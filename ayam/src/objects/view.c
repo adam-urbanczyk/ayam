@@ -362,8 +362,8 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   result = Tcl_GetVar2(interp, "ViewAttribData", "BGImage",
 		       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  if((result && !view->bgimage)  ||
-     (!result && view->bgimage)  ||
+  if((result && !view->bgimage) ||
+     (!result && view->bgimage) ||
      (result && view->bgimage && strcmp(result,view->bgimage)))
     {
       if(view->bgimage)
@@ -374,7 +374,7 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
       if(result)
 	{
-	  if(!(view->bgimage = calloc(strlen(result)+1, sizeof(char))))
+	  if(!(view->bgimage = malloc((strlen(result)+1)*sizeof(char))))
 	    {
 	      ay_error(AY_EOMEM, fname, NULL);
 	      return AY_ERROR;
@@ -624,7 +624,7 @@ ay_view_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     {
     case 0:
       /* select all points */
-      if(!(pe->coords = calloc(2, sizeof(double*))))
+      if(!(pe->coords = malloc(2*sizeof(double*))))
 	return AY_EOMEM;
 
       pe->coords[0] = view->from;
@@ -657,7 +657,7 @@ ay_view_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       if(!pecoord)
 	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
 
-      if(!(pe->coords = calloc(1, sizeof(double*))))
+      if(!(pe->coords = malloc(1*sizeof(double*))))
 	return AY_EOMEM;
 
       pe->coords[0] = pecoord;
@@ -770,11 +770,11 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
   vtemp.up[2] = 0.0;
   if(vtemp.type != AY_VTTOP)
     {
-      vtemp.up[1]=1.0;
+      vtemp.up[1] = 1.0;
     }
   else
     {
-      vtemp.up[2]=-1.0;
+      vtemp.up[2] = -1.0;
     }
   fscanf(fileptr,"%lg\n", &vtemp.grid);
   fscanf(fileptr,"%d\n", &vtemp.drawsel);
