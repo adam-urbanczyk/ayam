@@ -85,7 +85,7 @@ ay_toglcb_create(struct Togl *togl)
   view->zoom = 3.0;
   view->type = AY_VTFRONT;
   view->enable_undo = AY_TRUE;
- 
+
   view->id = id;
   id++;
 
@@ -110,9 +110,7 @@ ay_toglcb_create(struct Togl *togl)
 	  return;
 	}
     }
-#if 0
-  view->display_list = glGenLists(1);
-#endif
+
  return;
 } /* ay_toglcb_create */
 
@@ -139,10 +137,7 @@ ay_toglcb_destroy(struct Togl *togl)
       }
     }
 #endif
-#if 0
-  if(view->display_list != 0)
-    glDeleteLists(view->display_list, 1);
-#endif
+
   /* unlink from selection */
   lsel = &(ay_selection);
   while(sel)
@@ -285,6 +280,9 @@ ay_toglcb_display(struct Togl *togl)
 		   (GLfloat)ay_prefs.bgb, (GLfloat)1.0);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+      if(view->antialiaslines)
+	glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
+
       if(view->action_state)
 	{
 	  /* in action => swap in the second set of draw/display
@@ -334,5 +332,3 @@ ay_toglcb_display(struct Togl *togl)
 
  return;
 } /* ay_toglcb_display */
-
-
