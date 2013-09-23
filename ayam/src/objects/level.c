@@ -27,7 +27,7 @@ ay_level_createcb(int argc, char *argv[], ay_object *o)
  ay_level_object *level = NULL;
  char fname[] = "crtlevel";
 
-  if(!o)
+ if(!o)
     return AY_ENULL;
 
   if(!(level = calloc(1, sizeof(ay_level_object))))
@@ -41,7 +41,12 @@ ay_level_createcb(int argc, char *argv[], ay_object *o)
   o->refine = level;
 
   if(argc > 2)
-    level->type = (unsigned int) atoi(argv[2]);
+    {
+      if(!argv)
+	return AY_ENULL;
+
+      level->type = (unsigned int) atoi(argv[2]);
+    }
 
  return AY_OK;
 } /* ay_level_createcb */
@@ -147,10 +152,13 @@ ay_level_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_level_object *level = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   level = (ay_level_object *)o->refine;
+
+  if(!level)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
 
@@ -176,10 +184,13 @@ ay_level_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  ay_level_object *level = NULL;
  int itmp = 0;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   level = (ay_level_object *)o->refine;
+
+  if(!level)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
 
@@ -204,7 +215,7 @@ ay_level_readcb(FILE *fileptr, ay_object *o)
  ay_level_object *level = NULL;
  int type = 0, result = 0;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   fscanf(fileptr,"%d\n",&type);
@@ -240,10 +251,13 @@ ay_level_writecb(FILE *fileptr, ay_object *o)
 {
  ay_level_object *level = NULL;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   level = (ay_level_object *)(o->refine);
+
+  if(!level)
+    return AY_ENULL;
 
   fprintf(fileptr, "%d\n", level->type);
 
@@ -327,6 +341,9 @@ ay_level_providecb(ay_object *o, unsigned int type, ay_object **result)
     } /* if */
 
   l = (ay_level_object *)o->refine;
+
+  if(!l)
+    return AY_ENULL;
 
   if(l->type == AY_LTEND)
     return AY_OK;
