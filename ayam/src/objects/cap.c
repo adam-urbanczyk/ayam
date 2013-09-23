@@ -156,6 +156,9 @@ ay_cap_drawhcb(struct Togl *togl, ay_object *o)
 
   cap = (ay_cap_object *) o->refine;
 
+  if(!cap)
+    return AY_ENULL;
+
   if(cap->npatch)
     {
       patch = (ay_nurbpatch_object *)cap->npatch->refine;
@@ -193,6 +196,9 @@ ay_cap_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   cap = (ay_cap_object *)o->refine;
 
+  if(!cap)
+    return AY_ENULL;
+
   if(cap->npatch)
     {
       patch = (ay_nurbpatch_object *)cap->npatch->refine;
@@ -220,6 +226,9 @@ ay_cap_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   cap = (ay_cap_object *)o->refine;
+
+  if(!cap)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
@@ -275,8 +284,10 @@ ay_cap_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   cap = (ay_cap_object *)(o->refine);
 
-  toa = Tcl_NewStringObj(n1,-1);
+  if(!cap)
+    return AY_ENULL;
 
+  toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
   Tcl_SetStringObj(ton,"Type",-1);
@@ -356,6 +367,9 @@ ay_cap_writecb(FILE *fileptr, ay_object *o)
 
   cap = (ay_cap_object *)(o->refine);
 
+  if(!cap)
+    return AY_ENULL;
+
   fprintf(fileptr, "%g\n", cap->glu_sampling_tolerance);
   fprintf(fileptr, "%d\n", cap->display_mode);
   fprintf(fileptr, "%d\n", cap->type);
@@ -379,6 +393,9 @@ ay_cap_wribcb(char *file, ay_object *o)
 
   cap = (ay_cap_object*)o->refine;
 
+  if(!cap)
+    return AY_ENULL;
+
   if(cap->npatch)
     ay_status = ay_wrib_toolobject(file, cap->npatch, o);
 
@@ -399,7 +416,11 @@ ay_cap_bbccb(ay_object *o, double *bbox, int *flags)
     return AY_ENULL;
 
   cap = (ay_cap_object *)o->refine;
-  if(cap && cap->npatch)
+
+  if(!cap)
+    return AY_ENULL;
+
+  if(cap->npatch)
     {
       ay_status = ay_bbc_get(cap->npatch, bbox);
       /* exclusive bounding box (discard children bbox) */
@@ -430,6 +451,9 @@ ay_cap_notifycb(ay_object *o)
     return AY_ENULL;
 
   cap = (ay_cap_object *)(o->refine);
+
+  if(!cap)
+    return AY_ENULL;
 
   nextcurve = &(pobject);
 
@@ -535,6 +559,9 @@ ay_cap_convertcb(ay_object *o, int in_place)
 
   c = (ay_cap_object *) o->refine;
 
+  if(!c)
+    return AY_ENULL;
+
  return ay_convert_nptoolobj(o, c->npatch, NULL, in_place);
 } /* ay_cap_convertcb */
 
@@ -551,6 +578,9 @@ ay_cap_providecb(ay_object *o, unsigned int type, ay_object **result)
     return AY_ENULL;
 
   c = (ay_cap_object *) o->refine;
+
+  if(!c)
+    return AY_ENULL;
 
  return ay_provide_nptoolobj(o, type, c->npatch, NULL, result);
 } /* ay_cap_providecb */

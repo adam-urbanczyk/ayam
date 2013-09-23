@@ -398,6 +398,9 @@ ay_bpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   bpatch = (ay_bpatch_object *)(o->refine);
 
+  if(!bpatch)
+    return AY_ENULL;
+
   if(min_dist == 0.0)
     min_dist = DBL_MAX;
 
@@ -585,6 +588,9 @@ ay_bpatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   bpatch = (ay_bpatch_object *)o->refine;
 
+  if(!bpatch)
+    return AY_ENULL;
+
   toa = Tcl_NewStringObj(n1,-1);
 
   ton = Tcl_NewStringObj("P1_X",-1);
@@ -662,6 +668,9 @@ ay_bpatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   bpatch = (ay_bpatch_object *)o->refine;
+
+  if(!bpatch)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
 
@@ -762,6 +771,9 @@ ay_bpatch_writecb(FILE *fileptr, ay_object *o)
 
   bpatch = (ay_bpatch_object *)(o->refine);
 
+  if(!bpatch)
+    return AY_ENULL;
+
   fprintf(fileptr, "%g %g %g\n", bpatch->p1[0], bpatch->p1[1], bpatch->p1[2]);
   fprintf(fileptr, "%g %g %g\n", bpatch->p2[0], bpatch->p2[1], bpatch->p2[2]);
   fprintf(fileptr, "%g %g %g\n", bpatch->p3[0], bpatch->p3[1], bpatch->p3[2]);
@@ -787,6 +799,9 @@ ay_bpatch_wribcb(char *file, ay_object *o)
    return AY_ENULL;
 
   bpatch = (ay_bpatch_object*)o->refine;
+
+  if(!bpatch)
+    return AY_ENULL;
 
   /* XXXX order correct for RIB? */
   rect[0][0] = (RtFloat)(bpatch->p1[0]);
@@ -858,6 +873,9 @@ ay_bpatch_bbccb(ay_object *o, double *bbox, int *flags)
     return AY_ENULL;
 
   b = (ay_bpatch_object *)o->refine;
+
+  if(!b)
+    return AY_ENULL;
 
   memcpy(&(cv[0]), b->p1, 3*sizeof(double));
   memcpy(&(cv[3]), b->p2, 3*sizeof(double));
@@ -961,6 +979,9 @@ ay_bpatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   bp = (ay_bpatch_object *) o->refine;
 
+  if(!bp)
+    return AY_ENULL;
+
   if(type == AY_IDNPATCH)
     {
       if(!(new = calloc(1, sizeof(ay_object))))
@@ -1024,7 +1045,7 @@ ay_bpatch_init(Tcl_Interp *interp)
 				   ay_bpatch_bbccb,
 				   AY_IDBPATCH);
 
-  Tcl_SetVar(interp,"propertyList","BPatchAttr", TCL_APPEND_VALUE |
+  Tcl_SetVar(interp, "propertyList", "BPatchAttr", TCL_APPEND_VALUE |
 	     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   ay_status += ay_convert_register(ay_bpatch_convertcb, AY_IDBPATCH);

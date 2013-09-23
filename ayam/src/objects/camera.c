@@ -212,6 +212,9 @@ ay_camera_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   camera = (ay_camera_object *)o->refine;
 
+  if(!camera)
+    return AY_ENULL;
+
   toa = Tcl_NewStringObj(n1, -1);
   ton = Tcl_NewStringObj("From_X",-1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -295,6 +298,9 @@ ay_camera_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   camera = (ay_camera_object *)o->refine;
 
+  if(!camera)
+    return AY_ENULL;
+
   toa = Tcl_NewStringObj(n1, -1);
 
   ton = Tcl_NewStringObj("From_X", -1);
@@ -363,6 +369,9 @@ ay_camera_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     return AY_ENULL;
 
   camera = (ay_camera_object *)(o->refine);
+
+  if(!camera)
+    return AY_ENULL;
 
   if(min_dist == 0.0)
     min_dist = DBL_MAX;
@@ -628,6 +637,9 @@ ay_camera_bbccb(ay_object *o, double *bbox, int *flags)
 
   camera = (ay_camera_object *)o->refine;
 
+  if(!camera)
+    return AY_ENULL;
+
   from[0] = camera->from[0];
   from[1] = camera->from[1];
   from[2] = camera->from[2];
@@ -713,6 +725,9 @@ ay_camera_dropcb(ay_object *o)
     }
 
   camera = (ay_camera_object *)o->refine;
+
+  if(!camera)
+    return AY_ENULL;
 
   while(sel)
     {
