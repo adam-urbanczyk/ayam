@@ -16,7 +16,6 @@
 
 static char *ay_clone_name = "Clone";
 
-
 static char *ay_mirror_name = "Mirror";
 
 
@@ -36,7 +35,7 @@ ay_clone_createcb(int argc, char *argv[], ay_object *o)
  ay_clone_object *new = NULL;
  int mirror_mode = 1;
 
-  if(!o)
+  if(!argv || !o)
     return AY_ENULL;
 
   if(!(new = calloc(1, sizeof(ay_clone_object))))
@@ -146,15 +145,18 @@ ay_clone_copycb(void *src, void **dst)
 int
 ay_clone_drawcb(struct Togl *togl, ay_object *o)
 {
- ay_clone_object *cc = NULL;
+ ay_clone_object *clone = NULL;
  ay_object *c = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  cc = (ay_clone_object *)o->refine;
+  clone = (ay_clone_object *)o->refine;
 
-  c = cc->clones;
+  if(!clone)
+    return AY_ENULL;
+
+  c = clone->clones;
   while(c)
     {
       ay_draw_object(togl, c, AY_TRUE);
@@ -171,15 +173,18 @@ ay_clone_drawcb(struct Togl *togl, ay_object *o)
 int
 ay_clone_shadecb(struct Togl *togl, ay_object *o)
 {
- ay_clone_object *cc = NULL;
+ ay_clone_object *clone = NULL;
  ay_object *c = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  cc = (ay_clone_object *)o->refine;
+  clone = (ay_clone_object *)o->refine;
 
-  c = cc->clones;
+  if(!clone)
+    return AY_ENULL;
+
+  c = clone->clones;
   while(c)
     {
       ay_shade_object(togl, c, AY_FALSE);
@@ -196,29 +201,32 @@ ay_clone_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_clone_drawhcb(struct Togl *togl, ay_object *o)
 {
- ay_clone_object *cc = NULL;
+ ay_clone_object *clone = NULL;
  unsigned int i = 0, a = 0;
 
   if(!o)
     return AY_ENULL;
 
-  cc = (ay_clone_object *)o->refine;
+  clone = (ay_clone_object *)o->refine;
 
-  if(!cc->pnts)
+  if(!clone)
+    return AY_ENULL;
+
+  if(!clone->pnts)
     {
-      cc->pntslen = 1;
+      clone->pntslen = 1;
       ay_clone_notifycb(o);
     }
 
-  if(cc->pnts)
+  if(clone->pnts)
     {
       glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
 		(GLfloat)ay_prefs.obb);
 
       glBegin(GL_POINTS);
-       for(i = 0; i < cc->pntslen; i++)
+       for(i = 0; i < clone->pntslen; i++)
 	 {
-	   glVertex3dv((GLdouble *)&cc->pnts[a]);
+	   glVertex3dv((GLdouble *)&clone->pnts[a]);
 	   a += 4;
 	 }
       glEnd();
@@ -237,20 +245,23 @@ ay_clone_drawhcb(struct Togl *togl, ay_object *o)
 int
 ay_clone_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
- ay_clone_object *cc = NULL;
+ ay_clone_object *clone = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  cc = (ay_clone_object *)o->refine;
+  clone = (ay_clone_object *)o->refine;
 
-  if(!cc->pnts)
+  if(!clone)
+    return AY_ENULL;
+
+  if(!clone->pnts)
     {
-      cc->pntslen = 1;
+      clone->pntslen = 1;
       ay_clone_notifycb(o);
     }
 
- return ay_selp_getpnts(mode, o, p, pe, 1, cc->pntslen, 4, cc->pnts);
+ return ay_selp_getpnts(mode, o, p, pe, 1, clone->pntslen, 4, clone->pnts);
 } /* ay_clone_getpntcb */
 
 
@@ -274,10 +285,13 @@ ay_clone_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  ay_clone_object *clone = NULL;
  int pasteProp = AY_FALSE;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   clone = (ay_clone_object *)o->refine;
+
+  if(!clone)
+    return AY_ENULL;
 
   if(o->type == AY_IDMIRROR)
     {
@@ -438,10 +452,13 @@ ay_clone_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_clone_object *clone = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   clone = (ay_clone_object *)(o->refine);
+
+  if(!clone)
+    return AY_ENULL;
 
   if(o->type == AY_IDMIRROR)
     {
@@ -558,8 +575,8 @@ ay_clone_readcb(FILE *fileptr, ay_object *o)
 {
  ay_clone_object *clone = NULL;
 
- if(!o)
-   return AY_ENULL;
+  if(!fileptr || !o)
+    return AY_ENULL;
 
   if(!(clone = calloc(1, sizeof(ay_clone_object))))
     { return AY_EOMEM; }
@@ -609,10 +626,13 @@ ay_clone_writecb(FILE *fileptr, ay_object *o)
 {
  ay_clone_object *clone = NULL;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   clone = (ay_clone_object *)(o->refine);
+
+  if(!clone)
+    return AY_ENULL;
 
   fprintf(fileptr,"%d\n",clone->numclones);
 
@@ -647,18 +667,22 @@ ay_clone_writecb(FILE *fileptr, ay_object *o)
 int
 ay_clone_wribcb(char *file, ay_object *o)
 {
- ay_clone_object *cc = NULL;
+ ay_clone_object *clone = NULL;
  ay_object *c = NULL;
  int old_resinstances;
 
   if(!o)
     return AY_ENULL;
 
-  cc = (ay_clone_object *)o->refine;
+  clone = (ay_clone_object *)o->refine;
+
+  if(!clone)
+    return AY_ENULL;
+
   old_resinstances = ay_prefs.resolveinstances;
   ay_prefs.resolveinstances = AY_TRUE;
 
-  c = cc->clones;
+  c = clone->clones;
   while(c)
     {
       ay_wrib_object(file, c);
@@ -682,15 +706,18 @@ ay_clone_bbccb(ay_object *o, double *bbox, int *flags)
  double xmin = DBL_MAX, xmax = -DBL_MAX, ymin = DBL_MAX;
  double ymax = -DBL_MAX, zmin = DBL_MAX, zmax = -DBL_MAX;
  double bbt[24] = {0};
- ay_clone_object *cc = NULL;
+ ay_clone_object *clone = NULL;
  ay_object *c = NULL;
 
   if(!o || !bbox || !flags)
     return AY_ENULL;
 
-  cc = (ay_clone_object *)o->refine;
+  clone = (ay_clone_object *)o->refine;
 
-  c = cc->clones;
+  if(!clone)
+    return AY_ENULL;
+
+  c = clone->clones;
   if(!c)
     {  /* use the bounding boxes of the child(s) */
       *flags = 2;
@@ -784,6 +811,9 @@ ay_clone_notifycb(ay_object *o)
     return AY_ENULL;
 
   clone = (ay_clone_object *)(o->refine);
+
+  if(!clone)
+    return AY_ENULL;
 
   /* clear the old clones */
   while(clone->clones)
@@ -1300,8 +1330,8 @@ int
 ay_clone_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
- ay_clone_object *cc = NULL;
- ay_object *clone = NULL, *new = NULL, *down = NULL, **next = NULL;
+ ay_clone_object *clone = NULL;
+ ay_object *c = NULL, *new = NULL, *down = NULL, **next = NULL;
  ay_object *newo = NULL;
 
   if(!o)
@@ -1312,7 +1342,10 @@ ay_clone_convertcb(ay_object *o, int in_place)
   if(!down || !down->next)
     return AY_OK;
 
-  cc = (ay_clone_object *) o->refine;
+  clone = (ay_clone_object *) o->refine;
+
+  if(!clone)
+    return AY_ENULL;
 
   /* first, create new objects */
 
@@ -1339,7 +1372,7 @@ ay_clone_convertcb(ay_object *o, int in_place)
     {
       next = &((*next)->next);
     }
-  if(cc->mirror)
+  if(clone->mirror)
     {
       while(down->next)
 	{
@@ -1354,16 +1387,16 @@ ay_clone_convertcb(ay_object *o, int in_place)
 
   /* copy clone(s) */
   down = o->down;
-  clone = cc->clones;
-  while(clone)
+  c = clone->clones;
+  while(c)
     {
       newo = NULL;
       ay_status = ay_object_copy(down, &newo);
       if(newo)
 	{
-	  ay_trafo_copy(clone, newo);
+	  ay_trafo_copy(c, newo);
 	  /* link clones */
-	  if(cc->mirror == 0)
+	  if(clone->mirror == 0)
 	    {
 	      /* in order */
 	      *next = newo;
@@ -1377,9 +1410,9 @@ ay_clone_convertcb(ay_object *o, int in_place)
 	    } /* if */
 	} /* if */
 
-      if(cc->mirror != 0)
+      if(clone->mirror != 0)
 	down = down->next;
-      clone = clone->next;
+      c = c->next;
     } /* while */
 
   while(*next)
@@ -1412,8 +1445,8 @@ int
 ay_clone_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
  int ay_status = AY_OK;
- ay_clone_object *cc = NULL;
- ay_object *clone = NULL, *down = NULL, *newo = NULL, **next = NULL;
+ ay_clone_object *clone = NULL;
+ ay_object *c = NULL, *down = NULL, *newo = NULL, **next = NULL;
  ay_object *po;
 
   if(!o)
@@ -1444,7 +1477,10 @@ ay_clone_providecb(ay_object *o, unsigned int type, ay_object **result)
       return AY_ERROR;
     } /* if */
 
-  cc = (ay_clone_object *) o->refine;
+  clone = (ay_clone_object *) o->refine;
+
+  if(!clone)
+    return AY_ENULL;
 
   /* dow we have any child objects? */
   down = o->down;
@@ -1453,7 +1489,7 @@ ay_clone_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   next = result;
 
-  if(cc->mirror != 0)
+  if(clone->mirror != 0)
     {
       while(down)
 	{
@@ -1482,8 +1518,8 @@ ay_clone_providecb(ay_object *o, unsigned int type, ay_object **result)
     } /* if */
 
   down = o->down;
-  clone = cc->clones;
-  while(clone)
+  c = clone->clones;
+  while(c)
     {
       newo = NULL;
 
@@ -1500,12 +1536,12 @@ ay_clone_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  /* add trafo to all provided objects */
 	  while(po)
 	    {
-	      ay_trafo_copy(clone, po);
+	      ay_trafo_copy(c, po);
 	      ay_trafo_add(o, po);
 	      po = po->next;
 	    }
 	  /* link provided objects to result */
-	  if(cc->mirror == 0)
+	  if(clone->mirror == 0)
 	    {
 	      /* in order for normal clones */
 	      *next = newo;
@@ -1528,9 +1564,9 @@ ay_clone_providecb(ay_object *o, unsigned int type, ay_object **result)
 	    } /* if */
 	} /* if */
 
-      if(cc->mirror != 0)
+      if(clone->mirror != 0)
 	down = down->next;
-      clone = clone->next;
+      c = c->next;
     } /* while */
 
  return ay_status;

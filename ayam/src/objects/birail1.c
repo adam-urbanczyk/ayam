@@ -183,6 +183,9 @@ ay_birail1_drawhcb(struct Togl *togl, ay_object *o)
 
   birail1 = (ay_birail1_object *) o->refine;
 
+  if(!birail1)
+    return AY_ENULL;
+
   if(birail1->npatch)
     {
       patch = (ay_nurbpatch_object *)birail1->npatch->refine;
@@ -221,6 +224,9 @@ ay_birail1_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   birail1 = (ay_birail1_object *)o->refine;
 
+  if(!birail1)
+    return AY_ENULL;
+
   if(birail1->npatch)
     {
       patch = (ay_nurbpatch_object *)birail1->npatch->refine;
@@ -244,10 +250,13 @@ ay_birail1_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_birail1_object *birail1 = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   birail1 = (ay_birail1_object *)o->refine;
+
+  if(!birail1)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
@@ -290,13 +299,15 @@ ay_birail1_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_birail1_object *birail1 = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   birail1 = (ay_birail1_object *)(o->refine);
 
-  toa = Tcl_NewStringObj(n1,-1);
+  if(!birail1)
+    return AY_ENULL;
 
+  toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
   Tcl_SetStringObj(ton,"Type",-1);
@@ -337,8 +348,8 @@ ay_birail1_readcb(FILE *fileptr, ay_object *o)
  ay_birail1_object *birail1 = NULL;
  int caps[4] = {0};
 
- if(!o)
-   return AY_ENULL;
+  if(!fileptr || !o)
+    return AY_ENULL;
 
   if(!(birail1 = calloc(1, sizeof(ay_birail1_object))))
     { return AY_EOMEM; }
@@ -372,10 +383,13 @@ ay_birail1_writecb(FILE *fileptr, ay_object *o)
  ay_cparam cparams = {0};
  int caps[2] = {0};
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   birail1 = (ay_birail1_object *)(o->refine);
+
+  if(!birail1)
+    return AY_ENULL;
 
   if(o->tags)
     {
@@ -412,6 +426,9 @@ ay_birail1_wribcb(char *file, ay_object *o)
 
   birail1 = (ay_birail1_object*)o->refine;
 
+  if(!birail1)
+    return AY_ENULL;
+
   if(birail1->npatch)
     ay_wrib_toolobject(file, birail1->npatch, o);
 
@@ -441,6 +458,9 @@ ay_birail1_bbccb(ay_object *o, double *bbox, int *flags)
     return AY_ENULL;
 
   birail1 = (ay_birail1_object *)o->refine;
+
+  if(!birail1)
+    return AY_ENULL;
 
   if(birail1->npatch)
     {
@@ -478,6 +498,9 @@ ay_birail1_notifycb(ay_object *o)
     return AY_ENULL;
 
   birail1 = (ay_birail1_object *)(o->refine);
+
+  if(!birail1)
+    return AY_ENULL;
 
   mode = birail1->display_mode;
   tolerance = birail1->glu_sampling_tolerance;
@@ -670,6 +693,9 @@ ay_birail1_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   b = (ay_birail1_object *) o->refine;
 
+  if(!b)
+    return AY_ENULL;
+
  return ay_provide_nptoolobj(o, type, b->npatch, b->caps_and_bevels, result);
 } /* ay_birail1_providecb */
 
@@ -686,6 +712,9 @@ ay_birail1_convertcb(ay_object *o, int in_place)
     return AY_ENULL;
 
   b = (ay_birail1_object *) o->refine;
+
+  if(!b)
+    return AY_ENULL;
 
  return ay_convert_nptoolobj(o, b->npatch, b->caps_and_bevels, in_place);
 } /* ay_birail1_convertcb */

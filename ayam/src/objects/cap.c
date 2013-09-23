@@ -216,7 +216,7 @@ ay_cap_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_cap_object *cap = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   cap = (ay_cap_object *)o->refine;
@@ -270,7 +270,7 @@ ay_cap_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_cap_object *cap = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   cap = (ay_cap_object *)(o->refine);
@@ -316,8 +316,8 @@ ay_cap_readcb(FILE *fileptr, ay_object *o)
 {
  ay_cap_object *cap = NULL;
 
- if(!o)
-   return AY_ENULL;
+  if(!fileptr || !o)
+    return AY_ENULL;
 
   if(!(cap = calloc(1, sizeof(ay_cap_object))))
     { return AY_EOMEM; }
@@ -351,7 +351,7 @@ ay_cap_writecb(FILE *fileptr, ay_object *o)
 {
  ay_cap_object *cap = NULL;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   cap = (ay_cap_object *)(o->refine);

@@ -221,6 +221,9 @@ ay_disk_drawhcb(struct Togl *togl, ay_object *o)
 
   disk = (ay_disk_object *) o->refine;
 
+  if(!disk)
+    return AY_ENULL;
+
   if(!disk->pnts)
     {
       if(!(pnts = calloc(AY_PDISK*3, sizeof(double))))
@@ -265,6 +268,9 @@ ay_disk_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   disk = (ay_disk_object *)o->refine;
 
+  if(!disk)
+    return AY_ENULL;
+
   if(!disk->pnts)
     {
       if(!(disk->pnts = calloc(AY_PDISK*3, sizeof(double))))
@@ -287,10 +293,13 @@ ay_disk_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_disk_object *disk = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   disk = (ay_disk_object *)o->refine;
+
+  if(!disk)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
@@ -340,10 +349,13 @@ ay_disk_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_disk_object *disk = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   disk = (ay_disk_object *)(o->refine);
+
+  if(!disk)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
 
@@ -376,7 +388,7 @@ ay_disk_readcb(FILE *fileptr, ay_object *o)
 {
  ay_disk_object *disk = NULL;
 
-  if(!o)
+  if(!fileptr || !o)
    return AY_ENULL;
 
   if(!(disk = calloc(1, sizeof(ay_disk_object))))
@@ -409,10 +421,13 @@ ay_disk_writecb(FILE *fileptr, ay_object *o)
 {
  ay_disk_object *disk = NULL;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   disk = (ay_disk_object *)(o->refine);
+
+  if(!disk)
+    return AY_ENULL;
 
   fprintf(fileptr, "%g\n", disk->radius);
   fprintf(fileptr, "%g\n", disk->height);
@@ -434,6 +449,9 @@ ay_disk_wribcb(char *file, ay_object *o)
    return AY_ENULL;
 
   disk = (ay_disk_object*)o->refine;
+
+  if(!disk)
+    return AY_ENULL;
 
   RiDisk((RtFloat)disk->height,
 	 (RtFloat)disk->radius,
@@ -457,6 +475,9 @@ ay_disk_bbccb(ay_object *o, double *bbox, int *flags)
     return AY_ENULL;
 
   disk = (ay_disk_object *)o->refine;
+
+  if(!disk)
+    return AY_ENULL;
 
   if(!disk->is_simple)
     {
@@ -511,6 +532,9 @@ ay_disk_notifycb(ay_object *o)
     return AY_ENULL;
 
   disk = (ay_disk_object *)o->refine;
+
+  if(!disk)
+    return AY_ENULL;
 
   if(disk->pnts)
     {
@@ -598,6 +622,9 @@ ay_disk_providecb(ay_object *o, unsigned int type, ay_object **result)
     }
 
   disk = (ay_disk_object *) o->refine;
+
+  if(!disk)
+    return AY_ENULL;
 
   if(type == AY_IDNPATCH)
     {

@@ -323,7 +323,13 @@ ay_cone_drawhcb(struct Togl *togl, ay_object *o)
  ay_cone_object *cone = NULL;
  double *pnts = NULL;
 
+  if(!o)
+    return AY_ENULL;
+
   cone = (ay_cone_object *) o->refine;
+
+  if(!cone)
+    return AY_ENULL;
 
   if(!cone->pnts)
     {
@@ -370,6 +376,9 @@ ay_cone_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   cone = (ay_cone_object *)o->refine;
 
+  if(!cone)
+    return AY_ENULL;
+
   if(!cone->pnts)
     {
       if(!(cone->pnts = calloc(AY_PCONE*3, sizeof(double))))
@@ -393,10 +402,13 @@ ay_cone_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  ay_cone_object *cone = NULL;
  int itemp = 0;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   cone = (ay_cone_object *)o->refine;
+
+  if(!cone)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
@@ -448,15 +460,16 @@ ay_cone_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_cone_object *cone = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   cone = (ay_cone_object *)(o->refine);
 
+  if(!cone)
+    return AY_ENULL;
+
   toa = Tcl_NewStringObj(n1,-1);
-
   ton = Tcl_NewStringObj(n1,-1);
-
 
   Tcl_SetStringObj(ton,"Closed",-1);
   to = Tcl_NewIntObj(cone->closed);
@@ -489,8 +502,9 @@ ay_cone_readcb(FILE *fileptr, ay_object *o)
 {
  ay_cone_object *cone = NULL;
  int itemp = 0;
- if(!o)
-   return AY_ENULL;
+
+  if(!fileptr || !o)
+    return AY_ENULL;
 
   if(!(cone = calloc(1, sizeof(ay_cone_object))))
     { return AY_EOMEM; }
@@ -524,10 +538,13 @@ ay_cone_writecb(FILE *fileptr, ay_object *o)
 {
  ay_cone_object *cone = NULL;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   cone = (ay_cone_object *)(o->refine);
+
+  if(!cone)
+    return AY_ENULL;
 
   fprintf(fileptr, "%d\n", (int)cone->closed);
   fprintf(fileptr, "%g\n", cone->radius);
@@ -551,6 +568,9 @@ ay_cone_wribcb(char *file, ay_object *o)
    return AY_ENULL;
 
   cone = (ay_cone_object*)o->refine;
+
+  if(!cone)
+    return AY_ENULL;
 
   if(!cone->closed)
     {
@@ -662,6 +682,9 @@ ay_cone_bbccb(ay_object *o, double *bbox, int *flags)
 
   cone = (ay_cone_object *)o->refine;
 
+  if(!cone)
+    return AY_ENULL;
+
   if(!cone->is_simple)
     {
       if(!cone->pnts)
@@ -715,6 +738,9 @@ ay_cone_notifycb(ay_object *o)
     return AY_ENULL;
 
   cone = (ay_cone_object *)o->refine;
+
+  if(!cone)
+    return AY_ENULL;
 
   if(cone->pnts)
     {
@@ -801,6 +827,9 @@ ay_cone_providecb(ay_object *o, unsigned int type, ay_object **result)
     }
 
   cone = (ay_cone_object *) o->refine;
+
+  if(!cone)
+    return AY_ENULL;
 
   if(type == AY_IDNPATCH)
     {
@@ -933,6 +962,9 @@ ay_cone_convertcb(ay_object *o, int in_place)
     return AY_ENULL;
 
   cone = (ay_cone_object *) o->refine;
+
+  if(!cone)
+    return AY_ENULL;
 
   /* first, create new object(s) */
 

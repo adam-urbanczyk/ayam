@@ -289,7 +289,7 @@ ay_box_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_box_object *box = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   box = (ay_box_object *)o->refine;
@@ -328,7 +328,7 @@ ay_box_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_box_object *box = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   box = (ay_box_object *)(o->refine);
@@ -362,8 +362,8 @@ ay_box_readcb(FILE *fileptr, ay_object *o)
 {
  ay_box_object *box = NULL;
 
- if(!o)
-   return AY_ENULL;
+  if(!fileptr || !o)
+    return AY_ENULL;
 
   if(!(box = calloc(1, sizeof(ay_box_object))))
     { return AY_EOMEM; }
@@ -386,7 +386,7 @@ ay_box_writecb(FILE *fileptr, ay_object *o)
 {
  ay_box_object *box = NULL;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   box = (ay_box_object *)(o->refine);

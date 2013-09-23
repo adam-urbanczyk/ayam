@@ -34,6 +34,9 @@ ay_bpatch_createcb(int argc, char *argv[], ay_object *o)
  double *cv = NULL;
  ay_bpatch_object *bpatch = NULL;
 
+  if(!o || !argv)
+    return AY_ENULL;
+
   /* parse args */
   while(i < argc)
     {
@@ -188,6 +191,9 @@ int
 ay_bpatch_copycb(void *src, void **dst)
 {
  ay_bpatch_object *bpatch = NULL;
+
+  if(!src || !dst)
+    return AY_ENULL;
 
   if(!(bpatch = malloc(sizeof(ay_bpatch_object))))
     return AY_EOMEM;
@@ -574,7 +580,7 @@ ay_bpatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_bpatch_object *bpatch = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   bpatch = (ay_bpatch_object *)o->refine;
@@ -652,7 +658,7 @@ ay_bpatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_bpatch_object *bpatch = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   bpatch = (ay_bpatch_object *)o->refine;
@@ -726,7 +732,7 @@ ay_bpatch_readcb(FILE *fileptr, ay_object *o)
 {
  ay_bpatch_object *bp = NULL;
 
-  if(!o)
+  if(!fileptr || !o)
    return AY_ENULL;
 
   if(!(bp = calloc(1, sizeof(ay_bpatch_object))))
@@ -751,7 +757,7 @@ ay_bpatch_writecb(FILE *fileptr, ay_object *o)
 {
  ay_bpatch_object *bpatch = NULL;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   bpatch = (ay_bpatch_object *)(o->refine);
