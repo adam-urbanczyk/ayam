@@ -256,7 +256,6 @@ ay_extrnc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
-
   Tcl_SetStringObj(ton,"Side",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(extrnc->side));
@@ -320,9 +319,7 @@ ay_extrnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
-
   ton = Tcl_NewStringObj(n1,-1);
-
 
   Tcl_SetStringObj(ton,"Side",-1);
   to = Tcl_NewIntObj(extrnc->side);

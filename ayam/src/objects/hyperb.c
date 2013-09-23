@@ -356,6 +356,9 @@ ay_hyperb_drawhcb(struct Togl *togl, ay_object *o)
 
   h = (ay_hyperboloid_object *) o->refine;
 
+  if(!h)
+    return AY_ENULL;
+
   if(!h->pnts)
     {
       if(!(pnts = calloc(AY_PHYPERB*3, sizeof(double))))
@@ -401,6 +404,9 @@ ay_hyperb_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   h = (ay_hyperboloid_object *)o->refine;
 
+  if(!h)
+    return AY_ENULL;
+
   if(!h->pnts)
     {
       if(!(h->pnts = calloc(AY_PHYPERB*3, sizeof(double))))
@@ -424,10 +430,13 @@ ay_hyperb_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  ay_hyperboloid_object *hyperb = NULL;
  int itemp;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   hyperb = (ay_hyperboloid_object *)o->refine;
+
+  if(!hyperb)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
@@ -489,13 +498,15 @@ ay_hyperb_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_hyperboloid_object *hyperb = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   hyperb = (ay_hyperboloid_object *)(o->refine);
 
-  toa = Tcl_NewStringObj(n1,-1);
+  if(!hyperb)
+    return AY_ENULL;
 
+  toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
   Tcl_SetStringObj(ton,"Closed",-1);
@@ -550,7 +561,7 @@ ay_hyperb_readcb(FILE *fileptr, ay_object *o)
  ay_hyperboloid_object *hyperb = NULL;
  int itemp;
 
-  if(!o)
+  if(!fileptr || !o)
    return AY_ENULL;
 
   if(!(hyperb = calloc(1, sizeof(ay_hyperboloid_object))))
@@ -579,10 +590,13 @@ ay_hyperb_writecb(FILE *fileptr, ay_object *o)
 {
  ay_hyperboloid_object *hyperb = NULL;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   hyperb = (ay_hyperboloid_object *)(o->refine);
+
+  if(!hyperb)
+    return AY_ENULL;
 
   fprintf(fileptr, "%d\n", (int)hyperb->closed);
   fprintf(fileptr, "%g %g %g\n", hyperb->p1[0], hyperb->p1[1], hyperb->p1[2]);
@@ -608,6 +622,9 @@ ay_hyperb_wribcb(char *file, ay_object *o)
    return AY_ENULL;
 
   hyperb = (ay_hyperboloid_object*)o->refine;
+
+  if(!hyperb)
+    return AY_ENULL;
 
   p1[0] = (RtFloat)hyperb->p1[0];
   p1[1] = (RtFloat)hyperb->p1[1];
@@ -703,6 +720,9 @@ ay_hyperb_bbccb(ay_object *o, double *bbox, int *flags)
 
   h = (ay_hyperboloid_object *)o->refine;
 
+  if(!h)
+    return AY_ENULL;
+
   if(fabs(h->thetamax) != 360.0)
     {
       if(!h->pnts)
@@ -763,6 +783,9 @@ ay_hyperboloid_notifycb(ay_object *o)
     return AY_ENULL;
 
   h = (ay_hyperboloid_object *)o->refine;
+
+  if(!h)
+    return AY_ENULL;
 
   if(h->pnts)
     {
@@ -853,7 +876,7 @@ ay_hyperboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
  double *cv = NULL, *vk = NULL, *controlv = NULL;
  double zaxis[3]={0.0,0.0,1.0};
  double quat[4];
- ay_hyperboloid_object *hyperboloid = NULL, *h = NULL;
+ ay_hyperboloid_object *h = NULL;
  ay_disk_object disk = {0};
  ay_bpatch_object bpatch = {{0}};
  ay_object *new = NULL, d = {0}, **n = NULL;
@@ -870,8 +893,10 @@ ay_hyperboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 	return AY_ERROR;
     }
 
-  hyperboloid = (ay_hyperboloid_object *) o->refine;
-  h = hyperboloid;
+  h = (ay_hyperboloid_object *) o->refine;
+
+  if(!h)
+    return AY_ENULL;
 
   if(type == AY_IDNPATCH)
     {
@@ -883,9 +908,9 @@ ay_hyperboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
       else
 	ths = 90.0;
 
-      the = ths + hyperboloid->thetamax;
+      the = ths + h->thetamax;
 
-      if(hyperboloid->thetamax < 0.0)
+      if(h->thetamax < 0.0)
 	{
 	  ay_status = ay_nb_CreateNurbsCircleArc(rmin, the, ths,
 						 &height, &vk, &cv);
@@ -922,9 +947,9 @@ ay_hyperboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
       else
 	ths = 90.0;
 
-      the = ths + hyperboloid->thetamax;
+      the = ths + h->thetamax;
 
-      if(hyperboloid->thetamax < 0.0)
+      if(h->thetamax < 0.0)
 	{
 	  ay_status = ay_nb_CreateNurbsCircleArc(rmax, the, ths,
 						 &height, &vk, &cv);
@@ -962,7 +987,7 @@ ay_hyperboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
       new->refine = np;
 
       /* check for disk shape */
-      if((fabs(h->p1[2] - h->p2[2]) > AY_EPSILON) && hyperboloid->closed)
+      if((fabs(h->p1[2] - h->p2[2]) > AY_EPSILON) && h->closed)
 	{
 	  /* create caps */
 	  n = &(new->next);
@@ -971,7 +996,7 @@ ay_hyperboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  d.refine = &disk;
 	  disk.radius = rmin;
 	  disk.height = h->p1[2];
-	  disk.thetamax = hyperboloid->thetamax;
+	  disk.thetamax = h->thetamax;
 	  if(fabs(h->p1[0]) > AY_EPSILON)
 	    ths = -AY_R2D(atan(h->p1[1]/h->p1[0]));
 	  else
@@ -1011,7 +1036,7 @@ ay_hyperboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      n = &((*n)->next);
 	    } /* if */
 
-	  if(fabs(hyperboloid->thetamax) != 360.0)
+	  if(fabs(h->thetamax) != 360.0)
 	    {
 	      ay_object_defaults(&d);
 	      ay_trafo_copy(o, &d);
@@ -1075,16 +1100,17 @@ ay_hyperboloid_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
  ay_object *new = NULL, *t;
- ay_hyperboloid_object *hyperboloid = NULL;
+ ay_hyperboloid_object *hyperb = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  hyperboloid = (ay_hyperboloid_object *) o->refine;
+  hyperb = (ay_hyperboloid_object *) o->refine;
 
-  /* first, create new object(s) */
+  if(!hyperb)
+    return AY_ENULL;
 
-  if(hyperboloid->closed)
+  if(hyperb->closed)
     {
       if(!(new = calloc(1, sizeof(ay_object))))
 	{ return AY_EOMEM; }
@@ -1114,9 +1140,6 @@ ay_hyperboloid_convertcb(ay_object *o, int in_place)
     {
       ay_status = ay_hyperboloid_providecb(o, AY_IDNPATCH, &new);
     }
-
-
-  /* second, link new object(s), or replace old object with it/them */
 
   if(new)
     {
