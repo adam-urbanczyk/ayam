@@ -38,7 +38,7 @@ ay_icurve_createcb(int argc, char *argv[], ay_object *o)
  double sdlen = 0.125, edlen = 0.125;
  ay_icurve_object *icurve = NULL;
 
-  if(!o)
+  if(!argv || !o)
     return AY_ENULL;
 
   /* parse args */
@@ -605,6 +605,10 @@ ay_icurve_drawacb(struct Togl *togl, ay_object *o)
  GLdouble *ver = NULL;
 
   icurve = (ay_icurve_object *) o->refine;
+
+  if(!icurve)
+    return AY_ENULL;
+
   length = icurve->length;
 
   ver = icurve->controlv;
@@ -632,6 +636,9 @@ ay_icurve_drawhcb(struct Togl *togl, ay_object *o)
  ay_icurve_object *icurve;
 
   icurve = (ay_icurve_object *) o->refine;
+
+  if(!icurve)
+    return AY_ENULL;
 
   pnts = icurve->controlv;
 
@@ -674,6 +681,9 @@ ay_icurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     return AY_ENULL;
 
   icurve = (ay_icurve_object *)(o->refine);
+
+  if(!icurve)
+    return AY_ENULL;
 
   if(min_dist == 0.0)
     min_dist = DBL_MAX;
@@ -907,10 +917,13 @@ ay_icurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_icurve_object *icurve = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   icurve = (ay_icurve_object *)o->refine;
+
+  if(!icurve)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
@@ -1028,10 +1041,13 @@ ay_icurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_icurve_object *icurve = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   icurve = (ay_icurve_object *)(o->refine);
+
+  if(!icurve)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
@@ -1090,7 +1106,7 @@ ay_icurve_readcb(FILE *fileptr, ay_object *o)
  ay_icurve_object *icurve = NULL;
  int i, a;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   if(!(icurve = calloc(1, sizeof(ay_icurve_object))))
@@ -1147,10 +1163,13 @@ ay_icurve_writecb(FILE *fileptr, ay_object *o)
  ay_icurve_object *icurve = NULL;
  int i, a;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   icurve = (ay_icurve_object *)(o->refine);
+
+  if(!icurve)
+    return AY_ENULL;
 
   fprintf(fileptr, "%d\n", icurve->length);
   fprintf(fileptr, "%d\n", icurve->type); /* was: Closed */
@@ -1215,6 +1234,9 @@ ay_icurve_bbccb(ay_object *o, double *bbox, int *flags)
 
   icurve = (ay_icurve_object *)o->refine;
 
+  if(!icurve)
+    return AY_ENULL;
+
  return ay_bbc_fromarr(icurve->controlv, icurve->length, 3, bbox);
 } /* ay_icurve_bbccb */
 
@@ -1236,6 +1258,9 @@ ay_icurve_notifycb(ay_object *o)
     return AY_ENULL;
 
   icurve = (ay_icurve_object *)(o->refine);
+
+  if(!icurve)
+    return AY_ENULL;
 
   /*
    * Do we have a child?
@@ -1374,6 +1399,9 @@ ay_icurve_convertcb(ay_object *o, int in_place)
 
   ic = (ay_icurve_object *) o->refine;
 
+  if(!ic)
+    return AY_ENULL;
+
   if(ic->ncurve)
     {
       ay_status = ay_object_copy(ic->ncurve, &new);
@@ -1434,6 +1462,9 @@ ay_icurve_providecb(ay_object *o, unsigned int type, ay_object **result)
     }
 
   ic = (ay_icurve_object *) o->refine;
+
+  if(!ic)
+    return AY_ENULL;
 
   if(type == AY_IDNCURVE)
     {
