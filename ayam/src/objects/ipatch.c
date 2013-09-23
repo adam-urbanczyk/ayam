@@ -52,7 +52,7 @@ ay_ipatch_createcb(int argc, char *argv[], ay_object *o)
  double **deriv;
  ay_ipatch_object *ip = NULL;
 
-  if(!o)
+  if(!argv || !o)
     return AY_ENULL;
 
   /* parse args */
@@ -939,6 +939,9 @@ ay_ipatch_drawcb(struct Togl *togl, ay_object *o)
 
   ipatch = (ay_ipatch_object *)o->refine;
 
+  if(!ipatch)
+    return AY_ENULL;
+
   if(ipatch->display_mode != 0)
     {
       display_mode = ipatch->display_mode-1;
@@ -990,7 +993,13 @@ ay_ipatch_shadecb(struct Togl *togl, ay_object *o)
  ay_ipatch_object *ipatch = NULL;
  ay_object *p = NULL;
 
+  if(!o)
+    return AY_ENULL;
+
   ipatch = (ay_ipatch_object *)o->refine;
+
+  if(!ipatch)
+    return AY_ENULL;
 
   p = ipatch->npatch;
   while(p)
@@ -1020,9 +1029,17 @@ int
 ay_ipatch_drawacb(struct Togl *togl, ay_object *o)
 {
  int width = 0, height = 0;
- ay_ipatch_object *ipatch = (ay_ipatch_object *) o->refine;
+ ay_ipatch_object *ipatch;
  GLdouble *ver = NULL;
  /*double point_size = ay_prefs.handle_size;*/
+
+  if(!o)
+    return AY_ENULL;
+
+  ipatch = (ay_ipatch_object *) o->refine;
+
+  if(!ipatch)
+    return AY_ENULL;
 
   width = ipatch->width;
   height = ipatch->height;
@@ -1050,6 +1067,9 @@ ay_ipatch_drawhcb(struct Togl *togl, ay_object *o)
     return AY_ENULL;
 
   ipatch = (ay_ipatch_object *) o->refine;
+
+  if(!ipatch)
+    return AY_ENULL;
 
   pnts = ipatch->controlv;
 
@@ -1136,6 +1156,9 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     return AY_ENULL;
 
   ipatch = (ay_ipatch_object *)(o->refine);
+
+  if(!ipatch)
+    return AY_ENULL;
 
   if(min_dist == 0.0)
     min_dist = DBL_MAX;
@@ -1491,10 +1514,13 @@ ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  int new_ktype_v, new_close_v, new_order_v, new_height;
  int i, update = AY_FALSE;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   ipatch = (ay_ipatch_object *)o->refine;
+
+  if(!ipatch)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
@@ -1820,15 +1846,16 @@ ay_ipatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_ipatch_object *ipatch = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   ipatch = (ay_ipatch_object *)(o->refine);
 
+  if(!ipatch)
+    return AY_ENULL;
+
   toa = Tcl_NewStringObj(n1,-1);
-
   ton = Tcl_NewStringObj(n1,-1);
-
 
   Tcl_SetStringObj(ton,"Width",-1);
   to = Tcl_NewIntObj(ipatch->width);
@@ -1950,7 +1977,7 @@ ay_ipatch_readcb(FILE *fileptr, ay_object *o)
  ay_ipatch_object *ipatch = NULL;
  int i, a;
 
-  if(!o)
+  if(!fileptr || !o)
    return AY_ENULL;
 
   if(!(ipatch = calloc(1, sizeof(ay_ipatch_object))))
@@ -2098,10 +2125,13 @@ ay_ipatch_writecb(FILE *fileptr, ay_object *o)
  ay_ipatch_object *ipatch = NULL;
  int i, a;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   ipatch = (ay_ipatch_object *)(o->refine);
+
+  if(!ipatch)
+    return AY_ENULL;
 
   fprintf(fileptr, "%d\n", ipatch->width);
   fprintf(fileptr, "%d\n", ipatch->height);
@@ -2185,9 +2215,13 @@ ay_ipatch_wribcb(char *file, ay_object *o)
  ay_object *p;
 
   if(!o)
-    return AY_OK;
+    return AY_ENULL;
 
   ipatch = (ay_ipatch_object*)(o->refine);
+
+  if(!ipatch)
+    return AY_ENULL;
+
   p = ipatch->npatch;
   while(p)
     {
@@ -2219,6 +2253,9 @@ ay_ipatch_bbccb(ay_object *o, double *bbox, int *flags)
 
   ipatch = (ay_ipatch_object *)o->refine;
 
+  if(!ipatch)
+    return AY_ENULL;
+
  return ay_bbc_fromarr(ipatch->controlv, ipatch->width*ipatch->height,
 		       3, bbox);
 } /* ay_ipatch_bbccb */
@@ -2244,6 +2281,9 @@ ay_ipatch_notifycb(ay_object *o)
     return AY_ENULL;
 
   ip = (ay_ipatch_object *)o->refine;
+
+  if(!ip)
+    return AY_ENULL;
 
   mode = ip->display_mode;
   tolerance = ip->glu_sampling_tolerance;
@@ -2443,14 +2483,17 @@ cleanup:
 int
 ay_ipatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
- ay_ipatch_object *i = NULL;
+ ay_ipatch_object *ip = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  i = (ay_ipatch_object *) o->refine;
+  ip = (ay_ipatch_object *) o->refine;
 
- return ay_provide_nptoolobj(o, type, i->npatch, i->caps_and_bevels, result);
+  if(!ip)
+    return AY_ENULL;
+
+ return ay_provide_nptoolobj(o, type, ip->npatch, ip->caps_and_bevels, result);
 } /* ay_ipatch_providecb */
 
 
@@ -2466,6 +2509,9 @@ ay_ipatch_convertcb(ay_object *o, int in_place)
     return AY_ENULL;
 
   ip = (ay_ipatch_object *) o->refine;
+
+  if(!ip)
+    return AY_ENULL;
 
  return ay_convert_nptoolobj(o, ip->npatch, ip->caps_and_bevels, in_place);
 } /* ay_ipatch_convertcb */

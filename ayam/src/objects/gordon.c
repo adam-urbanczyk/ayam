@@ -185,6 +185,9 @@ ay_gordon_drawhcb(struct Togl *togl, ay_object *o)
 
   gordon = (ay_gordon_object *) o->refine;
 
+  if(!gordon)
+    return AY_ENULL;
+
   if(gordon->npatch)
     {
       patch = (ay_nurbpatch_object *)gordon->npatch->refine;
@@ -223,6 +226,9 @@ ay_gordon_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   gordon = (ay_gordon_object *)o->refine;
 
+  if(!gordon)
+    return AY_ENULL;
+
   if(gordon->npatch)
     {
       patch = (ay_nurbpatch_object *)gordon->npatch->refine;
@@ -251,10 +257,13 @@ ay_gordon_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  ay_list_object *oldsel = NULL, *newsel = NULL;
  ay_object *down = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   gordon = (ay_gordon_object *)o->refine;
+
+  if(!gordon)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
@@ -344,13 +353,15 @@ ay_gordon_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_gordon_object *gordon = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   gordon = (ay_gordon_object *)(o->refine);
 
-  toa = Tcl_NewStringObj(n1,-1);
+  if(!gordon)
+    return AY_ENULL;
 
+  toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
   Tcl_SetStringObj(ton,"WatchCurves",-1);
@@ -395,7 +406,7 @@ ay_gordon_readcb(FILE *fileptr, ay_object *o)
 {
  ay_gordon_object *gordon = NULL;
 
- if(!o)
+  if(!fileptr || !o)
    return AY_ENULL;
 
   if(!(gordon = calloc(1, sizeof(ay_gordon_object))))
@@ -421,10 +432,13 @@ ay_gordon_writecb(FILE *fileptr, ay_object *o)
 {
  ay_gordon_object *gordon = NULL;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   gordon = (ay_gordon_object *)(o->refine);
+
+  if(!gordon)
+    return AY_ENULL;
 
   fprintf(fileptr, "%d\n", gordon->wcc);
   fprintf(fileptr, "%d\n", gordon->uorder);
@@ -449,6 +463,9 @@ ay_gordon_wribcb(char *file, ay_object *o)
    return AY_ENULL;
 
   gordon = (ay_gordon_object*)o->refine;
+
+  if(!gordon)
+    return AY_ENULL;
 
   if(gordon->npatch)
     ay_wrib_toolobject(file, gordon->npatch, o);
@@ -479,6 +496,9 @@ ay_gordon_bbccb(ay_object *o, double *bbox, int *flags)
     return AY_ENULL;
 
   gordon = (ay_gordon_object *)o->refine;
+
+  if(!gordon)
+    return AY_ENULL;
 
   if(gordon->npatch)
     {
@@ -518,6 +538,9 @@ ay_gordon_notifycb(ay_object *o)
     return AY_ENULL;
 
   gordon = (ay_gordon_object *)(o->refine);
+
+  if(!gordon)
+    return AY_ENULL;
 
   mode = gordon->display_mode;
   tolerance = gordon->glu_sampling_tolerance;
@@ -741,6 +764,9 @@ ay_gordon_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   g = (ay_gordon_object *) o->refine;
 
+  if(!g)
+    return AY_ENULL;
+
  return ay_provide_nptoolobj(o, type, g->npatch, g->caps_and_bevels, result);
 } /* ay_gordon_providecb */
 
@@ -757,6 +783,9 @@ ay_gordon_convertcb(ay_object *o, int in_place)
     return AY_ENULL;
 
   g = (ay_gordon_object *) o->refine;
+
+  if(!g)
+    return AY_ENULL;
 
  return ay_convert_nptoolobj(o, g->npatch, g->caps_and_bevels, in_place);
 } /* ay_gordon_convertcb */
