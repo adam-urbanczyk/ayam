@@ -101,16 +101,19 @@ ay_concatnc_copycb(void *src, void **dst)
 int
 ay_concatnc_drawcb(struct Togl *togl, ay_object *o)
 {
- ay_concatnc_object *cc = NULL;
+ ay_concatnc_object *concatnc = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  cc = (ay_concatnc_object *)o->refine;
+  concatnc = (ay_concatnc_object *)o->refine;
 
-  if(cc->ncurve)
+  if(!concatnc)
+    return AY_ENULL;
+
+  if(concatnc->ncurve)
     {
-      ay_draw_object(togl, cc->ncurve, AY_TRUE);
+      ay_draw_object(togl, concatnc->ncurve, AY_TRUE);
     }
 
  return AY_OK;
@@ -143,6 +146,9 @@ ay_concatnc_drawacb(struct Togl *togl, ay_object *o)
 
   concatnc = (ay_concatnc_object *)o->refine;
 
+  if(!concatnc)
+    return AY_ENULL;
+
   if(concatnc && concatnc->ncurve)
     {
       /* get NURBS curve */
@@ -173,7 +179,10 @@ ay_concatnc_drawhcb(struct Togl *togl, ay_object *o)
 
   concatnc = (ay_concatnc_object *)o->refine;
 
-  if(concatnc && concatnc->ncurve)
+  if(!concatnc)
+    return AY_ENULL;
+
+  if(concatnc->ncurve)
     {
       /* get NURBS curve */
       nc = (ay_nurbcurve_object *)concatnc->ncurve->refine;
@@ -214,6 +223,9 @@ ay_concatnc_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   concatnc = (ay_concatnc_object *)o->refine;
 
+  if(!concatnc)
+    return AY_ENULL;
+
   if(concatnc->ncurve)
     {
       curve = (ay_nurbcurve_object *)concatnc->ncurve->refine;
@@ -237,10 +249,13 @@ ay_concatnc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_concatnc_object *concatnc = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   concatnc = (ay_concatnc_object *)o->refine;
+
+  if(!concatnc)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
@@ -287,13 +302,15 @@ ay_concatnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_concatnc_object *concatnc = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   concatnc = (ay_concatnc_object *)(o->refine);
 
-  toa = Tcl_NewStringObj(n1,-1);
+  if(!concatnc)
+    return AY_ENULL;
 
+  toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
   Tcl_SetStringObj(ton,"Closed",-1);
@@ -338,8 +355,8 @@ ay_concatnc_readcb(FILE *fileptr, ay_object *o)
 {
  ay_concatnc_object *concatnc = NULL;
 
- if(!o)
-   return AY_ENULL;
+  if(!fileptr || !o)
+    return AY_ENULL;
 
   if(!(concatnc = calloc(1, sizeof(ay_concatnc_object))))
     { return AY_EOMEM; }
@@ -377,10 +394,13 @@ ay_concatnc_writecb(FILE *fileptr, ay_object *o)
 {
  ay_concatnc_object *concatnc = NULL;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   concatnc = (ay_concatnc_object *)(o->refine);
+
+  if(!concatnc)
+    return AY_ENULL;
 
   fprintf(fileptr, "%d\n", concatnc->closed);
   fprintf(fileptr, "%d\n", concatnc->fillgaps);
@@ -444,6 +464,10 @@ ay_concatnc_notifycb(ay_object *o)
     return AY_ENULL;
 
   concatnc = (ay_concatnc_object *)(o->refine);
+
+  if(!concatnc)
+    return AY_ENULL;
+
   if(concatnc->ncurve)
     (void)ay_object_delete(concatnc->ncurve);
   concatnc->ncurve = NULL;
@@ -575,18 +599,21 @@ int
 ay_concatnc_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
- ay_concatnc_object *cc = NULL;
+ ay_concatnc_object *concatnc = NULL;
  ay_object *new = NULL;
  ay_nurbcurve_object *nc = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  cc = (ay_concatnc_object *) o->refine;
+  concatnc = (ay_concatnc_object *) o->refine;
 
-  if(cc->ncurve)
+  if(!concatnc)
+    return AY_ENULL;
+
+  if(concatnc->ncurve)
     {
-      ay_status = ay_object_copy(cc->ncurve, &new);
+      ay_status = ay_object_copy(concatnc->ncurve, &new);
       if(new)
 	{
 	  nc = (ay_nurbcurve_object *)(new->refine);
@@ -627,7 +654,7 @@ int
 ay_concatnc_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
  int ay_status = AY_OK;
- ay_concatnc_object *cc = NULL;
+ ay_concatnc_object *concatnc = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -640,13 +667,16 @@ ay_concatnc_providecb(ay_object *o, unsigned int type, ay_object **result)
 	return AY_ERROR;
     }
 
-  cc = (ay_concatnc_object *) o->refine;
+  concatnc = (ay_concatnc_object *) o->refine;
+
+  if(!concatnc)
+    return AY_ENULL;
 
   if(type == AY_IDNCURVE)
     {
-      if(cc->ncurve)
+      if(concatnc->ncurve)
 	{
-	  ay_status = ay_object_copy(cc->ncurve, result);
+	  ay_status = ay_object_copy(concatnc->ncurve, result);
 	  if(*result)
 	    {
 	      ay_trafo_copy(o, *result);

@@ -127,6 +127,9 @@ ay_concatnp_drawcb(struct Togl *togl, ay_object *o)
 
   concatnp = (ay_concatnp_object *)o->refine;
 
+  if(!concatnp)
+    return AY_ENULL;
+
   if(concatnp->npatch)
     {
       ay_draw_object(togl, concatnp->npatch, AY_TRUE);
@@ -156,6 +159,9 @@ ay_concatnp_shadecb(struct Togl *togl, ay_object *o)
     return AY_ENULL;
 
   concatnp = (ay_concatnp_object *)o->refine;
+
+  if(!concatnp)
+    return AY_ENULL;
 
   if(concatnp->npatch)
     {
@@ -188,6 +194,9 @@ ay_concatnp_drawacb(struct Togl *togl, ay_object *o)
 
   concatnp = (ay_concatnp_object *) o->refine;
 
+  if(!concatnp)
+    return AY_ENULL;
+
   if(concatnp->npatch)
     {
       np = (ay_nurbpatch_object *)concatnp->npatch->refine;
@@ -215,6 +224,9 @@ ay_concatnp_drawhcb(struct Togl *togl, ay_object *o)
     return AY_ENULL;
 
   concatnp = (ay_concatnp_object *) o->refine;
+
+  if(!concatnp)
+    return AY_ENULL;
 
   if(concatnp->npatch)
     {
@@ -254,6 +266,9 @@ ay_concatnp_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   concatnp = (ay_concatnp_object *)o->refine;
 
+  if(!concatnp)
+    return AY_ENULL;
+
   if(concatnp->npatch)
     {
       patch = (ay_nurbpatch_object *)concatnp->npatch->refine;
@@ -279,10 +294,13 @@ ay_concatnp_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  char *string = NULL;
  int stringlen, newknottype = 0;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   concatnp = (ay_concatnp_object *)o->refine;
+
+  if(!concatnp)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
@@ -372,10 +390,13 @@ ay_concatnp_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_concatnp_object *concatnp = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   concatnp = (ay_concatnp_object *)(o->refine);
+
+  if(!concatnp)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
@@ -444,7 +465,7 @@ ay_concatnp_readcb(FILE *fileptr, ay_object *o)
  int ay_status = AY_OK;
  ay_concatnp_object *concatnp = NULL;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   if(!(concatnp = calloc(1, sizeof(ay_concatnp_object))))
@@ -496,10 +517,13 @@ ay_concatnp_writecb(FILE *fileptr, ay_object *o)
 {
  ay_concatnp_object *concatnp = NULL;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   concatnp = (ay_concatnp_object *)(o->refine);
+
+  if(!concatnp)
+    return AY_ENULL;
 
   fprintf(fileptr, "%d\n", concatnp->type);
   fprintf(fileptr, "%d\n", concatnp->revert);
@@ -533,6 +557,9 @@ ay_concatnp_wribcb(char *file, ay_object *o)
    return AY_ENULL;
 
   concatnp = (ay_concatnp_object*)o->refine;
+
+  if(!concatnp)
+    return AY_ENULL;
 
   if(concatnp->npatch)
     ay_wrib_toolobject(file, concatnp->npatch, o);
@@ -586,6 +613,9 @@ ay_concatnp_notifycb(ay_object *o)
     return AY_ENULL;
 
   concatnp = (ay_concatnp_object *)(o->refine);
+
+  if(!concatnp)
+    return AY_ENULL;
 
   mode = concatnp->display_mode;
   tolerance = concatnp->glu_sampling_tolerance;
@@ -759,6 +789,9 @@ ay_concatnp_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   c = (ay_concatnp_object *) o->refine;
 
+  if(!c)
+    return AY_ENULL;
+
  return ay_provide_nptoolobj(o, type, c->npatch, c->caps_and_bevels, result);
 } /* ay_concatnp_providecb */
 
@@ -775,6 +808,9 @@ ay_concatnp_convertcb(ay_object *o, int in_place)
     return AY_ENULL;
 
   c = (ay_concatnp_object *) o->refine;
+
+  if(!c)
+    return AY_ENULL;
 
  return ay_convert_nptoolobj(o, c->npatch, c->caps_and_bevels, in_place);
 } /* ay_concatnp_convertcb */

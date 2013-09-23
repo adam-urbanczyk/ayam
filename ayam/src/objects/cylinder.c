@@ -377,6 +377,9 @@ ay_cylinder_drawhcb(struct Togl *togl, ay_object *o)
 
   cylinder = (ay_cylinder_object *)o->refine;
 
+  if(!cylinder)
+    return AY_ENULL;
+
   if(!cylinder->pnts)
     {
       if(!(pnts = calloc(AY_PCYLINDER*3, sizeof(double))))
@@ -422,6 +425,9 @@ ay_cylinder_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   cylinder = (ay_cylinder_object *)o->refine;
 
+  if(!cylinder)
+    return AY_ENULL;
+
   if(!cylinder->pnts)
     {
       if(!(cylinder->pnts = calloc(AY_PCYLINDER*3, sizeof(double))))
@@ -445,10 +451,13 @@ ay_cylinder_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  ay_cylinder_object *cylinder = NULL;
  int itemp = 0;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   cylinder = (ay_cylinder_object *)o->refine;
+
+  if(!cylinder)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
@@ -504,15 +513,16 @@ ay_cylinder_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_cylinder_object *cylinder = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   cylinder = (ay_cylinder_object *)(o->refine);
 
+  if(!cylinder)
+    return AY_ENULL;
+
   toa = Tcl_NewStringObj(n1,-1);
-
   ton = Tcl_NewStringObj(n1,-1);
-
 
   Tcl_SetStringObj(ton,"Closed",-1);
   to = Tcl_NewIntObj(cylinder->closed);
@@ -549,8 +559,9 @@ ay_cylinder_readcb(FILE *fileptr, ay_object *o)
 {
  ay_cylinder_object *cylinder = NULL;
  int itemp = 0;
- if(!o)
-   return AY_ENULL;
+
+  if(!fileptr || !o)
+    return AY_ENULL;
 
   if(!(cylinder = calloc(1, sizeof(ay_cylinder_object))))
     { return AY_EOMEM; }
@@ -585,10 +596,13 @@ ay_cylinder_writecb(FILE *fileptr, ay_object *o)
 {
  ay_cylinder_object *cylinder = NULL;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   cylinder = (ay_cylinder_object *)(o->refine);
+
+  if(!cylinder)
+    return AY_ENULL;
 
   fprintf(fileptr, "%d\n", (int)cylinder->closed);
   fprintf(fileptr, "%g\n", cylinder->radius);
@@ -614,6 +628,8 @@ ay_cylinder_wribcb(char *file, ay_object *o)
 
   cylinder = (ay_cylinder_object*)o->refine;
 
+  if(!cylinder)
+    return AY_ENULL;
 
   if(!cylinder->closed)
   {
@@ -745,6 +761,9 @@ ay_cylinder_bbccb(ay_object *o, double *bbox, int *flags)
 
   cylinder = (ay_cylinder_object *)o->refine;
 
+  if(!cylinder)
+    return AY_ENULL;
+
   if(!cylinder->is_simple)
     {
       if(!cylinder->pnts)
@@ -801,6 +820,9 @@ ay_cylinder_notifycb(ay_object *o)
     return AY_ENULL;
 
   cylinder = (ay_cylinder_object *)o->refine;
+
+  if(!cylinder)
+    return AY_ENULL;
 
   if(cylinder->pnts)
     {
@@ -918,6 +940,9 @@ ay_cylinder_providecb(ay_object *o, unsigned int type, ay_object **result)
     }
 
   cylinder = (ay_cylinder_object *) o->refine;
+
+  if(!cylinder)
+    return AY_ENULL;
 
   if(type == AY_IDNPATCH)
     {
@@ -1061,6 +1086,9 @@ ay_cylinder_convertcb(ay_object *o, int in_place)
     return AY_ENULL;
 
   cylinder = (ay_cylinder_object *) o->refine;
+
+  if(!cylinder)
+    return AY_ENULL;
 
   /* first, create new object(s) */
 

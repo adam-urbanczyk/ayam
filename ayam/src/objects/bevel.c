@@ -186,6 +186,9 @@ ay_bevel_drawhcb(struct Togl *togl, ay_object *o)
 
   bevel = (ay_bevel_object *) o->refine;
 
+  if(!bevel)
+    return AY_ENULL;
+
   if(bevel->npatch)
     {
       patch = (ay_nurbpatch_object *)bevel->npatch->refine;
@@ -224,6 +227,9 @@ ay_bevel_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   bevel = (ay_bevel_object *)o->refine;
 
+  if(!bevel)
+    return AY_ENULL;
+
   if(bevel->npatch)
     {
       patch = (ay_nurbpatch_object *)bevel->npatch->refine;
@@ -247,10 +253,13 @@ ay_bevel_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_bevel_object *bevel = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   bevel = (ay_bevel_object *)o->refine;
+
+  if(!bevel)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
@@ -285,13 +294,15 @@ ay_bevel_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_bevel_object *bevel = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   bevel = (ay_bevel_object *)(o->refine);
 
-  toa = Tcl_NewStringObj(n1,-1);
+  if(!bevel)
+    return AY_ENULL;
 
+  toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
   Tcl_SetStringObj(ton,"DisplayMode",-1);
@@ -319,8 +330,8 @@ ay_bevel_readcb(FILE *fileptr, ay_object *o)
 {
  ay_bevel_object *bevel = NULL;
 
- if(!o)
-   return AY_ENULL;
+  if(!fileptr || !o)
+    return AY_ENULL;
 
   if(!(bevel = calloc(1, sizeof(ay_bevel_object))))
     { return AY_EOMEM; }
@@ -342,10 +353,13 @@ ay_bevel_writecb(FILE *fileptr, ay_object *o)
 {
  ay_bevel_object *bevel = NULL;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   bevel = (ay_bevel_object *)(o->refine);
+
+  if(!bevel)
+    return AY_ENULL;
 
   fprintf(fileptr, "%d\n", bevel->display_mode);
   fprintf(fileptr, "%g\n", bevel->glu_sampling_tolerance);
@@ -367,6 +381,9 @@ ay_bevel_wribcb(char *file, ay_object *o)
    return AY_ENULL;
 
   bevel = (ay_bevel_object*)o->refine;
+
+  if(!bevel)
+    return AY_ENULL;
 
   if(bevel->npatch)
     ay_wrib_toolobject(file, bevel->npatch, o);
@@ -394,6 +411,9 @@ ay_bevel_bbccb(ay_object *o, double *bbox, int *flags)
     return AY_ENULL;
 
   bevel = (ay_bevel_object *)o->refine;
+
+  if(!bevel)
+    return AY_ENULL;
 
   if(bevel->npatch)
     {
@@ -435,6 +455,9 @@ ay_bevel_notifycb(ay_object *o)
     return AY_ENULL;
 
   bevel = (ay_bevel_object *)(o->refine);
+
+  if(!bevel)
+    return AY_ENULL;
 
   mode = bevel->display_mode;
   tolerance = bevel->glu_sampling_tolerance;
@@ -659,7 +682,10 @@ ay_bevel_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   b = (ay_bevel_object *) o->refine;
 
-  return ay_provide_nptoolobj(o, type, b->npatch, b->caps, result);
+  if(!b)
+    return AY_ENULL;
+
+ return ay_provide_nptoolobj(o, type, b->npatch, b->caps, result);
 } /* ay_bevel_providecb */
 
 
@@ -675,6 +701,9 @@ ay_bevel_convertcb(ay_object *o, int in_place)
     return AY_ENULL;
 
   b = (ay_bevel_object *) o->refine;
+
+  if(!b)
+    return AY_ENULL;
 
  return ay_convert_nptoolobj(o, b->npatch, b->caps, in_place);
 } /* ay_bevel_convertcb */

@@ -472,15 +472,21 @@ ay_acurve_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_acurve_drawacb(struct Togl *togl, ay_object *o)
 {
- ay_acurve_object *curve;
+ ay_acurve_object *acurve;
  double *ver;
 
-  curve = (ay_acurve_object *)o->refine;
+  if(!o)
+    return AY_ENULL;
 
-  ver = curve->controlv;
+  acurve = (ay_acurve_object *)o->refine;
+
+  if(!acurve)
+    return AY_ENULL;
+
+  ver = acurve->controlv;
 
   /* draw arrow */
-  ay_draw_arrow(togl, &(ver[curve->length*3-6]), &(ver[curve->length*3-3]));
+  ay_draw_arrow(togl, &(ver[acurve->length*3-6]), &(ver[acurve->length*3-3]));
 
  return AY_OK;
 } /* ay_acurve_drawacb */
@@ -494,18 +500,21 @@ ay_acurve_drawhcb(struct Togl *togl, ay_object *o)
 {
  int i;
  double *pnts;
- ay_acurve_object *curve;
+ ay_acurve_object *acurve;
 
   if(!o)
     return AY_ENULL;
 
-  curve = (ay_acurve_object *)o->refine;
+  acurve = (ay_acurve_object *)o->refine;
 
-  pnts = curve->controlv;
+  if(!acurve)
+    return AY_ENULL;
+
+  pnts = acurve->controlv;
 
   /* draw points */
   glBegin(GL_POINTS);
-   for(i = 0; i < curve->length; i++)
+   for(i = 0; i < acurve->length; i++)
      {
        glVertex3dv((GLdouble *)pnts);
        pnts += 3;
@@ -535,6 +544,9 @@ ay_acurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     return AY_ENULL;
 
   acurve = (ay_acurve_object *)(o->refine);
+
+  if(!acurve)
+    return AY_ENULL;
 
   if(min_dist == 0.0)
     min_dist = DBL_MAX;
@@ -668,10 +680,13 @@ ay_acurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_acurve_object *acurve = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   acurve = (ay_acurve_object *)o->refine;
+
+  if(!acurve)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
@@ -781,13 +796,15 @@ ay_acurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_acurve_object *acurve = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   acurve = (ay_acurve_object *)(o->refine);
 
-  toa = Tcl_NewStringObj(n1,-1);
+  if(!acurve)
+    return AY_ENULL;
 
+  toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
   Tcl_SetStringObj(ton,"Length",-1);
@@ -841,8 +858,8 @@ ay_acurve_readcb(FILE *fileptr, ay_object *o)
  ay_acurve_object *acurve = NULL;
  int i, a;
 
- if(!o)
-   return AY_ENULL;
+  if(!fileptr || !o)
+    return AY_ENULL;
 
   if(!(acurve = calloc(1, sizeof(ay_acurve_object))))
     { return AY_EOMEM; }
@@ -884,10 +901,13 @@ ay_acurve_writecb(FILE *fileptr, ay_object *o)
  ay_acurve_object *acurve = NULL;
  int i, a;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   acurve = (ay_acurve_object *)(o->refine);
+
+  if(!acurve)
+    return AY_ENULL;
 
   fprintf(fileptr, "%d\n", acurve->length);
   fprintf(fileptr, "%d\n", acurve->alength);
@@ -943,6 +963,9 @@ ay_acurve_bbccb(ay_object *o, double *bbox, int *flags)
 
   acurve = (ay_acurve_object *)o->refine;
 
+  if(!acurve)
+    return AY_ENULL;
+
  return ay_bbc_fromarr(acurve->controlv, acurve->length, 3, bbox);
 } /* ay_acurve_bbccb */
 
@@ -965,6 +988,9 @@ ay_acurve_notifycb(ay_object *o)
     return AY_ENULL;
 
   acurve = (ay_acurve_object *)(o->refine);
+
+  if(!acurve)
+    return AY_ENULL;
 
   (void)ay_object_delete(acurve->ncurve);
   acurve->ncurve = NULL;
@@ -1135,6 +1161,9 @@ ay_acurve_convertcb(ay_object *o, int in_place)
 
   ac = (ay_acurve_object *)o->refine;
 
+  if(!ac)
+    return AY_ENULL;
+
   if(ac->ncurve)
     {
       ay_status = ay_object_copy(ac->ncurve, &new);
@@ -1195,6 +1224,9 @@ ay_acurve_providecb(ay_object *o, unsigned int type, ay_object **result)
     }
 
   ac = (ay_acurve_object *)o->refine;
+
+  if(!ac)
+    return AY_ENULL;
 
   if(type == AY_IDNCURVE)
     {

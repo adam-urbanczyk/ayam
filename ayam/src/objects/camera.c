@@ -56,6 +56,7 @@ ay_camera_deletecb(void *c)
  ay_camera_object *camera = NULL;
 
   camera = (ay_camera_object *)(c);
+
   if(!camera)
     return AY_ENULL;
 
@@ -72,6 +73,9 @@ int
 ay_camera_copycb(void *src, void **dst)
 {
  ay_camera_object *camera = NULL;
+
+  if(!src || !dst)
+    return AY_ENULL;
 
   if(!(camera = malloc(sizeof(ay_camera_object))))
     return AY_EOMEM;
@@ -148,7 +152,7 @@ ay_camera_drawhcb(struct Togl *togl, ay_object *o)
 {
  ay_camera_object *camera = NULL;
 
-  if(!togl || !o)
+  if(!o)
     return AY_ENULL;
 
   camera = (ay_camera_object *)o->refine;
@@ -519,6 +523,8 @@ ay_camera_readcb(FILE *fileptr, ay_object *o)
 {
  ay_camera_object *camera = NULL;
 
+  if(!fileptr || !o)
+    return AY_ENULL;
 
   if(!(camera = calloc(1, sizeof(ay_camera_object))))
     { return AY_EOMEM; }
@@ -556,6 +562,9 @@ int
 ay_camera_writecb(FILE *fileptr, ay_object *o)
 {
  ay_camera_object *camera = NULL;
+
+  if(!fileptr || !o)
+    return AY_ENULL;
 
   camera = (ay_camera_object *)(o->refine);
 
@@ -693,6 +702,9 @@ ay_camera_dropcb(ay_object *o)
  char arg1[] = "save", arg2[] = "CamDrop";
  char *argv[3] = {0};
  ay_list_object *oldsel = NULL, newsel = {0};
+
+  if(!o)
+    return AY_ENULL;
 
   if(!sel)
     {

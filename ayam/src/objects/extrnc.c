@@ -142,7 +142,10 @@ ay_extrnc_drawacb(struct Togl *togl, ay_object *o)
 
   extrnc = (ay_extrnc_object *)o->refine;
 
-  if(extrnc && extrnc->ncurve)
+  if(!extrnc)
+    return AY_ENULL;
+
+  if(extrnc->ncurve)
     {
       /* get NURBS curve */
       nc = (ay_nurbcurve_object *)extrnc->ncurve->refine;
@@ -172,7 +175,10 @@ ay_extrnc_drawhcb(struct Togl *togl, ay_object *o)
 
   extrnc = (ay_extrnc_object *)o->refine;
 
-  if(extrnc && extrnc->ncurve)
+  if(!extrnc)
+    return AY_ENULL;
+
+  if(extrnc->ncurve)
     {
       /* get NURBS curve */
       nc = (ay_nurbcurve_object *)extrnc->ncurve->refine;
@@ -213,6 +219,9 @@ ay_extrnc_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   extrnc = (ay_extrnc_object *)o->refine;
 
+  if(!extrnc)
+    return AY_ENULL;
+
   if(extrnc->ncurve)
     {
       curve = (ay_nurbcurve_object *)extrnc->ncurve->refine;
@@ -236,10 +245,13 @@ ay_extrnc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_extrnc_object *extrnc = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   extrnc = (ay_extrnc_object *)o->refine;
+
+  if(!extrnc)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
@@ -299,10 +311,13 @@ ay_extrnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_extrnc_object *extrnc = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   extrnc = (ay_extrnc_object *)(o->refine);
+
+  if(!extrnc)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
 
@@ -366,8 +381,8 @@ ay_extrnc_readcb(FILE *fileptr, ay_object *o)
 {
  ay_extrnc_object *extrnc = NULL;
 
- if(!o)
-   return AY_ENULL;
+  if(!fileptr || !o)
+    return AY_ENULL;
 
   if(!(extrnc = calloc(1, sizeof(ay_extrnc_object))))
     { return AY_EOMEM; }
@@ -415,10 +430,13 @@ ay_extrnc_writecb(FILE *fileptr, ay_object *o)
 {
  ay_extrnc_object *extrnc = NULL;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   extrnc = (ay_extrnc_object *)(o->refine);
+
+  if(!extrnc)
+    return AY_ENULL;
 
   fprintf(fileptr, "%d\n", extrnc->side);
   fprintf(fileptr, "%g\n", extrnc->parameter);
@@ -457,6 +475,9 @@ ay_extrnc_bbccb(ay_object *o, double *bbox, int *flags)
 
   extrnc = (ay_extrnc_object *)o->refine;
 
+  if(!extrnc)
+    return AY_ENULL;
+
   if(extrnc->ncurve)
     {
       ay_bbc_get(extrnc->ncurve, bbox);
@@ -491,6 +512,9 @@ ay_extrnc_notifycb(ay_object *o)
     return AY_ENULL;
 
   extrnc = (ay_extrnc_object *)(o->refine);
+
+  if(!extrnc)
+    return AY_ENULL;
 
   pnum = extrnc->pnum - 1;
   mode = extrnc->display_mode;
@@ -682,6 +706,9 @@ ay_extrnc_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   s = (ay_extrnc_object *) o->refine;
 
+  if(!s)
+    return AY_ENULL;
+
   if(type == AY_IDNCURVE)
     {
       t = &(new);
@@ -724,6 +751,9 @@ ay_extrnc_convertcb(ay_object *o, int in_place)
 
   /* first, create new objects */
   r = (ay_extrnc_object *) o->refine;
+
+  if(!r)
+    return AY_ENULL;
 
   if(r->ncurve)
     {
