@@ -222,6 +222,9 @@ ay_box_drawhcb(struct Togl *togl, ay_object *o)
 
   box = (ay_box_object *)o->refine;
 
+  if(!box)
+    return AY_ENULL;
+
   if(!box->pnts)
     {
       if(!(pnts = calloc(8*3, sizeof(double))))
@@ -267,6 +270,9 @@ ay_box_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   box = (ay_box_object *)o->refine;
 
+  if(!box)
+    return AY_ENULL;
+
   if(!box->pnts)
     {
       if(!(box->pnts = calloc(8*3, sizeof(double))))
@@ -293,6 +299,9 @@ ay_box_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   box = (ay_box_object *)o->refine;
+
+  if(!box)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
 
@@ -332,6 +341,9 @@ ay_box_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   box = (ay_box_object *)(o->refine);
+
+  if(!box)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
 
@@ -391,6 +403,9 @@ ay_box_writecb(FILE *fileptr, ay_object *o)
 
   box = (ay_box_object *)(o->refine);
 
+  if(!box)
+    return AY_ENULL;
+
   fprintf(fileptr, "%g\n", box->width);
   fprintf(fileptr, "%g\n", box->length);
   fprintf(fileptr, "%g\n", box->height);
@@ -412,6 +427,9 @@ ay_box_wribcb(char *file, ay_object *o)
    return AY_ENULL;
 
   box = (ay_box_object*)o->refine;
+
+  if(!box)
+    return AY_ENULL;
 
    RiTransformBegin();
     RiScale((RtFloat)box->width, (RtFloat)box->height, (RtFloat)box->length);
@@ -464,6 +482,9 @@ ay_box_bbccb(ay_object *o, double *bbox, int *flags)
 
   box = (ay_box_object *)o->refine;
 
+  if(!box)
+    return AY_ENULL;
+
   wh = box->width  * 0.5;
   lh = box->length * 0.5;
   hh = box->height * 0.5;
@@ -505,6 +526,9 @@ ay_box_notifycb(ay_object *o)
     return AY_ENULL;
 
   box = (ay_box_object *)o->refine;
+
+  if(!box)
+    return AY_ENULL;
 
   if(box->pnts)
     {
@@ -562,6 +586,9 @@ ay_box_providecb(ay_object *o, unsigned int type, ay_object **result)
     }
 
   box = (ay_box_object *) o->refine;
+
+  if(!box)
+    return AY_ENULL;
 
   wh = box->width  * 0.5;
   lh = box->length * 0.5;
