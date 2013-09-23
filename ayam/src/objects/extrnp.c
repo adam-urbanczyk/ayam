@@ -158,6 +158,9 @@ ay_extrnp_drawacb(struct Togl *togl, ay_object *o)
 
   extrnp = (ay_extrnp_object *) o->refine;
 
+  if(!extrnp)
+    return AY_ENULL;
+
   if(extrnp->npatch)
     {
       np = (ay_nurbpatch_object *)extrnp->npatch->refine;
@@ -186,6 +189,9 @@ ay_extrnp_drawhcb(struct Togl *togl, ay_object *o)
     return AY_ENULL;
 
   extrnp = (ay_extrnp_object *) o->refine;
+
+  if(!extrnp)
+    return AY_ENULL;
 
   if(extrnp->npatch)
     {
@@ -227,6 +233,9 @@ ay_extrnp_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   extrnp = (ay_extrnp_object *)o->refine;
 
+  if(!extrnp)
+    return AY_ENULL;
+
   if(extrnp->npatch)
     {
       patch = (ay_nurbpatch_object *)extrnp->npatch->refine;
@@ -250,10 +259,13 @@ ay_extrnp_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_extrnp_object *extrnp = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   extrnp = (ay_extrnp_object *)o->refine;
+
+  if(!extrnp)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
@@ -312,10 +324,13 @@ ay_extrnp_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_extrnp_object *extrnp = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   extrnp = (ay_extrnp_object *)(o->refine);
+
+  if(!extrnp)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
@@ -377,8 +392,8 @@ ay_extrnp_readcb(FILE *fileptr, ay_object *o)
 {
  ay_extrnp_object *extrnp = NULL;
 
- if(!o)
-   return AY_ENULL;
+  if(!fileptr || !o)
+    return AY_ENULL;
 
   if(!(extrnp = calloc(1, sizeof(ay_extrnp_object))))
     { return AY_EOMEM; }
@@ -412,10 +427,13 @@ ay_extrnp_writecb(FILE *fileptr, ay_object *o)
 {
  ay_extrnp_object *extrnp = NULL;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   extrnp = (ay_extrnp_object *)(o->refine);
+
+  if(!extrnp)
+    return AY_ENULL;
 
   fprintf(fileptr, "%d\n", extrnp->pnum);
   fprintf(fileptr, "%g\n", extrnp->umin);
@@ -443,6 +461,9 @@ ay_extrnp_wribcb(char *file, ay_object *o)
 
   extrnp = (ay_extrnp_object*)o->refine;
 
+  if(!extrnp)
+    return AY_ENULL;
+
   if(extrnp->npatch)
     ay_wrib_toolobject(file, extrnp->npatch, o);
 
@@ -462,6 +483,9 @@ ay_extrnp_bbccb(ay_object *o, double *bbox, int *flags)
     return AY_ENULL;
 
   extrnp = (ay_extrnp_object *)o->refine;
+
+  if(!extrnp)
+    return AY_ENULL;
 
   if(extrnp->npatch)
     {
@@ -495,6 +519,9 @@ ay_extrnp_notifycb(ay_object *o)
     return AY_ENULL;
 
   extrnp = (ay_extrnp_object *)(o->refine);
+
+  if(!extrnp)
+    return AY_ENULL;
 
   pnum = extrnp->pnum - 1;
   mode = extrnp->display_mode;
@@ -606,6 +633,9 @@ ay_extrnp_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   e = (ay_extrnp_object *) o->refine;
 
+  if(!e)
+    return AY_ENULL;
+
  return ay_provide_nptoolobj(o, type, e->npatch, NULL, result);
 } /* ay_extrnp_providecb */
 
@@ -622,6 +652,9 @@ ay_extrnp_convertcb(ay_object *o, int in_place)
     return AY_ENULL;
 
   e = (ay_extrnp_object *) o->refine;
+
+  if(!e)
+    return AY_ENULL;
 
  return ay_convert_nptoolobj(o, e->npatch, NULL, in_place);
 } /* ay_extrnp_convertcb */

@@ -185,6 +185,9 @@ ay_extrude_drawhcb(struct Togl *togl, ay_object *o)
 
   extrude = (ay_extrude_object *) o->refine;
 
+  if(!extrude)
+    return AY_ENULL;
+
   if(extrude->npatch)
     {
       patch = (ay_nurbpatch_object *)extrude->npatch->refine;
@@ -223,6 +226,9 @@ ay_extrude_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   extrude = (ay_extrude_object *)o->refine;
 
+  if(!extrude)
+    return AY_ENULL;
+
   if(extrude->npatch)
     {
       patch = (ay_nurbpatch_object *)extrude->npatch->refine;
@@ -246,10 +252,13 @@ ay_extrude_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_extrude_object *extrude = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   extrude = (ay_extrude_object *)o->refine;
+
+  if(!extrude)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
@@ -296,15 +305,16 @@ ay_extrude_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_extrude_object *extrude = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   extrude = (ay_extrude_object *)(o->refine);
 
+  if(!extrude)
+    return AY_ENULL;
+
   toa = Tcl_NewStringObj(n1,-1);
-
   ton = Tcl_NewStringObj(n1,-1);
-
 
   Tcl_SetStringObj(ton,"Height",-1);
   to = Tcl_NewDoubleObj(extrude->height);
@@ -351,7 +361,7 @@ ay_extrude_readcb(FILE *fileptr, ay_object *o)
  int startb_type, startb_type2, endb_type, startb_sense, endb_sense;
  double startb_radius, startb_radius2, endb_radius;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   if(!(extrude = calloc(1, sizeof(ay_extrude_object))))
@@ -407,10 +417,13 @@ ay_extrude_writecb(FILE *fileptr, ay_object *o)
  int startb_type = 0, endb_type = 0, startb_sense, endb_sense;
  double startb_radius = 1.0, endb_radius = 1.0;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   extrude = (ay_extrude_object *)(o->refine);
+
+  if(!extrude)
+    return AY_ENULL;
 
   /* get bevel parameters */
   ay_npt_getbeveltags(o, 0, &has_startb, &startb_type, &startb_radius,
@@ -446,6 +459,9 @@ ay_extrude_wribcb(char *file, ay_object *o)
 
   extrude = (ay_extrude_object*)o->refine;
 
+  if(!extrude)
+    return AY_ENULL;
+
   p = extrude->npatch;
   while(p)
     {
@@ -477,6 +493,9 @@ ay_extrude_bbccb(ay_object *o, double *bbox, int *flags)
     return AY_ENULL;
 
   extrude = (ay_extrude_object *)o->refine;
+
+  if(!extrude)
+    return AY_ENULL;
 
   if(extrude->npatch)
     {
@@ -530,6 +549,9 @@ ay_extrude_notifycb(ay_object *o)
     return AY_OK;
 
   ext = (ay_extrude_object*)o->refine;
+
+  if(!ext)
+    return AY_ENULL;
 
   /* ok, something changed below, we have to rebuild the extrusion(s) */
 
@@ -984,6 +1006,9 @@ ay_extrude_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   e = (ay_extrude_object *) o->refine;
 
+  if(!e)
+    return AY_ENULL;
+
  return ay_provide_nptoolobj(o, type, e->npatch, e->caps_and_bevels, result);
 } /* ay_extrude_providecb */
 
@@ -1000,6 +1025,9 @@ ay_extrude_convertcb(ay_object *o, int in_place)
     return AY_ENULL;
 
   e = (ay_extrude_object *) o->refine;
+
+  if(!e)
+    return AY_ENULL;
 
  return ay_convert_nptoolobj(o, e->npatch, e->caps_and_bevels, in_place);
 } /* ay_extrude_convertcb */
