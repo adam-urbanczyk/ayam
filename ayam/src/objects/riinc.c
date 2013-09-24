@@ -186,10 +186,13 @@ ay_riinc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  ay_riinc_object *riinc = NULL;
  char *result = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   riinc = (ay_riinc_object *)o->refine;
+
+  if(!riinc)
+    return AY_ENULL;
 
   if(riinc->file)
     {
@@ -243,10 +246,13 @@ ay_riinc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_riinc_object *riinc = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   riinc = (ay_riinc_object *)(o->refine);
+
+  if(!riinc)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
 
@@ -283,7 +289,7 @@ ay_riinc_readcb(FILE *fileptr, ay_object *o)
  int ay_status = AY_OK;
  ay_riinc_object *riinc = NULL;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   if(!(riinc = calloc(1, sizeof(ay_riinc_object))))
@@ -314,10 +320,13 @@ ay_riinc_writecb(FILE *fileptr, ay_object *o)
 {
  ay_riinc_object *riinc = NULL;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   riinc = (ay_riinc_object *)(o->refine);
+
+  if(!riinc)
+    return AY_ENULL;
 
   fprintf(fileptr, "%g\n", riinc->width);
   fprintf(fileptr, "%g\n", riinc->length);
@@ -364,6 +373,9 @@ ay_riinc_bbccb(ay_object *o, double *bbox, int *flags)
     return AY_ENULL;
 
   riinc = (ay_riinc_object *)o->refine;
+
+  if(!riinc)
+    return AY_ENULL;
 
   wh = riinc->width  * 0.5;
   lh = riinc->length * 0.5;

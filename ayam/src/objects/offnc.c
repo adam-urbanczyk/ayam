@@ -146,7 +146,10 @@ ay_offnc_drawacb(struct Togl *togl, ay_object *o)
 
   offnc = (ay_offnc_object *)o->refine;
 
-  if(offnc && offnc->ncurve)
+  if(!offnc)
+    return AY_ENULL;
+
+  if(offnc->ncurve)
     {
       /* get NURBS curve */
       nc = (ay_nurbcurve_object *)offnc->ncurve->refine;
@@ -187,7 +190,10 @@ ay_offnc_drawhcb(struct Togl *togl, ay_object *o)
 
   offnc = (ay_offnc_object *)o->refine;
 
-  if(offnc && offnc->ncurve)
+  if(!offnc)
+    return AY_ENULL;
+
+  if(offnc->ncurve)
     {
       /* get NURBS curve */
       nc = (ay_nurbcurve_object *)offnc->ncurve->refine;
@@ -238,6 +244,9 @@ ay_offnc_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   offnc = (ay_offnc_object *)o->refine;
 
+  if(!offnc)
+    return AY_ENULL;
+
   if(offnc->ncurve)
     {
       curve = (ay_nurbcurve_object *)offnc->ncurve->refine;
@@ -261,10 +270,13 @@ ay_offnc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_offnc_object *offnc = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   offnc = (ay_offnc_object *)o->refine;
+
+  if(!offnc)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
@@ -312,13 +324,15 @@ ay_offnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_offnc_object *offnc = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   offnc = (ay_offnc_object *)(o->refine);
 
-  toa = Tcl_NewStringObj(n1,-1);
+  if(!offnc)
+    return AY_ENULL;
 
+  toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
   Tcl_SetStringObj(ton,"Mode",-1);
@@ -363,7 +377,7 @@ ay_offnc_readcb(FILE *fileptr, ay_object *o)
 {
  ay_offnc_object *offnc = NULL;
 
- if(!o)
+ if(!fileptr || !o)
    return AY_ENULL;
 
   if(!(offnc = calloc(1, sizeof(ay_offnc_object))))
@@ -389,10 +403,13 @@ ay_offnc_writecb(FILE *fileptr, ay_object *o)
 {
  ay_offnc_object *offnc = NULL;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   offnc = (ay_offnc_object *)(o->refine);
+
+  if(!offnc)
+    return AY_ENULL;
 
   fprintf(fileptr, "%d\n", offnc->mode);
   fprintf(fileptr, "%d\n", offnc->revert);
@@ -428,6 +445,9 @@ ay_offnc_bbccb(ay_object *o, double *bbox, int *flags)
 
   offnc = (ay_offnc_object *)o->refine;
 
+  if(!offnc)
+    return AY_ENULL;
+
   if(offnc->ncurve)
     {
       ay_bbc_get(offnc->ncurve, bbox);
@@ -459,6 +479,9 @@ ay_offnc_notifycb(ay_object *o)
     return AY_ENULL;
 
   offnc = (ay_offnc_object *)(o->refine);
+
+  if(!offnc)
+    return AY_ENULL;
 
   mode = offnc->display_mode;
   tolerance = offnc->glu_sampling_tolerance;
@@ -584,6 +607,9 @@ ay_offnc_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   s = (ay_offnc_object *) o->refine;
 
+  if(!s)
+    return AY_ENULL;
+
   if(type == AY_IDNCURVE)
     {
       t = &(new);
@@ -626,6 +652,9 @@ ay_offnc_convertcb(ay_object *o, int in_place)
 
   /* first, create new objects */
   r = (ay_offnc_object *) o->refine;
+
+  if(!r)
+    return AY_ENULL;
 
   if(r->ncurve)
     {

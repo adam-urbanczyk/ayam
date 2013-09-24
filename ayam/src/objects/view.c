@@ -207,10 +207,13 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  char *result;
  char fname[] = "view_setpropcb";
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   view = (ay_view_object *)o->refine;
+
+  if(!view)
+    return AY_ENULL;
 
   memcpy(oldmark, view->markworld, 3*sizeof(double));
 
@@ -429,10 +432,14 @@ ay_view_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  Tk_Window win;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   view = (ay_view_object *)o->refine;
+
+  if(!view)
+    return AY_ENULL;
+
   togl = view->togl;
   width = Togl_Width(togl);
   height = Togl_Height(togl);
@@ -614,6 +621,9 @@ ay_view_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     return AY_ENULL;
 
   view = (ay_view_object *)(o->refine);
+
+  if(!view)
+    return AY_ENULL;
 
   if(min_dist == 0.0)
     min_dist = DBL_MAX;
@@ -1021,6 +1031,9 @@ ay_view_writecb(FILE *fileptr, ay_object *o)
  ay_view_object *view = NULL;
  struct Togl *togl = NULL;
 
+  if(!o)
+    return AY_ENULL;
+
   view = (ay_view_object *)(o->refine);
 
   if(!view)
@@ -1120,6 +1133,9 @@ ay_view_bbccb(ay_object *o, double *bbox, int *flags)
 
   view = (ay_view_object *)o->refine;
 
+  if(!view)
+    return AY_ENULL;
+
   from[0] = view->from[0];
   from[1] = view->from[1];
   from[2] = view->from[2];
@@ -1201,6 +1217,9 @@ ay_view_notifycb(ay_object *o)
     return AY_ENULL;
 
   view = (ay_view_object *)(o->refine);
+
+  if(!view)
+    return AY_ENULL;
 
   /* reset rotx,rotz recalc roty */
   /*
@@ -1423,13 +1442,20 @@ ay_view_dropcb(ay_object *o)
  char arg1[] = "save", arg2[] = "ViewDrop";
  char *argv[3] = {0};
 
+  if(!o)
+    return AY_ENULL;
+
+  view = (ay_view_object *)o->refine;
+
+  if(!view)
+    return AY_ENULL;
+
   if(!sel)
     {
       ay_error(AY_ENOSEL, fname, NULL);
       return AY_EDONOTLINK;
     }
 
-  view = (ay_view_object *)o->refine;
   Togl_MakeCurrent(view->togl);
   ay_currentview = view;
   width = Togl_Width(view->togl);

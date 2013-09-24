@@ -727,6 +727,10 @@ ay_sdmesh_drawcb(struct Togl *togl, ay_object *o)
     return AY_ENULL;
 
   sdmesh = (ay_sdmesh_object *)(o->refine);
+
+  if(!sdmesh)
+    return AY_ENULL;
+
   if(sdmesh->drawsub && sdmesh->pomesh)
     {
       ay_draw_object(togl, sdmesh->pomesh, AY_TRUE);
@@ -764,6 +768,9 @@ ay_sdmesh_shadecb(struct Togl *togl, ay_object *o)
 
   sdmesh = (ay_sdmesh_object *)(o->refine);
 
+  if(!sdmesh)
+    return AY_ENULL;
+
   if(sdmesh->pomesh)
     {
       ay_shade_object(togl, sdmesh->pomesh, AY_FALSE);
@@ -791,6 +798,9 @@ ay_sdmesh_drawhcb(struct Togl *togl, ay_object *o)
     return AY_ENULL;
 
   sdmesh = (ay_sdmesh_object *)(o->refine);
+
+  if(!sdmesh)
+    return AY_ENULL;
 
   pnts = sdmesh->controlv;
 
@@ -825,6 +835,9 @@ ay_sdmesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     return AY_ENULL;
 
   sdmesh = (ay_sdmesh_object *)(o->refine);
+
+  if(!sdmesh)
+    return AY_ENULL;
 
   if(min_dist == 0.0)
     min_dist = DBL_MAX;
@@ -958,10 +971,13 @@ ay_sdmesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  ay_sdmesh_object *sdmesh = NULL;
  int i;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   sdmesh = (ay_sdmesh_object *)o->refine;
+
+  if(!sdmesh)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1, -1);
   ton = Tcl_NewStringObj(n1, -1);
@@ -1006,15 +1022,16 @@ ay_sdmesh_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_sdmesh_object *sdmesh = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   sdmesh = (ay_sdmesh_object *)(o->refine);
 
+  if(!sdmesh)
+    return AY_ENULL;
+
   toa = Tcl_NewStringObj(n1, -1);
-
   ton = Tcl_NewStringObj(n1, -1);
-
 
   Tcl_SetStringObj(ton, "Scheme", -1);
   to = Tcl_NewIntObj(sdmesh->scheme);
@@ -1059,7 +1076,7 @@ ay_sdmesh_readcb(FILE *fileptr, ay_object *o)
  unsigned int total_verts = 0, total_intargs = 0, total_floatargs = 0;
  unsigned int i, a;
 
-  if(!o)
+  if(!fileptr || !o)
    return AY_ENULL;
 
   if(!(sdmesh = calloc(1, sizeof(ay_sdmesh_object))))
@@ -1182,10 +1199,13 @@ ay_sdmesh_writecb(FILE *fileptr, ay_object *o)
  unsigned int total_verts = 0, total_intargs = 0, total_floatargs = 0;
  unsigned int i = 0, a = 0;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   sdmesh = (ay_sdmesh_object *)(o->refine);
+
+  if(!sdmesh)
+    return AY_ENULL;
 
   fprintf(fileptr, "%d\n", sdmesh->scheme);
   fprintf(fileptr, "%u\n", sdmesh->nfaces);
@@ -1281,6 +1301,9 @@ ay_sdmesh_wribcb(char *file, ay_object *o)
     return AY_OK;
 
   sdmesh = (ay_sdmesh_object*)(o->refine);
+
+  if(!sdmesh)
+    return AY_ENULL;
 
   switch(sdmesh->scheme)
     {
@@ -1398,7 +1421,6 @@ ay_sdmesh_wribcb(char *file, ay_object *o)
   if(!(pvc = ay_pv_count(o)))
     {
       /* No */
-
       if(sdmesh->ntags > 0)
 	{
 	  /* export mesh with tags */
@@ -1433,21 +1455,23 @@ ay_sdmesh_wribcb(char *file, ay_object *o)
       parms[0] = (RtPointer)controls;
 
       n = 1;
-      ay_pv_filltokpar(o, AY_TRUE, 1, &n, tokens, parms);
-
-      if(sdmesh->ntags > 0)
+      ay_status = ay_pv_filltokpar(o, AY_TRUE, 1, &n, tokens, parms);
+      if(!ay_status)
 	{
-	  /* export mesh with tags */
-	  RiSubdivisionMeshV(scheme, (RtInt)sdmesh->nfaces, nverts, verts,
+	  if(sdmesh->ntags > 0)
+	    {
+	      /* export mesh with tags */
+	      RiSubdivisionMeshV(scheme, (RtInt)sdmesh->nfaces, nverts, verts,
 			(RtInt)sdmesh->ntags, tags, nargs, intargs, floatargs,
 			    (RtInt)n, tokens, parms);
-	}
-      else
-	{
-	  /* export mesh without tags */
-	  RiSubdivisionMeshV(scheme, (RtInt)sdmesh->nfaces, nverts, verts,
-			    (RtInt)0, NULL, NULL, NULL, NULL,
-			    (RtInt)n, tokens, parms);
+	    }
+	  else
+	    {
+	      /* export mesh without tags */
+	      RiSubdivisionMeshV(scheme, (RtInt)sdmesh->nfaces, nverts, verts,
+				 (RtInt)0, NULL, NULL, NULL, NULL,
+				 (RtInt)n, tokens, parms);
+	    } /* if */
 	} /* if */
     } /* if */
 
@@ -1510,6 +1534,9 @@ ay_sdmesh_bbccb(ay_object *o, double *bbox, int *flags)
 
   sdmesh = (ay_sdmesh_object *)o->refine;
 
+  if(!sdmesh)
+    return AY_ENULL;
+
  return ay_bbc_fromarr(sdmesh->controlv, sdmesh->ncontrols, 3, bbox);
 } /* ay_sdmesh_bbccb */
 
@@ -1527,6 +1554,9 @@ ay_sdmesh_notifycb(ay_object *o)
     return AY_ENULL;
 
   sdmesh = (ay_sdmesh_object *) o->refine;
+
+  if(!sdmesh)
+    return AY_ENULL;
 
   if(sdmesh->face_normals)
     free(sdmesh->face_normals);
@@ -1550,6 +1580,9 @@ ay_sdmesh_convertcb(ay_object *o, int in_place)
     return AY_ENULL;
 
   sdmesh = (ay_sdmesh_object *) o->refine;
+
+  if(!sdmesh)
+    return AY_ENULL;
 
   if(sdmesh->pomesh)
     {

@@ -463,7 +463,13 @@ ay_sphere_drawhcb(struct Togl *togl, ay_object *o)
  double *pnts;
  ay_sphere_object *sphere;
 
+  if(!o)
+    return AY_ENULL;
+
   sphere = (ay_sphere_object *) o->refine;
+
+  if(!sphere)
+    return AY_ENULL;
 
   if(!sphere->pnts)
     {
@@ -508,6 +514,9 @@ ay_sphere_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   sphere = (ay_sphere_object *)o->refine;
 
+  if(!sphere)
+    return AY_ENULL;
+
   if(!sphere->pnts)
     {
       if(!(sphere->pnts = calloc(AY_PSPHERE*3, sizeof(double))))
@@ -535,6 +544,9 @@ ay_sphere_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   sphere = (ay_sphere_object *)o->refine;
+
+  if(!sphere)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
@@ -597,10 +609,11 @@ ay_sphere_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   sphere = (ay_sphere_object *)(o->refine);
 
+  if(!sphere)
+    return AY_ENULL;
+
   toa = Tcl_NewStringObj(n1,-1);
-
   ton = Tcl_NewStringObj(n1,-1);
-
 
   Tcl_SetStringObj(ton,"Closed",-1);
   to = Tcl_NewIntObj(sphere->closed);
@@ -681,6 +694,9 @@ ay_sphere_writecb(FILE *fileptr, ay_object *o)
 
   sphere = (ay_sphere_object *)(o->refine);
 
+  if(!sphere)
+    return AY_ENULL;
+
   fprintf(fileptr, "%d\n", (int)sphere->closed);
   fprintf(fileptr, "%g\n", sphere->radius);
   fprintf(fileptr, "%g\n", sphere->zmin);
@@ -717,6 +733,8 @@ ay_sphere_wribcb(char *file, ay_object *o)
 
   sphere = (ay_sphere_object*)o->refine;
 
+  if(!sphere)
+    return AY_ENULL;
 
   if(!sphere->closed)
   {
@@ -883,6 +901,9 @@ ay_sphere_bbccb(ay_object *o, double *bbox, int *flags)
 
   sphere = (ay_sphere_object *)o->refine;
 
+  if(!sphere)
+    return AY_ENULL;
+
   if(!sphere->is_simple)
     {
       if(!sphere->pnts)
@@ -937,6 +958,9 @@ ay_sphere_notifycb(ay_object *o)
     return AY_ENULL;
 
   sphere = (ay_sphere_object *)o->refine;
+
+  if(!sphere)
+    return AY_ENULL;
 
   if(sphere->pnts)
     {
@@ -1115,6 +1139,9 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
     }
 
   sphere = (ay_sphere_object *) o->refine;
+
+  if(!sphere)
+    return AY_ENULL;
 
   if(type == AY_IDNPATCH)
     {
@@ -1352,6 +1379,9 @@ ay_sphere_convertcb(ay_object *o, int in_place)
     return AY_ENULL;
 
   sphere = (ay_sphere_object *) o->refine;
+
+  if(!sphere)
+    return AY_ENULL;
 
   /* first, create new object(s) */
 

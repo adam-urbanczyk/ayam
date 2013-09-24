@@ -630,6 +630,9 @@ ay_pomesh_drawcb(struct Togl *togl, ay_object *o)
 
   pomesh = (ay_pomesh_object *)(o->refine);
 
+  if(!pomesh)
+    return AY_ENULL;
+
   if(pomesh->has_normals)
     stride = 6;
   else
@@ -718,6 +721,9 @@ ay_pomesh_drawhcb(struct Togl *togl, ay_object *o)
 
   pomesh = (ay_pomesh_object *)(o->refine);
 
+  if(!pomesh)
+    return AY_ENULL;
+
   if(pomesh->has_normals)
     stride = 6;
   else
@@ -756,6 +762,9 @@ ay_pomesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     return AY_ENULL;
 
   pomesh = (ay_pomesh_object *)(o->refine);
+
+  if(!pomesh)
+    return AY_ENULL;
 
   if(pomesh->has_normals)
     stride = 6;
@@ -893,10 +902,13 @@ ay_pomesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  ay_pomesh_object *pomesh = NULL;
  int new_type;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   pomesh = (ay_pomesh_object *)o->refine;
+
+  if(!pomesh)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1, -1);
   ton = Tcl_NewStringObj(n1, -1);
@@ -927,10 +939,13 @@ ay_pomesh_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_pomesh_object *pomesh = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   pomesh = (ay_pomesh_object *)(o->refine);
+
+  if(!pomesh)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1, -1);
   ton = Tcl_NewStringObj(n1, -1);
@@ -973,7 +988,7 @@ ay_pomesh_readcb(FILE *fileptr, ay_object *o)
  unsigned int total_loops = 0, total_verts = 0;
  unsigned int i, a;
 
-  if(!o)
+  if(!fileptr || !o)
    return AY_ENULL;
 
   if(!(pomesh = calloc(1, sizeof(ay_pomesh_object))))
@@ -1080,10 +1095,13 @@ ay_pomesh_writecb(FILE *fileptr, ay_object *o)
  unsigned int total_loops = 0, total_verts = 0;
  unsigned int i = 0, a = 0;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   pomesh = (ay_pomesh_object *)(o->refine);
+
+  if(!pomesh)
+    return AY_ENULL;
 
   fprintf(fileptr, "%d\n", pomesh->type);
   fprintf(fileptr, "%u\n", pomesh->npolys);
@@ -1161,6 +1179,9 @@ ay_pomesh_wribcb(char *file, ay_object *o)
     return AY_OK;
 
   pomesh = (ay_pomesh_object*)(o->refine);
+
+  if(!pomesh)
+    return AY_ENULL;
 
   if(pomesh->has_normals)
     stride = 6;
@@ -1241,7 +1262,7 @@ ay_pomesh_wribcb(char *file, ay_object *o)
 	    { ay_status = AY_EOMEM; goto cleanup; }
 
 	  if(!(parms = calloc(pvc+2, sizeof(RtPointer))))
-	    { ay_status = AY_EOMEM; goto cleanup; }
+	    { free(tokens); ay_status = AY_EOMEM; goto cleanup; }
 
 	  tokens[0] = "P";
 	  parms[0] = (RtPointer)controls;
@@ -1249,7 +1270,7 @@ ay_pomesh_wribcb(char *file, ay_object *o)
 	  parms[1] = (RtPointer)normals;
 
 	  n = 2;
-	  ay_pv_filltokpar(o, AY_TRUE, 2, &n, tokens, parms);
+	  ay_status = ay_pv_filltokpar(o, AY_TRUE, 2, &n, tokens, parms);
 	}
       else
 	{
@@ -1257,28 +1278,31 @@ ay_pomesh_wribcb(char *file, ay_object *o)
 	    { ay_status = AY_EOMEM; goto cleanup; }
 
 	  if(!(parms = calloc(pvc+1, sizeof(RtPointer))))
-	    { ay_status = AY_EOMEM; goto cleanup; }
+	    { free(tokens); ay_status = AY_EOMEM; goto cleanup; }
 
 	  tokens[0] = "P";
 	  parms[0] = (RtPointer)controls;
 
 	  n = 1;
-	  ay_pv_filltokpar(o, AY_TRUE, 1, &n, tokens, parms);
+	  ay_status = ay_pv_filltokpar(o, AY_TRUE, 1, &n, tokens, parms);
 	} /* if */
 
-      RiPointsGeneralPolygonsV((RtInt)pomesh->npolys, nloops, nverts, verts,
-			       (RtInt)n, tokens, parms);
+      if(!ay_status)
+	{
+	  RiPointsGeneralPolygonsV((RtInt)pomesh->npolys, nloops, nverts, verts,
+				   (RtInt)n, tokens, parms);
+	}
 
       for(j = (pomesh->has_normals?2:1); j < n; j++)
 	{
-	  free(tokens[j]);
-	  free(parms[j]);
+	  if(tokens[j])
+	    free(tokens[j]);
+	  if(parms[i])
+	    free(parms[j]);
 	}
 
       free(tokens);
-      tokens = NULL;
       free(parms);
-      parms = NULL;
     } /* if */
 
   /* clean up */
@@ -1293,10 +1317,6 @@ cleanup:
     free(nverts);
   if(verts)
     free(verts);
-  if(tokens)
-    free(tokens);
-  if(parms)
-    free(parms);
 
  return ay_status;
 } /* ay_pomesh_wribcb */
@@ -1315,6 +1335,9 @@ ay_pomesh_bbccb(ay_object *o, double *bbox, int *flags)
     return AY_ENULL;
 
   pomesh = (ay_pomesh_object *)o->refine;
+
+  if(!pomesh)
+    return AY_ENULL;
 
   if(pomesh->has_normals)
     stride = 6;

@@ -105,6 +105,9 @@ ay_trim_drawcb(struct Togl *togl, ay_object *o)
 
   trim = (ay_trim_object *)(o->refine);
 
+  if(!trim)
+    return AY_ENULL;
+
   p = trim->npatch;
   while(p)
     {
@@ -130,6 +133,9 @@ ay_trim_shadecb(struct Togl *togl, ay_object *o)
     return AY_ENULL;
 
   trim = (ay_trim_object *)(o->refine);
+
+  if(!trim)
+    return AY_ENULL;
 
   p = trim->npatch;
   while(p)
@@ -177,10 +183,13 @@ ay_trim_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_trim_object *trim = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   trim = (ay_trim_object *)o->refine;
+
+  if(!trim)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
@@ -212,13 +221,15 @@ ay_trim_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_trim_object *trim = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   trim = (ay_trim_object *)(o->refine);
 
-  toa = Tcl_NewStringObj(n1,-1);
+  if(!trim)
+    return AY_ENULL;
 
+  toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
   Tcl_SetStringObj(ton,"PatchNum",-1);
@@ -243,8 +254,8 @@ ay_trim_readcb(FILE *fileptr, ay_object *o)
 {
  ay_trim_object *trim = NULL;
 
- if(!o)
-   return AY_ENULL;
+  if(!fileptr || !o)
+    return AY_ENULL;
 
   if(!(trim = calloc(1, sizeof(ay_trim_object))))
     { return AY_EOMEM; }
@@ -265,10 +276,13 @@ ay_trim_writecb(FILE *fileptr, ay_object *o)
 {
  ay_trim_object *trim = NULL;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   trim = (ay_trim_object *)(o->refine);
+
+  if(!trim)
+    return AY_ENULL;
 
   fprintf(fileptr, "%d\n", trim->patchnum);
 
@@ -289,6 +303,9 @@ ay_trim_wribcb(char *file, ay_object *o)
    return AY_ENULL;
 
   trim = (ay_trim_object*)o->refine;
+
+  if(!trim)
+    return AY_ENULL;
 
   p = trim->npatch;
   while(trim->npatch)
@@ -313,6 +330,9 @@ ay_trim_bbccb(ay_object *o, double *bbox, int *flags)
     return AY_ENULL;
 
   trim = (ay_trim_object *)o->refine;
+
+  if(!trim)
+    return AY_ENULL;
 
   if(trim->npatch)
     {
@@ -345,6 +365,9 @@ ay_trim_notifycb(ay_object *o)
     return AY_ENULL;
 
   trim = (ay_trim_object *)(o->refine);
+
+  if(!trim)
+    return AY_ENULL;
 
   /* remove old objects */
   if(trim->npatch)
@@ -425,6 +448,9 @@ ay_trim_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   t = (ay_trim_object *) o->refine;
 
+  if(!t)
+    return AY_ENULL;
+
  return ay_provide_nptoolobj(o, type, t->npatch, NULL, result);
 } /* ay_trim_providecb */
 
@@ -441,6 +467,9 @@ ay_trim_convertcb(ay_object *o, int in_place)
     return AY_ENULL;
 
   t = (ay_trim_object *) o->refine;
+
+  if(!t)
+    return AY_ENULL;
 
  return ay_convert_nptoolobj(o, t->npatch, NULL, in_place);
 } /* ay_trim_convertcb */

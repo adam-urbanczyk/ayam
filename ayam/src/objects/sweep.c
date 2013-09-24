@@ -184,6 +184,9 @@ ay_sweep_drawhcb(struct Togl *togl, ay_object *o)
 
   sweep = (ay_sweep_object *) o->refine;
 
+  if(!sweep)
+    return AY_ENULL;
+
   if(sweep->npatch)
     {
       patch = (ay_nurbpatch_object *)sweep->npatch->refine;
@@ -222,6 +225,9 @@ ay_sweep_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   sweep = (ay_sweep_object *)o->refine;
 
+  if(!sweep)
+    return AY_ENULL;
+
   if(sweep->npatch)
     {
       patch = (ay_nurbpatch_object *)sweep->npatch->refine;
@@ -245,14 +251,16 @@ ay_sweep_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_sweep_object *sweep = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   sweep = (ay_sweep_object *)o->refine;
 
+  if(!sweep)
+    return AY_ENULL;
+
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
-
 
   Tcl_SetStringObj(ton,"Rotate",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -300,15 +308,16 @@ ay_sweep_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_sweep_object *sweep = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   sweep = (ay_sweep_object *)(o->refine);
 
+  if(!sweep)
+    return AY_ENULL;
+
   toa = Tcl_NewStringObj(n1,-1);
-
   ton = Tcl_NewStringObj(n1,-1);
-
 
   Tcl_SetStringObj(ton,"Rotate",-1);
   to = Tcl_NewIntObj(sweep->rotate);
@@ -358,8 +367,8 @@ ay_sweep_readcb(FILE *fileptr, ay_object *o)
  ay_sweep_object *sweep = NULL;
  int caps[4] = {0};
 
- if(!o)
-   return AY_ENULL;
+  if(!fileptr || !o)
+    return AY_ENULL;
 
   if(!(sweep = calloc(1, sizeof(ay_sweep_object))))
     { return AY_EOMEM; }
@@ -400,10 +409,13 @@ ay_sweep_writecb(FILE *fileptr, ay_object *o)
  ay_cparam cparams = {0};
  int caps[2] = {0};
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   sweep = (ay_sweep_object *)(o->refine);
+
+  if(!sweep)
+    return AY_ENULL;
 
   if(o->tags)
     {
@@ -442,6 +454,9 @@ ay_sweep_wribcb(char *file, ay_object *o)
 
   sweep = (ay_sweep_object*)o->refine;
 
+  if(!sweep)
+    return AY_ENULL;
+
   if(sweep->npatch)
     ay_wrib_toolobject(file, sweep->npatch, o);
 
@@ -471,6 +486,9 @@ ay_sweep_bbccb(ay_object *o, double *bbox, int *flags)
     return AY_ENULL;
 
   sweep = (ay_sweep_object *)o->refine;
+
+  if(!sweep)
+    return AY_ENULL;
 
   if(sweep->npatch)
     {
@@ -509,6 +527,9 @@ ay_sweep_notifycb(ay_object *o)
     return AY_ENULL;
 
   sweep = (ay_sweep_object *)(o->refine);
+
+  if(!sweep)
+    return AY_ENULL;
 
   mode = sweep->display_mode;
   tolerance = sweep->glu_sampling_tolerance;
@@ -719,6 +740,9 @@ ay_sweep_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   s = (ay_sweep_object *) o->refine;
 
+  if(!s)
+    return AY_ENULL;
+
  return ay_provide_nptoolobj(o, type, s->npatch, s->caps_and_bevels, result);
 } /* ay_sweep_providecb */
 
@@ -735,6 +759,9 @@ ay_sweep_convertcb(ay_object *o, int in_place)
     return AY_ENULL;
 
   s = (ay_sweep_object *) o->refine;
+
+  if(!s)
+    return AY_ENULL;
 
  return ay_convert_nptoolobj(o, s->npatch, s->caps_and_bevels, in_place);
 } /* ay_sweep_convertcb */

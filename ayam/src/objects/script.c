@@ -211,6 +211,9 @@ ay_script_drawcb(struct Togl *togl, ay_object *o)
 
   sc = (ay_script_object *)o->refine;
 
+  if(!sc)
+    return AY_ENULL;
+
   switch(sc->type)
     {
     case 1:
@@ -252,6 +255,9 @@ ay_script_shadecb(struct Togl *togl, ay_object *o)
     }
 
   sc = (ay_script_object *)o->refine;
+
+  if(!sc)
+    return AY_ENULL;
 
   switch(sc->type)
     {
@@ -296,6 +302,9 @@ ay_script_drawhcb(struct Togl *togl, ay_object *o)
 
   sc = (ay_script_object *)o->refine;
 
+  if(!sc)
+    return AY_ENULL;
+
   if(!sc->pnts)
     {
       sc->pntslen = 1;
@@ -337,6 +346,9 @@ ay_script_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     return AY_ENULL;
 
   sc = (ay_script_object *)o->refine;
+
+  if(!sc)
+    return AY_ENULL;
 
   if(!sc->pnts)
     {
@@ -466,10 +478,13 @@ ay_script_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  char *string;
  int stringlen, newscript = AY_FALSE;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   sc = (ay_script_object *)o->refine;
+
+  if(!sc)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1, -1);
   ton = Tcl_NewStringObj(n1, -1);
@@ -572,13 +587,15 @@ ay_script_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *arrmemberlist = NULL, *arrmember;
  int arrmembers = 0, i;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   sc = (ay_script_object *)(o->refine);
 
-  toa = Tcl_NewStringObj(n1, -1);
+  if(!sc)
+    return AY_ENULL;
 
+  toa = Tcl_NewStringObj(n1, -1);
   ton = Tcl_NewStringObj(n1, -1);
 
   Tcl_SetStringObj(ton, "Active", -1);
@@ -687,14 +704,14 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
  Tcl_Obj *to = NULL;
 #endif
 
-  if(!o)
-    return AY_ENULL;
-
 #ifdef AYNOSAFEINTERP
   interp = ay_interp;
 #else
   interp = ay_safeinterp;
 #endif
+
+  if(!fileptr || !o)
+    return AY_ENULL;
 
   if(!(sc = calloc(1, sizeof(ay_script_object))))
     { return AY_EOMEM; }
@@ -852,16 +869,19 @@ ay_script_writecb(FILE *fileptr, ay_object *o)
  Tcl_Obj *toa = NULL, *ton = NULL;
  Tcl_Interp *interp = NULL;
 
-  if(!o)
-    return AY_ENULL;
-
 #ifdef AYNOSAFEINTERP
   interp = ay_interp;
 #else
   interp = ay_safeinterp;
 #endif
 
+  if(!fileptr || !o)
+    return AY_ENULL;
+
   sc = (ay_script_object *)(o->refine);
+
+  if(!sc)
+    return AY_ENULL;
 
   fprintf(fileptr, "%d\n", sc->active);
   fprintf(fileptr, "%d\n", sc->type);
@@ -965,6 +985,9 @@ ay_script_wribcb(char *file, ay_object *o)
 
   sc = (ay_script_object*)o->refine;
 
+  if(!sc)
+    return AY_ENULL;
+
   switch(sc->type)
     {
     case 1:
@@ -1005,6 +1028,9 @@ ay_script_bbccb(ay_object *o, double *bbox, int *flags)
     return AY_ENULL;
 
   sc = (ay_script_object *)(o->refine);
+
+  if(!sc)
+    return AY_ENULL;
 
   switch(sc->type)
     {
@@ -1188,6 +1214,9 @@ ay_script_notifycb(ay_object *o)
     } /* if */
 
   sc = (ay_script_object *)(o->refine);
+
+  if(!sc)
+    return AY_ENULL;
 
   /* always clear the old read only points */
   if(sc->pnts)
@@ -1662,6 +1691,9 @@ ay_script_convertcb(ay_object *o, int in_place)
 
   sc = (ay_script_object *)(o->refine);
 
+  if(!sc)
+    return AY_ENULL;
+
   if(sc->cm_objects)
     ay_sel_clearselflag(sc->cm_objects);
 
@@ -1770,6 +1802,9 @@ ay_script_providecb(ay_object *o, unsigned int type, ay_object **result)
     return AY_ENULL;
 
   sc = (ay_script_object *)(o->refine);
+
+  if(!sc)
+    return AY_ENULL;
 
   if(!result)
     {

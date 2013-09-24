@@ -181,6 +181,9 @@ ay_swing_drawhcb(struct Togl *togl, ay_object *o)
 
   swing = (ay_swing_object *) o->refine;
 
+  if(!swing)
+    return AY_ENULL;
+
   if(swing->npatch)
     {
       patch = (ay_nurbpatch_object *)swing->npatch->refine;
@@ -219,6 +222,9 @@ ay_swing_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   swing = (ay_swing_object *)o->refine;
 
+  if(!swing)
+    return AY_ENULL;
+
   if(swing->npatch)
     {
       patch = (ay_nurbpatch_object *)swing->npatch->refine;
@@ -242,10 +248,13 @@ ay_swing_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_swing_object *swing = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   swing = (ay_swing_object *)o->refine;
+
+  if(!swing)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
@@ -297,13 +306,15 @@ ay_swing_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_swing_object *swing = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   swing = (ay_swing_object *)(o->refine);
 
-  toa = Tcl_NewStringObj(n1,-1);
+  if(!swing)
+    return AY_ENULL;
 
+  toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
   Tcl_SetStringObj(ton,"UpperCap",-1);
@@ -353,8 +364,8 @@ ay_swing_readcb(FILE *fileptr, ay_object *o)
 {
  ay_swing_object *swing = NULL;
 
- if(!o)
-   return AY_ENULL;
+  if(!fileptr || !o)
+    return AY_ENULL;
 
   if(!(swing = calloc(1, sizeof(ay_swing_object))))
     { return AY_EOMEM; }
@@ -380,10 +391,13 @@ ay_swing_writecb(FILE *fileptr, ay_object *o)
 {
  ay_swing_object *swing = NULL;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   swing = (ay_swing_object *)(o->refine);
+
+  if(!swing)
+    return AY_ENULL;
 
   fprintf(fileptr, "%d\n", swing->has_upper_cap);
   fprintf(fileptr, "%d\n", swing->has_lower_cap);
@@ -409,6 +423,9 @@ ay_swing_wribcb(char *file, ay_object *o)
    return AY_ENULL;
 
   swing = (ay_swing_object*)o->refine;
+
+  if(!swing)
+    return AY_ENULL;
 
   if(swing->npatch)
     ay_wrib_toolobject(file, swing->npatch, o);
@@ -439,6 +456,9 @@ ay_swing_bbccb(ay_object *o, double *bbox, int *flags)
     return AY_ENULL;
 
   swing = (ay_swing_object *)o->refine;
+
+  if(!swing)
+    return AY_ENULL;
 
   if(swing->npatch)
     {
@@ -1023,6 +1043,9 @@ ay_swing_notifycb(ay_object *o)
 
   swing = (ay_swing_object *)(o->refine);
 
+  if(!swing)
+    return AY_ENULL;
+
   mode = swing->display_mode;
   tolerance = swing->glu_sampling_tolerance;
 
@@ -1185,6 +1208,9 @@ ay_swing_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   s = (ay_swing_object *) o->refine;
 
+  if(!s)
+    return AY_ENULL;
+
  return ay_provide_nptoolobj(o, type, s->npatch, s->caps_and_bevels, result);
 } /* ay_swing_providecb */
 
@@ -1201,6 +1227,9 @@ ay_swing_convertcb(ay_object *o, int in_place)
     return AY_ENULL;
 
   s = (ay_swing_object *) o->refine;
+
+  if(!s)
+    return AY_ENULL;
 
  return ay_convert_nptoolobj(o, s->npatch, s->caps_and_bevels, in_place);
 } /* ay_swing_convertcb */

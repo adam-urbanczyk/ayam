@@ -794,13 +794,21 @@ ay_ncurve_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_ncurve_drawacb(struct Togl *togl, ay_object *o)
 {
- ay_nurbcurve_object *curve = (ay_nurbcurve_object *) o->refine;
+ ay_nurbcurve_object *ncurve = NULL;
  double *ver = NULL;
 
-  ver = curve->controlv;
+  if(!o)
+    return AY_ENULL;
 
-  ay_draw_arrow(togl, &(ver[curve->length*4-8]),
-		&(ver[curve->length*4-4]));
+  ncurve = (ay_nurbcurve_object *)o->refine;
+
+  if(!ncurve)
+    return AY_ENULL;
+
+  ver = ncurve->controlv;
+
+  ay_draw_arrow(togl, &(ver[ncurve->length*4-8]),
+		&(ver[ncurve->length*4-4]));
 
  return AY_OK;
 } /* ay_ncurve_drawacb */
@@ -816,18 +824,21 @@ ay_ncurve_drawhcb(struct Togl *togl, ay_object *o)
  double *pnts;
  double point_size = ay_prefs.handle_size;
  ay_mpoint *mp;
- ay_nurbcurve_object *curve;
+ ay_nurbcurve_object *ncurve;
 
   if(!o)
     return AY_ENULL;
 
-  curve = (ay_nurbcurve_object *) o->refine;
+  ncurve = (ay_nurbcurve_object *) o->refine;
 
-  pnts = curve->controlv;
+  if(!ncurve)
+    return AY_ENULL;
+
+  pnts = ncurve->controlv;
 
   /* draw normal points */
   glBegin(GL_POINTS);
-   for(i = 0; i < curve->length; i++)
+   for(i = 0; i < ncurve->length; i++)
      {
        glVertex3dv((GLdouble *)pnts);
        pnts += 4;
@@ -835,11 +846,11 @@ ay_ncurve_drawhcb(struct Togl *togl, ay_object *o)
   glEnd();
 
   /* draw multiple points */
-  if(curve->mpoints)
+  if(ncurve->mpoints)
     {
       glPointSize((GLfloat)(point_size*1.25));
       glBegin(GL_POINTS);
-       mp = curve->mpoints;
+       mp = ncurve->mpoints;
        while(mp)
 	 {
 	   glVertex3dv((GLdouble *)(mp->points[0]));
@@ -872,6 +883,9 @@ ay_ncurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     return AY_ENULL;
 
   ncurve = (ay_nurbcurve_object *)(o->refine);
+
+  if(!ncurve)
+    return AY_ENULL;
 
   if(min_dist == 0.0)
     min_dist = DBL_MAX;
@@ -1040,10 +1054,13 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  int knotc, i, stride = 4;
  Tcl_Obj **knotv;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   ncurve = (ay_nurbcurve_object *)o->refine;
+
+  if(!ncurve)
+    return AY_ENULL;
 
   /* get new values from Tcl */
   to = Tcl_ObjGetVar2(interp, arrobj, lengthobj,
@@ -1312,10 +1329,13 @@ ay_ncurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  ay_nurbcurve_object *ncurve = NULL;
  int i;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   ncurve = (ay_nurbcurve_object *)(o->refine);
+
+  if(!ncurve)
+    return AY_ENULL;
 
   if(argc > 1 && argv[1][0] == '-' && argv[1][1] == 'i')
     {
@@ -1391,7 +1411,7 @@ ay_ncurve_readcb(FILE *fileptr, ay_object *o)
  ay_nurbcurve_object *ncurve = NULL;
  int i, a;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   if(!(ncurve = calloc(1, sizeof(ay_nurbcurve_object))))
@@ -1480,10 +1500,13 @@ ay_ncurve_writecb(FILE *fileptr, ay_object *o)
  ay_nurbcurve_object *ncurve = NULL;
  int i, a;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   ncurve = (ay_nurbcurve_object *)(o->refine);
+
+  if(!ncurve)
+    return AY_ENULL;
 
   fprintf(fileptr, "%d\n", ncurve->length);
   fprintf(fileptr, "%d\n", ncurve->order);
@@ -1542,6 +1565,9 @@ ay_ncurve_bbccb(ay_object *o, double *bbox, int *flags)
 
   ncurve = (ay_nurbcurve_object *)o->refine;
 
+  if(!ncurve)
+    return AY_ENULL;
+
  return ay_bbc_fromarr(ncurve->controlv, ncurve->length, 4, bbox);
 } /* ay_ncurve_bbccb */
 
@@ -1562,6 +1588,9 @@ ay_ncurve_convertcb(ay_object *o, int in_place)
     { return AY_ENULL; }
 
   nc = (ay_nurbcurve_object *) o->refine;
+
+  if(!nc)
+    return AY_ENULL;
 
   if(!(new = calloc(1, sizeof(ay_object))))
     { return AY_EOMEM; }
@@ -1622,6 +1651,9 @@ ay_ncurve_notifycb(ay_object *o)
     return AY_ENULL;
 
   ncurve = (ay_nurbcurve_object *)(o->refine);
+
+  if(!ncurve)
+    return AY_ENULL;
 
   if(ncurve->knot_type > AY_KTCUSTOM)
     {

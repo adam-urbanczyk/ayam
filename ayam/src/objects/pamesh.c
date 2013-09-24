@@ -299,6 +299,9 @@ ay_pamesh_drawcb(struct Togl *togl, ay_object *o)
 
   pamesh = (ay_pamesh_object *)o->refine;
 
+  if(!pamesh)
+    return AY_ENULL;
+
   if((pamesh->display_mode != 0) && !view->action_state)
     {
       display_mode = pamesh->display_mode-1;
@@ -336,6 +339,9 @@ ay_pamesh_shadecb(struct Togl *togl, ay_object *o)
 
   pamesh = (ay_pamesh_object *)o->refine;
 
+  if(!pamesh)
+    return AY_ENULL;
+
   p = pamesh->npatch;
   while(p)
     {
@@ -362,6 +368,9 @@ ay_pamesh_drawacb(struct Togl *togl, ay_object *o)
 
   pm = (ay_pamesh_object *)o->refine;
 
+  if(!pm)
+    return AY_ENULL;
+
   width = pm->width;
   height = pm->height;
 
@@ -387,6 +396,9 @@ ay_pamesh_drawhcb(struct Togl *togl, ay_object *o)
     return AY_ENULL;
 
   pm = (ay_pamesh_object *) o->refine;
+
+  if(!pm)
+    return AY_ENULL;
 
   width = pm->width;
   height = pm->height;
@@ -422,6 +434,9 @@ ay_pamesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     return AY_ENULL;
 
   pamesh = (ay_pamesh_object *)(o->refine);
+
+  if(!pamesh)
+    return AY_ENULL;
 
   if(min_dist == 0.0)
     min_dist = DBL_MAX;
@@ -555,10 +570,13 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  double dtemp;
  char *man[] = {"_0","_1","_2","_3","_4","_5","_6","_7","_8","_9","_10","_11","_12","_13","_14","_15"};
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   pamesh = (ay_pamesh_object *)o->refine;
+
+  if(!pamesh)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
@@ -765,15 +783,16 @@ ay_pamesh_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  int j;
  char *man[] = {"_0","_1","_2","_3","_4","_5","_6","_7","_8","_9","_10","_11","_12","_13","_14","_15"};
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   pamesh = (ay_pamesh_object *)(o->refine);
 
+  if(!pamesh)
+    return AY_ENULL;
+
   toa = Tcl_NewStringObj(n1,-1);
-
   ton = Tcl_NewStringObj(n1,-1);
-
 
   Tcl_SetStringObj(ton,"Width",-1);
   to = Tcl_NewIntObj(pamesh->width);
@@ -873,7 +892,7 @@ ay_pamesh_readcb(FILE *fileptr, ay_object *o)
  ay_pamesh_object *pamesh = NULL;
  int i, a;
 
- if(!o)
+ if(!fileptr || !o)
    return AY_ENULL;
 
   if(!(pamesh = calloc(1, sizeof(ay_pamesh_object))))
@@ -956,10 +975,13 @@ ay_pamesh_writecb(FILE *fileptr, ay_object *o)
  ay_pamesh_object *pamesh = NULL;
  int i, a;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   pamesh = (ay_pamesh_object *)(o->refine);
+
+  if(!pamesh)
+    return AY_ENULL;
 
   fprintf(fileptr, "%d\n", pamesh->width);
   fprintf(fileptr, "%d\n", pamesh->height);
@@ -1025,6 +1047,9 @@ ay_pamesh_wribcb(char *file, ay_object *o)
     return AY_OK;
 
   patch = (ay_pamesh_object*)(o->refine);
+
+  if(!patch)
+    return AY_ENULL;
 
   if(patch->type == AY_PTBICUBIC)
     {
@@ -1192,6 +1217,9 @@ ay_pamesh_bbccb(ay_object *o, double *bbox, int *flags)
 
   pamesh = (ay_pamesh_object *)o->refine;
 
+  if(!pamesh)
+    return AY_ENULL;
+
  return ay_bbc_fromarr(pamesh->controlv, pamesh->width*pamesh->height,
 		       4, bbox);
 } /* ay_pamesh_bbccb */
@@ -1212,6 +1240,9 @@ ay_pamesh_notifycb(ay_object *o)
     return AY_ENULL;
 
   pamesh = (ay_pamesh_object *)o->refine;
+
+  if(!pamesh)
+    return AY_ENULL;
 
   if(pamesh->npatch)
     {
@@ -1267,6 +1298,9 @@ ay_pamesh_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   pm = (ay_pamesh_object *) o->refine;
 
+  if(!pm)
+    return AY_ENULL;
+
   if(type == AY_IDNPATCH)
     {
       t = &(new);
@@ -1314,6 +1348,10 @@ ay_pamesh_convertcb(ay_object *o, int in_place)
   /* first, create new objects */
 
   pamesh = (ay_pamesh_object *) o->refine;
+
+  if(!pamesh)
+    return AY_ENULL;
+
   p = pamesh->npatch;
   if(p && p->next)
     {

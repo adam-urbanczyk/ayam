@@ -183,6 +183,9 @@ ay_skin_drawhcb(struct Togl *togl, ay_object *o)
 
   skin = (ay_skin_object *) o->refine;
 
+  if(!skin)
+    return AY_ENULL;
+
   if(skin->npatch)
     {
       patch = (ay_nurbpatch_object *)skin->npatch->refine;
@@ -221,6 +224,9 @@ ay_skin_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   skin = (ay_skin_object *)o->refine;
 
+  if(!skin)
+    return AY_ENULL;
+
   if(skin->npatch)
     {
       patch = (ay_nurbpatch_object *)skin->npatch->refine;
@@ -244,10 +250,13 @@ ay_skin_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_skin_object *skin = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   skin = (ay_skin_object *)o->refine;
+
+  if(!skin)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
@@ -295,15 +304,16 @@ ay_skin_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_skin_object *skin = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   skin = (ay_skin_object *)(o->refine);
 
+  if(!skin)
+    return AY_ENULL;
+
   toa = Tcl_NewStringObj(n1,-1);
-
   ton = Tcl_NewStringObj(n1,-1);
-
 
   Tcl_SetStringObj(ton,"Interpolate",-1);
   to = Tcl_NewIntObj(skin->interpolate);
@@ -349,8 +359,8 @@ ay_skin_readcb(FILE *fileptr, ay_object *o)
  ay_skin_object *skin = NULL;
  int caps[4] = {0};
 
- if(!o)
-   return AY_ENULL;
+  if(!fileptr || !o)
+    return AY_ENULL;
 
   if(!(skin = calloc(1, sizeof(ay_skin_object))))
     { return AY_EOMEM; }
@@ -385,10 +395,13 @@ ay_skin_writecb(FILE *fileptr, ay_object *o)
  ay_cparam cparams = {0};
  int caps[2] = {0};
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   skin = (ay_skin_object *)(o->refine);
+
+  if(!skin)
+    return AY_ENULL;
 
   if(o->tags)
     {
@@ -426,6 +439,9 @@ ay_skin_wribcb(char *file, ay_object *o)
 
   skin = (ay_skin_object*)o->refine;
 
+  if(!skin)
+    return AY_ENULL;
+
   if(skin->npatch)
     ay_wrib_object(file, skin->npatch);
 
@@ -455,6 +471,9 @@ ay_skin_bbccb(ay_object *o, double *bbox, int *flags)
     return AY_ENULL;
 
   skin = (ay_skin_object *)o->refine;
+
+  if(!skin)
+    return AY_ENULL;
 
   if(skin->npatch)
     {
@@ -492,6 +511,9 @@ ay_skin_notifycb(ay_object *o)
     return AY_ENULL;
 
   skin = (ay_skin_object *)(o->refine);
+
+  if(!skin)
+    return AY_ENULL;
 
   mode = skin->display_mode;
   tolerance = skin->glu_sampling_tolerance;
@@ -669,6 +691,9 @@ ay_skin_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   s = (ay_skin_object *) o->refine;
 
+  if(!s)
+    return AY_ENULL;
+
  return ay_provide_nptoolobj(o, type, s->npatch, s->caps_and_bevels, result);
 } /* ay_skin_providecb */
 
@@ -685,6 +710,9 @@ ay_skin_convertcb(ay_object *o, int in_place)
     return AY_ENULL;
 
   s = (ay_skin_object *) o->refine;
+
+  if(!s)
+    return AY_ENULL;
 
  return ay_convert_nptoolobj(o, s->npatch, s->caps_and_bevels, in_place);
 } /* ay_skin_convertcb */

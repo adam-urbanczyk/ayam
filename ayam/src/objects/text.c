@@ -149,6 +149,9 @@ ay_text_drawcb(struct Togl *togl, ay_object *o)
 
   text = (ay_text_object *)(o->refine);
 
+  if(!text)
+    return AY_ENULL;
+
   npatch = text->npatch;
 
   while(npatch)
@@ -174,6 +177,9 @@ ay_text_shadecb(struct Togl *togl, ay_object *o)
     return AY_ENULL;
 
   text = (ay_text_object *)(o->refine);
+
+  if(!text)
+    return AY_ENULL;
 
   npatch = text->npatch;
 
@@ -201,6 +207,9 @@ ay_text_drawhcb(struct Togl *togl, ay_object *o)
     return AY_ENULL;
 
   text = (ay_text_object *)o->refine;
+
+  if(!text)
+    return AY_ENULL;
 
   if(!text->pnts)
     {
@@ -244,6 +253,9 @@ ay_text_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   text = (ay_text_object *)o->refine;
 
+  if(!text)
+    return AY_ENULL;
+
   if(!text->pnts)
     {
       text->pntslen = 1;
@@ -268,10 +280,13 @@ ay_text_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  ay_text_object *text = NULL;
  Tcl_UniChar *unistr = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   text = (ay_text_object *)o->refine;
+
+  if(!text)
+    return AY_ENULL;
 
   if(text->fontname)
     {
@@ -359,10 +374,13 @@ ay_text_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_text_object *text = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   text = (ay_text_object *)o->refine;
+
+  if(!text)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
 
@@ -428,8 +446,8 @@ ay_text_readcb(FILE *fileptr, ay_object *o)
  int startb_type, startb_type2, endb_type, startb_sense, endb_sense;
  double startb_radius, startb_radius2, endb_radius;
 
-  if(!o)
-   return AY_ENULL;
+  if(!fileptr || !o)
+    return AY_ENULL;
 
   if(!(text = calloc(1, sizeof(ay_text_object))))
     { return AY_EOMEM; }
@@ -497,10 +515,13 @@ ay_text_writecb(FILE *fileptr, ay_object *o)
  int startb_type = 0, endb_type = 0, startb_sense = 0, endb_sense = 0;
  double startb_radius = 0.0, endb_radius = 0.0;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   text = (ay_text_object *)(o->refine);
+
+  if(!text)
+    return AY_ENULL;
 
   /* get bevel parameters */
   ay_npt_getbeveltags(o, 0, &has_startb, &startb_type, &startb_radius,
@@ -561,6 +582,9 @@ ay_text_wribcb(char *file, ay_object *o)
 
   text = (ay_text_object*)o->refine;
 
+  if(!text)
+    return AY_ENULL;
+
   p = text->npatch;
   while(p)
     {
@@ -588,6 +612,10 @@ ay_text_bbccb(ay_object *o, double *bbox, int *flags)
     return AY_ENULL;
 
   text = (ay_text_object *)o->refine;
+
+  if(!text)
+    return AY_ENULL;
+
   if(text->npatch)
     {
       p = text->npatch;
@@ -671,6 +699,9 @@ ay_text_notifycb(ay_object *o)
     return AY_ENULL;
 
   text = (ay_text_object *)o->refine;
+
+  if(!text)
+    return AY_ENULL;
 
   if(text->npatch)
     ay_status = ay_object_deletemulti(text->npatch);
@@ -1009,6 +1040,9 @@ ay_text_convertcb(ay_object *o, int in_place)
 
   text = (ay_text_object *) o->refine;
 
+  if(!text)
+    return AY_ENULL;
+
  return ay_convert_nptoolobj(o, text->npatch, NULL, in_place);
 } /* ay_text_convertcb */
 
@@ -1025,6 +1059,9 @@ ay_text_providecb(ay_object *o, unsigned int type, ay_object **result)
     return AY_ENULL;
 
   text = (ay_text_object *) o->refine;
+
+  if(!text)
+    return AY_ENULL;
 
  return ay_provide_nptoolobj(o, type, text->npatch, NULL, result);
 } /* ay_text_providecb */

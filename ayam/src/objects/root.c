@@ -217,10 +217,14 @@ ay_root_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  int itemp = 0;
  char *result;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   root = (ay_root_object *)o->refine;
+
+  if(!root)
+    return AY_ENULL;
+
   riopt = root->riopt;
 
   toa = Tcl_NewStringObj(n1, -1);
@@ -407,10 +411,14 @@ ay_root_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  ay_root_object *root = NULL;
  ay_riopt *riopt = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   root = (ay_root_object *)o->refine;
+
+  if(!root)
+    return AY_ENULL;
+
   riopt = root->riopt;
 
   toa = Tcl_NewStringObj(n1, -1);
@@ -551,7 +559,7 @@ ay_root_readcb(FILE *fileptr, ay_object *o)
  int fwtemp = 0, fhtemp = 0;
  ay_riopt *riopt = NULL;
 
-  if(!o)
+  if(!fileptr | !o)
     return AY_ENULL;
 
   if(!ay_root)
@@ -756,11 +764,13 @@ ay_root_writecb(FILE *fileptr, ay_object *o)
  ay_root_object *root = NULL;
  ay_riopt *riopt = NULL;
 
-  if(!o)
+  if(!fileptr | !o)
     return AY_ENULL;
 
   root = (ay_root_object*)(o->refine);
 
+  if(!root)
+    return AY_ENULL;
 
   /* write RiOptions */
   riopt = root->riopt;
@@ -859,6 +869,10 @@ ay_root_wribcb(char *file, ay_object *o)
    return AY_ENULL;
 
   root = (ay_root_object*)o->refine;
+
+  if(!root)
+    return AY_ENULL;
+
   riopt = root->riopt;
 
   /* wrib RiOptions */

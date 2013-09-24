@@ -479,6 +479,9 @@ ay_light_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   light = (ay_light_object *)(o->refine);
 
+  if(!light)
+    return AY_ENULL;
+
   if(min_dist == 0.0)
     min_dist = DBL_MAX;
 
@@ -704,10 +707,13 @@ ay_light_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_light_object *light = NULL;
 
-  if(!o)
+  if(!interp || !o)
    return AY_ENULL;
 
   light = (ay_light_object *)o->refine;
+
+  if(!light)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
 
@@ -811,10 +817,13 @@ ay_light_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_light_object *light = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   light = (ay_light_object *)(o->refine);
+
+  if(!light)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
 
@@ -910,7 +919,7 @@ ay_light_readcb(FILE *fileptr, ay_object *o)
  double p[3] = {DBL_MAX, DBL_MAX, DBL_MAX};
  ay_pointedit pe = {0};
 
-  if(!o)
+  if(!fileptr || !o)
    return AY_ENULL;
 
   if(!(light = calloc(1, sizeof(ay_light_object))))
@@ -970,10 +979,13 @@ ay_light_writecb(FILE *fileptr, ay_object *o)
 {
  ay_light_object *light = NULL;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   light = (ay_light_object *)(o->refine);
+
+  if(!light)
+    return AY_ENULL;
 
   fprintf(fileptr, "%d\n", light->shadows);
   fprintf(fileptr, "%d\n", light->samples);
@@ -1046,6 +1058,9 @@ ay_light_bbccb(ay_object *o, double *bbox, int *flags)
     return AY_ENULL;
 
   light = (ay_light_object *)o->refine;
+
+  if(!light)
+    return AY_ENULL;
 
   ay_light_getfromto(light, from, to, &has_from, &has_to);
 
@@ -1125,6 +1140,9 @@ ay_light_notifycb(ay_object *o)
     return AY_ENULL;
 
   light = (ay_light_object *)(o->refine);
+
+  if(!light)
+    return AY_ENULL;
 
   /* warn user, if light shader exists but type is not custom */
   if((light->type != AY_LITCUSTOM) && light->lshader)
