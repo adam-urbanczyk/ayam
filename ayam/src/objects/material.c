@@ -262,10 +262,13 @@ ay_material_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  int stringlen = 0;
  char fname[] = "setmaterial";
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   material = (ay_mat_object *)o->refine;
+
+  if(!material)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
 
@@ -419,10 +422,13 @@ ay_material_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  ay_mat_object *material = NULL, *mat = NULL;
  char *name = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   material = (ay_mat_object *)(o->refine);
+
+  if(!material)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
 
@@ -556,7 +562,7 @@ ay_material_readcb(FILE *fileptr, ay_object *o)
  char *newname;
  int newindex = 2;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   if(!(material = calloc(1, sizeof(ay_mat_object))))
@@ -685,10 +691,13 @@ ay_material_writecb(FILE *fileptr, ay_object *o)
 {
  ay_mat_object *material = NULL;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   material = (ay_mat_object *)(o->refine);
+
+  if(!material)
+    return AY_ENULL;
 
   fprintf(fileptr, "%d\n", material->registered);
 
@@ -818,6 +827,9 @@ ay_material_dropcb(ay_object *o)
     }
 
   mat = (ay_mat_object *)o->refine;
+
+  if(!mat)
+    return AY_ENULL;
 
   ay_status = ay_matt_getmaterial(o->name, &regmat);
   if(ay_status || (regmat != mat))

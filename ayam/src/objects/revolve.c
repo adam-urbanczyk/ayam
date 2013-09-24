@@ -197,6 +197,9 @@ ay_revolve_drawhcb(struct Togl *togl, ay_object *o)
 
   revolve = (ay_revolve_object *) o->refine;
 
+  if(!revolve)
+    return AY_ENULL;
+
   if(revolve->npatch)
     {
       patch = (ay_nurbpatch_object *)revolve->npatch->refine;
@@ -235,6 +238,9 @@ ay_revolve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   revolve = (ay_revolve_object *)o->refine;
 
+  if(!revolve)
+    return AY_ENULL;
+
   if(revolve->npatch)
     {
       patch = (ay_nurbpatch_object *)revolve->npatch->refine;
@@ -258,10 +264,13 @@ ay_revolve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_revolve_object *revolve = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   revolve = (ay_revolve_object *)o->refine;
+
+  if(!revolve)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
@@ -325,15 +334,16 @@ ay_revolve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_revolve_object *revolve = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   revolve = (ay_revolve_object *)(o->refine);
 
+  if(!revolve)
+    return AY_ENULL;
+
   toa = Tcl_NewStringObj(n1,-1);
-
   ton = Tcl_NewStringObj(n1,-1);
-
 
   Tcl_SetStringObj(ton,"ThetaMax",-1);
   to = Tcl_NewDoubleObj(revolve->thetamax);
@@ -394,8 +404,8 @@ ay_revolve_readcb(FILE *fileptr, ay_object *o)
 {
  ay_revolve_object *revolve = NULL;
 
- if(!o)
-   return AY_ENULL;
+  if(!fileptr || !o)
+    return AY_ENULL;
 
   if(!(revolve = calloc(1, sizeof(ay_revolve_object))))
     { return AY_EOMEM; }
@@ -429,10 +439,13 @@ ay_revolve_writecb(FILE *fileptr, ay_object *o)
 {
  ay_revolve_object *revolve = NULL;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   revolve = (ay_revolve_object *)(o->refine);
+
+  if(!revolve)
+    return AY_ENULL;
 
   fprintf(fileptr, "%g\n", revolve->thetamax);
   fprintf(fileptr, "%d\n", revolve->has_upper_cap);
@@ -460,6 +473,9 @@ ay_revolve_wribcb(char *file, ay_object *o)
    return AY_ENULL;
 
   revolve = (ay_revolve_object*)o->refine;
+
+  if(!revolve)
+    return AY_ENULL;
 
   if(revolve->npatch)
     ay_wrib_toolobject(file, revolve->npatch, o);
@@ -492,6 +508,9 @@ ay_revolve_bbccb(ay_object *o, double *bbox, int *flags)
     return AY_ENULL;
 
   revolve = (ay_revolve_object *)o->refine;
+
+  if(!revolve)
+    return AY_ENULL;
 
   if(revolve->npatch)
     {
@@ -1105,6 +1124,9 @@ ay_revolve_notifycb(ay_object *o)
 
   revolve = (ay_revolve_object *)(o->refine);
 
+  if(!revolve)
+    return AY_ENULL;
+
   mode = revolve->display_mode;
   tolerance = revolve->glu_sampling_tolerance;
 
@@ -1271,6 +1293,9 @@ ay_revolve_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   r = (ay_revolve_object *) o->refine;
 
+  if(!r)
+    return AY_ENULL;
+
   if(type == AY_IDNPATCH)
     {
       t = &(new);
@@ -1388,6 +1413,9 @@ ay_revolve_convertcb(ay_object *o, int in_place)
   /* first, create new objects */
 
   r = (ay_revolve_object *) o->refine;
+
+  if(!r)
+    return AY_ENULL;
 
   if((r->upper_cap) || (r->lower_cap) || (r->start_cap) || (r->end_cap))
     {

@@ -199,10 +199,13 @@ ay_riproc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  ay_riproc_object *riproc = NULL;
  char *result = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   riproc = (ay_riproc_object *)o->refine;
+
+  if(!riproc)
+    return AY_ENULL;
 
   if(riproc->file)
     {
@@ -275,10 +278,13 @@ ay_riproc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_riproc_object *riproc = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   riproc = (ay_riproc_object *)(o->refine);
+
+  if(!riproc)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
 
@@ -286,7 +292,6 @@ ay_riproc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(riproc->file)
     Tcl_SetVar2(interp,n1,"File",riproc->file,TCL_LEAVE_ERR_MSG |
 		TCL_GLOBAL_ONLY);
-
 
   Tcl_SetVar2(interp,n1,"Data","",TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   if(riproc->data)
@@ -330,7 +335,7 @@ ay_riproc_readcb(FILE *fileptr, ay_object *o)
  int ay_status = AY_OK;
  ay_riproc_object *riproc = NULL;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   if(!(riproc = calloc(1, sizeof(ay_riproc_object))))
@@ -369,10 +374,13 @@ ay_riproc_writecb(FILE *fileptr, ay_object *o)
 {
  ay_riproc_object *riproc = NULL;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   riproc = (ay_riproc_object *)(o->refine);
+
+  if(!riproc)
+    return AY_ENULL;
 
   fprintf(fileptr, "%g\n", riproc->minx);
   fprintf(fileptr, "%g\n", riproc->maxx);
@@ -467,6 +475,9 @@ ay_riproc_bbccb(ay_object *o, double *bbox, int *flags)
     return AY_ENULL;
 
   riproc = (ay_riproc_object *)o->refine;
+
+  if(!riproc)
+    return AY_ENULL;
 
   /* P1 */
   bbox[0] = riproc->minx; bbox[1] = riproc->maxy; bbox[2] = riproc->maxz;

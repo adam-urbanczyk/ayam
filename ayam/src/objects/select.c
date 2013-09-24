@@ -80,7 +80,10 @@ ay_select_deletecb(void *c)
 int
 ay_select_copycb(void *src, void **dst)
 {
-  ay_select_object *select = NULL, *selectsrc = NULL;
+ ay_select_object *select = NULL, *selectsrc = NULL;
+
+  if(!src || !dst)
+    return AY_ENULL;
 
   selectsrc = (ay_select_object *)src;
 
@@ -177,6 +180,9 @@ ay_select_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   select = (ay_select_object *)o->refine;
 
+  if(!select)
+    return AY_ENULL;
+
   toa = Tcl_NewStringObj(n1,-1);
 
   ton = Tcl_NewStringObj("Indices",-1);
@@ -235,6 +241,9 @@ ay_select_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   select = (ay_select_object *)o->refine;
+
+  if(!select)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
 
@@ -308,6 +317,9 @@ ay_select_writecb(FILE *fileptr, ay_object *o)
 
   select = (ay_select_object *)(o->refine);
 
+  if(!select)
+    return AY_ENULL;
+
   if(select->indices)
     fprintf(fileptr, "0\n%s\n", select->indices);
   else
@@ -369,6 +381,9 @@ ay_select_notifycb(ay_object *o)
 
   select = (ay_select_object *)o->refine;
 
+  if(!select)
+    return AY_ENULL;
+
   /* if something changed below, the cached indices may be invalid now */
   if(select->seli)
     {
@@ -416,6 +431,9 @@ ay_select_providecb(ay_object *o, unsigned int type, ay_object **result)
     } /* if */
 
   sel = (ay_select_object *)o->refine;
+
+  if(!sel)
+    return AY_ENULL;
 
   if(!sel->indices)
     return AY_OK;

@@ -371,6 +371,9 @@ ay_parab_drawhcb(struct Togl *togl, ay_object *o)
 
   parab = (ay_paraboloid_object *) o->refine;
 
+  if(!parab)
+    return AY_ENULL;
+
   if(!parab->pnts)
     {
       if(!(pnts = calloc(AY_PPARAB*3, sizeof(double))))
@@ -414,6 +417,9 @@ ay_parab_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   parab = (ay_paraboloid_object *)o->refine;
 
+  if(!parab)
+    return AY_ENULL;
+
   if(!parab->pnts)
     {
       if(!(parab->pnts = calloc(AY_PPARAB*3, sizeof(double))))
@@ -439,10 +445,13 @@ ay_parab_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  int itemp = 0;
  double dtemp = 0.0;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   parab = (ay_paraboloid_object *)o->refine;
+
+  if(!parab)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
@@ -504,10 +513,13 @@ ay_parab_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_paraboloid_object *parab = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   parab = (ay_paraboloid_object *)(o->refine);
+
+  if(!parab)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
@@ -547,8 +559,9 @@ ay_parab_readcb(FILE *fileptr, ay_object *o)
 {
  ay_paraboloid_object *parab = NULL;
  int itemp = 0;
- if(!o)
-   return AY_ENULL;
+
+  if(!fileptr || !o)
+    return AY_ENULL;
 
   if(!(parab = calloc(1, sizeof(ay_paraboloid_object))))
     { return AY_EOMEM; }
@@ -575,10 +588,13 @@ ay_parab_writecb(FILE *fileptr, ay_object *o)
 {
  ay_paraboloid_object *parab = NULL;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   parab = (ay_paraboloid_object *)(o->refine);
+
+  if(!parab)
+    return AY_ENULL;
 
   fprintf(fileptr, "%d\n", (int)parab->closed);
   fprintf(fileptr, "%g\n", parab->rmax);
@@ -606,6 +622,9 @@ ay_parab_wribcb(char *file, ay_object *o)
    return AY_ENULL;
 
   paraboloid = (ay_paraboloid_object*)o->refine;
+
+  if(!paraboloid)
+    return AY_ENULL;
 
   if(!paraboloid->closed)
     {
@@ -703,6 +722,9 @@ ay_parab_bbccb(ay_object *o, double *bbox, int *flags)
 
   parab = (ay_paraboloid_object *)o->refine;
 
+  if(!parab)
+    return AY_ENULL;
+
   if(fabs(parab->thetamax) != 360.0)
     {
       if(!parab->pnts)
@@ -757,6 +779,9 @@ ay_paraboloid_notifycb(ay_object *o)
     return AY_ENULL;
 
   parab = (ay_paraboloid_object *)o->refine;
+
+  if(!parab)
+    return AY_ENULL;
 
   if(parab->pnts)
     {
@@ -846,6 +871,9 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
     }
 
   paraboloid = (ay_paraboloid_object *) o->refine;
+
+  if(!paraboloid)
+    return AY_ENULL;
 
   if(type == AY_IDNPATCH)
     {
@@ -1157,6 +1185,9 @@ ay_paraboloid_convertcb(ay_object *o, int in_place)
     return AY_ENULL;
 
   paraboloid = (ay_paraboloid_object *) o->refine;
+
+  if(!paraboloid)
+    return AY_ENULL;
 
   /* first, create new object(s) */
 

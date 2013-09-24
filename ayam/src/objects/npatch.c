@@ -1352,14 +1352,22 @@ ay_npatch_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_npatch_drawacb(struct Togl *togl, ay_object *o)
 {
+ ay_nurbpatch_object *npatch = NULL;
  int width = 0, height = 0;
- ay_nurbpatch_object *patch = (ay_nurbpatch_object *)o->refine;
  double *cv = NULL;
 
-  width = patch->width;
-  height = patch->height;
+  if(!o)
+    return AY_ENULL;
 
-  cv = patch->controlv;
+  npatch = (ay_nurbpatch_object *)o->refine;
+
+  if(!npatch)
+    return AY_ENULL;
+
+  width = npatch->width;
+  height = npatch->height;
+
+  cv = npatch->controlv;
 
   /* draw arrow */
   ay_draw_arrow(togl, &(cv[width*height*4-8]), &(cv[width*height*4-4]));
@@ -1378,18 +1386,21 @@ ay_npatch_drawhcb(struct Togl *togl, ay_object *o)
  double *pnts;
  double point_size = ay_prefs.handle_size;
  ay_mpoint *mp;
- ay_nurbpatch_object *patch;
+ ay_nurbpatch_object *npatch;
 
   if(!o)
     return AY_ENULL;
 
-  patch = (ay_nurbpatch_object *)o->refine;
+  npatch = (ay_nurbpatch_object *)o->refine;
 
-  pnts = patch->controlv;
+  if(!npatch)
+    return AY_ENULL;
+
+  pnts = npatch->controlv;
 
   /* draw normal points */
   glBegin(GL_POINTS);
-   for(i = 0; i < (patch->width * patch->height); i++)
+   for(i = 0; i < (npatch->width * npatch->height); i++)
      {
        glVertex3dv((GLdouble *)pnts);
        pnts += 4;
@@ -1397,11 +1408,11 @@ ay_npatch_drawhcb(struct Togl *togl, ay_object *o)
   glEnd();
 
   /* draw multiple points */
-  if(patch->mpoints)
+  if(npatch->mpoints)
     {
       glPointSize((GLfloat)(point_size*1.25));
       glBegin(GL_POINTS);
-       mp = patch->mpoints;
+       mp = npatch->mpoints;
        while(mp)
 	 {
 	   glVertex3dv((GLdouble *)(mp->points[0]));
@@ -1434,6 +1445,9 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     return AY_ENULL;
 
   npatch = (ay_nurbpatch_object *)(o->refine);
+
+  if(!npatch)
+    return AY_ENULL;
 
   if(min_dist == 0.0)
     min_dist = DBL_MAX;
@@ -1611,6 +1625,9 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   npatch = (ay_nurbpatch_object *)o->refine;
+
+  if(!npatch)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
@@ -1970,10 +1987,11 @@ ay_npatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   npatch = (ay_nurbpatch_object *)(o->refine);
 
+  if(!npatch)
+    return AY_ENULL;
+
   toa = Tcl_NewStringObj(n1,-1);
-
   ton = Tcl_NewStringObj(n1,-1);
-
 
   Tcl_SetStringObj(ton,"Width",-1);
   to = Tcl_NewIntObj(npatch->width);
@@ -2079,7 +2097,7 @@ ay_npatch_readcb(FILE *fileptr, ay_object *o)
  ay_nurbpatch_object *npatch = NULL;
  int i, a;
 
- if(!o)
+ if(!fileptr || !o)
    return AY_ENULL;
 
   if(!(npatch = calloc(1, sizeof(ay_nurbpatch_object))))
@@ -2181,10 +2199,13 @@ ay_npatch_writecb(FILE *fileptr, ay_object *o)
  ay_nurbpatch_object *npatch = NULL;
  int i, a;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   npatch = (ay_nurbpatch_object *)(o->refine);
+
+  if(!npatch)
+    return AY_ENULL;
 
   fprintf(fileptr, "%d\n", npatch->width);
   fprintf(fileptr, "%d\n", npatch->height);
@@ -2645,6 +2666,9 @@ ay_npatch_wribcb(char *file, ay_object *o)
 
   patch = (ay_nurbpatch_object*)(o->refine);
 
+  if(!patch)
+    return AY_ENULL;
+
   nu = (RtInt)patch->width;
   uorder = (RtInt)patch->uorder;
   nv = (RtInt)patch->height;
@@ -2748,20 +2772,25 @@ ay_npatch_wribcb(char *file, ay_object *o)
       parms[0] = (RtPointer)controls;
 
       n = 1;
-      ay_pv_filltokpar(o, AY_TRUE, 1, &n, tokens, parms);
+      ay_status = ay_pv_filltokpar(o, AY_TRUE, 1, &n, tokens, parms);
 
-      RiNuPatchV(nu, uorder, uknots,
-		 /*(RtFloat)uknots[uorder-1], (RtFloat)uknots[nu],*/
-		 umin, umax,
-		 nv, vorder, vknots,
-		 /*(RtFloat)vknots[vorder-1], (RtFloat)vknots[nv],*/
-		 vmin, vmax,
-		 (RtInt)n, tokens, parms);
+      if(!ay_status)
+	{
+	  RiNuPatchV(nu, uorder, uknots,
+		     /*(RtFloat)uknots[uorder-1], (RtFloat)uknots[nu],*/
+		     umin, umax,
+		     nv, vorder, vknots,
+		     /*(RtFloat)vknots[vorder-1], (RtFloat)vknots[nv],*/
+		     vmin, vmax,
+		     (RtInt)n, tokens, parms);
+	}
 
       for(i = 1; i < n; i++)
 	{
-	  free(tokens[i]);
-	  free(parms[i]);
+	  if(tokens[i])
+	    free(tokens[i]);
+	  if(parms[i])
+	    free(parms[i]);
 	}
 
       free(tokens);
@@ -2801,6 +2830,9 @@ ay_npatch_bbccb(ay_object *o, double *bbox, int *flags)
 
   npatch = (ay_nurbpatch_object *)o->refine;
 
+  if(!npatch)
+    return AY_ENULL;
+
   /* exclusive bounding box, discard children/trim curves bbox */
   *flags = 1;
 
@@ -2828,6 +2860,9 @@ ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
     return AY_ENULL;
 
   npatch = (ay_nurbpatch_object *)(o->refine);
+
+  if(!npatch)
+    return AY_ENULL;
 
   if(!result)
     {
@@ -2897,6 +2932,9 @@ ay_npatch_convertcb(ay_object *o, int in_place)
 
   npatch = (ay_nurbpatch_object *)(o->refine);
 
+  if(!npatch)
+    return AY_ENULL;
+
   if(npatch->caps_and_bevels)
     {
       if(!(new = calloc(1, sizeof(ay_object))))
@@ -2963,6 +3001,9 @@ ay_npatch_notifycb(ay_object *o)
 
   npatch = (ay_nurbpatch_object *)(o->refine);
 
+  if(!npatch)
+    return AY_ENULL;
+
   if(npatch->caps_and_bevels)
     {
       (void)ay_object_deletemulti(npatch->caps_and_bevels);
@@ -2985,11 +3026,11 @@ ay_npatch_notifycb(ay_object *o)
       ay_bevelt_parsetags(o->tags, &bparams);
       ay_capt_parsetags(o->tags, &cparams);
 
-      /* silently avoid bevel & cap integration */
+      /* silently avoid bevel & cap integration... */
       for(i = 0; i < 4; i++)
 	{
 	  bparams.integrate[i] = AY_FALSE;
-	  /* still allow integration of a cap into a bevel surface */
+	  /* ...but still allow integration of a cap into a bevel surface */
 	  if(!bparams.states[i])
 	    {
 	      cparams.integrate[i] = AY_FALSE;

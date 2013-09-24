@@ -224,6 +224,9 @@ ay_ncircle_drawacb(struct Togl *togl, ay_object *o)
 
   ncircle = (ay_ncircle_object *) o->refine;
 
+  if(!ncircle)
+    return AY_ENULL;
+
   if(ncircle && ncircle->ncurve)
     {
       /* get NURBS curve */
@@ -254,7 +257,10 @@ ay_ncircle_drawhcb(struct Togl *togl, ay_object *o)
 
   ncircle = (ay_ncircle_object *) o->refine;
 
-  if(ncircle && ncircle->ncurve)
+  if(!ncircle)
+    return AY_ENULL;
+
+  if(ncircle->ncurve)
     {
       /* get NURBS curve */
       curve = (ay_nurbcurve_object *)ncircle->ncurve->refine;
@@ -317,10 +323,13 @@ ay_ncircle_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_ncircle_object *ncircle = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   ncircle = (ay_ncircle_object *)o->refine;
+
+  if(!ncircle)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
@@ -368,13 +377,15 @@ ay_ncircle_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_ncircle_object *ncircle = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   ncircle = (ay_ncircle_object *)(o->refine);
 
-  toa = Tcl_NewStringObj(n1,-1);
+  if(!ncircle)
+    return AY_ENULL;
 
+  toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
   Tcl_SetStringObj(ton,"Radius",-1);
@@ -418,7 +429,7 @@ ay_ncircle_readcb(FILE *fileptr, ay_object *o)
 {
  ay_ncircle_object *ncircle = NULL;
 
- if(!o)
+ if(!fileptr || !o)
    return AY_ENULL;
 
   if(!(ncircle = calloc(1, sizeof(ay_ncircle_object))))
@@ -444,10 +455,13 @@ ay_ncircle_writecb(FILE *fileptr, ay_object *o)
 {
  ay_ncircle_object *ncircle = NULL;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   ncircle = (ay_ncircle_object *)(o->refine);
+
+  if(!ncircle)
+    return AY_ENULL;
 
   fprintf(fileptr, "%g\n", ncircle->radius);
   fprintf(fileptr, "%g\n", ncircle->tmin);
@@ -490,6 +504,9 @@ ay_ncircle_bbccb(ay_object *o, double *bbox, int *flags)
 
   ncircle = (ay_ncircle_object *)o->refine;
 
+  if(!ncircle)
+    return AY_ENULL;
+
   if(ncircle->ncurve)
     {
       ay_bbc_get(ncircle->ncurve, bbox);
@@ -521,6 +538,9 @@ ay_ncircle_notifycb(ay_object *o)
     return AY_ENULL;
 
   ncircle = (ay_ncircle_object *)(o->refine);
+
+  if(!ncircle)
+    return AY_ENULL;
 
   if(ncircle->ncurve)
     (void)ay_object_delete(ncircle->ncurve);
@@ -608,6 +628,9 @@ ay_ncircle_convertcb(ay_object *o, int in_place)
 
   ncircle = (ay_ncircle_object *) o->refine;
 
+  if(!ncircle)
+    return AY_ENULL;
+
   if(ncircle->ncurve)
     {
       ay_status = ay_object_copy(ncircle->ncurve, &new);
@@ -661,6 +684,9 @@ ay_ncircle_providecb(ay_object *o, unsigned int type, ay_object **result)
     }
 
   ncircle = (ay_ncircle_object *) o->refine;
+
+  if(!ncircle)
+    return AY_ENULL;
 
   if(type == AY_IDNCURVE)
     {

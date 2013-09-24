@@ -184,6 +184,9 @@ ay_offnp_drawacb(struct Togl *togl, ay_object *o)
 
   offnp = (ay_offnp_object *)o->refine;
 
+  if(!offnp)
+    return AY_ENULL;
+
   if(offnp->npatch)
     {
       /* get NURBS patch */
@@ -224,6 +227,9 @@ ay_offnp_drawhcb(struct Togl *togl, ay_object *o)
     return AY_ENULL;
 
   offnp = (ay_offnp_object *) o->refine;
+
+  if(!offnp)
+    return AY_ENULL;
 
   if(offnp->npatch)
     {
@@ -275,6 +281,9 @@ ay_offnp_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   offnp = (ay_offnp_object *)o->refine;
 
+  if(!offnp)
+    return AY_ENULL;
+
   if(offnp->npatch)
     {
       patch = (ay_nurbpatch_object *)offnp->npatch->refine;
@@ -298,10 +307,13 @@ ay_offnp_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_offnp_object *offnp = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   offnp = (ay_offnp_object *)o->refine;
+
+  if(!offnp)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
@@ -345,13 +357,15 @@ ay_offnp_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_offnp_object *offnp = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   offnp = (ay_offnp_object *)(o->refine);
 
-  toa = Tcl_NewStringObj(n1,-1);
+  if(!offnp)
+    return AY_ENULL;
 
+  toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
   Tcl_SetStringObj(ton,"Mode",-1);
@@ -391,7 +405,7 @@ ay_offnp_readcb(FILE *fileptr, ay_object *o)
 {
  ay_offnp_object *offnp = NULL;
 
- if(!o)
+ if(!fileptr || !o)
    return AY_ENULL;
 
   if(!(offnp = calloc(1, sizeof(ay_offnp_object))))
@@ -416,10 +430,13 @@ ay_offnp_writecb(FILE *fileptr, ay_object *o)
 {
  ay_offnp_object *offnp = NULL;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   offnp = (ay_offnp_object *)(o->refine);
+
+  if(!offnp)
+    return AY_ENULL;
 
   fprintf(fileptr, "%d\n", offnp->mode);
   fprintf(fileptr, "%g\n", offnp->offset);
@@ -443,6 +460,9 @@ ay_offnp_wribcb(char *file, ay_object *o)
    return AY_ENULL;
 
   offnp = (ay_offnp_object*)o->refine;
+
+  if(!offnp)
+    return AY_ENULL;
 
   if(offnp->npatch)
     ay_wrib_toolobject(file, offnp->npatch, o);
@@ -470,6 +490,9 @@ ay_offnp_bbccb(ay_object *o, double *bbox, int *flags)
     return AY_ENULL;
 
   offnp = (ay_offnp_object *)o->refine;
+
+  if(!offnp)
+    return AY_ENULL;
 
   if(offnp->npatch)
     {
@@ -505,6 +528,9 @@ ay_offnp_notifycb(ay_object *o)
     return AY_ENULL;
 
   offnp = (ay_offnp_object *)(o->refine);
+
+  if(!offnp)
+    return AY_ENULL;
 
   mode = offnp->display_mode;
   tolerance = offnp->glu_sampling_tolerance;
@@ -670,6 +696,9 @@ ay_offnp_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   b = (ay_offnp_object *) o->refine;
 
+  if(!b)
+    return AY_ENULL;
+
  return ay_provide_nptoolobj(o, type, b->npatch, b->caps_and_bevels, result);
 } /* ay_offnp_providecb */
 
@@ -686,6 +715,9 @@ ay_offnp_convertcb(ay_object *o, int in_place)
     return AY_ENULL;
 
   b = (ay_offnp_object *) o->refine;
+
+  if(!b)
+    return AY_ENULL;
 
  return ay_convert_nptoolobj(o, b->npatch, b->caps_and_bevels, in_place);
 } /* ay_offnp_convertcb */

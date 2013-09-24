@@ -354,6 +354,9 @@ ay_torus_drawhcb(struct Togl *togl, ay_object *o)
 
   torus = (ay_torus_object *) o->refine;
 
+  if(!torus)
+    return AY_ENULL;
+
   if(!torus->pnts)
     {
       if(!(pnts = calloc(AY_PTORUS*3, sizeof(double))))
@@ -399,6 +402,9 @@ ay_torus_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   torus = (ay_torus_object *)o->refine;
 
+  if(!torus)
+    return AY_ENULL;
+
   if(!torus->pnts)
     {
       if(!(torus->pnts = calloc(AY_PTORUS*3, sizeof(double))))
@@ -422,10 +428,13 @@ ay_torus_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  ay_torus_object *torus = NULL;
  int itemp = 0;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   torus = (ay_torus_object *)o->refine;
+
+  if(!torus)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
@@ -476,13 +485,15 @@ ay_torus_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_torus_object *torus = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   torus = (ay_torus_object *)(o->refine);
 
-  toa = Tcl_NewStringObj(n1,-1);
+  if(!torus)
+    return AY_ENULL;
 
+  toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
   Tcl_SetStringObj(ton,"Closed",-1);
@@ -524,8 +535,9 @@ ay_torus_readcb(FILE *fileptr, ay_object *o)
 {
  ay_torus_object *torus = NULL;
  int itemp = 0;
- if(!o)
-   return AY_ENULL;
+
+  if(!fileptr || !o)
+    return AY_ENULL;
 
   if(!(torus = calloc(1, sizeof(ay_torus_object))))
     { return AY_EOMEM; }
@@ -552,10 +564,13 @@ ay_torus_writecb(FILE *fileptr, ay_object *o)
 {
  ay_torus_object *torus = NULL;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   torus = (ay_torus_object *)(o->refine);
+
+  if(!torus)
+    return AY_ENULL;
 
   fprintf(fileptr, "%d\n", (int)torus->closed);
   fprintf(fileptr, "%g\n", torus->majorrad);
@@ -583,6 +598,9 @@ ay_torus_wribcb(char *file, ay_object *o)
    return AY_ENULL;
 
   torus = (ay_torus_object*)o->refine;
+
+  if(!torus)
+    return AY_ENULL;
 
   if(!torus->closed)
     {
@@ -666,6 +684,9 @@ ay_torus_bbccb(ay_object *o, double *bbox, int *flags)
 
   t = (ay_torus_object *)o->refine;
 
+  if(!t)
+    return AY_ENULL;
+
   if((fabs(t->thetamax) != 360.0) || (fabs(t->phimax-t->phimin) != 360.0))
     {
       if(!t->pnts)
@@ -721,6 +742,9 @@ ay_torus_notifycb(ay_object *o)
     return AY_ENULL;
 
   torus = (ay_torus_object *)o->refine;
+
+  if(!torus)
+    return AY_ENULL;
 
   if(torus->pnts)
     {
@@ -796,6 +820,9 @@ ay_torus_providecb(ay_object *o, unsigned int type, ay_object **result)
     }
 
   torus = (ay_torus_object *) o->refine;
+
+  if(!torus)
+    return AY_ENULL;
 
   if(type == AY_IDNPATCH)
     {
@@ -1037,6 +1064,9 @@ ay_torus_convertcb(ay_object *o, int in_place)
     return AY_ENULL;
 
   torus = (ay_torus_object *) o->refine;
+
+  if(!torus)
+    return AY_ENULL;
 
   /* first, create new object(s) */
 
