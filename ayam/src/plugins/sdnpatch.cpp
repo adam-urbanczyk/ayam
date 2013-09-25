@@ -3178,10 +3178,13 @@ sdnpatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  sdnpatch_object *sdnpatch = NULL;
  int itemp = 0;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   sdnpatch = (sdnpatch_object *)o->refine;
+
+  if(!sdnpatch)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
@@ -3230,13 +3233,15 @@ sdnpatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  sdnpatch_object *sdnpatch = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   sdnpatch = (sdnpatch_object *)(o->refine);
 
-  toa = Tcl_NewStringObj(n1,-1);
+  if(!sdnpatch)
+    return AY_ENULL;
 
+  toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
   Tcl_SetStringObj(ton,"Degree",-1);
@@ -3278,7 +3283,7 @@ sdnpatch_readcb(FILE *fileptr, ay_object *o)
  KnotPrecision k;
  MeshBuilder *meshBuilder;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   if(!(sdnpatch = (sdnpatch_object*)calloc(1, sizeof(sdnpatch_object))))
@@ -3349,13 +3354,15 @@ sdnpatch_writecb(FILE *fileptr, ay_object *o)
  MeshFlattener *meshFlattener = NULL;
  FlatMeshHandler *handler = NULL;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   sdnpatch = (sdnpatch_object *)(o->refine);
 
-  fprintf(fileptr, "%d\n", sdnpatch->subdivDegree);
+  if(!sdnpatch)
+    return AY_ENULL;
 
+  fprintf(fileptr, "%d\n", sdnpatch->subdivDegree);
   fprintf(fileptr, "%d\n", sdnpatch->subdivLevel);
 
   /* write the control mesh using the AyWriter MeshFlattener handler */
@@ -3484,6 +3491,9 @@ sdnpatch_notifycb(ay_object *o)
 
   sdnpatch = (sdnpatch_object *)(o->refine);
 
+  if(!sdnpatch)
+    return AY_ENULL;
+
   /* manage potentially modified control points */
   if(o->selp)
     {
@@ -3566,6 +3576,9 @@ sdnpatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   sdnpatch = (sdnpatch_object *) o->refine;
 
+  if(!sdnpatch)
+    return AY_ENULL;
+
   if(type == AY_IDPOMESH)
     {
 
@@ -3622,6 +3635,9 @@ sdnpatch_convertcb(ay_object *o, int in_place)
   /* first, create new objects */
 
   sdnpatch = (sdnpatch_object *) o->refine;
+
+  if(!sdnpatch)
+    return AY_ENULL;
 
   if(sdnpatch->subdivMesh)
     {
