@@ -216,6 +216,9 @@ sfcurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   sfcurve = (sfcurve_object *)o->refine;
 
+  if(!sfcurve)
+    return AY_ENULL;
+
   if(sfcurve->ncurve)
     {
       ncurve = (ay_nurbcurve_object*)sfcurve->ncurve->refine;
@@ -242,10 +245,13 @@ sfcurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  sfcurve_object *sfcurve = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   sfcurve = (sfcurve_object *)o->refine;
+
+  if(!sfcurve)
+    return AY_ENULL;
 
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
@@ -325,15 +331,16 @@ sfcurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  sfcurve_object *sfcurve = NULL;
 
-  if(!o)
+  if(!interp || !o)
     return AY_ENULL;
 
   sfcurve = (sfcurve_object *)(o->refine);
 
+  if(!sfcurve)
+    return AY_ENULL;
+
   toa = Tcl_NewStringObj(n1,-1);
-
   ton = Tcl_NewStringObj(n1,-1);
-
 
   Tcl_SetStringObj(ton,"Sections",-1);
   to = Tcl_NewIntObj(sfcurve->sections);
@@ -392,7 +399,7 @@ sfcurve_readcb(FILE *fileptr, ay_object *o)
 {
  sfcurve_object *sfcurve = NULL;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   if(!(sfcurve = calloc(1, sizeof(sfcurve_object))))
@@ -425,10 +432,13 @@ sfcurve_writecb(FILE *fileptr, ay_object *o)
 {
  sfcurve_object *sfcurve = NULL;
 
-  if(!o)
+  if(!fileptr || !o)
     return AY_ENULL;
 
   sfcurve = (sfcurve_object *)(o->refine);
+
+  if(!sfcurve)
+    return AY_ENULL;
 
   fprintf(fileptr, "%d\n", sfcurve->sections);
   fprintf(fileptr, "%d\n", sfcurve->order);
@@ -464,6 +474,9 @@ sfcurve_bbccb(ay_object *o, double *bbox, int *flags)
     return AY_ENULL;
 
   sfcurve = (sfcurve_object *)o->refine;
+
+  if(!sfcurve)
+    return AY_ENULL;
 
   if(sfcurve->ncurve)
     {
@@ -543,6 +556,9 @@ sfcurve_notifycb(ay_object *o)
     return AY_ENULL;
 
   sfcurve = (sfcurve_object *)(o->refine);
+
+  if(!sfcurve)
+    return AY_ENULL;
 
   /* remove old NURBS curve */
   ay_object_delete(sfcurve->ncurve);
@@ -638,6 +654,9 @@ sfcurve_convertcb(ay_object *o, int in_place)
 
   sfc = (sfcurve_object *) o->refine;
 
+  if(!sfc)
+    return AY_ENULL;
+
   if(sfc->ncurve)
     {
       ay_status = ay_object_copy(sfc->ncurve, &new);
@@ -692,6 +711,9 @@ sfcurve_providecb(ay_object *o, unsigned int type, ay_object **result)
     }
 
   sfc = (sfcurve_object *) o->refine;
+
+  if(!sfc)
+    return AY_ENULL;
 
   if(type == AY_IDNCURVE)
     {
