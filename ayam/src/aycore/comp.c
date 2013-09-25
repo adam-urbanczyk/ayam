@@ -1630,26 +1630,32 @@ ay_comp_register(ay_comparecb *compcb, unsigned int type_id)
 int
 ay_comp_objects(ay_object *o1, ay_object *o2)
 {
- int ay_status = AY_OK;
+ int result = AY_FALSE;
  /* char fname[] = "comp_objects";*/
  ay_voidfp *arr = NULL;
  ay_comparecb *cb = NULL;
 
-  /* call the comp callback */
-  arr = ay_comparecbt.arr;
-  cb = (ay_comparecb *)(arr[o1->type]);
-  if(cb)
-    {
-      ay_status = cb(o1, o2);
-    }
-  /*
-    else
-    {
-    ay_error(AY_EWARN, fname, "No compare callback registered!");
-    }
-  */
+  if(!o1 || !o2)
+    return AY_FALSE;
 
- return ay_status;
+  if(o1->refine && o2->refine)
+    {
+      /* call the comparison callback */
+      arr = ay_comparecbt.arr;
+      cb = (ay_comparecb *)(arr[o1->type]);
+      if(cb)
+	{
+	  result = cb(o1, o2);
+	}
+      /*
+	else
+	{
+	ay_error(AY_EWARN, fname, "No compare callback registered!");
+	}
+      */
+    }
+
+ return result;
 } /* ay_comp_objects */
 
 
