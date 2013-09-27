@@ -1054,75 +1054,10 @@ metaobj_convertcb(ay_object *o, int in_place)
 } /* metaobj_convertcb */
 
 
-/* note: this function _must_ be capitalized exactly this way
- * regardless of filename (see: man n load)!
- */
-#ifdef WIN32
-  __declspec (dllexport)
-#endif /* WIN32 */
-int
-Metaobj_Init (Tcl_Interp * interp)
-{
- int ay_status = AY_OK;
- char fname[] = "metaobj_init";
- char success_cmd[] =
-   "puts stdout \"Custom object \\\"MetaObj\\\" successfully loaded.\"\n";
-
-#ifdef WIN32
-  if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
-    {
-      return TCL_ERROR;
-    }
-#endif /* WIN32 */
-
-  ay_status = ay_otype_register (metaobj_name,
-				 metaobj_createcb,
-				 metaobj_deletecb,
-				 metaobj_copycb,
-				 metaobj_drawcb,
-				 NULL,	/* no points to edit */
-				 metaobj_shadecb,
-				 metaobj_setpropcb,
-				 metaobj_getpropcb,
-				 NULL,	/* No Picking! */
-				 metaobj_readcb,
-				 metaobj_writecb,
-				 metaobj_wribcb,
-				 metaobj_bbccb,
-				 &metaobj_id);
-
-  ay_status += ay_notify_register (metaobj_notifycb, metaobj_id);
-
-  ay_status += ay_convert_register(metaobj_convertcb, metaobj_id);
-
-  ay_status += ay_provide_register(metaobj_providecb, metaobj_id);
-
-  if (ay_status)
-    {
-      ay_error (AY_ERROR, fname, "Error registering custom object!");
-      return TCL_OK;
-    }
-
-  /* first Metacomp init */
-  Metacomp_Init (interp);
-
-  /* source metaobj.tcl, it contains the Tcl-code to build
-     the metaobj-Attributes Property GUI */
-  if ((Tcl_EvalFile (interp, "metaobj.tcl")) != TCL_OK)
-    {
-      ay_error (AY_ERROR, fname, "Error while sourcing \\\"metaobj.tcl\\\"!");
-      return TCL_OK;
-    }
-
-  Tcl_Eval (interp, success_cmd);
-
- return TCL_OK;
-} /* Metaobj_Init */
-
-
 /**************************************************************************
  * Metacomp part
  *************************************************************************/
+
 
 int
 metacomp_createcb (int argc, char *argv[], ay_object * o)
@@ -1245,15 +1180,15 @@ metacomp_setpropcb (Tcl_Interp * interp, int argc, char *argv[],
  meta_blob *b = NULL;
 
   if (!o)
-    {
-      return AY_ENULL;
-    }
+    return AY_ENULL;
 
   b = (meta_blob *) o->refine;
 
+  if(!b)
+    return AY_ENULL;
+
   toa = Tcl_NewStringObj (n1, -1);
   ton = Tcl_NewStringObj (n1, -1);
-
 
   Tcl_SetStringObj (ton, "Formula", -1);
   to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -1351,10 +1286,11 @@ metacomp_getpropcb (Tcl_Interp * interp, int argc, char *argv[],
 
   b = (meta_blob *) (o->refine);
 
+  if(!b)
+    return AY_ENULL;
+
   toa = Tcl_NewStringObj (n1, -1);
-
   ton = Tcl_NewStringObj (n1, -1);
-
 
   Tcl_SetStringObj (ton, "Radius", -1);
   to = Tcl_NewDoubleObj (b->r);
@@ -1471,7 +1407,7 @@ metacomp_readcb (FILE * fileptr, ay_object * o)
  int read;
  char *expr = NULL;
 
-  if (!o)
+  if (!fileptr || !o)
     return AY_ENULL;
 
   if (!(b = calloc (1, sizeof (meta_blob))))
@@ -1517,10 +1453,13 @@ metacomp_writecb (FILE * fileptr, ay_object * o)
 {
  meta_blob *b;
 
-  if (!o)
+  if (!fileptr || !o)
     return AY_ENULL;
 
   b = (meta_blob *) (o->refine);
+
+  if(!b)
+    return AY_ENULL;
 
   fprintf (fileptr, "%g\n", b->r);
   fprintf (fileptr, "%g\n", b->p.x);
@@ -1547,18 +1486,45 @@ metacomp_writecb (FILE * fileptr, ay_object * o)
  return AY_OK;
 } /* metacomp_writecb */
 
+
 /* note: this function _must_ be capitalized exactly this way
  * regardless of filename (see: man n load)!
  */
+#ifdef WIN32
+  __declspec (dllexport)
+#endif /* WIN32 */
 int
-Metacomp_Init (Tcl_Interp * interp)
+Metaobj_Init (Tcl_Interp * interp)
 {
  int ay_status = AY_OK;
- char fname[] = "metacomp_init";
+ char fname[] = "metaobj_init";
  char success_cmd[] =
-   "puts stdout \"Custom object \\\"MetaComp\\\" successfully loaded.\"\n";
+   "puts stdout \"Custom object \\\"MetaObj\\\" successfully loaded.\"\n";
 
-  ay_status = ay_otype_register (metacomp_name,
+#ifdef WIN32
+  if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
+    {
+      return TCL_ERROR;
+    }
+#endif /* WIN32 */
+
+  ay_status = ay_otype_register (metaobj_name,
+				 metaobj_createcb,
+				 metaobj_deletecb,
+				 metaobj_copycb,
+				 metaobj_drawcb,
+				 NULL,	/* no points to edit */
+				 metaobj_shadecb,
+				 metaobj_setpropcb,
+				 metaobj_getpropcb,
+				 NULL,	/* No Picking! */
+				 metaobj_readcb,
+				 metaobj_writecb,
+				 metaobj_wribcb,
+				 metaobj_bbccb,
+				 &metaobj_id);
+
+  ay_status += ay_otype_register (metacomp_name,
 				 metacomp_createcb,
 				 metacomp_deletecb,
 				 metacomp_copycb,
@@ -1574,6 +1540,12 @@ Metacomp_Init (Tcl_Interp * interp)
 				 NULL,	/* metacomp_bbccb, */
 				 &metacomp_id);
 
+  ay_status += ay_notify_register (metaobj_notifycb, metaobj_id);
+
+  ay_status += ay_convert_register(metaobj_convertcb, metaobj_id);
+
+  ay_status += ay_provide_register(metaobj_providecb, metaobj_id);
+
   if (ay_status)
     {
       ay_error (AY_ERROR, fname, "Error registering custom object!");
@@ -1581,6 +1553,14 @@ Metacomp_Init (Tcl_Interp * interp)
     }
 
   metautils_init(metacomp_id);
+
+  /* source metaobj.tcl, it contains the Tcl-code to build
+     the metaobj-Attributes Property GUI */
+  if ((Tcl_EvalFile (interp, "metaobj.tcl")) != TCL_OK)
+    {
+      ay_error (AY_ERROR, fname, "Error while sourcing \\\"metaobj.tcl\\\"!");
+      return TCL_OK;
+    }
 
   /* source metacomp.tcl, it contains the Tcl-code to build
      the metaobj-Attributes Property GUI */
@@ -1594,4 +1574,4 @@ Metacomp_Init (Tcl_Interp * interp)
   Tcl_Eval (interp, success_cmd);
 
  return TCL_OK;
-} /* Metacomp_Init */
+} /* Metaobj_Init */
