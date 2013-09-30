@@ -158,13 +158,11 @@ ay_draw_view(struct Togl *togl, int draw_offset)
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       glEnable(GL_LINE_SMOOTH);
       glDepthMask(GL_FALSE);
-      if(ay_prefs.aalinewidth != 1.0)
-	glLineWidth((GLfloat)ay_prefs.aalinewidth);
+      glLineWidth((GLfloat)ay_prefs.aalinewidth);
     }
   else
     {
-      if(ay_prefs.linewidth != 1.0)
-	glLineWidth((GLfloat)ay_prefs.linewidth);
+      glLineWidth((GLfloat)ay_prefs.linewidth);
     }
 
   if(view->drawlevel || view->type == AY_VTTRIM)
@@ -200,13 +198,11 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 
       if(view->antialiaslines)
 	{
-	  if(ay_prefs.aasellinewidth != 1.0)
-	    glLineWidth((GLfloat)ay_prefs.aasellinewidth);
+	  glLineWidth((GLfloat)ay_prefs.aasellinewidth);
 	}
       else
 	{
-	  if(ay_prefs.sellinewidth != 1.0)
-	    glLineWidth((GLfloat)ay_prefs.sellinewidth);
+	  glLineWidth((GLfloat)ay_prefs.sellinewidth);
 	}
 
       glPushMatrix();
@@ -366,17 +362,11 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 
   if(view->antialiaslines)
     {
-      if(ay_prefs.aalinewidth != 1.0)
-	glLineWidth((GLfloat)ay_prefs.aalinewidth);
-      else
-	glLineWidth((GLfloat)1.0f);
+      glLineWidth((GLfloat)ay_prefs.aalinewidth);
     }
   else
     {
-      if(ay_prefs.linewidth != 1.0)
-	glLineWidth((GLfloat)ay_prefs.linewidth);
-      else
-	glLineWidth((GLfloat)1.0f);
+      glLineWidth((GLfloat)ay_prefs.linewidth);
     }
 
   ay_draw_annos(togl, draw_offset);
@@ -855,11 +845,11 @@ ay_draw_arrow(struct Togl *togl, double *from, double *to)
       return;
     }
 
-  p1x = win1x+AY_POINTER;
-  p1y = win1y+AY_POINTER;
+  p1x = win1x+8;
+  p1y = win1y+8;
 
-  p2x = win1x+AY_POINTER;
-  p2y = win1y-AY_POINTER;
+  p2x = win1x+8;
+  p2y = win1y-8;
 
   if(win2x-win1x != 0.0)
     {
