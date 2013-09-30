@@ -1919,13 +1919,6 @@ extern char *ay_error_igntype;
 #define AY_CATGORDON 4 /**< Gordon Cap */
 /*@}*/
 
-
-/** size of arrows */
-#define AY_POINTER 8
-
-/** to avoid direct comparison of doubles with 0.0 */
-#define AY_EPSILON 1.0e-06
-
 /** \name Directions */
 /*@{*/
 #define AY_NORTH  0
@@ -1940,6 +1933,9 @@ extern char *ay_error_igntype;
 #define AY_YZ  1
 #define AY_XZ  2
 /*@}*/
+
+/** to avoid direct comparison of doubles with 0.0 */
+#define AY_EPSILON 1.0e-06
 
 /** \name Transcendent Tools */
 /*@{*/
