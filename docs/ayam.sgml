@@ -29,7 +29,7 @@ code example of 6 lines text (needs another 2 for the upper/lower lines)
  -->
 <article>
 
-<title>Ayam
+<title>Ayam</title>
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
@@ -49,6 +49,8 @@ There are HTML and PDF versions of this document prepared.
 
 In addition, one can use the provided SGML-source to generate other formats.
 </abstract>
+
+<header><lhead>bla</lhead><rhead>blubb</rhead></header>
 
 <toc>
 
@@ -10862,6 +10864,9 @@ If an operation executed successfully on an object, the selected
 points may be removed from the object. Then the notification
 of the object will be run. The notification of the parent object(s)
 will be run after processing of all selected objects finished.
+<p>
+Tools that create tool objects may use the clipboard to move the
+new children around, i.e. the clipboard contents are lost afterwards.
 
 <#if out=latex><x/newpage/</#if>
 <sect1>Curve Creation Tools
@@ -11429,13 +11434,13 @@ scripting interface command <ref id="scunclampnc" name="unclampNC">.
 <eps file="pics/inskn.ps" height="4cm">
 <img src="pics/inskn.gif">
 <caption>Insert Knot Tool (left: original curve, right: a knot has been
-inserted 1 time at t=0.5)</caption>
+inserted 1 time at u=0.5)</caption>
 </figure>
 <descrip>
 <tag/Arguments/ The insert knot tool takes a number of NURBS curves from
-the selection and requests two additional values, a parametric value t
+the selection and requests two additional values, a parametric value u
 and an integer value i.
-<tag/Operation/ The specified knot (t) will be inserted i
+<tag/Operation/ The specified knot value u will be inserted i
 times into the knot vector of the selected curves, without changing the
 shape of the curve(s).
 <tag/Notes/ The knot type of the curves will be changed to <tt/"Custom"/.
@@ -11767,7 +11772,7 @@ be swapped (width, height, and all other dimension related parameters
 will be exchanged) without altering the shape of the patches.
 
 <tag/Notes/
-The point selection will be removed from the original object.
+The point selection will be removed from the original objects.
 
 See also the documentation of the corresponding
 scripting interface command <ref id="scswapuvs" name="swapuvS">.
@@ -11809,7 +11814,7 @@ will be clamped automatically. The knot type of the patch will
 be changed to <tt/"Custom"/. New control points will be added and the position
 of old control points may be changed in the progress.
 
-The point selection will be removed from the original object.
+The point selection will be removed from the original objects.
 
 See also the documentation of the corresponding scripting interface commands
 <ref id="scelevateunp" name="elevateuNP"> and
@@ -11835,7 +11840,7 @@ control points will. The patch interpolates the first and the last control
 point afterwards. The knot types of the patch will be changed to type
 <tt/"Custom"/.
 
-The point selection will be removed from the original object.
+The point selection will be removed from the original objects.
 
 There are also tools available that clamp a patch in U or
 V direction only.
@@ -11865,7 +11870,7 @@ be changed to type <tt/"Custom"/.
 There are also tools available that unclamp a patch in U or
 V direction only.
 
-The point selection will be removed from the original object.
+The point selection will be removed from the original objects.
 
 See also the documentation of the corresponding scripting interface commands
 <ref id="scunclampunp" name="unclampuNP"> and
@@ -11891,7 +11896,7 @@ shape of the patches.
 
 This tool does not change the geometry of the patches.
 
-The point selection will be removed from the original object.
+The point selection will be removed from the original objects.
 
 See also the documentation of the corresponding scripting interface commands
 <ref id="scinsknunp" name="insknuNP"> and
@@ -11919,7 +11924,7 @@ value t, i.e.~use <tt/"-i 4"/ instead of <tt/"0.5"/).
 If the knot can not be removed <it/r/ times due to the tolerance given, an
 error is reported and the original surface is left unchanged.
 <tag/Notes/ If <it/tol/ is <tt/"0.0"/ the remove knot tool tries to
-work without changing the shape of the suface, i.e. only superfluous
+work without changing the shape of the surface, i.e. only superfluous
 knots will be removed.
 If <it/tol/ is <tt/"Inf"/ (infinity) the specified knot will be removed
 regardless of potential surface changes.
@@ -12113,40 +12118,40 @@ The PolyMesh objects created by the tesselation will immediately be
 displayed in all view windows instead of the original objects.
 Whenever tesselation method or parameters are changed, the tesselation
 will be recomputed and displayed, thus, allowing an immediate estimation
-of the tesselation quality.
+of the tesselation quality and the number of created polygonal elements.
 <p>
-If the preference option <tt>"Modelling/LazyNotify"</tt> is enabled,
+If the option <tt>"LazyUpdate"</tt> is enabled,
 updates of the tesselation that normally occur while dragging the
 slider(s) will be deferred until the mouse button is released.
 <p>
-If the <tt/"Ok"/ button is pressed to close the tesselation tool, all
-selected objects will be replaced by their tesselated
-counterparts; if <tt/"Cancel"/ is used, all selected objects remain
-unchanged.
+If the <tt/"Ok"/ button is pressed, the tesselation tool will be
+closed and all selected objects will be replaced by their tesselated
+counterparts.
 <p>
-If the check box <tt/"SaveToTag"/ is activated, closing the tesselation
-tool using <tt/"Cancel"/ will also add a <tt/"TP"/ tag containing
-the currently selected method and parameter value to all selected
-objects. This tag can be evaluated later, when the respective
-objects are converted to PolyMesh objects. Since Ayam 1.11 also the
-conversion mechanism of objects keeps the <tt/"TP"/ tags intact, so
-that one may e.g.~save tesselation parameters for a Sphere or a Revolve
-object. Upon conversion of the Sphere or Revolve object via a NURBS
-patch to a PolyMesh, the tesselation parameters will be retained.
-Mind that the <tt/"SaveToTag"/ option will be activated automatically
-if any of the objects to tesselate already have a <tt/"TP"/ tag.
+If the <tt/"Save"/ button is used, the tesselation dialog will be
+closed and <tt/"TP"/ tags containing
+the currently selected method and parameter value will be added
+to all selected objects.
+These tags will be evaluated later, when the respective
+objects are converted to PolyMesh objects (e.g.~upon export).
+Since Ayam 1.11 also the conversion mechanism of objects keeps the
+<tt/"TP"/ tags intact, so that one may e.g.~save tesselation parameters
+to a Sphere or a Revolve object that will be used, when the object
+will be converted to a PolyMesh (via a NURBS patch).
+<p>
+If <tt/"Cancel"/ is used, the dialog will be closed
+and all selected objects remain unchanged.
 
 <tag/Notes/ The tesselation tool will block most other parts of Ayam
-while it is running. It is, however, possible to adjust view parameters
+while it is running, i.e.~it is not possible to change the selection
+or run other tools. It is, however, possible to adjust view parameters
 while the tesselation tool is open, to examine the tesselation result
 more closely or from different viewing angles.
 
-The initial values of the
-parameter slider bounds may be changed by simply entering values
-that are out of bounds into the respective entry widget, then pressing the
-<tt/&lt;Tab&gt;/ key. Range and resolution of the slider will be calculated
-automatically from the resolution of the value entered in the entry
-widget.
+The values of the parameter slider bounds may be changed by simply entering
+values that are out of the current bounds into the respective entry widget,
+then pressing the <tt/&lt;Tab&gt;/ key. Range and resolution of the slider
+will be recalculated automatically from the value in the entry widget.
 </descrip>
 
 See section
@@ -13762,8 +13767,7 @@ insknNC &ndash; insert knot into NURBS curve:
  <item>Synopsis: <tt/"insknNC u r"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Insert a new knot at the position
-specified by u (u must be in the valid range of the knot vector
-of the selected curves) r times. The valid range is determined by
+specified by <tt/u/ <tt/r/ times. The valid range for <tt/u/ is determined by
 the current knot vector U as follows: <tt/U[p] <= u <= U[n]/, where
 p is the degree (order-1) of the curve and n is the length of the curve.
 The knot type of the curves will always be changed to custom but
@@ -14469,8 +14473,9 @@ The option <tt/"-o"/ determines the desired order of the surface in U
 direction (default <f/min(4,width)/).
 <p>
 The option <tt/"-t"/ allows to set a surface type
-(0 &ndash; open, 1 &ndash; closed, 3 &ndash; periodic; default 0), and
-the option <tt/"-k"/ allows to set a knot type (default 1 &ndash; NURB).
+(0 &ndash; open, 1 &ndash; closed, 3 &ndash; periodic; default 0).
+<p>
+The option <tt/"-k"/ allows to set a knot type (default 1 &ndash; NURB).
 <p>
 See also section <ref id="buildnpt" name="Build from Curves Tool">.
 </itemize>
@@ -19283,7 +19288,7 @@ Index:
 <item>Epsilon: <ref id="moattr" name="MetaObj attributes">
 <item>ErrorLevel: <ref id="prefmisc" name="preference setting">
 <item>estlenNC: <ref id="scestlennc" name="scripting interface command">
-<item>evaluate curve/suface: <ref id="scgetpnt" name="scripting interface command">
+<item>evaluate curve/surface: <ref id="scgetpnt" name="scripting interface command">
 <item>ExcludeHidden: <ref id="prefrib" name="preference setting">
 <item>Expand: <ref id="treecontm" name="tree context menu entry">
 <item>ExpGain, ExpGamma: <ref id="rio" name="RenderMan interface option">
