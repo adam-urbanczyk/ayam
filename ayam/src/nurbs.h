@@ -997,7 +997,6 @@ int ay_npt_breakintocurvesv(ay_object *o, int apply_trafo,
 int ay_npt_breakintocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 			       int argc, char *argv[]);
 
-
 /** Build NURBS patch from curves.
  */
 int ay_npt_buildfromcurves(ay_list_object *curves, int ncurves, int type,
@@ -1014,6 +1013,10 @@ int ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int ay_npt_fillgap(ay_object *o1, ay_object *o2,
 		   double tanlen, char *uv, ay_object **result);
+
+/** Create setback (instead of fillet).
+ */
+int ay_npt_setback(ay_object *o1, ay_object *o2, double tanlen, char *uv);
 
 /** Concatenate NURBS patches.
  */

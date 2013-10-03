@@ -2044,6 +2044,171 @@ cleanup:
 } /* ay_npt_buildfromcurvestcmd */
 
 
+/** ay_npt_setback:
+ *  set back the borders of the connected patches \a o1 and \a o2
+ *
+ * \param[in,out] o1 first NURBS patch object
+ * \param[in,out] o2 second NURBS patch object
+ * \param[in] tanlen if != 0.0, scale of tangents, expressed as ratio
+ *  of the distance between the respective border points in o1 and o2
+ * \param[in] uv specification on which sides the patches are connected
+ *  may be NULL, in which case the patches are connected via un(o1)-u0(o2)
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_npt_setback(ay_object *o1, ay_object *o2,
+	       double tanlen, char *uv)
+{
+ int ay_status = AY_OK;
+ ay_nurbpatch_object *np1, *np2;
+ double *cv11, *cv12;
+ double *cv21, *cv22;
+ double dist, v1[3], v2[3];
+ int i, l1, l2, stride = 4, stride1 = 4, stride2 = 4;
+
+  if(!o1 || !o2)
+    return AY_ENULL;
+
+  if((o1->type != AY_IDNPATCH) || (o2->type != AY_IDNPATCH))
+    return AY_ERROR;
+
+  np1 = (ay_nurbpatch_object *)o1->refine;
+  np2 = (ay_nurbpatch_object *)o2->refine;
+
+  l1 = np1->height;
+  l2 = np2->height;
+
+  cv11 = &(np1->controlv[(np1->width*np1->height*stride)]);
+  cv11 -= np1->height*stride;
+  cv12 = cv11 - np1->height*stride;
+
+  cv21 = np2->controlv;
+  cv22 = cv21 + np1->height*stride;
+
+  if(uv)
+    {
+      switch(uv[0])
+	{
+	case 'U':
+	  cv11 = np1->controlv;
+	  cv12 = cv11+(np1->height*stride);
+	  break;
+	case 'v':
+	  l1 = np1->width;
+	  cv11 = np1->controlv;
+	  cv12 = cv11+stride;
+	  stride1 = np1->height;
+	  break;
+	case 'V':
+	  l1 = np1->width;
+	  cv11 = np1->controlv;
+	  cv11 += (np1->height-1)*stride;
+	  cv12 = cv11-stride;
+	  stride1 = np1->height;
+	  break;
+	default:
+	  break;
+	}
+
+      if(uv[0] != '\0')
+	{
+	  switch(uv[1])
+	    {
+	    case 'U':
+	      cv21 = &(np2->controlv[(np2->width*np2->height*stride)]);
+	      cv21 -= np2->height*stride;
+	      cv22 = cv21 - np2->height*stride;
+	      break;
+	    case 'v':
+	      l2 = np2->width;
+	      cv21 = np2->controlv;
+	      cv22 = cv21+stride;
+	      stride2 = np2->height;
+	      break;
+	    case 'V':
+	      l2 = np2->width;
+	      cv21 = np2->controlv;
+	      cv21 += (np2->height-1)*stride;
+	      cv22 = cv21-stride;
+	      stride2 = np2->height;
+	      break;
+	    default:
+	      break;
+	    }
+	} /* if */
+    } /* if */
+
+  if(l1 != l2)
+    return AY_ERROR;
+
+  if(AY_ISTRAFO(o1))
+    ay_npt_applytrafo(o1);
+
+  if(AY_ISTRAFO(o2))
+    ay_npt_applytrafo(o2);
+
+  /* set back the respective border control points */
+  for(i = 0; i < l1; i++)
+    {
+      v1[0] = (cv11[0]-cv12[0]);
+      v1[1] = (cv11[1]-cv12[1]);
+      v1[2] = (cv11[2]-cv12[2]);
+
+      dist = AY_V3LEN(v1);
+      if(dist > AY_EPSILON)
+	{
+	  AY_V3SCAL(v1, 1.0/dist);
+
+	  if(tanlen > 0)
+	    {
+	      AY_V3SCAL(v1, tanlen);
+	    }
+	  else
+	    {
+	      AY_V3SCAL(v1, fabs(tanlen)*dist);
+	    }
+
+	  cv11[0] -= v1[0];
+	  cv11[1] -= v1[1];
+	  cv11[2] -= v1[2];
+	}
+      cv11 += stride1;
+      cv12 += stride1;
+    } /* for */
+
+  for(i = 0; i < l2; i++)
+    {
+      v2[0] = (cv21[0]-cv22[0]);
+      v2[1] = (cv21[1]-cv22[1]);
+      v2[2] = (cv21[2]-cv22[2]);
+
+      dist = AY_V3LEN(v2);
+      if(dist > AY_EPSILON)
+	{
+	  AY_V3SCAL(v2, 1.0/dist);
+
+	  if(tanlen > 0)
+	    {
+	      AY_V3SCAL(v2, tanlen);
+	    }
+	  else
+	    {
+	      AY_V3SCAL(v2, fabs(tanlen)*dist);
+	    }
+
+	  cv21[0] -= v2[0];
+	  cv21[1] -= v2[1];
+	  cv21[2] -= v2[2];
+	}
+      cv21 += stride2;
+      cv22 += stride2;
+    } /* for */
+
+ return ay_status;
+} /* ay_npt_setback */
+
+
 /** ay_npt_fillgap:
  *  fill the gap between the patches \a o1 and \a o2
  *  with another NURBS patch (fillet); no fillet will be created
@@ -2052,7 +2217,7 @@ cleanup:
  * \param[in] o1 first NURBS patch object
  * \param[in] o2 second NURBS patch object
  * \param[in] tanlen if != 0.0, scale of tangents, expressed as ratio
- *  of the distance between last point in c1 and first point in c2
+ *  of the distance between the respective border points in o1 and o2
  * \param[in] uv specification of which sides of the patches to connect
  *  may be NULL, in which case the patches are connected via un(o1)-u0(o2)
  * \param[in,out] result fillet patch (unless the respective border
@@ -2304,14 +2469,15 @@ cleanup:
 
 /** ay_npt_fillgaps:
  *  fill all the gaps between the patches in \a o
- *  with another NURBS patch; the fillets will be marked as selected
+ *  with another NURBS patch; the fillet objects will be marked as selected
  *  to tell them apart from the original patches
  *
  * \param[in,out] o a number of NURBS patch objects (NURBS curves can
  *  be mixed in), the resulting fillets will be inserted in this list
- * \param[in] type if AY_TRUE an additional fillet between the last
+ * \param[in] type if AY_TRUE, an additional fillet between the last
  *  and the first patch will be created
- * \param[in] fillet_type unused
+ * \param[in] fillet_type if 1, fillets will be created, if -1,
+ *  no fillets but set backs will be computed
  * \param[in] ftlen fillet tangent length
  * \param[in] uv controls which sides of the patches to connect
  *
@@ -2335,19 +2501,30 @@ ay_npt_fillgaps(ay_object *o, int type, int fillet_type,
       if((o->type == AY_IDNPATCH) && o->next &&
 	 (o->next->type == AY_IDNPATCH))
 	{
-	  ay_status = ay_npt_fillgap(o, o->next, ftlen, fuv, &fillet);
-
-	  if(ay_status)
-	    return ay_status;
-	  if(fillet)
+	  if(fillet_type > 0)
 	    {
-	      /* mark as fillet */
-	      fillet->selected = 1;
-	      /* link fillet to list of patches */
-	      fillet->next = o->next;
-	      o->next = fillet;
-	      /* adjust o for next iteration */
-	      o = fillet->next;
+	      ay_status = ay_npt_fillgap(o, o->next, ftlen, fuv, &fillet);
+
+	      if(ay_status)
+		return ay_status;
+
+	      if(fillet)
+		{
+		  /* mark as fillet */
+		  fillet->selected = 1;
+		  /* link fillet to list of patches */
+		  fillet->next = o->next;
+		  o->next = fillet;
+		  /* adjust o for next iteration */
+		  o = fillet->next;
+		}
+	    }
+	  else
+	    {
+	      ay_status = ay_npt_setback(o, o->next, ftlen, fuv);
+
+	      if(ay_status)
+		return ay_status;
 	    }
 	} /* if */
 
@@ -2405,23 +2582,36 @@ ay_npt_fillgaps(ay_object *o, int type, int fillet_type,
 
       /* create the fillet */
       if(last->type == AY_IDNPATCH && first->type == AY_IDNPATCH)
-	ay_status = ay_npt_fillgap(last, first, ftlen, fuv, &fillet);
-
-      if(ay_status)
-	return ay_status;
-      if(fillet)
 	{
-	  /* mark as fillet */
-	  fillet->selected = 1;
-	  /* link fillet to list of patches */
-	  if(last)
+	  if(fillet_type > 0)
 	    {
-	      fillet->next = last->next;
-	      last->next = fillet;
+	      ay_status = ay_npt_fillgap(last, first, ftlen, fuv, &fillet);
+
+	      if(ay_status)
+		return ay_status;
+
+	      if(fillet)
+		{
+		  /* mark as fillet */
+		  fillet->selected = 1;
+		  /* link fillet to list of patches */
+		  if(last)
+		    {
+		      fillet->next = last->next;
+		      last->next = fillet;
+		    }
+		  else
+		    {
+		      (void)ay_object_delete(fillet);
+		    }
+		}
 	    }
 	  else
 	    {
-	      (void)ay_object_delete(fillet);
+	      ay_status = ay_npt_setback(o, o->next, ftlen, fuv);
+
+	      if(ay_status)
+		return ay_status;
 	    }
 	} /* if */
     } /* if */
@@ -2445,8 +2635,10 @@ ay_npt_fillgaps(ay_object *o, int type, int fillet_type,
  *  if knot_type is AY_KTCUSTOM, a special knot vector will be created,
  *  that makes the concatenated surface 'interpolate' all input surfaces,
  *  however, this comes at the cost of multiple internal knots
- * \param[in] fillet_type if AY_TRUE, fillets are created for all gaps
- *  in the list of provided patches prior to concatenation
+ * \param[in] fillet_type if 1, fillets are created for all gaps
+ *  in the list of provided patches prior to concatenation;
+ *  if -1, the patches are considered to be connected already and for
+ *  a smooth transition, the respective borders will be set back
  * \param[in] ftlen fillet tangent length
  * \param[in] compatible if AY_TRUE, the patches and curves are considered
  *  compatible, and no clamping/elevating along V will take place
@@ -2476,12 +2668,16 @@ ay_npt_concat(ay_object *o, int type, int order,
   nextcurve = &allcurves;
 
   if(uv)
-    uvlen = strlen(uv);
+    {
+      uvlen = strlen(uv);
+    }
 
   /* create fillets */
-  if(fillet_type)
+  if(fillet_type != 0)
     {
       ay_status = ay_npt_fillgaps(o, type, fillet_type, ftlen, uv);
+      if(ay_status)
+	goto cleanup;
     } /* if */
 
   /* for custom knot vectors, elevate all patches to max_order
@@ -11922,13 +12118,6 @@ ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      tcl_status = Tcl_GetInt(interp, argv[i+1], &fillet_type);
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
-
-	      if(fillet_type < 0)
-		{
-		  ay_error(AY_ERROR, argv[0],
-			   "Parameter <fillet type> must be >= 0.");
-		  return TCL_OK;
-		}
 	    }
 	  if(!strcmp(argv[i], "-t"))
 	    {
