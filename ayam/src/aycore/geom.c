@@ -276,3 +276,32 @@ ay_geom_extractmeannormal(double *cv, int cvlen, int cvstride,
 
  return ay_status;
 } /* ay_geom_extractmeannormal */
+
+
+/* ay_geom_meandist:
+ */
+void
+ay_geom_meandist(double *cv1, int cv1stride,
+		 double *cv2, int cv2stride,
+		 int cvlen, double *result)
+{
+ int i;
+ double v[3], vlen;
+
+  *result = 0.0;
+
+  for(i = 0; i < cvlen; i++)
+    {
+      if(!AY_V3COMP(cv1,cv2))
+	{
+	  AY_V3SUB(v,cv1,cv2);
+	  vlen = AY_V3LEN(v);
+	  *result += vlen/cvlen;
+	}
+
+      cv1 += cv1stride;
+      cv2 += cv2stride;
+    }
+
+ return;
+} /* ay_geom_meandist */
