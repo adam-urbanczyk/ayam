@@ -5359,6 +5359,7 @@ ay_nct_shiftctcmd(ClientData clientData, Tcl_Interp *interp,
  return TCL_OK;
 } /* ay_nct_shiftctcmd */
 
+
 int
 ay_nct_getplane(int cvlen, int cvstride, double *cv)
 {

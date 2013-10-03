@@ -330,10 +330,10 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
       rnc = (ay_nurbcurve_object *)(rc->refine);
       if(fabs(rnc->controlv[0]) > AY_EPSILON || fabs(circcv[0]) > AY_EPSILON)
 	{
-	  if(fabs(rnc->controlv[0]) > AY_EPSILON)
+	  r = sqrt(rnc->controlv[0]*rnc->controlv[0] +
+		   rnc->controlv[1]*rnc->controlv[1]);
+	  if(r > AY_EPSILON)
 	    {
-	      r = sqrt(rnc->controlv[0]*rnc->controlv[0] +
-		       rnc->controlv[1]*rnc->controlv[1]);
 	      angle = AY_R2D(acos(rnc->controlv[0]/r));
 	      if(rnc->controlv[1] < 0.0)
 		angle = 360.0-angle;
@@ -341,9 +341,9 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
 	  else
 	    angle = 0;
 
-	  if(fabs(circcv[0]) > AY_EPSILON)
+	  r = sqrt(circcv[0]*circcv[0]+circcv[1]*circcv[1]);
+	  if(r > AY_EPSILON)
 	    {
-	      r = sqrt(circcv[0]*circcv[0]+circcv[1]*circcv[1]);
 	      anglem = AY_R2D(acos(circcv[0]/r));
 	      if(circcv[1] < 0.0)
 		anglem = 360.0 - anglem;
@@ -397,9 +397,10 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
 	  ay_trafo_apply3(&(circcv[a]), rm);
 	  a += stride;
 	}
+
       memcpy(&(np->controlv[nc->length*stride]), circcv,
 	     nc->length*stride*sizeof(double));
-
+      
       /* set middle point */
       a = (nc->length*2)*stride;
       for(i = 0; i < nc->length; i++)
@@ -411,6 +412,7 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
     }
   else
     {
+      /* 2D mode */
       a = nc->length*stride;
       for(i = 0; i < nc->length; i++)
 	{
@@ -506,8 +508,14 @@ ay_capt_integrate(ay_object *c, int side, int knottype, ay_object *s)
   if(ay_status)
     goto cleanup;
 
-  ay_status = ay_npt_concat(cc, 0, order, knottype, 0, 0.0, AY_TRUE, uv,
-			    &o);
+  if(knottype == AY_KTNURB)
+    ay_status = ay_npt_concat(cc, /*type=*/0, order, knottype,
+			      /*-1*/0, /*-0.2*/0, AY_TRUE, uv,
+			      &o);
+  else
+    ay_status = ay_npt_concat(cc, /*type=*/0, order, knottype,
+			      0, 0.0, AY_TRUE, uv,
+			      &o);
 
   if(ay_status)
     goto cleanup;
