@@ -5543,7 +5543,7 @@ is 360.
 
 <sect2>Conversion Support
 <p>
-A sphere object may be converted to NURBS patches
+A Sphere object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the sphere.<footnote>Since 1.8.2.</footnote>
 <p>
@@ -5554,7 +5554,7 @@ cap at thetamax.
 
 <sect2>RIB Export
 <p>
-The sphere object appears in RIB output as simple
+The Sphere object appears in RIB output as simple
 <tscreen><tt>
 RiSphere(...);
 </tt></tscreen>
@@ -5592,13 +5592,13 @@ default is 360.
 
 <sect2>Conversion Support
 <p>
-A disk object may be converted to a NURBS patch
+A Disk object may be converted to a NURBS patch
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the disk.<footnote>Since 1.8.2.</footnote>
 
 <sect2>RIB Export
 <p>
-The disk object will always be exported as simple disk:
+The Disk object will always be exported as simple disk:
 <tscreen><tt>
 RiDisk(...);
 </tt></tscreen>
@@ -5637,7 +5637,7 @@ default is 360.
 
 <sect2>Conversion Support
 <p>
-A cone object may be converted to NURBS patches
+A Cone object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the cone.<footnote>Since 1.8.2.</footnote>
 <p>
@@ -5648,7 +5648,7 @@ cap at thetamax.
 
 <sect2>RIB Export
 <p>
-The cone object appears in RIB output as simple
+The Cone object appears in RIB output as simple
 <tscreen><tt>
 RiCone(...);
 </tt></tscreen>
@@ -6364,7 +6364,7 @@ curve).
 <figure loc="ht">
 <eps file="pics/ncircles.ps" height="5cm">
 <img src="pics/ncircles.gif">
-<caption>Different NCircle Objects (l: default, m: TMax 180, r: Radius 0.5, TMax 200)</caption>
+<caption>Different NCircle Objects (l: default, m: TMax 180, r: Radius 0.5, TMax -200)</caption>
 </figure>
 <p>
 The NCircle object creates a circular NURBS curve or a circular arc in
@@ -11936,11 +11936,11 @@ See also the documentation of the corresponding scripting interface commands
 <ref id="scremknunp" name="remknvNP">.
 </descrip>
 
-<sect2>Patch Split Tools<label id="splitnpt">
+<sect2>Patch Split Tool<label id="splitnpt">
 <p>
 <descrip>
-<tag/Arguments/ The patch split tools take a number of NURBS patches from
-the selection and request a parametric value t (in U or V parametric dimension,
+<tag/Arguments/ The patch split tool takes a number of NURBS patches from
+the selection and requests a parametric value t (in U or V parametric dimension,
 respectively).
 <tag/Operation/ The patches will be split at the parametric value t
 into two patches (in U or V parametric dimension, respectively) using
@@ -12062,7 +12062,7 @@ transformation attributes of the respective NPatch.
                      |-NCurve
                      |-NCurve
 </verb></tscreen>
-<tag/Notes/ The original NURBS patch object is not deleted.
+<tag/Notes/ The original NURBS patch objects are not deleted.
 See also the documentation of the corresponding
 scripting interface command <ref id="scbreaknp" name="breakNP">.
 </descrip>
@@ -12089,7 +12089,7 @@ the first curve.
 |-NCurve               |-NCurve
                        |-NPatch
 </verb></tscreen>
-<tag/Notes/ The original NURBS curves objects are not deleted.
+<tag/Notes/ The original NURBS curve objects are not deleted.
 
 See also the documentation of the corresponding
 scripting interface command <ref id="scbuildnp" name="buildNP">.
@@ -15658,6 +15658,33 @@ preferences, you still have to switch to Pixie using the main menu
 
 <#if out=latex><x/newpage/</#if>
 
+<sect2>Create Truncated Cones<label id="tconetcl">
+<p>
+The script <tt>"tcone.tcl"</tt> creates truncated cones with arguments
+similar to the cylinder primitive.
+<p>
+This script must be used in a Script object of type <tt/"Create"/.
+For convenience, there is also a property GUI; one must add a <tt/"NP"/ tag
+of value <tt/"TConeAttr"/ to the Script object to see it.
+<p>
+These are the parameters of the truncated cone:
+<itemize>
+<item><tt/"Closed"/ toggles whether the object should
+be automatically sealed (closed by matching cap surfaces).<newline>
+Only when this option is enabled, the cone
+may be used in CSG operations safely.
+
+<item><tt/"ThetaMax"/ is the sweeping angle of the cone in degrees,
+default is 360.
+
+<item><tt/"ZMin"/ is the base of the cone, default is 0.
+<item><tt/"ZMax"/ is the peak of the cone, default is 1.
+<item><tt/"RMin"/ is the radius of the cone at the base, default is 1.
+<item><tt/"RMax"/ is the radius of the cone at the peak, default is 0.5.
+</itemize>
+
+<#if out=latex><x/newpage/</#if>
+
 <sect2>Create Polyhedrons from Conway Notations<label id="polyhedronjs">
 <p>
 <figure loc="ht">
@@ -16019,11 +16046,10 @@ This is what the first <tt/"if"/ statement, checking for existence
 of the mirroring Tcl array variable, in above example is all about.
 <p>
 Following this scheme of dual mirroring data structures on the
-Tcl and Javascript sides now follows the creation of the
-property GUI which is also constrained to just one script run
-by an <tt/"if"/ statement.
+Tcl and JavaScript sides, now the property GUI is created, which is also
+constrained to just one script run by a similar <tt/"if"/ statement.
 <p>
-Following the GUI, a sphere object is created and parameterized
+After the GUI, a Sphere object is created and parameterized
 according to the data in the property GUI, which is used as
 radius, zmin, and zmax value.
 
@@ -16317,11 +16343,10 @@ This is what the first <tt/"if"/ statement, checking for existence
 of the mirroring Tcl array variable, in above example is all about.
 <p>
 Following this scheme of dual mirroring data structures on the
-Tcl and Lua sides now follows the creation of the
-property GUI which is also constrained to just one script run
-by an <tt/"if"/ statement.
+Tcl and Lua sides, now the property GUI is created, which is also
+constrained to just one script run by a similar <tt/"if"/ statement.
 <p>
-Following the GUI, a sphere object is created and parameterized
+After the GUI, a Sphere object is created and parameterized
 according to the data in the property GUI, which is used as
 radius, zmin, and zmax value.
 
@@ -19056,9 +19081,8 @@ Index:
 <itemize>
 <item><ref id="bevelobj" name="Bevel object">,
 <item><ref id="bevt" name="Bevel tool">,
-<item><ref id="bevelsprop" name="Bevels Property">,
+<item><ref id="bevelsprop" name="Bevels property">,
 <item><ref id="handb" name="using bevels">,
-<item><ref id="offsetncp" name="offset mode">
 </itemize>
 <item>Bevel3D: <ref id="offsetncp" name="offset mode">
 <item>BevelRadius, BevelRevert, BevelType: <ref id="bevelp" name="Bevel attribute">
@@ -19090,9 +19114,11 @@ Index:
 <item><ref id="cameraobj" name="Camera object">,
 <item><ref id="camp" name="view property">
 </itemize>
+<item>Cap:
 <itemize>
-<item>Cap: <ref id="capobj" name="Cap object">,
-<item><ref id="capsprop" name="Caps Property">
+<item><ref id="capobj" name="Cap object">,
+<item><ref id="capt" name="Cap tool">,
+<item><ref id="capsprop" name="Caps property">
 </itemize>
 <item>CastShadows: <ref id="riattrs" name="RenderMan/BMRT attribute">
 <item>Cat: <ref id="hidprefs" name="hidden preference setting">
@@ -19112,7 +19138,13 @@ Index:
 <item>clampNC: <ref id="scclampnc" name="scripting interface command">
 <item>clampuNP: <ref id="scclampunp" name="scripting interface command">
 <item>clampvNP: <ref id="scclampvnp" name="scripting interface command">
-<item>Clipboard: <ref id="sciclip" name="scripting interface commands">
+<item>Clear: <ref id="mmspecial" name="main menu entry">
+<item>Clipboard:
+<itemize>
+<item><ref id="mmedit" name="edit menu entries">,
+<item><ref id="mmspecial" name="special menu entries">,
+<item><ref id="sciclip" name="scripting interface commands">
+</itemize>
 <item>Clone: <ref id="cloneobj" name="Clone object">
 <item>Close: <ref id="treecontm" name="tree context menu entry">
 <item>Closed:
@@ -19152,6 +19184,7 @@ Index:
 <item>CompleteNotify: <ref id="prefmodel" name="preference setting">
 <item>copOb: <ref id="sccopob" name="scripting interface command">
 <item>Copy: <ref id="mmedit" name="main menu entry">
+<item>Copy (Add): <ref id="mmspecial" name="main menu entry">
 <item>Copy Property:
 <itemize>
 <item><ref id="mmedit" name="main menu entry">,
@@ -19198,6 +19231,7 @@ Index:
 </itemize>
 <item>Custom Object: <ref id="customobj" name="what is">
 <item>Cut: <ref id="mmedit" name="main menu entry">
+<item>Cut (Add): <ref id="mmspecial" name="main menu entry">
 <item>cutOb: <ref id="sccutob" name="scripting interface command">
 <item>Cylinder: <ref id="cylinderobj" name="Cylinder object">
 </list>
@@ -19577,8 +19611,11 @@ Index:
 <item>Loft: <ref id="skinobj" name="Skin object">
 <item>LogFile: <ref id="prefgui" name="preference setting">
 <item>Logging: <ref id="prefgui" name="preference setting">
-<item>LowerBevel: <ref id="extrattr" name="Extrude attribute">,
+<item>LowerBevel:
+<itemize>
+<item><ref id="extrattr" name="Extrude attribute">,
 <item><ref id="textattr" name="Text attribute">
+</itemize>
 <item>LowerCap:
 <itemize>
 <item><ref id="rep" name="Revolve attribute">,
@@ -19737,6 +19774,7 @@ Index:
 <item>Paste: <ref id="mmedit" name="main menu entry">
 <item>Paste (Move): <ref id="mmspecial" name="main menu entry">
 <item>Paste Property: <ref id="mmedit" name="main menu entry">
+<item>Paste Property to Selected: <ref id="mmspecial" name="main menu entry">
 <item>PatchMesh: <ref id="patchmeshobj" name="PatchMesh object">
 <item>PatchNum:
 <itemize>
