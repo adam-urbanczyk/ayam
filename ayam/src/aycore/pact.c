@@ -1511,9 +1511,7 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
     } /* while */
 
   if(notify_parent)
-    {
-      (void)ay_notify_parent();
-    }
+    (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_pact_insertptcb */
@@ -1833,9 +1831,7 @@ ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[])
     } /* while */
 
   if(notify_parent)
-    {
-      (void)ay_notify_parent();
-    }
+    (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_pact_deleteptcb */
@@ -2118,7 +2114,7 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
     {
       if(!ay_prefs.lazynotify || start)
 	{
-	  ay_notify_parent();
+	  (void)ay_notify_parent();
 	}
 
       ay_toglcb_display(togl);
@@ -2230,7 +2226,7 @@ ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
 
   if(!ay_prefs.lazynotify && notifyparent)
     {
-      ay_notify_parent();
+      (void)ay_notify_parent();
     }
 
  return TCL_OK;
@@ -2246,59 +2242,95 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
  int ay_status = AY_OK;
  char fname[] = "reset_weights";
  double p[3], *coords;
- unsigned int i;
+ unsigned int i, j, k;
  int notify_parent = AY_FALSE;
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
  ay_nurbcurve_object *nc = NULL;
  ay_nurbpatch_object *np = NULL;
  ay_pointedit pe = {0};
+ int reset_selected = AY_FALSE;
+ int reset_picked = AY_FALSE;
 
-  while(sel)
+  if(argc == 3)
     {
-      o = sel->object;
-
-      ay_status = ay_pact_getpoint(0, o, p, &pe);
-
-      if(ay_status)
-	{
-	  ay_error(AY_ERROR, fname, NULL);
-	}
-
-      if(pe.coords && pe.rational && (!pe.readonly))
-	{
-	  for(i = 0; i < pe.num; i++)
-	    {
-	      coords = pe.coords[i];
-	      coords[3] = 1.0;
-	    } /* for */
-
-	  o->modified = AY_TRUE;
-	  if(o->type == AY_IDNCURVE)
-	    {
-	      nc = (ay_nurbcurve_object *)o->refine;
-	      nc->is_rat = AY_FALSE;
-	    }
-	  if(o->type == AY_IDNPATCH)
-	    {
-	      np = (ay_nurbpatch_object *)o->refine;
-	      np->is_rat = AY_FALSE;
-	    }
-	  ay_notify_object(o);
-	  notify_parent = AY_TRUE;
-	}
+      if(!strcmp(argv[2], "-selected"))
+	reset_selected = AY_TRUE;
       else
+	if(!strcmp(argv[2], "-picked"))
+	  reset_picked = AY_TRUE;
+    }
+
+  if(reset_picked)
+    {
+      j = 0;
+      for(i = 0; i < pact_objectslen; i++)
 	{
-	  ay_error(AY_ERROR, fname, "No editable rational points found.");
-	} /* if */
+	  if(pact_ratcpo[i])
+	    {
+	      for(k = 0; k < pact_numcpo[i]; k++)
+		{
+		  coords = pact_pe.coords[j+k];
+		  coords[3] = 1.0;
+		}
+	      pact_objects[i]->modified = AY_TRUE;
+	      ay_notify_object(pact_objects[i]);
+	      notify_parent = AY_TRUE;
+	    }
+	  j += pact_numcpo[i];
+	} /* for */
+    }
+  else
+    {
+      /* reset all */
+      while(sel)
+	{
+	  o = sel->object;
+	  
+	  ay_status = ay_pact_getpoint(0, o, p, &pe);
 
-      ay_pact_clearpointedit(&pe);
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, fname, NULL);
+	    }
 
-      sel = sel->next;
-   } /* while */
+	  if(pe.coords && pe.rational && (!pe.readonly))
+	    {
+	      for(i = 0; i < pe.num; i++)
+		{
+		  coords = pe.coords[i];
+		  coords[3] = 1.0;
+		} /* for */
+
+	      o->modified = AY_TRUE;
+	      if(o->type == AY_IDNCURVE)
+		{
+		  nc = (ay_nurbcurve_object *)o->refine;
+		  nc->is_rat = AY_FALSE;
+		}
+	      if(o->type == AY_IDNPATCH)
+		{
+		  np = (ay_nurbpatch_object *)o->refine;
+		  np->is_rat = AY_FALSE;
+		}
+	      ay_notify_object(o);
+	      notify_parent = AY_TRUE;
+	    } /* if */
+
+	  ay_pact_clearpointedit(&pe);
+
+	  sel = sel->next;
+	} /* while */
+    } /* if */
 
   if(notify_parent)
-    (void)ay_notify_parent();
+    {
+      (void)ay_notify_parent();
+    }
+  else
+    {
+      ay_error(AY_EWARN, fname, "No editable/rational points found.");
+    }
 
  return TCL_OK;
 } /* ay_pact_wrtcb */
@@ -2437,9 +2469,7 @@ ay_pact_snaptogridcb(struct Togl *togl, int argc, char *argv[])
     } /* while */
 
   if(notify_parent)
-    {
-      (void)ay_notify_parent();
-    }
+    (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_pact_snaptogridcb */
@@ -2659,9 +2689,7 @@ ay_pact_multiptcb(struct Togl *togl, int argc, char *argv[])
     } /* while */
 
   if(notify_parent)
-    {
-      (void)ay_notify_parent();
-    }
+    (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_pact_multiptcb */
