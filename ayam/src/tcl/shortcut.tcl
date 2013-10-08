@@ -567,7 +567,6 @@ proc shortcut_view { w } {
     bind $w <[repctrl $aymainshortcuts(Zap)]> zap
     bind $w <Map> unzap
 
-
     # object selection
     bind $w <[repctrl $ayviewshortcuts(OSUp)]>\
 	"selNPFL 1; after idle \"focus %W\""
@@ -654,6 +653,8 @@ proc shortcut_view { w } {
 	break
     }
 
+    bind $w <[repctrl $ayviewshortcuts(ResetAllW)]>\
+	"actionResetAllWP $w.f3D.togl"
 
     # bind function keys
     shortcut_fkeys $w
