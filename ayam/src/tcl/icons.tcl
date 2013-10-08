@@ -205,6 +205,14 @@ thayInAJlpSm6QmdSAFU5BWGHZoIKQIYMPaKv+Gzl/w9s2si9BtcNs7R9bh47GZbgCVcShUgElsw
 WRMBBYtVFBEAOw}
 image create photo ay_EditW_img -format GIF -data $imgdata
 
+# ResetW
+set imgdata {\
+R0lGODdhGQAZAOMAALy8vL28vLy9vL29vLy8vQAAAE1NTa8AAHNzc/7+/gAAAAAAAAAAAAAAAAAA
+AAAAACwAAAAAGQAZAAAEgBDISSsNYmbL+9hdeBFSYXJmgZ5p674wkK6qNYuSgZO4LvIiH45yOFSE
+kqKoaCydksql0gVgDqtFl/UKPRS23AkzykW0mC3E0JT4jgvtmgieQDMT7bX7gK9n5SFocGx7OHeE
+g35NHHd4bHFwYABAfzBniwAgEmaWJmoVAQChYRYRADs=}
+image create photo ay_ResetW_img -format GIF -data $imgdata
+
 # EditN
 set imgdata {\
 R0lGODdhGQAZAMIAAAAAAL28vLy9vby8vL29vLy8vby9vAAAACwAAAAAGQAZAAADWji6rGGtQQCi

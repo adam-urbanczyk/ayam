@@ -1490,12 +1490,61 @@ proc actionEditWP { w } {
 
 #
 proc actionResetWP { w } {
-    undo save ResetWeight
+    global ayprefs
+
+    viewTitle $w "" "Reset_Weights"
+    viewSetMAIcon $w ay_ResetW_img "Reset_Weights"
+
+    actionClearB1 $w
+
+    bind $w <ButtonPress-1> {
+	undo save ResetPntW
+	if { $ayprefs(FlashPoints) == 1 } {
+	    %W startpepac %x %y -flash
+	} else {
+	    %W startpepac %x %y
+	}
+    }
+
+    if { $ayprefs(FlashPoints) == 1 } {
+	bind $w <Motion> {
+	    %W startpepac %x %y -flash
+	}
+    }
+
+    bind $w <ButtonRelease-1> {
+	%W wrpac -picked
+	rV
+	plb_update
+	focus %W
+    }
+
+    if { $ayprefs(FlashPoints) == 1 } {
+	if { $ayprefs(FixFlashPoints) == 1 } {
+	    bind $w <ButtonRelease-1> "+\
+          %W startpepac %x %y -flash ;\
+          %W startpepac %x %y -flash "
+	} else {
+	    bind $w <ButtonRelease-1> "+\
+          %W startpepac %x %y -flash "
+	}
+    }
+
+    $w setconf -drawh 1
+
+ return;
+}
+# actionResetWP
+
+
+#
+proc actionResetAllWP { w } {
+    undo save ResetAllW
     $w wrpac
     rV
  return;
 }
-# actionResetWP
+# actionResetAllWP
 
 
 #
