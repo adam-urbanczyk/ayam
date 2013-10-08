@@ -493,6 +493,8 @@ array set ayviewshortcuts {
     RestrictZ "z"
 
     Reset "Ctrl-KP_Begin"
+
+    ResetAllW "Ctrl-W"
 }
 # array ayviewshortcuts
 

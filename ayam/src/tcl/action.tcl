@@ -1541,6 +1541,7 @@ proc actionResetWP { w } {
 proc actionResetAllWP { w } {
     undo save ResetAllW
     $w wrpac
+    plb_update
     rV
  return;
 }
