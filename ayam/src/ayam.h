@@ -1330,7 +1330,9 @@ typedef struct ay_view_object_s
       over drawing (e.g.\ AyCSG) */
   Togl_Callback *altdispcb;
 
-  int action_state;  /**< is an action active in this view? (0 no, 1 yes) */
+  int action_state; /**< is an action active in this view? (0 no, 1 yes) */
+
+  int full_notify;  /**< controls scope of notification */
 
 } ay_view_object;
 

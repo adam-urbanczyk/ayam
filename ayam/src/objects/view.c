@@ -43,13 +43,8 @@ int
 ay_view_deletecb(void *c)
 {
  char fname[] = "view_deletecb";
- ay_view_object *view = NULL;
 
-  view = (ay_view_object *)(c);
-  if(!view)
-    return AY_ENULL;
-
-  ay_error(AY_ERROR, fname, "cannot delete a view this way, use View/Close");
+  ay_error(AY_ERROR, fname, "Can not delete a view this way, use View/Close!");
 
  return AY_ERROR;
 } /* ay_view_deletecb */
@@ -57,13 +52,15 @@ ay_view_deletecb(void *c)
 
 /* ay_view_copycb:
  *  copy callback function of view object
+ *  this callback does nothing,
+ *  only the undo system can copy view objects
  */
 int
 ay_view_copycb(void *src, void **dst)
 {
  char fname[] = "view_copycb";
 
-  ay_error(AY_ERROR, fname, "can not copy a view object");
+  ay_error(AY_ERROR, fname, "Can not copy a view object!");
 
  return AY_ERROR;
 } /* ay_view_copycb */
@@ -199,6 +196,7 @@ ay_view_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
+ int ay_status = AY_OK;
  ay_view_object *view = NULL;
  char *n1 = "CameraData", *n2 = "ViewAttribData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
@@ -380,7 +378,8 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	  if(!(view->bgimage = malloc((strlen(result)+1)*sizeof(char))))
 	    {
 	      ay_error(AY_EOMEM, fname, NULL);
-	      return AY_ERROR;
+	      ay_status = AY_ERROR;
+	      goto cleanup;
 	    } /* if */
 	  strcpy(view->bgimage, result);
 	  view->bgimagedirty = AY_TRUE;
@@ -401,9 +400,6 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   ay_notify_object(o);
 
-  Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
-
   ay_toglcb_reshape(view->togl);
 
   if(need_markupdate)
@@ -413,7 +409,12 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   ay_toglcb_display(view->togl);
 
- return AY_OK;
+cleanup:
+
+  Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
+  Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
+
+ return ay_status;
 } /* ay_view_setpropcb */
 
 
@@ -885,6 +886,7 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
     }
 
   vtemp.drawhandles = AY_FALSE;
+  vtemp.full_notify = AY_TRUE;
 
   if(ay_prefs.single_window & (ay_read_viewnum < 4))
     {
@@ -1255,7 +1257,7 @@ ay_view_notifycb(ay_object *o)
 
   ay_viewt_uprop(view);
 
-  /* load texture */
+  /* load texture from TIFF image file*/
   if(view->bgimage && view->bgimage[0] != '\0' && view->bgimagedirty)
     {
       tif = TIFFOpen(view->bgimage, "r");
@@ -1311,106 +1313,109 @@ ay_view_notifycb(ay_object *o)
 
       glEnable(GL_TEXTURE_2D);
 
-      result = gluBuild2DMipmaps(GL_TEXTURE_2D, 4, w, h, GL_RGBA,
-				 GL_UNSIGNED_BYTE, image);
+       result = gluBuild2DMipmaps(GL_TEXTURE_2D, 4, w, h, GL_RGBA,
+				  GL_UNSIGNED_BYTE, image);
 
-      if(result != 0)
-	{
-	  ay_error(AY_ERROR, fname, "Unable to create texture.");
-	  /*ay_error(AY_ERROR, fname, gluErrorString(result));*/
-	}
+       if(result != 0)
+	 {
+	   ay_error(AY_ERROR, fname, "Unable to create texture.");
+	   /*ay_error(AY_ERROR, fname, gluErrorString(result));*/
+	 }
 
-      /* high quality texture mapping */
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-		      GL_LINEAR_MIPMAP_LINEAR);
-
+       /* high quality texture mapping */
+       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+		       GL_LINEAR_MIPMAP_LINEAR);
 
       glDisable(GL_TEXTURE_2D);
       _TIFFfree(image);
+    } /* if have dirty bgimage */
 
-    } /* if */
-
-  if(view->bgknotv)
-    free(view->bgknotv);
-  view->bgknotv = NULL;
-
-  if(view->bgcv)
-    free(view->bgcv);
-  view->bgcv = NULL;
-
-  if(o->down && o->down->next)
+  if(view->full_notify)
     {
-      o = o->down;
-      if(o->type == AY_IDNPATCH)
+      if(view->bgknotv)
+	free(view->bgknotv);
+      view->bgknotv = NULL;
+
+      if(view->bgcv)
+	free(view->bgcv);
+      view->bgcv = NULL;
+
+      if(o->down && o->down->next)
 	{
-	  ay_status = ay_object_copy(o, &p);
-	}
-      else
-	{
-	  ay_status = ay_provide_object(o, AY_IDNPATCH, &p);
-	}
-      if(p)
-	{
-	  np = (ay_nurbpatch_object *)(p->refine);
-	  if(AY_ISTRAFO(p))
+	  o = o->down;
+	  if(o->type == AY_IDNPATCH)
 	    {
-	      /* create trafo */
-	      ay_trafo_creatematrix(p, m);
-	      j = 0;
-	      for(i = 0; i < np->width*np->height; i++)
+	      ay_status = ay_object_copy(o, &p);
+	    }
+	  else
+	    {
+	      ay_status = ay_provide_object(o, AY_IDNPATCH, &p);
+	    }
+	  if(p)
+	    {
+	      np = (ay_nurbpatch_object *)(p->refine);
+	      if(AY_ISTRAFO(p))
 		{
-		  ay_trafo_apply3(&(np->controlv[j]), m);
-		  j += 4;
+		  /* create trafo */
+		  ay_trafo_creatematrix(p, m);
+		  j = 0;
+		  for(i = 0; i < np->width*np->height; i++)
+		    {
+		      ay_trafo_apply3(&(np->controlv[j]), m);
+		      j += 4;
+		    }
 		}
-	    }
 
-	  if(!(view->bgknotv = calloc(np->width + np->uorder +
-				      np->height + np->vorder, sizeof(float))))
-	    {
-	      ay_status = AY_EOMEM;
-	      goto cleanup;
-	    }
-	  for(i = 0; i < np->width+np->uorder; i++)
-	    {
-	      view->bgknotv[i] = (float)np->uknotv[i];
-	    }
-	  j = i;
-	  for(i = 0; i < np->height+np->vorder; i++)
-	    {
-	      view->bgknotv[j] = (float)np->vknotv[i];
-	      j++;
-	    }
-
-	  if(!(view->bgcv = calloc(np->width*np->height*6, sizeof(float))))
-	    {
-	      free(view->bgknotv);
-	      view->bgknotv = NULL;
-	      ay_status = AY_EOMEM;
-	      goto cleanup;
-	    }
-
-	  for(i=0;i<np->width;i++)
-	    {
-	      for(j=0;j<np->height;j++)
+	      if(!(view->bgknotv = calloc(np->width + np->uorder +
+				    np->height + np->vorder, sizeof(float))))
 		{
-		  view->bgcv[k]   = (float)np->controlv[l];
-		  view->bgcv[k+1] = (float)np->controlv[l+1];
-		  view->bgcv[k+2] = (float)np->controlv[l+2];
-		  view->bgcv[k+3] = (float)np->controlv[l+3];
-
-		  /* generate texture coordinates */
-		  view->bgcv[k+4] = ((float)i)/(np->width-1);
-		  view->bgcv[k+5] = ((float)j)/(np->height-1);
-		  k += 6;
-		  l += 4;
+		  ay_status = AY_EOMEM;
+		  goto cleanup;
 		}
-	    }
-	  view->bgwidth = np->width;
-	  view->bgheight = np->height;
-	  view->bguorder = np->uorder;
-	  view->bgvorder = np->vorder;
-	} /* if */
-    } /* if */
+	      for(i = 0; i < np->width+np->uorder; i++)
+		{
+		  view->bgknotv[i] = (float)np->uknotv[i];
+		}
+	      j = i;
+	      for(i = 0; i < np->height+np->vorder; i++)
+		{
+		  view->bgknotv[j] = (float)np->vknotv[i];
+		  j++;
+		}
+
+	      if(!(view->bgcv = calloc(np->width*np->height*6, sizeof(float))))
+		{
+		  free(view->bgknotv);
+		  view->bgknotv = NULL;
+		  ay_status = AY_EOMEM;
+		  goto cleanup;
+		}
+
+	      for(i=0;i<np->width;i++)
+		{
+		  for(j=0;j<np->height;j++)
+		    {
+		      view->bgcv[k]   = (float)np->controlv[l];
+		      view->bgcv[k+1] = (float)np->controlv[l+1];
+		      view->bgcv[k+2] = (float)np->controlv[l+2];
+		      view->bgcv[k+3] = (float)np->controlv[l+3];
+
+		      /* generate texture coordinates */
+		      view->bgcv[k+4] = ((float)i)/(np->width-1);
+		      view->bgcv[k+5] = ((float)j)/(np->height-1);
+		      k += 6;
+		      l += 4;
+		    }
+		}
+	      view->bgwidth = np->width;
+	      view->bgheight = np->height;
+	      view->bguorder = np->uorder;
+	      view->bgvorder = np->vorder;
+	    } /* if have copied/provided NPatch */
+	} /* if havechild */
+    } /* if full_notify */
+
+  view->full_notify = AY_TRUE;
 
 cleanup:
 
