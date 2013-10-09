@@ -1255,8 +1255,6 @@ ay_view_notifycb(ay_object *o)
   */
   view->dirty = AY_TRUE;
 
-  ay_viewt_uprop(view);
-
   /* load texture from TIFF image file*/
   if(view->bgimage && view->bgimage[0] != '\0' && view->bgimagedirty)
     {
@@ -1535,7 +1533,10 @@ ay_view_dropcb(ay_object *o)
 
 	      ay_toglcb_reshape(view->togl);
 	      ay_toglcb_display(view->togl);
-	      ay_viewt_uprop(view);
+
+	      view->full_notify = AY_FALSE;
+	      ay_viewt_uprop(view, AY_TRUE);
+
 	      view->drawmark = AY_FALSE;
 	    }
 	  break;
@@ -1557,7 +1558,10 @@ ay_view_dropcb(ay_object *o)
 
 	  ay_toglcb_reshape(view->togl);
 	  ay_toglcb_display(view->togl);
-	  ay_viewt_uprop(view);
+
+	  view->full_notify = AY_FALSE;
+	  ay_viewt_uprop(view, AY_TRUE);
+
 	  view->drawmark = AY_FALSE;
 	  break;
 	case AY_IDNPATCH:
