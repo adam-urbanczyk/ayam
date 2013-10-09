@@ -1703,7 +1703,7 @@ int ay_viewt_tocamtcb(struct Togl *togl, int argc, char *argv[]);
 
 /** update view property
  */
-void ay_viewt_uprop(ay_view_object *view);
+void ay_viewt_uprop(ay_view_object *view, int notify);
 
 /** snap winx and winy to current grid
  */

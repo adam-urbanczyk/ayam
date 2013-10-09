@@ -598,7 +598,9 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
 	  ay_viewt_updatemark(togl, /*local=*/AY_TRUE);
 	}
       ay_toglcb_display(togl);
-      ay_viewt_uprop(view);
+
+      view->full_notify = AY_FALSE;
+      ay_viewt_uprop(view, AY_TRUE);
 
       restore_selection = AY_FALSE;
     } /* if (sel) */
@@ -687,7 +689,9 @@ ay_viewt_align(struct Togl *togl, int argc, char *argv[])
   ay_toglcb_reshape(togl);
   ay_toglcb_display(togl);
 
-  ay_viewt_uprop(view);
+  view->full_notify = AY_FALSE;
+  ay_viewt_uprop(view, AY_TRUE);
+
   view->drawmark = AY_FALSE;
 
  return TCL_OK;
@@ -1812,7 +1816,8 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
       ay_toglcb_display(togl);
     }
 
-  ay_viewt_uprop(view);
+  view->full_notify = AY_FALSE;
+  ay_viewt_uprop(view, AY_TRUE);
 
   /* save point in time where we return control to Tcl; we use this
      to detect whether the user holds down a key if we are called
@@ -1990,7 +1995,9 @@ ay_viewt_fromcamtcb(struct Togl *togl, int argc, char *argv[])
   ay_toglcb_reshape(togl);
   ay_toglcb_display(togl);
 
-  ay_viewt_uprop(view);
+  view->full_notify = AY_FALSE;
+  ay_viewt_uprop(view, AY_TRUE);
+
   view->drawmark = AY_FALSE;
   view->aligned = AY_FALSE;
 
@@ -2037,7 +2044,7 @@ ay_viewt_tocamtcb(struct Togl *togl, int argc, char *argv[])
  *  update view property
  */
 void
-ay_viewt_uprop(ay_view_object *view)
+ay_viewt_uprop(ay_view_object *view, int notify)
 {
  Tcl_Interp *interp = ay_interp;
  ay_list_object *sel = ay_selection;
@@ -2055,8 +2062,31 @@ ay_viewt_uprop(ay_view_object *view)
 	      if(sview == view)
 		{
 		  ay_prop_gettcmd(NULL, interp, 0, NULL);
+		  if(notify)
+		    {
+		      ay_notify_object(o);
+		    }
 		} /* if */
 	    } /* if */
+	} /* if */
+    }
+  else
+    {
+      if(notify)
+	{
+	  o = ay_root->down;
+	  while(o && o->next)
+	    {
+	      if(o->type == AY_IDVIEW)
+		{
+		  sview = (ay_view_object *)(o->refine);
+		  if(sview == view)
+		    {
+		      ay_notify_object(o);
+		    }
+		}
+	      o = o->next;
+	    }
 	} /* if */
     } /* if */
 

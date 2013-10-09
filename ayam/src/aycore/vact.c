@@ -144,7 +144,8 @@ ay_vact_movetcb(struct Togl *togl, int argc, char *argv[])
 
   ay_toglcb_display(togl);
 
-  ay_viewt_uprop(view);
+  view->full_notify = AY_FALSE;
+  ay_viewt_uprop(view, AY_TRUE);
 
  return TCL_OK;
 } /* ay_vact_movetcb */
@@ -212,7 +213,8 @@ ay_vact_zoomtcb(struct Togl *togl, int argc, char *argv[])
       ay_toglcb_display(togl);
     }
 
-  ay_viewt_uprop(view);
+  view->full_notify = AY_FALSE;
+  ay_viewt_uprop(view, AY_TRUE);
 
  return TCL_OK;
 } /* ay_vact_zoomtcb */
@@ -285,7 +287,8 @@ ay_vact_moveztcb(struct Togl *togl, int argc, char *argv[])
       ay_toglcb_display(togl);
     }
 
-  ay_viewt_uprop(view);
+  view->full_notify = AY_FALSE;
+  ay_viewt_uprop(view, AY_TRUE);
 
  return TCL_OK;
 } /* ay_vact_moveztcb */
