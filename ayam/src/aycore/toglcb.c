@@ -89,6 +89,8 @@ ay_toglcb_create(struct Togl *togl)
   view->id = id;
   id++;
 
+  view->full_notify = AY_TRUE;
+
   /* vital OpenGL defaults */
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_AUTO_NORMAL);
