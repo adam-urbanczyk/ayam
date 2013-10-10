@@ -74,12 +74,10 @@ ay_extrnc_deletecb(void *c)
 int
 ay_extrnc_copycb(void *src, void **dst)
 {
- ay_extrnc_object *extrnc = NULL, *extrncsrc = NULL;
+ ay_extrnc_object *extrnc = NULL;
 
   if(!src || !dst)
     return AY_ENULL;
-
-  extrncsrc = (ay_extrnc_object *)src;
 
   if(!(extrnc = malloc(sizeof(ay_extrnc_object))))
     return AY_EOMEM;
@@ -291,10 +289,10 @@ ay_extrnc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
-  ay_notify_object(o);
+  (void)ay_notify_object(o);
 
   o->modified = AY_TRUE;
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return AY_OK;
 } /* ay_extrnc_setpropcb */

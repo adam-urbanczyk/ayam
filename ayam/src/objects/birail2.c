@@ -78,12 +78,10 @@ ay_birail2_deletecb(void *c)
 int
 ay_birail2_copycb(void *src, void **dst)
 {
- ay_birail2_object *birail2 = NULL, *birail2src = NULL;
+ ay_birail2_object *birail2 = NULL;
 
   if(!src || !dst)
     return AY_ENULL;
-
-  birail2src = (ay_birail2_object *)src;
 
   if(!(birail2 = malloc(sizeof(ay_birail2_object))))
     return AY_EOMEM;
@@ -284,10 +282,10 @@ ay_birail2_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
-  ay_notify_object(o);
+  (void)ay_notify_object(o);
 
   o->modified = AY_TRUE;
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return AY_OK;
 } /* ay_birail2_setpropcb */

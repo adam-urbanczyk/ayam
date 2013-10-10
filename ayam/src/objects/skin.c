@@ -78,12 +78,10 @@ ay_skin_deletecb(void *c)
 int
 ay_skin_copycb(void *src, void **dst)
 {
- ay_skin_object *skin = NULL, *skinsrc = NULL;
+ ay_skin_object *skin = NULL;
 
   if(!src || !dst)
     return AY_ENULL;
-
-  skinsrc = (ay_skin_object *)src;
 
   if(!(skin = malloc(sizeof(ay_skin_object))))
     return AY_EOMEM;
@@ -285,10 +283,10 @@ ay_skin_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
-  ay_notify_object(o);
+  (void)ay_notify_object(o);
 
   o->modified = AY_TRUE;
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return AY_OK;
 } /* ay_skin_setpropcb */

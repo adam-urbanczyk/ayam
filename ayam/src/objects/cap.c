@@ -74,12 +74,10 @@ ay_cap_deletecb(void *c)
 int
 ay_cap_copycb(void *src, void **dst)
 {
- ay_cap_object *cap = NULL, *capsrc = NULL;
+ ay_cap_object *cap = NULL;
 
   if(!src || !dst)
     return AY_ENULL;
-
-  capsrc = (ay_cap_object *)src;
 
   if(!(cap = malloc(sizeof(ay_cap_object))))
     return AY_EOMEM;
@@ -260,10 +258,10 @@ ay_cap_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	cap->display_mode;
     }
 
-  ay_notify_object(o);
+  (void)ay_notify_object(o);
 
   o->modified = AY_TRUE;
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return AY_OK;
 } /* ay_cap_setpropcb */

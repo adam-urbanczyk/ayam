@@ -746,11 +746,10 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   if(update)
     {
-      ay_notify_object(o);
+      (void)ay_notify_object(o);
 
       o->modified = AY_TRUE;
-
-      ay_notify_parent();
+      (void)ay_notify_parent();
     }
 
   /* set new display mode/sampling tolerance */

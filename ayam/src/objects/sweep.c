@@ -79,12 +79,10 @@ ay_sweep_deletecb(void *c)
 int
 ay_sweep_copycb(void *src, void **dst)
 {
- ay_sweep_object *sweep = NULL, *sweepsrc = NULL;
+ ay_sweep_object *sweep = NULL;
 
   if(!src || !dst)
     return AY_ENULL;
-
-  sweepsrc = (ay_sweep_object *)src;
 
   if(!(sweep = malloc(sizeof(ay_sweep_object))))
     return AY_EOMEM;

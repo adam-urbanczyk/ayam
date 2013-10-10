@@ -76,12 +76,10 @@ ay_swing_deletecb(void *c)
 int
 ay_swing_copycb(void *src, void **dst)
 {
- ay_swing_object *swing = NULL, *swingsrc = NULL;
+ ay_swing_object *swing = NULL;
 
   if(!src || !dst)
     return AY_ENULL;
-
-  swingsrc = (ay_swing_object *)src;
 
   if(!(swing = malloc(sizeof(ay_swing_object))))
     return AY_EOMEM;
@@ -286,11 +284,10 @@ ay_swing_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
-  ay_notify_object(o);
+  (void)ay_notify_object(o);
 
   o->modified = AY_TRUE;
-
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return AY_OK;
 } /* ay_swing_setpropcb */

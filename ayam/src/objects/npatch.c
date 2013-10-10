@@ -1948,7 +1948,7 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   if(update || o->modified)
     {
-      ay_notify_object(o);
+      (void)ay_notify_object(o);
 
       o->modified = AY_TRUE;
     }
@@ -1965,7 +1965,7 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	}
     }
 
-  ay_status = ay_notify_parent();
+  (void)ay_notify_parent();
 
  return AY_OK;
 } /* ay_npatch_setpropcb */

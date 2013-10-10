@@ -80,12 +80,10 @@ ay_gordon_deletecb(void *c)
 int
 ay_gordon_copycb(void *src, void **dst)
 {
- ay_gordon_object *gordon = NULL, *gordonsrc = NULL;
+ ay_gordon_object *gordon = NULL;
 
   if(!src || !dst)
     return AY_ENULL;
-
-  gordonsrc = (ay_gordon_object *)src;
 
   if(!(gordon = malloc(sizeof(ay_gordon_object))))
     return AY_EOMEM;
@@ -334,10 +332,10 @@ ay_gordon_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     }
   gordon->wcc = new_wcc;
 
-  ay_notify_object(o);
+  (void)ay_notify_object(o);
 
   o->modified = AY_TRUE;
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return AY_OK;
 } /* ay_gordon_setpropcb */
