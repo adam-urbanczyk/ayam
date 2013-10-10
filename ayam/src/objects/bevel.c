@@ -87,12 +87,10 @@ ay_bevel_deletecb(void *c)
 int
 ay_bevel_copycb(void *src, void **dst)
 {
- ay_bevel_object *bevel = NULL, *bevelsrc = NULL;
+ ay_bevel_object *bevel = NULL;
 
   if(!src || !dst)
     return AY_ENULL;
-
-  bevelsrc = (ay_bevel_object *)src;
 
   if(!(bevel = malloc(sizeof(ay_bevel_object))))
     return AY_EOMEM;
@@ -275,10 +273,11 @@ ay_bevel_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
-  ay_notify_object(o);
+  (void)ay_notify_object(o);
 
   o->modified = AY_TRUE;
-  ay_notify_parent();
+
+  (void)ay_notify_parent();
 
  return AY_OK;
 } /* ay_bevel_setpropcb */

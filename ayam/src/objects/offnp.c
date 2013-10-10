@@ -79,12 +79,10 @@ ay_offnp_deletecb(void *c)
 int
 ay_offnp_copycb(void *src, void **dst)
 {
- ay_offnp_object *offnp = NULL, *offnpsrc = NULL;
+ ay_offnp_object *offnp = NULL;
 
   if(!src || !dst)
     return AY_ENULL;
-
-  offnpsrc = (ay_offnp_object *)src;
 
   if(!(offnp = malloc(sizeof(ay_offnp_object))))
     return AY_EOMEM;
@@ -337,11 +335,10 @@ ay_offnp_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
-  ay_notify_object(o);
+  (void)ay_notify_object(o);
 
   o->modified = AY_TRUE;
-
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return AY_OK;
 } /* ay_offnp_setpropcb */

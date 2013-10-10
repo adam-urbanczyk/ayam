@@ -83,12 +83,12 @@ ay_concatnp_deletecb(void *c)
 int
 ay_concatnp_copycb(void *src, void **dst)
 {
- ay_concatnp_object *concatnp = NULL, *concatnpsrc = NULL;
+ ay_concatnp_object *concatnp = NULL, *concatnpsrc;
 
   if(!src || !dst)
     return AY_ENULL;
 
-  concatnpsrc = (ay_concatnp_object *)src;
+  concatnpsrc = (ay_concatnp_object*)src;
 
   if(!(concatnp = malloc(sizeof(ay_concatnp_object))))
     return AY_EOMEM;
@@ -371,10 +371,10 @@ cleanup:
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
-  ay_notify_object(o);
+  (void)ay_notify_object(o);
 
   o->modified = AY_TRUE;
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return AY_OK;
 } /* ay_concatnp_setpropcb */
