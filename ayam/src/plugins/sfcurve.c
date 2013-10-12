@@ -104,26 +104,17 @@ sfcurve_deletecb(void *c)
 int
 sfcurve_copycb(void *src, void **dst)
 {
- int ay_status = AY_OK;
- sfcurve_object *sfcurve = NULL, *sfcurvesrc = NULL;
+ sfcurve_object *sfcurve = NULL;
 
   if(!src || !dst)
     return AY_ENULL;
-
-  sfcurvesrc = (sfcurve_object *)src;
 
   if(!(sfcurve = calloc(1, sizeof(sfcurve_object))))
     return AY_EOMEM;
 
   memcpy(sfcurve, src, sizeof(sfcurve_object));
 
-  /* copy ncurve */
-  if(sfcurvesrc->ncurve)
-    {
-      ay_status = ay_object_copy(sfcurvesrc->ncurve, &(sfcurve->ncurve));
-      if(ay_status)
-	sfcurve->ncurve = NULL;
-    }
+  sfcurve->ncurve = NULL;
 
   *dst = (void *)sfcurve;
 
@@ -239,7 +230,6 @@ sfcurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 int
 sfcurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- int ay_status = AY_OK;
  char fname[] = "sfcurve_setpropcb";
  char *n1 = "SfCurveAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
@@ -312,10 +302,10 @@ sfcurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
-  ay_status = ay_notify_object(o);
+  (void)ay_notify_object(o);
 
   o->modified = AY_TRUE;
-  ay_status = ay_notify_parent();
+  (void)ay_notify_parent();
 
  return AY_OK;
 } /* sfcurve_setpropcb */

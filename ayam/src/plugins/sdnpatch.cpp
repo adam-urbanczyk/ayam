@@ -3213,11 +3213,10 @@ sdnpatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
 
-  ay_notify_object(o);
+  (void)ay_notify_object(o);
 
   o->modified = AY_TRUE;
-
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return AY_OK;
 } /* sdnpatch_setpropcb */
