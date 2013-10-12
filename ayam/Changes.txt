@@ -1,5 +1,5 @@
-[5. Sep 2013] CVS-Head:
-=======================
+[12. Oct 2013] CVS-Head:
+========================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
 o crash when removing wrong trim curves from patches (SF 3514206)
@@ -74,6 +74,9 @@ o improved closing of surfaces
 o added a second set of drawing/display parameters that is in effect
   when interactive modelling or view actions are active
 o improved robustness of Gordon caps
+o added modelling action to reset the weight of selected control points;
+  the shortcut to start this action is <W>, the shortcut for the action
+  to reset all weights at once is now <Ctrl+W>
 
 GUI:
 o the default value menu buttons of property GUI elements now display a
