@@ -491,6 +491,9 @@ csphere_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   csphere = (csphere_object *)o->refine;
 
+  if(!csphere)
+    return AY_ENULL;
+
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
@@ -548,10 +551,11 @@ csphere_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   csphere = (csphere_object *)(o->refine);
 
+  if(!csphere)
+    return AY_ENULL;
+
   toa = Tcl_NewStringObj(n1,-1);
-
   ton = Tcl_NewStringObj(n1,-1);
-
 
   Tcl_SetStringObj(ton,"Closed",-1);
   to = Tcl_NewIntObj(csphere->closed);
@@ -632,6 +636,9 @@ csphere_writecb(FILE *fileptr, ay_object *o)
 
   csphere = (csphere_object *)(o->refine);
 
+  if(!csphere)
+    return AY_ENULL;
+
   fprintf(fileptr, "%d\n", csphere->closed);
   fprintf(fileptr, "%g\n", csphere->radius);
   fprintf(fileptr, "%g\n", csphere->zmin);
@@ -668,6 +675,8 @@ csphere_wribcb(char *file, ay_object *o)
 
   csphere = (csphere_object*)o->refine;
 
+  if(!csphere)
+    return AY_ENULL;
 
   if(!csphere->closed)
   {
@@ -830,6 +839,9 @@ csphere_bbccb(ay_object *o, double *bbox, int *flags)
     return AY_ENULL;
 
   csphere = (csphere_object *)o->refine;
+
+  if(!csphere)
+    return AY_ENULL;
 
   r = csphere->radius;
   zmi = csphere->zmin;
