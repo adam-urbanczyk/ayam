@@ -2242,7 +2242,8 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
  int ay_status = AY_OK;
  char fname[] = "reset_weights";
  double p[3], *coords;
- unsigned int i, j, k;
+ unsigned int i, j;
+ int k, l;
  int notify_parent = AY_FALSE;
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
@@ -2264,20 +2265,20 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
   if(reset_picked)
     {
       j = 0;
-      for(i = 0; i < pact_objectslen; i++)
+      for(k = 0; k < pact_objectslen; k++)
 	{
-	  if(pact_ratcpo[i])
+	  if(pact_ratcpo[k])
 	    {
-	      for(k = 0; k < pact_numcpo[i]; k++)
+	      for(l = 0; l < pact_numcpo[k]; l++)
 		{
-		  coords = pact_pe.coords[j+k];
+		  coords = pact_pe.coords[j+l];
 		  coords[3] = 1.0;
 		}
-	      pact_objects[i]->modified = AY_TRUE;
-	      ay_notify_object(pact_objects[i]);
+	      pact_objects[k]->modified = AY_TRUE;
+	      ay_notify_object(pact_objects[k]);
 	      notify_parent = AY_TRUE;
 	    }
-	  j += pact_numcpo[i];
+	  j += pact_numcpo[k];
 	} /* for */
     }
   else
