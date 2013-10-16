@@ -1050,7 +1050,7 @@ int
 ay_pomesht_tosdmesh(ay_pomesh_object *pomesh, ay_sdmesh_object **sdmesh)
 {
  int ay_status = AY_OK;
- double *ncontrolv  = NULL;
+ double *ncontrolv = NULL;
  unsigned int *nverts = NULL, *verts = NULL, *t = NULL;
  unsigned int i, j, k, l = 0, m = 0, n = 0, totalverts = 0;
  ay_sdmesh_object *nsdmesh = NULL;

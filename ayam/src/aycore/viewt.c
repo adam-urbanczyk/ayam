@@ -1989,8 +1989,8 @@ ay_viewt_fromcamtcb(struct Togl *togl, int argc, char *argv[])
   memcpy(view->from, c->from, 3*sizeof(double));
   memcpy(view->to, c->to, 3*sizeof(double));
   memcpy(view->up, c->up, 3*sizeof(double));
-  view->roll =  c->roll;
-  view->zoom =  c->zoom;
+  view->roll = c->roll;
+  view->zoom = c->zoom;
 
   ay_toglcb_reshape(togl);
   ay_toglcb_display(togl);
@@ -2743,7 +2743,7 @@ ay_viewt_init(void)
   cvfromxobj = Tcl_NewStringObj("cVFromX",-1);
   cvfromyobj = Tcl_NewStringObj("cVFromY",-1);
   cvfromzobj = Tcl_NewStringObj("cVFromZ",-1);
-  cvtoxobj  = Tcl_NewStringObj("cVToX",-1);
+  cvtoxobj = Tcl_NewStringObj("cVToX",-1);
   cvtoyobj = Tcl_NewStringObj("cVToY",-1);
   cvtozobj = Tcl_NewStringObj("cVToZ",-1);
   cvzoomobj = Tcl_NewStringObj("cVZoom",-1);

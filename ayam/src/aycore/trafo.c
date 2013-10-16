@@ -1191,13 +1191,13 @@ ay_trafo_invmatrix4(double *m, double *mi)
     * determine if the matrix is singular.
     */
    pos = neg = 0.0;
-   t =  AY_M44(m,0,0) * AY_M44(m,1,1) * AY_M44(m,2,2);
+   t = AY_M44(m,0,0) * AY_M44(m,1,1) * AY_M44(m,2,2);
    if (t >= 0.0) pos += t; else neg += t;
 
-   t =  AY_M44(m,1,0) * AY_M44(m,2,1) * AY_M44(m,0,2);
+   t = AY_M44(m,1,0) * AY_M44(m,2,1) * AY_M44(m,0,2);
    if (t >= 0.0) pos += t; else neg += t;
 
-   t =  AY_M44(m,2,0) * AY_M44(m,0,1) * AY_M44(m,1,2);
+   t = AY_M44(m,2,0) * AY_M44(m,0,1) * AY_M44(m,1,2);
    if (t >= 0.0) pos += t; else neg += t;
 
    t = -AY_M44(m,2,0) * AY_M44(m,1,1) * AY_M44(m,0,2);
@@ -1557,18 +1557,18 @@ ay_trafo_rotatematrix(double angle, double x, double y, double z, double *m)
     *  Arbitrary axis rotation matrix.
     *
     *  This is composed of 5 matrices, Rz, Ry, T, Ry', Rz', multiplied
-    *  like so:  Rz * Ry * T * Ry' * Rz'.  T is the final rotation
+    *  like so: Rz * Ry * T * Ry' * Rz'. T is the final rotation
     *  (which is about the X-axis), and the two composite transforms
     *  Ry' * Rz' and Rz * Ry are (respectively) the rotations necessary
-    *  from the arbitrary axis to the X-axis then back.  They are
+    *  from the arbitrary axis to the X-axis then back. They are
     *  all elementary rotations.
     *
     *  Rz' is a rotation about the Z-axis, to bring the axis vector
-    *  into the x-z plane.  Then Ry' is applied, rotating about the
-    *  Y-axis to bring the axis vector parallel with the X-axis.  The
-    *  rotation about the X-axis is then performed.  Ry and Rz are
+    *  into the x-z plane. Then Ry' is applied, rotating about the
+    *  Y-axis to bring the axis vector parallel with the X-axis. The
+    *  rotation about the X-axis is then performed. Ry and Rz are
     *  simply the respective inverse transforms to bring the arbitrary
-    *  axis back to it's original orientation.  The first transforms
+    *  axis back to it's original orientation. The first transforms
     *  Rz' and Ry' are considered inverses, since the data from the
     *  arbitrary axis gives you info on how to get to it, not how
     *  to get away from it, and an inverse must be applied.
@@ -1596,7 +1596,7 @@ ay_trafo_rotatematrix(double angle, double x, double y, double z, double *m)
     *
     *  ...etc.  Because of those relations and the standard trigonometric
     *  relations, it is possible to reduce the transforms down to what
-    *  is used below.  It may be that any primary axis chosen will give the
+    *  is used below. It may be that any primary axis chosen will give the
     *  same results (modulo a sign convention) using this method.
     *
     *  Particularly nice is to notice that all divisions that might

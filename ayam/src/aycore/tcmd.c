@@ -459,7 +459,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
  double m[16], u = 0.0, v = 0.0;
  char fargs[] = "[-trafo|-world|-eval] (index | indexu indexv | u | u v (varx vary varz [varw] | -vn varname)|-all varname)";
  Tcl_Obj *to = NULL, *ton = NULL;
- int lflags =  TCL_LEAVE_ERR_MSG | TCL_APPEND_VALUE | TCL_LIST_ELEMENT |
+ int lflags = TCL_LEAVE_ERR_MSG | TCL_APPEND_VALUE | TCL_LIST_ELEMENT |
    TCL_PARSE_PART1;
  ay_voidfp *arr = NULL;
  ay_getpntcb *cb = NULL;
