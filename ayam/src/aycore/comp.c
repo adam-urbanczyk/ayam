@@ -246,7 +246,7 @@ ay_comp_tag(ay_tag *t1, ay_tag *t2)
 int
 ay_comp_tags(ay_object *o1, ay_object *o2)
 {
-  ay_tag *t1, *t2;
+ ay_tag *t1, *t2;
 
   t1 = o1->tags;
   t2 = o2->tags;
@@ -308,7 +308,7 @@ ay_comp_sarg(ay_shader_arg *a1, ay_shader_arg *a2)
 int
 ay_comp_shader(ay_shader *s1, ay_shader *s2)
 {
-  ay_shader_arg *a1, *a2;
+ ay_shader_arg *a1, *a2;
 
   if((s1->type != s2->type) || (strcmp(s1->name, s2->name)))
     return AY_FALSE;
@@ -659,7 +659,6 @@ int
 ay_comp_ncurve(ay_object *o1, ay_object *o2)
 {
  ay_nurbcurve_object *n1, *n2;
-
 
   n1 = (ay_nurbcurve_object *)o1->refine;
   n2 = (ay_nurbcurve_object *)o2->refine;

@@ -1361,8 +1361,8 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp *interp,
 	case AY_SACOLOR:
 	  Tcl_SetStringObj(ton,sargnv[i],-1);
 	  Tcl_AppendStringsToObj(ton,"_R",NULL);
-	  to  = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-			       TCL_GLOBAL_ONLY);
+	  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
+			      TCL_GLOBAL_ONLY);
 	  Tcl_GetDoubleFromObj(interp, to, &dtemp);
 	  if(dtemp < 0) dtemp = 0.0;
 	  if(dtemp > 255) dtemp = 255.0;
@@ -1370,8 +1370,8 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  Tcl_SetStringObj(ton,sargnv[i],-1);
 	  Tcl_AppendStringsToObj(ton,"_G",NULL);
-	  to  = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-			       TCL_GLOBAL_ONLY);
+	  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
+			      TCL_GLOBAL_ONLY);
 	  Tcl_GetDoubleFromObj(interp, to, &dtemp);
 	  if(dtemp < 0) dtemp = 0.0;
 	  if(dtemp > 255) dtemp = 255.0;
@@ -1379,8 +1379,8 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  Tcl_SetStringObj(ton,sargnv[i],-1);
 	  Tcl_AppendStringsToObj(ton,"_B",NULL);
-	  to  = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-			       TCL_GLOBAL_ONLY);
+	  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
+			      TCL_GLOBAL_ONLY);
 	  Tcl_GetDoubleFromObj(interp, to, &dtemp);
 	  if(dtemp < 0) dtemp = 0.0;
 	  if(dtemp > 255) dtemp = 255.0;
@@ -1392,29 +1392,29 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp *interp,
 	case AY_SANORMAL:
 	  Tcl_SetStringObj(ton,sargnv[i],-1);
 	  Tcl_AppendStringsToObj(ton,"_X",NULL);
-	  to  = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-			       TCL_GLOBAL_ONLY);
+	  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
+			      TCL_GLOBAL_ONLY);
 	  Tcl_GetDoubleFromObj(interp, to, &dtemp);
 	  newarg->val.point[0] = (float)dtemp;
 
 	  Tcl_SetStringObj(ton,sargnv[i],-1);
 	  Tcl_AppendStringsToObj(ton,"_Y",NULL);
-	  to  = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-			       TCL_GLOBAL_ONLY);
+	  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
+			      TCL_GLOBAL_ONLY);
 	  Tcl_GetDoubleFromObj(interp, to, &dtemp);
 	  newarg->val.point[1] = (float)dtemp;
 
 	  Tcl_SetStringObj(ton,sargnv[i],-1);
 	  Tcl_AppendStringsToObj(ton,"_Z",NULL);
-	  to  = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-			       TCL_GLOBAL_ONLY);
+	  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
+			      TCL_GLOBAL_ONLY);
 	  Tcl_GetDoubleFromObj(interp, to, &dtemp);
 	  newarg->val.point[2] = (float)dtemp;
 	  break;
 	case AY_SASCALAR:
 	  Tcl_SetStringObj(ton,sargnv[i],-1);
-	  to  = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-			       TCL_GLOBAL_ONLY);
+	  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
+			      TCL_GLOBAL_ONLY);
 	  Tcl_GetDoubleFromObj(interp, to, &dtemp);
 	  newarg->val.scalar = (float)dtemp;
 	  break;
@@ -1436,8 +1436,8 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      Tcl_SetStringObj(ton,sargnv[i],-1);
 	      Tcl_AppendStringsToObj(ton,man[j],NULL);
-	      to  = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-				   TCL_GLOBAL_ONLY);
+	      to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
+				  TCL_GLOBAL_ONLY);
 	      Tcl_GetDoubleFromObj(interp, to, &dtemp);
 	      newarg->val.matrix[j] = (float)dtemp;
 	    } /* for */

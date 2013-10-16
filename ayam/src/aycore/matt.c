@@ -304,7 +304,7 @@ ay_matt_creatematerialids(ay_object *o)
     {
       if(o->mat)
 	{
-	  mat =  o->mat;
+	  mat = o->mat;
 
 	  if(!(tname = calloc(3, sizeof(char))))
 	    return AY_EOMEM;

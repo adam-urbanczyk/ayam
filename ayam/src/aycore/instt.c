@@ -237,7 +237,7 @@ ay_instt_createorigids(ay_object *o)
 		{ free(tval); return AY_EOMEM; }
 
 	      strcpy(tname,"OI");
-	      if(!(newtag = calloc(1,sizeof(ay_tag))))
+	      if(!(newtag = calloc(1, sizeof(ay_tag))))
 		{ free(tval); free(tname); return AY_EOMEM; }
 
 	      newtag->name = tname;
@@ -302,7 +302,7 @@ ay_instt_createinstanceids(ay_object *o)
 		{
 		  /* copy val from origtag to oitag of instance object */
 		  free(tag->val);
-		  if(!(tag->val=calloc(strlen(origtag->val)+1,sizeof(char))))
+		  if(!(tag->val=calloc(strlen(origtag->val)+1, sizeof(char))))
 		    return AY_EOMEM;
 		  strcpy(tag->val, origtag->val);
 
@@ -314,12 +314,15 @@ ay_instt_createinstanceids(ay_object *o)
 	  if(!found)
 	    {
 	      /* need to create a new tag object */
-	      ay_tags_copy(origtag, &tag);
+	      ay_status = ay_tags_copy(origtag, &tag);
+
+	      if(ay_status)
+		return ay_status;
+
 	      tag->next = o->tags;
 	      o->tags = tag;
 	    }
-
-	}
+	} /* if instance */
 
       if(o->down)
 	ay_status = ay_instt_createinstanceids(o->down);
@@ -328,7 +331,7 @@ ay_instt_createinstanceids(ay_object *o)
 	return ay_status;
 
       o = o->next;
-    }
+    } /* while */
 
  return ay_status;
 } /* ay_instt_createinstanceids */
@@ -606,7 +609,6 @@ ay_instt_clearoidtags(ay_object *o)
 		  tag = tag->next;
 		} /* if */
 	    } /* while */
-
 	} /* if */
 
       if(o->down)
@@ -616,19 +618,19 @@ ay_instt_clearoidtags(ay_object *o)
 	return ay_status;
 
       o = o->next;
-    }
+    } /* while */
 
  return ay_status;
 } /* ay_instt_clearoidtags */
 
 
 /* ay_instt_findinstance:
- *  check objects pointed to by "o" for instance objects that
- *  are instances of object "r"; returns AY_ERROR imediately
- *  if a single instance has been found
+ *  _recursively_ check objects pointed to by "o" for instance objects
+ *  whose master is "m"; returns AY_ERROR imediately
+ *  if a single such instance has been found
  */
 int
-ay_instt_findinstance(ay_object *r, ay_object *o)
+ay_instt_findinstance(ay_object *m, ay_object *o)
 {
  int ay_status = AY_OK;
 
@@ -639,12 +641,12 @@ ay_instt_findinstance(ay_object *r, ay_object *o)
     {
       if(o->type == AY_IDINSTANCE)
 	{
-	  if(((ay_object *)o->refine) == r)
+	  if(((ay_object *)o->refine) == m)
 	    return AY_ERROR;
 	}
 
       if(o->down)
-	ay_status = ay_instt_findinstance(r, o->down);
+	ay_status = ay_instt_findinstance(m, o->down);
 
       if(ay_status)
 	return ay_status;
@@ -736,6 +738,8 @@ ay_instt_resolve(ay_object *i)
     return AY_ERROR;
 
   orig = (ay_object *)i->refine;
+
+  /* sanity check */
   if(!orig)
     return AY_ERROR;
 
@@ -865,7 +869,7 @@ ay_instt_resolvetcmd(ClientData clientData, Tcl_Interp *interp,
  *  else returns AY_FALSE.
  *  This function first recursively browses the scene searching
  *  for the target, and when found, upon unwinding the recursive
- *  invocations checks all (intermediate) parents from target to o.
+ *  invocations, checks all (intermediate) parents from target to o.
  */
 int
 ay_instt_checkinstance(ay_object *o, ay_object *target,
@@ -1085,5 +1089,5 @@ ay_instt_init(Tcl_Interp *interp)
   /* hash table for id -> original object pointers */
   Tcl_InitHashTable(&ay_instt_oidptr_ht, TCL_STRING_KEYS);
 
-  return;
+ return;
 } /* ay_instt_init */

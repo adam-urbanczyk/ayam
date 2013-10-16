@@ -164,7 +164,7 @@ ay_clevel_gotop()
 	}
     }
 
-  return ay_status;
+ return ay_status;
 } /* ay_clevel_gotop */
 
 

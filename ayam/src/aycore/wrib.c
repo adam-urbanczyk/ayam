@@ -1228,7 +1228,7 @@ ay_wrib_defmat(char *file)
 int
 ay_wrib_checklights(ay_object *o)
 {
- int  i = AY_FALSE;
+ int i = AY_FALSE;
  ay_light_object *light = NULL;
 
   if(!o)
@@ -1313,19 +1313,19 @@ ay_wrib_lights(char *file, ay_object *o)
   filenlen = strlen(file);
 
   if(!(shadowptr = calloc(filenlen+64, sizeof(char))))
-    return AY_EOMEM;
+    {ay_status = AY_EOMEM; goto cleanup;}
   if(!(pxptr = calloc(filenlen+64, sizeof(char))))
-    return AY_EOMEM;
+    {ay_status = AY_EOMEM; goto cleanup;}
   if(!(nxptr = calloc(filenlen+64, sizeof(char))))
-    return AY_EOMEM;
+    {ay_status = AY_EOMEM; goto cleanup;}
   if(!(pyptr = calloc(filenlen+64, sizeof(char))))
-    return AY_EOMEM;
+    {ay_status = AY_EOMEM; goto cleanup;}
   if(!(nyptr = calloc(filenlen+64, sizeof(char))))
-    return AY_EOMEM;
+    {ay_status = AY_EOMEM; goto cleanup;}
   if(!(pzptr = calloc(filenlen+64, sizeof(char))))
-    return AY_EOMEM;
+    {ay_status = AY_EOMEM; goto cleanup;}
   if(!(nzptr = calloc(filenlen+64, sizeof(char))))
-    return AY_EOMEM;
+    {ay_status = AY_EOMEM; goto cleanup;}
 
   while(o)
     {
@@ -1575,6 +1575,7 @@ ay_wrib_lights(char *file, ay_object *o)
     } /* while */
 
   /* clean up */
+cleanup:
   if(shadowptr)
     {
       free(shadowptr);
@@ -1604,7 +1605,7 @@ ay_wrib_lights(char *file, ay_object *o)
       free(nzptr);
     }
 
-  return ay_status;
+ return ay_status;
 } /* ay_wrib_lights */
 
 

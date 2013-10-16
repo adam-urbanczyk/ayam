@@ -224,7 +224,7 @@ int
 ay_sdmesht_topolymesh(ay_sdmesh_object *sdmesh, ay_pomesh_object **pomesh)
 {
  int ay_status = AY_OK;
- double *ncontrolv  = NULL;
+ double *ncontrolv = NULL;
  unsigned int *nverts = NULL, *verts = NULL, *nloops = NULL;
  unsigned int i, totalverts = 0;
  ay_pomesh_object *npomesh = NULL;

@@ -51,7 +51,7 @@ ay_quat_axistoquat(double a[3], double phi, double q[4])
 
 /* ay_quat_norm:
  *  Normalize the quaternion <q>, if needed.
- *  Quaternions always obey:  a^2 + b^2 + c^2 + d^2 = 1.0
+ *  Quaternions always obey: a^2 + b^2 + c^2 + d^2 = 1.0
  *  If they don't add up to 1.0, dividing by their magnitude will
  *  renormalize them.
  */
@@ -212,7 +212,7 @@ ay_quat_slerp(double t, double q1[4], double q2[4], double r[4])
  double angle = 0.0, scale = 0.0, invscale = 0.0;
  double theta, invsintheta, iq1[4];
 
-  angle =  ay_quat_dot(q1, q2);
+  angle = ay_quat_dot(q1, q2);
 
   if(angle < 0.0)
     {
@@ -268,8 +268,8 @@ ay_quat_slerp(double t, double q1[4], double q2[4], double r[4])
 double
 ay_quat_dot(double q1[4], double q2[4])
 {
-  return((q1[0] * q2[0]) + (q1[1] * q2[1]) +
-    (q1[2] * q2[2]) + (q1[3] * q2[3]));
+ return((q1[0] * q2[0]) + (q1[1] * q2[1]) +
+	(q1[2] * q2[2]) + (q1[3] * q2[3]));
 } /* ay_quat_dot */
 
 

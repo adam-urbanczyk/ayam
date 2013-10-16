@@ -323,6 +323,7 @@ ay_sel_clearselflag(ay_object *o)
       o->selected = AY_FALSE;
       o = o->next;
     }
-  return;
+
+ return;
 } /* ay_sel_clearselflag */
 
