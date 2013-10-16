@@ -773,7 +773,7 @@ proc selMUD { up } {
     while { 1 } {
     if { $ay(lb) == 0 } {
 	# tree
-	set w  $ay(tree)
+	set w $ay(tree)
 	set sel ""
 	set sel [$w selection get]
 	if { $sel ne "" } {
@@ -883,43 +883,64 @@ proc searchOb { expression action {gui 0} } {
     }
 
     # compile expression
-    if { [string first "\$" $ObjectSearch(Expression)] == 0 } {
+    if { ([string first "\$" $ObjectSearch(Expression)] == 0) ||
+	 ([string first "(" $ObjectSearch(Expression)] == 0) } {
 	# variable comparison
-	if { [string first "\$name" $ObjectSearch(Expression)] == 0 } {
-	    # object name comparison
-	    set cx "getName name;expr \{"
-	    append cx $ObjectSearch(Expression)
-	    append cx "\}"
-	} elseif { [string first "\$type" $ObjectSearch(Expression)] == 0 } {
-	    # object type comparison
-	    set cx "getType type;expr \{"
-	    append cx $ObjectSearch(Expression)
-	    append cx "\}"
-	} elseif { [string first "\$mat" $ObjectSearch(Expression)] == 0 } {
-	    # object material comparison
-	    set cx "global matPropData;"
-	    append cx "set matPropData(Materialname) \"\";getMat;expr \{ "
-	    append cx "\$matPropData(Materialname)"
-	    set sindex [string first " " $ObjectSearch(Expression)]
-	    append cx [string range $ObjectSearch(Expression) $sindex end]
-	    append cx " \}"
-	} else {
-	    # arbitrary variable, probably a property value comparison like
-	    # SphereAttr(Radius) == 1
-	    # => create an expression like
-	    # getProperty SphereAttr(Radius) val; expr $val == 1.0
-	    set index [string first ")" $ObjectSearch(Expression)]
+	set rem [string range $ObjectSearch(Expression)\
+		     [string first "\$" $ObjectSearch(Expression)] end]
+	set cx ""
+	set vi 0
+	set mappings {}
+	while { [string first "\$" $rem] != -1 } {
+	    if { [string first "\$name" $rem] == 0 } {
+		# object name comparison
+		append cx "getName name;"
+	    } elseif { [string first "\$type" $rem] == 0 } {
+		# object type comparison
+		append cx "getType type;"
+	    } elseif { [string first "\$mat" $rem] == 0 } {
+		# object material comparison
+		append cx "global matPropData;"
+		append cx "set matPropData(Materialname) \"\";getMat;"
+		append cx "set mat \$matPropData(Materialname);"
+	    } else {
+		# arbitrary variable, probably a property value comparison like
+		# SphereAttr(Radius) == 1.0
+		# => create an expression like
+		# getProperty SphereAttr(Radius) val; expr $val == 1.0
+		set index [string first ")" $rem]
+		if { $index != -1 } {
+		    set prop [string range $rem 1 $index]
+		    append cx "getProperty "
+		    append cx $prop
+		    append cx " val$vi;"
+		    # arrange to transform the property specifier
+		    if { [lsearch $mappings $prop] == -1 } {
+			lappend mappings $prop
+			lappend mappings "val$vi"
+		    }
+		}
+		incr vi
+	    }
+	    # process next $
+	    set rem [string range $rem 1 end]
+	    set index [string first "\$" $rem]
 	    if { $index != -1 } {
-		set sindex [string first " " $ObjectSearch(Expression)]
-		set cx "getProperty "
-		append cx \
-		    [string range $ObjectSearch(Expression) 1 $index]
-		append cx " val;expr \{ \$val"
-		append cx \
-		    [string range $ObjectSearch(Expression) $sindex end]
-		append cx "\}"
+		set rem [string range $rem $index end]
+	    } else {
+		break;
 	    }
 	}
+	# while
+	append cx "expr \{"
+	if { [llength $mappings] > 0 } {
+	    append cx [string map $mappings $ObjectSearch(Expression)]
+	} else {
+	    append cx $ObjectSearch(Expression)
+	}
+	append cx "\}"
+puts "Using Expression:"
+puts $cx
 	set ObjectSearch(cx) $cx
     } else {
 	# expression is not a variable comparison
@@ -962,7 +983,7 @@ proc searchOb { expression action {gui 0} } {
     # now go find the objects
     set ObjectSearch(numfound) 0
     forAll 1 {
-	global ay ObjectSearch
+	global i ay ObjectSearch
 	if { [eval $ObjectSearch(cx)] } {
 	    # found an object
 	    incr ObjectSearch(numfound)
@@ -1165,7 +1186,7 @@ proc objectsearch_open { } {
     lappend expressions "myProc"
 
     if { ![info exists ObjectSearch(Action)] } {
-	set  ObjectSearch(Action) "Highlight"
+	set ObjectSearch(Action) "Highlight"
     }
 
     # complete dialog GUI
