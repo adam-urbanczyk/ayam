@@ -730,12 +730,15 @@ console or in a property GUI element (i.e.~a data entry field).
 Hit <tt>&lt;Esc&gt;</tt> to set the focus to the object selection
 widget and thus enable the main menu keyboard shortcuts.
 <p>
-One can adapt these shortcuts using the <tt>"ayamrc"</tt> file
+These keyboard shortcuts may be adapted using the <tt>"ayamrc"</tt> file
 (see section <ref id="ayamrc" name="Ayamrc File">).
 <p>
-Another way of navigating the menu is via the <tt/"Menu"/ or
-<tt/"Alt"/ key, pressed together with the various underlined characters
-in the menu entries.
+Another way of navigating the menu is via the <tt/&lt;Alt&gt;/ or
+<tt/&lt;Menu&gt;/ key, pressed together with the various underlined
+characters in the menu entries. Once a menu is open, it may also be
+navigated with the cursor keys. The <tt/&lt;Return&gt;/ key invokes
+the currently selected menu entry and the <tt/&lt;Esc&gt;/ key closes
+the menu.
 
 <#if out=latex><x/phantomsection/</#if>
 
@@ -811,8 +814,8 @@ See section <ref id="savesf" name="Saving Scene Files">
 for a more detailed discussion.
 
 <item><tt>"Import/"</tt>, since Ayam 1.13 this sub menu is initially
-empty. You need to load a plugin first to gain access to the menu entries
-described here.
+empty. To gain access to the menu entries described here, the
+respective plugin must be loaded.
 
 <item><tt>"Import/Apple 3DMF"</tt>, import a scene from the Apple
 3DMF format, see section <ref id="imp3dmf" name="3DMF (Apple) Import">
@@ -840,9 +843,9 @@ based X3D format published by the Web3D Consortium, see section
 for more information.
 
 <item><tt>"Export/"</tt>, since Ayam 1.13 this sub menu initially
-only contains the <tt>"RenderMan RIB"</tt> entry. You need to load a
-plugin first to gain access to the other menu entries
-described here.
+only contains the <tt>"RenderMan RIB"</tt> entry. To gain access
+to the other menu entries described here, the corresponding plugin
+must be loaded.
 
 <item><tt>"Export/RenderMan RIB"</tt>, exports the current scene to a RIB,
 asking which camera (which view) to use.
@@ -972,62 +975,63 @@ see also section <ref id="objsearch" name="Object Search">.
 <label id="mmcreate">
 The <tt/"Create"/ menu entries let you create objects. In contrast
 to the object creation via the toolbox some menu entries present you
-with small dialogs, where you may adjust parameters for the object
-to be created.
+with small dialogs, where parameters for the object to be created
+may be adjusted.
 The entry fields in those dialogs support Tcl expressions as detailed
 in section <ref id="scexpdiag" name="Expression Support in Dialog Entries">.
 Here are the entries of the <tt/Create/ menu:
 <itemize>
 <item><tt/"NURBCurve"/, create a new NURBS curve. A small dialog box will
-pop up, where you may specify the length of the new curve. See
+pop up, where the length of the new curve may be specified. See
 also section <ref id="ncurveobj" name="NCurve Object">.
 This dialog also contains a <tt/"AddArgs"/ entry
-field where you may specify additional command line arguments to
-the <tt/"crtOb NCurve"/ command, as outlined in section
+field where additional command line arguments to
+the <tt/"crtOb NCurve"/ command may be specified, as outlined in section
 <ref id="sccrtnc" name="Creating Objects">.<footnote>Since 1.19.</footnote>
 
 <item><tt/"ICurve"/, create a new interpolating curve. A small dialog box will
-pop up, where you may specify the length of the new curve. See
+pop up, where the length of the new curve may be specified. See
 also section <ref id="icurveobj" name="ICurve Object">.
 This dialog also contains a <tt/"AddArgs"/ entry
-field where you may specify additional command line arguments to
-the <tt/"crtOb ICurve"/ command, as outlined in section
+field where additional command line arguments to
+the <tt/"crtOb ICurve"/ command may be specified, as outlined in section
 <ref id="sccrtic" name="Creating Objects">.<footnote>Since 1.19.</footnote>
 
 <item><tt/"ACurve"/, create a new approximating curve. A small dialog box will
-pop up, where you may specify the length of the new curve. See
+pop up, where the length of the new curve may be specified. See
 also section <ref id="acurveobj" name="ACurve Object">.
 This dialog also contains a <tt/"AddArgs"/ entry
-field where you may specify additional command line arguments to
-the <tt/"crtOb ACurve"/ command, as outlined in section
+field where additional command line arguments to
+the <tt/"crtOb ACurve"/ command may be specified, as outlined in section
 <ref id="sccrtac" name="Creating Objects">.<footnote>Since 1.19.</footnote>
 
 <item><tt/"NCircle"/, create a new NURBS circle. See
 also section <ref id="ncircleobj" name="NCircle Object">.
 
 <item><tt/"NURBPatch"/, create a new NURBS patch. A small dialog box will
-pop up, where you may specify the width and height of the new patch. See
+pop up, where the width and height of the new patch may be specified. See
 also section <ref id="npatchobj" name="NPatch Object">.
 This dialog also contains a <tt/"AddArgs"/ entry
-field where you may specify additional command line arguments to
-the <tt/"crtOb NPatch"/ command, as outlined in section
+field where additional command line arguments to
+the <tt/"crtOb NPatch"/ command may be specified, as outlined in section
 <ref id="sccrtnp" name="Creating Objects">.<footnote>Since 1.19.</footnote>
 
 <item><tt/"IPatch"/, create a new interpolating patch.
 <footnote>Since 1.20.</footnote>
-A small dialog box will pop up, where you may specify the width and
-height of the new patch. See also section
+A small dialog box will pop up, where the width and
+height of the new patch may be specified. See also section
 <ref id="ipatchobj" name="IPatch Object">.
 This dialog also contains a <tt/"AddArgs"/ entry
-field where you may specify additional command line arguments to
-the <tt/"crtOb IPatch"/ command, as outlined in section
+field where additional command line arguments to
+the <tt/"crtOb IPatch"/ command may be specified, as outlined in section
 <ref id="sccrtip" name="Creating Objects">.
 
 <item><tt/"BPatch"/, create a new bilinear patch. See
 also section <ref id="bpatchobj" name="BPatch Object">.
 
-<item><tt/"PatchMesh"/, create a new patch mesh. See
-also section <ref id="patchmeshobj" name="PatchMesh Object">.
+<item><tt/"PatchMesh"/, create a new patch mesh. A small dialog box will
+pop up, where the width and height of the new patch may be specified.
+See also section <ref id="patchmeshobj" name="PatchMesh Object">.
 
 <item><tt/"Solid"/, create a new solid primitive object, for use in CSG.
 <tt/"Box"/, <tt/"Sphere"/, <tt/"Disk"/, <tt/"Cone"/, <tt/"Cylinder"/,
@@ -1996,7 +2000,7 @@ The following special actions are defined:
 <tag/Highlight/
 All found objects will be colored in the object tree.
 Highlighted objects stay highlighted until the tree view is updated
-completely (e.g. via the keyboard shortcut <tt>&lt;F5&gt;</tt>) or partially
+completely (e.g.~via the keyboard shortcut <tt>&lt;F5&gt;</tt>) or partially
 (for instance after drag and drop or object clipboard operations).
 <tag/Collect/
 The node names of the found objects
@@ -2010,12 +2014,12 @@ The node names of the found objects will be collected, then the list of
 objects will be processed so that delete is safe, then the objects
 will be deleted from the scene.
 </descrip>
-In addition to these special actions, a command/procedure call, like e.g.
-<tt>convOb -inplace</tt> or <tt>addTag NoExport ""</tt> can also be
+In addition to these special actions, a command/procedure call, like
+e.g.~<tt>convOb -inplace</tt> or <tt>addTag NoExport ""</tt> can also be
 specified as action.
 However, as the object search is based on the <tt/"forAll"/ scripting
 interface command, certain restrictions apply:<newline>
-the action must not change the scene hierarchy, i.e. one must not
+the action must not change the scene hierarchy, i.e.~one must not
 delete, cut, or create objects in the command/procedure call. Changing the
 objects themselves, even converting them in-place, however, is allowed.
 See also section
@@ -2079,7 +2083,7 @@ Note that the environment variable SHADERS will be adapted to match
 the contents of this preference setting, so that renderers started
 by Ayam see exactly the same set of shaders as Ayam.
 However, this does of course not affect any renderers that are
-started outside the Ayam context, i.e. when rendering exported RIB files
+started outside the Ayam context, i.e.~when rendering exported RIB files
 from a shell.
 
 <item><tt/"Scan for Shaders!"/ initiates a rebuild of the internal
@@ -3243,7 +3247,7 @@ dimensional mark coordinates. Therefore, in versions prior to 1.21 the
 third coordinate was always set to zero upon a click. If the preference
 option <tt>"Modelling/GlobalMark"</tt> is enabled, the third coordinate
 is not reset anymore. This way one can define all three coordinates of
-the mark by clicking two times in appropriate views, e.g. first in a
+the mark by clicking two times in appropriate views, e.g.~first in a
 front view for x and y and second in a side view for z.
 <p>
 Additionally, when the set mark action is active, the following keyboard
@@ -7345,7 +7349,7 @@ and watches its changes and adapts to it automagically.
 <p>
 The axis of revolution is always the Y axis.
 The parameter curve should be defined in the XY plane.
-If not, it will be squashed down to this plane before revolving it.
+If not, the curve will be projected to this plane before revolving.
 <p>
 The following table briefly lists some capabilities of the Revolve object.
 <p>
@@ -10079,7 +10083,7 @@ of the shader to the default values.
 See also section <ref id="workshd" name="Working with Shaders"> below.
 <p>
 All other elements of the shader property GUI depend on the currently
-attached shader, i.e. they represent the arguments of the shader
+attached shader, i.e.~they represent the arguments of the shader
 function.
 
 <#if out=latex><x/phantomsection/</#if>
@@ -10230,7 +10234,7 @@ or to change the type or value of the tag.
 <figure loc="ht">
 <eps file="pics/addmodtag.ps" height="2.5cm">
 <img src="pics/addmodtag.gif">
-<caption>Add/Edit Tag  Dialog</caption>
+<caption>Add/Edit Tag Dialog</caption>
 </figure>
 </itemize>
 <p>
@@ -10485,8 +10489,8 @@ are: SDMesh, PolyMesh, PatchMesh, NPatch, and BPatch.
 Most tool objects that internally create NPatch objects also support PV
 tags.<footnote>Since 1.20.</footnote>
 Mind that the same set of tags
-will be used for all surfaces that make up the tool object, e.g.
-the swept surface, the bevels, and the caps.
+will be used for all surfaces that make up the tool object,
+e.g.~the swept surface, the bevels, and the caps.
 <p>
 Furthermore, the number of data elements, which depends on the
 detail or storage class, the type of geometric primitive, and the
@@ -10866,7 +10870,7 @@ of the object will be run. The notification of the parent object(s)
 will be run after processing of all selected objects finished.
 <p>
 Tools that create tool objects may use the clipboard to move the
-new children around, i.e. the clipboard contents are lost afterwards.
+new children around, i.e.~the clipboard contents are lost afterwards.
 
 <#if out=latex><x/newpage/</#if>
 <sect1>Curve Creation Tools
@@ -11472,7 +11476,7 @@ value t, i.e.~use <tt/"-i 4"/ instead of <tt/"0.5"/).
 If the knot can not be removed <it/r/ times due to the tolerance given, an
 error is reported and the original curve is left unchanged.
 <tag/Notes/ If <it/tol/ is <tt/"0.0"/ the remove knot tool tries to
-work without changing the shape of the curve, i.e. only superfluous
+work without changing the shape of the curve, i.e.~only superfluous
 knots will be removed.
 If <it/tol/ is <tt/"Inf"/ (infinity) the specified knot will be removed
 regardless of potential curve changes.
@@ -11717,7 +11721,7 @@ or NURBS patch and a number of selected (tagged) multiple points
 on how to select (tag) control points).
 <tag/Operation/ The points forming the selected multiple points will
 be made to simple points again and may be edited separately.
-<tag/Notes/ The control points should immediately be edited (i.e. moved
+<tag/Notes/ The control points should immediately be edited (i.e.~moved
 apart) after exploding, to avoid that they automatically collapse to a
 multiple point again, as Ayam will re-create the multiple points on
 several occasions like reading of a scene, inserting/deleting points,
@@ -11924,7 +11928,7 @@ value t, i.e.~use <tt/"-i 4"/ instead of <tt/"0.5"/).
 If the knot can not be removed <it/r/ times due to the tolerance given, an
 error is reported and the original surface is left unchanged.
 <tag/Notes/ If <it/tol/ is <tt/"0.0"/ the remove knot tool tries to
-work without changing the shape of the surface, i.e. only superfluous
+work without changing the shape of the surface, i.e.~only superfluous
 knots will be removed.
 If <it/tol/ is <tt/"Inf"/ (infinity) the specified knot will be removed
 regardless of potential surface changes.
@@ -13442,6 +13446,37 @@ goTop:
  <item>Description: Go to the top level of the object hierarchy.
 </itemize>
 
+<p>
+The following commands move objects around in the hierarchy:
+
+<#if out=latex><x/phantomsection/</#if>
+
+<label id="scupob">
+upOb &ndash; move object(s) upward in the current level:
+<itemize>
+ <item>Synopsis: <tt/"upOb"/
+ <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Description: Move the currently selected object(s) upwards
+in the current level. Non contiguous selections are supported.
+If the first of the selected objects is the first in the current level,
+nothing will be changed.
+</itemize>
+
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
+<label id="scdownob">
+downOb &ndash; move object(s) downward in the current level:
+<itemize>
+ <item>Synopsis: <tt/"downOb"/
+ <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Description: Move the currently selected object(s) downwards
+in the current level. Non contiguous selections are supported.
+If the last of the selected objects is the last in the current level,
+nothing will be changed.
+</itemize>
+
+
 <sect2>Transformations<label id="scitrafo">
 <p>
 These commands transform objects or selected points of objects:
@@ -14012,7 +14047,7 @@ isCompNC:
  <item>Synopsis: <tt>"isCompNC"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: This command returns 1 if the selected NURBS curves
-are compatible (i.e. defined on the same knot vector), otherwise it returns 0.
+are compatible (i.e.~defined on the same knot vector), otherwise it returns 0.
 </itemize>
 
 <p>
@@ -15567,7 +15602,7 @@ used to get more useful cursor key behavior in primary modelling
 views (parallel views).
 <p>
 After running the script, the keyboard shortcuts for rotating
-and panning in parallel views are swapped, e.g. just pressing
+and panning in parallel views are swapped, e.g.~just pressing
 <tt/&lt;Left&gt;/ key will then pan the view, instead of rotating it.
 <p>
 The shortcuts will be swapped again, when the view changes
@@ -15799,7 +15834,7 @@ because the Tcl command <tt/"exit"/ is not available in the safe interpreter.
 The command will not fail, when the calling context ist the main Tcl
 interpreter; one can e.g.~type into the Ayam console:
 <tscreen>
-<tt><bf>jsEval {</bf>tcleval("<bf>exit</bf>");<bf/}/</tt>
+<tt>&raquo;&thinsp;<bf>jsEval {</bf>tcleval("<bf>exit</bf>");<bf/}/</tt>
 </tscreen>
 and Ayam quits (see also section:
 <ref id="safeinterp" name="Safe Interpreter">).
@@ -16097,7 +16132,7 @@ because the Tcl command <tt/"exit"/ is not available in the safe interpreter.
 The command will not fail, when the calling context ist the main Tcl
 interpreter; one can e.g.~type into the Ayam console:
 <tscreen>
-<tt><bf>luaEval {</bf>tcleval("<bf>exit</bf>");<bf/}/</tt>
+<tt>&raquo;&thinsp;<bf>luaEval {</bf>tcleval("<bf>exit</bf>");<bf/}/</tt>
 </tscreen>
 and Ayam quits (see also section:
 <ref id="safeinterp" name="Safe Interpreter">).
@@ -16209,7 +16244,7 @@ or contain namespace specifiers
 <p>
 When data is transferred from the Tcl to the Lua side
 (e.g.~while converting return values of <tt/"tcleval"/ or variable
-values linked via  <tt/"tclvar"/),
+values linked via <tt/"tclvar"/),
 the following conversions are in effect:
 Scalar data types will be converted to their directly matching counterparts.
 Lists will be converted to array-tables (nesting is allowed and will
@@ -16450,7 +16485,7 @@ application. For instance, many applications claim to read files in the
 Wavefront OBJ format but only import polygonal data or, even worse, only
 triangles from such files. By default, Ayam tries to preserve as much
 information/design intent as possible in the respective export format
-leading e.g. to the use of NURBS in Wavefront OBJ files.
+leading e.g.~to the use of NURBS in Wavefront OBJ files.
 Consequently, to successfully transfer an Ayam scene to a different
 application, in some cases, manual conversion of the NURBS objects in
 the Ayam scene to polygonal geometry may be necessary.
@@ -16895,9 +16930,9 @@ The Wavefront export currently supports the following
 objects:
 <itemize>
 <item>NCurve and objects that may be converted to NCurve
-objects (e.g. ICurve, ConcatNC, ExtrNC),
+objects (e.g.~ICurve, ConcatNC, ExtrNC),
 <item>NPatch (with trim curves) and objects that may be converted
-to NPatch objects (e.g. BPatch, PatchMesh, Revolve, Sweep, Extrude, Skin,
+to NPatch objects (e.g.~BPatch, PatchMesh, Revolve, Sweep, Extrude, Skin,
 Cap, Gordon, Birail1, Birail2, Text); since Ayam 1.8.3 also Quadrics
 will be automatically converted to NURBS surfaces and exported,
 <item>PolyMesh and objects that may be converted to PolyMesh objects
@@ -19086,6 +19121,7 @@ Index:
 </itemize>
 <item>Bevel3D: <ref id="offsetncp" name="offset mode">
 <item>BevelRadius, BevelRevert, BevelType: <ref id="bevelp" name="Bevel attribute">
+<item>Bezier: <ref id="ncurveattrprop" name="knot type">
 <item>bgconvert.tcl: <ref id="bgconverttcl" name="example/helper script">
 <item>BGImage: <ref id="vat" name="View attribute">
 <item>bicubic/bilinear PatchMesh: <ref id="patchmeshobj" name="PatchMesh object">
@@ -19099,6 +19135,7 @@ Index:
 <item>BPatch: <ref id="bpatchobj" name="BPatch object">
 <item>Break: <ref id="breaknpt" name="break into curves tool">
 <item>breakNP: <ref id="scbreaknp" name="scripting interface command">
+<item>B-Spline: <ref id="ncurveattrprop" name="knot type">
 <item>BType_U, BType_V: <ref id="pmattr" name="PatchMesh attribute">
 <item>Build: <ref id="buildnpt" name="build from curves tool">
 <item>buildNP: <ref id="scbuildnp" name="scripting interface command">
@@ -19124,7 +19161,9 @@ Index:
 <item>Cat: <ref id="hidprefs" name="hidden preference setting">
 <item>Chamfer: <ref id="bevelobj" name="Bevel object">,
 <item>CheckLights: <ref id="prefrib" name="preference setting">
+<item>Chordal: <ref id="ncurveattrprop" name="knot type">
 <item>Center All Points: <ref id="mmspecial" name="main menu entry">
+<item>Centripetal: <ref id="ncurveattrprop" name="knot type">
 <item>Circle:
 <itemize>
 <item><ref id="ncirct" name="NURBS circle tool">,
@@ -19271,6 +19310,7 @@ Index:
 <item>DBNS: <ref id="bnstag" name="tag type">
 <item>Docs: <ref id="prefgui" name="preference setting">
 <item>Double Size: <ref id="vmconf" name="view menu entry">
+<item>downOb: <ref id="scdownob" name="scripting interface command">
 <item>DrawGrid, DrawLevel, DrawSel, DrawBG: <ref id="vat" name="View attribute">
 <item>Draw BGImage: <ref id="vmconf" name="view menu entry">
 <item>Draw Grid: <ref id="vmconf" name="view menu entry">
@@ -19346,7 +19386,7 @@ Index:
 <item><ref id="extnct" name="extract curve tool">,
 <item><ref id="extrnpt" name="extract patch tool">
 </itemize>
-<item>ExtrNC:<ref id="extrncobj" name="ExtrNC object">
+<item>ExtrNC: <ref id="extrncobj" name="ExtrNC object">
 <item>ExtrNP:
 <itemize>
 <item><ref id="extrnpobj" name="ExtrNP object">,
@@ -19701,6 +19741,7 @@ Index:
 <item>NPDisplayModeA: <ref id="prefdraw" name="preference setting">
 <item>NumClones: <ref id="cloneattr" name="Clone attribute">
 <item>NumSamples: <ref id="moattr" name="MetaObj attribute">
+<item>NURB: <ref id="ncurveattrprop" name="knot type">
 <item>NURBCircle: <ref id="ncirct" name="NURBS circle tool">
 <item>NURBCurve: <ref id="ncurveobj" name="NCurve object">
 <item>NURBPatch: <ref id="npatchobj" name="NPatch object">
@@ -20312,6 +20353,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 </itemize>
 <item>UndoLevels: <ref id="prefmodel" name="preference setting">
 <item>Union: <ref id="levelobj" name="Level object">
+<item>upOb: <ref id="scupob" name="scripting interface command">
 <item>UpperCap:
 <itemize>
 <item><ref id="rep" name="Revolve attribute">,
@@ -20386,7 +20428,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="expwav" name="Wavefront OBJ export option">
 </itemize>
 <item>WriteViews: <ref id="expx3dopt" name="X3D (Web3D) export option">
-<item>WriteX3dom<ref id="expx3dopt" name="X3D (Web3D) export option">
+<item>WriteX3dom: <ref id="expx3dopt" name="X3D (Web3D) export option">
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
