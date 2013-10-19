@@ -3398,8 +3398,9 @@ select the first of the points that make up the multiple point
 
 <sect1>Editing Points<label id="editac">
 <p>
-To edit the points of an object three actions (<tt/"Edit"/,
-<tt/"Edit Weights"/, and <tt/"Numeric Point Edit"/) are available.
+To edit the points of an object four actions (<tt/"Edit"/,
+<tt/"Edit Weights"/, <tt/"Reset Weights"/, and <tt/"Numeric Point Edit"/)
+are available.
 All those actions may be applied to objects that support single point
 editing only.
 Such objects usually draw their selectable points using small white
@@ -3523,12 +3524,12 @@ The numeric point editing action also supports read only
 points, their coordinates may be retrieved, but applying any values
 will have no effect.<footnote>Since 1.18.</footnote>
 <p>
-Single coordinate entry fields may be empty to
+When applying changes, single coordinate entry fields may be empty to
 prevent a change of the corresponding coordinate
 value.<footnote>Since 1.20.</footnote>
 <p>
 If a multiple point is edited, this action modifies all single
-points that make up the multiple point, i.e.~you can not move
+points that make up the multiple point, i.e.~one can not move
 single points apart from a multiple point using the numeric point
 edit action. Temporarily disable the <tt/"CreateMP"/ property or
 explode the multiple point to do that.
@@ -3546,12 +3547,21 @@ another modelling action. Simply click on the point again in a view
 where the numeric point editing action is active, to update the coordinate
 values in the numeric point editing dialog.
 <p>
+The numeric point edit value fields support Tcl expressions.
+This allows e.g.~to set a point to
+exactly<footnote>in the limits imposed by the
+floating point data type double</footnote> <f>1/3</f> by entering:
+<tscreen>
+<tt>[expr 1.0/3.0]</tt>
+</tscreen>
+<p>
 Even though the dialog may display point coordinates in degraded
 accuracy (due to floating point to string conversion)
 the original point data is unchanged and its accuracy is not affected
 as long as the new data is not applied.
 See also the discussion of the <tt/"TclPrecision"/ preference option in
 section <ref id="prefmisc" name="Miscellaneous Preferences">).
+
 </itemize>
 
 <sect1>Snapping Points to the Grid<label id="snapac">
@@ -11780,22 +11790,22 @@ be swapped (width, height, and all other dimension related parameters
 will be exchanged) without altering the shape of the patches.
 
 <tag/Notes/
-The point selection will be removed from the original objects.
+The point selection will be removed from the original object(s).
 
 See also the documentation of the corresponding
 scripting interface command <ref id="scswapuvs" name="swapuvS">.
 </descrip>
 
-<sect2>Refine Surface Tool<label id="refinest">
+<sect2>Refine Knots Surface Tool<label id="refinest">
 <p>
 <figure loc="ht">
 <eps file="pics/refinenp.ps" height="4cm">
 <img src="pics/refinenp.gif">
-<caption>Successive Application of Refine Surface (U) Tool</caption>
+<caption>Successive Application of Refine Knots Surface (U) Tool</caption>
 </figure>
 <descrip>
-<tag/Arguments/ The refine surface tool takes a number of NURBS patches from
-the selection.
+<tag/Arguments/ The refine knots surface tool takes a number of NURBS
+patches from the selection.
 <tag/Operation/ The respective knot vectors of the selected NURBS patches
 will be refined without changing the shape of the patches. New control
 points will be added and the position of old control points may be
@@ -11803,18 +11813,18 @@ changed in the progress (see also the image above).
 <tag/Notes/ The respective knot type of the patch may
 be changed to <tt/"Custom"/.
 
-The point selection will be removed from the original object.
+The point selection will be removed from the original object(s).
 
 See also the documentation of the corresponding scripting interface commands
 <ref id="screfineunp" name="refineuNP"> and
 <ref id="screfinevnp" name="refinevNP">.
 </descrip>
 
-<sect2>Elevate UV Tool<label id="elevuvt">
+<sect2>Elevate Surface Tool<label id="elevuvt">
 <p>
 <descrip>
-<tag/Arguments/ The elevate uv tool takes a number of NURBS patches from
-the selection and additionally requests two integer values.
+<tag/Arguments/ The elevate surface tool takes a number of NURBS patches
+from the selection and additionally requests two integer values.
 <tag/Operation/ The order of the selected NURBS patches will be raised
 by the specified integer values without changing the shape of the patches.
 <tag/Notes/ If the knot vector of the patch is not clamped, it
@@ -11829,26 +11839,26 @@ See also the documentation of the corresponding scripting interface commands
 <ref id="scelevatevnp" name="elevatevNP">.
 </descrip>
 
-<sect2>Patch Clamp Tool<label id="clanpt">
+<sect2>Clamp Surface Tool<label id="clanpt">
 <p>
 <figure loc="ht">
 <eps file="pics/clampnp.ps" height="4cm">
 <img src="pics/clampnp.gif">
-<caption>Patch Clamp Tool (left: Original Patch with B-Spline Knot Vectors, right: Clamped Patch)</caption>
+<caption>Clamp Surface Tool (left: Original Patch with B-Spline Knot Vectors, right: Clamped Patch)</caption>
 </figure>
 <descrip>
-<tag/Arguments/ The patch clamp tool takes a number of NURBS patches from
+<tag/Arguments/ The clamp surface tool takes a number of NURBS patches from
 the selection.
-<tag/Operation/ The knot vectors of a selected NURBS patch will be
+<tag/Operation/ The knot vectors of the selected NURBS patches will be
 changed using knot insertion so that the first and the last knot
 (in each direction) have a multiplicity equal to the order of the patch
 (in the respective direction).
-<tag/Notes/ The shape of the patch will not change but the position of some
-control points will. The patch interpolates the first and the last control
-point afterwards. The knot types of the patch will be changed to type
+<tag/Notes/ The shape of the patches will not change but the position of some
+control points will. The patches interpolate the first and the last control
+point afterwards. The knot types of the patches will be changed to type
 <tt/"Custom"/.
 
-The point selection will be removed from the original objects.
+The point selection will be removed from the original object(s).
 
 There are also tools available that clamp a patch in U or
 V direction only.
@@ -11858,68 +11868,70 @@ See also the documentation of the corresponding scripting interface commands
 <ref id="scclampvnp" name="clampvNP">.
 </descrip>
 
-<sect2>Patch Unclamp Tool<label id="unclanpt">
+<sect2>Unclamp Surface Tool<label id="unclanpt">
 <p>
 <figure loc="ht">
 <eps file="pics/unclampnp.ps" height="5cm">
 <img src="pics/unclampnp.gif">
-<caption>Patch Unclamp Tool (left: Original Patch, right: Unclamped Patch)</caption>
+<caption>Unclamp Surface Tool (left: Original Patch, right: Unclamped Patch)</caption>
 </figure>
 <descrip>
-<tag/Arguments/ The patch unclamp tool takes a number of NURBS patches from
+<tag/Arguments/ The unclamp surface tool takes a number of NURBS patches from
 the selection.
-<tag/Operation/ The knot vectors of a selected NURBS patch will be
+<tag/Operation/ The knot vectors of the selected NURBS patches will be
 changed so that there are no multiple knots at the respective ends
-of the knot vectors. The shape of the patch will not change but the
-position of some control points will. The knot types of the patch can
+of the knot vectors. The shape of the patches will not change but the
+position of some control points will. The knot types of the patches may
 be changed to type <tt/"Custom"/.
 
 <tag/Notes/
 There are also tools available that unclamp a patch in U or
 V direction only.
 
-The point selection will be removed from the original objects.
+The point selection will be removed from the original object(s).
 
 See also the documentation of the corresponding scripting interface commands
 <ref id="scunclampunp" name="unclampuNP"> and
 <ref id="scunclampvnp" name="unclampvNP">.
 </descrip>
 
-<sect2>Patch Insert Knot Tool<label id="insknnpt">
+<sect2>Insert Knot Surface Tool<label id="insknnpt">
 <p>
 <figure loc="ht">
 <eps file="pics/insknnp.ps" height="5cm">
 <img src="pics/insknnp.gif">
-<caption>Patch Insert Knot Tool (left: original patch, right: a knot has been
+<caption>Insert Knot Surface Tool (left: original patch, right: a knot has been
 inserted 1 time at t=0.5)</caption>
 </figure>
 <descrip>
-<tag/Arguments/ The insert knot tool takes a number of NURBS patches from
+<tag/Arguments/ The insert knot surface tool takes a number of NURBS
+patches from
 the selection and requests two additional values, a parametric value t
 and an integer value i.
 <tag/Operation/ The specified knot (t) will be inserted i
-times into the knot vector of the selected patches, without changing the
-shape of the patches.
+times into the knot vector of the selected patches, without changing their
+shape.
 <tag/Notes/ The knot type of the patch will be changed to <tt/"Custom"/.
 
 This tool does not change the geometry of the patches.
 
-The point selection will be removed from the original objects.
+The point selection will be removed from the original object(s).
 
 See also the documentation of the corresponding scripting interface commands
 <ref id="scinsknunp" name="insknuNP"> and
 <ref id="scinsknvnp" name="insknvNP">.
 </descrip>
 
-<sect2>Patch Remove Knot Tool<label id="remknts">
+<sect2>Remove Knot Surface Tool<label id="remknts">
 <p>
 <figure loc="ht">
 <eps file="pics/remknnp.ps" height="5cm">
 <img src="pics/remknnp.gif">
-<caption>Remove Knot Tool (left: original surface, right: the knot at t=0.5 has been removed 1 time)</caption>
+<caption>Remove Knot Surface Tool (left: original surface, right: the knot at t=0.5 has been removed 1 time)</caption>
 </figure>
 <descrip>
-<tag/Arguments/ The remove knot tool takes a number of NURBS surfaces from
+<tag/Arguments/ The remove knot surface tool takes a number of NURBS
+surfaces from
 the selection and requests three additional values, a parametric value <it/t/,
 an integer value <it/r/, and a tolerance value <it/tol/.
 <tag/Operation/ The knot at the specified parametric value <it/t/ will be
@@ -11944,10 +11956,10 @@ See also the documentation of the corresponding scripting interface commands
 <ref id="scremknunp" name="remknvNP">.
 </descrip>
 
-<sect2>Patch Split Tool<label id="splitnpt">
+<sect2>Split Surface Tool<label id="splitnpt">
 <p>
 <descrip>
-<tag/Arguments/ The patch split tool takes a number of NURBS patches from
+<tag/Arguments/ The split surface tool takes a number of NURBS patches from
 the selection and requests a parametric value t (in U or V parametric dimension,
 respectively).
 <tag/Operation/ The patches will be split at the parametric value t
@@ -11968,10 +11980,10 @@ See also the documentation of the corresponding scripting interface commands
 <ref id="scsplitvnp" name="splitvNP">.
 </descrip>
 
-<sect2>Patch Rescale Knots to Range Tool<label id="resckrnpt">
+<sect2>Rescale Knots to Range Surface Tool<label id="resckrnpt">
 <p>
 <descrip>
-<tag/Arguments/ The patch rescale knots to range tool takes a number of
+<tag/Arguments/ The rescale knots to range surface tool takes a number of
 NURBS patches from the selection and requests a range.
 <tag/Operation/ The knot vectors of the patches will be scaled, so that
 their first and last values match the given range. Trim curves, if
@@ -11986,10 +11998,10 @@ See also the documentation of the corresponding
 scripting interface command <ref id="screscaleknnp" name="rescaleknNP">.
 </descrip>
 
-<sect2>Patch Rescale Knots to Mindist Tool<label id="resckmnpt">
+<sect2>Rescale Knots to Mindist Surface Tool<label id="resckmnpt">
 <p>
 <descrip>
-<tag/Arguments/ The rescale knots to mindist tool takes a number of
+<tag/Arguments/ The rescale knots to mindist surface tool takes a number of
 NURBS patches from the selection and request a minimum distance value.
 <tag/Operation/ The knot vectors of the patches will be scaled, so that
 no two knots have a distance smaller than the given minimum distance
@@ -14092,7 +14104,7 @@ clamped at either side, this is no longer the case.
 Furthermore, patches with multiple knots in the end region(s) could not be
 clamped, this works ok now.
 <p>
-See also section <ref id="clanpt" name="Patch Clamp Tool">.
+See also section <ref id="clanpt" name="Clamp Surface Tool">.
 </itemize>
 
 <p>
@@ -14119,7 +14131,7 @@ clamped at either side, this is no longer the case.
 Furthermore, patches with multiple knots in the end region(s) could not be
 clamped, this works ok now.
 <p>
-See also section <ref id="clanpt" name="Patch Clamp Tool">.
+See also section <ref id="clanpt" name="Clamp Surface Tool">.
 </itemize>
 
 <p>
@@ -14139,7 +14151,7 @@ are unclamped.
 If the side parameter is <tt/"-s"/ only the start, and if it is <tt/"-e"/
 only the end is unclamped.
 <p>
-See also section <ref id="unclanpt" name="Patch Unclamp Tool">.
+See also section <ref id="unclanpt" name="Unclamp Surface Tool">.
 </itemize>
 
 <p>
@@ -14159,7 +14171,7 @@ are unclamped.
 If the side parameter is <tt/"-s"/ only the start, and if it is <tt/"-e"/
 only the end is unclamped.
 <p>
-See also section <ref id="unclanpt" name="Patch Unclamp Tool">.
+See also section <ref id="unclanpt" name="Unclamp Surface Tool">.
 </itemize>
 
 <p>
@@ -14184,9 +14196,9 @@ does not change the knot type.
 This operation does not change the shape of the patch.
 <p><p>
 See also sections
-<ref id="resckrnpt" name="Patch Rescale Knots to Range Tool">
+<ref id="resckrnpt" name="Rescale Knots to Range Surface Tool">
 and
-<ref id="resckmnpt" name="Patch Rescale Knots to Mindist Tool">.
+<ref id="resckmnpt" name="Rescale Knots to Mindist Surface Tool">.
  <item>Example: <tt/"rescaleknNP -ru 0.2 0.3"/ scales the u knot vector
 of the selected NURBS patch objects to the new range (0.2, 0.3).
 </itemize>
@@ -14208,7 +14220,7 @@ width of the patch.
 The u knot type of the patches will always be changed to <tt/"Custom"/ but
 the shape of the patches will not change.
 <p><p>
-See also section <ref id="insknnpt" name="Patch Insert Knot Tool">.
+See also section <ref id="insknnpt" name="Insert Knot Surface Tool">.
 </itemize>
 
 <p>
@@ -14228,7 +14240,7 @@ height of the patch.
 The v knot type of the patches will always be changed to <tt/"Custom"/ but
 the shape of the patches will not change.
 <p><p>
-See also section <ref id="insknnpt" name="Patch Insert Knot Tool">.
+See also section <ref id="insknnpt" name="Insert Knot Surface Tool">.
 </itemize>
 
 <p>
@@ -14251,7 +14263,7 @@ from the original surface more than tol in any point.
 If the knot can not be removed r times due to the tolerance, an
 error is reported and the original surface is left unchanged.
 <p><p>
-See also section <ref id="remknts" name="Patch Remove Knot Tool">.
+See also section <ref id="remknts" name="Remove Knot Surface Tool">.
 </itemize>
 
 <p>
@@ -14274,7 +14286,7 @@ from the original surface more than tol in any point.
 If the knot can not be removed r times due to the tolerance, an
 error is reported and the original surface is left unchanged.
 <p><p>
-See also section <ref id="remknts" name="Patch Remove Knot Tool">.
+See also section <ref id="remknts" name="Remove Knot Surface Tool">.
 </itemize>
 
 <p>
@@ -14289,7 +14301,7 @@ refineuNP &ndash; refine NURBS surface in U direction:
 without changing their shape.
 The u knot type of the refined surfaces may be changed to <tt/"Custom"/.
 <p><p>
-See also section <ref id="refinest" name="Refine Surface Tool">.
+See also section <ref id="refinest" name="Refine Knots Surface Tool">.
 </itemize>
 
 <p>
@@ -14304,7 +14316,7 @@ refinevNP &ndash; refine NURBS surface in V direction:
 without changing their shape.
 The v knot type of the refined surfaces may be changed to <tt/"Custom"/.
 <p><p>
-See also section <ref id="refinest" name="Refine Surface Tool">.
+See also section <ref id="refinest" name="Refine Knots Surface Tool">.
 </itemize>
 
 <p>
@@ -14319,7 +14331,7 @@ elevateuNP &ndash; elevate NURBS surface in U direction:
 without changing the shape of the surfaces by n.
 The u knot type of the elevated surfaces will be changed to <tt/"Custom"/.
 <p><p>
-See also section <ref id="elevuvt" name="Elevate UV Tool">.
+See also section <ref id="elevuvt" name="Elevate Surface Tool">.
 </itemize>
 
 <p>
@@ -14334,7 +14346,7 @@ elevatevNP &ndash; elevate NURBS surface in V direction:
 without changing the shape of the surfaces by n.
 The v knot type of the elevated surfaces will be changed to <tt/"Custom"/.
 <p><p>
-See also section <ref id="elevuvt" name="Elevate UV Tool">.
+See also section <ref id="elevuvt" name="Elevate Surface Tool">.
 </itemize>
 
 <p>
@@ -14351,7 +14363,7 @@ The selected NPatch will be modified and a new NPatch object will
 be created and appended as new object to the
 current level of the scene.
 <p><p>
-See also section <ref id="splitnpt" name="Patch Split Tools">.
+See also section <ref id="splitnpt" name="Split Surface Tools">.
 </itemize>
 
 <p>
@@ -14368,7 +14380,7 @@ The selected NPatch will be modified and a new NPatch object will
 be created and appended as new object to the
 current level of the scene.
 <p><p>
-See also section <ref id="splitnpt" name="Patch Split Tools">.
+See also section <ref id="splitnpt" name="Split Surface Tools">.
 </itemize>
 
 <p>
