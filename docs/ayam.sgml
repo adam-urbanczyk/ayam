@@ -3434,6 +3434,10 @@ Edit Weights|<tt/&lt;w&gt;/|
 <#if out=latex><x>inlinegfx pics/editwac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/editwac.gif"></#if>
 @<hline>
+Reset Weights|<tt/&lt;W&gt;/|
+<#if out=latex><x>inlinegfx pics/resetwac.png 0.7cm </x></#if>
+<#if out=html><img src="pics/resetwac.gif"></#if>
+@<hline>
 Numeric Edit|<tt/&lt;E&gt;/|
 <#if out=latex><x>inlinegfx pics/editdac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/editdac.gif"></#if>
@@ -3468,20 +3472,20 @@ MacOSX Aqua.
 
 <item>The modelling action <tt/"Edit Weights"/ (shortcut: <tt/&lt;w&gt;/)
 changes the w coordinate of a single point by dragging the mouse left
-or right. The weights may be reset for all points
-using the shortcut: <tt/&lt;W&gt;/. Furthermore, it is
-not possible to edit the weights of multiple selected objects, only
-the first selected object is considered.
-<p>
+or right.
 
-If a NURBS curve has multiple points, this action modifies all
-single points that make up the multiple point.
+<item>The modelling action <tt/"Reset Weights"/ (shortcut: <tt/&lt;W&gt;/)
+resets the w coordinate of the picked point to 1.0.
+
+<p>
+The weights may be reset for all points
+using the shortcut: <tt/&lt;Ctrl-W&gt;/.
 
 <item>The modelling action <tt/"Numeric Point Edit"/ (shortcut:
 <tt/&lt;E&gt;/)
 starts an intermediate point selection action and upon a click
-with the mouse opens a small window where you may change the
-coordinates of the selected editable point(s) by entering
+with the mouse opens a small window where the coordinates of the
+selected editable point(s) may be changed directly by entering
 new coordinate values on the keyboard (see image below).
 <p>
 <figure loc="ht">
@@ -19332,7 +19336,7 @@ Index:
 <list>
 <item>Edit:
 <itemize>
-<item><ref id="editac" name="edit points">,
+<item><ref id="editac" name="edit points action">,
 <item><ref id="mmedit" name="edit menu">
 </itemize>
 <item>Edit Local:
@@ -19975,6 +19979,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Reset: <ref id="propgui" name="reset property GUI">
 <item>ResetDM, ResetST: <ref id="impmops" name="Mops import option">
 <item>Reset Preferences: <ref id="mmspecial" name="main menu entry">
+<item>Reset Weights: <ref id="editac" name="reset weights action">
 <item>ResInstances: <ref id="prefrib" name="preference setting">
 <item>Resolve all Instances: <ref id="mmspecial" name="main menu entry">
 <item>ResolveInstances: <ref id="expx3dopt" name="X3D (Web3D) export option">
