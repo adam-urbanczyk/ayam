@@ -611,8 +611,22 @@ $m.npt.kn add command -label "Refine Knots U" -command {
     undo save RefineUNP; refineuNP; plb_update; rV
 }
 
+$m.npt.kn add command -label "Refine Knots U with" -command {
+    getProp; set ay(okn) $::NPatchAttrData(Knots_U);
+    runTool [list ay(okn) ay(refineknu)] {"Old Knots:" "New Knots:"}\
+	"undo save RefineKnUNP; refineuNP \{%1\}; plb_update; rV"\
+        "Refine Knots U"
+}
+
 $m.npt.kn add command -label "Refine Knots V" -command {
-    undo save RefineVNP; refinevNP; plb_update; rV
+    undo save RefineKnVNP; refinevNP; plb_update; rV
+}
+
+$m.npt.kn add command -label "Refine Knots V with" -command {
+    getProp; set ay(okn) $::NPatchAttrData(Knots_V);
+    runTool [list ay(okn) ay(refineknv)] {"Old Knots:" "New Knots:"}\
+	"undo save RefineKnVNP; refinevNP \{%1\}; plb_update; rV"\
+        "Refine Knots V"
 }
 
 $m.npt.kn add command -label "Rescale Knots to Range U" -command {
