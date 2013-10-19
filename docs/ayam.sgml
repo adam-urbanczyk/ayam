@@ -11949,7 +11949,7 @@ knots will be removed.
 If <it/tol/ is <tt/"Inf"/ (infinity) the specified knot will be removed
 regardless of potential surface changes.
 
-The point selection will be removed from the original objects.
+The point selection will be removed from the original object(s).
 
 See also the documentation of the corresponding scripting interface commands
 <ref id="scremknunp" name="remknuNP">, and
@@ -11971,7 +11971,7 @@ knot insertion.
 </verb></tscreen>
 <tag/Notes/ The original patch objects will be modified.
 
-The point selection will be removed from the original objects.
+The point selection will be removed from the original object(s).
 
 Eventually present trim curves will not be honored properly.
 
@@ -11979,6 +11979,23 @@ See also the documentation of the corresponding scripting interface commands
 <ref id="scsplitunp" name="splituNP"> and
 <ref id="scsplitvnp" name="splitvNP">.
 </descrip>
+
+<sect2>Interpolate Surface Tool<label id="interpnpt">
+<p>
+<descrip>
+<tag/Arguments/ The interpolate surface tool takes a number of NURBS
+patches from the selection and requests an additional parameter o.
+<tag/Operation/ The patches will be modified so that they interpolate
+all original control points with the desired interpolation order o.
+
+<tag/Notes/
+The point selection will be removed from the original object(s).
+
+See also the documentation of the corresponding scripting interface commands
+<ref id="scinterpunp" name="interpuNP"> and
+<ref id="scinterpvnp" name="interpvNP">.
+</descrip>
+
 
 <sect2>Rescale Knots to Range Surface Tool<label id="resckrnpt">
 <p>
@@ -14295,10 +14312,12 @@ See also section <ref id="remknts" name="Remove Knot Surface Tool">.
 <label id="screfineunp">
 refineuNP &ndash; refine NURBS surface in U direction:
 <itemize>
- <item>Synopsis: <tt/"refineuNP"/
+ <item>Synopsis: <tt/"refineuNP [{u1 u2 un}]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Refine the selected NURBS surfaces in u direction
-without changing their shape.
+with n new knots {u1 u2 un} without changing their shape.
+If no list of new knots is given, a new knot is inserted into each interval
+in the old knot vector.
 The u knot type of the refined surfaces may be changed to <tt/"Custom"/.
 <p><p>
 See also section <ref id="refinest" name="Refine Knots Surface Tool">.
@@ -14310,10 +14329,12 @@ See also section <ref id="refinest" name="Refine Knots Surface Tool">.
 <label id="screfinevnp">
 refinevNP &ndash; refine NURBS surface in V direction:
 <itemize>
- <item>Synopsis: <tt/"refinevNP"/
+ <item>Synopsis: <tt/"refinevNP [{v1 v2 vn}]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Refine the selected NURBS surfaces in v direction
-without changing their shape.
+with n new knots {v1 v2 vn} without changing their shape.
+If no list of new knots is given, a new knot is inserted into each interval
+in the old knot vector.
 The v knot type of the refined surfaces may be changed to <tt/"Custom"/.
 <p><p>
 See also section <ref id="refinest" name="Refine Knots Surface Tool">.
@@ -19562,13 +19583,12 @@ Index:
 <item>Instant Apply: <ref id="propgui" name="instant apply facility">
 <item>Intensity: <ref id="lip" name="Light attribute">
 <item>Interior: <ref id="matshader" name="shader">
-<item>Interpolation:
+<item>Interpolate:
 <itemize>
-<item><ref id="attrs" name="RenderMan/BMRT attribute">,
-<item><ref id="icurveobj" name="interpolating curve">,
 <item><ref id="swp" name="Sweep attribute">,
 <item><ref id="skp" name="Skin attribute">
 </itemize>
+<item>Interpolation: <ref id="attrs" name="RenderMan/BMRT attribute">
 <item>InterpolCtrl: <ref id="birail2p" name="Birail2 attribute">
 <item>Intersection: <ref id="levelobj" name="Level object">
 <item>Invert Selection: <ref id="mmspecial" name="main menu entry">
