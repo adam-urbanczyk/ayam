@@ -401,7 +401,7 @@ cleanup:
 int
 ay_ncurve_deletecb(void *c)
 {
- ay_nurbcurve_object *ncurve = NULL;
+ ay_nurbcurve_object *ncurve;
 
   if(!c)
     return AY_ENULL;
@@ -443,7 +443,7 @@ int
 ay_ncurve_copycb(void *src, void **dst)
 {
  int ay_status = AY_OK;
- ay_nurbcurve_object *ncurve = NULL, *ncurvesrc = NULL;
+ ay_nurbcurve_object *ncurve, *ncurvesrc;
  int knot_count;
 
   if(!src || !dst)
@@ -734,8 +734,8 @@ ay_ncurve_drawch(ay_nurbcurve_object *ncurve)
 int
 ay_ncurve_drawcb(struct Togl *togl, ay_object *o)
 {
+ ay_nurbcurve_object *ncurve;
  int display_mode = ay_prefs.nc_display_mode;
- ay_nurbcurve_object *ncurve = NULL;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
 
   if(!o)
@@ -794,7 +794,7 @@ ay_ncurve_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_ncurve_drawacb(struct Togl *togl, ay_object *o)
 {
- ay_nurbcurve_object *ncurve = NULL;
+ ay_nurbcurve_object *ncurve;
  double *ver = NULL;
 
   if(!o)

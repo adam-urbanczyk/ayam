@@ -30,7 +30,7 @@ int ay_sphere_notifycb(ay_object *o);
 int
 ay_sphere_createcb(int argc, char *argv[], ay_object *o)
 {
- ay_sphere_object *sphere = NULL;
+ ay_sphere_object *sphere;
  char fname[] = "crtsphere";
 
   if(!o)
@@ -61,7 +61,7 @@ ay_sphere_createcb(int argc, char *argv[], ay_object *o)
 int
 ay_sphere_deletecb(void *c)
 {
- ay_sphere_object *sphere = NULL;
+ ay_sphere_object *sphere;
 
   if(!c)
     return AY_ENULL;
@@ -83,7 +83,7 @@ ay_sphere_deletecb(void *c)
 int
 ay_sphere_copycb(void *src, void **dst)
 {
- ay_sphere_object *sphere = NULL;
+ ay_sphere_object *sphere;
 
   if(!src || !dst)
     return AY_ENULL;
@@ -107,7 +107,7 @@ ay_sphere_copycb(void *src, void **dst)
 int
 ay_sphere_drawcb(struct Togl *togl, ay_object *o)
 {
- ay_sphere_object *sphere = NULL;
+ ay_sphere_object *sphere;
  double phimax, phimin, phi, rmax, rmin, thetamax, zmin, zmax, radius;
  double phidiff, thetadiff, angle;
  int i, j, k;
@@ -277,7 +277,7 @@ ay_sphere_drawcb(struct Togl *togl, ay_object *o)
 int
 ay_sphere_shadecb(struct Togl *togl, ay_object *o)
 {
- ay_sphere_object *sphere = NULL;
+ ay_sphere_object *sphere;
  double phimax, phimin, phi, rmax, rmin, thetamax, zmin, zmax, radius;
  double phidiff, thetadiff, angle;
  int i, j, k;
@@ -476,7 +476,7 @@ ay_sphere_drawhcb(struct Togl *togl, ay_object *o)
       if(!(pnts = calloc(AY_PSPHERE*3, sizeof(double))))
 	{ return AY_EOMEM; }
       sphere->pnts = pnts;
-      ay_sphere_notifycb(o);
+      (void)ay_sphere_notifycb(o);
     }
   else
     {
@@ -507,7 +507,7 @@ ay_sphere_drawhcb(struct Togl *togl, ay_object *o)
 int
 ay_sphere_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
- ay_sphere_object *sphere = NULL;
+ ay_sphere_object *sphere;
 
   if(!o)
     return AY_ENULL;
@@ -521,7 +521,7 @@ ay_sphere_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     {
       if(!(sphere->pnts = calloc(AY_PSPHERE*3, sizeof(double))))
 	return AY_EOMEM;
-      ay_sphere_notifycb(o);
+      (void)ay_sphere_notifycb(o);
     }
 
  return ay_selp_getpnts(mode, o, p, pe, 1, AY_PSPHERE, 3, sphere->pnts);
@@ -537,7 +537,7 @@ ay_sphere_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  /*int ay_status = AY_OK;*/
  char *n1 = "SphereAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- ay_sphere_object *sphere = NULL;
+ ay_sphere_object *sphere;
  int itemp = 0;
 
   if(!o)
@@ -586,9 +586,9 @@ ay_sphere_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
+  (void)ay_sphere_notifycb(o);
   o->modified = AY_TRUE;
-  ay_sphere_notifycb(o);
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return AY_OK;
 } /* ay_sphere_setpropcb */
@@ -602,7 +602,7 @@ ay_sphere_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  char *n1="SphereAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- ay_sphere_object *sphere = NULL;
+ ay_sphere_object *sphere;
 
   if(!o)
     return AY_ENULL;
@@ -648,7 +648,7 @@ ay_sphere_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_sphere_readcb(FILE *fileptr, ay_object *o)
 {
- ay_sphere_object *sphere = NULL;
+ ay_sphere_object *sphere;
  int itemp = 0;
 
   if(!o)
@@ -687,7 +687,7 @@ ay_sphere_readcb(FILE *fileptr, ay_object *o)
 int
 ay_sphere_writecb(FILE *fileptr, ay_object *o)
 {
- ay_sphere_object *sphere = NULL;
+ ay_sphere_object *sphere;
 
   if(!o)
     return AY_ENULL;
@@ -714,7 +714,7 @@ ay_sphere_writecb(FILE *fileptr, ay_object *o)
 int
 ay_sphere_wribcb(char *file, ay_object *o)
 {
- ay_sphere_object *sphere = NULL;
+ ay_sphere_object *sphere;
  RtPoint P1[16];
  RtPoint P2[16];
  RtFloat rmin, rmax;
@@ -894,7 +894,7 @@ int
 ay_sphere_bbccb(ay_object *o, double *bbox, int *flags)
 {
  double r = 0.0, zmi = 0.0, zma = 0.0;
- ay_sphere_object *sphere = NULL;
+ ay_sphere_object *sphere;
 
   if(!o || !bbox || !flags)
     return AY_ENULL;
@@ -910,7 +910,7 @@ ay_sphere_bbccb(ay_object *o, double *bbox, int *flags)
 	{
 	  if(!(sphere->pnts = calloc(AY_PSPHERE*3, sizeof(double))))
 	    { return AY_EOMEM; }
-	  ay_sphere_notifycb(o);
+	  (void)ay_sphere_notifycb(o);
 	}
 
       return ay_bbc_fromarr(sphere->pnts, AY_PSPHERE, 3, bbox);
@@ -1373,7 +1373,7 @@ ay_sphere_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
  ay_object *new = NULL, *t;
- ay_sphere_object *sphere = NULL;
+ ay_sphere_object *sphere;
 
   if(!o)
     return AY_ENULL;
@@ -1415,7 +1415,6 @@ ay_sphere_convertcb(ay_object *o, int in_place)
     {
       ay_status = ay_sphere_providecb(o, AY_IDNPATCH, &new);
     }
-
 
   /* second, link new object(s), or replace old object with it/them */
 

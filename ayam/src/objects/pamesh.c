@@ -27,7 +27,7 @@ ay_pamesh_createcb(int argc, char *argv[], ay_object *o)
  int width = 4, height = 4;
  int i = 0, j = 0, k = 0;
  double *cv = NULL, dx = 0.25;
- ay_pamesh_object *p = NULL;
+ ay_pamesh_object *p;
 
   if(!o)
     return AY_ENULL;
@@ -100,7 +100,7 @@ ay_pamesh_createcb(int argc, char *argv[], ay_object *o)
 int
 ay_pamesh_deletecb(void *c)
 {
- ay_pamesh_object *pamesh = NULL;
+ ay_pamesh_object *pamesh;
 
   if(!c)
     return AY_ENULL;
@@ -135,7 +135,7 @@ ay_pamesh_deletecb(void *c)
 int
 ay_pamesh_copycb(void *src, void **dst)
 {
- ay_pamesh_object *pamesh = NULL, *pameshsrc = NULL;
+ ay_pamesh_object *pamesh, *pameshsrc;
 
   if(!src || !dst)
     return AY_ENULL;
@@ -203,8 +203,8 @@ ay_pamesh_copycb(void *src, void **dst)
 int
 ay_pamesh_drawcpcb(struct Togl *togl, ay_object *o)
 {
- ay_pamesh_object *pamesh = NULL;
- double *ver = NULL;
+ ay_pamesh_object *pamesh;
+ double *cv;
  int i, j, a, width, height;
 
   if(!o)
@@ -218,7 +218,7 @@ ay_pamesh_drawcpcb(struct Togl *togl, ay_object *o)
   width = pamesh->width;
   height = pamesh->height;
 
-  ver = pamesh->controlv;
+  cv = pamesh->controlv;
 
   a = 0;
   if(pamesh->close_v)
@@ -228,7 +228,7 @@ ay_pamesh_drawcpcb(struct Togl *togl, ay_object *o)
 	  glBegin(GL_LINE_LOOP);
 	   for(j = 0; j < height; j++)
 	     {
-	       glVertex3dv((GLdouble *)&ver[a]);
+	       glVertex3dv((GLdouble *)&cv[a]);
 	       a += 4;
 	     }
 	  glEnd();
@@ -241,7 +241,7 @@ ay_pamesh_drawcpcb(struct Togl *togl, ay_object *o)
 	  glBegin(GL_LINE_STRIP);
 	   for(j = 0; j < height; j++)
 	     {
-	       glVertex3dv((GLdouble *)&ver[a]);
+	       glVertex3dv((GLdouble *)&cv[a]);
 	       a += 4;
 	     } /* for */
 	  glEnd();
@@ -256,7 +256,7 @@ ay_pamesh_drawcpcb(struct Togl *togl, ay_object *o)
 	  glBegin(GL_LINE_LOOP);
 	   for(i = 0; i < width; i++)
 	     {
-	       glVertex3dv((GLdouble *)&ver[a]);
+	       glVertex3dv((GLdouble *)&cv[a]);
 
 	       a += (4 * height);
 	     }
@@ -271,7 +271,7 @@ ay_pamesh_drawcpcb(struct Togl *togl, ay_object *o)
 	  glBegin(GL_LINE_STRIP);
 	   for(i = 0; i < width; i++)
 	     {
-	       glVertex3dv((GLdouble *)&ver[a]);
+	       glVertex3dv((GLdouble *)&cv[a]);
 
 	       a += (4 * height);
 	     } /* for */
@@ -334,8 +334,11 @@ ay_pamesh_drawcb(struct Togl *togl, ay_object *o)
 int
 ay_pamesh_shadecb(struct Togl *togl, ay_object *o)
 {
- ay_pamesh_object *pamesh = NULL;
- ay_object *p = NULL;
+ ay_pamesh_object *pamesh;
+ ay_object *p;
+
+  if(!o)
+    return AY_ENULL;
 
   pamesh = (ay_pamesh_object *)o->refine;
 
@@ -361,7 +364,7 @@ ay_pamesh_drawacb(struct Togl *togl, ay_object *o)
 {
  int width = 0, height = 0;
  ay_pamesh_object *pm;
- GLdouble *ver = NULL;
+ GLdouble *cv;
 
   if(!o)
     return AY_ENULL;
@@ -374,9 +377,9 @@ ay_pamesh_drawacb(struct Togl *togl, ay_object *o)
   width = pm->width;
   height = pm->height;
 
-  ver = pm->controlv;
+  cv = pm->controlv;
 
-  ay_draw_arrow(togl, &(ver[width*height*4-8]), &(ver[width*height*4-4]));
+  ay_draw_arrow(togl, &(cv[width*height*4-8]), &(cv[width*height*4-4]));
 
  return AY_OK;
 } /* ay_pamesh_drawacb */
@@ -388,9 +391,9 @@ ay_pamesh_drawacb(struct Togl *togl, ay_object *o)
 int
 ay_pamesh_drawhcb(struct Togl *togl, ay_object *o)
 {
- int width, height, i;
- double *pnts;
  ay_pamesh_object *pm;
+ double *pnts;
+ int width, height, i;
 
   if(!o)
     return AY_ENULL;
@@ -888,11 +891,11 @@ ay_pamesh_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_pamesh_readcb(FILE *fileptr, ay_object *o)
 {
- ay_pamesh_object *pamesh = NULL;
+ ay_pamesh_object *pamesh;
  int i, a;
 
- if(!fileptr || !o)
-   return AY_ENULL;
+  if(!fileptr || !o)
+    return AY_ENULL;
 
   if(!(pamesh = calloc(1, sizeof(ay_pamesh_object))))
     { return AY_EOMEM; }
@@ -971,7 +974,7 @@ ay_pamesh_readcb(FILE *fileptr, ay_object *o)
 int
 ay_pamesh_writecb(FILE *fileptr, ay_object *o)
 {
- ay_pamesh_object *pamesh = NULL;
+ ay_pamesh_object *pamesh;
  int i, a;
 
   if(!fileptr || !o)
@@ -1209,7 +1212,7 @@ ay_pamesh_wribcb(char *file, ay_object *o)
 int
 ay_pamesh_bbccb(ay_object *o, double *bbox, int *flags)
 {
- ay_pamesh_object *pamesh = NULL;
+ ay_pamesh_object *pamesh;
 
   if(!o || !bbox || !flags)
     return AY_ENULL;
