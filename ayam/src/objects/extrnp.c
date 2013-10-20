@@ -27,24 +27,24 @@ int
 ay_extrnp_createcb(int argc, char *argv[], ay_object *o)
 {
  char fname[] = "crtextrnp";
- ay_extrnp_object *new = NULL;
+ ay_extrnp_object *extrnp;
 
   if(!o)
     return AY_ENULL;
 
-  if(!(new = calloc(1, sizeof(ay_extrnp_object))))
+  if(!(extrnp = calloc(1, sizeof(ay_extrnp_object))))
     {
       ay_error(AY_EOMEM, fname, NULL);
       return AY_ERROR;
     }
 
-  new->umax = 1.0;
-  new->vmax = 1.0;
-  new->pnum = 1;
+  extrnp->umax = 1.0;
+  extrnp->vmax = 1.0;
+  extrnp->pnum = 1;
 
   o->hide_children = AY_TRUE;
   o->parent = AY_TRUE;
-  o->refine = new;
+  o->refine = extrnp;
 
  return AY_OK;
 } /* ay_extrnp_createcb */
@@ -56,7 +56,7 @@ ay_extrnp_createcb(int argc, char *argv[], ay_object *o)
 int
 ay_extrnp_deletecb(void *c)
 {
- ay_extrnp_object *extrnp = NULL;
+ ay_extrnp_object *extrnp;
 
   if(!c)
     return AY_ENULL;
@@ -78,7 +78,7 @@ ay_extrnp_deletecb(void *c)
 int
 ay_extrnp_copycb(void *src, void **dst)
 {
- ay_extrnp_object *extrnp = NULL;
+ ay_extrnp_object *extrnp;
 
   if(!src || !dst)
     return AY_ENULL;
@@ -102,7 +102,7 @@ ay_extrnp_copycb(void *src, void **dst)
 int
 ay_extrnp_drawcb(struct Togl *togl, ay_object *o)
 {
- ay_extrnp_object *extrnp = NULL;
+ ay_extrnp_object *extrnp;
 
   if(!o)
     return AY_ENULL;
@@ -125,7 +125,7 @@ ay_extrnp_drawcb(struct Togl *togl, ay_object *o)
 int
 ay_extrnp_shadecb(struct Togl *togl, ay_object *o)
 {
- ay_extrnp_object *extrnp = NULL;
+ ay_extrnp_object *extrnp;
 
   if(!o)
     return AY_ENULL;
@@ -148,8 +148,8 @@ ay_extrnp_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_extrnp_drawacb(struct Togl *togl, ay_object *o)
 {
- ay_extrnp_object *extrnp = NULL;
- ay_nurbpatch_object *np = NULL;
+ ay_extrnp_object *extrnp;
+ ay_nurbpatch_object *np;
 
   if(!o)
     return AY_ENULL;
@@ -168,7 +168,7 @@ ay_extrnp_drawacb(struct Togl *togl, ay_object *o)
 		    &(np->controlv[np->width*np->height*4-4]));
     }
 
-  return AY_OK;
+ return AY_OK;
 } /* ay_extrnp_drawacb */
 
 
@@ -178,10 +178,10 @@ ay_extrnp_drawacb(struct Togl *togl, ay_object *o)
 int
 ay_extrnp_drawhcb(struct Togl *togl, ay_object *o)
 {
- int i;
- double *pnts;
  ay_extrnp_object *extrnp;
  ay_nurbpatch_object *np;
+ double *pnts;
+ int i;
 
   if(!o)
     return AY_ENULL;
@@ -388,7 +388,7 @@ ay_extrnp_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_extrnp_readcb(FILE *fileptr, ay_object *o)
 {
- ay_extrnp_object *extrnp = NULL;
+ ay_extrnp_object *extrnp;
 
   if(!fileptr || !o)
     return AY_ENULL;
@@ -423,7 +423,7 @@ ay_extrnp_readcb(FILE *fileptr, ay_object *o)
 int
 ay_extrnp_writecb(FILE *fileptr, ay_object *o)
 {
- ay_extrnp_object *extrnp = NULL;
+ ay_extrnp_object *extrnp;
 
   if(!fileptr || !o)
     return AY_ENULL;
@@ -452,7 +452,7 @@ ay_extrnp_writecb(FILE *fileptr, ay_object *o)
 int
 ay_extrnp_wribcb(char *file, ay_object *o)
 {
- ay_extrnp_object *extrnp = NULL;
+ ay_extrnp_object *extrnp;
 
   if(!o)
    return AY_ENULL;
@@ -475,7 +475,7 @@ ay_extrnp_wribcb(char *file, ay_object *o)
 int
 ay_extrnp_bbccb(ay_object *o, double *bbox, int *flags)
 {
- ay_extrnp_object *extrnp = NULL;
+ ay_extrnp_object *extrnp;
 
   if(!o || !bbox || !flags)
     return AY_ENULL;
@@ -624,7 +624,7 @@ cleanup:
 int
 ay_extrnp_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
- ay_extrnp_object *e = NULL;
+ ay_extrnp_object *e;
 
   if(!o)
     return AY_ENULL;
@@ -644,7 +644,7 @@ ay_extrnp_providecb(ay_object *o, unsigned int type, ay_object **result)
 int
 ay_extrnp_convertcb(ay_object *o, int in_place)
 {
- ay_extrnp_object *e = NULL;
+ ay_extrnp_object *e;
 
   if(!o)
     return AY_ENULL;

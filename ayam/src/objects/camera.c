@@ -277,7 +277,7 @@ ay_camera_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
 
-  return AY_OK;
+ return AY_OK;
 } /* ay_camera_setpropcb */
 
 

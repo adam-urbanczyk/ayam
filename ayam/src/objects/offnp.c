@@ -205,7 +205,7 @@ ay_offnp_drawacb(struct Togl *togl, ay_object *o)
       glPopMatrix();
     }
 
-  return AY_OK;
+ return AY_OK;
 } /* ay_offnp_drawacb */
 
 

@@ -157,7 +157,7 @@ ay_concatnc_drawacb(struct Togl *togl, ay_object *o)
 		    &(nc->controlv[nc->length*4-4]));
     }
 
-  return AY_OK;
+ return AY_OK;
 } /* ay_concatnc_drawacb */
 
 
