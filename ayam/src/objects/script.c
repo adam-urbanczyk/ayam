@@ -44,7 +44,7 @@ ay_script_createcb(int argc, char *argv[], ay_object *o)
 {
  /*int ay_status = AY_OK;*/
  char fname[] = "crtscript";
- ay_script_object *new = NULL;
+ ay_script_object *new;
 
   if(!o)
     return AY_ENULL;
@@ -69,10 +69,10 @@ ay_script_createcb(int argc, char *argv[], ay_object *o)
 int
 ay_script_deletecb(void *c)
 {
+ Tcl_Interp *interp;
+ ay_script_object *sc;
  int result = TCL_OK;
- ay_script_object *sc = NULL;
  int i = 0;
- Tcl_Interp *interp = NULL;
 
   if(!c)
     return AY_ENULL;
@@ -460,7 +460,7 @@ ay_script_getsp(Tcl_Interp *interp, ay_script_object *sc)
       Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
     } /* if */
 
-  return ay_status;
+ return ay_status;
 } /* ay_script_getsp */
 
 
@@ -556,11 +556,10 @@ ay_script_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   sc->modified = AY_TRUE;
 
-  ay_notify_object(o);
+  (void)ay_notify_object(o);
 
   o->modified = AY_TRUE;
-
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
   if(newscript)
     ay_script_getsp(interp, sc);

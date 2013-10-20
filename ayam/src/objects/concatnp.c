@@ -206,7 +206,7 @@ ay_concatnp_drawacb(struct Togl *togl, ay_object *o)
 		    &(np->controlv[np->width*np->height*4-4]));
     }
 
-  return AY_OK;
+ return AY_OK;
 } /* ay_concatnp_drawacb */
 
 
