@@ -30,7 +30,7 @@ int ay_paraboloid_notifycb(ay_object *o);
 int
 ay_parab_createcb(int argc, char *argv[], ay_object *o)
 {
- ay_paraboloid_object *parab = NULL;
+ ay_paraboloid_object *parab;
  char fname[] = "crtparab";
 
   if(!o)
@@ -60,7 +60,7 @@ ay_parab_createcb(int argc, char *argv[], ay_object *o)
 int
 ay_parab_deletecb(void *c)
 {
- ay_paraboloid_object *parab = NULL;
+ ay_paraboloid_object *parab;
 
   if(!c)
     return AY_ENULL;
@@ -82,7 +82,7 @@ ay_parab_deletecb(void *c)
 int
 ay_parab_copycb(void *src, void **dst)
 {
- ay_paraboloid_object *parab = NULL;
+ ay_paraboloid_object *parab;
 
   if(!src || !dst)
     return AY_ENULL;
@@ -107,10 +107,10 @@ ay_parab_copycb(void *src, void **dst)
 int
 ay_parab_drawcb(struct Togl *togl, ay_object *o)
 {
- ay_paraboloid_object *parab = NULL;
+ ay_paraboloid_object *parab;
  double height, hdiff, angle, thetadiff, f;
- int i, j;
  double R[5];
+ int i, j;
 
   if(!o)
     return AY_ENULL;
@@ -210,10 +210,10 @@ ay_parab_drawcb(struct Togl *togl, ay_object *o)
 int
 ay_parab_shadecb(struct Togl *togl, ay_object *o)
 {
- ay_paraboloid_object *parab = NULL;
+ ay_paraboloid_object *parab;
  double height, hdiff, angle, thetadiff, f;
- int i, j;
  double R[5];
+ int i, j;
 
   if(!o)
     return AY_ENULL;
@@ -317,19 +317,19 @@ ay_parab_shadecb(struct Togl *togl, ay_object *o)
 	{
 	  glPushMatrix();
 
-	  gluQuadricOrientation(ay_gluquadobj, GLU_INSIDE);
-	  glTranslated(0.0, 0.0, parab->zmin);
-	  if(fabs(parab->thetamax) != 360.0)
-	    {
-	      glRotated(parab->thetamax-90.0, 0.0, 0.0, 1.0);
-	      gluPartialDisk(ay_gluquadobj, 0.0, R[0], 8, 1, 0.0,
-			     parab->thetamax);
-	    }
-	  else
-	    {
-	      gluDisk(ay_gluquadobj, 0.0, R[0], 8, 1);
-	    }
-	  gluQuadricOrientation(ay_gluquadobj, GLU_OUTSIDE);
+	   gluQuadricOrientation(ay_gluquadobj, GLU_INSIDE);
+	   glTranslated(0.0, 0.0, parab->zmin);
+	   if(fabs(parab->thetamax) != 360.0)
+	     {
+	       glRotated(parab->thetamax-90.0, 0.0, 0.0, 1.0);
+	       gluPartialDisk(ay_gluquadobj, 0.0, R[0], 8, 1, 0.0,
+			      parab->thetamax);
+	     }
+	   else
+	     {
+	       gluDisk(ay_gluquadobj, 0.0, R[0], 8, 1);
+	     }
+	   gluQuadricOrientation(ay_gluquadobj, GLU_OUTSIDE);
 
 	  glPopMatrix();
 	}
@@ -362,9 +362,9 @@ ay_parab_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_parab_drawhcb(struct Togl *togl, ay_object *o)
 {
- int i;
- double *pnts;
  ay_paraboloid_object *parab;
+ double *pnts;
+ int i;
 
   if(!o)
     return AY_ENULL;
@@ -379,7 +379,7 @@ ay_parab_drawhcb(struct Togl *togl, ay_object *o)
       if(!(pnts = calloc(AY_PPARAB*3, sizeof(double))))
 	return AY_EOMEM;
       parab->pnts = pnts;
-      ay_paraboloid_notifycb(o);
+      (void)ay_paraboloid_notifycb(o);
     }
   else
     {
@@ -410,7 +410,7 @@ ay_parab_drawhcb(struct Togl *togl, ay_object *o)
 int
 ay_parab_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
- ay_paraboloid_object *parab = NULL;
+ ay_paraboloid_object *parab;
 
   if(!o)
     return AY_ENULL;
@@ -424,7 +424,7 @@ ay_parab_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     {
       if(!(parab->pnts = calloc(AY_PPARAB*3, sizeof(double))))
 	return AY_EOMEM;
-      ay_paraboloid_notifycb(o);
+      (void)ay_paraboloid_notifycb(o);
     }
 
  return ay_selp_getpnts(mode, o, p, pe, 1, AY_PPARAB, 3, parab->pnts);
@@ -438,12 +438,12 @@ int
 ay_parab_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  /*int ay_status = AY_OK;*/
+ ay_paraboloid_object *parab;
  char *n1 = "ParabAttrData";
  char fname[] = "parab_setprop";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- ay_paraboloid_object *parab = NULL;
- int itemp = 0;
  double dtemp = 0.0;
+ int itemp = 0;
 
   if(!interp || !o)
     return AY_ENULL;
@@ -495,8 +495,8 @@ ay_parab_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
+  (void)ay_paraboloid_notifycb(o);
   o->modified = AY_TRUE;
-  ay_paraboloid_notifycb(o);
   ay_notify_parent();
 
  return AY_OK;
@@ -511,7 +511,7 @@ ay_parab_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  char *n1="ParabAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- ay_paraboloid_object *parab = NULL;
+ ay_paraboloid_object *parab;
 
   if(!interp || !o)
     return AY_ENULL;
@@ -557,7 +557,7 @@ ay_parab_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_parab_readcb(FILE *fileptr, ay_object *o)
 {
- ay_paraboloid_object *parab = NULL;
+ ay_paraboloid_object *parab;
  int itemp = 0;
 
   if(!fileptr || !o)
@@ -573,7 +573,6 @@ ay_parab_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%lg\n",&parab->zmax);
   fscanf(fileptr,"%lg\n",&parab->thetamax);
 
-
   o->refine = parab;
 
  return AY_OK;
@@ -586,7 +585,7 @@ ay_parab_readcb(FILE *fileptr, ay_object *o)
 int
 ay_parab_writecb(FILE *fileptr, ay_object *o)
 {
- ay_paraboloid_object *parab = NULL;
+ ay_paraboloid_object *parab;
 
   if(!fileptr || !o)
     return AY_ENULL;
@@ -613,10 +612,10 @@ ay_parab_writecb(FILE *fileptr, ay_object *o)
 int
 ay_parab_wribcb(char *file, ay_object *o)
 {
- ay_paraboloid_object *paraboloid = NULL;
+ ay_paraboloid_object *paraboloid;
  RtFloat rmin = (RtFloat)0.0;
  RtPoint patch[16];
- RtFloat  Sx, Sy, B0, B3, K;
+ RtFloat Sx, Sy, B0, B3, K;
 
   if(!o)
    return AY_ENULL;
@@ -715,7 +714,7 @@ int
 ay_parab_bbccb(ay_object *o, double *bbox, int *flags)
 {
  double r = 0.0, zmi = 0.0, zma = 0.0;
- ay_paraboloid_object *parab = NULL;
+ ay_paraboloid_object *parab;
 
   if(!o || !bbox || !flags)
     return AY_ENULL;
@@ -731,7 +730,7 @@ ay_parab_bbccb(ay_object *o, double *bbox, int *flags)
 	{
 	  if(!(parab->pnts = calloc(AY_PPARAB*3, sizeof(double))))
 	    { return AY_EOMEM; }
-	  ay_paraboloid_notifycb(o);
+	  (void)ay_paraboloid_notifycb(o);
 	}
 
       return ay_bbc_fromarr(parab->pnts, AY_PPARAB, 3, bbox);
@@ -772,8 +771,8 @@ ay_paraboloid_notifycb(ay_object *o)
  ay_paraboloid_object *parab;
  double *pnts;
  double zmin, zmid, zmax, rmin, rmid, rmax;
- int i, a;
  double thetadiff, angle;
+ int i, a;
 
   if(!o)
     return AY_ENULL;
@@ -880,7 +879,7 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
       if(paraboloid->zmin > 0.0)
 	r = sqrt(paraboloid->zmin/paraboloid->zmax);
       K  = paraboloid->rmax * paraboloid->rmax;
-      B0 = paraboloid->zmin  - ((2 * paraboloid->zmin) / K);
+      B0 = paraboloid->zmin - ((2 * paraboloid->zmin) / K);
       B3 = paraboloid->zmax - (2 * paraboloid->zmax);
       K  = (2 * paraboloid->zmax) / K;
       Sx = (B3 - B0) / (K * (r - paraboloid->rmax));
@@ -1179,7 +1178,7 @@ ay_paraboloid_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
  ay_object *new = NULL, *t;
- ay_paraboloid_object *paraboloid = NULL;
+ ay_paraboloid_object *paraboloid;
 
   if(!o)
     return AY_ENULL;
@@ -1221,7 +1220,6 @@ ay_paraboloid_convertcb(ay_object *o, int in_place)
     {
       ay_status = ay_paraboloid_providecb(o, AY_IDNPATCH, &new);
     }
-
 
   /* second, link new object(s), or replace old object with it/them */
 

@@ -29,7 +29,7 @@ int ay_disk_notifycb(ay_object *o);
 int
 ay_disk_createcb(int argc, char *argv[], ay_object *o)
 {
- ay_disk_object *disk = NULL;
+ ay_disk_object *disk;
  char fname[] = "crtdisk";
 
   if(!o)
@@ -58,7 +58,7 @@ ay_disk_createcb(int argc, char *argv[], ay_object *o)
 int
 ay_disk_deletecb(void *c)
 {
- ay_disk_object *disk = NULL;
+ ay_disk_object *disk;
 
   if(!c)
     return AY_ENULL;
@@ -80,7 +80,7 @@ ay_disk_deletecb(void *c)
 int
 ay_disk_copycb(void *src, void **dst)
 {
- ay_disk_object *disk = NULL;
+ ay_disk_object *disk;
 
   if(!src || !dst)
     return AY_ENULL;
@@ -104,7 +104,7 @@ ay_disk_copycb(void *src, void **dst)
 int
 ay_disk_drawcb(struct Togl *togl, ay_object *o)
 {
- ay_disk_object *disk = NULL;
+ ay_disk_object *disk;
  GLdouble radius = 0.0;
  GLdouble w = 0.0;
  GLdouble height = 0.0;
@@ -230,7 +230,7 @@ ay_disk_drawhcb(struct Togl *togl, ay_object *o)
 	return AY_EOMEM;
 
       disk->pnts = pnts;
-      ay_disk_notifycb(o);
+      (void)ay_disk_notifycb(o);
     }
   else
     {
@@ -261,7 +261,7 @@ ay_disk_drawhcb(struct Togl *togl, ay_object *o)
 int
 ay_disk_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
- ay_disk_object *disk = NULL;
+ ay_disk_object *disk;
 
   if(!o)
     return AY_ENULL;
@@ -275,7 +275,7 @@ ay_disk_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     {
       if(!(disk->pnts = calloc(AY_PDISK*3, sizeof(double))))
 	return AY_EOMEM;
-      ay_disk_notifycb(o);
+      (void)ay_disk_notifycb(o);
     }
 
  return ay_selp_getpnts(mode, o, p, pe, 1, AY_PDISK, 3, disk->pnts);
@@ -291,7 +291,7 @@ ay_disk_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  /*int ay_status = AY_OK;*/
  char *n1 = "DiskAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- ay_disk_object *disk = NULL;
+ ay_disk_object *disk;
 
   if(!interp || !o)
     return AY_ENULL;
@@ -347,7 +347,7 @@ ay_disk_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  char *n1="DiskAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- ay_disk_object *disk = NULL;
+ ay_disk_object *disk;
 
   if(!interp || !o)
     return AY_ENULL;
@@ -386,7 +386,7 @@ ay_disk_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_disk_readcb(FILE *fileptr, ay_object *o)
 {
- ay_disk_object *disk = NULL;
+ ay_disk_object *disk;
 
   if(!fileptr || !o)
    return AY_ENULL;
@@ -419,7 +419,7 @@ ay_disk_readcb(FILE *fileptr, ay_object *o)
 int
 ay_disk_writecb(FILE *fileptr, ay_object *o)
 {
- ay_disk_object *disk = NULL;
+ ay_disk_object *disk;
 
   if(!fileptr || !o)
     return AY_ENULL;
@@ -443,7 +443,7 @@ ay_disk_writecb(FILE *fileptr, ay_object *o)
 int
 ay_disk_wribcb(char *file, ay_object *o)
 {
- ay_disk_object *disk = NULL;
+ ay_disk_object *disk;
 
   if(!o)
    return AY_ENULL;
@@ -469,7 +469,7 @@ int
 ay_disk_bbccb(ay_object *o, double *bbox, int *flags)
 {
  double r = 0.0, h = 0.0;
- ay_disk_object *disk = NULL;
+ ay_disk_object *disk;
 
   if(!o || !bbox || !flags)
     return AY_ENULL;
@@ -485,7 +485,7 @@ ay_disk_bbccb(ay_object *o, double *bbox, int *flags)
 	{
 	  if(!(disk->pnts = calloc(AY_PDISK*3, sizeof(double))))
 	    { return AY_EOMEM; }
-	  ay_disk_notifycb(o);
+	  (void)ay_disk_notifycb(o);
 	}
 
       return ay_bbc_fromarr(disk->pnts, AY_PDISK, 3, bbox);

@@ -30,7 +30,7 @@ int ay_hyperboloid_notifycb(ay_object *o);
 int
 ay_hyperb_createcb(int argc, char *argv[], ay_object *o)
 {
- ay_hyperboloid_object *h = NULL;
+ ay_hyperboloid_object *h;
  char fname[] = "crthyperboloid";
 
   if(!o)
@@ -59,7 +59,7 @@ ay_hyperb_createcb(int argc, char *argv[], ay_object *o)
 int
 ay_hyperb_deletecb(void *c)
 {
- ay_hyperboloid_object *h = NULL;
+ ay_hyperboloid_object *h;
 
   if(!c)
     return AY_ENULL;
@@ -81,7 +81,7 @@ ay_hyperb_deletecb(void *c)
 int
 ay_hyperb_copycb(void *src, void **dst)
 {
- ay_hyperboloid_object *h = NULL;
+ ay_hyperboloid_object *h;
 
   if(!src || !dst)
     return AY_ENULL;
@@ -105,7 +105,7 @@ ay_hyperb_copycb(void *src, void **dst)
 int
 ay_hyperb_drawcb(struct Togl *togl, ay_object *o)
 {
- ay_hyperboloid_object *h = NULL;
+ ay_hyperboloid_object *h;
  double rmi = 0.0, rma = 0.0, ami = 0.0, ama = 0.0;
  double P1[9*2], P2[9*2];
  int i;
@@ -225,7 +225,7 @@ ay_hyperb_drawcb(struct Togl *togl, ay_object *o)
 int
 ay_hyperb_shadecb(struct Togl *togl, ay_object *o)
 {
- ay_hyperboloid_object *h = NULL;
+ ay_hyperboloid_object *h;
  double rmi = 0.0, rma = 0.0, ami = 0.0, ama = 0.0;
  int i;
  double P1[9*2], P2[9*2];
@@ -354,6 +354,9 @@ ay_hyperb_drawhcb(struct Togl *togl, ay_object *o)
  double *pnts;
  ay_hyperboloid_object *h;
 
+  if(!o)
+    return AY_ENULL;
+
   h = (ay_hyperboloid_object *) o->refine;
 
   if(!h)
@@ -366,7 +369,7 @@ ay_hyperb_drawhcb(struct Togl *togl, ay_object *o)
 	  return AY_EOMEM;
 	}
       h->pnts = pnts;
-      ay_hyperboloid_notifycb(o);
+      (void)ay_hyperboloid_notifycb(o);
     }
   else
     {
@@ -397,7 +400,7 @@ ay_hyperb_drawhcb(struct Togl *togl, ay_object *o)
 int
 ay_hyperb_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
- ay_hyperboloid_object *h = NULL;
+ ay_hyperboloid_object *h;
 
   if(!o)
     return AY_ENULL;
@@ -411,7 +414,7 @@ ay_hyperb_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     {
       if(!(h->pnts = calloc(AY_PHYPERB*3, sizeof(double))))
 	return AY_EOMEM;
-      ay_hyperboloid_notifycb(o);
+      (void)ay_hyperboloid_notifycb(o);
     }
 
  return ay_selp_getpnts(mode, o, p, pe, 1, AY_PHYPERB, 3, h->pnts);
@@ -427,7 +430,7 @@ ay_hyperb_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  /*int ay_status = AY_OK;*/
  char *n1 = "HyperbAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- ay_hyperboloid_object *hyperb = NULL;
+ ay_hyperboloid_object *hyperb;
  int itemp;
 
   if(!interp || !o)
@@ -480,9 +483,9 @@ ay_hyperb_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
+  (void)ay_hyperboloid_notifycb(o);
   o->modified = AY_TRUE;
-  ay_hyperboloid_notifycb(o);
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return AY_OK;
 } /* ay_hyperb_setpropcb */
@@ -496,7 +499,7 @@ ay_hyperb_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  char *n1="HyperbAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- ay_hyperboloid_object *hyperb = NULL;
+ ay_hyperboloid_object *hyperb;
 
   if(!interp || !o)
     return AY_ENULL;
@@ -558,7 +561,7 @@ ay_hyperb_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_hyperb_readcb(FILE *fileptr, ay_object *o)
 {
- ay_hyperboloid_object *hyperb = NULL;
+ ay_hyperboloid_object *hyperb;
  int itemp;
 
   if(!fileptr || !o)
@@ -588,7 +591,7 @@ ay_hyperb_readcb(FILE *fileptr, ay_object *o)
 int
 ay_hyperb_writecb(FILE *fileptr, ay_object *o)
 {
- ay_hyperboloid_object *hyperb = NULL;
+ ay_hyperboloid_object *hyperb;
 
   if(!fileptr || !o)
     return AY_ENULL;
@@ -613,7 +616,7 @@ ay_hyperb_writecb(FILE *fileptr, ay_object *o)
 int
 ay_hyperb_wribcb(char *file, ay_object *o)
 {
- ay_hyperboloid_object *hyperb = NULL;
+ ay_hyperboloid_object *hyperb;
  RtPoint p1, p2;
  RtPoint patch[4];
  RtFloat angle = (RtFloat)0.0, radius = (RtFloat)0.0;
@@ -713,7 +716,7 @@ int
 ay_hyperb_bbccb(ay_object *o, double *bbox, int *flags)
 {
  double r = 0.0, rmi = 0.0, rma = 0.0, zmi = 0.0, zma = 0.0;
- ay_hyperboloid_object *h = NULL;
+ ay_hyperboloid_object *h;
 
   if(!o || !bbox || !flags)
     return AY_ENULL;
@@ -729,7 +732,7 @@ ay_hyperb_bbccb(ay_object *o, double *bbox, int *flags)
 	{
 	  if(!(h->pnts = calloc(AY_PHYPERB*3, sizeof(double))))
 	    { return AY_EOMEM; }
-	  ay_hyperboloid_notifycb(o);
+	  (void)ay_hyperboloid_notifycb(o);
 	}
 
       return ay_bbc_fromarr(h->pnts, AY_PHYPERB, 3, bbox);
@@ -876,7 +879,7 @@ ay_hyperboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
  double *cv = NULL, *vk = NULL, *controlv = NULL;
  double zaxis[3]={0.0,0.0,1.0};
  double quat[4];
- ay_hyperboloid_object *h = NULL;
+ ay_hyperboloid_object *h;
  ay_disk_object disk = {0};
  ay_bpatch_object bpatch = {{0}};
  ay_object *new = NULL, d = {0}, **n = NULL;
@@ -1100,7 +1103,7 @@ ay_hyperboloid_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
  ay_object *new = NULL, *t;
- ay_hyperboloid_object *hyperb = NULL;
+ ay_hyperboloid_object *hyperb;
 
   if(!o)
     return AY_ENULL;

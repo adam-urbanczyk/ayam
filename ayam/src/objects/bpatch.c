@@ -171,7 +171,7 @@ cleanup:
 int
 ay_bpatch_deletecb(void *c)
 {
- ay_bpatch_object *bpatch = NULL;
+ ay_bpatch_object *bpatch;
 
   if(!c)
     return AY_ENULL;
@@ -190,7 +190,7 @@ ay_bpatch_deletecb(void *c)
 int
 ay_bpatch_copycb(void *src, void **dst)
 {
- ay_bpatch_object *bpatch = NULL;
+ ay_bpatch_object *bpatch;
 
   if(!src || !dst)
     return AY_ENULL;
@@ -212,7 +212,7 @@ ay_bpatch_copycb(void *src, void **dst)
 int
 ay_bpatch_drawcb(struct Togl *togl, ay_object *o)
 {
- ay_bpatch_object *bpatch = NULL;
+ ay_bpatch_object *bpatch;
  double h1[9*3], h2[9*3], w1[9*3], w2[9*3], d[3], len = 0.0;
  int i;
 
@@ -321,7 +321,7 @@ ay_bpatch_drawcb(struct Togl *togl, ay_object *o)
 int
 ay_bpatch_drawhcb(struct Togl *togl, ay_object *o)
 {
- ay_bpatch_object *bpatch = NULL;
+ ay_bpatch_object *bpatch;
 
   if(!o)
     return AY_ENULL;
@@ -349,7 +349,7 @@ ay_bpatch_drawhcb(struct Togl *togl, ay_object *o)
 int
 ay_bpatch_shadecb(struct Togl *togl, ay_object *o)
 {
- ay_bpatch_object *bpatch = NULL;
+ ay_bpatch_object *bpatch;
  double n[3] = {0};
 
   if(!o)
@@ -386,7 +386,7 @@ ay_bpatch_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_bpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
- ay_bpatch_object *bpatch = NULL;
+ ay_bpatch_object *bpatch;
  ay_point *pnt = NULL, **lastpnt = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
  double *pecoord = NULL, **ctmp, *c = NULL;
@@ -581,7 +581,7 @@ ay_bpatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  /*int ay_status = AY_OK;*/
  char *n1 = "BPatchAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- ay_bpatch_object *bpatch = NULL;
+ ay_bpatch_object *bpatch;
 
   if(!interp || !o)
     return AY_ENULL;
@@ -662,7 +662,7 @@ ay_bpatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  char *n1="BPatchAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- ay_bpatch_object *bpatch = NULL;
+ ay_bpatch_object *bpatch;
 
   if(!interp || !o)
     return AY_ENULL;
@@ -739,7 +739,7 @@ ay_bpatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_bpatch_readcb(FILE *fileptr, ay_object *o)
 {
- ay_bpatch_object *bp = NULL;
+ ay_bpatch_object *bp;
 
   if(!fileptr || !o)
    return AY_ENULL;
@@ -764,7 +764,7 @@ ay_bpatch_readcb(FILE *fileptr, ay_object *o)
 int
 ay_bpatch_writecb(FILE *fileptr, ay_object *o)
 {
- ay_bpatch_object *bpatch = NULL;
+ ay_bpatch_object *bpatch;
 
   if(!fileptr || !o)
     return AY_ENULL;
@@ -789,7 +789,7 @@ ay_bpatch_writecb(FILE *fileptr, ay_object *o)
 int
 ay_bpatch_wribcb(char *file, ay_object *o)
 {
- ay_bpatch_object *bpatch = NULL;
+ ay_bpatch_object *bpatch;
  RtPoint rect[4];
  RtToken *tokens = NULL;
  RtPointer *parms = NULL;
@@ -867,7 +867,7 @@ ay_bpatch_bbccb(ay_object *o, double *bbox, int *flags)
  double ymax = -DBL_MAX, zmin = DBL_MAX, zmax = -DBL_MAX;
  double cv[12] = {0};
  int i = 0, a = 0;
- ay_bpatch_object *b = NULL;
+ ay_bpatch_object *b;
 
   if(!o || !bbox || !flags)
     return AY_ENULL;

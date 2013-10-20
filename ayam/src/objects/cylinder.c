@@ -30,7 +30,7 @@ int ay_cylinder_notifycb(ay_object *o);
 int
 ay_cylinder_createcb(int argc, char *argv[], ay_object *o)
 {
- ay_cylinder_object *cylinder = NULL;
+ ay_cylinder_object *cylinder;
  char fname[] = "crtcylinder";
 
   if(!o)
@@ -61,7 +61,7 @@ ay_cylinder_createcb(int argc, char *argv[], ay_object *o)
 int
 ay_cylinder_deletecb(void *c)
 {
- ay_cylinder_object *cylinder = NULL;
+ ay_cylinder_object *cylinder;
 
   if(!c)
     return AY_ENULL;
@@ -83,7 +83,7 @@ ay_cylinder_deletecb(void *c)
 int
 ay_cylinder_copycb(void *src, void **dst)
 {
- ay_cylinder_object *cylinder = NULL;
+ ay_cylinder_object *cylinder;
 
   if(!src || !dst)
     return AY_ENULL;
@@ -107,7 +107,7 @@ ay_cylinder_copycb(void *src, void **dst)
 int
 ay_cylinder_drawcb(struct Togl *togl, ay_object *o)
 {
- ay_cylinder_object *cylinder = NULL;
+ ay_cylinder_object *cylinder;
  double thetamax, zmin, zmax, radius;
  double thetadiff, angle;
  int i;
@@ -247,7 +247,7 @@ ay_cylinder_drawcb(struct Togl *togl, ay_object *o)
 int
 ay_cylinder_shadecb(struct Togl *togl, ay_object *o)
 {
- ay_cylinder_object *cylinder = NULL;
+ ay_cylinder_object *cylinder;
  double thetamax, zmin, zmax, radius;
  double thetadiff, angle;
  int i;
@@ -387,7 +387,7 @@ ay_cylinder_drawhcb(struct Togl *togl, ay_object *o)
 	  return AY_EOMEM;
 	}
       cylinder->pnts = pnts;
-      ay_cylinder_notifycb(o);
+      (void)ay_cylinder_notifycb(o);
     }
   else
     {
@@ -418,7 +418,7 @@ ay_cylinder_drawhcb(struct Togl *togl, ay_object *o)
 int
 ay_cylinder_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
- ay_cylinder_object *cylinder = NULL;
+ ay_cylinder_object *cylinder;
 
   if(!o)
     return AY_ENULL;
@@ -432,7 +432,7 @@ ay_cylinder_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     {
       if(!(cylinder->pnts = calloc(AY_PCYLINDER*3, sizeof(double))))
 	return AY_EOMEM;
-      ay_cylinder_notifycb(o);
+      (void)ay_cylinder_notifycb(o);
     }
 
  return ay_selp_getpnts(mode, o, p, pe, 1, AY_PCYLINDER, 3, cylinder->pnts);
@@ -448,7 +448,7 @@ ay_cylinder_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  /*int ay_status = AY_OK;*/
  char *n1 = "CylinderAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- ay_cylinder_object *cylinder = NULL;
+ ay_cylinder_object *cylinder;
  int itemp = 0;
 
   if(!interp || !o)
@@ -495,9 +495,9 @@ ay_cylinder_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
+  (void)ay_cylinder_notifycb(o);
   o->modified = AY_TRUE;
-  ay_cylinder_notifycb(o);
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return AY_OK;
 } /* ay_cylinder_setpropcb */
@@ -511,7 +511,7 @@ ay_cylinder_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  char *n1="CylinderAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- ay_cylinder_object *cylinder = NULL;
+ ay_cylinder_object *cylinder;
 
   if(!interp || !o)
     return AY_ENULL;
@@ -557,7 +557,7 @@ ay_cylinder_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_cylinder_readcb(FILE *fileptr, ay_object *o)
 {
- ay_cylinder_object *cylinder = NULL;
+ ay_cylinder_object *cylinder;
  int itemp = 0;
 
   if(!fileptr || !o)
@@ -594,7 +594,7 @@ ay_cylinder_readcb(FILE *fileptr, ay_object *o)
 int
 ay_cylinder_writecb(FILE *fileptr, ay_object *o)
 {
- ay_cylinder_object *cylinder = NULL;
+ ay_cylinder_object *cylinder;
 
   if(!fileptr || !o)
     return AY_ENULL;
@@ -620,7 +620,7 @@ ay_cylinder_writecb(FILE *fileptr, ay_object *o)
 int
 ay_cylinder_wribcb(char *file, ay_object *o)
 {
- ay_cylinder_object *cylinder = NULL;
+ ay_cylinder_object *cylinder;
  RtPoint rect[4];
 
   if(!o)
@@ -754,7 +754,7 @@ int
 ay_cylinder_bbccb(ay_object *o, double *bbox, int *flags)
 {
  double r = 0.0, zmi = 0.0, zma = 0.0;
- ay_cylinder_object *cylinder = NULL;
+ ay_cylinder_object *cylinder;
 
   if(!o || !bbox || !flags)
     return AY_ENULL;
@@ -770,7 +770,7 @@ ay_cylinder_bbccb(ay_object *o, double *bbox, int *flags)
 	{
 	  if(!(cylinder->pnts = calloc(AY_PCYLINDER*3, sizeof(double))))
 	    { return AY_EOMEM; }
-	  ay_cylinder_notifycb(o);
+	  (void)ay_cylinder_notifycb(o);
 	}
 
       return ay_bbc_fromarr(cylinder->pnts, AY_PCYLINDER, 3, bbox);

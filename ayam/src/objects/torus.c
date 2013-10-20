@@ -30,7 +30,7 @@ int ay_torus_notifycb(ay_object *o);
 int
 ay_torus_createcb(int argc, char *argv[], ay_object *o)
 {
- ay_torus_object *torus = NULL;
+ ay_torus_object *torus;
  char fname[] = "crttorus";
 
   if(!o)
@@ -61,7 +61,7 @@ ay_torus_createcb(int argc, char *argv[], ay_object *o)
 int
 ay_torus_deletecb(void *c)
 {
- ay_torus_object *torus = NULL;
+ ay_torus_object *torus;
 
   if(!c)
     return AY_ENULL;
@@ -83,7 +83,7 @@ ay_torus_deletecb(void *c)
 int
 ay_torus_copycb(void *src, void **dst)
 {
- ay_torus_object *torus = NULL;
+ ay_torus_object *torus;
 
   if(!src || !dst)
     return AY_ENULL;
@@ -107,7 +107,7 @@ ay_torus_copycb(void *src, void **dst)
 int
 ay_torus_drawcb(struct Togl *togl, ay_object *o)
 {
- ay_torus_object *torus = NULL;
+ ay_torus_object *torus;
  double phi, mar, mir, thetamax;
  double phidiff, thetadiff, angle;
  int i, j;
@@ -210,7 +210,7 @@ ay_torus_drawcb(struct Togl *togl, ay_object *o)
 int
 ay_torus_shadecb(struct Togl *togl, ay_object *o)
 {
- ay_torus_object *torus = NULL;
+ ay_torus_object *torus;
  double phi, mar, mir, thetamax;
  double phidiff, thetadiff, angle;
  int i, j;
@@ -345,9 +345,9 @@ ay_torus_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_torus_drawhcb(struct Togl *togl, ay_object *o)
 {
- int i;
- double *pnts;
  ay_torus_object *torus;
+ double *pnts;
+ int i;
 
   if(!o)
     return AY_ENULL;
@@ -364,7 +364,7 @@ ay_torus_drawhcb(struct Togl *togl, ay_object *o)
 	  return AY_EOMEM;
 	}
       torus->pnts = pnts;
-      ay_torus_notifycb(o);
+      (void)ay_torus_notifycb(o);
     }
   else
     {
@@ -395,7 +395,7 @@ ay_torus_drawhcb(struct Togl *togl, ay_object *o)
 int
 ay_torus_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
- ay_torus_object *torus = NULL;
+ ay_torus_object *torus;
 
   if(!o)
     return AY_ENULL;
@@ -409,7 +409,7 @@ ay_torus_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     {
       if(!(torus->pnts = calloc(AY_PTORUS*3, sizeof(double))))
 	return AY_EOMEM;
-      ay_torus_notifycb(o);
+      (void)ay_torus_notifycb(o);
     }
 
  return ay_selp_getpnts(mode, o, p, pe, 1, AY_PTORUS, 3, torus->pnts);
@@ -425,7 +425,7 @@ ay_torus_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  /*int ay_status = AY_OK;*/
  char *n1 = "TorusAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- ay_torus_object *torus = NULL;
+ ay_torus_object *torus;
  int itemp = 0;
 
   if(!interp || !o)
@@ -467,9 +467,9 @@ ay_torus_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
+  (void)ay_torus_notifycb(o);
   o->modified = AY_TRUE;
-  ay_torus_notifycb(o);
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return AY_OK;
 } /* ay_torus_setpropcb */
@@ -483,7 +483,7 @@ ay_torus_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  char *n1="TorusAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- ay_torus_object *torus = NULL;
+ ay_torus_object *torus;
 
   if(!interp || !o)
     return AY_ENULL;
@@ -533,7 +533,7 @@ ay_torus_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_torus_readcb(FILE *fileptr, ay_object *o)
 {
- ay_torus_object *torus = NULL;
+ ay_torus_object *torus;
  int itemp = 0;
 
   if(!fileptr || !o)
@@ -562,7 +562,7 @@ ay_torus_readcb(FILE *fileptr, ay_object *o)
 int
 ay_torus_writecb(FILE *fileptr, ay_object *o)
 {
- ay_torus_object *torus = NULL;
+ ay_torus_object *torus;
 
   if(!fileptr || !o)
     return AY_ENULL;
@@ -590,7 +590,7 @@ ay_torus_writecb(FILE *fileptr, ay_object *o)
 int
 ay_torus_wribcb(char *file, ay_object *o)
 {
- ay_torus_object *torus = NULL;
+ ay_torus_object *torus;
  RtPoint p1, p2;
  double phidiff;
 
@@ -677,7 +677,7 @@ int
 ay_torus_bbccb(ay_object *o, double *bbox, int *flags)
 {
  double r = 0.0, zmi = 0.0, zma = 0.0;
- ay_torus_object *t = NULL;
+ ay_torus_object *t;
 
   if(!o || !bbox || !flags)
     return AY_ENULL;
@@ -693,7 +693,7 @@ ay_torus_bbccb(ay_object *o, double *bbox, int *flags)
 	{
 	  if(!(t->pnts = calloc(AY_PTORUS*3, sizeof(double))))
 	    { return AY_EOMEM; }
-	  ay_torus_notifycb(o);
+	  (void)ay_torus_notifycb(o);
 	}
 
       return ay_bbc_fromarr(t->pnts, AY_PTORUS, 3, bbox);
@@ -1058,7 +1058,7 @@ ay_torus_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
  ay_object *new = NULL, *t;
- ay_torus_object *torus = NULL;
+ ay_torus_object *torus;
 
   if(!o)
     return AY_ENULL;

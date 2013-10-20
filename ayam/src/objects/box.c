@@ -26,7 +26,7 @@ int ay_box_notifycb(ay_object *o);
 int
 ay_box_createcb(int argc, char *argv[], ay_object *o)
 {
- ay_box_object *box = NULL;
+ ay_box_object *box;
  char fname[] = "crtbox";
 
   if(!o)
@@ -54,7 +54,7 @@ ay_box_createcb(int argc, char *argv[], ay_object *o)
 int
 ay_box_deletecb(void *c)
 {
- ay_box_object *box = NULL;
+ ay_box_object *box;
 
   if(!c)
     return AY_ENULL;
@@ -76,7 +76,7 @@ ay_box_deletecb(void *c)
 int
 ay_box_copycb(void *src, void **dst)
 {
- ay_box_object *box = NULL;
+ ay_box_object *box;
 
   if(!src || !dst)
     return AY_ENULL;
@@ -100,7 +100,7 @@ ay_box_copycb(void *src, void **dst)
 int
 ay_box_drawcb(struct Togl *togl, ay_object *o)
 {
- ay_box_object *box = NULL;
+ ay_box_object *box;
  GLdouble wh, hh, lh;
 
   if(!o)
@@ -148,7 +148,7 @@ ay_box_drawcb(struct Togl *togl, ay_object *o)
 int
 ay_box_shadecb(struct Togl *togl, ay_object *o)
 {
- ay_box_object *box = NULL;
+ ay_box_object *box;
  GLdouble wh, hh, lh;
 
   if(!o)
@@ -213,9 +213,9 @@ ay_box_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_box_drawhcb(struct Togl *togl, ay_object *o)
 {
- int i;
- double *pnts;
  ay_box_object *box;
+ double *pnts;
+ int i;
 
   if(!o)
     return AY_ENULL;
@@ -232,7 +232,7 @@ ay_box_drawhcb(struct Togl *togl, ay_object *o)
 	  return AY_EOMEM;
 	}
       box->pnts = pnts;
-      ay_box_notifycb(o);
+      (void)ay_box_notifycb(o);
     }
   else
     {
@@ -263,7 +263,7 @@ ay_box_drawhcb(struct Togl *togl, ay_object *o)
 int
 ay_box_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
- ay_box_object *box = NULL;
+ ay_box_object *box;
 
   if(!o)
     return AY_ENULL;
@@ -277,7 +277,7 @@ ay_box_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     {
       if(!(box->pnts = calloc(8*3, sizeof(double))))
 	return AY_EOMEM;
-      ay_box_notifycb(o);
+      (void)ay_box_notifycb(o);
     }
 
  return ay_selp_getpnts(mode, o, p, pe, 1, 8, 3, box->pnts);
@@ -293,7 +293,7 @@ ay_box_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  /*int ay_status = AY_OK;*/
  char *n1 = "BoxAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- ay_box_object *box = NULL;
+ ay_box_object *box;
 
   if(!interp || !o)
     return AY_ENULL;
@@ -320,8 +320,9 @@ ay_box_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
+  (void)ay_box_notifycb(o);
   o->modified = AY_TRUE;
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return AY_OK;
 } /* ay_box_setpropcb */
@@ -335,7 +336,7 @@ ay_box_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  char *n1="BoxAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- ay_box_object *box = NULL;
+ ay_box_object *box;
 
   if(!interp || !o)
     return AY_ENULL;
@@ -372,7 +373,7 @@ ay_box_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_box_readcb(FILE *fileptr, ay_object *o)
 {
- ay_box_object *box = NULL;
+ ay_box_object *box;
 
   if(!fileptr || !o)
     return AY_ENULL;
@@ -396,7 +397,7 @@ ay_box_readcb(FILE *fileptr, ay_object *o)
 int
 ay_box_writecb(FILE *fileptr, ay_object *o)
 {
- ay_box_object *box = NULL;
+ ay_box_object *box;
 
   if(!fileptr || !o)
     return AY_ENULL;
@@ -420,7 +421,7 @@ ay_box_writecb(FILE *fileptr, ay_object *o)
 int
 ay_box_wribcb(char *file, ay_object *o)
 {
- ay_box_object *box = NULL;
+ ay_box_object *box;
  RtPoint rect[4];
 
   if(!o)
@@ -475,7 +476,7 @@ int
 ay_box_bbccb(ay_object *o, double *bbox, int *flags)
 {
  double wh = 0.0, lh = 0.0, hh = 0.0;
- ay_box_object *box = NULL;
+ ay_box_object *box;
 
   if(!o || !bbox || !flags)
     return AY_ENULL;
@@ -517,9 +518,9 @@ ay_box_bbccb(ay_object *o, double *bbox, int *flags)
 int
 ay_box_notifycb(ay_object *o)
 {
- ay_box_object *box = NULL;
+ ay_box_object *box;
  double wh, hh, lh;
- double *pnts = NULL;
+ double *pnts;
  int i = 0, a = 0;
 
   if(!o)

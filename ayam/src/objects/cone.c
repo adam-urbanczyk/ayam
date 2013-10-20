@@ -30,7 +30,7 @@ int ay_cone_notifycb(ay_object *o);
 int
 ay_cone_createcb(int argc, char *argv[], ay_object *o)
 {
- ay_cone_object *cone = NULL;
+ ay_cone_object *cone;
  char fname[] = "crtcone";
 
   if(!o)
@@ -60,7 +60,7 @@ ay_cone_createcb(int argc, char *argv[], ay_object *o)
 int
 ay_cone_deletecb(void *c)
 {
- ay_cone_object *cone = NULL;
+ ay_cone_object *cone;
 
   if(!c)
     return AY_ENULL;
@@ -82,7 +82,7 @@ ay_cone_deletecb(void *c)
 int
 ay_cone_copycb(void *src, void **dst)
 {
- ay_cone_object *cone = NULL;
+ ay_cone_object *cone;
 
   if(!src || !dst)
     return AY_ENULL;
@@ -106,7 +106,7 @@ ay_cone_copycb(void *src, void **dst)
 int
 ay_cone_drawcb(struct Togl *togl, ay_object *o)
 {
- ay_cone_object *cone = NULL;
+ ay_cone_object *cone;
  double thetamax, height, radius;
  double thetadiff, angle;
  int i;
@@ -217,7 +217,7 @@ ay_cone_drawcb(struct Togl *togl, ay_object *o)
 int
 ay_cone_shadecb(struct Togl *togl, ay_object *o)
 {
- ay_cone_object *cone = NULL;
+ ay_cone_object *cone;
  double thetamax, height, radius;
  double thetadiff, angle;
  int i;
@@ -320,7 +320,7 @@ int
 ay_cone_drawhcb(struct Togl *togl, ay_object *o)
 {
  int i = 0, a = 0;
- ay_cone_object *cone = NULL;
+ ay_cone_object *cone;
  double *pnts = NULL;
 
   if(!o)
@@ -338,7 +338,7 @@ ay_cone_drawhcb(struct Togl *togl, ay_object *o)
 	  return AY_EOMEM;
 	}
       cone->pnts = pnts;
-      ay_cone_notifycb(o);
+      (void)ay_cone_notifycb(o);
     }
   else
     {
@@ -369,7 +369,7 @@ ay_cone_drawhcb(struct Togl *togl, ay_object *o)
 int
 ay_cone_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
- ay_cone_object *cone = NULL;
+ ay_cone_object *cone;
 
   if(!o)
     return AY_ENULL;
@@ -383,7 +383,7 @@ ay_cone_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     {
       if(!(cone->pnts = calloc(AY_PCONE*3, sizeof(double))))
 	return AY_EOMEM;
-      ay_cone_notifycb(o);
+      (void)ay_cone_notifycb(o);
     }
 
  return ay_selp_getpnts(mode, o, p, pe, 1, AY_PCONE, 3, cone->pnts);
@@ -399,7 +399,7 @@ ay_cone_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  /*int ay_status = AY_OK;*/
  char *n1 = "ConeAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- ay_cone_object *cone = NULL;
+ ay_cone_object *cone;
  int itemp = 0;
 
   if(!interp || !o)
@@ -442,9 +442,9 @@ ay_cone_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
+  (void)ay_cone_notifycb(o);
   o->modified = AY_TRUE;
-  ay_cone_notifycb(o);
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return AY_OK;
 } /* ay_cone_setpropcb */
@@ -458,7 +458,7 @@ ay_cone_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  char *n1="ConeAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- ay_cone_object *cone = NULL;
+ ay_cone_object *cone;
 
   if(!interp || !o)
     return AY_ENULL;
@@ -500,7 +500,7 @@ ay_cone_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_cone_readcb(FILE *fileptr, ay_object *o)
 {
- ay_cone_object *cone = NULL;
+ ay_cone_object *cone;
  int itemp = 0;
 
   if(!fileptr || !o)
@@ -536,7 +536,7 @@ ay_cone_readcb(FILE *fileptr, ay_object *o)
 int
 ay_cone_writecb(FILE *fileptr, ay_object *o)
 {
- ay_cone_object *cone = NULL;
+ ay_cone_object *cone;
 
   if(!fileptr || !o)
     return AY_ENULL;
@@ -561,7 +561,7 @@ ay_cone_writecb(FILE *fileptr, ay_object *o)
 int
 ay_cone_wribcb(char *file, ay_object *o)
 {
- ay_cone_object *cone = NULL;
+ ay_cone_object *cone;
  RtPoint rect[4];
 
   if(!o)
@@ -675,7 +675,7 @@ int
 ay_cone_bbccb(ay_object *o, double *bbox, int *flags)
 {
  double r = 0.0, h = 0.0;
- ay_cone_object *cone = NULL;
+ ay_cone_object *cone;
 
   if(!o || !bbox || !flags)
     return AY_ENULL;
@@ -691,7 +691,7 @@ ay_cone_bbccb(ay_object *o, double *bbox, int *flags)
 	{
 	  if(!(cone->pnts = calloc(AY_PCONE*3, sizeof(double))))
 	    { return AY_EOMEM; }
-	  ay_cone_notifycb(o);
+	  (void)ay_cone_notifycb(o);
 	}
 
       return ay_bbc_fromarr(cone->pnts, AY_PCONE, 3, bbox);
@@ -956,7 +956,7 @@ ay_cone_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
  ay_object *new = NULL, *t;
- ay_cone_object *cone = NULL;
+ ay_cone_object *cone;
 
   if(!o)
     return AY_ENULL;
