@@ -1486,6 +1486,16 @@ proc warpMouse { dx dy } {
     set newx [expr $x + $dx]
     set newy [expr $y + $dy]
 
+    # never warp out of current view window
+    set ww $ay(currentView)
+    set x0 [expr [winfo rootx $ww] - [winfo rootx $w]]
+    set xn [expr $x0 + [winfo width $ww]]
+    set y0 [expr [winfo rooty $ww] - [winfo rooty $w]]
+    set yn [expr $y0 + [winfo height $ww]]
+    if { $newx < $x0 || $newx > $xn || $newy < $y0 || $newy > $yn } {
+	return;
+    }
+
     # redirect all events to the tree widget so that no view receives
     # stray <Motion> events caused by the warp
     grab $ay(tree)
