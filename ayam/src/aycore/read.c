@@ -375,7 +375,7 @@ int
 ay_read_tags(FILE *fileptr, ay_object *o)
 {
  int ay_status = AY_OK;
- ay_tag *tag = NULL, *last = NULL;
+ ay_tag *tag = NULL, **next = NULL;
  Tcl_HashEntry *entry = NULL;
  int tcount = 0, i = 0;
  char fname[] = "read_tags";
@@ -391,6 +391,8 @@ ay_read_tags(FILE *fileptr, ay_object *o)
     return AY_ENULL;
 
   fscanf(fileptr, "%d\n", &tcount);
+
+  next = &(o->tags);
 
   for(i = 0; i < tcount; i++)
     {
@@ -424,14 +426,8 @@ ay_read_tags(FILE *fileptr, ay_object *o)
 	    { free(tag->name); free(tag); return AY_EOMEM; }
 	}
 
-     if(!o->tags)
-       {
-	 o->tags = tag;
-       }
-     else
-       {
-	 last->next = tag;
-       }
+      *next = tag;
+      next = &(tag->next);
 
 #ifdef AYNOSAFEINTERP
      /* if there is no safe interpreter, disable all ANS/BNS tags
@@ -485,7 +481,6 @@ ay_read_tags(FILE *fileptr, ay_object *o)
 	 Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
        } /* if */
 #endif /* AYNOSAFEINTERP */
-     last = tag;
     } /* for */
 
  return ay_status;
