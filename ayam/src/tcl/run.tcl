@@ -179,7 +179,7 @@ proc runGetStdout { num cmd template channel } {
 		set hours [expr int(floor($togo/3600))]
 		set mins [expr int(floor(($togo-($hours*3600))/60))]
 		set secs [expr int(round($togo-($hours*3600)-($mins*60)))]
-		set string [format "~ %d:%02d:%02d to go"  $hours $mins $secs]
+		set string [format "~ %d:%02d:%02d to go" $hours $mins $secs]
 		catch { .render${num}.f2.la configure -text $string }
 		if { $percent >= 100 } {
 		    set fulltime [expr ($cur-$start)]
@@ -253,7 +253,7 @@ proc runRenderer { cmd template } {
     winDialog $w $t
 
     if { $ayprefs(FixDialogTitles) == 1 } {
-	pack [frame $w.fl] -in $w -side top   
+	pack [frame $w.fl] -in $w -side top
 	pack [label $w.fl.l -text $t] -in $w.fl -side left -fill x -expand yes
     }
 

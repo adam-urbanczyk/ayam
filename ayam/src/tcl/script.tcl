@@ -77,7 +77,7 @@ proc resizeHandle:Create {win resizeWin args} {
     bind $win <ButtonPress-1> \
 	"resizeHandle:ButtonPress-1 $win $resizeWin %X %Y"
     bind $win <B1-Motion> \
-	"resizeHandle:B1-Motion $win $resizeWin  %X %Y"
+	"resizeHandle:B1-Motion $win $resizeWin %X %Y"
     bind $win <ButtonRelease-1> \
 	"resizeHandle:PlaceHandle $win $resizeWin"
     bind $win <Destroy> "resizeHandle:Destroy $win"
