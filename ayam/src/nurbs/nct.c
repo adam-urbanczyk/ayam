@@ -1182,7 +1182,7 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
 	      o->modified = AY_TRUE;
 
 	      /* re-create tesselation of curve */
-	      ay_notify_object(sel->object);
+	      (void)ay_notify_object(sel->object);
 	    } /* if */
 	}
       else
@@ -1551,7 +1551,7 @@ ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
 	      sel->object->modified = AY_TRUE;
 
 	      /* re-create tesselation of curve */
-	      ay_notify_object(sel->object);
+	      (void)ay_notify_object(sel->object);
 	    }
 	}
       else
@@ -1837,7 +1837,7 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 	  sel->object->modified = AY_TRUE;
 
 	  /* re-create tesselation of curve */
-	  ay_notify_object(sel->object);
+	  (void)ay_notify_object(sel->object);
 	}
       else
 	{
@@ -1967,7 +1967,7 @@ ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
 	  src->modified = AY_TRUE;
 
 	  /* re-create tesselation of curve */
-	  ay_notify_object(sel->object);
+	  (void)ay_notify_object(sel->object);
 	} /* if */
 
       sel = sel->next;
@@ -2019,7 +2019,7 @@ ay_nct_collapsetcmd(ClientData clientData, Tcl_Interp *interp,
 	    sel->object->modified = AY_TRUE;
 
 	    /* re-create tesselation of curve */
-	    ay_notify_object(sel->object);
+	    (void)ay_notify_object(sel->object);
 	  }
 	  break;
 	case AY_IDNPATCH:
@@ -2092,7 +2092,7 @@ ay_nct_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 	      }
 	    sel->object->modified = AY_TRUE;
 	    /* re-create tesselation of curve */
-	    ay_notify_object(sel->object);
+	    (void)ay_notify_object(sel->object);
 	  }
 	  break;
 	case AY_IDNPATCH:
@@ -3499,7 +3499,7 @@ int
 ay_nct_getorientation(ay_nurbcurve_object *curve, int stride,
 		      int report, int plane, double *orient)
 {
-  int i, j, k, l;
+ int i, j, k, l;
  double *cv = NULL, A = 0.0;
  char fname[] = "nct_getorientation";
 
@@ -4561,7 +4561,7 @@ ay_nct_rescaleknvtcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_nct_rescaleknvtcmd */
@@ -4597,10 +4597,6 @@ ay_nct_getcurvature(ay_nurbcurve_object *c, double t)
       numer = AY_V3LEN(cross);
       denom = pow(velsqrlen, 1.5);
       return (numer/denom);
-    }
-  else
-    {
-      return 0.0;
     }
 
  return 0.0;
@@ -4721,7 +4717,7 @@ ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_nct_curvplottcmd */
@@ -5348,7 +5344,7 @@ ay_nct_shiftctcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  src->modified = AY_TRUE;
 
-	  ay_notify_object(src);
+	  (void)ay_notify_object(src);
 	} /* if */
 
       sel = sel->next;
@@ -5614,7 +5610,7 @@ ay_nct_toxytcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      src->modified = AY_TRUE;
 	      /* re-create tesselation of curve */
-	      ay_notify_object(src);
+	      (void)ay_notify_object(src);
 	    } /* if */
 	} /* if */
 
@@ -5804,7 +5800,7 @@ ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_selp_clear(o);
 	    }
 	  o->modified = AY_TRUE;
-	  ay_notify_object(o);
+	  (void)ay_notify_object(o);
 
 	  p = p->next;
 	} /* if */
@@ -6062,7 +6058,7 @@ ay_nct_coarsentcmd(ClientData clientData, Tcl_Interp *interp,
 	  o->modified = AY_TRUE;
 
 	  /* re-create tesselation of curve */
-	  ay_notify_object(sel->object);
+	  (void)ay_notify_object(sel->object);
 	} /* if */
 
       sel = sel->next;
@@ -6244,7 +6240,7 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 	  o->modified = AY_TRUE;
 
 	  /* re-create tesselation of curve */
-	  ay_notify_object(sel->object);
+	  (void)ay_notify_object(sel->object);
 	} /* if */
 
       sel = sel->next;
@@ -6388,7 +6384,7 @@ ay_nct_trimtcmd(ClientData clientData, Tcl_Interp *interp,
 	  o->modified = AY_TRUE;
 
 	  /* re-create tesselation of curve */
-	  ay_notify_object(sel->object);
+	  (void)ay_notify_object(sel->object);
 	} /* if */
 
       sel = sel->next;
@@ -7399,7 +7395,7 @@ ay_nct_reparamtcmd(ClientData clientData, Tcl_Interp *interp,
 	  o->modified = AY_TRUE;
 
 	  /* re-create tesselation of curve */
-	  ay_notify_object(sel->object);
+	  (void)ay_notify_object(sel->object);
 	} /* if */
 
       sel = sel->next;
@@ -7552,7 +7548,7 @@ ay_nct_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 	  o->modified = AY_TRUE;
 
 	  /* re-create tesselation of curve */
-	  ay_notify_object(sel->object);
+	  (void)ay_notify_object(sel->object);
 	} /* if */
 
       sel = sel->next;
@@ -7792,7 +7788,7 @@ ay_nct_extendtcmd(ClientData clientData, Tcl_Interp *interp,
 	  o->modified = AY_TRUE;
 
 	  /* re-create tesselation of curve */
-	  ay_notify_object(o);
+	  (void)ay_notify_object(o);
 	} /* if */
 
       sel = sel->next;
@@ -7869,7 +7865,7 @@ ay_nct_xxxxtcmd(ClientData clientData, Tcl_Interp *interp,
 	  o->modified = AY_TRUE;
 
 	  /* re-create tesselation of curve */
-	  ay_notify_object(sel->object);
+	  (void)ay_notify_object(sel->object);
 	} /* if */
 
       sel = sel->next;
