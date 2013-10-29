@@ -922,7 +922,8 @@ proc searchOb { expression action {gui 0} } {
 		}
 		incr vi
 	    }
-	    # process next $
+
+	    # arrange to process next $
 	    set rem [string range $rem 1 end]
 	    set index [string first "\$" $rem]
 	    if { $index != -1 } {
@@ -939,8 +940,7 @@ proc searchOb { expression action {gui 0} } {
 	    append cx $ObjectSearch(Expression)
 	}
 	append cx "\}"
-puts "Using Expression:"
-puts $cx
+
 	set ObjectSearch(cx) $cx
     } else {
 	# expression is not a variable comparison
@@ -1194,7 +1194,7 @@ proc objectsearch_open { } {
     addString $w.f1 ObjectSearch Action\
 	{Highlight Collect Copy Delete "\[myProc\]"}
     addColor $w ObjectSearch HighlightColor
-    addMenu $w ObjectSearch Scope {All Selection Level}
+    addMenu $w ObjectSearch Scope {All Selection Level Collection}
     addCheck $w ObjectSearch ClearHighlight
     addCheck $w ObjectSearch ClearClipboard
 

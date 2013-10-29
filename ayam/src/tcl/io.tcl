@@ -682,14 +682,14 @@ proc io_mruLoad { index } {
 
 # io_mruUMenu:
 #  update MRU menu entries
-proc io_mruUMenu {  } {
+proc io_mruUMenu { } {
     global ay ayprefs
     set i 0
     set m $ay(filemenu)
     foreach f $ayprefs(mru) {
 	set label "[expr $i+1]. [lindex $ayprefs(mru) $i]"
 	set len [string length $label]
-	if {  $len > 20 } {
+	if { $len > 20 } {
 	    set tail [string range $label [expr $len - 17] end]
 	    set head [string range $label 0 2]
 	    set label "$head ...$tail"
@@ -705,7 +705,7 @@ proc io_mruUMenu {  } {
 
 # io_warnChanged:
 #  raise a warning reqester, that the scene contains unsaved changes
-proc io_warnChanged {  } {
+proc io_warnChanged { } {
     global ay ayprefs
 
     if { $ayprefs(WarnChanged) == 1 } {
@@ -744,7 +744,7 @@ set answer [tk_messageBox -title $t -type okcancel -icon warning -message $m]
 
 # io_saveEnv:
 #  save working environment scene file
-proc io_saveEnv {  } {
+proc io_saveEnv { } {
  global ay ayprefs ay_error tcl_platform
 
  winAutoFocusOff
