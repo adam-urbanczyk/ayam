@@ -9679,18 +9679,25 @@ ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  if(!strncmp(argv[i], "-r", 2))
 	    {
-	      mode = 0;
-	      dim = 0;
-	      if(!strcmp(argv[i], "-ru"))
+	      if(argc > i+2)
 		{
-		  dim = 1;
+		  mode = 0;
+		  dim = 0;
+		  if(!strcmp(argv[i], "-ru"))
+		    {
+		      dim = 1;
+		    }
+		  if(!strcmp(argv[i], "-rv"))
+		    {
+		      dim = 2;
+		    }
+		  sscanf(argv[i+1], "%lg", &rmin);
+		  sscanf(argv[i+2], "%lg", &rmax);
 		}
-	      if(!strcmp(argv[i], "-rv"))
+	      else
 		{
-		  dim = 2;
+		  ay_error(AY_EARGS, argv[0], "-ru|-rv min max");
 		}
-	      sscanf(argv[i+1], "%lg", &rmin);
-	      sscanf(argv[i+2], "%lg", &rmax);
 	    } /* if */
 	  if(!strncmp(argv[i], "-d", 2))
 	    {
