@@ -304,7 +304,7 @@ ay_matt_creatematerialids(ay_object *o)
     {
       if(o->mat)
 	{
-	  mat = o->mat;
+	  mat =  o->mat;
 
 	  if(!(tname = calloc(3, sizeof(char))))
 	    return AY_EOMEM;
@@ -563,6 +563,41 @@ ay_matt_mayhavematerial(unsigned int type)
   else
     return AY_TRUE;
 } /* ay_matt_mayhavematerial */
+
+
+/* ay_matt_clearshaders:
+ *  remove all shaders from a material
+ */
+void
+ay_matt_clearshaders(ay_mat_object *material)
+{
+
+  if(!material)
+    return;
+
+  if(material->sshader)
+    {
+      ay_shader_free(material->sshader);
+      material->sshader = NULL;
+    }
+  if(material->dshader)
+    {
+      ay_shader_free(material->dshader);
+      material->dshader = NULL;
+    }
+  if(material->ishader)
+    {
+      ay_shader_free(material->ishader);
+      material->ishader = NULL;
+    }
+  if(material->eshader)
+    {
+      ay_shader_free(material->eshader);
+      material->eshader = NULL;
+    }
+
+ return;
+} /* ay_matt_clearshaders */
 
 
 /* ay_matt_init:

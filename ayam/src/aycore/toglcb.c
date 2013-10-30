@@ -89,8 +89,6 @@ ay_toglcb_create(struct Togl *togl)
   view->id = id;
   id++;
 
-  view->full_notify = AY_TRUE;
-
   /* vital OpenGL defaults */
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_AUTO_NORMAL);
@@ -283,7 +281,7 @@ ay_toglcb_display(struct Togl *togl)
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
       if(view->antialiaslines)
-	glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
+	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 
       if(view->action_state)
 	{
