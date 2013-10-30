@@ -134,94 +134,39 @@ ay_undo_deletemulti(ay_object *o)
 	  if(view->bgimage)
 	    free(view->bgimage);
 	  free(view);
-	  /* delete selected points */
-	  if(d->selp)
-	    ay_selp_clear(d);
-	  /* delete tags */
-	  ay_tags_delall(d);
-	  /* free name */
-	  if(d->name)
-	    free(d->name);
-	  /* now, free generic object */
-	  free(d);
-	  break;
-	case AY_IDINSTANCE:
-	  /* delete selected points */
-	  if(d->selp)
-	    ay_selp_clear(d);
-	  /* delete tags */
-	  ay_tags_delall(d);
-	  /* free name */
-	  if(d->name)
-	    free(d->name);
-	  /* now, free generic object */
-	  free(d);
 	  break;
 	case AY_IDMATERIAL:
 	  material = (ay_mat_object *)(d->refine);
-
-	  if(material->sshader)
-	    {
-	      ay_shader_free(material->sshader);
-	      material->sshader = NULL;
-	    }
-	  if(material->dshader)
-	    {
-	      ay_shader_free(material->dshader);
-	      material->dshader = NULL;
-	    }
-	  if(material->ishader)
-	    {
-	      ay_shader_free(material->ishader);
-	      material->ishader = NULL;
-	    }
-	  if(material->eshader)
-	    {
-	      ay_shader_free(material->eshader);
-	      material->eshader = NULL;
-	    }
-
+	  ay_matt_clearshaders(material);
 	  free(material);
-
-	  /* delete selected points */
-	  if(d->selp)
-	    ay_selp_clear(d);
-	  /* delete tags */
-	  ay_tags_delall(d);
-	  /* free name */
-	  if(d->name)
-	    free(d->name);
-	  /* now, free generic object */
-	  free(d);
 	  break;
+	case AY_IDINSTANCE:
 	case AY_IDLAST:
-	  /* just free generic object */
-	  free(d);
 	  break;
 	default:
 	  arr = ay_deletecbt.arr;
 	  dcb = (ay_deletecb*)(arr[d->type]);
 	  if(dcb)
-	    ay_status = dcb(d->refine);
-
-	  if(ay_status)
-	    {
+	    if(dcb(d->refine))
 	      return;
-	    }
-	  /* delete selected points */
-	  if(d->selp)
-	    ay_selp_clear(d);
-	  /* delete tags */
-	  if(d->tags)
-	    ay_tags_delall(d);
-	  /* free name */
-	  if(d->name)
-	    free(d->name);
-	  /* now, free generic object */
-	  free(d);
-
 	  break;
 	} /* switch */
+
+      /* delete selected points */
+      if(d->selp)
+	ay_selp_clear(d);
+
+      /* delete tags */
+      if(d->tags)
+	ay_tags_delall(d);
+
+      /* free name */
+      if(d->name)
+	free(d->name);
+
+      /* free generic object */
+      free(d);
+
       d = next;
     } /* while */
 
@@ -271,29 +216,7 @@ ay_undo_copymat(ay_mat_object *src, ay_mat_object *dst)
  ay_object *oobjptr;
  int oregistered;
 
-  if(dst->sshader)
-    {
-      ay_shader_free(dst->sshader);
-      dst->sshader = NULL;
-    }
-
-  if(dst->dshader)
-    {
-      ay_shader_free(dst->dshader);
-      dst->dshader = NULL;
-    }
-
-  if(dst->ishader)
-    {
-      ay_shader_free(dst->ishader);
-      dst->ishader = NULL;
-    }
-
-  if(dst->eshader)
-    {
-      ay_shader_free(dst->eshader);
-      dst->eshader = NULL;
-    }
+  ay_matt_clearshaders(dst);
 
   oregistered = dst->registered;
   onameptr = dst->nameptr;
@@ -309,25 +232,34 @@ ay_undo_copymat(ay_mat_object *src, ay_mat_object *dst)
 
   if(src->sshader)
     {
-      ay_status = ay_shader_copy(src->sshader, &(dst->sshader));
+      dst->sshader = NULL;
+      ay_status += ay_shader_copy(src->sshader, &(dst->sshader));
     }
 
   if(src->dshader)
     {
-      ay_status = ay_shader_copy(src->dshader, &(dst->dshader));
+      dst->dshader = NULL;
+      ay_status += ay_shader_copy(src->dshader, &(dst->dshader));
     }
 
   if(src->ishader)
     {
-      ay_status = ay_shader_copy(src->ishader, &(dst->ishader));
+      dst->ishader = NULL;
+      ay_status += ay_shader_copy(src->ishader, &(dst->ishader));
     }
 
   if(src->eshader)
     {
-      ay_status = ay_shader_copy(src->eshader, &(dst->eshader));
+      dst->eshader = NULL;
+      ay_status += ay_shader_copy(src->eshader, &(dst->eshader));
     }
 
- return AY_OK;
+  if(ay_status)
+    {
+      ay_status = AY_ERROR;
+    }
+
+ return ay_status;
 } /* ay_undo_copymat */
 
 
@@ -1076,9 +1008,7 @@ ay_undo_savechildren(ay_object *o, ay_undo_object *uo,
       /* copy object */
       ay_status = ay_undo_copysave(down, *nexto);
       if(ay_status)
-	{
-	  return ay_status;
-	}
+	return ay_status;
 
       *nexto = &((**nexto)->next);
 
@@ -1086,6 +1016,8 @@ ay_undo_savechildren(ay_object *o, ay_undo_object *uo,
       if(down->down && down->down->next)
 	{
 	  ay_status = ay_undo_savechildren(down, uo, lastr, nexto);
+	  if(ay_status)
+	    return ay_status;
 	}
 
       down = down->next;

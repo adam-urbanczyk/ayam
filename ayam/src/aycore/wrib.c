@@ -965,42 +965,41 @@ ay_wrib_displaytags(void)
 		}
 
 	      /* get proper type */
-	      if( ! ay_comp_strcase(type, "framebuffer"))
+	      if(!ay_comp_strcase(type, "framebuffer"))
 		{
 		  dtype = RI_FRAMEBUFFER;
 		}
-	      if( ! ay_comp_strcase(type, "file"))
+	      if(!ay_comp_strcase(type, "file"))
 		{
 		  dtype = RI_FILE;
 		}
 
-
 	      /* get proper mode */
-	      if( ! ay_comp_strcase(mode, "a"))
+	      if(!ay_comp_strcase(mode, "a"))
 		{
 		  dmode = RI_A;
 		}
-	      if( ! ay_comp_strcase(mode, "z"))
+	      if(!ay_comp_strcase(mode, "z"))
 		{
 		  dmode = RI_Z;
 		}
-	      if( ! ay_comp_strcase(mode, "az"))
+	      if(!ay_comp_strcase(mode, "az"))
 		{
 		  dmode = RI_AZ;
 		}
-	      if( ! ay_comp_strcase(mode, "rgb"))
+	      if(!ay_comp_strcase(mode, "rgb"))
 		{
 		  dmode = RI_RGB;
 		}
-	      if( ! ay_comp_strcase(mode, "rgba"))
+	      if(!ay_comp_strcase(mode, "rgba"))
 		{
 		  dmode = RI_RGBA;
 		}
-	      if( ! ay_comp_strcase(mode, "rgbz"))
+	      if(!ay_comp_strcase(mode, "rgbz"))
 		{
 		  dmode = RI_RGBZ;
 		}
-	      if( ! ay_comp_strcase(mode, "rgbaz"))
+	      if(!ay_comp_strcase(mode, "rgbaz"))
 		{
 		  dmode = RI_RGBAZ;
 		}
@@ -1101,12 +1100,12 @@ ay_wrib_hidertags(void)
 		}
 
 	      /* get proper type */
-	      if( ! ay_comp_strcase(type, "hidden"))
+	      if(!ay_comp_strcase(type, "hidden"))
 		{
 		  htype = RI_HIDDEN;
 		}
 	      else
-	      if( ! ay_comp_strcase(type, "paint"))
+	      if(!ay_comp_strcase(type, "paint"))
 		{
 		  htype = RI_PAINT;
 		}
@@ -1228,7 +1227,7 @@ ay_wrib_defmat(char *file)
 int
 ay_wrib_checklights(ay_object *o)
 {
- int i = AY_FALSE;
+ int  i = AY_FALSE;
  ay_light_object *light = NULL;
 
   if(!o)
@@ -1313,19 +1312,19 @@ ay_wrib_lights(char *file, ay_object *o)
   filenlen = strlen(file);
 
   if(!(shadowptr = calloc(filenlen+64, sizeof(char))))
-    {ay_status = AY_EOMEM; goto cleanup;}
+    return AY_EOMEM;
   if(!(pxptr = calloc(filenlen+64, sizeof(char))))
-    {ay_status = AY_EOMEM; goto cleanup;}
+    return AY_EOMEM;
   if(!(nxptr = calloc(filenlen+64, sizeof(char))))
-    {ay_status = AY_EOMEM; goto cleanup;}
+    return AY_EOMEM;
   if(!(pyptr = calloc(filenlen+64, sizeof(char))))
-    {ay_status = AY_EOMEM; goto cleanup;}
+    return AY_EOMEM;
   if(!(nyptr = calloc(filenlen+64, sizeof(char))))
-    {ay_status = AY_EOMEM; goto cleanup;}
+    return AY_EOMEM;
   if(!(pzptr = calloc(filenlen+64, sizeof(char))))
-    {ay_status = AY_EOMEM; goto cleanup;}
+    return AY_EOMEM;
   if(!(nzptr = calloc(filenlen+64, sizeof(char))))
-    {ay_status = AY_EOMEM; goto cleanup;}
+    return AY_EOMEM;
 
   while(o)
     {
@@ -1575,7 +1574,6 @@ ay_wrib_lights(char *file, ay_object *o)
     } /* while */
 
   /* clean up */
-cleanup:
   if(shadowptr)
     {
       free(shadowptr);
@@ -1605,7 +1603,7 @@ cleanup:
       free(nzptr);
     }
 
- return ay_status;
+  return ay_status;
 } /* ay_wrib_lights */
 
 
