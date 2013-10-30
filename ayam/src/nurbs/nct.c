@@ -4504,9 +4504,16 @@ ay_nct_rescaleknvtcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  if(!strcmp(argv[i], "-r"))
 	    {
-	      mode = 0;
-	      sscanf(argv[i+1], "%lg", &rmin);
-	      sscanf(argv[i+2], "%lg", &rmax);
+	      if(argc > i+2)
+		{
+		  mode = 0;
+		  sscanf(argv[i+1], "%lg", &rmin);
+		  sscanf(argv[i+2], "%lg", &rmax);
+		}
+	      else
+		{
+		  ay_error(AY_EARGS, argv[0], "-r min max");
+		}
 	    }
 	  if(!strcmp(argv[i], "-d"))
 	    {
