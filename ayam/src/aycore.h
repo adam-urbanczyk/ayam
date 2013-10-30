@@ -692,6 +692,10 @@ void ay_matt_nomaterial(unsigned int type);
  */
 int ay_matt_mayhavematerial(unsigned int type);
 
+/** Remove all shaders from a material.
+ */
+void ay_matt_clearshaders(ay_mat_object *material);
+
 
 /* pact.c */
 
