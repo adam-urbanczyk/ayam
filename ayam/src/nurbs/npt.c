@@ -10666,15 +10666,23 @@ ay_npt_extractnp(ay_object *src, double umin, double umax,
       /* check parameters */
       if((umin < patch->uknotv[patch->uorder-1]) ||
 	 (umax > patch->uknotv[patch->width]))
-	  return ay_error_reportdrange(fname, "\"umin/umax\"",
-				       patch->uknotv[patch->uorder-1],
-				       patch->uknotv[patch->width]);
+	{
+	  (void)ay_error_reportdrange(fname, "\"umin/umax\"",
+				      patch->uknotv[patch->uorder-1],
+				      patch->uknotv[patch->width]);
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	}
 
       if((vmin < patch->vknotv[patch->vorder-1]) ||
 	 (vmax > patch->vknotv[patch->height]))
-	  return ay_error_reportdrange(fname, "\"vmin/vmax\"",
-				       patch->vknotv[patch->vorder-1],
-				       patch->vknotv[patch->height]);
+	{
+	  (void)ay_error_reportdrange(fname, "\"vmin/vmax\"",
+				      patch->vknotv[patch->vorder-1],
+				      patch->vknotv[patch->height]);
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	}
 
       /* split off areas outside umin/umax/vmin/vmax */
       /* note that this approach supports e.g. umin to be exactly uknotv[0]
@@ -10685,7 +10693,7 @@ ay_npt_extractnp(ay_object *src, double umin, double umax,
 	  if(ay_status)
 	    {
 	      ay_error(AY_ERROR, fname, split_errmsg);
-	      return AY_ERROR;
+	      goto cleanup;
 	    }
 	  /* <np1> is the sub surface we want
 	     => remove <copy>; then move <np1> to <copy> */
@@ -10705,7 +10713,7 @@ ay_npt_extractnp(ay_object *src, double umin, double umax,
 	  if(ay_status)
 	    {
 	      ay_error(AY_ERROR, fname, split_errmsg);
-	      return AY_ERROR;
+	      goto cleanup;
 	    }
 	  /* <copy> is the sub surface we want
 	     => remove <np1> */
@@ -10721,7 +10729,7 @@ ay_npt_extractnp(ay_object *src, double umin, double umax,
 	  if(ay_status)
 	    {
 	      ay_error(AY_ERROR, fname, split_errmsg);
-	      return AY_ERROR;
+	      goto cleanup;
 	    }
 	  /* <np1> is the sub surface we want
 	     => remove <copy>; then move <np1> to <copy> */
@@ -10740,7 +10748,7 @@ ay_npt_extractnp(ay_object *src, double umin, double umax,
 	  if(ay_status)
 	    {
 	      ay_error(AY_ERROR, fname, split_errmsg);
-	      return AY_ERROR;
+	      goto cleanup;
 	    }
 	  /* <copy> is the sub surface we want
 	     => remove <np1> */
@@ -10753,9 +10761,17 @@ ay_npt_extractnp(ay_object *src, double umin, double umax,
 
       /* return result */
       *result = copy;
+      copy = NULL;
     } /* if */
 
- return AY_OK;
+cleanup:
+
+  if(copy)
+    {
+      ay_object_delete(copy);
+    }
+
+ return ay_status;
 } /* ay_npt_extractnp */
 
 
