@@ -10284,78 +10284,6 @@ ay_npt_splitu(ay_object *src, double u, ay_object **result)
 } /* ay_npt_splitu */
 
 
-/** ay_npt_splitutcmd:
- *  Split selected NURBS patches in U direction.
- *  Implements the \a splituNP scripting interface command.
- *  See also the corresponding section in the \ayd{scsplitunp}.
- *
- *  \returns TCL_OK in any case.
- */
-int
-ay_npt_splitutcmd(ClientData clientData, Tcl_Interp *interp,
-		  int argc, char *argv[])
-{
- int tcl_status = TCL_OK, ay_status = AY_OK;
- ay_list_object *sel = ay_selection;
- ay_object *new = NULL;
- double u = 0.0;
-
-  if(argc < 2)
-    {
-      ay_error(AY_EARGS, argv[0], "u");
-      return TCL_OK;
-    }
-
-  if(!sel)
-    {
-      ay_error(AY_ENOSEL, argv[0], NULL);
-      return TCL_OK;
-    }
-
-  tcl_status = Tcl_GetDouble(interp, argv[1], &u);
-  AY_CHTCLERRRET(tcl_status, argv[0], interp);
-
-  while(sel)
-    {
-      if(sel->object->type == AY_IDNPATCH)
-	{
-	  /* remove all selected points */
-	  if(sel->object->selp)
-	    {
-	      ay_selp_clear(sel->object);
-	    }
-
-	  new = NULL;
-
-	  ay_status = ay_npt_splitu(sel->object, u, &new);
-
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, argv[0], NULL);
-	      return TCL_OK;
-	    } /* if */
-
-	  ay_object_link(new);
-
-	  sel->object->modified = AY_TRUE;
-
-	  /* re-create tesselation of original patch */
-	  (void)ay_notify_object(sel->object);
-	}
-      else
-	{
-	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
-	} /* if */
-
-      sel = sel->next;
-    } /* while */
-
-  (void)ay_notify_parent();
-
- return TCL_OK;
-} /* ay_npt_splitutcmd */
-
-
 /* ay_npt_splitv:
  *  split NURBPatch object <src> at parametric value <v> into two;
  *  modifies <src>, returns second patch in <result>.
@@ -10534,25 +10462,31 @@ ay_npt_splitv(ay_object *src, double v, ay_object **result)
 } /* ay_npt_splitv */
 
 
-/** ay_npt_splitvtcmd:
- *  Split selected NURBS patches in V direction.
- *  Implements the \a splitvNP scripting interface command.
+/** ay_npt_splituvtcmd:
+ *  Split selected NURBS patches in U/V direction.
+ *  Implements the \a splituNP scripting interface command.
+ *  Also implements the \a splitvNP scripting interface command.
+ *  See also the corresponding section in the \ayd{scsplitunp}.
  *  See also the corresponding section in the \ayd{scsplitvnp}.
  *
  *  \returns TCL_OK in any case.
  */
 int
-ay_npt_splitvtcmd(ClientData clientData, Tcl_Interp *interp,
-		  int argc, char *argv[])
+ay_npt_splituvtcmd(ClientData clientData, Tcl_Interp *interp,
+		   int argc, char *argv[])
 {
  int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_object *new = NULL;
- double v = 0.0;
+ double t = 0.0;
+ int splitv = AY_FALSE;
+
+  if(argv[0][5] == 'v')
+    splitv = AY_TRUE;
 
   if(argc < 2)
     {
-      ay_error(AY_EARGS, argv[0], "v");
+      ay_error(AY_EARGS, argv[0], "t");
       return TCL_OK;
     }
 
@@ -10562,12 +10496,11 @@ ay_npt_splitvtcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  tcl_status = Tcl_GetDouble(interp, argv[1], &v);
+  tcl_status = Tcl_GetDouble(interp, argv[1], &t);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
 
   while(sel)
     {
-
       if(sel->object->type == AY_IDNPATCH)
 	{
 	  /* remove all selected points */
@@ -10577,8 +10510,10 @@ ay_npt_splitvtcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 
 	  new = NULL;
-
-	  ay_status = ay_npt_splitv(sel->object, v, &new);
+	  if(splitv)
+	    ay_status = ay_npt_splitv(sel->object, t, &new);
+	  else
+	    ay_status = ay_npt_splitu(sel->object, t, &new);
 
 	  if(ay_status)
 	    {
@@ -10604,12 +10539,11 @@ ay_npt_splitvtcmd(ClientData clientData, Tcl_Interp *interp,
   (void)ay_notify_parent();
 
  return TCL_OK;
-} /* ay_npt_splitvtcmd */
+} /* ay_npt_splituvtcmd */
 
 
 /* ay_npt_extractnp:
  *  extract subpatch from patch <src>, returns patch in <result>;
- *  XXXX leaks memory in error condition
  */
 int
 ay_npt_extractnp(ay_object *src, double umin, double umax,
@@ -10697,7 +10631,6 @@ ay_npt_extractnp(ay_object *src, double umin, double umax,
 	    }
 	  /* <np1> is the sub surface we want
 	     => remove <copy>; then move <np1> to <copy> */
-
 	  if(np1)
 	    {
 	      np2 = copy;

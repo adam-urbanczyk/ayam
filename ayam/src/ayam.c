@@ -1202,10 +1202,10 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "insknvNP", ay_npt_insertknvtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "splituNP", ay_npt_splitutcmd,
+  Tcl_CreateCommand(interp, "splituNP", ay_npt_splituvtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "splitvNP", ay_npt_splitvtcmd,
+  Tcl_CreateCommand(interp, "splitvNP", ay_npt_splituvtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "extrNP", ay_npt_extractnptcmd,
@@ -1698,10 +1698,10 @@ ay_safeinit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "insknvNP", ay_npt_insertknvtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "splituNP", ay_npt_splitutcmd,
+  Tcl_CreateCommand(interp, "splituNP", ay_npt_splituvtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "splitvNP", ay_npt_splitvtcmd,
+  Tcl_CreateCommand(interp, "splitvNP", ay_npt_splituvtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "extrNP", ay_npt_extractnptcmd,
