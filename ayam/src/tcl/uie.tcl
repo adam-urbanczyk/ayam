@@ -1054,6 +1054,8 @@ proc addFile { w prop name {def {}} } {
     eval [subst "bindtags $f.e \{$f.e pge Entry all\}"]
     bind $f.e <Key-Escape> $escapecmd
     uie_fixEntry $f.e
+    after idle "entryViewEnd $f.e"
+
     if { ! $ay(iapplydisable) } {
 	bind $f.e <Key-Return> "$::ay(bok) invoke;break"
 	catch {bind $f.e <Key-KP_Enter> "$::ay(bok) invoke;break"}
