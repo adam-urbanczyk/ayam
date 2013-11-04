@@ -5401,12 +5401,12 @@ int x3dio_readcadelement(scew_element *element, int type)
       x3dio_pushtrafo();
 
       /* get transformation parameters/attributes */
-      ay_status = x3dio_readfloatvec(element, "scale", 3, scale);
-      ay_status = x3dio_readfloatvec(element, "center", 3, center);
-      ay_status = x3dio_readfloatvec(element, "translation", 3, translation);
-      ay_status = x3dio_readfloatvec(element, "rotation", 4, rotation);
-      ay_status = x3dio_readfloatvec(element, "scaleOrientation", 4,
-				     scaleorient);
+      (void)x3dio_readfloatvec(element, "scale", 3, scale);
+      (void)x3dio_readfloatvec(element, "center", 3, center);
+      (void)x3dio_readfloatvec(element, "translation", 3, translation);
+      (void)x3dio_readfloatvec(element, "rotation", 4, rotation);
+      (void)x3dio_readfloatvec(element, "scaleOrientation", 4,
+			       scaleorient);
 
       /* apply trafos to current transformation stack matrix */
       ay_trafo_translatematrix(translation[0], translation[1], translation[2],
@@ -5428,8 +5428,10 @@ int x3dio_readcadelement(scew_element *element, int type)
 				scaleorient[1], scaleorient[2],
 				x3dio_ctrafos->m);
 	}
+
       ay_trafo_scalematrix(scale[0], scale[1], scale[2],
 			   x3dio_ctrafos->m);
+
       if(fabs(scaleorient[3]) > AY_EPSILON)
 	{
 	  ay_trafo_rotatematrix(-AY_R2D(scaleorient[3]), scaleorient[0],
@@ -6342,6 +6344,11 @@ x3dio_readelement(scew_element *element)
       if(!strcmp(element_name, "SpotLight"))
 	{
 	  ay_status = x3dio_readlight(element, 2);
+	  handled_elements = 1;
+	}
+      if(!strcmp(element_name, "StaticGroup"))
+	{
+	  ay_status = x3dio_readshape(element);
 	  handled_elements = 1;
 	}
       if(!strcmp(element_name, "Switch"))
@@ -10252,9 +10259,10 @@ x3dio_writescene(char *filename, int selected, int toplevellayers)
 
   if(x3dio_scalefactor != 1.0)
     {
-      tm[0]  *= x3dio_scalefactor;
-      tm[5]  *= x3dio_scalefactor;
-      tm[10] *= x3dio_scalefactor;
+      sprintf(buf, "%g %g %g", x3dio_scalefactor, x3dio_scalefactor,
+	      x3dio_scalefactor);
+      scene_element = scew_element_add(scene_element, "Transform");
+      scew_element_add_attr_pair(scene_element, "scale", buf);
     }
 
   /* export the views */
