@@ -11404,7 +11404,7 @@ ay_npt_offset(ay_object *o, int mode, double offset, ay_nurbpatch_object **np)
 	{ ay_status = AY_EOMEM; goto cleanup; }
 
       memcpy(newukv, patch->uknotv,
-	     (patch->width+patch->vorder)*sizeof(double));
+	     (patch->width+patch->uorder)*sizeof(double));
     }
   if(patch->vknot_type == AY_KTCUSTOM)
     {
