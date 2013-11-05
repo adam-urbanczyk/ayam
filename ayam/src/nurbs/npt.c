@@ -7967,6 +7967,8 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      if(knots > -1 || extend)
 		{
+		  if(knots == -1)
+		    knots = AY_KTNURB;
 		  tknotv = np->vknotv;
 		  np->vknotv = NULL;
 		  np->uknot_type = knots;
@@ -8016,6 +8018,8 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      if(knots > -1 || extend)
 		{
+		  if(knots == -1)
+		    knots = AY_KTBSPLINE;
 		  tknotv = np->vknotv;
 		  np->vknotv = NULL;
 		  np->uknot_type = knots;
@@ -8274,6 +8278,8 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      if(knots >- 1 || extend)
 		{
+		  if(knots == -1)
+		    knots = AY_KTNURB;
 		  tknotv = np->uknotv;
 		  np->uknotv = NULL;
 		  np->vknot_type = knots;
@@ -8311,6 +8317,8 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      if(knots > -1 || extend)
 		{
+		  if(knots == -1)
+		    knots = AY_KTBSPLINE;
 		  tknotv = np->uknotv;
 		  np->uknotv = NULL;
 		  np->vknot_type = knots;
