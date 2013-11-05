@@ -499,7 +499,7 @@ ay_npatch_createcb(int argc, char *argv[], ay_object *o)
 	}
     } /* if */
 
-  ay_npt_setuvtypes(npatch);
+  ay_npt_setuvtypes(npatch, 0);
 
   if(createmp>-1)
     {
@@ -3018,7 +3018,8 @@ ay_npatch_notifycb(ay_object *o)
 	return ay_status;
     }
 
-  ay_npt_setuvtypes(npatch);
+  if(o->modified)
+    ay_npt_setuvtypes(npatch, 0);
 
   /* get bevel and caps parameters */
   if(o->tags)
