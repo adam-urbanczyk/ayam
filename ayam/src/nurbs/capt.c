@@ -424,7 +424,7 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
 
   np->is_rat = nc->is_rat;
 
-  ay_npt_setuvtypes(np);
+  ay_npt_setuvtypes(np, 0);
 
   /* return result */
   *cap = npatch;
