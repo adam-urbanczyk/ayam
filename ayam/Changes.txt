@@ -1,5 +1,5 @@
-[12. Oct 2013] CVS-Head:
-========================
+[4. Nov 2013] CVS-Head:
+=======================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
 o crash when removing wrong trim curves from patches (SF 3514206)
@@ -17,6 +17,8 @@ o X3D export of PolyMesh normals (SF 3604132)
 o X3D element misses mandatory profile specification (SF 3604137)
 o X3D export of tool objects caps and bevels (SF 3604907)
 o getPnt/setPnt for IPatch (SF 488)
+o elevating periodic NURBS surfaces with knot type Chordal or
+  Centripetal (SF 490)
 
 Modelling:
 o added "Compatible" option to ConcatNP objects, to prevent unwanted
@@ -174,6 +176,7 @@ o X3D export now creates simple material nodes
   (new export option "WriteMaterials")
 o X3D export of NURBS curves of order 2 now creates Polyline primitives
 o X3D import of viewpoints now creates correct camera attributes
+o X3D import now supports StaticGroup nodes
 o improved temporary and archive RIB file names for direct rendering with Gelato
 o Rhino 3DM export of PoMesh objects now supports face normals and colors
 o improved import of closed polylines from DXF
