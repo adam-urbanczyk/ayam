@@ -614,6 +614,7 @@ proc shortcut_view { w } {
 	}
 	$w.f3D.togl mc
 	viewSetType $w $ay(cVType) 0
+	$w.f3D.togl setconf -cp 0.0 0.0
 	$w.f3D.togl render
     }
 
@@ -1031,8 +1032,8 @@ $w.ftext.text insert end "Modelling Actions (View Windows):
 
  Set Mark             <$svsc(About)>
   accept old Mark      <Return>
-  set objs center      <$svsc(CenterO)>
-  set pnts center      <$svsc(CenterPB)>
+  set Objs Center      <$svsc(CenterO)>
+  set Pnts Center      <$svsc(CenterPB)>
 
  Edit Points Direct   <$svsc(Edit)>
  Edit Points Numeric  <$svsc(EditN)>
