@@ -1016,21 +1016,24 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
  int ay_status = AY_OK;
  char fname[] = "view_setconf";
  Tcl_Interp *interp = ay_interp;
+ ay_object *o = NULL;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  int width = Togl_Width(togl);
  int height = Togl_Height(togl);
- ay_object *o = NULL;
  int argi = 0, need_redraw = AY_TRUE, need_updatemark = AY_FALSE;
  double argd = 0.0, rotx = 0.0, roty = 0.0, rotz = 0.0;
  double old_rect_xmin, old_rect_ymin, old_rect_xmax, old_rect_ymax;
  double temp[3] = {0};
+ double dxw, dyw, t[3] = {0}, t2[2] = {0}, mm[16] = {0};
  int i = 2;
  int kbdact_in_progress = AY_FALSE;
+ int rectw, recth, dispx, dispy;
  char arg0[] = "undo";
  char arg1[] = "save";
  char arg2[] = "-start", arg3[] = "0";
  char arg4[] = "-winxy";
  char *tclargv[5] = {0}, buf1[64], buf2[64];
+
 #ifndef AYNOUNISTDH
  static clock_t t_lastcalled = 0, t_current = 0;
  struct tms tbuf;
@@ -1089,13 +1092,14 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
     {
       rotx = 0.0;
       Tcl_GetDouble(interp, argv[i+1], &argd);
+      Tcl_GetInt(interp, argv[i+1], &argi);
 
       /* XXXX this code assumes, every argument is atleast 2 chars long! */
       switch(argv[i][1])
 	{
 	case 'a':
 	  /*if(!strcmp(argv[i], "-action"))*/
-	  Tcl_GetInt(interp, argv[i+1], &(view->action_state));
+	  view->action_state = argi;
 	  break;
 	case 'b':
 	  /*if(!strcmp(argv[i], "-bgimage"))*/
@@ -1130,10 +1134,10 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	  break;
 	case 'c':
 	  /*if(!strcmp(argv[i], "-cmark"))*/
+	  if(argv[i][2] == 'm')
 	    {
 	      if(ay_selection)
 		{
-		  Tcl_GetInt(interp, argv[i+1], &argi);
 		  switch(argi)
 		    {
 		    case 0:
@@ -1169,6 +1173,12 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 		  ay_error(AY_ENOSEL, fname, NULL);
 		}
 	    } /* if */
+	  /*-cp*/
+	  if(argv[i][2] == 'p')
+	    {
+	      view->nearp = argd;
+	      Tcl_GetDouble(interp, argv[i+2], &view->farp);
+	    }
 	  break;
 	case 'd':
 	  if(!strcmp(argv[i], "-dfromx"))
@@ -1253,42 +1263,34 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	    }
 	  if(!strcmp(argv[i], "-dsel"))
 	    {
-	      Tcl_GetInt(interp, argv[i+1], &argi);
 	      view->drawsel = argi;
 	    }
 	  if(!strcmp(argv[i], "-dlev"))
 	    {
-	      Tcl_GetInt(interp, argv[i+1], &argi);
 	      view->drawlevel = argi;
 	    }
 	  if(!strcmp(argv[i], "-dbg"))
 	    {
-	      Tcl_GetInt(interp, argv[i+1], &argi);
 	      view->drawbgimage = argi;
 	    }
 	  if(!strcmp(argv[i], "-docs"))
 	    {
-	      Tcl_GetInt(interp, argv[i+1], &argi);
 	      view->drawobjectcs = argi;
 	    }
 	  if(!strcmp(argv[i], "-doaal"))
 	    {
-	      Tcl_GetInt(interp, argv[i+1], &argi);
 	      view->antialiaslines = argi;
 	    }
 	  if(!strcmp(argv[i], "-draw"))
 	    {
-	      Tcl_GetInt(interp, argv[i+1], &argi);
 	      view->redraw = argi;
 	    }
 	  if(!strcmp(argv[i], "-drawg"))
 	    {
-	      Tcl_GetInt(interp, argv[i+1], &argi);
 	      view->drawgrid = argi;
 	    }
 	  if(!strcmp(argv[i], "-drawh"))
 	    {
-	      Tcl_GetInt(interp, argv[i+1], &argi);
 	      if(argi == view->drawhandles)
 		need_redraw = AY_FALSE;
 	      view->drawhandles = argi;
@@ -1315,8 +1317,6 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	    }
 	  if(!strcmp(argv[i], "-fovx"))
 	    {
-	      Tcl_GetDouble(interp, argv[i+1], &argd);
-
 	      view->zoom = fabs(tan(AY_D2R(argd/2.0)));
 	      view->drawmark = AY_FALSE;
 	      view->aligned = AY_FALSE;
@@ -1338,14 +1338,12 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	case 'i':
 	  /*if(!strcmp(argv[i], "-ico"))*/
 	    {
-	      Tcl_GetInt(interp, argv[i+1], &argi);
 	      view->isicon = argi;
 	    }
 	  break;
 	case 'l':
 	  /*if(!strcmp(argv[i], "-local"))*/
 	    {
-	      Tcl_GetInt(interp, argv[i+1], &argi);
 	      view->local = argi;
 	      view->drawmark = AY_FALSE;
 	    }
@@ -1480,7 +1478,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	    }
 	  if(!strcmp(argv[i], "-pnts"))
 	    {
-	      Tcl_GetInt(interp, argv[i+1], &view->transform_points);
+	      view->transform_points = argi;
 	    }
 	  if(!strcmp(argv[i], "-pos"))
 	    {
@@ -1490,7 +1488,6 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 #ifdef AYENABLEPPREV
 	  if(!strcmp(argv[i], "-pprev"))
 	    {
-	      Tcl_GetInt(interp, argv[i+1], &argi);
 	      if(argi)
 		ay_wrib_pprevopen(view);
 	      else
@@ -1579,14 +1576,12 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	    } /* if */
 	  if(!strcmp(argv[i], "-redraw"))
 	    {
-	      Tcl_GetInt(interp, argv[i+1], &argi);
 	      need_redraw = argi;
 	    }
 	  break;
 	case 's':
 	  if(!strcmp(argv[i], "-shade"))
 	    {
-	      Tcl_GetInt(interp, argv[i+1], &argi);
 	      view->shade = argi;
 	    }
 	  if(!strcmp(argv[i], "-smark"))
@@ -1596,7 +1591,6 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	      Tcl_GetDouble(interp, argv[i+3], &(view->markworld[2]));
 	      view->drawmark = AY_TRUE;
 	      need_updatemark = AY_TRUE;
-
 	    }
 	  break;
 	case 't':
@@ -1620,7 +1614,6 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	    }
 	  if(!strcmp(argv[i], "-type"))
 	    {
-	      Tcl_GetInt(interp, argv[i+1], &argi);
 	      if(argi != view->type)
 		{
 		  ay_viewt_changetype(view, argi);
@@ -1681,7 +1674,6 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	    }
 	  if(!strcmp(argv[i], "-ugrid"))
 	    {
-	      Tcl_GetInt(interp, argv[i+1], &argi);
 	      view->usegrid = argi;
 	    }
 	  break;
@@ -1693,9 +1685,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	    }
 	  if(!strcmp(argv[i], "-zrect"))
 	    {
-	      int rectw, recth, dispx, dispy;
-	      double dxw, dyw, t[3] = {0}, t2[2] = {0},mm[16] = {0};
-	      if(view->rect_xmin<view->rect_xmax)
+	      if(view->rect_xmin < view->rect_xmax)
 		{
 		  rectw = (int)(view->rect_xmax-view->rect_xmin);
 		  dispx = (int)((width/2)-(view->rect_xmax-(rectw/2)));
@@ -1705,7 +1695,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 		  rectw = (int)(view->rect_xmin-view->rect_xmax);
 		  dispx = (int)((width/2)-(view->rect_xmin-(rectw/2)));
 		}
-	      if(view->rect_ymin<view->rect_ymax)
+	      if(view->rect_ymin < view->rect_ymax)
 		{
 		  recth = (int)(view->rect_ymax-view->rect_ymin);
 		  dispy = (int)((height/2)-(view->rect_ymax-(recth/2)));
@@ -1759,8 +1749,8 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 		   /* yes, derive angles from t */
 		   roty = AY_R2D(atan2(t[0], t[2]));
 
-		   t2[0]=t[0];
-		   t2[1]=t[2];
+		   t2[0] = t[0];
+		   t2[1] = t[2];
 		   if(t[0] && t[2])
 		     rotx = AY_R2D(atan2(t[1], AY_V2LEN(t2)));
 
@@ -1798,6 +1788,8 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 		}
 	      view->drawmark = AY_FALSE;
 	    }
+	  break;
+	default:
 	  break;
 	} /* switch */
       i += 2;
