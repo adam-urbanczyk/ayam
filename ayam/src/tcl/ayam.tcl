@@ -152,7 +152,7 @@ array set ayprefs {
  SMethod 3
  SParamU 10
  SParamV 10
- SavePrefsGeom 1
+ SaveDialogGeom 1
  PrefsGeom ""
  PrefsSection "Main"
 
@@ -580,6 +580,8 @@ array set riopt {
 
 array set rioptval {}
 array set riattrval {}
+
+array set aygeom {}
 
 # just in case some binding fires...
 set oldx 0
@@ -1566,7 +1568,7 @@ if { $ay(failsafe) == 0 } {
 prefs_set
 
 # apply preferences
-if { $ayprefs(SavePrefsGeom) > 1 } {
+if { $ayprefs(SaveDialogGeom) > 1 } {
     set ay(prefsgeom) $ayprefs(PrefsGeom)
     set ay(prefssection) $ayprefs(PrefsSection)
 }
