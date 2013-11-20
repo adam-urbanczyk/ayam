@@ -223,7 +223,7 @@ its contents,\nwhen the user resizes it?"
 ms_set en ayprefse_RGTrans "Make all rendering user interfaces transient?"
 ms_set en ayprefse_TclPrecision "Precision of Tcl mathematics.\nHigh values\
 lead to exact but hard\nto edit numbers in entry fields."
-ms_set en ayprefse_SavePrefsGeom "Save geometry of preferences window for\
+ms_set en ayprefse_SaveDialogGeom "Save geometry of dialog windows for\
 next invocation?"
 ms_set en ayprefse_SMethod "Sampling method to be used for NURBS\nto PolyMesh\
 conversions."
@@ -431,7 +431,7 @@ markiert werden?"
 ms_set de ayprefse_TclPrecision "Genauigkeit der Wandlung von\
 Gleitkommazahlen von Tcl.\nHohe Werte führen zu exakten aber schwer\
 editierbaren\nWerten in Eingabefeldern."
-ms_set de ayprefse_SavePrefsGeom "Geometrie der Voreinstellungen\
+ms_set de ayprefse_SaveDialogGeom "Geometrie von Dialogfenstern\
 für den nächsten Aufruf sichern?"
 ms_set de ayprefse_SMethod "Sampling-Methode, die für NURBS zu\nPolyMesh\
 Umwandlungen benutzt wird."
@@ -627,7 +627,7 @@ ms_set fr ayprefse_ToolBoxShrink "Rendre la fenêtre Boîte-à-Outils ajustable\
 à son contenu,\nlorsque l'utilisateur en modifie la taille?"
 ms_set fr ayprefse_RGTrans "Rendre toutes les interface utilisateur transient?"
 ms_set fr ayprefse_TclPrecision "Precision des mathématiques Tcl."
-#ms_set fr ayprefse_SavePrefsGeom "Save geometry of preferences window for\
+#ms_set fr ayprefse_SaveDialogGeom "Save geometry of dialog windows for\
 #next invocation?"
 
 #ms_set fr ayprefse_SMethod "Sampling method to be used for NURBS\nto PolyMesh\

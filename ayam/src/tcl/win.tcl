@@ -66,10 +66,36 @@ proc winCenter { w {p "."} } {
 
 
 ##############################
+# winRestoreOrCenter:
+#  restore geometry or center the window
+proc winRestoreOrCenter { w t {c "."} } {
+    global ay ayprefs aygeom
+
+    regsub -all "\[\[:space:\]\[:cntrl:\]\]" $t "_" st
+    set var aygeom([string range $w 1 end]_${st})
+    set geom ""
+    catch "set geom \$$var"
+
+    if { ($ayprefs(SaveDialogGeom) > 0) } {
+	if { ($geom != "") } {
+	    winMoveOrResize $w $geom
+	}
+	bind $w <Configure>\
+	    "if { \"%W\" == \"$w\" } { set $var \[winGetGeom $w\] }"
+    } else {
+	winCenter $w $c
+    }
+
+ return;
+}
+# winRestoreOrCenter
+
+
+##############################
 # winMoveOrResize:
 #  move or resize window w according to newgeom
 proc winMoveOrResize { w newgeom } {
-global ay ayprefs
+    global ay ayprefs
 
     if { $newgeom == "" } { return }
 
@@ -407,7 +433,7 @@ proc winMakeFloat { w } {
 # winDialog:
 #  create a dialog window
 proc winDialog { w t } {
-    global ay
+ global ay ayprefs
 
     catch {destroy $w}
     toplevel $w -class Ayam

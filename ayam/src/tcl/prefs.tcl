@@ -34,7 +34,7 @@ proc prefs_rsnb { nb page } {
 
     update
 
-    if { ($ayprefs(SavePrefsGeom) != 0) && ($ay(prefsgeom) != "") } {
+    if { ($ayprefs(SaveDialogGeom) != 0) && ($ay(prefsgeom) != "") } {
 	set owidth [string range $ay(prefsgeom) 0\
 		[string first x $ay(prefsgeom)]]
 	set owidth [string trimright $owidth x]
@@ -46,7 +46,7 @@ proc prefs_rsnb { nb page } {
     wm geometry .prefsw {}
     $nb configure -height [winfo reqheight [$nb getframe $page]]
 
-    if { ($ayprefs(SavePrefsGeom) != 0) && ($ay(prefsgeom) != "") && \
+    if { ($ayprefs(SaveDialogGeom) != 0) && ($ay(prefsgeom) != "") && \
 	    [info exists owidth] } {
 	update
 	set ng [winGetGeom .prefsw]
@@ -110,7 +110,7 @@ proc prefs_open {} {
 
     # center window (if no saved geometry is available)
     update idletasks
-    if { ($ayprefs(SavePrefsGeom) == 0) || ($ay(prefsgeom) == "") } {
+    if { ($ayprefs(SaveDialogGeom) == 0) || ($ay(prefsgeom) == "") } {
 	winCenter $w
     }
 
@@ -302,7 +302,7 @@ proc prefs_open {} {
     #addCheckB $fw ayprefse Transient [ms ayprefse_Transient]
     addParamB $fw ayprefse TclPrecision [ms ayprefse_TclPrecision]\
 	    { 4 5 6 12 17 }
-    addMenuB $fw ayprefse SavePrefsGeom [ms ayprefse_SavePrefsGeom]\
+    addMenuB $fw ayprefse SaveDialogGeom [ms ayprefse_SaveDialogGeom]\
 	    {Never WhileRunning Always}
     addText $fw e3 "Tesselation:"
     addMenuB $fw ayprefse SMethod [ms ayprefse_SMethod]\
@@ -439,10 +439,10 @@ proc prefs_open {} {
     bind $w <Shift-Control-Tab> "prefs_nextpage $nb 0;break"
     catch {bind $w <Control-ISO_Left_Tab> "prefs_nextpage $nb 0;break"}
 
-    if { ($ayprefs(SavePrefsGeom) > 0) && ($ay(prefsgeom) != "") } {
+    if { ($ayprefs(SaveDialogGeom) > 0) && ($ay(prefsgeom) != "") } {
 	winMoveOrResize $w $ay(prefsgeom)
     }
-    if { $ayprefs(SavePrefsGeom) > 0 } {
+    if { $ayprefs(SaveDialogGeom) > 0 } {
 	bind $w <Configure> "\
 	 if { \"%W\" == \"$w\" } { set ay(prefsgeom) \[winGetGeom $w\] } "
     }
@@ -459,6 +459,7 @@ proc prefs_open {} {
 #  save preference settings to ayamrc file
 proc prefs_save { } {
     global ay ayprefs
+
     set ayrc $ay(ayamrc)
 
     if { [file exists $ayrc ] } {
@@ -471,14 +472,12 @@ proc prefs_save { } {
 	} ]
 	update
 	set newfile [open $ayrc w]
-
-
     } else {
 	if { $ayrc == "" } { set ayrc "~/.ayamrc" }
 	set newfile [open $ayrc w]
     }
 
-    global aymainshortcuts ayviewshortcuts riattr riopt
+    global aygeom aymainshortcuts ayviewshortcuts riattr riopt
 
     # get main window geometry
     set ayprefs(mainGeom) [winGetGeom .]
@@ -490,7 +489,7 @@ proc prefs_save { } {
     catch { set ayprefs(toolBoxGeom) [winGetGeom .tbw] }
 
     # get preferences window geometry
-    if { $ayprefs(SavePrefsGeom) > 1 } {
+    if { $ayprefs(SaveDialogGeom) > 1 } {
 	if { $ay(prefsgeom) != "" } {
 	    set ayprefs(PrefsGeom) $ay(prefsgeom)
 	}
@@ -498,7 +497,7 @@ proc prefs_save { } {
 	set ayprefs(PrefsSection) $ay(prefssection)
     } else {
 	set ayprefs(PrefsGeom) ""
-	# also remember the currently open preferences section
+	# reset the currently open preferences section
 	set ayprefs(PrefsSection) "Main"
     }
 
@@ -553,6 +552,15 @@ proc prefs_save { } {
     foreach key $keys {
 	eval [subst "set val {{\$ayviewshortcuts($key)}}"]
 	puts $newfile "set ayviewshortcuts($key) $val"
+    }
+
+    # dialog window geometries
+    if { $ayprefs(SaveDialogGeom) > 1 } {
+	puts $newfile "# dialog geometry:"
+	foreach key [array names aygeom ] {
+	    eval [subst "set val {{\$aygeom($key)}}"]
+	    puts $newfile "set aygeom($key) $val"
+	}
     }
 
     # now write RiOption and RiAttribute tag database

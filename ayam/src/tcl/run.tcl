@@ -113,7 +113,7 @@ proc runTool { argvars argstrings command title {advargs ""} } {
     catch {bind $w <Key-KP_Enter> "$f.bok invoke"}
     bind $w <Escape> "$f.bca invoke"
 
-    winCenter $w
+    winRestoreOrCenter $w $title
     grab $w
     focus $f.bok
     tkwait window $w
