@@ -591,7 +591,7 @@ proc tgui_open { } {
     bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
-    winCenter $w
+    winRestoreOrCenter $w $t
     focus $w.f2.bok
 
     tgui_recalcslider 0 $tgui_tessparam(SParamU)

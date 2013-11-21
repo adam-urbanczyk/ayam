@@ -786,8 +786,7 @@ proc plb_addremprop { {rem 0} } {
     bind $w <Key-Return> "$f.bok invoke"
     catch { bind $w <Key-KP_Enter> "$f.bok invoke" }
 
-    # center window
-    winCenter $w
+    winRestoreOrCenter $w $title
 
     grab $w
     tkwait window $w

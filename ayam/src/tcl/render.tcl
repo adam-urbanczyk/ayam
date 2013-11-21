@@ -356,7 +356,7 @@ proc render_select { } {
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
     # center window
-    winCenter $w
+    winRestoreOrCenter $w $t
 
     grab $w
     focus $f.bok

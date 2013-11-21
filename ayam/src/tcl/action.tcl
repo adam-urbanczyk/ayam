@@ -1285,7 +1285,7 @@ proc editPointDialog { } {
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x
 
-    winCenter $w
+    winRestoreOrCenter $w $t
 
     # auto raise window, when obscured
     bind $w <Visibility> {

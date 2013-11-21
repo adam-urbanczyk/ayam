@@ -427,7 +427,7 @@ proc io_exportRIB { {expview "" } } {
     bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
-    winCenter $w
+    winRestoreOrCenter $w $t
     grab $w
     focus $f.bok
     tkwait window $w

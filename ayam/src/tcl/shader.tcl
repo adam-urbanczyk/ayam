@@ -326,7 +326,7 @@ proc shader_setNew { win type stype } {
     bind $w <Key-Return> "$f.bok invoke"
     catch { bind $w <Key-KP_Enter> "$f.bok invoke" }
 
-    winCenter $w
+    winRestoreOrCenter $w $t
     grab $w
     focus $w.f1.lb
     tkwait window $w

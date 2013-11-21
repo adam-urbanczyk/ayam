@@ -114,7 +114,7 @@ proc material_createp { } {
     bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
-    winCenter $w
+    winRestoreOrCenter $w $t
     grab $w
     focus $w.f1.fName.e
     tkwait window $w

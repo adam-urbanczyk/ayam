@@ -123,7 +123,7 @@ proc npatch_break { } {
 
     shortcut_addcshelp $w ayam-5.html breaknpt
 
-    winCenter $w
+    winRestoreOrCenter $w $t
     grab $w
     focus $w.f2.bok
     tkwait window $w
