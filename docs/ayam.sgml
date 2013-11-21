@@ -1975,10 +1975,13 @@ for example
 <tt>hasChild</tt>
 </tscreen>
 finds all objects that have children.
-<tscreen>
-<tt>proc findNT {n t} {getName name;getType type; return [expr {$type == $t && $name == $n}]}</tt>
-</tscreen>
 </descrip>
+
+Complex logical expressions may also be created, like e.g.
+<tscreen>
+<tt>($type == "Sphere") && ($mat == "wood")</tt>
+</tscreen>
+which finds all wooden sphere objects.
 
 The default value menu of the <tt/"Expression"/ entry is pre-seeded with
 meaningful entries when the search dialog is opened.
@@ -1990,6 +1993,7 @@ of the first entries, so that searching for objects of this material is
 just a matter of two clicks.
 If the object is an instance, the first two entries in this menu will
 be <tt/"Master"/ and <tt/"Instances"/.
+
 
 <sect2>Search Actions
 <p>
@@ -2598,14 +2602,14 @@ by Tcl is 12 and results in no loss of precision. The default value
 used by Ayam is 6 and should result in a good balance between precision
 and readability.
 
-<item><tt/"SavePrefsGeom"/ controls when the geometry of the preferences
-editor should be remembered by Ayam, <tt/"Never"/: the window is always
-opened in standard size, centered on the screen; <tt/"WhileRunning"/:
+<item><tt/"SaveDialogGeom"/ controls when the geometry of various dialog
+windows should be remembered by Ayam, <tt/"Never"/: the dialog window are
+always opened in standard size, centered on the screen; <tt/"WhileRunning"/:
 the window width and position will be remembered as long as Ayam is
 running; <tt/"Always"/: the window width and position will be remembered
 in the saved preferences, thus, also surviving a restart of Ayam.
 Note that the height of the preferences window will always be adapted
-to the currently open preferences section, no matter how <tt/"SavePrefsGeom"/
+to the currently open preferences section, no matter how <tt/"SaveDialogGeom"/
 is set.
 
 <item><tt/"SMethod"/; is the sampling method used by the NURBS to PolyMesh
@@ -11969,7 +11973,7 @@ knot insertion.
 |-NPatch     ==>     |-NPatch
                      |-NPatch
 </verb></tscreen>
-<tag/Notes/ The original patch objects will be modified.
+<tag/Notes/ The original patch object(s) will be modified.
 
 The point selection will be removed from the original object(s).
 
@@ -14864,6 +14868,10 @@ If <tt/r/ is 0, only objects from the current level will be processed.
 If the <tt/"-type"/ option is given, only objects of the specified type
 <tt/t/ will be processed.
 <p>
+The global variable <tt/"ay(CurrentLevel)"/ will be maintained while
+a recursive forAll browses the scene. In addition, the global variable
+<tt/"i"/ will be set to the index of the current object.
+<p>
 Note that forAll will run slowly if a property GUI is displayed.
 By de-selecting the property using e.g.~the property context menu first,
 it will run much faster.
@@ -17456,7 +17464,7 @@ view window) or camera objects depending on the <tt>"ReadViewpoints"</tt>
 import option.
 
 <item><bf>Non geometric/Scene structure:</bf>
-Transformation, Shape, Group, Inline.
+Transformation, Shape, Group, StaticGroup, Inline.
 <p><p>
 Shear transformations are not supported.
 <p>
@@ -20097,9 +20105,9 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Save as: <ref id="mmfile" name="main menu entry">
 <item>Save Prefs: <ref id="mmfile" name="main menu entry">
 <item>SaveAddsMRU: <ref id="prefmisc" name="preference setting">
+<item>SaveDialogGeom: <ref id="prefmisc" name="preference setting">
 <item>SaveMainGeom: <ref id="savemaingeomtag" name="tag type">
 <item>SavePaneLayout: <ref id="savepanelayouttag" name="tag type">
-<item>SavePrefsGeom: <ref id="prefmisc" name="preference setting">
 <item>saveScene: <ref id="scsavescene" name="scripting interface command">
 <item>Scale:
 <itemize>
