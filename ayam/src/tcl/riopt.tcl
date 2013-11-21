@@ -22,7 +22,7 @@ proc riopt_addp { } {
     winDialog $w $t
 
     if { $ayprefs(FixDialogTitles) == 1 } {
-	pack [frame $w.fl] -in $w -side top   
+	pack [frame $w.fl] -in $w -side top
 	pack [label $w.fl.l -text $t] -in $w.fl -side left -fill x -expand yes
     }
 
@@ -40,8 +40,6 @@ proc riopt_addp { } {
 	-yscrollcommand "$f.sc set" -exportselection 0
     pack $f.li -in $f -side left -fill both -expand yes
 
-    # center window
-    winCenter $w
     global rioptval
     array set rioptval {
 	Int 0
@@ -292,6 +290,8 @@ proc riopt_addp { } {
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
     bind $w <Key-Return> "$f.bok invoke"
     catch { bind $w <Key-KP_Enter> "$f.bok invoke" }
+
+    winRestoreOrCenter $w $t
 
     grab $w
     focus $w.f1.li

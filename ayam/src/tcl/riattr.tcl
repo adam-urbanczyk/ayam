@@ -22,7 +22,7 @@ proc riattr_addp { } {
     winDialog $w $t
 
     if { $ayprefs(FixDialogTitles) == 1 } {
-	pack [frame $w.fl] -in $w -side top   
+	pack [frame $w.fl] -in $w -side top
 	pack [label $w.fl.l -text $t] -in $w.fl -side left -fill x -expand yes
     }
 
@@ -39,9 +39,6 @@ proc riattr_addp { } {
     listbox $f.li -width 24 -height 10 -selectmode browse -activestyle none\
 	-yscrollcommand "$f.sc set" -exportselection 0
     pack $f.li -in $f -side left -fill both -expand yes
-
-    # center window
-    winCenter $w
 
     # create/set variables
     global riattrval
@@ -267,6 +264,8 @@ proc riattr_addp { } {
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
     bind $w <Key-Return> "$f.bok invoke"
     catch { bind $w <Key-KP_Enter> "$f.bok invoke" }
+
+    winRestoreOrCenter $w $t
 
     grab $w
     focus $w.f1.li

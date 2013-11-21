@@ -1228,7 +1228,7 @@ proc objectsearch_open { } {
     # establish "Help"-binding
     shortcut_addcshelp $w ayam-2.html objsearch
 
-    winCenter $w
+    winRestoreOrCenter $w $t
     grab $w
     focus $w.f1.fExpression.e
     tkwait window $w

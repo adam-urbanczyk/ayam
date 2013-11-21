@@ -111,7 +111,7 @@ proc pomesh_merge { } {
     bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
-    winCenter $w
+    winRestoreOrCenter $w $t
     grab $w
     focus $w.f2.bok
     tkwait window $w
@@ -194,7 +194,7 @@ proc pomesh_optimize { } {
     bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
-    winCenter $w
+    winRestoreOrCenter $w $t
     grab $w
     focus $w.f2.bok
     tkwait window $w
@@ -275,7 +275,7 @@ proc pomesh_split { } {
     bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
-    winCenter $w
+    winRestoreOrCenter $w $t
     grab $w
     focus $w.f2.bok
     tkwait window $w

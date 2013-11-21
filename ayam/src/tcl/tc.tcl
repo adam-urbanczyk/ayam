@@ -425,8 +425,7 @@ proc tc_edit { } {
     # act on resize operations of the user
     bind $w <Configure> "tc_updateCanvas $ca"
 
-    # center window
-    winCenter $w
+    winRestoreOrCenter $w $t
 
     # adjust focus
     focus $w.fb1.mb1

@@ -313,7 +313,7 @@ pack $f -in $w -side top -fill x
 bind $w <Escape> "$f.bca invoke"
 wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
-winCenter $w
+winRestoreOrCenter $w $t
 grab $w
 focus .addTag.fu.e
 tkwait window $w

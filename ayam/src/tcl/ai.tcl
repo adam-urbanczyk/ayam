@@ -68,7 +68,7 @@ proc ai_open { } {
     # establish "Help"-binding
     shortcut_addcshelp $w ayam-8.html ai
 
-    winCenter $w
+    winRestoreOrCenter $w $t
     focus $f.bok
     tkwait window $w
 
