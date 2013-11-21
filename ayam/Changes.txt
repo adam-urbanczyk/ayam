@@ -1,4 +1,4 @@
-[4. Nov 2013] CVS-Head:
+[21. Nov 2013] CVS-Head:
 =======================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
@@ -120,6 +120,9 @@ o <Ctrl+h> now toggles the hide attribute (instead of just setting it)
 o the standard console prompt now also displays the name of the modelling
   action that can be repeated (via menu "Tools/Repeat", <Ctrl-t>)
 o improved drawing quality of antialiased NURBS
+o added preference option "SaveDialogGeom" that controls saving the geometry
+  of various dialog windows
+o removed preference option  "SavePrefsGeom" in favor of "SaveDialogGeom" above
 
 Scripts/Scripting Interface:
 o added luainterp plugin to support the Lua scripting language
