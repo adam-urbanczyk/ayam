@@ -52,7 +52,8 @@ proc idr_open {} {
     global ay idrprefs
 
     set w .idrw
-    winDialog $w "IDR"
+    set t "IDR"
+    winDialog $w $t
 
     set f [frame $w.fu -bd 2 -relief sunken]
     pack $f -in $w -side top -fill both -expand yes
@@ -196,7 +197,7 @@ proc idr_open {} {
     pack $f.bgo $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x
 
-    winCenter $w
+    winRestoreOrCenter $w $t
 
     focus $f.bca
 

@@ -51,7 +51,8 @@ proc onio_import { } {
     set ay_error ""
 
     set w .onio
-    winDialog $w "OpenNURBS Import"
+    set t "OpenNURBS Import"
+    winDialog $w $t
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
@@ -131,7 +132,7 @@ proc onio_import { } {
     # establish "Help"-binding
     shortcut_addcshelp $w ayam-7.html imprhino
 
-    winCenter $w
+    winRestoreOrCenter $w $t
     grab $w
     focus $w.f2.bok
     tkwait window $w
@@ -160,7 +161,8 @@ proc onio_export { } {
     set ay_error ""
 
     set w .onio
-    winDialog $w "OpenNURBS Export"
+    set t "OpenNURBS Export"
+    winDialog $w $t
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
@@ -247,7 +249,7 @@ proc onio_export { } {
     # establish "Help"-binding
     shortcut_addcshelp $w ayam-7.html exprhino
 
-    winCenter $w
+    winRestoreOrCenter $w $t
     grab $w
     focus $w.f2.bok
     tkwait window $w

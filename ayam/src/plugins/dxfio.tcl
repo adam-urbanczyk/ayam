@@ -49,7 +49,8 @@ proc dxfio_import { } {
     set ay_error ""
 
     set w .dxfio
-    winDialog $w "DXF Import Options"
+    set t "DXF Import Options"
+    winDialog $w $t
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
@@ -126,7 +127,7 @@ proc dxfio_import { } {
     # establish "Help"-binding
     shortcut_addcshelp $w ayam-7.html impdxf
 
-    winCenter $w
+    winRestoreOrCenter $w $t
     grab $w
     focus $w.f2.bok
     tkwait window $w
@@ -155,7 +156,8 @@ proc dxfio_export { } {
     set ay_error ""
 
     set w .dxfio
-    winDialog $w "DXF Export Options"
+    set t "DXF Export Options"
+    winDialog $w $t
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
@@ -240,7 +242,7 @@ proc dxfio_export { } {
     # establish "Help"-binding
     shortcut_addcshelp $w ayam-7.html expdxf
 
-    winCenter $w
+    winRestoreOrCenter $w $t
     grab $w
     focus $w.f2.bok
     tkwait window $w

@@ -120,7 +120,8 @@ proc aycsgPreferences { } {
     array set aycsg_options_save [array get aycsg_options]
 
     set w .aycsgprefs
-    winDialog $w "AyCSG Preferences"
+    set t "AyCSG Preferences"
+    winDialog $w $t
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
@@ -192,7 +193,7 @@ proc aycsgPreferences { } {
     bind $w <Key-Return> "$::ay(bok) invoke;break"
     catch {bind $w <Key-KP_Enter> "$::ay(bok) invoke;break"}
 
-    winCenter $w
+    winRestoreOrCenter $w $t
     grab $w
     focus $w.f2.bok
     tkwait window $w
