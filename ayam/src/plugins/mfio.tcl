@@ -50,7 +50,8 @@ proc mfio_import { } {
     set ay_error ""
 
     set w .mfio
-    winDialog $w "3DMF Import Options"
+    set t "3DMF Import Options"
+    winDialog $w $t
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
@@ -124,7 +125,7 @@ proc mfio_import { } {
     # establish "Help"-binding
     shortcut_addcshelp $w ayam-7.html imp3dmf
 
-    winCenter $w
+    winRestoreOrCenter $w $t
     grab $w
     focus $w.f2.bok
     tkwait window $w
@@ -153,7 +154,8 @@ proc mfio_export { } {
     set ay_error ""
 
     set w .mfio
-    winDialog $w "3DMF Export Options"
+    set t "3DMF Export Options"
+    winDialog $w $t
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
@@ -234,7 +236,7 @@ proc mfio_export { } {
     # establish "Help"-binding
     shortcut_addcshelp $w ayam-7.html exp3dmf
 
-    winCenter $w
+    winRestoreOrCenter $w $t
     grab $w
     focus $w.f2.bok
     tkwait window $w

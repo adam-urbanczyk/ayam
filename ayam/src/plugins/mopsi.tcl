@@ -31,7 +31,8 @@ proc mopsi_import { } {
     }
 
     set w .mopi
-    winDialog $w "Import Options"
+    set t "Import Options"
+    winDialog $w $t
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
@@ -106,7 +107,7 @@ proc mopsi_import { } {
     # establish "Help"-binding
     shortcut_addcshelp $w ayam-7.html impmops
 
-    winCenter $w
+    winRestoreOrCenter $w $t
     grab $w
     focus $w.f2.bok
     tkwait window $w

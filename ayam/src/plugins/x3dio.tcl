@@ -59,7 +59,8 @@ proc x3dio_import { } {
     set ay_error ""
 
     set w .x3dio
-    winDialog $w "X3D Import"
+    set t "X3D Import"
+    winDialog $w $t
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
@@ -148,7 +149,7 @@ proc x3dio_import { } {
     # establish "Help"-binding
     shortcut_addcshelp $w ayam-7.html impx3d
 
-    winCenter $w
+    winRestoreOrCenter $w $t
     grab $w
     focus $w.f2.bok
     tkwait window $w
@@ -177,7 +178,8 @@ proc x3dio_export { } {
     set ay_error ""
 
     set w .x3dio
-    winDialog $w "X3D Export"
+    set t "X3D Export"
+    winDialog $w $t
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
@@ -279,7 +281,7 @@ proc x3dio_export { } {
     # establish "Help"-binding
     shortcut_addcshelp $w ayam-7.html expx3d
 
-    winCenter $w
+    winRestoreOrCenter $w $t
     grab $w
     focus $w.f2.bok
     tkwait window $w

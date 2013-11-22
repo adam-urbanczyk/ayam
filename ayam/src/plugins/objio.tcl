@@ -46,7 +46,8 @@ proc objio_export { } {
     }
 
     set w .objE
-    winDialog $w "Export OBJ"
+    set t "Export OBJ"
+    winDialog $w $t
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
@@ -120,7 +121,7 @@ proc objio_export { } {
     # establish "Help"-binding
     shortcut_addcshelp $w ayam-7.html expwav
 
-    winCenter $w
+    winRestoreOrCenter $w $t
     grab $w
     focus $w.f2.bok
     tkwait window $w
@@ -152,7 +153,8 @@ proc objio_import { } {
     }
 
     set w .objI
-    winDialog $w "Import OBJ"
+    set t "Import OBJ"
+    winDialog $w $t
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
@@ -239,7 +241,7 @@ proc objio_import { } {
     # establish "Help"-binding
     shortcut_addcshelp $w ayam-7.html impwav
 
-    winCenter $w
+    winRestoreORCenter $w $t
     grab $w
     focus $w.f2.bok
     tkwait window $w

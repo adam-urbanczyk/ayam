@@ -45,15 +45,8 @@ proc rrib_import { } {
     set ay_error ""
 
     set w .ribI
-    catch {destroy $w}
-    toplevel $w -class ayam
-    wm title $w "RRIB Options"
-    wm iconname $w "Ayam"
-    if { $ay(ws) == "Aqua" } {
-	winMakeFloat $w
-    } else {
-	wm transient $w .
-    }
+    set t "RRIB Options"
+    winDialog $w $t
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
@@ -138,7 +131,7 @@ proc rrib_import { } {
     # establish "Help"-binding
     shortcut_addcshelp $w ayam-7.html imprib
 
-    winCenter $w
+    winRestoreOrCenter $w $t
     grab $w
     focus $w.f2.bok
     tkwait window $w
