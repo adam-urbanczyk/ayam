@@ -76,14 +76,14 @@ $m add command -label "Revert" -command  {
     undo save SDNRevert; sdnrevert; rV; }
 
 $m add command -label "Merge" -command  {
-    sdnmergePatch; uS; rV; }
+    sdnmergePatch; uCR; rV; set ay(sc) 1}
 
 $m add separator
 
 $m add command -label "NPatch To SDNPatch" -command {
-    sdnconvertNP; uS; rV; }
+    sdnconvertNP; uS; rV; set ay(sc) 1 }
 $m add command -label "PolyMesh To SDNPatch" -command {
-    sdnconvertPO; uS; rV; }
+    sdnconvertPO; uS; rV; set ay(sc) 1 }
 
 $m add separator
 

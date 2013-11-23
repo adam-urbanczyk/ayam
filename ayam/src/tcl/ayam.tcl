@@ -1031,7 +1031,6 @@ proc uCR { } {
 		incr count
 	    }
 	}
-
     } else {
 	# ListBox is active
 	uS

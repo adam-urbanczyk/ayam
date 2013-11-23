@@ -695,10 +695,10 @@ $m.pm add command -label "Split" -command { pomesh_split } -underline 0
 $m.pm add command -label "Optimize" -command { pomesh_optimize } -underline 0
 $m.pm add separator
 $m.pm add command -label "Gen. Face Normals" -command {
-    undo save GenFaceNorm; genfnPo }\
+    undo save GenFaceNorm; genfnPo; rV }\
     -underline 5
 $m.pm add command -label "Gen. Smooth Normals" -command {
-    undo save GenSmoothNorm; gensnPo }\
+    undo save GenSmoothNorm; gensnPo; rV }\
     -underline 0
 
 $m add separator
@@ -712,12 +712,12 @@ $sm add command -label "Deselect All Points" -command "selPnts; rV" \
 $sm add command -label "Invert Selection" -command "invPnts; rV" \
     -underline 0
 $sm add command -label "Apply Trafo To All Points"\
-	-command "undo save ApplyTr; applyTrafo;\
-	plb_update; notifyOb; rV" \
+	-command "undo save ApplyTrafo; applyTrafo;\
+	 plb_update; notifyOb; rV" \
     -underline 0
 
 $sm add command -label "Apply Trafo To Selected Points"\
-	-command "undo save ApplyTr; applyTrafo -sel;\
+	-command "undo save ApplyTrafo; applyTrafo -sel;\
 	plb_update; notifyOb; rV" \
     -underline 1
 

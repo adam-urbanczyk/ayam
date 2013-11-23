@@ -364,7 +364,7 @@ proc viewTitle { w type action } {
 # viewSetFOV:
 #  set the Field Of View of a view
 proc viewSetFOV { view } {
-    global ay ayprefs
+ global ay ayprefs
 
     winAutoFocusOff
 
@@ -387,18 +387,18 @@ proc viewSetFOV { view } {
     addParam $f ay FOV
 
     set f [frame $w.f2]
-    button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command "global ay;\
+    button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command "\
+        global ay;\
 	$view mc;\
 	undo save SetFOV;\
 	$view setconf -fovx \$ay(FOV);\
 	update;\
-	grab release .setFov;\
+	grab release $w;\
 	focus $view;\
 	destroy .setFov"
 
     button $f.bca -text "Cancel" -pady $ay(pady) -width 5 -command "\
-	set ay(FOV) $ay(FOV);\
-	grab release .setFov;\
+	grab release $w;\
 	focus $view;\
 	destroy $w"
 
@@ -417,6 +417,7 @@ proc viewSetFOV { view } {
     if { $ay(ws) != "Aqua" } {
 	grab $w
     }
+
     focus $w.f1.fFOV.e
     tkwait window $w
 
@@ -430,7 +431,7 @@ proc viewSetFOV { view } {
 ##############################
 # viewSetGrid:
 proc viewSetGrid { view } {
-    global ay ayprefs
+ global ay ayprefs
 
     winAutoFocusOff
 
@@ -465,14 +466,12 @@ proc viewSetGrid { view } {
         set w \[winfo parent \[winfo parent $view\]\];\
 	viewSetGridIcon \$w \$ay(GridSize);\
 	update;\
-	catch \{grab release .setGrid\};\
+	grab release $w;\
 	focus $view;\
-	destroy .setGrid"
+	destroy $w"
 
     button $f.bca -text "Cancel" -pady $ay(pady) -width 5 -command "\
-	global ay;\
-	set ay(GridSize) $ay(GridSize);\
-	catch \{grab release .setGrid\};\
+	grab release $w;\
 	focus $view;\
 	destroy $w"
 
@@ -905,7 +904,7 @@ proc setCameraAttr { } {
 ##############################
 # setViewAttr:
 proc setViewAttr { } {
-    global ay ViewAttribData pclip_reset
+ global ay ViewAttribData pclip_reset
 
     set cw $ay(currentView)
 
@@ -955,7 +954,7 @@ proc setViewAttr { } {
 # viewRepairTitle:
 #  after undo/redo, set correct view title
 proc viewRepairTitle { w type } {
-    global ay ViewAttribData
+ global ay ViewAttribData
 
     set typename [lindex $ay(viewtypenames) $type]
 
@@ -970,7 +969,7 @@ proc viewRepairTitle { w type } {
 # viewSetGridIcon:
 #  set correct grid icon according to gridsize
 proc viewSetGridIcon { w gridsize } {
-    global ay tcl_platform AYWITHAQUA
+ global ay tcl_platform AYWITHAQUA
 
     if { [string first ".view" $w] == 0 } {
 	# guard against calling with sub-widget
@@ -1025,7 +1024,7 @@ proc viewSetGridIcon { w gridsize } {
 # viewSetDModeIcon:
 #  set correct drawing mode icon according to mode
 proc viewSetDModeIcon { w mode } {
-    global ay AYWITHAQUA
+ global ay AYWITHAQUA
 
     if { [string first ".view" $w] == 0 } {
 	# guard against calling with sub-widget
@@ -1056,7 +1055,6 @@ proc viewSetDModeIcon { w mode } {
 	    if {$menubar} { eval "$conf -image {} -label \"Shade&Draw\"" }
 	}
     }
-    # switch
 
  return;
 }
@@ -1166,7 +1164,7 @@ proc viewSetMModeIcon { w mode } {
 		set lab "P"
 	    }
 	}
-	# switch
+
 	switch $mode {
 	    0 {
 		append lab "-Glob"
@@ -1178,10 +1176,11 @@ proc viewSetMModeIcon { w mode } {
 		append lab "-LocObj"
 	    }
 	}
-	# switch
+
 	eval "$conf -label $lab"
     }
     # if
+
  return;
 }
 # viewSetMModeIcon
@@ -1191,7 +1190,7 @@ proc viewSetMModeIcon { w mode } {
 # viewSetMAIcon:
 #  set modelling action icon
 proc viewSetMAIcon { w image balloon } {
-    global ay tcl_platform AYWITHAQUA
+ global ay tcl_platform AYWITHAQUA
 
     # external views on Aqua do not display any such icon
     if { (! $AYWITHAQUA) || ([string first ".view" $w] != 0) } {
@@ -1219,7 +1218,7 @@ proc viewSetMAIcon { w image balloon } {
 #  set current view to the view that has the focus;
 #  used after startup and loading of scenes
 proc viewMouseToCurrent { } {
-    global ay
+ global ay
 
     set focused [focus -displayof .]
 
@@ -1376,13 +1375,12 @@ proc viewSetBGImage { view } {
         };\
         set ay(sc) 1;\
 	update;\
-	grab release .setBGI;\
+	grab release $w;\
 	focus $view;\
 	destroy $w"
 
     button $f.bca -text "Cancel" -pady $ay(pady) -width 15 -command "\
-	global ay;
-	grab release .setBGI;\
+	grab release $w;\
 	focus $view;\
 	destroy $w"
 
@@ -1451,7 +1449,7 @@ proc viewPan { togl dir } {
 ##############################
 # setMark:
 proc setMark { px {y 0} {z 0} } {
-    global ay
+ global ay
 
     if { $ay(views) == "" } {
 	return;
@@ -1476,7 +1474,7 @@ proc setMark { px {y 0} {z 0} } {
 # warpMouse:
 # warp mouse pointer to new position
 proc warpMouse { dx dy } {
-    global ay
+ global ay
 
     set w [winfo toplevel $ay(currentView)]
 
@@ -1503,6 +1501,8 @@ proc warpMouse { dx dy } {
     event generate $w <Motion> -warp 1 -x $newx -y $newy
     # restore event processing
     grab release $ay(tree)
+
+ return;
 }
 # warpMouse
 
