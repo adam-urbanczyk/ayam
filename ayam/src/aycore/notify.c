@@ -282,7 +282,7 @@ ay_notify_parentof(ay_object *o, int silent)
 
   ay_status = ay_clevel_find(ay_root->next, o, &found);
 
-  if(!found)
+  if(ay_status || !found)
     {
       if(!silent)
 	{
@@ -296,14 +296,14 @@ ay_notify_parentof(ay_object *o, int silent)
 
   ay_status = ay_notify_parent();
 
+cleanup:
+
   while(ay_currentlevel)
     {
       lev = ay_currentlevel->next;
       free(ay_currentlevel);
       ay_currentlevel = lev;
     }
-
-cleanup:
 
   ay_currentlevel = oldclevel;
 
@@ -350,7 +350,7 @@ ay_notify_objecttcmd(ClientData clientData, Tcl_Interp *interp,
 	      /* -block */
 	      if(argc > 3)
 		{
-		  if(argv[2][0]=='o')
+		  if(argv[2][0] == 'o')
 		    {
 		      ay_notify_blockobject = AY_TRUE;
 		    }
