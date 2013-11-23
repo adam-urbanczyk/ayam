@@ -69,40 +69,32 @@ proc pomesh_merge { } {
 
 	mergePo -p $pomeshmerge_options(MergePVTags)
 
+	grab release .pomeshmerge
+	restoreFocus $pomeshmerge_options(oldfocus)
+	destroy .pomeshmerge
+	uCR
 	if { $ay_error > 1 } {
 	    ayError 2 "Merge" "There were errors while merging!"
 	    if { $pomeshmerge_options(RemoveMerged) == 1 } {
 		ayError 2 "Merge" "Original PolyMesh objects not deleted!"
 	    }
-	    uS; rV
-	    grab release .pomeshmerge
-	    restoreFocus $pomeshmerge_options(oldfocus)
-	    destroy .pomeshmerge
 	} else {
-
-	   if { $pomeshmerge_options(RemoveMerged) == 1 } {
-	       catch {delOb}; uS; sL; rV
-	    } else {
-		uS; sL; rV
+	    set ay(sc) 1
+	    if { $pomeshmerge_options(RemoveMerged) == 1 } {
+		catch {delOb}; uS;
 	    }
-
-	   set ay(sc) 1
-
-	   grab release .pomeshmerge
-	   restoreFocus $pomeshmerge_options(oldfocus)
-	   destroy .pomeshmerge
-
-	   if { $pomeshmerge_options(OptimizeNew) == 1 } {
-	       pomesh_optimize
-	   }
-       }
-
+	    if { $pomeshmerge_options(OptimizeNew) == 1 } {
+		sL
+		pomesh_optimize
+	    }
+	}
+	rV
     }
 
     button $f.bca -text "Cancel" -width 5 -command "\
-	    grab release .pomeshmerge;\
+	    grab release $w;\
 	    restoreFocus $pomeshmerge_options(oldfocus);\
-	    destroy .pomeshmerge"
+	    destroy $w"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x
@@ -175,6 +167,8 @@ proc pomesh_optimize { } {
 
 	if { $ay_error > 1 } {
 	    ayError 2 "Optimize" "There were errors while optimizing!"
+	} else {
+	    set ay(sc) 1
 	}
 
 	grab release .pomeshopt
@@ -183,9 +177,9 @@ proc pomesh_optimize { } {
     }
 
     button $f.bca -text "Cancel" -width 5 -command "\
-	    grab release .pomeshopt;\
+	    grab release $w;\
 	    restoreFocus $pomeshopt_options(oldfocus);\
-	    destroy .pomeshopt"
+	    destroy $w"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x
@@ -244,23 +238,24 @@ proc pomesh_split { } {
 
 	set ay_error ""
 
-	undo save SplPoMesh
+	undo save SplitPoMesh
 
 	splitPo
 
-	uS; sL; rV
-
-	if { $ay_error > 1 } {
-	    ayError 2 "Split" "There were errors while splitting!"
-	} else {
-	    if { $pomeshspl_options(Optimize) } {
-		pomesh_optimize
-	    }
-	}
+	uCR; sL; rV
 
 	grab release .pomeshspl
 	restoreFocus $pomeshspl_options(oldfocus)
 	destroy .pomeshspl
+
+	if { $ay_error > 1 } {
+	    ayError 2 "Split" "There were errors while splitting!"
+	} else {
+	    set ay(sc) 1
+	    if { $pomeshspl_options(Optimize) } {
+		pomesh_optimize
+	    }
+	}
     }
 
     button $f.bca -text "Cancel" -width 5 -command "\
