@@ -1006,13 +1006,11 @@ foreach elem [array names ayviewshortcuts] {
 }
 # foreach
 
-$w.ftext.text insert end "Modelling Actions (View Windows):
+$w.ftext.text insert end "Modelling Scope (View Windows):
+ Objects (all views)  <$svsc(TransO)> (<$svsc(TransO)$svsc(TransO)>)
+ Points (all views)   <$svsc(TransP)> (<$svsc(TransP)$svsc(TransP)>)
 
- Pick Objects         <$svsc(Pick)>
-
- Transform Objects    <$svsc(TransO)>
- Transform Points     <$svsc(TransP)>
-
+Modelling Actions (View Windows):
  Move                 <$svsc(MoveO)>
   restrict X, Y, Z:   <$svsc(MoveO)$svsc(RestrictX)>, <$svsc(MoveO)$svsc(RestrictY)>, <$svsc(MoveO)$svsc(RestrictZ)>
 
@@ -1051,69 +1049,68 @@ $w.ftext.text insert end "Modelling Actions (View Windows):
  Snap to Grid 2D      <$svsc(SnapGrid2D)>
  Snap to Grid 3D      <$svsc(SnapGrid3D)>
 
- Hide Objects         <$svsc(Hide)>
- Show Objects         <$svsc(Show)>
-
  FindU                <$svsc(FindU)>
  FindUV               <$svsc(FindUV)>
  Split Curve          <$svsc(SplitNC)>
 
 View Actions (View Windows):
-
- Break Action        <$svsc(Break)>
-
- Move View           <$svsc(MoveV)>
+ Move View            <$svsc(MoveV)>
  Move View
- (along Z)           <$svsc(MoveZV)>
- MoveViewAnytime     <Mouse-$svsc(MoveVButton)>
+ (along Z)            <$svsc(MoveZV)>
+ MoveViewAnytime      <Mouse-$svsc(MoveVButton)>
 
- Rotate View         <$svsc(RotV)>
- RotateViewAnytime   <$svsc(RotModKey)+Mouse-1>
+ Rotate View          <$svsc(RotV)>
+ RotateViewAnytime    <$svsc(RotModKey)+Mouse-1>
 
- Rotate View (left)  <$svsc(RotL)>
- Rotate View (right) <$svsc(RotR)>
- Rotate View (up)    <$svsc(RotU)>
- Rotate View (down)  <$svsc(RotD)>
+ Rotate View (left)   <$svsc(RotL)>
+ Rotate View (right)  <$svsc(RotR)>
+ Rotate View (up)     <$svsc(RotU)>
+ Rotate View (down)   <$svsc(RotD)>
 
- Zoom View           <$svsc(ZoomV)>
- Zoom in View        <$svsc(ZoomI)>
- Zoom out View       <$svsc(ZoomO)>
- ZoomViewAnytime     <Mouse-$svsc(ZoomVButton)>
+ Zoom View            <$svsc(ZoomV)>
+ Zoom in View         <$svsc(ZoomI)>
+ Zoom out View        <$svsc(ZoomO)>
+ ZoomViewAnytime      <Mouse-$svsc(ZoomVButton)>
 
- ZoomRegion          <$svsc(ZoomRModKey)+Mouse-1
- ZoomToObject        <$svsc(ZoomTO)> / <$svsc(ZoomTO2)>
- ZoomToAll           <$svsc(ZoomAll)>
+ ZoomRegion           <$svsc(ZoomRModKey)+Mouse-1
+ ZoomToObject         <$svsc(ZoomTO)> / <$svsc(ZoomTO2)>
+ ZoomToAll            <$svsc(ZoomAll)>
 
- Cycle View Type     <$svsc(TypeUp)> / <$svsc(TypeDown)>
+ Cycle View Type      <$svsc(TypeUp)> / <$svsc(TypeDown)>
 
- Cycle Draw/Shade    <$svsc(DMUp)> / <$svsc(DMDown)>
+ Cycle Draw/Shade     <$svsc(DMUp)> / <$svsc(DMDown)>
+
+Management (View Windows):
+ Break Action         <$svsc(Break)>
+ Pick Objects         <$svsc(Pick)>
+ Hide Objects         <$svsc(Hide)>
+ Show Objects         <$svsc(Show)>
 
 Function Keys (View Windows):
-
-Adjust NURBS Sampling Rate: <${aymainshortcuts(SetSTL)}> / <${aymainshortcuts(SetSTP)}>
+ Adjust NURBS Sampling Rate: <${aymainshortcuts(SetSTL)}> / <${aymainshortcuts(SetSTP)}>
  Toggle Wire/NURBS:          <${aymainshortcuts(SwNURBSWire)}>
  Toggle Lazy Notification    <${aymainshortcuts(SwLazyNotify)}>
  Update                      <${aymainshortcuts(Update)}>
 
-See the reference card in the docs
-folder for a printable and more
-complete version.
+ See the reference card in the docs
+ folder for a printable and more
+ complete version.
 "
 
 bind $w <Next> "$w.ftext.text yview scroll 1 pages"
 bind $w <Prior> "$w.ftext.text yview scroll -1 pages"
 
 bind $w.ftext.text <ButtonPress-4>\
-"$w.ftext.text yview scroll -1 pages; break"
+ "$w.ftext.text yview scroll -1 pages; break"
 
 bind $w.ftext.text <ButtonPress-5>\
-"$w.ftext.text yview scroll 1 pages; break"
+ "$w.ftext.text yview scroll 1 pages; break"
 
 # add a pinstripe background pattern
 set filler "                                                        "
-set i 2
+set i 0
 set on 0
-while {$i < 85} {
+while { $i < 85 } {
     set line [$w.ftext.text get ${i}.0 ${i}.end]
     if { [string length $line] > 0 } {
 	if { $on } {
@@ -1124,14 +1121,19 @@ while {$i < 85} {
 	    lappend ranges ${i}.0
 	    lappend ranges ${i}.end
 	}
-	set first 0
-	set first [string first "<" $line ]
-	if { $first > 0 } {
+	set j [string first "<" $line]
+	if { $j != -1 } {
 	    # only lines with "<" toggle the pattern
 	    if { $on } {
 		set on 0
 	    } else {
 		set on 1
+	    }
+	} else {
+	    if { [string range $line 0 0] != " " } {
+		lappend ulranges ${i}.0
+		lappend ulranges ${i}.end
+		set on 0
 	    }
 	}
     } else {
@@ -1141,6 +1143,9 @@ while {$i < 85} {
     incr i
 }
 # while
+
+eval $w.ftext.text tag add ultag $ulranges
+$w.ftext.text tag configure ultag -underline 1
 
 eval $w.ftext.text tag add graytag $ranges
 
