@@ -726,8 +726,15 @@ proc prefs_warnNeedRestart { warn } {
 	    if { $ayprefs(FixDialogTitles) == 1 } {
 		set m "$t\n\n$m"
 	    }
+
+	    set p "."
+
+	    if { [winfo exists .prefsw] } {
+		set p ".prefsw"
+	    }
+
 	    set answer\
-		[tk_messageBox -title $t -type ok -icon warning -message $m]
+       [tk_messageBox -parent $p -title $t -type ok -icon warning -message $m]
 	}
     }
     # if
