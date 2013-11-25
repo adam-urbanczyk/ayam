@@ -1417,6 +1417,7 @@ proc viewSetBGImage { view } {
 ##############################
 # viewPan:
 proc viewPan { togl dir } {
+ global ayprefs
 
     $togl mc
     $togl movevac -start 0 0
@@ -1426,19 +1427,21 @@ proc viewPan { togl dir } {
     set l [$togl configure -height]
     set h [lindex $l 4]
 
-    #undo save MoveView
-
-    if { $dir == 0 } {
-	$togl setconf -undokb ViewPanX -panx [expr -$w/10]
-    }
-    if { $dir == 1 } {
-	$togl setconf -undokb ViewPanX -panx [expr $w/10]
-    }
-    if { $dir == 2 } {
-	$togl setconf -undokb ViewPanY -pany [expr -$h/10]
-    }
-    if { $dir == 3 } {
-	$togl setconf -undokb ViewPanY -pany [expr $h/10]
+    set d $ayprefs(PanDist)
+    if { $d < 0 } {
+       	switch $dir {
+	    0 { $togl setconf -undokb ViewPanX -panx [expr $w/$d] }
+	    1 { $togl setconf -undokb ViewPanX -panx [expr -$w/$d] }
+	    2 { $togl setconf -undokb ViewPanY -pany [expr $h/$d] }
+	    3 { $togl setconf -undokb ViewPanY -pany [expr -$h/$d] }
+	}
+    } else {
+	switch $dir {
+	    0 { $togl setconf -undokb ViewPanX -panx [expr -$d] }
+	    1 { $togl setconf -undokb ViewPanX -panx [expr $d] }
+	    2 { $togl setconf -undokb ViewPanY -pany [expr -$d] }
+	    3 { $togl setconf -undokb ViewPanY -pany [expr $d] }
+	}
     }
 
  return;
@@ -1495,7 +1498,7 @@ proc warpMouse { dx dy } {
     }
 
     # redirect all events to the tree widget so that no view receives
-    # stray <Motion> events caused by the warp
+    # stray <Motion> events potentially caused by the warp
     grab $ay(tree)
     # do the warp
     event generate $w <Motion> -warp 1 -x $newx -y $newy

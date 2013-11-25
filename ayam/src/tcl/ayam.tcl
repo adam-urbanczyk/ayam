@@ -222,6 +222,8 @@ array set ayprefs {
 
  ConsoleTakeFocus 1
 
+ PanDist -10
+
  Docs "http://ayam.sourceforge.net/docs/"
  DailyTips {
 {Always click on drawn pixels, when picking vertices.}
