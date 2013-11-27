@@ -139,8 +139,9 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
  ay_voidfp *arr = NULL;
  int numtriangles = 0;
  int use_tc = AY_FALSE, use_vc = AY_FALSE, use_vn = AY_FALSE;
- int smethod = 0;
+ int smethod = 0, smethodarg = 0;
  double sparamu = 0.0, sparamv = 0.0;
+ double sparamuarg = 0.0, sparamvarg = 0.0;
 
   /* get new tesselation parameters */
   if(argc < 6)
@@ -150,9 +151,9 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
       return AY_ERROR;
     }
 
-  sscanf(argv[1], "%d", &smethod);
-  sscanf(argv[2], "%lg", &sparamu);
-  sscanf(argv[3], "%lg", &sparamv);
+  sscanf(argv[1], "%d", &smethodarg);
+  sscanf(argv[2], "%lg", &sparamuarg);
+  sscanf(argv[3], "%lg", &sparamvarg);
   sscanf(argv[4], "%d", &use_tc);
   sscanf(argv[5], "%d", &use_vc);
   sscanf(argv[6], "%d", &use_vn);
@@ -166,10 +167,7 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 	 arr = ay_deletecbt.arr;
 	 cb = (ay_deletecb *)(arr[oref->object->type]);
 	 if(cb)
-	   ay_status = cb(oref->object->refine);
-
-	 if(ay_status)
-	   return ay_status;
+	   (void)cb(oref->object->refine);
 
 	 oref->object->refine = NULL;
        }
@@ -181,6 +179,10 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
   oref = ay_tgui_origrefs;
   while(o)
     {
+      smethod = smethodarg;
+      sparamu = sparamuarg;
+      sparamv = sparamvarg;
+
       /* infer parameters from (eventually present) TP tag */
       tag = o->tags;
       while(tag)
@@ -201,6 +203,7 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 				     use_vc, NULL,
 				     use_vn, NULL,
 				     &tmp);
+
 	  /* process caps and bevels (if any) */
 	  tmpnp = ((ay_nurbpatch_object*)o->refine)->caps_and_bevels;
 	  if(tmpnp)
