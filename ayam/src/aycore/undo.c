@@ -113,7 +113,6 @@ ay_undo_init(int buffer_size)
 void
 ay_undo_deletemulti(ay_object *o)
 {
- int ay_status = AY_OK;
  ay_object *next = NULL, *d = NULL;
  ay_view_object *view = NULL;
  ay_mat_object *material = NULL;
@@ -147,8 +146,7 @@ ay_undo_deletemulti(ay_object *o)
 	  arr = ay_deletecbt.arr;
 	  dcb = (ay_deletecb*)(arr[d->type]);
 	  if(dcb)
-	    if(dcb(d->refine))
-	      return;
+	    (void)dcb(d->refine);
 	  break;
 	} /* switch */
 
@@ -585,7 +583,6 @@ ay_undo_copy(ay_undo_object *uo)
 	case AY_IDROOT:
 	  ay_status = ay_undo_copyroot((ay_root_object *)(c->refine),
 				       (ay_root_object *)(o->refine));
-
 	  if(ay_status)
 	    {
 	      return ay_status;
@@ -597,22 +594,23 @@ ay_undo_copy(ay_undo_object *uo)
 	case AY_IDMATERIAL:
 	  if(o->name)
 	    {
-	      ay_matt_deregister(o->name);
+	      (void)ay_matt_deregister(o->name);
 	      free(o->name);
 	      o->name = NULL;
 	    }
 	  if(c->name)
 	    {
-	      ay_matt_registermaterial(c->name,
+	      (void)ay_matt_registermaterial(c->name,
 				       (ay_mat_object *)(o->refine));
 	      if(!(o->name = malloc((strlen(c->name)+1) * sizeof(char))))
-		return AY_EOMEM;
+		{
+		  return AY_EOMEM;
+		}
 	      strcpy(o->name, c->name);
 	    }
 
 	  ay_status = ay_undo_copymat((ay_mat_object *)(c->refine),
 				      (ay_mat_object *)(o->refine));
-
 	  if(ay_status)
 	    {
 	      return ay_status;
@@ -622,16 +620,17 @@ ay_undo_copy(ay_undo_object *uo)
 	  arr = ay_deletecbt.arr;
 	  dcb = (ay_deletecb*)(arr[o->type]);
 	  if(dcb)
-	    ay_status = dcb(o->refine);
+	    (void)dcb(o->refine);
 
 	  arr = ay_copycbt.arr;
 	  ccb = (ay_copycb*)(arr[c->type]);
 	  if(ccb)
-	    ay_status = ccb(c->refine, &(o->refine));
-
-	  if(ay_status)
 	    {
-	      return ay_status;
+	      ay_status = ccb(c->refine, &(o->refine));
+	      if(ay_status)
+		{
+		  return ay_status;
+		}
 	    }
 	  break;
 	} /* switch */
@@ -666,11 +665,9 @@ ay_undo_copy(ay_undo_object *uo)
       /* copy selected points */
       if(c->selp)
 	{
-	  ay_status = ay_undo_copyselp(c, o);
-	  ay_status = ay_pact_getpoint(3, o, NULL, NULL);
+	  (void)ay_undo_copyselp(c, o);
+	  (void)ay_pact_getpoint(3, o, NULL, NULL);
 	}
-
-      /*ay_selp_clear(o);*/
 
       /* copy all other attributes */
       o->type = c->type;
@@ -683,7 +680,7 @@ ay_undo_copy(ay_undo_object *uo)
 
       if((c->type != AY_IDVIEW) && (c->type != AY_IDROOT))
 	{
-	  ay_notify_object(o);
+	  (void)ay_notify_object(o);
 	  if(find_parent)
 	    {
 	      notify_parent = AY_TRUE;
@@ -697,7 +694,7 @@ ay_undo_copy(ay_undo_object *uo)
     } /* while */
 
   if(notify_parent)
-    ay_status = ay_notify_parentof(parent, AY_TRUE);
+    (void)ay_notify_parentof(parent, AY_TRUE);
 
  return AY_OK;
 } /* ay_undo_copy */
@@ -891,7 +888,6 @@ ay_undo_copysave(ay_object *src, ay_object **dst)
 
       ay_status = ay_undo_copyroot((ay_root_object *)(src->refine),
 				   (ay_root_object *)(new->refine));
-
       if(ay_status)
 	{
 	  goto cleanup;
