@@ -26,11 +26,13 @@ static ay_list_object *ay_tgui_origrefs = NULL; /* place of originals
 
 int ay_tgui_open(void);
 
+void ay_tgui_clearobjlist(ay_list_object **objlist);
+
 int ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[]);
 
-int ay_tgui_ok(void);
+void ay_tgui_ok(void);
 
-int ay_tgui_cancel(void);
+void ay_tgui_cancel(void);
 
 int ay_tgui_tcmd(ClientData clientData, Tcl_Interp *interp,
 		 int argc, char *argv[]);
@@ -120,6 +122,28 @@ ay_tgui_open(void)
 } /* ay_tgui_open */
 
 
+/* ay_tgui_clearobjlist:
+ *  clear list of objects
+ */
+void ay_tgui_clearobjlist(ay_list_object **objlist)
+{
+ ay_list_object *del;
+
+  if(!objlist)
+    return;
+
+  while(*objlist)
+    {
+      del = *objlist;
+      *objlist = del->next;
+      (void)ay_object_delete(del->object);
+      free(del);
+    } /* while */
+
+ return;
+} /* ay_tgui_clearobjlist */
+
+
 /* ay_tgui_update:
  *  re-tesselate selected NURBS patch objects after the user changed
  *  a tesselation parameter
@@ -131,7 +155,6 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
  char fname[] = "tgui_update";
  char *n1="tgui_tessparam";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- ay_tag *tag = NULL;
  ay_list_object *oref = NULL;
  ay_list_object *newl = NULL, **lastl = NULL, *polist = NULL;
  ay_object *o = NULL, *tmp = NULL, *tmpnp = NULL;
@@ -139,9 +162,8 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
  ay_voidfp *arr = NULL;
  int numtriangles = 0;
  int use_tc = AY_FALSE, use_vc = AY_FALSE, use_vn = AY_FALSE;
- int smethod = 0, smethodarg = 0;
+ int smethod = 0;
  double sparamu = 0.0, sparamv = 0.0;
- double sparamuarg = 0.0, sparamvarg = 0.0;
 
   /* get new tesselation parameters */
   if(argc < 6)
@@ -151,9 +173,9 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
       return AY_ERROR;
     }
 
-  sscanf(argv[1], "%d", &smethodarg);
-  sscanf(argv[2], "%lg", &sparamuarg);
-  sscanf(argv[3], "%lg", &sparamvarg);
+  sscanf(argv[1], "%d", &smethod);
+  sscanf(argv[2], "%lg", &sparamu);
+  sscanf(argv[3], "%lg", &sparamv);
   sscanf(argv[4], "%d", &use_tc);
   sscanf(argv[5], "%d", &use_vc);
   sscanf(argv[6], "%d", &use_vn);
@@ -179,39 +201,23 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
   oref = ay_tgui_origrefs;
   while(o)
     {
-      smethod = smethodarg;
-      sparamu = sparamuarg;
-      sparamv = sparamvarg;
-
-      /* infer parameters from (eventually present) TP tag */
-      tag = o->tags;
-      while(tag)
-	{
-	  if(tag->type == ay_tp_tagtype)
-	    {
-	      if(tag->val)
-		sscanf(tag->val, "%d,%lg,%lg", &smethod, &sparamu, &sparamv);
-	    }
-	  tag = tag->next;
-	} /* while */
-
       if(o->type == AY_IDNPATCH)
 	{
 	  tmp = NULL;
-	  ay_status = ay_tess_npatch(o, smethod+1, sparamu, sparamv,
-				     use_tc, NULL,
-				     use_vc, NULL,
-				     use_vn, NULL,
-				     &tmp);
+	  (void)ay_tess_npatch(o, smethod+1, sparamu, sparamv,
+			       use_tc, NULL,
+			       use_vc, NULL,
+			       use_vn, NULL,
+			       &tmp);
 
 	  /* process caps and bevels (if any) */
 	  tmpnp = ((ay_nurbpatch_object*)o->refine)->caps_and_bevels;
-	  if(tmpnp)
+	  if(tmp && tmpnp)
 	    {
 	      lastl = &polist;
 
 	      if(!(newl = calloc(1, sizeof(ay_list_object))))
-		return AY_EOMEM;
+		{ ay_status = AY_EOMEM; goto cleanup; }
 	      newl->object = tmp;
 	      *lastl = newl;
 	      lastl = &(newl->next);
@@ -219,38 +225,33 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 	      while(tmpnp)
 		{
 		  tmp = NULL;
-		  ay_status = ay_tess_npatch(tmpnp, smethod+1,
-					     sparamu, sparamv,
-					     use_tc, NULL,
-					     use_vc, NULL,
-					     use_vn, NULL,
-					     &tmp);
-
-		  if(!(newl = calloc(1, sizeof(ay_list_object))))
-		    return AY_EOMEM;
-		  newl->object = tmp;
-		  *lastl = newl;
-		  lastl = &(newl->next);
-
+		  (void)ay_tess_npatch(tmpnp, smethod+1,
+				       sparamu, sparamv,
+				       use_tc, NULL,
+				       use_vc, NULL,
+				       use_vn, NULL,
+				       &tmp);
+		  if(tmp)
+		    {
+		      if(!(newl = calloc(1, sizeof(ay_list_object))))
+			{ ay_status = AY_EOMEM; goto cleanup; }
+		      newl->object = tmp;
+		      *lastl = newl;
+		      lastl = &(newl->next);
+		    }
 		  tmpnp = tmpnp->next;
 		}
 
 	      tmp = NULL;
-	      ay_status = ay_pomesht_merge(AY_FALSE, polist, &tmp);
-
-	      while(polist)
-		{
-		  newl = polist;
-		  polist = newl->next;
-		  ay_object_delete(newl->object);
-		  free(newl);
-		} /* while */
+	      if(polist)
+		(void)ay_pomesht_merge(AY_FALSE, polist, &tmp);
+	      ay_tgui_clearobjlist(&polist);
 	    } /* if */
 	}
       else
 	{
 	  tmpnp = NULL;
-	  ay_status = ay_provide_object(o, AY_IDNPATCH, &tmpnp);
+	  (void)ay_provide_object(o, AY_IDNPATCH, &tmpnp);
 	  if(tmpnp)
 	    {
 	      if(tmpnp->next)
@@ -262,32 +263,28 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 			ay_npt_applytrafo(tmpnp);
 
 		      tmp = NULL;
-		      ay_status = ay_tess_npatch(tmpnp, smethod+1,
-						 sparamu, sparamv,
-						 use_tc, NULL,
-						 use_vc, NULL,
-						 use_vn, NULL,
-						 &tmp);
-
-		      if(!(newl = calloc(1, sizeof(ay_list_object))))
-			return AY_EOMEM;
-		      newl->object = tmp;
-		      *lastl = newl;
-		      lastl = &(newl->next);
+		      (void)ay_tess_npatch(tmpnp, smethod+1,
+					   sparamu, sparamv,
+					   use_tc, NULL,
+					   use_vc, NULL,
+					   use_vn, NULL,
+					   &tmp);
+		      if(tmp)
+			{
+			  if(!(newl = calloc(1, sizeof(ay_list_object))))
+			    { ay_status = AY_EOMEM; goto cleanup; }
+			  newl->object = tmp;
+			  *lastl = newl;
+			  lastl = &(newl->next);
+			}
 
 		      tmpnp = tmpnp->next;
 		    } /* while */
 
 		  tmp = NULL;
-		  ay_status = ay_pomesht_merge(AY_FALSE, polist, &tmp);
-
-		  while(polist)
-		    {
-		      newl = polist;
-		      polist = newl->next;
-		      ay_object_delete(newl->object);
-		      free(newl);
-		    } /* while */
+		  if(polist)
+		    (void)ay_pomesht_merge(AY_FALSE, polist, &tmp);
+		  ay_tgui_clearobjlist(&polist);
 		}
 	      else
 		{
@@ -295,25 +292,29 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 		    ay_npt_applytrafo(tmpnp);
 		      
 		  tmp = NULL;
-		  ay_status = ay_tess_npatch(tmpnp, smethod+1,
-					     sparamu, sparamv,
-					     use_tc, NULL,
-					     use_vc, NULL,
-					     use_vn, NULL,
-					     &tmp);
+		  (void)ay_tess_npatch(tmpnp, smethod+1,
+				       sparamu, sparamv,
+				       use_tc, NULL,
+				       use_vc, NULL,
+				       use_vn, NULL,
+				       &tmp);
 		} /* if */
-	      ay_object_deletemulti(tmpnp);
+	      (void)ay_object_deletemulti(tmpnp);
 	    } /* if */
 	} /* if */
 
       if(tmp)
 	{
+	  /*
+	   * the tesselation was successful => move tesselation
+	   * result to oref
+	   */
 	  oref->object->refine = tmp->refine;
 	  numtriangles += ((ay_pomesh_object*)(tmp->refine))->npolys;
 	  /*ay_trafo_copy(tmp, oref->object);*/
 
 	  /*
-	   * the tesselation might have created PV tags (e.g. TexCoords)
+	   * the tesselation might have created PV tags (e.g. TexCoords),
 	   * we just move them to the original object...
 	   */
 	  ay_tags_delall(oref->object);
@@ -330,9 +331,7 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 	   * so that we do not crash elsewhere
 	   */
 	  if(!(oref->object->refine = calloc(1, sizeof(ay_pomesh_object))))
-	    {
-	      return AY_EOMEM;
-	    }
+	    { ay_status = AY_EOMEM; goto cleanup; }
 	}
 
       oref->object->type = AY_IDPOMESH;
@@ -343,6 +342,8 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
       oref = oref->next;
       o = o->next;
     } /* while */
+
+cleanup:
 
   /* redraw all views */
   o = ay_root->down;
@@ -360,7 +361,6 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
     Togl_MakeCurrent(ay_currentview->togl);
 
   toa = Tcl_NewStringObj(n1,-1);
-
   ton = Tcl_NewStringObj(n1,-1);
 
   Tcl_SetStringObj(ton,"NumTriangles",-1);
@@ -370,6 +370,8 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
+  ay_tgui_clearobjlist(&polist);
+
  return ay_status;
 } /* ay_tgui_update */
 
@@ -377,51 +379,53 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 /* ay_tgui_ok:
  *  remove temporary copies of NURBS patch objects (user pressed "Ok")
  */
-int
+void
 ay_tgui_ok(void)
 {
  int ay_status = AY_OK;
  char fname[] = "tgui_ok";
  ay_list_object *oref = ay_tgui_origrefs;
- ay_object *o = ay_tgui_origs, *l = NULL, **ll = NULL;
+ ay_object *o = ay_tgui_origs, *d = NULL;
+ int moved = 0;
 
+  /* process/remove children first */
+  o = ay_tgui_origs;
+  while(o)
+    {	  
+      while(o->down && o->down->next)
+	{
+	  d = o->down;
+	  o->down = d->next;
+	  ay_status = ay_object_candelete(d, ay_tgui_origs);
+	  if(ay_status == AY_OK)
+	    {
+	      d->refcount = 0;
+	      (void)ay_object_delete(d);
+	    }
+	  else
+	    {
+	      d->next = ay_clipboard;
+	      ay_clipboard = d;
+	      moved = 1;
+	    }
+	}	
+      o = o->next;
+    }
+
+  if(moved)
+    ay_error(AY_ERROR, fname, "Moved referenced object(s) to clipboard!");
+
+  o = ay_tgui_origs;
   while(ay_tgui_origrefs)
     {
       o = ay_tgui_origs;
       ay_tgui_origs = o->next;
 
-      /* remove trim curves */
-      if(o->down && o->down->next)
-	{
-	  ay_status = ay_object_deletemulti(o->down);
-	  if(ay_status)
-	    {
-	      ay_error(AY_ERROR, fname,
-		"Could not remove children, maybe referenced objects?");
-
-	      l = o->down;
-	      ll = &(o->down);
-	      while(l->next)
-		{
-		  ll = &(l->next);
-		  l = l->next;
-		}
-
-	      *ll = ay_clipboard;
-	      ay_clipboard = o->down;
-
-	      o->down = NULL;
-	      ay_error(AY_ERROR, fname, "Moved children to clipboard!");
-	    } /* if */
-	  o->down = NULL;
-	} /* if */
-
       o->name = NULL;
       o->selp = NULL;
       o->mat = NULL;
       ay_tags_delall(o);
-      ay_object_delete(o);
-      /*free(o);*/
+      (void)ay_object_delete(o);
 
       /* remove reference to original object (in scene) */
       oref = ay_tgui_origrefs;
@@ -429,7 +433,7 @@ ay_tgui_ok(void)
       free(oref);
     } /* while */
 
- return ay_status;
+ return;
 } /* ay_tgui_ok */
 
 
@@ -437,10 +441,9 @@ ay_tgui_ok(void)
  *  copy original NURBS patch objects from ay_tgui_origs back to scene
  *  and remove tesselated PolyMeshes (user pressed "Cancel")
  */
-int
+void
 ay_tgui_cancel(void)
 {
- int ay_status = AY_OK;
  ay_list_object *oref = ay_tgui_origrefs;
  ay_object *o = ay_tgui_origs;
  ay_deletecb *cb = NULL;
@@ -457,10 +460,7 @@ ay_tgui_cancel(void)
 	{
 	  cb = (ay_deletecb *)(arr[oref->object->type]);
 	  if(cb)
-	    ay_status = cb(oref->object->refine);
-
-	  if(ay_status)
-	    return ay_status;
+	    (void)cb(oref->object->refine);
 	}
 
       oref->object->type = o->type;
@@ -493,7 +493,7 @@ ay_tgui_cancel(void)
   if(ay_currentview)
     Togl_MakeCurrent(ay_currentview->togl);
 
- return ay_status;
+ return;
 } /* ay_tgui_cancel */
 
 
@@ -504,11 +504,11 @@ int
 ay_tgui_tcmd(ClientData clientData, Tcl_Interp *interp,
 	     int argc, char *argv[])
 {
- char fname[] = "tguiCmd";
+ int ay_status = AY_OK;
 
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "(ok|ca|up|in)!");
+      ay_error(AY_EARGS, argv[0], "(ok|ca|up|in)!");
       return TCL_OK;
     }
 
@@ -521,7 +521,11 @@ ay_tgui_tcmd(ClientData clientData, Tcl_Interp *interp,
       ay_tgui_cancel();
       break;
     case 'u':
-      ay_tgui_update(interp, argc-1, &(argv[1]));
+      ay_status = ay_tgui_update(interp, argc-1, &(argv[1]));
+      if(ay_status)
+	{
+	  ay_error(ay_status, argv[0], "Tesselation failed!");
+	}
       break;
     case 'i':
       ay_tgui_open();
