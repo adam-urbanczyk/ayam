@@ -85,6 +85,10 @@ ay_tgui_open(void)
 
 	  if(!(new = calloc(1, sizeof(ay_object))))
 	    return AY_EOMEM;
+
+	  if(!(newl = calloc(1, sizeof(ay_list_object))))
+	    {free(new); return AY_EOMEM;}
+
 	  *last = new;
 	  last = &(new->next);
 	  /* we use the new ay_object to store the type specific
@@ -96,9 +100,7 @@ ay_tgui_open(void)
 	     tags immune to that */
 	  o->tags = NULL;
 
-	  /* we save a pointer to the original object in the scene */
-	  if(!(newl = calloc(1, sizeof(ay_list_object))))
-	    return AY_EOMEM;
+	  /* we save a pointer to the original object in the scene */	  
 	  *lastl = newl;
 	  lastl = &(newl->next);
 	  newl->object = o;
@@ -290,7 +292,7 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 		{
 		  if(o->type == AY_IDLEVEL)
 		    ay_npt_applytrafo(tmpnp);
-		      
+
 		  tmp = NULL;
 		  (void)ay_tess_npatch(tmpnp, smethod+1,
 				       sparamu, sparamv,
@@ -391,7 +393,7 @@ ay_tgui_ok(void)
   /* process/remove children first */
   o = ay_tgui_origs;
   while(o)
-    {	  
+    {
       while(o->down && o->down->next)
 	{
 	  d = o->down;
@@ -408,7 +410,7 @@ ay_tgui_ok(void)
 	      ay_clipboard = d;
 	      moved = 1;
 	    }
-	}	
+	}
       o = o->next;
     }
 
