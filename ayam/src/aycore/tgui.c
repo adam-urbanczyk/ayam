@@ -30,6 +30,10 @@ void ay_tgui_clearobjlist(ay_list_object **objlist);
 
 int ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[]);
 
+void ay_tgui_movemasterstoclip(ay_object *m, ay_object **p, ay_object *h);
+
+void ay_tgui_removechildren(ay_object *o);
+
 void ay_tgui_ok(void);
 
 void ay_tgui_cancel(void);
@@ -100,7 +104,7 @@ ay_tgui_open(void)
 	     tags immune to that */
 	  o->tags = NULL;
 
-	  /* we save a pointer to the original object in the scene */	  
+	  /* we save a pointer to the original object in the scene */
 	  *lastl = newl;
 	  lastl = &(newl->next);
 	  newl->object = o;
@@ -378,6 +382,71 @@ cleanup:
 } /* ay_tgui_update */
 
 
+/* ay_tgui_movemasterstoclip
+ * _recursively_ moves all masters that have references outside the
+ * object hierarchy <h> to the clipboard
+ */
+void
+ay_tgui_movemasterstoclip(ay_object *m, ay_object **p, ay_object *h)
+{
+ unsigned int refs;
+
+  if(!p || !h)
+    return;
+
+  while(m)
+    {
+      if(m->down && m->down->next)
+	ay_tgui_movemasterstoclip(m->down, &(m->down), h);
+
+      if(m->refcount > 0)
+	{
+	  refs = 0;
+	  ay_instt_countrefs(h, m, &refs);
+	  if(m->refcount > refs)
+	    {
+	      *p = m->next;
+	      m->next = ay_clipboard;
+	      ay_clipboard = m;
+	      m = (*p)->next;
+	      continue;
+	    }
+	}
+
+      p = &(m->next);
+      m = m->next;
+    }
+
+ return;
+} /* ay_tgui_movemasterstoclip */
+
+
+/* ay_tgui_removechildren
+ * _recursively_ removes all children, irrespective of their
+ * reference counts
+ */
+void
+ay_tgui_removechildren(ay_object *o)
+{
+ ay_object *d;
+
+  while(o)
+    {
+      if(o->down && o->down->next)
+	{
+	  ay_tgui_removechildren(o->down);
+	  o->down = NULL;
+	}
+      d = o;
+      o = d->next;
+      d->refcount = 0;
+      (void)ay_object_delete(d);
+    }
+
+ return;
+} /* ay_tgui_removechildren */
+
+
 /* ay_tgui_ok:
  *  remove temporary copies of NURBS patch objects (user pressed "Ok")
  */
@@ -387,29 +456,23 @@ ay_tgui_ok(void)
  int ay_status = AY_OK;
  char fname[] = "tgui_ok";
  ay_list_object *oref = ay_tgui_origrefs;
- ay_object *o = ay_tgui_origs, *d = NULL;
+ ay_object *o = ay_tgui_origs;
  int moved = 0;
 
   /* process/remove children first */
   o = ay_tgui_origs;
   while(o)
     {
-      while(o->down && o->down->next)
+      if(o->down && o->down->next)
 	{
-	  d = o->down;
-	  o->down = d->next;
-	  ay_status = ay_object_candelete(d, ay_tgui_origs);
-	  if(ay_status == AY_OK)
+	  ay_status = ay_object_candelete(ay_tgui_origs, o->down);
+	  if(ay_status != AY_OK)
 	    {
-	      d->refcount = 0;
-	      (void)ay_object_delete(d);
-	    }
-	  else
-	    {
-	      d->next = ay_clipboard;
-	      ay_clipboard = d;
+	      ay_tgui_movemasterstoclip(o->down, &(o->down), ay_tgui_origs);
 	      moved = 1;
 	    }
+	  ay_tgui_removechildren(o->down);
+	  o->down = NULL;
 	}
       o = o->next;
     }
