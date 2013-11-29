@@ -1038,17 +1038,17 @@ ay_object_count(ay_object *o)
 
 /* ay_object_candelete:
  *  _recursively_ check, whether there are referenced/master objects
- *  in the object hierarchy <p>/<o> and whether any references/instances
- *  of those masters are _not_ in this hierarchy. If this is the case,
- *  <o> must not be deleted.
+ *  in the hierarchy pointed to by <o> and whether any references/instances
+ *  of those masters are _not_ in the hierarchy pointed to by <h>.
+ *  If this is the case, <o> must not be deleted.
  */
 int
-ay_object_candelete(ay_object *p, ay_object *o)
+ay_object_candelete(ay_object *h, ay_object *o)
 {
  int ay_status = AY_OK;
  unsigned int refs;
 
-  if(!p || !o)
+  if(!h || !o)
     return AY_ENULL;
 
   while(o && o->next)
@@ -1056,7 +1056,7 @@ ay_object_candelete(ay_object *p, ay_object *o)
       if(o->down && o->down->next)
 	{
 	  /* recurse into children */
-	  ay_status = ay_object_candelete(p, o->down);
+	  ay_status = ay_object_candelete(h, o->down);
 
 	  /* immediately return a negative result */
 	  if(ay_status)
@@ -1066,7 +1066,7 @@ ay_object_candelete(ay_object *p, ay_object *o)
       if(o->refcount)
 	{
 	  refs = 0;
-	  ay_instt_countrefs(p, o, &refs);
+	  ay_instt_countrefs(h, o, &refs);
 	  if(o->refcount > refs)
 	    return AY_ERROR;
 	}
