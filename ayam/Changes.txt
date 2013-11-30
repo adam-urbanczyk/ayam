@@ -1,4 +1,4 @@
-[21. Nov 2013] CVS-Head:
+[30. Nov 2013] CVS-Head:
 =======================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
@@ -19,6 +19,7 @@ o X3D export of tool objects caps and bevels (SF 3604907)
 o getPnt/setPnt for IPatch (SF 488)
 o elevating periodic NURBS surfaces with knot type Chordal or
   Centripetal (SF 490)
+o crash when tesselating complex hierarchies with instances (SF 492)
 
 Modelling:
 o added "Compatible" option to ConcatNP objects, to prevent unwanted
