@@ -2603,7 +2603,7 @@ used by Ayam is 6 and should result in a good balance between precision
 and readability.
 
 <item><tt/"SaveDialogGeom"/ controls when the geometry of various dialog
-windows should be remembered by Ayam, <tt/"Never"/: the dialog window are
+windows should be remembered by Ayam, <tt/"Never"/: the dialog windows are
 always opened in standard size, centered on the screen; <tt/"WhileRunning"/:
 the window width and position will be remembered as long as Ayam is
 running; <tt/"Always"/: the window width and position will be remembered
@@ -12167,7 +12167,11 @@ slider(s) will be deferred until the mouse button is released.
 <p>
 If the <tt/"Ok"/ button is pressed, the tesselation tool will be
 closed and all selected objects will be replaced by their tesselated
-counterparts.
+counterparts. The original objects will be deleted.<newline>
+If referenced/master objects are among the selected objects or their
+children, and if any of their references are not selected or a child
+of the selected objects (i.e.~would not be deleted also), then those
+master objects will not be deleted but moved to the clipboard instead.
 <p>
 If the <tt/"Save"/ button is used, the tesselation dialog will be
 closed and <tt/"TP"/ tags containing
@@ -18240,6 +18244,11 @@ cleared using the main menu entry <tt>"File/New"</tt>.
 The default value is 1 &ndash; yes, load the environment file on
 <tt>"File/New"</tt>.
 
+<item><tt/"PanDist"/: the distance about which panning in views by
+keyboard occurs; positive values are absolute in pixels, negative values are
+relative to the current window dimension; a value of -10 means a
+tenth of the current window width/height. The default value is -10.
+
 <item><tt/"PaneMargins"/, is a list of currently five floating
 point values, used as a safety margin for the panes:
 console vs. hierarchy, hierarchy vs. upper-views, lower-view vs. property,
@@ -19850,6 +19859,7 @@ Index:
 <label id="indexp"><tt/<bf/P//
 <list>
 <item>P1, P2: <ref id="hyp" name="Hyperboloid attribute">
+<item>PanDist: <ref id="hidprefs" name="hidden preference setting">
 <item>PaneMargins: <ref id="hidprefs" name="hidden preference setting">
 <item>Paraboloid: <ref id="paraboloidobj" name="Paraboloid object">
 <item>Parameter: <ref id="extrncp" name="ExtrNC attribute">
