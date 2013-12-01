@@ -1024,6 +1024,7 @@ ay_object_replace(ay_object *src, ay_object *dst)
 /* ay_object_count:
  *  this function counts all objects pointed to by o (including all siblings
  *  and all children of o and its siblings) in a recursive manner
+ *  The terminating endlevel objects are not included.
  */
 unsigned int
 ay_object_count(ay_object *o)
@@ -1084,3 +1085,81 @@ ay_object_candelete(ay_object *h, ay_object *o)
 
  return ay_status;
 } /* ay_object_candelete */
+
+
+/* ay_object_candeletelist:
+ *  _recursively_ check, whether there are referenced/master objects
+ *  in the list/hierarchy pointed to by <l> and whether any
+ *  references/instances of those masters are _not_ in the hierarchy
+ *  pointed to by <l>.
+ *  If this is the case, <l> must not be deleted.
+ *  For the initial invocation o must be NULL.
+ */
+int
+ay_object_candeletelist(ay_list_object *l, ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_object *m;
+ unsigned int refs;
+
+  if(!l)
+    return AY_ENULL;
+
+  if(o)
+    {
+      /* worker invocation, check all objects pointed to by o */
+      while(o && o->next)
+	{
+	  if(o->down && o->down->next)
+	    {
+	      /* recurse into children */
+	      ay_status = ay_object_candeletelist(l, o->down);
+
+	      /* immediately return a negative result */
+	      if(ay_status)
+		return ay_status;
+	    }
+
+	  if(o->refcount)
+	    {
+	      refs = 0;
+	      ay_instt_countrefslist(l, o, &refs);
+	      if(o->refcount > refs)
+		return AY_ERROR;
+	    }
+
+	  o = o->next;
+	} /* while */
+    }
+  else
+    {
+      /* top level invocation, just iterate the list, check
+	 the objects directly pointed to by it, and if those
+	 objects have children, fire off a recursive worker */
+      while(l)
+	{
+	  m = l->object;
+
+	  if(m->refcount)
+	    {
+	      refs = 0;
+	      ay_instt_countrefslist(l, m, &refs);
+	      if(m->refcount > refs)
+		return AY_ERROR;
+	    }
+
+	  if(m->down && m->down->next)
+	    {
+	      ay_status = ay_object_candeletelist(l, m->down);
+
+	      /* immediately return a negative result */
+	      if(ay_status)
+		return ay_status;
+	    }
+
+	  l = l->next;
+	} /* while */
+    } /* if */
+
+ return ay_status;
+} /* ay_object_candeletelist */
