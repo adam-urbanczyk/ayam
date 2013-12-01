@@ -1591,7 +1591,8 @@ ay_mfio_readecntr(MF3DVoidObjPtr object)
 		  /* discard simple trim */
 		  if(is_bound)
 		    {
-		      ay_object_deletemulti(ay_mfio_trimmedpatch->down);
+		      ay_object_deletemulti(ay_mfio_trimmedpatch->down,
+					    AY_FALSE);
 		      ay_mfio_trimmedpatch->down = ay_endlevel;
 		    }
 		} /* if */
@@ -1821,9 +1822,7 @@ ay_mfio_writencconvertible(MF3D_FilePtr fileptr, ay_object *o)
 	  ay_status = ay_mfio_writenurbcurve(fileptr, c);
 	}
 
-      ay_status = ay_object_deletemulti(c);
-
-      return AY_OK;
+      (void)ay_object_deletemulti(c, AY_TRUE);
     } /* if */
 
  return ay_status;
@@ -1855,9 +1854,7 @@ ay_mfio_writenpconvertible(MF3D_FilePtr fileptr, ay_object *o)
 	  t = t->next;
 	} /* while */
 
-      ay_status = ay_object_deletemulti(p);
-
-      return AY_OK;
+      (void)ay_object_deletemulti(p, AY_TRUE);
     } /* if */
 
  return ay_status;
@@ -2898,7 +2895,7 @@ ay_mfio_writeobject(MF3D_FilePtr fileptr, ay_object *object)
 
 	  if(c)
 	    {
-	      ay_object_deletemulti(c);
+	      (void)ay_object_deletemulti(c, AY_TRUE);
 	      i = -1;
 	      break;
 	    }

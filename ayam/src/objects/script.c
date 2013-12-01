@@ -108,7 +108,7 @@ ay_script_deletecb(void *c)
     free(sc->script);
 
   if(sc->cm_objects)
-    (void)ay_object_deletemulti(sc->cm_objects);
+    (void)ay_object_deletemulti(sc->cm_objects, AY_FALSE);
 
   /* free saved parameters */
   if(sc->params)
@@ -1348,7 +1348,7 @@ ay_script_notifycb(ay_object *o)
 
       if(sc->cm_objects)
 	{
-	  ay_status = ay_object_deletemulti(sc->cm_objects);
+	  ay_status = ay_object_deletemulti(sc->cm_objects, AY_FALSE);
 	  sc->cm_objects = NULL;
 	}
 
@@ -1401,7 +1401,7 @@ ay_script_notifycb(ay_object *o)
 
       if(sc->cm_objects)
 	{
-	  ay_status = ay_object_deletemulti(sc->cm_objects);
+	  ay_status = ay_object_deletemulti(sc->cm_objects, AY_FALSE);
 	  sc->cm_objects = NULL;
 	}
 
@@ -1532,7 +1532,7 @@ resenv:
 
   if(ay_clipboard)
     {
-      (void)ay_object_deletemulti(ay_clipboard);
+      (void)ay_object_deletemulti(ay_clipboard, AY_FALSE);
     }
 
   ay_clipboard = old_clipboard;
@@ -1713,7 +1713,7 @@ ay_script_convertcb(ay_object *o, int in_place)
 		  newl->type = AY_LTLEVEL;
 
 		  /* remove current children (of the script object) */
-		  ay_status = ay_object_deletemulti(o->down);
+		  ay_status = ay_object_deletemulti(o->down, AY_FALSE);
 
 		  /* XXXX check and report errors? */
 

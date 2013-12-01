@@ -60,7 +60,7 @@ ay_text_deletecb(void *c)
   text = (ay_text_object *)(c);
 
   if(text->npatch)
-    (void)ay_object_deletemulti(text->npatch);
+    (void)ay_object_deletemulti(text->npatch, AY_FALSE);
 
   if(text->fontname)
     free(text->fontname);
@@ -704,7 +704,7 @@ ay_text_notifycb(ay_object *o)
     return AY_ENULL;
 
   if(text->npatch)
-    ay_status = ay_object_deletemulti(text->npatch);
+    ay_status = ay_object_deletemulti(text->npatch, AY_FALSE);
   text->npatch = NULL;
   nextnpatch = &(text->npatch);
 
@@ -833,7 +833,7 @@ ay_text_notifycb(ay_object *o)
 			{
 			  curve->next = NULL;
 			  *nexthole = NULL;
-			  (void)ay_object_deletemulti(holes);
+			  (void)ay_object_deletemulti(holes, AY_FALSE);
 			  holes = NULL;
 			  nexthole = &(holes);
 			}
@@ -898,7 +898,7 @@ ay_text_notifycb(ay_object *o)
 		    {
 		      curve->next = NULL;
 		      *nexthole = NULL;
-		      (void)ay_object_deletemulti(holes);
+		      (void)ay_object_deletemulti(holes, AY_FALSE);
 		      holes = NULL;
 		      nexthole = &(holes);
 		    }
@@ -915,7 +915,7 @@ ay_text_notifycb(ay_object *o)
 		     user?) */
 		  ay_error(AY_EWARN, fname,
 		     "Could not convert all outlines, please try Revert.");
-		  (void)ay_object_deletemulti(holes);
+		  (void)ay_object_deletemulti(holes, AY_FALSE);
 		  holes = NULL;
 		  nexthole = &(holes);
 		}

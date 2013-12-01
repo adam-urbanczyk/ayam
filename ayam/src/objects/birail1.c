@@ -64,7 +64,7 @@ ay_birail1_deletecb(void *c)
     (void)ay_object_delete(birail1->npatch);
 
   if(birail1->caps_and_bevels)
-    (void)ay_object_deletemulti(birail1->caps_and_bevels);
+    (void)ay_object_deletemulti(birail1->caps_and_bevels, AY_FALSE);
 
   free(birail1);
 
@@ -512,7 +512,7 @@ ay_birail1_notifycb(ay_object *o)
 
   if(birail1->caps_and_bevels)
     {
-      (void)ay_object_deletemulti(birail1->caps_and_bevels);
+      (void)ay_object_deletemulti(birail1->caps_and_bevels, AY_FALSE);
       birail1->caps_and_bevels = NULL;
     }
 
@@ -647,17 +647,17 @@ cleanup:
   /* remove provided objects */
   if(is_provided[0])
     {
-      (void)ay_object_deletemulti(pobject1);
+      (void)ay_object_deletemulti(pobject1, AY_FALSE);
     }
 
   if(is_provided[1])
     {
-      (void)ay_object_deletemulti(pobject2);
+      (void)ay_object_deletemulti(pobject2, AY_FALSE);
     }
 
   if(is_provided[2])
     {
-      (void)ay_object_deletemulti(pobject3);
+      (void)ay_object_deletemulti(pobject3, AY_FALSE);
     }
 
   if(npatch)

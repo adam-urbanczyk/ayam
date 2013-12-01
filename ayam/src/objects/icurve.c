@@ -1290,7 +1290,7 @@ ay_icurve_notifycb(ay_object *o)
 	    } /* for */
 
 	  /* delete child */
-	  (void)ay_object_deletemulti(o->down);
+	  (void)ay_object_deletemulti(o->down, AY_FALSE);
 	  o->down = NULL;
 	} /* if */
     } /* if */

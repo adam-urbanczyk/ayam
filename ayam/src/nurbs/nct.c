@@ -2425,7 +2425,7 @@ cleanup:
 
   if(pobject)
     {
-      (void)ay_object_deletemulti(pobject);
+      (void)ay_object_deletemulti(pobject, AY_TRUE);
     }
 
  return TCL_OK;
@@ -4695,7 +4695,7 @@ ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      free(o); free(controlv);
 	      if(freepo)
-		(void)ay_object_deletemulti(po);
+		(void)ay_object_deletemulti(po, AY_TRUE);
 	      sel = sel->next;
 	      continue;
 	    }
@@ -4718,7 +4718,7 @@ ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(freepo)
 	{
-	  (void)ay_object_deletemulti(po);
+	  (void)ay_object_deletemulti(po, AY_TRUE);
 	}
 
       sel = sel->next;
@@ -5818,7 +5818,7 @@ ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
 
 cleanup:
   if(src)
-    (void)ay_object_deletemulti(src);
+    (void)ay_object_deletemulti(src, AY_TRUE);
 
  return TCL_OK;
 } /* ay_nct_makecomptcmd */
@@ -7301,7 +7301,7 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
 cleanup:
   if(po)
     {
-      (void)ay_object_deletemulti(po);
+      (void)ay_object_deletemulti(po, AY_TRUE);
     }
 
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);

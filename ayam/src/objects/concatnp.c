@@ -69,7 +69,7 @@ ay_concatnp_deletecb(void *c)
     (void)ay_object_delete(concatnp->npatch);
 
   if(concatnp->caps_and_bevels)
-    (void)ay_object_deletemulti(concatnp->caps_and_bevels);
+    (void)ay_object_deletemulti(concatnp->caps_and_bevels, AY_FALSE);
 
   free(concatnp);
 
@@ -629,7 +629,7 @@ ay_concatnp_notifycb(ay_object *o)
 
   if(concatnp->caps_and_bevels)
     {
-      (void)ay_object_deletemulti(concatnp->caps_and_bevels);
+      (void)ay_object_deletemulti(concatnp->caps_and_bevels, AY_FALSE);
       concatnp->caps_and_bevels = NULL;
     }
 
@@ -761,7 +761,7 @@ cleanup:
 
   /* free list of temporary patches/curves */
   if(patches)
-    (void)ay_object_deletemulti(patches);
+    (void)ay_object_deletemulti(patches, AY_FALSE);
 
   /* recover selected points */
   if(o->selp)

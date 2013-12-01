@@ -2674,7 +2674,7 @@ ay_rrib_RiPatchMesh(RtToken type, RtInt nu, RtToken uwrap,
 
   ay_tags_delall(&ay_rrib_co);
 
-  ay_object_deletemulti(pm.npatch);
+  ay_object_deletemulti(pm.npatch, AY_FALSE);
   pm.npatch = NULL;
 
   free(pm.controlv);
@@ -4947,7 +4947,7 @@ ay_rrib_popattribs(void)
 
   if(ay_rrib_cattributes->trimcurves)
     {
-      ay_object_deletemulti(ay_rrib_cattributes->trimcurves);
+      ay_object_deletemulti(ay_rrib_cattributes->trimcurves, AY_FALSE);
       ay_rrib_cattributes->trimcurves = NULL;
     }
 
@@ -5426,7 +5426,7 @@ ay_rrib_linkobject(void *object, int type)
 	      /* discard simple trim */
 	      if(is_bound)
 		{
-		  ay_object_deletemulti(ay_rrib_co.down);
+		  ay_object_deletemulti(ay_rrib_co.down, AY_FALSE);
 		  ay_rrib_co.down = NULL;
 		}
 	    } /* if */
@@ -5675,7 +5675,7 @@ ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
   while(ay_rrib_riobjects)
     {
       tl = ay_rrib_riobjects->next;
-      ay_object_deletemulti(ay_rrib_riobjects->object);
+      ay_object_deletemulti(ay_rrib_riobjects->object, AY_FALSE);
       free(ay_rrib_riobjects);
       ay_rrib_riobjects = tl;
     } /* while */

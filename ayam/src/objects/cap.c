@@ -518,7 +518,7 @@ ay_cap_notifycb(ay_object *o)
 
   if(ay_status)
     {
-      (void)ay_object_deletemulti(pobject);
+      (void)ay_object_deletemulti(pobject, AY_FALSE);
       goto cleanup;
     }
 

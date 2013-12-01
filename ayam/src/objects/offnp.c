@@ -65,7 +65,7 @@ ay_offnp_deletecb(void *c)
     (void)ay_object_delete(offnp->npatch);
 
   if(offnp->caps_and_bevels)
-    (void)ay_object_deletemulti(offnp->caps_and_bevels);
+    (void)ay_object_deletemulti(offnp->caps_and_bevels, AY_FALSE);
 
   free(offnp);
 
@@ -541,7 +541,7 @@ ay_offnp_notifycb(ay_object *o)
 
   if(offnp->caps_and_bevels)
     {
-      (void)ay_object_deletemulti(offnp->caps_and_bevels);
+      (void)ay_object_deletemulti(offnp->caps_and_bevels, AY_FALSE);
       offnp->caps_and_bevels = NULL;
     }
 
@@ -596,7 +596,7 @@ ay_offnp_notifycb(ay_object *o)
       ay_status = ay_object_copymulti(npatch->down, &(newo->down));
       if(ay_status)
 	{
-	  (void)ay_object_deletemulti(o->down);
+	  (void)ay_object_deletemulti(o->down, AY_FALSE);
 	  o->down = NULL;
 	}
     }
@@ -664,7 +664,7 @@ cleanup:
   /* remove provided object(s) */
   if(provided)
     {
-      (void)ay_object_deletemulti(npatch);
+      (void)ay_object_deletemulti(npatch, AY_FALSE);
     }
 
   /* recover selected points */

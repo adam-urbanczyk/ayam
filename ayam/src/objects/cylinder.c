@@ -1065,7 +1065,7 @@ cleanup:
 
   if(new)
     {
-      (void)ay_object_deletemulti(new);
+      (void)ay_object_deletemulti(new, AY_FALSE);
     }
 
  return ay_status;

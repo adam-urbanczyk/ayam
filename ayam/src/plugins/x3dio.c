@@ -4830,7 +4830,7 @@ x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
 	      /* discard simple trim */
 	      if(is_bound)
 		{
-		  (void)ay_object_deletemulti(o->down);
+		  (void)ay_object_deletemulti(o->down, AY_FALSE);
 		  x3dio_lrobject = NULL;
 		}
 	    } /* if */
@@ -7303,7 +7303,7 @@ x3dio_writencconvertibleobj(scew_element *element, ay_object *o)
       t = t->next;
     } /* while */
 
-  (void)ay_object_deletemulti(c);
+  (void)ay_object_deletemulti(c, AY_TRUE);
 
  return ay_status;
 } /* x3dio_writencconvertibleobj */
@@ -7383,7 +7383,7 @@ cleanup:
 
   if(c)
     {
-      (void)ay_object_deletemulti(c);
+      (void)ay_object_deletemulti(c, AY_TRUE);
     }
 
  return ay_status;
@@ -7987,7 +7987,7 @@ x3dio_writenpconvertibleobj(scew_element *element, ay_object *o)
       t = t->next;
     } /* while */
 
-  (void)ay_object_deletemulti(c);
+  (void)ay_object_deletemulti(c, AY_TRUE);
 
  return ay_status;
 } /* x3dio_writenpconvertibleobj */
@@ -9608,7 +9608,7 @@ x3dio_writerevolveobj(scew_element *element, ay_object *o)
 
   if(!circle)
     {
-      (void)ay_object_deletemulti(c);
+      (void)ay_object_deletemulti(c, AY_FALSE);
       return AY_ERROR;
     }
 
@@ -9640,7 +9640,7 @@ x3dio_writerevolveobj(scew_element *element, ay_object *o)
   /* cleanup */
   ay_nct_destroy(circle);
 
-  (void)ay_object_deletemulti(c);
+  (void)ay_object_deletemulti(c, AY_FALSE);
 
  return AY_OK;
 } /* x3dio_writerevolveobj */
@@ -9728,7 +9728,7 @@ x3dio_writesweepobj(scew_element *element, ay_object *o)
 
   if(!d)
     {
-      (void)ay_object_deletemulti(c);
+      (void)ay_object_deletemulti(c, AY_FALSE);
       return AY_ERROR;
     }
 
@@ -9755,8 +9755,8 @@ x3dio_writesweepobj(scew_element *element, ay_object *o)
     }
 
   /* cleanup */
-  (void)ay_object_deletemulti(c);
-  (void)ay_object_deletemulti(d);
+  (void)ay_object_deletemulti(c, AY_FALSE);
+  (void)ay_object_deletemulti(d, AY_FALSE);
 
  return AY_OK;
 } /* x3dio_writesweepobj */
@@ -9843,7 +9843,7 @@ x3dio_writeswingobj(scew_element *element, ay_object *o)
 
   if(!d)
     {
-      (void)ay_object_deletemulti(c);
+      (void)ay_object_deletemulti(c, AY_FALSE);
       return AY_ERROR;
     }
 
@@ -9871,8 +9871,8 @@ x3dio_writeswingobj(scew_element *element, ay_object *o)
     }
 
   /* cleanup */
-  (void)ay_object_deletemulti(c);
-  (void)ay_object_deletemulti(d);
+  (void)ay_object_deletemulti(c, AY_FALSE);
+  (void)ay_object_deletemulti(d, AY_FALSE);
 
  return AY_OK;
 } /* x3dio_writeswingobj */
@@ -9986,7 +9986,7 @@ x3dio_writeextrudeobj(scew_element *element, ay_object *o)
 				 "trajectoryCurve");
 
       /* cleanup */
-      (void)ay_object_deletemulti(c);
+      (void)ay_object_deletemulti(c, AY_FALSE);
 
       d = d->next;
     } /* while */
@@ -10114,7 +10114,7 @@ x3dio_writeobject(scew_element *element, ay_object *o, int count)
 
 	  if(c)
 	    {
-	      (void)ay_object_deletemulti(c);
+	      (void)ay_object_deletemulti(c, AY_TRUE);
 	      i = -1;
 	      break;
 	    }

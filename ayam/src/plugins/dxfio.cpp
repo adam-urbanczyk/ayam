@@ -2115,7 +2115,7 @@ dxfio_writenpatch(ay_object *o, dimeModel *dm, double *m)
 	  t = t->next;
 	} // while
 
-      ay_status = ay_object_deletemulti(p);
+      ay_status = ay_object_deletemulti(p, AY_FALSE);
 
       return AY_OK;
     } // if
@@ -2424,7 +2424,7 @@ dxfio_writeobject(ay_object *o, dimeModel *dm)
 
 	  if(c)
 	    {
-	      ay_object_deletemulti(c);
+	      ay_object_deletemulti(c, AY_FALSE);
 	      i = -1;
 	      break;
 	    }

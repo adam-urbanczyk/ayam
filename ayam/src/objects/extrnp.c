@@ -602,7 +602,7 @@ cleanup:
   /* remove provided object(s) */
   if(provided)
     {
-      (void)ay_object_deletemulti(pobject);
+      (void)ay_object_deletemulti(pobject, AY_FALSE);
     }
 
   /* recover selected points */

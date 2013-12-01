@@ -668,7 +668,7 @@ cleanup:
     free(buf);
 
   if(allprovided)
-    (void)ay_object_deletemulti(allprovided);
+    (void)ay_object_deletemulti(allprovided, AY_FALSE);
 
  return ay_status;
 } /* ay_select_providecb */

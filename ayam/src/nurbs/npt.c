@@ -2978,7 +2978,7 @@ ay_npt_concat(ay_object *o, int type, int order,
 
 cleanup:
 
-  (void)ay_object_deletemulti(allcurves);
+  (void)ay_object_deletemulti(allcurves, AY_TRUE);
 
   /* delete list */
   while(curvelist)
@@ -4684,7 +4684,7 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
       ay_status = ay_nct_makecompatible(curve);
       if(ay_status)
 	{
-	  (void)ay_object_deletemulti(curve);
+	  (void)ay_object_deletemulti(curve, AY_TRUE);
 	  return ay_status;
 	}
       o1 = curve;
@@ -7652,7 +7652,7 @@ ay_npt_isboundcurve(ay_object *o, double b1, double b2, double b3, double b4,
 cleanup:
 
   if(c)
-    (void)ay_object_deletemulti(c);
+    (void)ay_object_deletemulti(c, AY_TRUE);
 
   if(tcv)
     free(tcv);
@@ -11935,7 +11935,7 @@ cleanup:
 
   if(pobject)
     {
-      (void)ay_object_deletemulti(pobject);
+      (void)ay_object_deletemulti(pobject, AY_TRUE);
     }
 
  return TCL_OK;
@@ -12221,7 +12221,7 @@ ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
 
 cleanup:
   /* free list of temporary patches/curves */
-  (void)ay_object_deletemulti(patches);
+  (void)ay_object_deletemulti(patches, AY_TRUE);
 
  return TCL_OK;
 } /* ay_npt_concatstcmd */
