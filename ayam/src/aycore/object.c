@@ -324,7 +324,7 @@ ay_object_delete(ay_object *o)
  *  delete multiple objects connected via their ->next fields
  */
 int
-ay_object_deletemulti(ay_object *o)
+ay_object_deletemulti(ay_object *o, int force)
 {
  int ay_status = AY_OK;
  ay_object *next = NULL, *d = NULL;
@@ -335,9 +335,18 @@ ay_object_deletemulti(ay_object *o)
   d = o;
   while(d)
     {
+      if(force)
+	{
+	  if(d->down && d->down->next)
+	    {
+	      (void)ay_object_deletemulti(d->down, force);
+	    }
+	  d->refcount = 0;
+	}
+
       next = d->next;
       ay_status = ay_object_delete(d);
-      if(ay_status)
+      if(!force && ay_status)
 	{
 	  return ay_status;
 	}
@@ -957,7 +966,7 @@ ay_object_replace(ay_object *src, ay_object *dst)
 
   if(dst->down && dst->down->next)
     {
-      ay_object_deletemulti(dst->down);
+      ay_object_deletemulti(dst->down, AY_FALSE);
     }
 
   if(dst->tags)

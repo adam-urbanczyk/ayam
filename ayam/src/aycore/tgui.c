@@ -305,7 +305,7 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 				       use_vn, NULL,
 				       &tmp);
 		} /* if */
-	      (void)ay_object_deletemulti(tmpnp);
+	      (void)ay_object_deletemulti(tmpnp, AY_FALSE);
 	    } /* if */
 	} /* if */
 

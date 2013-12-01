@@ -193,7 +193,7 @@ ay_convert_nptoolobj(ay_object *o, ay_object *p, ay_object *cb, int in_place)
 	  ay_status = ay_object_copy(b, next);
 	  if(ay_status)
 	    {
-	      ay_object_deletemulti(new);
+	      (void)ay_object_deletemulti(new, AY_FALSE);
 	      return AY_ERROR;
 	    }
 	  if(*next)
@@ -214,7 +214,7 @@ ay_convert_nptoolobj(ay_object *o, ay_object *p, ay_object *cb, int in_place)
 	  ay_status = ay_object_copy(b, next);
 	  if(ay_status)
 	    {
-	      ay_object_deletemulti(new);
+	      (void)ay_object_deletemulti(new, AY_FALSE);
 	      return AY_ERROR;
 	    }
 	  if(*next)
@@ -240,7 +240,7 @@ ay_convert_nptoolobj(ay_object *o, ay_object *p, ay_object *cb, int in_place)
       ay_status = ay_object_copy(p, &new);
       if(ay_status)
 	{
-	  ay_object_deletemulti(new);
+	  (void)ay_object_deletemulti(new, AY_FALSE);
 	  return AY_ERROR;
 	}
       if(new)
