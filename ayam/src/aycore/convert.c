@@ -15,7 +15,7 @@
 /* convert.c - functions for object conversion */
 
 /* ay_convert_register:
- *  register the conversion callback notcb for
+ *  register the conversion callback convcb for
  *  objects of type type_id
  */
 int
@@ -30,11 +30,11 @@ ay_convert_register(ay_convertcb *convcb, unsigned int type_id)
 } /* ay_convert_register */
 
 
-/* ay_convert_force:
+/* ay_convert_object:
  *  call conversion callback of object o
  */
 int
-ay_convert_force(ay_object *o, int in_place)
+ay_convert_object(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
  char fname[] = "convert";
@@ -75,17 +75,17 @@ ay_convert_force(ay_object *o, int in_place)
     }
 
  return AY_OK;
-} /* ay_convert_force */
+} /* ay_convert_object */
 
 
-/* ay_convert_forcetcmd:
+/* ay_convert_objecttcmd:
  *  force conversion of selected object(s)
  *  Implements the \a convOb scripting interface command.
  *  See also the corresponding section in the \ayd{scconvob}.
  *  \returns TCL_OK in any case.
  */
 int
-ay_convert_forcetcmd(ClientData clientData, Tcl_Interp *interp,
+ay_convert_objecttcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
  int ay_status = AY_OK, in_place = AY_FALSE, notify_parent = AY_FALSE;
@@ -135,7 +135,7 @@ ay_convert_forcetcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_status = ay_convert_force(sel->object, in_place);
+	  ay_status = ay_convert_object(sel->object, in_place);
 	  if(!ay_status)
 	    {
 	      sel->object->modified = AY_TRUE;
@@ -151,7 +151,7 @@ ay_convert_forcetcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
  return TCL_OK;
-} /* ay_convert_forcetcmd */
+} /* ay_convert_objecttcmd */
 
 
 /* ay_convert_nptoolobj:

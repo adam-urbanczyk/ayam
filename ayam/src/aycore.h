@@ -154,12 +154,12 @@ int ay_convert_register(ay_convertcb  *convcb, unsigned int type_id);
 
 /** convert an object
  */
-int ay_convert_force(ay_object *o, int in_place);
+int ay_convert_object(ay_object *o, int in_place);
 
 /** Tcl command to convert the selected objects.
  */
-int ay_convert_forcetcmd(ClientData clientData, Tcl_Interp *interp,
-			 int argc, char *argv[]);
+int ay_convert_objecttcmd(ClientData clientData, Tcl_Interp *interp,
+			  int argc, char *argv[]);
 
 /** helper for tool objects that convert to NURBS surfaces with caps/bevels
  */

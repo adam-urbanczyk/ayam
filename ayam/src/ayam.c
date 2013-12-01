@@ -732,7 +732,7 @@ Tcl_AppInit(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* conv.c */
-  Tcl_CreateCommand(interp, "convOb", ay_convert_forcetcmd,
+  Tcl_CreateCommand(interp, "convOb", ay_convert_objecttcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* draw.c */
@@ -1404,7 +1404,7 @@ ay_safeinit(Tcl_Interp *interp)
 		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* conv.c */
-  Tcl_CreateCommand(interp, "convOb", ay_convert_forcetcmd,
+  Tcl_CreateCommand(interp, "convOb", ay_convert_objecttcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* instt.c */
