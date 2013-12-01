@@ -61,10 +61,10 @@ ay_extrude_deletecb(void *c)
   extrude = (ay_extrude_object *)(c);
 
   if(extrude->npatch)
-    (void)ay_object_deletemulti(extrude->npatch);
+    (void)ay_object_deletemulti(extrude->npatch, AY_FALSE);
 
   if(extrude->caps_and_bevels)
-    (void)ay_object_deletemulti(extrude->caps_and_bevels);
+    (void)ay_object_deletemulti(extrude->caps_and_bevels, AY_FALSE);
 
   free(extrude);
 
@@ -570,7 +570,7 @@ ay_extrude_notifycb(ay_object *o)
 
   if(ext->caps_and_bevels)
     {
-      ay_object_deletemulti(ext->caps_and_bevels);
+      ay_object_deletemulti(ext->caps_and_bevels, AY_FALSE);
     }
   ext->caps_and_bevels = NULL;
 
@@ -943,7 +943,7 @@ ay_extrude_notifycb(ay_object *o)
 
 	  if(is_provided)
 	    {
-	      ay_object_deletemulti(c);
+	      ay_object_deletemulti(c, AY_FALSE);
 	    }
 
 	} /* if c */

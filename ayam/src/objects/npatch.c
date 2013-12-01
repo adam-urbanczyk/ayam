@@ -566,7 +566,7 @@ ay_npatch_deletecb(void *c)
 
   if(npatch->caps_and_bevels)
     {
-      (void)ay_object_deletemulti(npatch->caps_and_bevels);
+      (void)ay_object_deletemulti(npatch->caps_and_bevels, AY_FALSE);
       npatch->caps_and_bevels = NULL;
     }
 
@@ -2556,7 +2556,7 @@ ay_npatch_wribtrimcurves(ay_object *o)
 
 		  if(nc)
 		    {
-		      (void)ay_object_deletemulti(nc);
+		      (void)ay_object_deletemulti(nc, AY_FALSE);
 		    }
 
 		  loop = loop->next;
@@ -2602,7 +2602,7 @@ ay_npatch_wribtrimcurves(ay_object *o)
 		  knot[c] = (RtFloat)curve->knotv[k];
 		  c++;
 		} /* for */
-	      (void) ay_object_deletemulti(nc);
+	      (void) ay_object_deletemulti(nc, AY_FALSE);
 	    } /* if */
 	  break;
 	} /* switch */
@@ -3006,7 +3006,7 @@ ay_npatch_notifycb(ay_object *o)
 
   if(npatch->caps_and_bevels)
     {
-      (void)ay_object_deletemulti(npatch->caps_and_bevels);
+      (void)ay_object_deletemulti(npatch->caps_and_bevels, AY_FALSE);
       npatch->caps_and_bevels = NULL;
     }
 

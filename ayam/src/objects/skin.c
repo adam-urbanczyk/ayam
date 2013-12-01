@@ -64,7 +64,7 @@ ay_skin_deletecb(void *c)
     (void)ay_object_delete(skin->npatch);
 
   if(skin->caps_and_bevels)
-    (void)ay_object_deletemulti(skin->caps_and_bevels);
+    (void)ay_object_deletemulti(skin->caps_and_bevels, AY_FALSE);
 
   free(skin);
 
@@ -525,7 +525,7 @@ ay_skin_notifycb(ay_object *o)
 
   if(skin->caps_and_bevels)
     {
-      (void)ay_object_deletemulti(skin->caps_and_bevels);
+      (void)ay_object_deletemulti(skin->caps_and_bevels, AY_FALSE);
       skin->caps_and_bevels = NULL;
     }
 
@@ -661,7 +661,7 @@ ay_skin_notifycb(ay_object *o)
 
 cleanup:
   /* remove temporary curves */
-  (void)ay_object_deletemulti(all_curves);
+  (void)ay_object_deletemulti(all_curves, AY_FALSE);
 
   /* recover selected points */
   if(o->selp)

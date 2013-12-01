@@ -3396,7 +3396,7 @@ sdnpatch_wribcb(char *file, ay_object *o)
 
   ay_wrib_object(file, c);
 
-  ay_object_deletemulti(c);
+  ay_object_deletemulti(c, AY_FALSE);
 
  return AY_OK;
 } /* sdnpatch_wribcb */
@@ -4429,7 +4429,7 @@ sdnpatch_convnptcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_object_link(newo);
 	    }
 
-	  ay_object_deletemulti(p);
+	  ay_object_deletemulti(p, AY_FALSE);
 	}
 
       sel = sel->next;
@@ -4611,7 +4611,7 @@ sdnpatch_convpotcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_object_link(newo);
 	    }
 
-	  ay_object_deletemulti(p);
+	  ay_object_deletemulti(p, AY_FALSE);
 	}
 
       sel = sel->next;
@@ -5339,7 +5339,7 @@ sdnpatch_mergepatchtcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(degree != sdnpatch->subdivDegree)
 	    {
 	      if(c)
-		ay_object_deletemulti(c);
+		ay_object_deletemulti(c, AY_FALSE);
 	      sel = sel->next;
 	      continue;
 	    }
@@ -5358,12 +5358,12 @@ sdnpatch_mergepatchtcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  ay_error(AY_EOMEM, argv[0], NULL);
 	  if(c)
-	    ay_object_deletemulti(c);
+	    ay_object_deletemulti(c, AY_FALSE);
 	  goto cleanup;
 	}
 
       if(c)
-	ay_object_deletemulti(c);
+	ay_object_deletemulti(c, AY_FALSE);
 
       sel = sel->next;
     } /* while */

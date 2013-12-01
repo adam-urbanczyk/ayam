@@ -1027,7 +1027,7 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
 		  dtmp = NULL;
 		  if(dd)
 		    {
-		      ay_object_deletemulti(dd);
+		      ay_object_deletemulti(dd, AY_FALSE);
 		      dd = NULL;
 		    }
 		} /* if */
@@ -1093,7 +1093,7 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
 
 	  if(dd)
 	    {
-	      ay_object_deletemulti(dd);
+	      ay_object_deletemulti(dd, AY_FALSE);
 	      dd = NULL;
 	    }
 	  i++;

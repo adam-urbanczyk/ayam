@@ -65,7 +65,7 @@ ay_sweep_deletecb(void *c)
     (void)ay_object_delete(sweep->npatch);
 
   if(sweep->caps_and_bevels)
-    (void)ay_object_deletemulti(sweep->caps_and_bevels);
+    (void)ay_object_deletemulti(sweep->caps_and_bevels, AY_FALSE);
 
   free(sweep);
 
@@ -539,7 +539,7 @@ ay_sweep_notifycb(ay_object *o)
 
   if(sweep->caps_and_bevels)
     {
-      (void)ay_object_deletemulti(sweep->caps_and_bevels);
+      (void)ay_object_deletemulti(sweep->caps_and_bevels, AY_FALSE);
       sweep->caps_and_bevels = NULL;
     }
 
@@ -692,17 +692,17 @@ cleanup:
   /* remove provided objects */
   if(is_provided[0])
     {
-      (void)ay_object_deletemulti(pobject1);
+      (void)ay_object_deletemulti(pobject1, AY_FALSE);
     }
 
   if(is_provided[1])
     {
-      (void)ay_object_deletemulti(pobject2);
+      (void)ay_object_deletemulti(pobject2, AY_FALSE);
     }
 
   if(is_provided[2])
     {
-      (void)ay_object_deletemulti(pobject3);
+      (void)ay_object_deletemulti(pobject3, AY_FALSE);
     }
 
   /* remove patch */

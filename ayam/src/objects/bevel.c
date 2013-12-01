@@ -73,7 +73,7 @@ ay_bevel_deletecb(void *c)
     (void)ay_object_delete(bevel->npatch);
 
   if(bevel->caps)
-    (void)ay_object_deletemulti(bevel->caps);
+    (void)ay_object_deletemulti(bevel->caps, AY_FALSE);
 
   free(bevel);
 
@@ -470,7 +470,7 @@ ay_bevel_notifycb(ay_object *o)
 
   if(bevel->caps)
     {
-      (void)ay_object_deletemulti(bevel->caps);
+      (void)ay_object_deletemulti(bevel->caps, AY_FALSE);
       bevel->caps = NULL;
     }
 
@@ -632,11 +632,11 @@ cleanup:
   /* remove provided objects */
   if(pobject1)
     {
-      (void)ay_object_deletemulti(pobject1);
+      (void)ay_object_deletemulti(pobject1, AY_FALSE);
     }
   if(pobject2)
     {
-      (void)ay_object_deletemulti(pobject2);
+      (void)ay_object_deletemulti(pobject2, AY_FALSE);
     }
 
   if(t)

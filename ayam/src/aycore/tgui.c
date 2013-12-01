@@ -32,8 +32,6 @@ int ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[]);
 
 void ay_tgui_movemasterstoclip(ay_object *m, ay_object **p, ay_object *h);
 
-void ay_tgui_removechildren(ay_object *o);
-
 void ay_tgui_ok(void);
 
 void ay_tgui_cancel(void);
@@ -421,32 +419,6 @@ ay_tgui_movemasterstoclip(ay_object *m, ay_object **p, ay_object *h)
 } /* ay_tgui_movemasterstoclip */
 
 
-/* ay_tgui_removechildren
- * _recursively_ removes all children, irrespective of their
- * reference counts
- */
-void
-ay_tgui_removechildren(ay_object *o)
-{
- ay_object *d;
-
-  while(o)
-    {
-      if(o->down && o->down->next)
-	{
-	  ay_tgui_removechildren(o->down);
-	  o->down = NULL;
-	}
-      d = o;
-      o = d->next;
-      d->refcount = 0;
-      (void)ay_object_delete(d);
-    }
-
- return;
-} /* ay_tgui_removechildren */
-
-
 /* ay_tgui_ok:
  *  remove temporary copies of NURBS patch objects (user pressed "Ok")
  */
@@ -471,7 +443,7 @@ ay_tgui_ok(void)
 	      ay_tgui_movemasterstoclip(o->down, &(o->down), ay_tgui_origs);
 	      moved = 1;
 	    }
-	  ay_tgui_removechildren(o->down);
+	  (void)ay_object_deletemulti(o->down, AY_TRUE);
 	  o->down = NULL;
 	}
       o = o->next;

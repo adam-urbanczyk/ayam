@@ -62,7 +62,7 @@ ay_swing_deletecb(void *c)
     (void)ay_object_delete(swing->npatch);
 
   if(swing->caps_and_bevels)
-    (void)ay_object_deletemulti(swing->caps_and_bevels);
+    (void)ay_object_deletemulti(swing->caps_and_bevels, AY_FALSE);
 
   free(swing);
 
@@ -684,7 +684,7 @@ cleanup:
   if(tloop)
     {
       tloop->down = NULL;
-      (void)ay_object_deletemulti(tloop);
+      (void)ay_object_deletemulti(tloop, AY_FALSE);
     }
 
   if(trim)
@@ -1009,7 +1009,7 @@ cleanup:
   if(tloop)
     {
       tloop->down = NULL;
-      (void)ay_object_deletemulti(tloop);
+      (void)ay_object_deletemulti(tloop, AY_FALSE);
     }
 
   if(trim)
@@ -1055,7 +1055,7 @@ ay_swing_notifycb(ay_object *o)
 
   if(swing->caps_and_bevels)
     {
-      (void)ay_object_deletemulti(swing->caps_and_bevels);
+      (void)ay_object_deletemulti(swing->caps_and_bevels, AY_FALSE);
       swing->caps_and_bevels = NULL;
     }
 
@@ -1156,11 +1156,11 @@ cleanup:
   /* remove provided object(s) */
   if(provided_cs && cs)
     {
-      (void)ay_object_deletemulti(cs);
+      (void)ay_object_deletemulti(cs, AY_FALSE);
     }
   if(provided_tr && tr)
     {
-      (void)ay_object_deletemulti(tr);
+      (void)ay_object_deletemulti(tr, AY_FALSE);
     }
 
   /* recover selected points */

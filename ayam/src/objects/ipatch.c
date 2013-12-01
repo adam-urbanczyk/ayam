@@ -620,10 +620,10 @@ ay_ipatch_deletecb(void *c)
 
   /* free NURBS patch(es) */
   if(ipatch->npatch)
-    (void)ay_object_deletemulti(ipatch->npatch);
+    (void)ay_object_deletemulti(ipatch->npatch, AY_FALSE);
 
   if(ipatch->caps_and_bevels)
-    (void)ay_object_deletemulti(ipatch->caps_and_bevels);
+    (void)ay_object_deletemulti(ipatch->caps_and_bevels, AY_FALSE);
 
   free(ipatch);
 
@@ -2292,13 +2292,13 @@ ay_ipatch_notifycb(ay_object *o)
 
   if(ip->npatch)
     {
-      (void)ay_object_deletemulti(ip->npatch);
+      (void)ay_object_deletemulti(ip->npatch, AY_FALSE);
       ip->npatch = NULL;
     }
 
   if(ip->caps_and_bevels)
     {
-      (void)ay_object_deletemulti(ip->caps_and_bevels);
+      (void)ay_object_deletemulti(ip->caps_and_bevels, AY_FALSE);
       ip->caps_and_bevels = NULL;
     }
 
@@ -2471,7 +2471,7 @@ ay_ipatch_notifycb(ay_object *o)
 cleanup:
 
   if(p)
-    (void)ay_object_deletemulti(p);
+    (void)ay_object_deletemulti(p, AY_FALSE);
 
  return ay_status;
 } /* ay_ipatch_notifycb */

@@ -64,7 +64,7 @@ ay_birail2_deletecb(void *c)
     (void)ay_object_delete(birail2->npatch);
 
   if(birail2->caps_and_bevels)
-    (void)ay_object_deletemulti(birail2->caps_and_bevels);
+    (void)ay_object_deletemulti(birail2->caps_and_bevels, AY_FALSE);
 
   free(birail2);
 
@@ -530,7 +530,7 @@ ay_birail2_notifycb(ay_object *o)
 
   if(birail2->caps_and_bevels)
     {
-      (void)ay_object_deletemulti(birail2->caps_and_bevels);
+      (void)ay_object_deletemulti(birail2->caps_and_bevels, AY_FALSE);
       birail2->caps_and_bevels = NULL;
     }
 
@@ -696,27 +696,27 @@ ay_birail2_notifycb(ay_object *o)
 cleanup:
   if(is_provided[0])
     {
-      (void)ay_object_deletemulti(pobject1);
+      (void)ay_object_deletemulti(pobject1, AY_FALSE);
     }
 
   if(is_provided[1])
     {
-      (void)ay_object_deletemulti(pobject2);
+      (void)ay_object_deletemulti(pobject2, AY_FALSE);
     }
 
   if(is_provided[2])
     {
-      (void)ay_object_deletemulti(pobject3);
+      (void)ay_object_deletemulti(pobject3, AY_FALSE);
     }
 
   if(is_provided[3])
     {
-      (void)ay_object_deletemulti(pobject4);
+      (void)ay_object_deletemulti(pobject4, AY_FALSE);
     }
 
   if(is_provided[4])
     {
-      (void)ay_object_deletemulti(pobject5);
+      (void)ay_object_deletemulti(pobject5, AY_FALSE);
     }
 
   if(npatch)

@@ -769,7 +769,7 @@ onio_addtrim(ay_object *o, ON_BrepLoop::TYPE ltype, ON_BrepTrim::TYPE ttype,
 
   // cleanup
   if(pnc)
-    ay_object_deletemulti(pnc);
+    ay_object_deletemulti(pnc, AY_FALSE);
 
  return ay_status;
 } // onio_addtrim
@@ -945,7 +945,7 @@ onio_writenpconvertible(ay_object *o, ONX_Model *p_m, double *m)
 	  t = t->next;
 	} // while
 
-      (void)ay_object_deletemulti(p);
+      (void)ay_object_deletemulti(p, AY_FALSE);
 
       int last = p_m->m_object_table.Count();
       for(int i = first; i < last; i++)
@@ -1052,7 +1052,7 @@ onio_writencconvertible(ay_object *o, ONX_Model *p_m, double *m)
 	  t = t->next;
 	} // while
 
-      ay_status = ay_object_deletemulti(p);
+      ay_status = ay_object_deletemulti(p, AY_FALSE);
 
       int last = p_m->m_object_table.Count();
       for(int i = first; i < last; i++)
@@ -1989,7 +1989,7 @@ onio_writeobject(ay_object *o, ONX_Model *p_m)
 
 	  if(c)
 	    {
-	      ay_object_deletemulti(c);
+	      ay_object_deletemulti(c, AY_FALSE);
 	      i = -1;
 	      break;
 	    }

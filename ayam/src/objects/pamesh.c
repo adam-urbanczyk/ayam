@@ -121,7 +121,7 @@ ay_pamesh_deletecb(void *c)
 
   /* free NURBS patch(es) */
   if(pamesh->npatch)
-    (void)ay_object_deletemulti(pamesh->npatch);
+    (void)ay_object_deletemulti(pamesh->npatch, AY_FALSE);
 
   free(pamesh);
 
@@ -1248,7 +1248,7 @@ ay_pamesh_notifycb(ay_object *o)
 
   if(pamesh->npatch)
     {
-      (void)ay_object_deletemulti(pamesh->npatch);
+      (void)ay_object_deletemulti(pamesh->npatch, AY_FALSE);
       pamesh->npatch = NULL;
     }
 

@@ -754,7 +754,7 @@ cleanup:
 
   if(cap)
     {
-      (void)ay_object_deletemulti(cap);
+      (void)ay_object_deletemulti(cap, AY_FALSE);
     }
 
   if(controlv)
@@ -1084,7 +1084,7 @@ cleanup:
 
   if(cap)
     {
-      (void)ay_object_deletemulti(cap);
+      (void)ay_object_deletemulti(cap, AY_FALSE);
     }
 
   if(controlv)
@@ -1234,7 +1234,7 @@ cleanup:
   /* remove provided object(s) */
   if(is_provided)
     {
-      (void)ay_object_deletemulti(pobject);
+      (void)ay_object_deletemulti(pobject, AY_FALSE);
     }
 
   /* recover selected points */

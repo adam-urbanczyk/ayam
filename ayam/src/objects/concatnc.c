@@ -575,7 +575,7 @@ ay_concatnc_notifycb(ay_object *o)
 cleanup:
 
   /* free list of temporary curves */
-  (void)ay_object_deletemulti(curves);
+  (void)ay_object_deletemulti(curves, AY_FALSE);
 
   /* recover selected points */
   if(o->selp)

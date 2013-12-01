@@ -59,7 +59,7 @@ ay_trim_deletecb(void *c)
   trim = (ay_trim_object *)(c);
 
   if(trim->npatch)
-    (void)ay_object_deletemulti(trim->npatch);
+    (void)ay_object_deletemulti(trim->npatch, AY_FALSE);
 
   free(trim);
 
@@ -372,7 +372,7 @@ ay_trim_notifycb(ay_object *o)
   /* remove old objects */
   if(trim->npatch)
     {
-      (void)ay_object_deletemulti(trim->npatch);
+      (void)ay_object_deletemulti(trim->npatch, AY_FALSE);
     }
   trim->npatch = NULL;
 

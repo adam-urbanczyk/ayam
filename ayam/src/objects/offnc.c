@@ -564,7 +564,7 @@ cleanup:
   /* remove provided object(s) */
   if(provided)
     {
-      (void)ay_object_deletemulti(ncurve);
+      (void)ay_object_deletemulti(ncurve, AY_FALSE);
     }
 
   /* recover selected points */

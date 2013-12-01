@@ -66,7 +66,7 @@ ay_gordon_deletecb(void *c)
     (void)ay_object_delete(gordon->npatch);
 
   if(gordon->caps_and_bevels)
-    (void)ay_object_deletemulti(gordon->caps_and_bevels);
+    (void)ay_object_deletemulti(gordon->caps_and_bevels, AY_FALSE);
 
   free(gordon);
 
@@ -550,7 +550,7 @@ ay_gordon_notifycb(ay_object *o)
 
   if(gordon->caps_and_bevels)
     {
-      (void)ay_object_deletemulti(gordon->caps_and_bevels);
+      (void)ay_object_deletemulti(gordon->caps_and_bevels, AY_FALSE);
       gordon->caps_and_bevels = NULL;
     }
 
@@ -728,10 +728,10 @@ ay_gordon_notifycb(ay_object *o)
 cleanup:
   /* remove temporary curves and intersection patch */
   if(hcurves)
-    (void)ay_object_deletemulti(hcurves);
+    (void)ay_object_deletemulti(hcurves, AY_FALSE);
 
   if(vcurves)
-    (void)ay_object_deletemulti(vcurves);
+    (void)ay_object_deletemulti(vcurves, AY_FALSE);
 
   if(inpatch)
     (void)ay_object_delete(inpatch);

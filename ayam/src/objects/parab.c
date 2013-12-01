@@ -1159,12 +1159,12 @@ cleanup:
 
   if(new)
     {
-      (void)ay_object_deletemulti(new);
+      (void)ay_object_deletemulti(new, AY_FALSE);
     }
 
   if(newp)
     {
-      (void)ay_object_deletemulti(newp);
+      (void)ay_object_deletemulti(newp, AY_FALSE);
     }
 
  return ay_status;
