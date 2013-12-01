@@ -958,7 +958,7 @@ eval_provided:
       if(freepo)
 	{
 	  if(po)
-	    (void)ay_object_deletemulti(po);
+	    (void)ay_object_deletemulti(po, AY_FALSE);
 	} /* if */
 
       sel = sel->next;
@@ -969,7 +969,7 @@ cleanup:
   if(freepo)
     {
       if(po)
-	(void)ay_object_deletemulti(po);
+	(void)ay_object_deletemulti(po, AY_FALSE);
     } /* if */
 
  return TCL_OK;

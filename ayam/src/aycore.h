@@ -532,7 +532,7 @@ int ay_object_delete(ay_object *o);
 
 /** delete multiple (connected) objects
  */
-int ay_object_deletemulti(ay_object *o);
+int ay_object_deletemulti(ay_object *o, int force);
 
 /** Tcl command to delete selected objects.
  */

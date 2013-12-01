@@ -122,7 +122,7 @@ ay_provide_nptoolobj(ay_object *o, unsigned int type,
       ay_status = ay_object_copy(p, t);
       if(ay_status)
 	{
-	  ay_object_deletemulti(new);
+	  ay_object_deletemulti(new, AY_FALSE);
 	  return AY_ERROR;
 	}
 
@@ -140,7 +140,7 @@ ay_provide_nptoolobj(ay_object *o, unsigned int type,
       ay_status = ay_object_copy(p, t);
       if(ay_status)
 	{
-	  ay_object_deletemulti(new);
+	  ay_object_deletemulti(new, AY_FALSE);
 	  return AY_ERROR;
 	}
 
