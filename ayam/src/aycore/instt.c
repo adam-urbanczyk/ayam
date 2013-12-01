@@ -1047,21 +1047,18 @@ ay_instt_getmastertcmd(ClientData clientData, Tcl_Interp *interp,
  *  in the list of objects <o> (and all their children)
  *  and count all found references in <refs>
  */
-int
+void
 ay_instt_countrefs(ay_object *o, ay_object *m, unsigned int *refs)
 {
- int ay_status = AY_OK;
 
   if(!o || !m || !refs)
-    return AY_ENULL;
+    return;
 
   while(o && o->next)
     {
       if(o->down && o->down->next)
 	{
-	  ay_status = ay_instt_countrefs(o->down, m, refs);
-	  if(ay_status)
-	    return ay_status;
+	  ay_instt_countrefs(o->down, m, refs);
 	}
       if(o->type == AY_IDINSTANCE)
 	{
@@ -1073,8 +1070,42 @@ ay_instt_countrefs(ay_object *o, ay_object *m, unsigned int *refs)
       o = o->next;
     } /* while */
 
- return ay_status;
+ return;
 } /* ay_instt_countrefs */
+
+
+/* ay_instt_countrefslist:
+ *  search for instances of master <m>
+ *  in the list of objects <l> (and all their children)
+ *  and count all found references in <refs>
+ */
+void
+ay_instt_countrefslist(ay_list_object *l, ay_object *m, unsigned int *refs)
+{
+ ay_object *o = NULL;
+
+  if(!l || !m || !refs)
+    return;
+
+  while(l)
+    {
+      o = l->object;
+      if(o->down && o->down->next)
+	{
+	  ay_instt_countrefs(o->down, m, refs);
+	}
+      if(o->type == AY_IDINSTANCE)
+	{
+	  if(o->refine == m)
+	    {
+	      *refs = *refs + 1;
+	    }
+	}
+      l = l->next;
+    } /* while */
+
+ return;
+} /* ay_instt_countrefslist */
 
 
 /* ay_instt_init:
