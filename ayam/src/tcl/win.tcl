@@ -79,6 +79,8 @@ proc winRestoreOrCenter { w t {c "."} } {
     if { ($ayprefs(SaveDialogGeom) > 0) } {
 	if { ($geom != "") } {
 	    winMoveOrResize $w $geom
+	} else {
+	    winCenter $w $c
 	}
 	bind $w <Configure>\
 	    "if { \"%W\" == \"$w\" } { set $var \[winGetGeom $w\] }"
