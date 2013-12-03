@@ -1160,7 +1160,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 			    }
 			  else
 			    {
-			      ay_error(AY_ERROR, fname, NULL);
+			      ay_error(ay_status, fname, NULL);
 			    }
 			}
 		      break;
@@ -1637,8 +1637,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 		      tclargv[0] = arg0;
 		      tclargv[1] = arg1;
 		      tclargv[2] = argv[i+1];
-		      ay_status = ay_undo_undotcmd(NULL, ay_interp,
-						   3, tclargv);
+		      (void)ay_undo_undotcmd(NULL, ay_interp, 3, tclargv);
 		    }
 		}
 	    }
@@ -2379,6 +2378,10 @@ ay_viewt_markfromsel(struct Togl *togl)
  int i = 0, a = 0, numo = 0, numu;
 
   sel = ay_selection;
+
+  if(!sel)
+    return AY_ENOSEL;
+
   while(sel)
     {
       numo++;
