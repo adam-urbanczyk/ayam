@@ -528,6 +528,10 @@ ay_undo_copy(ay_undo_object *uo)
 	  ay_tags_delall(o);
 	}
       ay_status = ay_undo_copytags(c, o);
+      if(ay_status)
+	{
+	  return ay_status;
+	}
 
       /* copy type specific part */
       switch(c->type)

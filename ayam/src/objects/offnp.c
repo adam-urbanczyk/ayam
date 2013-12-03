@@ -596,8 +596,8 @@ ay_offnp_notifycb(ay_object *o)
       ay_status = ay_object_copymulti(npatch->down, &(newo->down));
       if(ay_status)
 	{
-	  (void)ay_object_deletemulti(o->down, AY_FALSE);
-	  o->down = NULL;
+	  (void)ay_object_deletemulti(newo->down, AY_FALSE);
+	  newo->down = ay_endlevel;
 	}
     }
   else

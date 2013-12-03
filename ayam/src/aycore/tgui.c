@@ -157,7 +157,7 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 {
  int ay_status = AY_OK;
  char fname[] = "tgui_update";
- char *n1="tgui_tessparam";
+ char *n1 = "tgui_tessparam";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_list_object *oref = NULL;
  ay_list_object *newl = NULL, **lastl = NULL, *polist = NULL;
@@ -427,9 +427,12 @@ ay_tgui_ok(void)
 {
  int ay_status = AY_OK;
  char fname[] = "tgui_ok";
- ay_list_object *oref = ay_tgui_origrefs;
- ay_object *o = ay_tgui_origs;
+ ay_list_object *oref;
+ ay_object *o;
  int moved = 0;
+
+  if(!ay_tgui_origrefs || !ay_tgui_origs)
+    return;
 
   /* process/remove children first */
   o = ay_tgui_origs;
@@ -452,7 +455,6 @@ ay_tgui_ok(void)
   if(moved)
     ay_error(AY_ERROR, fname, "Moved referenced object(s) to clipboard!");
 
-  o = ay_tgui_origs;
   while(ay_tgui_origrefs)
     {
       o = ay_tgui_origs;
@@ -481,10 +483,13 @@ ay_tgui_ok(void)
 void
 ay_tgui_cancel(void)
 {
- ay_list_object *oref = ay_tgui_origrefs;
- ay_object *o = ay_tgui_origs;
+ ay_list_object *oref;
+ ay_object *o;
  ay_deletecb *cb = NULL;
  ay_voidfp *arr = NULL;
+
+  if(!ay_tgui_origrefs || !ay_tgui_origs)
+    return;
 
   arr = ay_deletecbt.arr;
 
