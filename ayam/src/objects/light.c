@@ -957,7 +957,7 @@ ay_light_readcb(FILE *fileptr, ay_object *o)
 	  return ay_status;
 	}
       /* copy shader from/to to light.tfrom light.tto */
-      ay_status = ay_pact_getpoint(1, o, p, &pe);
+      (void)ay_pact_getpoint(1, o, p, &pe);
       ay_pact_clearpointedit(&pe);
     }
 
