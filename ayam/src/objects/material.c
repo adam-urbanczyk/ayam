@@ -844,9 +844,7 @@ ay_material_dropcb(ay_object *o)
      objects are saved by each undo operation anyway */
   argv[1] = arg1;
   argv[2] = arg2;
-  status = ay_undo_undotcmd(NULL, ay_interp, 3, argv);
-  if(status != TCL_OK)
-    ay_status = AY_ERROR;
+  (void)ay_undo_undotcmd(NULL, ay_interp, 3, argv);
 
   while(sel)
     {

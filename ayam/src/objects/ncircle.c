@@ -605,7 +605,7 @@ cleanup:
 	ay_selp_clear(o);
     }
 
- return AY_OK;
+ return ay_status;
 } /* ay_ncircle_notifycb */
 
 
