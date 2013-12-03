@@ -600,7 +600,6 @@ ay_icurve_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_icurve_drawacb(struct Togl *togl, ay_object *o)
 {
- int length = 0;
  ay_icurve_object *icurve = NULL;
  GLdouble *ver = NULL;
 
@@ -608,8 +607,6 @@ ay_icurve_drawacb(struct Togl *togl, ay_object *o)
 
   if(!icurve)
     return AY_ENULL;
-
-  length = icurve->length;
 
   ver = icurve->controlv;
 
