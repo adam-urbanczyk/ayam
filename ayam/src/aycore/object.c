@@ -221,7 +221,8 @@ ay_object_createtcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_object_delete:
- *  delete an object
+ *  _recursively_ delete the children of an object and then the object;
+ *  fails if there are objects/children with refcount > 0;
  *  does not unlink the object!
  */
 int
@@ -230,7 +231,7 @@ ay_object_delete(ay_object *o)
  int ay_status = AY_OK;
  ay_voidfp *arr = NULL;
  ay_deletecb *cb = NULL;
- ay_object *down = NULL, *d = NULL;
+ ay_object *d = NULL;
  ay_mat_object *mat = NULL;
  unsigned int *refcountptr;
  ay_tag *tag = NULL;
@@ -248,14 +249,16 @@ ay_object_delete(ay_object *o)
   /* delete children first */
   if(o->down && (o->down != ay_endlevel))
     {
-      down = o->down;
-      while(down)
+      while(o->down)
 	{
-	  d = down;
-	  down = down->next;
+	  d = o->down;
+	  /* unlink the first child and try to delete it */
+	  o->down = d->next;
 	  ay_status = ay_object_delete(d);
 	  if(ay_status)
 	    {
+	      /* delete failed, re-link the child */
+	      o->down = d;
 	      return ay_status;
 	    } /* if */
 	} /* while */
@@ -322,6 +325,18 @@ ay_object_delete(ay_object *o)
 
 /* ay_object_deletemulti:
  *  delete multiple objects connected via their ->next fields
+ *
+ *  If the \a force argument is AY_FALSE and the hierarchy contains
+ *  undeletable objects (e.g. due to references), the removal process
+ *  will be stopped and the object hierarchy will be in unknown state.
+ *  This variant should only be used, when there are no references in \a o,
+ *  otherwise memory will leak.
+ *
+ *  If the \a force argument is AY_TRUE, the removal will be enforced by
+ *  setting the reference counts to 0 before deletion.
+ *  This variant should only be used after a succesful call to candelete(),
+ *  otherwise access to freed memory/crashes can occur later (via the
+ *  references)!
  */
 int
 ay_object_deletemulti(ay_object *o, int force)
@@ -479,7 +494,8 @@ ay_object_link(ay_object *o)
 
 
 /* ay_object_unlink:
- *  unlink object o from scene, without deleting it!
+ *  unlink object \a o from scene, without deleting it!
+ *  \a o must be in the current level;
  *  properly maintains ay_next and ay_currentlevel
  */
 void
@@ -757,7 +773,7 @@ ay_object_copymulti(ay_object *src, ay_object **dst)
   while(src)
     {
       ay_status = ay_object_copy(src, dst);
-      if(ay_status|| !(*dst))
+      if(ay_status || !(*dst))
 	{
 	  return ay_status;
 	}
