@@ -919,14 +919,13 @@ ay_object_crtendlevel(ay_object **o)
  *  which will eventually be modified (if *o is an instance);
  *  is able to work with multiple and nested objects!
  */
-int
+void
 ay_object_deleteinstances(ay_object **o)
 {
- int ay_status = AY_OK;
  ay_object **last = NULL, *next = NULL, *co = NULL;
 
   if(!o || !*o)
-    return AY_OK;
+    return;
 
   co = *o;
   last = o;
@@ -934,14 +933,14 @@ ay_object_deleteinstances(ay_object **o)
     {
       if(co->down && co->down->next)
 	{
-	  ay_status = ay_object_deleteinstances(&(co->down));
+	  ay_object_deleteinstances(&(co->down));
 	} /* if */
 
       if(co->type == AY_IDINSTANCE)
 	{
 	  next = co->next;
 	  ay_undo_clearobj(co);
-	  ay_status = ay_object_delete(co);
+	  (void)ay_object_delete(co);
 	  (*last) = next;
 	  co = next;
 	}
@@ -952,7 +951,7 @@ ay_object_deleteinstances(ay_object **o)
 	} /* if */
     } /* while */
 
- return ay_status;
+ return;
 } /* ay_object_deleteinstances */
 
 

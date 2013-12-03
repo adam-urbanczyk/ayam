@@ -26,18 +26,17 @@ ay_clear_scene(void)
  ay_root_object *root = NULL;
  char *ucargs[3] = {0}, ucarg0[] = "undo", ucarg1[] = "clear";
 
-  /* clear instances of masters in the scene from clipboard */
-  ay_instt_clearclipboard(ay_root);
-
   /* clear undo buffer */
   /*ay_status = ay_undo_clear();*/
   ucargs[0] = ucarg0;
   ucargs[1] = ucarg1;
   ay_undo_undotcmd(NULL, ay_interp, 2, ucargs);
 
+  /* clear instances of masters in the scene from clipboard */
+  ay_instt_clearclipboard(ay_root);
+
   /* remove all instance objects from the scene */
-  ay_status = ay_object_deleteinstances(&(ay_root->next));
-  o = ay_root;
+  ay_object_deleteinstances(&(ay_root->next));
 
   /* for all material objects in scene:
    * - remove references to them from clipboard
@@ -52,7 +51,7 @@ ay_clear_scene(void)
   ay_matt_removeallrefs(ay_root);
 
   /* remove all objects now, no unlink necessary */
-  o = o->next;
+  o = ay_root->next;
   while(o->next)
     {
       o2 = o->next;

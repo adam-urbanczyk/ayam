@@ -589,7 +589,7 @@ int ay_object_crtendlevel(ay_object **o);
 
 /** remove instances of object o
  */
-int ay_object_deleteinstances(ay_object **o);
+void ay_object_deleteinstances(ay_object **o);
 
 /** replace object dst with src
  */
