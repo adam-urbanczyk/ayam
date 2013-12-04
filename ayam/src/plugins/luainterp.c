@@ -228,7 +228,8 @@ luainterp_error()
 {
  char fname[] = "luainterp_error";
  char buf[128] = "";
- char *errmsg, *bracket;
+ char *bracket;
+ const char *errmsg;
 
   errmsg = lua_tostring(L, -1);
 
@@ -355,9 +356,9 @@ luainterp_wrapevalcmd(lua_State *L)
 {
  int tcl_status = TCL_OK;
  int nargs;
- const char *script;
  char *resstr;
  Tcl_Obj *resobj;
+ const char *script;
 
   nargs = lua_gettop(L);
 
@@ -410,6 +411,7 @@ luainterp_convtableds(lua_State *L, int i, char **result)
  int k = 1;
  char *valstr;
  Tcl_DString ds;
+ const char *tstr;
 
   /* convert table (array) to Tcl list */
   Tcl_DStringInit(&ds);
@@ -423,8 +425,8 @@ luainterp_convtableds(lua_State *L, int i, char **result)
 	case LUA_TNUMBER:
 	case LUA_TBOOLEAN:
 	case LUA_TSTRING:
-	  valstr = lua_tostring(L, -1);
-	  Tcl_DStringAppend(&ds, valstr, -1);
+	  tstr = lua_tostring(L, -1);
+	  Tcl_DStringAppend(&ds, tstr, -1);
 	  Tcl_DStringAppend(&ds, " ", 1);
 	  break;
 	case LUA_TTABLE:
@@ -433,6 +435,7 @@ luainterp_convtableds(lua_State *L, int i, char **result)
 	  if(ay_status)
 	    goto cleanup;
 	  Tcl_DStringAppend(&ds, valstr, -1);
+	  free(valstr);
 	  Tcl_DStringAppend(&ds, "}", 1);
 	  Tcl_DStringAppend(&ds, " ", 1);
 	  break;
@@ -532,12 +535,13 @@ int
 luainterp_wraptclcmd(lua_State *L)
 {
  int ay_status = AY_OK;
- char **argv = NULL, *val;
+ char **argv = NULL;
  ClientData clientData = {0};
  Tcl_CmdInfo cmdinfo = {0};
  lua_Debug ar;
  int nargs, argi = 1;
  int i = 1;
+ const char *val;
 
   /* get number of arguments */
   nargs = lua_gettop(L);
@@ -579,7 +583,12 @@ luainterp_wraptclcmd(lua_State *L)
   lua_getstack (L, 0, &ar);
   lua_getinfo(L, "n", &ar);
 
-  argv[0] = ar.name;
+  if(!(argv[0] = calloc(strlen(ar.name)+1, sizeof(char))))
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
+  strcpy(argv[0], ar.name);
 
   /* call into Tcl */
   if(Tcl_GetCommandInfo(luainterp_interp, argv[0], &cmdinfo))
@@ -602,7 +611,7 @@ luainterp_wraptclcmd(lua_State *L)
 
 cleanup:
 
-  for(i = 1; i <= nargs; i++)
+  for(i = 0; i <= nargs; i++)
     {
       if(argv[i])
 	free(argv[i]);
