@@ -312,9 +312,9 @@ int ay_instt_clearoidtags(ay_object *o);
  */
 int ay_instt_findinstance(ay_object *r, ay_object *o);
 
-/** Remove all instances of object o from clipboard.
+/** remove instances of object m
  */
-void ay_instt_remclipboard(ay_object *o);
+void ay_instt_removeinstances(ay_object **o, ay_object *m);
 
 /** Check if there are instances in the clipboard, remove them.
  */
@@ -586,10 +586,6 @@ int ay_object_gettypeornametcmd(ClientData clientData, Tcl_Interp *interp,
 /** create level terminator object
  */
 int ay_object_crtendlevel(ay_object **o);
-
-/** remove instances of object o
- */
-void ay_object_deleteinstances(ay_object **o);
 
 /** replace object dst with src
  */

@@ -36,7 +36,7 @@ ay_clear_scene(void)
   ay_instt_clearclipboard(ay_root);
 
   /* remove all instance objects from the scene */
-  ay_object_deleteinstances(&(ay_root->next));
+  ay_instt_removeinstances(&ay_root, NULL);
 
   /* for all material objects in scene:
    * - remove references to them from clipboard
