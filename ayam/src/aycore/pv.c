@@ -22,20 +22,20 @@
  *  <added>: this value is increased according to the number of PV tags
  *  processed
  *  <tokens>,<parms>: have to be of the right size and allocated outside!
- *  XXXX leaks lots of memory in low mem situation
  */
 int
 ay_pv_filltokpar(ay_object *o, int declare, int start,
 		 int *added, RtToken tokens[], RtPointer parms[])
 {
+ int ay_status = AY_OK;
  ay_tag *tag = NULL;
  char *tagvaltmp = NULL, *pvname, *pvstorage, *pvtype, *pvvalue, *numvals;
  char tok[] = ",";
  unsigned int i, j, n;
- RtFloat *ftemp;
- RtString *stemp;
- RtPoint *ptemp;
- RtColor *ctemp, *otemp;
+ RtFloat *ftemp = NULL;
+ RtString *stemp = NULL;
+ RtPoint *ptemp = NULL;
+ RtColor *ctemp = NULL, *otemp = NULL;
  char fname[] = "pv_filltokpar", e1[] = "Missing data value in PV-tag!";
  Tcl_DString ds, dso;
 
@@ -68,7 +68,8 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 	      pvtype = NULL;
 	      pvstorage = NULL;
 	      if(!(tokens[start] = malloc((strlen(pvname)+1)*sizeof(char))))
-		return AY_EOMEM;
+		{ ay_status = AY_EOMEM; goto cleanup; }
+
 	      strcpy(tokens[start], pvname);
 
 	      /* get storage class */
@@ -107,7 +108,7 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 			      Tcl_DStringAppend(&ds, "float", -1);
 
 			      if(!(ftemp = malloc(n*sizeof(RtFloat))))
-				return AY_EOMEM;
+				{ ay_status = AY_EOMEM; goto cleanup; }
 
 			      for(i = 0; i < n; i++)
 				{
@@ -128,7 +129,7 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 			      Tcl_DStringAppend(&ds, "float[2]", -1);
 
 			      if(!(ftemp = malloc(n*2*sizeof(RtFloat))))
-				return AY_EOMEM;
+				{ ay_status = AY_EOMEM; goto cleanup; }
 			      j = 0;
 			      for(i = 0; i < n; i++)
 				{
@@ -160,7 +161,7 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 			      Tcl_DStringAppend(&ds, "string", -1);
 
 			      if(!(stemp = malloc(n*sizeof(RtString))))
-				return AY_EOMEM;
+				{ ay_status = AY_EOMEM; goto cleanup; }
 
 			      for(i = 0; i < n; i++)
 				{
@@ -168,7 +169,7 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 				    {
 				      if(!(stemp[i] = malloc(
 					 (strlen(pvvalue)+1)*sizeof(char))))
-					return AY_EOMEM;
+					{ ay_status = AY_EOMEM; goto cleanup; }
 				      strcpy(stemp[i], pvvalue);
 				      pvvalue = strtok(NULL, tok);
 				    }
@@ -178,6 +179,7 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 				    }
 				}
 			      parms[start] = (RtPointer)stemp;
+			      stemp = NULL;
 			      break;
 
 			    case 'n':
@@ -199,6 +201,7 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 				}
 
 			      if(!(ptemp = malloc(n*sizeof(RtPoint))))
+				{ ay_status = AY_EOMEM; goto cleanup; }
 				return AY_EOMEM;
 
 			      for(i = 0; i < n; i++)
@@ -223,7 +226,7 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 			      Tcl_DStringAppend(&ds, "color", -1);
 
 			      if(!(ctemp = malloc(n*sizeof(RtColor))))
-				return AY_EOMEM;
+				{ ay_status = AY_EOMEM; goto cleanup; }
 
 			      for(i = 0; i < n; i++)
 				{
@@ -241,16 +244,17 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 				    } /* for j */
 				} /* for i */
 			      parms[start] = (RtPointer)ctemp;
+			      ctemp = NULL;
 			      break;
 
 			    case 'd':
 			      Tcl_DStringAppend(&ds, "color", -1);
 
 			      if(!(ctemp = malloc(n*sizeof(RtColor))))
-				return AY_EOMEM;
+				{ ay_status = AY_EOMEM; goto cleanup; }
 
 			      if(!(otemp = malloc(n*sizeof(RtColor))))
-				return AY_EOMEM;
+				{ ay_status = AY_EOMEM; goto cleanup; }
 
 			      for(i = 0; i < n; i++)
 				{
@@ -281,6 +285,7 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 				    }
 				} /* for */
 			      parms[start] = (RtPointer)ctemp;
+			      ctemp = NULL;
 
 			      /* sneak in the opacity */
 			      start++;
@@ -296,9 +301,11 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 				}
 			      if(!(tokens[start] = calloc(strlen(
 				      ay_prefs.opacityname)+1, sizeof(char))))
-				return AY_EOMEM;
+				{ ay_status = AY_EOMEM; goto cleanup; }
+
 			      strcpy(tokens[start], pvname);
 			      parms[start] = (RtPointer)otemp;
+			      otemp = NULL;
 			      break;
 
 			    default:
@@ -328,12 +335,21 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
       tag = tag->next;
     } /* while */
 
-  if(tagvaltmp)
-    {
-      free(tagvaltmp);
-    }
+cleanup:
 
- return AY_OK;
+  if(tagvaltmp)
+    free(tagvaltmp);
+
+  if(stemp)
+    free(stemp);
+
+  if(ctemp)
+    free(ctemp);
+
+  if(otemp)
+    free(otemp);
+
+ return ay_status;
 } /* ay_pv_filltokpar */
 
 
