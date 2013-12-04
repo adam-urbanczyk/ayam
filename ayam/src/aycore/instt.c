@@ -658,30 +658,46 @@ ay_instt_findinstance(ay_object *m, ay_object *o)
 } /* ay_instt_findinstance */
 
 
-/* ay_instt_remclipboard:
- *  remove all instances of object o from clipboard
+/* ay_instt_removeinstances:
+ *  remove all instance objects from objects pointed to by **o,
+ *  which will eventually be modified (if *o is an instance);
+ *  is able to work with multiple and nested objects!
  */
 void
-ay_instt_remclipboard(ay_object *o)
+ay_instt_removeinstances(ay_object **o, ay_object *m)
 {
- ay_object **last = &ay_clipboard, *cur = ay_clipboard;
+ int ay_status = AY_OK;
+ ay_object **last = NULL, *next = NULL, *co = NULL;
 
-  while(cur)
+  if(!o || !*o)
+    return;
+
+  co = *o;
+  last = o;
+  while(co)
     {
-      if((cur->type == AY_IDINSTANCE) && (cur->refine == o))
+      if(co->down && co->down->next)
 	{
-	  *last = cur->next;
-	  ay_object_delete(cur);
-	  cur = *last;
+	  ay_instt_removeinstances(&(co->down), m);
+	} /* if */
+
+      if((co->type == AY_IDINSTANCE) && (!m || (co->refine == m)))
+	{
+	  next = co->next;
+	  ay_undo_clearobj(co);
+	  (void)ay_object_delete(co);
+	  (*last) = next;
+	  co = next;
 	}
       else
 	{
-	  cur = cur->next;
-	}
-    }
+	  last = &(co->next);
+	  co = co->next;
+	} /* if */
+    } /* while */
 
  return;
-} /* ay_instt_remclipboard */
+} /* ay_instt_removeinstances */
 
 
 /* ay_instt_clearclipboard:
@@ -699,11 +715,7 @@ ay_instt_clearclipboard(ay_object *o)
     {
       if((o->refcount > 0) && (o->type != AY_IDMATERIAL))
 	{
-	  ay_status = ay_instt_findinstance(o, ay_clipboard);
-	  if(ay_status)
-	    {
-	      ay_instt_remclipboard(o);
-	    }
+	  ay_instt_removeinstances(&(ay_clipboard), o);
 	}
 
       if(o->down && o->down->next)

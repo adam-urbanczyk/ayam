@@ -28,7 +28,7 @@ ay_clipb_clear()
  ay_object *o = NULL, *t = NULL;
 
   /* first, delete all instance objects */
-  ay_object_deleteinstances(&ay_clipboard);
+ ay_instt_removeinstances(&ay_clipboard, NULL);
 
   /* now delete all normal objects */
   t = ay_clipboard;

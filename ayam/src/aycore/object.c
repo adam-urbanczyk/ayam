@@ -914,47 +914,6 @@ ay_object_crtendlevel(ay_object **o)
 } /* ay_object_crtendlevel */
 
 
-/* ay_object_deleteinstances:
- *  remove all instance objects from objects pointed to by **o,
- *  which will eventually be modified (if *o is an instance);
- *  is able to work with multiple and nested objects!
- */
-void
-ay_object_deleteinstances(ay_object **o)
-{
- ay_object **last = NULL, *next = NULL, *co = NULL;
-
-  if(!o || !*o)
-    return;
-
-  co = *o;
-  last = o;
-  while(co)
-    {
-      if(co->down && co->down->next)
-	{
-	  ay_object_deleteinstances(&(co->down));
-	} /* if */
-
-      if(co->type == AY_IDINSTANCE)
-	{
-	  next = co->next;
-	  ay_undo_clearobj(co);
-	  (void)ay_object_delete(co);
-	  (*last) = next;
-	  co = next;
-	}
-      else
-	{
-	  last = &(co->next);
-	  co = co->next;
-	} /* if */
-    } /* while */
-
- return;
-} /* ay_object_deleteinstances */
-
-
 /* ay_object_replace:
  *  replace object dst with the one pointed to by src;
  *  type specific contents of dst are lost afterwards;
