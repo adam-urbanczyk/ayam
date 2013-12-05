@@ -1298,33 +1298,11 @@ ay_wrib_lights(char *file, ay_object *o)
  size_t filenlen = 0;
  RtLightHandle light_handle;
  char arrname[] = "ayprefs", ccvarname[] = "SMChangeShaders";
- const char *vstr = NULL;
  int changeshaders = AY_TRUE;
+ const char *vstr = NULL;
 
   if(!o || !file)
-    return ay_status;
-
-  vstr = Tcl_GetVar2(ay_interp, arrname, ccvarname,
-		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  if(vstr)
-    Tcl_GetInt(ay_interp, vstr, &changeshaders);
-
-  filenlen = strlen(file);
-
-  if(!(shadowptr = calloc(filenlen+64, sizeof(char))))
-    return AY_EOMEM;
-  if(!(pxptr = calloc(filenlen+64, sizeof(char))))
-    return AY_EOMEM;
-  if(!(nxptr = calloc(filenlen+64, sizeof(char))))
-    return AY_EOMEM;
-  if(!(pyptr = calloc(filenlen+64, sizeof(char))))
-    return AY_EOMEM;
-  if(!(nyptr = calloc(filenlen+64, sizeof(char))))
-    return AY_EOMEM;
-  if(!(pzptr = calloc(filenlen+64, sizeof(char))))
-    return AY_EOMEM;
-  if(!(nzptr = calloc(filenlen+64, sizeof(char))))
-    return AY_EOMEM;
+    return AY_ENULL;
 
   while(o)
     {
@@ -1389,6 +1367,34 @@ ay_wrib_lights(char *file, ay_object *o)
 		RiAttribute("light","shadows",(RtPointer)&onstr, RI_NULL);
 	      else
 		RiAttribute("light","shadows",(RtPointer)&offstr, RI_NULL);
+	    }
+
+	  if((ay_prefs.use_sm > 0) && light->use_sm && changeshaders)
+	    {
+	      if(!shadowptr)
+		{
+		  vstr = Tcl_GetVar2(ay_interp, arrname, ccvarname,
+				     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+		  if(vstr)
+		    Tcl_GetInt(ay_interp, vstr, &changeshaders);
+
+		  filenlen = strlen(file);
+
+		  if(!(shadowptr = calloc(filenlen+64, sizeof(char))))
+		    { ay_status = AY_EOMEM; goto cleanup; }
+		  if(!(pxptr = calloc(filenlen+64, sizeof(char))))
+		    { ay_status = AY_EOMEM; goto cleanup; }
+		  if(!(nxptr = calloc(filenlen+64, sizeof(char))))
+		    { ay_status = AY_EOMEM; goto cleanup; }
+		  if(!(pyptr = calloc(filenlen+64, sizeof(char))))
+		    { ay_status = AY_EOMEM; goto cleanup; }
+		  if(!(nyptr = calloc(filenlen+64, sizeof(char))))
+		    { ay_status = AY_EOMEM; goto cleanup; }
+		  if(!(pzptr = calloc(filenlen+64, sizeof(char))))
+		    { ay_status = AY_EOMEM; goto cleanup; }
+		  if(!(nzptr = calloc(filenlen+64, sizeof(char))))
+		    { ay_status = AY_EOMEM; goto cleanup; }
+		}
 	    }
 
 	  switch(light->type)
@@ -1573,7 +1579,7 @@ ay_wrib_lights(char *file, ay_object *o)
       o = o->next;
     } /* while */
 
-  /* clean up */
+cleanup:
   if(shadowptr)
     {
       free(shadowptr);
@@ -1603,7 +1609,7 @@ ay_wrib_lights(char *file, ay_object *o)
       free(nzptr);
     }
 
-  return ay_status;
+ return ay_status;
 } /* ay_wrib_lights */
 
 
