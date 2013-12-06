@@ -385,16 +385,35 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  ay_object *o = NULL;
- ay_list_object *sel = ay_selection, *try_again = NULL, **next_try_again, *t;
+ ay_list_object *sel, *try_again = NULL, **next_try_again, *t;
 
-  if(!sel)
+  if(!ay_selection)
     {
       ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
-  next_try_again = &(try_again);
+  sel = ay_selection;
+  if(ay_object_candeletelist(sel, NULL) != AY_OK)
+    {
+      while(sel)
+	{
+	  ay_instt_clearclipboard(sel->object);
+	  sel = sel->next;
+	}
+      sel = ay_selection;
+      if(ay_object_candeletelist(sel, NULL) != AY_OK)
+	{
+	  while(sel)
+	    {
+	      ay_instt_removeinstances(&(sel->object->down), NULL);
+	      sel = sel->next;
+	    }
+	}
+    }
 
+  next_try_again = &(try_again);
+  sel = ay_selection;
   while(sel)
     {
       o = sel->object;
