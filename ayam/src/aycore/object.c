@@ -384,7 +384,7 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
  int ay_status = AY_OK;
- ay_object *o = NULL;
+ ay_object *o = NULL, *oldnext;
  ay_list_object *sel, *try_again = NULL, **next_try_again, *t;
 
   if(!ay_selection)
@@ -398,7 +398,12 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
     {
       while(sel)
 	{
+	  /* temporarily isolate the object so that clearclipboard()
+	     does not browse through too much of the scene */
+	  oldnext = sel->object->next;
+	  sel->object->next = NULL;
 	  ay_instt_clearclipboard(sel->object);
+	  sel->object->next = oldnext;
 	  sel = sel->next;
 	}
       sel = ay_selection;
