@@ -626,7 +626,7 @@ ay_instt_clearoidtags(ay_object *o)
 
 /* ay_instt_findinstance:
  *  _recursively_ check objects pointed to by "o" for instance objects
- *  whose master is "m"; returns AY_ERROR imediately
+ *  whose master is "m"; returns AY_ERROR immediately
  *  if a single such instance has been found
  */
 int
@@ -658,15 +658,18 @@ ay_instt_findinstance(ay_object *m, ay_object *o)
 } /* ay_instt_findinstance */
 
 
-/* ay_instt_removeinstances:
- *  remove all instance objects from objects pointed to by **o,
- *  which will eventually be modified (if *o is an instance);
+/** ay_instt_removeinstances:
+ *  Remove all instance objects from objects pointed to by \a **o,
+ *  which will eventually be modified (if \a *o is an instance);
  *  is able to work with multiple and nested objects!
+ *
+ * \param[in,out] o object hierarchy to check
+ * \param[in] m if != NULL only instances of this object are removed,
+ *  otherwise all instances will be removed
  */
 void
 ay_instt_removeinstances(ay_object **o, ay_object *m)
 {
- int ay_status = AY_OK;
  ay_object **last = NULL, *next = NULL, *co = NULL;
 
   if(!o || !*o)
@@ -700,13 +703,17 @@ ay_instt_removeinstances(ay_object **o, ay_object *m)
 } /* ay_instt_removeinstances */
 
 
-/* ay_instt_clearclipboard:
- *  Check if there are instances in the clipboard, remove them.
+/** ay_instt_clearclipboard:
+ *  Check if there are instances of any master from the object
+ *  hierarchy \a o in the clipboard and remove/delete them from
+ *  the clipboard. The hierarchy can "change" because refcounts
+ *  can be decreased in the progress.
+ *
+ * \param[in,out] o object hierarchy to check
  */
 void
 ay_instt_clearclipboard(ay_object *o)
 {
- int ay_status = AY_OK;
 
   if(!o)
     return;
