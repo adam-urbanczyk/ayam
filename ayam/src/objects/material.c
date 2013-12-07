@@ -810,7 +810,6 @@ int
 ay_material_dropcb(ay_object *o)
 {
  char fname[] = "material_drop";
- int status = TCL_OK;
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_object *s = NULL;

@@ -324,10 +324,6 @@ void ay_instt_clearclipboard(ay_object *o);
  */
 int ay_instt_wribiarchives(char *file, ay_object *o);
 
-/** resolve instance to normal object
- */
-int ay_instt_resolve(ay_object *i);
-
 /** Tcl command to resolve selected instances to normal objects.
  */
 int ay_instt_resolvetcmd(ClientData clientData, Tcl_Interp *interp,
