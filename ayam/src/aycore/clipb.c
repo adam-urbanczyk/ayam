@@ -28,7 +28,7 @@ ay_clipb_clear()
  ay_object *o = NULL, *t = NULL;
 
   /* first, delete all instance objects */
- ay_instt_removeinstances(&ay_clipboard, NULL);
+  ay_instt_removeinstances(&ay_clipboard, NULL);
 
   /* now delete all normal objects */
   t = ay_clipboard;
@@ -406,7 +406,7 @@ ay_clipb_replacetcmd(ClientData clientData, Tcl_Interp *interp,
   while(clip && clip != clipend)
     {
       (void)ay_notify_object(clip);
-	    
+
       clip = clip->next;
     } /* while */
 

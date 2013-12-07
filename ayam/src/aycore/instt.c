@@ -284,7 +284,6 @@ ay_instt_createinstanceids(ay_object *o)
 	    {
 	      if(tag->type == ay_oi_tagtype)
 		{
-
 		  origtag = tag;
 		  found = AY_TRUE;
 		}
@@ -302,7 +301,7 @@ ay_instt_createinstanceids(ay_object *o)
 		{
 		  /* copy val from origtag to oitag of instance object */
 		  free(tag->val);
-		  if(!(tag->val=calloc(strlen(origtag->val)+1, sizeof(char))))
+		  if(!(tag->val=malloc((strlen(origtag->val)+1)*sizeof(char))))
 		    return AY_EOMEM;
 		  strcpy(tag->val, origtag->val);
 
@@ -325,11 +324,12 @@ ay_instt_createinstanceids(ay_object *o)
 	} /* if instance */
 
       if(o->down)
-	ay_status = ay_instt_createinstanceids(o->down);
+	{
+	  ay_status = ay_instt_createinstanceids(o->down);
 
-      if(ay_status)
-	return ay_status;
-
+	  if(ay_status)
+	    return ay_status;
+	}
       o = o->next;
     } /* while */
 
@@ -646,11 +646,12 @@ ay_instt_findinstance(ay_object *m, ay_object *o)
 	}
 
       if(o->down)
-	ay_status = ay_instt_findinstance(m, o->down);
+	{
+	  ay_status = ay_instt_findinstance(m, o->down);
 
-      if(ay_status)
-	return ay_status;
-
+	  if(ay_status)
+	    return ay_status;
+	}
       o = o->next;
     }
 
@@ -736,104 +737,6 @@ ay_instt_clearclipboard(ay_object *o)
 } /* ay_instt_clearclipboard */
 
 
-/* ay_instt_resolve:
- *  resolve instance i by copying the master object
- *  onto i
- *  propagate changes to this function to ay_instance_convertcb()!
- */
-int
-ay_instt_resolve(ay_object *i)
-{
- int ay_status = AY_OK;
- char *iname = NULL;
- double movx, movy, movz;
- double rotx, roty, rotz;
- double scalx, scaly, scalz;
- double quat[4];
- ay_object *orig = NULL, *temp = NULL;
- ay_object *inext = NULL;
-
-  if(i->type != AY_IDINSTANCE)
-    return AY_ERROR;
-
-  orig = (ay_object *)i->refine;
-
-  /* sanity check */
-  if(!orig)
-    return AY_ERROR;
-
-  movx = i->movx;
-  movy = i->movy;
-  movz = i->movz;
-
-  rotx = i->rotx;
-  roty = i->roty;
-  rotz = i->rotz;
-
-  scalx = i->scalx;
-  scaly = i->scaly;
-  scalz = i->scalz;
-
-  quat[0] = i->quat[0];
-  quat[1] = i->quat[1];
-  quat[2] = i->quat[2];
-  quat[3] = i->quat[3];
-
-  inext = i->next;
-  iname = i->name;
-
-  if(i->selp)
-    {
-      ay_selp_clear(i);
-      ay_tags_remnonm(i, orig);
-    }
-
-  if(i->tags)
-    {
-      ay_tags_delall(i);
-    }
-
-  /* copy data from original object via temp object to instance object */
-  ay_status = ay_object_copy(orig, &temp);
-  if(ay_status)
-    return ay_status;
-
-  memcpy(i, temp, sizeof(ay_object));
-
-  /* repair pointers */
-  i->name = iname;
-  i->next = inext;
-
-  /* free temporary object */
-  if(temp->name)
-    free(temp->name);
-
-  free(temp);
-
-  /* use transformation attributes from instance, not from original */
-  i->movx = movx;
-  i->movy = movy;
-  i->movz = movz;
-
-  i->rotx = rotx;
-  i->roty = roty;
-  i->rotz = rotz;
-
-  i->scalx = scalx;
-  i->scaly = scaly;
-  i->scalz = scalz;
-
-  i->quat[0] = quat[0];
-  i->quat[1] = quat[1];
-  i->quat[2] = quat[2];
-  i->quat[3] = quat[3];
-
-  orig->refcount--;
-
- return ay_status;
-} /* ay_instt_resolve */
-
-
 /* ay_instt_resolvetcmd:
  *  resolve selected instance object by copying its master object
  *  Implements the \a resolveIn scripting interface command.
@@ -847,12 +750,19 @@ ay_instt_resolvetcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
+ ay_voidfp *arr;
+ ay_convertcb *cb;
 
   if(!sel)
     {
       ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
+
+  arr = ay_convertcbt.arr;
+  cb = (ay_convertcb *)(arr[AY_IDINSTANCE]);
+  if(!cb)
+    return AY_OK;
 
   while(sel)
     {
@@ -865,8 +775,8 @@ ay_instt_resolvetcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_error(AY_ERROR, argv[0], "Object is not of type Instance!");
 	  continue;
 	}
-
-      ay_status = ay_instt_resolve(o);
+      /* convert in place */
+      ay_status = cb(o, AY_TRUE);
 
       if(ay_status)
 	{
@@ -1136,7 +1046,7 @@ ay_instt_init(Tcl_Interp *interp)
   /* register ObjectID tag type */
   ay_tags_register(interp, ay_oi_tagname, &ay_oi_tagtype);
 
-  /* hash table for id -> original object pointers */
+  /* hash table for id -> master object pointers */
   Tcl_InitHashTable(&ay_instt_oidptr_ht, TCL_STRING_KEYS);
 
  return;

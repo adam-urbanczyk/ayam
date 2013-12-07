@@ -38,12 +38,10 @@ int ay_ai_createinstances(ay_object *ref, ay_object *o);
 
 int ay_ai_makeinstances(ay_object *o, ay_object *instance_root);
 
-int ay_ai_resolveinstances(ay_object *o);
+int ay_ai_resolveinstances(ay_object *o, ay_convertcb *cb);
 
 int ay_ai_resolveinstancestcmd(ClientData clientData, Tcl_Interp *interp,
 			       int argc, char *argv[]);
-
-int ay_ai_countobjects(ay_object *o);
 
 int ay_ai_makeinstancestcmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
@@ -294,14 +292,14 @@ ay_ai_makeinstances(ay_object *o, ay_object *instance_root)
  *  in the scene by the real object
  */
 int
-ay_ai_resolveinstances(ay_object *o)
+ay_ai_resolveinstances(ay_object *o, ay_convertcb *cb)
 {
  int ret = 0;
  ay_object *d = NULL;
 
   if(o->type == AY_IDINSTANCE)
     {
-      ay_instt_resolve(o);
+      cb(o, AY_TRUE);
       ret++;
     }
 
@@ -310,7 +308,7 @@ ay_ai_resolveinstances(ay_object *o)
       d = o->down;
       while(d->next)
 	{
-	  ret += ay_ai_resolveinstances(d);
+	  ret += ay_ai_resolveinstances(d, cb);
 	  d = d->next;
 	} /* while */
     } /* if */
@@ -329,7 +327,14 @@ ay_ai_resolveinstancestcmd(ClientData clientData, Tcl_Interp *interp,
  char str[128], fname[] = "ai_resolve";
  int numres = 0;
  ay_object *o = NULL;
- ay_list_object *sel = NULL;
+ ay_list_object *sel;
+ ay_voidfp *arr;
+ ay_convertcb *cb;
+
+  arr = ay_convertcbt.arr;
+  cb = (ay_convertcb *)(arr[AY_IDINSTANCE]);
+  if(!cb)
+    return AY_OK;
 
   sel = ay_selection;
 
@@ -337,7 +342,7 @@ ay_ai_resolveinstancestcmd(ClientData clientData, Tcl_Interp *interp,
     {
       while(sel)
 	{
-	  numres += ay_ai_resolveinstances(sel->object);
+	  numres += ay_ai_resolveinstances(sel->object, cb);
 	  sel = sel->next;
 	}
     }
@@ -346,7 +351,7 @@ ay_ai_resolveinstancestcmd(ClientData clientData, Tcl_Interp *interp,
       o = ay_currentlevel->object;
       while(o)
 	{
-	  numres += ay_ai_resolveinstances(o);
+	  numres += ay_ai_resolveinstances(o, cb);
 	  o = o->next;
 	}
     } /* if */
@@ -357,27 +362,6 @@ ay_ai_resolveinstancestcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_ai_resolveinstancestcmd */
-
-
-/* ay_ai_countobjects:
- * count scene objects for tests
- */
-int
-ay_ai_countobjects(ay_object *o)
-{
- int ret = 0;
-
-  while(o->next)
-    {
-      if(o->down)
-	ret += ay_ai_countobjects(o->down);
-      ret++;
-
-      o = o->next;
-    } /* while */
-
- return ret;
-} /* ay_ai_countobjects */
 
 
 /* ay_ai_makeinstancestcmd:
@@ -393,6 +377,13 @@ ay_ai_makeinstancestcmd(ClientData clientData, Tcl_Interp *interp,
  int dummy = 0;
  ay_object *o = NULL;
  ay_list_object *sel = NULL;
+ ay_voidfp *arr;
+ ay_convertcb *cb;
+
+  arr = ay_convertcbt.arr;
+  cb = (ay_convertcb *)(arr[AY_IDINSTANCE]);
+  if(!cb)
+    return AY_OK;
 
   /* get ignore flags */
   toa = Tcl_NewStringObj("aiprefs",-1);
@@ -416,7 +407,7 @@ ay_ai_makeinstancestcmd(ClientData clientData, Tcl_Interp *interp,
     {
       while(sel)
 	{
-	  dummy += ay_ai_resolveinstances(sel->object);
+	  dummy += ay_ai_resolveinstances(sel->object, cb);
 	  sel = sel->next;
 	}
     }
@@ -425,14 +416,14 @@ ay_ai_makeinstancestcmd(ClientData clientData, Tcl_Interp *interp,
       o = ay_currentlevel->object;
       while(o)
 	{
-	  dummy += ay_ai_resolveinstances(o);
+	  dummy += ay_ai_resolveinstances(o, cb);
 	  o = o->next;
 	}
     } /* if */
 
   /*
-  sprintf(str, "%d objects found",
-  	  ay_ai_countobjects(ay_root));
+  sprintf(str, "%u objects found",
+  	  ay_object_count(ay_root));
   ay_error(AY_EOUTPUT, fname, str);
   */
 
@@ -480,8 +471,6 @@ ay_ai_makeinstancestcmd(ClientData clientData, Tcl_Interp *interp,
 
  return ay_status;
 } /* ay_ai_makeinstancestcmd */
-
-
 
 
 #if 0
