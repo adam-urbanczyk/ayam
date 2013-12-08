@@ -762,7 +762,7 @@ ay_instt_resolvetcmd(ClientData clientData, Tcl_Interp *interp,
   arr = ay_convertcbt.arr;
   cb = (ay_convertcb *)(arr[AY_IDINSTANCE]);
   if(!cb)
-    return AY_OK;
+    return TCL_OK;
 
   while(sel)
     {
