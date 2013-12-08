@@ -120,17 +120,22 @@ ay_ai_instanceobject(ay_object *inst, ay_object *ref)
 
   if(inst)
     {
-      if(inst->down)
+      if(inst->down && inst->down->next)
 	{
 	  sub = inst->down;
 	  while(sub)
 	    {
 	      sub2 = sub->next;
 	      ay_status = ay_object_delete(sub);
-	      /* XXXX what, if it failed? */
+	      if(ay_status)
+		{
+		  inst->down = sub;
+		  return ay_status;
+		}
 	      sub = sub2;
 	    }
 	}
+      inst->down = NULL;
 
       /* delete the real object & attributes */
       /* code taken from aycore/object.c/ay_object_delete() */
@@ -188,7 +193,7 @@ ay_ai_instanceobject(ay_object *inst, ay_object *ref)
 int
 ay_ai_createinstances(ay_object *ref, ay_object *o)
 {
- int ret = 0;
+ int ay_status, ret = 0;
  ay_object *d = NULL;
 
   /* do not create instance of reference object itself */
@@ -217,7 +222,9 @@ ay_ai_createinstances(ay_object *ref, ay_object *o)
 	      (ay_ai_compchildren(ref, o))))
 	    {
 	      /* create instance */
-	      ay_ai_instanceobject(o, ref);
+	      ay_status = ay_ai_instanceobject(o, ref);
+	      if(ay_status)
+		return ret;
 	      ret++;
 	    } /* if */
 
@@ -325,7 +332,7 @@ ay_ai_resolveinstancestcmd(ClientData clientData, Tcl_Interp *interp,
 			   int argc, char *argv[])
 {
  char str[128], fname[] = "ai_resolve";
- int numres = 0;
+ int numres = 0, totalnumres = 0;
  ay_object *o = NULL;
  ay_list_object *sel;
  ay_voidfp *arr;
@@ -333,30 +340,41 @@ ay_ai_resolveinstancestcmd(ClientData clientData, Tcl_Interp *interp,
 
   arr = ay_convertcbt.arr;
   cb = (ay_convertcb *)(arr[AY_IDINSTANCE]);
-  if(!cb)
-    return AY_OK;
 
   sel = ay_selection;
 
   if(sel)
     {
-      while(sel)
+      do
 	{
-	  numres += ay_ai_resolveinstances(sel->object, cb);
-	  sel = sel->next;
+	  numres = 0;
+	  sel = ay_selection;
+	  while(sel)
+	    {
+	      numres += ay_ai_resolveinstances(sel->object, cb);
+	      sel = sel->next;
+	    }
+	  totalnumres += numres;
 	}
+      while(numres);
     }
   else
     {
-      o = ay_currentlevel->object;
-      while(o)
+      do
 	{
-	  numres += ay_ai_resolveinstances(o, cb);
-	  o = o->next;
+	  numres = 0;
+	  o = ay_currentlevel->object;
+	  while(o)
+	    {
+	      numres += ay_ai_resolveinstances(o, cb);
+	      o = o->next;
+	    }
+	  totalnumres += numres;
 	}
+      while(numres);
     } /* if */
 
-  sprintf(str, "%d instances resolved", numres);
+  sprintf(str, "%d instances resolved", totalnumres);
 
   ay_error(AY_EOUTPUT, fname, str);
 
@@ -371,10 +389,9 @@ int
 ay_ai_makeinstancestcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[])
 {
- int ay_status = AY_OK;
  char str[64], fname[] = "ai";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- int dummy = 0;
+ int numres = 0, totalnumres = 0, numinst = 0;
  ay_object *o = NULL;
  ay_list_object *sel = NULL;
  ay_voidfp *arr;
@@ -382,8 +399,6 @@ ay_ai_makeinstancestcmd(ClientData clientData, Tcl_Interp *interp,
 
   arr = ay_convertcbt.arr;
   cb = (ay_convertcb *)(arr[AY_IDINSTANCE]);
-  if(!cb)
-    return AY_OK;
 
   /* get ignore flags */
   toa = Tcl_NewStringObj("aiprefs",-1);
@@ -395,41 +410,46 @@ ay_ai_makeinstancestcmd(ClientData clientData, Tcl_Interp *interp,
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &ay_ai_ignoremat);
 
-  sel = ay_selection;
-
-  /* avoid working on the root */
-  if(sel && (sel->object == ay_root))
-    {
-      sel = sel->next;
-    }
-
   if(sel)
     {
-      while(sel)
+      do
 	{
-	  dummy += ay_ai_resolveinstances(sel->object, cb);
-	  sel = sel->next;
+	  numres = 0;
+	  sel = ay_selection;
+	  while(sel)
+	    {
+	      numres += ay_ai_resolveinstances(sel->object, cb);
+	      sel = sel->next;
+	    }
+	  totalnumres += numres;
 	}
+      while(numres);
     }
   else
     {
-      o = ay_currentlevel->object;
-      while(o)
+      do
 	{
-	  dummy += ay_ai_resolveinstances(o, cb);
-	  o = o->next;
+	  numres = 0;
+	  o = ay_currentlevel->object;
+	  while(o)
+	    {
+	      numres += ay_ai_resolveinstances(o, cb);
+	      o = o->next;
+	    }
+	  totalnumres += numres;
 	}
+      while(numres);
     } /* if */
 
   /*
   sprintf(str, "%u objects found",
   	  ay_object_count(ay_root));
   ay_error(AY_EOUTPUT, fname, str);
-  */
+
 
   comp_true = 0;
   comp_false = 0;
-  dummy = 0;
+  */
 
   sel = ay_selection;
 
@@ -443,7 +463,7 @@ ay_ai_makeinstancestcmd(ClientData clientData, Tcl_Interp *interp,
     {
       while(sel)
 	{
-	  dummy += ay_ai_makeinstances(sel->object, ay_currentlevel->object);
+	  numinst += ay_ai_makeinstances(sel->object, ay_currentlevel->object);
 	  sel = sel->next;
 	}
     }
@@ -452,12 +472,12 @@ ay_ai_makeinstancestcmd(ClientData clientData, Tcl_Interp *interp,
       o = ay_currentlevel->object;
       while(o)
 	{
-	  dummy += ay_ai_makeinstances(o, ay_currentlevel->object);
+	  numinst += ay_ai_makeinstances(o, ay_currentlevel->object);
 	  o = o->next;
 	}
     } /* if */
 
-  sprintf(str, "%d instances created", dummy);
+  sprintf(str, "%d instances created", numinst);
 
   ay_error(AY_EOUTPUT, fname, str);
 
@@ -469,7 +489,7 @@ ay_ai_makeinstancestcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
- return ay_status;
+ return TCL_OK;
 } /* ay_ai_makeinstancestcmd */
 
 
