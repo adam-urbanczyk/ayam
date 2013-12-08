@@ -12,12 +12,13 @@
 array set aiprefs {
     IgnoreTags 0
     IgnoreMat 1
+    Scope 0
 }
 
 # ai_open:
 #  open the AI Options dialogue
 #
-proc ai_open { } {
+proc ai_open { resolve } {
     global ay ayprefs aiprefs
 
     winAutoFocusOff
@@ -25,7 +26,11 @@ proc ai_open { } {
     set oldFocus [focus]
 
     set w .aiw
-    set t "AI Options"
+    if { $resolve } {
+	set t "Resolve All Instances"
+    } else {
+	set t "Automatic Instancing"
+    }
     winDialog $w $t
 
     set f [frame $w.fu -bd 2 -relief sunken]
@@ -36,23 +41,15 @@ proc ai_open { } {
     if { $ayprefs(FixDialogTitles) == 1 } {
 	addText $f e1 $t
     }
-    addCheck $f aiprefs IgnoreTags
-    addCheck $f aiprefs IgnoreMat
-
+    addMenu $f aiprefs Scope [list "All" "Level" "Selection"]
+    if { $resolve != 1 } {
+	addCheck $f aiprefs IgnoreTags
+	addCheck $f aiprefs IgnoreMat
+    }
     pack $f -in $w -side top -fill x
     set f [frame $w.fl]
-    button $f.bok -text "Start" -pady $ay(pady) -width 6 -command "\
-	global ay;\
-	restoreFocus $oldFocus;\
-	destroy .aiw;\
-	ai_makeInstances;\
-	if \{ \[winfo exists \$ay(tree)\] \} \{\
-	    tree_reset\
-	\} else \{\
-	    goTop; cS; uS; rV\
-	\};\
-	set ay(sc) 1;\
-	undo clear"
+    button $f.bok -text "Start" -pady $ay(pady) -width 6\
+	-command "ai $oldFocus $resolve"
 
     button $f.bca -text "Cancel" -pady $ay(pady) -width 6 -command "\
 	restoreFocus $oldFocus;\
@@ -80,15 +77,23 @@ proc ai_open { } {
 }
 # ai_open
 
-# ai_resolve:
-#  resolve all instances
-#
-proc ai_resolve { } {
-    global ay
-    ai_resolveInstances
+
+proc ai { oldFocus resolve } {
+ global ay
+    restoreFocus $oldFocus
+    destroy .aiw
+    if { $resolve } {
+	ai_resolveInstances
+    } else {
+	ai_makeInstances
+    }
     if { [winfo exists $ay(tree)] } {
-	set ay(cl) $ay(CurrentLevel)
-	uS 1 1
+	if { $resolve } {
+	    set ay(cl) $ay(CurrentLevel)
+	    uS 1 1
+	} else {
+	    tree_reset
+	}
     } else {
 	goTop; cS; uS; rV
     }
@@ -96,4 +101,4 @@ proc ai_resolve { } {
     undo clear
  return;
 }
-# ai_resolve
+# ai

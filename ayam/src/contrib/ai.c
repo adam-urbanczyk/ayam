@@ -25,6 +25,7 @@ int comp_true, comp_false;
 
 int ay_ai_ignoretags;
 int ay_ai_ignoremat;
+int ay_ai_scope;
 
 /* prototypes of functions local to this module */
 
@@ -36,15 +37,12 @@ int ay_ai_instanceobject(ay_object *inst, ay_object *ref);
 
 int ay_ai_createinstances(ay_object *ref, ay_object *o);
 
-int ay_ai_makeinstances(ay_object *o, ay_object *instance_root);
+int ay_ai_makeinstances(ay_object *o, ay_object *level, ay_list_object *sel);
 
 int ay_ai_resolveinstances(ay_object *o, ay_convertcb *cb);
 
-int ay_ai_resolveinstancestcmd(ClientData clientData, Tcl_Interp *interp,
-			       int argc, char *argv[]);
-
-int ay_ai_makeinstancestcmd(ClientData clientData, Tcl_Interp *interp,
-			    int argc, char *argv[]);
+int ay_ai_tcmd(ClientData clientData, Tcl_Interp *interp,
+	       int argc, char *argv[]);
 
 /* functions: */
 
@@ -240,11 +238,10 @@ ay_ai_createinstances(ay_object *ref, ay_object *o)
  * find identical objects and create instances
  */
 int
-ay_ai_makeinstances(ay_object *o, ay_object *instance_root)
+ay_ai_makeinstances(ay_object *o, ay_object *level, ay_list_object *sel)
 {
  int ret = 0;
  ay_object *d = NULL;
- ay_list_object *sel = NULL;
 
   /* process children first */
   if(o->down && o->down->next)
@@ -254,7 +251,7 @@ ay_ai_makeinstances(ay_object *o, ay_object *instance_root)
 	{
 	  if(d->type != AY_IDNPATCH)
 	    {
-	      ret += ay_ai_makeinstances(d, instance_root);
+	      ret += ay_ai_makeinstances(d, level, sel);
 	    }
 	  d = d->next;
 	}
@@ -263,8 +260,6 @@ ay_ai_makeinstances(ay_object *o, ay_object *instance_root)
   /* now create instances of "o", if "o" isn´t an instance itself */
   if(o->type != AY_IDINSTANCE)
     {
-      sel = ay_selection;
-
       /* avoid working on the root */
       if(sel && (sel->object == ay_root))
 	{
@@ -281,7 +276,7 @@ ay_ai_makeinstances(ay_object *o, ay_object *instance_root)
 	}
       else
 	{
-	  d = instance_root;
+	  d = level;
 	  while(d->next)
 	    {
 	      ret += ay_ai_createinstances(o, d);
@@ -324,31 +319,81 @@ ay_ai_resolveinstances(ay_object *o, ay_convertcb *cb)
 } /* ay_ai_resolveinstances */
 
 
-/* ay_ai_resolveinstancestcmd:
- *  Tcl command to resolve instances
+/* ay_ai_tcmd:
+ * Tcl command for resolving and automatic instancing
  */
 int
-ay_ai_resolveinstancestcmd(ClientData clientData, Tcl_Interp *interp,
-			   int argc, char *argv[])
+ay_ai_tcmd(ClientData clientData, Tcl_Interp *interp,
+	   int argc, char *argv[])
 {
- char str[128], fname[] = "ai_resolve";
- int numres = 0, totalnumres = 0;
- ay_object *o = NULL;
- ay_list_object *sel;
+ char str[64], fname[] = "ai";
+ Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ int numres = 0, totalnumres = 0, numinst = 0;
+ int resolve = AY_FALSE, scope = 0;
+ ay_object *o = NULL, *level = NULL;
+ ay_list_object *sel = NULL, *cursel;
  ay_voidfp *arr;
  ay_convertcb *cb;
+
+  /* is the command "ai_resolveInstances"? */
+  if(argv[0][3] == 'r')
+    resolve = AY_TRUE;
 
   arr = ay_convertcbt.arr;
   cb = (ay_convertcb *)(arr[AY_IDINSTANCE]);
 
-  sel = ay_selection;
+  /* get ignore flags */
+  toa = Tcl_NewStringObj("aiprefs", -1);
+  ton = Tcl_NewStringObj("IgnoreTags", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &ay_ai_ignoretags);
 
-  if(sel)
+  Tcl_SetStringObj(ton, "IgnoreMat", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &ay_ai_ignoremat);
+
+  Tcl_SetStringObj(ton, "Scope", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &ay_ai_scope);
+
+  scope = ay_ai_scope;
+  cursel = ay_selection;
+
+  /* avoid working on the root */
+  if(cursel && (cursel->object == ay_root))
+    {
+      cursel = cursel->next;
+    }
+
+  switch(scope)
+    {
+    case 0:
+      /* all */
+      level = ay_root->next;
+      cursel = NULL;
+      break;
+    case 1:
+      /* current level */
+      level = ay_currentlevel->object;
+      if(level == ay_root)
+	level = level->next;
+      cursel = NULL;
+      break;
+    case 2:
+      /* selection */
+      if(cursel == NULL)
+	goto cleanup;
+      break;
+    default:
+      break;
+    }
+
+  if(cursel)
     {
       do
 	{
 	  numres = 0;
-	  sel = ay_selection;
+	  sel = cursel;
 	  while(sel)
 	    {
 	      numres += ay_ai_resolveinstances(sel->object, cb);
@@ -363,7 +408,7 @@ ay_ai_resolveinstancestcmd(ClientData clientData, Tcl_Interp *interp,
       do
 	{
 	  numres = 0;
-	  o = ay_currentlevel->object;
+	  o = level;
 	  while(o)
 	    {
 	      numres += ay_ai_resolveinstances(o, cb);
@@ -378,68 +423,8 @@ ay_ai_resolveinstancestcmd(ClientData clientData, Tcl_Interp *interp,
 
   ay_error(AY_EOUTPUT, fname, str);
 
- return TCL_OK;
-} /* ay_ai_resolveinstancestcmd */
-
-
-/* ay_ai_makeinstancestcmd:
- * Tcl command for automatic instancing
- */
-int
-ay_ai_makeinstancestcmd(ClientData clientData, Tcl_Interp *interp,
-			int argc, char *argv[])
-{
- char str[64], fname[] = "ai";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- int numres = 0, totalnumres = 0, numinst = 0;
- ay_object *o = NULL;
- ay_list_object *sel = NULL;
- ay_voidfp *arr;
- ay_convertcb *cb;
-
-  arr = ay_convertcbt.arr;
-  cb = (ay_convertcb *)(arr[AY_IDINSTANCE]);
-
-  /* get ignore flags */
-  toa = Tcl_NewStringObj("aiprefs",-1);
-  ton = Tcl_NewStringObj("IgnoreTags",-1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &ay_ai_ignoretags);
-
-  Tcl_SetStringObj(ton, "IgnoreMat",-1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &ay_ai_ignoremat);
-
-  if(sel)
-    {
-      do
-	{
-	  numres = 0;
-	  sel = ay_selection;
-	  while(sel)
-	    {
-	      numres += ay_ai_resolveinstances(sel->object, cb);
-	      sel = sel->next;
-	    }
-	  totalnumres += numres;
-	}
-      while(numres);
-    }
-  else
-    {
-      do
-	{
-	  numres = 0;
-	  o = ay_currentlevel->object;
-	  while(o)
-	    {
-	      numres += ay_ai_resolveinstances(o, cb);
-	      o = o->next;
-	    }
-	  totalnumres += numres;
-	}
-      while(numres);
-    } /* if */
+  if(resolve)
+    goto cleanup;
 
   /*
   sprintf(str, "%u objects found",
@@ -451,28 +436,22 @@ ay_ai_makeinstancestcmd(ClientData clientData, Tcl_Interp *interp,
   comp_false = 0;
   */
 
-  sel = ay_selection;
-
-  /* avoid working on the root */
-  if(sel && (sel->object == ay_root))
+  if(cursel)
     {
-      sel = sel->next;
-    }
-
-  if(sel)
-    {
+      sel = cursel;
       while(sel)
 	{
-	  numinst += ay_ai_makeinstances(sel->object, ay_currentlevel->object);
+	  numinst += ay_ai_makeinstances(sel->object, ay_currentlevel->object,
+					 cursel);
 	  sel = sel->next;
 	}
     }
   else
     {
-      o = ay_currentlevel->object;
+      o = level;
       while(o)
 	{
-	  numinst += ay_ai_makeinstances(o, ay_currentlevel->object);
+	  numinst += ay_ai_makeinstances(o, level, NULL);
 	  o = o->next;
 	}
     } /* if */
@@ -486,11 +465,14 @@ ay_ai_makeinstancestcmd(ClientData clientData, Tcl_Interp *interp,
   	  comp_true, comp_false);
   Tcl_Eval(interp, done_cmd);
   */
+
+cleanup:
+
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
  return TCL_OK;
-} /* ay_ai_makeinstancestcmd */
+} /* ay_ai_tcmd */
 
 
 #if 0
@@ -648,10 +630,10 @@ ay_ai_init(Tcl_Interp *interp)
   /* char fname[] = "Ai_Init";*/
 
    /* Create Tcl commands */
-  Tcl_CreateCommand(interp, "ai_makeInstances", ay_ai_makeinstancestcmd,
+  Tcl_CreateCommand(interp, "ai_makeInstances", ay_ai_tcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "ai_resolveInstances", ay_ai_resolveinstancestcmd,
+  Tcl_CreateCommand(interp, "ai_resolveInstances", ay_ai_tcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
   /*
   Tcl_CreateCommand(interp, "ai_getInstancesList", ay_ai_getinstanceslisttcmd,
