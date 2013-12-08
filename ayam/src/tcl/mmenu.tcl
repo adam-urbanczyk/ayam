@@ -879,9 +879,9 @@ $sm add command -label "Paste Property to Selected"\
 
 $m add cascade -menu $m.ins -label "Instances" -underline 0
 set sm [menu $m.ins -tearoff 0]
-$sm add command -label "Resolve all Instances" -command "ai_resolve" \
+$sm add command -label "Resolve all Instances" -command "ai_open 1" \
     -underline 0
-$sm add command -label "Automatic Instancing" -command "ai_open" \
+$sm add command -label "Automatic Instancing" -command "ai_open 0" \
     -underline 0
 
 $m add cascade -menu $m.tag -label "Tags" -underline 0
