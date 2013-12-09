@@ -202,7 +202,6 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 
 			      if(!(ptemp = malloc(n*sizeof(RtPoint))))
 				{ ay_status = AY_EOMEM; goto cleanup; }
-				return AY_EOMEM;
 
 			      for(i = 0; i < n; i++)
 				{
