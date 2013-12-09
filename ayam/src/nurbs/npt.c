@@ -8871,7 +8871,7 @@ ay_npt_collapseselp(ay_object *o)
     return AY_EOMEM;
   if(!(new->points = calloc(count, sizeof(double *))))
     { free(new); return AY_EOMEM; }
-  if(!(new->indices = calloc(count, sizeof(double *))))
+  if(!(new->indices = calloc(count, sizeof(unsigned int))))
     { free(new->points); free(new); return AY_EOMEM; }
 
   /* fill mpoint */
