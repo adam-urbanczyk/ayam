@@ -131,6 +131,9 @@ ay_geom_extractmiddlepoint(int mode, double *cv, int cvlen, int cvstride,
 
   if(mode == 0)
     {
+      if(!cv)
+	return AY_ENULL;
+
       minmax[0] = DBL_MAX;
       minmax[1] = -DBL_MAX;
       minmax[2] = DBL_MAX;
