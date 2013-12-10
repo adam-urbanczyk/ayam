@@ -695,16 +695,13 @@ ay_view_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 	{
 	  if(!(pecoordstmp = realloc(pecoords, (a+1)*sizeof(double *))))
-	    {
-	      if(pecoords)
-		free(pecoords);
-	      return AY_EOMEM;
-	    }
+	    return AY_EOMEM;
+
 	  pecoords = pecoordstmp;
 	  pecoords[a] = c;
 
 	  if(!(itmp = realloc(peindices, (a+1)*sizeof(unsigned int))))
-	    return AY_EOMEM;
+	    { free(pecoords); return AY_EOMEM; }
 	  peindices = itmp;
 	  peindices[a] = 0;
 	  a++;
@@ -721,13 +718,21 @@ ay_view_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	    {
 	      if(pecoords)
 		free(pecoords);
+	      if(peindices)
+		free(peindices);
 	      return AY_EOMEM;
 	    }
 	  pecoords = pecoordstmp;
 	  pecoords[a] = c;
 
 	  if(!(itmp = realloc(peindices, (a+1)*sizeof(unsigned int))))
-	    return AY_EOMEM;
+	    {
+	      if(pecoords)
+		free(pecoords);
+	      if(peindices)
+		free(peindices);
+	      return AY_EOMEM;
+	    }
 	  peindices = itmp;
 	  peindices[a] = 0;
 	  a++;
