@@ -1429,7 +1429,7 @@ typedef struct ay_preferences_s
   double sellinewidth; /**< width of selected lines */
   double aalinewidth; /**< width of anti-aliased lines */
   double aasellinewidth; /**< width of selected anti-aliased lines */
-  double aafudge; ; /**< */
+  double aafudge; /**< correction offset for anti-aliased lines */
 
   /* error handling */
   char onerror; /**< what to do if errors occur? 0 stop, 1 continue */
