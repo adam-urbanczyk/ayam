@@ -484,8 +484,7 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 	  if(!(tmp = realloc(pecoords,
 			     (pact_pe.num + penumber)*sizeof(double*))))
 	    {
-	      ay_error(AY_EOMEM, fname, NULL);
-	      goto cleanup;
+	      ay_status = AY_EOMEM; goto cleanup;
 	    }
 	  else
 	    {
@@ -498,8 +497,7 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 	  if(!(tmpu = realloc(peindices,
 			     (pact_pe.num + penumber)*sizeof(unsigned int))))
 	    {
-	      ay_error(AY_EOMEM, fname, NULL);
-	      goto cleanup;
+	      ay_status = AY_EOMEM; goto cleanup;
 	    }
 	  else
 	    {
@@ -518,8 +516,7 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 	  if(!(tmpi = realloc(pact_numcpo, (pact_objectslen+1)*
 			      sizeof(int))))
 	    {
-	      ay_error(AY_EOMEM, fname, NULL);
-	      goto cleanup;
+	      ay_status = AY_EOMEM; goto cleanup;
 	    }
 	  else
 	    {
@@ -531,8 +528,7 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 	  if(!(tmpi = realloc(pact_ratcpo, (pact_objectslen+1)*
 			      sizeof(int))))
 	    {
-	      ay_error(AY_EOMEM, fname, NULL);
-	      goto cleanup;
+	      ay_status = AY_EOMEM; goto cleanup;
 	    }
 	  else
 	    {
@@ -544,8 +540,7 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 	  if(!(tmpo = realloc(pact_objects, (pact_objectslen+1)*
 			      sizeof(ay_object*))))
 	    {
-	      ay_error(AY_EOMEM, fname, NULL);
-	      goto cleanup;
+	      ay_status = AY_EOMEM; goto cleanup;
 	    }
 	  else
 	    {
@@ -554,7 +549,7 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 	    }
 
 	  pact_objectslen++;
-	} /* if */
+	} /* if pick ok */
 
       ay_pact_clearpointedit(&pact_pe);
 
@@ -580,6 +575,7 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 	ay_pact_flashpoint(AY_FALSE, pecoords?*pecoords:NULL, o);
     } /* if */
 
+  /* prevent cleanup code from doing something harmful */
   pecoords = NULL;
   peindices = NULL;
 
@@ -588,12 +584,12 @@ cleanup:
   ay_prefs.pick_epsilon = oldpickepsilon;
 
   if(ay_status)
-    {
-      if(pecoords)
-	free(pecoords);
-      if(peindices)
-	free(peindices);
-    }
+    ay_error(ay_status, fname, NULL);
+
+  if(pecoords)
+    free(pecoords);
+  if(peindices)
+    free(peindices);
 
  return TCL_OK;
 } /* ay_pact_startpetcb */
@@ -2287,7 +2283,7 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
       while(sel)
 	{
 	  o = sel->object;
-	  
+
 	  ay_status = ay_pact_getpoint(0, o, p, &pe);
 
 	  if(ay_status)

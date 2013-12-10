@@ -404,16 +404,16 @@ ay_pomesh_createcb(int argc, char *argv[], ay_object *o)
 	{
 	  pomesh->has_normals = AY_TRUE;
 	}
+
+      /* prevent cleanup code from doing something harmful */
+      nloops = NULL;
+      nverts = NULL;
+      verts = NULL;
+      controlv = NULL;
+      pomesh = NULL;
     } /* if(npolys > 0) */
 
   o->refine = (void *)pomesh;
-
-  /* prevent cleanup code from doing something harmful */
-  nloops = NULL;
-  nverts = NULL;
-  verts = NULL;
-  controlv = NULL;
-  pomesh = NULL;
 
 cleanup:
 
@@ -514,7 +514,7 @@ ay_pomesh_copycb(void *src, void **dst)
   pomesh->face_normals = NULL;
 
   /* copy nloops */
-  if(pomeshsrc->nloops)
+  if(pomeshsrc->npolys && pomeshsrc->nloops)
     {
       if(!(pomesh->nloops = malloc(pomeshsrc->npolys * sizeof(unsigned int))))
 	{
@@ -531,7 +531,7 @@ ay_pomesh_copycb(void *src, void **dst)
     } /* if */
 
   /* copy nverts */
-  if(pomeshsrc->nverts)
+  if(pomeshsrc->nverts && total_loops)
     {
       if(!(pomesh->nverts = malloc(total_loops * sizeof(unsigned int))))
 	{
@@ -548,7 +548,7 @@ ay_pomesh_copycb(void *src, void **dst)
     } /* if */
 
   /* copy verts */
-  if(pomeshsrc->verts)
+  if(pomeshsrc->verts && total_verts)
     {
       if(!(pomesh->verts = malloc(total_verts * sizeof(unsigned int))))
 	{

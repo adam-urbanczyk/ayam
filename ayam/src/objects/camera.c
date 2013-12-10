@@ -445,7 +445,7 @@ ay_camera_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	  pecoords[a] = c;
 
 	  if(!(itmp = realloc(peindices, (a+1)*sizeof(unsigned int))))
-	    return AY_EOMEM;
+	    { free(ctmp); return AY_EOMEM; }
 	  peindices = itmp;
 	  peindices[a] = 0;
 	  a++;
@@ -462,6 +462,8 @@ ay_camera_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	    {
 	      if(pecoords)
 		free(pecoords);
+	      if(peindices)
+		free(peindices);
 	      return AY_EOMEM;
 	    }
 	  pecoords = ctmp;
@@ -469,6 +471,8 @@ ay_camera_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
 	  if(!(itmp = realloc(peindices, (a+1)*sizeof(unsigned int))))
 	    {
+	      if(pecoords)
+		free(pecoords);
 	      if(peindices)
 		free(peindices);
 	      return AY_EOMEM;
