@@ -336,7 +336,11 @@ ay_object_delete(ay_object *o)
  *  setting the reference counts to 0 before deletion.
  *  This variant should only be used after a succesful call to candelete(),
  *  otherwise access to freed memory/crashes can occur later (via the
- *  references)!
+ *  references)! Furthermore, all internal references should be removed
+ *  beforehand via instt_removeinstances() and matt_removeallrefs(),
+ *  or the objects must be sorted in a way that all references are deleted
+ *  before the respective master/material objects, otherwise crashes
+ *  can occur while removing (use after free()).
  */
 int
 ay_object_deletemulti(ay_object *o, int force)
@@ -355,6 +359,7 @@ ay_object_deletemulti(ay_object *o, int force)
 	  if(d->down && d->down->next)
 	    {
 	      (void)ay_object_deletemulti(d->down, force);
+	      d->down = NULL;
 	    }
 	  d->refcount = 0;
 	}
