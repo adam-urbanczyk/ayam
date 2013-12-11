@@ -980,10 +980,10 @@ void
 ay_instt_countrefs(ay_object *o, ay_object *m, unsigned int *refs)
 {
 
-  if(!o || !m || !refs)
+  if(!m || !refs)
     return;
 
-  while(o && o->next)
+  while(o)
     {
       if(o->down && o->down->next)
 	{
@@ -1013,7 +1013,7 @@ ay_instt_countrefslist(ay_list_object *l, ay_object *m, unsigned int *refs)
 {
  ay_object *o = NULL;
 
-  if(!l || !m || !refs)
+  if(!m || !refs)
     return;
 
   while(l)
