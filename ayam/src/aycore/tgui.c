@@ -440,17 +440,6 @@ ay_tgui_ok(void)
     {
       if(o->down && o->down->next)
 	{
-	  ay_instt_removeinstances(&(o->down), NULL);
-	  ay_matt_removeallrefs(o->down);
-	}
-      o = o->next;
-    }
-
-  o = ay_tgui_origs;
-  while(o)
-    {
-      if(o->down && o->down->next)
-	{
 	  ay_status = ay_object_candelete(ay_tgui_origs, o->down);
 	  if(ay_status != AY_OK)
 	    {

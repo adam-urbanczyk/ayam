@@ -333,14 +333,13 @@ ay_object_delete(ay_object *o)
  *  otherwise memory will leak.
  *
  *  If the \a force argument is AY_TRUE, the removal will be enforced by
- *  setting the reference counts to 0 before deletion.
+ *  setting the reference counts to 0 before deletion. Furthermore,
+ *  all internal references will be removed beforehand via
+ *  instt_removeinstances() and matt_removeallrefs(), otherwise crashes
+ *  can occur while removing (use after free()).
  *  This variant should only be used after a succesful call to candelete(),
  *  otherwise access to freed memory/crashes can occur later (via the
- *  references)! Furthermore, all internal references should be removed
- *  beforehand via instt_removeinstances() and matt_removeallrefs(),
- *  or the objects must be sorted in a way that all references are deleted
- *  before the respective master/material objects, otherwise crashes
- *  can occur while removing (use after free()).
+ *  references)!
  */
 int
 ay_object_deletemulti(ay_object *o, int force)
@@ -352,6 +351,14 @@ ay_object_deletemulti(ay_object *o, int force)
     return AY_ENULL;
 
   d = o;
+
+  if(force == AY_TRUE)
+    {
+      ay_instt_removeinstances(&(d), NULL);
+      ay_matt_removeallrefs(d);
+      return ay_object_deletemulti(d, 2);
+    }
+
   while(d)
     {
       if(force)
@@ -953,12 +960,13 @@ int
 ay_object_replace(ay_object *src, ay_object *dst)
 {
  int ay_status = AY_OK;
+ char fname[] = "replace";
  ay_voidfp *arr = NULL;
  ay_deletecb *dcb = NULL;
  ay_mat_object *oldmat = NULL;
  ay_object *oldnext = NULL, *d = NULL;
- int oldrefcount = 0;
  ay_tag *tag = NULL;
+ int oldrefcount = 0;
 
   if(!src || !dst)
     return AY_ENULL;
@@ -969,7 +977,21 @@ ay_object_replace(ay_object *src, ay_object *dst)
 
   if(dst->down && dst->down->next)
     {
-      ay_object_deletemulti(dst->down, AY_FALSE);
+      ay_status = ay_object_candelete(dst->down, dst->down);
+      if(ay_status != AY_OK)
+	{
+	  d = dst->down;
+	  while(d->next)
+	    d = d->next;
+	  d->next = ay_clipboard;
+	  ay_clipboard = dst->down;
+	  dst->down = NULL;
+	  ay_error(AY_ERROR, fname, "Moved referenced object(s) to clipboard!");
+	}
+      else
+	{
+	  (void)ay_object_deletemulti(dst->down, AY_TRUE);
+	}
     }
 
   if(dst->tags)
