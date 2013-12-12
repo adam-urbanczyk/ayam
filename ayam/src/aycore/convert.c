@@ -40,6 +40,7 @@ ay_convert_object(ay_object *o, int in_place)
  char fname[] = "convert";
  ay_voidfp *arr = NULL;
  ay_convertcb *cb = NULL;
+ ay_object *d = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -47,12 +48,15 @@ ay_convert_object(ay_object *o, int in_place)
   if(in_place && o->down && o->down->next)
     {
       ay_status = ay_object_candelete(o->down, o->down);
-
-      if(ay_status)
+      if(ay_status != AY_OK)
 	{
-	  ay_error(AY_ERROR, fname,
-		   "Can not remove children, conversion aborted!");
-	  return AY_ERROR;
+	  d = o->down;
+	  while(d->next)
+	    d = d->next;
+	  d->next = ay_clipboard;
+	  ay_clipboard = o->down;
+	  o->down = NULL;
+	  ay_error(AY_ERROR, fname, "Moved referenced object(s) to clipboard!");
 	}
     }
 
