@@ -429,7 +429,6 @@ ay_tgui_ok(void)
  char fname[] = "tgui_ok";
  ay_list_object *oref;
  ay_object *o;
- int moved = 0;
 
   if(!ay_tgui_origrefs || !ay_tgui_origs)
     return;
@@ -444,16 +443,14 @@ ay_tgui_ok(void)
 	  if(ay_status != AY_OK)
 	    {
 	      ay_tgui_movemasterstoclip(o->down, &(o->down), ay_tgui_origs);
-	      moved = 1;
+	      ay_error(AY_ERROR, fname,
+		       "Moved referenced object(s) to clipboard!");
 	    }
 	  (void)ay_object_deletemulti(o->down, AY_TRUE);
 	  o->down = NULL;
 	}
       o = o->next;
     }
-
-  if(moved)
-    ay_error(AY_ERROR, fname, "Moved referenced object(s) to clipboard!");
 
   while(ay_tgui_origrefs)
     {
