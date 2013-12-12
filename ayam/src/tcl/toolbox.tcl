@@ -158,7 +158,7 @@ proc toolbox_open { {w .tbw} } {
 	    bind $f.sel <Shift-ButtonPress-1> {
 		global  ay
 		%W configure -relief sunken
-		actionDelTagP $ay(currentView)
+		selPnts;
 		rV
 		after 100 "%W configure -relief raised"
 		break;
