@@ -40,25 +40,9 @@ ay_convert_object(ay_object *o, int in_place)
  char fname[] = "convert";
  ay_voidfp *arr = NULL;
  ay_convertcb *cb = NULL;
- ay_object *d = NULL;
 
   if(!o)
     return AY_ENULL;
-
-  if(in_place && o->down && o->down->next)
-    {
-      ay_status = ay_object_candelete(o->down, o->down);
-      if(ay_status != AY_OK)
-	{
-	  d = o->down;
-	  while(d->next)
-	    d = d->next;
-	  d->next = ay_clipboard;
-	  ay_clipboard = o->down;
-	  o->down = NULL;
-	  ay_error(AY_ERROR, fname, "Moved referenced object(s) to clipboard!");
-	}
-    }
 
   /* call the conversion callback */
   arr = ay_convertcbt.arr;
@@ -90,12 +74,13 @@ ay_convert_object(ay_object *o, int in_place)
  */
 int
 ay_convert_objecttcmd(ClientData clientData, Tcl_Interp *interp,
-		     int argc, char *argv[])
+		      int argc, char *argv[])
 {
  int ay_status = AY_OK, in_place = AY_FALSE, notify_parent = AY_FALSE;
  int check = AY_FALSE;
  ay_list_object *sel = ay_selection;
  Tcl_HashEntry *entry = NULL;
+ char *res, no[] = "0", yes[] = "1";
 
   if(argc > 1)
     {
@@ -118,27 +103,30 @@ ay_convert_objecttcmd(ClientData clientData, Tcl_Interp *interp,
     {
       if(check)
 	{
+	  /* check */
 	  if((entry = Tcl_FindHashEntry(&ay_otypesht, argv[2])))
 	    {
 	      ay_status = ay_provide_object(sel->object,
 			       (unsigned int)Tcl_GetHashValue(entry), NULL);
 	      if(ay_status == AY_OK)
-		{
-		  Tcl_SetResult(interp, "1", TCL_VOLATILE);
-		}
+		res = yes;
 	      else
-		{
-		  Tcl_SetResult(interp, "0", TCL_VOLATILE);
-		}
+		res = no;
+
+	      if(ay_selection->next)
+		Tcl_AppendElement(interp, res);
+	      else
+		Tcl_SetResult(interp, res, TCL_VOLATILE);
 	    }
 	  else
 	    {
 	      ay_error(AY_ENTYPE, argv[0], argv[2]);
+	      return TCL_OK;
 	    }
-	  return TCL_OK;
 	}
       else
 	{
+	  /* convert */
 	  ay_status = ay_convert_object(sel->object, in_place);
 	  if(!ay_status)
 	    {
@@ -158,9 +146,18 @@ ay_convert_objecttcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_convert_objecttcmd */
 
 
-/* ay_convert_nptoolobj:
+/** ay_convert_nptoolobj:
  *  helper for tool objects that convert to a NURBS patch
  *  plus caps/bevels
+ *
+ *  \param[in,out] o original object to be converted
+ *  \param[in] p patch object(s) o converts to
+ *  \param[in] cb caps and bevels
+ *  \param[in] in_place if AY_TRUE, o will be replaced by the
+ *  converted objec(s), if AY_FALSE, the converted objects will
+ *  be linked to the current level of the scene
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_convert_nptoolobj(ay_object *o, ay_object *p, ay_object *cb, int in_place)
@@ -175,6 +172,7 @@ ay_convert_nptoolobj(ay_object *o, ay_object *p, ay_object *cb, int in_place)
 
   if(p->next || cb)
     {
+      /* object converts to multiple patches or there are caps/bevels */
       if(!(new = calloc(1, sizeof(ay_object))))
 	{ return AY_EOMEM; }
 
@@ -241,13 +239,9 @@ ay_convert_nptoolobj(ay_object *o, ay_object *p, ay_object *cb, int in_place)
     }
   else
     {
+      /* object converts to a single patch with no caps/bevels */
       ay_status = ay_object_copy(p, &new);
-      if(ay_status)
-	{
-	  (void)ay_object_deletemulti(new, AY_FALSE);
-	  return AY_ERROR;
-	}
-      if(new)
+      if(!ay_status && new)
 	{
 	  ay_trafo_copy(o, new);
 	  new->hide_children = AY_TRUE;
@@ -293,7 +287,7 @@ ay_convert_nptoolobj(ay_object *o, ay_object *p, ay_object *cb, int in_place)
 	}
       else
 	{
-	  ay_status = ay_object_replace(new, o);
+	  (void)ay_object_replace(new, o);
 	}
     } /* if */
 
