@@ -326,18 +326,30 @@ ay_object_delete(ay_object *o)
 /* ay_object_deletemulti:
  *  delete multiple objects connected via their ->next fields
  *
- *  If the \a force argument is AY_FALSE and the hierarchy contains
+ *  If the \a force argument is AY_FALSE (0) and the hierarchy contains
  *  undeletable objects (e.g. due to references), the removal process
  *  will be stopped and the object hierarchy will be in unknown state.
- *  This variant should only be used, when there are no references in \a o,
- *  otherwise memory will leak.
+ *  This variant should only be used, when there are no referenced
+ *  objects in \a o, otherwise memory may leak.
  *
- *  If the \a force argument is AY_TRUE, the removal will be enforced by
+ *  If the \a force argument is AY_TRUE (1), the removal will be enforced by
  *  setting the reference counts to 0 before deletion. Furthermore,
  *  all internal references will be removed beforehand via
- *  instt_removeinstances() and matt_removeallrefs(), otherwise crashes
- *  can occur while removing (use after free()).
- *  This variant should only be used after a succesful call to candelete(),
+ *  instt_removeinstances() and matt_removeallrefs().
+ *  This variant should only be used after a successful call to
+ *  object_candelete(),
+ *  otherwise access to freed memory/crashes can occur later (via the
+ *  references)!
+ *
+ *  If the \a force argument is 2, the removal of master objects will be
+ *  enforced by setting the reference counts to 0 before deletion.
+ *  The object hierarchy should either have no references and no objects
+ *  with materials (i.e. already have been cleaned by instt_removeinstances()
+ *  and matt_removeallrefs()) or the objects must be sorted in a way that
+ *  all references are deleted before the respective master/material objects,
+ *  otherwise crashes can occur while removing (use after free()).
+ *  This variant should only be used after a successful call to
+ *  object_candelete(),
  *  otherwise access to freed memory/crashes can occur later (via the
  *  references)!
  */
@@ -356,7 +368,7 @@ ay_object_deletemulti(ay_object *o, int force)
     {
       ay_instt_removeinstances(&(d), NULL);
       ay_matt_removeallrefs(d);
-      return ay_object_deletemulti(d, 2);
+      force = 2;
     }
 
   while(d)
@@ -834,6 +846,7 @@ ay_object_haschildtcmd(ClientData clientData, Tcl_Interp *interp,
 {
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
+ char *res, no[] = "0", yes[] = "1";
 
   if(!sel)
     {
@@ -841,22 +854,21 @@ ay_object_haschildtcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  o = sel->object;
+  while(sel)
+    {
+      o = sel->object;
 
-  if(!o->down)
-    {
-      Tcl_SetResult(interp, "0", TCL_VOLATILE);
-    }
-  else
-    {
-      if(o->down != ay_endlevel)
-	{
-	  Tcl_SetResult(interp, "1", TCL_VOLATILE);
-	}
+      if(o->down && o->down != ay_endlevel)
+	res = yes;
       else
-	{
-	  Tcl_SetResult(interp, "0", TCL_VOLATILE);
-	}
+	res = no;
+
+      if(ay_selection->next)
+	Tcl_AppendElement(interp, res);
+      else
+	Tcl_SetResult(interp, res, TCL_VOLATILE);
+
+      sel = sel->next;
     }
 
  return TCL_OK;
