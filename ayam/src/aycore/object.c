@@ -418,6 +418,12 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
+  /* remove all references of the objects to be removed
+     in order to avoid illegal memory accesses; should e.g.
+     a material be removed first and later an object of that
+     material decreases the reference counter of the removed
+     material object while being deleted, an illegal memory
+     access ensues */
   sel = ay_selection;
   while(sel)
     {
@@ -436,7 +442,8 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       sel = sel->next;
     }
-  
+
+  /* check for referenced objects that can not be deleted */
   sel = ay_selection;
   if(ay_object_candeletelist(sel, NULL) != AY_OK)
     {
