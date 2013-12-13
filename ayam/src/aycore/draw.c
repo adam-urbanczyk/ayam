@@ -1280,7 +1280,7 @@ ay_draw_cs(struct Togl *togl, int mode)
       glMatrixMode(GL_MODELVIEW);
       glPushMatrix();
        glLoadIdentity();
-       glTranslated(((int)win1x)+6+0.5, ((int)win1y)+0.5, 0.0);
+       glTranslatef(((int)win1x)+6.0f+0.375f, ((int)win1y)+0.375f, 0.0f);
        /* draw X */
        glBegin(GL_LINES);
         glVertex2i(-3, -3);
@@ -1289,7 +1289,7 @@ ay_draw_cs(struct Togl *togl, int mode)
 	glVertex2i(e, -e);
        glEnd();
        glLoadIdentity();
-       glTranslated(((int)win2x)+6+0.5, ((int)win2y)+0.5, 0.0);
+       glTranslatef(((int)win2x)+6.0f+0.375f, ((int)win2y)+0.375f, 0.0f);
        /* draw Y */
        glBegin(GL_LINES);
         glVertex2i(-3, 3);
@@ -1301,7 +1301,7 @@ ay_draw_cs(struct Togl *togl, int mode)
 	glVertex2i(0, -e);
        glEnd();
        glLoadIdentity();
-       glTranslated(((int)win3x)+6+0.5, ((int)win3y)+0.5, 0.0);
+       glTranslatef(((int)win3x)+6.0f+0.375f, ((int)win3y)+0.375f, 0.0f);
        /* draw Z */
        glBegin(GL_LINE_STRIP);
         glVertex2i(-3, 3);
@@ -1345,8 +1345,8 @@ ay_draw_mark(struct Togl *togl)
    glMatrixMode(GL_MODELVIEW);
    glPushMatrix();
     glLoadIdentity();
-    glTranslated(((int)view->markx)+0.5,
-		 (Togl_Height(togl)-(int)view->marky)+0.5, 0.0);
+    glTranslatef(((int)view->markx)+0.375f,
+		 (Togl_Height(togl)-(int)view->marky)+0.375f, 0.0f);
     glBegin(GL_LINES);
      glVertex2i(-4, 0);
      glVertex2i(e, 0);
