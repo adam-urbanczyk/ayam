@@ -30,6 +30,9 @@ ay_clipb_clear()
   /* first, delete all instance objects */
   ay_instt_removeinstances(&ay_clipboard, NULL);
 
+  /* also, remove all references to materials */
+  ay_matt_removeallrefs(ay_clipboard);
+
   /* now delete all normal objects */
   t = ay_clipboard;
   while(t)
