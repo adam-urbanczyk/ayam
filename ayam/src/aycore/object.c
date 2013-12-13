@@ -332,9 +332,9 @@ ay_object_delete(ay_object *o)
  *  This variant should only be used, when there are no referenced
  *  objects in \a o, otherwise memory may leak.
  *
- *  If the \a force argument is AY_TRUE (1), the removal will be enforced by
- *  setting the reference counts to 0 before deletion. Furthermore,
- *  all internal references will be removed beforehand via
+ *  If the \a force argument is AY_TRUE (1), the removal of master objects
+ *  will be enforced by setting the reference counts to 0 before deletion.
+ *  Furthermore, all internal references will be removed beforehand via
  *  instt_removeinstances() and matt_removeallrefs().
  *  This variant should only be used after a successful call to
  *  object_candelete(),
@@ -346,8 +346,8 @@ ay_object_delete(ay_object *o)
  *  The object hierarchy should either have no references and no objects
  *  with materials (i.e. already have been cleaned by instt_removeinstances()
  *  and matt_removeallrefs()) or the objects must be sorted in a way that
- *  all references are deleted before the respective master/material objects,
- *  otherwise crashes can occur while removing (use after free()).
+ *  all references are deleted before the respective master/material objects.
+ *  Otherwise crashes can occur while removing (use after free()).
  *  This variant should only be used after a successful call to
  *  object_candelete(),
  *  otherwise access to freed memory/crashes can occur later (via the
@@ -410,6 +410,7 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  ay_object *o = NULL, *oldnext;
  ay_list_object *sel, *try_again = NULL, **next_try_again, *t;
+ ay_mat_object *m = NULL;
 
   if(!ay_selection)
     {
@@ -417,6 +418,25 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
+  sel = ay_selection;
+  while(sel)
+    {
+      o = sel->object;
+      if(o->down && o->down->next)
+	{
+	  ay_instt_removeinstances(&(o->down), NULL);
+	  ay_matt_removeallrefs(o->down);
+	}
+      if(o->mat)
+	{
+	  m = o->mat;
+	  o->mat = NULL;
+	  if(m->refcountptr)
+	    (*(m->refcountptr))--;
+	}
+      sel = sel->next;
+    }
+  
   sel = ay_selection;
   if(ay_object_candeletelist(sel, NULL) != AY_OK)
     {
