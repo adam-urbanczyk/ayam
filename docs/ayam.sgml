@@ -1917,8 +1917,9 @@ when the main window gets iconified.
 </figure>
 <p>
 The object search facility allows to find objects in the scene hierarchy
-according to user defined criteria and highlight them in the tree view
-or execute arbitrary actions on them (see also the image above).
+according to many different, even user defined criteria and highlight
+them in the tree view or execute arbitrary actions on them (see also
+the image above).<footnote>Since 1.21.</footnote>
 
 Note, that the search dialog is not closed immediately after a search,
 this allows multiple search actions with possibly refined parameters.
@@ -1935,7 +1936,8 @@ the selected objects and their children (<tt/"Selection"/) or all objects of
 the current level regardless of selection but again including all children
 (<tt/"Level"/).<newline>
 By default (when scope is "All"), all objects in the scene are processed,
-even if the current level is not the root level.
+even if the current level is not the root level and no objects are
+selected.
 
 If the options <tt/"ClearHighlight"/ or <tt/"ClearClipboard"/ are switched
 on, the highlights and the object clipboard are cleared before a search
@@ -1975,13 +1977,25 @@ for example
 <tt>hasChild</tt>
 </tscreen>
 finds all objects that have children.
+
+See section
+<ref id="sccomm" name="Procedures and Commands"> for a listing of
+available commands.
 </descrip>
 
 Complex logical expressions may also be created, like e.g.
 <tscreen>
 <tt>($type == "Sphere") && ($mat == "wood")</tt>
 </tscreen>
-which finds all wooden sphere objects.
+which finds all wooden sphere objects. Due to the way the expressions
+are evaluated, the use of the braces is imperative even for a little
+bit more complex expressions that use the negation operator:
+<tscreen>
+<tt/(![hasChild])/
+</tscreen>
+
+Also note that all string based comparisons of e.g.~types or names
+via <tt>==</tt> are case sensitive.
 
 The default value menu of the <tt/"Expression"/ entry is pre-seeded with
 meaningful entries when the search dialog is opened.
@@ -1990,7 +2004,7 @@ selected objects.
 For instance, if the selected object is a material, the material entry
 will contain the material name fetched from this object and will be one
 of the first entries, so that searching for objects of this material is
-just a matter of two clicks.
+just a matter of two mouse clicks.
 If the object is an instance, the first two entries in this menu will
 be <tt/"Master"/ and <tt/"Instances"/.
 
@@ -2026,8 +2040,12 @@ interface command, certain restrictions apply:<newline>
 the action must not change the scene hierarchy, i.e.~one must not
 delete, cut, or create objects in the command/procedure call. Changing the
 objects themselves, even converting them in-place, however, is allowed.
-See also section
+See section
 <ref id="scifall" name="Applying Commands to a Number of Objects">.
+
+See also section
+<ref id="sccomm" name="Procedures and Commands"> for a listing of
+available commands.
 
 The special action <tt/"Highlight"/ also collects the found node names
 in the Tcl list <tt>"ObjectSearch(nodes)"</tt>.
