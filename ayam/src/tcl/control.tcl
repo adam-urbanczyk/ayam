@@ -911,16 +911,16 @@ proc searchOb { expression action {gui 0} } {
 		set index [string first ")" $rem]
 		if { $index != -1 } {
 		    set prop [string range $rem 1 $index]
-		    append cx "getProperty "
-		    append cx $prop
-		    append cx " val$vi;"
 		    # arrange to transform the property specifier
-		    if { [lsearch $mappings $prop] == -1 } {
+		    if { [lsearch -exact $mappings $prop] == -1 } {
+			append cx "getProperty "
+			append cx $prop
+			append cx " val$vi;"
 			lappend mappings $prop
 			lappend mappings "val$vi"
+			incr vi
 		    }
 		}
-		incr vi
 	    }
 
 	    # arrange to process next $
@@ -960,7 +960,7 @@ proc searchOb { expression action {gui 0} } {
 	    set ObjectSearch(cx) $ObjectSearch(Expression)
 	}
     }
-
+puts $ObjectSearch(cx)
     # save old selection state
     set ObjectSearch(oldclevel) $ay(CurrentLevel)
     set ObjectSearch(oldslevel) $ay(SelectedLevel)
@@ -1135,7 +1135,7 @@ proc objectsearch_open { } {
 	    if { ! [info exists ${type}_props] } {
 		init_${type}
 	    }
-	    if { [lsearch ${type}_props Material] != -1 } {
+	    if { [lsearch -exact ${type}_props Material] != -1 } {
 		getMat
 		set mat $matPropData(Materialname)
 	    }
