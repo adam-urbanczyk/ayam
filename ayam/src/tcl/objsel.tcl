@@ -252,7 +252,7 @@ proc cleanObjSel { Selection } {
 		    set item [expr $item + 1]
 		}
 		# Is the item already stored in the current selection ?
-		if { [lsearch $Selection $item] == -1} {
+		if { [lsearch -exact $Selection $item] == -1} {
 		    lappend cleanedSelect $i
 		}
 	    }
@@ -262,7 +262,7 @@ proc cleanObjSel { Selection } {
 	# For each item picked by the user :
 	foreach i $ay(LastSelection) {
 	    # Is the item already stored in the current selection ?
-	    if { [lsearch $Selection $i] == -1} {
+	    if { [lsearch -exact $Selection $i] == -1} {
 		# Is the item in the current level ?
 		if { $ay(SelectedLevel) == [$ay(tree) parent $i] } {
 		    lappend cleanedSelect $i

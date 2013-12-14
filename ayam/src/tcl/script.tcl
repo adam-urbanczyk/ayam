@@ -163,7 +163,7 @@ proc setScriptp { } {
     set t $ay(pca).$ScriptAttr(w).tScript
 
     set tags [$t tag names]
-    if { [lsearch $tags errtag] != -1 } {
+    if { [lsearch -exact $tags errtag] != -1 } {
 	$t tag delete errtag
     }
 
@@ -181,7 +181,7 @@ proc getScriptp { } {
     getProp
     set errrange ""
     set tags [$t tag names]
-    if { [lsearch $tags errtag] != -1 } {
+    if { [lsearch -exact $tags errtag] != -1 } {
 	set errrange [$t tag range errtag]
     }
     $t delete 1.0 end
