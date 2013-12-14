@@ -386,7 +386,7 @@ global ay ay_error
 
 	    # check presence of wanted property for selected object
 	    set propindex ""
-	    catch {set propindex [lsearch $props $arrayname]}
+	    catch {set propindex [lsearch -exact $props $arrayname]}
 	    if { $propindex == -1 } {
 		ayError 2 "getProperty" "Could not find property: $arrayname."
 		return;
@@ -457,7 +457,7 @@ global ay curtypes ay_error
 
 	    # check presence of wanted property for selected object
 	    set propindex ""
-	    catch {set propindex [lsearch $props $arrayname]}
+	    catch {set propindex [lsearch -exact $props $arrayname]}
 	    if { $propindex == -1 } {
 		ayError 2 "setProperty" "Could not find property: $arrayname."
 		return;

@@ -378,12 +378,12 @@ proc tgui_addtag { } {
 	set tagnames ""
 	set tagvals ""
 	getTags tagnames tagvals
-	if { ($tagnames == "" ) || ([lsearch $tagnames "TP"] == -1) } {
+	if { ($tagnames == "" ) || ([lsearch -exact $tagnames "TP"] == -1) } {
 	    # no tags, or TP tag not present already => just add a new tag
 	    addTag "TP" $val
 	} else {
 	    # we have already a TP tag => change its value
-	    set index [lsearch $tagnames "TP"]
+	    set index [lsearch -exact $tagnames "TP"]
 	    setTags -index $index "TP" $val
 	}
 	# if
@@ -420,7 +420,7 @@ proc tgui_readtag { } {
     set tagvals ""
     getTags tagnames tagvals
     if { ($tagnames != "" ) } {
-	set index [lsearch $tagnames "TP"]
+	set index [lsearch -exact $tagnames "TP"]
 	if { $index != -1 } {
 	    set val [lindex $tagvals $index]
 	    scan $val "%d,%g,%g" smethod sparamu sparamv

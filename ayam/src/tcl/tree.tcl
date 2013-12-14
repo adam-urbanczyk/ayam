@@ -234,7 +234,7 @@ proc tree_selectItem { redraw tree node } {
     set nlist [$tree selection get]
     $ay(tree) selection clear
     $ay(tree) selection set $node
-    if { [lsearch $nlist $node] == "-1" } {
+    if { [lsearch -exact $nlist $node] == "-1" } {
 	$tree selection set $node
 	set ay(SelectedLevel) [$tree parent $node]
 	$tree selection set $node
@@ -273,7 +273,7 @@ proc tree_toggleSelection { tree node } {
     set SelectedLevel $ay(SelectedLevel)
 
     set nlist [$tree selection get]
-    if { [lsearch $nlist $node] != -1 } {
+    if { [lsearch -exact $nlist $node] != -1 } {
 	if { [llength $nlist] > "1" } {
 	    $tree selection remove $node
 	}
@@ -336,7 +336,7 @@ proc tree_multipleSelection { tree node } {
 	break;
     }
 
-    if { [lsearch $nlist $node] != -1 } {
+    if { [lsearch -exact $nlist $node] != -1 } {
 	ayError 1 "multipleSelection" "Select a different object!"
 	break;
     }
@@ -480,7 +480,7 @@ proc tree_drop { tree from droppos currentoperation datatype data } {
 	    }
 	    # prevent moving of objects into their own childs
 	    while { $parent != "root" } {
-		if { [lsearch $selection $parent] != "-1" } {
+		if { [lsearch -exact $selection $parent] != "-1" } {
 		    ayError 2 tree_drop "Can not place objects here!"
 		    set err 1
 		}
