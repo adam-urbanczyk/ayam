@@ -1161,10 +1161,10 @@ ay_draw_trimview(void)
 		   (GLfloat)ay_prefs.seb);
 
 	 glBegin(GL_LINE_LOOP);
-	  glVertex3f(minx, miny, 0.0);
-	  glVertex3f(maxx, miny, 0.0);
-	  glVertex3f(maxx, maxy, 0.0);
-	  glVertex3f(minx, maxy, 0.0);
+	  glVertex3f(minx, miny, 0.0f);
+	  glVertex3f(maxx, miny, 0.0f);
+	  glVertex3f(maxx, maxy, 0.0f);
+	  glVertex3f(minx, maxy, 0.0f);
 	 glEnd();
 
 	 glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
@@ -1230,15 +1230,15 @@ ay_draw_cs(struct Togl *togl, int mode)
 
      /* draw */
      glBegin(GL_LINES);
-      glColor3f((GLfloat)1.0, (GLfloat)0.0, (GLfloat)0.0);
-      glVertex3f((GLfloat)0.0, (GLfloat)0.0, (GLfloat)0.0);
-      glVertex3f((GLfloat)1.0, (GLfloat)0.0, (GLfloat)0.0);
-      glColor3f((GLfloat)0.0, (GLfloat)1.0, (GLfloat)0.0);
-      glVertex3f((GLfloat)0.0, (GLfloat)0.0, (GLfloat)0.0);
-      glVertex3f((GLfloat)0.0, (GLfloat)1.0, (GLfloat)0.0);
-      glColor3f((GLfloat)0.0, (GLfloat)0.0, (GLfloat)1.0);
-      glVertex3f((GLfloat)0.0, (GLfloat)0.0, (GLfloat)0.0);
-      glVertex3f((GLfloat)0.0, (GLfloat)0.0, (GLfloat)1.0);
+      glColor3f((GLfloat)1.0f, (GLfloat)0.0f, (GLfloat)0.0f);
+      glVertex3f((GLfloat)0.0f, (GLfloat)0.0f, (GLfloat)0.0f);
+      glVertex3f((GLfloat)1.0f, (GLfloat)0.0f, (GLfloat)0.0f);
+      glColor3f((GLfloat)0.0f, (GLfloat)1.0f, (GLfloat)0.0f);
+      glVertex3f((GLfloat)0.0f, (GLfloat)0.0f, (GLfloat)0.0f);
+      glVertex3f((GLfloat)0.0f, (GLfloat)1.0f, (GLfloat)0.0f);
+      glColor3f((GLfloat)0.0f, (GLfloat)0.0f, (GLfloat)1.0f);
+      glVertex3f((GLfloat)0.0f, (GLfloat)0.0f, (GLfloat)0.0f);
+      glVertex3f((GLfloat)0.0f, (GLfloat)0.0f, (GLfloat)1.0f);
      glEnd();
 
      glColor4fv(color);
