@@ -728,9 +728,18 @@ ay_swing_crtside(ay_swing_object *swing, ay_object *cso, ay_object *tro,
       if(!(curve = calloc(1, sizeof(ay_object))))
 	return AY_EOMEM;
 
-      ay_status = ay_npt_extractnc(swing->npatch, start?2:3, 0.0, AY_FALSE,
-				   AY_TRUE, AY_FALSE, NULL,
-				   &nc);
+      if(start)
+	{
+	  ay_status = ay_npt_extractnc(swing->npatch, 5, 0.0, AY_TRUE,
+				       AY_TRUE, AY_FALSE, NULL,
+				       &nc);
+	}
+      else
+	{
+	  ay_status = ay_npt_extractnc(swing->npatch, 5, 1.0, AY_TRUE,
+				       AY_TRUE, AY_FALSE, NULL,
+				       &nc);
+	}
 
       if(ay_status || !nc)
 	{ ay_status = AY_ERROR; goto cleanup; }
@@ -745,9 +754,27 @@ ay_swing_crtside(ay_swing_object *swing, ay_object *cso, ay_object *tro,
 
   /* calculate angle and scale factor */
   if(start)
-    p = tr->controlv;
+    {
+      /* if(ay_knots_isclamped(...))
+	   p = tr->controlv;
+	 else
+      */
+      ay_nb_CurvePoint4D(tr->length-1, tr->order-1,
+			 tr->knotv, tr->controlv,
+			 tr->knotv[tr->order-1], P1);
+      p = P1;
+    }
   else
-    p = &(tr->controlv[(tr->length-1)*stride]);
+    {
+      /* if(ay_knots_isclamped(...))
+	 p = &(tr->controlv[(tr->length-1)*stride]);
+	 else
+      */
+      ay_nb_CurvePoint4D(tr->length-1, tr->order-1,
+		     tr->knotv, tr->controlv,
+		     tr->knotv[tr->length], P1);
+      p = P1;
+    }
 
   if(fabs(p[2]) > AY_EPSILON)
     {
@@ -846,8 +873,6 @@ ay_swing_crtside(ay_swing_object *swing, ay_object *cso, ay_object *tro,
       goto cleanup;
     }
 
-  controlv = NULL;
-
   ((ay_nurbpatch_object *)cap->refine)->glu_sampling_tolerance =
     tolerance;
   ((ay_nurbpatch_object *)cap->refine)->display_mode = mode;
@@ -877,6 +902,9 @@ ay_swing_crtside(ay_swing_object *swing, ay_object *cso, ay_object *tro,
 
   curve->next = ay_endlevel;
   cap->down = curve;
+
+  /* prevent cleanup code from doing something harmful */
+  controlv = NULL;
 
   /* create another trimcurve to close the loop */
   if(!(trim = calloc(1, sizeof(ay_object))))
@@ -937,6 +965,7 @@ ay_swing_crtside(ay_swing_object *swing, ay_object *cso, ay_object *tro,
   ((ay_nurbcurve_object *)(trim->refine))->display_mode =
     cs->display_mode;
 
+  /* prevent cleanup code from doing something harmful */
   controlv = NULL;
 
   /* fix orientation of trim */
