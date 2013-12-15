@@ -537,7 +537,6 @@ ay_npt_resizearrayh(double **controlvptr, int stride,
 		  v[1] = controlv[a+stride+1] - controlv[a+1];
 		  v[2] = controlv[a+stride+2] - controlv[a+2];
 
-
 		  t = j/(newpersec[i]+1.0);
 
 		  AY_V3SCAL(v,t);
@@ -709,7 +708,7 @@ ay_npt_revertu(ay_nurbpatch_object *np)
   /* revert knots */
   if(np->uknot_type >= AY_KTCUSTOM)
     {
-      ay_status = ay_knots_revert(np->uknotv, np->width+np->uorder);
+      (void)ay_knots_revert(np->uknotv, np->width+np->uorder);
     } /* if */
 
   /* since we do not create new multiple points
@@ -831,7 +830,7 @@ ay_npt_revertv(ay_nurbpatch_object *np)
   /* revert knots */
   if(np->vknot_type >= AY_KTCUSTOM)
     {
-      ay_status = ay_knots_revert(np->vknotv, np->height+np->vorder);
+      (void)ay_knots_revert(np->vknotv, np->height+np->vorder);
     } /* if */
 
   /* since we do not create new multiple points
@@ -8789,9 +8788,9 @@ ay_npt_recreatemp(ay_nurbpatch_object *np)
 	    {
 	      if(!(new = calloc(1, sizeof(ay_mpoint))))
 		{ goto cleanup; }
-	      if(!(new->points = calloc(count, sizeof(double *))))
+	      if(!(new->points = malloc(count*sizeof(double *))))
 		{ goto cleanup; }
-	      if(!(new->indices = calloc(count, sizeof(unsigned int))))
+	      if(!(new->indices = malloc(count*sizeof(unsigned int))))
 		{ goto cleanup; }
 	      new->multiplicity = count;
 	      memcpy(new->points, tmpp, count*sizeof(double *));

@@ -237,9 +237,9 @@ ay_nct_recreatemp(ay_nurbcurve_object *c)
 	    {
 	      if(!(new = calloc(1, sizeof(ay_mpoint))))
 		{ goto cleanup; }
-	      if(!(new->points = calloc(count, sizeof(double *))))
+	      if(!(new->points = malloc(count*sizeof(double *))))
 		{ goto cleanup; }
-	      if(!(new->indices = calloc(count, sizeof(unsigned int))))
+	      if(!(new->indices = malloc(count*sizeof(unsigned int))))
 		{ goto cleanup; }
 	      new->multiplicity = count;
 	      memcpy(new->points, tmpp, count*sizeof(double *));
@@ -692,7 +692,7 @@ ay_nct_revert(ay_nurbcurve_object *curve)
   /* revert knots */
   if(curve->knot_type >= AY_KTCUSTOM)
     {
-      ay_knots_revert(curve->knotv, curve->length+curve->order);
+      (void)ay_knots_revert(curve->knotv, curve->length+curve->order);
     } /* if */
 
  return AY_OK;
@@ -4089,7 +4089,7 @@ ay_nct_concatmultiple(int closed, int knot_type, int fillgaps,
  *  value is negated before use, -0.1 => 0.1)
  * \param[in] c1 first curve
  * \param[in] c2 second curve
- * \param[in] result fillet curve
+ * \param[in,out] result fillet curve
  *
  * \returns AY_OK on success, error code otherwise.
  */
