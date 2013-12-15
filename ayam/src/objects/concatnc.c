@@ -501,7 +501,7 @@ ay_concatnc_notifycb(ay_object *o)
       down = down->next;
     } /* while */
 
-  if(!curves || numcurves < 2)
+  if(!curves || (numcurves < 2 && !concatnc->fillgaps))
     {
       goto cleanup;
     }
