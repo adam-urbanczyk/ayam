@@ -24,7 +24,7 @@ ay_toglcb_create(struct Togl *togl)
 {
  /*int ay_status = AY_OK;*/
  char fname[] = "toglcb_create";
- ay_view_object *view = NULL;
+ ay_view_object *view = NULL, *dview;
  ay_object *o = NULL, *d = NULL, **l = NULL;
  static int id = 0;
 
@@ -63,7 +63,7 @@ ay_toglcb_create(struct Togl *togl)
   o->next = *l;
   *l = o;
 
-  /* correctly (re)set currentlevel */
+  /* correctly (re)set ay_currentlevel */
   if(ay_currentlevel->next->object == ay_root)
     {
       ay_clevel_del();
@@ -88,6 +88,23 @@ ay_toglcb_create(struct Togl *togl)
 
   view->id = id;
   id++;
+
+  if(ay_prefs.globalmark)
+    {
+      /* set the mark (if there is atleast one other view) */
+      d = ay_root->down;
+      while(d->next)
+	{
+	  if(d != o && d->type == AY_IDVIEW)
+	    {
+	      dview = (ay_view_object*)d->refine;
+	      view->drawmark = dview->drawmark;
+	      memcpy(view->markworld, dview->markworld, 3*sizeof(double));
+	      break;
+	    }
+	  d = d->next;
+	}
+    }
 
   /* vital OpenGL defaults */
   glEnable(GL_DEPTH_TEST);
