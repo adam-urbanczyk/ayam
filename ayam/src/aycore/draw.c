@@ -1327,6 +1327,7 @@ ay_draw_mark(struct Togl *togl)
 {
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  int e = 5;
+ float mx, my;
 
   if(view->antialiaslines)
     {
@@ -1337,7 +1338,6 @@ ay_draw_mark(struct Togl *togl)
 	    (GLfloat)ay_prefs.tpb);
 
   glDisable(GL_DEPTH_TEST);
-
   glMatrixMode(GL_PROJECTION);
   glPushMatrix();
    glLoadIdentity();
@@ -1345,8 +1345,35 @@ ay_draw_mark(struct Togl *togl)
    glMatrixMode(GL_MODELVIEW);
    glPushMatrix();
     glLoadIdentity();
-    glTranslatef(((int)view->markx)+0.375f,
-		 (Togl_Height(togl)-(int)view->marky)+0.375f, 0.0f);
+    /*    printf("%.9g %.9g\n",view->markx,view->marky);*/
+
+    /* accomodate for various queer values in markx/marky
+       (that result from using gluProject()) */
+    if(fabs(fmod(view->markx,1)-0.5) < 0.001)
+      mx = floor(view->markx)+0.375;
+    else
+      {
+	mx = view->markx;
+	if(mx > 0)
+	  mx = (int)(mx+0.5);
+	else
+	  mx = (int)(mx-0.5);
+	mx -= 0.375;
+      }
+    if(fabs(fmod(view->marky,1)-0.5) < 0.001)
+      my = Togl_Height(togl)-ceil(view->marky)+0.375;
+    else
+      {
+	my = view->marky;
+	if(my > 0)
+	  my = (int)(my+0.5);
+	else
+	  my = (int)(my-0.5);
+	my = Togl_Height(togl)-my-0.375;
+      }
+    glTranslatef(mx/*round(view->markx)-0.375*/,
+		 my/*Togl_Height(togl)-round(view->marky)-0.375*/,
+		 0.0f);
     glBegin(GL_LINES);
      glVertex2i(-4, 0);
      glVertex2i(e, 0);
