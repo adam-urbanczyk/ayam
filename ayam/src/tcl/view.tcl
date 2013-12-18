@@ -575,9 +575,14 @@ proc viewOpen { width height {establish_bindings 1} {internal_view 0} } {
     lappend ay(views) $w
 
     $w.f3D.togl mc
+    set ay(currentView) $w.f3D.togl
+
     $w.f3D.togl setconf -name $name
 
-    set ay(currentView) $w.f3D.togl
+    # set mark
+    if {$ayprefs(GlobalMark)} {
+	$w.f3D.togl setconf -panx 0
+    }
 
     if { $internal_view == 0 } {
 	viewTitle $w Front Pick

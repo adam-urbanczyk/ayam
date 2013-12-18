@@ -1452,6 +1452,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 		  sprintf(buf2, "%g", height/2.0-view->marky);
 		  tclargv[4] = buf2;
 		  ay_vact_movetcb(togl, 5, tclargv);
+		  need_updatemark = AY_TRUE;
 		}
 	    }
 	  if(!strcmp(argv[i], "-panx"))
@@ -1464,6 +1465,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	      tclargv[3] = argv[i+1];
 	      tclargv[4] = arg3;
 	      ay_vact_movetcb(togl, 5, tclargv);
+	      need_updatemark = AY_TRUE;
 	    }
 	  if(!strcmp(argv[i], "-pany"))
 	    {
@@ -1475,6 +1477,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	      tclargv[3] = arg3;
 	      tclargv[4] = argv[i+1];
 	      ay_vact_movetcb(togl, 5, tclargv);
+	      need_updatemark = AY_TRUE;
 	    }
 	  if(!strcmp(argv[i], "-pnts"))
 	    {
@@ -1836,6 +1839,8 @@ ay_viewt_updatemark(struct Togl *togl, int local)
  double dummy, mm[16], pm[16];
  int vp[4], height = Togl_Height(togl);
  GLint gl_status = GL_TRUE;
+
+  glFlush();
 
   glGetIntegerv(GL_VIEWPORT, vp);
 
