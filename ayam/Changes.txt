@@ -1,5 +1,5 @@
-[7. Dec 2013] CVS-Head:
-=======================
+[18. Dec 2013] CVS-Head:
+========================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
 o crash when removing wrong trim curves from patches (SF 3514206)
@@ -20,6 +20,7 @@ o getPnt/setPnt for IPatch (SF 488)
 o elevating periodic NURBS surfaces with knot type Chordal or
   Centripetal (SF 490)
 o crash when tesselating complex hierarchies with instances (SF 492)
+o new views do not inherit the global mark  (SF 493)
 
 Modelling:
 o added "Compatible" option to ConcatNP objects, to prevent unwanted
@@ -128,6 +129,8 @@ o added preference option "SaveDialogGeom" that controls saving the geometry
 o removed preference option  "SavePrefsGeom" in favor of "SaveDialogGeom" above
 o added hidden preference option "PanDist" that controls the amount of
   view window panning for keyboard presses
+o "Special/Instances/Resolve all Instances" now resolves even nested instances
+o added a "Scope" option to the automatic instancing and resolve dialogs
 
 Scripts/Scripting Interface:
 o added luainterp plugin to support the Lua scripting language
