@@ -117,6 +117,7 @@ proc actionBindCenter { w { nextaction "" } } {
 # e.g. rotate about and scale about
 # but also a full fledged action to set the mark
 proc actionSetMark { w { nextaction "" } } {
+    global ayprefs
 
     viewTitle $w "" "Mark Point"
 
@@ -151,6 +152,27 @@ proc actionSetMark { w { nextaction "" } } {
     }
 
     actionBindCenter $w $nextaction
+
+    if { $ayprefs(FlashPoints) == 1 } {
+	bind $w <Motion> {
+	    %W startpepac %x %y -flash
+	}
+	if { $ayprefs(FixFlashPoints) == 1 } {
+	    bind $w <ButtonRelease-1> "+\
+          %W startpepac %x %y -flash -ignoreold;\
+          %W startpepac %x %y -flash -ignoreold"
+	    bind $w <Shift-ButtonRelease-1> "+\
+          %W startpepac %x %y -flash -ignoreold;\
+          %W startpepac %x %y -flash -ignoreold"
+	} else {
+	    bind $w <ButtonRelease-1> "+\
+          %W startpepac %x %y -flash -ignoreold;"
+	    bind $w <Shift-ButtonRelease-1> "+\
+          %W startpepac %x %y -flash -ignoreold;"
+	}
+    }
+
+    $w setconf -drawh 1
 
  return;
 }

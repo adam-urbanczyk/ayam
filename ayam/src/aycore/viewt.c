@@ -1018,6 +1018,8 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
  Tcl_Interp *interp = ay_interp;
  ay_object *o = NULL;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
+ ay_list_object *sel;
+ ay_pointedit pe = {0};
  int width = Togl_Width(togl);
  int height = Togl_Height(togl);
  int argi = 0, need_redraw = AY_TRUE, need_updatemark = AY_FALSE;
@@ -1369,41 +1371,85 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 		{
 		  Tcl_GetDouble(interp, argv[i+1], &view->markx);
 		  Tcl_GetDouble(interp, argv[i+2], &view->marky);
-		  if(view->usegrid)
-		    ay_viewt_griddify(togl, &view->markx, &view->marky);
-
-		  view->drawmark = AY_TRUE;
-
-		  ay_viewt_wintoworld(togl, view->markx, view->marky,
-				      &(temp[0]),
-				      &(temp[1]),
-				      &(temp[2]));
-
-		  switch(view->type)
+		  sel = ay_selection;
+		  while(sel)
 		    {
-		    case AY_VTFRONT:
-		    case AY_VTTRIM:
-		      view->markworld[0] = temp[0];
-		      view->markworld[1] = temp[1];
-		      if(!ay_prefs.globalmark)
-			view->markworld[2] = 0.0;
-		      break;
-		    case AY_VTSIDE:
-		      if(!ay_prefs.globalmark)
-			view->markworld[0] = 0.0;
-		      view->markworld[1] = temp[1];
-		      view->markworld[2] = temp[2];
-		      break;
-		    case AY_VTTOP:
-		      view->markworld[0] = temp[0];
-		      if(!ay_prefs.globalmark)
-			view->markworld[1] = 0.0;
-		      view->markworld[2] = temp[2];
-		      break;
-		    default:
-		      /* XXXX output proper error message */
-		      break;
-		    } /* switch */
+		      o = sel->object;
+		      ay_viewt_wintoobj(togl, o,
+					view->markx, view->marky,
+					&(t[0]), &(t[1]), &(t[2]));
+
+		      ay_status = ay_pact_getpoint(1, o, t, &pe);
+		      if(!ay_status && pe.coords)
+			{
+			  break;
+			}
+		      sel = sel->next;
+		    }
+		  if(pe.coords)
+		    {
+		      memcpy(t, pe.coords[0], 3*sizeof(double));
+
+		      /* to world */
+		      glMatrixMode(GL_MODELVIEW);
+		      glPushMatrix();
+		       glLoadIdentity();
+		       if(ay_currentlevel->object != ay_root)
+			 {
+			   ay_trafo_getall(ay_currentlevel->next);
+			 }
+		       glTranslated(o->movx, o->movy, o->movz);
+		       ay_quat_torotmatrix(o->quat, mm);
+		       glMultMatrixd((GLdouble*)mm);
+		       glScaled(o->scalx, o->scaly, o->scalz);
+		       glGetDoublev(GL_MODELVIEW_MATRIX, mm);
+		      glPopMatrix();
+
+		      ay_trafo_apply3(t, mm);
+		      view->markworld[0] = t[0];
+		      view->markworld[1] = t[1];
+		      view->markworld[2] = t[2];
+		    }
+		  else
+		    {
+		      if(view->usegrid)
+			ay_viewt_griddify(togl, &view->markx, &view->marky);
+
+		      view->drawmark = AY_TRUE;
+
+		      ay_viewt_wintoworld(togl, view->markx, view->marky,
+					  &(temp[0]),
+					  &(temp[1]),
+					  &(temp[2]));
+
+		      switch(view->type)
+			{
+			case AY_VTFRONT:
+			case AY_VTTRIM:
+			  view->markworld[0] = temp[0];
+			  view->markworld[1] = temp[1];
+			  if(!ay_prefs.globalmark)
+			    view->markworld[2] = 0.0;
+			  break;
+			case AY_VTSIDE:
+			  if(!ay_prefs.globalmark)
+			    view->markworld[0] = 0.0;
+			  view->markworld[1] = temp[1];
+			  view->markworld[2] = temp[2];
+			  break;
+			case AY_VTTOP:
+			  view->markworld[0] = temp[0];
+			  if(!ay_prefs.globalmark)
+			    view->markworld[1] = 0.0;
+			  view->markworld[2] = temp[2];
+			  break;
+			default:
+			  /* XXXX output proper error message */
+			  break;
+			} /* switch */
+		    } /* if */
+
+		  ay_pact_clearpointedit(&pe);
 
 		  if(view->drawmark || ay_prefs.globalmark)
 		    {
