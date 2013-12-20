@@ -83,7 +83,7 @@ proc apnt_setmode { {onoff 1} } {
 
     if { $::apnt_scope == 0 } {
 	set w [winfo parent [winfo parent $::ay(currentView)]]
-	
+
 	viewSetPMode $w $onoff
     } else {
 	set oldcw $::ay(currentView)
@@ -150,20 +150,20 @@ proc apnt_actionTagP { w } {
 
     if { $ayprefs(FlashPoints) == 1 } {
 	bind $w <Motion> {
-	    %W startpepac %x %y -flash
+	    %W startpepac %x %y -readonly -flash
 	}
 	if { $ayprefs(FixFlashPoints) == 1 } {
 	    bind $w <ButtonRelease-1> "+\
-          %W startpepac %x %y -flash -ignoreold;\
-          %W startpepac %x %y -flash -ignoreold"
+          %W startpepac %x %y -readonly -flash -ignoreold;\
+          %W startpepac %x %y -readonly -flash -ignoreold"
 	    bind $w <Shift-ButtonRelease-1> "+\
-          %W startpepac %x %y -flash -ignoreold;\
-          %W startpepac %x %y -flash -ignoreold"
+          %W startpepac %x %y -readonly -flash -ignoreold;\
+          %W startpepac %x %y -readonly -flash -ignoreold"
 	} else {
 	    bind $w <ButtonRelease-1> "+\
-          %W startpepac %x %y -flash -ignoreold;"
+          %W startpepac %x %y -readonly -flash -ignoreold;"
 	    bind $w <Shift-ButtonRelease-1> "+\
-          %W startpepac %x %y -flash -ignoreold;"
+          %W startpepac %x %y -readonly -flash -ignoreold;"
 	}
     }
     $w setconf -drawh 1

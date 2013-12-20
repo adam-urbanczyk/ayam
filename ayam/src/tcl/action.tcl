@@ -155,20 +155,20 @@ proc actionSetMark { w { nextaction "" } } {
 
     if { $ayprefs(FlashPoints) == 1 } {
 	bind $w <Motion> {
-	    %W startpepac %x %y -flash
+	    %W startpepac %x %y -readonly -flash
 	}
 	if { $ayprefs(FixFlashPoints) == 1 } {
 	    bind $w <ButtonRelease-1> "+\
-          %W startpepac %x %y -flash -ignoreold;\
-          %W startpepac %x %y -flash -ignoreold"
+          %W startpepac %x %y -readonly -flash -ignoreold;\
+          %W startpepac %x %y -readonly -flash -ignoreold"
 	    bind $w <Shift-ButtonRelease-1> "+\
-          %W startpepac %x %y -flash -ignoreold;\
-          %W startpepac %x %y -flash -ignoreold"
+          %W startpepac %x %y -readonly -flash -ignoreold;\
+          %W startpepac %x %y -readonly -flash -ignoreold"
 	} else {
 	    bind $w <ButtonRelease-1> "+\
-          %W startpepac %x %y -flash -ignoreold;"
+          %W startpepac %x %y -readonly -flash -ignoreold;"
 	    bind $w <Shift-ButtonRelease-1> "+\
-          %W startpepac %x %y -flash -ignoreold;"
+          %W startpepac %x %y -readonly -flash -ignoreold;"
 	}
     }
 
@@ -1022,20 +1022,20 @@ proc actionTagP { w } {
 
     if { $ayprefs(FlashPoints) == 1 } {
 	bind $w <Motion> {
-	    %W startpepac %x %y -flash
+	    %W startpepac %x %y -readonly -flash
 	}
 	if { $ayprefs(FixFlashPoints) == 1 } {
 	    bind $w <ButtonRelease-1> "+\
-          %W startpepac %x %y -flash -ignoreold;\
-          %W startpepac %x %y -flash -ignoreold"
+          %W startpepac %x %y -readonly -flash -ignoreold;\
+          %W startpepac %x %y -readonly -flash -ignoreold"
 	    bind $w <Shift-ButtonRelease-1> "+\
-          %W startpepac %x %y -flash -ignoreold;\
-          %W startpepac %x %y -flash -ignoreold"
+          %W startpepac %x %y -readonly -flash -ignoreold;\
+          %W startpepac %x %y -readonly -flash -ignoreold"
 	} else {
 	    bind $w <ButtonRelease-1> "+\
-          %W startpepac %x %y -flash -ignoreold;"
+          %W startpepac %x %y -readonly -flash -ignoreold;"
 	    bind $w <Shift-ButtonRelease-1> "+\
-          %W startpepac %x %y -flash -ignoreold;"
+          %W startpepac %x %y -readonly -flash -ignoreold;"
 	}
     }
     $w setconf -drawh 1
