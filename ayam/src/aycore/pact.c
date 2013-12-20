@@ -413,7 +413,8 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
  double **pecoords = NULL, **tmp = NULL, oldpickepsilon;
  double minlevelscale, minobjscale;
  GLdouble m[16];
- int penumber = 0, *tmpi;
+ int allowreadonly = AY_FALSE, flash = AY_FALSE, ignoreold = AY_FALSE;
+ int i, penumber = 0, *tmpi;
  unsigned int *peindices = NULL, *tmpu;
 
   Togl_MakeCurrent(togl);
@@ -436,6 +437,28 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 
   Tcl_GetDouble(interp, argv[2], &winX);
   Tcl_GetDouble(interp, argv[3], &winY);
+  i = 4;
+  while(i < argc)
+    {
+      if(argv[i][0] == '-')
+	{
+	  switch(argv[i][1])
+	    {
+	    case 'r':
+	      allowreadonly = AY_TRUE;
+	      break;
+	    case 'f':
+	      flash = AY_TRUE;
+	      break;
+	    case 'i':
+	      ignoreold = AY_TRUE;
+	      break;
+	    default:
+	      break;
+	    }
+	}
+      i++;
+    }
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
@@ -477,7 +500,7 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
       ay_status = ay_pact_getpoint(1, o, obj, &pact_pe);
 
       /* see what have we got */
-      if(!ay_status && pact_pe.coords && (!pact_pe.readonly))
+      if(!ay_status && pact_pe.coords && (!pact_pe.readonly || allowreadonly))
 	{
 	  /* pick succeeded ...*/
 	  /* ...save coords */
@@ -563,16 +586,13 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
   pact_pe.indices = peindices;
 
   /* flash option given? */
-  if(ay_selection && (argc > 4))
+  if(ay_selection && flash)
     {
       if(pact_objectslen > 0)
 	o = pact_objects[0];
       else
 	o = NULL;
-      if(argc > 5)
-	ay_pact_flashpoint(AY_TRUE, pecoords?*pecoords:NULL, o);
-      else
-	ay_pact_flashpoint(AY_FALSE, pecoords?*pecoords:NULL, o);
+      ay_pact_flashpoint(ignoreold, pecoords?*pecoords:NULL, o);
     } /* if */
 
   /* prevent cleanup code from doing something harmful */
