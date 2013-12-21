@@ -1025,7 +1025,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
  int argi = 0, need_redraw = AY_TRUE, need_updatemark = AY_FALSE;
  double argd = 0.0, rotx = 0.0, roty = 0.0, rotz = 0.0;
  double old_rect_xmin, old_rect_ymin, old_rect_xmax, old_rect_ymax;
- double temp[3] = {0};
+ double minlevelscale = 1.0, temp[3] = {0};
  double dxw, dyw, t[3] = {0}, t2[2] = {0}, mm[16] = {0};
  int i = 2;
  int kbdact_in_progress = AY_FALSE;
@@ -1372,6 +1372,10 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 		  Tcl_GetDouble(interp, argv[i+1], &view->markx);
 		  Tcl_GetDouble(interp, argv[i+2], &view->marky);
 		  sel = ay_selection;
+		  if(sel)
+		    {
+		      minlevelscale = ay_pact_getminlevelscale();
+		    }
 		  while(sel)
 		    {
 		      o = sel->object;
@@ -1379,7 +1383,8 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 					view->markx, view->marky,
 					&(t[0]), &(t[1]), &(t[2]));
 
-		      ay_status = ay_pact_getpoint(1, o, t, &pe);
+		      ay_status = ay_pact_pickpoint(o, view, minlevelscale,
+						    t, &pe);
 		      if(!ay_status && pe.coords)
 			{
 			  break;

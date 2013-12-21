@@ -110,10 +110,91 @@ ay_pact_getpoint(int mode, ay_object *o, double *obj, ay_pointedit *pe)
   arr = ay_getpntcbt.arr;
   cb = (ay_getpntcb *)(arr[o->type]);
   if(!cb)
-    return AY_OK;
+    {
+      return AY_OK;
+    }
 
  return cb(mode, o, obj, pe);
 } /* ay_pact_getpoint */
+
+
+/* ay_pact_pickpoint:
+ *  like getpoint() above, but additionally modifies ay_pickepsilon
+ *  to improve picking accuracy for large/small objects
+*/
+int
+ay_pact_pickpoint(ay_object *o, ay_view_object *view,
+		  double minlevelscale, double *obj, ay_pointedit *pe)
+{
+ int ay_status = AY_OK;
+ ay_voidfp *arr = NULL;
+ ay_getpntcb *cb = NULL;
+ double oldpickepsilon, minobjscale;
+
+  if(!o || !obj || !pe || !view)
+    return AY_ENULL;
+
+  oldpickepsilon = ay_prefs.pick_epsilon;
+
+  /* adapt pick epsilon to view zoom, level and object scale */
+  minobjscale = fabs(o->scalx);
+
+  if(fabs(o->scaly) < minobjscale)
+    minobjscale = o->scaly;
+
+  if(fabs(o->scalz) < minobjscale)
+    minobjscale = o->scalz;
+
+  if(minlevelscale < 0)
+    minlevelscale = 1.0;
+
+  ay_prefs.pick_epsilon = oldpickepsilon / minlevelscale / minobjscale *
+    250 * view->conv_x;
+
+  /* now try to pick points on object o */
+  arr = ay_getpntcbt.arr;
+  cb = (ay_getpntcb *)(arr[o->type]);
+  if(cb)
+    {
+      ay_status = cb(1, o, obj, pe);
+    }
+
+  ay_prefs.pick_epsilon = oldpickepsilon;
+
+ return ay_status;
+} /* ay_pact_pickpoint */
+
+
+/* ay_pact_getminlevelscale:
+ *  helper to calculate the minimum scale of the current level
+ *  may be expensive for deeply nested levels, so only call this
+ *  once for a level
+ *  Also due to its potential cost, this is not integrated in pickpoint()
+ *  above.
+ */
+double
+ay_pact_getminlevelscale()
+{
+ GLdouble m[16];
+ double minlevelscale = 1.0;
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+   glLoadIdentity();
+   if(ay_currentlevel->object != ay_root)
+     {
+       ay_trafo_getalls(ay_currentlevel->next);
+     }
+   glGetDoublev(GL_MODELVIEW_MATRIX, m);
+   minlevelscale = fabs(m[0]);
+   if(fabs(m[5]) < minlevelscale)
+     minlevelscale = fabs(m[5]);
+   if(fabs(m[10]) < minlevelscale)
+     minlevelscale = fabs(m[10]);
+  glPopMatrix();
+
+ return minlevelscale;
+} /* ay_pact_getminlevelscale */
 
 
 /* ay_pact_seltcb:
@@ -125,18 +206,15 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
  int ay_status = AY_OK;
  char fname[] = "selpac";
  Tcl_Interp *interp = Togl_Interp(togl);
- /*  ay_view_object *view = Togl_GetClientData(togl);*/
- double height = Togl_Height(togl);
- int have_it = AY_FALSE, multiple = AY_FALSE, multipledel = AY_FALSE;
- unsigned int i = 0;
- double winX = 0.0, winY = 0.0, winX2 = 0.0, winY2 = 0.0, dtemp = 0.0;
- double obj[24] = {0}, pl[16] = {0};
- /*  double pickepsilon = ay_prefs.pick_epsilon;*/
  ay_point *newp = NULL, *point = NULL, *last = NULL;
  ay_pointedit pe = {0};
  ay_list_object *sel = ay_selection;
+ ay_view_object *view = Togl_GetClientData(togl);
  ay_object *o = NULL;
- GLfloat pixel[3] = {0.0f,0.0f,0.0f};
+ int have_it = AY_FALSE, multiple = AY_FALSE, multipledel = AY_FALSE;
+ unsigned int i = 0;
+ double winX = 0.0, winY = 0.0, winX2 = 0.0, winY2 = 0.0, dtemp = 0.0;
+ double minlevelscale = 1.0, obj[24] = {0}, pl[16] = {0};
 
   if(!ay_selection)
     {
@@ -177,19 +255,21 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
       winY = dtemp;
     }
 
+  if(!multiple)
+    {
+      minlevelscale = ay_pact_getminlevelscale();
+    }
+
   while(sel)
     {
       o = sel->object;
 
       if(!multiple)
 	{
-	  glReadPixels((GLint)(winX),(GLint)(height-winY), 1, 1,
-		       GL_RGB, GL_FLOAT, &pixel);
-
 	  ay_viewt_wintoobj(togl, o, winX, winY,
 			    &(obj[0]), &(obj[1]), &(obj[2]));
 
-	  ay_status = ay_pact_getpoint(1, o, obj, &pe);
+	  ay_status = ay_pact_pickpoint(o, view, minlevelscale, obj, &pe);
 	}
       else
 	{
@@ -409,10 +489,8 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  ay_object **tmpo = NULL, *o = NULL;
  double winX = 0.0, winY = 0.0;
- double obj[3] = {0};
- double **pecoords = NULL, **tmp = NULL, oldpickepsilon;
- double minlevelscale, minobjscale;
- GLdouble m[16];
+ double minlevelscale, obj[3] = {0};
+ double **pecoords = NULL, **tmp = NULL;
  int allowreadonly = AY_FALSE, flash = AY_FALSE, ignoreold = AY_FALSE;
  int i, penumber = 0, *tmpi;
  unsigned int *peindices = NULL, *tmpu;
@@ -460,22 +538,7 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
       i++;
     }
 
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-   glLoadIdentity();
-   if(ay_currentlevel->object != ay_root)
-     {
-       ay_trafo_getalls(ay_currentlevel->next);
-     }
-   glGetDoublev(GL_MODELVIEW_MATRIX, m);
-   minlevelscale = fabs(m[0]);
-   if(fabs(m[5]) < minlevelscale)
-     minlevelscale = fabs(m[5]);
-   if(fabs(m[10]) < minlevelscale)
-     minlevelscale = fabs(m[10]);
-  glPopMatrix();
-
-  oldpickepsilon = ay_prefs.pick_epsilon;
+  minlevelscale = ay_pact_getminlevelscale();
 
   while(sel)
     {
@@ -484,20 +547,8 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
       ay_viewt_wintoobj(togl, o, winX, winY,
 			&(obj[0]), &(obj[1]), &(obj[2]));
 
-      /* adapt pick epsilon to view zoom, level and object scale */
-      minobjscale = fabs(o->scalx);
-
-      if(fabs(o->scaly) < minobjscale)
-	minobjscale = o->scaly;
-
-      if(fabs(o->scalz) < minobjscale)
-	minobjscale = o->scalz;
-
-      ay_prefs.pick_epsilon = oldpickepsilon / minlevelscale / minobjscale *
-	250 * view->conv_x;
-
       /* now try to pick points on object o */
-      ay_status = ay_pact_getpoint(1, o, obj, &pact_pe);
+      ay_status = ay_pact_pickpoint(o, view, minlevelscale, obj, &pact_pe);
 
       /* see what have we got */
       if(!ay_status && pact_pe.coords && (!pact_pe.readonly || allowreadonly))
@@ -601,8 +652,6 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 
 cleanup:
 
-  ay_prefs.pick_epsilon = oldpickepsilon;
-
   if(ay_status)
     ay_error(ay_status, fname, NULL);
 
@@ -624,7 +673,7 @@ ay_pact_pentcb(struct Togl *togl, int argc, char *argv[])
 {
  int ay_status = AY_OK, tcl_status = TCL_OK;
  Tcl_Interp *interp = NULL;
- /* ay_view_object *view = NULL;*/
+ ay_view_object  *view = (ay_view_object *)Togl_GetClientData(togl);
  double winX = 0.0, winY = 0.0;
  double obj[3] = {0};
  char *n1 = "editPntArr", fname[] = "editPntNum";
@@ -633,7 +682,7 @@ ay_pact_pentcb(struct Togl *togl, int argc, char *argv[])
  int local = 0/*, need_parentnotify = AY_TRUE*/;
  int set_x = AY_FALSE, set_y = AY_FALSE;
  int set_z = AY_FALSE, set_w = AY_FALSE;
- double *coords, wcoords[4], tcoords[4];
+ double minlevelscale = 1.0, *coords, wcoords[4], tcoords[4];
  ay_list_object *sel = NULL;
  ay_object *o = NULL;
  ay_pointedit pe = {0};
@@ -647,7 +696,7 @@ ay_pact_pentcb(struct Togl *togl, int argc, char *argv[])
     }
 
   interp = Togl_Interp(togl);
-  /*  view = (ay_view_object *)Togl_GetClientData(togl);*/
+
 
   if(!strcmp(argv[2], "-start"))
     {
@@ -661,6 +710,8 @@ ay_pact_pentcb(struct Togl *togl, int argc, char *argv[])
       Tcl_GetDouble(interp, argv[3], &winX);
       Tcl_GetDouble(interp, argv[4], &winY);
 
+      minlevelscale = ay_pact_getminlevelscale();
+
       while(sel)
 	{
 	  o = sel->object;
@@ -669,7 +720,7 @@ ay_pact_pentcb(struct Togl *togl, int argc, char *argv[])
 	  ay_viewt_wintoobj(togl, o, winX, winY,
 			    &(obj[0]), &(obj[1]), &(obj[2]));
 
-	  ay_status = ay_pact_getpoint(1, o, obj, &pe);
+	  ay_status = ay_pact_pickpoint(o, view, minlevelscale, obj, &pe);
 
 	  /* update GUI and point selection (only if the pick succeeded) */
 	  if(!ay_status && pe.coords)
