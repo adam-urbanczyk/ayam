@@ -703,9 +703,18 @@ void ay_matt_clearshaders(ay_mat_object *material);
  */
 void ay_pact_clearpointedit(ay_pointedit *pe);
 
-/** pick points
+/** helper to get minimum scale of current level
+ */
+double ay_pact_getminlevelscale();
+
+/** select points
  */
 int ay_pact_getpoint(int mode, ay_object *o, double *obj, ay_pointedit *pe);
+
+/** pick single point
+ */
+int ay_pact_pickpoint(ay_object *o, ay_view_object *view,
+		      double minlevelscale, double *obj, ay_pointedit *pe);
 
 /** tag/select point action
  */
