@@ -1419,9 +1419,6 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 		    {
 		      if(view->usegrid)
 			ay_viewt_griddify(togl, &view->markx, &view->marky);
-
-		      view->drawmark = AY_TRUE;
-
 		      ay_viewt_wintoworld(togl, view->markx, view->marky,
 					  &(temp[0]),
 					  &(temp[1]),
@@ -1453,6 +1450,8 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 			  break;
 			} /* switch */
 		    } /* if */
+
+		  view->drawmark = AY_TRUE;
 
 		  ay_pact_clearpointedit(&pe);
 
