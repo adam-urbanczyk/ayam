@@ -1289,19 +1289,19 @@ displacement shader to a surface shader (as long as the copied arguments
 of both shaders have the same names and types) or copy a radius value
 from a sphere to a cylinder.
 
-<item><tt>"Instances/Resolve all Instances"</tt>, converts all instances
-of the current level (and its child objects) to normal objects.
-If objects are selected, only those selected objects will be
-processed.<footnote>Since 1.14.</footnote>
+<item><tt>"Instances/Resolve all Instances"</tt>, opens a small dialog
+where the scope of the resolve operation may be
+adjusted.<footnote>Since 1.21.</footnote>
+
 In contrast to converting the selected Instance objects, this operation
 does not stop until no Instances are left in the processed object
 hierarchies.
 
-<item><tt>"Instances/Automatic Instancing"</tt>, pops up a small dialog box,
-where you may parameterise and start the automatic instantiation
-algorithm (that automatically creates instances from
-equal objects). See section <ref id="ai" name="Automatic Instancing">
-for more information regarding automatic instancing.
+<item><tt>"Instances/Automatic Instancing"</tt>, opens a small dialog,
+where the automatic instantiation may be parameterised and started
+(this algorithm automatically creates instances from equal objects).
+See section <ref id="ai" name="Automatic Instancing">
+for more information.
 
 <item><tt>"Tags/Add RiOption"</tt>, pops up a small dialog box, where you may
 select and parameterise a RiOption tag to add as tag to the Root object
@@ -3271,6 +3271,10 @@ option <tt>"Modelling/GlobalMark"</tt> is enabled, the third coordinate
 is not reset anymore. This way one can define all three coordinates of
 the mark by clicking two times in appropriate views, e.g.~first in a
 front view for x and y and second in a side view for z.
+<p>
+The mark can also be set to a point of one of the selected objects. In this
+case, the mark coordinates are three
+dimensional.<footnote>Since 1.21.</footnote>
 <p>
 Additionally, when the set mark action is active, the following keyboard
 shortcuts are available:
@@ -9444,6 +9448,30 @@ can be used in conjunction like this:
 
 </itemize>
 
+<sect2>Conversion Support
+<p>
+Script objects convert to the objects they create/modify
+using the main menu entry <tt>"Tools/Convert"</tt>.
+
+When converting in place, some special rules are in effect:<newline>
+if there is just one created/modified object, its tags
+are appended to the tags of the Script object and its material
+setting only takes precedence if there is actually a material set.<newline>
+If there are multiple created/modified objects, the Script object
+is transformed
+into a level object, keeping its tags and material settings.
+The created/modified objects will become children of the new
+Level object (with tags and material properties unchanged).
+
+The current children of the Script object will be removed prior
+to conversion. If this fails (due to references), they may end
+up in the object clipboard.
+
+<sect2>RIB Export
+<p>
+Script objects will be exported to RIB files as the objects
+they create/modify.
+
 <sect2>Script Object Examples<label id="scriptobjex">
 <p>
 This section illustrates the development of a Script object for parametric
@@ -12429,8 +12457,8 @@ the designated Ayam scripting interface command.
  <item>Example: <tt/"help help"/ displays the help of the help command.
 </itemize>
 
-<sect2>Creating Objects<label id="crtob">
-<p><label id="sccrtob">
+<sect2>Managing Objects
+<p><label id="sccrtob"><label id="crtob">
 To create new objects the <tt/"crtOb"/ command can be used.
 <itemize>
  <item>Synopsis: <tt/"crtOb type [args]"/
@@ -13191,6 +13219,60 @@ that fits the parameter space of the currently selected NURBS
 patch object (or the current parent object, if it is a NPatch).
 If no NURBS patch is selected or parent, this command will create a
 centered quadratic curve with width 2.0 and height 2.0 instead.
+</itemize>
+
+<#if out=latex><x/newpage/</#if>
+
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
+<label id="scdelOb">
+delOb:
+<itemize>
+ <item>Synopsis: <tt>"delOb"</tt>
+ <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Description: This command removes the selected object(s) and
+their children from the scene.
+The removal may not be possible, if there are references of the selected
+object(s) or their children.
+</itemize>
+
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
+<label id="scgettype">
+getType:
+<itemize>
+ <item>Synopsis: <tt>"getType varname"</tt>
+ <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Description: This command writes the type of the
+selected object into the variable varname. The types are
+the well known strings that are displayed in the hierarchy list box
+if the objects are not named (NPatch, NCurve, Sphere, etc.).
+</itemize>
+
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
+<label id="scgetname">
+getName:
+<itemize>
+ <item>Synopsis: <tt>"getName varname"</tt>
+ <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Description: This command writes the name of the
+selected object into the variable varname.
+</itemize>
+
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
+<label id="schaschild">
+hasChild:
+<itemize>
+ <item>Synopsis: <tt>"hasChild"</tt>
+ <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Description: This command returns 1 if the selected object
+has child objects, otherwise it returns 0.
 </itemize>
 
 
@@ -15062,20 +15144,6 @@ Miscellaneous commands:
 <p>
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="scgettype">
-getType:
-<itemize>
- <item>Synopsis: <tt>"getType varname"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes
- <item>Description: This command writes the type of the
-selected object into the variable varname. The types are
-the well known strings that are displayed in the hierarchy list box
-if the objects are not named (NPatch, NCurve, Sphere, etc.).
-</itemize>
-
-<p>
-<#if out=latex><x/phantomsection/</#if>
-
 <label id="sctmpget">
 tmpGet:
 <itemize>
@@ -15084,18 +15152,6 @@ tmpGet:
  <item>Description: This command calculates a name for a temporary
 file in tmpdir and puts the complete name (with the optionally present
 extension appended) into the variable designated by varname.
-</itemize>
-
-<p>
-<#if out=latex><x/phantomsection/</#if>
-
-<label id="schaschild">
-hasChild:
-<itemize>
- <item>Synopsis: <tt>"hasChild"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes
- <item>Description: This command returns 1 if the selected object
-has child objects, otherwise it returns 0.
 </itemize>
 
 <p>
