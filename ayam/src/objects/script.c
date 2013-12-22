@@ -1680,10 +1680,11 @@ int
 ay_script_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
+ char fname[] = "script_convert";
  ay_tag *tag = NULL;
  ay_script_object *sc = NULL;
  ay_level_object *newl = NULL;
- ay_object *cmo = NULL, *new = NULL;
+ ay_object *d, *cmo = NULL, *new = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -1702,6 +1703,24 @@ ay_script_convertcb(ay_object *o, int in_place)
     case 2:
       if(sc->cm_objects)
 	{
+	  /* remove current children (of the script object) */
+	  ay_status = ay_object_candelete(o->down, o->down);
+	  if(ay_status != AY_OK)
+	    {
+	      d = o->down;
+	      while(d->next)
+		d = d->next;
+	      d->next = ay_clipboard;
+	      ay_clipboard = o->down;
+	      ay_error(AY_ERROR, fname,
+		       "Moved referenced object(s) to clipboard!");
+	    }
+	  else
+	    {
+	      (void)ay_object_deletemulti(o->down, AY_TRUE);
+	    }
+	  o->down = NULL;
+
 	  if(in_place)
 	    {
 	      if(sc->cm_objects->next && sc->cm_objects->next->next)
@@ -1711,11 +1730,6 @@ ay_script_convertcb(ay_object *o, int in_place)
 		    return AY_EOMEM;
 		  o->type = AY_IDLEVEL;
 		  newl->type = AY_LTLEVEL;
-
-		  /* remove current children (of the script object) */
-		  ay_status = ay_object_deletemulti(o->down, AY_FALSE);
-
-		  /* XXXX check and report errors? */
 
 		  /* link created/modified objects as new
 		     children to the new level object */
@@ -1760,8 +1774,16 @@ ay_script_convertcb(ay_object *o, int in_place)
 		    {
 		      o->tags = cmo->tags;
 		    } /* if */
-		  o->mat = cmo->mat;
-		} /* if */
+		  if(cmo->mat)
+		    {
+		      if(o->mat)
+			{
+			  d = o->mat->objptr;
+			  d->refcount--;
+			}
+		      o->mat = cmo->mat;
+		    }
+		} /* if have multiple objects */
 	    }
 	  else
 	    {
@@ -1776,8 +1798,8 @@ ay_script_convertcb(ay_object *o, int in_place)
 		    } /* if */
 		  cmo = cmo->next;
 		} /* while */
-	    } /* if */
-	} /* if */
+	    } /* if in_place */
+	} /* if have cm objects */
       break;
     default:
       break;
