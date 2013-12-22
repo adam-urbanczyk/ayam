@@ -1704,23 +1704,25 @@ ay_script_convertcb(ay_object *o, int in_place)
       if(sc->cm_objects)
 	{
 	  /* remove current children (of the script object) */
-	  ay_status = ay_object_candelete(o->down, o->down);
-	  if(ay_status != AY_OK)
+	  if(o->down)
 	    {
-	      d = o->down;
-	      while(d->next)
-		d = d->next;
-	      d->next = ay_clipboard;
-	      ay_clipboard = o->down;
-	      ay_error(AY_ERROR, fname,
-		       "Moved referenced object(s) to clipboard!");
+	      ay_status = ay_object_candelete(o->down, o->down);
+	      if(ay_status != AY_OK)
+		{
+		  d = o->down;
+		  while(d->next)
+		    d = d->next;
+		  d->next = ay_clipboard;
+		  ay_clipboard = o->down;
+		  ay_error(AY_ERROR, fname,
+			   "Moved referenced object(s) to clipboard!");
+		}
+	      else
+		{
+		  (void)ay_object_deletemulti(o->down, AY_TRUE);
+		}
+	      o->down = NULL;
 	    }
-	  else
-	    {
-	      (void)ay_object_deletemulti(o->down, AY_TRUE);
-	    }
-	  o->down = NULL;
-
 	  if(in_place)
 	    {
 	      if(sc->cm_objects->next && sc->cm_objects->next->next)
