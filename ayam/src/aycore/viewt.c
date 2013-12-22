@@ -551,7 +551,10 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
 	{
 	  /* perspective view */
 
-	  /* offset the view along eye vector, keeping the zoom as it is */
+	  /* reset the zoom */
+	  view->zoom = 0.25;
+
+	  /* offset the view along eye vector */
 	  AY_V3SUB(dt, view->from, view->to);
 	  lx = AY_V3LEN(dt);
 	  ly = ((l/2.0)/tan(view->zoom))/lx*2.1;
