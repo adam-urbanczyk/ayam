@@ -26,7 +26,7 @@ ay_vact_movetcb(struct Togl *togl, int argc, char *argv[])
  double winx = 0.0, winy = 0.0;
  double dxw = 0.0, dyw = 0.0;
  double t[3] = {0}, t2[2] = {0};
- GLdouble mm[16]= {0}, rotx = 0.0, roty = 0.0;
+ GLdouble mm[16] = {0}, rotx = 0.0, roty = 0.0;
  char fname[] = "move_view";
 
   /* parse args */
@@ -77,7 +77,7 @@ ay_vact_movetcb(struct Togl *togl, int argc, char *argv[])
   glPushMatrix();
    glLoadIdentity();
    /* check, whether we are able to derive camera orientation angles from t */
-   if((fabs(t[0]) < AY_EPSILON) && (fabs(t[2]) < AY_EPSILON)) 
+   if((fabs(t[0]) < AY_EPSILON) && (fabs(t[2]) < AY_EPSILON))
      {
        /* no, this (hopefully just) happens with Top views, that
 	  are Y-Axis aligned and express a useful angle in view->up */
