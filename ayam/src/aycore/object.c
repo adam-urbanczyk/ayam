@@ -1019,13 +1019,7 @@ ay_object_replace(ay_object *src, ay_object *dst)
       ay_status = ay_object_candelete(dst->down, dst->down);
       if(ay_status != AY_OK)
 	{
-	  d = dst->down;
-	  while(d->next)
-	    d = d->next;
-	  d->next = ay_clipboard;
-	  ay_clipboard = dst->down;
-	  dst->down = NULL;
-	  ay_error(AY_ERROR, fname, "Moved referenced object(s) to clipboard!");
+	  ay_clipb_prepend(dst->down, fname);
 	}
       else
 	{

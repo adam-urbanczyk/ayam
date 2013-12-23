@@ -119,6 +119,11 @@ int ay_clipb_replacetcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_clipb_hmovtcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
+/** prepend objects to the clipboard
+ */
+void ay_clipb_prepend(ay_object *o, char *fname);
+
+
 /* comp.c */
 
 /** compare two strings

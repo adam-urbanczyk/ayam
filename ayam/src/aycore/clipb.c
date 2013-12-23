@@ -571,3 +571,22 @@ ay_clipb_hmovtcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_clipb_hmovtcmd */
+
+void
+ay_clipb_prepend(ay_object *o, char *fname)
+{
+
+  if(!o)
+    return;
+
+  while(o->next && o->next != ay_endlevel)
+    o = o->next;
+
+  o->next = ay_clipboard;
+  ay_clipboard = o;
+
+  if(fname)
+    ay_error(AY_ERROR, fname, "Moved referenced object(s) to clipboard!");
+
+ return;
+} /* ay_clipb_prepend */

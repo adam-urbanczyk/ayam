@@ -632,20 +632,20 @@ ay_viewt_align(struct Togl *togl, int argc, char *argv[])
  double m2[16];
  int use_m2 = AY_FALSE;
 
- if(view->local == 2)
-   {
-     /* No parent object and no selection? This means there is nothing
-	we could align the view to. Thus, we just bail out. */
-     if((ay_currentlevel->object == ay_root) && !ay_selection)
-       return TCL_OK;
+  if(view->local == 2)
+    {
+      /* No parent object and no selection? This means there is nothing
+	 we could align the view to. Thus, we just bail out. */
+      if((ay_currentlevel->object == ay_root) && !ay_selection)
+	return TCL_OK;
 
-     if(ay_selection)
-       {
-	 ay_trafo_identitymatrix(m2);
-	 ay_quat_torotmatrix(ay_selection->object->quat, m2);
-	 use_m2 = AY_TRUE;
-       }
-   }
+      if(ay_selection)
+	{
+	  ay_trafo_identitymatrix(m2);
+	  ay_quat_torotmatrix(ay_selection->object->quat, m2);
+	  use_m2 = AY_TRUE;
+	}
+    }
 
   /* get parent objects transformation */
   glMatrixMode(GL_MODELVIEW);
