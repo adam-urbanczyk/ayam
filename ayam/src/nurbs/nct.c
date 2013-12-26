@@ -3622,7 +3622,7 @@ ay_nct_getwinding(ay_nurbcurve_object *nc, double *normals,
 {
  double *cv, *p1, *p2;
  double V1[3], V2[3];
- double l, l1 = 0.0, l2 = 0.0;
+ double l1 = 0.0, l2 = 0.0;
  int i, stride = 4;
  int a = 0, b = stride, c = 0, d = normalstride;
 
@@ -3636,15 +3636,11 @@ ay_nct_getwinding(ay_nurbcurve_object *nc, double *normals,
 	  if(!AY_V3COMP(p1, p2))
 	    {
 	      AY_V3SUB(V1, p2, p1);
-	      l = AY_V3LEN(V1);
-	      l1 += l;
+	      l1 += AY_V3LEN(V1);
 	      memcpy(V1, &(normals[c]), 3*sizeof(double));
-	      if(l < 1.0)
-		AY_V3SCAL(V1, l);
+
 	      AY_V3SUB(V1, V1, p1);
 	      memcpy(V2, &(normals[d]), 3*sizeof(double));
-	      if(l < 1.0)
-		AY_V3SCAL(V2, l);
 	      AY_V3SUB(V2, V2, p2);
 	      AY_V3SUB(V1, V2, V1);
 	      l2 += AY_V3LEN(V1);
@@ -5397,12 +5393,14 @@ ay_nct_getplane(int cvlen, int cvstride, double *cv)
  *  information to the transformation attributes and rotating the control
  *  points of the planar curve to the XY plane
  *
+ * \param[in] allow_flip if AY_TRUE also curves in the XY plane with
+ *  non clockwise winding will be changed (flipped)
  * \param[in,out] c curve object to process
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_nct_toxy(ay_object *c)
+ay_nct_toxy(int allow_flip, ay_object *c)
 {
  int ay_status = AY_OK;
  ay_acurve_object *ac = NULL;
@@ -5533,7 +5531,8 @@ ay_nct_toxy(ay_object *c)
   /* A is now perpendicular to the plane in which the curve is defined
      thus, we calculate angle and rotation axis (B) between A and Z (0,0,1) */
   angle = AY_R2D(acos(AY_V3DOT(A, Z)));
-  if((fabs(angle) < AY_EPSILON) || (fabs(angle - 180.0) < AY_EPSILON))
+  if((fabs(angle) < AY_EPSILON) ||
+     (!allow_flip && (fabs(angle - 180.0) < AY_EPSILON)))
     {
       /* Nothing to do, as curve ist properly aligned with
 	 XY plane already...*/
@@ -5607,7 +5606,7 @@ ay_nct_toxytcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_status = ay_nct_toxy(src);
+	  ay_status = ay_nct_toxy(/*allow_flip=*/AY_FALSE, src);
 	  if(ay_status)
 	    {
 	      ay_error(ay_status, argv[0],
@@ -7446,7 +7445,7 @@ ay_nct_isplanar(ay_object *c, ay_object **cp, int *is_planar)
   if(ay_status || !tmp)
     return;
 
-  ay_status = ay_nct_toxy(tmp);
+  ay_status = ay_nct_toxy(/*allow_flip=*/AY_TRUE, tmp);
 
   if(!ay_status)
     {
