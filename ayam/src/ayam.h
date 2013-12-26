@@ -984,17 +984,12 @@ typedef struct ay_revolve_object_s
   double thetamax; /**< angle of revolution (degrees) */
   int sections; /**< number of sections in U direction */
   int order; /**< desired order in U direction */
-  int has_upper_cap; /**< create upper cap? */
-  ay_object *upper_cap; /**< cached upper cap */
-  int has_lower_cap; /**< create lower cap? */
-  ay_object *lower_cap; /**< cached lower cap */
-  int has_start_cap; /**< create start cap (at theta 0)? */
-  ay_object *start_cap; /**< cached start cap */
-  int has_end_cap; /**< create end cap (at thetamax)? */
-  ay_object *end_cap; /**< cached end cap */
 
   /** cached NURBS patch representation */
   ay_object *npatch;
+
+  /** cached caps and bevel objects */
+  ay_object *caps_and_bevels;
 
   double glu_sampling_tolerance; /**< drawing quality */
   int display_mode; /**< drawing mode */
@@ -1045,10 +1040,6 @@ typedef struct ay_sweep_object_s
 /** Swung surface object */
 typedef struct ay_swing_object_s
 {
-  int has_upper_cap; /**< create upper cap? */
-  int has_lower_cap; /**< create lower cap? */
-  int has_start_cap; /**< create start cap? */
-  int has_end_cap; /**< create end cap? */
 
   /** cached NURBS patch representation */
   ay_object *npatch;

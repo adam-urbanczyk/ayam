@@ -63,17 +63,8 @@ ay_revolve_deletecb(void *c)
   if(revolve->npatch)
     (void)ay_object_delete(revolve->npatch);
 
-  if(revolve->upper_cap)
-    (void)ay_object_delete(revolve->upper_cap);
-
-  if(revolve->lower_cap)
-    (void)ay_object_delete(revolve->lower_cap);
-
-  if(revolve->start_cap)
-    (void)ay_object_delete(revolve->start_cap);
-
-  if(revolve->end_cap)
-    (void)ay_object_delete(revolve->end_cap);
+  if(revolve->caps_and_bevels)
+    (void)ay_object_deletemulti(revolve->caps_and_bevels, AY_FALSE);
 
   free(revolve);
 
@@ -98,10 +89,7 @@ ay_revolve_copycb(void *src, void **dst)
   memcpy(revolve, src, sizeof(ay_revolve_object));
 
   revolve->npatch = NULL;
-  revolve->upper_cap = NULL;
-  revolve->lower_cap = NULL;
-  revolve->start_cap = NULL;
-  revolve->end_cap = NULL;
+  revolve->caps_and_bevels = NULL;
 
   *dst = (void *)revolve;
 
@@ -116,6 +104,7 @@ int
 ay_revolve_drawcb(struct Togl *togl, ay_object *o)
 {
  ay_revolve_object *revolve = NULL;
+ ay_object *b;
 
   if(!o)
     return AY_ENULL;
@@ -128,17 +117,15 @@ ay_revolve_drawcb(struct Togl *togl, ay_object *o)
   if(revolve->npatch)
     ay_draw_object(togl, revolve->npatch, AY_TRUE);
 
-  if(revolve->upper_cap)
-    ay_draw_object(togl, revolve->upper_cap, AY_TRUE);
-
-  if(revolve->lower_cap)
-    ay_draw_object(togl, revolve->lower_cap, AY_TRUE);
-
-  if(revolve->start_cap)
-    ay_draw_object(togl, revolve->start_cap, AY_TRUE);
-
-  if(revolve->end_cap)
-    ay_draw_object(togl, revolve->end_cap, AY_TRUE);
+  if(revolve->caps_and_bevels)
+    {
+      b = revolve->caps_and_bevels;
+      while(b)
+	{
+	  ay_draw_object(togl, b, AY_TRUE);
+	  b = b->next;
+	}
+    }
 
  return AY_OK;
 } /* ay_revolve_drawcb */
@@ -151,6 +138,7 @@ int
 ay_revolve_shadecb(struct Togl *togl, ay_object *o)
 {
  ay_revolve_object *revolve = NULL;
+ ay_object *b;
 
   if(!o)
     return AY_ENULL;
@@ -163,17 +151,15 @@ ay_revolve_shadecb(struct Togl *togl, ay_object *o)
   if(revolve->npatch)
     ay_shade_object(togl, revolve->npatch, AY_FALSE);
 
-  if(revolve->upper_cap)
-    ay_shade_object(togl, revolve->upper_cap, AY_FALSE);
-
-  if(revolve->lower_cap)
-    ay_shade_object(togl, revolve->lower_cap, AY_FALSE);
-
-  if(revolve->start_cap)
-    ay_shade_object(togl, revolve->start_cap, AY_FALSE);
-
-  if(revolve->end_cap)
-    ay_shade_object(togl, revolve->end_cap, AY_FALSE);
+  if(revolve->caps_and_bevels)
+    {
+      b = revolve->caps_and_bevels;
+      while(b)
+	{
+	  ay_shade_object(togl, b, AY_FALSE);
+	  b = b->next;
+	}
+    }
 
  return AY_OK;
 } /* ay_revolve_shadecb */
@@ -285,22 +271,6 @@ ay_revolve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(revolve->order));
 
-  Tcl_SetStringObj(ton,"UpperCap",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(revolve->has_upper_cap));
-
-  Tcl_SetStringObj(ton,"LowerCap",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(revolve->has_lower_cap));
-
-  Tcl_SetStringObj(ton,"StartCap",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(revolve->has_start_cap));
-
-  Tcl_SetStringObj(ton,"EndCap",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(revolve->has_end_cap));
-
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(revolve->display_mode));
@@ -354,26 +324,6 @@ ay_revolve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_NewIntObj(revolve->order);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"UpperCap",-1);
-  to = Tcl_NewIntObj(revolve->has_upper_cap);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"LowerCap",-1);
-  to = Tcl_NewIntObj(revolve->has_lower_cap);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"StartCap",-1);
-  to = Tcl_NewIntObj(revolve->has_start_cap);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"EndCap",-1);
-  to = Tcl_NewIntObj(revolve->has_end_cap);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_NewIntObj(revolve->display_mode);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
@@ -400,6 +350,7 @@ int
 ay_revolve_readcb(FILE *fileptr, ay_object *o)
 {
  ay_revolve_object *revolve = NULL;
+ int caps[4] = {0};
 
   if(!fileptr || !o)
     return AY_ENULL;
@@ -408,10 +359,10 @@ ay_revolve_readcb(FILE *fileptr, ay_object *o)
     { return AY_EOMEM; }
 
   fscanf(fileptr,"%lg\n",&revolve->thetamax);
-  fscanf(fileptr,"%d\n",&revolve->has_upper_cap);
-  fscanf(fileptr,"%d\n",&revolve->has_lower_cap);
-  fscanf(fileptr,"%d\n",&revolve->has_start_cap);
-  fscanf(fileptr,"%d\n",&revolve->has_end_cap);
+  fscanf(fileptr,"%d\n",&caps[0]);
+  fscanf(fileptr,"%d\n",&caps[1]);
+  fscanf(fileptr,"%d\n",&caps[2]);
+  fscanf(fileptr,"%d\n",&caps[3]);
   fscanf(fileptr,"%d\n",&revolve->display_mode);
   fscanf(fileptr,"%lg\n",&revolve->glu_sampling_tolerance);
 
@@ -420,6 +371,12 @@ ay_revolve_readcb(FILE *fileptr, ay_object *o)
       /* since 1.8 */
       fscanf(fileptr,"%d\n",&revolve->sections);
       fscanf(fileptr,"%d\n",&revolve->order);
+    }
+
+  if(ay_read_version < 16)
+    {
+      /* before Ayam 1.21 */
+      ay_capt_createtags(o, caps);
     }
 
   o->refine = revolve;
@@ -435,6 +392,8 @@ int
 ay_revolve_writecb(FILE *fileptr, ay_object *o)
 {
  ay_revolve_object *revolve = NULL;
+ ay_cparam cparams = {0};
+ int caps[4] = {0};
 
   if(!fileptr || !o)
     return AY_ENULL;
@@ -444,11 +403,25 @@ ay_revolve_writecb(FILE *fileptr, ay_object *o)
   if(!revolve)
     return AY_ENULL;
 
+  if(o->tags)
+    {
+      /* for backwards compatibility wrt. caps */
+      ay_capt_parsetags(o->tags, &cparams);
+      if(cparams.states[0])
+	caps[0] = cparams.types[0]+1;
+      if(cparams.states[1])
+	caps[1] = cparams.types[1]+1;
+      if(cparams.states[2])
+	caps[2] = cparams.types[2]+1;
+      if(cparams.states[3])
+	caps[3] = cparams.types[3]+1;
+    }
+
   fprintf(fileptr, "%g\n", revolve->thetamax);
-  fprintf(fileptr, "%d\n", revolve->has_upper_cap);
-  fprintf(fileptr, "%d\n", revolve->has_lower_cap);
-  fprintf(fileptr, "%d\n", revolve->has_start_cap);
-  fprintf(fileptr, "%d\n", revolve->has_end_cap);
+  fprintf(fileptr, "%d\n", caps[0]);
+  fprintf(fileptr, "%d\n", caps[1]);
+  fprintf(fileptr, "%d\n", caps[2]);
+  fprintf(fileptr, "%d\n", caps[3]);
   fprintf(fileptr, "%d\n", revolve->display_mode);
   fprintf(fileptr, "%g\n", revolve->glu_sampling_tolerance);
   fprintf(fileptr, "%d\n", revolve->sections);
@@ -465,6 +438,7 @@ int
 ay_revolve_wribcb(char *file, ay_object *o)
 {
  ay_revolve_object *revolve = NULL;
+ ay_object *b;
 
   if(!o)
    return AY_ENULL;
@@ -477,17 +451,15 @@ ay_revolve_wribcb(char *file, ay_object *o)
   if(revolve->npatch)
     ay_wrib_toolobject(file, revolve->npatch, o);
 
-  if(revolve->upper_cap)
-    ay_wrib_toolobject(file, revolve->upper_cap, o);
-
-  if(revolve->lower_cap)
-    ay_wrib_toolobject(file, revolve->lower_cap, o);
-
-  if(revolve->start_cap)
-    ay_wrib_toolobject(file, revolve->start_cap, o);
-
-  if(revolve->end_cap)
-    ay_wrib_toolobject(file, revolve->end_cap, o);
+  if(revolve->caps_and_bevels)
+    {
+      b = revolve->caps_and_bevels;
+      while(b)
+	{
+	  ay_wrib_object(file, b);
+	  b = b->next;
+	}
+    }
 
  return AY_OK;
 } /* ay_revolve_wribcb */
@@ -1042,6 +1014,7 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
 	nc->glu_sampling_tolerance;
       ((ay_nurbcurve_object *)(trim->refine))->display_mode =
 	nc->display_mode;
+
       /* prevent cleanup code from doing something harmful */
       controlv = NULL;
 
@@ -1109,12 +1082,15 @@ int
 ay_revolve_notifycb(ay_object *o)
 {
  int ay_status = AY_OK, phase = 0;
- ay_revolve_object *revolve = NULL;
  char fname[] = "revolve_notify";
- ay_object *curve = NULL, *pobject = NULL, *npatch = NULL;
+ ay_object *curve = NULL, *pobject = NULL, **nextcb = NULL, *newo = NULL;
+ ay_revolve_object *revolve = NULL;
  ay_nurbcurve_object *nc = NULL;
  int is_provided = AY_FALSE, mode = 0;
  double tolerance;
+ ay_object *bevel = NULL;
+ ay_bparam bparams = {0};
+ ay_cparam cparams = {0};
 
   if(!o)
     return AY_ENULL;
@@ -1127,26 +1103,18 @@ ay_revolve_notifycb(ay_object *o)
   mode = revolve->display_mode;
   tolerance = revolve->glu_sampling_tolerance;
 
+  nextcb = &(revolve->caps_and_bevels);
+
   /* remove old objects */
   if(revolve->npatch)
     (void)ay_object_delete(revolve->npatch);
   revolve->npatch = NULL;
 
-  if(revolve->upper_cap)
-    (void)ay_object_delete(revolve->upper_cap);
-  revolve->upper_cap = NULL;
-
-  if(revolve->lower_cap)
-    (void)ay_object_delete(revolve->lower_cap);
-  revolve->lower_cap = NULL;
-
-  if(revolve->start_cap)
-    (void)ay_object_delete(revolve->start_cap);
-  revolve->start_cap = NULL;
-
-  if(revolve->end_cap)
-    (void)ay_object_delete(revolve->end_cap);
-  revolve->end_cap = NULL;
+  if(revolve->caps_and_bevels)
+    {
+      (void)ay_object_deletemulti(revolve->caps_and_bevels, AY_FALSE);
+      revolve->caps_and_bevels = NULL;
+    }
 
   /* get curve to revolve */
   if(!o->down || !o->down->next)
@@ -1170,65 +1138,70 @@ ay_revolve_notifycb(ay_object *o)
 
   /* revolve */
   phase = 1;
-  ay_status = ay_npt_createnpatchobject(&npatch);
+  ay_status = ay_npt_createnpatchobject(&newo);
 
   if(ay_status)
     goto cleanup;
 
   ay_status = ay_npt_revolve(curve, revolve->thetamax, revolve->sections,
 			     revolve->order,
-			  (ay_nurbpatch_object **)(void*)&(npatch->refine));
+			  (ay_nurbpatch_object **)(void*)&(newo->refine));
 
   if(ay_status)
     goto cleanup;
 
-  revolve->npatch = npatch;
-
-  ((ay_nurbpatch_object *)npatch->refine)->glu_sampling_tolerance =
-    tolerance;
-  ((ay_nurbpatch_object *)npatch->refine)->display_mode =
-    mode;
+  revolve->npatch = newo;
 
   nc = (ay_nurbcurve_object *)curve->refine;
 
-  /* create caps */
+  /* create bevels/caps */
   phase = 2;
-  if(revolve->has_upper_cap)
-    {
-      ay_status = ay_revolve_crtcap(revolve, curve,
-				    nc->knotv[nc->length], AY_TRUE,
-				    &(revolve->upper_cap));
-      if(ay_status)
-	goto cleanup;
-    } /* if */
 
-  if(revolve->has_lower_cap)
+  /* get bevel and cap parameters */
+  if(o->tags)
     {
-      ay_status = ay_revolve_crtcap(revolve, curve,
-				    nc->knotv[nc->order - 1], AY_FALSE,
-				    &(revolve->lower_cap));
-      if(ay_status)
-	goto cleanup;
-    } /* if */
+      ay_bevelt_parsetags(o->tags, &bparams);
+      ay_capt_parsetags(o->tags, &cparams);
+    }
 
-  if(revolve->has_start_cap)
+  /* create/add caps */
+  if(cparams.has_caps)
     {
-      ay_status = ay_revolve_crtside(revolve, curve, 0.0,
-				     &(revolve->start_cap));
+      ay_status = ay_capt_addcaps(&cparams, &bparams, revolve->npatch, nextcb);
       if(ay_status)
 	goto cleanup;
 
-      if(revolve->start_cap)
-	revolve->start_cap->scalz *= -1.0;
-    } /* if */
+      while(*nextcb)
+	nextcb = &((*nextcb)->next);
+    }
 
-  if(revolve->has_end_cap)
+  /* create/add bevels */
+  if(bparams.has_bevels)
     {
-      ay_status = ay_revolve_crtside(revolve, curve, revolve->thetamax,
-				    &(revolve->end_cap));
+      ay_status = ay_bevelt_addbevels(&bparams, &cparams, revolve->npatch,
+				      nextcb);
       if(ay_status)
 	goto cleanup;
-    } /* if */
+    }
+
+  /* copy sampling tolerance/mode over to new objects */
+  ((ay_nurbpatch_object *)revolve->npatch->refine)->glu_sampling_tolerance =
+    tolerance;
+  ((ay_nurbpatch_object *)revolve->npatch->refine)->display_mode =
+    mode;
+
+  if(revolve->caps_and_bevels)
+    {
+      bevel = revolve->caps_and_bevels;
+      while(bevel)
+	{
+	  ((ay_nurbpatch_object *)
+	   (bevel->refine))->glu_sampling_tolerance = tolerance;
+	  ((ay_nurbpatch_object *)
+	   (bevel->refine))->display_mode = mode;
+	  bevel = bevel->next;
+	}
+    }
 
 cleanup:
   /* remove provided object(s) */
@@ -1254,7 +1227,7 @@ cleanup:
 	  ay_error(AY_ERROR, fname, "Revolve failed.");
 	  break;
 	case 2:
-	  ay_error(AY_EWARN, fname, "Cap creation failed.");
+	  ay_error(AY_EWARN, fname, "Bevel/Cap creation failed.");
 	  ay_status = AY_OK;
 	  break;
 	default:
@@ -1272,125 +1245,17 @@ cleanup:
 int
 ay_revolve_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
- int ay_status = AY_OK;
- char fname[] = "revolve_providecb";
  ay_revolve_object *r = NULL;
- ay_object *new = NULL, **t = NULL, *p = NULL;
 
   if(!o)
     return AY_ENULL;
-
-  if(!result)
-    {
-      if(type == AY_IDNPATCH)
-	return AY_OK;
-      else
-	return AY_ERROR;
-    }
 
   r = (ay_revolve_object *) o->refine;
 
   if(!r)
     return AY_ENULL;
 
-  if(type == AY_IDNPATCH)
-    {
-      t = &(new);
-
-      if(!r->npatch)
-	return AY_ERROR;
-
-      /* copy revolution */
-      p = r->npatch;
-      while(p)
-	{
-	  ay_status = ay_object_copy(p, t);
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, fname, NULL);
-	      return AY_ERROR;
-	    }
-	  ay_trafo_copy(o, *t);
-	  t = &((*t)->next);
-	  p = p->next;
-	} /* while */
-
-      /* copy caps */
-      p = r->upper_cap;
-      while(p)
-	{
-	  ay_status = ay_object_copy(p, t);
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, fname, NULL);
-	      return AY_ERROR;
-	    }
-
-	  ay_npt_applytrafo(*t);
-	  ay_trafo_copy(o, *t);
-
-	  t = &((*t)->next);
-	  p = p->next;
-	} /* while */
-
-      p = r->lower_cap;
-      while(p)
-	{
-	  ay_status = ay_object_copy(p, t);
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, fname, NULL);
-	      return AY_ERROR;
-	    }
-
-	  ay_npt_applytrafo(*t);
-	  ay_trafo_copy(o, *t);
-
-	  t = &((*t)->next);
-	  p = p->next;
-	} /* while */
-
-      p = r->start_cap;
-      while(p)
-	{
-	  ay_status = ay_object_copy(p, t);
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, fname, NULL);
-	      return AY_ERROR;
-	    }
-
-	  ay_npt_applytrafo(*t);
-	  ay_trafo_copy(o, *t);
-
-	  t = &((*t)->next);
-	  p = p->next;
-	} /* while */
-
-      p = r->end_cap;
-      while(p)
-	{
-	  ay_status = ay_object_copy(p, t);
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, fname, NULL);
-	      return AY_ERROR;
-	    }
-
-	  ay_npt_applytrafo(*t);
-	  ay_trafo_copy(o, *t);
-
-	  t = &((*t)->next);
-	  p = p->next;
-	} /* while */
-
-      /* copy eventually present TP tags */
-      ay_npt_copytptag(o, new);
-
-      *result = new;
-    } /* if */
-
- return ay_status;
+ return ay_provide_nptoolobj(o, type, r->npatch, r->caps_and_bevels, result);
 } /* ay_revolve_providecb */
 
 
@@ -1400,165 +1265,17 @@ ay_revolve_providecb(ay_object *o, unsigned int type, ay_object **result)
 int
 ay_revolve_convertcb(ay_object *o, int in_place)
 {
- int ay_status = AY_OK;
  ay_revolve_object *r = NULL;
- ay_object *new = NULL, **next = NULL;
 
   if(!o)
     return AY_ENULL;
-
-  /* first, create new objects */
 
   r = (ay_revolve_object *) o->refine;
 
   if(!r)
     return AY_ENULL;
 
-  if((r->upper_cap) || (r->lower_cap) || (r->start_cap) || (r->end_cap))
-    {
-      if(!(new = calloc(1, sizeof(ay_object))))
-	{ return AY_EOMEM; }
-
-      ay_object_defaults(new);
-      new->type = AY_IDLEVEL;
-      new->parent = AY_TRUE;
-      new->inherit_trafos = AY_TRUE;
-      ay_trafo_copy(o, new);
-
-      if(!(new->refine = calloc(1, sizeof(ay_level_object))))
-	{ free(new); return AY_EOMEM; }
-
-      ((ay_level_object *)(new->refine))->type = AY_LTLEVEL;
-
-      next = &(new->down);
-
-      if(r->npatch)
-	{
-	  ay_status = ay_object_copy(r->npatch, next);
-	  if(*next)
-	    {
-	      /* reset display mode and sampling tolerance
-		 of new patch to "global"? */
-	      if(!in_place && ay_prefs.conv_reset_display)
-		{
-		  ay_npt_resetdisplay(*next);
-		}
-
-	      (*next)->hide_children = AY_TRUE;
-	      (*next)->parent = AY_TRUE;
-	      (*next)->down = ay_endlevel;
-	      next = &((*next)->next);
-	    }
-	} /* if */
-
-      if(r->upper_cap)
-	{
-	  ay_status = ay_object_copy(r->upper_cap, next);
-	  if(*next)
-	    {
-	      /* reset display mode and sampling tolerance
-		 of new patch to "global"? */
-	      if(!in_place && ay_prefs.conv_reset_display)
-		{
-		  ay_npt_resetdisplay(*next);
-		}
-
-	      next = &((*next)->next);
-	    }
-	}
-
-      if(r->lower_cap)
-	{
-	  ay_status = ay_object_copy(r->lower_cap, next);
-	  if(*next)
-	    {
-	      /* reset display mode and sampling tolerance
-		 of new patch to "global"? */
-	      if(!in_place && ay_prefs.conv_reset_display)
-		{
-		  ay_npt_resetdisplay(*next);
-		}
-
-	      next = &((*next)->next);
-	    }
-	}
-
-      if(r->start_cap)
-	{
-	  ay_status = ay_object_copy(r->start_cap, next);
-	  if(*next)
-	    {
-	      /* reset display mode and sampling tolerance
-		 of new patch to "global"? */
-	      if(!in_place && ay_prefs.conv_reset_display)
-		{
-		  ay_npt_resetdisplay(*next);
-		}
-
-	      next = &((*next)->next);
-	    }
-	}
-
-      if(r->end_cap)
-	{
-	  ay_status = ay_object_copy(r->end_cap, next);
-	  if(*next)
-	    {
-	      /* reset display mode and sampling tolerance
-		 of new patch to "global"? */
-	      if(!in_place && ay_prefs.conv_reset_display)
-		{
-		  ay_npt_resetdisplay(*next);
-		}
-
-	      next = &((*next)->next);
-	    }
-	}
-
-      /* copy eventually present TP tags */
-      ay_npt_copytptag(o, new->down);
-      *next = ay_endlevel;
-    }
-  else
-    {
-      if(r->npatch)
-	{
-	  ay_status = ay_object_copy(r->npatch, &new);
-	  if(new)
-	    {
-	      /* reset display mode and sampling tolerance
-		 of new patch to "global"? */
-	      if(!in_place && ay_prefs.conv_reset_display)
-		{
-		  ay_npt_resetdisplay(new);
-		}
-
-	      ay_trafo_copy(o, new);
-	      new->hide_children = AY_TRUE;
-	      new->parent = AY_TRUE;
-	      new->down = ay_endlevel;
-
-	      /* copy eventually present TP tags */
-	      ay_npt_copytptag(o, new);
-	    }
-	} /* if */
-    } /* if */
-
-  /* second, link new objects, or replace old objects with them */
-
-  if(new)
-    {
-      if(!in_place)
-	{
-	  ay_object_link(new);
-	}
-      else
-	{
-	  ay_object_replace(new, o);
-	} /* if */
-    } /* if */
-
- return ay_status;
+ return ay_convert_nptoolobj(o, r->npatch, r->caps_and_bevels, in_place);
 } /* ay_revolve_convertcb */
 
 

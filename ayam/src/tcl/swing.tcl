@@ -14,7 +14,7 @@ set Swing 1
 proc init_Swing { } {
 global ay Swing_props SwingAttr SwingAttrData
 
-set Swing_props { Transformations Attributes Material Tags SwingAttr }
+set Swing_props { Transformations Attributes Material Tags Bevels Caps SwingAttr }
 
 array set SwingAttr {
 arr   SwingAttrData
@@ -26,15 +26,12 @@ w     fSwingAttr
 array set SwingAttrData {
 DisplayMode 1
 NPInfoBall "n/a"
+BoundaryNames { "Start" "End" "Upper" "Lower" }
+BoundaryIDs { 2 3 0 1 }
 }
 
 # create SwingAttr-UI
 set w [frame $ay(pca).$SwingAttr(w)]
-addVSpace $w s1 2
-addCheck $w SwingAttrData UpperCap
-addCheck $w SwingAttrData LowerCap
-addCheck $w SwingAttrData StartCap
-addCheck $w SwingAttrData EndCap
 
 addParam $w SwingAttrData Tolerance
 addMenu $w SwingAttrData DisplayMode $ay(npdisplaymodes)

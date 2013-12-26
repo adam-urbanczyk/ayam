@@ -257,22 +257,6 @@ ay_swing_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
-  Tcl_SetStringObj(ton,"UpperCap",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(swing->has_upper_cap));
-
-  Tcl_SetStringObj(ton,"LowerCap",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(swing->has_lower_cap));
-
-  Tcl_SetStringObj(ton,"StartCap",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(swing->has_start_cap));
-
-  Tcl_SetStringObj(ton,"EndCap",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(swing->has_end_cap));
-
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(swing->display_mode));
@@ -314,26 +298,6 @@ ay_swing_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
-  Tcl_SetStringObj(ton,"UpperCap",-1);
-  to = Tcl_NewIntObj(swing->has_upper_cap);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"LowerCap",-1);
-  to = Tcl_NewIntObj(swing->has_lower_cap);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"StartCap",-1);
-  to = Tcl_NewIntObj(swing->has_start_cap);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"EndCap",-1);
-  to = Tcl_NewIntObj(swing->has_end_cap);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_NewIntObj(swing->display_mode);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
@@ -360,6 +324,7 @@ int
 ay_swing_readcb(FILE *fileptr, ay_object *o)
 {
  ay_swing_object *swing = NULL;
+ int caps[4] = {0};
 
   if(!fileptr || !o)
     return AY_ENULL;
@@ -367,12 +332,18 @@ ay_swing_readcb(FILE *fileptr, ay_object *o)
   if(!(swing = calloc(1, sizeof(ay_swing_object))))
     { return AY_EOMEM; }
 
-  fscanf(fileptr,"%d\n",&swing->has_upper_cap);
-  fscanf(fileptr,"%d\n",&swing->has_lower_cap);
-  fscanf(fileptr,"%d\n",&swing->has_start_cap);
-  fscanf(fileptr,"%d\n",&swing->has_end_cap);
+  fscanf(fileptr,"%d\n",&caps[0]);
+  fscanf(fileptr,"%d\n",&caps[1]);
+  fscanf(fileptr,"%d\n",&caps[2]);
+  fscanf(fileptr,"%d\n",&caps[3]);
   fscanf(fileptr,"%d\n",&swing->display_mode);
   fscanf(fileptr,"%lg\n",&swing->glu_sampling_tolerance);
+
+  if(ay_read_version < 16)
+    {
+      /* before Ayam 1.21 */
+      ay_capt_createtags(o, caps);
+    }
 
   o->refine = swing;
 
@@ -387,6 +358,8 @@ int
 ay_swing_writecb(FILE *fileptr, ay_object *o)
 {
  ay_swing_object *swing = NULL;
+ ay_cparam cparams = {0};
+ int caps[4] = {0};
 
   if(!fileptr || !o)
     return AY_ENULL;
@@ -396,10 +369,24 @@ ay_swing_writecb(FILE *fileptr, ay_object *o)
   if(!swing)
     return AY_ENULL;
 
-  fprintf(fileptr, "%d\n", swing->has_upper_cap);
-  fprintf(fileptr, "%d\n", swing->has_lower_cap);
-  fprintf(fileptr, "%d\n", swing->has_start_cap);
-  fprintf(fileptr, "%d\n", swing->has_end_cap);
+  if(o->tags)
+    {
+      /* for backwards compatibility wrt. caps */
+      ay_capt_parsetags(o->tags, &cparams);
+      if(cparams.states[0])
+	caps[0] = cparams.types[0]+1;
+      if(cparams.states[1])
+	caps[1] = cparams.types[1]+1;
+      if(cparams.states[2])
+	caps[2] = cparams.types[2]+1;
+      if(cparams.states[3])
+	caps[3] = cparams.types[3]+1;
+    }
+
+  fprintf(fileptr, "%d\n", caps[0]);
+  fprintf(fileptr, "%d\n", caps[1]);
+  fprintf(fileptr, "%d\n", caps[2]);
+  fprintf(fileptr, "%d\n", caps[3]);
   fprintf(fileptr, "%d\n", swing->display_mode);
   fprintf(fileptr, "%g\n", swing->glu_sampling_tolerance);
 
@@ -767,12 +754,12 @@ ay_swing_crtside(ay_swing_object *swing, ay_object *cso, ay_object *tro,
   else
     {
       /* if(ay_knots_isclamped(...))
-	 p = &(tr->controlv[(tr->length-1)*stride]);
+	   p = &(tr->controlv[(tr->length-1)*stride]);
 	 else
       */
       ay_nb_CurvePoint4D(tr->length-1, tr->order-1,
-		     tr->knotv, tr->controlv,
-		     tr->knotv[tr->length], P1);
+			 tr->knotv, tr->controlv,
+			 tr->knotv[tr->length], P1);
       p = P1;
     }
 
@@ -1058,9 +1045,11 @@ ay_swing_notifycb(ay_object *o)
 {
  int ay_status = AY_OK, phase = 0;
  char fname[] = "swing_notify";
+ ay_object *cs = NULL, *tr = NULL, *pobject = NULL, *newo = NULL;
+ ay_object *bevel, **nextcb;
  ay_swing_object *swing = NULL;
- ay_object *cs = NULL, *tr = NULL, *pobject = NULL, *npatch = NULL;
- ay_object **nextcb;
+ ay_bparam bparams = {0};
+ ay_cparam cparams = {0};
  int provided_cs = AY_FALSE, provided_tr = AY_FALSE, mode = 0;
  double tolerance;
 
@@ -1123,63 +1112,70 @@ ay_swing_notifycb(ay_object *o)
 
   /* swing */
   phase = 1;
-  ay_status = ay_npt_createnpatchobject(&npatch);
+  ay_status = ay_npt_createnpatchobject(&newo);
 
   if(ay_status)
     goto cleanup;
 
   ay_status = ay_npt_swing(cs, tr,
-			  (ay_nurbpatch_object **)(void*)&(npatch->refine));
+			  (ay_nurbpatch_object **)(void*)&(newo->refine));
 
   if(ay_status)
     {
-      free(npatch);
+      free(newo);
       goto cleanup;
     }
 
-  swing->npatch = npatch;
+  swing->npatch = newo;
 
-  ((ay_nurbpatch_object *)npatch->refine)->glu_sampling_tolerance =
+  /* create bevels&caps */
+  phase = 2;
+
+  /* get bevel and cap parameters */
+  if(o->tags)
+    {
+      ay_bevelt_parsetags(o->tags, &bparams);
+      ay_capt_parsetags(o->tags, &cparams);
+    }
+
+  /* create/add caps */
+  if(cparams.has_caps)
+    {
+      ay_status = ay_capt_addcaps(&cparams, &bparams, swing->npatch, nextcb);
+      if(ay_status)
+	goto cleanup;
+
+      while(*nextcb)
+	nextcb = &((*nextcb)->next);
+    }
+
+  /* create/add bevels */
+  if(bparams.has_bevels)
+    {
+      ay_status = ay_bevelt_addbevels(&bparams, &cparams, swing->npatch,
+				      nextcb);
+      if(ay_status)
+	goto cleanup;
+    }
+
+  /* copy sampling tolerance/mode over to new objects */
+  ((ay_nurbpatch_object *)swing->npatch->refine)->glu_sampling_tolerance =
     tolerance;
-  ((ay_nurbpatch_object *)npatch->refine)->display_mode =
+  ((ay_nurbpatch_object *)swing->npatch->refine)->display_mode =
     mode;
 
-  /* create caps */
-  phase = 2;
-  if(swing->has_upper_cap)
+  if(swing->caps_and_bevels)
     {
-      ay_status = ay_swing_crtcap(swing, AY_TRUE, nextcb);
-      if(ay_status)
-	goto cleanup;
-      nextcb = &((*nextcb)->next);
-    } /* if */
-
-  if(swing->has_lower_cap)
-    {
-      ay_status = ay_swing_crtcap(swing, AY_FALSE, nextcb);
-      if(ay_status)
-	goto cleanup;
-      nextcb = &((*nextcb)->next);
-    } /* if */
-
-  if(swing->has_start_cap)
-    {
-      ay_status = ay_swing_crtside(swing, cs, tr, AY_TRUE, nextcb);
-      if(ay_status)
-	goto cleanup;
-      /*
-      if(swing->start_cap)
-	swing->start_cap->scalz *= -1.0;
-      */
-      nextcb = &((*nextcb)->next);
-    } /* if */
-
-  if(swing->has_end_cap)
-    {
-      ay_status = ay_swing_crtside(swing, cs, tr, AY_FALSE, nextcb);
-      if(ay_status)
-	goto cleanup;
-    } /* if */
+      bevel = swing->caps_and_bevels;
+      while(bevel)
+	{
+	  ((ay_nurbpatch_object *)
+	   (bevel->refine))->glu_sampling_tolerance = tolerance;
+	  ((ay_nurbpatch_object *)
+	   (bevel->refine))->display_mode = mode;
+	  bevel = bevel->next;
+	}
+    }
 
 cleanup:
   /* remove provided object(s) */
@@ -1209,7 +1205,7 @@ cleanup:
 	  ay_error(AY_ERROR, fname, "Swing failed.");
 	  break;
 	case 2:
-	  ay_error(AY_EWARN, fname, "Cap creation failed.");
+	  ay_error(AY_EWARN, fname, "Bevel/Cap creation failed.");
 	  ay_status = AY_OK;
 	  break;
 	default:
