@@ -14,7 +14,7 @@ set Revolve 1
 proc init_Revolve { } {
 global ay Revolve_props RevolveAttr RevolveAttrData
 
-set Revolve_props { Transformations Attributes Material Tags RevolveAttr }
+set Revolve_props { Transformations Attributes Material Tags Bevels Caps RevolveAttr }
 
 array set RevolveAttr {
 arr   RevolveAttrData
@@ -26,6 +26,8 @@ w     fRevolveAttr
 array set RevolveAttrData {
 DisplayMode 1
 NPInfoBall "n/a"
+BoundaryNames { "Upper" "Lower" "Start" "End" }
+BoundaryIDs { 2 3 0 1 }
 }
 
 # create RevolveAttr-UI
@@ -34,11 +36,6 @@ addVSpace $w s1 2
 addParam $w RevolveAttrData ThetaMax
 addParam $w RevolveAttrData Sections
 addParam $w RevolveAttrData Order
-
-addCheck $w RevolveAttrData UpperCap
-addCheck $w RevolveAttrData LowerCap
-addCheck $w RevolveAttrData StartCap
-addCheck $w RevolveAttrData EndCap
 
 addParam $w RevolveAttrData Tolerance
 addMenu $w RevolveAttrData DisplayMode $ay(npdisplaymodes)

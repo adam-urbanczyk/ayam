@@ -841,11 +841,7 @@ ay_comp_revolve(ay_object *o1, ay_object *o2)
   r1 = (ay_revolve_object *)o1->refine;
   r2 = (ay_revolve_object *)o2->refine;
 
-  if((r1->has_upper_cap != r2->has_upper_cap) ||
-     (r1->has_lower_cap != r2->has_lower_cap) ||
-     (r1->has_start_cap != r2->has_start_cap) ||
-     (r1->has_end_cap != r2->has_end_cap) ||
-     (r1->thetamax != r2->thetamax) ||
+  if((r1->thetamax != r2->thetamax) ||
      (r1->sections != r2->sections) ||
      (r1->order != r2->order))
     return AY_FALSE;
@@ -890,13 +886,6 @@ ay_comp_swing(ay_object *o1, ay_object *o2)
 
   s1 = (ay_swing_object *)o1->refine;
   s2 = (ay_swing_object *)o2->refine;
-
-  if((s1->has_upper_cap != s2->has_upper_cap) ||
-     (s1->has_lower_cap != s2->has_lower_cap) ||
-     (s1->has_start_cap != s2->has_start_cap) ||
-     (s1->has_end_cap != s2->has_end_cap)
-     )
-    return AY_FALSE;
 
  return AY_TRUE;
 } /* ay_comp_swing */
