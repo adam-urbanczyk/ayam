@@ -789,7 +789,7 @@ ay_nct_shiftctcmd(ClientData clientData, Tcl_Interp *interp,
 
 /** Rotate curve to XY plane.
  */
-int ay_nct_toxy(ay_object *c);
+int ay_nct_toxy(int allow_flip, ay_object *c);
 
 /** Tcl command to rotate selected NURBS curves to XY plane.
  */

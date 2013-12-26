@@ -153,6 +153,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		is_planar = AY_FALSE;
 	      else
 		ay_nct_isplanar(&curve, &alignedcurve, &is_planar);
+
 	    }
 	  else
 	    {
@@ -683,7 +684,7 @@ ay_bevelt_create(int type, double radius, int align, ay_object *o,
 
       /* adjust orientation of curve (next sections only work properly,
 	 when curve is planar in XY plane) */
-      ay_status = ay_nct_toxy(o);
+      ay_status = ay_nct_toxy(/*allow_flip=*/AY_FALSE, o);
       if(ay_status)
 	{
 	  free(patch); free(controlv); free(uknotv); free(vknotv);
