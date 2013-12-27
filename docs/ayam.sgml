@@ -50,8 +50,6 @@ There are HTML and PDF versions of this document prepared.
 In addition, one can use the provided SGML-source to generate other formats.
 </abstract>
 
-<header><lhead>bla</lhead><rhead>blubb</rhead></header>
-
 <toc>
 
 <sect>Introduction
@@ -918,8 +916,12 @@ Also note that referenced objects, when moved into the clipboard with
 See also section <ref id="instclip" name="Instances and the Object Clipboard">.
 
 
-<item><tt/"Delete"/, removes the selected object(s) from the scene.
-<newline>
+<item><tt/"Delete"/, removes the selected object(s) and their children
+from the scene.<newline>
+This operation may fail for master objects (objects with instances/references)
+or for parent objects with master objects among their children.
+In case of failure, an error will be reported and the undeletable object(s)
+will be moved to the end of the current level.<newline>
 This operation cannot be undone!
 
 <item><tt/"Select All"/, selects all objects in the current level
@@ -13226,15 +13228,19 @@ centered quadratic curve with width 2.0 and height 2.0 instead.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="scdelOb">
-delOb:
+<label id="scdelob">
+delOb &ndash; delete object(s):
 <itemize>
- <item>Synopsis: <tt>"delOb"</tt>
+ <item>Synopsis: <tt/"delOb"/
  <item>Background: Yes, Undo: No, Safe: Yes
- <item>Description: This command removes the selected object(s) and
-their children from the scene.
-The removal may not be possible, if there are references of the selected
-object(s) or their children.
+ <item>Description: Delete the selected object(s) and their children
+from the scene.
+This operation fails for the root object.
+This operation may fail for master objects (objects with instances/references)
+or for parent objects with master objects among their children.
+In case of failure, an error will be reported and the undeletable object(s)
+will be moved to the end of the current level. The root object, however,
+will never be moved.
 </itemize>
 
 <p>
@@ -13261,6 +13267,18 @@ getName:
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: This command writes the name of the
 selected object into the variable varname.
+</itemize>
+
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
+<label id="scnameob">
+nameOb:
+<itemize>
+ <item>Synopsis: <tt>"nameOb name"</tt>
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: This command sets the name of the
+selected object(s).
 </itemize>
 
 <p>
@@ -13453,6 +13471,8 @@ copOb &ndash; copy object(s):
  <item>Description: Copy the selected object(s) to the object clipboard.
 If the option <tt/"-append"/ is used, the clipboard will not be cleared
 before this operation.
+ <item>Notes: May fail if the clipboard contains referenced objects.
+If the append option is set, this operation never fails.
 </itemize>
 <p>
 <#if out=latex><x/phantomsection/</#if>
@@ -13465,6 +13485,8 @@ cutOb &ndash; cut object(s):
  <item>Description: Move the selected object(s) into the object clipboard.
 If the option <tt/"-append"/ is used, the clipboard will not be cleared
 before this operation.
+ <item>Notes: May fail if the clipboard contains referenced objects.
+If the append option is set, this operation never fails.
 </itemize>
 <p>
 <#if out=latex><x/phantomsection/</#if>
@@ -13476,7 +13498,10 @@ pasOb &ndash; paste object(s):
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Copy the selected object(s) from the object
 clipboard to the current level. If the option <tt/"-move"/ is given,
-the objects are moved and not copied.
+the objects are moved and not copied, i.e.~after a move, the clipboard
+is empty.
+ <item>Notes: This operation may fail if the result is an illegal
+instance configuration (recursive references).
 </itemize>
 <p>
 <#if out=latex><x/phantomsection/</#if>
@@ -13490,32 +13515,12 @@ repOb &ndash; replace clipboard content with selected object(s):
 with the currently selected object(s). If multiple objects are selected
 in non consecutive sequences, only the first consecutive sequence
 or single object is replaced.
+ <item>Notes: This operation may fail if the result is an illegal
+instance configuration (recursive references).
 </itemize>
 <p>
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="scdelob">
-delOb &ndash; delete object(s):
-<itemize>
- <item>Synopsis: <tt/"delOb"/
- <item>Background: Yes, Undo: No, Safe: Yes
- <item>Description: Delete the selected object(s) from the scene.
-This operation fails for master objects (objects with instances/references).
-</itemize>
-<p>
-<#if out=latex><x/phantomsection/</#if>
-
-Note that most of the object clipboard commands fail for root and view
-objects.
-<p>
-As <tt/"copOb"/ and <tt/"cutOb"/ may need to clear the object clipboard,
-they can also fail if master objects (objects with instances/references)
-are currently inside the object clipboard.
-<p>
-Furthermore, the object clipboard commands check whether or not their
-result would be an illegal instance configuration (master of a level inside
-this level) and also fail if this is the case.
-<p>
 The following procedures operate the property clipboard,
 which is totally independent from the object clipboard.
 <p>
@@ -19581,6 +19586,7 @@ Index:
 <list>
 <item>genfnPo: <ref id="scgenfnPo" name="scripting interface command">
 <item>gensnPo: <ref id="scgensnPo" name="scripting interface command">
+<item>getName: <ref id="scgetname" name="scripting interface command">
 <item>getPnt: <ref id="scgetpnt" name="scripting interface command">
 <item>getPrefs: <ref id="scgetprefs" name="scripting interface command">
 <item>getProperty: <ref id="scgetproperty" name="scripting interface command">
@@ -19850,6 +19856,7 @@ Index:
 
 <label id="indexn"><tt/<bf/N//
 <list>
+<item>nameOb: <ref id="scnameob" name="scripting interface command">
 <item>NCDisplayMode: <ref id="prefdraw" name="preference setting">
 <item>NCDisplayModeA: <ref id="prefdraw" name="preference setting">
 <item>NCircle: <ref id="ncircleobj" name="NCircle object">
