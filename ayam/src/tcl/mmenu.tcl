@@ -305,7 +305,7 @@ $m add command -label "View" \
     -underline 0
 $m add separator
 $m add command -label "Instance" \
-    -command "crtOb Instance; uCR; sL; notifyOb; rV;" \
+    -command "crtInstances; uCR; sL; notifyOb; rV;" \
     -underline 1
 #    ^^^^^^^^^^^ => N
 $m add command -label "Clone" -command "level_crt Clone;" \
