@@ -106,3 +106,19 @@ proc instance_edit { } {
  return;
 }
 #  instance_edit
+
+
+# crtInstances:
+#  helper to create instances from all selected objects
+#
+proc crtInstances { } {
+    set selection ""
+    getSel selection
+    if { $selection == "" } {
+	ayError 2 "crtInstances" "Please select an object!"
+    } else {
+	forAll -r 0 { crtOb Instance; }
+    }
+ return;
+}
+# crtInstances
