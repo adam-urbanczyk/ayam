@@ -385,11 +385,11 @@ proc toolbox_open { {w .tbw} } {
 
 	    #####
 	    button $f.binst -image ay_Instance_img -padx 0 -pady 0 -command {
-		crtOb Instance; uCR; sL; rV;
+		crtInstances; uCR; sL; rV;
 	    }
 	    bind $f.binst <Control-ButtonPress-1> {
 		%W configure -relief sunken
-		crtOb Instance; uCR; rV;
+		crtInstances; uCR; rV;
 		after 100 "%W configure -relief raised"
 		break;
 	    }
