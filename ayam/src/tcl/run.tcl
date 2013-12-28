@@ -124,86 +124,82 @@ proc runTool { argvars argstrings command title {advargs ""} } {
 # runTool
 
 
-###################################
-# runGetStderr:
-#
-proc runGetStderr { num cmd channel } {
+# updateRenderProgress:
+# helper for runGetOutput, updates the progress widget of
+# the corresponding rendering window, also computes
+# the elapsed/remaining rendering time
+proc updateRenderProgress { num percent } {
+    global ay
+    update
+    if { [string index [.render${num}.f2.la cget -text] 0] == "~" } {
 
-    if { [eof $channel] } {
-        # program completed
-        catch { close $channel }
-    } else {
-        set xx [gets $channel]
-	if { $xx != "" } {
-	    ayError 2 $cmd $xx
+	catch { SetProgress .render${num}.f1.p $percent }
+
+	set cur [clock seconds]
+	set start $ay(rstarttime${num})
+	set fulltime [expr ($cur-$start)*100.0/$percent]
+	set togo [expr (100.0-$percent)*$fulltime/100.0]
+	set hours [expr int(floor($togo/3600))]
+	set mins [expr int(floor(($togo-($hours*3600))/60))]
+	set secs [expr int(round($togo-($hours*3600)-($mins*60)))]
+	set string [format "~ %d:%02d:%02d to go" $hours $mins $secs]
+	catch { .render${num}.f2.la configure -text $string }
+	if { $percent >= 100 } {
+	    set fulltime [expr ($cur-$start)]
+	    set hours [expr int(floor($fulltime/3600))]
+	    set mins [expr int(floor(($fulltime-($hours*3600))/60))]
+	    set secs [expr int(round($fulltime-($hours*3600)-\
+					 ($mins*60)))]
+	    set string [format "%d:%02d:%02d elapsed" \
+			    $hours $mins $secs]
+	    catch { .render${num}.f2.la configure -text $string }
+	    if {$ay(renderbeep${num})} {bell}
 	}
+	# if
     }
+    #if
+    update
+ return;
 }
-# runGetStderr
+# updateRenderProgress
 
 
 ###################################
-# runGetStdout:
-#
-proc runGetStdout { num cmd template channel } {
+# runGetOutput:
+# get and parse the renderer output from stdout/stderr
+proc runGetOutput { iserr num cmd template channel } {
     global ayprefs ay
     if { [eof $channel] } {
-        # program completed => invoke cancel button to properly
-	# clean up all processes and destroy the RenderGUI window
-	catch { .render${num}.bca invoke }
+	if { $iserr } {
+	    # program completed => invoke cancel button to properly
+	    # clean up all processes and destroy the RenderGUI window
+	    catch { .render${num}.bca invoke }
+	} else {
+	    # chan is stdout
+	    catch { close $channel }
+	}
     } else {
         set xx [gets $channel]
-
 	set percent 0
-	if { $ayprefs(RenderPT) != "" } {
+	if { $template != "" } {
 	    if { [ string first "regexp" $template ] == 0 } {
 		regsub "string" $template "{$xx}" template2
 		eval $template2
 	    } else {
 		scan $xx $template percent
 	    }
-	} else {
-	    ayError 4 $cmd $xx
 	}
-
-	update
 	if { $percent != 0 } {
-	    if { [string index [.render${num}.f2.la cget -text] 0] == "~" } {
-
-		catch { SetProgress .render${num}.f1.p $percent }
-
-		set cur [clock seconds]
-		set start $ay(rstarttime${num})
-		set fulltime [expr ($cur-$start)*100.0/$percent]
-		set togo [expr (100.0-$percent)*$fulltime/100.0]
-		set hours [expr int(floor($togo/3600))]
-		set mins [expr int(floor(($togo-($hours*3600))/60))]
-		set secs [expr int(round($togo-($hours*3600)-($mins*60)))]
-		set string [format "~ %d:%02d:%02d to go" $hours $mins $secs]
-		catch { .render${num}.f2.la configure -text $string }
-		if { $percent >= 100 } {
-		    set fulltime [expr ($cur-$start)]
-		    set hours [expr int(floor($fulltime/3600))]
-		    set mins [expr int(floor(($fulltime-($hours*3600))/60))]
-		    set secs [expr int(round($fulltime-($hours*3600)-\
-			    ($mins*60)))]
-		    set string [format "%d:%02d:%02d elapsed" \
-			    $hours $mins $secs]
-		    catch { .render${num}.f2.la configure -text $string }
-
-		    if {$ay(renderbeep${num})} {bell}
-
-		}
-		# if
+	    updateRenderProgress $num $percent
+	} else {
+	    if { $iserr } {
+		ayError 4 $cmd $xx
 	    }
-	    #if
 	}
-	# if
-	update
     }
-    # if
+    # if eof
 }
-# runGetStdout
+# runGetOutput
 
 
 ###################################
@@ -234,13 +230,13 @@ proc runRenderer { cmd template } {
     set ioPipe [open "|$cat" r+]
     fconfigure $ioPipe -buffering none -blocking 0
     fileevent $ioPipe readable "\
-	runGetStderr $ay(rnum) [lindex $cmd 0] $ioPipe"
+     runGetOutput 1 $ay(rnum) [lindex $cmd 0] \"$template\" $ioPipe"
 
     set ioFid [open "|$cmd 2>@$ioPipe" r+]
 
     fconfigure $ioFid -buffering none -blocking 0
     fileevent $ioFid readable "\
-     runGetStdout $ay(rnum) [lindex $cmd 0] \"$template\" $ioFid"
+     runGetOutput 0 $ay(rnum) [lindex $cmd 0] \"$template\" $ioFid"
 
     global pids
     set pids [list [pid $ioPipe]]
@@ -272,35 +268,30 @@ proc runRenderer { cmd template } {
     if { $tcl_platform(platform) == "windows" } {
 	checkbutton $f.cb -image emptyimg -variable ay(renderbeep$ay(rnum))\
 		-bd 1 -indicatoron 0 -selectcolor #b03060
-	balloon_set $f.cb "Beep when finished."
 	pack $f.cb -in $f -side left -pady 2 -expand yes -anchor center
     } else {
 	checkbutton $f.cb -variable ay(renderbeep$ay(rnum))
-	balloon_set $f.cb "Beep when finished."
 	pack $f.cb -in $f -side left -fill x -expand yes
     }
+    balloon_set $f.cb "Beep when finished."
     pack $f -in $w -side top -fill x
 
     button $w.bca -text "Cancel!" -width 16 -command "\
-	    set dontwait 0;
+	    catch \{ fileevent $ioPipe readable \"\" \};
+	    catch \{ fileevent $ioFid readable \"\" \};
+            catch \{ close $ioPipe \};
+            catch \{ close $ioFid \};
 	    foreach i {$pids} {
 	     if { \"$kill\" == \"w32kill\" } {
 	      catch \{ w32kill \$i; \} result } else {
 	      catch \{ exec $kill \$i \} result;
 	     };
 	     if { \$result != \"\" } {
-	      puts stderr \"\$result\"; set dontwait 1;
+	      if { \"$wait\" != \"\" } {
+	        catch \{ $wait \$i \};
+              };              
              };
             };
-	    if { !\$dontwait } {
-	     foreach i {$pids} {
-	      if { \"$wait\" != \"\" } {
-	      catch \{ $wait \$i \};
-              };
-             };
-	    };
-	    catch \{ fileevent $ioPipe readable \"\" \};
-	    catch \{ fileevent $ioFid readable \"\" \};
 	    restoreFocus $oldFocus;
             winAutoFocusOn;
 	    destroy $w"
