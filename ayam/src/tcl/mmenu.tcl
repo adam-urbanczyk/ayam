@@ -910,10 +910,10 @@ $sm add command -label "From Camera" -command "io_exportRIBfC" \
 $sm add command -label "Selected Objects" -command "io_exportRIBSO" \
     -underline 9
 #    ^^^^^^^^^^^ => O
-$sm add command -label "Create All ShadowMaps" -command "io_RenderSM 1" \
+$sm add command -label "Create All ShadowMaps" -command "io_RenderSM . 1" \
     -underline 7
 #    ^^^^^^^^^^^ => A
-$sm add command -label "Create ShadowMap" -command "io_RenderSM 0" \
+$sm add command -label "Create ShadowMap" -command "io_RenderSM . 0" \
     -underline 7
 #    ^^^^^^^^^^^ => S
 $m add separator

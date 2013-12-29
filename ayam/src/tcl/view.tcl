@@ -265,7 +265,7 @@ proc viewRender { w type } {
 	append command2 " &"
 	eval [subst "$command2"]
     } else {
-	runRenderer "$command" "$pt"
+	runRenderer $w "$command" "$pt"
     }
     # if
 
