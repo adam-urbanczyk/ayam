@@ -950,7 +950,7 @@ proc io_exportRIBfC { } {
 # io_RenderSM:
 #  export shadow map RIB and render all shadow maps
 #
-proc io_RenderSM { all } {
+proc io_RenderSM { w all } {
     global ayprefs ay ay_error
 
     if { $ayprefs(ShadowMaps) != 2 } {
@@ -1024,19 +1024,13 @@ proc io_RenderSM { all } {
 
 	if { $ayprefs(SMRenderUI) != 1} {
 	    set command "exec "
-
 	    regsub -all {%s} $ayprefs(SMRender) $efilename command2
-
 	    append command $command2
 	    append command " &"
-
 	    eval [subst "$command"]
 	} else {
-
 	    regsub -all {%s} $ayprefs(SMRender) $efilename command
-
-	    runRenderer "$command" "$ayprefs(SMRenderPT)"
-
+	    runRenderer $w "$command" "$ayprefs(SMRenderPT)"
 	}
 	# if
 

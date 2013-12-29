@@ -193,7 +193,7 @@ proc runGetOutput { iserr num cmd template channel } {
 	    updateRenderProgress $num $percent
 	} else {
 	    if { $iserr } {
-		ayError 4 $cmd $xx
+		ayError 2 $cmd $xx
 	    }
 	}
     }
@@ -205,10 +205,16 @@ proc runGetOutput { iserr num cmd template channel } {
 ###################################
 # runRenderer:
 #
-proc runRenderer { cmd template } {
+proc runRenderer { win cmd template } {
     global ay ayprefs
 
     winAutoFocusOff
+
+    if { [string first ".view" $win] != 0 } {
+	# $w does not start with ".view" => view is internal
+	# => center render gui dialog on main window
+	set win .
+    }
 
     if { $ayprefs(Kill) != "" } {
 	set kill $ayprefs(Kill)
@@ -289,7 +295,7 @@ proc runRenderer { cmd template } {
 	     if { \$result != \"\" } {
 	      if { \"$wait\" != \"\" } {
 	        catch \{ $wait \$i \};
-              };              
+              };
              };
             };
 	    restoreFocus $oldFocus;
@@ -297,7 +303,8 @@ proc runRenderer { cmd template } {
 	    destroy $w"
     pack $w.bca -in $w -side bottom -anchor s -fill x -expand yes
 
-    winCenter $w
+    # center dialog on screen or inside the view (if external)
+    winCenter $w $win
 
     # auto raise window, when obscured
     bind $w <Visibility> {
