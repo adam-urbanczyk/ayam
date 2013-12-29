@@ -2491,7 +2491,7 @@ of forcing a renderer to render to the screen (via a RiDisplay statement
 in the exported RIB, necessary for e.g.~PRMan and RDC;
 or via a command line argument, e.g.~<tt>-d</tt> for rendrib from BMRT).
 
-<item><tt/"QRender"/ determines the command that should be executed,
+<item><tt/"QRender"/ determines the command that should be executed
 upon quick rendering a view, <tt>%s</tt> denotes the name of the RIB file.
 
 <item><tt/"QRenderUI"/, enables the Rendering GUI for quick rendering,
@@ -2500,7 +2500,7 @@ see discussion of <tt/"RenderUI"/ below.
 <item><tt/"QRenderPT"/, progress template for quick rendering,
 see discussion of <tt/"RenderPT"/ below.
 
-<item><tt/"Render"/ determines the command that should be executed,
+<item><tt/"Render"/ determines the command that should be executed
 upon normal rendering of a view, <tt>%s</tt> denotes the name of the RIB file.
 
 <item><tt/"RenderUI"/ enables the renderer user interface (Rendering GUI),
@@ -2523,20 +2523,53 @@ template used by Ayam to determine the current percentage of completion
 of the rendering for display in the Rendering GUI. The special symbol <tt/"%d"/
 denotes the position of the percentage number in the output of the renderer.
 For rendrib from BMRT2.6 this should be set to <tt/"R90000 %d"/ and
-the special command line option <tt/"-Progress"/ should be used.
+the special command line option <tt/"-Progress"/ should be used for
+the renderer command (see <tt/"Render"/ above).
 For rendrib from BMRT2.5 it should be set to <tt/"Done computing %d"/
-and no special option has to be given to the renderer.
+and no special option has to be given to the renderer.<newline>
 If the output of the renderer contains variable strings before
-the progress number, a second variant of parsing the output using
-regular expressions is available since Ayam 1.6. In this case, the
-progress template should be a complete regexp command for Tcl
-that parses the string contained in the variable named <tt/"string"/
-and puts the parsed progress number into a variable named <tt/"progress"/.
+the progress number or the renderer uses terminal control characters,
+a second variant of parsing the output using
+regular expressions is available.<footnote>Since 1.6.</footnote>
+In this case, the progress template should be a complete regexp command
+for Tcl that parses the output of the renderer and puts the extracted
+progress number into a variable named <tt/"percent"/.
+The output to parse will be inserted
+in the regexp command template in place of <tt/"string"/.
+The dummy output variable is needed, because Tcl regexp always outputs the
+complete matching line into the first variable.<newline>
 Here is an example that works with Pixie-1.2.1, which outputs
-strings like <tt/"fish.rib (222):  - 10.00 percent"/:
+strings like
+<tscreen><verb>
+fish.rib (222):  - 10.00 percent
+</verb></tscreen>
+(note the variable component containing the RIB name):
 <tscreen><verb>
 regexp -- {^.* - (\[0-9\]+)} string dummy percent
 </verb></tscreen>
+
+This regexp eats the variable component away and then looks for the
+single dash right in front of the percent number.<newline>
+
+Gelato output looks like this
+<tscreen><verb>
+Elapsed:    10.1440s  Done:  64%  |********************           |
+</verb></tscreen>
+and uses terminal control to render the progress bar in ASCII; this calls
+for a different approach that parses backwards (hence
+the use of <tt/&dollar;/ at the end):
+<tscreen><verb>
+regexp -- {(\[0-9\]+)%(\[ |*\]+)$} string dummy percent
+</verb></tscreen>
+
+<item><tt/"FRender"/, renderer to use for direct rendering to image files
+(via view menu entry <tt/"Render to File"/).
+
+<item><tt/"FRenderUI"/, enables the Rendering GUI for the direct rendering
+to image files, see discussion of <tt/"RenderUI"/ above.
+
+<item><tt/"FRenderPT"/, progress template for the direct rendering,
+see discussion of <tt/"RenderPT"/ above.
 
 <item><tt/"SMRender"/, renderer to use for the rendering of shadow maps
 (e.g.~view menu entry <tt>"View/Create All ShadowMaps"</tt>),
@@ -19562,6 +19595,8 @@ Index:
 <item>forAll: <ref id="scforall" name="scripting interface command">
 <item>Force Notification: <ref id="mmtools" name="main menu entry">
 <item>Formula: <ref id="mcattr" name="MetaComp attribute">
+<item>FRender, FRenderPT, FRenderUI:
+<ref id="prefrib" name="preference setting">
 <item>From:
 <itemize>
 <item><ref id="camp" name="camera property">,
@@ -19994,8 +20029,8 @@ Index:
 <label id="indexq"><tt/<bf/Q//
 <list>
 <item>QuadAsBRep: <ref id="exp3dmopt" name="3DM (Rhino) export option">
-<item>QRender: <ref id="prefrib" name="preference setting">
-<item>QRenderPT, QRenderUI: <ref id="prefrib" name="preference setting">
+<item>QRender, QRenderPT, QRenderUI:
+<ref id="prefrib" name="preference setting">
 <item>Quat: <ref id="trap" name="transformations property">
 <item>QuickDraw 3D Metafile:
 <itemize>
@@ -20308,7 +20343,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>SMFileFormat: <ref id="prefrib" name="preference setting">
 <item>SMFileType: <ref id="prefrib" name="preference setting">
 <item>SMethod: <ref id="prefmisc" name="preference setting">
-<item>SMRender, SMRenderUI, SMRenderPT: <ref id="prefrib" name="preference setting">
+<item>SMRender, SMRenderUI, SMRenderPT:
+<ref id="prefrib" name="preference setting">
 <item>SMRes: <ref id="lip" name="Light attribute">
 <item>Snap Points to Grid: <ref id="snapac" name="modelling action">
 <item>Snap3D: <ref id="prefmodel" name="preference setting">
