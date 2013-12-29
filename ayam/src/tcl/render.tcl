@@ -282,10 +282,10 @@ proc render_select { } {
 	    9 {
 		# Gelato
 		set ayprefs(QRender) "gelato -preview 0.25 -iv %s"
-		set ayprefs(QRenderPT) "regexp -- {(\[0-9\]+)\\%(\[ |*\]+)$} string dummy percent"
+		set ayprefs(QRenderPT) "regexp -- {(\[0-9\]+)%(\[ |*\]+)$} string dummy percent"
 		set ayprefs(Render) "gelato -iv %s"
 		set ayprefs(RenderPT) $ayprefs(QRenderPT)
-		set ayprefs(SMRender) " %s"
+		set ayprefs(SMRender) "gelato %s"
 		set ayprefs(SMRenderPT) $ayprefs(QRenderPT)
 		set ayprefs(FRender) "gelato %s"
 		set ayprefs(FRenderPT) $ayprefs(QRenderPT)
