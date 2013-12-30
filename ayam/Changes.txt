@@ -1,4 +1,4 @@
-[18. Dec 2013] CVS-Head:
+[30. Dec 2013] CVS-Head:
 ========================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
@@ -20,7 +20,7 @@ o getPnt/setPnt for IPatch (SF 488)
 o elevating periodic NURBS surfaces with knot type Chordal or
   Centripetal (SF 490)
 o crash when tesselating complex hierarchies with instances (SF 492)
-o new views do not inherit the global mark  (SF 493)
+o new views do not inherit the global mark (SF 493)
 
 Modelling:
 o added "Compatible" option to ConcatNP objects, to prevent unwanted
@@ -57,6 +57,7 @@ o the mark may now be set by double-clicking with the right mouse button
 o if the mark is set by clicking into a view, the respective z coordinate of
   the mark is no longer set to zero (when the preference option "GlobalMark"
   is activated); this allows to set a 3D mark using two clicks in two views
+o the mark can now be set directly onto picked points of objects
 o improved face normal generation for PolyMesh and SDMesh objects through
   application of the Newell normal calculation algorithm
 o caching the face normals for PolyMesh and SDMesh objects leads to much
@@ -67,13 +68,15 @@ o added view action to zoom out to the whole scene, the action is bound
 o improved the "zoom to object" view action to properly adjust the clipping
   planes, light positions, and the camera position for perspective views,
   therefore, modelling with very small or very large objects gets a bit easier
-o improved clone placement on open trajectory curves
+o improved clone placement on open trajectory curves (the trajectory is
+  now completely filled)
 o added unclamping facility for NURBS curves and surfaces
 o added curve extension (to a point) modelling tool
 o NURBS curve/surface type detection is now faster and more robust
 o skinning curves that touch at their endpoints with custom knots now works
 o many NURBS curve/surface tools no longer unconditionally set the
-  respective knot type to custom but rather infer a proper new type
+  respective knot type to "Custom" but rather infer a proper new type
+o improved picking of points for very large or very small objects
 o improved closing of surfaces
 o added a second set of drawing/display parameters that is in effect
   when interactive modelling or view actions are active
@@ -83,6 +86,8 @@ o added modelling action to reset the weight of selected control points;
   to reset all weights at once is now <Ctrl+W>
 o deleting objects is now more robust for complex hierarchies with
   master and instance objects
+o creating Instance objects now silently creates instances of the original
+  master when an Instance is selected (instead of raising an error)
 
 GUI:
 o the default value menu buttons of property GUI elements now display a
@@ -131,6 +136,9 @@ o added hidden preference option "PanDist" that controls the amount of
   view window panning for keyboard presses
 o "Special/Instances/Resolve all Instances" now resolves even nested instances
 o added a "Scope" option to the automatic instancing and resolve dialogs
+o improved rendering GUI geometry management
+o rendering GUIs can now also parse the progress from the stderr channel
+o improved closing of the rendering GUI, it is more robust now
 
 Scripts/Scripting Interface:
 o added luainterp plugin to support the Lua scripting language
@@ -189,6 +197,7 @@ o X3D export of NURBS curves of order 2 now creates Polyline primitives
 o X3D import of viewpoints now creates correct camera attributes
 o X3D import now supports StaticGroup nodes
 o improved temporary and archive RIB file names for direct rendering with Gelato
+o added progress parsing template for Gelato
 o Rhino 3DM export of PoMesh objects now supports face normals and colors
 o improved import of closed polylines from DXF
 
