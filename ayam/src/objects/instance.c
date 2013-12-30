@@ -38,10 +38,14 @@ ay_instance_createcb(int argc, char *argv[], ay_object *o)
 
   target = sel->object;
 
+  if(target->type == AY_IDINSTANCE)
+    {
+      target = (ay_object *)target->refine;
+    }
+
   /* XXXX create a blacklist data structure for this test */
   if((target->type == AY_IDROOT) || (target->type == AY_IDVIEW) ||
-     (target->type == AY_IDLIGHT) || (target->type == AY_IDINSTANCE) ||
-     (target->type == AY_IDMATERIAL))
+     (target->type == AY_IDLIGHT) || (target->type == AY_IDMATERIAL))
     {
       ay_error(AY_ERROR, fname,
 	       "cannot create instance of this type of object");
