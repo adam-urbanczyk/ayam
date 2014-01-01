@@ -58,11 +58,11 @@ void ay_clevel_del(void);
 
 /** clear current level stack
  */
-int ay_clevel_delall(void);
+void ay_clevel_delall(void);
 
 /** change current level to the top level
  */
-int ay_clevel_gotop();
+void ay_clevel_gotop();
 
 /** Tcl command to change the current level to the top level.
  */
