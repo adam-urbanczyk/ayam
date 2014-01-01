@@ -118,28 +118,22 @@ ay_clevel_del(void)
 
 
 /* ay_clevel_delall:
- * actually deletes all clevel objects but not the first
- * that points to ay_root
+ *  deletes all clevel objects but not the first
+ *  two that point to NULL and to ay_root
  */
-int
+void
 ay_clevel_delall(void)
 {
- int ay_status = AY_OK;
  ay_list_object *lev = ay_currentlevel;
 
-  if(lev)
+  while(lev && lev->next && lev->next->next)
     {
-      while(lev->next)
-	{
-	  ay_currentlevel = lev->next;
-	  free(lev);
-	  lev = ay_currentlevel;
-	}
+      ay_currentlevel = lev->next;
+      free(lev);
+      lev = ay_currentlevel;
     }
 
-  ay_status = ay_clevel_add(ay_root);
-
- return ay_status;
+ return;
 } /* ay_clevel_delall */
 
 
@@ -147,13 +141,12 @@ ay_clevel_delall(void)
  *  change the current level to the top level;
  *  additionally, reset ay_next to the end of the top level
  */
-int
+void
 ay_clevel_gotop()
 {
- int ay_status = AY_OK;
  ay_object *o = ay_root;
 
-  ay_status = ay_clevel_delall();
+  ay_clevel_delall();
 
   if(o)
     {
@@ -164,7 +157,7 @@ ay_clevel_gotop()
 	}
     }
 
- return ay_status;
+ return;
 } /* ay_clevel_gotop */
 
 
@@ -177,15 +170,9 @@ int
 ay_clevel_gotoptcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
- int ay_status = AY_OK;
  /* char varName[20], newValue[10];*/
 
-  ay_status = ay_clevel_gotop();
-
-  if(ay_status)
-    {
-      ay_error(AY_ERROR, argv[0], NULL);
-    }
+  ay_clevel_gotop();
 
 #if 0
   /* Synchronize the value of ay(CurrentLevel) */
@@ -660,9 +647,14 @@ ay_clevel_cltcmd(ClientData clientData, Tcl_Interp *interp,
       if(ay_status)
 	{
 	  ay_clevel_delall();
-	  ay_clevel_del();
-	  ay_next = oay_next;
+	  if(ay_currentlevel)
+	    {
+	      if(ay_currentlevel->next)
+		free(ay_currentlevel->next);
+	      free(ay_currentlevel);
+	    }
 	  ay_currentlevel = ocl;
+	  ay_next = oay_next;
 	  ay_error(AY_ERROR, argv[0], "Could not save current level.");
 	  return TCL_OK;
 	}
@@ -686,7 +678,7 @@ ay_clevel_cltcmd(ClientData clientData, Tcl_Interp *interp,
       else
 	{
 	  /* no, absolute level */
-	  ay_status = ay_clevel_delall();
+	  ay_clevel_delall();
 	  t = ay_root;
 	} /* if */
 
@@ -744,8 +736,13 @@ ay_clevel_cltcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      /* error, we run over end of level => index is wrong */
 	      /* cleanup */
-	      ay_status = ay_clevel_delall();
-	      free(ay_currentlevel);
+	      ay_clevel_delall();
+	      if(ay_currentlevel)
+		{
+		  if(ay_currentlevel->next)
+		    free(ay_currentlevel->next);
+		  free(ay_currentlevel);
+		}
 	      ay_currentlevel = ocl;
 	      ocl = NULL;
 	      ay_next = oay_next;

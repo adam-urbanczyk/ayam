@@ -1525,9 +1525,13 @@ resenv:
     }
 
   /* restore the environment */
-  (void)ay_clevel_delall();
+  ay_clevel_delall();
   if(ay_currentlevel)
-    free(ay_currentlevel);
+    {
+      if(ay_currentlevel->next)
+	free(ay_currentlevel->next);
+      free(ay_currentlevel);
+    }
   ay_currentlevel = old_currentlevel;
 
   if(ay_clipboard)
@@ -1684,7 +1688,7 @@ ay_script_convertcb(ay_object *o, int in_place)
  ay_tag *tag = NULL;
  ay_script_object *sc = NULL;
  ay_level_object *newl = NULL;
- ay_object *d, *cmo = NULL, *new = NULL;
+ ay_object *m, *cmo = NULL, *new = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -1709,13 +1713,7 @@ ay_script_convertcb(ay_object *o, int in_place)
 	      ay_status = ay_object_candelete(o->down, o->down);
 	      if(ay_status != AY_OK)
 		{
-		  d = o->down;
-		  while(d->next)
-		    d = d->next;
-		  d->next = ay_clipboard;
-		  ay_clipboard = o->down;
-		  ay_error(AY_ERROR, fname,
-			   "Moved referenced object(s) to clipboard!");
+		  ay_clipb_prepend(o->down, fname);
 		}
 	      else
 		{
@@ -1749,7 +1747,7 @@ ay_script_convertcb(ay_object *o, int in_place)
 		  /* have just one object */
 		  cmo = sc->cm_objects;
 		  o->type = cmo->type;
-		  
+
 		  sc->cm_objects = NULL;
 
 		  /* now free the script object */
@@ -1780,8 +1778,8 @@ ay_script_convertcb(ay_object *o, int in_place)
 		    {
 		      if(o->mat)
 			{
-			  d = o->mat->objptr;
-			  d->refcount--;
+			  m = o->mat->objptr;
+			  m->refcount--;
 			}
 		      o->mat = cmo->mat;
 		    }
