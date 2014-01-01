@@ -9540,7 +9540,7 @@ x3dio_writerevolveobj(scew_element *element, ay_object *o)
  scew_element *shape_element = NULL;
  scew_element *swing_element = NULL;
  scew_element *curve_element = NULL;
- ay_object *c = NULL;
+ ay_object *c = NULL, *e;
  ay_nurbcurve_object *cs, *circle = NULL;
  double radius = 1.0;
 
@@ -9622,20 +9622,13 @@ x3dio_writerevolveobj(scew_element *element, ay_object *o)
   scew_element_add_attr_pair(curve_element, "containerField",
 			     "trajectoryCurve");
 
-
-  /* write the caps */
-  if(rev->upper_cap)
-    x3dio_writenpatchobj(transform_element, rev->upper_cap);
-
-  if(rev->lower_cap)
-    x3dio_writenpatchobj(transform_element, rev->lower_cap);
-
-  if(rev->start_cap)
-    x3dio_writenpatchobj(transform_element, rev->start_cap);
-
-  if(rev->end_cap)
-    x3dio_writenpatchobj(transform_element, rev->end_cap);
-
+  /* write the caps and bevels */
+  e = rev->caps_and_bevels;
+  while(e)
+    {
+      x3dio_writenpatchobj(transform_element, e);
+      e = e->next;
+    }
 
   /* cleanup */
   ay_nct_destroy(circle);

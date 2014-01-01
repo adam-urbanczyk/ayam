@@ -1631,6 +1631,7 @@ mopsi_revolve(FILE *fileptr, ay_object *o)
 {
  int ay_status = AY_OK;
  ay_revolve_object *r = NULL;
+ int caps[4] = {0};
 
   if(!(r = calloc(1, sizeof(ay_revolve_object))))
     { return AY_EOMEM; }
@@ -1640,8 +1641,8 @@ mopsi_revolve(FILE *fileptr, ay_object *o)
   o->parent = AY_TRUE;
 
 
-  fscanf(fileptr,"%d\n",&r->has_upper_cap);
-  fscanf(fileptr,"%d\n",&r->has_lower_cap);
+  fscanf(fileptr,"%d\n",&(caps[0]));
+  fscanf(fileptr,"%d\n",&(caps[1]));
   r->thetamax = 360.0;
   r->glu_sampling_tolerance = 30.0;
 
