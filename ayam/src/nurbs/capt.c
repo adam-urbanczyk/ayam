@@ -176,7 +176,7 @@ cleanup:
  * Create a simple cap surface from a single NURBS curve.
  *
  * \param[in] c NURBS curve object
- * \param[in] mode 0 - 2D, 1 - 3D
+ * \param[in] mode 0 - 2D, 1 - 3D quadric, 2 - 3D cubic
  * \param[in] frac fraction parameter for 3D mode
  * \param[in,out] cap new NURBS patch object
  *
@@ -189,7 +189,9 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
  ay_object *npatch = NULL;
  ay_nurbcurve_object *nc = NULL, *rnc = NULL;
  ay_nurbpatch_object *np = NULL;
- double knotv0[4] = {0.0,0.0,1.0,1.0}, knotv1[6] = {0.0,0.0,0.0,1.0,1.0,1.0};
+ double knotv0[4] = {0.0,0.0,1.0,1.0};
+ double knotv1[6] = {0.0,0.0,0.0,1.0,1.0,1.0};
+ double knotv2[8] = {0.0,0.0,0.0,0.0,1.0,1.0,1.0,1.0};
  int a, b = 0, i = 0, stride = 4;
  double r = 0.0, m[4] = {0}, n[3] = {0}, z[3] = {0.0,0.0,1.0};
  double *p, angle, anglem, len, rm[16], rotaxis[3], *circcv = NULL;
@@ -219,8 +221,16 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
 
   if(mode)
     {
-      np->width = 3;
-      np->uorder = 3;
+      if(mode == 1)
+	{
+	  np->width = 3;
+	  np->uorder = 3;
+	}
+      else
+	{
+	  np->width = 4;
+	  np->uorder = 4;
+	}
     }
   else
     {
@@ -243,7 +253,10 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
   memcpy(np->vknotv, nc->knotv, (nc->length+nc->order)*sizeof(double));
   if(mode)
     {
-      memcpy(np->uknotv, knotv1, (np->width+np->uorder)*sizeof(double));
+      if(mode == 1)
+	memcpy(np->uknotv, knotv1, (np->width+np->uorder)*sizeof(double));
+      else
+	memcpy(np->uknotv, knotv2, (np->width+np->uorder)*sizeof(double));
     }
   else
     {
@@ -325,7 +338,7 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
       if(!rc)
 	goto cleanup;
 
-      (void)ay_nct_toxy(rc);
+      (void)ay_nct_toxy(/*allow_flip=*/AY_FALSE, rc);
 
       rnc = (ay_nurbcurve_object *)(rc->refine);
       if(fabs(rnc->controlv[0]) > AY_EPSILON || fabs(circcv[0]) > AY_EPSILON)
@@ -381,6 +394,9 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
 					      nc->length-1, stride,
 					      n);
 
+      if(ay_status)
+	goto cleanup;
+
       angle = AY_R2D(acos(AY_V3DOT(n, z)));
 
       if((fabs(angle) > AY_EPSILON) /*&& (fabs(angle - 180.0) > AY_EPSILON)*/)
@@ -398,11 +414,20 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
 	  a += stride;
 	}
 
-      memcpy(&(np->controlv[nc->length*stride]), circcv,
+      memcpy(&(np->controlv[nc->length*mode*stride]), circcv,
 	     nc->length*stride*sizeof(double));
-      
+
+      if(mode == 2)
+	ay_interpol_1DA4D(0.5, nc->length, np->controlv,
+			  &(np->controlv[nc->length*2*stride]),
+			  &(np->controlv[nc->length*stride]));
+
       /* set middle point */
-      a = (nc->length*2)*stride;
+      if(mode == 1)
+	a = (nc->length*2)*stride;
+      else
+	a = (nc->length*3)*stride;
+
       for(i = 0; i < nc->length; i++)
 	{
 	  memcpy(&(np->controlv[a]), m, 3*sizeof(double));
@@ -581,7 +606,7 @@ ay_capt_crttrimcap(ay_object *c, ay_object **cap)
       if(c->type != AY_IDNCURVE)
 	{ ay_status = AY_ERROR; goto cleanup; }
 
-      ay_status = ay_nct_toxy(c);
+      ay_status = ay_nct_toxy(/*allow_flip=*/AY_FALSE, c);
       if(ay_status)
 	{ ay_status = AY_ERROR; goto cleanup; }
 
