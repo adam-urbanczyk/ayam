@@ -133,12 +133,7 @@ ay_tree_getclevel(char *node)
  int i = 4, p, n;
  ay_object *o = ay_root;
 
-  ay_status = ay_clevel_delall();
-
-  if(ay_status)
-    {
-      return;
-    }
+  ay_clevel_delall();
 
   if(memcmp(node, "root:", 5))
     {
