@@ -934,7 +934,7 @@ ay_knots_getuminmax(ay_object *o, int order, int knots, double *knotv,
       tag = o->tags;
       while(tag)
 	{
-	  if(tag->type == ay_umm_tagtype)
+	  if(tag->type == ay_umm_tagtype && tag->val)
 	    {
 	      if(sscanf(tag->val, "%lg,%lg", umin, umax) == 2)
 		have_valid_umm_tag = AY_TRUE;
@@ -975,7 +975,7 @@ ay_knots_getvminmax(ay_object *o, int order, int knots, double *knotv,
       tag = o->tags;
       while(tag)
 	{
-	  if(tag->type == ay_vmm_tagtype)
+	  if(tag->type == ay_vmm_tagtype && tag->val)
 	    {
 	      if(sscanf(tag->val, "%lg,%lg", vmin, vmax) == 2)
 		have_valid_vmm_tag = AY_TRUE;
