@@ -1106,17 +1106,17 @@ proc editPointUpdate { w } {
     update
     set f1 $w.f1
     set f $f1.fx
-    $f.e delete @0 end
-    $f.e insert @0 $array(x)
+    $f.e delete 0 end
+    $f.e insert 0 $array(x)
     set f $f1.fy
-    $f.e delete @0 end
-    $f.e insert @0 $array(y)
+    $f.e delete 0 end
+    $f.e insert 0 $array(y)
     set f $f1.fz
-    $f.e delete @0 end
-    $f.e insert @0 $array(z)
+    $f.e delete 0 end
+    $f.e insert 0 $array(z)
     set f $f1.fw
-    $f.e delete @0 end
-    $f.e insert @0 $array(w)
+    $f.e delete 0 end
+    $f.e insert 0 $array(w)
 
     update
     set array(x2) [$w.f1.fx.e get]
@@ -1221,7 +1221,7 @@ proc editPointDialog { } {
 
     set f [frame $f.fm]
     menubutton $f.mb -text "Local" -menu $f.mb.m -relief raised\
-	    -padx 0 -pady 1
+	    -padx 0 -pady 1 -indicatoron 1
     if { $tcl_platform(platform) == "windows" } {
 	$f.mb configure -pady 1
     }
@@ -1243,6 +1243,9 @@ proc editPointDialog { } {
     }
     pack $f.mb -in $f -side left -fill x -expand yes -pady 0
     pack $f -in $w.f1 -side top -fill x
+
+    pack [label $w.f1.l0 -height 1 -image ay_Empty_img -pady 0]\
+	-in $w.f1 -side top -fill x -pady 0
 
     set f $w.f1
     set f [frame $f.fx]
@@ -1292,6 +1295,24 @@ proc editPointDialog { } {
     bind $f.e <Key-Return> "editPointApply;break"
     catch {bind $f.e <Key-KP_Enter> "editPointApply;break"}
 
+    set m [menu $w.popup -tearoff 0]
+    $m add command -label "Fetch Mark" -command {
+	set e .editPointDw.f1.fx.e
+	$e delete 0 end
+	$e insert 0 [lindex $ay(mark) 0]
+	set e .editPointDw.f1.fy.e
+	$e delete 0 end
+	$e insert 0 [lindex $ay(mark) 1]
+	set e .editPointDw.f1.fz.e
+	$e delete 0 end
+	$e insert 0 [lindex $ay(mark) 2]
+	set e .editPointDw.f1.fw.e
+	$e delete 0 end
+    }
+
+    pack [label $w.f1.l2 -height 2 -image ay_Empty_img -pady 0]\
+	-in $w.f1 -side top -fill x -pady 0
+
     update
     editPointUpdate $w
 
@@ -1329,10 +1350,17 @@ proc editPointDialog { } {
 
     focus $f.bok
 
+    bind $w <ButtonPress-3> "editPointDialogOpenPopup $w"
+
  return;
 }
 # editPointDialog
 
+
+proc editPointDialogOpenPopup { w } {
+    set xy [winfo pointerxy $w]
+    tk_popup $w.popup [lindex $xy 0] [lindex $xy 1]
+}
 
 #
 proc actionEditNumP { w } {
