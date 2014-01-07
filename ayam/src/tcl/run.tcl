@@ -76,7 +76,7 @@ proc runTool { argvars argstrings command title {advargs ""} } {
 	# fill current value of $i into the entry
 	eval "set vali \$$i"
 	if { $vali != "" } {
-	    $f2.e insert @0 $vali
+	    $f2.e insert 0 $vali
 	}
 
 	pack $f2.l -in $f2 -padx 2 -pady 2 -side left -expand no -fill x
