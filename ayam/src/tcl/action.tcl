@@ -1350,17 +1350,12 @@ proc editPointDialog { } {
 
     focus $f.bok
 
-    bind $w <ButtonPress-3> "editPointDialogOpenPopup $w"
+    bind $w <ButtonPress-3> "winOpenPopup $w"
 
  return;
 }
 # editPointDialog
 
-
-proc editPointDialogOpenPopup { w } {
-    set xy [winfo pointerxy $w]
-    tk_popup $w.popup [lindex $xy 0] [lindex $xy 1]
-}
 
 #
 proc actionEditNumP { w } {

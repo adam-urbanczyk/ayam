@@ -556,21 +556,6 @@ proc tree_toggleSub { tree node } {
 # tree_toggleSub
 
 
-#tree_openPopup:
-# display the tree context menu
-proc tree_openPopup { tree } {
-    global ay
-
-    set xy [winfo pointerxy .]
-    set x [lindex $xy 0]
-    set y [lindex $xy 1]
-
-    tk_popup $tree.popup $x $y
- return;
-}
-# tree_openPopup
-
-
 #tree_move:
 # move a tree node (via DnD)
 proc tree_move { } {
@@ -930,9 +915,9 @@ $m add command -label "Help on Object" -command "\$ay(helpmenu) invoke 1"\
     -underline 0
 
 if { $ay(ws) == "Aqua" && $ayprefs(SwapMB) } {
-    bind $ay(tree) <ButtonPress-2> "tree_openPopup $ay(tree)"
+    bind $ay(tree) <ButtonPress-2> "winOpenPopup $ay(tree)"
 } else {
-    bind $ay(tree) <ButtonPress-3> "tree_openPopup $ay(tree)"
+    bind $ay(tree) <ButtonPress-3> "winOpenPopup $ay(tree)"
 }
 
 # initial focus management (plb_update/plb_focus change this again)

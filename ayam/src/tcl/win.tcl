@@ -450,3 +450,8 @@ proc winDialog { w t } {
  return;
 }
 # winDialog
+
+
+proc winOpenPopup { w } {
+    tk_popup $w.popup [winfo pointerx $w] [winfo pointery $w]
+}
