@@ -231,15 +231,15 @@ array set ayprefs {
 {Use <Shift+TAB> or <Esc> to move the focus away from the console.}
 {Documentation is available in the doc subdirectory.}
 {Drag the borderline above the console to adjust it's height.}
-{Point editing does not work right? Adjust PickEpsilon in Prefs!}
+{Point editing does not work right? Adjust PickEpsilon in the preferences!}
 {The NURB circles and spheres are not to be tampered with!}
 {New! Documentation is available in the doc subdirectory!}
-{Tired of that "ever-auto-resizing" main window? See Prefs!}
+{Tired of that "ever-auto-resizing" main window? See the preferences!}
 {Copy a single parameter of a property by doubleclicking
 on its name, then press <Ctrl+Shift+i> (Copy Marked Prop).}
 {All views appear as children of the Root-object!}
 {Have I mentioned the documentation lately?}
-{Drop geometric objects on to materials to connect them.}
+{Drop geometric objects onto materials to connect them.}
 {Drop lights on to views to check where they are lighting to.}
 {Drop objects on to view windows to zoom to/see the objects.}
 {Tired of the splash screen? Start Ayam with -nosplash.}
@@ -253,7 +253,7 @@ on its name, then press <Ctrl+Shift+i> (Copy Marked Prop).}
 {Use F5 to update everything.}
 {Use F6 to toggle "lazy notification" on/off.}
 {To find the master of an instance, press <Ctrl+Shift+m>.}
-{Your object tree needs updating? Press <Ctrl+l>.}
+{Your object tree needs updating? Press <Ctrl+l> or <F5>.}
 {Press <0> to quickly select the last property.}
 {Press <1> - <9> to quickly select properties.}
 {Have I mentioned the documentation lately?}
@@ -264,13 +264,14 @@ on its name, then press <Ctrl+Shift+i> (Copy Marked Prop).}
 {Menu keyboard shortcuts do not work? Press <Esc> first!}
 {Check http://www.ayam3d.org/ for the latest hotfix!}
 {Hold down <Shift> while clicking in property GUIs for instant apply.}
-{Ayam is stuck in Tcl errors? Run "repairAyam.tcl".}
+{Ayam is stuck in Tcl errors? Run the script "repairAyam.tcl".}
 {There is a FAQ on http://www.ayam3d.org/faq.html!}
 {Tree updates slowly? Always work in sub-levels!}
 {The <Return> key in property GUIs now does an instant apply.}
 {Tired of the splash screen? Set the environment variable AYNOSPLASH.}
 {Press <Shift-Enter> in the Console for immediate update and redraw.}
 {To get rid of the mark, press <Esc> twice in a view.}
+{The numeric point edit dialog now has a contex menu.}
 }
 }
 # array ayprefs
@@ -714,9 +715,15 @@ array set ay {
  lasttool ""
  cVPnts 0
  cVDrawMark 0
- mark { 0 0 0 }
 }
 # array ay
+
+array set aymark {
+ x 0
+ y 0
+ z 0
+ w 1
+}
 
 # miscellaneous dialog data
 array set aydd {
