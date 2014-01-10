@@ -48,6 +48,9 @@ static Tcl_Obj *cvzoomobj = NULL;
 static Tcl_Obj *cvpntsobj = NULL;
 static Tcl_Obj *cvdrawmarkobj = NULL;
 static Tcl_Obj *cvundoobj = NULL;
+static Tcl_Obj *aymarkobj = NULL;
+static Tcl_Obj *xyzobj[3] = {0};
+
 
 /* functions: */
 
@@ -1883,15 +1886,19 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 /* ay_viewt_updatemark:
  *  calculate new mark window coordinates, if <local> is true, do it
  *  just for the view <togl>, otherwise and if also the globalmark
- *  preference is enabled, also update all other views
+ *  preference is enabled, also update all other views;
+ *  also updates the global Tcl array "aymark", so that scripts
+ *  may access the new mark coordinates
  */
 int
 ay_viewt_updatemark(struct Togl *togl, int local)
 {
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  double dummy, mm[16], pm[16];
- int vp[4], height = Togl_Height(togl);
+ int i, vp[4], height = Togl_Height(togl);
  GLint gl_status = GL_TRUE;
+ Tcl_Obj *to = NULL;
+ Tcl_Interp *interp = ay_interp;
 
   glFlush();
 
@@ -1944,6 +1951,13 @@ ay_viewt_updatemark(struct Togl *togl, int local)
   if(!local && ay_prefs.globalmark)
     {
       ay_viewt_updateglobalmark(togl);
+    }
+
+  for(i = 0; i < 3; i++)
+    {
+      to = Tcl_NewDoubleObj(view->markworld[i]);
+      Tcl_ObjSetVar2(interp, aymarkobj, xyzobj[i], to, TCL_LEAVE_ERR_MSG |
+		     TCL_GLOBAL_ONLY);
     }
 
  return AY_OK;
@@ -2803,6 +2817,10 @@ ay_viewt_init(void)
   cvpntsobj = Tcl_NewStringObj("cVPnts",-1);
   cvdrawmarkobj = Tcl_NewStringObj("cVDrawMark",-1);
   cvundoobj = Tcl_NewStringObj("cVUndo",-1);
+  aymarkobj = Tcl_NewStringObj("aymark",-1);
+  xyzobj[0] = Tcl_NewStringObj("x",-1);
+  xyzobj[1] = Tcl_NewStringObj("y",-1);
+  xyzobj[2] = Tcl_NewStringObj("z",-1);
 
  return;
 } /* ay_viewt_init */

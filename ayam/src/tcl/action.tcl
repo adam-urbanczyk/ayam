@@ -1084,11 +1084,20 @@ array set editPntArr {
 }
 # array
 
+proc editPointDialogClear { w } {
+    foreach e {x y z w} {$w.f1.f$e.e delete 0 end}
+}
 
-#editPointUpdate:
+proc editPointDialogSet { w arr } {
+    global $arr
+    editPointDialogClear $w
+    foreach e {x y z w} {eval $w.f1.f$e.e insert 0 \$${arr}($e)}
+}
+
+#editPointDialogUpdate:
 # helper for editPointDialog
 # updates the dialog entries
-proc editPointUpdate { w } {
+proc editPointDialogUpdate { w } {
     upvar #0 editPntArr array
 
     if { $array(local) == 1 } {
@@ -1104,21 +1113,9 @@ proc editPointUpdate { w } {
     }
 
     update
-    set f1 $w.f1
-    set f $f1.fx
-    $f.e delete 0 end
-    $f.e insert 0 $array(x)
-    set f $f1.fy
-    $f.e delete 0 end
-    $f.e insert 0 $array(y)
-    set f $f1.fz
-    $f.e delete 0 end
-    $f.e insert 0 $array(z)
-    set f $f1.fw
-    $f.e delete 0 end
-    $f.e insert 0 $array(w)
-
+    editPointDialogSet $w editPntArr
     update
+
     set array(x2) [$w.f1.fx.e get]
     set array(y2) [$w.f1.fy.e get]
     set array(z2) [$w.f1.fz.e get]
@@ -1126,20 +1123,20 @@ proc editPointUpdate { w } {
 
  return;
 }
-# editPointUpdate
+# editPointDialogUpdate
 
 
-#editPointApply:
+#editPointDialogApply:
 # helper for editPointDialog
 # apply the changes from the dialog
-proc editPointApply { } {
+proc editPointDialogApply { w } {
     global ay
     upvar #0 editPntArr array
 
-    set array(x) [.editPointDw.f1.fx.e get]
-    set array(y) [.editPointDw.f1.fy.e get]
-    set array(z) [.editPointDw.f1.fz.e get]
-    set array(w) [.editPointDw.f1.fw.e get]
+    set array(x) [$w.f1.fx.e get]
+    set array(y) [$w.f1.fy.e get]
+    set array(z) [$w.f1.fz.e get]
+    set array(w) [$w.f1.fw.e get]
 
     # if there are scripts or variable accesses in the
     # entry fields, execute / realize them ...
@@ -1190,12 +1187,12 @@ proc editPointApply { } {
 
  return;
 }
-# editPointApply
+# editPointDialogApply
 
 
 #editPointDialog:
 # helper for actionEditNumP below
-# directly edit coordinates of points
+# open the numeric point edit dialog
 proc editPointDialog { } {
     upvar #0 editPntArr array
     global ay ayprefs tcl_platform AYWITHAQUA
@@ -1203,7 +1200,7 @@ proc editPointDialog { } {
     set w .editPointDw
 
     if { [winfo exists $w] } {
-	editPointUpdate $w
+	editPointDialogUpdate $w
 	return;
     }
 
@@ -1244,81 +1241,35 @@ proc editPointDialog { } {
     pack $f.mb -in $f -side left -fill x -expand yes -pady 0
     pack $f -in $w.f1 -side top -fill x
 
+    # separating space
     pack [label $w.f1.l0 -height 1 -image ay_Empty_img -pady 0]\
 	-in $w.f1 -side top -fill x -pady 0
 
-    set f $w.f1
-    set f [frame $f.fx]
+    # create four entries
+    foreach e {X Y Z W} {
+	set lce [string tolower $e]
+	set f $w.f1
+	set f [frame $f.f$lce]
+	label $f.l -text $e -width 4
+	entry $f.e -width 8
+	pack $f.l -in $f -padx 2 -pady 2 -side left -fill x -expand no
+	pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
+	pack $f -in $w.f1 -side top -fill x
 
-    label $f.l -text "X" -width 4
-    entry $f.e -width 8
-    pack $f.l -in $f -padx 2 -pady 2 -side left -fill x -expand no
-    pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
-    pack $f -in $w.f1 -side top -fill x
-
-    bind $f.e <Key-Return> "editPointApply;break"
-    catch {bind $f.e <Key-KP_Enter> "editPointApply;break"}
-
-    set f $w.f1
-    set f [frame $f.fy]
-
-    label $f.l -text "Y" -width 4
-    entry $f.e -width 8
-    pack $f.l -in $f -padx 2 -pady 2 -side left -fill x -expand no
-    pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
-    pack $f -in $w.f1 -side top -fill x
-
-    bind $f.e <Key-Return> "editPointApply;break"
-    catch {bind $f.e <Key-KP_Enter> "editPointApply;break"}
-
-    set f $w.f1
-    set f [frame $f.fz]
-
-    label $f.l -text "Z" -width 4
-    entry $f.e -width 8
-    pack $f.l -in $f -padx 2 -pady 2 -side left -fill x -expand no
-    pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
-    pack $f -in $w.f1 -side top -fill x
-
-    bind $f.e <Key-Return> "editPointApply;break"
-    catch {bind $f.e <Key-KP_Enter> "editPointApply;break"}
-
-    set f $w.f1
-    set f [frame $f.fw]
-
-    label $f.l -text "W" -width 4
-    entry $f.e -width 8
-    pack $f.l -in $f -padx 2 -pady 2 -side left -fill x -expand no
-    pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
-    pack $f -in $w.f1 -side top -fill x
-
-    bind $f.e <Key-Return> "editPointApply;break"
-    catch {bind $f.e <Key-KP_Enter> "editPointApply;break"}
-
-    set m [menu $w.popup -tearoff 0]
-    $m add command -label "Fetch Mark" -command {
-	set e .editPointDw.f1.fx.e
-	$e delete 0 end
-	$e insert 0 [lindex $ay(mark) 0]
-	set e .editPointDw.f1.fy.e
-	$e delete 0 end
-	$e insert 0 [lindex $ay(mark) 1]
-	set e .editPointDw.f1.fz.e
-	$e delete 0 end
-	$e insert 0 [lindex $ay(mark) 2]
-	set e .editPointDw.f1.fw.e
-	$e delete 0 end
+	bind $f.e <Key-Return> "editPointDialogApply $w;break"
+	catch {bind $f.e <Key-KP_Enter> "editPointDialogApply $w;break"}
     }
 
+    # separating space
     pack [label $w.f1.l2 -height 2 -image ay_Empty_img -pady 0]\
 	-in $w.f1 -side top -fill x -pady 0
 
     update
-    editPointUpdate $w
+    editPointDialogUpdate $w
 
     set f [frame $w.f2]
     button $f.bok -text "Apply" -width 5 -pady $ay(pady)\
-	-command editPointApply
+	-command "editPointDialogApply $w"
     button $f.bca -text "Cancel" -width 5 -pady $ay(pady) -command "\
             global editPntArr;\
 	    if { \[winfo exists \$editPntArr(window)\] } {\
@@ -1327,6 +1278,12 @@ proc editPointDialog { } {
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x
+
+    # create popup
+    set m [menu $w.popup -tearoff 0]
+    $m add command -label "Clear" -command "editPointDialogClear $w"
+    $m add command -label "Reset" -command "editPointDialogUpdate $w"
+    $m add command -label "Fetch Mark" -command "editPointDialogSet $w aymark"
 
     winRestoreOrCenter $w $t
 
@@ -1345,8 +1302,8 @@ proc editPointDialog { } {
     bind $w <Escape> "$w.f2.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$w.f2.bca invoke"
 
-    bind $w <Key-Return> "editPointApply;break"
-    catch {bind $w <Key-KP_Enter> "editPointApply;break"}
+    bind $w <Key-Return> "editPointDialogApply $w;break"
+    catch {bind $w <Key-KP_Enter> "editPointDialogApply $w;break"}
 
     focus $f.bok
 
