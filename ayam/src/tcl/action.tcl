@@ -1193,7 +1193,7 @@ proc editPointDialogApply { w } {
 #editPointDialog:
 # helper for actionEditNumP below
 # open the numeric point edit dialog
-proc editPointDialog { } {
+proc editPointDialog { win } {
     upvar #0 editPntArr array
     global ay ayprefs tcl_platform AYWITHAQUA
 
@@ -1285,8 +1285,6 @@ proc editPointDialog { } {
     $m add command -label "Reset" -command "editPointDialogUpdate $w"
     $m add command -label "Fetch Mark" -command "editPointDialogSet $w aymark"
 
-    winRestoreOrCenter $w $t
-
     # auto raise window, when obscured
     bind $w <Visibility> {
 	# are we obscured?
@@ -1308,6 +1306,15 @@ proc editPointDialog { } {
     focus $f.bok
 
     bind $w <ButtonPress-3> "winOpenPopup $w"
+
+    if {  [string first ".view" $win] != 0 } {
+	# internal view
+	winRestoreOrCenter $w $t
+    } else {
+	# external view => center dialog on view
+	wm transient $w [winfo toplevel $win]
+	winCenter $w [winfo toplevel $win]
+    }
 
  return;
 }
@@ -1332,7 +1339,7 @@ proc actionEditNumP { w } {
 	%W penpac -start %x %y
 	set editPntArr(window) %W
 	if { $editPntArr(valid) == 1 } {
-	    editPointDialog
+	    editPointDialog %W
 	}
 	update
     }
