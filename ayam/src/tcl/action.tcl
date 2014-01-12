@@ -1195,7 +1195,7 @@ proc editPointDialogApply { w } {
 # open the numeric point edit dialog
 proc editPointDialog { win } {
     upvar #0 editPntArr array
-    global ay ayprefs tcl_platform AYWITHAQUA
+    global ay ayprefs aymainshortcuts tcl_platform AYWITHAQUA
 
     set w .editPointDw
 
@@ -1305,7 +1305,7 @@ proc editPointDialog { win } {
 
     focus $f.bok
 
-    bind $w <ButtonPress-3> "winOpenPopup $w"
+    bind $w <ButtonPress-$aymainshortcuts(CMButton)> "winOpenPopup $w"
 
     if {  [string first ".view" $win] != 0 } {
 	# internal view
