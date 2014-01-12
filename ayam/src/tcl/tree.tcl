@@ -730,7 +730,7 @@ proc tree_collapse { } {
 # tree_open:
 # create object hierarchy tree widget
 proc tree_open { w } {
-global ay AYWITHAQUA ayprefs
+global ay ayprefs AYWITHAQUA
 
 set ay(lb) 0
 # frame
@@ -914,11 +914,9 @@ $m add separator
 $m add command -label "Help on Object" -command "\$ay(helpmenu) invoke 1"\
     -underline 0
 
-if { $ay(ws) == "Aqua" && $ayprefs(SwapMB) } {
-    bind $ay(tree) <ButtonPress-2> "winOpenPopup $ay(tree)"
-} else {
-    bind $ay(tree) <ButtonPress-3> "winOpenPopup $ay(tree)"
-}
+global aymainshortcuts
+bind $ay(tree) <ButtonPress-$aymainshortcuts(CMButton)>\
+    "winOpenPopup $ay(tree)"
 
 # initial focus management (plb_update/plb_focus change this again)
 if { $ayprefs(SingleWindow) == 1 } {

@@ -360,6 +360,7 @@ array set aymainshortcuts {
     ContextMod "Shift"
 
     ContextMenu "Shift-F10"
+    CMButton 3
 }
 # array aymainshortcuts
 
@@ -887,6 +888,15 @@ if { $tcl_platform(platform) == "windows" } {
 	set ayviewshortcuts(OSRight) "M1-Key-6"
 
 	set ayviewshortcuts(Reset) "M1-Key-5"
+
+	if { $ayprefs(SwapMB) } {
+	    if { $aymainshortcuts(CMButton) == 2 } {
+		set aymainshortcuts(CMButton) 3
+	    }
+	    if { $aymainshortcuts(CMButton) == 3 } {
+		set aymainshortcuts(CMButton) 2
+	    }
+	}
 
 	# Aqua always sends Shift-Tab
 	set ayprefs(ShiftTab) "<Shift-Tab>"
