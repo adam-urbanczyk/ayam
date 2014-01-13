@@ -1088,9 +1088,10 @@ proc tree_toggleTree { mode } {
 
     set sel ""
     set sel [$ay(tree) selection get]
-    switch $mode {
-	0 {
-	    foreach node $sel {
+    foreach node $sel {
+	switch $mode {
+	    0 {
+		# toggle
 		if { [$ay(tree) itemcget $node -open] } {
 		    foreach n [$ay(tree) nodes $node] {
 			$ay(tree) closetree $n
@@ -1103,24 +1104,24 @@ proc tree_toggleTree { mode } {
 		    $ay(tree) opentree $node
 		}
 	    }
-	}
-	1 {
-	    foreach node $sel {
+	    1 {
+		# open
 		foreach n [$ay(tree) nodes $node] {
 		    $ay(tree) opentree $n
 		}
 		$ay(tree) opentree $node
 	    }
-	}
-	2 {
-	    foreach node $sel {
+	    2 {
+		# close
 		foreach n [$ay(tree) nodes $node] {
 		    $ay(tree) closetree $n
 		}
 		$ay(tree) closetree $node
 	    }
 	}
+	# switch mode
     }
+    # foreach sel
  return;
 }
 # tree_toggleTree
