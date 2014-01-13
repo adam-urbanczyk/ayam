@@ -775,8 +775,10 @@ set ay(tree) $tree
 
 # bindings
 
-# open whole subtrees
-bind $tree <Shift-space> "tree_toggleTree;break"
+# open/close/toggle whole subtrees
+bind $tree <Shift-space> "tree_toggleTree 0;break"
+bind $tree <plus> "tree_toggleTree 1;break"
+bind $tree <minus> "tree_toggleTree 2;break"
 
 # scroll tree with wheel
 bind $tree <ButtonPress-4> "$tree yview scroll -1 pages; break"
@@ -1080,24 +1082,43 @@ proc tree_gotop { } {
 
 
 #tree_toggleTree:
-# open/close all selected sub-trees recursively
-proc tree_toggleTree { } {
+# toggle/open/close all selected sub-trees recursively
+proc tree_toggleTree { mode } {
     global ay
 
     set sel ""
     set sel [$ay(tree) selection get]
-
-    foreach node $sel {
-	if { [$ay(tree) itemcget $node -open] } {
-	    foreach n [$ay(tree) nodes $node] {
-		$ay(tree) closetree $n
+    switch $mode {
+	0 {
+	    foreach node $sel {
+		if { [$ay(tree) itemcget $node -open] } {
+		    foreach n [$ay(tree) nodes $node] {
+			$ay(tree) closetree $n
+		    }
+		    $ay(tree) closetree $node
+		} else {
+		    foreach n [$ay(tree) nodes $node] {
+			$ay(tree) opentree $n
+		    }
+		    $ay(tree) opentree $node
+		}
 	    }
-	    $ay(tree) closetree $node
-	} else {
-	    foreach n [$ay(tree) nodes $node] {
-		$ay(tree) opentree $n
+	}
+	1 {
+	    foreach node $sel {
+		foreach n [$ay(tree) nodes $node] {
+		    $ay(tree) opentree $n
+		}
+		$ay(tree) opentree $node
 	    }
-	    $ay(tree) opentree $node
+	}
+	2 {
+	    foreach node $sel {
+		foreach n [$ay(tree) nodes $node] {
+		    $ay(tree) closetree $n
+		}
+		$ay(tree) closetree $node
+	    }
 	}
     }
  return;
