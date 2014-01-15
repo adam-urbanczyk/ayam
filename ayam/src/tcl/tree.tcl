@@ -775,11 +775,6 @@ set ay(tree) $tree
 
 # bindings
 
-# open/close/toggle whole subtrees
-bind $tree <Shift-space> "tree_toggleTree 0;break"
-bind $tree <plus> "tree_toggleTree 1;break"
-bind $tree <minus> "tree_toggleTree 2;break"
-
 # scroll tree with wheel
 bind $tree <ButtonPress-4> "$tree yview scroll -1 pages; break"
 bind $tree <ButtonPress-5> "$tree yview scroll 1 pages; break"
@@ -1085,6 +1080,8 @@ proc tree_gotop { } {
 # toggle/open/close all selected sub-trees recursively
 proc tree_toggleTree { mode } {
     global ay
+
+    if { $ay(lb) == 1 } { return }
 
     set sel ""
     set sel [$ay(tree) selection get]
