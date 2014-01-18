@@ -1,4 +1,4 @@
-[10. Jan 2014] CVS-Head:
+[18. Jan 2014] CVS-Head:
 ========================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
@@ -135,12 +135,14 @@ o removed preference option  "SavePrefsGeom" in favor of "SaveDialogGeom" above
 o added hidden preference option "PanDist" that controls the amount of
   view window panning for keyboard presses
 o "Special/Instances/Resolve all Instances" now resolves even nested instances
-o added a "Scope" option to the automatic instancing and resolve dialogs
+o added a "Scope" option to the automatic instancing and resolve instances
+  dialogs
 o improved rendering GUI geometry management
 o rendering GUIs can now also parse the progress from the stderr channel
 o improved closing of the rendering GUI, it is more robust now
 o the numeric point edit dialog now has a context menu that allows to
   clear or reset all entries, as well as to fetch the mark coordinates
+o added keyboard shortcuts to recursively open/close whole sub-trees (<+>/<->)
 
 Scripts/Scripting Interface:
 o added luainterp plugin to support the Lua scripting language
@@ -187,6 +189,8 @@ o "forAll" can now also recurse after the command has been called
 o removed "forAllT" procedure, use "forAll" with "-type" option instead
 o tonpatch.tcl/topoly.tcl now work with more object types (e.g. Script, Mirror)
 o scripts now have access to the mark through the global array "aymark"
+o added script "myicons.tcl" that allows the user to load an own set of
+  icons into the application
 
 Import/Export:
 o X3D export now has a special mode to inject the exported X3D scene
