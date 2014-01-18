@@ -384,6 +384,12 @@ selected object(s).
 <item><tt/&lt;Shift+Space&gt;/ toggles display of all sub-levels of the
 selected object(s).<footnote>Since 1.18.</footnote>
 
+<item><tt/&lt;+&gt;/ opens all sub-levels of the
+selected object(s).<footnote>Since 1.21.</footnote>
+
+<item><tt/&lt;-&gt;/ closes all sub-levels of the
+selected object(s).<footnote>Since 1.21.</footnote>
+
 <item><tt/&lt;Alt+Up&gt;/ and <tt/&lt;Alt+Down&gt;/ move the
 selected objects in the current level in the respective direction,
 unless the root object is selected and unless the first object is
@@ -3089,7 +3095,7 @@ Rotate|<tt/&lt;r&gt;/|
 <caption>Rotate Action</caption>
 </table>
 
-<sect1>Rotating Objects or Selected Points About a Point<label id="rotaac">
+<sect1>Rotating Objects or Selected Points about a Point<label id="rotaac">
 <p>
 Using the rotate about modelling action one may interactively rotate
 objects or the selected (tagged) points of the selected objects about
@@ -3197,7 +3203,7 @@ Stretch 2D|<tt/&lt;T&gt;/|
 <caption>Scaling Actions Overview</caption>
 </table>
 
-<sect1>Scaling Objects or Selected Points About a Point<label id="scalaac">
+<sect1>Scaling Objects or Selected Points about a Point<label id="scalaac">
 <p>
 Using the scale about modelling actions one may interactively scale
 objects or the selected (tagged) points
@@ -15852,6 +15858,23 @@ Note that the script does not change the <tt>"RIB-Export/Renderer"</tt>
 preferences, you still have to switch to Pixie using the main menu
 <tt>"Special/Select Renderer"</tt> once.
 
+<sect2>Replace Icons<label id="myiconstcl">
+<p>
+The script <tt>"myicons.tcl"</tt>
+allows to replace the icons of Ayam with a set of user defined ones.
+The new icons must be GIF image files of size 25 by 25 and reside
+in the <tt/"icons"/ directory relative to the Ayam executable. 
+
+The names of the image files may be obtained from the script or
+by the following scripting interface command (in the Ayam console):
+<tscreen>
+<tt>&raquo;&thinsp;image names</tt>
+</tscreen>
+
+Action icon variants (e.g. for the scale about actions) can also be created
+automatically by changing the <tt/"createVariants"/ variable in
+the script file.
+
 <#if out=latex><x/newpage/</#if>
 
 <sect2>Create Truncated Cones<label id="tconetcl">
@@ -17840,7 +17863,7 @@ using <tt/&lt;Ctrl+z&gt;/ (undo) but also forward using <tt/&lt;Ctrl+y&gt;/
 (redo).
 <p>
 The storage space occupied by the undo buffer may be adjusted using the
-preferences (<tt>"Prefs/Modelling/UndoLevels"</tt>). A value of -1 for
+preferences option <tt>"Modelling/UndoLevels"</tt>. A value of -1 for
 <tt>"UndoLevels"</tt> completely disables the undo system.
 The values 0 and 1 are not allowed. The value 2 means that there is
 always one state of the scene that can be restored, plus, a potential
@@ -18097,7 +18120,8 @@ also be the new current level in any case (after reading),
 <item> if a material is missing from the file, and a matching (by name)
 material exists in the scene, the objects will be connected to this
 material,
-<item> view windows will be opened for every view object read,
+<item> view windows will be opened for every view object read
+(the internal views will not be changed),
 <item> the current directory will only be changed during the file
 read operation,
 <item> if a material object is read, Ayam will immediately register
@@ -19885,6 +19909,7 @@ Index:
 <item>movOb: <ref id="scmovob" name="scripting interface command">
 <item>movPnts: <ref id="scmovpnts" name="scripting interface command">
 <item>Multiple Point: <ref id="ncurvemp" name="Multiple Points">
+<item>myicons.tcl: <ref id="myiconstcl" name="example/helper script">
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
