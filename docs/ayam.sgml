@@ -516,6 +516,8 @@ current level to the root level.
 Thus, if you feel lost anywhere in Ayam, just press <tt/&lt;Esc&gt;/
 twice or thrice.
 
+<#if out=latex><x/newpage/</#if>
+
 <sect2>Properties<label id="propgui">
 <p>
 <figure loc="ht">
@@ -643,6 +645,8 @@ hot key <tt/&lt;Ctrl+I&gt;/.
 Special care must be taken when pasting incomplete properties to objects
 which do not have complete properties already. Do not paste an incomplete
 shader property to an object which does not already have the same shader.
+
+<#if out=latex><x/newpage/</#if>
 
 <sect2>The Console<label id="cons">
 <p>
@@ -3722,6 +3726,8 @@ Delete Points|<tt/&lt;d&gt;/|
 </tabular>
 <caption>Insert/Delete Points Actions</caption>
 </table>
+
+<#if out=latex><x/newpage/</#if>
 
 <sect1>Manipulating the Multiplicity of Points<label id="multac">
 <p>
@@ -18266,6 +18272,21 @@ See the ayamrc file itself for a complete listing of available shortcuts.
 The ayamrc file currently contains the following adjustable hidden
 preference settings:
 <itemize>
+
+<item><tt/"AALineWidth"/, line width used for drawing the lines of
+unselected objects (blue lines in standard color configuration)
+when anti-aliasing is enabled.
+The default value is 1.3. Ayam is not checking, whether the specified
+value is supported by the OpenGL implementation used.
+
+<item><tt/"AAFudge"/, offset added to any line ends to accomodate
+for different OpenGL implementations wrt. anti-aliasing.
+
+<item><tt/"AASelLineWidth"/, line width used for drawing the lines of
+selected objects (white lines in standard color configuration)
+when anti-aliasing is enabled.
+The default value is 1.3. Ayam is not checking, whether the specified
+value is supported by the OpenGL implementation used.
 
 <item><tt/"AddViewParams"/ allows to add custom parameters to the
 view OpenGL widget creation, like e.g.~<tt/"-stereo true"/. The default
