@@ -3535,7 +3535,7 @@ explode the multiple point to do that.
 If the preference option <tt>"Modelling/EditSnaps"</tt> is enabled,
 the picked point will be moved to the nearest grid coordinates first,
 otherwise the grid just controls the displacement for the edit
-action. The snapping can occur in 2D or 3D depending on the preference
+action. The snapping can occur in 2D or 3D, depending on the preference
 option <tt>"Modelling/Snap3D"</tt>.
 Moreover, while snapping a point, the mouse pointer will warp to
 the new position of the point (so that the user does not lose
@@ -3610,13 +3610,13 @@ open all the time.<footnote>Since 1.4.</footnote>
 <p>
 Furthermore, it is not necessary that the original
 object stays selected while working with the numeric point edit dialog,
-you may select other objects to e.g.~infer new point coordinates from
+other objects may be selected to e.g.~infer new point coordinates from
 their properties and apply them to the original object.
 Furthermore notice that the coordinate values displayed in the numeric
 point editing window will not update when the point is modified by
-another modelling action. Simply click on the point again in a view
-where the numeric point editing action is active, to update the coordinate
-values in the numeric point editing dialog.
+another modelling action (in another view). Simply click on the point
+again in a view where the numeric point editing action is active, to
+update the coordinate values in the numeric point editing dialog.
 <p>
 The numeric point edit value fields support Tcl expressions.
 This allows e.g.~to set a point to
@@ -3632,7 +3632,16 @@ the original point data is unchanged and its accuracy is not affected
 as long as the new data is not applied.
 See also the discussion of the <tt/"TclPrecision"/ preference option in
 section <ref id="prefmisc" name="Miscellaneous Preferences">).
-
+<p>
+The numeric point edit dialog also has a context menu.
+<footnote>Since 1.21</footnote>
+The entries in this menu allow you to:
+<itemize>
+<item> <tt/"Clear"/ all entries,
+<item> <tt/"Reset"/ all entries to the last fetched values (undo edits), or
+<item> <tt/"Fetch Mark"/, set all entries to the mark coordinates of the
+current view (W is cleared).
+</itemize>
 </itemize>
 
 <sect1>Snapping Points to the Grid<label id="snapac">
