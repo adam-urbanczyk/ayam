@@ -12396,6 +12396,9 @@ See also section <ref id="scierr" name="Reporting Errors">.
 <item> The variable <tt/"i"/ is used by all <tt/"forAll"/
 command variants. See also section
 <ref id="scifall" name="Applying Commands to a Number of Objects">.
+<item> The variable <tt/"aymark"/ is an array that contains the current
+mark coordinates.
+<footnote>Since 1.21.</footnote>
 </itemize>
 
 <sect2>The Global Array ay<label id="ayarray">
@@ -18723,6 +18726,10 @@ objects, using a simple algorithm that recursively compares
 objects. The comparison of materials and tags may be turned off in the
 small dialog that pops up after selection of the menu entry
 <tt>"Special/Instances/Automatic Instancing"</tt>.
+Here, also the scope of the automatic instantiation can be set to
+the selected objects, the current level, or all objects
+in the scene (regardless of current level and selection).
+<footnote>Since 1.21.</footnote>
 <p>
 The algorithm is able to create instances of grouping objects
 too (objects with child objects, e.g.~levels or tool-objects
@@ -18739,12 +18746,6 @@ the total number of objects in a scene.
 Note that before the automatic instantiation starts, all currently
 existing instances will be resolved.<newline>
 After instantiation some statistics will be displayed in the console.
-<p>
-Also note that the instantiation obeys the object
-selection:<footnote>Since 1.14.</footnote><newline>
-instances are only created from the selected objects.
-If no objects are selected, instances are created from all objects
-in the current level and below.
 <p>
 More information about this subject can be found in:<p>
 <it>Schultz, R., and Schumann, H.: "Automatic Instancing of
