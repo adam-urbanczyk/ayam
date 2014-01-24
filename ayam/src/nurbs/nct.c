@@ -15,6 +15,9 @@
 /** \file nct.c \brief NURBS curve tools */
 
 /* prototypes of functions local to this module: */
+int ay_nct_refinearray(double *Pw, int len, int stride, ay_point *selp,
+		       double **Qw, int *Qwlen);
+
 int ay_nct_offsetsection(ay_object *o, double offset,
 			 ay_nurbcurve_object **nc);
 
@@ -859,6 +862,117 @@ ay_nct_refinekn(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
 } /* ay_nct_refinekn */
 
 
+int
+ay_nct_refinearray(double *Pw, int len, int stride, ay_point *selp,
+		   double **Qw, int *Qwlen)
+{
+ char fname[] = "refinearray";
+ double *Q;
+ int count;
+ int i, j, start = 0, end = len;
+ ay_point *endpnt = NULL;
+
+  if(!Qw)
+    return AY_ENULL;
+
+  if(selp)
+    {
+      start = len;
+      end = 0;
+      while(selp)
+	{
+	  if(start > (int)selp->index)
+	    start = selp->index;
+	  if(end < (int)selp->index)
+	    {
+	      end = selp->index;
+	      endpnt = selp;
+	    }
+
+	  selp = selp->next;
+	}
+    }
+
+  if(end >= len)
+    end = len-1;
+
+  /* first, count new points... */
+  count = 0;
+  for(i = start; i < end; i++)
+    {
+      /* ...taking care of multiple consecutive points, where we
+	 do not insert new points... */
+      if((fabs(Pw[i*stride]   - Pw[(i+1)*stride])   > AY_EPSILON) ||
+	 (fabs(Pw[i*stride+1] - Pw[(i+1)*stride+1]) > AY_EPSILON) ||
+	 (fabs(Pw[i*stride+2] - Pw[(i+1)*stride+2]) > AY_EPSILON))
+	{
+	  count++;
+	}
+    }
+
+  if(count)
+    {
+      /* allocate new control vector */
+      if(!(Q = malloc((len + count)*stride*sizeof(double))))
+	{
+	  ay_error(AY_EOMEM, fname, NULL);
+	  return AY_ERROR;
+	}
+
+      /* copy first points */
+      if(start > 0)
+	memcpy(Q, Pw, start*stride*sizeof(double));
+
+      /* copy old & create new points */
+      i = start;
+      j = start;
+      while(i < end)
+	{
+	  memcpy(&(Q[j*stride]), &(Pw[i*stride]), stride*sizeof(double));
+
+	  if((fabs(Pw[i*stride]   - Pw[(i+1)*stride])   > AY_EPSILON) ||
+	     (fabs(Pw[i*stride+1] - Pw[(i+1)*stride+1]) > AY_EPSILON) ||
+	     (fabs(Pw[i*stride+2] - Pw[(i+1)*stride+2]) > AY_EPSILON))
+	    {
+	      Q[(j+1)*stride] = Pw[i*stride] +
+		((Pw[(i+1)*stride] - Pw[i*stride])/2.0);
+
+	      Q[(j+1)*stride+1] = Pw[i*stride+1] +
+		((Pw[(i+1)*stride+1] - Pw[i*stride+1])/2.0);
+
+	      Q[(j+1)*stride+2] = Pw[i*stride+2] +
+		((Pw[(i+1)*stride+2] - Pw[i*stride+2])/2.0);
+
+	      if(stride > 3)
+		Q[(j+1)*stride+3] = Pw[i*stride+3] +
+		  ((Pw[(i+1)*stride+3] - Pw[i*stride+3])/2.0);
+
+	      j++;
+	    }
+
+	  i++;
+	  j++;
+	} /* while */
+
+      /* copy last point(s) */
+      memcpy(&(Q[(end+count)*stride]),
+	     &(Pw[end*stride]),
+	     (len-end)*stride*sizeof(double));
+
+      if(endpnt)
+	{
+	  endpnt->index += count;
+	}
+
+      /* return result */
+      *Qw = Q;
+      *Qwlen = len + count;
+    } /* if count */
+
+ return AY_OK;
+} /* ay_nct_refinearray */
+
+
 /** ay_nct_refinecv:
  *  refine a NURBS curve by inserting control points at the right places,
  *  changing the shape of the curve
@@ -995,8 +1109,7 @@ ay_nct_refinecv(ay_nurbcurve_object *curve, ay_point *selp)
 	{
 	  /* count sections in start-end range */
 	  p = curve->order-1;
-	  for(i = start+1;
-	      i < end+p; i++)
+	  for(i = start+1; i < end+p; i++)
 	    {
 	      if(fabs(curve->knotv[i]-curve->knotv[i+1]) > AY_EPSILON)
 		npslen++;
@@ -1110,8 +1223,10 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_nurbcurve_object *curve = NULL;
- int refine_cv = AY_FALSE, aknotc = 0, i;
- double *X = NULL;
+ ay_icurve_object *ic;
+ ay_acurve_object *ac;
+ int refine_cv = AY_FALSE, aknotc = 0, i, Qwlen;
+ double *X = NULL, *Qw;
  char **aknotv = NULL;
 
   if(argc > 1)
@@ -1146,6 +1261,7 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
   while(sel)
     {
       o = sel->object;
+      o->modified = AY_FALSE;
 
       if(o->type == AY_IDNCURVE)
 	{
@@ -1156,44 +1272,92 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
 	    ay_status = ay_nct_refinekn(curve, X, aknotc);
 	  if(ay_status)
 	    {
-	      ay_error(AY_ERROR, argv[0], "Refine operation failed.");
 	      goto cleanup;
 	    }
 	  else
 	    {
-	      if(o->selp)
-		{
-		  if(refine_cv)
-		    {
-		      if(!o->selp->next)
-			{
-			  ay_selp_clear(o);
-			}
-		      else
-			{
-			  ay_status = ay_pact_getpoint(3, o, NULL, NULL);
-			}
-		    }
-		  else
-		    {
-		      ay_selp_clear(o);
-		    } /* if */
-		} /* if */
 	      o->modified = AY_TRUE;
-
-	      /* re-create tesselation of curve */
-	      (void)ay_notify_object(sel->object);
-	    } /* if */
+	    }
 	}
       else
 	{
-	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
+	  if(refine_cv && (o->type == AY_IDICURVE))
+	    {
+	      ic = (ay_icurve_object*)o->refine;
+	      Qw = NULL;
+	      ay_status = ay_nct_refinearray(ic->controlv, ic->length, 3,
+					     o->selp, &Qw, &Qwlen);
+	      if(!ay_status && Qw)
+		{
+		  free(ic->controlv);
+		  ic->controlv = Qw;
+		  ic->length = Qwlen;
+		  o->modified = AY_TRUE;
+		}
+	      else
+		{
+		  goto cleanup;
+		}
+	    }
+	  else
+	    {
+	      if(refine_cv && o->type == AY_IDACURVE)
+		{
+		  ac = (ay_acurve_object*)o->refine;
+		  Qw = NULL;
+		  ay_status = ay_nct_refinearray(ac->controlv, ac->length, 3,
+						 o->selp, &Qw, &Qwlen);
+		  if(!ay_status && Qw)
+		    {
+		      free(ac->controlv);
+		      ac->controlv = Qw;
+		      ac->length = Qwlen;
+		      o->modified = AY_TRUE;
+		    }
+		  else
+		    {
+		      goto cleanup;
+		    }
+		}
+	      else
+		{
+		  ay_error(AY_EWARN, argv[0], ay_error_igntype);
+		}
+	    }
 	} /* if */
+
+      if(o->modified)
+	{
+	  if(o->selp)
+	    {
+	      if(refine_cv)
+		{
+		  if(!o->selp->next)
+		    {
+		      ay_selp_clear(o);
+		    }
+		  else
+		    {
+		      ay_status = ay_pact_getpoint(3, o, NULL, NULL);
+		    }
+		}
+	      else
+		{
+		  ay_selp_clear(o);
+		} /* if refine_cv */
+	    } /* if selp */
+	  (void)ay_notify_object(o);
+	} /* if modified */
 
       sel = sel->next;
     } /* while */
 
 cleanup:
+
+  if(ay_status)
+    {
+      ay_error(AY_ERROR, argv[0], "Refine operation failed.");
+    }
 
   (void)ay_notify_parent();
 
@@ -1516,7 +1680,6 @@ ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
 
   while(sel)
     {
-
       if(sel->object->type == AY_IDNCURVE)
 	{
 	  curve = (ay_nurbcurve_object *)sel->object->refine;
@@ -5464,7 +5627,7 @@ ay_nct_toxy(int allow_flip, ay_object *c)
     }
 
   /* check and correct the points */
-  while(!have_good_points  && (num_tries < (cvlen/2)))
+  while(!have_good_points && (num_tries < (cvlen/2)))
     {
       have_good_points = AY_TRUE;
       if(AY_V3COMP(tp1, tp2))
@@ -7666,7 +7829,7 @@ ay_nct_extend(ay_nurbcurve_object *curve, double *p)
     newkv[i] = u;
 
   ay_nb_UnclampCurve(curve->is_rat, curve->length-1, curve->order-1, 2,
-		     newkv, newcv, AY_FALSE);
+		     newkv, newcv, /* updateknots=*/AY_FALSE);
 
   curve->length++;
   curve->knot_type = AY_KTCUSTOM;
