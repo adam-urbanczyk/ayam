@@ -3775,9 +3775,9 @@ The modelling action <tt/"FindU"/ (shortcut: <tt/&lt;u&gt;/)
 may be applied to NURBS curves (objects of type NCurve or
 objects that provide NCurve objects) only.
 This action may be used to get the corresponding parametric
-value u from a point on a curve. For every picked point
-the appropriate value for u is calculated, stored
-in the global variable u, and additionally written to the console.
+value <em/u/ from a point on a curve. For every picked point
+the appropriate value for <em/u/ is calculated, stored
+in the global variable <tt/u/, and additionally written to the console.
 The mark is set to the position of the picked point (see section
 <ref id="markac" name="Setting the Mark">
 for more information about the mark).
@@ -3802,9 +3802,10 @@ The modelling action <tt/"FindUV"/ (shortcut: <tt/&lt;U&gt;/)
 may be applied to NURBS surfaces (objects of type NPatch or
 objects that provide NPatch objects) only.
 This action may be used to get the corresponding parametric
-values u and v from a point on a surface. For every picked point
-the appropriate values for u and v are calculated, stored
-in the global variables u and v, and additionally written to the console.
+values <em/u/ and <em/v/ from a point on a surface. For every picked
+point the appropriate values for <em/u/ and <em/v/ are calculated,
+stored in the global variables <tt/u/ and <tt/v/, and additionally
+written to the console.
 The mark is set to the position of the picked point (see section
 <ref id="markac" name="Setting the Mark">
 for more information about the mark).
@@ -6041,8 +6042,8 @@ is not clamped. If in doubt, use the clamp tool or a knot vector
 of type <tt/"NURB"/, <tt/"Chordal"/, or <tt/"Centripetal"/.
 
 <p>
-If the type is <tt/"Periodic"/, the last p control points of the curve
-will be made identical to the first p where p is the degree of the
+If the type is <tt/"Periodic"/, the last <em/p/ control points of the curve
+will be made identical to the first <em/p/ where <em/p/ is the degree of the
 curve (read order-1). This will close the curve with guaranteed continuity.
 Note that for a cubic spline (order 4) you will need atleast 6 control
 points to make it periodic. It is important to know, that the multiple control
@@ -10393,15 +10394,18 @@ In order to create a tag of type RiAttribute, the type string must be
 <p>
 <tt/&lt;attrname&gt;,&lt;paramname&gt;,&lt;paramtype&gt;,&lt;param&gt;/
 <p>
-where attrname is the name of the attribute (e.g.~"render") paramname
-is the name of the parameter (e.g.~"displacementbound") paramtype is a
-single character defining the type of the parameter (it may be one of
+where<newline>
+<tt/&lt;attrname&gt;/ is the name of the attribute (e.g.~"render");<newline>
+<tt/&lt;paramname&gt;/ is the name of the parameter
+(e.g.~"displacementbound");<newline>
+<tt/&lt;paramtype&gt;/ is a single character defining the type of the
+parameter (it may be one of
 <tt/f/ &ndash; float, <tt/g/ &ndash; float pair, <tt/i/ &ndash; integer,
 <tt/j/ &ndash; integer pair, <tt/s/ &ndash; string, <tt/c/ &ndash; color,
-<tt/p/ &ndash; point) and finally
-param is the value of the parameter itself (e.g.~a float: "1.2", an
-integer value: "3", a string: "on", a color: "1,1,1" or a point:
-"0.4,0.5,1.0").
+<tt/p/ &ndash; point); and finally<newline>
+<tt/&lt;param&gt;/ is the value of the parameter itself (e.g.~a
+float: "1.2", an integer value: "3", a string: "on", a color: "1,1,1"
+or a point: "0.4,0.5,1.0").
 <p>
 <bf/Example/
 <p>
@@ -10573,18 +10577,18 @@ The syntax of the value string of a PV tag is as following:
 <p>
 <tt/&lt;name&gt;,&lt;detail&gt;,&lt;type&gt;,&lt;ndata&gt;,&lt;data&gt;/
 <p>
-where
-<tt/"&lt;name&gt;"/ is the name of the primitive variable;
-<tt/"&lt;detail&gt;"/ (or storage class) should be one of
-<tt/"uniform"/, <tt/"varying"/, <tt/"vertex"/, or <tt/"constant"/;
-<tt/"&lt;type&gt;"/ is a single character describing the type of the
-data (one of <tt/"c"/ (color), <tt/"f"/ (float), <tt/"g"/ (float[2]),
+where<newline>
+<tt/&lt;name&gt;/ is the name of the primitive variable;<newline>
+<tt/&lt;detail&gt;/ (or storage class) should be one of
+<tt/"uniform"/, <tt/"varying"/, <tt/"vertex"/, or <tt/"constant"/;<newline>
+<tt/&lt;type&gt;/ is a single character describing the type of the
+data (one of <tt>"c"</tt> (color), <tt>"f"</tt> (float), <tt/"g"/ (float[2]),
 <tt/"n"/ (normal), <tt/"p"/ (point), <tt/"s"/ (string), or <tt/"v"/ (vector),
-see also the documentation of the <tt/"RiAttribute"/ tag above);
-<tt/"&lt;ndata&gt;"/ is an integer number describing how many data
-elements will follow; and
-<tt/"&lt;data&gt;"/ is a comma separated list
-consisting of <tt/"&lt;ndata&gt;"/ elements of type <tt/"&lt;type&gt;"/.
+see also the documentation of the <tt/"RiAttribute"/ tag above);<newline>
+<tt/&lt;ndata&gt;/ is an integer number describing how many data
+elements will follow; and<newline>
+<tt/&lt;data&gt;/ is a comma separated list
+consisting of <tt/&lt;ndata&gt;/ elements of type <tt/&lt;type&gt;/.
 <p>
 <bf/Examples/
 <p>
@@ -10599,8 +10603,8 @@ the respective surface shader should have a parameter
 <p>
 <bf/Notes/
 <p>
-The following data types are <em>not</em> supported: i, j.
-Support for the data types n (normal), and v (vector) was added
+The following data types are <em>not</em> supported: <tt/"i"/, <tt/"j"/.
+Support for the data types <tt/"n"/ (normal), and <tt/"v"/ (vector) was added
 in Ayam 1.17.
 <p>
 Not all geometric objects currently honour PV tags
@@ -10610,14 +10614,14 @@ Most tool objects that internally create NPatch objects also support PV
 tags.<footnote>Since 1.20.</footnote>
 Mind that the same set of tags
 will be used for all surfaces that make up the tool object,
-e.g.~the swept surface, the bevels, and the caps.
+e.g.~the swept surface, its bevels, and its caps.
 <p>
 Furthermore, the number of data elements, which depends on the
 detail or storage class, the type of geometric primitive, and the
 configuration of the geometric primitive is <em>not</em> checked by Ayam.
-Some RIB writing libraries, however, check the number and silently
+Some RIB writing libraries, however, do verify the numbers and silently
 omit the primitive variable if there are mismatches. The RIB should be
-checked for the presence of the primitive variable after export,
+examined for the presence of the primitive variable after export,
 especially, if PV tags were added or edited manually.
 
 <sect2>RiHider Tag<label id="rihtag">
@@ -11374,7 +11378,8 @@ ICurve, and ACurve objects from the selection.
 a control point in the middle of each control point interval, changing
 the shape of the curve. The original control points will not be changed.
 For periodic NURBS curves, no control points will be inserted in the last
-<em/p/ intervals, this allows to maintain the periodicity, see also the
+<em/p/ intervals (where <em/p/ is the degree of the curve),
+this allows to maintain the periodicity, see also the
 image below where a periodic curve of length 9 (8 sections) has been
 refined, resulting in a periodic curve of length 15 (not 17).
 <figure loc="ht">
@@ -11435,8 +11440,8 @@ the selection.
 <tag/Operation/ Every second control point in the control vectors of
 the selected NURBS curves will be deleted.
 <tag/Notes/ For periodic curves the coarsen tool will not remove
-control points from the first (last) p intervals (where p is the degree
-of the curve).
+control points from the first (last) <em/p/ intervals (where <em/p/
+is the degree of the curve).
 
 For closed curves, the coarsen tool will not remove the last point.
 
@@ -13937,8 +13942,8 @@ clampNC &ndash; clamp NURBS curve:
  <item>Description: Clamp the knot vector of the selected NURBS curves
 without changing the shape of the curves.
 The knot type of the clamped curve will be changed to <tt/"Custom"/ and
-the knots will have o equal values at the desired side(s), where o is the
-order of the curve.
+the knots will have <em/o/ equal values at the desired side(s), where <em/o/
+is the order of the curve.
 <p><p>
 If the side parameter is omitted or 0, both sides
 are clamped.
@@ -14300,8 +14305,8 @@ clampuNP &ndash; clamp NURBS patch in U direction:
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Clamp the U direction knot vector of the selected NURBS
 patches without changing the shape of the patches.
-The knot type will be changed to <tt/"Custom"/ and the knots will have o
-equal values at start and end (where o is the order of the patch in
+The knot type will be changed to <tt/"Custom"/ and the knots will have <em/o/
+equal values at start and end (where <em/o/ is the order of the patch in
 U direction).
 <p><p>
 If the side parameter is omitted or 0, both sides
@@ -14327,8 +14332,8 @@ clampvNP &ndash; clamp NURBS patch in V direction:
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Clamp the V direction knot vector of the selected NURBS
 patches without changing the shape of the patches.
-The knot type will be changed to <tt/"Custom"/ and the knots will have o
-equal values at start and end (where o is the order of the patch in
+The knot type will be changed to <tt/"Custom"/ and the knots will have <em/o/
+equal values at start and end (where <em/o/ is the order of the patch in
 V direction).
 <p><p>
 If the side parameter is omitted or 0, both sides
