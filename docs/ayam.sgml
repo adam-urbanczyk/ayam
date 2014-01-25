@@ -10388,7 +10388,6 @@ that differ from the standard RiAttributes is in use.
 <tt/"RiAttribute"/ tags possibly attached to the material object of this
 geometric object.
 <p>
-<#if out=latex><x/newpage/</#if>
 In order to create a tag of type RiAttribute, the type string must be
 <tt/"RiAttribute"/. The syntax of the value string is as following:
 <p>
