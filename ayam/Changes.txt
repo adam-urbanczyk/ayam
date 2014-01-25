@@ -1,4 +1,4 @@
-[18. Jan 2014] CVS-Head:
+[25. Jan 2014] CVS-Head:
 ========================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
@@ -88,6 +88,7 @@ o deleting objects is now more robust for complex hierarchies with
   master and instance objects
 o creating Instance objects now silently creates instances of the original
   master when an Instance is selected (instead of raising an error)
+o the refine curve tool now also supports ICurve and ACurve objects
 
 GUI:
 o the default value menu buttons of property GUI elements now display a
@@ -123,7 +124,7 @@ o the help keyboard binding (<F1>) now also works in all property GUI
 o added mnemonic handling to internal view menus and grid menu
 o walking up in the object hierarchy via the object listbox now selects
   the proper object
-o the UI of the tesselation tool has been improved (the SaveToTag option
+o the UI of the tesselation tool has been improved (the "SaveToTag" option
   is now a major "Save" button)
 o <Ctrl+h> now toggles the hide attribute (instead of just setting it)
 o the standard console prompt now also displays the name of the modelling
