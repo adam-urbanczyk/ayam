@@ -381,7 +381,7 @@ $m.nct add command -label "Trim" -command {
 }
 
 $m.nct add command -label "Refine" -command { undo save Refine;
-    refineNC -cv; plb_update; rV }
+    refineC; plb_update; rV }
 
 $m.nct add command -label "Coarsen" -command { undo save Coarsen; coarsenNC;
                                               plb_update; rV }
@@ -419,12 +419,12 @@ $m.nct.kn add command -label "Remove Knot" -command {
 } -underline 0
 
 $m.nct.kn add command -label "Refine Knots" -command { undo save RefineKn;
-    refineNC; plb_update; rV } -underline 1
+    refineknNC; plb_update; rV } -underline 1
 
 $m.nct.kn add command -label "Refine Knots with" -command {
     getProp; set ay(okn) $::NCurveAttrData(Knots);
     runTool [list ay(okn) ay(refinekn)] {"Old Knots:" "New Knots:"}\
-	"undo save RefineKn; refineNC \{%1\}; plb_update; rV"\
+	"undo save RefineKn; refineknNC \{%1\}; plb_update; rV"\
         "Refine Knots"
 } -underline 2
 

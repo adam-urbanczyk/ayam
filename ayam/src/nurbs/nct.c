@@ -1210,8 +1210,9 @@ ay_nct_refinecv(ay_nurbcurve_object *curve, ay_point *selp)
 
 /** ay_nct_refinetcmd:
  *  Refine selected NURBS curves.
- *  Implements the \a refineNC scripting interface command.
- *  See also the corresponding section in the \ayd{screfinenc}.
+ *  Implements the \a refineC scripting interface command.
+ *  Also implements the \a refineknNC scripting interface command.
+ *  See also the corresponding section in the \ayd{screfinec}.
  *
  *  \returns TCL_OK in any case.
  */
@@ -1225,37 +1226,37 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbcurve_object *curve = NULL;
  ay_icurve_object *ic;
  ay_acurve_object *ac;
- int refine_cv = AY_FALSE, aknotc = 0, i, Qwlen;
+ int refine_cv = AY_TRUE, aknotc = 0, i, Qwlen;
  double *X = NULL, *Qw;
  char **aknotv = NULL;
 
+  /* distinguish between
+     refineC and
+     refineknNC
+     012345^    */
+  if(argv[0][6] == 'k')
+    refine_cv = AY_FALSE;
+
   if(argc > 1)
     {
-      if(!strcmp(argv[1], "-cv"))
+      Tcl_SplitList(interp, argv[1], &aknotc, &aknotv);
+
+      if(!(X = malloc(aknotc*sizeof(double))))
 	{
-	  refine_cv = AY_TRUE;
+	  ay_error(AY_EOMEM,argv[0],NULL);
+	  if(aknotv)
+	    Tcl_Free((char *) aknotv);
+	  return TCL_OK;
 	}
-      else
+
+      for(i = 0; i < aknotc; i++)
 	{
-	  Tcl_SplitList(interp, argv[1], &aknotc, &aknotv);
+	  tcl_status = Tcl_GetDouble(interp, aknotv[i], &X[i]);
+	  AY_CHTCLERRGOT(tcl_status, argv[0], interp);
+	} /* for */
 
-	  if(!(X = malloc(aknotc*sizeof(double))))
-	    {
-	      ay_error(AY_EOMEM,argv[0],NULL);
-	      if(aknotv)
-		Tcl_Free((char *) aknotv);
-	      return TCL_OK;
-	    }
-
-	  for(i = 0; i < aknotc; i++)
-	    {
-	      tcl_status = Tcl_GetDouble(interp, aknotv[i], &X[i]);
-	      AY_CHTCLERRGOT(tcl_status, argv[0], interp);
-	    } /* for */
-
-	  Tcl_Free((char *) aknotv);
-	  aknotv = NULL;
-	} /* if */
+      Tcl_Free((char *) aknotv);
+      aknotv = NULL;
     } /* if */
 
   while(sel)
