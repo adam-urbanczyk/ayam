@@ -11367,19 +11367,20 @@ scripting interface command <ref id="screvert" name="revertC">.
 <caption>Successive Application of Refine Tool</caption>
 </figure>
 <descrip>
-<tag/Arguments/ The refine tool takes a number of NURBS curves from
-the selection.
-<tag/Operation/ The selected NURBS curves will be refined by inserting
+<tag/Arguments/ The refine tool takes all NCurve,
+ICurve, and ACurve objects from the selection.
+<footnote>ICurve and ACurve since 1.21.</footnote>
+<tag/Operation/ The selected curves will be refined by inserting
 a control point in the middle of each control point interval, changing
 the shape of the curve. The original control points will not be changed.
-For periodic curves, no control points will be inserted in the last p
-intervals, this allows to maintain the periodicity, see also the
+For periodic NURBS curves, no control points will be inserted in the last
+<em/p/ intervals, this allows to maintain the periodicity, see also the
 image below where a periodic curve of length 9 (8 sections) has been
 refined, resulting in a periodic curve of length 15 (not 17).
 <figure loc="ht">
 <eps file="pics/refinepe.ps" height="4cm">
 <img src="pics/refinepe.gif">
-<caption>Refining a Periodic Curve</caption>
+<caption>Refining a Periodic NURBS Curve</caption>
 </figure>
 If there are selected points, only the intervals between the first
 and the last selected point are refined, see also the image below.
@@ -11388,11 +11389,11 @@ and the last selected point are refined, see also the image below.
 <img src="pics/refinesel.gif">
 <caption>Refining a Selected Region</caption>
 </figure>
+The point selection will be adapted so that the refine tool can be
+applied multiple times.
 <tag/Notes/
-The point selection will be removed from the original objects.
-
 See also the documentation of the corresponding
-scripting interface command <ref id="screfinenc" name="refineNC">.
+scripting interface command <ref id="screfinec" name="refineC">.
 </descrip>
 
 <sect2>Refine Knots Tool<label id="refknit">
@@ -11418,7 +11419,7 @@ certain control points does.
 The point selection will be removed from the original objects.
 
 See also the documentation of the corresponding
-scripting interface command <ref id="screfinenc" name="refineNC">.
+scripting interface command <ref id="screfineknnc" name="refineknNC">.
 </descrip>
 
 <sect2>Coarsen Tool<label id="coart">
@@ -11827,7 +11828,7 @@ on how to select (tag) control points).
 <tag/Operation/ The selected control points will be made a
 single multiple point, all points will get the coordinate values
 of the last tagged point.
-
+This means that the shape of the curve/surface can change.
 
 The point selection will be removed from the original objects.
 </descrip>
@@ -11841,15 +11842,20 @@ or NURBS patch and a number of selected (tagged) multiple points
 on how to select (tag) control points).
 <tag/Operation/ The points forming the selected multiple points will
 be made to simple points again and may be edited separately.
+The shape of the curve/surface will not change.
+
 <tag/Notes/ The control points should immediately be edited (i.e.~moved
 apart) after exploding, to avoid that they automatically collapse to a
 multiple point again, as Ayam will re-create the multiple points on
 several occasions like reading of a scene, inserting/deleting points,
 or applying the NCurveAttr/NPatchAttr property if all single control
 points of the multiple point(s) still have identical coordinate values
-(and the <tt/"CreateMP"/ option of the curve or patch object is activated).
+(and the <tt/"CreateMP"/ attribute of the curve or patch object is activated).
 
 The point selection will be removed from the original objects.
+
+To explode all multiple points of a curve/surface at once, disable
+the <tt/"CreateMP"/ attribute.
 </descrip>
 
 <#if out=latex><x/newpage/</#if>
@@ -14042,18 +14048,35 @@ See also section <ref id="remknt" name="Remove Knot Tool">.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="screfinenc">
-refineNC &ndash; refine NURBS curve:
+<label id="screfinenc"><label id="screfinec">
+refineC &ndash; refine curve:
 <itemize>
- <item>Synopsis: <tt/"refineNC [-cv | {u1 u2 un}]"/
+ <item>Synopsis: <tt/"refineC"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Refine the knot vector of the selected NURBS curve
-without changing the shape of the curve with n new knots {u1 u2 un}
-or refine the control vector (if <tt/"-cv"/ option is given).
-If no list of new knots is given a new knot is inserted into each interval
-in the old knot vector.
+ <item>Description: Refine the control vector of the selected
+curves, changing the shape of the curve. If the curve has
+selected points, only the interval between the first and the
+last of the selected points is refined. For periodic NURBS
+curves, the last <em/p/ intervals are not refined (where <em/p/
+is the degree of the curve).
 <p><p>
 See also section <ref id="refit" name="Refine Tool">.
+</itemize>
+
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
+<label id="screfineknnc">
+refineknNC &ndash; refine knots of NURBS curve:
+<itemize>
+ <item>Synopsis: <tt/"refineknNC {u1 u2 un}"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Refine the knot vector of the selected NURBS curve
+without changing the shape of the curve with n new knots {u1 u2 un}.
+If no list of new knots is given, a new knot is inserted into each interval
+in the old knot vector.
+<p><p>
+See also section <ref id="refknit" name="Refine Knots Tool">.
 </itemize>
 
 <p>
@@ -18297,7 +18320,10 @@ for different OpenGL implementations wrt. anti-aliasing.
 <item><tt/"AASelLineWidth"/, line width used for drawing the lines of
 selected objects (white lines in standard color configuration)
 when anti-aliasing is enabled.
-The default value is 1.3. Ayam is not checking, whether the specified
+The default value is 1.5 (a tad higher than <tt/"AALineWidth"/ above,
+to make the perceived line width equal compared to normal lines, in the
+case of drawing a selected curve over a not selected resulting surface).
+Ayam is not checking, whether the specified
 value is supported by the OpenGL implementation used.
 
 <item><tt/"AddViewParams"/ allows to add custom parameters to the
@@ -19431,7 +19457,7 @@ Index:
 </itemize>
 <item>Collapse:
 <itemize>
-<item><ref id="collt" name="Collapse tool">,
+<item><ref id="collt" name="collapse points tool">,
 <item><ref id="treecontm" name="tree context menu entry">
 </itemize>
 <item>colfocus.tcl: <ref id="colfocustcl" name="example/helper script">
@@ -19587,7 +19613,7 @@ Index:
 <item>ExcludeHidden: <ref id="prefrib" name="preference setting">
 <item>Expand: <ref id="treecontm" name="tree context menu entry">
 <item>ExpGain, ExpGamma: <ref id="rio" name="RenderMan interface option">
-<item>Explode: <ref id="explt" name="Explode tool">
+<item>Explode: <ref id="explt" name="explode points tool">
 <item>Export:
 <itemize>
 <item><ref id="exprhino" name="3DM (Rhino) export">,
@@ -20161,7 +20187,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="refinest" name="surface tool">
 </itemize>
 <item>Refine Knots: <ref id="refknit" name="Refine Knots Tool">
-<item>refineNC: <ref id="screfinenc" name="scripting interface command">
+<item>refineC: <ref id="screfinec" name="scripting interface command">
+<item>refineknNC: <ref id="screfineknnc" name="scripting interface command">
 <item>refineuNP: <ref id="screfineunp" name="scripting interface command">
 <item>refinevNP: <ref id="screfinevnp" name="scripting interface command">
 <item>Relative:
