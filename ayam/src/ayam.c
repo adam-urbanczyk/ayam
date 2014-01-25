@@ -1065,7 +1065,10 @@ Tcl_AppInit(Tcl_Interp *interp)
   /* NURBS */
 
   /* nurbs/nct.c */
-  Tcl_CreateCommand(interp, "refineNC", ay_nct_refinetcmd,
+  Tcl_CreateCommand(interp, "refineC", ay_nct_refinetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "refineknNC", ay_nct_refinetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "coarsenNC", ay_nct_coarsentcmd,
@@ -1570,7 +1573,10 @@ ay_safeinit(Tcl_Interp *interp)
   /* NURBS */
 
   /* nurbs/nct.c */
-  Tcl_CreateCommand(interp, "refineNC", ay_nct_refinetcmd,
+  Tcl_CreateCommand(interp, "refineC", ay_nct_refinetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "refineknNC", ay_nct_refinetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "coarsenNC", ay_nct_coarsentcmd,
