@@ -45,8 +45,11 @@ set ay(filemenu) $m
 $m add command -label "New"\
 	-command {
     global ay ayprefs tcl_platform
-    if { ! [io_warnChanged] } {
-	update; selOb; cS; plb_update; newScene; uS;
+    if { ! [io_warnChanged] } {	
+	cS; plb_update; goTop
+	set ay(CurrentLevel) "root"
+	set ay(SelectedLevel) "root"
+	newScene; uS;
 	if { ($ayprefs(EnvFile) != "") && $ayprefs(NewLoadsEnv) == 1 } {
 	    viewCloseAll; cS; plb_update
 	    set filename [file nativename $ayprefs(EnvFile)]
@@ -57,10 +60,7 @@ $m add command -label "New"\
 	    update
 	}
 	set ay(filename) ""
-	wm title . "Ayam - Main - : --"
-	goTop
-	set ay(CurrentLevel) "root"
-	set ay(SelectedLevel) "root"
+	wm title . "Ayam - Main - : --"	
 	update
 	uS
 	update
