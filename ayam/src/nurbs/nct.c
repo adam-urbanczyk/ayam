@@ -705,9 +705,9 @@ ay_nct_revert(ay_nurbcurve_object *curve)
 /** ay_nct_revertarr:
  *  revert an array
  *
- * \param[in,out] cv
- * \param[in] cvlen
- * \param[in] stride
+ * \param[in,out] cv array to revert
+ * \param[in] cvlen number of elements in cv
+ * \param[in] stride size of an element in cv
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -862,6 +862,18 @@ ay_nct_refinekn(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
 } /* ay_nct_refinekn */
 
 
+/** ay_nct_refinearray:
+ *  Helper to refine an 1D array of control points.
+ * 
+ * \param[in] Pw array to refine
+ * \param[in] len number of elements in Pw
+ * \param[in] stride size of an element in Pw
+ * \param[in,out] selp region to be refined, may be NULL
+ * \param[in,out] Qw new refined array
+ * \param[in,out] Qwlen length of new array
+ * 
+ * \return AY_OK on success, error code otherwise.
+ */
 int
 ay_nct_refinearray(double *Pw, int len, int stride, ay_point *selp,
 		   double **Qw, int *Qwlen)
@@ -3651,13 +3663,13 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
  *  this is my fourth attempt on (and a complete rewrite of) this routine
  *  this time with support from Paul Bourke
  *
- * \param curve NURBS curve to interrogate
- * \param stride
- * \param report
- * \param plane
- * \param orient
+ * \param[in] curve NURBS curve to interrogate
+ * \param[in] stride
+ * \param[in] report
+ * \param[in] plane
+ * \param[in,out] orient
  *
- * \return
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_getorientation(ay_nurbcurve_object *curve, int stride,
@@ -5848,13 +5860,16 @@ ay_nct_iscomptcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  ay_error(ay_status, argv[0], "Could not check the curves.");
 	}
-      if(comp)
-	{
-	  Tcl_SetResult(interp, "1", TCL_VOLATILE);
-	}
       else
 	{
-	  Tcl_SetResult(interp, "0", TCL_VOLATILE);
+	  if(comp)
+	    {
+	      Tcl_SetResult(interp, "1", TCL_VOLATILE);
+	    }
+	  else
+	    {
+	      Tcl_SetResult(interp, "0", TCL_VOLATILE);
+	    }
 	}
 
       free(curves);
@@ -6015,7 +6030,7 @@ ay_nct_israt(ay_nurbcurve_object *curve)
 } /* ay_nct_israt */
 
 
-/* ay_nct_coarsen:
+/** ay_nct_coarsen:
  *  Reduces the resolution of a NURBS curve.
  *
  * \param[in,out] curve NURBS curve object to be coarsened
