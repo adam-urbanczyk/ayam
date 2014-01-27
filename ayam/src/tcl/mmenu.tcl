@@ -468,10 +468,6 @@ $m.nct add command -label "To XY" -command {
 $m.nct add command -label "Make Compatible" -command {
     undo save MakeCompNC; makeCompNC; rV; }
 
-$m.nct add separator
-$m.nct add command -label "Collapse Points" -command {collMP; rV; set ay(sc) 1}
-$m.nct add command -label "Explode Points" -command {explMP; rV; set ay(sc) 1}
-
 $m add separator
 
 $m add cascade -menu $m.npt -label "Surface" -underline 0
@@ -674,14 +670,9 @@ $m.npt add command -label "Reset Weights" -command {
 	ayError 2 "Reset_Weights" "Need an open view!"
     }
 }
-
 $m.npt add command -label "Tesselate" -command tgui_open -underline 0
 $m.npt add separator
-$m.npt add command -label "Collapse Points" -command {collMP; rV; set ay(sc) 1}
-$m.npt add command -label "Explode Points" -command {explMP; rV; set ay(sc) 1}
-$m.npt add separator
 $m.npt add command -label "Break into Curves" -command npatch_break
-
 $m.npt add command -label "Build from Curves" -command {
     buildNP; uCR; sL; rV; set ay(sc) 1
 }
@@ -711,6 +702,12 @@ $sm add command -label "Deselect All Points" -command "selPnts; rV" \
     -underline 0
 $sm add command -label "Invert Selection" -command "invPnts; rV" \
     -underline 0
+
+$sm add separator
+$sm add command -label "Collapse Points" -command {collMP; rV; set ay(sc) 1}
+$sm add command -label "Explode Points" -command {explMP; rV; set ay(sc) 1}
+$sm add separator
+
 $sm add command -label "Apply Trafo To All Points"\
 	-command "undo save ApplyTrafo; applyTrafo;\
 	 plb_update; notifyOb; rV" \
