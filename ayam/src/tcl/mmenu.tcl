@@ -397,6 +397,11 @@ $m.nct add command -label "Elevate" -command {
 	"undo save Elevate; elevateNC %0; plb_update; rV"\
 	"Elevate Curve"
 }
+$m.nct add command -label "Extend" -command {
+    runTool [list ay(extendx) ay(extendy) ay(extendz)] [list "X:" "Y:" "Z:"]\
+	"undo save Extend; extendNC %0 %1 %2; plb_update; rV"\
+	"Extend Curve"
+}
 
 
 $m.nct add cascade -menu $m.nct.kn -label "Knots" -underline 0
