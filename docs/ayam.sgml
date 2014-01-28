@@ -10998,6 +10998,8 @@ new children around, i.e.~the clipboard contents are lost afterwards.
 <#if out=latex><x/newpage/</#if>
 <sect1>Curve Creation Tools
 <p>
+These tools create parametric curve objects.
+
 <sect2>Circular B-Spline Tool<label id="cbspt">
 <p>
 <figure loc="ht">
@@ -11096,242 +11098,10 @@ by the TrimRect tool.
 </descrip>
 
 <#if out=latex><x/newpage/</#if>
-<sect1>Surface Creation Tools
-<p>
-<sect2>NURBSphere Tool<label id="nspt">
-<p>
-<descrip>
-<tag/Arguments/ None.
-<tag/Operation/ The NURBSphere tool creates a half circle NURBS curve
-and revolves it about the Y axis thus forming a sphere of radius 1.
-<tag/Notes/ The NURBS curve is deleted afterwards.
-</descrip>
-
-<sect2>NURBSphere2 Tool<label id="nsp2t">
-<p>
-<descrip>
-<tag/Arguments/ None.
-<tag/Operation/ The NURBSphere tool creates a Cobb-NURBSphere,
-consisting of six NURBS patches.
-<tag/Notes/ The NURBS patches are of high order (5).
-</descrip>
-
-<sect2>Revolve Tool<label id="revt">
-<p>
-<descrip>
-<tag/Arguments/ The revolve tool takes the selected objects from
-the selection.
-<tag/Operation/ The tool creates a Revolve object, and moves
-the selected objects to it.
-<tscreen><verb>
-|-NCurve     ==>     +-Revolve
-                      \-NCurve
-</verb></tscreen>
-<tag/Notes/ See section <ref id="revolveobj" name="Revolve Object">
-for more information regarding the revolve object.
-
-This tool uses the object clipboard to move the objects so that the
-original clipboard contents are lost when this tool finishes.
-</descrip>
-
-<sect2>Swing Tool<label id="swint">
-<p>
-<descrip>
-<tag/Arguments/ The swing tool takes the selected objects from
-the selection.
-<tag/Operation/ The tool creates a Swing object, and moves
-the selected objects to it.
-<tscreen><verb>
-|-NCurve     ==>     +-Swing
-                      \-NCurve
-</verb></tscreen>
-<tag/Notes/ See section <ref id="swingobj" name="Swing Object">
-for more information regarding the Swing object.
-This tool uses the object clipboard to move the objects so that the
-original clipboard contents are lost when this tool finishes.
-</descrip>
-
-<sect2>Extrude Tool<label id="extt">
-<p>
-<descrip>
-<tag/Arguments/ The extrude tool takes the selected objects from
-the selection.
-<tag/Operation/ The tool creates an Extrude object, and moves
-the selected objects to it.
-<tscreen><verb>
-|-NCurve             +-Extrude
-|-NCurve     ==>      |-NCurve
-                      \-NCurve
-</verb></tscreen>
-<tag/Notes/ See section <ref id="extrudeobj" name="Extrude Object">
-for more information regarding the extrude object.
-
-This tool uses the object clipboard to move the objects so that the
-original clipboard contents are lost when this tool finishes.
-</descrip>
-
-<sect2>Sweep Tool<label id="swpt">
-<p>
-<descrip>
-<tag/Arguments/ The sweep tool takes the selected objects from
-the selection.
-<tag/Operation/ The tool creates a Sweep object, and moves
-the selected objects to it.
-<tscreen><verb>
-|-NCurve             +-Sweep
-|-NCurve     ==>      |-NCurve
-                      \-NCurve
-</verb></tscreen>
-<tag/Notes/ See section <ref id="sweepobj" name="Sweep Object">
-for more information regarding the Sweep object.
-This tool uses the object clipboard to move the objects so that the
-original clipboard contents are lost when this tool finishes.
-</descrip>
-
-<sect2>Bevel Tool<label id="bevt">
-<p>
-<descrip>
-<tag/Arguments/ The bevel tool takes the selected objects from
-the selection.
-<tag/Operation/ The tool creates a Bevel object, and moves
-the selected objects to it.
-<tscreen><verb>
-|-NCurve             +-Bevel
-|-NCurve     ==>      |-NCurve
-                      \-NCurve
-</verb></tscreen>
-<tag/Notes/ See section <ref id="bevelobj" name="Bevel Object">
-for more information regarding the Bevel object.
-
-This tool uses the object clipboard to move the objects so that the
-original clipboard contents are lost when this tool finishes.
-</descrip>
-
-<sect2>Cap Tool<label id="capt">
-<p>
-<descrip>
-<tag/Arguments/ The cap tool takes the selected objects from
-the selection.
-<tag/Operation/ The tool creates a Cap object, and moves
-the selected objects to it.
-<tscreen><verb>
-|-NCurve             +-Cap
-|-NCurve     ==>      |-NCurve
-                      \-NCurve
-</verb></tscreen>
-<tag/Notes/ See section <ref id="capobj" name="Cap Object">
-for more information regarding the Cap object.
-
-This tool uses the object clipboard to move the objects so that the
-original clipboard contents are lost when this tool finishes.
-</descrip>
-
-<sect2>Birail1 Tool<label id="bi1t">
-<p>
-<descrip>
-<tag/Arguments/ The birail1 tool takes the selected objects from
-the selection.
-<tag/Operation/ The tool creates a Birail1 object, and moves
-the selected objects to it.
-<tscreen><verb>
-|-NCurve             +-Birail1
-|-NCurve     ==>      |-NCurve
-|-NCurve              |-NCurve
-                      \-NCurve
-</verb></tscreen>
-<tag/Notes/ See section <ref id="birail1obj" name="Birail1 Object">
-for more information regarding the Birail1 object.
-
-This tool uses the object clipboard to move the objects so that the
-original clipboard contents are lost when this tool finishes.
-</descrip>
-
-<sect2>Birail2 Tool<label id="bi2t">
-<p>
-<descrip>
-<tag/Arguments/ The birail2 tool takes the selected objects from
-the selection.
-<tag/Operation/ The tool creates a Birail2 object, and moves
-the selected objects to it.
-<tscreen><verb>
-|-NCurve             +-Birail2
-|-NCurve              |-NCurve
-|-NCurve     ==>      |-NCurve
-|-NCurve              |-NCurve
-                      \-NCurve
-</verb></tscreen>
-<tag/Notes/ See section <ref id="birail2obj" name="Birail2 Object">
-for more information regarding the Birail2 object.
-
-This tool uses the object clipboard to move the objects so that the
-original clipboard contents are lost when this tool finishes.
-</descrip>
-
-<sect2>Gordon Tool<label id="gort">
-<p>
-<descrip>
-<tag/Arguments/ The gordon tool takes the selected objects from
-the selection.
-<tag/Operation/ The tool creates a Gordon object, and moves
-the selected objects to it.
-<tscreen><verb>
-|-NCurve             +-Gordon
-|-NCurve              |-NCurve
-|-Level               |-NCurve
-|-NCurve     ==>      |-Level
-|-NCurve              |-NCurve
-                      \-NCurve
-</verb></tscreen>
-<tag/Notes/ See section <ref id="gordonobj" name="Gordon Object">
-for more information regarding the Gordon object.
-
-This tool uses the object clipboard to move the objects so that the
-original clipboard contents are lost when this tool finishes.
-</descrip>
-
-<sect2>Skin Tool<label id="skit">
-<p>
-<descrip>
-<tag/Arguments/ The skin tool takes the selected objects from
-the selection.
-<tag/Operation/ The tool creates a Skin object, and moves
-the selected objects to it.
-<tscreen><verb>
-|-NCurve             +-Skin
-|-NCurve     ==>      |-NCurve
-|-NCurve              |-NCurve
-                      \-NCurve
-</verb></tscreen>
-<tag/Notes/ See section <ref id="skinobj" name="Skin Object">
-for more information regarding the Skin object.
-
-This tool uses the object clipboard to move the objects so that the
-original clipboard contents are lost when this tool finishes.
-</descrip>
-
-<sect2>Trim Tool<label id="trimt">
-<p>
-<descrip>
-<tag/Arguments/ The trim tool takes the selected objects from
-the selection.
-<tag/Operation/ The tool creates a Trim object, and moves
-the selected objects to it.
-<tscreen><verb>
-|-NPatch             +-Trim
-|-NCurve     ==>      |-NPatch
-|-NCurve              |-NCurve
-                      \-NCurve
-</verb></tscreen>
-<tag/Notes/ See section <ref id="trimobj" name="Trim Object">
-for more information regarding the Trim object.
-
-This tool uses the object clipboard to move the objects so that the
-original clipboard contents are lost when this tool finishes.
-</descrip>
-
-<#if out=latex><x/newpage/</#if>
 <sect1>Curve Modification Tools
 <p>
+These tools modify parametric curve objects.
+
 <sect2>Revert Tool<label id="revertt">
 <p>
 <descrip>
@@ -11567,9 +11337,9 @@ inserted 1 time at u=0.5)</caption>
 </figure>
 <descrip>
 <tag/Arguments/ The insert knot tool takes a number of NURBS curves from
-the selection and requests two additional values, a parametric value u
-and an integer value i.
-<tag/Operation/ The specified knot value u will be inserted i
+the selection and requests two additional values, a parametric value <it/u/
+and an integer value <it/i/.
+<tag/Operation/ The specified knot value <it/u/ will be inserted <it/i/
 times into the knot vector of the selected curves, without changing the
 shape of the curve(s).
 <tag/Notes/ The knot type of the curves will be changed to <tt/"Custom"/.
@@ -11863,8 +11633,246 @@ the <tt/"CreateMP"/ attribute.
 </descrip>
 
 <#if out=latex><x/newpage/</#if>
+<sect1>Surface Creation Tools
+<p>
+These tools create parametric surface objects.
+
+<sect2>NURBSphere Tool<label id="nspt">
+<p>
+<descrip>
+<tag/Arguments/ None.
+<tag/Operation/ The NURBSphere tool creates a half circle NURBS curve
+and revolves it about the Y axis thus forming a sphere of radius 1.
+<tag/Notes/ The NURBS curve is deleted afterwards.
+</descrip>
+
+<sect2>NURBSphere2 Tool<label id="nsp2t">
+<p>
+<descrip>
+<tag/Arguments/ None.
+<tag/Operation/ The NURBSphere tool creates a Cobb-NURBSphere,
+consisting of six NURBS patches.
+<tag/Notes/ The NURBS patches are of high order (5).
+</descrip>
+
+<sect2>Revolve Tool<label id="revt">
+<p>
+<descrip>
+<tag/Arguments/ The revolve tool takes the selected objects from
+the selection.
+<tag/Operation/ The tool creates a Revolve object, and moves
+the selected objects to it.
+<tscreen><verb>
+|-NCurve     ==>     +-Revolve
+                      \-NCurve
+</verb></tscreen>
+<tag/Notes/ See section <ref id="revolveobj" name="Revolve Object">
+for more information regarding the revolve object.
+
+This tool uses the object clipboard to move the objects so that the
+original clipboard contents are lost when this tool finishes.
+</descrip>
+
+<sect2>Swing Tool<label id="swint">
+<p>
+<descrip>
+<tag/Arguments/ The swing tool takes the selected objects from
+the selection.
+<tag/Operation/ The tool creates a Swing object, and moves
+the selected objects to it.
+<tscreen><verb>
+|-NCurve     ==>     +-Swing
+                      \-NCurve
+</verb></tscreen>
+<tag/Notes/ See section <ref id="swingobj" name="Swing Object">
+for more information regarding the Swing object.
+This tool uses the object clipboard to move the objects so that the
+original clipboard contents are lost when this tool finishes.
+</descrip>
+
+<sect2>Extrude Tool<label id="extt">
+<p>
+<descrip>
+<tag/Arguments/ The extrude tool takes the selected objects from
+the selection.
+<tag/Operation/ The tool creates an Extrude object, and moves
+the selected objects to it.
+<tscreen><verb>
+|-NCurve             +-Extrude
+|-NCurve     ==>      |-NCurve
+                      \-NCurve
+</verb></tscreen>
+<tag/Notes/ See section <ref id="extrudeobj" name="Extrude Object">
+for more information regarding the extrude object.
+
+This tool uses the object clipboard to move the objects so that the
+original clipboard contents are lost when this tool finishes.
+</descrip>
+
+<sect2>Sweep Tool<label id="swpt">
+<p>
+<descrip>
+<tag/Arguments/ The sweep tool takes the selected objects from
+the selection.
+<tag/Operation/ The tool creates a Sweep object, and moves
+the selected objects to it.
+<tscreen><verb>
+|-NCurve             +-Sweep
+|-NCurve     ==>      |-NCurve
+                      \-NCurve
+</verb></tscreen>
+<tag/Notes/ See section <ref id="sweepobj" name="Sweep Object">
+for more information regarding the Sweep object.
+This tool uses the object clipboard to move the objects so that the
+original clipboard contents are lost when this tool finishes.
+</descrip>
+
+<sect2>Bevel Tool<label id="bevt">
+<p>
+<descrip>
+<tag/Arguments/ The bevel tool takes the selected objects from
+the selection.
+<tag/Operation/ The tool creates a Bevel object, and moves
+the selected objects to it.
+<tscreen><verb>
+|-NCurve             +-Bevel
+|-NCurve     ==>      |-NCurve
+                      \-NCurve
+</verb></tscreen>
+<tag/Notes/ See section <ref id="bevelobj" name="Bevel Object">
+for more information regarding the Bevel object.
+
+This tool uses the object clipboard to move the objects so that the
+original clipboard contents are lost when this tool finishes.
+</descrip>
+
+<sect2>Cap Tool<label id="capt">
+<p>
+<descrip>
+<tag/Arguments/ The cap tool takes the selected objects from
+the selection.
+<tag/Operation/ The tool creates a Cap object, and moves
+the selected objects to it.
+<tscreen><verb>
+|-NCurve             +-Cap
+|-NCurve     ==>      |-NCurve
+                      \-NCurve
+</verb></tscreen>
+<tag/Notes/ See section <ref id="capobj" name="Cap Object">
+for more information regarding the Cap object.
+
+This tool uses the object clipboard to move the objects so that the
+original clipboard contents are lost when this tool finishes.
+</descrip>
+
+<sect2>Birail1 Tool<label id="bi1t">
+<p>
+<descrip>
+<tag/Arguments/ The birail1 tool takes the selected objects from
+the selection.
+<tag/Operation/ The tool creates a Birail1 object, and moves
+the selected objects to it.
+<tscreen><verb>
+|-NCurve             +-Birail1
+|-NCurve     ==>      |-NCurve
+|-NCurve              |-NCurve
+                      \-NCurve
+</verb></tscreen>
+<tag/Notes/ See section <ref id="birail1obj" name="Birail1 Object">
+for more information regarding the Birail1 object.
+
+This tool uses the object clipboard to move the objects so that the
+original clipboard contents are lost when this tool finishes.
+</descrip>
+
+<sect2>Birail2 Tool<label id="bi2t">
+<p>
+<descrip>
+<tag/Arguments/ The birail2 tool takes the selected objects from
+the selection.
+<tag/Operation/ The tool creates a Birail2 object, and moves
+the selected objects to it.
+<tscreen><verb>
+|-NCurve             +-Birail2
+|-NCurve              |-NCurve
+|-NCurve     ==>      |-NCurve
+|-NCurve              |-NCurve
+                      \-NCurve
+</verb></tscreen>
+<tag/Notes/ See section <ref id="birail2obj" name="Birail2 Object">
+for more information regarding the Birail2 object.
+
+This tool uses the object clipboard to move the objects so that the
+original clipboard contents are lost when this tool finishes.
+</descrip>
+
+<sect2>Gordon Tool<label id="gort">
+<p>
+<descrip>
+<tag/Arguments/ The gordon tool takes the selected objects from
+the selection.
+<tag/Operation/ The tool creates a Gordon object, and moves
+the selected objects to it.
+<tscreen><verb>
+|-NCurve             +-Gordon
+|-NCurve              |-NCurve
+|-Level               |-NCurve
+|-NCurve     ==>      |-Level
+|-NCurve              |-NCurve
+                      \-NCurve
+</verb></tscreen>
+<tag/Notes/ See section <ref id="gordonobj" name="Gordon Object">
+for more information regarding the Gordon object.
+
+This tool uses the object clipboard to move the objects so that the
+original clipboard contents are lost when this tool finishes.
+</descrip>
+
+<sect2>Skin Tool<label id="skit">
+<p>
+<descrip>
+<tag/Arguments/ The skin tool takes the selected objects from
+the selection.
+<tag/Operation/ The tool creates a Skin object, and moves
+the selected objects to it.
+<tscreen><verb>
+|-NCurve             +-Skin
+|-NCurve     ==>      |-NCurve
+|-NCurve              |-NCurve
+                      \-NCurve
+</verb></tscreen>
+<tag/Notes/ See section <ref id="skinobj" name="Skin Object">
+for more information regarding the Skin object.
+
+This tool uses the object clipboard to move the objects so that the
+original clipboard contents are lost when this tool finishes.
+</descrip>
+
+<sect2>Trim Tool<label id="trimt">
+<p>
+<descrip>
+<tag/Arguments/ The trim tool takes the selected objects from
+the selection.
+<tag/Operation/ The tool creates a Trim object, and moves
+the selected objects to it.
+<tscreen><verb>
+|-NPatch             +-Trim
+|-NCurve     ==>      |-NPatch
+|-NCurve              |-NCurve
+                      \-NCurve
+</verb></tscreen>
+<tag/Notes/ See section <ref id="trimobj" name="Trim Object">
+for more information regarding the Trim object.
+
+This tool uses the object clipboard to move the objects so that the
+original clipboard contents are lost when this tool finishes.
+</descrip>
+
+
+<#if out=latex><x/newpage/</#if>
 <sect1>Surface Modification Tools
 <p>
+These tools modify parametric surface objects.
 
 <sect2>Revert U Tool<label id="revertut">
 <p>
@@ -12153,6 +12161,8 @@ scripting interface command <ref id="screscaleknnp" name="rescaleknNP">.
 <#if out=latex><x/newpage/</#if>
 <sect1>Conversion Tools
 <p>
+These tools convert between parametric objects.
+
 <sect2>Extract Curve Tool<label id="extnct">
 <p>
 <descrip>
@@ -16164,12 +16174,19 @@ tclset("a", a);<newline>
 tclset("b", b);
 </tt></tscreen>
 sets the Tcl variable <tt>"a"</tt> to the floating point value 3.3,
-and <tt>"b"</tt> to a list of integer values (<tt>"{ 1 3 5 }"</tt>).
+and <tt>"b"</tt> to a list of integer values<newline>
+<tt>{ 1 3 5 }</tt>.
 Note that the variable names may also point to Tcl array elements:
-<tt>"tclset("SphereAttrData(Radius)", 1.2);"</tt>
+<tscreen><tt>
+tclset("SphereAttrData(Radius)", 1.2);
+</tt></tscreen>
 or contain namespace specifiers
-<tt>"tclset("::MyNameSpace::Radius", 1.2);"</tt>
+<tscreen><tt>
+tclset("::MyNameSpace::Radius", 1.2);
+</tt></tscreen>
 .
+
+<#if out=latex><x/newpage/</#if>
 
 <sect2>Data Conversion
 <p>
@@ -16462,12 +16479,19 @@ tclset("a", a);<newline>
 tclset("b", b);
 </tt></tscreen>
 sets the Tcl variable <tt>"a"</tt> to the floating point value 3.3,
-and <tt>"b"</tt> to a list of integer values (<tt>"{ 1 3 5 }"</tt>).
+and <tt>"b"</tt> to a list of integer values<newline>
+<tt>{ 1 3 5 }</tt>.
 Note that the variable names may also point to Tcl array elements:
-<tt>"tclset("SphereAttrData(Radius)", 1.2);"</tt>
+<tscreen><tt>
+tclset("SphereAttrData(Radius)", 1.2);
+</tt></tscreen>
 or contain namespace specifiers
-<tt>"tclset("::MyNameSpace::Radius", 1.2);"</tt>
+<tscreen><tt>
+tclset("::MyNameSpace::Radius", 1.2);
+</tt></tscreen>
 .
+
+<#if out=latex><x/newpage/</#if>
 
 <sect2>Data Conversion
 <p>
