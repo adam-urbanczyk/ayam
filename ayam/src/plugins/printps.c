@@ -23,10 +23,47 @@
 #endif /* WIN32 */
 int Printps_Init(Tcl_Interp *interp);
 
-int printps_convnptcmd(ClientData clientData, Tcl_Interp *interp,
-		       int argc, char *argv[]);
+int printps_parseformat(char *filename);
+
+int printps_printtcmd(ClientData clientData, Tcl_Interp *interp,
+		      int argc, char *argv[]);
 
 /* functions: */
+
+int
+printps_parseformat(char *filename)
+{
+ int format = GL2PS_EPS;
+ char *ext;
+
+  if(!filename)
+    goto cleanup;
+
+  ext = strrchr(filename, '.');
+  if(!ext)
+    goto cleanup;
+
+  switch(ext[1])
+    {
+    case 'p':
+      if(ext[2] == 'd')
+	format = GL2PS_PDF;
+      else
+	format = GL2PS_PS;
+      break;
+    case 's':
+      format = GL2PS_SVG;
+      break;
+    case 't':
+      format = GL2PS_TEX;
+      break;
+    default:
+      break;
+    }
+
+cleanup:
+ return format;
+}
 
 /* printps_printtcmd:
  *  Tcl command to print to PostScript
@@ -36,32 +73,30 @@ printps_printtcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
  int ay_status = AY_OK;
+ int tcl_status = TCL_OK;
  struct Togl *togl = NULL;
  ay_view_object *view = NULL;
  ay_object *o = NULL;
  int i = 1;
+ char *filename = "out.eps";
  FILE *fp;
  int state = GL2PS_OVERFLOW, buffsize = 0;
+ int format = GL2PS_EPS;
 
   /* parse args */
   if(argc > 2)
     {
       while(i+1 < argc)
 	{
-	  if(!strcmp(argv[i], "-r"))
+	  if(!strcmp(argv[i], "-v"))
 	    {
-	      /*
-	      mode = 0;
-	      sscanf(argv[i+1], "%lg", &rmin);
-	      sscanf(argv[i+2], "%lg", &rmax);
-	      */
+	      tcl_status = Tcl_GetInt(interp, argv[i], &i);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	    }
-	  if(!strcmp(argv[i], "-d"))
+	  if(!strcmp(argv[i], "-f"))
 	    {
-	      /*
-	      mode = 1;
-	      sscanf(argv[i+1], "%lg", &mindist);
-	      */
+	      filename = argv[i+1];
+	      format = printps_parseformat(filename);
 	    }
 	  i += 2;
 	}
@@ -89,16 +124,18 @@ printps_printtcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-    fp = fopen("out.eps", "wb");
+    fp = fopen(filename, "wb");
     while(state == GL2PS_OVERFLOW)
       {
 	buffsize += 1024*1024;
-	gl2psBeginPage("test", "gl2psTestSimple", NULL, GL2PS_EPS,
+	gl2psBeginPage("test", "gl2psTestSimple", NULL, format,
 		       GL2PS_SIMPLE_SORT,
 		       GL2PS_DRAW_BACKGROUND | GL2PS_USE_CURRENT_VIEWPORT,
-		       GL_RGBA, 0, NULL, 0, 0, 0, buffsize, fp, "out.eps");
+		       GL_RGBA, 0, NULL, 0, 0, 0, buffsize, fp, filename);
+
 	gl2psPointSize(4);
 	gl2psLineWidth(0.8);
+
 	ay_toglcb_display(togl);
 
 	state = gl2psEndPage();
