@@ -90,7 +90,7 @@ printps_printtcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  if(!strcmp(argv[i], "-v"))
 	    {
-	      tcl_status = Tcl_GetInt(interp, argv[i], &i);
+	      tcl_status = Tcl_GetInt(interp, argv[i+1], &i);
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	    }
 	  if(!strcmp(argv[i], "-f"))
@@ -125,6 +125,14 @@ printps_printtcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
     fp = fopen(filename, "wb");
+    if(!fp)
+      {
+	ay_error(AY_EOPENFILE, argv[0], filename);
+	return TCL_OK;
+      }
+
+    Togl_MakeCurrent(togl);
+
     while(state == GL2PS_OVERFLOW)
       {
 	buffsize += 1024*1024;
@@ -140,6 +148,10 @@ printps_printtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	state = gl2psEndPage();
       }
+
+    if(ay_currentview)
+      Togl_MakeCurrent(ay_currentview->togl);
+
     fclose(fp);
 
  return TCL_OK;
