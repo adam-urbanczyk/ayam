@@ -331,11 +331,6 @@ proc tree_multipleSelection { tree node } {
 
     set nlist [$tree selection get]
 
-    if { [llength $nlist] != "1" } {
-	ayError 1 "multipleSelection" "Select a single object first!"
-	break;
-    }
-
     if { [lsearch -exact $nlist $node] != -1 } {
 	ayError 1 "multipleSelection" "Select a different object!"
 	break;
@@ -347,12 +342,15 @@ proc tree_multipleSelection { tree node } {
 	break;
     }
 
-    set index1 [$tree index $nlist]
+    set index1 [$tree index [lindex $nlist 0]]
     set index2 [$tree index $node]
 
     if { $index1 < $index2 } {
 	set selnodes [lsort [$tree nodes $parent $index1 $index2]]
     } else {
+	if { [llength $nlist] > 1 } {
+	    set index1 [$tree index [lindex $nlist end]]
+	}
 	set selnodes [lsort [$tree nodes $parent $index2 $index1]]
     }
 
