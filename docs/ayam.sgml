@@ -1648,10 +1648,12 @@ associated with this view. Another way to change the grid size is
 to use the grid icon menu on the rightmost side, see below.
 
 <item><tt/"Half Size"/, change width and height to the half of the
-current values.
+current values. This is not available for the internal views in
+single window GUI mode.
 
 <item><tt/"Double Size"/, change width and height to the double of the
-current values.
+current values. This is not available for the internal views in
+single window GUI mode.
 
 <item><tt/"From Camera"/, copy camera settings from the currently
 selected camera object to the view.
@@ -1665,6 +1667,8 @@ working for perspective views, of course.
 
 <item><tt/"Zoom to Object"/, adapt the camera settings, so that
 the currently selected objects are centered in the view.
+In addition, clipping planes and light position may be adapted for
+very small or very large objects.
 
 <item><tt/"Zoom to All"/, adapt the camera settings, so that
 all objects are centered in the view, regardless of current
@@ -3314,16 +3318,18 @@ Set Mark|<tt/&lt;a&gt;/|
 <p>
 A single click with the mouse sets the mark. If grids are active in
 the view, the mark will be snapped to the nearest grid coordinates.
-Note, that, using a mouse click, one is only able to specify two
-dimensional mark coordinates. Therefore, in versions prior to 1.21 the
-third coordinate was always set to zero upon a click. If the preference
-option <tt>"Modelling/GlobalMark"</tt> is enabled, the third coordinate
-is not reset anymore. This way one can define all three coordinates of
-the mark by clicking two times in appropriate views, e.g.~first in a
-front view for x and y and second in a side view for z.
+Note, that, using a single mouse click, one is only able to specify two
+dimensional mark coordinates. Therefore, in versions prior to 1.21, the
+third coordinate was always set to zero upon a click. This is no longer
+the case. If the preference option <tt>"Modelling/GlobalMark"</tt> is
+enabled, the third coordinate is <em/not/ reset anymore. This way one
+can define all three coordinates of the mark by clicking two times in
+appropriate views, e.g.~first in a
+front view for the x and y coordinates and then in a side view for the
+missing z coordinate.
 <p>
 The mark can also be set to a point of one of the selected objects. In this
-case, the mark coordinates are three
+case, the mark coordinates are always immediately three
 dimensional.<footnote>Since 1.21.</footnote>
 <p>
 Additionally, when the set mark action is active, the following keyboard
