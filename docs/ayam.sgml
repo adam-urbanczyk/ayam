@@ -2907,6 +2907,11 @@ below:
 <caption>View Transforming Objects (left) and Points (right)</caption>
 </figure>
 <p>
+Note that those shortcuts just switch the current view, to modify all
+open views, just press <tt/o/ or <tt/p/ twice:
+<tt/&lt;oo&gt;/ and <tt/&lt;pp&gt;/.
+<footnote>Since 1.21.</footnote>
+<p>
 See also the section
 <ref id="apnttcl" name="Automatic Point Actions">
 for a script, that, partially, brings back the old implicit behaviour.
@@ -11291,7 +11296,8 @@ the selection.
 changed using knot insertion so that the first and the last knot
 have a multiplicity equal to the order of the curve,
 without changing the shape of the curve. The curve will
-interpolate the first and the last control point afterwards.
+interpolate the first and the last control point afterwards (if also
+the weights of those points are 1.0).
 <tag/Notes/ The knot type of the curves will be changed to <tt/"Custom"/.
 
 The point selection will be removed from the original objects.
@@ -11979,7 +11985,9 @@ changed using knot insertion so that the first and the last knot
 (in the respective direction).
 <tag/Notes/ The shape of the patches will not change but the position of some
 control points will. The patches interpolate the first and the last control
-point afterwards. The knot types of the patches will be changed to type
+points in the respective direction afterwards (if also the weights of those
+points are 1.0).
+The knot types of the patches will be changed to type
 <tt/"Custom"/.
 
 The point selection will be removed from the original object(s).
