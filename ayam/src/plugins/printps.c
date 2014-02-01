@@ -30,6 +30,9 @@ int printps_printtcmd(ClientData clientData, Tcl_Interp *interp,
 
 /* functions: */
 
+/* printps_parseformat:
+ *  parse extension of filename into output format type
+ */
 int
 printps_parseformat(char *filename)
 {
@@ -63,7 +66,8 @@ printps_parseformat(char *filename)
 
 cleanup:
  return format;
-}
+} /* printps_parseformat */
+
 
 /* printps_printtcmd:
  *  Tcl command to print to PostScript
@@ -78,6 +82,8 @@ printps_printtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_view_object *view = NULL;
  ay_object *o = NULL;
  int i = 1;
+ char *title = NULL;
+ char *producer = "Ayam";
  char *filename = "out.eps";
  FILE *fp;
  int state = GL2PS_OVERFLOW, buffsize = 0;
@@ -98,6 +104,14 @@ printps_printtcmd(ClientData clientData, Tcl_Interp *interp,
 	      filename = argv[i+1];
 	      format = printps_parseformat(filename);
 	    }
+	  if(!strcmp(argv[i], "-p"))
+	    {
+	      producer = argv[i+1];
+	    }
+	  if(!strcmp(argv[i], "-t"))
+	    {
+	      title = argv[i+1];
+	    }
 	  i += 2;
 	}
     }
@@ -112,6 +126,8 @@ printps_printtcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      view = (ay_view_object*)o->refine;
 	      togl = view->togl;
+	      if(!title)
+		title = o->name;
 	      break;
 	    }
 	}
@@ -136,7 +152,7 @@ printps_printtcmd(ClientData clientData, Tcl_Interp *interp,
     while(state == GL2PS_OVERFLOW)
       {
 	buffsize += 1024*1024;
-	gl2psBeginPage("test", "gl2psTestSimple", NULL, format,
+	gl2psBeginPage(title, producer, NULL, format,
 		       GL2PS_SIMPLE_SORT,
 		       GL2PS_DRAW_BACKGROUND | GL2PS_USE_CURRENT_VIEWPORT,
 		       GL_RGBA, 0, NULL, 0, 0, 0, buffsize, fp, filename);
