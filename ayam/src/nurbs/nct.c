@@ -3664,10 +3664,10 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
  *  this time with support from Paul Bourke
  *
  * \param[in] curve NURBS curve to interrogate
- * \param[in] stride
- * \param[in] report
- * \param[in] plane
- * \param[in,out] orient
+ * \param[in] stride size of a point in the curve
+ * \param[in] report if AY_TRUE, errors are reported to the user
+ * \param[in] plane curve must lie in this plane (0 - XY, 1 - XZ, 2 - YZ)
+ * \param[in,out] orient -1 if curve is ccw wrt. the selected plane
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -4407,12 +4407,12 @@ ay_nct_fillgap(int order, double tanlen,
       if(order == 3)
 	{
 	  ay_status = ay_nct_create(3, numcontrol, AY_KTNURB, controlv,
-				    NULL, &nc);
+				    /*knotv=*/NULL, &nc);
 	}
       else
 	{
 	  ay_status = ay_nct_create(numcontrol, numcontrol, AY_KTNURB,
-				    controlv, NULL, &nc);
+				    controlv, /*knotv=*/NULL, &nc);
 	}
 
       if(ay_status)
@@ -7746,7 +7746,7 @@ ay_nct_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /** ay_nct_extend:
- *  extend a NURBS curve to a given point not changing the
+ *  extend a NURBS curve to a given point, not changing the
  *  current shape of the curve
  *
  * \param[in,out] curve NURBS curve object to extend
@@ -7898,6 +7898,7 @@ ay_nct_extendtcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(!c)
 	    {
 	      ay_error(AY_ERROR, argv[0], "could not get global mark");
+	      return TCL_OK;
 	    }
 	  memcpy(m, c, 3*sizeof(double));
 	}
