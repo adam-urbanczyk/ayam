@@ -6669,7 +6669,7 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
     return AY_EOMEM;
 
   /* special case for simple lines */
-  if(curve->length == 2)
+  if((curve->length == 2) && (mode != 3))
     {
       p1 = &(curve->controlv[0]);
       p2 = &(curve->controlv[stride]);
