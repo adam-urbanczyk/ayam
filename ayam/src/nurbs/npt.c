@@ -10498,6 +10498,10 @@ ay_npt_splituvtcmd(ClientData clientData, Tcl_Interp *interp,
  double t = 0.0;
  int splitv = AY_FALSE;
 
+  /* distinguish between
+     splituNP and
+     splitvNP
+     01234^    */
   if(argv[0][5] == 'v')
     splitv = AY_TRUE;
 
