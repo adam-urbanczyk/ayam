@@ -956,7 +956,7 @@ ay_knots_getuminmax(ay_object *o, int order, int knots, double *knotv,
 /* ay_knots_getvminmax:
  *  get minimum/maximum v parametric values from knot vector <knotv>
  *  of object <o> with order <order> and number of knots (encodes
- *  size in v parametric dimension) <knots> from UMM tag (if present)
+ *  size in v parametric dimension) <knots> from VMM tag (if present)
  *  or directly from the knot vector (else)
  */
 int
