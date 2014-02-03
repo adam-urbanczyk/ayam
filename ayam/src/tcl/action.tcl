@@ -1060,13 +1060,9 @@ proc actionDelTagP { w } {
 # action keeps its data
 array set editPntArr {
     x 0.0
-    x2 0.0
     y 0.0
-    y2 0.0
     z 0.0
-    z2 0.0
     w 0.0
-    w2 0.0
 
     lx 0.0
     ly 0.0
@@ -1115,11 +1111,6 @@ proc editPointDialogUpdate { w } {
     update
     editPointDialogSet $w editPntArr
     update
-
-    set array(x2) [$w.f1.fx.e get]
-    set array(y2) [$w.f1.fy.e get]
-    set array(z2) [$w.f1.fz.e get]
-    set array(w2) [$w.f1.fw.e get]
 
  return;
 }
@@ -1230,13 +1221,13 @@ proc editPointDialog { win } {
 	global editPntArr
 	set editPntArr(local) 1
 	.editPointDw.f1.fm.mb configure -text "Local"
-	editPointUpdate .editPointDw
+	editPointDialogUpdate .editPointDw
     }
     $m add command -label "World" -command {
 	global editPntArr
 	set editPntArr(local) 0
 	.editPointDw.f1.fm.mb configure -text "World"
-	editPointUpdate .editPointDw
+	editPointDialogUpdate .editPointDw
     }
     pack $f.mb -in $f -side left -fill x -expand yes -pady 0
     pack $f -in $w.f1 -side top -fill x
