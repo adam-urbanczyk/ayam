@@ -890,6 +890,16 @@ int ay_nct_extend(ay_nurbcurve_object *curve, double *p);
 int ay_nct_extendtcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
+/** Compute mean distance of two 1D control point arrays.
+ */
+double ay_nct_meandist(int cvlen, int cvstride, double *cva, double *cvb);
+
+/** Shift 1D control point array to minimum mean distance to a second array.
+ */
+int ay_nct_shifttominmeandist(int cvlen, int cvstride,
+			      double *cva, double *cvb);
+
+
 /* npt.c */
 
 /** Create NURBS patch object.

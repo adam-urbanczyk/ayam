@@ -864,14 +864,14 @@ ay_nct_refinekn(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
 
 /** ay_nct_refinearray:
  *  Helper to refine an 1D array of control points.
- * 
+ *
  * \param[in] Pw array to refine
  * \param[in] len number of elements in Pw
  * \param[in] stride size of an element in Pw
  * \param[in,out] selp region to be refined, may be NULL
  * \param[in,out] Qw new refined array
  * \param[in,out] Qwlen length of new array
- * 
+ *
  * \return AY_OK on success, error code otherwise.
  */
 int
@@ -4447,10 +4447,18 @@ ay_nct_fillgap(int order, double tanlen,
 } /* ay_nct_fillgap */
 
 
-/* ay_nct_fillgaps:
- *  create fillet curves (using ay_nct_fillgap() above) for all
- *  gaps in the list of curves pointed to by curves and insert
- *  the fillets right in this list
+/** ay_nct_fillgaps:
+ *  Create fillet curves (using ay_nct_fillgap() above) for all
+ *  gaps in the list of curves pointed to by \a curves and insert
+ *  the fillets right in this list.
+ *
+ *  \param[in] closed if AY_TRUE, attempt to create a fillet between
+ *   the end of the last curve in \a curves and the start of the first
+ *   curve in \curves
+ *  \param[in] order desired order of the fillets
+ *  \param[in] tanlen length of tangents
+ *  \param[in,out] curves list of curves, the fillets will be mixed in
+ *   the list in the right places
  */
 int
 ay_nct_fillgaps(int closed, int order, double tanlen, ay_object *curves)
@@ -7751,7 +7759,7 @@ ay_nct_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
  *
  * \param[in,out] curve NURBS curve object to extend
  * \param[in] p point to extend the curve to (must be different
- *  from the last control point in \a curve
+ *  from the last control point in \a curve)
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -7984,6 +7992,71 @@ ay_nct_extendtcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_nct_extendtcmd */
+
+
+double
+ay_nct_meandist(int cvlen, int cvstride, double *cva, double *cvb)
+{
+  int a = 0, b = 0, t = 0, i;
+ double v[3] = {0}, len = 0.0, tlen = 0.0;
+
+  for(i = 0; i < cvlen; i++)
+    {
+      v[0] = cva[a]-cvb[b];
+      v[1] = cva[a+1]-cvb[b+1];
+      v[2] = cva[a+2]-cvb[b+2];
+
+      if((fabs(v[0]) > AY_EPSILON) ||
+	 (fabs(v[1]) > AY_EPSILON) ||
+	 (fabs(v[2]) > AY_EPSILON))
+	{
+	  len = AY_V3LEN(v);
+	  tlen += len;
+	  t++;
+	}
+      a += cvstride;
+      b += cvstride;
+    }
+
+  if(t > 0)
+    tlen /= t;
+
+ return tlen;
+} /* ay_nct_meandist */
+
+
+int
+ay_nct_shifttominmeandist(int cvlen, int cvstride, double *cva, double *cvb)
+{
+ int t = 0, mint = 0, b = 0, i;
+ double len, minlen = DBL_MAX;
+ double *cvb2 = NULL;
+
+  if(!(cvb2 = malloc(2*cvlen*cvstride*sizeof(double))))
+    return AY_EOMEM;
+
+  memcpy(cvb2, cvb, cvlen*cvstride*sizeof(double));
+  memcpy(&(cvb2[cvlen*cvstride]), cvb, cvlen*cvstride*sizeof(double));
+
+  for(i = 0; i < cvlen; i++)
+    {
+      len = ay_nct_meandist(cvlen, cvstride, cva, &(cvb2[b]));
+      if(len < minlen)
+	{
+	  minlen = len;
+	  mint = t;
+	}
+      t++;
+      b += cvstride;
+    }
+
+  memcpy(cvb, &(cvb2[mint*cvstride]), cvlen*cvstride*sizeof(double));
+
+  free(cvb2);
+
+ return AY_OK;
+} /* ay_nct_shifttominmeandist */
+
 
 
 /* templates */
