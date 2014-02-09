@@ -277,7 +277,7 @@ int ay_geom_extractmiddlepoint(int mode, double *cv, int cvlen, int cvstride,
 /** Extract mean normal.
  */
 int ay_geom_extractmeannormal(double *cv, int cvlen, int cvstride,
-			      double *result);
+			      double *m, double *result);
 
 /** Calculate mean distance of two control point arrays.
  */

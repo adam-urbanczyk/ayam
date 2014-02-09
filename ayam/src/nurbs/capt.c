@@ -393,11 +393,11 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
       if(nc->type == AY_CTPERIODIC)
 	ay_status = ay_geom_extractmeannormal(nc->controlv,
 					    (nc->length-(nc->order-2)), stride,
-					    n);
+					    m, n);
       else
 	ay_status = ay_geom_extractmeannormal(nc->controlv,
 					      nc->length-1, stride,
-					      n);
+					      m, n);
 
       if(ay_status)
 	goto cleanup;
