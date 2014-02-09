@@ -279,13 +279,6 @@ int ay_geom_extractmiddlepoint(int mode, double *cv, int cvlen, int cvstride,
 int ay_geom_extractmeannormal(double *cv, int cvlen, int cvstride,
 			      double *m, double *result);
 
-/** Calculate mean distance of two control point arrays.
- */
-void
-ay_geom_meandist(double *cv1, int cv1stride,
-		 double *cv2, int cv2stride,
-		 int cvlen, double *result);
-
 
 /* instt.c */
 

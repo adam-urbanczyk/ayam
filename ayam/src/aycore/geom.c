@@ -113,7 +113,20 @@ ay_geom_calcnfrom3(double *p1, double *p2, double *p3, double *n)
 } /* ay_geom_calcnfrom3 */
 
 
-/* ay_geom_extractmiddlepoint:
+/** ay_geom_extractmiddlepoint:
+ * calculate center point from a closed curve
+ * (or similar set of coordinates)
+ *
+ * \param[in] mode if 0 calculate the bounding box center, else calculate
+ *  the center of gravity 
+ * \param[in] cv coordinate array
+ * \param[in] cvlen number of points in \a cv
+ * \param[in] cvstride size of a point in \a cv (>=3, unchecked)
+ * \param[in,out] tcv temporary array of size 4*cvlen (to avoid reallocation for
+ *  repeated calls, only used for mode 1), may be NULL
+ * \param[in,out] result pointer where to store the resulting center point
+ * 
+ * \return AY_OK on success, error code otherwise
  */
 int
 ay_geom_extractmiddlepoint(int mode, double *cv, int cvlen, int cvstride,
@@ -222,7 +235,17 @@ ay_geom_extractmiddlepoint(int mode, double *cv, int cvlen, int cvstride,
 } /* ay_geom_extractmiddlepoint */
 
 
-/* ay_geom_extractmeannormal:
+/** ay_geom_extractmeannormal:
+ * calculate the mean normal from a closed curve
+ *  (or similar set of coordinates)
+ * 
+ * \param[in] cv coordinate array
+ * \param[in] cvlen number of points in \a cv
+ * \param[in] cvstride size of a point in \a cv (>=3, unchecked)
+ * \param[in] m center point in which the normal is calculated, may be NULL
+ * \param[in,out] result pointer where the resulting normal is stored
+ * 
+ * \return AY_OK on success, error code otherwise
  */
 int
 ay_geom_extractmeannormal(double *cv, int cvlen, int cvstride,
@@ -285,31 +308,3 @@ ay_geom_extractmeannormal(double *cv, int cvlen, int cvstride,
  return ay_status;
 } /* ay_geom_extractmeannormal */
 
-
-/* ay_geom_meandist:
- */
-void
-ay_geom_meandist(double *cv1, int cv1stride,
-		 double *cv2, int cv2stride,
-		 int cvlen, double *result)
-{
- int i;
- double v[3], vlen;
-
-  *result = 0.0;
-
-  for(i = 0; i < cvlen; i++)
-    {
-      if(!AY_V3COMP(cv1,cv2))
-	{
-	  AY_V3SUB(v,cv1,cv2);
-	  vlen = AY_V3LEN(v);
-	  *result += vlen/cvlen;
-	}
-
-      cv1 += cv1stride;
-      cv2 += cv2stride;
-    }
-
- return;
-} /* ay_geom_meandist */
