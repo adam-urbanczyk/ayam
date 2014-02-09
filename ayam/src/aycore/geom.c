@@ -16,10 +16,10 @@
 
 
 /* ay_geom_intersectlines3D:
- *  calculate intersection of the two 3D lines <p1><t1> and <p2>t2>
+ *  calculate intersection of the two 3D lines <p1><t1> and <p2><t2>
  *  (where p is a point on the line and t is the tangent)
  *  outputs the point in <p>
- *  returns 0 when no intersection exists (colinear/parallel lines)
+ *  returns 0 when no intersection exists (collinear/parallel lines)
  *  otherwise returns 1
  */
 int
@@ -52,10 +52,10 @@ ay_geom_intersectlines3D(double *p1, double *t1,
 
 
 /* ay_geom_intersectlines2D:
- *  calculate intersection of the two 2D lines <p1><t1> and <p2>t2>
+ *  calculate intersection of the two 2D lines <p1><t1> and <p2><t2>
  *  (where p is a point on the line and t is the tangent)
  *  outputs the point in <p>
- *  returns 0 when no intersection exists (colinear/parallel lines)
+ *  returns 0 when no intersection exists (collinear/parallel lines)
  *  otherwise returns 1
  */
 int
@@ -117,7 +117,7 @@ ay_geom_calcnfrom3(double *p1, double *p2, double *p3, double *n)
  */
 int
 ay_geom_extractmiddlepoint(int mode, double *cv, int cvlen, int cvstride,
-			  double **tcv, double *result)
+			   double **tcv, double *result)
 {
  int ay_status = AY_OK;
  int stride = 4, a, i, j;
@@ -226,18 +226,23 @@ ay_geom_extractmiddlepoint(int mode, double *cv, int cvlen, int cvstride,
  */
 int
 ay_geom_extractmeannormal(double *cv, int cvlen, int cvstride,
-			  double *result)
+			  double *m, double *result)
 {
  int ay_status = AY_OK;
  int i, snlen = 0;
- double m[4] = {0}, *p1, *p2, *psn;
+ double mm[4] = {0}, *p1, *p2, *psn;
  double len, *sn = NULL;
 
-  ay_status = ay_geom_extractmiddlepoint(0, cv, cvlen,
-					 cvstride, NULL, m);
+  if(!m)
+    {
+      ay_status = ay_geom_extractmiddlepoint(0, cv, cvlen,
+					     cvstride, NULL, mm);
 
-  if(ay_status)
-    return ay_status;
+      if(ay_status)
+	return ay_status;
+
+      m = mm;
+    }
 
   if(!(sn = malloc(cvlen*3*sizeof(double))))
     return AY_EOMEM;
