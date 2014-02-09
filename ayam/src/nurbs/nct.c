@@ -7994,10 +7994,20 @@ ay_nct_extendtcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_nct_extendtcmd */
 
 
+/** ay_nct_meandist:
+ * Compute mean distance of two 1D control point arrays.
+ * 
+ * \param[in] cvlen number of points in \a cva _and_ \a cvb
+ * \param[in] cvstride size of a point in \a cva _and_ \a cvb (>=3, unchecked)
+ * \param[in] cva first coordinate array 
+ * \param[in] cvb second coordinate array 
+ * 
+ * \return mean distance
+ */
 double
 ay_nct_meandist(int cvlen, int cvstride, double *cva, double *cvb)
 {
-  int a = 0, b = 0, t = 0, i;
+ int a = 0, b = 0, t = 0, i;
  double v[3] = {0}, len = 0.0, tlen = 0.0;
 
   for(i = 0; i < cvlen; i++)
@@ -8025,6 +8035,16 @@ ay_nct_meandist(int cvlen, int cvstride, double *cva, double *cvb)
 } /* ay_nct_meandist */
 
 
+/** ay_nct_shifttominmeandist:
+ * Shift 1D control point array to minimum mean distance to a second array.
+ * 
+ * \param[in] cvlen number of points in \a cva _and_ \a cvb
+ * \param[in] cvstride size of a point in \a cva _and_ \a cvb (>=3, unchecked)
+ * \param[in] cva first coordinate array
+ * \param[in,out] cvb second coordinate array (may be shifted)
+ * 
+ * \return AY_OK on success, error code otherwise
+ */
 int
 ay_nct_shifttominmeandist(int cvlen, int cvstride, double *cva, double *cvb)
 {
