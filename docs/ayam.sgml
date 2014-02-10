@@ -13228,7 +13228,7 @@ Examples:
 creates a tetrahedral (four triangular faces) mesh.
 <item><bf/<tt/"crtOb SDMesh -f 4 -v {0 1 3  1 2 3  0 3 2  0 2 1} -cv {0 0 0  1 0 0  0 0 -1  0.5 1 -0.5} -tags {1} -args {1 1} -intargs {0} -doubleargs {3.0}"//<newline>
 creates a tetrahedral mesh with a semi-sharp corner.
-<item><bf/<tt/"crtOb SDMesh -f 4 -v {0 1 3  1 2 3  0 3 2  0 2 1} -cv {0 0 0  1 0 0  0 0 -1  0.5 1 -0.5} -tags {2} -args {2 1} -intargs {0 1} -doubleargs {10.0}"//<newline>
+<item><bf/<tt/"crtOb SDMesh -f 4 -v {0 1 3  1 2 3  0 3 2  0 2 1} -cv {0 0 0  1 0 0  0 0 -1  0.5 1 -0.5} -tags {1} -args {2 1} -intargs {0 1} -doubleargs {10.0}"//<newline>
 creates a tetrahedral mesh with a crease.
 </enum>
 Notes:<newline>
@@ -13285,6 +13285,8 @@ with radius as defined via the <tt/-r/ option and arc as
 defined via the <tt/-a/ option. The curve always starts on the
 positive X axis. The radius defaults to 1.0 and
 the arc to 360.0. The arc option supports negative values.
+<p>
+See also section <ref id="ncirct" name="NURB Circle Tool">.
 </itemize>
 <p>
 <#if out=latex><x/phantomsection/</#if>
@@ -13298,6 +13300,8 @@ crtClosedBS &ndash; create closed (circular) B-Spline:
 with desired number of sections, order (defaults to 4), arc (defaults
 to 360.0, negative values are allowed), and radius (defaults to 1.0).
 The curve always starts on the positive X axis. 
+<p>
+See also section <ref id="cbspt" name="Circular B-Spline Tool">.
 </itemize>
 <p>
 <#if out=latex><x/phantomsection/</#if>
@@ -13312,6 +13316,8 @@ that fits the parameter space of the currently selected NURBS
 patch object (or the current parent object, if it is a NPatch).
 If no NURBS patch is selected or parent, this command will create a
 centered quadratic curve with width 2.0 and height 2.0 instead.
+<p>
+See also section <ref id="trrt" name="TrimRect Tool">.
 </itemize>
 
 <#if out=latex><x/newpage/</#if>
@@ -16068,6 +16074,9 @@ or to execute JavaScript code from a file:
 <tscreen>
 <tt>&raquo;&thinsp;<bf>jsEval -f scriptfile.js</bf></tt>
 </tscreen>
+
+Note, that this command is not available in the safe interpreter.
+
 Furthermore, Script object scripts may also be implemented in JavaScript,
 provided the first line of the script is a comment that instructs Ayam to
 use the JavaScript interpreter:
@@ -16373,6 +16382,9 @@ or to execute Lua code from a file:
 <tscreen>
 <tt>&raquo;&thinsp;<bf>luaEval -f scriptfile.lua</bf></tt>
 </tscreen>
+
+Note, that this command is not available in the safe interpreter.
+
 Furthermore, Script object scripts may also be implemented in Lua,
 provided the first line of the script is a comment that instructs Ayam to
 use the Lua interpreter:
