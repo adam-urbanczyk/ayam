@@ -3306,6 +3306,7 @@ ay_nct_crtncircletcmd(ClientData clientData, Tcl_Interp *interp,
 /** ay_nct_crtrecttcmd:
  *  Create a NURBS rectangle.
  *  Implements the \a crtNRect scripting interface command.
+ *  Also implements the \a crtTrimRect scripting interface command.
  *  See also the corresponding section in the \ayd{sccrtnrect}.
  *
  *  \returns TCL_OK in any case.
@@ -3314,7 +3315,7 @@ int
 ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
- /*int ay_status = AY_OK;*/
+ int tcl_status = AY_OK;
  ay_list_object *lev = ay_currentlevel;
  ay_object *parent = NULL, **last = NULL;
  ay_nurbpatch_object *patch = NULL;
@@ -3325,9 +3326,71 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 			     -1.0, 1.0, 0.0, 1.0,
 			     1.0, 1.0, 0.0, 1.0};
  double knots[7] = {0.0, 0.0, 0.25, 0.5, 0.75, 1.0, 1.0};
+ double width = 1.0, height = 1.0;
  int i = 0, create_trim = AY_FALSE;
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
+
+
+  /* distinguish between
+     crtNRect and
+     crtTrimRect
+     012^       */
+  if(argv[0][3] == 'T')
+    {
+      create_trim = AY_TRUE;
+    }
+  else
+    {
+      if(argc > 1)
+	{
+	  i = 1;
+	  while(i+1 < argc)
+	    {
+	      if((argv[i][0] == '-') && (argv[i][1] == 'w'))
+		{
+		  tcl_status = Tcl_GetDouble(interp, argv[i+1], &width);
+		  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+		}
+	      if((argv[i][0] == '-') && (argv[i][1] == 'h'))
+		{
+		  tcl_status = Tcl_GetDouble(interp, argv[i+1], &height);
+		  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+		}
+	      i += 2;
+	    }
+	}
+    }
+
+  if(create_trim)
+    {
+      if(sel && (sel->object->type == AY_IDNPATCH))
+	{
+	  create_trim = AY_TRUE;
+	  patch = (ay_nurbpatch_object *)sel->object->refine;
+	}
+      else
+	{
+	  if(lev->next)
+	    {
+	      parent = lev->next->object;
+	      if(parent)
+		{
+		  if(parent->type == AY_IDNPATCH)
+		    {
+		      create_trim = AY_TRUE;
+		      patch = (ay_nurbpatch_object *)parent->refine;
+		    } /* if */
+		} /* if */
+	    } /* if */
+	} /* if */
+
+      if(!patch)
+	{
+	  ay_error(AY_ERROR, argv[0], "No NPatch selected or parent.");
+	  return TCL_OK;
+	}
+    }
 
   if(!(o = calloc(1, sizeof(ay_object))))
     {
@@ -3338,27 +3401,6 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
   o->type = AY_IDNCURVE;
   ay_object_defaults(o);
   ay_object_placemark(o);
-
-  if(sel && (sel->object->type == AY_IDNPATCH))
-    {
-      create_trim = AY_TRUE;
-      patch = (ay_nurbpatch_object *)sel->object->refine;
-    }
-  else
-    {
-      if(lev->next)
-	{
-	  parent = lev->next->object;
-	  if(parent)
-	    {
-	      if(parent->type == AY_IDNPATCH)
-		{
-		  create_trim = AY_TRUE;
-		  patch = (ay_nurbpatch_object *)parent->refine;
-		} /* if */
-	    } /* if */
-	} /* if */
-    } /* if */
 
   if(!(curve = calloc(1, sizeof(ay_nurbcurve_object))))
     {
@@ -3418,6 +3460,13 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
     }
   else
     {
+      if(width != 1.0)
+	for(i = 0; i < 5; i++)
+	  def_controls[i*4] *= width;
+      if(height != 1.0)
+	for(i = 0; i < 5; i++)
+	  def_controls[i*4+1] *= height;
+
       memcpy(curve->controlv, def_controls, 20*sizeof(double));
     }
 
@@ -5362,8 +5411,8 @@ cleanup:
  *
  * \param[in] dir direction of the shift (0: left, 1: right)
  * \param[in] stride size of a point
- * \param[in] cvlen number of points in control vector
- * \param[in,out] cv control vector
+ * \param[in] cvlen number of points in control vector \a cv
+ * \param[in,out] cv control vector to shift
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -5571,7 +5620,7 @@ ay_nct_getplane(int cvlen, int cvstride, double *cv)
 } /* ay_nct_getplane */
 
 
-/* ay_nct_toxy:
+/** ay_nct_toxy:
  *  modify the planar curve \a c, so that it is defined in the XY plane
  *  by detecting the current orientation, adding the relevant rotation
  *  information to the transformation attributes and rotating the control
@@ -7996,12 +8045,12 @@ ay_nct_extendtcmd(ClientData clientData, Tcl_Interp *interp,
 
 /** ay_nct_meandist:
  * Compute mean distance of two 1D control point arrays.
- * 
+ *
  * \param[in] cvlen number of points in \a cva _and_ \a cvb
  * \param[in] cvstride size of a point in \a cva _and_ \a cvb (>=3, unchecked)
- * \param[in] cva first coordinate array 
- * \param[in] cvb second coordinate array 
- * 
+ * \param[in] cva first coordinate array
+ * \param[in] cvb second coordinate array
+ *
  * \return mean distance
  */
 double
@@ -8037,12 +8086,12 @@ ay_nct_meandist(int cvlen, int cvstride, double *cva, double *cvb)
 
 /** ay_nct_shifttominmeandist:
  * Shift 1D control point array to minimum mean distance to a second array.
- * 
+ *
  * \param[in] cvlen number of points in \a cva _and_ \a cvb
  * \param[in] cvstride size of a point in \a cva _and_ \a cvb (>=3, unchecked)
  * \param[in] cva first coordinate array
  * \param[in,out] cvb second coordinate array (may be shifted)
- * 
+ *
  * \return AY_OK on success, error code otherwise
  */
 int
