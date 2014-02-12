@@ -11082,6 +11082,22 @@ The amount of movement determines the radius of the torus, whereas
 the radius of the circle determines the thickness.
 </descrip>
 
+<sect2>Rectangle Tool<label id="nrrt">
+<p>
+<descrip>
+<tag/Arguments/ Width, Height
+<tag/Operation/ The rectangle tool creates a non-rational,
+two-dimensional, piecewise linear, centered NURBS curve of
+rectangular shape and twice the specified width and height
+in the XY plane.
+
+<tag/Notes/
+The created curve will be marked as closed and the generation
+of multiple points will be enabled, so that point edit actions know that
+they may need to move two points.
+See also section <ref id="ncurvemp" name="Multiple Points">.
+</descrip>
+
 <sect2>TrimRect Tool<label id="trrt">
 <p>
 <descrip>
@@ -13309,18 +13325,26 @@ See also section <ref id="cbspt" name="Circular B-Spline Tool">.
 <label id="sccrtnrect">
 crtNRect &ndash; create a rectangular NURBS curve:
 <itemize>
- <item>Synopsis: <tt/"crtNRect"/
+ <item>Synopsis: <tt/"crtNRect [-w width] [-h height]"/
+ <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Description: This command creates a centered rectangular NURBS curve
+of twice the given width and height in the XY plane.
+</itemize>
+
+<p>
+<#if out=latex><x/newpage/</#if>
+
+<label id="sccrttrimrect">
+crtTrimRect &ndash; create a rectangular bounding trim curve:
+<itemize>
+ <item>Synopsis: <tt/"crtTrimRect"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: This command creates a rectangular NURBS curve
 that fits the parameter space of the currently selected NURBS
 patch object (or the current parent object, if it is a NPatch).
-If no NURBS patch is selected or parent, this command will create a
-centered quadratic curve with width 2.0 and height 2.0 instead.
 <p>
 See also section <ref id="trrt" name="TrimRect Tool">.
 </itemize>
-
-<#if out=latex><x/newpage/</#if>
 
 <p>
 <#if out=latex><x/phantomsection/</#if>
@@ -19557,6 +19581,7 @@ Index:
 <item>crtClosedBS: <ref id="sccrtclosedbs" name="scripting interface command">
 <item>crtNCircle: <ref id="sccrtncircle" name="scripting interface command">
 <item>crtNRect: <ref id="sccrtnrect" name="scripting interface command">
+<item>crtTrimRect: <ref id="sccrttrimrect" name="scripting interface command">
 <item>crtOb: <ref id="sccrtob" name="scripting interface command">
 <item>CSG:
 <itemize>
