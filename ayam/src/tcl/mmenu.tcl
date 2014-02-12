@@ -397,6 +397,7 @@ $m.nct add command -label "Elevate" -command {
 	"undo save Elevate; elevateNC %0; plb_update; rV"\
 	"Elevate Curve"
 }
+
 $m.nct add command -label "Extend" -command {
     runTool [list ay(extendx) ay(extendy) ay(extendz)] [list "X:" "Y:" "Z:"]\
 	"undo save Extend; extendNC %0 %1 %2; plb_update; rV"\
@@ -755,14 +756,19 @@ $m.nc add command -label "Circular B-Spline" -command {
 	{"Radius:" "Arc:" "Sections:" "Order:"}\
 	"crtClosedBS %2 %3 %1 %0; uCR; sL; notifyOb; rV;"\
 	"Create Closed B-Spline"
-} -underline 0
+} -underline 9
 $m.nc add command -label "NURBCircle" -command {
     runTool {ay(ncircradius) ay(ncircarc)} {"Radius:" "Arc:"}\
 	"crtNCircle -r %0 -a %1; uCR; sL; notifyOb; rV;"\
 	"Create NURBCircle"
-} -underline 5
+} -underline 4
+$m.nc add command -label "Rectangle" -command {
+    runTool {ay(nrectwidth) ay(nrectheight)} {"Width:" "Height:"}\
+	"crtNRect -w %0 -h %1; uCR; sL; notifyOb; rV;"\
+	"Create Rectangle"
+} -underline 1
 $m.nc add command -label "TrimRect" -command {
-    crtNRect; set ay(ul) $ay(CurrentLevel); uS 0 1; rV
+    crtTrimRect; set ay(ul) $ay(CurrentLevel); uS 0 1; rV
 } -underline 0
 
 $m.nc add separator

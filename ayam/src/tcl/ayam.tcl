@@ -647,6 +647,8 @@ array set ay {
  ncircarc 360.0
  ncirctmin 0.0
  ncirctmax 360.0
+ nrectwidth 1.0
+ nrectheight 1.0
  nsphereradius 1.0
  cbspsec 6
  cbsporder 4
