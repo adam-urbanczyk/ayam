@@ -13310,12 +13310,12 @@ See also section <ref id="ncirct" name="NURB Circle Tool">.
 <label id="sccrtclosedbs">
 crtClosedBS &ndash; create closed (circular) B-Spline:
 <itemize>
- <item>Synopsis: <tt/"crtClosedBS sections [order [arc [radius]]]"/
+ <item>Synopsis: <tt/"crtClosedBS [-s sections] [-o order] [-a arc] [-r radius]"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: This command creates a circular B-Spline curve
-with desired number of sections, order (defaults to 4), arc (defaults
-to 360.0, negative values are allowed), and radius (defaults to 1.0).
-The curve always starts on the positive X axis. 
+with desired number of sections (defaults to 6), order (defaults to 4),
+arc (defaults to 360.0, negative values are allowed), and
+radius (defaults to 1.0). The curve always starts on the positive X axis. 
 <p>
 See also section <ref id="cbspt" name="Circular B-Spline Tool">.
 </itemize>
@@ -15557,7 +15557,7 @@ proc easySweep { } {
  goDown -1
 
  # now, we create a new curve (a closed B-Spline suitable as cross section)
- crtClosedBS 8
+ crtClosedBS -s 8
 
  # select the new object
  selOb 0
