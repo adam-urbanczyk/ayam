@@ -3631,7 +3631,7 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
  int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_object *o = NULL;
  ay_nurbcurve_object *curve = NULL;
- int i, sections = 8, order = 4;
+ int i, sections = 6, order = 4;
  double radius = 1.0, arc = 360.0;
 
   /* parse args */
