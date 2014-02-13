@@ -783,7 +783,7 @@ array set Revolve_1 {
 		getProp; set ::NCurveAttrData(Knot-Type) 1; setProp
 	    }
 	    4 {
-		crtClosedBS 4; hSL; movOb 1.25 0 0;
+		crtClosedBS -s 4; hSL; movOb 1.25 0 0;
 	    }
 	};
 	notifyOb;
@@ -855,7 +855,7 @@ array set Extrude_1 {
 		getProp; set ::NCurveAttrData(Knot-Type) 1; setProp
 	    }
 	    4 {
-		crtClosedBS 4; hSL; movOb 1.25 0 0;
+		crtClosedBS -s 4; hSL; movOb 1.25 0 0;
 	    }
 	    5 {	crtOb NCircle }
 	    6 {
@@ -881,7 +881,7 @@ lappend Extrude_1(vals) { 1.0 }
 
 # Extrude Variation #2
 array set Extrude_2 {
-    precmd {goDown -1;crtClosedBS 4;hSL;movOb 1.25 0.0 0.0;notifyOb;goUp;hSL}
+    precmd {goDown -1;crtClosedBS -s 4;hSL;movOb 1.25 0.0 0.0;notifyOb;goUp;hSL}
     arr ExtrudeAttrData
     freevars {StartCap EndCap}
     StartCap {0 1}
@@ -937,7 +937,7 @@ array set Sweep_1 {
 array set Sweep_2 {
     precmd {
 	goDown -1;
-	crtClosedBS 4; hSL; rotOb 0 90 0;
+	crtClosedBS -s 4; hSL; rotOb 0 90 0;
 	crtOb NCurve; notifyOb; goUp; hSL
     }
     arr SweepAttrData
@@ -1037,8 +1037,8 @@ array set Skin_1 {
 array set Skin_2 {
     precmd {
 	goDown -1;
-	crtClosedBS 4; hSL; movOb 0 1 1;
-	crtClosedBS 4; notifyOb; goUp; hSL
+	crtClosedBS -s 4; hSL; movOb 0 1 1;
+	crtClosedBS -s 4; notifyOb; goUp; hSL
     }
     arr SkinAttrData
     freevars {StartCap EndCap}
@@ -1053,11 +1053,11 @@ array set Skin_2 {
 array set Skin_3 {
     precmd {
 	goDown -1;
-	crtClosedBS 4; hSL; movOb 0 4 4;
-	crtClosedBS 4; hSL; movOb 0 3 3;
-	crtClosedBS 4; hSL; movOb 0 1 2;
-	crtClosedBS 4; hSL; movOb 0 1 0;
-	crtClosedBS 4; notifyOb; goUp; hSL
+	crtClosedBS -s 4; hSL; movOb 0 4 4;
+	crtClosedBS -s 4; hSL; movOb 0 3 3;
+	crtClosedBS -s 4; hSL; movOb 0 1 2;
+	crtClosedBS -s 4; hSL; movOb 0 1 0;
+	crtClosedBS -s 4; notifyOb; goUp; hSL
     }
     arr SkinAttrData
     freevars {Interpolate StartCap EndCap Knot-Type_U Order_U}
@@ -1076,22 +1076,22 @@ array set Skin_4 {
 	goDown -1;
 	switch $l {
 	    0 {
-		crtClosedBS 4; hSL; movOb 0 4 4;
-		crtClosedBS 4; hSL; movOb 0 3 3;
-		crtClosedBS 4; hSL; movOb 0 1 2;
-		crtClosedBS 4; hSL; movOb 0 1 0;
-		crtClosedBS 4;
+		crtClosedBS -s 4; hSL; movOb 0 4 4;
+		crtClosedBS -s 4; hSL; movOb 0 3 3;
+		crtClosedBS -s 4; hSL; movOb 0 1 2;
+		crtClosedBS -s 4; hSL; movOb 0 1 0;
+		crtClosedBS -s 4;
 	    }
 	    1 {
-		crtClosedBS 4; hSL; movOb 0 4 4;
-		crtClosedBS 4; hSL; movOb 0 3 3;
-		crtClosedBS 4; hSL; movOb 0 1 0;
-		crtClosedBS 4;
+		crtClosedBS -s 4; hSL; movOb 0 4 4;
+		crtClosedBS -s 4; hSL; movOb 0 3 3;
+		crtClosedBS -s 4; hSL; movOb 0 1 0;
+		crtClosedBS -s 4;
 	    }
 	    2 {
-		crtClosedBS 4; hSL; movOb 0 4 4;
-		crtClosedBS 4; hSL; movOb 0 1 0;
-		crtClosedBS 4;
+		crtClosedBS -s 4; hSL; movOb 0 4 4;
+		crtClosedBS -s 4; hSL; movOb 0 1 0;
+		crtClosedBS -s 4;
 	    }
 	}
 	notifyOb; goUp; hSL
@@ -1114,24 +1114,24 @@ array set Skin_5 {
 	goDown -1;
 	switch $l {
 	    0 {
-		crtClosedBS 4; hSL; movOb 0 3 3;
-		crtClosedBS 5; hSL; movOb 0 1.5 0;
-		crtClosedBS 4;
+		crtClosedBS -s 4; hSL; movOb 0 3 3;
+		crtClosedBS -s 5; hSL; movOb 0 1.5 0;
+		crtClosedBS -s 4;
 	    }
 	    1 {
-		crtClosedBS 4; hSL; movOb 0 3 3;
+		crtClosedBS -s 4; hSL; movOb 0 3 3;
 		crtOb NCurve; hSL; movOb 0 1.5 0;
-		crtClosedBS 4;
+		crtClosedBS -s 4;
 	    }
 	    2 {
-		crtClosedBS 4; hSL; movOb 0 3 3;
+		crtClosedBS -s 4; hSL; movOb 0 3 3;
 		crtOb NCircle; hSL; movOb 0 1.5 0;
-		crtClosedBS 4;
+		crtClosedBS -s 4;
 	    }
 	    3 {
 		crtOb NCircle; hSL; movOb 0 3 3; rotOb 45 0 0;
 		crtOb NCircle; hSL; movOb 0 1.5 0;
-		crtClosedBS 4;hSL; rotOb -45 0 0;
+		crtClosedBS -s 4;hSL; rotOb -45 0 0;
 	    }
 	}
 	notifyOb; goUp; hSL
@@ -1163,10 +1163,10 @@ array set Cap_1 {
     precmd {
 	goDown -1;
 	switch $l {
-	    0 {	crtClosedBS 4; }
+	    0 {	crtClosedBS -s 4; }
 	    1 {	crtOb NCircle }
 	    2 {
-		crtClosedBS 4; hSL; movOb 1.25 0 0;
+		crtClosedBS -s 4; hSL; movOb 1.25 0 0;
 	    }
 	    3 {
 		crtOb NCircle; hSL; movOb 1.25 0 0;
@@ -1191,10 +1191,10 @@ array set Bevel_1 {
     precmd {
 	goDown -1;
 	switch $l {
-	    0 {	crtClosedBS 4; }
+	    0 {	crtClosedBS -s 4; }
 	    1 {	crtOb NCircle }
 	    2 {
-		crtClosedBS 4; hSL; movOb 1.25 0 0;
+		crtClosedBS -s 4; hSL; movOb 1.25 0 0;
 	    }
 	    3 {
 		crtOb NCircle; hSL; movOb 1.25 0 0;
@@ -1284,7 +1284,7 @@ array set OffsetNC_1 {
 		getProp; set ::NCurveAttrData(Knot-Type) 1; setProp
 	    }
 	    4 {
-		crtClosedBS 4; hSL; movOb 1.25 0 0;
+		crtClosedBS -s 4; hSL; movOb 1.25 0 0;
 	    }
 	    5 {	crtOb NCircle }
 	    6 {
