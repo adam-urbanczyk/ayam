@@ -529,8 +529,8 @@ proc toolbox_open { {w .tbw} } {
 
 	    #####
 	    button $f.bnci -image ay_NCircle_img -padx 0 -pady 0 -command {
-		crtClosedBS $ay(cbspsec) $ay(cbsporder)\
-		    $ay(cbsptmax) $ay(cbsprad); uCR; sL; rV;
+		crtClosedBS -s $ay(cbspsec) -o $ay(cbsporder)\
+		    -a $ay(cbsptmax) -r $ay(cbsprad); uCR; sL; rV;
 	    }
 	    bind $f.bnci <Shift-ButtonPress-1> {
 		global  ay
@@ -541,8 +541,8 @@ proc toolbox_open { {w .tbw} } {
 	    }
 	    bind $f.bnci <Control-ButtonPress-1> {
 		%W configure -relief sunken
-		crtClosedBS $ay(cbspsec) $ay(cbsporder)\
-		    $ay(cbsptmax) $ay(cbsprad); uCR; rV;
+		crtClosedBS -s $ay(cbspsec) -o $ay(cbsporder)\
+		    -a $ay(cbsptmax) -r $ay(cbsprad); uCR; rV;
 		after 100 "%W configure -relief raised"
 		break;
 	    }

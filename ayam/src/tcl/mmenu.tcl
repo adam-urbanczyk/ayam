@@ -754,7 +754,7 @@ menu $m.nc -tearoff 0
 $m.nc add command -label "Circular B-Spline" -command {
     runTool { ay(cbsprad) ay(cbsptmax) ay(cbspsec) ay(cbsporder) }\
 	{"Radius:" "Arc:" "Sections:" "Order:"}\
-	"crtClosedBS %2 %3 %1 %0; uCR; sL; notifyOb; rV;"\
+	"crtClosedBS -r %0 -a %1 -s %2 -o %3; uCR; sL; notifyOb; rV;"\
 	"Create Closed B-Spline"
 } -underline 9
 $m.nc add command -label "NURBCircle" -command {

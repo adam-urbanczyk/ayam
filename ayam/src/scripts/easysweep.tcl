@@ -26,7 +26,7 @@ proc easySweep { } {
  goDown -1
 
  # now, we create a new curve (a closed B-Spline suitable as cross section)
- crtClosedBS 8
+ crtClosedBS -s 8
 
  # select the new object
  selOb 0

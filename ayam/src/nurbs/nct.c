@@ -3598,7 +3598,6 @@ ay_nct_crtcircbsp(int sections, double radius, double arc, int order,
 
   if(!ay_status)
     {
-
       len = sections+(order-1);
 
       ay_status = ay_nct_create(order, len, AY_KTBSPLINE, controlv, NULL,
@@ -3632,18 +3631,41 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
  int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_object *o = NULL;
  ay_nurbcurve_object *curve = NULL;
- int sections = 0, order = 4;
+ int i, sections = 8, order = 4;
  double radius = 1.0, arc = 360.0;
 
   /* parse args */
-  if(argc < 2)
-    {
-      ay_error(AY_EARGS, argv[0], "sections");
-      return TCL_OK;
-    }
-
-  tcl_status = Tcl_GetInt(interp, argv[1], &sections);
-  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+ if(argc > 1)
+   {
+     i = 1;
+     while(i+1 < argc)
+       {
+	 if((argv[i][0] == '-') && (argv[i][1] == 'a'))
+	   {
+	     tcl_status = Tcl_GetDouble(interp, argv[i+1], &arc);
+	     AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	   }
+	 else
+	 if((argv[i][0] == '-') && (argv[i][1] == 'r'))
+	   {
+	     tcl_status = Tcl_GetDouble(interp, argv[i+1], &radius);
+	     AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	   }
+	 else
+	 if((argv[i][0] == '-') && (argv[i][1] == 's'))
+	   {
+	     tcl_status = Tcl_GetInt(interp, argv[i+1], &sections);
+	     AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	   }
+	 else
+	 if((argv[i][0] == '-') && (argv[i][1] == 'o'))
+	   {
+	     tcl_status = Tcl_GetInt(interp, argv[i+1], &order);
+	     AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	   }
+	 i += 2;
+       }
+   }
 
   if(sections < 1)
     {
@@ -3651,26 +3673,8 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  if(argc > 2)
-    {
-      tcl_status = Tcl_GetInt(interp, argv[2], &order);
-      AY_CHTCLERRRET(tcl_status, argv[0], interp);
-
-      if(order < 2)
-	order = 4;
-    }
-
-  if(argc > 3)
-    {
-      tcl_status = Tcl_GetDouble(interp, argv[3], &arc);
-      AY_CHTCLERRRET(tcl_status, argv[0], interp);
-    }
-
-  if(argc > 4)
-    {
-      tcl_status = Tcl_GetDouble(interp, argv[4], &radius);
-      AY_CHTCLERRRET(tcl_status, argv[0], interp);
-    }
+  if(order < 2)
+    order = 4;
 
   /* create object */
   if(!(o = calloc(1, sizeof(ay_object))))
