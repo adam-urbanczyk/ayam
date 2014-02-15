@@ -1615,6 +1615,9 @@ ay_safeinit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "crtNRect", ay_nct_crtrecttcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "crtTrimRect", ay_nct_crtrecttcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   Tcl_CreateCommand(interp, "crtClosedBS", ay_nct_crtclosedbsptcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
