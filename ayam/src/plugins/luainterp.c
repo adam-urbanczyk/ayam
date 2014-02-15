@@ -155,6 +155,7 @@ static const struct luaL_Reg luainterplib [] = {
       {"concatNC", luainterp_wraptclcmd},
       {"crtNCircle", luainterp_wraptclcmd},
       {"crtNRect", luainterp_wraptclcmd},
+      {"crtTrimRect", luainterp_wraptclcmd},
       {"crtClosedBS", luainterp_wraptclcmd},
       {"rescaleknNC", luainterp_wraptclcmd},
       /* curvPlot ? */

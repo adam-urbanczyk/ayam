@@ -176,6 +176,7 @@ static JSFunctionSpec jsinterp_global_functions[] = {
   {"concatNC", jsinterp_wraptcmdargs, 0, 0, 0},
   {"crtNCircle", jsinterp_wraptcmdargs, 0, 0, 0},
   {"crtNRect", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"crtTrimRect", jsinterp_wraptcmdargs, 0, 0, 0},
   {"crtClosedBS", jsinterp_wraptcmdargs, 0, 0, 0},
   {"rescaleknNC", jsinterp_wraptcmdargs, 0, 0, 0},
   /* curvPlot ? */
