@@ -960,7 +960,7 @@ proc searchOb { expression action {gui 0} } {
 	    set ObjectSearch(cx) $ObjectSearch(Expression)
 	}
     }
-puts $ObjectSearch(cx)
+
     # save old selection state
     set ObjectSearch(oldclevel) $ay(CurrentLevel)
     set ObjectSearch(oldslevel) $ay(SelectedLevel)
