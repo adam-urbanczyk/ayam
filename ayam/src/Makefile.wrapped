@@ -521,6 +521,11 @@ LUADIR = ../../../sdk/lua-5.2.0/src
 LUAINC = -I $(LUADIR)
 LUALIB = -L $(LUADIR) -llua
 
+# PrintPS Plugin
+GL2PSDIR = ../../../sdk/gl2ps-1.3.8-source
+GL2PSINC = -I $(GL2PSDIR)
+GL2PSLIB = $(GL2PSDIR)/gl2ps.o
+
 AYINC = -I. -IMF3D -Icontrib $(TOGLINC) $(TCLINC) $(TKINC) $(BMRTINC) $(GLINC) $(AFFINEINC) $(AQSISINC) $(TIFFINC)
 
 #############################################
@@ -662,6 +667,10 @@ jsinterp.so:
 luainterp.so:
 	$(CC) -c $(CFLAGS) plugins/luainterp.c -o plugins/luainterp.o $(AYINC) $(LUAINC)
 	$(CC) $(SHLFLAGS) plugins/luainterp.o -o plugins/luainterp.so $(LUALIB)
+
+printps.so:
+	$(CC) -c $(CFLAGS) plugins/printps.c -o plugins/printps.o $(AYINC) $(GL2PSINC)
+	$(CC) $(SHLFLAGS) plugins/printps.o -o plugins/printps.so  $(GL2PSLIB)
 
 plugins/ayerror.o:
 	$(CC) -c $(CFLAGS) plugins/ayerror.c -o plugins/ayerror.o $(TCLINC)
