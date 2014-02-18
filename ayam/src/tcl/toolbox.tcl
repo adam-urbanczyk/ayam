@@ -36,6 +36,7 @@ proc toolbox_open { {w .tbw} } {
 
     set f [frame $w.f -takefocus 0]
     set ay(toolbuttons) {}
+    set ay(tbw) $f
 
     foreach i $ayprefs(toolBoxList) {
 
@@ -845,8 +846,8 @@ proc toolbox_layout { {w ".tbw"} } {
 	}
     }
 
-    set ay(tbw) [winfo width $w]
-    set ay(tbh) [winfo height $w]
+    set ay(tbwidth) [winfo width $w]
+    set ay(tbheight) [winfo height $w]
 
     # disallow enlargement of the toolbox frame
     if { $w != ".tbw" } {
@@ -854,7 +855,7 @@ proc toolbox_layout { {w ".tbw"} } {
     }
 
     bind $w <Configure> {
-	if { $ay(tbw) != %w || $ay(tbh) != %h } {
+	if { $ay(tbwidth) != %w || $ay(tbheight) != %h } {
 	    if { $ayprefs(SingleWindow) } {
 		toolbox_layout .fv.fTools
 	    } else {
