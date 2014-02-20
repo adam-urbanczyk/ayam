@@ -11110,10 +11110,6 @@ the (u,v) parameter space of a NURBS patch, for use as trim curve.
 the NURBS patch object should be selected or the current level should be
 inside the NURBS patch.
 
-If no NURBS patch object is selected and the current level is not inside
-a NURBS patch, a curve with the coordinates (-1,-1), (-1,1), (1,1),
-and (1,-1) will be created instead.
-
 The created curve will be marked as closed and the generation
 of multiple points will be enabled, so that point edit actions know that
 they may need to move two points.
@@ -13340,8 +13336,8 @@ crtTrimRect &ndash; create a rectangular bounding trim curve:
  <item>Synopsis: <tt/"crtTrimRect"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: This command creates a rectangular NURBS curve
-that fits the parameter space of the currently selected NURBS
-patch object (or the current parent object, if it is a NPatch).
+that fits the parameter space of the currently selected NPatch
+object (or the current parent object, if it is a NPatch).
 <p>
 See also section <ref id="trrt" name="TrimRect Tool">.
 </itemize>
@@ -13990,7 +13986,7 @@ properties:
 <label id="scclampnc">
 clampNC &ndash; clamp NURBS curve:
 <itemize>
- <item>Synopsis: <tt/"clampNC [side]"/
+ <item>Synopsis: <tt/"clampNC [-s | -e]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Clamp the knot vector of the selected NURBS curves
 without changing the shape of the curves.
@@ -13998,10 +13994,10 @@ The knot type of the clamped curve will be changed to <tt/"Custom"/ and
 the knots will have <em/o/ equal values at the desired side(s), where <em/o/
 is the order of the curve.
 <p><p>
-If the side parameter is omitted or 0, both sides
+If the side parameter is omitted, both sides
 are clamped.
-If the side parameter is 1 only the start, and if it is 2 only the end
-is clamped.
+If the side parameter is <tt/"-s"/ only the start, and if it is <tt/"-e"/
+only the end is unclamped.
 <p>
 In Ayam versions prior to 1.18 it was an error if the curve was already
 clamped at either side, this is no longer the case.
@@ -14015,6 +14011,7 @@ See also section <ref id="clat" name="Clamp Tool">.
 <#if out=latex><x/phantomsection/</#if>
 
 <label id="scunclampnc">
+unclampNC &ndash; unclamp NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"unclampNC [-s | -e]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -14354,7 +14351,7 @@ See also section <ref id="makecompt" name="Make Compatible Tool">.
 <label id="scclampnpu"><label id="scclampunp">
 clampuNP &ndash; clamp NURBS patch in U direction:
 <itemize>
- <item>Synopsis: <tt/"clampuNP [side]"/
+ <item>Synopsis: <tt/"clampuNP [-s | -e]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Clamp the U direction knot vector of the selected NURBS
 patches without changing the shape of the patches.
@@ -14362,10 +14359,10 @@ The knot type will be changed to <tt/"Custom"/ and the knots will have <em/o/
 equal values at start and end (where <em/o/ is the order of the patch in
 U direction).
 <p><p>
-If the side parameter is omitted or 0, both sides
+If the side parameter is omitted, both sides
 are clamped.
-If the side parameter is 1 only the start, and if it is 2 only the end
-is clamped.
+If the side parameter is <tt/"-s"/ only the start, and if it is <tt/"-e"/
+only the end is unclamped.
 <p>
 In Ayam versions prior to 1.18 it was an error if the patch was already
 clamped at either side, this is no longer the case.
@@ -14381,7 +14378,7 @@ See also section <ref id="clanpt" name="Clamp Surface Tool">.
 <label id="scclampnpv"><label id="scclampvnp">
 clampvNP &ndash; clamp NURBS patch in V direction:
 <itemize>
- <item>Synopsis: <tt/"clampvNP [side]"/
+ <item>Synopsis: <tt/"clampvNP [-s | -e]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Clamp the V direction knot vector of the selected NURBS
 patches without changing the shape of the patches.
@@ -14389,10 +14386,10 @@ The knot type will be changed to <tt/"Custom"/ and the knots will have <em/o/
 equal values at start and end (where <em/o/ is the order of the patch in
 V direction).
 <p><p>
-If the side parameter is omitted or 0, both sides
+If the side parameter is omitted, both sides
 are clamped.
-If the side parameter is 1 only the start, and if it is 2 only the end
-is clamped.
+If the side parameter is <tt/"-s"/ only the start, and if it is <tt/"-e"/
+only the end is unclamped.
 <p>
 In Ayam versions prior to 1.18 it was an error if the patch was already
 clamped at either side, this is no longer the case.
@@ -15614,11 +15611,7 @@ global ay ayprefs
 # create an image from a GIF file:
 image create photo myImage -format gif -file /home/user/giffile
 
-if { $ayprefs(SingleWindow) } {
-  set b .fv.fTools.f.mybutton
-} else {
-  set b .tbw.f.mybutton
-}
+set b $ay(tbw).mybutton
 
 # if the button does not already exist:
 if { ![winfo exists $b] } {
@@ -15661,14 +15654,16 @@ toolbox spanning the whole window (this works best with the
 standard toolbox layout of 4 by 12 buttons used in the multi-window
 GUI configuration):
 <code>
+global ay
+
 # create a frame:
-set f [frame .tbw.f.fcollex]
+set f [frame $ay(tbw).fcollex]
 
 # calculate the row number below the last row:
-set row [expr [lindex [grid size .tbw.f] 1] + 1]
+set row [expr [lindex [grid size $ay(tbw)] 1] + 1]
 
 # now display the frame at calculated row, spanning the whole window:
-grid $f -row $row -column 0 -columnspan [lindex [grid size .tbw.f] 0]\
+grid $f -row $row -column 0 -columnspan [lindex [grid size $ay(tbw)] 0]\
      -sticky we
 # create two buttons inside the frame:
 button $f.b1 -width 5 -text "Coll." -command { collMP; rV; }
