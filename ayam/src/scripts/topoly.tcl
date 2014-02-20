@@ -43,10 +43,13 @@ proc toPoly { } {
     uS
 
     # now convert all NPatch objects to PolyMeshes
-    forAll -type NPatch 1 { convOb -inplace }
+    forAll -type NPatch -r 1 { convOb -inplace }
+
+    # now convert Subdivision Surfaces to PolyMeshes
+    forAll -type SDMesh -r 1 { convOb -inplace }
 
     # now convert MetaBalls to PolyMeshes
-    forAll -type MetaObj 1 { convOb -inplace }
+    forAll -type MetaObj -r 1 { convOb -inplace }
 
     # unblock the UI
     tgui_unblock
