@@ -232,13 +232,14 @@ proc addParam { w prop name {def {}} } {
 	    "after idle {$ay(bok) invoke}"
 	bind $f.b2 <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
 	    "after idle {$ay(bok) invoke}"
-	bind $f.e <Key-Return> "$::ay(bok) invoke;break"
-	catch {bind $f.e <Key-KP_Enter> "$::ay(bok) invoke;break"}
 	if { $mb != "" } {
 	    bind $mb <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
 		"after idle {$ay(bok) invoke}"
 	}
     }
+
+    bind $f.e <Key-Return> "$::ay(bok) invoke;break"
+    catch {bind $f.e <Key-KP_Enter> "$::ay(bok) invoke;break"}
 
     if { $ay(ws) == "Win32" } {
 	pack $f.l -in $f -side left
@@ -557,23 +558,22 @@ proc addColor { w prop name {def {}}} {
 
     if { ! $ay(iapplydisable) } {
 	global aymainshortcuts
-	set okcmd "updateColorFromE $w $prop $name $f.b1;$ay(bok) invoke;break"
-	bind $e1 <Key-Return> $okcmd
-	catch {bind $e1 <Key-KP_Enter> $okcmd}
-	bind $e2 <Key-Return> $okcmd
-	catch {bind $e2 <Key-KP_Enter> $okcmd}
-	bind $e3 <Key-Return> $okcmd
-	catch {bind $e3 <Key-KP_Enter> $okcmd}
-
 	if { $mb != "" } {
 	    bind $mb <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
 		"after idle {$ay(bok) invoke}"
 	}
-
 	bind $f.b1 <${aymainshortcuts(IApplyMod)}-ButtonPress-1>\
 		"updateColor $w $prop $name $f.b1;\
 		 after idle {$ay(bok) invoke};break;"
     }
+
+    set okcmd "updateColorFromE $w $prop $name $f.b1;$ay(bok) invoke;break"
+    bind $e1 <Key-Return> $okcmd
+    catch {bind $e1 <Key-KP_Enter> $okcmd}
+    bind $e2 <Key-Return> $okcmd
+    catch {bind $e2 <Key-KP_Enter> $okcmd}
+    bind $e3 <Key-Return> $okcmd
+    catch {bind $e3 <Key-KP_Enter> $okcmd}
 
     if { [winfo exists $f.l2] } {
 	pack $f.er $f.eg $f.eb $f.l2 $f.b1 -in $f -fill both -expand yes\
@@ -675,14 +675,15 @@ proc addCheck { w prop name } {
 	global aymainshortcuts
 	bind $cb <${aymainshortcuts(IApplyMod)}-ButtonRelease-1> "after idle {\
 	    $ay(bok) invoke}"
-	bind $cb <Key-Return> "$ay(bok) invoke;break"
-	catch {bind $cb <Key-KP_Enter> "$ay(bok) invoke;break"}
 
 	if { $ay(ws) == "Win32" || $ay(ws) == "Aqua" } {
 	    bind $ff <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
 		"after idle {$ay(bok) invoke}"
 	}
     }
+
+    bind $cb <Key-Return> "$ay(bok) invoke;break"
+    catch {bind $cb <Key-KP_Enter> "$ay(bok) invoke;break"}
 
     pack $f -in $w -side top -fill x
 
@@ -833,10 +834,9 @@ proc addString { w prop name  {def {}}} {
     eval [subst "bindtags $f.e \{$f.e pge Entry all\}"]
     bind $f.e <Key-Escape> $escapecmd
     uie_fixEntry $f.e
-    if { ! $ay(iapplydisable) } {
-	bind $f.e <Key-Return> "$ay(bok) invoke;break"
-	catch {bind $f.e <Key-KP_Enter> "$ay(bok) invoke;break"}
-    }
+
+    bind $f.e <Key-Return> "$ay(bok) invoke;break"
+    catch {bind $f.e <Key-KP_Enter> "$ay(bok) invoke;break"}
 
     set mb ""
     if { $def != {} } {
@@ -1056,10 +1056,9 @@ proc addFile { w prop name {def {}} } {
     uie_fixEntry $f.e
     after idle "entryViewEnd $f.e"
 
-    if { ! $ay(iapplydisable) } {
-	bind $f.e <Key-Return> "$::ay(bok) invoke;break"
-	catch {bind $f.e <Key-KP_Enter> "$::ay(bok) invoke;break"}
-    }
+    bind $f.e <Key-Return> "$::ay(bok) invoke;break"
+    catch {bind $f.e <Key-KP_Enter> "$::ay(bok) invoke;break"}
+
     button $f.b -text "Set" -width 4 -bd $bw -padx 0 -pady 0 -takefocus 0\
      -command "\
 	global $prop ay;
@@ -1166,10 +1165,10 @@ proc addMDir { w prop name } {
     eval [subst "bindtags $f.e \{$f.e pge Entry all\}"]
     bind $f.e <Key-Escape> $escapecmd
     uie_fixEntry $f.e
-    if { ! $ay(iapplydisable) } {
-	bind $f.e <Key-Return> "$::ay(bok) invoke;break"
-	catch {bind $f.e <Key-KP_Enter> "$::ay(bok) invoke;break"}
-    }
+
+    bind $f.e <Key-Return> "$::ay(bok) invoke;break"
+    catch {bind $f.e <Key-KP_Enter> "$::ay(bok) invoke;break"}
+
     bind $f.e <1> "+balloon_setsplit $f.e \[$f.e get\] 15"
     eval balloon_setsplit $f.e  \$${prop}(${name}) 15
 
@@ -1249,10 +1248,10 @@ proc addMFile { w prop name } {
     eval [subst "bindtags $f.e \{$f.e pge Entry all\}"]
     bind $f.e <Key-Escape> $escapecmd
     uie_fixEntry $f.e
-    if { ! $ay(iapplydisable) } {
-	bind $f.e <Key-Return> "$::ay(bok) invoke;break"
-	catch {bind $f.e <Key-KP_Enter> "$::ay(bok) invoke;break"}
-    }
+
+    bind $f.e <Key-Return> "$::ay(bok) invoke;break"
+    catch {bind $f.e <Key-KP_Enter> "$::ay(bok) invoke;break"}
+
     bind $f.e <1> "+balloon_setsplit $f.e \[$f.e get\] 15"
     eval balloon_setsplit $f.e \$${prop}(${name}) 15
 
@@ -1329,7 +1328,9 @@ proc addCommand { w name text command } {
     bind $f.b <F1> "shortcut_calltlhelp %W"
 
     if { ! $ay(iapplydisable) } {
-	bind $f.b <Shift-1> "global ay; set ay(shiftcommand) 1;"
+	global aymainshortcuts
+	bind $f.b <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
+	    "global ay; set ay(shiftcommand) 1;"
     }
 
     pack $f.b -in $f -side left -fill x -expand yes
