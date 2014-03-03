@@ -86,6 +86,10 @@ proc riattr_addp { } {
 
 	set list $riattr($attrname)
 
+	# disable instant apply bindings
+	set oldiapplydisable $ay(iapplydisable)
+	set ay(iapplydisable) 1
+
 	foreach param $list {
 	    if { $attrpara == [lindex $param 0] } {
 		# destroy old UI
@@ -104,19 +108,20 @@ proc riattr_addp { } {
 		set def [lindex $param 2]
 
 		switch $type {
-
 		    i {
 			if { $def != {} } {
 			    set riattrval(Int) [lindex $def 0] } else {
 				set riattrval(Int) 0
-		      }
-			addParam .addRiAttrw.f2 riattrval Int $def}
+			    }
+			addParam .addRiAttrw.f2 riattrval Int $def
+		    }
 		    f {
 			if { $def != {} } {
 			    set riattrval(Float) [lindex $def 0] } else {
 				set riattrval(Float) 0.0
-		      }
-			addParam .addRiAttrw.f2 riattrval Float $def}
+			    }
+			addParam .addRiAttrw.f2 riattrval Float $def
+		    }
 		    s {
 			if { $def != {} } {
 			    set riattrval(String) [lindex $def 0] } else {
@@ -143,8 +148,6 @@ proc riattr_addp { } {
 				}
 				return;
 			    }
-
-
 			}
 		    }
 		    c {
@@ -179,15 +182,14 @@ proc riattr_addp { } {
 			}
 			addParamPair .addRiAttrw.f2 riattrval FloatPair $def
 		    }
-
 		}
 		# switch
 	    }
 	    # if
-
 	}
 	# foreach
 
+	set ay(iapplydisable) $oldiapplydisable
     }
     # bind
 
@@ -216,7 +218,6 @@ proc riattr_addp { } {
 		    catch {destroy [winfo children .addRiAttrw.f2]}
 		    set type [lindex $param 1]
 		    switch $type {
-
 			i { set val $riattrval(Int) }
 			f { set val $riattrval(Float) }
 			s { set val $riattrval(String) }
@@ -228,12 +229,12 @@ proc riattr_addp { } {
 	"$riattrval(IntPair_0),$riattrval(IntPair_1)" }
                         g { set val \
 	"$riattrval(FloatPair_0),$riattrval(FloatPair_1)" }
-
 		    }
+		    # switch
 		}
-
+		# if
 	    }
-
+	    # foreach param
 	    if { $val != "" } {
 		undo save AddRiAttr
 		addTag RiAttribute "$attrname,$attrpara,$type,$val"
@@ -241,7 +242,6 @@ proc riattr_addp { } {
 	    } else {
 		ayError 2 riattr_addp "No value entered!"
 	    }
-
 	} else {
 	    ayError 2 riattr_addp "No attribute selected!"
 	}
@@ -250,6 +250,7 @@ proc riattr_addp { } {
 	restoreFocus $ay(addRiAttrFocus)
 	destroy .addRiAttrw
     }
+    # button
 
     button $f.bca -text "Cancel" -pady $ay(pady) -width 5 -command "\
 	grab release $w;\

@@ -85,6 +85,10 @@ proc riopt_addp { } {
 
 	set list $riopt($optname)
 
+	# disable instant apply bindings
+	set oldiapplydisable $ay(iapplydisable)
+	set ay(iapplydisable) 1
+
 	foreach param $list {
 	    if { $optpara == [lindex $param 0] } {
 		# destroy old UI
@@ -103,7 +107,6 @@ proc riopt_addp { } {
 		set def [lindex $param 2]
 
 		switch $type {
-
 		    i {
 			if { $def != {} } {
 			    set rioptval(Int) [lindex $def 0] } else {
@@ -126,7 +129,6 @@ proc riopt_addp { } {
 			addString .addRiOptw.f2 rioptval String $def
 		      }
 		    p {
-
 			addParam .addRiOptw.f2 rioptval Point_X
 		        addParam .addRiOptw.f2 rioptval Point_Y
 		        addParam .addRiOptw.f2 rioptval Point_Z
@@ -146,11 +148,8 @@ proc riopt_addp { } {
 				}
 				return;
 			    }
-
-
 			}
 		    }
-
 		    c {
 			if { $def != {} } {
 			    set rioptval(Color_R) [lindex [lindex $def 0] 0]
@@ -163,7 +162,6 @@ proc riopt_addp { } {
 			}
 			addColor .addRiOptw.f2 rioptval Color $def
 		      }
-
 		    j {
 			if { $def != {} } {
 			    set rioptval(IntPair_0) [lindex [lindex $def 0] 0]
@@ -191,6 +189,7 @@ proc riopt_addp { } {
 	}
 	# foreach
 
+	set ay(iapplydisable) $oldiapplydisable
     }
     # bind
 
@@ -202,7 +201,6 @@ proc riopt_addp { } {
     set f [frame $w.f3]
     button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command {
 	global riopt rioptval
-
 
 	set lb .addRiOptw.f1.li
 
@@ -232,11 +230,12 @@ proc riopt_addp { } {
 	"$rioptval(IntPair_0),$rioptval(IntPair_1)" }
                         g { set val \
 	"$rioptval(FloatPair_0),$rioptval(FloatPair_1)" }
-
 		    }
+		    # switch
 		}
-
+		# if
 	    }
+	    # foreach param
 
 	    if { $val != "" } {
 		global ay
@@ -249,7 +248,6 @@ proc riopt_addp { } {
 		    undo save AddRiOpt
 		    addTag RiOption "$optname,$optpara,$type,$val"
 		    selOb -lb $sel
-
 		} else {
 		    set t $ay(tree)
 		    set sel ""
@@ -266,7 +264,6 @@ proc riopt_addp { } {
 	    } else {
 		ayError 2 riopt_addp "No value entered!"
 	    }
-
 	} else {
 	    ayError 2 riopt_addp "No option selected!"
 	}
@@ -274,8 +271,8 @@ proc riopt_addp { } {
 	grab release .addRiOptw
 	restoreFocus $ay(addRiOptFocus)
 	destroy .addRiOptw
-
     }
+    # button
 
     button $f.bca -text "Cancel" -pady $ay(pady) -width 5 -command "\
 	grab release $w;\
