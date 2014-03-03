@@ -11345,6 +11345,8 @@ of the knot vectors. The shape of the curve will not change but the
 position of some control points will. The knot type of the curve can
 be changed to type <tt/"Custom"/.
 <tag/Notes/
+Unclamping is <em/not/ an exact reversal of clamping (and vice versa).
+
 The point selection will be removed from the original objects.
 
 See also the documentation of the corresponding
@@ -12035,6 +12037,8 @@ position of some control points will. The knot types of the patches may
 be changed to type <tt/"Custom"/.
 
 <tag/Notes/
+Unclamping is <em/not/ an exact reversal of clamping (and vice versa).
+
 There are also tools available that unclamp a patch in U or
 V direction only.
 
@@ -13499,9 +13503,15 @@ be added to the selection; already selected points will not be deselected.
 The index is zero-based and always one dimensional (even
 for surfaces). Multiple indices may be provided.
  </itemize>
- <item>Example: Given that a single NCurve object is selected, its
-points may be selected using the command <tt/"selPnts -all"/; the first
-and third point of the same curve may be selected using <tt/"selPnts 0 2"/.
+<item>Notes:
+In contrast to the tag points modelling action, selecting a single point
+of a multiple point (of NCurve and NPatch objects) via this command
+only selects this single point.
+ <item>Examples: Given that a single NCurve object is selected,
+<enum>
+ <item><tt/"selPnts -all"/ selects all points of the curve, and
+ <item><tt/"selPnts 0 2"/ selects the first and third point of the curve.
+</enum>
 </itemize>
 
 <sect2>Manipulating Properties<label id="sciprop">
@@ -13994,10 +14004,9 @@ The knot type of the clamped curve will be changed to <tt/"Custom"/ and
 the knots will have <em/o/ equal values at the desired side(s), where <em/o/
 is the order of the curve.
 <p><p>
-If the side parameter is omitted, both sides
-are clamped.
+If the side parameter is omitted, both sides are clamped.
 If the side parameter is <tt/"-s"/ only the start, and if it is <tt/"-e"/
-only the end is unclamped.
+only the end is clamped.
 <p>
 In Ayam versions prior to 1.18 it was an error if the curve was already
 clamped at either side, this is no longer the case.
@@ -14019,8 +14028,7 @@ unclampNC &ndash; unclamp NURBS curve:
 without changing the shape of the curves.
 The knot type of the clamped curve can be changed to <tt/"Custom"/.
 <p><p>
-If the side parameter is omitted, both sides
-are unclamped.
+If the side parameter is omitted, both sides are unclamped.
 If the side parameter is <tt/"-s"/ only the start, and if it is <tt/"-e"/
 only the end is unclamped.
 <p>
@@ -14359,10 +14367,9 @@ The knot type will be changed to <tt/"Custom"/ and the knots will have <em/o/
 equal values at start and end (where <em/o/ is the order of the patch in
 U direction).
 <p><p>
-If the side parameter is omitted, both sides
-are clamped.
+If the side parameter is omitted, both sides are clamped.
 If the side parameter is <tt/"-s"/ only the start, and if it is <tt/"-e"/
-only the end is unclamped.
+only the end is clamped.
 <p>
 In Ayam versions prior to 1.18 it was an error if the patch was already
 clamped at either side, this is no longer the case.
@@ -14386,10 +14393,9 @@ The knot type will be changed to <tt/"Custom"/ and the knots will have <em/o/
 equal values at start and end (where <em/o/ is the order of the patch in
 V direction).
 <p><p>
-If the side parameter is omitted, both sides
-are clamped.
+If the side parameter is omitted, both sides are clamped.
 If the side parameter is <tt/"-s"/ only the start, and if it is <tt/"-e"/
-only the end is unclamped.
+only the end is clamped.
 <p>
 In Ayam versions prior to 1.18 it was an error if the patch was already
 clamped at either side, this is no longer the case.
@@ -14411,8 +14417,7 @@ unclampuNP &ndash; unclamp NURBS patch in U direction:
 patches without changing the shape of the patches.
 The knot type can be changed to <tt/"Custom"/.
 <p><p>
-If the side parameter is omitted both sides
-are unclamped.
+If the side parameter is omitted, both sides are unclamped.
 If the side parameter is <tt/"-s"/ only the start, and if it is <tt/"-e"/
 only the end is unclamped.
 <p>
@@ -14431,8 +14436,7 @@ unclampvNP &ndash; unclamp NURBS patch in V direction:
 patches without changing the shape of the patches.
 The knot type can be changed to <tt/"Custom"/.
 <p><p>
-If the side parameter is omitted both sides
-are unclamped.
+If the side parameter is omitted, both sides are unclamped.
 If the side parameter is <tt/"-s"/ only the start, and if it is <tt/"-e"/
 only the end is unclamped.
 <p>
