@@ -321,16 +321,7 @@ proc runRenderer { win cmd template } {
     # Esc-Key == Cancel button
     bind $w <Escape> "$w.bca invoke"
 
-    # disable close button of window decoration
-    # (if we would allow to close the dialog, before rendering
-    # finishes or the cancel button is used, we would not be able
-    # to properly clean up all started processes, because unfortunately
-    # (or better, stupidly ;)) the necessary information is tied to the
-    # cancel button)
-    # XXXX reorganize the code, so that the pids are not bound
-    # to the cancel button, then enable premature closing of the RenderGUI
-    # window again
-    wm protocol $w WM_DELETE_WINDOW "#donothing"
+    wm protocol $w WM_DELETE_WINDOW "$w.bca invoke;break"
 
     focus $w
 
