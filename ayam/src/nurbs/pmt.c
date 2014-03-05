@@ -38,10 +38,10 @@ ay_pmt_bilinearcltonpatch(ay_pamesh_object *pamesh, ay_object **result)
   if(!pamesh || !result)
    return AY_ENULL;
 
-  if(!(o = calloc(1, sizeof(ay_object))))
-    return AY_EOMEM;
-  ay_object_defaults(o);
-  o->type = AY_IDNPATCH;
+  ay_status = ay_npt_createnpatchobject(&o);
+
+  if(ay_status || !o)
+    return AY_ERROR;
 
   if(pamesh->close_u)
     w = pamesh->width+1;
@@ -59,13 +59,11 @@ ay_pmt_bilinearcltonpatch(ay_pamesh_object *pamesh, ay_object **result)
       return AY_EOMEM;
     }
 
-
   a = 0; b = 0;
   for(i = 0; i < pamesh->width; i++)
     {
       memcpy(&(cv[a]), &(pamesh->controlv[b]),
 	     pamesh->height*4*sizeof(double));
-
 
       a += pamesh->height*4;
       if(pamesh->close_v)
@@ -74,7 +72,6 @@ ay_pmt_bilinearcltonpatch(ay_pamesh_object *pamesh, ay_object **result)
 	  a += 4;
 	}
       b += pamesh->height*4;
-
     } /* for */
 
   if(pamesh->close_u)
@@ -132,7 +129,6 @@ ay_pmt_bicubiccltonpatch(ay_pamesh_object *pamesh, ay_object **result)
       evwinwidth = 4;
       wrapu = 1;
       break;
-
     case AY_BTBSPLINE:
       ktu = AY_KTBSPLINE;
       evwinwidth = pamesh->width;
@@ -251,13 +247,13 @@ ay_pmt_bicubiccltonpatch(ay_pamesh_object *pamesh, ay_object **result)
       for(j = 0; j < winv; j++)
 	{
 	  /* create new object */
-	  if(!(o = calloc(1, sizeof(ay_object))))
+	  ay_status = ay_npt_createnpatchobject(&o);
+
+	  if(ay_status || !o)
 	    {
 	      free(ncv);
-	      return AY_EOMEM;
+	      return AY_ERROR;
 	    }
-	  ay_object_defaults(o);
-	  o->type = AY_IDNPATCH;
 
 	  if(!(cv = calloc(evwinwidth*evwinheight*4, sizeof(double))))
 	    {
@@ -302,9 +298,7 @@ ay_pmt_bicubiccltonpatch(ay_pamesh_object *pamesh, ay_object **result)
 	      *result = o;
 	    }
 	  nexto = &(o->next);
-
 	} /* for */
-
     } /* for */
 
 cleanup:
@@ -325,14 +319,14 @@ int
 ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result)
 {
  int ay_status = AY_OK;
+ char fname[] = "pmt_tonpatch";
  double *cv = NULL;
  int evwinwidth, evwinheight, ktu, ktv, uorder, vorder;
  int i = 0, j = 0, winu, winv, k, a, b;
  ay_object *o = NULL, **nexto = NULL;
- char fname[] = "pmt_tonpatch";
 
   if(!pamesh || !result)
-   return AY_ENULL;
+    return AY_ENULL;
 
   if(pamesh->type == AY_PTBILINEAR)
     {
@@ -351,7 +345,6 @@ ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result)
     }
   else
     {
-
       if((pamesh->close_u) || (pamesh->close_v))
 	{
 	  ay_status = ay_pmt_bicubiccltonpatch(pamesh, result);
@@ -366,7 +359,6 @@ ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result)
 	  ktu = AY_KTBEZIER;
 	  evwinwidth = 4;
 	  break;
-
 	case AY_BTBSPLINE:
 	  ktu = AY_KTBSPLINE;
 	  evwinwidth = pamesh->width;
@@ -395,13 +387,12 @@ ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result)
 
     } /* if */
 
-
   if((evwinwidth == pamesh->width) && (evwinheight == pamesh->height))
     {
-      if(!(o = calloc(1, sizeof(ay_object))))
-	return AY_EOMEM;
-      ay_object_defaults(o);
-      o->type = AY_IDNPATCH;
+      ay_status = ay_npt_createnpatchobject(&o);
+
+      if(ay_status || !o)
+	return AY_ERROR;
 
       if(!(cv = calloc(evwinwidth*evwinheight*4, sizeof(double))))
       {
@@ -416,7 +407,6 @@ ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result)
     }
   else
     {
-
       winu = (pamesh->width/(evwinwidth-1));
       winv = (pamesh->height/(evwinheight-1));
 
@@ -438,10 +428,10 @@ ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result)
 	  for(j = 0; j < winv; j++)
 	    {
 	      /* create new object */
-	      if(!(o = calloc(1, sizeof(ay_object))))
-		return AY_EOMEM;
-	      ay_object_defaults(o);
-	      o->type = AY_IDNPATCH;
+	      ay_status = ay_npt_createnpatchobject(&o);
+
+	      if(ay_status || !o)
+		return AY_ERROR;
 
 	      if(!(cv = calloc(evwinwidth*evwinheight*4, sizeof(double))))
 		{
@@ -480,11 +470,8 @@ ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result)
 		  *result = o;
 		}
 	      nexto = &(o->next);
-
-
 	    } /* for */
 	} /* for */
-
     } /* if */
 
  return AY_OK;
@@ -545,7 +532,6 @@ ay_pmt_valid(ay_pamesh_object *pamesh)
 	  break;
 	default:
 	  break;
-
 	} /* switch */
 
       if(stepu <= 0)
@@ -588,7 +574,6 @@ ay_pmt_valid(ay_pamesh_object *pamesh)
 	  break;
 	default:
 	  break;
-
 	} /* switch */
 
       if(stepv <= 0)
@@ -613,7 +598,7 @@ ay_pmt_valid(ay_pamesh_object *pamesh)
 	}
     } /* if */
 
-  return AY_OK;
+ return AY_OK;
 } /* ay_pmt_valid */
 
 
