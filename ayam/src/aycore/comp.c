@@ -882,10 +882,6 @@ ay_comp_sweep(ay_object *o1, ay_object *o2)
 int
 ay_comp_swing(ay_object *o1, ay_object *o2)
 {
- ay_swing_object *s1, *s2;
-
-  s1 = (ay_swing_object *)o1->refine;
-  s2 = (ay_swing_object *)o2->refine;
 
  return AY_TRUE;
 } /* ay_comp_swing */
