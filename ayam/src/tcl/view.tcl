@@ -380,11 +380,17 @@ proc viewSetFOV { view } {
     set ay(bca) $w.f2.bca
     set ay(bok) $w.f2.bok
 
+    # disable instant apply bindings
+    set oldiapplydisable $ay(iapplydisable)
+    set ay(iapplydisable) 1
+
     if { $ayprefs(FixDialogTitles) == 1 } {
 	addText $f ay $t
     }
 
     addParam $f ay FOV
+
+    set ay(iapplydisable) $oldiapplydisable
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command "\
@@ -447,11 +453,17 @@ proc viewSetGrid { view } {
     set ay(bca) $w.f2.bca
     set ay(bok) $w.f2.bok
 
+    # disable instant apply bindings
+    set oldiapplydisable $ay(iapplydisable)
+    set ay(iapplydisable) 1
+
     if { $ayprefs(FixDialogTitles) == 1 } {
 	addText $f ay $t
     }
 
     addParam $f ay GridSize [list 0.001 0.01 0.1 0.25 0.5 1 10]
+
+    set ay(iapplydisable) $oldiapplydisable
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command "\
