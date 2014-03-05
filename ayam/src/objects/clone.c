@@ -113,12 +113,10 @@ ay_clone_deletecb(void *c)
 int
 ay_clone_copycb(void *src, void **dst)
 {
- ay_clone_object *clone = NULL, *clonesrc = NULL;
+ ay_clone_object *clone;
 
   if(!src || !dst)
     return AY_ENULL;
-
-  clonesrc = (ay_clone_object *)src;
 
   if(!(clone = malloc(sizeof(ay_clone_object))))
     return AY_EOMEM;
@@ -127,7 +125,6 @@ ay_clone_copycb(void *src, void **dst)
 
   clone->pnts = NULL;
   clone->pntslen = 0;
-
   clone->clones = NULL;
 
   *dst = (void *)clone;

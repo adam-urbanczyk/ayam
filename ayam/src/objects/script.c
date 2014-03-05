@@ -71,7 +71,6 @@ ay_script_deletecb(void *c)
 {
  Tcl_Interp *interp;
  ay_script_object *sc;
- int result = TCL_OK;
  int i = 0;
 
   if(!c)
@@ -92,7 +91,7 @@ ay_script_deletecb(void *c)
 #endif
 
 	  /* JavaScript/Lua/... */
-	  result = sc->cb(interp, NULL, AY_TRUE, &(sc->cscript));
+	  (void)sc->cb(interp, NULL, AY_TRUE, &(sc->cscript));
 	}
 
       /* if there is no callback or it did not clean up properly... */
@@ -373,7 +372,6 @@ ay_script_getsp(Tcl_Interp *interp, ay_script_object *sc)
  int arrmembers = 0, i;
  Tcl_Obj *toa = NULL, *ton = NULL;
 
-
   /* handle script parameters */
   if(sc->script)
     {
@@ -577,7 +575,6 @@ ay_script_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_script_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- int ay_status = AY_OK;
  char *n1="ScriptAttrData", *empty = "";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_script_object *sc = NULL;
@@ -625,7 +622,6 @@ ay_script_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	}
       else
 	{
-	  ay_status = AY_ERROR;
 	  goto cleanup;
 	}
 
@@ -665,8 +661,7 @@ ay_script_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		} /* if */
 	    } /* for */
 	} /* if */
-
-    } /* if */
+    } /* if have params and script */
 
 cleanup:
 
@@ -848,7 +843,7 @@ cleanup:
     } /* if */
 #endif
 
- return AY_OK;
+ return ay_status;
 } /* ay_script_readcb */
 
 
