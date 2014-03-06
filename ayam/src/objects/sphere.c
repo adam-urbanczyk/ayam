@@ -223,7 +223,6 @@ ay_sphere_drawcb(struct Togl *togl, ay_object *o)
       angle += thetadiff;
     }
 
-
   /* draw */
   for(i = 0; i < 9; i++)
     {
@@ -299,7 +298,7 @@ ay_sphere_shadecb(struct Togl *togl, ay_object *o)
       /* yes, it is */
 
       /* draw */
-      gluSphere(ay_gluquadobj,radius,10,10);
+      gluSphere(ay_gluquadobj, radius, 8, 4);
 
       return AY_OK;
     }
@@ -351,7 +350,6 @@ ay_sphere_shadecb(struct Togl *togl, ay_object *o)
 
       for(j = 0; j <= 4; j++)
 	{
-
 	  P2[k+(j*3)] *= cos(angle);
 	  P2[k+(j*3)+1] = sin(angle) * R[j];
 	}
