@@ -35,7 +35,7 @@ ay_pamesh_createcb(int argc, char *argv[], ay_object *o)
   /* parse args */
   while(i+1 < argc)
     {
-      if(!strcmp(argv[i],"-width"))
+      if(!strcmp(argv[i], "-width"))
 	{
 	  Tcl_GetInt(ay_interp, argv[i+1], &width);
 	  /* bicubic case is default! */
@@ -43,7 +43,7 @@ ay_pamesh_createcb(int argc, char *argv[], ay_object *o)
 	  i+=2;
 	}
       else
-      if(!strcmp(argv[i],"-height"))
+      if(!strcmp(argv[i], "-height"))
 	{
 	  Tcl_GetInt(ay_interp, argv[i+1], &height);
 	  /* bicubic case is default! */
@@ -54,7 +54,7 @@ ay_pamesh_createcb(int argc, char *argv[], ay_object *o)
 	i++;
     }
 
-  if(!(p = calloc(1,sizeof(ay_pamesh_object))))
+  if(!(p = calloc(1, sizeof(ay_pamesh_object))))
     {
       return AY_EOMEM;
     }
@@ -66,7 +66,7 @@ ay_pamesh_createcb(int argc, char *argv[], ay_object *o)
   p->btype_u = AY_BTBEZIER;
   p->btype_v = AY_BTBEZIER;
 
-  if(!(cv = calloc(width*height*4,sizeof(double))))
+  if(!(cv = malloc(width*height*4*sizeof(double))))
     {
       free(p);
       return AY_EOMEM;
@@ -77,8 +77,9 @@ ay_pamesh_createcb(int argc, char *argv[], ay_object *o)
     {
       for(j = 0; j < height; j++)
 	{
-	  cv[k]   = (double)i*dx;
-	  cv[k+1] = (double)j*dx;
+	  cv[k]   = i*dx;
+	  cv[k+1] = j*dx;
+	  cv[k+2] = 0.0;
 	  cv[k+3] = 1.0;
 	  k += 4;
 	}
@@ -257,7 +258,6 @@ ay_pamesh_drawcpcb(struct Togl *togl, ay_object *o)
 	   for(i = 0; i < width; i++)
 	     {
 	       glVertex3dv((GLdouble *)&cv[a]);
-
 	       a += (4 * height);
 	     }
 	  glEnd();
@@ -272,7 +272,6 @@ ay_pamesh_drawcpcb(struct Togl *togl, ay_object *o)
 	   for(i = 0; i < width; i++)
 	     {
 	       glVertex3dv((GLdouble *)&cv[a]);
-
 	       a += (4 * height);
 	     } /* for */
 	  glEnd();
@@ -451,8 +450,8 @@ ay_pamesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     {
     case 0:
       /* select all points */
-      if(!(pe->coords = calloc(pamesh->width * pamesh->height,
-					 sizeof(double*))))
+      if(!(pe->coords = malloc(pamesh->width * pamesh->height*
+			       sizeof(double*))))
 	return AY_EOMEM;
 
       for(i = 0; i < (pamesh->width*pamesh->height); i++)
@@ -646,7 +645,7 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	  to  = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
 			       TCL_GLOBAL_ONLY);
 	  Tcl_GetDoubleFromObj(interp, to, &dtemp);
-	  pamesh->ubasis[j] = (float)dtemp;
+	  pamesh->ubasis[j] = dtemp;
 	} /* for */
 
       Tcl_SetStringObj(ton,"Step_U",-1);
@@ -681,7 +680,7 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	  to  = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
 			       TCL_GLOBAL_ONLY);
 	  Tcl_GetDoubleFromObj(interp, to, &dtemp);
-	  pamesh->vbasis[j] = (float)dtemp;
+	  pamesh->vbasis[j] = dtemp;
 	} /* for */
 
       Tcl_SetStringObj(ton,"Step_V",-1);
@@ -1069,15 +1068,15 @@ ay_pamesh_wribcb(char *file, ay_object *o)
   if(patch->close_v)
     vwrap = RI_PERIODIC;
 
-  if((controls = calloc(nu*nv*4, sizeof(RtFloat))) == NULL)
+  if((controls = malloc(nu*nv*4*sizeof(RtFloat))) == NULL)
     return AY_EOMEM;
 
-  a=0;
+  a = 0;
   /* RenderMan expects u-major order! */
-  for(i=0;i<nv;i++)
+  for(i = 0; i < nv; i++)
     {
       b = i*4;
-      for(j=0;j<nu;j++)
+      for(j = 0; j < nu; j++)
 	{
 	  controls[a] = (RtFloat)patch->controlv[b];
 	  a++;
@@ -1087,7 +1086,7 @@ ay_pamesh_wribcb(char *file, ay_object *o)
 	  a++;
 	  controls[a] = (RtFloat)patch->controlv[b+3];
 	  a++;
-	  b+=(nv*4);
+	  b += (nv*4);
 	}
     }
 
