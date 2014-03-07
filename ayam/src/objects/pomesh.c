@@ -69,8 +69,7 @@ ay_pomesh_createcb(int argc, char *argv[], ay_object *o)
 	      break;
 	    case 'l':
 	      /* -loops */
-	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) ==
-		 TCL_OK)
+	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) == TCL_OK)
 		{
 		  if(nloops)
 		    {
@@ -98,8 +97,7 @@ ay_pomesh_createcb(int argc, char *argv[], ay_object *o)
 	      break;
 	    case 'n':
 	      /* -nverts */
-	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) ==
-		 TCL_OK)
+	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) == TCL_OK)
 		{
 		  if(nverts)
 		    {
@@ -128,8 +126,7 @@ ay_pomesh_createcb(int argc, char *argv[], ay_object *o)
 	      break;
 	    case 'i':
 	      /* -iverts */
-	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) ==
-		 TCL_OK)
+	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) == TCL_OK)
 		{
 		  if(verts)
 		    {
@@ -170,8 +167,7 @@ ay_pomesh_createcb(int argc, char *argv[], ay_object *o)
 		  break;
 		case 'v':
 		  /* -cv */
-		  if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) ==
-		     TCL_OK)
+		  if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) == TCL_OK)
 		    {
 		      if(controlv)
 			{
@@ -317,12 +313,13 @@ ay_pomesh_createcb(int argc, char *argv[], ay_object *o)
 	      ay_status = AY_EOMEM;
 	      goto cleanup;
 	    }
+#if 0
 	  uj = 0;
 	  for(ui = 0; ui < totalverts; ui++)
 	    {
-	      controlv[uj]   = ui;
-	      controlv[uj+1] = ui;
-	      controlv[uj+2] = ui;
+	      controlv[uj]   = 0.0;
+	      controlv[uj+1] = 0.0;
+	      controlv[uj+2] = 0.0;
 
 	      if(vnormals)
 		{
@@ -331,6 +328,7 @@ ay_pomesh_createcb(int argc, char *argv[], ay_object *o)
 
 	      uj += stride;
 	    } /* for */
+#endif
 	  controlvlen = totalverts;
 	} /* if */
 
@@ -389,7 +387,8 @@ ay_pomesh_createcb(int argc, char *argv[], ay_object *o)
 	{
 	  if(verts[ui] >= controlvlen)
 	    {
-	      ay_error(AY_ERROR, fname, "vertex index out of bounds");
+	      ay_error(AY_ERROR, fname,
+	       "vertex index out of bounds (or not enough control points)");
 	      ay_status = AY_ERROR;
 	      goto cleanup;
 	    }
