@@ -122,7 +122,8 @@ ay_icurve_createcb(int argc, char *argv[], ay_object *o)
 			{
 			  free(cv);
 			}
-		      if(!(cv = calloc(acvlen, sizeof(double))))
+		      if(!(cv = calloc(acvlen<stride?stride:acvlen,
+				       sizeof(double))))
 			{
 			  Tcl_Free((char *) acv);
 			  ay_status = AY_EOMEM;
@@ -331,7 +332,11 @@ ay_icurve_createcb(int argc, char *argv[], ay_object *o)
 	  */
 	  if(acvlen/stride < length)
 	    {
-	      for(i = acvlen/stride; i < (length); i++)
+	      if(acvlen < stride)
+		j = 1;
+	      else
+		j = acvlen/stride;
+	      for(i = j; i < (length); i++)
 		{
 		  cv[i*stride]   = cv[(i-1)*stride]   + dx;
 		  cv[i*stride+1] = cv[(i-1)*stride+1] + dy;
@@ -390,15 +395,15 @@ ay_icurve_createcb(int argc, char *argv[], ay_object *o)
 
   /*memcpy(icurve->sderiv, sder, 3*sizeof(double));*/
 
-  icurve->sderiv[0] = cv[0]-sder[0];
-  icurve->sderiv[1] = cv[1]-sder[1];
-  icurve->sderiv[2] = cv[2]-sder[2];
+  icurve->sderiv[0] = cv[0] - sder[0];
+  icurve->sderiv[1] = cv[1] - sder[1];
+  icurve->sderiv[2] = cv[2] - sder[2];
 
   /*memcpy(icurve->ederiv, eder, 3*sizeof(double));*/
 
-  icurve->ederiv[0] = cv[(length-1)*3]  -eder[0];
-  icurve->ederiv[1] = cv[(length-1)*3+1]-eder[1];
-  icurve->ederiv[2] = cv[(length-1)*3+2]-eder[2];
+  icurve->ederiv[0] = cv[(length-1)*3]   - eder[0];
+  icurve->ederiv[1] = cv[(length-1)*3+1] - eder[1];
+  icurve->ederiv[2] = cv[(length-1)*3+2] - eder[2];
 
   icurve->controlv = cv;
 

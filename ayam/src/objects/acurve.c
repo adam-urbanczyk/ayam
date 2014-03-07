@@ -116,7 +116,8 @@ ay_acurve_createcb(int argc, char *argv[], ay_object *o)
 			{
 			  free(cv);
 			}
-		      if(!(cv = calloc(acvlen, sizeof(double))))
+		      if(!(cv = calloc(acvlen<stride?stride:acvlen,
+				       sizeof(double))))
 			{
 			  Tcl_Free((char *) acv);
 			  ay_status = AY_EOMEM;
@@ -241,7 +242,11 @@ ay_acurve_createcb(int argc, char *argv[], ay_object *o)
 	  */
 	  if(acvlen/stride < length)
 	    {
-	      for(i = acvlen/stride; i < (length); i++)
+	      if(acvlen < stride)
+		j = 1;
+	      else
+		j = acvlen/stride;
+	      for(i = j; i < (length); i++)
 		{
 		  cv[i*stride]   = cv[(i-1)*stride]   + dx;
 		  cv[i*stride+1] = cv[(i-1)*stride+1] + dy;
