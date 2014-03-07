@@ -67,8 +67,7 @@ ay_sdmesh_createcb(int argc, char *argv[], ay_object *o)
 	      break;
 	    case 'n':
 	      /* -nverts */
-	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) ==
-		 TCL_OK)
+	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) == TCL_OK)
 		{
 		  if(nverts)
 		    {
@@ -96,8 +95,7 @@ ay_sdmesh_createcb(int argc, char *argv[], ay_object *o)
 	      break;
 	    case 'v':
 	      /* -verts */
-	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) ==
-		 TCL_OK)
+	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) == TCL_OK)
 		{
 		  if(verts)
 		    {
@@ -138,8 +136,7 @@ ay_sdmesh_createcb(int argc, char *argv[], ay_object *o)
 		  break;
 		case 'v':
 		  /* -cv */
-		  if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) ==
-		     TCL_OK)
+		  if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) == TCL_OK)
 		    {
 		      if(controlv)
 			{
@@ -176,8 +173,7 @@ ay_sdmesh_createcb(int argc, char *argv[], ay_object *o)
 	      break;
 	    case 't':
 	      /* -tags */
-	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) ==
-		 TCL_OK)
+	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) == TCL_OK)
 		{
 		  if(tags)
 		    {
@@ -191,8 +187,7 @@ ay_sdmesh_createcb(int argc, char *argv[], ay_object *o)
 		    }
 		  for(j = 0; j < avlen; j++)
 		    {
-		      tcl_status = Tcl_GetInt(ay_interp,
-					      av[j], &tags[j]);
+		      tcl_status = Tcl_GetInt(ay_interp, av[j], &tags[j]);
 		      if(tcl_status != TCL_OK)
 			{
 			  break;
@@ -205,8 +200,7 @@ ay_sdmesh_createcb(int argc, char *argv[], ay_object *o)
 	      break;
 	    case 'a':
 	      /* -args (nargs) */
-	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) ==
-		 TCL_OK)
+	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) == TCL_OK)
 		{
 		  if(nargs)
 		    {
@@ -234,8 +228,7 @@ ay_sdmesh_createcb(int argc, char *argv[], ay_object *o)
 	      break;
 	    case 'i':
 	      /* -intargs */
-	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) ==
-		 TCL_OK)
+	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) == TCL_OK)
 		{
 		  if(iargs)
 		    {
@@ -249,8 +242,7 @@ ay_sdmesh_createcb(int argc, char *argv[], ay_object *o)
 		    }
 		  for(j = 0; j < avlen; j++)
 		    {
-		      tcl_status = Tcl_GetInt(ay_interp,
-					      av[j], &iargs[j]);
+		      tcl_status = Tcl_GetInt(ay_interp, av[j], &iargs[j]);
 		      if(tcl_status != TCL_OK)
 			{
 			  break;
@@ -263,8 +255,7 @@ ay_sdmesh_createcb(int argc, char *argv[], ay_object *o)
 	      break;
 	    case 'd':
 	      /* -doubleargs */
-	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) ==
-		 TCL_OK)
+	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) == TCL_OK)
 		{
 		  if(dargs)
 		    {
@@ -278,8 +269,7 @@ ay_sdmesh_createcb(int argc, char *argv[], ay_object *o)
 		    }
 		  for(j = 0; j < avlen; j++)
 		    {
-		      tcl_status = Tcl_GetDouble(ay_interp,
-						 av[j], &dargs[j]);
+		      tcl_status = Tcl_GetDouble(ay_interp, av[j], &dargs[j]);
 		      if(tcl_status != TCL_OK)
 			{
 			  break;
@@ -367,15 +357,17 @@ ay_sdmesh_createcb(int argc, char *argv[], ay_object *o)
 	      ay_status = AY_EOMEM;
 	      goto cleanup;
 	    }
+#if 0
 	  uj = 0;
 	  for(ui = 0; ui < totalverts; ui++)
 	    {
-	      controlv[uj]   = ui;
-	      controlv[uj+1] = ui;
-	      controlv[uj+2] = ui;
+	      controlv[uj]   = 0.0;
+	      controlv[uj+1] = 0.0;
+	      controlv[uj+2] = 0.0;
 
 	      uj += stride;
 	    } /* for */
+#endif
 	  controlvlen = totalverts;
 	} /* if */
 
@@ -430,7 +422,8 @@ ay_sdmesh_createcb(int argc, char *argv[], ay_object *o)
 	{
 	  if(verts[ui] >= controlvlen)
 	    {
-	      ay_error(AY_ERROR, fname, "vertex index out of bounds");
+	      ay_error(AY_ERROR, fname,
+	       "vertex index out of bounds (or not enough control points)");
 	      ay_status = AY_ERROR;
 	      goto cleanup;
 	    }
