@@ -62,6 +62,8 @@ proc pamesh_getAttr { } {
     addCheck $w PatchMeshAttrData Close_U
     addCheck $w PatchMeshAttrData Close_V
 
+    addInfo $w PatchMeshAttrData IsRat
+
     if { $PatchMeshAttrData(Type) == 1 } {
 
 	addMenu $w PatchMeshAttrData BType_U [list Bezier B-Spline CatmullRom Hermite Custom]

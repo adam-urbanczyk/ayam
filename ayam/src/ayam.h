@@ -573,6 +573,8 @@ typedef struct ay_pamesh_object_s {
   int close_v; /**< is patch mesh closed in V? */
   double *controlv; /**< control points [width * height * 4] */
 
+  int is_rat; /**< is any weight != 1.0 */
+
   int type; /**< type of patch mesh (AY_PT*, bilinear or bicubic) */
   int btype_u; /**< basis type of patch mesh in U, (AY_BT*) */
   int btype_v; /**< basis type of patch mesh in V, (AY_BT*) */

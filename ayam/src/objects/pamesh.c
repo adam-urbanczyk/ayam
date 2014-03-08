@@ -867,6 +867,14 @@ ay_pamesh_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		     TCL_GLOBAL_ONLY);
     } /* if */
 
+  Tcl_SetStringObj(ton,"IsRat", -1);
+  if(pamesh->is_rat)
+    to = Tcl_NewStringObj("yes", -1);
+  else
+    to = Tcl_NewStringObj("no", -1);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton,"Tolerance",-1);
   to = Tcl_NewDoubleObj(pamesh->glu_sampling_tolerance);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
@@ -960,6 +968,8 @@ ay_pamesh_readcb(FILE *fileptr, ay_object *o)
 
   fscanf(fileptr,"%lg\n",&(pamesh->glu_sampling_tolerance));
   fscanf(fileptr,"%d\n",&(pamesh->display_mode));
+
+  pamesh->is_rat = ay_pmt_israt(pamesh);
 
   o->refine = pamesh;
 
