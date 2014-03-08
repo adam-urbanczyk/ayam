@@ -806,7 +806,7 @@ int ay_nct_iscomptcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
-/** Check whether any weight is != 1.0.
+/** Check whether any weight of a NURBS curve is != 1.0.
  */
 int ay_nct_israt(ay_nurbcurve_object *curve);
 
@@ -1160,7 +1160,7 @@ int ay_npt_extractnc(ay_object *npatch, int side, double param, int relative,
 		     double **pvnt,
 		     ay_nurbcurve_object **result);
 
-/** Check whether any weight is != 1.0.
+/** Check whether any weight of a NURBS patch is != 1.0.
  */
 int ay_npt_israt(ay_nurbpatch_object *np);
 
@@ -1385,6 +1385,10 @@ int ay_pmt_revertu(ay_pamesh_object *pm);
 /** Revert patchmesh in V direction.
  */
 int ay_pmt_revertv(ay_pamesh_object *pm);
+
+/** Check whether any weight of a patch mesh is != 1.0.
+ */
+int ay_pmt_israt(ay_pamesh_object *pm);
 
 
 /* stess.c */
