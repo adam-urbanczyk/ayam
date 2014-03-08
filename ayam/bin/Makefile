@@ -101,6 +101,7 @@ install:
 	-$(INSTALL) plugins/loadluainterp.tcl $(LIBDIR)
 	-$(INSTALL) plugins/sfcurve.so $(LIBDIR)
 	-$(INSTALL) plugins/loadsfcurve.tcl $(LIBDIR)
+	-$(INSTALL) plugins/printps.so $(LIBDIR)
 	$(MKDIR) $(DOCDIR)
 	$(INSTALL) $(DOCFILES) $(DOCDIR)
 	$(MKDIR) $(DOCDIR)/html
