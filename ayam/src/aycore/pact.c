@@ -2213,6 +2213,7 @@ ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
  ay_object *o = NULL;
  ay_nurbcurve_object *nc = NULL;
  ay_nurbpatch_object *np = NULL;
+ ay_pamesh_object *pm = NULL;
 
   if(pact_objectslen == 0)
     return TCL_OK;
@@ -2278,10 +2279,17 @@ ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
 		  nc = (ay_nurbcurve_object *)o->refine;
 		  nc->is_rat = AY_TRUE;
 		}
+	      else
 	      if(o->type == AY_IDNPATCH)
 		{
 		  np = (ay_nurbpatch_object *)o->refine;
 		  np->is_rat = AY_TRUE;
+		}
+	      else
+	      if(o->type == AY_IDPAMESH)
+		{
+		  pm = (ay_pamesh_object *)o->refine;
+		  pm->is_rat = AY_TRUE;
 		}
 	    }
 	  ay_pact_notify(o, j, k-pact_numcpo[j]);
@@ -2316,6 +2324,7 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
  ay_list_object *sel = ay_selection;
  ay_nurbcurve_object *nc = NULL;
  ay_nurbpatch_object *np = NULL;
+ ay_pamesh_object *pm = NULL;
  ay_pointedit pe = {0};
  int reset_selected = AY_FALSE;
  int reset_picked = AY_FALSE;
@@ -2376,10 +2385,17 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
 		  nc = (ay_nurbcurve_object *)o->refine;
 		  nc->is_rat = AY_FALSE;
 		}
+	      else
 	      if(o->type == AY_IDNPATCH)
 		{
 		  np = (ay_nurbpatch_object *)o->refine;
 		  np->is_rat = AY_FALSE;
+		}
+	      else
+	      if(o->type == AY_IDPAMESH)
+		{
+		  pm = (ay_pamesh_object *)o->refine;
+		  pm->is_rat = AY_FALSE;
 		}
 	      ay_notify_object(o);
 	      notify_parent = AY_TRUE;
