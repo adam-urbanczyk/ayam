@@ -3956,6 +3956,10 @@ This section informs you about the different object types of Ayam and
 about the property GUIs that appear in the properties section of the
 main window if a single object and a property have been selected.
 <p>
+Note that the <tt>"Help on object"</tt> and <tt>"Help on property"</tt>
+main menu entries in Ayam can be used to directly jump to the appropriate
+sub-section of this part of the documentation.
+<p>
 Documentation on the standard properties (Transformations, Attributes,
 Material, Shader, and Tags) can be found in
 section <ref id="stdprop" name="Standard Properties">.
@@ -7233,6 +7237,9 @@ settings:<p>
 <item><tt/"Width"/ and <tt/"Height"/ control the dimensions of the patch.
 <item><tt/"Close_U"/ and <tt/"Close_V"/ determine, whether the patch
 mesh should be closed in U and V direction respectively.
+<item><tt/"IsRat"/ informs you, whether the patch mesh
+is rational (uses weight values different from
+1.0).<footnote>Since 1.21.</footnote>
 <item><tt/"BType_U"/ and <tt/"BType_V"/ control the basis type
 for bicubic patches. You may choose between the basis types:
 <tt/"Bezier"/, <tt/"B-Spline"/, <tt/"Catmull-Rom"/,
@@ -10979,6 +10986,10 @@ Documentation on all those tags can be found in the previous sections.
 <p>
 This section describes NURBS curve and surface related modelling
 tools.
+<p>
+Note that pressing the <tt/&lt;F1&gt;/ key in tool dialog windows
+can be used to directly jump to the appropriate
+sub-section of this part of the documentation.
 
 <sect1>General Remarks
 <p>
@@ -10992,7 +11003,7 @@ of their appearance in the current level.
 <p>
 Tools that take only NURBS curves or only NURBS surfaces from the selection
 will warn if the selection contains objects of unsuitable type,
-but processing will continue.
+but processing will continue regardless.
 <p>
 In case of an error, however, the processing of multiple selected
 objects immediately stops, possibly leaving modified <em>and</em>
@@ -12359,13 +12370,13 @@ and their parameter(s).
 <sect>Scripting Interface<label id="script">
 <p>
 The Ayam scripting interface is mainly a number of Tcl procedures
-and Tcl commands that are also used internally by the application,
-e.g.~the main menu entry <tt>"File/New"</tt> calls the
+and Tcl commands that are also used internally by the application.
+The main menu entry <tt>"File/New"</tt> for instance calls the
 scripting interface command <tt/"newScene"/ (among other commands).
 Using the scripting interface means to call these commands on
 your own possibly in a mix with standard Tcl script code.
 <p>
-Furthermore, using Tcl and its introspection facilities, you could
+Furthermore, using Tcl and its introspection capabilities, you could
 easily modify the code Ayam consists of. This is, however, not
 recommended for good reasons (unless you read the Ayam source code
 and really know, what you are doing).
@@ -12532,11 +12543,17 @@ scripting interface.
 Since Ayam 1.16, the global property management array may be created
 easily using the new scripting interface command <tt/"addPropertyGUI"/.
 
+<#if out=latex><x/newpage/</#if>
+
 <sect1>Procedures and Commands<label id="sccomm">
 <p>
 This section provides documentation on the most important
 scripting interface procedures and commands of Ayam sorted
 by category.
+<p>
+Note that the <tt/"help"/ command in the Ayam console can be used
+to directly jump to the appropriate sub-section of this part of
+the documentation.
 <p>
 All procedures and commands are documented in the following scheme:
 <itemize>
@@ -18344,6 +18361,8 @@ of the tolerance preference setting to the factory default for the
 <tscreen><tt>
 &raquo;&thinsp;unset ayprefs(Tolerance)
 </tt></tscreen>
+After unsetting single elements of the preferences array, Ayam should
+be restarted.
 
 <sect2>Changing Keyboard Shortcuts
 <p>
@@ -19892,6 +19911,7 @@ Index:
 <itemize>
 <item><ref id="ncattr" name="NCurve attribute">,
 <item><ref id="npattr" name="NPatch attribute">
+<item><ref id="pmattr" name="PatchMesh attribute">
 </itemize>
 </list>
 
