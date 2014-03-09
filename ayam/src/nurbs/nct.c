@@ -7456,9 +7456,9 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
  int ay_status = AY_OK;
- ay_nurbcurve_object *curve = NULL;
  ay_list_object *sel = ay_selection;
- ay_object *o = NULL, *po = NULL;
+ ay_nurbcurve_object *curve;
+ ay_object *o, *po;
  double len;
  int apply_trafo = 0, i = 1;
  Tcl_Obj *to = NULL, *ton = NULL;
@@ -7494,47 +7494,54 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
 
   ton = Tcl_NewStringObj(argv[i], -1);
 
-  /* get curve to work on */
-  o = sel->object;
-  if(o->type != AY_IDNCURVE)
+  while(sel)
     {
-      ay_status = ay_provide_object(sel->object, AY_IDNCURVE, &po);
-      if(!ay_status && po)
+      /* get curve to work on */
+      o = sel->object;
+      po = NULL;
+      if(o->type != AY_IDNCURVE)
 	{
-	  curve = (ay_nurbcurve_object *)po->refine;
+	  ay_status = ay_provide_object(sel->object, AY_IDNCURVE, &po);
+	  if(!ay_status && po)
+	    {
+	      curve = (ay_nurbcurve_object *)po->refine;
+	    }
+	  else
+	    {
+	      ay_error(AY_ERROR, argv[0], "Provide failed.");
+	      goto cleanup;
+	    }
 	}
       else
 	{
-	  ay_error(AY_ERROR, argv[0], "Provide failed.");
-	  goto cleanup;
+	  curve = (ay_nurbcurve_object *)o->refine;
 	}
-    }
-  else
-    {
-      curve = (ay_nurbcurve_object *)o->refine;
-    }
 
-  if(apply_trafo)
-    {
-      if(!po)
-	ay_status = ay_object_copy(o, &po);
+      if(apply_trafo)
+	{
+	  if(!po)
+	    ay_status = ay_object_copy(o, &po);
 
-      if(ay_status || !po)
+	  if(ay_status || !po)
+	    goto cleanup;
+
+	  ay_nct_applytrafo(po);
+	  curve = (ay_nurbcurve_object *)po->refine;
+	}
+
+      /* get length */
+      ay_status = ay_nct_estlen(curve, &len);
+
+      if(ay_status)
 	goto cleanup;
 
-      ay_nct_applytrafo(po);
-      curve = (ay_nurbcurve_object *)po->refine;
+      /* put result into Tcl context */
+      to = Tcl_NewDoubleObj(len);
+      Tcl_ObjSetVar2(interp,ton,NULL,to,TCL_LEAVE_ERR_MSG | TCL_APPEND_VALUE |
+		     TCL_LIST_ELEMENT);
+
+      sel = sel->next;
     }
-
-  /* get length */
-  ay_status = ay_nct_estlen(curve, &len);
-
-  if(ay_status)
-    goto cleanup;
-
-  /* put result into Tcl context */
-  to = Tcl_NewDoubleObj(len);
-  Tcl_ObjSetVar2(interp,ton,NULL,to,TCL_LEAVE_ERR_MSG);
 
   /* cleanup */
 cleanup:
