@@ -21,6 +21,9 @@ using namespace std;
 using namespace std::tr1::placeholders;
 using namespace snurbs;
 
+static char sdnpatch_version_ma[] = AY_VERSIONSTR;
+static char sdnpatch_version_mi[] = AY_VERSIONSTRMI;
+
 static char *sdnpatch_name = "SDNPatch";
 
 static unsigned int sdnpatch_id;
@@ -5510,6 +5513,11 @@ Sdnpatch_Init(Tcl_Interp *interp)
       return TCL_ERROR;
     }
 #endif /* WIN32 */
+
+  if(ay_checkversion(fname, sdnpatch_version_ma, sdnpatch_version_mi))
+    {
+      return TCL_ERROR;
+    }
 
   ay_status = ay_otype_register(sdnpatch_name,
 				sdnpatch_createcb,

@@ -1750,6 +1750,38 @@ ay_safeinit(Tcl_Interp *interp)
 } /* ay_safeinit */
 
 
+/** check Ayam compile vs. run-time version (for plugins)
+ */
+int
+ay_checkversion(char *fname, char *pv_ma, char *pv_mi)
+{
+ int ay_status = AY_OK;
+ char errmsg[] = "Plugin has been compiled for a different Ayam version!";
+ char bailmsg[] = "It is unsafe to continue! Bailing out...";
+ char contmsg[] = "However, it is probably safe to continue...";
+
+  if(!fname || !pv_ma || !pv_mi)
+    return AY_ERROR;
+
+  if(strcmp(ay_version_ma, pv_ma))
+    {
+      ay_error(AY_ERROR, fname, errmsg);
+      ay_error(AY_ERROR, fname, bailmsg);
+      ay_status = AY_ERROR;
+    }
+  else
+    {
+      if(strcmp(ay_version_mi, pv_mi))
+	{
+	  ay_error(AY_EWARN, fname, errmsg);
+	  ay_error(AY_EWARN, fname, contmsg);
+	}
+    }
+
+ return ay_status;
+} /* ay_checkversion */
+
+
 #ifndef AYWRAPPED
 /********************************************/
 /*main:                                     */

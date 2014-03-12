@@ -1060,19 +1060,9 @@ Luainterp_Init(Tcl_Interp *interp)
     }
 
   /* first, check versions */
-  if(strcmp(ay_version_ma, luainterp_version_ma))
+  if(ay_checkversion(fname, luainterp_version_ma, luainterp_version_mi))
     {
-      ay_error(AY_ERROR, fname,
-	       "Plugin has been compiled for a different Ayam version!");
-      ay_error(AY_ERROR, fname, "It is unsafe to continue! Bailing out...");
-      return TCL_OK;
-    }
-
-  if(strcmp(ay_version_mi, luainterp_version_mi))
-    {
-      ay_error(AY_ERROR, fname,
-	       "Plugin has been compiled for a different Ayam version!");
-      ay_error(AY_ERROR, fname, "However, it is probably safe to continue...");
+      return TCL_ERROR;
     }
 
   /* Create a Lua runtime. */

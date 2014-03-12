@@ -74,6 +74,9 @@ int Objio_Init(Tcl_Interp *interp);
 
 /* global variables */
 
+static char objio_version_ma[] = AY_VERSIONSTR;
+static char objio_version_mi[] = AY_VERSIONSTRMI;
+
 static double tm[16] = {0}; /* current transformation matrix */
 
 static double objio_scalefactor = 1.0;
@@ -3956,6 +3959,11 @@ Objio_Init(Tcl_Interp *interp)
  char fname[] = "objio_init";
 
   if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
+    {
+      return TCL_ERROR;
+    }
+
+  if(ay_checkversion(fname, objio_version_ma, objio_version_mi))
     {
       return TCL_ERROR;
     }
