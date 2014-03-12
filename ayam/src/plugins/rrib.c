@@ -42,8 +42,8 @@ cc -o rrib rrib.c -I/home/randi/sdk/affine0008/include/
 
 /* global variables for this module: */
 
-char ay_rrib_version_ma[] = AY_VERSIONSTR;
-char ay_rrib_version_mi[] = AY_VERSIONSTRMI;
+char rrib_version_ma[] = AY_VERSIONSTR;
+char rrib_version_mi[] = AY_VERSIONSTRMI;
 
 /* current object:
  * all object reading functions enter data to this object,
@@ -5858,19 +5858,9 @@ Rrib_Init(Tcl_Interp *interp)
 #endif /* WIN32 */
 
   /* first, check versions */
-  if(strcmp(ay_version_ma, ay_rrib_version_ma))
+  if(ay_checkversion(fname, rrib_version_ma, rrib_version_mi))
     {
-      ay_error(AY_ERROR, fname,
-	       "Plugin has been compiled for a different Ayam version!");
-      ay_error(AY_ERROR, fname, "It is unsafe to continue! Bailing out...");
-      return TCL_OK;
-    }
-
-  if(strcmp(ay_version_mi, ay_rrib_version_mi))
-    {
-      ay_error(AY_ERROR, fname,
-	       "Plugin has been compiled for a different Ayam version!");
-      ay_error(AY_ERROR, fname, "However, it is probably safe to continue...");
+      return TCL_ERROR;
     }
 
   /* register some C-functions as Tcl-Commands */

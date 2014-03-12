@@ -14,6 +14,9 @@
 
 /* sfcurve.c - super formula curve custom object */
 
+char sfcurve_version_ma[] = AY_VERSIONSTR;
+char sfcurve_version_mi[] = AY_VERSIONSTRMI;
+
 static char *sfcurve_name = "SfCurve";
 
 static unsigned int sfcurve_id;
@@ -745,6 +748,11 @@ Sfcurve_Init(Tcl_Interp *interp)
     }
 #endif /* WIN32 */
 
+  if(ay_checkversion(fname, sfcurve_version_ma, sfcurve_version_mi))
+    {
+      return TCL_ERROR;
+    }
+
   ay_status = ay_otype_register(sfcurve_name,
 				sfcurve_createcb,
 				sfcurve_deletecb,
@@ -790,4 +798,3 @@ Sfcurve_Init(Tcl_Interp *interp)
 
  return TCL_OK;
 } /* Sfcurve_Init */
-

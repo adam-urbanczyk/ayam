@@ -3681,19 +3681,9 @@ Onio_Init(Tcl_Interp *interp)
 #endif // WIN32
 
   // first, check versions
-  if(strcmp(ay_version_ma, onio_version_ma))
+  if(ay_checkversion(fname, onio_version_ma, onio_version_mi))
     {
-      ay_error(AY_ERROR, fname,
-	       "Plugin has been compiled for a different Ayam version!");
-      ay_error(AY_ERROR, fname, "It is unsafe to continue! Bailing out...");
-      return TCL_OK;
-    }
-
-  if(strcmp(ay_version_mi, onio_version_mi))
-    {
-      ay_error(AY_ERROR, fname,
-	       "Plugin has been compiled for a different Ayam version!");
-      ay_error(AY_ERROR, fname, "However, it is probably safe to continue...");
+      return TCL_ERROR;
     }
 
   // source onio.tcl, it contains vital Tcl-code

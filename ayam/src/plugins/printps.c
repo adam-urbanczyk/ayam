@@ -16,6 +16,9 @@
 
 /* printps.c - print PostScript plugin */
 
+char printps_version_ma[] = AY_VERSIONSTR;
+char printps_version_mi[] = AY_VERSIONSTRMI;
+
 /* prototypes of functions local to this module: */
 
 #ifdef WIN32
@@ -193,6 +196,11 @@ Printps_Init(Tcl_Interp *interp)
       return TCL_ERROR;
     }
 #endif /* WIN32 */
+
+  if(ay_checkversion(fname, printps_version_ma, printps_version_mi))
+    {
+      return TCL_ERROR;
+    }
 
   Tcl_CreateCommand(interp, "printPS",
 		    (Tcl_CmdProc*) printps_printtcmd,

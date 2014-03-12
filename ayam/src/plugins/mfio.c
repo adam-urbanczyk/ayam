@@ -29,8 +29,8 @@ static Tcl_HashTable ay_mfio_read_ht;
 static Tcl_HashTable ay_mfio_write_ht;
 
 
-char ay_mfio_version_ma[] = AY_VERSIONSTR;
-char ay_mfio_version_mi[] = AY_VERSIONSTRMI;
+char mfio_version_ma[] = AY_VERSIONSTR;
+char mfio_version_mi[] = AY_VERSIONSTRMI;
 
 typedef int (ay_mfio_readcb) (MF3DVoidObjPtr object);
 
@@ -3368,21 +3368,10 @@ Mfio_Init(Tcl_Interp *interp)
 #endif /* WIN32 */
 
   /* first, check versions */
-  if(strcmp(ay_version_ma, ay_mfio_version_ma))
+  if(ay_checkversion(fname, mfio_version_ma, mfio_version_mi))
     {
-      ay_error(AY_ERROR, fname,
-	       "Plugin has been compiled for a different Ayam version!");
-      ay_error(AY_ERROR, fname, "It is unsafe to continue! Bailing out...");
-      return TCL_OK;
+      return TCL_ERROR;
     }
-
-  if(strcmp(ay_version_mi, ay_mfio_version_mi))
-    {
-      ay_error(AY_ERROR, fname,
-	       "Plugin has been compiled for a different Ayam version!");
-      ay_error(AY_ERROR, fname, "However, it is probably safe to continue...");
-    }
-
 
   /* init hash table for read callbacks */
   Tcl_InitHashTable(&ay_mfio_read_ht, TCL_ONE_WORD_KEYS);

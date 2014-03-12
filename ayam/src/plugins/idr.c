@@ -20,8 +20,8 @@
 
 /* global variables and types local to this module */
 
-char idr_ay_version_ma[] = AY_VERSIONSTR;
-char idr_ay_version_mi[] = AY_VERSIONSTRMI;
+char idr_version_ma[] = AY_VERSIONSTR;
+char idr_version_mi[] = AY_VERSIONSTRMI;
 
 /* IDR tag type (visible to the user) */
 static char *idr_idrtagtype;
@@ -4331,19 +4331,10 @@ Idr_Init(Tcl_Interp *interp)
 #endif /* WIN32 */
 
   /* first check versions */
-  if(strcmp(ay_version_ma, idr_ay_version_ma))
-    {
-      ay_error(AY_ERROR, fname,
-	       "Plugin has been compiled for a different Ayam version!");
-      ay_error(AY_ERROR, fname, "It is unsafe to continue! Bailing out...");
-      return TCL_OK;
-    }
 
-  if(strcmp(ay_version_mi, idr_ay_version_mi))
+  if(ay_checkversion(fname, idr_version_ma, idr_version_mi))
     {
-      ay_error(AY_ERROR, fname,
-	       "Plugin has been compiled for a different Ayam version!");
-      ay_error(AY_ERROR, fname, "However, it is probably safe to continue...");
+      return TCL_ERROR;
     }
 
   /* Create Togl commands */

@@ -19,6 +19,9 @@
 #include "trimesh.h"
 
 
+char subdiv_version_ma[] = AY_VERSIONSTR;
+char subdiv_version_mi[] = AY_VERSIONSTRMI;
+
 // prototypes of functions local to this module:
 
 extern "C" {
@@ -189,6 +192,11 @@ Subdiv_Init(Tcl_Interp *interp)
 {
  int ay_status = AY_OK;
  char fname[] = "Subdiv_Init";
+
+  if(ay_checkversion(fname, subdiv_version_ma, subdiv_version_mi))
+    {
+      return TCL_ERROR;
+    }
 
   ay_status = ay_notify_register(subdiv_notifycb, AY_IDSDMESH);
 

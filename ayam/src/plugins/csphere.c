@@ -28,6 +28,9 @@ typedef struct csphere_object_s
 } csphere_object;
 
 
+static char csphere_version_ma[] = AY_VERSIONSTR;
+static char csphere_version_mi[] = AY_VERSIONSTRMI;
+
 #ifdef WIN32
   __declspec (dllexport)
 #endif /* WIN32 */
@@ -893,6 +896,11 @@ Csphere_Init(Tcl_Interp *interp)
       return TCL_ERROR;
     }
 #endif /* WIN32 */
+
+  if(ay_checkversion(fname, csphere_version_ma, csphere_version_mi))
+    {
+      return TCL_ERROR;
+    }
 
   ay_status = ay_otype_register(csphere_name,
 				csphere_createcb,
