@@ -558,6 +558,13 @@ MmZM3Ut0QIIK7iaePPjipHwIEx0umFlgb32AXhskcIEFTCzwBAsjvMYFGGYw4wwAi2RnxhkYLICB
 DBdcEIYYZORyCYSWQLMAEWhIYcYSaRCxwCSogGgJIwRIYYAUUhQxiS6WHKLjjoIEAgA7}
 image create photo ay_DMShadeDraw_img -format GIF -data $imgdata
 
+# DMHiddenWire
+set imgdata {\
+R0lGODdhGQAZAIAAALy8vAAZcywAAAAAGQAZAAACRoSPqcvtGKIML0VDz60Z
+dPh8H8iMI2mlzmmGKtqIyjnDGGd7uNausnRbAGW8idHWi9VyL6SyxNStNMKK
+JyOixYxaq/fbKAAAOw==}
+image create photo ay_DMHiddenWire_img -format GIF -data $imgdata
+
 # Modelling Mode (Local/Global) Menu Icons:
 # MMGlob
 set imgdata {\

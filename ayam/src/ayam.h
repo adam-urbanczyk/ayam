@@ -1233,7 +1233,7 @@ typedef struct ay_view_object_s
 {
   struct Togl *togl; /**< pointer to corresponding Togl widget structure */
   int type; /**< view type (AY_VT*) (Persp., Front, Side, Top, Trim) */
-  double grid; /**< gridsize, 0.0 == no grid */
+  int drawmode; /**< drawing mode (AY_DM*) (Wire, Hidden, Shade, ShadeWire) */
 
   int local; /**< edit space (0 - global (world), 1 - level, 2 - object) */
   int aligned; /**< view is currently aligned to level or object space? */
@@ -1241,9 +1241,11 @@ typedef struct ay_view_object_s
   int drawsel; /**< draw selected objects (and their children) only? */
   int drawlevel; /**< draw current level (and below) only? */
   int redraw; /**< automatic redraw? */
+
+  double grid; /**< gridsize, 0.0 == no grid */
   int drawgrid; /**< draw grid? */
   int usegrid; /**< use (snap to) grid? */
-  int shade; /**< shade view? */
+
   int antialiaslines; /**< use antialiasing for line drawing? */
 
   /*#ifdef AY_ENABLEPPREV*/
@@ -1912,6 +1914,14 @@ extern char *ay_error_igntype;
 #define AY_CATSIMPLE 2 /**< Simple Cap */
 #define AY_CATSIMPLEINT 3 /**< Simple Cap Integrated*/
 #define AY_CATGORDON 4 /**< Gordon Cap */
+/*@}*/
+
+/** \name Drawing Modes */
+/*@{*/
+#define AY_DMWIRE       0
+#define AY_DMSHADE      1
+#define AY_DMSHADEWIRE  2
+#define AY_DMWIREHIDDEN 3
 /*@}*/
 
 /** \name Directions */

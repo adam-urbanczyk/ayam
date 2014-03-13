@@ -322,7 +322,7 @@ ay_toglcb_display(struct Togl *togl)
 	}
 
       /* draw */
-      if(view->shade)
+      if(view->drawmode)
 	ay_shade_view(togl);
       else
 	ay_draw_view(togl, /*draw_offset=*/AY_FALSE);

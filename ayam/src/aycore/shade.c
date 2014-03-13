@@ -206,7 +206,7 @@ ay_shade_view(struct Togl *togl)
 
   /* when drawing mode is shade+draw, "set back" the shaded
      surfaces a bit so that we can draw on top of them later */
-  if(view->shade > 1)
+  if(view->drawmode > 1)
     {
 #ifdef GL_VERSION_1_1
       glEnable(GL_POLYGON_OFFSET_FILL);
@@ -219,17 +219,26 @@ ay_shade_view(struct Togl *togl)
 #endif
     }
 
-  glEnable(GL_DITHER);
-  glEnable(GL_LIGHTING);
-  glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, (GLfloat)1.0);
-  glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
+  if(view->drawmode < 3)
+    {
+      glEnable(GL_DITHER);
+      glEnable(GL_LIGHTING);
+      glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, (GLfloat)1.0);
+      glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
 
-  color[0] = (GLfloat)ay_prefs.shr;
-  color[1] = (GLfloat)ay_prefs.shg;
-  color[2] = (GLfloat)ay_prefs.shb;
-  color[3] = (GLfloat)1.0;
+      color[0] = (GLfloat)ay_prefs.shr;
+      color[1] = (GLfloat)ay_prefs.shg;
+      color[2] = (GLfloat)ay_prefs.shb;
+      color[3] = (GLfloat)1.0;
 
-  glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
+      glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
+    }
+  else
+    {
+      /* drawmode is AY_DMWIREHIDDEN */
+      glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+    }
+
   glMatrixMode(GL_MODELVIEW);
 
   if(view->drawlevel)
@@ -251,6 +260,11 @@ ay_shade_view(struct Togl *togl)
 	} /* while */
     } /* if */
 
+  if(view->drawmode == AY_DMWIREHIDDEN)
+    {
+      glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+    }
+
   if(sel)
     {
       /* process the selected objects */
@@ -267,15 +281,25 @@ ay_shade_view(struct Togl *togl)
          DrawSelectionOnly is _not_ enabled */
       if(view->drawsel)
 	{
+	  if(view->drawmode == AY_DMWIREHIDDEN)
+	    {
+	      glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+	    }
+
 	  while(sel)
 	    {
 	      ay_shade_object(togl, sel->object, AY_FALSE);
 	      sel = sel->next;
 	    } /* while */
+
+	  if(view->drawmode == AY_DMWIREHIDDEN)
+	    {
+	      glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	    }
 	} /* if */
 
       /* draw handles of selected objects */
-      if(view->drawhandles && view->shade < 2)
+      if(view->drawhandles && (view->drawmode != AY_DMSHADE))
 	{
 	  /* let all handles appear "on top" of current drawing
 	  * Do we really want this? In a shaded view, the user expects
@@ -413,7 +437,7 @@ ay_shade_view(struct Togl *togl)
     }
 
   /* shade and draw? */
-  if(view->shade > 1)
+  if(view->drawmode > 1)
     {
 #ifdef GL_VERSION_1_1
       glDisable(GL_POLYGON_OFFSET_FILL);

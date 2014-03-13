@@ -393,7 +393,7 @@ mopsi_views(Tcl_Interp *interp, FILE *fileptr, int insert)
       fscanf(fileptr,"%lg\n", &ddummy);
       fscanf(fileptr,"%lg\n", &ddummy);
       fscanf(fileptr,"%d\n", &idummy);
-      fscanf(fileptr,"%d\n", &vtemp.shade);
+      fscanf(fileptr,"%d\n", &vtemp.drawmode);
       fscanf(fileptr,"%d\n", &vtemp.drawsel);
       fscanf(fileptr,"%d\n", &vtemp.redraw);
       fscanf(fileptr,"%d\n", &vtemp.drawgrid);

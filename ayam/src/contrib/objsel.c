@@ -390,7 +390,7 @@ ay_objsel_processcb (struct Togl *togl, int argc, char *argv[])
       ay_objsel_pushlnames(ay_currentlevel->next);
     }
 
-  if(!view->shade)
+  if(!view->drawmode)
     {
       if(!view->drawsel)
 	{

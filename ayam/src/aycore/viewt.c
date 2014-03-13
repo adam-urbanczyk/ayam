@@ -759,7 +759,7 @@ ay_viewt_makecurtcb(struct Togl *togl, int argc, char *argv[])
   Tcl_ObjSetVar2(interp, ayobj, cvredrawobj, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  to = Tcl_NewIntObj(view->shade);
+  to = Tcl_NewIntObj(view->drawmode);
   Tcl_ObjSetVar2(interp, ayobj, cvdmodeobj, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
@@ -992,7 +992,7 @@ ay_viewt_redrawtcb(struct Togl *togl, int argc, char *argv[])
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
       /* draw */
-      if(view->shade)
+      if(view->drawmode)
 	ay_shade_view(togl);
       else
 	ay_draw_view(togl, AY_FALSE);
@@ -1641,7 +1641,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	case 's':
 	  if(!strcmp(argv[i], "-shade"))
 	    {
-	      view->shade = argi;
+	      view->drawmode = argi;
 	    }
 	  if(!strcmp(argv[i], "-smark"))
 	    {
@@ -2418,7 +2418,7 @@ ay_viewt_setupintview(int viewnum, ay_object *o, ay_view_object *vtemp)
 
   sprintf(command,
 	  "global ay;viewSetDModeIcon [lindex $ay(views) %d] %d\n",
-	  vnum, vtemp->shade);
+	  vnum, vtemp->drawmode);
 
   Tcl_Eval(ay_interp, command);
 
