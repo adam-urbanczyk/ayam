@@ -286,7 +286,7 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton, "DrawingMode", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &view->shade);
+  Tcl_GetIntFromObj(interp, to, &view->drawmode);
 
   Tcl_SetStringObj(ton, "DrawSel", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -527,7 +527,7 @@ ay_view_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton, "DrawingMode", -1);
-  to = Tcl_NewIntObj(view->shade);
+  to = Tcl_NewIntObj(view->drawmode);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton, "DrawSel", -1);
@@ -819,7 +819,7 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%d\n", &vtemp.drawgrid);
   fscanf(fileptr,"%d\n", &vtemp.usegrid);
   fscanf(fileptr,"%d\n", &vtemp.local);
-  fscanf(fileptr,"%d\n", &vtemp.shade);
+  fscanf(fileptr,"%d\n", &vtemp.drawmode);
 
   fscanf(fileptr,"%lg\n", &vtemp.from[0]);
   fscanf(fileptr,"%lg\n", &vtemp.from[1]);
@@ -1002,7 +1002,7 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
 
   sprintf(command,
 	  "global ay;viewSetDModeIcon [lindex $ay(views) end] %d\n",
-	  vtemp.shade);
+	  vtemp.drawmode);
 
   Tcl_Eval(ay_interp, command);
 
@@ -1057,7 +1057,7 @@ ay_view_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr,"%d\n",view->drawgrid);
   fprintf(fileptr,"%d\n",view->usegrid);
   fprintf(fileptr,"%d\n",view->local);
-  fprintf(fileptr,"%d\n",view->shade);
+  fprintf(fileptr,"%d\n",view->drawmode);
 
   fprintf(fileptr,"%g\n",view->from[0]);
   fprintf(fileptr,"%g\n",view->from[1]);

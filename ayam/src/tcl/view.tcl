@@ -180,8 +180,8 @@ proc viewCycleDrawMode { w dir } {
     set mode [expr $ay(cVDMode) + $dir]
 
     # wrap around
-    if { $mode < 0 } { set mode 2 }
-    if { $mode > 2 } { set mode 0 }
+    if { $mode < 0 } { set mode 3 }
+    if { $mode > 3 } { set mode 0 }
     # set new drawing mode
     $togl setconf -shade $mode
     # set icon
@@ -1071,6 +1071,10 @@ proc viewSetDModeIcon { w mode } {
 	    eval "$conf -image ay_DMShadeDraw_img"
 	    if {$menubar} { eval "$conf -image {} -label \"Shade&Draw\"" }
 	}
+	3 {
+	    eval "$conf -image ay_DMHiddenWire_img"
+	    if {$menubar} { eval "$conf -image {} -label \"HiddenWire\"" }
+	}
     }
 
  return;
@@ -1590,7 +1594,7 @@ addParam $w ViewAttribData Height
 
 addText $w e2 "Drawing:"
 addCheck $w ViewAttribData Redraw
-addMenu $w ViewAttribData DrawingMode [list Draw Shade ShadeAndDraw]
+addMenu $w ViewAttribData DrawingMode [list Draw Shade ShadeAndDraw HiddenWire]
 addCheck $w ViewAttribData DrawSel
 addCheck $w ViewAttribData DrawLevel
 addCheck $w ViewAttribData DrawObjectCS

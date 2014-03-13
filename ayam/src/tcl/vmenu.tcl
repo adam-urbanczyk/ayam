@@ -160,6 +160,11 @@ $cm add radio -label "ShadeAndDraw" -variable ay(cVDMode) -value 2 -command "\
 	$w.f3D.togl setconf -shade \$ay(cVDMode);\
 	viewSetDModeIcon $w 2;\
 	\$ay(currentView) mc"
+$cm add radio -label "HiddenWire" -variable ay(cVDMode) -value 3 -command "\
+	global ay;\
+	$w.f3D.togl setconf -shade \$ay(cVDMode);\
+	viewSetDModeIcon $w 3;\
+	\$ay(currentView) mc"
 
 # modelling mode sub menu
 set cm [menu $m.mmode -tearoff 0]
@@ -361,16 +366,24 @@ $m add command -image ay_DMShade_img -hidemargin 1 -command "\
 	$w.f3D.togl setconf -shade \$ay(cVDMode);\
 	viewSetDModeIcon $w 1;\
 	\$ay(currentView) mc"
+
 $m add command -image ay_DMShadeDraw_img -hidemargin 1 -command "\
         global ay; set ay(cVDMode) 2;\
 	$w.f3D.togl setconf -shade \$ay(cVDMode);\
 	viewSetDModeIcon $w 2;\
 	\$ay(currentView) mc"
 
+$m add command -image ay_DMHiddenWire_img -hidemargin 1 -command "\
+        global ay; set ay(cVDMode) 3;\
+	$w.f3D.togl setconf -shade \$ay(cVDMode);\
+	viewSetDModeIcon $w 3;\
+	\$ay(currentView) mc"
+
 if { $AYWITHAQUA } {
     $m entryconfigure 0 -image {} -label "Draw"
     $m entryconfigure 1 -image {} -label "Shade"
     $m entryconfigure 2 -image {} -label "Shade&Draw"
+    $m entryconfigure 3 -image {} -label "HiddenWire"
 }
 
 

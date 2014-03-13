@@ -578,7 +578,7 @@ ay_undo_copy(ay_undo_object *uo)
 	  Tcl_DStringAppend(&ds, view_setdmodeicon_cmd, -1);
 	  Tcl_DStringAppend(&ds, winpath, -1);
 	  memset(buf, 0, sizeof(buf));
-	  sprintf(buf, " %d", ((ay_view_object *)(o->refine))->shade);
+	  sprintf(buf, " %d", ((ay_view_object *)(o->refine))->drawmode);
 	  Tcl_DStringAppend(&ds, buf, -1);
 	  Tcl_Eval(ay_interp, Tcl_DStringValue(&ds));
 	  Tcl_DStringFree(&ds);
