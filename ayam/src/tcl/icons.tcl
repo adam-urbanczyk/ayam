@@ -560,9 +560,16 @@ image create photo ay_DMShadeDraw_img -format GIF -data $imgdata
 
 # DMHiddenWire
 set imgdata {\
-R0lGODdhGQAZAIAAALy8vAAZcywAAAAAGQAZAAACRoSPqcvtGKIML0VDz60Z
-dPh8H8iMI2mlzmmGKtqIyjnDGGd7uNausnRbAGW8idHWi9VyL6SyxNStNMKK
-JyOixYxaq/fbKAAAOw==}
+R0lGODdhGQAZAKUhAAUedRMpehMqeh4yfx4zfx8zgB80fx80gCA1gCE1gCk9
+gys9hCs/hSw/hS0/hDlKiZGXrJKXrJ6hsZ6isZ+isZ6jsZ+jsZ+ksaCksaGl
+sqKls6yutq2vtq6vt62wtru7vLy8vP//////////////////////////////
+////////////////////////////////////////////////////////////
+/////////////////////////////////ywAAAAAGQAZAAAG4ECQcEgsGo/F
+j2fDZHo+SKMSwygIDggEA/OMCj+aRqMSWViYGLEGigQ/MJyNA8OePtZHN36T
+2CQ1d2xDHxmBIB8YDh1SgBmCIB1zbJF0eYmLX5dDGwh+SJSTkpudUYiKQpye
+qKRRqauqIK6trBsGFoKyeRYGnhsBChgbT7mDSxgKAb0GEAxaFxMEE01NVFoQ
+vEKRFGgMAwADWeFawRsUp4eaStAS005QoEPwkKJSmoOFeKaYRG6Of4Z8YB0C
+hIfRmzj07BTME2ZMmTMb0jRY2MYDFStYxnXxUqzdRo4gkQQBADs=}
 image create photo ay_DMHiddenWire_img -format GIF -data $imgdata
 
 # Modelling Mode (Local/Global) Menu Icons:
