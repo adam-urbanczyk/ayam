@@ -92,6 +92,10 @@ int Mopsi_Init(Tcl_Interp *interp);
 
 
 /* global variables */
+
+char mopsi_version_ma[] = AY_VERSIONSTR;
+char mopsi_version_mi[] = AY_VERSIONSTRMI;
+
 static int mopsi_version;
 
 static ay_object *mopsi_lastread;
@@ -2118,6 +2122,12 @@ Mopsi_Init(Tcl_Interp *interp)
  Tcl_HashEntry *entry = NULL;
 
   if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
+    {
+      return TCL_ERROR;
+    }
+
+  /* first, check versions */
+  if(ay_checkversion(fname, mopsi_version_ma, mopsi_version_mi))
     {
       return TCL_ERROR;
     }
