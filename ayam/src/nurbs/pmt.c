@@ -740,3 +740,31 @@ ay_pmt_revertv(ay_pamesh_object *pm)
 
  return ay_status;
 } /* ay_pmt_revertv */
+
+
+/* ay_pmt_israt:
+ *  check whether any control point of patch metch <pm>
+ *  uses a weight value (!= 1.0)
+ */
+int
+ay_pmt_israt(ay_pamesh_object *pm)
+{
+ int i, j;
+ double *p;
+
+  if(!pm)
+    return AY_FALSE;
+
+  p = &(pm->controlv[3]);
+  for(i = 0; i < pm->width; i++)
+    {
+      for(j = 0; j < pm->height; j++)
+	{
+	  if((fabs(*p) < (1.0-AY_EPSILON)) || (fabs(*p) > (1.0+AY_EPSILON)))
+	    return AY_TRUE;
+	  p += 4;
+	} /* for */
+    } /* for */
+
+ return AY_FALSE;
+} /* ay_pmt_israt */
