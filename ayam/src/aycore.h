@@ -221,6 +221,8 @@ void ay_draw_mark(struct Togl *togl);
  */
 int ay_draw_registerdacb(ay_drawcb  *dacb, unsigned int type_id);
 
+void ay_draw_silhouettes(struct Togl *togl);
+
 
 /* error.c */
 

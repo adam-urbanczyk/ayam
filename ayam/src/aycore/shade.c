@@ -263,6 +263,10 @@ ay_shade_view(struct Togl *togl)
   if(view->drawmode == AY_DMWIREHIDDEN)
     {
       glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+      if(!view->action_state)
+	{
+	  ay_draw_silhouettes(togl);
+	}
     }
 
   if(sel)
@@ -295,6 +299,10 @@ ay_shade_view(struct Togl *togl)
 	  if(view->drawmode == AY_DMWIREHIDDEN)
 	    {
 	      glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	      if(!view->action_state)
+		{
+		  ay_draw_silhouettes(togl);
+		}
 	    }
 	} /* if */
 
@@ -309,7 +317,7 @@ ay_shade_view(struct Togl *togl)
 	  * handles in perspective views, as those are thought for
 	  * review, not modelling anyway.
 	  */
-	  if(view->type != AY_VTPERSP)
+	  if(view->type != AY_VTPERSP && view->drawmode != AY_DMWIREHIDDEN)
 	    {
 	      glClear(GL_DEPTH_BUFFER_BIT);
 	    }
