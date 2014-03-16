@@ -247,7 +247,7 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 	  /* let all handles appear "on top" of current drawing;     */
 	  /* we cannot use the glDisable(GL_DEPTH_TEST);-method here */
 	  /* because we need the Z-values for vertice picking...     */
-	  if(view->type != AY_VTPERSP && view->drawmode != AY_DMWIREHIDDEN)   
+	  if(view->type != AY_VTPERSP && view->drawmode != AY_DMWIREHIDDEN)
 	    {
 	      glClear(GL_DEPTH_BUFFER_BIT);
 	    }
@@ -1406,13 +1406,16 @@ ay_draw_registerdacb(ay_drawcb  *dacb, unsigned int type_id)
 } /* ay_draw_registerdacb */
 
 
+/* ay_draw_thin:
+ *  helper function that executes morphological thinning
+ */
 void
 ay_draw_thin(int w, int h, unsigned char *src)
 {
  unsigned char *srcp;
  int x, y, num, finished;
  int nw, no, ne, we, ea, sw, so, se;
- static int erasetable[256]={
+ static int erasetable[256] = {
    0,0,1,1,0,0,1,1,
    1,1,0,1,1,1,0,1,
    1,1,0,0,1,1,1,1,
@@ -1535,18 +1538,18 @@ void
 ay_draw_silhouettes(struct Togl *togl)
 {
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
- char fname[] = "draw_silhouettes";
  int i, j, w, h, wd, hd;
  float ex, ey, e;
- /*float p[5] = {0.036470f,0.248968f,0.429123f,0.248968f,0.036470f};
-   float d[5] = {0.108385f,0.280349f,0.0f,0.280349f,0.108385f};*/
- float d[9], *d1, *d2, *d3, thresh = 0.01;
+ float *d1, *d2, *d3, thresh = 0.01;
  GLfloat sx[9] = {-1,0,1,-2,0,2,-1,0,1}, sy[9]={-1,-2,-1,0,0,0,1,2,1};
  GLfloat *depthimg = NULL;
- unsigned char color[4];
- GLint result;
  GLuint texid;
+ unsigned char color[4];
  unsigned char *silimg = NULL, *s, *t, *edges;
+
+ /*XXXX employ optimized sobel?*/
+ /*float p[5] = {0.036470f,0.248968f,0.429123f,0.248968f,0.036470f};
+   float d[5] = {0.108385f,0.280349f,0.0f,0.280349f,0.108385f};*/
 
   w = Togl_Width(togl);
   h = Togl_Height(togl);
@@ -1559,7 +1562,7 @@ ay_draw_silhouettes(struct Togl *togl)
   if(!(edges = malloc(w*h*sizeof(unsigned char))))
     goto cleanup;
 
-  if(!(silimg = calloc(w*h*4,sizeof(unsigned char))))
+  if(!(silimg = calloc(w*h*4, sizeof(unsigned char))))
     goto cleanup;
 
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -1567,11 +1570,6 @@ ay_draw_silhouettes(struct Togl *togl)
 
   glFlush();
   glReadPixels(-1, -1, w+2, h+2, GL_DEPTH_COMPONENT, GL_FLOAT, depthimg);
-
-  color[0] = ay_prefs.obr*255;
-  color[1] = ay_prefs.obg*255;
-  color[2] = ay_prefs.obb*255;
-  color[3] = 255;
 
   /* detect edges in z-buffer data using a simple sobel filter */
   for(i = 1; i < h-1; i++)
@@ -1627,13 +1625,18 @@ ay_draw_silhouettes(struct Togl *togl)
     }
 
   /*
-    the sobel creates 2 pixel wide lines, so we need to process them
-    by morphological thinning
-    XXXX Todo: unless the line width is already 2!
+    the sobel creates 2 pixel wide lines, so we need to process them by
+    morphological thinning (unless the normal line width is already 2!)
   */
-  ay_draw_thin(w, h, edges);
+  if(ay_prefs.linewidth < 1.5)
+    ay_draw_thin(w, h, edges);
 
   /* create the silhouette texture */
+  color[0] = ay_prefs.obr*255;
+  color[1] = ay_prefs.obg*255;
+  color[2] = ay_prefs.obb*255;
+  color[3] = 255;
+
   for(i = 1; i < h-1; i++)
     {
       s = &(edges[i*w]);
@@ -1645,22 +1648,22 @@ ay_draw_silhouettes(struct Togl *togl)
 	      memcpy(t, color, 4*sizeof(unsigned char));
 	    }
 	  s++;
-	  t+=4;
+	  t += 4;
 	}
-    }
-
-  if(view->antialiaslines)
-    {
-      /* XXXX ToDo: employ 3x3 gaussian blur? */
     }
 
   /* draw silhouette texture */
   glDisable(GL_DEPTH_TEST);
   glEnable(GL_TEXTURE_2D);
-
   glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
+  if(view->antialiaslines)
+    {
+      glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    }
+  else
+    {
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
   glGenTextures(1, &texid);
   glBindTexture(GL_TEXTURE_2D, texid);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -1677,21 +1680,60 @@ ay_draw_silhouettes(struct Togl *togl)
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
   glLoadIdentity();
-
   glBegin(GL_QUADS);
-  glTexCoord2i(0, 0);
-  glVertex3i(0, 0, 0);
+  if(view->antialiaslines)
+    {
+      for(i = 0; i < 4; i++)
+	{
+	  switch(i)
+	    {
+	    case 0:
+	      ex = -0.1;
+	      ey = 0.1;
+	      break;
+	    case 1:
+	      ex = 0.1;
+	      ey = 0.1;
+	      break;
+	    case 2:
+	      ex = 0.1;
+	      ey = -0.1;
+	      break;
+	    case 3:
+	      ex = -0.1;
+	      ey = -0.1;
+	      break;
+	    }
+	  ex /= w;
+	  ey /= h;
+	  glTexCoord2f(0+ex, 0+ey);
+	  glVertex3i(0, 0, 0);
+	  
+	  glTexCoord2f(0+ex, 1+ey);
+	  glVertex3i(0, h, 0);
 
-  glTexCoord2i(0, 1);
-  glVertex3i(0, h, 0);
+	  glTexCoord2f(1+ex, 1+ey);
+	  glVertex3i(w, h, 0);
 
-  glTexCoord2i(1, 1);
-  glVertex3i(w, h, 0);
+	  glTexCoord2f(1+ex, 0+ey);
+	  glVertex3i(w, 0, 0);
+	}
+    }
+  else
+    {
+      glTexCoord2i(0, 0);
+      glVertex3i(0, 0, 0);
 
-  glTexCoord2i(1, 0);
-  glVertex3i(w, 0, 0);
+      glTexCoord2i(0, 1);
+      glVertex3i(0, h, 0);
+
+      glTexCoord2i(1, 1);
+      glVertex3i(w, h, 0);
+
+      glTexCoord2i(1, 0);
+      glVertex3i(w, 0, 0);
+    }
   glEnd();
-
   glPopMatrix();
   glMatrixMode(GL_PROJECTION);
   glPopMatrix();
