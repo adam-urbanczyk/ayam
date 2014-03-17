@@ -236,6 +236,10 @@ proc riattr_addp { } {
 	    }
 	    # foreach param
 	    if { $val != "" } {
+		set selected ""
+		getSel selected
+		if { $selected == "" } { ayError 20 "AddRiAttr" ""; return; }
+
 		undo save AddRiAttr
 		addTag RiAttribute "$attrname,$attrpara,$type,$val"
 		plb_update

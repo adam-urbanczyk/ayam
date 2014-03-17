@@ -667,6 +667,9 @@ proc plb_setwin { w {fw ""} } {
 # (realized via NP/RP tags)
 proc plb_addremprop { {rem 0} } {
     global ay ayprefs AddRemProp
+    set selected ""
+    getSel selected
+    if { $selected == "" } { ayError 20 "addremprop" ""; return; }
 
     winAutoFocusOff
 
