@@ -221,12 +221,16 @@ proc tree_paintTree { level } {
 
 #tree_selectOrPopup
 #
-proc tree_selectOrPopup { redraw tree node } {
+proc tree_selectOrPopup { extend redraw tree node } {
  global ay
 
     set nlist [$tree selection get]
     if { [llength $nlist] == 0 } {
 	tree_selectItem $redraw $tree $node
+    } else {
+	if { $extend } {
+	    tree_multipleSelection $tree $node
+	}
     }
     winOpenPopup $ay(tree)
 
@@ -858,7 +862,9 @@ $tree bindText <Double-ButtonPress-1> "tree_toggleSub $sw.tree"
 
 global aymainshortcuts
 $tree bindText <ButtonPress-$aymainshortcuts(CMButton)>\
-    "tree_selectOrPopup 1 $sw.tree"
+    "tree_selectOrPopup 0 1 $sw.tree"
+$tree bindText <Shift-ButtonPress-$aymainshortcuts(CMButton)>\
+    "tree_selectOrPopup 1 1 $sw.tree"
 
 # focus management binding
 if { !$::ayprefs(SingleWindow) } {
