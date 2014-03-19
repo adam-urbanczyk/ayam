@@ -219,6 +219,22 @@ proc tree_paintTree { level } {
 # tree_paintTree
 
 
+#tree_selectOrPopup
+#
+proc tree_selectOrPopup { redraw tree node } {
+ global ay
+
+    set nlist [$tree selection get]
+    if { [llength $nlist] == 0 } {
+	tree_selectItem $redraw $tree $node
+    }
+    winOpenPopup $ay(tree)
+
+ return;
+}
+# tree_selectOrPopup
+
+
 #tree_selectItem
 # select one tree item; clicking an already selected object does nothing
 proc tree_selectItem { redraw tree node } {
@@ -840,6 +856,10 @@ $tree bindText <ButtonPress-1> "tree_selectItem 1 $sw.tree"
 # open sub tree
 $tree bindText <Double-ButtonPress-1> "tree_toggleSub $sw.tree"
 
+global aymainshortcuts
+$tree bindText <ButtonPress-$aymainshortcuts(CMButton)>\
+    "tree_selectOrPopup 1 $sw.tree"
+
 # focus management binding
 if { !$::ayprefs(SingleWindow) } {
     bind $tree <Key-Tab> "focus .fl.con.console;break"
@@ -874,9 +894,13 @@ $m add cascade -label "Tree" -menu $ay(tree).popup.tree\
     -underline 1
 set m [menu $ay(tree).popup.tree -tearoff 0]
 $m add command -label "Rebuild" -command "tree_reset"
+
+
 $m add command -label "Expand All" -command "tree_expand"
 $m add command -label "Collapse All" -command "tree_collapse"
-$m add command -label "Toggle Selected" -command "tree_toggleTree"
+$m add command -label "Expand Selected" -command "tree_toggleTree 1"
+$m add command -label "Collapse Selected" -command "tree_toggleTree 2"
+$m add command -label "Toggle Selected" -command "tree_toggleTree 0"
 set m $ay(tree).popup
 
 $m add separator
