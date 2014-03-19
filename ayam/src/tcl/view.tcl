@@ -1471,6 +1471,40 @@ proc viewPan { togl dir } {
 
 
 ##############################
+# viewZoom:
+proc viewZoom { w d } {
+ global ay ayprefs
+
+    if { [string first ".view" $w] != 0 } {
+	# internal view
+	set togl $w
+	if { [string first ".togl" $togl] == 0 } {
+	    return;
+	}
+    } else {
+	# external view
+	set togl [winfo toplevel $w].f3D.togl
+    }
+
+    $togl mc
+    if { $ay(cVUndo) } {
+	undo save ZoomView
+    }
+    $togl mc
+    if { $d < 0.0 } {
+	$togl setconf -dzoom [expr 1.0/$ayprefs(WheelZoom)]
+    } else {
+	$togl setconf -dzoom $ayprefs(WheelZoom)
+    }
+    update
+    $togl reshape
+    $togl render
+
+ return;
+}
+
+
+##############################
 # setMark:
 proc setMark { px {y 0} {z 0} } {
  global ay
