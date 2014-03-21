@@ -14,6 +14,450 @@
 
 /* shade.c - functions for drawing a shaded scene using OpenGL */
 
+/* ay_shade_thin:
+ *  helper function that executes morphological thinning
+ */
+void
+ay_shade_thin(int w, int h, unsigned char *src)
+{
+ unsigned char *srcp;
+ int x, y, num, finished;
+ int nw, no, ne, we, ea, sw, so, se;
+ static int erasetable[256] = {
+   0,0,1,1,0,0,1,1,
+   1,1,0,1,1,1,0,1,
+   1,1,0,0,1,1,1,1,
+   0,0,0,0,0,0,0,1,
+
+   0,0,1,1,0,0,1,1,
+   1,1,0,1,1,1,0,1,
+   1,1,0,0,1,1,1,1,
+   0,0,0,0,0,0,0,1,
+
+   1,1,0,0,1,1,0,0,
+   0,0,0,0,0,0,0,0,
+   0,0,0,0,0,0,0,0,
+   0,0,0,0,0,0,0,0,
+
+   1,1,0,0,1,1,0,0,
+   1,1,0,1,1,1,0,1,
+   0,0,0,0,0,0,0,0,
+   0,0,0,0,0,0,0,0,
+
+   0,0,1,1,0,0,1,1,
+   1,1,0,1,1,1,0,1,
+   1,1,0,0,1,1,1,1,
+   0,0,0,0,0,0,0,1,
+
+   0,0,1,1,0,0,1,1,
+   1,1,0,1,1,1,0,1,
+   1,1,0,0,1,1,1,1,
+   0,0,0,0,0,0,0,0,
+
+   1,1,0,0,1,1,0,0,
+   0,0,0,0,0,0,0,0,
+   1,1,0,0,1,1,1,1,
+   0,0,0,0,0,0,0,0,
+
+   1,1,0,0,1,1,0,0,
+   1,1,0,1,1,1,0,0,
+   1,1,0,0,1,1,1,0,
+   1,1,0,0,1,0,0,0
+ };
+
+  finished = AY_FALSE;
+  while(!finished)
+    {
+      finished = AY_TRUE;
+      for(y = 1; y < h-1; y++)
+	{
+	  srcp = src+y*w;
+	  x = 1;
+	  while(x < w-1)
+	    {
+	      if(*(srcp+x) == 0)
+		{
+		  we = *(srcp+x-1);
+		  ea = *(srcp+x+1);
+		  if((we == 255) || (ea == 255))
+		    {
+		      nw = *(srcp+x+w-1);
+		      no = *(srcp+x+w);
+		      ne = *(srcp+x+w+1);
+		      sw = *(srcp+x-w-1);
+		      so = *(srcp+x-w);
+		      se = *(srcp+x-w+1);
+		      num = nw/255+no/255*2+ne/255*4+we/255*8+ea/255*16+
+			sw/255*32+so/255*64+se/255*128;
+		      if(erasetable[num] == 1)
+			{
+			  *(srcp+x) = 255;
+			  finished = AY_FALSE;
+			  x++;
+			}
+		    }
+		}
+	      x++;
+	    }
+	}
+
+      for(x = 1; x < w-1; x++)
+	{
+	  y = 1;
+	  while(y < h-1)
+	    {
+	      srcp = src+y*w;
+	      if(*(srcp+x) == 0)
+		{
+		  no = *(srcp+x+w);
+		  so = *(srcp+x-w);
+		  if((no == 255) || (so == 255))
+		    {
+		      nw = *(srcp+x+w-1);
+		      ne = *(srcp+x+w+1);
+		      we = *(srcp+x-1);
+		      ea = *(srcp+x+1);
+		      sw = *(srcp+x-w-1);
+		      se = *(srcp+x-w+1);
+		      num = nw/255+no/255*2+ne/255*4+we/255*8+ea/255*16+
+			sw/255*32+so/255*64+se/255*128;
+		      if(erasetable[num] == 1)
+			{
+			  *(srcp+x) = 255;
+			  finished = AY_FALSE;
+			  y++;
+			}
+		    }
+		}
+	      y++;
+	    }
+	}
+    }
+
+ return;
+} /* ay_shade_thin */
+
+
+unsigned char *
+ay_shade_detectsilhouettes(struct Togl *togl, int selection)
+{
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
+ ay_list_object *sel = ay_selection;
+ ay_object *o = ay_root;
+ int i, j, k, w, h, wd, hd;
+ float ex, ey, e;
+ float *d1, *d2, *d3, thresh = 0.01;
+ unsigned char *c1, *c2, *c3;
+ GLfloat light_pos[] = { 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f };
+ GLfloat red[] = {1.0f, 0.0f, 0.0f, 1.0f};
+ GLfloat green[] = {0.0f, 1.0f, 0.0f, 1.0f};
+ GLfloat blue[] = {0.0f, 0.0f, 1.0f, 1.0f};
+ GLfloat white[] = {1.0f, 1.0f, 1.0f, 1.0f};
+ unsigned char color[4];
+ GLfloat sx[9] = {-1,0,1,-2,0,2,-1,0,1}, sy[9]={-1,-2,-1,0,0,0,1,2,1};
+ GLfloat *depthimg = NULL;
+ int use_materialcolor;
+ unsigned char *silimg = NULL, *s, *t, *edges;
+
+  if(selection && !sel)
+    return NULL;
+
+  w = Togl_Width(togl);
+  h = Togl_Height(togl);
+
+  wd = w+2;
+  hd = h+2;
+
+  if(!(depthimg = calloc(wd*hd, sizeof(GLfloat))))
+    goto cleanup;
+
+  if(!(silimg = calloc(wd*hd*4, sizeof(unsigned char))))
+    goto cleanup;
+
+  if(!(edges = malloc(w*h*sizeof(unsigned char))))
+    goto cleanup;
+
+  memset(edges, 255, w*h*sizeof(unsigned char));
+
+  /* setup lighting */
+  glEnable(GL_LIGHTING);
+  glDisable(GL_DITHER);
+  glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, (GLfloat)1.0);
+  glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
+  glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, white);
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+   glRotated(view->rotz, 0.0, 0.0, 1.0);
+   glRotated(view->roty, 0.0, 1.0, 0.0);
+   glRotated(view->rotx, 1.0, 0.0, 0.0);
+  glPopMatrix();
+
+  glEnable(GL_LIGHT1);
+  glEnable(GL_LIGHT2);
+  glEnable(GL_LIGHT3);
+  glEnable(GL_LIGHT4);
+  glEnable(GL_LIGHT5);
+
+  glLightfv(GL_LIGHT0, GL_POSITION, &(light_pos[0]));
+  glLightfv(GL_LIGHT0, GL_DIFFUSE, red);
+  glLightfv(GL_LIGHT1, GL_POSITION, &(light_pos[1]));
+  glLightfv(GL_LIGHT1, GL_DIFFUSE, green);
+  glLightfv(GL_LIGHT2, GL_POSITION, &(light_pos[2]));
+  glLightfv(GL_LIGHT2, GL_DIFFUSE, blue);
+
+  light_pos[2] = -1.0f;
+  red[0] = -1.0f;
+  green[1] = -1.0f;
+  blue[2] = -1.0f;
+  glLightfv(GL_LIGHT3, GL_POSITION, &(light_pos[0]));
+  glLightfv(GL_LIGHT3, GL_DIFFUSE, red);
+  glLightfv(GL_LIGHT4, GL_POSITION, &(light_pos[1]));
+  glLightfv(GL_LIGHT4, GL_DIFFUSE, green);
+  glLightfv(GL_LIGHT5, GL_POSITION, &(light_pos[2]));
+  glLightfv(GL_LIGHT5, GL_DIFFUSE, blue);
+
+  use_materialcolor = ay_prefs.use_materialcolor;
+  ay_prefs.use_materialcolor = AY_FALSE;
+
+  /* shade all objects */
+  glMatrixMode(GL_MODELVIEW);
+
+  if(view->drawlevel)
+    {
+      o = ay_currentlevel->object;
+      glPushMatrix();
+      if(ay_currentlevel->object != ay_root)
+	{
+	  ay_trafo_getall(ay_currentlevel->next);
+	}
+    }
+
+  if(!selection && !view->drawsel)
+    {
+      while(o)
+	{	  
+	  ay_shade_object(togl, o, AY_FALSE);
+	  o = o->next;
+	} /* while */
+    } /* if */
+
+  if(sel)
+    {
+      /* shade the selected objects */
+      glPushMatrix();
+      if(!view->drawlevel)
+	{
+	  if(ay_currentlevel->object != ay_root)
+	    {
+	      ay_trafo_getall(ay_currentlevel->next);
+	    }
+	}
+
+      while(sel)
+	{
+	  ay_shade_object(togl, sel->object, AY_FALSE);
+	  sel = sel->next;
+	}
+	
+      glPopMatrix();
+    } /* if */
+
+  if(view->drawlevel)
+    {
+      glMatrixMode(GL_MODELVIEW);
+      glPopMatrix();
+    }
+
+  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+  glPixelStorei(GL_PACK_ALIGNMENT, 1);
+
+  glFlush();
+
+  /* process z-buffer */
+  glReadPixels(-1, -1, w+2, h+2, GL_DEPTH_COMPONENT, GL_FLOAT, depthimg);
+
+  /* detect edges in z-buffer data using a simple sobel filter */
+  for(i = 1; i < h-1; i++)
+    {
+      s = &(edges[i*w]);
+      d1 = &(depthimg[i*wd]);
+      d2 = d1+wd;
+      d3 = d2+wd;
+      for(j = 1; j < w-1; j++)
+	{
+	  ex = 0;
+	  ex += d1[0]*sx[0];
+	  ex += d2[0]*sx[1];
+	  ex += d3[0]*sx[2];
+
+	  ex += d1[1]*sx[3];
+	  ex += d2[1]*sx[4];
+	  ex += d3[1]*sx[5];
+
+	  ex += d1[2]*sx[6];
+	  ex += d2[2]*sx[7];
+	  ex += d3[2]*sx[8];
+
+	  ey = 0;
+	  ey += d1[0]*sy[0];
+	  ey += d2[0]*sy[1];
+	  ey += d3[0]*sy[2];
+
+	  ey += d1[1]*sy[3];
+	  ey += d2[1]*sy[4];
+	  ey += d3[1]*sy[5];
+
+	  ey += d1[2]*sy[6];
+	  ey += d2[2]*sy[7];
+	  ey += d3[2]*sy[8];
+
+	  e = sqrt(ex*ex+ey*ey);
+
+	  if(e > thresh)
+	    {
+	      *s = 0;
+	    }
+
+	  d1++;
+	  d2++;
+	  d3++;
+	  s++;
+	}
+    }
+
+  /* process color-buffer */
+  glReadPixels(-1, -1, w+2, h+2, GL_RGBA, GL_UNSIGNED_BYTE, silimg);
+
+  /* detect edges in color data using a simple sobel filter, separately
+     on each color channel */
+  for(i = 1; i < h-1; i++)
+    {
+      s = &(edges[i*w]);
+      c1 = &(silimg[i*4*wd]);
+      c2 = c1+4*wd;
+      c3 = c2+4*wd;
+      for(j = 1; j < w-1; j++)
+	{
+	  for(k = 0; k < 3; k++)
+	    {
+	      if(*s)
+		{
+		  ex = 0;
+		  ex += c1[0]*sx[0];
+		  ex += c2[0]*sx[1];
+		  ex += c3[0]*sx[2];
+
+		  ex += c1[4]*sx[3];
+		  ex += c2[4]*sx[4];
+		  ex += c3[4]*sx[5];
+
+		  ex += c1[8]*sx[6];
+		  ex += c2[8]*sx[7];
+		  ex += c3[8]*sx[8];
+
+		  ey = 0;
+		  ey += c1[0]*sy[0];
+		  ey += c2[0]*sy[1];
+		  ey += c3[0]*sy[2];
+
+		  ey += c1[4]*sy[3];
+		  ey += c2[4]*sy[4];
+		  ey += c3[4]*sy[5];
+
+		  ey += c1[8]*sy[6];
+		  ey += c2[8]*sy[7];
+		  ey += c3[8]*sy[8];
+
+		  e = sqrt(ex*ex+ey*ey);
+
+		  if(e > 200)
+		    {
+		      *s = 0;
+		    }
+		}
+	      c1++;
+	      c2++;
+	      c3++;
+	    }
+
+	  c1++;
+	  c2++;
+	  c3++;
+	  s++;
+	}
+    }
+
+
+  /*
+    the sobel creates 2 pixel wide lines, so we need to process them by
+    morphological thinning (unless the normal line width is already 2!)
+  */
+  if(ay_prefs.linewidth < 1.5)
+    ay_shade_thin(w, h, edges);
+
+
+  /* create the silhouette texture */
+  if(selection)
+    {
+      color[0] = ay_prefs.ser*255;
+      color[1] = ay_prefs.seg*255;
+      color[2] = ay_prefs.seb*255;
+    }
+  else
+    {
+      color[0] = ay_prefs.obr*255;
+      color[1] = ay_prefs.obg*255;
+      color[2] = ay_prefs.obb*255;
+    }
+  color[3] = 255;
+
+  memset(silimg, 0, wd*hd*4*sizeof(unsigned char));
+
+  for(i = 1; i < h-1; i++)
+    {
+      s = &(edges[i*w]);
+      t = &(silimg[i*w*4]);
+      for(j = 1; j < w-1; j++)
+	{
+	  if(!*s)
+	    {
+	      memcpy(t, color, 4*sizeof(unsigned char));
+	    }
+	  /*
+	  else
+	    {
+	      memset(t, 0, 4*sizeof(unsigned char));
+	    }
+	  */
+	  s++;
+	  t += 4;
+	}
+    }
+
+cleanup:
+  glClear(GL_DEPTH_BUFFER_BIT|GL_COLOR_BUFFER_BIT);
+
+  ay_prefs.use_materialcolor = use_materialcolor;
+  /* reset light configuration */
+  ay_viewt_setupprojection(togl);
+  glLightfv(GL_LIGHT0, GL_DIFFUSE, white);
+  glDisable(GL_LIGHT1);
+  glDisable(GL_LIGHT2);
+  glDisable(GL_LIGHT3);
+  glDisable(GL_LIGHT4);
+  glDisable(GL_LIGHT5);
+
+  if(depthimg)
+    free(depthimg);
+  if(edges)
+    free(edges);
+
+ return silimg;
+} /* ay_shade_detectsilhouettes */
+
+
+
 /* ay_shade_object:
  *  shade a single object and children
  */
@@ -183,11 +627,20 @@ ay_shade_view(struct Togl *togl)
  ay_point *point = NULL;
  GLfloat color[4] = {0.0f,0.0f,0.0f,0.0f};
  double m[16];
+ unsigned char *sil = NULL, *silsel = NULL;
 
   if(view->dirty)
     {
       ay_toglcb_reshape(togl);
       view->dirty = AY_FALSE;
+    }
+
+  if(view->drawmode == AY_DMWIREHIDDEN && !view->action_state)
+    {
+      if(!view->drawsel)
+	sil = ay_shade_detectsilhouettes(togl, AY_FALSE);
+      if(sel)
+	silsel = ay_shade_detectsilhouettes(togl, AY_TRUE);
     }
 
   glDisable(GL_LIGHTING);
@@ -263,9 +716,13 @@ ay_shade_view(struct Togl *togl)
   if(view->drawmode == AY_DMWIREHIDDEN)
     {
       glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-      if(!view->action_state)
+      if(sil)
 	{
-	  ay_draw_silhouettes(togl);
+	  ay_draw_silhouettes(togl, sil);
+	}
+      if(!view->drawsel && silsel)
+	{
+	  ay_draw_silhouettes(togl, silsel);
 	}
     }
 
@@ -299,9 +756,9 @@ ay_shade_view(struct Togl *togl)
 	  if(view->drawmode == AY_DMWIREHIDDEN)
 	    {
 	      glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-	      if(!view->action_state)
+	      if(silsel)
 		{
-		  ay_draw_silhouettes(togl);
+		  ay_draw_silhouettes(togl, silsel);
 		}
 	    }
 	} /* if */
@@ -457,6 +914,11 @@ ay_shade_view(struct Togl *togl)
 
       ay_draw_view(togl, AY_TRUE);
     }
+
+  if(sil)
+    free(sil);
+  if(silsel)
+    free(silsel);
 
  return AY_OK;
 } /* ay_shade_view */
