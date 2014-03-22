@@ -1,4 +1,4 @@
-[8. Mar 2014] CVS-Head:
+[22. Mar 2014] CVS-Head:
 =======================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
@@ -133,7 +133,7 @@ o the standard console prompt now also displays the name of the modelling
 o improved drawing quality of antialiased NURBS
 o added preference option "SaveDialogGeom" that controls saving the geometry
   of various dialog windows
-o removed preference option  "SavePrefsGeom" in favor of "SaveDialogGeom" above
+o removed preference option "SavePrefsGeom" in favor of "SaveDialogGeom" above
 o added hidden preference option "PanDist" that controls the amount of
   view window panning for keyboard presses
 o "Special/Instances/Resolve all Instances" now resolves even nested instances
@@ -145,6 +145,9 @@ o improved closing of the rendering GUI, it is more robust now
 o the numeric point edit dialog now has a context menu that allows to
   clear or reset all entries, as well as to fetch the mark coordinates
 o added keyboard shortcuts to recursively open/close whole sub-trees (<+>/<->)
+o added drawing mode "HiddenWire" (with silhouettes)
+o menu browsing now manages the action state of all views to allow faster
+  redraws
 
 Scripts/Scripting Interface:
 o added luainterp plugin to support the Lua scripting language
@@ -196,6 +199,7 @@ o added script "myicons.tcl" that allows the user to load an own set of
 o added crtTrimRect command
 o crtNRect now always creates centered rectangles of given width/height
 o crtClosedBS command options are now more legible
+o estlenNC now works for multiple selected objects
 
 Import/Export:
 o X3D export now has a special mode to inject the exported X3D scene
