@@ -899,6 +899,10 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "withOb", ay_tcmd_withobtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "menuState", ay_tcmd_menustatetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+
   /* tmp.c */
   Tcl_CreateCommand(interp, "tmpGet", ay_tmp_gettcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
