@@ -1409,6 +1409,12 @@ int ay_tcmd_registerlang(char *name, char **result);
  */
 int ay_tcmd_getuint(char *str, unsigned int *uint);
 
+/** Tcl command to set action state from menu state
+ */
+int ay_tcmd_menustatetcmd(ClientData clientData, Tcl_Interp *interp,
+			  int argc, char *argv[]);
+
+
 /* tgui.c */
 
 /** initialize tesselation GUI module

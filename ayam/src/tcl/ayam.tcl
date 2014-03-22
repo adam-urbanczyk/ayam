@@ -2096,6 +2096,9 @@ if { $tcl_version > 8.3 } {
     }
 }
 
+bind Menu <Map> {menuState}
+bind Menu <Unmap> {menuState -1}
+
 # if no view is open (first start ever, no ayamrc file, or no working
 # environment file), open a first view now
 if { !$ayprefs(SingleWindow) && ($ay(noview) != 1) && ($ay(views) == "") } {

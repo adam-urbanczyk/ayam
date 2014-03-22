@@ -1616,3 +1616,33 @@ ay_tcmd_registerlang(char *name, char **result)
 
  return AY_OK;
 } /* ay_tcmd_registerlang */
+
+
+/* ay_tcmd_menustatetcmd:
+ *  set action state from menu state
+ *  Implements the \a menuState scripting interface command.
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_tcmd_menustatetcmd(ClientData clientData, Tcl_Interp *interp,
+		      int argc, char *argv[])
+{
+ ay_object *o = ay_root->down;
+ ay_view_object *view = NULL;
+ int offset = 1;
+
+  if(argc > 1)
+    offset = -1;
+
+  while(o)
+    {
+      if(o->type == AY_IDVIEW)
+	{
+	  view = (ay_view_object*)o->refine;
+	  view->action_state += offset;
+	}
+      o = o->next;
+    } /* while */
+
+ return TCL_OK;
+} /* ay_tcmd_menustatetcmd */
