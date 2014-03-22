@@ -602,6 +602,8 @@ ay_init(Tcl_Interp *interp)
   ay_prefs.aasellinewidth = 1.3;
   ay_prefs.aafudge = 1.0;
 
+  ay_prefs.sdmode = 3;
+
   ay_prefs.use_sm = AY_FALSE;
   ay_prefs.edit_snaps_to_grid = AY_TRUE;
 
@@ -1240,6 +1242,8 @@ Tcl_AppInit(Tcl_Interp *interp)
 
   Togl_CreateCommand("finduvac", ay_npt_finduvcb);
 
+  Tcl_CreateCommand(interp, "tobezPM", ay_pmt_tobeztcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
 /* inform Tcl-context about compile time configuration: */
 
