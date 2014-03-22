@@ -1425,6 +1425,7 @@ typedef struct ay_preferences_s
   double aalinewidth; /**< width of anti-aliased lines */
   double aasellinewidth; /**< width of selected anti-aliased lines */
   double aafudge; /**< correction offset for anti-aliased lines */
+  int sdmode; /**< silhouette detection mode (0 off, 1 z, 2 color, 3 both) */
 
   /* error handling */
   char onerror; /**< what to do if errors occur? 0 stop, 1 continue */

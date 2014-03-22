@@ -1413,7 +1413,7 @@ ay_draw_silhouettes(struct Togl *togl, unsigned char *silimg)
 {
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  int i, w, h;
- float ex, ey, e;
+ float ex, ey;
  GLuint texid;
 
   w = Togl_Width(togl);
@@ -1446,67 +1446,67 @@ ay_draw_silhouettes(struct Togl *togl, unsigned char *silimg)
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
-  glLoadIdentity();
-  glBegin(GL_QUADS);
-  if(view->antialiaslines)
-    {
-      for(i = 0; i < 4; i++)
-	{
-	  switch(i)
-	    {
-	    case 0:
-	      ex = -0.1;
-	      ey = 0.1;
-	      break;
-	    case 1:
-	      ex = 0.1;
-	      ey = 0.1;
-	      break;
-	    case 2:
-	      ex = 0.1;
-	      ey = -0.1;
-	      break;
-	    case 3:
-	      ex = -0.1;
-	      ey = -0.1;
-	      break;
-	    }
-	  ex /= w;
-	  ey /= h;
-	  glTexCoord2f(0+ex, 0+ey);
-	  glVertex3i(0, 0, 0);
-	  
-	  glTexCoord2f(0+ex, 1+ey);
-	  glVertex3i(0, h, 0);
+   glLoadIdentity();
+   glBegin(GL_QUADS);
+    if(view->antialiaslines)
+      {
+	for(i = 0; i < 4; i++)
+	  {
+	    switch(i)
+	      {
+	      case 0:
+		ex = -0.1;
+		ey = 0.1;
+		break;
+	      case 1:
+		ex = 0.1;
+		ey = 0.1;
+		break;
+	      case 2:
+		ex = 0.1;
+		ey = -0.1;
+		break;
+	      case 3:
+		ex = -0.1;
+		ey = -0.1;
+		break;
+	      }
+	    ex /= w;
+	    ey /= h;
+	    glTexCoord2f(0+ex, 0+ey);
+	    glVertex3i(0, 0, 0);
 
-	  glTexCoord2f(1+ex, 1+ey);
-	  glVertex3i(w, h, 0);
+	    glTexCoord2f(0+ex, 1+ey);
+	    glVertex3i(0, h, 0);
 
-	  glTexCoord2f(1+ex, 0+ey);
-	  glVertex3i(w, 0, 0);
-	}
-    }
-  else
-    {
-      glTexCoord2i(0, 0);
-      glVertex3i(0, 0, 0);
+	    glTexCoord2f(1+ex, 1+ey);
+	    glVertex3i(w, h, 0);
 
-      glTexCoord2i(0, 1);
-      glVertex3i(0, h, 0);
+	    glTexCoord2f(1+ex, 0+ey);
+	    glVertex3i(w, 0, 0);
+	  }
+      }
+    else
+      {
+	glTexCoord2i(0, 0);
+	glVertex3i(0, 0, 0);
 
-      glTexCoord2i(1, 1);
-      glVertex3i(w, h, 0);
+	glTexCoord2i(0, 1);
+	glVertex3i(0, h, 0);
 
-      glTexCoord2i(1, 0);
-      glVertex3i(w, 0, 0);
-    }
-  glEnd();
+	glTexCoord2i(1, 1);
+	glVertex3i(w, h, 0);
+
+	glTexCoord2i(1, 0);
+	glVertex3i(w, 0, 0);
+      }
+   glEnd();
   glPopMatrix();
   glMatrixMode(GL_PROJECTION);
   glPopMatrix();
   glMatrixMode(GL_MODELVIEW);
 
-cleanup:
+
   glDisable(GL_BLEND);
   glEnable(GL_DEPTH_TEST);
   glDisable(GL_TEXTURE_2D);

@@ -81,6 +81,8 @@ array set ayprefs {
  AASelLineWidth 1.5
  AAFudge 1.0
 
+ SDMode 3
+
  RIBFile "Scene"
  Image "RIB"
  ResInstances 0
