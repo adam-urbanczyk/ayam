@@ -356,9 +356,9 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 	      glDepthRange(0.0, 1.0);
 	      glDepthFunc(GL_LESS);
 	    }
-	} /* if */
+	} /* if drawhandles */
       glPopMatrix();
-    } /* if */
+    } /* if sel */
 
   if(view->antialiaslines)
     {
