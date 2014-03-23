@@ -14,6 +14,149 @@
 
 /* shade.c - functions for drawing a shaded scene using OpenGL */
 
+/* ay_shade_cleansil:
+ *  remove all silhouette points from the direct vicinity
+ *  of already drawn wire points
+ */
+int
+ay_shade_cleansil(struct Togl *togl, int selection, unsigned char *sil)
+{
+ int i, j, w, h, d;
+ unsigned char *wires, *w1, *w2, *w3, *p;
+ unsigned char col[3];
+ int clear = AY_FALSE;
+ ay_object *o = ay_root;
+ ay_list_object *sel = ay_selection;
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
+ int hascol = AY_FALSE;
+
+  w = Togl_Width(togl);
+  h = Togl_Height(togl);
+
+  if(!(wires = malloc(w*h*4*sizeof(unsigned char))))
+    return hascol;
+
+  glDepthMask(GL_FALSE);
+
+  if(view->drawlevel || view->type == AY_VTTRIM)
+    {
+      o = ay_currentlevel->object;
+      glPushMatrix();
+      if(ay_currentlevel->object != ay_root)
+	{
+	  ay_trafo_getall(ay_currentlevel->next);
+	}
+    }
+
+  if(selection)
+    {
+      glPushMatrix();
+       if(!view->drawlevel)
+	 {
+	   if(ay_currentlevel->object != ay_root)
+	     {
+	       ay_trafo_getall(ay_currentlevel->next);
+	     }
+	 }
+       glLineWidth((GLfloat)ay_prefs.sellinewidth);
+       col[0] = ay_prefs.ser*255;
+       col[1] = ay_prefs.seg*255;
+       col[2] = ay_prefs.seb*255;
+       glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+		 (GLfloat)ay_prefs.seb);
+       while(sel)
+	 {
+	   ay_draw_object(togl, sel->object, AY_TRUE);
+	   sel = sel->next;
+	 }
+      glLineWidth((GLfloat)ay_prefs.linewidth);
+      glPopMatrix();
+    }
+  else
+    {
+      glLineWidth((GLfloat)ay_prefs.linewidth);
+      col[0] = ay_prefs.obr*255;
+      col[1] = ay_prefs.obg*255;
+      col[2] = ay_prefs.obb*255;
+      glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+	    (GLfloat)ay_prefs.obb);
+      while(o->next)
+	{
+	  ay_draw_object(togl, o, AY_FALSE);
+	  o = o->next;
+	}
+    }
+
+  if(view->drawlevel || view->type == AY_VTTRIM)
+    {
+      glMatrixMode(GL_MODELVIEW);
+      glPopMatrix();
+    }
+
+  glDepthMask(GL_TRUE);
+
+  glFlush();
+  glReadPixels(0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, wires);
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  for(i = 1; i < h-1; i++)
+    {
+      w1 = &(wires[(i-1)*4*w]);
+      w2 = w1+w*4;
+      w3 = w2+w*4;
+      p = &(sil[i*4*w+4]);
+      for(j = 1; j < w-1; j++)
+	{
+	  d = abs(col[0]-p[0])+abs(col[1]-p[1])+abs(col[2]-p[2]);
+	  if(d < 3)
+	    {
+	      hascol = AY_TRUE;
+	      clear = AY_FALSE;
+	      while(1)
+		{
+		  d = abs(col[0]-w1[0])+abs(col[1]-w1[1])+abs(col[2]-w1[2]);
+		  if(d < 3)
+		    { clear = AY_TRUE; break; }
+		  d = abs(col[0]-w2[0])+abs(col[1]-w2[1])+abs(col[2]-w2[2]);
+		  if(d < 3)
+		    { clear = AY_TRUE; break; }
+		  d = abs(col[0]-w3[0])+abs(col[1]-w3[1])+abs(col[2]-w3[2]);
+		  if(d < 3)
+		    { clear = AY_TRUE; break; }
+		  d = abs(col[0]-w1[4])+abs(col[1]-w1[5])+abs(col[2]-w1[6]);
+		  if(d < 3)
+		    { clear = AY_TRUE; break; }
+		  /* omitting central pixel */
+		  d = abs(col[0]-w3[4])+abs(col[1]-w3[5])+abs(col[2]-w3[6]);
+		  if(d < 3)
+		    { clear = AY_TRUE; break; }
+		  d = abs(col[0]-w1[8])+abs(col[1]-w1[9])+abs(col[2]-w1[10]);
+		  if(d < 3)
+		    { clear = AY_TRUE; break; }
+		  d = abs(col[0]-w2[8])+abs(col[1]-w2[9])+abs(col[2]-w2[10]);
+		  if(d < 3)
+		    { clear = AY_TRUE; break; }
+		  d = abs(col[0]-w3[8])+abs(col[1]-w3[9])+abs(col[2]-w3[10]);
+		  if(d < 3)
+		    { clear = AY_TRUE; break; }
+		  break;
+		}
+	      if(clear)
+		memset(p, 0, 4*sizeof(unsigned char));
+	    }
+	  w1 += 4;
+	  w2 += 4;
+	  w3 += 4;
+	  p += 4;
+	}
+    }
+
+  free(wires);
+
+ return hascol;
+} /* ay_shade_cleansil */
+
+
 /* ay_shade_thin:
  *  helper function that executes morphological thinning
  */
@@ -330,7 +473,7 @@ ay_shade_detectsilhouettes(struct Togl *togl, int selection)
 	}
     } /* if ay_prefs.sdmode != 2 (not color only) */
 
-    if(ay_prefs.sdmode > 1)
+  if(ay_prefs.sdmode > 1)
     {
       /* process color-buffer */
       glReadPixels(-1, -1, w+2, h+2, GL_RGBA, GL_UNSIGNED_BYTE, silimg);
@@ -377,7 +520,7 @@ ay_shade_detectsilhouettes(struct Togl *togl, int selection)
 
 		      e = sqrt(ex*ex+ey*ey);
 
-		      if(e > 300)
+		      if(e > 250)
 			{
 			  *s = 0;
 			}
@@ -399,9 +542,16 @@ ay_shade_detectsilhouettes(struct Togl *togl, int selection)
     the sobel creates 2 pixel wide lines, so we need to process them by
     morphological thinning (unless the normal line width is already 2!)
   */
-  if(ay_prefs.linewidth < 1.5)
-    ay_shade_thin(w, h, edges);
-
+  if(selection)
+    {
+      if(ay_prefs.sellinewidth < 1.5)
+	ay_shade_thin(w, h, edges);
+    }
+  else
+    {
+      if(ay_prefs.linewidth < 1.5)
+	ay_shade_thin(w, h, edges);
+    }
 
   /* create the silhouette texture */
   if(selection)
@@ -647,7 +797,9 @@ ay_shade_view(struct Togl *togl)
      ay_prefs.sdmode != 0)
     {
       if(!view->drawsel)
-	sil = ay_shade_detectsilhouettes(togl, AY_FALSE);
+	{
+	  sil = ay_shade_detectsilhouettes(togl, AY_FALSE);
+	}
       if(sel)
 	silsel = ay_shade_detectsilhouettes(togl, AY_TRUE);
     }
@@ -727,12 +879,26 @@ ay_shade_view(struct Togl *togl)
       glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
       if(sil)
 	{
-	  ay_draw_silhouettes(togl, sil);
+	  if(!view->antialiaslines && (ay_prefs.linewidth < 1.5))
+	    if(!ay_shade_cleansil(togl, AY_FALSE, sil))
+	      {
+		free(sil);
+		sil = NULL;
+	      }
 	}
       if(!view->drawsel && silsel)
 	{
-	  ay_draw_silhouettes(togl, silsel);
+	  if(!view->antialiaslines && (ay_prefs.sellinewidth < 1.5))
+	    if(!ay_shade_cleansil(togl, AY_TRUE, silsel))
+	      {
+		free(silsel);
+		silsel = NULL;
+	      }
 	}
+      if(sil)
+	ay_draw_silhouettes(togl, sil);
+      if(silsel)
+	ay_draw_silhouettes(togl, silsel);
     }
 
   if(sel)
@@ -767,7 +933,9 @@ ay_shade_view(struct Togl *togl)
 	      glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 	      if(silsel)
 		{
-		  ay_draw_silhouettes(togl, silsel);
+		  if(!view->antialiaslines && (ay_prefs.sellinewidth < 1.5))
+		    if(ay_shade_cleansil(togl, AY_TRUE, silsel))
+		      ay_draw_silhouettes(togl, silsel);
 		}
 	    }
 	} /* if */
