@@ -330,17 +330,3 @@ proc olb_select { } {
  return;
 }
 # olb_select
-
-
-proc olb_openPopup { olb } {
- global ay
-
-    set xy [winfo pointerxy .]
-    set x [lindex $xy 0]
-    set y [lindex $xy 1]
-
-    tk_popup ${olb}.popup $x $y
-
- return;
-}
-# olb_openPopup
