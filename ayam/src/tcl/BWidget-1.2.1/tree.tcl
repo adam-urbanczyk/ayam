@@ -1,7 +1,7 @@
 # ------------------------------------------------------------------------------
 #  tree.tcl
 #  This file is part of Unifix BWidget Toolkit
-#  $Id: tree.tcl,v 1.4 2004/03/22 07:31:43 randolf Exp $
+#  $Id: tree.tcl,v 1.5 2014/03/24 18:22:52 randolf Exp $
 # ------------------------------------------------------------------------------
 #  Index of commands:
 #     - Tree::create
@@ -731,7 +731,7 @@ proc Tree::_see { path idn side } {
     if { $y < $yv0 } {
         $path:cmd yview scroll [expr {$y-$yv0}] units
     } elseif { $y >= $yv1 } {
-        $path:cmd yview scroll [expr {$y-$yv1+1}] units
+        $path:cmd yview scroll [expr {$y-$yv1+2}] units
     }
 
     set xmax [lindex $scrl 2]
