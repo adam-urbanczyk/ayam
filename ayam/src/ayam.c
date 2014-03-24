@@ -1246,8 +1246,12 @@ Tcl_AppInit(Tcl_Interp *interp)
 
   Togl_CreateCommand("finduvac", ay_npt_finduvcb);
 
+
+  /* nurbs/pmt.c */
+  /*
   Tcl_CreateCommand(interp, "tobezPM", ay_pmt_tobeztcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+  */
 
 /* inform Tcl-context about compile time configuration: */
 
@@ -1753,6 +1757,13 @@ ay_safeinit(Tcl_Interp *interp)
 
   Tcl_CreateCommand(interp, "unclampvNP", ay_npt_unclamptcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+
+  /* nurbs/pmt.c */
+  /*
+  Tcl_CreateCommand(interp, "tobezPM", ay_pmt_tobeztcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+  */
 
  return ay_status;
 } /* ay_safeinit */
