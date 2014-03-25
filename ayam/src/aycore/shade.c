@@ -281,13 +281,24 @@ ay_shade_thin(int w, int h, unsigned char *src)
 } /* ay_shade_thin */
 
 
+/**
+ * Create a silhouette texture by shading all objects in a special
+ * lighting setup and detect edges in the resulting z- and
+ * color-buffer data.
+ *
+ * \param togl view to use
+ * \param selection if AY_TRUE create the silhouettes for
+ *  the selected objects only
+ *
+ * \return silhouette texture or NULL (in case of an error)
+ */
 unsigned char *
 ay_shade_detectsilhouettes(struct Togl *togl, int selection)
 {
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  ay_list_object *sel = ay_selection;
  ay_object *o = ay_root;
- int i, j, k, w, h, wd, hd;
+ int i, j, k, w, h;
  float ex, ey, e;
  float *d1, *d2, *d3, thresh = 0.01;
  unsigned char *c1, *c2, *c3;
@@ -308,10 +319,7 @@ ay_shade_detectsilhouettes(struct Togl *togl, int selection)
   w = Togl_Width(togl);
   h = Togl_Height(togl);
 
-  wd = w+2;
-  hd = h+2;
-
-  if(!(silimg = calloc(wd*hd*4, sizeof(unsigned char))))
+  if(!(silimg = calloc(w*h*4, sizeof(unsigned char))))
     goto cleanup;
 
   if(!(edges = malloc(w*h*sizeof(unsigned char))))
@@ -380,30 +388,32 @@ ay_shade_detectsilhouettes(struct Togl *togl, int selection)
     {
       while(o)
 	{
-	  ay_shade_object(togl, o, AY_FALSE);
+	  if(!o->selected)
+	    ay_shade_object(togl, o, AY_FALSE);
 	  o = o->next;
 	} /* while */
     } /* if */
-
-  if(sel)
+  else
     {
-      /* shade the selected objects */
-      glPushMatrix();
-       if(!view->drawlevel)
-	 {
-	   if(ay_currentlevel->object != ay_root)
-	     {
-	       ay_trafo_getall(ay_currentlevel->next);
-	     }
-	 }
-       while(sel)
-	 {
-	   ay_shade_object(togl, sel->object, AY_FALSE);
-	   sel = sel->next;
-	 }
-      glPopMatrix();
-    } /* if */
-
+      if(sel)
+	{
+	  /* shade the selected objects */
+	  glPushMatrix();
+	  if(!view->drawlevel)
+	    {
+	      if(ay_currentlevel->object != ay_root)
+		{
+		  ay_trafo_getall(ay_currentlevel->next);
+		}
+	    }
+	  while(sel)
+	    {
+	      ay_shade_object(togl, sel->object, AY_FALSE);
+	      sel = sel->next;
+	    }
+	  glPopMatrix();
+	} /* if */
+    }
   if(view->drawlevel)
     {
       glMatrixMode(GL_MODELVIEW);
@@ -417,19 +427,19 @@ ay_shade_detectsilhouettes(struct Togl *togl, int selection)
 
   if(ay_prefs.sdmode != 2)
     {
-      if(!(depthimg = calloc(wd*hd, sizeof(GLfloat))))
+      if(!(depthimg = calloc(w*h, sizeof(GLfloat))))
 	goto cleanup;
 
       /* process z-buffer */
-      glReadPixels(-1, -1, w+2, h+2, GL_DEPTH_COMPONENT, GL_FLOAT, depthimg);
+      glReadPixels(0, 0, w, h, GL_DEPTH_COMPONENT, GL_FLOAT, depthimg);
 
       /* detect edges in z-buffer data using a simple sobel filter */
       for(i = 1; i < h-1; i++)
 	{
-	  s = &(edges[i*w]);
-	  d1 = &(depthimg[i*wd]);
-	  d2 = d1+wd;
-	  d3 = d2+wd;
+	  s = &(edges[i*w+1]);
+	  d2 = &(depthimg[i*w]);
+	  d1 = d2-w;
+	  d3 = d2+w;
 	  for(j = 1; j < w-1; j++)
 	    {
 	      ex = 0;
@@ -476,16 +486,16 @@ ay_shade_detectsilhouettes(struct Togl *togl, int selection)
   if(ay_prefs.sdmode > 1)
     {
       /* process color-buffer */
-      glReadPixels(-1, -1, w+2, h+2, GL_RGBA, GL_UNSIGNED_BYTE, silimg);
+      glReadPixels(0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, silimg);
 
       /* detect edges in color data using a simple sobel filter, separately
 	 on each color channel */
       for(i = 1; i < h-1; i++)
 	{
-	  s = &(edges[i*w]);
-	  c1 = &(silimg[i*4*wd]);
-	  c2 = c1+4*wd;
-	  c3 = c2+4*wd;
+	  s = &(edges[i*w+1]);
+	  c2 = &(silimg[i*4*w]);
+	  c1 = c2-4*w;
+	  c3 = c2+4*w;
 	  for(j = 1; j < w-1; j++)
 	    {
 	      for(k = 0; k < 3; k++)
@@ -520,7 +530,7 @@ ay_shade_detectsilhouettes(struct Togl *togl, int selection)
 
 		      e = sqrt(ex*ex+ey*ey);
 
-		      if(e > 250)
+		      if(e > 300)
 			{
 			  *s = 0;
 			}
@@ -568,12 +578,12 @@ ay_shade_detectsilhouettes(struct Togl *togl, int selection)
     }
   color[3] = 255;
 
-  memset(silimg, 0, wd*hd*4*sizeof(unsigned char));
+  memset(silimg, 0, w*h*4*sizeof(unsigned char));
 
   for(i = 1; i < h-1; i++)
     {
-      s = &(edges[i*w]);
-      t = &(silimg[i*w*4]);
+      s = &(edges[i*w+1]);
+      t = &(silimg[i*w*4+4]);
       for(j = 1; j < w-1; j++)
 	{
 	  if(!*s)
