@@ -6781,7 +6781,7 @@ ay_npt_gordonwc(ay_object *g)
 {
  int ay_status = AY_OK;
  ay_nurbcurve_object *nc;
- ay_icurve_object  *ic;
+ ay_icurve_object *ic;
  ay_object *firstu = NULL, *lastu = NULL, *firstv = NULL, *lastv = NULL;
  ay_object *last = NULL, *down;
  double fum[16], lum[16], fvm[16], lvm[16];
@@ -6933,10 +6933,15 @@ ay_npt_gordonwc(ay_object *g)
 } /* ay_npt_gordonwc */
 
 
-/* ay_npt_extractboundary:
- *  extract boundary NURBS curve from the NURBS patch <o>
- *  apply_trafo: this parameter controls whether trafos of <o> should be
- *   copied to the curve, or applied to the control points of the curve
+/** ay_npt_extractboundary:
+ * extract complete boundary NURBS curve from the NURBS patch \a o
+ *
+ * \param[in] o NURBS patch object to process
+ * \param[in] apply_trafo this parameter controls whether transformation
+ *  attributes of \a o should be applied to the control points of the curve
+ * \param[in,out] result pointer where to store the resulting curve
+ *
+ * \return AY_OK on success, error code otherwise.
  */
 int
 ay_npt_extractboundary(ay_object *o, int apply_trafo,
@@ -11164,7 +11169,7 @@ ay_npt_gndup(char dir, ay_nurbpatch_object *np, int i, double *p,
   if(dir == AY_EAST)
     {
       offset = stride*np->height;
-      if(i > np->width-np->uorder)
+      if(i == np->width-1)
 	{
 	  /* wrap around */
 	  p2 = p - ((np->width-np->uorder) * np->height * stride);
@@ -11178,7 +11183,7 @@ ay_npt_gndup(char dir, ay_nurbpatch_object *np, int i, double *p,
     {
       /* dir == AY_WEST */
       offset = -stride*np->height;
-      if(i < np->uorder)
+      if(i == 0)
 	{
 	  /* wrap around */
 	  p2 = p + ((np->width-np->uorder) * np->height * stride);
@@ -11232,7 +11237,7 @@ ay_npt_gndvp(char dir, ay_nurbpatch_object *np, int j, double *p,
   if(dir == AY_NORTH)
     {
       offset = -stride;
-      if(j < np->vorder)
+      if(j == 0)
 	{
 	  /* wrap around */
 	  p2 = p + ((np->height-np->vorder) * stride);
@@ -11246,7 +11251,7 @@ ay_npt_gndvp(char dir, ay_nurbpatch_object *np, int j, double *p,
     {
       /* dir == AY_SOUTH */
       offset = stride;
-      if(j > np->height-np->vorder)
+      if(j == np->height-1)
 	{
 	  /* wrap around */
 	  p2 = p - ((np->height-np->vorder) * stride);
