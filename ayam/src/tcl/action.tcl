@@ -1723,7 +1723,7 @@ proc actionSplitNC { w } {
 #actionPick:
 # establish object picking bindings
 proc actionPick { w } {
-    global ayviewshortcuts
+    global ayprefs ayviewshortcuts
 
     viewTitle $w "" "Pick"
     viewSetMAIcon $w ay_Pick_img "Pick"
@@ -1771,7 +1771,18 @@ proc actionPick { w } {
 	%W setconf -rect $oldx $oldy %x %y 1
     }
 
-    bind $w <Motion> ""
+    if { $ayprefs(FlashObjects) } {
+	bind $w <Motion> {
+	    if { [winfo exists .reconsider] == 0} {
+		%W processObjSel - %x %y
+	    }
+	}
+	bind $w <Leave> {
+	    %W processObjSel +
+	}
+    } else {
+	bind $w <Motion> ""
+    }
 
  return;
 }
