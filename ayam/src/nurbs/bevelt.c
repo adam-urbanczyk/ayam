@@ -196,14 +196,14 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		  else
 		    {
 		      revert = bparams->dirs[i];
-		      //bparams->radii[i] = bparams->radii[i];
+		      /*bparams->radii[i] = bparams->radii[i];*/
 		    }
 		  break;
 		case 1:
 		  if(winding > 0)
 		    {
 		      revert = bparams->dirs[i];
-		      //bparams->radii[i] = bparams->radii[i];
+		      /*bparams->radii[i] = bparams->radii[i];*/
 		    }
 		  else
 		    {
@@ -215,7 +215,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		  if(winding > 0)
 		    {
 		      revert = bparams->dirs[i];
-		      //bparams->radii[i] = bparams->radii[i];
+		      /*bparams->radii[i] = bparams->radii[i];*/
 		    }
 		  else
 		    {
@@ -232,7 +232,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		  else
 		    {
 		      revert = bparams->dirs[i];
-		      //bparams->radii[i] = bparams->radii[i];
+		      /*bparams->radii[i] = bparams->radii[i];*/
 		    }
 		  break;
 		default:
@@ -296,25 +296,25 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		case 1:
 		  if(winding > 0)
 		    {
-		      //bparams->dirs[i] = bparams->dirs[i];
+		      /*bparams->dirs[i] = bparams->dirs[i];*/
 		      bparams->radii[i] = -bparams->radii[i];
 		    }
 		  else
 		    {
 		      bparams->dirs[i] = !bparams->dirs[i];
-		      //bparams->radii[i] = bparams->radii[i];
+		      /*bparams->radii[i] = bparams->radii[i];*/
 		    }
 		  break;
 		case 2:
 		  if(winding > 0)
 		    {
-		      //bparams->dirs[i] = bparams->dirs[i];
+		    /*bparams->dirs[i] = bparams->dirs[i];*/
 		      bparams->radii[i] = -bparams->radii[i];
 		    }
 		  else
 		    {
 		      bparams->dirs[i] = !bparams->dirs[i];
-		      //bparams->radii[i] = bparams->radii[i];
+		      /*bparams->radii[i] = bparams->radii[i];*/
 		    }
 		  break;
 		case 3:

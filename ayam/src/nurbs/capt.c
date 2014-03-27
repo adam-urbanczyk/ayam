@@ -23,8 +23,8 @@
  *  later when creating the bevel
  * \param[in,out] o NURBS patch object (may be modified
  *  if the integrate parameter of a cap is set)
- * \param[in,out] cap list of new NURBS patch objects,
- *  (may stay empty if all bevels are integrated into the surface)
+ * \param[in,out] dst list of new NURBS patch objects,
+ *  (may stay empty if all caps are integrated into the surface)
  *
  * \returns AY_OK on success, error code otherwise.
  */

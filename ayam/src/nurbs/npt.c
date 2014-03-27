@@ -2922,7 +2922,7 @@ ay_npt_concat(ay_object *o, int type, int order,
 		{
 		  k = np->vorder;
 		  u = np->vknotv[k]+j;
-		  //swapuv = AY_TRUE;
+		  /*swapuv = AY_TRUE;*/
 		  for(l = k; l < np->height+np->vorder; l++)
 		    {
 		      newknotv[a] = np->vknotv[l]+j;
@@ -2933,7 +2933,7 @@ ay_npt_concat(ay_object *o, int type, int order,
 		{
 		  k = np->uorder;
 		  u = np->uknotv[k]+j;
-		  //swapuv = AY_FALSE;
+		  /*swapuv = AY_FALSE;*/
 		  for(l = k; l < np->width+np->uorder; l++)
 		    {
 		      newknotv[a] = np->uknotv[l]+j;
@@ -2943,7 +2943,6 @@ ay_npt_concat(ay_object *o, int type, int order,
 #if 0
 	      if(!o->selected && o->down && o->down->next)
 		{
-
 		  ay_npt_copytrims(o, u, swapuv, i, new);
 		}
 #endif
