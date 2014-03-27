@@ -167,6 +167,7 @@ array set ayprefs {
  Scripts ""
  AddViewParams ""
  FlashPoints 1
+ FlashObjects 0
  AskScriptDisable 1
 
  WarnUnknownTag 1
@@ -2096,6 +2097,7 @@ if { $tcl_version > 8.3 } {
     }
 }
 
+# improve redraw speed when browsing through menus
 bind Menu <Map> {menuState}
 bind Menu <Unmap> {menuState -1}
 
