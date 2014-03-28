@@ -485,6 +485,7 @@ ay_objsel_processcb(struct Togl *togl, int argc, char *argv[])
  int width = Togl_Width(togl);
  int height = Togl_Height(togl);
  GLdouble aspect = ((GLdouble) width) / ((GLdouble) height);
+ double tolerance;
  double x1 = 0.0, y1 = 0.0, x2 = 0.0, y2 = 0.0;
  double x = 0.0, y = 0.0, boxw = 0.0, boxh = 0.0;
  GLuint selectBuf[1024];
@@ -493,7 +494,8 @@ ay_objsel_processcb(struct Togl *togl, int argc, char *argv[])
 
   if(argv[2][0] == '+')
     {
-      ay_objsel_flashobjects(togl, 0, NULL);
+      if(view->drawmode == AY_DMWIRE)
+	ay_objsel_flashobjects(togl, 0, NULL);
       return TCL_OK;
     }
 
@@ -517,6 +519,9 @@ ay_objsel_processcb(struct Togl *togl, int argc, char *argv[])
       boxh = ay_prefs.object_pick_epsilon;
       boxw = ay_prefs.object_pick_epsilon;
     }
+
+  tolerance = ay_prefs.glu_sampling_tolerance;
+  ay_prefs.glu_sampling_tolerance = 120.0;
 
   Togl_MakeCurrent(togl);
 
@@ -622,8 +627,13 @@ ay_objsel_processcb(struct Togl *togl, int argc, char *argv[])
 
   hits = glRenderMode(GL_RENDER);
 
+  ay_prefs.glu_sampling_tolerance = tolerance;
+
   if(argv[2][0] == '-')
-    ay_objsel_draw_hits(hits, selectBuf, togl);
+    {
+      if(view->drawmode == AY_DMWIRE)
+	ay_objsel_draw_hits(hits, selectBuf, togl);
+    }
   else
     ay_objsel_process_hits(hits, selectBuf, argv[2]);
 
