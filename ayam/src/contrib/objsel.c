@@ -499,6 +499,11 @@ ay_objsel_processcb(struct Togl *togl, int argc, char *argv[])
       return TCL_OK;
     }
 
+  if(argv[2][0] == '-' && view->drawmode != AY_DMWIRE)
+    {
+      return TCL_OK;
+    }
+
   Tcl_GetDouble(interp, argv[3], &x1);
   Tcl_GetDouble(interp, argv[4], &y1);
 
