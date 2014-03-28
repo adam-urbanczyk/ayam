@@ -1362,6 +1362,7 @@ typedef struct ay_preferences_s
   int edit_snaps_to_grid; /**< edit points first snaps them to the grid? */
   int snap3d; /**< snap points to the grid in 3D? */
   int allow_warp;  /**< allow warping the mouse while snapping? */
+  double object_pick_epsilon; /**< object picking accuracy */
   double pick_epsilon; /**< control point picking accuracy */
   int lazynotify; /**< control notification */
   int completenotify; /**< control complete notification */

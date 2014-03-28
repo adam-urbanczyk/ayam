@@ -323,16 +323,16 @@ ay_objsel_drawobjects(struct Togl *togl, int n, ay_object **o)
 		       l = l->next;
 		       if(l)
 			 l = l->next;
-		     }
-		 }
+		     } /* while */
+		 } /* if */
 	       ay_draw_object(togl, o[i], AY_FALSE);
 	       ay_clevel_delall();
 	       ay_clevel_del();
 	       ay_clevel_del();
 	       glLoadIdentity();
-	     }
-	 }
-     }
+	     } /* if */
+	 } /* for */
+     } /* if */
 
  return;
 } /* ay_objsel_drawobjects */
@@ -477,6 +477,7 @@ ay_objsel_draw_hits(GLint hits, GLuint buffer[], struct Togl *togl)
 int
 ay_objsel_processcb(struct Togl *togl, int argc, char *argv[])
 {
+ Tcl_Interp *interp = ay_interp;
  ay_view_object *view = (ay_view_object *) Togl_GetClientData(togl);
  /* char fname[] = "objsel_process"; */
  ay_object *o = ay_root->next;
@@ -484,7 +485,6 @@ ay_objsel_processcb(struct Togl *togl, int argc, char *argv[])
  int width = Togl_Width(togl);
  int height = Togl_Height(togl);
  GLdouble aspect = ((GLdouble) width) / ((GLdouble) height);
- Tcl_Interp *interp = ay_interp;
  double x1 = 0.0, y1 = 0.0, x2 = 0.0, y2 = 0.0;
  double x = 0.0, y = 0.0, boxw = 0.0, boxh = 0.0;
  GLuint selectBuf[1024];
@@ -512,23 +512,10 @@ ay_objsel_processcb(struct Togl *togl, int argc, char *argv[])
     }
   else
     {
-     Tcl_Obj *toa = NULL, *ton = NULL, *to = NULL;
-     char *part1 = "ayprefs", *part2 = "PickTolerance";
-     double tolerance = 0.0;
-
-      toa = Tcl_NewStringObj(part1, -1);
-      ton = Tcl_NewStringObj(part2, -1);
-      to = Tcl_ObjGetVar2(interp, toa, ton,
-		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-      tolerance = atof(Tcl_GetStringFromObj(to, NULL));
       x = x1;
       y = y1;
-      boxh = tolerance;
-      boxw = tolerance;
-
-      Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
-      Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
+      boxh = ay_prefs.object_pick_epsilon;
+      boxw = ay_prefs.object_pick_epsilon;
     }
 
   Togl_MakeCurrent(togl);

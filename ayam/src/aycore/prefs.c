@@ -370,6 +370,10 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
       Tcl_SetStringObj(toa, n1, -1);
     }
 
+  Tcl_SetStringObj(ton, "PickTolerance", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &ay_prefs.object_pick_epsilon);
+
   Tcl_SetStringObj(ton, "HandleSize", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &ay_prefs.handle_size);
