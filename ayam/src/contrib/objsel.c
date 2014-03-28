@@ -25,6 +25,12 @@ void ay_objsel_poplnames(ay_list_object *lo);
 
 void ay_objsel_process_hits(GLint hits, GLuint buffer[], char *var);
 
+void ay_objsel_drawobjects(struct Togl *togl, int n, ay_object **o);
+
+void ay_objsel_flashobjects(struct Togl *togl, int n, ay_object **o);
+
+void ay_objsel_draw_hits(GLint hits, GLuint buffer[], struct Togl *togl);
+
 
 /* functions: */
 
@@ -282,99 +288,38 @@ ay_objsel_process_hits(GLint hits, GLuint buffer[], char *var)
 
 
 void
-ay_objsel_flashobjects(struct Togl *togl, int n, ay_object **o)
+ay_objsel_drawobjects(struct Togl *togl, int n, ay_object **o)
 {
- int i, found;
- ay_list_object *l, *old_clevel = NULL;
  ay_object *lo;
- static int oldn = 0;
- static ay_object **oldo = NULL;
+ ay_list_object *l;
+ int i, found;
  double m[16];
 
-#ifdef GL_VERSION_1_1
-
- if(oldo && o && oldn == n)
-   if(!memcmp(oldo, o, n*sizeof(ay_object*)))
-     {
-       free(o);
-       return;
-     }
-
-  ay_viewt_setupprojection(togl);
-
-  glDrawBuffer(GL_FRONT);
-
-  glDisable(GL_DEPTH_TEST);
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-   glLoadIdentity();
-
-   old_clevel = ay_currentlevel;
-   ay_currentlevel = NULL;
-
-   /* first draw (clear) old objects */
-   glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
-	     (GLfloat)ay_prefs.obb);
-   if(oldo)
-     {
-       for(i = 0; i < oldn; i++)
-	 {
-	   if(oldo[i] != NULL)
-	     {
-	       found = AY_FALSE;
-	       ay_clevel_find(ay_root, oldo[i], &found);
-	       if(found && ay_currentlevel)
-		 {
-		   l = ay_currentlevel->next;
-		   while(l && l->object != oldo[i])
-		     {
-		       lo = l->object;
-		       glTranslated((GLdouble)lo->movx,
-				    (GLdouble)lo->movy,
-				    (GLdouble)lo->movz);
-		       ay_quat_torotmatrix(lo->quat, m);
-		       glMultMatrixd((GLdouble *)m);
-		       glScaled((GLdouble)lo->scalx,
-				(GLdouble)lo->scaly,
-				(GLdouble)lo->scalz);
-		       l = l->next;
-		       if(l)
-			 l = l->next;
-		     }
-		 }
-	       ay_draw_object(togl, oldo[i], AY_FALSE);
-	       ay_clevel_delall();
-	       ay_clevel_del();
-	       ay_clevel_del();
-	       glLoadIdentity();
-	     }
-	 }
-     }
-   /* now draw new objects */
-  glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
-	    (GLfloat)ay_prefs.seb);
    if(o)
      {
        for(i = 0; i < n; i++)
 	 {
-	   if(o[i] != NULL)
+	   if(o[i])
 	     {
 	       found = AY_FALSE;
-	       ay_clevel_find(ay_root, o[i], &found);
+	       (void)ay_clevel_find(ay_root, o[i], &found);
 	       if(found && ay_currentlevel)
 		 {
 		   l = ay_currentlevel->next;
 		   while(l && l->object != o[i])
 		     {
 		       lo = l->object;
-		       glTranslated((GLdouble)lo->movx,
-				    (GLdouble)lo->movy,
-				    (GLdouble)lo->movz);
-		       ay_quat_torotmatrix(lo->quat, m);
-		       glMultMatrixd((GLdouble *)m);
-		       glScaled((GLdouble)lo->scalx,
-				(GLdouble)lo->scaly,
-				(GLdouble)lo->scalz);
+		       if(AY_ISTRAFO(lo))
+			 {
+			   glTranslated((GLdouble)lo->movx,
+					(GLdouble)lo->movy,
+					(GLdouble)lo->movz);
+			   ay_quat_torotmatrix(lo->quat, m);
+			   glMultMatrixd((GLdouble *)m);
+			   glScaled((GLdouble)lo->scalx,
+				    (GLdouble)lo->scaly,
+				    (GLdouble)lo->scalz);
+			 }
 		       l = l->next;
 		       if(l)
 			 l = l->next;
@@ -388,11 +333,55 @@ ay_objsel_flashobjects(struct Togl *togl, int n, ay_object **o)
 	     }
 	 }
      }
+
+ return;
+} /* ay_objsel_drawobjects */
+
+
+void
+ay_objsel_flashobjects(struct Togl *togl, int n, ay_object **o)
+{
+ ay_list_object *old_clevel = NULL;
+ static int oldn = 0;
+ static ay_object **oldo = NULL;
+
+  /* avoid flickering if nothing changed */
+  if(oldo && o && oldn == n)
+    if(!memcmp(oldo, o, n*sizeof(ay_object*)))
+      {
+	free(o);
+	return;
+      }
+
+  ay_viewt_setupprojection(togl);
+
+  glDrawBuffer(GL_FRONT);
+  glDisable(GL_DEPTH_TEST);
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+   glLoadIdentity();
+
+   old_clevel = ay_currentlevel;
+   ay_currentlevel = NULL;
+
+   /* first draw (clear) old objects */
+   glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+	     (GLfloat)ay_prefs.obb);
+
+   ay_objsel_drawobjects(togl, oldn, oldo);
+
+   /* now draw new objects */
+   glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+	     (GLfloat)ay_prefs.seb);
+
+   ay_objsel_drawobjects(togl, n, o);
+
   glPopMatrix();
   glEnable(GL_DEPTH_TEST);
   glFlush();
   glDrawBuffer(GL_BACK);
-#endif /* GL_VERSION_1_1 */
+
+  ay_currentlevel = old_clevel;
 
   if(oldo)
     {
@@ -403,11 +392,6 @@ ay_objsel_flashobjects(struct Togl *togl, int n, ay_object **o)
   oldo = o;
   oldn = n;
 
-  ay_clevel_delall();
-  ay_clevel_del();
-  ay_clevel_del();
-  ay_currentlevel = old_clevel;
-
  return;
 } /* ay_objsel_flashobjects */
 
@@ -417,7 +401,6 @@ ay_objsel_flashobjects(struct Togl *togl, int n, ay_object **o)
 void
 ay_objsel_draw_hits(GLint hits, GLuint buffer[], struct Togl *togl)
 {
- char fname[] = "objsel_draw_hits";
  int i = 0, n = 0;
  GLint *ptr = NULL;
  ay_object **picked = NULL;
