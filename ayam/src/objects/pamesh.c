@@ -1170,17 +1170,24 @@ ay_pamesh_wribcb(char *file, ay_object *o)
       break;
     } /* switch */
 
-  if((ubasisptr != &RiBezierBasis) ||
-     (vbasisptr != &RiBezierBasis))
-    {
-      RiBasis(*ubasisptr, ustep, *vbasisptr, vstep);
-    }
 
   /* Do we have any primitive variables? */
   if(!(pvc = ay_pv_count(o)))
     {
       /* No */
+      if((ubasisptr != &RiBezierBasis) ||
+	 (vbasisptr != &RiBezierBasis))
+	{
+	  RiBasis(*ubasisptr, ustep, *vbasisptr, vstep);
+	}
+
       RiPatchMesh(type, nu, uwrap, nv, vwrap, "Pw", controls, NULL);
+
+      if((ubasisptr != &RiBezierBasis) ||
+	 (vbasisptr != &RiBezierBasis))
+	{
+	  RiBasis(RiBezierBasis, RI_BEZIERSTEP, RiBezierBasis, RI_BEZIERSTEP);
+	}
     }
   else
     {
@@ -1197,7 +1204,19 @@ ay_pamesh_wribcb(char *file, ay_object *o)
       n = 1;
       ay_pv_filltokpar(o, AY_TRUE, 1, &n, tokens, parms);
 
+      if((ubasisptr != &RiBezierBasis) ||
+	 (vbasisptr != &RiBezierBasis))
+	{
+	  RiBasis(*ubasisptr, ustep, *vbasisptr, vstep);
+	}
+
       RiPatchMeshV(type, nu, uwrap, nv, vwrap, (RtInt)n, tokens, parms);
+
+      if((ubasisptr != &RiBezierBasis) ||
+	 (vbasisptr != &RiBezierBasis))
+	{
+	  RiBasis(RiBezierBasis, RI_BEZIERSTEP, RiBezierBasis, RI_BEZIERSTEP);
+	}
 
       for(i = 1; i < n; i++)
 	{
