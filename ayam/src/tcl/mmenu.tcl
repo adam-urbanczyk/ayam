@@ -119,7 +119,7 @@ if { ! $AYWITHAQUA } {
     # Edit
     menubutton $w.fMenu.ed -text "Edit" -menu $w.fMenu.ed.m -padx 3\
 	-underline 0
-    menu $w.fMenu.ed.m  -tearoff 0
+    menu $w.fMenu.ed.m -tearoff 0
     set m $w.fMenu.ed.m
 } else {
     # Edit
@@ -275,7 +275,7 @@ $m.sl add command -label "Torus"\
 $m.sl add command -label "Hyperboloid"\
     -command "crtOb Hyperboloid; uCR; sL; notifyOb; rV;" -underline 0
 $m.sl add command -label "Paraboloid"\
-    -command "crtOb Paraboloid;  uCR; sL; notifyOb; rV;" -underline 0
+    -command "crtOb Paraboloid; uCR; sL; notifyOb; rV;" -underline 0
 
 $m add cascade -menu $m.csg -label "Level" -underline 0
 menu $m.csg -tearoff 0
@@ -498,13 +498,13 @@ $m.npt add command -label "Close V" -command {
 $m.npt add command -label "Split U" -command {
     runTool ay(splitu) {"Split at:"}\
 	"undo save SplitUNP; splituNP %0; uCR; sL; rV"\
-	"Split Surface"
+	"Split Surface U"
 }
 
 $m.npt add command -label "Split V" -command {
     runTool ay(splitu) {"Split at:"}\
 	"undo save SplitVNP; splitvNP %0; uCR; sL; rV"\
-	"Split Surface"
+	"Split Surface V"
 }
 
 
@@ -538,13 +538,13 @@ menu $m.npt.el -tearoff 0
 $m.npt.el add command -label "Elevate U" -command {
     runTool ay(elevnpu) "Elevate U by:"\
 	"undo save ElevateUNP; elevateuNP %0; plb_update; rV"\
-	"Elevate Surface"
+	"Elevate Surface U"
 }
 
 $m.npt.el add command -label "Elevate V" -command {
     runTool ay(elevnpv) "Elevate V by:"\
 	"undo save ElevateVNP; elevatevNP %0; plb_update; rV"\
-	"Elevate Surface"
+	"Elevate Surface V"
 }
 
 $m.npt.el add command -label "Elevate Both" -command {
@@ -583,14 +583,14 @@ $m.npt.kn add command -label "Insert Knot U" -command {
     runTool [list ay(insknu) ay(insknr)]\
 	[list "Insert knot at:" "Insert times:"]\
 	"undo save InsKnUNP; insknuNP %0 %1; plb_update; rV"\
-	"Insert Knot"
+	"Insert Knot U"
 }
 
 $m.npt.kn add command -label "Insert Knot V" -command {
     runTool [list ay(insknu) ay(insknr)]\
 	[list "Insert knot at:" "Insert times:"]\
 	"undo save InsKnVNP; insknvNP %0 %1; plb_update; rV"\
-	"Insert Knot"
+	"Insert Knot V"
 }
 
 $m.npt.kn add command -label "Remove Knot U" -command {
@@ -635,31 +635,31 @@ $m.npt.kn add command -label "Rescale Knots to Range U" -command {
     undo save RescaleKnots 1;
     runTool {ay(rmin) ay(rmax)} {"RangeMin:" "RangeMax:"}\
 	"rescaleknNP -ru %0 %1; plb_update;"\
-	"Rescale Knots"
+	"Rescale Knots U"
 }
 $m.npt.kn add command -label "Rescale Knots to Range V" -command {
     undo save RescaleKnots 1;
     runTool {ay(rmin) ay(rmax)} {"RangeMin:" "RangeMax:"}\
 	"rescaleknNP -rv %0 %1; plb_update;"\
-	"Rescale Knots"
+	"Rescale Knots V"
 }
 $m.npt.kn add command -label "Rescale Knots to Range Both" -command {
     undo save RescaleKnots 1;
     runTool {ay(rmin) ay(rmax)} {"RangeMin:" "RangeMax:"}\
 	"rescaleknNP -r %0 %1; plb_update;"\
-	"Rescale Knots"    ""
+	"Rescale Knots"
 }
 $m.npt.kn add command -label "Rescale Knots to Mindist U" -command {
     undo save RescaleKnots 1;
     runTool ay(mindist) "MinDist:"\
 	"rescaleknNP -du %0; plb_update;"\
-	"Rescale Knots"
+	"Rescale Knots U"
 }
 $m.npt.kn add command -label "Rescale Knots to Mindist V" -command {
     undo save RescaleKnots 1;
     runTool ay(mindist) "MinDist:"\
 	"rescaleknNP -dv %0; plb_update;"\
-	"Rescale Knots"
+	"Rescale Knots V"
 }
 $m.npt.kn add command -label "Rescale Knots to Mindist Both" -command {
     undo save RescaleKnots 1;
