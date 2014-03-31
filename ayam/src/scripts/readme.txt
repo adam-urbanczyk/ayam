@@ -1,4 +1,4 @@
-[readme.txt - 13. Jun 2013]
+[readme.txt - 31. Mar 2014]
 
 This directory contains a collection of various scripts for Ayam.
 
@@ -33,9 +33,11 @@ colfocus.tcl - color the focus ring
 intfd.tcl - use internal file dialogs (MacOSX only!)
 kdialog.tcl - use KDE dialogs (kdialog)
 zdialog.tcl - use Gnome dialogs (zenity)
+myicons.tcl - replace icon image with user defined ones
 
 showwin.tcl - show all application windows
 zap.tcl - hide all application windows
+
 
 Modelling Helpers:
 easysweep.tcl - add helper to custom menu for easy sweep creation from
