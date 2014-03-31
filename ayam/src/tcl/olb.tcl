@@ -69,7 +69,7 @@ if { ($tcl_platform(platform) == "windows") || $AYWITHAQUA } {
 	if { %D < 0.0 } {
 	    $ay(olb) yview scroll 1 pages
 	} else {
-	    $ay(olb) yview scroll -1 pages 
+	    $ay(olb) yview scroll -1 pages
 	}
 	break
     }
@@ -165,7 +165,7 @@ button $f.bnon -text "None" -padx 0 -pady 0 -command {
     }
 } -takefocus 0 -highlightthickness 0
 
-button $f.bup -text "Up" -padx 0 -pady 0  -command {
+button $f.bup -text "Up" -padx 0 -pady 0 -command {
     global ay;
     cS
     goUp
@@ -207,7 +207,7 @@ button $f.ball -text "All" -padx 0 -pady 0 -command {
 } -takefocus 0 -highlightthickness 0
 set ay(olbball) $f.ball
 
-button $f.btop -text "Top" -padx 0 -pady 0  -command {
+button $f.btop -text "Top" -padx 0 -pady 0 -command {
     cS
     goTop
     olb_update
@@ -223,7 +223,7 @@ frame $f.f3
 set f $f.f3
 
 button $f.binv -text "Inv" -padx 0 -pady 0 -command {
-    global ay    
+    global ay
     set selected [$ay(olb) curselection]
     $ay(olb) selection set 0 end
     foreach element $selected {
@@ -231,8 +231,8 @@ button $f.binv -text "Inv" -padx 0 -pady 0 -command {
     }
     olb_select
 } -takefocus 0 -highlightthickness 0
-    
-button $f.bdwn -text "Down" -padx 0 -pady 0  -command {
+
+button $f.bdwn -text "Down" -padx 0 -pady 0 -command {
     global ay
     set list [$ay(olb) curselection]
     lappend ay(lastdown) [lindex $list 0]
@@ -316,7 +316,7 @@ proc olb_select { } {
 
     set lb $ay(olb)
     set selection [$lb curselection]
-  
+
     eval "selOb -lb $selection"
 
     plb_update

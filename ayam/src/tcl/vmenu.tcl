@@ -115,7 +115,7 @@ $m add command -label "Top" -command "viewSetType $w 2" -underline 0
 $m add separator
 $m add command -label "Perspective" -command "viewSetType $w 3" -underline 0
 $m add separator
-$m add command -label "Trim" -command  "viewSetType $w 4" -underline 1
+$m add command -label "Trim" -command "viewSetType $w 4" -underline 1
 
 # Configure Menu
 if { $menubar } {
