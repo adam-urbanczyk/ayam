@@ -1,4 +1,4 @@
-[22. Mar 2014] CVS-Head:
+[2. Apr 2014] CVS-Head:
 =======================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
@@ -90,6 +90,8 @@ o creating Instance objects now silently creates instances of the original
   master when an Instance is selected (instead of raising an error)
 o the refine curve tool now also supports ICurve and ACurve objects
 o patch meshes now also maintain an "IsRat" attribute
+o added object flashing facility to the object picking (activated
+  via new preference option "FlashObjects")
 
 GUI:
 o the default value menu buttons of property GUI elements now display a
