@@ -2093,7 +2093,7 @@ ay_viewt_tocamtcb(struct Togl *togl, int argc, char *argv[])
     }
   c = (ay_camera_object *)o->refine;
 
-  memcpy(c->from,view->from,  3*sizeof(double));
+  memcpy(c->from, view->from, 3*sizeof(double));
   memcpy(c->to, view->to, 3*sizeof(double));
   memcpy(c->up, view->up, 3*sizeof(double));
   c->roll = view->roll;
@@ -2620,7 +2620,8 @@ ay_viewt_markfromselp(struct Togl *togl, int mode)
    glGetDoublev(GL_MODELVIEW_MATRIX, mm);
   glPopMatrix();
 
-  if(GL_FALSE == gluProject(cog[0],cog[1],cog[2],mm,mp,vp,&winx,&winy,&winz))
+  if(GL_FALSE == gluProject(cog[0], cog[1], cog[2], mm, mp, vp,
+			    &winx, &winy, &winz))
     {
       return AY_ERROR;
     }
