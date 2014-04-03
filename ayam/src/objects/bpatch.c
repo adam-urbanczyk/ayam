@@ -56,8 +56,7 @@ ay_bpatch_createcb(int argc, char *argv[], ay_object *o)
 	    {
 	      /* -cv */
 	    case 'c':
-	      if(Tcl_SplitList(ay_interp, argv[i+1], &acvlen, &acv) ==
-		     TCL_OK)
+	      if(Tcl_SplitList(ay_interp, argv[i+1], &acvlen, &acv) == TCL_OK)
 		{
 		  if(cv)
 		    {
@@ -71,8 +70,7 @@ ay_bpatch_createcb(int argc, char *argv[], ay_object *o)
 		    }
 		  for(j = 0; j < acvlen; j++)
 		    {
-		      tcl_status = Tcl_GetDouble(ay_interp,
-						 acv[j], &cv[j]);
+		      tcl_status = Tcl_GetDouble(ay_interp, acv[j], &cv[j]);
 		      if(tcl_status != TCL_OK)
 			{
 			  break;
@@ -103,7 +101,6 @@ ay_bpatch_createcb(int argc, char *argv[], ay_object *o)
 	  ay_status = AY_ERROR;
 	  goto cleanup;
 	}
-
     } /* while */
 
   if(!(bpatch = calloc(1, sizeof(ay_bpatch_object))))
@@ -114,25 +111,25 @@ ay_bpatch_createcb(int argc, char *argv[], ay_object *o)
 
   if(cv)
     {
-      if(acvlen>2)
+      if(acvlen > 2)
 	{
 	  bpatch->p1[0]  = cv[0];
 	  bpatch->p1[1]  = cv[1];
 	  bpatch->p1[2]  = cv[2];
 	}
-      if(acvlen>5)
+      if(acvlen > 5)
 	{
 	  bpatch->p2[0]  = cv[3];
 	  bpatch->p2[1]  = cv[4];
 	  bpatch->p2[2]  = cv[5];
 	}
-      if(acvlen>8)
+      if(acvlen > 8)
 	{
 	  bpatch->p3[0]  = cv[6];
 	  bpatch->p3[1]  = cv[7];
 	  bpatch->p3[2]  = cv[8];
 	}
-      if(acvlen>11)
+      if(acvlen > 11)
 	{
 	  bpatch->p4[0]  = cv[9];
 	  bpatch->p4[1]  = cv[10];
