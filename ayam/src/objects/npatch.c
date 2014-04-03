@@ -373,11 +373,11 @@ ay_npatch_createcb(int argc, char *argv[], ay_object *o)
       /* check length of user provided control point array */
       if(acvlen/stride < width*height)
 	{
-	  if(acvlen>0)
+	  if(acvlen > 0)
 	    s[0] = cv[0];
-	  if(acvlen>1)
+	  if(acvlen > 1)
 	    s[1] = cv[1];
-	  if(acvlen>2)
+	  if(acvlen > 2)
 	    s[2] = cv[2];
 
 	  free(cv);
