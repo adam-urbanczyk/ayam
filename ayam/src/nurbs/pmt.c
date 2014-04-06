@@ -792,6 +792,10 @@ double mb[16] = {-1.0,  3.0, -3.0,  1.0,  3.0, -6.0,  3.0,  0.0,
  double mh[16] = {1,-1,0,0,  -2, 3, 0, 0,  1, -2, 1, 0,  2, -3, 0, 1};
  //double mh[16] = {1,0,0,0,  0, 1, 0, 0,  -3, -2, 3, -1,  2, 1, -2, 1};
 
+ double mc[16] = {0.5, -0.5, 0, 0,  -1.5, 2, 0.5, 0,  1.5, -2.5, 0, -1,
+		  -0.5, 1, -0.5, 0};
+
+
 RtBasis RiBezierBasis = { { -1.0,  3.0, -3.0,  1.0 },
                           {  3.0, -6.0,  3.0,  0.0 },
                           { -3.0,  3.0,  0.0,  0.0 },
@@ -849,11 +853,17 @@ RtBasis RiPowerBasis = { { 1.0, 0.0, 0.0, 0.0 },
   /* create conversion matrices */
   if(convertu)
     {
+      memcpy(mu, mbi, 16*sizeof(double));
       switch(pm->btype_u)
 	{
 	case AY_BTHERMITE:
-	    memcpy(mu, mbi, 16*sizeof(double));
 	    ay_trafo_multmatrix4(mu, mh);
+	  break;
+	case AY_BTCATMULLROM:
+	  ay_trafo_multmatrix4(mu, mc);
+	  break;
+	case AY_BTCUSTOM:
+	    ay_trafo_multmatrix4(mu, pm->ubasis);
 	  break;
 	}
 
@@ -874,14 +884,19 @@ RtBasis RiPowerBasis = { { 1.0, 0.0, 0.0, 0.0 },
 
   if(convertv)
     {
+      memcpy(mv, mbi, 16*sizeof(double));
       switch(pm->btype_v)
 	{
 	case AY_BTHERMITE:
-	    memcpy(mv, mbi, 16*sizeof(double));
 	    ay_trafo_multmatrix4(mv, mh);
 	  break;
+	case AY_BTCATMULLROM:
+	  ay_trafo_multmatrix4(mv, mc);
+	  break;
+	case AY_BTCUSTOM:
+	    ay_trafo_multmatrix4(mv, pm->vbasis);
+	  break;
 	}
-
     }
 
   w = pm->width;
@@ -898,6 +913,14 @@ RtBasis RiPowerBasis = { { 1.0, 0.0, 0.0, 0.0 },
   cv = pm->controlv;
   if(!(newcv = malloc(pm->width*pm->height*4*sizeof(double))))
     return AY_EOMEM;
+
+  /* copy weights */
+  i1 = 3;
+  for(i = 0; i < pm->width*pm->height; i++)
+    {
+      newcv[i1] = cv[i1];
+      i1 += 4;
+    }
 
   /* unwrap */
   if(nw != w || nh != h)
@@ -957,8 +980,8 @@ RtBasis RiPowerBasis = { { 1.0, 0.0, 0.0, 0.0 },
 
       for(j = 0; j < i2; j++)
 	{
-	  /* for each control point component (x,y,z,w) */
-	  for(k = 0; k < 4; k++)
+	  /* for each control point component (x,y,z) */
+	  for(k = 0; k < 3; k++)
 	    {
 	      /* get coordinates into a 4x4 matrix */
 	      for(l = 0; l < 4; l++)
@@ -970,15 +993,16 @@ RtBasis RiPowerBasis = { { 1.0, 0.0, 0.0, 0.0 },
 		}
 
 	      /* apply conversion matrices */
+	      if(convertv)
+		{
+		  memcpy(m2, mv, 16*sizeof(double));
+		  ay_trafo_multmatrix4(m2, m);
+		  memcpy(m, m2, 16*sizeof(double));
+		}
+
 	      if(convertu)
 		{
 		  ay_trafo_multmatrix4(m, mut);
-		}
-	      if(convertv)
-		{
-		  memcpy(m2,mv,16*sizeof(double));
-		  ay_trafo_multmatrix4(m2, m);
-		  memcpy(m,m2,16*sizeof(double));
 		}
 
 	      /* copy converted coordinates back */
