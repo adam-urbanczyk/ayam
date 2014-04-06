@@ -1391,6 +1391,9 @@ int ay_pmt_revertv(ay_pamesh_object *pm);
 int ay_pmt_israt(ay_pamesh_object *pm);
 
 
+int ay_pmt_tobeztcmd(ClientData clientData, Tcl_Interp *interp,
+		     int argc, char *argv[]);
+
 /* stess.c */
 
 /** Remove tesselation from NURBS patch.

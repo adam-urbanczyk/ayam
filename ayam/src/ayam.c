@@ -1248,10 +1248,9 @@ Tcl_AppInit(Tcl_Interp *interp)
 
 
   /* nurbs/pmt.c */
-  /*
   Tcl_CreateCommand(interp, "tobezPM", ay_pmt_tobeztcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-  */
+
 
 /* inform Tcl-context about compile time configuration: */
 
@@ -1760,10 +1759,9 @@ ay_safeinit(Tcl_Interp *interp)
 
 
   /* nurbs/pmt.c */
-  /*
   Tcl_CreateCommand(interp, "tobezPM", ay_pmt_tobeztcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-  */
+
 
  return ay_status;
 } /* ay_safeinit */
