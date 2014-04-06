@@ -779,20 +779,18 @@ ay_pmt_tobezier(ay_pamesh_object *pm)
  int w, h, nw, nh;
  double *cv, *newcv, *expcv, *n, *p, *p1, *p2, *p3, *p4;
  double *n1, *n2, *n3, *n4;
+ double m[16], m2[16], mu[16], mv[16], mut[16];
+
  double mb[16] = {1, 0, 0, 0,  -3, 3, 0, 0,  3, -6, 3, 0,  -1, 3, -3, 1};
+ //double mb[16] = {1, -3, 3, -1,  0, 3, -6, 3,  0, 0, 3, -3,  0, 0, 0, 1};
   /* 
 double mb[16] = {-1.0,  3.0, -3.0,  1.0,  3.0, -6.0,  3.0,  0.0,
 		  -3.0,  3.0,  0.0,  0.0,  1.0,  0.0,  0.0,  0.0};
   */
  double mbi[16];
- double m[16], mu[16], mv[16], mvt[16];
- 
+
  double mh[16] = {1,-1,0,0,  -2, 3, 0, 0,  1, -2, 1, 0,  2, -3, 0, 1};
- //double mh[16] = {1,0,0,0,  0, 1, 0, 0,   -3, -2, 3, -1,   2, 1, -2, 1};
- /*
- double mh[16] = {2.0,  1.0, -2.0,  1.0,  -3.0, -2.0,  3.0, -1.0,
-		  0.0,  1.0,  0.0,  0.0,  1.0,  0.0,  0.0,  0.0};
- */
+ //double mh[16] = {1,0,0,0,  0, 1, 0, 0,  -3, -2, 3, -1,  2, 1, -2, 1};
 
 RtBasis RiBezierBasis = { { -1.0,  3.0, -3.0,  1.0 },
                           {  3.0, -6.0,  3.0,  0.0 },
@@ -858,6 +856,20 @@ RtBasis RiPowerBasis = { { 1.0, 0.0, 0.0, 0.0 },
 	    ay_trafo_multmatrix4(mu, mh);
 	  break;
 	}
+
+      /* transpose u conversion matrix */
+      i1 = 0;
+      for(i = 0; i < 4; i++)
+	{
+	  i2 = i;
+	  for(j = 0; j < 4; j++)
+	    {
+	      mut[i2] = mu[i1];
+
+	      i1++;
+	      i2 += 4;
+	    } /* for */
+	} /* for */
     }
 
   if(convertv)
@@ -870,18 +882,6 @@ RtBasis RiPowerBasis = { { 1.0, 0.0, 0.0, 0.0 },
 	  break;
 	}
 
-      /* transpose v conversion matrix */
-      for(i = 0; i < 4; i++)
-	{
-	  i2 = i;
-	  for(j = 0; j < 4; j++)
-	    {
-	      mvt[i2] = mv[i1];
-
-	      i1++;
-	      i2 += 4;
-	    } /* for */
-	} /* for */
     }
 
   w = pm->width;
@@ -972,11 +972,13 @@ RtBasis RiPowerBasis = { { 1.0, 0.0, 0.0, 0.0 },
 	      /* apply conversion matrices */
 	      if(convertu)
 		{
-		  ay_trafo_multmatrix4(m, mu);
+		  ay_trafo_multmatrix4(m, mut);
 		}
 	      if(convertv)
 		{
-		  ay_trafo_multmatrix4(m, mvt);
+		  memcpy(m2,mv,16*sizeof(double));
+		  ay_trafo_multmatrix4(m2, m);
+		  memcpy(m,m2,16*sizeof(double));
 		}
 
 	      /* copy converted coordinates back */
