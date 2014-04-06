@@ -4349,26 +4349,6 @@ The trim curves should completely lie inside this rectangle.
 Note that picking of objects currently does not work in views of type
 <tt/"Trim"/.
 <p>
-View objects act in special ways, when certain objects are dropped
-onto them in the tree view:
-<p>
-When a camera object is dropped onto a view object using drag and drop
-in the tree view the camera settings of the camera object will be copied
-to the views camera.
-<p>
-When a light object of type <tt/"Spot"/ is dropped onto a view object
-using drag and drop in the tree view the views camera will be changed,
-so that the user looks along the light to see what objects of the scene
-are lit by the light object (this works best with perspective views
-that have equal width and height).
-<p>
-It is also possible, to directly drag objects from the
-tree view to a view window: for geometric objects, the view then
-performs a zoom to object operation, for cameras and light sources
-the views camera will be changed as if the object was dropped
-onto a view object in the tree view (see the above
-description).<footnote>Since 1.8.</footnote>
-<p>
 The following table briefly lists some capabilities of the View object.
 <p>
 <table loc="ht">
@@ -4461,6 +4441,28 @@ disable undo for view actions, e.g.~panning or zooming a view,
 these actions then also do not change the scene changed state.
 </itemize>
 
+<sect2>Drag and Drop Support
+<p>
+View objects act in special ways, when certain objects are dropped
+onto them in the tree view:
+<p>
+When a camera object is dropped onto a view object, the camera settings
+of the camera object will be copied to the views camera.
+<p>
+When a light object of type <tt/"Spot"/ is dropped onto a view object,
+the views camera will be changed,
+so that the user looks along the light to see what objects of the scene
+are lit by the light object (this works best with perspective views
+that have equal width and height).
+<p>
+It is also possible, to directly drag objects from the
+tree view to a view window: for geometric objects, the view then
+performs a zoom to object operation, for cameras and light sources
+the views camera will be changed as if the object was dropped
+onto a view object in the tree view (see the above
+description).<footnote>Since 1.8.</footnote>
+
+
 <sect1>Camera Object<label id="cameraobj">
 <p>
 Camera objects are used to temporarily save camera settings
@@ -4468,10 +4470,6 @@ of views.
 Therefore, they has just have two properties
 explained above, see sections <ref id="camp" name="Camera"> and
 <ref id="attrs" name="Attributes Property">.
-<p>
-When a view object is dropped onto a camera object using drag and drop
-in the tree view, the camera settings from the view will be copied
-to the camera object.
 <p>
 The following table briefly lists some capabilities of the Camera object.
 <p>
@@ -4482,6 +4480,12 @@ Camera|No|No|N/A|Yes<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Camera Object Capabilities</caption>
 </table>
+<p>
+
+<sect2>Drag and Drop Support
+<p>
+When a view object is dropped onto a camera object the camera settings
+from the view will be copied to the camera object.
 
 <sect2>RIB Export
 <p>
@@ -4809,11 +4813,7 @@ Ayam.
 Material objects are used to attach RiAttributes and shaders to
 geometric objects.
 <p>
-When geometric objects are dropped onto a material object using
-drag and drop in the tree view they will be connected to this
-material object.
-<p>
-While geometric objects are connected to a material object this material
+As long as geometric objects are connected to a material object this material
 object may not be deleted.
 <p>
 The following table briefly lists some capabilities of the Material object.
@@ -4890,6 +4890,11 @@ reside in the object clipboard.
 <item><tt/"Registered"/ displays whether this material may be
 connected to geometric objects, see the discussion about material names above.
 </itemize>
+
+<sect2>Drag and Drop Support
+<p>
+When geometric objects are dropped onto a material object
+they will be connected to this material object.
 
 <sect2>RIB Export
 <p>
@@ -19910,7 +19915,7 @@ Index:
 <item>IsRat:
 <itemize>
 <item><ref id="ncattr" name="NCurve attribute">,
-<item><ref id="npattr" name="NPatch attribute">
+<item><ref id="npattr" name="NPatch attribute">,
 <item><ref id="pmattr" name="PatchMesh attribute">
 </itemize>
 </list>
@@ -20596,12 +20601,12 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>tclset:
 <itemize>
 <item><ref id="tclset" name="JavaScript scripting interface function">,
-<item><ref id="luatcleval" name="Lua scripting interface function">
+<item><ref id="luatclset" name="Lua scripting interface function">
 </itemize>
 <item>tclvar:
 <itemize>
-<item><ref id="tclvar" name="JavaScript scripting interface function">
-<item><ref id="luatcleval" name="Lua scripting interface function">
+<item><ref id="tclvar" name="JavaScript scripting interface function">,
+<item><ref id="luatclvar" name="Lua scripting interface function">
 </itemize>
 <item>Tesselate: <ref id="tesst" name="tesselation tool">
 <item>TessPoMesh <ref id="expwav" name="Wavefront OBJ export option">
