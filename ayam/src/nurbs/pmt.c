@@ -394,7 +394,7 @@ ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result)
       if(ay_status || !o)
 	return AY_ERROR;
 
-      if(!(cv = calloc(evwinwidth*evwinheight*4, sizeof(double))))
+      if(!(cv = malloc(evwinwidth*evwinheight*4*sizeof(double))))
       {
 	free(o);
 	return AY_EOMEM;
@@ -779,23 +779,14 @@ ay_pmt_tobezier(ay_pamesh_object *pm)
  int w, h, nw, nh;
  double *cv, *newcv, *expcv, *n, *p, *p1, *p2, *p3, *p4;
  double *n1, *n2, *n3, *n4;
- double m[16], m2[16], mu[16], mv[16], mut[16];
-
+ double m[16], tm[16], mu[16], mv[16], mut[16];
  double mb[16] = {1, 0, 0, 0,  -3, 3, 0, 0,  3, -6, 3, 0,  -1, 3, -3, 1};
- //double mb[16] = {1, -3, 3, -1,  0, 3, -6, 3,  0, 0, 3, -3,  0, 0, 0, 1};
-  /* 
-double mb[16] = {-1.0,  3.0, -3.0,  1.0,  3.0, -6.0,  3.0,  0.0,
-		  -3.0,  3.0,  0.0,  0.0,  1.0,  0.0,  0.0,  0.0};
-  */
  double mbi[16];
-
- double mh[16] = {1,-1,0,0,  -2, 3, 0, 0,  1, -2, 1, 0,  2, -3, 0, 1};
- //double mh[16] = {1,0,0,0,  0, 1, 0, 0,  -3, -2, 3, -1,  2, 1, -2, 1};
-
+ double mh[16] = {1, -1, 0, 0,  -2, 3, 0, 0,  1, -2, 1, 0,  2, -3, 0, 1};
  double mc[16] = {0.5, -0.5, 0, 0,  -1.5, 2, 0.5, 0,  1.5, -2.5, 0, -1,
 		  -0.5, 1, -0.5, 0};
 
-
+#if 0
 RtBasis RiBezierBasis = { { -1.0,  3.0, -3.0,  1.0 },
                           {  3.0, -6.0,  3.0,  0.0 },
                           { -3.0,  3.0,  0.0,  0.0 },
@@ -830,6 +821,7 @@ RtBasis RiPowerBasis = { { 1.0, 0.0, 0.0, 0.0 },
                          { 0.0, 0.0, 1.0, 0.0 },
                          { 0.0, 0.0, 0.0, 1.0 }
                         };
+#endif
 
   if(!pm)
     return AY_FALSE;
@@ -857,13 +849,13 @@ RtBasis RiPowerBasis = { { 1.0, 0.0, 0.0, 0.0 },
       switch(pm->btype_u)
 	{
 	case AY_BTHERMITE:
-	    ay_trafo_multmatrix4(mu, mh);
+	  ay_trafo_multmatrix4(mu, mh);
 	  break;
 	case AY_BTCATMULLROM:
 	  ay_trafo_multmatrix4(mu, mc);
 	  break;
 	case AY_BTCUSTOM:
-	    ay_trafo_multmatrix4(mu, pm->ubasis);
+	  ay_trafo_multmatrix4(mu, pm->ubasis);
 	  break;
 	}
 
@@ -888,13 +880,13 @@ RtBasis RiPowerBasis = { { 1.0, 0.0, 0.0, 0.0 },
       switch(pm->btype_v)
 	{
 	case AY_BTHERMITE:
-	    ay_trafo_multmatrix4(mv, mh);
+	  ay_trafo_multmatrix4(mv, mh);
 	  break;
 	case AY_BTCATMULLROM:
 	  ay_trafo_multmatrix4(mv, mc);
 	  break;
 	case AY_BTCUSTOM:
-	    ay_trafo_multmatrix4(mv, pm->vbasis);
+	  ay_trafo_multmatrix4(mv, pm->vbasis);
 	  break;
 	}
     }
@@ -911,7 +903,7 @@ RtBasis RiPowerBasis = { { 1.0, 0.0, 0.0, 0.0 },
     nh += 3;
 
   cv = pm->controlv;
-  if(!(newcv = malloc(pm->width*pm->height*4*sizeof(double))))
+  if(!(newcv = calloc(pm->width*pm->height,4*sizeof(double))))
     return AY_EOMEM;
 
   /* copy weights */
@@ -965,15 +957,15 @@ RtBasis RiPowerBasis = { { 1.0, 0.0, 0.0, 0.0 },
   if(0&&pm->close_v)
     i2++;
 
-  /* apply conversion matrices to a copy of the control points */
+  /* convert control points */
   for(i = 0; i < i1; i++)
     {
-      p1 = &p[i*3*nh*4];
+      p1 = &(p[i*3*nh*4]);
       p2 = p1+(nh*4);
       p3 = p2+(nh*4);
       p4 = p3+(nh*4);
 
-      n1 = &n[i*3*h*4];
+      n1 = &(n[i*3*h*4]);
       n2 = n1+(h*4);
       n3 = n2+(h*4);
       n4 = n3+(h*4);
@@ -995,9 +987,9 @@ RtBasis RiPowerBasis = { { 1.0, 0.0, 0.0, 0.0 },
 	      /* apply conversion matrices */
 	      if(convertv)
 		{
-		  memcpy(m2, mv, 16*sizeof(double));
-		  ay_trafo_multmatrix4(m2, m);
-		  memcpy(m, m2, 16*sizeof(double));
+		  memcpy(tm, mv, 16*sizeof(double));
+		  ay_trafo_multmatrix4(tm, m);
+		  memcpy(m, tm, 16*sizeof(double));
 		}
 
 	      if(convertu)
@@ -1005,7 +997,7 @@ RtBasis RiPowerBasis = { { 1.0, 0.0, 0.0, 0.0 },
 		  ay_trafo_multmatrix4(m, mut);
 		}
 
-	      /* copy converted coordinates back */
+	      /* copy converted coordinates to newcv */
 	      for(l = 0; l < 4; l++)
 		{
 		  *(n1+(l*4)+k) = m[l];
@@ -1045,7 +1037,7 @@ RtBasis RiPowerBasis = { { 1.0, 0.0, 0.0, 0.0 },
 
 
 /** ay_pmt_tobeztcmd:
- *  
+ *
  *  \returns TCL_OK in any case.
  */
 int
