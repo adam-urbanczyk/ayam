@@ -189,7 +189,7 @@ ay_pmt_bicubiccltonpatch(ay_pamesh_object *pamesh, ay_object **result)
   /* copy last (wrapped) lines */
   if(pamesh->close_u)
     {
-      for(i = 0; i<wrapu; i++)
+      for(i = 0; i < wrapu; i++)
 	{
 	  memcpy(&(ncv[a]), &(cv[b]), 4*pamesh->height*sizeof(double));
 	  a += pamesh->height*4;
@@ -743,7 +743,7 @@ ay_pmt_revertv(ay_pamesh_object *pm)
 
 
 /* ay_pmt_israt:
- *  check whether any control point of patch metch <pm>
+ *  check whether any control point of patch mesh <pm>
  *  uses a weight value (!= 1.0)
  */
 int
@@ -768,3 +768,287 @@ ay_pmt_israt(ay_pamesh_object *pm)
 
  return AY_FALSE;
 } /* ay_pmt_israt */
+
+
+/* ay_pmt_tobezier:
+ */
+int
+ay_pmt_tobezier(ay_pamesh_object *pm)
+{
+ int convertu = AY_FALSE, convertv = AY_FALSE, i, j, k, l, i1, i2;
+ int w, h, nw, nh;
+ double *cv, *newcv, *expcv, *n, *p, *p1, *p2, *p3, *p4;
+ double *n1, *n2, *n3, *n4;
+ double mb[16] = {1, 0, 0, 0,  -3, 3, 0, 0,  3, -6, 3, 0,  -1, 3, -3, 1};
+  /* 
+double mb[16] = {-1.0,  3.0, -3.0,  1.0,  3.0, -6.0,  3.0,  0.0,
+		  -3.0,  3.0,  0.0,  0.0,  1.0,  0.0,  0.0,  0.0};
+  */
+ double mbi[16];
+ double m[16], mu[16], mv[16], mvt[16];
+ 
+ double mh[16] = {1,-1,0,0,  -2, 3, 0, 0,  1, -2, 1, 0,  2, -3, 0, 1};
+ //double mh[16] = {1,0,0,0,  0, 1, 0, 0,   -3, -2, 3, -1,   2, 1, -2, 1};
+ /*
+ double mh[16] = {2.0,  1.0, -2.0,  1.0,  -3.0, -2.0,  3.0, -1.0,
+		  0.0,  1.0,  0.0,  0.0,  1.0,  0.0,  0.0,  0.0};
+ */
+
+RtBasis RiBezierBasis = { { -1.0,  3.0, -3.0,  1.0 },
+                          {  3.0, -6.0,  3.0,  0.0 },
+                          { -3.0,  3.0,  0.0,  0.0 },
+                          {  1.0,  0.0,  0.0,  0.0 }
+                         };
+
+
+/* Define One Sixth of */
+#define Sx(a) ((a)/6)
+RtBasis RiBSplineBasis = { { Sx(-1.0), Sx( 3.0), Sx(-3.0), Sx( 1.0) },
+                           { Sx( 3.0), Sx(-6.0), Sx( 3.0), Sx( 0.0) },
+                           { Sx(-3.0), Sx( 0.0), Sx( 3.0), Sx( 0.0) },
+                           { Sx( 1.0), Sx( 4.0), Sx( 1.0), Sx( 0.0) }
+                         };
+
+/* Define One Half of */
+#define Hf(a) ((a)/2)
+RtBasis RiCatmullRomBasis = { { Hf(-1.0), Hf( 3.0), Hf(-3.0), Hf( 1.0) },
+                              { Hf( 2.0), Hf(-5.0), Hf( 4.0), Hf(-1.0) },
+                              { Hf(-1.0), Hf( 0.0), Hf( 1.0), Hf( 0.0) },
+                              { Hf( 0.0), Hf( 2.0), Hf( 0.0), Hf( 0.0) }
+                             };
+
+RtBasis RiHermiteBasis = { {  2.0,  1.0, -2.0,  1.0 },
+                           { -3.0, -2.0,  3.0, -1.0 },
+                           {  0.0,  1.0,  0.0,  0.0 },
+                           {  1.0,  0.0,  0.0,  0.0 }
+                          };
+
+RtBasis RiPowerBasis = { { 1.0, 0.0, 0.0, 0.0 },
+                         { 0.0, 1.0, 0.0, 0.0 },
+                         { 0.0, 0.0, 1.0, 0.0 },
+                         { 0.0, 0.0, 0.0, 1.0 }
+                        };
+
+  if(!pm)
+    return AY_FALSE;
+
+  if(pm->btype_u != AY_BTBEZIER)
+    {
+      convertu = AY_TRUE;
+    }
+
+  if(pm->btype_v != AY_BTBEZIER)
+    {
+      convertv = AY_TRUE;
+    }
+
+  if(!convertu && !convertv)
+    return AY_OK;
+
+  /* invert target basis matrix */
+  ay_trafo_invmatrix4(mb, mbi);
+
+  /* create conversion matrices */
+  if(convertu)
+    {
+      switch(pm->btype_u)
+	{
+	case AY_BTHERMITE:
+	    memcpy(mu, mbi, 16*sizeof(double));
+	    ay_trafo_multmatrix4(mu, mh);
+	  break;
+	}
+    }
+
+  if(convertv)
+    {
+      switch(pm->btype_v)
+	{
+	case AY_BTHERMITE:
+	    memcpy(mv, mbi, 16*sizeof(double));
+	    ay_trafo_multmatrix4(mv, mh);
+	  break;
+	}
+
+      /* transpose v conversion matrix */
+      for(i = 0; i < 4; i++)
+	{
+	  i2 = i;
+	  for(j = 0; j < 4; j++)
+	    {
+	      mvt[i2] = mv[i1];
+
+	      i1++;
+	      i2 += 4;
+	    } /* for */
+	} /* for */
+    }
+
+  w = pm->width;
+  h = pm->height;
+
+  nw = w;
+  if(pm->close_u)
+    nw += 3;
+
+  nh = h;
+  if(pm->close_v)
+    nh += 3;
+
+  cv = pm->controlv;
+  if(!(newcv = malloc(pm->width*pm->height*4*sizeof(double))))
+    return AY_EOMEM;
+
+  /* unwrap */
+  if(nw != w || nh != h)
+    {
+      if(!(expcv = malloc(nw*nh*4*sizeof(double))))
+	{ free(newcv); return AY_EOMEM; }
+
+      for(i = 0; i < pm->width; i++)
+	{
+	  memcpy(&(expcv[i*nh*4]), &(cv[i*h*4]), 4*h*sizeof(double));
+
+	  if(pm->close_v)
+	    {
+	      memcpy(&(expcv[i*nh*4+h*4]), &(cv[i*h*4]),
+		     (nh-h)*4*sizeof(double));
+	    }
+	}
+
+      if(pm->close_u)
+	{
+	  j = 0;
+	  for(i = w; i < nw; i++)
+	    {
+	      memcpy(&(expcv[i*nh*4]), &(expcv[j*nh*4]), 4*nh*sizeof(double));
+	      j++;
+	    }
+	}
+
+      p = expcv;
+    }
+  else
+    {
+      p = pm->controlv;
+    }
+
+  n = newcv;
+  i1 = pm->width/3;
+  if(0&&pm->close_u)
+    i1++;
+
+  i2 = pm->height/3;
+  if(0&&pm->close_v)
+    i2++;
+
+  /* apply conversion matrices to a copy of the control points */
+  for(i = 0; i < i1; i++)
+    {
+      p1 = &p[i*3*nh*4];
+      p2 = p1+(nh*4);
+      p3 = p2+(nh*4);
+      p4 = p3+(nh*4);
+
+      n1 = &n[i*3*h*4];
+      n2 = n1+(h*4);
+      n3 = n2+(h*4);
+      n4 = n3+(h*4);
+
+      for(j = 0; j < i2; j++)
+	{
+	  /* for each control point component (x,y,z,w) */
+	  for(k = 0; k < 4; k++)
+	    {
+	      /* get coordinates into a 4x4 matrix */
+	      for(l = 0; l < 4; l++)
+		{
+		  m[l]    = *(p1+(l*4)+k);
+		  m[l+4]  = *(p2+(l*4)+k);
+		  m[l+8]  = *(p3+(l*4)+k);
+		  m[l+12] = *(p4+(l*4)+k);
+		}
+
+	      /* apply conversion matrices */
+	      if(convertu)
+		{
+		  ay_trafo_multmatrix4(m, mu);
+		}
+	      if(convertv)
+		{
+		  ay_trafo_multmatrix4(m, mvt);
+		}
+
+	      /* copy converted coordinates back */
+	      for(l = 0; l < 4; l++)
+		{
+		  *(n1+(l*4)+k) = m[l];
+		  *(n2+(l*4)+k) = m[l+4];
+		  *(n3+(l*4)+k) = m[l+8];
+		  *(n4+(l*4)+k) = m[l+12];
+		}
+	    } /* for each component */
+
+	  /* move conversion window 3 points downwards (3*4 = 12) */
+	  p1 += 12;
+	  p2 += 12;
+	  p3 += 12;
+	  p4 += 12;
+
+	  n1 += 12;
+	  n2 += 12;
+	  n3 += 12;
+	  n4 += 12;
+	} /* for */
+    } /* for */
+
+  if(nw != w || nh != h)
+    {
+      free(expcv);
+    }
+
+  free(pm->controlv);
+  pm->controlv = newcv;
+  pm->btype_u = AY_BTBEZIER;
+  pm->btype_v = AY_BTBEZIER;
+  pm->ustep = 3;
+  pm->vstep = 3;
+
+ return AY_OK;
+} /* ay_pmt_tobezier */
+
+
+/** ay_pmt_tobeztcmd:
+ *  
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_pmt_tobeztcmd(ClientData clientData, Tcl_Interp *interp,
+		 int argc, char *argv[])
+{
+ int ay_status;
+ ay_list_object *sel = ay_selection;
+ ay_pamesh_object *pm = NULL;
+
+  while(sel)
+    {
+      if(sel->object->type == AY_IDPAMESH)
+	{
+	  pm = (ay_pamesh_object*)sel->object->refine;
+	  ay_status = ay_pmt_tobezier(pm);
+	  sel->object->modified = AY_TRUE;
+	}
+      if(sel->object->modified)
+	{
+	  if(sel->object->selp)
+	    ay_selp_clear(sel->object);
+	  (void)ay_notify_object(sel->object);
+	}
+
+      sel = sel->next;
+    } /* while */
+
+  (void)ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_pmt_tobeztcmd */
