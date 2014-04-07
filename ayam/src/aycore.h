@@ -1568,12 +1568,16 @@ void ay_trafo_multmatrix4(double *m1, double *m2);
  */
 int ay_trafo_invmatrix4(double *m, double *mi);
 
+/** invert generic matrix
+ */
+int ay_trafo_invgenmatrix4(double *m, double *mi);
+
 /** initialize transformation matrix m from transformation
- *  attributes of o
+ *  attributes of \a o
  */
 void ay_trafo_creatematrix(ay_object *o, double *m);
 
-/** decompose transformation matrix m to transformation attributes of o
+/** decompose transformation matrix m to transformation attributes of \a o
  */
 void ay_trafo_decomposematrix(double *m, ay_object *o);
 
@@ -1581,15 +1585,15 @@ void ay_trafo_decomposematrix(double *m, ay_object *o);
  */
 void ay_trafo_identitymatrix(double *m);
 
-/** add a translation to transformation matrix m
+/** add a translation to transformation matrix \a m
  */
 void ay_trafo_translatematrix(double x, double y, double z, double *m);
 
-/** add a scale transformation to transformation matrix m
+/** add a scale transformation to transformation matrix \a m
  */
 void ay_trafo_scalematrix(double x, double y, double z, double *m);
 
-/** add a rotation to transformation matrix m
+/** add a rotation to transformation matrix \a m
  */
 void ay_trafo_rotatematrix(double angle, double x, double y, double z,
 			   double *m);
