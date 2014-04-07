@@ -775,13 +775,14 @@ ay_pmt_israt(ay_pamesh_object *pm)
 int
 ay_pmt_tobezier(ay_pamesh_object *pm)
 {
+ int ay_status;
  int convertu = AY_FALSE, convertv = AY_FALSE, i, j, k, l, i1, i2;
  int w, h, nw, nh;
  double *cv, *newcv, *expcv, *n, *p, *p1, *p2, *p3, *p4;
  double *n1, *n2, *n3, *n4;
  double m[16], tm[16], mu[16], mv[16], mut[16];
+ double mbi[16];
  double mb[16] = {1, 0, 0, 0,  -3, 3, 0, 0,  3, -6, 3, 0,  -1, 3, -3, 1};
- double mbi[16] = {0};
  double mh[16] = {1, -1, 0, 0,  -2, 3, 0, 0,  1, -2, 1, 0,  2, -3, 0, 1};
  double mc[16] = {0.5, -0.5, 0, 0,  -1.5, 2, 0.5, 0,  1.5, -2.5, 0, -1,
 		  -0.5, 1, -0.5, 0};
@@ -840,7 +841,10 @@ RtBasis RiPowerBasis = { { 1.0, 0.0, 0.0, 0.0 },
     return AY_OK;
 
   /* invert target basis matrix */
-  ay_trafo_invmatrix4(mb, mbi);
+  ay_status = ay_trafo_invgenmatrix4(mb, mbi);
+
+  if(ay_status)
+    return AY_ERROR;
 
   /* create conversion matrices */
   if(convertu)
