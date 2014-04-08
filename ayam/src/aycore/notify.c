@@ -195,6 +195,8 @@ ay_notify_object(ay_object *o)
       while(od->next)
 	{
 	  ay_status = ay_notify_object(od);
+	  if(ay_status)
+	    return ay_status;
 	  od = od->next;
 	}
     }
