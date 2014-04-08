@@ -11298,7 +11298,6 @@ ay_npt_offset(ay_object *o, int mode, double offset, ay_nurbpatch_object **np)
  double normal1[3] = {0}, normal2[3] = {0};
  double *newcv = NULL, *newukv = NULL, *newvkv = NULL;
  double *p0, *p1, *p2, *p3, *p4;
- double *copyrow = NULL, *copycol = NULL;
  ay_nurbpatch_object *patch = NULL;
  ay_npt_gndcb *gnducb = ay_npt_gndu;
  ay_npt_gndcb *gndvcb = ay_npt_gndv;
@@ -11326,12 +11325,6 @@ ay_npt_offset(ay_object *o, int mode, double offset, ay_nurbpatch_object **np)
 
   if(!(newcv = malloc(patch->width*patch->height*stride*sizeof(double))))
     return AY_EOMEM;
-
-  if(!(copyrow = calloc(patch->height, sizeof(char))))
-    { ay_status = AY_EOMEM; goto cleanup; }
-
-  if(!(copycol = calloc(patch->width, sizeof(char))))
-    { ay_status = AY_EOMEM; goto cleanup; }
 
   a = 0;
   for(i = 0; i < patch->width; i++)
@@ -11456,11 +11449,6 @@ cleanup:
       if(newvkv)
 	free(newvkv);
     }
-
-  if(copyrow)
-    free(copyrow);
-  if(copycol)
-    free(copycol);
 
  return ay_status;
 } /* ay_npt_offset */
