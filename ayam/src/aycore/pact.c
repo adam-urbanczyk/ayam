@@ -33,8 +33,8 @@ static int pact_objectslen;
 
 
 /* prototypes of functions local to this module: */
-int ay_pact_findpoint(int len, int stride, double *cv,
-		      double objX, double objY, double objZ, int *index);
+void ay_pact_findpoint(int len, int stride, double *cv,
+		       double objX, double objY, double objZ, int *index);
 
 int ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
 		     double objX, double objY, double objZ);
@@ -965,7 +965,7 @@ cleanup:
 /* ay_pact_findpoint:
  *  find point in cv array
  */
-int
+void
 ay_pact_findpoint(int len, int stride, double *cv,
 		  double objX, double objY, double objZ, int *index)
 {
@@ -973,7 +973,7 @@ ay_pact_findpoint(int len, int stride, double *cv,
  double min_distance = ay_prefs.pick_epsilon, distance = 0.0;
 
   if(!cv || !index)
-   return AY_ENULL;
+   return;
 
   if(min_distance == 0.0)
     min_distance = DBL_MAX;
@@ -1004,7 +1004,7 @@ ay_pact_findpoint(int len, int stride, double *cv,
       a += stride;
     } /* for */
 
- return AY_OK;
+ return;
 } /* ay_pact_findpoint */
 
 
@@ -1025,8 +1025,8 @@ ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
     return AY_ENULL;
 
   *index = -1;
-  ay_status = ay_pact_findpoint(curve->length, 4, curve->controlv,
-				objX, objY, objZ, index);
+  ay_pact_findpoint(curve->length, 4, curve->controlv, objX, objY, objZ,
+		    index);
 
   /* no point picked? */
   if(*index == -1)
@@ -1266,8 +1266,8 @@ ay_pact_insertic(ay_icurve_object *icurve, int *index,
     return AY_ENULL;
 
   *index = -1;
-  ay_status = ay_pact_findpoint(icurve->length, 3, icurve->controlv,
-				objX, objY, objZ, index);
+  ay_pact_findpoint(icurve->length, 3, icurve->controlv, objX, objY, objZ,
+		    index);
 
   /* no point picked? */
   if(*index == -1)
@@ -1397,8 +1397,8 @@ ay_pact_insertac(ay_acurve_object *acurve, int *index,
     return AY_ENULL;
 
   *index = -1;
-  ay_status = ay_pact_findpoint(acurve->length, 3, acurve->controlv,
-				objX, objY, objZ, index);
+  ay_pact_findpoint(acurve->length, 3, acurve->controlv, objX, objY, objZ,
+		    index);
 
   /* no point picked? */
   if(*index == -1)
@@ -1570,7 +1570,7 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
 	{
 	  notify_parent = AY_TRUE;
 	  ay_selp_ins(o, (unsigned int)index, AY_FALSE);
-	  ay_status = ay_notify_object(o);
+	  (void)ay_notify_object(o);
 	  o->modified = AY_TRUE;
 	} /* if */
 
@@ -1600,8 +1600,8 @@ ay_pact_deletenc(ay_nurbcurve_object *curve, int *index,
     return AY_ENULL;
 
   *index = -1;
-  ay_status = ay_pact_findpoint(curve->length, 4, curve->controlv,
-				objX, objY, objZ, index);
+  ay_pact_findpoint(curve->length, 4, curve->controlv, objX, objY, objZ,
+		    index);
 
   if(*index == -1)
     {
@@ -1687,6 +1687,11 @@ ay_pact_deletenc(ay_nurbcurve_object *curve, int *index,
   else
     {
       ay_status = ay_knots_createnc(curve);
+      if(ay_status)
+	{
+	  ay_error(ay_status, fname, "Error creating new knots.");
+	  goto cleanup;
+	}
     }
 
   if(curve->type)
@@ -1698,9 +1703,10 @@ ay_pact_deletenc(ay_nurbcurve_object *curve, int *index,
 	}
     }
 
+cleanup:
   ay_nct_recreatemp(curve);
 
- return AY_OK;
+ return ay_status;
 } /* ay_pact_deletenc */
 
 
@@ -1711,7 +1717,6 @@ int
 ay_pact_deleteic(ay_icurve_object *icurve, int *index,
 		 double objX, double objY, double objZ)
 {
- int ay_status = AY_OK;
  char fname[] = "delete_pointic";
  int i = 0, j = 0, k = 0;
  double *newcontrolv = NULL;
@@ -1720,10 +1725,10 @@ ay_pact_deleteic(ay_icurve_object *icurve, int *index,
     return AY_ENULL;
 
   *index = -1;
-  ay_status = ay_pact_findpoint(icurve->length, 3, icurve->controlv,
-				objX, objY, objZ, index);
+  ay_pact_findpoint(icurve->length, 3, icurve->controlv, objX, objY, objZ,
+		    index);
 
-  if(ay_status || *index == -1)
+  if(*index == -1)
     {
       return AY_OK;
     }
@@ -1773,7 +1778,6 @@ int
 ay_pact_deleteac(ay_acurve_object *acurve, int *index,
 		 double objX, double objY, double objZ)
 {
- int ay_status = AY_OK;
  char fname[] = "delete_pointac";
  int i = 0, j = 0, k = 0;
  double *newcontrolv = NULL;
@@ -1782,10 +1786,10 @@ ay_pact_deleteac(ay_acurve_object *acurve, int *index,
     return AY_ENULL;
 
   *index = -1;
-  ay_status = ay_pact_findpoint(acurve->length, 3, acurve->controlv,
-				objX, objY, objZ, index);
+  ay_pact_findpoint(acurve->length, 3, acurve->controlv, objX, objY, objZ,
+		    index);
 
-  if(ay_status || *index == -1)
+  if(*index == -1)
     {
       return AY_OK;
     }
@@ -1890,7 +1894,7 @@ ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[])
 	{
 	  notify_parent = AY_TRUE;
 	  ay_selp_rem(o, (unsigned int)index);
-	  ay_status = ay_notify_object(o);
+	  (void)ay_notify_object(o);
 	  o->modified = AY_TRUE;
 	} /* if */
 
