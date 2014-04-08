@@ -1071,6 +1071,11 @@ ay_pmt_tobeztcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  pm = (ay_pamesh_object*)sel->object->refine;
 	  ay_status = ay_pmt_tobezier(pm);
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, argv[0], "Conversion failed.");
+	      break;
+	    }
 	  sel->object->modified = AY_TRUE;
 	}
       if(sel->object->modified)

@@ -721,7 +721,7 @@ ay_extrnc_providecb(ay_object *o, unsigned int type, ay_object **result)
 
       ay_trafo_copy(o, *t);
 
-      t = &((*t)->next);
+      /*t = &((*t)->next);*/
 
       *result = new;
     } /* if */
