@@ -468,7 +468,7 @@ ay_cap_notifycb(ay_object *o)
     {
       if(down->type != AY_IDNCURVE)
 	{
-	  ay_status = ay_provide_object(down, AY_IDNCURVE, nextcurve);
+	  (void)ay_provide_object(down, AY_IDNCURVE, nextcurve);
 	  if(*nextcurve)
 	    {
 	      ay_nct_applytrafo(*nextcurve);

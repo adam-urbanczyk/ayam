@@ -586,7 +586,7 @@ ay_sweep_notifycb(ay_object *o)
       curve3 = o->down->next->next;
       if(curve3->type != AY_IDNCURVE)
 	{
-	  ay_status = ay_provide_object(curve3, AY_IDNCURVE, &pobject3);
+	  (void)ay_provide_object(curve3, AY_IDNCURVE, &pobject3);
 	  if(pobject3)
 	    {
 	      curve3 = pobject3;
