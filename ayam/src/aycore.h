@@ -1740,7 +1740,7 @@ int ay_viewt_droptcb(struct Togl *togl, int argc, char *argv[]);
 
 /** setup internal view (while reading from scene file)
  */
-int ay_viewt_setupintview(int viewnum, ay_object *o, ay_view_object *vtemp);
+void ay_viewt_setupintview(int viewnum, ay_object *o, ay_view_object *vtemp);
 
 /** set mark from selected objects cog
  */

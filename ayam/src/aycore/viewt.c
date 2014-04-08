@@ -2368,7 +2368,7 @@ ay_viewt_droptcb(struct Togl *togl, int argc, char *argv[])
  *  set up the view window <o> from data in <vtemp>
  *  (while reading an internal view from a scene file)
  */
-int
+void
 ay_viewt_setupintview(int viewnum, ay_object *o, ay_view_object *vtemp)
 {
  struct Togl *togl;
@@ -2378,12 +2378,12 @@ ay_viewt_setupintview(int viewnum, ay_object *o, ay_view_object *vtemp)
  int vnum = viewnum-1;
 
   if(!o || !vtemp)
-    return AY_ENULL;
+    return;
 
   if(o->type == AY_IDVIEW)
     view = (ay_view_object *)o->refine;
   else
-    return AY_ERROR;
+    return;
 
   /* protect togl and altdispcb pointers from the memcpy below */
   togl = view->togl;
@@ -2430,7 +2430,7 @@ ay_viewt_setupintview(int viewnum, ay_object *o, ay_view_object *vtemp)
 
   Tcl_Eval(ay_interp, update_cmd);
 
- return AY_OK;
+ return;
 } /* ay_viewt_setupintview */
 
 
