@@ -782,10 +782,10 @@ ay_pmt_tobezier(ay_pamesh_object *pm)
  double *n1, *n2, *n3, *n4;
  double m[16], tm[16], mu[16], mv[16], mut[16];
  double mbi[16];
- double mb[16] = {1, 0, 0, 0,  -3, 3, 0, 0,  3, -6, 3, 0,  -1, 3, -3, 1};
- double mh[16] = {1, -1, 0, 0,  -2, 3, 0, 0,  1, -2, 1, 0,  2, -3, 0, 1};
- double mc[16] = {0.5, -0.5, 0, 0,  -1.5, 2, 0.5, 0,  1.5, -2.5, 0, -1,
-		  -0.5, 1, -0.5, 0};
+ double mb[16] = {-1, 3, -3, 1,  3, -6, 3, 0,  -3, 3, 0, 0,  1, 0, 0, 0};
+ double mh[16] = {2, -3, 0, 1,  1, -2, 1, 0,  -2, 3, 0, 0,  1, -1, 0, 0};
+ double mc[16] = {-0.5, 1, -0.5, 1,  1.5, -2.5, 0, 1,  -1.5, 2, 0.5, 0,
+		  0.5, -0.5, 0, 0};
 
 #if 0
 RtBasis RiBezierBasis = { { -1.0,  3.0, -3.0,  1.0 },
@@ -876,7 +876,7 @@ RtBasis RiPowerBasis = { { 1.0, 0.0, 0.0, 0.0 },
 	      i2 += 4;
 	    } /* for */
 	} /* for */
-    }
+    } /* if convertu */
 
   if(convertv)
     {
@@ -893,7 +893,7 @@ RtBasis RiPowerBasis = { { 1.0, 0.0, 0.0, 0.0 },
 	  ay_trafo_multmatrix4(mv, pm->vbasis);
 	  break;
 	}
-    }
+    } /* if convertv */
 
   w = pm->width;
   h = pm->height;
@@ -907,7 +907,7 @@ RtBasis RiPowerBasis = { { 1.0, 0.0, 0.0, 0.0 },
     nh += 3;
 
   cv = pm->controlv;
-  if(!(newcv = calloc(pm->width*pm->height,4*sizeof(double))))
+  if(!(newcv = malloc(pm->width*pm->height*4*sizeof(double))))
     return AY_EOMEM;
 
   /* copy weights */
