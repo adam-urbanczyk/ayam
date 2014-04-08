@@ -911,7 +911,7 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
 	}
 
       /* set up the internal view */
-      ay_status = ay_viewt_setupintview(ay_read_viewnum, last, &vtemp);
+      ay_viewt_setupintview(ay_read_viewnum, last, &vtemp);
 
       /* if children follow (BGImage geometry),
 	 arrange for their proper reading as children
