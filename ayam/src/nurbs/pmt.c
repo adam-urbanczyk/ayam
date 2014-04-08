@@ -403,6 +403,13 @@ ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result)
       ay_status = ay_npt_create(uorder, vorder, evwinwidth, evwinheight,
 				ktu, ktv, cv, NULL, NULL,
 				(ay_nurbpatch_object **)(void*)&(o->refine));
+
+      if(ay_status)
+	{
+	  free(cv); free(o);
+	  return ay_status;
+	}
+
       *result = o;
     }
   else
@@ -459,6 +466,12 @@ ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result)
 					evwinwidth, evwinheight,
 					ktu, ktv, cv, NULL, NULL,
 				 (ay_nurbpatch_object **)(void*)&(o->refine));
+
+	      if(ay_status)
+		{
+		  free(cv); free(o);
+		  return ay_status;
+		}
 
 	      /* link new object */
 	      if(nexto)

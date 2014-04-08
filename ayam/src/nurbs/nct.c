@@ -2556,7 +2556,7 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 	{
 	  ay_status = ay_provide_object(ay_selection->object,
 					AY_IDNCURVE, &pobject);
-	  if(!pobject)
+	  if(ay_status || !pobject)
 	    {
 	      ay_error(AY_EWTYPE, fname, ay_nct_ncname);
 	      return TCL_OK;
@@ -4880,7 +4880,7 @@ ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_status = ay_provide_object(sel->object, AY_IDNCURVE, &po);
+	  (void)ay_provide_object(sel->object, AY_IDNCURVE, &po);
 	  if(po)
 	    {
 	      freepo = AY_TRUE;
@@ -6510,7 +6510,7 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 int
 ay_nct_trim(ay_nurbcurve_object **curve, double umin, double umax)
 {
- int ay_status = AY_OK;
+ int ay_status;
  ay_object t1 = {0}, *t2 = NULL;
  void *t;
  double knotmin, knotmax;
@@ -6532,8 +6532,8 @@ ay_nct_trim(ay_nurbcurve_object **curve, double umin, double umax)
     {
       ay_status = ay_nct_split(&t1, umin, &t2);
 
-      if(ay_status)
-	return ay_status;
+      if(ay_status || !t2)
+	return AY_ERROR;
 
       /* remove superfluous curve and save result in t1 */
       t = t2->refine;
@@ -6548,7 +6548,7 @@ ay_nct_trim(ay_nurbcurve_object **curve, double umin, double umax)
       ay_status = ay_nct_split(&t1, umax, &t2);
 
       if(ay_status)
-	return ay_status;
+	return AY_ERROR;
 
       /* remove superfluous curve */
       (void)ay_object_delete(t2);
@@ -6558,7 +6558,7 @@ ay_nct_trim(ay_nurbcurve_object **curve, double umin, double umax)
   /* return result */
   *curve = t1.refine;
 
- return ay_status;
+ return AY_OK;
 } /* ay_nct_trim */
 
 
@@ -8033,7 +8033,6 @@ ay_nct_extendtcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_status = ay_pact_getpoint(3, o, NULL, NULL);
 	      if(ay_status)
 		ay_selp_clear(o);
-	      ay_status = AY_OK;
 	    }
 
 	  ay_nct_recreatemp(curve);
