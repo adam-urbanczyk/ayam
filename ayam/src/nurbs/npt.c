@@ -6723,7 +6723,7 @@ ay_npt_gordonmodw(ay_object *o1, ay_object *o2)
  *  use precalculated inverse transformation matrix <m1> or <m2>
  *  (the two curve objects do not necessarily have the same trafos)
  */
-int
+void
 ay_npt_gordoncc(ay_object *o1, ay_object *o2, int stride,
 		double *p1, double *p2, double *pp1, double *pp2,
 		double *m1, double *m2)
@@ -6766,7 +6766,7 @@ ay_npt_gordoncc(ay_object *o1, ay_object *o2, int stride,
 	} /* if */
     } /* if */
 
- return AY_OK;
+ return;
 } /* ay_npt_gordoncc */
 
 
@@ -6775,10 +6775,9 @@ ay_npt_gordoncc(ay_object *o1, ay_object *o2, int stride,
  *  gordon surface <g> (compare and possibly correct their endpoints)
  *  XXXX should be extended to cover also the inner curve endpoints
  */
-int
+void
 ay_npt_gordonwc(ay_object *g)
 {
- int ay_status = AY_OK;
  ay_nurbcurve_object *nc;
  ay_icurve_object *ic;
  ay_object *firstu = NULL, *lastu = NULL, *firstv = NULL, *lastv = NULL;
@@ -6790,7 +6789,7 @@ ay_npt_gordonwc(ay_object *g)
  double *pp5 = NULL, *pp6 = NULL, *pp7 = NULL, *pp8 = NULL;
 
   if(!g || !g->down || !g->down->next)
-    return AY_ENULL;
+    return;
 
   /* get curves */
   down = g->down;
@@ -6809,7 +6808,7 @@ ay_npt_gordonwc(ay_object *g)
 
   if((!lastu) || (!firstv) || (!lastv) || (firstu == lastu) ||
      (firstv == lastv))
-    return AY_OK;
+    return;
 
   /* get transformation matrices */
   ay_trafo_creatematrix(firstu, fum);
@@ -6896,39 +6895,39 @@ ay_npt_gordonwc(ay_object *g)
      already work with one pp == NULL, if only the point data is complete */
   if(pp1 && pp5)
     {
-      ay_status = ay_npt_gordoncc(firstu, firstv,
-				  ((firstu->type == AY_IDNCURVE) &&
-				   (firstv->type == AY_IDNCURVE))?4:3,
-				  p1, p5, pp1, pp5, fumi, fvmi);
+      ay_npt_gordoncc(firstu, firstv,
+		      ((firstu->type == AY_IDNCURVE) &&
+		       (firstv->type == AY_IDNCURVE))?4:3,
+		      p1, p5, pp1, pp5, fumi, fvmi);
 
     }
 
   if(pp2 && pp7)
     {
-      ay_status = ay_npt_gordoncc(firstu, lastv,
-				  ((firstu->type == AY_IDNCURVE) &&
-				   (lastv->type == AY_IDNCURVE))?4:3,
-				  p2, p7, pp2, pp7, fumi, lvmi);
+      ay_npt_gordoncc(firstu, lastv,
+		      ((firstu->type == AY_IDNCURVE) &&
+		       (lastv->type == AY_IDNCURVE))?4:3,
+		      p2, p7, pp2, pp7, fumi, lvmi);
     }
 
   if(pp3 && pp6)
     {
-      ay_status = ay_npt_gordoncc(lastu, firstv,
-				  ((lastu->type == AY_IDNCURVE) &&
-				   (firstv->type == AY_IDNCURVE))?4:3,
-				  p3, p6, pp3, pp6, lumi, fvmi);
+      ay_npt_gordoncc(lastu, firstv,
+		      ((lastu->type == AY_IDNCURVE) &&
+		       (firstv->type == AY_IDNCURVE))?4:3,
+		      p3, p6, pp3, pp6, lumi, fvmi);
     }
 
 
   if(pp4 && pp8)
     {
-      ay_status = ay_npt_gordoncc(lastu, lastv,
-				  ((lastu->type == AY_IDNCURVE) &&
-				   (lastv->type == AY_IDNCURVE))?4:3,
-				  p4, p8, pp4, pp8, lumi, lvmi);
+      ay_npt_gordoncc(lastu, lastv,
+		      ((lastu->type == AY_IDNCURVE) &&
+		       (lastv->type == AY_IDNCURVE))?4:3,
+		      p4, p8, pp4, pp8, lumi, lvmi);
     }
 
- return ay_status;
+ return;
 } /* ay_npt_gordonwc */
 
 

@@ -612,7 +612,7 @@ ay_birail2_notifycb(ay_object *o)
       curve5 = o->down->next->next->next->next;
       if(curve5->type != AY_IDNCURVE)
 	{
-	  ay_status = ay_provide_object(curve5, AY_IDNCURVE, &pobject5);
+	  (void)ay_provide_object(curve5, AY_IDNCURVE, &pobject5);
 	  if(pobject5)
 	    {
 	      curve5 = pobject5;

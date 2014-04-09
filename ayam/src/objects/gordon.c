@@ -561,7 +561,7 @@ ay_gordon_notifycb(ay_object *o)
     goto cleanup;
 
   if(gordon->wcc)
-    ay_status = ay_npt_gordonwc(o);
+    ay_npt_gordonwc(o);
 
   down = o->down;
 
