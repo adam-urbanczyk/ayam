@@ -1140,13 +1140,13 @@ int ay_npt_gordonmodw(ay_object *o1, ay_object *o2);
 
 /** Helper for gordonwc().
  */
-int ay_npt_gordoncc(ay_object *o1, ay_object *o2, int stride,
-		    double *p1, double *p2, double *pp1, double *pp2,
-		    double *m1, double *m2);
+void ay_npt_gordoncc(ay_object *o1, ay_object *o2, int stride,
+		     double *p1, double *p2, double *pp1, double *pp2,
+		     double *m1, double *m2);
 
 /** Watch and correct Gordon surface children.
  */
-int ay_npt_gordonwc(ay_object *g);
+void ay_npt_gordonwc(ay_object *g);
 
 /** Extract boundary curve from NURBS patch.
  */
