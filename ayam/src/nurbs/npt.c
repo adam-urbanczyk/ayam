@@ -12267,7 +12267,7 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
   else
     {
       tcl_status = Tcl_GetDouble(interp, argv[1], &u);
-      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);	
     }
   i++;
   tcl_status = Tcl_GetInt(interp, argv[i], &r);
@@ -12282,8 +12282,11 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc > 3+have_index)
     {
-      tcl_status = Tcl_GetDouble(interp, argv[i], &tol);
-      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+      if((argv[i][0] != 'I') && (argv[i][0] != 'i'))
+	{
+	  tcl_status = Tcl_GetDouble(interp, argv[i], &tol);
+	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	}
     }
 
   while(sel)
@@ -12471,8 +12474,11 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc > 3+have_index)
     {
-      tcl_status = Tcl_GetDouble(interp, argv[i], &tol);
-      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+      if((argv[i][0] != 'I') && (argv[i][0] != 'i'))
+	{
+	  tcl_status = Tcl_GetDouble(interp, argv[i], &tol);
+	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	}
     }
 
   while(sel)

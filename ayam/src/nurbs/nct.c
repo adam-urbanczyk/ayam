@@ -6329,7 +6329,7 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int tcl_status = TCL_OK, ay_status = AY_OK;
  int have_index = AY_FALSE, i = 1, j = 0, s = 0, r = 0;
- double tol = DBL_MAX/*AY_EPSILON*/;
+ double tol = DBL_MAX;
  double u = 0.0, *newknotv = NULL, *newcontrolv = NULL;
  ay_nurbcurve_object *curve;
  ay_list_object *sel = ay_selection;
@@ -6376,8 +6376,11 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc > 3+have_index)
     {
-      tcl_status = Tcl_GetDouble(interp, argv[i], &tol);
-      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+      if((argv[i][0] != 'I') && (argv[i][0] != 'i'))
+	{
+	  tcl_status = Tcl_GetDouble(interp, argv[i], &tol);
+	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	}
     }
 
   while(sel)
