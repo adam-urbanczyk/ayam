@@ -1,4 +1,4 @@
-[readme.txt - 24. Apr 2012]
+[readme.txt - 10. Apr 2014]
 
 This directory contains a collection of various plugins for Ayam.
 
@@ -56,4 +56,4 @@ aycsg - CSG preview using OpenCSG
 idr - importance driven rendering
 aydnd - inter-application drag and drop support
 subdiv - subdivision surfaces support
-
+printps - print OpenGL drawings as SVG/EPS
