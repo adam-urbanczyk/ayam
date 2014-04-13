@@ -551,7 +551,6 @@ ay_ncurve_drawstess(ay_view_object *view, ay_nurbcurve_object *ncurve)
 	    }
 	}
 
-      tesslen = 0;
       if(!ncurve->tessv)
 	{
 	  ay_status = ay_stess_CurvePoints3D(ncurve->length, ncurve->order-1,
@@ -694,7 +693,7 @@ ay_ncurve_drawglu(ay_view_object *view, ay_nurbcurve_object *ncurve)
 
    gluNurbsProperty(ncurve->no, GLU_CULLING, GL_TRUE);
 
-   gluNurbsCurve(ncurve->no, (GLint)knot_count,  (GLfloat*)ncurve->fltcv,
+   gluNurbsCurve(ncurve->no, (GLint)knot_count, (GLfloat*)ncurve->fltcv,
 		 (GLint)(ncurve->is_rat?4:3),
 		 (GLfloat*)&(ncurve->fltcv[knot_count]),
 		 (GLint)ncurve->order,
