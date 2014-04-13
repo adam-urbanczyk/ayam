@@ -6722,6 +6722,7 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
  char *nname = ay_prefs.normalname;
  unsigned int vnlen = 0;
  double *vn = NULL, vlen;
+ int vnstride = 3;
 
   /* sanity check */
   if(!o || !nc)
@@ -6821,6 +6822,8 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 	    "3DPVN" mode:
 	    offset points according to normals delivered as primitive variable
 	  */
+
+	  /* first check for PV tag of type "n" */
 	  tag = o->tags;
 	  while(tag)
 	    {
@@ -6831,14 +6834,32 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 		}
 	      tag = tag->next;
 	    }
+
+	  /* now check for a NT-tag */
+	  if(!vn)
+	    {
+	      tag = o->tags;
+	      while(tag)
+		{
+		  if(tag->type == ay_nt_tagtype)
+		    {
+		      vn = ((ay_btval*)(tag->val))->payload;
+		      vnstride = 9;
+		      break;
+		    }
+		  tag = tag->next;
+		}
+	    }
+
 	  if(!vn || (vnlen != (unsigned int)curve->length))
 	    {
 	      ay_status = AY_ERROR;
 	      goto cleanup;
 	    }
+
 	  for(i = 0; i < curve->length; i++)
 	    {
-	      p1 = &(vn[i*3]);
+	      p1 = &(vn[i*vnstride]);
 	      AY_V3SCAL(p1, offset);
 	      newcv[i*stride]   = curve->controlv[i*stride]   + p1[0];
 	      newcv[i*stride+1] = curve->controlv[i*stride+1] + p1[1];
