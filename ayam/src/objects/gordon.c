@@ -38,7 +38,7 @@ ay_gordon_createcb(int argc, char *argv[], ay_object *o)
       return AY_ERROR;
     }
 
-  new->wcc = AY_FALSE;
+  new->watchcorners = AY_FALSE;
   new->uorder = 4;
   new->vorder = 4;
 
@@ -249,7 +249,7 @@ ay_gordon_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  /* char fname[] = "gordon_setpropcb";*/
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_gordon_object *gordon = NULL;
- int new_wcc;
+ int new_watchcorners;
  char uarg1[] = "save", uarg2[] = "WatchCurves";
  char *uargv[3] = {0};
  ay_list_object *oldsel = NULL, *newsel = NULL;
@@ -268,7 +268,7 @@ ay_gordon_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton,"WatchCurves",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(new_wcc));
+  Tcl_GetIntFromObj(interp,to, &(new_watchcorners));
 
   Tcl_SetStringObj(ton,"Order_U",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -290,7 +290,7 @@ ay_gordon_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
 
-  if((new_wcc != gordon->wcc) && new_wcc)
+  if((new_watchcorners != gordon->watchcorners) && new_watchcorners)
     {
       /* save old selection */
       oldsel = ay_selection;
@@ -330,7 +330,7 @@ ay_gordon_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       /* now restore original selection */
       ay_selection = oldsel;
     }
-  gordon->wcc = new_wcc;
+  gordon->watchcorners = new_watchcorners;
 
   (void)ay_notify_object(o);
 
@@ -363,7 +363,7 @@ ay_gordon_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   ton = Tcl_NewStringObj(n1,-1);
 
   Tcl_SetStringObj(ton,"WatchCurves",-1);
-  to = Tcl_NewIntObj(gordon->wcc);
+  to = Tcl_NewIntObj(gordon->watchcorners);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
@@ -410,7 +410,7 @@ ay_gordon_readcb(FILE *fileptr, ay_object *o)
   if(!(gordon = calloc(1, sizeof(ay_gordon_object))))
     { return AY_EOMEM; }
 
-  fscanf(fileptr,"%d\n",&gordon->wcc);
+  fscanf(fileptr,"%d\n",&gordon->watchcorners);
   fscanf(fileptr,"%d\n",&gordon->uorder);
   fscanf(fileptr,"%d\n",&gordon->vorder);
   fscanf(fileptr,"%d\n",&gordon->display_mode);
@@ -438,7 +438,7 @@ ay_gordon_writecb(FILE *fileptr, ay_object *o)
   if(!gordon)
     return AY_ENULL;
 
-  fprintf(fileptr, "%d\n", gordon->wcc);
+  fprintf(fileptr, "%d\n", gordon->watchcorners);
   fprintf(fileptr, "%d\n", gordon->uorder);
   fprintf(fileptr, "%d\n", gordon->vorder);
   fprintf(fileptr, "%d\n", gordon->display_mode);
@@ -560,7 +560,7 @@ ay_gordon_notifycb(ay_object *o)
   if(!o->down || !o->down->next)
     goto cleanup;
 
-  if(gordon->wcc)
+  if(gordon->watchcorners)
     ay_npt_gordonwc(o);
 
   down = o->down;

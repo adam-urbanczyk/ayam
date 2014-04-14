@@ -27,7 +27,7 @@ array set GordonAttrData {
 
 set w [frame $ay(pca).$GordonAttr(w)]
 addVSpace $w s1 2
-addCheck $w GordonAttrData WatchCurves
+addCheck $w GordonAttrData WatchCorners
 addParam $w GordonAttrData Order_U
 addParam $w GordonAttrData Order_V
 
