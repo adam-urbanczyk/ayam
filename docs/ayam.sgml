@@ -8567,14 +8567,14 @@ the creation of the Gordon surface:
 
 <sect2>GordonAttr Property<label id="gop"><label id="gordonattrprop">
 <p>
-If the parameter <tt/"WatchCurves"/ is switched on, Ayam will
+If the parameter <tt/"WatchCorners"/ is switched on, Ayam will
 check for all four outer parameter curves, whether they touch in their
 endpoints. If not, the endpoints will be corrected. Note that this
 works only properly with clamped curves and objects that directly
 contain editable control points (i.e.~it works with NCurve and ICurve
 objects, but not with Instance or ConcatNC objects). If Ayam can
 determine which curve was modified last, the other curve that should
-meet at the endpoint in question will be modified by <tt/"WatchCurves"/.
+meet at the endpoint in question will be modified.
 If Ayam finds no information on modifications, the U curves take
 precedence (i.e.~the V curves will be modified).
 <p>
@@ -20753,6 +20753,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Wait: <ref id="hidprefs" name="hidden preference setting">
 <item>WarnPropPasteToSel: <ref id="hidprefs" name="hidden preference setting">
 <item>WarnUnknownTag: <ref id="hidprefs" name="hidden preference setting">
+<item>WatchCorners: <ref id="gop" name="Gordon attribute">
 <item>Wavefront OBJ:
 <itemize>
 <item><ref id="impwav" name="Wavefront OBJ import">,

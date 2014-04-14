@@ -635,7 +635,7 @@ typedef struct ay_sdmesh_object_s {
 
 /** Gordon object */
 typedef struct ay_gordon_object_s {
-  int wcc; /**< watch (and automatically correct) parameter curves? */
+  int watchcorners; /**< watch (and automatically correct) corners? */
   int uorder; /**< desired order for U dimension */
   int vorder; /**< desired order for V dimension */
 

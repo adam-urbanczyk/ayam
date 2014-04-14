@@ -23,6 +23,16 @@ typedef void (ay_npt_gndcb) (char dir, ay_nurbpatch_object *np,
 
 /* prototypes of functions local to this module: */
 
+/** Helper for gordonwc().
+ */
+int ay_npt_gordonmodw(ay_object *o1, ay_object *o2);
+
+/** Helper for gordonwc().
+ */
+void ay_npt_gordoncc(ay_object *o1, ay_object *o2, int stride,
+		     double *p1, double *p2, double *pp1, double *pp2,
+		     double *m1, double *m2);
+
 int ay_npt_rescaletrim(ay_object *trim,
 		       int mode, double omin, double omax,
 		       double nmin, double nmax);
