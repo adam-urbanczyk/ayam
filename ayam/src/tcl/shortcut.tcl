@@ -976,7 +976,7 @@ Modelling Actions (View Windows):
  Insert Points        <$svsc(InsertP)>
  Delete Points        <$svsc(DeleteP)>
 
- Select All/No Points <$svsc(SelAllP)>/<$svsc(DeSelect)>
+ Select All/No Points <$svsc(SelAllP)> / <$svsc(DeSelect)>
  Invert PointSel      <$svsc(InvSelP)>
  Collapse Selected    <$svsc(CollP)>
  Explode Selected     <$svsc(ExplP)>
@@ -1006,13 +1006,14 @@ View Actions (View Windows):
  Zoom out View        <$svsc(ZoomO)>
  ZoomViewAnytime      <Mouse-$svsc(ZoomVButton)>
 
- ZoomRegion           <$svsc(ZoomRModKey)+Mouse-1
+ ZoomRegion           <$svsc(ZoomRModKey)+Mouse-1>
  ZoomToObject         <$svsc(ZoomTO)> / <$svsc(ZoomTO2)>
  ZoomToAll            <$svsc(ZoomAll)>
 
  Cycle View Type      <$svsc(TypeUp)> / <$svsc(TypeDown)>
 
- Cycle Draw/Shade     <$svsc(DMUp)> / <$svsc(DMDown)>
+ Cycle Draw Mode      <$svsc(DMUp)> /
+                        <$svsc(DMDown)>
 
 Management (View Windows):
  Break Action         <$svsc(Break)>
