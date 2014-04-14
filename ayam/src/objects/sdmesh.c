@@ -32,7 +32,7 @@ ay_sdmesh_createcb(int argc, char *argv[], ay_object *o)
  int avlen;
  int scheme = AY_SDSCATMULL, optnum = 0, i = 2, j = 0;
  int *tags = NULL, *iargs = NULL;
- unsigned int ui = 0, uj = 0, nfaces = 0, tmpui = 0;
+ unsigned int ui = 0, nfaces = 0, tmpui = 0;
  unsigned int *nverts = NULL, *verts = NULL, *nargs = 0;
  unsigned int nvertslen = 0, vertslen = 0, tagslen = 0;
  unsigned int totalverts = 0, controlvlen = 0, nargslen = 0;
@@ -470,18 +470,19 @@ ay_sdmesh_createcb(int argc, char *argv[], ay_object *o)
 
       sdmesh->controlv = controlv;
       sdmesh->ncontrols = controlvlen;
-    } /* if(nfaces > 0) */
+
+      /* prevent cleanup code from doing something harmful */
+      nverts = NULL;
+      verts = NULL;
+      tags = NULL;
+      nargs = NULL;
+      iargs = NULL;
+      dargs = NULL;
+      controlv = NULL;
+    } /* if nfaces > 0 */
 
   o->refine = (void *)sdmesh;
 
-  /* prevent cleanup code from doing something harmful */
-  nverts = NULL;
-  verts = NULL;
-  tags = NULL;
-  nargs = NULL;
-  iargs = NULL;
-  dargs = NULL;
-  controlv = NULL;
   sdmesh = NULL;
 
 cleanup:
