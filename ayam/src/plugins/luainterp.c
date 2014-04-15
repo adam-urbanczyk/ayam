@@ -621,6 +621,11 @@ cleanup:
 
   free(argv);
 
+  if(ay_status == AY_EOMEM)
+    {
+      return luaL_error(L, "out of memory");
+    }
+
  return 0;
 } /* luainterp_wraptclcmd */
 

@@ -3686,11 +3686,126 @@ Onio_Init(Tcl_Interp *interp)
       return TCL_ERROR;
     }
 
+  // init hash table for write callbacks
+  Tcl_InitHashTable(&onio_write_ht, TCL_ONE_WORD_KEYS);
+
+  // fill hash table
+  ay_status += onio_registerwritecb((char *)(AY_IDNPATCH),
+				    onio_writenpatch);
+
+  ay_status += onio_registerwritecb((char *)(AY_IDEXTRUDE),
+				    onio_writenpconvertible);
+
+  ay_status += onio_registerwritecb((char *)(AY_IDREVOLVE),
+				    onio_writenpconvertible);
+
+  ay_status += onio_registerwritecb((char *)(AY_IDSWEEP),
+				    onio_writenpconvertible);
+
+  ay_status += onio_registerwritecb((char *)(AY_IDSWING),
+				    onio_writenpconvertible);
+
+  ay_status += onio_registerwritecb((char *)(AY_IDSKIN),
+				    onio_writenpconvertible);
+
+  ay_status += onio_registerwritecb((char *)(AY_IDGORDON),
+				    onio_writenpconvertible);
+
+  ay_status += onio_registerwritecb((char *)(AY_IDBIRAIL1),
+				    onio_writenpconvertible);
+
+  ay_status += onio_registerwritecb((char *)(AY_IDBIRAIL2),
+				    onio_writenpconvertible);
+
+  ay_status += onio_registerwritecb((char *)(AY_IDCAP),
+				    onio_writenpconvertible);
+
+  ay_status += onio_registerwritecb((char *)(AY_IDBEVEL),
+				    onio_writenpconvertible);
+
+  ay_status += onio_registerwritecb((char *)(AY_IDEXTRNP),
+				    onio_writenpconvertible);
+
+  ay_status += onio_registerwritecb((char *)(AY_IDBPATCH),
+				    onio_writenpconvertible);
+
+  ay_status += onio_registerwritecb((char *)(AY_IDPAMESH),
+				    onio_writenpconvertible);
+
+  ay_status += onio_registerwritecb((char *)(AY_IDTEXT),
+				    onio_writenpconvertible);
+
+  ay_status += onio_registerwritecb((char *)(AY_IDNCURVE),
+				    onio_writencurve);
+
+  ay_status += onio_registerwritecb((char *)(AY_IDACURVE),
+				    onio_writencconvertible);
+
+  ay_status += onio_registerwritecb((char *)(AY_IDICURVE),
+				    onio_writencconvertible);
+
+  ay_status += onio_registerwritecb((char *)(AY_IDCONCATNC),
+				    onio_writencconvertible);
+
+  ay_status += onio_registerwritecb((char *)(AY_IDEXTRNC),
+				    onio_writencconvertible);
+
+  ay_status += onio_registerwritecb((char *)(AY_IDNCIRCLE),
+				    onio_writencconvertible);
+
+  ay_status += onio_registerwritecb((char *)(AY_IDOFFNC),
+				    onio_writencconvertible);
+
+  ay_status += onio_registerwritecb((char *)(AY_IDLEVEL),
+				    onio_writelevel);
+
+  ay_status += onio_registerwritecb((char *)(AY_IDCLONE),
+				    onio_writeclone);
+
+  ay_status += onio_registerwritecb((char *)(AY_IDMIRROR),
+				    onio_writeclone);
+
+  ay_status += onio_registerwritecb((char *)(AY_IDINSTANCE),
+				    onio_writeinstance);
+
+  ay_status += onio_registerwritecb((char *)(AY_IDSCRIPT),
+				    onio_writescript);
+
+  ay_status += onio_registerwritecb((char *)(AY_IDSPHERE),
+				    onio_writesphere);
+
+  ay_status += onio_registerwritecb((char *)(AY_IDCYLINDER),
+				    onio_writecylinder);
+
+  ay_status += onio_registerwritecb((char *)(AY_IDCONE),
+				    onio_writecone);
+
+  ay_status += onio_registerwritecb((char *)(AY_IDTORUS),
+				    onio_writetorus);
+
+  ay_status += onio_registerwritecb((char *)(AY_IDBOX),
+				    onio_writebox);
+
+  ay_status += onio_registerwritecb((char *)(AY_IDDISK),
+				    onio_writenpconvertible);
+
+  ay_status += onio_registerwritecb((char *)(AY_IDHYPERBOLOID),
+				    onio_writenpconvertible);
+
+  ay_status += onio_registerwritecb((char *)(AY_IDPARABOLOID),
+				    onio_writenpconvertible);
+
+  ay_status += onio_registerwritecb((char *)(AY_IDPOMESH),
+				    onio_writepomesh);
+
+  if(ay_status)
+    return TCL_ERROR;
+
   // source onio.tcl, it contains vital Tcl-code
   if((Tcl_EvalFile(interp, "onio.tcl")) != TCL_OK)
      {
        ay_error(AY_ERROR, fname, "Error while sourcing \"onio.tcl\"!");
-       return TCL_OK;
+       return TCL_ERROR;
      }
 
   // initialize OpenNURBS
@@ -3704,122 +3819,9 @@ Onio_Init(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "onioWrite", (Tcl_CmdProc*) onio_writetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  // init hash table for write callbacks
-  Tcl_InitHashTable(&onio_write_ht, TCL_ONE_WORD_KEYS);
-
-  // fill hash table
-  ay_status = onio_registerwritecb((char *)(AY_IDNPATCH),
-				   onio_writenpatch);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDEXTRUDE),
-				   onio_writenpconvertible);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDREVOLVE),
-				   onio_writenpconvertible);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDSWEEP),
-				   onio_writenpconvertible);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDSWING),
-				   onio_writenpconvertible);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDSKIN),
-				   onio_writenpconvertible);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDGORDON),
-				   onio_writenpconvertible);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDBIRAIL1),
-				   onio_writenpconvertible);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDBIRAIL2),
-				   onio_writenpconvertible);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDCAP),
-				   onio_writenpconvertible);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDBEVEL),
-				   onio_writenpconvertible);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDEXTRNP),
-				   onio_writenpconvertible);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDBPATCH),
-				   onio_writenpconvertible);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDPAMESH),
-				   onio_writenpconvertible);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDTEXT),
-				   onio_writenpconvertible);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDNCURVE),
-				   onio_writencurve);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDACURVE),
-				   onio_writencconvertible);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDICURVE),
-				   onio_writencconvertible);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDCONCATNC),
-				   onio_writencconvertible);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDEXTRNC),
-				   onio_writencconvertible);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDNCIRCLE),
-				   onio_writencconvertible);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDOFFNC),
-				   onio_writencconvertible);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDLEVEL),
-				   onio_writelevel);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDCLONE),
-				   onio_writeclone);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDMIRROR),
-				   onio_writeclone);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDINSTANCE),
-				   onio_writeinstance);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDSCRIPT),
-				   onio_writescript);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDSPHERE),
-				   onio_writesphere);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDCYLINDER),
-				   onio_writecylinder);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDCONE),
-				   onio_writecone);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDTORUS),
-				   onio_writetorus);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDBOX),
-				   onio_writebox);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDDISK),
-				   onio_writenpconvertible);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDHYPERBOLOID),
-				   onio_writenpconvertible);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDPARABOLOID),
-				   onio_writenpconvertible);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDPOMESH),
-				   onio_writepomesh);
-
-
   ay_error(AY_EOUTPUT, fname, "Plugin 'onio' successfully loaded.");
 
  return TCL_OK;
-} // Onio_Init | onio_inittcmd
+} // Onio_Init
 
 } // extern "C"
