@@ -87,7 +87,6 @@ ay_text_copycb(void *src, void **dst)
  ay_text_object *tdst = NULL, *tsrc = NULL;
 
   tsrc = (ay_text_object *)src;
-  tdst = (ay_text_object *)dst;
 
   if(!(tdst = malloc(sizeof(ay_text_object))))
     return AY_EOMEM;
@@ -1006,7 +1005,7 @@ ay_text_notifycb(ay_object *o)
 cleanup:
 
   /* free (temporary) font structure */
-  tti_status = ay_tti_getcurves(NULL, 0, NULL);
+  (void)ay_tti_getcurves(NULL, 0, NULL);
 
   /* correct any inconsistent values of pnts and pntslen */
   if(text->pntslen && !text->pnts)
