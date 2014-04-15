@@ -742,8 +742,10 @@ cleanup:
 
   if(newjsval)
     free(newjsval);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
+  if(toa)
+    {
+      Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
+    }
   if(ton)
     {
       Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);

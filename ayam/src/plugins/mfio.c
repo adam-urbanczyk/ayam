@@ -3377,164 +3377,167 @@ Mfio_Init(Tcl_Interp *interp)
   Tcl_InitHashTable(&ay_mfio_read_ht, TCL_ONE_WORD_KEYS);
 
   /* fill hash table */
-  ay_status = ay_mfio_registerreadcb((char *)(kMF3DObjNURBPatch),
-				       ay_mfio_readnurbpatch);
+  ay_status += ay_mfio_registerreadcb((char *)(kMF3DObjNURBPatch),
+				      ay_mfio_readnurbpatch);
 
-  ay_status = ay_mfio_registerreadcb((char *)(kMF3DObjNURBCurve),
-				       ay_mfio_readnurbcurve);
+  ay_status += ay_mfio_registerreadcb((char *)(kMF3DObjNURBCurve),
+				      ay_mfio_readnurbcurve);
 
-  ay_status = ay_mfio_registerreadcb((char *)(kMF3DObjNURBCurve2D),
-				       ay_mfio_readnurbcurve2d);
+  ay_status += ay_mfio_registerreadcb((char *)(kMF3DObjNURBCurve2D),
+				      ay_mfio_readnurbcurve2d);
 
-  ay_status = ay_mfio_registerreadcb((char *)(kMF3DObjPolyLine),
-				       ay_mfio_readpolyline);
+  ay_status += ay_mfio_registerreadcb((char *)(kMF3DObjPolyLine),
+				      ay_mfio_readpolyline);
 
-  ay_status = ay_mfio_registerreadcb((char *)(kMF3DObjGeneralPolygon),
-				     ay_mfio_readgeneralpolygon);
+  ay_status += ay_mfio_registerreadcb((char *)(kMF3DObjGeneralPolygon),
+				      ay_mfio_readgeneralpolygon);
 
-  ay_status = ay_mfio_registerreadcb((char *)(kMF3DObjPolygon),
-				     ay_mfio_readpolygon);
+  ay_status += ay_mfio_registerreadcb((char *)(kMF3DObjPolygon),
+				      ay_mfio_readpolygon);
 
-  ay_status = ay_mfio_registerreadcb((char *)(kMF3DObjTriangle),
-				     ay_mfio_readtriangle);
+  ay_status += ay_mfio_registerreadcb((char *)(kMF3DObjTriangle),
+				      ay_mfio_readtriangle);
 
-  ay_status = ay_mfio_registerreadcb((char *)(kMF3DObjTriGrid),
-				     ay_mfio_readtrigrid);
+  ay_status += ay_mfio_registerreadcb((char *)(kMF3DObjTriGrid),
+				      ay_mfio_readtrigrid);
 
-  ay_status = ay_mfio_registerreadcb((char *)(kMF3DObjBox),
-				       ay_mfio_readbox);
+  ay_status += ay_mfio_registerreadcb((char *)(kMF3DObjBox),
+				      ay_mfio_readbox);
 
-  ay_status = ay_mfio_registerreadcb((char *)(kMF3DObjContainer),
-				       ay_mfio_readcntr);
+  ay_status += ay_mfio_registerreadcb((char *)(kMF3DObjContainer),
+				      ay_mfio_readcntr);
 
-  ay_status = ay_mfio_registerreadcb((char *)(kMF3DObjEndContainer),
-				       ay_mfio_readecntr);
+  ay_status += ay_mfio_registerreadcb((char *)(kMF3DObjEndContainer),
+				      ay_mfio_readecntr);
 
-  ay_status = ay_mfio_registerreadcb((char *)(kMF3DObjTranslateTransform),
-				       ay_mfio_readtran);
+  ay_status += ay_mfio_registerreadcb((char *)(kMF3DObjTranslateTransform),
+				      ay_mfio_readtran);
 
-  ay_status = ay_mfio_registerreadcb((char *)(kMF3DObjScaleTransform),
-				       ay_mfio_readscal);
+  ay_status += ay_mfio_registerreadcb((char *)(kMF3DObjScaleTransform),
+				      ay_mfio_readscal);
 
-  ay_status = ay_mfio_registerreadcb((char *)(kMF3DObjRotateTransform),
-				       ay_mfio_readrot);
+  ay_status += ay_mfio_registerreadcb((char *)(kMF3DObjRotateTransform),
+				      ay_mfio_readrot);
 
-  ay_status = ay_mfio_registerreadcb((char *)(kMF3DObjQuaternionTransform),
-				       ay_mfio_readquat);
+  ay_status += ay_mfio_registerreadcb((char *)(kMF3DObjQuaternionTransform),
+				      ay_mfio_readquat);
 
-  ay_status = ay_mfio_registerreadcb(
-				  (char *)(kMF3DObjRotateAboutAxisTransform),
-				  ay_mfio_readrotaaxis);
+  ay_status += ay_mfio_registerreadcb(
+				      (char *)(kMF3DObjRotateAboutAxisTransform),
+				      ay_mfio_readrotaaxis);
 
-  ay_status = ay_mfio_registerreadcb((char *)(kMF3DObjDiffuseColor),
-				       ay_mfio_readdcol);
+  ay_status += ay_mfio_registerreadcb((char *)(kMF3DObjDiffuseColor),
+				      ay_mfio_readdcol);
 
-  ay_status = ay_mfio_registerreadcb((char *)(kMF3DObjTransparencyColor),
-				       ay_mfio_readtcol);
+  ay_status += ay_mfio_registerreadcb((char *)(kMF3DObjTransparencyColor),
+				      ay_mfio_readtcol);
 
-  ay_status = ay_mfio_registerreadcb((char *)(kMF3DObjTrimCurves),
-				       ay_mfio_readtrim);
+  ay_status += ay_mfio_registerreadcb((char *)(kMF3DObjTrimCurves),
+				      ay_mfio_readtrim);
 
+  if(ay_status)
+    return TCL_ERROR;
 
   /* init hash table for write callbacks */
   Tcl_InitHashTable(&ay_mfio_write_ht, TCL_ONE_WORD_KEYS);
 
   /* fill hash table */
-  ay_status = ay_mfio_registerwritecb((char *)(AY_IDNPATCH),
+  ay_status += ay_mfio_registerwritecb((char *)(AY_IDNPATCH),
 				       ay_mfio_writenurbpatch);
-  ay_status = ay_mfio_registerwritecb((char *)(AY_IDNCURVE),
+  ay_status += ay_mfio_registerwritecb((char *)(AY_IDNCURVE),
 				       ay_mfio_writenurbcurve);
-  ay_status = ay_mfio_registerwritecb((char *)(AY_IDLEVEL),
+  ay_status += ay_mfio_registerwritecb((char *)(AY_IDLEVEL),
 				       ay_mfio_writelevel);
-  ay_status = ay_mfio_registerwritecb((char *)(AY_IDBOX),
+  ay_status += ay_mfio_registerwritecb((char *)(AY_IDBOX),
 				       ay_mfio_writebox);
-  ay_status = ay_mfio_registerwritecb((char *)(AY_IDSPHERE),
+  ay_status += ay_mfio_registerwritecb((char *)(AY_IDSPHERE),
 				       ay_mfio_writesphere);
-  ay_status = ay_mfio_registerwritecb((char *)(AY_IDDISK),
+  ay_status += ay_mfio_registerwritecb((char *)(AY_IDDISK),
 				       ay_mfio_writedisk);
-  ay_status = ay_mfio_registerwritecb((char *)(AY_IDCONE),
+  ay_status += ay_mfio_registerwritecb((char *)(AY_IDCONE),
 				       ay_mfio_writecone);
-  ay_status = ay_mfio_registerwritecb((char *)(AY_IDCYLINDER),
+  ay_status += ay_mfio_registerwritecb((char *)(AY_IDCYLINDER),
 				       ay_mfio_writecylinder);
-  ay_status = ay_mfio_registerwritecb((char *)(AY_IDTORUS),
+  ay_status += ay_mfio_registerwritecb((char *)(AY_IDTORUS),
 				       ay_mfio_writetorus);
-  ay_status = ay_mfio_registerwritecb((char *)(AY_IDINSTANCE),
+  ay_status += ay_mfio_registerwritecb((char *)(AY_IDINSTANCE),
 				       ay_mfio_writeinstance);
-  ay_status = ay_mfio_registerwritecb((char *)(AY_IDCLONE),
+  ay_status += ay_mfio_registerwritecb((char *)(AY_IDCLONE),
 				       ay_mfio_writeclone);
-  ay_status = ay_mfio_registerwritecb((char *)(AY_IDMIRROR),
+  ay_status += ay_mfio_registerwritecb((char *)(AY_IDMIRROR),
 				       ay_mfio_writeclone);
-  ay_status = ay_mfio_registerwritecb((char *)(AY_IDSCRIPT),
+  ay_status += ay_mfio_registerwritecb((char *)(AY_IDSCRIPT),
 				       ay_mfio_writescript);
 
-  ay_status = ay_mfio_registerwritecb((char *)(AY_IDICURVE),
+  ay_status += ay_mfio_registerwritecb((char *)(AY_IDICURVE),
 				       ay_mfio_writencconvertible);
-  ay_status = ay_mfio_registerwritecb((char *)(AY_IDCONCATNC),
+  ay_status += ay_mfio_registerwritecb((char *)(AY_IDCONCATNC),
 				       ay_mfio_writencconvertible);
-  ay_status = ay_mfio_registerwritecb((char *)(AY_IDEXTRNC),
+  ay_status += ay_mfio_registerwritecb((char *)(AY_IDEXTRNC),
 				       ay_mfio_writencconvertible);
-  ay_status = ay_mfio_registerwritecb((char *)(AY_IDNCIRCLE),
+  ay_status += ay_mfio_registerwritecb((char *)(AY_IDNCIRCLE),
 				       ay_mfio_writencconvertible);
-  ay_status = ay_mfio_registerwritecb((char *)(AY_IDOFFNC),
+  ay_status += ay_mfio_registerwritecb((char *)(AY_IDOFFNC),
 				       ay_mfio_writencconvertible);
 
-  ay_status = ay_mfio_registerwritecb((char *)(AY_IDEXTRUDE),
+  ay_status += ay_mfio_registerwritecb((char *)(AY_IDEXTRUDE),
 				       ay_mfio_writenpconvertible);
-  ay_status = ay_mfio_registerwritecb((char *)(AY_IDREVOLVE),
+  ay_status += ay_mfio_registerwritecb((char *)(AY_IDREVOLVE),
 				       ay_mfio_writenpconvertible);
-  ay_status = ay_mfio_registerwritecb((char *)(AY_IDSWEEP),
+  ay_status += ay_mfio_registerwritecb((char *)(AY_IDSWEEP),
 				       ay_mfio_writenpconvertible);
-  ay_status = ay_mfio_registerwritecb((char *)(AY_IDSWING),
+  ay_status += ay_mfio_registerwritecb((char *)(AY_IDSWING),
 				       ay_mfio_writenpconvertible);
-  ay_status = ay_mfio_registerwritecb((char *)(AY_IDSKIN),
+  ay_status += ay_mfio_registerwritecb((char *)(AY_IDSKIN),
 				       ay_mfio_writenpconvertible);
-  ay_status = ay_mfio_registerwritecb((char *)(AY_IDCAP),
+  ay_status += ay_mfio_registerwritecb((char *)(AY_IDCAP),
 				       ay_mfio_writenpconvertible);
-  ay_status = ay_mfio_registerwritecb((char *)(AY_IDBEVEL),
+  ay_status += ay_mfio_registerwritecb((char *)(AY_IDBEVEL),
 				       ay_mfio_writenpconvertible);
-  ay_status = ay_mfio_registerwritecb((char *)(AY_IDPAMESH),
+  ay_status += ay_mfio_registerwritecb((char *)(AY_IDPAMESH),
 				       ay_mfio_writenpconvertible);
-  ay_status = ay_mfio_registerwritecb((char *)(AY_IDBPATCH),
+  ay_status += ay_mfio_registerwritecb((char *)(AY_IDBPATCH),
 				       ay_mfio_writenpconvertible);
-  ay_status = ay_mfio_registerwritecb((char *)(AY_IDGORDON),
+  ay_status += ay_mfio_registerwritecb((char *)(AY_IDGORDON),
 				       ay_mfio_writenpconvertible);
-  ay_status = ay_mfio_registerwritecb((char *)(AY_IDBIRAIL1),
+  ay_status += ay_mfio_registerwritecb((char *)(AY_IDBIRAIL1),
 				       ay_mfio_writenpconvertible);
-  ay_status = ay_mfio_registerwritecb((char *)(AY_IDBIRAIL2),
+  ay_status += ay_mfio_registerwritecb((char *)(AY_IDBIRAIL2),
 				       ay_mfio_writenpconvertible);
-  ay_status = ay_mfio_registerwritecb((char *)(AY_IDTEXT),
+  ay_status += ay_mfio_registerwritecb((char *)(AY_IDTEXT),
 				       ay_mfio_writenpconvertible);
-  ay_status = ay_mfio_registerwritecb((char *)(AY_IDHYPERBOLOID),
+  ay_status += ay_mfio_registerwritecb((char *)(AY_IDHYPERBOLOID),
 				       ay_mfio_writenpconvertible);
-  ay_status = ay_mfio_registerwritecb((char *)(AY_IDPARABOLOID),
+  ay_status += ay_mfio_registerwritecb((char *)(AY_IDPARABOLOID),
 				       ay_mfio_writenpconvertible);
-  ay_status = ay_mfio_registerwritecb((char *)(AY_IDEXTRNP),
+  ay_status += ay_mfio_registerwritecb((char *)(AY_IDEXTRNP),
 				       ay_mfio_writenpconvertible);
 
-  ay_status = ay_mfio_registerwritecb((char *)(AY_IDPOMESH),
+  ay_status += ay_mfio_registerwritecb((char *)(AY_IDPOMESH),
 				       ay_mfio_writepolymesh);
 
 
-  /* register some C-functions as Tcl-Commands */
-  Tcl_CreateCommand (interp, "mfioRead",
-		     ay_mfio_importscenetcmd,
-		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+  if(ay_status)
+    return TCL_ERROR;
 
-  Tcl_CreateCommand (interp, "mfioWrite",
-		     ay_mfio_exportscenetcmd,
-		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+  /* register some C-functions as Tcl-Commands */
+  Tcl_CreateCommand(interp, "mfioRead",
+		    ay_mfio_importscenetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "mfioWrite",
+		    ay_mfio_exportscenetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* source mfio.tcl, it contains Tcl-code for menu entries */
   if((Tcl_EvalFile(interp, "mfio.tcl")) != TCL_OK)
      {
        ay_error(AY_ERROR, fname,
 		  "Error while sourcing \"mfio.tcl\"!");
-       return TCL_OK;
+       return TCL_ERROR;
      }
 
-
   ay_error(AY_EOUTPUT, fname, "Plugin 'mfio' successfully loaded.");
-
 
  return TCL_OK;
 } /* Mfio_Init */

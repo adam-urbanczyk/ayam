@@ -460,7 +460,7 @@ dxfio_readarc(const class dimeState *state,
   newo->movy = center[1];
   newo->movz = center[2];
 
-  ay_status = ay_notify_object(newo);
+  (void)ay_notify_object(newo);
 
   // link the new arc into the scene hierarchy
   ay_status = dxfio_linkobject(newo);
@@ -497,7 +497,7 @@ dxfio_readcircle(const class dimeState *state,
   newo->movy = circle->getCenter()[1];
   newo->movz = circle->getCenter()[2];
 
-  ay_status = ay_notify_object(newo);
+  (void)ay_notify_object(newo);
 
   // link the new circle into the scene hierarchy
   ay_status = dxfio_linkobject(newo);
@@ -561,7 +561,7 @@ dxfio_readellipse(const class dimeState *state,
 	}
     } // if
 
-  ay_status = ay_notify_object(newo);
+  (void)ay_notify_object(newo);
 
   // link the new circle/ellipse into the scene hierarchy
   ay_status = dxfio_linkobject(newo);
@@ -900,6 +900,8 @@ dxfio_getpolymesh(const class dimeState *state,
   if(!(pomesh->nloops = (unsigned int*)calloc(numfaces, sizeof(unsigned int))))
     { ay_status = AY_EOMEM; goto cleanup; }
   if(!(pomesh->nverts = (unsigned int*)calloc(numfaces, sizeof(unsigned int))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  if(!(pomesh->verts = (unsigned int*)calloc(numfaces*4, sizeof(unsigned int))))
     { ay_status = AY_EOMEM; goto cleanup; }
   a = 0;
   for(i = 0; i < numfaces; i++)
@@ -2772,11 +2774,42 @@ Dxfio_Init(Tcl_Interp *interp)
       return TCL_ERROR;
     }
 
+  // init hash table for write callbacks
+  Tcl_InitHashTable(&dxfio_write_ht, TCL_ONE_WORD_KEYS);
+
+  // fill hash table
+  ay_status += dxfio_registerwritecb((char *)(AY_IDLEVEL),
+				     dxfio_writelevel);
+
+  ay_status += dxfio_registerwritecb((char *)(AY_IDCLONE),
+				     dxfio_writeclone);
+
+  ay_status += dxfio_registerwritecb((char *)(AY_IDMIRROR),
+				     dxfio_writeclone);
+
+  ay_status += dxfio_registerwritecb((char *)(AY_IDINSTANCE),
+				     dxfio_writeinstance);
+
+  ay_status += dxfio_registerwritecb((char *)(AY_IDSCRIPT),
+				     dxfio_writescript);
+
+  ay_status += dxfio_registerwritecb((char *)(AY_IDPOMESH),
+				     dxfio_writepomesh);
+
+  ay_status += dxfio_registerwritecb((char *)(AY_IDNPATCH),
+				     dxfio_writenpatch);
+
+  ay_status += dxfio_registerwritecb((char *)(AY_IDNCURVE),
+				     dxfio_writencurve);
+
+  if(ay_status)
+    return TCL_ERROR;
+
   // source dxfio.tcl, it contains vital Tcl-code
   if((Tcl_EvalFile(interp, "dxfio.tcl")) != TCL_OK)
     {
       ay_error(AY_ERROR, fname, "Error while sourcing \"dxfio.tcl\"!");
-      return TCL_OK;
+      return TCL_ERROR;
     }
 
   // create new Tcl commands to interface with the plugin
@@ -2785,35 +2818,6 @@ Dxfio_Init(Tcl_Interp *interp)
 
   Tcl_CreateCommand(interp, "dxfioWrite", (Tcl_CmdProc*) dxfio_writetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-
-  // init hash table for write callbacks
-  Tcl_InitHashTable(&dxfio_write_ht, TCL_ONE_WORD_KEYS);
-
-  // fill hash table
-  ay_status = dxfio_registerwritecb((char *)(AY_IDLEVEL),
-				   dxfio_writelevel);
-
-  ay_status = dxfio_registerwritecb((char *)(AY_IDCLONE),
-				   dxfio_writeclone);
-
-  ay_status = dxfio_registerwritecb((char *)(AY_IDMIRROR),
-				   dxfio_writeclone);
-
-  ay_status = dxfio_registerwritecb((char *)(AY_IDINSTANCE),
-				   dxfio_writeinstance);
-
-  ay_status = dxfio_registerwritecb((char *)(AY_IDSCRIPT),
-				   dxfio_writescript);
-
-  ay_status = dxfio_registerwritecb((char *)(AY_IDPOMESH),
-				   dxfio_writepomesh);
-
-  ay_status = dxfio_registerwritecb((char *)(AY_IDNPATCH),
-				   dxfio_writenpatch);
-
-  ay_status = dxfio_registerwritecb((char *)(AY_IDNCURVE),
-				   dxfio_writencurve);
-
 
   ay_error(AY_EOUTPUT, fname, "Plugin 'dxfio' successfully loaded.");
 
