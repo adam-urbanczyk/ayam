@@ -1517,8 +1517,8 @@ ay_rrib_RiBasis(RtBasis ubasis, RtInt ustep,
  int ubasis_custom = AY_TRUE;
  int vbasis_custom = AY_TRUE;
 
+  /* U */
   ay_rrib_cattributes->ustep = ustep;
-  ay_rrib_cattributes->vstep = vstep;
 
   if(ubasis == RiBezierBasis)
     {
@@ -1544,10 +1544,29 @@ ay_rrib_RiBasis(RtBasis ubasis, RtInt ustep,
       ubasis_custom = AY_FALSE;
     }
 
+  if(ubasis == RiPowerBasis)
+    {
+      ay_rrib_cattributes->btype_u = AY_BTPOWER;
+      ubasis_custom = AY_FALSE;
+    }
+
+  if(ubasis_custom)
+    {
+      ay_rrib_cattributes->btype_u = AY_BTCUSTOM;
+      if(ay_rrib_cattributes->ubasisptr)
+	free(ay_rrib_cattributes->ubasisptr);
+      if(!(ay_rrib_cattributes->ubasisptr = malloc(1*sizeof(RtBasis))))
+	return;
+      memcpy(ay_rrib_cattributes->ubasisptr, ubasis, sizeof(RtBasis));
+    }
+
+  /* V */
+  ay_rrib_cattributes->vstep = vstep;
+
   if(vbasis == RiBezierBasis)
     {
       ay_rrib_cattributes->btype_v = AY_BTBEZIER;
-      vbasis_custom = AY_FALSE;
+      ubasis_custom = AY_FALSE;
     }
 
   if(vbasis == RiBSplineBasis)
@@ -1566,6 +1585,23 @@ ay_rrib_RiBasis(RtBasis ubasis, RtInt ustep,
     {
       ay_rrib_cattributes->btype_v = AY_BTHERMITE;
       vbasis_custom = AY_FALSE;
+    }
+
+  if(vbasis == RiPowerBasis)
+    {
+      ay_rrib_cattributes->btype_v = AY_BTPOWER;
+      vbasis_custom = AY_FALSE;
+    }
+
+  if(vbasis_custom)
+    {
+      ay_rrib_cattributes->btype_v = AY_BTCUSTOM;
+      ay_rrib_cattributes->vbasisptr = vbasis;
+      if(ay_rrib_cattributes->vbasisptr)
+	free(ay_rrib_cattributes->vbasisptr);
+      if(!(ay_rrib_cattributes->vbasisptr = malloc(1*sizeof(RtBasis))))
+	return;
+      memcpy(ay_rrib_cattributes->vbasisptr, vbasis, sizeof(RtBasis));
     }
 
  return;
@@ -2568,6 +2604,7 @@ ay_rrib_RiPatchMesh(RtToken type, RtInt nu, RtToken uwrap,
  ay_pamesh_object pm;
  int i = 0, j = 0, stride = 4;
  double *p = NULL;
+ RtBasis *basis;
  RtPointer tokensfound[PPWTBL_LAST];
  RtFloat *pp = NULL, *pw = NULL;
  char *hvars[2] = {"P","Pw"};
@@ -2600,7 +2637,26 @@ ay_rrib_RiPatchMesh(RtToken type, RtInt nu, RtToken uwrap,
   pm.ustep = ay_rrib_cattributes->ustep;
   pm.vstep = ay_rrib_cattributes->vstep;
 
-  pm.ubasis = NULL;
+  if(pm.btype_u == AY_BTCUSTOM)
+    {
+      basis = ay_rrib_cattributes->ubasisptr;
+      if(!(pm.ubasis = calloc(16, sizeof(double))))
+	{
+	  goto cleanup;
+	}
+      for(i = 0; i < 4; i++)
+	{
+	  pm.ubasis[i]    = (*basis)[0][i];
+	  pm.ubasis[i+4]  = (*basis)[1][i];
+	  pm.ubasis[i+8]  = (*basis)[2][i];
+	  pm.ubasis[i+12] = (*basis)[3][i];
+	}
+    }
+  else
+    {
+      pm.ubasis = NULL;
+    }
+
   pm.vbasis = NULL;
 
   RibGetUserParameters(Ppw, PPWTBL_LAST, n, tokens, parms, tokensfound);
@@ -2663,16 +2719,18 @@ ay_rrib_RiPatchMesh(RtToken type, RtInt nu, RtToken uwrap,
 	} /* for */
     } /* for */
 
-    if(!ay_pmt_valid(&pm))
-      {
-	ay_status = ay_pmt_tonpatch(&pm, &(pm.npatch));
-      }
+  if(!ay_pmt_valid(&pm))
+    {
+      ay_status = ay_pmt_tonpatch(&pm, &(pm.npatch));
+    }
 
   ay_rrib_readpvs(n, tokens, parms, 2, hvars, &(ay_rrib_co.tags));
 
   ay_rrib_linkobject((void *)(&pm), AY_IDPAMESH);
 
   ay_tags_delall(&ay_rrib_co);
+
+cleanup:
 
   ay_object_deletemulti(pm.npatch, AY_FALSE);
   pm.npatch = NULL;
@@ -4861,6 +4919,8 @@ ay_rrib_pushattribs(void)
       newstate->ishader = NULL;
       newstate->eshader = NULL;
       newstate->tags = NULL;
+      newstate->ubasisptr = NULL;
+      newstate->vbasisptr = NULL;
 
       if(ay_rrib_cattributes->sshader)
 	{
@@ -4885,6 +4945,23 @@ ay_rrib_pushattribs(void)
 	  ay_status = ay_shader_copy(ay_rrib_cattributes->eshader,
 				     &(newstate->eshader));
 	}
+
+      if(ay_rrib_cattributes->ubasisptr)
+	{
+	  if(!(newstate->ubasisptr = malloc(1*sizeof(RtBasis))))
+	    return;
+	  memcpy(newstate->ubasisptr, ay_rrib_cattributes->ubasisptr,
+		 sizeof(RtBasis));
+	}
+
+      if(ay_rrib_cattributes->vbasisptr)
+	{
+	  if(!(newstate->vbasisptr = malloc(1*sizeof(RtBasis))))
+	    return;
+	  memcpy(newstate->vbasisptr, ay_rrib_cattributes->vbasisptr,
+		 sizeof(RtBasis));
+	}
+
 #if 0
       /* copy trimcurves */
       if(ay_rrib_cattributes->trimcurves)
@@ -4918,6 +4995,10 @@ ay_rrib_pushattribs(void)
       newstate->t3 = 1.0f;
       newstate->s4 = 1.0f;
       newstate->t4 = 1.0f;
+      newstate->ustep = 3;
+      newstate->vstep = 3;
+      newstate->btype_u = AY_BTBEZIER;
+      newstate->btype_v = AY_BTBEZIER;
     } /* if */
 
   /* link new state to stack */
@@ -4990,6 +5071,11 @@ ay_rrib_popattribs(void)
 	}
     } /* if */
 
+  if(ay_rrib_cattributes->ubasisptr)
+    free(ay_rrib_cattributes->ubasisptr);
+  if(ay_rrib_cattributes->vbasisptr)
+    free(ay_rrib_cattributes->vbasisptr);
+
   free(ay_rrib_cattributes);
 
   ay_rrib_cattributes = nextstate;
@@ -5053,7 +5139,6 @@ ay_rrib_pushtrafos(void)
       newstate->m[5] = 1.0;
       newstate->m[10] = 1.0;
       newstate->m[15] = 1.0;
-
     } /* if */
 
   /* link new state to stack */
