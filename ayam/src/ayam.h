@@ -1885,8 +1885,8 @@ extern char *ay_error_igntype;
 #define AY_BTBSPLINE    1
 #define AY_BTCATMULLROM 2
 #define AY_BTHERMITE    3
-#define AY_BTCUSTOM     4
-#define AY_BTPOWER      5
+#define AY_BTPOWER      4
+#define AY_BTCUSTOM     5
 /*@}*/
 
 /** \name Subdivision Schemes */
