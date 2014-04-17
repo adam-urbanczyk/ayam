@@ -917,9 +917,9 @@ ay_pamesh_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%d\n",&pamesh->ustep);
   fscanf(fileptr,"%d\n",&pamesh->vstep);
 
-  if(ay_read_version >= 15)
+  if(ay_read_version < 15)
     {
-      /* Since Ayam 1.21: */
+      /* Prior to Ayam 1.21: */
       if(pamesh->btype_u == 4)
 	pamesh->btype_u = AY_BTCUSTOM;
       if(pamesh->btype_v == 4)
