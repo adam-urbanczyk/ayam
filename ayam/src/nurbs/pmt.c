@@ -14,6 +14,58 @@
 
 /** \file pmt.c \brief PatchMesh tools */
 
+/* Bezier */
+static double mb[16] = {-1, 3, -3, 1,  3, -6, 3, 0,  -3, 3, 0, 0,  1, 0, 0, 0};
+/* Hermite (RenderMan flavour) */
+static double mh[16] = {2, -3, 0, 1,  1, -2, 1, 0,  -2, 3, 0, 0,  1, -1, 0, 0};
+/* Catmull Rom */
+static double mc[16] = {-0.5, 1, -0.5, 0,  1.5, -2.5, 0, 1,  -1.5, 2, 0.5, 0,
+			0.5, -0.5, 0, 0};
+/* B-Spline */
+static double ms[16] = {-1.0/6, 3.0/6, -3.0/6, 1.0/6,  3.0/6, -1, 0, 4.0/6,
+			-3.0/6, 3.0/6, 3.0/6, 1.0/6,  1.0/6, 0, 0, 0};
+/* Power */
+static double mp[16] = {1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1};
+
+ /* for reference */
+#if 0
+RtBasis RiBezierBasis = { { -1.0,  3.0, -3.0,  1.0 },
+                          {  3.0, -6.0,  3.0,  0.0 },
+                          { -3.0,  3.0,  0.0,  0.0 },
+                          {  1.0,  0.0,  0.0,  0.0 }
+                         };
+
+
+/* Define One Sixth of */
+#define Sx(a) ((a)/6)
+RtBasis RiBSplineBasis = { { Sx(-1.0), Sx( 3.0), Sx(-3.0), Sx( 1.0) },
+                           { Sx( 3.0), Sx(-6.0), Sx( 3.0), Sx( 0.0) },
+                           { Sx(-3.0), Sx( 0.0), Sx( 3.0), Sx( 0.0) },
+                           { Sx( 1.0), Sx( 4.0), Sx( 1.0), Sx( 0.0) }
+                         };
+
+/* Define One Half of */
+#define Hf(a) ((a)/2)
+RtBasis RiCatmullRomBasis = { { Hf(-1.0), Hf( 3.0), Hf(-3.0), Hf( 1.0) },
+                              { Hf( 2.0), Hf(-5.0), Hf( 4.0), Hf(-1.0) },
+                              { Hf(-1.0), Hf( 0.0), Hf( 1.0), Hf( 0.0) },
+                              { Hf( 0.0), Hf( 2.0), Hf( 0.0), Hf( 0.0) }
+                             };
+
+RtBasis RiHermiteBasis = { {  2.0,  1.0, -2.0,  1.0 },
+                           { -3.0, -2.0,  3.0, -1.0 },
+                           {  0.0,  1.0,  0.0,  0.0 },
+                           {  1.0,  0.0,  0.0,  0.0 }
+                          };
+
+RtBasis RiPowerBasis = { { 1.0, 0.0, 0.0, 0.0 },
+                         { 0.0, 1.0, 0.0, 0.0 },
+                         { 0.0, 0.0, 1.0, 0.0 },
+                         { 0.0, 0.0, 0.0, 1.0 }
+                        };
+#endif
+
+
 
 /* prototypes of functions local to this module: */
 
@@ -795,47 +847,6 @@ ay_pmt_tobezier(ay_pamesh_object *pm)
  double *n1, *n2, *n3, *n4;
  double m[16], tm[16], mu[16], mv[16], mut[16];
  double mbi[16];
- double mb[16] = {-1, 3, -3, 1,  3, -6, 3, 0,  -3, 3, 0, 0,  1, 0, 0, 0};
- double mh[16] = {2, -3, 0, 1,  1, -2, 1, 0,  -2, 3, 0, 0,  1, -1, 0, 0};
- double mc[16] = {-0.5, 1, -0.5, 1,  1.5, -2.5, 0, 1,  -1.5, 2, 0.5, 0,
-		  0.5, -0.5, 0, 0};
-
-#if 0
-RtBasis RiBezierBasis = { { -1.0,  3.0, -3.0,  1.0 },
-                          {  3.0, -6.0,  3.0,  0.0 },
-                          { -3.0,  3.0,  0.0,  0.0 },
-                          {  1.0,  0.0,  0.0,  0.0 }
-                         };
-
-
-/* Define One Sixth of */
-#define Sx(a) ((a)/6)
-RtBasis RiBSplineBasis = { { Sx(-1.0), Sx( 3.0), Sx(-3.0), Sx( 1.0) },
-                           { Sx( 3.0), Sx(-6.0), Sx( 3.0), Sx( 0.0) },
-                           { Sx(-3.0), Sx( 0.0), Sx( 3.0), Sx( 0.0) },
-                           { Sx( 1.0), Sx( 4.0), Sx( 1.0), Sx( 0.0) }
-                         };
-
-/* Define One Half of */
-#define Hf(a) ((a)/2)
-RtBasis RiCatmullRomBasis = { { Hf(-1.0), Hf( 3.0), Hf(-3.0), Hf( 1.0) },
-                              { Hf( 2.0), Hf(-5.0), Hf( 4.0), Hf(-1.0) },
-                              { Hf(-1.0), Hf( 0.0), Hf( 1.0), Hf( 0.0) },
-                              { Hf( 0.0), Hf( 2.0), Hf( 0.0), Hf( 0.0) }
-                             };
-
-RtBasis RiHermiteBasis = { {  2.0,  1.0, -2.0,  1.0 },
-                           { -3.0, -2.0,  3.0, -1.0 },
-                           {  0.0,  1.0,  0.0,  0.0 },
-                           {  1.0,  0.0,  0.0,  0.0 }
-                          };
-
-RtBasis RiPowerBasis = { { 1.0, 0.0, 0.0, 0.0 },
-                         { 0.0, 1.0, 0.0, 0.0 },
-                         { 0.0, 0.0, 1.0, 0.0 },
-                         { 0.0, 0.0, 0.0, 1.0 }
-                        };
-#endif
 
   if(!pm)
     return AY_FALSE;
@@ -865,15 +876,23 @@ RtBasis RiPowerBasis = { { 1.0, 0.0, 0.0, 0.0 },
       memcpy(mu, mbi, 16*sizeof(double));
       switch(pm->btype_u)
 	{
+	case AY_BTBSPLINE:
+	  ay_trafo_multmatrix4(mu, ms);
+	  break;
 	case AY_BTHERMITE:
 	  ay_trafo_multmatrix4(mu, mh);
 	  break;
 	case AY_BTCATMULLROM:
 	  ay_trafo_multmatrix4(mu, mc);
 	  break;
+	case AY_BTPOWER:
+	  ay_trafo_multmatrix4(mu, mp);
+	  break;
 	case AY_BTCUSTOM:
 	  ay_trafo_multmatrix4(mu, pm->ubasis);
 	  break;
+	default:
+	  return AY_ERROR;
 	}
 
       /* transpose u conversion matrix */
@@ -896,15 +915,23 @@ RtBasis RiPowerBasis = { { 1.0, 0.0, 0.0, 0.0 },
       memcpy(mv, mbi, 16*sizeof(double));
       switch(pm->btype_v)
 	{
+	case AY_BTBSPLINE:
+	  ay_trafo_multmatrix4(mv, ms);
+	  break;
 	case AY_BTHERMITE:
 	  ay_trafo_multmatrix4(mv, mh);
 	  break;
 	case AY_BTCATMULLROM:
 	  ay_trafo_multmatrix4(mv, mc);
 	  break;
+	case AY_BTPOWER:
+	  ay_trafo_multmatrix4(mv, mp);
+	  break;
 	case AY_BTCUSTOM:
 	  ay_trafo_multmatrix4(mv, pm->vbasis);
 	  break;
+	default:
+	  return AY_ERROR;
 	}
     } /* if convertv */
 
@@ -1092,3 +1119,4 @@ ay_pmt_tobeztcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_pmt_tobeztcmd */
+
