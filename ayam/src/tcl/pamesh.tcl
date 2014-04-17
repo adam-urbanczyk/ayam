@@ -65,16 +65,16 @@ proc pamesh_getAttr { } {
     addInfo $w PatchMeshAttrData IsRat
 
     if { $PatchMeshAttrData(Type) == 1 } {
+	set l [list Bezier B-Spline CatmullRom Hermite Power Custom]
+	addMenu $w PatchMeshAttrData BType_U $l
+	addMenu $w PatchMeshAttrData BType_V $l
 
-	addMenu $w PatchMeshAttrData BType_U [list Bezier B-Spline CatmullRom Hermite Custom]
-	addMenu $w PatchMeshAttrData BType_V [list Bezier B-Spline CatmullRom Hermite Custom]
-
-	if { $PatchMeshAttrData(BType_U) == 4 } {
+	if { $PatchMeshAttrData(BType_U) == 5 } {
 	    addParam $w PatchMeshAttrData Step_U
 	    addMatrix $w PatchMeshAttrData Basis_U
 	}
 
-	if { $PatchMeshAttrData(BType_V) == 4 } {
+	if { $PatchMeshAttrData(BType_V) == 5 } {
 	    addParam $w PatchMeshAttrData Step_V
 	    addMatrix $w PatchMeshAttrData Basis_V
 	}

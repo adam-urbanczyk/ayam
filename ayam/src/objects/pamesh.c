@@ -917,6 +917,15 @@ ay_pamesh_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%d\n",&pamesh->ustep);
   fscanf(fileptr,"%d\n",&pamesh->vstep);
 
+  if(ay_read_version >= 15)
+    {
+      /* Since Ayam 1.21: */
+      if(pamesh->btype_u == 4)
+	pamesh->btype_u = AY_BTCUSTOM;
+      if(pamesh->btype_v == 4)
+	pamesh->btype_v = AY_BTCUSTOM;
+    }
+
   if(pamesh->btype_u == AY_BTCUSTOM)
     {
       if(!(pamesh->ubasis = calloc(16, sizeof(double))))
@@ -926,7 +935,7 @@ ay_pamesh_readcb(FILE *fileptr, ay_object *o)
 	}
       for(i = 0; i < 16; i++)
 	{
-	  fscanf(fileptr, "%lg\n", &(pamesh->vbasis[i]));
+	  fscanf(fileptr, "%lg\n", &(pamesh->ubasis[i]));
 	}
     }
 
@@ -1118,6 +1127,10 @@ ay_pamesh_wribcb(char *file, ay_object *o)
       ubasisptr = &(RiHermiteBasis);
       ustep = RI_HERMITESTEP;
       break;
+    case AY_BTPOWER:
+      ubasisptr = &(RiPowerBasis);
+      ustep = RI_POWERSTEP;
+      break;
     case AY_BTCUSTOM:
       ubasisptr = &(ubasis);
       ustep = (RtInt)patch->ustep;
@@ -1152,6 +1165,10 @@ ay_pamesh_wribcb(char *file, ay_object *o)
     case AY_BTHERMITE:
       vbasisptr = &(RiHermiteBasis);
       vstep = RI_HERMITESTEP;
+      break;
+    case AY_BTPOWER:
+      vbasisptr = &(RiPowerBasis);
+      vstep = RI_POWERSTEP;
       break;
     case AY_BTCUSTOM:
       vbasisptr = &(vbasis);
