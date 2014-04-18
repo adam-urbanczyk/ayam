@@ -2657,7 +2657,25 @@ ay_rrib_RiPatchMesh(RtToken type, RtInt nu, RtToken uwrap,
       pm.ubasis = NULL;
     }
 
-  pm.vbasis = NULL;
+  if(pm.btype_v == AY_BTCUSTOM)
+    {
+      basis = ay_rrib_cattributes->vbasisptr;
+      if(!(pm.vbasis = calloc(16, sizeof(double))))
+	{
+	  goto cleanup;
+	}
+      for(i = 0; i < 4; i++)
+	{
+	  pm.vbasis[i]    = (*basis)[0][i];
+	  pm.vbasis[i+4]  = (*basis)[1][i];
+	  pm.vbasis[i+8]  = (*basis)[2][i];
+	  pm.vbasis[i+12] = (*basis)[3][i];
+	}
+    }
+  else
+    {
+      pm.vbasis = NULL;
+    }
 
   RibGetUserParameters(Ppw, PPWTBL_LAST, n, tokens, parms, tokensfound);
   if(tokensfound[PPWTBL_PW])
