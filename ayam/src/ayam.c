@@ -516,6 +516,9 @@ ay_init(Tcl_Interp *interp)
   /* initialize NURBS knots module */
   ay_knots_init(interp);
 
+  /* initialize the patch mesh tools module */
+  ay_pmt_init();
+
   /* register BP (Bevel Parameters) tag type */
   ay_tags_register(interp, ay_bp_tagname, &ay_bp_tagtype);
 

@@ -27,6 +27,8 @@ static double ms[16] = {-1.0/6, 3.0/6, -3.0/6, 1.0/6,  3.0/6, -1, 0, 4.0/6,
 /* Power */
 static double mp[16] = {1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1};
 
+static double mbi[16];
+
  /* for reference */
 #if 0
 RtBasis RiBezierBasis = { { -1.0,  3.0, -3.0,  1.0 },
@@ -846,7 +848,6 @@ ay_pmt_tobezier(ay_pamesh_object *pm)
  double *cv, *newcv, *expcv, *n, *p, *p1, *p2, *p3, *p4;
  double *n1, *n2, *n3, *n4;
  double m[16], tm[16], mu[16], mv[16], mut[16];
- double mbi[16];
 
   if(!pm)
     return AY_FALSE;
@@ -863,12 +864,6 @@ ay_pmt_tobezier(ay_pamesh_object *pm)
 
   if(!convertu && !convertv)
     return AY_OK;
-
-  /* invert target basis matrix */
-  ay_status = ay_trafo_invgenmatrix4(mb, mbi);
-
-  if(ay_status)
-    return AY_ERROR;
 
   /* create conversion matrices */
   if(convertu)
@@ -1120,3 +1115,16 @@ ay_pmt_tobeztcmd(ClientData clientData, Tcl_Interp *interp,
  return TCL_OK;
 } /* ay_pmt_tobeztcmd */
 
+
+/** ay_pmt_init:
+ * Initialize the patch mesh tools module.
+ */
+void
+ay_pmt_init()
+{
+
+  /* invert Bezier basis matrix */
+  (void)ay_trafo_invgenmatrix4(mb, mbi);
+
+ return;
+} /* ay_pmt_init */
