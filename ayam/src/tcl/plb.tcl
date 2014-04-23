@@ -208,11 +208,11 @@ button $f.b1 -text "Apply" -padx 10 -pady 0 -command {
     if { $sel == "" } { return }
     set prop [$lb get $sel]
     set setprocp ""
-    eval [subst "set setprocp \$${prop}(sproc)"]
-    if { $setprocp != "" } { $setprocp } else { setProp }
+    eval [subst "set setprocp {\$${prop}(sproc)}"]
+    if { $setprocp != "" } { eval $setprocp } else { setProp }
     set getprocp ""
-    eval [subst "set getprocp \$${prop}(gproc)"]
-    if { $getprocp != "" } { $getprocp } else { getProp }
+    eval [subst "set getprocp {\$${prop}(gproc)}"]
+    if { $getprocp != "" } { eval $getprocp } else { getProp }
 
     # save current property data for the "Reset" button
     eval [subst "set arrname \$${prop}(arr)"]

@@ -395,8 +395,8 @@ global ay ay_error
 	    # get property data
 	    global $arrayname
 	    set getprocp ""
-	    eval [subst "set getprocp \$${arrayname}(gproc)"]
-	    if { $getprocp != "" } { $getprocp } else { getProp }
+	    eval [subst "set getprocp {\$${arrayname}(gproc)}"]
+	    if { $getprocp != "" } { eval $getprocp } else { getProp }
 
 	    # fill value to variable
 	    eval [subst "set arr \$${arrayname}(arr)"]
@@ -466,8 +466,8 @@ global ay curtypes ay_error
 	    # get property data
 	    global $arrayname
 	    set getprocp ""
-	    eval [subst "set getprocp \$${arrayname}(gproc)"]
-	    if { $getprocp != "" } { $getprocp } else { getProp }
+	    eval [subst "set getprocp {\$${arrayname}(gproc)}"]
+	    if { $getprocp != "" } { eval $getprocp } else { getProp }
 
 	    # modify property data
 	    eval [subst "set arr \$${arrayname}(arr)"]
@@ -477,8 +477,8 @@ global ay curtypes ay_error
 
 	    # set property data
 	    set setprocp ""
-	    eval [subst "set setprocp \$${arrayname}(sproc)"]
-	    if { $setprocp != "" } { $setprocp } else { setProp }
+	    eval [subst "set setprocp {\$${arrayname}(sproc)}"]
+	    if { $setprocp != "" } { eval $setprocp } else { setProp }
 	}
 	incr obj
     }

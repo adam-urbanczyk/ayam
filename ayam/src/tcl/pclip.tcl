@@ -123,18 +123,17 @@ proc pclip_paste { } {
 		global $pclip_prop
 		eval [subst "set arr \$${pclip_prop}(arr)"]
 		set gproc ""
-		eval [subst "set gproc \$${pclip_prop}(gproc)"]
+		eval [subst "set gproc {\$${pclip_prop}(gproc)}"]
 		set sproc ""
-		eval [subst "set sproc \$${pclip_prop}(sproc)"]
+		eval [subst "set sproc {\$${pclip_prop}(sproc)}"]
 
 		global $arr pclip_clipboard
-		if { $gproc != "" } { $gproc } else { getProp }
+		if { $gproc != "" } { eval $gproc } else { getProp }
 		set avnames [array names pclip_clipboard]
 		foreach j $avnames {
-
 		    eval [subst "set $arr\(\$j\) {\$pclip_clipboard\(\$j\)}"]
 		}
-		if { $sproc != "" } { $sproc } else { setProp }
+		if { $sproc != "" } { eval $sproc } else { setProp }
 	    } else {
 
 	   puts stderr "pclip_paste: Unable to paste property: \"$pclip_prop\""
@@ -204,13 +203,13 @@ proc pclip_pastetosel { } {
 
 	    # get names of get/set procedures
 	    set gproc ""
-	    eval [subst "set gproc \$${pclip_prop}(gproc)"]
+	    eval [subst "set gproc {\$${pclip_prop}(gproc)}"]
 	    set sproc ""
-	    eval [subst "set sproc \$${pclip_prop}(sproc)"]
+	    eval [subst "set sproc {\$${pclip_prop}(sproc)}"]
 
 	    # get old values of property to paste to
 	    global $arr pclip_clipboard
-	    if { $gproc != "" } { $gproc } else { getProp }
+	    if { $gproc != "" } { eval $gproc } else { getProp }
 
 	    # copy values from property clipboard to property, possibly
 	    # mixing old and new values (depending on clipboard content)
@@ -220,7 +219,7 @@ proc pclip_pastetosel { } {
 	    }
 
 	    # copy the new values of the property to C-context
-	    if { $sproc != "" } { $sproc } else { setProp }
+	    if { $sproc != "" } { eval $sproc } else { setProp }
 
 	    # immediately read them back for proper display in
 	    # the property GUI and update the property GUI
