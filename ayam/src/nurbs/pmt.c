@@ -837,7 +837,12 @@ ay_pmt_israt(ay_pamesh_object *pm)
 } /* ay_pmt_israt */
 
 
-/* ay_pmt_tobezier:
+/** ay_pmt_tobezier:
+ * Convert PatchMesh to Bezier matrix.
+ *
+ * \param pm[in,out] PatchMesh to process
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_pmt_tobezier(ay_pamesh_object *pm)
@@ -881,7 +886,7 @@ ay_pmt_tobezier(ay_pamesh_object *pm)
 	  ay_trafo_multmatrix4(mu, mc);
 	  break;
 	case AY_BTPOWER:
-	  ay_trafo_multmatrix4(mu, mp);
+	  /* use mbi unchanged */
 	  break;
 	case AY_BTCUSTOM:
 	  ay_trafo_multmatrix4(mu, pm->ubasis);
@@ -920,7 +925,7 @@ ay_pmt_tobezier(ay_pamesh_object *pm)
 	  ay_trafo_multmatrix4(mv, mc);
 	  break;
 	case AY_BTPOWER:
-	  ay_trafo_multmatrix4(mv, mp);
+	  /* use mbi unchanged */
 	  break;
 	case AY_BTCUSTOM:
 	  ay_trafo_multmatrix4(mv, pm->vbasis);
@@ -1076,6 +1081,9 @@ ay_pmt_tobezier(ay_pamesh_object *pm)
 
 
 /** ay_pmt_tobeztcmd:
+ *  Convert selected PatchMesh objects to Bezier basis.
+ *  Implements the \a tobezPM scripting interface command.
+ *  See also the corresponding section in the \ayd{scctobezpm}.
  *
  *  \returns TCL_OK in any case.
  */
