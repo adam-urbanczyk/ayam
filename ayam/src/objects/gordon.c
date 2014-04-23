@@ -250,10 +250,8 @@ ay_gordon_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_gordon_object *gordon = NULL;
  int new_watchcorners;
- char uarg1[] = "save", uarg2[] = "WatchCurves";
- char *uargv[3] = {0};
- ay_list_object *oldsel = NULL, *newsel = NULL;
- ay_object *down = NULL;
+ char uarg0[] = "rewind", uarg1[] = "save", uarg2[] = "setProp", uarg3[] = "1";
+ char *uargv[4] = {0};
 
   if(!interp || !o)
     return AY_ENULL;
@@ -266,7 +264,7 @@ ay_gordon_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
-  Tcl_SetStringObj(ton,"WatchCurves",-1);
+  Tcl_SetStringObj(ton,"WatchCorners",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(new_watchcorners));
 
@@ -289,46 +287,18 @@ ay_gordon_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
-
-  if((new_watchcorners != gordon->watchcorners) && new_watchcorners)
+  /* replace topmost undo state with a new one that includes our children? */
+  if((argc > 1) &&
+     (new_watchcorners != gordon->watchcorners) && new_watchcorners)
     {
-      /* save old selection */
-      oldsel = ay_selection;
-
-      /* fake selection containing all parameter curves */
-      down = o->down;
-      ay_selection = NULL;
-      while(down)
-	{
-	  if(!(newsel = calloc(1, sizeof(ay_list_object))))
-	    {
-	      return AY_EOMEM; /* XXXX leaks mem in low mem situation! */
-	    }
-	  newsel->object = down;
-	  newsel->next = ay_selection;
-	  ay_selection = newsel;
-	  down = down->next;
-	} /* while */
-
-      /* call "undo save WatchCurves" */
-      if(ay_selection)
-	{
-	  /* undo save */
-	  uargv[1] = uarg1;
-	  uargv[2] = uarg2;
-	  ay_undo_undotcmd(NULL, ay_interp, 3, uargv);
-	} /* if */
-
-      /* clear faked selection */
-      while(ay_selection)
-	{
-	  newsel = ay_selection->next;
-	  free(ay_selection);
-	  ay_selection = newsel;
-	} /* while */
-
-      /* now restore original selection */
-      ay_selection = oldsel;
+      /* undo rewind */
+      uargv[1] = uarg0;
+      ay_undo_undotcmd(NULL, ay_interp, 2, uargv);
+      /* undo save setProp 1 */
+      uargv[1] = uarg1;
+      uargv[2] = uarg2;
+      uargv[3] = uarg3;
+      ay_undo_undotcmd(NULL, ay_interp, 4, uargv);
     }
   gordon->watchcorners = new_watchcorners;
 
@@ -362,7 +332,7 @@ ay_gordon_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
-  Tcl_SetStringObj(ton,"WatchCurves",-1);
+  Tcl_SetStringObj(ton,"WatchCorners",-1);
   to = Tcl_NewIntObj(gordon->watchcorners);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);

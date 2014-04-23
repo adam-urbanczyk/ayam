@@ -13,7 +13,7 @@ set Gordon_props { Transformations Attributes Material Tags Bevels Caps GordonAt
 
 array set GordonAttr {
     arr   GordonAttrData
-    sproc ""
+    sproc {setProp undo}
     gproc ""
     w     fGordonAttr
 }
