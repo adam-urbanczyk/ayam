@@ -586,11 +586,11 @@ ay_gordon_notifycb(ay_object *o)
 	{
 	  if(down->type == AY_IDNCURVE)
 	    {
-	      ay_object_copy(down, &c);
+	      (void)ay_object_copy(down, &c);
 	    }
 	  else
 	    {
-	      ay_provide_object(down, AY_IDNCURVE, &c);
+	      (void)ay_provide_object(down, AY_IDNCURVE, &c);
 	    } /* if */
 
 	  while(c)
@@ -639,11 +639,11 @@ ay_gordon_notifycb(ay_object *o)
 	    {
 	      if(down->type == AY_IDNPATCH)
 		{
-		  ay_object_copy(down, &inpatch);
+		  (void)ay_object_copy(down, &inpatch);
 		}
 	      else
 		{
-		  ay_provide_object(down, AY_IDNPATCH, &inpatch);
+		  (void)ay_provide_object(down, AY_IDNPATCH, &inpatch);
 		} /* if */
 
 	      if(inpatch)
@@ -734,7 +734,7 @@ cleanup:
     (void)ay_object_deletemulti(vcurves, AY_FALSE);
 
   if(inpatch)
-    (void)ay_object_delete(inpatch);
+    (void)ay_object_deletemulti(inpatch, AY_FALSE);
 
   /* recover selected points */
   if(o->selp)
