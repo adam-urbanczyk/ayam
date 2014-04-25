@@ -1,4 +1,4 @@
-[18. Apr 2014] CVS-Head:
+[25. Apr 2014] CVS-Head:
 ========================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
@@ -94,6 +94,8 @@ o patch meshes now also maintain an "IsRat" attribute
 o patch meshes now also support the "Power" basis type
 o added object flashing facility to the object picking (activated
   via new preference option "FlashObjects")
+o added support for ACurve and NCurve providing objects to Gordon objects
+  WatchCorners feature
 
 GUI:
 o the default value menu buttons of property GUI elements now display a
