@@ -21,7 +21,7 @@ o elevating periodic NURBS surfaces with knot type Chordal or
   Centripetal (SF 490)
 o crash when tesselating complex hierarchies with instances (SF 492)
 o new views do not inherit the global mark (SF 493)
-o Crash when reading PatchMesh objects with custom basis (SF 494)
+o crash when reading PatchMesh objects with custom basis (SF 494)
 
 Modelling:
 o added "Compatible" option to ConcatNP objects, to prevent unwanted
