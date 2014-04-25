@@ -33,6 +33,12 @@ void ay_npt_gordoncc(ay_object *o1, ay_object *o2, int stride,
 		     double *p1, double *p2, double *pp1, double *pp2,
 		     double *m1, double *m2);
 
+/** Helper for gordonwc().
+ */
+void ay_npt_gordonwcgetends(ay_object *o,
+			    double *s, double *e, double **ss, double **se,
+			    int *trafo, double *tm, double *tmi);
+
 int ay_npt_rescaletrim(ay_object *trim,
 		       int mode, double omin, double omax,
 		       double nmin, double nmax);
@@ -6757,10 +6763,22 @@ ay_npt_gordoncc(ay_object *o1, ay_object *o2, int stride,
 	      if(pp2)
 		{
 		  memcpy(pp2, p1, stride*sizeof(double));
-		  ay_trafo_apply3(pp2, m2);
-		  if(stride == 4)
+		  if(m2)
+		    ay_trafo_apply3(pp2, m2);
+		  if(o2->type == AY_IDNCURVE && stride == 3)
 		    pp2[3] = 1.0;
-		} /* if */
+		}
+	      else
+		{
+		  if(pp1)
+		    {
+		      memcpy(pp1, p2, stride*sizeof(double));
+		      if(m1)
+			ay_trafo_apply3(pp1, m1);
+		      if(o1->type == AY_IDNCURVE && stride == 3)
+			pp1[3] = 1.0;
+		    }
+		}
 	    }
 	  else
 	    {
@@ -6768,16 +6786,112 @@ ay_npt_gordoncc(ay_object *o1, ay_object *o2, int stride,
 	      if(pp1)
 		{
 		  memcpy(pp1, p2, stride*sizeof(double));
-		  ay_trafo_apply3(pp1, m1);
-		  if(stride == 4)
+		  if(m1)
+		    ay_trafo_apply3(pp1, m1);
+		  if(o1->type == AY_IDNCURVE && stride == 3)
 		    pp1[3] = 1.0;
-		} /* if */
+		}
+	      else
+		{
+		  if(pp2)
+		    {
+		      memcpy(pp2, p1, stride*sizeof(double));
+		      if(m2)
+			ay_trafo_apply3(pp2, m2);
+		      if(o2->type == AY_IDNCURVE && stride == 3)
+			pp2[3] = 1.0;
+		    }
+		}
 	    } /* if */
 	} /* if */
     } /* if */
 
  return;
 } /* ay_npt_gordoncc */
+
+
+/* ay_npt_gordonwcgetends:
+ *
+ */
+void
+ay_npt_gordonwcgetends(ay_object *o,
+                       double *s, double *e, double **ss, double **se,
+                       int *trafo, double *tm, double *tmi)
+{
+ ay_object *p = NULL;
+ ay_nurbcurve_object *nc;
+ ay_icurve_object *ic;
+ ay_acurve_object *ac;
+ double *pps, *ppe;
+
+  switch(o->type)
+    {
+    case AY_IDNCURVE:
+      nc = (ay_nurbcurve_object *)o->refine;
+      pps = &(nc->controlv[0]);
+      ppe = &(nc->controlv[(nc->length-1)*4]);
+      *ss = pps;
+      *se = ppe;
+      break;
+    case AY_IDICURVE:
+      ic = (ay_icurve_object *)o->refine;
+      pps = &(ic->controlv[0]);
+      ppe = &(ic->controlv[(ic->length-1)*3]);
+      *ss = pps;
+      *se = ppe;
+      break;
+    case AY_IDACURVE:
+      ac = (ay_acurve_object *)o->refine;
+      pps = &(ac->controlv[0]);
+      ppe = &(ac->controlv[(ac->length-1)*3]);
+      *ss = pps;
+      *se = ppe;
+      break;
+    default:
+      ay_provide_object(o, AY_IDNCURVE, &p);
+      if(p)
+        {
+          nc = (ay_nurbcurve_object *)p->refine;
+
+          pps = &(nc->controlv[0]);
+          ppe = &(nc->controlv[(nc->length-1)*4]);
+          if(AY_ISTRAFO(p))
+            {
+              ay_trafo_creatematrix(p, tm);
+              AY_APTRAN3(s, pps, tm)
+              AY_APTRAN3(e, ppe, tm)
+            }
+          else
+            {
+              memcpy(s, pps, 3*sizeof(double));
+              memcpy(e, ppe, 3*sizeof(double));
+            }
+          ay_object_deletemulti(p, AY_FALSE);
+        }
+      *ss = NULL;
+      *se = NULL;
+      break;
+    } /* switch */
+
+  if(!p)
+    {
+      if(AY_ISTRAFO(o))
+        {
+          *trafo = AY_TRUE;
+          ay_trafo_creatematrix(o, tm);
+          ay_trafo_invmatrix4(tm, tmi);
+          AY_APTRAN3(s, pps, tm)
+          AY_APTRAN3(e, ppe, tm)
+        }
+      else
+        {
+          memcpy(s, pps, 3*sizeof(double));
+          memcpy(e, ppe, 3*sizeof(double));
+        }
+    }
+
+ return;
+} /* ay_npt_gordonwcgetends */
 
 
 /* ay_npt_gordonwc:
@@ -6788,15 +6902,15 @@ ay_npt_gordoncc(ay_object *o1, ay_object *o2, int stride,
 void
 ay_npt_gordonwc(ay_object *g)
 {
- ay_nurbcurve_object *nc;
- ay_icurve_object *ic;
  ay_object *firstu = NULL, *lastu = NULL, *firstv = NULL, *lastv = NULL;
  ay_object *last = NULL, *down;
+ int istrafo[4] = {0};
  double fum[16], lum[16], fvm[16], lvm[16];
  double fumi[16], lumi[16], fvmi[16], lvmi[16];
  double p1[3], p2[3], p3[3], p4[3], p5[3], p6[3], p7[3], p8[3];
  double *pp1 = NULL, *pp2 = NULL, *pp3 = NULL, *pp4 = NULL;
  double *pp5 = NULL, *pp6 = NULL, *pp7 = NULL, *pp8 = NULL;
+ double *mi1, *mi2;
 
   if(!g || !g->down || !g->down->next)
     return;
@@ -6820,121 +6934,73 @@ ay_npt_gordonwc(ay_object *g)
      (firstv == lastv))
     return;
 
-  /* get transformation matrices */
-  ay_trafo_creatematrix(firstu, fum);
-  ay_trafo_invmatrix4(fum, fumi);
-  ay_trafo_creatematrix(lastu, lum);
-  ay_trafo_invmatrix4(lum, lumi);
-  ay_trafo_creatematrix(firstv, fvm);
-  ay_trafo_invmatrix4(fvm, fvmi);
-  ay_trafo_creatematrix(lastv, lvm);
-  ay_trafo_invmatrix4(lvm, lvmi);
-
-  /* get all 8 corner points; transform them to gordon object space */
-  if(firstu->type == AY_IDNCURVE)
-    {
-      nc = (ay_nurbcurve_object *)firstu->refine;
-      pp1 = &(nc->controlv[0]);
-      pp2 = &(nc->controlv[(nc->length-1)*4]);
-    }
-  if(firstu->type == AY_IDICURVE)
-    {
-      ic = (ay_icurve_object *)firstu->refine;
-      pp1 = &(ic->controlv[0]);
-      pp2 = &(ic->controlv[(ic->length-1)*3]);
-    }
-  if(pp1)
-    AY_APTRAN3(p1, pp1, fum)
-  if(pp2)
-    AY_APTRAN3(p2, pp2, fum)
-
-  if(lastu->type == AY_IDNCURVE)
-    {
-      nc = (ay_nurbcurve_object *)lastu->refine;
-      pp3 = &(nc->controlv[0]);
-      pp4 = &(nc->controlv[(nc->length-1)*4]);
-    }
-  if(lastu->type == AY_IDICURVE)
-    {
-      ic = (ay_icurve_object *)lastu->refine;
-      pp3 = &(ic->controlv[0]);
-      pp4 = &(ic->controlv[(ic->length-1)*3]);
-    }
-  if(pp3)
-    AY_APTRAN3(p3, pp3, lum)
-  if(pp4)
-    AY_APTRAN3(p4, pp4, lum)
-
-  if(firstv->type == AY_IDNCURVE)
-    {
-      nc = (ay_nurbcurve_object *)firstv->refine;
-      pp5 = &(nc->controlv[0]);
-      pp6 = &(nc->controlv[(nc->length-1)*4]);
-    }
-  if(firstv->type == AY_IDICURVE)
-    {
-      ic = (ay_icurve_object *)firstv->refine;
-      pp5 = &(ic->controlv[0]);
-      pp6 = &(ic->controlv[(ic->length-1)*3]);
-    }
-  if(pp5)
-    AY_APTRAN3(p5, pp5, fvm)
-  if(pp6)
-    AY_APTRAN3(p6, pp6, fvm)
-
-  if(lastv->type == AY_IDNCURVE)
-    {
-      nc = (ay_nurbcurve_object *)lastv->refine;
-      pp7 = &(nc->controlv[0]);
-      pp8 = &(nc->controlv[(nc->length-1)*4]);
-    }
-  if(lastv->type == AY_IDICURVE)
-    {
-      ic = (ay_icurve_object *)lastv->refine;
-      pp7 = &(ic->controlv[0]);
-      pp8 = &(ic->controlv[(ic->length-1)*3]);
-    }
-  if(pp7)
-    AY_APTRAN3(p7, pp7, lvm)
-  if(pp8)
-    AY_APTRAN3(p8, pp8, lvm)
+  /* get all eight curve end coordinates and transform them to
+     Gordon object space */
+  ay_npt_gordonwcgetends(firstu, p1, p2, &pp1, &pp2, &(istrafo[0]),
+			 fum, fumi);
+  ay_npt_gordonwcgetends(lastu, p3, p4, &pp3, &pp4, &(istrafo[1]),
+			 lum, lumi);
+  ay_npt_gordonwcgetends(firstv, p5, p6, &pp5, &pp6, &(istrafo[2]),
+			 fvm, fvmi);
+  ay_npt_gordonwcgetends(lastv, p7, p8, &pp7, &pp8, &(istrafo[3]),
+			 lvm, lvmi);
 
   /* now compare and possibly correct the points */
-  /* XXXX make those "&&" below "||", when NCurve providing objects are
-     supported by the endpoint calculating code above; gordoncc() can
-     already work with one pp == NULL, if only the point data is complete */
-  if(pp1 && pp5)
+  if(pp1 || pp5)
     {
+      mi1 = fumi;
+      if(!istrafo[0])
+	mi1 = NULL;
+      mi2 = fvmi;
+      if(!istrafo[2])
+	mi2 = NULL;
       ay_npt_gordoncc(firstu, firstv,
 		      ((firstu->type == AY_IDNCURVE) &&
 		       (firstv->type == AY_IDNCURVE))?4:3,
-		      p1, p5, pp1, pp5, fumi, fvmi);
-
+		      p1, p5, pp1, pp5, mi1, mi2);
     }
 
-  if(pp2 && pp7)
+  if(pp2 || pp7)
     {
+      mi1 = fumi;
+      if(!istrafo[0])
+	mi1 = NULL;
+      mi2 = lvmi;
+      if(!istrafo[3])
+	mi2 = NULL;
       ay_npt_gordoncc(firstu, lastv,
 		      ((firstu->type == AY_IDNCURVE) &&
 		       (lastv->type == AY_IDNCURVE))?4:3,
-		      p2, p7, pp2, pp7, fumi, lvmi);
+		      p2, p7, pp2, pp7, mi1, mi2);
     }
 
-  if(pp3 && pp6)
+  if(pp3 || pp6)
     {
+      mi1 = lumi;
+      if(!istrafo[1])
+	mi1 = NULL;
+      mi2 = fvmi;
+      if(!istrafo[2])
+	mi2 = NULL;
       ay_npt_gordoncc(lastu, firstv,
 		      ((lastu->type == AY_IDNCURVE) &&
 		       (firstv->type == AY_IDNCURVE))?4:3,
-		      p3, p6, pp3, pp6, lumi, fvmi);
+		      p3, p6, pp3, pp6, mi1, mi2);
     }
 
 
-  if(pp4 && pp8)
+  if(pp4 || pp8)
     {
+      mi1 = lumi;
+      if(!istrafo[1])
+	mi1 = NULL;
+      mi2 = lvmi;
+      if(!istrafo[3])
+	mi2 = NULL;
       ay_npt_gordoncc(lastu, lastv,
 		      ((lastu->type == AY_IDNCURVE) &&
 		       (lastv->type == AY_IDNCURVE))?4:3,
-		      p4, p8, pp4, pp8, lumi, lvmi);
+		      p4, p8, pp4, pp8, mi1, mi2);
     }
 
  return;
@@ -12276,7 +12342,7 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
   else
     {
       tcl_status = Tcl_GetDouble(interp, argv[1], &u);
-      AY_CHTCLERRRET(tcl_status, argv[0], interp);	
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);
     }
   i++;
   tcl_status = Tcl_GetInt(interp, argv[i], &r);
