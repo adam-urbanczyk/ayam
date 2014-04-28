@@ -126,7 +126,7 @@ ay_geom_calcnfrom3(double *p1, double *p2, double *p3, double *n)
  *  repeated calls, only used for mode 1), may be NULL
  * \param[in,out] result pointer where to store the resulting center point
  * 
- * \return AY_OK on success, error code otherwise
+ * \returns AY_OK on success, error code otherwise
  */
 int
 ay_geom_extractmiddlepoint(int mode, double *cv, int cvlen, int cvstride,
@@ -245,7 +245,7 @@ ay_geom_extractmiddlepoint(int mode, double *cv, int cvlen, int cvstride,
  * \param[in] m center point in which the normal is calculated, may be NULL
  * \param[in,out] result pointer where the resulting normal is stored
  * 
- * \return AY_OK on success, error code otherwise
+ * \returns AY_OK on success, error code otherwise
  */
 int
 ay_geom_extractmeannormal(double *cv, int cvlen, int cvstride,
