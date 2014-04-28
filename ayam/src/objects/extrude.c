@@ -78,12 +78,10 @@ ay_extrude_deletecb(void *c)
 int
 ay_extrude_copycb(void *src, void **dst)
 {
- ay_extrude_object *extrude = NULL, *extrudesrc = NULL;
+ ay_extrude_object *extrude = NULL;
 
   if(!src || !dst)
     return AY_ENULL;
-
-  extrudesrc = (ay_extrude_object *)src;
 
   if(!(extrude = malloc(sizeof(ay_extrude_object))))
     return AY_EOMEM;
