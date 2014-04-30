@@ -198,6 +198,10 @@ ay_trim_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &(trim->patchnum));
 
+  Tcl_SetStringObj(ton,"ScaleMode",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(trim->scalemode));
+
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
@@ -237,6 +241,11 @@ ay_trim_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton,"ScaleMode",-1);
+  to = Tcl_NewIntObj(trim->scalemode);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
   ay_prop_getnpinfo(interp, n1, trim->npatch);
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
@@ -262,6 +271,12 @@ ay_trim_readcb(FILE *fileptr, ay_object *o)
 
   fscanf(fileptr, "%d\n", &trim->patchnum);
 
+  if(ay_read_version >= 15)
+    {
+      /* Since Ayam 1.21 */
+      fscanf(fileptr, "%d\n", &trim->scalemode);
+    }
+
   o->refine = trim;
 
  return AY_OK;
@@ -285,6 +300,7 @@ ay_trim_writecb(FILE *fileptr, ay_object *o)
     return AY_ENULL;
 
   fprintf(fileptr, "%d\n", trim->patchnum);
+  fprintf(fileptr, "%d\n", trim->scalemode);
 
  return AY_OK;
 } /* ay_trim_writecb */
@@ -357,8 +373,10 @@ ay_trim_notifycb(ay_object *o)
 {
  int ay_status = AY_OK;
  ay_trim_object *trim = NULL;
+ ay_nurbpatch_object *np = NULL;
  ay_object *down = NULL, *npatch = NULL, *ncurve = NULL;
  ay_object **next = NULL;
+ double min, max;
  int i = 0;
 
   if(!o)
@@ -419,6 +437,24 @@ ay_trim_notifycb(ay_object *o)
 		}
 	      else
 		{
+		  /* apply scale to copy */
+		  if(trim->scalemode)
+		    {
+		      if(AY_ISTRAFO(ncurve))
+			{
+			  ay_nct_applytrafo(ncurve);
+			}
+		      np = (ay_nurbpatch_object*)npatch->refine;
+		      min = np->uknotv[np->uorder-1];
+		      max = np->uknotv[np->width];
+		      ncurve->movx = min;
+		      ncurve->scalx = max-min;
+		      min = np->vknotv[np->vorder-1];
+		      max = np->vknotv[np->height];
+		      ncurve->movy = min;
+		      ncurve->scaly = max-min;
+		    }
+		  /* link copy to patch */
 		  *next = ncurve;
 		  next = &(ncurve->next);
 		}

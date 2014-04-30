@@ -25,13 +25,14 @@ w     fTrimAttr
 
 array set TrimAttrData {
 PatchNum 0
+ScaleMode 0
 }
 
 # create TrimAttr-UI
 set w [frame $ay(pca).$TrimAttr(w)]
 addVSpace $w s1 2
 addParam $w TrimAttrData PatchNum
-
+addMenu $w TrimAttrData ScaleMode {Absolute Relative Automatic}
 return;
 }
 # init_Trim
