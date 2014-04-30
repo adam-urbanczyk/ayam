@@ -1345,7 +1345,7 @@ typedef struct ay_select_object_s
 typedef struct ay_trim_object_s
 {
   int patchnum; /**< select patch from multiple provided */
-
+  int scalemode; /**< how to scale the trim(s) to the npatch */
   /** cached NURBS patch representation */
   ay_object *npatch;
 } ay_trim_object;
