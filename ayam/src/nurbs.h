@@ -1427,6 +1427,11 @@ int ay_stess_DrawTrimmedSurface(ay_object *o);
  */
 int ay_stess_ShadeTrimmedSurface(ay_object *o);
 
+/** Tesselate all trim curves of a NURBS surface.
+ */
+int ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
+			    int **tl, int **td);
+
 /** Tesselate a NURBS surface.
  */
 int ay_stess_TessNP(ay_object *o, int qf);
