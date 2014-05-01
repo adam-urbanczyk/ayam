@@ -7654,18 +7654,22 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
  ay_object *c;
  ay_nurbpatch_object *np;
  char buf[64], *attr = NULL, *tmp;
- int a, b, i, j, k, m, n, p, q;
+ int a, b, i, j, k, m, n, p, q, i0, ii, jj;
  int ulines, vlines, fulines, fvlines, spanu, spanv;
  int *spanus, *spanvs, *fspanus, *fspanvs;
  int idxsize = 0;
  double *P, *U, *V, *Nu, *Nv, *fd1, *fd2, *Ct;
  double l, u, v, ud, fud, vd, fvd;
  double N[3] = {0}, fder[9] = {0};
- double offset = 0.005;
+ double qf, offset = 0.005;
  scew_element *transform_element = NULL;
  scew_element *shape_element = NULL;
  scew_element *line_element = NULL;
  scew_element *coord_element = NULL;
+ int tcslen; /**< number of tesselated trim curves */
+ double **tcs; /**< tesselated trim curves [tcslen][tcslens[i]] */
+ int *tcslens; /**< lengths of trim curves [tcslen] */
+ int *tcsdirs; /**< directions of trim curves [tcslen] */
 
   if(!element || !o || !o->refine)
     return AY_ENULL;
@@ -7935,8 +7939,7 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
 
       /* write coordinates */
       coord_element = scew_element_add(line_element, "Coordinate");
-      x3dio_writedoublepoints(coord_element, "point", 3, fulines*2,
-			      3, Ct);
+      x3dio_writedoublepoints(coord_element, "point", 3, fulines*2, 3, Ct);
 
       do
 	{
@@ -7945,6 +7948,112 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
       while((V[i] == V[i+1]) && i < m);
       v = V[i];
     } /* for */
+
+  if(ay_npt_istrimmed(o, 0))
+    {
+      /* this is a non trivially trimmed NURBS patch */
+      if(Ct)
+	free(Ct);
+      Ct = NULL;
+      if(attr)
+	free(attr);
+      attr = NULL;
+
+      /* avoid the outermost trim, if it lies on the boundary */
+      ii = AY_FALSE;
+      ay_npt_isboundcurve(o->down, U[p], U[n], V[q], V[m], &ii);
+      if(ii == AY_TRUE)
+	i0 = 1;
+      else
+	i0 = 0;
+
+      qf = ay_stess_GetQF(ay_prefs.glu_sampling_tolerance);
+
+      ay_status = ay_stess_TessTrimCurves(o, qf,
+					  &tcslen, &tcs,
+					  &tcslens, &tcsdirs);
+
+      /* estimate memory needed to store the indices */
+      /* calculate total number of points/indices */
+      a = 0;
+      for(ii = i0; ii < tcslen; ii++)
+	{
+	  a += tcslens[ii];
+	}
+      idxsize = sprintf(buf, " %d", a*2);
+      /* allocate and fill indices */
+      if(!(attr = malloc((a*2*idxsize+10)*sizeof(char))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+      tmp = attr;
+      a = 0;
+      for(ii = i0; ii < tcslen; ii++)
+	{
+	  for(jj = 0; jj < tcslens[ii]; jj++)
+	    {
+	      tmp += sprintf(tmp, " %d", a);
+	      a++;
+	    }
+	  tmp += sprintf(tmp, " -1");
+	}
+      b = a;
+      for(ii = i0; ii < tcslen; ii++)
+	{
+	  for(jj = 0; jj < tcslens[ii]; jj++)
+	    {
+	      tmp += sprintf(tmp, " %d", a);
+	      a++;
+	    }
+	  tmp += sprintf(tmp, " -1");
+	}
+      /* allocate and fill coordinates */
+      if(!(Ct = malloc(a*3*2*sizeof(double))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+
+      j = 0; k = b*3;
+      for(ii = i0; ii < tcslen; ii++)
+	{
+	  for(jj = 0; jj < tcslens[ii]; jj++)
+	    {
+	      if(np->is_rat)
+		ay_nb_CompFirstDerSurf4D(n-1, m-1, p, q, U, V, P,
+					 tcs[ii][jj*2], tcs[ii][jj*2+1],
+					 fder);
+	      else
+		ay_nb_CompFirstDerSurf3D(n-1, m-1, p, q, U, V, P,
+					 tcs[ii][jj*2], tcs[ii][jj*2+1],
+					 fder);
+
+	      fd1 = &(fder[3]);
+	      fd2 = &(fder[6]);
+	      AY_V3CROSS(N, fd2, fd1);
+	      l = AY_V3LEN(N);
+	      if(fabs(l) > AY_EPSILON)
+		AY_V3SCAL(N, 1.0/l);
+	      /* offset point along normal */
+	      AY_V3SCAL(N, offset);
+	      Ct[j]   = fder[0]+N[0];
+	      Ct[j+1] = fder[1]+N[1];
+	      Ct[j+2] = fder[2]+N[2];
+	      Ct[k]   = fder[0]-N[0];
+	      Ct[k+1] = fder[1]-N[1];
+	      Ct[k+2] = fder[2]-N[2];
+	      j += 3;
+	      k += 3;
+	    } /* for */
+	} /* for */
+
+      /* write out all the data */
+      shape_element = scew_element_add(transform_element, "Shape");
+
+      x3dio_writewiremat(shape_element);
+
+      line_element = scew_element_add(shape_element, "IndexedLineSet");
+
+      scew_element_add_attr_pair(line_element, "coordIndex", attr);
+
+      coord_element = scew_element_add(line_element, "Coordinate");
+      x3dio_writedoublepoints(coord_element, "point", 3, b*2, 3, Ct);
+    } /* if istrimmed */
 
   /* write the caps and bevels */
   c = np->caps_and_bevels;
@@ -7968,6 +8077,18 @@ cleanup:
   */
   if(attr)
     free(attr);
+
+  if(tcs)
+    {
+      for(i = 0; i < tcslen; i++)
+	{
+	  free(tcs[i]);
+	}
+      free(tcs);
+    }
+
+  if(tcslens)
+    free(tcslens);
 
  return ay_status;
 } /* x3dio_writenpwire */
