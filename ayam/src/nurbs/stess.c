@@ -1135,8 +1135,9 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
     return AY_EOMEM;
   if(!(tls = calloc(numtrims, sizeof(int))))
     { ay_status = AY_EOMEM; goto cleanup; }
-  if(!(tds = calloc(numtrims, sizeof(int))))
-    { ay_status = AY_EOMEM; goto cleanup; }
+  if(td)
+    if(!(tds = calloc(numtrims, sizeof(int))))
+      { ay_status = AY_EOMEM; goto cleanup; }
 
   i = 0;
   d = o->down;
@@ -1256,13 +1257,15 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
 	      /* get orientation of trimloop */
 	      l.length = tls[i];
 	      l.controlv = tts[i];
-	      angle = 0.0;
-	      ay_nct_getorientation(&l, 2, 1, 0, &angle);
-	      if(angle >= 0.0)
+	      if(td)
 		{
-		  tds[i] = 1;
+		  angle = 0.0;
+		  ay_nct_getorientation(&l, 2, 1, 0, &angle);
+		  if(angle >= 0.0)
+		    {
+		      tds[i] = 1;
+		    }
 		}
-
 	      i++;
 	    }
 	  dd = NULL;
@@ -1299,7 +1302,7 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
 		{
 		  memcpy(p1, &(c->controlv[j*4]), 4*sizeof(double));
 		  AY_APTRAN3(p2, p1, mm)
-		    memcpy(&(dtmp[j*stride]), p2, 2*sizeof(double));
+		  memcpy(&(dtmp[j*stride]), p2, 2*sizeof(double));
 		  if(c->is_rat)
 		    dtmp[j*stride+2] = c->controlv[j*4+3];
 		}
@@ -1318,17 +1321,22 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
 	    }
 
 	  /* get orientation of trimloop */
-	  angle = 0.0;
-	  ay_nct_getorientation(c, 4, 1, 0, &angle);
-	  if(angle >= 0.0)
+	  if(td)
 	    {
-	      tds[i] = 1;
+	      angle = 0.0;
+	      ay_nct_getorientation(c, 4, 1, 0, &angle);
+	      if(angle >= 0.0)
+		{
+		  tds[i] = 1;
+		}
 	    }
+
 	  if(dd)
 	    {
 	      (void)ay_object_deletemulti(dd, AY_TRUE);
 	      dd = NULL;
 	    }
+
 	  i++;
 	} /* if */
 
@@ -1338,7 +1346,8 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
   *nt = numtrims;
   *tt = tts;
   *tl = tls;
-  *td = tds;
+  if(td)
+    *td = tds;
 
   /* prevent cleanup code from doing something harmful */
   tts = NULL;
