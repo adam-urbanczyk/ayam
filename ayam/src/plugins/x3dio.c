@@ -7473,21 +7473,10 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
   if(!element || !o || !o->refine)
     return AY_ENULL;
 
-  /* write this patch (and its caps and bevels) as wire frame? */
+  /* write this patch as wire frame? */
   if(ay_tags_hastag(o, NULL, ay_aswire_tagtype))
     {
       /* yes */
-      np = (ay_nurbpatch_object *)o->refine;
-
-      ay_status = x3dio_writetransform(element, o, &transform_element);
-
-      down = np->caps_and_bevels;
-      while(down)
-	{
-	  x3dio_writenpwire(transform_element, down);
-	  down = down->next;
-	}
-
       return x3dio_writenpwire(element, o);
     } /* if wire */
 
@@ -7634,6 +7623,7 @@ x3dio_writewiremat(scew_element *shape_element)
     return AY_ENULL;
 
   app_element = scew_element_add(shape_element, "Appearance");
+
   mat_element = scew_element_add(app_element, "Material");
 
   sprintf(buf, "%g %g %g", ay_prefs.obr, ay_prefs.obg, ay_prefs.obb);
@@ -7669,7 +7659,6 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
  int tcslen; /**< number of tesselated trim curves */
  double **tcs; /**< tesselated trim curves [tcslen][tcslens[i]] */
  int *tcslens; /**< lengths of trim curves [tcslen] */
- int *tcsdirs; /**< directions of trim curves [tcslen] */
 
   if(!element || !o || !o->refine)
     return AY_ENULL;
@@ -7796,6 +7785,9 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
   fspanvs[a] = fspanvs[a-1];
 #endif
 
+  /* v-lines */
+
+  /* estimate memory needed to store the indices */
   idxsize = sprintf(buf, " %d", (fvlines*2));
   if(!(attr = malloc((idxsize*fvlines*2+10)*sizeof(char))))
     { ay_status = AY_EOMEM; goto cleanup; }
@@ -7811,7 +7803,6 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
     } /* for */
   memcpy(tmp, " -1", 4*sizeof(char));
 
-  /* v-lines */
   u = U[p];
   i = p;
   for(a = 0; a < ulines; a++)
@@ -7851,6 +7842,7 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
 	  v += fvd;
 	} /* for */
 
+      /* write all the data */
       shape_element = scew_element_add(transform_element, "Shape");
 
       x3dio_writewiremat(shape_element);
@@ -7859,10 +7851,11 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
 
       scew_element_add_attr_pair(line_element, "coordIndex", attr);
 
-      /* write coordinates */
       coord_element = scew_element_add(line_element, "Coordinate");
-      x3dio_writedoublepoints(coord_element, "point", 3, fvlines*2,
-			      3, Ct);
+
+      x3dio_writedoublepoints(coord_element, "point", 3, fvlines*2, 3, Ct);
+
+      /* skip multiple knots */
       do
 	{
 	  i++;
@@ -7875,6 +7868,8 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
     free(attr);
 
   /* u-lines */
+
+  /* estimate memory needed to store the indices */
   idxsize = sprintf(buf, " %d", (fulines*2));
   if(!(attr = malloc((idxsize*fulines*2+10)*sizeof(char))))
     { ay_status = AY_EOMEM; goto cleanup; }
@@ -7929,6 +7924,7 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
 	  u += fud;
 	} /* for */
 
+      /* write all the data */
       shape_element = scew_element_add(transform_element, "Shape");
 
       x3dio_writewiremat(shape_element);
@@ -7937,10 +7933,11 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
 
       scew_element_add_attr_pair(line_element, "coordIndex", attr);
 
-      /* write coordinates */
       coord_element = scew_element_add(line_element, "Coordinate");
+
       x3dio_writedoublepoints(coord_element, "point", 3, fulines*2, 3, Ct);
 
+      /* skip multiple knots */
       do
 	{
 	  i++;
@@ -7948,6 +7945,8 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
       while((V[i] == V[i+1]) && i < m);
       v = V[i];
     } /* for */
+
+  /* trim curves */
 
   if(ay_npt_istrimmed(o, 0))
     {
@@ -7959,7 +7958,7 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
 	free(attr);
       attr = NULL;
 
-      /* avoid the outermost trim, if it lies on the boundary */
+      /* skip the outermost trim, if it lies on the boundary */
       ii = AY_FALSE;
       ay_npt_isboundcurve(o->down, U[p], U[n], V[q], V[m], &ii);
       if(ii == AY_TRUE)
@@ -7971,7 +7970,9 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
 
       ay_status = ay_stess_TessTrimCurves(o, qf,
 					  &tcslen, &tcs,
-					  &tcslens, &tcsdirs);
+					  &tcslens, NULL);
+      if(ay_status)
+	goto cleanup;
 
       /* estimate memory needed to store the indices */
       /* calculate total number of points/indices */
@@ -8052,6 +8053,7 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
       scew_element_add_attr_pair(line_element, "coordIndex", attr);
 
       coord_element = scew_element_add(line_element, "Coordinate");
+
       x3dio_writedoublepoints(coord_element, "point", 3, b*2, 3, Ct);
     } /* if istrimmed */
 
