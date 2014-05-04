@@ -35,7 +35,7 @@ int objio_writetvertices(FILE *fileptr, unsigned int n, int stride,
 
 int objio_writencurve(FILE *fileptr, ay_object *o, double *m);
 
-int objio_writetcurve(FILE *fileptr, ay_object *o, double *m);
+int objio_writetcurve(FILE *fileptr, ay_object *o);
 
 int objio_writetrims(FILE *fileptr, ay_object *o);
 
@@ -329,10 +329,10 @@ objio_writencurve(FILE *fileptr, ay_object *o, double *m)
  *  write a single trim curve
  */
 int
-objio_writetcurve(FILE *fileptr, ay_object *o, double *m)
+objio_writetcurve(FILE *fileptr, ay_object *o)
 {
  ay_nurbcurve_object *nc;
- double v[3] = {0}, *p1, pw[3] = {0}, ma[16] = {0}, mn[16] = {0};
+ double v[3] = {0}, *p1, pw[3] = {0}, m[16] = {0};
  int stride = 4, i;
 
   if(!o)
@@ -341,12 +341,9 @@ objio_writetcurve(FILE *fileptr, ay_object *o, double *m)
   nc = (ay_nurbcurve_object *)o->refine;
 
   /* create proper transformation matrix */
-  ay_trafo_creatematrix(o, mn);
-  memcpy(ma, m, 16*sizeof(double));
-  ay_trafo_multmatrix4(ma, mn);
+  ay_trafo_creatematrix(o, m);
 
   /* get all vertices, transform them and write them out */
-
   p1 = nc->controlv;
   for(i = 0; i < nc->length; i++)
     {
@@ -354,13 +351,13 @@ objio_writetcurve(FILE *fileptr, ay_object *o, double *m)
 	{
 	  pw[0] = p1[0];
 	  pw[1] = p1[1];
-	  AY_APTRAN3(v,pw,ma)
+	  AY_APTRAN3(v,pw,m)
 	  v[2] = p1[3];
 	  fprintf(fileptr, "vp %g %g %g\n", v[0], v[1], v[2]);
 	}
       else
 	{
-	  AY_APTRAN3(v,p1,ma)
+	  AY_APTRAN3(v,p1,m)
 	  fprintf(fileptr, "vp %g %g\n", v[0], v[1]);
 	}
       p1 += stride;
@@ -400,47 +397,51 @@ int
 objio_writetrims(FILE *fileptr, ay_object *o)
 {
  int ay_status = AY_OK;
- double mi[16] = {0};
- ay_object *down = NULL, *pnc = NULL;
-
-  ay_trafo_identitymatrix(mi);
+ ay_object *down = NULL, *pnc = NULL, *p;
 
   while(o->next)
     {
       switch(o->type)
 	{
 	case AY_IDNCURVE:
-	  objio_writetcurve(fileptr, o, mi);
+	  objio_writetcurve(fileptr, o);
 	  break;
 	case AY_IDLEVEL:
 	  if((o->down) && (o->down->next))
 	    {
-	      ay_trafo_creatematrix(o, mi);
 	      down = o->down;
 	      while(down->next)
 		{
 		  if(down->type == AY_IDNCURVE)
 		    {
-		      objio_writetcurve(fileptr, down, mi);
+		      objio_writetcurve(fileptr, down);
+		    }
+		  else
+		    {
+		      p = NULL;
+		      ay_status = ay_provide_object(o, AY_IDNCURVE, &p);
+		      pnc = p;
+		      while(pnc)
+			{
+			  objio_writetcurve(fileptr, pnc);
+			  pnc = pnc->next;
+			}
+		      (void)ay_object_deletemulti(p, AY_FALSE);
 		    }
 		  down = down->next;
 		} /* while */
-	      ay_trafo_identitymatrix(mi);
 	    } /* if */
 	  break;
 	default:
-	  pnc = NULL;
-	  ay_status = ay_provide_object(o, AY_IDNCURVE, &pnc);
-	  down = pnc;
-	  while(down)
+	  p = NULL;
+	  ay_status = ay_provide_object(o, AY_IDNCURVE, &p);
+	  pnc = p;
+	  while(pnc)
 	    {
-	      objio_writetcurve(fileptr, pnc, mi);
-	      down = down->next;
+	      objio_writetcurve(fileptr, pnc);
+	      pnc = pnc->next;
 	    }
-	  if(pnc)
-	    {
-	      (void)ay_object_deletemulti(pnc, AY_FALSE);
-	    }
+	  (void)ay_object_deletemulti(p, AY_FALSE);
 	  break;
 	} /* switch */
 
@@ -458,7 +459,7 @@ int
 objio_writetrimids(FILE *fileptr, ay_object *o)
 {
  int ay_status = AY_OK;
- ay_object *o2 = o, *down = NULL, *pnc = NULL, *cnc = NULL;
+ ay_object *o2 = o, *down = NULL, *pnc = NULL, *cnc = NULL, *p = NULL;
  ay_nurbcurve_object *nc = NULL;
  double umin, umax, orient;
  int tc = 0, hole;
@@ -481,22 +482,31 @@ objio_writetrimids(FILE *fileptr, ay_object *o)
 		    {
 		      tc++;
 		    }
+		  else
+		    {
+		      p = NULL;
+		      ay_status = ay_provide_object(down, AY_IDNCURVE, &p);
+		      pnc = p;
+		      while(pnc)
+			{
+			  tc++;
+			  pnc = pnc->next;
+			}
+		      (void)ay_object_deletemulti(p, AY_FALSE);
+		    }
 		  down = down->next;
 		} /* while */
 	    } /* if */
 	default:
-	  pnc = NULL;
-	  ay_status = ay_provide_object(o, AY_IDNCURVE, &pnc);
-	  down = pnc;
-	  while(down)
+	  p = NULL;
+	  ay_status = ay_provide_object(o, AY_IDNCURVE, &p);
+	  pnc = p;
+	  while(pnc)
 	    {
 	      tc++;
-	      down = down->next;
+	      pnc = pnc->next;
 	    }
-	  if(pnc)
-	    {
-	      (void)ay_object_deletemulti(pnc, AY_FALSE);
-	    }
+	  (void)ay_object_deletemulti(p, AY_FALSE);
 	  break;
 	} /* switch */
 
@@ -561,14 +571,29 @@ objio_writetrimids(FILE *fileptr, ay_object *o)
 		  if(down->type == AY_IDNCURVE)
 		    {
 		      nc = (ay_nurbcurve_object *)down->refine;
-
-		      ay_knots_getuminmax(o, nc->order, nc->length+nc->order,
+		      ay_knots_getuminmax(down, nc->order, nc->length+nc->order,
 					  nc->knotv,
 					  &umin, &umax);
-
 		      fprintf(fileptr, " %g %g -%d", umin, umax, tc);
-
 		      tc--;
+		    }
+		  else
+		    {
+		      p = NULL;
+		      ay_status = ay_provide_object(down, AY_IDNCURVE, &p);
+		      pnc = p;
+		      while(pnc)
+			{
+			  nc = (ay_nurbcurve_object *)pnc->refine;
+			  ay_knots_getuminmax(pnc, nc->order,
+					      nc->length+nc->order,
+					      nc->knotv,
+					      &umin, &umax);
+			  fprintf(fileptr, " %g %g -%d", umin, umax, tc);
+			  tc--;
+			  pnc = pnc->next;
+			}
+		      (void)ay_object_deletemulti(p, AY_FALSE);
 		    }
 		  down = down->next;
 		} /* while */
@@ -610,13 +635,10 @@ objio_writetrimids(FILE *fileptr, ay_object *o)
 	      if(down->type == AY_IDNCURVE)
 		{
 		  nc = (ay_nurbcurve_object *)down->refine;
-
-		  ay_knots_getuminmax(o, nc->order, nc->length+nc->order,
+		  ay_knots_getuminmax(down, nc->order, nc->length+nc->order,
 				      nc->knotv,
 				      &umin, &umax);
-
-		  fprintf(fileptr, " %g %g -%d", umin, umax, tc);
-
+		  fprintf(fileptr, " %g %g -%d\n", umin, umax, tc);
 		  tc--;
 		} /* if */
 	      down = down->next;
