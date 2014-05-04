@@ -439,7 +439,7 @@ objio_writetrims(FILE *fileptr, ay_object *o)
 	    }
 	  if(pnc)
 	    {
-	      (void)ay_object_deletemulti(pnc, AY_TRUE);
+	      (void)ay_object_deletemulti(pnc, AY_FALSE);
 	    }
 	  break;
 	} /* switch */
@@ -495,7 +495,7 @@ objio_writetrimids(FILE *fileptr, ay_object *o)
 	    }
 	  if(pnc)
 	    {
-	      (void)ay_object_deletemulti(pnc, AY_TRUE);
+	      (void)ay_object_deletemulti(pnc, AY_FALSE);
 	    }
 	  break;
 	} /* switch */
@@ -625,7 +625,7 @@ objio_writetrimids(FILE *fileptr, ay_object *o)
 
 	  if(pnc)
 	    {
-	      (void)ay_object_deletemulti(pnc, AY_TRUE);
+	      (void)ay_object_deletemulti(pnc, AY_FALSE);
 	    }
 	  break;
 	} /* switch */
@@ -866,7 +866,7 @@ objio_writencconvertible(FILE *fileptr, ay_object *o, double *m)
       ay_status = objio_writeobject(fileptr, t, AY_FALSE, AY_FALSE);
     }
 
-  (void)ay_object_deletemulti(c, AY_TRUE);
+  (void)ay_object_deletemulti(c, AY_FALSE);
 
  return ay_status;
 } /* objio_writencconvertible */
@@ -903,7 +903,7 @@ objio_writenpconvertible(FILE *fileptr, ay_object *o, double *m)
       ay_status = objio_writeobject(fileptr, t, AY_FALSE, AY_FALSE);
     }
 
-  (void)ay_object_deletemulti(p, AY_TRUE);
+  (void)ay_object_deletemulti(p, AY_FALSE);
 
  return ay_status;
 } /* objio_writenpconvertible */
@@ -1438,7 +1438,7 @@ objio_writeobject(FILE *fileptr, ay_object *o, int writeend, int count)
 
 	  if(c)
 	    {
-	      (void)ay_object_deletemulti(c, AY_TRUE);
+	      (void)ay_object_deletemulti(c, AY_FALSE);
 	      i = -1;
 	      break;
 	    }
@@ -3465,7 +3465,7 @@ objio_readend(void)
 	      /* discard simple trim */
 	      if(is_bound)
 		{
-		  (void)ay_object_deletemulti(objio_trims, AY_TRUE);
+		  (void)ay_object_deletemulti(objio_trims, AY_FALSE);
 		  o->down = ay_endlevel;
 		}
 	    } /* if */
@@ -3857,7 +3857,7 @@ objio_readscene(char *filename)
   objio_texturev = NULL;
 
   if(objio_trims)
-    (void)ay_object_deletemulti(objio_trims, AY_TRUE);
+    (void)ay_object_deletemulti(objio_trims, AY_FALSE);
 
   objio_trims = NULL;
   objio_nexttrim = &(objio_trims);

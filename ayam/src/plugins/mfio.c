@@ -1822,7 +1822,7 @@ ay_mfio_writencconvertible(MF3D_FilePtr fileptr, ay_object *o)
 	  ay_status = ay_mfio_writenurbcurve(fileptr, c);
 	}
 
-      (void)ay_object_deletemulti(c, AY_TRUE);
+      (void)ay_object_deletemulti(c, AY_FALSE);
     } /* if */
 
  return ay_status;
@@ -1854,7 +1854,7 @@ ay_mfio_writenpconvertible(MF3D_FilePtr fileptr, ay_object *o)
 	  t = t->next;
 	} /* while */
 
-      (void)ay_object_deletemulti(p, AY_TRUE);
+      (void)ay_object_deletemulti(p, AY_FALSE);
     } /* if */
 
  return ay_status;
@@ -2895,7 +2895,7 @@ ay_mfio_writeobject(MF3D_FilePtr fileptr, ay_object *object)
 
 	  if(c)
 	    {
-	      (void)ay_object_deletemulti(c, AY_TRUE);
+	      (void)ay_object_deletemulti(c, AY_FALSE);
 	      i = -1;
 	      break;
 	    }
