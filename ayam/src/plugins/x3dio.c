@@ -7334,7 +7334,7 @@ x3dio_writencconvertibleobj(scew_element *element, ay_object *o)
       t = t->next;
     } /* while */
 
-  (void)ay_object_deletemulti(c, AY_TRUE);
+  (void)ay_object_deletemulti(c, AY_FALSE);
 
  return ay_status;
 } /* x3dio_writencconvertibleobj */
@@ -7414,7 +7414,7 @@ cleanup:
 
   if(c)
     {
-      (void)ay_object_deletemulti(c, AY_TRUE);
+      (void)ay_object_deletemulti(c, AY_FALSE);
     }
 
  return ay_status;
@@ -8141,7 +8141,7 @@ x3dio_writenpconvertibleobj(scew_element *element, ay_object *o)
       t = t->next;
     } /* while */
 
-  (void)ay_object_deletemulti(c, AY_TRUE);
+  (void)ay_object_deletemulti(c, AY_FALSE);
 
  return ay_status;
 } /* x3dio_writenpconvertibleobj */
@@ -10261,7 +10261,7 @@ x3dio_writeobject(scew_element *element, ay_object *o, int count)
 
 	  if(c)
 	    {
-	      (void)ay_object_deletemulti(c, AY_TRUE);
+	      (void)ay_object_deletemulti(c, AY_FALSE);
 	      i = -1;
 	      break;
 	    }
