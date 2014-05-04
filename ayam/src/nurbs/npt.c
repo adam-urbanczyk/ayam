@@ -941,30 +941,37 @@ ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
  *
  * \param[in] o NURBS curve object (a trim curve)
  * \param[in] no GLU NURBS Renderer object of associated NURBS patch object
+ * \param[in] tm additional transformation matrix
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_npt_drawtrimcurve(ay_object *o, GLUnurbsObj *no)
+ay_npt_drawtrimcurve(ay_object *o, GLUnurbsObj *no, double *tm)
 {
  int order = 0, length = 0, knot_count = 0, i = 0, a = 0, b = 0;
+ int apply_trafo = AY_FALSE;
  ay_nurbcurve_object *curve = (ay_nurbcurve_object *) o->refine;
- static GLfloat *knots = NULL, *controls = NULL;
- double m[16], x = 0.0, y = 0.0, w = 1.0;
+ GLfloat *knots = NULL, *controls = NULL;
+ double m16[16], *m, x = 0.0, y = 0.0, w = 1.0;
 
   /* get curves transformation-matrix */
-  ay_trafo_creatematrix(o, m);
-
-  if(controls)
+  if(AY_ISTRAFO(o))
     {
-      free(controls);
-      controls = NULL;
+      apply_trafo = AY_TRUE;
+      m = m16;
+      ay_trafo_creatematrix(o, m16);
+      if(tm)
+	{
+	  ay_trafo_multmatrix4(m, tm);
+	}
     }
-
-  if(knots)
+  else
     {
-      free(knots);
-      knots = NULL;
+      if(tm)
+	{
+	  apply_trafo = AY_TRUE;
+	  m = tm;
+	}
     }
 
   order = curve->order;
@@ -976,7 +983,7 @@ ay_npt_drawtrimcurve(ay_object *o, GLUnurbsObj *no)
     return AY_EOMEM;
   if((controls = malloc(length*(curve->is_rat?3:2)*
 			sizeof(GLfloat))) == NULL)
-    { free(knots); knots = NULL; return AY_EOMEM; }
+    { free(knots); return AY_EOMEM; }
 
   a = 0;
   for(i = 0; i < knot_count; i++)
@@ -991,21 +998,34 @@ ay_npt_drawtrimcurve(ay_object *o, GLUnurbsObj *no)
       y = (GLdouble)curve->controlv[b]; b++;
 
       b++; /* for z */
-
-      if(curve->is_rat)
+      if(apply_trafo)
 	{
-	  w = (GLdouble)curve->controlv[b];
-
-	  controls[a] = (GLfloat)((m[0]*x + m[4]*y + m[12])*w);
-	  controls[a+1] = (GLfloat)((m[1]*x + m[5]*y + m[13])*w);
-	  controls[a+2] = (GLfloat)(w /*m[3]*x + m[7]*y + m[15]*w*/);
-	  a += 3;
+	  if(curve->is_rat)
+	    {
+	      w = (GLdouble)curve->controlv[b];
+	      controls[a]   = (GLfloat)((m[0]*x + m[4]*y + m[12])*w);
+	      controls[a+1] = (GLfloat)((m[1]*x + m[5]*y + m[13])*w);
+	      controls[a+2] = (GLfloat)(w /*m[3]*x + m[7]*y + m[15]*w*/);
+	      a += 3;
+	    }
+	  else
+	    {
+	      controls[a] = (GLfloat)(m[0]*x + m[4]*y + m[12]);
+	      controls[a+1] = (GLfloat)(m[1]*x + m[5]*y + m[13]);
+	      a += 2;
+	    }
 	}
       else
 	{
-	  controls[a] = (GLfloat)(m[0]*x + m[4]*y + m[12]);
-	  controls[a+1] = (GLfloat)(m[1]*x + m[5]*y + m[13]);
-	  a += 2;
+	  controls[a] = x;
+	  controls[a+1] = y;
+	  if(curve->is_rat)
+	    {
+	      controls[a+2] = w;
+	      a += 3;
+	    }
+	  else
+	    a += 2;
 	}
       b++;
     } /* for */
@@ -1024,6 +1044,9 @@ ay_npt_drawtrimcurve(ay_object *o, GLUnurbsObj *no)
 		  (curve->is_rat?GLU_MAP1_TRIM_3:GLU_MAP1_TRIM_2));
     }
 
+  free(knots);
+  free(controls);
+
  return AY_OK;
 } /* ay_npt_drawtrimcurve */
 
@@ -1041,6 +1064,7 @@ ay_npt_drawtrimcurves(ay_object *o)
  int ay_status = AY_OK;
  ay_object *trim = NULL, *loop = NULL, *nc = NULL;
  ay_nurbpatch_object *npatch = (ay_nurbpatch_object *)o->refine;
+ double m16[16], *m = NULL;
 
   trim = o->down;
   while(trim->next)
@@ -1049,7 +1073,7 @@ ay_npt_drawtrimcurves(ay_object *o)
 	{
 	case AY_IDNCURVE:
 	  gluBeginTrim(npatch->no);
-	  ay_status = ay_npt_drawtrimcurve(trim, npatch->no);
+	   (void)ay_npt_drawtrimcurve(trim, npatch->no, NULL);
 	  gluEndTrim(npatch->no);
 	  break;
 	case AY_IDLEVEL:
@@ -1062,17 +1086,26 @@ ay_npt_drawtrimcurves(ay_object *o)
 		{
 		  if(loop->type == AY_IDNCURVE)
 		    {
-		      ay_status = ay_npt_drawtrimcurve(loop, npatch->no);
+		      ay_status = ay_npt_drawtrimcurve(loop, npatch->no, NULL);
 		    }
 		  else
 		    {
+		      /* loop element is a curve providing object */
+		      if(AY_ISTRAFO(loop))
+			{
+			  ay_trafo_creatematrix(o, m16);
+			  m = m16;
+			}
+		      else
+			m = NULL;
 		      nc = NULL;
 		      ay_status = ay_provide_object(loop, AY_IDNCURVE, &nc);
-		      if(nc)
+		      while(nc)
 			{
-			  ay_status = ay_npt_drawtrimcurve(nc, npatch->no);
-			  (void)ay_object_delete(nc);
+			  (void)ay_npt_drawtrimcurve(nc, npatch->no, m);
+			  nc = nc->next;
 			} /* if */
+		      (void)ay_object_deletemulti(nc, AY_FALSE);
 		    } /* if */
 		  loop = loop->next;
 		} /* while */
@@ -1080,15 +1113,24 @@ ay_npt_drawtrimcurves(ay_object *o)
 	    } /* if */
 	  break;
 	default:
+	  /* trim is a curve providing object */
+	  if(AY_ISTRAFO(trim))
+	    {
+	      ay_trafo_creatematrix(o, m16);
+	      m = m16;
+	    }
+	  else
+	    m = NULL;
 	  nc = NULL;
 	  ay_status = ay_provide_object(trim, AY_IDNCURVE, &nc);
-	  if(nc)
+	  while(nc)
 	    {
 	      gluBeginTrim(npatch->no);
-	      ay_status = ay_npt_drawtrimcurve(nc, npatch->no);
+	       (void)ay_npt_drawtrimcurve(nc, npatch->no, m);
 	      gluEndTrim(npatch->no);
-	      (void)ay_object_delete(nc);
+	      nc = nc->next;
 	    }
+	  (void)ay_object_deletemulti(nc, AY_FALSE);
 	  break;
 	} /* switch */
       trim = trim->next;
@@ -7622,7 +7664,7 @@ ay_npt_isboundcurve(ay_object *o, double b1, double b2, double b3, double b4,
 {
  int ay_status = AY_OK;
  int i = 0, stride = 4;
- int on_bound = AY_FALSE;
+ int apply_trafo = AY_FALSE, on_bound = AY_FALSE;
  double *cv = NULL, *tcv = NULL, *p = NULL, m[16];
  ay_nurbcurve_object *ncurve = NULL;
  ay_object *c = NULL;
@@ -7650,10 +7692,12 @@ ay_npt_isboundcurve(ay_object *o, double b1, double b2, double b3, double b4,
   /* check, whether each curve section is on one boundary */
   cv = ncurve->controlv;
 
-  /* apply transformations */
-  /*if(AY_ISTRAFO(o))
-    {*/
-  ay_trafo_creatematrix(o, m);
+  /* apply transformations? */
+  if(AY_ISTRAFO(o))
+    {
+      apply_trafo = AY_TRUE;
+      ay_trafo_creatematrix(o, m);
+    }
 
   tcv = malloc(ncurve->length*stride*sizeof(double));
 
@@ -7666,16 +7710,23 @@ ay_npt_isboundcurve(ay_object *o, double b1, double b2, double b3, double b4,
   p = tcv;
   for(i = 0; i < ncurve->length; i++)
     {
-      AY_APTRAN3(p,cv,m);
-      /* multiply in the weights to not get fooled
-	 by e.g. a 9-point-circle */
-      p[0] *= cv[3];
-      p[1] *= cv[3];
+      if(apply_trafo)
+	{
+	  AY_APTRAN3(p,cv,m);
+	  /* multiply in the weights to not get fooled
+	     by e.g. a 9-point-circle */
+	  p[0] *= cv[3];
+	  p[1] *= cv[3];
+	}
+      else
+	{
+	  p[0] = cv[0]*cv[3];
+	  p[1] = cv[1]*cv[3];
+	}
       p += stride;
       cv += stride;
     }
   cv = tcv;
-  /*}*/
 
   for(i = 0; i < ncurve->length-1; i++)
     {
