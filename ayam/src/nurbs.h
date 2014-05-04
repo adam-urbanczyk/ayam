@@ -968,7 +968,7 @@ int ay_npt_swapuv(ay_nurbpatch_object *np);
 
 /** Draw a single trim curve using GLU.
  */
-int ay_npt_drawtrimcurve(ay_object *o, GLUnurbsObj *no, double *m);
+int ay_npt_drawtrimcurve(ay_object *o, GLUnurbsObj *no);
 
 /** Draw all trim curves using GLU.
  */

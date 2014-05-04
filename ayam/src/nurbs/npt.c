@@ -941,38 +941,25 @@ ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
  *
  * \param[in] o NURBS curve object (a trim curve)
  * \param[in] no GLU NURBS Renderer object of associated NURBS patch object
- * \param[in] tm additional transformation matrix
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_npt_drawtrimcurve(ay_object *o, GLUnurbsObj *no, double *tm)
+ay_npt_drawtrimcurve(ay_object *o, GLUnurbsObj *no)
 {
  int order = 0, length = 0, knot_count = 0, i = 0, a = 0, b = 0;
  int apply_trafo = AY_FALSE;
  ay_nurbcurve_object *curve = (ay_nurbcurve_object *) o->refine;
  GLfloat *knots = NULL, *controls = NULL;
- double m16[16], *m, x = 0.0, y = 0.0, w = 1.0;
+ double m[16], x = 0.0, y = 0.0, w = 1.0;
 
   /* get curves transformation-matrix */
   if(AY_ISTRAFO(o))
     {
       apply_trafo = AY_TRUE;
-      m = m16;
-      ay_trafo_creatematrix(o, m16);
-      if(tm)
-	{
-	  ay_trafo_multmatrix4(m, tm);
-	}
+      ay_trafo_creatematrix(o, m);
     }
-  else
-    {
-      if(tm)
-	{
-	  apply_trafo = AY_TRUE;
-	  m = tm;
-	}
-    }
+
 
   order = curve->order;
   length = curve->length;
@@ -1062,9 +1049,8 @@ int
 ay_npt_drawtrimcurves(ay_object *o)
 {
  int ay_status = AY_OK;
- ay_object *trim = NULL, *loop = NULL, *nc = NULL;
+ ay_object *trim = NULL, *loop = NULL, *p = NULL, *nc = NULL;
  ay_nurbpatch_object *npatch = (ay_nurbpatch_object *)o->refine;
- double m16[16], *m = NULL;
 
   trim = o->down;
   while(trim->next)
@@ -1073,7 +1059,7 @@ ay_npt_drawtrimcurves(ay_object *o)
 	{
 	case AY_IDNCURVE:
 	  gluBeginTrim(npatch->no);
-	   (void)ay_npt_drawtrimcurve(trim, npatch->no, NULL);
+	   (void)ay_npt_drawtrimcurve(trim, npatch->no);
 	  gluEndTrim(npatch->no);
 	  break;
 	case AY_IDLEVEL:
@@ -1086,26 +1072,20 @@ ay_npt_drawtrimcurves(ay_object *o)
 		{
 		  if(loop->type == AY_IDNCURVE)
 		    {
-		      ay_status = ay_npt_drawtrimcurve(loop, npatch->no, NULL);
+		      ay_status = ay_npt_drawtrimcurve(loop, npatch->no);
 		    }
 		  else
 		    {
 		      /* loop element is a curve providing object */
-		      if(AY_ISTRAFO(loop))
-			{
-			  ay_trafo_creatematrix(o, m16);
-			  m = m16;
-			}
-		      else
-			m = NULL;
-		      nc = NULL;
-		      ay_status = ay_provide_object(loop, AY_IDNCURVE, &nc);
+		      p = NULL;
+		      ay_status = ay_provide_object(loop, AY_IDNCURVE, &p);
+		      nc = p;
 		      while(nc)
 			{
-			  (void)ay_npt_drawtrimcurve(nc, npatch->no, m);
+			  (void)ay_npt_drawtrimcurve(nc, npatch->no);
 			  nc = nc->next;
 			} /* if */
-		      (void)ay_object_deletemulti(nc, AY_FALSE);
+		      (void)ay_object_deletemulti(p, AY_FALSE);
 		    } /* if */
 		  loop = loop->next;
 		} /* while */
@@ -1114,23 +1094,17 @@ ay_npt_drawtrimcurves(ay_object *o)
 	  break;
 	default:
 	  /* trim is a curve providing object */
-	  if(AY_ISTRAFO(trim))
-	    {
-	      ay_trafo_creatematrix(o, m16);
-	      m = m16;
-	    }
-	  else
-	    m = NULL;
-	  nc = NULL;
-	  ay_status = ay_provide_object(trim, AY_IDNCURVE, &nc);
+	  p = NULL;
+	  ay_status = ay_provide_object(trim, AY_IDNCURVE, &p);
+	  nc = p;
 	  while(nc)
 	    {
 	      gluBeginTrim(npatch->no);
-	       (void)ay_npt_drawtrimcurve(nc, npatch->no, m);
+	       (void)ay_npt_drawtrimcurve(nc, npatch->no);
 	      gluEndTrim(npatch->no);
 	      nc = nc->next;
 	    }
-	  (void)ay_object_deletemulti(nc, AY_FALSE);
+	  (void)ay_object_deletemulti(p, AY_FALSE);
 	  break;
 	} /* switch */
       trim = trim->next;
