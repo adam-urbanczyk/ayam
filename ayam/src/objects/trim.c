@@ -324,9 +324,9 @@ ay_trim_wribcb(char *file, ay_object *o)
     return AY_ENULL;
 
   p = trim->npatch;
-  while(trim->npatch)
+  while(p)
     {
-      ay_wrib_object(file, trim->npatch);
+      ay_wrib_object(file, p);
       p = p->next;
     }
 
@@ -408,7 +408,7 @@ ay_trim_notifycb(ay_object *o)
 	  np = (ay_nurbpatch_object*)down->refine;
 	  if(np->caps_and_bevels)
 	    {
-	      ay_object_copymulti(np->caps_and_bevels, &(npatch->next));
+	      (void)ay_object_copymulti(np->caps_and_bevels, &(npatch->next));
 	    }
 	}
     }
