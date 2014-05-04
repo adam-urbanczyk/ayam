@@ -401,7 +401,17 @@ ay_trim_notifycb(ay_object *o)
     }
 
   if(down->type == AY_IDNPATCH)
-    ay_status = ay_object_copy(down, &npatch);
+    {
+      (void)ay_object_copy(down, &npatch);
+      if(npatch)
+	{
+	  np = (ay_nurbpatch_object*)down->refine;
+	  if(np->caps_and_bevels)
+	    {
+	      ay_object_copymulti(np->caps_and_bevels, &(npatch->next));
+	    }
+	}
+    }
   else
     ay_status = ay_provide_object(down, AY_IDNPATCH, &npatch);
 
