@@ -726,6 +726,11 @@ int ay_nct_applytrafo(ay_object *c);
  */
 int ay_nct_getpntfromindex(ay_nurbcurve_object *curve, int index, double **p);
 
+/** Concatenate multiple objects.
+ */
+void ay_nct_concatobjs(ay_object *o, ay_object **result);
+
+
 /** Concatenate multiple NURBS curves.
  */
 int ay_nct_concatmultiple(int closed, int knot_type, int fillgaps,

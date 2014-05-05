@@ -4114,6 +4114,33 @@ ay_nct_homtoeuc(ay_nurbcurve_object *nc)
 } /* ay_nct_homtoeuc */
 
 
+/** ay_nct_concatobjs:
+ * Concatenate multiple objects that are NURBS curves or provide
+ * NURBS curves.
+ * 
+ * \param[in] o list of objects to concatenate
+ * \param[in,out] result where to store the resulting object
+ */
+void
+ay_nct_concatobjs(ay_object *o, ay_object **result)
+{
+ ay_object c = {};
+ ay_concatnc_object cn = {};
+
+  ay_object_defaults(&c);
+  c.type = AY_IDCONCATNC;
+  c.refine = &cn;
+  c.down = o;
+  cn.closed = AY_TRUE;
+  cn.knot_type = 1; /* AY_KTCUSTOM */
+
+  (void)ay_notify_object(&c);
+  *result = cn.ncurve;
+
+ return;
+} /* ay_nct_concatobjs */
+
+
 /* ay_nct_concatmultiple:
  *  concat multiple NURBS curves in curves to a new single
  *  curve, which is returned via result; order and knot type
