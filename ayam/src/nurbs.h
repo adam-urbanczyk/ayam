@@ -1406,8 +1406,8 @@ int ay_stess_GetQF(double gst);
 
 /** Tesselate a (non-rational or rational) 2D (trim) curve.
  */
-int ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int is_rat,
-			   int qf, int *Clen, double **C);
+int ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int stride,
+			   int is_rat, int qf, int *Clen, double **C);
 
 /** Tesselate a (non-rational or rational) 3D curve.
  */

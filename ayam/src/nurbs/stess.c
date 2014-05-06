@@ -231,7 +231,8 @@ ay_stess_FindMultiplePoints(int n, int p, double *U, double *P,
  *   calculate all points of a 2D curve (TrimCurve)
  */
 int
-ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int is_rat, int qf,
+ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int stride,
+		       int is_rat, int qf,
 		       int *Clen, double **C)
 {
  int span, j, k, l, m, mc = 0, vi, incu, mc1 = 0, mc2 = 0;
@@ -296,7 +297,7 @@ ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int is_rat, int qf,
 
 	  for(j = 0; j <= p; j++)
 	    {
-	      k = (span-p+j)*3;
+	      k = (span-p+j)*stride;
 	      Cw[0] = Cw[0] + N[j]*(Pw[k]*Pw[k+2]);
 	      Cw[1] = Cw[1] + N[j]*(Pw[k+1]*Pw[k+2]);
 	      Cw[2] = Cw[2] + N[j]*Pw[k+2];
@@ -363,7 +364,7 @@ ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int is_rat, int qf,
 
 	  for(j = 0; j <= p; j++)
 	    {
-	      k = (span-p+j)*2;
+	      k = (span-p+j)*stride;
 	      Ct[m]   = Ct[m]   + N[j]*Pw[k];
 	      Ct[m+1] = Ct[m+1] + N[j]*Pw[k+1];
 	    }
@@ -1114,7 +1115,7 @@ ay_stess_TessTrimCurve(ay_object *o, double **tts, int *tls, int *tds,
 {
  ay_nurbcurve_object *nc = NULL;
  double angle, m[16], *dtmp, p1[4], p2[4];
- int apply_trafo = AY_FALSE, stride, len, j;
+ int apply_trafo = AY_FALSE, stride, j;
 
   nc = (ay_nurbcurve_object*)o->refine;
 
@@ -1145,17 +1146,15 @@ ay_stess_TessTrimCurve(ay_object *o, double **tts, int *tls, int *tds,
 	}
 
       ay_stess_CurvePoints2D(nc->length, nc->order-1, nc->knotv, dtmp,
-			     nc->is_rat, qf, &(len), &(tts[*i]));
-      tls[*i] += len;
+			     nc->is_rat, stride, qf, &(tls[*i]), &(tts[*i]));
       free(dtmp);
       dtmp = NULL;
     }
   else
     {
       ay_stess_CurvePoints2D(nc->length, nc->order-1,
-			     nc->knotv, nc->controlv,
-			     nc->is_rat, qf, &(len), &(tts[*i]));
-      tls[*i] += len;
+			     nc->knotv, nc->controlv, 4,
+			     nc->is_rat, qf, &(tls[*i]), &(tts[*i]));
     }
 
   /* get orientation of trimloop */
@@ -1199,7 +1198,7 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
 	  break;
 	case AY_IDLEVEL:
 	  loop = trim->down;
-	  while(loop)
+	  while(loop->next)
 	    {
 	      if(loop->type == AY_IDNCURVE)
 		{
@@ -1251,7 +1250,7 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
       c = NULL;
       switch(trim->type)
 	{
-	case AY_IDNCURVE:	 
+	case AY_IDNCURVE:
 	  ay_stess_TessTrimCurve(trim, tts, tls, tds, &i, qf);
 	  break;
 	case AY_IDLEVEL:
@@ -1259,7 +1258,7 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
 	  if(loop->next)
 	    {
 	      cnc = NULL;
-	      ay_nct_concatobjs(trim->down, &cnc);
+	      ay_nct_concatobjs(loop, &cnc);
 	      if(cnc)
 		{
 		  ay_stess_TessTrimCurve(cnc, tts, tls, tds, &i, qf);
@@ -1336,6 +1335,13 @@ ay_stess_MergeUVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 		       * the uv-point to a trimloop point and delete the
 		       * original trimloop point!
 		       */
+
+		      if(p1->type > 0)
+			{
+			  printf("double trim point in u (%lg, %lg)\n",
+				 p1->u,p1->v);
+			}
+
 		      if((p1->type > 0) && (p1->dir != p2->dir))
 			{
 			  /* intersecting trimcurves */
@@ -1421,6 +1427,12 @@ ay_stess_MergeVVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 		{
 		  if(p2->u == p1->u)
 		    {
+
+		      if(p1->type > 0)
+			{
+			  printf("double trim point in v\n");
+			}
+
 		      /* We, accidentally, have here a trimloop
 		       * point that is identical to another point;
 		       * if the other point is a uv-point we transmogrify
@@ -1493,6 +1505,8 @@ ay_stess_MergeVVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 /* ay_stess_ClassifyTCPoint:
  *  rule out trim-loop points where the loop just touches the
  *  uv-line
+ *  returns AY_FALSE if the direct neighbors on the trimcurve both
+ *  are on the same side wrt. u; AY_TRUE else
  */
 int
 ay_stess_ClassifyTCPoint(double *tc, int tclen, int i, double u)
@@ -1618,24 +1632,6 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 	      for(l = 0; l < (tcslens[k]-1); l++)
 		{
 		  ind = l*2;
-		  if((fabs(tt[ind]-u) < AY_EPSILON) &&
-		     (tt[ind+1] >= v) && (tt[ind+1] < v+vd))
-		    {
-		      if(ay_stess_ClassifyTCPoint(tt, tcslens[k], l, u))
-			{
-			  if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
-			    {
-			      return AY_EOMEM;
-			    }
-			  newuvp->type = 1;
-			  newuvp->dir = tcsdirs[k];
-			  newuvp->u = tt[ind];
-			  newuvp->v = tt[ind+1];
-			  *olduvp = newuvp;
-			  olduvp = &(newuvp->next);
-			}
-		    }
-		  else
 		  if(((tt[ind] <= u) && (tt[ind+2] >= u)) ||
 		     ((tt[ind] >= u) && (tt[ind+2] <= u)))
 		    {
@@ -1666,24 +1662,24 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 	  v += vd;
 	} /* for */
 
-      /* merge vectors */
       if(trimuvp)
 	{
+	  /* we had trimloop points => merge vectors */
 	  ay_status = ay_stess_MergeUVectors(uvps[i], trimuvp);
 	  if(ay_status)
 	    {
 	      ay_error(AY_ERROR, fname,
 		       "Intersecting or misoriented trimcurves!");
-
 	      return AY_ERROR;
 	    } /* if */
 	}
       else
 	{
-	  /* remove unwanted lines (all lines that contain
-	     no trimloop points) */
+	  /* we had no trimloop points */
 	  if(first_loop_cw)
 	    {
+	      /* remove unwanted lines (all lines that contain
+		 no trimloop points) */
 	      uvpptr = uvps[i];
 	      while(uvpptr)
 		{
@@ -1750,10 +1746,10 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 		   * uvpptr->next on, all intermediate uvps
 		   */
 		  olduvp = &(uvpptr->next);
-		  /* we are now out */
+		  /* we are now "out" */
 		  out = 1;
 		}
-	    } /* if */
+	    } /* if is trimloop point */
 	  uvpptr = uvpptr->next;
 	} /* while */
 
@@ -1886,24 +1882,6 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 		{
 		  /* pre-select trimloop section */
 		  ind = l*2;
-		  if((fabs(tt[ind+1]-v) < AY_EPSILON) &&
-		     (tt[ind] >= u) && (tt[ind] < u+ud))
-		    {
-		      if(ay_stess_ClassifyTCPoint(tt+1, tcslens[k], l, v))
-			{
-			  if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
-			    {
-			      return AY_EOMEM;
-			    }
-			  newuvp->type = 1;
-			  newuvp->dir = tcsdirs[k];
-			  newuvp->u = tt[ind];
-			  newuvp->v = tt[ind+1];
-			  *olduvp = newuvp;
-			  olduvp = &(newuvp->next);
-			}
-		    }
-		  else
 		  if(((tt[ind+1] <= v) && (tt[ind+2+1] >= v)) ||
 		     ((tt[ind+1] >= v) && (tt[ind+2+1] <= v)))
 		    {
@@ -1934,24 +1912,24 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 	  u += ud;
 	} /* for */
 
-      /* merge vectors */
       if(trimuvp)
 	{
+	  /* we had trimloop points => merge vectors */
 	  ay_status = ay_stess_MergeVVectors(uvps[i], trimuvp);
 	  if(ay_status)
 	    {
 	      ay_error(AY_ERROR, fname,
 		       "Intersecting or misoriented trimcurves!");
-
 	      return AY_ERROR;
 	    }
 	}
       else
 	{
-	  /* remove unwanted lines (all lines that contain
-	     no trimloop points) */
+	  /* we had no trimloop points */
 	  if(first_loop_cw)
 	    {
+	      /* remove unwanted lines (all lines that contain
+		 no trimloop points) */
 	      uvpptr = uvps[i];
 	      while(uvpptr)
 		{
@@ -2018,10 +1996,10 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 		   * uvpptr->next on, all intermediate uvps
 		   */
 		  olduvp = &(uvpptr->next);
-		  /* we are now out */
+		  /* we are now "out" */
 		  out = 1;
 		}
-	    } /* if */
+	    } /* if is trimloop point */
 	  uvpptr = uvpptr->next;
 	} /* while */
 
@@ -2083,10 +2061,7 @@ ay_stess_DrawTrimmedSurface(ay_object *o)
 
   if(!stess)
     return AY_ENULL;
-      if(stess->ft_cw)
-	printf("ft_cw\n");
-      else
-	printf("!ft_cw\n");
+
   /* draw iso-u lines */
   for(i = 0; i < stess->upslen; i++)
     {
@@ -2102,7 +2077,6 @@ ay_stess_DrawTrimmedSurface(ay_object *o)
 
       while(uvpptr)
 	{
-
 	  if(uvpptr->type > 0)
 	    {
 	      if(out)
@@ -2128,9 +2102,7 @@ ay_stess_DrawTrimmedSurface(ay_object *o)
 
       if(!out)
 	glEnd();
-
-    } /* for */
-
+    } /* for all u lines */
 
   /* draw iso-v lines */
   for(i = 0; i < stess->vpslen; i++)
@@ -2147,7 +2119,6 @@ ay_stess_DrawTrimmedSurface(ay_object *o)
 
       while(uvpptr)
 	{
-
 	  if(uvpptr->type > 0)
 	    {
 	      if(out)
@@ -2174,12 +2145,10 @@ ay_stess_DrawTrimmedSurface(ay_object *o)
 
       if(!out)
 	glEnd();
-
-    } /* for */
-
+    } /* for all v lines */
 
   /* draw trimcurves (outlines) */
-  for(i = 0; i < stess->tcslen; i++)
+  for(i = 0; i < 1/*stess->tcslen*/; i++)
     {
       glBegin(GL_LINE_STRIP);
        for(j = 0; j < stess->tcslens[i]; j++)
