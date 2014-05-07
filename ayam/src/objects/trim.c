@@ -365,6 +365,50 @@ ay_trim_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_trim_bbccb */
 
 
+/* ay_trim_scaleprovider:
+ * helper for ay_trim_notifycb() below
+ * apply scale/translation to a curve providing object
+ */
+void
+ay_trim_scaleprovider(ay_object *o, double minu, double maxu,
+		      double minv, double maxv,
+		      ay_object **result)
+{
+ ay_object *p = NULL;
+
+  if(!AY_ISTRAFO(o))
+    {
+      o->movx = minu;
+      o->scalx = maxu-minu;
+      o->movy = minv;
+      o->scaly = maxv-minv;
+      *result = o;
+    }
+  else
+    {
+      ay_provide_object(o, AY_IDNCURVE, &p);
+      *result = p;
+      while(p)
+	{
+	  if(AY_ISTRAFO(p))
+	    {
+	      ay_nct_applytrafo(p);
+	    }
+	  p->movx = minu;
+	  p->scalx = maxu-minu;
+	  p->movy = minv;
+	  p->scaly = maxv-minv;
+
+	  p = p->next;
+	}
+      if(*result)
+	ay_object_delete(o);
+    }
+
+ return;
+} /* ay_trim_scaleprovider */
+
+
 /* ay_trim_notifycb:
  *  notification callback function of trim object
  */
@@ -374,9 +418,9 @@ ay_trim_notifycb(ay_object *o)
  int ay_status = AY_OK;
  ay_trim_object *trim = NULL;
  ay_nurbpatch_object *np = NULL;
- ay_object *down = NULL, *npatch = NULL, *ncurve = NULL;
- ay_object **next = NULL;
- double min, max;
+ ay_object *down = NULL, *npatch = NULL, *ncurve = NULL, *child;
+ ay_object **next = NULL, **nextchild, *t, *n;
+ double minu, maxu, minv, maxv;
  int i = 0;
 
   if(!o)
@@ -450,24 +494,88 @@ ay_trim_notifycb(ay_object *o)
 		  /* apply scale to copy */
 		  if(trim->scalemode)
 		    {
-		      if(AY_ISTRAFO(ncurve))
-			{
-			  ay_nct_applytrafo(ncurve);
-			}
 		      np = (ay_nurbpatch_object*)npatch->refine;
-		      min = np->uknotv[np->uorder-1];
-		      max = np->uknotv[np->width];
-		      ncurve->movx = min;
-		      ncurve->scalx = max-min;
-		      min = np->vknotv[np->vorder-1];
-		      max = np->vknotv[np->height];
-		      ncurve->movy = min;
-		      ncurve->scaly = max-min;
-		    }
+		      minu = np->uknotv[np->uorder-1];
+		      maxu = np->uknotv[np->width];
+		      minv = np->vknotv[np->vorder-1];
+		      maxv = np->vknotv[np->height];
+
+		      switch(ncurve->type)
+			{
+			case AY_IDNCURVE:
+			  if(AY_ISTRAFO(ncurve))
+			    {
+			      ay_nct_applytrafo(ncurve);
+			    }
+			  ncurve->movx = minu;
+			  ncurve->scalx = maxu-minu;
+			  ncurve->movy = minv;
+			  ncurve->scaly = maxv-minv;
+			  break;
+			case AY_IDLEVEL:
+			  child = ncurve->down;
+			  nextchild = &(ncurve->down);
+			  while(child && child->next)
+			    {
+			      if(child->type == AY_IDNCURVE)
+				{
+				  if(AY_ISTRAFO(child))
+				    {
+				      ay_nct_applytrafo(child);
+				    }
+				  child->movx = minu;
+				  child->scalx = maxu-minu;
+				  child->movy = minv;
+				  child->scaly = maxv-minv;
+				  nextchild = &(child->next);
+				  child = child->next;
+				}
+			      else
+				{
+				  /* child is a curve provider */
+				  n = child->next;
+				  ay_trim_scaleprovider(child, minu, maxu,
+							minv, maxv, &t);
+				  /* link the start of the provided
+				     objects to the original list */
+				  if(t)
+				    {
+				      *nextchild = t;
+				      while(t->next)
+					t = t->next;
+				      /* link the end of the provided
+					 objects to the original list */
+				      t->next = n;
+
+				      nextchild = &(t->next);
+				    }
+				  else
+				    {
+				      nextchild = &(child->next);
+				    }
+				  child = n;
+				} /* if curve or provider */
+			    } /* while */
+			  break;
+			default:
+			  /* ncurve is a curve provider */
+			  ay_trim_scaleprovider(ncurve, minu, maxu, minv, maxv,
+						&t);
+			  if(t)
+			    ncurve = t;
+			  break;
+			} /* switch */
+		    } /* if scalemode */
+
 		  /* link copy to patch */
 		  *next = ncurve;
-		  next = &(ncurve->next);
-		}
+		  if(ncurve)
+		    {
+		      while(ncurve->next)
+			ncurve = ncurve->next;
+		      next = &(ncurve->next);
+		    }
+		} /* if have copy */
 	      down = down->next;
 	    } /* while */
 
