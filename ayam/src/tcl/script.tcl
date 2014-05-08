@@ -100,7 +100,11 @@ eval [subst "bindtags $t \{$t Text all\}"]
 bind $t <Key-Escape> "resetFocus;break"
 
 # create resize handle for text widget
-resizeHandle:Create $w.rsh $t
+if { $ay(ws) == "Win32" } {
+    resizeHandle:Create $w.rsh $t {-bg SystemWindow}
+} else {
+    resizeHandle:Create $w.rsh $t
+}
 
 # create popup menu
 set m [menu $t.popup -tearoff 0]
@@ -194,7 +198,7 @@ proc getScriptp { } {
 	eval [subst "$t tag add errtag $errrange"]
     }
 
-    after idle "resizeHandle:PlaceHandle $ay(pca).$ScriptAttr(w).rsh \
+    after 100 "resizeHandle:PlaceHandle $ay(pca).$ScriptAttr(w).rsh \
       $ay(pca).$ScriptAttr(w).tScript"
 
  return;
