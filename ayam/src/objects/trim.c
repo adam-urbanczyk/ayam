@@ -376,34 +376,23 @@ ay_trim_scaleprovider(ay_object *o, double minu, double maxu,
 {
  ay_object *p = NULL;
 
-  if(!AY_ISTRAFO(o))
+  ay_provide_object(o, AY_IDNCURVE, &p);
+  *result = p;
+  while(p)
     {
-      o->movx = minu;
-      o->scalx = maxu-minu;
-      o->movy = minv;
-      o->scaly = maxv-minv;
-      *result = o;
-    }
-  else
-    {
-      ay_provide_object(o, AY_IDNCURVE, &p);
-      *result = p;
-      while(p)
+      if(AY_ISTRAFO(p))
 	{
-	  if(AY_ISTRAFO(p))
-	    {
-	      ay_nct_applytrafo(p);
-	    }
-	  p->movx = minu;
-	  p->scalx = maxu-minu;
-	  p->movy = minv;
-	  p->scaly = maxv-minv;
-
-	  p = p->next;
+	  ay_nct_applytrafo(p);
 	}
-      if(*result)
-	ay_object_delete(o);
+      p->movx = minu;
+      p->scalx = maxu-minu;
+      p->movy = minv;
+      p->scaly = maxv-minv;
+
+      p = p->next;
     }
+  if(*result)
+    ay_object_delete(o);
 
  return;
 } /* ay_trim_scaleprovider */
