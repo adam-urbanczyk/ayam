@@ -1177,7 +1177,7 @@ ay_script_notifycb(ay_object *o)
  ay_pointedit pe = {0};
  ay_voidfp *arr = NULL;
  int i = 0;
- int old_rdmode = 0;
+ int old_rdmode = 0, old_createatmark = 0;
  ClientData old_restrictcd;
  Tcl_DString ds;
  Tcl_Interp *interp = NULL;
@@ -1265,6 +1265,9 @@ ay_script_notifycb(ay_object *o)
     {
       ay_trafo_defaults(o);
     }
+
+  old_createatmark = ay_prefs.createatmark;
+  ay_prefs.createatmark = 0;
 
   /* copy cached/saved individual parameters to global Tcl array */
   if(/*!sc->modified && */sc->params)
@@ -1538,6 +1541,8 @@ resenv:
 
   ay_next = old_aynext;
 
+  ay_prefs.createatmark = old_createatmark;
+
   /* report failed scripts to the user */
   if(result == TCL_ERROR)
     {
@@ -1679,6 +1684,7 @@ int
 ay_script_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
+ int add_trafo = AY_FALSE;
  char fname[] = "script_convert";
  ay_tag *tag = NULL;
  ay_script_object *sc = NULL;
@@ -1702,6 +1708,11 @@ ay_script_convertcb(ay_object *o, int in_place)
     case 2:
       if(sc->cm_objects)
 	{
+	  if(o->tags && ay_script_hasnptrafo(o) && AY_ISTRAFO(o))
+	    {
+	      add_trafo = AY_TRUE;
+	    }
+
 	  /* remove current children (of the script object) */
 	  if(o->down)
 	    {
@@ -1720,7 +1731,8 @@ ay_script_convertcb(ay_object *o, int in_place)
 	    {
 	      if(sc->cm_objects->next && sc->cm_objects->next->next)
 		{
-		  /* have multiple objects */
+		  /* have multiple objects
+		     => transmorph o to a Level */
 		  if(!(newl = calloc(1, sizeof(ay_level_object))))
 		    return AY_EOMEM;
 		  o->type = AY_IDLEVEL;
@@ -1739,7 +1751,8 @@ ay_script_convertcb(ay_object *o, int in_place)
 		}
 	      else
 		{
-		  /* have just one object */
+		  /* have just one object
+		     => transmorph o to target type */
 		  cmo = sc->cm_objects;
 		  o->type = cmo->type;
 
@@ -1750,6 +1763,8 @@ ay_script_convertcb(ay_object *o, int in_place)
 
 		  /* complete transmogrification of o */
 		  o->refine = cmo->refine;
+		  if(add_trafo)
+		    ay_trafo_add(o, cmo);
 		  ay_trafo_copy(cmo, o);
 		  o->parent = cmo->parent;
 		  o->hide_children = cmo->hide_children;
@@ -1782,6 +1797,8 @@ ay_script_convertcb(ay_object *o, int in_place)
 	    }
 	  else
 	    {
+	      /* keep original (i.e. !in_place)
+		 => just copy and link all the cm_objects */
 	      cmo = sc->cm_objects;
 	      while(cmo && cmo->next)
 		{
@@ -1789,6 +1806,8 @@ ay_script_convertcb(ay_object *o, int in_place)
 		  ay_status = ay_object_copy(cmo, &new);
 		  if(ay_status == AY_OK && new)
 		    {
+		      if(add_trafo)
+			ay_trafo_add(o, new);
 		      ay_object_link(new);
 		    } /* if */
 		  cmo = cmo->next;
@@ -1811,6 +1830,7 @@ int
 ay_script_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
  int ay_status = AY_OK;
+ int add_trafo = AY_FALSE;
  ay_script_object *sc = NULL;
  ay_object *cmo = NULL, *po = NULL, **npo = NULL;
 
@@ -1870,6 +1890,10 @@ ay_script_providecb(ay_object *o, unsigned int type, ay_object **result)
     case 2:
       if(sc->cm_objects)
 	{
+	  if(o->tags && ay_script_hasnptrafo(o) && AY_ISTRAFO(o))
+	    {
+	      add_trafo = AY_TRUE;
+	    }
 	  npo = &po;
 	  cmo = sc->cm_objects;
 	  while(cmo && cmo->next)
@@ -1886,7 +1910,11 @@ ay_script_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      if(!ay_status && *npo)
 		{
 		  while(*npo)
-		    npo = &((*npo)->next);
+		    {
+		      if(add_trafo)
+			ay_trafo_add(o, *npo);
+		      npo = &((*npo)->next);
+		    }
 		}
 	      cmo = cmo->next;
 	    } /* while */
