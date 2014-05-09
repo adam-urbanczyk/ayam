@@ -2601,18 +2601,13 @@ ay_rrib_RiPatchMesh(RtToken type, RtInt nu, RtToken uwrap,
 		    RtInt n, RtToken tokens[], RtPointer parms[])
 {
  int ay_status = AY_OK;
- ay_pamesh_object pm;
+ ay_pamesh_object pm = {0};
  int i = 0, j = 0, stride = 4;
  double *p = NULL;
  RtBasis *basis;
  RtPointer tokensfound[PPWTBL_LAST];
  RtFloat *pp = NULL, *pw = NULL;
  char *hvars[2] = {"P","Pw"};
-
-  memset(&pm, 0, sizeof(ay_pamesh_object));
-  pm.glu_sampling_tolerance = 0.0;
-  pm.display_mode = 0;
-  pm.npatch = NULL;
 
   if(!strcmp(type, RI_BILINEAR))
     pm.type = AY_PTBILINEAR;
@@ -2751,10 +2746,13 @@ ay_rrib_RiPatchMesh(RtToken type, RtInt nu, RtToken uwrap,
 cleanup:
 
   ay_object_deletemulti(pm.npatch, AY_FALSE);
-  pm.npatch = NULL;
 
-  free(pm.controlv);
-  pm.controlv = NULL;
+  if(pm.controlv)
+    free(pm.controlv);
+  if(pm.vbasis)
+    free(pm.vbasis);
+  if(pm.ubasis)
+    free(pm.ubasis);
 
  return;
 } /* ay_rrib_RiPatchMesh */
