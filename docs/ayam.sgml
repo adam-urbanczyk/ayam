@@ -2066,6 +2066,7 @@ available commands.
 The special action <tt/"Highlight"/ also collects the found node names
 in the Tcl list <tt>"ObjectSearch(nodes)"</tt>.
 
+<#if out=latex><x/newpage/</#if>
 <sect1>Preferences<label id="prefs">
 <p>
 <figure loc="ht">
@@ -2100,6 +2101,7 @@ only be realized after the editor is closed.
 <p>
 The preferences are divided into five sections as follows.
 
+<#if out=latex><x/newpage/</#if>
 <sect2>Main Preferences<label id="prefmain">
 <p>
 The <tt/"Main"/ section contains the most important application setup
@@ -2248,7 +2250,7 @@ The preference settings <tt/"ListTypes"/, <tt/"MarkHidden"/,
 settings since Ayam 1.14, see section
 <ref id="hidprefs" name="Hidden Preference Settings">.
 
-
+<#if out=latex><x/newpage/</#if>
 <sect2>Modelling Preferences<label id="prefmodel"><label id="prefmodeling">
 <p>
 The next section of the preferences, <tt/"Modelling"/,
@@ -2335,6 +2337,7 @@ For more information, see also the section
 <ref id="undos" name="The Undo System">.
 </itemize>
 
+<#if out=latex><x/newpage/</#if>
 <sect2>Drawing Preferences<label id="prefdraw"><label id="prefdrawing">
 <p>
 The preferences in the <tt/"Drawing"/ section let you specify
@@ -2401,6 +2404,7 @@ rendering.
 will be used when drawing or shading.
 </itemize>
 
+<#if out=latex><x/newpage/</#if>
 <sect2>RIB-Export Preferences<label id="prefrib"><label id="prefrib-export">
 <p>
 The <tt/"RIB-Export"/ section of the preferences contains settings that
@@ -2622,6 +2626,7 @@ using <tt>"Special/Select Renderer"</tt> first, then fine tuning your
 renderer setup using the preferences editor is the suggested way to
 switch Ayam to a certain RenderMan renderer.
 
+<#if out=latex><x/newpage/</#if>
 <sect2>Miscellaneous Preferences<label id="prefmisc">
 <p>
 The (<tt/"Misc"/) section of the preferences contains the dreaded
@@ -9365,6 +9370,24 @@ objects will be disabled using the <tt/"Active"/ Script object property
 and may be enabled again after careful inspection of the script code
 manually or using the main menu entry <tt>"Special/Enable Scripts"</tt>.
 
+<sect2>Transformation Support
+<p>
+Even though, initially, Script objects do not show the
+Transformations property, they can support transformations under
+certain circumstances.
+To enable this support, a NP tag with the value <tt/"Transformations"/
+must be added to the Script object (i.e. the Transformations property
+must be visible).<newline>
+Now, the result(s) of the script can, additionally, be manipulated by
+the standard interactive modelling actions, like move or scale.
+<p>
+Note, that upon provide or conversion the transformations from the
+Script object will be added to the transformations of the objects
+created by the script in the same way as by the delegate
+transformations tool, which fails for complex setups.
+However, this problem can be avoided by
+using the <tt/"applyTrafo"/ command on the created objects in the script.
+
 <sect2>Script Object Usage
 <p>
 The script of a Script object will be run each time the script is
@@ -9400,7 +9423,8 @@ has been refined to allow more complex scripts (that traverse the scene or
 use the clipboard) to be written:
 When a script is running, the current level is the child level of the
 respective Script object. Furthermore, the object clipboard is saved
-for running the script and re-established after the script finished.
+for running the script and re-established after the script finished,
+and the <tt>"CreateAtMark"</tt> option is disabled.
 <p>
 The binary and source distributions of Ayam contain several example
 scripts for Script objects in the <tt>"ayam/bin/scripts"</tt> and
