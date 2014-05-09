@@ -1,4 +1,4 @@
-[2. May 2014] CVS-Head:
+[9. May 2014] CVS-Head:
 =======================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
@@ -98,6 +98,7 @@ o added support for ACurve and NCurve providing objects to Gordon objects
   WatchCorners feature
 o added ScaleMode option to Trim object controlling how to scale the
   trim to the parametric space of the NURBS surface
+o improved transformation attribute support of Script objects
 
 GUI:
 o the default value menu buttons of property GUI elements now display a
