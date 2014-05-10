@@ -843,7 +843,8 @@ ay_pmt_israt(ay_pamesh_object *pm)
  * Convert PatchMesh to a different matrix.
  *
  * \param[in,out] pm PatchMesh to process
- * \param[in] btype target type
+ * \param[in] btype target basis type
+ * \param[in] bstep target step size
  * \param[in] basis target basis (may be NULL unless \a btype is AY_BTCUSTOM)
  *
  * \returns AY_OK on success, error code otherwise.
