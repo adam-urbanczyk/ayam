@@ -1251,7 +1251,7 @@ Tcl_AppInit(Tcl_Interp *interp)
 
 
   /* nurbs/pmt.c */
-  Tcl_CreateCommand(interp, "tobezPM", ay_pmt_tobeztcmd,
+  Tcl_CreateCommand(interp, "tobasisPM", ay_pmt_tobasistcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
 
@@ -1762,7 +1762,7 @@ ay_safeinit(Tcl_Interp *interp)
 
 
   /* nurbs/pmt.c */
-  Tcl_CreateCommand(interp, "tobezPM", ay_pmt_tobeztcmd,
+  Tcl_CreateCommand(interp, "tobasisPM", ay_pmt_tobasistcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
 
