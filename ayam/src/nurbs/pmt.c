@@ -29,6 +29,8 @@ static double mp[16] = {1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1};
 
 static double mbi[16];
 
+static double msi[16];
+
  /* for reference */
 #if 0
 RtBasis RiBezierBasis = { { -1.0,  3.0, -3.0,  1.0 },
@@ -837,34 +839,54 @@ ay_pmt_israt(ay_pamesh_object *pm)
 } /* ay_pmt_israt */
 
 
-/** ay_pmt_tobezier:
- * Convert PatchMesh to Bezier matrix.
+/** ay_pmt_tobasis:
+ * Convert PatchMesh to a different matrix.
  *
- * \param pm[in,out] PatchMesh to process
+ * \param[in,out] pm PatchMesh to process
+ * \param[in] btype target type
+ * \param[in] basis target basis (may be NULL unless \a btype is AY_BTCUSTOM)
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_pmt_tobezier(ay_pamesh_object *pm)
+ay_pmt_tobasis(ay_pamesh_object *pm, int btype, int bstep, double *basis)
 {
- int ay_status;
  int convertu = AY_FALSE, convertv = AY_FALSE, i, j, k, l, i1, i2;
- int w, h, nw, nh;
+ int have_mi = AY_FALSE, w, h, nw, nh;
  double *cv, *newcv, *expcv, *n, *p, *p1, *p2, *p3, *p4;
  double *n1, *n2, *n3, *n4;
- double m[16], tm[16], mu[16], mv[16], mut[16];
+ double m[16], mi[16], tm[16], mu[16], mv[16], mut[16];
 
   if(!pm)
-    return AY_FALSE;
+    return AY_ENULL;
 
-  if(pm->btype_u != AY_BTBEZIER)
+  if((btype == AY_BTCUSTOM) && !basis)
+    return AY_ERROR;
+
+  if(pm->btype_u != btype)
     {
       convertu = AY_TRUE;
     }
+  else
+    {
+      if(pm->btype_u == AY_BTCUSTOM)
+	{
+	  if(memcmp(pm->ubasis, basis, 16*sizeof(double)))
+	    convertu = AY_TRUE;
+	}
+    }
 
-  if(pm->btype_v != AY_BTBEZIER)
+  if(pm->btype_v != btype)
     {
       convertv = AY_TRUE;
+    }
+  else
+    {
+      if(pm->btype_v == AY_BTCUSTOM)
+	{
+	  if(memcmp(pm->vbasis, basis, 16*sizeof(double)))
+	    convertv = AY_TRUE;
+	}
     }
 
   if(!convertu && !convertv)
@@ -873,7 +895,24 @@ ay_pmt_tobezier(ay_pamesh_object *pm)
   /* create conversion matrices */
   if(convertu)
     {
-      memcpy(mu, mbi, 16*sizeof(double));
+      switch(btype)
+	{
+	case AY_BTBSPLINE:
+	  memcpy(mu, msi, 16*sizeof(double));
+	  break;
+	case AY_BTBEZIER:
+	  memcpy(mu, mbi, 16*sizeof(double));
+	  break;
+	default:
+	  if(ay_trafo_invgenmatrix4(basis, mi))
+	    {
+	      return AY_ERROR;
+	    }
+	  have_mi = AY_TRUE;
+	  memcpy(mu, mi, 16*sizeof(double));
+	  break;
+	}
+
       switch(pm->btype_u)
 	{
 	case AY_BTBSPLINE:
@@ -886,7 +925,7 @@ ay_pmt_tobezier(ay_pamesh_object *pm)
 	  ay_trafo_multmatrix4(mu, mc);
 	  break;
 	case AY_BTPOWER:
-	  /* use mbi unchanged */
+	  /* use inv(basis) unchanged */
 	  break;
 	case AY_BTCUSTOM:
 	  ay_trafo_multmatrix4(mu, pm->ubasis);
@@ -912,7 +951,24 @@ ay_pmt_tobezier(ay_pamesh_object *pm)
 
   if(convertv)
     {
-      memcpy(mv, mbi, 16*sizeof(double));
+      switch(btype)
+	{
+	case AY_BTBSPLINE:
+	  memcpy(mv, msi, 16*sizeof(double));
+	  break;
+	case AY_BTBEZIER:
+	  memcpy(mv, mbi, 16*sizeof(double));
+	  break;
+	default:
+	  if(!have_mi)
+	    if(ay_trafo_invgenmatrix4(basis, mi))
+	      {
+		return AY_ERROR;
+	      }
+	  memcpy(mv, mi, 16*sizeof(double));
+	  break;
+	}
+
       switch(pm->btype_v)
 	{
 	case AY_BTBSPLINE:
@@ -925,7 +981,7 @@ ay_pmt_tobezier(ay_pamesh_object *pm)
 	  ay_trafo_multmatrix4(mv, mc);
 	  break;
 	case AY_BTPOWER:
-	  /* use mbi unchanged */
+	  /* use inv(basis) unchanged */
 	  break;
 	case AY_BTCUSTOM:
 	  ay_trafo_multmatrix4(mv, pm->vbasis);
@@ -1071,36 +1127,126 @@ ay_pmt_tobezier(ay_pamesh_object *pm)
 
   free(pm->controlv);
   pm->controlv = newcv;
-  pm->btype_u = AY_BTBEZIER;
-  pm->btype_v = AY_BTBEZIER;
-  pm->ustep = 3;
-  pm->vstep = 3;
+  pm->btype_u = btype;
+  pm->btype_v = btype;
+  pm->ustep = bstep;
+  pm->vstep = bstep;
 
  return AY_OK;
-} /* ay_pmt_tobezier */
+} /* ay_pmt_tobasis */
 
 
-/** ay_pmt_tobeztcmd:
- *  Convert selected PatchMesh objects to Bezier basis.
- *  Implements the \a tobezPM scripting interface command.
- *  See also the corresponding section in the \ayd{scctobezpm}.
+/** ay_pmt_tobasistcmd:
+ *  Convert selected PatchMesh objects to a different basis.
+ *  Implements the \a tobasisPM scripting interface command.
+ *  See also the corresponding section in the \ayd{scctobasispm}.
  *
  *  \returns TCL_OK in any case.
  */
 int
-ay_pmt_tobeztcmd(ClientData clientData, Tcl_Interp *interp,
-		 int argc, char *argv[])
+ay_pmt_tobasistcmd(ClientData clientData, Tcl_Interp *interp,
+		   int argc, char *argv[])
 {
- int ay_status;
+ int ay_status, tcl_status;
  ay_list_object *sel = ay_selection;
  ay_pamesh_object *pm = NULL;
+ char **basisv = NULL;
+ int i = 1, j = 0, basisc = 0, btype = AY_BTBSPLINE;
+ int have_step = AY_FALSE, step = 0;
+ double *basis = NULL;
+
+  if(argc > 2)
+    {
+      /* parse args */
+      while(i+1 < argc)
+	{
+	  if(!strcmp(argv[i], "-s"))
+	    {
+	      have_step = AY_TRUE;
+	      tcl_status = Tcl_GetInt(interp, argv[i+1], &step);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	      if(step < 0)
+		{
+		  ay_error(AY_ERROR, argv[0], "Illegal step size.");
+		  goto cleanup;
+		}
+	    }
+
+	  if(!strcmp(argv[i], "-t"))
+	    {
+	      tcl_status = Tcl_GetInt(interp, argv[i+1], &btype);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+
+	      if(btype < 0 || btype > AY_BTCUSTOM)
+		{
+		  ay_error(AY_ERROR, argv[0], "Illegal matrix type.");
+		  goto cleanup;
+		}
+	    }
+
+	  if(!strcmp(argv[i], "-b"))
+	    {
+	      btype = AY_BTCUSTOM;
+	      Tcl_SplitList(interp, argv[i+1], &basisc, &basisv);
+	      if(basisc == 16)
+		{
+		  if(!(basis = malloc(16*sizeof(double))))
+		    {
+		      ay_error(AY_EOMEM, argv[0], NULL);
+		      goto cleanup;
+		    }
+
+		  for(j = 0; j < 16; j++)
+		    {
+		      tcl_status = Tcl_GetDouble(interp, basisv[j], &basis[j]);
+		      AY_CHTCLERRGOT(tcl_status, argv[0], interp);
+		    } /* for */
+		}
+	      else
+		{
+		  ay_error(AY_ERROR, argv[0], "Basis must be 16 floats.");
+		  goto cleanup;
+		}
+
+	      Tcl_Free((char *) basisv);
+	      basisv = NULL;
+	    }
+
+	  i += 2;
+	} /* while */
+    } /* if */
+
+  if(!have_step)
+    {
+      switch(btype)
+	{
+	case AY_BTBEZIER:
+	  step = 3;
+	  break;
+	case AY_BTBSPLINE:
+	  step = 1;
+	  break;
+	case AY_BTHERMITE:
+	  step = 2;
+	  break;
+	case AY_BTCATMULLROM:
+	  step = 1;
+	  break;
+	case AY_BTPOWER:
+	  step = 4;
+	  break;
+	default:
+	  ay_error(AY_ERROR, argv[0], "No step specified.");
+	  goto cleanup;
+	}
+    }
 
   while(sel)
     {
       if(sel->object->type == AY_IDPAMESH)
 	{
 	  pm = (ay_pamesh_object*)sel->object->refine;
-	  ay_status = ay_pmt_tobezier(pm);
+	  ay_status = ay_pmt_tobasis(pm, btype, step, basis);
 	  if(ay_status)
 	    {
 	      ay_error(AY_ERROR, argv[0], "Conversion failed.");
@@ -1120,8 +1266,16 @@ ay_pmt_tobeztcmd(ClientData clientData, Tcl_Interp *interp,
 
   (void)ay_notify_parent();
 
+cleanup:
+
+  if(basis)
+    free(basis);
+
+  if(basisv)
+    Tcl_Free((char *) basisv);
+
  return TCL_OK;
-} /* ay_pmt_tobeztcmd */
+} /* ay_pmt_tobasistcmd */
 
 
 /** ay_pmt_init:
@@ -1133,6 +1287,9 @@ ay_pmt_init()
 
   /* invert Bezier basis matrix */
   (void)ay_trafo_invgenmatrix4(mb, mbi);
+
+  /* invert B-Spline basis matrix */
+  (void)ay_trafo_invgenmatrix4(ms, msi);
 
  return;
 } /* ay_pmt_init */

@@ -1385,9 +1385,9 @@ int ay_pmt_revertv(ay_pamesh_object *pm);
  */
 int ay_pmt_israt(ay_pamesh_object *pm);
 
-/** Tcl command to convert selected patch meshes to Bezier matrix */
-int ay_pmt_tobeztcmd(ClientData clientData, Tcl_Interp *interp,
-		     int argc, char *argv[]);
+/** Tcl command to convert selected patch meshes to a different basis matrix */
+int ay_pmt_tobasistcmd(ClientData clientData, Tcl_Interp *interp,
+		       int argc, char *argv[]);
 
 /** Initialize the patch mesh tools module.
  */
