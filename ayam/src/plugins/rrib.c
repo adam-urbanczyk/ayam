@@ -1596,7 +1596,6 @@ ay_rrib_RiBasis(RtBasis ubasis, RtInt ustep,
   if(vbasis_custom)
     {
       ay_rrib_cattributes->btype_v = AY_BTCUSTOM;
-      ay_rrib_cattributes->vbasisptr = vbasis;
       if(ay_rrib_cattributes->vbasisptr)
 	free(ay_rrib_cattributes->vbasisptr);
       if(!(ay_rrib_cattributes->vbasisptr = malloc(1*sizeof(RtBasis))))
