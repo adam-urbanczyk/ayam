@@ -916,6 +916,9 @@ ay_pmt_tobasis(ay_pamesh_object *pm, int btype, int bstep, double *basis)
 
       switch(pm->btype_u)
 	{
+	case AY_BTBEZIER:
+	  ay_trafo_multmatrix4(mu, mb);
+	  break;
 	case AY_BTBSPLINE:
 	  ay_trafo_multmatrix4(mu, ms);
 	  break;
@@ -972,6 +975,9 @@ ay_pmt_tobasis(ay_pamesh_object *pm, int btype, int bstep, double *basis)
 
       switch(pm->btype_v)
 	{
+	case AY_BTBEZIER:
+	  ay_trafo_multmatrix4(mv, mb);
+	  break;
 	case AY_BTBSPLINE:
 	  ay_trafo_multmatrix4(mv, ms);
 	  break;
@@ -1128,6 +1134,22 @@ ay_pmt_tobasis(ay_pamesh_object *pm, int btype, int bstep, double *basis)
 
   free(pm->controlv);
   pm->controlv = newcv;
+  if(btype == AY_BTCUSTOM)
+    {
+      if(pm->btype_u != AY_BTCUSTOM)
+	{
+	  if(!(pm->ubasis = malloc(16*sizeof(double))))
+	     return AY_EOMEM;
+	}
+      memcpy(pm->ubasis, basis, 16*sizeof(double));
+
+      if(pm->btype_v != AY_BTCUSTOM)
+	{
+	  if(!(pm->vbasis = malloc(16*sizeof(double))))
+	     return AY_EOMEM;
+	}
+      memcpy(pm->vbasis, basis, 16*sizeof(double));
+    }
   pm->btype_u = btype;
   pm->btype_v = btype;
   pm->ustep = bstep;
