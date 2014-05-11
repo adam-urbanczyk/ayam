@@ -1188,7 +1188,7 @@ ay_pmt_tobasistcmd(ClientData clientData, Tcl_Interp *interp,
 	      have_step = AY_TRUE;
 	      tcl_status = Tcl_GetInt(interp, argv[i+1], &step);
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
-	      if(step < 0)
+	      if(step <= 0 || step > 4)
 		{
 		  ay_error(AY_ERROR, argv[0], "Illegal step size.");
 		  goto cleanup;
