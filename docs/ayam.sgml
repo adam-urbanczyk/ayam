@@ -14859,6 +14859,39 @@ The option <tt/"-k"/ allows to set a knot type (default 1 &ndash; NURB).
 See also section <ref id="buildnpt" name="Build from Curves Tool">.
 </itemize>
 
+
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
+<label id="sctobasispm">
+tobasisPM &ndash; convert PatchMesh to a different basis:
+<itemize>
+ <item>Synopsis: <tt/"tobasisPM [-t type | -s step | -b basis]"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Converts all selected PatchMesh objects to a
+different basis. Both dimensions will be converted to the same
+basis; it is not an error if one dimension is already of the
+target basis type.
+<p><p>
+The option <tt/"-t"/ controls the new basis type
+(0 - Bezier, 1 - B-Spline, 2 - CatmullRom, 3 - Hermite, 4 - Power,
+5 - Custom), default is 1 (conversion to B-Spline).
+<p>
+The option <tt/"-s"/ determines the new step size, it defaults
+to the natural step size of the target basis type and thus can be
+omitted safely, unless the target type is Custom, in which case the step
+size <em/must/ be specified.
+<p>
+The option <tt/"-b"/ allows to convert to a custom basis and thus
+is a list of 16 floating point values specifying a 4 by 4 basis matrix
+in column major order. If <tt/"-b"/ is given, the target type defaults
+to Custom.
+<!--
+<p>
+See also section <ref id="basist" name="Basis Tool">.
+-->
+</itemize>
+
 <sect2>Manipulating PolyMesh Objects<label id="scipomesh">
 <p>
 These are more specialized commands to change PolyMesh
@@ -20670,6 +20703,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="camp" name="camera property">,
 <item><ref id="lip" name="Light attribute">
 </itemize>
+<item>tobasisPM: <ref id="sctobasispm" name="scripting interface command">
 <item>To Camera: <ref id="vmconf" name="view menu entry">
 <item>Toggle Toolbox: <ref id="mmspecial" name="main menu entry">
 <item>Toggle TreeView: <ref id="mmspecial" name="main menu entry">
