@@ -356,7 +356,7 @@ ay_write_scene(char *fname, int selected)
 	{ fclose(fileptr); return ay_status; }
       o = o->next;
     }
-  if(ferror(fileptr) || errno != 0)
+  if(ferror(fileptr))
     {
       ay_error(AY_ERROR, fname, strerror(errno));
     }
