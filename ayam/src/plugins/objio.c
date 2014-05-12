@@ -611,7 +611,7 @@ objio_writetrimids(FILE *fileptr, ay_object *o)
 
 	      fprintf(fileptr, " %g %g -%d\n", umin, umax, tc);
 	      tc--;
-	
+
 	      pnc = pnc->next;
 	    } /* while */
 
@@ -1533,7 +1533,7 @@ objio_writescene(char *filename, int selected)
       o = o->next;
     } /* while */
 
-  if(ferror(fileptr) || errno != 0)
+  if(ferror(fileptr))
     {
       ay_error(AY_ERROR, fname, strerror(errno));
     }
