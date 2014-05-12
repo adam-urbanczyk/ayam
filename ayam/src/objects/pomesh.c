@@ -409,10 +409,10 @@ ay_pomesh_createcb(int argc, char *argv[], ay_object *o)
       nverts = NULL;
       verts = NULL;
       controlv = NULL;
-      pomesh = NULL;
     } /* if(npolys > 0) */
 
   o->refine = (void *)pomesh;
+  pomesh = NULL;
 
 cleanup:
 
