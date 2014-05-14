@@ -419,6 +419,10 @@ void ay_notify_block(int scope, int block);
  */
 int ay_notify_init(Tcl_Interp *interp);
 
+/** Tcl command to enforce notification of selected objects (safe interp).
+ */
+int ay_notify_objectsafetcmd(ClientData clientData, Tcl_Interp *interp,
+			     int argc, char *argv[]);
 
 /* ns.c */
 

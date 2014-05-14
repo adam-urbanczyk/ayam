@@ -1434,6 +1434,10 @@ ay_safeinit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "getMaster", ay_instt_getmastertcmd,
 		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  /* notify.c */
+  Tcl_CreateCommand(interp, "notifyOb", ay_notify_objectsafetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   /* object.c */
   Tcl_CreateCommand(interp, "crtOb", ay_object_createtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
