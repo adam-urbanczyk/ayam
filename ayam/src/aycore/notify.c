@@ -696,6 +696,46 @@ ay_notify_block(int scope, int block)
 } /* ay_notify_block */
 
 
+/** ay_notify_objectsafetcmd:
+ *  Enforce notification of selected objects.
+ *  Implements the \a notifyOb scripting interface command in the
+ *  safe interpreter.
+ *  See also the corresponding section in the \ayd{scnotifyob}.
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_notify_objectsafetcmd(ClientData clientData, Tcl_Interp *interp,
+			 int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ ay_voidfp *arr = NULL;
+ ay_notifycb *cb = NULL;
+ ay_list_object *sel = ay_selection;
+ ay_object *o;
+
+  arr = ay_notifycbt.arr;
+  while(sel)
+    {
+      o = sel->object;
+
+      /* get the notification callback */
+      cb = (ay_notifycb *)(arr[o->type]);
+
+      /* call the notification callback */
+      if(cb)
+	ay_status = cb(o);
+
+      if(ay_status)
+	{
+	  ay_error(AY_ERROR, argv[0], "notify callback failed");
+	}
+      sel = sel->next;
+    }
+
+ return TCL_OK;
+} /* ay_notify_objectsafetcmd */
+
+
 /* ay_notify_init:
  *  initialize notification module
  */
