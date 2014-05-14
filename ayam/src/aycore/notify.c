@@ -724,6 +724,8 @@ ay_notify_objectsafetcmd(ClientData clientData, Tcl_Interp *interp,
       /* call the notification callback */
       if(cb)
 	ay_status = cb(o);
+      else
+	ay_status = AY_OK;
 
       if(ay_status)
 	{
