@@ -7253,9 +7253,9 @@ is rational (uses weight values different from
 <item><tt/"BType_U"/ and <tt/"BType_V"/ control the basis type
 for bicubic patches. You may choose between the basis types:
 <tt/"Bezier"/, <tt/"B-Spline"/, <tt/"Catmull-Rom"/,
-<tt/"Hermite"/, and <tt/"Custom"/.
+<tt/"Hermite"/, <tt/"Power"/, and <tt/"Custom"/.
 In the latter case (<tt/"Custom"/), additional parameters may be set.
-Those are <tt/"Step_U"//<tt/"Step_V"/ (the stepsize of the basis) and
+Those are <tt/"Step_U"//<tt/"Step_V"/ (the step size of the basis) and
 <tt/"Basis_U"//<tt/"Basis_V"/ the basis itself
 (please see the RenderMan Companion for a discussion of basis types).
 </itemize>
@@ -14877,7 +14877,7 @@ The option <tt/"-t"/ controls the new basis type
 (0 - Bezier, 1 - B-Spline, 2 - CatmullRom, 3 - Hermite, 4 - Power,
 5 - Custom), default is 1 (conversion to B-Spline).
 <p>
-The option <tt/"-s"/ determines the new step size, it defaults
+The option <tt/"-s"/ determines the new step size (1 to 4), it defaults
 to the natural step size of the target basis type and thus can be
 omitted safely, unless the target type is Custom, in which case the step
 size <em/must/ be specified.
@@ -15459,7 +15459,7 @@ or 1 &ndash; yes.
 notifyOb:
 <itemize>
  <item>Synopsis: <tt>"notifyOb [-all | -modified | -parent]"</tt>
- <item>Background: Yes, Undo: No, Safe: No
+ <item>Background: Yes, Undo: No, Safe: Yes<f><sup>&lowast;</sup></f>
  <item>Description: This command calls the registered notification
 callback for the selected object(s) and their parents, or, if no object
 is selected, for all objects of the scene.
@@ -15477,6 +15477,13 @@ parent object of the current level will be notified.
 Prior to Ayam 1.20 this command was named <tt>"forceNot"</tt>,
 the old name is still available for compatibility but its
 use is deprecated.
+<p>
+<f><sup>&lowast;</sup></f>: Since 1.21 this command is also available
+in the safe interpreter with limited functionality: only the notification
+callbacks of the selected objects will be executed. No BNS or ANS tags
+will be considered, notification of parents will not be done, and the
+complete notification will also be omitted. Hence, in the safe interpreter,
+this command ignores all parameters.
 </itemize>
 
 <p>
