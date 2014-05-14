@@ -113,6 +113,7 @@ static JSFunctionSpec jsinterp_global_functions[] = {
   {"repOb", jsinterp_wraptcmd, 0, 0, 0},
   {"clearClip", jsinterp_wraptcmd, 0, 0, 0},
   {"convOb", jsinterp_wraptcmd, 0, 0, 0},
+  {"notifyOb", jsinterp_wraptcmdargs, 0, 0, 0},
   {"goTop", jsinterp_wraptcmd, 0, 0, 0},
   {"goUp", jsinterp_wraptcmd, 0, 0, 0},
   {"goDown", jsinterp_wraptcmd, 0, 0, 0},
