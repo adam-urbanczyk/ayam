@@ -7637,7 +7637,7 @@ ay_npt_isboundcurve(ay_object *o, double b1, double b2, double b3, double b4,
 		    int *result)
 {
  int ay_status = AY_OK;
- int i = 0, stride = 4;
+ int i = 0, j = 0, stride = 4;
  int apply_trafo = AY_FALSE, on_bound = AY_FALSE;
  double *cv = NULL, *tcv = NULL, *p = NULL, m[16];
  ay_nurbcurve_object *ncurve = NULL;
@@ -7704,35 +7704,36 @@ ay_npt_isboundcurve(ay_object *o, double b1, double b2, double b3, double b4,
 
   for(i = 0; i < ncurve->length-1; i++)
     {
+      j = i*stride;
       on_bound = AY_FALSE;
       /* check against bound1 */
-      if(!on_bound && (fabs(cv[i]-b1) < AY_EPSILON))
+      if(!on_bound && (fabs(cv[j]-b1) < AY_EPSILON))
 	{
-	  if(fabs(cv[i+stride]-b1) < AY_EPSILON)
+	  if(fabs(cv[j+stride]-b1) < AY_EPSILON)
 	    {
 	      on_bound = AY_TRUE;
 	    }
 	} /* if */
       /* check against bound2 */
-      if(!on_bound && (fabs(cv[i]-b2) < AY_EPSILON))
+      if(!on_bound && (fabs(cv[j]-b2) < AY_EPSILON))
 	{
-	  if(fabs(cv[i+stride]-b2) < AY_EPSILON)
+	  if(fabs(cv[j+stride]-b2) < AY_EPSILON)
 	    {
 	      on_bound = AY_TRUE;
 	    }
 	} /* if */
       /* check against bound3 */
-      if(!on_bound && (fabs(cv[i+1]-b3) < AY_EPSILON))
+      if(!on_bound && (fabs(cv[j+1]-b3) < AY_EPSILON))
 	{
-	  if(fabs(cv[i+stride+1]-b3) < AY_EPSILON)
+	  if(fabs(cv[j+stride+1]-b3) < AY_EPSILON)
 	    {
 	      on_bound = AY_TRUE;
 	    }
 	} /* if */
       /* check against bound4 */
-      if(!on_bound && (fabs(cv[i+1]-b4) < AY_EPSILON))
+      if(!on_bound && (fabs(cv[j+1]-b4) < AY_EPSILON))
 	{
-	  if(fabs(cv[i+stride+1]-b4) < AY_EPSILON)
+	  if(fabs(cv[j+stride+1]-b4) < AY_EPSILON)
 	    {
 	      on_bound = AY_TRUE;
 	    }
