@@ -88,9 +88,6 @@ ay_pamesh_createcb(int argc, char *argv[], ay_object *o)
   p->controlv = cv;
   o->refine = (void *)p;
 
-  /* immediately create NURBS patch representation */
-  ay_pmt_tonpatch(p, &(p->npatch));
-
  return AY_OK;
 } /* ay_pamesh_createcb */
 
@@ -1283,7 +1280,7 @@ ay_pamesh_notifycb(ay_object *o)
       return AY_OK;
     }
 
-  ay_status = ay_pmt_tonpatch(pamesh, &(pamesh->npatch));
+  ay_status = ay_pmt_tonpatch(o, &(pamesh->npatch));
 
   p = pamesh->npatch;
   while(p)
