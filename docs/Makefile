@@ -15,6 +15,9 @@ html:
 	-cd html;../corrwh.pl;cd ..
 	tclsh insover.tcl
 
+html-draft: html
+	tclsh insdraft.tcl
+
 txt:
 	sgml2txt -D out=txt -f ayam.sgml
 
@@ -32,6 +35,16 @@ pdf:
 	pdflatex ayam.tex > /dev/null
 	pdflatex ayam.tex
 	rm ayaml.tex ayam.tex ayam.toc ayam.log ayam.aux ayam.out
+
+pdf2:
+	-rm -f ayam.tex ayam.toc ayam.log ayam.aux
+	sgml2latex -p a4 -D out=latex -o tex ayam.sgml
+	/usr/bin/tclsh fixpdftex.tcl ayam.tex ayaml.tex
+	cp ayaml.tex ayam.tex
+	pdflatex ayam.tex
+	pdflatex ayam.tex
+	pdflatex ayam.tex
+#	rm ayaml.tex ayam.tex ayam.toc ayam.log ayam.aux ayam.out
 
 archive: html
 	mkdir -p docs/pics
