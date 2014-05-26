@@ -1358,7 +1358,7 @@ int ay_npt_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 
 /** Convert patchmesh to NURBS patch.
  */
-int ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result);
+int ay_pmt_tonpatch(ay_object *o, int btype, ay_object **result);
 
 /** Check patchmesh for errors.
  */
