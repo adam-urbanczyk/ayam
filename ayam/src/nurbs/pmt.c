@@ -31,7 +31,7 @@ static double mbi[16];
 
 static double msi[16];
 
- /* for reference */
+/* for reference */
 #if 0
 RtBasis RiBezierBasis = { { -1.0,  3.0, -3.0,  1.0 },
                           {  3.0, -6.0,  3.0,  0.0 },
@@ -81,7 +81,7 @@ int ay_pmt_tonpatchmulti(ay_object *o, ay_object **result);
 /** ay_pmt_valid:
  *  check patch mesh for validity
  *
- * \param[in] patch patch mesh object to process
+ * \param[in] pamesh patch mesh object to process
  *
  * \returns AY_OK (0) if mesh is valid
  *   else:
@@ -202,11 +202,11 @@ ay_pmt_valid(ay_pamesh_object *pamesh)
 } /* ay_pmt_valid */
 
 
-/* ay_pmt_getpntfromindex:
+/** ay_pmt_getpntfromindex:
  *  get address of a single control point from its indices
  *  (performing bounds checking)
  *
- * \param[in] patch patch mesh object to process
+ * \param[in] pm patch mesh object to process
  * \param[in] indexu index of desired control point in U dimension (width)
  * \param[in] indexv index of desired control point in V dimension (height)
  * \param[in,out] p pointer to pointer where to store the resulting address
@@ -214,22 +214,22 @@ ay_pmt_valid(ay_pamesh_object *pamesh)
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_pmt_getpntfromindex(ay_pamesh_object *patch, int indexu, int indexv,
+ay_pmt_getpntfromindex(ay_pamesh_object *pm, int indexu, int indexv,
 		       double **p)
 {
  int stride = 4;
  char fname[] = "pmt_getpntfromindex";
 
-  if(!patch || !p)
+  if(!pm || !p)
     return AY_ENULL;
 
-  if(indexu >= patch->width || indexu < 0)
-    return ay_error_reportirange(fname, "\"indexu\"", 0, patch->width-1);
+  if(indexu >= pm->width || indexu < 0)
+    return ay_error_reportirange(fname, "\"indexu\"", 0, pm->width-1);
 
-  if(indexv >= patch->height || indexv < 0)
-    return ay_error_reportirange(fname, "\"indexv\"", 0, patch->height-1);
+  if(indexv >= pm->height || indexv < 0)
+    return ay_error_reportirange(fname, "\"indexv\"", 0, pm->height-1);
 
-  *p = &(patch->controlv[(indexu*patch->height+indexv)*stride]);
+  *p = &(pm->controlv[(indexu*pm->height+indexv)*stride]);
 
  return AY_OK;
 } /* ay_pmt_getpntfromindex */
@@ -241,7 +241,6 @@ ay_pmt_getpntfromindex(ay_pamesh_object *patch, int indexu, int indexv,
  * \param[in,out] pm patch mesh object to process
  *
  * \returns AY_OK on success, error code otherwise.
- *
  */
 int
 ay_pmt_swapuv(ay_pamesh_object *pm)
@@ -278,7 +277,7 @@ ay_pmt_swapuv(ay_pamesh_object *pm)
 } /* ay_pmt_swapuv */
 
 
-/* ay_pmt_revertu:
+/** ay_pmt_revertu:
  * revert patch mesh along U (width)
  *
  * \param[in,out] pm patch mesh object to revert
@@ -342,9 +341,13 @@ ay_pmt_revertv(ay_pamesh_object *pm)
 } /* ay_pmt_revertv */
 
 
-/* ay_pmt_israt:
- *  check whether any control point of patch mesh <pm>
+/** ay_pmt_israt:
+ *  check whether any control point of patch mesh \a pm
  *  uses a weight value (!= 1.0)
+ *
+ * \param[in] pm PatchMesh to check
+ *
+ * \returns AY_TRUE if any weight is != 1.0, else returns AY_FALSE
  */
 int
 ay_pmt_israt(ay_pamesh_object *pm)
@@ -743,6 +746,14 @@ cleanup:
 } /* ay_pmt_tobasistcmd */
 
 
+/* ay_pmt_tonpatchmulti:
+ * helper for ay_pmt_tonpatch() below;
+ * converts a complex patch mesh by moving an evaluation window
+ * over the mesh (according to the parameters defined by the basis type
+ * and step size), converting the respective window to a single NURBS
+ * patch, then concatenating the resulting NURBS patches first row-wise,
+ * then column-wise to the final resulting NURBS patch
+ */
 int
 ay_pmt_tonpatchmulti(ay_object *o, ay_object **result)
 {
@@ -913,10 +924,15 @@ cleanup:
 } /* ay_pmt_tonpatchmulti */
 
 
-/* ay_pmt_tonpatch:
- *   create a NURBS patch from a PatchMesh
- *   o this function will not work properly or crash if the PatchMesh
- *     fails the validity check using ay_pmt_valid() above!
+/** ay_pmt_tonpatch:
+ * Create a NURBS patch from a PatchMesh.
+ * This function will not work properly or crash if the PatchMesh
+ * fails the validity check using ay_pmt_valid() above!
+ * This function only handles bilinear patch meshes, bicubic patch
+ * meshes of basis type AY_BTBSPLINE, and bicubic patch meshes of
+ * arbitrary basis type and width/height 4.
+ * Other, complex, patch meshes are handled via ay_pmt_tonpatchmulti()
+ * above.
  */
 int
 ay_pmt_tonpatch(ay_object *o, int btype, ay_object **result)
