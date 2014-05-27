@@ -933,6 +933,14 @@ cleanup:
  * arbitrary basis type and width/height 4.
  * Other, complex, patch meshes are handled via ay_pmt_tonpatchmulti()
  * above.
+ *
+ * \param[in] o the patch mesh to convert 
+ * \param[in] btype desired basis type, must be AY_BTBSPLINE;
+ *  the other valid type (AY_BTBEZIER) is used exclusively by
+ *  ay_pmt_tonpatchmulti() when calling back
+ * \param[in,out] result pointer where to store the resulting NPatch
+ * 
+ * \returns AY_OK on success, error code otherwise. 
  */
 int
 ay_pmt_tonpatch(ay_object *o, int btype, ay_object **result)
