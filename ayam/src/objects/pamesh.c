@@ -12,7 +12,7 @@
 
 #include "ayam.h"
 
-/* pamesh.c -  PatchMesh object */
+/* pamesh.c - PatchMesh object */
 
 static char *ay_pamesh_name = "PatchMesh";
 
@@ -119,7 +119,7 @@ ay_pamesh_deletecb(void *c)
 
   /* free NURBS patch(es) */
   if(pamesh->npatch)
-    (void)ay_object_deletemulti(pamesh->npatch, AY_FALSE);
+    (void)ay_object_delete(pamesh->npatch);
 
   free(pamesh);
 
@@ -175,7 +175,6 @@ ay_pamesh_copycb(void *src, void **dst)
   if(pameshsrc->vbasis)
     {
       if(!(pamesh->vbasis = malloc(16 * sizeof(double))))
-
 	{
 	  if(pamesh->ubasis)
 	    free(pamesh->ubasis);
@@ -288,7 +287,6 @@ ay_pamesh_drawcb(struct Togl *togl, ay_object *o)
  int display_mode = ay_prefs.np_display_mode;
  ay_pamesh_object *pamesh = NULL;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
- ay_object *p = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -311,13 +309,11 @@ ay_pamesh_drawcb(struct Togl *togl, ay_object *o)
     }
   else
     {
-      /* No, draw the NURBS patch(es), if present */
-      p = pamesh->npatch;
-      while(p)
+      /* No, draw the NURBS patch, if present */
+      if(pamesh->npatch)
 	{
-	  ay_draw_object(togl, p, AY_FALSE);
-	  p = p->next;
-	} /* while */
+	  ay_draw_object(togl, pamesh->npatch, AY_FALSE);
+	} /* if */
     } /* if */
 
  return AY_OK;
@@ -331,7 +327,6 @@ int
 ay_pamesh_shadecb(struct Togl *togl, ay_object *o)
 {
  ay_pamesh_object *pamesh;
- ay_object *p;
 
   if(!o)
     return AY_ENULL;
@@ -341,12 +336,10 @@ ay_pamesh_shadecb(struct Togl *togl, ay_object *o)
   if(!pamesh)
     return AY_ENULL;
 
-  p = pamesh->npatch;
-  while(p)
+  if(pamesh->npatch)
     {
-      ay_shade_object(togl, p, AY_FALSE);
-      p = p->next;
-    } /* while */
+      ay_shade_object(togl, pamesh->npatch, AY_FALSE);
+    }
 
  return AY_OK;
 } /* ay_pamesh_shadecb */
@@ -560,7 +553,6 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  char *n1 = "PatchMeshAttrData";
  char fname[] = "pamesh_setpropcb";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- ay_object *p = NULL;
  ay_nurbpatch_object *np = NULL;
  ay_pamesh_object *pamesh = NULL;
  int new_close_u, new_width, new_btype_u, new_step_u;
@@ -674,8 +666,8 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	{
 	  Tcl_SetStringObj(ton,"Basis_V",-1);
 	  Tcl_AppendStringsToObj(ton,man[j],NULL);
-	  to  = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-			       TCL_GLOBAL_ONLY);
+	  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
+			      TCL_GLOBAL_ONLY);
 	  Tcl_GetDoubleFromObj(interp, to, &dtemp);
 	  pamesh->vbasis[j] = dtemp;
 	} /* for */
@@ -752,18 +744,12 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     }
 
   /* set new display mode/sampling tolerance */
-  p = pamesh->npatch;
-  while(p)
+  if(pamesh->npatch)
     {
-      if(p->type == AY_IDNPATCH)
-	{
-	  np = (ay_nurbpatch_object *)p->refine;
-	  np->display_mode = pamesh->display_mode;
-	  np->glu_sampling_tolerance = pamesh->glu_sampling_tolerance;
-	}
-
-      p = p->next;
-    } /* while */
+      np = (ay_nurbpatch_object *)pamesh->npatch->refine;
+      np->display_mode = pamesh->display_mode;
+      np->glu_sampling_tolerance = pamesh->glu_sampling_tolerance;
+    } /* if */
 
  return AY_OK;
 } /* ay_pamesh_setpropcb */
@@ -1032,7 +1018,7 @@ ay_pamesh_writecb(FILE *fileptr, ay_object *o)
 	      pamesh->controlv[a+1],
 	      pamesh->controlv[a+2],
 	      pamesh->controlv[a+3]);
-      a+=4;
+      a += 4;
     }
 
   fprintf(fileptr, "%g\n", pamesh->glu_sampling_tolerance);
@@ -1257,7 +1243,6 @@ int
 ay_pamesh_notifycb(ay_object *o)
 {
  int ay_status = AY_OK;
- ay_object *p = NULL;
  ay_pamesh_object *pamesh = NULL;
  ay_nurbpatch_object *np = NULL;
 
@@ -1271,7 +1256,7 @@ ay_pamesh_notifycb(ay_object *o)
 
   if(pamesh->npatch)
     {
-      (void)ay_object_deletemulti(pamesh->npatch, AY_FALSE);
+      (void)ay_object_delete(pamesh->npatch);
       pamesh->npatch = NULL;
     }
 
@@ -1280,20 +1265,14 @@ ay_pamesh_notifycb(ay_object *o)
       return AY_OK;
     }
 
-  ay_status = ay_pmt_tonpatch(o, &(pamesh->npatch));
+  ay_status = ay_pmt_tonpatch(o, AY_BTBSPLINE, &(pamesh->npatch));
 
-  p = pamesh->npatch;
-  while(p)
+  if(pamesh->npatch)
     {
-      if(p->type == AY_IDNPATCH)
-	{
-	  np = (ay_nurbpatch_object *)p->refine;
-	  np->display_mode = pamesh->display_mode;
-	  np->glu_sampling_tolerance = pamesh->glu_sampling_tolerance;
-	}
-
-      p = p->next;
-    } /* while */
+      np = (ay_nurbpatch_object *)pamesh->npatch->refine;
+      np->display_mode = pamesh->display_mode;
+      np->glu_sampling_tolerance = pamesh->glu_sampling_tolerance;
+    } /* if */
 
  return ay_status;
 } /* ay_pamesh_notifycb */
@@ -1308,7 +1287,7 @@ ay_pamesh_providecb(ay_object *o, unsigned int type, ay_object **result)
  int ay_status = AY_OK;
  char fname[] = "pamesh_providecb";
  ay_pamesh_object *pm = NULL;
- ay_object *new = NULL, **t = NULL, *p = NULL;
+ ay_object *new = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -1328,24 +1307,19 @@ ay_pamesh_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   if(type == AY_IDNPATCH)
     {
-      t = &(new);
-
       if(!pm->npatch)
 	return AY_ERROR;
 
-      p = pm->npatch;
-      while(p)
+      if(pm->npatch)
 	{
-	  ay_status = ay_object_copy(p, t);
-	  if(ay_status)
+	  ay_status = ay_object_copy(pm->npatch, &new);
+	  if(!new || ay_status)
 	    {
 	      ay_error(ay_status, fname, NULL);
 	      return AY_ERROR;
 	    }
-	  ay_trafo_copy(o, *t);
-	  t = &((*t)->next);
-	  p = p->next;
-	} /* while */
+	  ay_trafo_copy(o, new);
+	} /* if */
 
       /* copy eventually present TP tags */
       ay_npt_copytptag(o, new);
@@ -1365,94 +1339,43 @@ ay_pamesh_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
  ay_pamesh_object *pamesh = NULL;
- ay_object *p = NULL, *new = NULL, **next = NULL;
+ ay_object *new = NULL;
 
   if(!o)
     return AY_ENULL;
-
-  /* first, create new objects */
 
   pamesh = (ay_pamesh_object *) o->refine;
 
   if(!pamesh)
     return AY_ENULL;
 
-  p = pamesh->npatch;
-  if(p && p->next)
+  if(pamesh->npatch)
     {
-      ay_status = ay_object_create(AY_IDLEVEL, &new);
-
+      /* first, create new objects */
+      ay_status = ay_object_copy(pamesh->npatch, &new);
       if(new)
 	{
-	  next = &(new->down);
-
-	  while(p)
+	  /* reset display mode and sampling tolerance
+	     of new patch to "global"? */
+	  if(ay_prefs.conv_reset_display)
 	    {
-	      ay_status = ay_object_copy(p, next);
-	      if(*next)
-		{
-		  ay_trafo_copy(o, *next);
-
-		  /* reset display mode and sampling tolerance
-		     of new patch to "global"? */
-		  if(ay_prefs.conv_reset_display)
-		    {
-		      ay_npt_resetdisplay(*next);
-		    }
-
-		  /* copy eventually present TP tags */
-		  ay_npt_copytptag(o, *next);
-
-		  (*next)->parent = AY_TRUE;
-		  (*next)->down = ay_endlevel;
-
-		  next = &((*next)->next);
-		} /* if */
-	      p = p->next;
-	    } /* while */
-
-	  if(!new->down)
-	    {
-	      (void)ay_object_delete(new);
-	      new = NULL;
-	      ay_status = AY_ERROR;
+	      ay_npt_resetdisplay(new);
 	    }
 
-	} /* if */
-    }
-  else
-    {
-      if(p)
-	{
-	  ay_status = ay_object_copy(p, &new);
-	  if(new)
+	  ay_trafo_copy(o, new);
+
+	  /* copy eventually present TP tags */
+	  ay_npt_copytptag(o, new);
+
+	  /* second, link new objects, or replace old objects with them */
+	  if(!in_place)
 	    {
-	      /* reset display mode and sampling tolerance
-		 of new patch to "global"? */
-	      if(ay_prefs.conv_reset_display)
-		{
-		  ay_npt_resetdisplay(new);
-		}
-
-	      ay_trafo_copy(o, new);
-
-	      /* copy eventually present TP tags */
-	      ay_npt_copytptag(o, new);
+	      ay_object_link(new);
+	    }
+	  else
+	    {
+	      ay_status = ay_object_replace(new, o);
 	    } /* if */
-	} /* if */
-    } /* if */
-
-  /* second, link new objects, or replace old objects with them */
-
-  if(new)
-    {
-      if(!in_place)
-	{
-	  ay_object_link(new);
-	}
-      else
-	{
-	  ay_status = ay_object_replace(new, o);
 	} /* if */
     } /* if */
 
