@@ -2599,7 +2599,6 @@ ay_rrib_RiPatchMesh(RtToken type, RtInt nu, RtToken uwrap,
 		    RtInt nv, RtToken vwrap,
 		    RtInt n, RtToken tokens[], RtPointer parms[])
 {
- int ay_status = AY_OK;
  ay_pamesh_object pm = {0};
  int i = 0, j = 0, stride = 4;
  double *p = NULL;
@@ -2731,11 +2730,6 @@ ay_rrib_RiPatchMesh(RtToken type, RtInt nu, RtToken uwrap,
 	} /* for */
     } /* for */
 
-  if(!ay_pmt_valid(&pm))
-    {
-      ay_status = ay_pmt_tonpatch(&pm, &(pm.npatch));
-    }
-
   ay_rrib_readpvs(n, tokens, parms, 2, hvars, &(ay_rrib_co.tags));
 
   ay_rrib_linkobject((void *)(&pm), AY_IDPAMESH);
@@ -2743,8 +2737,6 @@ ay_rrib_RiPatchMesh(RtToken type, RtInt nu, RtToken uwrap,
   ay_tags_delall(&ay_rrib_co);
 
 cleanup:
-
-  ay_object_deletemulti(pm.npatch, AY_FALSE);
 
   if(pm.controlv)
     free(pm.controlv);
@@ -5618,6 +5610,11 @@ ay_rrib_linkobject(void *object, int type)
 	    }
 	} /* if */
     } /* if */
+
+  if(type == AY_IDPAMESH)
+    {
+      (void)ay_notify_object(o);
+    }
 
   ay_rrib_lrobject = o;
 
