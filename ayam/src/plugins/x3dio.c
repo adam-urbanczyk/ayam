@@ -1360,6 +1360,11 @@ x3dio_linkobject(scew_element *element, unsigned int type, void *sobj)
   /* link the object to the scene */
   ay_object_link(new);
 
+  if(type == AY_IDPAMESH)
+    {
+      (void)ay_notify_object(new);
+    }
+
   x3dio_lrobject = new;
 
  return ay_status;
@@ -3460,9 +3465,6 @@ x3dio_readelevationgrid(scew_element *element)
 	} /* for */
     } /* for */
 
-  /* immediately create NURBS patch representation */
-  ay_status = ay_pmt_tonpatch(&pamesh, &(pamesh.npatch));
-
   /* copy object to the Ayam scene */
   ay_status = x3dio_linkobject(element, AY_IDPAMESH, (void*)&pamesh);
 
@@ -3473,9 +3475,6 @@ cleanup:
 
   if(pamesh.controlv)
     free(pamesh.controlv);
-
-  if(pamesh.npatch)
-    ay_object_delete(pamesh.npatch);
 
  return ay_status;
 } /* x3dio_readelevationgrid */
