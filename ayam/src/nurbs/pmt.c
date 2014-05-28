@@ -934,13 +934,13 @@ cleanup:
  * Other, complex, patch meshes are handled via ay_pmt_tonpatchmulti()
  * above.
  *
- * \param[in] o the patch mesh to convert 
+ * \param[in] o the patch mesh to convert
  * \param[in] btype desired basis type, must be AY_BTBSPLINE;
  *  the other valid type (AY_BTBEZIER) is used exclusively by
  *  ay_pmt_tonpatchmulti() when calling back
  * \param[in,out] result pointer where to store the resulting NPatch
- * 
- * \returns AY_OK on success, error code otherwise. 
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_pmt_tonpatch(ay_object *o, int btype, ay_object **result)
@@ -987,7 +987,7 @@ ay_pmt_tonpatch(ay_object *o, int btype, ay_object **result)
 	  else
 	    return AY_ERROR;
 	  if(ay_status)
-	    return ay_status;
+	    goto cleanup;
 
 	  pamesh = c->refine;
 	}
@@ -1017,12 +1017,16 @@ ay_pmt_tonpatch(ay_object *o, int btype, ay_object **result)
   ay_status = ay_npt_createnpatchobject(&newo);
 
   if(ay_status || !newo)
-    return AY_ERROR;
+    {
+      if(!ay_status)
+	ay_status = AY_ERROR;
+      goto cleanup;
+    }
 
   if(!(cv = malloc(w*h*4*sizeof(double))))
     {
-      free(o);
-      return AY_EOMEM;
+      ay_status = AY_EOMEM;
+      goto cleanup;
     }
 
   /* fill cv */
