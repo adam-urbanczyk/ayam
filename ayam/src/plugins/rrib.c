@@ -2005,7 +2005,7 @@ ay_rrib_RiIlluminate(RtLightHandle light, RtBoolean onoff)
  int i = 0;
 
   o = ay_rrib_flobject;
-  while(o->next && i < (int)light)
+  while(o && o->next && i < (int)light)
     {
       if(o->type == AY_IDLIGHT)
 	{
