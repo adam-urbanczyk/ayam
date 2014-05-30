@@ -83,6 +83,9 @@ array set ayprefs {
 
  SDMode 3
 
+ FDShowHidden 1
+ FDShowHiddenBtn 0
+
  RIBFile "Scene"
  Image "RIB"
  ResInstances 0
@@ -2126,6 +2129,18 @@ if { $ay(ws) == "Aqua" } {
     # when started via Finder/Dock we end up with cd /, correct this
     cd "$env(HOME)/Documents"
 }
+
+# maintain Unix/X11 tk file dialog options for hidden files
+if { $tcl_platform(platform) != "windows" } {
+    if { $ay(ws) != "Aqua" } {
+	if {  $ayprefs(FDShowHidden) != 1 || $ayprefs(FDShowHiddenBtn) != 0 } {
+	    catch {tk_getOpenFile foo bar}
+	    set ::tk::dialog::file::showHiddenVar $ayprefs(FDShowHidden)
+	    set ::tk::dialog::file::showHiddenBtn $ayprefs(FDShowHiddenBtn)
+	}
+    }
+}
+
 
 puts stdout "The tip of the day is:"
 tipoftheDay
