@@ -33,7 +33,7 @@ code example of 6 lines text (needs another 2 for the upper/lower lines)
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>22. Feb 2013
+<date>23. May 2014
 
 <abstract>
 This is the documentation of Ayam 1.21 &ndash; a free 3D modelling environment
@@ -18550,6 +18550,12 @@ on startup in the console (default: large).
 <item><tt/"EFlush"/: time in ms between two flushes of the error message
 buffer (default: 2000 - 2s).
 
+<item><tt/"FDShowHidden"/: controls whether the standard file dialog on
+Unix shows hidden files (default 1).
+
+<item><tt/"FDShowHiddenBtn"/: controls whether the standard file dialog on
+Unix shows an extra buttoon that toggles display of hidden files (default 0).
+
 <item><tt/"FixDialogTitles"/, this option prepends the title of a message box
 that is normally displayed in the window frame of the message box to the
 message in the box. This may be necessary because on some systems the title
@@ -19827,6 +19833,7 @@ Index:
 <list>
 <item>FAQ: <ref id="secref" name="Ayam FAQ WWW reference">
 <item>Far: <ref id="camp" name="camera property">
+<item>FDShowHidden: <ref id="hidprefs" name="hidden preference setting">
 <item>File:
 <itemize>
 <item><ref id="mmfile" name="file menu">,
