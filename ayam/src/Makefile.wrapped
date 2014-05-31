@@ -555,7 +555,8 @@ ayamwrap: ayam
 	rm -f lib
 	ln -s $(WRAPDIR)/lib lib
 	zip -A -j -u -9 ayam $(WRAPDIR)/tclInit.tcl
-	zip -A -r -u -9 ayam lib/wrap0.3 lib/tcl8.2 lib/tk8.2
+	-cp contrib/tk/tkfbox.tcl lib/tk8.4
+	zip -A -r -u -9 ayam lib/wrap0.3 lib/tcl8.4 lib/tk8.4
 	rm -f lib
 	rm -f BWidgets
 	ln -s $(BWIDGETS) BWidgets
