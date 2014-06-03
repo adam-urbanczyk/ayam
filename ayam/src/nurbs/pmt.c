@@ -115,6 +115,9 @@ ay_pmt_valid(ay_pamesh_object *pamesh)
 
       switch(pamesh->btype_u)
 	{
+	case AY_BTPOWER:
+	  stepu = 4;
+	  break;
 	case AY_BTBEZIER:
 	  stepu = 3;
 	  break;
@@ -157,6 +160,9 @@ ay_pmt_valid(ay_pamesh_object *pamesh)
 
       switch(pamesh->btype_v)
 	{
+	case AY_BTPOWER:
+	  stepv = 4;
+	  break;
 	case AY_BTBEZIER:
 	  stepv = 3;
 	  break;
@@ -794,6 +800,9 @@ ay_pmt_tonpatchmulti(ay_object *o, ay_object **result)
 
   switch(pm->btype_u)
     {
+    case AY_BTPOWER:
+      su = 4;
+      break;
     case AY_BTBEZIER:
       su = 3;
       break;
@@ -810,6 +819,9 @@ ay_pmt_tonpatchmulti(ay_object *o, ay_object **result)
 
   switch(pm->btype_v)
     {
+    case AY_BTPOWER:
+      sv = 4;
+      break;
     case AY_BTBEZIER:
       sv = 3;
       break;
