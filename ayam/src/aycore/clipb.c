@@ -12,10 +12,10 @@
 
 #include "ayam.h"
 
-/* clipb.c - functions for the object clipboard */
+/** \file clipb.c \brief functions for the object clipboard */
 
 
-/* ay_clipb_clear:
+/** ay_clipb_clear:
  *  Properly clears the clipboard.
  *
  *  \returns AY_OK if successful, AY_ERROR otherwise.
@@ -59,7 +59,7 @@ ay_clipb_clear()
 } /* ay_clipb_clear */
 
 
-/* ay_clipb_copytcmd:
+/** ay_clipb_copytcmd:
  *  Implements the \a copOb scripting interface command.
  *  See also the corresponding section in the \ayd{sccopob}.
  *
@@ -126,7 +126,7 @@ ay_clipb_copytcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_clipb_copytcmd */
 
 
-/* ay_clipb_cuttcmd:
+/** ay_clipb_cuttcmd:
  *  move currently selected objects to the clipboard
  *  Implements the \a cutOb scripting interface command.
  *  See also the corresponding section in the \ayd{sccutob}.
@@ -213,7 +213,7 @@ ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_clipb_cuttcmd */
 
 
-/* ay_clipb_pastetcmd:
+/** ay_clipb_pastetcmd:
  *  copy/move objects from the clipboard to the current level
  *  Implements the \a pasOb scripting interface command.
  *  See also the corresponding section in the \ayd{scpasob}.
@@ -303,7 +303,7 @@ ay_clipb_pastetcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_clipb_pastetcmd */
 
 
-/* ay_clipb_replacetcmd:
+/** ay_clipb_replacetcmd:
  *  replace objects from the current selection with the clipboard content
  *  Implements the \a repOb scripting interface command.
  *  See also the corresponding section in the \ayd{screpob}.
@@ -436,7 +436,7 @@ ay_clipb_replacetcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_clipb_replacetcmd */
 
 
-/* ay_clipb_hmovtcmd:
+/** ay_clipb_hmovtcmd:
  *  Implements the \a upOb scripting interface command.
  *  Also implements the \a downOb scripting interface command.
  *  See also the corresponding section in the \ayd{scupob}.
