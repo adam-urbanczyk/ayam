@@ -25,7 +25,9 @@ static double mc[16] = {-0.5, 1, -0.5, 0,  1.5, -2.5, 0, 1,  -1.5, 2, 0.5, 0,
 static double ms[16] = {-1.0/6, 3.0/6, -3.0/6, 1.0/6,  3.0/6, -1, 0, 4.0/6,
 			-3.0/6, 3.0/6, 3.0/6, 1.0/6,  1.0/6, 0, 0, 0};
 /* Power */
+#if 0
 static double mp[16] = {1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1};
+#endif
 
 static double mbi[16];
 
@@ -115,9 +117,6 @@ ay_pmt_valid(ay_pamesh_object *pamesh)
 
       switch(pamesh->btype_u)
 	{
-	case AY_BTPOWER:
-	  stepu = 4;
-	  break;
 	case AY_BTBEZIER:
 	  stepu = 3;
 	  break;
@@ -160,9 +159,6 @@ ay_pmt_valid(ay_pamesh_object *pamesh)
 
       switch(pamesh->btype_v)
 	{
-	case AY_BTPOWER:
-	  stepv = 4;
-	  break;
 	case AY_BTBEZIER:
 	  stepv = 3;
 	  break;
@@ -393,7 +389,7 @@ int
 ay_pmt_tobasis(ay_pamesh_object *pm, int btype, int bstep, double *basis)
 {
  int convertu = AY_FALSE, convertv = AY_FALSE, i, j, k, l, i1, i2;
- int have_mi = AY_FALSE, w, h;
+ int have_mi = AY_FALSE;
  double *p1, *p2, *p3, *p4;
  double m[16], mi[16], tm[16], mu[16], mv[16], mut[16];
 
@@ -539,9 +535,6 @@ ay_pmt_tobasis(ay_pamesh_object *pm, int btype, int bstep, double *basis)
 	  return AY_ERROR;
 	}
     } /* if convertv */
-
-  w = pm->width;
-  h = pm->height;
 
   p1 = pm->controlv;
   p2 = p1 + 16;
@@ -800,9 +793,6 @@ ay_pmt_tonpatchmulti(ay_object *o, ay_object **result)
 
   switch(pm->btype_u)
     {
-    case AY_BTPOWER:
-      su = 4;
-      break;
     case AY_BTBEZIER:
       su = 3;
       break;
@@ -819,9 +809,6 @@ ay_pmt_tonpatchmulti(ay_object *o, ay_object **result)
 
   switch(pm->btype_v)
     {
-    case AY_BTPOWER:
-      sv = 4;
-      break;
     case AY_BTBEZIER:
       sv = 3;
       break;
