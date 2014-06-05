@@ -1370,7 +1370,7 @@ ay_clone_convertcb(ay_object *o, int in_place)
     {
       while(down->next)
 	{
-	  ay_status = ay_object_copy(down, next);
+	  ay_status += ay_object_copy(down, next);
 	  down = down->next;
 	  if(*next)
 	    {
@@ -1385,7 +1385,7 @@ ay_clone_convertcb(ay_object *o, int in_place)
   while(c)
     {
       newo = NULL;
-      ay_status = ay_object_copy(down, &newo);
+      ay_status += ay_object_copy(down, &newo);
       if(newo)
 	{
 	  ay_trafo_copy(c, newo);
@@ -1467,10 +1467,10 @@ ay_clone_providecb(ay_object *o, unsigned int type, ay_object **result)
 
 	  down = down->next;
 	} /* while */
-
+      
       return AY_ERROR;
     } /* if */
-
+  
   clone = (ay_clone_object *) o->refine;
 
   if(!clone)
@@ -1490,10 +1490,10 @@ ay_clone_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  newo = NULL;
 	  if(down->type == type)
 	    {
-	      ay_status = ay_object_copy(down, &newo);
+	      (void) ay_object_copy(down, &newo);
 	    } else {
-	      ay_status = ay_provide_object(down, type, &newo);
-	    } /* if */
+	      (void) ay_provide_object(down, type, &newo);
+	  } /* if */
 
 	  if(newo)
 	    {
@@ -1519,9 +1519,9 @@ ay_clone_providecb(ay_object *o, unsigned int type, ay_object **result)
 
       if(down->type == type)
 	{
-	  ay_status = ay_object_copy(down, &newo);
+	  (void) ay_object_copy(down, &newo);
 	} else {
-	  ay_status = ay_provide_object(down, type, &newo);
+	  (void) ay_provide_object(down, type, &newo);
 	} /* if */
 
       if(newo)
@@ -1537,7 +1537,7 @@ ay_clone_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  /* link provided objects to result */
 	  if(clone->mirror == 0)
 	    {
-	      /* in order for normal clones */
+	      /* in natural order for normal clones */
 	      *next = newo;
 	      while(newo->next)
 		{
