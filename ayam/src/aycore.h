@@ -93,6 +93,10 @@ int ay_clevel_cltcmd(ClientData clientData, Tcl_Interp *interp,
 
 /* clipb.c */
 
+/** Properly clears the clipboard.
+ */
+int ay_clipb_clear();
+
 /** Tcl command to copy selected objects to the object clipboard.
  */
 int ay_clipb_copytcmd(ClientData clientData, Tcl_Interp *interp,

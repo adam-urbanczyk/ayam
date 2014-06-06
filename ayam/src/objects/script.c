@@ -1346,7 +1346,9 @@ ay_script_notifycb(ay_object *o)
 
       if(sc->cm_objects)
 	{
-	  ay_status = ay_object_deletemulti(sc->cm_objects, AY_FALSE);
+	  ay_instt_removeinstances(&sc->cm_objects, NULL);
+	  ay_matt_removeallrefs(sc->cm_objects);
+	  (void)ay_object_deletemulti(sc->cm_objects, AY_FALSE);
 	  sc->cm_objects = NULL;
 	}
 
@@ -1399,7 +1401,9 @@ ay_script_notifycb(ay_object *o)
 
       if(sc->cm_objects)
 	{
-	  ay_status = ay_object_deletemulti(sc->cm_objects, AY_FALSE);
+	  ay_instt_removeinstances(&sc->cm_objects, NULL);
+	  ay_matt_removeallrefs(sc->cm_objects);
+	  (void)ay_object_deletemulti(sc->cm_objects, AY_FALSE);
 	  sc->cm_objects = NULL;
 	}
 
@@ -1534,7 +1538,16 @@ resenv:
 
   if(ay_clipboard)
     {
-      (void)ay_object_deletemulti(ay_clipboard, AY_FALSE);
+      ay_status = ay_clipb_clear();
+      if(ay_status)
+	{
+	  ay_instt_removeinstances(&sc->cm_objects, NULL);
+	  ay_matt_removeallrefs(sc->cm_objects);
+	  (void)ay_object_deletemulti(sc->cm_objects, AY_FALSE);
+	  sc->cm_objects = NULL;
+	  (void)ay_clipb_clear();
+	  sc->active = AY_FALSE;
+	}
     }
 
   ay_clipboard = old_clipboard;
@@ -1803,6 +1816,8 @@ ay_script_convertcb(ay_object *o, int in_place)
 	      while(cmo && cmo->next)
 		{
 		  new = NULL;
+		  /* XXXX todo: what if an instance pointing back to
+		     cm_objects is copied out here? */
 		  ay_status = ay_object_copy(cmo, &new);
 		  if(ay_status == AY_OK && new)
 		    {
