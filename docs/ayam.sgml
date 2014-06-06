@@ -9565,13 +9565,20 @@ can be used in conjunction like this:
 Script objects convert to the objects they create/modify
 using the main menu entry <tt>"Tools/Convert"</tt>.
 
+When the script created a master object and instances, normal
+conversion will not be able to duplicate this relationship
+(due to the copy semantics of instance objects, see also section
+<ref id="instclip" name="Instances and the Object Clipboard">).
+To get around this, just copy the Script object and then use
+in place conversion on the copy.
+
 When converting in place, some special rules are in effect:<newline>
 if there is just one created/modified object, its tags
 are appended to the tags of the Script object and its material
 setting only takes precedence if there is actually a material set.<newline>
 If there are multiple created/modified objects, the Script object
 is transformed
-into a level object, keeping its tags and material settings.
+into a Level object, keeping its tags and material settings.
 The created/modified objects will become children of the new
 Level object (with tags and material properties unchanged).
 
