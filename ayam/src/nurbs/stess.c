@@ -1082,6 +1082,22 @@ ay_stess_IntersectLines2D(double *p1, double *p2, double *p3, double *p4,
 {
  double r, s, den;
 
+  if(((fabs(p1[0]-p3[0])<AY_EPSILON)&&(fabs(p1[1]-p3[1])<AY_EPSILON)) ||
+     ((fabs(p1[0]-p4[0])<AY_EPSILON)&&(fabs(p1[1]-p4[1])<AY_EPSILON)))
+    {
+      ip[0] = p1[0];
+      ip[1] = p1[1];
+      return 1;
+    }
+
+  if(((fabs(p2[0]-p3[0])<AY_EPSILON)&&(fabs(p2[1]-p3[1])<AY_EPSILON)) ||
+     ((fabs(p2[0]-p4[0])<AY_EPSILON)&&(fabs(p2[1]-p4[1])<AY_EPSILON)))
+    {
+      ip[0] = p2[0];
+      ip[1] = p2[1];
+      return 1;
+    }
+
   den = ((p2[0]-p1[0])*(p4[1]-p3[1])-(p2[1]-p1[1])*(p4[0]-p3[0]));
 
   r = ((p1[1]-p3[1])*(p4[0]-p3[0])-(p1[0]-p3[0])*(p4[1]-p3[1]))/den;
@@ -1335,13 +1351,6 @@ ay_stess_MergeUVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 		       * the uv-point to a trimloop point and delete the
 		       * original trimloop point!
 		       */
-
-		      if(p1->type > 0)
-			{
-			  printf("double trim point in u (%lg, %lg)\n",
-				 p1->u,p1->v);
-			}
-
 		      if((p1->type > 0) && (p1->dir != p2->dir))
 			{
 			  /* intersecting trimcurves */
@@ -1427,12 +1436,6 @@ ay_stess_MergeVVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 		{
 		  if(p2->u == p1->u)
 		    {
-
-		      if(p1->type > 0)
-			{
-			  printf("double trim point in v\n");
-			}
-
 		      /* We, accidentally, have here a trimloop
 		       * point that is identical to another point;
 		       * if the other point is a uv-point we transmogrify
@@ -1632,9 +1635,17 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 	      for(l = 0; l < (tcslens[k]-1); l++)
 		{
 		  ind = l*2;
+		  /* is section crossing or touching u? */
 		  if(((tt[ind] <= u) && (tt[ind+2] >= u)) ||
 		     ((tt[ind] >= u) && (tt[ind+2] <= u)))
 		    {
+		      /* weed out all sections that run (more or less)
+			 exactly along the current u-line, nothing good
+			 comes of them */
+		      if((fabs(tt[ind] - u) < AY_EPSILON) &&
+			 (fabs(tt[ind+2] - u) < AY_EPSILON))
+			continue;
+
 		      ipoint[0] = 0.0;
 		      ipoint[1] = 0.0;
 
@@ -1704,7 +1715,7 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
       while(uvpptr)
 	{
 	  /* act only on trimloop-points */
-	  if(uvpptr->type == 1)
+	  if(uvpptr->type)
 	    {
 	      if(first_loop)
 		{
@@ -1869,7 +1880,7 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
       trimuvp = NULL;
       p3[1] = v;
       p4[1] = v;
-      /* calc all intersections of all trimloops with current u */
+      /* calc all intersections of all trimloops with current v */
       for(j = 0; j < (Cn-1); j++)
 	{
 	  p3[0] = u;
@@ -1880,11 +1891,19 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 
 	      for(l = 0; l < (tcslens[k]-1); l++)
 		{
-		  /* pre-select trimloop section */
 		  ind = l*2;
+
+		  /* is section crossing or touching v? */
 		  if(((tt[ind+1] <= v) && (tt[ind+2+1] >= v)) ||
 		     ((tt[ind+1] >= v) && (tt[ind+2+1] <= v)))
 		    {
+		      /* weed out all sections that run (more or less)
+			 exactly along the current v-line, nothing good
+			 comes of them */
+		      if((fabs(tt[ind+1] - v) < AY_EPSILON) &&
+			 (fabs(tt[ind+2+1] - v) < AY_EPSILON))
+			continue;
+
 		      ipoint[0] = 0.0;
 		      ipoint[1] = 0.0;
 
@@ -1892,7 +1911,7 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 						    &(tt[ind+2]),
 						    p3, p4, ipoint)))
 			{
-			  /* u-line intersects with trimcurve */
+			  /* v-line intersects with trimcurve */
 			  /* add new point */
 			  if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
 			    {
@@ -1954,7 +1973,7 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
       while(uvpptr)
 	{
 	  /* act only on trimloop-points */
-	  if(uvpptr->type == 1)
+	  if(uvpptr->type)
 	    {
 	      if(first_loop)
 		{
@@ -2145,10 +2164,11 @@ ay_stess_DrawTrimmedSurface(ay_object *o)
 
       if(!out)
 	glEnd();
+
     } /* for all v lines */
 
   /* draw trimcurves (outlines) */
-  for(i = 0; i < 1/*stess->tcslen*/; i++)
+  for(i = 0; i < stess->tcslen; i++)
     {
       glBegin(GL_LINE_STRIP);
        for(j = 0; j < stess->tcslens[i]; j++)
