@@ -16,7 +16,7 @@
 
 /* local preprocessor definitions: */
 #define AY_STESSEPSILON 0.000001
-
+#define AY_STESSDBG 0
 
 /* prototypes of functions local to this module: */
 int ay_stess_FindMultiplePoints(int n, int p, double *U, double *P,
@@ -32,6 +32,8 @@ void ay_stess_TessTrimCurve(ay_object *o, double **tts, int *tls, int *tds,
 int ay_stess_MergeUVectors(ay_stess_uvp *a, ay_stess_uvp *b);
 
 int ay_stess_MergeVVectors(ay_stess_uvp *a, ay_stess_uvp *b);
+
+int ay_stess_IsNotTouching(double *tc, int tclen, int i, double u);
 
 int ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 			    int numtrims,
@@ -1351,6 +1353,10 @@ ay_stess_MergeUVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 		       * the uv-point to a trimloop point and delete the
 		       * original trimloop point!
 		       */
+#ifdef AY_STESSDBG
+		      printf("Transmogrify u-line point at %lg %lg.\n",
+			     p1->u, p1->v);
+#endif /* AY_STESSDBG */
 		      if((p1->type > 0) && (p1->dir != p2->dir))
 			{
 			  /* intersecting trimcurves */
@@ -1442,6 +1448,10 @@ ay_stess_MergeVVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 		       * the uv-point to a trimloop point and delete the
 		       * original trimloop point!
 		       */
+#ifdef AY_STESSDBG
+		      printf("Transmogrify v-line point at %lg %lg.\n",
+			     p1->u, p1->v);
+#endif /* AY_STESSDBG */
 		      if((p1->type > 0) && (p1->dir != p2->dir))
 			{
 			  /* intersecting trimcurves */
@@ -1505,14 +1515,14 @@ ay_stess_MergeVVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 } /* ay_stess_MergeVVectors */
 
 
-/* ay_stess_ClassifyTCPoint:
+/* ay_stess_IsNotTouching:
  *  rule out trim-loop points where the loop just touches the
  *  uv-line
  *  returns AY_FALSE if the direct neighbors on the trimcurve both
  *  are on the same side wrt. u; AY_TRUE else
  */
 int
-ay_stess_ClassifyTCPoint(double *tc, int tclen, int i, double u)
+ay_stess_IsNotTouching(double *tc, int tclen, int i, double u)
 {
  int left, right;
 
@@ -1541,7 +1551,7 @@ ay_stess_ClassifyTCPoint(double *tc, int tclen, int i, double u)
     return AY_FALSE;
 
  return AY_TRUE;
-} /* ay_stess_ClassifyTCPoint */
+} /* ay_stess_IsNotTouching */
 
 
 /* ay_stess_TessTrimmedNPU:
@@ -1653,20 +1663,32 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 						    &(tt[ind+2]),
 						    p3, p4, ipoint)))
 			{
-			  /* u-line intersects with trimcurve */
-			  /* add new point */
-			  if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
+			  if((fabs(ipoint[1] - vmin) < AY_EPSILON) ||
+			     (fabs(ipoint[1] - vmax) < AY_EPSILON) ||
+			     ay_stess_IsNotTouching(tt, tcslens[k], l, u))
 			    {
-			      return AY_EOMEM;
+			      /* u-line intersects with trimcurve */
+			      /* => add new point */
+			      if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
+				{
+				  return AY_EOMEM;
+				}
+			      newuvp->type = 1;
+			      newuvp->dir = tcsdirs[k];
+			      newuvp->u = ipoint[0];
+			      newuvp->v = ipoint[1];
+			      *olduvp = newuvp;
+			      olduvp = &(newuvp->next);
 			    }
-			  newuvp->type = 1;
-			  newuvp->dir = tcsdirs[k];
-			  newuvp->u = ipoint[0];
-			  newuvp->v = ipoint[1];
-			  *olduvp = newuvp;
-			  olduvp = &(newuvp->next);
-			} /* if */
-		    } /* if */
+#ifdef AY_STESSDBG
+			  else
+			    {
+			      printf("Discarding u-touching trim loop point");
+			      printf(", at %lg %lg.\n", ipoint[0], ipoint[1]);
+			    } /* if border or touching*/
+#endif /* AY_STESSDBG */
+			} /* if have intersection */
+		    } /* if is not parallel */
 		} /* for */
 	    } /* for */
 
@@ -1911,20 +1933,32 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 						    &(tt[ind+2]),
 						    p3, p4, ipoint)))
 			{
-			  /* v-line intersects with trimcurve */
-			  /* add new point */
-			  if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
+			  if((fabs(ipoint[0] - umin) < AY_EPSILON) ||
+			     (fabs(ipoint[0] - umax) < AY_EPSILON) ||
+			     ay_stess_IsNotTouching(&(tt[1]), tcslens[k], l, v))
 			    {
-			      return AY_EOMEM;
+			      /* v-line intersects with trimcurve */
+			      /* -> add new point */
+			      if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
+				{
+				  return AY_EOMEM;
+				}
+			      newuvp->type = 1;
+			      newuvp->dir = tcsdirs[k];
+			      newuvp->u = ipoint[0];
+			      newuvp->v = ipoint[1];
+			      *olduvp = newuvp;
+			      olduvp = &(newuvp->next);
 			    }
-			  newuvp->type = 1;
-			  newuvp->dir = tcsdirs[k];
-			  newuvp->u = ipoint[0];
-			  newuvp->v = ipoint[1];
-			  *olduvp = newuvp;
-			  olduvp = &(newuvp->next);
-			} /* if */
-		    } /* if */
+#ifdef AY_STESSDBG
+			  else
+			    {
+			      printf("Discarding v-touching trim loop point");
+			      printf(", at %lg %lg.\n", ipoint[0], ipoint[1]);
+			    } /* if border or touching*/
+#endif /* AY_STESSDBG */
+			} /* if have intersection */
+		    } /* if is not parallel */
 		} /* for */
 	    } /* for */
 
@@ -2085,42 +2119,44 @@ ay_stess_DrawTrimmedSurface(ay_object *o)
   for(i = 0; i < stess->upslen; i++)
     {
       uvpptr = stess->ups[i];
-
-      if(stess->ft_cw)
+      if(uvpptr && uvpptr->next)
 	{
-	  out = 0;
-	  glBegin(GL_LINE_STRIP);
-	}
-      else
-	out = 1;
-
-      while(uvpptr)
-	{
-	  if(uvpptr->type > 0)
+	  if(stess->ft_cw)
 	    {
-	      if(out)
+	      out = 0;
+	      glBegin(GL_LINE_STRIP);
+	    }
+	  else
+	    out = 1;
+
+	  while(uvpptr)
+	    {
+	      if(uvpptr->type > 0)
 		{
-		  glBegin(GL_LINE_STRIP);
-		  glVertex3dv((GLdouble*)(uvpptr->C));
-		  out = 0;
+		  if(out)
+		    {
+		      glBegin(GL_LINE_STRIP);
+		      glVertex3dv((GLdouble*)(uvpptr->C));
+		      out = 0;
+		    }
+		  else
+		    {
+		      glVertex3dv((GLdouble*)(uvpptr->C));
+		      glEnd();
+		      out = 1;
+		    } /* if */
 		}
 	      else
 		{
 		  glVertex3dv((GLdouble*)(uvpptr->C));
-		  glEnd();
-		  out = 1;
 		} /* if */
-	    }
-	  else
-	    {
-	      glVertex3dv((GLdouble*)(uvpptr->C));
-	    } /* if */
 
-	  uvpptr = uvpptr->next;
-	} /* while */
+	      uvpptr = uvpptr->next;
+	    } /* while */
 
-      if(!out)
-	glEnd();
+	  if(!out)
+	    glEnd();
+	}
     } /* for all u lines */
 
   /* draw iso-v lines */
@@ -2128,43 +2164,45 @@ ay_stess_DrawTrimmedSurface(ay_object *o)
     {
       uvpptr = stess->vps[i];
 
-      if(stess->ft_cw)
+      if(uvpptr && uvpptr->next)
 	{
-	  out = 0;
-	  glBegin(GL_LINE_STRIP);
-	}
-      else
-	out = 1;
-
-      while(uvpptr)
-	{
-	  if(uvpptr->type > 0)
+	  if(stess->ft_cw)
 	    {
-	      if(out)
+	      out = 0;
+	      glBegin(GL_LINE_STRIP);
+	    }
+	  else
+	    out = 1;
+
+	  while(uvpptr)
+	    {
+	      if(uvpptr->type > 0)
 		{
-		  glBegin(GL_LINE_STRIP);
-		  glVertex3dv((GLdouble*)(uvpptr->C));
-		  out = 0;
+		  if(out)
+		    {
+		      glBegin(GL_LINE_STRIP);
+		      glVertex3dv((GLdouble*)(uvpptr->C));
+		      out = 0;
+		    }
+		  else
+		    {
+		      glVertex3dv((GLdouble*)(uvpptr->C));
+		      glEnd();
+		      out = 1;
+		    } /* if */
 		}
 	      else
 		{
-		  glVertex3dv((GLdouble*)(uvpptr->C));
-		  glEnd();
-		  out = 1;
+		  if(!out)
+		    glVertex3dv((GLdouble*)(uvpptr->C));
 		} /* if */
-	    }
-	  else
-	    {
-	      if(!out)
-		glVertex3dv((GLdouble*)(uvpptr->C));
-	    } /* if */
 
-	  uvpptr = uvpptr->next;
-	}  /* while */
+	      uvpptr = uvpptr->next;
+	    }  /* while */
 
-      if(!out)
-	glEnd();
-
+	  if(!out)
+	    glEnd();
+	}
     } /* for all v lines */
 
   /* draw trimcurves (outlines) */
