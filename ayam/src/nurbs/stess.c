@@ -16,7 +16,7 @@
 
 /* local preprocessor definitions: */
 #define AY_STESSEPSILON 0.000001
-#define AY_STESSDBG 0
+/*#define AY_STESSDBG 1*/
 
 /* prototypes of functions local to this module: */
 int ay_stess_FindMultiplePoints(int n, int p, double *U, double *P,
@@ -1345,7 +1345,7 @@ ay_stess_MergeUVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 	    {
 	      if(p2)
 		{
-		  if(p2->v == p1->v)
+		  if(fabs(p2->v - p1->v) < AY_EPSILON)
 		    {
 		      /* We, accidentally, have here a trimloop
 		       * point that is identical to another point;
@@ -1379,7 +1379,7 @@ ay_stess_MergeUVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 		    }
 		}
 
-	      if(p2)
+	      if(!inserted && p2)
 		{
 		  if((p2->v > p1->v) && (p2->v < p1->next->v))
 		    {
@@ -1440,7 +1440,7 @@ ay_stess_MergeVVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 	    {
 	      if(p2)
 		{
-		  if(p2->u == p1->u)
+		  if(fabs(p2->u - p1->u) < AY_EPSILON)
 		    {
 		      /* We, accidentally, have here a trimloop
 		       * point that is identical to another point;
@@ -1474,7 +1474,7 @@ ay_stess_MergeVVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 		    } /* if */
 		} /* if */
 
-	      if(p2)
+	      if(!inserted && p2)
 		{
 		  if((p2->u > p1->u) && (p2->u < p1->next->u))
 		    {
@@ -1508,7 +1508,6 @@ ay_stess_MergeVVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 	{
 	  done = AY_TRUE;
 	}
-
     } /* while */
 
  return AY_OK;
@@ -1566,8 +1565,8 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object *p = NULL;
- ay_stess_uvp **uvps = NULL, *uvpptr, *newuvp, **olduvp, *trimuvp;
- ay_stess_uvp *uvpptr2, *uvpptr3;
+ ay_stess_uvp **uvps = NULL, *uvpptr, *newuvp, **nextuvp, *trimuvp;
+ ay_stess_uvp *olduvp, *uvpptr2, *uvpptr3;
  double *tt, ipoint[2] = {0};
  double p3[2], p4[2], *U, *V, u, v;
  double *fd1, *fd2, temp[3] = {0}, ders[12] = {0};
@@ -1605,7 +1604,7 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
   for(i = 0; i < Cn; i++)
     {
       v = vmin;
-      olduvp = &(uvps[i]);
+      nextuvp = &(uvps[i]);
       for(j = 0; j < Cm; j++)
 	{
 	  if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
@@ -1615,8 +1614,8 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 	  /* type == 0 */
 	  newuvp->u = u;
 	  newuvp->v = v;
-	  *olduvp = newuvp;
-	  olduvp = &(newuvp->next);
+	  *nextuvp = newuvp;
+	  nextuvp = &(newuvp->next);
 	  v += vd;
 	} /* for */
       u += ud;
@@ -1629,7 +1628,8 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
   for(i = 0; i < Cn; i++)
     {
       v = vmin;
-      olduvp = &trimuvp;
+      nextuvp = &trimuvp;
+      olduvp = NULL;
       trimuvp = NULL;
       p3[0] = u;
       p4[0] = u;
@@ -1655,7 +1655,7 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 		      if((fabs(tt[ind] - u) < AY_EPSILON) &&
 			 (fabs(tt[ind+2] - u) < AY_EPSILON))
 			continue;
-
+			
 		      ipoint[0] = 0.0;
 		      ipoint[1] = 0.0;
 
@@ -1668,17 +1668,25 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 			     ay_stess_IsNotTouching(tt, tcslens[k], l, u))
 			    {
 			      /* u-line intersects with trimcurve */
-			      /* => add new point */
-			      if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
+			      /* => add new point (but avoid consecutive
+				 equal points; those appear if a loop touches
+				  start or end of the current u-line) */
+			      if(!olduvp ||
+				   fabs(olduvp->v - ipoint[1]) > AY_EPSILON)
 				{
-				  return AY_EOMEM;
+				  if(!(newuvp = calloc(1,
+						       sizeof(ay_stess_uvp))))
+				    {
+				      return AY_EOMEM;
+				    }
+				  newuvp->type = 1;
+				  newuvp->dir = tcsdirs[k];
+				  newuvp->u = ipoint[0];
+				  newuvp->v = ipoint[1];
+				  olduvp = newuvp;
+				  *nextuvp = newuvp;
+				  nextuvp = &(newuvp->next);
 				}
-			      newuvp->type = 1;
-			      newuvp->dir = tcsdirs[k];
-			      newuvp->u = ipoint[0];
-			      newuvp->v = ipoint[1];
-			      *olduvp = newuvp;
-			      olduvp = &(newuvp->next);
 			    }
 #ifdef AY_STESSDBG
 			  else
@@ -1695,7 +1703,7 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 	  v += vd;
 	} /* for */
 
-      if(trimuvp)
+      if(trimuvp && trimuvp->next)
 	{
 	  /* we had trimloop points => merge vectors */
 	  ay_status = ay_stess_MergeUVectors(uvps[i], trimuvp);
@@ -1730,8 +1738,8 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
   /* remove unwanted uvps */
   for(i = 0; i < Cn; i++)
     {
-      first_loop = 1;
-      olduvp = &(uvps[i]);
+      first_loop = AY_TRUE;
+      nextuvp = &(uvps[i]);
       uvpptr = uvps[i];
 
       while(uvpptr)
@@ -1756,10 +1764,10 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 		   * uvps that we skipped since we left the patch
 		   */
 		  /* free unwanted vertices */
-		  if(uvpptr != (*olduvp))
+		  if(uvpptr != (*nextuvp))
 		    {
-		      uvpptr2 = *olduvp;
-		      *olduvp = uvpptr;
+		      uvpptr2 = *nextuvp;
+		      *nextuvp = uvpptr;
 		      while(uvpptr2 != uvpptr)
 			{
 			  uvpptr3 = uvpptr2->next;
@@ -1778,25 +1786,24 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 		   * where we are; we will delete later from
 		   * uvpptr->next on, all intermediate uvps
 		   */
-		  olduvp = &(uvpptr->next);
+		  nextuvp = &(uvpptr->next);
 		  /* we are now "out" */
 		  out = 1;
 		}
 	    } /* if is trimloop point */
 	  uvpptr = uvpptr->next;
 	} /* while */
-
-      /* free left over outer uvps */
-      if(*olduvp != uvps[i] && out)
+      if(i==7)
+      if(*nextuvp != uvps[i] && out)
 	{
-	  while(*olduvp)
+	  /* free left over outer uvps */	  
+	  while(*nextuvp)
 	    {
-	      uvpptr2 = *olduvp;
-	      *olduvp = (*olduvp)->next;
+	      uvpptr2 = *nextuvp;
+	      *nextuvp = (*nextuvp)->next;
 	      free(uvpptr2);
 	    }
 	}
-
     } /* for */
 
   /* finally, calculate surfacepoints */
@@ -1836,8 +1843,8 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object *p = NULL;
- ay_stess_uvp **uvps = NULL, *uvpptr, *newuvp, **olduvp, *trimuvp;
- ay_stess_uvp *uvpptr2, *uvpptr3;
+ ay_stess_uvp **uvps = NULL, *uvpptr, *newuvp, **nextuvp, *trimuvp;
+ ay_stess_uvp *olduvp, *uvpptr2, *uvpptr3;
  double *tt, ipoint[2] = {0};
  double p3[2], p4[2], *U, *V, u, v;
  double *fd1, *fd2, temp[3] = {0}, ders[12] = {0};
@@ -1874,7 +1881,7 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
   for(i = 0; i < Cm; i++)
     {
       u = umin;
-      olduvp = &(uvps[i]);
+      nextuvp = &(uvps[i]);
       for(j = 0; j < Cn; j++)
 	{
 	  if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
@@ -1884,8 +1891,8 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 	  /* type == 0 */
 	  newuvp->u = u;
 	  newuvp->v = v;
-	  *olduvp = newuvp;
-	  olduvp = &(newuvp->next);
+	  *nextuvp = newuvp;
+	  nextuvp = &(newuvp->next);
 	  u += ud;
 	}
       v += vd;
@@ -1898,7 +1905,8 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
   for(i = 0; i < Cm; i++)
     {
       u = umin;
-      olduvp = &trimuvp;
+      nextuvp = &trimuvp;
+      olduvp = NULL;
       trimuvp = NULL;
       p3[1] = v;
       p4[1] = v;
@@ -1938,17 +1946,25 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 			     ay_stess_IsNotTouching(&(tt[1]), tcslens[k], l, v))
 			    {
 			      /* v-line intersects with trimcurve */
-			      /* -> add new point */
-			      if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
+			      /* => add new point (but avoid consecutive
+				 equal points; those appear if a loop touches
+				  start or end of the current v-line) */
+			      if(!olduvp ||
+				   fabs(olduvp->u - ipoint[0]) > AY_EPSILON)
 				{
-				  return AY_EOMEM;
+				  if(!(newuvp = calloc(1,
+						       sizeof(ay_stess_uvp))))
+				    {
+				      return AY_EOMEM;
+				    }
+				  newuvp->type = 1;
+				  newuvp->dir = tcsdirs[k];
+				  newuvp->u = ipoint[0];
+				  newuvp->v = ipoint[1];
+				  olduvp = newuvp;
+				  *nextuvp = newuvp;
+				  nextuvp = &(newuvp->next);
 				}
-			      newuvp->type = 1;
-			      newuvp->dir = tcsdirs[k];
-			      newuvp->u = ipoint[0];
-			      newuvp->v = ipoint[1];
-			      *olduvp = newuvp;
-			      olduvp = &(newuvp->next);
 			    }
 #ifdef AY_STESSDBG
 			  else
@@ -1965,7 +1981,7 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 	  u += ud;
 	} /* for */
 
-      if(trimuvp)
+      if(trimuvp && trimuvp->next)
 	{
 	  /* we had trimloop points => merge vectors */
 	  ay_status = ay_stess_MergeVVectors(uvps[i], trimuvp);
@@ -2001,7 +2017,7 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
   for(i = 0; i < Cm; i++)
     {
       first_loop = AY_TRUE;
-      olduvp = &(uvps[i]);
+      nextuvp = &(uvps[i]);
       uvpptr = uvps[i];
 
       while(uvpptr)
@@ -2026,10 +2042,10 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 		   * uvps that we skipped since we left the patch
 		   */
 		  /* free unwanted vertices */
-		  if(uvpptr != (*olduvp))
+		  if(uvpptr != (*nextuvp))
 		    {
-		      uvpptr2 = *olduvp;
-		      *olduvp = uvpptr;
+		      uvpptr2 = *nextuvp;
+		      *nextuvp = uvpptr;
 		      while(uvpptr2 != uvpptr)
 			{
 			  uvpptr3 = uvpptr2->next;
@@ -2048,7 +2064,7 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 		   * where we are; we will delete later from
 		   * uvpptr->next on, all intermediate uvps
 		   */
-		  olduvp = &(uvpptr->next);
+		  nextuvp = &(uvpptr->next);
 		  /* we are now "out" */
 		  out = 1;
 		}
@@ -2057,16 +2073,15 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 	} /* while */
 
       /* free left over outer uvps */
-      if(*olduvp != uvps[i] && out)
+      if(*nextuvp != uvps[i] && out)
 	{
-	  while(*olduvp)
+	  while(*nextuvp)
 	    {
-	      uvpptr2 = *olduvp;
-	      *olduvp = (*olduvp)->next;
+	      uvpptr2 = *nextuvp;
+	      *nextuvp = (*nextuvp)->next;
 	      free(uvpptr2);
 	    }
 	}
-
     } /* for */
 
   /* finally, calculate surfacepoints */
@@ -2860,6 +2875,3 @@ ay_stess_TessNP(ay_object *o, int qf)
 
  return AY_OK;
 } /* ay_stess_TessNP */
-
-/* remove local preprocessor definitions */
-#undef AY_STESSEPSILON
