@@ -522,7 +522,7 @@ ay_concatnc_notifycb(ay_object *o)
     {
       /* to create the custom knot vector, all parameter curve
 	 knots must be defined in the range (0.0-1.0) */
-
+      ncurve = curves;
       while(ncurve)
 	{
 	  nc = (ay_nurbcurve_object*)ncurve->refine;
