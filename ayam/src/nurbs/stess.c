@@ -1655,7 +1655,7 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 		      if((fabs(tt[ind] - u) < AY_EPSILON) &&
 			 (fabs(tt[ind+2] - u) < AY_EPSILON))
 			continue;
-			
+
 		      ipoint[0] = 0.0;
 		      ipoint[1] = 0.0;
 
@@ -1670,7 +1670,7 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 			      /* u-line intersects with trimcurve */
 			      /* => add new point (but avoid consecutive
 				 equal points; those appear if a loop touches
-				  start or end of the current u-line) */
+				 start or end of the current u-line) */
 			      if(!olduvp ||
 				   fabs(olduvp->v - ipoint[1]) > AY_EPSILON)
 				{
@@ -1793,10 +1793,10 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 	    } /* if is trimloop point */
 	  uvpptr = uvpptr->next;
 	} /* while */
-      if(i==7)
+
       if(*nextuvp != uvps[i] && out)
 	{
-	  /* free left over outer uvps */	  
+	  /* free left over outer uvps */
 	  while(*nextuvp)
 	    {
 	      uvpptr2 = *nextuvp;
@@ -1948,7 +1948,7 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 			      /* v-line intersects with trimcurve */
 			      /* => add new point (but avoid consecutive
 				 equal points; those appear if a loop touches
-				  start or end of the current v-line) */
+				 start or end of the current v-line) */
 			      if(!olduvp ||
 				   fabs(olduvp->u - ipoint[0]) > AY_EPSILON)
 				{
