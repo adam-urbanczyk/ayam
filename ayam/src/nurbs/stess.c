@@ -1164,7 +1164,7 @@ ay_stess_TessTrimCurve(ay_object *o, double **tts, int *tls, int *tds,
 	}
 
       ay_stess_CurvePoints2D(nc->length, nc->order-1, nc->knotv, dtmp,
-			     nc->is_rat, stride, qf, &(tls[*i]), &(tts[*i]));
+			     stride, nc->is_rat, qf, &(tls[*i]), &(tts[*i]));
       free(dtmp);
       dtmp = NULL;
     }
