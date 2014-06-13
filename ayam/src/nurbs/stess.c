@@ -2869,9 +2869,9 @@ ay_stess_TessNP(ay_object *o, int qf)
 				 &npatch->stess->tessw, &npatch->stess->tessh,
 				 &npatch->stess->tessv);
 	} /* if */
-
-      npatch->tessqf = qf;
     } /* if */
+
+  npatch->tessqf = qf;
 
  return AY_OK;
 } /* ay_stess_TessNP */
