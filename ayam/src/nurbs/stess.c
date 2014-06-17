@@ -35,6 +35,8 @@ int ay_stess_MergeVVectors(ay_stess_uvp *a, ay_stess_uvp *b);
 
 int ay_stess_IsNotTouching(double *tc, int tclen, int i, double u);
 
+void ay_stess_SortIntersections(ay_stess_uvp *list, int u);
+
 int ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 			    int numtrims,
 			    double **tcs, int *tcslens, int *tcsdirs,
@@ -311,7 +313,6 @@ ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int stride,
 	  /* make sure that there are no consecutive identical
 	     points in the output, as Merge(U/V)Vectors() below
 	     would choke on that (unnecessarily) */
-
 	  if(!l || (fabs(Ct[m-2] - Ct[m]) > AY_EPSILON) ||
 	     (fabs(Ct[m-1] - Ct[m+1]) > AY_EPSILON))
 	    {
@@ -370,7 +371,12 @@ ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int stride,
 	      Ct[m]   = Ct[m]   + N[j]*Pw[k];
 	      Ct[m+1] = Ct[m+1] + N[j]*Pw[k+1];
 	    }
-
+#if 0
+	  if(Ct[m] != Ct[m] || Ct[m+1] != Ct[m+1])
+	    {
+	      printf("NAN, at u %lg!\n",u);
+	    }
+#endif
 	  /* make sure that there are no consecutive identical
 	     points in the output, as Merge(U/V)Vectors() below
 	     would choke on that (unnecessarily) */
@@ -563,10 +569,10 @@ ay_stess_SurfacePoints3D(int n, int m, int p, int q, double *U, double *V,
   Nv = Nu + (p+1);
 
   *Cn = (4 + n) * qf;
-  ud = (U[n] - U[p]) / ((*Cn) - 1);
+  ud = (U[n+1] - U[p]) / ((*Cn) - 1);
 
   *Cm = (4 + m) * qf;
-  vd = (V[m] - V[q]) / ((*Cm) - 1);
+  vd = (V[m+1] - V[q]) / ((*Cm) - 1);
 
   if(!(Ct = calloc((*Cn)*(*Cm)*6, sizeof(double))))
     { free(Nu); return AY_EOMEM; }
@@ -912,10 +918,10 @@ ay_stess_SurfacePoints4D(int n, int m, int p, int q, double *U, double *V,
   temp = Nv + (q+1);
 
   *Cn = (4 + n) * qf;
-  ud = (U[n] - U[p]) / ((*Cn) - 1);
+  ud = (U[n+1] - U[p]) / ((*Cn) - 1);
 
   *Cm = (4 + m) * qf;
-  vd = (V[m] - V[q]) / ((*Cm) - 1);
+  vd = (V[m+1] - V[q]) / ((*Cm) - 1);
 
   if(!(spanus = calloc((*Cn)+(*Cm), sizeof(int))))
     { ay_status = AY_EOMEM; goto cleanup; }
@@ -1334,10 +1340,10 @@ ay_stess_MergeUVectors(ay_stess_uvp *a, ay_stess_uvp *b)
  ay_stess_uvp *p1, *p2, *p3;
  int done = AY_FALSE, inserted = 0;
 
+  p1 = a;
   while(!done)
     {
       inserted = 0;
-      p1 = a;
       p2 = b;
       while(!inserted && b)
 	{
@@ -1387,6 +1393,7 @@ ay_stess_MergeUVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 		      p1->next = p2;
 		      b = p2->next;
 		      p2->next = p3;
+		      p1 = p2;
 		      inserted = 1;
 		    }
 		  else
@@ -1399,6 +1406,11 @@ ay_stess_MergeUVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 	    {
 	      /* falling off the border of the patch
 		 => discard remaining trim points */
+	      if(p1 && b)
+		{
+		  p1->type = 3;
+		}
+
 	      while(b)
 		{
 		  p2 = b->next;
@@ -1429,10 +1441,10 @@ ay_stess_MergeVVectors(ay_stess_uvp *a, ay_stess_uvp *b)
  ay_stess_uvp *p1, *p2, *p3;
  int done = AY_FALSE, inserted = 0;
 
+  p1 = a;
   while(!done)
     {
       inserted = 0;
-      p1 = a;
       p2 = b;
       while(!inserted && b)
 	{
@@ -1482,6 +1494,7 @@ ay_stess_MergeVVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 		      p1->next = p2;
 		      b = p2->next;
 		      p2->next = p3;
+		      p1 = p2;
 		      inserted = 1;
 		    }
 		  else
@@ -1494,6 +1507,10 @@ ay_stess_MergeVVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 	    {
 	      /* falling off the border of the patch
 		 => discard remaining trim points */
+	      if(p1 && b)
+		{
+		  p1->type = 3;
+		}
 	      while(b)
 		{
 		  p2 = b->next;
@@ -1551,6 +1568,57 @@ ay_stess_IsNotTouching(double *tc, int tclen, int i, double u)
 
  return AY_TRUE;
 } /* ay_stess_IsNotTouching */
+
+
+/* ay_stess_SortIntersections:
+ *  sort a list of intersections for faster merging
+ */
+void
+ay_stess_SortIntersections(ay_stess_uvp *list, int u)
+{
+ int done = AY_FALSE;
+ ay_stess_uvp *p1, *p2;
+ double t;
+
+  if(!list || !list->next)
+    return;
+
+  while(!done)
+    {
+      done = AY_TRUE;
+
+      p1 = list;
+      p2 = p1->next;
+      while(p1 && p2)
+	{
+	  if(u)
+	    {
+	      if(p1->u > p2->u)
+		{
+		  t = p1->u;
+		  p1->u = p2->u;
+		  p2->u = t;
+		  done = AY_FALSE;
+		}
+	    }
+	  else
+	    {
+	      if(p1->v > p2->v)
+		{
+		  t = p1->v;
+		  p1->v = p2->v;
+		  p2->v = t;
+		  done = AY_FALSE;
+		}
+	    }
+
+	  p1 = p1->next;
+	  p2 = p2->next;
+	}
+    }
+
+ return;
+} /* ay_stess_SortIntersections */
 
 
 /* ay_stess_TessTrimmedNPU:
@@ -1623,89 +1691,96 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 
   first_loop_cw = !tcsdirs[0];
 
-  u = umin;
   /* match desired uv coords of patch tesselation with trimloops */
+  u = umin;
+  p3[1] = vmin - AY_EPSILON;
+  p4[1] = vmax + AY_EPSILON;
+
   for(i = 0; i < Cn; i++)
     {
-      v = vmin;
       nextuvp = &trimuvp;
       olduvp = NULL;
       trimuvp = NULL;
+      /* calc all intersections of all trimloops with current u */
       p3[0] = u;
       p4[0] = u;
-      /* calc all intersections of all trimloops with current u */
-      for(j = 0; j < (Cm-1); j++)
+
+      for(k = 0; k < numtrims; k++)
 	{
-	  p3[1] = v;
-	  p4[1] = v+vd;
-	  for(k = 0; k < numtrims; k++)
+	  tt = tcs[k];
+
+	  for(l = 0; l < (tcslens[k]-1); l++)
 	    {
-	      tt = tcs[k];
-
-	      for(l = 0; l < (tcslens[k]-1); l++)
+	      ind = l*2;
+	      /* is section crossing or touching u? */
+	      if(((tt[ind] <= u) && (tt[ind+2] >= u)) ||
+		 ((tt[ind] >= u) && (tt[ind+2] <= u)))
 		{
-		  ind = l*2;
-		  /* is section crossing or touching u? */
-		  if(((tt[ind] <= u) && (tt[ind+2] >= u)) ||
-		     ((tt[ind] >= u) && (tt[ind+2] <= u)))
+		  /* weed out all sections that run (more or less)
+		     exactly along the current u-line, nothing good
+		     comes of them */
+		  if((fabs(tt[ind] - u) < AY_EPSILON) &&
+		     (fabs(tt[ind+2] - u) < AY_EPSILON))
 		    {
-		      /* weed out all sections that run (more or less)
-			 exactly along the current u-line, nothing good
-			 comes of them */
-		      if((fabs(tt[ind] - u) < AY_EPSILON) &&
-			 (fabs(tt[ind+2] - u) < AY_EPSILON))
-			continue;
-
-		      ipoint[0] = 0.0;
-		      ipoint[1] = 0.0;
-
-		      if((ay_stess_IntersectLines2D(&(tt[ind]),
-						    &(tt[ind+2]),
-						    p3, p4, ipoint)))
-			{
-			  if((fabs(ipoint[1] - vmin) < AY_EPSILON) ||
-			     (fabs(ipoint[1] - vmax) < AY_EPSILON) ||
-			     ay_stess_IsNotTouching(tt, tcslens[k], l, u))
-			    {
-			      /* u-line intersects with trimcurve */
-			      /* => add new point (but avoid consecutive
-				 equal points; those appear if a loop touches
-				 start or end of the current u-line) */
-			      if(!olduvp ||
-				   fabs(olduvp->v - ipoint[1]) > AY_EPSILON)
-				{
-				  if(!(newuvp = calloc(1,
-						       sizeof(ay_stess_uvp))))
-				    {
-				      return AY_EOMEM;
-				    }
-				  newuvp->type = 1;
-				  newuvp->dir = tcsdirs[k];
-				  newuvp->u = ipoint[0];
-				  newuvp->v = ipoint[1];
-				  olduvp = newuvp;
-				  *nextuvp = newuvp;
-				  nextuvp = &(newuvp->next);
-				}
-			    }
 #ifdef AY_STESSDBG
-			  else
+		      printf("Discarding parallel section.\n");
+#endif
+		      continue;
+		    }
+		  ipoint[0] = 0.0;
+		  ipoint[1] = 0.0;
+		  if((ay_stess_IntersectLines2D(&(tt[ind]),
+						&(tt[ind+2]),
+						p3, p4, ipoint)))
+		    {
+		      if((fabs(ipoint[1] - vmin) < AY_EPSILON) ||
+			 (fabs(ipoint[1] - vmax) < AY_EPSILON) ||
+			 ay_stess_IsNotTouching(tt, tcslens[k], l, u))
+			{
+			  /* u-line intersects with trimcurve */
+			  /* => add new point (but avoid consecutive
+			     equal points; those appear if a loop touches
+			     start or end of the current u-line) */
+			  if(!olduvp ||
+			     fabs(olduvp->v - ipoint[1]) > AY_EPSILON)
 			    {
-			      printf("Discarding u-touching trim loop point");
-			      printf(", at %lg %lg.\n", ipoint[0], ipoint[1]);
-			    } /* if border or touching*/
+			      if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
+				{
+				  return AY_EOMEM;
+				}
+			      newuvp->type = 1;
+			      newuvp->dir = tcsdirs[k];
+			      newuvp->u = ipoint[0];
+			      newuvp->v = ipoint[1];
+			      olduvp = newuvp;
+			      *nextuvp = newuvp;
+			      nextuvp = &(newuvp->next);
+			    }
+			}
+#ifdef AY_STESSDBG
+		      else
+			{
+			  printf("Discarding u-touching trim loop point");
+			  printf(", at %lg %lg.\n", ipoint[0], ipoint[1]);
+			} /* if border or touching*/
 #endif /* AY_STESSDBG */
-			} /* if have intersection */
-		    } /* if is not parallel */
-		} /* for */
+		    } /* if have intersection */
+		} /* if is not parallel */
 	    } /* for */
-
-	  v += vd;
 	} /* for */
+
+#ifdef AY_STESSDBG
+      if(trimuvp && !trimuvp->next)
+	{
+	  printf("Discarding u-line with just one trim point (%lg, %lg).\n",
+		 trimuvp->u,trimuvp->v);
+	}
+#endif /* AY_STESSDBG */
 
       if(trimuvp && trimuvp->next)
 	{
 	  /* we had trimloop points => merge vectors */
+	  ay_stess_SortIntersections(trimuvp, AY_FALSE);
 	  ay_status = ay_stess_MergeUVectors(uvps[i], trimuvp);
 	  if(ay_status)
 	    {
@@ -1739,6 +1814,7 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
   for(i = 0; i < Cn; i++)
     {
       first_loop = AY_TRUE;
+      out = !first_loop_cw;
       nextuvp = &(uvps[i]);
       uvpptr = uvps[i];
 
@@ -1900,90 +1976,86 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 
   first_loop_cw = !tcsdirs[0];
 
-  v = vmin;
   /* match desired uv coords of patch tesselation with trimloops */
+  v = vmin;
+  p3[0] = umin - AY_EPSILON;
+  p4[0] = umax + AY_EPSILON;
+
   for(i = 0; i < Cm; i++)
     {
-      u = umin;
       nextuvp = &trimuvp;
       olduvp = NULL;
       trimuvp = NULL;
+
       p3[1] = v;
       p4[1] = v;
-      /* calc all intersections of all trimloops with current v */
-      for(j = 0; j < (Cn-1); j++)
+
+      for(k = 0; k < numtrims; k++)
 	{
-	  p3[0] = u;
-	  p4[0] = u+ud;
-	  for(k = 0; k < numtrims; k++)
+	  tt = tcs[k];
+
+	  for(l = 0; l < (tcslens[k]-1); l++)
 	    {
-	      tt = tcs[k];
+	      ind = l*2;
 
-	      for(l = 0; l < (tcslens[k]-1); l++)
+	      /* is section crossing or touching v? */
+	      if(((tt[ind+1] <= v) && (tt[ind+2+1] >= v)) ||
+		 ((tt[ind+1] >= v) && (tt[ind+2+1] <= v)))
 		{
-		  ind = l*2;
+		  /* weed out all sections that run (more or less)
+		     exactly along the current v-line, nothing good
+		     comes of them */
+		  if((fabs(tt[ind+1] - v) < AY_EPSILON) &&
+		     (fabs(tt[ind+2+1] - v) < AY_EPSILON))
+		    continue;
 
-		  /* is section crossing or touching v? */
-		  if(((tt[ind+1] <= v) && (tt[ind+2+1] >= v)) ||
-		     ((tt[ind+1] >= v) && (tt[ind+2+1] <= v)))
+		  ipoint[0] = 0.0;
+		  ipoint[1] = 0.0;
+
+		  if((ay_stess_IntersectLines2D(&(tt[ind]),
+						&(tt[ind+2]),
+						p3, p4, ipoint)))
 		    {
-		      /* weed out all sections that run (more or less)
-			 exactly along the current v-line, nothing good
-			 comes of them */
-		      if((fabs(tt[ind+1] - v) < AY_EPSILON) &&
-			 (fabs(tt[ind+2+1] - v) < AY_EPSILON))
-			continue;
-
-		      ipoint[0] = 0.0;
-		      ipoint[1] = 0.0;
-
-		      if((ay_stess_IntersectLines2D(&(tt[ind]),
-						    &(tt[ind+2]),
-						    p3, p4, ipoint)))
+		      if((fabs(ipoint[0] - umin) < AY_EPSILON) ||
+			 (fabs(ipoint[0] - umax) < AY_EPSILON) ||
+			 ay_stess_IsNotTouching(&(tt[1]), tcslens[k], l, v))
 			{
-			  if((fabs(ipoint[0] - umin) < AY_EPSILON) ||
-			     (fabs(ipoint[0] - umax) < AY_EPSILON) ||
-			     ay_stess_IsNotTouching(&(tt[1]), tcslens[k], l, v))
+			  /* v-line intersects with trimcurve */
+			  /* => add new point (but avoid consecutive
+			     equal points; those appear if a loop touches
+			     start or end of the current v-line) */
+			  if(!olduvp ||
+			     fabs(olduvp->u - ipoint[0]) > AY_EPSILON)
 			    {
-			      /* v-line intersects with trimcurve */
-			      /* => add new point (but avoid consecutive
-				 equal points; those appear if a loop touches
-				 start or end of the current v-line) */
-			      if(!olduvp ||
-				   fabs(olduvp->u - ipoint[0]) > AY_EPSILON)
+			      if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
 				{
-				  if(!(newuvp = calloc(1,
-						       sizeof(ay_stess_uvp))))
-				    {
-				      return AY_EOMEM;
-				    }
-				  newuvp->type = 1;
-				  newuvp->dir = tcsdirs[k];
-				  newuvp->u = ipoint[0];
-				  newuvp->v = ipoint[1];
-				  olduvp = newuvp;
-				  *nextuvp = newuvp;
-				  nextuvp = &(newuvp->next);
+				  return AY_EOMEM;
 				}
+			      newuvp->type = 1;
+			      newuvp->dir = tcsdirs[k];
+			      newuvp->u = ipoint[0];
+			      newuvp->v = ipoint[1];
+			      olduvp = newuvp;
+			      *nextuvp = newuvp;
+			      nextuvp = &(newuvp->next);
 			    }
+			}
 #ifdef AY_STESSDBG
-			  else
-			    {
-			      printf("Discarding v-touching trim loop point");
-			      printf(", at %lg %lg.\n", ipoint[0], ipoint[1]);
-			    } /* if border or touching*/
+		      else
+			{
+			  printf("Discarding v-touching trim loop point");
+			  printf(", at %lg %lg.\n", ipoint[0], ipoint[1]);
+			} /* if border or touching*/
 #endif /* AY_STESSDBG */
-			} /* if have intersection */
-		    } /* if is not parallel */
-		} /* for */
+		    } /* if have intersection */
+		} /* if is not parallel */
 	    } /* for */
-
-	  u += ud;
 	} /* for */
 
       if(trimuvp && trimuvp->next)
 	{
 	  /* we had trimloop points => merge vectors */
+	  ay_stess_SortIntersections(trimuvp, AY_TRUE);
 	  ay_status = ay_stess_MergeVVectors(uvps[i], trimuvp);
 	  if(ay_status)
 	    {
@@ -2017,6 +2089,7 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
   for(i = 0; i < Cm; i++)
     {
       first_loop = AY_TRUE;
+      out = !first_loop_cw;
       nextuvp = &(uvps[i]);
       uvpptr = uvps[i];
 
@@ -2174,6 +2247,7 @@ ay_stess_DrawTrimmedSurface(ay_object *o)
 	}
     } /* for all u lines */
 
+  out = 0;
   /* draw iso-v lines */
   for(i = 0; i < stess->vpslen; i++)
     {
@@ -2874,5 +2948,5 @@ ay_stess_TessNP(ay_object *o, int qf)
   if(npatch->stess)
     npatch->tessqf = qf;
 
- return AY_OK;
+ return ay_status;
 } /* ay_stess_TessNP */
