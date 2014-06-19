@@ -580,10 +580,10 @@ ay_stess_SurfacePoints3D(int n, int m, int p, int q, double *U, double *V,
   Nv = Nu + (p+1);
 
   *Cn = (4 + n) * qf;
-  ud = (U[n+1] - U[p]) / ((*Cn) - 1);
+  ud = (U[n] - U[p]) / ((*Cn) - 1);
 
   *Cm = (4 + m) * qf;
-  vd = (V[m+1] - V[q]) / ((*Cm) - 1);
+  vd = (V[m] - V[q]) / ((*Cm) - 1);
 
   if(!(Ct = calloc((*Cn)*(*Cm)*6, sizeof(double))))
     { free(Nu); return AY_EOMEM; }
@@ -929,10 +929,10 @@ ay_stess_SurfacePoints4D(int n, int m, int p, int q, double *U, double *V,
   temp = Nv + (q+1);
 
   *Cn = (4 + n) * qf;
-  ud = (U[n+1] - U[p]) / ((*Cn) - 1);
+  ud = (U[n] - U[p]) / ((*Cn) - 1);
 
   *Cm = (4 + m) * qf;
-  vd = (V[m+1] - V[q]) / ((*Cm) - 1);
+  vd = (V[m] - V[q]) / ((*Cm) - 1);
 
   if(!(spanus = calloc((*Cn)+(*Cm), sizeof(int))))
     { ay_status = AY_EOMEM; goto cleanup; }
@@ -1226,7 +1226,7 @@ ay_stess_TessLinearTrimCurve(ay_object *o, double **tts, int *tls, int *tds,
 {
  ay_nurbcurve_object *nc = NULL;
  double angle, m[16], *dtmp, p1[4], p2[4];
- int apply_trafo = AY_FALSE, j;
+ int apply_trafo = AY_FALSE, j, l = 0;
 
   nc = (ay_nurbcurve_object*)o->refine;
 
@@ -1244,30 +1244,44 @@ ay_stess_TessLinearTrimCurve(ay_object *o, double **tts, int *tls, int *tds,
       /* apply transformations */
       for(j = 0; j < nc->length; j++)
 	{
-	  memcpy(p1, &(nc->controlv[j*4]), 4*sizeof(double));
-	  AY_APTRAN3(p2, p1, m)
-	  memcpy(&(dtmp[j*2]), p2, 2*sizeof(double));
-	  if(nc->is_rat)
+	  /*
+	  if((fabs(nc->controlv[j*4] - nc->controlv[j*4+4]) > AY_EPSILON) ||
+	     (fabs(nc->controlv[j*4+1] - nc->controlv[j*4+5]) > AY_EPSILON))
 	    {
-	      dtmp[j*2]   /= nc->controlv[j*4+3];
-	      dtmp[j*2+1] /= nc->controlv[j*4+3];
-	    }
+	  */
+	      memcpy(p1, &(nc->controlv[j*4]), 4*sizeof(double));
+	      AY_APTRAN3(p2, p1, m)
+		memcpy(&(dtmp[j*2]), p2, 2*sizeof(double));
+	      if(nc->is_rat)
+		{
+		  dtmp[j*2]   /= nc->controlv[j*4+3];
+		  dtmp[j*2+1] /= nc->controlv[j*4+3];
+		}
+	      l++;
+	      /*}*/
 	}
     }
   else
     {
       for(j = 0; j < nc->length; j++)
 	{
-	  memcpy(&(dtmp[j*2]), &(nc->controlv[j*4]), 2*sizeof(double));
-	  if(nc->is_rat)
+	  /*
+	  if((fabs(nc->controlv[j*4] - nc->controlv[j*4+4]) > AY_EPSILON) ||
+	     (fabs(nc->controlv[j*4+1] - nc->controlv[j*4+5]) > AY_EPSILON))
 	    {
-	      dtmp[j*2]   /= nc->controlv[j*4+3];
-	      dtmp[j*2+1] /= nc->controlv[j*4+3];
-	    }
+	  */
+	      memcpy(&(dtmp[j*2]), &(nc->controlv[j*4]), 2*sizeof(double));
+	      if(nc->is_rat)
+		{
+		  dtmp[j*2]   /= nc->controlv[j*4+3];
+		  dtmp[j*2+1] /= nc->controlv[j*4+3];
+		}
+	      l++;
+	      /*}*/
 	}
     }
 
-  tls[*i] = nc->length;
+  tls[*i] = l;
   tts[*i] = dtmp;
 
   /* get orientation of trimloop */
