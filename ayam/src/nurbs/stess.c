@@ -29,6 +29,9 @@ int ay_stess_IntersectLines2D(double *p1, double *p2, double *p3, double *p4,
 void ay_stess_TessTrimCurve(ay_object *o, double **tts, int *tls, int *tds,
 			    int *i, double qf);
 
+void ay_stess_TessLinearTrimCurve(ay_object *o, double **tts, int *tls,
+				  int *tds, int *i, double qf);
+
 int ay_stess_MergeUVectors(ay_stess_uvp *a, ay_stess_uvp *b);
 
 int ay_stess_MergeVVectors(ay_stess_uvp *a, ay_stess_uvp *b);
@@ -379,10 +382,12 @@ ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int stride,
 	      Ct[m+1] = Ct[m+1] + N[j]*Pw[k+1];
 	    }
 
+#ifdef AY_STESSDBG
 	  if(Ct[m] != Ct[m] || Ct[m+1] != Ct[m+1])
 	    {
 	      printf("NAN, at u %lg!\n",u);
 	    }
+#endif
 
 	  /* make sure that there are no consecutive identical
 	     points in the output, as Merge(U/V)Vectors() below
@@ -1149,6 +1154,12 @@ ay_stess_TessTrimCurve(ay_object *o, double **tts, int *tls, int *tds,
 
   nc = (ay_nurbcurve_object*)o->refine;
 
+  if(nc->order == 2)
+    {
+      ay_stess_TessLinearTrimCurve(o, tts, tls, tds, i, qf);
+      return;
+    }
+
   if(nc->is_rat)
     stride = 3;
   else
@@ -1162,7 +1173,7 @@ ay_stess_TessTrimCurve(ay_object *o, double **tts, int *tls, int *tds,
 
   if(apply_trafo)
     {
-      if(!(dtmp = calloc(nc->length*stride, sizeof(double))))
+      if(!(dtmp = malloc(nc->length*stride*sizeof(double))))
 	{ return; }
 
       /* apply transformations */
@@ -1203,6 +1214,78 @@ ay_stess_TessTrimCurve(ay_object *o, double **tts, int *tls, int *tds,
 
  return;
 } /* ay_stess_TessTrimCurve */
+
+
+/* ay_stess_TessLinearTrimCurve:
+ * Helper for ay_stess_TessTrimCurves() below.
+ * Tesselate a single linear (i.e. order == 2) trim curve/loop.
+ */
+void
+ay_stess_TessLinearTrimCurve(ay_object *o, double **tts, int *tls, int *tds,
+			     int *i, double qf)
+{
+ ay_nurbcurve_object *nc = NULL;
+ double angle, m[16], *dtmp, p1[4], p2[4];
+ int apply_trafo = AY_FALSE, j;
+
+  nc = (ay_nurbcurve_object*)o->refine;
+
+  if(AY_ISTRAFO(o))
+    {
+      apply_trafo = AY_TRUE;
+      ay_trafo_creatematrix(o, m);
+    }
+
+  if(!(dtmp = malloc(nc->length*2*sizeof(double))))
+    { return; }
+
+  if(apply_trafo)
+    {
+      /* apply transformations */
+      for(j = 0; j < nc->length; j++)
+	{
+	  memcpy(p1, &(nc->controlv[j*4]), 4*sizeof(double));
+	  AY_APTRAN3(p2, p1, m)
+	  memcpy(&(dtmp[j*2]), p2, 2*sizeof(double));
+	  if(nc->is_rat)
+	    {
+	      dtmp[j*2]   /= nc->controlv[j*4+3];
+	      dtmp[j*2+1] /= nc->controlv[j*4+3];
+	    }
+	}
+    }
+  else
+    {
+      for(j = 0; j < nc->length; j++)
+	{
+	  memcpy(&(dtmp[j*2]), &(nc->controlv[j*4]), 2*sizeof(double));
+	  if(nc->is_rat)
+	    {
+	      dtmp[j*2]   /= nc->controlv[j*4+3];
+	      dtmp[j*2+1] /= nc->controlv[j*4+3];
+	    }
+	}
+    }
+
+  tls[*i] = nc->length;
+  tts[*i] = dtmp;
+
+  /* get orientation of trimloop */
+  if(tds)
+    {
+      angle = 0.0;
+      ay_nct_getorientation(nc, 4, 1, 0, &angle);
+      if(angle >= 0.0)
+	{
+	  tds[*i] = 1;
+	}
+    }
+
+  /* advance trim loop counter */
+  *i = *i+1;
+
+ return;
+} /* ay_stess_TessLinearTrimCurve */
 
 
 /* ay_stess_TessTrimCurves:
