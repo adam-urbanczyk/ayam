@@ -19,9 +19,9 @@
 /*#define AY_STESSDBG 1*/
 
 /* prototypes of functions local to this module: */
-int ay_stess_FindMultiplePoints(int n, int p, double *U, double *P,
-				int dim, int is_rat, int stride,
-				int *m, double **V);
+void ay_stess_FindMultiplePoints(int n, int p, double *U, double *P,
+				 int dim, int is_rat, int stride,
+				 int *m, double **V);
 
 int ay_stess_IntersectLines2D(double *p1, double *p2, double *p3, double *p4,
 			      double *ip);
@@ -165,7 +165,7 @@ ay_stess_GetQF(double gst)
  *  rational coordinates <is_rat> (0/1), and coordinate size <stride> (4);
  *  returns corresponding parametric values in <V[<m>]>
  */
-int
+void
 ay_stess_FindMultiplePoints(int n, int p, double *U, double *P,
 			    int dim, int is_rat, int stride,
 			    int *m, double **V)
@@ -174,7 +174,7 @@ ay_stess_FindMultiplePoints(int n, int p, double *U, double *P,
  double *p1, *p2, *t;
 
   if(!U || !P || !m || !V)
-    return AY_ENULL;
+    return;
 
   *m = 0;
   *V = NULL;
@@ -213,7 +213,7 @@ ay_stess_FindMultiplePoints(int n, int p, double *U, double *P,
 	      if(*V)
 		free(*V);
 	      *m = 0; *V = NULL;
-	      return AY_EOMEM;
+	      return;
 	    }
 	  *V = t;
 	  (*V)[(*m)] = U[i + p + 1];
@@ -227,7 +227,7 @@ ay_stess_FindMultiplePoints(int n, int p, double *U, double *P,
 	} /* if */
     } /* for */
 
- return AY_OK;
+ return;
 } /* ay_stess_FindMultiplePoints */
 
 
@@ -247,9 +247,9 @@ ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int stride,
 
   if(!(N = calloc(p+1, sizeof(double))))
     return AY_EOMEM;
-  /*
-  ay_status = ay_stess_FindMultiplePoints(n, p, U, Pw, 2, is_rat, 4, &mc, &V);
-  */
+
+  ay_stess_FindMultiplePoints(n, p, U, Pw, 2, is_rat, stride, &mc, &V);
+
   *Clen = ((4 + n) * qf);
 
   if(!(Ct = calloc((*Clen + mc) * 2, sizeof(double))))
@@ -267,6 +267,10 @@ ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int stride,
       for(l = 0; l < (*Clen) + mc; l++)
 	{
 	  u1 = u;
+
+	  if(u1 > U[n])
+	    u1 = U[n];
+
 	  incu = AY_TRUE;
 	  /* are there unprocessed multiple points? */
 	  if((mc > 0) && (vi < mc))
@@ -334,6 +338,9 @@ ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int stride,
 	{
 	  u1 = u;
 
+	  if(u1 > U[n])
+	    u1 = U[n];
+
 	  incu = AY_TRUE;
 	  /* are there unprocessed multiple points? */
 	  if((mc > 0) && (vi < mc))
@@ -371,12 +378,12 @@ ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int stride,
 	      Ct[m]   = Ct[m]   + N[j]*Pw[k];
 	      Ct[m+1] = Ct[m+1] + N[j]*Pw[k+1];
 	    }
-#if 0
+
 	  if(Ct[m] != Ct[m] || Ct[m+1] != Ct[m+1])
 	    {
 	      printf("NAN, at u %lg!\n",u);
 	    }
-#endif
+
 	  /* make sure that there are no consecutive identical
 	     points in the output, as Merge(U/V)Vectors() below
 	     would choke on that (unnecessarily) */
@@ -412,7 +419,6 @@ int
 ay_stess_CurvePoints3D(int n, int p, double *U, double *Pw, int is_rat, int qf,
 		       int *Clen, double **C)
 {
- int ay_status = AY_OK;
  int span, j, k, l, m, mc = 0, vi, incu, mc1 = 0;
  double *N = NULL, Cw[4], *Ct = NULL, u, ud, u1, *V;
 
@@ -422,7 +428,7 @@ ay_stess_CurvePoints3D(int n, int p, double *U, double *Pw, int is_rat, int qf,
   if(!(N = calloc(p+1, sizeof(double))))
     return AY_EOMEM;
 
-  ay_status = ay_stess_FindMultiplePoints(n, p, U, Pw, 3, is_rat, 4, &mc, &V);
+  ay_stess_FindMultiplePoints(n, p, U, Pw, 3, is_rat, 4, &mc, &V);
 
   *Clen = ((4 + n) * qf);
 
@@ -1192,6 +1198,7 @@ ay_stess_TessTrimCurve(ay_object *o, double **tts, int *tls, int *tds,
 	}
     }
 
+  /* advance trim loop counter */
   *i = *i+1;
 
  return;
