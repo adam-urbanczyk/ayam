@@ -242,7 +242,7 @@ ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int stride,
 		       int is_rat, int qf,
 		       int *Clen, double **C)
 {
- int span, j, k, l, m, mc = 0, vi, incu, mc1 = 0, mc2 = 0;
+ int span, j, k, l, m, mc = 0, vi, incu, mc1 = 0;
  double *N = NULL, Cw[3], *Ct = NULL, u, ud, u1, *V = NULL;
 
   if(!U || !Pw || !Clen || !C)
@@ -317,18 +317,14 @@ ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int stride,
 	  Ct[m]   = Cw[0]/Cw[2];
 	  Ct[m+1] = Cw[1]/Cw[2];
 
-	  /* make sure that there are no consecutive identical
-	     points in the output, as Merge(U/V)Vectors() below
-	     would choke on that (unnecessarily) */
-	  if(!l || (fabs(Ct[m-2] - Ct[m]) > AY_EPSILON) ||
-	     (fabs(Ct[m-1] - Ct[m+1]) > AY_EPSILON))
+#ifdef AY_STESSDBG
+	  if(Ct[m] != Ct[m] || Ct[m+1] != Ct[m+1])
 	    {
-	      m += 2;
+	      printf("NAN, at u %lg!\n",u);
 	    }
-	  else
-	    {
-	      mc2++;
-	    }
+#endif
+
+	  m += 2;
 
 	  if(incu)
 	    u += ud;
@@ -389,18 +385,7 @@ ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int stride,
 	    }
 #endif
 
-	  /* make sure that there are no consecutive identical
-	     points in the output, as Merge(U/V)Vectors() below
-	     would choke on that (unnecessarily) */
-	  if(!l || (fabs(Ct[m-2] - Ct[m]) > AY_EPSILON) ||
-	     (fabs(Ct[m-1] - Ct[m+1]) > AY_EPSILON))
-	    {
-	      m += 2;
-	    }
-	  else
-	    {
-	      mc2++;
-	    }
+	  m += 2;
 
 	  if(incu)
 	    u += ud;
@@ -409,7 +394,7 @@ ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int stride,
     } /* if */
 
   *C = Ct;
-  *Clen += mc1-mc2;
+  *Clen += mc1;
 
   free(N);
 
