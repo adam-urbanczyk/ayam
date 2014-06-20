@@ -7744,8 +7744,6 @@ ay_npt_isboundcurve(ay_object *o, double b1, double b2, double b3, double b4,
 	  *result = AY_FALSE;
 	  goto cleanup;
 	}
-
-      cv += stride;
     } /* for */
 
   /*
@@ -7794,9 +7792,9 @@ ay_npt_istrimmed(ay_object *o, int mode)
   if(!npatch)
     return AY_FALSE;
 
-  b1 = npatch->uknotv[0];
+  b1 = npatch->uknotv[npatch->uorder-1];
   b2 = npatch->uknotv[npatch->width];
-  b3 = npatch->vknotv[0];
+  b3 = npatch->vknotv[npatch->vorder-1];
   b4 = npatch->vknotv[npatch->height];
 
   switch(mode)
