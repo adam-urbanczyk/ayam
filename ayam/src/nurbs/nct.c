@@ -3400,7 +3400,8 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 
   o->type = AY_IDNCURVE;
   ay_object_defaults(o);
-  ay_object_placemark(o);
+  if(!create_trim)
+    ay_object_placemark(o);
 
   if(!(curve = calloc(1, sizeof(ay_nurbcurve_object))))
     {
