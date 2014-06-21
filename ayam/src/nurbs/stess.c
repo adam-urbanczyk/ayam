@@ -118,6 +118,9 @@ ay_stess_destroy(ay_nurbpatch_object *np)
   if(stess->tcsdirs)
     free(stess->tcsdirs);
 
+  if(stess->tcspnts)
+    free(stess->tcspnts);
+
   /* now free the stess object */
   free(stess);
   np->stess = NULL;
@@ -1279,13 +1282,15 @@ ay_stess_TessLinearTrimCurve(ay_object *o, double **tts, int *tls, int *tds,
  */
 int
 ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
-			int **tl, int **td)
+			int **tl, int **td, double **tp)
 {
  int ay_status = AY_OK;
- double **tts = NULL;
- int i, numtrims = 0, *tls = NULL, *tds = NULL;
+ double **tts = NULL, *tps = NULL, p4[4];
+ int i, j, a, numtrims = 0, *tls = NULL, *tds = NULL;
  ay_object *trim = NULL, *loop = NULL, *p, *nc = NULL, *cnc = NULL;
  ay_nurbcurve_object *c = NULL;
+ ay_nurbpatch_object *np = NULL;
+ int npnts = 0;
 
   /* count trimloops */
   trim = o->down;
@@ -1383,11 +1388,47 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
       trim = trim->next;
     } /* while */
 
+  /* calculate 3D surface points */
+  np = (ay_nurbpatch_object*)o->refine;
+  for(i = 0; i < numtrims; i++)
+    {
+      npnts += tls[i];
+    }
+
+  if(!(tps = calloc(npnts*3, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  a = 0;
+  for(i = 0; i < numtrims; i++)
+    {
+      for(j = 0; j < tls[i]; j++)
+	{
+	  if(np->is_rat)
+	    {
+	      ay_nb_SurfacePoint4D(np->width-1, np->height-1, np->uorder-1,
+				   np->vorder-1, np->uknotv, np->vknotv,
+				   np->controlv, tts[i][j*2], tts[i][j*2+1],
+				   p4);
+	      memcpy(&(tps[a]), p4, 3*sizeof(double));
+	    }
+	  else
+	    {
+	      ay_nb_SurfacePoint3D(np->width-1, np->height-1, np->uorder-1,
+				   np->vorder-1, np->uknotv, np->vknotv,
+				   np->controlv, tts[i][j*2], tts[i][j*2+1],
+				   &(tps[a]));
+	    }
+	  a += 3;
+	} /* for */
+    } /* for */
+
+  /* return results */
   *nt = numtrims;
   *tt = tts;
   *tl = tls;
   if(td)
     *td = tds;
+
+  *tp = tps;
 
   /* prevent cleanup code from doing something harmful */
   tts = NULL;
@@ -2213,8 +2254,7 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 int
 ay_stess_DrawTrimmedSurface(ay_object *o)
 {
- double p4[4] = {0};
- int i, j, out = 0;
+ int i, j, a, out = 0;
  ay_stess *stess = NULL;
  ay_stess_uvp *uvpptr;
  ay_nurbpatch_object *p = NULL;
@@ -2318,17 +2358,14 @@ ay_stess_DrawTrimmedSurface(ay_object *o)
     } /* for all v lines */
 
   /* draw trimcurves (outlines) */
+  a = 0;
   for(i = 0; i < stess->tcslen; i++)
     {
       glBegin(GL_LINE_STRIP);
        for(j = 0; j < stess->tcslens[i]; j++)
 	 {
-	   ay_nb_SurfacePoint4D(p->width-1, p->height-1,
-	       	       p->uorder-1, p->vorder-1, p->uknotv, p->vknotv,
-	       	       p->controlv, stess->tcs[i][j*2],
-				stess->tcs[i][j*2+1], p4);
-
-	   glVertex3dv((GLdouble*)(p4));
+	   glVertex3dv(&(stess->tcspnts[a]));
+	   a += 3;
 	 } /* for */
       glEnd();
     } /* for */
@@ -2868,7 +2905,8 @@ ay_stess_TessTrimmedNP(ay_object *o, int qf)
 
   ay_status = ay_stess_TessTrimCurves(o, qf,
 				      &(st->tcslen), &(st->tcs),
-				      &(st->tcslens), &(st->tcsdirs));
+				      &(st->tcslens), &(st->tcsdirs),
+				      &(st->tcspnts));
 
   if(ay_status)
     goto cleanup;

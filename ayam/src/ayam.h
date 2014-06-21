@@ -482,6 +482,7 @@ typedef struct ay_stess_s {
   double **tcs; /**< tesselated trim curves [tcslen][tcslens[i]] */
   int *tcslens; /**< lengths of trim curves [tcslen] */
   int *tcsdirs; /**< directions of trim curves [tcslen] */
+  double *tcspnts; /**< points of tesselated trim curves [sum(tcslens)*3] */
 
   double ud; /**< distance */
   double vd; /**< distance */
