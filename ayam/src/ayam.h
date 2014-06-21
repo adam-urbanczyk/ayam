@@ -479,9 +479,7 @@ typedef struct ay_stess_s {
 
   int ft_cw; /**< first trim is oriented clockwise? */
   int tcslen; /**< number of tesselated trim curves */
-  double **tcs; /**< tesselated trim curves [tcslen][tcslens[i]] */
   int *tcslens; /**< lengths of trim curves [tcslen] */
-  int *tcsdirs; /**< directions of trim curves [tcslen] */
   double *tcspnts; /**< points of tesselated trim curves [sum(tcslens)*3] */
 
   double ud; /**< distance */
@@ -605,6 +603,7 @@ typedef struct ay_pomesh_object_s {
   int has_normals; /**< vertex normals? 0 - No, stride=3; 1 - Yes, stride=6 */
   double *controlv; /**< control points [ncontrols * stride] */
   double *face_normals; /**< face normals [npolys * 3] */
+  /*GLuint list;*/
 } ay_pomesh_object;
 
 
