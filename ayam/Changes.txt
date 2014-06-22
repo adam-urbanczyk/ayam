@@ -1,5 +1,5 @@
-[9. Jun 2014] CVS-Head:
-=======================
+[22. Jun 2014] CVS-Head:
+========================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
 o crash when removing wrong trim curves from patches (SF 3514206)
@@ -23,6 +23,7 @@ o crash when tesselating complex hierarchies with instances (SF 492)
 o new views do not inherit the global mark (SF 493)
 o crash when reading PatchMesh objects with custom basis (SF 494)
 o crash when importing RIB with RiIlluminate (SF 495)
+o ConcatNC fails to create custom knots (SF 496)
 
 Modelling:
 o added "Compatible" option to ConcatNP objects, to prevent unwanted
@@ -98,11 +99,15 @@ o patch meshes now always convert to a single NURBS patch (are therefore
   now also supports arbitrary basis types
 o added object flashing facility to the object picking (activated
   via new preference option "FlashObjects")
-o added support for ACurve and NCurve providing objects to Gordon objects
-  WatchCorners feature
+o added support for ACurve objects and NCurve providing objects to Gordon
+  objects WatchCorners feature
 o added ScaleMode option to Trim object controlling how to scale the
   trim to the parametric space of the NURBS surface
 o improved transformation attribute support of Script objects
+o improved conversion of Script objects that create Instances or objects
+  with materials
+o improved STESS tesselation of trimmed NURBS in terms of robustness,
+  tesselation speed, drawing speed, and memory requirements
 
 GUI:
 o the default value menu buttons of property GUI elements now display a
