@@ -1232,7 +1232,7 @@ ay_stess_TessLinearTrimCurve(ay_object *o, double **tts, int *tls, int *tds,
 	{
 	  memcpy(p1, &(nc->controlv[j*4]), 4*sizeof(double));
 	  AY_APTRAN3(p2, p1, m)
-	    memcpy(&(dtmp[j*2]), p2, 2*sizeof(double));
+	  memcpy(&(dtmp[j*2]), p2, 2*sizeof(double));
 	  if(nc->is_rat)
 	    {
 	      dtmp[j*2]   /= nc->controlv[j*4+3];
@@ -1409,11 +1409,11 @@ cleanup:
 
 
 /* ay_stess_ReTessTrimCurves:
- *  tesselate all trim curves of object <o>
+ *  re tesselate all linear trims of object <o>
  */
 int
 ay_stess_ReTessTrimCurves(ay_object *o, int qf, int numtrims, double **tt,
-			int *tl, double **tp)
+			  int *tl, double **tp)
 {
  int ay_status = AY_OK;
  double *tps = NULL, p4[4];
@@ -1422,6 +1422,15 @@ ay_stess_ReTessTrimCurves(ay_object *o, int qf, int numtrims, double **tt,
  ay_nurbcurve_object *c = NULL;
  ay_nurbpatch_object *np = NULL;
  int npnts = 0;
+
+  np = (ay_nurbpatch_object*)o->refine;
+
+  /* XXXX todo: adapt qf to NPatch dimensions to accomodate for the
+     worst case: a single linear trim segment running along the complete
+     patch surface; even in this case, we should provide an adequate
+     amount of tesselated points and avoid leaving the surface too
+     much/often */
+  qf *= 2;
 
   i = 0;
   trim = o->down;
@@ -1470,7 +1479,6 @@ ay_stess_ReTessTrimCurves(ay_object *o, int qf, int numtrims, double **tt,
     } /* while */
 
   /* calculate 3D surface points */
-  np = (ay_nurbpatch_object*)o->refine;
   for(i = 0; i < numtrims; i++)
     {
       npnts += tl[i];
@@ -1754,8 +1762,8 @@ ay_stess_SortIntersections(ay_stess_uvp *list, int u)
 
 	  p1 = p1->next;
 	  p2 = p2->next;
-	}
-    }
+	} /* while p1 && p2 */
+    } /* while !done */
 
  return;
 } /* ay_stess_SortIntersections */
@@ -2745,7 +2753,6 @@ ay_stess_ShadeTrimmedSurfaceorig(ay_object *o)
 		    }
 		  else
 		    {
-
 		      while(u2 && u2->next && (u2->next->v < u1->v))
 			u2 = u2->next;
 
@@ -2767,7 +2774,6 @@ ay_stess_ShadeTrimmedSurfaceorig(ay_object *o)
 			      break;
 			    }
 			}
-
 		    }
 
 		  /* avoid infinite loop */
@@ -2999,7 +3005,7 @@ ay_stess_TessTrimmedNP(ay_object *o, int qf)
   if(ay_status)
     goto cleanup;
 
-  /* return result */
+  /* prevent cleanup code from doing something harmful */
   p = NULL;
 
   /* clean up the mess */
