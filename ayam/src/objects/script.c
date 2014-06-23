@@ -1828,16 +1828,17 @@ ay_script_convertcb(ay_object *o, int in_place)
 			  if(add_trafo)
 			    ay_trafo_add(o, new);
 			  ay_object_link(new);
-			} /* if */		    
+			} /* if */
 		      cmo = cmo->next;
 		    } /* while */
 		}
 	      else
 		{
+		  ay_status = AY_ERROR;
 		  ay_error(AY_ERROR, fname,
 			   "Could not convert directly.");
 		  ay_error(AY_ERROR, fname,
-		     "Try copying the script, then use in-place conversion.");
+		     "Try copying the Script, then use in-place conversion.");
 		}
 	    } /* if in_place */
 	} /* if have cm objects */
@@ -1846,7 +1847,7 @@ ay_script_convertcb(ay_object *o, int in_place)
       break;
     } /* switch */
 
- return AY_OK;
+ return ay_status;
 } /* ay_script_convertcb */
 
 
