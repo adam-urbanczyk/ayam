@@ -14,15 +14,6 @@
 
 /* ncurve.c - ncurve object */
 
-void ay_ncurve_cacheflt(ay_nurbcurve_object *ncurve);
-
-int ay_ncurve_drawstess(ay_view_object *view, ay_nurbcurve_object *ncurve);
-
-int ay_ncurve_drawglu(ay_view_object *view, ay_nurbcurve_object *ncurve);
-
-int ay_ncurve_drawch(ay_nurbcurve_object *ncurve);
-
-
 static char *ay_ncurve_name = "NCurve";
 
 static Tcl_Obj *arrobj = NULL;
@@ -37,6 +28,18 @@ static Tcl_Obj *dmobj = NULL;
 static Tcl_Obj *knotsmodobj = NULL;
 static Tcl_Obj *isratobj = NULL;
 static Tcl_Obj *isdegenobj = NULL;
+
+
+/* prototypes of functions local to this module: */
+
+void ay_ncurve_cacheflt(ay_nurbcurve_object *ncurve);
+
+int ay_ncurve_drawstess(ay_view_object *view, ay_nurbcurve_object *ncurve);
+
+int ay_ncurve_drawglu(ay_view_object *view, ay_nurbcurve_object *ncurve);
+
+int ay_ncurve_drawch(ay_nurbcurve_object *ncurve);
+
 
 /* functions: */
 
