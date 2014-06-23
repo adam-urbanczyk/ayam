@@ -21,18 +21,21 @@
  */
 
 static char *ay_script_name = "Script";
-
 static char *ay_script_sp = "SP"; /* Save (Individual) Parameters */
-
 static char *ay_script_sa = "array:"; /* Save Array */
-
 static char *ay_script_ul = "use:"; /* Use (Language) */
+
+
+/* prototypes of functions local to this module: */
 
 int ay_script_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe);
 
 int ay_script_notifycb(ay_object *o);
 
 int ay_script_hasnptrafo(ay_object *o);
+
+int ay_script_checkconversion(ay_object *o);
+
 
 /* functions: */
 
@@ -1726,22 +1729,23 @@ ay_script_convertcb(ay_object *o, int in_place)
 	      add_trafo = AY_TRUE;
 	    }
 
-	  /* remove current children (of the script object) */
-	  if(o->down)
-	    {
-	      ay_status = ay_object_candelete(o->down, o->down);
-	      if(ay_status != AY_OK)
-		{
-		  ay_clipb_prepend(o->down, fname);
-		}
-	      else
-		{
-		  (void)ay_object_deletemulti(o->down, AY_TRUE);
-		}
-	      o->down = NULL;
-	    }
 	  if(in_place)
 	    {
+	      /* remove current children (of the script object) */
+	      if(o->down)
+		{
+		  ay_status = ay_object_candelete(o->down, o->down);
+		  if(ay_status != AY_OK)
+		    {
+		      ay_clipb_prepend(o->down, fname);
+		    }
+		  else
+		    {
+		      (void)ay_object_deletemulti(o->down, AY_TRUE);
+		    }
+		  o->down = NULL;
+		}
+
 	      if(sc->cm_objects->next && sc->cm_objects->next->next)
 		{
 		  /* have multiple objects
@@ -1813,20 +1817,28 @@ ay_script_convertcb(ay_object *o, int in_place)
 	      /* keep original (i.e. !in_place)
 		 => just copy and link all the cm_objects */
 	      cmo = sc->cm_objects;
-	      while(cmo && cmo->next)
+	      if(ay_script_checkconversion(cmo))
 		{
-		  new = NULL;
-		  /* XXXX todo: what if an instance pointing back to
-		     cm_objects is copied out here? */
-		  ay_status = ay_object_copy(cmo, &new);
-		  if(ay_status == AY_OK && new)
+		  while(cmo && cmo->next)
 		    {
-		      if(add_trafo)
-			ay_trafo_add(o, new);
-		      ay_object_link(new);
-		    } /* if */
-		  cmo = cmo->next;
-		} /* while */
+		      new = NULL;
+		      ay_status = ay_object_copy(cmo, &new);
+		      if(ay_status == AY_OK && new)
+			{
+			  if(add_trafo)
+			    ay_trafo_add(o, new);
+			  ay_object_link(new);
+			} /* if */		    
+		      cmo = cmo->next;
+		    } /* while */
+		}
+	      else
+		{
+		  ay_error(AY_ERROR, fname,
+			   "Could not convert directly.");
+		  ay_error(AY_ERROR, fname,
+		     "Try copying the script, then use in-place conversion.");
+		}
 	    } /* if in_place */
 	} /* if have cm objects */
       break;
@@ -1836,6 +1848,37 @@ ay_script_convertcb(ay_object *o, int in_place)
 
  return AY_OK;
 } /* ay_script_convertcb */
+
+
+/** ay_script_providecb:
+ *  helper for ay_script_convertcb() above
+ *  _recursively_ check, whether or not we can copy out the objects
+ *  from \a o to the scene (currently only checks, if there are
+ *  instances or objects with materials, but the really dangerous
+ *  configurations are if the master or material of aforementioned
+ *  instances or objects are _also_ in \a o)
+ */
+int
+ay_script_checkconversion(ay_object *o)
+{
+
+  while(o)
+    {
+      if(o->down)
+	if(!ay_script_checkconversion(o->down))
+	  return AY_FALSE;
+
+      if(o->type == AY_IDINSTANCE)
+	return AY_FALSE;
+
+      if(o->mat)
+	return AY_FALSE;
+
+      o = o->next;
+    }
+
+ return AY_TRUE;
+} /* ay_script_checkconversion */
 
 
 /* ay_script_providecb:
