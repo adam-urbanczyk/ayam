@@ -313,6 +313,11 @@ int x3dio_writenpatchobj(scew_element *element, ay_object *o);
 
 int x3dio_writenpwire(scew_element *element, ay_object *o);
 
+int x3dio_writetrimmednpwire(scew_element *element, ay_object *o);
+
+int x3dio_writetrimwire(scew_element *element, ay_nurbpatch_object *np,
+			ay_stess_uvp *p1, ay_stess_uvp *p2);
+
 int x3dio_writenpconvertibleobj(scew_element *element, ay_object *o);
 
 int x3dio_writelevelobj(scew_element *element, ay_object *o);
@@ -7643,26 +7648,28 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
  ay_object *c;
  ay_nurbpatch_object *np;
  char buf[64], *attr = NULL, *tmp;
- int a, b, i, j, k, m, n, p, q, i0, ii, jj;
- int ulines, vlines, fulines, fvlines, spanu, spanv;
- int *spanus, *spanvs, *fspanus, *fspanvs;
+ int a, b, i, j, k, m, n, p, q;
+ int ulines, vlines, fulines, fvlines/*, spanu, spanv*/;
+ /* int *spanus, *spanvs, *fspanus, *fspanvs;*/
  int idxsize = 0;
- double *P, *U, *V, *Nu, *Nv, *fd1, *fd2, *Ct;
+ double *P, *U, *V, *fd1, *fd2, *Ct;
  double l, u, v, ud, fud, vd, fvd;
  double N[3] = {0}, fder[9] = {0};
- double qf, offset = 0.005;
+ double offset = 0.005;
  scew_element *transform_element = NULL;
  scew_element *shape_element = NULL;
  scew_element *line_element = NULL;
  scew_element *coord_element = NULL;
- int tcslen; /**< number of tesselated trim curves */
- double **tcs; /**< tesselated trim curves [tcslen][tcslens[i]] */
- int *tcslens; /**< lengths of trim curves [tcslen] */
 
   if(!element || !o || !o->refine)
     return AY_ENULL;
 
   np = (ay_nurbpatch_object *)o->refine;
+
+  if(ay_npt_istrimmed(o, 0))
+    {
+      return x3dio_writetrimmednpwire(element, o);
+    }
 
   /* write transform */
   ay_status = x3dio_writetransform(element, o, &transform_element);
@@ -7945,117 +7952,6 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
       v = V[i];
     } /* for */
 
-  /* trim curves */
-
-  if(ay_npt_istrimmed(o, 0))
-    {
-      /* this is a non trivially trimmed NURBS patch */
-      if(Ct)
-	free(Ct);
-      Ct = NULL;
-      if(attr)
-	free(attr);
-      attr = NULL;
-
-      /* skip the outermost trim, if it lies on the boundary */
-      ii = AY_FALSE;
-      ay_npt_isboundcurve(o->down, U[p], U[n], V[q], V[m], &ii);
-      if(ii == AY_TRUE)
-	i0 = 1;
-      else
-	i0 = 0;
-
-      qf = ay_stess_GetQF(ay_prefs.glu_sampling_tolerance);
-
-      ay_status = ay_stess_TessTrimCurves(o, qf,
-					  &tcslen, &tcs,
-					  &tcslens, NULL);
-      if(ay_status)
-	goto cleanup;
-
-      /* estimate memory needed to store the indices */
-      /* calculate total number of points/indices */
-      a = 0;
-      for(ii = i0; ii < tcslen; ii++)
-	{
-	  a += tcslens[ii];
-	}
-      idxsize = sprintf(buf, " %d", a*2);
-      /* allocate and fill indices */
-      if(!(attr = malloc((a*2*idxsize+10)*sizeof(char))))
-	{ ay_status = AY_EOMEM; goto cleanup; }
-      tmp = attr;
-      a = 0;
-      for(ii = i0; ii < tcslen; ii++)
-	{
-	  for(jj = 0; jj < tcslens[ii]; jj++)
-	    {
-	      tmp += sprintf(tmp, " %d", a);
-	      a++;
-	    }
-	  tmp += sprintf(tmp, " -1");
-	}
-      b = a;
-      for(ii = i0; ii < tcslen; ii++)
-	{
-	  for(jj = 0; jj < tcslens[ii]; jj++)
-	    {
-	      tmp += sprintf(tmp, " %d", a);
-	      a++;
-	    }
-	  tmp += sprintf(tmp, " -1");
-	}
-      /* allocate and fill coordinates */
-      if(!(Ct = malloc(a*3*2*sizeof(double))))
-	{ ay_status = AY_EOMEM; goto cleanup; }
-
-      j = 0; k = b*3;
-      for(ii = i0; ii < tcslen; ii++)
-	{
-	  for(jj = 0; jj < tcslens[ii]; jj++)
-	    {
-	      if(np->is_rat)
-		ay_nb_CompFirstDerSurf4D(n-1, m-1, p, q, U, V, P,
-					 tcs[ii][jj*2], tcs[ii][jj*2+1],
-					 fder);
-	      else
-		ay_nb_CompFirstDerSurf3D(n-1, m-1, p, q, U, V, P,
-					 tcs[ii][jj*2], tcs[ii][jj*2+1],
-					 fder);
-
-	      fd1 = &(fder[3]);
-	      fd2 = &(fder[6]);
-	      AY_V3CROSS(N, fd2, fd1);
-	      l = AY_V3LEN(N);
-	      if(fabs(l) > AY_EPSILON)
-		AY_V3SCAL(N, 1.0/l);
-	      /* offset point along normal */
-	      AY_V3SCAL(N, offset);
-	      Ct[j]   = fder[0]+N[0];
-	      Ct[j+1] = fder[1]+N[1];
-	      Ct[j+2] = fder[2]+N[2];
-	      Ct[k]   = fder[0]-N[0];
-	      Ct[k+1] = fder[1]-N[1];
-	      Ct[k+2] = fder[2]-N[2];
-	      j += 3;
-	      k += 3;
-	    } /* for */
-	} /* for */
-
-      /* write out all the data */
-      shape_element = scew_element_add(transform_element, "Shape");
-
-      x3dio_writewiremat(shape_element);
-
-      line_element = scew_element_add(shape_element, "IndexedLineSet");
-
-      scew_element_add_attr_pair(line_element, "coordIndex", attr);
-
-      coord_element = scew_element_add(line_element, "Coordinate");
-
-      x3dio_writedoublepoints(coord_element, "point", 3, b*2, 3, Ct);
-    } /* if istrimmed */
-
   /* write the caps and bevels */
   c = np->caps_and_bevels;
   while(c)
@@ -8079,6 +7975,435 @@ cleanup:
   if(attr)
     free(attr);
 
+ return ay_status;
+} /* x3dio_writenpwire */
+
+
+/* x3dio_writetrimwire:
+ *
+ */
+int
+x3dio_writetrimwire(scew_element *element, ay_nurbpatch_object *np,
+		    ay_stess_uvp *p1, ay_stess_uvp *p2)
+{
+ int ay_status = AY_OK;
+ char buf[64], *attr = NULL, *tmp;
+ int a, b, i, j, k, m, n, p, q;
+ int idxsize = 0;
+ double *P, *U, *V, *fd1, *fd2, *Ct;
+ double l;
+ double N[3] = {0}, fder[9] = {0};
+ double offset = 0.005;
+ scew_element *shape_element = NULL;
+ scew_element *line_element = NULL;
+ scew_element *coord_element = NULL;
+ ay_stess_uvp *uvp;
+
+  if(!element || !np || !p1 || !p2)
+    return AY_ENULL;
+
+  if(p1 == p2)
+    return AY_OK;
+
+  P = np->controlv;
+  U = np->uknotv;
+  V = np->vknotv;
+  n = np->width;
+  m = np->height;
+  p = np->uorder-1;
+  q = np->vorder-1;
+
+  /* estimate memory needed to store the indices */
+  /* calculate total number of points/indices */
+  a = 1;
+  uvp = p1;
+  while(uvp && uvp != p2)
+    {
+      a++;
+      uvp = uvp->next;
+    }
+
+  b = a;
+  idxsize = sprintf(buf, " %d", b*2);
+
+  /* allocate and fill indices */
+  if(!(attr = malloc((b*2*idxsize+10)*sizeof(char))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  tmp = attr;
+  a = 0;
+  for(i = 0; i < b; i++)
+    {
+      tmp += sprintf(tmp, " %d", a);
+      a++;
+    }
+  tmp += sprintf(tmp, " -1");
+  for(i = a; i < b*2; i++)
+    {
+      tmp += sprintf(tmp, " %d", a);
+      a++;
+    }
+  tmp += sprintf(tmp, " -1");
+
+  /* allocate and fill coordinates */
+  if(!(Ct = malloc(b*2*3*sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  j = 0;
+  k = b*3;
+  uvp = p1;
+  for(i = 0; i < b; i++)
+    {
+      if(np->is_rat)
+	ay_nb_CompFirstDerSurf4D(n-1, m-1, p, q, U, V, P,
+				 uvp->u, uvp->v,
+				 fder);
+      else
+	ay_nb_CompFirstDerSurf3D(n-1, m-1, p, q, U, V, P,
+				 uvp->u, uvp->v,
+				 fder);
+
+      fd1 = &(fder[3]);
+      fd2 = &(fder[6]);
+      AY_V3CROSS(N, fd2, fd1);
+      l = AY_V3LEN(N);
+      if(fabs(l) > AY_EPSILON)
+	AY_V3SCAL(N, 1.0/l);
+      /* offset point along normal */
+      AY_V3SCAL(N, offset);
+      Ct[j]   = fder[0]+N[0];
+      Ct[j+1] = fder[1]+N[1];
+      Ct[j+2] = fder[2]+N[2];
+      Ct[k]   = fder[0]-N[0];
+      Ct[k+1] = fder[1]-N[1];
+      Ct[k+2] = fder[2]-N[2];
+      j += 3;
+      k += 3;
+
+      uvp = uvp->next;
+    } /* for */
+
+  /* write out all the data */
+  shape_element = scew_element_add(element, "Shape");
+
+  x3dio_writewiremat(shape_element);
+
+  line_element = scew_element_add(shape_element, "IndexedLineSet");
+
+  scew_element_add_attr_pair(line_element, "coordIndex", attr);
+
+  coord_element = scew_element_add(line_element, "Coordinate");
+
+  x3dio_writedoublepoints(coord_element, "point", 3, b*2, 3, Ct);
+
+cleanup:
+
+  if(Ct)
+    free(Ct);
+
+  if(attr)
+    free(attr);
+
+ return AY_OK;
+} /* x3dio_writetrimwire */
+
+
+/* x3dio_writetrimmednpwire:
+ *
+ */
+int
+x3dio_writetrimmednpwire(scew_element *element, ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_object *c;
+ ay_nurbpatch_object *np;
+ char buf[64], *attr = NULL, *tmp;
+ int a, b, i, j, k, m, n, p, q, i0, ii, jj;
+ int idxsize = 0;
+ double *P, *U, *V, *fd1, *fd2, *Ct;
+ double l;
+ double N[3] = {0}, fder[9] = {0};
+ double qf, offset = 0.005;
+ scew_element *transform_element = NULL;
+ scew_element *shape_element = NULL;
+ scew_element *line_element = NULL;
+ scew_element *coord_element = NULL;
+ int clear_stess = AY_FALSE;
+ int out = 0;
+ ay_stess *stess = NULL;
+ int tcslen = 0;
+ int *tcslens = NULL;
+ double **tcs = NULL;
+ ay_stess_uvp *uvpptr, *p1, *p2;
+
+  if(!element || !o || !o->refine)
+    return AY_ENULL;
+
+  np = (ay_nurbpatch_object *)o->refine;
+
+  /* write transform */
+  ay_status = x3dio_writetransform(element, o, &transform_element);
+
+  if(!np->stess)
+    {
+      qf = ay_stess_GetQF(ay_prefs.glu_sampling_tolerance);
+
+      ay_status = ay_stess_TessTrimmedNP(o, qf);
+      if(!ay_status)
+	return ay_status;
+      clear_stess = AY_TRUE;
+    }
+
+  stess = np->stess;
+
+  /* write iso-u lines */
+  for(i = 0; i < stess->upslen; i++)
+    {
+      uvpptr = stess->ups[i];
+      p1 = uvpptr;
+      if(uvpptr && uvpptr->next)
+	{
+	  if(stess->ft_cw)
+	    {
+	      out = 0;
+	      p1 = uvpptr;
+	      /*
+		glBegin(GL_LINE_STRIP);
+	      */
+	    }
+	  else
+	    out = 1;
+
+	  while(uvpptr)
+	    {
+	      if(uvpptr->type > 0)
+		{
+		  if(out)
+		    {
+		      p1 = uvpptr;
+		      /*
+			glBegin(GL_LINE_STRIP);
+			glVertex3dv((GLdouble*)(uvpptr->C));
+		      */
+		      out = 0;
+		    }
+		  else
+		    {
+		      p2 = uvpptr;
+		      x3dio_writetrimwire(transform_element, np, p1, p2);
+		      /*
+			glVertex3dv((GLdouble*)(uvpptr->C));
+			glEnd();
+		      */
+		      out = 1;
+		    } /* if */
+		}
+
+	      uvpptr = uvpptr->next;
+	    } /* while */
+
+	  if(!out)
+	    {
+	      p2 = uvpptr;
+	      x3dio_writetrimwire(transform_element, np, p1, p2);
+	      /*
+		glEnd();
+	      */
+	    }
+	}
+    } /* for all u lines */
+
+  out = 0;
+  /* write iso-v lines */
+  for(i = 0; i < stess->vpslen; i++)
+    {
+      uvpptr = stess->vps[i];
+      p1 = uvpptr;
+      if(uvpptr && uvpptr->next)
+	{
+	  if(stess->ft_cw)
+	    {
+	      out = 0;
+	      p1 = uvpptr;
+	      /*
+		glBegin(GL_LINE_STRIP);
+		glVertex3dv((GLdouble*)(uvpptr->C));
+	      */
+	    }
+	  else
+	    out = 1;
+
+	  while(uvpptr)
+	    {
+	      if(uvpptr->type > 0)
+		{
+		  if(out)
+		    {
+		      p1 = uvpptr;
+		      /*
+			glBegin(GL_LINE_STRIP);
+			glVertex3dv((GLdouble*)(uvpptr->C));
+		      */
+		      out = 0;
+		    }
+		  else
+		    {
+		      p2 = uvpptr;
+		      x3dio_writetrimwire(transform_element, np, p1, p2);
+		      /*
+			glVertex3dv((GLdouble*)(uvpptr->C));
+			glEnd();
+		      */
+		      out = 1;
+		    } /* if */
+		}
+
+	      uvpptr = uvpptr->next;
+	    }  /* while */
+
+	  if(!out)
+	    {
+	      p2 = uvpptr;
+	      x3dio_writetrimwire(transform_element, np, p1, p2);
+	      /*
+		glEnd();
+	      */
+	    }
+	}
+    } /* for all v lines */
+
+  /* write trim curves */
+
+  P = np->controlv;
+  U = np->uknotv;
+  V = np->vknotv;
+  n = np->width;
+  m = np->height;
+  p = np->uorder-1;
+  q = np->vorder-1;
+
+  /* skip the outermost trim, if it lies on the boundary */
+  ii = AY_FALSE;
+  ay_npt_isboundcurve(o->down, U[p], U[n], V[q], V[m], &ii);
+  if(ii == AY_TRUE)
+    i0 = 1;
+  else
+    i0 = 0;
+
+  qf = ay_stess_GetQF(ay_prefs.glu_sampling_tolerance);
+
+  ay_status = ay_stess_TessTrimCurves(o, qf,
+				      &tcslen, &tcs,
+				      &tcslens, NULL);
+  if(ay_status)
+    goto cleanup;
+
+  ay_status = ay_stess_ReTessTrimCurves(o, qf,
+					tcslen, tcs,
+					tcslens, NULL);
+  if(ay_status)
+    goto cleanup;
+
+  /* estimate memory needed to store the indices */
+  /* calculate total number of points/indices */
+  a = 0;
+  for(ii = i0; ii < tcslen; ii++)
+    {
+      a += tcslens[ii];
+    }
+  idxsize = sprintf(buf, " %d", a*2);
+  /* allocate and fill indices */
+  if(!(attr = malloc((a*2*idxsize+10)*sizeof(char))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  tmp = attr;
+  a = 0;
+  for(ii = i0; ii < tcslen; ii++)
+    {
+      for(jj = 0; jj < tcslens[ii]; jj++)
+	{
+	  tmp += sprintf(tmp, " %d", a);
+	  a++;
+	}
+      tmp += sprintf(tmp, " -1");
+    }
+  b = a;
+  for(ii = i0; ii < tcslen; ii++)
+    {
+      for(jj = 0; jj < tcslens[ii]; jj++)
+	{
+	  tmp += sprintf(tmp, " %d", a);
+	  a++;
+	}
+      tmp += sprintf(tmp, " -1");
+    }
+  /* allocate and fill coordinates */
+  if(!(Ct = malloc(a*3*2*sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  j = 0; k = b*3;
+  for(ii = i0; ii < tcslen; ii++)
+    {
+      for(jj = 0; jj < tcslens[ii]; jj++)
+	{
+	  if(np->is_rat)
+	    ay_nb_CompFirstDerSurf4D(n-1, m-1, p, q, U, V, P,
+				     tcs[ii][jj*2], tcs[ii][jj*2+1],
+				     fder);
+	  else
+	    ay_nb_CompFirstDerSurf3D(n-1, m-1, p, q, U, V, P,
+				     tcs[ii][jj*2], tcs[ii][jj*2+1],
+				     fder);
+
+	  fd1 = &(fder[3]);
+	  fd2 = &(fder[6]);
+	  AY_V3CROSS(N, fd2, fd1);
+	  l = AY_V3LEN(N);
+	  if(fabs(l) > AY_EPSILON)
+	    AY_V3SCAL(N, 1.0/l);
+	  /* offset point along normal */
+	  AY_V3SCAL(N, offset);
+	  Ct[j]   = fder[0]+N[0];
+	  Ct[j+1] = fder[1]+N[1];
+	  Ct[j+2] = fder[2]+N[2];
+	  Ct[k]   = fder[0]-N[0];
+	  Ct[k+1] = fder[1]-N[1];
+	  Ct[k+2] = fder[2]-N[2];
+	  j += 3;
+	  k += 3;
+	} /* for */
+    } /* for */
+
+  /* write out all the data */
+  shape_element = scew_element_add(transform_element, "Shape");
+
+  x3dio_writewiremat(shape_element);
+
+  line_element = scew_element_add(shape_element, "IndexedLineSet");
+
+  scew_element_add_attr_pair(line_element, "coordIndex", attr);
+
+  coord_element = scew_element_add(line_element, "Coordinate");
+
+  x3dio_writedoublepoints(coord_element, "point", 3, b*2, 3, Ct);
+
+
+  /* write the caps and bevels */
+  c = np->caps_and_bevels;
+  while(c)
+    {
+      x3dio_writenpwire(transform_element, c);
+      c = c->next;
+    }
+
+cleanup:
+  if(clear_stess)
+    ay_stess_destroy(np);
+
+  if(Ct)
+    free(Ct);
+
+  if(attr)
+    free(attr);
+
   if(tcs)
     {
       for(i = 0; i < tcslen; i++)
@@ -8092,7 +8417,7 @@ cleanup:
     free(tcslens);
 
  return ay_status;
-} /* x3dio_writenpwire */
+} /* x3dio_writetrimmednpwire */
 
 
 /* x3dio_writenpconvertibleobj:
