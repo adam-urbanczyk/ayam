@@ -1511,7 +1511,8 @@ ay_stess_ReTessTrimCurves(ay_object *o, int qf, int numtrims, double **tt,
     } /* for */
 
   /* return result */
-  *tp = tps;
+  if(tp)
+    *tp = tps;
 
  return ay_status;
 } /* ay_stess_ReTessTrimCurves */
