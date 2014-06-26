@@ -1442,6 +1442,10 @@ int ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
 int ay_stess_ReTessTrimCurves(ay_object *o, int qf, int nt, double **tt,
 			      int *tl, double **tp);
 
+/** Tesselate a trimmed NURBS surface.
+ */
+int ay_stess_TessTrimmedNP(ay_object *o, int qf);
+
 /** Tesselate a NURBS surface.
  */
 int ay_stess_TessNP(ay_object *o, int qf);
