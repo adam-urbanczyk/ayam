@@ -8107,7 +8107,14 @@ cleanup:
 
 
 /* x3dio_writetrimmednpwire:
+ * Special version of x3dio_writetrimwire() for trimmed NURBS patches.
  *
+ * As the UV-lines may be interrupted by the trim curves, we use the
+ * STESS tesselation and instead of drawing line strips with OpenGL we
+ * write out IndexedLineSet elements using x3dio_writetrimwire() above.
+ *
+ * We also tesselate and write out the trim curves themselves as a
+ * single IndexedLineSet element.
  */
 int
 x3dio_writetrimmednpwire(scew_element *element, ay_object *o)
@@ -8125,7 +8132,7 @@ x3dio_writetrimmednpwire(scew_element *element, ay_object *o)
  scew_element *shape_element = NULL;
  scew_element *line_element = NULL;
  scew_element *coord_element = NULL;
- int clear_stess = AY_FALSE, out = 0, tcslen = 0;
+ int clear_stess = AY_FALSE, out, tcslen = 0;
  ay_stess *stess = NULL;
  int *tcslens = NULL;
  double **tcs = NULL;
@@ -8153,6 +8160,7 @@ x3dio_writetrimmednpwire(scew_element *element, ay_object *o)
   stess = np->stess;
 
   /* write iso-u lines */
+  out = 0;
   for(i = 0; i < stess->upslen; i++)
     {
       uvpptr = stess->ups[i];
@@ -8206,11 +8214,11 @@ x3dio_writetrimmednpwire(scew_element *element, ay_object *o)
 		glEnd();
 	      */
 	    }
-	}
+	} /* if line has atleast two points */
     } /* for all u lines */
 
-  out = 0;
   /* write iso-v lines */
+  out = 0;
   for(i = 0; i < stess->vpslen; i++)
     {
       uvpptr = stess->vps[i];
@@ -8255,7 +8263,7 @@ x3dio_writetrimmednpwire(scew_element *element, ay_object *o)
 		}
 
 	      uvpptr = uvpptr->next;
-	    }  /* while */
+	    } /* while */
 
 	  if(!out)
 	    {
@@ -8265,11 +8273,10 @@ x3dio_writetrimmednpwire(scew_element *element, ay_object *o)
 		glEnd();
 	      */
 	    }
-	}
+	} /* if line has atleast two points */
     } /* for all v lines */
 
   /* write trim curves */
-
   P = np->controlv;
   U = np->uknotv;
   V = np->vknotv;
