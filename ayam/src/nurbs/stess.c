@@ -36,8 +36,6 @@ int ay_stess_MergeUVectors(ay_stess_uvp *a, ay_stess_uvp *b);
 
 int ay_stess_MergeVVectors(ay_stess_uvp *a, ay_stess_uvp *b);
 
-int ay_stess_IsNotTouching(double *tc, int tclen, int i, double u);
-
 void ay_stess_SortIntersections(ay_stess_uvp *list, int u);
 
 int ay_stess_TessTrimmedNPU(ay_object *o, int qf,
@@ -1478,41 +1476,44 @@ ay_stess_ReTessTrimCurves(ay_object *o, int qf, int numtrims, double **tt,
       trim = trim->next;
     } /* while */
 
-  /* calculate 3D surface points */
-  for(i = 0; i < numtrims; i++)
-    {
-      npnts += tl[i];
-    }
-
-  if(!(tps = calloc(npnts*3, sizeof(double))))
-    { return AY_EOMEM; }
-  a = 0;
-  for(i = 0; i < numtrims; i++)
-    {
-      for(j = 0; j < tl[i]; j++)
-	{
-	  if(np->is_rat)
-	    {
-	      ay_nb_SurfacePoint4D(np->width-1, np->height-1, np->uorder-1,
-				   np->vorder-1, np->uknotv, np->vknotv,
-				   np->controlv, tt[i][j*2], tt[i][j*2+1],
-				   p4);
-	      memcpy(&(tps[a]), p4, 3*sizeof(double));
-	    }
-	  else
-	    {
-	      ay_nb_SurfacePoint3D(np->width-1, np->height-1, np->uorder-1,
-				   np->vorder-1, np->uknotv, np->vknotv,
-				   np->controlv, tt[i][j*2], tt[i][j*2+1],
-				   &(tps[a]));
-	    }
-	  a += 3;
-	} /* for */
-    } /* for */
-
-  /* return result */
   if(tp)
-    *tp = tps;
+    {
+      /* calculate 3D surface points */
+      for(i = 0; i < numtrims; i++)
+	{
+	  npnts += tl[i];
+	}
+
+      if(!(tps = calloc(npnts*3, sizeof(double))))
+	{ return AY_EOMEM; }
+
+      a = 0;
+      for(i = 0; i < numtrims; i++)
+	{
+	  for(j = 0; j < tl[i]; j++)
+	    {
+	      if(np->is_rat)
+		{
+		  ay_nb_SurfacePoint4D(np->width-1, np->height-1, np->uorder-1,
+				       np->vorder-1, np->uknotv, np->vknotv,
+				       np->controlv, tt[i][j*2], tt[i][j*2+1],
+				       p4);
+		  memcpy(&(tps[a]), p4, 3*sizeof(double));
+		}
+	      else
+		{
+		  ay_nb_SurfacePoint3D(np->width-1, np->height-1, np->uorder-1,
+				       np->vorder-1, np->uknotv, np->vknotv,
+				       np->controlv, tt[i][j*2], tt[i][j*2+1],
+				       &(tps[a]));
+		}
+	      a += 3;
+	    } /* for */
+	} /* for */
+
+      /* return result */
+      *tp = tps;
+    } /* if tp */
 
  return ay_status;
 } /* ay_stess_ReTessTrimCurves */
@@ -1817,6 +1818,9 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
   *resvd = vd;
 
   /* fill desired uv-coords */
+  /* XXXX Todo: check surface for double control points (important
+     surface features where we should place a tesselated point/line)
+   */
   u = umin;
   for(i = 0; i < Cn; i++)
     {
@@ -1826,6 +1830,7 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 	{
 	  if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
 	    {
+	      /* XXXX memory leak! */
 	      return AY_EOMEM;
 	    }
 	  /* type == 0 */
@@ -1893,6 +1898,7 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 			{
 			  if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
 			    {
+			      /* XXXX memory leak! */
 			      return AY_EOMEM;
 			    }
 			  newuvp->type = 1;
@@ -2091,6 +2097,9 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
   vd = (vmax-vmin)/((Cm)-1);
 
   /* fill desired uv-coords */
+  /* XXXX Todo: check surface for double control points (important
+     surface features where we should place a tesselated point/line)
+   */
   u = umin;
   v = vmin;
   for(i = 0; i < Cm; i++)
@@ -2101,6 +2110,7 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 	{
 	  if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
 	    {
+	      /* XXXX memory leak! */
 	      return AY_EOMEM;
 	    }
 	  /* type == 0 */
@@ -2164,6 +2174,7 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 			{
 			  if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
 			    {
+			      /* XXXX memory leak! */
 			      return AY_EOMEM;
 			    }
 			  newuvp->type = 1;
@@ -2349,7 +2360,9 @@ ay_stess_DrawTrimmedSurface(ay_object *o)
 	      glBegin(GL_LINE_STRIP);
 	    }
 	  else
-	    out = 1;
+	    {
+	      out = 1;
+	    }
 
 	  while(uvpptr)
 	    {
@@ -2366,23 +2379,25 @@ ay_stess_DrawTrimmedSurface(ay_object *o)
 		      glVertex3dv((GLdouble*)(uvpptr->C));
 		      glEnd();
 		      out = 1;
-		    } /* if */
+		    } /* if out */
 		}
 	      else
 		{
 		  glVertex3dv((GLdouble*)(uvpptr->C));
-		} /* if */
+		} /* if trim point */
 
 	      uvpptr = uvpptr->next;
 	    } /* while */
 
 	  if(!out)
-	    glEnd();
+	    {
+	      glEnd();
+	    }
 	}
     } /* for all u lines */
 
-  out = 0;
   /* draw iso-v lines */
+  out = 0;
   for(i = 0; i < stess->vpslen; i++)
     {
       uvpptr = stess->vps[i];
@@ -2395,7 +2410,9 @@ ay_stess_DrawTrimmedSurface(ay_object *o)
 	      glBegin(GL_LINE_STRIP);
 	    }
 	  else
-	    out = 1;
+	    {
+	      out = 1;
+	    }
 
 	  while(uvpptr)
 	    {
@@ -2412,19 +2429,20 @@ ay_stess_DrawTrimmedSurface(ay_object *o)
 		      glVertex3dv((GLdouble*)(uvpptr->C));
 		      glEnd();
 		      out = 1;
-		    } /* if */
+		    } /* if out */
 		}
 	      else
 		{
-		  if(!out)
-		    glVertex3dv((GLdouble*)(uvpptr->C));
-		} /* if */
+		  glVertex3dv((GLdouble*)(uvpptr->C));
+		} /* if trim point */
 
 	      uvpptr = uvpptr->next;
 	    }  /* while */
 
 	  if(!out)
-	    glEnd();
+	    {
+	      glEnd();
+	    }
 	}
     } /* for all v lines */
 
