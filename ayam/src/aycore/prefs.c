@@ -92,6 +92,10 @@ ay_prefs_gettcmd(ClientData clientData, Tcl_Interp *interp,
   to = Tcl_NewIntObj(ay_prefs.nc_display_mode_a);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton, "AvoidPwlCurve", -1);
+  to = Tcl_NewIntObj(ay_prefs.glu_avoid_pwlcurve);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton, "UseMatColor", -1);
   to = Tcl_NewIntObj(ay_prefs.use_materialcolor);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -481,6 +485,10 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_SetStringObj(ton, "NCDisplayModeA", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &ay_prefs.nc_display_mode_a);
+
+  Tcl_SetStringObj(ton, "AvoidPwlCurve", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &ay_prefs.glu_avoid_pwlcurve);
 
   Tcl_SetStringObj(ton, "UseMatColor", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);

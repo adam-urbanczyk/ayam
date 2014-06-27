@@ -1017,7 +1017,7 @@ ay_npt_drawtrimcurve(ay_object *o, GLUnurbsObj *no)
       b++;
     } /* for */
 
-  if(curve->order != 2)
+  if(ay_prefs.glu_avoid_pwlcurve || curve->order != 2)
     {
       gluNurbsCurve(no, (GLint)knot_count, knots,
 		    (GLint)(curve->is_rat?3:2), controls,
