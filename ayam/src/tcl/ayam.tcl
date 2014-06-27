@@ -43,6 +43,8 @@ array set ayprefs {
  NPDisplayModeA 0
  NCDisplayModeA 0
 
+ AvoidPwlCurve 1
+
  Background_R 127
  Background_G 127
  Background_B 127

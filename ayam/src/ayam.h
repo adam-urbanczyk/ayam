@@ -1439,7 +1439,7 @@ typedef struct ay_preferences_s
   int wrib_em; /**< is RIB export writing a environment map? */
   int wrib_archives; /**< is RIB export writing an archive? */
 
-
+  /* NURBS display parameters */
   double glu_sampling_tolerance; /**< drawing/shading quality */
   int np_display_mode; /**< display mode for NURBS surfaces */
   int nc_display_mode; /**< display mode for NURBS curves */
@@ -1447,7 +1447,7 @@ typedef struct ay_preferences_s
   int np_display_mode_a; /**< display mode for NURBS surfaces (in action) */
   int nc_display_mode_a; /**< display mode for NURBS curves (in action) */
   int glu_cache_float; /**< unused */
-
+  int glu_avoid_pwlcurve; /**< use gluNurbsCurve() for polygonal trims? */
   int stess_qf; /**< quality factor derived from GLU sampling tolerance */
 
   /** default sampling mode/quality for NURBS -> PolyMesh conversion */
