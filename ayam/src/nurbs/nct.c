@@ -3438,24 +3438,24 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
   /* fill controlv */
   if(create_trim)
     {
-      curve->controlv[0] = patch->uknotv[0];
-      curve->controlv[1] = patch->vknotv[0];
+      curve->controlv[0] = patch->uknotv[patch->uorder-1];
+      curve->controlv[1] = patch->vknotv[patch->vorder-1];
       curve->controlv[2] = 0.0;
       curve->controlv[3] = 1.0;
-      curve->controlv[4] = patch->uknotv[patch->width+patch->uorder-1];
-      curve->controlv[5] = patch->vknotv[0];
+      curve->controlv[4] = patch->uknotv[patch->width];
+      curve->controlv[5] = patch->vknotv[patch->vorder-1];
       curve->controlv[6] = 0.0;
       curve->controlv[7] = 1.0;
-      curve->controlv[8] = patch->uknotv[patch->width+patch->uorder-1];
-      curve->controlv[9] = patch->vknotv[patch->height+patch->vorder-1];
+      curve->controlv[8] = patch->uknotv[patch->width];
+      curve->controlv[9] = patch->vknotv[patch->height];
       curve->controlv[10] = 0.0;
       curve->controlv[11] = 1.0;
-      curve->controlv[12] = patch->uknotv[0];
-      curve->controlv[13] = patch->vknotv[patch->height+patch->vorder-1];
+      curve->controlv[12] = patch->uknotv[patch->uorder-1];
+      curve->controlv[13] = patch->vknotv[patch->height];
       curve->controlv[14] = 0.0;
       curve->controlv[15] = 1.0;
-      curve->controlv[16] = patch->uknotv[0];
-      curve->controlv[17] = patch->vknotv[0];
+      curve->controlv[16] = patch->uknotv[patch->uorder-1];
+      curve->controlv[17] = patch->vknotv[patch->vorder-1];
       curve->controlv[18] = 0.0;
       curve->controlv[19] = 1.0;
     }
