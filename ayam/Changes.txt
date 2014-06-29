@@ -1,4 +1,4 @@
-[22. Jun 2014] CVS-Head:
+[29. Jun 2014] CVS-Head:
 ========================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
@@ -104,10 +104,12 @@ o added support for ACurve objects and NCurve providing objects to Gordon
 o added ScaleMode option to Trim object controlling how to scale the
   trim to the parametric space of the NURBS surface
 o improved transformation attribute support of Script objects
-o improved conversion of Script objects that create Instances or objects
-  with materials
+o improved notification and conversion of Script objects that create
+  Instances or objects with materials
 o improved STESS tesselation of trimmed NURBS in terms of robustness,
   tesselation speed, drawing speed, and memory requirements
+o improved display of trimmed NURBS using GLU by introduction of the
+  hidden preference setting "AvoidPwlCurve" (enabled by default)
 
 GUI:
 o the default value menu buttons of property GUI elements now display a
@@ -170,6 +172,7 @@ o added hidden options to ayamrc that control whether the standard file
   dialog (on Unix) shows hidden files ("FDShowHidden" and "FDShowHiddenBtn")
 o added a patched version of the standard Tk file dialog that now has an
   additional keyboard shortcut (<Alt-Up>) to change to the parent directory  
+o improved drawing of the parametric domain in views of type "Trim"
 
 Scripts/Scripting Interface:
 o added luainterp plugin to support the Lua scripting language
