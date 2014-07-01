@@ -960,7 +960,6 @@ ay_npt_drawtrimcurve(ay_object *o, GLUnurbsObj *no)
       ay_trafo_creatematrix(o, m);
     }
 
-
   order = curve->order;
   length = curve->length;
 
@@ -968,8 +967,7 @@ ay_npt_drawtrimcurve(ay_object *o, GLUnurbsObj *no)
 
   if((knots = malloc(knot_count * sizeof(GLfloat))) == NULL)
     return AY_EOMEM;
-  if((controls = malloc(length*(curve->is_rat?3:2)*
-			sizeof(GLfloat))) == NULL)
+  if((controls = malloc(length*(curve->is_rat?3:2)*sizeof(GLfloat))) == NULL)
     { free(knots); return AY_EOMEM; }
 
   a = 0;
@@ -981,10 +979,10 @@ ay_npt_drawtrimcurve(ay_object *o, GLUnurbsObj *no)
   a = 0; b = 0;
   for(i = 0; i < length; i++)
     {
-      x = (GLdouble)curve->controlv[b]; b++;
-      y = (GLdouble)curve->controlv[b]; b++;
+      x = (GLdouble)curve->controlv[b];
+      y = (GLdouble)curve->controlv[b+1];
+      b += 3;
 
-      b++; /* for z */
       if(apply_trafo)
 	{
 	  if(curve->is_rat)
@@ -1072,13 +1070,13 @@ ay_npt_drawtrimcurves(ay_object *o)
 		{
 		  if(loop->type == AY_IDNCURVE)
 		    {
-		      ay_status = ay_npt_drawtrimcurve(loop, npatch->no);
+		      (void)ay_npt_drawtrimcurve(loop, npatch->no);
 		    }
 		  else
 		    {
 		      /* loop element is a curve providing object */
 		      p = NULL;
-		      ay_status = ay_provide_object(loop, AY_IDNCURVE, &p);
+		      (void)ay_provide_object(loop, AY_IDNCURVE, &p);
 		      nc = p;
 		      while(nc)
 			{
@@ -1095,7 +1093,7 @@ ay_npt_drawtrimcurves(ay_object *o)
 	default:
 	  /* trim is a curve providing object */
 	  p = NULL;
-	  ay_status = ay_provide_object(trim, AY_IDNCURVE, &p);
+	  (void)ay_provide_object(trim, AY_IDNCURVE, &p);
 	  nc = p;
 	  while(nc)
 	    {
