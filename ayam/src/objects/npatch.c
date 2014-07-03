@@ -744,7 +744,7 @@ ay_npatch_drawstess(ay_view_object *view, ay_object *o)
     {
       if(npatch->stess)
 	{
-	  ay_status = ay_stess_DrawTrimmedSurface(o);
+	  ay_stess_DrawTrimmedSurface(npatch->stess);
 	}
     } /* if */
 
@@ -1208,7 +1208,7 @@ ay_npatch_shadestess(ay_view_object *view, ay_object *o)
     {
       if(npatch->stess)
 	{
-	  ay_status = ay_stess_ShadeTrimmedSurface(o);
+	  (void)ay_stess_ShadeTrimmedSurface(npatch->stess);
 	}
     }
 

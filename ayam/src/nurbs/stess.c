@@ -2333,20 +2333,14 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 /* ay_stess_DrawTrimmedSurface:
  *
  */
-int
-ay_stess_DrawTrimmedSurface(ay_object *o)
+void
+ay_stess_DrawTrimmedSurface(ay_stess *stess)
 {
  int i, j, a, out = 0;
- ay_stess *stess = NULL;
  ay_stess_uvp *uvpptr;
- ay_nurbpatch_object *p = NULL;
-
-  p = (ay_nurbpatch_object *)o->refine;
-
-  stess = p->stess;
 
   if(!stess)
-    return AY_ENULL;
+    return;
 
   /* draw iso-u lines */
   for(i = 0; i < stess->upslen; i++)
@@ -2459,27 +2453,21 @@ ay_stess_DrawTrimmedSurface(ay_object *o)
       glEnd();
     } /* for */
 
- return AY_OK;
+ return;
 } /* ay_stess_DrawTrimmedSurface */
 
 
 /* ay_stess_ShadeTrimmedSurface:
  *
  */
-int
-ay_stess_ShadeTrimmedSurface(ay_object *o)
+void
+ay_stess_ShadeTrimmedSurface(ay_stess *stess)
 {
  int i, forwardu1;
- ay_stess *stess = NULL;
  ay_stess_uvp *u1, *u2/*, *v1, *v2*/;
- ay_nurbpatch_object *p = NULL;
-
-  p = (ay_nurbpatch_object *)o->refine;
-
-  stess = p->stess;
 
   if(!stess)
-    return AY_ENULL;
+    return;
 
   for(i = 0; i < (stess->upslen-1); i++)
     {
@@ -2624,7 +2612,7 @@ ay_stess_ShadeTrimmedSurface(ay_object *o)
 
     } /* for */
 
- return AY_OK;
+ return;
 } /* ay_stess_ShadeTrimmedSurface */
 
 /* ay_stess_ShadeTrimmedSurface:
