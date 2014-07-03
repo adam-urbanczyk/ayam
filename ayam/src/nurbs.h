@@ -1398,7 +1398,7 @@ void ay_pmt_init();
 
 /** Remove tesselation from NURBS patch.
  */
-int ay_stess_destroy(ay_nurbpatch_object *np);
+void ay_stess_destroy(ay_nurbpatch_object *np);
 
 /** Calculate stess usable quality factor from GLU sampling tolerance.
  */

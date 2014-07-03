@@ -55,7 +55,7 @@ int ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 /* ay_stess_destroy:
  *  properly destroy an stess object
  */
-int
+void
 ay_stess_destroy(ay_nurbpatch_object *np)
 {
  ay_stess_uvp *p = NULL;
@@ -63,10 +63,10 @@ ay_stess_destroy(ay_nurbpatch_object *np)
  int i;
 
   if(!np)
-    return AY_ENULL;
+    return;
 
   if(!np->stess)
-    return AY_OK;
+    return;
 
   stess = np->stess;
 
@@ -111,7 +111,7 @@ ay_stess_destroy(ay_nurbpatch_object *np)
   free(stess);
   np->stess = NULL;
 
- return AY_OK;
+ return;
 } /* ay_stess_destroy */
 
 
@@ -3045,7 +3045,7 @@ cleanup:
 
   if(p)
     {
-      (void)ay_stess_destroy(p);
+      ay_stess_destroy(p);
     }
 
   if(ay_status)
@@ -3063,7 +3063,7 @@ int
 ay_stess_TessNP(ay_object *o, int qf)
 {
  int ay_status = AY_ERROR;
- /*char fname[] = "stess_TessNP";*/
+ char fname[] = "stess_TessNP";
  ay_nurbpatch_object *npatch;
 
   if(!o)
@@ -3091,7 +3091,10 @@ ay_stess_TessNP(ay_object *o, int qf)
 	}
 
       if(!(npatch->stess = calloc(1, sizeof(ay_stess))))
-	return AY_EOMEM;
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
 
       if(npatch->is_rat)
 	{
@@ -3117,6 +3120,13 @@ ay_stess_TessNP(ay_object *o, int qf)
 
   if(npatch->stess)
     npatch->tessqf = qf;
+
+cleanup:
+
+  if(ay_status)
+    {
+      ay_error(ay_status, fname, NULL);
+    }
 
  return ay_status;
 } /* ay_stess_TessNP */
