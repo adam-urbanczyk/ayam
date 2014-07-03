@@ -1426,11 +1426,11 @@ int ay_stess_SurfacePoints4D(int n, int m, int p, int q, double *U, double *V,
 
 /** Draw tesselation of a trimmed NURBS surface.
  */
-int ay_stess_DrawTrimmedSurface(ay_object *o);
+void ay_stess_DrawTrimmedSurface(ay_stess *stess);
 
 /** Shade tesselation of a trimmed NURBS surface.
  */
-int ay_stess_ShadeTrimmedSurface(ay_object *o);
+void ay_stess_ShadeTrimmedSurface(ay_stess *stess);
 
 /** Tesselate all trim curves of a NURBS surface.
  */
