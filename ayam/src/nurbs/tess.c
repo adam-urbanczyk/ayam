@@ -977,6 +977,7 @@ ay_tess_tristopomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 
       if(!(tag->name = calloc(3, sizeof(char))))
 	{
+	  free(tag);
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
 	}
@@ -1003,6 +1004,7 @@ ay_tess_tristopomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 
       if(!(tag->name = calloc(3, sizeof(char))))
 	{
+	  free(tag);
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
 	}
@@ -1513,7 +1515,7 @@ cleanup:
     } /* while */
   to.tris = NULL;
 
- return AY_OK;
+ return ay_status;
 #endif
 } /* ay_tess_npatch */
 
