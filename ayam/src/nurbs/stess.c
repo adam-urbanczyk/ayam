@@ -2490,6 +2490,18 @@ ay_stess_ShadeTrimmedSurface(ay_stess *stess)
 	      u2 = u2->next;
 	    }
 	}
+      else
+	{
+	  /* forward to first trim */
+	  while(u1 && u1->type == 0)
+	    {
+	      u1 = u1->next;
+	    }
+	  while(u2 && u2->type == 0)
+	    {
+	      u2 = u2->next;
+	    }
+	}
 
       if(!u1 || !u2 || !u1->next || !u2->next)
 	{
@@ -2589,7 +2601,7 @@ ay_stess_ShadeTrimmedSurface(ay_stess *stess)
 
 	      if(!u1 || !u2)
 		{
-		  glBegin(GL_TRIANGLE_STRIP);
+		  glEnd();
 		  break;
 		}
 
