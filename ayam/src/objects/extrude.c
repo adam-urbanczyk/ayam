@@ -527,9 +527,8 @@ ay_extrude_notifycb(ay_object *o)
  ay_extrude_object *ext = NULL;
  ay_object *down = NULL, *c = NULL, *cap = NULL, *trim = NULL;
  ay_object *bevel = NULL, *startb = NULL, *endb = NULL, *tloop = NULL;
- ay_object *extrusion = NULL, *ne = NULL, *ot = NULL;
- ay_object *upper_cap = NULL, *lower_cap = NULL;
- ay_object **nextcb;
+ ay_object *extrusion = NULL, *upper_cap = NULL, *lower_cap = NULL;
+ ay_object **nexttrimu, **nexttriml, **nextcb;
  ay_nurbcurve_object *curve = NULL;
  ay_nurbpatch_object *patch = NULL;
  int display_mode = 0, is_provided = AY_FALSE;
@@ -557,12 +556,9 @@ ay_extrude_notifycb(ay_object *o)
   display_mode = ext->display_mode;
 
   /* clear old extrusions, caps and bevels */
-  extrusion = ext->npatch;
-  while(extrusion)
+  if(ext->npatch)
     {
-      ne = extrusion->next;
-      ay_object_delete(extrusion);
-      extrusion = ne;
+      ay_object_deletemulti(ext->npatch, AY_FALSE);
     }
   ext->npatch = NULL;
 
@@ -720,11 +716,12 @@ ay_extrude_notifycb(ay_object *o)
 
 		  trim->movx += 0.5;
 		  trim->movy += 0.5;
-
+		  upper_cap->down = trim;
+		  nexttrimu = &(trim->next);
 		}
 	      else
-		{ /* not first curve  */
-
+		{
+		  /* not first curve  */
 		  if(has_endb)
 		    {
 		      patch = (ay_nurbpatch_object*)endb->refine;
@@ -770,12 +767,10 @@ ay_extrude_notifycb(ay_object *o)
 		  trim->movx += 0.5+(trimmx/fabs(umaxx-uminx));
 		  trim->movy += 0.5+(trimmy/fabs(umaxy-uminy));
 
+		  trim->next = *nexttrimu;
+		  *nexttrimu = trim;
+		  nexttrimu = &(trim->next);
 		} /* if */
-
-	      ot = upper_cap->down;
-	      upper_cap->down = trim;
-	      trim->next = ot;
-
 	    } /* if */
 
 	  if(has_startb)
@@ -884,6 +879,9 @@ ay_extrude_notifycb(ay_object *o)
 
 		  trim->movx += 0.5;
 		  trim->movy += 0.5;
+
+		  lower_cap->down = trim;
+		  nexttriml = &(trim->next);
 		}
 	      else
 		{ /* not first curve  */
@@ -931,12 +929,10 @@ ay_extrude_notifycb(ay_object *o)
 		  trim->movx += 0.5+(trimmx/fabs(lmaxx-lminx));
 		  trim->movy += 0.5+(trimmy/fabs(lmaxy-lminy));
 
+		  trim->next = *nexttriml;
+		  *nexttriml = trim;
+		  nexttriml = &(trim->next);
 		} /* if */
-
-	      ot = lower_cap->down;
-	      lower_cap->down = trim;
-	      trim->next = ot;
-
 	    } /* if */
 
 	  if(is_provided)
