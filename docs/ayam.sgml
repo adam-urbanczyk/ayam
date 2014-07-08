@@ -878,6 +878,10 @@ for more information.
 <item><tt/"Load Plugin"/, loads a file containing a custom object or a plugin.
 Depending on the platform Ayam is running on, these are files with the
 file name extension <tt/".so"/ or <tt/".dll"/.
+
+If loading of a plugin fails, further attempts may also fail, even
+if the cause of the initial failure is eliminated. Just restart Ayam.
+
 See section <ref id="plugov" name="Plugins Overview"> for more
 information regarding Ayam plugins.
 
@@ -7043,6 +7047,9 @@ and you will be on the safe side.
 <p>
 NURBS curve providing objects are also supported as trim
 curves.<footnote>Since 1.5.</footnote>
+When objects provide multiple NURBS curves, those do <em>not</em>
+form a single loop, but are seen as individual loops.
+
 
 <sect2>Conversion Support
 <p>
@@ -11157,10 +11164,9 @@ See also section <ref id="ncurvemp" name="Multiple Points">.
 <p>
 <descrip>
 <tag/Arguments/ None
-<tag/Operation/ The TrimRect tool creates a non-rational,
-two-dimensional piecewise
-linear NURBS curve of rectangular shape in the XY plane, that fits in
-the (u,v) parameter space of a NURBS patch, for use as trim curve.
+<tag/Operation/ The TrimRect tool creates a non-rational, two-dimensional,
+piecewise linear NURBS curve of rectangular shape in the XY plane, that
+fits in the (u,v) parameter space of a NURBS patch, for use as trim curve.
 <tag/Notes/ To fit the curve to the parameter space of a NURBS patch,
 the NURBS patch object should be selected or the current level should be
 inside the NURBS patch.
@@ -11169,6 +11175,8 @@ The created curve will be marked as closed and the generation
 of multiple points will be enabled, so that point edit actions know that
 they may need to move two points.
 See also section <ref id="ncurvemp" name="Multiple Points">.
+
+The <tt>"CreateAtMark"</tt> option is ignored.
 
 See section <ref id="trim" name="Trim Curves"> for a more detailed
 discussion of trim curves and how to use the rectangular curve created
@@ -13403,6 +13411,7 @@ crtTrimRect &ndash; create a rectangular bounding trim curve:
  <item>Description: This command creates a rectangular NURBS curve
 that fits the parameter space of the currently selected NPatch
 object (or the current parent object, if it is a NPatch).
+The <tt>"CreateAtMark"</tt> option is ignored.
 <p>
 See also section <ref id="trrt" name="TrimRect Tool">.
 </itemize>
