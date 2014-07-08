@@ -19,7 +19,6 @@ proc browser_findExecutable {progname varname} {
 }
 # browser_findExecutable
 
-
 proc browser_urlOpen {url} {
     global env tcl_platform
 
@@ -108,6 +107,24 @@ proc browser_urlOpen {url} {
 # browser_urlOpen
 
 
+proc concatUrls {u1 u2} {
+
+    if {[string index ${u1} end] == "/" } {
+	return ${u1}${u2}
+    }
+
+    set ul1 [string tolower ${u1}]
+    if { ([string first ".html" ${ul1} end-5] != -1) ||
+	 ([string first ".htm" ${ul1} end-4] != -1) } {
+	# u1 ends with .html/.htm
+	return [string range ${u1} 0 [string last "/" ${u1}]]${u2}
+    }
+
+ return ${u1}/${u2};
+}
+# concatUrls
+
+
 proc help { {command ""} } {
     global ayprefs
 
@@ -117,14 +134,8 @@ proc help { {command ""} } {
     }
 
     set lcommand [string tolower $command]
-    if { ([string first "file://" $ayprefs(Docs)] != -1) } {
-	set lslash [string last "/" $ayprefs(Docs)]
-	set url [string range $ayprefs(Docs) 0\
-		 $lslash]ayam-6.html\#sc${lcommand}
-	browser_urlOpen $url
-    } else {
-	browser_urlOpen $ayprefs(Docs)ayam-6.html\#sc${lcommand}
-    }
+
+    browser_urlOpen [concatUrls ${ayprefs(Docs)} ayam-6.html\#sc${lcommand}]
 
  return;
 }
