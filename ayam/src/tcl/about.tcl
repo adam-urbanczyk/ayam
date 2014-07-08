@@ -197,7 +197,7 @@ bind $w.ftext.text <ButtonRelease-1> {
 
 update idletasks
 
-# Esc-key && close via window decoration == Dismiss button
+# Esc-key && close via window decoration == Close button
 bind $w <Escape> "$w.fbutton.bca invoke"
 wm protocol $w WM_DELETE_WINDOW "$w.fbutton.bca invoke"
 

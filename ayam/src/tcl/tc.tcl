@@ -401,7 +401,7 @@ proc tc_edit { } {
 
     # dismiss button
     set f [frame $w.fb2]
-    button $f.bd -text "Dismiss" -pady $ay(pady) -command {
+    button $f.bd -text "Close" -pady $ay(pady) -command {
 	global tclist tcindex tc
 	# clean up
 	unset tc tclist tcindex
@@ -412,7 +412,7 @@ proc tc_edit { } {
     pack $f -in $w -side bottom -fill x
 
 
-    # Esc-key && close via window decoration == Dismiss button
+    # Esc-key && close via window decoration == Close button
     bind $w <Escape> "$f.bd invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bd invoke"
 
