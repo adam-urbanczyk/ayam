@@ -965,17 +965,26 @@ ay_npt_drawtrimcurve(ay_object *o, GLUnurbsObj *no)
 
   knot_count = length + order;
 
-  if((knots = malloc(knot_count * sizeof(GLfloat))) == NULL)
-    return AY_EOMEM;
-  if((controls = malloc(length*(curve->is_rat?3:2)*sizeof(GLfloat))) == NULL)
-    { free(knots); return AY_EOMEM; }
-
-  a = 0;
-  for(i = 0; i < knot_count; i++)
+  if(ay_prefs.glu_avoid_pwlcurve || curve->order != 2)
     {
-      knots[a] = (GLfloat)curve->knotv[a];
-      a++;
+      if((knots = malloc(knot_count * sizeof(GLfloat))) == NULL)
+	return AY_EOMEM;
+
+      a = 0;
+      for(i = 0; i < knot_count; i++)
+	{
+	  knots[a] = (GLfloat)curve->knotv[a];
+	  a++;
+	}
     }
+
+  if((controls = malloc(length*(curve->is_rat?3:2)*sizeof(GLfloat))) == NULL)
+    {
+      if(knots)
+	free(knots);
+      return AY_EOMEM;
+    }
+
   a = 0; b = 0;
   for(i = 0; i < length; i++)
     {
@@ -1011,7 +1020,7 @@ ay_npt_drawtrimcurve(ay_object *o, GLUnurbsObj *no)
 	    }
 	  else
 	    a += 2;
-	}
+	} // if apply_trafo
       b++;
     } /* for */
 
@@ -1029,7 +1038,8 @@ ay_npt_drawtrimcurve(ay_object *o, GLUnurbsObj *no)
 		  (curve->is_rat?GLU_MAP1_TRIM_3:GLU_MAP1_TRIM_2));
     }
 
-  free(knots);
+  if(knots)
+    free(knots);
   free(controls);
 
  return AY_OK;
@@ -7698,8 +7708,8 @@ ay_npt_isboundcurve(ay_object *o, double b1, double b2, double b3, double b4,
       p += stride;
       cv += stride;
     }
-  cv = tcv;
 
+  cv = tcv;
   for(i = 0; i < ncurve->length-1; i++)
     {
       j = i*stride;
