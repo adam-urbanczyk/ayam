@@ -1141,14 +1141,7 @@ proc shortcut_addescescbinding { w } {
 #  actually calls the web browser
 proc shortcut_callcshelp { base tag } {
     global ayprefs
-    if { [string first "file://" $ayprefs(Docs)] != -1 } {
-	set lslash [string last "/" $ayprefs(Docs)]
-	set url [string range\
-		     $ayprefs(Docs) 0 $lslash]/${base}\#$tag
-	browser_urlOpen $url
-    } else {
-	browser_urlOpen $ayprefs(Docs)${base}\#$tag
-    }
+    browser_urlOpen [concatUrls ${ayprefs(Docs)} ${base}\#sc${tag}]
  return;
 }
 # shortcut_callcshelp
@@ -1164,25 +1157,6 @@ proc shortcut_addcshelp { w base tag } {
  return;
 }
 # shortcut_addcshelp
-
-
-# shortcut_calltlhelp:
-#  call context sensitive help of toplevel window
-#  for the provided window
-proc shortcut_calltlhelp { w } {
-    set w [winfo toplevel $w]
-    set b ""
-    catch {set b [bind $w <F1>]}
-    # use while to protect from 'called break outside of a loop'-error
-    while { 1 } {
-	if { $b != "" } {
-	    eval $b
-	}
-	break
-    }
- return;
-}
-# shortcut_calltlhelp
 
 
 # shortcut_addviewbinding:

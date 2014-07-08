@@ -10,11 +10,31 @@
 # User Interface Elements for Property GUIs, Preferences, Tool Dialogs,
 # and Import/Export Dialogs
 
+# uie_callhelp:
+#  call context sensitive help of toplevel window
+#  for the provided window
+proc uie_callhelp { w } {
+    global aymainshortcuts
+    set w [winfo toplevel $w]
+    set b ""
+    catch {set b [bind $w [repctrl $aymainshortcuts(Help)]]}
+    # use while to protect from 'called break outside of a loop'-error
+    while { 1 } {
+	if { $b != "" } {
+	    eval $b
+	}
+	break
+    }
+ return;
+}
+# uie_callhelp
+
+
 # uie_fixEntry:
 #
 #
 proc uie_fixEntry { w } {
-    global tcl_version tcl_platform
+    global tcl_version tcl_platform aymainshortcuts
 
     if { ( $tcl_platform(platform) == "windows" ) && \
 	 ( $tcl_version > 8.2 ) } {
@@ -22,7 +42,7 @@ proc uie_fixEntry { w } {
 	bind $w <Shift-Tab> {focus [tk_focusPrev %W];plb_focus;break}
     }
 
-    bind $w <F1> "shortcut_calltlhelp %W"
+    bind $w [repctrl $aymainshortcuts(Help)] "uie_callhelp %W"
 
  return;
 }
@@ -452,7 +472,7 @@ proc addColorB { w prop name help {def {}}} {
 #
 #
 proc addColor { w prop name {def {}}} {
-    global $prop ay ayprefs
+    global $prop ay ayprefs aymainshortcuts
 
     if { [winfo toplevel $w] == "." } {
 	set escapecmd "resetFocus;break"
@@ -523,7 +543,7 @@ proc addColor { w prop name {def {}}} {
 
     eval [subst "bindtags $f.b1 \{$f.b1 pge Button all\}"]
     bind $f.b1 <Key-Escape> $escapecmd
-    bind $f.b1 <F1> "shortcut_calltlhelp %W"
+    bind $f.b1 [repctrl $aymainshortcuts(Help)] "uie_callhelp %W"
     bind $f.b1 <Visibility> "updateColorFromE $w $prop $name $f.b1"
 
     set mb ""
@@ -608,7 +628,7 @@ proc addCheckB { w prop name help } {
 #
 #
 proc addCheck { w prop name } {
-    global $prop ay ayprefs
+    global $prop ay ayprefs aymainshortcuts
 
     if { [winfo toplevel $w] == "." } {
 	set escapecmd "resetFocus;break"
@@ -644,7 +664,7 @@ proc addCheck { w prop name } {
 
 	eval [subst "bindtags $ff.cb \{$ff.cb pge Checkbutton all\}"]
 	bind $ff.cb <Key-Escape> $escapecmd
-	bind $ff.cb <F1> "shortcut_calltlhelp %W"
+	bind $ff.cb [repctrl $aymainshortcuts(Help)] "uie_callhelp %W"
     } else {
 	if { $ay(ws) == "Aqua" } {
 	    # also Aqua gets its "Extrawurst"
@@ -657,7 +677,7 @@ proc addCheck { w prop name } {
 
 	    eval [subst "bindtags $ff.cb \{$ff.cb pge Checkbutton all\}"]
 	    bind $ff.cb <Key-Escape> $escapecmd
-	    bind $ff.cb <F1> "shortcut_calltlhelp %W"
+	    bind $ff.cb [repctrl $aymainshortcuts(Help)] "uie_callhelp %W"
 	} else {
 	    # generic (X11) implementation
 	    set cb [checkbutton $f.cb -variable ${prop}(${name}) -bd $bw\
@@ -667,7 +687,7 @@ proc addCheck { w prop name } {
 
 	    eval [subst "bindtags $f.cb \{$f.cb pge Checkbutton all\}"]
 	    bind $f.cb <Key-Escape> $escapecmd
-	    bind $f.cb <F1> "shortcut_calltlhelp %W"
+	    bind $f.cb [repctrl $aymainshortcuts(Help)] "uie_callhelp %W"
 	}
     }
 
@@ -718,7 +738,7 @@ proc addMenuB { w prop name help elist } {
 #
 #
 proc addMenu { w prop name elist } {
-    global $prop ay ayprefs
+    global $prop ay ayprefs aymainshortcuts
 
     if { [winfo toplevel $w] == "." } {
 	set escapecmd "resetFocus;break"
@@ -753,7 +773,7 @@ proc addMenu { w prop name elist } {
     bind $f.mb <Key-Return> "$::ay(bok) invoke;break"
     catch {bind $f.mb <Key-KP_Enter> "$::ay(bok) invoke;break"}
 
-    bind $f.mb <F1> "shortcut_calltlhelp %W"
+    bind $f.mb [repctrl $aymainshortcuts(Help)] "uie_callhelp %W"
 
     if { $ay(ws) == "Win32" } {
 	$f.mb configure -pady 1
@@ -1310,7 +1330,7 @@ proc addCommandB { w name text command help } {
 #
 #
 proc addCommand { w name text command } {
-    global ay ayprefs
+    global ay ayprefs aymainshortcuts
 
     if { [winfo toplevel $w] == "." } {
 	set escapecmd "resetFocus;break"
@@ -1325,7 +1345,7 @@ proc addCommand { w name text command } {
     button $f.b -text $text -bd $bw -command $command -pady 0
     eval [subst "bindtags $f.b \{$f.b pge Button all\}"]
     bind $f.b <Key-Escape> $escapecmd
-    bind $f.b <F1> "shortcut_calltlhelp %W"
+    bind $f.b [repctrl $aymainshortcuts(Help)] "uie_callhelp %W"
 
     if { ! $ay(iapplydisable) } {
 	global aymainshortcuts

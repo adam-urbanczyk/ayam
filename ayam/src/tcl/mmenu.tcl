@@ -45,7 +45,7 @@ set ay(filemenu) $m
 $m add command -label "New"\
 	-command {
     global ay ayprefs tcl_platform
-    if { ! [io_warnChanged] } {	
+    if { ! [io_warnChanged] } {
 	cS; plb_update; goTop
 	set ay(CurrentLevel) "root"
 	set ay(SelectedLevel) "root"
@@ -60,7 +60,7 @@ $m add command -label "New"\
 	    update
 	}
 	set ay(filename) ""
-	wm title . "Ayam - Main - : --"	
+	wm title . "Ayam - Main - : --"
 	update
 	uS
 	update
@@ -985,14 +985,8 @@ $m add command -label "Help on object" -command {
 	    }
 	    getType type
 	    set type [string tolower $type]
-	    if { [string first "file://" $ayprefs(Docs)] != -1 } {
-		set lslash [string last "/" $ayprefs(Docs)]
-		set url [string range \
-			 $ayprefs(Docs) 0 $lslash]/ayam-4.html\#${type}obj
-		browser_urlOpen $url
-	    } else {
-		browser_urlOpen $ayprefs(Docs)ayam-4.html\#${type}obj
-	    }
+	    browser_urlOpen \
+		[concatUrls ${ayprefs(Docs)} ayam-4.html\#${type}obj]
 	}
     }
 } -underline 8
@@ -1018,16 +1012,9 @@ $m add command -label "Help on property" -command {
 	    }
 
 	    set type [$lb get $index]
-
 	    set type [string tolower $type]
-	    if { [string first "file://" $ayprefs(Docs)] != -1 } {
-		set lslash [string last "/" $ayprefs(Docs)]
-		set url [string range \
-			 $ayprefs(Docs) 0 $lslash]/ayam-4.html\#${type}prop
-		browser_urlOpen $url
-	    } else {
-		browser_urlOpen $ayprefs(Docs)ayam-4.html\#${type}prop
-	    }
+	    browser_urlOpen \
+		[concatUrls ${ayprefs(Docs)} ayam-4.html\#${type}prop]
 	}
     }
 } -underline 8
