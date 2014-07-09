@@ -747,13 +747,15 @@ ay_nct_revertarr(double *cv, int cvlen, int stride)
  *  The knot type may change in the process.
  *
  * \param[in,out] curve NURBS curve object to refine
+ * \param[in] maintain_ends maintain periodic ends
  * \param[in] newknotv vector of new knot values (may be NULL)
  * \param[in] newknotvlen length of newknotv vector
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_nct_refinekn(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
+ay_nct_refinekn(ay_nurbcurve_object *curve, int maintain_ends,
+		double *newknotv, int newknotvlen)
 {
  double *X = NULL, *Ubar = NULL, *Qw = NULL, *knotv;
  int count = 0, i, j, start, end;
@@ -777,7 +779,7 @@ ay_nct_refinekn(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
       start = curve->order-1;
       end = curve->length;
 
-      if(curve->type == AY_CTPERIODIC)
+      if(maintain_ends && (curve->type == AY_CTPERIODIC))
 	{
 	  /* periodic curves get special treatment:
 	     do not insert knots that would change
@@ -819,8 +821,7 @@ ay_nct_refinekn(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
     {
       if(!newknotv)
 	free(X);
-      ay_error(AY_EOMEM, fname, NULL);
-      return AY_ERROR;
+      return AY_EOMEM;
     }
   if(!(Qw = malloc((curve->length + count)*4*sizeof(double))))
     {
@@ -1237,7 +1238,7 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbcurve_object *curve = NULL;
  ay_icurve_object *ic;
  ay_acurve_object *ac;
- int refine_cv = AY_TRUE, aknotc = 0, i, Qwlen;
+ int refine_cv = AY_TRUE, maintain_ends = AY_FALSE, aknotc = 0, i, Qwlen;
  double *X = NULL, *Qw;
  char **aknotv = NULL;
 
@@ -1250,11 +1251,18 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc > 1)
     {
-      Tcl_SplitList(interp, argv[1], &aknotc, &aknotv);
+      i = 1;
+      if(argv[1][0] == '-' && argv[1][0] == 'm')
+	{
+	  maintain_ends = AY_TRUE;
+	  i++;
+	}
+
+      Tcl_SplitList(interp, argv[i], &aknotc, &aknotv);
 
       if(!(X = malloc(aknotc*sizeof(double))))
 	{
-	  ay_error(AY_EOMEM,argv[0],NULL);
+	  ay_error(AY_EOMEM, argv[0], NULL);
 	  if(aknotv)
 	    Tcl_Free((char *) aknotv);
 	  return TCL_OK;
@@ -1281,7 +1289,7 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(refine_cv)
 	    ay_status = ay_nct_refinecv(curve, o->selp);
 	  else
-	    ay_status = ay_nct_refinekn(curve, X, aknotc);
+	    ay_status = ay_nct_refinekn(curve, maintain_ends, X, aknotc);
 	  if(ay_status)
 	    {
 	      goto cleanup;
