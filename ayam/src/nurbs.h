@@ -578,8 +578,8 @@ int ay_nct_revert(ay_nurbcurve_object *curve);
 
 /** Refine NURBS curve knots.
  */
-int ay_nct_refinekn(ay_nurbcurve_object *curve, double *newknotv,
-		    int newknotvlen);
+int ay_nct_refinekn(ay_nurbcurve_object *curve, int maintain_ends,
+		    double *newknotv, int newknotvlen);
 
 /** Refine NURBS curve control points.
  */
