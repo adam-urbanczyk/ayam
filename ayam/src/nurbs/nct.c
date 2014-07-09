@@ -757,7 +757,6 @@ ay_nct_refinekn(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
 {
  double *X = NULL, *Ubar = NULL, *Qw = NULL, *knotv;
  int count = 0, i, j, start, end;
- char fname[] = "nct_refinekn";
 
   if(!curve)
     return AY_ENULL;
@@ -783,8 +782,11 @@ ay_nct_refinekn(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
 	  /* periodic curves get special treatment:
 	     do not insert knots that would change
 	     the multiple control points at the ends */
-	  start++;
-	  end--;
+	  start += ceil(curve->order/2.0);
+	  end -= ceil(curve->order/2.0);
+
+	  if(start >= end || end <= start)
+	    return AY_ERROR;
 	}
 
       for(i = start; i < end; i++)
@@ -798,8 +800,7 @@ ay_nct_refinekn(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
 
       if(!(X = malloc(count*sizeof(double))))
 	{
-	  ay_error(AY_EOMEM, fname, NULL);
-	  return AY_ERROR;
+	  return AY_EOMEM;
 	}
       /* fill X (contains just the new u values) */
       j = 0;
@@ -826,8 +827,7 @@ ay_nct_refinekn(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
       if(!newknotv)
 	free(X);
       free(Ubar);
-      ay_error(AY_EOMEM, fname, NULL);
-      return AY_ERROR;
+      return AY_EOMEM;
     }
 
   /* fill Ubar & Qw */
@@ -1213,7 +1213,6 @@ ay_nct_refinecv(ay_nurbcurve_object *curve, ay_point *selp)
 	{
 	  endpnt->index += count;
 	}
-
     } /* if count */
 
  return AY_OK;
@@ -4118,7 +4117,7 @@ ay_nct_homtoeuc(ay_nurbcurve_object *nc)
 /** ay_nct_concatobjs:
  * Concatenate multiple objects that are NURBS curves or provide
  * NURBS curves.
- * 
+ *
  * \param[in] o list of objects to concatenate
  * \param[in,out] result where to store the resulting object
  */
