@@ -3446,10 +3446,10 @@ objio_readend(void)
 	  if((!objio_readstrim) && (objio_trims->next->next))
 	    {
 	      ay_status = ay_npt_isboundcurve(o->down,
-					      objio_npatch.uknotv[0],
-				      objio_npatch.uknotv[objio_npatch.width],
-					      objio_npatch.vknotv[0],
-				      objio_npatch.vknotv[objio_npatch.height],
+				   objio_npatch.uknotv[objio_npatch.uorder-1],
+				   objio_npatch.uknotv[objio_npatch.width],
+				   objio_npatch.vknotv[objio_npatch.vorder-1],
+				   objio_npatch.vknotv[objio_npatch.height],
 					      &is_bound);
 	      /* discard simple trim */
 	      if(is_bound)

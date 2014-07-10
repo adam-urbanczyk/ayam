@@ -1583,9 +1583,9 @@ ay_mfio_readecntr(MF3DVoidObjPtr object)
 		{
 		  np = (ay_nurbpatch_object *)ay_mfio_trimmedpatch->refine;
 		  ay_status = ay_npt_isboundcurve(ay_mfio_trimmedpatch->down,
-						  np->uknotv[0],
+						  np->uknotv[np->uorder-1],
 						  np->uknotv[np->width],
-						  np->vknotv[0],
+						  np->vknotv[np->vorder-1],
 						  np->vknotv[np->height],
 						  &is_bound);
 		  /* discard simple trim */
