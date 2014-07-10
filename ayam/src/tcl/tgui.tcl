@@ -34,14 +34,14 @@ uplevel #0 { array set tgui_tessparam {
     SParamU5 1
     SParamV5 1
 
-    MB1Down 0
-
     UseTexCoords 0
     UseVertColors 0
     UseVertNormals 0
 
     LazyUpdate 0
 
+    MB1Down 0
+    ReadTag 0
     OldSMethod -1
     NumTriangles 0
 }
@@ -424,6 +424,8 @@ proc tgui_remtag { } {
 proc tgui_readtag { } {
     global tgui_tessparam
 
+    set tgui_tessparam(ReadTag) 0
+
     set tagnames ""
     set tagvals ""
     getTags tagnames tagvals
@@ -446,10 +448,11 @@ proc tgui_readtag { } {
 	    tgui_recalcslider 1 $sparamv
 
 	    set tgui_tessparam(OldSMethod) $smethod
+	    set tgui_tessparam(SMethod) $smethod
 	    set tgui_tessparam(SParamU) $sparamu
 	    set tgui_tessparam(SParamV) $sparamv
-	    set tgui_tessparam(SMethod) $smethod
-	    set tgui_tessparam(SaveToTag) 1
+
+	    set tgui_tessparam(ReadTag) 1
 	}
         # if
     }
@@ -489,7 +492,9 @@ proc tgui_open { } {
     addText $f t1 "Tesselation Parameters"
     addCommand $f c1 "Reset All!" {
 	global tgui_tessparam tgui_tessparamdefaults
+	set t $tgui_tessparam(ReadTag)
 	array set tgui_tessparam [array get tgui_tessparamdefaults]
+	set tgui_tessparam(ReadTag) $t
 	tgui_update
 	tgui_recalcslider 0 $tgui_tessparam(SParamU)
 	tgui_recalcslider 1 $tgui_tessparam(SParamV)
@@ -597,8 +602,13 @@ proc tgui_open { } {
     # button
 
     button $f.bca -text "Cancel" -width 5 -command {
+	global tgui_tessparam
 	tguiCmd ca; focus .; destroy .tguiw;
-	undo rewind;
+	if { $tgui_tessparam(ReadTag) == 1 } {
+	    undo;
+	} else {
+	    undo rewind;
+	}
 	uCL cl {1 1}; plb_update;
     }
     # button
