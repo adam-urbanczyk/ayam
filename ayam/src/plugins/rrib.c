@@ -5503,12 +5503,12 @@ ay_rrib_linkobject(void *object, int type)
     {
       if(ay_rrib_cattributes->trimcurves)
 	{
-	  ay_rrib_co.down = NULL;
-	  (void)ay_object_copymulti(ay_rrib_cattributes->trimcurves,
-			      &ay_rrib_co.down);
+	  ay_rrib_co.down = ay_rrib_cattributes->trimcurves;
 
-	  /* check for simple trim, if it is the only one */
-	  if((!ay_rrib_readstrim) && (ay_rrib_co.down->next))
+	  /* check for simple trim */
+	  if((!ay_rrib_readstrim) &&
+	     ((ay_rrib_co.down->next == ay_endlevel) ||
+	      (ay_rrib_co.down->next == NULL)))
 	    {
 	      np = (ay_nurbpatch_object *)ay_rrib_co.refine;
 	      ay_status = ay_npt_isboundcurve(ay_rrib_co.down,
@@ -5520,7 +5520,6 @@ ay_rrib_linkobject(void *object, int type)
 	      /* discard simple trim */
 	      if(is_bound)
 		{
-		  ay_object_deletemulti(ay_rrib_co.down, AY_FALSE);
 		  ay_rrib_co.down = NULL;
 		}
 	    } /* if */
@@ -5533,7 +5532,8 @@ ay_rrib_linkobject(void *object, int type)
 		{
 		  t = t->next;
 		}
-	      t->next = ay_endlevel;
+	      if(t != ay_endlevel)
+		t->next = ay_endlevel;
 	    }
 	  else
 	    {
@@ -5628,12 +5628,6 @@ ay_rrib_linkobject(void *object, int type)
     } /* if */
 
   ay_rrib_co.name = NULL;
-
-  if(type == AY_IDNPATCH && ay_rrib_co.down != ay_endlevel)
-    {
-      ay_object_deletemulti(ay_rrib_co.down, AY_FALSE);    
-    } /* if */
-
   ay_rrib_co.down = NULL;
 
  return;
