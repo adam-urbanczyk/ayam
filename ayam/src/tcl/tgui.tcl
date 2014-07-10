@@ -45,6 +45,7 @@ uplevel #0 { array set tgui_tessparam {
     OldSMethod -1
     NumTriangles 0
 }
+array set tgui_tessparamdefaults [array get tgui_tessparam]
 }
 
 # tgui_block:
@@ -253,18 +254,24 @@ proc tgui_update args {
 		set tgui_tessparam(SParamV) $tgui_tessparam(SParamV4)
 		set tgui_tessparam(FT4) 0
 	    }
-	    if { ($tgui_tessparam(SMethod) == 4) &&
-		 ($tgui_tessparam(FT5) == 1 ) } {
-		set tgui_tessparam(SParamU) $tgui_tessparam(SParamU5)
-		set tgui_tessparam(SParamV) $tgui_tessparam(SParamV5)
-		set tgui_tessparam(FT5) 0
-	    }
 	    .tguiw.f1.fSParamU.ll conf -text "0"
 	    .tguiw.f1.fSParamU.lr conf -text "20"
 	    .tguiw.f1.fSParamU.s conf -from 0 -to 20
 	    .tguiw.f1.fSParamV.ll conf -text "0"
 	    .tguiw.f1.fSParamV.lr conf -text "20"
 	    .tguiw.f1.fSParamV.s conf -from 0 -to 20
+
+	    if { ($tgui_tessparam(SMethod) == 4) &&
+		 ($tgui_tessparam(FT5) == 1 ) } {
+		.tguiw.f1.fSParamU.lr conf -text "5"
+		.tguiw.f1.fSParamU.s conf -from 0 -to 5
+		.tguiw.f1.fSParamV.lr conf -text "5"
+		.tguiw.f1.fSParamV.s conf -from 0 -to 5
+		set tgui_tessparam(SParamU) $tgui_tessparam(SParamU5)
+		set tgui_tessparam(SParamV) $tgui_tessparam(SParamV5)
+		set tgui_tessparam(FT5) 0
+	    }
+
 	    .tguiw.f1.fSParamU.s conf -resolution 0.1
 	    .tguiw.f1.fSParamV.s conf -resolution 0.1
 	}
@@ -369,22 +376,23 @@ proc tgui_addtag { } {
     global tgui_tessparam
 
     undo save AddTPTag
+    set tgui_tessparam(tagval) \
+	[format "%d,%g,%g" [expr $tgui_tessparam(SMethod) + 1]\
+	     $tgui_tessparam(SParamU) $tgui_tessparam(SParamV)]
 
     forAll -recursive 0 {
 	global tgui_tessparam
-	set val [format "%d,%g,%g"\
-		     [expr $tgui_tessparam(SMethod) + 1]\
-		     $tgui_tessparam(SParamU) $tgui_tessparam(SParamV)]
+
 	set tagnames ""
 	set tagvals ""
 	getTags tagnames tagvals
 	if { ($tagnames == "" ) || ([lsearch -exact $tagnames "TP"] == -1) } {
 	    # no tags, or TP tag not present already => just add a new tag
-	    addTag "TP" $val
+	    addTag "TP" $tgui_tessparam(tagval)
 	} else {
 	    # we have already a TP tag => change its value
 	    set index [lsearch -exact $tagnames "TP"]
-	    setTags -index $index "TP" $val
+	    setTags -index $index "TP" $tgui_tessparam(tagval)
 	}
 	# if
     }
@@ -423,13 +431,19 @@ proc tgui_readtag { } {
 	set index [lsearch -exact $tagnames "TP"]
 	if { $index != -1 } {
 	    set val [lindex $tagvals $index]
+
+	    set smethod 0
+	    set sparamu 20
+	    set sparamv 20
+
 	    scan $val "%d,%g,%g" smethod sparamu sparamv
 
 	    set tgui_tessparam(FT${smethod}) 0
 
 	    set smethod [expr $smethod - 1]
 
-	    tgui_recalcslider $sparamu $sparamv
+	    tgui_recalcslider 0 $sparamu
+	    tgui_recalcslider 1 $sparamv
 
 	    set tgui_tessparam(OldSMethod) $smethod
 	    set tgui_tessparam(SParamU) $sparamu
@@ -473,6 +487,13 @@ proc tgui_open { } {
     set tgui_tessparam(LazyUpdate) $ayprefs(LazyNotify)
 
     addText $f t1 "Tesselation Parameters"
+    addCommand $f c1 "Reset All!" {
+	global tgui_tessparam tgui_tessparamdefaults
+	array set tgui_tessparam [array get tgui_tessparamdefaults]
+	tgui_update
+	tgui_recalcslider 0 $tgui_tessparam(SParamU)
+	tgui_recalcslider 1 $tgui_tessparam(SParamV)
+    }
     addCheck $f tgui_tessparam LazyUpdate
     addCheck $f tgui_tessparam UseTexCoords
     addCheck $f tgui_tessparam UseVertColors
@@ -480,8 +501,6 @@ proc tgui_open { } {
 
     # SMethod
     addMenu $f tgui_tessparam SMethod $ay(smethods)
-
-    set tgui_tessparam(SMethod) 3
 
     # SParamU
     set f [frame $f.fSParamU -relief sunken -borderwidth 1]
