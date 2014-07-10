@@ -904,10 +904,10 @@ ay_rrib_RiNuPatch(RtInt nu, RtInt uorder, RtFloat uknot[],
   ay_rrib_readpvs(n, tokens, parms, 2, hvars, &(ay_rrib_co.tags));
 
   /* trim by knot vector? */
-  if((umin > np.uknotv[np.uorder]) || (umax < np.uknotv[np.width]))
+  if((umin > np.uknotv[np.uorder-1]) || (umax < np.uknotv[np.width]))
     ay_knots_setuminmax(&ay_rrib_co, umin, umax);
 
-  if((vmin > np.vknotv[np.vorder]) || (vmax < np.vknotv[np.height]))
+  if((vmin > np.vknotv[np.vorder-1]) || (vmax < np.vknotv[np.height]))
     ay_knots_setvminmax(&ay_rrib_co, vmin, vmax);
 
   /* detect knot types */
@@ -974,7 +974,6 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
 	 level->down = ay_endlevel;
 	 ncinloop = &(level->down);
 
-
 	 /* read loops curves */
 	 for(j = 0; j < ncurves[i]; j++)
 	   {
@@ -1011,7 +1010,7 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
 	       } /* for */
 
 	     /* trim by knot vector? */
-	     if((*minptr > nc->knotv[nc->order]) ||
+	     if((*minptr > nc->knotv[nc->order-1]) ||
 		(*maxptr < nc->knotv[nc->length]))
 	       ay_knots_setuminmax(o, *minptr, *maxptr);
 
@@ -1078,7 +1077,7 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
 	   } /* for */
 
 	 /* trim by knot vector? */
-	 if((*minptr > nc->knotv[nc->order]) ||
+	 if((*minptr > nc->knotv[nc->order-1]) ||
 	    (*maxptr < nc->knotv[nc->length]))
 	   ay_knots_setuminmax(o, *minptr, *maxptr);
 
@@ -4956,7 +4955,10 @@ ay_rrib_pushattribs(void)
       if(ay_rrib_cattributes->ubasisptr)
 	{
 	  if(!(newstate->ubasisptr = malloc(1*sizeof(RtBasis))))
-	    return;
+	    {
+	      free(newstate);
+	      return;
+	    }
 	  memcpy(newstate->ubasisptr, ay_rrib_cattributes->ubasisptr,
 		 sizeof(RtBasis));
 	}
@@ -4964,23 +4966,21 @@ ay_rrib_pushattribs(void)
       if(ay_rrib_cattributes->vbasisptr)
 	{
 	  if(!(newstate->vbasisptr = malloc(1*sizeof(RtBasis))))
-	    return;
+	    {
+	      if(newstate->ubasisptr)
+		free(newstate->ubasisptr);
+	      free(newstate);
+	      return;
+	    }
 	  memcpy(newstate->vbasisptr, ay_rrib_cattributes->vbasisptr,
 		 sizeof(RtBasis));
 	}
 
-#if 0
-      /* copy trimcurves */
       if(ay_rrib_cattributes->trimcurves)
 	{
-	  /* XXXX Bug: this simple copy means, only the first trimcurve
-	     survives a BeginAttribute! */
-	  ay_status = ay_object_copy(ay_rrib_cattributes->trimcurves,
-				     &(newstate->trimcurves));
-
-
+	  (void)ay_object_copymulti(ay_rrib_cattributes->trimcurves,
+				    &newstate->trimcurves);
 	}
-#endif
     }
   else
     {
@@ -5510,9 +5510,9 @@ ay_rrib_linkobject(void *object, int type)
 	    {
 	      np = (ay_nurbpatch_object *)ay_rrib_co.refine;
 	      ay_status = ay_npt_isboundcurve(ay_rrib_co.down,
-					      np->uknotv[0],
+					      np->uknotv[np->uorder-1],
 					      np->uknotv[np->width],
-					      np->vknotv[0],
+					      np->vknotv[np->vorder-1],
 					      np->vknotv[np->height],
 					      &is_bound);
 	      /* discard simple trim */
