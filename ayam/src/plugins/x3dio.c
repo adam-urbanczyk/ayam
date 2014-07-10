@@ -4857,9 +4857,9 @@ x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
 	  if((!x3dio_readstrim) && (o->down->next))
 	    {
 	      ay_status = ay_npt_isboundcurve(o->down,
-					      np.uknotv[0],
+					      np.uknotv[np.uorder-1],
 				      np.uknotv[np.width],
-					      np.vknotv[0],
+					      np.vknotv[np.vorder-1],
 				      np.vknotv[np.height],
 					      &is_bound);
 	      /* discard simple trim */
