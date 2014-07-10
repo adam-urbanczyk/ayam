@@ -5503,7 +5503,9 @@ ay_rrib_linkobject(void *object, int type)
     {
       if(ay_rrib_cattributes->trimcurves)
 	{
-	  ay_rrib_co.down = ay_rrib_cattributes->trimcurves;
+	  ay_rrib_co.down = NULL;
+	  (void)ay_object_copymulti(ay_rrib_cattributes->trimcurves,
+			      &ay_rrib_co.down);
 
 	  /* check for simple trim, if it is the only one */
 	  if((!ay_rrib_readstrim) && (ay_rrib_co.down->next))
@@ -5523,6 +5525,7 @@ ay_rrib_linkobject(void *object, int type)
 		}
 	    } /* if */
 
+	  /* terminate trim level */
 	  if(ay_rrib_co.down)
 	    {
 	      t = ay_rrib_co.down;
@@ -5626,10 +5629,12 @@ ay_rrib_linkobject(void *object, int type)
 
   ay_rrib_co.name = NULL;
 
-  if(type == AY_IDNPATCH)
+  if(type == AY_IDNPATCH && ay_rrib_co.down != ay_endlevel)
     {
-      ay_rrib_co.down = NULL;
+      ay_object_deletemulti(ay_rrib_co.down, AY_FALSE);    
     } /* if */
+
+  ay_rrib_co.down = NULL;
 
  return;
 } /* ay_rrib_linkobject */
