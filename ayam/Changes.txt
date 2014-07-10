@@ -1,4 +1,4 @@
-[29. Jun 2014] CVS-Head:
+[10. Jul 2014] CVS-Head:
 ========================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
@@ -110,6 +110,9 @@ o improved STESS tesselation of trimmed NURBS in terms of robustness,
   tesselation speed, drawing speed, and memory requirements
 o improved display of trimmed NURBS using GLU by introduction of the
   hidden preference setting "AvoidPwlCurve" (enabled by default)
+o refining the knots of periodic curves now inserts knots into all knot
+  sections (not maintaining the periodic ends, but this can still be
+  achieved by using the new refineknNC command option "-m")
 
 GUI:
 o the default value menu buttons of property GUI elements now display a
@@ -173,6 +176,8 @@ o added hidden options to ayamrc that control whether the standard file
 o added a patched version of the standard Tk file dialog that now has an
   additional keyboard shortcut (<Alt-Up>) to change to the parent directory  
 o improved drawing of the parametric domain in views of type "Trim"
+o added a "Reset All!" command entry to the tesselation dialog
+o improved initial and default parameters of the tesselation dialog
 
 Scripts/Scripting Interface:
 o added luainterp plugin to support the Lua scripting language
@@ -245,6 +250,7 @@ o Rhino 3DM export of PoMesh objects now supports face normals and colors
 o improved import of closed polylines from DXF
 o improved import of patches and patch meshes with arbitrary basis types
   from RIB files
+o improved trim curve attribute handling for RIB import
 
 Plugins:
 o added plugin "sfcurve" that creates superformula curves
