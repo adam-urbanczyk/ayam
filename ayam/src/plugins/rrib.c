@@ -946,7 +946,7 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
  RtFloat *knotptr = NULL, *uptr = NULL, *vptr = NULL, *wptr = NULL;
  RtFloat *minptr = NULL, *maxptr = NULL;
  ay_nurbcurve_object *nc = NULL;
- ay_object *o = NULL, *level = NULL, **ncinloop = NULL;
+ ay_object **next, *o = NULL, *level = NULL, **ncinloop = NULL;
 
   nptr = n;
   orderptr = order;
@@ -956,6 +956,14 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
   wptr = w;
   minptr = min;
   maxptr = max;
+
+  if(ay_rrib_cattributes->trimcurves)
+    {
+      (void)ay_object_deletemulti(ay_rrib_cattributes->trimcurves,
+				  AY_FALSE);
+      ay_rrib_cattributes->trimcurves = NULL;
+    }
+  next = &(ay_rrib_cattributes->trimcurves);
 
   for(i = 0; i < nloops; i++)
    {
@@ -1040,12 +1048,8 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
 	   } /* for */
 
 	 /* link level */
-	 if(ay_rrib_cattributes->trimcurves)
-	   {
-	     (void)ay_object_deletemulti(ay_rrib_cattributes->trimcurves,
-					 AY_FALSE);
-	   }
-	 ay_rrib_cattributes->trimcurves = level;
+	 *next = level;
+	 next = &(level->next);
        }
      else
        { /* read single trimcurve */
@@ -1101,12 +1105,8 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
 	 o->refine = (void *)nc;
 
 	 /* link trimcurve */
-	 if(ay_rrib_cattributes->trimcurves)
-	   {
-	     (void)ay_object_deletemulti(ay_rrib_cattributes->trimcurves,
-					 AY_FALSE);
-	   }
-	 ay_rrib_cattributes->trimcurves = o;
+	 *next = o;
+	 next = &(o->next);
 
 	 orderptr++;
 	 nptr++;
