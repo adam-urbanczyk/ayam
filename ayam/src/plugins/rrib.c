@@ -1185,25 +1185,25 @@ ay_rrib_RiLightSource(RtToken name,
     {
       for(i = 0; i < n; i++)
 	{
-	  if(!strcmp(tokens[i],"intensity"))
+	  if(!strcmp(tokens[i], "intensity"))
 	    {
 	      l.intensity = (double)(*((float*)(parms[i])));
 	    }
-	  if(!strcmp(tokens[i],"from"))
+	  if(!strcmp(tokens[i], "from"))
 	    {
 	      pnt = (RtPoint*)(parms[i]);
 	      l.tfrom[0] = (double)((*pnt)[0]);
 	      l.tfrom[1] = (double)((*pnt)[1]);
 	      l.tfrom[2] = (double)((*pnt)[2]);
 	    }
-	  if(!strcmp(tokens[i],"to"))
+	  if(!strcmp(tokens[i], "to"))
 	    {
 	      pnt = (RtPoint*)(parms[i]);
 	      l.tto[0] = (double)((*pnt)[0]);
 	      l.tto[1] = (double)((*pnt)[1]);
 	      l.tto[2] = (double)((*pnt)[2]);
 	    }
-	  if(!strcmp(tokens[i],"lightcolor"))
+	  if(!strcmp(tokens[i], "lightcolor"))
 	    {
 	      col = (RtColor*)(parms[i]);
 	      l.colr = (int)((*col)[0])*255.0;
@@ -2385,7 +2385,7 @@ ay_rrib_RiOption(RtToken name,
       return;
     } /* if */
 
-  if(!strcmp(name,"radiosity"))
+  if(!strcmp(name, "radiosity"))
     {
       for(i = 0; i < n; i++)
 	{
@@ -2409,7 +2409,7 @@ ay_rrib_RiOption(RtToken name,
       return;
     } /* if */
 
-  if(!strcmp(name,"render"))
+  if(!strcmp(name, "render"))
     {
       for(i = 0; i < n; i++)
 	{
@@ -2447,7 +2447,7 @@ ay_rrib_RiOption(RtToken name,
       return;
     } /* if */
 
-  if(!strcmp(name,"searchpath"))
+  if(!strcmp(name, "searchpath"))
     {
       for(i = 0; i < n; i++)
 	{
@@ -3353,16 +3353,16 @@ ay_rrib_RiSolidBegin(RtToken operation)
 
   l.type = AY_LTLEVEL;
 
-  if(!strcmp(operation,"primitive"))
+  if(!strcmp(operation, "primitive"))
     l.type = AY_LTPRIM;
 
-  if(!strcmp(operation,"union"))
+  if(!strcmp(operation, "union"))
     l.type = AY_LTUNION;
 
-  if(!strcmp(operation,"difference"))
+  if(!strcmp(operation, "difference"))
     l.type = AY_LTDIFF;
 
-  if(!strcmp(operation,"intersection"))
+  if(!strcmp(operation, "intersection"))
     l.type = AY_LTINT;
 
   ay_rrib_co.parent = AY_TRUE;
@@ -4003,7 +4003,6 @@ ay_rrib_readshader(char *sname, int stype,
 		  sarg->val.color[1] = (float)((*col)[1]);
 		  sarg->val.color[2] = (float)((*col)[2]);
 		  break;
-
 		case kRIB_POINTTYPE:
 		  sarg->type = AY_SAPOINT;
 		  pnt = (RtPoint *)(parms[i]);
@@ -4046,7 +4045,6 @@ ay_rrib_readshader(char *sname, int stype,
 		  link = AY_FALSE;
 		  break;
 		} /* switch */
-
 
 	      /* link argument to shader */
 	      if(link)
@@ -4660,7 +4658,6 @@ ay_rrib_readpvs(int n, RtToken tokens[], RtPointer parms[],
 	   } /* if */
 
 	 Tcl_DStringFree(&ds);
-
        } /* if (!already_handled */
    } /* for */
 
@@ -5715,7 +5712,6 @@ ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
   ay_rrib_lastriobject = NULL;
   ay_rrib_lastmaterialnum = 0;
   ay_rrib_readmateriali = 0;
-  ay_rrib_readstrim = 1;
 
   /* default fov */
   ay_rrib_fov = 45.0;
@@ -5873,7 +5869,7 @@ ay_rrib_readribtcmd(ClientData clientData, Tcl_Interp *interp,
 	  sscanf(argv[i+1], "%d", &read_strim);
 	}
 
-      i+=2;
+      i += 2;
   } /* while */
 
   /* create Materials level, if it does not exist */
