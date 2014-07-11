@@ -3497,7 +3497,7 @@ objio_readend(void)
 	  /* scale trim curves */
 	  if(o->down && o->down->next)
 	    {
-	      ay_status = ay_npt_rescaletrims(o->down, 0, oldmin, oldmax,
+	      ay_status = ay_npt_rescaletrims(o->down, 1, oldmin, oldmax,
 					      np->vknotv[0],
 				 np->vknotv[np->height+np->vorder-1]);
 	    }
