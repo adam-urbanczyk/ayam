@@ -1040,7 +1040,11 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
 	   } /* for */
 
 	 /* link level */
-	 level->next = ay_rrib_cattributes->trimcurves;
+	 if(ay_rrib_cattributes->trimcurves)
+	   {
+	     (void)ay_object_deletemulti(ay_rrib_cattributes->trimcurves,
+					 AY_FALSE);
+	   }
 	 ay_rrib_cattributes->trimcurves = level;
        }
      else
@@ -1090,13 +1094,18 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
 
 	 nc->is_rat = ay_nct_israt(nc);
 
-	 /* link trimcurve */
 	 if(!(o = calloc(1, sizeof(ay_object))))
 	   return;
 	 ay_object_defaults(o);
 	 o->type = AY_IDNCURVE;
 	 o->refine = (void *)nc;
-	 o->next = ay_rrib_cattributes->trimcurves;
+
+	 /* link trimcurve */
+	 if(ay_rrib_cattributes->trimcurves)
+	   {
+	     (void)ay_object_deletemulti(ay_rrib_cattributes->trimcurves,
+					 AY_FALSE);
+	   }
 	 ay_rrib_cattributes->trimcurves = o;
 
 	 orderptr++;
@@ -1156,7 +1165,6 @@ ay_rrib_RiLightSource(RtToken name,
   else
     l.shadows = 0;
 
-
   /* check for default light source types first */
   if(!strcmp(name, "spotlight"))
     {
@@ -1202,7 +1210,6 @@ ay_rrib_RiLightSource(RtToken name,
 	      l.colg = (int)((*col)[1])*255.0;
 	      l.colb = (int)((*col)[2])*255.0;
 	    }
-
 	} /* for */
     }
   else
@@ -1294,7 +1301,6 @@ ay_rrib_RiAreaLightSource(RtToken name,
       ay_status = ay_clevel_add(ay_rrib_lrobject);
       ay_status = ay_clevel_add(ay_rrib_lrobject->down);
       ay_next = &(ay_rrib_lrobject->down);
-
     } /* if */
 
  return(lh);
@@ -1328,7 +1334,7 @@ ay_rrib_RiAttribute(RtToken name,
  char *stemp = NULL;
  char fname[] = "ay_rrib_RiAttribute";
 
-  if(!strcmp(name,"identifier"))
+  if(!strcmp(name, "identifier"))
     {
       for(i = 0; i < n; i++)
 	{
@@ -1356,7 +1362,7 @@ ay_rrib_RiAttribute(RtToken name,
       return;
     } /* if */
 
-  if(!strcmp(name,"light"))
+  if(!strcmp(name, "light"))
     {
       for(i = 0; i < n; i++)
 	{
@@ -1384,7 +1390,7 @@ ay_rrib_RiAttribute(RtToken name,
       return;
     } /* if */
 
-  if(!strcmp(name,"render"))
+  if(!strcmp(name, "render"))
     {
       for(i = 0; i < n; i++)
 	{
@@ -1440,7 +1446,7 @@ ay_rrib_RiAttribute(RtToken name,
       return;
     } /* if */
 
-  if(!strcmp(name,"displacementbound"))
+  if(!strcmp(name, "displacementbound"))
     {
       for(i = 0; i < n; i++)
 	{
@@ -4952,6 +4958,8 @@ ay_rrib_pushattribs(void)
 				     &(newstate->eshader));
 	}
 
+      /* XXXX todo: copy tags? */
+
       if(ay_rrib_cattributes->ubasisptr)
 	{
 	  if(!(newstate->ubasisptr = malloc(1*sizeof(RtBasis))))
@@ -5607,7 +5615,7 @@ ay_rrib_linkobject(void *object, int type)
 	  /* scale trim curves */
 	  if(o->down && o->down->next)
 	    {
-	      ay_status = ay_npt_rescaletrims(o->down, 0, oldmin, oldmax,
+	      ay_status = ay_npt_rescaletrims(o->down, 1, oldmin, oldmax,
 					      np->vknotv[0],
 				 np->vknotv[np->height+np->vorder-1]);
 	    }
