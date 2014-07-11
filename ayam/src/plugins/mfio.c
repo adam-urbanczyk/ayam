@@ -1541,7 +1541,7 @@ ay_mfio_scalenpknots(ay_object *o)
       /* scale trim curves */
       if(o->down && o->down->next)
 	{
-	  ay_status = ay_npt_rescaletrims(o->down, 0, oldmin, oldmax,
+	  ay_status = ay_npt_rescaletrims(o->down, 1, oldmin, oldmax,
 					  patch->vknotv[0],
 			        patch->vknotv[patch->height+patch->vorder-1]);
 	}
