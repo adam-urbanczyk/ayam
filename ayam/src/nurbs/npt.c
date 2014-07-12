@@ -941,14 +941,18 @@ ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
  *
  * \param[in] o NURBS curve object (a trim curve)
  * \param[in] no GLU NURBS Renderer object of associated NURBS patch object
+ * \param[in] refine how many times shall this trim curve be refined
+ *  (for increased tesselation fidelity along trim edges)
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_npt_drawtrimcurve(ay_object *o, GLUnurbsObj *no)
+ay_npt_drawtrimcurve(ay_object *o, GLUnurbsObj *no, unsigned int refine)
 {
+ int ay_status = AY_OK;
  int order = 0, length = 0, knot_count = 0, i = 0, a = 0, b = 0;
  int apply_trafo = AY_FALSE;
+ ay_object *n = NULL;
  ay_nurbcurve_object *curve = (ay_nurbcurve_object *) o->refine;
  GLfloat *knots = NULL, *controls = NULL;
  double m[16], x = 0.0, y = 0.0, w = 1.0;
@@ -960,6 +964,24 @@ ay_npt_drawtrimcurve(ay_object *o, GLUnurbsObj *no)
       ay_trafo_creatematrix(o, m);
     }
 
+  if(refine)
+    {
+      ay_status = ay_object_copy(o, &n);
+      if(n)
+	{
+	  curve = n->refine;
+	}
+      else
+	{
+	  goto cleanup;
+	}
+      while(refine)
+	{      
+	  ay_nct_refinekn(curve, AY_FALSE, NULL, 0);
+	  refine--;
+	}
+    }
+
   order = curve->order;
   length = curve->length;
 
@@ -968,7 +990,7 @@ ay_npt_drawtrimcurve(ay_object *o, GLUnurbsObj *no)
   if(ay_prefs.glu_avoid_pwlcurve || curve->order != 2)
     {
       if((knots = malloc(knot_count * sizeof(GLfloat))) == NULL)
-	return AY_EOMEM;
+	{ ay_status = AY_EOMEM; goto cleanup; }
 
       a = 0;
       for(i = 0; i < knot_count; i++)
@@ -979,11 +1001,7 @@ ay_npt_drawtrimcurve(ay_object *o, GLUnurbsObj *no)
     }
 
   if((controls = malloc(length*(curve->is_rat?3:2)*sizeof(GLfloat))) == NULL)
-    {
-      if(knots)
-	free(knots);
-      return AY_EOMEM;
-    }
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   a = 0; b = 0;
   for(i = 0; i < length; i++)
@@ -1038,11 +1056,18 @@ ay_npt_drawtrimcurve(ay_object *o, GLUnurbsObj *no)
 		  (curve->is_rat?GLU_MAP1_TRIM_3:GLU_MAP1_TRIM_2));
     }
 
+cleanup:
+
   if(knots)
     free(knots);
-  free(controls);
 
- return AY_OK;
+  if(controls)
+    free(controls);
+
+  if(n)
+    ay_object_delete(n);
+
+ return ay_status;
 } /* ay_npt_drawtrimcurve */
 
 
@@ -1050,11 +1075,13 @@ ay_npt_drawtrimcurve(ay_object *o, GLUnurbsObj *no)
  *  draw all trimcurves with GLU
  *
  * \param[in] o NURBS patch object with trim curves
+ * \param[in] refine_trims how many times are the trim curves to be refined
+ *  (for increased tesselation fidelity along trim edges)
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_npt_drawtrimcurves(ay_object *o)
+ay_npt_drawtrimcurves(ay_object *o, unsigned int refine_trims)
 {
  int ay_status = AY_OK;
  ay_object *trim = NULL, *loop = NULL, *p = NULL, *nc = NULL;
@@ -1067,7 +1094,7 @@ ay_npt_drawtrimcurves(ay_object *o)
 	{
 	case AY_IDNCURVE:
 	  gluBeginTrim(npatch->no);
-	   (void)ay_npt_drawtrimcurve(trim, npatch->no);
+	   (void)ay_npt_drawtrimcurve(trim, npatch->no, refine_trims);
 	  gluEndTrim(npatch->no);
 	  break;
 	case AY_IDLEVEL:
@@ -1080,7 +1107,8 @@ ay_npt_drawtrimcurves(ay_object *o)
 		{
 		  if(loop->type == AY_IDNCURVE)
 		    {
-		      (void)ay_npt_drawtrimcurve(loop, npatch->no);
+		      (void)ay_npt_drawtrimcurve(loop, npatch->no,
+						 refine_trims);
 		    }
 		  else
 		    {
@@ -1090,7 +1118,8 @@ ay_npt_drawtrimcurves(ay_object *o)
 		      nc = p;
 		      while(nc)
 			{
-			  (void)ay_npt_drawtrimcurve(nc, npatch->no);
+			  (void)ay_npt_drawtrimcurve(nc, npatch->no,
+						     refine_trims);
 			  nc = nc->next;
 			} /* if */
 		      (void)ay_object_deletemulti(p, AY_FALSE);
@@ -1108,7 +1137,7 @@ ay_npt_drawtrimcurves(ay_object *o)
 	  while(nc)
 	    {
 	      gluBeginTrim(npatch->no);
-	       (void)ay_npt_drawtrimcurve(nc, npatch->no);
+	       (void)ay_npt_drawtrimcurve(nc, npatch->no, refine_trims);
 	      gluEndTrim(npatch->no);
 	      nc = nc->next;
 	    }

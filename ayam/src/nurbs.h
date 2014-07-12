@@ -973,11 +973,11 @@ int ay_npt_swapuv(ay_nurbpatch_object *np);
 
 /** Draw a single trim curve using GLU.
  */
-int ay_npt_drawtrimcurve(ay_object *o, GLUnurbsObj *no);
+int ay_npt_drawtrimcurve(ay_object *o, GLUnurbsObj *no, unsigned int refine);
 
 /** Draw all trim curves using GLU.
  */
-int ay_npt_drawtrimcurves(ay_object *o);
+int ay_npt_drawtrimcurves(ay_object *o, unsigned int refine_trims);
 
 /** Create Cobbs NURBS sphere patch.
  */
@@ -1460,6 +1460,7 @@ int ay_tess_npatch(ay_object *o,
 		   int use_tc, char *myst,
 		   int use_vc, char *mycs,
 		   int use_vn, char *myn,
+		   int refine_trims,
 		   ay_object **pm);
 
 /** Tcl command to tesselate selected NURBS patches

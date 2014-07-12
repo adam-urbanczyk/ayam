@@ -1086,6 +1086,7 @@ ay_tess_npatch(ay_object *o,
 	       int use_tc, char *myst,
 	       int use_vc, char *mycs,
 	       int use_vn, char *myn,
+	       int refine_trims,
 	       ay_object **pm)
 {
 #ifndef GLU_VERSION_1_3
@@ -1428,7 +1429,7 @@ ay_tess_npatch(ay_object *o,
   /* put trimcurves */
   if(o->down && o->down->next)
     {
-      ay_status = ay_npt_drawtrimcurves(o);
+      ay_status = ay_npt_drawtrimcurves(o, refine_trims);
     } /* if */
 
   gluEndSurface(npatch->no);
@@ -1537,6 +1538,7 @@ ay_tess_npatchtcmd(ClientData clientData, Tcl_Interp *interp,
  double sparamu = ay_prefs.sparamu, sparamv = ay_prefs.sparamv;
  int smethod = ay_prefs.smethod+1;
  int use_tc = AY_FALSE, use_vc = AY_FALSE, use_vn = AY_FALSE;
+ int refine_trims = 0;
 
   if(argc > 1)
     {
@@ -1578,6 +1580,11 @@ ay_tess_npatchtcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  Tcl_GetInt(interp, argv[6], &use_vn);
 	}
+
+      if(argc > 7)
+	{
+	  Tcl_GetInt(interp, argv[6], &refine_trims);
+	}
     } /* if */
 
   while(sel)
@@ -1591,6 +1598,7 @@ ay_tess_npatchtcmd(ClientData clientData, Tcl_Interp *interp,
 				     use_tc, NULL,
 				     use_vc, NULL,
 				     use_vn, NULL,
+				     refine_trims,
 				     &new);
 	  if(!ay_status)
 	    {
