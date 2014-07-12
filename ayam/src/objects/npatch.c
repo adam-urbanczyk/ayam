@@ -907,7 +907,7 @@ ay_npatch_drawglu(ay_view_object *view, ay_object *o)
   /* draw trimcurves */
   if(o->down && o->down->next)
     {
-      ay_status = ay_npt_drawtrimcurves(o);
+      ay_status = ay_npt_drawtrimcurves(o, 0);
     } /* if */
 
   gluEndSurface(npatch->no);
@@ -1285,7 +1285,7 @@ ay_npatch_shadeglu(ay_view_object *view, ay_object *o)
   /* draw trimcurves */
   if(o->down && o->down->next)
     {
-      ay_status = ay_npt_drawtrimcurves(o);
+      ay_status = ay_npt_drawtrimcurves(o, 0);
     } /* if */
 
   gluEndSurface(npatch->no);
@@ -2804,6 +2804,7 @@ ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
  int use_tc = AY_FALSE, use_vc = AY_FALSE, use_vn = AY_FALSE;
  int smethod = ay_prefs.smethod;
  double sparamu = ay_prefs.sparamu, sparamv = ay_prefs.sparamv;
+ int refine_trim = 0;
 
   if(!o)
     return AY_ENULL;
@@ -2830,7 +2831,8 @@ ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  if(tag->type == ay_tp_tagtype)
 	    {
 	      if(tag->val)
-		sscanf(tag->val,"%d,%lg,%lg",&smethod, &sparamu, &sparamv);
+		sscanf(tag->val,"%d,%lg,%lg,%d", &smethod,
+		       &sparamu, &sparamv, &refine_trim);
 	    }
 	  tag = tag->next;
 	} /* while */
@@ -2838,6 +2840,7 @@ ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
       /* tesselate */
       ay_status = ay_tess_npatch(o, smethod, sparamu, sparamv,
 				 use_tc, NULL, use_vc, NULL, use_vn, NULL,
+				 refine_trim,
 				 result);
 
       if(*result)
