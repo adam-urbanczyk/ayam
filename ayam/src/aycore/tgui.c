@@ -170,10 +170,10 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
  double sparamu = 0.0, sparamv = 0.0;
 
   /* get new tesselation parameters */
-  if(argc < 6)
+  if(argc < 7)
     {
       ay_error(AY_EARGS, fname,
-	       "smethod sparamu sparamv usetc usevc usevn");
+	       "smethod sparamu sparamv usetc usevc usevn refinetrims");
       return AY_ERROR;
     }
 
@@ -184,6 +184,12 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
   sscanf(argv[5], "%d", &use_vc);
   sscanf(argv[6], "%d", &use_vn);
   sscanf(argv[7], "%d", &refine_trims);
+
+  if(refine_trims < 0)
+    refine_trims = 0;
+  else
+    if(refine_trims > 5)
+      refine_trims = 5;
 
   /* clear old tesselations */
   oref = ay_tgui_origrefs;

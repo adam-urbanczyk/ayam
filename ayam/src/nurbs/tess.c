@@ -1583,7 +1583,13 @@ ay_tess_npatchtcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(argc > 7)
 	{
-	  Tcl_GetInt(interp, argv[6], &refine_trims);
+	  Tcl_GetInt(interp, argv[7], &refine_trims);
+
+	  if(refine_trims < 0)
+	    refine_trims = 0;
+	  else
+	    if(refine_trims > 5)
+	      refine_trims = 5;
 	}
     } /* if */
 
