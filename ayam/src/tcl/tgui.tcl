@@ -511,7 +511,7 @@ proc tgui_open { } {
     addCheck $f tgui_tessparam UseTexCoords
     addCheck $f tgui_tessparam UseVertColors
     addCheck $f tgui_tessparam UseVertNormals
-    addParam $f tgui_tessparam RefineTrims
+    addParam $f tgui_tessparam RefineTrims {0 1 2 3 4 5}
 
     # SMethod
     addMenu $f tgui_tessparam SMethod $ay(smethods)
