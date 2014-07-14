@@ -450,6 +450,7 @@ ay_clipb_hmovtcmd(ClientData clientData, Tcl_Interp *interp,
 {
  ay_list_object *sel = ay_selection;
  ay_object *s1, *s2, *l, *t, **before;
+ int notify_parent = AY_FALSE;
 
   if(!sel)
     {
@@ -495,6 +496,7 @@ ay_clipb_hmovtcmd(ClientData clientData, Tcl_Interp *interp,
 		  l->next = t;
 		  if(l == ay_currentlevel->object)
 		    ay_currentlevel->object = s1;
+		  notify_parent = AY_TRUE;
 		  break;
 		}
 	      before = &(l->next);
@@ -553,6 +555,7 @@ ay_clipb_hmovtcmd(ClientData clientData, Tcl_Interp *interp,
 		  t = l->next->next;
 		  l->next->next = s1;
 		  s2->next = t;
+		  notify_parent = AY_TRUE;
 		  break;
 		}
 	      before = &(l->next);
@@ -568,6 +571,9 @@ ay_clipb_hmovtcmd(ClientData clientData, Tcl_Interp *interp,
       ay_next = &(l->next);
       l = l->next;
     }
+
+  if(notify_parent)
+    (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_clipb_hmovtcmd */
