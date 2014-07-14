@@ -2401,6 +2401,7 @@ ay_npatch_wribtrimcurves(ay_object *o)
       switch(trim->type)
 	{
 	case AY_IDNCURVE:
+	  valid_loop = AY_TRUE;
 	  totalcurves++;
 	  curve = (ay_nurbcurve_object *)(trim->refine);
 	  totalcontrol += curve->length;
@@ -2413,41 +2414,43 @@ ay_npatch_wribtrimcurves(ay_object *o)
 	  valid_loop = AY_FALSE;
 	  ncurves[nloops] = 0;
 	  loop = trim->down;
-	  while(loop->next)
+	  while(loop && loop->next)
 	    {
 	      nc = NULL;
 	      if(loop->type == AY_IDNCURVE)
 		{
-		  curve = (ay_nurbcurve_object *)(loop->refine);
 		  valid_loop = AY_TRUE;
+		  curve = (ay_nurbcurve_object *)(loop->refine);
 		  totalcurves++;
 		  totalcontrol += curve->length;
 		  totalknots += curve->length;
 		  totalknots += curve->order;
 		  ncurves[nloops] += 1;
-		  nloops++;
 		}
 	      else
 		{
 		  p = NULL;
 		  ay_status = ay_provide_object(loop, AY_IDNCURVE, &p);
+		  if(p)
+		    valid_loop = AY_TRUE;
 		  nc = p;
 		  while(nc)
 		    {
 		      curve = (ay_nurbcurve_object *)(nc->refine);
-		      valid_loop = AY_TRUE;
 		      totalcurves++;
 		      totalcontrol += curve->length;
 		      totalknots += curve->length;
 		      totalknots += curve->order;
 		      ncurves[nloops] += 1;
-		      nloops++;
 		      nc = nc->next;
 		    }
 		  (void)ay_object_deletemulti(p, AY_FALSE);
 		} /* if */
+
 	      loop = loop->next;
 	    } /* while */
+	  if(valid_loop)
+	    nloops++;
 	  break;
 	default:
 	  p = NULL;
