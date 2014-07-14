@@ -281,7 +281,7 @@ ay_shade_thin(int w, int h, unsigned char *src)
 } /* ay_shade_thin */
 
 
-/**
+/** ay_shade_detectsilhouettes:
  * Create a silhouette texture by shading all objects in a special
  * lighting setup and detect edges in the resulting z- and
  * color-buffer data.
@@ -290,7 +290,7 @@ ay_shade_thin(int w, int h, unsigned char *src)
  * \param selection if AY_TRUE create the silhouettes for
  *  the selected objects only
  *
- * \return silhouette texture or NULL (in case of an error)
+ * \returns silhouette texture or NULL (in case of an error)
  */
 unsigned char *
 ay_shade_detectsilhouettes(struct Togl *togl, int selection)
@@ -311,7 +311,7 @@ ay_shade_detectsilhouettes(struct Togl *togl, int selection)
  GLfloat sx[9] = {-1,0,1,-2,0,2,-1,0,1}, sy[9]={-1,-2,-1,0,0,0,1,2,1};
  GLfloat *depthimg = NULL;
  int use_materialcolor;
- unsigned char *silimg = NULL, *s, *t, *edges;
+ unsigned char *silimg = NULL, *edges = NULL, *s, *t;
 
   if(selection && !sel)
     return NULL;
@@ -652,7 +652,7 @@ ay_shade_object(struct Togl *togl, ay_object *o, int push_name)
 
   /* if an odd number of scale factors are negative
      swap front and back faces */
-  if((o->scalx*o->scaly*o->scalz)<0.0)
+  if((o->scalx*o->scaly*o->scalz) < 0.0)
     {
       glGetIntegerv(GL_FRONT_FACE, &ff);
       if(ff == GL_CW)
@@ -859,7 +859,8 @@ ay_shade_view(struct Togl *togl)
     }
   else
     {
-      /* drawmode is AY_DMWIREHIDDEN */
+      /* drawmode is AY_DMWIREHIDDEN, do not paint, but
+	 update the z-buffer */
       glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
     }
 
