@@ -210,7 +210,7 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
   /* re-tesselate with new tesselation parameters */
   o = ay_tgui_origs;
   oref = ay_tgui_origrefs;
-  while(o)
+  while(o && oref)
     {
       if(o->type == AY_IDNPATCH)
 	{
