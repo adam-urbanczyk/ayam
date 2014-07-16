@@ -3981,7 +3981,7 @@ documented in tables like this:
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Object Type|No/Object Type<f><sup>+/&lowast;</sup></f>|Yes&thinsp;/&thinsp;No|N/A&thinsp;/&thinsp;Children&thinsp;/&thinsp;Object Type<f><sup>+/&lowast;</sup></f>|Yes&thinsp;/&thinsp;No*
+Object Type|No&thinsp;/&thinsp;Object Type<f><sup>+/&lowast;</sup></f>|Yes&thinsp;/&thinsp;No|N/A&thinsp;/&thinsp;Children&thinsp;/&thinsp;Object Type<f><sup>+/&lowast;</sup></f>|Yes&thinsp;/&thinsp;No*
 <#if out=latex>@<hline></#if>
 </tabular>
 <caption>Object Capabilities Template</caption>
@@ -3992,21 +3992,23 @@ The capabilities are:
 <item><bf/Type/: the type name as displayed in the object tree view
 and understood by the <tt/"crtOb"/ scripting interface command;
 <item><bf/Parent of/: the object is a parent object (can have child
-objects of the designated type),
+objects of the designated type),<newline>
 <f/<sup/+// &ndash; multiple child objects may be present
-(one or many),
-<f/<sup/&lowast;// &ndash; multiple child objects must be
-present (many), note that the type of the child object(s) does not
-need to match directly, the child(s) must rather provide an object
+(one or many),<newline>
+<f/<sup/&lowast;// &ndash; multiple child objects must be present
+(many),<newline>
+note that the type of the child object(s) does not
+need to match directly, the child(ren) must rather provide an object
 of the appropriate type (see also section
 <ref id="toolobj" name="The Modelling Concept Tool-Objects">);
 <item><bf/Material/: the object can be associated with a material;
-<item><bf>Converts to/Provides</bf>: type of converted/provided objects
-(Children means, the provided objects of the children are delivered upstream),
-<f/<sup/+// &ndash; multiple objects may be provided (one or many),
+<item><bf>Converts to&thinsp;/&thinsp;Provides</bf>: type of converted or
+provided objects (Children means, the provided objects of the children are
+delivered upstream),<newline>
+<f/<sup/+// &ndash; multiple objects may be provided (one or many),<newline>
 <f/<sup/&lowast;// &ndash; multiple objects will be provided (many);
-<item><bf/Point Edit/: the object has editable points,
-* &ndash; read only points are supported.
+<item><bf/Point Edit/: the object has editable points,<newline>
+<f/*/ &ndash; read only points are supported.
 </itemize>
 
 <#if out=latex><x/newpage/</#if>
@@ -8908,7 +8910,7 @@ distances vary a lot (see also the image below).
 <figure loc="ht">
 <eps file="pics/concatnpfillets.ps" height="5cm">
 <img src="pics/concatnpfillets.gif">
-<caption>Concatenated Surfaces (blue) with Fillets (left: FTLength 0.3, right: FTLength -0.3</caption>
+<caption>Concatenated Surfaces (blue) with Fillets (left: FTLength 0.3, right: FTLength -0.3)</caption>
 </figure>
 
 <item>If <tt/"Revert"/ is enabled, the orientation of the concatenated
@@ -10799,14 +10801,22 @@ to objects of type <tt/"NPatch"/ (and objects that may be converted
 to <tt/"NPatch"/ objects). Those tesselation parameters
 will be used when the NPatch object is tesselated for e.g.~a
 conversion to a PolyMesh object. The syntax of the TP tag is:
-<tt>"&lt;tmethod&gt;,&lt;tparamu&gt;,&lt;tparamv&gt;"</tt>
-where <tt/"&lt;tmethod&gt;"/ is an integer value between 1 and 3, describing
-which tesselation method to use (1 &ndash; ParametricError,
-2 &ndash; PathLength, and 3 &ndash; DomainDistance) and
-<tt/"&lt;tparamu&gt;"/ and <tt/"&lt;tparamv&gt;"/ are float values
+<tt>"&lt;tmethod&gt;,&lt;tparamu&gt;,&lt;tparamv&gt;,&lt;refinetrims&gt;"</tt>
+where <tt/"&lt;tmethod&gt;"/ is an integer value between 1 and 5,
+describing which tesselation method to use (1 &ndash; ParametricError,
+2 &ndash; PathLength,
+3 &ndash; DomainDistance,
+4 &ndash; NormalizedDomainDistance, and
+5 &ndash; AdaptiveDomainDistance)
+and <tt/"&lt;tparamu&gt;"/ and <tt/"&lt;tparamv&gt;"/ are float values
 describing the respective parameter value for the chosen tesselation
 method. The second parameter value is ignored for the tesselation methods
 1 and 2.
+<p>
+The last value, <tt>"refinetrims"</tt>, is an integer between 0 and 5
+controlling how many times the trim curves are to be refined before
+tesselation for improved tesselation fidelity along trim edges.
+The <tt>"refinetrims"</tt> value may be omitted and defaults to 0.
 <p>
 Note that the syntax of the <tt/"TP"/ tag changed in Ayam 1.9,
 the old syntax only allowed one parameter.
@@ -12379,6 +12389,10 @@ of the tesselation quality and the number of created polygonal elements.
 If the option <tt>"LazyUpdate"</tt> is enabled,
 updates of the tesselation that normally occur while dragging the
 slider(s) will be deferred until the mouse button is released.
+<p>
+The option <tt>"RefineTrims"</tt> controls how many times the trim
+curves are to be refined before tesselation for improved tesselation
+fidelity along trim edges.
 <p>
 If the <tt/"Ok"/ button is pressed, the tesselation tool will be
 closed and all selected objects will be replaced by their tesselated
@@ -16937,12 +16951,13 @@ in detail.
 <p>
 Using the <tt/"rrib"/ (for <bf/R/ead <bf/RIB/) plugin RenderMan
 Interface Bytestreams of version 3.0 can be imported into Ayam.
+This plugin is based on the Affine library by Thomas E. Burge.
 Start importing a RIB using the menu entry
 <tt>"File/Import/RenderMan RIB"</tt>
 (if this menu entry is not available, the
 rrib plugin must be loaded using the menu entry
 <tt>"File/Load Plugin"</tt> first).
-<p>
+
 <sect2>RIB Primitive Support
 <p>
 The RRIB plugin supports import of the following geometric
@@ -16974,10 +16989,9 @@ are silently ignored.
 <p>
 Also note that for NURBS patches and bicubic patch meshes, points of type
 "P" will be promoted to "Pw". Points of type "Pz" are not supported
-by the plugin. Trimming of NURBS patches by clamping
-the knot ranges is also not supported (however, UMM/VMM
-tags will be created, that contain the new knot minimum and maximum
-values).<footnote>Since 1.9.</footnote>
+by the plugin. Trimming of NURBS patches by clamping their knot ranges
+is also not supported (however, UMM/VMM tags will be created, that contain
+the new knot minimum and maximum values).<footnote>Since 1.9.</footnote>
 See also section <ref id="ummtag" name="UMM/VMM (U/V Min Max) Tag">.
 <p>
 Furthermore, objects of type (general) polygon and polygon mesh will
@@ -17002,10 +17016,9 @@ The RIB import may be controlled via different options:
 <item><tt/"ScaleFactor"/, determines a global scale factor to be applied
 to all imported objects.
 <item><tt/"ReadFrame"/, specifies the number of the frame in the RIB
-to read. A value of -1 means, all frames are to be read. If you specify
-a frame number and this frame does not show up in the RIB as
-<tt/"FrameBegin &lt;yournumber&gt;"/ nothing will be
-imported.
+to read. A value of -1 means, all frames are to be read. If a frame
+number is specified and this frame does not show up in the RIB as
+<tt/"FrameBegin &lt;yournumber&gt;"/ nothing will be imported.
 <item><tt/"ReadCamera"/: if this is switched on, a Camera object will
 be created when the RIB plugin encounters a <tt/"WorldBegin"/. You may drag
 this camera object onto a perspective View object in Ayam after import
@@ -18079,7 +18092,8 @@ to the X3D file.
 
 <sect>Miscellaneous
 <p>
-This section contains all information about Ayam not fitting elsewhere.
+This section contains all information about Ayam not fitting into
+the other main sections.
 
 <sect1>The Undo System<label id="undos">
 <p>
@@ -20076,6 +20090,7 @@ Index:
 <item>Last (None): <ref id="mmtools" name="main menu entry">
 <item>Lathe: <ref id="revolveobj" name="Revolve object">
 <item>LazyNotify: <ref id="prefmodel" name="preference setting">
+<item>LazyUpdate: <ref id="tesst" name="tesselation option">
 <item>Length:
 <itemize>
 <item><ref id="bxp" name="Box attribute">,
@@ -20398,6 +20413,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Refine Knots: <ref id="refknit" name="Refine Knots Tool">
 <item>refineC: <ref id="screfinec" name="scripting interface command">
 <item>refineknNC: <ref id="screfineknnc" name="scripting interface command">
+<item>RefineTrims: <ref id="tesst" name="tesselation option">
 <item>refineuNP: <ref id="screfineunp" name="scripting interface command">
 <item>refinevNP: <ref id="screfinevnp" name="scripting interface command">
 <item>Relative:
