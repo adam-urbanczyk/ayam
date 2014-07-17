@@ -976,7 +976,7 @@ ay_npt_drawtrimcurve(ay_object *o, GLUnurbsObj *no, unsigned int refine)
 	  goto cleanup;
 	}
       while(refine)
-	{      
+	{
 	  ay_nct_refinekn(curve, AY_FALSE, NULL, 0);
 	  refine--;
 	}
@@ -1029,16 +1029,16 @@ ay_npt_drawtrimcurve(ay_object *o, GLUnurbsObj *no, unsigned int refine)
 	}
       else
 	{
-	  controls[a] = x;
-	  controls[a+1] = y;
+	  controls[a]   = (GLfloat)x;
+	  controls[a+1] = (GLfloat)y;
 	  if(curve->is_rat)
 	    {
-	      controls[a+2] = w;
+	      controls[a+2] = (GLfloat)w;
 	      a += 3;
 	    }
 	  else
 	    a += 2;
-	} // if apply_trafo
+	} /* if apply_trafo */
       b++;
     } /* for */
 

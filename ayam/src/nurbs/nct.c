@@ -784,8 +784,8 @@ ay_nct_refinekn(ay_nurbcurve_object *curve, int maintain_ends,
 	  /* periodic curves get special treatment:
 	     do not insert knots that would change
 	     the multiple control points at the ends */
-	  start += ceil(curve->order/2.0);
-	  end -= ceil(curve->order/2.0);
+	  start += (int)ceil(curve->order/2.0);
+	  end -= (int)ceil(curve->order/2.0);
 
 	  if(start >= end || end <= start)
 	    return AY_ERROR;
@@ -4132,8 +4132,8 @@ ay_nct_homtoeuc(ay_nurbcurve_object *nc)
 void
 ay_nct_concatobjs(ay_object *o, ay_object **result)
 {
- ay_object c = {};
- ay_concatnc_object cn = {};
+ ay_object c = {0};
+ ay_concatnc_object cn = {0};
 
   ay_object_defaults(&c);
   c.type = AY_IDCONCATNC;

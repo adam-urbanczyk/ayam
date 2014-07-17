@@ -131,19 +131,19 @@ ay_viewt_setupprojection(struct Togl *togl)
    if((view->type == AY_VTPERSP) || (view->type == AY_VTFRONT))
      {
        if(view->farp > 1000.0)
-	 light_posf[2] = view->farp*2;
+	 light_posf[2] = (GLfloat)(view->farp*2);
        glLightfv(GL_LIGHT0, GL_POSITION, light_posf);
      }
    if(view->type == AY_VTSIDE)
      {
        if(view->farp > 1000.0)
-	 light_poss[0] = view->farp*2;
+	 light_poss[0] = (GLfloat)(view->farp*2);
        glLightfv(GL_LIGHT0, GL_POSITION, light_poss);
      }
    if(view->type == AY_VTTOP)
      {
        if(view->farp > 1000.0)
-	 light_post[1] = view->farp*2;
+	 light_post[1] = (GLfloat)(view->farp*2);
        glLightfv(GL_LIGHT0, GL_POSITION, light_post);
      }
   glPopMatrix();
