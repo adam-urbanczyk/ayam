@@ -674,31 +674,69 @@ proc shortcut_view { w } {
 }
 # shortcut_view
 
+proc shortcut_viewalt { ww } {
+    global ay
+    if { [string first ".view" $ww] != 0 } {
+	set w $ww.f3D.togl
+    } else {
+	set w [winfo toplevel $ww].f3D.togl
+    }
+    $w mc
+    $w configure -cursor exchange
+    set ay(vaoldfocus) [focus]
+ return;
+}
 
 # shortcut_viewactions:
 # Setup action-keybindings for a 3D-View.
 proc shortcut_viewactions { w } {
  global ay ayviewshortcuts
 
-    set i $ayviewshortcuts(RotButton)
+    bind all <KeyRelease-$ayviewshortcuts(RotModKey)> "update idletasks"
 
     bind $w <KeyPress-$ayviewshortcuts(RotModKey)> {
-	if { [string first ".view" %W] != 0 } {
-	    set w %W.f3D.togl
+	# as the Alt modifier is repeating on Win32 we must immediately
+	# disable further events; otherwise our Release-binding below
+	# does not work correctly, leaving the focus nowhere after simply
+        # pressing/releasing <Alt> and then the wheel would not work anymore
+        # for zooming the view (until <B1> is used to 'repair' the focus)
+	if { [string first ".view" %W] == 0 } {
+	    set w [winfo toplevel %W]
 	} else {
-	    set w [winfo toplevel %W].f3D.togl
+	    set w %W
 	}
-	$w configure -cursor exchange
+	bind $w <KeyPress-$ayviewshortcuts(RotModKey)> ""
+	shortcut_viewalt %W
     }
-
     bind $w <KeyRelease-$ayviewshortcuts(RotModKey)> {
 	if { [string first ".view" %W] != 0 } {
 	    set w %W.f3D.togl
 	} else {
 	    set w [winfo toplevel %W].f3D.togl
 	}
+	$w mc
 	$w configure -cursor {}
+
+	if { $ay(vaoldfocus) != "" } {
+	    focus -force $ay(vaoldfocus)
+	}
+	if { [string first ".view" %W] == 0 } {
+	    set w [winfo toplevel %W]
+	} else {
+	    set w %W
+	}
+	bind $w <KeyPress-$ayviewshortcuts(RotModKey)> {
+	    if { [string first ".view" %W] == 0 } {
+		set w [winfo toplevel %W]
+	    } else {
+		set w %W
+	    }
+	    bind $w <KeyPress-$ayviewshortcuts(RotModKey)> ""
+	    shortcut_viewalt %W
+	}
     }
+
+    set i $ayviewshortcuts(RotButton)
     bind $w.f3D.togl <${ayviewshortcuts(RotMod)}-ButtonPress-${i}> {
 	%W setconf -a 1
 	set oldx %x
@@ -716,8 +754,6 @@ proc shortcut_viewactions { w } {
 	update
 	break
     }
-
-    set i $ayviewshortcuts(ZoomRButton)
 
     bind $w <KeyPress-$ayviewshortcuts(ZoomRModKey)> {
 	if { [string first ".view" %W] != 0 } {
@@ -737,11 +773,11 @@ proc shortcut_viewactions { w } {
 	$w configure -cursor {}
     }
 
+    set i $ayviewshortcuts(ZoomRButton)
     bind $w.f3D.togl <${ayviewshortcuts(ZoomRMod)}-ButtonPress-${i}> {
 	set oldx %x
 	set oldy %y
     }
-
     bind $w.f3D.togl <${ayviewshortcuts(ZoomRMod)}-ButtonRelease-${i}> {
 	%W mc
 	if { $ay(cVUndo) } {
@@ -752,13 +788,11 @@ proc shortcut_viewactions { w } {
 	focus %W
 	break
     }
-
     bind $w.f3D.togl <${ayviewshortcuts(ZoomRMod)}-B${i}-Motion> {
 	%W setconf -rect $oldx $oldy %x %y 1
     }
 
     set i $ayviewshortcuts(ZoomVButton)
-
     bind $w.f3D.togl <ButtonPress-${i}> {
 	%W mc
 	if { $ay(cVUndo) } {
@@ -768,19 +802,16 @@ proc shortcut_viewactions { w } {
 	%W zoomvac -start %y
 	update
     }
-
     bind $w.f3D.togl <B${i}-Motion> {
 	%W zoomvac -winy %y
 	update
     }
-
     bind $w.f3D.togl <ButtonRelease-${i}> {
 	%W setconf -a 0
 	focus %W
     }
 
-    set i  $ayviewshortcuts(MoveVButton)
-
+    set i $ayviewshortcuts(MoveVButton)
     bind $w.f3D.togl <ButtonPress-${i}> {
 	%W mc
 	if { $ay(cVUndo) } {
@@ -790,12 +821,10 @@ proc shortcut_viewactions { w } {
 	%W movevac -start %x %y
 	update
     }
-
     bind $w.f3D.togl <B${i}-Motion> {
 	%W movevac -winxy %x %y
 	update
     }
-
     bind $w.f3D.togl <ButtonRelease-${i}> {
 	%W setconf -a 0
 	focus %W
@@ -807,7 +836,7 @@ proc shortcut_viewactions { w } {
 
     if { $ay(ws) == "Win32" || $ay(ws) == "Aqua" } {
 	if { [string first ".view" $w] != 0 } {
-	    bind $w.f3D.togl <MouseWheel> {viewZoom %W %D;break}
+	    bind $w <MouseWheel> {viewZoom %W.f3D.togl %D;break}
 	} else {
 	    bind $w <MouseWheel> {viewZoom %W %D;break}
 	}

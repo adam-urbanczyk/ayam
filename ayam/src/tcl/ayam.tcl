@@ -726,6 +726,7 @@ array set ay {
  lasttool ""
  cVPnts 0
  cVDrawMark 0
+ vaoldfocus ""
 }
 # array ay
 
