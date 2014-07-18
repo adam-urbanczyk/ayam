@@ -1,4 +1,4 @@
-[10. Jul 2014] CVS-Head:
+[18. Jul 2014] CVS-Head:
 ========================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
@@ -113,6 +113,9 @@ o improved display of trimmed NURBS using GLU by introduction of the
 o refining the knots of periodic curves now inserts knots into all knot
   sections (not maintaining the periodic ends, but this can still be
   achieved by using the new refineknNC command option "-m")
+o added tesselation GUI option and TP tag parameter "RefineTrims" that
+  controls how many times the trim curves are to be refined prior to
+  tesselation for improved tesselation fidelity along trim edges
 
 GUI:
 o the default value menu buttons of property GUI elements now display a
@@ -178,6 +181,8 @@ o added a patched version of the standard Tk file dialog that now has an
 o improved drawing of the parametric domain in views of type "Trim"
 o added a "Reset All!" command entry to the tesselation dialog
 o improved initial and default parameters of the tesselation dialog
+o improved focus management of the Alt-Rotate view action on Win32 so that
+  e.g. the mouse wheel keeps working after usage of the Alt key all the time
 
 Scripts/Scripting Interface:
 o added luainterp plugin to support the Lua scripting language
