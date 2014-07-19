@@ -692,14 +692,15 @@ proc shortcut_viewalt { ww } {
 proc shortcut_viewactions { w } {
  global ay ayviewshortcuts
 
+    # Rotate by mouse
     bind all <KeyRelease-$ayviewshortcuts(RotModKey)> "update idletasks"
 
+    # as the Alt modifier is repeating on Win32 we must immediately
+    # disable further events; otherwise our Release-binding below
+    # does not work correctly, leaving the focus nowhere after simply
+    # pressing/releasing <Alt> and then the wheel would not work anymore
+    # for zooming the view (until <B1> is used to 'repair' the focus)
     bind $w <KeyPress-$ayviewshortcuts(RotModKey)> {
-	# as the Alt modifier is repeating on Win32 we must immediately
-	# disable further events; otherwise our Release-binding below
-	# does not work correctly, leaving the focus nowhere after simply
-        # pressing/releasing <Alt> and then the wheel would not work anymore
-        # for zooming the view (until <B1> is used to 'repair' the focus)
 	if { [string first ".view" %W] == 0 } {
 	    set w [winfo toplevel %W]
 	} else {
@@ -755,6 +756,7 @@ proc shortcut_viewactions { w } {
 	break
     }
 
+    # Zoom/Pan into a region by mouse
     bind $w <KeyPress-$ayviewshortcuts(ZoomRModKey)> {
 	if { [string first ".view" %W] != 0 } {
 	    set w %W.f3D.togl
@@ -792,6 +794,7 @@ proc shortcut_viewactions { w } {
 	%W setconf -rect $oldx $oldy %x %y 1
     }
 
+    # Zoom by mouse
     set i $ayviewshortcuts(ZoomVButton)
     bind $w.f3D.togl <ButtonPress-${i}> {
 	%W mc
@@ -811,6 +814,7 @@ proc shortcut_viewactions { w } {
 	focus %W
     }
 
+    # Pan by mouse
     set i $ayviewshortcuts(MoveVButton)
     bind $w.f3D.togl <ButtonPress-${i}> {
 	%W mc
@@ -830,19 +834,30 @@ proc shortcut_viewactions { w } {
 	focus %W
     }
 
+    # Zoom by mouse wheel
+    # XXXX ToDo: should we bind B4/B5 on Win32/Aqua?
     bind $w.f3D.togl <ButtonPress-4> {viewZoom %W %D;break}
 
     bind $w.f3D.togl <ButtonPress-5> {viewZoom %W -%D;break}
 
     if { $ay(ws) == "Win32" || $ay(ws) == "Aqua" } {
 	if { [string first ".view" $w] != 0 } {
-	    bind $w <MouseWheel> {viewZoom %W.f3D.togl %D;break}
+	    # internal view
+	    if { $ay(ws) == "Win32" } {
+		bind $w <MouseWheel> {viewZoom %W.f3D.togl %D;break}
+	    } else {
+		# Aqua
+		bind $w.f3D.togl <MouseWheel> {viewZoom %W %D;break}
+	    }
 	} else {
+	    # external view
 	    bind $w <MouseWheel> {viewZoom %W %D;break}
 	}
+	# if internal or external
     }
-    # if
+    # if Win32 or Aqua
 
+    # Start modelling actions by keyboard
     bind $w <$ayviewshortcuts(Break)> "actionClear $w.f3D.togl"
     bind $w <$ayviewshortcuts(MoveV)> "actionMoveView $w.f3D.togl"
     bind $w <$ayviewshortcuts(MoveZV)> "actionMoveZView $w.f3D.togl"
