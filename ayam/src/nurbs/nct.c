@@ -3324,7 +3324,7 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int tcl_status = AY_OK;
  ay_list_object *lev = ay_currentlevel;
- ay_object *parent = NULL, **last = NULL;
+ ay_object *parent = NULL;
  ay_nurbpatch_object *patch = NULL;
  ay_nurbcurve_object *curve = NULL;
  double def_controls[20] = { 1.0, 1.0, 0.0, 1.0,
@@ -3334,10 +3334,9 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 			     1.0, 1.0, 0.0, 1.0};
  double knots[7] = {0.0, 0.0, 0.25, 0.5, 0.75, 1.0, 1.0};
  double width = 1.0, height = 1.0;
- int i = 0, create_trim = AY_FALSE;
+ int i = 0, create_trim = AY_FALSE, notify_parent = AY_FALSE;
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
-
 
   /* distinguish between
      crtNRect and
@@ -3365,159 +3364,165 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 		  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 		}
 	      i += 2;
-	    }
-	}
-    }
+	    } /* while */
+	} /* if have args */
+      sel = NULL;
+    } /* if crtNRect */
 
-  if(create_trim)
+  do
     {
-      if(sel && (sel->object->type == AY_IDNPATCH))
+      if(create_trim)
 	{
-	  create_trim = AY_TRUE;
-	  patch = (ay_nurbpatch_object *)sel->object->refine;
-	}
-      else
-	{
-	  if(lev->next)
+	  if(sel && (sel->object->type == AY_IDNPATCH))
 	    {
-	      parent = lev->next->object;
-	      if(parent)
-		{
-		  if(parent->type == AY_IDNPATCH)
-		    {
-		      create_trim = AY_TRUE;
-		      patch = (ay_nurbpatch_object *)parent->refine;
-		    } /* if */
-		} /* if */
-	    } /* if */
-	} /* if */
-
-      if(!patch)
-	{
-	  ay_error(AY_ERROR, argv[0], "No NPatch selected or parent.");
-	  return TCL_OK;
-	}
-    }
-
-  if(!(o = calloc(1, sizeof(ay_object))))
-    {
-      ay_error(AY_EOMEM, argv[0], NULL);
-      return TCL_OK;
-    }
-
-  o->type = AY_IDNCURVE;
-  ay_object_defaults(o);
-  if(!create_trim)
-    ay_object_placemark(o);
-
-  if(!(curve = calloc(1, sizeof(ay_nurbcurve_object))))
-    {
-      free(o);
-      ay_error(AY_EOMEM, argv[0], NULL);
-      return TCL_OK;
-    }
-
-  if(!(curve->controlv = malloc(20*sizeof(double))))
-    {
-      free(o);
-      free(curve);
-      ay_error(AY_EOMEM, argv[0], NULL);
-      return TCL_OK;
-    }
-
-  if(!(curve->knotv = malloc(7*sizeof(double))))
-    {
-      free(o); free(curve->controlv); free(curve);
-      ay_error(AY_EOMEM, argv[0], NULL);
-      return TCL_OK;
-    }
-
-  curve->length = 5;
-  curve->order = 2;
-  curve->knot_type = AY_KTCUSTOM;
-  curve->type = AY_CTCLOSED;
-  curve->createmp = AY_TRUE;
-
-  /* fill knotv */
-  for(i = 0; i < 7; i++)
-    curve->knotv[i] = knots[i];
-
-  /* fill controlv */
-  if(create_trim)
-    {
-      curve->controlv[0] = patch->uknotv[patch->uorder-1];
-      curve->controlv[1] = patch->vknotv[patch->vorder-1];
-      curve->controlv[2] = 0.0;
-      curve->controlv[3] = 1.0;
-      curve->controlv[4] = patch->uknotv[patch->width];
-      curve->controlv[5] = patch->vknotv[patch->vorder-1];
-      curve->controlv[6] = 0.0;
-      curve->controlv[7] = 1.0;
-      curve->controlv[8] = patch->uknotv[patch->width];
-      curve->controlv[9] = patch->vknotv[patch->height];
-      curve->controlv[10] = 0.0;
-      curve->controlv[11] = 1.0;
-      curve->controlv[12] = patch->uknotv[patch->uorder-1];
-      curve->controlv[13] = patch->vknotv[patch->height];
-      curve->controlv[14] = 0.0;
-      curve->controlv[15] = 1.0;
-      curve->controlv[16] = patch->uknotv[patch->uorder-1];
-      curve->controlv[17] = patch->vknotv[patch->vorder-1];
-      curve->controlv[18] = 0.0;
-      curve->controlv[19] = 1.0;
-    }
-  else
-    {
-      if(width != 1.0)
-	for(i = 0; i < 5; i++)
-	  def_controls[i*4] *= width;
-      if(height != 1.0)
-	for(i = 0; i < 5; i++)
-	  def_controls[i*4+1] *= height;
-
-      memcpy(curve->controlv, def_controls, 20*sizeof(double));
-    }
-
-  o->type = AY_IDNCURVE;
-  o->refine = curve;
-
-  ay_nct_recreatemp(curve);
-
-  if(!patch)
-    {
-      ay_object_link(o);
-    }
-  else
-    {
-      if(!(sel && sel->object && (sel->object->type == AY_IDNPATCH)))
-	{
-	  ay_object_link(o);
-	}
-      else
-	{
-	  parent = sel->object->down;
-	  if(!parent)
-	    {
-	      sel->object->down = o;
-	      o->next = ay_endlevel;
+	      patch = (ay_nurbpatch_object *)sel->object->refine;
 	    }
 	  else
 	    {
-	      last = &(sel->object->down);
-	      while(parent->next)
+	      if(lev->next)
 		{
-		  last = &(parent->next);
-		  parent = parent->next;
-		} /* while */
-	      o->next = *last;
-	      *last = o;
+		  parent = lev->next->object;
+		  if(parent)
+		    {
+		      if(parent->type == AY_IDNPATCH)
+			{
+			  patch = (ay_nurbpatch_object *)parent->refine;
+			  sel = NULL;
+			} /* if */
+		    } /* if */
+		} /* if */
 	    } /* if */
+
+	  if(!patch)
+	    {
+	      if(sel)
+		sel = sel->next;
+	      if(sel)
+		continue;
+	      else
+		break;
+	    }
+	} /* if create_trim */
+
+      if(!(o = calloc(1, sizeof(ay_object))))
+	{
+	  ay_error(AY_EOMEM, argv[0], NULL);
+	  return TCL_OK;
+	}
+
+      o->type = AY_IDNCURVE;
+      ay_object_defaults(o);
+      if(!create_trim)
+	ay_object_placemark(o);
+
+      if(!(curve = calloc(1, sizeof(ay_nurbcurve_object))))
+	{
+	  free(o);
+	  ay_error(AY_EOMEM, argv[0], NULL);
+	  return TCL_OK;
+	}
+
+      if(!(curve->controlv = malloc(20*sizeof(double))))
+	{
+	  free(o);
+	  free(curve);
+	  ay_error(AY_EOMEM, argv[0], NULL);
+	  return TCL_OK;
+	}
+
+      if(!(curve->knotv = malloc(7*sizeof(double))))
+	{
+	  free(o); free(curve->controlv); free(curve);
+	  ay_error(AY_EOMEM, argv[0], NULL);
+	  return TCL_OK;
+	}
+
+      curve->length = 5;
+      curve->order = 2;
+      curve->knot_type = AY_KTCUSTOM;
+      curve->type = AY_CTCLOSED;
+      curve->createmp = AY_TRUE;
+
+      /* fill knotv */
+      for(i = 0; i < 7; i++)
+	curve->knotv[i] = knots[i];
+
+      /* fill controlv */
+      if(create_trim)
+	{
+	  curve->controlv[0] = patch->uknotv[patch->uorder-1];
+	  curve->controlv[1] = patch->vknotv[patch->vorder-1];
+	  curve->controlv[2] = 0.0;
+	  curve->controlv[3] = 1.0;
+	  curve->controlv[4] = patch->uknotv[patch->width];
+	  curve->controlv[5] = patch->vknotv[patch->vorder-1];
+	  curve->controlv[6] = 0.0;
+	  curve->controlv[7] = 1.0;
+	  curve->controlv[8] = patch->uknotv[patch->width];
+	  curve->controlv[9] = patch->vknotv[patch->height];
+	  curve->controlv[10] = 0.0;
+	  curve->controlv[11] = 1.0;
+	  curve->controlv[12] = patch->uknotv[patch->uorder-1];
+	  curve->controlv[13] = patch->vknotv[patch->height];
+	  curve->controlv[14] = 0.0;
+	  curve->controlv[15] = 1.0;
+	  curve->controlv[16] = patch->uknotv[patch->uorder-1];
+	  curve->controlv[17] = patch->vknotv[patch->vorder-1];
+	  curve->controlv[18] = 0.0;
+	  curve->controlv[19] = 1.0;
+	}
+      else
+	{
+	  if(width != 1.0)
+	    for(i = 0; i < 5; i++)
+	      def_controls[i*4] *= width;
+	  if(height != 1.0)
+	    for(i = 0; i < 5; i++)
+	      def_controls[i*4+1] *= height;
+
+	  memcpy(curve->controlv, def_controls, 20*sizeof(double));
+	}
+
+      o->type = AY_IDNCURVE;
+      o->refine = curve;
+
+      ay_nct_recreatemp(curve);
+
+      if(create_trim)
+	{
+	  if(sel)
+	    {
+	      o->next = sel->object->down;
+	      sel->object->down = o;
+	    }
+	  else
+	    {
+	      o->next = parent->down;
+	      parent->down = o;
+	    }
+	}
+      else
+	{
+	  ay_object_link(o);
 	} /* if */
-    } /* if */
 
-  (void)ay_notify_object(o);
+      (void)ay_notify_object(o);
+      notify_parent = AY_TRUE;
 
-  (void)ay_notify_parent();
+      if(sel)
+	sel = sel->next;
+
+    } while (sel && create_trim);
+
+  if(notify_parent)
+    {
+      (void)ay_notify_parent();
+    }
+  else
+    {
+      if(create_trim)
+	ay_error(AY_ERROR, argv[0], "No NPatch selected or parent.");
+    }
 
  return TCL_OK;
 } /* ay_nct_crtrecttcmd */
