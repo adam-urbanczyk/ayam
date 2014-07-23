@@ -739,6 +739,10 @@ proc shortcut_viewactions { w } {
 
     set i $ayviewshortcuts(RotButton)
     bind $w.f3D.togl <${ayviewshortcuts(RotMod)}-ButtonPress-${i}> {
+	%W mc
+	if { $ay(cVUndo) } {
+	    undo save RotateView
+	}
 	%W setconf -a 1
 	set oldx %x
 	set oldy %y
