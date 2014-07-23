@@ -1488,13 +1488,17 @@ proc viewZoom { w d } {
 
     $togl mc
     if { $ay(cVUndo) } {
-	undo save ZoomView
-    }
-    $togl mc
-    if { $d < 0.0 } {
-	$togl setconf -dzoom [expr 1.0/$ayprefs(WheelZoom)]
+	if { $d < 0.0 } {
+	    $togl setconf -undokb ZoomView -dzoom [expr 1.0/$ayprefs(WheelZoom)]
+	} else {
+	    $togl setconf -undokb ZoomView -dzoom $ayprefs(WheelZoom)
+	}
     } else {
-	$togl setconf -dzoom $ayprefs(WheelZoom)
+	if { $d < 0.0 } {
+	    $togl setconf -dzoom [expr 1.0/$ayprefs(WheelZoom)]
+	} else {
+	    $togl setconf -dzoom $ayprefs(WheelZoom)
+	}
     }
     update
     $togl reshape
