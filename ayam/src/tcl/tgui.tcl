@@ -383,7 +383,7 @@ proc tgui_addtag { } {
 
     undo save AddTPTag
     set tgui_tessparam(tagval) \
-	[format "%d,%g,%g" [expr $tgui_tessparam(SMethod) + 1]\
+	[format "%d,%g,%g,%d" [expr $tgui_tessparam(SMethod) + 1]\
 	     $tgui_tessparam(SParamU) $tgui_tessparam(SParamV)\
 	     $tgui_tessparam(RefineTrims)]
 
@@ -444,6 +444,7 @@ proc tgui_readtag { } {
 	    set smethod 0
 	    set sparamu 20
 	    set sparamv 20
+	    set rtrims 0
 
 	    scan $val "%d,%g,%g,%d" smethod sparamu sparamv rtrims
 
