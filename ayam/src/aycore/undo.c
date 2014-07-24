@@ -14,6 +14,10 @@
 
 /* undo.c - undo/redo related functions */
 
+/*
+#define UNDO_DBG 1
+*/
+
 /* types local to this module */
 typedef struct ay_undo_object_s
 {
@@ -1425,7 +1429,13 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
  int save_children = AY_FALSE;
  char *a = "ay", *n = "sc", *v = "1";
  char *n2 = "uc", *n3 = "undoo", *n4 = "redoo", v2[64];
- char vnone[] = "None", vnull[] = "Null";
+ char vnone[] = "None";
+#ifdef UNDO_DBG
+ char vnull[] = "Null";
+#else
+ char *vnull = vnone;
+#endif
+
  static int uc = 0;
 
   /* parse args */
@@ -1455,7 +1465,7 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
 		    }
 		  else
 		    {
-		      ay_error(AY_EARGS, argv[0], "redo|save|clear");
+		      ay_error(AY_EARGS, argv[0], "redo|save|clear|rewind");
 		      return TCL_OK;
 		    } /* if */
 		} /* if */
@@ -1477,9 +1487,9 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
   switch(mode)
     {
     case 0:
-      /*
+#ifdef UNDO_DBG
       printf("undo\n");
-      */
+#endif
       /* perform undo */
       ay_status = ay_undo_undo();
       if(!ay_status)
@@ -1510,15 +1520,15 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
 			    (undo_buffer[undo_current+1]).operation,
 			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	      else
-		Tcl_SetVar2(interp, a, n4, vnone,
+		Tcl_SetVar2(interp, a, n4, vnull,
 			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	    }
 	} /* if */
       break;
     case 1:
-      /*
+#ifdef UNDO_DBG
       printf("redo\n");
-      */
+#endif
       /* perform redo */
       ay_status = ay_undo_redo();
       if(!ay_status)
@@ -1542,26 +1552,27 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
 			    (undo_buffer[undo_current]).operation,
 			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	      else
-		Tcl_SetVar2(interp, a, n4, vnone,
+		Tcl_SetVar2(interp, a, n4, vnull,
 			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	    }
 	  else
 	    {
-	      Tcl_SetVar2(interp, a, n4, vnull,
+	      Tcl_SetVar2(interp, a, n4, vnone,
 			  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	    }
 	} /* if */
       break;
     case 2:
-      /*
+#ifdef UNDO_DBG
       printf("save\n");
-      */
+#endif
       /* perform save */
       /* save name of modelling operation in progress */
       if(argc > 2)
 	{
 	  if(undo_saved_op)
 	    free(undo_saved_op);
+	  undo_saved_op = NULL;
 
 	  if(!(undo_saved_op = malloc((strlen(argv[2]) + 1) *
 				      sizeof(char))))
@@ -1606,9 +1617,9 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
       undo_saved_op = NULL;
       break;
     case 3:
-      /*
+#ifdef UNDO_DBG
       printf("clear\n");
-      */
+#endif
       /* perform clear */
       ay_undo_clear();
       uc = 0;
@@ -1617,9 +1628,9 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
       Tcl_SetVar2(interp, a, n4, vnone, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       break;
     case 4:
-      /*
+#ifdef UNDO_DBG
       printf("rewind\n");
-      */
+#endif
       /* perform rewind (undo a save) */
       ay_status = ay_undo_rewind(argc > 2);
       if(!ay_status)
@@ -1650,7 +1661,7 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
 			    (undo_buffer[undo_current+1]).operation,
 			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	      else
-		Tcl_SetVar2(interp, a, n4, vnone,
+		Tcl_SetVar2(interp, a, n4, vnull,
 			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	    }
 	} /* if */
