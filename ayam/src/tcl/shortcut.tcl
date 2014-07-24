@@ -746,17 +746,21 @@ proc shortcut_viewactions { w } {
 	%W setconf -a 1
 	set oldx %x
 	set oldy %y
+	set ay(motion) 0
     }
     bind $w.f3D.togl <${ayviewshortcuts(RotMod)}-ButtonRelease-${i}> {
 	%W setconf -a 0
 	focus %W
+	if { $ay(cVUndo) && ! $ay(motion) } {
+	    undo rewind silent
+	}
 	break
     }
     bind $w.f3D.togl <${ayviewshortcuts(RotMod)}-B${i}-Motion> {
 	%W setconf -drotx [expr ($oldx - %x)] -droty [expr ($oldy - %y)]
 	set oldx %x
 	set oldy %y
-	update
+	set ay(motion) 1
 	break
     }
 
@@ -785,13 +789,15 @@ proc shortcut_viewactions { w } {
 	set oldy %y
     }
     bind $w.f3D.togl <${ayviewshortcuts(ZoomRMod)}-ButtonRelease-${i}> {
-	%W mc
-	if { $ay(cVUndo) } {
-	    undo save ZoomRView
+	if { $oldx != %x && $oldy != %y } {
+	    %W mc
+	    if { $ay(cVUndo) } {
+		undo save ZoomRView
+	    }
+	    %W setconf -zrect 1 -rect $oldx $oldy %x %y 0
+	    %W redraw
+	    focus %W
 	}
-	%W setconf -zrect 1 -rect $oldx $oldy %x %y 0
-	%W redraw
-	focus %W
 	break
     }
     bind $w.f3D.togl <${ayviewshortcuts(ZoomRMod)}-B${i}-Motion> {
@@ -807,14 +813,17 @@ proc shortcut_viewactions { w } {
 	}
 	%W setconf -a 1
 	%W zoomvac -start %y
-	update
+	set ay(motion) 0
     }
     bind $w.f3D.togl <B${i}-Motion> {
 	%W zoomvac -winy %y
-	update
+	set ay(motion) 1
     }
     bind $w.f3D.togl <ButtonRelease-${i}> {
 	%W setconf -a 0
+	if { $ay(cVUndo) && ! $ay(motion) } {
+	    undo rewind silent
+	}
 	focus %W
     }
 
@@ -827,14 +836,17 @@ proc shortcut_viewactions { w } {
 	}
 	%W setconf -a 1
 	%W movevac -start %x %y
-	update
+	set ay(motion) 0
     }
     bind $w.f3D.togl <B${i}-Motion> {
 	%W movevac -winxy %x %y
-	update
+	set ay(motion) 1
     }
     bind $w.f3D.togl <ButtonRelease-${i}> {
 	%W setconf -a 0
+	if { $ay(cVUndo) && ! $ay(motion) } {
+	    undo rewind silent
+	}
 	focus %W
     }
 
