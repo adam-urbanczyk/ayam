@@ -690,7 +690,6 @@ array set ay {
  locales { en de fr }
  ScanShaders 0
  need_redraw 1
- mouseup 0
  gl_ver ""
  gl_ven ""
  gl_ren ""
@@ -712,7 +711,6 @@ array set ay {
  elevnpv 1
  soext "so"
  shiftcbsp 1
- zoomr 0
  askedscriptdisable 0
  scriptdisable 0
  iapplydisable 0
@@ -727,6 +725,7 @@ array set ay {
  cVPnts 0
  cVDrawMark 0
  vaoldfocus ""
+ motion 0
 }
 # array ay
 
@@ -782,6 +781,8 @@ if { $tcl_platform(platform) == "windows" } {
     set ayprefs(SafeAutoFocus) 1
 
     set ayprefs(BackupExt) ".bak"
+
+    set ayprefs(LogFile) [file join {$ayprefs(TmpDir)} ayam.log]
 
     # Win32 does not know KP_Add/KP_Subtract keysyms...
     set ayviewshortcuts(ZoomI) "plus"
