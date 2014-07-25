@@ -822,8 +822,8 @@ ay_shade_view(struct Togl *togl)
       ay_draw_bgimage(togl);
     }
 
-  /* draw grid */
-  if(view->drawgrid)
+  /* draw grid (but not in hidden wire mode) */
+  if(view->drawgrid && view->drawmode < 3)
     {
       ay_draw_grid(togl);
     }
