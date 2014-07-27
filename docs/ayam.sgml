@@ -12364,7 +12364,7 @@ scripting interface command <ref id="scbuildnp" name="buildNP">.
 <sect2>Tesselation Tool<label id="tesst">
 <p>
 <figure loc="ht">
-<eps file="pics/tgui.ps" height="3cm">
+<eps file="pics/tgui.ps" height="6cm">
 <img src="pics/tgui.gif">
 <caption>GUI of Tesselation Tool</caption>
 </figure>
@@ -12389,6 +12389,12 @@ of the tesselation quality and the number of created polygonal elements.
 If the option <tt>"LazyUpdate"</tt> is enabled,
 updates of the tesselation that normally occur while dragging the
 slider(s) will be deferred until the mouse button is released.
+<p>
+The options <tt/"UseTexCoords"/, <tt/"UseVertColors"/, and
+<tt/"UseVertNormals"/ control processing of texture coordinates,
+vertex colors, and vertex normals stored as PV tags in the objects
+to be tesselated. When enabled, the resulting PolyMesh objects will
+also have PV tags of the respective type.
 <p>
 The option <tt>"RefineTrims"</tt> controls how many times the trim
 curves are to be refined before tesselation for improved tesselation
@@ -20851,6 +20857,9 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 </itemize>
 <item>UseInternalFD: <ref id="hidprefs" name="hidden preference setting">
 <item>UseMatColor: <ref id="prefdraw" name="preference setting">
+<item>UseTexCoords: <ref id="tesst" name="tesselation option">
+<item>UseVertColors: <ref id="tesst" name="tesselation option">
+<item>UseVertNormals: <ref id="tesst" name="tesselation option">
 <item>usepixie.tcl: <ref id="usepixietcl" name="example/helper script">
 <item>UseSM: <ref id="lip" name="Light attribute">
 <item>UVSelect: <ref id="concatnpp" name="ConcatNP attribute">
