@@ -740,7 +740,7 @@ ay_undo_redo(void)
 
   undo_last_op = 1;
 
- return AY_OK;
+ return ay_status;
 } /* ay_undo_redo */
 
 
@@ -763,6 +763,9 @@ ay_undo_undo(void)
     { /* if last op was a save, we need to save current state too,
          to allow the user to get back to current state with redo */
       ay_status = ay_undo_save((undo_buffer[undo_current-1]).saved_children);
+      if(ay_status)
+	ay_error(AY_EWARN, fname,
+		 "Undo save failed, the state before 'undo' will be lost!");
       undo_current--;
     }
 
@@ -780,7 +783,7 @@ ay_undo_undo(void)
 
   undo_last_op = 0;
 
- return AY_OK;
+ return ay_status;
 } /* ay_undo_undo */
 
 
