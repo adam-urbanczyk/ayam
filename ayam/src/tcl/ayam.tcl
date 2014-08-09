@@ -232,6 +232,8 @@ array set ayprefs {
 
  PanDist -10
 
+ Grids { 0.1 0.25 0.5 1.0 }
+
  Docs "http://ayam.sourceforge.net/docs/"
  DailyTips {
 {Always click on drawn pixels, when picking vertices.}
@@ -492,6 +494,11 @@ array set ayviewshortcuts {
 
     DMUp "Ctrl-Prior"
     DMDown "Ctrl-Next"
+
+    GridCycleUp "Home"
+    GridCycleDown "End"
+    GridUp "Shift-Home"
+    GridDown "Shift-End"
 
     OSUp "Ctrl-KP_Up"
     OSDown "Ctrl-KP_Down"
