@@ -1005,19 +1005,19 @@ proc viewSetGridIcon { w gridsize } {
     }
 
     if { $gridsize == 0.1 } {
-	eval "$conf -image ay_Grid01_img"
+	eval "$conf -image ay_Grid0.1_img"
 	if {$menubar} { eval "$conf -image {} -label \"Grid 0.1\"" }
 	} else {
 	    if { $gridsize == 0.25 } {
-		eval "$conf -image ay_Grid025_img"
+		eval "$conf -image ay_Grid0.25_img"
 	       if {$menubar} { eval "$conf -image {} -label \"Grid 0.25\"" }
 	    } else {
 		if { $gridsize == 0.5 } {
-		    eval "$conf -image ay_Grid05_img"
+		    eval "$conf -image ay_Grid0.5_img"
 		if {$menubar} { eval "$conf -image {} -label \"Grid 0.5\"" }
 		} else {
 		    if { $gridsize == 1.0 } {
-			eval "$conf -image ay_Grid10_img"
+			eval "$conf -image ay_Grid1.0_img"
 		if {$menubar} { eval "$conf -image {} -label \"Grid 1.0\"" }
 		    } else {
 			if { $gridsize == 0.0 } {

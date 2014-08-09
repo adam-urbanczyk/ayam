@@ -405,16 +405,16 @@ if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
 }
 # if
 
-$m add command -image ay_Grid01_img -hidemargin 1 -command "\
+$m add command -image ay_Grid0.1_img -hidemargin 1 -command "\
     $w.f3D.togl setconf -grid 0.1 -drawg 1 -ugrid 1;\
     viewSetGridIcon $w 0.1"
-$m add command -image ay_Grid025_img -hidemargin 1 -command "\
+$m add command -image ay_Grid0.25_img -hidemargin 1 -command "\
     $w.f3D.togl setconf -grid 0.25 -drawg 1 -ugrid 1;\
     viewSetGridIcon $w 0.25"
-$m add command -image ay_Grid05_img -hidemargin 1 -command "\
+$m add command -image ay_Grid0.5_img -hidemargin 1 -command "\
     $w.f3D.togl setconf -grid 0.5 -drawg 1 -ugrid 1;\
     viewSetGridIcon $w 0.5"
-$m add command -image ay_Grid10_img -hidemargin 1 -command "\
+$m add command -image ay_Grid1.0_img -hidemargin 1 -command "\
     $w.f3D.togl setconf -grid 1.0 -drawg 1 -ugrid 1;\
     viewSetGridIcon $w 1.0"
 $m add command -image ay_GridX_img -hidemargin 1 -command "\
