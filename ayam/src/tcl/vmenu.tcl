@@ -394,7 +394,9 @@ if { $AYWITHAQUA } {
 if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
     menubutton $w.fMenu.g -image ay_Grid_img -menu $w.fMenu.g.m\
 	    -padx 0 -pady 0 -borderwidth 0
-    balloon_set $w.fMenu.g "change gridsize"
+    set gu $ayviewshortcuts(GridCycleUp)
+    set gd $ayviewshortcuts(GridCycleDown)
+    balloon_set $w.fMenu.g "change gridsize\ncycle with ${gu}/${gd}"
     set m [menu $w.fMenu.g.m -tearoff 0]
     if { [winfo toplevel $w] == $w } {
 	bind ayview <$aymainshortcuts(MenuMod)-g> "viewPostMenu %W.fMenu.g.m"
