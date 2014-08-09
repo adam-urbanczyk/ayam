@@ -24,15 +24,17 @@ proc printHotKeys { filename } {
 
     puts $id "\\documentclass\[10pt,a4paper\]\{article\}"
     puts $id "\\usepackage\[T1\]\{fontenc\}"
-    puts $id "\\usepackage\[landscape,lmargin=5mm,rmargin=5mm,bmargin=10mm\]\{geometry\}"
+    puts $id "\\usepackage\[landscape,lmargin=1cm,rmargin=-1cm,bmargin=-3cm\]\{geometry\}"
     puts $id "\\usepackage\{multicol\}"
     puts $id "\\usepackage\{multirow\}"
     puts $id "\\usepackage\{lmodern\}"
-
+    puts $id "\\usepackage\{array\}"
+    puts $id "\\setlength\{\\extrarowheight\}\{2pt\}"
+    puts $id "\\setlength\{\\columnsep\}\{-3cm\}"
     puts $id "\\title\{Ayam $ay(ay_version) Hot Keys\}"
     puts $id "\\date\{\}"
     puts $id "\\begin\{document\}"
-    puts $id "\\topmargin -4cm"
+    puts $id "\\topmargin -5cm"
     puts $id "\\maketitle\\thispagestyle\{empty\}\\vspace*\{-2cm\}"
     puts $id "\\begin\{multicols\}\{3\}"
 
@@ -60,13 +62,10 @@ proc printHotKeys { filename } {
     puts $id "\\hline"
     puts $id "\\end\{tabular\}"
 
-    puts $id "\\vspace \{0.5cm\}\\\\"
+    puts $id "\\vspace \{0.4cm\}\\\\"
 ################
     puts $id "\{\\bf Edit Operations\} (Main Window):\\\\"
     puts $id "\\begin\{tabular\}\{\|l\|l\|\}"
-    puts $id "\\hline"
-    puts $id "Action & Key\\\\"
-    puts $id "\\hline"
     puts $id "\\hline"
     puts $id "Copy & \\verb|<[remkpkr $aymainshortcuts(Copy)]>|\\\\"
     puts $id "\\hline"
@@ -100,13 +99,10 @@ proc printHotKeys { filename } {
     puts $id "\\hline"
     puts $id "\\end\{tabular\}\\\\"
 
-    puts $id "\\vspace \{0.5cm\}\\\\"
+    puts $id "\\vspace \{0.4cm\}\\\\"
 ################
-    puts $id "\{\\bf View Operations\} (View Windows):\\\\"
+    puts $id "\{\\bf View Operations 1\} (View Windows):\\\\"
     puts $id "\\begin\{tabular\}\{\|l\|l\|\}"
-    puts $id "\\hline"
-    puts $id "Action & Key\\\\"
-    puts $id "\\hline"
     puts $id "\\hline"
     puts $id "Quick Render& \\verb|<[remkpkr $ayviewshortcuts(QRender)]>|\\\\"
     puts $id "\\hline"
@@ -131,15 +127,14 @@ proc printHotKeys { filename } {
     puts $id "\\hline"
     puts $id "\\end\{tabular\}\\\\"
     puts $id "\\vspace \{0.5cm\}\\\\"
+
 ## ## ##
     puts $id "\{\\small * - external views only\}\\\\"
     puts $id "\\vfill\\columnbreak"
 ## ## ##
-    puts $id "\\noindent\{\\bf View Operations\} (View Windows):\\\\"
+
+    puts $id "\\noindent\{\\bf View Operations 2\} (View Windows):\\\\"
     puts $id "\\begin\{tabular\}\{\|l\|p\{4cm\}\|\}"
-    puts $id "\\hline"
-    puts $id "Action & Key\\\\"
-    puts $id "\\hline"
     puts $id "\\hline"
     puts $id "Halve Size* & \\verb|<[remkpkr $ayviewshortcuts(Halve)]>|\\\\"
     puts $id "\\hline"
@@ -163,22 +158,18 @@ proc printHotKeys { filename } {
     puts $id "Toggle Local & \\verb|<[remkpkr $ayviewshortcuts(Local)]>*| / \\verb|<[remkpkr $ayviewshortcuts(Local2)]>|\\\\"
     puts $id "\\hline"
     puts $id "\\hline"
-    puts $id "\\multirow\{2\}\{*\}\{Cycle Type\} & \\verb|<[remkpkr $ayviewshortcuts(TypeUp)]>| /\\\\"
-    puts $id "& \\verb|<[remkpkr $ayviewshortcuts(TypeDown)]>|\\\\"
+    puts $id "Cycle Type & \\verb|<[remkpkr $ayviewshortcuts(TypeUp)]>*| / \\verb|<[remkpkr $ayviewshortcuts(TypeDown)]>|\\\\"
     puts $id "\\hline"
     puts $id "\\multirow\{2\}\{*\}\{Cycle DrawMode\} & \\verb|<[remkpkr $ayviewshortcuts(DMUp)]>| /\\\\"
     puts $id "&\\verb|<[remkpkr $ayviewshortcuts(DMDown)]>|\\\\"
     puts $id "\\hline"
     puts $id "\\end\{tabular\}"
 
-    puts $id "\\vspace \{0.5cm\}\\\\"
+    puts $id "\\vspace \{0.4cm\}\\\\"
 
 ################
     puts $id "\{\\bf Modelling Actions\} (View Windows):\\\\"
     puts $id "\\begin\{tabular\}\{\|l\|l\|\}"
-    puts $id "\\hline"
-    puts $id "Action & Key\\\\"
-    puts $id "\\hline"
     puts $id "\\hline"
     puts $id "Transform Objects / Points & \\verb|<[remkpkr $ayviewshortcuts(TransO)]>| / \\verb|<[remkpkr $ayviewshortcuts(TransP)]>|\\\\"
     puts $id "\\hline"
@@ -204,7 +195,7 @@ proc printHotKeys { filename } {
     puts $id "Mark (Objs. COG / Pnts. COG)& \\verb|<[remkpkr $ayviewshortcuts(About)]>| / \\verb|<[remkpkr $ayviewshortcuts(About)][remkpkr $ayviewshortcuts(CenterO)]>| / \\verb|<[remkpkr $ayviewshortcuts(About)][remkpkr $ayviewshortcuts(CenterP)]>|\\\\"
     puts $id "\\hline"
     puts $id "\\hline"
-    puts $id "Edit Point (directly)& \\verb|<[remkpkr $ayviewshortcuts(Edit)]>| (\\verb|<[remkpkr $ayviewshortcuts(EditD)]>|)\\\\"
+    puts $id "Edit Point (directly)& \\verb|<[remkpkr $ayviewshortcuts(Edit)]>| (\\verb|<[remkpkr $ayviewshortcuts(EditN)]>|)\\\\"
     puts $id "\\hline"
     puts $id "Edit Weight / Reset all& \\verb|<[remkpkr $ayviewshortcuts(WeightE)]>| / \\verb|<[remkpkr $ayviewshortcuts(WeightR)]>|\\\\"
     puts $id "\\hline"
@@ -218,12 +209,12 @@ proc printHotKeys { filename } {
     puts $id "\\hline"
     puts $id "\\end\{tabular\}"
 
-    puts $id "\\vspace \{0.5cm\}\\\\"
+    puts $id "\\vspace \{0.25cm\}\\\\"
 
 ## ## ##
     puts $id "\\vfill\\columnbreak"
 ## ## ##
-
+    puts $id "\\hspace\{2cm\}\\begin\{minipage\}\{\\columnwidth\}"
     puts $id "\\noindent\{\\bf Camera Actions\} (View Windows):\\\\"
     puts $id "\\begin\{tabular\}\{\|l\|l\|\}"
     puts $id "\\hline"
@@ -249,13 +240,10 @@ proc printHotKeys { filename } {
     puts $id "\\hline"
     puts $id "\\end\{tabular\}"
 
-    puts $id "\\vspace \{0.5cm\}\\\\"
+    puts $id "\\vspace \{0.4cm\}\\\\"
 ################
     puts $id "\{\\bf Miscellaneous\} (View Windows):\\\\"
     puts $id "\\begin\{tabular\}\{\|l\|l\|\}"
-    puts $id "\\hline"
-    puts $id "Action & Key\\\\"
-    puts $id "\\hline"
     puts $id "\\hline"
     puts $id "Break Action& \\verb|<[remkpkr $ayviewshortcuts(Break)]>|\\\\"
     puts $id "\\hline"
@@ -288,13 +276,10 @@ proc printHotKeys { filename } {
     puts $id "\\hline"
     puts $id "\\end\{tabular\}"
 
-    puts $id "\\vspace \{0.3cm\}\\\\"
+    puts $id "\\vspace \{0.4cm\}\\\\"
 
     puts $id "\{\\bf Global\} (All Windows):\\\\"
     puts $id "\\begin\{tabular\}\{\|l\|l\|\}"
-    puts $id "\\hline"
-    puts $id "Action & Key\\\\"
-    puts $id "\\hline"
     puts $id "\\hline"
     puts $id "Show Property& \\verb|<0>-<9>|\\\\"
     puts $id "\\hline"
@@ -307,6 +292,7 @@ proc printHotKeys { filename } {
     puts $id "Redo & \\verb|<[remkpkr $aymainshortcuts(Redo)]>|\\\\"
     puts $id "\\hline"
     puts $id "\\end\{tabular\}"
+    puts $id "\\end\{minipage\}"
 
 
     puts $id "\\end\{multicols\}"
