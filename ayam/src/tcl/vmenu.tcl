@@ -345,7 +345,10 @@ if { $AYWITHAQUA } {
 if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
     menubutton $w.fMenu.dm -image ay_DMDraw_img -menu $w.fMenu.dm.m\
 	    -padx 0 -pady 0 -borderwidth 0
-    balloon_set $w.fMenu.dm "change drawing mode"
+    global ayviewshortcuts
+    set dmu $ayviewshortcuts(DMUp)
+    set dmd $ayviewshortcuts(DMDown)
+    balloon_set $w.fMenu.dm "change drawing mode\ntoggle with ${dmu}/${dmd}"
     set m [menu $w.fMenu.dm.m -tearoff 0]
 
     set ay(dmodem) fMenu.dm.m

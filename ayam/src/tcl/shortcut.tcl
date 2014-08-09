@@ -569,6 +569,13 @@ proc shortcut_view { w } {
     bind $w <[repctrl $ayviewshortcuts(DMUp)]> "viewCycleDrawMode $w -1;break"
     bind $w <[repctrl $ayviewshortcuts(DMDown)]> "viewCycleDrawMode $w 1;break"
 
+    bind $w <[repctrl $ayviewshortcuts(GridCycleUp)]>\
+	"viewCycleGrid $w 1 1;break"
+    bind $w <[repctrl $ayviewshortcuts(GridCycleDown)]>\
+	"viewCycleGrid $w 1 -1;break"
+    bind $w <[repctrl $ayviewshortcuts(GridUp)]> "viewCycleGrid $w 0 1;break"
+    bind $w <[repctrl $ayviewshortcuts(GridDown)]> "viewCycleGrid $w 0 -1;break"
+
     bind $w <[repctrl $aymainshortcuts(Zap)]> zap
     bind $w <Map> unzap
 

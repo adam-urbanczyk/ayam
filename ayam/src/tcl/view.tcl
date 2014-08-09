@@ -1024,7 +1024,15 @@ proc viewSetGridIcon { w gridsize } {
 			    eval "$conf -image ay_Grid_img"
 		    if {$menubar} { eval "$conf -image {} -label \"No Grid\"" }
 			} else {
-			    eval "$conf -image ay_GridX_img"
+			    # non-standard size, see if we have a matching icon
+			    set iconName ay_Grid
+			    append iconName $gridsize
+			    append iconName _img
+			    if { [lsearch [image names] $iconName] != -1 } {
+				eval "$conf -image $iconName"
+			    } else {
+				eval "$conf -image ay_GridX_img"
+			    }
                   if {$menubar} { eval "$conf -image {} -label \"Grid X\"" }
 			}
 		    }
@@ -1320,6 +1328,64 @@ proc viewCycleMMode { w } {
  return;
 }
 # viewCycleMMode
+
+
+##############################
+# viewCycleGrid:
+#  cycle grid size
+proc viewCycleGrid { w cycle dir } {
+    global ay ayprefs
+
+    set togl $w.f3D.togl
+
+    if { [string first ".view" $w] == 0 } {
+	set w [winfo toplevel $togl]
+    }
+
+    if { $cycle } {
+	set index [lsearch $ayprefs(Grids) $ay(cVGridSize)]
+
+	if { $index == -1 } {
+	    if { $dir == -1 } {
+		set index [llength $ayprefs(Grids)]
+		incr index -1
+	    } else {
+		set index 0
+	    }
+	} else {
+	    if { $dir == -1 } {
+		incr index -1
+		if { $index < 0 } {
+		    set index [llength $ayprefs(Grids)]
+		    incr index -1
+		}
+	    } else {
+		incr index
+		if { $index >= [llength $ayprefs(Grids)] } {
+		    set index 0
+		}
+	    }
+	}
+
+	set grid [lindex $ayprefs(Grids) $index]
+
+    } else {
+	if { $dir == -1 } {
+	    set grid [expr $ay(cVGridSize) * 0.5]
+	} else {
+	    set grid [expr $ay(cVGridSize) * 2.0]
+	}
+    }
+
+    $w.f3D.togl setconf -grid $grid
+
+    viewSetGridIcon $w $grid
+
+    set ay(cVGridSize) $grid
+
+ return;
+}
+# viewCycleGrid
 
 
 ##############################
