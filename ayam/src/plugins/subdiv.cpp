@@ -127,18 +127,14 @@ subdiv_notifycb(ay_object *o)
   if(sdmesh->scheme == AY_SDSCATMULL)
     {
       try {
-      qm = new QuadMesh(cv, sdmesh->nfaces, sdmesh->nverts, sdmesh->verts);
-      } catch (...) {
-	ay_status = AY_ERROR;
-	goto cleanup;
-      }
-      try {
+	qm = new QuadMesh(cv, sdmesh->nfaces, sdmesh->nverts, sdmesh->verts);
 	qm->subdivide(sdmesh->level);
       } catch (...) {
 	ay_status = AY_ERROR;
 	delete qm;
 	goto cleanup;
       }
+
       qm->toAyam(&po->controlv, &po->ncontrols,
 		 &po->nverts, &po->verts, &po->npolys);
 
@@ -146,9 +142,14 @@ subdiv_notifycb(ay_object *o)
     }
   else
     {
-      tm = new TriMesh(cv, sdmesh->nfaces, sdmesh->nverts, sdmesh->verts);
-
-      tm->subdivide(sdmesh->level);
+      try {
+	tm = new TriMesh(cv, sdmesh->nfaces, sdmesh->nverts, sdmesh->verts);
+	tm->subdivide(sdmesh->level);
+      } catch (...) {
+	ay_status = AY_ERROR;
+	delete qm;
+	goto cleanup;
+      }
 
       tm->toAyam(&po->controlv, &po->ncontrols,
 		 &po->nverts, &po->verts, &po->npolys);
@@ -156,8 +157,7 @@ subdiv_notifycb(ay_object *o)
       delete tm;
     }
 
-  if(!(po->nloops = (unsigned int*)calloc(po->npolys,
-					  sizeof(unsigned int))))
+  if(!(po->nloops = (unsigned int*)malloc(po->npolys*sizeof(unsigned int))))
     {
       ay_status = AY_EOMEM;
       goto cleanup;
