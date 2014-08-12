@@ -235,6 +235,7 @@ static Tcl_ObjType *jsinterp_BooleanType = NULL;
 static Tcl_ObjType *jsinterp_ByteArrayType = NULL;
 static Tcl_ObjType *jsinterp_DoubleType = NULL;
 static Tcl_ObjType *jsinterp_IntType = NULL;
+static Tcl_ObjType *jsinterp_LongType = NULL;
 static Tcl_ObjType *jsinterp_ListType = NULL;
 static Tcl_ObjType *jsinterp_StringType = NULL;
 static Tcl_ObjType *jsinterp_WideIntType = NULL;
@@ -406,39 +407,39 @@ jsinterp_objtoval(Tcl_Obj *to, jsval *v)
  Tcl_Obj **objv;
  jsval elemv, arrv;
 
-  if(to->typePtr == jsinterp_IntType)
+  if((to->typePtr == jsinterp_IntType) || (to->typePtr == jsinterp_LongType))
     {
-      if(JS_NewNumberValue(jsinterp_cx,
-			   (double)to->internalRep.longValue, v))
+      if(JS_NewNumberValue(jsinterp_cx, (double)to->internalRep.longValue, v))
 	{
 	  return AY_OK;
 	}
     }
-  else if (to->typePtr == jsinterp_DoubleType)
+    else if(to->typePtr == jsinterp_WideIntType)
     {
-      if(JS_NewNumberValue(jsinterp_cx,
-			   (double)to->internalRep.doubleValue, v))
+      if(JS_NewNumberValue(jsinterp_cx, (double)to->internalRep.wideValue, v))
 	{
 	  return AY_OK;
 	}
     }
-    else if (to->typePtr == jsinterp_BooleanType)
-      {
-	if(Tcl_GetIntFromObj(NULL, to, &ival) != TCL_ERROR)
-	  {
-	    if(JS_NewNumberValue(jsinterp_cx, (double)ival, v))
-	      {
-		return AY_OK;
-	      }
-	  }
-      }
-  /*
-  else if (to->typePtr == tclByteArrayTypePtr) {
-    str = (char *) Tcl_GetByteArrayFromObj(to, &len);
-    ...
-  }
-  */
-  else if (to->typePtr == jsinterp_ListType)
+    else if(to->typePtr == jsinterp_DoubleType)
+    {
+      if(JS_NewNumberValue(jsinterp_cx, (double)to->internalRep.doubleValue, v))
+	{
+	  return AY_OK;
+	}
+    }
+    else if(to->typePtr == jsinterp_BooleanType)
+    {
+      if(Tcl_GetIntFromObj(NULL, to, &ival) != TCL_ERROR)
+	{
+	  if(ival == 0)
+	    *v = JSVAL_FALSE;
+	  else
+	    *v = JSVAL_TRUE;
+	  return AY_OK;
+	}
+    }
+    else if(to->typePtr == jsinterp_ListType)
     {
       Tcl_ListObjGetElements(NULL, to, &objc, &objv);
       if(objc)
@@ -477,15 +478,18 @@ jsinterp_objtoval(Tcl_Obj *to, jsval *v)
       else
 	{
 	  /* create empty string */
+	  /* XXXX rather create empty array object? */
 	  if((jss = JS_NewStringCopyZ(jsinterp_cx, NULL)))
 	    {
 	      *v = STRING_TO_JSVAL(jss);
 	      return AY_OK;
 	    }
 	}
-    }
-  else
-    {
+    } else {
+      /* XXXX TODO
+       * for unicode, rather use Tcl_GetStringFromObj() with lengthPtr and then
+       * JSString * JS_NewStringCopyN(JSContext *cx, const char *s, size_t n);
+       */
       if((sval = Tcl_GetString(to)) != NULL)
 	{
 	  if((jss = JS_NewStringCopyZ(jsinterp_cx, sval)))
@@ -494,7 +498,13 @@ jsinterp_objtoval(Tcl_Obj *to, jsval *v)
 	      return AY_OK;
 	    }
 	}
-    }
+    } /* switch objtype */
+  /*
+  else if (to->typePtr == tclByteArrayTypePtr) {
+    str = (char *) Tcl_GetByteArrayFromObj(to, &len);
+    ...
+  }
+  */
 
  return AY_ERROR;
 } /* jsinterp_objtoval */
@@ -705,7 +715,7 @@ jsinterp_vartraceproc(ClientData clientData, Tcl_Interp *interp,
 
       if(JS_LookupProperty(jsinterp_cx, jsinterp_global, name1, objval))
 	{
-	  if(!JSVAL_IS_VOID(*objval))
+	  if(!JSVAL_IS_NULL(*objval) && !JSVAL_IS_VOID(*objval))
 	    {
 	      if(JSVAL_IS_OBJECT(*objval))
 		{
@@ -811,8 +821,9 @@ jsinterp_jsvaltoobj(jsval jv, Tcl_Obj **to)
  jsdouble *dval;
  JSString *jss;
  JSObject *jso;
+ JSClass *jsc;
  Tcl_Obj *lto;
- jsval arrelem;
+ jsval arrelem, bval;
 
   if(JSVAL_IS_BOOLEAN(jv))
     {
@@ -839,7 +850,7 @@ jsinterp_jsvaltoobj(jsval jv, Tcl_Obj **to)
       *to = Tcl_NewStringObj(JS_GetStringBytes(jss), -1);
       return;
     }
-  if(JSVAL_IS_OBJECT(jv))
+  if(!JSVAL_IS_NULL(jv) && JSVAL_IS_OBJECT(jv))
     {
       jso = JSVAL_TO_OBJECT(jv);
       if(JS_IsArrayObject(jsinterp_cx, jso))
@@ -851,6 +862,7 @@ jsinterp_jsvaltoobj(jsval jv, Tcl_Obj **to)
 		{
 		  if(JS_GetElement(jsinterp_cx, jso, i, &arrelem))
 		    {
+		      lto = NULL;
 		      jsinterp_jsvaltoobj(arrelem, &lto);
 		      if(lto)
 			{
@@ -865,7 +877,19 @@ jsinterp_jsvaltoobj(jsval jv, Tcl_Obj **to)
 		    } /* if */
 		} /* for */
 	    } /* if */
-	} /* if */
+	}
+      else
+	{
+	  /* assume non-thread-safe build */
+	  jsc = JS_GetClass(jso);
+	  if(jsc && !strcmp(jsc->name, "Boolean"))
+	    {
+	      if(!JS_CallFunctionName(jsinterp_cx, jso, "valueOf",
+				      0, NULL, &bval))
+		return;
+	      return jsinterp_jsvaltoobj(bval, to);
+	    }
+	} /* if is array or Boolean */
     } /* if */
 
  return;
@@ -905,6 +929,10 @@ jsinterp_tclset(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
 	    {
 	      Tcl_ObjSetVar2(jsinterp_interp, ton, NULL, to,
 			     TCL_LEAVE_ERR_MSG);
+	    }
+	  else
+	    {
+	      JS_ReportError(cx, "could not convert the value");
 	    }
 
 	  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
@@ -1173,6 +1201,7 @@ Jsinterp_Init(Tcl_Interp *interp)
   jsinterp_ByteArrayType = Tcl_GetObjType("bytearray");
   jsinterp_DoubleType = Tcl_GetObjType("double");
   jsinterp_IntType = Tcl_GetObjType("int");
+  jsinterp_LongType = Tcl_GetObjType("long");
   jsinterp_ListType = Tcl_GetObjType("list");
   jsinterp_StringType = Tcl_GetObjType("string");
   jsinterp_WideIntType = Tcl_GetObjType("wideInt");
