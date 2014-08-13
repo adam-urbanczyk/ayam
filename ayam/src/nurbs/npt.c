@@ -5672,7 +5672,7 @@ ay_npt_extrude(double height, ay_object *o, ay_nurbpatch_object **extrusion)
   new->vorder = curve->order;
   new->uorder = 2; /* linear! */
   new->vknot_type = curve->knot_type;
-  new->uknot_type = AY_KTCUSTOM;
+  new->uknot_type = AY_KTNURB;
   new->width = 2;
   new->height = curve->length;
   new->glu_sampling_tolerance = curve->glu_sampling_tolerance;
