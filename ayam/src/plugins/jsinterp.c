@@ -528,6 +528,7 @@ jsinterp_wrapevalcmd(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
   if(argc < 1)
     {
       JS_ReportError(cx, "insufficient arguments, need script");
+      return JS_FALSE;
     }
 
   if(JSVAL_IS_STRING(argv[0]))
@@ -554,6 +555,7 @@ jsinterp_wrapevalcmd(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
 	      else
 		{
 		  JS_ReportError(cx, "failed to convert script result");
+		  retval = JS_FALSE;
 		}
 	    }
 	  break;
@@ -562,6 +564,7 @@ jsinterp_wrapevalcmd(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
   else
     {
       JS_ReportError(cx, "bad script");
+      retval = JS_FALSE;
     }
 
   *rval = JSVAL_VOID; /* return undefined */
@@ -779,6 +782,12 @@ jsinterp_tclvar(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
  uintN i = 0;
  char *vname;
 
+  if(argc < 1)
+    {
+      JS_ReportError(cx, "insufficient arguments, need varname");
+      return JS_FALSE;
+    }
+
   for(i = 0; i < argc; i++)
     {
       if(JSVAL_IS_STRING(argv[i]))
@@ -797,6 +806,7 @@ jsinterp_tclvar(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
 					 clientData))
 		{
 		  JS_ReportError(cx, "failed to establish trace");
+		  return JS_FALSE;
 		}
 	    }
 	}
@@ -819,11 +829,11 @@ jsinterp_jsvaltoobj(jsval jv, Tcl_Obj **to)
  int ival;
  jsuint i, arrlen;
  jsdouble *dval;
+ jsval arrelem, bval;
  JSString *jss;
  JSObject *jso;
  JSClass *jsc;
  Tcl_Obj *lto;
- jsval arrelem, bval;
 
   if(JSVAL_IS_BOOLEAN(jv))
     {
@@ -910,6 +920,7 @@ jsinterp_tclset(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
   if(argc < 2)
     {
       JS_ReportError(cx, "insufficient arguments, need varname and value");
+      return JS_FALSE;
     }
 
   for(i = 0; (i+1) < argc; i += 2)
@@ -933,6 +944,8 @@ jsinterp_tclset(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
 	  else
 	    {
 	      JS_ReportError(cx, "could not convert the value");
+	      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+	      return JS_FALSE;
 	    }
 
 	  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
