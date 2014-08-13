@@ -792,7 +792,7 @@ ay_knots_mergenp(ay_nurbpatch_object *patch,
       while(!done)
 	{
 	  /* was: if(Ubar[ib] == U[ia]) */
-	  if(fabs(Ubar[ib]-U[ia]) < AY_EPSILON)
+	  if(fabs(Ubar[ib] - U[ia]) < AY_EPSILON)
 	    {
 	      ib++;
 	      ia++;
@@ -803,7 +803,7 @@ ay_knots_mergenp(ay_nurbpatch_object *patch,
 	      r++;
 	      ib++;
 	    }
-	  done = ((ia >= (patch->width+patch->uorder)) || (ib >= Ubarlen));
+	  done = ((ia >= (patch->width + patch->uorder)) || (ib >= Ubarlen));
 	}
 
       if(r == 0)
@@ -1179,11 +1179,11 @@ ay_knots_chordparam(double *Q, int Qlen, int stride, double **U)
   j = 0;
   for(i = 0; i < (Qlen-1); i++)
     {
-      if((fabs(Q[j+stride] - Q[j])>AY_EPSILON) ||
-	 (fabs(Q[j+stride+1] - Q[j+1])>AY_EPSILON) ||
-	 (fabs(Q[j+stride+2] - Q[j+2])>AY_EPSILON))
+      if((fabs(Q[j+stride]   - Q[j])   > AY_EPSILON) ||
+	 (fabs(Q[j+stride+1] - Q[j+1]) > AY_EPSILON) ||
+	 (fabs(Q[j+stride+2] - Q[j+2]) > AY_EPSILON))
 	{
-	  lens[i] = AY_VLEN((Q[j+stride] - Q[j]),
+	  lens[i] = AY_VLEN((Q[j+stride]   - Q[j]),
 			    (Q[j+stride+1] - Q[j+1]),
 			    (Q[j+stride+2] - Q[j+2]));
 	}
@@ -1334,6 +1334,7 @@ ay_knots_chordparamnp(int dir, double *Q, int width, int height, int stride,
   if(!Q || !U)
     return AY_ENULL;
 
+  /* compute partial lengths */
   if(dir)
     {
       (void)ay_npt_avglensv(Q, width, height, stride, &lens);
@@ -1354,13 +1355,10 @@ ay_knots_chordparamnp(int dir, double *Q, int width, int height, int stride,
       return AY_EOMEM;
     }
 
-  /* compute total length and partial lengths */
-  j = 0;
+  /* compute total length */
   for(i = 0; i < Ulen-1; i++)
     {
       totallen += lens[i];
-
-      j += stride;
     }
 
   if(totallen < AY_EPSILON)
@@ -1439,7 +1437,7 @@ ay_knots_centriparamnp(int dir, double *Q, int width, int height, int stride,
   /* compute total length and partial lengths */
   for(i = 0; i < Ulen-1; i++)
     {
-      if(fabs(lens[i])>AY_EPSILON)
+      if(fabs(lens[i]) > AY_EPSILON)
 	{
 	  lens[i] = sqrt(lens[i]);
 	  totallen += lens[i];
@@ -1560,12 +1558,12 @@ ay_knots_classify(unsigned int order, double *U, unsigned int Ulen,
   if(Ulen < 2 || !U)
     return AY_KTCUSTOM;
 
-  d = U[1]-U[0];
+  d = U[1] - U[0];
 
   /* check all knot intervals */
   for(i = 1; i < (Ulen-1); i++)
     {
-      if(fabs((U[i+1]-U[i])-d) > eps)
+      if(fabs((U[i+1] - U[i]) - d) > eps)
 	{
 	  is_bspline = AY_FALSE;
 	  break;
@@ -1577,7 +1575,7 @@ ay_knots_classify(unsigned int order, double *U, unsigned int Ulen,
   /* check first order intervals */
   for(i = 1; i < order; i++)
     {
-      if(fabs(U[i+1]-U[i]) > eps)
+      if(fabs(U[i+1] - U[i]) > eps)
 	{
 	  is_clamped = AY_FALSE;
 	  break;
@@ -1598,10 +1596,10 @@ ay_knots_classify(unsigned int order, double *U, unsigned int Ulen,
   if(is_clamped)
     {
       /* check intermediate intervals */
-      d = U[order+1]-U[order];
+      d = U[order+1] - U[order];
       for(i = order+1; i < (Ulen-order); i++)
 	{
-	  if(fabs((U[i+1]-U[i]) - d) > eps)
+	  if(fabs((U[i+1] - U[i]) - d) > eps)
 	    {
 	      is_nurb = AY_FALSE;
 	      break;
@@ -1620,7 +1618,7 @@ ay_knots_classify(unsigned int order, double *U, unsigned int Ulen,
 /** ay_knots_revert:
  * Revert a knot vector.
  *
- * \param[in,out] U knot vector
+ * \param[in,out] U knot vector to process
  * \param[in] Ulen length of knot vector
  *
  * \returns AY_OK on success, error code otherwise.
@@ -1641,10 +1639,9 @@ ay_knots_revert(double *U, int Ulen)
   Ut[0] = U[0];
   Ut[Ulen-1] = U[Ulen-1];
   j = Ulen-2;
-  for(i=1; i < (Ulen-1); i++)
+  for(i = 1; i < (Ulen-1); i++)
     {
-      Ut[i] = Ut[0]+(Ut[Ulen-1]-U[j]);
-
+      Ut[i] = Ut[0] + (Ut[Ulen-1] - U[j]);
       j--;
     }
 
@@ -1716,7 +1713,7 @@ ay_knots_getdisc(int Ulen, double *U, int order, int *Udlen, double **Ud)
  * \param[in] index control point to be removed
  * \param[in] order order of curve/surface
  * \param[in] length length (width/height) of curve (surface) prior to removal
- * \param[in,out] U knot vector
+ * \param[in,out] U pointer to knot vector to process
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -1767,7 +1764,7 @@ ay_knots_remove(unsigned int index, int order, int length, double **U)
  * \param[in] index control point to be inserted
  * \param[in] order order of curve/surface
  * \param[in] length length (width/height) of curve (surface) prior to insertion
- * \param[in,out] U knot vector
+ * \param[in,out] U pointer to knot vector to process
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -1824,7 +1821,9 @@ ay_knots_insert(unsigned int index, int order, int length, double **U)
  *
  * \param[in] nc NURBS curve to check
  * \param[in] eps maximum allowed distance for the match
- * \param[in,out] u knot
+ * \param[in,out] u pointer to knot value to check, but also pointer where
+ *  to store the matching knots address (will only be written to in case
+ *  of a match)
  *
  */
 void
@@ -1839,7 +1838,7 @@ ay_knots_match(ay_nurbcurve_object *nc, double eps, double *u)
   p = nc->knotv;
   for(i = 0; i < nc->length+nc->order; i++)
     {
-      if(fabs(*p-*u)<eps)
+      if(fabs(*p - *u) < eps)
 	{
 	  *u = *p;
 	  return;
