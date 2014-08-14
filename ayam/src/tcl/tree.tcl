@@ -230,10 +230,14 @@ proc tree_selectOrPopup { extend redraw tree node } {
     } else {
 	if { $extend } {
 	    tree_multipleSelection $tree $node
+	} else {
+	    if {[lsearch $nlist $node] == -1 } {
+		tree_selectItem $redraw $tree $node
+	    }
 	}
     }
     winOpenPopup $ay(tree)
-
+    after idle {focus -force $ay(tree).popup}
  return;
 }
 # tree_selectOrPopup
