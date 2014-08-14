@@ -1,20 +1,19 @@
-[readme.txt; 18. Dec 2012]
+[readme.txt; 14. Aug 2014]
 
 This directory contains the sources (SGML and pictures) for the main
 Ayam documentation (the Ayam reference manual) and a Tcl-script to
 create a reference card.
 
-In order to build your own version of the documentation you need the
-following prerequisites:
+In order to build the documentation the following prerequisites are needed:
 o make
 o tclsh in /usr/bin/ (otherwise edit the Makefile)
 o sgml-tools 1.0.9 or linuxdoc-tools
 
-if you want to build a PostScript version you, additionally, need
+Additional prerequisites for the PostScript version are:
 o LaTeX
 o dvips
 
-if you want to build a PDF version you, additionally, need
+Additional prerequisites for the PDF version are:
 o dvipdf (not recommended) or pdflatex (recommended)
 o needspace.sty, shorttoc.sty, footmisc.sty
 
@@ -45,6 +44,7 @@ or
 </footnote>             "\">*</SUB>"            +
 
 See also the provided file "html-mapping".
+My html mapping resides in "/usr/share/linuxdoc-tools/mappings/html".
 
 To build the PostScript version:
 >make ps
@@ -73,12 +73,15 @@ to
 <ref>			"\\hyperref\[[ID]\]{\\ref*{[ID]} [NAME] (page \\pageref*{[ID]})}"
 
 See also the provided file "latex2e-mapping".
+My latex2e mapping resides in "/usr/share/linuxdoc-tools/mappings/latex2e".
 
 Also employ the isoent and ISOtech.2tex files.
+My isoent resides in "/usr/share/sgml/dtd".
+My ISOtech.2tex resides in "/usr/share/entity-map/0.1.0/".
 
 ==============================================================================
 
-To (re)create the reference card, you need the following prerequisites:
+To (re)create the reference card, the following prerequisites are needed:
 o LaTeX
 
 How do you create the reference card?
