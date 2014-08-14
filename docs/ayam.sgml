@@ -1770,7 +1770,7 @@ camera (From and To) to the view type dependend default values.
 </itemize>
 
 See section <ref id="rctcl" name="Revert Cursor Key Behavior">
-for a script that swaps the cursor key bindings in parallel
+for a script that swaps the rotate and pan cursor key bindings in parallel
 views.
 
 Interactive actions modifying the camera, that is associated with the
@@ -1818,8 +1818,8 @@ Rotate View|<tt/&lt;R&gt;/|
 <caption>Interactive View Actions Overview</caption>
 </table>
 <p>
-You may also pan/move the view by dragging with the rightmost mouse
-button and zoom the view with the middle mouse button without affecting
+You may also pan&thinsp;/&thinsp;move the view by dragging with the rightmost
+mouse button and zoom the view with the middle mouse button without affecting
 any other active view or modelling action.
 <p>
 If you have a wheel mouse and it is configured to send
@@ -1831,6 +1831,10 @@ types.<footnote>Since 1.15.</footnote>
 <p>
 <tt/&lt;Ctrl+PgUp&gt;/ and <tt/&lt;Ctrl+PgDown&gt;/
 cycle through the drawing modes.<footnote>Since 1.16.</footnote>
+<p>
+<tt/&lt;Home&gt;/ and <tt/&lt;End&gt;/ cycle through the grid sizes.
+<tt/&lt;Shift-Home&gt;/ and <tt/&lt;Shift-End&gt;/ modify the current
+grid size.<footnote>Since 1.21.</footnote>
 <p>
 Using the menu entry <tt/"Zoom to Object"/ or the corresponding
 shortcut <tt/&lt;Ctrl+o&gt;/ (<tt/&lt;O&gt;/ for internal views)
@@ -4348,13 +4352,13 @@ The standard input planes are as following: Front &ndash; XY-plane,
 Side &ndash; ZY-plane, Top &ndash; XZ-plane, Trim &ndash; XY-plane.
 <p>
 In perspective views no interactive modelling actions are possible,
-but you may position the camera, pick objects, and select points.
+but the camera may be modified, objects can be picked, and points selected.
 <p>
-Views of type <tt/"Trim"/ are very special. They are used to edit
-trim curves of NPatch objects only. They display <em>only</em>
-those trim curves as normal NURBS curves when the current level is
-inside a NPatch.
-The extensions of the patch in parameter-space are drawn as a rectangle.
+Views of type <tt/"Trim"/ are used to edit trim curves of NPatch objects
+only. They display those trim curves as normal NURBS curves when the
+current level is inside a NPatch.
+The extensions of the patch in parameter-space are also drawn as a
+dashed rectangle.
 The trim curves should completely lie inside this rectangle.
 Note that picking of objects currently does not work in views of type
 <tt/"Trim"/.
@@ -4429,26 +4433,31 @@ used by the interactive modelling actions.
 <item><tt/"ModellingMode"/ enables editing in local object spaces.
 See also section <ref id="editlocal" name="Editing in Local Spaces">.
 
-<item><tt/"DrawBG"/ controls whether the background image should
-be drawn.
+<item><tt/"DrawBG"/ controls whether the background image (specified
+by the <tt/"BGImage"/ option below) should be drawn. If a NPatch object
+is present as child of the View object,
+the image will be mapped onto this object instead of filling the
+complete view window background.
+
 <item><tt/"BGImage"/ is the name of a TIFF file, that will
-be used as texture for the background image. Ayam will read
-this image once when you apply the changes to the
-<tt/"ViewAttrib"/ property
-but reread
-the image file if the notification callback of the view object
-is invoked (e.g.~using the main menu entry
+be used as texture for the background image. Ayam will read this image file
+when the changes to the <tt/"ViewAttrib"/ property are applied,
+but also reread the image file if the notification callback of the view
+object is invoked (e.g.~using the main menu entry
 <tt>"Tools/Force Notification"</tt>).
 
 <item><tt/"Mark"/ is the marked point (in world coordinates) for
 the rotate and scale about modelling actions.
 
 <item><tt/"SetMark"/ controls whether the data from the <tt/"Mark"/
-entries above should be used as new mark coordinates.
+entries above should be used as new mark coordinates when the
+changes to the <tt/"ViewAttrib"/ property are applied.
 
 <item><tt/"EnableUndo"/ is switched on by default and allows to
-disable undo for view actions, e.g.~panning or zooming a view,
-these actions then also do not change the scene changed state.
+control undo for the interactive view actions, e.g.~panning or zooming
+a view.
+If this option is disabled, these actions will not be recorded in the
+undo system and also do not change the scene changed state.
 </itemize>
 
 <sect2>Drag and Drop Support
@@ -16269,7 +16278,7 @@ the following code fails:
 <tt>tcleval("<bf>exit</bf>");</tt>
 </tscreen>
 because the Tcl command <tt/"exit"/ is not available in the safe interpreter.
-The command will not fail, when the calling context ist the main Tcl
+The command will not fail, when the calling context is the main Tcl
 interpreter; one can e.g.~type into the Ayam console:
 <tscreen>
 <tt>&raquo;&thinsp;<bf>jsEval {</bf>tcleval("<bf>exit</bf>");<bf/}/</tt>
@@ -16345,7 +16354,8 @@ Mind that the corresponding variable on the JavaScript side does
 occurs.
 The Tcl variable, in turn, does not have to exist, when the
 <tt>"tclvar"</tt> function is called (i.e.~all the work is done
-in the trace callback).
+in the trace callback). If the variable name contains a namespace
+specifier, this namespace has to exist, when <tt/"tclvar"/ is called.
 <p>
 Even though it looks a perfect fit, <tt/"tclvar"/ can not be used to
 manage a property data array. Atleast not if the array contains components
@@ -16358,7 +16368,6 @@ There is no easy way to get around this.
 A suggested way to manage a property data array is shown in the
 complete examples section below.
 
-<#if out=latex><x/newpage/</#if>
 <#if out=latex><x/phantomsection/</#if>
 
 <tt/<bf/tclset://<label id="tclset"><newline>
@@ -16577,7 +16586,7 @@ the following code fails:
 <tt>tcleval("<bf>exit</bf>");</tt>
 </tscreen>
 because the Tcl command <tt/"exit"/ is not available in the safe interpreter.
-The command will not fail, when the calling context ist the main Tcl
+The command will not fail, when the calling context is the main Tcl
 interpreter; one can e.g.~type into the Ayam console:
 <tscreen>
 <tt>&raquo;&thinsp;<bf>luaEval {</bf>tcleval("<bf>exit</bf>");<bf/}/</tt>
@@ -16653,7 +16662,8 @@ Mind that the corresponding variable on the Lua side does
 variable occurs.
 The Tcl variable, in turn, does not have to exist, when the
 <tt>"tclvar"</tt> function is called (i.e.~all the work is done
-in the trace callback).
+in the trace callback). If the variable name contains a namespace
+specifier, this namespace has to exist, when <tt/"tclvar"/ is called.
 <p>
 Even though it looks a perfect fit, <tt/"tclvar"/ can not be used to
 manage a property data array. Atleast not if the array contains components
@@ -16666,7 +16676,6 @@ There is no easy way to get around this.
 A suggested way to manage a property data array is shown in the
 complete examples section below.
 
-<#if out=latex><x/newpage/</#if>
 <#if out=latex><x/phantomsection/</#if>
 
 <tt/<bf/tclset://<label id="luatclset"><newline>
