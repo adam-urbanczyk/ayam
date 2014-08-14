@@ -101,7 +101,7 @@ bind $t <Key-Escape> "resetFocus;break"
 
 # create resize handle for text widget
 if { $ay(ws) == "Win32" } {
-    resizeHandle:Create $w.rsh $t {-bg SystemWindow}
+    resizeHandle:Create $w.rsh $t -bg SystemWindow
 } else {
     resizeHandle:Create $w.rsh $t
 }
