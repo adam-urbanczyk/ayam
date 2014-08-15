@@ -113,12 +113,14 @@ typedef struct ay_rrib_attrstate_s {
   /* all other RiAttributes */
   ay_tag *tags;
 
+  /* basis parameters for bicubic patches and patch meshes */
   int btype_u, btype_v;
   RtBasis *ubasisptr;
   RtBasis *vbasisptr;
   RtInt ustep;
   RtInt vstep;
 
+  /* texture coordinates */
   RtFloat s1, s2, s3, s4, t1, t2, t3, t4;
 
 } ay_rrib_attrstate;
@@ -177,7 +179,7 @@ static int ay_rrib_level;
 /* fov */
 static double ay_rrib_fov;
 
-/* cliping planes */
+/* clipping planes */
 static double ay_rrib_near, ay_rrib_far;
 
 /* image size */
@@ -3679,16 +3681,17 @@ ay_rrib_RiWorldBegin(void)
 	{
 	  ay_error(AY_ERROR, fname, "Could not invert camera transformation.");
 	  ay_rrib_RiIdentity();
-	  return;
 	}
+      else
+	{
+	  ay_trafo_apply3(c.from, mi);
+	  ay_trafo_apply3(c.to, mi);
+	  ay_trafo_apply3(c.up, mi);
 
-      ay_trafo_apply3(c.from, mi);
-      ay_trafo_apply3(c.to, mi);
-      ay_trafo_apply3(c.up, mi);
+	  ay_rrib_RiIdentity();
 
-      ay_rrib_RiIdentity();
-
-      ay_rrib_linkobject((void *)(&c), AY_IDCAMERA);
+	  ay_rrib_linkobject((void *)(&c), AY_IDCAMERA);
+	}
 
       /*
 	l.type = AY_LTLEVEL;
