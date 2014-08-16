@@ -238,6 +238,7 @@ proc tree_selectOrPopup { extend redraw tree node } {
     }
     winOpenPopup $ay(tree)
     after idle {focus -force $ay(tree).popup}
+
  return;
 }
 # tree_selectOrPopup
@@ -904,8 +905,6 @@ $m add cascade -label "Tree" -menu $ay(tree).popup.tree\
     -underline 1
 set m [menu $ay(tree).popup.tree -tearoff 0]
 $m add command -label "Rebuild" -command "tree_reset"
-
-
 $m add command -label "Expand All" -command "tree_expand"
 $m add command -label "Collapse All" -command "tree_collapse"
 $m add command -label "Expand Selected" -command "tree_toggleTree 1"
@@ -1096,6 +1095,7 @@ proc tree_reset { } {
 # go to top level
 proc tree_gotop { } {
     global ay
+
     if { $ay(CurrentLevel) != "root" } {
 	tree_paintLevel "root"
     }
