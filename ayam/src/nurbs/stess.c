@@ -180,9 +180,9 @@ ay_stess_FindMultiplePoints(int n, int p, double *U, double *P,
       p2 = p1 + stride;
       for(j = 0; j < p-1; j++)
 	{
-	  if((fabs(p1[0]-p2[0]) > AY_EPSILON) ||
-	     ((dim>1) && (fabs(p1[1]-p2[1]) > AY_EPSILON)) ||
-	     ((dim>2) && (fabs(p1[2]-p2[2]) > AY_EPSILON)))
+	  if((fabs(p1[0] - p2[0]) > AY_EPSILON) ||
+	     ((dim > 1) && (fabs(p1[1] - p2[1]) > AY_EPSILON)) ||
+	     ((dim > 2) && (fabs(p1[2] - p2[2]) > AY_EPSILON)))
 	    {
 	      eq = AY_FALSE;
 	      break;
@@ -1242,7 +1242,6 @@ ay_stess_TessLinearTrimCurve(ay_object *o, double **tts, int *tls, int *tds,
     {
       for(j = 0; j < nc->length; j++)
 	{
-
 	  memcpy(&(dtmp[j*2]), &(nc->controlv[j*4]), 2*sizeof(double));
 	  if(nc->is_rat)
 	    {
@@ -1250,7 +1249,7 @@ ay_stess_TessLinearTrimCurve(ay_object *o, double **tts, int *tls, int *tds,
 	      dtmp[j*2+1] /= nc->controlv[j*4+3];
 	    }
 	}
-    }
+    } /* if */
 
   tls[*i] = nc->length;
   tts[*i] = dtmp;
@@ -1284,7 +1283,6 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
  double **tts = NULL;
  int i, numtrims = 0, *tls = NULL, *tds = NULL;
  ay_object *trim = NULL, *loop = NULL, *p, *nc = NULL, *cnc = NULL;
- ay_nurbcurve_object *c = NULL;
 
   /* count trimloops */
   trim = o->down;
@@ -1313,7 +1311,7 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
 		    }
 		}
 	      loop = loop->next;
-	    }
+	    } /* while */
 	  break;
 	default:
 	  p = NULL;
@@ -1326,7 +1324,7 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
 	    }
 	  (void)ay_object_deletemulti(p, AY_FALSE);
 	  break;
-	}
+	} /* switch */
       trim = trim->next;
     } /* while */
 
@@ -1346,7 +1344,6 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
   trim = o->down;
   while(trim->next)
     {
-      c = NULL;
       switch(trim->type)
 	{
 	case AY_IDNCURVE:
@@ -2042,7 +2039,10 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 	  fd2 = &(ders[6]);
 	  AY_V3CROSS(temp, fd2, fd1);
 	  memcpy(&(uvpptr->C[3]), temp, 3*sizeof(double));
-
+	  if(uvpptr->next)
+	    {
+	      uvpptr->next->prev = uvpptr;
+	    }
 	  uvpptr = uvpptr->next;
 	} /* while */
     } /* for */
@@ -2319,7 +2319,10 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 	  fd2 = &(ders[6]);
 	  AY_V3CROSS(temp, fd2, fd1);
 	  memcpy(&(uvpptr->C[3]), temp, 3*sizeof(double));
-
+	  if(uvpptr->next)
+	    {
+	      uvpptr->next->prev = uvpptr;
+	    }
 	  uvpptr = uvpptr->next;
 	} /* while */
     } /* for */
@@ -2463,12 +2466,13 @@ ay_stess_DrawTrimmedSurface(ay_stess *stess)
 void
 ay_stess_ShadeTrimmedSurface(ay_stess *stess)
 {
- int i, forwardu1;
- ay_stess_uvp *u1, *u2/*, *v1, *v2*/;
+ int i, instrip = AY_FALSE;
+ ay_stess_uvp *u1, *u2, *v1, *v2;
 
   if(!stess)
     return;
 
+  /* search for complete cells (all types 0) in u-direction */
   for(i = 0; i < (stess->upslen-1); i++)
     {
       u1 = stess->ups[i];
@@ -2508,463 +2512,261 @@ ay_stess_ShadeTrimmedSurface(ay_stess *stess)
 	  continue;
 	}
 
-      glBegin(GL_TRIANGLE_STRIP);
-      glNormal3dv((GLdouble*)&((u1->C)[3]));
-      glVertex3dv((GLdouble*)(u1->C));
-      glNormal3dv((GLdouble*)&((u2->C)[3]));
-      glVertex3dv((GLdouble*)(u2->C));
+      while(u1 && u1->type != 0)
+	u1 = u1->next;
 
-      u1 = u1->next;
-      u2 = u2->next;
+      while(u2 && u2->type != 0)
+	u2 = u2->next;
 
-      while(u1 && u2)
+      while(u1 && u1->next && u2 && u2->next)
 	{
-	  glNormal3dv((GLdouble*)&((u1->C)[3]));
-	  glVertex3dv((GLdouble*)(u1->C));
-	  glNormal3dv((GLdouble*)&((u2->C)[3]));
-	  glVertex3dv((GLdouble*)(u2->C));
-
-
-	  if(u1->type > 0 || u2->type > 0)
+	  if(u1->type == 0 && u1->next->type == 0 &&
+	     u2->type == 0 && u2->next->type == 0 &&
+	     u1->v == u2->v)
 	    {
-	      /* we cross a trimcurve/leave the surface
-		 => forward to next complete cell (where both,
-		 u1 and u2, point to the surface again) */
-
-	      /* break current strip */
-	      glEnd();
-
-	      forwardu1 = AY_FALSE;
-
-	      if(u1->type == 0 && u2->type > 0)
+	      if(!instrip)
 		{
-		  forwardu1 = AY_TRUE;
-		}
-
-	      if(u1->type > 0 && u2->type > 0)
-		{
-		  u1 = u1->next;
-		  u2 = u2->next;
-		}
-	      else
-		{
-		  if(forwardu1)
+		  /* before we start the strip, check, whether there
+		     is an incomplete cell behind, and shade it */
+		  if(u1->prev && u2->prev &&
+		     (u1->prev->type || u2->prev->type))
 		    {
-		      /* u2 is off, u1 still on, forward u1 to next boundary */
-		      /* but stop right before u2 in any case */
-		      u2 = u2->next;
-		      if(u2)
-			{
-			  while(u1 && u1->next &&
-				((u1->next->v < u2->v) || u1->next->type))
-			    {
-			      u1 = u1->next;
-			      if(u1 && u1->type)
-				{
-				  u1 = u1->next;
-				  break;
-				}
-			    }
-			}
+		      glBegin(GL_TRIANGLE_STRIP);
+		       glNormal3dv((GLdouble*)&((u1->prev->C)[3]));
+		       glVertex3dv((GLdouble*)(u1->prev->C));
+		       glNormal3dv((GLdouble*)&((u2->prev->C)[3]));
+		       glVertex3dv((GLdouble*)(u2->prev->C));
+		       glNormal3dv((GLdouble*)&((u1->C)[3]));
+		       glVertex3dv((GLdouble*)(u1->C));
+		       glNormal3dv((GLdouble*)&((u2->C)[3]));
+		       glVertex3dv((GLdouble*)(u2->C));
+		      glEnd();
 		    }
-		  else
-		    {
-		      /* forwardu2 would be AY_TRUE */
-		      /* u1 is off, u2 still on, forward u2 to next boundary */
-		      /* but stop right before u1 in any case */
-		      u1 = u1->next;
-		      if(u1)
-			{
-			  while(u2 && u2->next &&
-				((u2->next->v < u1->v) || u2->next->type))
-			    {
-			      u2 = u2->next;
-			      if(u2 && u2->type)
-				{
-				  u2 = u2->next;
-				  break;
-				}
-			    }
-			}
-		    }
+
+		  glBegin(GL_TRIANGLE_STRIP);
+		  instrip = AY_TRUE;
 		}
-
-	      /* avoid infinite loop */
-	      if(u1 && u2)
-		{
-		  if(u1->v < u2->v)
-		    u1 = u1->next;
-		  else
-		    u2 = u2->next;
-		}
-
-
-	      if(!u1 || !u2)
-		{
-		  glEnd();
-		  break;
-		}
-
-	      /* if we get here, u1 and u2 point to the next
-		 complete cell in the surface */
-
-	      /* start a new strip */
-	      glBegin(GL_TRIANGLE_STRIP);
 	      glNormal3dv((GLdouble*)&((u1->C)[3]));
 	      glVertex3dv((GLdouble*)(u1->C));
 	      glNormal3dv((GLdouble*)&((u2->C)[3]));
 	      glVertex3dv((GLdouble*)(u2->C));
-	    } /* if */
+	      u1 = u1->next;
+	      u2 = u2->next;
+	      glNormal3dv((GLdouble*)&((u1->C)[3]));
+	      glVertex3dv((GLdouble*)(u1->C));
+	      glNormal3dv((GLdouble*)&((u2->C)[3]));
+	      glVertex3dv((GLdouble*)(u2->C));
 
-	  u1 = u1->next;
-	  u2 = u2->next;
+	      /* check next cell */
+	      if(!u1->next || !u2->next ||
+		 u1->next->type != 0 || u2->next->type != 0)
+		{
+		  if(instrip)
+		    {
+		      glEnd();
+		      instrip = AY_FALSE;
+
+		      /* after ending the strip, check, whether there
+			 is an incomplete cell following, and shade it */
+		      if(u1->next && u2->next &&
+			 (u1->next->type || u2->next->type))
+			{
+			  glBegin(GL_TRIANGLE_STRIP);
+			   glNormal3dv((GLdouble*)&((u1->C)[3]));
+			   glVertex3dv((GLdouble*)(u1->C));
+			   glNormal3dv((GLdouble*)&((u2->C)[3]));
+			   glVertex3dv((GLdouble*)(u2->C));
+			   glNormal3dv((GLdouble*)&((u1->next->C)[3]));
+			   glVertex3dv((GLdouble*)(u1->next->C));
+			   glNormal3dv((GLdouble*)&((u2->next->C)[3]));
+			   glVertex3dv((GLdouble*)(u2->next->C));
+			  glEnd();
+			}
+		    }
+		}
+	    } /* have complete cell */
+
+	  /* forward to next candidate cell */
+	  while((u1 && u1->type != 0) ||
+		(u1 && u1->next && u1->next->type != 0))
+	    u1 = u1->next;
+
+	  while((u2 && u2->type != 0) ||
+		(u2 && u2->next && u2->next->type != 0))
+	    u2 = u2->next;
+
+	  if(!u1 || !u2)
+	    break;
+
+	  if(u1->v != u2->v)
+	    {
+	      if(u1->v < u2->v)
+		{
+		  while(u1->v < u2->v)
+		    u1 = u1->next;
+		}
+	      else
+		{
+		  while(u1->v > u2->v)
+		    u2 = u2->next;
+		}
+	    }
+
 	} /* while */
 
-      glEnd();
-
+      if(instrip)
+	{
+	  glEnd();
+	  instrip = AY_FALSE;
+	}
     } /* for */
 
- return;
-} /* ay_stess_ShadeTrimmedSurface */
+  /****************************************************/
 
-/* ay_stess_ShadeTrimmedSurface:
- *
- */
-int
-ay_stess_ShadeTrimmedSurfaceorig(ay_object *o)
-{
- int i, forwardu1;
- ay_stess *stess = NULL;
- ay_stess_uvp *u1, *u2/*, *v1, *v2*/;
- ay_nurbpatch_object *p = NULL;
-
-  p = (ay_nurbpatch_object *)o->refine;
-
-  stess = p->stess;
-
-  if(!stess)
-    return AY_ENULL;
-
-  for(i = 0; i < (stess->upslen-1); i++)
+  /* search for complete cells (all types 0) in v-direction, but
+     do not render them, just process the possibly incomplete
+     cells right before/behind them */
+  for(i = 0; i < (stess->vpslen-1); i++)
     {
-      u1 = stess->ups[i];
-      u2 = stess->ups[i+1];
+      v1 = stess->vps[i];
+      v2 = stess->vps[i+1];
 
-      if(!u1 || !u2 || !u1->next || !u2->next)
+      if(stess->ft_cw)
+	{
+	  /* forward to next complete grid-cell */
+	  while(v1)
+	    {
+	      if(v1->type == 0 || v1->type == 2)
+		break;
+	      v1 = v1->next;
+	    }
+	  while(v2)
+	    {
+	      if(v2->type == 0 || v2->type == 2)
+		break;
+	      v2 = v2->next;
+	    }
+	}
+      else
+	{
+	  /* forward to first trim */
+	  while(v1 && v1->type == 0)
+	    {
+	      v1 = v1->next;
+	    }
+	  while(v2 && v2->type == 0)
+	    {
+	      v2 = v2->next;
+	    }
+	}
+
+      if(!v1 || !v2 || !v1->next || !v2->next)
 	{
 	  continue;
 	}
 
-      glBegin(GL_TRIANGLE_STRIP);
-      glNormal3dv((GLdouble*)&((u1->C)[3]));
-      glVertex3dv((GLdouble*)(u1->C));
-      glNormal3dv((GLdouble*)&((u2->C)[3]));
-      glVertex3dv((GLdouble*)(u2->C));
+      while(v1 && v1->type != 0)
+	v1 = v1->next;
 
-      u1 = u1->next;
-      u2 = u2->next;
+      while(v2 && v2->type != 0)
+	v2 = v2->next;
 
-      while(u1 && u2)
+      while(v1 && v1->next && v2 && v2->next)
 	{
-	  glNormal3dv((GLdouble*)&((u1->C)[3]));
-	  glVertex3dv((GLdouble*)(u1->C));
-	  glNormal3dv((GLdouble*)&((u2->C)[3]));
-	  glVertex3dv((GLdouble*)(u2->C));
-
-
-	  if(u1->type > 0 || u2->type > 0)
+	  if(v1->type == 0 && v1->next->type == 0 &&
+	     v2->type == 0 && v2->next->type == 0 &&
+	     v1->u == v2->u)
 	    {
-	      /* we cross a trimcurve/leave the surface
-		 => forward to next complete cell (where both,
-		 u1 and u2, point to the surface again) */
-
-	      /* break current strip */
-	      glEnd();
-
-	      forwardu1 = AY_FALSE;
-
-	      if(u1->type == 0 && u2->type > 0)
+	      if(!instrip)
 		{
-		  forwardu1 = AY_TRUE;
+		  /* here we would start the strip of complete cells,
+		     but in v direction, we only check, whether there
+		     is an incomplete cell behind, and shade it */
+		  if(v1->prev && v2->prev &&
+		     (v1->prev->type || v2->prev->type))
+		    {
+		      glBegin(GL_TRIANGLE_STRIP);
+		       glNormal3dv((GLdouble*)&((v1->prev->C)[3]));
+		       glVertex3dv((GLdouble*)(v1->prev->C));
+		       glNormal3dv((GLdouble*)&((v1->C)[3]));
+		       glVertex3dv((GLdouble*)(v1->C));
+		       glNormal3dv((GLdouble*)&((v2->prev->C)[3]));
+		       glVertex3dv((GLdouble*)(v2->prev->C));
+		       glNormal3dv((GLdouble*)&((v2->C)[3]));
+		       glVertex3dv((GLdouble*)(v2->C));
+		      glEnd();
+		    }
+		  instrip = AY_TRUE;
 		}
 
-	      if(u1->type > 0 && u2->type > 0)
+	      v1 = v1->next;
+	      v2 = v2->next;
+
+	      /* check next cell */
+	      if(!v1->next || !v2->next ||
+		 v1->next->type != 0 || v2->next->type != 0)
 		{
-		  u1 = u1->next;
-		  u2 = u2->next;
+		  if(instrip)
+		    {
+
+		      instrip = AY_FALSE;
+
+		      /* here we would end the strip of complete cells,
+			 but in v direction, we only check, whether there
+			 is an incomplete cell following, and shade it */
+		      if(v1->next && v2->next &&
+			 (v1->next->type || v2->next->type))
+			{
+			  glBegin(GL_TRIANGLE_STRIP);
+			   glNormal3dv((GLdouble*)&((v1->C)[3]));
+			   glVertex3dv((GLdouble*)(v1->C));
+			   glNormal3dv((GLdouble*)&((v1->next->C)[3]));
+			   glVertex3dv((GLdouble*)(v1->next->C));
+			   glNormal3dv((GLdouble*)&((v2->C)[3]));
+			   glVertex3dv((GLdouble*)(v2->C));
+			   glNormal3dv((GLdouble*)&((v2->next->C)[3]));
+			   glVertex3dv((GLdouble*)(v2->next->C));
+			  glEnd();
+			}
+		    }
+		}
+	    } /* have complete cell */
+
+	  /* forward to next candidate cell */
+	  while((v1 && v1->type != 0) ||
+		(v1 && v1->next && v1->next->type != 0))
+	    v1 = v1->next;
+
+	  while((v2 && v2->type != 0) ||
+		(v2 && v2->next && v2->next->type != 0))
+	    v2 = v2->next;
+
+	  if(!v1 || !v2)
+	    break;
+
+	  if(v1->u != v2->u)
+	    {
+	      if(v1->u < v2->u)
+		{
+		  while(v1->u < v2->u)
+		    v1 = v1->next;
 		}
 	      else
 		{
-		  if(forwardu1)
-		    {
-		      /* u2 is off, u1 still on, forward u1 to next boundary */
-		      /* but stop right before u2 in any case */
-		      u2 = u2->next;
-		      if(u2)
-			{
-			  while(u1 && u1->next &&
-				((u1->next->v < u2->v) || u1->next->type))
-			    {
-			      u1 = u1->next;
-			      if(u1 && u1->type)
-				{
-				  u1 = u1->next;
-				  break;
-				}
-			    }
-			}
-		    }
-		  else
-		    {
-		      /* forwardu2 would be AY_TRUE */
-		      /* u1 is off, u2 still on, forward u2 to next boundary */
-		      /* but stop right before u1 in any case */
-		      u1 = u1->next;
-		      if(u1)
-			{
-			  while(u2 && u2->next &&
-				((u2->next->v < u1->v) || u2->next->type))
-			    {
-			      u2 = u2->next;
-			      if(u2 && u2->type)
-				{
-				  u2 = u2->next;
-				  break;
-				}
-			    }
-			}
-		    }
+		  while(v1->u > v2->u)
+		    v2 = v2->next;
 		}
+	    }
 
-	      while(u1 && u2)
-		{
-		  if(fabs(u1->v - u2->v) < stess->vd)
-		    {
-		      if((int)(u1->v/stess->vd) == (int)(u2->v/stess->vd))
-			{
-			  break;
-			}
-		    }
-
-		  if(u1->v < u2->v)
-		    {
-		      while(u1 && u1->next && (u1->next->v < u2->v))
-			u1 = u1->next;
-
-		      if(fabs(u1->v - u2->v) < stess->vd)
-			{
-			  if((int)(u1->v/stess->vd) == (int)(u2->v/stess->vd))
-			    {
-			      break;
-			    }
-			}
-
-		      while(u2 && u2->next && (u2->next->v < u1->v))
-			u2 = u2->next;
-
-		      if(fabs(u1->v - u2->v) < stess->vd)
-			{
-			  if((int)(u1->v/stess->vd) == (int)(u2->v/stess->vd))
-			    {
-			      break;
-			    }
-			}
-		    }
-		  else
-		    {
-		      while(u2 && u2->next && (u2->next->v < u1->v))
-			u2 = u2->next;
-
-		      if(fabs(u1->v - u2->v) < stess->vd)
-			{
-			  if((int)(u1->v/stess->vd) == (int)(u2->v/stess->vd))
-			    {
-			      break;
-			    }
-			}
-
-		      while(u1 && u1->next && (u1->next->v < u2->v))
-			u1 = u1->next;
-
-		      if(fabs(u1->v - u2->v) < stess->vd)
-			{
-			  if((int)(u1->v/stess->vd) == (int)(u2->v/stess->vd))
-			    {
-			      break;
-			    }
-			}
-		    }
-
-		  /* avoid infinite loop */
-		  if(u1 && u2)
-		    {
-		      if(u1->v < u2->v)
-			u1 = u1->next;
-		      else
-			u2 = u2->next;
-		    }
-		} /* while */
-
-	      if(!u1 || !u2)
-		{
-		  glBegin(GL_TRIANGLE_STRIP);
-		  break;
-		}
-
-	      /* if we get here, u1 and u2 point to the next
-		 complete cell in the surface */
-
-	      /* start a new strip */
-	      glBegin(GL_TRIANGLE_STRIP);
-	      glNormal3dv((GLdouble*)&((u1->C)[3]));
-	      glVertex3dv((GLdouble*)(u1->C));
-	      glNormal3dv((GLdouble*)&((u2->C)[3]));
-	      glVertex3dv((GLdouble*)(u2->C));
-	    } /* if */
-
-	  u1 = u1->next;
-	  u2 = u2->next;
 	} /* while */
 
-      glEnd();
-
-    } /* for */
-#if 0
-  for(i = 0; i < (stess->vpslen-1); i++)
-    {
-      v1 = stess->vps[i+1];
-      v2 = stess->vps[i];
-
-      if(!v1 || !v2 || !v1->next || !v2->next)
-	continue;
-
-      glBegin(GL_TRIANGLE_STRIP);
-      glNormal3dv((GLdouble*)&((v1->C)[3]));
-      glVertex3dv((GLdouble*)(v1->C));
-      glNormal3dv((GLdouble*)&((v2->C)[3]));
-      glVertex3dv((GLdouble*)(v2->C));
-
-      v1 = v1->next;
-      v2 = v2->next;
-
-      while(v1 && v2)
+      if(instrip)
 	{
-	  glNormal3dv((GLdouble*)&((v1->C)[3]));
-	  glVertex3dv((GLdouble*)(v1->C));
-	  glNormal3dv((GLdouble*)&((v2->C)[3]));
-	  glVertex3dv((GLdouble*)(v2->C));
-
-	  if(v1->type > 0 && v2->type > 0)
-	    {
-	      v1 = v1->next;
-	      v2 = v2->next;
-	      if(!v1 || !v2)
-		{
-		  glBegin(GL_TRIANGLE_STRIP);
-		  break;
-		}
-
-	      glEnd();
-	      glBegin(GL_TRIANGLE_STRIP);
-	      glNormal3dv((GLdouble*)&((v1->C)[3]));
-	      glVertex3dv((GLdouble*)(v1->C));
-	      glNormal3dv((GLdouble*)&((v2->C)[3]));
-	      glVertex3dv((GLdouble*)(v2->C));
-	    } /* if */
-
-	  if(v1->type > 0 && v2->type == 0)
-	    {
-	      if(!v1->next)
-		{
-		  glEnd();
-		  glBegin(GL_TRIANGLE_STRIP);
-		  glNormal3dv((GLdouble*)&((v1->C)[3]));
-		  glVertex3dv((GLdouble*)(v1->C));
-		  while(v2)
-		    {
-		      glNormal3dv((GLdouble*)&((v2->C)[3]));
-		      glVertex3dv((GLdouble*)(v2->C));
-		      glNormal3dv((GLdouble*)&((v1->C)[3]));
-		      glVertex3dv((GLdouble*)(v1->C));
-		      v2 = v2->next;
-		    }
-		  glEnd();
-		  glBegin(GL_TRIANGLE_STRIP);
-		  break;
-		}
-
-	      v1 = v1->next;
-	      glEnd();
-
-	      while(v2 && (v2->u+stess->ud < v1->u))
-		v2 = v2->next;
-
-	      while(v1 && (v1->u+stess->ud < v2->u))
-		v1 = v1->next;
-
-	      if(!v1 || !v2)
-		{
-		  glBegin(GL_TRIANGLE_STRIP);
-		  break;
-		}
-
-	      glBegin(GL_TRIANGLE_STRIP);
-	      glNormal3dv((GLdouble*)&((v1->C)[3]));
-	      glVertex3dv((GLdouble*)(v1->C));
-	      glNormal3dv((GLdouble*)&((v2->C)[3]));
-	      glVertex3dv((GLdouble*)(v2->C));
-	    } /* if */
-
-	  if(v1->type == 0 && v2->type > 0)
-	    {
-	      if(!v2->next)
-		{
-		  glEnd();
-		  glBegin(GL_TRIANGLE_STRIP);
-		  while(v1)
-		    {
-		      glNormal3dv((GLdouble*)&((v1->C)[3]));
-		      glVertex3dv((GLdouble*)(v1->C));
-		      glNormal3dv((GLdouble*)&((v2->C)[3]));
-		      glVertex3dv((GLdouble*)(v2->C));
-		      v1 = v1->next;
-		    }
-		  glEnd();
-		  glBegin(GL_TRIANGLE_STRIP);
-		  break;
-		}
-
-	      v2 = v2->next;
-	      glEnd();
-
-	      while(v1 && (v1->u+stess->ud < v2->u))
-		v1 = v1->next;
-
-	      while(v2 && (v2->u+stess->ud < v1->u))
-		v2 = v2->next;
-
-	      if(!v1 || !v2)
-		{
-		  glBegin(GL_TRIANGLE_STRIP);
-		  break;
-		}
-
-	      glBegin(GL_TRIANGLE_STRIP);
-	      glNormal3dv((GLdouble*)&((v1->C)[3]));
-	      glVertex3dv((GLdouble*)(v1->C));
-	      glNormal3dv((GLdouble*)&((v2->C)[3]));
-	      glVertex3dv((GLdouble*)(v2->C));
-	    } /* if */
-
-	  v1 = v1->next;
-	  v2 = v2->next;
-	} /* while */
-
-      glEnd();
-
+	  instrip = AY_FALSE;
+	}
     } /* for */
-#endif
- return AY_OK;
+
+ return;
 } /* ay_stess_ShadeTrimmedSurface */
 
 
