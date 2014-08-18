@@ -485,7 +485,8 @@ ay_stess_CurvePoints3D(int n, int p, double *U, double *Pw, int is_rat, int qf,
 	  Ct[m+2] = Cw[2]/Cw[3];
 
 	  m += 3;
-	  u += ud;
+	  if(incu)
+	    u += ud;
 	} /* for */
     }
   else
@@ -2607,12 +2608,12 @@ ay_stess_ShadeTrimmedSurface(ay_stess *stess)
 	    {
 	      if(u1->v < u2->v)
 		{
-		  while(u1->v < u2->v)
+		  while(u1 && u1->v < u2->v)
 		    u1 = u1->next;
 		}
 	      else
 		{
-		  while(u1->v > u2->v)
+		  while(u2 && u1->v > u2->v)
 		    u2 = u2->next;
 		}
 	    }
@@ -2749,12 +2750,12 @@ ay_stess_ShadeTrimmedSurface(ay_stess *stess)
 	    {
 	      if(v1->u < v2->u)
 		{
-		  while(v1->u < v2->u)
+		  while(v1 && v1->u < v2->u)
 		    v1 = v1->next;
 		}
 	      else
 		{
-		  while(v1->u > v2->u)
+		  while(v2 && v1->u > v2->u)
 		    v2 = v2->next;
 		}
 	    }
