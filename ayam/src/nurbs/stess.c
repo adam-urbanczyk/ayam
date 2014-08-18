@@ -211,7 +211,7 @@ ay_stess_FindMultiplePoints(int n, int p, double *U, double *P,
 	  (*V)[(*m)] = U[i + p + 1];
 	  (*m)++;
 	  p1 += ((p-1)*stride);
-	  i  += (p-1);
+	  i += (p-1);
 	}
       else
 	{
@@ -253,6 +253,8 @@ ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int stride,
   if(!(Ct = calloc((*Clen + mc) * 2, sizeof(double))))
     {
       free(N);
+      if(V)
+	free(V);
       return AY_EOMEM;
     }
   m = 0;
@@ -392,6 +394,8 @@ ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int stride,
   *Clen += mc1;
 
   free(N);
+  if(V)
+    free(V);
 
  return AY_OK;
 } /* ay_stess_CurvePoints2D */
@@ -420,6 +424,8 @@ ay_stess_CurvePoints3D(int n, int p, double *U, double *Pw, int is_rat, int qf,
   if(!(Ct = calloc((*Clen + mc) * 3, sizeof(double))))
     {
       free(N);
+      if(V)
+	free(V);
       return AY_EOMEM;
     }
 
@@ -537,6 +543,8 @@ ay_stess_CurvePoints3D(int n, int p, double *U, double *Pw, int is_rat, int qf,
   *Clen += mc1;
 
   free(N);
+  if(V)
+    free(V);
 
  return AY_OK;
 } /* ay_stess_CurvePoints3D */
@@ -2498,13 +2506,10 @@ ay_stess_ShadeTrimmedSurface(ay_stess *stess)
 	{
 	  /* forward to first trim */
 	  while(u1 && u1->type == 0)
-	    {
-	      u1 = u1->next;
-	    }
+	    u1 = u1->next;
+
 	  while(u2 && u2->type == 0)
-	    {
-	      u2 = u2->next;
-	    }
+	    u2 = u2->next;
 	}
 
       if(!u1 || !u2 || !u1->next || !u2->next)
@@ -2527,7 +2532,7 @@ ay_stess_ShadeTrimmedSurface(ay_stess *stess)
 	      if(!instrip)
 		{
 		  /* before we start the strip, check, whether there
-		     is an incomplete cell behind, and shade it */
+		     is an incomplete cell before, and shade it */
 		  if(u1->prev && u2->prev &&
 		     (u1->prev->type || u2->prev->type))
 		    {
@@ -2611,7 +2616,6 @@ ay_stess_ShadeTrimmedSurface(ay_stess *stess)
 		    u2 = u2->next;
 		}
 	    }
-
 	} /* while */
 
       if(instrip)
@@ -2651,13 +2655,10 @@ ay_stess_ShadeTrimmedSurface(ay_stess *stess)
 	{
 	  /* forward to first trim */
 	  while(v1 && v1->type == 0)
-	    {
-	      v1 = v1->next;
-	    }
+	    v1 = v1->next;
+
 	  while(v2 && v2->type == 0)
-	    {
-	      v2 = v2->next;
-	    }
+	    v2 = v2->next;
 	}
 
       if(!v1 || !v2 || !v1->next || !v2->next)
@@ -2681,7 +2682,7 @@ ay_stess_ShadeTrimmedSurface(ay_stess *stess)
 		{
 		  /* here we would start the strip of complete cells,
 		     but in v direction, we only check, whether there
-		     is an incomplete cell behind, and shade it */
+		     is an incomplete cell before, and shade it */
 		  if(v1->prev && v2->prev &&
 		     (v1->prev->type || v2->prev->type))
 		    {
@@ -2757,7 +2758,6 @@ ay_stess_ShadeTrimmedSurface(ay_stess *stess)
 		    v2 = v2->next;
 		}
 	    }
-
 	} /* while */
 
       if(instrip)
