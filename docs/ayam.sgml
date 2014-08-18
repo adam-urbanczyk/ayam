@@ -1189,9 +1189,18 @@ as implemented in the <tt/"Gen. Face Normals"/ tool above.
 <item><tt>"Select All Points"</tt>, selects all points of the currently
 selected object(s).
 
+<item><tt>"Deselect All Points"</tt>, de-selects all points of the currently
+selected object(s).
+
 <item><tt>"Invert Selection"</tt>, selects all points of the currently
 selected object(s) that are not selected, and de-select all points that
 are currently selected.
+
+<item><tt>"Collapse Points"</tt>, collapses all currently selected points
+to one, see also <ref id="collt" name="Collapse Tool">.
+
+<item><tt>"Explode Points"</tt>, explodes all currently selected multiple
+points, see also <ref id="explt" name="Explode Tool">.
 
 <item><tt>"Apply To All"</tt>, applies the transformations encoded in
 the transformations property of the selected objects to all points of those
@@ -7299,14 +7308,9 @@ outlines of the patch (OutlinePatch). The default setting
 <p>
 The patch mesh may be converted to an ordinary NURBS patch
 using the main menu entry <tt>"Tools/Convert"</tt>.
-However, this does not work for all possible types of patch meshes
-(e.g.~patch meshes with the basis types Catmull-Rom, Hermite, or
-Custom can not be converted, currently).
-An internal NURBS patch representation is also in use when drawing
-the patch mesh (if the <tt/"DisplayMode"/ is not <tt/"ControlHull"/)
-and when shading the patch mesh.
-Consequently, there is currently no shaded representation of patch meshes
-of basis type Catmull-Rom, Hermite or Custom.
+In Ayam versions prior to 1.21, conversion (and shaded display)
+did not work for patch meshes with the basis types Catmull-Rom, Hermite,
+or Custom. This is no longer the case.
 
 <sect2>RIB Export
 <p>
@@ -11475,7 +11479,8 @@ the shape of the resulting curve does not deviate more than <it/tol/
 from the original curve in any point. Since Ayam 1.20 the knot to remove
 may also be specified using its (zero based)
 index in the knot vector (by entering -i index instead of a parametric
-value t, i.e.~use <tt/"-i 4"/ instead of <tt/"0.5"/).
+value t, i.e.~use <tt/"-i 3"/ instead of <tt/"0.5"/ for the knot vector
+<tt/"0 0 0 0.5 1 1 1"/).<newline>
 If the knot can not be removed <it/r/ times due to the tolerance given, an
 error is reported and the original curve is left unchanged.
 <tag/Notes/ If <it/tol/ is <tt/"0.0"/ the remove knot tool tries to
@@ -12176,7 +12181,8 @@ shape of the resulting surfaces does not deviate more than <it/tol/ from
 the original surfaces in any point. Since Ayam 1.20
 the knot to remove may also be specified using its (zero based)
 index in the knot vector (by entering -i index instead of a parametric
-value t, i.e.~use <tt/"-i 4"/ instead of <tt/"0.5"/).
+value t, i.e.~use <tt/"-i 3"/ instead of <tt/"0.5"/ for the knot vector
+<tt/"0 0 0 0.5 1 1 1"/).<newline>
 If the knot can not be removed <it/r/ times due to the tolerance given, an
 error is reported and the original surface is left unchanged.
 <tag/Notes/ If <it/tol/ is <tt/"0.0"/ the remove knot tool tries to
@@ -14217,8 +14223,8 @@ remknNC &ndash; remove knot from NURBS curve:
 specified by u (u must be in the valid range of the knot vector
 of the selected curve) r times from the curve. Since Ayam 1.20
 the knot to remove may also be specified using its (zero based)
-index in the knot vector (i.e.~use <tt/"remknNC -i 4 1"/ instead of
-<tt/"remknNC 0.5 1"/).
+index in the knot vector (i.e.~use <tt/"remknNC -i 3 1"/ instead of
+<tt/"remknNC 0.5 1"/ for the knot vector <tt/"0 0 0 0.5 1 1 1"/).
 <p><p>
 Note that the
 shape of the curve may be changed by this tool unless the parameter
@@ -14646,11 +14652,11 @@ remknuNP &ndash; remove u knot from NURBS surface:
 specified by u (u must be in the valid range of the knot vector
 of the selected surface) r times from the surface. Since Ayam 1.20
 the knot to remove may also be specified using its (zero based)
-index in the knot vector (i.e.~use <tt/"remknuNP -i 4 1"/ instead of
-<tt/"remknuNP 0.5 1"/). Note that the
-shape of the surface may be changed by this tool unless the parameter
-tol is specified. If tol is specified, the new surface does not deviate
-from the original surface more than tol in any point.
+index in the knot vector (i.e.~use <tt/"remknuNP -i 3 1"/ instead of
+<tt/"remknuNP 0.5 1"/ for the knot vector <tt/"0 0 0 0.5 1 1 1"/).
+Note that the shape of the surface may be changed by this tool unless the
+parameter tol is specified. If tol is specified, the new surface does
+not deviate from the original surface more than tol in any point.
 If the knot can not be removed r times due to the tolerance, an
 error is reported and the original surface is left unchanged.
 <p><p>
@@ -14669,11 +14675,11 @@ remknvNP &ndash; remove v knot from NURBS surface:
 specified by v (v must be in the valid range of the knot vector
 of the selected surface) r times from the surface. Since Ayam 1.20
 the knot to remove may also be specified using its (zero based)
-index in the knot vector (i.e.~use <tt/"remknvNP -i 4 1"/ instead of
-<tt/"remknvNP 0.5 1"/). Note that the
-shape of the surface may be changed by this tool unless the parameter
-tol is specified. If tol is specified, the new surface does not deviate
-from the original surface more than tol in any point.
+index in the knot vector (i.e.~use <tt/"remknvNP -i 3 1"/ instead of
+<tt/"remknvNP 0.5 1"/ for the knot vector <tt/"0 0 0 0.5 1 1 1"/).
+Note that the shape of the surface may be changed by this tool unless
+the parameter tol is specified. If tol is specified, the new surface does
+not deviate from the original surface more than tol in any point.
 If the knot can not be removed r times due to the tolerance, an
 error is reported and the original surface is left unchanged.
 <p><p>
