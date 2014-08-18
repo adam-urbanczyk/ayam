@@ -455,6 +455,7 @@ typedef struct ay_nurbcurve_object_s
 /** a tesselated NURBS patch point */
 typedef struct ay_stess_uvp_s {
   struct ay_stess_uvp_s *next; /**< next point */
+  struct ay_stess_uvp_s *prev; /**< previous point */
   int type; /**< 0 - original point, 1 - trimloop point */
   int dir; /**< direction of associated trimcurve, 0 - cw, 1 - ccw */
   /*@{*//** associated parametric values of this point */
@@ -603,7 +604,8 @@ typedef struct ay_pomesh_object_s {
   int has_normals; /**< vertex normals? 0 - No, stride=3; 1 - Yes, stride=6 */
   double *controlv; /**< control points [ncontrols * stride] */
   double *face_normals; /**< face normals [npolys * 3] */
-  /*GLuint list;*/
+
+  /*  GLuint list;*/
 } ay_pomesh_object;
 
 
