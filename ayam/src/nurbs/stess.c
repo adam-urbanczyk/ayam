@@ -58,9 +58,12 @@ int ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 void
 ay_stess_destroy(ay_nurbpatch_object *np)
 {
+ ay_voidfp *arr = NULL;
+ ay_deletecb *cb = NULL;
  ay_stess_uvp *p = NULL;
  ay_stess *stess = NULL;
  int i;
+
 
   if(!np)
     return;
@@ -106,6 +109,14 @@ ay_stess_destroy(ay_nurbpatch_object *np)
 
   if(stess->tcspnts)
     free(stess->tcspnts);
+
+  if(stess->pomesh)
+    {
+      arr = ay_deletecbt.arr;
+      cb = (ay_deletecb *)(arr[AY_IDPOMESH]);
+      if(cb)
+	(void)cb(stess->pomesh);
+    }
 
   /* now free the stess object */
   free(stess);
@@ -2476,10 +2487,34 @@ void
 ay_stess_ShadeTrimmedSurface(ay_stess *stess)
 {
  int i, instrip = AY_FALSE;
+ unsigned int j;
  ay_stess_uvp *u1, *u2, *v1, *v2;
+ ay_pomesh_object *po;
+ double *p;
 
   if(!stess)
     return;
+
+  if(stess->pomesh)
+    {
+      /* assume the pomesh is a triangle soup (from the tesselation) */
+      po = stess->pomesh;
+      glBegin(GL_TRIANGLES);
+       p = stess->normal;
+       glNormal3dv((GLdouble*)p);
+       p = po->controlv;
+       for(j = 0; j < po->npolys; j++)
+	 {
+	   glVertex3dv((GLdouble*)p);
+	   p += 3;
+	   glVertex3dv((GLdouble*)p);
+	   p += 3;
+	   glVertex3dv((GLdouble*)p);
+	   p += 3;
+	 }
+      glEnd();
+      return;
+    }
 
   /* search for complete cells (all types 0) in u-direction */
   for(i = 0; i < (stess->upslen-1); i++)
@@ -2858,6 +2893,172 @@ cleanup:
 } /* ay_stess_TessTrimmedNP */
 
 
+/* ay_stess_TessTrimmedPlanarNP:
+ *
+ */
+int
+ay_stess_TessTrimmedPlanarNP(ay_object *o, int qf)
+{
+ int ay_status = AY_OK;
+ ay_nurbpatch_object *np = NULL;
+ ay_tag *tag;
+ ay_stess *st = NULL;
+ double **tcs = NULL; /**< tesselated trim curves [tcslen][tcslens[i]] */
+ int tcslen, *tcslens = NULL, *tcsdirs = NULL;
+ unsigned int i, j, a, totalverts = 0;
+ ay_pomesh_object *po = NULL, *tpo = NULL;
+ double u, v, *p;
+
+  np = (ay_nurbpatch_object *)o->refine;
+
+  if(np->stess)
+    {
+      ay_stess_destroy(np);
+    }
+
+  ay_status = ay_stess_TessTrimCurves(o, qf,
+				      &tcslen, &tcs,
+				      &tcslens, &tcsdirs);
+
+  if(ay_status)
+    goto cleanup;
+
+  if(tcs)
+    {
+      if(!(np->stess = calloc(1, sizeof(ay_stess))))
+	return AY_ERROR;
+
+      st = np->stess;
+
+      st->tcslen = tcslen;
+      st->tcslens = tcslens;
+
+      if(!(po = calloc(1, sizeof(ay_pomesh_object))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+      po->npolys = 1;
+      if(!(po->nloops = calloc(1, sizeof(unsigned int))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+      po->nloops[0] = tcslen;
+      if(!(po->nverts = calloc(tcslen, sizeof(unsigned int))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+
+      for(i = 0; i < (unsigned int)tcslen; i++)
+	{
+	  po->nverts[i] = tcslens[i];
+	  totalverts += tcslens[i];
+	}
+
+      if(!(po->verts = calloc(totalverts, sizeof(unsigned int))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+
+      for(i = 0; i < totalverts; i++)
+	{
+	  po->verts[i] = i;
+	}
+
+      /* fill controlv */
+      if(!(po->controlv = calloc(totalverts*3, sizeof(double))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+      st->tcspnts = po->controlv;
+
+      p = po->controlv;
+      for(i = 0; i < (unsigned int)tcslen; i++)
+	{
+	  a = 0;
+	  for(j = 0; j < (unsigned int)tcslens[i]; j++)
+	    {
+	      u = tcs[i][a];
+	      v = tcs[i][a+1];
+
+	      if(np->is_rat)
+		{
+		  ay_nb_SurfacePoint4D(np->width-1, np->height-1, np->uorder-1,
+				       np->vorder-1, np->uknotv, np->vknotv,
+				       np->controlv, u, v, p);
+		}
+	      else
+		{
+		  ay_nb_SurfacePoint3D(np->width-1, np->height-1, np->uorder-1,
+				       np->vorder-1, np->uknotv, np->vknotv,
+				       np->controlv, u, v, p);
+		}
+
+	      a += 2;
+	      p += 3;
+	    }
+	}
+
+      /* tesselate the polygon */
+      ay_status = ay_tess_pomesh(po, /*optimize=*/AY_FALSE, &tpo);
+
+      st->pomesh = tpo;
+
+      /* set normal */
+      tag = o->tags;
+      while(tag)
+	{
+	  if(tag->type == ay_nt_tagtype)
+	    {
+	      memcpy(st->normal, ((ay_btval*)tag->val)->payload,
+		     3*sizeof(double));
+	      break;
+	    }
+	  tag = tag->next;
+	}
+
+      /* remove temporary polymesh */
+      free(po->nloops);
+      free(po->nverts);
+      free(po->verts);
+      free(po);
+    }
+
+  /* prevent cleanup code from doing something harmful */
+  np = NULL;
+
+  /* clean up the mess */
+cleanup:
+
+  if(tcs)
+    {
+      for(i = 0; i < (unsigned int)tcslen; i++)
+	{
+	  if(tcs[i])
+	    free(tcs[i]);
+	}
+      free(tcs);
+    }
+
+  if(tcsdirs)
+    free(tcsdirs);
+
+  if(np)
+    {
+      ay_stess_destroy(np);
+    }
+
+  if(ay_status)
+    ay_status = AY_ERROR;
+
+ return ay_status;
+} /* ay_stess_TessTrimmedPlanarNP */
+
+
 /* ay_stess_TessNP:
  *  tesselate NURBS patch object <o> with quality factor <qf>;
  *  stores results in the object!
@@ -2880,7 +3081,10 @@ ay_stess_TessNP(ay_object *o, int qf)
   if(ay_npt_istrimmed(o, 0))
     {
       /* this is a nontrivially trimmed NURBS patch */
-      ay_status = ay_stess_TessTrimmedNP(o, qf);
+      if(npatch->is_planar)
+	ay_status = ay_stess_TessTrimmedPlanarNP(o, qf);
+      else
+	ay_status = ay_stess_TessTrimmedNP(o, qf);
     }
 
   if(ay_status == AY_ERROR)

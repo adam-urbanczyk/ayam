@@ -483,6 +483,9 @@ typedef struct ay_stess_s {
   int *tcslens; /**< lengths of trim curves [tcslen] */
   double *tcspnts; /**< points of tesselated trim curves [sum(tcslens)*3] */
 
+  struct ay_pomesh_object_s *pomesh;  /**< tesselated planar trimmed patch */
+  double normal[3]; /**< normal of tesselated planar mesh */
+
   double ud; /**< distance */
   double vd; /**< distance */
 } ay_stess;
@@ -501,7 +504,8 @@ typedef struct ay_nurbpatch_object_s
   int utype; /**< closeness type (AY_CTOPEN, AY_CTCLOSED, AY_CTPERIODIC) */
   int vtype; /**< closeness type (AY_CTOPEN, AY_CTCLOSED, AY_CTPERIODIC) */
 
-  int is_rat; /**< is any weight != 1.0 */
+  char is_rat; /**< is any weight != 1.0? */
+  char is_planar; /**< is this patch flat? */
 
   double *controlv; /**< control points [width * height * 4] */
   double *uknotv; /**< u knot vector [width + uorder]*/
