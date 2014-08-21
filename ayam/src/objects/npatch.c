@@ -2936,6 +2936,58 @@ ay_npatch_convertcb(ay_object *o, int in_place)
 } /* ay_npatch_convertcb */
 
 
+/* ay_npatch_setnttag:
+ *
+ */
+void
+ay_npatch_setnttag(ay_object *o, double *normal)
+{
+ ay_tag *tag;
+ ay_btval *btval;
+ double *nval;
+
+  tag = o->tags;
+  while(tag)
+    {
+      if(tag->type == ay_nt_tagtype)
+	break;
+      tag = tag->next;
+    }
+
+  if(!tag)
+    {
+      /* create and link new tag */
+      if(!(tag = calloc(1, sizeof(ay_tag))))
+	return;
+
+      if(!(btval = calloc(1, sizeof(ay_btval))))
+	{free(tag); return;}
+
+      if(!(nval = calloc(3, sizeof(double))))
+	{free(tag); free(btval); return;}
+
+      memcpy(nval, normal, sizeof(double));
+      btval->payload = nval;
+
+      tag->type = ay_nt_tagtype;
+      tag->is_intern = AY_TRUE;
+      tag->is_binary = AY_TRUE;
+      tag->val = btval;
+
+      tag->next = o->tags;
+      o->tags = tag;
+    }
+  else
+    {
+      /* just update */
+      btval = (ay_btval*)tag->val;
+      memcpy(btval->payload, normal, 3*sizeof(double));
+    }
+
+  return;
+} /* ay_npatch_setnttag */
+
+
 /* ay_npatch_notifycb:
  *  notification callback function of npatch object
  */
@@ -2949,7 +3001,7 @@ ay_npatch_notifycb(ay_object *o)
  ay_cparam cparams = {0};
  int display_mode = ay_prefs.np_display_mode, mode;
  int i, qf = ay_prefs.stess_qf;
- double tolerance;
+ double normal[3], tolerance;
 
   if(!o)
     return AY_ENULL;
@@ -2974,7 +3026,14 @@ ay_npatch_notifycb(ay_object *o)
     }
 
   if(o->modified)
-    ay_npt_setuvtypes(npatch, 0);
+    {
+      ay_npt_setuvtypes(npatch, 0);
+      npatch->is_planar = (char)ay_npt_isplanar(npatch, normal);
+      if(npatch->is_planar)
+	{
+	  ay_npatch_setnttag(o, normal);
+	}
+    }
 
   /* get bevel and caps parameters */
   if(o->tags)

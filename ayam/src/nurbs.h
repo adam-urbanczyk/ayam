@@ -1187,6 +1187,10 @@ int ay_npt_closev(ay_nurbpatch_object *np, int mode);
 int ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
+/** Check NURBS patch planarity.
+ */
+int ay_npt_isplanar(ay_nurbpatch_object *np, double *n);
+
 /** Check NURBS patch closeness in U direction.
  */
 int ay_npt_isclosedu(ay_nurbpatch_object *np);
