@@ -8494,6 +8494,49 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_npt_closevtcmd */
 
 
+/** ay_npt_isplanar:
+ *  check whether NURBS patch \a np is planar
+ *
+ *  \param[in] np NURBS patch to check
+ *
+ *  \returns
+ *   AY_TRUE - surface is planar
+ *   AY_FALSE - else
+ */
+int
+ay_npt_isplanar(ay_nurbpatch_object *np, double *n)
+{
+ double n1[3], n2[3];
+ double *p1, *p2, *p3, *p4;
+
+  if(np->width > 2 || np->height > 2)
+    return AY_FALSE;
+
+  p1 = np->controlv;
+  p2 = &(np->controlv[4]);
+  p3 = &(np->controlv[8]);
+  p4 = &(np->controlv[12]);
+
+  ay_geom_calcnfrom3(p1, p3, p2, n1);
+
+  ay_geom_calcnfrom3(p1, p4, p2, n2);
+  if(!AY_V3COMP(n1, n2))
+    return AY_FALSE;
+
+  ay_geom_calcnfrom3(p2, p3, p4, n2);
+  if(!AY_V3COMP(n1, n2))
+    return AY_FALSE;
+
+  ay_geom_calcnfrom3(p4, p1, p3, n2);
+  if(!AY_V3COMP(n1, n2))
+    return AY_FALSE;
+
+  memcpy(n, n1, 3*sizeof(double));
+
+ return AY_TRUE;
+} /* ay_npt_isplanar */
+
+
 /** ay_npt_isclosedu:
  *  check whether NURBS patch \a np is closed in u direction
  *  by sampling the surface at the respective borders at parametric
