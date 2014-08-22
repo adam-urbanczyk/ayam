@@ -1482,7 +1482,7 @@ int ay_tess_pomeshf(ay_pomesh_object *pomesh,
 
 /** Tesselate a polymesh with GLU.
  */
-int ay_tess_pomesh(ay_pomesh_object *pomesh, int optimize,
+int ay_tess_pomesh(ay_pomesh_object *pomesh, int optimize, double *normal,
 		   ay_pomesh_object **trpomesh);
 
 /*! \file nurbs.h \brief Ayam NURBS API */

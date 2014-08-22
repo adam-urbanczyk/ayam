@@ -1925,7 +1925,7 @@ dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m)
 
   if(needtess)
     {
-      ay_status = ay_tess_pomesh(pm, AY_TRUE, &trpm);
+      ay_status = ay_tess_pomesh(pm, AY_TRUE, NULL, &trpm);
       if(trpm)
 	{
 	  pm = trpm;
