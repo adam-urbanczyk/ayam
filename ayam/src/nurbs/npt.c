@@ -5871,6 +5871,8 @@ ay_npt_createcap(double z, ay_nurbcurve_object *curve,
   memcpy(patch->uknotv, knotv, 4*sizeof(double));
   memcpy(patch->vknotv, knotv, 4*sizeof(double));
 
+  patch->is_planar = AY_TRUE;
+
   i = 0;
   minx = curve->controlv[0];
   maxx = minx;
