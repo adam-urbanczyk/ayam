@@ -2966,8 +2966,9 @@ ay_npatch_setnttag(ay_object *o, double *normal)
       if(!(nval = calloc(3, sizeof(double))))
 	{free(tag); free(btval); return;}
 
-      memcpy(nval, normal, sizeof(double));
+      memcpy(nval, normal, 3*sizeof(double));
       btval->payload = nval;
+      btval->size = 3*sizeof(double);
 
       tag->type = ay_nt_tagtype;
       tag->is_intern = AY_TRUE;
