@@ -53,6 +53,7 @@ typedef struct ay_tess_object_s {
 
   int count;
   int startup;
+  int toggle;
 
   double *p1;
   double *p2;
@@ -188,6 +189,49 @@ ay_tess_createtri(ay_tess_object *to)
 } /* ay_tess_createtri */
 
 
+/* ay_tess_createtrirev:
+ *  create triangle from to->p3, to->p2, to->p1 and link it to <to>
+ */
+void
+ay_tess_createtrirev(ay_tess_object *to)
+{
+ ay_tess_tri *tri = NULL;
+
+  if(!(tri = calloc(1, sizeof(ay_tess_tri))))
+    return;
+
+  tri->next = to->tris;
+  to->tris = tri;
+
+  memcpy(tri->p1, to->p3, 3*sizeof(double));
+  memcpy(tri->p2, to->p2, 3*sizeof(double));
+  memcpy(tri->p3, to->p1, 3*sizeof(double));
+
+  if(to->has_vn)
+    {
+      memcpy(tri->n1, to->n3, 3*sizeof(double));
+      memcpy(tri->n2, to->n2, 3*sizeof(double));
+      memcpy(tri->n3, to->n1, 3*sizeof(double));
+    }
+
+  if(to->has_vc)
+    {
+      memcpy(tri->c1, to->c3, 4*sizeof(double));
+      memcpy(tri->c2, to->c2, 4*sizeof(double));
+      memcpy(tri->c3, to->c1, 4*sizeof(double));
+    }
+
+  if(to->has_tc)
+    {
+      memcpy(tri->t1, to->t3, 2*sizeof(double));
+      memcpy(tri->t2, to->t2, 2*sizeof(double));
+      memcpy(tri->t3, to->t1, 2*sizeof(double));
+    }
+
+ return;
+} /* ay_tess_createtrirev */
+
+
 /* ay_tess_begindata:
  *  tesselation callback
  *
@@ -210,6 +254,7 @@ ay_tess_begindata(GLenum type, void *userData)
     case GL_TRIANGLE_STRIP:
       to->count = 3;
       to->startup = 3;
+      to->toggle = 0;
       break;
     case GL_TRIANGLES:
       to->count = 3;
@@ -340,8 +385,26 @@ ay_tess_vertexdata(GLfloat *vertex, void *userData)
 	      /* create new triangle */
 	      if(ay_tess_checktri(to->p1, to->p2, to->p3))
 		{
-		  ay_tess_createtri(to);
-		} /* if */
+		  if(to->toggle)
+		    {
+		      ay_tess_createtrirev(to);
+		      to->toggle = 0;
+		    }
+		  else
+		    {
+		      ay_tess_createtri(to);
+		      to->toggle = 1;
+		    }
+		} else {
+		  if(to->toggle)
+		    {
+		      to->toggle = 0;
+		    }
+		  else
+		    {
+		      to->toggle = 1;
+		    }
+	      } /* if */
 
 	      /* shift vertex/normal/color/texcoord data */
 	      t = to->p1;
@@ -1837,7 +1900,6 @@ ay_tess_pomesh(ay_pomesh_object *pomesh, int optimize,
   /*  gluTessCallback(tess, GLU_TESS_NORMAL_DATA, AYGLUCBTYPE ay_tess_normaldata);*/
   gluTessCallback(tess, GLU_TESS_END_DATA, AYGLUCBTYPE ay_tess_enddata);
   gluTessCallback(tess, GLU_TESS_COMBINE_DATA, AYGLUCBTYPE ay_tess_combinedata);
-
   for(i = 0; i < pomesh->npolys; i++)
     {
       gluTessBeginPolygon(tess, (GLvoid*)(&to));
