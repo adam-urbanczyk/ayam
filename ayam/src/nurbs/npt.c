@@ -8496,8 +8496,10 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 
 /** ay_npt_isplanar:
  *  check whether NURBS patch \a np is planar
+ *  XXXX todo: add support for more complex and degenerated triangular patches
  *
  *  \param[in] np NURBS patch to check
+ *  \param[in,out] n pointer where the normal will be stored, may be NULL
  *
  *  \returns
  *   AY_TRUE - surface is planar
@@ -8531,7 +8533,8 @@ ay_npt_isplanar(ay_nurbpatch_object *np, double *n)
   if(!AY_V3COMP(n1, n2))
     return AY_FALSE;
 
-  memcpy(n, n1, 3*sizeof(double));
+  if(n)
+    memcpy(n, n1, 3*sizeof(double));
 
  return AY_TRUE;
 } /* ay_npt_isplanar */
