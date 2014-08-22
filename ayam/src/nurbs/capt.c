@@ -670,6 +670,8 @@ ay_capt_crttrimcap(ay_object *c, ay_object **cap)
 	  memcpy(np->uknotv, knotv, 4*sizeof(double));
 	  memcpy(np->vknotv, knotv, 4*sizeof(double));
 
+	  np->is_planar = AY_TRUE;
+
 	  i = 0;
 	  minx = DBL_MAX; maxx = -DBL_MAX;
 	  miny = DBL_MAX; maxy = -DBL_MAX;
