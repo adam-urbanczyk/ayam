@@ -90,6 +90,8 @@ int ay_tess_checktri(double *p1, double *p2, double *p3);
 
 void ay_tess_createtri(ay_tess_object *to);
 
+void ay_tess_createtrirev(ay_tess_object *to);
+
 void ay_tess_begindata(GLenum type, void *userData);
 
 void ay_tess_vertexdata(GLfloat *vertex, void *userData);
@@ -1850,7 +1852,7 @@ cleanup:
  *  returns new PolyMesh in <trpomesh>
  */
 int
-ay_tess_pomesh(ay_pomesh_object *pomesh, int optimize,
+ay_tess_pomesh(ay_pomesh_object *pomesh, int optimize, double *normal,
 	       ay_pomesh_object **trpomesh)
 {
 #ifndef GLU_VERSION_1_2
@@ -1893,6 +1895,9 @@ ay_tess_pomesh(ay_pomesh_object *pomesh, int optimize,
 
   to.nextpd = &(to.p1);
   to.nextnd = &(to.n1);
+
+  if(normal)
+    gluTessNormal(tess, normal[0], normal[1], normal[2]);
 
   gluTessCallback(tess, GLU_TESS_ERROR, AYGLUCBTYPE ay_error_glucb);
   gluTessCallback(tess, GLU_TESS_BEGIN_DATA, AYGLUCBTYPE ay_tess_begindata);

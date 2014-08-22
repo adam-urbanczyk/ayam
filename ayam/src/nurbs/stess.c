@@ -3003,12 +3003,8 @@ ay_stess_TessTrimmedPlanarNP(ay_object *o, int qf)
 	    }
 	}
 
-      /* tesselate the polygon */
-      ay_status = ay_tess_pomesh(po, /*optimize=*/AY_FALSE, &tpo);
-
-      st->pomesh = tpo;
-
       /* set normal */
+      p = NULL;
       tag = o->tags;
       while(tag)
 	{
@@ -3016,10 +3012,16 @@ ay_stess_TessTrimmedPlanarNP(ay_object *o, int qf)
 	    {
 	      memcpy(st->normal, ((ay_btval*)tag->val)->payload,
 		     3*sizeof(double));
+	      p = st->normal;
 	      break;
 	    }
 	  tag = tag->next;
 	}
+
+      /* tesselate the polygon */
+      ay_status = ay_tess_pomesh(po, /*optimize=*/AY_FALSE, p, &tpo);
+
+      st->pomesh = tpo;
 
       /* remove temporary polymesh */
       free(po->nloops);
