@@ -3004,6 +3004,9 @@ ay_stess_TessTrimmedPlanarNP(ay_object *o, int qf)
 	}
 
       /* set normal */
+      st->normal[0] = 0.0;
+      st->normal[1] = 0.0;
+      st->normal[2] = 1.0;
       p = NULL;
       tag = o->tags;
       while(tag)
