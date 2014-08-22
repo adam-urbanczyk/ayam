@@ -3512,7 +3512,7 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
       if(sel)
 	sel = sel->next;
 
-    } while (sel && create_trim);
+    } while(sel && create_trim);
 
   if(notify_parent)
     {
