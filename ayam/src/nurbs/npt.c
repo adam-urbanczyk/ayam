@@ -8498,7 +8498,7 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 
 /** ay_npt_isplanar:
  *  check whether NURBS patch \a np is planar
- *  XXXX todo: add support for more complex and degenerated triangular patches
+ *  XXXX todo: add support for more complex patches
  *
  *  \param[in] np NURBS patch to check
  *  \param[in,out] n pointer where the normal will be stored, may be NULL
@@ -8510,6 +8510,7 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 int
 ay_npt_isplanar(ay_nurbpatch_object *np, double *n)
 {
+
  double n1[3], n2[3];
  double *p1, *p2, *p3, *p4;
 
@@ -8521,6 +8522,33 @@ ay_npt_isplanar(ay_nurbpatch_object *np, double *n)
   p3 = &(np->controlv[8]);
   p4 = &(np->controlv[12]);
 
+  /* check for degenerate triangular patch first (which is planar
+     by definition) */
+  if(AY_V3COMP(p1, p2))
+    {
+      ay_geom_calcnfrom3(p1, p3, p4, n1);
+      goto storen;
+    }
+
+  if(AY_V3COMP(p1, p3))
+    {
+      ay_geom_calcnfrom3(p1, p2, p4, n1);
+      goto storen;
+    }
+
+  if(AY_V3COMP(p2, p4))
+    {
+      ay_geom_calcnfrom3(p2, p3, p1, n1);
+      goto storen;
+    }
+
+  if(AY_V3COMP(p3, p4))
+    {
+      ay_geom_calcnfrom3(p3, p1, p2, n1);
+      goto storen;
+    }
+
+  /* patch seems to be quadrilateral, check all normals */
   ay_geom_calcnfrom3(p1, p3, p2, n1);
 
   ay_geom_calcnfrom3(p1, p4, p2, n2);
@@ -8534,6 +8562,8 @@ ay_npt_isplanar(ay_nurbpatch_object *np, double *n)
   ay_geom_calcnfrom3(p4, p1, p3, n2);
   if(!AY_V3COMP(n1, n2))
     return AY_FALSE;
+
+storen:
 
   if(n)
     memcpy(n, n1, 3*sizeof(double));
