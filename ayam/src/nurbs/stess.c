@@ -1101,16 +1101,16 @@ ay_stess_IntersectLines2D(double *p1, double *p2, double *p3, double *p4,
 {
  double r, s, den;
 
-  if(((fabs(p1[0]-p3[0])<AY_EPSILON)&&(fabs(p1[1]-p3[1])<AY_EPSILON)) ||
-     ((fabs(p1[0]-p4[0])<AY_EPSILON)&&(fabs(p1[1]-p4[1])<AY_EPSILON)))
+  if(((fabs(p1[0]-p3[0])<=2*AY_EPSILON)&&(fabs(p1[1]-p3[1])<=2*AY_EPSILON)) ||
+     ((fabs(p1[0]-p4[0])<=2*AY_EPSILON)&&(fabs(p1[1]-p4[1])<=2*AY_EPSILON)))
     {
       ip[0] = p1[0];
       ip[1] = p1[1];
       return 1;
     }
 
-  if(((fabs(p2[0]-p3[0])<AY_EPSILON)&&(fabs(p2[1]-p3[1])<AY_EPSILON)) ||
-     ((fabs(p2[0]-p4[0])<AY_EPSILON)&&(fabs(p2[1]-p4[1])<AY_EPSILON)))
+  if(((fabs(p2[0]-p3[0])<=2*AY_EPSILON)&&(fabs(p2[1]-p3[1])<=2*AY_EPSILON)) ||
+     ((fabs(p2[0]-p4[0])<=2*AY_EPSILON)&&(fabs(p2[1]-p4[1])<=2*AY_EPSILON)))
     {
       ip[0] = p2[0];
       ip[1] = p2[1];
@@ -1872,7 +1872,11 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
       nextuvp = &trimuvp;
       olduvp = NULL;
       trimuvp = NULL;
+
       /* calc all intersections of all trimloops with current u */
+
+      if(i == Cn-1)
+	u = umax;
       p3[0] = u;
       p4[0] = u;
 
@@ -1883,9 +1887,12 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 	  for(l = 0; l < (tcslens[k]-1); l++)
 	    {
 	      ind = l*2;
+
 	      /* is section crossing or touching u? */
-	      if(((tt[ind] <= u) && (tt[ind+2] >= u)) ||
-		 ((tt[ind] >= u) && (tt[ind+2] <= u)))
+	      if(((tt[ind] <= (u + AY_EPSILON))
+		  && (tt[ind+2] >= (u - AY_EPSILON))) ||
+		 ((tt[ind] >= (u - AY_EPSILON)) &&
+		  (tt[ind+2] <= (u + AY_EPSILON))))
 		{
 		  /* weed out all sections that run (more or less)
 		     exactly along the current u-line, nothing good
@@ -2120,7 +2127,6 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
   /* XXXX Todo: check surface for double control points (important
      surface features where we should place a tesselated point/line)
    */
-  u = umin;
   v = vmin;
   for(i = 0; i < Cm; i++)
     {
@@ -2155,7 +2161,10 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
       nextuvp = &trimuvp;
       olduvp = NULL;
       trimuvp = NULL;
+      /* calc all intersections of all trimloops with current v */
 
+      if(i == Cm-1)
+	v = vmax;
       p3[1] = v;
       p4[1] = v;
 
@@ -2168,8 +2177,10 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 	      ind = l*2;
 
 	      /* is section crossing or touching v? */
-	      if(((tt[ind+1] <= v) && (tt[ind+2+1] >= v)) ||
-		 ((tt[ind+1] >= v) && (tt[ind+2+1] <= v)))
+	      if(((tt[ind+1] <= (v + AY_EPSILON)) &&
+		  (tt[ind+2+1] >= (v - AY_EPSILON))) ||
+		 ((tt[ind+1] >= (v - AY_EPSILON)) &&
+		  (tt[ind+2+1] <= (v + AY_EPSILON))))
 		{
 		  /* weed out all sections that run (more or less)
 		     exactly along the current v-line, nothing good
@@ -2201,6 +2212,7 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 			  newuvp->dir = tcsdirs[k];
 			  newuvp->u = ipoint[0];
 			  newuvp->v = ipoint[1];
+
 			  olduvp = newuvp;
 			  *nextuvp = newuvp;
 			  nextuvp = &(newuvp->next);
@@ -2410,7 +2422,7 @@ ay_stess_DrawTrimmedSurface(ay_stess *stess)
 	    {
 	      glEnd();
 	    }
-	}
+	} /* if have two points */
     } /* for all u lines */
 
   /* draw iso-v lines */
@@ -2460,7 +2472,7 @@ ay_stess_DrawTrimmedSurface(ay_stess *stess)
 	    {
 	      glEnd();
 	    }
-	}
+	} /* if have two points */
     } /* for all v lines */
 
   /* draw trimcurves (outlines) */
