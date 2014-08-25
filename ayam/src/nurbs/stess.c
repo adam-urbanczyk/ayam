@@ -2579,23 +2579,6 @@ ay_stess_ShadeTrimmedSurface(ay_stess *stess)
 	    {
 	      if(!instrip)
 		{
-		  /* before we start the strip, check, whether there
-		     is an incomplete cell before, and shade it */
-		  if(u1->prev && u2->prev &&
-		     (u1->prev->type || u2->prev->type))
-		    {
-		      glBegin(GL_TRIANGLE_STRIP);
-		       glNormal3dv((GLdouble*)&((u1->prev->C)[3]));
-		       glVertex3dv((GLdouble*)(u1->prev->C));
-		       glNormal3dv((GLdouble*)&((u2->prev->C)[3]));
-		       glVertex3dv((GLdouble*)(u2->prev->C));
-		       glNormal3dv((GLdouble*)&((u1->C)[3]));
-		       glVertex3dv((GLdouble*)(u1->C));
-		       glNormal3dv((GLdouble*)&((u2->C)[3]));
-		       glVertex3dv((GLdouble*)(u2->C));
-		      glEnd();
-		    }
-
 		  glBegin(GL_TRIANGLE_STRIP);
 		  instrip = AY_TRUE;
 		}
@@ -2618,23 +2601,6 @@ ay_stess_ShadeTrimmedSurface(ay_stess *stess)
 		    {
 		      glEnd();
 		      instrip = AY_FALSE;
-
-		      /* after ending the strip, check, whether there
-			 is an incomplete cell following, and shade it */
-		      if(u1->next && u2->next &&
-			 (u1->next->type || u2->next->type))
-			{
-			  glBegin(GL_TRIANGLE_STRIP);
-			   glNormal3dv((GLdouble*)&((u1->C)[3]));
-			   glVertex3dv((GLdouble*)(u1->C));
-			   glNormal3dv((GLdouble*)&((u2->C)[3]));
-			   glVertex3dv((GLdouble*)(u2->C));
-			   glNormal3dv((GLdouble*)&((u1->next->C)[3]));
-			   glVertex3dv((GLdouble*)(u1->next->C));
-			   glNormal3dv((GLdouble*)&((u2->next->C)[3]));
-			   glVertex3dv((GLdouble*)(u2->next->C));
-			  glEnd();
-			}
 		    }
 		}
 	    } /* have complete cell */
@@ -2671,6 +2637,119 @@ ay_stess_ShadeTrimmedSurface(ay_stess *stess)
 	  glEnd();
 	  instrip = AY_FALSE;
 	}
+
+      /*
+       * search for incomplete cells
+       */
+      u1 = stess->ups[i];
+      u2 = stess->ups[i+1];
+
+      if(stess->ft_cw)
+	{
+	  while(u1)
+	    {
+	      if(u1->type == 0 || u1->type == 2)
+		break;
+	      u1 = u1->next;
+	    }
+	  while(u2)
+	    {
+	      if(u2->type == 0 || u2->type == 2)
+		break;
+	      u2 = u2->next;
+	    }
+	}
+      else
+	{
+	  /* forward to first trim */
+	  while(u1 && u1->type == 0)
+	    u1 = u1->next;
+
+	  while(u2 && u2->type == 0)
+	    u2 = u2->next;
+	}
+
+      if(!u1 || !u2 || !u1->next || !u2->next)
+	{
+	  continue;
+	}
+
+      while(u1 && u1->type != 0)
+	u1 = u1->next;
+
+      while(u2 && u2->type != 0)
+	u2 = u2->next;
+
+      if(!u1 || !u2 || !u1->next || !u2->next)
+	{
+	  continue;
+	}
+
+      while(u1 && u1->next && u2 && u2->next)
+	{	  
+	  if(u1->v != u2->v)
+	    {
+	      if(u1->v < u2->v)
+		{
+		  while(u1 && u1->v < u2->v)
+		    u1 = u1->next;
+		}
+	      else
+		{
+		  while(u2 && u1->v > u2->v)
+		    u2 = u2->next;
+		}
+	    }
+
+	  if(!u1 || !u2 || !u1->next || !u2->next)
+	    {
+	      break;;
+	    }
+
+	  if(u1->type == 0 && u2->type == 0 && u1->v == u2->v)
+	    {
+	      /* check previous cell */
+	      if(u1->prev && u2->prev &&
+		 (u1->prev->type || u2->prev->type))
+		{
+		  glBegin(GL_TRIANGLE_STRIP);
+		   glNormal3dv((GLdouble*)&((u1->prev->C)[3]));
+		   glVertex3dv((GLdouble*)(u1->prev->C));
+		   glNormal3dv((GLdouble*)&((u2->prev->C)[3]));
+		   glVertex3dv((GLdouble*)(u2->prev->C));
+		   glNormal3dv((GLdouble*)&((u1->C)[3]));
+		   glVertex3dv((GLdouble*)(u1->C));
+		   glNormal3dv((GLdouble*)&((u2->C)[3]));
+		   glVertex3dv((GLdouble*)(u2->C));
+		  glEnd();
+		}
+
+	      /* check next cell */
+	      if(u1->next->type || u2->next->type)
+		{
+		  glBegin(GL_TRIANGLE_STRIP);
+		   glNormal3dv((GLdouble*)&((u1->C)[3]));
+		   glVertex3dv((GLdouble*)(u1->C));
+		   glNormal3dv((GLdouble*)&((u2->C)[3]));
+		   glVertex3dv((GLdouble*)(u2->C));
+		   glNormal3dv((GLdouble*)&((u1->next->C)[3]));
+		   glVertex3dv((GLdouble*)(u1->next->C));
+		   glNormal3dv((GLdouble*)&((u2->next->C)[3]));
+		   glVertex3dv((GLdouble*)(u2->next->C));
+		  glEnd();
+		}
+	    } /* if */
+
+	  /* forward to next candidate cell */
+	  do
+	    u1 = u1->next;
+	  while(u1 && u1->type != 0);
+
+	  do
+	    u2 = u2->next;
+	  while(u2 && u2->type != 0);
+
+	} /* while */
     } /* for */
 
   /****************************************************/
