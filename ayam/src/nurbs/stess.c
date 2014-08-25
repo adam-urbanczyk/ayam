@@ -2670,9 +2670,7 @@ ay_stess_ShadeTrimmedSurface(ay_stess *stess)
 	}
 
       if(!u1 || !u2 || !u1->next || !u2->next)
-	{
-	  continue;
-	}
+	continue;
 
       while(u1 && u1->type != 0)
 	u1 = u1->next;
@@ -2681,9 +2679,7 @@ ay_stess_ShadeTrimmedSurface(ay_stess *stess)
 	u2 = u2->next;
 
       if(!u1 || !u2 || !u1->next || !u2->next)
-	{
-	  continue;
-	}
+	continue;
 
       while(u1 && u1->next && u2 && u2->next)
 	{	  
@@ -2702,9 +2698,7 @@ ay_stess_ShadeTrimmedSurface(ay_stess *stess)
 	    }
 
 	  if(!u1 || !u2 || !u1->next || !u2->next)
-	    {
-	      break;;
-	    }
+	    break;
 
 	  if(u1->type == 0 && u2->type == 0 && u1->v == u2->v)
 	    {
@@ -2789,9 +2783,7 @@ ay_stess_ShadeTrimmedSurface(ay_stess *stess)
 	}
 
       if(!v1 || !v2 || !v1->next || !v2->next)
-	{
-	  continue;
-	}
+	continue;
 
       while(v1 && v1->type != 0)
 	v1 = v1->next;

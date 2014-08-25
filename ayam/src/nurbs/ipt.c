@@ -868,7 +868,7 @@ ay_ipt_interpolateudc(ay_nurbpatch_object *np, int order, int ktype,
 	  AY_V3SCAL(ds, sdlen);
 
 	  ind2 = ind1;
-	  ind1 = ((np->width-1)*N+i)*stride;;
+	  ind1 = ((np->width-1)*N+i)*stride;
 
 	  de[0] = Pw[ind2] - Pw[ind1];
 	  de[1] = Pw[ind2+1] - Pw[ind1+1];
