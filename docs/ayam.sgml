@@ -1841,8 +1841,8 @@ types.<footnote>Since 1.15.</footnote>
 <tt/&lt;Ctrl+PgUp&gt;/ and <tt/&lt;Ctrl+PgDown&gt;/
 cycle through the drawing modes.<footnote>Since 1.16.</footnote>
 <p>
-<tt/&lt;Home&gt;/ and <tt/&lt;End&gt;/ cycle through the grid sizes.
-<tt/&lt;Shift-Home&gt;/ and <tt/&lt;Shift-End&gt;/ modify the current
+<tt/&lt;Insert&gt;/ and <tt/&lt;Delete&gt;/ cycle through the grid sizes.
+<tt/&lt;Shift-Insert&gt;/ and <tt/&lt;Shift-Delete&gt;/ modify the current
 grid size.<footnote>Since 1.21.</footnote>
 <p>
 Using the menu entry <tt/"Zoom to Object"/ or the corresponding
@@ -8603,7 +8603,7 @@ precedence (i.e.~the V curves will be modified).
 Note that this works only properly with clamped curves.
 Furthermore, only NCurve, ICurve, or ACurve objects will be modified,
 but end point data will be derived from any objects providing a
-NCurve (e.g. ExtrNC).<footnote>Since 1.21.</footnote>
+NCurve (e.g.~ExtrNC).<footnote>Since 1.21.</footnote>
 <p>
 The parameters <tt/"Order_U"/ and <tt/"Order_V"/ determine the
 desired order of the resulting surface in U and V direction.
@@ -9397,7 +9397,7 @@ Even though, initially, Script objects do not show the
 Transformations property, they can support transformations under
 certain circumstances.
 To enable this support, a NP tag with the value <tt/"Transformations"/
-must be added to the Script object (i.e. the Transformations property
+must be added to the Script object (i.e.~the Transformations property
 must be visible).<newline>
 Now, the result(s) of the script can, additionally, be manipulated by
 the standard interactive modelling actions, like move or scale.
@@ -16137,7 +16137,7 @@ by the following scripting interface command (in the Ayam console):
 <tt>&raquo;&thinsp;image names</tt>
 </tscreen>
 
-Action icon variants (e.g. for the scale about actions) can also be created
+Action icon variants (e.g.~for the scale about actions) can also be created
 automatically by changing the <tt/"createVariants"/ variable in
 the script file.
 
