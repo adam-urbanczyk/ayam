@@ -1,4 +1,4 @@
-[17. Aug 2014] CVS-Head:
+[28. Aug 2014] CVS-Head:
 ========================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
@@ -117,6 +117,8 @@ o refining the knots of periodic curves now inserts knots into all knot
 o added tesselation GUI option and TP tag parameter "RefineTrims" that
   controls how many times the trim curves are to be refined prior to
   tesselation for improved tesselation fidelity along trim edges
+o added specialized polygon based tesselator for planar trimmed patches
+  to STESS tesselation
 
 GUI:
 o the default value menu buttons of property GUI elements now display a
@@ -188,7 +190,7 @@ o zooming of view windows with the mouse wheel is no longer clogging the
   undo system
 o simple clicks into the view window no longer generate unnecessary entries
   in the undo buffer for view actions
-o added keyboard shortcuts to cycle/modify the grid size
+o added keyboard shortcuts to cycle/modify the grid size (<Insert>/<Delete>)
 
 Scripts/Scripting Interface:
 o added luainterp plugin to support the Lua scripting language
