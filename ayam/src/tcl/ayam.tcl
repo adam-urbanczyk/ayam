@@ -495,10 +495,10 @@ array set ayviewshortcuts {
     DMUp "Ctrl-Prior"
     DMDown "Ctrl-Next"
 
-    GridCycleUp "Home"
-    GridCycleDown "End"
-    GridUp "Shift-Home"
-    GridDown "Shift-End"
+    GridCycleUp "Insert"
+    GridCycleDown "Delete"
+    GridUp "Shift-Insert"
+    GridDown "Shift-Delete"
 
     OSUp "Ctrl-KP_Up"
     OSDown "Ctrl-KP_Down"
