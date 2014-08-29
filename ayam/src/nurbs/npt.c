@@ -6923,6 +6923,11 @@ ay_npt_gordonwcgetends(ay_object *o,
             }
           ay_object_deletemulti(p, AY_FALSE);
         }
+      else
+	{
+	  /* report error? */
+	  return;
+	}
       *ss = NULL;
       *se = NULL;
       break;
@@ -8550,9 +8555,9 @@ ay_npt_isplanar(ay_nurbpatch_object *np, double *n)
 		      if(!AY_V3COMP(n1, n2))
 			return AY_FALSE;
 		    }
-		}
-	    }
-	}
+		} /* if have_n1 */
+	    } /* for j */
+	} /* for i */
 
       if(!have_n2)
 	return AY_FALSE;
@@ -8631,7 +8636,6 @@ storen:
 int
 ay_npt_isclosedu(ay_nurbpatch_object *np)
 {
- int ay_status = AY_OK;
  int i;
  double u1, u2, v;
  double p1[4], p2[4];
@@ -8649,46 +8653,46 @@ ay_npt_isclosedu(ay_nurbpatch_object *np)
       v = np->vknotv[i];
 
       /* calculate and compare surface points */
-      ay_status = ay_nb_SurfacePoint4D(np->width-1, np->height-1,
-				       np->uorder-1, np->vorder-1,
-				       np->uknotv, np->vknotv,
-				       np->controlv,
-				       u1,
-				       v,
-				       p1);
+      (void)ay_nb_SurfacePoint4D(np->width-1, np->height-1,
+				 np->uorder-1, np->vorder-1,
+				 np->uknotv, np->vknotv,
+				 np->controlv,
+				 u1,
+				 v,
+				 p1);
 
-      ay_status = ay_nb_SurfacePoint4D(np->width-1, np->height-1,
-				       np->uorder-1, np->vorder-1,
-				       np->uknotv, np->vknotv,
-				       np->controlv,
-				       u2,
-				       v,
-				       p2);
+      (void)ay_nb_SurfacePoint4D(np->width-1, np->height-1,
+				 np->uorder-1, np->vorder-1,
+				 np->uknotv, np->vknotv,
+				 np->controlv,
+				 u2,
+				 v,
+				 p2);
 
-      if(!AY_V3COMP(p1,p2))
+      if(!AY_V3COMP(p1, p2))
 	return AY_FALSE;
 
       /* check intermediate knot */
       v += (np->vknotv[i+1] - np->vknotv[i])/2.0;
 
       /* calculate and compare surface points */
-      ay_status = ay_nb_SurfacePoint4D(np->width-1, np->height-1,
-				       np->uorder-1, np->vorder-1,
-				       np->uknotv, np->vknotv,
-				       np->controlv,
-				       u1,
-				       v,
-				       p1);
+      (void)ay_nb_SurfacePoint4D(np->width-1, np->height-1,
+				 np->uorder-1, np->vorder-1,
+				 np->uknotv, np->vknotv,
+				 np->controlv,
+				 u1,
+				 v,
+				 p1);
 
-      ay_status = ay_nb_SurfacePoint4D(np->width-1, np->height-1,
-				       np->uorder-1, np->vorder-1,
-				       np->uknotv, np->vknotv,
-				       np->controlv,
-				       u2,
-				       v,
-				       p2);
+      (void)ay_nb_SurfacePoint4D(np->width-1, np->height-1,
+				 np->uorder-1, np->vorder-1,
+				 np->uknotv, np->vknotv,
+				 np->controlv,
+				 u2,
+				 v,
+				 p2);
 
-      if(!AY_V3COMP(p1,p2))
+      if(!AY_V3COMP(p1, p2))
 	return AY_FALSE;
     } /* for */
 
@@ -8696,21 +8700,21 @@ ay_npt_isclosedu(ay_nurbpatch_object *np)
   v = np->vknotv[np->height];
 
   /* calculate and compare surface points */
-  ay_status = ay_nb_SurfacePoint4D(np->width-1, np->height-1,
-				   np->uorder-1, np->vorder-1,
-				   np->uknotv, np->vknotv,
-				   np->controlv,
-				   u1,
-				   v,
-				   p1);
+  (void)ay_nb_SurfacePoint4D(np->width-1, np->height-1,
+			     np->uorder-1, np->vorder-1,
+			     np->uknotv, np->vknotv,
+			     np->controlv,
+			     u1,
+			     v,
+			     p1);
 
-  ay_status = ay_nb_SurfacePoint4D(np->width-1, np->height-1,
-				   np->uorder-1, np->vorder-1,
-				   np->uknotv, np->vknotv,
-				   np->controlv,
-				   u2,
-				   v,
-				   p2);
+  (void)ay_nb_SurfacePoint4D(np->width-1, np->height-1,
+			     np->uorder-1, np->vorder-1,
+			     np->uknotv, np->vknotv,
+			     np->controlv,
+			     u2,
+			     v,
+			     p2);
 
   if(!AY_V3COMP(p1,p2))
     return AY_FALSE;
@@ -8735,7 +8739,6 @@ ay_npt_isclosedu(ay_nurbpatch_object *np)
 int
 ay_npt_isclosedv(ay_nurbpatch_object *np)
 {
- int ay_status = AY_OK;
  int i;
  double u, v1, v2;
  double p1[4], p2[4];
@@ -8753,21 +8756,21 @@ ay_npt_isclosedv(ay_nurbpatch_object *np)
       u = np->uknotv[i];
 
       /* calculate and compare surface points */
-      ay_status = ay_nb_SurfacePoint4D(np->width-1, np->height-1,
-				       np->uorder-1, np->vorder-1,
-				       np->uknotv, np->vknotv,
-				       np->controlv,
-				       u,
-				       v1,
-				       p1);
+      (void)ay_nb_SurfacePoint4D(np->width-1, np->height-1,
+				 np->uorder-1, np->vorder-1,
+				 np->uknotv, np->vknotv,
+				 np->controlv,
+				 u,
+				 v1,
+				 p1);
 
-      ay_status = ay_nb_SurfacePoint4D(np->width-1, np->height-1,
-				       np->uorder-1, np->vorder-1,
-				       np->uknotv, np->vknotv,
-				       np->controlv,
-				       u,
-				       v2,
-				       p2);
+      (void)ay_nb_SurfacePoint4D(np->width-1, np->height-1,
+				 np->uorder-1, np->vorder-1,
+				 np->uknotv, np->vknotv,
+				 np->controlv,
+				 u,
+				 v2,
+				 p2);
 
       if(!AY_V3COMP(p1,p2))
 	return AY_FALSE;
@@ -8776,21 +8779,21 @@ ay_npt_isclosedv(ay_nurbpatch_object *np)
       u += (np->uknotv[i+1] - np->uknotv[i])/2.0;
 
       /* calculate and compare surface points */
-      ay_status = ay_nb_SurfacePoint4D(np->width-1, np->height-1,
-				       np->uorder-1, np->vorder-1,
-				       np->uknotv, np->vknotv,
-				       np->controlv,
-				       u,
-				       v1,
-				       p1);
+      (void)ay_nb_SurfacePoint4D(np->width-1, np->height-1,
+				 np->uorder-1, np->vorder-1,
+				 np->uknotv, np->vknotv,
+				 np->controlv,
+				 u,
+				 v1,
+				 p1);
 
-      ay_status = ay_nb_SurfacePoint4D(np->width-1, np->height-1,
-				       np->uorder-1, np->vorder-1,
-				       np->uknotv, np->vknotv,
-				       np->controlv,
-				       u,
-				       v2,
-				       p2);
+      (void)ay_nb_SurfacePoint4D(np->width-1, np->height-1,
+				 np->uorder-1, np->vorder-1,
+				 np->uknotv, np->vknotv,
+				 np->controlv,
+				 u,
+				 v2,
+				 p2);
 
       if(!AY_V3COMP(p1,p2))
 	return AY_FALSE;
@@ -8800,21 +8803,21 @@ ay_npt_isclosedv(ay_nurbpatch_object *np)
   u = np->uknotv[np->width];
 
   /* calculate and compare surface points */
-  ay_status = ay_nb_SurfacePoint4D(np->width-1, np->height-1,
-				   np->uorder-1, np->vorder-1,
-				   np->uknotv, np->vknotv,
-				   np->controlv,
-				   u,
-				   v1,
-				   p1);
+  (void)ay_nb_SurfacePoint4D(np->width-1, np->height-1,
+			     np->uorder-1, np->vorder-1,
+			     np->uknotv, np->vknotv,
+			     np->controlv,
+			     u,
+			     v1,
+			     p1);
 
-  ay_status = ay_nb_SurfacePoint4D(np->width-1, np->height-1,
-				   np->uorder-1, np->vorder-1,
-				   np->uknotv, np->vknotv,
-				   np->controlv,
-				   u,
-				   v2,
-				   p2);
+  (void)ay_nb_SurfacePoint4D(np->width-1, np->height-1,
+			     np->uorder-1, np->vorder-1,
+			     np->uknotv, np->vknotv,
+			     np->controlv,
+			     u,
+			     v2,
+			     p2);
 
   if(!AY_V3COMP(p1,p2))
     return AY_FALSE;
