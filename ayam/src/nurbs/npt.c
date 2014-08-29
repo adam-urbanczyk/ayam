@@ -8498,7 +8498,6 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 
 /** ay_npt_isplanar:
  *  check whether NURBS patch \a np is planar
- *  XXXX todo: add support for more complex patches
  *
  *  \param[in] np NURBS patch to check
  *  \param[in,out] n pointer where the normal will be stored, may be NULL
@@ -8510,12 +8509,56 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 int
 ay_npt_isplanar(ay_nurbpatch_object *np, double *n)
 {
-
  double n1[3], n2[3];
  double *p1, *p2, *p3, *p4;
+ int i, j, have_n1, have_n2;
 
   if(np->width > 2 || np->height > 2)
-    return AY_FALSE;
+    {
+      if((np->utype == AY_CTCLOSED) || (np->utype == AY_CTPERIODIC))
+	return AY_FALSE;
+
+      if((np->vtype == AY_CTCLOSED) || (np->vtype == AY_CTPERIODIC))
+	return AY_FALSE;
+
+      have_n1 = AY_FALSE;
+      have_n2 = AY_FALSE;
+      for(i = 0; i < np->width; i++)
+	{
+	  for(j = 0; j < np->height; j++)
+	    {
+	      if(!have_n1)
+		{
+		  memset(n1, 0, 3*sizeof(double));
+		  ay_npt_getnormal(np, i, j,
+				   ay_npt_gndu, ay_npt_gndv, AY_FALSE, n1);
+		  if(fabs(n1[0]) > AY_EPSILON ||
+		     fabs(n1[1]) > AY_EPSILON ||
+		     fabs(n1[2]) > AY_EPSILON)
+		    have_n1 = AY_TRUE;
+		}
+	      else
+		{
+		  memset(n2, 0, 3*sizeof(double));
+		  ay_npt_getnormal(np, i, j,
+				   ay_npt_gndu, ay_npt_gndv, AY_FALSE, n2);
+		  if(fabs(n2[0]) > AY_EPSILON ||
+		     fabs(n2[1]) > AY_EPSILON ||
+		     fabs(n2[2]) > AY_EPSILON)
+		    {
+		      have_n2 = AY_TRUE;
+		      if(!AY_V3COMP(n1, n2))
+			return AY_FALSE;
+		    }
+		}
+	    }
+	}
+
+      if(!have_n2)
+	return AY_FALSE;
+
+      goto storen;
+    } /* if width/height > 2 */
 
   p1 = np->controlv;
   p2 = &(np->controlv[4]);
