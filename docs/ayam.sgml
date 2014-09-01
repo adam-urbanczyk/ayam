@@ -855,8 +855,8 @@ only contains the <tt>"RenderMan RIB"</tt> entry. To gain access
 to the other menu entries described here, the corresponding plugin
 must be loaded.
 
-<item><tt>"Export/RenderMan RIB"</tt>, exports the current scene to a RIB,
-asking which camera (which view) to use.
+<item><tt>"Export/RenderMan RIB"</tt>, exports the current scene to a RIB
+file, asking which camera (which view) to use.
 
 <item><tt>"Export/Apple 3DMF"</tt>, export a scene to the Apple
 3DMF format, see section <ref id="exp3dmf" name="3DMF (Apple) Export">
@@ -1222,8 +1222,8 @@ is the center of the respective objects coordinate system.
 Note that, currently, this works on each of the selected objects
 separately!
 <item><tt>"Center All Points (2D-XY)"</tt>,
-<tt>"Points/Center All Points (2D-YZ)"</tt>,
-<tt>"Points/Center All Points (2D-XZ)"</tt>: work like the center
+<tt>"Center All Points (2D-YZ)"</tt>,
+<tt>"Center All Points (2D-XZ)"</tt>: work like the center
 3D tool but just center in the designated plane.
 </itemize>
 
@@ -1491,10 +1491,10 @@ see also section <ref id="mm" name="Main Menu">.
 Note that the main window keyboard shortcuts only work if the main window
 has the keyboard input focus <em>and</em> the input focus is not in the
 console or in a property GUI element (i.e.~a data entry field).
-Hit <tt>&lt;Esc&gt;</tt> first to set the focus to the object selection
-widget and thus enable the main window keyboard shortcuts.
+In doubt, hit <tt>&lt;Esc&gt;</tt> first to set the focus to the object
+selection widget and thus enable the main window keyboard shortcuts.
 <p>
-One can adapt all these shortcuts using the <tt>"ayamrc"</tt> file
+All these shortcuts can be adapted using the <tt>"ayamrc"</tt> file
 (see section <ref id="ayamrc" name="Ayamrc File">).
 
 <sect1>Anatomy of a View<label id="viewwin">
@@ -1551,10 +1551,20 @@ window size instead.
 Also note that the environment variable <tt/SHADERS/ will be adapted
 to the preference setting <tt/Shaders/ for rendering.
 
+<item><tt/"Render to File"/: the scene is exported to a RIB file using the
+camera settings of the current view and with a RiDisplay statement that
+results in an image file to be produced; then the <tt/"FRender"/ command
+(see the preferences) will be called. The image file name will be derived
+from the scene file name. Note that the RIB export
+will not use the RiOption settings for image size but the current
+window size instead.
+Also note that the environment variable <tt/SHADERS/ will be adapted
+to the preference setting <tt/Shaders/ for rendering.
+
 <item><tt/"Redraw"/: forces the OpenGL-widget to be drawn, this is
 particularly useful if automatic redrawing of the view has been disabled.
 
-<item><tt/"Export RIB"/ exports the scene to a RIB. This does exactly the
+<item><tt/"Export RIB"/ exports the scene to a RIB file. This does exactly the
 same as the main menu entry <tt>"File/Export/RenderMan RIB"</tt>, except that
 the current view will already be selected in the dialog box.
 
@@ -2557,18 +2567,18 @@ See also section <ref id="hidprefs" name="Hidden Preference Settings">.
 template used by Ayam to determine the current percentage of completion
 of the rendering for display in the Rendering GUI. The special symbol <tt/"%d"/
 denotes the position of the percentage number in the output of the renderer.
-For rendrib from BMRT2.6 this should be set to <tt/"R90000 %d"/ and
+For <tt/rendrib/ from BMRT 2.6 this should be set to <tt/"R90000 %d"/ and
 the special command line option <tt/"-Progress"/ should be used for
 the renderer command (see <tt/"Render"/ above).
-For rendrib from BMRT2.5 it should be set to <tt/"Done computing %d"/
+For <tt/rendrib/ from BMRT 2.5 it should be set to <tt/"Done computing %d"/
 and no special option has to be given to the renderer.<newline>
 If the output of the renderer contains variable strings before
 the progress number or the renderer uses terminal control characters,
 a second variant of parsing the output using
 regular expressions is available.<footnote>Since 1.6.</footnote>
 In this case, the progress template should be a complete regexp command
-for Tcl that parses the output of the renderer and puts the extracted
-progress number into a variable named <tt/"percent"/.
+for Tcl that parses the output of the renderer with a regular expression and
+puts the extracted progress number into a variable named <tt/"percent"/.
 The output to parse will be inserted
 in the regexp command template in place of <tt/"string"/.
 The dummy output variable is needed, because Tcl regexp always outputs the
@@ -2583,30 +2593,34 @@ fish.rib (222):  - 10.00 percent
 regexp -- {^.* - (\[0-9\]+)} string dummy percent
 </verb></tscreen>
 
-This regexp eats the variable component away and then looks for the
+This regexp command eats the variable component away and then looks for the
 single dash right in front of the percent number.<newline>
 
 Gelato output looks like this
 <tscreen><verb>
 Elapsed:    10.1440s  Done:  64%  |********************           |
 </verb></tscreen>
-and uses terminal control to render the progress bar in ASCII; this calls
-for a different approach that parses backwards (hence
+and uses terminal control characters to render the progress bar in ASCII;
+this calls for a different approach that parses backwards (hence
 the use of <tt/&dollar;/ at the end):
 <tscreen><verb>
 regexp -- {(\[0-9\]+)%(\[ |*\]+)$} string dummy percent
 </verb></tscreen>
 
-<item><tt/"FRender"/, renderer to use for direct rendering to image files
-(via view menu entry <tt/"Render to File"/).
+This regexp command eats away all pipe symbols, asterisks, and spaces
+<em/backwards/, starting from the last character and including the percent
+sign, which comes right behind the sought after percentage number.
+
+<item><tt/"FRender"/, renderer command to use for direct rendering to image
+files (via view menu entry <tt/"Render to File"/).
 
 <item><tt/"FRenderUI"/, enables the Rendering GUI for the direct rendering
 to image files, see discussion of <tt/"RenderUI"/ above.
 
-<item><tt/"FRenderPT"/, progress template for the direct rendering,
-see discussion of <tt/"RenderPT"/ above.
+<item><tt/"FRenderPT"/, progress template for the direct rendering to
+image files, see discussion of <tt/"RenderPT"/ above.
 
-<item><tt/"SMRender"/, renderer to use for the rendering of shadow maps
+<item><tt/"SMRender"/, renderer command to use for the rendering of shadow maps
 (e.g.~view menu entry <tt>"View/Create All ShadowMaps"</tt>),
 see also section <ref id="shadowmaps" name="Using ShadowMaps">.
 <tt>%s</tt> denotes the name of the RIB file.
@@ -2633,13 +2647,13 @@ upon RIB export. Not changing the shader names is necessary for Gelato.
 permanent preview feature (see also section <ref id="vm" name="View Menu">).
 This setting is just available, if the compile
 time option <tt/AYENABLEPPREV/ has been set.
-This option is not set for the official Ayam binaries.
+This option is <em/not/ set for the official Ayam binaries.
 </itemize>
 
-Note that you can set many renderer related preferences at once using the
+Note that many renderer related preferences can be set at once using the
 select renderer tool via the main menu <tt>"Special/Select Renderer"</tt>
 (see also section <ref id="mmspecial" name="Special Menu">). In fact,
-using <tt>"Special/Select Renderer"</tt> first, then fine tuning your
+using <tt>"Special/Select Renderer"</tt> first, then fine tuning the
 renderer setup using the preferences editor is the suggested way to
 switch Ayam to a certain RenderMan renderer.
 
@@ -2694,8 +2708,8 @@ and readability.
 <item><tt/"SaveDialogGeom"/ controls when the geometry of various dialog
 windows should be remembered by Ayam, <tt/"Never"/: the dialog windows are
 always opened in standard size, centered on the screen; <tt/"WhileRunning"/:
-the window width and position will be remembered as long as Ayam is
-running; <tt/"Always"/: the window width and position will be remembered
+the window geometry will be remembered as long as Ayam is
+running; <tt/"Always"/: the window geometry will be remembered
 in the saved preferences, thus, also surviving a restart of Ayam.
 Note that the height of the preferences window will always be adapted
 to the currently open preferences section, no matter how <tt/"SaveDialogGeom"/
@@ -3879,12 +3893,12 @@ plane of all modelling actions is constrained to the world
 XY-, ZY-, or XZ-plane (depending on the type of view used).
 <p>
 However, if a view is <em>aligned</em> and switched to <em>local</em>,
-one can also edit in local object space. This means one can e.g.~edit a
-planar parameter curve of a skin object where both objects
-(curve and skin) are rotated and scaled arbitrarily
-and make sure that the parameter curve remains planar all the time.
+editing in local object space is possible. This means one can e.g.~edit a
+planar parameter curve of a Skin object where both objects
+are rotated and scaled arbitrarily via their transformation attributes
+and the parameter curve is guaranteed to remain planar all the time.
 <p>
-In other words, this means that the input plane of an aligned local view
+In other words, the input plane of an aligned local view
 will match the XY-, ZY-, or XZ-plane of the local object space,
 depending on the type of the view (<tt/"Front"/, <tt/"Side"/, or <tt/"Top"/).
 Editing and other modelling actions take place in that plane.
@@ -3894,18 +3908,18 @@ Note that in contrast to their normal behaviour, grids can also be scaled
 differently in X-window and Y-window coordinates in aligned local views
 (if the local object space is deformed this way).
 <p>
-How to make a view local and align it?
-<p>
-All you need to do is to first select an object and then press
-<tt/&lt;l&gt;/ <em>twice</em> to make the view object-local (one can
-also use <tt/&lt;Ctrl+l&gt;/ in external views).
+To make a view object local and aligned the object must be selected first.
+Now, pressing <tt/&lt;l&gt;/ <em>twice</em> makes the current view local
+(one can also use <tt/&lt;Ctrl+l&gt;/ in external views).
 In Ayam versions prior to 1.18 one also needed to manually align
 the view using <tt/&lt;L&gt;/ (or <tt/&lt;Ctrl+a&gt;/ in external
 views). Since Ayam 1.18, the view is automatically aligned to the
-selected object or current level when cycling through the global/local
-modes. Manually aligning a view may still be necessary, if the camera
-of the view is e.g.~changed by a view action (however, realigning is also
-always possible by cycling the modelling mode three times).
+selected object or current level when cycling through the
+global&thinsp;/&thinsp;local modes.
+Manually aligning a view may still be necessary after certain changes to
+the the camera of the view e.g.~by the rotate view action.
+Note that realigning is also always possible by cycling the modelling
+mode three times using <tt/&lt;l&gt;/.
 But let us get back to our local view.
 <p>
 To illustrate local views a little bit further, see the following example
@@ -3918,12 +3932,12 @@ images:
 </figure>
 <p>
 A Sweep object with a circular B-Spline curve as cross section (rotated
-about the y axis by 90 degrees) and a straight standard curve as trajectory.
+about the y axis by 90 degrees using the transformation attributes) and a
+straight standard curve as trajectory.
 The Sweep itself is rotated about the z axis by 30 degrees. The view is a
 front view, the cross section and trajectory are both selected.
 Note how inadequate the grid spacing would be to edit the trajectory curve
-(it is e.g.~near impossible to edit the curve and keep
-it straight). 
+(it is e.g.~near impossible to edit the curve and keep it straight).
 <p>
 &raquo;&thinsp;Press <tt/&lt;l&gt;/.
 <p>
@@ -3950,15 +3964,15 @@ trajectory, in fact it is perfectly aligned to the trajectory.
 </figure>
 <p>
 Now the view is object-local and aligned to the first of the selected
-objects (the cross section curve), note again the modelling mode icon,
+objects (the cross section curve); look at the modelling mode icon,
 it is now displaying a O in the lower right corner. As the selected
 cross section curve was rotated by 90 degrees around the y axis, the
-front view now again displays a circle. Note again the orientation
-of the Root object coordinate system. One can safely edit the cross
+front view now displays a circle. Note again the orientation
+of the Root object coordinate system. One can now safely edit the cross
 section curve, it will stay planar.
 
 Note, that object-local aligned views only align to the first of multiple
-selected objects; if all selected objects have the same transformation
+selected objects; if all selected objects share the same transformation
 attributes, everything is fine, but if not, some objects will be misaligned.
 
 Also remember: when a view is level-local, changing the current level
@@ -3970,6 +3984,11 @@ the aim point of the view camera to the origin of the respective local
 coordinate system which might not be appropriate for modelling purposes;
 so, after a selection change, one may want to also zoom the view to the
 newly selected object: <tt/&lt;LO&gt;/.
+
+Finally, note that aligning views only works for spaces
+defined by the transformation attributes, it is <em/not/ possible to
+align to e.g.~a planar curve that has the default transformation
+attributes and is rotated via the control points.
 
 <sect>Objects, Properties, and Tags<label id="obandprp">
 <p>
@@ -13432,7 +13451,7 @@ crtClosedBS &ndash; create closed (circular) B-Spline:
  <item>Description: This command creates a circular B-Spline curve
 with desired number of sections (defaults to 6), order (defaults to 4),
 arc (defaults to 360.0, negative values are allowed), and
-radius (defaults to 1.0). The curve always starts on the positive X axis. 
+radius (defaults to 1.0). The curve always starts on the positive X axis.
 <p>
 See also section <ref id="cbspt" name="Circular B-Spline Tool">.
 </itemize>
@@ -16129,7 +16148,7 @@ preferences, you still have to switch to Pixie using the main menu
 The script <tt>"myicons.tcl"</tt>
 allows to replace the icons of Ayam with a set of user defined ones.
 The new icons must be GIF image files of size 25 by 25 and reside
-in the <tt/"icons"/ directory relative to the Ayam executable. 
+in the <tt/"icons"/ directory relative to the Ayam executable.
 
 The names of the image files may be obtained from the script or
 by the following scripting interface command (in the Ayam console):
@@ -17228,7 +17247,7 @@ The DXF import may be controlled via different options:
 be imported.
 <item><tt/"ScaleFactor"/: allows to apply a scaling factor to all
 imported objects.
-<item><tt/"ReadLayers"/: 
+<item><tt/"ReadLayers"/:
 Using the <tt/"ReadLayers"/: using this import option, a single layer or
 a range of layers may be selected for import.
 By default, all entities from all layers will be imported.
@@ -18808,7 +18827,7 @@ This option is not used in single window GUI mode. Default is 1 &ndash; yes.
 be made transient. It will then, depending on the window manager or its
 configuration, get a different or no decoration, no icon (or no entry in the
 task bar on Windows), and will always be iconified when the main window
-gets iconified. Not used in single window GUI mode. 
+gets iconified. Not used in single window GUI mode.
 The default value is 1 &ndash; yes.
 
 <item><tt/"UseInternalFD"/ switches to an internal file dialog for loading
