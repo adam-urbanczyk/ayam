@@ -7811,7 +7811,8 @@ cleanup:
  * Check whether NURBS patch is trimmed.
  * Does not work well for degenerate patches.
  *
- * \param[in] mode operation mode: 0 - check if non-trivially trimmed
+ * \param[in] mode operation mode: 0 - check if non-trivially trimmed,
+ * 1 - check if trivially trimmed
  *
  * \returns AY_FALSE in error and if trivially trimmed,
  *          AY_TRUE if non-trivially trimmed
@@ -7880,6 +7881,41 @@ ay_npt_istrimmed(ay_object *o, int mode)
 	   */
 	  return AY_FALSE;
 	} /* if */
+      break;
+    case 1:
+      if(!o->down || !o->down->next)
+	return AY_FALSE; /* no child or just one child (EndLevel) */
+
+      /* if we get here o has atleast one real child */
+      if(o->down->next->next)
+	return AY_FALSE;
+
+      if(o->down->type != AY_IDLEVEL)
+	{
+	  /* process single trim curve */
+	  ay_npt_isboundcurve(o->down, b1, b2, b3, b4, &is_bound);
+	  return is_bound;
+	}
+      else
+	{
+	  /* process trim loop */
+	  down = o->down->down;
+	  while(down->next)
+	    {
+	      ay_npt_isboundcurve(down, b1, b2, b3, b4, &is_bound);
+	      if(!is_bound)
+		return AY_FALSE;
+
+	      down = down->next;
+	    } /* while */
+
+	  /*
+	   * if we get here, all curve segments of all trim loop elements
+	   * are each on one boundary => conclude trivial trim
+	   */
+	  return AY_TRUE;
+	}
+      break;
     default:
       break;
     } /* switch */
