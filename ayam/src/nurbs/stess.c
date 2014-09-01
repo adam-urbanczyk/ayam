@@ -2682,7 +2682,7 @@ ay_stess_ShadeTrimmedSurface(ay_stess *stess)
 	continue;
 
       while(u1 && u1->next && u2 && u2->next)
-	{	  
+	{
 	  if(u1->v != u2->v)
 	    {
 	      if(u1->v < u2->v)
@@ -3173,6 +3173,14 @@ ay_stess_TessNP(ay_object *o, int qf)
 	ay_status = ay_stess_TessTrimmedPlanarNP(o, qf);
       else
 	ay_status = ay_stess_TessTrimmedNP(o, qf);
+    }
+  else
+    {
+      if(o->down && o->down->next && npatch->is_planar &&
+	 ay_npt_istrimmed(o, 1))
+	{
+	  ay_status = ay_stess_TessTrimmedPlanarNP(o, qf);
+	}
     }
 
   if(ay_status == AY_ERROR)
