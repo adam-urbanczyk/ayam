@@ -95,6 +95,7 @@ bind $f.li <<ListboxSelect>> {
     } else {
 	focus -force $ay(olb)
     }
+
     # improve focus traversal (speed-wise)
     global tcl_platform AYWITHAQUA
     if { $ay(lb) == 1 } {
@@ -287,9 +288,9 @@ if { ($tcl_platform(platform) == "windows") } {
     # bind
 
     bind all <MouseWheel> {
-	if { ([focus] != "") && ([focus] != ".fl.con.console") &&\
-		([winfo toplevel [focus]] == ".") &&\
-		([string first "view" [focus]] == -1)} {
+	if { ([focus] != "") && ([focus] != ".fl.con.console") &&
+	     ([winfo toplevel [focus]] == ".") &&
+	     ([string first "view" [focus]] == -1)} {
 	    global ay
 	    if { %D < 0.0 } {
 		$ay(pca) yview scroll 1 pages
@@ -317,8 +318,8 @@ if { $AYWITHAQUA } {
     # bind
 
     bind all <MouseWheel> {
-	if { ([focus] != "") && ([focus] != ".fl.con.console") &&\
-		 ([winfo toplevel [focus]] == ".") } {
+	if { ([focus] != "") && ([focus] != ".fl.con.console") &&
+	     ([winfo toplevel [focus]] == ".") } {
 	    global ay
 	    if { %D < 0.0 } {
 		$ay(pca) yview scroll 3 units
@@ -527,8 +528,8 @@ proc plb_resize { } {
     set vwidth [expr [winfo rootx .fu.fMain.fProp]]
 
     global tcl_platform ayprefs
-    if { ($tcl_platform(platform) != "windows") &&\
-	    ($ayprefs(TwmCompat) != 1) } {
+    if { ($tcl_platform(platform) != "windows") &&
+	 ($ayprefs(TwmCompat) != 1) } {
 	set x [winfo rootx .]
 	set y [winfo rooty .]
 
@@ -571,11 +572,11 @@ proc plb_focus { } {
 		}
 	    }
 	    set fraction [expr (double($wypos)+[winfo reqheight $w])/\
-	                       double($height)]
+			      double($height)]
 	    if { ($fraction < [lindex $visible 0]) ||
 	         ($fraction > [lindex $visible 1]) } {
-		     set fraction [expr double($wypos)/double($height)]
-		     $ca yview moveto $fraction
+		set fraction [expr double($wypos)/double($height)]
+		$ca yview moveto $fraction
 	    }
 	}
 	# if
@@ -632,7 +633,7 @@ proc plb_showprop { prop } {
 proc plb_setwin { w {fw ""} } {
     global ay
 
-    if {![winfo exists $w] } {
+    if { ![winfo exists $w] } {
 	return
     }
 
