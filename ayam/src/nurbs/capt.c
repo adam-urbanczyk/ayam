@@ -517,7 +517,7 @@ ay_capt_integrate(ay_object *c, int side, int knottype, ay_object *s)
  ay_object *cc = NULL, *o = NULL, *oldnext;
  ay_nurbpatch_object *npc = NULL;
  ay_nurbpatch_object *nps = NULL;
- char *uv = NULL, uvs[][4] = {"Vu","vu","Uu","uu"};
+ char *uv = NULL, uvs[][4] = {"Vu","vu","Uv","uv"};
  int order = 0;
 
   if(!c || !s)
@@ -1014,7 +1014,7 @@ ay_capt_createtags(ay_object *o, int *caps)
 	    { free(new); return; }
 	  strcpy(new->name, ay_cp_tagname);
 	  new->type = ay_cp_tagtype;
-	  if(!(new->val = calloc(l, sizeof(char))))
+	  if(!(new->val = calloc(l+1, sizeof(char))))
 	    { free(new->name); free(new); return; }
 	  strcpy(new->val,buf);
 	  new->next = o->tags;
