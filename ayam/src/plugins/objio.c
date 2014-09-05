@@ -548,46 +548,46 @@ objio_writetrimids(FILE *fileptr, ay_object *o)
 		  ay_status = ay_nct_getorientation(nc, 4, 1, 0, &orient);
 		  ay_object_delete(cnc);
 		  cnc = NULL;
-		}
 
-	      if(orient < 0.0)
-		fprintf(fileptr, "hole ");
-	      else
-		fprintf(fileptr, "trim ");
-
-	      while(down->next)
-		{
-		  if(down->type == AY_IDNCURVE)
-		    {
-		      nc = (ay_nurbcurve_object *)down->refine;
-		      ay_knots_getuminmax(down, nc->order, nc->length+nc->order,
-					  nc->knotv,
-					  &umin, &umax);
-		      fprintf(fileptr, " %g %g -%d", umin, umax, tc);
-		      tc--;
-		    }
+		  if(orient < 0.0)
+		    fprintf(fileptr, "hole ");
 		  else
+		    fprintf(fileptr, "trim ");
+
+		  while(down->next)
 		    {
-		      p = NULL;
-		      ay_status = ay_provide_object(down, AY_IDNCURVE, &p);
-		      pnc = p;
-		      while(pnc)
+		      if(down->type == AY_IDNCURVE)
 			{
-			  nc = (ay_nurbcurve_object *)pnc->refine;
-			  ay_knots_getuminmax(pnc, nc->order,
-					      nc->length+nc->order,
-					      nc->knotv,
+			  nc = (ay_nurbcurve_object *)down->refine;
+			  ay_knots_getuminmax(down, nc->order,
+					      nc->length+nc->order, nc->knotv,
 					      &umin, &umax);
 			  fprintf(fileptr, " %g %g -%d", umin, umax, tc);
 			  tc--;
-			  pnc = pnc->next;
 			}
-		      (void)ay_object_deletemulti(p, AY_FALSE);
-		    }
-		  down = down->next;
-		} /* while */
+		      else
+			{
+			  p = NULL;
+			  ay_status = ay_provide_object(down, AY_IDNCURVE, &p);
+			  pnc = p;
+			  while(pnc)
+			    {
+			      nc = (ay_nurbcurve_object *)pnc->refine;
+			      ay_knots_getuminmax(pnc, nc->order,
+						  nc->length+nc->order,
+						  nc->knotv,
+						  &umin, &umax);
+			      fprintf(fileptr, " %g %g -%d", umin, umax, tc);
+			      tc--;
+			      pnc = pnc->next;
+			    }
+			  (void)ay_object_deletemulti(p, AY_FALSE);
+			}
+		      down = down->next;
+		    } /* while */
 
-	      fprintf(fileptr, "\n");
+		  fprintf(fileptr, "\n");
+		} /* if */
 	    } /* if */
 	  break;
 	default:
@@ -1113,10 +1113,11 @@ objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
 
 		  /* create new object (for the tesselated face) */
 		  if(!(li = calloc(1, sizeof(ay_list_object))))
-		    return AY_EOMEM;
+		    {ay_status = AY_EOMEM; goto cleanup;}
 
 		  if(!(to = calloc(1, sizeof(ay_object))))
-		    {free(li); return AY_EOMEM;}
+		    {free(li); ay_status = AY_EOMEM; goto cleanup;}
+
 		  li->object = to;
 
 		  ay_object_defaults(to);
@@ -1152,10 +1153,10 @@ objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
 
 	  /* create new object (for the tesselated face) */
 	  if(!(li = calloc(1, sizeof(ay_list_object))))
-	    return AY_EOMEM;
+	    {ay_status = AY_EOMEM; goto cleanup;}
 
 	  if(!(to = calloc(1, sizeof(ay_object))))
-	    {free(li); return AY_EOMEM;}
+	    {free(li); ay_status = AY_EOMEM; goto cleanup;}
 	  li->object = to;
 
 	  ay_object_defaults(to);
@@ -1210,6 +1211,8 @@ objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
 	objio_writepomesh(fileptr, lihead->object, m);
     } /* if */
 
+cleanup:
+
   while(lihead)
     {
       ay_object_delete(lihead->object);
@@ -1218,7 +1221,7 @@ objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
       lihead = li;
     } /* while */
 
- return AY_OK;
+ return ay_status;
 } /* objio_writepomesh */
 
 
