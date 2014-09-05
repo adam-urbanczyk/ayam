@@ -1117,8 +1117,11 @@ ay_draw_needredraw(ay_list_object *oldsel, ay_list_object *newsel,
 void
 ay_draw_trimview(void)
 {
- ay_nurbpatch_object *patch = NULL;
  GLfloat minx, maxx, miny, maxy;
+ int patch_num = 0, clear_patch = AY_FALSE;
+ ay_object *p = NULL, *o = NULL;
+ ay_nurbpatch_object *patch = NULL;
+ ay_trim_object *trim = NULL;
 
   /* check, whether we are not in the root level */
   if(ay_currentlevel && ay_currentlevel->object != ay_root)
@@ -1148,6 +1151,59 @@ ay_draw_trimview(void)
 	    }
 	}
 
+      /* or, is it a Trim object? */
+      if(!patch)
+	{
+	  if(ay_currentlevel->next && ay_currentlevel->next->object &&
+	     ay_currentlevel->next->object->type == AY_IDTRIM)
+	    {
+	      if(ay_currentlevel->next->object->down)
+		{
+		  trim = (ay_trim_object*)ay_currentlevel->next->object->refine;
+		  if(ay_currentlevel->next->object->down->type == AY_IDNPATCH)
+		    {
+		      patch = (ay_nurbpatch_object *)
+			(ay_currentlevel->next->object->down->refine);
+		      if(trim->patchnum)
+			{
+			  patch_num = 1;
+			  o = patch->caps_and_bevels;
+			  while(o && patch_num < trim->patchnum)
+			    {
+			      o = o->next;
+			      patch_num++;
+			    }
+			  if(o)
+			    {
+			      patch = (ay_nurbpatch_object *)o->refine;
+			    }
+			  else
+			    {
+			      patch = NULL;
+			    }
+			}
+		    }
+		  else
+		    {
+		      ay_provide_object(ay_currentlevel->next->object->down,
+					AY_IDNPATCH, &p);
+		      if(p)
+			clear_patch = AY_TRUE;
+		      o = p;
+		      while(o && patch_num < trim->patchnum)
+			{
+			  o = o->next;
+			  patch_num++;
+			}
+		      if(o)
+			{
+			  patch = (ay_nurbpatch_object *)o->refine;
+			}
+		    }
+		}
+	    }
+	}
+
       /* draw the bounds of the parametric space of the patch as rectangle */
       if(patch)
 	{
@@ -1171,8 +1227,11 @@ ay_draw_trimview(void)
 	   glEnd();
 
 	  glDisable(GL_LINE_STIPPLE);
-	} /* if */
-    } /* if */
+
+	  if(clear_patch)
+	    ay_object_deletemulti(p, AY_FALSE);
+	} /* if patch */
+    } /* if current level is not root */
 
  return;
 } /* ay_draw_trimview */
