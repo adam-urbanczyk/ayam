@@ -839,7 +839,10 @@ ay_rrib_RiNuPatch(RtInt nu, RtInt uorder, RtFloat uknot[],
     }
 
   if(!(np.vknotv = calloc(nv+vorder, sizeof(double))))
-    return;
+    {
+      free(np.uknotv);
+      return;
+    }
 
   for(i = 0; i < nv+vorder; i++)
     {
@@ -994,7 +997,10 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
 	     nc->order = (int)*orderptr;
 
 	     if(!(nc->knotv = calloc((*nptr + *orderptr), sizeof(double))))
-	       return;
+	       {
+		 free(nc);
+		 return;
+	       }
 
 	     for(k = 0; k < (*nptr + *orderptr); k++)
 	       {
@@ -1003,7 +1009,11 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
 	       }
 
 	     if(!(nc->controlv = calloc((*nptr * 4), sizeof(double))))
-	       return;
+	       {
+		 free(nc->knotv);
+		 free(nc);
+		 return;
+	       }
 
 	     l = 0;
 	     for(k = 0; k < *nptr; k++)
@@ -1062,7 +1072,10 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
 	 nc->order = (int)*orderptr;
 
 	 if(!(nc->knotv = calloc((*nptr + *orderptr), sizeof(double))))
-	   return;
+	   {
+	     free(nc);
+	     return;
+	   }
 
 	 for(k = 0; k < (*nptr + *orderptr); k++)
 	   {
@@ -1071,8 +1084,11 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
 	   }
 
 	 if(!(nc->controlv = calloc((*nptr * 4), sizeof(double))))
-	   return;
-
+	   {
+	     free(nc->knotv);
+	     free(nc);
+	     return;
+	   }
 	 l = 0;
 	 for(k = 0; k < *nptr; k++)
 	   {
@@ -1286,6 +1302,7 @@ ay_rrib_RiAreaLightSource(RtToken name,
       ay_clevel_del();
       ay_next = &(ay_currentlevel->object->next);
       ay_clevel_del();
+      lh = 0;
     }
   else
     {
@@ -1573,7 +1590,7 @@ ay_rrib_RiBasis(RtBasis ubasis, RtInt ustep,
   if(vbasis == RiBezierBasis)
     {
       ay_rrib_cattributes->btype_v = AY_BTBEZIER;
-      ubasis_custom = AY_FALSE;
+      vbasis_custom = AY_FALSE;
     }
 
   if(vbasis == RiBSplineBasis)
@@ -3979,7 +3996,11 @@ ay_rrib_readshader(char *sname, int stype,
 	      link = AY_TRUE;
 
 	      if(!(sarg = calloc(1, sizeof(ay_shader_arg))))
-		return;
+		{
+		  free(s->name);
+		  free(s);
+		  return;
+		}
 
 	      switch(type)
 		{
@@ -4624,9 +4645,12 @@ ay_rrib_readpvs(int n, RtToken tokens[], RtPointer parms[],
 		 ay_error(AY_ERROR, fname,
 		    "Skipping variable of unknown or unsupported type:");
 		 ay_error(AY_ERROR, fname, tokens[i]);
-		 free(nt->name);
-		 free(nt);
-		 nt = NULL;
+		 if(nt)
+		   {
+		     free(nt->name);
+		     free(nt);
+		     nt = NULL;
+		   }
 		 break;
 	       } /* switch */
 	   }
