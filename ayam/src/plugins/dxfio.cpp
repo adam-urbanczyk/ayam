@@ -1055,7 +1055,6 @@ dxfio_getsmoothsurface(const class dimeState *state,
   if(!(controlv = (double*)calloc(numcv*4, sizeof(double))))
     { return AY_EOMEM; }
 
-  a = 0;
   b = 0;
   c = 0;
   for(i = 0; i < w; i++)
@@ -2183,7 +2182,7 @@ dxfio_writencurve(ay_object *o, dimeModel *dm, double *m)
 
   dv = (dimeVec3f*)calloc(nc->length, sizeof(dimeVec3f));
   if(!dv)
-    { ay_status = AY_EOMEM; goto cleanup; }
+    { free(dk); ay_status = AY_EOMEM; goto cleanup; }
 
   for(int i = 0; i < nc->length; i++)
     {

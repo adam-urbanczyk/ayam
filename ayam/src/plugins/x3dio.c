@@ -1651,9 +1651,9 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
  unsigned int normallen = 0, normalilen = 0;
  unsigned int colorlen = 0, colorilen = 0;
  unsigned int texcoordlen = 0, texcoordilen = 0;
- double *normals;
- float *texcoords, *colors;
- int *normali, *colori, *texcoordi;
+ double *normals = NULL;
+ float *texcoords = NULL, *colors = NULL;
+ int *normali = NULL, *colori = NULL, *texcoordi = NULL;
  int expandcolors = AY_FALSE;
  unsigned int i, stride = 3;
  double *expandedcontrols = NULL;
@@ -2359,7 +2359,7 @@ x3dio_readindexedtrianglestripset(scew_element *element)
 	{
 	  pomesh.nverts[i] = 3;
 	} /* for */
-      j = 0; k = 0;
+      k = 0;
       for(i = 0; i < pomesh.npolys-1; i++)
 	{
 	  pomesh.verts[i*3]   = coordi[k];
@@ -5672,18 +5672,9 @@ cleanup:
 int
 x3dio_readappearance(scew_element *element)
 {
-  /*int ay_status = AY_OK;*/
- scew_attribute *attr = NULL;
- const XML_Char *str = NULL;
 
   if(!element)
     return AY_ENULL;
-
-  attr = scew_attribute_by_name(element, "DEF");
-  if(attr)
-    {
-      str = scew_attribute_value(attr);
-    }
 
  return AY_OK;
 } /* x3dio_readappearance */
@@ -7077,6 +7068,9 @@ x3dio_writedoublepoints(scew_element *element, char *name, unsigned int dim,
   if(!element || !name || !value)
     return AY_ENULL;
 
+  if(length == 0)
+    return AY_ERROR;
+
   for(i = 0; i < length; i++)
     {
       switch(dim)
@@ -7102,7 +7096,8 @@ x3dio_writedoublepoints(scew_element *element, char *name, unsigned int dim,
 
       if(!(tmp = realloc(attr, (totalbuflen+buflen+1)*sizeof(char))))
 	{
-	  free(attr);
+	  if(attr)
+	    free(attr);
 	  return AY_EOMEM;
 	}
       attr = tmp;
@@ -7135,13 +7130,17 @@ x3dio_writeweights(scew_element *element, char *name,
   if(!element || !name || !value)
     return AY_ENULL;
 
+  if(length == 0)
+    return AY_ERROR;
+
   for(i = 0; i < length; i++)
     {
       buflen = sprintf(buf, "%g ", value[a+3]);
 
       if(!(tmp = realloc(attr, (totalbuflen+buflen+1)*sizeof(char))))
 	{
-	  free(attr);
+	  if(attr)
+	    free(attr);
 	  return AY_EOMEM;
 	}
       attr = tmp;
@@ -7173,13 +7172,17 @@ x3dio_writeknots(scew_element *element, char *name,
   if(!element || !name || !value)
     return AY_ENULL;
 
+  if(length == 0)
+    return AY_ERROR;
+
   for(i = 0; i < length; i++)
     {
       buflen = sprintf(buf, "%g ", value[i]);
 
       if(!(tmp = realloc(attr, (totalbuflen+buflen+1)*sizeof(char))))
 	{
-	  free(attr);
+	  if(attr)
+	    free(attr);
 	  return AY_EOMEM;
 	}
       attr = tmp;
@@ -7682,7 +7685,6 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
   p = np->uorder-1;
   q = np->vorder-1;
 
-  u = U[p];
   ulines = 1;
   for(a = p; a < n; a++)
     {
@@ -7690,7 +7692,7 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
 	ulines++;
     }
   fulines = ulines*4;
-  v = V[q];
+
   vlines = 1;
   for(a = q; a < m; a++)
     {
@@ -7990,7 +7992,7 @@ x3dio_writetrimwire(scew_element *element, ay_nurbpatch_object *np,
  char buf[64], *attr = NULL, *tmp;
  int a, b, i, j, k, m, n, p, q;
  int idxsize = 0;
- double *P, *U, *V, *fd1, *fd2, *Ct;
+ double *P, *U, *V, *fd1, *fd2, *Ct = NULL;
  double l, N[3] = {0}, fder[9] = {0};
  double offset = 0.005;
  scew_element *shape_element = NULL;
@@ -8125,7 +8127,7 @@ x3dio_writetrimmednpwire(scew_element *element, ay_object *o)
  char buf[64], *attr = NULL, *tmp;
  int a, b, i, j, k, m, n, p, q, i0, ii, jj;
  int idxsize = 0;
- double *P, *U, *V, *fd1, *fd2, *Ct;
+ double *P, *U, *V, *fd1, *fd2, *Ct = NULL;
  double l, N[3] = {0}, fder[9] = {0};
  double qf, offset = 0.005;
  scew_element *transform_element = NULL;
