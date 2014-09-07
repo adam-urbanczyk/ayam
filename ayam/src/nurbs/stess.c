@@ -3108,12 +3108,6 @@ ay_stess_TessTrimmedPlanarNP(ay_object *o, int qf)
       ay_status = ay_tess_pomesh(po, /*optimize=*/AY_FALSE, p, &tpo);
 
       st->pomesh = tpo;
-
-      /* remove temporary polymesh */
-      free(po->nloops);
-      free(po->nverts);
-      free(po->verts);
-      free(po);
     }
 
   /* prevent cleanup code from doing something harmful */
@@ -3138,6 +3132,20 @@ cleanup:
   if(np)
     {
       ay_stess_destroy(np);
+    }
+
+  /* free temporary polymesh */
+  if(po)
+    {
+      if(po->verts)
+	free(po->verts);
+      if(po->nloops)
+	free(po->nloops);
+      if(po->nverts)
+	free(po->nverts);
+      /* deliberately not freeing po->controlv as that is re-used from the
+	 polygonal trim loops */
+      free(po);
     }
 
   if(ay_status)
@@ -3179,6 +3187,7 @@ ay_stess_TessNP(ay_object *o, int qf)
       if(o->down && o->down->next && npatch->is_planar &&
 	 ay_npt_istrimmed(o, 1))
 	{
+	  /* this is a trivially trimmed planar NURBS patch */
 	  ay_status = ay_stess_TessTrimmedPlanarNP(o, qf);
 	}
     }
