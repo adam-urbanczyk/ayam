@@ -1088,7 +1088,6 @@ ay_undo_save(int save_children)
 	{
 	  if(undo_last_op == 0)
 	    undo_current++;
-	  uo = &(undo_buffer[undo_current]);
 	  /* clear tail of undo buffer */
 	  for(i = undo_current; i < undo_buffer_size; i++)
 	    {
@@ -1160,6 +1159,10 @@ ay_undo_save(int save_children)
 	{
 	  uo->saved_children = AY_TRUE;
 	  ay_status = ay_undo_savechildren(sel->object, uo, &lastr, &nexto);
+	  if(ay_status)
+	    {
+	      return ay_status;
+	    }
 	}
       else
 	{
@@ -1240,7 +1243,7 @@ ay_undo_save(int save_children)
 	    {
 	      lso = lso->next;
 	      lsr = lsr->next;
-	      break;
+	      continue;
 	    }
 
 	  /* mark beginning of extra objects in undo buffer using
