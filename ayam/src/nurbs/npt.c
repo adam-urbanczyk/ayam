@@ -173,7 +173,7 @@ ay_npt_create(int uorder, int vorder, int width, int height,
 
 
 /** ay_npt_destroy:
- *   gracefully destroy a NURBS patch object
+ *  gracefully destroy a NURBS patch object
  *
  * \param[in,out] patch NURBS patch object to destroy
  */
@@ -211,9 +211,9 @@ ay_npt_destroy(ay_nurbpatch_object *patch)
 } /* ay_npt_destroy */
 
 
-/* ay_npt_createnpatchobject:
- *   properly create and set up an ay_object structure to be used
- *   with a NURBS patch object
+/** ay_npt_createnpatchobject:
+ *  properly create and set up an ay_object structure to be used
+ *  with a NURBS patch object
  *
  * \param[in,out] result new Ayam object
  *
@@ -263,7 +263,7 @@ ay_npt_resetdisplay(ay_object *o)
 } /* ay_npt_resetdisplay */
 
 
-/* ay_npt_euctohom:
+/** ay_npt_euctohom:
  *  convert rational coordinates from euclidean to homogeneous style
  *
  * \param[in,out] np NURBS patch object to process
@@ -298,7 +298,7 @@ ay_npt_euctohom(ay_nurbpatch_object *np)
 } /* ay_npt_euctohom */
 
 
-/* ay_npt_homtoeuc:
+/** ay_npt_homtoeuc:
  *  convert rational coordinates from homogeneous to euclidean style
  *
  * \param[in,out] np NURBS patch object to process
@@ -936,7 +936,7 @@ ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_npt_revertvtcmd */
 
 
-/* ay_npt_drawtrimcurve:
+/** ay_npt_drawtrimcurve:
  *  draw a single trimcurve with GLU
  *
  * \param[in] o NURBS curve object (a trim curve)
@@ -1071,7 +1071,7 @@ cleanup:
 } /* ay_npt_drawtrimcurve */
 
 
-/* ay_npt_drawtrimcurves:
+/** ay_npt_drawtrimcurves:
  *  draw all trimcurves with GLU
  *
  * \param[in] o NURBS patch object with trim curves
@@ -5940,7 +5940,7 @@ cleanup:
 
 /* ay_npt_applytrafo:
  *  applies transformations from object to all control points,
- *  then reset the objects transformation attributes
+ *  then resets the objects transformation attributes
  *
  * \param[in,out] p object of type NPatch to process
  *
