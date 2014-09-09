@@ -12233,7 +12233,7 @@ cleanup:
 } /* ay_npt_finduvcb */
 
 
-/* ay_npt_avglensu:
+/** ay_npt_avglensu:
  *  Compute average control point distances in U direction.
  *
  * \param[in] cv control points [width*height*stride]
@@ -12291,7 +12291,7 @@ ay_npt_avglensu(double *cv, int width, int height, int stride,
 } /* ay_npt_avglensu */
 
 
-/* ay_npt_avglensv:
+/** ay_npt_avglensv:
  *  Compute average control point distances in V direction.
  *
  * \param[in] cv control points [width*height*stride]
@@ -13244,7 +13244,7 @@ ay_npt_getcvnormals(ay_nurbpatch_object *np, double *n)
 } /* ay_npt_getcvnormals */
 
 
-/* ay_npt_unclamptcmd:
+/** ay_npt_unclamptcmd:
  *  Unclamp the selected NURBS surfaces.
  *  Implements the \a unclampuNP scripting interface command.
  *  Also implements the \a unclampvNP scripting interface command.

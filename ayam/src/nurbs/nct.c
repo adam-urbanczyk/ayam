@@ -5906,7 +5906,7 @@ ay_nct_toxytcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_nct_toxytcmd */
 
 
-/* ay_nct_iscomptcmd:
+/** ay_nct_iscomptcmd:
  *  Check selected NURBS curves for compatibility.
  *  Implements the \a isCompNC scripting interface command.
  *  See also the corresponding section in the \ayd{sciscompnc}.
@@ -7785,7 +7785,7 @@ ay_nct_isplanar(ay_object *c, ay_object **cp, int *is_planar)
 } /* ay_nct_isplanar */
 
 
-/* ay_nct_unclamptcmd:
+/** ay_nct_unclamptcmd:
  *  Unclamp the selected NURBS curves.
  *  Implements the \a unclampNC scripting interface command.
  *  See also the corresponding section in the \ayd{scunclampnc}.
@@ -8001,7 +8001,7 @@ ay_nct_extend(ay_nurbcurve_object *curve, double *p)
 } /* ay_nct_extend */
 
 
-/* ay_nct_extendtcmd:
+/** ay_nct_extendtcmd:
  *  Extend the selected NURBS curves to a point.
  *  Implements the \a extendNC scripting interface command.
  *  See also the corresponding section in the \ayd{scextendnc}.
