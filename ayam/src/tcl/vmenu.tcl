@@ -306,7 +306,9 @@ if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
 if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
     menubutton $w.fMenu.mm -image ay_MMGlob_img -menu $w.fMenu.mm.m\
 	    -padx 0 -pady 0 -borderwidth 0
-    balloon_set $w.fMenu.mm "change global/local mode"
+    global ayviewshortcuts
+    set lmk $ayviewshortcuts(Local2)
+    balloon_set $w.fMenu.mm "change global/local mode\ncycle with ${lmk}"
     set m [menu $w.fMenu.mm.m -tearoff 0]
 } else {
     set m [menu $mb.mm -tearoff 0]
