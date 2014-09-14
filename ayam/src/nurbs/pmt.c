@@ -589,7 +589,11 @@ ay_pmt_tobasis(ay_pamesh_object *pm, int btype, int bstep, double *basis)
       if(pm->btype_v != AY_BTCUSTOM)
 	{
 	  if(!(pm->vbasis = malloc(16*sizeof(double))))
-	     return AY_EOMEM;
+	    {
+	      if(pm->btype_u != AY_BTCUSTOM)
+		free(pm->ubasis);
+	      return AY_EOMEM;
+	    }
 	}
       memcpy(pm->vbasis, basis, 16*sizeof(double));
     }
@@ -661,7 +665,6 @@ ay_pmt_tobasistcmd(ClientData clientData, Tcl_Interp *interp,
 		      ay_error(AY_EOMEM, argv[0], NULL);
 		      goto cleanup;
 		    }
-
 		  for(j = 0; j < 16; j++)
 		    {
 		      tcl_status = Tcl_GetDouble(interp, basisv[j], &basis[j]);
@@ -982,7 +985,8 @@ ay_pmt_tonpatch(ay_object *o, int btype, ay_object **result)
 	{
 	  (void)ay_object_copy(o, &c);
 	  if(c)
-	    ay_status = ay_pmt_tobasis(c->refine, btype, 1, NULL);
+	    ay_status = ay_pmt_tobasis(c->refine, btype, /*bstep=*/1,
+				       /*basis=*/NULL);
 	  else
 	    return AY_ERROR;
 	  if(ay_status)
@@ -1070,8 +1074,10 @@ ay_pmt_tonpatch(ay_object *o, int btype, ay_object **result)
       goto cleanup;
     }
 
+  /* return result */
   *result = newo;
 
+  /* prevent cleanup code from doing something harmful */
   cv = NULL;
   newo = NULL;
 
