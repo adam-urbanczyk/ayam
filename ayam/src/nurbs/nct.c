@@ -146,7 +146,7 @@ ay_nct_destroy(ay_nurbcurve_object *curve)
 /** ay_nct_clearmp:
  *  delete all mpoints from curve
  *
- * \param[in] curve NURBS curve object
+ * \param[in,out] curve NURBS curve object
  */
 void
 ay_nct_clearmp(ay_nurbcurve_object *curve)
@@ -178,7 +178,7 @@ ay_nct_clearmp(ay_nurbcurve_object *curve)
 /** ay_nct_recreatemp:
  *  recreate mpoints of curve from identical control points
  *
- * \param[in] curve NURBS curve object
+ * \param[in,out] curve NURBS curve object
  */
 void
 ay_nct_recreatemp(ay_nurbcurve_object *c)
@@ -281,7 +281,7 @@ cleanup:
 /** ay_nct_collapseselp:
  *  collapse selected points of NURBS curve
  *
- * \param[in] o NURBS curve object
+ * \param[in,out] o NURBS curve object
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -392,7 +392,7 @@ ay_nct_collapseselp(ay_object *o)
 /** ay_nct_explodemp:
  *  explode selected mpoints of NURBS curve
  *
- * \param[in] o NURBS curve object
+ * \param[in,out] o NURBS curve object
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -473,7 +473,7 @@ ay_nct_explodemp(ay_object *o)
 /** ay_nct_resize:
  *  resize a NURBS curve
  *
- * \param[in] curve NURBS curve object
+ * \param[in,out] curve NURBS curve object
  * \param[in] new_length new length of curve
  *
  * \returns AY_OK on success, error code otherwise.
@@ -602,7 +602,7 @@ ay_nct_resize(ay_nurbcurve_object *curve, int new_length)
  *  If closing fails because there are not enough control
  *  points in the curve, the curve type will be reset to "open".
  *
- * \param[in] curve NURBS curve object to close
+ * \param[in,out] curve NURBS curve object to close
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -654,7 +654,7 @@ ay_nct_close(ay_nurbcurve_object *curve)
 /** ay_nct_revert:
  *  revert a NURBS curve
  *
- * \param[in] curve NURBS curve object to revert
+ * \param[in,out] curve NURBS curve object to revert
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -869,7 +869,7 @@ ay_nct_refinekn(ay_nurbcurve_object *curve, int maintain_ends,
  * \param[in] Pw array to refine
  * \param[in] len number of elements in Pw
  * \param[in] stride size of an element in Pw
- * \param[in,out] selp region to be refined, may be NULL
+ * \param[in] selp region to be refined, may be NULL
  * \param[in,out] Qw new refined array
  * \param[in,out] Qwlen length of new array
  *
@@ -992,7 +992,7 @@ ay_nct_refinearray(double *Pw, int len, int stride, ay_point *selp,
  *  The knot type does not change, but new knots will be generated.
  *
  * \param[in,out] curve NURBS curve object to refine
- * \param[in,out] selp selected points that define a (single) region to refine
+ * \param[in] selp selected points that define a (single) region to refine
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -1598,7 +1598,7 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
  *  fast clamp for curves with periodic knot vectors (e.g. AY_KTBSPLINE),
  *  always clamps both ends
  *
- * \param[in] curve NURBS curve object to clamp
+ * \param[in,out] curve NURBS curve object to clamp
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -1754,7 +1754,7 @@ ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
 /** ay_nct_elevate:
  *  elevate NURBS curve to new order
  *
- * \param[in] curve NURBS curve object to elevate
+ * \param[in,out] curve NURBS curve object to elevate
  * \param[in] new_order new order
  *
  * \returns AY_OK on success, error code otherwise.
@@ -4545,13 +4545,15 @@ ay_nct_fillgap(int order, double tanlen,
  *  gaps in the list of curves pointed to by \a curves and insert
  *  the fillets right in this list.
  *
- *  \param[in] closed if AY_TRUE, attempt to create a fillet between
- *   the end of the last curve in \a curves and the start of the first
- *   curve in \curves
- *  \param[in] order desired order of the fillets
- *  \param[in] tanlen length of tangents
- *  \param[in,out] curves list of curves, the fillets will be mixed in
- *   the list in the right places
+ * \param[in] closed if AY_TRUE, attempt to create a fillet between
+ *  the end of the last curve in \a curves and the start of the first
+ *  curve in \curves
+ * \param[in] order desired order of the fillets
+ * \param[in] tanlen length of tangents
+ * \param[in,out] curves list of curves, the fillets will be mixed in
+ *  the list in the right places
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_fillgaps(int closed, int order, double tanlen, ay_object *curves)
