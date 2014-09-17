@@ -333,11 +333,19 @@ ay_npt_homtoeuc(ay_nurbpatch_object *np)
 } /* ay_npt_homtoeuc */
 
 
-/* ay_npt_resizearrayw:
- *  change width of a 2D control point array <controlvptr> with
- *  stride <stride>, width <width>, and height <height> to new
- *  width <new_width> inserting new control points obtained by
- *  linear interpolation
+/** ay_npt_resizearrayw:
+ *  change width of a 2D control point array;
+ *  if the new width is smaller than the current width, the array
+ *  will be simply truncated, otherwise new control points obtained by
+ *  linear interpolation will be inserted in all sections
+ *
+ * \param[in,out] controlvptr 2D control point array to process
+ * \param[in] stride size of a point
+ * \param[in] width width of array
+ * \param[in] height height of array
+ * \param[in] new_width new width
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_resizearrayw(double **controlvptr, int stride,
@@ -450,9 +458,14 @@ ay_npt_resizearrayw(double **controlvptr, int stride,
 } /* ay_npt_resizearrayw */
 
 
-/* ay_npt_resizew:
+/** ay_npt_resizew:
  *  change width of a NURBS patch
  *  does _not_ maintain multiple points
+ *
+ * \param[in,out] np NURBS patch to process
+ * \param[in] new_width new width
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_resizew(ay_nurbpatch_object *np, int new_width)
@@ -473,11 +486,19 @@ ay_npt_resizew(ay_nurbpatch_object *np, int new_width)
 } /* ay_npt_resizew */
 
 
-/* ay_npt_resizearrayh:
- *  change height of a 2D control point array <controlvptr> with
- *  stride <stride>, width <width>, and height <height> to new
- *  height <new_height> inserting new control points obtained by
- *  linear interpolation
+/** ay_npt_resizearrayh:
+ *  change height of a 2D control point array;
+ *  if the new height is smaller than the current height, the array
+ *  will be simply truncated, otherwise new control points obtained by
+ *  linear interpolation will be inserted in all sections
+ *
+ * \param[in,out] controlvptr 2D control point array to process
+ * \param[in] stride size of a point
+ * \param[in] width width of array
+ * \param[in] height height of array
+ * \param[in] new_height new height
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_resizearrayh(double **controlvptr, int stride,
@@ -588,6 +609,11 @@ ay_npt_resizearrayh(double **controlvptr, int stride,
 /* ay_npt_resizeh:
  *  change height of a NURBS patch
  *  does _not_ maintain multiple points
+ *
+ * \param[in,out] np NURBS patch to process
+ * \param[in] new_height new height
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_resizeh(ay_nurbpatch_object *np, int new_height)
@@ -608,8 +634,15 @@ ay_npt_resizeh(ay_nurbpatch_object *np, int new_height)
 } /* ay_npt_resizeh */
 
 
-/* ay_npt_swaparray:
+/** ay_npt_swaparray:
  *  swap u and v dimensions of a 2D control point array
+ *
+ * \param[in,out] controlvptr 2D control point array to process
+ * \param[in] stride size of a point
+ * \param[in] width width of array
+ * \param[in] height height of array
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_swaparray(double **controlvptr, int stride,
@@ -644,8 +677,13 @@ ay_npt_swaparray(double **controlvptr, int stride,
 } /* ay_npt_swaparray */
 
 
-/* ay_npt_swapuv:
- *  swap u and v dimensions of the NURBS patch <np>
+/** ay_npt_swapuv:
+ *  swap u and v dimensions of a NURBS patch; considers control points and
+ *  knot vectors
+ *
+ * \param[in,out] np NURBS patch to process
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_swapuv(ay_nurbpatch_object *np)
@@ -1497,8 +1535,16 @@ ay_npt_crtnsphere2tcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_npt_crtnsphere2tcmd */
 
 
-/* ay_npt_breakintocurvesu:
- *  break NURBS patch object <o> into curves along u
+/** ay_npt_breakintocurvesu:
+ *  break NURBS patch object \a o into curves along u
+ *
+ * \param[in] o NURBS patch object to process
+ * \param[in] apply_trafo if AY_TRUE the transformation attributes
+ * of \a o will be applied to the control points prior to breaking
+ * \param[in,out] curves where to store the resulting curve objects
+ * \param[in,out] last the last curve object, may be NULL
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_breakintocurvesu(ay_object *o, int apply_trafo,
@@ -1599,8 +1645,16 @@ ay_npt_breakintocurvesu(ay_object *o, int apply_trafo,
 } /* ay_npt_breakintocurvesu */
 
 
-/* ay_npt_breakintocurvesv:
- *  break NURBS patch object <o> into curves along v
+/** ay_npt_breakintocurvesv:
+ *  break NURBS patch object \a o into curves along v
+ *
+ * \param[in] o NURBS patch object to process
+ * \param[in] apply_trafo if AY_TRUE the transformation attributes
+ * of \a o will be applied to the control points prior to breaking
+ * \param[in,out] curves where to store the resulting curve objects
+ * \param[in,out] last the last curve object, may be NULL
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_breakintocurvesv(ay_object *o, int apply_trafo,
@@ -1708,7 +1762,7 @@ ay_npt_breakintocurvesv(ay_object *o, int apply_trafo,
 
 /** ay_npt_breakintocurvestcmd:
  *  Break the selected NURBS surfaces into curves.
- *  Tcl interface for breakintocurvesu() and breakintocurvesv() above
+ *  Tcl interface for breakintocurvesu() and breakintocurvesv() above.
  *
  *  Implements the \a breakNP scripting interface command.
  *  See also the corresponding section in the \ayd{scbreaknp}.
@@ -2703,8 +2757,9 @@ ay_npt_fillgaps(ay_object *o, int type, int fillet_type,
  *  if knot_type is AY_KTCUSTOM, a special knot vector will be created,
  *  that makes the concatenated surface 'interpolate' all input surfaces,
  *  however, this comes at the cost of multiple internal knots
- * \param[in] fillet_type if 1, fillets are created for all gaps
- *  in the list of provided patches prior to concatenation;
+ * \param[in] fillet_type if 0, no fillets will be created;
+ *  if 1, fillets are created for all gaps in the list of provided patches
+ *  prior to concatenation;
  *  if -1, the patches are considered to be connected already and for
  *  a smooth transition, the respective borders will be set back
  * \param[in] ftlen fillet tangent length
@@ -6013,8 +6068,13 @@ ay_npt_getpntfromindex(ay_nurbpatch_object *patch, int indexu, int indexv,
 } /* ay_npt_getpntfromindex */
 
 
-/* ay_npt_elevateu:
+/** ay_npt_elevateu:
+ *  Elevate the u order of a NURBS patch.
  *
+ * \param[in,out] patch NURBS patch object to process
+ * \param[in] t how many times shall the order be increased
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_elevateu(ay_nurbpatch_object *patch, int t)
@@ -6114,8 +6174,13 @@ ay_npt_elevateu(ay_nurbpatch_object *patch, int t)
 } /* ay_npt_elevateu */
 
 
-/* ay_npt_elevatev:
+/** ay_npt_elevatev:
+ *  Elevate the v order of a NURBS patch.
  *
+ * \param[in,out] patch NURBS patch object to process
+ * \param[in] t how many times shall the order be increased
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_elevatev(ay_nurbpatch_object *patch, int t)
@@ -7196,19 +7261,26 @@ cleanup:
 } /* ay_npt_extractboundary */
 
 
-/* ay_npt_extractnc:
- *  extract a NURBS curve from the NURBS patch <o>
- *  side: specifies extraction of a boundary curve (0-3), of a curve at a
- *   specific parametric value (4 - along u dimension, 5 - along v dimension),
- *   the complete boundary curve (6), or the middle axis (7,8)
- *  param: parametric value at which curve is extracted; this parameter is
- *   ignored for the extraction of boundary curves
- *  relative: should param be interpreted in a relative way wrt. the knot
- *   vector?; this parameter is ignored for the extraction of boundary curves
- *  apply_trafo: this parameter controls whether trafos of <o> should be
- *   copied to the curve, or applied to the control points of the curve
- *  extractnt: should the normals/tangents be calculated and stored in
- *   PV tags?; 0 - no, 1 - normals, 2 - normals and tangents
+/** ay_npt_extractnc:
+ *  extract a NURBS curve from the NURBS patch \a o
+ *
+ * \param[in] o NURBS patch object to process
+ * \param[in] side specifies extraction of a boundary curve (0-3), of a
+ *  curve at a specific parametric value (4 - along u dimension,
+ *  5 - along v dimension), the complete boundary curve (6), or the
+ *  middle axis (7 along u, 8 along v)
+ * \param[in] param parametric value at which curve is extracted;
+ *  this parameter is ignored for the extraction of boundary curves
+ * \param[in] relative should \a param be interpreted in a relative way
+ *  wrt. the knot vector?; this parameter is ignored for the extraction
+ *  of boundary curves
+ * \param[in] apply_trafo this parameter controls whether trafos of \a o
+ *  should be copied to the curve, or applied to the control points of the
+ *  curve
+ * \param[in] extractnt should the normals/tangents be calculated and stored
+ *  in PV tags?; 0 - no, 1 - normals, 2 - normals and tangents
+ *
+ * \return AY_OK on success, error code otherwise.
  */
 int
 ay_npt_extractnc(ay_object *o, int side, double param, int relative,
