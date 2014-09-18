@@ -606,7 +606,7 @@ ay_npt_resizearrayh(double **controlvptr, int stride,
 } /* ay_npt_resizearrayh */
 
 
-/* ay_npt_resizeh:
+/** ay_npt_resizeh:
  *  change height of a NURBS patch
  *  does _not_ maintain multiple points
  *
@@ -793,6 +793,7 @@ ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
  ay_pamesh_object *pm = NULL;
  ay_bpatch_object *bp = NULL;
  double pt[3];
+ int notify_parent = AY_FALSE;
 
   while(sel)
     {
@@ -841,12 +842,14 @@ ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(sel->object->selp)
 	    ay_selp_clear(sel->object);
 	  (void)ay_notify_object(sel->object);
+	  notify_parent = AY_TRUE;
 	}
 
       sel = sel->next;
     } /* while */
 
-  (void)ay_notify_parent();
+  if(notify_parent)
+    (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_revertutcmd */
@@ -915,6 +918,7 @@ ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_pamesh_object *pm = NULL;
  ay_bpatch_object *bp = NULL;
  double pt[3];
+ int notify_parent = AY_FALSE;
 
   while(sel)
     {
@@ -963,12 +967,14 @@ ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(sel->object->selp)
 	    ay_selp_clear(sel->object);
 	  (void)ay_notify_object(sel->object);
+	  notify_parent = AY_TRUE;
 	}
 
       sel = sel->next;
     } /* while */
 
-  (void)ay_notify_parent();
+  if(notify_parent)
+    (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_revertvtcmd */
@@ -5993,7 +5999,7 @@ cleanup:
 } /* ay_npt_createcap */
 
 
-/* ay_npt_applytrafo:
+/** ay_npt_applytrafo:
  *  applies transformations from object to all control points,
  *  then resets the objects transformation attributes
  *
@@ -6035,7 +6041,7 @@ ay_npt_applytrafo(ay_object *p)
 } /* ay_npt_applytrafo */
 
 
-/* ay_npt_getpntfromindex:
+/** ay_npt_getpntfromindex:
  *  get address of a single control point from its indices
  *  (performing bounds checking)
  *
@@ -6305,6 +6311,7 @@ ay_npt_elevateuvtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *patch = NULL;
  int elevatev = AY_FALSE, t = 1;
+ int notify_parent = AY_FALSE;
 
   if(argc >= 2)
     {
@@ -6347,6 +6354,7 @@ ay_npt_elevateuvtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      /* re-create tesselation of patch */
 	      (void)ay_notify_object(sel->object);
+	      notify_parent = AY_TRUE;
 	    }
 	}
       else
@@ -6357,7 +6365,8 @@ ay_npt_elevateuvtcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  (void)ay_notify_parent();
+  if(notify_parent)
+    (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_elevateuvtcmd */
@@ -6381,6 +6390,7 @@ ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_pamesh_object *pm = NULL;
  ay_bpatch_object *bp = NULL;
  double pt[3];
+ int notify_parent = AY_FALSE;
 
   while(sel)
     {
@@ -6430,12 +6440,14 @@ ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
 	    ay_selp_clear(sel->object);
 
 	  (void)ay_notify_object(sel->object);
+	  notify_parent = AY_TRUE;
 	}
 
       sel = sel->next;
     } /* while */
 
-  (void)ay_notify_parent();
+  if(notify_parent)
+    (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_swapuvtcmd */
@@ -7705,9 +7717,13 @@ cleanup:
 } /* ay_npt_extractnc */
 
 
-/* ay_npt_israt:
- *  check whether any control point of NURBS patch <np>
+/** ay_npt_israt:
+ *  check whether any control point of a NURBS patch
  *  uses a weight value (!= 1.0)
+ *
+ * \param[in] np NURBS patch to check
+ *
+ * \returns AY_TRUE if patch is rational, AY_FALSE else.
  */
 int
 ay_npt_israt(ay_nurbpatch_object *np)
@@ -8156,6 +8172,7 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int tcl_status, ay_status = AY_OK;
  int i = 1, mode = 3, extend = AY_TRUE, knots = -1, stride = 4;
+ int notify_parent = AY_FALSE;
  double *newcontrolv = NULL, *tknotv;
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *np = NULL;
@@ -8296,6 +8313,7 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  /* re-create tesselation of patch */
 	  (void)ay_notify_object(sel->object);
+	  notify_parent = AY_TRUE;
 	  break;
 	default:
 	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
@@ -8304,7 +8322,8 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  (void)ay_notify_parent();
+  if(notify_parent)
+    (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_closeutcmd */
@@ -8461,6 +8480,7 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int tcl_status, ay_status = AY_OK;
  int i = 1, mode = 3, extend = AY_TRUE, knots = -1, stride = 4;
+ int notify_parent = AY_FALSE;
  double *a, *b;
  double *newcontrolv = NULL, *tknotv;
  ay_list_object *sel = ay_selection;
@@ -8595,6 +8615,7 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  /* re-create tesselation of patch */
 	  (void)ay_notify_object(sel->object);
+	  notify_parent = AY_TRUE;
 	  break;
 	default:
 	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
@@ -8603,7 +8624,8 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  (void)ay_notify_parent();
+  if(notify_parent)
+    (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_closevtcmd */
@@ -9863,6 +9885,7 @@ ay_npt_clampuvtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbpatch_object *np = NULL;
  ay_object *o = NULL;
  int clampv = AY_FALSE, side = 0;
+ int notify_parent = AY_FALSE;
 
   if(argc >= 2)
     {
@@ -9943,6 +9966,7 @@ ay_npt_clampuvtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      /* re-create tesselation of patch */
 	      (void)ay_notify_object(o);
+	      notify_parent = AY_TRUE;
 	    } /* if */
 	}
       else
@@ -9951,7 +9975,8 @@ ay_npt_clampuvtcmd(ClientData clientData, Tcl_Interp *interp,
 	} /* if */
     } /* while */
 
-  (void)ay_notify_parent();
+  if(notify_parent)
+    (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_clampuvtcmd */
@@ -10071,9 +10096,10 @@ ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *src = NULL;
  ay_nurbpatch_object *patch = NULL;
- int i = 1, mode = 0, dim = 0;
  double rmin = 0.0, rmax = 1.0, mindist = 1.0e-04;
  double oldmin, oldmax;
+ int i = 1, mode = 0, dim = 0;
+ int notify_parent = AY_FALSE;
 
   /* parse args */
   if(argc > 2)
@@ -10238,11 +10264,13 @@ ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 	      src->modified = AY_TRUE;
 	    } /* if */
 	  (void)ay_notify_object(src);
+	  notify_parent = AY_TRUE;
 	} /* if */
       sel = sel->next;
     } /* while */
 
-  (void)ay_notify_parent();
+  if(notify_parent)
+    (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_rescaleknvnptcmd */
@@ -10265,6 +10293,7 @@ ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbpatch_object *patch = NULL;
  double u, *knots = NULL, *newcontrolv = NULL, *newknotv = NULL;
  int stride = 4, k = 0, s = 0, r = 0;
+ int notify_parent = AY_FALSE;
 
   if(argc < 3)
     {
@@ -10366,12 +10395,14 @@ ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  /* re-create tesselation of patch */
 	  (void)ay_notify_object(src);
+	  notify_parent = AY_TRUE;
 	} /* if */
 
       sel = sel->next;
     } /* while */
 
-  (void)ay_notify_parent();
+  if(notify_parent)
+    (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_insertknutcmd */
@@ -10394,6 +10425,7 @@ ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbpatch_object *patch = NULL;
  double v, *knots = NULL, *newcontrolv = NULL, *newknotv = NULL;
  int stride = 4, k = 0, s = 0, r = 0;
+ int notify_parent = AY_FALSE;
 
   if(argc < 3)
     {
@@ -10496,12 +10528,14 @@ ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  /* re-create tesselation of patch */
 	  (void)ay_notify_object(sel->object);
+	  notify_parent = AY_TRUE;
 	} /* if */
 
       sel = sel->next;
     } /* while */
 
-  (void)ay_notify_parent();
+  if(notify_parent)
+    (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_insertknvtcmd */
@@ -10869,6 +10903,7 @@ ay_npt_splituvtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *new = NULL;
  double t = 0.0;
  int splitv = AY_FALSE;
+ int notify_parent = AY_FALSE;
 
   /* distinguish between
      splituNP and
@@ -10920,6 +10955,7 @@ ay_npt_splituvtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  /* re-create tesselation of original patch */
 	  (void)ay_notify_object(sel->object);
+	  notify_parent = AY_TRUE;
 	}
       else
 	{
@@ -10929,7 +10965,8 @@ ay_npt_splituvtcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  (void)ay_notify_parent();
+  if(notify_parent)
+    (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_splituvtcmd */
@@ -12605,8 +12642,9 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL;
  ay_nurbpatch_object *patch = NULL;
  ay_list_object *sel = ay_selection;
- int have_index = AY_FALSE, i = 1, j = 0, r = 0, s = 0;
  double u = 0.0, tol = DBL_MAX, *newcontrolv = NULL, *newknotv = NULL;
+ int have_index = AY_FALSE, i = 1, j = 0, r = 0, s = 0;
+ int notify_parent = AY_FALSE;
 
   if(argc < 3)
     {
@@ -12767,6 +12805,7 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  /* re-create tesselation of patch */
 	  (void)ay_notify_object(o);
+	  notify_parent = AY_TRUE;
 	}
       else
 	{
@@ -12775,7 +12814,8 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  (void)ay_notify_parent();
+  if(notify_parent)
+    (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_remknunptcmd */
@@ -12796,8 +12836,9 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL;
  ay_nurbpatch_object *patch = NULL;
  ay_list_object *sel = ay_selection;
- int have_index = AY_FALSE, i = 1, j = 0, r = 0, s = 0;
  double v = 0.0, tol = DBL_MAX, *newcontrolv = NULL, *newknotv = NULL;
+ int have_index = AY_FALSE, i = 1, j = 0, r = 0, s = 0;
+ int notify_parent = AY_FALSE;
 
   if(argc < 2)
     {
@@ -12953,6 +12994,7 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  /* re-create tesselation of patch */
 	  (void)ay_notify_object(o);
+	  notify_parent = AY_TRUE;
 	}
       else
 	{
@@ -12961,7 +13003,8 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  (void)ay_notify_parent();
+  if(notify_parent)
+    (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_remknvnptcmd */
@@ -13198,9 +13241,10 @@ ay_npt_refineuvtcmd(ClientData clientData, Tcl_Interp *interp,
  int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *patch = NULL;
+ double *X = NULL;
  int refinev = AY_FALSE;
  int aknotc = 0, i;
- double *X = NULL;
+ int notify_parent = AY_FALSE;
  char **aknotv = NULL;
 
   if(argc >= 2)
@@ -13255,6 +13299,7 @@ ay_npt_refineuvtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      /* re-create tesselation of patch */
 	      (void)ay_notify_object(sel->object);
+	      notify_parent = AY_TRUE;
 	    }
 	}
       else
@@ -13265,9 +13310,10 @@ ay_npt_refineuvtcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-cleanup:
+  if(notify_parent)
+    (void)ay_notify_parent();
 
-  (void)ay_notify_parent();
+cleanup:
 
   if(X)
     {
@@ -13283,6 +13329,13 @@ cleanup:
 } /* ay_npt_refineuvtcmd */
 
 
+/** ay_npt_getcvnormals:
+ *  Get normals for all control points of a NURBS patch; the normals
+ *  will be derived from the surrounding control points.
+ *
+ * \param[in] np NURBS surface object to process
+ * \param[in,out] n where to store the normals
+ */
 void
 ay_npt_getcvnormals(ay_nurbpatch_object *np, double *n)
 {
@@ -13333,6 +13386,7 @@ ay_npt_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  int free_selp = AY_FALSE;
+ int notify_parent = AY_FALSE;
 
   /* parse args */
   if(argc > 1)
@@ -13426,12 +13480,14 @@ ay_npt_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  /* re-create tesselation of patch */
 	  (void)ay_notify_object(o);
+	  notify_parent = AY_TRUE;
 	} /* if */
 
       sel = sel->next;
     } /* while */
 
-  (void)ay_notify_parent();
+  if(notify_parent)
+    (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_unclamptcmd */
@@ -13454,6 +13510,7 @@ ay_npt_xxxxtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_nurbpatch_object *patch = NULL;
+ int notify_parent = AY_FALSE;
 
   /* parse args */
   if(argc > 2)
@@ -13518,13 +13575,15 @@ ay_npt_xxxxtcmd(ClientData clientData, Tcl_Interp *interp,
 	  o->modified = AY_TRUE;
 
 	  /* re-create tesselation of patch */
-	  (void)ay_notify_object(sel->object);
+	  (void)ay_notify_object(o);
+	  notify_parent = AY_TRUE;
 	} /* if */
 
       sel = sel->next;
     } /* while */
 
-  (void)ay_notify_parent();
+  if(notify_parent)
+    (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_xxxxtcmd */
