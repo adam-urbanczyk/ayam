@@ -429,10 +429,11 @@ ay_npt_resizearrayw(double **controlvptr, int stride,
 
 		  AY_V3SCAL(v,t);
 
-		  ncontrolv[b] = controlv[a]+v[0];
-		  ncontrolv[b+1] = controlv[a+1]+v[1];
-		  ncontrolv[b+2] = controlv[a+2]+v[2];
-		  ncontrolv[b+3] = 1.0;
+		  ncontrolv[b]   = controlv[a]   + v[0];
+		  ncontrolv[b+1] = controlv[a+1] + v[1];
+		  ncontrolv[b+2] = controlv[a+2] + v[2];
+		  if(stride > 3)
+		    ncontrolv[b+3] = 1.0;
 
 		  a += stride;
 		  b += stride;
@@ -570,7 +571,7 @@ ay_npt_resizearrayh(double **controlvptr, int stride,
 
 	      for(j = 1; j <= newpersec[i]; j++)
 		{
-		  v[0] = controlv[a+stride] - controlv[a];
+		  v[0] = controlv[a+stride]   - controlv[a];
 		  v[1] = controlv[a+stride+1] - controlv[a+1];
 		  v[2] = controlv[a+stride+2] - controlv[a+2];
 
@@ -578,10 +579,11 @@ ay_npt_resizearrayh(double **controlvptr, int stride,
 
 		  AY_V3SCAL(v,t);
 
-		  ncontrolv[b] = controlv[a]+v[0];
-		  ncontrolv[b+1] = controlv[a+1]+v[1];
-		  ncontrolv[b+2] = controlv[a+2]+v[2];
-		  ncontrolv[b+3] = 1.0;
+		  ncontrolv[b]   = controlv[a]   + v[0];
+		  ncontrolv[b+1] = controlv[a+1] + v[1];
+		  ncontrolv[b+2] = controlv[a+2] + v[2];
+		  if(stride > 3)
+		    ncontrolv[b+3] = 1.0;
 
 		  b += stride;
 		} /* for */
@@ -762,7 +764,7 @@ ay_npt_revertu(ay_nurbpatch_object *np)
   /* revert knots */
   if(np->uknot_type >= AY_KTCUSTOM)
     {
-      (void)ay_knots_revert(np->uknotv, np->width+np->uorder);
+      ay_status = ay_knots_revert(np->uknotv, np->width+np->uorder);
     } /* if */
 
   /* since we do not create new multiple points
@@ -786,7 +788,7 @@ int
 ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
- /*int ay_status;*/
+ int ay_status;
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *np = NULL;
  ay_ipatch_object *ip = NULL;
@@ -802,8 +804,12 @@ ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
 	case AY_IDNPATCH:
 	  np = (ay_nurbpatch_object *)sel->object->refine;
 
-	  ay_npt_revertu(np);
-
+	  ay_status = ay_npt_revertu(np);
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, argv[0], "Revert failed.");
+	      goto cleanup;
+	    }
 	  sel->object->modified = AY_TRUE;
 	  break;
 	case AY_IDIPATCH:
@@ -848,6 +854,8 @@ ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
+cleanup:
+
   if(notify_parent)
     (void)ay_notify_parent();
 
@@ -887,7 +895,7 @@ ay_npt_revertv(ay_nurbpatch_object *np)
   /* revert knots */
   if(np->vknot_type >= AY_KTCUSTOM)
     {
-      (void)ay_knots_revert(np->vknotv, np->height+np->vorder);
+      ay_status = ay_knots_revert(np->vknotv, np->height+np->vorder);
     } /* if */
 
   /* since we do not create new multiple points
@@ -911,7 +919,7 @@ int
 ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
- /*int ay_status;*/
+ int ay_status;
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *np = NULL;
  ay_ipatch_object *ip = NULL;
@@ -927,8 +935,12 @@ ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
 	case AY_IDNPATCH:
 	  np = (ay_nurbpatch_object *)sel->object->refine;
 
-	  ay_npt_revertv(np);
-
+	  ay_status = ay_npt_revertv(np);
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, argv[0], "Revert failed.");
+	      goto cleanup;
+	    }
 	  sel->object->modified = AY_TRUE;
 	  break;
 	case AY_IDIPATCH:
@@ -972,6 +984,8 @@ ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
 
       sel = sel->next;
     } /* while */
+
+cleanup:
 
   if(notify_parent)
     (void)ay_notify_parent();
@@ -2387,7 +2401,9 @@ ay_npt_fillgap(ay_object *o1, ay_object *o2,
 	  if(ay_status || !of1)
 	    goto cleanup;
 	  np1 = (ay_nurbpatch_object *)of1->refine;
-	  ay_npt_revertu(np1);
+	  ay_status = ay_npt_revertu(np1);
+	  if(ay_status)
+	    goto cleanup;
 	}
       else
       if(uv[0] == 'v' || uv[0] == 'V')
@@ -2398,9 +2414,14 @@ ay_npt_fillgap(ay_object *o1, ay_object *o2,
 	  np1 = (ay_nurbpatch_object *)of1->refine;
 
 	  if(uv[0] == 'V')
-	    ay_npt_revertv(np1);
-
-	  ay_npt_swapuv(np1);
+	    {
+	      ay_status = ay_npt_revertv(np1);
+	      if(ay_status)
+		goto cleanup;
+	    }
+	  ay_status = ay_npt_swapuv(np1);
+	  if(ay_status)
+	    goto cleanup;
 	}
       if(uv[0] != '\0' && uv[1] == 'U')
 	{
@@ -2408,7 +2429,9 @@ ay_npt_fillgap(ay_object *o1, ay_object *o2,
 	  if(ay_status || !of2)
 	    goto cleanup;
 	  np2 = (ay_nurbpatch_object *)of2->refine;
-	  ay_npt_revertu(np2);
+	  ay_status = ay_npt_revertu(np2);
+	  if(ay_status)
+	    goto cleanup;
 	}
       else
       if(uv[0] != '\0' && (uv[1] == 'v' || uv[1] == 'V'))
@@ -2419,9 +2442,14 @@ ay_npt_fillgap(ay_object *o1, ay_object *o2,
 	  np2 = (ay_nurbpatch_object *)of2->refine;
 
 	  if(uv[1] == 'V')
-	    ay_npt_revertv(np2);
-
-	  ay_npt_swapuv(np2);
+	    {
+	      ay_status = ay_npt_revertv(np2);
+	      if(ay_status)
+		goto cleanup;
+	    }
+	  ay_status = ay_npt_swapuv(np2);
+	  if(ay_status)
+	    goto cleanup;
 	}
     } /* if */
 
@@ -2429,7 +2457,7 @@ ay_npt_fillgap(ay_object *o1, ay_object *o2,
     return AY_ERROR;
 
   /* check for matching borders */
-  cv1 = &(np1->controlv[(np1->width-1)*np1->height*stride]);
+  cv1 = &(np1->controlv[(np1->width - 1) * np1->height * stride]);
   cv2 = np2->controlv;
   is_eq = AY_TRUE;
   for(i = 0; i < np1->height; i++)
@@ -2453,10 +2481,11 @@ ay_npt_fillgap(ay_object *o1, ay_object *o2,
   new->uknot_type = AY_KTNURB;
   new->width = 4;
 
-  if(!(new->vknotv = malloc((np1->height+np1->vorder) * sizeof(double))))
+  if(!(new->vknotv = malloc((np1->height + np1->vorder) * sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
-  memcpy(new->vknotv, np1->vknotv, (np1->height+np1->vorder)*sizeof(double));
+  memcpy(new->vknotv, np1->vknotv, (np1->height + np1->vorder) *
+	 sizeof(double));
   new->vorder = np1->vorder;
   new->height = np1->height;
 
@@ -2468,7 +2497,7 @@ ay_npt_fillgap(ay_object *o1, ay_object *o2,
     goto cleanup;
   new->vknot_type = np1->vknot_type;
 
-  if(!(new->controlv = malloc(new->width*new->height*stride*
+  if(!(new->controlv = malloc(new->width * new->height * stride *
 			      sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
   ncv = new->controlv;
@@ -2476,19 +2505,19 @@ ay_npt_fillgap(ay_object *o1, ay_object *o2,
   /* calculate the fillet control points */
   cv1 = np1->controlv;
   cv2 = np2->controlv;
-  memcpy(ncv, &(cv1[(np1->width-1)*np1->height*stride]),
-	 np1->height*stride*sizeof(double));
+  memcpy(ncv, &(cv1[(np1->width - 1) * np1->height * stride]),
+	 np1->height * stride * sizeof(double));
   if(new->width > 2)
     {
-      a = np1->height*stride;
-      b = (np1->width-2)*np1->height*stride;
-      c = (np1->width-1)*np1->height*stride;
+      a = np1->height * stride;
+      b = (np1->width-2) * np1->height * stride;
+      c = (np1->width-1) * np1->height * stride;
       d = 0;
       for(i = 0; i < np1->height; i++)
 	{
-	  v1[0] = (cv1[c]-cv1[b]);
-	  v1[1] = (cv1[c+1]-cv1[b+1]);
-	  v1[2] = (cv1[c+2]-cv1[b+2]);
+	  v1[0] = (cv1[c]   - cv1[b]);
+	  v1[1] = (cv1[c+1] - cv1[b+1]);
+	  v1[2] = (cv1[c+2] - cv1[b+2]);
 
 	  dist = AY_V3LEN(v1);
 	  if(dist > AY_EPSILON)
@@ -2503,9 +2532,9 @@ ay_npt_fillgap(ay_object *o1, ay_object *o2,
 		{
 		  /* negative tanlen
 		     => factor in patch distance */
-		  v2[0] = (cv1[c]-cv2[d]);
-		  v2[1] = (cv1[c+1]-cv2[d+1]);
-		  v2[2] = (cv1[c+2]-cv2[d+2]);
+		  v2[0] = (cv1[c]   - cv2[d]);
+		  v2[1] = (cv1[c+1] - cv2[d+1]);
+		  v2[2] = (cv1[c+2] - cv2[d+2]);
 
 		  dist = AY_V3LEN(v2);
 		  AY_V3SCAL(v1, (dist*-tanlen));
@@ -2513,23 +2542,23 @@ ay_npt_fillgap(ay_object *o1, ay_object *o2,
 		} /* if */
 	    } /* if */
 
-	  ncv[a]   = cv1[c]+v1[0];
-	  ncv[a+1] = cv1[c+1]+v1[1];
-	  ncv[a+2] = cv1[c+2]+v1[2];
-	  ncv[a+3] = cv1[c+3]+(cv1[c+3]-cv1[b+3])/2.0;
+	  ncv[a]   = cv1[c]   + v1[0];
+	  ncv[a+1] = cv1[c+1] + v1[1];
+	  ncv[a+2] = cv1[c+2] + v1[2];
+	  ncv[a+3] = cv1[c+3] + (cv1[c+3] - cv1[b+3]) / 2.0;
 	  a += stride;
 	  b += stride;
 	  c += stride;
 	} /* for */
 
-      b = np1->height*stride;
+      b = np1->height * stride;
       c = 0;
-      d = (np1->width-1)*np1->height*stride;
+      d = (np1->width-1) * np1->height * stride;
       for(i = 0; i < np1->height; i++)
 	{
-	  v1[0] = (cv2[c]-cv2[b]);
-	  v1[1] = (cv2[c+1]-cv2[b+1]);
-	  v1[2] = (cv2[c+2]-cv2[b+2]);
+	  v1[0] = (cv2[c]   - cv2[b]);
+	  v1[1] = (cv2[c+1] - cv2[b+1]);
+	  v1[2] = (cv2[c+2] - cv2[b+2]);
 
 	  dist = AY_V3LEN(v1);
 	  if(dist > AY_EPSILON)
@@ -2544,29 +2573,29 @@ ay_npt_fillgap(ay_object *o1, ay_object *o2,
 		{
 		  /* negative tanlen
 		     => factor in patch distance */
-		  v2[0] = (cv2[c]-cv1[d]);
-		  v2[1] = (cv2[c+1]-cv1[d+1]);
-		  v2[2] = (cv2[c+2]-cv1[d+2]);
+		  v2[0] = (cv2[c]   - cv1[d]);
+		  v2[1] = (cv2[c+1] - cv1[d+1]);
+		  v2[2] = (cv2[c+2] - cv1[d+2]);
 
 		  dist = AY_V3LEN(v2);
 
-		  AY_V3SCAL(v1, (dist*-tanlen));
+		  AY_V3SCAL(v1, (dist * -tanlen));
 		  d += stride;
 		} /* if */
 	    } /* if */
 
-	  ncv[a]   = cv2[c]+v1[0];
-	  ncv[a+1] = cv2[c+1]+v1[1];
-	  ncv[a+2] = cv2[c+2]+v1[2];
-	  ncv[a+3] = cv2[c+3]+(cv2[c+3]-cv2[b+3])/2.0;
+	  ncv[a]   = cv2[c]   + v1[0];
+	  ncv[a+1] = cv2[c+1] + v1[1];
+	  ncv[a+2] = cv2[c+2] + v1[2];
+	  ncv[a+3] = cv2[c+3] + (cv2[c+3] - cv2[b+3]) / 2.0;
 	  a += stride;
 	  b += stride;
 	  c += stride;
 	} /* for */
     } /* if */
 
-  memcpy(&(ncv[(new->width-1)*new->height*stride]), cv2,
-	 np1->height*stride*sizeof(double));
+  memcpy(&(ncv[(new->width-1) * new->height * stride]), cv2,
+	 np1->height * stride * sizeof(double));
 
   /* return result */
   ay_status = ay_npt_createnpatchobject(result);
@@ -2632,7 +2661,6 @@ ay_npt_fillgaps(ay_object *o, int type, int fillet_type,
 	  if(fillet_type > 0)
 	    {
 	      ay_status = ay_npt_fillgap(o, o->next, ftlen, fuv, &fillet);
-
 	      if(ay_status)
 		return ay_status;
 
@@ -2650,7 +2678,6 @@ ay_npt_fillgaps(ay_object *o, int type, int fillet_type,
 	  else
 	    {
 	      ay_status = ay_npt_setback(o, o->next, ftlen, fuv);
-
 	      if(ay_status)
 		return ay_status;
 	    }
@@ -2714,7 +2741,6 @@ ay_npt_fillgaps(ay_object *o, int type, int fillet_type,
 	  if(fillet_type > 0)
 	    {
 	      ay_status = ay_npt_fillgap(last, first, ftlen, fuv, &fillet);
-
 	      if(ay_status)
 		return ay_status;
 
@@ -2737,12 +2763,11 @@ ay_npt_fillgaps(ay_object *o, int type, int fillet_type,
 	  else
 	    {
 	      ay_status = ay_npt_setback(o, o->next, ftlen, fuv);
-
 	      if(ay_status)
 		return ay_status;
 	    }
 	} /* if */
-    } /* if */
+    } /* if not open */
 
  return ay_status;
 } /* ay_npt_fillgaps */
@@ -2864,7 +2889,6 @@ ay_npt_concat(ay_object *o, int type, int order,
 		  if(np->uorder < max_order)
 		    {
 		      ay_status = ay_npt_elevateu(np, max_order-np->uorder);
-
 		      if(ay_status)
 			goto cleanup;
 		    }
@@ -2880,14 +2904,12 @@ ay_npt_concat(ay_object *o, int type, int order,
 		      if(np->vorder < max_order)
 			{
 			  ay_status = ay_npt_elevatev(np, max_order-np->vorder);
-
 			  if(ay_status)
 			    goto cleanup;
 			}
 		      else
 			{
 			  ay_status = ay_npt_clampv(np, 0);
-
 			  if(ay_status)
 			    goto cleanup;
 			}
@@ -2901,14 +2923,12 @@ ay_npt_concat(ay_object *o, int type, int order,
 		      if(np->uorder < max_order)
 			{
 			  ay_status = ay_npt_elevateu(np, max_order-np->uorder);
-
 			  if(ay_status)
 			    goto cleanup;
 			}
 		      else
 			{
 			  ay_status = ay_npt_clampu(np, 0);
-
 			  if(ay_status)
 			    goto cleanup;
 			}
@@ -2946,7 +2966,10 @@ ay_npt_concat(ay_object *o, int type, int order,
 		{
 		  if(uv[i] == 'V')
 		    {
-		      ay_npt_revertv((ay_nurbpatch_object *)o->refine);
+		      ay_status =
+			ay_npt_revertv((ay_nurbpatch_object *)o->refine);
+		      if(ay_status)
+			goto cleanup;
 		    }
 
 		  if(order == 1)
@@ -2964,7 +2987,10 @@ ay_npt_concat(ay_object *o, int type, int order,
 		{
 		  if(uvlen > 0 && uvlen > i && uv[i] == 'U')
 		    {
-		      ay_npt_revertu((ay_nurbpatch_object *)o->refine);
+		      ay_status =
+			ay_npt_revertu((ay_nurbpatch_object *)o->refine);
+		      if(ay_status)
+			goto cleanup;
 		    }
 
 		  if(order == 1)
@@ -3371,7 +3397,7 @@ ay_npt_swing(ay_object *o1, ay_object *o2,
   if(!(new->uknotv = malloc((tr->length + tr->order) * sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
-  memcpy(new->uknotv, tr->knotv, (tr->length+tr->order)*sizeof(double));
+  memcpy(new->uknotv, tr->knotv, (tr->length + tr->order) * sizeof(double));
   new->uorder = tr->order;
   new->uknot_type = tr->knot_type;
   new->width = tr->length;
@@ -3384,7 +3410,8 @@ ay_npt_swing(ay_object *o1, ay_object *o2,
   new->vknot_type = cs->knot_type;
   new->height = cs->length;
 
-  if(!(new->controlv = malloc(cs->length*tr->length*stride*sizeof(double))))
+  if(!(new->controlv = malloc(cs->length * tr->length * stride *
+			      sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
   /* fill controlv */
@@ -12745,7 +12772,12 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 
 	  /* swap U/V, for there is no RemoveKnotSurfU() */
-	  ay_npt_swapuv(patch);
+	  ay_status = ay_npt_swapuv(patch);
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, argv[0], "SwapUV failed.");
+	      return TCL_OK;
+	    }
 
 	  if(!(newcontrolv = malloc(patch->width*(patch->height-r)*4*
 				    sizeof(double))))
@@ -12793,7 +12825,12 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_npt_recreatemp(patch);
 
 	  /* swap back */
-	  ay_npt_swapuv(patch);
+	  ay_status = ay_npt_swapuv(patch);
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, argv[0], "SwapUV failed.");
+	      return TCL_OK;
+	    }
 
 	  /* remove all selected points */
 	  if(o->selp)
@@ -13014,7 +13051,7 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
  *  refine a NURBS surface in direction u by inserting knots at
  *  the right places, thus not changing the shape of the surface
  *
- * \param[in] patch NURBS surface object to refine
+ * \param[in,out] patch NURBS surface object to refine
  * \param[in] newknotv vector of new knot values (may be NULL)
  * \param[in] newknotvlen length of vector
  *
@@ -13122,7 +13159,7 @@ ay_npt_refineu(ay_nurbpatch_object *patch, double *newknotv, int newknotvlen)
  *  refine a NURBS surface in v direction by inserting knots at
  *  the right places, thus not changing the shape of the surface
  *
- * \param[in] patch NURBS surface object to refine
+ * \param[in,out] patch NURBS surface object to refine
  * \param[in] newknotv vector of new knot values (may be NULL)
  * \param[in] newknotvlen length of vector
  *
@@ -13334,7 +13371,8 @@ cleanup:
  *  will be derived from the surrounding control points.
  *
  * \param[in] np NURBS surface object to process
- * \param[in,out] n where to store the normals
+ * \param[in,out] n pointer to array [3*np->width*np->height]
+ *   where to store the normals
  */
 void
 ay_npt_getcvnormals(ay_nurbpatch_object *np, double *n)
