@@ -648,7 +648,7 @@ ay_extrude_notifycb(ay_object *o)
 		  firstmovex = trim->movx;
 		  firstmovey = trim->movy;
 
-
+		  z = ext->height;
 		  /*
 		     if we have bevels, we need a new control vector
 		     copied directly from the beveling patch,
@@ -795,6 +795,7 @@ ay_extrude_notifycb(ay_object *o)
 		      firstmovey = trim->movy;
 		    }
 
+		  z = 0.0;
 		  /*
 		     if we have bevels, we need a new control vector
 		     copied directly from the beveling patch,
@@ -815,7 +816,7 @@ ay_extrude_notifycb(ay_object *o)
 		      memcpy(curve->controlv,&(patch->controlv[
 					(patch->width-1)*4*patch->height]),
 			     4*curve->length*sizeof(double));
-		      z = curve->controlv[2];
+		      z = -curve->controlv[2];
 		      ay_trafo_copy(startb, trim);
 		      ay_nct_applytrafo(trim);
 		    } /* if */
