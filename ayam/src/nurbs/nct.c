@@ -5841,11 +5841,19 @@ ay_nct_toxy(int allow_flip, ay_object *c)
   /* A is now perpendicular to the plane in which the curve is defined
      thus, we calculate angle and rotation axis (B) between A and Z (0,0,1) */
   angle = AY_R2D(acos(AY_V3DOT(A, Z)));
-  if((fabs(angle) < AY_EPSILON) ||
-     (!allow_flip && (fabs(angle - 180.0) < AY_EPSILON)))
+  if((fabs(angle) < AY_EPSILON))
     {
       /* Nothing to do, as curve ist properly aligned with
 	 XY plane already...*/
+      return AY_OK;
+    }
+
+  if(fabs(angle - 180.0) < AY_EPSILON)
+    {
+      if(allow_flip)
+	{
+	  ay_nct_revert(c->refine);
+	}
       return AY_OK;
     }
 
