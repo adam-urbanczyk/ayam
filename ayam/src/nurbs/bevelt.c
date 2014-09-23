@@ -58,13 +58,13 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
   if(!bparams || !o || !dst)
     return AY_ENULL;
 
+  if(o->type != AY_IDNPATCH)
+    return AY_ERROR;
+
+  np = (ay_nurbpatch_object*)o->refine;
+
   for(i = 0; i < 4; i++)
     {
-      if(o->type != AY_IDNPATCH)
-	return AY_ERROR;
-
-      np = (ay_nurbpatch_object*)o->refine;
-
       if(bparams->states[i])
 	{
 	  is_planar = AY_TRUE;
