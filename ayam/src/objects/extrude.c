@@ -531,10 +531,10 @@ ay_extrude_notifycb(ay_object *o)
  ay_object **nexttrimu, **nexttriml, **nextcb;
  ay_nurbcurve_object *curve = NULL;
  ay_nurbpatch_object *patch = NULL;
- int display_mode = 0, is_provided = AY_FALSE;
+ ay_bparam bparams = {0};
+ ay_cparam cparams = {0};
+ int bstate, display_mode = 0, is_provided = AY_FALSE;
  int has_startb = AY_FALSE, has_endb = AY_FALSE;
- int startb_type, endb_type, startb_sense, endb_sense;
- double startb_radius, endb_radius;
  double uminx, umaxx, uminy, umaxy;
  double lminx, lmaxx, lminy, lmaxy;
  double firstmovex = 0.0, firstmovey = 0.0;
@@ -571,10 +571,15 @@ ay_extrude_notifycb(ay_object *o)
   nextcb = &(ext->caps_and_bevels);
 
   /* get bevel parameters from potentially present BP tags */
-  ay_npt_getbeveltags(o, 0, &has_startb, &startb_type, &startb_radius,
-		      &startb_sense);
-  ay_npt_getbeveltags(o, 1, &has_endb, &endb_type, &endb_radius,
-		      &endb_sense);
+  if(o->tags)
+    {
+      ay_bevelt_parsetags(o->tags, &bparams);
+      if(bparams.states[2])
+	has_startb = AY_TRUE;
+      if(bparams.states[3])
+	has_endb = AY_TRUE;
+      /*ay_capt_parsetags(o->tags, &cparams);*/
+    }
 
   /* create new extrusions, caps and bevels */
   down = o->down;
@@ -614,33 +619,18 @@ ay_extrude_notifycb(ay_object *o)
 
 	  ext->npatch->next = extrusion;
 
-	  /* create and link bevels */
-	  if(has_endb)
+	  /* create and link upper bevel */
+	  if(bparams.states[3])
 	    {
-	      bevel = NULL;
-	      ay_status = ay_npt_createnpatchobject(&bevel);
-	      if(bevel)
-		{
-		  if(endb_sense)
-		    ay_nct_revert((ay_nurbcurve_object *)(c->refine));
-		  ay_status = ay_bevelt_create(endb_type,
-					       endb_radius,
-					       AY_FALSE,
-					       c,
-			     (ay_nurbpatch_object **)(void*)&(bevel->refine));
-		  if(endb_sense)
-		    ay_nct_revert((ay_nurbcurve_object *)(c->refine));
-		  ay_trafo_copy(c, bevel);
-		  bevel->movz += ext->height;
-		  /* remember pointer to bevel for cap creation */
-		  endb = bevel;
-		  /* link bevel */
-		  *nextcb = bevel;
-		  nextcb = &(bevel->next);
-		} /* if */
+	      bstate = bparams.states[2];
+	      bparams.states[2] = 0;
+	      ay_bevelt_addbevels(&bparams, &cparams, ext->npatch, nextcb);
+	      endb = *nextcb;
+	      nextcb = &((*nextcb)->next);
+	      bparams.states[2] = bstate;
 	    } /* if */
 
-	  /* create and link caps */
+	  /* create and link upper cap */
 	  if(ext->has_upper_cap)
 	    {
 	      ay_status = ay_object_copy(c, &trim);
@@ -773,31 +763,18 @@ ay_extrude_notifycb(ay_object *o)
 		} /* if */
 	    } /* if */
 
-	  if(has_startb)
+	  /* create and link lower bevel */
+	  if(bparams.states[2])
 	    {
-	      bevel = NULL;
-	      ay_status = ay_npt_createnpatchobject(&bevel);
-	      if(bevel)
-		{
-		  if(startb_sense)
-		    ay_nct_revert((ay_nurbcurve_object *)(c->refine));
-		  ay_status = ay_bevelt_create(startb_type,
-					       startb_radius,
-					       AY_FALSE,
-					       c,
-			     (ay_nurbpatch_object **)(void*)&(bevel->refine));
-		  if(startb_sense)
-		    ay_nct_revert((ay_nurbcurve_object *)(c->refine));
-		  ay_trafo_copy(c, bevel);
-		  bevel->scalz *= -1;
-		  /* remember pointer to bevel for cap creation */
-		  startb = bevel;
-		  /* link bevel */
-		  *nextcb = bevel;
-		  nextcb = &(bevel->next);
-		} /* if */
+	      bstate = bparams.states[3];
+	      bparams.states[3] = 0;
+	      ay_bevelt_addbevels(&bparams, &cparams, ext->npatch, nextcb);
+	      endb = *nextcb;
+	      nextcb = &((*nextcb)->next);
+	      bparams.states[3] = bstate;
 	    } /* if */
 
+	  /* create and link lower cap */
 	  if(ext->has_lower_cap)
 	    {
 	      ay_status = ay_object_copy(c, &trim);
