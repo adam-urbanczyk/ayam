@@ -50,11 +50,6 @@ void ay_bevelt_parsetags(ay_tag *tag, ay_bparam *params);
 int ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 			ay_object **dst);
 
-/** Create bevel surface.
- */
-int ay_bevelt_create(int type, double radius, int align, ay_object *o,
-		     ay_nurbpatch_object **bevel);
-
 /** Create bevel surface from cross section bevel curve.
  */
 int ay_bevelt_createc(double radius, ay_object *o1, ay_object *o2,
