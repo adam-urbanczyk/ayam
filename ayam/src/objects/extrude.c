@@ -773,13 +773,13 @@ ay_extrude_notifycb(ay_object *o)
 	      bstate = bparams.states[3];
 	      bparams.states[3] = 0;
 	      if(extrusion)
-		bparams.dirs[3] = !bparams.dirs[3];
+		bparams.dirs[2] = !bparams.dirs[2];
 	      ay_bevelt_addbevels(&bparams, &cparams, ext->npatch, nextcb);
 	      startb = *nextcb;
 	      nextcb = &(startb->next);
 	      bparams.states[3] = bstate;
 	      if(extrusion)
-		bparams.dirs[3] = !bparams.dirs[3];
+		bparams.dirs[2] = !bparams.dirs[2];
 	    } /* if */
 
 	  /* create and link lower cap */
