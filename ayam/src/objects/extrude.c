@@ -624,10 +624,14 @@ ay_extrude_notifycb(ay_object *o)
 	    {
 	      bstate = bparams.states[2];
 	      bparams.states[2] = 0;
+	      if(extrusion)
+		bparams.dirs[3] = !bparams.dirs[3];
 	      ay_bevelt_addbevels(&bparams, &cparams, ext->npatch, nextcb);
 	      endb = *nextcb;
-	      nextcb = &((*nextcb)->next);
+	      nextcb = &(endb->next);
 	      bparams.states[2] = bstate;
+	      if(extrusion)
+		bparams.dirs[3] = !bparams.dirs[3];
 	    } /* if */
 
 	  /* create and link upper cap */
@@ -768,10 +772,14 @@ ay_extrude_notifycb(ay_object *o)
 	    {
 	      bstate = bparams.states[3];
 	      bparams.states[3] = 0;
+	      if(extrusion)
+		bparams.dirs[3] = !bparams.dirs[3];
 	      ay_bevelt_addbevels(&bparams, &cparams, ext->npatch, nextcb);
 	      startb = *nextcb;
-	      nextcb = &((*nextcb)->next);
+	      nextcb = &(startb->next);
 	      bparams.states[3] = bstate;
+	      if(extrusion)
+		bparams.dirs[3] = !bparams.dirs[3];
 	    } /* if */
 
 	  /* create and link lower cap */
