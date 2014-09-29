@@ -2626,8 +2626,9 @@ cleanup:
 
 /** ay_npt_fillgaps:
  *  fill all the gaps between the patches in \a o
- *  with another NURBS patch; the fillet objects will be marked as selected
- *  to tell them apart from the original patches
+ *  with another NURBS patch; the fillets will be inserted right into
+ *  the list of objects provided, the fillets will be marked as selected
+ *  so that the caller can tell them apart from the original patches
  *
  * \param[in,out] o a number of NURBS patch objects (NURBS curves can
  *  be mixed in), the resulting fillets will be inserted in this list
@@ -2773,6 +2774,161 @@ ay_npt_fillgaps(ay_object *o, int type, int fillet_type,
 } /* ay_npt_fillgaps */
 
 
+int
+ay_npt_fliptrim(ay_nurbpatch_object *np, ay_object *trim, int mode)
+{
+ int ay_status = AY_OK;
+ double u1, u2, v1, v2, mu, mv, m[16], mt[16];
+
+  if(!trim)
+    return AY_ENULL;
+
+  ay_trafo_identitymatrix(m);
+
+  u1 = np->uknotv[np->uorder-1];
+  u2 = np->uknotv[np->width];
+  mu = u1+((u2-u1)*0.5);
+
+  if(mode == 0)
+    {
+      /* U */
+      ay_trafo_translatematrix(-mu, 0.0, 0.0, m);
+      ay_trafo_scalematrix(-1.0, 1.0, 1.0, m);
+      ay_trafo_translatematrix(mu, 0.0, 0.0, m);
+    }
+  else
+    {
+      /* v */
+      v1 = np->vknotv[np->vorder-1];
+      v2 = np->vknotv[np->height];
+      mv = v1+((v2-v1)*0.5);
+
+      ay_trafo_translatematrix(-mu, -mv, 0.0, m);
+      //ay_trafo_scalematrix((u2-u1)/(v2-v1), (v2-v1)/(u2-u1), 1.0);
+      ay_trafo_rotatematrix(90.0, 0.0, 0.0, 1.0, m);
+      ay_trafo_translatematrix(mu, mv, 0.0, m);
+
+      if(mode == 2)
+	{
+	  /* V */
+	  ay_trafo_translatematrix(0.0, -mv, 0.0, m);
+	  ay_trafo_scalematrix(1.0, -1.0, 1.0, m);
+	  ay_trafo_translatematrix(0.0, mv, 0.0, m);
+	}
+    }
+
+  ay_trafo_creatematrix(trim, mt);
+
+  ay_trafo_multmatrix4(m, mt);
+
+  ay_trafo_decomposematrix(m, trim);
+
+ return ay_status;
+} /* ay_npt_fliptrim */
+
+
+int
+ay_npt_fliptrims(ay_nurbpatch_object *np, ay_object *trim, int mode)
+{
+ int ay_status = AY_OK;
+
+  if(!trim)
+    return AY_ENULL;
+
+  while(trim)
+    {
+
+      if(trim->type == AY_IDLEVEL)
+	{
+	  if(trim->down && trim->down->next)
+	    {
+	      ay_status = ay_npt_fliptrim(np, trim->down, mode);
+	    }
+	}
+      else
+	{
+	  ay_status = ay_npt_fliptrim(np, trim, mode);
+	}
+
+      trim = trim->next;
+    } /* while */
+
+ return ay_status;
+} /* ay_npt_fliptrims */
+
+
+/** ay_npt_copytrims:
+ *  copys trims from NURBS patch \a o to \a target
+ *
+ * \param[in,out] o
+ */
+int
+ay_npt_copytrims(ay_object *o, double u1, double u2, char *uv,
+		 ay_object *target)
+{
+ int ay_status = AY_OK;
+ int is_bound = AY_FALSE;
+ ay_object *t, *n, **d;
+ ay_nurbpatch_object *np = NULL;
+
+  if(!o || !target)
+    return AY_ENULL;
+
+  if(o->type == AY_IDNPATCH)
+    {
+      np = (ay_nurbpatch_object *)o->refine;
+
+      ay_status = ay_object_copymulti(o->down, &t);
+
+      ay_npt_isboundcurve(t, np->uknotv[np->uorder-1], np->uknotv[np->width],
+			  np->vknotv[np->vorder-1], np->vknotv[np->height],
+			  &is_bound);
+      if(is_bound)
+	{
+	  n = t->next;
+	  ay_object_delete(t);
+	  t = n;
+	}
+
+      if(!t)
+	return AY_OK;
+
+      if(uv)
+	{
+	  switch(*uv)
+	    {
+	    case 'U':
+	      ay_npt_fliptrims(np, t, 0);
+	      break;
+	    case 'v':
+	      ay_npt_fliptrims(np, t, 1);
+	      break;
+	    case 'V':
+	      ay_npt_fliptrims(np, t, 2);
+	      break;
+	    default:
+	      break;
+	    }
+	}
+
+      ay_status = ay_npt_rescaletrims(t, 0,
+				      np->uknotv[np->uorder-1],
+				      np->uknotv[np->width],
+				      u1, u2);
+
+
+      /* append new trims */
+      d = &(target->down);
+      o = target->down;
+      while(o && o->next)
+	o = o->next;
+      *d = t;
+    }
+
+ return ay_status;
+} /* ay_npt_copytrims */
+
+
 /** ay_npt_concat:
  *  concatenate the patches in \a o by breaking them into
  *  curves, making the curves compatible, and building a
@@ -2811,9 +2967,10 @@ ay_npt_concat(ay_object *o, int type, int order,
  ay_object *curve = NULL, *allcurves = NULL, **nextcurve = NULL;
  ay_list_object *curvelist = NULL, **nextlist = NULL, *rem;
  ay_nurbpatch_object *np = NULL;
+ double *newknotv = NULL, u1, u2;
  int a = 0, i = 0, j = 0, k = 0, l = 0, ncurves = 0, uvlen = 0;
- double *newknotv = NULL, u;
  int max_order = 0;
+ char *swapuv;
 
   if(!o || !result)
     return AY_ENULL;
@@ -3073,12 +3230,11 @@ ay_npt_concat(ay_object *o, int type, int order,
 	  if(o->type == AY_IDNPATCH)
 	    {
 	      np = (ay_nurbpatch_object *)o->refine;
+
 	      if(!o->selected &&
 		 uvlen > 0 && uvlen > i && (uv[i] == 'v' || uv[i] == 'V'))
 		{
 		  k = np->vorder;
-		  u = np->vknotv[k]+j;
-		  /*swapuv = AY_TRUE;*/
 		  for(l = k; l < np->height+np->vorder; l++)
 		    {
 		      newknotv[a] = np->vknotv[l]+j;
@@ -3088,20 +3244,28 @@ ay_npt_concat(ay_object *o, int type, int order,
 	      else
 		{
 		  k = np->uorder;
-		  u = np->uknotv[k]+j;
-		  /*swapuv = AY_FALSE;*/
+		  u1 = np->uknotv[k]+j;
 		  for(l = k; l < np->width+np->uorder; l++)
 		    {
 		      newknotv[a] = np->uknotv[l]+j;
 		      a++;
 		    }
 		}
-#if 0
+
 	      if(!o->selected && o->down && o->down->next)
 		{
-		  ay_npt_copytrims(o, u, swapuv, i, new);
+		  swapuv = NULL;
+		  if(uvlen > 0 && uvlen > i)
+		    swapuv = &(uv[i]);
+		  if(j == 0)
+		    u1 = 0.0;
+		  else
+		    u1 = newknotv[a-(l-1)];
+		  u2 = newknotv[a-1];
+		  printf("copy trims to %lg %lg\n",u1,u2);
+		  ay_status = ay_npt_copytrims(o, u1, u2, swapuv, new);
 		}
-#endif
+
 	      if(!o->selected)
 		i++;
 	      j++;
@@ -7785,7 +7949,6 @@ ay_npt_israt(ay_nurbpatch_object *np)
  * \param[in] b2 parametric value of right boundary (un)
  * \param[in] b3 parametric value of lower boundary (v0)
  * \param[in] b4 parametric value of upper boundary (vn)
- *
  * \param[in,out] result AY_TRUE if each section is on exactly one
  *                boundary else AY_FALSE
  *
@@ -10012,7 +10175,7 @@ ay_npt_clampuvtcmd(ClientData clientData, Tcl_Interp *interp,
 /* ay_npt_rescaletrim:
  *  rescale a single trim curve (<trim>) from old knot domain
  *  (<omin>,<omax>) to new domain (<nmin>,<nmax>) along dimension
- *  x/u (<mode> 0), y/v (<mode> 1), or both (<mode> 2)
+ *  x/u (<mode> 0) or y/v (<mode> 1)
  */
 int
 ay_npt_rescaletrim(ay_object *trim,
@@ -10020,40 +10183,35 @@ ay_npt_rescaletrim(ay_object *trim,
 		   double nmin, double nmax)
 {
  int ay_status = AY_OK;
- ay_nurbcurve_object *nc = NULL;
- double olen = 0.0;
- double nlen = 0.0;
- int stride = 4, i;
+ double mu, m[16], mt[16];
 
   if(!trim)
     return AY_ENULL;
 
-  if(trim->type != AY_IDNCURVE)
-    return AY_ERROR;
+  ay_trafo_identitymatrix(m);
 
-  nc = (ay_nurbcurve_object *)trim->refine;
+  mu = omin+((omax-omin)*0.5);
 
-  olen = omax-omin;
-  nlen = nmax-nmin;
-
-  /* map old values to range 0-1 then to new range */
-  if((mode == 0) || (mode == 2))
+  if((mode == 0))
     {
-      for(i = 0; i < nc->length; i++)
-	{
-	  nc->controlv[i*stride] = nmin +
-	    ((nc->controlv[i*stride] - omin) / olen * nlen);
-	}
+      ay_trafo_translatematrix(-mu, 0.0, 0.0, m);
+      ay_trafo_scalematrix((nmax-nmin)/(omax-omin), 1.0, 1.0, m);
+      mu = nmin+((nmax-nmin)*0.5);
+      ay_trafo_translatematrix(mu, 0.0, 0.0, m);
+    }
+  else
+    {
+      ay_trafo_translatematrix(0.0, -mu, 0.0, m);
+      ay_trafo_scalematrix(1.0, (nmax-nmin)/(omax-omin), 1.0, m);
+      mu = nmin+((nmax-nmin)*0.5);
+      ay_trafo_translatematrix(0.0, mu, 0.0, m);
     }
 
-  if((mode == 1) || (mode == 2))
-    {
-      for(i = 0; i < nc->length; i++)
-	{
-	  nc->controlv[i*stride+1] = nmin +
-	    ((nc->controlv[i*stride+1] - omin) / olen * nlen);
-	}
-    }
+  ay_trafo_creatematrix(trim, mt);
+
+  ay_trafo_multmatrix4(m, mt);
+
+  ay_trafo_decomposematrix(m, trim);
 
  return ay_status;
 } /* ay_npt_rescaletrim */
@@ -10062,7 +10220,7 @@ ay_npt_rescaletrim(ay_object *trim,
 /* ay_npt_rescaletrims:
  *  rescale the trim curves in <trim> from old knot domain
  *  (<omin>,<omax>) to new domain (<nmin>,<nmax>) along dimension
- *  x/u (<mode> 0), y/v (<mode> 1), or both (<mode> 2)
+ *  x/u (<mode> 0) or y/v (<mode> 1)
  *  Note that <trim> may actually be a list _and_ contain trim
  *  loop level objects (in the latter case, ay_npt_rescaletrims()
  *  will invoke itself again _recursively_).
@@ -10079,12 +10237,6 @@ ay_npt_rescaletrims(ay_object *trim,
 
   while(trim)
     {
-      if(trim->type == AY_IDNCURVE)
-	{
-	  ay_status = ay_npt_rescaletrim(trim, mode, omin, omax,
-					 nmin, nmax);
-	}
-
       if(trim->type == AY_IDLEVEL)
 	{
 	  if(trim->down && trim->down->next)
@@ -10092,6 +10244,11 @@ ay_npt_rescaletrims(ay_object *trim,
 	      ay_status = ay_npt_rescaletrims(trim->down, mode, omin, omax,
 					      nmin, nmax);
 	    }
+	}
+      else
+	{
+	  ay_status = ay_npt_rescaletrim(trim, mode, omin, omax,
+					 nmin, nmax);
 	}
 
       trim = trim->next;
