@@ -169,6 +169,7 @@ ay_draw_view(struct Togl *togl, int draw_offset)
     {
       o = ay_currentlevel->object;
       if(view->type == AY_VTTRIM && ay_currentlevel->next &&
+	 ay_currentlevel->next->object &&
 	 ay_currentlevel->next->object->type == AY_IDTRIM)
 	o = o->next;
       glPushMatrix();
