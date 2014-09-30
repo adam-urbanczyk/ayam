@@ -171,11 +171,17 @@ ay_draw_view(struct Togl *togl, int draw_offset)
       if(view->type == AY_VTTRIM && ay_currentlevel->next &&
 	 ay_currentlevel->next->object &&
 	 ay_currentlevel->next->object->type == AY_IDTRIM)
-	o = o->next;
+	{
+	  o = o->next;
+	}
       glPushMatrix();
-      if(ay_currentlevel->object != ay_root)
+      if(ay_currentlevel->object != ay_root && view->type != AY_VTTRIM)
 	{
 	  ay_trafo_getall(ay_currentlevel->next);
+	}
+      if(view->type == AY_VTTRIM)
+	{
+	  glLoadIdentity();
 	}
     }
 
@@ -210,7 +216,7 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 	}
 
       glPushMatrix();
-      if(!view->drawlevel)
+      if(!view->drawlevel && view->type != AY_VTTRIM)
 	{
 	  if(ay_currentlevel->object != ay_root)
 	    {
@@ -330,7 +336,6 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 		   glMultMatrixd((GLdouble*)m);
 		   glScaled((GLdouble)o->scalx, (GLdouble)o->scaly,
 			    (GLdouble)o->scalz);
-
 		   point = o->selp;
 		   glBegin(GL_POINTS);
 		    while(point)
@@ -341,7 +346,6 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 			point = point->next;
 		      }
 		   glEnd();
-
 		  glPopMatrix();
 		}
 	      sel = sel->next;
