@@ -2945,7 +2945,7 @@ ay_npt_copytrims(ay_object *o, double u1, double u2, char *uv,
       while(o && o->next)
 	o = o->next;
       *d = t;
-    }
+    } /* if o is npatch */
 
  return ay_status;
 } /* ay_npt_copytrims */
@@ -3163,10 +3163,15 @@ ay_npt_concat(ay_object *o, int type, int order,
 		      if(ay_status)
 			goto cleanup;
 		    }
-		  ay_status = ay_knots_rescaletorange(np->width+np->uorder,
-						      np->uknotv, 0, 1);
-		  if(ay_status)
-		    goto cleanup;
+		  if((fabs(np->uknotv[0] - 0.0) > AY_EPSILON) ||
+		     (fabs(np->uknotv[np->width+np->uorder-1] - 1.0) >
+		      AY_EPSILON))
+		    {
+		      ay_status = ay_knots_rescaletorange(np->width+np->uorder,
+							  np->uknotv, 0, 1);
+		      if(ay_status)
+			goto cleanup;
+		    }
 		}
 	      else
 		{
@@ -3184,10 +3189,23 @@ ay_npt_concat(ay_object *o, int type, int order,
 			  if(ay_status)
 			    goto cleanup;
 			}
-		      ay_status = ay_knots_rescaletorange(np->height+np->vorder,
-							  np->vknotv, 0, 1);
-		      if(ay_status)
-			goto cleanup;
+		      if((fabs(np->vknotv[0] - 0.0) > AY_EPSILON) ||
+			 (fabs(np->vknotv[np->height+np->vorder-1] - 1.0) >
+			  AY_EPSILON))
+			{
+			  if(o->down && o->down->next)
+			    {
+			    (void)ay_npt_rescaletrims(o->down, 1,
+						      np->vknotv[0],
+			      np->vknotv[np->height+np->vorder-1], 0, 1);
+			    }
+
+			  ay_status = ay_knots_rescaletorange(np->height +
+							      np->vorder,
+							      np->vknotv, 0, 1);
+			  if(ay_status)
+			    goto cleanup;
+			} /* if */
 		    }
 		  else
 		    {
@@ -3203,10 +3221,23 @@ ay_npt_concat(ay_object *o, int type, int order,
 			  if(ay_status)
 			    goto cleanup;
 			}
-		      ay_status = ay_knots_rescaletorange(np->width+np->uorder,
+		      if((fabs(np->uknotv[0] - 0.0) > AY_EPSILON) ||
+			 (fabs(np->uknotv[np->width+np->uorder-1] - 1.0) >
+			  AY_EPSILON))
+			{
+			  if(o->down && o->down->next)
+			    {
+			    (void)ay_npt_rescaletrims(o->down, 0,
+						      np->uknotv[0],
+                              np->uknotv[np->width+np->uorder-1], 0, 1);
+			    }
+
+			  ay_status = ay_knots_rescaletorange(np->width+
+							      np->uorder,
 							  np->uknotv, 0, 1);
-		      if(ay_status)
-			goto cleanup;
+			  if(ay_status)
+			    goto cleanup;
+			} /* if */
 		    } /* if */
 		  i++;
 		} /* if */
@@ -10310,8 +10341,10 @@ ay_npt_rescaletrim(ay_object *trim,
 
   s = (nmax-nmin)/(omax-omin);
 
-  if(fabs(s-1.0)<AY_EPSILON)
+  /* check whether the new domain is just offset */
+  if(fabs(s-1.0) < AY_EPSILON)
     {
+      /* new domain is offset */
       if(mode == 0)
 	{
 	  trim->movx += (nmin-omin);
@@ -10323,22 +10356,24 @@ ay_npt_rescaletrim(ay_object *trim,
     }
   else
     {
+      /* new domain is scaled plus, possibly, offset */
       ay_trafo_identitymatrix(m);
 
-      mu = omin+((omax-omin)*0.5);
       if(mode == 0)
 	{
-	  ay_trafo_translatematrix(-mu, 0.0, 0.0, m);
-	  ay_trafo_scalematrix((nmax-nmin)/(omax-omin), 1.0, 1.0, m);
 	  mu = nmin+((nmax-nmin)*0.5);
 	  ay_trafo_translatematrix(mu, 0.0, 0.0, m);
+	  ay_trafo_scalematrix((nmax-nmin)/(omax-omin), 1.0, 1.0, m);
+	  mu = omin+((omax-omin)*0.5);
+	  ay_trafo_translatematrix(-mu, 0.0, 0.0, m);
 	}
       else
 	{
-	  ay_trafo_translatematrix(0.0, -mu, 0.0, m);
-	  ay_trafo_scalematrix(1.0, (nmax-nmin)/(omax-omin), 1.0, m);
 	  mu = nmin+((nmax-nmin)*0.5);
 	  ay_trafo_translatematrix(0.0, mu, 0.0, m);
+	  ay_trafo_scalematrix(1.0, (nmax-nmin)/(omax-omin), 1.0, m);
+	  mu = omin+((omax-omin)*0.5);
+	  ay_trafo_translatematrix(0.0, -mu, 0.0, m);
 	}
 
       ay_trafo_creatematrix(trim, mt);
