@@ -2774,93 +2774,114 @@ ay_npt_fillgaps(ay_object *o, int type, int fillet_type,
 } /* ay_npt_fillgaps */
 
 
-int
+/** ay_npt_fliptrim:
+ * Flip a single trim curve.
+ *
+ * \param[in] np NURBS surface the trim curve belongs to
+ * \param[in,out] trim trim curve object
+ * \param[in] mode dimension to flip
+ */
+void
 ay_npt_fliptrim(ay_nurbpatch_object *np, ay_object *trim, int mode)
 {
- int ay_status = AY_OK;
  double u1, u2, v1, v2, mu, mv, m[16], mt[16];
+ /*double s;*/
 
   if(!trim)
-    return AY_ENULL;
-
-  ay_trafo_identitymatrix(m);
+    return;
 
   u1 = np->uknotv[np->uorder-1];
   u2 = np->uknotv[np->width];
   mu = u1+((u2-u1)*0.5);
 
+  ay_trafo_identitymatrix(mt);
+
   if(mode == 0)
     {
       /* U */
-      ay_trafo_translatematrix(-mu, 0.0, 0.0, m);
-      ay_trafo_scalematrix(-1.0, 1.0, 1.0, m);
-      ay_trafo_translatematrix(mu, 0.0, 0.0, m);
+      ay_trafo_translatematrix(mu, 0.0, 0.0, mt);
+      ay_trafo_scalematrix(-1.0, 1.0, 1.0, mt);
+      ay_trafo_translatematrix(-mu, 0.0, 0.0, mt);
     }
   else
     {
-      /* v */
+      /* v/V */
       v1 = np->vknotv[np->vorder-1];
       v2 = np->vknotv[np->height];
       mv = v1+((v2-v1)*0.5);
 
-      ay_trafo_translatematrix(-mu, -mv, 0.0, m);
-      //ay_trafo_scalematrix((u2-u1)/(v2-v1), (v2-v1)/(u2-u1), 1.0);
-      ay_trafo_rotatematrix(90.0, 0.0, 0.0, 1.0, m);
-      ay_trafo_translatematrix(mu, mv, 0.0, m);
-
+      ay_trafo_translatematrix(mu, mv, 0.0, mt);
+      ay_trafo_rotatematrix(90.0, 0.0, 0.0, 1.0, mt);
+      /*
+      s = (u2-u1)/(v2-v1);
+      if(fabs(s-1.0)>AY_EPSILON)
+	{
+	  ay_trafo_scalematrix((v2-v1)/(u2-u1), (u2-u1)/(v2-v1), 1.0, mt);
+	}
+      */
       if(mode == 2)
 	{
 	  /* V */
-	  ay_trafo_translatematrix(0.0, -mv, 0.0, m);
-	  ay_trafo_scalematrix(1.0, -1.0, 1.0, m);
-	  ay_trafo_translatematrix(0.0, mv, 0.0, m);
+	  ay_trafo_scalematrix(1.0, -1.0, 1.0, mt);
 	}
+      ay_trafo_translatematrix(-mu, -mv, 0.0, mt);
     }
 
-  ay_trafo_creatematrix(trim, mt);
+  ay_trafo_creatematrix(trim, m);
+  ay_trafo_multmatrix4(mt, m);
+  ay_trafo_decomposematrix(mt, trim);
 
-  ay_trafo_multmatrix4(m, mt);
-
-  ay_trafo_decomposematrix(m, trim);
-
- return ay_status;
+ return;
 } /* ay_npt_fliptrim */
 
 
-int
+/** ay_npt_fliptrims:
+ *  Flip the trim curves.
+ *
+ * \param[in] np NURBS surface the trims belong to
+ * \param[in,out] trim trim curves to process
+ * \param[in] mode dimension to flip
+ *
+ */
+void
 ay_npt_fliptrims(ay_nurbpatch_object *np, ay_object *trim, int mode)
 {
- int ay_status = AY_OK;
 
   if(!trim)
-    return AY_ENULL;
+    return;
 
   while(trim)
     {
-
       if(trim->type == AY_IDLEVEL)
 	{
 	  if(trim->down && trim->down->next)
 	    {
-	      ay_status = ay_npt_fliptrim(np, trim->down, mode);
+	      ay_npt_fliptrim(np, trim->down, mode);
 	    }
 	}
       else
 	{
-	  ay_status = ay_npt_fliptrim(np, trim, mode);
+	  ay_npt_fliptrim(np, trim, mode);
 	}
 
       trim = trim->next;
     } /* while */
 
- return ay_status;
+ return;
 } /* ay_npt_fliptrims */
 
 
 /** ay_npt_copytrims:
- *  copys trims from NURBS patch \a o to \a target
+ *  copy all trim curves from NURBS patch \a o to \a target
+ *  (complete bounding trims will be omitted)
  *
- * \param[in,out] o
+ * \param[in] o NURBS surface with trim curves to copy
+ * \param[in] u1 new u minimum
+ * \param[in] u2 new u maximum
+ * \param[in] uv di
+ * \param[in,out] target NURBS surface where copies will be added
+ *
+ * \return AY_OK on success, error code otherwise.
  */
 int
 ay_npt_copytrims(ay_object *o, double u1, double u2, char *uv,
@@ -2868,7 +2889,7 @@ ay_npt_copytrims(ay_object *o, double u1, double u2, char *uv,
 {
  int ay_status = AY_OK;
  int is_bound = AY_FALSE;
- ay_object *t, *n, **d;
+ ay_object *t, **d;
  ay_nurbpatch_object *np = NULL;
 
   if(!o || !target)
@@ -2878,16 +2899,18 @@ ay_npt_copytrims(ay_object *o, double u1, double u2, char *uv,
     {
       np = (ay_nurbpatch_object *)o->refine;
 
-      ay_status = ay_object_copymulti(o->down, &t);
-
-      ay_npt_isboundcurve(t, np->uknotv[np->uorder-1], np->uknotv[np->width],
-			  np->vknotv[np->vorder-1], np->vknotv[np->height],
+      ay_npt_isboundcurve(o->down, np->uknotv[np->uorder-1],
+			  np->uknotv[np->width],
+			  np->vknotv[np->vorder-1],
+			  np->vknotv[np->height],
 			  &is_bound);
       if(is_bound)
 	{
-	  n = t->next;
-	  ay_object_delete(t);
-	  t = n;
+	  ay_status = ay_object_copymulti(o->down->next, &t);
+	}
+      else
+	{
+	  ay_status = ay_object_copymulti(o->down, &t);
 	}
 
       if(!t)
@@ -2900,10 +2923,10 @@ ay_npt_copytrims(ay_object *o, double u1, double u2, char *uv,
 	    case 'U':
 	      ay_npt_fliptrims(np, t, 0);
 	      break;
-	    case 'v':
+	    case 'V':
 	      ay_npt_fliptrims(np, t, 1);
 	      break;
-	    case 'V':
+	    case 'v':
 	      ay_npt_fliptrims(np, t, 2);
 	      break;
 	    default:
@@ -2916,7 +2939,6 @@ ay_npt_copytrims(ay_object *o, double u1, double u2, char *uv,
 				      np->uknotv[np->width],
 				      u1, u2);
 
-
       /* append new trims */
       d = &(target->down);
       o = target->down;
@@ -2927,6 +2949,98 @@ ay_npt_copytrims(ay_object *o, double u1, double u2, char *uv,
 
  return ay_status;
 } /* ay_npt_copytrims */
+
+
+/** ay_npt_createtrimrect:
+ * Create bounding rectangular trim curve.
+ *
+ * \param[in,out] o NURBS surface where the trim should be added
+ *
+ * \return AY_OK on success, error code otherwise.
+ */
+int
+ay_npt_createtrimrect(ay_object *o)
+{
+ ay_object *r = NULL;
+ ay_nurbpatch_object *patch = NULL;
+ ay_nurbcurve_object *curve = NULL;
+ double knots[7] = {0.0, 0.0, 0.25, 0.5, 0.75, 1.0, 1.0};
+ int i;
+
+  if(!o)
+    return AY_ENULL;
+
+  if(o->type == AY_IDNPATCH)
+    {
+      patch = (ay_nurbpatch_object *)o->refine;
+
+      if(!(r = calloc(1, sizeof(ay_object))))
+	{
+	  return AY_EOMEM;
+	}
+
+      r->type = AY_IDNCURVE;
+      ay_object_defaults(r);
+
+      if(!(curve = calloc(1, sizeof(ay_nurbcurve_object))))
+	{
+	  free(r);
+	  return AY_EOMEM;
+	}
+
+      if(!(curve->controlv = malloc(20*sizeof(double))))
+	{
+	  free(r);
+	  free(curve);
+	  return AY_EOMEM;
+	}
+
+      if(!(curve->knotv = malloc(7*sizeof(double))))
+	{
+	  free(r); free(curve->controlv); free(curve);
+	  return AY_EOMEM;
+	}
+
+      curve->length = 5;
+      curve->order = 2;
+      curve->knot_type = AY_KTCUSTOM;
+      curve->type = AY_CTCLOSED;
+      curve->createmp = AY_TRUE;
+
+      /* fill knotv */
+      for(i = 0; i < 7; i++)
+	curve->knotv[i] = knots[i];
+
+      /* fill controlv */
+      curve->controlv[0] = patch->uknotv[patch->uorder-1];
+      curve->controlv[1] = patch->vknotv[patch->vorder-1];
+      curve->controlv[2] = 0.0;
+      curve->controlv[3] = 1.0;
+      curve->controlv[4] = patch->uknotv[patch->width];
+      curve->controlv[5] = patch->vknotv[patch->vorder-1];
+      curve->controlv[6] = 0.0;
+      curve->controlv[7] = 1.0;
+      curve->controlv[8] = patch->uknotv[patch->width];
+      curve->controlv[9] = patch->vknotv[patch->height];
+      curve->controlv[10] = 0.0;
+      curve->controlv[11] = 1.0;
+      curve->controlv[12] = patch->uknotv[patch->uorder-1];
+      curve->controlv[13] = patch->vknotv[patch->height];
+      curve->controlv[14] = 0.0;
+      curve->controlv[15] = 1.0;
+      curve->controlv[16] = patch->uknotv[patch->uorder-1];
+      curve->controlv[17] = patch->vknotv[patch->vorder-1];
+      curve->controlv[18] = 0.0;
+      curve->controlv[19] = 1.0;
+
+      r->refine = curve;
+
+      r->next = o->down;
+      o->down = r;
+    }
+
+ return AY_OK;
+} /* ay_npt_createtrimrect */
 
 
 /** ay_npt_concat:
@@ -2969,7 +3083,7 @@ ay_npt_concat(ay_object *o, int type, int order,
  ay_nurbpatch_object *np = NULL;
  double *newknotv = NULL, u1, u2;
  int a = 0, i = 0, j = 0, k = 0, l = 0, ncurves = 0, uvlen = 0;
- int max_order = 0;
+ int max_order = 0, create_trimrect = AY_FALSE;
  char *swapuv;
 
   if(!o || !result)
@@ -3262,8 +3376,8 @@ ay_npt_concat(ay_object *o, int type, int order,
 		  else
 		    u1 = newknotv[a-(l-1)];
 		  u2 = newknotv[a-1];
-		  printf("copy trims to %lg %lg\n",u1,u2);
 		  ay_status = ay_npt_copytrims(o, u1, u2, swapuv, new);
+		  create_trimrect = AY_TRUE;
 		}
 
 	      if(!o->selected)
@@ -3288,6 +3402,12 @@ ay_npt_concat(ay_object *o, int type, int order,
 	    {
 	      newknotv[i] = newknotv[a-1]+1;
 	    }
+	}
+
+      /* create bounding trim */
+      if(create_trimrect)
+	{
+	  ay_status = ay_npt_createtrimrect(new);
 	}
     } /* if */
 
@@ -10183,35 +10303,50 @@ ay_npt_rescaletrim(ay_object *trim,
 		   double nmin, double nmax)
 {
  int ay_status = AY_OK;
- double mu, m[16], mt[16];
+ double s, mu, m[16], mt[16];
 
   if(!trim)
     return AY_ENULL;
 
-  ay_trafo_identitymatrix(m);
+  s = (nmax-nmin)/(omax-omin);
 
-  mu = omin+((omax-omin)*0.5);
-
-  if((mode == 0))
+  if(fabs(s-1.0)<AY_EPSILON)
     {
-      ay_trafo_translatematrix(-mu, 0.0, 0.0, m);
-      ay_trafo_scalematrix((nmax-nmin)/(omax-omin), 1.0, 1.0, m);
-      mu = nmin+((nmax-nmin)*0.5);
-      ay_trafo_translatematrix(mu, 0.0, 0.0, m);
+      if(mode == 0)
+	{
+	  trim->movx += (nmin-omin);
+	}
+      else
+	{
+	  trim->movy += (nmin-omin);
+	}
     }
   else
     {
-      ay_trafo_translatematrix(0.0, -mu, 0.0, m);
-      ay_trafo_scalematrix(1.0, (nmax-nmin)/(omax-omin), 1.0, m);
-      mu = nmin+((nmax-nmin)*0.5);
-      ay_trafo_translatematrix(0.0, mu, 0.0, m);
+      ay_trafo_identitymatrix(m);
+
+      mu = omin+((omax-omin)*0.5);
+      if(mode == 0)
+	{
+	  ay_trafo_translatematrix(-mu, 0.0, 0.0, m);
+	  ay_trafo_scalematrix((nmax-nmin)/(omax-omin), 1.0, 1.0, m);
+	  mu = nmin+((nmax-nmin)*0.5);
+	  ay_trafo_translatematrix(mu, 0.0, 0.0, m);
+	}
+      else
+	{
+	  ay_trafo_translatematrix(0.0, -mu, 0.0, m);
+	  ay_trafo_scalematrix(1.0, (nmax-nmin)/(omax-omin), 1.0, m);
+	  mu = nmin+((nmax-nmin)*0.5);
+	  ay_trafo_translatematrix(0.0, mu, 0.0, m);
+	}
+
+      ay_trafo_creatematrix(trim, mt);
+
+      ay_trafo_multmatrix4(m, mt);
+
+      ay_trafo_decomposematrix(m, trim);
     }
-
-  ay_trafo_creatematrix(trim, mt);
-
-  ay_trafo_multmatrix4(m, mt);
-
-  ay_trafo_decomposematrix(m, trim);
 
  return ay_status;
 } /* ay_npt_rescaletrim */
