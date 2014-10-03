@@ -3445,11 +3445,12 @@ ay_npt_concat(ay_object *o, int type, int order,
 	  if(ay_status)
 	    goto cleanup;
 	}
-    } /* if */
+    } /* if knot type custom*/
 
   np = (ay_nurbpatch_object *)new->refine;
   np->is_rat = ay_npt_israt(np);
-  ay_npt_setuvtypes(np, 0);
+  if(knot_type == AY_KTCUSTOM)
+    ay_npt_setuvtypes(np, 0);
 
   /* return result */
   *result = new;
