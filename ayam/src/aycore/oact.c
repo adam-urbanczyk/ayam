@@ -636,7 +636,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 	     }
 	   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	  glPopMatrix();
-	  ay_trafo_invmatrix4(mm, mmi);
+	  ay_trafo_invmatrix(mm, mmi);
 	  AY_APTRAN3(v4, view->markworld, mmi);
 
 	  glPushMatrix();
@@ -685,7 +685,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 	   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	  glPopMatrix();
 
-	  ay_trafo_invmatrix4(mm,mmi);
+	  ay_trafo_invmatrix(mm,mmi);
 	  AY_APTRAN3(v4,view->markworld,mmi);
 
 	  glPushMatrix();
@@ -732,7 +732,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 	     }
 	   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	  glPopMatrix();
-	  ay_trafo_invmatrix4(mm, mmi);
+	  ay_trafo_invmatrix(mm, mmi);
 	  AY_APTRAN3(v4, view->markworld, mmi);
 
 	  glPushMatrix();
@@ -1926,7 +1926,7 @@ ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[])
        glGetDoublev(GL_MODELVIEW_MATRIX, mm);
       glPopMatrix();
 
-      ay_trafo_invmatrix4(mm, mmi);
+      ay_trafo_invmatrix(mm, mmi);
       AY_APTRAN3(a, view->markworld, mmi);
 
       ay_quat_torotmatrix(o->quat, mm);
@@ -2153,7 +2153,7 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
        glGetDoublev(GL_MODELVIEW_MATRIX, mm);
       glPopMatrix();
 
-      ay_trafo_invmatrix4(mm, mmi);
+      ay_trafo_invmatrix(mm, mmi);
       AY_APTRAN3(a, view->markworld, mmi);
 
       ay_quat_torotmatrix(o->quat, mm);
@@ -2379,7 +2379,7 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
        glGetDoublev(GL_MODELVIEW_MATRIX, mm);
       glPopMatrix();
 
-      ay_trafo_invmatrix4(mm, mmi);
+      ay_trafo_invmatrix(mm, mmi);
       AY_APTRAN3(a, view->markworld, mmi);
 
       ay_quat_torotmatrix(o->quat, mm);
@@ -2540,7 +2540,7 @@ ay_oact_sc2DAcb(struct Togl *togl, int argc, char *argv[])
    glGetDoublev(GL_MODELVIEW_MATRIX, mm);
   glPopMatrix();
 
-  ay_trafo_invmatrix4(mm, mmi);
+  ay_trafo_invmatrix(mm, mmi);
   AY_APTRAN3(a, view->markworld, mmi);
 
   /* scale the object(s) / selected points */
@@ -2787,7 +2787,7 @@ ay_oact_sc3DAcb(struct Togl *togl, int argc, char *argv[])
    glGetDoublev(GL_MODELVIEW_MATRIX, mm);
   glPopMatrix();
 
-  ay_trafo_invmatrix4(mm, mmi);
+  ay_trafo_invmatrix(mm, mmi);
   AY_APTRAN3(a, view->markworld, mmi);
 
   /* scale the object(s) / selected points */

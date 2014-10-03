@@ -1577,15 +1577,15 @@ int ay_trafo_rotpntstcmd(ClientData clientData, Tcl_Interp *interp,
 
 /** multiply two transformation matrices
  */
-void ay_trafo_multmatrix4(double *m1, double *m2);
+void ay_trafo_multmatrix(double *m1, double *m2);
 
 /** invert transformation matrix
  */
-int ay_trafo_invmatrix4(double *m, double *mi);
+int ay_trafo_invmatrix(double *m, double *mi);
 
 /** invert generic matrix
  */
-int ay_trafo_invgenmatrix4(double *m, double *mi);
+int ay_trafo_invgenmatrix(double *m, double *mi);
 
 /** initialize transformation matrix m from transformation
  *  attributes of \a o

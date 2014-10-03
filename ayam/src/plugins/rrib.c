@@ -2322,7 +2322,7 @@ ay_rrib_RiObjectInstance(RtObjectHandle handle)
 		  axis[2] = 0.0;
 		  ay_quat_axistoquat(axis, AY_D2R(o->rotx), quat);
 		  ay_quat_torotmatrix(quat, mt);
-		  ay_trafo_multmatrix4(m, mt);
+		  ay_trafo_multmatrix(m, mt);
 		}
 	      if(fabs(o->roty) > AY_EPSILON)
 		{
@@ -2331,7 +2331,7 @@ ay_rrib_RiObjectInstance(RtObjectHandle handle)
 		  axis[2] = 0.0;
 		  ay_quat_axistoquat(axis, AY_D2R(o->roty), quat);
 		  ay_quat_torotmatrix(quat, mt);
-		  ay_trafo_multmatrix4(m, mt);
+		  ay_trafo_multmatrix(m, mt);
 		}
 	      if(fabs(o->rotz) > AY_EPSILON)
 		{
@@ -2340,9 +2340,9 @@ ay_rrib_RiObjectInstance(RtObjectHandle handle)
 		  axis[2] = 1.0;
 		  ay_quat_axistoquat(axis, AY_D2R(o->rotz), quat);
 		  ay_quat_torotmatrix(quat, mt);
-		  ay_trafo_multmatrix4(m, mt);
+		  ay_trafo_multmatrix(m, mt);
 		}
-		ay_trafo_multmatrix4(m, ay_rrib_ctrafos->m);
+		ay_trafo_multmatrix(m, ay_rrib_ctrafos->m);
 		ay_trafo_decomposematrix(m, c);
 	      */
 	      ay_object_link(c);
@@ -3225,7 +3225,7 @@ ay_rrib_RiConcatTransform(RtMatrix transform)
        }
    }
 
-  ay_trafo_multmatrix4(ay_rrib_ctrafos->m, m);
+  ay_trafo_multmatrix(ay_rrib_ctrafos->m, m);
 
  return;
 } /* ay_rrib_RiConcatTransform */
@@ -3243,7 +3243,7 @@ ay_rrib_RiRotate(RtFloat angle, RtFloat dx, RtFloat dy, RtFloat dz)
   axis[2] = (double)dz;
   ay_quat_axistoquat(axis, -AY_D2R((double)angle), quat);
   ay_quat_torotmatrix(quat, m);
-  ay_trafo_multmatrix4(ay_rrib_ctrafos->m, m);
+  ay_trafo_multmatrix(ay_rrib_ctrafos->m, m);
 
  return;
 } /* ay_rrib_RiRotate */
@@ -3259,7 +3259,7 @@ ay_rrib_RiScale(RtFloat dx, RtFloat dy, RtFloat dz)
   m[10] = (double)dz;
   m[15] = 1.0;
 
-  ay_trafo_multmatrix4(ay_rrib_ctrafos->m, m);
+  ay_trafo_multmatrix(ay_rrib_ctrafos->m, m);
 
  return;
 } /* ay_rrib_RiScale */
@@ -3302,7 +3302,7 @@ ay_rrib_RiTranslate(RtFloat dx, RtFloat dy, RtFloat dz)
   m[13] = (double)dy;
   m[14] = (double)dz;
 
-  ay_trafo_multmatrix4(ay_rrib_ctrafos->m, m);
+  ay_trafo_multmatrix(ay_rrib_ctrafos->m, m);
 
  return;
 } /* ay_rrib_RiTranslate */
@@ -3693,7 +3693,7 @@ ay_rrib_RiWorldBegin(void)
 	  c.zoom = 1.0;
 	}
 
-      ay_status = ay_trafo_invmatrix4(ay_rrib_ctrafos->m, mi);
+      ay_status = ay_trafo_invmatrix(ay_rrib_ctrafos->m, mi);
       if(ay_status)
 	{
 	  ay_error(AY_ERROR, fname, "Could not invert camera transformation.");

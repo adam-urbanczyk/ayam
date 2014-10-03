@@ -2828,7 +2828,7 @@ ay_npt_fliptrim(ay_nurbpatch_object *np, ay_object *trim, int mode)
     }
 
   ay_trafo_creatematrix(trim, m);
-  ay_trafo_multmatrix4(mt, m);
+  ay_trafo_multmatrix(mt, m);
   ay_trafo_decomposematrix(mt, trim);
 
  return;
@@ -4067,7 +4067,7 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 
 	  memcpy(T0, T1, 3*sizeof(double));
 
-	  ay_trafo_multmatrix4(m, mr);
+	  ay_trafo_multmatrix(m, mr);
 	} /* if rotate */
 
       /* now, add translation to current point on trajectory */
@@ -4082,7 +4082,7 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	}
       ay_trafo_translatematrix(-p2[0], -p2[1], -p2[2], m);
 
-      ay_trafo_invmatrix4(m, mi);
+      ay_trafo_invmatrix(m, mi);
 
       /* sweep profile */
       for(j = 0; j < cs->length; j++)
@@ -4353,7 +4353,7 @@ ay_npt_sweepperiodic(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 
 	  memcpy(T0, T1, 3*sizeof(double));
 
-	  ay_trafo_multmatrix4(m, mr);
+	  ay_trafo_multmatrix(m, mr);
 	} /* if rotate */
 
       /* now, add translation to current point on trajectory */
@@ -4362,7 +4362,7 @@ ay_npt_sweepperiodic(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 
       ay_trafo_translatematrix(-p2[0], -p2[1], -p2[2], m);
 
-      ay_trafo_invmatrix4(m, mi);
+      ay_trafo_invmatrix(m, mi);
 
       /* sweep profile */
       for(j = 0; j < cs->length; j++)
@@ -4676,7 +4676,7 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 			       m);
 
       /* apply rotation */
-      ay_trafo_multmatrix4(m, mr);
+      ay_trafo_multmatrix(m, mr);
 
       /* add translation */
       ay_trafo_translatematrix((p5[0]-p1[0]),
@@ -4685,7 +4685,7 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 			       m);
 
       /* invert matrix */
-      ay_trafo_invmatrix4(m, mi);
+      ay_trafo_invmatrix(m, mi);
 
       /* sweep profile */
       for(j = 0; j < cs->length; j++)
@@ -5020,7 +5020,7 @@ ay_npt_birail1periodic(ay_object *o1, ay_object *o2, ay_object *o3,
 			       m);
 
       /* apply rotation */
-      ay_trafo_multmatrix4(m, mr);
+      ay_trafo_multmatrix(m, mr);
 
       /* add translation */
       ay_trafo_translatematrix((p5[0]-p1[0]),
@@ -5029,7 +5029,7 @@ ay_npt_birail1periodic(ay_object *o1, ay_object *o2, ay_object *o3,
 			       m);
 
       /* invert matrix */
-      ay_trafo_invmatrix4(m, mi);
+      ay_trafo_invmatrix(m, mi);
 
       /* sweep profile */
       for(j = 0; j < cs->length; j++)
@@ -5607,7 +5607,7 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
 
 
       /* apply rotation */
-      ay_trafo_multmatrix4(m, mr);
+      ay_trafo_multmatrix(m, mr);
 
       /* add translation */
       ay_trafo_translatematrix((p5[0]-p1[0]),
@@ -5616,7 +5616,7 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
 			       m);
 
       /* invert matrix */
-      ay_trafo_invmatrix4(m, mi);
+      ay_trafo_invmatrix(m, mi);
 
       /* sweep profile */
       for(j = 0; j < cs1->length; j++)
@@ -7358,7 +7358,7 @@ ay_npt_gordonwcgetends(ay_object *o,
         {
           *trafo = AY_TRUE;
           ay_trafo_creatematrix(o, tm);
-          ay_trafo_invmatrix4(tm, tmi);
+          ay_trafo_invmatrix(tm, tmi);
           AY_APTRAN3(s, pps, tm)
           AY_APTRAN3(e, ppe, tm)
         }
@@ -10378,7 +10378,7 @@ ay_npt_rescaletrim(ay_object *trim,
 
       ay_trafo_creatematrix(trim, mt);
 
-      ay_trafo_multmatrix4(m, mt);
+      ay_trafo_multmatrix(m, mt);
 
       ay_trafo_decomposematrix(m, trim);
     }
@@ -12564,7 +12564,7 @@ ay_npt_finduv(struct Togl *togl, ay_object *o,
   ay_nb_SurfacePoint4D(np->width-1, np->height-1, np->uorder-1, np->vorder-1,
 		       np->uknotv, np->vknotv, np->controlv, *u, *v, point);
 
-  ay_trafo_invmatrix4(m, mi);
+  ay_trafo_invmatrix(m, mi);
 
   ay_trafo_apply4(point, mi);
 

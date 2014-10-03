@@ -2513,7 +2513,7 @@ ay_nct_findu(struct Togl *togl, ay_object *o,
   ay_nb_CurvePoint4D(c->length-1, c->order-1, c->knotv,
 		     c->controlv, *u, point);
 
-  ay_trafo_invmatrix4(m, mi);
+  ay_trafo_invmatrix(m, mi);
 
   ay_trafo_apply4(point, mi);
 

@@ -2599,7 +2599,7 @@ ay_pact_snaptomarkcb(struct Togl *togl, int argc, char *argv[])
    if(mode)
      {
        glGetDoublev(GL_MODELVIEW_MATRIX, m);
-       ay_trafo_invmatrix4(m, mi);
+       ay_trafo_invmatrix(m, mi);
      }
 
    while(sel)
@@ -2617,7 +2617,7 @@ ay_pact_snaptomarkcb(struct Togl *togl, int argc, char *argv[])
 		glScaled(o->scalx, o->scaly, o->scalz);
 
 		glGetDoublev(GL_MODELVIEW_MATRIX, m);
-		ay_trafo_invmatrix4(m, mi);
+		ay_trafo_invmatrix(m, mi);
 	       glPopMatrix();
 
 	       pnt = o->selp;

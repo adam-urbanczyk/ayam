@@ -1363,7 +1363,7 @@ objio_writeobject(FILE *fileptr, ay_object *o, int writeend, int count)
 	    {
 	      ay_trafo_creatematrix(o, m1);
 	      memcpy(m2, tm, 16*sizeof(double));
-	      ay_trafo_multmatrix4(m2, m1);
+	      ay_trafo_multmatrix(m2, m1);
 
 	      ay_status = cb(fileptr, o, m2);
 	    }

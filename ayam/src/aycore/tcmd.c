@@ -1026,7 +1026,7 @@ ay_tcmd_setallpoints(Tcl_Interp *interp, char *fname, char *vn,
 	  glScaled(o->scalx, o->scaly, o->scalz);
 
 	  glGetDoublev(GL_MODELVIEW_MATRIX, m);
-	  ay_trafo_invmatrix4(m, mi);
+	  ay_trafo_invmatrix(m, mi);
 	  glPopMatrix();
 	} /* if */
 
@@ -1347,7 +1347,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	       glScaled(o->scalx, o->scaly, o->scalz);
 
 	       glGetDoublev(GL_MODELVIEW_MATRIX, m);
-	       ay_trafo_invmatrix4(m, mi);
+	       ay_trafo_invmatrix(m, mi);
 	      glPopMatrix();
 
 	      ay_trafo_apply3(p, mi);

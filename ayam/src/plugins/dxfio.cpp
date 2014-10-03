@@ -1898,7 +1898,7 @@ dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m)
 
   memcpy(m2, m, 16*sizeof(double));
   ay_trafo_creatematrix(o, m1);
-  ay_trafo_multmatrix4(m2, m1);
+  ay_trafo_multmatrix(m2, m1);
 
   for(i = 0; i < pm->npolys; i++)
     {
@@ -2149,7 +2149,7 @@ dxfio_writencurve(ay_object *o, dimeModel *dm, double *m)
 
   memcpy(m2, m, 16*sizeof(double));
   ay_trafo_creatematrix(o, m1);
-  ay_trafo_multmatrix4(m2, m1);
+  ay_trafo_multmatrix(m2, m1);
 
   if(nc->is_rat)
     {
@@ -2394,7 +2394,7 @@ dxfio_writeobject(ay_object *o, dimeModel *dm)
 	    {
 	      ay_trafo_creatematrix(o, m1);
 	      memcpy(m2, tm, 16*sizeof(double));
-	      ay_trafo_multmatrix4(m2, m1);
+	      ay_trafo_multmatrix(m2, m1);
 	      ay_status = cb(o, dm, m2);
 	    }
 	  else
