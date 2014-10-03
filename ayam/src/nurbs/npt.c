@@ -3340,10 +3340,11 @@ ay_npt_concat(ay_object *o, int type, int order,
 
   /* make all curves compatible */
   if(!compatible)
-    ay_status = ay_nct_makecompatible(allcurves);
-
-  if(ay_status)
-    goto cleanup;
+    {
+      ay_status = ay_nct_makecompatible(allcurves);
+      if(ay_status)
+	goto cleanup;
+    }
 
   if((type == AY_CTCLOSED || type == AY_CTPERIODIC) && fillet_type)
     type = AY_CTOPEN;
@@ -3408,6 +3409,8 @@ ay_npt_concat(ay_object *o, int type, int order,
 		    u1 = newknotv[a-(l-1)];
 		  u2 = newknotv[a-1];
 		  ay_status = ay_npt_copytrims(o, u1, u2, swapuv, new);
+		  if(ay_status)
+		    goto cleanup;
 		  create_trimrect = AY_TRUE;
 		}
 
@@ -3439,11 +3442,20 @@ ay_npt_concat(ay_object *o, int type, int order,
       if(create_trimrect)
 	{
 	  ay_status = ay_npt_createtrimrect(new);
+	  if(ay_status)
+	    goto cleanup;
 	}
     } /* if */
 
+  np = (ay_nurbpatch_object *)new->refine;
+  np->is_rat = ay_npt_israt(np);
+  ay_npt_setuvtypes(np, 0);
+
   /* return result */
   *result = new;
+
+  /* prevent cleanup code from doing something harmful */
+  new = NULL;
 
 cleanup:
 
@@ -3456,6 +3468,9 @@ cleanup:
       curvelist = rem->next;
       free(rem);
     }
+
+  if(new)
+    ay_object_delete(new);
 
  return ay_status;
 } /* ay_npt_concat */
