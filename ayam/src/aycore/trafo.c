@@ -1174,7 +1174,7 @@ ay_trafo_multmatrix4(double *m1, double *m2)
 
 
 /* ay_trafo_invmatrix4:
- *  invert _transformation_ matrix <m>, put result into <mi>;
+ *  invert _transformation_ matrix \a m, put result into <mi>;
  *  borrowed from Mesa3.2.1/matrix.c which in turn borrowed it
  *  from Graphics Gems II;
  *  with additional writes to allow working with completely
@@ -1262,7 +1262,7 @@ ay_trafo_invmatrix4(double *m, double *mi)
 
 
 /* ay_trafo_invgenmatrix4:
- *  invert _generic_ matrix <m>, put result into <mi>;
+ *  invert _generic_ matrix \a m, put result into <mi>;
  *  code borrowed from Mesa/SGI GLU
  */
 int
@@ -1403,7 +1403,7 @@ ay_trafo_invgenmatrix4(double *m, double *mi)
 
 
 /* ay_trafo_creatematrix:
- *  initialize transformation matrix <m> from transformation
+ *  initialize transformation matrix \a m from transformation
  *  attributes of <o>
  */
 void
@@ -1458,7 +1458,7 @@ ay_trafo_creatematrix(ay_object *o, double *m)
 
 
 /* ay_trafo_decomposematrix:
- *  decompose transformation matrix <m> to transformation attributes of <o>;
+ *  decompose transformation matrix \a m to transformation attributes of <o>;
  *  Note well: shear components are completely ignored;
  *  Matrix decomposition code borrowed from Graphics Gems II unmatrix.c.
  */
@@ -1629,8 +1629,10 @@ ay_trafo_decomposematrix(double *m, ay_object *o)
 } /* ay_trafo_decomposematrix */
 
 
-/* ay_trafo_identitymatrix:
- *  initialize transformation matrix <m> to identity
+/** ay_trafo_identitymatrix:
+ *  initialize transformation matrix \a m to identity
+ *
+ * \param[in,out] m matrix to process
  */
 void
 ay_trafo_identitymatrix(double *m)
@@ -1646,8 +1648,13 @@ ay_trafo_identitymatrix(double *m)
 } /* ay_trafo_identitymatrix */
 
 
-/* ay_trafo_translatematrix:
- *  add a translation to transformation matrix <m>
+/** ay_trafo_translatematrix:
+ *  add a translation to the transformation matrix \a m
+ *
+ * \param[in] x translation in x
+ * \param[in] y translation in y
+ * \param[in] z translation in z
+ * \param[in,out] m matrix to process
  */
 void
 ay_trafo_translatematrix(double x, double y, double z, double *m)
@@ -1662,8 +1669,13 @@ ay_trafo_translatematrix(double x, double y, double z, double *m)
 } /* ay_trafo_translatematrix */
 
 
-/* ay_trafo_scalematrix:
- *  add a scale transformation to transformation matrix m
+/** ay_trafo_scalematrix:
+ *  add a scale transformation to transformation matrix \a m
+ *
+ * \param[in] x scale factor
+ * \param[in] y scale factor
+ * \param[in] z scale factor
+ * \param[in,out] m matrix to process
  */
 void
 ay_trafo_scalematrix(double x, double y, double z, double *m)
@@ -1678,10 +1690,15 @@ ay_trafo_scalematrix(double x, double y, double z, double *m)
 } /* ay_trafo_scalematrix */
 
 
-/* ay_trafo_rotatematrix:
- *  add a rotation of angle <angle> (expressed in degrees)
- *  about axis <x>,<y>,<z> to transformation matrix <m>;
+/** ay_trafo_rotatematrix:
+ *  add a rotation to the transformation matrix \a m;
  *  code taken from Mesa (Erich Boleyn (erich@uruk.org))
+ *
+ * \param[in] angle rotation angle (in degrees)
+ * \param[in] x x component of rotation axis
+ * \param[in] y y component of rotation axis
+ * \param[in] z z component of rotation axis
+ * \param[in,out] m matrix to process
  */
 void
 ay_trafo_rotatematrix(double angle, double x, double y, double z, double *m)
