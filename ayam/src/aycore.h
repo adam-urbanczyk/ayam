@@ -273,6 +273,13 @@ int ay_geom_intersectlines2D(double *p1, double *t1,
 			     double *p2, double *t2,
 			     double *p);
 
+/** convert three points to plane equation coefficients
+ */
+void ay_geom_pointstoplane(double x1, double y1, double z1,
+			   double x2, double y2, double z2,
+			   double x3, double y3, double z3,
+			   double *A, double *B, double *C, double *D);
+
 /** calculate normal from three points
  */
 void ay_geom_calcnfrom3(double *p1, double *p2, double *p3, double *n);
@@ -1605,13 +1612,6 @@ void ay_trafo_scalematrix(double x, double y, double z, double *m);
  */
 void ay_trafo_rotatematrix(double angle, double x, double y, double z,
 			   double *m);
-
-/** convert 3 points to plane equation coefficients
- */
-void ay_trafo_pointstoplane(double x1, double y1, double z1,
-			    double x2, double y2, double z2,
-			    double x3, double y3, double z3,
-			    double *A, double *B, double *C, double *D);
 
 /** apply scale around cog for a number of points
  */
