@@ -159,7 +159,7 @@ ay_sm_dotrafos(ay_sm_trafostack *trafo, double *px, double *py, double *pz)
      ay_trafo_identitymatrix(m);
      ay_trafo_translatematrix(trafo->movx, trafo->movy, trafo->movz, m);
      ay_quat_torotmatrix(trafo->quat, mr);
-     ay_trafo_multmatrix4(m, mr);
+     ay_trafo_multmatrix(m, mr);
      ay_trafo_scalematrix(trafo->scalx, trafo->scaly, trafo->scalz, m);
 
      ay_trafo_apply3(v1, m);

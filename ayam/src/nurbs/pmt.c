@@ -443,7 +443,7 @@ ay_pmt_tobasis(ay_pamesh_object *pm, int btype, int bstep, double *basis)
 	  memcpy(mu, mbi, 16*sizeof(double));
 	  break;
 	default:
-	  if(ay_trafo_invgenmatrix4(basis, mi))
+	  if(ay_trafo_invgenmatrix(basis, mi))
 	    {
 	      return AY_ERROR;
 	    }
@@ -455,22 +455,22 @@ ay_pmt_tobasis(ay_pamesh_object *pm, int btype, int bstep, double *basis)
       switch(pm->btype_u)
 	{
 	case AY_BTBEZIER:
-	  ay_trafo_multmatrix4(mu, mb);
+	  ay_trafo_multmatrix(mu, mb);
 	  break;
 	case AY_BTBSPLINE:
-	  ay_trafo_multmatrix4(mu, ms);
+	  ay_trafo_multmatrix(mu, ms);
 	  break;
 	case AY_BTHERMITE:
-	  ay_trafo_multmatrix4(mu, mh);
+	  ay_trafo_multmatrix(mu, mh);
 	  break;
 	case AY_BTCATMULLROM:
-	  ay_trafo_multmatrix4(mu, mc);
+	  ay_trafo_multmatrix(mu, mc);
 	  break;
 	case AY_BTPOWER:
 	  /* use inv(basis) unchanged */
 	  break;
 	case AY_BTCUSTOM:
-	  ay_trafo_multmatrix4(mu, pm->ubasis);
+	  ay_trafo_multmatrix(mu, pm->ubasis);
 	  break;
 	default:
 	  return AY_ERROR;
@@ -503,7 +503,7 @@ ay_pmt_tobasis(ay_pamesh_object *pm, int btype, int bstep, double *basis)
 	  break;
 	default:
 	  if(!have_mi)
-	    if(ay_trafo_invgenmatrix4(basis, mi))
+	    if(ay_trafo_invgenmatrix(basis, mi))
 	      {
 		return AY_ERROR;
 	      }
@@ -514,22 +514,22 @@ ay_pmt_tobasis(ay_pamesh_object *pm, int btype, int bstep, double *basis)
       switch(pm->btype_v)
 	{
 	case AY_BTBEZIER:
-	  ay_trafo_multmatrix4(mv, mb);
+	  ay_trafo_multmatrix(mv, mb);
 	  break;
 	case AY_BTBSPLINE:
-	  ay_trafo_multmatrix4(mv, ms);
+	  ay_trafo_multmatrix(mv, ms);
 	  break;
 	case AY_BTHERMITE:
-	  ay_trafo_multmatrix4(mv, mh);
+	  ay_trafo_multmatrix(mv, mh);
 	  break;
 	case AY_BTCATMULLROM:
-	  ay_trafo_multmatrix4(mv, mc);
+	  ay_trafo_multmatrix(mv, mc);
 	  break;
 	case AY_BTPOWER:
 	  /* use inv(basis) unchanged */
 	  break;
 	case AY_BTCUSTOM:
-	  ay_trafo_multmatrix4(mv, pm->vbasis);
+	  ay_trafo_multmatrix(mv, pm->vbasis);
 	  break;
 	default:
 	  return AY_ERROR;
@@ -557,13 +557,13 @@ ay_pmt_tobasis(ay_pamesh_object *pm, int btype, int bstep, double *basis)
       if(convertv)
 	{
 	  memcpy(tm, mv, 16*sizeof(double));
-	  ay_trafo_multmatrix4(tm, m);
+	  ay_trafo_multmatrix(tm, m);
 	  memcpy(m, tm, 16*sizeof(double));
 	}
 
       if(convertu)
 	{
-	  ay_trafo_multmatrix4(m, mut);
+	  ay_trafo_multmatrix(m, mut);
 	}
 
       /* copy converted coordinates back */
@@ -1102,10 +1102,10 @@ ay_pmt_init()
 {
 
   /* invert Bezier basis matrix */
-  (void)ay_trafo_invgenmatrix4(mb, mbi);
+  (void)ay_trafo_invgenmatrix(mb, mbi);
 
   /* invert B-Spline basis matrix */
-  (void)ay_trafo_invgenmatrix4(ms, msi);
+  (void)ay_trafo_invgenmatrix(ms, msi);
 
  return;
 } /* ay_pmt_init */

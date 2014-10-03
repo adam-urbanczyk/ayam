@@ -1175,11 +1175,11 @@ aycsg_delegatetrafo(ay_object *o)
 		  // yes, just multiply new transformations into it
 		  /*
 		  memcpy(tm, o->tags->val, 16*sizeof(double));
-		  ay_trafo_multmatrix4(tm, (double*)down->tags->val);
+		  ay_trafo_multmatrix(tm, (double*)down->tags->val);
 		  memcpy(down->tags->val, tm, 16*sizeof(double));
 		  */
-		  ay_trafo_multmatrix4((double*)down->tags->val,
-				       (double*)o->tags->val);
+		  ay_trafo_multmatrix((double*)down->tags->val,
+				      (double*)o->tags->val);
 		  if(o->tags->name)
 		    {
 		      if(down->tags->name)
@@ -1220,7 +1220,7 @@ aycsg_delegatetrafo(ay_object *o)
 	      // yes, just multiply new transformations into it
 	      /*
 	      ay_trafo_creatematrix(o, tm);
-	      ay_trafo_multmatrix4(tm, (double*)down->tags->val);
+	      ay_trafo_multmatrix(tm, (double*)down->tags->val);
 	      memcpy(down->tags->val, tm, 16*sizeof(double));
 	      */
 	      ay_trafo_creatematrix(o, tm);
@@ -1231,7 +1231,7 @@ aycsg_delegatetrafo(ay_object *o)
 		  else
 		    down->tags->name = (char*)AY_TRUE;
 		}
-	      ay_trafo_multmatrix4((double*)down->tags->val, tm);
+	      ay_trafo_multmatrix((double*)down->tags->val, tm);
 	    }
 	  else
 	    {

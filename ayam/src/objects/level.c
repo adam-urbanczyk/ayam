@@ -379,7 +379,7 @@ ay_level_providecb(ay_object *o, unsigned int type, ay_object **result)
 		{
 		  memcpy(m3, m1, 16*sizeof(double));
 		  ay_trafo_creatematrix(t, m2);
-		  ay_trafo_multmatrix4(m3, m2);
+		  ay_trafo_multmatrix(m3, m2);
 		  ay_trafo_decomposematrix(m3, t);
 		
 		  last = &(t->next);

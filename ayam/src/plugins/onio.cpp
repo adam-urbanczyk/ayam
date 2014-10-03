@@ -1958,7 +1958,7 @@ onio_writeobject(ay_object *o, ONX_Model *p_m)
 	    {
 	      ay_trafo_creatematrix(o, m1);
 	      memcpy(m2, tm, 16*sizeof(double));
-	      ay_trafo_multmatrix4(m2, m1);
+	      ay_trafo_multmatrix(m2, m1);
 	      ay_status = cb(o, p_m, m2);
 	    }
 	  else

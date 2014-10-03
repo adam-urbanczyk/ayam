@@ -2308,7 +2308,7 @@ x3dio_readindexedtrianglestripset(scew_element *element)
  unsigned int coordlen = 0, coordilen = 0;
  int *coordi = NULL;
  double *coords = NULL;
- unsigned int i, j, k;
+ unsigned int i, k;
 
   if(!element)
     return AY_ENULL;
@@ -5300,7 +5300,7 @@ x3dio_readviewpoint(scew_element *element)
   trafo = x3dio_ctrafos;
   while(trafo)
     {
-      ay_trafo_multmatrix4(m, trafo->m);
+      ay_trafo_multmatrix(m, trafo->m);
       trafo = trafo->next;
     }
   ay_trafo_apply3(from, m);

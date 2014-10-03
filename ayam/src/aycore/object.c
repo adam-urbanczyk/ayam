@@ -343,6 +343,8 @@ ay_object_delete(ay_object *o)
  *
  *  If the \a force argument is 2, the removal of master objects will be
  *  enforced by setting the reference counts to 0 before deletion.
+ *  There will be _no_ calls to instt_removeinstances() or
+ *  matt_removeallrefs()!
  *  The object hierarchy should either have no references and no objects
  *  with materials (i.e. already have been cleaned by instt_removeinstances()
  *  and matt_removeallrefs()) or the objects must be sorted in a way that

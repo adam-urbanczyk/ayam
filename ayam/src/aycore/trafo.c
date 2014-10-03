@@ -1144,12 +1144,12 @@ ay_trafo_rotpntstcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_trafo_rotpntstcmd */
 
 
-/* ay_trafo_multmatrix4:
+/* ay_trafo_multmatrix:
  *  multiply transformation matrices <m1> and <m2> (do M1.M2),
  *  put result into <m1>
  */
 void
-ay_trafo_multmatrix4(double *m1, double *m2)
+ay_trafo_multmatrix(double *m1, double *m2)
 {
  double mt[16] = {0}, t;
  int i, j, k;
@@ -1170,10 +1170,10 @@ ay_trafo_multmatrix4(double *m1, double *m2)
   memcpy(m1, mt, 16*sizeof(double));
 
  return;
-} /* ay_trafo_multmatrix4 */
+} /* ay_trafo_multmatrix */
 
 
-/* ay_trafo_invmatrix4:
+/* ay_trafo_invmatrix:
  *  invert _transformation_ matrix \a m, put result into <mi>;
  *  borrowed from Mesa3.2.1/matrix.c which in turn borrowed it
  *  from Graphics Gems II;
@@ -1181,7 +1181,7 @@ ay_trafo_multmatrix4(double *m1, double *m2)
  *  uninitialized mi matrices
  */
 int
-ay_trafo_invmatrix4(double *m, double *mi)
+ay_trafo_invmatrix(double *m, double *mi)
 {
  double pos, neg, t;
  double det;
@@ -1258,15 +1258,15 @@ ay_trafo_invmatrix4(double *m, double *mi)
    AY_M44(mi,3,3) = 1;
 
  return AY_OK;
-} /* ay_trafo_invmatrix4 */
+} /* ay_trafo_invmatrix */
 
 
-/* ay_trafo_invgenmatrix4:
+/* ay_trafo_invgenmatrix:
  *  invert _generic_ matrix \a m, put result into <mi>;
  *  code borrowed from Mesa/SGI GLU
  */
 int
-ay_trafo_invgenmatrix4(double *m, double *mi)
+ay_trafo_invgenmatrix(double *m, double *mi)
 {
  double inv[16], det;
  int i;
@@ -1399,7 +1399,7 @@ ay_trafo_invgenmatrix4(double *m, double *mi)
     }
 
  return AY_OK;
-} /* ay_trafo_invgenmatrix4 */
+} /* ay_trafo_invgenmatrix */
 
 
 /* ay_trafo_creatematrix:
@@ -1438,7 +1438,7 @@ ay_trafo_creatematrix(ay_object *o, double *m)
   mr[9] = 2.0 * (q[1] * q[2] + q[0] * q[3]);
   mr[10] = (1.0 - 2.0 * (q[1] * q[1] + q[0] * q[0]));
   mr[15] = 1.0;
-  ay_trafo_multmatrix4(m, mr);
+  ay_trafo_multmatrix(m, mr);
 
   m[0] *= o->scalx;
   m[1] *= o->scalx;
@@ -1806,7 +1806,7 @@ ay_trafo_rotatematrix(double angle, double x, double y, double z, double *m)
    AY_M44(t,3,2) = 0.0;
    AY_M44(t,3,3) = 1.0;
 
-   ay_trafo_multmatrix4(m, t);
+   ay_trafo_multmatrix(m, t);
 
  return;
 } /* ay_trafo_rotatematrix */
