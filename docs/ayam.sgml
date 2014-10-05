@@ -8889,6 +8889,8 @@ domain.<footnote>Since 1.21.</footnote>
 Since the ConcatNP object also
 provides a NURBS patch, it is possible to use it as child object for
 another ConcatNP object (with possibly different parameters).
+This way, a hierarchy of ConcatNP objects can be used to emulate
+patch based modelling to certain extents.
 
 Attributes like display mode and tolerance for the new concatenated patch
 are simply taken from the first parameter patch.
@@ -8961,8 +8963,8 @@ In addition, for <tt/"Custom"/ knots, all parameter surfaces will be
 elevated to a common maximum order or atleast be clamped in the
 respective direction prior to the splitting to curves but after
 the fillet creation. Furthermore trim curves of the progenitor surfaces
-will be copied to the resulting surface, if the <tt/"Knot-Type"/ parameter
-is <tt/"Custom"/.
+will only be copied to the resulting surface, if the <tt/"Knot-Type"/
+parameter is <tt/"Custom"/.
 
 <item>The <tt/"UVSelect"/ option is a string that can be used to
 control the splitting direction for each parameter surface
@@ -20351,6 +20353,7 @@ Index:
 <item>Paste (Move): <ref id="mmspecial" name="main menu entry">
 <item>Paste Property: <ref id="mmedit" name="main menu entry">
 <item>Paste Property to Selected: <ref id="mmspecial" name="main menu entry">
+<item>Patch Based Modelling: <ref id="concatnpobj" name="ConcatNP object">
 <item>PatchMesh: <ref id="patchmeshobj" name="PatchMesh object">
 <item>PatchNum:
 <itemize>
