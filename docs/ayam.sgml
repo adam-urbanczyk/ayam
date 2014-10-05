@@ -6189,8 +6189,8 @@ order 4 would be:
 <p>
 <tt>{ 0.0 0.0 0.0 0.0 0.388889 1.0 1.0 1.0 1.0 }</tt>.
 
-The image below illustrates the use of two curves with uniform (NURB) vs.
-chordal knot vectors as Sweep trajectories.
+The image below illustrates the use of two curves with uniform (NURB)
+vs.~chordal knot vectors as Sweep trajectories.
 The upper Sweep with the uniform knot vector has much more unevenly
 distributed/sized sections and exhibits more severe self intersection
 problems.
@@ -8882,13 +8882,16 @@ the curves compatible, and joins them to the concatenated surface.
 Also NURBS curves or objects that provide NURBS curves can be used
 as parameter objects.<footnote>Since 1.20.</footnote>
 
+Eventually present trim curves can be copied and transformed to the
+appropriate place and orientation in the concatenated surfaces knot
+domain.<footnote>Since 1.21.</footnote>
+
 Since the ConcatNP object also
 provides a NURBS patch, it is possible to use it as child object for
 another ConcatNP object (with possibly different parameters).
 
 Attributes like display mode and tolerance for the new concatenated patch
-are simply taken from the first parameter patch. Eventually present
-trim curves will currently <em>not</em> be honored properly.
+are simply taken from the first parameter patch.
 
 The following table briefly lists some capabilities of the ConcatNP object.
 <p>
@@ -8935,9 +8938,10 @@ instead derived from the respective control points.
 control points from their respective end points. This value can
 be adapted for smaller&thinsp;/&thinsp;larger gaps between parameter
 surfaces. If this parameter is negative, the distance between the
-two surfaces in the end points will be multiplied in so that a
-more pleasing fillet shape results in configurations where the
-distances vary a lot (see also the image below).
+two surfaces in the respective border points will be multiplied in so
+that a more pleasing fillet shape results in configurations where the
+distances between the respective border points vary a lot (see also the
+image below).
 <p>
 <figure loc="ht">
 <eps file="pics/concatnpfillets.ps" height="5cm">
@@ -8951,12 +8955,14 @@ surface will be reversed (in U direction).
 <item>The <tt/"Knot-Type"/ parameter allows to choose a knot vector for
 the concatenated surface in U direction. Similar to the
 ConcatNC object, only <tt/"Custom"/ knots allow to preserve the shapes
-of the parameter surfaces completely but this comes at the price of multiple
+of the parameter surfaces completely, but this comes at the price of multiple
 internal knots (see also <ref id="concatncp" name="ConcatNCAttr Property">).
 In addition, for <tt/"Custom"/ knots, all parameter surfaces will be
 elevated to a common maximum order or atleast be clamped in the
 respective direction prior to the splitting to curves but after
-the fillet creation.
+the fillet creation. Furthermore trim curves of the progenitor surfaces
+will be copied to the resulting surface, if the <tt/"Knot-Type"/ parameter
+is <tt/"Custom"/.
 
 <item>The <tt/"UVSelect"/ option is a string that can be used to
 control the splitting direction for each parameter surface
@@ -9579,7 +9585,7 @@ The array must contain an entry <tt/"SP"/ that lists all individual
 parameters of the Script object. Note that only parameters from this
 list will be saved to Ayam scene files.
 Note also, that <tt/"SP"/ must <em/never/ contain <tt/"SP"/. All copies
-of a Script object must share the same set of individual vs. shared
+of a Script object must share the same set of individual vs.~shared
 parameters. If objects need to store differing/individual amounts of
 parameter data, lists can be used as individual parameters.
 <p>
@@ -18718,8 +18724,8 @@ tenth of the current window width/height. The default value is -10.
 
 <item><tt/"PaneMargins"/, is a list of currently five floating
 point values, used as a safety margin for the panes:
-console vs. hierarchy, hierarchy vs. upper-views, lower-view vs. property,
-property vs. hierarchy, upper-view-2 vs. upper-view-1 (in this
+console vs.~hierarchy, hierarchy vs.~upper-views, lower-view vs.~property,
+property vs.~hierarchy, upper-view-2 vs.~upper-view-1 (in this
 order).
 These values control the minimum size of a pane expressed in an
 inverse (1/x) and relative way:
