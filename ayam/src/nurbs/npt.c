@@ -11521,7 +11521,7 @@ ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
- ay_object *new = NULL;
+ ay_object *o, *new = NULL, *pobject = NULL;;
  double umin = 0.0, umax = 0.0, vmin = 0.0, vmax = 0.0;
  int relative = AY_FALSE;
 
@@ -11554,11 +11554,27 @@ ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
 
   while(sel)
     {
-      if(sel->object->type == AY_IDNPATCH)
+      o = sel->object;
+      if(o->type != AY_IDNPATCH)
+	{
+	  ay_status = ay_provide_object(o, AY_IDNPATCH, &pobject);
+
+	  if(!pobject)
+	    {
+	      ay_error(AY_EWARN, argv[0], ay_error_igntype);
+	      o = NULL;
+	    }
+	  else
+	    {
+	      o = pobject;
+	    } /* if */
+	} /* if */
+
+      if(o)
 	{
 	  new = NULL;
 
-	  ay_status = ay_npt_extractnp(sel->object, umin, umax, vmin, vmax,
+	  ay_status = ay_npt_extractnp(o, umin, umax, vmin, vmax,
 				       relative, &new);
 
 	  if(ay_status)
@@ -11569,10 +11585,12 @@ ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  ay_object_link(new);
 	}
-      else
+
+      if(pobject)
 	{
-	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
-	} /* if */
+	  ay_object_deletemulti(pobject, AY_FALSE);
+	}
+
       sel = sel->next;
     } /* while */
 
