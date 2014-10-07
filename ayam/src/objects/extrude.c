@@ -376,24 +376,37 @@ ay_extrude_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr, "%lg\n", &extrude->glu_sampling_tolerance);
 
   /* get bevel parameters from potentially present BP tags */
-  ay_npt_getbeveltags(o, 0, &has_startb, &startb_type, &startb_radius,
-		      &startb_sense);
-  ay_npt_getbeveltags(o, 1, &has_endb, &endb_type, &endb_radius,
-		      &endb_sense);
+
+  if(ay_read_version < 16)
+    {
+      /* before Ayam 1.21 */
+      ay_npt_getbeveltags(o, 0, &has_startb, &startb_type, &startb_radius,
+			  &startb_sense);
+      ay_npt_getbeveltags(o, 1, &has_endb, &endb_type, &endb_radius,
+			  &endb_sense);
+    }
+  else
+    {
+      ay_npt_getbeveltags(o, 2, &has_startb, &startb_type, &startb_radius,
+			  &startb_sense);
+      ay_npt_getbeveltags(o, 3, &has_endb, &endb_type, &endb_radius,
+			  &endb_sense);
+    }
 
   tag.name = nbuf;
   tag.type = ay_bp_tagtype;
   tag.val = vbuf;
+  /* need to create BP tag from object parameters? */
   if(!has_startb && has_startb2)
     {
-      sprintf(vbuf, "0,%d,%g,0", startb_type2, startb_radius2);
+      sprintf(vbuf, "2,%d,%g,0", startb_type2, startb_radius2);
       ay_tags_copy(&tag, &stag);
       ay_tags_append(o, stag);
     }
 
   if(!has_endb && has_endb2)
     {
-      sprintf(vbuf, "1,%d,%g,0", startb_type2, startb_radius2);
+      sprintf(vbuf, "3,%d,%g,0", startb_type2, startb_radius2);
       ay_tags_copy(&tag, &etag);
       ay_tags_append(o, etag);
     }
@@ -424,9 +437,9 @@ ay_extrude_writecb(FILE *fileptr, ay_object *o)
     return AY_ENULL;
 
   /* get bevel parameters */
-  ay_npt_getbeveltags(o, 0, &has_startb, &startb_type, &startb_radius,
+  ay_npt_getbeveltags(o, 2, &has_startb, &startb_type, &startb_radius,
 		      &startb_sense);
-  ay_npt_getbeveltags(o, 1, &has_endb, &endb_type, &endb_radius,
+  ay_npt_getbeveltags(o, 3, &has_endb, &endb_type, &endb_radius,
 		      &endb_sense);
 
   fprintf(fileptr, "%g\n", extrude->height);
@@ -450,7 +463,7 @@ int
 ay_extrude_wribcb(char *file, ay_object *o)
 {
  ay_extrude_object *extrude = NULL;
- ay_object *p =NULL;
+ ay_object *p = NULL;
 
   if(!o)
    return AY_ENULL;
