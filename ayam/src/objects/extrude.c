@@ -376,7 +376,6 @@ ay_extrude_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr, "%lg\n", &extrude->glu_sampling_tolerance);
 
   /* get bevel parameters from potentially present BP tags */
-
   if(ay_read_version < 16)
     {
       /* before Ayam 1.21 */
@@ -396,7 +395,8 @@ ay_extrude_readcb(FILE *fileptr, ay_object *o)
   tag.name = nbuf;
   tag.type = ay_bp_tagtype;
   tag.val = vbuf;
-  /* need to create BP tag from object parameters? */
+
+  /* need to create BP tag(s) from object parameters? */
   if(!has_startb && has_startb2)
     {
       sprintf(vbuf, "2,%d,%g,0", startb_type2, startb_radius2);
