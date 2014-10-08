@@ -353,7 +353,7 @@ ay_extrude_readcb(FILE *fileptr, ay_object *o)
 {
  ay_extrude_object *extrude = NULL;
  ay_tag tag = {0}, *stag = NULL, *etag = NULL;
- char vbuf[128], nbuf[3] = "BP";
+ char vbuf[128], nbuf[3] = "BP", *val;
  int has_startb = AY_FALSE, has_startb2 = AY_FALSE;
  int has_endb = AY_FALSE, has_endb2 = AY_FALSE;
  int startb_type, startb_type2, endb_type, startb_sense, endb_sense;
@@ -379,18 +379,26 @@ ay_extrude_readcb(FILE *fileptr, ay_object *o)
   if(ay_read_version < 16)
     {
       /* before Ayam 1.21 */
-      ay_npt_getbeveltags(o, 0, &has_startb, &startb_type, &startb_radius,
-			  &startb_sense);
-      ay_npt_getbeveltags(o, 1, &has_endb, &endb_type, &endb_radius,
-			  &endb_sense);
-    }
-  else
-    {
-      ay_npt_getbeveltags(o, 2, &has_startb, &startb_type, &startb_radius,
-			  &startb_sense);
-      ay_npt_getbeveltags(o, 3, &has_endb, &endb_type, &endb_radius,
-			  &endb_sense);
-    }
+      stag = o->tags;
+      while(stag)
+	{
+	  if(stag->type == ay_bp_tagtype && stag->val)
+	    {
+	      val = (char*)stag->val;
+	      if(*val == '0')
+		*val = '2';
+	      else
+		if(*val == '1')
+		  *val = '3';
+	    } /* if */
+	  stag = stag->next;
+	} /* while */
+    } /* if */
+
+  ay_npt_getbeveltags(o, 2, &has_startb, &startb_type, &startb_radius,
+		      &startb_sense);
+  ay_npt_getbeveltags(o, 3, &has_endb, &endb_type, &endb_radius,
+		      &endb_sense);
 
   tag.name = nbuf;
   tag.type = ay_bp_tagtype;
