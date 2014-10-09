@@ -40,6 +40,13 @@ proc bevel_parseTags { tagnames tagvalues bnames {bids ""} } {
 
 	    set bname [lindex $bnames $bplace]
 
+	    # set up some default values to allow truncated BP tag values
+	    set BevelTags(${bname}Type) 0
+	    set BevelTags(${bname}Radius) 0.1
+	    set BevelTags(${bname}Revert) 0
+	    set BevelTags(${bname}Integrate) 0
+	    set BevelTags(${bname}Force3D) 0
+
 	    scan $tagvalue "%d,%d,%lg,%d,%d,%d" dummy type \
 		BevelTags(${bname}Radius) BevelTags(${bname}Revert) \
 		BevelTags(${bname}Integrate) BevelTags(${bname}Force3D)
