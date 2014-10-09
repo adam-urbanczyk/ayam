@@ -388,8 +388,6 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
 
       ay_trafo_translatematrix(m[0], m[1], m[2], rm);
 
-      memset(n, 0, 3*sizeof(double));
-
       if(nc->type == AY_CTPERIODIC)
 	ay_status = ay_geom_extractmeannormal(nc->controlv,
 					    (nc->length-(nc->order-2)), stride,

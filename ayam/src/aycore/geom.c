@@ -315,6 +315,8 @@ ay_geom_extractmeannormal(double *cv, int cvlen, int cvstride,
       p2 += cvstride;
     }
 
+  memset(result, 0, 3*sizeof(double));
+
   psn = sn;
   for(i = 0; i < snlen; i++)
     {
