@@ -200,7 +200,7 @@ proc prefs_open {} {
 
     set l $ay(defactions)
     addMenuB $fw ayprefse DefaultAction [ms ayprefse_DefaultAction] $l
-    addParamB $fw ayprefse UndoLevels [ms ayprefse_UndoLevels] { -1 2 5 10 20 }
+    addParamB $fw ayprefse UndoLevels [ms ayprefse_UndoLevels] { 0 1 10 20 }
 
     # Drawing
     set fw [$nb insert end Drawing -text Drawing\
