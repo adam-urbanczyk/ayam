@@ -408,23 +408,16 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(itemp != ay_prefs.undo_levels)
     {
+      if(itemp < 0)
+	itemp = 0;
 
-      if((itemp != -1) && (itemp < 2)/* && (itemp < 1000)*/)
-	{
-	  itemp = 2;
-
-	  ay_error(AY_ERROR, argv[0],
-	   "Illegal value for UndoLevels (should be >2 or -1), reset to 2.");
-
-	  to = Tcl_NewIntObj(itemp);
-	  Tcl_ObjSetVar2(interp, toa, ton, to,
-			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	  Tcl_SetStringObj(toa, n2, -1);
-	  Tcl_ObjSetVar2(interp, toa, ton, to,
-			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	  Tcl_SetStringObj(toa, n1, -1);
-	}
-
+      to = Tcl_NewIntObj(itemp);
+      Tcl_ObjSetVar2(interp, toa, ton, to,
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_SetStringObj(toa, n2, -1);
+      Tcl_ObjSetVar2(interp, toa, ton, to,
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_SetStringObj(toa, n1, -1);
 
       /*      ay_status = ay_undo_clear();*/
       ucargs[0] = ucarg0;
@@ -439,7 +432,6 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 	}
 
       ay_prefs.undo_levels = itemp;
-
     } /* if */
 
   Tcl_SetStringObj(ton, "Snap3D", -1);
