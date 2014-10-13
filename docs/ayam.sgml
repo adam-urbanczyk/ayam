@@ -47,7 +47,7 @@ This document has been written using the SGML-Tools (LinuxDoc) formatting
 system to generate files in a variety of text formats from one source file.
 There are HTML and PDF versions of this document prepared.
 
-In addition, one can use the provided SGML-source to generate other formats.
+In addition, the provided SGML-source can be used to generate other formats.
 </abstract>
 
 <toc>
@@ -291,7 +291,7 @@ object called <tt/"Root"/ in the top level of the scene, even though the
 scene seems to be empty.
 See section <ref id="rootobj" name="Root Object"> for more
 information regarding this special object, and what it is good for.
-Note that one can not delete or copy this object.
+Note, that this object can not be deleted or copied.
 
 <bf/Object Tree View:/<label id="treeview">
 <p>
@@ -668,8 +668,8 @@ cause a Tcl error dialog window to appear, to the console using
 the preference setting <tt>"Misc/RedirectTcl"</tt>
 (see section <ref id="prefmisc" name="Miscellaneous Preferences">).
 <p>
-One can of course also enter commands or even complete new Tcl procedures
-into the console. However, this is a feature for an advanced
+It is of course also possible to enter commands or even complete new
+Tcl procedures into the console. However, this is a feature for an advanced
 user that studied section <ref id="script" name="Scripting Interface">.
 You need to explicitly click into the console to give it the input
 focus and thus enable input.
@@ -693,8 +693,8 @@ The console automagically completes <tt/tip/ to <tt/tipoftheDay/
 <p>
 Remember that many commands of the Ayam scripting interface work
 in background: without update of object selection widget, property GUI or
-redrawing of view windows. But one can enforce an immediate update of
-the GUI and redrawing of all views by using <tt/&lt;Shift-Enter&gt;/
+redrawing of view windows. But it is possible to enforce an immediate update
+of the GUI and redrawing of all views by using <tt/&lt;Shift-Enter&gt;/
 instead of <tt/&lt;Enter&gt;/ when entering commands.
 <p>
 Another simple demonstration of the consoles capabilities:
@@ -1309,10 +1309,10 @@ to the clipboard without cleaning it beforehand.
 <item><tt>"Clipboard/Paste Property to Selected"</tt> paste the property
 from the property clipboard to the currently selected
 property of the currently selected object. No type check of the
-properties will take place! This way one may e.g.~copy the settings from a
-displacement shader to a surface shader (as long as the copied arguments
-of both shaders have the same names and types) or copy a radius value
-from a sphere to a cylinder.
+properties will take place! This way it is possible to e.g.~copy
+a radius value from a sphere to a cylinder or to copy
+settings from a displacement shader to a surface shader (as long as the
+copied arguments of both shaders have the same names and types).
 
 <item><tt>"Instances/Resolve all Instances"</tt>, opens a small dialog
 where the scope of the resolve operation may be
@@ -1767,7 +1767,7 @@ menu shortcuts) are discussed in this section.
 Note that the view keyboard shortcuts only work if the view window
 has the keyboard input focus.
 <p>
-One can adapt these shortcuts using the <tt>"ayamrc"</tt> file
+These shortcuts can be adapted using the <tt>"ayamrc"</tt> file
 (see section <ref id="ayamrc" name="Ayamrc File">).
 <p>
 Keyboard shortcuts directly modifying the camera, that is associated
@@ -1857,7 +1857,7 @@ grid size.<footnote>Since 1.21.</footnote>
 <p>
 Using the menu entry <tt/"Zoom to Object"/ or the corresponding
 shortcut <tt/&lt;Ctrl+o&gt;/ (<tt/&lt;O&gt;/ for internal views)
-one can change the views camera settings so that the selected
+the views camera settings can be changed so that the selected
 objects will be displayed centered in the view window. This is handy
 to search for objects or if the user is simply lost in space.
 <p>
@@ -1874,7 +1874,7 @@ This facilitates working with very large and very tiny objects.
 <p>
 Using the menu entry <tt/"Align to Object"/ or the shortcut
 <tt/&lt;Ctrl+a&gt;/ (<tt/&lt;L&gt;/ for internal views)
-one can change the views camera settings so that it is aligned
+the views camera settings can be changed so that the view is aligned
 to the coordinate system of the currently selected object.
 This is handy for modelling in local coordinate systems
 (e.g.~when editing the control points of some planar curve defined in the
@@ -2080,8 +2080,8 @@ e.g.~<tt>convOb -inplace</tt> or <tt>addTag NoExport ""</tt> can also be
 specified as action.
 However, as the object search is based on the <tt/"forAll"/ scripting
 interface command, certain restrictions apply:<newline>
-the action must not change the scene hierarchy, i.e.~one must not
-delete, cut, or create objects in the command/procedure call. Changing the
+the action must not change the scene hierarchy, i.e.~no objects must be
+deleted, cut, or created in the command/procedure call. Changing the
 objects themselves, even converting them in-place, however, is allowed.
 See section
 <ref id="scifall" name="Applying Commands to a Number of Objects">.
@@ -2141,8 +2141,8 @@ hidden.<footnote>Since 1.14.</footnote>
 <item><tt/"Shaders"/ contains a number of paths (separated by a colon
 <tt/":"/ on Unix and by a semicolon <tt/";"/ on Win32) where Ayam looks
 for compiled shaders (e.g.~files with the extension <tt/".slc"/ that
-have been compiled with slc from BMRT). Using the <tt/"Add"/ button
-one may easily add paths with a directory chooser dialog.
+have been compiled with slc from BMRT). Using the <tt/"Add"/ button,
+paths may be added with a directory chooser dialog.
 After changes to this setting (also after <tt/"Revert"/!),
 use the <tt/"Scan for Shaders!"/ button below.
 <p><p>
@@ -2356,10 +2356,10 @@ that will be active after a press of the <tt/&lt;Esc&gt;/ key
 in a view window.
 
 <item><tt/"UndoLevels"/ determines the number of modelling steps
-that should be saved in the undo buffer. Useful values range
-from 2 to 50 (depending on how much memory you like to spend).
-If <tt/"UndoLevels"/ is set to -1, the undo system will be disabled
-completely.
+that should be saved in the undo buffer.
+If <tt/"UndoLevels"/ is set to 0, the undo system will be disabled
+completely.<footnote>Since 1.21.</footnote>
+<p>
 For more information, see also the section
 <ref id="undos" name="The Undo System">.
 </itemize>
@@ -2957,7 +2957,7 @@ for a script, that, partially, brings back the old implicit behaviour.
 
 <sect1>Selecting Objects by Picking<label id="objsel">
 <p>
-This section describes techniques one can use for selecting
+This section describes techniques that can used for selecting
 one or more objects within a view window with the mouse.
 <p>
 When the view windows action is <tt/"Pick"/, objects
@@ -3056,13 +3056,13 @@ the previous selection unchanged.
 It is also possible to use a double click in the list of selection
 candidates to select an object and immediately close the dialog
 window. Moreover, as the list of candidates immediately gets the
-keyboard focus, one can also use the cursor keys and <tt/&lt;Enter&gt;/ to
-select the object.<footnote>Since 1.11.</footnote>
+keyboard focus, the cursor keys and <tt/&lt;Enter&gt;/ can also be
+used to select the object.<footnote>Since 1.11.</footnote>
 <p>
 Notes:
 <itemize>
-<item>While the list of ambiguous candidates is opened one can not pick other
-objects within the views.
+<item>While the list of ambiguous candidates is opened no other
+objects can be picked within the views.
 
 <item>It is possible to use the <tt/"Zoom to Object"/ action (shortcut
 <tt/&lt;O&gt;/) while the ambiguous select listbox is open to get
@@ -3145,9 +3145,9 @@ Rotate|<tt/&lt;r&gt;/|
 
 <sect1>Rotating Objects or Selected Points about a Point<label id="rotaac">
 <p>
-Using the rotate about modelling action one may interactively rotate
-objects or the selected (tagged) points of the selected objects about
-a specific point in space.
+Using the rotate about modelling action
+objects or the selected (tagged) points of the selected objects
+can be interactively rotated about a specific point in space.
 <p>
 To start the rotate about action, invoke the normal rotate action,
 then press <tt/&lt;a&gt;/.
@@ -3164,8 +3164,8 @@ Rotate About|<tt/&lt;ra&gt;/|
 <caption>Rotate About Action</caption>
 </table>
 <p>
-To rotate about a different point, one needs to restart the
-intermediate set mark action (simply press <tt/&lt;a&gt;/ again).
+To rotate about a different point, the intermediate set mark action must
+be restarted (simply press <tt/&lt;a&gt;/ again).
 <p>
 After setting the mark, the action works the same way as
 the Rotate action, except that it rotates the selected object(s)
@@ -3201,8 +3201,8 @@ XY in a Front-view, ZY in a Side-view, and XZ in a Top-view.
 <p>
 It is also possible to restrict the scaling of objects or selected
 points to just one axis.
-For that one needs to press <tt/&lt;x&gt;/, <tt/&lt;y&gt;/, or
-<tt/&lt;z&gt;/ right after <tt/&lt;s&gt;/ (e.g.~<tt/&lt;sx&gt;/ for
+For that <tt/&lt;x&gt;/, <tt/&lt;y&gt;/, or <tt/&lt;z&gt;/ must
+be pressed right after <tt/&lt;s&gt;/ (e.g.~<tt/&lt;sx&gt;/ for
 scale 1D about x).
 <p>
 Since Ayam 1.17, direct access to the 1D scale modelling actions
@@ -3253,9 +3253,9 @@ Stretch 2D|<tt/&lt;T&gt;/|
 
 <sect1>Scaling Objects or Selected Points about a Point<label id="scalaac">
 <p>
-Using the scale about modelling actions one may interactively scale
-objects or the selected (tagged) points
-of the selected objects about a specific point in space.
+Using the scale about modelling actions objects or the selected
+(tagged) points of the selected objects can be interactively scaled
+about a specific point in space.
 <p>
 To start a scale about action, invoke the normal scale action,
 then press <tt/&lt;a&gt;/ (e.g.~<tt/&lt;sa&gt;/ for scale 2D about,
@@ -3293,8 +3293,8 @@ Stretch 2D About|<tt/&lt;Ta&gt;/|
 <caption>Scaling About Actions Overview</caption>
 </table>
 <p>
-To scale about a different point, one needs to restart the
-intermediate set mark action (simply press <tt/&lt;a&gt;/ again).
+To scale about a different point, the intermediate set mark action
+must be restarted (simply press <tt/&lt;a&gt;/ again).
 <p>
 After setting the mark, the action works the same way as
 the scale action, except that it scales the selected object(s)
@@ -3307,12 +3307,13 @@ Translate_Y, or Translate_Z
 properties.
 <p>
 Also note, that the three dimensional scaling about the mark
-occurs in all three dimensions, however, in the interactive
-set mark action one is only able to specify two dimensional
-coordinates using a mouse click (the third coordinate is always
-set to zero). To specify a true three dimensional mark one
-can use the corresponding view object attributes or select
-a point and set the mark to it (shortcut <tt/&lt;C&gt;/).
+occurs in all three dimensions, however, in the intermediate interactive
+set mark action only two dimensional coordinates can be specified
+using a single mouse click. To specify a true three dimensional mark
+the corresponding view object attributes can be used or
+a point can be selected and the mark set to it (shortcut <tt/&lt;C&gt;/).
+See section <ref id="markac" name="Setting the Mark"> for other means
+of setting a three dimensional mark.
 <p>
 To avoid degenerated coordinates due to roundoff errors
 it is highly suggested to use grids with this action.
@@ -3353,12 +3354,12 @@ Set Mark|<tt/&lt;a&gt;/|
 <p>
 A single click with the mouse sets the mark. If grids are active in
 the view, the mark will be snapped to the nearest grid coordinates.
-Note, that, using a single mouse click, one is only able to specify two
-dimensional mark coordinates. Therefore, in versions prior to 1.21, the
+Note, that, using a single mouse click, only two dimensional mark
+coordinates can be specified. Therefore, in versions prior to 1.21, the
 third coordinate was always set to zero upon a click. This is no longer
 the case. If the preference option <tt>"Modelling/GlobalMark"</tt> is
-enabled, the third coordinate is <em/not/ reset anymore. This way one
-can define all three coordinates of the mark by clicking two times in
+enabled, the third coordinate is <em/not/ reset anymore. This way all
+three coordinates of the mark can be defined by clicking two times in
 appropriate views, e.g.~first in a
 front view for the x and y coordinates and then in a side view for the
 missing z coordinate.
@@ -3493,7 +3494,7 @@ to the selection action, add other points to the selection or delete
 some points from the selection, switch to rotate, rotate the selected
 points and so on.
 <p>
-One may also add a bigger number of points to the selection using a
+A bigger number of points may be added to the selection using a
 click and drag operation. All points that are inside the rectangular
 region defined by the click and drag will be added to the selection.
 In fact, this approach is the only way to safely add points to the
@@ -3511,7 +3512,7 @@ If <tt/"CreateMP"/ is enabled, picking a multiple point will always
 select all points that make up the multiple point.<newline>
 If <tt/"CreateMP"/ is disabled, picking a multiple point will only
 select the first of the points that make up the multiple point
-(but one can use drag select to select all points nevertheless).
+(but drag selection can be used to select all points nevertheless).
 
 <sect1>Editing Points<label id="editac">
 <p>
@@ -3646,8 +3647,8 @@ prevent a change of the corresponding coordinate
 value.<footnote>Since 1.20.</footnote>
 <p>
 If a multiple point is edited, this action modifies all single
-points that make up the multiple point, i.e.~one can not move
-single points apart from a multiple point using the numeric point
+points that make up the multiple point, i.e.~single points can not
+be moved apart from a multiple point using the numeric point
 edit action. Temporarily disable the <tt/"CreateMP"/ property or
 explode the multiple point to do that.
 <p>
@@ -3893,8 +3894,8 @@ plane of all modelling actions is constrained to the world
 XY-, ZY-, or XZ-plane (depending on the type of view used).
 <p>
 However, if a view is <em>aligned</em> and switched to <em>local</em>,
-editing in local object space is possible. This means one can e.g.~edit a
-planar parameter curve of a Skin object where both objects
+editing in local object space is possible. This means a planar parameter
+curve of a Skin object may be edited where both objects
 are rotated and scaled arbitrarily via their transformation attributes
 and the parameter curve is guaranteed to remain planar all the time.
 <p>
@@ -3910,9 +3911,9 @@ differently in X-window and Y-window coordinates in aligned local views
 <p>
 To make a view object local and aligned the object must be selected first.
 Now, pressing <tt/&lt;l&gt;/ <em>twice</em> makes the current view local
-(one can also use <tt/&lt;Ctrl+l&gt;/ in external views).
-In Ayam versions prior to 1.18 one also needed to manually align
-the view using <tt/&lt;L&gt;/ (or <tt/&lt;Ctrl+a&gt;/ in external
+(in external views <tt/&lt;Ctrl+l&gt;/ can also be used).
+In Ayam versions prior to 1.18 the view also needed to be aligned
+manually using <tt/&lt;L&gt;/ (or <tt/&lt;Ctrl+a&gt;/ in external
 views). Since Ayam 1.18, the view is automatically aligned to the
 selected object or current level when cycling through the
 global&thinsp;/&thinsp;local modes.
@@ -3968,8 +3969,8 @@ objects (the cross section curve); look at the modelling mode icon,
 it is now displaying a O in the lower right corner. As the selected
 cross section curve was rotated by 90 degrees around the y axis, the
 front view now displays a circle. Note again the orientation
-of the Root object coordinate system. One can now safely edit the cross
-section curve, it will stay planar.
+of the Root object coordinate system. The cross section curve can now
+be edited safely, it will stay planar.
 
 Note, that object-local aligned views only align to the first of multiple
 selected objects; if all selected objects share the same transformation
@@ -4881,13 +4882,13 @@ and the documentation of BMRT for more detailed information about the
 RenderMan specific attributes.
 
 <itemize>
-<item><tt/"Color"/, the color of the object. If you set one of the
-entries to a negative value (e.g.~-1), the color will not be set at all
-for this object.
+<item><tt/"Color"/, the color of the object. If one of the entries is set
+to a negative value (e.g.~-1), the color will not be set at all
+for this object, i.e.~no RiColor call will be emitted upon export.
 <item><tt/"Opacity"/, the opacity of the object, the default
-255 255 255 means the object is totally opaque. If you set one of the
-entries to a negative value (e.g.~-1), the opacity will not be set at all
-for this object.
+(255 255 255) means the object is totally opaque. If one of the entries is
+set to a negative value (e.g.~-1), the opacity will not be set at all
+for this object, i.e.~no RiOpacity call will be emitted upon export.
 <item><tt/"ShadingRate"/, determines how often shaders are evaluated for
 a sample.
 <item><tt/"Interpolation"/, determines how return values computed
@@ -5375,8 +5376,8 @@ objects, that are subject to a second round of provision.
 <p>
 The amount of saved space can be very high, depending heavily on the
 actual scene and at what levels in the hierarchy instances are used.
-If there are no similar objects in the scene, however, one can hardly
-utilise instancing. Similar means "the same except for
+If there are no similar objects in the scene, however, instancing
+can hardly be utilised. Similar means "the same except for
 the transformation property" in this context.
 <p>
 Some simple rules for instancing:
@@ -5388,13 +5389,13 @@ Ayam and create instances of levels that contain aforementioned
 types of objects, things will go awry!
 <item>It is allowed, however, to put some instances
 into a level object and create instances of this level
-(this is sometimes called hierarchical instancing).
-<item>But one may not put instances of a level into the very same
-level or one of its children (this would be recursive instancing,
+(this is sometimes called <em/hierarchical instancing/).
+<item>But instances of a level may not be put into the very same
+level or one of its children (this would be <em/recursive instancing/,
 which is not supported by Ayam).
-<item>The original/master object may not be deleted from the scene
-as long as there are instances of that object in the scene or in the
-object clipboard.
+<item>The original&thinsp;/&thinsp;master object may not be deleted from
+the scene as long as there are instances of that object in the scene or
+in the object clipboard.
 </itemize>
 
 If deleting of an object fails, and the error message
@@ -5485,8 +5486,8 @@ main menu entry <tt>"Tools/Convert"</tt>.
 This process is also called resolving the instance.
 <p>
 To resolve all instance objects in a scene
-to normal objects, one can also use the main menu entry:
-<tt>"Special/Instances/Resolve all Instances"</tt>.
+to normal objects, also the main menu entry:
+<tt>"Special/Instances/Resolve all Instances"</tt> can be used.
 
 <sect2>RIB Export
 <p>
@@ -5554,8 +5555,8 @@ the provided objects.
 An index may appear multiple times, leading to multiple copies of the
 selected object to be delivered upstream.
 The index space spans over all provided objects of the desired type
-from all child objects. This means one can mix provided objects from
-multiple child objects of the Select object. Syntactically incorrect
+from all child objects. This means provided objects from multiple different
+child objects of the Select object can be mixed. Syntactically incorrect
 ranges and indices are silently ignored.
 <p>
 Examples:
@@ -6804,10 +6805,10 @@ as simple patches.
 Note that if <tt/"Side"/ is <tt/"U0"/, <tt/"Un"/, <tt/"V0"/, or <tt/"Vn"/
 the extraction process just copies the respective boundary control points,
 which only works for clamped knot vectors. To extract a boundary from
-a surface with e.g.~a B-Spline knot vector, one should <em/not/ use <tt/"U0"/
+a surface with e.g.~a B-Spline knot vector, <tt/"U0"/ should not be used
 but <tt/"U"/ with <tt/"Parameter"/ set to 0.0 and <tt/"Relative"/ enabled
-as <tt/"U"/ uses a different, more expensive, extraction process (which
-involves knot insertion).
+as <tt/"U"/ uses a different, more expensive, extraction process
+(which involves knot insertion).
 
 <item><tt/"Parameter"/ controls the parametric value in U or V
 direction in the parameter space of the NURBS patch object where the
@@ -7691,17 +7692,17 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 <p>
 All curves forming holes in the extruded object must be defined inside
 (geometrically) the first curve (the outline curve). Additionally,
-they may not intersect each other or themself and one can not have hole
-curves inside hole curves. If there are bevels and caps, allow extra
+they may not intersect each other or themself and there can not be hole
+curves inside hole curves. If there are bevels and caps, allow some extra
 spacing between the curves (for the bevels).
 Ayam will not check whether the parameter curves conform to these criteria.
 <p>
-With the direction of the curve one decides the direction of the
-bevel as well (should it round outwards or inwards?).
+With the direction of the curve, the direction of the bevel is determined
+as well (should it round outwards or inwards?).
 If the bevels of the holes look wrong try to revert the generating
 curves of the holes.
-Note that beveling does not work well with open curves. One should always
-use closed curves for beveling.
+Note that beveling does not work well with open curves. It is suggested
+to always use closed curves for beveling.
 Beveling may lead to self intersecting trim curves in sharp corners of an
 extrusion. Decrease the bevel radius or round the corners of the extruded
 curve (using insertion of additional control points) if cap generation
@@ -8370,7 +8371,7 @@ looks like this:
 </verb></tscreen>
 <p>
 Note that in contrast to the build from curves tool,
-the curves may be of arbitrary length and order. One may e.g.~easily
+the curves may be of arbitrary length and order. It is e.g.~possible to
 use a parameter curve of order 2 and length 6 with a second curve
 of order 4 and length 4 and a third curve with order 3 and 5
 control points.
@@ -8514,8 +8515,8 @@ Also note that this configuration is in fact equivalent to a Coons patch.
 <caption>Gordon Surface with Parameter Curves (white)</caption>
 </figure>
 <p>
-The curves may be of arbitrary length and order. One may e.g.~use
-a curve of order 2 and length 6 with a second curve
+The curves may be of arbitrary length and order. It is e.g.~ possible
+to use a curve of order 2 and length 6 with a second curve
 of order 4 and length 4 and a third curve with order 3 and 5
 control points for the U parametric dimension. Note, however,
 that in the general case only non-rational curves can be used
@@ -8555,13 +8556,13 @@ while editing the parameter curves of a Gordon surface, consider
 switching to lazy notification.
 <p>
 In order to ease the computationally intensive intersection
-detection for Ayam one may specify a third argument (separated
+detection for Ayam a third parameter object may be specified (separated
 from the two sets of parameter curves by a second empty level object).
-This third argument should be a NURBS patch object that describes
-all intersection points (by its control points).
+This third parameter object should be a NURBS patch object that describes
+all intersection points by its control points.
 If present, this intersection patch always takes precedence over the
 intersection points calculated internally.
-One may want to add a <tt>"NoExport"</tt> tag to this patch, to prevent
+A <tt>"NoExport"</tt> tag should be added to this patch, to prevent
 it from appearing in RIB output.
 <p>
 The object hierarchy of a Gordon object using such a patch may look
@@ -8970,14 +8971,15 @@ parameter is <tt/"Custom"/.
 control the splitting direction for each parameter surface
 individually. Valid characters in this string are <tt/"u"/, <tt/"U"/,
 <tt/"v"/, and <tt/"V"/.
-The uppercase variants lead to a reverted surface.
+The uppercase variants lead to a reverted surface in the respective
+direction.<newline>
 To connect two surfaces that share the same orientation "over a corner"
-one would e.g.~need to set <tt/"UVSelect"/ to <tt/"uV"/
-(see also the image below).
-The default, an empty string, is equivalent to <tt/"u"/ for all
-patches. Also incomplete strings lead to <tt/"u"/ for all remaining
-patches. There is no need to specify a value for fillets, those
-will always be created in a way that they can be split along the
+<tt/"UVSelect"/ should be set to <tt/"uV"/
+(see also the image below).<newline>
+The default value for <tt/"UVSelect"/, an empty string, is equivalent
+to <tt/"u"/ for all patches. Also incomplete strings will lead to <tt/"u"/
+for all remaining patches. There is no need to specify a value for fillets,
+those will always be created in a way so that they can be split along the
 U direction.
 <p>
 <figure loc="ht">
@@ -9463,8 +9465,8 @@ below).
 <p>
 There is also a tag type to remove properties
 (<tt>"RP"</tt>).<footnote>Since 1.12.</footnote>
-Using this tag, one can e.g.~hide the actual script
-code and block users from unintentionally changing it.
+Using this tag, the actual script code can be hidden
+and thus users are blocked from unintentionally changing it.
 <p>
 Starting with Ayam 1.16, the environment for running Script objects scripts
 has been refined to allow more complex scripts (that traverse the scene or
@@ -9751,8 +9753,9 @@ object to it (via the object clipboard). Finally, the Clone object
 is parameterised, so that the trajectory is completely filled (assuming
 that each copy of the first child needs 1 length unit on the trajectory)
 with objects.
-One may now modify the curve using interactive modelling actions,
-change its length, and the trajectory is always completely filled.
+The curve can now be modified using interactive modelling actions,
+or its length can be changed, and the trajectory will always be completely
+filled with an appropriate number of box objects.
 See example image below (compare the Clone configurations from
 the two different trajectory curves):
 <p>
@@ -10600,10 +10603,10 @@ geometric object.
 The exact behaviour of an object equipped with a <tt/"TC"/ tag
 depends heavily on the shader and its use of the texture coordinates.
 <p>
-Note also that using <tt/"TC"/ tags one change the texture coordinates
-of entire primitives only, if you want to change the texture coordinates
+Note also that using <tt/"TC"/ tags, the texture coordinates
+of entire primitives are changed. To change the texture coordinates
 of sub-primitives (e.g.~of single control points of a NURBS patch)
-you would need to use a <tt/"PV"/ (Primitive Variable) tag instead.
+<tt/"PV"/ (Primitive Variable) tags must be used instead.
 <p>
 To ease setting of <tt/"TC"/ tag values Ayam provides a special graphical
 editor as outlined below.
@@ -10654,7 +10657,7 @@ the texture coordinate editor.
 
 <item>save TC tags to a selected object. Note that it is not
 possible to directly save the TC tag to multiple selected objects.
-But one can use the property clipboard to copy the tag after saving
+But the property clipboard can be used to copy the tag after saving
 to a single object.
 </itemize>
 Note that the tag numbers in the menu entries count TC tags only.
@@ -10668,8 +10671,8 @@ while modeling. The <tt/"Dismiss"/ button closes the dialog.
 <p>
 The tag type <tt/"PV"/ can be used to attach arbitrary data
 to geometric primitives and even sub-primitives.
-With the help of primitive variables one can e.g.~attach own texture
-coordinates to a NURBS patch primitive or attach distinct
+With the help of primitive variables texture coordinates can be attached
+to a NURBS patch primitive or attach distinct
 colors to the faces or even to single vertices of a polygonal mesh.
 In the latter case, the data is properly interpolated by the RenderMan
 renderer before it is handed over to the surface shader.
@@ -10950,10 +10953,11 @@ onto the network, or confuse the application state, see also section
 Consequently, the warning dialog that appeared when files with
 BNS tags were loaded is also gone.
 <p>
-One can still re-enable the original functionality by recompiling Ayam.
-If you do so, for security reasons, if scene files containing BNS
+The original functionality can still be re-enabled by recompiling Ayam.
+If this is enabled and scene files containing BNS
 tags are loaded, Ayam will again raise a warning dialog, offering to
-temporarily disable all such tags that will be read.
+temporarily disable all such tags that will be read for obvious security
+reasons.
 To disable a BNS tag, Ayam simply changes its type from <tt/"BNS"/
 to <tt/"DBNS"/ (disabled before notify script).
 It will not be executed then.
@@ -10989,10 +10993,12 @@ onto the network, or confuse the application state, see also section
 Consequently, the warning dialog that appeared when files with
 ANS tags were loaded is also gone.
 <p>
-One can still re-enable the original functionality by recompiling Ayam.
-If you do so, for security reasons, if scene files containing ANS
+<p>
+The original functionality can still be re-enabled by recompiling Ayam.
+If this is enabled and scene files containing ANS
 tags are loaded, Ayam will again raise a warning dialog, offering to
-temporarily disable all such tags that will be read.
+temporarily disable all such tags that will be read for obvious security
+reasons.
 To disable a ANS tag, Ayam simply changes its type from <tt/"ANS"/
 to <tt/"DANS"/ (disabled before notify script).
 It will not be executed then.
@@ -12467,12 +12473,13 @@ If the <tt/"Save"/ button is used, the tesselation dialog will be
 closed and <tt/"TP"/ tags containing
 the currently selected method and parameter value will be added
 to all selected objects.
-These tags will be evaluated later, when the respective
+These tags can be evaluated later, when the respective
 objects are converted to PolyMesh objects (e.g.~upon export).
-Since Ayam 1.11 also the conversion mechanism of objects keeps the
-<tt/"TP"/ tags intact, so that one may e.g.~save tesselation parameters
-to a Sphere or a Revolve object that will be used, when the object
-will be converted to a PolyMesh (via a NURBS patch).
+Since Ayam 1.11 the conversion mechanism of objects keeps the
+<tt/"TP"/ tags intact, so that e.g.~tesselation parameters saved
+to a Sphere or a Revolve object will also be preserved, and can
+also be used later when the object will eventually be converted to
+a PolyMesh (via a NURBS patch).
 <p>
 If <tt/"Cancel"/ is used, the dialog will be closed
 and all selected objects remain unchanged.
@@ -15608,7 +15615,7 @@ a single <tt>"return;"</tt> statement.
 Various entries of dialogs for object creation and modelling tools
 support Tcl variables and expressions.
 
-One can e.g.~enter
+It is e.g.~possible to enter
 <code>
 $::u
 </code>
@@ -15632,8 +15639,8 @@ typed values):
 Repeated calling of the tool without opening the dialog (using
 the keyboard shortcut <tt/&lt;Ctrl+T&gt;/), will execute the
 provided expression again.
-This means, one can e.g.~create a number of curves with increasing
-length by entering into the Ayam console
+This means, a number of curves with increasing length can be created
+by entering into the Ayam console
 <code>
 set ::myvar 1
 </code>
@@ -15905,7 +15912,7 @@ AppleScript events will be used instead of the Tk send command.
 If this does not work as expected <tt>"repairAyam.tcl"</tt> may still
 be run via the Ayam console (as on Win32).
 <p>
-On Win32 one has to start <tt>"repairAyam.tcl"</tt> from the Ayam console
+On Win32 <tt>"repairAyam.tcl"</tt> has to be started from the Ayam console
 using the command:
 <tscreen>
 &raquo;&thinsp;source scripts/repairAyam.tcl
@@ -16213,8 +16220,9 @@ George W. Hart:<newline>
 <tt>http://www.georgehart.com/virtual-polyhedra/conway_notation.html</tt>
 <p>
 This script must be used in a Script object of type <tt/"Create"/.
-For convenience, there is also a property GUI; one must add a <tt/"NP"/ tag
-of value <tt/"PolyhedronAttr"/ to the Script object to see it.
+For convenience, there is also a property GUI; to make this GUI visible
+a <tt/"NP"/ tag of value <tt/"PolyhedronAttr"/ must be added to the Script
+object.
 <p>
 The Conway notation defines a set of operations executed consecutively
 on a seed/basic shape.
@@ -16329,7 +16337,7 @@ and <tt>"tclset"</tt>.
 <p>
 The functionality of Ayam is accessible from JavaScript via a larger
 set of global functions, named as the corresponding Tcl commands.
-One may e.g.~create Ayam objects in JavaScript using a function call
+For instance, Ayam objects can be created in JavaScript using a function call
 like this:
 <tscreen><tt>
 crtOb("NCircle");
@@ -16370,10 +16378,10 @@ by other means, see below.
 <#if out=latex><x/phantomsection/</#if>
 
 <tt/<bf/tclvar://<label id="tclvar"><newline>
-Using the JavaScript function <tt>"tclvar"</tt> one may establish a
-link between a Tcl variable and a corresponding variable in the
-JavaScript context.
-The <tt>"tclvar"</tt> function establishes a write trace on the Tcl
+Using the JavaScript function <tt>"tclvar"</tt> a link between a Tcl
+variable and a corresponding variable in the
+JavaScript context may be established.
+The <tt>"tclvar"</tt> function essentially creates a write trace on the Tcl
 variable, so that changes on the Tcl side are always automatically
 reflected on the JavaScript side:
 <tscreen><tt>
@@ -16637,7 +16645,7 @@ and <tt>"tclset"</tt>.
 <p>
 The functionality of Ayam is accessible from Lua via a larger
 set of global functions, named as the corresponding Tcl commands.
-One may e.g.~create Ayam objects in Lua using a function call
+For instance, Ayam objects can be created in Lua using a function call
 like this:
 <tscreen><tt>
 crtOb("NCircle");
@@ -16678,10 +16686,9 @@ by other means, see below.
 <#if out=latex><x/phantomsection/</#if>
 
 <tt/<bf/tclvar://<label id="luatclvar"><newline>
-Using the Lua function <tt>"tclvar"</tt> one may establish a
-link between a Tcl variable and a corresponding variable in the
-Lua context.
-The <tt>"tclvar"</tt> function establishes a write trace on the Tcl
+Using the Lua function <tt>"tclvar"</tt> a link between a Tcl variable
+and a corresponding variable in the Lua context can be established.
+The <tt>"tclvar"</tt> function creates a write trace on the Tcl
 variable, so that changes on the Tcl side are always automatically
 reflected on the Lua side:
 <tscreen><tt>
@@ -18127,7 +18134,8 @@ be resolved to normal objects or exported as DEF/USE pairs, note that no
 attempt is made to detect whether the master objects (the DEFs) will be
 exported for all exported instances (USE); this may happen especially in
 conjunction with the X3D export options <tt>"WriteSelected"</tt> or
-<tt>"IgnoreHidden"</tt>, incomplete/erroneous X3D files may result unless the
+<tt>"IgnoreHidden"</tt>, incomplete&thinsp;/&thinsp;erroneous X3D files may
+result unless the
 <tt>"ResolveInstances"</tt> option is switched on;
 <item><tt>"TopLevelLayers"</tt>: arranges for all child objects of top level
 objects in the Ayam scene to be put in CADLayer nodes;
@@ -18158,41 +18166,40 @@ the other main sections.
 
 <sect1>The Undo System<label id="undos">
 <p>
-With the help of the undo system, one may correct mistakes made while
-modelling.
-However, only modifications of objects can be undone. This includes changes
-made by modelling actions, changes made using property GUIs, but also
-changes to views (type changes or changes to the camera settings associated
-with a view).
-<p>
+With the help of the undo system mistakes made while modelling may
+be corrected.<newline>
+Note, that only modifications of objects can be undone. This includes changes
+made by interactive modelling actions, changes made using property GUIs,
+but also changes to views (type changes or changes to the camera settings
+associated with a view).<newline>
 It is currently <em>not</em> possible to undo any changes to the object
 hierarchy, including clipboard (e.g.~cut, paste) and drag and drop
-operations. If you delete an object, it is gone! If you, accidentally, move
-an object using drag and drop, undo will not help!
+operations. If an object is deleted, it is gone! If an object is,
+accidentally, moved using drag and drop, undo will <em/not/ help.
 <p>
 The undo system works by storing copies of the different states of changed
-objects in an undo buffer. You may step backwards through the saved states
-using <tt/&lt;Ctrl+z&gt;/ (undo) but also forward using <tt/&lt;Ctrl+y&gt;/
-(redo).
+objects in an undo buffer. It is possible to step backwards through the
+saved states using <tt/&lt;Ctrl+z&gt;/ (undo) but also forward
+using <tt/&lt;Ctrl+y&gt;/ (redo).
 <p>
 The storage space occupied by the undo buffer may be adjusted using the
-preferences option <tt>"Modelling/UndoLevels"</tt>. A value of -1 for
-<tt>"UndoLevels"</tt> completely disables the undo system.
-The values 0 and 1 are not allowed. The value 2 means that there is
-always one state of the scene that can be restored, plus, a potential
-undo operation can also always be undone using redo.
+preferences option <tt>"Modelling/UndoLevels"</tt>. A value of 0
+completely disables the undo system.<footnote>Since 1.21.</footnote>
+The value 1 means that there is always one state of the scene that can
+be restored, plus, a potential undo operation can also always be
+undone using redo.
 <p>
 The changes that would be undone or redone are shown in abbreviated form
 in the default prompt of the Ayam console and also in
 the main menu entries <tt>"Edit/Undo"</tt> and
 <tt>"Edit/Redo"</tt>.<footnote>Since 1.14.</footnote>
 <p>
-Several actions will completely clear the undo buffer (no undo is
-possible after those actions):
+Several actions will completely clear the undo buffer (i.e.~no undo is
+possible after one of those actions):
 New Scene, Open (Replace) Scene, and Close View.
 <p>
-Note that undo/redo will also modify objects that currently reside in the
-object clipboard (if they have saved states in the undo buffer).
+Also note, that undo&thinsp;/&thinsp;redo will also modify objects that
+reside in the object clipboard (if they have saved states in the undo buffer).
 This means that the following sequence of operations leads to a sphere
 placed at <tt>"0,0,0"</tt>:
 <code>
@@ -18202,6 +18209,7 @@ cut Sphere (to clipboard)
 undo
 paste Sphere (from clipboard)
 </code>
+
 
 <sect1>The Modelling Concept Tool-Objects<label id="toolobj">
 <p>
@@ -18757,8 +18765,8 @@ set to an empty string, a default of
 <tscreen><tt>
 \[Undo:$ay(undoo)/Redo:$ay(redoo)\].../[file tail [pwd]]&gt;
 </tt></tscreen>
-will be used, which displays the name of the operations that one can
-undo and redo and the last component of the current
+will be used, which displays the name of the operations that can be
+undone and redone and the last component of the current
 directory of Ayam like this:
 <tscreen><tt>
 [Undo:None/Redo:None].../scn&gt;
@@ -18766,11 +18774,11 @@ directory of Ayam like this:
 .
 
 <p>
-One may e.g.~change this to <tt/"[pwd]&gt;"/ to see just the full path
-name of the current directory.
-
-To display the value of a variable in the prompt (e.g.~designating
-the current level in the scene hierarchy) a write-trace
+If this would be set to <tt/"[pwd]&gt;"/ the prompt would display
+the full path name of the current directory instead.
+<p>
+To display the value of an arbitrary Tcl variable in the prompt
+(e.g.~designating the current level in the scene hierarchy) a write trace
 must be bound to that variable.
 The write trace in turn must call the procedure <tt/"ayam_updateprompt"/
 and may e.g.~be established using a small script like this:
@@ -18862,10 +18870,10 @@ for the mouse wheel; default value is 0.5.
 
 <sect2>RiOption and RiAttributes Database<label id="rioptdb">
 <p>
-With the ayamrc file, one may also adapt the database of RiOptions and
-RiAttributes to the current RenderMan rendering system.
+With the ayamrc file, also the database of RiOptions and RiAttributes may
+be adapted to the target RenderMan rendering system.
 <p>
-One can then easily add renderer specific options and attributes
+Renderer specific options and attributes can then be added
 to the scenes using tags and the main menu entries
 <tt>"Special/Tags/Add RiOption"</tt> and
 <tt>"Special/Tags/Add RiAttribute"</tt>,
@@ -19295,7 +19303,7 @@ that render very slowly.
 <sect1>Modelling Without Views<label id="modsanv">
 <p>
 To work with very large/complex scenes, it may be necessary to turn off
-all views. In Ayam one can do this in the multi window GUI mode
+all views. In Ayam this can be done in the multi window GUI mode
 (see section <ref id="prefgui" name="GUI preference settings">).
 If there are many objects, it is also advisable to switch the object
 selection widget from tree view mode to list box mode (menu:
