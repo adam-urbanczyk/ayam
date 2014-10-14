@@ -1533,6 +1533,49 @@ ay_tcmd_withobtcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_tcmd_withobtcmd */
 
 
+/* ay_tcmd_getstring:
+ *  get string from Tcl variable
+ */
+int
+ay_tcmd_getstring(Tcl_Interp *interp, Tcl_Obj *arr, Tcl_Obj *var, char **result)
+{
+ Tcl_Obj *to;
+ char *str;
+ int len = 0;
+
+  if(!interp)
+    interp = ay_interp;
+
+  if(!arr || !var || !result)
+   return AY_ENULL;
+
+  to = Tcl_ObjGetVar2(interp, arr, var, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  if(to)
+    {
+      str = Tcl_GetStringFromObj(to, &len);
+      if(str)
+	{	  
+	  if(*result)
+	    {
+	      if(!strcmp(*result, str))
+		{
+		  return AY_OK;
+		}
+	      free(*result);
+	      *result = NULL;
+	    }
+	  if(!(*result = malloc((len+1)*sizeof(char))))
+	    {
+	      return AY_EOMEM;
+	    }
+	  memcpy(*result, str, (len+1)*sizeof(char));
+	} /* if str */
+    } /* if to */
+
+ return AY_OK;
+} /* ay_tcmd_getstring */
+
+
 /* ay_tcmd_getuint:
  *  convert string to unsigned int
  */
