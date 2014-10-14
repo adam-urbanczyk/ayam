@@ -338,9 +338,8 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 {
  char *n1 = "ayprefs", *n2 = "ayprefse";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- int itemp = 0, ay_status = AY_OK, qf = 0;
  double dtemp = 0.0;
- char *str = NULL;
+ int itemp = 0, ay_status = AY_OK, qf = 0;
  char *ucargs[3] = {0}, ucarg0[] = "undo", ucarg1[] = "clear";
 
   /* Modeling */
@@ -711,40 +710,12 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
   ay_prefs.errorlevel = itemp;
 
   Tcl_SetStringObj(ton, "LogFile", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  str = Tcl_GetStringFromObj(to, NULL);
-
-  if(str)
-    {
-      if(ay_prefs.logfile)
-	free(ay_prefs.logfile);
-
-      if(!(ay_prefs.logfile = calloc(strlen(str)+1, sizeof(char))))
-	{
-	  ay_error(AY_EOMEM, argv[0], NULL);
-	  goto cleanup;
-	}
-
-      strcpy(ay_prefs.logfile, str);
-    }
+  if((ay_status = ay_tcmd_getstring(interp, toa, ton, &(ay_prefs.logfile))))
+    goto cleanup;
 
   Tcl_SetStringObj(ton, "PPRender", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  str = Tcl_GetStringFromObj(to, NULL);
-
-  if(str)
-    {
-      if(ay_prefs.pprender)
-	free(ay_prefs.pprender);
-
-      if(!(ay_prefs.pprender = calloc(strlen(str)+1, sizeof(char))))
-	{
-	  ay_error(AY_EOMEM, argv[0], NULL);
-	  goto cleanup;
-	}
-
-      strcpy(ay_prefs.pprender, str);
-    } /* if */
+  if((ay_status = ay_tcmd_getstring(interp, toa, ton, &(ay_prefs.pprender))))
+    goto cleanup;
 
   Tcl_SetStringObj(ton, "SMethod", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -797,99 +768,39 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_GetDoubleFromObj(interp, to, &ay_prefs.polyoffset1);
 
   Tcl_SetStringObj(ton, "PVTexCoordName", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  str = Tcl_GetStringFromObj(to, NULL);
-
-  if(str)
-    {
-      if(ay_prefs.texcoordname)
-	free(ay_prefs.texcoordname);
-
-      if(!(ay_prefs.texcoordname = calloc(strlen(str)+1, sizeof(char))))
-	{
-	  ay_error(AY_EOMEM, argv[0], NULL);
-	  goto cleanup;
-	}
-
-      strcpy(ay_prefs.texcoordname, str);
-    } /* if */
+  if((ay_status = ay_tcmd_getstring(interp, toa, ton,
+				    &(ay_prefs.texcoordname))))
+    goto cleanup;
 
   Tcl_SetStringObj(ton, "PVNormalName", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  str = Tcl_GetStringFromObj(to, NULL);
-
-  if(str)
-    {
-      if(ay_prefs.normalname)
-	free(ay_prefs.normalname);
-
-      if(!(ay_prefs.normalname = calloc(strlen(str)+1, sizeof(char))))
-	{
-	  ay_error(AY_EOMEM, argv[0], NULL);
-	  goto cleanup;
-	}
-
-      strcpy(ay_prefs.normalname, str);
-    } /* if */
+  if((ay_status = ay_tcmd_getstring(interp, toa, ton,
+				    &(ay_prefs.normalname))))
+    goto cleanup;
 
   Tcl_SetStringObj(ton, "PVTangentName", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  str = Tcl_GetStringFromObj(to, NULL);
-
-  if(str)
-    {
-      if(ay_prefs.tangentname)
-	free(ay_prefs.tangentname);
-
-      if(!(ay_prefs.tangentname = calloc(strlen(str)+1, sizeof(char))))
-	{
-	  ay_error(AY_EOMEM, argv[0], NULL);
-	  goto cleanup;
-	}
-
-      strcpy(ay_prefs.tangentname, str);
-    } /* if */
+  if((ay_status = ay_tcmd_getstring(interp, toa, ton,
+				    &(ay_prefs.tangentname))))
+    goto cleanup;
 
   Tcl_SetStringObj(ton, "PVColorName", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  str = Tcl_GetStringFromObj(to, NULL);
-
-  if(str)
-    {
-      if(ay_prefs.colorname)
-	free(ay_prefs.colorname);
-
-      if(!(ay_prefs.colorname = calloc(strlen(str)+1, sizeof(char))))
-	{
-	  ay_error(AY_EOMEM, argv[0], NULL);
-	  goto cleanup;
-	}
-
-      strcpy(ay_prefs.colorname, str);
-    } /* if */
+  if((ay_status = ay_tcmd_getstring(interp, toa, ton,
+				    &(ay_prefs.colorname))))
+    goto cleanup;
 
   Tcl_SetStringObj(ton, "PVOpacityName", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  str = Tcl_GetStringFromObj(to, NULL);
-
-  if(str)
-    {
-      if(ay_prefs.opacityname)
-	free(ay_prefs.opacityname);
-
-      if(!(ay_prefs.opacityname = calloc(strlen(str)+1, sizeof(char))))
-	{
-	  ay_error(AY_EOMEM, argv[0], NULL);
-	  goto cleanup;
-	}
-
-      strcpy(ay_prefs.opacityname, str);
-    } /* if */
+  if((ay_status = ay_tcmd_getstring(interp, toa, ton,
+				    &(ay_prefs.opacityname))))
+    goto cleanup;
 
 cleanup:
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+
+  if(ay_status)
+    {
+      ay_error(ay_status, argv[0], NULL);
+    }
 
  return TCL_OK;
 } /* ay_prefs_settcmd */
