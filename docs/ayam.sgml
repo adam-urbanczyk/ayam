@@ -9373,71 +9373,6 @@ scripting languages, like JavaScript, provided by the
 <tt/"jsinterp"/ plugin (see also:
 <ref id="jsinterp" name="JavaScript Scripting Interface">).<footnote>Since 1.18.</footnote>
 
-<sect2>Safe Interpreter<label id="safeinterp">
-<p>
-In Ayam versions prior to 1.16 Script object scripts could use any
-functionality of Tcl, Tk, and the Tcl scripting interface of Ayam which
-posed a huge security risk. This is no longer the case.
-Script objects scripts now run in a safe interpreter with reduced
-instruction set. They can no longer write to the file system, get
-onto the network, or confuse the application state. Direct access
-to Tk is also completely blocked, but Script objects still can have their
-own property GUIs (refer to the examples below).
-<p>
-In particular, the following Tcl commands are <em>not</em> available in the
-safe interpreter:
-cd, encoding, exec, exit, fconfigure, file, glob, load, open, pwd, socket,
-source, unload; auto_exec_ok, auto_import, auto_load, auto_load_index,
-auto_qualify, unknown (the missing unknown and autoloading facilities
-lead to further unavailability of commands normally available via
-autoloading, like e.g.~parray, history).<newline>
-The puts command is available in a limited fashion: only access to
-the stdout and stderr channels is allowed.
-<p>
-Ayam scripting interface commands that directly manipulate the user
-interface are also not available (uS, rV etc.). Please refer to the
-documentation of the scripting interface commands about their availability
-in the safe interpreter
-(see section
-<ref id="sccomm" name="Procedures and Commands">).
-<p>
-In addition, access to global variables like env, ay, ayprefs
-is not allowed. In fact, the safe interpreter has a completely
-separate set of variables. Transfer of data between both interpreters
-must be arranged manually from the Ayam interpreter (e.g.~scripts that
-run in the Ayam console).
-<p>
-With the help of scripts, that run in the Ayam interpreter, more commands
-may be transfered to or made available in the safe interpreter.
-But this may, of course, open security holes again.
-<p>
-You can also still re-enable full access from Script objects to the
-complete scripting interface by recompiling Ayam.
-If you do so, for security reasons, if scene files containing Script
-objects are loaded, Ayam will raise a warning dialog, offering to
-temporarily disable all Script objects that will be read. The Script
-objects will be disabled using the <tt/"Active"/ Script object property
-and may be enabled again after careful inspection of the script code
-manually or using the main menu entry <tt>"Special/Enable Scripts"</tt>.
-
-<sect2>Transformation Support
-<p>
-Even though, initially, Script objects do not show the
-Transformations property, they can support transformations under
-certain circumstances.
-To enable this support, a NP tag with the value <tt/"Transformations"/
-must be added to the Script object (i.e.~the Transformations property
-must be visible).<newline>
-Now, the result(s) of the script can, additionally, be manipulated by
-the standard interactive modelling actions, like move or scale.
-<p>
-Note, that upon provide or conversion the transformations from the
-Script object will be added to the transformations of the objects
-created by the script in the same way as by the delegate
-transformations tool, which fails for complex setups.
-However, this problem can be avoided by
-using the <tt/"applyTrafo"/ command on the created objects in the script.
-
 <sect2>Script Object Usage
 <p>
 The script of a Script object will be run each time the script is
@@ -9450,8 +9385,8 @@ escape from infinite loops in the Ayam console, is pressed.
 Calling commands and procedures that lead to the processing of
 events or that are slow because they manipulate or update the
 GUI of Ayam should be avoided. In particular, the following
-procedures and commands should <em>not</em> be used: uS, uCR, uCL,
-selOb, plb_update, undo!
+procedures and commands should <em>not</em> be used: <tt/uS/, <tt/uCR/,
+<tt/uCL/, <tt/selOb/, <tt/plb_update/, <tt/undo/!
 <p>
 Script objects may also create their own property
 GUIs for e.g.~script parameters.<footnote>Since 1.8.2.</footnote>
@@ -9590,14 +9525,14 @@ parameters of the Script object. Note that only parameters from this
 list will be saved to Ayam scene files.
 Note also, that <tt/"SP"/ must <em/never/ contain <tt/"SP"/. All copies
 of a Script object must share the same set of individual vs.~shared
-parameters. If objects need to store differing/individual amounts of
-parameter data, lists can be used as individual parameters.
+parameters. If objects need to store differing&thinsp;/&thinsp;individual
+amounts of parameter data, lists can be used as individual parameters.
 <p>
 Script objects may also use arbitrary, plugin provided,
 scripting languages.<footnote>Since 1.18.</footnote>
 To switch to a different language, the first line
 of the script must be a comment (in the syntax of the other language)
-with the word <tt>"use:"</tt> followed by the language name, as
+with the keyword <tt>"use:"</tt> followed by the language name, as
 provided by the corresponding plugin, e.g.~for JavaScript the first line
 should look like this:
 <code>
@@ -9610,6 +9545,73 @@ can be used in conjunction like this:
 </code>
 
 </itemize>
+
+<sect2>Safe Interpreter<label id="safeinterp">
+<p>
+In Ayam versions prior to 1.16 Script object scripts could use any
+functionality of Tcl, Tk, and the Tcl scripting interface of Ayam which
+posed a huge security risk. This is no longer the case.
+Script objects scripts now run in a safe interpreter with reduced
+instruction set. They can no longer write to the file system, get
+onto the network, or confuse the application state. Direct access
+to Tk is also completely blocked, but Script objects still can have their
+own property GUIs (refer to the examples below).
+<p>
+In particular, the following Tcl commands are <em>not</em> available in the
+safe interpreter:
+<tt/cd/, <tt/encoding/, <tt/exec/, <tt/exit/, <tt/fconfigure/, <tt/file/,
+<tt/glob/, <tt/load/, <tt/open/, <tt/pwd/, <tt/socket/,
+<tt/source/, <tt/unload/; <tt/auto_exec_ok/, <tt/auto_import/, <tt/auto_load/,
+<tt/auto_load_index/, <tt/auto_qualify/, <tt/unknown/
+(the missing unknown and autoloading facilities
+lead to further unavailability of commands normally available via
+autoloading, like e.g.~<tt/parray/, <tt/history/).<newline>
+The <tt/puts/ command is available in a limited fashion: only access to
+the stdout and stderr channels is allowed.
+<p>
+Ayam scripting interface commands that directly manipulate the user
+interface are also not available (<tt/uS/, <tt/rV/ etc.). Please refer to the
+documentation of the scripting interface commands about their availability
+in the safe interpreter
+(see section
+<ref id="sccomm" name="Procedures and Commands">).
+<p>
+In addition, access to global variables deserving protection like
+<tt/env/, <tt/ay/, <tt/ayprefs/ is not allowed. In fact, the safe
+interpreter has a completely separate set of variables. Transfer of
+data between both interpreters must be arranged manually from the
+Ayam interpreter (i.e.~with scripts that run in the Ayam console).
+<p>
+With the help of scripts, that run in the Ayam interpreter, more commands
+may be transfered to or made available in the safe interpreter.
+But this may, of course, open security holes again.
+<p>
+Full access from Script objects to the complete scripting interface
+may be re-enabled by recompiling Ayam.
+If this is enabled and scene files containing Script
+objects are loaded, Ayam will raise a warning dialog, offering to
+temporarily disable all Script objects that will be read. The Script
+objects will be disabled using their <tt/"Active"/ Script object property
+and may be enabled again after careful inspection of the script code
+manually or using the main menu entry <tt>"Special/Enable Scripts"</tt>.
+
+<sect2>Transformation Support
+<p>
+Even though, initially, Script objects do not show and use the
+Transformations property, they can support transformations under
+certain circumstances.
+To enable this support, a NP tag with the value <tt/"Transformations"/
+must be added to the Script object (i.e.~the Transformations property
+must be visible in order to be effective).<newline>
+Now, the result(s) of the script can, additionally, be manipulated by
+the standard interactive modelling actions, like move or scale.
+<p>
+Note, that upon provide or conversion the transformations from the
+Script object will be added to the transformations of the objects
+created by the script in the same way as by the delegate
+transformations tool, which fails for complex setups.
+However, this problem can be avoided by
+using the <tt/"applyTrafo"/ command on the created objects in the script.
 
 <sect2>Conversion Support
 <p>
@@ -10992,7 +10994,6 @@ onto the network, or confuse the application state, see also section
 <ref id="safeinterp" name="Safe Interpreter">.
 Consequently, the warning dialog that appeared when files with
 ANS tags were loaded is also gone.
-<p>
 <p>
 The original functionality can still be re-enabled by recompiling Ayam.
 If this is enabled and scene files containing ANS
