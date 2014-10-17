@@ -1,7 +1,10 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.shared [25. Mar 2009]
+# Makefile.shared [17. Oct 2014]
 # Makefile for Ayam (shared version)
+#
+# See the file ayam/src/INSTALL for prerequisites and instructions.
+# You can also use "wish ayamConf.tcl" to create a Makefile.
 
 # Choose an installation prefix.
 PREFIX = /usr/local/ayam
@@ -333,7 +336,7 @@ AYCSGLIBS = $(OPENCSGOBJS) $(GLEWLIB)
 # onio Plugin
 OPENNURBSDIR = ../../opennurbs
 
-ONIOCFLAGS = 
+ONIOCFLAGS =
 # IRIX:
 #ONIOCFLAGS = -D_WCHAR_T_DEFINED -DON_COMPILER_IRIX -D_GNU_SOURCE
 
@@ -643,7 +646,7 @@ onio.so:
 
 dxfio.so:
 	$(CXX) -c $(CFLAGS) plugins/dxfio.cpp -o plugins/dxfio.o $(AYINC) -I$(DXFIOINCDIR)
-	$(CXX) $(SHLFLAGS) plugins/dxfio.o -o plugins/dxfio.so  $(DXFIOLIBS) 
+	$(CXX) $(SHLFLAGS) plugins/dxfio.o -o plugins/dxfio.so  $(DXFIOLIBS)
 
 x3dio.so:
 	$(CC) -c $(CFLAGS) plugins/x3dio.c -o plugins/x3dio.o $(AYINC) $(X3DIOINC)
@@ -807,6 +810,8 @@ uninstall:
 	-rm -f /usr/share/applications/ayam.desktop
 	-rm -f ~/.local/share/ayam.desktop
 	-rm -f $(BINDIR)/Makefile
+	@echo "Uninstallation completed."
+
 
 # add Gnome/KDE/... user desktop shortcut
 desktop:

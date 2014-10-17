@@ -1,7 +1,10 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.wrapped [25. Mar 2009]
+# Makefile.wrapped [17. Oct 2014]
 # Makefile for Ayam (wrapped version)
+#
+# See the file ayam/src/INSTALL for prerequisites and instructions.
+# You can also use "wish ayamConf.tcl" to create a Makefile.
 
 # Choose an installation prefix.
 PREFIX = /usr/local/ayam
@@ -165,7 +168,7 @@ X11LIBS = -L/usr/X11R6/lib -lXmu -lXext -lX11
 # where is ributil.h?
 AFFINEINC = -I./affine/include
 # if you do not use Affine as BMRT libribout replacement:
-#AFFINEOBJS = 
+#AFFINEOBJS =
 # if you use affine as BMRT libribout replacement
 # (add -DAYUSEAFFINE to CFLAGS above!):
 AFFINEOBJS = ./affine/src/write.o ./affine/src/constant.o
@@ -481,7 +484,7 @@ AYCSGLIBS = $(OPENCSGOBJS) $(GLEWLIB)
 # onio Plugin
 OPENNURBSDIR = ../../opennurbs
 
-ONIOCFLAGS = 
+ONIOCFLAGS =
 # IRIX:
 #ONIOCFLAGS = -D_WCHAR_T_DEFINED -DON_COMPILER_IRIX -D_GNU_SOURCE
 
@@ -644,7 +647,7 @@ onio.so:
 
 dxfio.so:
 	$(CXX) -c $(CFLAGS) plugins/dxfio.cpp -o plugins/dxfio.o $(AYINC) -I$(DXFIOINCDIR)
-	$(CXX) $(SHLFLAGS) plugins/dxfio.o -o plugins/dxfio.so $(DXFIOLIBS) 
+	$(CXX) $(SHLFLAGS) plugins/dxfio.o -o plugins/dxfio.so $(DXFIOLIBS)
 
 x3dio.so:
 	$(CC) -c $(CFLAGS) plugins/x3dio.c -o plugins/x3dio.o $(AYINC) $(X3DIOINC)
@@ -680,7 +683,7 @@ mostlyclean:
 	-rm -f core
 	-rm -f *.o
 	-rm -f *.so
-	-rm -f $(AYAMOBJS) 
+	-rm -f $(AYAMOBJS)
 	-rm -f $(TOGLOBJECT)
 	-rm -f plugins/*.o
 	-rm -f plugins/*.so
@@ -799,6 +802,7 @@ uninstall:
 	-rm -f /usr/share/applications/ayam.desktop
 	-rm -f ~/.local/share/ayam.desktop
 	-rm -f $(BINDIR)/Makefile
+	@echo "Uninstallation completed."
 
 # add Gnome/KDE/... user desktop shortcut
 desktop:
@@ -826,5 +830,5 @@ filetype:
 
 .PHONY: mf3d
 
-.o.so: 
+.o.so:
 	$(CC) $(SHLFLAGS) -o $@ $*.o
