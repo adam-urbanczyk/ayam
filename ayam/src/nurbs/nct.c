@@ -1322,7 +1322,7 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	  else
 	    {
-	      if(refine_cv && o->type == AY_IDACURVE)
+	      if(refine_cv && (o->type == AY_IDACURVE))
 		{
 		  ac = (ay_acurve_object*)o->refine;
 		  Qw = NULL;
@@ -1653,12 +1653,10 @@ ay_nct_clampperiodic(ay_nurbcurve_object *curve)
   /* copy results back to curve, ignoring the first p and last p cv/knots */
   memcpy(curve->controlv, &(newcontrolv[p*stride]),
 	 curve->length*stride*sizeof(double));
-
   memcpy(curve->knotv, &(newknotv[p]),
 	 (curve->length+curve->order)*sizeof(double));
 
   free(newcontrolv);
-
   free(newknotv);
 
   /* correct curve type */
@@ -1831,14 +1829,13 @@ ay_nct_elevate(ay_nurbcurve_object *curve, int new_order)
     } /* if */
 
   /* alloc new knotv & new controlv */
-  if(!(Uh = malloc((curve->length + curve->length*t +
-		    curve->order + t) *
+  if(!(Uh = malloc((curve->length + curve->length*t + curve->order + t) *
 		   sizeof(double))))
     {
       ay_error(AY_EOMEM, fname, NULL);
       return AY_ERROR;
     }
-  if(!(Qw = malloc((curve->length + curve->length*t)*4*
+  if(!(Qw = malloc((curve->length + curve->length*t) * 4 *
 		   sizeof(double))))
     {
       free(Uh);
@@ -2355,8 +2352,8 @@ ay_nct_findu(struct Togl *togl, ay_object *o,
  double m[16], mi[16];
  GLfloat pixel1[3] = {0.9f,0.9f,0.9f}, pixel[3] = {0.0f,0.0f,0.0f};
  ay_nurbcurve_object *c = NULL;
- int dx[25] = {0,1,1,0,-1,-1,-1,0,1, 2,2,2,1,0,-1,-2,-2,-2,-2,-2,-1,0,1,2,2};
- int dy[25] = {0,0,-1,-1,-1,0,1,1,1, 0,-1,-2,-2,-2,-2,-2,-1,0,1,2,2,2,2,2,1};
+ int dx[25] = {0,1,1,0,-1,-1,-1,0,1,2,2,2,1,0,-1,-2,-2,-2,-2,-2,-1,0,1,2,2};
+ int dy[25] = {0,0,-1,-1,-1,0,1,1,1,0,-1,-2,-2,-2,-2,-2,-1,0,1,2,2,2,2,2,1};
  int found, i = 0, j = 0, k = 0, /*maxtry = 1000,*/ stride, samples = 10;
  int starti = 0, endi = 0;
  double point[4] = {0}/*, guess = 0.0, e1 = 0.05, e2 = 0.05*/;
@@ -2677,24 +2674,27 @@ ay_nct_splitdisc(ay_object *src, double u, ay_object **result)
 
   /* create new controls/knots for first curve */
   if(!(newcv1 = malloc(nc1->length*stride*sizeof(double))))
-    return AY_EOMEM;
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   memcpy(newcv1, nc1->controlv, nc1->length*stride*sizeof(double));
 
   if(!(newkv1 = malloc((nc1->length+nc1->order)*sizeof(double))))
-    { free(newcv1); return AY_EOMEM; }
+    { free(newcv1); ay_status = AY_EOMEM; goto cleanup; }
 
   memcpy(newkv1, nc1->knotv, (nc1->length+nc1->order)*sizeof(double));
 
   /* create new controls/knots for second curve */
   if( !(newcv2 = malloc(nc2->length*stride*sizeof(double))))
-    { free(newcv1); free(newkv1); return AY_EOMEM; }
+    { free(newcv1); free(newkv1); ay_status = AY_EOMEM; goto cleanup; }
 
   memcpy(newcv2, &(nc1->controlv[i*stride]),
 	 nc2->length*stride*sizeof(double));
 
   if(!(newkv2 = malloc((nc2->length+nc2->order)*sizeof(double))))
-    { free(newcv1); free(newkv1); free(newcv2); return AY_EOMEM; }
+    {
+      free(newcv1); free(newkv1); free(newcv2);
+      ay_status = AY_EOMEM; goto cleanup;
+    }
 
   memcpy(newkv2, &(nc1->knotv[nc1->length]),
 	 (nc2->length+nc2->order)*sizeof(double));
@@ -2716,7 +2716,6 @@ ay_nct_splitdisc(ay_object *src, double u, ay_object **result)
 
   ay_nct_recreatemp(nc2);
 
-
   new->selected = AY_FALSE;
   new->modified = AY_TRUE;
   src->modified = AY_TRUE;
@@ -2724,7 +2723,14 @@ ay_nct_splitdisc(ay_object *src, double u, ay_object **result)
   /* return result */
   *result = new;
 
- return AY_OK;
+  new = NULL;
+
+cleanup:
+
+  if(new)
+    ay_object_delete(new);
+
+ return ay_status;
 } /* ay_nct_splitdisc */
 
 
@@ -2843,8 +2849,10 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
       /* check new knots for validity */
       if(ay_knots_check(nc1->length, nc1->order,
 			nc1->length+nc1->order,	newknotv))
-	{ (void)ay_object_delete(new); free(newcontrolv); free(newknotv);
-	  return AY_ERROR; }
+	{
+	  (void)ay_object_delete(new); free(newcontrolv); free(newknotv);
+	  return AY_ERROR;
+	}
 
       free(nc2->controlv);
       nc2->controlv = NULL;
@@ -2871,8 +2879,10 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
       /* check new knots for validity */
       if(ay_knots_check(nc2->length, nc2->order,
 			nc2->length+nc2->order,	nc2->knotv))
-	{ (void)ay_object_delete(new); free(newcontrolv); free(newknotv);
-	  return AY_ERROR; }
+	{
+	  (void)ay_object_delete(new); free(newcontrolv); free(newknotv);
+	  return AY_ERROR;
+	}
 
       free(nc1->controlv);
       nc1->controlv = newcontrolv;
@@ -3674,37 +3684,37 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
  double radius = 1.0, arc = 360.0;
 
   /* parse args */
- if(argc > 1)
-   {
-     i = 1;
-     while(i+1 < argc)
-       {
-	 if((argv[i][0] == '-') && (argv[i][1] == 'a'))
-	   {
-	     tcl_status = Tcl_GetDouble(interp, argv[i+1], &arc);
-	     AY_CHTCLERRRET(tcl_status, argv[0], interp);
-	   }
-	 else
-	 if((argv[i][0] == '-') && (argv[i][1] == 'r'))
-	   {
-	     tcl_status = Tcl_GetDouble(interp, argv[i+1], &radius);
-	     AY_CHTCLERRRET(tcl_status, argv[0], interp);
-	   }
-	 else
-	 if((argv[i][0] == '-') && (argv[i][1] == 's'))
-	   {
-	     tcl_status = Tcl_GetInt(interp, argv[i+1], &sections);
-	     AY_CHTCLERRRET(tcl_status, argv[0], interp);
-	   }
-	 else
-	 if((argv[i][0] == '-') && (argv[i][1] == 'o'))
-	   {
-	     tcl_status = Tcl_GetInt(interp, argv[i+1], &order);
-	     AY_CHTCLERRRET(tcl_status, argv[0], interp);
-	   }
-	 i += 2;
-       }
-   }
+  if(argc > 1)
+    {
+      i = 1;
+      while(i+1 < argc)
+	{
+	  if((argv[i][0] == '-') && (argv[i][1] == 'a'))
+	    {
+	      tcl_status = Tcl_GetDouble(interp, argv[i+1], &arc);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	    }
+	  else
+	    if((argv[i][0] == '-') && (argv[i][1] == 'r'))
+	      {
+		tcl_status = Tcl_GetDouble(interp, argv[i+1], &radius);
+		AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	      }
+	    else
+	      if((argv[i][0] == '-') && (argv[i][1] == 's'))
+		{
+		  tcl_status = Tcl_GetInt(interp, argv[i+1], &sections);
+		  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+		}
+	      else
+		if((argv[i][0] == '-') && (argv[i][1] == 'o'))
+		  {
+		    tcl_status = Tcl_GetInt(interp, argv[i+1], &order);
+		    AY_CHTCLERRRET(tcl_status, argv[0], interp);
+		  }
+	  i += 2;
+	}
+    }
 
   if(sections < 1)
     {
@@ -5330,7 +5340,9 @@ ay_nct_makecompatible(ay_object *curves)
 	} /* if */
 
       if(clamp_me)
-	ay_status = ay_nct_clamp(curve, 0);
+	{
+	  ay_status = ay_nct_clamp(curve, 0);
+	}
 
       if(ay_status)
 	return ay_status;
