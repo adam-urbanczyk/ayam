@@ -3229,7 +3229,7 @@ ay_npt_concat(ay_object *o, int type, int order,
 			    {
 			    (void)ay_npt_rescaletrims(o->down, 0,
 						      np->uknotv[0],
-                              np->uknotv[np->width+np->uorder-1], 0, 1);
+				     np->uknotv[np->width+np->uorder-1], 0, 1);
 			    }
 
 			  ay_status = ay_knots_rescaletorange(np->width+
@@ -12516,14 +12516,13 @@ ay_npt_finduv(struct Togl *togl, ay_object *o,
        {
 	 for(j = 0; j < vsamples-1; j++)
 	   {
-
-	     ay_status = ay_nb_SurfacePoint4D(np->width-1, np->height-1,
-					      np->uorder-1, np->vorder-1,
-					      np->uknotv, np->vknotv,
-					      np->controlv,
-					      U[i]+((U[i+1]-U[i])/2.0),
-					      V[j]+((V[j+1]-V[j])/2.0),
-					      p);
+	     (void)ay_nb_SurfacePoint4D(np->width-1, np->height-1,
+					np->uorder-1, np->vorder-1,
+					np->uknotv, np->vknotv,
+					np->controlv,
+					U[i]+((U[i+1]-U[i])/2.0),
+					V[j]+((V[j+1]-V[j])/2.0),
+					p);
 	     p += stride;
 	   } /* for */
        } /* for */
@@ -12534,7 +12533,6 @@ ay_npt_finduv(struct Togl *togl, ay_object *o,
 	{
 	 for(j = 0; j < (vsamples-1); j++)
 	   {
-
 	     distance = AY_VLEN((point[0] - p[0]),
 				(point[1] - p[1]),
 				(point[2] - p[2]));
@@ -12595,8 +12593,10 @@ ay_npt_finduv(struct Togl *togl, ay_object *o,
   winXY[0] = winx;
   winXY[1] = winy;
 
-  ay_nb_SurfacePoint4D(np->width-1, np->height-1, np->uorder-1, np->vorder-1,
-		       np->uknotv, np->vknotv, np->controlv, *u, *v, point);
+  (void)ay_nb_SurfacePoint4D(np->width-1, np->height-1,
+			     np->uorder-1, np->vorder-1,
+			     np->uknotv, np->vknotv,
+			     np->controlv, *u, *v, point);
 
   ay_trafo_invmatrix(m, mi);
 
