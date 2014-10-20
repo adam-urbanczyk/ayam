@@ -3,7 +3,7 @@
 # packages HTML output, namely:
 
 
-set procs { fixfigureb fixfiguree fixcaption }
+set procs { fixfigureb fixfiguree }
 set procs {}
 
 # center all figures
@@ -22,18 +22,6 @@ proc fixfiguree { buf outfile } {
     set index [ string first "<FIGURE>" $buf ]
     if { $index > -1 } {
 	puts $outfile "<CENTER><FIGURE>"
-	set found 1
-    }
-    return $found;
-}
-
-proc fixcaption { buf outfile } {
-    set found 0
-    set index [ string first "<CAPTION>" $buf ]
-    if { $index > -1 } {
-	set out "<CAPTION><P>"
-	append out [string range $buf 9 end]
-	puts $outfile $out
 	set found 1
     }
     return $found;
