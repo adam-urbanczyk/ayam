@@ -336,14 +336,14 @@
 </ph>	
 
 <caption>		"</CENTER><P><CENTER><FONT SIZE=\"-1\">"
-</caption>		"</FONT></CENTER></P><P><CENTER>" 	
+</caption>		"</FONT></CENTER><P><CENTER>" 	
 
 % tables
 
 <table>		+ 	"<CENTER>\n"	+
 </table>	+	"</CENTER>\n"		+
 
-<tabular>	+ 	"<TABLE ALIGN=\"CENTER\" BORDER><TR><TD>\n"	+
+<tabular>	+ 	"<TABLE ALIGN=\"CENTER\" BORDER=\"1\"><TR><TD>\n"	+
 </tabular>	+	"</TD></TR></TABLE>\n"		+
 
 <rowsep>		"</TD></TR><TR><TD>"		+
