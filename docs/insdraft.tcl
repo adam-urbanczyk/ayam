@@ -9,10 +9,11 @@ foreach infilename [glob html/*.html] {
     while { ![eof $infile] } {
 	gets $infile buf
 
-	set index [ string first "<HTML>" $buf ]
+	set index [ string first "<BODY>" $buf ]
 	if { $index > -1 } {
-	    puts $outfile\
-"<HTML><style type=\"text/css\">\
+		puts $outfile\
+"<BODY>\
+<style type=\"text/css\">\
 #watermark {\
   color: #f0f0f0;\
   font-size: 200pt;\
@@ -26,19 +27,13 @@ foreach infilename [glob html/*.html] {
   left:100px;\
   top:0px;\
 }\
-</style>"
-	} else {
-	    set index [ string first "<BODY>" $buf ]
-	    if { $index > -1 } {
-		puts $outfile\
-"<div id=\"watermark\">\
+</style><div id=\"watermark\">\
 <p>DRAFT</p>\
-</div> "
-	    } else {
+</div> " } else {
 		puts $outfile $buf
 	    }
 	}
-    }
+    
     # while
     close $infile
     close $outfile
