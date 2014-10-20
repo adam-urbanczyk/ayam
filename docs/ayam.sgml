@@ -33,7 +33,7 @@ code example of 6 lines text (needs another 2 for the upper/lower lines)
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>23. May 2014
+<date>20. Oct 2014
 
 <abstract>
 This is the documentation of Ayam 1.21 &ndash; a free 3D modelling environment
@@ -9480,7 +9480,7 @@ points, adds tags, or does something similar). Afterwards, the two sets
 of objects will be exchanged, the modified objects will be moved to
 the internal data structure of the Script object while
 the unmodified original child objects will again be child objects of the
-Script object. The modified objects will be provided upstream to
+Script object. The modified objects will henceforth be provided upstream to
 potential parents.
 If certain actions in the script shall be restricted to
 one of the child objects of the Script object, the
@@ -9501,8 +9501,9 @@ needs a single NURBS curve as child object may look like this:
 <tscreen><verb>
 revertC
 </verb></tscreen>
-Note: In order to make this work for objects providing NURBS curves
-(interpolating curves or instances of NURBS curves) the code has to
+Note: In order to make this work for objects that are not supported by
+the <tt/revertC/ command directly but provide NURBS curves
+(e.g.~ExtrNC objects or instances of NURBS curves) the code has to
 look like this:
 <tscreen><verb>
 convOb -inplace; revertC
@@ -9626,13 +9627,13 @@ To get around this, just copy the Script object and then use
 in place conversion on the copy.
 
 When converting in place, some special rules are in effect:<newline>
-if there is just one created/modified object, its tags
+if there is just one created&thinsp;/&thinsp;modified object, its tags
 are appended to the tags of the Script object and its material
 setting only takes precedence if there is actually a material set.<newline>
-If there are multiple created/modified objects, the Script object
-is transformed
-into a Level object, keeping its tags and material settings.
-The created/modified objects will become children of the new
+If there are multiple created&thinsp;/&thinsp;modified objects, the
+Script object is transformed into a Level object, keeping its tags
+and material settings.
+The created&thinsp;/&thinsp;modified objects will become children of the new
 Level object (with tags and material properties unchanged).
 
 The current children of the Script object will be removed prior
@@ -9642,7 +9643,7 @@ up in the object clipboard.
 <sect2>RIB Export
 <p>
 Script objects will be exported to RIB files as the objects
-they create/modify.
+they create&thinsp;/&thinsp;modify.
 
 <sect2>Script Object Examples<label id="scriptobjex">
 <p>
@@ -10846,7 +10847,7 @@ to objects of type <tt/"NPatch"/ (and objects that may be converted
 to <tt/"NPatch"/ objects). Those tesselation parameters
 will be used when the NPatch object is tesselated for e.g.~a
 conversion to a PolyMesh object. The syntax of the TP tag is:
-<tt>"&lt;tmethod&gt;,&lt;tparamu&gt;,&lt;tparamv&gt;,&lt;refinetrims&gt;"</tt>
+<tt>"&lt;tmethod&gt;,&lt;tparamu&gt;,&lt;tparamv&gt;[,&lt;refinetrims&gt;]"</tt>
 where <tt/"&lt;tmethod&gt;"/ is an integer value between 1 and 5,
 describing which tesselation method to use (1 &ndash; ParametricError,
 2 &ndash; PathLength,
