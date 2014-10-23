@@ -7631,6 +7631,89 @@ cleanup:
 } /* ay_npt_extractboundary */
 
 
+/** ay_npt_extracttrim:
+ * extract a trim curve defined boundary from the NURBS patch \a o
+ *
+ * \param[in] o NURBS patch object to process
+ * \param[in] tnum index of trim curve to extract
+ * \param[in] apply_trafo this parameter controls whether transformation
+ *  attributes of \a o should be applied to the control points of the curve
+ * \param[in,out] result pointer where to store the resulting curve
+ *
+ * \return AY_OK on success, error code otherwise.
+ */
+int
+ay_npt_extracttrim(ay_object *o, int tnum, int apply_trafo,
+		   ay_nurbcurve_object **result)
+{
+ int ay_status = AY_OK;
+ ay_nurbcurve_object *nc;
+ int qf, i = 0, tcslen = 0;
+ int *tcslens = NULL;
+ double **tcs = NULL, *tps = NULL, *p;
+
+  if(!o || !result)
+    return AY_ENULL;
+
+  if(o->type != AY_IDNPATCH)
+    return AY_EWTYPE;
+
+  if(!o->down || !o->down->next)
+    return AY_ERROR;
+
+  qf = ay_stess_GetQF(ay_prefs.glu_sampling_tolerance);
+
+  ay_status = ay_stess_TessTrimCurves(o, qf,
+				      &tcslen, &tcs,
+				      &tcslens, NULL);
+  if(ay_status)
+    goto cleanup;
+
+  if(tnum > tcslen)
+    { ay_status = AY_ERROR; goto cleanup; }
+
+  ay_status = ay_stess_ReTessTrimCurves(o, qf,
+					tcslen, tcs,
+					tcslens, &tps);
+  if(ay_status)
+    goto cleanup;
+
+  p = tps;
+  for(i = 0; i < tnum-1; i++)
+    {
+      p += tcslens[i]*3;
+    }
+
+  ay_status = ay_ict_interpolateC2CClosed(tcslens[i], 0.33, 0.33,
+					  AY_KTCENTRI,
+					  AY_FALSE, NULL, NULL, p, &nc);
+  if(ay_status)
+    goto cleanup;
+
+  /* return result */
+  *result = (ay_nurbcurve_object*)nc;
+
+cleanup:
+
+  if(tcs)
+    {
+      for(i = 0; i < tcslen; i++)
+	{
+	  free(tcs[i]);
+	}
+      free(tcs);
+    }
+
+  if(tcslens)
+    free(tcslens);
+
+  if(tps)
+    free(tps);
+
+ return ay_status;
+} /* ay_npt_extracttrim */
+
+
 /** ay_npt_extractnc:
  *  extract a NURBS curve from the NURBS patch \a o
  *
@@ -7649,6 +7732,8 @@ cleanup:
  *  curve
  * \param[in] extractnt should the normals/tangents be calculated and stored
  *  in PV tags?; 0 - no, 1 - normals, 2 - normals and tangents
+ * \param[in] pvnt pointer where to store the normals/tangents
+ * \param[in,out] result pointer where to store the resulting curve
  *
  * \return AY_OK on success, error code otherwise.
  */
@@ -7673,6 +7758,11 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
 
   if(o->type != AY_IDNPATCH)
     return AY_EWTYPE;
+
+  if(side > 8)
+    {
+      return ay_npt_extracttrim(o, side-8, apply_trafo, result);
+    }
 
   if(side == 6)
     {
