@@ -82,8 +82,8 @@ ay_ict_sanitize(int length, double *controlv,
  * \param[in] length number of data points
  * \param[in] sdlen length of automatically generated start derivative
  * \param[in] edlen length of automatically generated end derivative
- * \param[in] param_type parameterisation type (KT_CHORDAL, KT_CENTRI,
- *            or KT_UNIFORM)
+ * \param[in] param_type parameterisation type (AY_KTCHORDAL, AY_KTCENTRI,
+ *            or AY_KTUNIFORM)
  * \param[in] have_end_derivs should sderiv / ederiv be used?
  * \param[in] sderiv start derivative
  * \param[in] sderiv end derivative
@@ -290,8 +290,8 @@ cleanup:
  * \param[in] length number of data points
  * \param[in] sdlen length of automatically generated start derivative
  * \param[in] edlen length of automatically generated end derivative
- * \param[in] param_type parameterisation type (KT_CHORDAL, KT_CENTRI,
- *            or KT_UNIFORM)
+ * \param[in] param_type parameterisation type (AY_KTCHORDAL, AY_KTCENTRI,
+ *            or AY_KTUNIFORM)
  * \param[in] have_end_derivs should sderiv / ederiv be used?
  * \param[in] sderiv start derivative
  * \param[in] sderiv end derivative
@@ -506,8 +506,8 @@ cleanup:
  * \param[in] length number of data points
  * \param[in] sdlen length of automatically generated start derivative
  * \param[in] edlen length of automatically generated end derivative
- * \param[in] param_type parameterisation type (KT_CHORDAL, KT_CENTRI,
- *            or KT_UNIFORM)
+ * \param[in] param_type parameterisation type (AY_KTCHORDAL, AY_KTCENTRI,
+ *            or AY_KTUNIFORM)
  * \param[in] have_end_derivs should sderiv / ederiv be used?
  * \param[in] sderiv start derivative
  * \param[in] sderiv end derivative
@@ -710,8 +710,8 @@ cleanup:
  * \param[in] length number of data points
  * \param[in] sdlen length of automatically generated start derivative
  * \param[in] edlen length of automatically generated end derivative
- * \param[in] param_type parameterisation type (KT_CHORDAL, KT_CENTRI,
- *            or KT_UNIFORM)
+ * \param[in] param_type parameterisation type (AY_KTCHORDAL, AY_KTCENTRI,
+ *            or AY_KTUNIFORM)
  * \param[in] have_end_derivs should sderiv / ederiv be used?
  * \param[in] sderiv start derivative
  * \param[in] sderiv end derivative
