@@ -1143,6 +1143,12 @@ void ay_npt_gordonwc(ay_object *g);
 int ay_npt_extractboundary(ay_object *o, int apply_trafo,
 			   ay_nurbcurve_object **result);
 
+/** Extract trim curve from NURBS patch.
+ */
+int
+ay_npt_extracttrim(ay_object *o, int tnum, int apply_trafo,
+		   ay_nurbcurve_object **result);
+
 /** Extract curve from patch.
  */
 int ay_npt_extractnc(ay_object *npatch, int side, double param, int relative,
