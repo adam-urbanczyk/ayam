@@ -19,7 +19,7 @@ set ExtrNC_props { Attributes Tags ExtrNCAttr }
 array set ExtrNCAttr {
 arr   ExtrNCAttrData
 sproc ""
-gproc ""
+gproc extrnc_getAttr
 w     fExtrNCAttr
 }
 
@@ -29,23 +29,56 @@ DisplayMode 1
 NCInfoBall "N/A"
 Extract 0
 }
-# create ExtrNCAttr-UI
-set w [frame $ay(pca).$ExtrNCAttr(w)]
-addVSpace $w s1 2
-addMenu $w ExtrNCAttrData Side\
-    [list U0 Un V0 Vn U V Boundary Middle_U Middle_V]
-addParam $w ExtrNCAttrData Parameter
-addCheck $w ExtrNCAttrData Relative
-addParam $w ExtrNCAttrData PatchNum
-addCheck $w ExtrNCAttrData Revert
-addMenu $w ExtrNCAttrData Extract [list Nothing Normals "Normals&Tangents"]
-
-addParam $w ExtrNCAttrData Tolerance
-addMenu $w ExtrNCAttrData DisplayMode $ay(ncdisplaymodes)
-
-addText $w ExtrNCAttrData "Extracted NURBS Curve:"
-addInfo $w ExtrNCAttrData NCInfo
 
 return;
 }
 # init_ExtrNC
+
+
+# extrnc_getAttr:
+#  get Attributes from C context and build new PropertyGUI
+#
+proc extrnc_getAttr { } {
+    global ay ayprefs ExtrNCAttr ExtrNCAttrData
+
+    set oldfocus [focus]
+
+    catch {destroy $ay(pca).$ExtrNCAttr(w)}
+    set w [frame $ay(pca).$ExtrNCAttr(w)]
+
+    set ExtrNCAttrData(trims) ""
+
+    getProp
+
+    set ay(bok) $ay(appb)
+
+    # create new UI
+    addVSpace $w s1 2
+    set sides [list U0 Un V0 Vn U V Boundary Middle_U Middle_V]
+    set cnt 1
+    foreach trim $ExtrNCAttrData(trims) {
+	if { $trim == "Level" || $trim == "NCurve" } {
+	    lappend sides Trim$cnt
+	} else {
+	    lappend sides $trim
+	}
+	incr cnt
+    }
+    addMenu $w ExtrNCAttrData Side $sides
+    addParam $w ExtrNCAttrData Parameter
+    addCheck $w ExtrNCAttrData Relative
+    addParam $w ExtrNCAttrData PatchNum
+    addCheck $w ExtrNCAttrData Revert
+    addMenu $w ExtrNCAttrData Extract [list Nothing Normals "Normals&Tangents"]
+
+    addParam $w ExtrNCAttrData Tolerance
+    addMenu $w ExtrNCAttrData DisplayMode $ay(ncdisplaymodes)
+
+    addText $w ExtrNCAttrData "Extracted NURBS Curve:"
+    addInfo $w ExtrNCAttrData NCInfo
+
+    plb_setwin $w $oldfocus
+
+ return;
+}
+# extrnc_getAttr
