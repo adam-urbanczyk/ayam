@@ -304,7 +304,6 @@ ay_extrnc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_extrnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- int ay_status = AY_OK;
  char *n1="ExtrNCAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_object *trim = NULL, *npatch = NULL, *pobject = NULL;
@@ -364,13 +363,14 @@ ay_extrnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   ay_prop_getncinfo(interp, n1, extrnc->ncurve);
 
+  /* parse trims for GUI selection */
   if(o->down &&  o->down->next)
     {
       pnum = extrnc->pnum - 1;
       npatch = o->down;
       if(npatch->type != AY_IDNPATCH)
 	{
-	  ay_status = ay_provide_object(npatch, AY_IDNPATCH, &pobject);
+	  (void)ay_provide_object(npatch, AY_IDNPATCH, &pobject);
 	  if(!pobject)
 	    {
 	      goto cleanup;
@@ -391,7 +391,7 @@ ay_extrnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		  else
 		    {
 		      /* not enough patches for pnum! */
-		      ay_status = AY_ERROR;
+		      /* report error? */		      
 		      goto cleanup;
 		    }
 		}
@@ -400,7 +400,7 @@ ay_extrnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		  npatch = pobject;
 		}
 	    } /* if */
-	} /* if */
+	} /* if child is not npatch */
 
       trim = npatch->down;
       Tcl_SetStringObj(ton, "trims", -1);
@@ -411,7 +411,7 @@ ay_extrnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 			 TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT);
 	  trim = trim->next;
 	}
-    }
+    } /* if have child */
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
