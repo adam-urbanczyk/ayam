@@ -304,9 +304,12 @@ ay_extrnc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_extrnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
+ int ay_status = AY_OK;
  char *n1="ExtrNCAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ ay_object *trim = NULL, *npatch = NULL, *pobject = NULL;
  ay_extrnc_object *extrnc = NULL;
+ int pnum;
 
   if(!interp || !o)
     return AY_ENULL;
@@ -361,8 +364,65 @@ ay_extrnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   ay_prop_getncinfo(interp, n1, extrnc->ncurve);
 
+  if(o->down &&  o->down->next)
+    {
+      pnum = extrnc->pnum - 1;
+      npatch = o->down;
+      if(npatch->type != AY_IDNPATCH)
+	{
+	  ay_status = ay_provide_object(npatch, AY_IDNPATCH, &pobject);
+	  if(!pobject)
+	    {
+	      goto cleanup;
+	    }
+	  else
+	    {
+	      if(pnum > 0)
+		{
+		  while(pobject && pnum)
+		    {
+		      pobject = pobject->next;
+		      pnum--;
+		    }
+		  if(pobject)
+		    {
+		      npatch = pobject;
+		    }
+		  else
+		    {
+		      /* not enough patches for pnum! */
+		      ay_status = AY_ERROR;
+		      goto cleanup;
+		    }
+		}
+	      else
+		{
+		  npatch = pobject;
+		}
+	    } /* if */
+	} /* if */
+
+      trim = npatch->down;
+      Tcl_SetStringObj(ton, "trims", -1);
+      while(trim->next)
+	{
+	  to = Tcl_NewStringObj(ay_object_getname(trim), -1);
+	  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+			 TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT);
+	  trim = trim->next;
+	}
+    }
+
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+
+cleanup:
+
+  /* remove provided object(s) */
+  if(pobject)
+    {
+      (void)ay_object_deletemulti(pobject, AY_FALSE);
+    }
 
  return AY_OK;
 } /* ay_extrnc_getpropcb */
