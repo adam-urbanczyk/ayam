@@ -88,6 +88,8 @@ proc fixdocclass { buf outfile } {
 	puts $outfile "\\usepackage\[tight\]\{shorttoc\}"
 	puts $outfile "\\usepackage\[perpage,para\]\{footmisc\}"
 	puts $outfile "\\usepackage{times}"
+	puts $outfile "\\widowpenalty=1000"
+	puts $outfile "\\clubpenalty=1000"
 	set found 1
 
 	# one shot...
