@@ -408,7 +408,7 @@ ay_extrnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	{
 	  to = Tcl_NewStringObj(ay_object_getname(trim), -1);
 	  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-			 TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT);
+			TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT);
 	  trim = trim->next;
 	}
     } /* if have child */
