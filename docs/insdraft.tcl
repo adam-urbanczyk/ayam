@@ -16,8 +16,11 @@ foreach infilename [glob html/*.html] {
 #watermark {\
   color: #f0f0f0;\
   font-size: 200pt;\
-  -webkit-transform: rotate(-45deg);\
   -moz-transform: rotate(-45deg);\
+  -webkit-transform: rotate(-45deg);\
+  -o-transform: rotate(-45deg);\
+  -ms-transform: rotate(-45deg);\
+  transform: rotate(-45deg);\
   position: fixed;\
   width: 100%;\
   height: 100%;\
