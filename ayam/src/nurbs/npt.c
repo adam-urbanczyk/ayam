@@ -7688,7 +7688,7 @@ ay_npt_extracttrim(ay_object *o, int tnum, double param, int apply_trafo,
       p += tcslens[i]*3;
     }
 
-  ay_status = ay_ict_interpolateC2CClosed(tcslens[i], 0.33, 0.33,
+  ay_status = ay_ict_interpolateC2CClosed(tcslens[i]-1, 0.33, 0.33,
 					  AY_KTCENTRI,
 					  AY_FALSE, NULL, NULL, p, &nc);
   if(ay_status)
