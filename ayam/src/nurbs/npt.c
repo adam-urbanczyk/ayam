@@ -7636,6 +7636,7 @@ cleanup:
  *
  * \param[in] o NURBS patch object to process
  * \param[in] tnum index of trim curve to extract
+ * \param[in] param sampling
  * \param[in] apply_trafo this parameter controls whether transformation
  *  attributes of \a o should be applied to the control points of the curve
  * \param[in,out] result pointer where to store the resulting curve
@@ -7643,7 +7644,7 @@ cleanup:
  * \return AY_OK on success, error code otherwise.
  */
 int
-ay_npt_extracttrim(ay_object *o, int tnum, int apply_trafo,
+ay_npt_extracttrim(ay_object *o, int tnum, double param, int apply_trafo,
 		   ay_nurbcurve_object **result)
 {
  int ay_status = AY_OK;
@@ -7661,7 +7662,10 @@ ay_npt_extracttrim(ay_object *o, int tnum, int apply_trafo,
   if(!o->down || !o->down->next)
     return AY_ERROR;
 
-  qf = ay_stess_GetQF(ay_prefs.glu_sampling_tolerance);
+  if(param == 0.0)
+    qf = ay_stess_GetQF(ay_prefs.glu_sampling_tolerance);
+  else
+    qf = ay_stess_GetQF(param);
 
   ay_status = ay_stess_TessTrimCurves(o, qf,
 				      &tcslen, &tcs,
@@ -7761,7 +7765,7 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
 
   if(side > 8)
     {
-      return ay_npt_extracttrim(o, side-8, apply_trafo, result);
+      return ay_npt_extracttrim(o, side-8, param, apply_trafo, result);
     }
 
   if(side == 6)
