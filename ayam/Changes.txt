@@ -1,4 +1,4 @@
-[03. Oct 2014] CVS-Head:
+[25. Oct 2014] CVS-Head:
 ========================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
@@ -195,6 +195,8 @@ o zooming of view windows with the mouse wheel is no longer clogging the
 o simple clicks into the view window no longer generate unnecessary entries
   in the undo buffer for view actions
 o added keyboard shortcuts to cycle/modify the grid size (<Insert>/<Delete>)
+o the UndoLevels preference setting now uses more natural values for
+  "off" (0) and "one state to undo" (1)
 
 Scripts/Scripting Interface:
 o added luainterp plugin to support the Lua scripting language
@@ -249,6 +251,8 @@ o added "crtTrimRect" command, now supporting multiple selected NPatch
 o "crtNRect" now always creates centered rectangles of given width/height
 o "crtClosedBS" command options are now more legible
 o "estlenNC" now works for multiple selected objects
+o "extrNP" command now supports NPatch providing objects
+o added support for trim boundary extraction to ExtrNC object
 o added a stripped down version of "notifyOb" to the safe interpreter
 o added support for true booleans and Tcl wide ints to jsinterp (JavaScript)
   data conversion
