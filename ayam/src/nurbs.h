@@ -1147,7 +1147,7 @@ int ay_npt_extractboundary(ay_object *o, int apply_trafo,
  */
 int
 ay_npt_extracttrim(ay_object *o, int tnum, double param, int apply_trafo,
-		   ay_nurbcurve_object **result);
+		   int extractnt, double **pvnt, ay_nurbcurve_object **result);
 
 /** Extract curve from patch.
  */
