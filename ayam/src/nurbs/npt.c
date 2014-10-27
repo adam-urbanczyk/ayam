@@ -7636,7 +7636,7 @@ cleanup:
  *
  * \param[in] o NURBS patch object to process
  * \param[in] tnum index of trim curve to extract
- * \param[in] param sampling
+ * \param[in] param sampling density
  * \param[in] apply_trafo this parameter controls whether transformation
  *  attributes of \a o should be applied to the control points of the curve
  * \param[in,out] result pointer where to store the resulting curve
@@ -7645,13 +7645,15 @@ cleanup:
  */
 int
 ay_npt_extracttrim(ay_object *o, int tnum, double param, int apply_trafo,
-		   ay_nurbcurve_object **result)
+		   int extractnt, double **pvnt, ay_nurbcurve_object **result)
 {
  int ay_status = AY_OK;
  ay_nurbcurve_object *nc;
- int qf, i = 0, tcslen = 0;
+ ay_nurbpatch_object *np;
+ int stride, qf, i = 0, a = 0, tcslen = 0;
  int *tcslens = NULL;
- double **tcs = NULL, *tps = NULL, *p;
+ double **tcs = NULL, *tps = NULL, *p3, *p2, *nt;
+ double *fd1, *fd2, l, N[3] = {0}, fder[16] = {0};
 
   if(!o || !result)
     return AY_ENULL;
@@ -7661,6 +7663,8 @@ ay_npt_extracttrim(ay_object *o, int tnum, double param, int apply_trafo,
 
   if(!o->down || !o->down->next)
     return AY_ERROR;
+
+  np = (ay_nurbpatch_object *)o->refine;
 
   if(param == 0.0)
     qf = ay_stess_GetQF(ay_prefs.glu_sampling_tolerance);
@@ -7682,17 +7686,86 @@ ay_npt_extracttrim(ay_object *o, int tnum, double param, int apply_trafo,
   if(ay_status)
     goto cleanup;
 
-  p = tps;
+  p3 = tps;
   for(i = 0; i < tnum-1; i++)
     {
-      p += tcslens[i]*3;
+      p3 += tcslens[i]*3;
     }
 
-  ay_status = ay_ict_interpolateC2CClosed(tcslens[i]-1, 0.33, 0.33,
-					  AY_KTCENTRI,
-					  AY_FALSE, NULL, NULL, p, &nc);
+  ay_status = ay_nct_create(4, tcslens[tnum-1]+2, AY_KTBSPLINE, NULL, NULL,
+			    &nc);
   if(ay_status)
     goto cleanup;
+
+  memcpy(nc->controlv, p3+(tcslens[tnum-1]-2)*3, 3*sizeof(double));
+  nc->controlv[3] = 1.0;
+  p2 = &(nc->controlv[4]);
+  for(i = 0; i < tcslens[tnum-1]-1; i++)
+    {
+      memcpy(p2, p3, 3*sizeof(double));
+      p2[3] = 1.0;
+      p3 += 3;
+      p2 += 4;
+    }
+  memcpy(p2, &(nc->controlv[4]), 8*sizeof(double));
+
+  nc->type = AY_CTPERIODIC;
+
+  if(extractnt)
+    {
+      p2 = tcs[tnum-1];
+      if(extractnt == 2)
+	stride = 9;
+      else
+	stride = 3;
+
+      if(!(nt = malloc(nc->length*stride*sizeof(double))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+      a = stride;
+      for(i = 0; i < tcslens[tnum-1]-1; i++)
+	{
+	  if(np->is_rat)
+	    ay_nb_CompFirstDerSurf4D(np->width-1, np->height-1,
+				     np->uorder-1, np->vorder-1,
+				     np->uknotv, np->vknotv, np->controlv,
+				     *p2, *(p2+1),
+				     fder);
+	  else
+	    ay_nb_CompFirstDerSurf3D(np->width-1, np->height-1,
+				     np->uorder-1, np->vorder-1,
+				     np->uknotv, np->vknotv, np->controlv,
+				     *p2, *(p2+1),
+				     fder);
+
+	  fd1 = &(fder[3]);
+	  fd2 = &(fder[6]);
+	  AY_V3CROSS(N, fd2, fd1);
+	  l = AY_V3LEN(N);
+	  if(fabs(l) > AY_EPSILON)
+	    AY_V3SCAL(N, 1.0/l);
+
+	  memcpy(&(nt[a]), N, 3*sizeof(double));
+	  a += 3;
+
+	  if(extractnt == 2)
+	    {
+	      memcpy(&(nt[a]), fd1, 3*sizeof(double));
+	      a += 3;
+	      memcpy(&(nt[a]), fd2, 3*sizeof(double));
+	      a += 3;
+	    }
+
+	  p2 += 2;
+	} /* for */
+
+      memcpy(nt, &(nt[a-stride]), stride*sizeof(double));
+      memcpy(&(nt[a]), &(nt[stride]), 2*stride*sizeof(double));
+
+      *pvnt = nt;
+    } /* if extractnt */
 
   /* return result */
   *result = (ay_nurbcurve_object*)nc;
@@ -7724,13 +7797,14 @@ cleanup:
  * \param[in] o NURBS patch object to process
  * \param[in] side specifies extraction of a boundary curve (0-3), of a
  *  curve at a specific parametric value (4 - along u dimension,
- *  5 - along v dimension), the complete boundary curve (6), or the
- *  middle axis (7 along u, 8 along v)
+ *  5 - along v dimension), the complete boundary curve (6), the
+ *  middle axis (7 along u, 8 along v), or a trim curve (>8)
  * \param[in] param parametric value at which curve is extracted;
- *  this parameter is ignored for the extraction of boundary curves
+ *  this parameter is ignored for the extraction of boundary curves;
+ *  this parameter controls the sampling density for trim curves
  * \param[in] relative should \a param be interpreted in a relative way
  *  wrt. the knot vector?; this parameter is ignored for the extraction
- *  of boundary curves
+ *  of boundary and trim curves
  * \param[in] apply_trafo this parameter controls whether trafos of \a o
  *  should be copied to the curve, or applied to the control points of the
  *  curve
@@ -7765,7 +7839,8 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
 
   if(side > 8)
     {
-      return ay_npt_extracttrim(o, side-8, param, apply_trafo, result);
+      return ay_npt_extracttrim(o, side-8, param, apply_trafo, extractnt,
+				pvnt, result);
     }
 
   if(side == 6)
