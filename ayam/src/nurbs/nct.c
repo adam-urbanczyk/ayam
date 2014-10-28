@@ -14,6 +14,10 @@
 
 /** \file nct.c \brief NURBS curve tools */
 
+/* local types: */
+typedef void (ay_nct_gndcb) (char dir, ay_nurbcurve_object *nc,
+			     double *p, double **dp);
+
 /* prototypes of functions local to this module: */
 int ay_nct_refinearray(double *Pw, int len, int stride, ay_point *selp,
 		       double **Qw, int *Qwlen);
@@ -23,6 +27,14 @@ int ay_nct_offsetsection(ay_object *o, double offset,
 
 int ay_nct_splitdisc(ay_object *src, double u, ay_object **result);
 
+void ay_nct_gnd(char dir, ay_nurbcurve_object *nc, double *p,
+		double **dp);
+
+void ay_nct_gndc(char dir, ay_nurbcurve_object *nc, double *p,
+		 double **dp);
+
+void ay_nct_gndp(char dir, ay_nurbcurve_object *nc, double *p,
+		 double **dp);
 
 /* local variables: */
 char ay_nct_ncname[] = "NCurve";
@@ -8273,6 +8285,278 @@ ay_nct_shifttominmeandist(int cvlen, int cvstride, double *cva, double *cvb)
 
  return AY_OK;
 } /* ay_nct_shifttominmeandist */
+
+
+/** ay_nct_getcvtangents:
+ *
+ *
+ */
+int
+ay_nct_getcvtangents(ay_nurbcurve_object *nc, double **result)
+{
+ int ay_status = AY_OK;
+ ay_nct_gndcb *gndcb = ay_nct_gnd;
+ double *tt, *p, *pp, *pn, v[3];
+ int i;
+
+  if(nc->type == AY_CTCLOSED)
+    gndcb = ay_nct_gndc;
+  else
+    if(nc->type == AY_CTPERIODIC)
+      gndcb = ay_nct_gndp;
+
+  if(!(tt = malloc(nc->length*3*sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  p = nc->controlv;
+  for(i = 0; i < nc->length; i++)
+    {
+      gndcb(1, nc, p, &pp);
+      gndcb(0, nc, p, &pn);
+      if(!pp || !pn)
+	{
+	  memset(&(tt[i*3]), 0, 3*sizeof(double));
+	}
+      else
+	{
+	  v[0] = pn[0]-pp[0];
+	  v[1] = pn[1]-pp[1];
+	  v[2] = pn[2]-pp[2];
+	  memcpy(&(tt[i*3]), v, 3*sizeof(double));
+	}
+      p += 4;
+    } /* for */
+
+  *result = tt;
+
+cleanup:
+ return ay_status;
+} /* ay_nct_getcvtangents */
+
+/* ay_nct_gnd:
+ * get address of next different control point in direction <dir>
+ * in a open NURBS curve <nc> where the current points address is <p>;
+ * <dir> must be one of:
+ * 0 - Forward
+ * 1 - Backward
+ * returns result (new address) in <dp>
+ * <dp> is set to NULL if there is no different point in the designated
+ * direction (e.g. if the curve is degenerated)
+ */
+void
+ay_nct_gnd(char dir, ay_nurbcurve_object *nc, double *p,
+	   double **dp)
+{
+ int stride = 4;
+ double *p2 = NULL;
+
+  if(dir == AY_FORWARD)
+    {
+      if(p == &(nc->controlv[(nc->length-1)*stride]))
+	{
+	  *dp = NULL;
+	  return;
+	}
+      p2 = p + stride;
+      /* apply offset to p2 until p2 points to
+	 a different control point than p
+	 (in terms of their coordinate values)
+	 or we run off the end of the curve */
+      while(AY_V4COMP(p, p2))
+	{
+	  p2 += stride;
+
+	  if(p2 == &(nc->controlv[(nc->length-1)*stride]))
+	    {
+	      *dp = NULL;
+	      return;
+	    }
+	} /* while */
+    }
+  else
+    {
+      /* dir == AY_BACKWARD */
+      if(p == nc->controlv)
+	{
+	  *dp = NULL;
+	  return;
+	}
+      p2 = p - stride;
+      /* apply offset to p2 until p2 points to
+	 a different control point than p
+	 (in terms of their coordinate values)
+	 or we run off the start of the curve */
+      while(AY_V4COMP(p, p2))
+	{
+	  p2 -= stride;
+	  if(p2 == nc->controlv)
+	    {
+	      *dp = NULL;
+	      return;
+	    }
+	} /* while */
+    } /* if */
+
+  *dp = p2;
+
+ return;
+} /* ay_nct_gnd */
+
+
+/* ay_nct_gndc:
+ * get address of next different control point in direction <dir>
+ * in a closed NURBS curve <nc> where the current points address is <p>;
+ * <dir> must be one of:
+ * 0 - Forward
+ * 1 - Backward
+ * returns result (new address) in <dp>
+ * <dp> is set to NULL if there is no different point in the designated
+ * direction (e.g. if the curve is degenerated)
+ */
+void
+ay_nct_gndc(char dir, ay_nurbcurve_object *nc, double *p,
+	    double **dp)
+{
+ int stride = 4;
+ double *p2 = NULL;
+
+  if(dir == AY_FORWARD)
+    {
+      if(p == &(nc->controlv[(nc->length-1)*stride]))
+	{
+	  /* wrap around */
+	  p2 = &(nc->controlv[stride]);
+	}
+      else
+	{
+	  p2 = p + stride;
+	}
+
+      /* apply offset to p2 until p2 points to
+	 a different control point than p
+	 (in terms of their coordinate values)
+	 or we get to p again or we run off the end of the curve */
+      while(AY_V4COMP(p, p2))
+	{
+	  p2 += stride;
+	  /* check degeneracy or 2nd wrap */
+	  if(p == p2 || p2 == &(nc->controlv[(nc->length-2)*stride]))
+	    {
+	      *dp = NULL;
+	      return;
+	    }
+	} /* while */
+    }
+  else
+    {
+      /* dir == AY_BACKWARD */
+      if(p == nc->controlv)
+	{
+	  /* wrap around */
+	  p2 = &(nc->controlv[(nc->length-1)*stride]);
+	}
+      else
+	{
+	  p2 = p - stride;
+	}
+
+      /* apply offset to p2 until p2 points to
+	 a different control point than p
+	 (in terms of their coordinate values)
+	 or we get to p again or we run off the start of the curve */
+      while(AY_V4COMP(p, p2))
+	{
+	  p2 -= stride;
+	  /* check degeneracy or 2nd wrap */
+	  if(p == p2 || p2 == nc->controlv)
+	    {
+	      *dp = NULL;
+	      return;
+	    }
+	} /* while */
+    } /* if */
+
+  *dp = p2;
+
+ return;
+} /* ay_nct_gndc */
+
+
+/* ay_nct_gndp:
+ * get address of next different control point in direction <dir>
+ * in a periodic NURBS curve <nc> where the current points address is <p>;
+ * <dir> must be one of:
+ * 0 - Forward
+ * 1 - Backward
+ * returns result (new address) in <dp>
+ * <dp> is set to NULL if there is no different point in the designated
+ * direction (e.g. if the curve is degenerated)
+ */
+void
+ay_nct_gndp(char dir, ay_nurbcurve_object *nc, double *p,
+	    double **dp)
+{
+ int stride = 4;
+ double *p2 = NULL;
+
+  if(dir == AY_FORWARD)
+    {
+      if(p == &(nc->controlv[(nc->length-1)*stride]))
+	{
+	  /* wrap around */
+	  p2 = &(nc->controlv[nc->order*stride]);
+	}
+      else
+	{
+	  p2 = p + stride;
+	}
+      /* apply offset to p2 until p2 points to
+	 a different control point than p
+	 (in terms of their coordinate values)
+	 or we get to p again or we run off the end of the curve */
+      while(AY_V4COMP(p, p2))
+	{
+	  p2 += stride;
+	  /* check degeneracy or 2nd wrap */
+	  if(p == p2 || p == &(nc->controlv[(nc->length-1)*stride]))
+	    {
+	      *dp = NULL;
+	      return;
+	    }
+	} /* while */
+    }
+  else
+    {
+      /* dir == AY_BACKWARD */
+      if(p == nc->controlv)
+	{
+	  /* wrap around */
+	  p2 = &(nc->controlv[(nc->length-nc->order-1)*stride]);
+	}
+      else
+	{
+	  p2 = p - stride;
+	}
+      /* apply offset to p2 until p2 points to
+	 a different control point than p
+	 (in terms of their coordinate values)
+	 or we get to p again or we run off the start of the curve */
+      while(AY_V4COMP(p, p2))
+	{
+	  p2 -= stride;
+	  /* check degeneracy or 2nd wrap */
+	  if(p == p2 || p2 == nc->controlv)
+	    {
+	      *dp = NULL;
+	      return;
+	    }
+	} /* while */
+    } /* if */
+
+  *dp = p2;
+
+ return;
+} /* ay_nct_gndp */
 
 
 

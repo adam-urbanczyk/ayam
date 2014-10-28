@@ -899,6 +899,10 @@ double ay_nct_meandist(int cvlen, int cvstride, double *cva, double *cvb);
 int ay_nct_shifttominmeandist(int cvlen, int cvstride,
 			      double *cva, double *cvb);
 
+/** Compute curve tangent vectors from control points.
+ */
+int ay_nct_getcvtangents(ay_nurbcurve_object *nc, double **result);
+
 
 /* npt.c */
 

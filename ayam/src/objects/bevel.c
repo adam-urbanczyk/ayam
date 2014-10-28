@@ -572,7 +572,7 @@ ay_bevel_notifycb(ay_object *o)
 		  tstride = 9;
 		  break;
 		}
-	      if(ay_pv_checkndt(tag, ay_prefs.normalname, "varying", "p"))
+	      if(ay_pv_checkndt(tag, ay_prefs.normalname, "varying", "n"))
 		{
 		  ay_pv_convert(tag, 0, NULL, (void**)&normals);
 		  nstride = 3;
@@ -580,7 +580,7 @@ ay_bevel_notifycb(ay_object *o)
 		  freen = AY_TRUE;
 		  continue;
 		}
-	      if(ay_pv_checkndt(tag, ay_prefs.tangentname, "varying", "p"))
+	      if(ay_pv_checkndt(tag, ay_prefs.tangentname, "varying", "n"))
 		{
 		  ay_pv_convert(tag, 0, NULL, (void**)&tangents);
 		  tstride = 3;
@@ -589,7 +589,7 @@ ay_bevel_notifycb(ay_object *o)
 		}
 		tag = tag->next;
 	    } /* while */
-	  if(!normals || !tangents)
+	  if(!normals)
 	    goto cleanup;
 	  ay_status = ay_bevelt_createc3d(b_radius, b_sense, curve, bcurve,
 					  normals, nstride, tangents, tstride,
