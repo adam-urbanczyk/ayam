@@ -761,8 +761,9 @@ ay_bevelt_createc3d(double radius, int revert, ay_object *o1, ay_object *o2,
  double *uknotv = NULL, *vknotv = NULL, *controlv = NULL;
  int stride = 4, i = 0, j = 0, a = 0, b = 0, c = 0;
  double angle, len, v1[3] = {0}, v2[2] = {0}, m[16] = {0};
+ double *tt = NULL;
 
-  if(!o1 || !o2 || !n || !t || !bevel)
+  if(!o1 || !o2 || !n || !bevel)
     return AY_ENULL;
 
   if(o1->type != AY_IDNCURVE)
@@ -774,6 +775,15 @@ ay_bevelt_createc3d(double radius, int revert, ay_object *o1, ay_object *o2,
   curve = (ay_nurbcurve_object *)o1->refine;
 
   bcurve = (ay_nurbcurve_object *)o2->refine;
+
+  if(!t)
+    {
+      ay_status = ay_nct_getcvtangents(curve, &tt);
+      if(ay_status)
+	goto cleanup;
+      t = tt;
+      tstride = 3;
+    }
 
   if(!(controlv = calloc(bcurve->length*curve->length*stride, sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
@@ -884,6 +894,8 @@ cleanup:
     free(uknotv);
   if(vknotv)
     free(vknotv);
+  if(tt)
+    free(tt);
 
  return ay_status;
 } /* ay_bevelt_createc3d */

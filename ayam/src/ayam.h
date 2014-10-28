@@ -1939,6 +1939,10 @@ extern char *ay_error_igntype;
 #define AY_EAST   1
 #define AY_SOUTH  2
 #define AY_WEST   3
+
+#define AY_FORWARD 0
+#define AY_BACKWARD 1
+
 /*@}*/
 
 /** \name Great Planes */
