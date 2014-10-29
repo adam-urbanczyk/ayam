@@ -885,7 +885,7 @@ ay_nct_refinekn(ay_nurbcurve_object *curve, int maintain_ends,
  * \param[in,out] Qw new refined array
  * \param[in,out] Qwlen length of new array
  *
- * \return AY_OK on success, error code otherwise.
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_refinearray(double *Pw, int len, int stride, ay_point *selp,
@@ -8211,7 +8211,7 @@ ay_nct_extendtcmd(ClientData clientData, Tcl_Interp *interp,
  * \param[in] cva first coordinate array
  * \param[in] cvb second coordinate array
  *
- * \return mean distance
+ * \returns mean distance
  */
 double
 ay_nct_meandist(int cvlen, int cvstride, double *cva, double *cvb)
@@ -8252,7 +8252,7 @@ ay_nct_meandist(int cvlen, int cvstride, double *cva, double *cvb)
  * \param[in] cva first coordinate array
  * \param[in,out] cvb second coordinate array (may be shifted)
  *
- * \return AY_OK on success, error code otherwise
+ * \returns AY_OK on success, error code otherwise
  */
 int
 ay_nct_shifttominmeandist(int cvlen, int cvstride, double *cva, double *cvb)
@@ -8288,8 +8288,12 @@ ay_nct_shifttominmeandist(int cvlen, int cvstride, double *cva, double *cvb)
 
 
 /** ay_nct_getcvtangents:
+ * Compute curve tangent vectors from control points.
  *
+ * \param[in] nc curve to process
+ * \param[in,out] result pointer where to store the tangents
  *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_getcvtangents(ay_nurbcurve_object *nc, double **result)
@@ -8332,6 +8336,7 @@ ay_nct_getcvtangents(ay_nurbcurve_object *nc, double **result)
 cleanup:
  return ay_status;
 } /* ay_nct_getcvtangents */
+
 
 /* ay_nct_gnd:
  * get address of next different control point in direction <dir>
@@ -8557,7 +8562,6 @@ ay_nct_gndp(char dir, ay_nurbcurve_object *nc, double *p,
 
  return;
 } /* ay_nct_gndp */
-
 
 
 /* templates */

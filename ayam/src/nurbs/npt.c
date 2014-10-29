@@ -2881,7 +2881,7 @@ ay_npt_fliptrims(ay_nurbpatch_object *np, ay_object *trim, int mode)
  * \param[in] uv di
  * \param[in,out] target NURBS surface where copies will be added
  *
- * \return AY_OK on success, error code otherwise.
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_copytrims(ay_object *o, double u1, double u2, char *uv,
@@ -2956,7 +2956,7 @@ ay_npt_copytrims(ay_object *o, double u1, double u2, char *uv,
  *
  * \param[in,out] o NURBS surface where the trim should be added
  *
- * \return AY_OK on success, error code otherwise.
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_createtrimrect(ay_object *o)
@@ -7510,7 +7510,7 @@ ay_npt_gordonwc(ay_object *g)
  *  attributes of \a o should be applied to the control points of the curve
  * \param[in,out] result pointer where to store the resulting curve
  *
- * \return AY_OK on success, error code otherwise.
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_extractboundary(ay_object *o, int apply_trafo,
@@ -7639,9 +7639,13 @@ cleanup:
  * \param[in] param sampling density
  * \param[in] apply_trafo this parameter controls whether transformation
  *  attributes of \a o should be applied to the control points of the curve
+ * \param[in] extractnt should normals/tangents be extracted (0 - no,
+ *            1 - normals, 2 - normals and tangents)
+ * \param[in,out] pvnt pointer where to store the extracted normals/tangents,
+ *            may be NULL, if \a extractnt is 0
  * \param[in,out] result pointer where to store the resulting curve
  *
- * \return AY_OK on success, error code otherwise.
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_extracttrim(ay_object *o, int tnum, double param, int apply_trafo,
@@ -7810,10 +7814,11 @@ cleanup:
  *  curve
  * \param[in] extractnt should the normals/tangents be calculated and stored
  *  in PV tags?; 0 - no, 1 - normals, 2 - normals and tangents
- * \param[in] pvnt pointer where to store the normals/tangents
+ * \param[in] pvnt pointer where to store the normals/tangents, may be
+ *  NULL, if \a extractnt is 0
  * \param[in,out] result pointer where to store the resulting curve
  *
- * \return AY_OK on success, error code otherwise.
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_extractnc(ay_object *o, int side, double param, int relative,
