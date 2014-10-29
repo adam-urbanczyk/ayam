@@ -446,7 +446,7 @@ ay_bevel_notifycb(ay_object *o)
  ay_tag *tag = NULL;
  int is_planar = AY_TRUE, has_b = AY_FALSE;
  int b_type, b_sense, force3d = AY_FALSE;
- int nstride, tstride, freen = AY_FALSE, freet = AY_FALSE;
+ int nstride, tstride = 0, freen = AY_FALSE, freet = AY_FALSE;
  double b_radius, tolerance;
  double *normals = NULL, *tangents = NULL;
 
