@@ -743,7 +743,7 @@ cleanup:
  *  and run from 0,0 to 1,1)
  * \param[in] n array of normals
  * \param[in] nstride stride in normals array
- * \param[in] t array of tangents
+ * \param[in] t array of tangents, may be NULL
  * \param[in] tstride stride in tangents array
  * \param[in,out] bevel resulting bevel object
  *
