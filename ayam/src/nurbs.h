@@ -457,9 +457,15 @@ void ay_nb_CompFirstDerSurf3D(int n, int m, int p, int q, double *U, double *V,
 int ay_nb_CreateNurbsCircleArc(double r, double ths, double the,
 			       int *length, double **knotv, double **controlv);
 
-/** Refine knot vector of NURBS curve with a new vector.
+/** Refine knot vector of rational NURBS curve with a new vector.
  */
 void ay_nb_RefineKnotVectCurve4D(int stride, int n, int p,
+				 double *U, double *Pw,
+				 double *X, int r, double *Ubar, double *Qw);
+
+/** Refine knot vector of non-rational NURBS curve with a new vector.
+ */
+void ay_nb_RefineKnotVectCurve3D(int stride, int n, int p,
 				 double *U, double *Pw,
 				 double *X, int r, double *Ubar, double *Qw);
 

@@ -98,7 +98,7 @@ ay_nb_LUDecompose(int n, double *A, int *pivot)
 		    }
 		  sign = -sign;
 		}
-	      q =  elem[k*n+k];	/* scale row */
+	      q = elem[k*n+k];	/* scale row */
 	      for(i = kp1; i < n; i++)
 		{
 		  t = - elem[i*n+k]/q;
@@ -2447,6 +2447,112 @@ ay_nb_RefineKnotVectCurve4D(int stride, int n, int p, double *U, double *Pw,
 
  return;
 } /* ay_nb_RefineKnotVectCurve4D */
+
+
+/*
+ * ay_nb_RefineKnotVectCurve3D:
+ * original algorithm by Boehm and Prautzsch
+ * refine the knot vector of the curve
+ * (stride, n, p, U[], Pw[]) with the new knots in X[r];
+ * results in new knots in Ubar[n+p+r] and new
+ * control points in Qw[n+r] both allocated outside!
+ */
+void
+ay_nb_RefineKnotVectCurve3D(int stride, int n, int p, double *U, double *Pw,
+			    double *X, int r, double *Ubar, double *Qw)
+{
+ int m, a, b;
+ int i, j, k, l, ind;
+ double alfa, td;
+ int ti, tj;
+
+  m = n+p+1;
+
+  a = ay_nb_FindSpan(n, p, X[0], U);
+  b = ay_nb_FindSpan(n, p, X[r], U);
+
+  b++;
+
+  for(j = 0; j <= (a-p); j++)
+    {
+      /* Qw[j] = Pw[j]; */
+      memcpy(&(Qw[j*stride]), &(Pw[j*stride]), stride*sizeof(double));
+    }
+
+  for(j = b-1; j <= n; j++)
+    {
+      /* Qw[j+r+1] = Pw[j]; */
+      memcpy(&(Qw[(j+r+1)*stride]), &(Pw[(j)*stride]), stride*sizeof(double));
+    }
+
+  for(j = 0; j <= a; j++)
+    {
+      Ubar[j] = U[j];
+    }
+
+  for(j = b+p; j <= m; j++)
+    {
+      Ubar[j+r+1] = U[j];
+    }
+
+  i = b+p-1;
+  k = b+p+r;
+
+  for(j = r; j >= 0; j--)
+    {
+      while((X[j] <= U[i]) && (i > a))
+	{
+	  /* Qw[k-p-1] = Pw[i-p-1]; */
+	  memcpy(&(Qw[(k-p-1)*stride]), &(Pw[(i-p-1)*stride]),
+		 stride*sizeof(double));
+
+	  Ubar[k] = U[i];
+	  k--;
+	  i--;
+	} /* while */
+
+      /* Qw[k-p-1] = Qw[k-p]; */
+      memcpy(&(Qw[(k-p-1)*stride]), &(Qw[(k-p)*stride]),
+	     stride*sizeof(double));
+
+      for(l = 1; l <= p; l++)
+	{
+	  ind = k-p+l;
+	  alfa = Ubar[k+l] - X[j];
+	  if(fabs(alfa) == 0.0)
+	    {
+	      /* Qw[ind-1] = Qw[ind]; */
+	      memcpy(&(Qw[(ind-1)*stride]), &(Qw[ind*stride]),
+		     stride*sizeof(double));
+	    }
+	  else
+	    {
+	      /* alfa = alfa / (Ubar[k+l] - U[i-p+l]); */
+	      td = (Ubar[k+l] - U[i-p+l]);
+	      if(td != 0.0)
+		alfa /= td;
+	      else
+		alfa = 0.0;
+
+	      /* Qw[ind-1] = alfa * Qw[ind-1] + (1.0 - alfa) * Qw[ind]; */
+	      ti = (ind-1)*stride;
+	      tj = ind*stride;
+	      Qw[ti]   = alfa * Qw[ti]   + (1.0 - alfa) * Qw[tj];
+	      Qw[ti+1] = alfa * Qw[ti+1] + (1.0 - alfa) * Qw[tj+1];
+	      Qw[ti+2] = alfa * Qw[ti+2] + (1.0 - alfa) * Qw[tj+2];
+	      if(stride == 4)
+		{
+		  Qw[ti+3] = 1.0;
+		} /* if */
+	    } /* if */
+	} /* for */
+
+      Ubar[k] = X[j];
+      k--;
+    } /* for */
+
+ return;
+} /* ay_nb_RefineKnotVectCurve3D */
 
 
 /*
