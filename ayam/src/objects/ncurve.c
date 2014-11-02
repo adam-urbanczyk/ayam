@@ -1670,6 +1670,11 @@ ay_ncurve_notifycb(ay_object *o)
 	return ay_status;
     }
 
+  if(o->modified)
+    {
+      ay_nct_settype(ncurve);
+    }
+
   /* manage the GLU NURBS renderer */
   if(ncurve->no)
     gluDeleteNurbsRenderer(ncurve->no);
