@@ -561,11 +561,10 @@ ay_bevel_notifycb(ay_object *o)
       if(b_sense)
 	{
 	  ay_nct_revert((ay_nurbcurve_object*)alignedcurve->refine);
-	} /* if */
-
+	}
+      /* create the bevel */
       ay_status = ay_bevelt_createc(b_radius, alignedcurve, bcurve,
 			     (ay_nurbpatch_object**)(void*)&(npatch->refine));
-
     }
   else
     {
@@ -598,6 +597,7 @@ ay_bevel_notifycb(ay_object *o)
 	    }
 	  tag = tag->next;
 	} /* while */
+      /* create the bevel */
       if(roundtocap)
 	{
 	  if(!tangents)
@@ -615,7 +615,7 @@ ay_bevel_notifycb(ay_object *o)
 					  normals, nstride, tangents, tstride,
 			     (ay_nurbpatch_object**)(void*)&(npatch->refine));
 	}
-    }
+    } /* if planar */
 
   if(alignedcurve)
     (void)ay_object_delete(alignedcurve);
@@ -649,6 +649,7 @@ cleanup:
     {
       (void)ay_object_deletemulti(pobject1, AY_FALSE);
     }
+
   if(pobject2)
     {
       (void)ay_object_deletemulti(pobject2, AY_FALSE);
