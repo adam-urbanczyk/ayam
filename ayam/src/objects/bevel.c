@@ -445,7 +445,7 @@ ay_bevel_notifycb(ay_object *o)
  ay_cparam cparams = {0};
  ay_tag *tag = NULL;
  int is_planar = AY_TRUE, has_b = AY_FALSE;
- int b_type, b_sense, force3d = AY_FALSE;
+ int b_type, b_sense, roundtocap = AY_FALSE, force3d = AY_FALSE;
  int nstride, tstride = 0, freen = AY_FALSE, freet = AY_FALSE;
  double b_radius, tolerance;
  double *normals = NULL, *tangents = NULL;
@@ -539,73 +539,89 @@ ay_bevel_notifycb(ay_object *o)
       ay_bevelt_findbevelcurve(-b_type, &bcurve);
     }
 
-  if(bcurve)
+  if(b_type != 3 && !bcurve)
     {
+      goto cleanup;
+    }
 
+  if(b_type < 3)
+    {
       if(force3d)
 	is_planar = AY_FALSE;
       else
 	ay_nct_isplanar(curve, &alignedcurve, &is_planar);
+    }
+  else
+    {
+      roundtocap = AY_TRUE;
+    }
 
-      if(is_planar)
+  if(is_planar && !roundtocap)
+    {
+      if(b_sense)
 	{
-	  if(b_sense)
+	  ay_nct_revert((ay_nurbcurve_object*)alignedcurve->refine);
+	} /* if */
+
+      ay_status = ay_bevelt_createc(b_radius, alignedcurve, bcurve,
+			     (ay_nurbpatch_object**)(void*)&(npatch->refine));
+
+    }
+  else
+    {
+      /* get normals and tangents from PV tags */
+      tag = curve->tags;
+      while(tag)
+	{
+	  if(tag->type == ay_nt_tagtype)
 	    {
-	      ay_nct_revert((ay_nurbcurve_object*)alignedcurve->refine);
-	    } /* if */
-
-	  ay_status = ay_bevelt_createc(b_radius, alignedcurve, bcurve,
-			   (ay_nurbpatch_object**)(void*)&(npatch->refine));
-
+	      normals = ((ay_btval*)tag->val)->payload;
+	      tangents = &(normals[3]);
+	      nstride = 9;
+	      tstride = 9;
+	      break;
+	    }
+	  if(ay_pv_checkndt(tag, ay_prefs.normalname, "varying", "n"))
+	    {
+	      ay_pv_convert(tag, 0, NULL, (void**)&normals);
+	      nstride = 3;
+	      tag = tag->next;
+	      freen = AY_TRUE;
+	      continue;
+	    }
+	  if(ay_pv_checkndt(tag, ay_prefs.tangentname, "varying", "n"))
+	    {
+	      ay_pv_convert(tag, 0, NULL, (void**)&tangents);
+	      tstride = 3;
+	      freet = AY_TRUE;
+	      break;
+	    }
+	  tag = tag->next;
+	} /* while */
+      if(roundtocap)
+	{
+	  if(!tangents)
+	    goto cleanup;
+	  ay_status = ay_bevelt_createroundtocap(b_radius, b_sense,
+						 curve,
+						 tangents, tstride,
+			     (ay_nurbpatch_object**)(void*)&(npatch->refine));
 	}
       else
 	{
-	  /* get normals and tangents from PV tags */
-	  tag = curve->tags;
-	  while(tag)
-	    {
-	      if(tag->type == ay_nt_tagtype)
-		{
-		  normals = ((ay_btval*)tag->val)->payload;
-		  tangents = &(normals[3]);
-		  nstride = 9;
-		  tstride = 9;
-		  break;
-		}
-	      if(ay_pv_checkndt(tag, ay_prefs.normalname, "varying", "n"))
-		{
-		  ay_pv_convert(tag, 0, NULL, (void**)&normals);
-		  nstride = 3;
-		  tag = tag->next;
-		  freen = AY_TRUE;
-		  continue;
-		}
-	      if(ay_pv_checkndt(tag, ay_prefs.tangentname, "varying", "n"))
-		{
-		  ay_pv_convert(tag, 0, NULL, (void**)&tangents);
-		  tstride = 3;
-		  freet = AY_TRUE;
-		  break;
-		}
-		tag = tag->next;
-	    } /* while */
 	  if(!normals)
 	    goto cleanup;
 	  ay_status = ay_bevelt_createc3d(b_radius, b_sense, curve, bcurve,
 					  normals, nstride, tangents, tstride,
-			   (ay_nurbpatch_object**)(void*)&(npatch->refine));
+			     (ay_nurbpatch_object**)(void*)&(npatch->refine));
 	}
-
-      if(alignedcurve)
-	(void)ay_object_delete(alignedcurve);
-
-      if(ay_status)
-	goto cleanup;
     }
-  else
-    {
-      goto cleanup;
-    }
+
+  if(alignedcurve)
+    (void)ay_object_delete(alignedcurve);
+
+  if(ay_status)
+    goto cleanup;
 
   /* create/add caps */
   if(o->tags)
