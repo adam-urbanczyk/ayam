@@ -2331,18 +2331,14 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
  ay_pamesh_object *pm = NULL;
  ay_pointedit pe = {0};
  int reset_selected = AY_FALSE;
- int reset_picked = AY_FALSE;
 
   if(argc == 3)
     {
       if(!strcmp(argv[2], "-selected"))
 	reset_selected = AY_TRUE;
-      else
-	if(!strcmp(argv[2], "-picked"))
-	  reset_picked = AY_TRUE;
     }
 
-  if(reset_picked)
+  if(reset_selected)
     {
       j = 0;
       for(k = 0; k < pact_objectslen; k++)
