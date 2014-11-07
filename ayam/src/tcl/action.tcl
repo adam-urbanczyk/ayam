@@ -1513,7 +1513,7 @@ proc actionResetWP { w } {
     }
 
     bind $w <ButtonRelease-1> {
-	%W wrpac -picked
+	%W wrpac -selected
 	rV
 	plb_update
 	focus %W
