@@ -9150,7 +9150,7 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
 
 		  for(k = 0; k < po->nverts[q]; k++)
 		    {
-		      buflen = sprintf(buf, " %d", po->verts[r]);
+		      buflen = sprintf(buf, " %u", po->verts[r]);
 
 		      if(!(tmp = realloc(attr,
 					 (totalbuflen+buflen+1)*sizeof(char))))
@@ -9283,13 +9283,13 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
 	      scew_element_add_attr_pair(ifs_element, "normalPerVertex",
 					 x3dio_falsestring);
 
-	      idxsize = sprintf(buf, " %d", po->npolys);
+	      idxsize = sprintf(buf, " %u", po->npolys);
 	      if(!(nattr = malloc((idxsize*po->npolys+10)*sizeof(char))))
 		{ ay_status = AY_EOMEM; goto cleanup; }
 	      tmp = nattr;
 	      for(i = 0; i < po->npolys; i++)
 		{
-		  tmp += sprintf(tmp, " %d", i);
+		  tmp += sprintf(tmp, " %u", i);
 		}
 
 	      scew_element_add_attr_pair(ifs_element, "normalIndex", nattr);
@@ -9581,9 +9581,9 @@ x3dio_writepomeshwire(scew_element *element, ay_object *o)
 	{
 	  for(k = 0; k < po->nverts[m]; k++)
 	    {
-	      idxsize += sprintf(buf, " %d", po->verts[n++]);
+	      idxsize += sprintf(buf, " %u", po->verts[n++]);
 	    }
-	  idxsize += sprintf(buf, " %d", po->verts[n-k]);
+	  idxsize += sprintf(buf, " %u", po->verts[n-k]);
 	  /* add " -1" */
 	  idxsize += 3;
 	  m++;
@@ -9602,9 +9602,9 @@ x3dio_writepomeshwire(scew_element *element, ay_object *o)
 	{
 	  for(k = 0; k < po->nverts[m]; k++)
 	    {
-	      tmp += sprintf(tmp, " %d", po->verts[n++]);
+	      tmp += sprintf(tmp, " %u", po->verts[n++]);
 	    }
-	  tmp += sprintf(tmp, " %d", po->verts[n-k]);
+	  tmp += sprintf(tmp, " %u", po->verts[n-k]);
 	  tmp += sprintf(tmp, " -1");
 	  m++;
 	}

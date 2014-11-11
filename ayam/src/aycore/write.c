@@ -219,7 +219,7 @@ ay_write_object(FILE *fileptr, ay_object *o)
 
   if(o->type < AY_IDLAST)
     {
-      fprintf(fileptr,"0\n%d\n", o->type);
+      fprintf(fileptr,"0\n%u\n", o->type);
     }
   else
     {

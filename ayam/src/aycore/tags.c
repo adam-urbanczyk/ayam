@@ -1188,7 +1188,7 @@ ay_tags_remnonm(ay_object *o, ay_object *m)
     } /* while */
 
   /* look for and remove corresponding NM tag only if we found the NO tag */
-  if(found && m)
+  if(found)
     {
       tag = o->tags;
       lasttag = &(o->tags);
