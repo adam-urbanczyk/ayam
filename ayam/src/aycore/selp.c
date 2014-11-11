@@ -1011,7 +1011,7 @@ ay_selp_selectmpnc(ay_object *o, int select_all)
  ay_nurbcurve_object *nc;
  int i, found = AY_FALSE;
 
-  if(!o || !o->type == AY_IDNCURVE)
+  if(!o || (o->type != AY_IDNCURVE))
     return;
 
   nc = (ay_nurbcurve_object *)o->refine;

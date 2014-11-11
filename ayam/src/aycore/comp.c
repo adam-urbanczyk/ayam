@@ -156,7 +156,7 @@ ay_comp_trafos(ay_object *o1, ay_object *o2)
   if((o1->movx == o2->movx) && (o1->movy == o2->movy) &&
      (o1->movz == o2->movz) && (o1->scalx == o2->scalx) &&
      (o1->scaly == o2->scaly) && (o1->scalz == o2->scalz) &&
-     (!memcmp(o1->quat, o2->quat, sizeof(4*sizeof(double)))))
+     (!memcmp(o1->quat, o2->quat, 4*sizeof(double))))
     {
       return AY_TRUE;
     }
@@ -1181,7 +1181,7 @@ ay_comp_clone(ay_object *o1, ay_object *o2)
   if((p1->movx != p2->movx) || (p1->movy != p2->movy) ||
      (p1->movz != p2->movz) || (p1->scalx != p2->scalx) ||
      (p1->scaly != p2->scaly) || (p1->scalz != p2->scalz) ||
-     (memcmp(p1->quat, p2->quat, sizeof(4*sizeof(double)))))
+     (memcmp(p1->quat, p2->quat, 4*sizeof(double))))
     return AY_FALSE;
 
  return AY_TRUE;
@@ -1213,17 +1213,17 @@ ay_comp_pomesh(ay_object *o1, ay_object *o2)
   if(p1->has_normals)
     {
       if(!memcmp(p1->controlv, p2->controlv,
-		 sizeof(p1->ncontrols*6*sizeof(double))))
+		 p1->ncontrols*6*sizeof(double)))
 	return AY_FALSE;
     }
   else
     {
       if(!memcmp(p1->controlv, p2->controlv,
-		 sizeof(p1->ncontrols*3*sizeof(double))))
+		 p1->ncontrols*3*sizeof(double)))
 	return AY_FALSE;
     }
 
-  if(!memcmp(p1->nloops, p2->nloops, sizeof(p1->npolys*sizeof(unsigned int))))
+  if(!memcmp(p1->nloops, p2->nloops, p1->npolys*sizeof(unsigned int)))
     return AY_FALSE;
 
   for(i = 0; i < p1->npolys; i++)
@@ -1231,7 +1231,7 @@ ay_comp_pomesh(ay_object *o1, ay_object *o2)
       total_loops += p1->nloops[i];
     } /* for */
 
-  if(!memcmp(p1->nverts, p2->nverts, sizeof(total_loops*sizeof(unsigned int))))
+  if(!memcmp(p1->nverts, p2->nverts, total_loops*sizeof(unsigned int)))
     return AY_FALSE;
 
   for(i = 0; i < total_loops; i++)
@@ -1239,13 +1239,13 @@ ay_comp_pomesh(ay_object *o1, ay_object *o2)
       total_verts += p1->nverts[i];
     } /* for */
 
-  if(!memcmp(p1->verts, p2->verts, sizeof(total_verts*sizeof(unsigned int))))
+  if(!memcmp(p1->verts, p2->verts, total_verts*sizeof(unsigned int)))
     return AY_FALSE;
 
   if(p1->face_normals && p2->face_normals)
     {
       if(!memcmp(p1->face_normals, p2->face_normals,
-		 sizeof(p1->ncontrols *3* sizeof(double))))
+		 p1->ncontrols*3*sizeof(double)))
 	return AY_FALSE;
     }
   else
@@ -1277,12 +1277,10 @@ ay_comp_sdmesh(ay_object *o1, ay_object *o2)
   if(p1->ncontrols != p2->ncontrols)
     return AY_FALSE;
 
-  if(!memcmp(p1->controlv, p2->controlv,
-	     sizeof(p1->ncontrols * 3 * sizeof(double))))
+  if(!memcmp(p1->controlv, p2->controlv, p1->ncontrols * 3 * sizeof(double)))
     return AY_FALSE;
 
-  if(!memcmp(p1->nverts, p2->nverts,
-	     sizeof(p1->nfaces * sizeof(unsigned int))))
+  if(!memcmp(p1->nverts, p2->nverts, p1->nfaces * sizeof(unsigned int)))
     return AY_FALSE;
 
   for(i = 0; i < p1->nfaces; i++)
@@ -1290,8 +1288,7 @@ ay_comp_sdmesh(ay_object *o1, ay_object *o2)
       total_verts += p1->nverts[i];
     } /* for */
 
-  if(!memcmp(p1->verts, p2->verts,
-	     sizeof(total_verts * sizeof(unsigned int))))
+  if(!memcmp(p1->verts, p2->verts, total_verts * sizeof(unsigned int)))
     return AY_FALSE;
 
   /* XXXX compare the tags */

@@ -770,7 +770,7 @@ ay_instt_resolvetcmd(ClientData clientData, Tcl_Interp *interp,
       /* so that we may use continue */
       sel = sel->next;
 
-      if(!o->type == AY_IDINSTANCE)
+      if(o->type != AY_IDINSTANCE)
 	{
 	  ay_error(AY_ERROR, argv[0], "Object is not of type Instance!");
 	  continue;
