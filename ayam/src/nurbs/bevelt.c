@@ -1080,13 +1080,16 @@ cleanup:
 
 
 /** ay_bevelt_createroundtonormal:
- * Create a 3D bevel that rounds to the mean normal.
+ * Create a 3D bevel that starts in the direction of the tangents
+ * and rounds to the mean normal.
  *
  * \param[in] radius width/height of the bevel (may be negative)
  * \param[in] revert direction of bevel (0 - inwards, 1 - outwards)
  * \param[in] o1 curve on which the bevel is constructed (usually
  *  a border extracted from a surface)
- * \param[in] ta array of tangents
+ * \param[in] nt array of normals
+ * \param[in] nstride stride in normals array
+ * \param[in] ta array of tangents, may be NULL
  * \param[in] tstride stride in tangents array
  * \param[in,out] bevel resulting bevel object
  *
