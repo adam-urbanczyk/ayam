@@ -1079,6 +1079,210 @@ cleanup:
 } /* ay_bevelt_createroundtocap */
 
 
+/** ay_bevelt_createroundtonormal:
+ * Create a 3D bevel that rounds to the mean normal.
+ *
+ * \param[in] radius width/height of the bevel (may be negative)
+ * \param[in] revert direction of bevel (0 - inwards, 1 - outwards)
+ * \param[in] o1 curve on which the bevel is constructed (usually
+ *  a border extracted from a surface)
+ * \param[in] ta array of tangents
+ * \param[in] tstride stride in tangents array
+ * \param[in,out] bevel resulting bevel object
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_bevelt_createroundtonormal(double radius, int revert, ay_object *o1,
+			      double *nt, int nstride, double *ta, int tstride,
+			      ay_nurbpatch_object **bevel)
+{
+ int ay_status = AY_OK;
+ ay_nurbcurve_object *curve = NULL;
+ double *uknotv = NULL, *vknotv = NULL, *controlv = NULL;
+ double *ct = NULL, *tt = NULL, *c, *t, *n, m[16];
+ double len, v1[3] = {0}, *p;
+ int stride = 4, i = 0, j = 0, a = 0, b = 0;
+
+  if(!o1 || !nt || !bevel)
+    return AY_ENULL;
+
+  if(o1->type != AY_IDNCURVE)
+    return AY_ERROR;
+
+  curve = (ay_nurbcurve_object *)o1->refine;
+
+  if(!(controlv = calloc(3*curve->length*stride, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  if(curve->knot_type == AY_KTCUSTOM)
+    {
+      if(!(vknotv = malloc((curve->length+curve->order) * sizeof(double))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+      memcpy(vknotv, curve->knotv,
+	     (curve->length+curve->order)*sizeof(double));
+    }
+
+  if(!ta)
+    {
+      ay_status = ay_nct_getcvtangents(curve, &ct);
+      if(ay_status || !ct)
+	return AY_ERROR;
+
+      if(!(tt = malloc(curve->length*3*sizeof(double))))
+	{ free(ct); ay_status = AY_EOMEM; goto cleanup; }
+
+      c = ct;
+      t = tt;
+      n = nt;
+
+      for(i = 0; i < curve->length; i++)
+	{
+	  len = AY_V3LEN(c);
+	  if(len > AY_EPSILON && fabs(len-1.0) > AY_EPSILON)
+	    {
+	      AY_V3SCAL(c, 1.0/len);
+	    }
+
+	  /* project c onto plane spanned by real surface tangents (nt) */
+	  ay_trafo_identitymatrix(m);
+	  m[0] = 1.0-n[0]*n[0];
+	  m[1] = (-n[1])*n[0];
+	  m[2] = (-n[2])*n[0];
+	  m[4] = (-n[0])*n[1];
+	  m[5] = 1.0-n[1]*n[1];
+	  m[6] = (-n[2])*n[1];
+	  m[8] = (-n[0])*n[2];
+	  m[9] = (-n[1])*n[2];
+	  m[10] = 1.0-n[2]*n[2];
+	  ay_trafo_apply3(c, m);
+
+	  len = AY_V3LEN(c);
+	  if(len > AY_EPSILON && fabs(len-1.0) > AY_EPSILON)
+	    {
+	      AY_V3SCAL(c, 1.0/len);
+	    }
+
+	  /* rotate c to a mostly perpendicular direction
+	     wrt. the unprojected c while keeping it in the
+	     tangent plane of the underlying surface point */
+	  ay_trafo_identitymatrix(m);
+	  ay_trafo_rotatematrix(90.0, n[0], n[1], n[2], m);
+	  ay_trafo_apply3(c, m);
+
+	  /* store result */
+	  memcpy(t, c, 3*sizeof(double));
+
+	  c += 3;
+	  t += 3;
+	  n += nstride;
+	} /* for */
+
+      ta = tt;
+      tstride = 3;
+      free(ct);
+    } /* if !t */
+
+  /* first cross section is a copy of the original curve */
+  memcpy(controlv, curve->controlv, curve->length*stride*sizeof(double));
+
+  /* offset in the direction of the surface tangent */
+  a = curve->length*stride;
+  b = 0;
+  for(j = 0; j < curve->length; j++)
+    {
+      memcpy(v1, &(ta[j*tstride]), 3*sizeof(double));
+
+      /* normalize and (possibly) flip tangent vector */
+      len = AY_V3LEN(v1);
+      if(len > AY_EPSILON)
+	{
+	  if(revert)
+	    {
+	      AY_V3SCAL(v1, -1.0/len);
+	    }
+	  else
+	    {
+	      AY_V3SCAL(v1, 1.0/len);
+	    }
+	}
+      else
+	{
+	  memset(v1, 0, 3*sizeof(double));
+	}
+
+      /* offset along scaled tangent vector */
+      controlv[a]   = curve->controlv[b]   - v1[0]*radius;
+      controlv[a+1] = curve->controlv[b+1] - v1[1]*radius;
+      controlv[a+2] = curve->controlv[b+2] - v1[2]*radius;
+      controlv[a+3] = curve->controlv[b+3];
+      a += stride;
+      b += stride;
+    } /* for */
+
+  /* offset a second time, in the direction of the mean normal */
+  if(curve->type == AY_CTPERIODIC)
+    ay_status = ay_geom_extractmeannormal(curve->controlv,
+					  curve->length-(curve->order/2), 4,
+					  NULL, v1);
+  else
+    ay_status = ay_geom_extractmeannormal(curve->controlv, curve->length, 4,
+					  NULL, v1);
+
+  a = curve->length*stride;
+  b = a+curve->length*stride;
+  p = &(controlv[a]);
+  for(j = 0; j < curve->length; j++)
+    {
+      controlv[b]   = controlv[a]   - v1[0]*radius;
+      controlv[b+1] = controlv[a+1] - v1[1]*radius;
+      controlv[b+2] = controlv[a+2] - v1[2]*radius;
+      controlv[b+3] = controlv[a+3];
+      p += stride;
+      a += stride;
+      b += stride;
+    } /* for */
+
+  ay_status = ay_npt_create(3, curve->order,
+			    3, curve->length,
+			    AY_KTNURB, curve->knot_type,
+			    controlv, uknotv, vknotv,
+			    bevel);
+
+  if(ay_status)
+    goto cleanup;
+
+  if(curve->type == AY_CTCLOSED)
+    {
+      (void)ay_npt_closev(*bevel, /*mode=*/2);
+    }
+
+  if(curve->type == AY_CTPERIODIC)
+    {
+      (void)ay_npt_closev(*bevel, /*mode=*/5);
+    }
+
+  /* prevent cleanup code from doing something harmful */
+  controlv = NULL;
+  uknotv = NULL;
+  vknotv = NULL;
+
+cleanup:
+
+  /* clean-up */
+  if(controlv)
+    free(controlv);
+  if(uknotv)
+    free(uknotv);
+  if(vknotv)
+    free(vknotv);
+  if(tt)
+    free(tt);
+
+ return ay_status;
+} /* ay_bevelt_createroundtonormal */
+
+
 /** ay_bevelt_integrate:
  * Integrate a bevel into a NURBS surface.
  *
