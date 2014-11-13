@@ -445,7 +445,7 @@ ay_bevel_notifycb(ay_object *o)
  ay_cparam cparams = {0};
  ay_tag *tag = NULL;
  int is_planar = AY_TRUE, has_b = AY_FALSE;
- int b_type, b_sense, roundtocap = AY_FALSE, force3d = AY_FALSE;
+ int b_type, b_sense, is_round = AY_FALSE, force3d = AY_FALSE;
  int nstride, tstride = 0, freen = AY_FALSE, freet = AY_FALSE;
  double b_radius, tolerance;
  double *normals = NULL, *tangents = NULL;
@@ -539,13 +539,12 @@ ay_bevel_notifycb(ay_object *o)
       ay_bevelt_findbevelcurve(-b_type, &bcurve);
     }
 
-  if(b_type != 3 && !bcurve)
-    {
-      goto cleanup;
-    }
-
   if(b_type < 3)
     {
+      if(!bcurve)
+	{
+	  goto cleanup;
+	}
       if(force3d)
 	is_planar = AY_FALSE;
       else
@@ -553,10 +552,10 @@ ay_bevel_notifycb(ay_object *o)
     }
   else
     {
-      roundtocap = AY_TRUE;
+      is_round = AY_TRUE;
     }
 
-  if(is_planar && !roundtocap)
+  if(is_planar && !is_round)
     {
       if(b_sense)
 	{
@@ -584,28 +583,47 @@ ay_bevel_notifycb(ay_object *o)
 	    {
 	      ay_pv_convert(tag, 0, NULL, (void**)&normals);
 	      nstride = 3;
-	      tag = tag->next;
 	      freen = AY_TRUE;
-	      continue;
+	      if(tangents)
+		break;
 	    }
 	  if(ay_pv_checkndt(tag, ay_prefs.tangentname, "varying", "n"))
 	    {
 	      ay_pv_convert(tag, 0, NULL, (void**)&tangents);
 	      tstride = 3;
 	      freet = AY_TRUE;
-	      break;
+	      if(normals)
+		break;
 	    }
 	  tag = tag->next;
 	} /* while */
       /* create the bevel */
-      if(roundtocap)
+      if(is_round)
 	{
-	  if(!tangents)
-	    goto cleanup;
-	  ay_status = ay_bevelt_createroundtocap(b_radius, b_sense,
-						 curve,
-						 tangents, tstride,
+	  if(b_type > 3)
+	    {
+	      if(!normals)
+		goto cleanup;
+
+	      if(tstride == 9)
+		tangents = NULL;
+
+	      ay_status = ay_bevelt_createroundtonormal(b_radius, b_sense,
+							curve,
+							normals, nstride,
+							tangents, tstride,
 			     (ay_nurbpatch_object**)(void*)&(npatch->refine));
+	    }
+	  else
+	    {
+	      if(!tangents)
+		goto cleanup;
+
+	      ay_status = ay_bevelt_createroundtocap(b_radius, b_sense,
+						     curve,
+						     tangents, tstride,
+			     (ay_nurbpatch_object**)(void*)&(npatch->refine));
+	    }
 	}
       else
 	{
