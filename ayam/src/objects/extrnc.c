@@ -404,7 +404,7 @@ ay_extrnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
       trim = npatch->down;
       Tcl_SetStringObj(ton, "trims", -1);
-      while(trim->next)
+      while(trim && trim->next)
 	{
 	  to = Tcl_NewStringObj(ay_object_getname(trim), -1);
 	  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
