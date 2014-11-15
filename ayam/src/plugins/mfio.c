@@ -2903,7 +2903,7 @@ ay_mfio_writeobject(MF3D_FilePtr fileptr, ay_object *object)
 
       if(i == -1)
 	{
-	  sprintf(err,"No callback registered for this type: %d.",
+	  sprintf(err,"No callback registered for this type: %u.",
 		  object->type);
 	  ay_error(AY_EWARN, fname, err);
 	}
@@ -3339,7 +3339,7 @@ ay_mfio_printerr(MF3DErr errcode)
 
     default:
       ay_error(AY_ERROR, fname, "Unknown Error Code, Internal Error");
-      printf("MFIO-Error: %u\n",errcode);
+      printf("MFIO-Error: %d\n", errcode);
       break;
     } /* switch */
 
