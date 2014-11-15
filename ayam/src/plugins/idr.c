@@ -4129,20 +4129,6 @@ idr_defregion_tcb(struct Togl *togl, int argc, char *argv[])
 	}
     }
 
-  if(winX2 < winX)
-    {
-      dtemp = winX2;
-      winX2 = winX;
-      winX = dtemp;
-    }
-
-  if(winY2 < winY)
-    {
-      dtemp = winY2;
-      winY2 = winY;
-      winY = dtemp;
-    }
-
   /* find view */
   v = o->down;
   while(v->next)
@@ -4162,10 +4148,24 @@ idr_defregion_tcb(struct Togl *togl, int argc, char *argv[])
       return TCL_OK;
     }
 
+  /* normalize rectangle */
+  if(winX2 < winX)
+    {
+      dtemp = winX2;
+      winX2 = winX;
+      winX = dtemp;
+    }
+
+  if(winY2 < winY)
+    {
+      dtemp = winY2;
+      winY2 = winY;
+      winY = dtemp;
+    }
+
   /* revert y */
   winY = height-winY;
   winY2 = height-winY2;
-
 
   /* create new tag */
   if(!(tnew = calloc(1, sizeof(ay_tag))))
