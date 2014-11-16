@@ -1,5 +1,5 @@
-[7. Nov 2014] CVS-Head:
-=======================
+[16. Nov 2014] CVS-Head:
+========================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
 o crash when removing wrong trim curves from patches (SF 3514206)
@@ -41,6 +41,7 @@ o Caps and Bevels are now available for many more object types,
 o added 3D bevel mode controlled via normals and tangents e.g. extracted
   from a surface by an ExtrNC object
 o added bevel mode that rounds to the cap also using tangent information
+o added bevel mode that rounds to the normal also using tangent information
 o Bevel orientations are now consistent (independent from curve winding)
 o Bevels from simple closed or periodic curves are now guaranteed to be
   closed or periodic also
