@@ -448,7 +448,7 @@ ay_bevel_notifycb(ay_object *o)
  int b_type, b_sense, is_round = AY_FALSE, force3d = AY_FALSE;
  int nstride, tstride = 0, freen = AY_FALSE, freet = AY_FALSE;
  double b_radius, tolerance;
- double *normals = NULL, *tangents = NULL;
+ double *normals = NULL, *tangents = NULL, *mn = NULL, v[3];
 
   if(!o)
     return AY_ENULL;
@@ -608,10 +608,27 @@ ay_bevel_notifycb(ay_object *o)
 	      if(tstride == 9)
 		tangents = NULL;
 
+	      tag = o->tags;
+	      while(tag)
+		{
+		  if(tag->type == ay_mn_tagtype)
+		    {
+		      if(tag->val)
+			{
+			  sscanf(tag->val, "%lg,%lg,%lg",
+				 &(v[0]), &(v[1]), &(v[2]));
+			  mn = v;
+			}
+		      break;
+		    }
+		  tag = tag->next;
+		}
+
 	      ay_status = ay_bevelt_createroundtonormal(b_radius, b_sense,
 							curve,
 							normals, nstride,
 							tangents, tstride,
+							mn,
 			     (ay_nurbpatch_object**)(void*)&(npatch->refine));
 	    }
 	  else

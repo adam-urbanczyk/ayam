@@ -206,6 +206,10 @@ char *ay_aswire_tagtype;
 
 char *ay_aswire_tagname = "AsWire";
 
+char *ay_mn_tagtype;
+
+char *ay_mn_tagname = "MN";
+
 static char *ay_log = "/tmp/ay.log";
 
 int ay_wrib_framenum = 0;
@@ -539,6 +543,9 @@ ay_init(Tcl_Interp *interp)
 
   /* register AsWire tag type */
   ay_tags_register(interp, ay_aswire_tagname, &ay_aswire_tagtype);
+
+  /* register MN tag type */
+  ay_tags_register(interp, ay_mn_tagname, &ay_mn_tagtype);
 
   /* create root object */
   if((ay_status = ay_object_create(AY_IDROOT, &ay_root)))
