@@ -1098,7 +1098,7 @@ cleanup:
 int
 ay_bevelt_createroundtonormal(double radius, int revert, ay_object *o1,
 			      double *nt, int nstride, double *ta, int tstride,
-			      ay_nurbpatch_object **bevel)
+			      double *mn, ay_nurbpatch_object **bevel)
 {
  int ay_status = AY_OK;
  ay_nurbcurve_object *curve = NULL;
@@ -1224,13 +1224,20 @@ ay_bevelt_createroundtonormal(double radius, int revert, ay_object *o1,
     } /* for */
 
   /* offset a second time, in the direction of the mean normal */
-  if(curve->type == AY_CTPERIODIC)
-    ay_status = ay_geom_extractmeannormal(curve->controlv,
-					  curve->length-(curve->order/2), 4,
-					  NULL, v1);
+  if(mn)
+    {
+      memcpy(v1, mn, 3*sizeof(double));
+    }
   else
-    ay_status = ay_geom_extractmeannormal(curve->controlv, curve->length, 4,
-					  NULL, v1);
+    {
+      if(curve->type == AY_CTPERIODIC)
+	ay_status = ay_geom_extractmeannormal(curve->controlv,
+					      curve->length-(curve->order/2), 4,
+					      NULL, v1);
+      else
+	ay_status = ay_geom_extractmeannormal(curve->controlv, curve->length, 4,
+					      NULL, v1);
+    }
 
   a = curve->length*stride;
   b = a+curve->length*stride;

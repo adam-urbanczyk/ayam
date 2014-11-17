@@ -73,6 +73,7 @@ int ay_bevelt_createroundtocap(double radius, int revert,
  */
 int ay_bevelt_createroundtonormal(double radius, int revert, ay_object *o1,
 			      double *nt, int nstride, double *ta, int tstride,
+			      double *mn,
 			      ay_nurbpatch_object **bevel);
 
 /** Find cross section bevel curve.
