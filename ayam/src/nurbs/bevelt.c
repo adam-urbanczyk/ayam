@@ -1227,6 +1227,11 @@ ay_bevelt_createroundtonormal(double radius, int revert, ay_object *o1,
   if(mn)
     {
       memcpy(v1, mn, 3*sizeof(double));
+      len = AY_V3LEN(v1);
+      if(len > AY_EPSILON)
+	{
+	  AY_V3SCAL(v1, 1.0/len);
+	}
     }
   else
     {
