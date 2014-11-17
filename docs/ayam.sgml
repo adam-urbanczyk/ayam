@@ -6765,7 +6765,10 @@ the master surface, ExtrNC objects do not support own transformation
 attributes.<footnote>Since 1.19.</footnote>
 <p>
 Note that the extraction of any curves currently completely ignores
-potentially present trimming information of the NPatch object.
+potentially present trimming information of the NPatch object, i.e. the
+extracted curves will not be trimmed.<newline>
+However, complete trim boundaries may be extracted
+.<footnote>Since 1.21.</footnote>
 <p>
 The following table briefly lists some capabilities of the ExtrNC object.
 <p>
@@ -6801,20 +6804,29 @@ of a patch in the designated
 dimension).<footnote>Since 1.15.</footnote><newline>
 This option is useful to re-engineer swept surfaces, delivered
 as simple patches.
+<item><tt/"Trim"/, all trim curves and loops of the current patch will
+appear here.
+<footnote>Since 1.21.</footnote>
+Note, that their extraction will result in an approximation
+of the 3D representation of the corresponding trim boundary only. In
+particular, the extracted curve will not be compatible to the trim curve.
+The approximation quality can be adjusted using <tt/"Parameter"/ below.
 </itemize>
 Note that if <tt/"Side"/ is <tt/"U0"/, <tt/"Un"/, <tt/"V0"/, or <tt/"Vn"/
 the extraction process just copies the respective boundary control points,
-which only works for clamped knot vectors. To extract a boundary from
-a surface with e.g.~a B-Spline knot vector, <tt/"U0"/ should not be used
-but <tt/"U"/ with <tt/"Parameter"/ set to 0.0 and <tt/"Relative"/ enabled
-as <tt/"U"/ uses a different, more expensive, extraction process
+which is fast but only works correctly for clamped knot vectors. To extract
+a boundary from a surface with e.g.~a B-Spline knot vector, <tt/"U0"/ should
+not be used but <tt/"U"/ with <tt/"Parameter"/ set to 0.0 and <tt/"Relative"/
+enabled as <tt/"U"/ uses a different, more expensive, extraction process
 (which involves knot insertion).
 
 <item><tt/"Parameter"/ controls the parametric value in U or V
 direction in the parameter space of the NURBS patch object where the
 curve should be extracted. This parameter is only used when <tt/"Side"/
 is <tt/"U"/ or <tt/"V"/. The valid range of parameter values depends
-on the knot vectors of the NURBS patch.
+on the knot vectors of the NURBS patch.<newline>
+If a trim boundary is to be extracted, this parameter controls the
+sampling just like the preference setting <tt>"Drawing/Tolerance"</tt>.
 
 <item><tt/"Relative"/ controls whether the parametric value should
 be interpreted in a relative way. If enabled, a parametric value of 0.5
@@ -11044,6 +11056,21 @@ is either 0 or 1 and may be used to revert the bevel.
 A BP tag could look like this:
 <tscreen><verb>BP 0,0,0.1,0</verb></tscreen>
 
+<sect2>MN (Mean Normal) Tag<label id="mntag">
+<p>
+<bf/Description/
+<p>
+The tag type <tt/"MN"/ (mean normal) can be added to the Bevel object
+to control the mean&thinsp;/&thinsp;target normal of the <tt/"RoundToNormal"/
+bevel mode.
+The tag value is a list of three comma separated floating point numbers,
+a 3D vector. The vector does not have to be normalized.
+<p>
+<bf/Example/
+<p>
+A MN tag could look like this:
+<tscreen><verb>MN 0.0,1.0,0.1</verb></tscreen>
+
 <sect2>Internal Tags
 <p>
 The following tags are used by Ayam internally only; they will <em>not</em>
@@ -11087,7 +11114,7 @@ known in Ayam and in all accompanying extensions (plugins).
 "TC",
 "PV", "SaveMainGeom", "SavePaneLayout", "TP", "MI", "OI", "DC", "TM", "NP",
 "RP", "BNS", "DBNS", "ANS", "DANS", "NO", "NM", "NT",
-"UMM", "VMM", "BP", "IDR", "IIDR", "RIDR", "R3IDR", "CIDR", "CCIDR"</tt>
+"UMM", "VMM", "BP", "MN", "IDR", "IIDR", "RIDR", "R3IDR", "CIDR", "CCIDR"</tt>
 <p>
 Documentation on all those tags can be found in the previous sections.
 
@@ -20250,6 +20277,7 @@ Index:
 <item>MinSamples, MaxSamples: <ref id="rio" name="RenderMan interface option">
 <item>MinX, MinY, MinZ: <ref id="riprocp" name="RiProc attribute">
 <item>Mirror: <ref id="mirrorobj" name="Mirror object">
+<item>MN: <ref id="mntag" name="tag type">
 <item>Modelling: <ref id="iac" name="Modelling Actions">
 <item>Mode: <ref id="offsetncp" name="OffsetNC attribute">
 <item>Mops Import: <ref id="impmops" name="Import of Mops Scenes">
