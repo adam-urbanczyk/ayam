@@ -1184,6 +1184,7 @@ ay_tags_remnonm(ay_object *o, ay_object *m)
 	      break;
 	    }
 	}
+      lasttag = &(tag->next);
       tag = tag->next;
     } /* while */
 
@@ -1203,6 +1204,7 @@ ay_tags_remnonm(ay_object *o, ay_object *m)
 		  break;
 		}
 	    }
+	  lasttag = &(tag->next);
 	  tag = tag->next;
 	} /* while */
     } /* if */

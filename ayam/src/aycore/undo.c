@@ -1401,6 +1401,7 @@ ay_undo_clearobj(ay_object *o)
 			  break;
 			}
 		    }
+		  lasttag = &(tag->next);
 		  tag = tag->next;
 		}
 	    }
