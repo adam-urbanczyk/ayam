@@ -285,7 +285,7 @@ ay_object_delete(ay_object *o)
   tag = o->tags;
   while(tag)
     {
-      if(tag->type == ay_nm_tagtype)
+      if(tag->type == ay_nm_tagtype && tag->is_binary)
 	{
 	  d = (ay_object*)(((ay_btval*)tag->val)->payload);
 	  tag = tag->next;
@@ -1035,7 +1035,7 @@ ay_object_replace(ay_object *src, ay_object *dst)
       tag = dst->tags;
       while(tag)
 	{
-	  if(tag->type == ay_nm_tagtype)
+	  if(tag->type == ay_nm_tagtype && tag->is_binary)
 	    {
 	      d = (ay_object*)(((ay_btval*)tag->val)->payload);
 	      tag = tag->next;

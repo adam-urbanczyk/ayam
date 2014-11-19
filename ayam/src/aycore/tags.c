@@ -1095,7 +1095,7 @@ ay_tags_addnonm(ay_object *o, ay_object *m)
   tag = m->tags;
   while(tag)
     {
-      if(tag->type == ay_no_tagtype)
+      if(tag->type == ay_no_tagtype && tag->is_binary)
 	{
 	  if(o == ((ay_btval*)tag->val)->payload)
 	    {
@@ -1174,7 +1174,7 @@ ay_tags_remnonm(ay_object *o, ay_object *m)
   lasttag = &(m->tags);
   while(tag)
     {
-      if(tag->type == ay_no_tagtype)
+      if(tag->type == ay_no_tagtype && tag->is_binary)
 	{
 	  if(o == ((ay_btval*)tag->val)->payload)
 	    {
@@ -1194,7 +1194,7 @@ ay_tags_remnonm(ay_object *o, ay_object *m)
       lasttag = &(o->tags);
       while(tag)
 	{
-	  if(tag->type == ay_nm_tagtype)
+	  if(tag->type == ay_nm_tagtype && tag->is_binary)
 	    {
 	      if(m == ((ay_btval*)tag->val)->payload)
 		{

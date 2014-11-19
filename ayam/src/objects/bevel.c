@@ -571,7 +571,7 @@ ay_bevel_notifycb(ay_object *o)
       tag = curve->tags;
       while(tag)
 	{
-	  if(tag->type == ay_nt_tagtype)
+	  if(tag->type == ay_nt_tagtype && tag->is_binary)
 	    {
 	      normals = ((ay_btval*)tag->val)->payload;
 	      tangents = &(normals[3]);

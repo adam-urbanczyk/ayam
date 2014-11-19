@@ -1370,7 +1370,7 @@ ay_undo_clearobj(ay_object *o)
   tag = o->tags;
   while(tag)
     {
-      if(tag->type == ay_nm_tagtype)
+      if(tag->type == ay_nm_tagtype && tag->is_binary)
 	{
 	  no_master = (ay_object*)(((ay_btval*)tag->val)->payload);
 	}
