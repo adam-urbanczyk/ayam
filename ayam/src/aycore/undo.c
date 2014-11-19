@@ -1365,7 +1365,7 @@ ay_undo_clearobj(ay_object *o)
  ay_object **lu = NULL, *u = NULL, *down;
  ay_object *no_master = NULL;
  ay_list_object **lr = NULL, *r = NULL;
- ay_tag *tag = NULL;
+ ay_tag *tag = NULL, **lasttag;
 
   tag = o->tags;
   while(tag)
@@ -1388,7 +1388,21 @@ ay_undo_clearobj(ay_object *o)
 	{
 	  if(r->object == no_master)
 	    {
-	      ay_tags_remnonm(NULL, u);
+	      tag = u->tags;
+	      lasttag = &(u->tags);
+	      while(tag)
+		{
+		  if(tag->type == ay_no_tagtype && tag->is_binary)
+		    {
+		      if(o == ((ay_btval*)tag->val)->payload)
+			{
+			  *lasttag = tag->next;
+			  ay_tags_free(tag);
+			  break;
+			}
+		    }
+		  tag = tag->next;
+		}
 	    }
 	  if(r->object == o)
 	    {
