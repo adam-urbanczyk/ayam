@@ -10922,7 +10922,7 @@ ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      free(newknotv);
 	      free(newcontrolv);
-	      ay_error(AY_ERROR, argv[0], "knot insertion failed");
+	      ay_error(AY_ERROR, argv[0], "Knot insertion failed.");
 	      return TCL_OK;
 	    }
 
@@ -11055,7 +11055,7 @@ ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      free(newknotv);
 	      free(newcontrolv);
-	      ay_error(AY_ERROR, argv[0], "knot insertion failed");
+	      ay_error(AY_ERROR, argv[0], "Knot insertion failed.");
 	      return TCL_OK;
 	    }
 
@@ -13970,8 +13970,10 @@ ay_npt_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
        if((argv[1][0] == '-') && (argv[1][1] == 'e'))
 	 side = 2;
        else
-	 tcl_status = Tcl_GetInt(interp, argv[1], &side);
-     AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	 {
+	   tcl_status = Tcl_GetInt(interp, argv[1], &side);
+	   AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	 }
    }
 
   if(!strcmp(argv[0], "unclampvNP"))
