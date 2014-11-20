@@ -1091,6 +1091,7 @@ cleanup:
  * \param[in] nstride stride in normals array
  * \param[in] ta array of tangents, may be NULL
  * \param[in] tstride stride in tangents array
+ * \param[in] mn mean normal, may be NULL
  * \param[in,out] bevel resulting bevel object
  *
  * \returns AY_OK on success, error code otherwise.
