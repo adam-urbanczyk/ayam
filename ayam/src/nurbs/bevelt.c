@@ -1131,7 +1131,7 @@ ay_bevelt_createroundtonormal(double radius, int revert, ay_object *o1,
     {
       ay_status = ay_nct_getcvtangents(curve, &ct);
       if(ay_status || !ct)
-	return AY_ERROR;
+	{ ay_status = AY_ERROR; goto cleanup; }
 
       if(!(tt = malloc(curve->length*3*sizeof(double))))
 	{ free(ct); ay_status = AY_EOMEM; goto cleanup; }
