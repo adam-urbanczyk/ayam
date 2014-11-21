@@ -1238,6 +1238,8 @@ ay_bevelt_createroundtonormal(double radius, int revert, ay_object *o1,
       else
 	ay_status = ay_geom_extractmeannormal(curve->controlv, curve->length, 4,
 					      NULL, v1);
+      if(ay_status)
+	goto cleanup;
     }
 
   a = curve->length*stride;
