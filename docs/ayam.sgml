@@ -6107,7 +6107,7 @@ The next section details the NCurve object property.
 <sect3>NCurveAttr Property<label id="ncattr"><label id="ncurveattrprop">
 <p><#if out=latex>&nbsp;<newline></#if>
 The first section of the NCurveAttr property contains curve specific
-settings:<p>
+settings:
 <itemize>
 <item><tt/"Type"/: This attribute replaces the <tt/"Closed"/
 attribute since Ayam 1.9.
@@ -7010,7 +7010,7 @@ NPatch|NCurve<f/<sup/+///&thinsp;Level<f/<sup/+//|Yes|PolyMesh|Yes<#if out=latex
 <sect3>NPatchAttr Property<label id="npattr"><label id="npatchattrprop">
 <p><#if out=latex>&nbsp;<newline></#if>
 The first section of the NPatchAttr property contains patch specific
-settings:<p>
+settings:
 <itemize>
 <item><tt/"Width"/ and <tt/"Height"/ control the dimensions of the patch.
 Similar to the <tt/"Length"/ parameter of the NCurve object, changes to
@@ -7317,7 +7317,7 @@ PatchMesh|No|Yes|NPatch|Yes<#if out=latex>@<hline></#if>
 <sect3>PatchMeshAttr Property<label id="pmattr"><label id="patchmeshattrprop">
 <p><#if out=latex>&nbsp;<newline></#if>
 The first section of the PatchMeshAttr property contains patch specific
-settings:<p>
+settings:
 <itemize>
 <item><tt/"Type"/ may be set to <tt/"Bilinear"/ or <tt/"Bicubic"/.
 <item><tt/"Width"/ and <tt/"Height"/ control the dimensions of the patch.
