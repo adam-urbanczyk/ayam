@@ -124,7 +124,7 @@ proc fixitemize { buf outfile } {
 	    puts $outfile "\\vspace\{-1.5ex\}"
 	} else {
 	puts $outfile\
-     "\\begin\{itemize\}\\setstretch\{1\}\\setlength\{\\itemsep\}\{0.33ex\}\\setlength\{\\parsep\}\{1ex\}"
+	    "\\vspace\{-1.5ex\}\\begin\{itemize\}\\setstretch\{1\}\\setlength\{\\itemsep\}\{0.33ex\}\\setlength\{\\parsep\}\{1ex\}"
 	}
 	set found 1
     }
