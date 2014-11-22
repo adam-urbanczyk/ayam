@@ -16,7 +16,7 @@
 # o inline graphics (icons in tables)
 # o improve itemize/enumerate environments line spread and paragraph distance
 
-set procs { fixheight fixsection fixenddoc fixdocclass fixitemize fixenum fixlist insnewpage insneedspace insphantomsection insinlinegfx fixtoc fixhyperref }
+set procs { fixheight fixsection fixenddoc fixdocclass fixitemize fixenum fixlist insnewpage insneedspace insphantomsection insinlinegfx fixtoc fixhyperref fixpara }
 
 proc fixheight { buf outfile } {
     global height
@@ -142,6 +142,18 @@ proc fixenum { buf outfile } {
     return $found;
 }
 
+
+proc fixpara { buf outfile } {
+    set found 0
+    set index [ string first "~\\" $buf ]
+    if { ($index > -1) } {
+	set out "~\\\\\\vskip -2.2ex"
+	append out [string range $buf 3 end]
+	puts $outfile $out    
+	set found 1
+    }
+    return $found;
+}
 
 proc insnewpage { buf outfile } {
     set found 0
