@@ -4229,7 +4229,12 @@ SfCurve|No|No|NCurve|No*<#if out=latex>@<hline></#if>
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Root Object<label id="rootobj">
+<sect1>Scene Organization Objects
+<p>
+These objects help to organize the scene apart from
+geometric objects.
+
+<sect2>Root Object<label id="rootobj">
 <p>
 There is always exactly one Root object in the scene.
 This object is something special in that it can not be deleted
@@ -4248,9 +4253,9 @@ using SaveMainGeom and SavePaneLayout tags (see also sections
 <p>
 The global scene rendering options are documented in the following sections.
 
-<sect2>RiOptions Property<label id="rio"><label id="rioptionsprop">
-<p>
-The RiOptions property carries RenderMan Interface options.
+<sect3>RiOptions Property<label id="rio"><label id="rioptionsprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+This property carries RenderMan Interface options.
 Both, standard and BMRT specific options may be set using this
 property. For the sake of brevity only a short description of
 the available options will be given here.
@@ -4327,8 +4332,8 @@ tesselated geometry.
 Renderer specific options may also be set with RiOption tags,
 see section <ref id="riotag" name="RiOption Tag">.
 
-<sect2>Imager, Atmosphere Property<label id="imager">
-<p>
+<sect3>Imager, Atmosphere Property<label id="imager">
+<p><#if out=latex>&nbsp;<newline></#if>
 The Imager and Atmosphere properties let you define shaders for the
 Root object, please refer to section
 <ref id="shd" name="Shader Properties">
@@ -4341,8 +4346,8 @@ Atmosphere shaders are volume shaders that
 may be used to implement global atmospheric
 optical effects like fog.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 The Root object appears in RIB output in different places as collection
 of RenderMan Interface options and imager as well as atmosphere shaders.
 <p>
@@ -4355,7 +4360,7 @@ RiDisplay tags (see also section
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>View Object<label id="viewobj">
+<sect2>View Object<label id="viewobj">
 <p>
 Every view window (see also section
 <ref id="viewwin" name="Anatomy of a View">)
@@ -4404,8 +4409,8 @@ View|NPatch|No|N/A|Yes<#if out=latex>@<hline></#if>
 <p>
 The next sections detail the properties of the view object.
 
-<sect2>Camera Property<label id="camp"><label id="cameraprop">
-<p>
+<sect3>Camera Property<label id="camp"><label id="cameraprop">
+<p><#if out=latex>&nbsp;<newline></#if>
 This section describes all elements of the <tt/"Camera"/ property:
 <itemize>
 <item><tt/"From"/ is the point where the camera (that is attached
@@ -4428,8 +4433,8 @@ Note that the up vector is not checked for erroneous values
 (e.g.~pointing in the direction of from-to) when applying the changes
 of the <tt/"Camera"/ property.
 
-<sect2>ViewAttrib Property<label id="vat"><label id="viewattrprop">
-<p>
+<sect3>ViewAttrib Property<label id="vat"><label id="viewattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
 This section describes the elements of the <tt/"ViewAttrib"/ property:
 <itemize>
 <item><tt/"Type"/ specifies the type of the view. Front, Side, Top (all
@@ -4489,8 +4494,8 @@ If this option is disabled, these actions will not be recorded in the
 undo system and also do not change the scene changed state.
 </itemize>
 
-<sect2>Drag and Drop Support
-<p>
+<sect3>Drag and Drop Support
+<p><#if out=latex>&nbsp;<newline></#if>
 View objects act in special ways, when certain objects are dropped
 onto them in the tree view:
 <p>
@@ -4511,7 +4516,7 @@ onto a view object in the tree view (see the above
 description).<footnote>Since 1.8.</footnote>
 
 
-<sect1>Camera Object<label id="cameraobj">
+<sect2>Camera Object<label id="cameraobj">
 <p>
 Camera objects are used to temporarily save camera settings
 of views.
@@ -4530,18 +4535,18 @@ Camera|No|No|N/A|Yes<#if out=latex>@<hline></#if>
 </table>
 <p>
 
-<sect2>Drag and Drop Support
-<p>
+<sect3>Drag and Drop Support
+<p><#if out=latex>&nbsp;<newline></#if>
 When a view object is dropped onto a camera object the camera settings
 from the view will be copied to the camera object.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 Camera objects never appear in RIB output.
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Light Object<label id="lightobj">
+<sect2>Light Object<label id="lightobj">
 <p>
 Light objects let you bring light into your scenes.
 <p>
@@ -4590,8 +4595,8 @@ Light|Yes|No|N/A|Yes<#if out=latex>@<hline></#if>
 <caption>Light Object Capabilities</caption>
 </table>
 
-<sect2>LightAttr Property<label id="lip"><label id="lightattrprop">
-<p>
+<sect3>LightAttr Property<label id="lip"><label id="lightattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
 Depending on the type of the light source, the light attribute
 property contains different parameters. Parameters that
 are not displayed will not be used on RIB export, consequently.
@@ -4668,8 +4673,8 @@ light source object onto a view object or into a view window
 width and height) to see what objects of the scene are actually lit
 by the light object.
 
-<sect2>Using ShadowMaps<label id="shadowmaps">
-<p>
+<sect3>Using ShadowMaps<label id="shadowmaps">
+<p><#if out=latex>&nbsp;<newline></#if>
 Using shadow maps requires the global preference setting
 <tt>"RIB-Export/ShadowMaps"</tt> to be switched on.
 Furthermore, for each light source for which a shadow map should be
@@ -4819,8 +4824,8 @@ require additional tweaking using shadow bias RiOption tags.
 Please consult the documentation of your renderer on how to achieve
 the best results using shadow maps.
 
-<sect2>Using AreaLights<label id="alob">
-<p>
+<sect3>Using AreaLights<label id="alob">
+<p><#if out=latex>&nbsp;<newline></#if>
 The common idealized standard light sources <tt/"Point"/, <tt/"Distant"/
 and <tt/"Spot"/ have no own geometric extension in space.
 This means, shadows resulting from such light sources will have sharp
@@ -4856,7 +4861,7 @@ Ayam.
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Material Object<label id="materialobj">
+<sect2>Material Object<label id="materialobj">
 <p>
 Material objects are used to attach RiAttributes and shaders to
 geometric objects.
@@ -4874,8 +4879,8 @@ Material|No|N/A|N/A|No<#if out=latex>@<hline></#if>
 <caption>Material Object Capabilities</caption>
 </table>
 
-<sect2>RiAttributes Property<label id="riattrs"><label id="riattributesprop">
-<p>
+<sect3>RiAttributes Property<label id="riattrs"><label id="riattributesprop">
+<p><#if out=latex>&nbsp;<newline></#if>
 Using this property standard and BMRT specific attributes may be set.
 Please refer to the documentation of the RenderMan interface
 and the documentation of BMRT for more detailed information about the
@@ -4909,8 +4914,8 @@ shader, that is used in shadow calculations.
 visibility attributes.
 </itemize>
 
-<sect2>Surface, Displacement, Interior, Exterior Property<label id="matshader">
-<p>
+<sect3>Surface, Displacement, Interior, Exterior Property<label id="matshader">
+<p><#if out=latex>&nbsp;<newline></#if>
 These properties let you define shaders for the material object, please
 refer to section <ref id="shd" name="Shader Properties">
 for information on how to deal with shader property GUIs.
@@ -4921,8 +4926,8 @@ rendering. Interior and Exterior shaders are so called volume shaders
 that may be used to capture special optical effects, encoding how light
 is affected while passing through an object.
 
-<sect2>MaterialAttr Property<label id="matattr"><label id="materialattrprop">
-<p>
+<sect3>MaterialAttr Property<label id="matattr"><label id="materialattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
 The MaterialAttr property contains attributes related to the
 management of material objects:
 <itemize>
@@ -4939,13 +4944,13 @@ reside in the object clipboard.
 connected to geometric objects, see the discussion about material names above.
 </itemize>
 
-<sect2>Drag and Drop Support
-<p>
+<sect3>Drag and Drop Support
+<p><#if out=latex>&nbsp;<newline></#if>
 When geometric objects are dropped onto a material object
 they will be connected to this material object.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 Material objects only appear in RIB output if connected to a
 geometric object (e.g.~a Box).
 <p>
@@ -4978,14 +4983,14 @@ above.
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Level Object<label id="levelobj">
+<sect2>Level Object<label id="levelobj">
 <p>
 Level objects may be used to build object hierarchies and perform CSG
 operations.
 <p>
 Ayam does not offer a layer concept, but by grouping objects using
-levels and the hide/show tools, layer functionality may be emulated
-to a certain extent.
+levels and the hide&thinsp;/&thinsp;show tools, layer functionality
+may be emulated to a certain extent.
 <p>
 Organizing the scene and working in levels also increases the speed
 of object tree updates, as only the current level and its sub-levels
@@ -5029,8 +5034,8 @@ Level|Any<f/<sup/+//|Yes|N/A&thinsp;/&thinsp;Children<f/<sup/+//|No<#if out=late
 <caption>Level Object Capabilities</caption>
 </table>
 
-<sect2>LevelAttr Property<label id="lep"><label id="levelattrprop">
-<p>
+<sect3>LevelAttr Property<label id="lep"><label id="levelattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
 Levels do not have many object type specific properties, you may just
 modify the type of the level using the attribute <tt/"Type"/.
 <p>
@@ -5099,8 +5104,8 @@ Furthermore, it is not necessary to enclose normal child objects
 CSG levels in primitive levels for RIB export. This is done by Ayam
 automatically where needed.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 The exact representation of a Level in RIB output depends on
 its type.
 <p>
@@ -5140,7 +5145,7 @@ RiTransformEnd();
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Clone Object<label id="cloneobj">
+<sect2>Clone Object<label id="cloneobj">
 <p>
 <figure loc="ht">
 <eps file="pics/clone.ps" height="5cm">
@@ -5213,11 +5218,10 @@ Clone|Any<f/<sup/+//|No|Children<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Clone Object Capabilities</caption>
 </table>
-<p>
-The following attributes further control the cloning process:
 
-<sect2>CloneAttr Property<label id="cloneattr"><label id="cloneattrprop">
-<p>
+<sect3>CloneAttr Property<label id="cloneattr"><label id="cloneattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The following attributes control the cloning process:
 <itemize>
 <item><tt/"NumClones"/ is the number of clones to create.
 <item><tt/"Rotate"/ is only used, if a trajectory curve is present.
@@ -5259,16 +5263,16 @@ Mirror|Yes|N/A|Yes<#if out=latex>@<hline></#if>
 <caption>Clone Parameterisation Examples</caption>
 </table>
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 The Clone object may be converted to ordinary objects using the
 main menu entry <tt>"Tools/Convert"</tt>.
 <p>
 Upon conversion a Level object will be created, that contains the original
 object <em>and</em> the clones.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 Clone objects appear in RIB output as a number of real
 objects, each with different transformation attributes.
 <p>
@@ -5278,7 +5282,7 @@ if the Clone is in trajectory mode.
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Mirror Object<label id="mirrorobj">
+<sect2>Mirror Object<label id="mirrorobj">
 <p>
 <figure loc="ht">
 <eps file="pics/mirror.ps" height="4cm">
@@ -5323,32 +5327,31 @@ Mirror|Any<f/<sup/+//|No|Children<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Mirror Object Capabilities</caption>
 </table>
-<p>
-The following attributes further control the mirror process:
 
-<sect2>MirrorAttr Property<label id="mirrorattr"><label id="mirrorattrprop">
-<p>
+<sect3>MirrorAttr Property<label id="mirrorattr"><label id="mirrorattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The following attributes control the mirror process:
 <itemize>
 <item><tt/"Plane"/ allows to select the plane about which the mirroring
 should occur (YZ-, XZ-, or XY-plane).
 </itemize>
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 The Mirror object may be converted to ordinary objects using the
 main menu entry <tt>"Tools/Convert"</tt>.
 <p>
 Upon conversion a Level object will be created, that contains the original
 objects and the mirrored counterparts (the latter in reverse order).
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 Mirror objects appear in RIB output as a number of real
 objects, each with different transformation attributes.
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Instance Object<label id="instanceobj">
+<sect2>Instance Object<label id="instanceobj">
 <p>
 Instance objects help to save memory consumption in scenes with many
 similar or repeating objects or transport geometric data across the
@@ -5425,8 +5428,8 @@ Instance|No|No|Master|No*<#if out=latex>@<hline></#if>
 <caption>Instance Object Capabilities</caption>
 </table>
 
-<sect2>Instances without Transformations (References)<label id="referencing">
-<p>
+<sect3>Instances without Transformations (References)<label id="referencing">
+<p><#if out=latex>&nbsp;<newline></#if>
 Instance objects support the <tt>"RP"</tt> tag type
 in a special way:
 if the <tt>"Transformations"</tt> property is removed using a
@@ -5448,8 +5451,8 @@ into the Ayam console:
 <p>
 This special case of an instance is sometimes also called reference.
 
-<sect2>Instances and the Object Clipboard<label id="instclip">
-<p>
+<sect3>Instances and the Object Clipboard<label id="instclip">
+<p><#if out=latex>&nbsp;<newline></#if>
 It is not possible to copy a master object and some instances
 of it, so that the new instances point to the newly created master.
 All copies of instance objects always point to the same original
@@ -5479,8 +5482,8 @@ It is possible to move masters and instances through the scene hierarchy
 using drag and drop in the tree view or using the clipboard with
 <tt>"Edit/Cut"</tt> and then <tt>"Special/Clipboard/Paste (Move)"</tt>.
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 An Instance object may be converted to an ordinary object using the
 main menu entry <tt>"Tools/Convert"</tt>.
 This process is also called resolving the instance.
@@ -5489,8 +5492,8 @@ To resolve all instance objects in a scene
 to normal objects, also the main menu entry:
 <tt>"Special/Instances/Resolve all Instances"</tt> can be used.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 The RIB export of instances does <em>not</em> use the RiInstance facility
 of the RenderMan interface, but rather the more flexible ReadArchive
 mechanism.
@@ -5507,7 +5510,7 @@ add info about file names
 -->
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Select Object<label id="selectobj">
+<sect2>Select Object<label id="selectobj">
 <p>
 The Select object may be used in hierarchies
 of tool objects to select one object from a list of provided
@@ -5543,8 +5546,9 @@ Select|Any<f/<sup/+//|No|N/A&thinsp;/&thinsp;Children<f/<sup/+//|No<#if out=late
 <caption>Select Object Capabilities</caption>
 </table>
 
-<sect2>SelectAttrib Property<label id="selectp"><label id="selectattrprop">
-<p>
+<sect3>SelectAttrib Property<label id="selectp"><label id="selectattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The following attribute controls the selection process:
 <itemize>
 <item><tt/"Indices"/ designates the object(s) to select. The index values
 are zero based. Multiple indices must be separated by <tt/","/, ranges
@@ -5572,13 +5576,13 @@ so many) up to the last, and the second object upstream.
  </itemize>
 </itemize>
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 Select objects never appear in RIB output.
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>RiInc Object<label id="riincobj">
+<sect2>RiInc Object<label id="riincobj">
 <p>
 RiInc objects may be used to include objects or whole scene parts into your
 scenes that, for some reason, are just available as a piece of RIB.
@@ -5592,11 +5596,10 @@ RiInc|No|No|N/A|No<#if out=latex>@<hline></#if>
 </tabular>
 <caption>RiInc Object Capabilities</caption>
 </table>
-<p>
-The following attributes control the inclusion process:
 
-<sect2>RiIncAttr Property<label id="riincp"><label id="riincattrprop">
-<p>
+<sect3>RiIncAttr Property<label id="riincp"><label id="riincattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The following attributes control the inclusion process:
 <itemize>
 <item>Using <tt/"File"/ you specify the filename of the RIB to be included.
 <item><tt/"Width"/, <tt/"Height"/, and <tt/"Length"/ specify
@@ -5604,7 +5607,14 @@ the size of a box, that will be drawn as a geometric representation of
 the RIB.
 </itemize>
 
-<sect1>RiProc Object<label id="riprocobj">
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
+RiInc objects export as single
+<tscreen><tt>
+ReadArchive
+</tt></tscreen>
+
+<sect2>RiProc Object<label id="riprocobj">
 <p>
 RiProc objects may be used to include procedural objects or external
 archives into your scenes.
@@ -5618,11 +5628,10 @@ RiProc|No|No|N/A|No<#if out=latex>@<hline></#if>
 </tabular>
 <caption>RiProc Object Capabilities</caption>
 </table>
-<p>
-The following attributes control the RiProc object:
 
-<sect2>RiProcAttr Property<label id="riprocp"><label id="riprocattrprop">
-<p>
+<sect3>RiProcAttr Property<label id="riprocp"><label id="riprocattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The following attributes control the RiProc object:
 <itemize>
 <item><tt/"Type"/ defines the type of the procedural object which is
 one of <tt/"DelayedReadArchive"/, <tt/"RunProgram"/, or
@@ -5637,9 +5646,19 @@ and <tt/"MaxZ"/ specify the size of the bounding box of the objects that
 the procedural will create or the archive contains.
 </itemize>
 
-<#if out=latex><x/newpage/</#if>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
+RiProc objects export as single
+<tscreen><tt>
+RiProcedural(...);
+</tt></tscreen>
 
-<sect1>Box Object<label id="boxobj">
+<#if out=latex><x/newpage/</#if>
+<sect1>CSG/Solid Primitives
+<p>
+These objects serve as geometric primitives in CSG hierarchies.
+
+<sect2>Box Object<label id="boxobj">
 <p>
 A solid box, centered at the origin of the object coordinate system.
 <p>
@@ -5652,11 +5671,10 @@ Box|No|Yes|NPatch<f/<sup/&lowast;//|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Box Object Capabilities</caption>
 </table>
-<p>
-The following parameters further control the shape of a box:
 
-<sect2>BoxAttrib Property<label id="bxp"><label id="boxattrprop">
-<p>
+<sect3>BoxAttrib Property<label id="bxp"><label id="boxattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The following parameters control the shape of the box:
 <itemize>
 <item><tt/"Width"/ is the width of the box (size of the box in
 direction of the X axis of the objects coordinate system).
@@ -5666,19 +5684,19 @@ direction of the Z axis of the objects coordinate system).
 direction of the Y axis of the objects coordinate system).
 </itemize>
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 A box object may be converted to three NURBS patches
 using the main menu entry
 <tt>"Tools/Convert"</tt>.<footnote>Since 1.8.2.</footnote>
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 The box object will always be exported as six bilinear patches.
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Sphere Object<label id="sphereobj">
+<sect2>Sphere Object<label id="sphereobj">
 <p>
 A sphere, centered at the origin of the object coordinate system.
 <p>
@@ -5691,11 +5709,10 @@ Sphere|No|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Sphere Object Capabilities</caption>
 </table>
-<p>
-The following parameters further control the shape of a sphere:
 
-<sect2>SphereAttr Property<label id="spattr"><label id="sphereattrprop">
-<p>
+<sect3>SphereAttr Property<label id="spattr"><label id="sphereattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The following parameters control the shape of the sphere:
 <itemize>
 <item><tt/"Closed"/ toggles whether the object should
 be automatically sealed (closed by matching cap surfaces).<newline>
@@ -5710,8 +5727,8 @@ default is 1.
 is 360.
 </itemize>
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 A Sphere object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the sphere.<footnote>Since 1.8.2.</footnote>
@@ -5721,8 +5738,8 @@ created and the caps follow the sphere in the following order:
 disk-shaped cap at zmin, disk-shaped cap at zmax, cap at theta 0,
 cap at thetamax.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 The Sphere object appears in RIB output as simple
 <tscreen><tt>
 RiSphere(...);
@@ -5734,7 +5751,7 @@ eight disks.
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Disk Object<label id="diskobj">
+<sect2>Disk Object<label id="diskobj">
 <p>
 A disk in the XY plane, centered at the origin of the object coordinate system.
 <p>
@@ -5747,11 +5764,10 @@ Disk|No|Yes|NPatch|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Disk Object Capabilities</caption>
 </table>
-<p>
-The following parameters further control the shape of a disk:
 
-<sect2>DiskAttr Property<label id="dkp"><label id="diskattrprop">
-<p>
+<sect3>DiskAttr Property<label id="dkp"><label id="diskattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The following parameters control the shape of the disk:
 <itemize>
 <item><tt/"Radius"/ is the radius of the disk, default is 1.
 <item><tt/"ZMin"/ displaces the disk along the Z axis, default is 0.
@@ -5759,14 +5775,14 @@ The following parameters further control the shape of a disk:
 default is 360.
 </itemize>
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 A Disk object may be converted to a NURBS patch
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the disk.<footnote>Since 1.8.2.</footnote>
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 The Disk object will always be exported as simple disk:
 <tscreen><tt>
 RiDisk(...);
@@ -5774,7 +5790,7 @@ RiDisk(...);
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Cone Object<label id="coneobj">
+<sect2>Cone Object<label id="coneobj">
 <p>
 A cone, centered at the origin of the object coordinate system,
 with the base in the XY plane.
@@ -5788,11 +5804,10 @@ Cone|No|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Cone Object Capabilities</caption>
 </table>
-<p>
-The following parameters further control the shape of a cone:
 
-<sect2>ConeAttr Property<label id="cnp"><label id="coneattrprop">
-<p>
+<sect3>ConeAttr Property<label id="cnp"><label id="coneattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The following parameters control the shape of the cone:
 <itemize>
 <item><tt/"Closed"/ toggles whether the object should
 be automatically sealed (closed by matching cap surfaces).<newline>
@@ -5804,8 +5819,8 @@ may be used in CSG operations safely.
 default is 360.
 </itemize>
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 A Cone object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the cone.<footnote>Since 1.8.2.</footnote>
@@ -5815,8 +5830,8 @@ created and the caps follow the cone in the following order:
 disk-shaped cap at the base, cap at theta 0,
 cap at thetamax.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 The Cone object appears in RIB output as simple
 <tscreen><tt>
 RiCone(...);
@@ -5827,7 +5842,7 @@ two polygons.
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Cylinder Object<label id="cylinderobj">
+<sect2>Cylinder Object<label id="cylinderobj">
 <p>
 A cylinder, centered at the origin of the object coordinate system.
 <p>
@@ -5840,11 +5855,10 @@ Cylinder|No|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Cylinder Object Capabilities</caption>
 </table>
-<p>
-The following parameters further control the shape of a cylinder:
 
-<sect2>CylinderAttr Property<label id="cyp"><label id="cylinderattrprop">
-<p>
+<sect3>CylinderAttr Property<label id="cyp"><label id="cylinderattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The following parameters control the shape of the cylinder:
 <itemize>
 <item><tt/"Closed"/ toggles whether the object should
 be automatically sealed (closed by matching cap surfaces).<newline>
@@ -5857,8 +5871,8 @@ may be used in CSG operations safely.
 default is 360.
 </itemize>
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 A cylinder object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the cylinder.<footnote>Since 1.8.2.</footnote>
@@ -5868,8 +5882,8 @@ created and the caps follow the cylinder in the following order:
 disk-shaped cap at zmin, disk-shaped cap at zmax, cap at theta 0,
 cap at thetamax.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 The cylinder object appears in RIB output as simple
 <tscreen><tt>
 RiCylinder(...);
@@ -5880,7 +5894,7 @@ and two polygons.
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Torus Object<label id="torusobj">
+<sect2>Torus Object<label id="torusobj">
 <p>
 A torus, centered at the origin of the object coordinate system.
 A torus is a donut like shape, that results from sweeping
@@ -5896,11 +5910,10 @@ Torus|No|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Torus Object Capabilities</caption>
 </table>
-<p>
-The following parameters further control the shape of a torus:
 
-<sect2>TorusAttr Property<label id="top"><label id="torusattrprop">
-<p>
+<sect3>TorusAttr Property<label id="top"><label id="torusattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The following parameters control the shape of the torus:
 <itemize>
 <item><tt/"Closed"/ toggles whether the object should
 be automatically sealed (closed by matching cap surfaces).<newline>
@@ -5917,8 +5930,8 @@ default is 360.
 default is 360.
 </itemize>
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 A torus object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the torus.<footnote>Since 1.8.2.</footnote>
@@ -5928,8 +5941,8 @@ created and the caps follow the torus in the following order:
 disk-shaped cap at theta 0, disk-shaped cap at thetamax, ring-shaped
 cap at phimin 0, ring-shaped cap at phimax.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 The torus object appears in RIB output as simple
 <tscreen><tt>
 RiTorus(...);
@@ -5940,7 +5953,7 @@ CSG hierarchy of at most one one torus, two disks, and two hyperboloids.
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Paraboloid Object<label id="paraboloidobj">
+<sect2>Paraboloid Object<label id="paraboloidobj">
 <p>
 A paraboloid, centered at the origin of the object coordinate system.
 <p>
@@ -5953,11 +5966,10 @@ Paraboloid|No|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Paraboloid Object Capabilities</caption>
 </table>
-<p>
-The following parameters further control the shape of a paraboloid:
 
-<sect2>ParaboloidAttr Property<label id="pap"><label id="paraboloidattrprop">
-<p>
+<sect3>ParaboloidAttr Property<label id="pap"><label id="paraboloidattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The following parameters control the shape of the paraboloid:
 <itemize>
 <item><tt/"Closed"/ toggles whether the object should
 be automatically sealed (closed by matching cap surfaces).<newline>
@@ -5973,8 +5985,8 @@ determines the Z location of the base, must be positive, default is 1.
 default is 360.
 </itemize>
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 A paraboloid object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the paraboloid.<footnote>Since 1.8.2.</footnote>
@@ -5984,8 +5996,8 @@ created and the caps follow the paraboloid in the following order:
 disk-shaped cap at zmin, disk-shaped cap at zmax, cap at theta 0,
 cap at thetamax.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 The paraboloid object appears in RIB output as simple
 <tscreen><tt>
 RiParaboloid(...);
@@ -5996,7 +6008,7 @@ CSG hierarchy of at most one paraboloid, two disks, and two bicubic patches.
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Hyperboloid Object<label id="hyperboloidobj">
+<sect2>Hyperboloid Object<label id="hyperboloidobj">
 <p>
 A hyperboloid, centered at the origin of the object coordinate system.
 The shape of the hyperboloid will be created by sweeping a line specified
@@ -6012,11 +6024,10 @@ Hyperboloid|No|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Hyperboloid Object Capabilities</caption>
 </table>
-<p>
-The following parameters further control the shape of a hyperboloid:
 
-<sect2>HyperboloidAttr Property<label id="hyp"><label id="hyperboloidattrprop">
-<p>
+<sect3>HyperboloidAttr Property<label id="hyp"><label id="hyperboloidattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The following parameters control the shape of the hyperboloid:
 <itemize>
 <item><tt/"Closed"/ toggles whether the object should
 be automatically sealed (closed by matching cap surfaces).<newline>
@@ -6030,8 +6041,8 @@ default is (1, 0, 0.5).
 default is 360.
 </itemize>
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 A hyperboloid object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the hyperboloid.<footnote>Since 1.8.2.</footnote>
@@ -6041,8 +6052,8 @@ created and the caps follow the hyperboloid in the following order:
 disk-shaped cap at P1, disk-shaped cap at P2, non-planar cap at theta 0,
 non-planar cap at thetamax.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 The hyperboloid object appears in RIB output as simple
 <tscreen><tt>
 RiHyperboloid(...);
@@ -6060,7 +6071,12 @@ for this bug (found by T. E. Burge).
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>NCurve (NURBS Curve) Object<label id="ncurveobj">
+<sect1>Freeform Curve Objects
+<p>
+These objects are mainly used as child objects for the surface
+generating tool objects.
+
+<sect2>NCurve (NURBS Curve) Object<label id="ncurveobj">
 <p>
 <figure loc="ht">
 <eps file="pics/ncurve.ps" height="5cm">
@@ -6088,8 +6104,8 @@ NCurve|No|No|N/A|Yes<#if out=latex>@<hline></#if>
 <p>
 The next section details the NCurve object property.
 
-<sect2>NCurveAttr Property<label id="ncattr"><label id="ncurveattrprop">
-<p>
+<sect3>NCurveAttr Property<label id="ncattr"><label id="ncurveattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
 The first section of the NCurveAttr property contains curve specific
 settings:<p>
 <itemize>
@@ -6268,8 +6284,8 @@ points to/from the curve so that the shape of the curve remains
 largely intact and the periodic extensions
 plausible.<footnote>Since 1.18.</footnote>
 
-<sect2>Multiple Points<label id="ncurvemp">
-<p>
+<sect3>Multiple Points<label id="ncurvemp">
+<p><#if out=latex>&nbsp;<newline></#if>
 <figure loc="ht">
 <eps file="pics/multip.ps" height="5cm">
 <img src="pics/multip.gif">
@@ -6301,14 +6317,14 @@ they automatically collapse to a multiple point again!
 You may also totally inhibit creation of multiple points for a
 NURBS curve using the attribute <tt/"CreateMP"/.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 NCurve objects never directly appear in RIB output (only indirectly as trim
 curve).
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>ICurve (Interpolating Curve) Object<label id="icurveobj">
+<sect2>ICurve (Interpolating Curve) Object<label id="icurveobj">
 <p>
 The ICurve object creates a global interpolating NURBS curve from n
 3D non-rational ordered data points.
@@ -6357,11 +6373,10 @@ ICurve|No|No|NCurve|Yes<#if out=latex>@<hline></#if>
 </tabular>
 <caption>ICurve Object Capabilities</caption>
 </table>
-<p>
-The following parameters control the interpolation process:
 
-<sect2>ICurveAttr Property<label id="icp"><label id="icurveattrprop">
-<p>
+<sect3>ICurveAttr Property<label id="icp"><label id="icurveattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The following parameters control the interpolation process:
 <itemize>
 <item>The <tt/"Type"/ parameter controls whether the interpolated
 curve should be open or closed.
@@ -6415,19 +6430,19 @@ since Ayam 1.16. <tt/"Closed"/ was replaced by <tt/"Type"/, <tt/"IParam"/
 by <tt/"SDLen"/ and <tt/"EDLen"/, and the <tt/"Mode"/ is now determined
 automatically from the desired order.
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 The interpolating curve may be converted to an ordinary NURBS curve using the
 main menu entry <tt>"Tools/Convert"</tt>.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 ICurve objects never directly appear in RIB output (only indirectly as trim
 curve).
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>ACurve (Approximating Curve) Object<label id="acurveobj">
+<sect2>ACurve (Approximating Curve) Object<label id="acurveobj">
 <p>
 <figure loc="!ht">
 <eps file="pics/acurves.ps" height="7cm">
@@ -6460,11 +6475,10 @@ ACurve|No|No|NCurve|Yes<#if out=latex>@<hline></#if>
 </tabular>
 <caption>ACurve Object Capabilities</caption>
 </table>
-<p>
-The following parameters control the approximation process:
 
-<sect2>ACurveAttr Property<label id="acp"><label id="acurveattrprop">
-<p>
+<sect3>ACurveAttr Property<label id="acp"><label id="acurveattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The following parameters control the approximation process:
 <itemize>
 <item><tt/"Length"/ determines the number of data points to
 approximate.
@@ -6516,19 +6530,19 @@ of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
 of the created NURBS curve.
 </itemize>
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 The approximating curve may be converted to an ordinary NURBS curve using the
 main menu entry <tt>"Tools/Convert"</tt>.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 ACurve objects never directly appear in RIB output (only indirectly as trim
 curve).
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>NCircle (NURBS Circle) Object<label id="ncircleobj">
+<sect2>NCircle (NURBS Circle) Object<label id="ncircleobj">
 <p>
 <figure loc="ht">
 <eps file="pics/ncircles.ps" height="5cm">
@@ -6553,12 +6567,11 @@ NCircle|No|No|NCurve|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>NCircle Object Capabilities</caption>
 </table>
-<p>
-The following section describes the parameters of the circle or
-arc.
 
-<sect2>NCircleAttr Property<label id="ncircleattrprop">
-<p>
+<sect3>NCircleAttr Property<label id="ncircleattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The following parameters control the shape of the circle or
+arc.
 <itemize>
 <item><tt/"Radius"/ is the radius of the circle.
 
@@ -6576,19 +6589,23 @@ of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
 of the created NURBS curve.
 </itemize>
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 The circular curve/arc may be converted to an ordinary NURBS curve using the
 main menu entry <tt>"Tools/Convert"</tt>.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 NCircle objects never directly appear in RIB output (only indirectly as trim
 curve).
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>ConcatNC (Concatenate NURBS Curves) Object<label id="concatncobj">
+<sect1>Curve Tool Objects
+<p>
+These objects modify existing curves or create new curves.
+
+<sect2>ConcatNC (Concatenate NURBS Curves) Object<label id="concatncobj">
 <p>
 <figure loc="ht">
 <eps file="pics/concatnc.ps" height="5cm">
@@ -6646,11 +6663,10 @@ ConcatNC|NCurve<f/<sup/+//|No|NCurve|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>ConcatNC Object Capabilities</caption>
 </table>
-<p>
-The following parameters further control the concatenation process:
 
-<sect2>ConcatNCAttr Property<label id="concatncp"><label id="concatncattrprop">
-<p>
+<sect3>ConcatNCAttr Property<label id="concatncp"><label id="concatncattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The following parameters control the concatenation process:
 <itemize>
 <item>Using <tt/"Closed"/ a closed concatenated curve may be created,
 even if the parameter curves do not touch.
@@ -6718,19 +6734,19 @@ like sweeps.
 of the created NURBS curve.
 </itemize>
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 The concatenated curve may be converted to an ordinary NURBS curve using the
 main menu entry <tt>"Tools/Convert"</tt>.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 ConcatNC objects never directly appear in RIB output (only indirectly as trim
 curve).
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>ExtrNC (Extract NURBS Curve) Object<label id="extrncobj">
+<sect2>ExtrNC (Extract NURBS Curve) Object<label id="extrncobj">
 <p>
 <figure loc="ht">
 <eps file="pics/extrnc.ps" height="5cm">
@@ -6779,11 +6795,10 @@ ExtrNC|NPatch|No|NCurve|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>ExtrNC Object Capabilities</caption>
 </table>
-<p>
-The extraction process is controlled by the following attributes:
 
-<sect2>ExtrNCAttr Property<label id="extrncp"><label id="extrncattrprop">
-<p>
+<sect3>ExtrNCAttr Property<label id="extrncp"><label id="extrncattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The extraction process is controlled by the following attributes:
 <itemize>
 <item><tt/"Side"/ controls which curve should be extracted from the
 surface.
@@ -6854,19 +6869,19 @@ of the extracted NURBS curve.
 See section <ref id="ncattr" name="NCurveAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 The extracted curve may be converted to an ordinary NURBS curve using the
 main menu entry <tt>"Tools/Convert"</tt>.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 ExtrNC objects never directly appear in RIB output (only indirectly as trim
 curve).
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>OffsetNC (Offset NURBS Curves) Object<label id="offsetncobj">
+<sect2>OffsetNC (Offset NURBS Curves) Object<label id="offsetncobj">
 <p>
 <figure loc="ht">
 <eps file="pics/offnc.ps" height="5cm">
@@ -6923,11 +6938,10 @@ OffsetNC|NCurve|No|NCurve|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>OffsetNC Object Capabilities</caption>
 </table>
-<p>
-The following parameters further control the offsetting process:
 
-<sect2>OffsetNCAttr Property<label id="offsetncp"><label id="offsetncattrprop">
-<p>
+<sect3>OffsetNCAttr Property<label id="offsetncp"><label id="offsetncattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The following parameters control the offsetting process:
 <itemize>
 <item>The first parameter <tt/"Mode"/ determines, which algorithm
 to use for the offsetting process.
@@ -6946,19 +6960,23 @@ of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
 of the created NURBS curve.
 </itemize>
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 The offset curve may be converted to an ordinary NURBS curve using the
 main menu entry <tt>"Tools/Convert"</tt>.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 OffsetNC objects never directly appear in RIB output (only indirectly as trim
 curve).
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>NPatch (NURBS Patch) Object<label id="npatchobj">
+<sect1>Freeform Surface Objects
+<p>
+These objects enable direct manipulation of freeform surfaces.
+
+<sect2>NPatch (NURBS Patch) Object<label id="npatchobj">
 <p>
 <figure loc="ht">
 <eps file="pics/npatch.ps" height="5cm">
@@ -6989,8 +7007,8 @@ NPatch|NCurve<f/<sup/+///&thinsp;Level<f/<sup/+//|Yes|PolyMesh|Yes<#if out=latex
 <caption>NPatch Object Capabilities</caption>
 </table>
 
-<sect2>NPatchAttr Property<label id="npattr"><label id="npatchattrprop">
-<p>
+<sect3>NPatchAttr Property<label id="npattr"><label id="npatchattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
 The first section of the NPatchAttr property contains patch specific
 settings:<p>
 <itemize>
@@ -7036,8 +7054,8 @@ outlines of the patch (<tt/"OutlinePatch"/). The default setting
 <tt>"Drawing/NPDisplayMode"</tt> should be used instead.
 </itemize>
 
-<sect2>Trim Curves<label id="trim">
-<p>
+<sect3>Trim Curves<label id="trim">
+<p><#if out=latex>&nbsp;<newline></#if>
 Trim curves may be used to cut out certain parts of a NURBS patch.
 They are simple 2D NURBS curves defined in the parametric space
 of the associated NURBS patch. Trim curves have to be defined as child
@@ -7103,8 +7121,8 @@ When objects provide multiple NURBS curves, those do <em>not</em>
 form a single loop, but are seen as individual loops.
 
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 A NPatch object may be converted to a PolyMesh object using the
 main menu entry <tt>"Tools/Convert"</tt>.
 <p>
@@ -7112,8 +7130,8 @@ This process is also called tesselation and thus, the tesselation
 parameters from TP tags will be used in the conversion process (if present)
 (see also section <ref id="tptag" name="TP Tag">).
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 NPatch objects will be exported as NURBS patch primitives:
 <tscreen>
 <tt>RiNuPatch(...);</tt>
@@ -7122,7 +7140,7 @@ PV tags are supported and also trim curves may appear.
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>IPatch (Interpolating Patch) Object<label id="ipatchobj">
+<sect2>IPatch (Interpolating Patch) Object<label id="ipatchobj">
 <p>
 <figure loc="ht">
 <eps file="pics/ipatch.ps" height="5cm">
@@ -7144,8 +7162,8 @@ IPatch|No|Yes|NPatch|Yes<#if out=latex>@<hline></#if>
 <caption>IPatch Object Capabilities</caption>
 </table>
 
-<sect2>IPatchAttr Property<label id=ipattr><label id="ipatchattrprop">
-<p>
+<sect3>IPatchAttr Property<label id=ipattr><label id="ipatchattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
 The IPatchAttr property contains the following elements:
 <itemize>
 <item><tt/"Width"/ and <tt/"Height"/ control the dimensions of the patch.
@@ -7208,14 +7226,14 @@ outlines of the patch (<tt/"OutlinePatch"/). The default setting
 of the created NURBS patch.
 </itemize>
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 The interpolated surface may be converted to an ordinary NURBS patch
 using the main menu entry
 <tt>"Tools/Convert"</tt>.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 IPatch objects will be exported as NURBS patch primitives:
 <tscreen>
 <tt>RiNuPatch(...);</tt>
@@ -7224,7 +7242,7 @@ PV tags are currently not supported.
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>BPatch (Bilinear Patch) Object<label id="bpatchobj">
+<sect2>BPatch (Bilinear Patch) Object<label id="bpatchobj">
 <p>
 <figure loc="ht">
 <eps file="pics/bpatch.ps" height="5cm">
@@ -7246,8 +7264,8 @@ BPatch|No|Yes|NPatch|Yes<#if out=latex>@<hline></#if>
 <caption>BPatch Object Capabilities</caption>
 </table>
 
-<sect2>BPatchAttr Property<label id=bpattr><label id="bpatchattrprop">
-<p>
+<sect3>BPatchAttr Property<label id=bpattr><label id="bpatchattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
 The BPatchAttr property allows to directly control the
 four points defining the geometry of the patch:<p>
 <itemize>
@@ -7257,13 +7275,13 @@ four points defining the geometry of the patch:<p>
 <item><tt/"P4_X"/, <tt/"P4_Y"/, <tt/"P4_Z"/, fourth point.
 </itemize>
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 The bilinear patch may be converted to an ordinary NURBS patch
 using the main menu entry <tt>"Tools/Convert"</tt>.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 BPatch objects will be exported as bilinear patch primitives:
 <tscreen>
 <tt>RiPatch(RI_BILINEAR, ...);</tt>
@@ -7272,7 +7290,7 @@ PV tags are supported.
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>PatchMesh Object<label id="patchmeshobj">
+<sect2>PatchMesh Object<label id="patchmeshobj">
 <p>
 <figure loc="ht">
 <eps file="pics/pamesh.ps" height="5.5cm">
@@ -7296,8 +7314,8 @@ PatchMesh|No|Yes|NPatch|Yes<#if out=latex>@<hline></#if>
 <caption>PatchMesh Object Capabilities</caption>
 </table>
 
-<sect2>PatchMeshAttr Property<label id="pmattr"><label id="patchmeshattrprop">
-<p>
+<sect3>PatchMeshAttr Property<label id="pmattr"><label id="patchmeshattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
 The first section of the PatchMeshAttr property contains patch specific
 settings:<p>
 <itemize>
@@ -7336,16 +7354,16 @@ outlines of the patch (OutlinePatch). The default setting
 <tt>"Drawing/DisplayMode"</tt> should be used.
 </itemize>
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 The patch mesh may be converted to an ordinary NURBS patch
 using the main menu entry <tt>"Tools/Convert"</tt>.
 In Ayam versions prior to 1.21, conversion (and shaded display)
 did not work for patch meshes with the basis types Catmull-Rom, Hermite,
 or Custom. This is no longer the case.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 PatchMesh objects will be exported as patch mesh primitives:
 <tscreen>
 <tt>RiPatchMesh(...);</tt>
@@ -7354,165 +7372,11 @@ PV tags are supported.
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>PolyMesh Object<label id="polymeshobj">
+<sect1>Surface Tool Objects
 <p>
-The PolyMesh object may be used to include objects that
-have been modeled using the polygonal modelling paradigm
-in Ayam scenes.
-<p>
-There are no special modelling actions for this type of object, but
-you may select and modify single points as you can do it with other
-object types, e.g.~curves.
-<p>
-The PolyMesh object is equivalent to the general points polygons
-primitive of the RenderMan interface. This means, each PolyMesh
-object may contain multiple general (convex or concave) polygons,
-which in turn may consist of an outer loop and an arbitrary number
-of inner loops that describe holes in the polygon. The loops use a point
-indexing scheme to efficiently reuse coordinate values.
-This general approach requires a so called tesselation to be carried
-out, in order for the PolyMesh object to be shaded.
-For the tesselation, Ayam uses routines of the GLU library.
-<p>
-Ayam is able to automatically create face normals for PolyMeshes.
-They will be calculated while tesselating the PolyMesh and be
-perpendicular to the plane determined by the first three vertices
-of the outer loop of a polygon.
-Furthermore, Ayam supports vertex normals (normals stored for every
-control point).
-<p>
-Note that storing a bunch of triangles each in its own PolyMesh
-object will lead to a real waste of memory. You may use the
-merge tool (main menu <tt>"Tools/PolyMesh/Merge"</tt>) to merge
-many PolyMesh objects into a single PolyMesh object.
-<p>
-The following table briefly lists some capabilities of the PolyMesh object.
-<p>
-<table loc="ht">
-<tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-PolyMesh|No|Yes|SDMesh|Yes<#if out=latex>@<hline></#if>
-</tabular>
-<caption>PolyMesh Object Capabilities</caption>
-</table>
+These objects create freeform surfaces from curves or other surfaces.
 
-<sect2>PolyMeshAttr Property<label id="pomattr"><label id="polymeshattrprop">
-<p>
-The PolyMeshAttr GUI just displays some information about the
-PolyMesh object:
-<itemize>
-<item><tt/"NPolys"/ the number of polygons.
-<item><tt/"NControls"/ the total number of control points
-defined.
-<item><tt/"HasNormals"/ is 1 if the object uses vertex normals,
-else it is 0.
-</itemize>
-
-<sect2>Conversion Support
-<p>
-PolyMesh objects may be converted to SDMesh
-objects using the main menu entry
-<tt>"Tools/Convert"</tt>.<footnote>Since 1.11.</footnote>
-<p>
-Note that no verification of the usability of the
-mesh as base mesh for a subdivision surface is carried out.
-Usually, such meshes have to be manifold and may not contain
-T-junctions.
-
-<sect2>RIB Export
-<p>
-PolyMesh objects will be exported as RiPointsGeneralPolygons primitives
-(regardless of whether the actual configuration would fit into a simpler
-polygonal primitive of the RenderMan interface, e.g.~a RiGeneralPolygon).
-<p>
-PV tags are supported.
-
-<#if out=latex><x/newpage/</#if>
-
-<sect1>SDMesh Object<label id="sdmeshobj">
-<p>
-<figure loc="ht">
-<eps file="pics/sdmesh.ps" height="6cm">
-<img src="pics/sdmesh.gif">
-<caption>SDMesh object with original polygonal mesh (blue)</caption>
-</figure>
-<p>
-The SDMesh object may be used to include objects that
-have been modeled using the subdivision modelling paradigm
-in Ayam scenes (see also the image above).
-<p>
-There are no special modelling actions for this type of object, but
-you may select and modify single points as you can do it with other
-object types, e.g.~curves.
-<p>
-The SDMesh object is equivalent to the Subdivision Mesh
-primitive of the RenderMan interface. This means, each SDMesh
-object may contain multiple faces with arbitrary number
-of vertices that form a polygonal mesh. This polygonal mesh is
-then successively refined using a subdivision scheme and, depending
-on the number of refinement (or subdivision) steps, results in
-a more or less smooth surface. There are several different
-subdivision schemes, but the scheme currently supported
-by most RenderMan compliant renderers is named "Catmull-Clark".
-<p>
-Tags may be specified for faces, edges, or vertices
-to control the subdivision process (e.g.~to create sharp corners or edges
-in the resulting surface). All tags known from the RenderMan interface
-(hole, crease, corner, and interpolateboundary) are supported by Ayam,
-but they may currently not be changed by the user.
-<p>
-Unless the <tt/"subdiv"/ plugin (available since Ayam 1.19) is loaded,
-Ayam is not able to do the subdivision and show the resulting smooth
-surface. All that is shown in wireframe and shaded views is the original
-polygonal mesh.
-<p>
-The following table briefly lists some capabilities of the SDMesh object.
-<p>
-<table loc="ht">
-<tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-SDMesh|No|Yes|PolyMesh|Yes<#if out=latex>@<hline></#if>
-</tabular>
-<caption>SDMesh Object Capabilities</caption>
-</table>
-
-<sect2>SDMeshAttr Property<label id="sdmattr"><label id="sdmeshattrprop">
-<p>
-The SDMeshAttr GUI just displays some information about the
-SDMesh object:
-<itemize>
-<item><tt/"Scheme"/, is the subdivision scheme, currently available
-schemes are Catmull-Clark and Loop.<footnote>Since 1.11.</footnote>
-<item><tt/"Level"/ is the number of subdivision steps that should
-be carried out when subdividing the mesh for preview. This subdivision
-needs the <tt/"subdiv"/ plugin.
-<item><tt/"DrawSub"/ allows to switch between the control polygon
-and the subdivided polygon outlines when drawing the mesh.
-<item><tt/"NFaces"/, the number of faces.
-<item><tt/"NControls"/, the total number of control points
-defined.
-</itemize>
-
-<sect2>Conversion Support
-<p>
-SDMesh objects may be converted to PolyMesh
-objects.<footnote>Since 1.11.</footnote>
-<p>
-Note however that only the original, unrefined, control
-polygon (i.e.~the base mesh) will be converted unless the <tt/"Level"/
-attribute is not zero <em>and</em> the <tt/"subdiv"/ plugin is loaded.
-
-<sect2>RIB Export
-<p>
-SDMesh objects will be exported as subdivision mesh primitives:
-<tscreen>
-<tt>RiSubdivisionMesh(...);</tt>
-</tscreen>
-PV tags are supported.
-
-<#if out=latex><x/newpage/</#if>
-
-<sect1>Revolve Object<label id="revolveobj">
+<sect2>Revolve Object<label id="revolveobj">
 <p>
 <figure loc="ht">
 <eps file="pics/revolve.ps" height="5cm">
@@ -7539,8 +7403,8 @@ Revolve|NCurve|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 <caption>Revolve Object Capabilities</caption>
 </table>
 
-<sect2>RevolveAttr Property<label id="rep"><label id="revolveattrprop">
-<p>
+<sect3>RevolveAttr Property<label id="rep"><label id="revolveattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
 The parameter <tt/"ThetaMax"/ specifies the
 sweeping angle of the revolution just like for an ordinary
 RenderMan quadric primitive.
@@ -7579,8 +7443,8 @@ try to revert the revolved curve.
 See section <ref id="npattr" name="NPatchAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 The surface of revolution and the caps
 may be converted to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
@@ -7592,8 +7456,8 @@ order: upper, lower, start, end.
 The Revolve object provides a list of NURBS patch objects in the
 same order as created upon conversion.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 Revolve objects will be exported as NURBS patch primitives:
 <tscreen>
 <tt>RiNuPatch(...);</tt>
@@ -7606,7 +7470,7 @@ the same set of tags.<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Extrude Object<label id="extrudeobj">
+<sect2>Extrude Object<label id="extrudeobj">
 <p>
 <figure loc="ht">
 <eps file="pics/extrude.ps" height="4cm">
@@ -7663,8 +7527,8 @@ Extrude|NCurve<f/<sup/+//|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 <caption>Extrude Object Capabilities</caption>
 </table>
 
-<sect2>ExtrudeAttr Property<label id="extrattr"><label id="extrudeattrprop">
-<p>
+<sect3>ExtrudeAttr Property<label id="extrattr"><label id="extrudeattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
 The parameter <tt/"Height"/ determines how
 big in Z direction the extrusion should be. Note that
 the height of the bevels will not be taken into account here,
@@ -7700,8 +7564,8 @@ section <ref id="bevelp" name="BevelAttr Property">.
 See section <ref id="npattr" name="NPatchAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
-<sect2>Using Holes and Bevels<label id="handb">
-<p>
+<sect3>Using Holes and Bevels<label id="handb">
+<p><#if out=latex>&nbsp;<newline></#if>
 All curves forming holes in the extruded object must be defined inside
 (geometrically) the first curve (the outline curve). Additionally,
 they may not intersect each other or themself and there can not be hole
@@ -7727,8 +7591,8 @@ and holes, possible scale transformations should be carried out on the
 hole curve control points, rather than on the hole curve object
 transformation attributes.
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 The extruded surface, the bevels, and the caps
 may be converted to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
@@ -7740,8 +7604,8 @@ order: end bevel, end cap, start bevel, start cap.
 The Extrude object provides a list of NURBS patch objects in the
 same order as created upon conversion.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 Extrude objects will be exported as NURBS patch primitives:
 <tscreen>
 <tt>RiNuPatch(...);</tt>
@@ -7755,7 +7619,7 @@ the same set of tags.<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Swing Object<label id="swingobj">
+<sect2>Swing Object<label id="swingobj">
 <p>
 <figure loc="ht">
 <eps file="pics/swing.ps" height="5cm">
@@ -7800,8 +7664,8 @@ Swing|NCurve<f/<sup/&lowast;//|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline><
 <caption>Swing Object Capabilities</caption>
 </table>
 
-<sect2>SwingAttr Property<label id="swingattrprop">
-<p>
+<sect3>SwingAttr Property<label id="swingattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
 The attributes <tt/"UpperCap"/, <tt/"LowerCap"/, <tt/"StartCap"/, and
 <tt/"EndCap"/ may be used to automatically create cap surfaces, that
 close the Swing on the respective ends.
@@ -7814,8 +7678,8 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 To help in the exact configuration of the swung surface, the <tt/"NPInfo"/
 field always displays the parameters of the created NURBS patch.
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 The swung surface and the caps
 may be converted to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
@@ -7827,8 +7691,8 @@ order: upper, lower, start, end.
 The Swing object provides a list of NURBS patch objects in the
 same order as created upon conversion.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 Swing objects will be exported as NURBS patch primitives:
 <tscreen>
 <tt>RiNuPatch(...);</tt>
@@ -7841,7 +7705,7 @@ the same set of tags.<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Sweep Object<label id="sweepobj">
+<sect2>Sweep Object<label id="sweepobj">
 <p>
 <figure loc="ht">
 <eps file="pics/sweep.ps" height="6cm">
@@ -7934,8 +7798,8 @@ Sweep|NCurve<f/<sup/&lowast;//|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline><
 <caption>Sweep Object Capabilities</caption>
 </table>
 
-<sect2>SweepAttr Property<label id="swp"><label id="sweepattrprop">
-<p>
+<sect3>SweepAttr Property<label id="swp"><label id="sweepattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
 The <tt/"Type"/ attribute controls whether the
 swept surface should be open, closed, or periodic in the direction
 of the trajectory curve.<footnote>Since 1.10.</footnote>
@@ -8017,8 +7881,8 @@ the Sweep object.
 <caption>Sweep Parameterisation Examples</caption>
 </table>
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 The swept surface, the bevels and the caps
 may be converted to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
@@ -8030,8 +7894,8 @@ order: start bevel, start cap, end bevel, end cap.
 The Sweep object provides a list of NURBS patch objects in the
 same order as created upon conversion.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 Sweep objects will be exported as NURBS patch primitives:
 <tscreen>
 <tt>RiNuPatch(...);</tt>
@@ -8045,7 +7909,7 @@ the same set of tags.<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Birail1 Object<label id="birail1obj">
+<sect2>Birail1 Object<label id="birail1obj">
 <p>
 <figure loc="ht">
 <eps file="pics/birail1.ps" height="5cm">
@@ -8100,10 +7964,10 @@ Birail1|NCurve<f/<sup/&lowast;//|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline
 </tabular>
 <caption>Birail1 Object Capabilities</caption>
 </table>
-<p>
-The following parameters further control the birailing process:
 
-<sect2>Birail1Attr Property<label id="birail1p"><label id="birail1attrprop">
+<sect3>Birail1Attr Property<label id="birail1p"><label id="birail1attrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The following parameters control the birailing process.
 <p>
 Similar to the <tt/"Sweep"/, the <tt/"Type"/ attribute controls whether the
 swept surface should be open, closed, or periodic in the direction
@@ -8165,8 +8029,8 @@ the Birail1 object.
 <caption>Birail1 Parameterisation Examples</caption>
 </table>
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 The birailed surface, the bevels, and the caps
 may be converted to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
@@ -8178,8 +8042,8 @@ order: end bevel, end cap, start bevel, start cap.
 The Birail1 object provides a list of NURBS patch objects in the
 same order as created upon conversion.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 Birail1 objects will be exported as NURBS patch primitives:
 <tscreen>
 <tt>RiNuPatch(...);</tt>
@@ -8193,7 +8057,7 @@ the same set of tags.<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Birail2 Object<label id="birail2obj">
+<sect2>Birail2 Object<label id="birail2obj">
 <p>
 <figure loc="ht">
 <eps file="pics/birail2.ps" height="5cm">
@@ -8267,10 +8131,10 @@ Birail2|NCurve<f/<sup/&lowast;//|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline
 </tabular>
 <caption>Birail2 Object Capabilities</caption>
 </table>
-<p>
-The following parameters control the birailing process:
 
-<sect2>Birail2Attr Property<label id="birail2p"><label id="birail2attrprop">
+<sect3>Birail2Attr Property<label id="birail2p"><label id="birail2attrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The following parameters control the birailing process.
 <p>
 The parameter <tt/"Sections"/ determines how many sections (in U direction)
 should be used, when generating the birailed NURBS patch. The birailed
@@ -8331,8 +8195,8 @@ the Birail2 object.
 <caption>Birail2 Parameterisation Examples</caption>
 </table>
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 The birailed surface, the bevels, and the caps
 may be converted to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
@@ -8344,8 +8208,8 @@ order: end bevel, end cap, start bevel, start cap.
 The Birail2 object provides a list of NURBS patch objects in the
 same order as created upon conversion.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 Birail2 objects will be exported as NURBS patch primitives:
 <tscreen>
 <tt>RiNuPatch(...);</tt>
@@ -8359,7 +8223,7 @@ the same set of tags.<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Skin Object<label id="skinobj">
+<sect2>Skin Object<label id="skinobj">
 <p>
 <figure loc="ht">
 <eps file="pics/skin.ps" height="6cm">
@@ -8424,10 +8288,10 @@ Skin|NCurve<f/<sup/&lowast;//|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline></
 </tabular>
 <caption>Skin Object Capabilities</caption>
 </table>
-<p>
-The following parameters control the skinning process:
 
-<sect2>SkinAttr Property<label id="skp"><label id="skinattrprop">
+<sect3>SkinAttr Property<label id="skp"><label id="skinattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The following parameters control the skinning process.
 <p>
 The first parameter <tt/"Interpolation"/ controls
 whether the inner curves should also be interpolated by the
@@ -8477,8 +8341,8 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 To help in the exact configuration of the skinned surface, the <tt/"NPInfo"/
 field always displays the parameters of the created NURBS patch.
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 The skinned surface, the bevels, and the caps
 may be converted to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
@@ -8490,8 +8354,8 @@ order: end bevel, end cap, start bevel, start cap.
 The Skin object provides a list of NURBS patch objects in the
 same order as created upon conversion.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 Skin objects will be exported as NURBS patch primitives:
 <tscreen>
 <tt>RiNuPatch(...);</tt>
@@ -8505,7 +8369,7 @@ the same set of tags.<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Gordon Object<label id="gordonobj">
+<sect2>Gordon Object<label id="gordonobj">
 <p>
 <figure loc="ht">
 <eps file="pics/gordon-hood.ps" height="6cm">
@@ -8619,11 +8483,11 @@ Gordon|NCurve<f/<sup/&lowast;///&thinsp;Level&thinsp;/&thinsp;NPatch|Yes|NPatch<
 </tabular>
 <caption>Gordon Object Capabilities</caption>
 </table>
-<p>
-The following parameters of the Gordon object further control
-the creation of the Gordon surface:
 
-<sect2>GordonAttr Property<label id="gop"><label id="gordonattrprop">
+<sect3>GordonAttr Property<label id="gop"><label id="gordonattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The following parameters of the Gordon object control
+the creation of the Gordon surface.
 <p>
 If the parameter <tt/"WatchCorners"/ is switched on, Ayam will
 check for all four outer parameter curves, whether they touch in their
@@ -8651,13 +8515,13 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 To help in the exact configuration of the Gordon surface, the <tt/"NPInfo"/
 field always displays the parameters of the created NURBS patch.
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 The Gordon surface may be converted to an ordinary NURBS patch using the
 main menu entry <tt>"Tools/Convert"</tt>.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 Gordon objects will be exported as NURBS patch primitives:
 <tscreen>
 <tt>RiNuPatch(...);</tt>
@@ -8668,7 +8532,7 @@ the same set of tags.<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Bevel Object<label id="bevelobj">
+<sect2>Bevel Object<label id="bevelobj">
 <p>
 <figure loc="!ht">
 <eps file="pics/bevel.ps" height="5cm">
@@ -8721,12 +8585,11 @@ Bevel|NCurve<f/<sup/+//|Yes|NPatch|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Bevel Object Capabilities</caption>
 </table>
-<p>
-The following parameters of the Bevel object further control
-the creation of the bevelled surface:
 
-<sect2>BevelAttr Property<label id="bevelp"><label id="bevelattrprop">
-<p>
+<sect3>BevelAttr Property<label id="bevelp"><label id="bevelattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The following parameters of the Bevel object control
+the creation of the bevelled surface:
 <itemize>
 <item><tt/"BevelType"/ lets you choose between different shapes of bevels:
  <itemize>
@@ -8765,13 +8628,13 @@ of the <tt/"BevelAttr"/ property.
 To help in the exact configuration of the bevel surface, the <tt/"NPInfo"/
 field always displays the parameters of the created NURBS patch.
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 The bevelled surface may be converted to an ordinary NURBS patch using the
 main menu entry <tt>"Tools/Convert"</tt>.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 Bevel objects will be exported as NURBS patch primitives:
 <tscreen>
 <tt>RiNuPatch(...);</tt>
@@ -8781,7 +8644,7 @@ PV tags are supported.<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Cap Object<label id="capobj">
+<sect2>Cap Object<label id="capobj">
 <p>
 <figure loc="!ht">
 <eps file="pics/cap.ps" height="6cm">
@@ -8839,10 +8702,10 @@ Cap|NCurve<f/<sup/+//|Yes|NPatch|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Cap Object Capabilities</caption>
 </table>
-<p>
-The following parameters control the cap creation process:
 
-<sect2>CapAttr Property<label id="capp"><label id="capattrprop">
+<sect3>CapAttr Property<label id="capp"><label id="capattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The following parameters control the cap creation process.
 <p>
 The attribute <tt/"Type"/ allows to select one of the following
 cap creation methods:
@@ -8861,13 +8724,13 @@ of the <tt/"CapAttr"/ property.
 To help in the exact configuration of the cap surface, the <tt/"NPInfo"/
 field always displays the parameters of the created NURBS patch.
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 The cap surface may be converted to an ordinary NURBS patch using the
 main menu entry <tt>"Tools/Convert"</tt>.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 Cap objects will be exported as NURBS patch primitives:
 <tscreen>
 <tt>RiNuPatch(...);</tt>
@@ -8877,7 +8740,7 @@ PV tags are supported.<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>ConcatNP (Concatenate NURBS Patches) Object<label id="concatnpobj">
+<sect2>ConcatNP (Concatenate NURBS Patches) Object<label id="concatnpobj">
 <p>
 <figure loc="ht">
 <eps file="pics/concatnp.ps" height="5cm">
@@ -8917,11 +8780,10 @@ ConcatNP|NPatch<f/<sup/&lowast;///&thinsp;NCurve<f/<sup/&lowast;//|Yes|NPatch|No
 </tabular>
 <caption>ConcatNP Object Capabilities</caption>
 </table>
-<p>
-The following parameters further control the concatenation process:
 
-<sect2>ConcatNPAttr Property<label id="concatnpp"><label id="concatnpattrprop">
-<p>
+<sect3>ConcatNPAttr Property<label id="concatnpp"><label id="concatnpattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The following parameters control the concatenation process.
 <itemize>
 <item>Using <tt/"Type"/, open, closed, or periodic concatenated patches may
 be created.
@@ -9013,13 +8875,13 @@ The output surface will then also be unclamped (in V direction).
 of the created NURBS patch.
 </itemize>
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 The concatenated surface may be converted to an ordinary NURBS patch using the
 main menu entry <tt>"Tools/Convert"</tt>.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 ConcatNP objects will be exported as NURBS patch primitives:
 <tscreen>
 <tt>RiNuPatch(...);</tt>
@@ -9029,7 +8891,7 @@ PV tags are supported.<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>ExtrNP (Extract NURBS Patch) Object<label id="extrnpobj">
+<sect2>ExtrNP (Extract NURBS Patch) Object<label id="extrnpobj">
 <p>
 <figure loc="ht">
 <eps file="pics/extrnp.ps" height="5cm">
@@ -9072,11 +8934,10 @@ ExtrNP|NPatch|Yes|NPatch|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>ExtrNP Object Capabilities</caption>
 </table>
-<p>
-The extraction process is controlled by the following attributes:
 
-<sect2>ExtrNPAttr Property<label id="extrnpp"><label id="extrnpattrprop">
-<p>
+<sect3>ExtrNPAttr Property<label id="extrnpp"><label id="extrnpattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The extraction process is controlled by the following attributes:
 <itemize>
 <item><tt/"UMin"/, <tt/"UMax"/, <tt/"VMin"/, and <tt/"VMax"/ are
 parametric values that control which part of the original surface
@@ -9104,13 +8965,13 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 of the extracted NURBS surface.
 </itemize>
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 The extracted surface may be converted to an ordinary NURBS patch using the
 main menu entry <tt>"Tools/Convert"</tt>.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 ExtrNP objects will be exported as NURBS patch primitives:
 <tscreen>
 <tt>RiNuPatch(...);</tt>
@@ -9120,7 +8981,7 @@ PV tags are supported.<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>OffsetNP (Offset NURBS Surfaces) Object<label id="offsetnpobj">
+<sect2>OffsetNP (Offset NURBS Surfaces) Object<label id="offsetnpobj">
 <p>
 <figure loc="ht">
 <eps file="pics/offnp.ps" height="5cm">
@@ -9152,11 +9013,10 @@ OffsetNP|NPatch|Yes|NPatch|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>OffsetNP Object Capabilities</caption>
 </table>
-<p>
-The following parameters further control the offsetting process:
 
-<sect2>OffsetNPAttr Property<label id="offsetnpp"><label id="offsetnpattrprop">
-<p>
+<sect3>OffsetNPAttr Property<label id="offsetnpp"><label id="offsetnpattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The following parameters control the offsetting process:
 <itemize>
 <item><tt/"Offset"/ determines the distance between original surface and
 offset surface. Negative values are allowed.
@@ -9169,13 +9029,13 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 of the created NURBS surface.
 </itemize>
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 The offset surface may be converted to an ordinary NURBS patch using the
 main menu entry <tt>"Tools/Convert"</tt>.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 OffsetNP objects will be exported as NURBS patch primitives:
 <tscreen>
 <tt>RiNuPatch(...);</tt>
@@ -9185,7 +9045,7 @@ PV tags are supported.<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Text Object<label id="textobj">
+<sect2>Text Object<label id="textobj">
 <p>
 <figure loc="!ht">
 <eps file="pics/text-ayam.ps" height="4cm">
@@ -9219,11 +9079,10 @@ Text|No|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Text Object Capabilities</caption>
 </table>
-<p>
-The following attributes control the creation of the text objects.
 
-<sect2>TextAttr Property<label id="textattr"><label id="textattrprop">
-<p>
+<sect3>TextAttr Property<label id="textattr"><label id="textattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The following attributes control the creation of the text objects.
 <itemize>
 <item>Using <tt/"FontName"/ you specify a TrueType font description file.
 Those files usually have the file name extension <tt/".ttf"/.
@@ -9271,8 +9130,8 @@ borders of the bevel surfaces with high values for the bevel radius.
 See section <ref id="npattr" name="NPatchAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 The extruded surfaces, the bevels, and the caps,
 may be converted to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
@@ -9284,8 +9143,8 @@ order: end bevel, end cap, start bevel, start cap.
 The Text object provides a list of NURBS patch objects in the
 same order as created upon conversion.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 Text objects will be exported as NURBS patch primitives:
 <tscreen>
 <tt>RiNuPatch(...);</tt>
@@ -9299,7 +9158,7 @@ the same set of tags.<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Trim Object<label id="trimobj">
+<sect2>Trim Object<label id="trimobj">
 <p>
 The Trim object may be used in hierarchies
 of tool objects to trim NURBS patch providing objects otherwise
@@ -9335,11 +9194,10 @@ Trim|NPatch&thinsp;/&thinsp;NCurve<f/<sup/+///&thinsp;Level<f/<sup/+//|Yes|NPatc
 </tabular>
 <caption>Trim Object Capabilities</caption>
 </table>
-<p>
-The following parameters further control the trimming process:
 
-<sect2>TrimAttrib Property<label id="trimp"><label id="trimattrprop">
-<p>
+<sect3>TrimAttrib Property<label id="trimp"><label id="trimattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The following parameters control the trimming process:
 <itemize>
 <item><tt/"PatchNum"/ allows to select a patch, should the NURBS
 patch providing object deliver a list. This way, a bevel of an
@@ -9354,13 +9212,13 @@ the same for a patch where the knots range from 0 to 1, 0 to 2,
 or even 3 to 3.5).
 </itemize>
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 The trimmed surface may be converted to an ordinary NURBS patch
 using the main menu entry <tt>"Tools/Convert"</tt>.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 Trim objects will be exported as NURBS patch primitives:
 <tscreen>
 <tt>RiNuPatch(...);</tt>
@@ -9369,7 +9227,199 @@ PV tags are currently not supported.
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Script Object<label id="scriptobj">
+<sect1>Polygonal and Subdivision Objects
+<p>
+These objects complement the Ayam feature set and allow
+objects modelled in the polygonal or subdivision modelling
+paradigms to be included in Ayam scenes.
+
+<sect2>PolyMesh Object<label id="polymeshobj">
+<p>
+The PolyMesh object may be used to include objects that
+have been modeled using the polygonal modelling paradigm
+in Ayam scenes.
+<p>
+There are no special modelling actions for this type of object, but
+you may select and modify single points as you can do it with other
+object types, e.g.~curves.
+<p>
+The PolyMesh object is equivalent to the general points polygons
+primitive of the RenderMan interface. This means, each PolyMesh
+object may contain multiple general (convex or concave) polygons,
+which in turn may consist of an outer loop and an arbitrary number
+of inner loops that describe holes in the polygon. The loops use a point
+indexing scheme to efficiently reuse coordinate values.
+This general approach requires a so called tesselation to be carried
+out, in order for the PolyMesh object to be shaded.
+For the tesselation, Ayam uses routines of the GLU library.
+<p>
+Ayam is able to automatically create face normals for PolyMeshes.
+They will be calculated while tesselating the PolyMesh and be
+perpendicular to the plane determined by the first three vertices
+of the outer loop of a polygon.
+Furthermore, Ayam supports vertex normals (normals stored for every
+control point).
+<p>
+Note that storing a bunch of triangles each in its own PolyMesh
+object will lead to a real waste of memory. You may use the
+merge tool (main menu <tt>"Tools/PolyMesh/Merge"</tt>) to merge
+many PolyMesh objects into a single PolyMesh object.
+<p>
+The following table briefly lists some capabilities of the PolyMesh object.
+<p>
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+PolyMesh|No|Yes|SDMesh|Yes<#if out=latex>@<hline></#if>
+</tabular>
+<caption>PolyMesh Object Capabilities</caption>
+</table>
+
+<sect3>PolyMeshAttr Property<label id="pomattr"><label id="polymeshattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The PolyMeshAttr GUI just displays some information about the
+PolyMesh object:
+<itemize>
+<item><tt/"NPolys"/ the number of polygons.
+<item><tt/"NControls"/ the total number of control points
+defined.
+<item><tt/"HasNormals"/ is 1 if the object uses vertex normals,
+else it is 0.
+</itemize>
+
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
+PolyMesh objects may be converted to SDMesh
+objects using the main menu entry
+<tt>"Tools/Convert"</tt>.<footnote>Since 1.11.</footnote>
+<p>
+Note that no verification of the usability of the
+mesh as base mesh for a subdivision surface is carried out.
+Usually, such meshes have to be manifold and may not contain
+T-junctions.
+
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
+PolyMesh objects will be exported as <tt/RiPointsGeneralPolygons/ primitives
+(regardless of whether the actual configuration would fit into a simpler
+polygonal primitive of the RenderMan interface, e.g.~a <tt/RiGeneralPolygon/).
+<p>
+PV tags are supported.
+
+<#if out=latex><x/newpage/</#if>
+
+<sect2>SDMesh Object<label id="sdmeshobj">
+<p>
+<figure loc="ht">
+<eps file="pics/sdmesh.ps" height="6cm">
+<img src="pics/sdmesh.gif">
+<caption>SDMesh object with original polygonal mesh (blue)</caption>
+</figure>
+<p>
+The SDMesh object may be used to include objects that
+have been modeled using the subdivision modelling paradigm
+in Ayam scenes (see also the image above).
+<p>
+There are no special modelling actions for this type of object, but
+you may select and modify single points as you can do it with other
+object types, e.g.~curves.
+<p>
+The SDMesh object is equivalent to the Subdivision Mesh
+primitive of the RenderMan interface. This means, each SDMesh
+object may contain multiple faces with arbitrary number
+of vertices that form a polygonal mesh. This polygonal mesh is
+then successively refined using a subdivision scheme and, depending
+on the number of refinement (or subdivision) steps, results in
+a more or less smooth surface. There are several different
+subdivision schemes, but the scheme currently supported
+by most RenderMan compliant renderers is named "Catmull-Clark".
+<p>
+Tags may be specified for faces, edges, or vertices
+to control the subdivision process (e.g.~to create sharp corners or edges
+in the resulting surface). All tags known from the RenderMan interface
+(hole, crease, corner, and interpolateboundary) are supported by Ayam,
+but they may currently not be changed by the user.
+<p>
+Unless the <tt/"subdiv"/ plugin (available since Ayam 1.19) is loaded,
+Ayam is not able to do the subdivision and show the resulting smooth
+surface. All that is shown in wireframe and shaded views is the original
+polygonal mesh.
+<p>
+The following table briefly lists some capabilities of the SDMesh object.
+<p>
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+SDMesh|No|Yes|PolyMesh|Yes<#if out=latex>@<hline></#if>
+</tabular>
+<caption>SDMesh Object Capabilities</caption>
+</table>
+
+<sect3>SDMeshAttr Property<label id="sdmattr"><label id="sdmeshattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The SDMeshAttr GUI just displays some information about the
+SDMesh object:
+<itemize>
+<item><tt/"Scheme"/, is the subdivision scheme, currently available
+schemes are Catmull-Clark and Loop.<footnote>Since 1.11.</footnote>
+<item><tt/"Level"/ is the number of subdivision steps that should
+be carried out when subdividing the mesh for preview. This subdivision
+needs the <tt/"subdiv"/ plugin.
+<item><tt/"DrawSub"/ allows to switch between the control polygon
+and the subdivided polygon outlines when drawing the mesh.
+<item><tt/"NFaces"/, the number of faces.
+<item><tt/"NControls"/, the total number of control points
+defined.
+</itemize>
+
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
+SDMesh objects may be converted to PolyMesh
+objects.<footnote>Since 1.11.</footnote>
+<p>
+Note however that only the original, unrefined, control
+polygon (i.e.~the base mesh) will be converted unless the <tt/"Level"/
+attribute is not zero <em>and</em> the <tt/"subdiv"/ plugin is loaded.
+
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
+SDMesh objects will be exported as subdivision mesh primitives:
+<tscreen>
+<tt>RiSubdivisionMesh(...);</tt>
+</tscreen>
+PV tags are supported.
+
+<#if out=latex><x/newpage/</#if>
+
+<sect1>Scripts and Plugins<label id="customobj">
+<p>
+These objects create&thinsp;/&thinsp;modify arbitrary other objects from
+scripts or define entirely new object types via the custom object plugin
+mechanism.
+<p>
+Custom objects are plugins that extend the Ayam capabilities by
+defining totally new types of e.g.~geometric objects. This may
+be done easily, because the Ayam core is written in a modelling
+paradigm independent way.
+<p>
+A simple example of a custom object is the CSphere, which implements
+a simple sphere and has a new property named <tt/"CSphereAttr"/.
+This property contains all parameters of a simple RenderMan Interface
+quadric sphere. A more complex example would be the MetaObj custom
+object. Via custom objects it is possible, but not planned for now,
+to integrate the hierarchical or T-Spline modelling paradigms into
+Ayam.
+<p>
+Since a custom object has total control over properties and representations,
+please refer to the documentation of the respective custom object for
+more information regarding its properties.
+<p>
+Several custom object plugins are already distributed with Ayam. Those
+are documented in the next sections:
+
+
+
+<sect2>Script Object<label id="scriptobj">
 <p>
 Script objects are the most flexible object type of Ayam.
 They may be used to create new objects, modify existing objects,
@@ -9385,8 +9435,8 @@ scripting languages, like JavaScript, provided by the
 <tt/"jsinterp"/ plugin (see also:
 <ref id="jsinterp" name="JavaScript Scripting Interface">).<footnote>Since 1.18.</footnote>
 
-<sect2>Script Object Usage
-<p>
+<sect3>Script Object Usage
+<p><#if out=latex>&nbsp;<newline></#if>
 The script of a Script object will be run each time the script is
 modified and each time the notification callback of the Script object
 is called (e.g.~because one of the children of the Script object changed).
@@ -9438,12 +9488,11 @@ Script|Any<f/<sup/+//|No|Any<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Script Object Capabilities</caption>
 </table>
-<p>
-The next section discusses the available Script object types and
-additional controlling parameters.
 
-<sect2>ScriptAttr Property<label id="scriptattr"><label id="scriptattrprop">
-<p>
+<sect3>ScriptAttr Property<label id="scriptattr"><label id="scriptattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+This section discusses the available Script object types and
+additional controlling parameters.
 <itemize>
 <item>If <tt/"Active"/ is disabled, the script will not be run.
 
@@ -9559,8 +9608,8 @@ can be used in conjunction like this:
 
 </itemize>
 
-<sect2>Safe Interpreter<label id="safeinterp">
-<p>
+<sect3>Safe Interpreter<label id="safeinterp">
+<p><#if out=latex>&nbsp;<newline></#if>
 In Ayam versions prior to 1.16 Script object scripts could use any
 functionality of Tcl, Tk, and the Tcl scripting interface of Ayam which
 posed a huge security risk. This is no longer the case.
@@ -9608,8 +9657,8 @@ objects will be disabled using their <tt/"Active"/ Script object property
 and may be enabled again after careful inspection of the script code
 manually or using the main menu entry <tt>"Special/Enable Scripts"</tt>.
 
-<sect2>Transformation Support
-<p>
+<sect3>Transformation Support
+<p><#if out=latex>&nbsp;<newline></#if>
 Even though, initially, Script objects do not show and use the
 Transformations property, they can support transformations under
 certain circumstances.
@@ -9626,8 +9675,8 @@ transformations tool, which fails for complex setups.
 However, this problem can be avoided by
 using the <tt/"applyTrafo"/ command on the created objects in the script.
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 Script objects convert to the objects they create/modify
 using the main menu entry <tt>"Tools/Convert"</tt>.
 
@@ -9652,13 +9701,13 @@ The current children of the Script object will be removed prior
 to conversion. If this fails (due to references), they may end
 up in the object clipboard.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 Script objects will be exported to RIB files as the objects
 they create&thinsp;/&thinsp;modify.
 
-<sect2>Script Object Examples<label id="scriptobjex">
-<p>
+<sect3>Script Object Examples<label id="scriptobjex">
+<p><#if out=latex>&nbsp;<newline></#if>
 This section illustrates the development of a Script object for parametric
 lines, otherwise unavailable in Ayam.
 <p>
@@ -9782,31 +9831,7 @@ the two different trajectory curves):
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Custom Objects<label id="customobj">
-<p>
-Custom objects are plugins that extend the Ayam capabilities by
-defining totally new types of e.g.~geometric objects. This may
-be done easily, because the Ayam core is written in a modelling
-paradigm independent way.
-<p>
-A simple example of a custom object is the CSphere, which implements
-a simple sphere and has a new property named <tt/"CSphereAttr"/.
-This property contains all parameters of a simple RenderMan Interface
-quadric sphere. A more complex example would be the MetaObj custom
-object. Via custom objects it is possible, but not planned for now,
-to integrate the hierarchical or T-Spline modelling paradigms into
-Ayam.
-<p>
-Since a custom object has total control over properties and representations,
-please refer to the documentation of the respective custom object for
-more information regarding its properties.
-<p>
-Several custom object plugins are already distributed with Ayam. Those
-are documented in the next sections:
-
-<#if out=latex><x/newpage/</#if>
-
-<sect1>SfCurve (Superformula Curve) Object<label id="sfcurveobj">
+<sect2>SfCurve (Superformula Curve) Object<label id="sfcurveobj">
 <p>
 The SfCurve object creates a superformula curve from four parameters
 named <tt/m/, <tt/n1/, <tt/n2/, and <tt/n3/ (see also the image below).
@@ -9845,11 +9870,10 @@ SfCurve|No|No|NCurve|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>SfCurve Object Capabilities</caption>
 </table>
-<p>
-The following parameters control the curve:
 
-<sect2>SfCurveAttr Property<label id="sfcurveattrprop">
-<p>
+<sect3>SfCurveAttr Property<label id="sfcurveattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The SfCurve object provides the following parameters:
 <itemize>
 <item>The parameters <tt/"M"/, <tt/"N1"/, <tt/"N2"/, and <tt/"N3"/
 control the superformula.
@@ -9879,19 +9903,19 @@ Curves with sharp features may need high values of about 100.
 of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
 </itemize>
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 The superformula curve may be converted to an ordinary NURBS curve using the
 main menu entry <tt>"Tools/Convert"</tt>.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 SfCurve objects never directly appear in RIB output (only indirectly as trim
 curve).
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Metaball Object<label id="metaobjobj"><label id="metacompobj">
+<sect2>Metaball Object<label id="metaobjobj"><label id="metacompobj">
 <p>
 <figure loc="ht">
 <eps file="pics/meta.ps" height="5cm">
@@ -9942,12 +9966,10 @@ of an implicit surface. The <tt>"MetaObj"</tt> object, that represents
 the meta world, evaluates this function on a regular three-dimensional
 grid and creates a polygonal representation for a specific function
 value (the so called threshold value).
-<p>
-This process may be further parameterised using the <tt/"MetaObjAttr"/
-property:
 
-<sect2>MetaObjAttr Property<label id="moattr"><label id="metaobjattrprop">
-<p>
+<sect3>MetaObjAttr Property<label id="moattr"><label id="metaobjattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The following attributes control the creation of the implicit surface:
 <itemize>
 <item>With the parameter <tt/"NumSamples"/ you specify the resolution of the
 three-dimensional regular grid, on which the implicit function is
@@ -9985,8 +10007,8 @@ While modelling with meta balls you may add other <tt/"MetaComp"/ objects
 to the <tt/"MetaObj"/ object and parameterise them.
 A <tt/"MetaComp"/ object has the following properties.
 
-<sect2>MetaCompAttr Property<label id="mcattr"><label id="metacompattrprop">
-<p>
+<sect3>MetaCompAttr Property<label id="mcattr"><label id="metacompattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
 <itemize>
 <item><tt/"Formula"/ specifies the type of the meta component.
 The following types are available: Metaball, Torus, Cube, Heart, and
@@ -10000,8 +10022,8 @@ for modelling holes. Just try it.
 
 The other parameter are specific to the type of the component:
 
-<sect2>Metaball<label id="mbcp">
-<p>
+<sect3>Metaball<label id="mbcp">
+<p><#if out=latex>&nbsp;<newline></#if>
 <itemize>
 <item><tt/"Radius"/ sets the radius of the metaball
 <item><tt/"EnergyCoeffA"/, <tt/"EnergyCoeffB"/, and <tt/"EnergyCoeffC"/
@@ -10010,23 +10032,23 @@ Usually you can leave those parameters at their default values.
 If you change them, be careful.
 </itemize>
 
-<sect2>Torus<label id="mtcp">
-<p>
+<sect3>Torus<label id="mtcp">
+<p><#if out=latex>&nbsp;<newline></#if>
 <itemize>
 <item><tt/"Ri"/ the inner radius of the torus
 <item><tt/"Ro"/ the outer radius if the torus
 <item><tt/"Rotate"/ rotates the torus about 90 degree
 </itemize>
 
-<sect2>Cube<label id="mucp">
-<p>
+<sect3>Cube<label id="mucp">
+<p><#if out=latex>&nbsp;<newline></#if>
 <itemize>
 <item><tt/"EdgeX"/, <tt/"EdgeY"/, and <tt/"EdgeZ"/, let you define the
 sharpness of the edges of the cube
 </itemize>
 
-<sect2>Custom<label id="cucp">
-<p>
+<sect3>Custom<label id="cucp">
+<p><#if out=latex>&nbsp;<newline></#if>
 <itemize>
 <item><tt/"Expression"/ is a piece of Tcl script, that represents your
 own custom formula for a meta component. The expression may call any
@@ -10045,13 +10067,13 @@ You should use any tricks (like the curly braces
 in the expr-statement above) to speed up the expression.
 </itemize>
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 Metaball objects may be converted to PolyMesh
 objects using the main menu entry <tt>"Tools/Convert"</tt>.
 
-<sect2>RIB Export
-<p>
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
 Metaball objects will be exported as RiPointsGeneralPolygons primitives
 (regardless of whether the actual configuration would fit into a simpler
 polygonal primitive of the RenderMan interface, e.g.~a RiGeneralPolygon).
@@ -10060,7 +10082,7 @@ PV tags are currently not supported.
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>SDNPatch Object<label id="sdnpatchobj">
+<sect2>SDNPatch Object<label id="sdnpatchobj">
 <p>
 <figure loc="ht">
 <eps file="pics/sdnpatch.ps" height="5cm">
@@ -10096,9 +10118,9 @@ SDNPatch|No|Yes|PolyMesh|Yes<#if out=latex>@<hline></#if>
 <caption>SDNPatch Object Capabilities</caption>
 </table>
 
-<sect2>SDNPatchAttr Property<label id=sdnpattr><label id="sdnpatchattrprop">
-<p>
-The SDNPatchAttr property allows you to set the following SDNPatch specific
+<sect3>SDNPatchAttr Property<label id=sdnpattr><label id="sdnpatchattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The SDNPatchAttr property allows to set the following SDNPatch specific
 attributes:
 <p>
 <itemize>
@@ -10108,8 +10130,8 @@ the only valid values are currently 3, 5, and 7.
 many polygons and a smooth surface; useful values range from 0 to 5.
 </itemize>
 
-<sect2>SDNPatch Modelling Actions
-<p>
+<sect3>SDNPatch Modelling Actions
+<p><#if out=latex>&nbsp;<newline></#if>
 This section, briefly, explains the special modelling actions defined
 for the SDNPatch custom object. In order to select a face or edge for
 such an operation, just select all the control points defining the face
@@ -10159,16 +10181,16 @@ Note that the PolyMesh to SDNPatch conversion only accepts closed
 quadrilateral polygon meshes (Triangles are omitted) and expects
 an optimized mesh (i.e.~adjacent faces should share the same vertices).
 
-<sect2>Conversion Support
-<p>
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
 SDNPatch objects may be converted to PolyMesh
 objects using the main menu entry <tt>"Tools/Convert"</tt>.
 
-<sect2>RIB Export
-<p>
-SDNPatch objects will be exported as RiPointsGeneralPolygons primitives
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
+SDNPatch objects will be exported as <tt/RiPointsGeneralPolygons/ primitives
 (regardless of whether the actual configuration would fit into a simpler
-polygonal primitive of the RenderMan interface, e.g.~a RiGeneralPolygon).
+polygonal primitive of the RenderMan interface, e.g.~a <tt/RiGeneralPolygon/).
 <p>
 PV tags are currently not supported.
 
