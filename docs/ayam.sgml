@@ -4212,8 +4212,9 @@ SDMesh|No|Yes|PolyMesh|Yes<#if out=latex>@<hline></#if>
 
 <sect2>Scripts and Plugins
 <p>
-These objects create/modify arbitrary other objects from scripts
-or define new object types via the custom object plugin mechanism.
+These objects create&thinsp;/&thinsp;modify arbitrary other objects
+from scripts or define entirely new object types via the custom object
+plugin mechanism.
 <p>
 <table loc="!ht">
 <tabular ca="|c|c|c|c|c|"><hline>
@@ -4696,7 +4697,7 @@ are written to a second RIB file named <tt>"&lt;scene&gt;.obj.rib"</tt>.
 This file is read from the main RIB several times via
 <tt>"ReadArchive"</tt>. The RIB contains multiple frames which may
 also be rendered separately if the frame number is known.
-To help you picking the right frame number for the image
+To help picking the right frame number for the image
 (e.g.~to re-render just the final image, when only a material setting was
 changed, and no shadow casting lights were moved and no shadow casting
 geometry was changed),
@@ -4706,7 +4707,7 @@ written as last statement to the RIB.
 Because multiple files (RIBs and shadow maps) are used, it is suggested
 to change the preference setting <tt>"RIB-Export/RIBFile"</tt> to
 <tt>"Scenefile"</tt>. This will strip the leading absolute path component
-from the filenames so that you may move the exported scene from one
+from the filenames so that the exported scene may be moved from one
 system to another more easily.
 <p>
 Do not render directly from a view window to the display when the
@@ -4723,14 +4724,14 @@ the shadow map to the display and simply stop.
 If the preference setting <tt>"RIB-Export/ShadowMaps"</tt> is set to
 <tt>"Manual"</tt>,
 the exported scene will not render the shadow maps but rather
-expects them to be present already. You can create them manually
+expects them to be present already. They can be created manually
 (hence the name <tt>"Manual"</tt>) using the view menu entries
 <tt>"View/Create ShadowMap"</tt>, <tt>"View/Create All ShadowMaps"</tt>
 or the main menu entries
 <tt>"Special/RIB-Export/Create ShadowMap"</tt>,
 <tt>"Special/RIB-Export/Create All ShadowMaps"</tt>.
 The manual approach has the advantage, that the shadow maps will not
-be re-created each time you render the scene.
+be re-created each time the scene is rendered.
 <p>
 <bf>ShadowMap Types</bf>
 <p>
@@ -4786,8 +4787,8 @@ type <tt/"Custom"/ with the normal <tt/"distantlight"/ shader attached,
 even though Ayam is able to create the necessary shadow maps. The
 normal <tt/"distantlight"/ shader just makes no use of the shadow maps.
 You have to manually switch to a shader that
-makes use of the shadow maps (<tt/"shadowdistant"/ in this case) to get
-shadows.
+makes use of the shadow maps (<tt/"shadowdistant"/ in this case) to
+actually get shadows.
 <p>
 <bf>ShadowMap Mini Tutorial</bf>
 <p>
@@ -4866,8 +4867,8 @@ Ayam.
 Material objects are used to attach RiAttributes and shaders to
 geometric objects.
 <p>
-As long as geometric objects are connected to a material object this material
-object may not be deleted.
+As long as geometric objects are connected to a material object,
+this material object may not be deleted.
 <p>
 The following table briefly lists some capabilities of the Material object.
 <p>
@@ -4881,7 +4882,7 @@ Material|No|N/A|N/A|No<#if out=latex>@<hline></#if>
 
 <sect3>RiAttributes Property<label id="riattrs"><label id="riattributesprop">
 <p><#if out=latex>&nbsp;<newline></#if>
-Using this property standard and BMRT specific attributes may be set.
+Using this property standard and BMRT specific RenderMan attributes may be set.
 Please refer to the documentation of the RenderMan interface
 and the documentation of BMRT for more detailed information about the
 RenderMan specific attributes.
@@ -7267,7 +7268,7 @@ BPatch|No|Yes|NPatch|Yes<#if out=latex>@<hline></#if>
 <sect3>BPatchAttr Property<label id=bpattr><label id="bpatchattrprop">
 <p><#if out=latex>&nbsp;<newline></#if>
 The BPatchAttr property allows to directly control the
-four points defining the geometry of the patch:<p>
+four points defining the geometry of the patch:
 <itemize>
 <item><tt/"P1_X"/, <tt/"P1_Y"/, <tt/"P1_Z"/, first point.
 <item><tt/"P2_X"/, <tt/"P2_Y"/, <tt/"P2_Z"/, second point.
@@ -8540,7 +8541,7 @@ the same set of tags.<footnote>Since 1.20.</footnote>
 <caption>Bevel Object (left: Curve, right: Resulting Bevelled Surface)</caption>
 </figure>
 <p>
-The bevel object forms a bevelled surface from a single planar parameter
+The bevel object forms a bevelled surface from a single parameter
 curve. The bevel cross section shape may be defined by a second curve.
 Consequently, the template for the object hierarchy of a Bevel object
 looks like this:
@@ -8554,8 +8555,8 @@ Bevels are also available as properties of different tool objects
 (e.g.~Extrude or Sweep). In fact, Bevel objects use the same creation
 algorithm as bevel properties but offer increased flexibility in terms of
 e.g.~material settings. Surfaces created from bevel properties always
-share the material settings of the tool object. In contrast, Bevel
-objects may have their own material settings. Bevel objects are
+share the material settings of the progenitor tool object. In contrast,
+Bevel objects may have their own material settings. Bevel objects are
 available in Ayam since version 1.10.
 <p>
 Note that the parameter curve of a Bevel object should be closed and
@@ -8566,12 +8567,12 @@ how to easily achieve this. If the curve is closed or periodic,
 the appropriate curve type should be set in the curve object,
 otherwise the bevelled surface may expose defects.
 <p>
-Since Ayam 1.19 the bevel object supports a second parameter curve
+Since Ayam 1.19 the Bevel object supports a second parameter curve
 that defines the bevels cross section shape. It should run from
-0,0 to 1,1. If present, the type parameter is ignored (with one
-notable exception) as the shape of the bevel is defined by the second curve.
+0,0 to 1,1. If present, the type parameter is ignored as the shape
+of the bevel is completly defined by the second curve.
 Note that even if the curve should end at 1,1, this is not mandatory
-and allows for bevels of differing width and height to be created.
+and therefore allows for bevels of differing width and height to be created.
 <p>
 The Bevel object watches the child object and adapts to it automatically
 via the notification mechanism.
@@ -9391,33 +9392,11 @@ PV tags are supported.
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Scripts and Plugins<label id="customobj">
+<sect1>Script and Custom Objects
 <p>
 These objects create&thinsp;/&thinsp;modify arbitrary other objects from
 scripts or define entirely new object types via the custom object plugin
 mechanism.
-<p>
-Custom objects are plugins that extend the Ayam capabilities by
-defining totally new types of e.g.~geometric objects. This may
-be done easily, because the Ayam core is written in a modelling
-paradigm independent way.
-<p>
-A simple example of a custom object is the CSphere, which implements
-a simple sphere and has a new property named <tt/"CSphereAttr"/.
-This property contains all parameters of a simple RenderMan Interface
-quadric sphere. A more complex example would be the MetaObj custom
-object. Via custom objects it is possible, but not planned for now,
-to integrate the hierarchical or T-Spline modelling paradigms into
-Ayam.
-<p>
-Since a custom object has total control over properties and representations,
-please refer to the documentation of the respective custom object for
-more information regarding its properties.
-<p>
-Several custom object plugins are already distributed with Ayam. Those
-are documented in the next sections:
-
-
 
 <sect2>Script Object<label id="scriptobj">
 <p>
@@ -9488,6 +9467,8 @@ Script|Any<f/<sup/+//|No|Any<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Script Object Capabilities</caption>
 </table>
+
+<#if out=latex><x/newpage/</#if>
 
 <sect3>ScriptAttr Property<label id="scriptattr"><label id="scriptattrprop">
 <p><#if out=latex>&nbsp;<newline></#if>
@@ -9831,6 +9812,26 @@ the two different trajectory curves):
 
 <#if out=latex><x/newpage/</#if>
 
+<sect2>Custom Objects Management<label id="customobj">
+<p>
+Custom objects are plugins that extend the Ayam capabilities by
+defining entirely new types of e.g.~geometric objects. This may
+be done easily, because the Ayam core is written in a modelling
+paradigm independent way.
+<p>
+Custom objects may also define own modelling tools. Those can
+usually be found in the <tt/"Custom"/ main menu.
+<p>
+Unlike other modelling helper plugins, custom object plugins
+will be loaded automatically with the scene files that contain
+such objects. Note, that this only works properly if the preference
+option <tt>"Main/Plugins"</tt> is correctly set.
+<p>
+Several custom object plugins are already distributed with Ayam. Those
+are documented in the next sections.
+
+<#if out=latex><x/newpage/</#if>
+
 <sect2>SfCurve (Superformula Curve) Object<label id="sfcurveobj">
 <p>
 The SfCurve object creates a superformula curve from four parameters
@@ -10122,7 +10123,6 @@ SDNPatch|No|Yes|PolyMesh|Yes<#if out=latex>@<hline></#if>
 <p><#if out=latex>&nbsp;<newline></#if>
 The SDNPatchAttr property allows to set the following SDNPatch specific
 attributes:
-<p>
 <itemize>
 <item><tt/"Degree"/ is the degree of the subdivision NURBS surface,
 the only valid values are currently 3, 5, and 7.
@@ -10138,7 +10138,6 @@ such an operation, just select all the control points defining the face
 or edge.
 All modelling actions can be started via the <tt>"Custom/SDNPatch"</tt>
 main menu.
-<p>
 <itemize>
 <item><tt/"Face Extrude"/, new faces are inserted in the mesh at all
 edges of the selected faces, the selected faces themselves are displaced
@@ -10195,7 +10194,6 @@ polygonal primitive of the RenderMan interface, e.g.~a <tt/RiGeneralPolygon/).
 PV tags are currently not supported.
 
 <#if out=latex><x/newpage/</#if>
-
 <sect1>Standard Properties<label id="stdprop">
 <p>
 Most Ayam objects have standard properties. They are used
@@ -11113,6 +11111,12 @@ This tag is used by the RIB exporter and the scene storage
 facility to establish links between material objects and
 the objects they are assigned to.
 
+<item>TM Tag
+<p>
+
+Internal binary tag to store transformation matrices, used by
+the AyCSG plugin.
+
 <item>NO/NM Tags<label id="nott"><label id="nmtt">
 <p>
 
@@ -11123,7 +11127,7 @@ across the scene.
 <p>
 
 This tag is an internal binary tag that carries normals and tangents
-for curves extracted from surfaces .
+for curves extracted from surfaces.
 
 </itemize>
 
@@ -13359,7 +13363,7 @@ creates a polymesh with a single triangular face.
 
 <item><bf/<tt/"crtOb PolyMesh -p 2 -cv {0 0 0  1 0 0  1 1 0  0 1 0} -iv {0 1 2 0 2 3}"//<newline>
 creates a polymesh with two connected (vertex sharing) triangular faces.
-<p>
+
 <item><bf/<tt/"crtOb PolyMesh -p 3 -cv {0 0 0  1 0 0  1 1 0  0 1 0  1.5 0 0  1.5 1 0} -iv {0 1 2 0 2 3 1 4 5 2} -nv {3 3 4}"//<newline>
 creates a polymesh with two triangles and one quad all connected
 (vertex sharing).
@@ -18559,7 +18563,7 @@ variable <tt>AYAMRC</tt> or is determined as following:
 denotes the home directory of the current user.
 <item>On the Win32 platform (Windows95 - XP) it is
 <tt>"&dollar;(HOME)/ayamrc"</tt> if the environment variable
-<tt>HOME</tt> exists, else <tt>"&dollar;(TEMP)/ayamrc"</tt>.<p>
+<tt>HOME</tt> exists, else <tt>"&dollar;(TEMP)/ayamrc"</tt>.
 <item>On Mac OS X Aqua (not X11!) it is
 <tt>"&tilde;/Library/Preferences/.ayamrc"</tt>, where <tt>"&tilde;"</tt>
 denotes the home directory of the current user.
