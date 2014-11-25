@@ -1,4 +1,4 @@
-[16. Nov 2014] CVS-Head:
+[25. Nov 2014] CVS-Head:
 ========================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
@@ -188,6 +188,7 @@ o added hidden options to ayamrc that control whether the standard file
 o added a patched version of the standard Tk file dialog that now has an
   additional keyboard shortcut (<Alt-Up>) to change to the parent directory  
 o improved drawing of the parametric domain in views of type "Trim"
+o improved visibility of the mark
 o added a "Reset All!" command entry to the tesselation dialog
 o improved initial and default parameters of the tesselation dialog
 o improved focus management of the Alt-Rotate view action on Win32 so that
