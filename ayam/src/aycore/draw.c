@@ -1394,17 +1394,19 @@ void
 ay_draw_mark(struct Togl *togl)
 {
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
- int e = 5;
+ int s = ay_prefs.handle_size*1.75/2.0;
  float mx, my;
-
-  if(view->antialiaslines)
-    {
-      e -= ay_prefs.aafudge;
-    }
 
   glColor3f((GLfloat)ay_prefs.tpr, (GLfloat)ay_prefs.tpg,
 	    (GLfloat)ay_prefs.tpb);
-
+  if(view->antialiaslines)
+    {
+      glLineWidth((GLfloat)ay_prefs.aasellinewidth);
+    }
+  else
+    {
+      glLineWidth((GLfloat)ay_prefs.sellinewidth*2.0f);
+    }
   glDisable(GL_DEPTH_TEST);
   glMatrixMode(GL_PROJECTION);
   glPushMatrix();
@@ -1439,14 +1441,31 @@ ay_draw_mark(struct Togl *togl)
 	  my = (int)(my-0.5);
 	my = Togl_Height(togl)-my-0.375;
       }
+
     glTranslatef(mx/*round(view->markx)-0.375*/,
 		 my/*Togl_Height(togl)-round(view->marky)-0.375*/,
 		 0.0f);
     glBegin(GL_LINES);
-     glVertex2i(-4, 0);
-     glVertex2i(e, 0);
-     glVertex2i(0, -4);
-     glVertex2i(0, e);
+     if(view->antialiaslines)
+       {
+	 glVertex2f((GLfloat)-s, 0.0f);
+	 glVertex2f((GLfloat)s/*-ay_prefs.aafudge*/, 0.0f);
+	 glVertex2f(0.0f, (GLfloat)-s);
+	 glVertex2f(0.0f, (GLfloat)s/*-ay_prefs.aafudge*/);
+       }
+     else
+       {
+	 if(ay_prefs.sellinewidth*2.0 >= 2.0)
+	   glVertex2i(-(s-2), 0);
+	 else
+	   glVertex2i(-(s-1), 0);
+	 glVertex2i(s, 0);
+	 if(ay_prefs.sellinewidth*2.0 >= 2.0)
+	   glVertex2i(0, -(s-2));
+	 else
+	   glVertex2i(0, -(s-1));
+	 glVertex2i(0, s);
+       }
     glEnd();
    glPopMatrix();
   glMatrixMode(GL_PROJECTION);
