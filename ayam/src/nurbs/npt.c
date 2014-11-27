@@ -11695,7 +11695,7 @@ ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
- ay_object *o, *new = NULL, *pobject = NULL;;
+ ay_object *o, *new = NULL, *pobject = NULL;
  double umin = 0.0, umax = 0.0, vmin = 0.0, vmax = 0.0;
  int relative = AY_FALSE;
 
