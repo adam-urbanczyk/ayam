@@ -1420,26 +1420,35 @@ ay_draw_mark(struct Togl *togl)
     /* accomodate for various queer values in markx/marky
        (that result from using gluProject()) */
     if(fabs(fmod(view->markx,1)-0.5) < 0.001)
-      mx = floor(view->markx)+0.375;
-    else
       {
-	mx = view->markx;
-	if(mx > 0)
-	  mx = (int)(mx+0.5);
-	else
-	  mx = (int)(mx-0.5);
-	mx -= 0.375;
+	mx = (float)(floor(view->markx)+0.375);
       }
-    if(fabs(fmod(view->marky,1)-0.5) < 0.001)
-      my = Togl_Height(togl)-ceil(view->marky)+0.375;
     else
       {
-	my = view->marky;
-	if(my > 0)
-	  my = (int)(my+0.5);
+	mx = (float)view->markx;
+	
+	if(mx > 0)
+	  mx = (float)(int)(mx+0.5);
 	else
-	  my = (int)(my-0.5);
-	my = Togl_Height(togl)-my-0.375;
+	  mx = (float)(int)(mx-0.5);
+	
+	mx -= 0.375f;
+      }
+
+    if(fabs(fmod(view->marky,1)-0.5) < 0.001)
+      {
+	my = (float)(Togl_Height(togl)-ceil(view->marky)+0.375);
+      }
+    else
+      {
+	my = (float)view->marky;
+	
+	if(my > 0)
+	  my = (float)(int)(my+0.5);
+	else
+	  my = (float)(int)(my-0.5);
+	
+	my = (float)(Togl_Height(togl)-my-0.375);
       }
 
     glTranslatef(mx/*round(view->markx)-0.375*/,
@@ -1542,20 +1551,20 @@ ay_draw_silhouettes(struct Togl *togl, unsigned char *silimg)
 	    switch(i)
 	      {
 	      case 0:
-		ex = -0.1;
-		ey = 0.1;
+		ex = -0.1f;
+		ey = 0.1f;
 		break;
 	      case 1:
-		ex = 0.1;
-		ey = 0.1;
+		ex = 0.1f;
+		ey = 0.1f;
 		break;
 	      case 2:
-		ex = 0.1;
-		ey = -0.1;
+		ex = 0.1f;
+		ey = -0.1f;
 		break;
 	      case 3:
-		ex = -0.1;
-		ey = -0.1;
+		ex = -0.1f;
+		ey = -0.1f;
 		break;
 	      }
 	    ex /= w;
