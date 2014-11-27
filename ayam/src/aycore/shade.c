@@ -59,9 +59,9 @@ ay_shade_cleansil(struct Togl *togl, int selection, unsigned char *sil)
 	     }
 	 }
        glLineWidth((GLfloat)ay_prefs.sellinewidth);
-       col[0] = ay_prefs.ser*255;
-       col[1] = ay_prefs.seg*255;
-       col[2] = ay_prefs.seb*255;
+       col[0] = (unsigned char)ay_prefs.ser*255;
+       col[1] = (unsigned char)ay_prefs.seg*255;
+       col[2] = (unsigned char)ay_prefs.seb*255;
        glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
 		 (GLfloat)ay_prefs.seb);
        while(sel)
@@ -75,9 +75,9 @@ ay_shade_cleansil(struct Togl *togl, int selection, unsigned char *sil)
   else
     {
       glLineWidth((GLfloat)ay_prefs.linewidth);
-      col[0] = ay_prefs.obr*255;
-      col[1] = ay_prefs.obg*255;
-      col[2] = ay_prefs.obb*255;
+      col[0] = (unsigned char)ay_prefs.obr*255;
+      col[1] = (unsigned char)ay_prefs.obg*255;
+      col[2] = (unsigned char)ay_prefs.obb*255;
       glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
 	    (GLfloat)ay_prefs.obb);
       while(o->next)
@@ -300,7 +300,7 @@ ay_shade_detectsilhouettes(struct Togl *togl, int selection)
  ay_object *o = ay_root;
  int i, j, k, w, h;
  float ex, ey, e;
- float *d1, *d2, *d3, thresh = 0.01;
+ float *d1, *d2, *d3, thresh = 0.01f;
  unsigned char *c1, *c2, *c3;
  GLfloat light_pos[] = { 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f };
  GLfloat red[] = {1.0f, 0.0f, 0.0f, 1.0f};
@@ -468,7 +468,7 @@ ay_shade_detectsilhouettes(struct Togl *togl, int selection)
 	      ey += d2[2]*sy[7];
 	      ey += d3[2]*sy[8];
 
-	      e = sqrt(ex*ex+ey*ey);
+	      e = (float)sqrt(ex*ex+ey*ey);
 
 	      if(e > thresh)
 		{
@@ -528,7 +528,7 @@ ay_shade_detectsilhouettes(struct Togl *togl, int selection)
 		      ey += c2[8]*sy[7];
 		      ey += c3[8]*sy[8];
 
-		      e = sqrt(ex*ex+ey*ey);
+		      e = (float)sqrt(ex*ex+ey*ey);
 
 		      if(e > 300)
 			{
@@ -566,15 +566,15 @@ ay_shade_detectsilhouettes(struct Togl *togl, int selection)
   /* create the silhouette texture */
   if(selection)
     {
-      color[0] = ay_prefs.ser*255;
-      color[1] = ay_prefs.seg*255;
-      color[2] = ay_prefs.seb*255;
+      color[0] = (unsigned char)ay_prefs.ser*255;
+      color[1] = (unsigned char)ay_prefs.seg*255;
+      color[2] = (unsigned char)ay_prefs.seb*255;
     }
   else
     {
-      color[0] = ay_prefs.obr*255;
-      color[1] = ay_prefs.obg*255;
-      color[2] = ay_prefs.obb*255;
+      color[0] = (unsigned char)ay_prefs.obr*255;
+      color[1] = (unsigned char)ay_prefs.obg*255;
+      color[2] = (unsigned char)ay_prefs.obb*255;
     }
   color[3] = 255;
 
