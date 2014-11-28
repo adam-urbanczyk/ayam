@@ -1388,14 +1388,13 @@ ay_draw_cs(struct Togl *togl, int mode)
 
 
 /* ay_draw_mark:
- *  draw marked point in space as simple red + symbol
+ *  draw marked point in space as simple red '+' symbol
  */
 void
 ay_draw_mark(struct Togl *togl)
 {
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  int s = ay_prefs.handle_size*1.75/2.0;
- float mx, my;
 
   glColor3f((GLfloat)ay_prefs.tpr, (GLfloat)ay_prefs.tpg,
 	    (GLfloat)ay_prefs.tpb);
@@ -1407,7 +1406,9 @@ ay_draw_mark(struct Togl *togl)
     {
       glLineWidth((GLfloat)ay_prefs.sellinewidth*2.0f);
     }
+
   glDisable(GL_DEPTH_TEST);
+
   glMatrixMode(GL_PROJECTION);
   glPushMatrix();
    glLoadIdentity();
@@ -1415,45 +1416,11 @@ ay_draw_mark(struct Togl *togl)
    glMatrixMode(GL_MODELVIEW);
    glPushMatrix();
     glLoadIdentity();
-    /*    printf("%.9g %.9g\n",view->markx,view->marky);*/
 
-    /* accomodate for various queer values in markx/marky
-       (that result from using gluProject()) */
-    if(fabs(fmod(view->markx,1)-0.5) < 0.001)
-      {
-	mx = (float)(floor(view->markx)+0.375);
-      }
-    else
-      {
-	mx = (float)view->markx;
-	
-	if(mx > 0)
-	  mx = (float)(int)(mx+0.5);
-	else
-	  mx = (float)(int)(mx-0.5);
-	
-	mx -= 0.375f;
-      }
-
-    if(fabs(fmod(view->marky,1)-0.5) < 0.001)
-      {
-	my = (float)(Togl_Height(togl)-ceil(view->marky)+0.375);
-      }
-    else
-      {
-	my = (float)view->marky;
-	
-	if(my > 0)
-	  my = (float)(int)(my+0.5);
-	else
-	  my = (float)(int)(my-0.5);
-	
-	my = (float)(Togl_Height(togl)-my-0.375);
-      }
-
-    glTranslatef(mx/*round(view->markx)-0.375*/,
-		 my/*Togl_Height(togl)-round(view->marky)-0.375*/,
+    glTranslatef((float)(floor(view->markx+0.5)-0.375f),
+		 (float)(floor(Togl_Height(togl)-view->marky+0.5)-0.375f),
 		 0.0f);
+
     glBegin(GL_LINES);
      if(view->antialiaslines)
        {
