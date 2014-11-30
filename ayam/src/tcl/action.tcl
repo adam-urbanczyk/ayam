@@ -416,7 +416,7 @@ proc actionRotOb { w } {
 
 #
 proc actionRotObA { w } {
-    global ayviewshortcuts
+    global ayviewshortcuts ayprefs
 
     viewTitle $w "" "RotateA"
     viewSetMAIcon $w ay_RotateA_img "RotateA"
@@ -434,6 +434,10 @@ proc actionRotObA { w } {
     }
 
     actionBindRelease $w
+
+    if $ayprefs(NormalizeTrafos) {
+	bind $w <ButtonRelease-1> "+normTrafo;getTrafo"
+    }
 
     bind $w <Motion> ""
 
@@ -522,6 +526,10 @@ proc actionSc1DXAOb { w } {
 
     actionBindRelease $w
 
+    if $ayprefs(NormalizeTrafos) {
+	bind $w <ButtonRelease-1> "+normTrafo;getTrafo"
+    }
+
     $w setconf -drawh 1
 
     if { [string first ".view" $w] == 0 } {
@@ -607,6 +615,10 @@ proc actionSc1DYAOb { w } {
 
     actionBindRelease $w
 
+    if $ayprefs(NormalizeTrafos) {
+	bind $w <ButtonRelease-1> "+normTrafo;getTrafo"
+    }
+
     $w setconf -drawh 1
 
     if { [string first ".view" $w] == 0 } {
@@ -691,6 +703,10 @@ proc actionSc1DZAOb { w } {
     bind $w <Motion> ""
 
     actionBindRelease $w
+
+    if $ayprefs(NormalizeTrafos) {
+	bind $w <ButtonRelease-1> "+normTrafo;getTrafo"
+    }
 
     $w setconf -drawh 1
 
@@ -786,6 +802,10 @@ proc actionSc2DAOb { w } {
 
     actionBindRelease $w
 
+    if $ayprefs(NormalizeTrafos) {
+	bind $w <ButtonRelease-1> "+normTrafo;getTrafo"
+    }
+
     $w setconf -drawh 1
 
     if { [string first ".view" $w] == 0 } {
@@ -871,6 +891,10 @@ proc actionSc3DAOb { w } {
 
     actionBindRelease $w
 
+    if $ayprefs(NormalizeTrafos) {
+	bind $w <ButtonRelease-1> "+normTrafo;getTrafo"
+    }
+
     $w setconf -drawh 1
 
     if { [string first ".view" $w] == 0 } {
@@ -955,6 +979,10 @@ proc actionStr2DAOb { w } {
     bind $w <Motion> ""
 
     actionBindRelease $w
+
+    if $ayprefs(NormalizeTrafos) {
+	bind $w <ButtonRelease-1> "+normTrafo;getTrafo"
+    }
 
     $w setconf -drawh 1
 

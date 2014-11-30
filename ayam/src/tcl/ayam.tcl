@@ -234,6 +234,8 @@ array set ayprefs {
 
  Grids { 0.1 0.25 0.5 1.0 }
 
+ NormalizeTrafos 1
+
  Docs "http://ayam.sourceforge.net/docs/"
  DailyTips {
 {Always click on drawn pixels, when picking vertices.}

@@ -1855,3 +1855,120 @@ ay_trafo_scalecog(double scale, double *cv, int len, int stride)
  return;
 } /* ay_trafo_scalecog */
 
+
+/* ay_trafo_normalize:
+ *
+ */
+void
+ay_trafo_normalize(ay_object *o, int digits)
+{
+ double euler[3];
+
+  if(!o)
+    return;
+
+  if(digits <= 0)
+    return;
+
+  o->movx = ay_trafo_round(o->movx, digits);
+  o->movy = ay_trafo_round(o->movy, digits);
+  o->movz = ay_trafo_round(o->movz, digits);
+
+  o->scalx = ay_trafo_round(o->scalx, digits);
+  o->scaly = ay_trafo_round(o->scaly, digits);
+  o->scalz = ay_trafo_round(o->scalz, digits);
+
+  if(o->quat[0] < pow(10, -digits))
+    o->quat[0] = 0.0;
+  if(o->quat[1] < pow(10, -digits))
+    o->quat[1] = 0.0;
+  if(o->quat[2] < pow(10, -digits))
+    o->quat[2] = 0.0;
+  if(o->quat[3] < pow(10, -digits))
+    o->quat[3] = 0.0;
+
+  ay_quat_toeuler(o->quat, euler);
+
+  o->rotx = AY_R2D(euler[0]);
+  o->roty = AY_R2D(euler[1]);
+  o->rotz = AY_R2D(euler[2]);
+
+  o->rotx = ay_trafo_round(o->rotx, digits);
+  o->roty = ay_trafo_round(o->roty, digits);
+  o->rotz = ay_trafo_round(o->rotz, digits);
+
+ return;
+} /* ay_trafo_normalize */
+
+
+/* ay_trafo_normalizetcmd:
+ *  
+ *  Implements the \a normTrafo scripting interface command.
+ *  See also the corresponding section in the \ayd{scnormtrafo}.
+ *
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_trafo_normalizetcmd(ClientData clientData, Tcl_Interp *interp,
+		       int argc, char *argv[])
+{
+ ay_list_object *sel = ay_selection;
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, argv[0], NULL);
+      return TCL_OK;
+    }
+
+  while(sel)
+    {
+      ay_trafo_normalize(sel->object, 6);
+
+      sel = sel->next;
+    } /* while */
+
+ return TCL_OK;
+} /* ay_trafo_normalizetcmd */
+
+
+/*
+ * Rounds double <value> to <nsig> significant figures.  Always rounds
+ * away from zero, so -2.6 to 1 sig fig will become -3.0.
+ *
+ * <digits> should be in the range 1 - 15
+*/
+double ay_trafo_round(double value, int digits)
+{
+ double a, b;
+ long int i;
+ int neg = 0;
+
+  if(!value)
+    return 0.0;
+
+  if(value < 0.0)
+    {
+      value = -value;
+      neg = 1;
+    }
+
+  if(value < pow(10, -digits))
+    return 0.0;
+
+  i = digits - log10(value);
+
+  if(i)
+    {
+      a = pow(10.0, (double)i);
+    }
+  else
+    {
+      a = 1.0;
+    }
+
+  b = value * a;
+  i = b + 0.5;
+  value = i / a;
+
+ return neg ? -value : value;
+} /* ay_trafo_round */
