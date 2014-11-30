@@ -1622,6 +1622,19 @@ void ay_trafo_rotatematrix(double angle, double x, double y, double z,
  */
 void ay_trafo_scalecog(double scale, double *cv, int len, int stride);
 
+/** normalize the transformation attributes
+ */
+void ay_trafo_normalize(ay_object *o, int digits);
+
+/** Tcl command to normalize the transformation attributes.
+ */
+int ay_trafo_normalizetcmd(ClientData clientData, Tcl_Interp *interp,
+			   int argc, char *argv[]);
+
+/** round a value to aspecific number of digits
+ */
+double ay_trafo_round(double value, int digits);
+
 
 /* undo.c */
 
