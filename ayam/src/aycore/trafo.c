@@ -1856,8 +1856,11 @@ ay_trafo_scalecog(double scale, double *cv, int len, int stride)
 } /* ay_trafo_scalecog */
 
 
-/* ay_trafo_normalize:
+/** ay_trafo_normalize:
+ *  Normalize transformation attributes.
  *
+ * \param[in,out] o object to process
+ * \param[in] digits number of significant figures to keep
  */
 void
 ay_trafo_normalize(ay_object *o, int digits)
@@ -1901,8 +1904,9 @@ ay_trafo_normalize(ay_object *o, int digits)
 } /* ay_trafo_normalize */
 
 
-/* ay_trafo_normalizetcmd:
- *  
+/** ay_trafo_normalizetcmd:
+ *  Normalize transformation attributes of selected objects.
+ *
  *  Implements the \a normTrafo scripting interface command.
  *  See also the corresponding section in the \ayd{scnormtrafo}.
  *
@@ -1931,11 +1935,14 @@ ay_trafo_normalizetcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_trafo_normalizetcmd */
 
 
-/*
- * Rounds double <value> to <nsig> significant figures.  Always rounds
- * away from zero, so -2.6 to 1 sig fig will become -3.0.
+/** ay_trafo_round:
+ * Rounds double value to specified number of significant figures.
+ * Always rounds away from zero, so -2.6 to 1 sig fig will become -3.0.
  *
- * <digits> should be in the range 1 - 15
+ * \param[in] value double to normalize
+ * \param[in] digits number of digits (should be in the range 1 - 15)
+ *
+ * \returns normalized value
 */
 double ay_trafo_round(double value, int digits)
 {
