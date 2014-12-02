@@ -1881,13 +1881,13 @@ ay_trafo_normalize(ay_object *o, int digits)
   o->scaly = ay_trafo_round(o->scaly, digits);
   o->scalz = ay_trafo_round(o->scalz, digits);
 
-  if(o->quat[0] < pow(10, -digits))
+  if(fabs(o->quat[0]) < pow(10, -digits))
     o->quat[0] = 0.0;
-  if(o->quat[1] < pow(10, -digits))
+  if(fabs(o->quat[1]) < pow(10, -digits))
     o->quat[1] = 0.0;
-  if(o->quat[2] < pow(10, -digits))
+     if(fabs(o->quat[2]) < pow(10, -digits))
     o->quat[2] = 0.0;
-  if(o->quat[3] < pow(10, -digits))
+     if(fabs(o->quat[3]) < pow(10, -digits))
     o->quat[3] = 0.0;
 
   ay_quat_toeuler(o->quat, euler);
