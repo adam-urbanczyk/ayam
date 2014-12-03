@@ -1375,6 +1375,7 @@ typedef struct ay_preferences_s
   int undo_levels; /**< number of undo levels, -1 turns undo off */
   int globalmark; /**< maintain a global mark? */
   int createatmark; /**< create objects at the mark? */
+  int normalizetrafos; /**< normalize (round) trafos? */
 
   /* RIB export prefs */
   int resolveinstances; /**< resolve all instances for RIB export? */
@@ -1920,11 +1921,11 @@ extern char *ay_error_igntype;
 
 /** \name Cap Types */
 /*@{*/
-#define AY_CATNONE  0 /**< No Cap */
-#define AY_CATTRIM 1 /**< Trim Cap */
-#define AY_CATSIMPLE 2 /**< Simple Cap */
+#define AY_CATNONE      0 /**< No Cap */
+#define AY_CATTRIM      1 /**< Trim Cap */
+#define AY_CATSIMPLE    2 /**< Simple Cap */
 #define AY_CATSIMPLEINT 3 /**< Simple Cap Integrated*/
-#define AY_CATGORDON 4 /**< Gordon Cap */
+#define AY_CATGORDON    4 /**< Gordon Cap */
 /*@}*/
 
 /** \name Drawing Modes */
@@ -1952,6 +1953,13 @@ extern char *ay_error_igntype;
 #define AY_XY  0
 #define AY_YZ  1
 #define AY_XZ  2
+/*@}*/
+
+/** \name Transformation Element Selector */
+/*@{*/
+#define AY_MOV 0x1
+#define AY_ROT 0x2
+#define AY_SCA 0x4
 /*@}*/
 
 /** to avoid direct comparison of doubles with 0.0 */

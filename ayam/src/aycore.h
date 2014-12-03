@@ -1489,6 +1489,22 @@ void ay_trafo_apply4(double *c, double *m);
 void ay_trafo_apply4v(double *c, unsigned int clen, unsigned int stride,
 		      double *m);
 
+/** accumulate all parent transformations
+ */
+void ay_trafo_getparent(ay_list_object *lo, double *tm);
+
+/** accumulate all inverse parent transformations
+ */
+void ay_trafo_getparentinv(ay_list_object *lo, double *tm);
+
+/** accumulate some parent transformations
+ */
+void ay_trafo_getsomeparent(ay_list_object *lo, int what, double *tm);
+
+/** accumulate some inverse parent transformations
+ */
+void ay_trafo_getsomeparentinv(ay_list_object *lo, int what, double *tm);
+
 /** concatenate all trafos onto GL matrix stack
  */
 void ay_trafo_getall(ay_list_object *lo);
