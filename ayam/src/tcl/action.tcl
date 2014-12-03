@@ -416,7 +416,7 @@ proc actionRotOb { w } {
 
 #
 proc actionRotObA { w } {
-    global ayviewshortcuts ayprefs
+    global ayprefs ayviewshortcuts
 
     viewTitle $w "" "RotateA"
     viewSetMAIcon $w ay_RotateA_img "RotateA"
@@ -504,7 +504,7 @@ proc actionSc1DXOb { w } {
 
 #
 proc actionSc1DXAOb { w } {
-    global ayviewshortcuts
+    global ayprefs ayviewshortcuts
 
     viewTitle $w "" "Scale1DXA"
     viewSetMAIcon $w ay_Scale1DXA_img "Scale1DXA"
@@ -593,7 +593,7 @@ proc actionSc1DYOb { w } {
 
 #
 proc actionSc1DYAOb { w } {
-    global ayviewshortcuts
+    global ayprefs ayviewshortcuts
 
     viewTitle $w "" "Scale1DYA"
     viewSetMAIcon $w ay_Scale1DYA_img "Scale1DYA"
@@ -682,7 +682,7 @@ proc actionSc1DZOb { w } {
 
 #
 proc actionSc1DZAOb { w } {
-    global ayviewshortcuts
+    global ayprefs ayviewshortcuts
 
     viewTitle $w "" "Scale1DZA"
     viewSetMAIcon $w ay_Scale1DZA_img "Scale1DZA"
@@ -780,7 +780,7 @@ proc actionSc2DOb { w } {
 
 #
 proc actionSc2DAOb { w } {
-    global ayviewshortcuts
+    global ayprefs ayviewshortcuts
 
     viewTitle $w "" "Scale2D"
     viewSetMAIcon $w ay_Scale2DA_img "Scale2DA"
@@ -869,7 +869,7 @@ proc actionSc3DOb { w } {
 
 #
 proc actionSc3DAOb { w } {
-    global ayviewshortcuts
+    global ayprefs ayviewshortcuts
 
     viewTitle $w "" "Scale3DA"
     viewSetMAIcon $w ay_Scale3DA_img "Scale3DA"
@@ -958,7 +958,7 @@ proc actionStr2DOb { w } {
 
 #
 proc actionStr2DAOb { w } {
-    global ayviewshortcuts
+    global ayprefs ayviewshortcuts
 
     viewTitle $w "" "Stretch2DA"
     viewSetMAIcon $w ay_Stretch2DA_img "Stretch2DA"
