@@ -102,6 +102,214 @@ ay_trafo_apply4v(double *c, unsigned int clen, unsigned int stride, double *m)
 } /* ay_trafo_apply4v */
 
 
+/** ay_trafo_getparent:
+ *  Accumulate all parent transformations starting from specified
+ *  level up to ay_root (unless a parent stops inheritance of the
+ *  transformation attributes).
+ *
+ * \param[in] lo current level
+ * \param[in,out] tm transformation matrix (double[16]) to process
+ */
+void
+ay_trafo_getparent(ay_list_object *lo, double *tm)
+{
+ ay_object *o = NULL;
+ double m[16];
+
+  if(!lo || !tm)
+    {
+      return;
+    }
+
+  o = lo->object;
+
+  if(!o)
+    {
+      return;
+    }
+
+  if(!o->inherit_trafos)
+    {
+      return;
+    }
+
+  if(lo->next)
+    {
+      ay_trafo_getparent(lo->next->next, tm);
+    }
+
+  if((o != ay_root) && o->down && AY_ISTRAFO(o))
+    {
+      ay_trafo_translatematrix(o->movx, o->movy, o->movz, tm);
+      ay_quat_torotmatrix(o->quat, m);
+      ay_trafo_multmatrix(tm, m);
+      ay_trafo_scalematrix(o->scalx, o->scaly, o->scalz, tm);
+    }
+
+ return;
+} /* ay_trafo_getparent */
+
+
+/** ay_trafo_getparentinv:
+ *  Accumulate all inverse parent transformations starting from specified
+ *  level up to ay_root (unless a parent stops inheritance of the
+ *  transformation attributes).
+ *
+ * \param[in] lo current level
+ * \param[in,out] tm transformation matrix (double[16]) to process
+ */
+void
+ay_trafo_getparentinv(ay_list_object *lo, double *tm)
+{
+ ay_object *o = NULL;
+ double quat[4], m[16];
+
+  if(!lo || !tm)
+    {
+      return;
+    }
+
+  o = lo->object;
+
+  if(!o)
+    {
+      return;
+    }
+
+  if(!o->inherit_trafos)
+    {
+      return;
+    }
+
+  if((o != ay_root) && o->down && AY_ISTRAFO(o))
+    {
+      ay_trafo_scalematrix(1.0/o->scalx, 1.0/o->scaly, 1.0/o->scalz, tm);
+      memcpy(quat, o->quat, 4*sizeof(double));
+      ay_quat_inv(quat);
+      ay_quat_torotmatrix(quat, m);
+      ay_trafo_multmatrix(tm, m);
+      ay_trafo_translatematrix(-o->movx, -o->movy, -o->movz, tm);
+    }
+
+  if(lo->next)
+   {
+     ay_trafo_getparentinv(lo->next->next, tm);
+   }
+
+ return;
+} /* ay_trafo_getparentinv */
+
+
+/** ay_trafo_getsomeparent:
+ *  Accumulate some parent transformations starting from specified
+ *  level up to ay_root (unless a parent stops inheritance of the
+ *  transformation attributes).
+ *
+ * \param[in] lo current level
+ * \param[in] what specifies which transformation attributes to get
+ * \param[in,out] tm transformation matrix (double[16]) to process
+ */
+void
+ay_trafo_getsomeparent(ay_list_object *lo, int what, double *tm)
+{
+ ay_object *o = NULL;
+ double m[16];
+
+  if(!lo || !tm)
+    {
+      return;
+    }
+
+  o = lo->object;
+
+  if(!o)
+    {
+      return;
+    }
+
+  if(!o->inherit_trafos)
+    {
+      return;
+    }
+
+  if(lo->next)
+    {
+      ay_trafo_getsomeparent(lo->next->next, what, tm);
+    }
+
+  if((o != ay_root) && o->down && AY_ISTRAFO(o))
+    {
+      if(what & AY_MOV)
+	ay_trafo_translatematrix(o->movx, o->movy, o->movz, tm);
+      if(what & AY_ROT)
+	{
+	  ay_quat_torotmatrix(o->quat, m);
+	  ay_trafo_multmatrix(tm, m);
+	}
+      if(what & AY_SCA)
+	ay_trafo_scalematrix(o->scalx, o->scaly, o->scalz, tm);
+    }
+
+ return;
+} /* ay_trafo_getsomeparent */
+
+
+/* ay_trafo_getsomeparentinv:
+ *  Accumulate some inverse parent transformations starting from specified
+ *  level up to ay_root (unless a parent stops inheritance of the
+ *  transformation attributes).
+ *
+ * \param[in] lo current level
+ * \param[in] what specifies which transformation attributes to get
+ * \param[in,out] tm transformation matrix (double[16]) to process
+ */
+void
+ay_trafo_getsomeparentinv(ay_list_object *lo, int what, double *tm)
+{
+ ay_object *o = NULL;
+ double quat[4], m[16];
+
+  if(!lo || !tm)
+    {
+      return;
+    }
+
+  o = lo->object;
+
+  if(!o)
+    {
+      return;
+    }
+
+  if(!o->inherit_trafos)
+    {
+      return;
+    }
+
+  if((o != ay_root) && o->down && AY_ISTRAFO(o))
+    {
+      if(what & AY_SCA)
+	ay_trafo_scalematrix(1.0/o->scalx, 1.0/o->scaly, 1.0/o->scalz, tm);
+      if(what & AY_ROT)
+	{
+	  memcpy(quat, o->quat, 4*sizeof(double));
+	  ay_quat_inv(quat);
+	  ay_quat_torotmatrix(quat, m);
+	  ay_trafo_multmatrix(tm, m);
+	}
+      if(what & AY_MOV)
+	ay_trafo_translatematrix(-o->movx, -o->movy, -o->movz, tm);
+    }
+
+  if(lo->next)
+   {
+     ay_trafo_getsomeparentinv(lo->next->next, what, tm);
+   }
+
+ return;
+} /* ay_trafo_getsomeparentinv */
+
+
 /* ay_trafo_getall:
  *
  */
