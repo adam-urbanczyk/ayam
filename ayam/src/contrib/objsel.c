@@ -572,7 +572,7 @@ ay_objsel_processcb(struct Togl *togl, int argc, char *argv[])
       o = ay_currentlevel->object;
       glPushMatrix();
       glLoadIdentity();
-      ay_trafo_getall(ay_currentlevel->next);
+      ay_trafo_concatparent(ay_currentlevel->next);
       ay_objsel_pushzeros(ay_currentlevel->next);
       ay_objsel_pushlnames(ay_currentlevel->next);
     }
