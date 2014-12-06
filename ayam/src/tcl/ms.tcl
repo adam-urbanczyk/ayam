@@ -107,12 +107,12 @@ ms_set en ayprefse_Snap3D "Snap coordinate values in all three dimensions?"
 ms_set en ayprefse_FlashPoints "Flash editable points in single point\
 editing modes?"
 ms_set en ayprefse_GlobalMark "Maintain a single, global mark, or many local\
-marks (for each view)?"
+marks (one for each view)?"
 ms_set en ayprefse_CreateAtMark "Create objects at the mark?"
 ms_set en ayprefse_DefaultAction "Modelling action invoked, when <Esc> key\
 is pressed."
 ms_set en ayprefse_UndoLevels "Number of undoable modelling steps;\
-\n-1 means Undo/Redo is disabled."
+\n0 means Undo/Redo is disabled."
 
 # Drawing
 ms_set en ayprefse_Tolerance "Sampling tolerance used when tesselating\
@@ -305,7 +305,7 @@ ms_set de ayprefse_CreateAtMark "Sollen neue Objekte an der Marke erzeugt werden
 ms_set de ayprefse_DefaultAction "Modellier-Aktion, die beim Drücken der\
 \n<Esc>-Taste gestartet werden soll."
 ms_set de ayprefse_UndoLevels "Anzahl zurücknehmbarer Modellierschritte;\
-\n-1 schaltet das Undo-System aus."
+\n0 schaltet das Undo-System aus."
 
 # Drawing
 ms_set de ayprefse_Tolerance "Bestimmt die Darstellungsqualität von NURBS\
