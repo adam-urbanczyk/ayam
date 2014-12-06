@@ -369,7 +369,7 @@ idr_propagate_dist(double *p1, ay_object *from, ay_object *cur,
 	      glMatrixMode(GL_MODELVIEW);
 	      glPushMatrix();
 	      glLoadIdentity();
-	      ay_trafo_getall(ay_currentlevel->next);
+	      ay_trafo_concatparent(ay_currentlevel->next);
 
 	      glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	      glPopMatrix();
@@ -451,7 +451,7 @@ idr_propagate_disttcmd(ClientData clientData, Tcl_Interp *interp,
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
    glLoadIdentity();
-   ay_trafo_getall(ay_currentlevel->next);
+   ay_trafo_concatparent(ay_currentlevel->next);
 
    glGetDoublev(GL_MODELVIEW_MATRIX, mm);
   glPopMatrix();
@@ -2069,7 +2069,7 @@ idr_get2dbbc(ay_object *o, int *left, int *right,
    glLoadIdentity();
    if(ay_currentlevel)
      {
-       ay_trafo_getall(ay_currentlevel->next);
+       ay_trafo_concatparent(ay_currentlevel->next);
      }
    glGetDoublev(GL_MODELVIEW_MATRIX, mvm);
   glPopMatrix();

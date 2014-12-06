@@ -12597,7 +12597,7 @@ ay_npt_finduv(struct Togl *togl, ay_object *o,
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
-   ay_trafo_getall(ay_currentlevel->next);
+   ay_trafo_concatparent(ay_currentlevel->next);
 
    glTranslated(o->movx, o->movy, o->movz);
    ay_quat_torotmatrix(o->quat, m);

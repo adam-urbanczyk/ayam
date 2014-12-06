@@ -1445,7 +1445,7 @@ ay_view_dropcb(ay_object *o)
  int has_from = AY_FALSE, has_to = AY_FALSE;
  int width, height;
  double aspect;
- double from[3], to[3], mr[16];
+ double from[3], to[3];
  GLdouble m[16];
  char arg1[] = "save", arg2[] = "ViewDrop";
  char *argv[3] = {0};
@@ -1493,24 +1493,8 @@ ay_view_dropcb(ay_object *o)
 	      memcpy(from, light->tfrom, 3*sizeof(double));
 	      memcpy(to, light->tto, 3*sizeof(double));
 
-	      glMatrixMode(GL_MODELVIEW);
-	      glPushMatrix();
-	       glLoadIdentity();
-
-	       if(ay_currentlevel->object != ay_root)
-		 {
-		   ay_trafo_getall(ay_currentlevel->next);
-		 }
-
-	       glTranslated(s->movx, s->movy, s->movz);
-
-	       ay_quat_torotmatrix(s->quat, mr);
-	       glMultMatrixd(mr);
-
-	       glScaled(s->scalx, s->scaly, s->scalz);
-
-	       glGetDoublev(GL_MODELVIEW_MATRIX, m);
-	      glPopMatrix();
+	      ay_trafo_identitymatrix(m);
+	      ay_trafo_getall(ay_currentlevel, s, m);
 
 	      ay_trafo_apply3(from, m);
 	      ay_trafo_apply3(to, m);

@@ -1507,35 +1507,11 @@ void ay_trafo_getsomeparentinv(ay_list_object *lo, int what, double *tm);
 
 /** concatenate all trafos onto GL matrix stack
  */
-void ay_trafo_getall(ay_list_object *lo);
+void ay_trafo_concatparent(ay_list_object *lo);
 
-/** inversely concatenate all trafos onto GL matrix stack
+/** get object and parent transformations
  */
-void ay_trafo_getalli(ay_list_object *lo);
-
-/** concatenate all scale trafos onto GL matrix stack
- */
-void ay_trafo_getalls(ay_list_object *lo);
-
-/** inversely concatenate all scale trafos onto GL matrix stack
- */
-void ay_trafo_getallis(ay_list_object *lo);
-
-/** concatenate all scale and rotate trafos onto GL matrix stack
- */
-void ay_trafo_getallsr(ay_list_object *lo);
-
-/** inversely concatenate all scale and rotate trafos onto GL matrix stack
- */
-void ay_trafo_getallisr(ay_list_object *lo);
-
-/** concatenate all rotate trafos onto GL matrix stack
- */
-void ay_trafo_getallr(ay_list_object *lo);
-
-/** inversely concatenate all rotate trafos onto GL matrix stack
- */
-void ay_trafo_getallir(ay_list_object *lo);
+void ay_trafo_getall(ay_list_object *lo, ay_object *o, double *tm);
 
 /** delegate trafos to children
  */

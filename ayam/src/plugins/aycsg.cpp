@@ -186,6 +186,7 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
  ay_view_object *view = NULL;
  int orig_use_materialcolor = ay_prefs.use_materialcolor;
  GLfloat color[4] = {0.0f,0.0f,0.0f,0.0f};
+ double tm[16];
  int is_csg;
  Togl_Callback *oldaltdispcb = NULL;
 #ifdef AYCSGDBG
@@ -247,10 +248,10 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
       ay_draw_bgimage(togl);
     }
 
-  if(view->drawsel || view->drawlevel)
+  if((view->drawsel || view->drawlevel) && ay_currentlevel->object != ay_root)
     {
-      glPushMatrix();
-      ay_trafo_getall(ay_currentlevel->next);
+      ay_trafo_getparent(ay_currentlevel->next, tm);
+      glMultMatrixd((GLdouble*)tm);
     }
 
   o = aycsg_root;
@@ -303,12 +304,6 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
 
   // now draw non-CSG top level primitives
   aycsg_drawtoplevelprim(togl);
-
-  if(view->drawsel || view->drawlevel)
-    {
-      glMatrixMode(GL_MODELVIEW);
-      glPopMatrix();
-    }
 
   // swap buffers
   Togl_SwapBuffers(togl);
