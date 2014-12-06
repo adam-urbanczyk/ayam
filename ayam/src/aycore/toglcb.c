@@ -265,6 +265,8 @@ ay_toglcb_reshape(struct Togl *togl)
   view->conv_x = (aspect * 2.0 / width) * view->zoom;
   view->conv_y = 2.0/height * view->zoom;
 
+  ay_viewt_updatemark(togl, /* local=*/ AY_TRUE);
+
   /*  glMatrixMode (GL_MODELVIEW);*/
 
  return;
