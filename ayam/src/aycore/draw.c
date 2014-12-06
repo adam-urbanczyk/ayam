@@ -177,7 +177,7 @@ ay_draw_view(struct Togl *togl, int draw_offset)
       glPushMatrix();
       if(ay_currentlevel->object != ay_root && view->type != AY_VTTRIM)
 	{
-	  ay_trafo_getall(ay_currentlevel->next);
+	  ay_trafo_concatparent(ay_currentlevel->next);
 	}
       if(view->type == AY_VTTRIM)
 	{
@@ -220,7 +220,7 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 	{
 	  if(ay_currentlevel->object != ay_root)
 	    {
-	      ay_trafo_getall(ay_currentlevel->next);
+	      ay_trafo_concatparent(ay_currentlevel->next);
 	    }
 	}
 
@@ -462,7 +462,7 @@ ay_draw_annos(struct Togl *togl, int draw_offset)
 	{
 	  glPushMatrix();
 	  glLoadIdentity();
-	  ay_trafo_getall(ay_currentlevel->next);
+	  ay_trafo_concatparent(ay_currentlevel->next);
 	}
 
       sel = ay_selection;
@@ -543,7 +543,7 @@ ay_draw_grid(struct Togl *togl)
       glPushMatrix();
        if(ay_currentlevel->object != ay_root)
 	 {
-	   ay_trafo_getall(ay_currentlevel->next);
+	   ay_trafo_concatparent(ay_currentlevel->next);
 	 }
        if((view->local == 2) && view->aligned && ay_selection)
 	 {

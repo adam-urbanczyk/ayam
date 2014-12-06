@@ -44,7 +44,7 @@ ay_shade_cleansil(struct Togl *togl, int selection, unsigned char *sil)
       glPushMatrix();
       if(ay_currentlevel->object != ay_root)
 	{
-	  ay_trafo_getall(ay_currentlevel->next);
+	  ay_trafo_concatparent(ay_currentlevel->next);
 	}
     }
 
@@ -55,7 +55,7 @@ ay_shade_cleansil(struct Togl *togl, int selection, unsigned char *sil)
 	 {
 	   if(ay_currentlevel->object != ay_root)
 	     {
-	       ay_trafo_getall(ay_currentlevel->next);
+	       ay_trafo_concatparent(ay_currentlevel->next);
 	     }
 	 }
        glLineWidth((GLfloat)ay_prefs.sellinewidth);
@@ -380,7 +380,7 @@ ay_shade_detectsilhouettes(struct Togl *togl, int selection)
       glPushMatrix();
       if(ay_currentlevel->object != ay_root)
 	{
-	  ay_trafo_getall(ay_currentlevel->next);
+	  ay_trafo_concatparent(ay_currentlevel->next);
 	}
     }
 
@@ -403,7 +403,7 @@ ay_shade_detectsilhouettes(struct Togl *togl, int selection)
 	    {
 	      if(ay_currentlevel->object != ay_root)
 		{
-		  ay_trafo_getall(ay_currentlevel->next);
+		  ay_trafo_concatparent(ay_currentlevel->next);
 		}
 	    }
 	  while(sel)
@@ -872,7 +872,7 @@ ay_shade_view(struct Togl *togl)
       glPushMatrix();
       if(ay_currentlevel->object != ay_root)
 	{
-	  ay_trafo_getall(ay_currentlevel->next);
+	  ay_trafo_concatparent(ay_currentlevel->next);
 	}
     }
 
@@ -920,7 +920,7 @@ ay_shade_view(struct Togl *togl)
 	{
 	  if(ay_currentlevel->object != ay_root)
 	    {
-	      ay_trafo_getall(ay_currentlevel->next);
+	      ay_trafo_concatparent(ay_currentlevel->next);
 	    }
 	}
 

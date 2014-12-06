@@ -221,7 +221,7 @@ ay_viewt_wintoobj(struct Togl *togl, ay_object *o,
 {
  int height = Togl_Height(togl);
  GLint viewport[4];
- GLdouble modelMatrix[16], projMatrix[16], m[16], winx, winy;
+ GLdouble modelMatrix[16], projMatrix[16], winx, winy;
  GLfloat winz = 0.0f;
 
   if(!togl || !o || !objX || !objY || !objZ)
@@ -240,29 +240,13 @@ ay_viewt_wintoobj(struct Togl *togl, ay_object *o,
 
   glGetDoublev(GL_PROJECTION_MATRIX, projMatrix);
 
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
+  ay_trafo_identitymatrix(modelMatrix);
+  ay_trafo_getall(ay_currentlevel, o, modelMatrix);
 
-   if(ay_currentlevel->object != ay_root)
-     {
-       ay_trafo_getall(ay_currentlevel->next);
-     }
+  gluUnProject(winx, winy, (GLdouble)winz, modelMatrix, projMatrix, viewport,
+	       objX, objY, objZ);
 
-   glTranslated(o->movx, o->movy, o->movz);
-
-   ay_quat_torotmatrix(o->quat, m);
-   glMultMatrixd(m);
-
-   glScaled(o->scalx, o->scaly, o->scalz);
-
-   glGetDoublev(GL_MODELVIEW_MATRIX, modelMatrix);
-
-   gluUnProject(winx, winy, (GLdouble)winz, modelMatrix, projMatrix, viewport,
-		objX, objY, objZ);
-
-   /* fprintf(stderr,"ObjX:%g; ObjY:%g; ObjZ:%g\n",*objX, *objY, *objZ); */
-
-  glPopMatrix();
+  /* fprintf(stderr,"ObjX:%g; ObjY:%g; ObjZ:%g\n",*objX, *objY, *objZ); */
 
  return;
 } /* ay_viewt_wintoobj */
@@ -282,7 +266,7 @@ ay_viewt_winrecttoobj(struct Togl *togl, ay_object *o,
 {
  int height = Togl_Height(togl), i, j;
  GLint viewport[4];
- GLdouble modelMatrix[16], projMatrix[16], m[16], win[24];
+ GLdouble modelMatrix[16], projMatrix[16], win[24];
 
   if(!togl || !o || !obj)
     return;
@@ -325,31 +309,15 @@ ay_viewt_winrecttoobj(struct Togl *togl, ay_object *o,
 
   glGetDoublev(GL_PROJECTION_MATRIX, projMatrix);
 
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
+  ay_trafo_identitymatrix(modelMatrix);
+  ay_trafo_getall(ay_currentlevel, o, modelMatrix);
 
-   if(ay_currentlevel->next)
-     {
-       ay_trafo_getall(ay_currentlevel->next);
-     }
-
-   glTranslated(o->movx, o->movy, o->movz);
-
-   ay_quat_torotmatrix(o->quat, m);
-   glMultMatrixd(m);
-
-   glScaled(o->scalx, o->scaly, o->scalz);
-
-   glGetDoublev(GL_MODELVIEW_MATRIX, modelMatrix);
-
-   for(i = 0; i < 8; i++)
-     {
-       gluUnProject(win[i*3], win[i*3+1], win[i*3+2],
-		    modelMatrix, projMatrix, viewport,
-		    &(obj[i*3]), &(obj[i*3+1]), &(obj[i*3+2]));
-     }
-
-  glPopMatrix();
+  for(i = 0; i < 8; i++)
+    {
+      gluUnProject(win[i*3], win[i*3+1], win[i*3+2],
+		   modelMatrix, projMatrix, viewport,
+		   &(obj[i*3]), &(obj[i*3+1]), &(obj[i*3+2]));
+    }
 
  return;
 } /* ay_viewt_winrecttoobj */
@@ -380,11 +348,7 @@ ay_viewt_wintoworld(struct Togl *togl, double winX, double winY,
   ay_viewt_setupprojection(togl);
   glGetDoublev(GL_PROJECTION_MATRIX, projMatrix);
 
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-   glLoadIdentity();
-   glGetDoublev(GL_MODELVIEW_MATRIX, modelMatrix);
-  glPopMatrix();
+  ay_trafo_identitymatrix(modelMatrix);
 
   gluUnProject(winx, winy, (GLdouble)winz, modelMatrix, projMatrix, viewport,
 	       worldX, worldY, worldZ);
@@ -476,15 +440,10 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
 	  goto cleanup;
 	}
 
-      glMatrixMode(GL_MODELVIEW);
-      glPushMatrix();
-       glLoadIdentity();
-       if(!zoom_to_all && ay_currentlevel->next)
-	 {
-	   ay_trafo_getall(ay_currentlevel->next);
-	 }
-       glGetDoublev(GL_MODELVIEW_MATRIX, mt);
-      glPopMatrix();
+      if(!zoom_to_all && ay_currentlevel->object != ay_root)
+	{
+	  ay_trafo_getparent(ay_currentlevel->next, mt);
+	}
 
       /* calc center of gravity (middle of bounding box) */
       cog[0] = xmin+((fabs(xmax-xmin))/2.0);
@@ -651,15 +610,11 @@ ay_viewt_align(struct Togl *togl, int argc, char *argv[])
     }
 
   /* get parent objects transformation */
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-   glLoadIdentity();
-   if(ay_currentlevel->object != ay_root)
-     {
-       ay_trafo_getallr(ay_currentlevel->next);
-     }
-   glGetDoublev(GL_MODELVIEW_MATRIX, m);
-  glPopMatrix();
+  ay_trafo_identitymatrix(m);
+  if(ay_currentlevel->object != ay_root)
+    {
+      ay_trafo_getparent(ay_currentlevel->next, m);
+    }
 
   if(view->type == AY_VTSIDE)
     {
@@ -1402,19 +1357,8 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 		      memcpy(t, pe.coords[0], 3*sizeof(double));
 
 		      /* to world */
-		      glMatrixMode(GL_MODELVIEW);
-		      glPushMatrix();
-		       glLoadIdentity();
-		       if(ay_currentlevel->object != ay_root)
-			 {
-			   ay_trafo_getall(ay_currentlevel->next);
-			 }
-		       glTranslated(o->movx, o->movy, o->movz);
-		       ay_quat_torotmatrix(o->quat, mm);
-		       glMultMatrixd((GLdouble*)mm);
-		       glScaled(o->scalx, o->scaly, o->scalz);
-		       glGetDoublev(GL_MODELVIEW_MATRIX, mm);
-		      glPopMatrix();
+		      ay_trafo_identitymatrix(mm);
+		      ay_trafo_getall(ay_currentlevel, o, mm);
 
 		      ay_trafo_apply3(t, mm);
 		      view->markworld[0] = t[0];
@@ -2204,34 +2148,27 @@ ay_viewt_griddify(struct Togl *togl, double *winx, double *winy)
 	{
 	  /* get reference point and grid size in window coords */
 	  glGetIntegerv(GL_VIEWPORT, vp);
-	  glMatrixMode(GL_PROJECTION);
 	  glGetDoublev(GL_PROJECTION_MATRIX, mp);
-	  glMatrixMode(GL_MODELVIEW);
-	  glPushMatrix();
-	   if(ay_currentlevel->object != ay_root)
-	     {
-	       ay_trafo_getall(ay_currentlevel->next);
-	     }
+
+	  if(ay_currentlevel->object != ay_root)
+	    {
+	      ay_trafo_concatparent(ay_currentlevel->next);
+	    }
 
 	   if(view->aligned && ay_selection)
 	     {
 	       o = ay_selection->object;
-	       glTranslated((GLdouble)o->movx, (GLdouble)o->movy,
-			    (GLdouble)o->movz);
-	       ay_quat_torotmatrix(o->quat, m);
-	       glMultMatrixd((GLdouble*)m);
 
-	       glScaled((GLdouble)o->scalx, (GLdouble)o->scaly,
-			(GLdouble)o->scalz);
+	       ay_trafo_creatematrix(o, m);
+	       ay_trafo_multmatrix(mm, m);
 	     } /* if */
 
-	   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
-	  glPopMatrix();
 	  if(GL_FALSE == gluProject(0.0, 0.0, 0.0, mm, mp, vp,
 				    &refx, &refy, &refz))
 	    {
 	      return AY_ERROR;
 	    }
+
 	  refy = height-refy;
 	  switch(view->type)
 	    {
@@ -2519,15 +2456,11 @@ ay_viewt_markfromsel(struct Togl *togl)
 
   glGetDoublev(GL_PROJECTION_MATRIX, mp);
 
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-   glLoadIdentity();
-   if(ay_currentlevel->object != ay_root)
-     {
-       ay_trafo_getall(ay_currentlevel->next);
-     }
-   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
-  glPopMatrix();
+  ay_trafo_identitymatrix(mm);
+  if(ay_currentlevel->object != ay_root)
+    {
+      ay_trafo_getparent(ay_currentlevel->next, mm);
+    }
 
   if(GL_FALSE == gluProject(cog[0],cog[1],cog[2],mm,mp,vp,&winx,&winy,&winz))
     {
@@ -2610,15 +2543,12 @@ ay_viewt_markfromselp(struct Togl *togl, int mode)
 
   glGetDoublev(GL_PROJECTION_MATRIX, mp);
 
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-   glLoadIdentity();
-   if(ay_currentlevel->object != ay_root)
-     {
-       ay_trafo_getall(ay_currentlevel->next);
-     }
-   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
-  glPopMatrix();
+  ay_trafo_identitymatrix(mm);
+
+  if(ay_currentlevel->object != ay_root)
+    {
+      ay_trafo_getparent(ay_currentlevel->next, mm);
+    }
 
   if(GL_FALSE == gluProject(cog[0], cog[1], cog[2], mm, mp, vp,
 			    &winx, &winy, &winz))

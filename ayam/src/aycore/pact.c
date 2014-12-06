@@ -178,20 +178,17 @@ ay_pact_getminlevelscale()
  GLdouble m[16];
  double minlevelscale = 1.0;
 
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-   glLoadIdentity();
-   if(ay_currentlevel->object != ay_root)
-     {
-       ay_trafo_getalls(ay_currentlevel->next);
-     }
-   glGetDoublev(GL_MODELVIEW_MATRIX, m);
+ ay_trafo_identitymatrix(m);
+ if(ay_currentlevel->object != ay_root)
+   {
+     ay_trafo_getsomeparent(ay_currentlevel->next, AY_SCA, m);
+   }
+
    minlevelscale = fabs(m[0]);
    if(fabs(m[5]) < minlevelscale)
      minlevelscale = fabs(m[5]);
    if(fabs(m[10]) < minlevelscale)
      minlevelscale = fabs(m[10]);
-  glPopMatrix();
 
  return minlevelscale;
 } /* ay_pact_getminlevelscale */
@@ -416,7 +413,7 @@ ay_pact_flashpoint(int ignore_old, double *pnt, ay_object *o)
        glLoadIdentity();
        if(ay_currentlevel->object != ay_root)
 	 {
-	   ay_trafo_getall(ay_currentlevel->next);
+	   ay_trafo_concatparent(ay_currentlevel->next);
 	 }
 
        /* clear old point? */
@@ -1961,14 +1958,14 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  /*ay_list_object *sel = ay_selection;*/
  static double oldwinx = 0.0, oldwiny = 0.0;
+ static int warp = AY_FALSE;
  double winx = 0.0, winy = 0.0;
  double movX, movY, movZ, dx = 0.0, dy = 0.0, dz = 0.0, *coords = NULL;
- double euler[3] = {0}, uccoords[3] = {0};
+ double quat[4] = {0}, uccoords[3] = {0};
  int i = 0, j, k = 0, start = AY_FALSE, redraw = AY_FALSE;
- static GLdouble m[16] = {0};
+ double m[16] = {0}, rm[16] = {0};
  /*GLdouble mo[16] = {0};*/
  ay_object *o = NULL;
- static int warp = AY_FALSE;
 
   if(warp)
     {
@@ -1985,36 +1982,31 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
     {
       o = pact_objects[j];
 
-      glMatrixMode(GL_MODELVIEW);
-      glPushMatrix();
-
-       glScaled (1.0/o->scalx, 1.0/o->scaly, 1.0/o->scalz);
-       if(!view->aligned)
-	 {
-	   ay_quat_toeuler(o->quat, euler);
-	   glRotated(AY_R2D(euler[0]), 0.0, 0.0, 1.0);
-	   glRotated(AY_R2D(euler[1]), 0.0, 1.0, 0.0);
-	   glRotated(AY_R2D(euler[2]), 1.0, 0.0, 0.0);
-	 }
-       glTranslated(-o->movx, -o->movy, -o->movz);
+      ay_trafo_identitymatrix(m);
+      ay_trafo_scalematrix(1.0/o->scalx, 1.0/o->scaly, 1.0/o->scalz, m);
+      if(!view->aligned)
+	{
+	  memcpy(quat, o->quat, 4*sizeof(double));
+	  ay_quat_inv(quat);
+	  ay_quat_torotmatrix(quat, rm);
+	  ay_trafo_multmatrix(m, rm);
+	}
+      ay_trafo_translatematrix(-o->movx, -o->movy, -o->movz, m);
 
        if(!view->local)
 	 {
 	   if(ay_currentlevel->object != ay_root)
 	     {
-	       ay_trafo_getalli(ay_currentlevel->next);
+	       ay_trafo_getparentinv(ay_currentlevel->next, m);
 	     }
 	 }
        else
 	 {
 	   if(ay_currentlevel->object != ay_root)
 	     {
-	       ay_trafo_getallis(ay_currentlevel->next);
+	       ay_trafo_getsomeparentinv(ay_currentlevel->next, AY_SCA, m);
 	     }
 	 }
-
-       glGetDoublev(GL_MODELVIEW_MATRIX, m);
-      glPopMatrix();
 
       if(argc >= 4)
 	{
@@ -2590,7 +2582,7 @@ ay_pact_snaptomarkcb(struct Togl *togl, int argc, char *argv[])
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
    glLoadIdentity();
-   ay_trafo_getall(ay_currentlevel->next);
+   ay_trafo_concatparent(ay_currentlevel->next);
 
    if(mode)
      {

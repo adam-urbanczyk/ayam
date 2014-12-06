@@ -1713,8 +1713,10 @@ ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
 	if((argv[1][0] == '-') && (argv[1][1] == 'e'))
 	  side = 2;
 	else
-	  tcl_status = Tcl_GetInt(interp, argv[1], &side);
-      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	  {
+	    tcl_status = Tcl_GetInt(interp, argv[1], &side);
+	    AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	  }
     }
 
   if(!sel)
@@ -2437,7 +2439,7 @@ ay_nct_findu(struct Togl *togl, ay_object *o,
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
-   ay_trafo_getall(ay_currentlevel->next);
+   ay_trafo_concatparent(ay_currentlevel->next);
 
    glTranslated(o->movx, o->movy, o->movz);
    ay_quat_torotmatrix(o->quat, m);
@@ -7687,11 +7689,11 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
 
       /* put result into Tcl context */
       to = Tcl_NewDoubleObj(len);
-      Tcl_ObjSetVar2(interp,ton,NULL,to,TCL_LEAVE_ERR_MSG | TCL_APPEND_VALUE |
-		     TCL_LIST_ELEMENT);
+      Tcl_ObjSetVar2(interp, ton, NULL, to,
+		     TCL_LEAVE_ERR_MSG | TCL_APPEND_VALUE | TCL_LIST_ELEMENT);
 
       sel = sel->next;
-    }
+    } /* while */
 
   /* cleanup */
 cleanup:
@@ -7901,8 +7903,10 @@ ay_nct_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
        if((argv[1][0] == '-') && (argv[1][1] == 'e'))
 	 side = 2;
        else
-	 tcl_status = Tcl_GetInt(interp, argv[1], &side);
-     AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	 {
+	   tcl_status = Tcl_GetInt(interp, argv[1], &side);
+	   AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	 }
    }
 
   /* check selection */
@@ -8122,7 +8126,7 @@ ay_nct_extendtcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_viewt_getglobalmark(&c);
 	  if(!c)
 	    {
-	      ay_error(AY_ERROR, argv[0], "could not get global mark");
+	      ay_error(AY_ERROR, argv[0], "Could not get global mark.");
 	      return TCL_OK;
 	    }
 	  memcpy(m, c, 3*sizeof(double));
@@ -8571,6 +8575,58 @@ ay_nct_gndp(char dir, ay_nurbcurve_object *nc, double *p,
 
  return;
 } /* ay_nct_gndp */
+
+
+int
+ay_nct_expanddisc(double **p, int *plen)
+{
+ int stride = 4, i, j, *d = NULL, newlen;
+ double *p1, *p2, *newp;
+
+  if(!(d = malloc((*plen)/2*sizeof(int))))
+    return AY_EOMEM;
+
+  p1 = *p;
+  p2 = *p+stride;
+  j = 0;
+  newlen = *plen;
+  for(i = 0; i < (*plen)-1; i++)
+   {
+     if(AY_V3COMP(p1, p2))
+       {
+	 if(j)
+	   d[j] = i-d[j-1];
+	 else
+	   d[j] = i;
+	 newlen++;
+	 j++;
+       }
+     p1 = p2;
+     p2 += stride;
+   }
+
+  if(newlen > *plen)
+    {
+      if(!(newp = calloc(newlen, stride*sizeof(int))))
+	{ free(d); return AY_EOMEM; }
+      p1 = newp;
+      p2 = *p;
+      for(i = 0; i < (*plen-newlen); i++)
+	{
+	  memcpy(p1, p2, d[i]*stride*sizeof(double));
+	  p1 += d[i]*stride;
+	  p2 += d[i]*stride;
+	  memcpy(p1, p2, stride*sizeof(double));
+	  p1 += stride;
+	}
+
+      free(*p);
+      *p = newp;
+      *plen = newlen;
+    }
+
+ return AY_OK;
+} /* ay_nct_expanddisc */
 
 
 /* templates */

@@ -310,11 +310,11 @@ ay_trafo_getsomeparentinv(ay_list_object *lo, int what, double *tm)
 } /* ay_trafo_getsomeparentinv */
 
 
-/* ay_trafo_getall:
+/* ay_trafo_concatparent:
  *
  */
 void
-ay_trafo_getall(ay_list_object *lo)
+ay_trafo_concatparent(ay_list_object *lo)
 {
  ay_object *o = NULL;
  double m[16];
@@ -338,7 +338,7 @@ ay_trafo_getall(ay_list_object *lo)
 
   if(lo->next)
     {
-      ay_trafo_getall(lo->next->next);
+      ay_trafo_concatparent(lo->next->next);
     }
 
   if((o != ay_root) && o->down)
@@ -350,316 +350,7 @@ ay_trafo_getall(ay_list_object *lo)
     }
 
  return;
-} /* ay_trafo_getall */
-
-
-/* ay_trafo_getalli:
- *
- */
-void
-ay_trafo_getalli(ay_list_object *lo)
-{
- ay_object *o = NULL;
- double euler[3] = {0};
-
-  if(!lo)
-    {
-      return;
-    }
-
-  o = lo->object;
-
-  if(!o)
-    {
-      return;
-    }
-
-  if(!o->inherit_trafos)
-    {
-      return;
-    }
-
-  if((o != ay_root) && o->down)
-    {
-      glScaled((GLdouble)(1.0/o->scalx), (GLdouble)(1.0/o->scaly),
-	       (GLdouble)(1.0/o->scalz));
-
-      ay_quat_toeuler(o->quat, euler);
-      glRotated((GLdouble)AY_R2D(euler[0]), (GLdouble)0.0, (GLdouble)0.0,
-		(GLdouble)1.0);
-      glRotated((GLdouble)AY_R2D(euler[1]), (GLdouble)0.0, (GLdouble)1.0,
-		(GLdouble)0.0);
-      glRotated((GLdouble)AY_R2D(euler[2]), (GLdouble)1.0, (GLdouble)0.0,
-		(GLdouble)0.0);
-
-      glTranslated((GLdouble)-o->movx, (GLdouble)-o->movy, (GLdouble)-o->movz);
-    }
-
-  if(lo->next)
-   {
-     ay_trafo_getalli(lo->next->next);
-   }
-
- return;
-} /* ay_trafo_getalli */
-
-
-/* ay_trafo_getalls:
- *
- */
-void
-ay_trafo_getalls(ay_list_object *lo)
-{
- ay_object *o = NULL;
-
-  if(!lo)
-    {
-      return;
-    }
-
-  o = lo->object;
-
-  if(!o)
-    {
-      return;
-    }
-
-  if(!o->inherit_trafos)
-    {
-      return;
-    }
-
-  if(lo->next)
-    {
-      ay_trafo_getalls(lo->next->next);
-    }
-
-  if((o != ay_root) && o->down)
-    {
-      glScaled((GLdouble)o->scalx, (GLdouble)o->scaly, (GLdouble)o->scalz);
-    }
-
- return;
-} /* ay_trafo_getalls */
-
-
-/* ay_trafo_getallis:
- *
- */
-void
-ay_trafo_getallis(ay_list_object *lo)
-{
- ay_object *o = NULL;
-
-  if(!lo)
-    {
-      return;
-    }
-
-  o = lo->object;
-
-  if(!o)
-    {
-      return;
-    }
-
-  if(!o->inherit_trafos)
-    {
-      return;
-    }
-
-  if((o != ay_root) && o->down)
-    {
-      glScaled((GLdouble)(1.0/o->scalx), (GLdouble)(1.0/o->scaly),
-	       (GLdouble)(1.0/o->scalz));
-    }
-
-  if(lo->next)
-   {
-     ay_trafo_getallis(lo->next->next);
-   }
-
- return;
-} /* ay_trafo_getallis */
-
-
-/* ay_trafo_getallsr:
- *
- */
-void
-ay_trafo_getallsr(ay_list_object *lo)
-{
- ay_object *o = NULL;
- double m[16] = {0};
-
-  if(!lo)
-    {
-      return;
-    }
-
-  o = lo->object;
-
-  if(!o)
-    {
-      return;
-    }
-
-  if(!o->inherit_trafos)
-    {
-      return;
-    }
-
-  if(lo->next)
-   {
-     ay_trafo_getallsr(lo->next->next);
-   }
-
-  if((o != ay_root) && o->down)
-    {
-      glScaled(o->scalx, o->scaly, o->scalz);
-      ay_quat_torotmatrix(o->quat, m);
-      glMultMatrixd((GLdouble *)m);
-    }
-
- return;
-} /* ay_trafo_getallsr */
-
-
-/* ay_trafo_getallisr:
- *
- */
-void
-ay_trafo_getallisr(ay_list_object *lo)
-{
- ay_object *o = NULL;
- double euler[3] = {0};
-
-  if(!lo)
-    {
-      return;
-    }
-
-  o = lo->object;
-
-  if(!o)
-    {
-      return;
-    }
-
-  if(!o->inherit_trafos)
-    {
-      return;
-    }
-
-  if((o != ay_root) && o->down)
-    {
-      glScaled((GLdouble)(1.0/o->scalx), (GLdouble)(1.0/o->scaly),
-	       (GLdouble)(1.0/o->scalz));
-
-      ay_quat_toeuler(o->quat, euler);
-      glRotated((GLdouble)AY_R2D(euler[0]), (GLdouble)0.0, (GLdouble)0.0,
-		(GLdouble)1.0);
-      glRotated((GLdouble)AY_R2D(euler[1]), (GLdouble)0.0, (GLdouble)1.0,
-		(GLdouble)0.0);
-      glRotated((GLdouble)AY_R2D(euler[2]), (GLdouble)1.0, (GLdouble)0.0,
-		(GLdouble)0.0);
-
-    }
-
-  if(lo->next)
-   {
-     ay_trafo_getallisr(lo->next->next);
-   }
-
- return;
-} /* ay_trafo_getallisr */
-
-
-/* ay_trafo_getallr:
- *
- */
-void
-ay_trafo_getallr(ay_list_object *lo)
-{
- ay_object *o = NULL;
- double m[16] = {0};
-
-  if(!lo)
-    {
-      return;
-    }
-
-  o = lo->object;
-
-  if(!o)
-    {
-      return;
-    }
-
-  if(!o->inherit_trafos)
-    {
-      return;
-    }
-
-  if(lo->next)
-   {
-     ay_trafo_getallr(lo->next->next);
-   }
-
-  if((o != ay_root) && o->down)
-    {
-      ay_quat_torotmatrix(o->quat, m);
-      glMultMatrixd((GLdouble *)m);
-    }
-
- return;
-} /* ay_trafo_getallr */
-
-
-/* ay_trafo_getallir:
- *
- */
-void
-ay_trafo_getallir(ay_list_object *lo)
-{
- ay_object *o = NULL;
- double euler[3] = {0};
-
-  if(!lo)
-    {
-      return;
-    }
-
-  o = lo->object;
-
-  if(!o)
-    {
-      return;
-    }
-
-  if(!o->inherit_trafos)
-    {
-      return;
-    }
-
-  if((o != ay_root) && o->down)
-    {
-      ay_quat_toeuler(o->quat, euler);
-      glRotated((GLdouble)AY_R2D(euler[0]), (GLdouble)0.0, (GLdouble)0.0,
-		(GLdouble)1.0);
-      glRotated((GLdouble)AY_R2D(euler[1]), (GLdouble)0.0, (GLdouble)1.0,
-		(GLdouble)0.0);
-      glRotated((GLdouble)AY_R2D(euler[2]), (GLdouble)1.0, (GLdouble)0.0,
-		(GLdouble)0.0);
-    }
-
-  if(lo->next)
-   {
-     ay_trafo_getallir(lo->next->next);
-   }
-
- return;
-} /* ay_trafo_getallir */
+} /* ay_trafo_concatparent */
 
 
 /* ay_trafo_delegate:
@@ -811,26 +502,22 @@ ay_trafo_delegatetcmd(ClientData clientData, Tcl_Interp *interp,
 void
 ay_trafo_applyall(ay_list_object *lo, ay_object *o, double *p)
 {
- GLdouble m[16];
- double rm[16];
+ double tm[16], m[16];
 
   if(!o || !p)
     {
       return;
     }
 
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-   ay_trafo_getall(lo);
+  ay_trafo_identitymatrix(tm);
+  if(lo && lo->object != ay_root)
+    ay_trafo_getparent(lo, tm);
+  ay_trafo_translatematrix(o->movx, o->movy, o->movz, tm);
+  ay_quat_torotmatrix(o->quat, m);
+  ay_trafo_multmatrix(tm, m);
+  ay_trafo_scalematrix(o->scalx, o->scaly, o->scalz, tm);
 
-   glTranslated(o->movx, o->movy, o->movz);
-   ay_quat_torotmatrix(o->quat, rm);
-   glMultMatrixd((GLdouble *)rm);
-   glScaled(o->scalx, o->scaly, o->scalz);
-   glGetDoublev(GL_MODELVIEW_MATRIX, m);
-  glPopMatrix();
-
-  ay_trafo_apply3(p,m);
+  ay_trafo_apply3(p,tm);
 
  return;
 } /* ay_trafo_applyall */
@@ -842,28 +529,22 @@ ay_trafo_applyall(ay_list_object *lo, ay_object *o, double *p)
 void
 ay_trafo_applyalli(ay_list_object *lo, ay_object *o, double *p)
 {
- GLdouble m[16];
- double euler[3] = {0};
+ double tm[16], m[16], quat[4];
 
   if(!o || !p)
     {
       return;
     }
 
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-   glScaled(1.0/o->scalx, 1.0/o->scaly, 1.0/o->scalz);
-   ay_quat_toeuler(o->quat, euler);
-   glRotated((GLdouble)AY_R2D(euler[0]), (GLdouble)0.0, (GLdouble)0.0,
-	     (GLdouble)1.0);
-   glRotated((GLdouble)AY_R2D(euler[1]), (GLdouble)0.0, (GLdouble)1.0,
-	     (GLdouble)0.0);
-   glRotated((GLdouble)AY_R2D(euler[2]), (GLdouble)1.0, (GLdouble)0.0,
-	     (GLdouble)0.0);
-   glTranslated(-o->movx, -o->movy, -o->movz);
-   ay_trafo_getalli(lo);
-   glGetDoublev(GL_MODELVIEW_MATRIX, m);
-  glPopMatrix();
+  ay_trafo_identitymatrix(tm);
+  ay_trafo_scalematrix(1.0/o->scalx, 1.0/o->scaly, 1.0/o->scalz, tm);
+  memcpy(quat, o->quat, 4*sizeof(double));
+  ay_quat_inv(quat);
+  ay_quat_torotmatrix(quat, m);
+  ay_trafo_multmatrix(tm, m);
+  ay_trafo_translatematrix(-o->movx, -o->movy, -o->movz, tm);
+  if(lo && lo->object != ay_root)
+    ay_trafo_getparentinv(lo, tm);
 
   ay_trafo_apply3(p,m);
 
@@ -2187,3 +1868,29 @@ double ay_trafo_round(double value, int digits)
 
  return neg ? -value : value;
 } /* ay_trafo_round */
+
+
+/** ay_trafo_getall:
+ * Concatenates all parent transformations and object transformations
+ * onto a given matrix.
+ *
+ * \param[in] lo current level
+ * \param[in] o object
+ * \param[in, out] tm pointer to transformation matrix (double[16]) to fill
+ */
+void
+ay_trafo_getall(ay_list_object *lo, ay_object *o, double *tm)
+{
+ double m[16];
+
+  if(lo && lo->object != ay_root)
+    {
+      ay_trafo_getparent(lo->next, tm);
+    }
+  ay_trafo_translatematrix(o->movx, o->movy, o->movz, tm);
+  ay_quat_torotmatrix(o->quat, m);
+  ay_trafo_multmatrix(tm, m);
+  ay_trafo_scalematrix(o->scalx, o->scaly, o->scalz, tm);
+
+ return;
+} /* ay_trafo_getall */

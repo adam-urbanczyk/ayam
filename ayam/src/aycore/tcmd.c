@@ -363,7 +363,7 @@ ay_tcmd_getallpoints(Tcl_Interp *interp, char *fname, char *vn,
  ay_pointedit pe = {0};
  unsigned int i = 0;
  double p[4] = {0};
- double m[16];
+ double pm[16], m[16];
  int flags = TCL_APPEND_VALUE | TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG |
    TCL_PARSE_PART1;
  Tcl_Obj *to = NULL, *ton = NULL;
@@ -372,11 +372,11 @@ ay_tcmd_getallpoints(Tcl_Interp *interp, char *fname, char *vn,
 
   if(apply_trafo == 2)
     {
-      glMatrixMode(GL_MODELVIEW);
-      glPushMatrix();
-      glLoadIdentity();
+      ay_trafo_identitymatrix(pm);
       if(ay_currentlevel->object != ay_root)
-	ay_trafo_getall(ay_currentlevel->next);
+	{
+	  ay_trafo_getparent(ay_currentlevel->next, pm);
+	}
     }
 
   while(sel)
@@ -385,13 +385,8 @@ ay_tcmd_getallpoints(Tcl_Interp *interp, char *fname, char *vn,
 
       if(apply_trafo == 1)
 	{
-	  glPushMatrix();
-	   glTranslated(o->movx, o->movy, o->movz);
-	   ay_quat_torotmatrix(o->quat, m);
-	   glMultMatrixd(m);
-	   glScaled(o->scalx, o->scaly, o->scalz);
-	   glGetDoublev(GL_MODELVIEW_MATRIX, m);
-	  glPopMatrix();
+	  memcpy(m, pm, 16*sizeof(double));
+	  ay_trafo_getall(NULL, o, m);
 	} /* if */
 
       ay_pact_getpoint(0, o, p, &pe);
@@ -422,11 +417,6 @@ ay_tcmd_getallpoints(Tcl_Interp *interp, char *fname, char *vn,
     } /* while */
 
   ay_notify_parent();
-
-  if(apply_trafo == 2)
-    {
-      glPopMatrix();
-    }
 
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
@@ -880,19 +870,8 @@ eval_provided:
 	    { /* Yes! */
 	      if(to_world)
 		{
-		  glMatrixMode(GL_MODELVIEW);
-		  glPushMatrix();
-		   glLoadIdentity();
-		   if(ay_currentlevel->object != ay_root)
-		     {
-		       ay_trafo_getall(ay_currentlevel->next);
-		     }
-		   glTranslated(o->movx, o->movy, o->movz);
-		   ay_quat_torotmatrix(o->quat, m);
-		   glMultMatrixd((GLdouble*)m);
-		   glScaled(o->scalx, o->scaly, o->scalz);
-		   glGetDoublev(GL_MODELVIEW_MATRIX, m);
-		  glPopMatrix();
+		  ay_trafo_identitymatrix(m);
+		  ay_trafo_getall(ay_currentlevel, o, m);
 		}
 	      else
 		{
@@ -991,7 +970,7 @@ ay_tcmd_setallpoints(Tcl_Interp *interp, char *fname, char *vn,
  int vlen = 0;
  unsigned int i = 0, j = 0;
  double *p = NULL, *v = NULL;
- double m[16], mi[16];
+ double pm[16], m[16], mi[16];
 
   tcl_status = ay_tcmd_convdlist(vn, &vlen, &v);
   AY_CHTCLERRRET(tcl_status, fname, interp);
@@ -1006,11 +985,11 @@ ay_tcmd_setallpoints(Tcl_Interp *interp, char *fname, char *vn,
 
   if(from_world)
     {
-      glMatrixMode(GL_MODELVIEW);
-      glPushMatrix();
-      glLoadIdentity();
+      ay_trafo_identitymatrix(pm);
       if(ay_currentlevel->object != ay_root)
-	ay_trafo_getall(ay_currentlevel->next);
+	{
+	  ay_trafo_getparent(ay_currentlevel->next, pm);
+	}
     }
 
   while(sel)
@@ -1019,15 +998,9 @@ ay_tcmd_setallpoints(Tcl_Interp *interp, char *fname, char *vn,
 
       if(from_world)
 	{
-	  glPushMatrix();
-	  glTranslated(o->movx, o->movy, o->movz);
-	  ay_quat_torotmatrix(o->quat, m);
-	  glMultMatrixd(m);
-	  glScaled(o->scalx, o->scaly, o->scalz);
-
-	  glGetDoublev(GL_MODELVIEW_MATRIX, m);
+	  memcpy(m, pm, 16*sizeof(double));
+	  ay_trafo_getall(NULL, o, m);
 	  ay_trafo_invmatrix(m, mi);
-	  glPopMatrix();
 	} /* if */
 
       p = m;
@@ -1073,11 +1046,6 @@ ay_tcmd_setallpoints(Tcl_Interp *interp, char *fname, char *vn,
 
   ay_notify_parent();
 
-  if(from_world)
-    {
-      glPopMatrix();
-    }
-
   if(v)
     {
       free(v);
@@ -1109,7 +1077,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
  double *p = NULL, *v = NULL;
  ay_voidfp *arr = NULL;
  ay_getpntcb *cb = NULL;
- double m[16], mi[16];
+ double pm[16], m[16], mi[16];
  char args[] =
    "[-world] (index [indexv] (x y z [w] | -vn varname) | -all varname)";
 
@@ -1162,11 +1130,11 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(from_world)
     {
-      glMatrixMode(GL_MODELVIEW);
-      glPushMatrix();
-      glLoadIdentity();
+      ay_trafo_identitymatrix(pm);
       if(ay_currentlevel->object != ay_root)
-	ay_trafo_getall(ay_currentlevel->next);
+	{
+	  ay_trafo_getparent(ay_currentlevel->next, pm);
+	}
     }
 
   while(sel)
@@ -1340,15 +1308,9 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(from_world)
 	    {
-	      glPushMatrix();
-	       glTranslated(o->movx, o->movy, o->movz);
-	       ay_quat_torotmatrix(o->quat, m);
-	       glMultMatrixd(m);
-	       glScaled(o->scalx, o->scaly, o->scalz);
-
-	       glGetDoublev(GL_MODELVIEW_MATRIX, m);
-	       ay_trafo_invmatrix(m, mi);
-	      glPopMatrix();
+	      memcpy(m, pm, 16*sizeof(double));
+	      ay_trafo_getall(NULL, o, m);
+	      ay_trafo_invmatrix(m, mi);
 
 	      ay_trafo_apply3(p, mi);
 	    } /* if */
@@ -1370,11 +1332,6 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
   ay_notify_parent();
 
 cleanup:
-
-  if(from_world)
-    {
-      glPopMatrix();
-    }
 
   if(clear_selp)
     {
