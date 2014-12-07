@@ -1582,6 +1582,9 @@ ay_safeinit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "rotPnts", ay_trafo_rotpntstcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "normTrafo", ay_trafo_normalizetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
 
   /* selp.c */
   Tcl_CreateCommand(interp, "selPnts", ay_selp_seltcmd,
