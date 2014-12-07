@@ -105,7 +105,7 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
  double sdx = 0, sdy = 0, sdz = 0;
  double v1[3] = {0}, v2[3] = {0};
  double quat[4] = {0};
- double mm[16],  m[16];
+ double mm[16], m[16];
 
   /* parse args */
   ay_status = ay_oact_parseargs(togl, argc, argv, fname,
@@ -739,8 +739,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 	      while(point)
 		{
 		  AY_APTRAN3(tpoint,point->point,mm);
-		  memcpy(point->point,tpoint,3*sizeof(double));
-
+		  memcpy(point->point, tpoint, 3*sizeof(double));
 		  point = point->next;
 		}
 
@@ -949,8 +948,7 @@ ay_oact_sc1DXcb(struct Togl *togl, int argc, char *argv[])
 	      while(point)
 		{
 		  AY_APTRAN3(tpoint,point->point,mm);
-		  memcpy(point->point,tpoint,3*sizeof(double));
-
+		  memcpy(point->point, tpoint, 3*sizeof(double));
 		  point = point->next;
 		}
 
@@ -1109,8 +1107,7 @@ ay_oact_sc1DYcb(struct Togl *togl, int argc, char *argv[])
 	      while(point)
 		{
 		  AY_APTRAN3(tpoint,point->point,mm);
-		  memcpy(point->point,tpoint,3*sizeof(double));
-
+		  memcpy(point->point, tpoint, 3*sizeof(double));
 		  point = point->next;
 		}
 
@@ -1269,8 +1266,7 @@ ay_oact_sc1DZcb(struct Togl *togl, int argc, char *argv[])
 	      while(point)
 		{
 		  AY_APTRAN3(tpoint,point->point,mm);
-		  memcpy(point->point,tpoint,3*sizeof(double));
-
+		  memcpy(point->point, tpoint, 3*sizeof(double));
 		  point = point->next;
 		}
 
@@ -1417,7 +1413,6 @@ ay_oact_sc2Dcb(struct Togl *togl, int argc, char *argv[])
 		{
 		  AY_APTRAN3(tpoint, point->point, mm);
 		  memcpy(point->point, tpoint, 3*sizeof(double));
-
 		  point = point->next;
 		}
 
@@ -1453,7 +1448,9 @@ ay_oact_sc2Dcb(struct Togl *togl, int argc, char *argv[])
   oldwiny = winy;
 
   if(!ay_prefs.lazynotify)
-    ay_notify_parent();
+    {
+      ay_notify_parent();
+    }
 
   ay_toglcb_display(togl);
 
@@ -1565,8 +1562,7 @@ ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[])
 	      while(point)
 		{
 		  AY_APTRAN3(tpoint,point->point,mm);
-		  memcpy(point->point,tpoint,3*sizeof(double));
-
+		  memcpy(point->point, tpoint, 3*sizeof(double));
 		  point = point->next;
 		}
 
@@ -1587,7 +1583,9 @@ ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[])
   oldwiny = winy;
 
   if(!ay_prefs.lazynotify)
-    ay_notify_parent();
+    {
+      ay_notify_parent();
+    }
 
   ay_toglcb_display(togl);
 
@@ -1807,8 +1805,7 @@ ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[])
 	      while(point)
 		{
 		  AY_APTRAN3(tpoint,point->point,mm);
-		  memcpy(point->point,tpoint,3*sizeof(double));
-
+		  memcpy(point->point, tpoint, 3*sizeof(double));
 		  point = point->next;
 		}
 
@@ -1834,7 +1831,9 @@ ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[])
   oldwiny = winy;
 
   if(!ay_prefs.lazynotify)
-    ay_notify_parent();
+    {
+      ay_notify_parent();
+    }
 
   ay_toglcb_display(togl);
 
@@ -2011,8 +2010,7 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
 	      while(point)
 		{
 		  AY_APTRAN3(tpoint,point->point,mm);
-		  memcpy(point->point,tpoint,3*sizeof(double));
-
+		  memcpy(point->point, tpoint, 3*sizeof(double));
 		  point = point->next;
 		}
 
@@ -2038,7 +2036,9 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
   oldwiny = winy;
 
   if(!ay_prefs.lazynotify)
-    ay_notify_parent();
+    {
+      ay_notify_parent();
+    }
 
   ay_toglcb_display(togl);
 
@@ -2215,8 +2215,7 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
 	      while(point)
 		{
 		  AY_APTRAN3(tpoint,point->point,mm);
-		  memcpy(point->point,tpoint,3*sizeof(double));
-
+		  memcpy(point->point, tpoint, 3*sizeof(double));
 		  point = point->next;
 		}
 
@@ -2242,7 +2241,9 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
   oldwiny = winy;
 
   if(!ay_prefs.lazynotify)
-    ay_notify_parent();
+    {
+      ay_notify_parent();
+    }
 
   ay_toglcb_display(togl);
 
@@ -2343,16 +2344,15 @@ ay_oact_sc2DAcb(struct Togl *togl, int argc, char *argv[])
 	    {
 	      point = o->selp;
 
-
 	      ay_trafo_identitymatrix(mm);
-	       if(!view->local)
-		 {
-		   if(ay_currentlevel->object != ay_root)
-		     {
-		       ay_trafo_getsomeparentinv(ay_currentlevel->next,
-						 AY_SCA | AY_ROT, mm);
-		     }
-		 }
+	      if(!view->local)
+		{
+		  if(ay_currentlevel->object != ay_root)
+		    {
+		      ay_trafo_getsomeparentinv(ay_currentlevel->next,
+						AY_SCA | AY_ROT, mm);
+		    }
+		}
 	       ay_trafo_translatematrix(-o->movx, -o->movy, -o->movz, mm);
 	       ay_trafo_translatematrix(a[0], a[1], a[2], mm);
 	       switch(view->type)
@@ -2361,11 +2361,11 @@ ay_oact_sc2DAcb(struct Togl *togl, int argc, char *argv[])
 		 case AY_VTTRIM:
 		   ay_trafo_scalematrix(dscal, dscal, 1.0, mm);
 		   break;
-		 case AY_VTSIDE:
-		   ay_trafo_scalematrix(1.0, dscal, dscal, mm);
-		   break;
 		 case AY_VTTOP:
 		   ay_trafo_scalematrix(dscal, 1.0, dscal, mm);
+		   break;
+		 case AY_VTSIDE:
+		   ay_trafo_scalematrix(1.0, dscal, dscal, mm);
 		   break;
 		 default:
 		   break;
@@ -2384,8 +2384,7 @@ ay_oact_sc2DAcb(struct Togl *togl, int argc, char *argv[])
 	      while(point)
 		{
 		  AY_APTRAN3(tpoint,point->point,mm);
-		  memcpy(point->point,tpoint,3*sizeof(double));
-
+		  memcpy(point->point, tpoint, 3*sizeof(double));
 		  point = point->next;
 		}
 
@@ -2427,7 +2426,9 @@ ay_oact_sc2DAcb(struct Togl *togl, int argc, char *argv[])
   oldwiny = winy;
 
   if(!ay_prefs.lazynotify)
-    ay_notify_parent();
+    {
+      ay_notify_parent();
+    }
 
   ay_toglcb_display(togl);
 
@@ -2595,9 +2596,9 @@ ay_oact_sc3DAcb(struct Togl *togl, int argc, char *argv[])
 		 }
 
 	       ay_trafo_translatematrix(-o->movx, -o->movy, -o->movz, mm);
-	       ay_trafo_translatematrix(a[0],a[1],a[2], mm);
-	       ay_trafo_scalematrix(dscal,dscal,dscal, mm);
-	       ay_trafo_translatematrix(-a[0],-a[1],-a[2], mm);
+	       ay_trafo_translatematrix(a[0], a[1], a[2], mm);
+	       ay_trafo_scalematrix(dscal, dscal, dscal, mm);
+	       ay_trafo_translatematrix(-a[0], -a[1], -a[2], mm);
 	       ay_trafo_translatematrix(o->movx, o->movy, o->movz, mm);
 
 	       if(!view->local)
@@ -2613,7 +2614,6 @@ ay_oact_sc3DAcb(struct Togl *togl, int argc, char *argv[])
 		{
 		  AY_APTRAN3(tpoint, point->point, mm);
 		  memcpy(point->point, tpoint, 3*sizeof(double));
-
 		  point = point->next;
 		}
 
@@ -2629,7 +2629,6 @@ ay_oact_sc3DAcb(struct Togl *togl, int argc, char *argv[])
 	  o->scalx *= dscal;
 	  o->scaly *= dscal;
 	  o->scalz *= dscal;
-
 	  o->modified = AY_TRUE;
 	} /* if */
     } /* while */

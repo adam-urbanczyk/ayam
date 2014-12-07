@@ -2439,7 +2439,8 @@ ay_nct_findu(struct Togl *togl, ay_object *o,
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
-   ay_trafo_concatparent(ay_currentlevel->next);
+   if(ay_currentlevel->object != ay_root)
+     ay_trafo_concatparent(ay_currentlevel->next);
 
    glTranslated(o->movx, o->movy, o->movz);
    ay_quat_torotmatrix(o->quat, m);
