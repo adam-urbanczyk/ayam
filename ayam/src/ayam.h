@@ -1376,6 +1376,7 @@ typedef struct ay_preferences_s
   int globalmark; /**< maintain a global mark? */
   int createatmark; /**< create objects at the mark? */
   int normalizetrafos; /**< normalize (round) trafos? */
+  int normalizedigits; /**< digits to preserve when normalizing (6 - 15) */
 
   /* RIB export prefs */
   int resolveinstances; /**< resolve all instances for RIB export? */

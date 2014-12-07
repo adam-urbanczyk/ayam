@@ -1774,9 +1774,9 @@ ay_trafo_normalize(ay_object *o, int digits)
     o->quat[0] = 0.0;
   if(fabs(o->quat[1]) < pow(10, -digits))
     o->quat[1] = 0.0;
-     if(fabs(o->quat[2]) < pow(10, -digits))
+  if(fabs(o->quat[2]) < pow(10, -digits))
     o->quat[2] = 0.0;
-     if(fabs(o->quat[3]) < pow(10, -digits))
+  if(fabs(o->quat[3]) < pow(10, -digits))
     o->quat[3] = 0.0;
 
   ay_quat_toeuler(o->quat, euler);
@@ -1815,7 +1815,7 @@ ay_trafo_normalizetcmd(ClientData clientData, Tcl_Interp *interp,
 
   while(sel)
     {
-      ay_trafo_normalize(sel->object, 6);
+      ay_trafo_normalize(sel->object, ay_prefs.normalizedigits);
 
       sel = sel->next;
     } /* while */
