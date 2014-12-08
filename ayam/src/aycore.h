@@ -1190,6 +1190,10 @@ int ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
  */
 void ay_selp_selectmpnc(ay_object *o, int select_all);
 
+/** normalize selected points
+ */
+void ay_selp_normalize(ay_object *o, int digits);
+
 
 /* shade.c */
 
