@@ -42,8 +42,21 @@ trace variable ay(action) w actionEnd
 # standard release binding for modeling actions:
 # force notification (via ay(action)/actionEnd above);
 # redraw all views; update property GUI
-proc actionBindRelease { w } {
-    bind $w <ButtonRelease-1> {
+proc actionBindRelease { w {normalize 1} } {
+    if { $normalize } {
+	bind $w <ButtonRelease-1> {
+	    if { $ay(cVPnts) } {
+                if { $ayprefs(NormalizePoints) } {
+                    normPnts
+                }
+            } else {
+                if { $ayprefs(NormalizeTrafos) } {
+                    normTrafos;getTrafo
+                }
+            }
+        }
+    }
+    bind $w <ButtonRelease-1> {+
 	set ay(action) 0
 	update
 	rV
@@ -205,7 +218,7 @@ proc actionRotView { w } {
 
     bind $w <Motion> ""
 
-    actionBindRelease $w
+    actionBindRelease $w 0
 
     $w setconf -drawh 0
 
@@ -237,7 +250,7 @@ proc actionMoveView { w } {
 
     bind $w <Motion> ""
 
-    actionBindRelease $w
+    actionBindRelease $w 0
 
     $w setconf -drawh 0
 
@@ -269,7 +282,7 @@ proc actionZoomView { w } {
 
     bind $w <Motion> ""
 
-    actionBindRelease $w
+    actionBindRelease $w 0
 
     $w setconf -drawh 0
 }
@@ -299,7 +312,7 @@ proc actionMoveZView { w } {
 
     bind $w <Motion> ""
 
-    actionBindRelease $w
+    actionBindRelease $w 0
 
     $w setconf -drawh 0
 
@@ -435,10 +448,6 @@ proc actionRotObA { w } {
 
     actionBindRelease $w
 
-    if $ayprefs(NormalizeTrafos) {
-	bind $w <ButtonRelease-1> "+normTrafo;getTrafo"
-    }
-
     bind $w <Motion> ""
 
     $w setconf -drawh 1
@@ -526,10 +535,6 @@ proc actionSc1DXAOb { w } {
 
     actionBindRelease $w
 
-    if $ayprefs(NormalizeTrafos) {
-	bind $w <ButtonRelease-1> "+normTrafo;getTrafo"
-    }
-
     $w setconf -drawh 1
 
     if { [string first ".view" $w] == 0 } {
@@ -615,10 +620,6 @@ proc actionSc1DYAOb { w } {
 
     actionBindRelease $w
 
-    if $ayprefs(NormalizeTrafos) {
-	bind $w <ButtonRelease-1> "+normTrafo;getTrafo"
-    }
-
     $w setconf -drawh 1
 
     if { [string first ".view" $w] == 0 } {
@@ -703,10 +704,6 @@ proc actionSc1DZAOb { w } {
     bind $w <Motion> ""
 
     actionBindRelease $w
-
-    if $ayprefs(NormalizeTrafos) {
-	bind $w <ButtonRelease-1> "+normTrafo;getTrafo"
-    }
 
     $w setconf -drawh 1
 
@@ -802,10 +799,6 @@ proc actionSc2DAOb { w } {
 
     actionBindRelease $w
 
-    if $ayprefs(NormalizeTrafos) {
-	bind $w <ButtonRelease-1> "+normTrafo;getTrafo"
-    }
-
     $w setconf -drawh 1
 
     if { [string first ".view" $w] == 0 } {
@@ -891,10 +884,6 @@ proc actionSc3DAOb { w } {
 
     actionBindRelease $w
 
-    if $ayprefs(NormalizeTrafos) {
-	bind $w <ButtonRelease-1> "+normTrafo;getTrafo"
-    }
-
     $w setconf -drawh 1
 
     if { [string first ".view" $w] == 0 } {
@@ -979,10 +968,6 @@ proc actionStr2DAOb { w } {
     bind $w <Motion> ""
 
     actionBindRelease $w
-
-    if $ayprefs(NormalizeTrafos) {
-	bind $w <ButtonRelease-1> "+normTrafo;getTrafo"
-    }
 
     $w setconf -drawh 1
 

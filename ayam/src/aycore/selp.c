@@ -1086,3 +1086,43 @@ ay_selp_selectmpnc(ay_object *o, int select_all)
 
  return;
 } /* ay_selp_selectmpnc */
+
+
+/** ay_selp_normalize:
+ *  Normalize selected points.
+ *
+ * \param[in,out] o object to process
+ * \param[in] digits number of significant figures to keep
+ */
+void
+ay_selp_normalize(ay_object *o, int digits)
+{
+ ay_point *pnt;
+ double *p;
+
+  if(!o || !o->selp || digits <= 0)
+    return;
+
+  pnt = o->selp;
+
+  while(pnt)
+    {
+      p = pnt->point;
+
+      *p = ay_trafo_round(*p, digits);
+      p++;
+      *p = ay_trafo_round(*p, digits);
+      p++;
+      *p = ay_trafo_round(*p, digits);
+
+      if(pnt->rational)
+	{
+	  p++;
+	  *p = ay_trafo_round(*p, digits);
+	}
+
+      pnt = pnt->next;
+    }
+
+ return;
+} /* ay_selp_normalize */

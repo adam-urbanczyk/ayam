@@ -235,6 +235,7 @@ array set ayprefs {
  Grids { 0.1 0.25 0.5 1.0 }
 
  NormalizeTrafos 1
+ NormalizePoints 1
  NormalizeDigits 6
 
  Docs "http://ayam.sourceforge.net/docs/"

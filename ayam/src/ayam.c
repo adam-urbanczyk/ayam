@@ -939,7 +939,10 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "rotPnts", ay_trafo_rotpntstcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "normTrafo", ay_trafo_normalizetcmd,
+  Tcl_CreateCommand(interp, "normTrafos", ay_trafo_normalizetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "normPnts", ay_trafo_normalizetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* oact.c */
@@ -1582,7 +1585,10 @@ ay_safeinit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "rotPnts", ay_trafo_rotpntstcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "normTrafo", ay_trafo_normalizetcmd,
+  Tcl_CreateCommand(interp, "normTrafos", ay_trafo_normalizetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "normPnts", ay_trafo_normalizetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
 
