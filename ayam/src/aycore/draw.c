@@ -831,9 +831,25 @@ ay_draw_grid(struct Togl *togl)
 void
 ay_draw_arrow(struct Togl *togl, double *from, double *to)
 {
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  GLdouble mvm[16], pm[16], win1x, win1y, win1z, win2x, win2y, win2z;
  GLdouble p1x, p1y, p2x, p2y, alpha;
  GLint vp[4];
+ double l = 1.25*ay_prefs.handle_size;
+
+  if(l < 7)
+    {
+      l = 7;
+    }
+
+  if(view->antialiaslines)
+    {
+      glLineWidth((GLfloat)ay_prefs.aasellinewidth);
+    }
+  else
+    {
+      glLineWidth((GLfloat)ay_prefs.sellinewidth*2.0f);
+    }
 
   glGetDoublev(GL_MODELVIEW_MATRIX, mvm);
   glGetDoublev(GL_PROJECTION_MATRIX, pm);
@@ -853,11 +869,11 @@ ay_draw_arrow(struct Togl *togl, double *from, double *to)
       return;
     }
 
-  p1x = win1x+8;
-  p1y = win1y+8;
+  p1x = win1x+l;
+  p1y = win1y+l;
 
-  p2x = win1x+8;
-  p2y = win1y-8;
+  p2x = win1x+l;
+  p2y = win1y-l;
 
   if(win2x-win1x != 0.0)
     {
