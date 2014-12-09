@@ -18790,6 +18790,18 @@ cleared using the main menu entry <tt>"File/New"</tt>.
 The default value is 1 &ndash; yes, load the environment file on
 <tt>"File/New"</tt>.
 
+<item><tt/"NormalizeDigits"/, determines the number of digits to the right
+of the decimal point, the transformation attribute and control point
+normalizing process should leave intact (Default: 6).
+
+<item><tt/"NormalizePoints"/, controls whether the selected points
+should be normalized, after interactive modelling actions
+(Default: 1 - yes).
+
+<item><tt/"NormalizeTrafos"/, controls whether the transformation
+attributes should be normalized, after interactive modelling actions
+(Default: 1 - yes).
+
 <item><tt/"PanDist"/: the distance about which panning in views by
 keyboard occurs; positive values are absolute in pixels, negative values are
 relative to the current window dimension; a value of -10 means a
@@ -20342,6 +20354,7 @@ Index:
 <item>NewLoadsEnv: <ref id="hidprefs" name="hidden preference settings">
 <item>newScene: <ref id="scnewscene" name="scripting interface command">
 <item>NoExport: <ref id="noexporttag" name="tag type">
+<item>NormalizeDigits, NormalizePoints, NormalizeTrafos: <ref id="hidprefs" name="hidden preference setting">
 <item>notifyOb: <ref id="scnotifyob" name="scripting interface command">
 <item>NP: <ref id="nptag" name="tag type">
 <item>NPatch: <ref id="npatchobj" name="NPatch object">
