@@ -7580,19 +7580,38 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo,
   ay_nct_revert(un);
   ay_nct_revert(v0);
 
-  ay_object_defaults(&o0);
-  ay_object_defaults(&o1);
-  ay_object_defaults(&o2);
-  ay_object_defaults(&o3);
-
-  o0.refine = u0;
-  o0.type = AY_IDNCURVE;
-  o1.refine = vn;
-  o1.type = AY_IDNCURVE;
-  o2.refine = un;
-  o2.type = AY_IDNCURVE;
-  o3.refine = v0;
-  o3.type = AY_IDNCURVE;
+  if(ay_nct_isdegen(u0))
+    o0.type = AY_IDLAST;
+  else
+    {
+      ay_object_defaults(&o0);
+      o0.refine = u0;
+      o0.type = AY_IDNCURVE;
+    }
+  if(ay_nct_isdegen(vn))
+    o1.type = AY_IDLAST;
+  else
+    {
+      ay_object_defaults(&o1);
+      o1.refine = vn;
+      o1.type = AY_IDNCURVE;
+    }
+  if(ay_nct_isdegen(un))
+    o2.type = AY_IDLAST;
+  else
+    {
+      ay_object_defaults(&o2);
+      o2.refine = un;
+      o2.type = AY_IDNCURVE;
+    }
+  if(ay_nct_isdegen(v0))
+    o3.type = AY_IDLAST;
+  else
+    {
+      ay_object_defaults(&o3);
+      o3.refine = v0;
+      o3.type = AY_IDNCURVE;
+    }
 
   o0.next = &o1;
   o1.next = &o2;
@@ -7605,7 +7624,7 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo,
     {ay_status = AY_ERROR; goto cleanup;}
 
   /* concatenate all four extracted curves */
-  ay_status = ay_nct_concatmultiple(AY_TRUE, 1, AY_FALSE, &o0, &c);
+  ay_status = ay_nct_concatmultiple(AY_FALSE, 1, AY_FALSE, &o0, &c);
   if(ay_status || !c)
     {ay_status = AY_ERROR; goto cleanup;}
 
