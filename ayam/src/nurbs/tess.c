@@ -1422,7 +1422,8 @@ ay_tess_npatch(ay_object *o,
 	  /* put vertex colors */
 	  if(use_vc && !have_vc)
 	    {
-	      if(ay_pv_checkndt(tag, mycs, "varying", "c"))
+	      if(ay_pv_checkndt(tag, mycs, "varying", "c") ||
+		 ay_pv_checkndt(tag, mycs, "varying", "d"))
 		{
 		  ay_status = ay_pv_convert(tag, 1, &vcolorlen,
 					    (void**)(void*)&vcolors);
@@ -1432,12 +1433,24 @@ ay_tess_npatch(ay_object *o,
 		      if(!(vcolors4 = calloc(vcolorlen*4, sizeof(GLfloat))))
 			{ ay_status = AY_EOMEM; goto cleanup; }
 		      a = 0;
-		      for(i = 0; i < vcolorlen; i++)
+		      if(ay_pv_checkndt(tag, mycs, "varying", "c"))
 			{
-			  memcpy(&(vcolors4[a]), &(vcolors[i*3]),
-				 3*sizeof(GLfloat));
-			  /*vcolors4[a+3] = 1.0;*/
-			  a += 4;
+			  for(i = 0; i < vcolorlen; i++)
+			    {
+			      memcpy(&(vcolors4[a]), &(vcolors[i*3]),
+				     3*sizeof(GLfloat));
+			      /*vcolors4[a+3] = 1.0;*/
+			      a += 4;
+			    }
+			}
+		      else
+			{
+			  for(i = 0; i < vcolorlen; i++)
+			    {
+			      memcpy(&(vcolors4[a]), &(vcolors[i*4]),
+				     4*sizeof(GLfloat));
+			      a += 4;
+			    }
 			}
 		      to.has_vc = AY_TRUE;
 		      /*
