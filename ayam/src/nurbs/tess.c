@@ -1414,6 +1414,7 @@ ay_tess_npatch(ay_object *o,
 			  GL_MAP2_TEXTURE_COORD_2);
 		    }
 		  have_tc = AY_TRUE;
+		  tag = tag->next;
 		  continue;
 		} /* if */
 	    } /* if */
@@ -1454,6 +1455,7 @@ ay_tess_npatch(ay_object *o,
 			      GL_MAP2_COLOR_4);
 		    }
 		  have_vc = AY_TRUE;
+		  tag = tag->next;
 		  continue;
 		} /* if */
 	    } /* if */
@@ -1483,6 +1485,7 @@ ay_tess_npatch(ay_object *o,
 			      GL_MAP2_NORMAL);
 		    }
 		  have_vn = AY_TRUE;
+		  tag = tag->next;
 		  continue;
 		} /* if */
 	    } /* if */
