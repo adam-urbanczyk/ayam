@@ -2421,8 +2421,7 @@ ay_nct_findu(struct Togl *togl, ay_object *o,
 	  return AY_ERROR;
 	}
 
-      glReadPixels((GLint)winx,(GLint)winy,1,1,
-		   GL_RGB,GL_FLOAT,&pixel);
+      glReadPixels((GLint)winx, (GLint)winy, 1, 1, GL_RGB, GL_FLOAT, &pixel);
 
       if((pixel1[0] <= pixel[0]) &&
 	 (pixel1[1] <= pixel[1]) &&
@@ -6777,6 +6776,10 @@ ay_nct_trimtcmd(ClientData clientData, Tcl_Interp *interp,
 /** ay_nct_isdegen:
  *  check curve for degeneracy (all points equal)
  *
+ *  Deliberately not checking the weights, as curves with
+ *  equal coordinates but different weights also collapse
+ *  to a point.
+ *
  * \param[in] curve NURBS curve to check
  *
  * \returns AY_TRUE if curve is degenerate, AY_FALSE else.
@@ -6793,26 +6796,13 @@ ay_nct_isdegen(ay_nurbcurve_object *curve)
   p1 = curve->controlv;
   p2 = p1+stride;
 
-  if(curve->is_rat)
+  for(i = 0; i < curve->length-1; i++)
     {
-      for(i = 0; i < curve->length-1; i++)
-	{
-	  if(!AY_V4COMP(p1, p2))
-	    return AY_FALSE;
-	  p1 += stride;
-	  p2 += stride;
-	} /* for */
-    }
-  else
-    {
-      for(i = 0; i < curve->length-1; i++)
-	{
-	  if(!AY_V3COMP(p1, p2))
-	    return AY_FALSE;
-	  p1 += stride;
-	  p2 += stride;
-	} /* for */
-    }
+      if(!AY_V3COMP(p1, p2))
+	return AY_FALSE;
+      p1 += stride;
+      p2 += stride;
+    } /* for */
 
  return AY_TRUE;
 } /* ay_nct_isdegen */
