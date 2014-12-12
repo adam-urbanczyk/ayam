@@ -1376,6 +1376,11 @@ void ay_npt_getcvnormals(ay_nurbpatch_object *np, double *n);
 int ay_npt_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
+/** Generate texture coordinates.
+ */
+void ay_npt_gentexcoords(ay_nurbpatch_object *np, ay_tag *tags, double *tc);
+
+
 /* pmt.c */
 
 /** Convert patchmesh to NURBS patch.

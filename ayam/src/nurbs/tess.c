@@ -1507,6 +1507,30 @@ ay_tess_npatch(ay_object *o,
 	} /* while */
     } /* if */
 
+  if(use_tc && !have_tc)
+    {
+      ay_npt_gentexcoords(npatch, o->tags, &texcoords);
+
+      if(*texcoords)
+	{
+	  to.has_tc = AY_TRUE;
+	  /*
+	    the use of (GLint)2, (GLint)width*2
+	    for s_stride, t_stride as opposed to
+	    (GLint)height*4, (GLint)4, above
+	    caters for the fact that PV tag data is
+	    stored in u-major (whereas the (GLU)
+	    NURBS patch is in v-major order
+	  */
+	  gluNurbsSurface(npatch->no, (GLint)uknot_count, uknots,
+			  (GLint)vknot_count, vknots,
+			  (GLint)2, (GLint)width*2, texcoords,
+			  (GLint)npatch->uorder, (GLint)npatch->vorder,
+			  GL_MAP2_TEXTURE_COORD_2);
+	  have_tc = AY_TRUE;
+	}
+    }
+
   /* put trimcurves */
   if(o->down && o->down->next)
     {

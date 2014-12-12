@@ -14088,6 +14088,85 @@ ay_npt_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_npt_unclamptcmd */
 
 
+/** ay_npt_gentexcoords:
+ *  Generate texture coordinates for all control points of a NURBS patch.
+ *
+ * \param[in] np NURBS surface object to process
+ * \param[in] tag tags
+ * \param[in,out] n pointer to array [2*np->width*np->height]
+ *   where to store the texture coordinates
+ */
+void
+ay_npt_gentexcoords(ay_nurbpatch_object *np, ay_tag *tags, double *tc)
+{
+ ay_tag *tag;
+ int a, i, j;
+ double u0, u, ud, v0, v, vd;
+ double q[8];
+
+  if(!(tc = malloc(2*np->width*np->height*sizeof(double))))
+    return;
+
+  tag = tags;
+  while(tag)
+    {
+      if(tag->type == ay_tc_tagtype)
+	{
+	  if(sscanf(tag->val, "%lg,%lg,%lg,%lg,%lg,%lg,%lg,%lg",
+		    &(q[0]),&(q[1]),&(q[2]),&(q[3]),
+		    &(q[4]),&(q[5]),&(q[6]),&(q[7])) != 8)
+	    {
+	      break;
+	    }
+	  else
+	    {	      
+	      for(i = 0; i < np->width; i++)
+		{
+		  for(j = 0; j < np->height; j++)
+		    {
+		      u = q[0]*(1.0-i/np->width+1.0-j/np->height) +
+			q[2]*(i/np->width+1.0-j/np->height) +
+			q[4]*(1.0-i/np->width+j/np->height) +
+			q[6]*(i/np->width+j/np->height);
+		      v = q[1]*(1.0-i/np->width+1.0-j/np->height) +
+			q[3]*(i/np->width+1.0-j/np->height) +
+			q[5]*(1.0-i/np->width+j/np->height) +
+			q[7]*(i/np->width+j/np->height);
+		      tc[a] = u;
+		      tc[a+1] = v;
+		      a += 2;
+		    }
+		}
+	      return;
+	    } /* if */
+	} /* if */
+      tag = tag->next;
+    } /* while tag */
+
+  u0 = np->uknotv[np->uorder-1];
+  ud = (np->uknotv[np->width]-u0)/np->width;
+  v0 = np->vknotv[np->vorder-1];
+  vd = (np->vknotv[np->height]-v0)/np->height;
+
+  a = 0;
+  u = u0;
+  for(i = 0; i < np->width; i++)
+    {
+      v = v0;
+      for(j = 0; j < np->height; j++)
+	{
+	  tc[a] = u;
+	  tc[a+1] = v;
+	  a += 2;
+	  v = v0+j*vd;
+	}
+      u = u0+i*ud;
+    }
+
+ return;
+} /* ay_npt_gentexcoords */
+
+
 /* templates */
 #if 0
 
