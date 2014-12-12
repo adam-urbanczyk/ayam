@@ -14092,16 +14092,16 @@ ay_npt_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
  *  Generate texture coordinates for all control points of a NURBS patch.
  *
  * \param[in] np NURBS surface object to process
- * \param[in] tag tags
- * \param[in,out] n pointer to array [2*np->width*np->height]
+ * \param[in] tags list of tags that potentially contains a TC tag
+ * \param[in,out] result pointer to array [2*np->width*np->height]
  *   where to store the texture coordinates
  */
 void
-ay_npt_gentexcoords(ay_nurbpatch_object *np, ay_tag *tags, double *tc)
+ay_npt_gentexcoords(ay_nurbpatch_object *np, ay_tag *tags, double **result)
 {
  ay_tag *tag;
  int a, i, j;
- double u0, u, ud, v0, v, vd;
+ double *tc, u0, u, ud, v0, v, vd;
  double q[8];
 
   if(!(tc = malloc(2*np->width*np->height*sizeof(double))))
@@ -14119,7 +14119,7 @@ ay_npt_gentexcoords(ay_nurbpatch_object *np, ay_tag *tags, double *tc)
 	      break;
 	    }
 	  else
-	    {	      
+	    {
 	      for(i = 0; i < np->width; i++)
 		{
 		  for(j = 0; j < np->height; j++)
@@ -14162,6 +14162,9 @@ ay_npt_gentexcoords(ay_nurbpatch_object *np, ay_tag *tags, double *tc)
 	}
       u = u0+i*ud;
     }
+
+  /* return result */
+  *result = tc;
 
  return;
 } /* ay_npt_gentexcoords */

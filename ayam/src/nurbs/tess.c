@@ -996,7 +996,7 @@ ay_tess_tristopomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 		  tri->t3[0], tri->t3[1]);
 
 	  if(!(tmp = realloc(tctagbuf,
-				   tctagbuflen+strlen(buf)*sizeof(char))))
+			     tctagbuflen+(strlen(buf)+1)*sizeof(char))))
 	    {
 	      ay_status = AY_EOMEM;
 	      goto cleanup;
@@ -1014,7 +1014,7 @@ ay_tess_tristopomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 		  tri->c3[0], tri->c3[1], tri->c3[2]);
 
 	  if(!(tmp = realloc(vctagbuf,
-				   vctagbuflen+strlen(buf)*sizeof(char))))
+			     vctagbuflen+(strlen(buf)+1)*sizeof(char))))
 	    {
 	      ay_status = AY_EOMEM;
 	      goto cleanup;
@@ -1028,7 +1028,6 @@ ay_tess_tristopomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 
       tri = tri->next;
     } /* while */
-
 
   if(has_tc)
     {
@@ -1511,7 +1510,7 @@ ay_tess_npatch(ay_object *o,
     {
       ay_npt_gentexcoords(npatch, o->tags, &texcoords);
 
-      if(*texcoords)
+      if(texcoords)
 	{
 	  to.has_tc = AY_TRUE;
 	  /*

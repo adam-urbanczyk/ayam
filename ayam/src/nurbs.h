@@ -1378,7 +1378,8 @@ int ay_npt_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 
 /** Generate texture coordinates.
  */
-void ay_npt_gentexcoords(ay_nurbpatch_object *np, ay_tag *tags, double *tc);
+void ay_npt_gentexcoords(ay_nurbpatch_object *np, ay_tag *tags,
+			 double **result);
 
 
 /* pmt.c */
