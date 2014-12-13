@@ -14125,13 +14125,13 @@ ay_npt_gentexcoords(ay_nurbpatch_object *np, ay_tag *tags, double **result)
 		{
 		  for(j = 0; j < np->height; j++)
 		    {
-		      u0 = q[0]+(q[2]-q[0])*(i/(double)np->width);
-		      ud = q[4]+(q[6]-q[4])*(i/(double)np->width);
-		      u = u0+(ud-u0)*(j/(double)np->height);
+		      u0 = q[0]+(q[2]-q[0])*(i/((double)np->width-1));
+		      ud = q[4]+(q[6]-q[4])*(i/((double)np->width-1));
+		      u = u0+(ud-u0)*(j/((double)np->height-1));
 
-		      v0 = q[1]+(q[3]-q[1])*(i/(double)np->width);
-		      vd = q[5]+(q[7]-q[5])*(i/(double)np->width);
-		      v = v0+(vd-v0)*(j/(double)np->height);
+		      v0 = q[1]+(q[3]-q[1])*(i/((double)np->width-1));
+		      vd = q[5]+(q[7]-q[5])*(i/((double)np->width-1));
+		      v = v0+(vd-v0)*(j/((double)np->height-1));
 
 		      tc[a] = u;
 		      tc[a+1] = v;
