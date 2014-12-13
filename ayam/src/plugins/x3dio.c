@@ -6948,17 +6948,17 @@ x3dio_writename(scew_element *element, ay_object *o, int trafo)
 
       if(newname)
 	{
-	  if(!(tag->val = malloc((strlen(newname)+1)*sizeof(char))))
+	  len = strlen(newname)+1;
+	  if(!(tag->val = malloc(len*sizeof(char))))
 	    { free(tag); ay_status = AY_EOMEM; goto cleanup; }
-
-	  memcpy(tag->val, newname, strlen(newname)*sizeof(char));
+	  memcpy(tag->val, newname, len*sizeof(char));
 	}
       else
 	{
-	  if(!(tag->val = malloc((strlen(o->name)+1)*sizeof(char))))
+	  len = strlen(o->name)+1;
+	  if(!(tag->val = malloc(len*sizeof(char))))
 	    { free(tag); ay_status = AY_EOMEM; goto cleanup; }
-
-	  memcpy(tag->val, o->name, strlen(o->name)*sizeof(char));
+	  memcpy(tag->val, o->name, len*sizeof(char));
 	}
 
       tag->type = x3dio_mn_tagtype;
