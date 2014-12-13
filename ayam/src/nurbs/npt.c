@@ -14120,23 +14120,28 @@ ay_npt_gentexcoords(ay_nurbpatch_object *np, ay_tag *tags, double **result)
 	    }
 	  else
 	    {
+	      a = 0;
 	      for(i = 0; i < np->width; i++)
 		{
 		  for(j = 0; j < np->height; j++)
 		    {
-		      u = q[0]*(1.0-i/np->width+1.0-j/np->height) +
-			q[2]*(i/np->width+1.0-j/np->height) +
-			q[4]*(1.0-i/np->width+j/np->height) +
-			q[6]*(i/np->width+j/np->height);
-		      v = q[1]*(1.0-i/np->width+1.0-j/np->height) +
-			q[3]*(i/np->width+1.0-j/np->height) +
-			q[5]*(1.0-i/np->width+j/np->height) +
-			q[7]*(i/np->width+j/np->height);
+		      u0 = q[0]+(q[2]-q[0])*(i/(double)np->width);
+		      ud = q[4]+(q[6]-q[4])*(i/(double)np->width);
+		      u = u0+(ud-u0)*(j/(double)np->height);
+
+		      v0 = q[1]+(q[3]-q[1])*(i/(double)np->width);
+		      vd = q[5]+(q[7]-q[5])*(i/(double)np->width);
+		      v = v0+(vd-v0)*(j/(double)np->height);
+
 		      tc[a] = u;
 		      tc[a+1] = v;
 		      a += 2;
 		    }
 		}
+
+	      /* return result */
+	      *result = tc;
+
 	      return;
 	    } /* if */
 	} /* if */

@@ -1173,7 +1173,7 @@ ay_tess_npatch(ay_object *o,
  double p1[3], p2[3], p3[3], p4[3], n1[3], n2[3], n3[3], n4[3];
  double t1[2], t2[2], t3[2], t4[2];
  double c1[4], c2[4], c3[4], c4[4];
- double knotlen, w;
+ double knotlen, w, *tc = NULL;
  ay_tess_tri *tr1 = NULL, *tr2;
 
   if(!o || !pm)
@@ -1508,25 +1508,32 @@ ay_tess_npatch(ay_object *o,
 
   if(use_tc && !have_tc)
     {
-      ay_npt_gentexcoords(npatch, o->tags, &texcoords);
+      ay_npt_gentexcoords(npatch, o->tags, &tc);
 
-      if(texcoords)
+      if(tc)
 	{
-	  to.has_tc = AY_TRUE;
-	  /*
-	    the use of (GLint)2, (GLint)width*2
-	    for s_stride, t_stride as opposed to
-	    (GLint)height*4, (GLint)4, above
-	    caters for the fact that PV tag data is
-	    stored in u-major (whereas the (GLU)
-	    NURBS patch is in v-major order
-	  */
-	  gluNurbsSurface(npatch->no, (GLint)uknot_count, uknots,
-			  (GLint)vknot_count, vknots,
-			  (GLint)2, (GLint)width*2, texcoords,
-			  (GLint)npatch->uorder, (GLint)npatch->vorder,
-			  GL_MAP2_TEXTURE_COORD_2);
-	  have_tc = AY_TRUE;
+	  if((texcoords = malloc(width*height*2*sizeof(float))))
+	    {
+	      for(i = 0; i < width*height*2; i++)
+		texcoords[i] = (float)tc[i];
+
+	      to.has_tc = AY_TRUE;
+	      /*
+		the use of (GLint)2, (GLint)width*2
+		for s_stride, t_stride as opposed to
+		(GLint)height*4, (GLint)4, above
+		caters for the fact that PV tag data is
+		stored in u-major (whereas the (GLU)
+		NURBS patch is in v-major order
+	      */
+	      gluNurbsSurface(npatch->no, (GLint)uknot_count, uknots,
+			      (GLint)vknot_count, vknots,
+			      (GLint)2, (GLint)width*2, texcoords,
+			      (GLint)npatch->uorder, (GLint)npatch->vorder,
+			      GL_MAP2_TEXTURE_COORD_2);
+	      have_tc = AY_TRUE;
+	    }
+	  free(tc);
 	}
     }
 
