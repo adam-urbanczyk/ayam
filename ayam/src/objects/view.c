@@ -948,7 +948,7 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
   v->bgimage = NULL;
   if(vtemp.bgimage)
     {
-      if((v->bgimage = calloc(strlen(vtemp.bgimage)+1,sizeof(char))))
+      if((v->bgimage = malloc((strlen(vtemp.bgimage)+1)*sizeof(char))))
 	{
 	  strcpy(v->bgimage, vtemp.bgimage);
 	  v->bgimagedirty = AY_TRUE;
