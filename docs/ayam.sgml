@@ -12508,7 +12508,11 @@ When enabled, the resulting PolyMesh objects will
 also have PV tags of the respective type.<newline>
 Note that the PV tags must be named as defined by the hidden preference
 options <tt/"PVTexCoordName"/ and <tt/"PVColorName"/ respectively. By
-default those are set to <tt/"st"/ and <tt/"Cs"/.
+default those are set to <tt/"st"/ and <tt/"Cs"/.<newline>
+If the <tt/"UseTexCoords"/ option is enabled, but no matching PV tag
+is present, texture coordinates will be generated from the data
+provided by a TC tag or (if no TC tag is present) from the knot
+values of the NURBS surfaces to be tesselated.<footnote>Since 1.21.</footnote>
 <p>
 The option <tt/"UseVertNormals"/ controls processing of
 vertex normals stored as PV tags in the objects to be tesselated.
@@ -12522,7 +12526,7 @@ a correct example tag looks like this:
 <p>
 The option <tt>"RefineTrims"</tt> controls how many times the trim
 curves are to be refined before tesselation for improved tesselation
-fidelity along trim edges.
+fidelity along trim edges.<footnote>Since 1.21.</footnote>
 <p>
 If the <tt/"Ok"/ button is pressed, the tesselation tool will be
 closed and all selected objects will be replaced by their tesselated
