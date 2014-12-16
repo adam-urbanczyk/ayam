@@ -238,7 +238,7 @@ ay_tags_register(Tcl_Interp *interp, char *name, char **result)
 } /* ay_tags_register */
 
 
-/* ay_tags_settcmd:
+/** ay_tags_settcmd:
  *  set new tags of selected object(s), after removing all old tags
  *  Implements the \a setTags scripting interface command.
  *  See also the corresponding section in the \ayd{scsettags}.
@@ -518,8 +518,12 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_tags_settcmd */
 
 
-/* ay_tags_addtcmd:
+/** ay_tags_addtcmd:
  *  add a tag to the selected object(s)
+ *  Implements the \a addTag scripting interface command.
+ *  See also the corresponding section in the \ayd{scaddtag}.
+ *
+ *  \returns TCL_OK in any case.
  */
 int
 ay_tags_addtcmd(ClientData clientData, Tcl_Interp *interp,
@@ -722,6 +726,10 @@ ay_tags_hastcmd(ClientData clientData, Tcl_Interp *interp,
 
 /* ay_tags_deletetcmd:
  *  delete all tags of the selected object(s)
+ *  Implements the \a delTags scripting interface command.
+ *  See also the corresponding section in the \ayd{scdeltags}.
+ *
+ *  \returns TCL_OK in any case.
  */
 int
 ay_tags_deletetcmd(ClientData clientData, Tcl_Interp *interp,
@@ -1029,7 +1037,9 @@ cleanup:
 } /* ay_tags_parseplist */
 
 
-/* ay_tags_reconnect:
+/** ay_tags_reconnect:
+ * reconnect already existing tags after late tag type registration
+ *
  *
  */
 int
@@ -1073,10 +1083,13 @@ ay_tags_reconnect(ay_object *o, char *tagtype, char *tagname)
 } /* ay_tags_reconnect */
 
 
-/* ay_tags_addnonm:
+/** ay_tags_addnonm:
  *  add NO/NM tags
- * @param[in] o object that gets the nm tag (typically a instance)
- * @param[in] m object that gets the no tag (typically the master of o)
+ *
+ * \param[in,out] o object that gets the nm tag (typically a instance)
+ * \param[in,out] m object that gets the no tag (typically the master of o)
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_tags_addnonm(ay_object *o, ay_object *m)
@@ -1154,10 +1167,13 @@ ay_tags_addnonm(ay_object *o, ay_object *m)
 } /* ay_tags_addnonm */
 
 
-/* ay_tags_remnonm:
+/** ay_tags_remnonm:
  *  remove NO/NM tags
- * @param[in] o object with nm tag (typically a instance)
- * @param[in] m object with no tag (typically the master of o)
+ *
+ * \param[in,out] o object with nm tag (typically a instance)
+ * \param[in,out] m object with no tag (typically the master of o)
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_tags_remnonm(ay_object *o, ay_object *m)
