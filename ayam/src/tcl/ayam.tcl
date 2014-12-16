@@ -238,7 +238,7 @@ array set ayprefs {
  NormalizePoints 1
  NormalizeDigits 6
 
- CopyTags "TP,TC"
+ ConvertTags "TP,TC"
 
  Docs "http://ayam.sourceforge.net/docs/"
  DailyTips {
