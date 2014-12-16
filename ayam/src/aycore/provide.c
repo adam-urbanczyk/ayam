@@ -151,8 +151,9 @@ ay_provide_nptoolobj(ay_object *o, unsigned int type,
       p = p->next;
     } /* while */
 
-  /* copy eventually present TP tags */
-  ay_npt_copytptag(o, new);
+  /* copy some tags */
+  (void)ay_tag_copyselected(o, new, ay_prefs.converttags,
+			    ay_prefs.converttagslen);
 
   *result = new;
 

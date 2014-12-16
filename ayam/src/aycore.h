@@ -1341,6 +1341,11 @@ int ay_tags_addnonm(ay_object *o, ay_object *m);
  */
 int ay_tags_remnonm(ay_object *o, ay_object *m);
 
+/** copy selected tags
+ */
+int ay_tag_copyselected(ay_object *src, ay_object *dst,
+			char **types, int typeslen);
+
 
 /* tc.c */
 

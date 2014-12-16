@@ -231,8 +231,9 @@ ay_convert_nptoolobj(ay_object *o, ay_object *p, ay_object *cb, int in_place)
 	  b = b->next;
 	} /* while */
 
-      /* copy eventually present TP tags */
-      ay_npt_copytptag(o, new->down);
+      /* copy some tags */
+      (void)ay_tag_copyselected(o, new->down, ay_prefs.converttags,
+				ay_prefs.converttagslen);
 
       /* terminate the level */
       *next = ay_endlevel;

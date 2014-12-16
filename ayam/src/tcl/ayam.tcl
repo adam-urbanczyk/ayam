@@ -238,6 +238,8 @@ array set ayprefs {
  NormalizePoints 1
  NormalizeDigits 6
 
+ CopyTags "TP,TC"
+
  Docs "http://ayam.sourceforge.net/docs/"
  DailyTips {
 {Always click on drawn pixels, when picking vertices.}

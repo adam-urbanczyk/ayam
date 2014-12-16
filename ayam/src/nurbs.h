@@ -1242,10 +1242,6 @@ int ay_npt_explodemp(ay_object *o);
 int ay_npt_getbeveltags(ay_object *o, int place,
 			int *has_bevel, int *type, double *radius, int *sense);
 
-/** Copy tesselation parameter tag.
- */
-int ay_npt_copytptag(ay_object *src, ay_object *dst);
-
 /** Clamp surface in U direction.
  */
 int ay_npt_clampu(ay_nurbpatch_object *np, int side);

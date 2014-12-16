@@ -9992,49 +9992,6 @@ ay_npt_getbeveltags(ay_object *o, int place,
 } /* ay_npt_getbeveltags */
 
 
-/* ay_npt_copytptag:
- *  copy the first TP (tesselation parameter) tag from object
- *  <src> to all objects in <dst> (dst may actually be a list,
- *  connected via ->next of each object!)
- */
-int
-ay_npt_copytptag(ay_object *src, ay_object *dst)
-{
- int ay_status = AY_OK;
- ay_object *o = NULL;
- ay_tag *t = NULL, *s = NULL;
-
-  if(!src || !dst)
-    return AY_ENULL;
-
-  if(!src->tags)
-    return AY_OK;
-
-  t = src->tags;
-
-  while(t)
-    {
-      if(t->type == ay_tp_tagtype)
-	{
-	  o = dst;
-	  while(o)
-	    {
-	      s = o->tags;
-	      ay_status = ay_tags_copy(t, &(o->tags));
-	      if(ay_status)
-		break;
-	      o->tags->next = s;
-	      o = o->next;
-	    } /* while */
-	  break;
-	} /* if */
-      t = t->next;
-    } /* while */
-
- return ay_status;
-} /* ay_npt_copytptag */
-
-
 /* ay_npt_clampu:
  *  clamp NURBS patch, it is safe to call this with half clamped patches
  *  side: 0 - clamp both ends, 1 - clamp only start, 2 - clamp only end

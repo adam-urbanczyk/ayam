@@ -1486,6 +1486,8 @@ typedef struct ay_preferences_s
   char *colorname; /**< default name for vertex color PV tags */
   char *opacityname; /**< default name for vertex opacity PV tags */
 
+  char **converttags;  /**< tags to keep/copy upon provide/conversion */
+  int converttagslen; /**< number of tag types in converttags */
 } ay_preferences;
 
 
