@@ -345,6 +345,8 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 		 int argc, char *argv[])
 {
  char *n1 = "ayprefs", *n2 = "ayprefse";
+ char *cvtags = NULL, *tagname, *tagtype, **tmp;
+ Tcl_HashEntry *entry = NULL;
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  double dtemp = 0.0;
  int itemp = 0, ay_status = AY_OK, qf = 0;
@@ -807,6 +809,32 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
   if((ay_status = ay_tcmd_getstring(interp, toa, ton,
 				    &(ay_prefs.opacityname))))
     goto cleanup;
+
+  Tcl_SetStringObj(ton, "ConvertTags", -1);
+  if((ay_status = ay_tcmd_getstring(interp, toa, ton, &cvtags)))
+    goto cleanup;
+
+  if(ay_prefs.converttags)
+    free(ay_prefs.converttags);
+  ay_prefs.converttags = NULL;
+  ay_prefs.converttagslen = 0;
+
+  tagname = strtok(cvtags, ",");
+  while(tagname)
+    {
+      if((entry = Tcl_FindHashEntry(&ay_tagtypesht, tagname)))
+	{
+	  tagtype = (char*)Tcl_GetHashValue(entry);
+
+	  if(!(tmp = realloc(ay_prefs.converttags,
+			     ay_prefs.converttagslen*sizeof(char*))))
+	    goto cleanup;
+	  ay_prefs.converttags = tmp;
+	  ay_prefs.converttags[ay_prefs.converttagslen] = tagtype;
+	  ay_prefs.converttagslen++;
+	}
+      tagname = strtok(NULL, ",");
+    }
 
 cleanup:
 

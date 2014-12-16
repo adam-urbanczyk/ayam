@@ -1008,8 +1008,9 @@ ay_bpatch_providecb(ay_object *o, unsigned int type, ay_object **result)
       memcpy(&(cv[12]), bp->p3, 3*sizeof(double));
       cv[15] = 1.0;
 
-      /* copy eventually present TP tags */
-      ay_npt_copytptag(o, new);
+      /* copy some tags */
+      (void)ay_tag_copyselected(o, new, ay_prefs.converttags,
+				ay_prefs.converttagslen);
 
       *result = new;
     } /* if */

@@ -1133,8 +1133,9 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 	    } /* if */
 	} /* if */
 
-      /* copy eventually present TP tags */
-      (void)ay_npt_copytptag(o, new);
+      /* copy some tags */
+      (void)ay_tag_copyselected(o, new, ay_prefs.converttags,
+				ay_prefs.converttagslen);
 
       /* return result */
       *result = new;

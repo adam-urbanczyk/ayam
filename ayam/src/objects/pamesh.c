@@ -1321,8 +1321,9 @@ ay_pamesh_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  ay_trafo_copy(o, new);
 	} /* if */
 
-      /* copy eventually present TP tags */
-      ay_npt_copytptag(o, new);
+      /* copy some tags */
+      (void)ay_tag_copyselected(o, new, ay_prefs.converttags,
+				ay_prefs.converttagslen);
 
       *result = new;
     } /* if */
@@ -1364,8 +1365,9 @@ ay_pamesh_convertcb(ay_object *o, int in_place)
 
 	  ay_trafo_copy(o, new);
 
-	  /* copy eventually present TP tags */
-	  ay_npt_copytptag(o, new);
+	  /* copy some tags */
+	  (void)ay_tag_copyselected(o, new, ay_prefs.converttags,
+				    ay_prefs.converttagslen);
 
 	  /* second, link new objects, or replace old objects with them */
 	  if(!in_place)
