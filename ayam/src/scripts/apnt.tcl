@@ -16,6 +16,11 @@
 # upon loading of the script:
 set apnt_enableonload 1
 
+# set this to 0 if you do not want to create Custom menu entries
+# upon loading of the script:
+set apnt_enablemenu 1
+
+
 # set this to 1 if you want all views to switch to point mode
 # (instead of just the current view)
 set apnt_scope 1
@@ -196,5 +201,11 @@ catch { unset apnt_enableonload }
 catch { bind . $apnt_hotkey apnt_toggle }
 
 catch { shortcut_addviewbinding $apnt_hotkey apnt_toggle }
+
+if { $apnt_enablemenu } {
+    set m $ay(cm)
+    $m add command -label "Toggle APNT" -command apnt_toggle\
+	-accelerator [remkpkr $apnt_hotkey]
+}
 
 # EOF
