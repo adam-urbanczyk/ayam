@@ -1040,19 +1040,17 @@ cleanup:
 /** ay_tags_reconnect:
  * reconnect already existing tags after late tag type registration
  *
- *
+ * \param[in,out] o object hierarchy to process
+ * \param[in] tagtype tag type to set
+ * \param[in] tagname tag name of tags to process
  */
-int
+void
 ay_tags_reconnect(ay_object *o, char *tagtype, char *tagname)
 {
- /*int ay_status = AY_OK;*/
  ay_tag *tag;
 
   if(!tagtype || !tagname)
-    return AY_ENULL;
-
-  if(!o)
-    return AY_OK;
+    return;
 
   while(o)
     {
@@ -1074,7 +1072,7 @@ ay_tags_reconnect(ay_object *o, char *tagtype, char *tagname)
 	  tag = tag->next;
 	} /* while */
 
-      ay_notify_object(o);
+      (void)ay_notify_object(o);
 
       o = o->next;
     } /* while */
@@ -1270,7 +1268,7 @@ ay_tag_copyselected(ay_object *src, ay_object *dst,
       if(copy)
 	{
 	  o = dst;
-	  while(o)
+	  while(o && o != ay_endlevel)
 	    {
 	      s = o->tags;
 	      ay_status = ay_tags_copy(t, &(o->tags));
