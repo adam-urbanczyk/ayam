@@ -1812,7 +1812,7 @@ Aycsg_Init(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   // reconnect potentially present DC tags
-  ay_status = ay_tags_reconnect(ay_root, aycsg_dc_tagtype, "DC");
+  ay_tags_reconnect(ay_root, aycsg_dc_tagtype, "DC");
 
   ay_error(AY_EOUTPUT, fname, "Plugin 'aycsg' successfully loaded.");
 

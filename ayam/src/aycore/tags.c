@@ -614,6 +614,73 @@ ay_tags_gettcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_tag *tag = NULL;
+ int get_single = AY_FALSE;
+
+  if(argv[0][6] != 's')
+    get_single = AY_TRUE;
+
+  if(argc < 3)
+    {
+      if(get_single)
+	ay_error(AY_EARGS, argv[0], "tagname vname");
+      else
+	ay_error(AY_EARGS, argv[0], "vname1 vname2");
+      return TCL_OK;
+    }
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, argv[0], NULL);
+      return TCL_OK;
+    }
+
+  if(!get_single)
+    Tcl_SetVar(interp,argv[1], "", TCL_LEAVE_ERR_MSG);
+  Tcl_SetVar(interp,argv[2], "", TCL_LEAVE_ERR_MSG);
+
+  o = sel->object;
+  tag = o->tags;
+  while(tag)
+    {
+      if(tag->name && tag->val && !tag->is_intern && !tag->is_binary)
+	{
+	  if(get_single)
+	    {
+	      if(!strcmp(argv[1], tag->name))
+		{
+		  Tcl_SetVar(interp, argv[2], tag->val, TCL_APPEND_VALUE |
+			     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
+		  break;
+		}
+	    }
+	  else
+	    {
+	      Tcl_SetVar(interp, argv[1], tag->name, TCL_APPEND_VALUE |
+			 TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
+	      Tcl_SetVar(interp, argv[2], tag->val, TCL_APPEND_VALUE |
+			 TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
+	    }
+	} /* if */
+      tag = tag->next;
+    } /* while */
+
+ return TCL_OK;
+} /* ay_tags_gettcmd */
+#if 0
+/* ay_tags_gettcmd:
+ *  return all tags of the (first) selected object
+ *  Implements the \a getTags scripting interface command.
+ *  See also the corresponding section in the \ayd{scgettags}.
+ *
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_tags_gettcmd(ClientData clientData, Tcl_Interp *interp,
+		int argc, char *argv[])
+{
+ ay_list_object *sel = ay_selection;
+ ay_object *o = NULL;
+ ay_tag *tag = NULL;
 
   if(argc < 3)
     {
@@ -646,7 +713,7 @@ ay_tags_gettcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_tags_gettcmd */
-
+#endif
 
 /** ay_tags_hastag:
  *  check for existence of a tag given a tag name or type
@@ -1077,7 +1144,7 @@ ay_tags_reconnect(ay_object *o, char *tagtype, char *tagname)
       o = o->next;
     } /* while */
 
- return AY_OK;
+ return;
 } /* ay_tags_reconnect */
 
 
