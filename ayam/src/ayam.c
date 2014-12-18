@@ -872,6 +872,8 @@ Tcl_AppInit(Tcl_Interp *interp)
 		      (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
   Tcl_CreateCommand(interp, "getTags", ay_tags_gettcmd,
 		      (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+  Tcl_CreateCommand(interp, "getTag", ay_tags_gettcmd,
+		      (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
   Tcl_CreateCommand(interp, "hasTag", ay_tags_hastcmd,
 		      (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
   Tcl_CreateCommand(interp, "delTags", ay_tags_deletetcmd,
@@ -1535,6 +1537,8 @@ ay_safeinit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "addTag", ay_tags_addtcmd,
 		      (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
   Tcl_CreateCommand(interp, "getTags", ay_tags_gettcmd,
+		      (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+  Tcl_CreateCommand(interp, "getTag", ay_tags_gettcmd,
 		      (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
   Tcl_CreateCommand(interp, "hasTag", ay_tags_hastcmd,
 		      (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);

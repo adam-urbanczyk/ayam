@@ -124,6 +124,7 @@ static const struct luaL_Reg luainterplib [] = {
       {"setTags", luainterp_wraptclcmd},
       {"addTag", luainterp_wraptclcmd},
       {"getTags", luainterp_wraptclcmd},
+      {"getTag", luainterp_wraptclcmd},
       {"hasTag", luainterp_wraptclcmd},
       {"delTags", luainterp_wraptclcmd},
 
