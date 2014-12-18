@@ -819,21 +819,24 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
   ay_prefs.converttags = NULL;
   ay_prefs.converttagslen = 0;
 
-  tagname = strtok(cvtags, ",");
-  while(tagname)
+  if(cvtags)
     {
-      if((entry = Tcl_FindHashEntry(&ay_tagtypesht, tagname)))
+      tagname = strtok(cvtags, ",");
+      while(tagname)
 	{
-	  tagtype = (char*)Tcl_GetHashValue(entry);
+	  if((entry = Tcl_FindHashEntry(&ay_tagtypesht, tagname)))
+	    {
+	      tagtype = (char*)Tcl_GetHashValue(entry);
 
-	  if(!(tmp = realloc(ay_prefs.converttags,
-			     ay_prefs.converttagslen*sizeof(char*))))
-	    goto cleanup;
-	  ay_prefs.converttags = tmp;
-	  ay_prefs.converttags[ay_prefs.converttagslen] = tagtype;
-	  ay_prefs.converttagslen++;
+	      if(!(tmp = realloc(ay_prefs.converttags,
+				 (ay_prefs.converttagslen+1)*sizeof(char*))))
+		goto cleanup;
+	      ay_prefs.converttags = tmp;
+	      ay_prefs.converttags[ay_prefs.converttagslen] = tagtype;
+	      ay_prefs.converttagslen++;
+	    }
+	  tagname = strtok(NULL, ",");
 	}
-      tagname = strtok(NULL, ",");
     }
 
 cleanup:
