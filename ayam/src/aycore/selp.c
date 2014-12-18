@@ -639,6 +639,8 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
  int select_all = AY_FALSE, select_none = AY_FALSE;
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
+ ay_point *p;
+ Tcl_Obj *toa, *to;
 
   if(!sel)
     {
@@ -665,11 +667,37 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      select_none = AY_TRUE;
 	    }
+	  /* -get */
+	  if(argv[1][1] == 'g')
+	    {
+	      if(argc != 3)
+		return TCL_OK;
+	      toa = Tcl_NewStringObj(argv[2], -1);
+
+	      Tcl_SetVar(interp, argv[2], "", TCL_LEAVE_ERR_MSG);
+
+	      o = sel->object;
+	      p = o->selp;
+	      while(p)
+		{
+		  if(p->index < (unsigned int)INT_MAX)
+		    to = Tcl_NewIntObj(p->index);
+		  else
+		    to = Tcl_NewWideIntObj((Tcl_WideInt)p->index);
+		  Tcl_ObjSetVar2(interp, toa, NULL, to, TCL_APPEND_VALUE |
+				 TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
+		  p = p->next;
+		}
+
+	      Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
+
+	      return TCL_OK;
+	    }
 	  /* -help */
 	  if(argv[1][1] == 'h')
 	    {
 	      ay_error(AY_EARGS, argv[0],
-		       "[-all | -none | ind1 ind2 ... indn]");
+		       "[-all | -none | -get vname | ind1 ind2 ... indn]");
 	      goto cleanup;
 	    }
 	}
