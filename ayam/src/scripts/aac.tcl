@@ -16,6 +16,12 @@
 # upon loading of the script:
 set aac_enableonload 1
 
+
+# set this to 0 if you do not want to create Custom menu entries
+# upon loading of the script:
+set aac_enablemenu 1
+
+
 # set the keyboard shortcut to enable/disable auto-about-center:
 set aac_hotkey "<F11>"
 
@@ -248,5 +254,11 @@ catch { unset aac_enableonload }
 catch { bind . $aac_hotkey aac_toggle }
 
 catch { shortcut_addviewbinding $aac_hotkey aac_toggle }
+
+if { $aac_enablemenu } {
+    set m $ay(cm)
+    $m add command -label "Toggle AAC" -command aac_toggle\
+	-accelerator [remkpkr $aac_hotkey]
+}
 
 # EOF
