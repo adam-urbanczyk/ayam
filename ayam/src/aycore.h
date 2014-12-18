@@ -1331,7 +1331,7 @@ int ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
 
 /** reconnect already existing tags after late tag type registration
  */
-int ay_tags_reconnect(ay_object *o, char *tagtype, char *tagname);
+void ay_tags_reconnect(ay_object *o, char *tagtype, char *tagname);
 
 /** add NO/NM tags
  */
