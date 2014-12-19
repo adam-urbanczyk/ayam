@@ -28,15 +28,12 @@ image create photo ay_SSP_img -format GIF -data $imgdata
 # ssp_save:
 #  save selected points to SP tag
 proc ssp_save { } {
-    global ay
-
     forAll {
 	selPnts -get pnts
 	if { $pnts != "" } {
 	    addTag SP $pnts
 	}
     }
-
  return;
 }
 # ssp_save
@@ -45,15 +42,12 @@ proc ssp_save { } {
 # ssp_restore:
 #  restore selected points from SP tag
 proc ssp_restore { } {
-    global ay
-
     forAll {
 	getTag SP pnts
 	if { $pnts != "" } {
 	    eval selPnts $pnts
 	}
     }
-
  return;
 }
 # ssp_restore
@@ -77,5 +71,8 @@ toolbox_layout
 
 # add to custom menu
 
+set m $ay(cm)
+$m add command -label "Save Point Selection" -command ssp_save
+$m add command -label "Restore Point Selection" -command ssp_restore
 
 # EOF
