@@ -649,7 +649,7 @@ ay_tags_gettcmd(ClientData clientData, Tcl_Interp *interp,
 	      if(!strcmp(argv[1], tag->name))
 		{
 		  Tcl_SetVar(interp, argv[2], tag->val, TCL_APPEND_VALUE |
-			     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
+			     TCL_LEAVE_ERR_MSG);
 		  break;
 		}
 	    }
