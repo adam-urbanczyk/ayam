@@ -777,21 +777,28 @@ proc toolbox_open { {w .tbw} } {
 proc toolbox_layout { {w ".tbw"} } {
     global ay ayprefs
 
+    set internal .fv.fTools
+
     if { $ay(tblock) == 1 } {
 	return;
     } else {
 	set ay(tblock) 1
     }
 
-    if { ! [winfo exists $w] } { set tblock 0; return; }
+    if { ! [winfo exists $w] } {
+	set w $internal
+	if { ! [winfo exists $w] } {
+	    set ay(tblock) 0; return;
+	}
+    }
 
     # to avoid being called too often, we temporarily remove the
     # configure binding
     bind $w <Configure> ""
 
     # we also temporarily allow the enlargement of the toolbox frame
-    if { $w != ".tbw" } {
-	pack configure .fv.fTools -expand yes
+    if { $w == $internal } {
+	pack configure $w -expand yes
     }
 
     set size [winfo reqwidth $w.f.[lindex $ay(toolbuttons) 0]]
@@ -801,21 +808,17 @@ proc toolbox_layout { {w ".tbw"} } {
     set numb [llength $ay(toolbuttons)]
 
     if { [expr $rows*$columns] < $numb } {
-	if { $w == ".tbw" } {
-	    # toolbox is in an extra toplevel window
-	    ayError 1 toolbox_layout "Can not display all buttons! Resizing..."
-	    set height [expr ceil(double($numb)/$columns)*$size]
-	    winMoveOrResize .tbw [winfo reqwidth $w]x${height}
-	    update
-	    set rows [expr round([winfo height $w] / $size)]
-	} else {
+	ayError 1 toolbox_layout "Can not display all buttons! Resizing..."
+	set height [expr ceil(double($numb)/$columns)*$size]
+	if { $w == $internal } {
 	    # toolbox is integrated in main window
-	    ayError 1 toolbox_layout "Can not display all buttons! Resizing..."
-	    set height [expr ceil(double($numb)/$columns)*$size]
 	    $w configure -height $height
-	    update
-	    set rows [expr round([winfo height $w] / $size)]
+	} else {
+	    # toolbox is in an extra toplevel window
+	    winMoveOrResize .tbw [winfo reqwidth $w]x${height}
 	}
+	update
+	set rows [expr round([winfo height $w] / $size)]
     }
 
     # release old layout
@@ -839,7 +842,7 @@ proc toolbox_layout { {w ".tbw"} } {
 
     # shrink-wrap the toplevel around buttons
     # (if the toolbox is in a separate toplevel window)
-    if { $w == ".tbw" } {
+    if { $w != $internal } {
 	if { $ayprefs(ToolBoxShrink) } {
 	    winMoveOrResize $w [winfo reqwidth $w.f]x[winfo reqheight $w.f]
 	    update
@@ -850,8 +853,8 @@ proc toolbox_layout { {w ".tbw"} } {
     set ay(tbheight) [winfo height $w]
 
     # disallow enlargement of the toolbox frame
-    if { $w != ".tbw" } {
-	pack configure .fv.fTools -expand no
+    if { $w == $internal } {
+	pack configure $w -expand no
     }
 
     bind $w <Configure> {
