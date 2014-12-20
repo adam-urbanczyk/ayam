@@ -16176,6 +16176,19 @@ via the keyboard shortcut <tt/&lt;o&gt;/.
 To temporarily disable the modified behavior, the global keyboard
 shortcut <tt/&lt;F12&gt;/ can be used.
 
+<sect2>Save Selected Points<label id="ssptcl">
+<p>
+The script <tt>"ssp.tcl"</tt> (for <bf/s/ave <bf/s/elected <bf/p/points)
+allows to save the point selection to tags of type
+<tt/SP/.<footnote>Since 1.21.</footnote>
+<p>
+After running the script, two new buttons appear in the toolbox
+that allow to save and restore the point selection respectively.
+There are also two corresponding entries in the custom menu.
+<p>
+Note that the tags can be saved to scene files and also copied
+to different objects.
+
 <sect2>Revert Cursor Key Behavior<label id="rctcl">
 <p>
 The script <tt>"rc.tcl"</tt> (for <bf/r/evert <bf/c/ursor) may be
@@ -18766,6 +18779,10 @@ on, the first click into the console will move the cursor to the input
 prompt, ready for command input, instead of moving the cursor to the
 point of the click. This option is enabled by default.
 
+<item><tt/"ConvertTags"/, a comma separated list of tag names.
+These tags will be copied verbatim to converted and provided
+objects. Default value: <tt/"TP,TC"/.
+
 <item><tt/"DailyTips"/: a list of strings that appear as tips
 on startup in the console (default: large).
 
@@ -19901,6 +19918,7 @@ Index:
 <item>ConsoleCursorEnd: <ref id="hidprefs" name="hidden preference setting">
 <item>ConsoleTakeFocus: <ref id="hidprefs" name="hidden preference setting">
 <item>Convert: <ref id="mmtools" name="main menu entry">
+<item>ConvertTags: <ref id="hidprefs" name="hidden preference setting">
 <item>convOb: <ref id="scconvob" name="scripting interface command">
 <item>Coons Patch: <ref id="gordonobj" name="Gordon object">
 <item>Create: <ref id="mmcreate" name="create menu">
@@ -20873,6 +20891,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>splituNP: <ref id="scsplitunp" name="scripting interface command">
 <item>splitvNP: <ref id="scsplitvnp" name="scripting interface command">
 <item>Spot: <ref id="pdsl" name="light type">
+<item>ssp.tcl: <ref id="ssptcl" name="example/helper script">
 <item>StartCap:
 <itemize>
 <item><ref id="extrattr" name="Extrude attribute">,
