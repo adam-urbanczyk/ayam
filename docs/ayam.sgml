@@ -10481,7 +10481,7 @@ object type specific as each object types boundary names are different.
 Use the <tt/"Tags"/ property to edit the tags of an object.
 <p>
 Tags provide an easy way to attach arbitrary information (e.g.~additional
-RenderMan interface attributes, special attributes for plugins or even
+RenderMan interface attributes, special attributes for plugins, or even
 scripts) to objects. A tag consists of two strings, one defining the type
 and one defining the value of the tag.
 <p>
@@ -10492,7 +10492,7 @@ elements:
 from the object.
 
 <item><tt/"Remove Tag!"/ is a menu, that allows
-to select and remove a single tag from the object.
+to quickly select and remove a single tag from the object.
 
 <item><tt/"Add Tag!"/ opens a small dialog window, where a new tag type
 and value may be entered (see also the image below).
@@ -10515,14 +10515,66 @@ Note that extensions and plugins may define their own types.
 <sect1>Tags<label id="tags">
 <p>
 Tags provide an easy way to attach arbitrary information (e.g.~additional
-RenderMan interface attributes, special attributes for plugins or even
+RenderMan interface attributes, special attributes for plugins, or even
 scripts) to objects. A tag consists of two strings, one defining the type
 and one defining the value of the tag.
 Tags may be manipulated via the tags property GUI (see
 section <ref id="tagsprop" name="Tags Property">)
 or the scripting interface.
 <p>
-The following sections documents all currently known tag types.
+The following two tables contains a compact list of tag names and short
+explanations, for all tag types that are
+known in Ayam and in all accompanying extensions (plugins).
+
+<#if out=latex><x/newpage/</#if>
+
+<table loc="ht">
+<tabular ca="|c|c|"><hline>
+<bf/Name/|<bf/Description/@<hline>
+ANS|After Notify Script@<hline>
+AsWire|X3D export control@<hline>
+BNS|Before Notify Script@<hline>
+BP|Bevel Parameter@<hline>
+CIDR|Importance Driven Rendering@<hline>
+CCIDR|Importance Driven Rendering@<hline>
+DANS|Disabled After Notify Script@<hline>
+DBNS|Disabled Before Notify Script@<hline>
+DC|Depth Complexity@<hline>
+IDR|Importance Driven Rendering@<hline>
+IIDR|Importance Driven Rendering@<hline>
+MI|Material ID@<hline>
+MN|Mean Normal@<hline>
+NM|Notify Master@<hline>
+NO|Notify Object@<hline>
+NoExport|Export Control@<hline>
+NP|New Property@<hline>
+NT|Normals Tangents<#if out=latex>@<hline></#if>
+</tabular>
+<caption>Tags Overview (1/2)</caption>
+</table>
+<p>
+<table loc="ht">
+<tabular ca="|c|c|"><hline>
+<bf/Name/|<bf/Description/@<hline>
+OI|Object ID@<hline>
+PV|Primitive Variable@<hline>
+RiAttribute|RenderMan Export@<hline>
+RiDisplay|RenderMan Export@<hline>
+R3IDR|Importance Driven Rendering@<hline>
+RIDR|Importance Driven Rendering@<hline>
+RiHider|RenderMan Export@<hline>
+RiOption|RenderMan Export@<hline>
+RP|Remove Property@<hline>
+SaveMainGeom|Geometry Management@<hline>
+SavePaneLayout|Geometry Management@<hline>
+TC|Texture Coordinates@<hline>
+TM|Transformation Matrix@<hline>
+TP|Tesselation Parameters@<hline>
+UMM|U Min Max@<hline>
+VMM|V Min Max<#if out=latex>@<hline></#if>
+</tabular>
+<caption>Tags Overview (2/2)</caption>
+</table>
 
 <sect2>RiAttribute Tag<label id="riatag">
 <p>
@@ -11130,51 +11182,6 @@ This tag is an internal binary tag that carries normals and tangents
 for curves extracted from surfaces.
 
 </itemize>
-
-<sect2>List of Known Tags
-<p>
-This section contains a compact list of tag names, that are
-known in Ayam and in all accompanying extensions (plugins).
-<p>
-<itemize>
-<item>ANS
-<item>AsWire
-<item>BNS
-<item>BP
-<item>CIDR
-<item>CCIDR
-<item>DANS
-<item>DBNS
-<item>DC
-<item>IDR
-<item>IIDR
-<item>MI
-<item>MN
-<item>NM
-<item>NO
-<item>NoExport
-<item>NP
-<item>NT
-<item>OI
-<item>PV
-<item>RiAttribute
-<item>RiDisplay
-<item>R3IDR
-<item>RIDR
-<item>RiHider
-<item>RiOption
-<item>RP
-<item>SaveMainGeom
-<item>SavePaneLayout
-<item>TC
-<item>TM
-<item>TP
-<item>UMM
-<item>VMM
-</itemize>
-
-<p>
-Documentation on all those tags can be found in the previous sections.
 
 <sect>NURBS Modelling Tools<label id="nmtool">
 <p>
