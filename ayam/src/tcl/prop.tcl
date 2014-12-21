@@ -127,10 +127,34 @@ addString $w matPropData Materialname
 
 # Tags property
 
+# copyTagp:
+# manage context menu entries ( Copy, Copy (Add) )
+proc copyTagp { i {add 0} } {
+global tagsPropData pclip_prop
+upvar #0 pclip_clipboard clipboard
+
+    if { $add == 0 } {
+	catch {unset clipboard}
+	set pclip_prop Tags
+	set clipboard(names) [lindex $tagsPropData(names) $i]
+	set clipboard(values) [lindex $tagsPropData(values) $i]
+    } else {
+	if { ($pclip_prop != "Tags") || (![info exists clipboard(names)]) } {
+	    copyTagp $i 0
+	    return;
+	}
+	lappend clipboard(names) [lindex $tagsPropData(names) $i]
+	lappend clipboard(values) [lindex $tagsPropData(values) $i]
+    }
+    return;
+}
+# copyTagp
+
+
 # getTagsp:
 #
 proc getTagsp { } {
-global ay ayprefs tagsPropData Tags tcl_platform
+global ay ayprefs aymainshortcuts tagsPropData Tags tcl_platform
 
 getTags names values
 set tagsPropData(names) $names
@@ -174,8 +198,14 @@ foreach tag $names {
 	set val [string range $val 0 $ayprefs(MaxTagLen)]
 	set val "${val}..."
     }
-    button $w.b$i -text "$tag: $val" -command "addTagp $i" -bd 1 -pady 0
-    pack $w.b$i -fill x -expand yes
+    set b $w.b$i
+    button $b -text "$tag: $val" -command "addTagp $i" -bd 1 -pady 0
+    pack $b -fill x -expand yes
+
+    set m [menu $b.popup -tearoff 0]
+    $m add command -label "Copy" -command "copyTagp $i"
+    $m add command -label "Copy (Add)" -command "copyTagp $i 1"
+    bind $b <ButtonPress-$aymainshortcuts(CMButton)> "winOpenPopup $b"
 
     incr i
 }
@@ -243,7 +273,7 @@ if { $edit >= 0 } {
 }
 winDialog $w $t
 if { $ayprefs(FixDialogTitles) == 1 } {
-    pack [frame $w.fl] -in $w -side top   
+    pack [frame $w.fl] -in $w -side top
     pack [label $w.fl.l -text $t] -in $w.fl -side left -fill x -expand yes
 }
 set f [frame $w.fu]
