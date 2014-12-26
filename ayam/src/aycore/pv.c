@@ -1011,8 +1011,15 @@ cleanup:
 } /* ay_pv_convert */
 
 
-/* ay_pv_getst:
- *  get texture coordinates st
+/** ay_pv_getst:
+ *  get texture coordinates (st) from PV tags
+ *
+ * \param[in] o object to get the texture coordinates from
+ * \param[in] mys name of PV tag that contains the s component
+ * \param[in] myt name of PV tag that contains the t component
+ * \param[in,out] data texture coordinates
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_pv_getst(ay_object *o, char *mys, char *myt, void **data)
@@ -1053,7 +1060,8 @@ ay_pv_getst(ay_object *o, char *mys, char *myt, void **data)
       ay_pv_convert(stag, 0, &sdalen, (void**)(void*)&sda);
       ay_pv_convert(ttag, 0, &tdalen, (void**)(void*)&tda);
 
-      if((sdalen == 0) || (tdalen == 0) || (sdalen != tdalen))
+      if((sdalen == 0) || (tdalen == 0) || (sdalen != tdalen) ||
+	 !sda || !tda)
 	{ ay_status = AY_ERROR; goto cleanup; }
 
       if(!(st = malloc(2*sdalen*sizeof(float))))
