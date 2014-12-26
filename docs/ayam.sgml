@@ -10504,13 +10504,17 @@ or to change the type or value of the tag.
 <figure loc="ht">
 <eps file="pics/addmodtag.ps" height="2.5cm">
 <img src="pics/addmodtag.gif">
-<caption>Add/Edit Tag Dialog</caption>
+<caption>Add&thinsp;/&thinsp;Edit Tag Dialog</caption>
 </figure>
 </itemize>
 <p>
+All tag entries have a context menu, where the corresponding tag can
+be copied&thinsp;/&thinsp;added to the property
+clipboard.<footnote>Since 1.21.</footnote>
+<p>
 The next sub-sections describe the tag types currently available in Ayam
 and the plugins distributed with Ayam.
-Note that extensions and plugins may define their own types.
+Note that foreign extensions and plugins may define their own types.
 
 <sect1>Tags<label id="tags">
 <p>
@@ -10578,8 +10582,6 @@ VMM|V Min Max<#if out=latex>@<hline></#if>
 
 <sect2>RiAttribute Tag<label id="riatag">
 <p>
-<bf/Description/
-<p>
 The tag type <tt/"RiAttribute"/ can be used to attach
 arbitrary RenderMan interface attributes to objects.
 This is handy if a renderer with lots of RiAttributes
@@ -10627,8 +10629,6 @@ by editing the ayamrc file, see section
 
 <sect2>RiOption Tag<label id="riotag">
 <p>
-<bf/Description/
-<p>
 The tag type <tt/"RiOption"/ can be used to attach arbitrary RenderMan
 interface options to the scene. This is handy if a renderer with
 lots of RiOptions that differ from the standard RiOptions is in use.
@@ -10654,8 +10654,6 @@ by editing the ayamrc file, see section
 <ref id="ayamrc" name="Ayamrc File">.
 
 <sect2>TC (Texture Coordinates) Tag<label id="tctag">
-<p>
-<bf/Description/
 <p>
 The tag type <tt/"TC"/ can be used to attach texture coordinates to
 objects or materials.
@@ -10754,8 +10752,6 @@ while modeling. The <tt/"Dismiss"/ button closes the dialog.
 
 <sect2>PV (Primitive Variable) Tag<label id="pvtag">
 <p>
-<bf/Description/
-<p>
 The tag type <tt/"PV"/ can be used to attach arbitrary data
 to geometric primitives and even sub-primitives.
 With the help of primitive variables texture coordinates can be attached
@@ -10826,8 +10822,6 @@ especially, if PV tags were added or edited manually.
 
 <sect2>RiHider Tag<label id="rihtag">
 <p>
-<bf/Description/
-<p>
 The tag type <tt/"RiHider"/ can be used to choose and parameterise
 different algorithms for hidden surface removal when rendering
 the exported scene with a RenderMan compliant renderer.
@@ -10844,8 +10838,6 @@ A RiHider tag could look like this:
 <tscreen><verb>RiHider hidden,depthfilter,s,midpoint</verb></tscreen>
 
 <sect2>RiDisplay Tag<label id="ridtag">
-<p>
-<bf/Description/
 <p>
 The tag type <tt/"RiDisplay"/ can be used to add output files of
 different type (e.g.~containing depth-buffer information)
@@ -10874,8 +10866,6 @@ if it does not already start with a plus.
 
 <sect2>AsWire Tag<label id="aswiretag">
 <p>
-<bf/Description/
-<p>
 The tag type <tt/"AsWire"/ switches export of certain objects
 from surface to wireframe mode.
 The value string of this tag is ignored. All
@@ -10883,8 +10873,6 @@ that counts is the presence of the tag.
 Note that only X3D export honours this tag.
 
 <sect2>NoExport Tag<label id="noexporttag">
-<p>
-<bf/Description/
 <p>
 The tag type <tt/"NoExport"/ can be used to exclude certain objects
 from exported RIBs. The value string of this tag is ignored. All
@@ -10897,8 +10885,6 @@ time (even if <tt/"NoExport"/ tags are added to all instances).
 
 <sect2>SaveMainGeom Tag<label id="savemaingeomtag">
 <p>
-<bf/Description/
-<p>
 The tag type <tt/"SaveMainGeom"/ can be used to save the geometry
 of the main window and the toolbox window (if open) to a scene
 file. For that the scene saving code checks for the presence of
@@ -10909,8 +10895,6 @@ after replacing a scene and re-establishes the geometries of
 main and toolbox window.
 
 <sect2>SavePaneLayout Tag<label id="savepanelayouttag">
-<p>
-<bf/Description/
 <p>
 The tag type <tt/"SavePaneLayout"/ can be used to save the relative
 sizes of the internal windows of the main window when Ayam runs in
@@ -10923,8 +10907,6 @@ after replacing a scene and re-establishes the geometries of the
 internal windows.
 
 <sect2>TP (Tesselation Parameter) Tag<label id="tptag">
-<p>
-<bf/Description/
 <p>
 The tag type <tt/"TP"/ can be used to save tesselation parameters
 to objects of type <tt/"NPatch"/ (and objects that may be converted
@@ -10962,8 +10944,6 @@ A TP tag could look like this:
 
 <sect2>DC (Depth Complexity) Tag<label id="dctag">
 <p>
-<bf/Description/
-<p>
 The tag type <tt/"DC"/ is only used by the AyCSG CSG preview plugin
 to store the depth complexity of CSG primitives.
 The syntax of the DC tag is:
@@ -10980,8 +10960,6 @@ A DC tag (valid for e.g.~a torus) could look like this:
 
 <sect2>NP (New Property) Tag<label id="nptag">
 <p>
-<bf/Description/
-<p>
 The tag type <tt/"NP"/ (new property) may be used to add new property
 GUIs to single objects. The value of the tag is the name of a new
 property. The necessary code to manage the property data and the
@@ -10994,8 +10972,6 @@ property list box.
 <tscreen><verb>NP Transformations</verb></tscreen>
 
 <sect2>RP (Remove Property) Tag<label id="rptag">
-<p>
-<bf/Description/
 <p>
 The tag type <tt/"RP"/ (remove property) may be used to remove GUI access
 to a property from single objects. The value of the tag is the name of the
@@ -11013,8 +10989,6 @@ direct control of script parameters. This way, the user does not
 see the script (code), just a clean parameter GUI.
 
 <sect2>BNS (Before Notify Script) Tag<label id="bnstag">
-<p>
-<bf/Description/
 <p>
 The tag type <tt/"BNS"/ (before notify script) may be used to add scripts
 to an object, that will be run <em/before/ the notification of
@@ -11054,8 +11028,6 @@ or by using the main menu entry <tt>"Special/Enable Scripts"</tt>.
 
 <sect2>ANS (After Notify Script) Tag<label id="anstag">
 <p>
-<bf/Description/
-<p>
 The tag type <tt/"ANS"/ (after notify script) may be used to add scripts
 to an object, that will be run <em/after/ the notification of
 that object completed.
@@ -11094,8 +11066,6 @@ or by using the main menu entry <tt>"Special/Enable Scripts"</tt>.
 
 <sect2>UMM/VMM (U/V Min Max) Tag<label id="ummtag">
 <p>
-<bf/Description/
-<p>
 The tag types <tt/"UMM"/ (u min max) and <tt/"VMM"/ (v min max) may
 be used to store additional parametric domain trimming values to
 NURBS curve and NURBS patch objects. Note that the GLU NURBS display
@@ -11107,8 +11077,6 @@ An UMM tag could look like this:
 <tscreen><verb>UMM 0.4,0.6</verb></tscreen>
 
 <sect2>BP (Bevel Parameters) Tag<label id="bptag">
-<p>
-<bf/Description/
 <p>
 The tag type <tt/"BP"/ (bevel parameters) is used by all bevel
 supporting tool objects to store their bevel information.
@@ -11129,8 +11097,6 @@ A BP tag could look like this:
 <tscreen><verb>BP 0,0,0.1,0</verb></tscreen>
 
 <sect2>MN (Mean Normal) Tag<label id="mntag">
-<p>
-<bf/Description/
 <p>
 The tag type <tt/"MN"/ (mean normal) can be added to the Bevel object
 to control the mean&thinsp;/&thinsp;target normal of the <tt/"RoundToNormal"/
@@ -11154,7 +11120,7 @@ changed using the scripting interface.
 
 This tag is used by the RIB exporter and the scene storage
 facility to establish links between instance objects and
-the original objects they are pointing to.
+the master objects they are pointing to.
 
 <item>MI (Material ID) Tag<label id="mitt">
 <p>
@@ -18690,10 +18656,10 @@ You may adapt the keyboard shortcuts used in the GUI to your special
 needs using the ayamrc file. Note that if you do that, the GUI (the menu
 entries and the <tt>"Show Shortcuts"</tt> window) will adapt to your
 changes but certainly neither this documentation, nor the reference card
-(unless recreated using refcard.tcl), nor the tutorials.
+(unless recreated using the script <tt/"refcard.tcl"/), nor the tutorials.
 <p>
-Ayam does not check for clashes in key bindings. This means, the last set
-binding for a key will be used.
+Ayam does <em/not/ check for clashes in key bindings. This means, the last
+set binding for a key will be used.
 <p>
 On Unix, the output of the program <tt/"xev"/ and the
 manual page for the <tt/"bind"/ command of Tk provide helpful
@@ -19009,8 +18975,8 @@ requester? (default: 1 &ndash; yes)
 <item><tt/"WarnUnknownTag"/ controls the warning messages for
 unknown tag types. (default: 1 &ndash; yes)
 
-<item><tt/"Wait"/: set this to <tt/"waitPid"/ if you want to enable
-the work around for zombie processes created by the Rendering GUI.
+<item><tt/"Wait"/: set this to <tt/"waitPid"/ to enable the work around
+for zombie processes created by the Rendering GUI.
 This is e.g.~necessary for the Linux platform.
 
 <item><tt/"WheelZoom"/, a float value that controls the zoom factor,
@@ -19043,8 +19009,8 @@ string using <tt>"s"</tt> and provided with a list of default values:
 <tt>"{ "silent" "normal" "stats" "debug" }"</tt>.
 
 To add another option to this section, say the option <tt>"op"</tt>
-which shall be an integer value, you have to change the aforementioned
-snippet to:
+which shall be an integer value, the aforementioned snippet needs to
+be changed to:
 <code>
 set riopt(runtime) {
  { verbosity s { "silent" "normal" "stats" "debug"} }
@@ -19161,15 +19127,16 @@ set a different <tt/"Shaders"/ preference setting or to immediately
 scan for shaders after loading of the plugin. For that, just remove
 the leading hash-marks (&num;) from the corresponding lines in the script.
 Note that changing the scripts for immediate shader parsing is not
-necessary if you load the shader parsing plugin automatically on startup
-of Ayam, as the loading of the scripts will happen before the Ayam startup
+necessary if the shader parsing plugin is loaded automatically on startup
+of Ayam, as the loading of the scripts (and therefore also of the
+plugin) will happen before the Ayam startup
 sequence executes the initial shader scanning pass.
 The shader search path used for the initial shader scanning pass
 is taken from the <tt/"Shaders"/ preference setting.
 <p>
-If you load a shader parsing plugin manually or via unchanged
-load script you need to adapt the shaders search path manually and also
-initiate a shader scan manually.
+If a shader parsing plugin is loaded manually or via unchanged
+load script, the shaders search path must be adapted manually.
+Furthermore a shader scan must be initiated manually too.
 Both actions may be carried out using the preferences editor. Scanning
 for shaders may also be started using the main menu:
 <tt>"Special/Scan Shaders"</tt>.
