@@ -14154,10 +14154,15 @@ addTag:
 <itemize>
  <item>Synopsis: <tt/"addTag type value"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Add a tag with type-string type and value-string
-value to the currently selected objects(s).
+ <item>Description: Add a tag with type-string <tt/type/ and value-string
+<tt/value/ to the currently selected objects.<newline>
 It is legal to deliver <tt>""</tt> as value parameter. This is
-e.g.~needed for the <tt/"NoExport"/ tag.
+e.g.~needed for the <tt/"NoExport"/ tag.<newline>
+Potentially existing tags of the designated type will <em/not/ be
+changed.<newline>
+If the tag type is not registered, a corresponding warning message may be
+emitted. This warning can be inhibited using the hidden preference
+setting <tt/"WarnUnknownTag"/.
 <item>Examples:
 <enum>
 <item><bf><tt>"addTag NoExport """</tt></bf><newline>
@@ -14174,15 +14179,15 @@ that hides the Transformations property GUI.
 <label id="scdeltags">
 delTags:
 <itemize>
- <item>Synopsis: <tt/"delTags type"/
+ <item>Synopsis: <tt/"delTags [type]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Delete all tags of designated type from
-the currently selected objects(s).
-If type is <tt/"all"/, all tags are deleted from the
-currently selected objects(s).
+the currently selected objects.
+If the type parameter is omitted or <tt/"all"/, <em/all/ tags are
+deleted from the currently selected objects.
 <item>Examples:
 <enum>
-<item><bf><tt>"delTags all"</tt></bf><newline>
+<item><bf><tt>"delTags"</tt></bf><newline>
 removes all tags from the selected objects.
 <item><bf><tt>"delTags RP"</tt></bf><newline>
 removes all <tt>"RP"</tt> tags from the selected objects.
@@ -14198,7 +14203,7 @@ getTags:
  <item>Synopsis: <tt/"getTags tvname vvname"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Get all tags from
-the currently selected objects and put them as lists into two
+the currently selected object and put them as lists into two
 variables named tvname for the tag types and vvname for the tag
 values.
 </itemize>
@@ -14211,7 +14216,7 @@ setTags:
 <itemize>
  <item>Synopsis: <tt/"setTags tags"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Clear all tags from the currently selected object
+ <item>Description: Clear all tags from the currently selected objects
 and set new tags. The tag types are taken from the list elements
 with even index numbers
 and the tag value-strings from the list elements with odd index numbers.
@@ -14232,7 +14237,9 @@ getTag:
  <item>Synopsis: <tt/"getTag tagname vname"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Get the value of a specific tag from
-the currently selected object.
+the currently selected object and put it into the designated variable.
+If there is no tag of the specified type, the variable will be set
+to <tt/""/.
 </itemize>
 
 <sect2>Manipulating NURBS Curves and Surfaces<label id="scinurbs">
