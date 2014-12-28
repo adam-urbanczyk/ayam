@@ -759,13 +759,7 @@ ay_tags_deletetcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_tag *tag = NULL, **last = NULL;
- int mode = 0; /* 1 delall, 0 type */
-
-  if(argc < 2)
-    {
-      ay_error(AY_EARGS, argv[0], "type|all");
-      return TCL_OK;
-    }
+ int mode = 1; /* 1 delall, 0 type */
 
   if(!sel)
     {
@@ -773,9 +767,9 @@ ay_tags_deletetcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  if(!strcmp(argv[1], "all"))
+  if(argc > 1 && strcmp(argv[1], "all"))
     {
-      mode = 1;
+      mode = 0;
     }
 
   while(sel)
