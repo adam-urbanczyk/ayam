@@ -629,6 +629,9 @@ ay_capt_crttrimcap(ay_object *c, ay_object **cap)
       if(c->type != AY_IDNCURVE)
 	{ ay_status = AY_ERROR; goto cleanup; }
 
+      if(!ay_nct_isclosed(c->refine))
+	{ ay_status = AY_ERROR; goto cleanup; }
+
       ay_status = ay_nct_toxy(/*allow_flip=*/AY_FALSE, c);
       if(ay_status)
 	{ ay_status = AY_ERROR; goto cleanup; }
