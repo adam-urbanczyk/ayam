@@ -564,6 +564,14 @@ ay_bevel_notifycb(ay_object *o)
       /* create the bevel */
       ay_status = ay_bevelt_createc(b_radius, alignedcurve, bcurve,
 			     (ay_nurbpatch_object**)(void*)&(npatch->refine));
+
+      /* rotate bevel created from aligned curve
+	 back to the original curve orientation */
+      if(!ay_status && npatch->refine)
+	{
+	  ay_trafo_copy(alignedcurve, npatch);
+	  ay_npt_applytrafo(npatch);
+	}
     }
   else
     {
