@@ -7121,6 +7121,16 @@ curves.<footnote>Since 1.5.</footnote>
 When objects provide multiple NURBS curves, those do <em>not</em>
 form a single loop, but are seen as individual loops.
 
+<sect3>Caps and Bevels
+<p><#if out=latex>&nbsp;<newline></#if>
+The NPatch object supports the standard caps as lined out in section
+<ref id="capsprop" name="Caps Property">
+and the standard bevels as lined out in section
+<ref id="bevelsprop" name="Bevels Property">.<newline>
+The boundary names are <tt/U0/, <tt/U1/, <tt/V0/, and <tt/V1/.
+<p>
+Integration is not supported; the corresponding option is silently
+ignored.
 
 <sect3>Conversion Support
 <p><#if out=latex>&nbsp;<newline></#if>
@@ -7444,15 +7454,28 @@ try to revert the revolved curve.
 See section <ref id="npattr" name="NPatchAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
+<sect3>Caps and Bevels
+<p><#if out=latex>&nbsp;<newline></#if>
+The Revolve object supports the standard caps as lined out in section
+<ref id="capsprop" name="Caps Property">
+and the standard bevels as lined out in section
+<ref id="bevelsprop" name="Bevels Property">.<newline>
+The boundary names are <tt/Upper/ (curve formed by revolving the start
+point of the cross section), <tt/Lower/ (curve formed by revolving the
+end point of the cross section), <tt/Start/ (cross section), and
+<tt/End/ (cross section at end of revolution).
+
 <sect3>Conversion Support
 <p><#if out=latex>&nbsp;<newline></#if>
 The surface of revolution and the caps
 may be converted to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
 <p>
-If caps are present, an enclosing Level object will be created
-and the caps follow the surface of revolution in the following
+If bevels or caps are present, an enclosing Level object will be created
+and the bevels or caps follow the surface of revolution in the following
 order: upper, lower, start, end.
+<p>
+Integrated bevels or caps do not appear as extra objects.
 <p>
 The Revolve object provides a list of NURBS patch objects in the
 same order as created upon conversion.
@@ -7463,8 +7486,8 @@ Revolve objects will be exported as NURBS patch primitives:
 <tscreen>
 <tt>RiNuPatch(...);</tt>
 </tscreen>
-If caps are present, those follow as trimmed NURBS patch primitives
-in the following order: upper, lower, start, end.
+If bevels or caps are present, those follow as potentially trimmed NURBS
+patch primitives in the following order: upper, lower, start, end.
 <p>
 PV tags are supported but all NURBS patch primitives will get
 the same set of tags.<footnote>Since 1.20.</footnote>
@@ -7679,15 +7702,28 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 To help in the exact configuration of the swung surface, the <tt/"NPInfo"/
 field always displays the parameters of the created NURBS patch.
 
+<sect3>Caps and Bevels
+<p><#if out=latex>&nbsp;<newline></#if>
+The Swing object supports the standard caps as lined out in section
+<ref id="capsprop" name="Caps Property">
+and the standard bevels as lined out in section
+<ref id="bevelsprop" name="Bevels Property">.<newline>
+The boundary names are <tt/Start/ (cross section), <tt/End/ (cross section
+at end of sweep), <tt/Upper/ (curve formed by sweeping the start point of the
+cross section), and <tt/Lower/ (curve formed by sweeping the end point of the
+cross section).
+
 <sect3>Conversion Support
 <p><#if out=latex>&nbsp;<newline></#if>
 The swung surface and the caps
 may be converted to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
 <p>
-If caps are present, an enclosing Level object will be created
-and the caps follow the swung surface in the following
+If bevels or caps are present, an enclosing Level object will be created
+and the bevels or caps follow the swung surface in the following
 order: upper, lower, start, end.
+<p>
+Integrated bevels or caps do not appear as extra objects.
 <p>
 The Swing object provides a list of NURBS patch objects in the
 same order as created upon conversion.
@@ -7698,8 +7734,8 @@ Swing objects will be exported as NURBS patch primitives:
 <tscreen>
 <tt>RiNuPatch(...);</tt>
 </tscreen>
-If caps are present, those follow as trimmed NURBS patch primitives
-in the following order: upper, lower, start, end.
+If bevels or caps are present, those follow as potentially trimmed NURBS
+patch primitives in the following order: upper, lower, start, end.
 <p>
 PV tags are supported but all NURBS patch primitives will get
 the same set of tags.<footnote>Since 1.20.</footnote>
@@ -7882,6 +7918,17 @@ the Sweep object.
 <caption>Sweep Parameterisation Examples</caption>
 </table>
 
+<sect3>Caps and Bevels
+<p><#if out=latex>&nbsp;<newline></#if>
+The Sweep object supports the standard caps as lined out in section
+<ref id="capsprop" name="Caps Property">
+and the standard bevels as lined out in section
+<ref id="bevelsprop" name="Bevels Property">.<newline>
+The boundary names are <tt/Start/ (cross section), <tt/End/ (cross section
+at end of sweep), <tt/Left/ (curve formed by sweeping the start point of the
+cross section), and <tt/Right/ (curve formed by sweeping the end point of the
+cross section).
+
 <sect3>Conversion Support
 <p><#if out=latex>&nbsp;<newline></#if>
 The swept surface, the bevels and the caps
@@ -7890,7 +7937,10 @@ may be converted to ordinary NURBS patches using the main menu entry
 <p>
 If bevels or caps are present, an enclosing Level object will be created
 and the bevels and caps follow the swept surface in the following
-order: start bevel, start cap, end bevel, end cap.
+order: start bevel, start cap, end bevel, end cap, left bevel, left cap,
+right bevel, right cap.
+<p>
+Integrated bevels or caps do not appear as extra objects.
 <p>
 The Sweep object provides a list of NURBS patch objects in the
 same order as created upon conversion.
@@ -7903,7 +7953,8 @@ Sweep objects will be exported as NURBS patch primitives:
 </tscreen>
 If caps or bevels are present, those follow as potentially trimmed
 NURBS patch primitives in the following order: start bevel, start cap,
-end bevel, end cap.
+end bevel, end cap, left bevel, left cap,
+right bevel, right cap.
 <p>
 PV tags are supported but all NURBS patch primitives will get
 the same set of tags.<footnote>Since 1.20.</footnote>
@@ -7970,8 +8021,8 @@ Birail1|NCurve<f/<sup/&lowast;//|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline
 <p><#if out=latex>&nbsp;<newline></#if>
 The following parameters control the birailing process.
 <p>
-Similar to the <tt/"Sweep"/, the <tt/"Type"/ attribute controls whether the
-swept surface should be open, closed, or periodic in the direction
+Similar to the Sweep object, the <tt/"Type"/ attribute controls whether the
+birailed surface should be open, closed, or periodic in the direction
 of the rail curves.
 <p>
 The parameter <tt/"Sections"/ determines how many
@@ -7991,21 +8042,6 @@ Moreover, if <tt/"Sections"/ is zero, the order of the birail in U direction
 is taken from the first rail curve. Otherwise, the order of the created
 patch depends on the number of sections as follows: for 1 and 2 sections
 the order will be 2 and 3 respectively, in all other cases it will be 4.
-<p>
-The attributes <tt/"StartCap"/ and <tt/"EndCap"/ may be
-used to automatically create cap surfaces, that close the
-birailed surface on the respective end.
-Note that this only works properly if the cross section
-curve is closed and planar (e.g.~defined in the XY plane).
-<p>
-Since Ayam 1.10 bevels are available for birails.
-They are accessible through the new command entries <tt/"Add Start Bevel!"/
-and <tt/"Add End Bevel!"/ respectively. If one of those entries is used,
-a corresponding bevel parameter tag is created and more options will be
-made available in the property GUI to adjust the bevel parameters or
-remove the tag again.
-A more thorough discussion of those options is available in section
-<ref id="bevelp" name="BevelAttr Property">.
 <p>
 See section <ref id="npattr" name="NPatchAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
@@ -8030,6 +8066,17 @@ the Birail1 object.
 <caption>Birail1 Parameterisation Examples</caption>
 </table>
 
+<sect3>Caps and Bevels
+<p><#if out=latex>&nbsp;<newline></#if>
+The Birail1 object supports the standard caps as lined out in section
+<ref id="capsprop" name="Caps Property">
+and the standard bevels as lined out in section
+<ref id="bevelsprop" name="Bevels Property">.<newline>
+The boundary names are <tt/Start/ (cross section), <tt/End/ (cross section
+at end of sweep), <tt/Left/ (curve formed by sweeping the start point of the
+cross section), and <tt/Right/ (curve formed by sweeping the end point of the
+cross section).
+
 <sect3>Conversion Support
 <p><#if out=latex>&nbsp;<newline></#if>
 The birailed surface, the bevels, and the caps
@@ -8038,7 +8085,10 @@ may be converted to ordinary NURBS patches using the main menu entry
 <p>
 If bevels or caps are present, an enclosing Level object will be created
 and the bevels and caps follow the birailed surface in the following
-order: end bevel, end cap, start bevel, start cap.
+order: end bevel, end cap, start bevel, start cap, left bevel, left cap,
+right bevel, right cap.
+<p>
+Integrated bevels or caps do not appear as extra objects.
 <p>
 The Birail1 object provides a list of NURBS patch objects in the
 same order as created upon conversion.
@@ -8051,7 +8101,7 @@ Birail1 objects will be exported as NURBS patch primitives:
 </tscreen>
 If caps or bevels are present, those follow as potentially trimmed
 NURBS patch primitives in the following order: end bevel, end cap,
-start bevel, start cap.
+start bevel, start cap, left bevel, left cap, right bevel, right cap.
 <p>
 PV tags are supported but all NURBS patch primitives will get
 the same set of tags.<footnote>Since 1.20.</footnote>
@@ -8160,21 +8210,6 @@ If <tt/"InterpolCtrl"/ is disabled, the first and last border of the
 resulting surface will always exactly match the parameter curves (CS1 and
 CS2 respectively), regardless of the interpolation control curve.
 <p>
-The attributes <tt/"StartCap"/ and <tt/"EndCap"/ may be
-used to automatically create cap surfaces, that close the
-birailed surface on the respective end.
-Note that this only works properly if the cross section
-curve is closed and planar (e.g.~defined in the XY plane).
-<p>
-Since Ayam 1.10 bevels are available for birails.
-They are accessible through the new command entries <tt/"Add Start Bevel!"/
-and <tt/"Add End Bevel!"/ respectively. If one of those entries is used,
-a corresponding bevel parameter tag is created and more options will be
-made available
-in the property GUI to adjust the bevel parameters or remove the tag again.
-A more thorough discussion of those options is available in section
-<ref id="bevelp" name="BevelAttr Property">.
-<p>
 See section <ref id="npattr" name="NPatchAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 <p>
@@ -8196,6 +8231,17 @@ the Birail2 object.
 <caption>Birail2 Parameterisation Examples</caption>
 </table>
 
+<sect3>Caps and Bevels
+<p><#if out=latex>&nbsp;<newline></#if>
+The Birail2 object supports the standard caps as lined out in section
+<ref id="capsprop" name="Caps Property">
+and the standard bevels as lined out in section
+<ref id="bevelsprop" name="Bevels Property">.<newline>
+The boundary names are <tt/Start/ (first cross section), <tt/End/ (second
+cross section), <tt/Left/ (curve formed by sweeping the start point of the
+first cross section), and <tt/Right/ (curve formed by sweeping the end
+point of the first cross section).
+
 <sect3>Conversion Support
 <p><#if out=latex>&nbsp;<newline></#if>
 The birailed surface, the bevels, and the caps
@@ -8204,7 +8250,10 @@ may be converted to ordinary NURBS patches using the main menu entry
 <p>
 If bevels or caps are present, an enclosing Level object will be created
 and the bevels and caps follow the birailed surface in the following
-order: end bevel, end cap, start bevel, start cap.
+order: end bevel, end cap, start bevel, start cap, left bevel, left cap,
+right bevel, right cap.
+<p>
+Integrated bevels or caps do not appear as extra objects.
 <p>
 The Birail2 object provides a list of NURBS patch objects in the
 same order as created upon conversion.
@@ -8217,7 +8266,7 @@ Birail2 objects will be exported as NURBS patch primitives:
 </tscreen>
 If caps or bevels are present, those follow as potentially trimmed
 NURBS patch primitives in the following order: end bevel, end cap,
-start bevel, start cap.
+start bevel, start cap, left bevel, left cap, right bevel, right cap.
 <p>
 PV tags are supported but all NURBS patch primitives will get
 the same set of tags.<footnote>Since 1.20.</footnote>
@@ -8316,31 +8365,21 @@ then the order will be silently adapted to the number of skinned curves.
 New in Ayam 1.7 is support for the knot type Custom, which creates
 a chord length parameterisation, even if interpolation is not enabled.
 <p>
-The attributes <tt/"StartCap"/ and <tt/"EndCap"/ may be used
-to automatically create cap surfaces to close the skinned surface
-on both ends.
-Note that this works only if the respective curves are closed and
-planar (e.g.~defined in the XY plane).
-Furthermore, if the skin is not interpolating the respective parameter
-curves (this may be the case if the <tt/"Knot-Type_U"/ parameter is set
-to <tt/"B-Spline"/) the cap(s) will not be created in the right place.
-The cap(s) will always be created in the position of the first (last)
-parameter curve.
-<p>
-Since Ayam 1.10 bevels are available for skins.
-They are accessible through the new command entries <tt/"Add Start Bevel!"/
-and <tt/"Add End Bevel!"/ respectively. If one of those entries is used,
-a corresponding bevel parameter tag is created and more options will be
-made available
-in the property GUI to adjust the bevel parameters or remove the tag again.
-A more thorough discussion of those options is available in section
-<ref id="bevelp" name="BevelAttr Property">.
-<p>
 See section <ref id="npattr" name="NPatchAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 <p>
 To help in the exact configuration of the skinned surface, the <tt/"NPInfo"/
 field always displays the parameters of the created NURBS patch.
+
+<sect3>Caps and Bevels
+<p><#if out=latex>&nbsp;<newline></#if>
+The Skin object supports the standard caps as lined out in section
+<ref id="capsprop" name="Caps Property">
+and the standard bevels as lined out in section
+<ref id="bevelsprop" name="Bevels Property">.<newline>
+The boundary names are <tt/Start/ (first parameter curve), <tt/End/ (last
+parameter curve), <tt/Left/ (curve through start points of parameter curves),
+and <tt/Right/ (curve through end points of parameter curves).
 
 <sect3>Conversion Support
 <p><#if out=latex>&nbsp;<newline></#if>
@@ -8350,7 +8389,10 @@ may be converted to ordinary NURBS patches using the main menu entry
 <p>
 If bevels or caps are present, an enclosing Level object will be created
 and the bevels and caps follow the skinned surface in the following
-order: end bevel, end cap, start bevel, start cap.
+order: start bevel, start cap, end bevel, end cap, left bevel, left cap,
+right bevel, right cap.
+<p>
+Integrated bevels or caps do not appear as extra objects.
 <p>
 The Skin object provides a list of NURBS patch objects in the
 same order as created upon conversion.
@@ -8362,8 +8404,9 @@ Skin objects will be exported as NURBS patch primitives:
 <tt>RiNuPatch(...);</tt>
 </tscreen>
 If caps or bevels are present, those follow as potentially trimmed
-NURBS patch primitives in the following order: end bevel, end cap,
-start bevel, start cap.
+NURBS patch primitives in the following order: start bevel, start cap,
+end bevel, end cap, left bevel, left cap,
+right bevel, right cap.
 <p>
 PV tags are supported but all NURBS patch primitives will get
 the same set of tags.<footnote>Since 1.20.</footnote>
@@ -8516,10 +8559,31 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 To help in the exact configuration of the Gordon surface, the <tt/"NPInfo"/
 field always displays the parameters of the created NURBS patch.
 
+<sect3>Caps and Bevels
+<p><#if out=latex>&nbsp;<newline></#if>
+The Gordon object supports the standard caps as lined out in section
+<ref id="capsprop" name="Caps Property">
+and the standard bevels as lined out in section
+<ref id="bevelsprop" name="Bevels Property">.<newline>
+The boundary names are <tt/U0/ (first curve of first set), <tt/U1/ (last
+curve of first set),
+<tt/V0/ (first curve of second set), and <tt/V1/ (last curve of second set).
+
 <sect3>Conversion Support
 <p><#if out=latex>&nbsp;<newline></#if>
-The Gordon surface may be converted to an ordinary NURBS patch using the
+The Gordon surface, the bevels, and the caps may be converted to
+ordinary NURBS patches using the
 main menu entry <tt>"Tools/Convert"</tt>.
+<p>
+If bevels or caps are present, an enclosing Level object will be created
+and the bevels and caps follow the Gordon surface in the following
+order: u0 bevel, u0 cap, u1 bevel, u1 cap, v0 bevel, v0 cap,
+v1 bevel, v1 cap.
+<p>
+Integrated bevels or caps do not appear as extra objects.
+<p>
+The Gordon object provides a list of NURBS patch objects in the
+same order as created upon conversion.
 
 <sect3>RIB Export
 <p><#if out=latex>&nbsp;<newline></#if>
@@ -8527,7 +8591,11 @@ Gordon objects will be exported as NURBS patch primitives:
 <tscreen>
 <tt>RiNuPatch(...);</tt>
 </tscreen>
-
+If caps or bevels are present, those follow as potentially trimmed
+NURBS patch primitives in the following order: u0 bevel, u0 cap,
+u1 bevel, u1 cap, v0 bevel, v0 cap, v1 bevel, v1
+cap.<footnote>Since 1.21.</footnote>
+<p>
 PV tags are supported but all NURBS patch primitives will get
 the same set of tags.<footnote>Since 1.20.</footnote>
 
@@ -8876,10 +8944,28 @@ The output surface will then also be unclamped (in V direction).
 of the created NURBS patch.
 </itemize>
 
+<sect3>Caps and Bevels
+<p><#if out=latex>&nbsp;<newline></#if>
+The ConcatNP object supports the standard caps as lined out in section
+<ref id="capsprop" name="Caps Property">
+and the standard bevels as lined out in section
+<ref id="bevelsprop" name="Bevels Property">.<newline>
+The boundary names are <tt/U0/, <tt/U1/, <tt/V0/, and <tt/V1/.
+
 <sect3>Conversion Support
 <p><#if out=latex>&nbsp;<newline></#if>
 The concatenated surface may be converted to an ordinary NURBS patch using the
 main menu entry <tt>"Tools/Convert"</tt>.
+<p>
+If bevels or caps are present, an enclosing Level object will be created
+and the bevels and caps follow the concatenated surface in the following
+order: u0 bevel, u0 cap, u1 bevel, u1 cap, v0 bevel, v0 cap,
+v1 bevel, v1 cap.
+<p>
+Integrated bevels or caps do not appear as extra objects.
+<p>
+The ConcatNP object provides a list of NURBS patch objects in the
+same order as created upon conversion.
 
 <sect3>RIB Export
 <p><#if out=latex>&nbsp;<newline></#if>
@@ -8887,8 +8973,13 @@ ConcatNP objects will be exported as NURBS patch primitives:
 <tscreen>
 <tt>RiNuPatch(...);</tt>
 </tscreen>
-
-PV tags are supported.<footnote>Since 1.20.</footnote>
+If caps or bevels are present, those follow as potentially trimmed
+NURBS patch primitives in the following order: u0 bevel, u0 cap,
+u1 bevel, u1 cap, v0 bevel, v0 cap, v1 bevel, v1
+cap.<footnote>Since 1.21.</footnote>
+<p>
+PV tags are supported but all NURBS patch primitives will get
+the same set of tags.<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
