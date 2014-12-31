@@ -8668,6 +8668,15 @@ the creation of the bevelled surface:
 
  <item><tt/"Ridge"/ a more complex ridged surface,
 
+ <item><tt/"RoundToCap"/ a surface that starts in the direction of a
+progenitor surface tangent and rounds off to a cap surface (normals
+and tangents must be present as tag on the parameter curve),
+
+ <item><tt/"RoundToNormal"/ a surface that starts in the direction of a
+progenitor surface tangent and rounds off to a mean normal
+(normals and tangents must be present as tag on the parameter curve, the
+mean normal can be provided by a MN tag),
+
  <item>Any curves defined in a global level named <tt/"Bevels"/
 also appear as potential bevel type. Those curves should follow
 the rules layed out above for the second parameter curve.
@@ -8677,18 +8686,28 @@ Note that the bevel types <tt/"RoundCapped"/ and <tt/"LinearCapped"/
 are no longer available<footnote>Since Ayam 1.21.</footnote>,
 use the <tt/"Caps"/ property to create caps.
 
-<item><tt/"BevelRadius"/ controls the size of the bevelled surface when seen
-from the top of the parameter curve. Note that the size of the bevel is
-expressed in units defined by the object coordinate system of the
-controlling object. Scale values of the controlling object affect the
-bevel size.
+<item><tt/"Radius"/ controls the size and direction of the bevelled
+surface when seen from the top of the parameter curve. Note that the
+size of the bevel is expressed in units defined by the object coordinate
+system of the controlling object. Scale values of the controlling object
+affect the bevel size. Negative values are allowed and reverse the
+surface.
 
-<item><tt/"BevelRevert"/ allows to revert the sense of the bevelled surface,
+<item><tt/"Revert"/ allows to revert the sense of the bevelled surface,
 should it round inwards or outwards? The sense may also be controlled
 using the direction of the parameter curve and, additionally, the sense
 in a different dimension may also be affected by using negative values
 for the bevel radius.
+
+<item><tt/"Force3D"/ switches to 3D mode for all bevel types; if this
+is enabled, non-planar parameter curves are supported, but normals
+and tangents must be present as PV tag on the parameter curve.
 </itemize>
+<p>
+To create the tag with the normal and tangent information,
+the <tt/"Extract"/ option of the ExtrNC object can be used.
+Otherwise PV tags must be created manually or with the help
+of the scripting interface.
 <p>
 See section <ref id="npattr" name="NPatchAttr"> for a description
 of the two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/
@@ -8721,27 +8740,19 @@ PV tags are supported.<footnote>Since 1.20.</footnote>
 <caption>Cap Object (left: Curve, right: Resulting Cap Surface)</caption>
 </figure>
 <p>
-The cap object forms a surface that fills a closed planar NURBS curve.
-If multiple curves are present as child objects, the curves following
-the first curve define holes in the cap surface similar to the
+The cap object forms a surface that fills a closed NURBS curve.
+Since Ayam 1.21, four different types of cap surfaces with different
+characteristics and parameter curve requirements are supported:
+Trim, Simple, Gordon, Simple3D.
+<p>
+The <bf/Trim/ type needs planar curves but supports concave curves.
+Furthermore, if multiple curves are present as child objects, the curves
+following the first curve define holes in the cap surface similar to the
 parameter curves of an extruded surface (see also section
 <ref id="handb" name="Using Holes and Bevels">).
 <p>
-<figure loc="!ht">
-<eps file="pics/gordoncap.ps" height="5cm">
-<img src="pics/gordoncap.gif">
-<caption>Cap from Non-Planar Curve (left: Curve, right: Resulting Cap Surface)</caption>
-</figure>
-<p>
-Since Ayam 1.13 the cap object also supports the so called Gordon mode.
-Here, only a single parameter curve may be present but, in contrast
-to the standard mode of operation (Trim), in the Gordon mode the parameter
-curve may be non-planar. Internally the cap object will split the
-parameter curve into four sections and build a Gordon surface from
-the four sections (see the image above for an example).
-<p>
 Consequently, the template for the object hierarchy of a Cap object
-looks like this:
+in Trim mode looks like this:
 <tscreen><verb>
 +-Cap
  | Outline(NCurve)
@@ -8751,13 +8762,41 @@ looks like this:
   \ Part2(NCurve)]
 </verb></tscreen>
 <p>
-Note that, in Trim mode, the curves have to be planar and defined in
-the XY plane; see section
-<ref id="toxyt" name="To XY Tool"> for information on
-how to easily achieve this.
-Furthermore, cap generation may fail, if the control points of the
+Note that the cap generation may fail, if the control points of the
 first curve have weights and the curve leaves the convex hull of the
-control polygon. Be careful when using weights!
+control polygon.
+<p>
+The <bf/Simple/ type just extends the curve linearly to a middle point,
+not supporting non planar curves well and not supporting concave curves
+at all but ensuring compatibility with the progenitor curve/surface
+(which may be important for tesselation or further surface processing).
+<p>
+The <bf/Gordon/ type supports only a single parameter curve but this curve
+may be non planar. Internally the cap object will split the
+parameter curve into four sections and build a Gordon surface from
+the four sections (see the following image for an example).
+<figure loc="!ht">
+<eps file="pics/gordoncap.ps" height="5cm">
+<img src="pics/gordoncap.gif">
+<caption>Cap from Non-Planar Curve (left: Curve, right: Resulting Cap Surface)</caption>
+</figure>
+<p>
+The <bf/Simple3D/ type extends the curve to a middle point via an additional
+ring of control points, it therefore rounds more smoothly to the middle
+(especially useful for non planar parameter curves) and retains all other
+characteristics of the Simple type.
+<p>
+See also the following table for an overview on the available cap types:
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Type/|<bf/Planar/|<bf/Concave/|<bf/Holes/|<bf>Compatibility&thinsp;/&thinsp;Integration</bf>@<hline>
+Trim|Yes|Yes|Yes|No@<hline>
+Simple|Yes|No|No|Yes@<hline>
+Gordon|No|No|No|No@<hline>
+Simple3D|No|No|No|Yes<#if out=latex>@<hline></#if>
+</tabular>
+<caption>Cap Types Overview</caption>
+</table>
 <p>
 The Cap object watches the child objects and adapts to them automatically
 via the notification mechanism.
@@ -8780,11 +8819,17 @@ The attribute <tt/"Type"/ allows to select one of the following
 cap creation methods:
 <itemize>
 <item><tt/"Trim"/: a trimmed NURBS surface,
-<item><tt/"Simple"/: a simple cap,
-<item><tt/"Gordon"/: an untrimmed Gordon surface
+<item><tt/"Simple"/: a simple cap that extends linearly to a middle
+point,
+<item><tt/"Gordon"/: an untrimmed Gordon surface,
+<item><tt/"Simple3D"/: a simple cap with an additional ring of control
+points that therefore rounds more smoothly to the middle especially for
+non planar parameter curves.
 </itemize>
-See also the general discussion about the cap
-object above.
+See also the general discussion about the Cap object above.
+<p>
+The <tt/"Fraction"/ parameter allows to adjust the placement of the
+additional control point ring in Simple3D mode.
 <p>
 See section <ref id="npattr" name="NPatchAttr"> for a description
 of the two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/
@@ -10551,8 +10596,8 @@ corresponding cap type (see section <ref id="capp" name="CapAttr Property">
 for more information on the available cap types).
 <p>
 In addition, the Caps property allows to create caps that integrate with
-the surface of the tool object (after the potential integration of bevels)
-via the cap type <tt/"SimpleInt"/.
+the progenitor surface of the corresponding tool object (after the potential
+integration of bevels) via the additional parameter <tt/"Integrate"/.
 
 <sect2>Bevels Property<label id="bevelsprop">
 <p>
@@ -10562,7 +10607,8 @@ otherwise sharp borders of the created surface.
 Many attributes of the Bevels property are also available for the
 Bevel object (see also <ref id="bevelp" name="BevelAttr Property">).
 In addition to those attributes, the Bevels property allows to integrate
-the created bevel surface with the surface of the tool object.
+the created bevel surface with the progenitor surface of the corresponding
+tool object via the additional parameter <tt/"Integrate"/.
 <p>
 The exact names of the attributes available in this property are
 object type specific as each object types boundary names are different.
@@ -20181,8 +20227,10 @@ Index:
 <item>Flatness: <ref id="moattr" name="MetaObj attributes">
 <item>FontName: <ref id="textattr" name="Text attribute">
 <item>forAll: <ref id="scforall" name="scripting interface command">
+<item>Force3D: <ref id="bevelp" name="Bevel attribute">
 <item>Force Notification: <ref id="mmtools" name="main menu entry">
 <item>Formula: <ref id="mcattr" name="MetaComp attribute">
+<item>Fraction: <ref id="capattrprop" name="Cap attribute">
 <item>FRender, FRenderPT, FRenderUI:
 <ref id="prefrib" name="preference setting">
 <item>From:
@@ -20303,6 +20351,11 @@ Index:
 <item>insertScene: <ref id="scinsertscene" name="scripting interface command">
 <item>Instance: <ref id="instanceobj" name="Instance object">
 <item>Instant Apply: <ref id="propgui" name="instant apply facility">
+<item>Integrate:
+<itemize>
+<item><ref id="capsprop" name="Bevel attribute">,
+<item><ref id="bevelsprop" name="Cap attribute">
+</itemize>
 <item>Intensity: <ref id="lip" name="Light attribute">
 <item>Interior: <ref id="matshader" name="shader">
 <item>Interpolate:
@@ -20647,6 +20700,7 @@ Index:
 <item><ref id="cnp" name="Cone attribute">,
 <item><ref id="cyp" name="Cylinder attribute">,
 <item><ref id="ncircleattrprop" name="NCircle attribute">,
+<item><ref id="bevelattrprop" name="Bevel attribute">,
 <item><ref id="mcattr" name="MetaComp attribute">
 </itemize>
 <item>RadSteps: <ref id="rio" name="RenderMan interface option">
