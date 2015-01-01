@@ -8669,8 +8669,8 @@ the creation of the bevelled surface:
  <item><tt/"Ridge"/ a more complex ridged surface,
 
  <item><tt/"RoundToCap"/ a surface that starts in the direction of a
-progenitor surface tangent and rounds off to a cap surface (normals
-and tangents must be present as tag on the parameter curve),
+progenitor surface tangent and rounds off to a cap surface (tangents
+must be present as tag on the parameter curve),
 
  <item><tt/"RoundToNormal"/ a surface that starts in the direction of a
 progenitor surface tangent and rounds off to a mean normal
@@ -8706,8 +8706,15 @@ and tangents must be present as PV tag on the parameter curve.
 <p>
 To create the tag with the normal and tangent information,
 the <tt/"Extract"/ option of the ExtrNC object can be used.
-Otherwise PV tags must be created manually or with the help
-of the scripting interface.
+Otherwise PV tags of appropriate name, storage class, and data type
+must be created manually or with the help of the scripting interface.
+Consider the following example script:
+<tscreen><verb>
+crtOb NCurve -length 4 -order 2 -cv {0 0 0 1  1 0 0 1  0 1 0 1  0 0 0 1}
+uS;sL
+addTag PV "N,varying,n,4, -1,0,0, 1,0,0, 0,1,0, -1,0,0"
+addTag PV "T,varying,n,4, 0,0,1, 0,0,1, 0,0,1, 0,0,1"
+</verb></tscreen>
 <p>
 See section <ref id="npattr" name="NPatchAttr"> for a description
 of the two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/
