@@ -9065,6 +9065,9 @@ and move it to the newly created ExtrNP object.
 As the geometry of the extracted surface is completely defined by
 the master surface, ExtrNP objects do not support own transformation
 attributes.<footnote>Since 1.19.</footnote>
+However, if a NP tag makes the Transformation property available
+again, the transformation attributes will be
+employed as usual.<footnote>Since 1.21.</footnote>
 <p>
 Also note that eventually present trim curves will <em>not</em> be honored
 properly.
@@ -9109,10 +9112,27 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 of the extracted NURBS surface.
 </itemize>
 
+<sect3>Caps and Bevels
+<p><#if out=latex>&nbsp;<newline></#if>
+The ExtrNP object supports the standard caps as lined out in section
+<ref id="capsprop" name="Caps Property">
+and the standard bevels as lined out in section
+<ref id="bevelsprop" name="Bevels Property">.<newline>
+The boundary names are <tt/U0/, <tt/U1/, <tt/V0/, and <tt/V1/.
+
 <sect3>Conversion Support
 <p><#if out=latex>&nbsp;<newline></#if>
 The extracted surface may be converted to an ordinary NURBS patch using the
 main menu entry <tt>"Tools/Convert"</tt>.
+<p>
+If bevels or caps are present, an enclosing Level object will be created
+and the bevels or caps follow the extracted surface in the following
+order: u0, u1, v0, v1.
+<p>
+Integrated bevels or caps do not appear as extra objects.
+<p>
+The ExtrNP object provides a list of NURBS patch objects in the
+same order as created upon conversion.
 
 <sect3>RIB Export
 <p><#if out=latex>&nbsp;<newline></#if>
@@ -9120,8 +9140,11 @@ ExtrNP objects will be exported as NURBS patch primitives:
 <tscreen>
 <tt>RiNuPatch(...);</tt>
 </tscreen>
-
-PV tags are supported.<footnote>Since 1.20.</footnote>
+If bevels or caps are present, those follow as potentially trimmed NURBS
+patch primitives in the following order: u0, u1, v0, v1.
+<p>
+PV tags are supported but all NURBS patch primitives will get
+the same set of tags.<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
