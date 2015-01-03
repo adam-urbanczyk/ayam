@@ -66,6 +66,9 @@ ay_extrnp_deletecb(void *c)
   if(extrnp->npatch)
     (void)ay_object_delete(extrnp->npatch);
 
+  if(extrnp->caps_and_bevels)
+    (void)ay_object_deletemulti(extrnp->caps_and_bevels, AY_FALSE);
+
   free(extrnp);
 
  return AY_OK;
@@ -89,6 +92,7 @@ ay_extrnp_copycb(void *src, void **dst)
   memcpy(extrnp, src, sizeof(ay_extrnp_object));
 
   extrnp->npatch = NULL;
+  extrnp->caps_and_bevels = NULL;
 
   *dst = (void *)extrnp;
 
@@ -103,6 +107,7 @@ int
 ay_extrnp_drawcb(struct Togl *togl, ay_object *o)
 {
  ay_extrnp_object *extrnp;
+ ay_object *b;
 
   if(!o)
     return AY_ENULL;
@@ -115,6 +120,16 @@ ay_extrnp_drawcb(struct Togl *togl, ay_object *o)
   if(extrnp->npatch)
     ay_draw_object(togl, extrnp->npatch, AY_TRUE);
 
+  if(extrnp->caps_and_bevels)
+    {
+      b = extrnp->caps_and_bevels;
+      while(b)
+	{
+	  ay_draw_object(togl, b, AY_TRUE);
+	  b = b->next;
+	}
+    }
+
  return AY_OK;
 } /* ay_extrnp_drawcb */
 
@@ -126,6 +141,7 @@ int
 ay_extrnp_shadecb(struct Togl *togl, ay_object *o)
 {
  ay_extrnp_object *extrnp;
+ ay_object *b;
 
   if(!o)
     return AY_ENULL;
@@ -137,6 +153,16 @@ ay_extrnp_shadecb(struct Togl *togl, ay_object *o)
 
   if(extrnp->npatch)
     ay_shade_object(togl, extrnp->npatch, AY_FALSE);
+
+  if(extrnp->caps_and_bevels)
+    {
+      b = extrnp->caps_and_bevels;
+      while(b)
+	{
+	  ay_shade_object(togl, b, AY_FALSE);
+	  b = b->next;
+	}
+    }
 
  return AY_OK;
 } /* ay_extrnp_shadecb */
@@ -453,6 +479,7 @@ int
 ay_extrnp_wribcb(char *file, ay_object *o)
 {
  ay_extrnp_object *extrnp;
+ ay_object *b;
 
   if(!o)
    return AY_ENULL;
@@ -464,6 +491,16 @@ ay_extrnp_wribcb(char *file, ay_object *o)
 
   if(extrnp->npatch)
     ay_wrib_toolobject(file, extrnp->npatch, o);
+
+  if(extrnp->caps_and_bevels)
+    {
+      b = extrnp->caps_and_bevels;
+      while(b)
+	{
+	  ay_wrib_object(file, b);
+	  b = b->next;
+	}
+    }
 
  return AY_OK;
 } /* ay_extrnp_wribcb */
@@ -509,7 +546,10 @@ ay_extrnp_notifycb(ay_object *o)
  int ay_status = AY_OK;
  ay_extrnp_object *extrnp = NULL;
  ay_object *n = NULL, *pobject = NULL;
- ay_object *npatch = NULL;
+ ay_object *npatch = NULL, **nextcb = NULL;
+ ay_object *bevel = NULL;
+ ay_bparam bparams = {0};
+ ay_cparam cparams = {0};
  int mode, pnum, provided = AY_FALSE;
  double tolerance;
 
@@ -525,10 +565,18 @@ ay_extrnp_notifycb(ay_object *o)
   mode = extrnp->display_mode;
   tolerance = extrnp->glu_sampling_tolerance;
 
+  nextcb = &(extrnp->caps_and_bevels);
+
   /* remove old objects */
   if(extrnp->npatch)
     (void)ay_object_delete(extrnp->npatch);
   extrnp->npatch = NULL;
+
+  if(extrnp->caps_and_bevels)
+    {
+      (void)ay_object_deletemulti(extrnp->caps_and_bevels, AY_FALSE);
+      extrnp->caps_and_bevels = NULL;
+    }
 
   /* get patch to extract the npatch from */
   if(!o->down)
@@ -586,6 +634,32 @@ ay_extrnp_notifycb(ay_object *o)
 
   extrnp->npatch = npatch;
 
+  /* get bevel and cap parameters */
+  if(o->tags)
+    {
+      ay_bevelt_parsetags(o->tags, &bparams);
+      ay_capt_parsetags(o->tags, &cparams);
+    }
+
+  /* create/add caps */
+  if(cparams.has_caps)
+    {
+      ay_status = ay_capt_addcaps(&cparams, &bparams, extrnp->npatch, nextcb);
+      if(ay_status)
+	goto cleanup;
+
+      while(*nextcb)
+	nextcb = &((*nextcb)->next);
+    }
+
+  /* create/add bevels */
+  if(bparams.has_bevels)
+    {
+      ay_status = ay_bevelt_addbevels(&bparams, &cparams, extrnp->npatch, nextcb);
+      if(ay_status)
+	goto cleanup;
+    }
+
   /* copy transformation attributes over to extrnp object
      (the extracted patch is always at the same place as
      the original surface) */
@@ -596,6 +670,19 @@ ay_extrnp_notifycb(ay_object *o)
     tolerance;
   ((ay_nurbpatch_object *)npatch->refine)->display_mode =
     mode;
+
+  if(extrnp->caps_and_bevels)
+    {
+      bevel = extrnp->caps_and_bevels;
+      while(bevel)
+	{
+	  ((ay_nurbpatch_object *)
+	   (bevel->refine))->glu_sampling_tolerance = tolerance;
+	  ((ay_nurbpatch_object *)
+	   (bevel->refine))->display_mode = mode;
+	  bevel = bevel->next;
+	}
+    }
 
 cleanup:
 
@@ -634,7 +721,7 @@ ay_extrnp_providecb(ay_object *o, unsigned int type, ay_object **result)
   if(!e)
     return AY_ENULL;
 
- return ay_provide_nptoolobj(o, type, e->npatch, NULL, result);
+ return ay_provide_nptoolobj(o, type, e->npatch, e->caps_and_bevels, result);
 } /* ay_extrnp_providecb */
 
 
@@ -654,7 +741,7 @@ ay_extrnp_convertcb(ay_object *o, int in_place)
   if(!e)
     return AY_ENULL;
 
- return ay_convert_nptoolobj(o, e->npatch, NULL, in_place);
+ return ay_convert_nptoolobj(o, e->npatch, e->caps_and_bevels, in_place);
 } /* ay_extrnp_convertcb */
 
 

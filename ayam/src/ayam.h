@@ -1142,6 +1142,9 @@ typedef struct ay_extrnp_object_s
   double umin, umax, vmin, vmax;
   /*@}*/
 
+  /** cached caps and bevel objects */
+  ay_object *caps_and_bevels;
+
   /** cached NURBS patch representation */
   ay_object *npatch;
 
