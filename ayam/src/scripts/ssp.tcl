@@ -1,7 +1,7 @@
 #
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
-# Ayam is copyrighted 1998-2010 by Randolf Schultz
+# Ayam is copyrighted 1998-2015 by Randolf Schultz
 # (randolf.schultz@gmail.com) and others.
 #
 # All rights reserved.
@@ -54,7 +54,6 @@ proc ssp_restore { } {
 
 
 # add to toolbox
-
 set b $ay(tbw).ssp
 if { ![winfo exists $b] } {
   button $b -padx 0 -pady 0 -image ay_SSP_img -command ssp_save
@@ -65,12 +64,10 @@ if { ![winfo exists $b] } {
   button $b -padx 0 -pady 0 -image ay_RSP_img -command ssp_restore
   lappend ay(toolbuttons) rsp
 }
-
 toolbox_layout
 
 
 # add to custom menu
-
 set m $ay(cm)
 $m add command -label "Save Point Selection" -command ssp_save
 $m add command -label "Restore Point Selection" -command ssp_restore
