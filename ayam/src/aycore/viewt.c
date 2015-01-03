@@ -440,6 +440,7 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
 	  goto cleanup;
 	}
 
+      ay_trafo_identitymatrix(mt);
       if(!zoom_to_all && ay_currentlevel->object != ay_root)
 	{
 	  ay_trafo_getparent(ay_currentlevel->next, mt);
@@ -2544,7 +2545,6 @@ ay_viewt_markfromselp(struct Togl *togl, int mode)
   glGetDoublev(GL_PROJECTION_MATRIX, mp);
 
   ay_trafo_identitymatrix(mm);
-
   if(ay_currentlevel->object != ay_root)
     {
       ay_trafo_getparent(ay_currentlevel->next, mm);
