@@ -9719,7 +9719,7 @@ ay_npt_recreatemp(ay_nurbpatch_object *np)
 	  found = AY_FALSE;
 	  while(mp && !found)
 	    {
-	      if(AY_V4COMP(ta, mp->points[0]))
+	      if(AY_V3COMP(ta, mp->points[0]))
 		{
 		  found = AY_TRUE;
 		  break;
@@ -11785,7 +11785,7 @@ ay_npt_gndu(char dir, ay_nurbpatch_object *np, int i, double *p,
 	 a different control point than p
 	 (in terms of their coordinate values)
 	 or we run off the edge of the patch */
-      while(AY_V4COMP(p, p2))
+      while(AY_V3COMP(p, p2))
 	{
 	  p2 += offset;
 	  i++;
@@ -11815,7 +11815,7 @@ ay_npt_gndu(char dir, ay_nurbpatch_object *np, int i, double *p,
 	 a different control point than p
 	 (in terms of their coordinate values)
 	 or we run off the edge of the patch */
-      while(AY_V4COMP(p, p2))
+      while(AY_V3COMP(p, p2))
 	{
 	  p2 += offset;
 	  i--;
@@ -11868,7 +11868,7 @@ ay_npt_gndv(char dir, ay_nurbpatch_object *np, int j, double *p,
 	 a different control point than p
 	 (in terms of their coordinate values)
 	 or we run off the edge of the patch */
-      while(AY_V4COMP(p, p2))
+      while(AY_V3COMP(p, p2))
 	{
 	  p2 += offset;
 	  j--;
@@ -11898,7 +11898,7 @@ ay_npt_gndv(char dir, ay_nurbpatch_object *np, int j, double *p,
 	 a different control point than p
 	 (in terms of their coordinate values)
 	 or we run off the edge of the patch */
-      while(AY_V4COMP(p, p2))
+      while(AY_V3COMP(p, p2))
 	{
 	  p2 += offset;
 	  j++;
@@ -11952,7 +11952,7 @@ ay_npt_gnduc(char dir, ay_nurbpatch_object *np, int i, double *p,
 	 a different control point than p
 	 (in terms of their coordinate values)
 	 or we get to p again or we fall off the patch */
-      while(AY_V4COMP(p, p2))
+      while(AY_V3COMP(p, p2))
 	{
 	  p2 += offset;
 
@@ -11984,7 +11984,7 @@ ay_npt_gnduc(char dir, ay_nurbpatch_object *np, int i, double *p,
 	 a different control point than p
 	 (in terms of their coordinate values)
 	 or we get to p again or we fall off the patch */
-      while(AY_V4COMP(p, p2))
+      while(AY_V3COMP(p, p2))
 	{
 	  p2 += offset;
 
@@ -12028,6 +12028,7 @@ ay_npt_gndvc(char dir, ay_nurbpatch_object *np, int j, double *p,
       if(j == 0)
 	{
 	  /* wrap around */
+	  j = np->height-2;
 	  p2 = p + ((np->height-2) * stride);
 	}
       else
@@ -12039,7 +12040,7 @@ ay_npt_gndvc(char dir, ay_nurbpatch_object *np, int j, double *p,
 	 a different control point than p
 	 (in terms of their coordinate values)
 	 or we get to p again or we fall off the patch */
-      while(AY_V4COMP(p, p2))
+      while(AY_V3COMP(p, p2))
 	{
 	  p2 += offset;
 
@@ -12059,6 +12060,7 @@ ay_npt_gndvc(char dir, ay_nurbpatch_object *np, int j, double *p,
       if(j == np->height-1)
 	{
 	  /* wrap around */
+	  j = 1;
 	  p2 = p - ((np->height-2) * stride);
 	}
       else
@@ -12070,7 +12072,7 @@ ay_npt_gndvc(char dir, ay_nurbpatch_object *np, int j, double *p,
 	 a different control point than p
 	 (in terms of their coordinate values)
 	 or we get to p again or we fall off the patch */
-      while(AY_V4COMP(p, p2))
+      while(AY_V3COMP(p, p2))
 	{
 	  p2 += offset;
 
@@ -12140,7 +12142,7 @@ ay_npt_gndup(char dir, ay_nurbpatch_object *np, int i, double *p,
      a different control point than p
      (in terms of their coordinate values)
      or we get to p again */
-  while(AY_V4COMP(p, p2))
+  while(AY_V3COMP(p, p2))
     {
       p2 += offset;
 
@@ -12208,7 +12210,7 @@ ay_npt_gndvp(char dir, ay_nurbpatch_object *np, int j, double *p,
      a different control point than p
      (in terms of their coordinate values)
      or we get to p again */
-  while(AY_V4COMP(p, p2))
+  while(AY_V3COMP(p, p2))
     {
       p2 += offset;
 
@@ -12396,6 +12398,20 @@ cleanup:
  return ay_status;
 } /* ay_npt_offset */
 
+#if 0
+#define AY_UPDATENORMAL(p1,p2,p3) {ay_geom_calcnfrom3(p1, p2, p3, normal2);\
+		  if(nnormals)\
+		    {\
+		      normal1[0] += normal2[0];\
+		      normal1[1] += normal2[1];\
+		      normal1[2] += normal2[2];\
+		    }\
+		  else\
+		    {\
+		      memcpy(normal1, normal2, 3*sizeof(double));\
+		    }\
+		  nnormals++;}
+#endif
 
 /* ay_npt_getnormal:
  *
@@ -12405,8 +12421,8 @@ ay_npt_getnormal(ay_nurbpatch_object *np, int i, int j,
 		 ay_npt_gndcb *gnducb, ay_npt_gndcb *gndvcb,
 		 int store_tangents, double *result)
 {
- double *p0, *p1, *p2, *p3, *p4;
  int nnormals = 0, stride = 4;
+ double *p0, *p1, *p2, *p3, *p4;
  double normal1[3] = {0}, normal2[3] = {0};
  double tangentu[3] = {0}, tangentv[3] = {0};
 
@@ -12425,53 +12441,219 @@ ay_npt_getnormal(ay_nurbpatch_object *np, int i, int j,
   if(p1 && p2)
     {
       ay_geom_calcnfrom3(p0, p1, p2, normal1);
-      nnormals++;
+      if(normal1[0] == normal1[0])
+	nnormals++;
     }
   if(p2 && p3)
     {
       ay_geom_calcnfrom3(p0, p2, p3, normal2);
-      if(nnormals)
+      if(normal2[0] == normal2[0])
 	{
-	  normal1[0] += normal2[0];
-	  normal1[1] += normal2[1];
-	  normal1[2] += normal2[2];
+	  if(nnormals)
+	    {
+	      normal1[0] += normal2[0];
+	      normal1[1] += normal2[1];
+	      normal1[2] += normal2[2];
+	    }
+	  else
+	    {
+	      memcpy(normal1, normal2, 3*sizeof(double));
+	    }
+	  nnormals++;
 	}
-      else
-	{
-	  memcpy(normal1, normal2, 3*sizeof(double));
-	}
-      nnormals++;
     }
   if(p3 && p4)
     {
       ay_geom_calcnfrom3(p0, p3, p4, normal2);
-      if(nnormals)
+      if(normal2[0] == normal2[0])
 	{
-	  normal1[0] += normal2[0];
-	  normal1[1] += normal2[1];
-	  normal1[2] += normal2[2];
+	  if(nnormals)
+	    {
+	      normal1[0] += normal2[0];
+	      normal1[1] += normal2[1];
+	      normal1[2] += normal2[2];
+	    }
+	  else
+	    {
+	      memcpy(normal1, normal2, 3*sizeof(double));
+	    }
+	  nnormals++;
 	}
-      else
-	{
-	  memcpy(normal1, normal2, 3*sizeof(double));
-	}
-      nnormals++;
     }
   if(p4 && p1)
     {
       ay_geom_calcnfrom3(p0, p4, p1, normal2);
-      if(nnormals)
+      if(normal2[0] == normal2[0])
 	{
-	  normal1[0] += normal2[0];
-	  normal1[1] += normal2[1];
-	  normal1[2] += normal2[2];
+	  if(nnormals)
+	    {
+	      normal1[0] += normal2[0];
+	      normal1[1] += normal2[1];
+	      normal1[2] += normal2[2];
+	    }
+	  else
+	    {
+	      memcpy(normal1, normal2, 3*sizeof(double));
+	    }
+	  nnormals++;
+	}
+    }
+
+  if(nnormals == 0)
+    {
+      memset(normal1, 0, 3*sizeof(double));
+      if(p2 || p4)
+	{
+	  /* degenerate in horizontal direction */
+	  /* p2 and p4 are possibly valid */
+	  if(p2)
+	    {
+	      gnducb(AY_EAST, np, i, p2, &p1);
+	      if(p1)
+		{
+		  /*AY_UPDATENORMALS(p0,p1,p2);*/
+		  ay_geom_calcnfrom3(p0, p1, p2, normal2);
+		  if(nnormals)
+		    {
+		      normal1[0] += normal2[0];
+		      normal1[1] += normal2[1];
+		      normal1[2] += normal2[2];
+		    }
+		  else
+		    {
+		      memcpy(normal1, normal2, 3*sizeof(double));
+		    }
+		  nnormals++;
+		}
+	      gnducb(AY_WEST, np, i, p2, &p3);
+	      if(p3)
+		{
+		  ay_geom_calcnfrom3(p0, p2, p3, normal2);
+		  if(nnormals)
+		    {
+		      normal1[0] += normal2[0];
+		      normal1[1] += normal2[1];
+		      normal1[2] += normal2[2];
+		    }
+		  else
+		    {
+		      memcpy(normal1, normal2, 3*sizeof(double));
+		    }
+		  nnormals++;
+		}
+	    } /* if p2 */
+	  if(p4)
+	    {
+	      gnducb(AY_EAST, np, i, p4, &p1);
+	      if(p1)
+		{
+		  ay_geom_calcnfrom3(p0, p4, p1, normal2);
+		  if(nnormals)
+		    {
+		      normal1[0] += normal2[0];
+		      normal1[1] += normal2[1];
+		      normal1[2] += normal2[2];
+		    }
+		  else
+		    {
+		      memcpy(normal1, normal2, 3*sizeof(double));
+		    }
+		  nnormals++;
+		}
+	      gnducb(AY_WEST, np, i, p4, &p3);
+	      if(p3)
+		{
+		  ay_geom_calcnfrom3(p0, p3, p4, normal2);
+		  if(nnormals)
+		    {
+		      normal1[0] += normal2[0];
+		      normal1[1] += normal2[1];
+		      normal1[2] += normal2[2];
+		    }
+		  else
+		    {
+		      memcpy(normal1, normal2, 3*sizeof(double));
+		    }
+		  nnormals++;
+		}
+	    } /* if p4 */
 	}
       else
 	{
-	  memcpy(normal1, normal2, 3*sizeof(double));
-	}
-      nnormals++;
-    }
+	  /* degenerate in vertical direction */
+	  /* p1 and p3 are possibly valid */
+	  if(p1)
+	    {
+	      gndvcb(AY_SOUTH, np, j, p1, &p2);
+	      if(p2)
+		{
+		  ay_geom_calcnfrom3(p0, p1, p2, normal2);
+		  if(nnormals)
+		    {
+		      normal1[0] += normal2[0];
+		      normal1[1] += normal2[1];
+		      normal1[2] += normal2[2];
+		    }
+		  else
+		    {
+		      memcpy(normal1, normal2, 3*sizeof(double));
+		    }
+		  nnormals++;
+		}
+	      gndvcb(AY_NORTH, np, j, p1, &p4);
+	      if(p4)
+		{
+		  ay_geom_calcnfrom3(p0, p4, p1, normal2);
+		  if(nnormals)
+		    {
+		      normal1[0] += normal2[0];
+		      normal1[1] += normal2[1];
+		      normal1[2] += normal2[2];
+		    }
+		  else
+		    {
+		      memcpy(normal1, normal2, 3*sizeof(double));
+		    }
+		  nnormals++;
+		}
+	    } /* if p1 */
+	  if(p3)
+	    {
+	      gndvcb(AY_SOUTH, np, j, p3, &p2);
+	      if(p2)
+		{
+		  ay_geom_calcnfrom3(p0, p2, p3, normal2);
+		  if(nnormals)
+		    {
+		      normal1[0] += normal2[0];
+		      normal1[1] += normal2[1];
+		      normal1[2] += normal2[2];
+		    }
+		  else
+		    {
+		      memcpy(normal1, normal2, 3*sizeof(double));
+		    }
+		  nnormals++;
+		}
+	      gndvcb(AY_NORTH, np, j, p3, &p4);
+	      if(p4)
+		{
+		  ay_geom_calcnfrom3(p0, p3, p4, normal2);
+		  if(nnormals)
+		    {
+		      normal1[0] += normal2[0];
+		      normal1[1] += normal2[1];
+		      normal1[2] += normal2[2];
+		    }
+		  else
+		    {
+		      memcpy(normal1, normal2, 3*sizeof(double));
+		    }
+		  nnormals++;
+		}
+	    } /* if p3 */
+	} /* if horizontal / vertical */
+    } /* if degenerate */
 
   if(nnormals > 1)
     {
