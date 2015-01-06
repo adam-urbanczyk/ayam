@@ -118,7 +118,7 @@ ay_geom_pointstoplane(double x1, double y1, double z1,
 void
 ay_geom_calcnfrom3(double *p1, double *p2, double *p3, double *n)
 {
- double v1[3] = {0}, v2[3] = {0}, len = 0.0;
+ double v1[3], v2[3], len;
 
   if(!p1 || !p2 || !p3 || !n)
    return;
@@ -127,7 +127,8 @@ ay_geom_calcnfrom3(double *p1, double *p2, double *p3, double *n)
   AY_V3SUB(v1, p3, p2)
   AY_V3CROSS(n, v1, v2)
   len = AY_V3LEN(n);
-  AY_V3SCAL(n, 1.0/len)
+  if(len > AY_EPSILON)
+    AY_V3SCAL(n, 1.0/len)
 
  return;
 } /* ay_geom_calcnfrom3 */
