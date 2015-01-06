@@ -12228,18 +12228,20 @@ ay_npt_gndvp(char dir, ay_nurbpatch_object *np, int j, double *p,
 } /* ay_npt_gndvp */
 
 
-#define AY_UPDATENORMAL(p1,p2,p3) {ay_geom_calcnfrom3(p1, p2, p3, normal2);\
-		  if(nnormals)\
-		    {\
-		      normal1[0] += normal2[0];\
-		      normal1[1] += normal2[1];\
-		      normal1[2] += normal2[2];\
-		    }\
-		  else\
-		    {\
-		      memcpy(normal1, normal2, 3*sizeof(double));\
-		    }\
-		  nnormals++;}
+#define AY_UPDATENORMAL(p1,p2,p3) {\
+    ay_geom_calcnfrom3(p1, p2, p3, normal2);\
+    if(nnormals)\
+      {\
+	normal1[0] += normal2[0];\
+	normal1[1] += normal2[1];\
+	normal1[2] += normal2[2];\
+      }\
+    else\
+      {\
+	memcpy(normal1, normal2, 3*sizeof(double));\
+      }\
+    nnormals++;\
+}
 
 
 /* ay_npt_offset:
@@ -12305,53 +12307,19 @@ ay_npt_offset(ay_object *o, int mode, double offset, ay_nurbpatch_object **np)
 
 	  if(p1 && p2)
 	    {
-	      ay_geom_calcnfrom3(p0, p1, p2, normal1);
-	      nnormals++;
+	      AY_UPDATENORMAL(p0,p1,p2);
 	    }
 	  if(p2 && p3)
 	    {
-	      ay_geom_calcnfrom3(p0, p2, p3, normal2);
-	      if(nnormals)
-		{
-		  normal1[0] += normal2[0];
-		  normal1[1] += normal2[1];
-		  normal1[2] += normal2[2];
-		}
-	      else
-		{
-		  memcpy(normal1, normal2, 3*sizeof(double));
-		}
-	      nnormals++;
+	      AY_UPDATENORMAL(p0,p2,p3);
 	    }
 	  if(p3 && p4)
 	    {
-	      ay_geom_calcnfrom3(p0, p3, p4, normal2);
-	      if(nnormals)
-		{
-		  normal1[0] += normal2[0];
-		  normal1[1] += normal2[1];
-		  normal1[2] += normal2[2];
-		}
-	      else
-		{
-		  memcpy(normal1, normal2, 3*sizeof(double));
-		}
-	      nnormals++;
+	      AY_UPDATENORMAL(p0,p3,p4);
 	    }
 	  if(p4 && p1)
 	    {
-	      ay_geom_calcnfrom3(p0, p4, p1, normal2);
-	      if(nnormals)
-		{
-		  normal1[0] += normal2[0];
-		  normal1[1] += normal2[1];
-		  normal1[2] += normal2[2];
-		}
-	      else
-		{
-		  memcpy(normal1, normal2, 3*sizeof(double));
-		}
-	      nnormals++;
+	      AY_UPDATENORMAL(p0,p4,p1);
 	    }
 
 	  if(nnormals == 0)
@@ -12510,63 +12478,19 @@ ay_npt_getnormal(ay_nurbpatch_object *np, int i, int j,
   /* calulate mean normal from 1-4 normals */
   if(p1 && p2)
     {
-      ay_geom_calcnfrom3(p0, p1, p2, normal1);
-      if(normal1[0] == normal1[0])
-	nnormals++;
+      AY_UPDATENORMAL(p0,p1,p2);
     }
   if(p2 && p3)
     {
-      ay_geom_calcnfrom3(p0, p2, p3, normal2);
-      if(normal2[0] == normal2[0])
-	{
-	  if(nnormals)
-	    {
-	      normal1[0] += normal2[0];
-	      normal1[1] += normal2[1];
-	      normal1[2] += normal2[2];
-	    }
-	  else
-	    {
-	      memcpy(normal1, normal2, 3*sizeof(double));
-	    }
-	  nnormals++;
-	}
+      AY_UPDATENORMAL(p0,p2,p3);
     }
   if(p3 && p4)
     {
-      ay_geom_calcnfrom3(p0, p3, p4, normal2);
-      if(normal2[0] == normal2[0])
-	{
-	  if(nnormals)
-	    {
-	      normal1[0] += normal2[0];
-	      normal1[1] += normal2[1];
-	      normal1[2] += normal2[2];
-	    }
-	  else
-	    {
-	      memcpy(normal1, normal2, 3*sizeof(double));
-	    }
-	  nnormals++;
-	}
+      AY_UPDATENORMAL(p0,p3,p4);
     }
   if(p4 && p1)
     {
-      ay_geom_calcnfrom3(p0, p4, p1, normal2);
-      if(normal2[0] == normal2[0])
-	{
-	  if(nnormals)
-	    {
-	      normal1[0] += normal2[0];
-	      normal1[1] += normal2[1];
-	      normal1[2] += normal2[2];
-	    }
-	  else
-	    {
-	      memcpy(normal1, normal2, 3*sizeof(double));
-	    }
-	  nnormals++;
-	}
+      AY_UPDATENORMAL(p0,p4,p1);
     }
 
   if(nnormals == 0)
