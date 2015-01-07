@@ -59,9 +59,9 @@ ay_shade_cleansil(struct Togl *togl, int selection, unsigned char *sil)
 	     }
 	 }
        glLineWidth((GLfloat)ay_prefs.sellinewidth);
-       col[0] = (unsigned char)ay_prefs.ser*255;
-       col[1] = (unsigned char)ay_prefs.seg*255;
-       col[2] = (unsigned char)ay_prefs.seb*255;
+       col[0] = (unsigned char)(ay_prefs.ser*255);
+       col[1] = (unsigned char)(ay_prefs.seg*255);
+       col[2] = (unsigned char)(ay_prefs.seb*255);
        glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
 		 (GLfloat)ay_prefs.seb);
        while(sel)
@@ -75,9 +75,9 @@ ay_shade_cleansil(struct Togl *togl, int selection, unsigned char *sil)
   else
     {
       glLineWidth((GLfloat)ay_prefs.linewidth);
-      col[0] = (unsigned char)ay_prefs.obr*255;
-      col[1] = (unsigned char)ay_prefs.obg*255;
-      col[2] = (unsigned char)ay_prefs.obb*255;
+      col[0] = (unsigned char)(ay_prefs.obr*255);
+      col[1] = (unsigned char)(ay_prefs.obg*255);
+      col[2] = (unsigned char)(ay_prefs.obb*255);
       glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
 	    (GLfloat)ay_prefs.obb);
       while(o->next)
@@ -566,15 +566,15 @@ ay_shade_detectsilhouettes(struct Togl *togl, int selection)
   /* create the silhouette texture */
   if(selection)
     {
-      color[0] = (unsigned char)ay_prefs.ser*255;
-      color[1] = (unsigned char)ay_prefs.seg*255;
-      color[2] = (unsigned char)ay_prefs.seb*255;
+      color[0] = (unsigned char)(ay_prefs.ser*255);
+      color[1] = (unsigned char)(ay_prefs.seg*255);
+      color[2] = (unsigned char)(ay_prefs.seb*255);
     }
   else
     {
-      color[0] = (unsigned char)ay_prefs.obr*255;
-      color[1] = (unsigned char)ay_prefs.obg*255;
-      color[2] = (unsigned char)ay_prefs.obb*255;
+      color[0] = (unsigned char)(ay_prefs.obr*255);
+      color[1] = (unsigned char)(ay_prefs.obg*255);
+      color[2] = (unsigned char)(ay_prefs.obb*255);
     }
   color[3] = 255;
 
