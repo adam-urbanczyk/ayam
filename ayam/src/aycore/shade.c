@@ -1102,6 +1102,10 @@ ay_shade_view(struct Togl *togl)
 
       ay_draw_view(togl, AY_TRUE);
     }
+  else
+    {
+      glLineWidth((GLfloat)1.0f);
+    }
 
   if(sil)
     free(sil);
