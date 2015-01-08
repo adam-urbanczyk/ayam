@@ -1,5 +1,5 @@
-[18. Dec 2014] CVS-Head:
-========================
+[8. Jan 2015] CVS-Head:
+=======================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
 o crash when removing wrong trim curves from patches (SF 3514206)
@@ -124,7 +124,11 @@ o added tesselation GUI option and TP tag parameter "RefineTrims" that
   tesselation for improved tesselation fidelity along trim edges
 o added specialized polygon based tesselator for planar trimmed patches
   to STESS tesselation
+o added "ConvertTags" preference option that controls which tags are to
+  be copied during conversion and provide
 o concatenating NURBS surfaces via ConcatNP objects now supports trim curves
+o offset surfaces (OffsetNP) and normal extraction (in the ExtrNC object)
+  now support degenerate surfaces
 o rotate and scale about interactive modelling actions now round the
   resulting transformation attributes or modified points to a specified
   number of digits to avoid displaying unreadable numbers in the respective
@@ -271,6 +275,10 @@ o "aac" and "aapnt" scripts now appear and convey their keyboard shortcut in
   the Custom menu
 o added "getTag" command to get a specific tag
 o added "-get" subcommand to "selPnts" command
+o the "delTags" command now also supports calling without parameters to
+  remove all tags
+o added helper script "ssp.tcl" that introduces saving of the point selection
+  to a tag
 
 Import/Export:
 o X3D export now has a special mode to inject the exported X3D scene
