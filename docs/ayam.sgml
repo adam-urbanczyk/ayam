@@ -8750,7 +8750,7 @@ PV tags are supported.<footnote>Since 1.20.</footnote>
 The cap object forms a surface that fills a closed NURBS curve.
 Since Ayam 1.21, four different types of cap surfaces with different
 characteristics and parameter curve requirements are supported:
-Trim, Simple, Gordon, Simple3D.
+Trim, Gordon, Simple, Simple3D.
 <p>
 The <bf/Trim/ type needs planar curves but supports concave curves.
 Furthermore, if multiple curves are present as child objects, the curves
@@ -8773,11 +8773,6 @@ Note that the cap generation may fail, if the control points of the
 first curve have weights and the curve leaves the convex hull of the
 control polygon.
 <p>
-The <bf/Simple/ type just extends the curve linearly to a middle point,
-not supporting non planar curves well and not supporting concave curves
-at all but ensuring compatibility with the progenitor curve/surface
-(which may be important for tesselation or further surface processing).
-<p>
 The <bf/Gordon/ type supports only a single parameter curve but this curve
 may be non planar. Internally the cap object will split the
 parameter curve into four sections and build a Gordon surface from
@@ -8787,6 +8782,11 @@ the four sections (see the following image for an example).
 <img src="pics/gordoncap.gif">
 <caption>Cap from Non-Planar Curve (left: Curve, right: Resulting Cap Surface)</caption>
 </figure>
+<p>
+The <bf/Simple/ type just extends the curve linearly to a middle point,
+not supporting non planar curves well and not supporting concave curves
+at all but ensuring compatibility with the progenitor curve/surface
+(which may be important for tesselation or further surface processing).
 <p>
 The <bf/Simple3D/ type extends the curve to a middle point via an additional
 ring of control points, it therefore rounds more smoothly to the middle
@@ -8798,8 +8798,8 @@ See also the following table for an overview on the available cap types:
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Planar/|<bf/Concave/|<bf/Holes/|<bf>Compatibility&thinsp;/&thinsp;Integration</bf>@<hline>
 Trim|Yes|Yes|Yes|No@<hline>
-Simple|Yes|No|No|Yes@<hline>
 Gordon|No|No|No|No@<hline>
+Simple|Yes|No|No|Yes@<hline>
 Simple3D|No|No|No|Yes<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Cap Types Overview</caption>
@@ -8826,9 +8826,9 @@ The attribute <tt/"Type"/ allows to select one of the following
 cap creation methods:
 <itemize>
 <item><tt/"Trim"/: a trimmed NURBS surface,
+<item><tt/"Gordon"/: an untrimmed Gordon surface,
 <item><tt/"Simple"/: a simple cap that extends linearly to a middle
 point,
-<item><tt/"Gordon"/: an untrimmed Gordon surface,
 <item><tt/"Simple3D"/: a simple cap with an additional ring of control
 points that therefore rounds more smoothly to the middle especially for
 non planar parameter curves.
@@ -9157,12 +9157,15 @@ the same set of tags.<footnote>Since 1.20.</footnote>
 </figure>
 <p>
 The OffsetNP object creates offset surfaces from
-NURBS surfaces using a simple algorithm.<footnote>Since 1.17.</footnote>
+NURBS surfaces using a simple algorithm: each control point is moved
+along a normal vector obtained by all direct neighboring control
+points.<footnote>Since 1.17.</footnote>
 The offsetting also works for closed and periodic surfaces in any
 possible combinations in the two dimensions.<footnote>Since 1.19.</footnote>
-However, note that degenerate and rational surfaces are still not supported.
+Degenerate surfaces are supported.<footnote>Since 1.21.</footnote>
+However note that rational surfaces are still not supported.
 <p>
-The offset surface will always match the original surface in width/height,
+The offset surface will always match the original surface in width, height,
 orders, and knots. See also the image above.
 Trim curves are copied verbatim from the parameter surface to the
 offset surface.
