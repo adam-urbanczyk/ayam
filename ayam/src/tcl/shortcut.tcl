@@ -327,6 +327,8 @@ proc shortcut_main { w } {
 
     bind $w <[repctrl $aymainshortcuts(ContextMenu)]> \
 	"if { \$ay(lb) == 1 } {winOpenPopup \$ay(olb)} else {winOpenPopup \$ay(tree)};break"
+    bind $w <[repctrl $aymainshortcuts(ContextMenu2)]> \
+	"if { \$ay(lb) == 1 } {winOpenPopup \$ay(olb)} else {winOpenPopup \$ay(tree)};break"
 
     # on Aqua, <Command-q> quits the application
     if { $AYWITHAQUA == 1 } {
