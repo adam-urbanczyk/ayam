@@ -376,6 +376,7 @@ array set aymainshortcuts {
     ContextMod "Shift"
 
     ContextMenu "Shift-F10"
+    ContextMenu2 "Menu"
     CMButton 3
 }
 # array aymainshortcuts
@@ -817,6 +818,8 @@ if { $tcl_platform(platform) == "windows" } {
     set aymainshortcuts(SProp77) "Key-7"
     set aymainshortcuts(SProp88) "Key-8"
     set aymainshortcuts(SProp99) "Key-9"
+
+    set aymainshortcuts(ContextMenu2) "App"
 
     set ayviewshortcuts(OSUp) "M1-Key-8"
     set ayviewshortcuts(OSDown) "M1-Key-2"
