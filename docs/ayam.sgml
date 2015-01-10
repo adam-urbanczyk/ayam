@@ -8783,14 +8783,16 @@ the four sections (see the following image for an example).
 <caption>Cap from Non-Planar Curve (left: Curve, right: Resulting Cap Surface)</caption>
 </figure>
 <p>
-The <bf/Simple/ type just extends the curve linearly to a middle point,
-not supporting non planar curves well and not supporting concave curves
+The <bf/Simple/ type just extends the parameter curve linearly to a middle
+point, not supporting non planar curves well and not supporting concave curves
 at all but ensuring compatibility with the progenitor curve/surface
 (which may be important for tesselation or further surface processing).
 <p>
-The <bf/Simple3D/ type extends the curve to a middle point via an additional
-ring of control points, it therefore rounds more smoothly to the middle
-(especially useful for non planar parameter curves) and retains all other
+The <bf/Simple3D/ type extends the parameter curve to a middle point via
+an additional planar and circular
+ring of control points, therefore rounding more smoothly to the middle
+(especially useful for non planar parameter curves or parameter curves
+with discontinuities), and retains all other
 characteristics of the Simple type.
 <p>
 See also the following table for an overview on the available cap types:
@@ -10606,7 +10608,7 @@ Beware! This works properly only, if the type of existing shader arguments
 does not change and if no shader arguments are removed in
 the new version of the shader.
 <p>
-One can also just copy certain parameter values (shader arguments
+It is also possible to just copy certain parameter values (shader arguments
 whose types do not change) by selecting them using double-clicks
 on the parameter names in the shader property GUI and then use
 e.g.~<tt>"Edit/Copy Marked Prop"</tt>
@@ -10624,27 +10626,46 @@ the boundary names of a Skin object are e.g.~<tt/"Left"/, <tt/"Right"/,
 <tt/"Start"/, and <tt/"End"/, whereas the boundary names of a NPatch object
 are <tt/"U0"/, <tt/"U1"/, <tt/"V0"/, and <tt/"V1"/.
 <p>
-For each boundary a menu button will appear that allows to set the
+To reduce GUI clutter, initially, the Caps property only contains buttons
+that allow to enable/disable the associated cap and control appearance of
+further options.
+<p>
+For each enabled cap a menu button will appear that allows to set the
 corresponding cap type (see section <ref id="capp" name="CapAttr Property">
 for more information on the available cap types).
 <p>
 In addition, the Caps property allows to create caps that integrate with
 the progenitor surface of the corresponding tool object (after the potential
 integration of bevels) via the additional parameter <tt/"Integrate"/.
+However, integration is only supported for the cap types
+<tt/"Simple"/ and <tt/"Simple3D"/. If integration is enabled and there
+is a bevel that is not integrating with the progenitor surface, the
+cap will integrate into the bevel instead.
+Integration will change the number of provided objects and the parameters
+of the progenitor surface.
 
 <sect2>Bevels Property<label id="bevelsprop">
 <p>
 Many tool object have a <tt/"Bevels"/ property to easily round the
 otherwise sharp borders of the created surface.
 <p>
+The exact names of the attributes available in this property are
+object type specific as each object types boundary names are different:
+the boundary names of a Skin object are e.g.~<tt/"Left"/, <tt/"Right"/,
+<tt/"Start"/, and <tt/"End"/, whereas the boundary names of a NPatch object
+are <tt/"U0"/, <tt/"U1"/, <tt/"V0"/, and <tt/"V1"/.
+<p>
+To reduce GUI clutter, initially, the Bevels property only contains buttons
+that allow to enable/disable the associated bevel and control appearance of
+further options.
+<p>
 Many attributes of the Bevels property are also available for the
 Bevel object (see also <ref id="bevelp" name="BevelAttr Property">).
 In addition to those attributes, the Bevels property allows to integrate
 the created bevel surface with the progenitor surface of the corresponding
 tool object via the additional parameter <tt/"Integrate"/.
-<p>
-The exact names of the attributes available in this property are
-object type specific as each object types boundary names are different.
+Integration will change the number of provided objects and the parameters
+of the progenitor surface.
 
 <sect2>Tags Property<label id="tagsprop">
 <p>
@@ -18819,7 +18840,7 @@ lines from the ayamrc file.
 Finally, resetting single preference settings without a text editor is
 also possible with the help of the scripting interface by manipulating
 the global <tt/"ayprefs"/ array. The following example leads to a reset
-of the tolerance preference setting to the factory default for the
+of the tolerance preference setting to its factory default for the
 <em>next</em> start of Ayam.
 <tscreen><tt>
 &raquo;&thinsp;unset ayprefs(Tolerance)
@@ -19207,9 +19228,9 @@ Available types of parameters are:
 <item>s: a string value,
 <item>p: a point in space (simply three float values), the default
 values (if provided) are three float values in curly braces, such as
-<tt>{{0.0 0.0 0.0}{1.0 1.0 1.0}}</tt>,
+<tt>{0.0 1.0 0.0}</tt>,
 <item>c: a color, the default values (if provided) are three float
-values in curly braces, such as <tt>{{0.0 0.0 0.0}{1.0 1.0 1.0}}</tt>.
+values in curly braces, such as <tt>{1.0 1.0 1.0}</tt>.
 </itemize>
 
 <sect1>Environment Variables<label id="envvars">
