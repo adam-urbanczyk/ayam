@@ -192,9 +192,9 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
  double knotv0[4] = {0.0,0.0,1.0,1.0};
  double knotv1[6] = {0.0,0.0,0.0,1.0,1.0,1.0};
  double knotv2[8] = {0.0,0.0,0.0,0.0,1.0,1.0,1.0,1.0};
- int a, b = 0, i = 0, stride = 4, shiftlen;
+ int a, b = 0, i = 0, stride = 4, shiftlen, numuniq;
  double r = 0.0, m[4] = {0}, n[3] = {0}, z[3] = {0.0,0.0,1.0};
- double *p, angle, anglem, len, rm[16], rotaxis[3], *circcv = NULL;
+ double *p, *q1, *q2, angle, anglem, len, rm[16], rotaxis[3], *circcv = NULL;
  ay_object *rc = NULL;
 
   if(!c || !cap)
@@ -282,6 +282,7 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
 	{ ay_status = AY_EOMEM; goto cleanup; }
 
       a = 0;
+      numuniq = 0;
       for(i = 0; i < nc->length; i++)
 	{
 	  p = &(nc->controlv[a]);
@@ -313,6 +314,18 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
       else
 	{
 	  /* simple closed curve */
+
+	  numuniq = 0;
+	  q1 = nc->controlv;
+	  q2 = q1+stride;
+	  for(i = 0; i < nc->length-1; i++)
+	    {
+	      if(!AY_V3COMP(q1,q2))
+		numuniq++;
+	      q1 = q2;
+	      q2 += stride;
+	    }
+
 	  ay_trafo_identitymatrix(rm);
 	  p = circcv;
 	  p[0] = r;
@@ -320,16 +333,24 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
 	  p[2] = 0.0;
 	  p[3] = 1.0;
 	  p = &(circcv[stride]);
-	  angle = 360.0/(nc->length-1);
+	  angle = 360.0/numuniq;
+	  q1 = &(nc->controlv[stride]);
+	  q1 = nc->controlv;
+	  q2 = q1+stride;
 	  for(i = 1; i < nc->length-1; i++)
 	    {
 	      p[0] = r;
 	      p[1] = 0.0;
 	      p[2] = 0.0;
 	      p[3] = 1.0;
-	      ay_trafo_rotatematrix(angle, 0.0, 0.0, 1.0, rm);
+	      if(!AY_V3COMP(q1,q2))
+		{
+		  ay_trafo_rotatematrix(angle, 0.0, 0.0, 1.0, rm);
+		}
 	      ay_trafo_apply3(p, rm);
 	      p += stride;
+	      q1 = q2;
+	      q2 += stride;
 	    } /* for */
 	  p[0] = r;
 	  p[1] = 0.0;
@@ -418,23 +439,30 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
 	}
 
       /* shift middle curve */
-      shiftlen = nc->length;
-      if(nc->type == AY_CTPERIODIC)
-	shiftlen -= (nc->order-1);
-      if(nc->type == AY_CTCLOSED)
-	shiftlen--;
-
-      ay_nct_shifttominmeandist(shiftlen, 4, nc->controlv, circcv);
-
-      if(nc->type == AY_CTPERIODIC)
+      if(0)
 	{
-	  memcpy(&(circcv[(nc->length-nc->order+1)*stride]), circcv,
-		 (nc->order-1)*stride*sizeof(double));
+	  shiftlen = nc->length;
+	  if(nc->type == AY_CTPERIODIC)
+	    shiftlen -= (nc->order-1);
+	  if(nc->type == AY_CTCLOSED)
+	    shiftlen--;
+
+	  ay_nct_shifttominmeandist(shiftlen, 4, nc->controlv, circcv);
+
+	  if(nc->type == AY_CTPERIODIC)
+	    {
+	      memcpy(&(circcv[(nc->length-nc->order+1)*stride]), circcv,
+		     (nc->order-1)*stride*sizeof(double));
+	    }
+	  else
+	    {
+	      memcpy(&(circcv[(nc->length-1)*stride]), circcv,
+		     stride*sizeof(double));
+	    }
 	}
       else
 	{
-	  memcpy(&(circcv[(nc->length-1)*stride]), circcv,
-	    stride*sizeof(double));
+	  ay_nct_rotatetominmeandist(nc->length, 4, nc->controlv, circcv);
 	}
 
       memcpy(&(np->controlv[nc->length*mode*stride]), circcv,
