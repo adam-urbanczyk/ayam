@@ -912,6 +912,11 @@ double ay_nct_meandist(int cvlen, int cvstride, double *cva, double *cvb);
 int ay_nct_shifttominmeandist(int cvlen, int cvstride,
 			      double *cva, double *cvb);
 
+/** Rotate 1D control point array to minimum mean distance to a second array.
+ */
+int ay_nct_rotatetominmeandist(int cvlen, int cvstride,
+			       double *cva, double *cvb);
+
 /** Compute curve tangent vectors from control points.
  */
 int ay_nct_getcvtangents(ay_nurbcurve_object *nc, double **result);
