@@ -8291,6 +8291,66 @@ ay_nct_shifttominmeandist(int cvlen, int cvstride, double *cva, double *cvb)
 } /* ay_nct_shifttominmeandist */
 
 
+/** ay_nct_rotatetominmeandist:
+ * Rotate 1D control point array to minimum mean distance to a second array.
+ * Todo: make this really computing a mean value and not just test the
+ * first control point of each array.
+ *
+ * \param[in] cvlen number of points in \a cva _and_ \a cvb
+ * \param[in] cvstride size of a point in \a cva _and_ \a cvb (>=3, unchecked)
+ * \param[in] cva first coordinate array
+ * \param[in,out] cvb second coordinate array (may be rotated)
+ *
+ * \returns AY_OK on success, error code otherwise
+ */
+int
+ay_nct_rotatetominmeandist(int cvlen, int cvstride, double *cva, double *cvb)
+{
+ double minangle = 0.0, angle = 0.0, n[3], m[4], rm[16];
+ double cvbt[3], vd[3];
+ double len, minlen = DBL_MAX;
+ int ay_status = AY_OK, i;
+
+  ay_status = ay_geom_extractmiddlepoint(/*mode=*/0, cvb, cvlen, cvstride,
+					 NULL, m);
+
+  ay_status += ay_geom_extractmeannormal(cvb, cvlen, cvstride, m, n);
+
+  if(!ay_status)
+    {
+      memcpy(cvbt, cvb, 3*sizeof(double));
+
+      for(i = 0; i < 360; i++)
+	{
+	  AY_V3SUB(vd, cva, cvbt);
+	  len = AY_V3LEN(vd);
+	  if(len < minlen)
+	    {
+	      minlen = len;
+	      minangle = angle;
+	    }
+
+	  angle += 1.0;
+	  ay_trafo_identitymatrix(rm);
+	  ay_trafo_translatematrix(m[0],m[1],m[2],rm);
+	  ay_trafo_rotatematrix(angle, n[0], n[1], n[2], rm);
+	  ay_trafo_translatematrix(-m[0],-m[1],-m[2],rm);
+	  AY_APTRAN3(cvbt, cvb, rm);
+	}
+
+      if(minangle != 0.0)
+	{
+	  ay_trafo_translatematrix(m[0],m[1],m[2],rm);
+	  ay_trafo_rotatematrix(minangle, n[0], n[1], n[2], rm);
+	  ay_trafo_translatematrix(-m[0],-m[1],-m[2],rm);
+	  ay_trafo_apply3v(cvb, cvlen, cvstride, rm);
+	}
+    }
+
+ return ay_status;
+} /* ay_nct_rotatetominmeandist */
+
+
 /** ay_nct_getcvtangents:
  * Compute curve tangent vectors from control points.
  *
