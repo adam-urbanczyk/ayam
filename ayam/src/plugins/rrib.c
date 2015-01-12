@@ -1224,9 +1224,9 @@ ay_rrib_RiLightSource(RtToken name,
 	  if(!strcmp(tokens[i], "lightcolor"))
 	    {
 	      col = (RtColor*)(parms[i]);
-	      l.colr = (int)((*col)[0])*255.0;
-	      l.colg = (int)((*col)[1])*255.0;
-	      l.colb = (int)((*col)[2])*255.0;
+	      l.colr = (int)((*col)[0]*255.0);
+	      l.colg = (int)((*col)[1]*255.0);
+	      l.colb = (int)((*col)[2]*255.0);
 	    }
 	} /* for */
     }
