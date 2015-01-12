@@ -129,13 +129,13 @@ ay_capt_addcaps(ay_cparam *cparams, ay_bparam *bparams,
 	      break;
 	    case 2:
 	      ay_status = ay_capt_crtsimplecap(extrcurve, 0, cparams->frac[i],
-					       &cap);
+					       NULL, &cap);
 	      if(!ay_status && (i > 1))
 		ay_status = ay_npt_swapuv(cap->refine);
 	      break;
 	    case 3:
 	      ay_status = ay_capt_crtsimplecap(extrcurve, 1, cparams->frac[i],
-					       &cap);
+					       NULL, &cap);
 	      if(!ay_status && (i > 1))
 		ay_status = ay_npt_swapuv(cap->refine);
 	      break;
@@ -178,12 +178,14 @@ cleanup:
  * \param[in] c NURBS curve object
  * \param[in] mode 0 - 2D, 1 - 3D quadric, 2 - 3D cubic
  * \param[in] frac fraction parameter for 3D mode
+ * \param[in] mp middle point, may be NULL
  * \param[in,out] cap new NURBS patch object
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
+ay_capt_crtsimplecap(ay_object *c, int mode, double frac, double *mp,
+		     ay_object **cap)
 {
  int ay_status = AY_OK;
  ay_object *npatch = NULL;
@@ -265,15 +267,22 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
 
   memcpy(np->controlv, nc->controlv, nc->length*stride*sizeof(double));
 
-  if(mode == 0)
-    ay_status = ay_geom_extractmiddlepoint(/*mode=*/0, nc->controlv,
-					   nc->length, stride, NULL, m);
+  if(mp)
+    {
+      memcpy(m, mp, 3*sizeof(double));
+    }
   else
-    ay_status = ay_geom_extractmiddlepoint(/*mode=*/1, nc->controlv,
-					   nc->length, stride, &circcv, m);
+    {
+      if(mode == 0)
+	ay_status = ay_geom_extractmiddlepoint(/*mode=*/0, nc->controlv,
+					       nc->length, stride, NULL, m);
+      else
+	ay_status = ay_geom_extractmiddlepoint(/*mode=*/1, nc->controlv,
+					       nc->length, stride, &circcv, m);
 
-  if(ay_status)
-    goto cleanup;
+      if(ay_status)
+	goto cleanup;
+    }
 
   if(mode)
     {

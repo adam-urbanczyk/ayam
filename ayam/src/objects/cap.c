@@ -440,10 +440,12 @@ ay_cap_bbccb(ay_object *o, double *bbox, int *flags)
 int
 ay_cap_notifycb(ay_object *o)
 {
+ int ay_status = AY_OK;
  ay_cap_object *cap = NULL;
  ay_object *down = NULL, *pobject = NULL;
  ay_object **nextcurve = NULL;
- int ay_status = AY_OK;
+ ay_tag *tag = NULL;
+ double v[3] = {0}, *mp = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -493,6 +495,21 @@ ay_cap_notifycb(ay_object *o)
       goto cleanup;
     } /* if */
 
+  tag = o->tags;
+  while(tag)
+    {
+      if(tag->type == ay_mp_tagtype)
+	{
+	  if(tag->val)
+	    {
+	      sscanf(tag->val, "%lg,%lg,%lg", &(v[0]), &(v[1]), &(v[2]));
+	      mp = v;
+	    }
+	  break;
+	}
+      tag = tag->next;
+    }
+
   /* the pobject points now to copies of the curves for which
      the cap should be created (and we may mess with it) */
   switch(cap->type)
@@ -504,11 +521,11 @@ ay_cap_notifycb(ay_object *o)
       ay_status = ay_capt_crtgordoncap(pobject, &(cap->npatch));
       break;
     case 2:
-      ay_status = ay_capt_crtsimplecap(pobject, 0, cap->fraction,
+      ay_status = ay_capt_crtsimplecap(pobject, 0, cap->fraction, mp,
 				       &(cap->npatch));
       break;
     case 3:
-      ay_status = ay_capt_crtsimplecap(pobject, 1, cap->fraction,
+      ay_status = ay_capt_crtsimplecap(pobject, 1, cap->fraction, mp,
 				       &(cap->npatch));
       break;
     default:

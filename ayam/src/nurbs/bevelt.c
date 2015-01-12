@@ -431,11 +431,11 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		  break;
 		case 2:
 		  ay_status = ay_capt_crtsimplecap(extrcurve, 0,
-						   cparams->frac[i], nextcap);
+					     cparams->frac[i], NULL, nextcap);
 		  break;
 		case 3:
 		  ay_status = ay_capt_crtsimplecap(extrcurve, 1,
-						   cparams->frac[i], nextcap);
+					     cparams->frac[i], NULL, nextcap);
 		  break;
 		default:
 		  ay_status = AY_ERROR;
