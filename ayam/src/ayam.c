@@ -210,6 +210,10 @@ char *ay_mn_tagtype;
 
 char *ay_mn_tagname = "MN";
 
+char *ay_mp_tagtype;
+
+char *ay_mp_tagname = "MP";
+
 static char *ay_log = "/tmp/ay.log";
 
 int ay_wrib_framenum = 0;
@@ -546,6 +550,9 @@ ay_init(Tcl_Interp *interp)
 
   /* register MN tag type */
   ay_tags_register(interp, ay_mn_tagname, &ay_mn_tagtype);
+
+  /* register MP tag type */
+  ay_tags_register(interp, ay_mp_tagname, &ay_mp_tagtype);
 
   /* create root object */
   if((ay_status = ay_object_create(AY_IDROOT, &ay_root)))

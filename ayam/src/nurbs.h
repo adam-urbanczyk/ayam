@@ -93,7 +93,8 @@ int ay_capt_addcaps(ay_cparam *cparams, ay_bparam *bparams, ay_object *o,
 
 /** Create simple cap from (convex) curve.
  */
-int ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap);
+int ay_capt_crtsimplecap(ay_object *c, int mode, double frac, double *mp,
+			 ay_object **cap);
 
 /** Integrate cap into the progenitor surface.
  */
