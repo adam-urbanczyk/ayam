@@ -46,7 +46,7 @@ static Tcl_HashTable *x3dio_defs_ht = NULL;
 
 /* MN tags are used to temporarily store x3dio generated Master/DEF names */
 char *x3dio_mn_tagtype = NULL;
-char *x3dio_mn_tagname = "MN";
+char *x3dio_mn_tagname = "mn";
 
 
 char *x3dio_truestring = "true";
@@ -250,9 +250,9 @@ int x3dio_adddef(char *name, scew_element *element);
 
 int x3dio_getdef(char *name, scew_element **element);
 
-int x3dio_removedefs(scew_element *element);
+void x3dio_removedefs(scew_element *element);
 
-int x3dio_countelements(scew_element *element, unsigned int *counter);
+void x3dio_countelements(scew_element *element, unsigned int *counter);
 
 int x3dio_readelement(scew_element *element);
 
@@ -1123,6 +1123,9 @@ x3dio_readcoords(scew_element *element, unsigned int *len, double **res)
 	  /* process USE attribute */
 	  ay_status = x3dio_processuse(&child);
 
+	  if(ay_status)
+	    return AY_ERROR;
+
 	  /* read data */
 	  ay_status = x3dio_readfloatpoints(child, "point", 3, len, &cv);
 	  if(*len)
@@ -1148,9 +1151,13 @@ x3dio_readcoords(scew_element *element, unsigned int *len, double **res)
 	  /* process USE attribute */
 	  ay_status = x3dio_processuse(&child);
 
+	  if(ay_status)
+	    return AY_ERROR;
+
 	  /* read data */
 	  ay_status = x3dio_readdoublepoints(child, "point", 3, len, res);
-	  return AY_OK; /* XXXX early exit! */
+
+	  return ay_status; /* XXXX early exit! */
 	}
     } /* while */
 
@@ -1180,10 +1187,13 @@ x3dio_readtexcoords(scew_element *element, unsigned int *len, float **res)
 	  /* process USE attribute */
 	  ay_status = x3dio_processuse(&child);
 
+	  if(ay_status)
+	    return AY_ERROR;
+
 	  /* read data */
 	  ay_status = x3dio_readfloatpoints(child, "point", 2, len, res);
 
-	  return AY_OK; /* XXXX early exit! */
+	  return ay_status; /* XXXX early exit! */
 	}
     } /* while */
 
@@ -1214,6 +1224,9 @@ x3dio_readnormals(scew_element *element, unsigned int *len, double **res)
 	{
 	  /* process USE attribute */
 	  ay_status = x3dio_processuse(&child);
+
+	  if(ay_status)
+	    return AY_ERROR;
 
 	  /* read data */
 	  ay_status = x3dio_readfloatpoints(child, "vector", 3, len, &cv);
@@ -1263,6 +1276,9 @@ x3dio_readcolors(scew_element *element, int *stride, unsigned int *len, float **
 	  /* process USE attribute */
 	  ay_status = x3dio_processuse(&child);
 
+	  if(ay_status)
+	    return AY_ERROR;
+
 	  /* read data */
 	  ay_status = x3dio_readfloatpoints(child, "color", 3, len, res);
 
@@ -1275,6 +1291,9 @@ x3dio_readcolors(scew_element *element, int *stride, unsigned int *len, float **
 	{
 	  /* process USE attribute */
 	  ay_status = x3dio_processuse(&child);
+
+	  if(ay_status)
+	    return AY_ERROR;
 
 	  /* read data */
 	  ay_status = x3dio_readfloatpoints(child, "color", 4, len, res);
@@ -5999,17 +6018,16 @@ x3dio_getdef(char *name, scew_element **element)
 /* x3dio_removedefs:
  *  _recursively_ remove all definitions from the DEF hashtable
  */
-int
+void
 x3dio_removedefs(scew_element *element)
 {
- int ay_status = AY_OK;
  scew_element *child = NULL;
  const XML_Char *str = NULL;
  Tcl_HashEntry *entry = NULL;
  scew_attribute *attr = NULL;
 
   if(!element)
-    return AY_OK;
+    return;
 
   attr = scew_attribute_by_name(element, "DEF");
   if(attr)
@@ -6026,10 +6044,10 @@ x3dio_removedefs(scew_element *element)
 
   while((child = scew_element_next(element, child)) != NULL)
     {
-      ay_status = x3dio_removedefs(child);
+      x3dio_removedefs(child);
     }
 
- return AY_OK;
+ return;
 } /* x3dio_removedefs */
 
 
@@ -6037,19 +6055,18 @@ x3dio_removedefs(scew_element *element)
  *  _recursively_ counts the child elements/nodes of <element>
  *  increases <counter> for each child
  */
-int
+void
 x3dio_countelements(scew_element *element, unsigned int *counter)
 {
- int ay_status = AY_OK;
  scew_element *child = NULL;
 
   while((child = scew_element_next(element, child)) != NULL)
     {
       (*counter)++;
-      ay_status = x3dio_countelements(child, counter);
+      x3dio_countelements(child, counter);
     }
 
- return AY_OK;
+ return;
 } /* x3dio_countelements */
 
 
@@ -6245,32 +6262,32 @@ x3dio_readelement(scew_element *element)
       if(!strcmp(element_name, "IndexedFaceSet"))
 	{
 	  ay_status = x3dio_readindexedfaceset(element);
-	  ay_status = x3dio_countelements(element, &handled_elements);
+	  x3dio_countelements(element, &handled_elements);
 	}
       if(!strcmp(element_name, "IndexedTriangleSet"))
 	{
 	  ay_status = x3dio_readindexedtriangleset(element);
-	  ay_status = x3dio_countelements(element, &handled_elements);
+	  x3dio_countelements(element, &handled_elements);
 	}
       if(!strcmp(element_name, "IndexedTriangleStripSet"))
 	{
 	  ay_status = x3dio_readindexedtrianglestripset(element);
-	  ay_status = x3dio_countelements(element, &handled_elements);
+	  x3dio_countelements(element, &handled_elements);
 	}
       if(!strcmp(element_name, "IndexedTriangleFanSet"))
 	{
 	  ay_status = x3dio_readindexedtrianglefanset(element);
-	  ay_status = x3dio_countelements(element, &handled_elements);
+	  x3dio_countelements(element, &handled_elements);
 	}
       if(!strcmp(element_name, "IndexedLineSet"))
 	{
 	  ay_status = x3dio_readindexedlineset(element);
-	  ay_status = x3dio_countelements(element, &handled_elements);
+	  x3dio_countelements(element, &handled_elements);
 	}
       if(!strcmp(element_name, "IndexedQuadSet"))
 	{
 	  ay_status = x3dio_readindexedquadset(element);
-	  ay_status = x3dio_countelements(element, &handled_elements);
+	  x3dio_countelements(element, &handled_elements);
 	}
       if(!strcmp(element_name, "Inline"))
 	{
@@ -6302,22 +6319,22 @@ x3dio_readelement(scew_element *element)
       if(!strcmp(element_name, "NurbsCurve"))
 	{
 	  ay_status = x3dio_readnurbscurve(element, 3);
-	  ay_status = x3dio_countelements(element, &handled_elements);
+	  x3dio_countelements(element, &handled_elements);
 	}
       if(!strcmp(element_name, "NurbsCurve2D"))
 	{
 	  ay_status = x3dio_readnurbscurve(element, 2);
-	  ay_status = x3dio_countelements(element, &handled_elements);
+	  x3dio_countelements(element, &handled_elements);
 	}
       if(!strcmp(element_name, "NurbsPatchSurface"))
 	{
 	  ay_status = x3dio_readnurbspatchsurface(element, AY_FALSE);
-	  ay_status = x3dio_countelements(element, &handled_elements);
+	  x3dio_countelements(element, &handled_elements);
 	}
       if(!strcmp(element_name, "NurbsTrimmedSurface"))
 	{
 	  ay_status = x3dio_readnurbspatchsurface(element, AY_TRUE);
-	  ay_status = x3dio_countelements(element, &handled_elements);
+	  x3dio_countelements(element, &handled_elements);
 	}
       if(!strcmp(element_name, "NurbsSet"))
 	{
@@ -6441,7 +6458,7 @@ x3dio_readelement(scew_element *element)
       break;
       */
     default:
-      ay_status = x3dio_countelements(element, &handled_elements);
+      x3dio_countelements(element, &handled_elements);
       break;
     } /* switch */
 
@@ -6658,7 +6675,7 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
   while((child = scew_element_next(element, child)) != NULL)
     {
       x3dio_totalelements++;
-      ay_status = x3dio_countelements(child, &x3dio_totalelements);
+      x3dio_countelements(child, &x3dio_totalelements);
     }
 
   /* set progress */
@@ -7298,9 +7315,12 @@ x3dio_writencurveobj(scew_element *element, ay_object *o)
   /* write name to shape element */
   ay_status = x3dio_writename(shape_element, o, AY_FALSE);
 
+  if(ay_status)
+    return ay_status;
+
   ay_status = x3dio_writencurve(shape_element, 3, c);
 
- return AY_OK;
+ return ay_status;
 } /* x3dio_writencurveobj */
 
 
@@ -8451,7 +8471,7 @@ x3dio_writenpconvertibleobj(scew_element *element, ay_object *o)
    return AY_ENULL;
 
   ay_status = ay_provide_object(o, AY_IDNPATCH, &c);
-  if(!c)
+  if(ay_status || !c)
     return AY_ERROR;
 
   /* write transform */
@@ -8496,14 +8516,14 @@ x3dio_writelevelobj(scew_element *element, ay_object *o)
 {
  int ay_status = AY_OK;
  ay_object *down = NULL;
- ay_level_object *lev;
  scew_element *transform_element = NULL;
  scew_element *ot_element = NULL;
 
   if(!element || !o || !o->refine)
     return AY_ENULL;
 
-  lev = (ay_level_object *)o->refine;
+  if(o == ay_endlevel)
+    return AY_OK;
 
   if(o->down && o->down->next)
     {
@@ -8524,6 +8544,9 @@ x3dio_writelevelobj(scew_element *element, ay_object *o)
 
       /* write name */
       ay_status = x3dio_writename(transform_element, o, AY_TRUE);
+
+      if(ay_status)
+	return ay_status;
 
       /* write children */
       down = o->down;
@@ -8756,6 +8779,9 @@ x3dio_writeboxobj(scew_element *element, ay_object *o)
   /* write name to shape element */
   ay_status = x3dio_writename(shape_element, o, AY_FALSE);
 
+  if(ay_status)
+    return ay_status;
+
   if(x3dio_writemat)
     x3dio_writematerial(shape_element, o);
 
@@ -8810,6 +8836,9 @@ x3dio_writesphereobj(scew_element *element, ay_object *o)
       /* write name to shape element */
       ay_status = x3dio_writename(shape_element, o, AY_FALSE);
 
+      if(ay_status)
+	return ay_status;
+
       if(x3dio_writemat)
 	x3dio_writematerial(shape_element, o);
 
@@ -8827,7 +8856,7 @@ x3dio_writesphereobj(scew_element *element, ay_object *o)
       ay_status = x3dio_writenpconvertibleobj(element, o);
     }
 
- return AY_OK;
+ return ay_status;
 } /* x3dio_writesphereobj */
 
 
@@ -8875,6 +8904,9 @@ x3dio_writecylinderobj(scew_element *element, ay_object *o)
       /* write name to shape element */
       ay_status = x3dio_writename(shape_element, o, AY_FALSE);
 
+      if(ay_status)
+	return ay_status;
+
       if(x3dio_writemat)
 	x3dio_writematerial(shape_element, o);
 
@@ -8901,7 +8933,7 @@ x3dio_writecylinderobj(scew_element *element, ay_object *o)
       ay_status = x3dio_writenpconvertibleobj(element, o);
     }
 
- return AY_OK;
+ return ay_status;
 } /* x3dio_writecylinderobj */
 
 
@@ -8944,6 +8976,9 @@ x3dio_writeconeobj(scew_element *element, ay_object *o)
       /* write name to shape element */
       ay_status = x3dio_writename(shape_element, o, AY_FALSE);
 
+      if(ay_status)
+	return ay_status;
+
       if(x3dio_writemat)
 	x3dio_writematerial(shape_element, o);
 
@@ -8967,7 +9002,7 @@ x3dio_writeconeobj(scew_element *element, ay_object *o)
       ay_status = x3dio_writenpconvertibleobj(element, o);
     }
 
- return AY_OK;
+ return ay_status;
 } /* x3dio_writeconeobj */
 
 
@@ -9404,7 +9439,6 @@ x3dio_writepomeshwire(scew_element *element, ay_object *o)
 {
  int ay_status = AY_OK;
  ay_pomesh_object *po;
- int stride;
  unsigned int a, b, i, j, k, l = 0, m = 0, n = 0;
  scew_element *transform_element = NULL;
  scew_element *shape_element = NULL;
@@ -9430,7 +9464,6 @@ x3dio_writepomeshwire(scew_element *element, ay_object *o)
       if(!(weighted_normals = calloc(po->ncontrols*3, sizeof(double))))
 	{ay_status = AY_EOMEM; goto cleanup;}
 
-      stride = 3;
       for(i = 0; i < po->npolys; i++)
 	{
 	  if(po->nloops[l] > 0)
@@ -9669,7 +9702,7 @@ x3dio_writeview(scew_element *element, ay_object *o)
 {
  struct Togl *togl;
  ay_view_object *view;
- ay_camera_object *camera;
+ /*ay_camera_object *camera;*/
  char buffer[128];
  double tmp = 0.0, v[3] = {0};
  double xzlen = 0.0, yzlen = 0.0, x = 0.0, y = 0.0;
@@ -9819,11 +9852,12 @@ x3dio_writeview(scew_element *element, ay_object *o)
       x3dio_x3domheight =  Togl_Height(togl);
    } /* if */
 
+ /*
  if(o->type == AY_IDCAMERA)
    {
      camera = (ay_camera_object*)o->refine;
    }
- /*
+
   if(o->name && (strlen(o->name)>1))
    {
 
@@ -10059,6 +10093,9 @@ x3dio_writerevolveobj(scew_element *element, ay_object *o)
   /* write name to shape element */
   ay_status = x3dio_writename(shape_element, o, AY_FALSE);
 
+  if(ay_status)
+    return ay_status;
+
   if(x3dio_writemat)
     x3dio_writematerial(shape_element, o);
 
@@ -10168,6 +10205,9 @@ x3dio_writesweepobj(scew_element *element, ay_object *o)
 
   /* write name to shape element */
   ay_status = x3dio_writename(shape_element, o, AY_FALSE);
+
+  if(ay_status)
+    return ay_status;
 
   if(x3dio_writemat)
     x3dio_writematerial(shape_element, o);
@@ -10284,6 +10324,9 @@ x3dio_writeswingobj(scew_element *element, ay_object *o)
 
   /* write name to shape element */
   ay_status = x3dio_writename(shape_element, o, AY_FALSE);
+
+  if(ay_status)
+    return ay_status;
 
   if(x3dio_writemat)
     x3dio_writematerial(shape_element, o);
@@ -10418,6 +10461,9 @@ x3dio_writeextrudeobj(scew_element *element, ay_object *o)
 
   /* write name to shape element */
   ay_status = x3dio_writename(shape_element, o, AY_FALSE);
+
+  if(ay_status)
+    return ay_status;
 
   if(x3dio_writemat)
     x3dio_writematerial(shape_element, o);
