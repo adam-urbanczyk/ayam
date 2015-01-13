@@ -2612,6 +2612,9 @@ x3dio_readindexedlineset(scew_element *element)
 
 	  ay_status = ay_knots_createnc(&nc);
 
+	  if(ay_status)
+	    goto cleanup;
+
 	  /* copy object to the Ayam scene */
 	  ay_status = x3dio_linkobject(element, AY_IDNCURVE, (void*)&nc);
 
@@ -2701,6 +2704,9 @@ x3dio_readlineset(scew_element *element)
 	      nc.knot_type = AY_KTNURB;
 
 	      ay_status = ay_knots_createnc(&nc);
+
+	      if(ay_status)
+		goto cleanup;
 
 	      /* copy object to the Ayam scene */
 	      ay_status = x3dio_linkobject(element, AY_IDNCURVE, (void*)&nc);
@@ -3444,9 +3450,7 @@ x3dio_readelevationgrid(scew_element *element)
 				    &heightslen, &heights);
 
   if(heightslen < (unsigned int)xDim*zDim)
-    {
-      return AY_ERROR;
-    }
+    { ay_status = AY_ERROR; goto cleanup; }
 
   /* get normals */
 
@@ -4460,6 +4464,9 @@ x3dio_readpolyline2d(scew_element *element, int contour)
 
       ay_status = ay_knots_createnc(&nc);
 
+      if(ay_status)
+	goto cleanup;
+
       /* copy object to the Ayam scene */
       ay_status = x3dio_linkobject(element, AY_IDNCURVE, (void*)&nc);
     } /* if */
@@ -4580,6 +4587,8 @@ x3dio_readnurbscurve(scew_element *element, unsigned int dim)
 	{
 	  nc.knot_type = AY_KTBSPLINE;
 	  ay_status = ay_knots_createnc(&nc);
+	  if(ay_status)
+	    goto cleanup;
 	}
 
       nc.is_rat = ay_nct_israt(&nc);
@@ -4795,6 +4804,8 @@ x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
       if(!has_uknots || !has_vknots)
 	{
 	  ay_status = ay_knots_createnp(&np);
+	  if(ay_status)
+	    goto cleanup;
 	}
 
       /* fix row/column major order */
