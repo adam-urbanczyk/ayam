@@ -5192,9 +5192,9 @@ x3dio_readlight(scew_element *element, int type)
   light.intensity = intensity;
 
   ay_status = x3dio_readfloatvec(element, "color", 3, color);
-  light.colr = (int)color[0]*255;
-  light.colg = (int)color[1]*255;
-  light.colb = (int)color[2]*255;
+  light.colr = (int)(color[0]*255);
+  light.colg = (int)(color[1]*255);
+  light.colb = (int)(color[2]*255);
 
   switch(type)
     {
@@ -9955,9 +9955,9 @@ x3dio_writelight(scew_element *element, ay_object *o)
       x3dio_writedoubleattrib(light_element, "intensity", &light->intensity);
 
       /* color */
-      col[0] = light->colr;
-      col[1] = light->colg;
-      col[2] = light->colb;
+      col[0] = light->colr/255.0;
+      col[1] = light->colg/255.0;
+      col[2] = light->colb/255.0;
       x3dio_writedoublevecattrib(light_element, "color", 3, col);
 
       /* local/global state */
@@ -11104,6 +11104,10 @@ X_Init(Tcl_Interp *interp)
   ay_status += x3dio_registerwritecb((char *)(AY_IDBEVEL),
 				     x3dio_writenpconvertibleobj);
   ay_status += x3dio_registerwritecb((char *)(AY_IDEXTRNP),
+				     x3dio_writenpconvertibleobj);
+  ay_status += x3dio_registerwritecb((char *)(AY_IDOFFNP),
+				     x3dio_writenpconvertibleobj);
+  ay_status += x3dio_registerwritecb((char *)(AY_IDIPATCH),
 				     x3dio_writenpconvertibleobj);
 
   if(ay_status)
