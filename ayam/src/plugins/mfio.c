@@ -2771,10 +2771,23 @@ ay_mfio_writeclone(MF3D_FilePtr fileptr, ay_object *o)
 
   clone = cl->clones;
 
+  if(!clone)
+    return AY_OK;
+
+  if(o->type == AY_IDMIRROR)
+    {
+      clone = o->down;
+      while(clone && clone->next)
+	{
+	  ay_status = ay_mfio_writeobject(fileptr, clone);
+	  clone = clone->next;
+	}
+      clone = cl->clones;
+    }
+
   while(clone)
     {
       ay_status = ay_mfio_writeobject(fileptr, clone);
-
       clone = clone->next;
     }
 

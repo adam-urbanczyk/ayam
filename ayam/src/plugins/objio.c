@@ -1242,6 +1242,20 @@ objio_writeclone(FILE *fileptr, ay_object *o, double *m)
 
   clone = cl->clones;
 
+  if(!clone)
+    return AY_OK;
+
+  if(o->type == AY_IDMIRROR)
+    {
+      clone = o->down;
+      while(clone && clone->next)
+	{
+	  ay_status = objio_writeobject(fileptr, clone, AY_TRUE, AY_TRUE);
+	  clone = clone->next;
+	}
+      clone = cl->clones;
+    }
+
   while(clone && clone->next)
     {
       ay_status = objio_writeobject(fileptr, clone, AY_TRUE, AY_FALSE);

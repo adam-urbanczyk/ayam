@@ -2278,10 +2278,23 @@ dxfio_writeclone(ay_object *o, dimeModel *dm, double *m)
 
   clone = cl->clones;
 
+  if(!clone)
+    return AY_OK;
+
+  if(o->type == AY_IDMIRROR)
+    {
+      clone = o->down;
+      while(clone && clone->next)
+	{
+	  ay_status = dxfio_writeobject(clone, dm);
+	  clone = clone->next;
+	}
+      clone = cl->clones;
+    }
+
   while(clone)
     {
       ay_status = dxfio_writeobject(clone, dm);
-
       clone = clone->next;
     } // while
 
