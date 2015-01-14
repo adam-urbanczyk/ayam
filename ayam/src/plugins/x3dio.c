@@ -8603,7 +8603,10 @@ x3dio_writecloneobj(scew_element *element, ay_object *o)
   /* write name */
   ay_status = x3dio_writename(transform_element, o, AY_TRUE);
 
-  if(!x3dio_resolveinstances)
+  if(ay_status)
+    return ay_status;
+
+  if(!x3dio_resolveinstances && o->type != AY_IDMIRROR)
     {
       /* if the first child is not an instance, write the first clone
        * as normal object, otherwise the master to the clone instance
@@ -8640,11 +8643,32 @@ x3dio_writecloneobj(scew_element *element, ay_object *o)
 	} /* if */
     } /* if */
 
+  if(o->type == AY_IDMIRROR)
+    {
+      down = o->down;
+      while(down && down->next)
+	{
+	  down->refcount++;
+	  ay_status = x3dio_writeobject(transform_element, down, AY_TRUE);
+	  down = down->next;
+	}
+    }
+
   while(clone)
     {
       ay_status = x3dio_writeobject(transform_element, clone, AY_FALSE);
 
       clone = clone->next;
+    }
+
+  if(o->type == AY_IDMIRROR)
+    {
+      down = o->down;
+      while(down && down->next)
+	{
+	  down->refcount--;
+	  down = down->next;
+	}
     }
 
  return ay_status;

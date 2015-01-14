@@ -1468,10 +1468,23 @@ onio_writeclone(ay_object *o, ONX_Model *p_m, double *m)
 
   clone = cl->clones;
 
+  if(!clone)
+    return AY_OK;
+
+  if(o->type == AY_IDMIRROR)
+    {
+      clone = o->down;
+      while(clone && clone->next)
+	{
+	  ay_status = onio_writeobject(clone, p_m);
+	  clone = clone->next;
+	}
+      clone = cl->clones;
+    }
+
   while(clone)
     {
       ay_status = onio_writeobject(clone, p_m);
-
       clone = clone->next;
     } // while
 
