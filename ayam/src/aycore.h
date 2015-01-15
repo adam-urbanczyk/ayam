@@ -25,6 +25,10 @@ int ay_bbc_get(ay_object *o, double *bbox);
  */
 int ay_bbc_fromarr(double *arr, int len, int stride, double *bbox);
 
+/** bounding box calculation from list of objects
+ */
+int ay_bbc_fromlist(ay_object *o, int update, double *bbox);
+
 
 /* clear.c */
 

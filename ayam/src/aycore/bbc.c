@@ -260,3 +260,93 @@ ay_bbc_fromarr(double *arr, int len, int stride, double *bbox)
 
  return AY_OK;
 } /* ay_bbc_fromarr */
+
+
+/* ay_bbc_fromlist:
+ *  bounding box calculation from list of objects
+ */
+int
+ay_bbc_fromlist(ay_object *o, int update, double *bbox)
+{
+ int ay_status = AY_OK;
+ int i, a;
+ double xmin = DBL_MAX, xmax = -DBL_MAX, ymin = DBL_MAX;
+ double ymax = -DBL_MAX, zmin = DBL_MAX, zmax = -DBL_MAX;
+ double bbt[24] = {0};
+
+  if(!o || !bbox)
+    return AY_ENULL;
+
+  if(update)
+    {
+      xmin = bbox[0];
+      xmax = bbox[6];
+      ymin = bbox[13];
+      ymax = bbox[1];
+      zmin = bbox[5];
+      zmax = bbox[2];
+    }
+
+  while(o)
+    {
+      ay_status = ay_bbc_get(o, bbt);
+
+      if(ay_status)
+	{
+	  o = o->next;
+	  continue;
+	}
+
+      a = 0;
+      for(i = 0; i < 8; i++)
+	{
+	  if(bbt[a] < xmin)
+	    xmin = bbt[a];
+	  if(bbt[a] > xmax)
+	    xmax = bbt[a];
+	  a += 3;
+	} /* for */
+
+      a = 1;
+      for(i = 0; i < 8; i++)
+	{
+	  if(bbt[a] < ymin)
+	    ymin = bbt[a];
+	  if(bbt[a] > ymax)
+	    ymax = bbt[a];
+	  a += 3;
+	} /* for */
+
+      a = 2;
+      for(i = 0; i < 8; i++)
+	{
+	  if(bbt[a] < zmin)
+	    zmin = bbt[a];
+	  if(bbt[a] > zmax)
+	    zmax = bbt[a];
+	  a += 3;
+	} /* for */
+
+      o = o->next;
+    } /* while */
+
+  /* P1 */
+  bbox[0] = xmin; bbox[1] = ymax; bbox[2] = zmax;
+  /* P2 */
+  bbox[3] = xmin; bbox[4] = ymax; bbox[5] = zmin;
+  /* P3 */
+  bbox[6] = xmax; bbox[7] = ymax; bbox[8] = zmin;
+  /* P4 */
+  bbox[9] = xmax; bbox[10] = ymax; bbox[11] = zmax;
+
+  /* P5 */
+  bbox[12] = xmin; bbox[13] = ymin; bbox[14] = zmax;
+  /* P6 */
+  bbox[15] = xmin; bbox[16] = ymin; bbox[17] = zmin;
+  /* P7 */
+  bbox[18] = xmax; bbox[19] = ymin; bbox[20] = zmin;
+  /* P8 */
+  bbox[21] = xmax; bbox[22] = ymin; bbox[23] = zmax;
+
+ return AY_OK;
+} /* ay_bbc_fromlist */
