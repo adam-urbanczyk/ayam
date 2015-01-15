@@ -673,6 +673,15 @@ ay_clone_wribcb(char *file, ay_object *o)
   if(!clone)
     return AY_ENULL;
 
+  if(o->type == AY_IDMIRROR)
+    {
+      c = o->down;
+      while(c)
+	{
+	  ay_wrib_object(file, c);
+	}
+    }
+
   old_resinstances = ay_prefs.resolveinstances;
   ay_prefs.resolveinstances = AY_TRUE;
 
@@ -1470,10 +1479,10 @@ ay_clone_providecb(ay_object *o, unsigned int type, ay_object **result)
 
 	  down = down->next;
 	} /* while */
-      
+
       return AY_ERROR;
     } /* if */
-  
+
   clone = (ay_clone_object *) o->refine;
 
   if(!clone)
