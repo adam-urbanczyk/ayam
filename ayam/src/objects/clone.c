@@ -673,15 +673,6 @@ ay_clone_wribcb(char *file, ay_object *o)
   if(!clone)
     return AY_ENULL;
 
-  if(o->type == AY_IDMIRROR)
-    {
-      c = o->down;
-      while(c)
-	{
-	  ay_wrib_object(file, c);
-	}
-    }
-
   old_resinstances = ay_prefs.resolveinstances;
   ay_prefs.resolveinstances = AY_TRUE;
 
@@ -705,10 +696,6 @@ int
 ay_clone_bbccb(ay_object *o, double *bbox, int *flags)
 {
  int ay_status = AY_OK;
- int i, a;
- double xmin = DBL_MAX, xmax = -DBL_MAX, ymin = DBL_MAX;
- double ymax = -DBL_MAX, zmin = DBL_MAX, zmax = -DBL_MAX;
- double bbt[24] = {0};
  ay_clone_object *clone = NULL;
  ay_object *c = NULL;
 
@@ -727,69 +714,9 @@ ay_clone_bbccb(ay_object *o, double *bbox, int *flags)
       return AY_OK;
     }
 
-  while(c)
-    {
-      ay_status = ay_bbc_get(c, bbt);
+  ay_status = ay_bbc_fromlist(c, AY_FALSE, bbox);
 
-      if(ay_status)
-	{
-	  c = c->next;
-	  continue;
-	}
-
-      a = 0;
-      for(i = 0; i < 8; i++)
-	{
-	  if(bbt[a] < xmin)
-	    xmin = bbt[a];
-	  if(bbt[a] > xmax)
-	    xmax = bbt[a];
-	  a += 3;
-	} /* for */
-
-      a = 1;
-      for(i = 0; i < 8; i++)
-	{
-	  if(bbt[a] < ymin)
-	    ymin = bbt[a];
-	  if(bbt[a] > ymax)
-	    ymax = bbt[a];
-	  a += 3;
-	} /* for */
-
-      a = 2;
-      for(i = 0; i < 8; i++)
-	{
-	  if(bbt[a] < zmin)
-	    zmin = bbt[a];
-	  if(bbt[a] > zmax)
-	    zmax = bbt[a];
-	  a += 3;
-	} /* for */
-
-      c = c->next;
-    } /* while */
-
-  /* fill in results */
-  /* P1 */
-  bbox[0] = xmin; bbox[1] = ymax; bbox[2] = zmax;
-  /* P2 */
-  bbox[3] = xmin; bbox[4] = ymax; bbox[5] = zmin;
-  /* P3 */
-  bbox[6] = xmax; bbox[7] = ymax; bbox[8] = zmin;
-  /* P4 */
-  bbox[9] = xmax; bbox[10] = ymax; bbox[11] = zmax;
-
-  /* P5 */
-  bbox[12] = xmin; bbox[13] = ymin; bbox[14] = zmax;
-  /* P6 */
-  bbox[15] = xmin; bbox[16] = ymin; bbox[17] = zmin;
-  /* P7 */
-  bbox[18] = xmax; bbox[19] = ymin; bbox[20] = zmin;
-  /* P8 */
-  bbox[21] = xmax; bbox[22] = ymin; bbox[23] = zmax;
-
- return AY_OK;
+ return ay_status;
 } /* ay_clone_bbccb */
 
 
