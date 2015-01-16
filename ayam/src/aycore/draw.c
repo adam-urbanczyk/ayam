@@ -1410,7 +1410,7 @@ void
 ay_draw_mark(struct Togl *togl)
 {
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
- int s = ay_prefs.handle_size*1.75/2.0;
+ int s = (int)(ay_prefs.handle_size*1.75/2.0);
 
   glColor3f((GLfloat)ay_prefs.tpr, (GLfloat)ay_prefs.tpg,
 	    (GLfloat)ay_prefs.tpb);
@@ -1584,7 +1584,6 @@ ay_draw_silhouettes(struct Togl *togl, unsigned char *silimg)
   glMatrixMode(GL_PROJECTION);
   glPopMatrix();
   glMatrixMode(GL_MODELVIEW);
-
 
   glDisable(GL_BLEND);
   glEnable(GL_DEPTH_TEST);
