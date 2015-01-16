@@ -14,7 +14,15 @@
 
 /* shade.c - functions for drawing a shaded scene using OpenGL */
 
-/* ay_shade_cleansil:
+/* prototypes of functions local to this module: */
+int ay_shade_cleansil(struct Togl *togl, int selection, unsigned char *sil);
+
+void ay_shade_thinsil(int w, int h, unsigned char *src);
+
+unsigned char *ay_shade_detectsil(struct Togl *togl, int selection);
+
+
+/** ay_shade_cleansil:
  *  remove all silhouette points from the direct vicinity
  *  of already drawn wire points
  */
@@ -157,11 +165,12 @@ ay_shade_cleansil(struct Togl *togl, int selection, unsigned char *sil)
 } /* ay_shade_cleansil */
 
 
-/* ay_shade_thin:
- *  helper function that executes morphological thinning
+/** ay_shade_thinsil:
+ * execute morphological thinning to reduce the line width coming
+ * from the Sobel line detector
  */
 void
-ay_shade_thin(int w, int h, unsigned char *src)
+ay_shade_thinsil(int w, int h, unsigned char *src)
 {
  unsigned char *srcp;
  int x, y, num, finished;
@@ -278,10 +287,10 @@ ay_shade_thin(int w, int h, unsigned char *src)
     }
 
  return;
-} /* ay_shade_thin */
+} /* ay_shade_thinsil */
 
 
-/** ay_shade_detectsilhouettes:
+/** ay_shade_detectsil:
  * Create a silhouette texture by shading all objects in a special
  * lighting setup and detect edges in the resulting z- and
  * color-buffer data.
@@ -293,7 +302,7 @@ ay_shade_thin(int w, int h, unsigned char *src)
  * \returns silhouette texture or NULL (in case of an error)
  */
 unsigned char *
-ay_shade_detectsilhouettes(struct Togl *togl, int selection)
+ay_shade_detectsil(struct Togl *togl, int selection)
 {
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  ay_list_object *sel = ay_selection;
@@ -332,6 +341,10 @@ ay_shade_detectsilhouettes(struct Togl *togl, int selection)
   glDisable(GL_LIGHTING);
   if(ay_prefs.sdmode > 1)
     {
+      glClearColor((GLfloat)1.0f, (GLfloat)1.0f,
+		   (GLfloat)1.0f, (GLfloat)0.0f);
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
       glEnable(GL_LIGHTING);
       glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, (GLfloat)1.0);
       glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
@@ -555,12 +568,12 @@ ay_shade_detectsilhouettes(struct Togl *togl, int selection)
   if(selection)
     {
       if(ay_prefs.sellinewidth < 1.5)
-	ay_shade_thin(w, h, edges);
+	ay_shade_thinsil(w, h, edges);
     }
   else
     {
       if(ay_prefs.linewidth < 1.5)
-	ay_shade_thin(w, h, edges);
+	ay_shade_thinsil(w, h, edges);
     }
 
   /* create the silhouette texture */
@@ -602,7 +615,6 @@ ay_shade_detectsilhouettes(struct Togl *togl, int selection)
     }
 
 cleanup:
-  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
   if(ay_prefs.sdmode > 1)
     {
@@ -615,7 +627,11 @@ cleanup:
       glDisable(GL_LIGHT3);
       glDisable(GL_LIGHT4);
       glDisable(GL_LIGHT5);
+      glClearColor((GLfloat)ay_prefs.bgr, (GLfloat)ay_prefs.bgg,
+		   (GLfloat)ay_prefs.bgb, (GLfloat)1.0);
     }
+
+  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
   if(depthimg)
     free(depthimg);
@@ -623,7 +639,7 @@ cleanup:
     free(edges);
 
  return silimg;
-} /* ay_shade_detectsilhouettes */
+} /* ay_shade_detectsil */
 
 
 /* ay_shade_object:
@@ -808,10 +824,10 @@ ay_shade_view(struct Togl *togl)
     {
       if(!view->drawsel)
 	{
-	  sil = ay_shade_detectsilhouettes(togl, AY_FALSE);
+	  sil = ay_shade_detectsil(togl, AY_FALSE);
 	}
       if(sel)
-	silsel = ay_shade_detectsilhouettes(togl, AY_TRUE);
+	silsel = ay_shade_detectsil(togl, AY_TRUE);
     }
 
   glDisable(GL_LIGHTING);
@@ -910,7 +926,7 @@ ay_shade_view(struct Togl *togl)
 	ay_draw_silhouettes(togl, sil);
       if(silsel)
 	ay_draw_silhouettes(togl, silsel);
-    }
+    } /* if drawmode is wirehidden */
 
   if(sel)
     {
@@ -949,7 +965,7 @@ ay_shade_view(struct Togl *togl)
 		      ay_draw_silhouettes(togl, silsel);
 		}
 	    }
-	} /* if */
+	} /* if draw selection only */
 
       /* draw handles of selected objects */
       if(view->drawhandles && (view->drawmode != AY_DMSHADE))
