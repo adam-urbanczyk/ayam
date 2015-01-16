@@ -235,6 +235,35 @@ $m.cu add command -label "NCircle" -command {
 	"Create NCircle"
 } -underline 3
 #  ^^^^^^^^^^^ => R
+
+$m.cu add separator
+
+$m.cu add command -label "Circular B-Spline" -command {
+    runTool { ay(cbsprad) ay(cbsptmax) ay(cbspsec) ay(cbsporder) }\
+	{"Radius:" "Arc:" "Sections:" "Order:"}\
+	"crtClosedBS -r %0 -a %1 -s %2 -o %3; uCR; sL; notifyOb; rV;"\
+	"Create Closed B-Spline"
+} -underline 9
+$m.cu add command -label "Rectangle" -command {
+    runTool {ay(nrectwidth) ay(nrectheight)} {"Width:" "Height:"}\
+	"crtNRect -w %0 -h %1; uCR; sL; notifyOb; rV;"\
+	"Create Rectangle"
+} -underline 1
+$m.cu add command -label "TrimRect" -command {
+    crtTrimRect; set ay(ul) $ay(CurrentLevel); uS 0 1; rV
+} -underline 0
+
+$m.cu add separator
+
+$m.cu add command -label "ConcatNC" -command "level_crt ConcatNC;" \
+    -underline 2
+$m.cu add command -label "OffsetNC" -command "level_crt OffsetNC \"\" -1;" \
+    -underline 0
+$m.cu add command -label "ExtrNC" -command "level_crt ExtrNC \"\" -1;" \
+    -underline 1
+
+
+
 $m add cascade -menu $m.su -label "Surface" -underline 0
 menu $m.su -tearoff 0
 $m.su add command -label "NURBPatch" -command {
@@ -257,6 +286,37 @@ $m.su add command -label "PatchMesh" -command {
 	"crtOb PatchMesh -width %0 -height %1; uCR; sL; notifyOb; rV;"\
 	"Create PatchMesh"
 } -underline 0
+
+$m.su add separator
+
+$m.su add command -label "NURBSphere" -command {
+    runTool ay(nsphereradius) "Radius:"\
+	"crtNSphere -r %0; uCR; sL; notifyOb; rV;"\
+	"Create NURBSphere"
+} -underline 4
+
+$m.su add command -label "Revolve" -command "level_crt Revolve;" -underline 0
+$m.su add command -label "Extrude" -command "level_crt Extrude;" -underline 0
+$m.su add command -label "Sweep" -command\
+    "level_crt Sweep; sweep_rotcross" -underline 1
+$m.su add command -label "Swing" -command\
+    "level_crt Swing; swing_rotcross;" -underline 4
+$m.su add command -label "Cap" -command "level_crt Cap;" -underline 1
+$m.su add command -label "Bevel" -command "level_crt Bevel;" -underline 2
+$m.su add command -label "Birail1" -command "level_crt Birail1;" -underline 6
+$m.su add command -label "Birail2" -command "level_crt Birail2;" -underline 6
+$m.su add command -label "Gordon" -command "level_crt Gordon;" -underline 3
+$m.su add command -label "Skin" -command "level_crt Skin;" -underline 1
+$m.su add command -label "Trim" -command "level_crt Trim;" -underline 0
+
+$m.su add separator
+
+$m.su add command -label "ConcatNP" -command "level_crt ConcatNP;" \
+    -underline 0
+$m.su add command -label "OffsetNP" -command "level_crt OffsetNP \"\" -1;" \
+     -underline 0
+$m.su add command -label "ExtrNP" -command "level_crt ExtrNP \"\" -1;" \
+    -underline 1
 
 $m add cascade -menu $m.sl -label "Solid" -underline 4
 menu $m.sl -tearoff 0
