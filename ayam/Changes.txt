@@ -1,5 +1,5 @@
-[8. Jan 2015] CVS-Head:
-=======================
+[16. Jan 2015] CVS-Head:
+========================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
 o crash when removing wrong trim curves from patches (SF 3514206)
@@ -25,6 +25,7 @@ o crash when reading PatchMesh objects with custom basis (SF 494)
 o crash when importing RIB with RiIlluminate (SF 495)
 o ConcatNC fails to create custom knots (SF 496)
 o curve type after knot refinement (SF 497)
+o export of Mirror objects (SF 498)
 
 Modelling:
 o added "Compatible" option to ConcatNP objects, to prevent unwanted
@@ -211,6 +212,7 @@ o simple clicks into the view window no longer generate unnecessary entries
 o the UndoLevels preference setting now uses more natural values for
   "off" (0) and "one state to undo" (1)
 o added keyboard shortcuts to cycle/modify the grid size (<Insert>/<Delete>)
+o added some tool object creating tools to Create menu
 
 Scripts/Scripting Interface:
 o added luainterp plugin to support the Lua scripting language
