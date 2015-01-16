@@ -1,4 +1,4 @@
-[readme.txt - 31. Mar 2014]
+[readme.txt - 16. Jan 2015]
 
 This directory contains a collection of various scripts for Ayam.
 
@@ -52,6 +52,7 @@ aac.tcl - automatically invoke the about center variants of actions
 apnt.tcl - automatically invoke the point modelling mode after each point
  selection
 rc.tcl - revert cursor key bindings for parallel (modelling) views
+ssp.tcl - save point selection to tags
 
 Misc:
 aytest.tcl - test Ayam
