@@ -48,7 +48,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
  int i, is_planar, is_roundtocap, do_integrate;
  int winding = 0, side = 0, revert = AY_FALSE;
  int capintknottype = AY_KTCUSTOM;
- double param = 0.0, *normals = NULL, *tangents = NULL;
+ double param = 0.0, *mp = NULL, *normals = NULL, *tangents = NULL;
  ay_object curve = {0}, *alignedcurve = NULL;
  ay_object *bevel = NULL, *bevelcurve = NULL;
  ay_object **next = dst, *extrcurve = NULL;
@@ -430,12 +430,20 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		  ay_status = ay_capt_crtgordoncap(extrcurve, nextcap);
 		  break;
 		case 2:
+		  if(cparams->use_mp[i])
+		    mp = &(cparams->mp[i*3]);
+		  else
+		    mp = NULL;
 		  ay_status = ay_capt_crtsimplecap(extrcurve, 0,
-					     cparams->frac[i], NULL, nextcap);
+					     cparams->frac[i], mp, nextcap);
 		  break;
 		case 3:
+		  if(cparams->use_mp[i])
+		    mp = &(cparams->mp[i*3]);
+		  else
+		    mp = NULL;
 		  ay_status = ay_capt_crtsimplecap(extrcurve, 1,
-					     cparams->frac[i], NULL, nextcap);
+					     cparams->frac[i], mp, nextcap);
 		  break;
 		default:
 		  ay_status = AY_ERROR;

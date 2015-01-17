@@ -34,7 +34,7 @@ ay_capt_addcaps(ay_cparam *cparams, ay_bparam *bparams,
 {
  int ay_status = AY_OK;
  int i, side;
- double param = 0.0;
+ double param = 0.0, *mp;
  ay_object *extrcurve = NULL;
  ay_object *cap = NULL, **nextcap = dst;
  ay_nurbpatch_object *np = NULL;
@@ -128,14 +128,22 @@ ay_capt_addcaps(ay_cparam *cparams, ay_bparam *bparams,
 	      ay_status = ay_capt_crtgordoncap(extrcurve, &cap);
 	      break;
 	    case 2:
+	      if(cparams->use_mp[i])
+		mp = &(cparams->mp[i*3]);
+	      else
+		mp = NULL;
 	      ay_status = ay_capt_crtsimplecap(extrcurve, 0, cparams->frac[i],
-					       NULL, &cap);
+					       mp, &cap);
 	      if(!ay_status && (i > 1))
 		ay_status = ay_npt_swapuv(cap->refine);
 	      break;
 	    case 3:
+	      if(cparams->use_mp[i])
+		mp = &(cparams->mp[i*3]);
+	      else
+		mp = NULL;
 	      ay_status = ay_capt_crtsimplecap(extrcurve, 1, cparams->frac[i],
-					       NULL, &cap);
+					       mp, &cap);
 	      if(!ay_status && (i > 1))
 		ay_status = ay_npt_swapuv(cap->refine);
 	      break;
@@ -178,7 +186,7 @@ cleanup:
  * \param[in] c NURBS curve object
  * \param[in] mode 0 - 2D, 1 - 3D quadric, 2 - 3D cubic
  * \param[in] frac fraction parameter for 3D mode
- * \param[in] mp middle point, may be NULL
+ * \param[in] mp middle point [double*3], may be NULL
  * \param[in,out] cap new NURBS patch object
  *
  * \returns AY_OK on success, error code otherwise.
@@ -988,6 +996,7 @@ ay_capt_parsetags(ay_tag *tag, ay_cparam *params)
 {
  int where, type, integrate;
  double frac;
+ double v[3] = {0};
 
   if(!params)
     return;
@@ -1013,6 +1022,20 @@ ay_capt_parsetags(ay_tag *tag, ay_cparam *params)
 		  params->frac[where] = frac;
 		}
 	    } /* if val */
+	} /* if */
+      if(tag->type == ay_mp_tagtype)
+	{
+	  if(tag->val)
+	    {
+	      where = -1;
+	      sscanf(tag->val, "%lg,%lg,%lg,%d",
+		     &(v[0]), &(v[1]), &(v[2]), &where);
+	      if(where > 0 && where < 4)
+		{
+		  params->use_mp[where] = 1;
+		  memcpy(&(params->mp[where*3]), v, 3*sizeof(double));
+		}
+	    }
 	} /* if */
       tag = tag->next;
     } /* while */
