@@ -239,6 +239,7 @@ array set ayprefs {
  NormalizeDigits 6
 
  ConvertTags "TP,TC"
+ CycleHiddenWire 0
 
  Docs "http://ayam.sourceforge.net/docs/"
  DailyTips {
