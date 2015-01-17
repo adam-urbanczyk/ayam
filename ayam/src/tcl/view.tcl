@@ -171,7 +171,7 @@ proc viewCycleType { w dir {recover 1} } {
 ##############################
 # viewCycleDrawMode:
 proc viewCycleDrawMode { w dir } {
-    global ay
+    global ay ayprefs
 
     set togl $w.f3D.togl
 
@@ -179,9 +179,15 @@ proc viewCycleDrawMode { w dir } {
 
     set mode [expr $ay(cVDMode) + $dir]
 
+    if { $ayprefs(CycleHiddenWire) } {
+	set last 3
+    } else {
+	set last 2
+    }
+
     # wrap around
-    if { $mode < 0 } { set mode 3 }
-    if { $mode > 3 } { set mode 0 }
+    if { $mode < 0 } { set mode $last }
+    if { $mode > $last } { set mode 0 }
     # set new drawing mode
     $togl setconf -shade $mode
     # set icon
