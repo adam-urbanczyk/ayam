@@ -169,6 +169,8 @@ typedef struct ay_cparam_s
   int types[4]; /**< type of cap (0 - trim, 1 - gordon, 2 - simple, 3 - s3d) */
   int integrate[4]; /**< integrate cap into surface (0 - no, 1 - yes)? */
   double frac[4]; /**< simple 3D fraction parameter (0.0 - 1.0)? */
+  double mp[12]; /**< mean points */
+  int use_mp[4]; /**< use mean point (0 - no, 1 - yes) */
 } ay_cparam;
 
 
