@@ -33,7 +33,7 @@ code example of 6 lines text (needs another 2 for the upper/lower lines)
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>20. Oct 2014
+<date>16. Jan 2015
 
 <abstract>
 This is the documentation of Ayam 1.21 &ndash; a free 3D modelling environment
@@ -1024,6 +1024,9 @@ the <tt/"crtOb ACurve"/ command may be specified, as outlined in section
 <item><tt/"NCircle"/, create a new NURBS circle. See
 also section <ref id="ncircleobj" name="NCircle Object">.
 
+For the other entries see section
+<ref id="cctools" name="Curve Creation Tools">.
+
 <item><tt/"NURBPatch"/, create a new NURBS patch. A small dialog box will
 pop up, where the width and height of the new patch may be specified. See
 also section <ref id="npatchobj" name="NPatch Object">.
@@ -1048,6 +1051,9 @@ also section <ref id="bpatchobj" name="BPatch Object">.
 <item><tt/"PatchMesh"/, create a new patch mesh. A small dialog box will
 pop up, where the width and height of the new patch may be specified.
 See also section <ref id="patchmeshobj" name="PatchMesh Object">.
+
+For the other entries see section
+<ref id="sctools" name="Surface Creation Tools">.
 
 <item><tt/"Solid"/, create a new solid primitive object, for use in CSG.
 <tt/"Box"/, <tt/"Sphere"/, <tt/"Disk"/, <tt/"Cone"/, <tt/"Cylinder"/,
@@ -1630,9 +1636,10 @@ or the corresponding keyboard shortcut <tt/&lt;Ctrl+d&gt;/.
 
 <item><tt/"Drawing Mode"/ determines whether the view should draw a wireframe
 representation (<tt>"Drawing Mode/Draw"</tt>) or a shaded one
-(<tt>"Drawing Mode/Shade"</tt>) or, new in Ayam 1.6, a representation
+(<tt>"Drawing Mode/Shade"</tt>), a representation
 where the curves of the draw mode are drawn over the shaded
-representation (<tt>"Drawing Mode/ShadeAndDraw"</tt>).
+representation (<tt>"Drawing Mode/ShadeAndDraw"</tt>), or
+hidden wireframe and silhouettes (<tt>"Drawing Mode/HiddenWire"</tt>).
 
 <item><tt/"Modelling Mode"/ allows to switch the modelling
 coordinate system from world space (<tt/"Global"/) to the
@@ -1727,7 +1734,7 @@ See also the image below:
 </figure>
 <p>
 The <tt/"Drawing mode"/ icon menu may be used to quickly change the current
-drawing mode, drawing, shading, or drawing and shading.
+drawing mode, drawing, shading, drawing and shading, or hidden wires.
 See also the image below:
 <p>
 <figure loc="ht">
@@ -11376,7 +11383,7 @@ Tools that create tool objects may use the clipboard to move the
 new children around, i.e.~the clipboard contents are lost afterwards.
 
 <#if out=latex><x/newpage/</#if>
-<sect1>Curve Creation Tools
+<sect1>Curve Creation Tools<label id="cctools">
 <p>
 These tools create parametric curve objects.
 
@@ -12034,7 +12041,7 @@ the <tt/"CreateMP"/ attribute.
 </descrip>
 
 <#if out=latex><x/newpage/</#if>
-<sect1>Surface Creation Tools
+<sect1>Surface Creation Tools<label id="sctools">
 <p>
 These tools create parametric surface objects.
 
@@ -18954,6 +18961,10 @@ point of the click. This option is enabled by default.
 These tags will be copied verbatim to converted and provided
 objects. Default value: <tt/"TP,TC"/.
 
+<item><tt/"CycleHiddenWire"/, determines whether the slow HiddenWire drawing
+mode is included in the list of modes that are cycled by keyboard
+(via <tt>"Ctrl+PageUp"/"Ctrl+PageDown"</tt>), default: 0 - no.
+
 <item><tt/"DailyTips"/: a list of strings that appear as tips
 on startup in the console (default: large).
 
@@ -20358,6 +20369,7 @@ Index:
 </itemize>
 <item>Help on object: <ref id="mmhelp" name="main menu entry">
 <item>Hidden Preferences: <ref id="hidprefs" name="hidden preference settings">
+<item>HiddenWire:<ref id="vmconf" name="view menu entry">
 <item>Hide:
 <itemize>
 <item><ref id="mmtools" name="main menu entry">,
