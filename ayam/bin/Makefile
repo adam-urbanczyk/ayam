@@ -110,6 +110,7 @@ install:
 	$(INSTALL) ../doc/html/pics/* $(DOCDIR)/html/pics
 	-$(MKDIR) $(SCNDIR)
 	-$(INSTALL) ../scn/*.ay $(SCNDIR)
+	-$(INSTALL) ../scn/*.xhtml $(SCNDIR)
 	-$(MKDIR) $(SCNDIR)/objects
 	-$(INSTALL) ../scn/objects/*.ay $(SCNDIR)/objects
 	-$(INSTALL) ../scn/objects/*.ttf $(SCNDIR)/objects
@@ -117,7 +118,7 @@ install:
 	-$(INSTALL) ../scn/scripts/*.ay $(SCNDIR)/scripts
 	-$(MKDIR) $(SCNDIR)/shaders
 	-$(INSTALL) ../scn/shaders/*.sl ../scn/shaders/Makefile ../scn/shaders/README.txt $(SCNDIR)/shaders
-	@echo "Installation completed."
+	@echo "Installation of Ayam completed."
 	@echo "Add $(BINDIR) to your PATH."
 	@echo "Add $(LIBDIR) to your LD_LIBRARY_PATH (or use ayam.sh)."
 	@echo "Use 'make -f $(BINDIR)/Makefile uninstall' to uninstall."
@@ -159,3 +160,4 @@ uninstall:
 	-rm -f /usr/share/applications/ayam.desktop
 	-rm -f ~/.local/share/ayam.desktop
 	-rm -f $(BINDIR)/Makefile
+	@echo "Uninstallation of Ayam completed."
