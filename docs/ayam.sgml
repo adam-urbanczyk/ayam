@@ -8682,11 +8682,13 @@ must be present as tag on the parameter curve),
  <item><tt/"RoundToNormal"/ a surface that starts in the direction of a
 progenitor surface tangent and rounds off to a mean normal
 (normals and tangents must be present as tag on the parameter curve, the
-mean normal can be provided by a MN tag),
+mean normal can also be provided by a MN tag,
+see section <ref id="mntag" name="MN (Mean Normal) Tag">),
 
  <item>Any curves defined in a global level named <tt/"Bevels"/
 also appear as potential bevel type. Those curves should follow
-the rules layed out above for the second parameter curve.
+the rules layed out above for the second parameter curve of the
+Bevel object.
  </itemize>
 
 Note that the bevel types <tt/"RoundCapped"/ and <tt/"LinearCapped"/
@@ -8801,6 +8803,10 @@ ring of control points, therefore rounding more smoothly to the middle
 (especially useful for non planar parameter curves or parameter curves
 with discontinuities), and retains all other
 characteristics of the Simple type.
+<p>
+A MP tag can be set to the Cap object to control the middle point
+in both simple modes (see section
+<ref id="mptag" name="MP (Mean Point) Tag">).
 <p>
 See also the following table for an overview on the available cap types:
 <table loc="ht">
@@ -10746,6 +10752,8 @@ IDR|Importance Driven Rendering@<hline>
 IIDR|Importance Driven Rendering@<hline>
 MI|Material ID@<hline>
 MN|Mean Normal@<hline>
+mn|master name@<hline>
+MP|Mean Point@<hline>
 NM|Notify Master@<hline>
 NO|Notify Object@<hline>
 NoExport|Export Control@<hline>
@@ -11306,6 +11314,21 @@ a 3D vector. The vector does not have to be normalized.
 <p>
 A MN tag could look like this:
 <tscreen><verb>MN 0.0,1.0,0.1</verb></tscreen>
+
+<sect2>MP (Mean Point) Tag<label id="mptag">
+<p>
+The tag type <tt/"MP"/ (mean point) can be added to the Cap object
+or objects with caps to control the middle point of the <tt/"Simple"/
+and <tt/"Simple3D"/ caps. This is useful if e.g. the automatically
+calculated mean point of the parameter curve is off.
+The tag value is a list of three comma separated floating point numbers,
+a 3D vector, followed by an integer value between 0 and 3 designating
+the cap. On Cap objects, the cap number may be omitted.
+<p>
+<bf/Example/
+<p>
+A MP tag could look like this:
+<tscreen><verb>MP 0.5,0.25,0.1,0</verb></tscreen>
 
 <sect2>Internal Tags
 <p>
@@ -20596,6 +20619,7 @@ Index:
 </itemize>
 <item>movOb: <ref id="scmovob" name="scripting interface command">
 <item>movPnts: <ref id="scmovpnts" name="scripting interface command">
+<item>MP: <ref id="mptag" name="tag type">
 <item>Multiple Point: <ref id="ncurvemp" name="Multiple Points">
 <item>myicons.tcl: <ref id="myiconstcl" name="example/helper script">
 </list>
