@@ -45,14 +45,18 @@ trace variable ay(action) w actionEnd
 proc actionBindRelease { w {normalize 1} } {
     if { $normalize } {
 	bind $w <ButtonRelease-1> {
-	    if { $ay(cVPnts) } {
-                if { $ayprefs(NormalizePoints) } {
-                    normPnts
-                }
-            } else {
-                if { $ayprefs(NormalizeTrafos) } {
-                    normTrafos;getTrafo
-                }
+	    set sel ""
+	    getSel sel
+	    if { $sel != "" } {
+		if { $ay(cVPnts) } {
+		    if { $ayprefs(NormalizePoints) } {
+			normPnts
+		    }
+		} else {
+		    if { $ayprefs(NormalizeTrafos) } {
+			normTrafos;getTrafo
+		    }
+		}
             }
         }
     }
