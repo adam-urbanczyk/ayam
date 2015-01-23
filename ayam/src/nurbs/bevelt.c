@@ -436,6 +436,8 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		    mp = NULL;
 		  ay_status = ay_capt_crtsimplecap(extrcurve, 0,
 					     cparams->frac[i], mp, nextcap);
+		  if(!ay_status)
+		    ay_status = ay_npt_swapuv((*nextcap)->refine);
 		  break;
 		case 3:
 		  if(cparams->use_mp[i])
@@ -444,6 +446,8 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		    mp = NULL;
 		  ay_status = ay_capt_crtsimplecap(extrcurve, 1,
 					     cparams->frac[i], mp, nextcap);
+		  if(!ay_status)
+		    ay_status = ay_npt_swapuv((*nextcap)->refine);
 		  break;
 		default:
 		  ay_status = AY_ERROR;
