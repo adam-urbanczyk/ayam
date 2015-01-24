@@ -92,6 +92,14 @@ ay_sel_selobtcmd(ClientData clientData, Tcl_Interp *interp,
       t = t->next;
     }
 
+  if(argc > 1)
+    {
+      if(argv[1][0] == '-' && argv[1][1] == '1')
+	{
+	  return ay_sel_hsltcmd(clientData, interp, 1, argv);
+	}
+    }
+
   /* save old selection for later comparison with new */
   oldsel = ay_selection;
   ay_selection = NULL;
