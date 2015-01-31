@@ -636,6 +636,8 @@ proc io_mruLoad { index } {
 	    set dirname [file dirname $filename]
 	    cd $dirname
 
+	    set filename [file tail $filename]
+
 	    set .fl.con(-prompt) {[file tail [pwd]]>}
 	    .fl.con delete end-1lines end
 	    Console:prompt .fl.con "\n"
