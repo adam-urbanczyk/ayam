@@ -1985,6 +1985,14 @@ while { $i < $argc } {
 
 	    set ay_error ""
 
+	    # make absolute filename for MRU
+	    set absfilename $filename
+	    if { $tcl_platform(platform) != "windows" } {
+		if { [string first "/" $filename] != 0 } {
+		    set absfilename [file join [pwd] $filename]
+		}
+	    }
+
 	    replaceScene $filename
 	    if { $ay_error < 2 } {
 		set ay(filename) $filename
@@ -1997,7 +2005,7 @@ while { $i < $argc } {
 		    cd $dirname
 		    ayam_updateprompt ay uc w
 		}
-		io_mruAdd $filename
+		io_mruAdd $absfilename
 	    } else {
 		ayError 2 "replaceScene" "There were errors while loading:"
 		ayError 2 "replaceScene" "$filename"
