@@ -124,7 +124,7 @@ proc io_replaceScene { {newfilename ""} } {
 	uS
 	rV
 	# add scene file to most recently used list
-	io_mruAdd $absfilename
+	io_mruAdd $filename
 	# reset scene change indicator
 	set ay(sc) 0
 	update
