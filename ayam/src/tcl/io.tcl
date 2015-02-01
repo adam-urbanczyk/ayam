@@ -25,7 +25,7 @@ proc io_checkType { filename } {
 # clear scene, then read new scene file
 #
 proc io_replaceScene { {newfilename ""} } {
-    global ay ayprefs
+    global ay ayprefs tcl_platform
 
     winAutoFocusOff
 
@@ -124,7 +124,7 @@ proc io_replaceScene { {newfilename ""} } {
 	uS
 	rV
 	# add scene file to most recently used list
-	io_mruAdd $filename
+	io_mruAdd $absfilename
 	# reset scene change indicator
 	set ay(sc) 0
 	update
@@ -272,7 +272,6 @@ proc io_saveScene { ask selected } {
 	    io_exportScene $filename
 	    return;
 	}
-
     }
 
     if { $filename != "" } {
@@ -303,7 +302,6 @@ proc io_saveScene { ask selected } {
 	    ayError 2 "Ayam" "There were errors while saving to:"
 	    ayError 2 "Ayam" "$filename"
 	}
-
     }
 
     winAutoFocusOn
@@ -497,7 +495,6 @@ proc io_lcAuto { name } {
 	if { $success == 0 } {
 	    break;
 	}
-
     }
     # foreach
 
@@ -549,11 +546,8 @@ proc io_loadCustom { } {
 		set filename [::tk::dialog::file:: open -filetypes $filetypes\
 			-parent . -initialdir $idir -title "Select Plugin:"]
 	    }
-	    # if
 	}
-	# if
     }
-    # if
 
     if { $filename != "" } {
 	io_lc $filename
@@ -631,6 +625,7 @@ proc io_mruLoad { index } {
 		file copy -force -- $filename ${filename}${ayprefs(BackupExt)}
 	    } ]
 	}
+
 	# change working directory
 	if { [file exists $filename] } {
 	    set dirname [file dirname $filename]
