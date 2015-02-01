@@ -504,7 +504,7 @@ ay_trafo_applyall(ay_list_object *lo, ay_object *o, double *p)
 {
  double tm[16], m[16];
 
-  if(!o || !p)
+  if(!p)
     {
       return;
     }
@@ -512,11 +512,13 @@ ay_trafo_applyall(ay_list_object *lo, ay_object *o, double *p)
   ay_trafo_identitymatrix(tm);
   if(lo && lo->object != ay_root)
     ay_trafo_getparent(lo, tm);
-  ay_trafo_translatematrix(o->movx, o->movy, o->movz, tm);
-  ay_quat_torotmatrix(o->quat, m);
-  ay_trafo_multmatrix(tm, m);
-  ay_trafo_scalematrix(o->scalx, o->scaly, o->scalz, tm);
-
+  if(o)
+    {
+      ay_trafo_translatematrix(o->movx, o->movy, o->movz, tm);
+      ay_quat_torotmatrix(o->quat, m);
+      ay_trafo_multmatrix(tm, m);
+      ay_trafo_scalematrix(o->scalx, o->scaly, o->scalz, tm);
+    }
   ay_trafo_apply3(p,tm);
 
  return;
@@ -531,22 +533,25 @@ ay_trafo_applyalli(ay_list_object *lo, ay_object *o, double *p)
 {
  double tm[16], m[16], quat[4];
 
-  if(!o || !p)
+  if(!p)
     {
       return;
     }
 
   ay_trafo_identitymatrix(tm);
-  ay_trafo_scalematrix(1.0/o->scalx, 1.0/o->scaly, 1.0/o->scalz, tm);
-  memcpy(quat, o->quat, 4*sizeof(double));
-  ay_quat_inv(quat);
-  ay_quat_torotmatrix(quat, m);
-  ay_trafo_multmatrix(tm, m);
-  ay_trafo_translatematrix(-o->movx, -o->movy, -o->movz, tm);
+  if(o)
+    {
+      ay_trafo_scalematrix(1.0/o->scalx, 1.0/o->scaly, 1.0/o->scalz, tm);
+      memcpy(quat, o->quat, 4*sizeof(double));
+      ay_quat_inv(quat);
+      ay_quat_torotmatrix(quat, m);
+      ay_trafo_multmatrix(tm, m);
+      ay_trafo_translatematrix(-o->movx, -o->movy, -o->movz, tm);
+    }
   if(lo && lo->object != ay_root)
     ay_trafo_getparentinv(lo, tm);
 
-  ay_trafo_apply3(p,m);
+  ay_trafo_apply3(p,tm);
 
  return;
 } /* ay_trafo_applyalli */
