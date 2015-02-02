@@ -379,6 +379,8 @@ array set aymainshortcuts {
     ContextMenu "Shift-F10"
     ContextMenu2 "Menu"
     CMButton 3
+    ExpandAll "asterisk"
+    CollapseAll "underscore"
 }
 # array aymainshortcuts
 
