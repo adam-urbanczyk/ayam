@@ -1635,11 +1635,12 @@ a redraw can be enforced using the menu entry <tt>"View/Redraw"</tt>
 or the corresponding keyboard shortcut <tt/&lt;Ctrl+d&gt;/.
 
 <item><tt/"Drawing Mode"/ determines whether the view should draw a wireframe
-representation (<tt>"Drawing Mode/Draw"</tt>) or a shaded one
+representation (<tt>"Drawing Mode/Draw"</tt>), a shaded one
 (<tt>"Drawing Mode/Shade"</tt>), a representation
 where the curves of the draw mode are drawn over the shaded
 representation (<tt>"Drawing Mode/ShadeAndDraw"</tt>), or
 hidden wireframe and silhouettes (<tt>"Drawing Mode/HiddenWire"</tt>).
+See also section <ref id="drawingmodes" name="Drawing Modes">.
 
 <item><tt/"Modelling Mode"/ allows to switch the modelling
 coordinate system from world space (<tt/"Global"/) to the
@@ -1904,6 +1905,74 @@ select the next or previous object.
 extend the current selection to include the next or previous object.
 </itemize>
 
+<#if out=latex><x/newpage/</#if>
+<sect1>Drawing Modes<label id="drawingmodes">
+<p>
+This section explains the draw modes available in Ayam.
+<p>
+The draw mode <tt/"Draw"/ shows a simple wire frame representation
+of the scene, see the following image:
+<figure loc="ht">
+<eps file="pics/dmdraw.ps" height="4.75cm">
+<img src="pics/dmdraw.gif">
+<caption>Draw Mode <tt/"Draw"/</caption>
+</figure>
+
+<p>
+The draw mode <tt/"Shade"/ displays the scene as shaded surface
+lit by a single headlight, see also the following image:
+<figure loc="ht">
+<eps file="pics/dmshade.ps" height="4.75cm">
+<img src="pics/dmshade.gif">
+<caption>Draw Mode <tt/"Shade"/</caption>
+</figure>
+
+<p>
+The draw mode <tt/"ShadeAndDraw"/ combines the images of the modes
+<tt/"Shade"/ and <tt/"Draw"/, see also the following image:
+<figure loc="ht">
+<eps file="pics/dmdrawshade.ps" height="4.75cm">
+<img src="pics/dmdrawshade.gif">
+<caption>Draw Mode <tt/"ShadeAndDraw"/</caption>
+</figure>
+
+<#if out=latex><x/newpage/</#if>
+<p>
+The drawing mode <tt/"HiddenWire"/ works like the shade and draw mode,
+where the surface shading part is only used to remove hidden bits.
+In addition, silhouette edges are detected and drawn.
+For best results, use it with anti-aliasing.
+<p>
+The silhouette detection is shading the scene a second
+time in a special multi-colored lighting setup. Then, edges are detected
+in the Z-buffer and color buffer data. If anti-aliasing is not enabled, the
+resulting edge map is processed by morphological thinning and removal
+of pixels in the direct vicinity of pixels already drawn, to get one
+pixel wide lines.
+Finally, the edge map is used as a largely transparent texture (except
+for the edges) on a full-screen quad, which is drawn as last object.
+In case of anti-aliasing, the quad will be drawn four times.
+See also the image below.
+
+<figure loc="ht">
+<eps file="pics/dmhiddenwire.ps" height="4.75cm">
+<img src="pics/dmhiddenwire.gif">
+<caption>Draw Mode <tt/"HiddenWire"/</caption>
+</figure>
+
+The silhouette detection is a slow process and therefore only performed
+when no interactive action is in progress.
+The following image shows what will be drawn during interactive actions,
+compare it also to the complete image above.
+
+<figure loc="ht">
+<eps file="pics/dmhiddenwirenosil.ps" height="4.75cm">
+<img src="pics/dmhiddenwirenosil.gif">
+<caption>Draw Mode <tt/"HiddenWire"/ without Silhouettes</caption>
+</figure>
+
+
+<#if out=latex><x/newpage/</#if>
 <sect1>The Toolbox Window<label id="toolb">
 <p>
 <figure loc="ht">
@@ -1958,6 +2027,7 @@ It will then (depending on the window manager or its configuration)
 get a different or no decoration, no icon, and will always be iconified
 when the main window gets iconified.
 
+<#if out=latex><x/newpage/</#if>
 <sect1>Object Search<label id="objsearch">
 <p>
 <figure loc="ht">
@@ -4457,13 +4527,15 @@ If this is disabled, no drawing takes place in the view until an
 explicit redraw is requested (using the view menu, or the shortcut
 <tt>&lt;Ctrl+d&gt;</tt>).
 <item><tt/"DrawingMode"/ allows to specify the drawing mode of
-the view: <tt/"Draw"/ draws a wireframe, <tt/"Shade"/ draws lighted
+the view: <tt/"Draw"/ draws a wire-frame, <tt/"Shade"/ draws lighted
 surfaces. Note that the lighting is in no way an exact (or even similar)
 representation of the light information as specified with Light objects
 in the scene.
 Instead, a single light source, located at the camera origin
-(a headlight), will be used
-<tt/"ShadeAndDraw"/ combines surfaces and wireframes.
+(a headlight), will be used.
+<tt/"ShadeAndDraw"/ combines surfaces and wire-frames.
+<tt/"HiddenWire"/ shows hidden wire-frames and silhouettes.
+See also section <ref id="drawingmodes" name="Drawing Modes">.
 
 <item><tt/"DrawSel"/ toggles drawing of selected objects. If this is
 enabled, only the current selected objects will be drawn.
@@ -21178,6 +21250,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="tclvar" name="JavaScript scripting interface function">,
 <item><ref id="luatclvar" name="Lua scripting interface function">
 </itemize>
+<item>tcone.tcl: <ref id="tconetcl" name="example/helper script">
 <item>Tesselate: <ref id="tesst" name="tesselation tool">
 <item>TessPoMesh <ref id="expwav" name="Wavefront OBJ export option">
 <item>Text: <ref id="textobj" name="Text object">
@@ -21248,6 +21321,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>trimNC: <ref id="sctrimnc" name="scripting interface command">
 <item>TrimRect: <ref id="trrt" name="TrimRect tool">
 <item>TrueDisp: <ref id="attrs" name="RenderMan/BMRT attribute">
+<item>truncated cone: <ref id="tconetcl" name="example/helper script">
 <item>TwmCompat: <ref id="prefgui" name="preference setting">
 <item>Type:
 <itemize>
