@@ -904,12 +904,16 @@ set ay(treecm) $m
 $m add cascade -label "Tree" -menu $ay(tree).popup.tree\
     -underline 1
 set m [menu $ay(tree).popup.tree -tearoff 0]
-$m add command -label "Rebuild" -command "tree_reset"
-$m add command -label "Expand All" -command "tree_expand"
-$m add command -label "Collapse All" -command "tree_collapse"
-$m add command -label "Expand Selected" -command "tree_toggleTree 1"
-$m add command -label "Collapse Selected" -command "tree_toggleTree 2"
-$m add command -label "Toggle Selected" -command "tree_toggleTree 0"
+global aymainshortcuts
+$m add command -label "Rebuild <$aymainshortcuts(Update)>"\
+    -command "tree_reset"
+$m add command -label "Expand All <$aymainshortcuts(ExpandAll)>"\
+    -command "tree_expand"
+$m add command -label "Collapse All <$aymainshortcuts(CollapseAll)>"\
+    -command "tree_collapse"
+$m add command -label "Expand Selected <+>" -command "tree_toggleTree 1"
+$m add command -label "Collapse Selected <->" -command "tree_toggleTree 2"
+$m add command -label "Toggle Selected <space>" -command "tree_toggleTree 0"
 set m $ay(tree).popup
 
 $m add separator
@@ -958,6 +962,9 @@ if { $ayprefs(SingleWindow) == 1 } {
 bind $ay(tree) <Escape> {
     shortcut_addescescbinding $ay(tree)
 }
+
+bind $ay(tree) <Key-$aymainshortcuts(ExpandAll)> tree_expand
+bind $ay(tree) <Key-$aymainshortcuts(CollapseAll)> tree_collapse
 
 # XXXX unfortunately, this does not work
 # because this steals all events otherwise
