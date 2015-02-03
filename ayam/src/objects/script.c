@@ -358,7 +358,10 @@ ay_script_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       ay_script_notifycb(o);
     }
 
- return ay_selp_getpnts(mode, o, p, pe, 1, sc->pntslen, 4, sc->pnts);
+  if(sc->pnts)
+    return ay_selp_getpnts(mode, o, p, pe, 1, sc->pntslen, 4, sc->pnts);
+
+ return AY_OK;
 } /* ay_script_getpntcb */
 
 
