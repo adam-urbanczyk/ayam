@@ -739,8 +739,8 @@ ay_hyperb_bbccb(ay_object *o, double *bbox, int *flags)
     rmi = sqrt((h->p1[0]*h->p1[0])+(h->p1[2]*h->p1[2]));
   if((h->p2[0]*h->p2[0])+(h->p2[2]*h->p2[2]) > AY_EPSILON)
     rma = sqrt((h->p2[0]*h->p2[0])+(h->p2[2]*h->p2[2]));
-  zmi = h->p1[1];
-  zma = h->p2[1];
+  zmi = h->p1[2];
+  zma = h->p2[2];
 
   r = rmi>rma?rmi:rma;
 
