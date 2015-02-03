@@ -189,6 +189,8 @@ proc actionSetMark { w { nextaction "" } } {
 	}
     }
 
+    bind $w <ButtonRelease-1> "+focus %W"
+
     $w setconf -drawh 1
 
  return;
