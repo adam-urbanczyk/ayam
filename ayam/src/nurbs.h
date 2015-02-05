@@ -80,6 +80,8 @@ int ay_bevelt_createroundtonormal(double radius, int revert, ay_object *o1,
  */
 int ay_bevelt_findbevelcurve(int index, ay_object **c);
 
+/** Create bevel by surface concatenations fillet creation.
+ */
 int ay_bevelt_createconcat(int side, ay_object *o, ay_object *c,
 			   ay_object **bevel);
 
