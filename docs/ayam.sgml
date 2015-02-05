@@ -1634,12 +1634,12 @@ be redrawn, whenever the scene changes. If this is disabled,
 a redraw can be enforced using the menu entry <tt>"View/Redraw"</tt>
 or the corresponding keyboard shortcut <tt/&lt;Ctrl+d&gt;/.
 
-<item><tt/"Drawing Mode"/ determines whether the view should draw a wireframe
-representation (<tt>"Drawing Mode/Draw"</tt>), a shaded one
+<item><tt/"Drawing Mode"/ determines whether the view should draw a
+wire-frame representation (<tt>"Drawing Mode/Draw"</tt>), a shaded one
 (<tt>"Drawing Mode/Shade"</tt>), a representation
-where the curves of the draw mode are drawn over the shaded
+where the wires of the draw mode are drawn over the shaded
 representation (<tt>"Drawing Mode/ShadeAndDraw"</tt>), or
-hidden wireframe and silhouettes (<tt>"Drawing Mode/HiddenWire"</tt>).
+hidden wires and silhouettes (<tt>"Drawing Mode/HiddenWire"</tt>).
 See also section <ref id="drawingmodes" name="Drawing Modes">.
 
 <item><tt/"Modelling Mode"/ allows to switch the modelling
@@ -1910,7 +1910,7 @@ extend the current selection to include the next or previous object.
 <p>
 This section explains the draw modes available in Ayam.
 <p>
-The draw mode <tt/"Draw"/ shows a simple wire frame representation
+The draw mode <tt/"Draw"/ shows a simple wire-frame representation
 of the scene, see the following image:
 <figure loc="ht">
 <eps file="pics/dmdraw.ps" height="4.75cm">
@@ -2037,7 +2037,7 @@ when the main window gets iconified.
 </figure>
 <p>
 The object search facility allows to find objects in the scene hierarchy
-according to many different, even user defined criteria and highlight
+according to many different, even script defined criteria and highlight
 them in the tree view or execute arbitrary actions on them (see also
 the image above).<footnote>Since 1.21.</footnote>
 
@@ -2152,14 +2152,20 @@ The node names of the found objects will be collected, then the list of
 objects will be processed so that delete is safe, then the objects
 will be deleted from the scene.
 </descrip>
-In addition to these special actions, a command/procedure call, like
-e.g.~<tt>convOb -inplace</tt> or <tt>addTag NoExport ""</tt> can also be
-specified as action.
+In addition to these special actions, a command&thinsp;/&thinsp;procedure
+call, like
+e.g.<newline>
+<tt>convOb -inplace</tt><newline>or<newline>
+<tt>addTag NoExport ""</tt><newline>
+can also be specified as action.
 However, as the object search is based on the <tt/"forAll"/ scripting
 interface command, certain restrictions apply:<newline>
 the action must not change the scene hierarchy, i.e.~no objects must be
-deleted, cut, or created in the command/procedure call. Changing the
-objects themselves, even converting them in-place, however, is allowed.
+deleted, cut, or created in the command&thinsp;/&thinsp;procedure call.
+Changing the objects themselves, even converting them in-place,
+however, is allowed.<newline>
+The script has no access to global variables, unless special measures
+are taken.<newline>
 See section
 <ref id="scifall" name="Applying Commands to a Number of Objects">.
 
@@ -4140,8 +4146,8 @@ i.e.~it can be created from scripts using the command <tt/"crtOb Revolve"/;
 <item><bf/Parent of/: the Revolve object has one NCurve (or NCurve providing
 object) as child;
 <item><bf/Material/: the Revolve object can be associated with a material;
-<item><bf>Converts to/Provides</bf>: the Revolve object converts to (and
-provides) one or multiple NPatch objects;
+<item><bf>Converts to&thinsp;/&thinsp;Provides</bf>: the Revolve object
+converts to (and provides) one or multiple NPatch objects;
 <item><bf/Point Edit/: the Revolve object has no editable points, it does
 not support single point modelling actions; however, read only points are
 supported (the control points of the underlying NPatch object can be read
@@ -6864,7 +6870,7 @@ the master surface, ExtrNC objects do not support own transformation
 attributes.<footnote>Since 1.19.</footnote>
 <p>
 Note that the extraction of any curves currently completely ignores
-potentially present trimming information of the NPatch object, i.e. the
+potentially present trimming information of the NPatch object, i.e.~the
 extracted curves will not be trimmed.<newline>
 However, complete trim boundaries may be extracted
 .<footnote>Since 1.21.</footnote>
@@ -7204,7 +7210,7 @@ follow these rules.
 Warning: Certain OpenGL implementations may be easily crashed
 drawing trimmed NURBS patches with trims that do not follow the
 aforementioned rules. When in doubt or while heavy modelling,
-switch to wireframe drawing and switch off shading temporarily
+switch to wire-frame drawing and switch off shading temporarily
 and you will be on the safe side.
 <p>
 NURBS curve providing objects are also supported as trim
@@ -8821,9 +8827,9 @@ Since Ayam 1.21, four different types of cap surfaces with different
 characteristics and parameter curve requirements are supported:
 Trim, Gordon, Simple, Simple3D.
 <p>
-The <bf/Trim/ type needs planar curves but supports concave curves.
+The <bf/Trim/ type needs planar parameter curves but they may be concave.
 Furthermore, if multiple curves are present as child objects, the curves
-following the first curve define holes in the cap surface similar to the
+following the first curve define holes in the cap surface, similar to the
 parameter curves of an extruded surface (see also section
 <ref id="handb" name="Using Holes and Bevels">).
 <p>
@@ -8954,9 +8960,9 @@ the curves compatible, and joins them to the concatenated surface.
 Also NURBS curves or objects that provide NURBS curves can be used
 as parameter objects.<footnote>Since 1.20.</footnote>
 
-Eventually present trim curves can be copied and transformed to the
-appropriate place and orientation in the concatenated surfaces knot
-domain.<footnote>Since 1.21.</footnote>
+Eventually present trim curves will be copied and transformed to the
+appropriate place and orientation in the concatenated surface, according
+to the new knot domain.<footnote>Since 1.21.</footnote>
 
 Since the ConcatNP object also
 provides a NURBS patch, it is possible to use it as child object for
@@ -9589,7 +9595,7 @@ but they may currently not be changed by the user.
 <p>
 Unless the <tt/"subdiv"/ plugin (available since Ayam 1.19) is loaded,
 Ayam is not able to do the subdivision and show the resulting smooth
-surface. All that is shown in wireframe and shaded views is the original
+surface. All that is shown in wire-frame and shaded views is the original
 polygonal mesh.
 <p>
 The following table briefly lists some capabilities of the SDMesh object.
@@ -11134,7 +11140,7 @@ if it does not already start with a plus.
 <sect2>AsWire Tag<label id="aswiretag">
 <p>
 The tag type <tt/"AsWire"/ switches export of certain objects
-from surface to wireframe mode.
+from surface to wire-frame mode.
 The value string of this tag is ignored. All
 that counts is the presence of the tag.
 Note that only X3D export honours this tag.
@@ -11380,7 +11386,7 @@ A MN tag could look like this:
 <p>
 The tag type <tt/"MP"/ (mean point) can be added to the Cap object
 or objects with caps to control the middle point of the <tt/"Simple"/
-and <tt/"Simple3D"/ caps. This is useful if e.g. the automatically
+and <tt/"Simple3D"/ caps. This is useful if e.g.~the automatically
 calculated mean point of the parameter curve is off.
 The tag value is a list of three comma separated floating point numbers,
 a 3D vector, followed by an integer value between 0 and 3 designating
@@ -11754,10 +11760,11 @@ scripting interface command <ref id="scelevatenc" name="elevateNC">.
 <tag/Arguments/ The extend tool takes a number of NURBS curves from
 the selection and additionally requests a point in space.
 <tag/Operation/ The selected NURBS curves will be extended to the
-specified point in space without changing the shape of the curve.
+specified point in space without changing the already existing
+shape of the curves.
 <p>
-If the knot vector of the curve is not clamped at the end, it
-will be clamped automatically. The knot type of the curve will be
+If the knot vector of a curve is not clamped at the end, it
+will be clamped automatically. The knot type of each curve will be
 changed to custom. A new control point will be added and the position
 of old control points may be changed in the progress.
 
@@ -11783,12 +11790,14 @@ scripting interface command <ref id="scextendnc" name="extendNC">.
 <descrip>
 <tag/Arguments/ The clamp tool takes a number of NURBS curves from
 the selection.
+
 <tag/Operation/ The knot vectors of the selected NURBS curves will be
 changed using knot insertion so that the first and the last knot
 have a multiplicity equal to the order of the curve,
 without changing the shape of the curve. The curve will
 interpolate the first and the last control point afterwards (if also
 the weights of those points are 1.0).
+
 <tag/Notes/ The knot type of the curves will be changed to <tt/"Custom"/.
 
 The point selection will be removed from the original objects.
@@ -11812,11 +11821,13 @@ scripting interface command <ref id="scclampnc" name="clampNC">.
 <descrip>
 <tag/Arguments/ The unclamp tool takes a number of NURBS curves from
 the selection.
+
 <tag/Operation/ The knot vectors of the selected NURBS curves will be
 changed so that there are no multiple knots at the respective ends
 of the knot vectors. The shape of the curve will not change but the
 position of some control points will. The knot type of the curve can
 be changed to type <tt/"Custom"/.
+
 <tag/Notes/
 Unclamping is <em/not/ an exact reversal of clamping (and vice versa).
 
@@ -11842,9 +11853,11 @@ inserted 1 time at u=0.5)</caption>
 <tag/Arguments/ The insert knot tool takes a number of NURBS curves from
 the selection and requests two additional values, a parametric value <it/u/
 and an integer value <it/i/.
+
 <tag/Operation/ The specified knot value <it/u/ will be inserted <it/i/
 times into the knot vector of the selected curves, without changing the
 shape of the curve(s).
+
 <tag/Notes/ The knot type of the curves will be changed to <tt/"Custom"/.
 
 The point selection will be removed from the original objects.
@@ -11864,6 +11877,7 @@ scripting interface command <ref id="scinsknnc" name="insknNC">.
 <tag/Arguments/ The remove knot tool takes a number of NURBS curves from
 the selection and requests three additional values, a parametric value <it/t/,
 an integer value <it/r/, and a tolerance value <it/tol/.
+
 <tag/Operation/ The knot at the specified parametric value <it/t/ will
 be removed <it/r/ times from the knot vector of the selected curves if
 the shape of the resulting curve does not deviate more than <it/tol/
@@ -11874,6 +11888,7 @@ value t, i.e.~use <tt/"-i 3"/ instead of <tt/"0.5"/ for the knot vector
 <tt/"0 0 0 0.5 1 1 1"/).<newline>
 If the knot can not be removed <it/r/ times due to the tolerance given, an
 error is reported and the original curve is left unchanged.
+
 <tag/Notes/ If <it/tol/ is <tt/"0.0"/ the remove knot tool tries to
 work without changing the shape of the curve, i.e.~only superfluous
 knots will be removed.
@@ -11924,9 +11939,9 @@ for t=0.5)</caption>
 </figure>
 <descrip>
 <tag/Arguments/ The split curves tool takes a number of NURBS curves from
-the selection and additionally requests a parametric value.
+the selection and additionally requests a parametric value <it/u/.
 <tag/Operation/ The selected NURBS curves will be split into two
-NURBS curves at the designated parametric value. The splitting process
+NURBS curves at the designated parametric value <it/u/. The splitting process
 involves application of knot insertion, so that all new curves will
 get a custom knot vector.
 <tscreen><verb>
@@ -14810,7 +14825,7 @@ splitNC &ndash; split NURBS curve
  <item>Synopsis: <tt/"splitNC u"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: splits the selected NURBS curves at the designated
-parametric value <f/u/ into two curves, creating one new curve and
+parametric value <it/u/ into two curves, creating one new curve and
 <em>modifying the original</em> selected curve.
 <p><p>
 See also section <ref id="splitt" name="Split Tool">.
@@ -15784,6 +15799,7 @@ from filename.
 </itemize>
 
 <p>
+<#if out=latex><x/newpage/</#if>
 <#if out=latex><x/phantomsection/</#if>
 
 <label id="scinsertscene">
@@ -16191,9 +16207,9 @@ proc easySweep { } {
 
 Run this pocedure by selecting a NURBS curve object, then type
 into the console:
-<code>
-easySweep
-</code>
+<tscreen>
+&raquo;&thinsp;easySweep
+</tscreen>
 
 You may add this command to the main menu as well:
 <code>
@@ -16258,6 +16274,7 @@ considerable help.<footnote>Since 1.14.</footnote>
 See also the script <tt>"scripts/topoly.tcl"</tt>
 for an example.
 <p>
+<#if out=latex><x/newpage/</#if>
 Here is another example that adds two buttons to the bottom of the
 toolbox spanning the whole window (this works best with the
 standard toolbox layout of 4 by 12 buttons used in the multi-window
@@ -16620,7 +16637,7 @@ default is 360.
 
 Internally, the script creates a Hyperboloid; further information about
 conversion capabilities and RIB export may be found in
-section <ref id="hyperboloidobj" name="Hyperboloid">).
+section <ref id="hyperboloidobj" name="Hyperboloid">.
 
 <#if out=latex><x/newpage/</#if>
 
@@ -17451,11 +17468,11 @@ rrib plugin must be loaded using the menu entry
 The RRIB plugin supports import of the following geometric
 primitives:
 <itemize>
-<item>Quadrics (Sphere, Disk, Cylinder, Cone, Paraboloid, Hyperboloid, Torus)
-<item>bilinear and bicubic patches and patch meshes
-<item>NURBS patches (with trim curves)
-<item>(general) polygons and (general) polygon meshes
-<item>subdivision meshes (with all tags)
+<item>Quadrics (Sphere, Disk, Cylinder, Cone, Paraboloid, Hyperboloid, Torus),
+<item>bilinear and bicubic patches and patch meshes,
+<item>NURBS patches (with trim curves),
+<item>(general) polygons and (general) polygon meshes,
+<item>subdivision meshes (with all tags).
 </itemize>
 
 Furthermore, the plugin supports reading of CSG, object-instances,
@@ -18514,12 +18531,12 @@ Object names will be converted to DEF attributes.
 <p>
 Instances can be resolved or exported as USE/DEF pairs.
 
-<sect2>Wireframe Support
+<sect2>Wire-frame Support
 <p>
-The X3D export allows to export wireframes instead of surfaces for
+The X3D export allows to export wire-frames instead of surfaces for
 NPatch and PoMesh objects.
 <p>
-To switch an object to wireframe export, just add a tag <tt/"AsWire"/
+To switch an object to wire-frame export, just add a tag <tt/"AsWire"/
 to the object.
 
 <sect2>X3D Export Options<label id="expx3dopt">
@@ -19751,7 +19768,7 @@ all views. In Ayam this can be done in the multi window GUI mode
 (see section <ref id="prefgui" name="GUI preference settings">).
 If there are many objects, it is also advisable to switch the object
 selection widget from tree view mode to list box mode (menu:
-<tt>"Special/Toggle TreeView"</tt>.
+<tt>"Special/Toggle TreeView"</tt>).
 <p>
 Modelling without views does not work on Apple MacOSX (Aqua) if
 GLU functionality is involved (as every GLU functionality on MacOSX
