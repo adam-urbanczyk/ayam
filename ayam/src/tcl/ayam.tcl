@@ -1303,11 +1303,11 @@ while { $i < $argc } {
     set arg [lindex $argv $i]
     if { (! [ string compare "-h" $arg ]) ||
          (! [ string compare "-help" $arg ]) } {
-	puts " -h:        Display this help"
-	puts " -nosplash: Do not display splash-image"
-	puts " -failsafe: Do not load preferences and environment"
-	puts " -noview:   Do not open a view"
-	puts " 1.ay 2.ay: Load 1.ay, insert 2.ay"
+	puts " -h:        Display this help."
+	puts " -nosplash: Do not display splash-image."
+	puts " -failsafe: Do not load preferences and environment."
+	puts " -noview:   Do not open a view."
+	puts " 1.ay 2.ay: Load 1.ay, insert 2.ay."
 	puts "\n Ayam - Reconstruct the World!"
 	update
 	exit
