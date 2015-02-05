@@ -1433,9 +1433,14 @@ ay_draw_mark(struct Togl *togl)
    glPushMatrix();
     glLoadIdentity();
 
-    glTranslatef((float)(floor(view->markx+0.5)-0.375f),
-		 (float)(floor(Togl_Height(togl)-view->marky+0.5)-0.375f),
-		 0.0f);
+    if(view->antialiaslines)
+      glTranslatef((float)(floor(view->markx+0.5)),
+		   (float)(floor(Togl_Height(togl)-view->marky+0.5)),
+		   0.0f);
+    else
+      glTranslatef((float)(floor(view->markx+0.5)-0.375f),
+		   (float)(floor(Togl_Height(togl)-view->marky+0.5)-0.375f),
+		   0.0f);
 
     glBegin(GL_LINES);
      if(view->antialiaslines)
