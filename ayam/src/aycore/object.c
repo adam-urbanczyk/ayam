@@ -47,7 +47,7 @@ ay_object_placemark(ay_object *o)
     return;
 
   /* move object to the mark? */
-  if(ay_prefs.createatmark && ay_currentview)
+  if(ay_prefs.createatmark && ay_currentview && ay_currentview->drawmark)
     {
       /* fake single object selection for snaptomarkcb() */
       osel = ay_selection;
