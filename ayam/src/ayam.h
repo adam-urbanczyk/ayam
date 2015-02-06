@@ -2069,7 +2069,7 @@ extern char *ay_error_igntype;
 
 /** \name Version Strings and Numbers */
 /*@{*/
-#define AY_VERSIONSTR "1.21pre"
+#define AY_VERSIONSTR "1.21"
 #define AY_VERSIONSTRMI "0"
 
 #define AY_VERSIONMA 1
