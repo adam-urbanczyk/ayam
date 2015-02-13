@@ -25,11 +25,13 @@ Type 0
 # create LevelAttr-UI
 set w [frame $ay(pca).$LevelAttr(w)]
 addVSpace $w s1 2
-addMenu $w LevelAttrData Type {Level Union Difference Intersection Primitive }
+addMenu $w LevelAttrData Type { Level Union Difference Intersection Primitive }
+
 
 # level_crt:
-#
-#
+# create Level or tool object with child(ren) (e.g. Revolve);
+# makes the currently selected objects children of the new
+# object using the object clipboard
 proc level_crt { objtype {crtargs "" } {keepsel 0} } {
     global ay ayprefs ay_error selected
     set selected ""
@@ -106,10 +108,11 @@ proc level_crt { objtype {crtargs "" } {keepsel 0} } {
 	    }
 	    set ay(SelectedLevel) $ay(CurrentLevel)
 	} else {
+	    # listbox is active
 	    uS
 	    $ay(olbball) invoke
 	}
-	# if
+	# if tree
 
 	# update parent objects
 	notifyOb
@@ -117,7 +120,7 @@ proc level_crt { objtype {crtargs "" } {keepsel 0} } {
 	# redraw all views
 	rV
     }
-    # if
+    # if keepsel
  return;
 }
 # level_crt
