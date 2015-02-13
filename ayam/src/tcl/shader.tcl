@@ -53,7 +53,7 @@ proc shader_scanAll {} {
 	return;
     }
 
-    ayError 4 scanAllShaders "Scanning for $sext shaders..."
+    ayError 4 scanAllShaders "Scanning $sext shaders..."
 
     set temp ""
     if { $ayprefs(Shaders) == "" } {
@@ -66,7 +66,9 @@ proc shader_scanAll {} {
 	} else {
 	    set ayprefs(Shaders) $env(SHADERS)
 	}
-    } else { set env(SHADERS) $ayprefs(Shaders) }
+    } else {
+	set env(SHADERS) [shader_unglobShaderPaths "$ayprefs(Shaders)"]
+    }
 
     set spathstr [split "$ayprefs(Shaders)" $ay(separator)]
 
@@ -74,14 +76,14 @@ proc shader_scanAll {} {
 
     foreach p $spathstr {
 	set files [glob -nocomplain "${p}/*${sext}"]
-	append temp "$files "
+	append allfiles "$files "
     }
 
     set allshaders ""
-    foreach s $temp {
-	# silently omit unreadable shaders
-	if {[file readable $s]} {
-	    lappend allshaders $s
+    foreach f $allfiles {
+	# silently omit unreadable shader files
+	if {[file readable $f]} {
+	    lappend allshaders $f
 	}
     }
     # foreach
@@ -97,7 +99,7 @@ proc shader_scanAll {} {
 	set dummy [file rootname "$dummy"]
 
 	set shaderarguments ""
-	
+
 	set ay_error 0
 	if { $ay(sext) != "" } {
 	    shaderScan "$dummy" shaderarguments
@@ -106,12 +108,12 @@ proc shader_scanAll {} {
 	    if { $AYUSESLCARGS == 1 } {
 		shaderScanSLC "$dummy" shaderarguments
 	    }
-	
+
 	    if { $AYUSESLXARGS == 1 } {
 		shaderScanSLX "$dummy" shaderarguments
 	    }
 	}
-	# if
+	# if have sext
 
 	if { $ay_error < 2 } {
 
@@ -124,9 +126,9 @@ proc shader_scanAll {} {
 		    lappend $shadernamelistname [lindex $shaderarguments 0]
 		}
 	    }
-	    # if
+	    # if have shadertype
 	}
-	# if
+	# if no error
     }
     # foreach
 
@@ -186,7 +188,7 @@ proc shader_cycSel { w k l } {
     global $l
 
     # get old list
-    eval [subst "set ol {\$$l}"] 
+    eval [subst "set ol {\$$l}"]
 
     set i [lindex $ol 0]
 
@@ -219,12 +221,12 @@ proc shader_setNew { win type stype } {
     eval "set shaders \$ay(${stype}shaders)"
     if { ($ay(sext) == "") && !$AYUSESLCARGS && !$AYUSESLXARGS } {
 	set types {{"Parsed Shader" ".xml"} {"All files" *}}
-  
+
 	set newfilename [tk_getOpenFile -filetypes $types -parent .\
 		-title "Select parsed shader:"]
 	if { $newfilename != "" } {
 	    set ay_error 0
-	    shader_scanXML $newfilename shaderarguments 
+	    shader_scanXML $newfilename shaderarguments
 
 	    if { $ay_error > 1 } {
 		ayError 2 shader_setNew "Oops, could not scan shader!"
@@ -257,7 +259,7 @@ proc shader_setNew { win type stype } {
     winDialog $w $t
 
     if { $ayprefs(FixDialogTitles) == 1 } {
-	pack [frame $w.fl] -in $w -side top   
+	pack [frame $w.fl] -in $w -side top
 	pack [label $w.fl.l -text $t] -in $w.fl -side left -fill x -expand yes
     }
 
@@ -276,7 +278,7 @@ proc shader_setNew { win type stype } {
     }
     # foreach
 
-    # now, fill the global lists with list indizes, and arrange for
+    # now, fill the global lists with list indices, and arrange for
     # the respective key on the keyboard to cycle-select using shader_cycsel
     set i 0
     foreach shader $shaders {
@@ -284,7 +286,7 @@ proc shader_setNew { win type stype } {
 	global ${fc}list
 	lappend ${fc}list $i
 	if { [ llength ${fc}list ] == 1 } {
-	    bind $w <KeyPress-${fc}> "shader_cycSel $f.lb $fc ${fc}list" 
+	    bind $w <KeyPress-${fc}> "shader_cycSel $f.lb $fc ${fc}list"
 	}
 	incr i
     }
@@ -298,7 +300,7 @@ proc shader_setNew { win type stype } {
     set f $w.f1
     pack $f.fsc -in $f -side right -fill y
     pack $f -in $w -side top -fill both -expand yes
-    
+
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
 	global ay newshaderindex
@@ -346,7 +348,7 @@ proc shader_setNew { win type stype } {
 	if { $AYUSESLCARGS == 1 } {
 	    shaderScanSLC $shadername shaderarguments
 	}
-    
+
 	if { $AYUSESLXARGS == 1 } {
 	    shaderScanSLX $shadername shaderarguments
 	}
@@ -383,7 +385,7 @@ proc shader_scanXML { file varname } {
     set parameters ""
     set done 0
     while { ! $done } {
-	
+
 	    set rl [gets $f]
 
 	    if { [eof $f] } {
@@ -408,9 +410,9 @@ proc shader_scanXML { file varname } {
 		    lappend parameters $parameter
 
 		}
-		
+
 	    }
-	    
+
 	}
 
 	lappend shader $parameters
@@ -555,7 +557,7 @@ set numargs [llength $ay_shader(ArgNames)]
 for {set i 0} {$i < $numargs} {incr i} {
 
     set argtype [lindex $ay_shader(ArgTypes) $i]
-    
+
     set argname [lindex $ay_shader(ArgNames) $i]
 
     switch $argtype {
@@ -643,7 +645,7 @@ proc shader_DbToArray { shader } {
     global ay_shader
 
     unset ay_shader
-    
+
     set ay_shader(Name) [lindex $shader 0]
     set ay_shader(ArgNames) ""
     set ay_shader(ArgTypes) ""
@@ -678,15 +680,35 @@ proc shader_DbToArray { shader } {
 }
 # shader_DbToArray
 
+# shader_unglobShaderPaths:
+#  helper to manage shader paths with globbing
+#
+proc shader_unglobShaderPaths { shaders } {
+    global ay
+    regsub -all $ay(separator) $shaders " " tmp;
+    set alldirs ""
+    foreach entry $tmp {
+	set dirs [glob -type d $entry]
+	foreach dir $dirs {
+	    append alldirs "$dir"
+	    append alldirs $ay(separator)
+	}
+    }
+ return $alldirs;
+}
+# shader_unglobShaderPaths
+
+# shader_findShader:
+# helper for ayslb
 #
 proc shader_findShader { sname } {
  global ay ayprefs
-
+    set shaders [shader_unglobShaderPaths $ayprefs(Shaders)]
     set tmp ""
-    regsub -all $ay(separator) $ayprefs(Shaders) " " tmp;
-
-    foreach p $tmp {
-	set fname $p/${sname}$ay(sext)
+    regsub -all $ay(separator) $shaders " " tmp;
+    set alldirs [shader_unglobShaderPaths $tmp]
+    foreach dir $alldirs {
+	set fname $dir/${sname}$ay(sext)
 	if { [file readable $fname] } {
 	    return $fname;
 	}

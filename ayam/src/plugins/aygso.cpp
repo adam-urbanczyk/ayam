@@ -148,7 +148,7 @@ aygso_scangsotcmd(ClientData clientData, Tcl_Interp *interp,
  const Gelato::GsoArgs::Parameter *p = NULL;
  Tcl_DString ds, dsp;
  bool result;
- char vname[] = "ayprefs(Shaders)";
+ char vname[] = "env(SHADERS)";
  int i = 0, numargs = 0;
  char *c = NULL;
 

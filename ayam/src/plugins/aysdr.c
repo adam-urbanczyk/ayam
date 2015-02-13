@@ -134,7 +134,7 @@ aysdr_scansdrtcmd(ClientData clientData, Tcl_Interp *interp,
  int arraylen;
  ESdrShaderType stype;
  Tcl_DString ds, dsp;
- char vname[] = "ayprefs(Shaders)";
+ char vname[] = "env(SHADERS)";
 #ifdef WIN32
  char vnamewin[] = "ay(PixieShaders)", command[] = "aysdr_rewritepath";
  char *c = NULL;
