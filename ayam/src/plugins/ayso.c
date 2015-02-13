@@ -111,7 +111,7 @@ ayso_scansotcmd(ClientData clientData, Tcl_Interp *interp,
  char buffer[255];
  int arraylen;
  Tcl_DString ds;
- char vname[] = "ayprefs(Shaders)";
+ char vname[] = "env(SHADERS)";
  char *c = NULL;
 
   if(argc < 3)

@@ -111,7 +111,7 @@ ayslo_scanslotcmd(ClientData clientData, Tcl_Interp *interp,
  char buffer[255];
  int arraylen;
  Tcl_DString ds;
- char vname[] = "ayprefs(Shaders)";
+ char vname[] = "env(SHADERS)";
 
   if(argc < 3)
     {

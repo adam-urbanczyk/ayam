@@ -91,12 +91,15 @@ ay_shader_scanslctcmd(ClientData clientData, Tcl_Interp *interp,
  char buffer[255];
  int arraylen;
  Tcl_DString ds;
+ char vname[] = "env(SHADERS)";
 
   if(argc < 3)
     {
       ay_error(AY_EARGS, argv[0], "shaderpath varname");
       return TCL_OK;
     }
+
+  SLC_SetPath(Tcl_GetVar(interp, vname, TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
 
   if((SLC_SetShader(argv[1])) == -1)
     {
@@ -329,7 +332,7 @@ ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
  char buffer[255];
  int arraylen;
  Tcl_DString ds;
- char vname[] = "ayprefs(Shaders)";
+ char vname[] = "env(SHADERS)";
 #ifdef WIN32
  char *c = NULL;
 #endif
