@@ -359,6 +359,12 @@ proc toolbox_open { {w .tbw} } {
 	    button $f.blevel -image ay_Level_img -padx 0 -pady 0 -command {
 		crtOb Level 1; uCR; sL; rV;
 	    }
+	    bind $f.blevel <Control-ButtonPress-1> {
+		%W configure -relief sunken
+		crtOb Level 1; uCR; rV;
+		after 100 "%W configure -relief raised"
+		break;
+	    }
 	    bind $f.blevel <Shift-ButtonPress-1> {
 		%W configure -relief sunken
 		level_crt Level 1
