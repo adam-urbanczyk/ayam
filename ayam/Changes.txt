@@ -1,4 +1,17 @@
-[16. Jan 2015] CVS-Head:
+[14. Feb 2015] CVS-Head:
+========================
+Bug Fixes:
+
+
+Modelling:
+
+
+GUI:
+o the Shaders preference setting now supports path globbing
+
+
+
+[7. Feb 2015] Ayam-1.21:
 ========================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
