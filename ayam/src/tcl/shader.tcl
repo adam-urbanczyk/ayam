@@ -94,9 +94,11 @@ proc shader_scanAll {} {
 	set dummy [file tail "$s"]
 	# strip extension (.slc/.slx) from shader-file-name
 	set dummy [file rootname "$dummy"]
-	# strip an eventually present .linux (DSO-shaders)
-	# from the shader-file-name
-	set dummy [file rootname "$dummy"]
+	# strip an eventually present .linux (DSO-shader architecture)
+	# from the shader-file-name?
+	if { $ayprefs(StripShaderArch) } {
+	    set dummy [file rootname "$dummy"]
+	}
 
 	set shaderarguments ""
 
