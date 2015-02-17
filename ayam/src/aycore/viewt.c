@@ -79,9 +79,9 @@ ay_viewt_setupprojection(struct Togl *togl)
 
   if(view->type == AY_VTPERSP)
     {
-      if(view->nearp <= 0.0)
+      if(view->nearp <= 1.0)
 	{
-	  nearp = 0.1;
+	  nearp = 1.0;
 	}
 
       if((view->farp == 0.0) || (view->farp <= nearp))
