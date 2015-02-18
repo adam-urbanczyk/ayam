@@ -708,46 +708,46 @@ RIB_UINT32
    RibGetStatus( RIB_HANDLE hrib ),
    RibGetOptions( RIB_HANDLE hrib );
 
-#define /* int */ RibGetMaximumFiles( /* RIB_HANDLE */ rib ) \
+#define  RibGetMaximumFiles(  rib ) \
                           ( (rib) ? gRibMaxFiles : 0 ) 
 
-#define /* int */ RibGetNumberOfSubfiles( /* RIB_HANDLE */ rib ) \
+#define  RibGetNumberOfSubfiles(  rib ) \
                           ( (rib) ? gRibNSubfiles : 0 ) 
 
-#define /* int */ RibGetNumberOfOpenSubfiles( /* RIB_HANDLE */ rib ) \
+#define  RibGetNumberOfOpenSubfiles(  rib ) \
                           ( (rib) ? gRibNOpenSubfiles : 0 ) 
 
-#define /* int */ RibGetRITableSize( /* RIB_HANDLE */ rib )  \
+#define  RibGetRITableSize(  rib )  \
 			     ( (rib) ? ((PRIB_INSTANCE)(rib))->rilevel : 0 )
 
-#define /* PRIB_RITABLE */ RibGetRITable( /* RIB_HANDLE */ rib ) \
+#define RibGetRITable(  rib ) \
                           ( (rib) ? ((PRIB_INSTANCE)(rib))->ritable : NULL ) 
 
-#define /*int*/ RibSetRITable( /*RIB_HANDLE*/ rib,       \
-			       /*int*/ ri_level,         \
-			       /*PRIB_RITABLE*/ table )  \
+#define RibSetRITable( rib,       \
+			       ri_level,         \
+			        table )  \
      ( (rib)&&(table)                                    \
       ? ((((PRIB_INSTANCE)(rib))->ritable=(table)),      \
 	 (((PRIB_INSTANCE)(rib))->rilevel=(ri_level)),   \
 	 NULL)                                           \
-      : 1 /* Error */ ) 
+      : 1 ) 
 
-#define RibGetHintTableSize( /* RIB_HANDLE */ rib )  \
+#define RibGetHintTableSize(  rib )  \
 			     ( (rib) ? ((PRIB_INSTANCE)(rib))->hintlevel : 0 )
 
-#define /* PRIB_HINTTABLE */ RibGetHintTable( /* RIB_HANDLE */ rib ) \
+#define  RibGetHintTable(  rib ) \
      ( (rib) ? ((PRIB_INSTANCE)(rib))->hinttable : NULL ) 
 
-#define /* int */ RibSetHintTable( /* RIB_HANDLE */ rib,        \
-				   /*int*/ hint_level,          \
-                                  /* PRIB_HINTTABLE */ table )  \
+#define  RibSetHintTable(  rib,        \
+				   hint_level,          \
+                                   table )  \
      ( (rib)&&(table)                                           \
       ? ((((PRIB_INSTANCE)(rib))->hinttable=(table)),           \
 	 (((PRIB_INSTANCE)(rib))->hintlevel=(hint_level)),      \
 	 NULL)                                                  \
-      : 1 /* Error */ ) 
+      : 1 ) 
 
-#define /* RtBoolean */ RibShouldFreeData( /* RIB_HANDLE */ rib )          \
+#define RibShouldFreeData(  rib )          \
      ( (rib)                                                               \
       && (((PRIB_INSTANCE)(rib))->status & kRIB_STATUS_KEEP_DATA)          \
       ? (((PRIB_INSTANCE)(rib))->status &= ~kRIB_STATUS_KEEP_DATA),RI_FALSE\
@@ -756,49 +756,49 @@ RIB_UINT32
 /* Same as RibShouldFreeData(), but does not remove the kRIB_STATUS_KEEP_DATA
  *    from the rib->status.
  */
-#define /* RtBoolean */ RibQueryKeepData( /* RIB_HANDLE */ rib )           \
+#define RibQueryKeepData(  rib )           \
      ( (rib)                                                               \
       && (((PRIB_INSTANCE)(rib))->status & kRIB_STATUS_KEEP_DATA)          \
       ? RI_FALSE : RI_TRUE )
 
-#define /* int */ RibKeepData( /* RIB_HANDLE */ rib ) \
+#define  RibKeepData(  rib ) \
      ( (rib) ? ((PRIB_INSTANCE)(rib))->status |= kRIB_STATUS_KEEP_DATA,0 : 1 )
 
-#define /* PRIB_HINTTABLE */ RibGetArcRecHandler( /* RIB_HANDLE */ rib ) \
+#define RibGetArcRecHandler(  rib ) \
      ( (rib) ? ((PRIB_INSTANCE)(rib))->arcrechandler : NULL ) 
 
-#define /* int */ RibGetNColorSamples( /* RIB_HANDLE */ rib ) \
+#define  RibGetNColorSamples(  rib ) \
      ( (rib) ? (((PRIB_INSTANCE)(rib))->ncolorsamples) : 0 ) 
 
-#define /* int */ RibSetNColorSamples( /* RIB_HANDLE */ rib, /*int*/n ) \
+#define  RibSetNColorSamples(  rib, n ) \
      ((rib) ? (((((PRIB_INSTANCE)(rib))->ncolorsamples)=(n)),0)       \
             : kRIB_ERRRC_INT) 
 
-#define /* int */ RibGetLastSequence( /* RIB_HANDLE */ rib ) \
+#define  RibGetLastSequence(  rib ) \
      ( (rib) ? (((PRIB_INSTANCE)(rib))->lastsequence) : 0 ) 
 
-#define /* int */ RibSetLastSequence( /* RIB_HANDLE */ rib, /*int*/n )  \
+#define  RibSetLastSequence(  rib, n )  \
      ((rib) ? (((PRIB_INSTANCE)(rib))->lastsequence)=(n),0 \
             : kRIB_ERRRC_INT) 
 
-#define /* int */ RibGetLastNUniform( /* RIB_HANDLE */ rib ) \
+#define  RibGetLastNUniform(  rib ) \
      ( (rib) ? (((PRIB_INSTANCE)(rib))->lastuniform) : 0 ) 
 
-#define /* int */ RibSetLastNUniform( /* RIB_HANDLE */ rib, /*int*/n )  \
+#define  RibSetLastNUniform(  rib, n )  \
      ((rib) ? (((PRIB_INSTANCE)(rib))->lastuniform)=(n),0 \
             : kRIB_ERRRC_INT) 
 
-#define /* int */ RibGetLastNVarying( /* RIB_HANDLE */ rib ) \
+#define  RibGetLastNVarying(  rib ) \
      ( (rib) ? (((PRIB_INSTANCE)(rib))->lastvarying) : 0 ) 
 
-#define /* int */ RibSetLastNVarying( /* RIB_HANDLE */ rib, /*int*/n )  \
+#define  RibSetLastNVarying(  rib, n )  \
      ((rib) ? (((PRIB_INSTANCE)(rib))->lastvarying)=(n),0 \
             : kRIB_ERRRC_INT) 
 
-#define /* int */ RibGetLastNVertex( /* RIB_HANDLE */ rib ) \
+#define  RibGetLastNVertex(  rib ) \
      ( (rib) ? (((PRIB_INSTANCE)(rib))->lastvertex) : 0 ) 
 
-#define /* int */ RibSetLastNVertex( /* RIB_HANDLE */ rib, /*int*/n )  \
+#define  RibSetLastNVertex(  rib, n )  \
      ((rib) ? (((PRIB_INSTANCE)(rib))->lastvertex)=(n),0 \
             : kRIB_ERRRC_INT) 
 
@@ -856,27 +856,27 @@ int
    RibGetLastChar( RIB_HANDLE hrib ),
    RibIgnoreLastChar( RIB_HANDLE  rib );
 
-#define /* unsigned int */ RibGetFileName( /* RIB_HANDLE */ rib )   \
+#define RibGetFileName(  rib )   \
           ( (rib) ? (((PRIB_INSTANCE)(rib))->filename) : 0L ) 
 
-#define /* RIB_HASHHND */ RibGetHashHandle( /* RIB_HANDLE */ rib )   \
+#define RibGetHashHandle(  rib )   \
           ( (rib) ? ((PRIB_INSTANCE)(rib))->phashtable : NULL ) 
 
-#define /* unsigned int */ RibGetLineCount( /* RIB_HANDLE */ rib )   \
+#define RibGetLineCount(  rib )   \
           ( (rib) ? ((PRIB_INSTANCE)(rib))->linecount : 0L ) 
-#define /* int */ RibIncrLineCount( /* RIB_HANDLE */ rib )    \
+#define  RibIncrLineCount(  rib )    \
           ( (rib) ? ((PRIB_INSTANCE)(rib))->linecount++,0 : 1 ) 
 
-#define /* size_t */ RibGetByteOffset( /* RIB_HANDLE */ rib )  \
+#define RibGetByteOffset(  rib )  \
           ( (rib) ? ((PRIB_INSTANCE)(rib))->byteoffset : 0L ) 
-#define /* int */ RibIncrByteOffset( /* RIB_HANDLE */ rib )    \
+#define  RibIncrByteOffset(  rib )    \
           ( (rib) ? ((PRIB_INSTANCE)(rib))->byteoffset++,0 : 1 ) 
 
-#define /* size_t */ RibGetBufferLength( /* RIB_HANDLE */ rib )  \
+#define RibGetBufferLength(  rib )  \
          ( ((rib)&&((PRIB_INSTANCE)(rib))->pbuf)                 \
           ? ((PRIB_INSTANCE)(rib))->pbuf->buflength : 0L ) 
 
-#define /* int */ RibIncrBufferLength( /* RIB_HANDLE */ rib )    \
+#define  RibIncrBufferLength(  rib )    \
          ( ((rib)&&((PRIB_INSTANCE)(rib))->pbuf)                 \
           ? ((PRIB_INSTANCE)(rib))->pbuf->buflength++,0 : 1 ) 
 
@@ -911,7 +911,7 @@ int
    RibSetErrorHandler( RIB_HANDLE  rib, PRIB_ERRORFILTERPROC p ),
    RibSetError( RIB_HANDLE rib, int code, int severity, PRIB_ERROR error );
 
-#define /* PRIB_ERRORFILTERPROC */ RibGetErrorHandler(/*RIB_HANDLE*/rib) \
+#define RibGetErrorHandler(rib) \
           ( (rib) ? ((PRIB_INSTANCE)(rib))->errorhandler : 0L )
 
 #ifndef __RIB_FILE_SETERROR
@@ -929,9 +929,9 @@ extern
 #endif
 int RibClearError( RIB_HANDLE rib );
 
-#define /* int */ RibGetLastErrorCode( /* RIB_HANDLE */ rib )      \
+#define  RibGetLastErrorCode(  rib )      \
           ( (rib) ? ((PRIB_INSTANCE)(rib))->errorcode : 0L ) 
-#define /* int */ RibGetLastErrorSeverity( /* RIB_HANDLE */ rib )  \
+#define  RibGetLastErrorSeverity(  rib )  \
           ( (rib) ? ((PRIB_INSTANCE)(rib))->errorseverity : 0L ) 
 
 /*

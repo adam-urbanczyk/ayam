@@ -107,8 +107,8 @@ enum {
    kRIB_CONSTANTCLASS = 0x00040000,
    kRIB_LASTCLASS     = 0x00050000
 };
-#define /* int */ RibClassEnumToInt( /* int */ class ) ((class)>>16)
-#define /* int */ RibIntToClassEnum( /* int */ class ) \
+#define RibClassEnumToInt( class ) ((class)>>16)
+#define RibIntToClassEnum( class ) \
            ( class > 0 && class < kRIB_LASTCLASS ? ((class)<<16) : 0 )
 
 /* Don't change the order of the kRIB_*TYPEs without changing the tables
