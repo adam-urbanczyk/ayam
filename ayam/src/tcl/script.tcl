@@ -124,7 +124,7 @@ $m add command -label "Load from file" -command {
     set t $ay(pca).${ScriptAttr(w)}.tScript
     set nt ""
 
-    set types {{"Script Files" {".tcl" ".js"}} {"All files" *}}
+    set types {{"Script Files" {".tcl" ".js" ".lua"}} {"All files" *}}
     set newfilename ""
     set newfilename [tk_getOpenFile -filetypes $types -parent .\
 		-title "Select file to load:"]
