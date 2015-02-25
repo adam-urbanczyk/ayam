@@ -999,6 +999,10 @@ int ay_npt_drawtrimcurve(ay_object *o, GLUnurbsObj *no, unsigned int refine);
  */
 int ay_npt_drawtrimcurves(ay_object *o, unsigned int refine_trims);
 
+/** Draw read-only handles.
+ */
+void ay_npt_drawrohandles(ay_nurbpatch_object *patch);
+
 /** Create Cobbs NURBS sphere patch.
  */
 int ay_npt_crtcobbsphere(ay_nurbpatch_object **cobbsphere);

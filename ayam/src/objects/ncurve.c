@@ -721,14 +721,29 @@ int
 ay_ncurve_drawch(ay_nurbcurve_object *ncurve)
 {
  int a, i;
+ double w;
 
   a = 0;
   glBegin(GL_LINE_STRIP);
-  for(i = 0; i < ncurve->length; i++)
-    {
-      glVertex3dv((GLdouble *)&(ncurve->controlv[a]));
-      a += 4;
-    }
+   if(ncurve->is_rat && ay_prefs.rationalpoints)
+     {
+       for(i = 0; i < ncurve->length; i++)
+	 {
+	   w = ncurve->controlv[a+3];
+	   glVertex3d((GLdouble)(ncurve->controlv[a]*w),
+		      (GLdouble)(ncurve->controlv[a+1]*w),
+		      (GLdouble)(ncurve->controlv[a+2]*w));
+	   a += 4;
+	 }
+     }
+   else
+     {
+       for(i = 0; i < ncurve->length; i++)
+	 {
+	   glVertex3dv((GLdouble *)&(ncurve->controlv[a]));
+	   a += 4;
+	 }
+     }
   glEnd();
 
  return AY_OK;
@@ -828,7 +843,7 @@ int
 ay_ncurve_drawhcb(struct Togl *togl, ay_object *o)
 {
  int i;
- double *pnts;
+ double w, *pnts;
  double point_size = ay_prefs.handle_size;
  ay_mpoint *mp;
  ay_nurbcurve_object *ncurve;
@@ -845,10 +860,24 @@ ay_ncurve_drawhcb(struct Togl *togl, ay_object *o)
 
   /* draw normal points */
   glBegin(GL_POINTS);
-   for(i = 0; i < ncurve->length; i++)
+   if(ncurve->is_rat && ay_prefs.rationalpoints)
      {
-       glVertex3dv((GLdouble *)pnts);
-       pnts += 4;
+       for(i = 0; i < ncurve->length; i++)
+	 {
+	   w = pnts[3];
+	   glVertex3d((GLdouble)(pnts[0]*w),
+		      (GLdouble)(pnts[1]*w),
+		      (GLdouble)(pnts[2]*w));
+	   pnts += 4;
+	 }
+     }
+   else
+     {
+       for(i = 0; i < ncurve->length; i++)
+	 {
+	   glVertex3dv((GLdouble *)pnts);
+	   pnts += 4;
+	 }
      }
   glEnd();
 
@@ -860,7 +889,18 @@ ay_ncurve_drawhcb(struct Togl *togl, ay_object *o)
        mp = ncurve->mpoints;
        while(mp)
 	 {
-	   glVertex3dv((GLdouble *)(mp->points[0]));
+	   if(ncurve->is_rat && ay_prefs.rationalpoints)
+	     {
+	       pnts = mp->points[0];
+	       w = pnts[3];
+	       glVertex3d((GLdouble)pnts[0]*w,
+			  (GLdouble)pnts[1]*w,
+			  (GLdouble)pnts[2]*w);
+	     }
+	   else
+	     {
+	       glVertex3dv((GLdouble *)(mp->points[0]));
+	     }
 	   mp = mp->next;
 	 }
       glEnd();
@@ -882,7 +922,7 @@ ay_ncurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
  ay_mpoint *mp = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
  double *pecoord = NULL, **ctmp;
- double *control = NULL, *c;
+ double *control = NULL, *c, h[3];
  int i = 0, j = 0, a = 0, found = AY_FALSE;
  unsigned int *itmp, peindex = 0;
 
@@ -923,9 +963,18 @@ ay_ncurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       control = ncurve->controlv;
       for(i = 0; i < ncurve->length; i++)
 	{
-	  dist = AY_VLEN((p[0] - control[j]),
-			 (p[1] - control[j+1]),
-			 (p[2] - control[j+2]));
+	  if(ncurve->is_rat && ay_prefs.rationalpoints)
+	    {
+	      dist = AY_VLEN((p[0] - (control[j]*control[j+3])),
+			     (p[1] - (control[j+1]*control[j+3])),
+			     (p[2] - (control[j+2]*control[j+3])));
+	    }
+	  else
+	    {
+	      dist = AY_VLEN((p[0] - control[j]),
+			     (p[1] - control[j+1]),
+			     (p[2] - control[j+2]));
+	    }
 
 	  if(dist < min_dist)
 	    {
@@ -989,10 +1038,22 @@ ay_ncurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       control = ncurve->controlv;
       j = 0;
       a = 0;
+      if(ncurve->is_rat && ay_prefs.rationalpoints)
+	{
+	  c = h;
+	}
       for(i = 0; i < ncurve->length; i++)
 	{
-	  c = &(control[j]);
-
+	  if(ncurve->is_rat && ay_prefs.rationalpoints)
+	    {
+	      h[0] = control[j]*control[j+3];
+	      h[1] = control[j+1]*control[j+3];
+	      h[2] = control[j+2]*control[j+3];
+	    }
+	  else
+	    {
+	      c = &(control[j]);
+	    }
 	  /* test point c against the four planes in p */
 	  if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
 	     ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&

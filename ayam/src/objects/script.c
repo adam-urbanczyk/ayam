@@ -321,10 +321,23 @@ ay_script_drawhcb(struct Togl *togl, ay_object *o)
 		(GLfloat)ay_prefs.obb);
 
       glBegin(GL_POINTS);
-       for(i = 0; i < sc->pntslen; i++)
+       if(sc->pntsrat && ay_prefs.rationalpoints)
 	 {
-	   glVertex3dv((GLdouble *)pnts);
-	   pnts += 4;
+	   for(i = 0; i < sc->pntslen; i++)
+	     {
+	       glVertex3d((GLdouble)pnts[0]*pnts[3],
+			  (GLdouble)pnts[1]*pnts[3],
+			  (GLdouble)pnts[2]*pnts[3]);
+	       pnts += 4;
+	     }
+	 }
+       else
+	 {
+	   for(i = 0; i < sc->pntslen; i++)
+	     {
+	       glVertex3dv((GLdouble *)pnts);
+	       pnts += 4;
+	     }
 	 }
       glEnd();
 

@@ -144,10 +144,7 @@ ay_cap_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_cap_drawhcb(struct Togl *togl, ay_object *o)
 {
- int i = 0, a = 0;
  ay_cap_object *cap = NULL;
- double *pnts = NULL;
- ay_nurbpatch_object *patch = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -159,21 +156,7 @@ ay_cap_drawhcb(struct Togl *togl, ay_object *o)
 
   if(cap->npatch)
     {
-      patch = (ay_nurbpatch_object *)cap->npatch->refine;
-      pnts = patch->controlv;
-      glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
-		(GLfloat)ay_prefs.obb);
-
-      glBegin(GL_POINTS);
-       for(i = 0; i < patch->width*patch->height; i++)
-	 {
-	   glVertex3dv((GLdouble *)&pnts[a]);
-	   a += 4;
-	 }
-      glEnd();
-
-      glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
-		(GLfloat)ay_prefs.seb);
+      ay_npt_drawrohandles((ay_nurbpatch_object *)cap->npatch);
     }
 
  return AY_OK;

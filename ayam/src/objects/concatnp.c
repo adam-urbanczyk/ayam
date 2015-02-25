@@ -216,9 +216,7 @@ ay_concatnp_drawacb(struct Togl *togl, ay_object *o)
 int
 ay_concatnp_drawhcb(struct Togl *togl, ay_object *o)
 {
- int i = 0, a = 0;
  ay_concatnp_object *concatnp = NULL;
- ay_nurbpatch_object *np = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -230,22 +228,7 @@ ay_concatnp_drawhcb(struct Togl *togl, ay_object *o)
 
   if(concatnp->npatch)
     {
-      np = (ay_nurbpatch_object *)concatnp->npatch->refine;
-
-      /* draw read only points */
-      glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
-		(GLfloat)ay_prefs.obb);
-
-      glBegin(GL_POINTS);
-       for(i = 0; i < np->width*np->height; i++)
-	 {
-	   glVertex3dv((GLdouble *)&(np->controlv[a]));
-	   a += 4;
-	 }
-      glEnd();
-
-      glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
-		(GLfloat)ay_prefs.seb);
+      ay_npt_drawrohandles((ay_nurbpatch_object *)concatnp->npatch);
     }
 
  return AY_OK;

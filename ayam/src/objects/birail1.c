@@ -171,10 +171,7 @@ ay_birail1_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_birail1_drawhcb(struct Togl *togl, ay_object *o)
 {
- int i;
- double *pnts;
  ay_birail1_object *birail1;
- ay_nurbpatch_object *patch;
 
   if(!o)
     return AY_ENULL;
@@ -186,22 +183,7 @@ ay_birail1_drawhcb(struct Togl *togl, ay_object *o)
 
   if(birail1->npatch)
     {
-      patch = (ay_nurbpatch_object *)birail1->npatch->refine;
-      pnts = patch->controlv;
-
-      glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
-		(GLfloat)ay_prefs.obb);
-
-      glBegin(GL_POINTS);
-       for(i = 0; i < (patch->width*patch->height); i++)
-	 {
-	   glVertex3dv((GLdouble *)pnts);
-	   pnts += 4;
-	 }
-      glEnd();
-
-      glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
-		(GLfloat)ay_prefs.seb);
+      ay_npt_drawrohandles((ay_nurbpatch_object *)birail1->npatch);
     }
 
  return AY_OK;

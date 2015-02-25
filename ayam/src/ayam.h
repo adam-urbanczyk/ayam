@@ -945,6 +945,7 @@ typedef struct ay_clone_object_s
 
   double *pnts; /**< read only points [pntslen*4] (created on request) */
   unsigned int pntslen; /**< number of read only points */
+  int pntsrat; /**< are the read only points rational? (0 - no, 1 - yes) */
 
   /** cached clones */
   ay_object *clones;
@@ -1234,6 +1235,7 @@ typedef struct ay_script_object_s
 
   double *pnts; /**< read only points [pntslen*4] (created on request) */
   unsigned int pntslen; /**< number of read only points */
+  int pntsrat; /**< are the read only points rational? (0 - no, 1 - yes) */
 
   ay_sevalcb *cb; /**< script evaluation callback (for JavaScript, Lua ...) */
 } ay_script_object;
@@ -1339,7 +1341,6 @@ typedef struct ay_view_object_s
   int action_state; /**< is an action active in this view? (0 no, 1 yes) */
 
   int full_notify;  /**< controls scope of notification */
-
 } ay_view_object;
 
 
@@ -1380,6 +1381,8 @@ typedef struct ay_preferences_s
   int undo_levels; /**< number of undo levels, -1 turns undo off */
   int globalmark; /**< maintain a global mark? */
   int createatmark; /**< create objects at the mark? */
+  int rationalpoints; /**< type of rational points (0 - euclidean,
+			 1 - homogeneous) */
   int normalizetrafos; /**< normalize (round) trafos? */
   int normalizedigits; /**< digits to preserve when normalizing (6 - 15) */
 

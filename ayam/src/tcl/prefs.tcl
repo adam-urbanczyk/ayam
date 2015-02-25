@@ -195,6 +195,8 @@ proc prefs_open {} {
     addCheckB $fw ayprefse EditSnaps [ms ayprefse_EditSnaps]
     addCheckB $fw ayprefse Snap3D [ms ayprefse_Snap3D]
     addCheckB $fw ayprefse FlashPoints [ms ayprefse_FlashPoints]
+    addMenuB $fw ayprefse RationalPoints [ms ayprefse_RationalPoints]\
+	{"Euclidean" "Homogeneous"}
     addCheckB $fw ayprefse GlobalMark [ms ayprefse_GlobalMark]
     addCheckB $fw ayprefse CreateAtMark [ms ayprefse_CreateAtMark]
 

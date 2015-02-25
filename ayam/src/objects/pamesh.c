@@ -203,6 +203,7 @@ ay_pamesh_drawcpcb(struct Togl *togl, ay_object *o)
  ay_pamesh_object *pamesh;
  double *cv;
  int i, j, a, width, height;
+ GLenum uprim = GL_LINE_STRIP, vprim = GL_LINE_STRIP;
 
   if(!o)
     return AY_ENULL;
@@ -215,64 +216,70 @@ ay_pamesh_drawcpcb(struct Togl *togl, ay_object *o)
   width = pamesh->width;
   height = pamesh->height;
 
+  if(pamesh->close_u)
+    uprim = GL_LINE_LOOP;
+
+  if(pamesh->close_v)
+    vprim = GL_LINE_LOOP;
+
   cv = pamesh->controlv;
 
   a = 0;
-  if(pamesh->close_v)
+  if(pamesh->is_rat && ay_prefs.rationalpoints)
     {
       for(i = 0; i < width; i++)
 	{
-	  glBegin(GL_LINE_LOOP);
-	   for(j = 0; j < height; j++)
-	     {
-	       glVertex3dv((GLdouble *)&cv[a]);
-	       a += 4;
-	     }
-	  glEnd();
-	}
-    }
-  else
-    {
-      for(i = 0; i < width; i++)
-	{
-	  glBegin(GL_LINE_STRIP);
-	   for(j = 0; j < height; j++)
-	     {
-	       glVertex3dv((GLdouble *)&cv[a]);
-	       a += 4;
-	     } /* for */
+	  glBegin(uprim);
+	  for(j = 0; j < height; j++)
+	    {
+	      glVertex3d((GLdouble )(cv[a]*cv[a+3]),
+			 (GLdouble )(cv[a+1]*cv[a+3]),
+			 (GLdouble )(cv[a+2]*cv[a+3]));
+	      a += 4;
+	    } /* for */
 	  glEnd();
 	} /* for */
-    } /* if */
 
-  if(pamesh->close_u)
-    {
       for(j = 0; j < height; j++)
 	{
 	  a = j * 4;
-	  glBegin(GL_LINE_LOOP);
-	   for(i = 0; i < width; i++)
+	  glBegin(vprim);
+	  for(i = 0; i < width; i++)
+	    {
+	      glVertex3d((GLdouble )(cv[a]*cv[a+3]),
+			 (GLdouble )(cv[a+1]*cv[a+3]),
+			 (GLdouble )(cv[a+2]*cv[a+3]));
+	      a += (4 * height);
+	    } /* for */
+	  glEnd();
+	} /* for */
+     }
+   else
+     {
+       for(i = 0; i < width; i++)
+	 {
+	   glBegin(uprim);
+	   for(j = 0; j < height; j++)
 	     {
 	       glVertex3dv((GLdouble *)&cv[a]);
-	       a += (4 * height);
-	     }
-	  glEnd();
-	}
-    }
-  else
-    {
-      for(j = 0; j < height; j++)
-	{
-	  a = j * 4;
-	  glBegin(GL_LINE_STRIP);
+	       a += 4;
+	     } /* for */
+	   glEnd();
+	 } /* for */
+
+
+       for(j = 0; j < height; j++)
+	 {
+	   a = j * 4;
+	   glBegin(vprim);
 	   for(i = 0; i < width; i++)
 	     {
 	       glVertex3dv((GLdouble *)&cv[a]);
 	       a += (4 * height);
 	     } /* for */
-	  glEnd();
-	} /* for */
-    } /* if */
+	   glEnd();
+	 } /* for */
+     } /* if homogeneous */
 
  return AY_OK;
 } /* ay_pamesh_drawcpcb */
@@ -398,10 +405,23 @@ ay_pamesh_drawhcb(struct Togl *togl, ay_object *o)
   pnts = pm->controlv;
 
   glBegin(GL_POINTS);
-   for(i = 0; i < (width*height); i++)
+   if(pm->is_rat && ay_prefs.rationalpoints)
      {
-       glVertex3dv((GLdouble *)pnts);
-       pnts += 4;
+       for(i = 0; i < (pm->width * pm->height); i++)
+	 {
+	   glVertex3d((GLdouble)pnts[0]*pnts[3],
+		      (GLdouble)pnts[1]*pnts[3],
+		      (GLdouble)pnts[2]*pnts[3]);
+	   pnts += 4;
+	 }
+     }
+   else
+     {
+       for(i = 0; i < (width*height); i++)
+	 {
+	   glVertex3dv((GLdouble *)pnts);
+	   pnts += 4;
+	 }
      }
   glEnd();
 
@@ -419,7 +439,7 @@ ay_pamesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
  ay_point *pnt = NULL, **lastpnt = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
  double *pecoord = NULL, **ctmp = NULL;
- double *control = NULL, *c;
+ double *control = NULL, *c, h[3];
  int i = 0, j = 0, a = 0, found = AY_FALSE;
 
   if(!o || ((mode != 3) && (!p || !pe)))
@@ -459,10 +479,18 @@ ay_pamesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
       for(i = 0; i < (pamesh->width * pamesh->height); i++)
 	{
-	  dist = AY_VLEN((p[0] - control[j]),
-			 (p[1] - control[j+1]),
-			 (p[2] - control[j+2]));
-
+	  if(pamesh->is_rat && ay_prefs.rationalpoints)
+	    {
+	      dist = AY_VLEN((p[0] - (control[j]*control[j+3])),
+			     (p[1] - (control[j+1]*control[j+3])),
+			     (p[2] - (control[j+2]*control[j+3])));
+	    }
+	  else
+	    {
+	      dist = AY_VLEN((p[0] - control[j]),
+			     (p[1] - control[j+1]),
+			     (p[2] - control[j+2]));
+	    }
 	  if(dist < min_dist)
 	    {
 	      pecoord = &(control[j]);
@@ -490,9 +518,22 @@ ay_pamesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       control = pamesh->controlv;
       j = 0;
       a = 0;
+      if(pamesh->is_rat && ay_prefs.rationalpoints)
+	{
+	  c = h;
+	}
       for(i = 0; i < pamesh->width * pamesh->height; i++)
 	{
-	  c = &(control[j]);
+	  if(pamesh->is_rat && ay_prefs.rationalpoints)
+	    {
+	      h[0] = control[j]*control[j+3];
+	      h[1] = control[j+1]*control[j+3];
+	      h[2] = control[j+2]*control[j+3];
+	    }
+	  else
+	    {
+	      c = &(control[j]);
+	    }
 
 	  /* test point c against the four planes in p */
 	  if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
