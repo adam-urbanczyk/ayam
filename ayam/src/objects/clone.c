@@ -196,7 +196,8 @@ int
 ay_clone_drawhcb(struct Togl *togl, ay_object *o)
 {
  ay_clone_object *clone = NULL;
- unsigned int i = 0, a = 0;
+ unsigned int i;
+ double *pnts;
 
   if(!o)
     return AY_ENULL;
@@ -214,14 +215,28 @@ ay_clone_drawhcb(struct Togl *togl, ay_object *o)
 
   if(clone->pnts)
     {
+      pnts = clone->pnts;
       glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
 		(GLfloat)ay_prefs.obb);
 
       glBegin(GL_POINTS);
-       for(i = 0; i < clone->pntslen; i++)
+       if(clone->pntsrat && ay_prefs.rationalpoints)
 	 {
-	   glVertex3dv((GLdouble *)&clone->pnts[a]);
-	   a += 4;
+	   for(i = 0; i < clone->pntslen; i++)
+	     {
+	       glVertex3d((GLdouble)pnts[0]*pnts[3],
+			  (GLdouble)pnts[1]*pnts[3],
+			  (GLdouble)pnts[2]*pnts[3]);
+	       pnts += 4;
+	     }
+	 }
+       else
+	 {
+	   for(i = 0; i < clone->pntslen; i++)
+	     {
+	       glVertex3dv((GLdouble *)pnts);
+	       pnts += 4;
+	     }
 	 }
       glEnd();
 
@@ -1080,13 +1095,15 @@ ay_clone_notifycb(ay_object *o)
       /* manage read only points */
       if(clone->pntslen)
 	{
+	  clone->pntsrat = AY_FALSE;
+	  down = o->down;
+	  tr = clone->clones;
+
 	  if(!clone->mirror)
 	    {
 	      /* normal or trajectory mode... */
-	      if(clone->pntslen && clone->numclones && clone->clones)
+	      if(clone->numclones && clone->clones)
 		{
-		  down = o->down;
-
 		  /* get all points of first child */
 		  ay_status = ay_pact_getpoint(0, down, xaxis, &pe);
 
@@ -1101,7 +1118,7 @@ ay_clone_notifycb(ay_object *o)
 			  goto cleanup;
 			}
 		      clone->pntslen = clone->numclones * pe.num;
-		      tr = clone->clones;
+
 		      /* iterate over all clones and transform/copy
 			 the child points according to clone trafos
 			 into the big clone points vector */
@@ -1110,6 +1127,7 @@ ay_clone_notifycb(ay_object *o)
 			  ay_trafo_creatematrix(tr, m);
 			  if(pe.rational)
 			    {
+			      clone->pntsrat = AY_TRUE;
 			      for(j = 0; j < pe.num; j++)
 				{
 				  p1 = &(clone->pnts[a]);
@@ -1134,20 +1152,19 @@ ay_clone_notifycb(ay_object *o)
 			} /* for */
 		    } /* if */
 		  ay_pact_clearpointedit(&pe);
-		} /* if */
+		} /* if have clones*/
 	    }
 	  else
 	    {
 	      /* mirror mode... */
-	      if(clone->pntslen && clone->clones)
+	      if(clone->clones)
 		{
-		  down = o->down;
-		  tr = clone->clones;
 		  clone->pntslen = 0;
 		  /* iterate over all children and transform/copy
-		     the child points according to child and then
-		     also according to the corresponding mirror clone
-		     trafos into a big clone points vector (built
+		     the respective child points according to childs
+		     transformation attributes and then also according
+		     to the corresponding mirror clone trafos
+		     into a big clone points vector (built
 		     up dynamically using realloc()) */
 		  while(down && down->next && tr)
 		    {
@@ -1155,7 +1172,6 @@ ay_clone_notifycb(ay_object *o)
 
 		      if(!ay_status && pe.num)
 			{
-
 			  clone->pntslen += (2 * pe.num);
 
 			  p1 = realloc(clone->pnts,
@@ -1164,10 +1180,10 @@ ay_clone_notifycb(ay_object *o)
 			  if(p1)
 			    {
 			      clone->pnts = p1;
-
 			      ay_trafo_creatematrix(tr, m);
 			      if(pe.rational)
 				{
+				  clone->pntsrat = AY_TRUE;
 				  for(j = 0; j < pe.num; j++)
 				    {
 				      p1 = &(clone->pnts[a]);
@@ -1221,17 +1237,16 @@ ay_clone_notifycb(ay_object *o)
 			      clone->pnts = NULL;
 			      break;
 			    } /* if */
-
-			} /* if */
+			} /* if have points*/
 
 		      ay_pact_clearpointedit(&pe);
 
 		      down = down->next;
 		      tr = tr->next;
 		    } /* while */
-		} /* if */
-	    } /* if */
-	} /* if */
+		} /* if have clones */
+	    } /* if mirror */
+	} /* if manage points */
     }
   else
     {

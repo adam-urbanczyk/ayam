@@ -338,13 +338,26 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 			    (GLdouble)o->scalz);
 		   point = o->selp;
 		   glBegin(GL_POINTS);
-		    while(point)
-		      {
-			glVertex3d((GLdouble)point->point[0],
-				   (GLdouble)point->point[1],
-				   (GLdouble)point->point[2]);
-			point = point->next;
-		      }
+		   if(point && point->rational && ay_prefs.rationalpoints)
+		     {
+		       while(point)
+			 {
+			  glVertex3d((GLdouble)point->point[0]*point->point[3],
+				     (GLdouble)point->point[1]*point->point[3],
+				     (GLdouble)point->point[2]*point->point[3]);
+			  point = point->next;
+			 }
+		     }
+		   else
+		     {
+		       while(point)
+			 {
+			   glVertex3d((GLdouble)point->point[0],
+				      (GLdouble)point->point[1],
+				      (GLdouble)point->point[2]);
+			   point = point->next;
+			 }
+		     }
 		   glEnd();
 		  glPopMatrix();
 		}

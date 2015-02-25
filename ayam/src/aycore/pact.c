@@ -486,7 +486,7 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  ay_object **tmpo = NULL, *o = NULL;
  double winX = 0.0, winY = 0.0;
- double minlevelscale, obj[3] = {0};
+ double minlevelscale, obj[3] = {0}, w;
  double **pecoords = NULL, **tmp = NULL;
  int allowreadonly = AY_FALSE, flash = AY_FALSE, ignoreold = AY_FALSE;
  int i, penumber = 0, *tmpi;
@@ -640,7 +640,19 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 	o = pact_objects[0];
       else
 	o = NULL;
-      ay_pact_flashpoint(ignoreold, pecoords?*pecoords:NULL, o);
+
+      if(pecoords && *pact_ratcpo && ay_prefs.rationalpoints)
+	{
+	  w = pecoords[0][3];
+	  obj[0] = pecoords[0][0]*w;
+	  obj[1] = pecoords[0][1]*w;
+	  obj[2] = pecoords[0][2]*w;
+	  ay_pact_flashpoint(ignoreold, obj, o);
+	}
+      else
+	{
+	  ay_pact_flashpoint(ignoreold, pecoords?*pecoords:NULL, o);
+	}
     } /* if */
 
   /* prevent cleanup code from doing something harmful */
@@ -1959,7 +1971,7 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
  /*ay_list_object *sel = ay_selection;*/
  static double oldwinx = 0.0, oldwiny = 0.0;
  static int warp = AY_FALSE;
- double winx = 0.0, winy = 0.0;
+ double winx = 0.0, winy = 0.0, w;
  double movX, movY, movZ, dx = 0.0, dy = 0.0, dz = 0.0, *coords = NULL;
  double quat[4] = {0}, uccoords[3] = {0};
  int i = 0, j, k = 0, start = AY_FALSE, redraw = AY_FALSE;
@@ -2185,7 +2197,16 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
       /* flash option given? */
       if(argc > 5)
 	{
-	  ay_pact_flashpoint(AY_TRUE, coords, o);
+	  if(*pact_ratcpo && ay_prefs.rationalpoints)
+	    {
+	      w = pact_pe.coords[0][3];
+	      uccoords[0] = coords[0]*w;
+	      uccoords[1] = coords[1]*w;
+	      uccoords[2] = coords[2]*w;
+	      ay_pact_flashpoint(AY_TRUE, uccoords, o);
+	    }
+	  else
+	    ay_pact_flashpoint(AY_TRUE, coords, o);
 	}
     } /* if */
 

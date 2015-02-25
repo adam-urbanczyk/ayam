@@ -173,10 +173,7 @@ ay_gordon_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_gordon_drawhcb(struct Togl *togl, ay_object *o)
 {
- int i;
- double *pnts;
  ay_gordon_object *gordon;
- ay_nurbpatch_object *patch;
 
   if(!o)
     return AY_ENULL;
@@ -188,22 +185,7 @@ ay_gordon_drawhcb(struct Togl *togl, ay_object *o)
 
   if(gordon->npatch)
     {
-      patch = (ay_nurbpatch_object *)gordon->npatch->refine;
-      pnts = patch->controlv;
-
-      glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
-		(GLfloat)ay_prefs.obb);
-
-      glBegin(GL_POINTS);
-       for(i = 0; i < patch->width*patch->height; i++)
-	 {
-	   glVertex3dv((GLdouble *)pnts);
-	   pnts += 4;
-	 }
-      glEnd();
-
-      glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
-		(GLfloat)ay_prefs.seb);
+      ay_npt_drawrohandles((ay_nurbpatch_object *)gordon->npatch);
     }
 
  return AY_OK;

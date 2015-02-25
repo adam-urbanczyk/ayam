@@ -1209,6 +1209,51 @@ ay_npt_drawtrimcurves(ay_object *o, unsigned int refine_trims)
 } /* ay_npt_drawtrimcurves */
 
 
+/** ay_npt_drawrohandles:
+ *  draw read only handles helper
+ */
+void
+ay_npt_drawrohandles(ay_nurbpatch_object *patch)
+{
+ int i;
+ double *pnts;
+
+  if(patch)
+    {
+      pnts = patch->controlv;
+
+      glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+		(GLfloat)ay_prefs.obb);
+
+      glBegin(GL_POINTS);
+       if(ay_prefs.rationalpoints)
+	 {
+	   for(i = 0; i < patch->width*patch->height; i++)
+	     {
+	       glVertex3d((GLdouble)pnts[0]*pnts[3],
+			  (GLdouble)pnts[1]*pnts[3],
+			  (GLdouble)pnts[2]*pnts[3]);
+	       pnts += 4;
+	     }
+	 }
+       else
+	 {
+	   for(i = 0; i < patch->width*patch->height; i++)
+	     {
+	       glVertex3dv((GLdouble *)pnts);
+	       pnts += 4;
+	     }
+	 }
+      glEnd();
+
+      glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+		(GLfloat)ay_prefs.seb);
+    }
+
+ return;
+} /* ay_npt_drawrohandles */
+
+
 /* ay_npt_crtcobbsphere:
  *  create a single patch (out of 6) of a NURBS Cobb Sphere
  *  controls taken from:

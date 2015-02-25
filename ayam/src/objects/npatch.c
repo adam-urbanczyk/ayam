@@ -951,29 +951,60 @@ ay_npatch_drawch(ay_nurbpatch_object *npatch)
 
       fcv = &(npatch->fltcv[width+height+npatch->uorder+npatch->vorder]);
       a = 0;
-      for(i = 0; i < width; i++)
-	{
-	  glBegin(GL_LINE_STRIP);
-	  for(j = 0; j < height; j++)
-	    {
-	      glVertex3fv((GLfloat *)&fcv[a]);
-	      a += 4;
-	    }
-	  glEnd();
-	}
 
-      for(j = 0; j < height; j++)
+      if(ay_prefs.rationalpoints)
 	{
-	  a = j * 4;
-
-	  glBegin(GL_LINE_STRIP);
 	  for(i = 0; i < width; i++)
 	    {
-	      glVertex3fv((GLfloat *)&fcv[a]);
-
-	      a += (4 * height);
+	      glBegin(GL_LINE_STRIP);
+	       for(j = 0; j < height; j++)
+		 {
+		   glVertex3f((GLfloat)fcv[a]*fcv[a+3],
+			      (GLfloat)fcv[a+1]*fcv[a+3],
+			      (GLfloat)fcv[a+2]*fcv[a+3]);
+		   a += 4;
+		 }
+	      glEnd();
 	    }
-	  glEnd();
+
+	  for(j = 0; j < height; j++)
+	    {
+	      a = j * 4;
+	      glBegin(GL_LINE_STRIP);
+	       for(i = 0; i < width; i++)
+		 {
+		   glVertex3f((GLfloat)fcv[a]*fcv[a+3],
+			      (GLfloat)fcv[a+1]*fcv[a+3],
+			      (GLfloat)fcv[a+2]*fcv[a+3]);
+		   a += (4 * height);
+		 }
+	      glEnd();
+	    }
+	}
+      else
+	{
+	  for(i = 0; i < width; i++)
+	    {
+	      glBegin(GL_LINE_STRIP);
+	       for(j = 0; j < height; j++)
+		 {
+		   glVertex3fv((GLfloat *)&fcv[a]);
+		   a += 4;
+		 }	     
+	      glEnd();
+	    }
+
+	  for(j = 0; j < height; j++)
+	    {
+	      a = j * 4;
+	      glBegin(GL_LINE_STRIP);
+	       for(i = 0; i < width; i++)
+		 {
+		   glVertex3fv((GLfloat *)&fcv[a]);
+		   a += (4 * height);
+		 }	     
+	      glEnd();
+	    }
 	}
     }
   else
@@ -999,7 +1030,6 @@ ay_npatch_drawch(ay_nurbpatch_object *npatch)
 	  for(i = 0; i < width; i++)
 	    {
 	      glVertex3dv((GLdouble *)&dcv[a]);
-
 	      a += (4 * height);
 	    }
 	  glEnd();
@@ -1389,7 +1419,7 @@ int
 ay_npatch_drawhcb(struct Togl *togl, ay_object *o)
 {
  int i;
- double *pnts;
+ double *pnts, w;
  double point_size = ay_prefs.handle_size;
  ay_mpoint *mp;
  ay_nurbpatch_object *npatch;
@@ -1406,10 +1436,23 @@ ay_npatch_drawhcb(struct Togl *togl, ay_object *o)
 
   /* draw normal points */
   glBegin(GL_POINTS);
-   for(i = 0; i < (npatch->width * npatch->height); i++)
+   if(npatch->is_rat && ay_prefs.rationalpoints)
      {
-       glVertex3dv((GLdouble *)pnts);
-       pnts += 4;
+       for(i = 0; i < (npatch->width * npatch->height); i++)
+	 {
+	   glVertex3d((GLdouble)pnts[0]*pnts[3],
+		      (GLdouble)pnts[1]*pnts[3],
+		      (GLdouble)pnts[2]*pnts[3]);
+	   pnts += 4;
+	 }
+     }
+   else
+     {
+       for(i = 0; i < (npatch->width * npatch->height); i++)
+	 {
+	   glVertex3dv((GLdouble *)pnts);
+	   pnts += 4;
+	 }
      }
   glEnd();
 
@@ -1418,11 +1461,27 @@ ay_npatch_drawhcb(struct Togl *togl, ay_object *o)
     {
       glPointSize((GLfloat)(point_size*1.25));
       glBegin(GL_POINTS);
-       mp = npatch->mpoints;
-       while(mp)
+       if(npatch->is_rat && ay_prefs.rationalpoints)
 	 {
-	   glVertex3dv((GLdouble *)(mp->points[0]));
-	   mp = mp->next;
+	   mp = npatch->mpoints;
+	   while(mp)
+	     {
+	       pnts = mp->points[0];
+	       w = pnts[3];
+	       glVertex3d((GLdouble)pnts[0]*w,
+			  (GLdouble)pnts[1]*w,
+			  (GLdouble)pnts[2]*w);
+	       mp = mp->next;
+	     }
+	 }
+       else
+	 {
+	   mp = npatch->mpoints;
+	   while(mp)
+	     {
+	       glVertex3dv((GLdouble *)(mp->points[0]));
+	       mp = mp->next;
+	     }
 	 }
       glEnd();
       glPointSize((GLfloat)point_size);
@@ -1443,7 +1502,7 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
  ay_mpoint *mp = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
  double *pecoord = NULL, **ctmp;
- double *control = NULL, *c;
+ double *control = NULL, *c, h[3];
  int i = 0, j = 0, a = 0, found = AY_FALSE;
  unsigned int *itmp, peindex = 0;
 
@@ -1486,10 +1545,18 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       control = npatch->controlv;
       for(i = 0; i < (npatch->width * npatch->height); i++)
 	{
-	  dist = AY_VLEN((p[0] - control[j]),
-			 (p[1] - control[j+1]),
-			 (p[2] - control[j+2]));
-
+	  if(npatch->is_rat && ay_prefs.rationalpoints)
+	    {
+	      dist = AY_VLEN((p[0] - (control[j]*control[j+3])),
+			     (p[1] - (control[j+1]*control[j+3])),
+			     (p[2] - (control[j+2]*control[j+3])));
+	    }
+	  else
+	    {
+	      dist = AY_VLEN((p[0] - control[j]),
+			     (p[1] - control[j+1]),
+			     (p[2] - control[j+2]));
+	    }
 	  if(dist < min_dist)
 	    {
 	      pecoord = &(control[j]);
@@ -1552,10 +1619,22 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       control = npatch->controlv;
       j = 0;
       a = 0;
+      if(npatch->is_rat && ay_prefs.rationalpoints)
+	{
+	  c = h;
+	}
       for(i = 0; i < npatch->width * npatch->height; i++)
 	{
-	  c = &(control[j]);
-
+	  if(npatch->is_rat && ay_prefs.rationalpoints)
+	    {
+	      h[0] = control[j]*control[j+3];
+	      h[1] = control[j+1]*control[j+3];
+	      h[2] = control[j+2]*control[j+3];
+	    }
+	  else
+	    {
+	      c = &(control[j]);
+	    }
 	  /* test point c against the four planes in p */
 	  if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
 	     ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&

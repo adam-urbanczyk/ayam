@@ -884,7 +884,7 @@ ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
 
   if(pe)
     {
-      if(stride == 4)
+      if(stride == 4 && ay_prefs.rationalpoints)
 	pe->rational = AY_TRUE;
 
       pe->readonly = readonly;
@@ -1001,7 +1001,7 @@ ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
 	  if(pnt->index < (unsigned int)arrlen)
 	    {
 	      pnt->point = &(arr[pnt->index*stride]);
-	      if(stride == 4)
+	      if(stride == 4 && ay_prefs.rationalpoints)
 		pnt->rational = AY_TRUE;
 	      pnt->readonly = readonly;
 	      lastpnt = &(pnt->next);

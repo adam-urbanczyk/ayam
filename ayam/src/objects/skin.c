@@ -171,10 +171,7 @@ ay_skin_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_skin_drawhcb(struct Togl *togl, ay_object *o)
 {
- int i;
- double *pnts;
  ay_skin_object *skin;
- ay_nurbpatch_object *patch;
 
   if(!o)
     return AY_ENULL;
@@ -186,22 +183,7 @@ ay_skin_drawhcb(struct Togl *togl, ay_object *o)
 
   if(skin->npatch)
     {
-      patch = (ay_nurbpatch_object *)skin->npatch->refine;
-      pnts = patch->controlv;
-
-      glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
-		(GLfloat)ay_prefs.obb);
-
-      glBegin(GL_POINTS);
-       for(i = 0; i < patch->width*patch->height; i++)
-	 {
-	   glVertex3dv((GLdouble*)pnts);
-	   pnts += 4;
-	 }
-      glEnd();
-
-      glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
-		(GLfloat)ay_prefs.seb);
+      ay_npt_drawrohandles((ay_nurbpatch_object *)skin->npatch);
     }
 
  return AY_OK;
