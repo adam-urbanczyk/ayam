@@ -1,10 +1,11 @@
-[14. Feb 2015] CVS-Head:
+[25. Feb 2015] CVS-Head:
 ========================
 Bug Fixes:
-
+none
 
 Modelling:
-
+o added option to display rational points in homogeneous style
+  (new preference option "Modelling/RationalPoints")
 
 GUI:
 o the Shaders preference setting now supports path globbing
@@ -209,7 +210,7 @@ o menu browsing now manages the action state of all views to allow faster
 o added hidden options to ayamrc that control whether the standard file
   dialog (on Unix) shows hidden files ("FDShowHidden" and "FDShowHiddenBtn")
 o added a patched version of the standard Tk file dialog that now has an
-  additional keyboard shortcut (<Alt-Up>) to change to the parent directory  
+  additional keyboard shortcut (<Alt-Up>) to change to the parent directory
 o improved drawing of the parametric domain in views of type "Trim"
 o improved visibility of the mark by using double-width lines and deriving
   the mark size from the handle size
@@ -782,7 +783,7 @@ o switched AyCSG plugin to OpenCSG 1.3.0 for important multi view fixes
 o added AyCSG preference option "OffscreenType" to switch between
   PBuffer and FBO offscreen rendering types
 o the AyCSG continuous CSG rendering state is now conveyed to the
-  user using the view menu icon with a red frame 
+  user using the view menu icon with a red frame
 o SDNPatch operations (e.g. FaceMerge) are now more robust
 o added Length and Scale options to SDNPatch FaceExtrude operation
 o added SDNPatch revert operation (that reverts all edges)
