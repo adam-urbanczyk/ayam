@@ -1365,6 +1365,13 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 		      view->markworld[0] = t[0];
 		      view->markworld[1] = t[1];
 		      view->markworld[2] = t[2];
+
+		      if(pe.rational && ay_prefs.rationalpoints)
+			{
+			  view->markworld[0] *= pe.coords[0][3];
+			  view->markworld[1] *= pe.coords[0][3];
+			  view->markworld[2] *= pe.coords[0][3];
+			}
 		    }
 		  else
 		    {
