@@ -871,6 +871,7 @@ ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
  ay_point *pnt = NULL, **lastpnt = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
  double **pecoords = NULL, **pecoordstmp, *pecoord = NULL, *c;
+ double h[3];
  int i = 0, j = 0, a = 0, found = AY_FALSE;
  unsigned int *peindices = NULL, *peindicestmp, peindex = 0;
 
@@ -913,10 +914,18 @@ ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
       /* selection based on a single point */
       for(i = 0; i < arrlen; i++)
 	{
-	  dist = AY_VLEN((p[0] - arr[j]),
-			 (p[1] - arr[j+1]),
-			 (p[2] - arr[j+2]));
-
+	  if(stride == 4 && ay_prefs.rationalpoints)
+	    {
+	      dist = AY_VLEN((p[0] - arr[j]*arr[j+3]),
+			     (p[1] - arr[j+1]*arr[j+3]),
+			     (p[2] - arr[j+2]*arr[j+3]));
+	    }
+	  else
+	    {
+	      dist = AY_VLEN((p[0] - arr[j]),
+			     (p[1] - arr[j+1]),
+			     (p[2] - arr[j+2]));
+	    }
 	  if(dist < min_dist)
 	    {
 	      pecoord = &(arr[j]);
@@ -949,7 +958,17 @@ ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
       a = 0;
       for(i = 0; i < arrlen; i++)
 	{
-	  c = &(arr[j]);
+	  if(stride == 4 && ay_prefs.rationalpoints)
+	    {
+	      c = h;
+	      h[0] = arr[j]*arr[j+3];
+	      h[1] = arr[j+1]*arr[j+3];
+	      h[2] = arr[j+2]*arr[j+3];
+	    }
+	  else
+	    {
+	      c = &(arr[j]);
+	    }
 
 	  /* test point c against the four planes in p */
 	  if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
