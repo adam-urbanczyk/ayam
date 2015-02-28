@@ -33,7 +33,7 @@ code example of 6 lines text (needs another 2 for the upper/lower lines)
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>30. Jan 2015
+<date>28. Feb 2015
 
 <abstract>
 This is the documentation of Ayam 1.21 &ndash; a free 3D modelling environment
@@ -2422,6 +2422,13 @@ the single point modelling actions when they would be modified by
 a click and drag action.
 Note that a change of this preference option only takes effect for
 the next invocation of the single point editing modelling action.
+
+<item><tt/"RationalPoints"/ determines the display style of rational points.
+In euclidean style the weights are not multiplied in, whereas in the
+homogeneous style the weights are multiplied in prior to display.
+This preference setting also influences the control hull display of
+NURBS curves and surfaces and some modelling actions like setting the
+mark from points.<footnote>Since 1.22.</footnote>
 
 <item><tt/"GlobalMark"/ toggles whether each view should manage its
 own mark (off), or whether there should be just one global
@@ -20900,6 +20907,7 @@ Index:
 <item><ref id="mcattr" name="MetaComp attribute">
 </itemize>
 <item>RadSteps: <ref id="rio" name="RenderMan interface option">
+<item>RationalPoints: <ref id="prefmodel" name="preference setting">
 <item>rc.tcl: <ref id="rctcl" name="example/helper script">
 <item>ReadCurves:
 <itemize>
