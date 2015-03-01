@@ -378,13 +378,13 @@ ay_selp_center(ay_point *p, int dim, double *center)
 int
 ay_selp_getcenter(ay_point *p, int mode, double *center)
 {
- int ay_status = AY_OK;
+ int ay_status = AY_OK, is_rat = AY_FALSE;
  double xmin = DBL_MAX, xmax = -DBL_MAX;
  double ymin = DBL_MAX, ymax = -DBL_MAX;
  double zmin = DBL_MAX, zmax = -DBL_MAX;
- unsigned int i = 0, nump = 0, numpu = 0;
+ unsigned int i = 0, j = 0, nump = 0, numpu = 0;
  ay_point *pnt = NULL;
- double **pnts = NULL;
+ double **pnts = NULL, *e, *hpnts = NULL, h[3];
 
   if(!p || !center)
     return AY_ENULL;
@@ -397,22 +397,35 @@ ay_selp_getcenter(ay_point *p, int mode, double *center)
       /* compute min-max-bbox center */
       while(pnt)
 	{
-	  if(pnt->point[0] < xmin)
-	    xmin = pnt->point[0];
-	  if(pnt->point[0] > xmax)
-	    xmax = pnt->point[0];
+	  if(pnt->rational && ay_prefs.rationalpoints)
+	    {
+	      e = h;
+	      h[0] = pnt->point[0]*pnt->point[3];
+	      h[1] = pnt->point[1]*pnt->point[3];
+	      h[2] = pnt->point[2]*pnt->point[3];
+	    }
+	  else
+	    {
+	      e = pnt->point;
+	    }
 
-	  if(pnt->point[1] < ymin)
-	    ymin = pnt->point[1];
-	  if(pnt->point[1] > ymax)
-	    ymax = pnt->point[1];
+	  if(e[0] < xmin)
+	    xmin = e[0];
+	  if(e[0] > xmax)
+	    xmax = e[0];
 
-	  if(pnt->point[2] < zmin)
-	    zmin = pnt->point[2];
-	  if(pnt->point[2] > zmax)
-	    zmax = pnt->point[2];
+	  if(e[1] < ymin)
+	    ymin = e[1];
+	  if(e[1] > ymax)
+	    ymax = e[1];
+
+	  if(e[2] < zmin)
+	    zmin = e[2];
+	  if(e[2] > zmax)
+	    zmax = e[2];
+
 	  pnt = pnt->next;
-	}
+	} /* while pnt */
       center[0] = xmin+(xmax-xmin)*0.5;
       center[1] = ymin+(ymax-ymin)*0.5;
       center[2] = zmin+(zmax-zmin)*0.5;
@@ -424,6 +437,8 @@ ay_selp_getcenter(ay_point *p, int mode, double *center)
       while(pnt)
 	{
 	  nump++;
+	  if(pnt->rational)
+	    is_rat = AY_TRUE;
 	  pnt = pnt->next;
 	}
       if(!(pnts = malloc(nump * sizeof(double*))))
@@ -431,10 +446,39 @@ ay_selp_getcenter(ay_point *p, int mode, double *center)
 	  return AY_EOMEM;
 	}
       pnt = p;
-      for(i = 0; i < nump; i++)
+
+      if(is_rat && ay_prefs.rationalpoints)
 	{
-	  pnts[i] = pnt->point;
-	  pnt = pnt->next;
+	  /* create temporary homogeneous coordinates */
+	  if(!(hpnts = malloc(nump * 3 * sizeof(double))))
+	    {
+	      free(pnts);
+	      return AY_EOMEM;
+	    }
+	  for(i = 0; i < nump; i++)
+	    {
+	      pnts[i] = &(hpnts[j]);
+	      if(pnt->rational)
+		{
+		  hpnts[j]   = pnt->point[0]*pnt->point[3];
+		  hpnts[j+1] = pnt->point[1]*pnt->point[3];
+		  hpnts[j+2] = pnt->point[2]*pnt->point[3];
+		}
+	      else
+		{
+		  memcpy(&(hpnts[j]), pnt->point, 3*sizeof(double));
+		}
+	      j += 3;
+	      pnt = pnt->next;
+	    }
+	}
+      else
+	{
+	  for(i = 0; i < nump; i++)
+	    {
+	      pnts[i] = pnt->point;
+	      pnt = pnt->next;
+	    }
 	}
 
       if(nump > 1)
@@ -454,6 +498,7 @@ ay_selp_getcenter(ay_point *p, int mode, double *center)
 	  center[0] = (pnts[0])[0]/(double)numpu;
 	  center[1] = (pnts[0])[1]/(double)numpu;
 	  center[2] = (pnts[0])[2]/(double)numpu;
+
 	  /* calculate the cog */
 	  for(i = 1; i < nump; i++)
 	    {
@@ -473,6 +518,8 @@ ay_selp_getcenter(ay_point *p, int mode, double *center)
 	  center[2] = (pnts[0])[2];
 	}
 
+      if(hpnts)
+	free(hpnts);
       free(pnts);
       break;
     default:
