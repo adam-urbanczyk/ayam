@@ -43,6 +43,9 @@ install:
 	-$(INSTALL) scripts/*.js $(BINDIR)/scripts
 	-$(INSTALL) scripts/readme.txt $(BINDIR)/scripts
 	-$(MKDIR) $(LIBDIR)
+	-$(INSTALL) plugins/libtiff.so* $(LIBDIR)
+	-cd $(LIBDIR);ln -sf libtiff.so.? libtiff.so
+	-cd $(LIBDIR);ln -sf libtiff.so.*.* libtiff.so.?
 	-$(INSTALL) plugins/metaobj.so $(LIBDIR)
 	-$(INSTALL) plugins/metaobj.tcl $(LIBDIR)
 	-$(INSTALL) plugins/metacomp.tcl $(LIBDIR)
