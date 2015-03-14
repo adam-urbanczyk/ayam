@@ -924,7 +924,7 @@ ay_shade_view(struct Togl *togl)
 	}
       if(sil)
 	ay_draw_silhouettes(togl, sil);
-      if(silsel)
+      if(!view->drawsel && silsel)
 	ay_draw_silhouettes(togl, silsel);
     } /* if drawmode is wirehidden */
 
@@ -961,8 +961,13 @@ ay_shade_view(struct Togl *togl)
 	      if(silsel)
 		{
 		  if(!view->antialiaslines && (ay_prefs.sellinewidth < 1.5))
-		    if(ay_shade_cleansil(togl, AY_TRUE, silsel))
-		      ay_draw_silhouettes(togl, silsel);
+		    if(!ay_shade_cleansil(togl, AY_TRUE, silsel))
+		      {
+			free(silsel);
+			silsel = NULL;
+		      }
+		  if(silsel)
+		    ay_draw_silhouettes(togl, silsel);
 		}
 	    }
 	} /* if draw selection only */
