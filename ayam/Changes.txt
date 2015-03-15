@@ -1,7 +1,7 @@
-[25. Feb 2015] CVS-Head:
+[15. Mar 2015] CVS-Head:
 ========================
 Bug Fixes:
-none
+o silhouettes are missing when draw selection only is active (SF 499)
 
 Modelling:
 o added option to display rational points in homogeneous style
@@ -9,7 +9,7 @@ o added option to display rational points in homogeneous style
 
 GUI:
 o the Shaders preference setting now supports path globbing
-
+o about dialog now only displays OpenGL/GLU extensions on request/click
 
 
 [7. Feb 2015] Ayam-1.21:
