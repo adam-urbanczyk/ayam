@@ -9,19 +9,11 @@
 
 # about.tcl - the about requester
 
-# aboutAyam:
-#  open the about window
+# aboutInsert:
+#  fill the about windows text widget
 #
-proc aboutAyam {} {
+proc aboutInsert { w } {
 global ay tcl_version tk_version tcl_patchLevel tk_patchLevel tcl_platform
-
-winAutoFocusOff
-
-set w .aboutw
-winDialog $w "About Ayam"
-
-frame $w.ftext
-frame $w.fbutton
 
 if { $ay(views) != "" } {
     getVersion
@@ -40,15 +32,7 @@ if { $tcl_version >= 8.1 } {
     set platform [string toupper $tcl_platform(platform) ]
 }
 
-pack $w.ftext -in $w -side top -expand yes -fill both
-pack $w.fbutton -in $w -side bottom
-
-text $w.ftext.text -yscrollcommand "$w.ftext.sbar set" \
-	-setgrid 1 -height 20 -width 65
-scrollbar $w.ftext.sbar -takefocus 0 -command "$w.ftext.text yview"
-pack $w.ftext.text -in $w.ftext -side left -fill both -expand yes
-pack $w.ftext.sbar -in $w.ftext -side right -fill y
-
+$w.ftext.text delete 0.0 end
 $w.ftext.text insert end \
 {
 Ayam, a free 3D Tcl/Tk/OpenGL/RenderMan modeler
@@ -98,22 +82,27 @@ GLU-Version: $ay(glu_ver)
 OpenGL
 Renderer: $ay(gl_ren)
 Vendor:   $ay(gl_ven)
-"
+Show Extensions: "
 
-foreach i $ay(gl_ext) {
-$w.ftext.text insert end "Extension: $i
-" 
-}
+set ay(aboutCBIndex) [$w.ftext.text index end]
+checkbutton $w.ftext.text.extb -variable ay(aboutShowsExt) -pady 0
+$w.ftext.text window create $ay(aboutCBIndex) -window $w.ftext.text.extb
 
-if { $ay(glu_ext) != "" } {
-$w.ftext.text insert end \
+if { $ay(aboutShowsExt) } {
+    $w.ftext.text insert end "
 "
-GLU
+    foreach i $ay(gl_ext) {
+	$w.ftext.text insert end "Extension: $i
 "
-}
-foreach i $ay(glu_ext) {
-$w.ftext.text insert end "Extension: $i
-" 
+    }
+
+    if { $ay(glu_ext) != "" } {
+	$w.ftext.text insert end \nGLU\n
+	foreach i $ay(glu_ext) {
+	    $w.ftext.text insert end "Extension: $i
+"
+	}
+    }
 }
 
 $w.ftext.text insert end \
@@ -154,6 +143,44 @@ TIFF Software is
 Copyright (c) 1988-1997 Sam Leffler
 Copyright (c) 1991-1997 Silicon Graphics, Inc.
 "
+
+
+}
+
+
+# aboutAyam:
+#  open the about window
+#
+proc aboutAyam {} {
+global ay tcl_version tk_version tcl_patchLevel tk_patchLevel tcl_platform
+
+winAutoFocusOff
+
+set w .aboutw
+winDialog $w "About Ayam"
+
+frame $w.ftext
+frame $w.fbutton
+
+pack $w.ftext -in $w -side top -expand yes -fill both
+pack $w.fbutton -in $w -side bottom
+
+text $w.ftext.text -yscrollcommand "$w.ftext.sbar set" \
+	-setgrid 1 -height 20 -width 65
+scrollbar $w.ftext.sbar -takefocus 0 -command "$w.ftext.text yview"
+pack $w.ftext.text -in $w.ftext -side left -fill both -expand yes
+pack $w.ftext.sbar -in $w.ftext -side right -fill y
+
+set ay(aboutShowsExt) false
+aboutInsert $w
+
+proc writeproc { w a b c } {
+    global ay
+    aboutInsert $w
+    $w.ftext.text see $ay(aboutCBIndex)
+}
+
+trace add variable ::ay(aboutShowsExt) write "writeproc $w"
 
 # center the last 19 lines"
 $w.ftext.text tag add "tag3" end-19lines end
