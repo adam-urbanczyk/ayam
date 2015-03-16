@@ -202,7 +202,7 @@ In Ayam versions prior to 1.19 those weights were always multiplied
 with the coordinate values (i.e.~homogenous rational coordinates)
 to allow faster drawing with OpenGL/GLU, which expects rational
 coordinate values to be delivered this way.
-But a negative side effect of this appproach was that modification
+But a negative side effect of this approach was that modification
 of coordinates or weights for modelling purposes was unnecessarily
 complicated.
 Therefore, since Ayam 1.19, rational coordinates are now euclidean
@@ -1242,7 +1242,7 @@ activated.
 
 <item><tt/"Show All"/ and <tt/"Hide All"/ set and unset the <tt/"Hide"/
 attribute of all objects in the scene (including the Root object
-and all views!) regardles of the currently selected objects (and
+and all views!) regardless of the currently selected objects (and
 without changing the current selection). These operations can
 not be undone using the undo system.
 
@@ -1539,7 +1539,7 @@ in the menu entries.
 <#if out=latex><x/phantomsection/</#if>
 
 <label id="vmview">
-Here are all meny entries of the <tt/"View"/ menu:
+Here are all entries of the <tt/"View"/ menu:
 <itemize>
 <item><tt/"Quick Render"/: the scene is exported to a RIB file using the
 camera settings of the current view; then the <tt/"QRender"/ command
@@ -1791,7 +1791,7 @@ with the view window, are:
 (on the numeric keypad) zoom the view.
 
 <item><tt/&lt;Ctrl+5&gt;/ (on the numeric keypad!) resets the views
-camera (From and To) to the view type dependend default values.
+camera (From and To) to the view type dependent default values.
 
 <item><tt/&lt;.&gt;/ pans the view to the mark.
 </itemize>
@@ -2235,6 +2235,13 @@ by Ayam see exactly the same set of shaders as Ayam.
 However, this does of course not affect any renderers that are
 started outside the Ayam context, i.e.~when rendering exported RIB files
 from a shell.
+<p>
+Since Ayam 1.22, the shader paths support globbing, i.e.~it is
+possible to specify "/usr/share/aqsis/shaders/*/" to include
+"/usr/share/aqsis/shaders/surface/", "/usr/share/aqsis/shaders/displacement/",
+"/usr/share/aqsis/shaders/volume/", "/usr/share/aqsis/shaders/light/" etc.
+with just a single entry. More complex styles of globbing, using
+e.g.~the question mark, are also supported.
 
 <item><tt/"Scan for Shaders!"/ initiates a rebuild of the internal
 shader database. All shaders in the directories specified by
@@ -2424,11 +2431,13 @@ Note that a change of this preference option only takes effect for
 the next invocation of the single point editing modelling action.
 
 <item><tt/"RationalPoints"/ determines the display style of rational points.
+<footnote>Since 1.22.</footnote>
+<p><p>
 In euclidean style the weights are not multiplied in, whereas in the
 homogeneous style the weights are multiplied in prior to display.
 This preference setting also influences the control hull display of
 NURBS curves and surfaces and some modelling actions like setting the
-mark from points.<footnote>Since 1.22.</footnote>
+mark from points.
 
 <item><tt/"GlobalMark"/ toggles whether each view should manage its
 own mark (off), or whether there should be just one global
@@ -2825,7 +2834,7 @@ ensures that the tesselation creates the same number of sample
 points (as given via <tt/"SParamU"/ and <tt/"SParamV"/) for any
 knot vector and
 <item><tt/"AdaptiveDomainDistance"/ additionally adds
-sample points dependend on the number of control points (width or
+sample points depending on the number of control points (width or
 height of the patch) to provide a better adaptation to complex patches.
 </enum>
 The tesselation methods,<tt/"NormalizedDomainDistance"/
@@ -3572,7 +3581,7 @@ is copied using the clipboard. The selection is also not saved to
 Ayam scene files. But selected points survive
 undo/redo.<footnote>Since 1.16.</footnote>
 <p>
-Furthermore, the selection action iself is not an operation
+Furthermore, the selection action itself is not an operation
 recorded in the undo buffer, thus cannot directly be undone.
 <p>
 The point selection also does not interfere with single point modelling
@@ -4370,7 +4379,7 @@ statement will be written to the RIB, which looks like this:
 
 <tscreen><verb>Display "unnamed.tif" "file" "rgba"</verb></tscreen>
 
-If you disable this option, be sure to add atleast one
+If you disable this option, be sure to add at least one
 RiDisplay tag to the Root object (see also section
 <ref id="ridtag" name="RiDisplay Tag">), otherwise your RIB will
 not contain a RiDisplay statement. This option has no effect on
@@ -6224,7 +6233,7 @@ of type <tt/"NURB"/, <tt/"Chordal"/, or <tt/"Centripetal"/.
 If the type is <tt/"Periodic"/, the last <em/p/ control points of the curve
 will be made identical to the first <em/p/ where <em/p/ is the degree of the
 curve (read order-1). This will close the curve with guaranteed continuity.
-Note that for a cubic spline (order 4) you will need atleast 6 control
+Note that for a cubic spline (order 4) you will need at least 6 control
 points to make it periodic. It is important to know, that the multiple control
 points alone can not guarantee that the curve is closed if the knot vector
 has no periodic extensions. If in doubt, switch the curve to
@@ -6501,7 +6510,7 @@ data points for open curves and from the second and second to last data
 points for closed curves. In addition, the respective derivative
 vector will be scaled by <tt/"SDLen"/ and <tt/"EDLen"/.
 
-If manual dervivatives are is switched on, two more
+If manual derivatives are is switched on, two more
 editable points appear in the single point editing modes. Those
 additional points directly control the derivatives in the
 endpoints of the interpolating curve. The parameters <tt/"SDLen"/ and
@@ -6730,7 +6739,7 @@ is created to close the curve.
 <item>Now the control points of all parameter curves and fillets are simply
 copied into a new big control point vector, without checking for double
 points. This means that for parameter curves that touch at their
-respective ends, atleast double control points in the new concatenated
+respective ends, at least double control points in the new concatenated
 curve will result.
 <item>If <tt/"Closed"/ is enabled, the curve will be closed.
 </enum>
@@ -6786,7 +6795,7 @@ points. The outer fillet control points are the parameter curve end points
 and the inner fillet control points will be positioned on the tangent
 of the respective parameter curve end point (see also the discussion
 of <tt/"FTLength"/ below). Thus, the transitions between parameter
-curve and fillet should be atleast G1 continuous.
+curve and fillet should be at least G1 continuous.
 Degree elevation will be used to raise the degree of the fillet to
 that of the concatenated curve; this may introduce additional
 control points in the fillet but its shape does not change and the
@@ -7209,7 +7218,7 @@ is present.
 
 <item>If there are nested trim curves, their direction must alternate.
 
-<item>Trim curves may not intersect each other or themself.
+<item>Trim curves may not intersect each other or them self.
 </itemize>
 Note that Ayam is not checking whether your trim curves
 follow these rules.
@@ -7689,7 +7698,7 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 <p><#if out=latex>&nbsp;<newline></#if>
 All curves forming holes in the extruded object must be defined inside
 (geometrically) the first curve (the outline curve). Additionally,
-they may not intersect each other or themself and there can not be hole
+they may not intersect each other or them self and there can not be hole
 curves inside hole curves. If there are bevels and caps, allow some extra
 spacing between the curves (for the bevels).
 Ayam will not check whether the parameter curves conform to these criteria.
@@ -8718,7 +8727,7 @@ otherwise the bevelled surface may expose defects.
 Since Ayam 1.19 the Bevel object supports a second parameter curve
 that defines the bevels cross section shape. It should run from
 0,0 to 1,1. If present, the type parameter is ignored as the shape
-of the bevel is completly defined by the second curve.
+of the bevel is completely defined by the second curve.
 Note that even if the curve should end at 1,1, this is not mandatory
 and therefore allows for bevels of differing width and height to be created.
 <p>
@@ -8760,7 +8769,7 @@ see section <ref id="mntag" name="MN (Mean Normal) Tag">),
 
  <item>Any curves defined in a global level named <tt/"Bevels"/
 also appear as potential bevel type. Those curves should follow
-the rules layed out above for the second parameter curve of the
+the rules laid out above for the second parameter curve of the
 Bevel object.
  </itemize>
 
@@ -9044,7 +9053,7 @@ ConcatNC object, only <tt/"Custom"/ knots allow to preserve the shapes
 of the parameter surfaces completely, but this comes at the price of multiple
 internal knots (see also <ref id="concatncp" name="ConcatNCAttr Property">).
 In addition, for <tt/"Custom"/ knots, all parameter surfaces will be
-elevated to a common maximum order or atleast be clamped in the
+elevated to a common maximum order or at least be clamped in the
 respective direction prior to the splitting to curves but after
 the fillet creation. Furthermore trim curves of the progenitor surfaces
 will only be copied to the resulting surface, if the <tt/"Knot-Type"/
@@ -9885,7 +9894,7 @@ data between both interpreters must be arranged manually from the
 Ayam interpreter (i.e.~with scripts that run in the Ayam console).
 <p>
 With the help of scripts, that run in the Ayam interpreter, more commands
-may be transfered to or made available in the safe interpreter.
+may be transferred to or made available in the safe interpreter.
 But this may, of course, open security holes again.
 <p>
 Full access from Script objects to the complete scripting interface
@@ -10111,7 +10120,7 @@ r(t) = (cos((m&middot;t)/4)<sup/n2/ + sin((m&middot;t)/4)<sup/n3/)<sup>-(1/n1)</
 </#if>
 where r is the radius and t the angle. The SfCurve object allows
 to specify start and end values for t as well as the number of
-sample points inbetween.<newline>
+sample points in between.<newline>
 The generated NURBS curve is always closed, but the order may be configured
 freely.
 <p>
@@ -10498,14 +10507,14 @@ suffers from a phenomenon called gimbal lock.
 To avoid gimbal locks, Ayam internally holds the orientation
 of an object in a quaternion.
 This quaternion not only holds information about the angles
-but also about the order in which partial rotations occured.
+but also about the order in which partial rotations occurred.
 <p>
 It is important to know, that the values of the angles of
 the rotation property must not be read in a way that
 the object will first be rotated around X by x-angle degrees
 then around Y by y-angle degrees then around Z by z-angle degrees.
 In fact, no information about the order in which partial
-rotations occured may be derived from that three values.
+rotations occurred may be derived from that three values.
 This implies, that e.g.~the values 0 0 45 may actually denote
 a different orientation than the very same values 0 0 45.
 <p>
@@ -11027,7 +11036,7 @@ to a single object.
 </itemize>
 Note that the tag numbers in the menu entries count TC tags only.
 <p>
-The texture coordinate dialog is modeless, it may stay open
+The texture coordinate dialog is mode-less, it may stay open
 while modeling. The <tt/"Dismiss"/ button closes the dialog.
 
 <sect2>PV (Primitive Variable) Tag<label id="pvtag">
@@ -11516,7 +11525,7 @@ Furthermore, shape, parameterisation, and curvature of the
 B-Spline curve are not exactly as one would expect from a circle.
 To create true circular curves, the NURBCircle tool (see below) should
 be used instead.
-<tag/Notes/ Sections must be atleast 1.
+<tag/Notes/ Sections must be at least 1.
 
 If Arc is 360.0, the first
 n control points of the new curve will be identical to the last n
@@ -12958,11 +12967,11 @@ If you want your changes to be recorded in the undo buffer, you have
 to arrange for this manually too (see the documentation of the undo
 command: <ref id="scundo" name="Undo">).
 <p>
-From scripts it may be necessary to check whether an error occured
+From scripts it may be necessary to check whether an error occurred
 during the execution of a command. All commands return
 TCL_OK in <em>any</em> case, so checking their return value avails
 to nothing, but they set the global Tcl variable <tt>"ay_error"</tt>
-to a value higher than 1 if an error occured. You need to set
+to a value higher than 1 if an error occurred. You need to set
 ay_error to zero before and check it after the operation in question
 to see whether the operation performed successfully:
 <#if out=latex><x/needspace 8/</#if>
@@ -13768,7 +13777,7 @@ It is therefore a list of positive integer values of length:
 double number of tags. The even entries specify the number of integer and
 the odd entries the number of floating point arguments per tag.
 The content of this list is partially dictated by the <tt/"-tags"/
-option, e.g.~a crease entry has atleast two integer arguments and one
+option, e.g.~a crease entry has at least two integer arguments and one
 floating point argument.
 The default value of this option is list of proper length, with all
 elements set to zero (no tags have any arguments).
@@ -14093,7 +14102,7 @@ get-procedure and accessing the data array that is associated with the
 property in question directly, especially if multiple values are to be
 fetched.
 However, the name of the data array and the appropriate procedure
-are inferred automatically and errors are catched and reported.
+are inferred automatically and errors are caught and reported.
 See below for more information regarding direct access of property values.
  <item>Example: Given that a single Sphere object is selected, its
 radius may be retrieved in the variable <tt/"r"/ easily using the command
@@ -15895,7 +15904,7 @@ Code should be one of: 1: warning, 2:
 error, 3: flush messages, 4: unspecified output.
 There are more codes defined (see ayam.h, look for Return/Error Codes)
 but they are generally not needed in the Tcl script context.
-Place should describe the procedure where the error occured.
+Place should describe the procedure where the error occurred.
 Detail is the string to be output.
 <item>Notes: The actual output in the Ayam console depends on the
 preference option <tt/"ErrorLevel"/ see section
@@ -16212,7 +16221,7 @@ proc easySweep { } {
 # easySweep
 </code>
 
-Run this pocedure by selecting a NURBS curve object, then type
+Run this procedure by selecting a NURBS curve object, then type
 into the console:
 <tscreen>
 &raquo;&thinsp;easySweep
@@ -16843,8 +16852,8 @@ in the trace callback). If the variable name contains a namespace
 specifier, this namespace has to exist, when <tt/"tclvar"/ is called.
 <p>
 Even though it looks a perfect fit, <tt/"tclvar"/ can not be used to
-manage a property data array. Atleast not if the array contains components
-to be saved to Ayam scene files. This is, because upon reading a scene
+manage a property data array (if the array contains components
+to be saved to Ayam scene files). This is, because upon reading a scene
 file with such saved array items, the items will be read (and put into
 the Tcl context) before the script can establish the write trace using
 <tt/"tclvar"/ and the data from the scene file never arrives in the JavaScript
@@ -17150,8 +17159,8 @@ in the trace callback). If the variable name contains a namespace
 specifier, this namespace has to exist, when <tt/"tclvar"/ is called.
 <p>
 Even though it looks a perfect fit, <tt/"tclvar"/ can not be used to
-manage a property data array. Atleast not if the array contains components
-to be saved to Ayam scene files. This is, because upon reading a scene
+manage a property data array (if the array contains components
+to be saved to Ayam scene files). This is, because upon reading a scene
 file with such saved array items, the items will be read (and put into
 the Tcl context) before the script can establish the write trace using
 <tt/"tclvar"/ and the data from the scene file never arrives in the Lua
@@ -17236,7 +17245,7 @@ Array ({0, 1, 2})|List ({0 1 2})<#if out=latex>@<hline></#if>
 <caption>Lua to Tcl Data Conversions</caption>
 </table>
 <p>
-The transport/conversion of table entrys (to e.g.~associative array
+The transport/conversion of table entries (to e.g.~associative array
 elements) can be arranged manually like this:
 <tscreen><tt>
 a.b = 3.14;<newline>
@@ -18926,10 +18935,10 @@ if the save views flag was cleared while reading the previous scene file,
 root and views will be omitted (i.e.~scene files without root and views
 stay scene files without root and views, even if new views
 are opened and parameterized),
-<item> if no errors occured during saving the file, the file name
+<item> if no errors occurred during saving the file, the file name
 will be put to the first most recently used files entry in the file menu,
 and the scene changed state will be set to "unchanged",
-<item> if errors occured, the current scene changed state will be kept.
+<item> if errors occurred, the current scene changed state will be kept.
 </enum>
 
 
@@ -19039,7 +19048,7 @@ when anti-aliasing is enabled.
 The default value is 1.3. Ayam is not checking, whether the specified
 value is supported by the OpenGL implementation used.
 
-<item><tt/"AAFudge"/, offset added to any line ends to accomodate
+<item><tt/"AAFudge"/, offset added to any line ends to accommodate
 for different OpenGL implementations wrt. anti-aliasing (default 1.0).
 
 <item><tt/"AASelLineWidth"/, line width used for drawing the lines of
@@ -19590,7 +19599,7 @@ To start using IDR:
 </enum>
 Compare the rendering time with a full render from the view window.
 
-IDR requires that atleast the renderer of the second rendering pass
+IDR requires that at least the renderer of the second rendering pass
 honours RiMatte. Since rgl does not honour RiMatte, it is sometimes
 necessary to simply exclude objects of different importance value.
 No wrong images are to be expected from this, as rgl does not calculate
