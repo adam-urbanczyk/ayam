@@ -770,6 +770,7 @@ proc selMUD { up } {
     } else {
 	set ay(selmudlock) 1
     }
+    set notify 0
     while { 1 } {
     if { $ay(lb) == 0 } {
 	# tree
@@ -820,6 +821,7 @@ proc selMUD { up } {
 		}
 		$w selection add $s
 	    }
+	    set notify 1
 	}
     } else {
 	# listbox
@@ -848,9 +850,13 @@ proc selMUD { up } {
 		}
 		$w selection set $i
 	    }
+	    set notify 1
 	}
     }
     break;
+    }
+    if { $notify } {
+	notifyOb;rV
     }
     set ay(selmudlock) 0
  return;
