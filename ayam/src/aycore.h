@@ -386,12 +386,17 @@ int ay_interpol_1DA1D(double p, int len, double *st, double *en, double *ta);
 
 /** interpolate between two sets of transformation attributes
  */
-int ay_interpol_trafos(double p, ay_object *o1, ay_object *o2, ay_object *ta);
+void ay_interpol_trafos(double p, ay_object *o1, ay_object *o2, ay_object *ta);
 
 /** interpolate between two curves
  */
 int ay_interpol_ncurves(double p, ay_object *c1, ay_object *c2,
 			ay_object **ta);
+
+/** Tcl command to interpolate between two curves
+ */
+int ay_interpol_curvestcmd(ClientData clientData, Tcl_Interp *interp,
+			   int argc, char *argv[]);
 
 
 /* notify.c */

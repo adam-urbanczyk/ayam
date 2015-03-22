@@ -82,14 +82,13 @@ ay_interpol_1DA1D(double p, int len, double *st, double *en, double *ta)
  *  the transformation attributes of two objects (<o1> and <o2>)
  *  and store the resulting transformation attributes in object <ta>
  */
-int
+void
 ay_interpol_trafos(double p, ay_object *o1, ay_object *o2, ay_object *ta)
 {
- int ay_status = AY_OK;
  double euler[3];
 
   if(!o1 || !o2 || !ta)
-    return AY_ENULL;
+    return;
 
   ta->movx = o1->movx+(p*(o2->movx - o1->movx));
   ta->movy = o1->movy+(p*(o2->movy - o1->movy));
@@ -121,13 +120,19 @@ ay_interpol_trafos(double p, ay_object *o1, ay_object *o2, ay_object *ta)
       ta->rotz = o1->rotz;
     } /* if */
 
- return ay_status;
+ return;
 } /* ay_interpol_trafos */
 
 
-/* ay_interpol_ncurves:
- *  use <p> as parameter (between 0.0 and 1.0) to interpolate between
- *  two NURBS curves (<c1> and <c2>) and store the resulting curve in <ta>
+/** ay_interpol_ncurves:
+ * Interpolate (tween) between two curves.
+ *
+ * \param p ratio of c1 and c2 (0.0 - 1.0)
+ * \param c1 first NURBS curve
+ * \param c2 second NURBS curve
+ * \param ta where to store the resulting curve
+ *
+ * \returns AY_OK on success, error code otherwise
  */
 int
 ay_interpol_ncurves(double p, ay_object *c1, ay_object *c2, ay_object **ta)
@@ -150,8 +155,8 @@ ay_interpol_ncurves(double p, ay_object *c1, ay_object *c2, ay_object **ta)
   if(nc1->length != nc2->length)
     return AY_ERROR;
 
-  if(!(newknotv = calloc(nc1->length+nc1->order, sizeof(double))))
-    { ay_status = AY_EOMEM; goto cleanup; }
+  if(nc1->order != nc2->order)
+    return AY_ERROR;
 
   if(!(newcontrolv = calloc(nc1->length*stride, sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
@@ -170,20 +175,38 @@ ay_interpol_ncurves(double p, ay_object *c1, ay_object *c2, ay_object **ta)
   if(ay_status)
     goto cleanup;
 
-  /* knot types are believed to be equal */
+  newnc->length = nc1->length;
+  newnc->order = nc1->order;
+  newnc->controlv = newcontrolv;
 
-  ay_status = ay_interpol_1DA1D(p, nc1->length+nc1->order,
-				nc1->knotv, nc2->knotv,
-				newknotv);
+  /* infer new knot type */
+  if(nc1->knot_type != nc2->knot_type)
+    newnc->knot_type = AY_KTCUSTOM;
+  else
+    newnc->knot_type = nc1->knot_type;
+
+  if(newnc->knot_type == AY_KTCUSTOM)
+    {
+      if(!(newknotv = calloc(nc1->length+nc1->order, sizeof(double))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+
+      ay_status = ay_interpol_1DA1D(p, nc1->length+nc1->order,
+				    nc1->knotv, nc2->knotv,
+				    newknotv);
+      newnc->knotv = newknotv;
+    }
+  else
+    {
+      ay_status = ay_knots_createnc(newnc);
+    }
+
   if(ay_status)
     goto cleanup;
 
-  memcpy(newnc, nc1, sizeof(ay_nurbcurve_object));
+  newnc->is_rat = ay_nct_israt(newnc);
+  ay_nct_settype(newnc);
 
-  newnc->controlv = newcontrolv;
-  newnc->knotv = newknotv;
-
-  ay_status = ay_interpol_trafos(p, c1, c2, newo);
+  ay_interpol_trafos(p, c1, c2, newo);
 
   *ta = newo;
 
@@ -204,3 +227,54 @@ cleanup:
 
  return ay_status;
 } /* ay_interpol_ncurves */
+
+
+/** ay_interpol_curvestcmd:
+ *
+ *  Implements the \a getMaster scripting interface command.
+ *  See also the corresponding section in the \ayd{scgetmaster}.
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_interpol_curvestcmd(ClientData clientData, Tcl_Interp *interp,
+		       int argc, char *argv[])
+{
+ int tcl_status = TCL_OK, ay_status = AY_OK;
+ ay_list_object *sel = ay_selection;
+ ay_object *o = NULL;
+ double r = 0.5;
+
+  /* parse args */
+  if(argc > 1)
+    {
+      tcl_status = Tcl_GetDouble(interp, argv[1], &r);
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+    }
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, argv[0], NULL);
+      return TCL_OK;
+    }
+
+  if((!sel->next) || (sel->object->type != AY_IDNCURVE) ||
+     (sel->next->object->type != AY_IDNCURVE))
+    {
+      ay_error(AY_ERROR, argv[0], "Select two NURBS curves.");
+      return TCL_OK;
+    }
+
+  ay_status = ay_interpol_ncurves(r, sel->object, sel->next->object, &o);
+
+  if(ay_status)
+    {
+      ay_error(AY_ERROR, argv[0], "Interpolation failed.");
+    }
+  else
+    {
+      ay_object_link(o);
+      ay_notify_parent();
+    }
+
+ return TCL_OK;
+} /* ay_interpol_curvestcmd */
