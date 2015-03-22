@@ -399,6 +399,17 @@ int ay_interpol_curvestcmd(ClientData clientData, Tcl_Interp *interp,
 			   int argc, char *argv[]);
 
 
+/** interpolate between two surfaces
+ */
+int ay_interpol_npatches(double r, ay_object *p1, ay_object *p2,
+			ay_object **ta);
+
+/** Tcl command to interpolate between two surfaces
+ */
+int ay_interpol_surfacestcmd(ClientData clientData, Tcl_Interp *interp,
+			     int argc, char *argv[]);
+
+
 /* notify.c */
 
 /** register notify callback

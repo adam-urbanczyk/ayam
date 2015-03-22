@@ -231,8 +231,8 @@ cleanup:
 
 /** ay_interpol_curvestcmd:
  *
- *  Implements the \a getMaster scripting interface command.
- *  See also the corresponding section in the \ayd{scgetmaster}.
+ *  Implements the \a tweenNC scripting interface command.
+ *  See also the corresponding section in the \ayd{sctweennc}.
  *  \returns TCL_OK in any case.
  */
 int
@@ -278,3 +278,189 @@ ay_interpol_curvestcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_interpol_curvestcmd */
+
+
+/** ay_interpol_npatches:
+ * Interpolate (tween) between two NURBS patches.
+ *
+ * \param r ratio of p1 and p2 (0.0 - 1.0)
+ * \param p1 first NURBS patch
+ * \param p2 second NURBS patch
+ * \param ta where to store the resulting patch
+ *
+ * \returns AY_OK on success, error code otherwise
+ */
+int
+ay_interpol_npatches(double r, ay_object *p1, ay_object *p2, ay_object **ta)
+{
+ int ay_status = AY_OK;
+ ay_object *newo = NULL;
+ ay_nurbpatch_object *np1, *np2, *newnp = NULL;
+ double *newuknotv = NULL, *newvknotv = NULL, *newcontrolv = NULL;
+ int stride = 4;
+
+  if(!p1 || !p2 || !ta)
+    return AY_ENULL;
+
+  if((p1->type != AY_IDNPATCH) || (p2->type != AY_IDNPATCH))
+    return AY_EARGS;
+
+  np1 = (ay_nurbpatch_object *)p1->refine;
+  np2 = (ay_nurbpatch_object *)p2->refine;
+
+  if((np1->width != np2->width)||(np1->height != np2->height))
+    return AY_ERROR;
+
+  if((np1->uorder != np2->uorder)||(np1->vorder != np2->vorder))
+    return AY_ERROR;
+
+  if(!(newcontrolv = calloc(np1->width*np1->height*stride, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  if(!(newnp = calloc(1, sizeof(ay_nurbpatch_object))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  ay_status = ay_npt_createnpatchobject(&newo);
+
+  if(ay_status || !newo)
+    goto cleanup;
+
+  newo->refine = newnp;
+
+  ay_status = ay_interpol_1DA4D(r, np1->width*np1->height,
+				np1->controlv, np2->controlv,
+				newcontrolv);
+  if(ay_status)
+    goto cleanup;
+
+  newnp->width = np1->width;
+  newnp->height = np1->height;
+  newnp->uorder = np1->uorder;
+  newnp->vorder = np1->vorder;
+  newnp->controlv = newcontrolv;
+
+  /* infer new knot types */
+  if(np1->uknot_type != np2->uknot_type)
+    newnp->uknot_type = AY_KTCUSTOM;
+  else
+    newnp->uknot_type = np1->uknot_type;
+
+  if(newnp->uknot_type == AY_KTCUSTOM)
+    {
+      if(!(newuknotv = calloc(np1->width+np1->uorder, sizeof(double))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+
+      ay_status = ay_interpol_1DA1D(r, np1->width+np1->uorder,
+				    np1->uknotv, np2->uknotv,
+				    newuknotv);
+      newnp->uknotv = newuknotv;
+
+      if(ay_status)
+	goto cleanup;
+    }
+
+  if(np1->vknot_type != np2->vknot_type)
+    newnp->vknot_type = AY_KTCUSTOM;
+  else
+    newnp->vknot_type = np1->vknot_type;
+
+  if(newnp->vknot_type == AY_KTCUSTOM)
+    {
+      if(!(newvknotv = calloc(np1->height+np1->vorder, sizeof(double))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+
+      ay_status = ay_interpol_1DA1D(r, np1->height+np1->vorder,
+				    np1->vknotv, np2->vknotv,
+				    newvknotv);
+      newnp->vknotv = newvknotv;
+
+      if(ay_status)
+	goto cleanup;
+    }
+
+  if((newnp->uknot_type != AY_KTCUSTOM) || (newnp->vknot_type != AY_KTCUSTOM))
+    {
+      ay_status = ay_knots_createnp(newnp);
+
+      if(ay_status)
+	goto cleanup;
+    }
+
+  newnp->is_rat = ay_npt_israt(newnp);
+  ay_npt_setuvtypes(newnp, 0);
+
+  ay_interpol_trafos(r, p1, p2, newo);
+
+  *ta = newo;
+
+  newo = NULL;
+  newuknotv = NULL;
+  newvknotv = NULL;
+  newcontrolv = NULL;
+  newnp = NULL;
+
+cleanup:
+  if(newuknotv)
+    free(newuknotv);
+  if(newvknotv)
+    free(newvknotv);
+  if(newcontrolv)
+    free(newcontrolv);
+  if(newnp)
+    free(newnp);
+  if(newo)
+    free(newo);
+
+ return ay_status;
+} /* ay_interpol_npatches */
+
+
+/** ay_interpol_surfacestcmd:
+ *
+ *  Implements the \a tweenNP scripting interface command.
+ *  See also the corresponding section in the \ayd{sctweennp}.
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_interpol_surfacestcmd(ClientData clientData, Tcl_Interp *interp,
+			 int argc, char *argv[])
+{
+ int tcl_status = TCL_OK, ay_status = AY_OK;
+ ay_list_object *sel = ay_selection;
+ ay_object *o = NULL;
+ double r = 0.5;
+
+  /* parse args */
+  if(argc > 1)
+    {
+      tcl_status = Tcl_GetDouble(interp, argv[1], &r);
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+    }
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, argv[0], NULL);
+      return TCL_OK;
+    }
+
+  if((!sel->next) || (sel->object->type != AY_IDNPATCH) ||
+     (sel->next->object->type != AY_IDNPATCH))
+    {
+      ay_error(AY_ERROR, argv[0], "Select two NURBS patches.");
+      return TCL_OK;
+    }
+
+  ay_status = ay_interpol_npatches(r, sel->object, sel->next->object, &o);
+
+  if(ay_status)
+    {
+      ay_error(AY_ERROR, argv[0], "Interpolation failed.");
+    }
+  else
+    {
+      ay_object_link(o);
+      ay_notify_parent();
+    }
+
+ return TCL_OK;
+} /* ay_interpol_surfacestcmd */
