@@ -296,10 +296,12 @@ ay_write_scene(char *fname, int selected)
     {
       o = ay_currentlevel->object;
     }
-
-  if(!ay_prefs.save_rootviews)
+  else
     {
-      o = o->next;
+      if(!ay_prefs.save_rootviews)
+	{
+	  o = o->next;
+	}
     }
 
   if(!o)
