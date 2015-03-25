@@ -223,16 +223,16 @@ ay_nb_GlobalInterpolation4D(int n, double *Q, double *ub, double *Uc, int d)
     return AY_EOMEM;
 
   if(!(N = calloc((d+1), sizeof(double))))
-    { free(A); return AY_EOMEM; }
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   if(!(qq = calloc((n+1)*4, sizeof(double))))
-    { free(A); free(N); return AY_EOMEM; }
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   if(!(xx = calloc((n+1)*4, sizeof(double))))
-    { free(A); free(N); free(qq); return AY_EOMEM; }
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   if(!(pivot = calloc(n+1, sizeof(int))))
-    { free(A); free(N); free(qq); free(xx); return AY_EOMEM; }
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   U = Uc;
 
@@ -240,7 +240,9 @@ ay_nb_GlobalInterpolation4D(int n, double *Q, double *ub, double *Uc, int d)
   for(i = 1; i < n; i++)
     {
       span = ay_nb_FindSpan(n, d, ub[i], U);
-      ay_nb_BasisFuns(span, ub[i], d, U, N);
+      ay_status = ay_nb_BasisFuns(span, ub[i], d, U, N);
+      if(ay_status)
+	{ free(A); free(N); free(qq); free(xx); free(pivot); return ay_status; }
       for(j = 0; j <= d; j++)
 	{
 	  ind = (i*(n+1)) + (span-d+j);
@@ -254,12 +256,12 @@ ay_nb_GlobalInterpolation4D(int n, double *Q, double *ub, double *Uc, int d)
   ay_status = ay_nb_LUDecompose(n+1, A, pivot);
 
   if(ay_status)
-    { free(A); free(N); free(qq); free(xx); free(pivot); return ay_status; }
+    { goto cleanup; }
 
   ay_status = ay_nb_LUInvert(n+1, A, pivot);
 
   if(ay_status)
-    { free(A); free(N); free(qq); free(xx); free(pivot); return ay_status; }
+    { goto cleanup; }
 
   /* Init matrix for LSE */
   memcpy(qq,Q,(n+1)*4*sizeof(double));
@@ -281,13 +283,20 @@ ay_nb_GlobalInterpolation4D(int n, double *Q, double *ub, double *Uc, int d)
   /* Store the results */
   memcpy(Q,xx,(n+1)*4*sizeof(double));
 
-  free(A);
-  free(N);
-  free(qq);
-  free(xx);
-  free(pivot);
+cleanup:
 
- return AY_OK;
+  if(A)
+    free(A);
+  if(N)
+    free(N);
+  if(qq)
+    free(qq);
+  if(xx)
+    free(xx);
+  if(pivot)
+    free(pivot);
+
+ return ay_status;
 } /* ay_nb_GlobalInterpolation4D */
 
 
@@ -313,16 +322,16 @@ ay_nb_GlobalInterpolation4DD(int n, double *Q, double *ub, double *Uc, int d,
     return AY_EOMEM;
 
   if(!(N = calloc((d+1), sizeof(double))))
-    { free(A); return AY_EOMEM; }
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   if(!(qq = calloc((n+3)*4, sizeof(double))))
-    { free(A); free(N); return AY_EOMEM; }
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   if(!(xx = calloc((n+3)*4, sizeof(double))))
-    { free(A); free(N); free(qq); return AY_EOMEM; }
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   if(!(pivot = calloc(n+3, sizeof(int))))
-    { free(A); free(N); free(qq); free(xx); return AY_EOMEM; }
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   U = Uc;
 
@@ -331,7 +340,12 @@ ay_nb_GlobalInterpolation4DD(int n, double *Q, double *ub, double *Uc, int d,
   for(i = 2; i < n+1; i++)
     {
       span = ay_nb_FindSpan(n+2, d, ub[k], U);
-      ay_nb_BasisFuns(span, ub[k], d, U, N);
+
+      ay_status = ay_nb_BasisFuns(span, ub[k], d, U, N);
+
+      if(ay_status)
+	{ goto cleanup; }
+
       for(j = 0; j <= d; j++)
 	{
 	  ind = (i*(n+3)) + (span-d+j);
@@ -351,12 +365,12 @@ ay_nb_GlobalInterpolation4DD(int n, double *Q, double *ub, double *Uc, int d,
   ay_status = ay_nb_LUDecompose(n+3, A, pivot);
 
   if(ay_status)
-    { free(A); free(N); free(qq); free(xx); free(pivot); return ay_status; }
+    { goto cleanup; }
 
   ay_status = ay_nb_LUInvert(n+3, A, pivot);
 
   if(ay_status)
-    { free(A); free(N); free(qq); free(xx); free(pivot); return ay_status; }
+    { goto cleanup; }
 
   /* Init matrix for LSE */
   memcpy(qq,Q,(n+3)*4*sizeof(double));
@@ -397,13 +411,20 @@ ay_nb_GlobalInterpolation4DD(int n, double *Q, double *ub, double *Uc, int d,
       j += 4;
     }
 
-  free(A);
-  free(N);
-  free(qq);
-  free(xx);
-  free(pivot);
+cleanup:
 
- return AY_OK;
+  if(A)
+    free(A);
+  if(N)
+    free(N);
+  if(qq)
+    free(qq);
+  if(xx)
+    free(xx);
+  if(pivot)
+    free(pivot);
+
+ return ay_status;
 } /* ay_nb_GlobalInterpolation4DD */
 
 
@@ -1385,16 +1406,16 @@ ay_nb_FindSpanMult(int n, int p, double u, double *U, int *s)
  * calculate NURBS basis functions for span i, parametric value u
  * degree p, knot vector U[] in N[p+1]
  */
-void
+int
 ay_nb_BasisFuns(int i, double u, int p, double *U, double *N)
 {
  double *left = NULL, *right = NULL, saved, temp;
  int j, r;
 
  if(!(left = calloc(p+1, sizeof(double))))
-   return;
+   return AY_EOMEM;
  if(!(right = calloc(p+1, sizeof(double))))
-   {free(left); return;}
+   {free(left); return AY_EOMEM;}
 
   N[0] = 1.0;
 
@@ -1417,8 +1438,44 @@ ay_nb_BasisFuns(int i, double u, int p, double *U, double *N)
   free(left);
   free(right);
 
- return;
+ return AY_OK;
 } /* ay_nb_BasisFuns */
+
+/*
+ * ay_nb_BasisFunsM:
+ * calculate NURBS basis functions for span i, parametric value u
+ * degree p, knot vector U[] in N[(p+1)*3]
+ * Memory management optimized variant, see size of N!
+ */
+void
+ay_nb_BasisFunsM(int i, double u, int p, double *U, double *N)
+{
+ double *left, *right, saved, temp;
+ int j, r;
+
+  left = &(N[p+1]);
+  right = left+(p+1);
+
+  N[0] = 1.0;
+
+  for(j = 1; j <= p; j++)
+    {
+      left[j] = u - U[i+1-j];
+      right[j] = U[i+j] - u;
+      saved = 0.0;
+
+      for(r = 0; r < j; r++)
+	{
+	  temp = N[r] / (right[r+1] + left[j-r]);
+	  N[r] = saved + right[r+1] * temp;
+	  saved = left[j-r] * temp;
+	}
+
+      N[j] = saved;
+    }
+
+ return;
+} /* ay_nb_BasisFunsM */
 
 
 /*
@@ -1428,19 +1485,21 @@ ay_nb_BasisFuns(int i, double u, int p, double *U, double *N)
 int
 ay_nb_CurvePoint4D(int n, int p, double *U, double *Pw, double u, double *C)
 {
- int span, j, k;
+ int ay_status = AY_OK, span, j, k;
  double *N = NULL, Cw[4] = {0};
 
- if(!(N = calloc(p+1, sizeof(double))))
-   return AY_EOMEM;
+  if(!(N = calloc(p+1, sizeof(double))))
+    return AY_EOMEM;
 
   span = ay_nb_FindSpan(n, p, u, U);
 
-  ay_nb_BasisFuns(span, u, p, U, N);
+  ay_status = ay_nb_BasisFuns(span, u, p, U, N);
+
+  if(ay_status)
+    { free(N); return ay_status; }
 
   for(j = 0; j <= p; j++)
     {
-
       k = (span-p+j)*4;
       Cw[0] = Cw[0] + N[j]*Pw[k]*Pw[k+3];
       Cw[1] = Cw[1] + N[j]*Pw[k+1]*Pw[k+3];
@@ -1456,6 +1515,39 @@ ay_nb_CurvePoint4D(int n, int p, double *U, double *Pw, double u, double *C)
  return AY_OK;
 } /* ay_nb_CurvePoint4D */
 
+/*
+ * ay_nb_CurvePoint4DM:
+ *
+ * Memory management optimized variant, but C must be of size
+ * 3+(p+1)*3
+ */
+void
+ay_nb_CurvePoint4DM(int n, int p, double *U, double *Pw, double u, double *C)
+{
+ int span, j, k;
+ double *N, Cw[4] = {0};
+
+  N = &(C[4]);
+
+  span = ay_nb_FindSpan(n, p, u, U);
+
+  ay_nb_BasisFunsM(span, u, p, U, N);
+
+  for(j = 0; j <= p; j++)
+    {
+      k = (span-p+j)*4;
+      Cw[0] = Cw[0] + N[j]*Pw[k]*Pw[k+3];
+      Cw[1] = Cw[1] + N[j]*Pw[k+1]*Pw[k+3];
+      Cw[2] = Cw[2] + N[j]*Pw[k+2]*Pw[k+3];
+      Cw[3] = Cw[3] + N[j]*Pw[k+3];
+    }
+
+  for(j = 0; j < 4; j++)
+    C[j] = Cw[j]/Cw[3];
+
+ return;
+} /* ay_nb_CurvePoint4DM */
+
 
 /*
  * ay_nb_CurvePoint3D:
@@ -1464,15 +1556,18 @@ ay_nb_CurvePoint4D(int n, int p, double *U, double *Pw, double u, double *C)
 int
 ay_nb_CurvePoint3D(int n, int p, double *U, double *P, double u, double *C)
 {
- int span, j, k;
+ int ay_status = AY_OK, span, j, k;
  double *N = NULL;
 
- if(!(N = calloc(p+1, sizeof(double))))
+  if(!(N = calloc(p+1, sizeof(double))))
    return AY_EOMEM;
 
   span = ay_nb_FindSpan(n, p, u, U);
 
-  ay_nb_BasisFuns(span, u, p, U, N);
+  ay_status = ay_nb_BasisFuns(span, u, p, U, N);
+
+  if(ay_status)
+    { free(N); return ay_status; }
 
   C[0] = 0.0;
   C[1] = 0.0;
@@ -1492,6 +1587,37 @@ ay_nb_CurvePoint3D(int n, int p, double *U, double *P, double u, double *C)
 
 
 /*
+ * ay_nb_CurvePoint3DM:
+ *
+ * Memory management optimized variant, but C must be of size
+ * 3+(p+1)*3!
+ */
+void
+ay_nb_CurvePoint3DM(int n, int p, double *U, double *P, double u, double *C)
+{
+ int span, j, k;
+ double *N = &(C[3]);
+
+  span = ay_nb_FindSpan(n, p, u, U);
+
+  ay_nb_BasisFunsM(span, u, p, U, N);
+
+  C[0] = 0.0;
+  C[1] = 0.0;
+  C[2] = 0.0;
+  for(j = 0; j <= p; j++)
+    {
+      k = (span-p+j)*4;
+      C[0] = C[0] + N[j]*P[k];
+      C[1] = C[1] + N[j]*P[k+1];
+      C[2] = C[2] + N[j]*P[k+2];
+    }
+
+ return;
+} /* ay_nb_CurvePoint3DM */
+
+
+/*
  * ay_nb_SurfacePoint4D:
  *
  */
@@ -1499,6 +1625,7 @@ int
 ay_nb_SurfacePoint4D(int n, int m, int p, int q, double *U, double *V,
 		     double *Pw, double u, double v, double *C)
 {
+ int ay_status = AY_OK;
  int spanu = 0, spanv = 0, indu = 0, indv = 0, l = 0, k = 0, i = 0, j = 0;
  double *Nu = NULL, *Nv = NULL, Cw[4] = {0}, *temp = NULL;
 
@@ -1510,10 +1637,16 @@ ay_nb_SurfacePoint4D(int n, int m, int p, int q, double *U, double *V,
     {free(Nu); free(Nv); return AY_EOMEM;}
 
   spanu = ay_nb_FindSpan(n, p, u, U);
-  ay_nb_BasisFuns(spanu, u, p, U, Nu);
+
+  ay_status = ay_nb_BasisFuns(spanu, u, p, U, Nu);
+  if(ay_status)
+    { free(Nu); free(Nv); return ay_status; }
 
   spanv = ay_nb_FindSpan(m, q, v, V);
-  ay_nb_BasisFuns(spanv, v, q, V, Nv);
+
+  ay_status = ay_nb_BasisFuns(spanv, v, q, V, Nv);
+  if(ay_status)
+    { free(Nu); free(Nv); return ay_status; }
 
   indu = spanu - p;
   for(l = 0; l <= q; l++)
@@ -1563,6 +1696,7 @@ int
 ay_nb_SurfacePoint3D(int n, int m, int p, int q, double *U, double *V,
 		     double *P, double u, double v, double *C)
 {
+ int ay_status = AY_OK;
  int spanu = 0, spanv = 0, indu = 0, indv = 0, l = 0, k = 0, i = 0;
  double *Nu = NULL, *Nv = NULL, temp[3] = {0};
 
@@ -1572,10 +1706,13 @@ ay_nb_SurfacePoint3D(int n, int m, int p, int q, double *U, double *V,
     {free(Nu); return AY_EOMEM;}
 
   spanu = ay_nb_FindSpan(n, p, u, U);
-  ay_nb_BasisFuns(spanu, u, p, U, Nu);
+  ay_status = ay_nb_BasisFuns(spanu, u, p, U, Nu);
+  if(ay_status)
+    { free(Nu); free(Nv); return ay_status; }
   spanv = ay_nb_FindSpan(m, q, v, V);
-  ay_nb_BasisFuns(spanv, v, q, V, Nv);
-
+  ay_status = ay_nb_BasisFuns(spanv, v, q, V, Nv);
+  if(ay_status)
+    { free(Nu); free(Nv); return ay_status; }
   memset(C, 0, 3*sizeof(double));
   C[0] = 0.0;
   C[1] = 0.0;
