@@ -409,7 +409,7 @@ In property GUIs and the console, pressing <tt/&lt;Esc&gt;/ moves the focus
 away to the main window or object selection window.
 
 Pressing <tt/&lt;Esc&gt;/ twice in a view window
-will also reset the focus to the main window/object selection
+will also reset the focus to the main window&thinsp;/&thinsp;object selection
 window.<footnote>Since 1.15.</footnote>
 Pressing <tt/&lt;Esc&gt;/ twice in the object selection
 window will additionally clear the selection (this implies
@@ -506,7 +506,7 @@ In property GUIs and the console, pressing <tt/&lt;Esc&gt;/ moves the focus
 away to the main window or object selection window.
 
 Pressing <tt/&lt;Esc&gt;/ twice in a view window
-will also reset the focus to the main window/object selection
+will also reset the focus to the main window&thinsp;/&thinsp;object selection
 window.<footnote>Since 1.15.</footnote><newline>
 Pressing <tt/&lt;Esc&gt;/ twice in the object selection
 window will additionally clear the selection (this implies
@@ -661,15 +661,15 @@ for unobtrusive text output (informative, warning, and error messages).
 If something does not work as advertised, the console may be worth
 a look.
 <p>
-The console captures the stderr and stdout channels of the
+The console captures the <tt/stderr/ and <tt/stdout/ channels of the
 Tcl-interpreter Ayam is running in. It is also possible to
 redirect all internal Tcl error messages, that would normally
 cause a Tcl error dialog window to appear, to the console using
 the preference setting <tt>"Misc/RedirectTcl"</tt>
 (see section <ref id="prefmisc" name="Miscellaneous Preferences">).
 <p>
-It is of course also possible to enter commands or even complete new
-Tcl procedures into the console. However, this is a feature for an advanced
+Furthermore, commands or even complete new Tcl procedures can be directly
+entered into the console. However, this is a feature for an advanced
 user that studied section <ref id="script" name="Scripting Interface">.
 You need to explicitly click into the console to give it the input
 focus and thus enable input.
@@ -4531,7 +4531,7 @@ around the axis that is defined by the points from and to.
 <item><tt/"Zoom"/ is a zoom factor.
 </itemize>
 
-Note that the up vector is not checked for erroneous values
+Note that the up vector is <em/not/ checked for erroneous values
 (e.g.~pointing in the direction of from-to) when applying the changes
 of the <tt/"Camera"/ property.
 
@@ -4603,20 +4603,20 @@ undo system and also do not change the scene changed state.
 View objects act in special ways, when certain objects are dropped
 onto them in the tree view:
 <p>
-When a camera object is dropped onto a view object, the camera settings
-of the camera object will be copied to the views camera.
+When a Camera object is dropped onto a View object, the camera settings
+of the Camera object will be copied to the views camera.
 <p>
-When a light object of type <tt/"Spot"/ is dropped onto a view object,
+When a Light object of type <tt/"Spot"/ is dropped onto a View object,
 the views camera will be changed,
 so that the user looks along the light to see what objects of the scene
 are lit by the light object (this works best with perspective views
 that have equal width and height).
 <p>
-It is also possible, to directly drag objects from the
+It is also possible, to directly drag arbitrary objects from the
 tree view to a view window: for geometric objects, the view then
 performs a zoom to object operation, for cameras and light sources
 the views camera will be changed as if the object was dropped
-onto a view object in the tree view (see the above
+onto a View object in the tree view (see the above
 description).<footnote>Since 1.8.</footnote>
 
 
@@ -4641,8 +4641,8 @@ Camera|No|No|N/A|Yes<#if out=latex>@<hline></#if>
 
 <sect3>Drag and Drop Support
 <p><#if out=latex>&nbsp;<newline></#if>
-When a view object is dropped onto a camera object the camera settings
-from the view will be copied to the camera object.
+When a view object is dropped onto a Camera object the camera settings
+from the view will be copied to the Camera object.
 
 <sect3>RIB Export
 <p><#if out=latex>&nbsp;<newline></#if>
@@ -7607,7 +7607,7 @@ the same set of tags.<footnote>Since 1.20.</footnote>
 right: Extrusion with Caps)</caption>
 </figure>
 <p>
-The extrude object forms an extrusion from a number of planar NURBS curves.
+The Extrude object forms an extrusion from a number of planar NURBS curves.
 <p>
 The first curve determines the outline and the other curves determine
 holes in the extrusion object. Holes may be used by objects that form
@@ -7625,7 +7625,7 @@ Consequently, the object hierarchy of an Extrude object may look like this:
  \ Hole_n(NCurve)]
 </verb></tscreen>
 <p>
-The extrude object can generate caps, if the generating
+The Extrude object can generate caps, if the generating
 curves are closed. Cap generation may fail, if the outer
 curve has weights and the curve itself leaves the convex
 hull of the control polygon. Be careful when using curves
@@ -7666,7 +7666,7 @@ if the extrusion height is 1.0 and beveling (upper and lower) is
 switched on with radius 0.1 the resulting object extends 1.2 units in
 Z direction.
 <p>
-The extrude object can automatically generate caps,
+The Extrude object can automatically generate caps,
 that are trimmed NURBS patches. Using <tt/"StartCap"/ and
 <tt/"EndCap"/ you determine whether such caps should be generated,
 default is off (no caps). Note that this feature does only work
@@ -7677,7 +7677,7 @@ the parameter curves conform to these criteria. Ayam, however,
 automatically detects the correct orientation of the curves (and
 reverts them if necessary).
 <p>
-Since Ayam 1.10 the bevel parameters of the extrude object are saved
+Since Ayam 1.10 the bevel parameters of the Extrude object are saved
 in bevel parameter tags and the property GUI changed to conform to
 all other bevel supporting tool objects. The old options <tt/"LowerBevel"/,
 <tt/"UpperBevel"/, <tt/"BevelType"/, and <tt/"BevelRadius"/ are no
@@ -7765,7 +7765,7 @@ scaling it according to a second NURBS curve (trajectory or
 path).<footnote>Since 1.14.</footnote><newline>
 This process is sometimes also called <em>rotational sweep</em>.
 <p>
-The swing object has the generating NURBS curves as child objects
+The Swing object has the generating NURBS curves as child objects
 and watches their movements and adapts to them automagically.
 The first curve is the cross section, the second is the trajectory.
 <p>
@@ -9196,7 +9196,7 @@ actual knot values, and the valid range for the parametric values is
 then consequently 0.0-1.0.
 
 <item><tt/"PatchNum"/ allows to select a patch from a list of
-patches delivered e.g.~by a beveled extrude object as child
+patches delivered e.g.~by a beveled Extrude object as child
 of the ExtrNP object.
 This way it is possible to extract a patch from a bevel or cap
 surface of e.g.~a Revolve object.
@@ -12242,7 +12242,7 @@ the selected objects to it.
                       \-NCurve
 </verb></tscreen>
 <tag/Notes/ See section <ref id="extrudeobj" name="Extrude Object">
-for more information regarding the extrude object.
+for more information regarding the Extrude object.
 
 This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
@@ -14308,7 +14308,7 @@ upOb &ndash; move object(s) upward in the current level:
  <item>Description: Move the currently selected object(s) upwards
 in the current level. Non contiguous selections are supported.
 If the first of the selected objects is the first in the current level,
-nothing will be changed.
+nothing will be changed, i.e. either all selected objects move, or none.
 </itemize>
 
 <p>
@@ -14322,7 +14322,7 @@ downOb &ndash; move object(s) downward in the current level:
  <item>Description: Move the currently selected object(s) downwards
 in the current level. Non contiguous selections are supported.
 If the last of the selected objects is the last in the current level,
-nothing will be changed.
+nothing will be changed, i.e. either all selected objects move, or none.
 </itemize>
 
 
@@ -17411,9 +17411,9 @@ features per export file format.
 
 Quadrics|Yes|No<f><sup>a</sup></f>|Some<f><sup>d</sup></f>|No<f><sup>b</sup></f>|Some<f><sup>d</sup></f>|Some<f><sup>d</sup></f>@<hline>
 
-Trimmed NURBS|Yes|Yes|Yes|No<f><sup>b</sup></f>|Yes|Yes<f><sup>c</sup></f>@<hline>
+Trimmed NURBS|Yes|Yes|Yes|No<f><sup>b</sup></f>|Yes<f><sup>c</sup></f>|Yes@<hline>
 
-Parametrics|No<f><sup>a</sup></f>|No<f><sup>a</sup></f>|No<f><sup>a</sup></f>|No<f><sup>b</sup></f>|No<f><sup>a</sup></f>|Some<f><sup>e</sup></f>@<hline>
+Parametrics|No<f><sup>a</sup></f>|No<f><sup>a</sup></f>|No<f><sup>a</sup></f>|No<f><sup>b</sup></f>|Some<f><sup>e</sup></f>|Some<f><sup>e</sup></f>@<hline>
 
 Curves|No|Yes|Yes|Yes|Yes|Yes@<hline>
 
