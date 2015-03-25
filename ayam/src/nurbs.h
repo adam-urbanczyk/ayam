@@ -405,17 +405,31 @@ int ay_nb_FindSpanMult(int n, int p, double u, double *U, int *s);
 
 /** Calculate NURBS basis functions.
  */
-void ay_nb_BasisFuns(int i, double u, int p, double *U, double *N);
+int ay_nb_BasisFuns(int i, double u, int p, double *U, double *N);
+
+/** Calculate NURBS basis functions in provided memory.
+ */
+void ay_nb_BasisFunsM(int i, double u, int p, double *U, double *N);
 
 /** Calculate a point on a rational NURBS curve.
  */
 int ay_nb_CurvePoint4D(int n, int p, double *U, double *Pw, double u,
 		       double *C);
 
+/** Calculate a point on a rational NURBS curve in provided memory.
+ */
+void ay_nb_CurvePoint4DM(int n, int p, double *U, double *Pw, double u,
+			 double *C);
+
 /** Calculate a point on a non-rational NURBS curve.
  */
 int ay_nb_CurvePoint3D(int n, int p, double *U, double *P, double u,
 		       double *C);
+
+/** Calculate a point on a non-rational NURBS curve in provided memory.
+ */
+void ay_nb_CurvePoint3DM(int n, int p, double *U, double *P, double u,
+			 double *C);
 
 /** Calculate a point on a rational NURBS surface.
  */
