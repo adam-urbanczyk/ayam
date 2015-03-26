@@ -14,6 +14,54 @@
 
 /* interpol.c - helpers for interpolation of various elements */
 
+/* ay_interpol_1DA4DIC:
+ *  interpolate between two 1D arrays of 4D points
+ *  with a interpolation control curve
+ *
+ */
+int
+ay_interpol_1DA4DIC(ay_nurbcurve_object *nc, int len, double *st, double *en,
+		    double *ta)
+{
+ int i;
+ double p, V1[3], ulen;
+
+  if(!nc || !st || !en || !ta)
+    return AY_ENULL;
+
+  ulen = fabs(nc->knotv[nc->length] - nc->knotv[nc->order-1]);
+
+  for(i = 0; i < (len*4); i += 4)
+    {
+      p = nc->knotv[nc->order-1]+(double)i/len*ulen;
+      ay_nb_CurvePoint4D(nc->length+1, nc->order-1, nc->knotv, nc->controlv,
+			 p, V1);
+      p = V1[1];
+      V1[0] = en[i]   - st[i];
+      V1[1] = en[i+1] - st[i+1];
+      V1[2] = en[i+2] - st[i+2];
+      if((fabs(V1[0]) > AY_EPSILON) ||
+	 (fabs(V1[1]) > AY_EPSILON) ||
+	 (fabs(V1[2]) > AY_EPSILON))
+	{
+	  AY_V3SCAL(V1,p);
+	  V1[0] += st[i];
+	  V1[1] += st[i+1];
+	  V1[2] += st[i+2];
+	  memcpy(&(ta[i]),V1,3*sizeof(double));
+	}
+      else
+	{
+	  memcpy(&(ta[i]),&(st[i]),3*sizeof(double));
+	}
+      /* interpolate weight */
+      ta[i+3] = st[i+3]+(p*(en[i+3]-st[i+3]));
+    } /* for */
+
+ return AY_OK;
+} /* ay_interpol_1DA4DIC */
+
+
 /* ay_interpol_1DA4D:
  *  use <p> as parameter (between 0.0 and 1.0) to interpolate between
  *  two 1D arrays of 4D points (<st> and <en>) of length <len>
@@ -130,16 +178,18 @@ ay_interpol_trafos(double p, ay_object *o1, ay_object *o2, ay_object *ta)
  * \param p ratio of c1 and c2 (0.0 - 1.0)
  * \param c1 first NURBS curve
  * \param c2 second NURBS curve
+ * \param ic interpolation control NURBS curve (may be NULL)
  * \param ta where to store the resulting curve
  *
  * \returns AY_OK on success, error code otherwise
  */
 int
-ay_interpol_ncurves(double p, ay_object *c1, ay_object *c2, ay_object **ta)
+ay_interpol_ncurves(double p, ay_object *c1, ay_object *c2, ay_object *ic,
+		    ay_object **ta)
 {
  int ay_status = AY_OK;
  ay_object *newo = NULL;
- ay_nurbcurve_object *nc1, *nc2, *newnc = NULL;
+ ay_nurbcurve_object *nc1, *nc2, *nc3 = NULL, *newnc = NULL;
  double *newknotv = NULL, *newcontrolv = NULL;
  int stride = 4;
 
@@ -151,6 +201,13 @@ ay_interpol_ncurves(double p, ay_object *c1, ay_object *c2, ay_object **ta)
 
   nc1 = (ay_nurbcurve_object *)c1->refine;
   nc2 = (ay_nurbcurve_object *)c2->refine;
+
+  if(ic)
+    {
+      if(ic->type != AY_IDNCURVE)
+	return AY_EARGS;
+      nc3 = (ay_nurbcurve_object *)ic->refine;
+    }
 
   if(nc1->length != nc2->length)
     return AY_ERROR;
@@ -169,9 +226,18 @@ ay_interpol_ncurves(double p, ay_object *c1, ay_object *c2, ay_object **ta)
   ay_object_defaults(newo);
   newo->type = AY_IDNCURVE;
   newo->refine = newnc;
-
-  ay_status = ay_interpol_1DA4D(p, nc1->length, nc1->controlv, nc2->controlv,
-				newcontrolv);
+  if(nc3)
+    {
+      ay_status = ay_interpol_1DA4DIC(nc3, nc1->length,
+				      nc1->controlv, nc2->controlv,
+				      newcontrolv);
+    }
+  else
+    {
+      ay_status = ay_interpol_1DA4D(p, nc1->length,
+				    nc1->controlv, nc2->controlv,
+				    newcontrolv);
+    }
   if(ay_status)
     goto cleanup;
 
@@ -264,7 +330,17 @@ ay_interpol_curvestcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  ay_status = ay_interpol_ncurves(r, sel->object, sel->next->object, &o);
+  if(sel->next && sel->next->next &&
+     sel->next->next->object->type == AY_IDNCURVE)
+    {
+      ay_status = ay_interpol_ncurves(r, sel->object, sel->next->object,
+				      sel->next->next->object, &o);
+    }
+  else
+    {
+      ay_status = ay_interpol_ncurves(r, sel->object, sel->next->object,
+				      NULL, &o);
+    }
 
   if(ay_status)
     {

@@ -380,6 +380,11 @@ void ay_instt_init(Tcl_Interp *interp);
  */
 int ay_interpol_1DA4D(double p, int len, double *st, double *en, double *ta);
 
+/** interpolate between two arrays of homogenous 3D coordinates
+ */
+int ay_interpol_1DA4DIC(ay_nurbcurve_object *nc, int len, double *st,
+			double *en, double *ta);
+
 /** interpolate between two arrays of doubles
  */
 int ay_interpol_1DA1D(double p, int len, double *st, double *en, double *ta);
@@ -390,7 +395,7 @@ void ay_interpol_trafos(double p, ay_object *o1, ay_object *o2, ay_object *ta);
 
 /** interpolate between two curves
  */
-int ay_interpol_ncurves(double p, ay_object *c1, ay_object *c2,
+int ay_interpol_ncurves(double p, ay_object *c1, ay_object *c2, ay_object *ic,
 			ay_object **ta);
 
 /** Tcl command to interpolate between two curves
