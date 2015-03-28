@@ -4928,14 +4928,23 @@ ay_nct_getcurvature(ay_nurbcurve_object *c, double t)
   if(c->order < 3)
     return 0.0;
 
-  ay_nb_ComputeFirstDer4D(c->length-1, c->order-1, c->knotv, c->controlv, t,
-			  vel);
+  if(c->is_rat)
+    ay_nb_ComputeFirstDer4D(c->length-1, c->order-1, c->knotv, c->controlv,
+			    t, vel);
+  else
+    ay_nb_ComputeFirstDer3D(c->length-1, c->order-1, c->knotv, c->controlv,
+			    t, vel);
+
   velsqrlen = (vel[0]*vel[0])+(vel[1]*vel[1])+(vel[2]*vel[2]);
 
   if(velsqrlen > AY_EPSILON)
     {
-      ay_nb_ComputeSecDer4D(c->length-1, c->order-1, c->knotv, c->controlv, t,
-			    acc);
+      if(c->is_rat)
+	ay_nb_ComputeSecDer4D(c->length-1, c->order-1, c->knotv, c->controlv,
+			      t, acc);
+      else
+	ay_nb_ComputeSecDer3D(c->length-1, c->order-1, c->knotv, c->controlv,
+			      t, acc);
       AY_V3CROSS(cross, vel, acc);
       numer = AY_V3LEN(cross);
       denom = pow(velsqrlen, 1.5);
