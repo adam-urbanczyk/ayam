@@ -1456,6 +1456,8 @@ ay_nb_BasisFunsM(int i, double u, int p, double *U, double *N)
   left = &(N[p+1]);
   right = left+(p+1);
 
+  memset(N, 0, (p+1)*3*sizeof(double));
+
   N[0] = 1.0;
 
   for(j = 1; j <= p; j++)
@@ -1507,7 +1509,7 @@ ay_nb_CurvePoint4D(int n, int p, double *U, double *Pw, double u, double *C)
       Cw[3] = Cw[3] + N[j]*Pw[k+3];
     }
 
-  for(j = 0; j < 4; j++)
+  for(j = 0; j < 3; j++)
     C[j] = Cw[j]/Cw[3];
 
   free(N);
@@ -1520,6 +1522,7 @@ ay_nb_CurvePoint4D(int n, int p, double *U, double *Pw, double u, double *C)
  *
  * Memory management optimized variant, but C must be of size
  * 3+(p+1)*3
+ *    ^N
  */
 void
 ay_nb_CurvePoint4DM(int n, int p, double *U, double *Pw, double u, double *C)
@@ -1527,7 +1530,7 @@ ay_nb_CurvePoint4DM(int n, int p, double *U, double *Pw, double u, double *C)
  int span, j, k;
  double *N, Cw[4] = {0};
 
-  N = &(C[4]);
+  N = &(C[3]);
 
   span = ay_nb_FindSpan(n, p, u, U);
 
@@ -1542,7 +1545,7 @@ ay_nb_CurvePoint4DM(int n, int p, double *U, double *Pw, double u, double *C)
       Cw[3] = Cw[3] + N[j]*Pw[k+3];
     }
 
-  for(j = 0; j < 4; j++)
+  for(j = 0; j < 3; j++)
     C[j] = Cw[j]/Cw[3];
 
  return;
@@ -1591,6 +1594,7 @@ ay_nb_CurvePoint3D(int n, int p, double *U, double *P, double u, double *C)
  *
  * Memory management optimized variant, but C must be of size
  * 3+(p+1)*3!
+ *    ^N
  */
 void
 ay_nb_CurvePoint3DM(int n, int p, double *U, double *P, double u, double *C)
@@ -1677,7 +1681,7 @@ ay_nb_SurfacePoint4D(int n, int m, int p, int q, double *U, double *V,
       j += 4;
     } /* for */
 
-  for(j = 0; j < 4; j++)
+  for(j = 0; j < 3; j++)
     C[j] = Cw[j]/Cw[3];
 
   free(Nu);
@@ -1848,6 +1852,102 @@ ay_nb_DersBasisFuns(int i, double u, int p, int n, double *U, double *ders)
 
 
 /*
+ * ay_nb_DersBasisFunsM:
+ *
+ * Memory management optimized variant, but ders must be of size
+ * (n+1)*(p+1)+((p+1)+(p+1)+(p+1*p+1)+2*(p+1))
+ * ^ders        ^left ^right^ndu      ^a
+ */
+void
+ay_nb_DersBasisFunsM(int i, double u, int p, int n, double *U, double *ders)
+{
+ double *left, *right, *ndu, *a, saved, temp, d;
+ int j, j1, j2, r, k, rk, pk, s1, s2;
+
+  left = &(ders[n*(p+1)]);
+  right = left+(p+1);
+  ndu = right+(p+1);
+  a = ndu+((p+1)*(p+1));
+
+  memset(ders, 0, (n*(p+1)+((p+1)+(p+1)+(p+1*p+1)+2*(p+1)))*sizeof(double));
+
+  ndu[0] = 1.0;
+  for(j = 1; j <= p; j++)
+    {
+      left[j] = u - U[i+1-j];
+      right[j] = U[i+j] - u;
+      saved = 0.0;
+      for(r = 0; r < j; r++)
+	{
+	  ndu[(j)*(p+1) + r] = right[r+1] + left[j-r];
+	  temp = ndu[r*(p+1) + (j-1)] / ndu[j*(p+1) + r];
+
+	  ndu[r*(p+1) + j] = saved + right[r+1] * temp;
+	  saved = left[j-r] * temp;
+	}
+      ndu[j*(p+1)+j] = saved;
+    } /* for */
+
+  for(j = 0; j <= p; j++)
+    {
+      ders[j] = ndu[j*(p+1) + p];
+    }
+
+  for(r = 0; r <= p; r++)
+    {
+      s1 = 0; s2 = 1;
+      a[0] = 1.0;
+      for(k = 1; k <= n; k++)
+	{
+	  d = 0.0;
+	  rk = r-k; pk = p-k;
+	  if(r >= k)
+	    {
+	      a[s2*(p+1)] = a[s1*(p+1)]/ndu[(pk+1)*(p+1) + rk];
+	      d = a[s2*(p+1)]*ndu[rk*(p+1) + pk];
+	    }
+
+	  if(rk >= -1)
+	    j1 = 1;
+	  else
+	    j1 = -rk;
+
+	  if(r-1 <= pk)
+	    j2 = k-1;
+	  else
+	    j2 = p-r;
+
+	  for(j = j1; j <= j2; j++)
+	    {
+	      a[s2*(p+1)+j] = (a[s1*(p+1) + j]-a[s1*(p+1) + (j-1)])/
+		ndu[(pk+1)*(p+1) + (rk+j)];
+	      d += a[s2*(p+1) + j] * ndu[(rk+j)*(p+1) + pk];
+	    }
+
+	  if(r <= pk)
+	    {
+	      a[s2*(p+1) + k] = -a[s1*(p+1) + (k-1)] / ndu[(pk+1)*(p+1) + r];
+	      d += a[s2*(p+1) + k] * ndu[r*(p+1) + pk];
+	    }
+	  ders[k*(p+1)+r] = d;
+	  j = s1; s1 = s2; s2 = j;
+	} /* for */
+    } /* for */
+  r = p;
+  for(k = 1; k <= n; k++)
+    {
+      for(j = 0; j <= p; j++)
+	{
+	  ders[k*(p+1)+j] *= r;
+	}
+      r *= (p-k);
+    }
+
+ return;
+} /* ay_nb_DersBasisFunsM */
+
+
+/*
  * ay_nb_ComputeFirstDer3D:
  *
  */
@@ -1858,7 +1958,7 @@ ay_nb_ComputeFirstDer3D(int n, int p, double *U, double *P, double u,
  int span = 0, j, r;
  double *nders = NULL;
 
-  if(!(nders = calloc((p+1) * (p+1), sizeof(double))))
+  if(!(nders = calloc(2 * (p+1), sizeof(double))))
     return;
 
   span = ay_nb_FindSpan(n, p, u, U);
@@ -1884,6 +1984,7 @@ ay_nb_ComputeFirstDer3D(int n, int p, double *U, double *P, double u,
  return;
 } /* ay_nb_ComputeFirstDer3D */
 
+
 /*
  * ay_nb_ComputeSecDer3D:
  *
@@ -1895,7 +1996,7 @@ ay_nb_ComputeSecDer3D(int n, int p, double *U, double *P, double u,
  int span = 0, j, r;
  double *nders = NULL;
 
-  if(!(nders = calloc((p+1) * (p+1), sizeof(double))))
+  if(!(nders = calloc(3 * (p+1), sizeof(double))))
     return;
 
   span = ay_nb_FindSpan(n, p, u, U);
@@ -1906,7 +2007,7 @@ ay_nb_ComputeSecDer3D(int n, int p, double *U, double *P, double u,
   C2[1] = 0.0;
   C2[2] = 0.0;
 
-  for(j=0;j<=p;j++)
+  for(j = 0; j <= p; j++)
     {
       r = (span-p+j)*4;
 
@@ -1933,7 +2034,7 @@ ay_nb_ComputeFirstDer4D(int n, int p, double *U, double *Pw, double u,
  int span = 0, j, k;
  double *nders = NULL, C0[3], wder0 = 0.0, wder1 = 0.0;
 
-  if(!(nders = calloc((p+1) * (p+1), sizeof(double))))
+  if(!(nders = calloc(2 * (p+1), sizeof(double))))
     return;
 
   span = ay_nb_FindSpan(n, p, u, U);
@@ -1994,7 +2095,7 @@ ay_nb_ComputeSecDer4D(int n, int p, double *U, double *Pw, double u,
  int span = 0, j, k;
  double *nders = NULL, wder0 = 0.0, wder1 = 0.0, wder2 = 0.0, C0[3], C1[3];
 
-  if(!(nders = calloc((p+1) * (p+1), sizeof(double))))
+  if(!(nders = calloc(3 * (p+1), sizeof(double))))
     return;
 
   span = ay_nb_FindSpan(n, p, u, U);
@@ -2192,16 +2293,13 @@ ay_nb_CompFirstDerSurf4D(int n, int m, int p, int q, double *U, double *V,
 	      w[0] -= bin[k*2+h] * w2[0];
 	      w[1] -= bin[k*2+h] * w2[1];
 	      w[2] -= bin[k*2+h] * w2[2];
-
 	    } /* for */
 
 	  i = (k*2+l)*3;
 	  C[i]   = w[0]/Ct[3];
 	  C[i+1] = w[1]/Ct[3];
 	  C[i+2] = w[2]/Ct[3];
-
 	} /* for */
-
     } /* for */
 
   free(Nu);
@@ -2212,6 +2310,164 @@ ay_nb_CompFirstDerSurf4D(int n, int m, int p, int q, double *U, double *V,
 
  return;
 } /* ay_nb_CompFirstDerSurf4D */
+
+
+/*
+ * ay_nb_FirstDerSurf4DMSize:
+ * Size of memory area needed by ay_nb_CompFirstDerSurf4DM() below.
+ */
+int
+ay_nb_FirstDerSurf4DMSize(int p, int q)
+{
+  return (12 +
+	  (2*(p+1)+((p+1)+(p+1)+(p+1*p+1)+2*(p+1))) +
+	  (2*(q+1)+((q+1)+(q+1)+(q+1*q+1)+2*(q+1))) +
+	  4*(q+1) + 20);
+} /* ay_nb_FirstDerSurf4DMSize */
+
+
+/*
+ * ay_nb_CompFirstDerSurf4DM:
+ * compute the first derivatives of rational surface
+ * (n, m, p, q, U[], V[], Pw[]) at position u,v in
+ * C[12]: C[0] - point, C[3] - 1st der along u, C[6] - 1st der along v
+ *
+ *
+ * Memory management optimized variant, but C must be of size
+ * (12 + (2*(p+1)+((p+1)+(p+1)+(p+1*p+1)+2*(p+1))) +
+ * (2*(q+1)+((q+1)+(q+1)+(q+1*q+1)+2*(q+1))) + 4*(q+1) + 20)
+ */
+void
+ay_nb_CompFirstDerSurf4DM(int n, int m, int p, int q, double *U, double *V,
+			  double *Pw, double u, double v, double *C)
+{
+ int i = 0, j = 0, k = 0, l = 0, h = 0, r = 0, s = 0;
+ int uspan = 0, vspan = 0;
+ double *Nu = NULL, *Nv = NULL, *temp = NULL, *Ct = NULL, *bin = NULL;
+ double w[3] = {0}, w2[3] = {0};
+
+  /* du == 1, dv == 1 */
+
+  Nu = &(C[12]);
+  Nv = Nu + (2*(p+1)+((p+1)+(p+1)+(p+1*p+1)+2*(p+1)));
+  temp = Nv + (2*(q+1)+((q+1)+(q+1)+(q+1*q+1)+2*(q+1)));
+  Ct = temp + (q+1)*4;
+  bin = Ct + 4*4;
+
+  ay_nb_Bin(2, 2, bin);
+
+  if(C[0] != 0.0)
+    uspan = (int)C[0];
+  else
+    uspan = ay_nb_FindSpan(n, p, u, U);
+  ay_nb_DersBasisFuns(uspan, u, p, 1, U, Nu);
+  if(C[1] != 0.0)
+    vspan = (int)C[1];
+  else
+    vspan = ay_nb_FindSpan(m, q, v, V);
+  ay_nb_DersBasisFuns(vspan, v, q, 1, V, Nv);
+
+  memset(C, 0, 12*sizeof(double));
+
+  Ct[0] = 0.0;
+  Ct[1] = 0.0;
+  Ct[2] = 0.0;
+  Ct[3] = 0.0;
+
+  for(k = 0; k <= 1; k++)
+    {
+      for(s = 0; s <= q; s++)
+	{
+	  temp[s*4]   = 0.0;
+	  temp[s*4+1] = 0.0;
+	  temp[s*4+2] = 0.0;
+	  temp[s*4+3] = 0.0;
+
+	  for(r = 0; r <= p; r++)
+	    {
+	      /* was: temp[s] = temp[s] + Nu[k][r]*P[uspan-p+r][vspan-q+s]; */
+	      i = (((uspan-p+r)*(m+1))+(vspan-q+s))*4;
+	      temp[s*4]   += Nu[(k*(p+1))+r]*Pw[i]*Pw[i+3];
+	      temp[s*4+1] += Nu[(k*(p+1))+r]*Pw[i+1]*Pw[i+3];
+	      temp[s*4+2] += Nu[(k*(p+1))+r]*Pw[i+2]*Pw[i+3];
+	      temp[s*4+3] += Nu[(k*(p+1))+r]*Pw[i+3];
+	    }
+	}
+
+      for(l = 0; l <= 1; l++)
+	{
+	  /* was: C[k][l] = 0; */
+	  Ct[(k*2+l)*4]   = 0.0;
+	  Ct[(k*2+l)*4+1] = 0.0;
+	  Ct[(k*2+l)*4+2] = 0.0;
+	  Ct[(k*2+l)*4+3] = 0.0;
+
+	  for(s = 0; s <= q; s++)
+	    {
+	      /* was C[k][l] = C[k][l] + Nv[l][s] * temp[s]; */
+	      i = (k*2+l)*4;
+	      Ct[i]   += Nv[(l*(q+1))+s] * temp[s*4];
+	      Ct[i+1] += Nv[(l*(q+1))+s] * temp[s*4+1];
+	      Ct[i+2] += Nv[(l*(q+1))+s] * temp[s*4+2];
+	      Ct[i+3] += Nv[(l*(q+1))+s] * temp[s*4+3];
+	    } /* for */
+	} /* for */
+    } /* for */
+  /***/
+  for(k = 0; k <= 1; k++)
+    {
+      for(l = 0; l <= 1-k; l++)
+	{
+	  /* was: w = Ct[k][l]; */
+	  i = (k*2+l)*4;
+	  w[0] = Ct[i];
+	  w[1] = Ct[i+1];
+	  w[2] = Ct[i+2];
+
+	  for(j = 1; j <= l; j++)
+	    {
+	      /* was: w -= bin[l][j]*wders[0][j]*C[k][l-j]; */
+	      i = (k*2+(l-j))*3;
+	      w[0] -= bin[l*2+j] * Ct[(j*4)+3] * C[i];
+	      w[1] -= bin[l*2+j] * Ct[(j*4)+3] * C[i+1];
+	      w[2] -= bin[l*2+j] * Ct[(j*4)+3] * C[i+2];
+	    } /* for */
+	  for(h = 1; h <= k; h++)
+	    {
+	      /* was: w -= bin[k][h]*wders[h][0]*C[k-h][l]; */
+	      i = ((k-h)*2+l)*3;
+	      w[0] -= bin[k*2+h] * Ct[(h*2*4)+3] * C[i];
+	      w[1] -= bin[k*2+h] * Ct[(h*2*4)+3] * C[i+1];
+	      w[2] -= bin[k*2+h] * Ct[(h*2*4)+3] * C[i+2];
+
+	      w2[0] = 0.0;
+	      w2[1] = 0.0;
+	      w2[2] = 0.0;
+
+	      for(j = 1; j <= l; j++)
+		{
+		  /* was: w2 += bin[l][j]*wders[h][j]*C[k-h][l-j]; */
+		  i = ((k-h)*2+(l-j))*3;
+		  w2[0] += bin[l*2+j] * Ct[((h*2+j)*4)+3] * C[i];
+		  w2[1] += bin[l*2+j] * Ct[((h*2+j)*4)+3] * C[i+1];
+		  w2[2] += bin[l*2+j] * Ct[((h*2+j)*4)+3] * C[i+2];
+		} /* for */
+
+	      /* was: w -= bin[k][h]*w2; */
+	      w[0] -= bin[k*2+h] * w2[0];
+	      w[1] -= bin[k*2+h] * w2[1];
+	      w[2] -= bin[k*2+h] * w2[2];
+	    } /* for */
+
+	  i = (k*2+l)*3;
+	  C[i]   = w[0]/Ct[3];
+	  C[i+1] = w[1]/Ct[3];
+	  C[i+2] = w[2]/Ct[3];
+	} /* for */
+    } /* for */
+
+ return;
+} /* ay_nb_CompFirstDerSurf4DM */
 
 
 /*
@@ -2286,6 +2542,99 @@ ay_nb_CompFirstDerSurf3D(int n, int m, int p, int q, double *U, double *V,
 
  return;
 } /* ay_nb_CompFirstDerSurf3D */
+
+
+/*
+ * ay_nb_FirstDerSurf3DMSize:
+ * Size of memory area needed by ay_nb_CompFirstDerSurf3DM() below.
+ */
+int
+ay_nb_FirstDerSurf3DMSize(int p, int q)
+{
+  return (12 +
+	  (2*(p+1)+((p+1)+(p+1)+(p+1*p+1)+2*(p+1))) +
+	  (2*(q+1)+((q+1)+(q+1)+(q+1*q+1)+2*(q+1))) +
+	  3*(q+1));
+} /* ay_nb_FirstDerSurf3DMSize */
+
+
+/*
+ * ay_nb_CompFirstDerSurf3DM:
+ * compute the first derivatives of non-rational surface
+ * (n, m, p, q, U[], V[], P[]) at position u,v in
+ * C[12]: C[0] - point, C[3] - 1st der along u, C[6] - 1st der along v
+ *
+ * Memory management optimized variant, but C must be of size
+ * (12 + (2*(p+1)+((p+1)+(p+1)+(p+1*p+1)+2*(p+1))) +
+ * (2*(q+1)+((q+1)+(q+1)+(q+1*q+1)+2*(q+1))) + 3*(q+1))
+ *
+ */
+void
+ay_nb_CompFirstDerSurf3DM(int n, int m, int p, int q, double *U, double *V,
+			  double *P, double u, double v, double *C)
+{
+ int i = 0, k = 0, l = 0, r = 0, s = 0;
+ int uspan = 0, vspan = 0;
+ double *Nu, *Nv, *temp;
+
+  /* du == 1, dv == 1 */
+
+  Nu = &(C[12]);
+  Nv = Nu + (2*(p+1)+((p+1)+(p+1)+(p+1*p+1)+2*(p+1)));
+  temp = Nv + (2*(q+1)+((q+1)+(q+1)+(q+1*q+1)+2*(q+1)));
+
+  if(C[0] != 0.0)
+    uspan = (int)C[0];
+  else
+    uspan = ay_nb_FindSpan(n, p, u, U);
+  ay_nb_DersBasisFunsM(uspan, u, p, 1, U, Nu);
+  if(C[1] != 0.0)
+    vspan = (int)C[1];
+  else
+    vspan = ay_nb_FindSpan(m, q, v, V);
+  ay_nb_DersBasisFunsM(vspan, v, q, 1, V, Nv);
+
+  memset(C, 0, 12*sizeof(double));
+  memset(temp, 0, 3*(q+1)*sizeof(double));
+
+  for(k = 0; k <= 1; k++)
+    {
+      for(s = 0; s <= q; s++)
+	{
+	  temp[s*3]   = 0.0;
+	  temp[s*3+1] = 0.0;
+	  temp[s*3+2] = 0.0;
+
+	  for(r = 0; r <= p; r++)
+	    {
+	      /* was: temp[s] = temp[s] + Nu[k][r]*P[uspan-p+r][vspan-q+s]; */
+	      i = (((uspan-p+r)*(m+1))+(vspan-q+s))*4;
+	      temp[s*3]   += Nu[(k*(p+1))+r]*P[i];
+	      temp[s*3+1] += Nu[(k*(p+1))+r]*P[i+1];
+	      temp[s*3+2] += Nu[(k*(p+1))+r]*P[i+2];
+	    }
+	}
+
+      for(l = 0; l <= 1; l++)
+	{
+	  /* was: C[k][l] = 0; */
+	  C[(k*2+l)*3]   = 0.0;
+	  C[(k*2+l)*3+1] = 0.0;
+	  C[(k*2+l)*3+2] = 0.0;
+
+	  for(s = 0; s <= q; s++)
+	    {
+	      /* was C[k][l] = C[k][l] + Nv[l][s] * temp[s]; */
+	      i = (k*2+l)*3;
+	      C[i]   += Nv[(l*(q+1))+s] * temp[s*3];
+	      C[i+1] += Nv[(l*(q+1))+s] * temp[s*3+1];
+	      C[i+2] += Nv[(l*(q+1))+s] * temp[s*3+2];
+	    } /* for */
+	} /* for */
+    } /* for */
+
+ return;
+} /* ay_nb_CompFirstDerSurf3DM */
 
 
 /*

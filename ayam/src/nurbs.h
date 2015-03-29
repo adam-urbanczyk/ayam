@@ -471,10 +471,28 @@ void ay_nb_ComputeSecDer4D(int n, int p, double *U, double *Pw, double u,
 void ay_nb_CompFirstDerSurf4D(int n, int m, int p, int q, double *U, double *V,
 			      double *Pw, double u, double v, double *C);
 
+/** Calculate size of memory area needed by ay_nb_CompFirstDerSurf4DM()
+ */
+int ay_nb_FirstDerSurf4DMSize(int p, int q);
+
+/** Calculate first derivative of rational NURBS surface.
+ */
+void ay_nb_CompFirstDerSurf4DM(int n, int m, int p, int q, double *U, double *V,
+			       double *Pw, double u, double v, double *C);
+
 /** Calculate first derivative of non-rational NURBS surface.
  */
 void ay_nb_CompFirstDerSurf3D(int n, int m, int p, int q, double *U, double *V,
 			      double *P, double u, double v, double *C);
+
+/** Calculate size of memory area needed by ay_nb_CompFirstDerSurf3DM()
+ */
+int ay_nb_FirstDerSurf3DMSize(int p, int q);
+
+/** Calculate first derivative of non-rational NURBS surface.
+ */
+void ay_nb_CompFirstDerSurf3DM(int n, int m, int p, int q, double *U, double *V,
+			       double *P, double u, double v, double *C);
 
 /** Create NURBS circle or arc.
  */
