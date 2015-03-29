@@ -569,15 +569,12 @@ int
 ay_stess_SurfacePoints3D(int n, int m, int p, int q, double *U, double *V,
 			 double *P, int qf, int *Cn, int *Cm, double **C)
 {
- int spanu = 0, spanv = 0, indu = 0, indv = 0, l = 0, k = 0, i = 0, j = 0;
+ int ay_status = AY_OK;
+ int spanu = 0, spanv = 0, j = 0;
  int a, b;
- double u, v, ud, vd, *Nu = NULL, *Nv = NULL;
- double temp[3] = {0}, *Ct = NULL, fder[12] = {0}, *fd1, *fd2;
+ double u, v, ud, vd;
+ double temp[3] = {0}, *Ct = NULL, *fder, *fd1, *fd2;
  int *spanus = NULL, *spanvs = NULL;
-
-  if(!(Nu = calloc(p+1+q+1, sizeof(double))))
-    return AY_EOMEM;
-  Nv = Nu + (p+1);
 
   *Cn = (4 + n) * qf;
   ud = (U[n] - U[p]) / ((*Cn) - 1);
@@ -586,11 +583,17 @@ ay_stess_SurfacePoints3D(int n, int m, int p, int q, double *U, double *V,
   vd = (V[m] - V[q]) / ((*Cm) - 1);
 
   if(!(Ct = calloc((*Cn)*(*Cm)*6, sizeof(double))))
-    { free(Nu); return AY_EOMEM; }
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   if(!(spanus = calloc((*Cn)+(*Cm), sizeof(int))))
-    { free(Nu); free(Ct); return AY_EOMEM; }
+    { ay_status = AY_EOMEM; goto cleanup; }
   spanvs = spanus + (*Cn);
+
+  if(!(fder = malloc(ay_nb_FirstDerSurf3DMSize(p, q)*sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  fd1 = &(fder[3]);
+  fd2 = &(fder[6]);
 
   /* employ linear variants of FindSpan() as they are much faster
      than a binary search; especially, since we calculate
@@ -663,39 +666,17 @@ ay_stess_SurfacePoints3D(int n, int m, int p, int q, double *U, double *V,
   for(a = 0; a < (*Cn); a++)
     {
       spanu = spanus[a];
-      ay_nb_BasisFuns(spanu, u, p, U, Nu);
-      indu = spanu - p;
       v = V[q];
       for(b = 0; b < (*Cm); b++)
 	{
 	  spanv = spanvs[b];
-	  ay_nb_BasisFuns(spanv, v, q, V, Nv);
 
-	  /*j = (a*(*Cn)+b)*3;*/
-	  for(l = 0; l <= q; l++)
-	    {
-	      memset(temp, 0, 3*sizeof(double));
-	      indv = spanv - q + l;
+	  /* calculate point and normal */
+	  fder[0] = (double)spanu;
+	  fder[1] = (double)spanv;
+	  ay_nb_CompFirstDerSurf3DM(n-1, m-1, p, q, U, V, P, u, v, fder);
+	  memcpy(&(Ct[j]), fder, 3*sizeof(double));
 
-	      for(k = 0; k <= p; k++)
-		{
-		  /* was: temp = temp + Nu[k]*P[indu+k][indv]; */
-		  i = (((indu+k)*m)+indv)*4;
-
-		  temp[0] += Nu[k]*P[i];
-		  temp[1] += Nu[k]*P[i+1];
-		  temp[2] += Nu[k]*P[i+2];
-		} /* for */
-	      /* was: Cw = Cw + Nv[l]*temp */
-	      Ct[j]   += Nv[l]*temp[0];
-	      Ct[j+1] += Nv[l]*temp[1];
-	      Ct[j+2] += Nv[l]*temp[2];
-	    } /* for */
-
-	  /* calculate normal */
-	  ay_nb_CompFirstDerSurf3D(n-1, m-1, p, q, U, V, P, u, v, fder);
-	  fd1 = &(fder[3]);
-	  fd2 = &(fder[6]);
 	  AY_V3CROSS(temp, fd2, fd1);
 	  memcpy(&(Ct[j+3]), temp, 3*sizeof(double));
 
@@ -707,9 +688,18 @@ ay_stess_SurfacePoints3D(int n, int m, int p, int q, double *U, double *V,
     } /* for */
 
   *C = Ct;
+  Ct = NULL;
 
-  free(Nu);
-  free(spanus);
+cleanup:
+
+  if(Ct)
+    free(Ct);
+
+  if(fder)
+    free(fder);
+
+  if(spanus)
+    free(spanus);
 
  return AY_OK;
 } /* ay_stess_SurfacePoints3D */
@@ -916,17 +906,11 @@ ay_stess_SurfacePoints4D(int n, int m, int p, int q, double *U, double *V,
 			 double *Pw, int qf, int *Cn, int *Cm, double **C)
 {
  int ay_status = AY_OK;
- int spanu = 0, spanv = 0, indu = 0, indv = 0, l = 0, k = 0, i = 0, j = 0;
- int a, b, ti;
- double u, v, ud, vd, *Nu = NULL, *Nv = NULL;
- double Cw[4] = {0}, *Ct = NULL, *temp = NULL, fder[12] = {0}, *fd1, *fd2;
+ int spanu = 0, spanv = 0, j = 0;
+ int a, b;
+ double u, v, ud, vd;
+ double *Ct = NULL, temp[3] = {0}, *fder, *fd1, *fd2;
  int *spanus = NULL, *spanvs = NULL;
-
-  if(!(Nu = calloc(p+1+q+1+((q+1)*4), sizeof(double))))
-    { ay_status = AY_EOMEM; goto cleanup; }
-
-  Nv = Nu + (p+1);
-  temp = Nv + (q+1);
 
   *Cn = (4 + n) * qf;
   ud = (U[n] - U[p]) / ((*Cn) - 1);
@@ -938,8 +922,14 @@ ay_stess_SurfacePoints4D(int n, int m, int p, int q, double *U, double *V,
     { ay_status = AY_EOMEM; goto cleanup; }
   spanvs = spanus + (*Cn);
 
+  if(!(fder = malloc(ay_nb_FirstDerSurf4DMSize(p, q)*sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
   if(!(Ct = calloc((*Cn)*(*Cm)*6, sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
+
+  fd1 = &(fder[3]);
+  fd2 = &(fder[6]);
 
   /* employ linear variants of FindSpan() as they are much faster
      than a binary search; especially, since we calculate
@@ -1012,56 +1002,18 @@ ay_stess_SurfacePoints4D(int n, int m, int p, int q, double *U, double *V,
   for(a = 0; a < (*Cn); a++)
     {
       spanu = spanus[a];
-      ay_nb_BasisFuns(spanu, u, p, U, Nu);
-
-      indu = spanu - p;
-
       v = V[q];
 
       for(b = 0; b < (*Cm); b++)
 	{
 	  spanv = spanvs[b];
-	  ay_nb_BasisFuns(spanv, v, q, V, Nv);
 
-	  ti = 0;
-	  for(l = 0; l <= q; l++)
-	    {
-	      memset(&(temp[l*4]), 0, 4*sizeof(double));
-	      indv = spanv - q + l;
-	      for(k = 0; k <= p; k++)
-		{
-		  /* was: temp = temp + Nu[k]*Pw[indu+k][indv]; */
-		  i = (((indu+k)*m)+indv)*4;
+	  /* calculate point and normal */
+	  fder[0] = (double)spanu;
+	  fder[1] = (double)spanv;
+	  ay_nb_CompFirstDerSurf4DM(n-1, m-1, p, q, U, V, Pw, u, v, fder);
+	  memcpy(&(Ct[j]), fder, 3*sizeof(double));
 
-		  temp[ti+0] += Nu[k]*Pw[i]*Pw[i+3];
-		  temp[ti+1] += Nu[k]*Pw[i+1]*Pw[i+3];
-		  temp[ti+2] += Nu[k]*Pw[i+2]*Pw[i+3];
-		  temp[ti+3] += Nu[k]*Pw[i+3];
-		} /* for */
-	      ti += 4;
-	    } /* for */
-
-	  memset(Cw, 0, 4*sizeof(double));
-	  ti = 0;
-	  for(l = 0; l <= q; l++)
-	    {
-	      /* was: Cw = Cw + Nv[l]*temp */
-	      Cw[0] += Nv[l]*temp[ti+0];
-	      Cw[1] += Nv[l]*temp[ti+1];
-	      Cw[2] += Nv[l]*temp[ti+2];
-	      Cw[3] += Nv[l]*temp[ti+3];
-	      ti += 4;
-	    }
-
-	  /*j = (a*(*Cn)+b)*3;*/
-	  Ct[j]   = Cw[0]/Cw[3];
-	  Ct[j+1] = Cw[1]/Cw[3];
-	  Ct[j+2] = Cw[2]/Cw[3];
-
-	  /* calculate normal */
-	  ay_nb_CompFirstDerSurf4D(n-1, m-1, p, q, U, V, Pw, u, v, fder);
-	  fd1 = &(fder[3]);
-	  fd2 = &(fder[6]);
 	  AY_V3CROSS(temp, fd2, fd1);
 	  memcpy(&(Ct[j+3]), temp, 3*sizeof(double));
 
@@ -1074,11 +1026,15 @@ ay_stess_SurfacePoints4D(int n, int m, int p, int q, double *U, double *V,
 
   /* return result */
   *C = Ct;
+  Ct = NULL;
 
 cleanup:
 
-  if(Nu)
-    free(Nu);
+  if(Ct)
+    free(Ct);
+
+  if(fder)
+    free(fder);
 
   if(spanus)
     free(spanus);
