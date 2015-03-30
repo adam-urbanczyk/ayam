@@ -184,7 +184,7 @@ ay_stess_FindMultiplePoints(int n, int p, double *U, double *P,
 
   p1 = P;
 
-  for(i = 0; i < n-1; i++)
+  for(i = 0; i < n-p; i++)
     {
       eq = AY_TRUE;
 
@@ -206,6 +206,7 @@ ay_stess_FindMultiplePoints(int n, int p, double *U, double *P,
 		  break;
 		}
 	    } /* if */
+
 	  p2 += stride;
 	} /* for */
 
@@ -2060,6 +2061,8 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 	} /* while */
     } /* for */
 
+  free(ders);
+
  return ay_status;
 } /* ay_stess_TessTrimmedNPU */
 
@@ -2366,6 +2369,8 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 	  uvpptr = uvpptr->next;
 	} /* while */
     } /* for */
+
+  free(ders);
 
  return ay_status;
 } /* ay_stess_TessTrimmedNPV */
