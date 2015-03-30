@@ -4445,7 +4445,7 @@ ay_nct_fillgap(int order, double tanlen,
   w = p1[3];
   AY_V3SCAL(p1, 1.0/w)
   p1[3] = 1.0;
-  ay_nb_ComputeFirstDer4D(n-1, p, U, Pw, u, n1);
+  ay_nb_FirstDer4D(n-1, p, U, Pw, u, n1);
 
   n = c2->length;
   p = c2->order-1;
@@ -4456,7 +4456,7 @@ ay_nct_fillgap(int order, double tanlen,
   w = p2[3];
   AY_V3SCAL(p2, 1.0/w)
   p2[3] = 1.0;
-  ay_nb_ComputeFirstDer4D(n-1, p, U, Pw, u, n2);
+  ay_nb_FirstDer4D(n-1, p, U, Pw, u, n2);
 
   /* check whether p1 and p2 are sufficiently different */
   if((fabs(p1[0] - p2[0]) < AY_EPSILON) &&
@@ -4767,8 +4767,8 @@ ay_nct_arrange(ay_object *o, ay_object *t, int rotate)
 
       if(rotate)
 	{
-	  ay_nb_ComputeFirstDer4D(tr->length-1, tr->order-1, tr->knotv,
-				  trcv, u, T1);
+	  ay_nb_FirstDer4D(tr->length-1, tr->order-1, tr->knotv,
+			   trcv, u, T1);
 
 	  len = AY_V3LEN(T1);
 	  AY_V3SCAL(T1,(1.0/len));
@@ -4929,21 +4929,21 @@ ay_nct_getcurvature(ay_nurbcurve_object *c, double t)
     return 0.0;
 
   if(c->is_rat)
-    ay_nb_ComputeFirstDer4D(c->length-1, c->order-1, c->knotv, c->controlv,
-			    t, vel);
+    ay_nb_FirstDer4D(c->length-1, c->order-1, c->knotv, c->controlv,
+		     t, vel);
   else
-    ay_nb_ComputeFirstDer3D(c->length-1, c->order-1, c->knotv, c->controlv,
-			    t, vel);
+    ay_nb_FirstDer3D(c->length-1, c->order-1, c->knotv, c->controlv,
+		     t, vel);
 
   velsqrlen = (vel[0]*vel[0])+(vel[1]*vel[1])+(vel[2]*vel[2]);
 
   if(velsqrlen > AY_EPSILON)
     {
       if(c->is_rat)
-	ay_nb_ComputeSecDer4D(c->length-1, c->order-1, c->knotv, c->controlv,
+	ay_nb_SecondDer4D(c->length-1, c->order-1, c->knotv, c->controlv,
 			      t, acc);
       else
-	ay_nb_ComputeSecDer3D(c->length-1, c->order-1, c->knotv, c->controlv,
+	ay_nb_SecondDer3D(c->length-1, c->order-1, c->knotv, c->controlv,
 			      t, acc);
       AY_V3CROSS(cross, vel, acc);
       numer = AY_V3LEN(cross);

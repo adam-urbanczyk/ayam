@@ -7859,9 +7859,9 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
 
 	  /* calculate point and normal */
 	  if(np->is_rat)
-	    ay_nb_CompFirstDerSurf4D(n-1, m-1, p, q, U, V, P, u, v, fder);
+	    ay_nb_FirstDerSurf4D(n-1, m-1, p, q, U, V, P, u, v, fder);
 	  else
-	    ay_nb_CompFirstDerSurf3D(n-1, m-1, p, q, U, V, P, u, v, fder);
+	    ay_nb_FirstDerSurf3D(n-1, m-1, p, q, U, V, P, u, v, fder);
 	  fd1 = &(fder[3]);
 	  fd2 = &(fder[6]);
 	  AY_V3CROSS(N, fd2, fd1);
@@ -7941,9 +7941,9 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
 
 	  /* calculate point and normal */
 	  if(np->is_rat)
-	    ay_nb_CompFirstDerSurf4D(n-1, m-1, p, q, U, V, P, u, v, fder);
+	    ay_nb_FirstDerSurf4D(n-1, m-1, p, q, U, V, P, u, v, fder);
 	  else
-	    ay_nb_CompFirstDerSurf3D(n-1, m-1, p, q, U, V, P, u, v, fder);
+	    ay_nb_FirstDerSurf3D(n-1, m-1, p, q, U, V, P, u, v, fder);
 	  fd1 = &(fder[3]);
 	  fd2 = &(fder[6]);
 	  AY_V3CROSS(N, fd2, fd1);
@@ -8086,13 +8086,13 @@ x3dio_writetrimwire(scew_element *element, ay_nurbpatch_object *np,
   for(i = 0; i < b; i++)
     {
       if(np->is_rat)
-	ay_nb_CompFirstDerSurf4D(n-1, m-1, p, q, U, V, P,
-				 uvp->u, uvp->v,
-				 fder);
+	ay_nb_FirstDerSurf4D(n-1, m-1, p, q, U, V, P,
+			     uvp->u, uvp->v,
+			     fder);
       else
-	ay_nb_CompFirstDerSurf3D(n-1, m-1, p, q, U, V, P,
-				 uvp->u, uvp->v,
-				 fder);
+	ay_nb_FirstDerSurf3D(n-1, m-1, p, q, U, V, P,
+			     uvp->u, uvp->v,
+			     fder);
 
       fd1 = &(fder[3]);
       fd2 = &(fder[6]);
@@ -8382,13 +8382,13 @@ x3dio_writetrimmednpwire(scew_element *element, ay_object *o)
       for(jj = 0; jj < tcslens[ii]; jj++)
 	{
 	  if(np->is_rat)
-	    ay_nb_CompFirstDerSurf4D(n-1, m-1, p, q, U, V, P,
-				     tcs[ii][jj*2], tcs[ii][jj*2+1],
-				     fder);
+	    ay_nb_FirstDerSurf4D(n-1, m-1, p, q, U, V, P,
+				 tcs[ii][jj*2], tcs[ii][jj*2+1],
+				 fder);
 	  else
-	    ay_nb_CompFirstDerSurf3D(n-1, m-1, p, q, U, V, P,
-				     tcs[ii][jj*2], tcs[ii][jj*2+1],
-				     fder);
+	    ay_nb_FirstDerSurf3D(n-1, m-1, p, q, U, V, P,
+				 tcs[ii][jj*2], tcs[ii][jj*2+1],
+				 fder);
 
 	  fd1 = &(fder[3]);
 	  fd2 = &(fder[6]);

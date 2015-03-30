@@ -1948,12 +1948,12 @@ ay_nb_DersBasisFunsM(int i, double u, int p, int n, double *U, double *ders)
 
 
 /*
- * ay_nb_ComputeFirstDer3D:
+ * ay_nb_FirstDer3D:
  *
  */
 void
-ay_nb_ComputeFirstDer3D(int n, int p, double *U, double *P, double u,
-			double *C1)
+ay_nb_FirstDer3D(int n, int p, double *U, double *P, double u,
+		 double *C1)
 {
  int span = 0, j, r;
  double *nders = NULL;
@@ -1982,16 +1982,16 @@ ay_nb_ComputeFirstDer3D(int n, int p, double *U, double *P, double u,
     free(nders);
 
  return;
-} /* ay_nb_ComputeFirstDer3D */
+} /* ay_nb_FirstDer3D */
 
 
 /*
- * ay_nb_ComputeSecDer3D:
+ * ay_nb_SecondDer3D:
  *
  */
 void
-ay_nb_ComputeSecDer3D(int n, int p, double *U, double *P, double u,
-		      double *C2)
+ay_nb_SecondDer3D(int n, int p, double *U, double *P, double u,
+		  double *C2)
 {
  int span = 0, j, r;
  double *nders = NULL;
@@ -2020,16 +2020,16 @@ ay_nb_ComputeSecDer3D(int n, int p, double *U, double *P, double u,
     free(nders);
 
  return;
-} /* ay_nb_ComputeSecDer3D */
+} /* ay_nb_SecondDer3D */
 
 
 /*
- * ay_nb_ComputeFirstDer4D:
+ * ay_nb_FirstDer4D:
  *
  */
 void
-ay_nb_ComputeFirstDer4D(int n, int p, double *U, double *Pw, double u,
-			double *C1)
+ay_nb_FirstDer4D(int n, int p, double *U, double *Pw, double u,
+		 double *C1)
 {
  int span = 0, j, k;
  double *nders = NULL, C0[3], wder0 = 0.0, wder1 = 0.0;
@@ -2081,16 +2081,16 @@ ay_nb_ComputeFirstDer4D(int n, int p, double *U, double *Pw, double u,
     free(nders);
 
  return;
-} /* ay_nb_ComputeFirstDer4D */
+} /* ay_nb_FirstDer4D */
 
 
 /*
- * ay_nb_ComputeSecDer4D:
+ * ay_nb_SecondDer4D:
  *
  */
 void
-ay_nb_ComputeSecDer4D(int n, int p, double *U, double *Pw, double u,
-		      double *C2)
+ay_nb_SecondDer4D(int n, int p, double *U, double *Pw, double u,
+		  double *C2)
 {
  int span = 0, j, k;
  double *nders = NULL, wder0 = 0.0, wder1 = 0.0, wder2 = 0.0, C0[3], C1[3];
@@ -2165,18 +2165,18 @@ ay_nb_ComputeSecDer4D(int n, int p, double *U, double *Pw, double u,
     free(nders);
 
  return;
-} /* ay_nb_ComputeSecDer4D */
+} /* ay_nb_SecondDer4D */
 
 
 /*
- * ay_nb_CompFirstDerSurf4D:
+ * ay_nb_FirstDerSurf4D:
  * compute the first derivatives of rational surface
  * (n, m, p, q, U[], V[], Pw[]) at position u,v in
  * C[12]: C[0] - point, C[3] - 1st der along u, C[6] - 1st der along v
  */
 void
-ay_nb_CompFirstDerSurf4D(int n, int m, int p, int q, double *U, double *V,
-			 double *Pw, double u, double v, double *C)
+ay_nb_FirstDerSurf4D(int n, int m, int p, int q, double *U, double *V,
+		     double *Pw, double u, double v, double *C)
 {
  int i = 0, j = 0, k = 0, l = 0, h = 0, r = 0, s = 0;
  int uspan = 0, vspan = 0;
@@ -2309,12 +2309,12 @@ ay_nb_CompFirstDerSurf4D(int n, int m, int p, int q, double *U, double *V,
   free(bin);
 
  return;
-} /* ay_nb_CompFirstDerSurf4D */
+} /* ay_nb_FirstDerSurf4D */
 
 
 /*
  * ay_nb_FirstDerSurf4DMSize:
- * Size of memory area needed by ay_nb_CompFirstDerSurf4DM() below.
+ * Size of memory area needed by ay_nb_FirstDerSurf4DM() below.
  */
 int
 ay_nb_FirstDerSurf4DMSize(int p, int q)
@@ -2327,7 +2327,7 @@ ay_nb_FirstDerSurf4DMSize(int p, int q)
 
 
 /*
- * ay_nb_CompFirstDerSurf4DM:
+ * ay_nb_FirstDerSurf4DM:
  * compute the first derivatives of rational surface
  * (n, m, p, q, U[], V[], Pw[]) at position u,v in
  * C[12]: C[0] - point, C[3] - 1st der along u, C[6] - 1st der along v
@@ -2336,10 +2336,17 @@ ay_nb_FirstDerSurf4DMSize(int p, int q)
  * Memory management optimized variant, but C must be of size
  * (12 + (2*(p+1)+((p+1)+(p+1)+(p+1*p+1)+2*(p+1))) +
  * (2*(q+1)+((q+1)+(q+1)+(q+1*q+1)+2*(q+1))) + 4*(q+1) + 20)
+ *
+ * Furthermore:
+ * if C[0] is not 0, it already contains the u-span
+ * if C[1] is not 0, it already contains the v-span
+ * if C[2] is not 0, Nu already contains the u basis functions
+ * if C[3] is not 0, Nv already contains the v basis functions
+ *
  */
 void
-ay_nb_CompFirstDerSurf4DM(int n, int m, int p, int q, double *U, double *V,
-			  double *Pw, double u, double v, double *C)
+ay_nb_FirstDerSurf4DM(int n, int m, int p, int q, double *U, double *V,
+		      double *Pw, double u, double v, double *C)
 {
  int i = 0, j = 0, k = 0, l = 0, h = 0, r = 0, s = 0;
  int uspan = 0, vspan = 0;
@@ -2360,12 +2367,14 @@ ay_nb_CompFirstDerSurf4DM(int n, int m, int p, int q, double *U, double *V,
     uspan = (int)C[0];
   else
     uspan = ay_nb_FindSpan(n, p, u, U);
-  ay_nb_DersBasisFuns(uspan, u, p, 1, U, Nu);
+  if(C[2] == 0.0)
+     ay_nb_DersBasisFunsM(uspan, u, p, 1, U, Nu);
   if(C[1] != 0.0)
     vspan = (int)C[1];
   else
     vspan = ay_nb_FindSpan(m, q, v, V);
-  ay_nb_DersBasisFuns(vspan, v, q, 1, V, Nv);
+  if(C[3] == 0.0)
+     ay_nb_DersBasisFunsM(vspan, v, q, 1, V, Nv);
 
   memset(C, 0, 12*sizeof(double));
 
@@ -2467,18 +2476,18 @@ ay_nb_CompFirstDerSurf4DM(int n, int m, int p, int q, double *U, double *V,
     } /* for */
 
  return;
-} /* ay_nb_CompFirstDerSurf4DM */
+} /* ay_nb_FirstDerSurf4DM */
 
 
 /*
- * ay_nb_CompFirstDerSurf3D:
+ * ay_nb_FirstDerSurf3D:
  * compute the first derivatives of non-rational surface
  * (n, m, p, q, U[], V[], P[]) at position u,v in
  * C[12]: C[0] - point, C[3] - 1st der along u, C[6] - 1st der along v
  */
 void
-ay_nb_CompFirstDerSurf3D(int n, int m, int p, int q, double *U, double *V,
-			 double *P, double u, double v, double *C)
+ay_nb_FirstDerSurf3D(int n, int m, int p, int q, double *U, double *V,
+		     double *P, double u, double v, double *C)
 {
  int i = 0, k = 0, l = 0, r = 0, s = 0;
  int uspan = 0, vspan = 0;
@@ -2541,12 +2550,12 @@ ay_nb_CompFirstDerSurf3D(int n, int m, int p, int q, double *U, double *V,
   free(temp);
 
  return;
-} /* ay_nb_CompFirstDerSurf3D */
+} /* ay_nb_FirstDerSurf3D */
 
 
 /*
  * ay_nb_FirstDerSurf3DMSize:
- * Size of memory area needed by ay_nb_CompFirstDerSurf3DM() below.
+ * Size of memory area needed by ay_nb_FirstDerSurf3DM() below.
  */
 int
 ay_nb_FirstDerSurf3DMSize(int p, int q)
@@ -2559,7 +2568,7 @@ ay_nb_FirstDerSurf3DMSize(int p, int q)
 
 
 /*
- * ay_nb_CompFirstDerSurf3DM:
+ * ay_nb_FirstDerSurf3DM:
  * compute the first derivatives of non-rational surface
  * (n, m, p, q, U[], V[], P[]) at position u,v in
  * C[12]: C[0] - point, C[3] - 1st der along u, C[6] - 1st der along v
@@ -2568,10 +2577,15 @@ ay_nb_FirstDerSurf3DMSize(int p, int q)
  * (12 + (2*(p+1)+((p+1)+(p+1)+(p+1*p+1)+2*(p+1))) +
  * (2*(q+1)+((q+1)+(q+1)+(q+1*q+1)+2*(q+1))) + 3*(q+1))
  *
+ * Furthermore:
+ * if C[0] is not 0, it already contains the u-span
+ * if C[1] is not 0, it already contains the v-span
+ * if C[2] is not 0, Nu already contains the u basis functions
+ * if C[3] is not 0, Nv already contains the v basis functions
  */
 void
-ay_nb_CompFirstDerSurf3DM(int n, int m, int p, int q, double *U, double *V,
-			  double *P, double u, double v, double *C)
+ay_nb_FirstDerSurf3DM(int n, int m, int p, int q, double *U, double *V,
+		      double *P, double u, double v, double *C)
 {
  int i = 0, k = 0, l = 0, r = 0, s = 0;
  int uspan = 0, vspan = 0;
@@ -2587,12 +2601,14 @@ ay_nb_CompFirstDerSurf3DM(int n, int m, int p, int q, double *U, double *V,
     uspan = (int)C[0];
   else
     uspan = ay_nb_FindSpan(n, p, u, U);
-  ay_nb_DersBasisFunsM(uspan, u, p, 1, U, Nu);
+  if(C[2] == 0.0)
+     ay_nb_DersBasisFunsM(uspan, u, p, 1, U, Nu);
   if(C[1] != 0.0)
     vspan = (int)C[1];
   else
     vspan = ay_nb_FindSpan(m, q, v, V);
-  ay_nb_DersBasisFunsM(vspan, v, q, 1, V, Nv);
+  if(C[3] == 0.0)
+     ay_nb_DersBasisFunsM(vspan, v, q, 1, V, Nv);
 
   memset(C, 0, 12*sizeof(double));
   memset(temp, 0, 3*(q+1)*sizeof(double));
@@ -2634,7 +2650,7 @@ ay_nb_CompFirstDerSurf3DM(int n, int m, int p, int q, double *U, double *V,
     } /* for */
 
  return;
-} /* ay_nb_CompFirstDerSurf3DM */
+} /* ay_nb_FirstDerSurf3DM */
 
 
 /*

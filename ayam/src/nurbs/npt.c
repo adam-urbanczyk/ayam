@@ -4032,8 +4032,8 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
   T0[1] = 0.0;
   T0[2] = 0.0;
 
-  ay_nb_ComputeFirstDer4D(tr->length-1, tr->order-1, tr->knotv,
-			  trcv, tr->knotv[tr->order-1], T1);
+  ay_nb_FirstDer4D(tr->length-1, tr->order-1, tr->knotv,
+		   trcv, tr->knotv[tr->order-1], T1);
 
   len = AY_V3LEN(T1);
   AY_V3SCAL(T1,(1.0/len));
@@ -4089,16 +4089,16 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
       u = tr->knotv[tr->order-1]+(((double)i/sections)*plen);
       if(rotate)
 	{
-	  ay_nb_ComputeFirstDer4D(tr->length-1, tr->order-1, tr->knotv,
-				  trcv, u, T1);
+	  ay_nb_FirstDer4D(tr->length-1, tr->order-1, tr->knotv,
+			   trcv, u, T1);
 
 	  if(closed && (i == 0 || i == sections))
 	    {
 	      /* compute average between first and last derivative */
-	      ay_nb_ComputeFirstDer4D(tr->length-1, tr->order-1, tr->knotv,
-				      trcv, tr->knotv[tr->order-1], T1);
-	      ay_nb_ComputeFirstDer4D(tr->length-1, tr->order-1, tr->knotv,
-				      trcv, tr->knotv[tr->length], T2);
+	      ay_nb_FirstDer4D(tr->length-1, tr->order-1, tr->knotv,
+			       trcv, tr->knotv[tr->order-1], T1);
+	      ay_nb_FirstDer4D(tr->length-1, tr->order-1, tr->knotv,
+			       trcv, tr->knotv[tr->length], T2);
 
 	      T1[0] = T1[0] + ((T2[0]-T1[0])/2.0);
 	      T1[1] = T1[1] + ((T2[1]-T1[1])/2.0);
@@ -4388,8 +4388,8 @@ ay_npt_sweepperiodic(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 
       if(rotate)
 	{
-	  ay_nb_ComputeFirstDer4D(tr->length-1, tr->order-1, tr->knotv,
-				  trcv, u, T1);
+	  ay_nb_FirstDer4D(tr->length-1, tr->order-1, tr->knotv,
+			   trcv, u, T1);
 
 	  len = AY_V3LEN(T1);
 	  AY_V3SCAL(T1,(1.0/len));
@@ -7796,17 +7796,17 @@ ay_npt_extracttrim(ay_object *o, int tnum, double param, int apply_trafo,
       for(i = 0; i < tcslens[tnum-1]-1; i++)
 	{
 	  if(np->is_rat)
-	    ay_nb_CompFirstDerSurf4D(np->width-1, np->height-1,
-				     np->uorder-1, np->vorder-1,
-				     np->uknotv, np->vknotv, np->controlv,
-				     *p2, *(p2+1),
-				     fder);
+	    ay_nb_FirstDerSurf4D(np->width-1, np->height-1,
+				 np->uorder-1, np->vorder-1,
+				 np->uknotv, np->vknotv, np->controlv,
+				 *p2, *(p2+1),
+				 fder);
 	  else
-	    ay_nb_CompFirstDerSurf3D(np->width-1, np->height-1,
-				     np->uorder-1, np->vorder-1,
-				     np->uknotv, np->vknotv, np->controlv,
-				     *p2, *(p2+1),
-				     fder);
+	    ay_nb_FirstDerSurf3D(np->width-1, np->height-1,
+				 np->uorder-1, np->vorder-1,
+				 np->uknotv, np->vknotv, np->controlv,
+				 *p2, *(p2+1),
+				 fder);
 
 	  fd1 = &(fder[3]);
 	  fd2 = &(fder[6]);
