@@ -2350,7 +2350,7 @@ ay_nb_FirstDerSurf4DM(int n, int m, int p, int q, double *U, double *V,
 {
  int i = 0, j = 0, k = 0, l = 0, h = 0, r = 0, s = 0;
  int uspan = 0, vspan = 0;
- double *Nu = NULL, *Nv = NULL, *temp = NULL, *Ct = NULL, *bin = NULL;
+ double *Nu, *Nv, *temp, *Ct, *bin;
  double w[3] = {0}, w2[3] = {0};
 
   /* du == 1, dv == 1 */
