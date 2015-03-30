@@ -674,7 +674,9 @@ ay_stess_SurfacePoints3D(int n, int m, int p, int q, double *U, double *V,
 	  /* calculate point and normal */
 	  fder[0] = (double)spanu;
 	  fder[1] = (double)spanv;
-	  ay_nb_CompFirstDerSurf3DM(n-1, m-1, p, q, U, V, P, u, v, fder);
+	  fder[2] = 0.0;
+	  fder[3] = 0.0;
+	  ay_nb_FirstDerSurf3DM(n-1, m-1, p, q, U, V, P, u, v, fder);
 	  memcpy(&(Ct[j]), fder, 3*sizeof(double));
 
 	  AY_V3CROSS(temp, fd2, fd1);
@@ -701,7 +703,7 @@ cleanup:
   if(spanus)
     free(spanus);
 
- return AY_OK;
+ return ay_status;
 } /* ay_stess_SurfacePoints3D */
 
 #if 0
@@ -837,7 +839,7 @@ ay_stess_SurfacePoints3DF(int n, int m, int p, int q, double *U, double *V,
 	    } /* for */
 
 	  /* calculate normal */
-	  ay_nb_CompFirstDerSurf3D(n-1, m-1, p, q, U, V, P, u, v, fder);
+	  ay_nb_FirstDerSurf3D(n-1, m-1, p, q, U, V, P, u, v, fder);
 
 	  for(k = 0; k <= 1; k++)
 	    {
@@ -1011,7 +1013,9 @@ ay_stess_SurfacePoints4D(int n, int m, int p, int q, double *U, double *V,
 	  /* calculate point and normal */
 	  fder[0] = (double)spanu;
 	  fder[1] = (double)spanv;
-	  ay_nb_CompFirstDerSurf4DM(n-1, m-1, p, q, U, V, Pw, u, v, fder);
+	  fder[2] = 0.0;
+	  fder[3] = 0.0;
+	  ay_nb_FirstDerSurf4DM(n-1, m-1, p, q, U, V, Pw, u, v, fder);
 	  memcpy(&(Ct[j]), fder, 3*sizeof(double));
 
 	  AY_V3CROSS(temp, fd2, fd1);
@@ -2014,9 +2018,9 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 
       while(uvpptr)
 	{
-	  ay_nb_CompFirstDerSurf4D(p->width-1, p->height-1,
-			    p->uorder-1, p->vorder-1, p->uknotv, p->vknotv,
-			    p->controlv, uvpptr->u, uvpptr->v, ders);
+	  ay_nb_FirstDerSurf4D(p->width-1, p->height-1,
+			       p->uorder-1, p->vorder-1, p->uknotv, p->vknotv,
+			       p->controlv, uvpptr->u, uvpptr->v, ders);
 	  memcpy(uvpptr->C, ders, 3*sizeof(double));
 	  fd1 = &(ders[3]);
 	  fd2 = &(ders[6]);
@@ -2298,9 +2302,9 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 
       while(uvpptr)
 	{
-	  ay_nb_CompFirstDerSurf4D(p->width-1, p->height-1,
-			    p->uorder-1, p->vorder-1, p->uknotv, p->vknotv,
-			    p->controlv, uvpptr->u, uvpptr->v, ders);
+	  ay_nb_FirstDerSurf4D(p->width-1, p->height-1,
+			       p->uorder-1, p->vorder-1, p->uknotv, p->vknotv,
+			       p->controlv, uvpptr->u, uvpptr->v, ders);
 
 	  memcpy(uvpptr->C, ders, 3*sizeof(double));
 	  fd1 = &(ders[3]);
