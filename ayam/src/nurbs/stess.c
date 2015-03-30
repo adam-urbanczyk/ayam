@@ -248,7 +248,7 @@ ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int stride,
   if(!U || !Pw || !Clen || !C)
     return AY_ENULL;
 
-  if(!(N = calloc(p+1, sizeof(double))))
+  if(!(N = calloc(3*(p+1), sizeof(double))))
     return AY_EOMEM;
 
   ay_stess_FindMultiplePoints(n, p, U, Pw, 2, is_rat, stride, &mc, &V);
@@ -310,7 +310,7 @@ ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int stride,
 	    } /* if */
 	  span = ay_nb_FindSpan(n-1, p, u1, U);
 
-	  ay_nb_BasisFuns(span, u1, p, U, N);
+	  ay_nb_BasisFunsM(span, u1, p, U, N);
 
 	  memset(Cw, 0, 3*sizeof(double));
 
@@ -377,7 +377,7 @@ ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int stride,
 
 	  span = ay_nb_FindSpan(n-1, p, u1, U);
 
-	  ay_nb_BasisFuns(span, u1, p, U, N);
+	  ay_nb_BasisFunsM(span, u1, p, U, N);
 
 	  for(j = 0; j <= p; j++)
 	    {
@@ -425,7 +425,7 @@ ay_stess_CurvePoints3D(int n, int p, double *U, double *Pw, int is_rat, int qf,
   if(!U || !Pw || !Clen || !C)
     return AY_ENULL;
 
-  if(!(N = calloc(p+1, sizeof(double))))
+  if(!(N = calloc(3*(p+1), sizeof(double))))
     return AY_EOMEM;
 
   ay_stess_FindMultiplePoints(n, p, U, Pw, 3, is_rat, 4, &mc, &V);
@@ -478,7 +478,8 @@ ay_stess_CurvePoints3D(int n, int p, double *U, double *Pw, int is_rat, int qf,
 	    } /* if */
 
 	  span = ay_nb_FindSpan(n-1, p, u1, U);
-	  ay_nb_BasisFuns(span, u1, p, U, N);
+
+	  ay_nb_BasisFunsM(span, u1, p, U, N);
 
 	  memset(Cw, 0, 4*sizeof(double));
 
@@ -535,7 +536,7 @@ ay_stess_CurvePoints3D(int n, int p, double *U, double *Pw, int is_rat, int qf,
 
 	  span = ay_nb_FindSpan(n-1, p, u1, U);
 
-	  ay_nb_BasisFuns(span, u1, p, U, N);
+	  ay_nb_BasisFunsM(span, u1, p, U, N);
 
 	  for(j = 0; j <= p; j++)
 	    {
@@ -1764,7 +1765,7 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
  ay_stess_uvp *olduvp, *uvpptr2, *uvpptr3;
  double *tt, ipoint[2] = {0};
  double p3[2], p4[2], *U, *V, u, v;
- double *fd1, *fd2, temp[3] = {0}, ders[12] = {0};
+ double *fd1, *fd2, temp[3] = {0}, *ders = NULL;
  double umin, umax, vmin, vmax, ud, vd;
  int i, j, k, l, ind;
  int out = 0, first_loop = AY_TRUE, first_loop_cw = AY_FALSE;
@@ -2011,19 +2012,44 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 	}
     } /* for */
 
+  *result = uvps;
+
   /* finally, calculate surfacepoints */
+  if(p->is_rat)
+    {
+      if(!(ders = malloc(
+	  ay_nb_FirstDerSurf4DMSize(p->uorder-1, p->vorder-1)*sizeof(double))))
+	{ return AY_EOMEM; }
+    }
+  else
+    {
+      if(!(ders = malloc(
+	  ay_nb_FirstDerSurf3DMSize(p->uorder-1, p->vorder-1)*sizeof(double))))
+	{ return AY_EOMEM; }
+    }
+
+  fd1 = &(ders[3]);
+  fd2 = &(ders[6]);
+
   for(i = 0; i < Cn; i++)
     {
       uvpptr = uvps[i];
 
       while(uvpptr)
 	{
-	  ay_nb_FirstDerSurf4D(p->width-1, p->height-1,
-			       p->uorder-1, p->vorder-1, p->uknotv, p->vknotv,
-			       p->controlv, uvpptr->u, uvpptr->v, ders);
+	  memset(ders, 0, 4*sizeof(double));
+
+	  if(p->is_rat)
+	    ay_nb_FirstDerSurf4D(p->width-1, p->height-1,
+				 p->uorder-1, p->vorder-1, p->uknotv, p->vknotv,
+				 p->controlv, uvpptr->u, uvpptr->v, ders);
+	  else
+	    ay_nb_FirstDerSurf3D(p->width-1, p->height-1,
+				 p->uorder-1, p->vorder-1, p->uknotv, p->vknotv,
+				 p->controlv, uvpptr->u, uvpptr->v, ders);
+
 	  memcpy(uvpptr->C, ders, 3*sizeof(double));
-	  fd1 = &(ders[3]);
-	  fd2 = &(ders[6]);
+
 	  AY_V3CROSS(temp, fd2, fd1);
 	  memcpy(&(uvpptr->C[3]), temp, 3*sizeof(double));
 	  if(uvpptr->next)
@@ -2033,8 +2059,6 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 	  uvpptr = uvpptr->next;
 	} /* while */
     } /* for */
-
-  *result = uvps;
 
  return ay_status;
 } /* ay_stess_TessTrimmedNPU */
@@ -2055,7 +2079,7 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
  ay_stess_uvp *olduvp, *uvpptr2, *uvpptr3;
  double *tt, ipoint[2] = {0};
  double p3[2], p4[2], *U, *V, u, v;
- double *fd1, *fd2, temp[3] = {0}, ders[12] = {0};
+ double *fd1, *fd2, temp[3] = {0}, *ders = NULL;
  double umin, umax, vmin, vmax, ud, vd;
  int i, j, k, l, ind;
  int out = 0, first_loop = AY_TRUE, first_loop_cw = AY_FALSE;
@@ -2295,20 +2319,44 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 	}
     } /* for */
 
+  *result = uvps;
+
   /* finally, calculate surfacepoints */
+  if(p->is_rat)
+    {
+      if(!(ders = malloc(
+	  ay_nb_FirstDerSurf3DMSize(p->uorder-1, p->vorder-1)*sizeof(double))))
+	{ return AY_EOMEM; }
+    }
+  else
+    {
+      if(!(ders = malloc(
+	  ay_nb_FirstDerSurf4DMSize(p->uorder-1, p->vorder-1)*sizeof(double))))
+	{ return AY_EOMEM; }
+    }
+
+  fd1 = &(ders[3]);
+  fd2 = &(ders[6]);
+
   for(i = 0; i < Cm; i++)
     {
       uvpptr = uvps[i];
 
       while(uvpptr)
 	{
-	  ay_nb_FirstDerSurf4D(p->width-1, p->height-1,
-			       p->uorder-1, p->vorder-1, p->uknotv, p->vknotv,
-			       p->controlv, uvpptr->u, uvpptr->v, ders);
+	  memset(ders, 0, 4*sizeof(double));
+
+	  if(p->is_rat)
+	    ay_nb_FirstDerSurf4DM(p->width-1, p->height-1,
+				 p->uorder-1, p->vorder-1, p->uknotv, p->vknotv,
+				 p->controlv, uvpptr->u, uvpptr->v, ders);
+	  else
+	    ay_nb_FirstDerSurf3DM(p->width-1, p->height-1,
+				 p->uorder-1, p->vorder-1, p->uknotv, p->vknotv,
+				 p->controlv, uvpptr->u, uvpptr->v, ders);
 
 	  memcpy(uvpptr->C, ders, 3*sizeof(double));
-	  fd1 = &(ders[3]);
-	  fd2 = &(ders[6]);
+
 	  AY_V3CROSS(temp, fd2, fd1);
 	  memcpy(&(uvpptr->C[3]), temp, 3*sizeof(double));
 	  if(uvpptr->next)
@@ -2318,8 +2366,6 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 	  uvpptr = uvpptr->next;
 	} /* while */
     } /* for */
-
-  *result = uvps;
 
  return ay_status;
 } /* ay_stess_TessTrimmedNPV */
