@@ -2040,11 +2040,11 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 	  memset(ders, 0, 4*sizeof(double));
 
 	  if(p->is_rat)
-	    ay_nb_FirstDerSurf4D(p->width-1, p->height-1,
+	    ay_nb_FirstDerSurf4DM(p->width-1, p->height-1,
 				 p->uorder-1, p->vorder-1, p->uknotv, p->vknotv,
 				 p->controlv, uvpptr->u, uvpptr->v, ders);
 	  else
-	    ay_nb_FirstDerSurf3D(p->width-1, p->height-1,
+	    ay_nb_FirstDerSurf3DM(p->width-1, p->height-1,
 				 p->uorder-1, p->vorder-1, p->uknotv, p->vknotv,
 				 p->controlv, uvpptr->u, uvpptr->v, ders);
 
