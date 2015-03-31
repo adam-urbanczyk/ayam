@@ -1,15 +1,23 @@
-[15. Mar 2015] CVS-Head:
+[31. Mar 2015] CVS-Head:
 ========================
 Bug Fixes:
 o silhouettes are missing when draw selection only is active (SF 499)
+o moving objects in the hierarchy by keyboard does not notify/redraw (SF 500)
+o save selected misses the first of the selected objects (SF 501)
 
 Modelling:
 o added option to display rational points in homogeneous style
   (new preference option "Modelling/RationalPoints")
+o NURBS tesselation using STESS is much faster now
+o allow negative values for "ToleranceA" that result in a relative
+  scaling of the sampling tolerance
 
 GUI:
 o the Shaders preference setting now supports path globbing
 o about dialog now only displays OpenGL/GLU extensions on request/click
+
+Scripts/Scripting Interface:
+o added commands to tween NURBS curves and surfaces ("tweenNC" and "tweenNP")
 
 
 [7. Feb 2015] Ayam-1.21:
