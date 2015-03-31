@@ -312,10 +312,14 @@ ay_toglcb_display(struct Togl *togl)
 	  stqf = ay_prefs.stess_qf;
 	  if(ay_prefs.glu_sampling_tolerance_a != 0.0)
 	    {
-	      ay_prefs.glu_sampling_tolerance =
-		ay_prefs.glu_sampling_tolerance_a;
+	      if(ay_prefs.glu_sampling_tolerance_a < 0.0)
+		ay_prefs.glu_sampling_tolerance *=
+		  -ay_prefs.glu_sampling_tolerance_a;
+	      else
+		ay_prefs.glu_sampling_tolerance =
+		  ay_prefs.glu_sampling_tolerance_a;
 	      ay_prefs.stess_qf =
-		ay_stess_GetQF(ay_prefs.glu_sampling_tolerance_a);
+		ay_stess_GetQF(ay_prefs.glu_sampling_tolerance);
 	    }
 	  if(ay_prefs.np_display_mode_a > 0)
 	    ay_prefs.np_display_mode = ay_prefs.np_display_mode_a-1;
@@ -340,6 +344,7 @@ ay_toglcb_display(struct Togl *togl)
 	  ay_prefs.nc_display_mode = ncdm;
 	  ay_prefs.glu_sampling_tolerance = tol;
 	  ay_prefs.stess_qf = stqf;
+	  //	  view->display_list_active = AY_FALSE;
 	}
     } /* if !altdisp */
 
