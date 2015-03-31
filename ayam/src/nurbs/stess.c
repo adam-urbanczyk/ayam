@@ -708,199 +708,6 @@ cleanup:
  return ay_status;
 } /* ay_stess_SurfacePoints3D */
 
-#if 0
-/* ay_stess_SurfacePoints3DF:
- *   calculate all points of an untrimmed NURBS surface
- */
-int
-ay_stess_SurfacePoints3DF(int n, int m, int p, int q, double *U, double *V,
-			 double *P, int qf, int *Cn, int *Cm, double **C)
-{
- int spanu = 0, spanv = 0, indu = 0, indv = 0, l = 0, k = 0, i = 0, j = 0;
- int a, b;
- double u, v, ud, vd, *Nu = NULL, *Nv = NULL;
- double *Ct = NULL, fder[12] = {0}, *fd1, *fd2;
- int *spanus = NULL, *spanvs = NULL;
-
-  if(!(Nu = calloc(((p+1)*(p+1)+(q+1)*(q+1)+(q+1)*3), sizeof(double))))
-    return AY_EOMEM;
-  Nv = Nu + (p+1)*(p+1);
-  temp = Nv + (q+1)*(q+1);
-
-  *Cn = (4 + n) * qf;
-  ud = (U[n] - U[p]) / ((*Cn) - 1);
-
-  *Cm = (4 + m) * qf;
-  vd = (V[m] - V[q]) / ((*Cm) - 1);
-
-  if(!(Ct = calloc((*Cn)*(*Cm)*6, sizeof(double))))
-    { free(Nu); return AY_EOMEM; }
-
-  if(!(spanus = calloc((*Cn)+(*Cm), sizeof(int))))
-    { free(Nu); free(Ct); return AY_EOMEM; }
-  spanvs = spanus + (*Cn);
-
-  /* employ linear variants of FindSpan() as they are much faster
-     than a binary search; especially, since we calculate
-     spans for all parameters in order */
-
-  u = U[p];
-  spanu = p;
-  for(a = 0; a < (*Cn)-1; a++)
-    {
-      /*
-      if(u < U[p+1])
-	{
-	  spanus[a] = p;
-	}
-      else
-	{
-	  while(u >= U[spanu])
-	    {
-	      spanu++;
-	    }
-	  spanus[a] = spanu-1;
-	}
-      */
-
-      if(u > U[p+1])
-	{
-	  while(u > U[spanu+1])
-	    {
-	      spanu++;
-	    }
-	}
-      spanus[a] = spanu;
-
-      u += ud;
-    }
-  spanus[a] = spanus[a-1];
-
-  v = V[q];
-  spanv = q;
-  for(a = 0; a < (*Cm)-1; a++)
-    {
-      /*
-      if(v < V[q+1])
-	{
-	  spanvs[a] = q;
-	}
-      else
-	{
-	  while(v > V[spanv])
-	    {
-	      spanv++;
-	    }
-	  spanvs[a] = spanv-1;
-	}
-      */
-
-      if(v > V[q+1])
-	{
-	  while(v > V[spanv+1])
-	    {
-	      spanv++;
-	    }
-	}
-      spanvs[a] = spanv;
-      v += vd;
-    }
-  spanvs[a] = spanvs[a-1];
-
-  u = U[p];
-  for(a = 0; a < (*Cn); a++)
-    {
-      spanu = spanus[a];
-      ay_nb_DersBasisFuns(spanu, u, p, 1, U, Nu);
-      indu = spanu - p;
-      v = V[q];
-      for(b = 0; b < (*Cm); b++)
-	{
-	  spanv = spanvs[b];
-	  ay_nb_DersBasisFuns(spanv, v, q, 1, V, Nv);
-
-	  /*j = (a*(*Cn)+b)*3;*/
-	  for(l = 0; l <= q; l++)
-	    {
-	      memset(temp, 0, 3*sizeof(double));
-	      indv = spanv - q + l;
-
-	      for(k = 0; k <= p; k++)
-		{
-		  /* was: temp = temp + Nu[k]*P[indu+k][indv]; */
-		  i = (((indu+k)*m)+indv)*4;
-
-		  temp[0] += Nu[k]*P[i];
-		  temp[1] += Nu[k]*P[i+1];
-		  temp[2] += Nu[k]*P[i+2];
-		} /* for */
-	      /* was: Cw = Cw + Nv[l]*temp */
-	      Ct[j]   += Nv[l]*temp[0];
-	      Ct[j+1] += Nv[l]*temp[1];
-	      Ct[j+2] += Nv[l]*temp[2];
-	    } /* for */
-
-	  /* calculate normal */
-	  ay_nb_FirstDerSurf3D(n-1, m-1, p, q, U, V, P, u, v, fder);
-
-	  for(k = 0; k <= 1; k++)
-	    {
-	      for(s = 0; s <= q; s++)
-		{
-		  temp[s*3]   = 0.0;
-		  temp[s*3+1] = 0.0;
-		  temp[s*3+2] = 0.0;
-
-		  for(r = 0; r <= p; r++)
-		    {
-		      /* was: temp[s] = temp[s] +
-			 Nu[k][r]*P[uspan-p+r][vspan-q+s]; */
-		      i = (((uspan-p+r)*(m+1))+(vspan-q+s))*4;
-		      temp[s*3]   += Nu[(k*(p+1))+r]*P[i];
-		      temp[s*3+1] += Nu[(k*(p+1))+r]*P[i+1];
-		      temp[s*3+2] += Nu[(k*(p+1))+r]*P[i+2];
-		    }
-		}
-
-	      for(l = 0; l <= 1; l++)
-		{
-		  /* was: C[k][l] = 0; */
-		  C[(k*2+l)*3]   = 0.0;
-		  C[(k*2+l)*3+1] = 0.0;
-		  C[(k*2+l)*3+2] = 0.0;
-
-		  for(s = 0; s <= q; s++)
-		    {
-		      /* was C[k][l] = C[k][l] + Nv[l][s] * temp[s]; */
-		      i = (k*2+l)*3;
-		      C[i]   += Nv[(l*(q+1))+s] * temp[s*3];
-		      C[i+1] += Nv[(l*(q+1))+s] * temp[s*3+1];
-		      C[i+2] += Nv[(l*(q+1))+s] * temp[s*3+2];
-		    } /* for */
-		} /* for */
-	    } /* for */
-
-
-	  fd1 = &(fder[3]);
-	  fd2 = &(fder[6]);
-	  AY_V3CROSS(temp, fd2, fd1);
-	  memcpy(&(Ct[j+3]), temp, 3*sizeof(double));
-
-	  j += 6;
-	  v += vd;
-	} /* for */
-
-      u += ud;
-    } /* for */
-
-  *C = Ct;
-
-  free(Nu);
-  free(spanus);
-
- return AY_OK;
-} /* ay_stess_SurfacePoints3DF */
-#endif
 
 /* ay_stess_SurfacePoints4D:
  *   calculate all points of an untrimmed NURBS surface with weights
@@ -1374,6 +1181,7 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
   tds = NULL;
 
 cleanup:
+
   if(tts)
     free(tts);
   if(tls)
@@ -1394,11 +1202,10 @@ ay_stess_ReTessTrimCurves(ay_object *o, int qf, int numtrims, double **tt,
 {
  int ay_status = AY_OK;
  double *tps = NULL, p4[4];
- int i, j, a;
+ int i, j, a, npnts = 0;
  ay_object *trim = NULL, *loop = NULL, *p, *nc = NULL, *cnc = NULL;
  ay_nurbcurve_object *c = NULL;
  ay_nurbpatch_object *np = NULL;
- int npnts = 0;
 
   np = (ay_nurbpatch_object*)o->refine;
 
@@ -2328,13 +2135,13 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
   if(p->is_rat)
     {
       if(!(ders = malloc(
-	  ay_nb_FirstDerSurf3DMSize(p->uorder-1, p->vorder-1)*sizeof(double))))
+	  ay_nb_FirstDerSurf4DMSize(p->uorder-1, p->vorder-1)*sizeof(double))))
 	{ return AY_EOMEM; }
     }
   else
     {
       if(!(ders = malloc(
-	  ay_nb_FirstDerSurf4DMSize(p->uorder-1, p->vorder-1)*sizeof(double))))
+	  ay_nb_FirstDerSurf3DMSize(p->uorder-1, p->vorder-1)*sizeof(double))))
 	{ return AY_EOMEM; }
     }
 
