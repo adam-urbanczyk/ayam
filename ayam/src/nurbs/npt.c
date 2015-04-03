@@ -13301,7 +13301,7 @@ cleanup:
 /** ay_npt_remknunptcmd:
  *  Remove a knot from the selected NURBS patches.
  *  Implements the \a remknuNP scripting interface command.
- *  See also the corresponding section in the \ayd{scextrnp}.
+ *  See also the corresponding section in the \ayd{scremknunp}.
  *
  *  \returns TCL_OK in any case.
  */
@@ -13505,7 +13505,7 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
 /** ay_npt_remknvnptcmd:
  *  Remove a knot from the selected NURBS patches.
  *  Implements the \a remknvNP scripting interface command.
- *  See also the corresponding section in the \ayd{scextrnp}.
+ *  See also the corresponding section in the \ayd{scremknvnp}.
  *
  *  \returns TCL_OK in any case.
  */
@@ -13912,6 +13912,7 @@ ay_npt_refinev(ay_nurbpatch_object *patch, double *newknotv, int newknotvlen)
  *  Implements the \a refineuNP and \a refinevNP scripting
  *  interface commands.
  *  See also the corresponding section in the \ayd{screfineunp}.
+ *  See also the corresponding section in the \ayd{screfinevnp}.
  *
  *  \returns TCL_OK in any case.
  */
@@ -14055,7 +14056,7 @@ ay_npt_getcvnormals(ay_nurbpatch_object *np, double *n)
  *  Unclamp the selected NURBS surfaces.
  *  Implements the \a unclampuNP scripting interface command.
  *  Also implements the \a unclampvNP scripting interface command.
- *  See also the corresponding section in the \ayd{scunclampnp}.
+ *  See also the corresponding section in the \ayd{scunclampunp}.
  *
  *  \returns TCL_OK in any case.
  */
