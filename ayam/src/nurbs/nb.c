@@ -1047,17 +1047,17 @@ ay_nb_InsertKnotCurve3D(int np, int p, double *UP, double *P, double u,
   /* save unaltered control points */
   for(i = 0; i <= (k-p); i++)
     {
-      i1 = i*3;
-      Q[i1] = P[i1];
+      i1 = i*4;
+      Q[i1]   = P[i1];
       Q[i1+1] = P[i1+1];
       Q[i1+2] = P[i1+2];
     } /* for */
 
   for(i = np; i >= (k-s); i--)
     {
-      i1 = (i+r)*3;
-      i2 = i*3;
-      Q[i1] = P[i2];
+      i1 = (i+r)*4;
+      i2 = i*4;
+      Q[i1]   = P[i2];
       Q[i1+1] = P[i2+1];
       Q[i1+2] = P[i2+2];
     } /* for */
@@ -1065,8 +1065,8 @@ ay_nb_InsertKnotCurve3D(int np, int p, double *UP, double *P, double u,
   for(i = 0; i <= (p-s); i++)
     {
       i1 = i*3;
-      i2 = (k-p+i)*3;
-      R[i1] = P[i2];
+      i2 = (k-p+i)*4;
+      R[i1]   = P[i2];
       R[i1+1] = P[i2+1];
       R[i1+2] = P[i2+2];
     } /* for */
@@ -1085,23 +1085,23 @@ ay_nb_InsertKnotCurve3D(int np, int p, double *UP, double *P, double u,
 	  R[i2+2] = alpha*R[i1+2] + (1.0-alpha)*R[i2+2];
 	} /* for */
 
-      i1 = L*3;
-      Q[i1] = R[0];
+      i1 = L*4;
+      Q[i1]   = R[0];
       Q[i1+1] = R[1];
       Q[i1+2] = R[2];
 
-      i1 = (k+r-j-s)*3;
+      i1 = (k+r-j-s)*4;
       i2 = (p-j-s)*3;
-      Q[i1] = R[i2];
+      Q[i1]   = R[i2];
       Q[i1+1] = R[i2+1];
       Q[i1+2] = R[i2+2];
     } /* for */
 
   for(i = L+1; i < k-s; i++)
     {
-      i1 = i*3;
+      i1 = i*4;
       i2 = (i-L)*3;
-      Q[i1] = R[i2];
+      Q[i1]   = R[i2];
       Q[i1+1] = R[i2+1];
       Q[i1+2] = R[i2+2];
     } /* for */
@@ -1112,6 +1112,12 @@ ay_nb_InsertKnotCurve3D(int np, int p, double *UP, double *P, double u,
   for(i=0; i<=k; i++) UQ[i] = UP[i];
   for(i=1; i<=r; i++) UQ[k+i] = u;
   for(i=k+1; i<=mp; i++) UQ[i+r] = UP[i];
+
+  /* fix weights */
+  for(i = 0; i < *nq; i++)
+    {
+      Q[i*4+3] = 1.0;
+    }
 
  return AY_OK;
 } /* ay_nb_InsertKnotCurve3D */
@@ -3988,7 +3994,7 @@ ay_nb_RefineKnotVectSurfU4D(int stride, int w, int h, int p, double *U,
 	      Qw[i1]   = alpha*Qw[i1]   + (1.0-alpha)*Qw[i2];
 	      Qw[i1+1] = alpha*Qw[i1+1] + (1.0-alpha)*Qw[i2+1];
 	      Qw[i1+2] = alpha*Qw[i1+2] + (1.0-alpha)*Qw[i2+2];
-	      if(stride>3)
+	      if(stride > 3)
 		Qw[i1+3] = alpha*Qw[i1+3] + (1.0-alpha)*Qw[i2+3];
 	    } /* for */
 	} /* for */

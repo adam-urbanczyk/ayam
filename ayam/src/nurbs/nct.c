@@ -1485,7 +1485,12 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
 	  if(!(newknotv = malloc((curve->length+curve->order)*sizeof(double))))
 	    { free(newcontrolv); return AY_EOMEM; }
 
-	  ay_status = ay_nb_InsertKnotCurve4D(curve->length-rs-1,
+	  if(curve->is_rat)
+	    ay_status = ay_nb_InsertKnotCurve4D(curve->length-rs-1,
+			 curve->order-1, curve->knotv, curve->controlv, u, k,
+			 s, rs, &nq, newknotv, newcontrolv);
+	  else
+	    ay_status = ay_nb_InsertKnotCurve3D(curve->length-rs-1,
 			 curve->order-1, curve->knotv, curve->controlv, u, k,
 			 s, rs, &nq, newknotv, newcontrolv);
 
@@ -1536,7 +1541,12 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
 	  if(!(newknotv = malloc((curve->length+curve->order)*sizeof(double))))
 	    { free(newcontrolv); return AY_EOMEM; }
 
-	  ay_status = ay_nb_InsertKnotCurve4D(curve->length-re-1,
+	  if(curve->is_rat)
+	    ay_status = ay_nb_InsertKnotCurve4D(curve->length-re-1,
+			 curve->order-1, curve->knotv, curve->controlv, u, k,
+			 s, re, &nq, newknotv, newcontrolv);
+	  else
+	    ay_status = ay_nb_InsertKnotCurve3D(curve->length-re-1,
 			 curve->order-1, curve->knotv, curve->controlv, u, k,
 			 s, re, &nq, newknotv, newcontrolv);
 
@@ -1650,7 +1660,11 @@ ay_nct_clampperiodic(ay_nurbcurve_object *curve)
     { free(newcontrolv); return AY_EOMEM; }
 
   /* insert knots at start */
-  ay_status = ay_nb_InsertKnotCurve4D(np-1, p, curve->knotv, curve->controlv,
+  if(curve->is_rat)
+    ay_status = ay_nb_InsertKnotCurve4D(np-1, p, curve->knotv, curve->controlv,
+                        curve->knotv[p], p, 0, p, &nq, newknotv, newcontrolv);
+  else
+    ay_status = ay_nb_InsertKnotCurve3D(np-1, p, curve->knotv, curve->controlv,
                         curve->knotv[p], p, 0, p, &nq, newknotv, newcontrolv);
 
   if(ay_status)
@@ -1661,7 +1675,11 @@ ay_nct_clampperiodic(ay_nurbcurve_object *curve)
     }
 
   /* insert knots at end (nq is now np+p-1!) */
-  ay_status = ay_nb_InsertKnotCurve4D(nq, p, newknotv, newcontrolv,
+  if(curve->is_rat)
+    ay_status = ay_nb_InsertKnotCurve4D(nq, p, newknotv, newcontrolv,
+			newknotv[nq+1], nq, 0, p, &nq, newknotv, newcontrolv);
+  else
+    ay_status = ay_nb_InsertKnotCurve3D(nq, p, newknotv, newcontrolv,
 			newknotv[nq+1], nq, 0, p, &nq, newknotv, newcontrolv);
 
   if(ay_status)
@@ -2148,6 +2166,7 @@ ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
 	    }
+
 	  if(!(newknotv = malloc((curve->length+curve->order)*sizeof(double))))
 	    {
 	      free(newcontrolv);
@@ -2155,7 +2174,12 @@ ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
 	      return TCL_OK;
 	    }
 
-	  ay_status = ay_nb_InsertKnotCurve4D(curve->length-r-1,
+	  if(curve->is_rat)
+	    ay_status = ay_nb_InsertKnotCurve4D(curve->length-r-1,
+			  curve->order-1, curve->knotv, curve->controlv, u, k,
+			  s, r, &nq, newknotv, newcontrolv);
+	  else
+	    ay_status = ay_nb_InsertKnotCurve3D(curve->length-r-1,
 			  curve->order-1, curve->knotv, curve->controlv, u, k,
 			  s, r, &nq, newknotv, newcontrolv);
 
@@ -2816,7 +2840,12 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
 				 sizeof(double))))
 	    { free(newcontrolv); return AY_EOMEM; }
 
-	  ay_status = ay_nb_InsertKnotCurve4D(curve->length-r-1,
+	  if(curve->is_rat)
+	    ay_status = ay_nb_InsertKnotCurve4D(curve->length-r-1,
+			  curve->order-1, curve->knotv, curve->controlv, u, k,
+			  s, r, &nq, newknotv, newcontrolv);
+	  else
+	    ay_status = ay_nb_InsertKnotCurve3D(curve->length-r-1,
 			  curve->order-1, curve->knotv, curve->controlv, u, k,
 			  s, r, &nq, newknotv, newcontrolv);
 
