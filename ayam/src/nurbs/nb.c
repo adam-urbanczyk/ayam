@@ -1650,13 +1650,13 @@ ay_nb_SurfacePoint4D(int n, int m, int p, int q, double *U, double *V,
 
   ay_status = ay_nb_BasisFuns(spanu, u, p, U, Nu);
   if(ay_status)
-    { free(Nu); free(Nv); return ay_status; }
+    { free(Nu); free(Nv); free(temp); return ay_status; }
 
   spanv = ay_nb_FindSpan(m, q, v, V);
 
   ay_status = ay_nb_BasisFuns(spanv, v, q, V, Nv);
   if(ay_status)
-    { free(Nu); free(Nv); return ay_status; }
+    { free(Nu); free(Nv); free(temp); return ay_status; }
 
   indu = spanu - p;
   for(l = 0; l <= q; l++)
