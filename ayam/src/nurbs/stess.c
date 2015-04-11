@@ -575,7 +575,7 @@ ay_stess_SurfacePoints3D(int n, int m, int p, int q, double *U, double *V,
  int spanu = 0, spanv = 0, j = 0;
  int a, b;
  double u, v, ud, vd;
- double temp[3] = {0}, *Ct = NULL, *fder, *fd1, *fd2;
+ double temp[3] = {0}, *Ct = NULL, *fder = NULL, *fd1, *fd2;
  int *spanus = NULL, *spanvs = NULL;
 
   *Cn = (4 + n) * qf;
@@ -720,7 +720,7 @@ ay_stess_SurfacePoints4D(int n, int m, int p, int q, double *U, double *V,
  int spanu = 0, spanv = 0, j = 0;
  int a, b;
  double u, v, ud, vd;
- double *Ct = NULL, temp[3] = {0}, *fder, *fd1, *fd2;
+ double *Ct = NULL, temp[3] = {0}, *fder = NULL, *fd1, *fd2;
  int *spanus = NULL, *spanvs = NULL;
 
   *Cn = (4 + n) * qf;
@@ -2926,7 +2926,7 @@ ay_stess_TessTrimmedPlanarNP(ay_object *o, int qf)
       ay_status = ay_tess_pomesh(po, /*optimize=*/AY_FALSE, p, &tpo);
 
       st->pomesh = tpo;
-    }
+    } /* if tcs */
 
   /* prevent cleanup code from doing something harmful */
   np = NULL;
