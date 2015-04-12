@@ -24,7 +24,7 @@
 # example:
 # runTool splitCurveu {"Split at u:"} "splitCurve %0"
 proc runTool { argvars argstrings command title {advargs ""} } {
-    global ay ayprefs
+    global ay ayprefs aymainshortcuts
 
     winAutoFocusOff
     set oldFocus [focus]
@@ -112,6 +112,10 @@ proc runTool { argvars argstrings command title {advargs ""} } {
     bind $w <Key-Return> "$f.bok invoke"
     catch {bind $w <Key-KP_Enter> "$f.bok invoke"}
     bind $w <Escape> "$f.bca invoke"
+
+    if { $advargs != "" } {
+	shortcut_addcshelp $w ayam-5.html $advargs
+    }
 
     winRestoreOrCenter $w $title
     grab $w

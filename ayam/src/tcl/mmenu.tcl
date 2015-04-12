@@ -431,13 +431,13 @@ $m.nct add command -label "Concat" -command { concatNC; uCR; rV}
 $m.nct add command -label "Split" -command {
     runTool ay(splitu) {"Split at:"}\
 	"undo save Split; splitNC %0; uCR; sL; rV"\
-	"Split Curve"
+	"Split Curve" splitt
 }
 $m.nct add command -label "Trim" -command {
     runTool [list ay(trimumin) ay(trimumax)]\
 	[list "UMin:" "UMax:"]\
 	"undo save TrimNC; trimNC %0 %1; plb_update; rV"\
-	"Trim Curve"
+	"Trim Curve" ctrimt
 }
 
 $m.nct add command -label "Refine" -command { undo save Refine;
@@ -455,13 +455,13 @@ $m.nct add command -label "Unclamp" -command { undo save UnclampNC; unclampNC;
 $m.nct add command -label "Elevate" -command {
     runTool ay(elevd) {"Elevate by:"}\
 	"undo save Elevate; elevateNC %0; plb_update; rV"\
-	"Elevate Curve"
+	"Elevate Curve" elevt
 }
 
 $m.nct add command -label "Extend" -command {
     runTool [list ay(extendx) ay(extendy) ay(extendz)] [list "X:" "Y:" "Z:"]\
 	"undo save Extend; extendNC %0 %1 %2; plb_update; rV"\
-	"Extend Curve"
+	"Extend Curve" extendt
 }
 
 
@@ -473,7 +473,7 @@ $m.nct.kn add command -label "Insert Knot" -command {
     runTool [list ay(okn) ay(insknu) ay(insknr)]\
 	[list "Old knots:" "Insert knot at:" "Insert times:"]\
 	"undo save InsKn; insknNC %1 %2; plb_update; rV"\
-	"Insert Knot"
+	"Insert Knot" insknt
 } -underline 0
 
 $m.nct.kn add command -label "Remove Knot" -command {
@@ -481,7 +481,7 @@ $m.nct.kn add command -label "Remove Knot" -command {
     runTool [list ay(okn) ay(remknu) ay(remknr) ay(remtol)]\
 	[list "Old knots:" "Remove knot:" "Remove times:" "Tolerance:"]\
 	"undo save RemKn; remknNC %1 %2 %3; plb_update; rV"\
-	"Remove Knot"
+	"Remove Knot" remknt
 } -underline 0
 
 $m.nct.kn add command -label "Refine Knots" -command { undo save RefineKn;
@@ -491,21 +491,21 @@ $m.nct.kn add command -label "Refine Knots with" -command {
     getProp; set ay(okn) $::NCurveAttrData(Knots);
     runTool [list ay(okn) ay(refinekn)] {"Old Knots:" "New Knots:"}\
 	"undo save RefineKn; refineknNC \{%1\}; plb_update; rV"\
-        "Refine Knots"
+        "Refine Knots" refknit
 } -underline 2
 
 $m.nct.kn add command -label "Rescale Knots to Range" -command {
     undo save RescaleKnots;
     runTool {ay(rmin) ay(rmax)} {"RangeMin:" "RangeMax:"}\
 	"rescaleknNC -r %0 %1; plb_update;"\
-	"Rescale Knots"
+	"Rescale Knots" resckrt
 } -underline 2
 
 $m.nct.kn add command -label "Rescale Knots to Mindist" -command {
     undo save RescaleKnots;
     runTool ay(mindist) "MinDist:"\
 	"rescaleknNC -d %0; plb_update;"\
-	"Rescale Knots"
+	"Rescale Knots" resckmt
 } -underline 3
 
 $m.nct add command -label "Reset Weights" -command {
@@ -522,12 +522,12 @@ $m.nct add command -label "Plot Curvature" -command {
     runTool [list ay(curvatp) ay(curvatw) ay(curvats)]\
 	[list "Data points:" "Width:" "Scale Height:"]\
 	"curvPlot %0 %1 %2; uCR; rV"\
-	"Curvature Plot"
+	"Curvature Plot" plotcurt
 }
 $m.nct add command -label "Shift" -command {
     runTool ay(shiftcbsp) {"Times:"}\
 	"undo save ShiftC; shiftC %0; rV"\
-	"Shift Curve"
+	"Shift Curve" shiftclc
 }
 $m.nct add command -label "To XY" -command {
     undo save ToXYNC; toXYNC; rV; }
@@ -558,13 +558,13 @@ $m.npt add command -label "Close V" -command {
 $m.npt add command -label "Split U" -command {
     runTool ay(splitu) {"Split at:"}\
 	"undo save SplitUNP; splituNP %0; uCR; sL; rV"\
-	"Split Surface U"
+	"Split Surface U" splitnpt
 }
 
 $m.npt add command -label "Split V" -command {
     runTool ay(splitu) {"Split at:"}\
 	"undo save SplitVNP; splitvNP %0; uCR; sL; rV"\
-	"Split Surface V"
+	"Split Surface V" splitnpt
 }
 
 
@@ -598,20 +598,20 @@ menu $m.npt.el -tearoff 0
 $m.npt.el add command -label "Elevate U" -command {
     runTool ay(elevnpu) "Elevate U by:"\
 	"undo save ElevateUNP; elevateuNP %0; plb_update; rV"\
-	"Elevate Surface U"
+	"Elevate Surface U" elevuvt
 }
 
 $m.npt.el add command -label "Elevate V" -command {
     runTool ay(elevnpv) "Elevate V by:"\
 	"undo save ElevateVNP; elevatevNP %0; plb_update; rV"\
-	"Elevate Surface V"
+	"Elevate Surface V" elevuvt
 }
 
 $m.npt.el add command -label "Elevate Both" -command {
     runTool [list ay(elevnpu) ay(elevnpv)]\
 	[list "Elevate U by:" "Elevate V by:"]\
 	"undo save ElevateUVNP; elevateuNP %0; elevatevNP %1; plb_update; rV"\
-	"Elevate Surface"
+	"Elevate Surface" elevuvt
 }
 
 $m.npt add cascade -menu $m.npt.in -label "Interpolate" -underline 0
@@ -620,20 +620,20 @@ menu $m.npt.in -tearoff 0
 $m.npt.in add command -label "Interpolate U" -command {
     runTool ay(interpou) {"Order:"}\
 	"undo save InterpUNP; interpuNP %0; plb_update; rV"\
-	"Interpolate Surface U"
+	"Interpolate Surface U" interpnpt
 }
 
 $m.npt.in add command -label "Interpolate V" -command {
     runTool ay(interpov) {"Order:"}\
 	"undo save InterpVNP; interpvNP %0; plb_update; rV"\
-	"Interpolate Surface V"
+	"Interpolate Surface V" interpnpt
 }
 
 $m.npt.in add command -label "Interpolate Both" -command {
     runTool [list ay(interpou) ay(interpov)]\
 	[list "Order U:" "Order V:"]\
 	"undo save InterpUVNP; interpuNP %0; interpvNP %1; plb_update; rV"\
-	"Interpolate Surface"
+	"Interpolate Surface" interpnpt
 }
 
 $m.npt add cascade -menu $m.npt.kn -label "Knots" -underline 0
@@ -643,14 +643,14 @@ $m.npt.kn add command -label "Insert Knot U" -command {
     runTool [list ay(insknu) ay(insknr)]\
 	[list "Insert knot at:" "Insert times:"]\
 	"undo save InsKnUNP; insknuNP %0 %1; plb_update; rV"\
-	"Insert Knot U"
+	"Insert Knot U" insknnpt
 }
 
 $m.npt.kn add command -label "Insert Knot V" -command {
     runTool [list ay(insknu) ay(insknr)]\
 	[list "Insert knot at:" "Insert times:"]\
 	"undo save InsKnVNP; insknvNP %0 %1; plb_update; rV"\
-	"Insert Knot V"
+	"Insert Knot V" insknnpt
 }
 
 $m.npt.kn add command -label "Remove Knot U" -command {
@@ -658,7 +658,7 @@ $m.npt.kn add command -label "Remove Knot U" -command {
     runTool [list ay(okn) ay(remknu) ay(remknr) ay(remtol)]\
 	[list "Old knots:" "Remove knot:" "Remove times:" "Tolerance:"]\
 	"undo save RemKnU; remknuNP %1 %2 %3; plb_update; rV"\
-	"Remove Knot U"
+	"Remove Knot U" remknnpt
 }
 
 $m.npt.kn add command -label "Remove Knot V" -command {
@@ -666,7 +666,7 @@ $m.npt.kn add command -label "Remove Knot V" -command {
     runTool [list ay(okn) ay(remknu) ay(remknr) ay(remtol)]\
 	[list "Old knots:" "Remove knot:" "Remove times:" "Tolerance:"]\
 	"undo save RemKnV; remknvNP %1 %2 %3; plb_update; rV"\
-	"Remove Knot V"
+	"Remove Knot V" remknnpt
 }
 
 $m.npt.kn add command -label "Refine Knots U" -command {
@@ -677,7 +677,7 @@ $m.npt.kn add command -label "Refine Knots U with" -command {
     getProp; set ay(okn) $::NPatchAttrData(Knots_U);
     runTool [list ay(okn) ay(refineknu)] {"Old Knots:" "New Knots:"}\
 	"undo save RefineKnUNP; refineuNP \{%1\}; plb_update; rV"\
-        "Refine Knots U"
+        "Refine Knots U" refinest
 }
 
 $m.npt.kn add command -label "Refine Knots V" -command {
@@ -688,44 +688,44 @@ $m.npt.kn add command -label "Refine Knots V with" -command {
     getProp; set ay(okn) $::NPatchAttrData(Knots_V);
     runTool [list ay(okn) ay(refineknv)] {"Old Knots:" "New Knots:"}\
 	"undo save RefineKnVNP; refinevNP \{%1\}; plb_update; rV"\
-        "Refine Knots V"
+        "Refine Knots V" refinest
 }
 
 $m.npt.kn add command -label "Rescale Knots to Range U" -command {
     undo save RescaleKnots 1;
     runTool {ay(rmin) ay(rmax)} {"RangeMin:" "RangeMax:"}\
 	"rescaleknNP -ru %0 %1; plb_update;"\
-	"Rescale Knots U"
+	"Rescale Knots U" resckrnpt
 }
 $m.npt.kn add command -label "Rescale Knots to Range V" -command {
     undo save RescaleKnots 1;
     runTool {ay(rmin) ay(rmax)} {"RangeMin:" "RangeMax:"}\
 	"rescaleknNP -rv %0 %1; plb_update;"\
-	"Rescale Knots V"
+	"Rescale Knots V" resckrnpt
 }
 $m.npt.kn add command -label "Rescale Knots to Range Both" -command {
     undo save RescaleKnots 1;
     runTool {ay(rmin) ay(rmax)} {"RangeMin:" "RangeMax:"}\
 	"rescaleknNP -r %0 %1; plb_update;"\
-	"Rescale Knots"
+	"Rescale Knots" resckrnpt
 }
 $m.npt.kn add command -label "Rescale Knots to Mindist U" -command {
     undo save RescaleKnots 1;
     runTool ay(mindist) "MinDist:"\
 	"rescaleknNP -du %0; plb_update;"\
-	"Rescale Knots U"
+	"Rescale Knots U" resckmnpt
 }
 $m.npt.kn add command -label "Rescale Knots to Mindist V" -command {
     undo save RescaleKnots 1;
     runTool ay(mindist) "MinDist:"\
 	"rescaleknNP -dv %0; plb_update;"\
-	"Rescale Knots V"
+	"Rescale Knots V" resckmnpt
 }
 $m.npt.kn add command -label "Rescale Knots to Mindist Both" -command {
     undo save RescaleKnots 1;
     runTool ay(mindist) "MinDist:"\
 	"rescaleknNP -d %0; plb_update;"\
-	"Rescale Knots"
+	"Rescale Knots" resckmnpt
 }
 $m.npt add command -label "Reset Weights" -command {
     if { $ay(views) != "" } {
@@ -815,17 +815,17 @@ $m.nc add command -label "Circular B-Spline" -command {
     runTool { ay(cbsprad) ay(cbsptmax) ay(cbspsec) ay(cbsporder) }\
 	{"Radius:" "Arc:" "Sections:" "Order:"}\
 	"crtClosedBS -r %0 -a %1 -s %2 -o %3; uCR; sL; notifyOb; rV;"\
-	"Create Closed B-Spline"
+	"Create Closed B-Spline" cbspt
 } -underline 9
 $m.nc add command -label "NURBCircle" -command {
     runTool {ay(ncircradius) ay(ncircarc)} {"Radius:" "Arc:"}\
 	"crtNCircle -r %0 -a %1; uCR; sL; notifyOb; rV;"\
-	"Create NURBCircle"
+	"Create NURBCircle" ncirct
 } -underline 4
 $m.nc add command -label "Rectangle" -command {
     runTool {ay(nrectwidth) ay(nrectheight)} {"Width:" "Height:"}\
 	"crtNRect -w %0 -h %1; uCR; sL; notifyOb; rV;"\
-	"Create Rectangle"
+	"Create Rectangle" nrrt
 } -underline 1
 $m.nc add command -label "TrimRect" -command {
     crtTrimRect; set ay(ul) $ay(CurrentLevel); uS 0 1; rV
