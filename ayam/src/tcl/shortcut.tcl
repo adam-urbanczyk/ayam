@@ -1210,7 +1210,7 @@ proc shortcut_addescescbinding { w } {
 #  actually calls the web browser
 proc shortcut_callcshelp { base tag } {
     global ayprefs
-    browser_urlOpen [concatUrls ${ayprefs(Docs)} ${base}\#sc${tag}]
+    browser_urlOpen [concatUrls ${ayprefs(Docs)} ${base}\#${tag}]
  return;
 }
 # shortcut_callcshelp

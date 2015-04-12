@@ -17,7 +17,7 @@ proc uie_callhelp { w } {
     global aymainshortcuts
     set w [winfo toplevel $w]
     set b ""
-    catch {set b [bind $w [repctrl $aymainshortcuts(Help)]]}
+    catch {set b [bind $w <[repctrl $aymainshortcuts(Help)]>]}
     # use while to protect from 'called break outside of a loop'-error
     while { 1 } {
 	if { $b != "" } {
@@ -42,7 +42,7 @@ proc uie_fixEntry { w } {
 	bind $w <Shift-Tab> {focus [tk_focusPrev %W];plb_focus;break}
     }
 
-    bind $w [repctrl $aymainshortcuts(Help)] "uie_callhelp %W"
+    bind $w <[repctrl $aymainshortcuts(Help)]> "uie_callhelp %W"
 
  return;
 }
