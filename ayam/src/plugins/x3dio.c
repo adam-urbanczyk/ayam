@@ -4009,7 +4009,7 @@ x3dio_readextrusion(scew_element *element)
   pomesh.npolys = ((cslen-1) * (splen-1) * 2) +
     (has_startcap?1:0) + (has_endcap?1:0);
   totalverts = ((cslen-1) * (splen-1) * 2 * 3) +
-    (has_startcap?cslen+1:0) + (has_endcap?cslen+1:0);
+    (has_startcap?cslen:0) + (has_endcap?cslen:0);
 
   if(pomesh.npolys == 0)
     { ay_status = AY_ERROR; goto cleanup; }
@@ -4162,6 +4162,18 @@ cleanup:
 
   if(rots)
     free(rots);
+
+  if(pomesh.nloops)
+    free(pomesh.nloops);
+
+  if(pomesh.nverts)
+    free(pomesh.nverts);
+
+  if(pomesh.verts)
+    free(pomesh.verts);
+
+  if(pomesh.controlv)
+    free(pomesh.controlv);
 
  return ay_status;
 } /* x3dio_readextrusion */
