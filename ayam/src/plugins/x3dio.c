@@ -3678,23 +3678,24 @@ x3dio_getdiffspinepoint(unsigned int splen, float *sp, unsigned int sindex,
 
 
 /* x3dio_getspinerots:
- *
+ * XXXX TODO: handle all points equal case
  */
 int
 x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
 		   unsigned int orlen, float *or,
 		   double **rots)
 {
+ int ay_status = AY_OK;
  double /*scpx[3],*/ scpy[3], /*scpz[3],*/ t1[3]/*, t2[3]*/;
  /*double prevscpz[3];*/
  double q1[4] = {0}, q2[4] = {0}, quat[4] = {0};
  double *quats = NULL;
- unsigned int i, next;
+ unsigned int i, j, next, prev;
 
-  if(!sp || !rots)
+  if(!sp || !or || !rots)
    return AY_ENULL;
 
-  if(!(quats = calloc(splen*4,sizeof(double))))
+  if(!(quats = calloc(splen*4, sizeof(double))))
     return AY_EOMEM;
 
   if(splen > 2)
@@ -3707,7 +3708,12 @@ x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
 	      /* first spine point */
 	      if(!sp_closed)
 		{
-		  x3dio_getdiffspinepoint(splen, sp, 0, 1, &next);
+		  ay_status = x3dio_getdiffspinepoint(splen, sp, 0, 1, &next);
+		  if(ay_status == AY_ERROR)
+		    {
+		      /* all spine points equal! */
+		    }
+
 		  scpy[0] = sp[next*3] - sp[0];
 		  scpy[1] = sp[next*3+1] - sp[1];
 		  scpy[2] = sp[next*3+2] - sp[2];
@@ -3740,10 +3746,17 @@ x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
 	  if((i > 0) && (i < splen-1))
 	    {
 	      /* middle spine point */
-	      x3dio_getdiffspinepoint(splen, sp, i, 1, &next);
-	      scpy[0] = sp[next*3] - sp[i*3];
-	      scpy[1] = sp[next*3+1] - sp[i*3+1];
-	      scpy[2] = sp[next*3+2] - sp[i*3+2];
+	      ay_status = x3dio_getdiffspinepoint(splen, sp, i, 1, &next);
+	      if(!ay_status)
+		{
+		  ay_status = x3dio_getdiffspinepoint(splen, sp, i, -1, &prev);
+		  if(!ay_status)
+		    {
+		      scpy[0] = sp[next*3] - sp[prev*3];
+		      scpy[1] = sp[next*3+1] - sp[prev*3+1];
+		      scpy[2] = sp[next*3+2] - sp[prev*3+2];
+		    }
+		}
 	      /*
 	      t1[0] = sp[next*3] - sp[i*3];
 	      t1[1] = sp[next*3+1] - sp[i*3+1];
@@ -3759,7 +3772,7 @@ x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
 	      /* last spine point */
 	      if(!sp_closed)
 		{
-		  x3dio_getdiffspinepoint(splen, sp, i, -1, &next);
+		  (void)x3dio_getdiffspinepoint(splen, sp, i, -1, &next);
 		  scpy[0] = sp[i*3]   - sp[next*3];
 		  scpy[1] = sp[i*3+1] - sp[next*3+1];
 		  scpy[2] = sp[i*3+2] - sp[next*3+2];
@@ -3810,14 +3823,19 @@ x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
 	  x3dio_getquatfromvec(scpy, quat);
 
 	  /* add orientation */
-	  if(fabs(or[i*4+3]) > AY_EPSILON)
+
+	  j = i;
+	  if(orlen == 1)
+	    j = 0;
+
+	  if(fabs(or[j*4+3]) > AY_EPSILON)
 	    {
 	      /*quats[i*4] = 1.0;*/
 
-	      q2[0] = or[i*4];
-	      q2[1] = or[i*4+1];
-	      q2[2] = or[i*4+2];
-	      q2[3] = or[i*4+3];
+	      q2[0] = or[j*4];
+	      q2[1] = or[j*4+1];
+	      q2[2] = or[j*4+2];
+	      q2[3] = or[j*4+3];
 
 	      ay_quat_axistoquat(q2, q2[3], q1);
 	      ay_quat_add(quat, q1, &(quats[i*4]));
@@ -3846,7 +3864,7 @@ x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
 	  x3dio_getquatfromvec(t1, quat);
 	} /* if */
 
-      /* add orientation of spine start point */
+      /* add orientation of spine start point? */
       if(fabs(or[3]) > AY_EPSILON)
 	{
 	  q2[0] = or[0];
@@ -3855,28 +3873,31 @@ x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
 	  q2[3] = or[3];
 
 	  ay_quat_axistoquat(q2, q2[3], q1);
-	  ay_quat_add(q1, quat, quats);
+	  ay_quat_add(quat, q1, quats);
 	}
       else
 	{
 	  memcpy(quats, quat, 4*sizeof(double));
 	} /* if */
-      /* add orientation of spine end point */
-      if(fabs(or[7]) > AY_EPSILON)
+
+      /* add orientation of spine end point? */
+      j = 4;
+      if(orlen == 1)
+	j = 0;
+      if(fabs(or[j+3]) > AY_EPSILON)
 	{
-	  q2[0] = or[4];
-	  q2[1] = or[5];
-	  q2[2] = or[6];
-	  q2[3] = or[7];
+	  q2[0] = or[j];
+	  q2[1] = or[j+1];
+	  q2[2] = or[j+2];
+	  q2[3] = or[j+3];
 
 	  ay_quat_axistoquat(q2, q2[3], q1);
-	  ay_quat_add(q1, quat, &(quats[4]));
+	  ay_quat_add(quat, q1, &(quats[4]));
 	}
       else
 	{
 	  memcpy(&(quats[4]), quat, 4*sizeof(double));
 	} /* if */
-
     } /* if */
 
   *rots = quats;
@@ -3886,7 +3907,7 @@ x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
 
 
 /* x3dio_readextrusion:
- *
+ * XXXX TODO: add option to read as Quads or as NURBS
  */
 int
 x3dio_readextrusion(scew_element *element)
@@ -3900,7 +3921,7 @@ x3dio_readextrusion(scew_element *element)
  float *orient = NULL, orientd[4] = {0.0f, 0.0f, 1.0f, 0.0f};
  float *tcs = NULL;
  unsigned int tcslen = 0;
- int has_sides = AY_TRUE, has_startcap = AY_TRUE, has_endcap = AY_TRUE;
+ int has_startcap = AY_TRUE, has_endcap = AY_TRUE;
  int sp_closed = AY_FALSE;
  ay_pomesh_object pomesh = {0};
  unsigned int totalverts = 0, i, j, a = 0, b = 0;
@@ -3909,8 +3930,7 @@ x3dio_readextrusion(scew_element *element)
   if(!element)
     return AY_ENULL;
 
-  ay_status = x3dio_readfloatpoints(element, "crossSection", 2,
-				    &cslen, &cs);
+  ay_status = x3dio_readfloatpoints(element, "crossSection", 2, &cslen, &cs);
 
   if(cslen == 0)
     {
@@ -3928,8 +3948,7 @@ x3dio_readextrusion(scew_element *element)
 	}
     } /* if */
 
-  ay_status = x3dio_readfloatpoints(element, "spine", 3,
-				    &splen, &sp);
+  ay_status = x3dio_readfloatpoints(element, "spine", 3, &splen, &sp);
 
   if(splen == 0)
     {
@@ -3944,8 +3963,7 @@ x3dio_readextrusion(scew_element *element)
       sp_closed = AY_TRUE;
     }
 
-  ay_status = x3dio_readfloatpoints(element, "scale", 2,
-				    &scalelen, &scale);
+  ay_status = x3dio_readfloatpoints(element, "scale", 2, &scalelen, &scale);
 
   if(scalelen == 0)
     {
@@ -3988,12 +4006,10 @@ x3dio_readextrusion(scew_element *element)
       has_endcap = AY_FALSE;
     }
 
-  ay_status = x3dio_readbool(element, "sides", &has_sides);
-
-  pomesh.npolys = (has_sides?(cslen-1) * (splen-1) * 2:0) +
+  pomesh.npolys = ((cslen-1) * (splen-1) * 2) +
     (has_startcap?1:0) + (has_endcap?1:0);
-  totalverts = (has_sides?pomesh.npolys * 3:0) +
-    (has_startcap?cslen:0) + (has_endcap?cslen:0);
+  totalverts = ((cslen-1) * (splen-1) * 2 * 3) +
+    (has_startcap?cslen+1:0) + (has_endcap?cslen+1:0);
 
   if(pomesh.npolys == 0)
     { ay_status = AY_ERROR; goto cleanup; }
@@ -4007,34 +4023,36 @@ x3dio_readextrusion(scew_element *element)
     { ay_status = AY_EOMEM; goto cleanup; }
 
   /* fill polymesh index arrays */
+
+  /* no holes */
   for(i = 0; i < pomesh.npolys; i++)
     {
       pomesh.nloops[i] = 1;
     }
+
+  /* all polys are triangles (nverts for cap polys will be corrected
+     later on) */
   for(i = 0; i < pomesh.npolys; i++)
     {
       pomesh.nverts[i] = 3;
     } /* for */
 
-  if(has_sides)
+  for(i = 0; i < splen-1; i++)
     {
-      for(i = 0; i < splen-1; i++)
+      for(j = 0; j < cslen-1; j++)
 	{
-	  for(j = 0; j < cslen-1; j++)
-	    {
-	      pomesh.verts[a]   = b;
-	      pomesh.verts[a+1] = b+1;
-	      pomesh.verts[a+2] = b+cslen;
-	      a += 3;
-	      pomesh.verts[a]   = b+1;
-	      pomesh.verts[a+1] = b+cslen+1;
-	      pomesh.verts[a+2] = b+cslen;
-	      a += 3;
-	      b++;
-	    } /* for */
+	  pomesh.verts[a]   = b;
+	  pomesh.verts[a+1] = b+1;
+	  pomesh.verts[a+2] = b+cslen;
+	  a += 3;
+	  pomesh.verts[a]   = b+1;
+	  pomesh.verts[a+1] = b+cslen+1;
+	  pomesh.verts[a+2] = b+cslen;
+	  a += 3;
 	  b++;
 	} /* for */
-    } /* if */
+      b++;
+    } /* for */
 
   /* create caps */
   if(has_startcap && has_endcap)
