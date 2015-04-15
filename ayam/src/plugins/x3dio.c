@@ -3678,7 +3678,6 @@ x3dio_getdiffspinepoint(unsigned int splen, float *sp, unsigned int sindex,
 
 
 /* x3dio_getspinerots:
- * XXXX TODO: handle all points equal case
  */
 int
 x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
@@ -3712,7 +3711,28 @@ x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
 		  if(ay_status == AY_ERROR)
 		    {
 		      /* all spine points equal! */
-		    }
+		      for(j = 0; j < splen; j++)
+			{
+			  memset(quat, 0, 3*sizeof(double));
+			  quat[3] = 1.0;
+
+			  if(orlen > 1 && fabs(or[j*4+3]) > AY_EPSILON)
+			    {
+			      q2[0] = or[j*4];
+			      q2[1] = or[j*4+1];
+			      q2[2] = or[j*4+2];
+			      q2[3] = or[j*4+3];
+
+			      ay_quat_axistoquat(q2, q2[3], q1);
+			      ay_quat_add(quat, q1, &(quats[j*4]));
+			    }
+			  else
+			    {
+			      memcpy(&(quats[j*4]), quat, 4*sizeof(double));
+			    } /* if */
+			} /* for */
+		      break;
+		    } /* if */
 
 		  scpy[0] = sp[next*3] - sp[0];
 		  scpy[1] = sp[next*3+1] - sp[1];
@@ -5567,6 +5587,8 @@ int x3dio_readcadelement(scew_element *element, int type)
       o = o->down;
       for(i = 0; i < vislen; i++)
 	{
+	  if(!o)
+	    break;
 	  if(!vis[i])
 	    {
 	      o->hide = AY_TRUE;
