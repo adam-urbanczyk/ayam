@@ -10843,7 +10843,7 @@ NoExport|Export Control@<hline>
 NP|New Property@<hline>
 NT|Normals Tangents<#if out=latex>@<hline></#if>
 </tabular>
-<caption>Tags Overview (1/2)</caption>
+<caption>Tags Overview (1/2), * &ndash; internal</caption>
 </table>
 <p>
 <table loc="ht">
@@ -10860,13 +10860,14 @@ RiOption|RenderMan Export@<hline>
 RP|Remove Property@<hline>
 SaveMainGeom|Geometry Management@<hline>
 SavePaneLayout|Geometry Management@<hline>
+SP|Selected Points@<hline>
 TC|Texture Coordinates@<hline>
 TM|Transformation Matrix*@<hline>
 TP|Tesselation Parameters@<hline>
 UMM|U Min Max@<hline>
 VMM|V Min Max<#if out=latex>@<hline></#if>
 </tabular>
-<caption>Tags Overview (2/2)</caption>
+<caption>Tags Overview (2/2), * &ndash; internal</caption>
 </table>
 
 <sect2>RiAttribute Tag<label id="riatag">
@@ -12073,6 +12074,33 @@ See also the documentation of the corresponding
 scripting interface command <ref id="sctoxyc" name="toXYC">.
 </descrip>
 
+<sect2>Tween Curve Tool<label id="tweennct">
+<p>
+<descrip>
+<tag/Arguments/ The tween tool takes two NURBS curves from
+the selection and requests a parameter <em/r/.
+<tag/Operation/ The selected NURBS curves will be interpolated (tweened)
+and a new third curve incorporating features from the original curves
+will be created.
+The parameter <em/r/ defines the ratio of influence of the first and
+the second curve (the latter using <em>1-r</em>).
+<tscreen><verb>
+|-NCurve             |-NCurve
+|-NCurve     ==>     |-NCurve
+                     |-NCurve
+</verb></tscreen>
+<tag/Notes/ The first two curves must be of the same length and order.
+They need not be defined on the same knot vector, however.
+
+If a third curve is selected, the parameter <em/r/ is ignored and this
+third curve defines the ratio of influence with its y coordinates.
+
+The original NURBS curves will not be deleted by this tool.
+
+See also the documentation of the corresponding
+scripting interface command <ref id="sctweennc" name="tweenNC">.
+</descrip>
+
 <sect2>Make Compatible Tool<label id="makecompt">
 <p>
 <figure loc="ht">
@@ -12084,7 +12112,7 @@ scripting interface command <ref id="sctoxyc" name="toXYC">.
 <tag/Arguments/ The Make Compatible tool takes a number of
 NURBS curves from the selection.
 <tag/Operation/ The curves will be made compatible, so that they
-are of the same order and defined on the same knot vector.
+are of the same length and order and defined on the same knot vector.
 <tag/Notes/ This tool does not change the geometry of the curves.
 However, since clamping, degree elevation, and knot insertion may be
 used on the curves, their order, knot vectors, and control points
@@ -12599,7 +12627,7 @@ See also the documentation of the corresponding scripting interface commands
 <ref id="scinsknvnp" name="insknvNP">.
 </descrip>
 
-<sect2>Remove Knot Surface Tool<label id="remknts">
+<sect2>Remove Knot Surface Tool<label id="remknnpt">
 <p>
 <figure loc="ht">
 <eps file="pics/remknnp.ps" height="5cm">
@@ -14768,6 +14796,27 @@ See also section <ref id="revertt" name="Revert Tool">.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 
+<label id="sctweennc">
+tweenNC &ndash; interpolate (tween) curves:
+<itemize>
+ <item>Synopsis: <tt/"tweenNC [r]"/
+ <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Description: Interpolate (tween) between the first two selected
+NURBS curves, creating a new curve that incorporates features from the
+selected curves. The parameter <em/r/ defines the
+ratio of influence of the first and the second curve (the latter
+using <em>1-r</em>). This parameter defaults to 0.5.<newline>
+The first two curves must be of the same length and order. They need
+not be defined on the same knot vector, however.<newline>
+If a third curve is selected, the parameter <em/r/ is ignored and this
+third curve defines the ratio of influence with its y coordinates.
+<p><p>
+See also section <ref id="tweennct" name="Tween Curve Tool">.
+</itemize>
+
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
 <label id="screvertu"><label id="screvertus">
 revertuS &ndash; revert surfaces:
 <itemize>
@@ -15128,7 +15177,7 @@ not deviate from the original surface more than tol in any point.
 If the knot can not be removed r times due to the tolerance, an
 error is reported and the original surface is left unchanged.
 <p><p>
-See also section <ref id="remknts" name="Remove Knot Surface Tool">.
+See also section <ref id="remknnpt" name="Remove Knot Surface Tool">.
 </itemize>
 
 <p>
@@ -15151,7 +15200,7 @@ not deviate from the original surface more than tol in any point.
 If the knot can not be removed r times due to the tolerance, an
 error is reported and the original surface is left unchanged.
 <p><p>
-See also section <ref id="remknts" name="Remove Knot Surface Tool">.
+See also section <ref id="remknnpt" name="Remove Knot Surface Tool">.
 </itemize>
 
 <p>
@@ -16500,7 +16549,7 @@ shortcut <tt/&lt;F12&gt;/ can be used.
 
 <sect2>Save Selected Points<label id="ssptcl">
 <p>
-The script <tt>"ssp.tcl"</tt> (for <bf/s/ave <bf/s/elected <bf/p/points)
+The script <tt>"ssp.tcl"</tt> (for <bf/s/ave <bf/s/elected <bf/p/oints)
 allows to save the point selection to tags of type
 <tt/SP/.<footnote>Since 1.21.</footnote>
 <p>
@@ -21356,6 +21405,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>TrimRect: <ref id="trrt" name="TrimRect tool">
 <item>TrueDisp: <ref id="attrs" name="RenderMan/BMRT attribute">
 <item>truncated cone: <ref id="tconetcl" name="example/helper script">
+<item>tweenNC: <ref id="sctweennc" name="scripting interface command">
 <item>TwmCompat: <ref id="prefgui" name="preference setting">
 <item>Type:
 <itemize>
