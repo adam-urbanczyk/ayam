@@ -529,6 +529,12 @@ $m.nct add command -label "Shift" -command {
 	"undo save ShiftC; shiftC %0; rV"\
 	"Shift Curve" shiftclc
 }
+$m.nct add command -label "Tween" -command {
+    runTool ay(tweenr) {"Ratio:"}\
+	"undo save TweenNC; tweenNC %0; uCR; rV"\
+	"Tween Curves" tweent
+}
+
 $m.nct add command -label "To XY" -command {
     undo save ToXYNC; toXYNC; rV; }
 $m.nct add command -label "Make Compatible" -command {
