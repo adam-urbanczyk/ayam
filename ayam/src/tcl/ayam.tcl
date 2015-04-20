@@ -682,6 +682,7 @@ array set ay {
  cbsporder 4
  cbsptmax 360.0
  cbsprad 1.0
+ tweenr 0.5
  rmin 0.0
  rmax 1.0
  mindist 1.0e-04
