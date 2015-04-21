@@ -532,7 +532,7 @@ $m.nct add command -label "Shift" -command {
 $m.nct add command -label "Tween" -command {
     runTool ay(tweenr) {"Ratio:"}\
 	"undo save TweenNC; tweenNC %0; uCR; rV"\
-	"Tween Curves" tweent
+	"Tween Curves" tweennct
 }
 
 $m.nct add command -label "To XY" -command {
@@ -733,7 +733,7 @@ $m.npt.kn add command -label "Rescale Knots to Mindist Both" -command {
 	"rescaleknNP -d %0; plb_update;"\
 	"Rescale Knots" resckmnpt
 }
-$m.npt add command -label "Reset Weights" -command {
+$m.npt add command -label "Reset Weights" -underline 0 -command {
     if { $ay(views) != "" } {
 	undo save ResetWeights
 	[lindex $ay(views) 0].f3D.togl wrpac
@@ -741,6 +741,11 @@ $m.npt add command -label "Reset Weights" -command {
     } else {
 	ayError 2 "Reset_Weights" "Need an open view!"
     }
+}
+$m.npt add command -label "Tween" -underline 1 -command {
+    runTool ay(tweenr) {"Ratio:"}\
+	"undo save TweenNP; tweenNP %0; uCR; rV"\
+	"Tween Surfaces" tweennpt
 }
 $m.npt add command -label "Tesselate" -command tgui_open -underline 0
 $m.npt add separator
