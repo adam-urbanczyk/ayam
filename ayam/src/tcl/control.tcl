@@ -21,8 +21,9 @@ proc forAll_callcmd { cmd type } {
 	    return 0;
 	}
     }
-    catch {eval $cmd} retCode
-    if { $retCode == -1 } {
+
+    if { [catch {eval $cmd} err] } {
+	puts stderr "forAll command failed:\n$err"
 	return -1;
     }
 
@@ -77,8 +78,7 @@ proc forAll_tree { recursive type command } {
 		set ay(CurrentLevel) $sel
 		set oldi $i
 		update
-		catch {forAll_tree $recursive $type $command} retCode
-		if { $retCode == -1 } {
+		if { [forAll_tree $recursive $type $command] == -1 } {
 		    return -1;
 		}
 		set i $oldi
@@ -147,8 +147,7 @@ proc forAll_lb { recursive type command } {
 		selOb
 		set oldi $i
 		update
-		catch {forAll_lb $recursive $type $command} retCode
-		if { $retCode == -1 } {
+		if { [forAll_lb $recursive $type $command] == -1 } {
 		    return -1;
 		}
 		set i $oldi
