@@ -10421,14 +10421,14 @@ to revert the direction of the extrusion.
 from the mesh, the neighboring patches of the second face are connected
 to the neighboring faces of the first face.
 The decision, which vertices of the faces will actually be connected,
-depends on the relative vertice distances: you need to move the two
+depends on the relative vertex distances: you need to move the two
 faces near each other to make clear, how the new connection shall be
 established.
 <item><tt/"Face Connect"/, the first two selected faces are removed
 from the mesh, the neighboring patches of the second face are connected
 to the neighboring faces of the first face via a set of new faces.
 The decision, between which vertices of the faces the new faces are built,
-depends on the relative vertice distances: you need to move the two
+depends on the relative vertex distances: you need to move the two
 faces near each other to make clear, how the new connection shall be
 established.
 <item><tt/"Reset All Knots"/, set all knot values to 1.0 (the default).
@@ -11614,6 +11614,40 @@ discussion of trim curves and how to use the rectangular curve created
 by the TrimRect tool.
 </descrip>
 
+<sect2>Tween Curve Tool<label id="tweennct">
+<p>
+<descrip>
+<tag/Arguments/ The tween curve tool takes two NURBS curves from
+the selection and requests a parameter <em/r/.
+<tag/Operation/ The selected NURBS curves will be interpolated (tweened)
+and a new third curve incorporating features from the original curves
+will be created.
+The parameter <em/r/ defines the ratio of influence of the first and
+the second curve (the latter using <em>1-r</em>).
+<tscreen><verb>
+|-NCurve             |-NCurve
+|-NCurve     ==>     |-NCurve
+                     |-NCurve
+</verb></tscreen>
+<tag/Notes/ The two curves must be of the same length and order.
+They need not be defined on the same knot vector, however.
+
+If a third curve is selected, the parameter <em/r/ is ignored and this
+third curve defines the ratio of influence with its y coordinates.
+
+If one of the curves knot vector types is <tt/"Custom"/ or the
+respective knot vector types are different, the resulting
+knot vector type will be <tt/"Custom"/ and the knot values will
+also be interpolated/tweened.<newline>
+Otherwise a matching knot vector will be generated according
+to the type.
+
+The original NURBS curves will not be deleted by this tool.
+
+See also the documentation of the corresponding
+scripting interface command <ref id="sctweennc" name="tweenNC">.
+</descrip>
+
 <#if out=latex><x/newpage/</#if>
 <sect1>Curve Modification Tools
 <p>
@@ -12074,33 +12108,6 @@ See also the documentation of the corresponding
 scripting interface command <ref id="sctoxyc" name="toXYC">.
 </descrip>
 
-<sect2>Tween Curve Tool<label id="tweennct">
-<p>
-<descrip>
-<tag/Arguments/ The tween tool takes two NURBS curves from
-the selection and requests a parameter <em/r/.
-<tag/Operation/ The selected NURBS curves will be interpolated (tweened)
-and a new third curve incorporating features from the original curves
-will be created.
-The parameter <em/r/ defines the ratio of influence of the first and
-the second curve (the latter using <em>1-r</em>).
-<tscreen><verb>
-|-NCurve             |-NCurve
-|-NCurve     ==>     |-NCurve
-                     |-NCurve
-</verb></tscreen>
-<tag/Notes/ The first two curves must be of the same length and order.
-They need not be defined on the same knot vector, however.
-
-If a third curve is selected, the parameter <em/r/ is ignored and this
-third curve defines the ratio of influence with its y coordinates.
-
-The original NURBS curves will not be deleted by this tool.
-
-See also the documentation of the corresponding
-scripting interface command <ref id="sctweennc" name="tweenNC">.
-</descrip>
-
 <sect2>Make Compatible Tool<label id="makecompt">
 <p>
 <figure loc="ht">
@@ -12433,6 +12440,38 @@ for more information regarding the Trim object.
 
 This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
+</descrip>
+
+<sect2>Tween Surfaces Tool<label id="tweennpt">
+<p>
+<descrip>
+<tag/Arguments/ The tween tool takes two NURBS patches from
+the selection and requests a parameter <em/r/.
+<tag/Operation/ The selected NURBS patches will be interpolated (tweened)
+and a new third patch incorporating features from the original patches
+will be created.
+The parameter <em/r/ defines the ratio of influence of the first and
+the second patch (the latter using <em>1-r</em>).
+<tscreen><verb>
+|-NPatch             |-NPatch
+|-NPatch     ==>     |-NPatch
+                     |-NPatch
+</verb></tscreen>
+<tag/Notes/ The two patches must be of the same width, height,
+uorder, and vorder.
+They need not be defined on the same knot vectors, however.
+
+If one of the patches knot vector types is <tt/"Custom"/ or the
+respective knot vector types are different, the resulting
+knot vector type will be <tt/"Custom"/ and the knot values will
+also be interpolated/tweened.<newline>
+Otherwise a matching knot vector will be generated according
+to the type.
+
+The original NURBS patches will not be deleted by this tool.
+
+See also the documentation of the corresponding
+scripting interface command <ref id="sctweennp" name="tweenNP">.
 </descrip>
 
 
@@ -14161,7 +14200,7 @@ Multiple selected objects are supported.<footnote>Since 1.21.</footnote>
 that is associated with a property and calling the appropriate set-procedure
 directly, especially if multiple values are to be set.
 However, the name of the data array and the appropriate procedure
-are inferred automatically and errors are catched and reported.
+are inferred automatically and errors are caught and reported.
 See below for more information regarding direct access of property values.
  <item>Example: Given that a single Sphere object is selected, its
 radius may be set to the new value <tt/"3.0"/ easily using the command
@@ -15399,6 +15438,25 @@ surface type
 Finally, the <tt/"-u"/ option allows to specify the uv-select-string.
 See also section <ref id="concatnpp" name="ConcatNPAttr Property">
 for more information on these options.
+</itemize>
+
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
+<label id="sctweennp">
+tweenNP &ndash; interpolate (tween) surfaces:
+<itemize>
+ <item>Synopsis: <tt/"tweenNP [r]"/
+ <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Description: Interpolate (tween) between the first two selected
+NURBS patches, creating a new patch that incorporates features from the
+selected patches. The parameter <em/r/ defines the
+ratio of influence of the first and the second patch (the latter
+using <em>1-r</em>). This parameter defaults to 0.5.<newline>
+The two patches must be of the same width, height, uorder, and vorder.
+They need not be defined on the same knot vectors, however.<newline>
+<p><p>
+See also section <ref id="tweennpt" name="Tween Surfaces Tool">.
 </itemize>
 
 <p>
