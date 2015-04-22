@@ -253,6 +253,17 @@ ay_interpol_ncurves(double p, ay_object *c1, ay_object *c2, ay_object *ic,
 
   if(newnc->knot_type == AY_KTCUSTOM)
     {
+      if((fabs(nc1->knotv[0] - nc2->knotv[0]) > AY_EPSILON) ||
+	 (fabs(nc1->knotv[nc1->length+nc1->order-1] -
+	       nc2->knotv[nc2->length+nc2->order-1]) > AY_EPSILON))
+	{
+	  ay_status = ay_knots_rescaletorange(nc2->length+nc2->order,
+					      nc2->knotv, nc1->knotv[0],
+				       nc1->knotv[nc1->length+nc1->order-1]);
+	  if(ay_status)
+	    goto cleanup;
+	}
+
       if(!(newknotv = calloc(nc1->length+nc1->order, sizeof(double))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
 
@@ -423,6 +434,17 @@ ay_interpol_npatches(double r, ay_object *p1, ay_object *p2, ay_object **ta)
 
   if(newnp->uknot_type == AY_KTCUSTOM)
     {
+      if((fabs(np1->uknotv[0] - np2->uknotv[0]) > AY_EPSILON) ||
+	 (fabs(np1->uknotv[np1->width+np1->uorder-1] -
+	       np2->uknotv[np2->width+np2->uorder-1]) > AY_EPSILON))
+	{
+	  ay_status = ay_knots_rescaletorange(np2->width+np2->uorder,
+					      np2->uknotv, np1->uknotv[0],
+				       np1->uknotv[np1->width+np1->uorder-1]);
+	  if(ay_status)
+	    goto cleanup;
+	}
+
       if(!(newuknotv = calloc(np1->width+np1->uorder, sizeof(double))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
 
@@ -442,6 +464,17 @@ ay_interpol_npatches(double r, ay_object *p1, ay_object *p2, ay_object **ta)
 
   if(newnp->vknot_type == AY_KTCUSTOM)
     {
+      if((fabs(np1->vknotv[0] - np2->vknotv[0]) > AY_EPSILON) ||
+	 (fabs(np1->vknotv[np1->height+np1->vorder-1] -
+	       np2->vknotv[np2->height+np2->vorder-1]) > AY_EPSILON))
+	{
+	  ay_status = ay_knots_rescaletorange(np2->height+np2->vorder,
+					      np2->vknotv, np1->vknotv[0],
+				       np1->vknotv[np1->height+np1->vorder-1]);
+	  if(ay_status)
+	    goto cleanup;
+	}
+
       if(!(newvknotv = calloc(np1->height+np1->vorder, sizeof(double))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
 
