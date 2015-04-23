@@ -1786,9 +1786,9 @@ ay_trafo_normalize(ay_object *o, int digits)
 
   ay_quat_toeuler(o->quat, euler);
 
-  o->rotx = AY_R2D(euler[0]);
+  o->rotx = AY_R2D(euler[2]);
   o->roty = AY_R2D(euler[1]);
-  o->rotz = AY_R2D(euler[2]);
+  o->rotz = AY_R2D(euler[0]);
 
   o->rotx = ay_trafo_round(o->rotx, digits);
   o->roty = ay_trafo_round(o->roty, digits);
