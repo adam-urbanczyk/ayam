@@ -1,9 +1,10 @@
-[15. Apr 2015] CVS-Head:
+[23. Apr 2015] CVS-Head:
 ========================
 Bug Fixes:
 o silhouettes are missing when draw selection only is active (SF 499)
 o moving objects in the hierarchy by keyboard does not notify/redraw (SF 500)
 o save selected misses the first of the selected objects (SF 501)
+o rotation attributes swapped after normalization (SF 502)
 
 Modelling:
 o added option to display rational points in homogeneous style
@@ -18,6 +19,7 @@ o about dialog now only displays OpenGL/GLU extensions on request/click
 
 Scripts/Scripting Interface:
 o added commands to tween NURBS curves and surfaces ("tweenNC" and "tweenNP")
+o improved error reporting of "forAll" procedure
 
 Import/Export:
 o X3D import of extrusion nodes improved
