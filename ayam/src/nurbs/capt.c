@@ -299,7 +299,6 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, double *mp,
 	{ ay_status = AY_EOMEM; goto cleanup; }
 
       a = 0;
-      numuniq = 0;
       for(i = 0; i < nc->length; i++)
 	{
 	  p = &(nc->controlv[a]);
@@ -351,7 +350,6 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, double *mp,
 	  p[3] = 1.0;
 	  p = &(circcv[stride]);
 	  angle = 360.0/numuniq;
-	  q1 = &(nc->controlv[stride]);
 	  q1 = nc->controlv;
 	  q2 = q1+stride;
 	  for(i = 1; i < nc->length-1; i++)
