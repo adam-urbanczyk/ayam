@@ -2778,8 +2778,14 @@ onio_readbrep(ON_Brep *p_b, double accuracy)
 	  lf = NULL;
 	  ay_status = onio_readnurbssurface(&s, true);
 	  lf = onio_lrobject;
-	  if(lf && lf->type == AY_IDNPATCH)
+
+	  if(ay_status)
+	    return ay_status;
+
+	  if(lf && lf->type == AY_IDNPATCH && lf->refine)
 	    np = (ay_nurbpatch_object*)lf->refine;
+	  else
+	    return AY_ERROR;
 	}
       else
 	{
@@ -2787,9 +2793,6 @@ onio_readbrep(ON_Brep *p_b, double accuracy)
 	  "Unable to convert brep face; continuing with next face.");
 	  continue;
 	}
-
-      if(ay_status)
-	return ay_status;
 
       // loop_count = number of trimming loops on this face (>=1)
       const int loop_count = face.m_li.Count();

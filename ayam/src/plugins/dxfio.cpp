@@ -2178,11 +2178,12 @@ dxfio_writencurve(ay_object *o, dimeModel *dm, double *m)
       dk[i] = (dxfdouble)nc->knotv[i];
     }
   sp->setKnotValues(dk, nc->length+nc->order, NULL);
+  free(dk);  
   dk = NULL;
 
   dv = (dimeVec3f*)calloc(nc->length, sizeof(dimeVec3f));
   if(!dv)
-    { free(dk); ay_status = AY_EOMEM; goto cleanup; }
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   for(int i = 0; i < nc->length; i++)
     {
@@ -2194,6 +2195,8 @@ dxfio_writencurve(ay_object *o, dimeModel *dm, double *m)
     }
 
   sp->setControlPoints(dv, nc->length, NULL);
+  free(dv);
+  dv = NULL;
 
   if(has_weights)
     {
