@@ -426,6 +426,14 @@ typedef struct ay_root_object_s
 } ay_root_object;
 
 
+/** a tesselated NURBS curve */
+typedef struct ay_stess_curve_s {
+  int tesslen; /**< number of points in tesselation */
+  double *tessv; /**< cached tesselation [tesslen*3] */
+  int tessqf; /**< cached tesselation quality */
+} ay_stess_curve;
+
+
 /** NURBS curve object */
 typedef struct ay_nurbcurve_object_s
 {
@@ -443,10 +451,7 @@ typedef struct ay_nurbcurve_object_s
   GLUnurbsObj *no; /**< GLU NURBS object */
   float *fltcv; /**< cached float data for GLU */
 
-  /* stess */
-  int tesslen; /**< number of points in tesselation */
-  double *tessv; /**< cached tesselation [tesslen*3] */
-  int tessqf; /**< cached tesselation quality */
+  ay_stess_curve stess[2]; /**< stess tesselations */
 
   /* multiple points */
   int createmp; /**< create multiple points? */

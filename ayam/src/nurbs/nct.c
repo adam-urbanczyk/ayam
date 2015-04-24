@@ -139,9 +139,11 @@ ay_nct_destroy(ay_nurbcurve_object *curve)
   if(curve->no)
     gluDeleteNurbsRenderer(curve->no);
 
-  /* free (simple) tesselation */
-  if(curve->tessv)
-    free(curve->tessv);
+  /* free (simple) tesselations */
+  if(curve->stess[0].tessv)
+    free(curve->stess[0].tessv);
+  if(curve->stess[1].tessv)
+    free(curve->stess[1].tessv);
 
   if(curve->controlv)
     free(curve->controlv);
@@ -2682,10 +2684,17 @@ cleanup:
 } /* ay_nct_finducb */
 
 
-/* ay_nct_splitdisc:
- *  split NURBCurve object <src> at discontinuous parametric value <u>
- *  into two curves;
- *  modifies <src>, returns second curve in <result>.
+/** ay_nct_splitdisc:
+ * split NURBCurve object \a src at discontinuous parametric value \a u
+ * into two curves;
+ * \a u must appear curve->order times in the knot vector;
+ * modifies \a src, returns second curve in \a result
+ *
+ * \param[in,out] src curve object to split
+ * \param[in] u parametric value
+ * \param[in,out] result where to store the second curve
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_splitdisc(ay_object *src, double u, ay_object **result)
@@ -2716,8 +2725,15 @@ ay_nct_splitdisc(ay_object *src, double u, ay_object **result)
 	break;
     }
 
-  nc2->length = nc1->length-i;
   nc1->length = i;
+
+  if(nc1->length < 2)
+    { nc1->length = nc2->length; ay_status = AY_ERROR; goto cleanup; }
+
+  nc2->length -= i;
+
+  if(nc2->length < 2)
+    { ay_status = AY_ERROR; goto cleanup; }
 
   /* create new controls/knots for first curve */
   if(!(newcv1 = malloc(nc1->length*stride*sizeof(double))))
@@ -2781,9 +2797,15 @@ cleanup:
 } /* ay_nct_splitdisc */
 
 
-/* ay_nct_split:
- *  split NURBCurve object <src> at parametric value <u> into two;
- *  modifies <src>, returns second curve in <result>.
+/** ay_nct_split:
+ *  split NURBCurve object \a src at parametric value \a u into two;
+ *  modifies \a src, returns second curve in \a result
+ *
+ * \param src curve object to split
+ * \param u parametric value at which to split
+ * \param result where to store the second curve
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_split(ay_object *src, double u, ay_object **result)
@@ -2880,8 +2902,15 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
 	  nc1len = k - (nc1->order-1) + 1;
 	}
 
+      if(nc1len < 2)
+	{ (void)ay_object_delete(new); return AY_ERROR; }
+
       nc2 = (ay_nurbcurve_object*)new->refine;
       nc2->length = (nc1->length+1) - nc1len;
+
+      if(nc2->length < 2)
+	{ (void)ay_object_delete(new); return AY_ERROR; }
+
       nc1->length = nc1len;
 
       if(!(newcontrolv = malloc(nc1->length*stride*sizeof(double))))
@@ -2996,6 +3025,8 @@ ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if((ay_status = ay_nct_split(sel->object, u, &new)))
 	    {
+	      if(!new)
+
 	      ay_error(ay_status, argv[0], NULL);
 	      return TCL_OK;
 	    } /* if */

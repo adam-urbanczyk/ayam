@@ -434,9 +434,11 @@ ay_ncurve_deletecb(void *c)
   if(ncurve->fltcv)
     free(ncurve->fltcv);
 
-  /* free (simple) tesselation */
-  if(ncurve->tessv)
-    free(ncurve->tessv);
+  /* free (simple) tesselations */
+  if(ncurve->stess[0].tessv)
+    free(ncurve->stess[0].tessv);
+  if(ncurve->stess[1].tessv)
+    free(ncurve->stess[1].tessv);
 
   free(ncurve);
 
@@ -468,8 +470,7 @@ ay_ncurve_copycb(void *src, void **dst)
   ncurve->fltcv = NULL;
   ncurve->knotv = NULL;
   ncurve->controlv = NULL;
-  ncurve->tessv = NULL;
-  ncurve->tesslen = 0;
+  memset(ncurve->stess, 0, 2*sizeof(ay_stess_curve));
 
   /* copy knots */
   knot_count = ncurve->order + ncurve->length;
@@ -510,8 +511,6 @@ cleanup:
 	free(ncurve->controlv);
       if(ncurve->knotv)
 	free(ncurve->knotv);
-      if(ncurve->tessv)
-	free(ncurve->tessv);
       free(ncurve);
     }
 
@@ -530,6 +529,7 @@ ay_ncurve_drawstess(ay_view_object *view, ay_nurbcurve_object *ncurve)
  int a = 0, i, tesslen, tstride;
  double *tessv;
  int qf = ay_prefs.stess_qf;
+ ay_stess_curve *stc;
 
   if(ncurve->order == 2)
     {
@@ -544,31 +544,42 @@ ay_ncurve_drawstess(ay_view_object *view, ay_nurbcurve_object *ncurve)
 	  qf = ay_stess_GetQF(ncurve->glu_sampling_tolerance);
 	}
 
-      if(ncurve->tessqf != qf)
+      /* select correct ay_stess_curve struct */
+      stc = &(ncurve->stess[0]);
+
+      /* in an action, we pick the second struct (unless the first
+	 is already of the right qf) */
+      if(view->action_state && stc->tessqf != qf)
 	{
-	  if(ncurve->tessv)
+	  stc = &(ncurve->stess[1]);
+	}
+
+      if(stc->tessqf != qf)
+	{
+	  if(stc->tessv)
 	    {
-	      free(ncurve->tessv);
-	      ncurve->tessv = NULL;
-	      ncurve->tesslen = 0;
+	      free(stc->tessv);
+	      stc->tessv = NULL;
+	      stc->tesslen = 0;
 	    }
 	}
 
-      if(!ncurve->tessv)
+      if(!stc->tessv)
 	{
 	  ay_status = ay_stess_CurvePoints3D(ncurve->length, ncurve->order-1,
 		         ncurve->knotv, ncurve->controlv, ncurve->is_rat, qf,
-					   &ncurve->tesslen, &ncurve->tessv);
+					     &stc->tesslen, &stc->tessv);
 
 	  if(ay_status)
 	    {
 	      return ay_status;
 	    }
 	}
+
       tstride = 3;
-      tessv = ncurve->tessv;
-      tesslen = ncurve->tesslen;
-      ncurve->tessqf = qf;
+      tessv = stc->tessv;
+      tesslen = stc->tesslen;
+      stc->tessqf = qf;
     } /* if */
 
   if(tesslen)
@@ -1097,6 +1108,8 @@ ay_ncurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	      pnt = *lastpnt;
 	    }
 	} /* while */
+      break;
+    default:
       break;
     } /* switch */
 
@@ -1749,12 +1762,11 @@ ay_ncurve_notifycb(ay_object *o)
     }
 
   /* manage the cached tesselation */
-  if(ncurve->tessv)
-    {
-      free(ncurve->tessv);
-      ncurve->tessv = NULL;
-      ncurve->tesslen = 0;
-    }
+  if(ncurve->stess[0].tessv)
+    free(ncurve->stess[0].tessv);
+  if(ncurve->stess[1].tessv)
+    free(ncurve->stess[1].tessv);
+  memset(ncurve->stess, 0, 2*sizeof(ay_stess_curve));
 
  return AY_OK;
 } /* ay_ncurve_notifycb */
