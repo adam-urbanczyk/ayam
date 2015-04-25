@@ -53,25 +53,18 @@ int ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 /* functions: */
 
 /* ay_stess_destroy:
- *  properly destroy an stess object
+ *  properly destroy an stess patch object
  */
 void
-ay_stess_destroy(ay_nurbpatch_object *np)
+ay_stess_destroy(ay_stess_patch *stess)
 {
  ay_voidfp *arr = NULL;
  ay_deletecb *cb = NULL;
  ay_stess_uvp *p = NULL;
- ay_stess *stess = NULL;
  int i;
 
-
-  if(!np)
+  if(!stess)
     return;
-
-  if(!np->stess)
-    return;
-
-  stess = np->stess;
 
   if(stess->tessv)
     free(stess->tessv);
@@ -118,9 +111,7 @@ ay_stess_destroy(ay_nurbpatch_object *np)
 	(void)cb(stess->pomesh);
     }
 
-  /* now free the stess object */
-  free(stess);
-  np->stess = NULL;
+  memset(stess, 0, sizeof(ay_stess_patch));
 
  return;
 } /* ay_stess_destroy */
@@ -2187,7 +2178,7 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
  *
  */
 void
-ay_stess_DrawTrimmedSurface(ay_stess *stess)
+ay_stess_DrawTrimmedSurface(ay_stess_patch *stess)
 {
  int i, j, a, out = 0;
  ay_stess_uvp *uvpptr;
@@ -2314,7 +2305,7 @@ ay_stess_DrawTrimmedSurface(ay_stess *stess)
  *
  */
 void
-ay_stess_ShadeTrimmedSurface(ay_stess *stess)
+ay_stess_ShadeTrimmedSurface(ay_stess_patch *stess)
 {
  int i, instrip = AY_FALSE;
  unsigned int j;
@@ -2711,67 +2702,58 @@ ay_stess_ShadeTrimmedSurface(ay_stess *stess)
  *
  */
 int
-ay_stess_TessTrimmedNP(ay_object *o, int qf)
+ay_stess_TessTrimmedNP(ay_object *o, int qf, ay_stess_patch *stess)
 {
  int ay_status = AY_OK;
- ay_nurbpatch_object *p = NULL;
- ay_stess *st = NULL;
+ ay_nurbpatch_object *np = NULL;
  double **tcs = NULL; /**< tesselated trim curves [tcslen][tcslens[i]] */
  int i, *tcsdirs = NULL; /**< directions of trim curves [tcslen] */
 
-  p = (ay_nurbpatch_object *)o->refine;
+  np = (ay_nurbpatch_object *)o->refine;
 
-  if(p->stess)
-    {
-      ay_stess_destroy(p);
-    }
-
-  if(!(p->stess = calloc(1, sizeof(ay_stess))))
-    return AY_ERROR;
-
-  st = p->stess;
+  ay_stess_destroy(stess);
 
   ay_status = ay_stess_TessTrimCurves(o, qf,
-				      &(st->tcslen), &tcs,
-				      &(st->tcslens), &tcsdirs);
+				      &(stess->tcslen), &tcs,
+				      &(stess->tcslens), &tcsdirs);
 
   if(ay_status)
     goto cleanup;
 
-  ay_status = ay_stess_TessTrimmedNPU(o, qf, st->tcslen, tcs,
-				      st->tcslens, tcsdirs,
-				      &(st->ud), &(st->vd),
-				      &(st->upslen), &(st->ups));
+  ay_status = ay_stess_TessTrimmedNPU(o, qf, stess->tcslen, tcs,
+				      stess->tcslens, tcsdirs,
+				      &(stess->ud), &(stess->vd),
+				      &(stess->upslen), &(stess->ups));
 
   if(ay_status)
     goto cleanup;
 
-  ay_status = ay_stess_TessTrimmedNPV(o, qf, st->tcslen, tcs,
-				      st->tcslens, tcsdirs,
-				      &(st->vpslen), &(st->vps));
+  ay_status = ay_stess_TessTrimmedNPV(o, qf, stess->tcslen, tcs,
+				      stess->tcslens, tcsdirs,
+				      &(stess->vpslen), &(stess->vps));
 
   if(ay_status)
     goto cleanup;
 
-  st->ft_cw = !tcsdirs[0];
+  stess->ft_cw = !tcsdirs[0];
 
   ay_status = ay_stess_ReTessTrimCurves(o, qf,
-					st->tcslen, tcs,
-					st->tcslens,
-					&(st->tcspnts));
+					stess->tcslen, tcs,
+					stess->tcslens,
+					&(stess->tcspnts));
 
   if(ay_status)
     goto cleanup;
 
   /* prevent cleanup code from doing something harmful */
-  p = NULL;
+  np = NULL;
 
   /* clean up the mess */
 cleanup:
 
   if(tcs)
     {
-      for(i = 0; i < st->tcslen; i++)
+      for(i = 0; i < stess->tcslen; i++)
 	{
 	  if(tcs[i])
 	    free(tcs[i]);
@@ -2782,9 +2764,9 @@ cleanup:
   if(tcsdirs)
     free(tcsdirs);
 
-  if(p)
+  if(np)
     {
-      ay_stess_destroy(p);
+      ay_stess_destroy(stess);
     }
 
   if(ay_status)
@@ -2798,12 +2780,11 @@ cleanup:
  *
  */
 int
-ay_stess_TessTrimmedPlanarNP(ay_object *o, int qf)
+ay_stess_TessTrimmedPlanarNP(ay_object *o, int qf, ay_stess_patch *stess)
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object *np = NULL;
  ay_tag *tag;
- ay_stess *st = NULL;
  double **tcs = NULL; /**< tesselated trim curves [tcslen][tcslens[i]] */
  int tcslen, *tcslens = NULL, *tcsdirs = NULL;
  unsigned int i, j, a, totalverts = 0;
@@ -2812,10 +2793,7 @@ ay_stess_TessTrimmedPlanarNP(ay_object *o, int qf)
 
   np = (ay_nurbpatch_object *)o->refine;
 
-  if(np->stess)
-    {
-      ay_stess_destroy(np);
-    }
+  ay_stess_destroy(stess);
 
   ay_status = ay_stess_TessTrimCurves(o, qf,
 				      &tcslen, &tcs,
@@ -2826,13 +2804,8 @@ ay_stess_TessTrimmedPlanarNP(ay_object *o, int qf)
 
   if(tcs)
     {
-      if(!(np->stess = calloc(1, sizeof(ay_stess))))
-	return AY_ERROR;
-
-      st = np->stess;
-
-      st->tcslen = tcslen;
-      st->tcslens = tcslens;
+      stess->tcslen = tcslen;
+      stess->tcslens = tcslens;
 
       if(!(po = calloc(1, sizeof(ay_pomesh_object))))
 	{
@@ -2875,7 +2848,7 @@ ay_stess_TessTrimmedPlanarNP(ay_object *o, int qf)
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
 	}
-      st->tcspnts = po->controlv;
+      stess->tcspnts = po->controlv;
 
       p = po->controlv;
       for(i = 0; i < (unsigned int)tcslen; i++)
@@ -2905,18 +2878,18 @@ ay_stess_TessTrimmedPlanarNP(ay_object *o, int qf)
 	}
 
       /* set normal */
-      st->normal[0] = 0.0;
-      st->normal[1] = 0.0;
-      st->normal[2] = 1.0;
+      stess->normal[0] = 0.0;
+      stess->normal[1] = 0.0;
+      stess->normal[2] = 1.0;
       p = NULL;
       tag = o->tags;
       while(tag)
 	{
 	  if(tag->type == ay_nt_tagtype)
 	    {
-	      memcpy(st->normal, ((ay_btval*)tag->val)->payload,
+	      memcpy(stess->normal, ((ay_btval*)tag->val)->payload,
 		     3*sizeof(double));
-	      p = st->normal;
+	      p = stess->normal;
 	      break;
 	    }
 	  tag = tag->next;
@@ -2925,7 +2898,7 @@ ay_stess_TessTrimmedPlanarNP(ay_object *o, int qf)
       /* tesselate the polygon */
       ay_status = ay_tess_pomesh(po, /*optimize=*/AY_FALSE, p, &tpo);
 
-      st->pomesh = tpo;
+      stess->pomesh = tpo;
     } /* if tcs */
 
   /* prevent cleanup code from doing something harmful */
@@ -2975,10 +2948,10 @@ cleanup:
 
 /* ay_stess_TessNP:
  *  tesselate NURBS patch object <o> with quality factor <qf>;
- *  stores results in the object!
+ *  stores results in <stess>
  */
 int
-ay_stess_TessNP(ay_object *o, int qf)
+ay_stess_TessNP(ay_object *o, int qf, ay_stess_patch *stess)
 {
  int ay_status = AY_ERROR;
  char fname[] = "stess_TessNP";
@@ -2996,9 +2969,9 @@ ay_stess_TessNP(ay_object *o, int qf)
     {
       /* this is a nontrivially trimmed NURBS patch */
       if(npatch->is_planar)
-	ay_status = ay_stess_TessTrimmedPlanarNP(o, qf);
+	ay_status = ay_stess_TessTrimmedPlanarNP(o, qf, stess);
       else
-	ay_status = ay_stess_TessTrimmedNP(o, qf);
+	ay_status = ay_stess_TessTrimmedNP(o, qf, stess);
     }
   else
     {
@@ -3006,7 +2979,7 @@ ay_stess_TessNP(ay_object *o, int qf)
 	 ay_npt_istrimmed(o, 1))
 	{
 	  /* this is a trivially trimmed planar NURBS patch */
-	  ay_status = ay_stess_TessTrimmedPlanarNP(o, qf);
+	  ay_status = ay_stess_TessTrimmedPlanarNP(o, qf, stess);
 	}
     }
 
@@ -3015,16 +2988,7 @@ ay_stess_TessNP(ay_object *o, int qf)
       /* trimmed tesselation failed or
 	 this is an untrimmed or trivially trimmed NURBS patch,
          where we can safely ignore potentially present trim curves... */
-      if(npatch->stess)
-	{
-	  ay_stess_destroy(npatch);
-	}
-
-      if(!(npatch->stess = calloc(1, sizeof(ay_stess))))
-	{
-	  ay_status = AY_EOMEM;
-	  goto cleanup;
-	}
+      ay_stess_destroy(stess);
 
       if(npatch->is_rat)
 	{
@@ -3033,8 +2997,8 @@ ay_stess_TessNP(ay_object *o, int qf)
 					   npatch->uorder-1, npatch->vorder-1,
 					   npatch->uknotv, npatch->vknotv,
 					   npatch->controlv, qf,
-				 &npatch->stess->tessw, &npatch->stess->tessh,
-				 &npatch->stess->tessv);
+					   &stess->tessw, &stess->tessh,
+					   &stess->tessv);
 	}
       else
 	{
@@ -3043,13 +3007,12 @@ ay_stess_TessNP(ay_object *o, int qf)
 					   npatch->uorder-1, npatch->vorder-1,
 					   npatch->uknotv, npatch->vknotv,
 					   npatch->controlv, qf,
-				 &npatch->stess->tessw, &npatch->stess->tessh,
-				 &npatch->stess->tessv);
+					   &stess->tessw, &stess->tessh,
+					   &stess->tessv);
 	} /* if */
     } /* if */
 
-  if(npatch->stess)
-    npatch->tessqf = qf;
+    stess->qf = qf;
 
 cleanup:
 

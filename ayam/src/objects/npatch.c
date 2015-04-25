@@ -583,9 +583,9 @@ ay_npatch_deletecb(void *c)
   if(npatch->fltcv)
     free(npatch->fltcv);
 
-  /* free tesselation */
-  if(npatch->stess)
-    ay_stess_destroy(npatch);
+  /* free tesselations */
+  ay_stess_destroy(&(npatch->stess[0]));
+  ay_stess_destroy(&(npatch->stess[1]));
 
   free(npatch);
 
@@ -615,7 +615,7 @@ ay_npatch_copycb(void *src, void **dst)
 
   npatch->no = NULL;
   npatch->fltcv = NULL;
-  npatch->stess = NULL;
+  memset(npatch->stess, 0, 2*sizeof(ay_stess_patch));
 
   /* copy knots */
   kl = npatch->uorder + npatch->width;
@@ -689,32 +689,40 @@ ay_npatch_drawstess(ay_view_object *view, ay_object *o)
  double *tessv = NULL;
  int qf = ay_prefs.stess_qf;
  ay_nurbpatch_object *npatch = (ay_nurbpatch_object *)o->refine;
+ ay_stess_patch *stess;
 
   if((npatch->glu_sampling_tolerance != 0.0) && !view->action_state)
     {
       qf = ay_stess_GetQF(npatch->glu_sampling_tolerance);
     }
 
-  if(npatch->tessqf != qf)
+  /* select correct ay_stess_patch struct */
+  stess = &(npatch->stess[0]);
+
+  /* in an action, we pick the second struct (unless the first
+     is already of the right qf) */
+  if(view->action_state && stess->qf != qf)
     {
-      if(npatch->stess)
-	{
-	  ay_stess_destroy(npatch);
-	}
+      stess = &(npatch->stess[1]);
+    }
+
+  if(stess->qf != qf)
+    {
+      ay_stess_destroy(stess);
     } /* if */
 
-  if(!npatch->stess || (npatch->stess && npatch->stess->tessw == -1))
+  if(stess->qf != qf || stess->tessw == -1)
     {
-      ay_status = ay_stess_TessNP(o, qf);
+      ay_status = ay_stess_TessNP(o, qf, stess);
       if(ay_status)
 	return ay_status;
     }
 
-  if(npatch->stess && npatch->stess->tessv)
+  if(stess->tessv)
     {
-      tessv = npatch->stess->tessv;
-      tessw = npatch->stess->tessw;
-      tessh = npatch->stess->tessh;
+      tessv = stess->tessv;
+      tessw = stess->tessw;
+      tessh = stess->tessh;
 
       a = 0;
       for(i = 0; i < tessw; i++)
@@ -742,10 +750,7 @@ ay_npatch_drawstess(ay_view_object *view, ay_object *o)
     }
   else
     {
-      if(npatch->stess)
-	{
-	  ay_stess_DrawTrimmedSurface(npatch->stess);
-	}
+      ay_stess_DrawTrimmedSurface(stess);
     } /* if */
 
  return AY_OK;
@@ -832,7 +837,6 @@ ay_npatch_cacheflt(ay_nurbpatch_object *npatch)
 int
 ay_npatch_drawglu(ay_view_object *view, ay_object *o)
 {
- int ay_status = AY_OK;
  int uorder, vorder, width, height, uknot_count, vknot_count;
  int display_mode = ay_prefs.np_display_mode;
  GLdouble sampling_tolerance = ay_prefs.glu_sampling_tolerance;
@@ -907,7 +911,7 @@ ay_npatch_drawglu(ay_view_object *view, ay_object *o)
   /* draw trimcurves */
   if(o->down && o->down->next)
     {
-      ay_status = ay_npt_drawtrimcurves(o, 0);
+      (void)ay_npt_drawtrimcurves(o, 0);
     } /* if */
 
   gluEndSurface(npatch->no);
@@ -990,7 +994,7 @@ ay_npatch_drawch(ay_nurbpatch_object *npatch)
 		 {
 		   glVertex3fv((GLfloat *)&fcv[a]);
 		   a += 4;
-		 }	     
+		 }
 	      glEnd();
 	    }
 
@@ -1002,7 +1006,7 @@ ay_npatch_drawch(ay_nurbpatch_object *npatch)
 		 {
 		   glVertex3fv((GLfloat *)&fcv[a]);
 		   a += (4 * height);
-		 }	     
+		 }
 	      glEnd();
 	    }
 	}
@@ -1102,21 +1106,19 @@ ay_npatch_shadech(ay_nurbpatch_object *npatch)
 {
  int a, b, c, d, i, j;
  float *fcv;
+ ay_stess_patch *stess;
 
-  if(npatch->stess && npatch->stess->tessw != -1)
-    ay_stess_destroy(npatch);
+  stess = &(npatch->stess[0]);
 
-  if(!npatch->stess)
-    {
-      if(!(npatch->stess = calloc(1, sizeof(ay_stess))))
-	return AY_EOMEM;
-      if(!(npatch->stess->tessv = calloc(npatch->width*npatch->height*3,
-					 sizeof(double))))
-	{free(npatch->stess); npatch->stess = NULL; return AY_EOMEM;}
+  if(stess->tessw != -1)
+    ay_stess_destroy(stess);
 
-      ay_npt_getcvnormals(npatch, npatch->stess->tessv);
-      npatch->stess->tessw = -1;
-    } /* if */
+  if(!(stess->tessv = calloc(npatch->width*npatch->height*3,
+				     sizeof(double))))
+    { return AY_EOMEM; }
+
+  ay_npt_getcvnormals(npatch, stess->tessv);
+  stess->tessw = -1;
 
   if(npatch->is_rat)
     {
@@ -1141,9 +1143,9 @@ ay_npatch_shadech(ay_nurbpatch_object *npatch)
 	  glBegin(GL_QUAD_STRIP);
 	  for(j = 0; j < npatch->height; j++)
 	    {
-	      glNormal3dv(&(npatch->stess->tessv[c]));
+	      glNormal3dv(&(stess->tessv[c]));
 	      glVertex3fv(&(fcv[a]));
-	      glNormal3dv(&(npatch->stess->tessv[d]));
+	      glNormal3dv(&(stess->tessv[d]));
 	      glVertex3fv(&(fcv[b]));
 	      a += 4;
 	      b += 4;
@@ -1164,9 +1166,9 @@ ay_npatch_shadech(ay_nurbpatch_object *npatch)
 	  glBegin(GL_QUAD_STRIP);
 	  for(j = 0; j < npatch->height; j++)
 	    {
-	      glNormal3dv(&(npatch->stess->tessv[c]));
+	      glNormal3dv(&(stess->tessv[c]));
 	      glVertex3dv(&(npatch->controlv[a]));
-	      glNormal3dv(&(npatch->stess->tessv[d]));
+	      glNormal3dv(&(stess->tessv[d]));
 	      glVertex3dv(&(npatch->controlv[b]));
 	      a += 4;
 	      b += 4;
@@ -1192,30 +1194,40 @@ ay_npatch_shadestess(ay_view_object *view, ay_object *o)
  int a, b, i, j, tessw, tessh;
  double *tessv = NULL;
  ay_nurbpatch_object *npatch = (ay_nurbpatch_object *)o->refine;
+ ay_stess_patch *stess;
 
   if((npatch->glu_sampling_tolerance != 0.0) && !view->action_state)
     {
       qf = ay_stess_GetQF(npatch->glu_sampling_tolerance);
     }
 
-  if(npatch->tessqf != qf)
-    {
-      if(npatch->stess)
-	{
-	  ay_stess_destroy(npatch);
-	}
-    } /* if */
+  /* select correct ay_stess_patch struct */
+  stess = &(npatch->stess[0]);
 
-  if(!npatch->stess || (npatch->stess && npatch->stess->tessw == -1))
+  /* in an action, we pick the second struct (unless the first
+     is already of the right qf) */
+  if(view->action_state && stess->qf != qf)
     {
-      ay_status = ay_stess_TessNP(o, qf);
+      stess = &(npatch->stess[1]);
     }
 
-  if(npatch->stess && npatch->stess->tessv)
+  if(stess->qf != qf)
     {
-      tessv = npatch->stess->tessv;
-      tessw = npatch->stess->tessw;
-      tessh = npatch->stess->tessh;
+      ay_stess_destroy(stess);
+    } /* if */
+
+  if(stess->qf != qf || stess->tessw == -1)
+    {
+      ay_status = ay_stess_TessNP(o, qf, stess);
+      if(ay_status)
+	return ay_status;
+    }
+
+  if(stess->tessv)
+    {
+      tessv = stess->tessv;
+      tessw = stess->tessw;
+      tessh = stess->tessh;
 
       a = 0;
       b = tessh*6;
@@ -1236,9 +1248,9 @@ ay_npatch_shadestess(ay_view_object *view, ay_object *o)
     }
   else
     {
-      if(npatch->stess)
+      if(stess)
 	{
-	  (void)ay_stess_ShadeTrimmedSurface(npatch->stess);
+	  (void)ay_stess_ShadeTrimmedSurface(stess);
 	}
     }
 
@@ -3080,7 +3092,7 @@ ay_npatch_notifycb(ay_object *o)
  ay_bparam bparams = {0};
  ay_cparam cparams = {0};
  int display_mode = ay_prefs.np_display_mode, mode;
- int i, qf = ay_prefs.stess_qf;
+ int i;
  double normal[3], tolerance;
 
   if(!o)
@@ -3183,11 +3195,10 @@ ay_npatch_notifycb(ay_object *o)
       npatch->fltcv = NULL;
     }
 
-  /* manage the cached tesselation */
-  if(npatch->stess)
-    {
-      ay_stess_destroy(npatch);
-    }
+  /* manage the cached tesselations */
+  ay_stess_destroy(&(npatch->stess[0]));
+  ay_stess_destroy(&(npatch->stess[1]));
+  memset(npatch->stess, 0, 2*sizeof(ay_stess_patch));
 
   if(npatch->display_mode != 0)
     {
@@ -3204,12 +3215,6 @@ ay_npatch_notifycb(ay_object *o)
       break;
     case 3:
     case 4:
-      if(npatch->glu_sampling_tolerance != 0.0)
-	{
-	  qf = ay_stess_GetQF(npatch->glu_sampling_tolerance);
-	}
-
-      npatch->tessqf = qf;
       break;
     default:
       break;

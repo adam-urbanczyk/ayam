@@ -1761,7 +1761,7 @@ ay_ncurve_notifycb(ay_object *o)
       ncurve->fltcv = NULL;
     }
 
-  /* manage the cached tesselation */
+  /* manage the cached tesselations */
   if(ncurve->stess[0].tessv)
     free(ncurve->stess[0].tessv);
   if(ncurve->stess[1].tessv)

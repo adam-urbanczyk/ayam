@@ -192,9 +192,9 @@ ay_npt_destroy(ay_nurbpatch_object *patch)
   if(patch->no)
     gluDeleteNurbsRenderer(patch->no);
 
-  /* free tesselation */
-  if(patch->stess)
-    ay_stess_destroy(patch);
+  /* free tesselations */
+  ay_stess_destroy(&(patch->stess[0]));
+  ay_stess_destroy(&(patch->stess[1]));
 
   if(patch->controlv)
     free(patch->controlv);
