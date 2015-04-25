@@ -472,8 +472,9 @@ typedef struct ay_stess_uvp_s {
 } ay_stess_uvp;
 
 
-/** a complete tesselation */
-typedef struct ay_stess_s {
+/** a tesselated NURBS patch */
+typedef struct ay_stess_patch_s {
+  int qf; /**< tesselation quality */
   /* untrimmed patch */
   int tessw; /**< number of tesselated points in U dimension */
   int tessh; /**< number of tesselated points in V dimension */
@@ -495,7 +496,7 @@ typedef struct ay_stess_s {
 
   double ud; /**< distance */
   double vd; /**< distance */
-} ay_stess;
+} ay_stess_patch;
 
 
 /** NURBS patch object */
@@ -525,9 +526,7 @@ typedef struct ay_nurbpatch_object_s
   double glu_sampling_tolerance; /**< drawing quality */
   int display_mode; /**< drawing mode */
 
-  /* stess */
-  int tessqf; /**< cached tesselation quality */
-  ay_stess *stess; /**< cached tesselation */
+  ay_stess_patch stess[2]; /**< cached tesselations */
 
   /** cached caps and bevel objects */
   ay_object *caps_and_bevels;

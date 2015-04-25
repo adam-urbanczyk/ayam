@@ -1466,7 +1466,7 @@ void ay_pmt_init();
 
 /** Remove tesselation from NURBS patch.
  */
-void ay_stess_destroy(ay_nurbpatch_object *np);
+void ay_stess_destroy(ay_stess_patch *stess);
 
 /** Calculate stess usable quality factor from GLU sampling tolerance.
  */
@@ -1494,11 +1494,11 @@ int ay_stess_SurfacePoints4D(int n, int m, int p, int q, double *U, double *V,
 
 /** Draw tesselation of a trimmed NURBS surface.
  */
-void ay_stess_DrawTrimmedSurface(ay_stess *stess);
+void ay_stess_DrawTrimmedSurface(ay_stess_patch *stess);
 
 /** Shade tesselation of a trimmed NURBS surface.
  */
-void ay_stess_ShadeTrimmedSurface(ay_stess *stess);
+void ay_stess_ShadeTrimmedSurface(ay_stess_patch *stess);
 
 /** Tesselate all trim curves of a NURBS surface.
  */
@@ -1512,11 +1512,11 @@ int ay_stess_ReTessTrimCurves(ay_object *o, int qf, int nt, double **tt,
 
 /** Tesselate a trimmed NURBS surface.
  */
-int ay_stess_TessTrimmedNP(ay_object *o, int qf);
+int ay_stess_TessTrimmedNP(ay_object *o, int qf, ay_stess_patch *stess);
 
 /** Tesselate a NURBS surface.
  */
-int ay_stess_TessNP(ay_object *o, int qf);
+int ay_stess_TessNP(ay_object *o, int qf, ay_stess_patch *stess);
 
 
 /* tess.c */
