@@ -8217,8 +8217,8 @@ x3dio_writetrimmednpwire(scew_element *element, ay_object *o)
  scew_element *shape_element = NULL;
  scew_element *line_element = NULL;
  scew_element *coord_element = NULL;
- int clear_stess = AY_FALSE, out, tcslen = 0;
- ay_stess *stess = NULL;
+ int out, tcslen = 0;
+ ay_stess_patch stess = {0};
  int *tcslens = NULL;
  double **tcs = NULL;
  ay_stess_uvp *uvpptr, *p1, *p2;
@@ -8231,28 +8231,21 @@ x3dio_writetrimmednpwire(scew_element *element, ay_object *o)
   /* write transform */
   x3dio_writetransform(element, o, &transform_element);
 
-  if(!np->stess)
-    {
-      qf = ay_stess_GetQF(ay_prefs.glu_sampling_tolerance);
+  qf = ay_stess_GetQF(ay_prefs.glu_sampling_tolerance);
 
-      ay_status = ay_stess_TessTrimmedNP(o, qf);
-      if(ay_status)
-	return ay_status;
-
-      clear_stess = AY_TRUE;
-    }
-
-  stess = np->stess;
+  ay_status = ay_stess_TessTrimmedNP(o, qf, &stess);
+  if(ay_status)
+    return ay_status;
 
   /* write iso-u lines */
   out = 0;
-  for(i = 0; i < stess->upslen; i++)
+  for(i = 0; i < stess.upslen; i++)
     {
-      uvpptr = stess->ups[i];
+      uvpptr = stess.ups[i];
       p1 = uvpptr;
       if(uvpptr && uvpptr->next)
 	{
-	  if(stess->ft_cw)
+	  if(stess.ft_cw)
 	    {
 	      out = 0;
 	      p1 = uvpptr;
@@ -8304,13 +8297,13 @@ x3dio_writetrimmednpwire(scew_element *element, ay_object *o)
 
   /* write iso-v lines */
   out = 0;
-  for(i = 0; i < stess->vpslen; i++)
+  for(i = 0; i < stess.vpslen; i++)
     {
-      uvpptr = stess->vps[i];
+      uvpptr = stess.vps[i];
       p1 = uvpptr;
       if(uvpptr && uvpptr->next)
 	{
-	  if(stess->ft_cw)
+	  if(stess.ft_cw)
 	    {
 	      out = 0;
 	      p1 = uvpptr;
@@ -8484,8 +8477,7 @@ x3dio_writetrimmednpwire(scew_element *element, ay_object *o)
     }
 
 cleanup:
-  if(clear_stess)
-    ay_stess_destroy(np);
+  ay_stess_destroy(&stess);
 
   if(Ct)
     free(Ct);
