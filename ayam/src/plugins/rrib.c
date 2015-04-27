@@ -606,6 +606,8 @@ void ay_rrib_initgprims(void);
 
 void ay_rrib_cleargprims(void);
 
+void ay_rrib_defaultattribs(ay_rrib_attrstate *attrstate);
+
 void ay_rrib_pushattribs(void);
 
 void ay_rrib_popattribs(void);
@@ -1255,10 +1257,16 @@ ay_rrib_RiLightSource(RtToken name,
 
   ay_status = ay_object_copy(&ay_rrib_co, &o);
 
+  if(ay_status)
+    goto cleanup;
+
   ay_rrib_readpvs(n, tokens, parms, 0, NULL, &(o->tags));
 
   ay_object_link(o);
   ay_rrib_lrobject = o;
+
+cleanup:
+
   ay_rrib_co.parent = AY_FALSE;
   ay_object_delete(ay_rrib_co.down);
   ay_rrib_co.down = NULL;
@@ -1771,7 +1779,6 @@ RtVoid
 ay_rrib_RiDisplay(char *name, RtToken type, RtToken mode,
 		  RtInt n, RtToken tokens[], RtPointer parms[])
 {
- int ay_status = AY_OK;
  ay_tag *nt = NULL;
  char tname[] = "RiDisplay";
  Tcl_DString ds;
@@ -1813,7 +1820,7 @@ ay_rrib_RiDisplay(char *name, RtToken type, RtToken mode,
   strcpy(nt->val, Tcl_DStringValue(&ds));
 
   /* append tag to root object */
-  ay_status = ay_tags_append(ay_root, nt);
+  ay_tags_append(ay_root, nt);
 
   /* clean up */
   Tcl_DStringFree(&ds);
@@ -1957,7 +1964,6 @@ RtVoid
 ay_rrib_RiHider(RtToken type,
 		RtInt n, RtToken tokens[], RtPointer parms[])
 {
- int ay_status = AY_OK;
  ay_tag *nt = NULL;
  char tname[] = "RiHider";
  Tcl_DString ds;
@@ -1993,7 +1999,7 @@ ay_rrib_RiHider(RtToken type,
     } /* if */
 
   /* append tag to root object */
-  ay_status = ay_tags_append(ay_root, nt);
+  ay_tags_append(ay_root, nt);
 
   /* clean up */
   Tcl_DStringFree(&ds);
@@ -2236,6 +2242,7 @@ ay_rrib_RiObjectBegin(void)
   ay_rrib_pushtrafos();
   ay_rrib_RiIdentity();
   ay_rrib_pushattribs();
+  ay_rrib_defaultattribs(ay_rrib_cattributes);
 
  return((RtObjectHandle)(ay_rrib_cobjecthandle++));
 } /* ay_rrib_RiObjectBegin */
@@ -2258,14 +2265,10 @@ ay_rrib_RiObjectEnd(void)
 RtVoid
 ay_rrib_RiObjectInstance(RtObjectHandle handle)
 {
- int ay_status = AY_OK;
  ay_list_object *l = NULL;
- ay_object *o = NULL, *c = NULL;
+ ay_object *o = NULL;
  char fname[] = "ay_rrib_RiObjectInstance";
- int i = 1, j = 0;
- double m[16], mt[16];
- double quat[4];
- double axis[3];
+ int i = 1;
 
   if((int)handle > ay_rrib_cobjecthandle)
     {
@@ -2293,60 +2296,7 @@ ay_rrib_RiObjectInstance(RtObjectHandle handle)
       o = l->object;
       while(o)
 	{
-	  c = NULL;
-	  ay_status = ay_object_copy(o, &c);
-	  if(!ay_status)
-	    {
-	      /* XXXX should we rather concatenate the current transformations
-		 to the transformations of the objects in object handle? */
-
-	      ay_trafo_decomposematrix(ay_rrib_ctrafos->m, c);
-	      /*
-	      for(j = 0; j < 16; j++)
-		{
-		  m[j] = 0.0;
-		}
-	      m[0] = o->scalx;
-	      m[5] = o->scaly;
-	      m[10] = o->scalz;
-	      m[15] = 1.0;
-
-	      m[3] = o->movx;
-	      m[7] = o->movy;
-	      m[11] = o->movz;
-
-	      if(fabs(o->rotx) > AY_EPSILON)
-		{
-		  axis[0] = 1.0;
-		  axis[1] = 0.0;
-		  axis[2] = 0.0;
-		  ay_quat_axistoquat(axis, AY_D2R(o->rotx), quat);
-		  ay_quat_torotmatrix(quat, mt);
-		  ay_trafo_multmatrix(m, mt);
-		}
-	      if(fabs(o->roty) > AY_EPSILON)
-		{
-		  axis[0] = 0.0;
-		  axis[1] = 1.0;
-		  axis[2] = 0.0;
-		  ay_quat_axistoquat(axis, AY_D2R(o->roty), quat);
-		  ay_quat_torotmatrix(quat, mt);
-		  ay_trafo_multmatrix(m, mt);
-		}
-	      if(fabs(o->rotz) > AY_EPSILON)
-		{
-		  axis[0] = 0.0;
-		  axis[1] = 0.0;
-		  axis[2] = 1.0;
-		  ay_quat_axistoquat(axis, AY_D2R(o->rotz), quat);
-		  ay_quat_torotmatrix(quat, mt);
-		  ay_trafo_multmatrix(m, mt);
-		}
-		ay_trafo_multmatrix(m, ay_rrib_ctrafos->m);
-		ay_trafo_decomposematrix(m, c);
-	      */
-	      ay_object_link(c);
-	    } /* if */
+	  ay_rrib_linkobject(o->refine, o->type);
 	  o = o->next;
 	} /* while */
     } /* if */
@@ -4932,6 +4882,43 @@ ay_rrib_cleargprims(void)
 
 
 void
+ay_rrib_defaultattribs(ay_rrib_attrstate *attrstate)
+{
+ ay_rrib_attrstate *next;
+
+  if(!attrstate)
+    return;
+
+  next = attrstate->next;
+  memset(attrstate, 0, sizeof(ay_rrib_attrstate));
+  attrstate->next = next;
+
+  attrstate->light_samples = -1;
+  attrstate->light_shadows = -1;
+  attrstate->shading_rate = 1.0;
+  attrstate->colr = -1;
+  attrstate->opr = -1;
+  attrstate->camera = 1;
+  attrstate->reflection = 1;
+  attrstate->shadow = 1;
+  attrstate->s1 = 0.0f;
+  attrstate->t1 = 0.0f;
+  attrstate->s2 = 1.0f;
+  attrstate->t2 = 0.0f;
+  attrstate->s3 = 0.0f;
+  attrstate->t3 = 1.0f;
+  attrstate->s4 = 1.0f;
+  attrstate->t4 = 1.0f;
+  attrstate->ustep = 3;
+  attrstate->vstep = 3;
+  attrstate->btype_u = AY_BTBEZIER;
+  attrstate->btype_v = AY_BTBEZIER;
+
+ return;
+} /* ay_rrib_defaultattribs */
+
+
+void
 ay_rrib_pushattribs(void)
 {
  ay_rrib_attrstate *newstate = NULL;
@@ -5721,11 +5708,10 @@ ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
 		int read_lights, int read_material, int read_partial,
 		int read_strim)
 {
- int ay_status = AY_OK;
  RIB_HANDLE rib = NULL;
  ay_list_object *tl = NULL;
 
-  ay_status = ay_tags_append(NULL, NULL);
+  ay_tags_append(NULL, NULL);
 
   /* initialize global variables */
   memset(&ay_rrib_co, 0, sizeof(ay_object));
