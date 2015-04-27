@@ -177,7 +177,7 @@ ay_tags_copyall(ay_object *src, ay_object *dst)
  *  between calls, or has to call ay_tags_append(NULL, NULL); to
  *  reset the cache.
  */
-int
+void
 ay_tags_append(ay_object *o, ay_tag *tag)
 {
  int ay_status = AY_OK;
@@ -187,11 +187,11 @@ ay_tags_append(ay_object *o, ay_tag *tag)
   if(!o)
     {
       last_object = NULL;
-      return AY_OK;
+      return;
     }
 
   if(!tag)
-    return AY_ENULL;
+    return;
 
   if((o != last_object) || (!next_tag))
     {
@@ -205,7 +205,7 @@ ay_tags_append(ay_object *o, ay_tag *tag)
   *next_tag = tag;
   next_tag = &(tag->next);
 
- return ay_status;
+ return;
 } /* ay_tags_append */
 
 

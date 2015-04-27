@@ -1313,7 +1313,7 @@ int ay_tags_copyall(ay_object *src, ay_object *dst);
 
 /** append tag to object
  */
-int ay_tags_append(ay_object *o, ay_tag *tag);
+void ay_tags_append(ay_object *o, ay_tag *tag);
 
 /** register a tag type
  */
