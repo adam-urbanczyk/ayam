@@ -175,6 +175,9 @@ ay_comp_tag(ay_tag *t1, ay_tag *t2)
 {
  ay_btval *bv1, *bv2;
 
+  if(t1->type != t2->type)
+    return AY_FALSE;
+
   if(t1->name && t2->name)
     {
       if(strcmp(t1->name, t2->name))
@@ -183,17 +186,6 @@ ay_comp_tag(ay_tag *t1, ay_tag *t2)
   else
     {
       if(t1->name != t2->name)
-	return AY_FALSE;
-    }
-
-  if(t1->type && t2->type)
-    {
-      if(strcmp(t1->type, t2->type))
-	return AY_FALSE;
-    }
-  else
-    {
-      if(t1->type != t2->type)
 	return AY_FALSE;
     }
 
