@@ -2294,11 +2294,23 @@ ay_rrib_RiObjectInstance(RtObjectHandle handle)
   if((i == (int)handle) && l)
     {
       o = l->object;
-      while(o)
+      if(o->next)
+	{
+	  ay_rrib_RiSolidBegin("level");
+	  ay_rrib_pushattribs();
+	  ay_rrib_defaultattribs(ay_rrib_cattributes);
+	  while(o)
+	    {
+	      ay_rrib_linkobject(o->refine, o->type);
+	      o = o->next;
+	    } /* while */
+	  ay_rrib_popattribs();
+	  ay_rrib_RiSolidEnd();
+	}
+      else
 	{
 	  ay_rrib_linkobject(o->refine, o->type);
-	  o = o->next;
-	} /* while */
+	} /* if */
     } /* if */
 
  return;
@@ -3191,7 +3203,7 @@ ay_rrib_RiRotate(RtFloat angle, RtFloat dx, RtFloat dy, RtFloat dz)
   axis[0] = (double)dx;
   axis[1] = (double)dy;
   axis[2] = (double)dz;
-  ay_quat_axistoquat(axis, -AY_D2R((double)angle), quat);
+  ay_quat_axistoquat(axis, AY_D2R((double)angle), quat);
   ay_quat_torotmatrix(quat, m);
   ay_trafo_multmatrix(ay_rrib_ctrafos->m, m);
 
@@ -3333,6 +3345,9 @@ ay_rrib_RiSolidBegin(RtToken operation)
 
   if(!strcmp(operation, "intersection"))
     l.type = AY_LTINT;
+
+  if(!strcmp(operation, "level"))
+    l.type = AY_LTLEVEL;
 
   ay_rrib_co.parent = AY_TRUE;
   ay_rrib_linkobject((void *)(&l), AY_IDLEVEL);
@@ -5702,7 +5717,11 @@ ay_rrib_printerror(RIB_HANDLE rib, int code, int severity, PRIB_ERROR error)
  return kRIB_OK;
 } /* ay_rrib_printerror */
 
-
+/* ay_rrib_readrib:
+ *
+ * XXXX Todo: use RibGetLineCount(rib); for progress report.
+ * 
+ */
 int
 ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
 		int read_lights, int read_material, int read_partial,
