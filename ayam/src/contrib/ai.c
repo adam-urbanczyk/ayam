@@ -258,7 +258,7 @@ ay_ai_makeinstances(ay_object *o, ay_object *level, ay_list_object *sel)
     } /* if */
 
   /* now create instances of "o", if "o" isn´t an instance itself */
-  if(o->type != AY_IDINSTANCE)
+  if(ay_ai_instanceabletype(o->type))
     {
       /* avoid working on the root */
       if(sel && (sel->object == ay_root))
