@@ -25,6 +25,10 @@ proc ai_open { resolve } {
 
     set oldFocus [focus]
 
+    if { $oldFocus == "" } {
+	set oldFocus "."
+    }
+
     set w .aiw
     if { $resolve } {
 	set t "Resolve All Instances"
