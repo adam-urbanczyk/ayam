@@ -843,7 +843,7 @@ ay_pmt_tonpatchmulti(ay_object *o, ay_object **result)
 
   if(h > 1)
     {
-      if(!(uv = malloc(h*sizeof(char))))
+      if(!(uv = calloc(h+1, sizeof(char))))
 	return AY_EOMEM;
       for(i = 0; i < h; i++)
 	uv[i] = 'v';
@@ -868,7 +868,7 @@ ay_pmt_tonpatchmulti(ay_object *o, ay_object **result)
 		  if(rj > pm->height)
 		    rj = jj;
 
-		  b = (ri*h*4+rj)*4;
+		  b = (ri*h+rj)*4;
 
 		  memcpy(&(tcv[a]), &(cv[b]), 4*sizeof(double));
 		  a += 4;
