@@ -21,6 +21,7 @@ uplevel #0 { array set rrib_options {
   ScaleFactor 1.0
   filename ""
   FileName "unnamed.rib"
+  Progress 0
 }   }
 
 # rrib_import:
@@ -67,6 +68,8 @@ proc rrib_import { } {
     addCheck $f rrib_options ReadPartial
     addCheck $f rrib_options ReadSTrim
     addParam $f rrib_options RescaleKnots [list 0.0 1.0e-4]
+    set rrib_options(Progress) 0
+    addProgress $f rrib_options Progress
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
@@ -75,6 +78,9 @@ proc rrib_import { } {
 	set rrib_options(filename) $rrib_options(FileName)
 	set oldcd [pwd]
 	cd [file dirname $rrib_options(FileName)]
+
+	set rrib_options(Cancel) 0
+	update
 
 	rribRead [file tail $rrib_options(FileName)]\
 	    -f $rrib_options(ReadFrame)\
@@ -115,6 +121,7 @@ proc rrib_import { } {
 
     button $f.bca -text "Cancel" -width 5 -command "\
 		grab release .ribI;\
+                set rrib_options(Cancel) 1;\
 		restoreFocus $rrib_options(oldfocus);\
 		destroy .ribI"
 

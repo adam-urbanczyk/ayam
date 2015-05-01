@@ -45,6 +45,13 @@ cc -o rrib rrib.c -I/home/randi/sdk/affine0008/include/
 char rrib_version_ma[] = AY_VERSIONSTR;
 char rrib_version_mi[] = AY_VERSIONSTRMI;
 
+/* total number of lines in RIB */
+static size_t rrib_totallines;
+
+/* progress values (%) */
+static int rrib_lastprog = 0, rrib_curprog = 0;
+
+
 /* current object:
  * all object reading functions enter data to this object,
  * link object type specific data to it, then copy it
@@ -206,6 +213,8 @@ static double rrib_scalefactor; /* global scale factor */
    ay_rrib_RiReadArchive() keeps a copy of it on the stack
    when recursively descending into other RIBs */
 static PRIB_INSTANCE grib;
+static PRIB_INSTANCE ogrib;
+
 
 /* the following tables are used by Affine to parse vectors of points */
 /* how to sort through the data */
@@ -5523,6 +5532,10 @@ ay_rrib_linkobject(void *object, int type)
 {
  int ay_status = AY_OK;
  /* char *fname = "ay_rrib_linkobject";*/
+ char fname[] = "rrib_readscene";
+ char aname[] = "rrib_options", vname1[] = "Progress";
+ char vname2[] = "Cancel", *val = NULL;
+ char pbuffer[64];
  ay_object *o = NULL, *t = NULL;
  ay_nurbpatch_object *np = NULL;
  double oldmin, oldmax;
@@ -5664,6 +5677,30 @@ ay_rrib_linkobject(void *object, int type)
   ay_rrib_co.name = NULL;
   ay_rrib_co.down = NULL;
 
+  /* calculate/report progress and handle canceling */
+  rrib_curprog = (int)(RibGetLineCount(ogrib)*100.0/rrib_totallines);
+
+  if(rrib_curprog > rrib_lastprog)
+    {
+      sprintf(pbuffer, "%d", rrib_curprog);
+      Tcl_SetVar2(ay_interp, aname, vname1, pbuffer,
+		  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      rrib_lastprog = rrib_curprog;
+
+      while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
+
+      /* also, check for cancel button */
+      val = Tcl_GetVar2(ay_interp, aname, vname2,
+			TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      if(val && val[0] == '1')
+	{
+	  ay_error(AY_EOUTPUT, fname,
+		   "Import cancelled! Not all objects may have been read!");
+	  /* XXXX TODO ok? What if we are in a archive? */
+	  RibEnd(ogrib);
+	}
+    }
+
  return;
 } /* ay_rrib_linkobject */
 
@@ -5717,10 +5754,10 @@ ay_rrib_printerror(RIB_HANDLE rib, int code, int severity, PRIB_ERROR error)
  return kRIB_OK;
 } /* ay_rrib_printerror */
 
+
 /* ay_rrib_readrib:
  *
- * XXXX Todo: use RibGetLineCount(rib); for progress report.
- * 
+ *
  */
 int
 ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
@@ -5729,10 +5766,26 @@ ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
 {
  RIB_HANDLE rib = NULL;
  ay_list_object *tl = NULL;
+ FILE *fileptr;
+ int c;
+
+  /* count lines for progress report */
+  if(!(fileptr = fopen(filename, "rb")))
+    return AY_EOPENFILE;
+  rrib_totallines = 0;
+  while((c=fgetc(fileptr)) != EOF)
+    {
+      if(c == '\n')
+	rrib_totallines++;
+    }
+  fclose(fileptr);
 
   ay_tags_append(NULL, NULL);
 
   /* initialize global variables */
+  rrib_curprog = 0;
+  rrib_lastprog = 0;
+
   memset(&ay_rrib_co, 0, sizeof(ay_object));
   ay_object_defaults(&ay_rrib_co);
 
@@ -5795,6 +5848,7 @@ ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
   if(rib)
     {
       grib = (PRIB_INSTANCE)rib;
+      ogrib = grib;
 
       RibSetErrorHandler(rib, ay_rrib_printerror);
 
