@@ -868,7 +868,7 @@ ay_pmt_tonpatchmulti(ay_object *o, ay_object **result)
 		  if(rj > pm->height)
 		    rj = jj;
 
-		  b = (ri*h+rj)*4;
+		  b = (ri*pm->height+rj)*4;
 
 		  memcpy(&(tcv[a]), &(cv[b]), 4*sizeof(double));
 		  a += 4;
