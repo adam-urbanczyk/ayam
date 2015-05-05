@@ -130,6 +130,8 @@ typedef struct ay_rrib_attrstate_s {
   /* texture coordinates */
   RtFloat s1, s2, s3, s4, t1, t2, t3, t4;
 
+  /* orientation */
+  int orientation;
 } ay_rrib_attrstate;
 
 static ay_rrib_attrstate *ay_rrib_cattributes;
@@ -2519,8 +2521,19 @@ ay_rrib_RiOption(RtToken name,
 RtVoid
 ay_rrib_RiOrientation(RtToken orientation)
 {
+
+  if(strcmp(orientation, "lh"))
+    {
+      ay_rrib_cattributes->orientation = 1;
+    }
+  else
+    {
+      ay_rrib_cattributes->orientation = 0;
+    }
+
  return;
 } /* ay_rrib_RiOrientation */
+
 
 
 RtVoid
@@ -3176,6 +3189,12 @@ ay_rrib_RiResource(RtToken handle, RtToken type,
 RtVoid
 ay_rrib_RiReverseOrientation(void)
 {
+
+  if(ay_rrib_cattributes->orientation)
+    ay_rrib_cattributes->orientation = 0;
+  else
+    ay_rrib_cattributes->orientation = 1;
+
  return;
 } /* ay_rrib_RiReverseOrientation */
 
@@ -3186,15 +3205,15 @@ ay_rrib_RiConcatTransform(RtMatrix transform)
  int i, j, k;
  double m[16];
 
- k = 0;
- for(i = 0; i < 4; i++)
-   {
-     for(j = 0; j < 4; j++)
-       {
-	 m[k] = (double)transform[i][j];
-	 k++;
-       }
-   }
+  k = 0;
+  for(i = 0; i < 4; i++)
+    {
+      for(j = 0; j < 4; j++)
+	{
+	  m[k] = (double)transform[i][j];
+	  k++;
+	}
+    }
 
   ay_trafo_multmatrix(ay_rrib_ctrafos->m, m);
 
@@ -3212,7 +3231,10 @@ ay_rrib_RiRotate(RtFloat angle, RtFloat dx, RtFloat dy, RtFloat dz)
   axis[0] = (double)dx;
   axis[1] = (double)dy;
   axis[2] = (double)dz;
-  ay_quat_axistoquat(axis, AY_D2R((double)angle), quat);
+  if(!ay_rrib_cattributes->orientation)
+    ay_quat_axistoquat(axis, -AY_D2R((double)angle), quat);
+  else
+    ay_quat_axistoquat(axis, AY_D2R((double)angle), quat);
   ay_quat_torotmatrix(quat, m);
   ay_trafo_multmatrix(ay_rrib_ctrafos->m, m);
 
@@ -4711,6 +4733,9 @@ ay_rrib_initgeneral(void)
   gRibNopRITable[kRIB_TRANSLATE] = (PRIB_RIPROC)ay_rrib_RiTranslate;
   gRibNopRITable[kRIB_ROTATE] = (PRIB_RIPROC)ay_rrib_RiRotate;
   gRibNopRITable[kRIB_SCALE] = (PRIB_RIPROC)ay_rrib_RiScale;
+  gRibNopRITable[kRIB_ORIENTATION] = (PRIB_RIPROC)ay_rrib_RiOrientation;
+  gRibNopRITable[kRIB_REVERSEORIENTATION] =
+    (PRIB_RIPROC)ay_rrib_RiReverseOrientation;
 
   gRibNopRITable[kRIB_ATTRIBUTEBEGIN] = (PRIB_RIPROC)ay_rrib_RiAttributeBegin;
   gRibNopRITable[kRIB_ATTRIBUTEEND] = (PRIB_RIPROC)ay_rrib_RiAttributeEnd;
@@ -4760,7 +4785,9 @@ ay_rrib_cleargeneral(void)
   gRibNopRITable[kRIB_TRANSLATE] = (PRIB_RIPROC)RiNopTranslate;
   gRibNopRITable[kRIB_ROTATE] = (PRIB_RIPROC)RiNopRotate;
   gRibNopRITable[kRIB_SCALE] = (PRIB_RIPROC)RiNopScale;
-
+  gRibNopRITable[kRIB_ORIENTATION] = (PRIB_RIPROC)RiNopOrientation;
+  gRibNopRITable[kRIB_REVERSEORIENTATION] =
+    (PRIB_RIPROC)RiNopReverseOrientation;
 
   gRibNopRITable[kRIB_ATTRIBUTEBEGIN] = (PRIB_RIPROC)RiNopAttributeBegin;
   gRibNopRITable[kRIB_ATTRIBUTEEND] = (PRIB_RIPROC)RiNopAttributeEnd;
