@@ -236,7 +236,7 @@ proc tree_selectOrPopup { extend redraw tree node } {
 	    }
 	}
     }
-    winOpenPopup $ay(tree)
+    after idle {winOpenPopup $ay(tree)}
     after idle {focus -force $ay(tree).popup}
 
  return;
