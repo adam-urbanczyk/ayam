@@ -273,7 +273,7 @@ proc tree_selectItem { tree node } {
     if { $ay(need_redraw) == 1 } {
 	rV
     }
-    
+
     set ay(sellock) 0
 
  return;
