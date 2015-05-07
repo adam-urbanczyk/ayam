@@ -865,9 +865,9 @@ $tree bindText <Double-ButtonPress-1> "tree_toggleSub $sw.tree"
 
 global aymainshortcuts
 $tree bindText <ButtonPress-$aymainshortcuts(CMButton)>\
-    "tree_selectOrPopup 0 1 $sw.tree"
+    "tree_selectOrPopup 0 $sw.tree"
 $tree bindText <Shift-ButtonPress-$aymainshortcuts(CMButton)>\
-    "tree_selectOrPopup 1 1 $sw.tree"
+    "tree_selectOrPopup 1 $sw.tree"
 
 # focus management binding
 if { !$::ayprefs(SingleWindow) } {
