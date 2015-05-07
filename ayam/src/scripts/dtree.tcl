@@ -33,19 +33,18 @@ proc tree_paintTree { level } {
     return;
 }
 
-
 #tree_handleSelection:
 # do any stuff for the selected objects such as highligting the selected level
 proc tree_handleSelection { } {
     global ay
 
+    set snodes [$ay(tree) selection get]
     if { $ay(SelectedLevel) != $ay(CurrentLevel) } {
 	set ay(CurrentLevel) $ay(SelectedLevel)
+	Tree::_draw_tree $ay(tree)
+	$ay(tree) selection set $snodes
     }
-    tree_paintLevel $ay(SelectedLevel)
-    set nlist [$ay(tree) selection get]
-    eval [subst "treeSelect $nlist"]
-
+    eval [subst "treeSelect $snodes"]
  return;
 }
 # tree_handleSelection
@@ -72,6 +71,7 @@ proc Tree::_draw_node { path node x0 y0 deltax deltay padx showlines f } {
 	set wf [Widget::getoption $path.$node -fill]
 	if { $wf != $ObjectSearch(HighlightColor) } {
 	    set wf $f
+	    Widget::setoption $path.$node -fill $f
 	}
 	$path:cmd create text [expr {$x1+$padx}] $y0 \
 	    -text   [Widget::getoption $path.$node -text] \
