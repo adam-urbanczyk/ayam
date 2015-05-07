@@ -11,9 +11,18 @@
 
 # DTree changes the BWidget tree code, so that it no longer creates
 # canvas items for _all_ nodes, but only for the nodes visible in
-# the current scroll region; this means, while scrolling we must
-# create new items all the time, also "see" can no longer just
-# request the bbox of items that are not in the scroll region...
+# the current scroll region, which is much faster, if there are many
+# nodes (in the range of ten thousands); however, this means, while
+# scrolling we must call Tree::_draw_tree (and thus create new items)
+# all the time, also "see" can no longer just request the bbox of items
+# that are not in the scroll region (as they are not there), instead, the
+# potential position of the node must be inferred by some helper procs (that
+# browse the nodes lists/hierarchy and accumulate a y-position, just like the
+# _draw_node/_draw_subnodes duo does)...
+# For additional speed-up, the current level painting mechanism has been
+# integrated in the drawing mechanism (otherwise, changing the current level
+# would lead to too many calls to Widget::setoption).
+
 
 #tree_paintLevel:
 # this proc normally paints levels by setting the respective node/item
@@ -37,7 +46,6 @@ proc tree_paintTree { level } {
 # do any stuff for the selected objects such as highligting the selected level
 proc tree_handleSelection { } {
     global ay
-
     set snodes [$ay(tree) selection get]
     if { $ay(SelectedLevel) != $ay(CurrentLevel) } {
 	set ay(CurrentLevel) $ay(SelectedLevel)
