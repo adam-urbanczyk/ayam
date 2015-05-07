@@ -221,12 +221,12 @@ proc tree_paintTree { level } {
 
 #tree_selectOrPopup
 #
-proc tree_selectOrPopup { extend redraw tree node } {
+proc tree_selectOrPopup { extend tree node } {
  global ay
 
     set nlist [$tree selection get]
     if { [llength $nlist] == 0 } {
-	tree_selectItem $redraw $tree $node
+	tree_selectItem $tree $node
     } else {
 	if { $extend } {
 	    tree_multipleSelection $tree $node
@@ -246,7 +246,7 @@ proc tree_selectOrPopup { extend redraw tree node } {
 
 #tree_selectItem
 # select one tree item; clicking an already selected object does nothing
-proc tree_selectItem { redraw tree node } {
+proc tree_selectItem { tree node } {
     global ay
 
     if { $ay(sellock) == 1 } {
@@ -257,25 +257,23 @@ proc tree_selectItem { redraw tree node } {
 
     set ay(ts) 1;
     set nlist [$tree selection get]
+
     $ay(tree) selection clear
     $ay(tree) selection set $node
     if { [lsearch -exact $nlist $node] == "-1" } {
-	$tree selection set $node
 	set ay(SelectedLevel) [$tree parent $node]
-	$tree selection set $node
     }
-    tree_handleSelection
     $tree bindText <ButtonRelease-1> ""
-    $tree bindText <ButtonPress-1> "tree_selectItem 1 $tree"
+    $tree bindText <ButtonPress-1> "tree_selectItem $tree"
+    tree_handleSelection
     update
     plb_update
     update idletasks
-    if { $redraw == 1 } {
-	if { $ay(need_redraw) == 1 } {
-	    rV
-	}
-    }
 
+    if { $ay(need_redraw) == 1 } {
+	rV
+    }
+    
     set ay(sellock) 0
 
  return;
@@ -323,7 +321,7 @@ proc tree_toggleSelection { tree node } {
 
     # allow dnd of multiple selected objects
     $tree bindText <ButtonPress-1> ""
-    $tree bindText <ButtonRelease-1> "tree_selectItem 1 $tree"
+    $tree bindText <ButtonRelease-1> "tree_selectItem $tree"
 
     tree_handleSelection
 
@@ -391,7 +389,7 @@ proc tree_multipleSelection { tree node } {
 
     # allow dnd of multiple selected objects
     $tree bindText <ButtonPress-1> ""
-    $tree bindText <ButtonRelease-1> "tree_selectItem 1 $tree"
+    $tree bindText <ButtonRelease-1> "tree_selectItem $tree"
 
     break;
     }
@@ -539,7 +537,7 @@ proc tree_drop { tree from droppos currentoperation datatype data } {
 		if { $parent != "root" } {
 		    $ay(tree) itemconfigure $parent -open 1
 		}
-		#tree_selectItem 1 $ay(tree) $newnode
+		#tree_selectItem $ay(tree) $newnode
 	    }
 	    set ay(droplock) 0
 	}
@@ -861,7 +859,7 @@ $tree bindText <Shift-ButtonRelease-1> "set dummy "
 $tree bindText <Control-ButtonRelease-1> "set dummy "
 
 # select a single object
-$tree bindText <ButtonPress-1> "tree_selectItem 1 $sw.tree"
+$tree bindText <ButtonPress-1> "tree_selectItem $sw.tree"
 # open sub tree
 $tree bindText <Double-ButtonPress-1> "tree_toggleSub $sw.tree"
 
