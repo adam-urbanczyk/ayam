@@ -58,6 +58,18 @@ proc tree_handleSelection { } {
 # tree_handleSelection
 
 
+#tree_openSub:
+# open/close subtree in tree view
+proc tree_openSub { tree newstate node } {
+    global ay
+    set ay(ts) 1;
+    $tree itemconfigure $node -open $newstate
+    after idle "Tree::_draw_tree $tree"
+ return;
+}
+# tree_openSub
+
+
 # ------------------------------------------------------------------------------
 #  Command Tree::_draw_node
 # ------------------------------------------------------------------------------
