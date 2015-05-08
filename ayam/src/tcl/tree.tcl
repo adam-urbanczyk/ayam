@@ -232,7 +232,7 @@ proc tree_selectOrPopup { extend tree node } {
 	    tree_multipleSelection $tree $node
 	} else {
 	    if {[lsearch $nlist $node] == -1 } {
-		tree_selectItem $redraw $tree $node
+		tree_selectItem $tree $node
 	    }
 	}
     }
@@ -556,7 +556,6 @@ proc tree_openSub { tree newstate node } {
     global ay
     set ay(ts) 1;
     $tree itemconfigure $node -open $newstate
-    $tree configure -redraw 1
  return;
 }
 # tree_openSub
@@ -1084,7 +1083,7 @@ proc tree_reset { } {
 	set ay(SelectedLevel) "root"
 	tree_paintLevel $ay(CurrentLevel)
 	cS
-	#tree_selectItem 1 $ay(tree) "root:0"
+	#tree_selectItem $ay(tree) "root:0"
 	$ay(tree) see "root:0"
     }
 

@@ -161,7 +161,7 @@ proc tgui_unblock { } {
 	bind $t <2> $ay(oldtreeb2binding)
 	bind $t <3> $ay(oldtreeb3binding)
 	$t bindText <ButtonRelease-1> ""
-	$t bindText <ButtonPress-1> "tree_selectItem 1 $t"
+	$t bindText <ButtonPress-1> "tree_selectItem $t"
     } else {
 	bind .fu.fMain.fHier.flb.la <Double-1> $ay(oldlabelbinding)
     }
