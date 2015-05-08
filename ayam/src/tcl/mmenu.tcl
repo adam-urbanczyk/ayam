@@ -150,7 +150,7 @@ $m add command -label "Select All" -command {
 	    eval [subst "treeSelect $nodes"]
 	    # allow dnd of multiple selected objects
 	    $tree bindText <ButtonPress-1> ""
-	    $tree bindText <ButtonRelease-1> "tree_selectItem 1 $tree"
+	    $tree bindText <ButtonRelease-1> "tree_selectItem $tree"
 	}
 	plb_update
 	if { $ay(need_redraw) } {

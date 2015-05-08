@@ -348,7 +348,7 @@ proc singleObjSel { node } {
 	    olb_select
 	} else {
 	    tree_openTree $ay(tree) $Selection
-	    tree_selectItem 1 $ay(tree) $Selection
+	    tree_selectItem $ay(tree) $Selection
 	    $ay(tree) see $Selection
 	}
     }
@@ -396,7 +396,7 @@ proc multipleObjSel { node } {
 	    } else {
 		# Unselect all items of the listbox and replace them by
 		# the new selection
-		tree_selectItem 1 $ay(tree) [lindex $ay(LastSelection) 0]
+		tree_selectItem $ay(tree) [lindex $ay(LastSelection) 0]
 		foreach i [lrange $ay(LastSelection) 1 end] {
 		    tree_toggleSelection $ay(tree) $i
 		}

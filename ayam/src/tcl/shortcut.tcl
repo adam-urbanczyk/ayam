@@ -232,20 +232,13 @@ proc shortcut_main { w } {
 	global ay
 	if { $ay(lb) == 0 } {
 	    set tree $ay(tree)
-	    set cl $ay(CurrentLevel)
-
-	    set sel ""
 	    set sel [$tree selection get]
-
 	    if { $sel == "" } {
 		break
 	    }
-
 	    set sel [lindex $sel 0]
-
 	    $tree selection set $sel
 	    treeSelect $sel
-
 	    if { ! [hasChild] } {
 		break
 	    }
