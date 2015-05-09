@@ -129,6 +129,53 @@ proc tree_collapse { } {
 }
 # tree_collapse
 
+#tree_toggleTree:
+# toggle/open/close all selected sub-trees recursively
+proc tree_toggleTree { mode } {
+    global ay
+    if { $ay(lb) == 1 } { return }
+    $ay(tree) configure -redraw 0
+    set sel [$ay(tree) selection get]
+    foreach node $sel {
+	switch $mode {
+	    0 {
+		# toggle
+		if { [$ay(tree) itemcget $node -open] } {
+		    foreach n [$ay(tree) nodes $node] {
+			$ay(tree) closetree $n
+		    }
+		    $ay(tree) closetree $node
+		} else {
+		    foreach n [$ay(tree) nodes $node] {
+			$ay(tree) opentree $n
+		    }
+		    $ay(tree) opentree $node
+		}
+	    }
+	    1 {
+		# open
+		foreach n [$ay(tree) nodes $node] {
+		    $ay(tree) opentree $n
+		}
+		$ay(tree) opentree $node
+	    }
+	    2 {
+		# close
+		foreach n [$ay(tree) nodes $node] {
+		    $ay(tree) closetree $n
+		}
+		$ay(tree) closetree $node
+	    }
+	}
+	# switch mode
+    }
+    # foreach sel
+    $ay(tree) configure -redraw 1
+ return;
+}
+# tree_toggleTree
+
+
 
 # ------------------------------------------------------------------------------
 #  Command Tree::_draw_node
