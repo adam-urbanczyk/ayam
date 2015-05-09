@@ -4482,8 +4482,8 @@ ay_nct_fillgap(int order, double tanlen,
 	       ay_nurbcurve_object *c1, ay_nurbcurve_object *c2,
 	       ay_object **result)
 {
- double p1[4], p2[4], p3[4], p4[4], n1[3], n2[3], l[3];
- double *U, *Pw, u, d, w, len;
+  double p1[4] = {0}, p2[4] = {0}, p3[4], p4[4], n1[3], n2[3], l[3];
+ double *U, *Pw, u, d, len;
  double *controlv = NULL;
  int n, p, numcontrol;
  ay_object *o = NULL;
@@ -4499,24 +4499,22 @@ ay_nct_fillgap(int order, double tanlen,
   p = c1->order-1;
   U = c1->knotv;
   Pw = c1->controlv;
-
   u = U[n];
-  ay_nb_CurvePoint4D(n-1, p, U, Pw, u, p1);
-  w = p1[3];
-  AY_V3SCAL(p1, 1.0/w)
+  ay_status = ay_nb_CurvePoint4D(n-1, p, U, Pw, u, p1);
   p1[3] = 1.0;
-  ay_nb_FirstDer4D(n-1, p, U, Pw, u, n1);
+  /*ay_status +=*/ ay_nb_FirstDer4D(n-1, p, U, Pw, u, n1);
 
   n = c2->length;
   p = c2->order-1;
   U = c2->knotv;
   Pw = c2->controlv;
   u = U[p];
-  ay_nb_CurvePoint4D(n-1, p, U, Pw, u, p2);
-  w = p2[3];
-  AY_V3SCAL(p2, 1.0/w)
+  ay_status += ay_nb_CurvePoint4D(n-1, p, U, Pw, u, p2);
   p2[3] = 1.0;
-  ay_nb_FirstDer4D(n-1, p, U, Pw, u, n2);
+  /*ay_status +=*/ ay_nb_FirstDer4D(n-1, p, U, Pw, u, n2);
+
+  if(ay_status)
+    return AY_ERROR;
 
   /* check whether p1 and p2 are sufficiently different */
   if((fabs(p1[0] - p2[0]) < AY_EPSILON) &&
