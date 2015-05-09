@@ -62,35 +62,85 @@ proc runTool { argvars argstrings command title {advargs ""} } {
 	}
 
 	# create GUI
-	set f2 [frame $f.f$index]
+	if { 0 } {
+	    set f2 [frame $f.f$index]
 
-	label $f2.l -text [lindex $argstrings $index ] -width 14
-	entry $f2.e -width 14
-	eval [subst "bindtags $f2.e \{$f2.e Entry all\}"]
-	bind $f2.e <Key-Escape> ".rtw.f2.bca invoke;break"
-	bind $f2.e <Key-Return> ".rtw.f2.bok invoke;break"
-	catch {bind $f2.e <Key-KP_Enter> ".rtw.f2.bok invoke;break"}
-	bind $f2.e <Double-ButtonPress-1> "$f2.e selection range 0 end; break"
-	uie_fixEntry $f2.e
+	    label $f2.l -text [lindex $argstrings $index ] -width 14
+	    entry $f2.e -width 14
+	    eval [subst "bindtags $f2.e \{$f2.e Entry all\}"]
+	    bind $f2.e <Key-Escape> ".rtw.f2.bca invoke;break"
+	    bind $f2.e <Key-Return> ".rtw.f2.bok invoke;break"
+	    catch {bind $f2.e <Key-KP_Enter> ".rtw.f2.bok invoke;break"}
+	    bind $f2.e <Double-ButtonPress-1> \
+		"$f2.e selection range 0 end; break"
+	    uie_fixEntry $f2.e
 
-	# fill current value of $i into the entry
-	eval "set vali \$$i"
-	if { $vali != "" } {
-	    $f2.e insert 0 $vali
-	}
+	    # fill current value of $i into the entry
+	    eval "set vali \$$i"
+	    if { $vali != "" } {
+		$f2.e insert 0 $vali
+	    }
 
-	pack $f2.l -in $f2 -padx 2 -pady 2 -side left -expand no -fill x
-	pack $f2.e -in $f2 -padx 2 -pady 2 -side left -expand yes -fill x
-	pack $f2 -in $w.f1 -side top -expand yes -fill x
+	    pack $f2.l -in $f2 -padx 2 -pady 2 -side left -expand no -fill x
+	    pack $f2.e -in $f2 -padx 2 -pady 2 -side left -expand yes -fill x
+	    pack $f2 -in $w.f1 -side top -expand yes -fill x
 
-	# and simultaneously build up a script
-	if { $isarray } {
-	    append okscript "global $j; set $i \[$f2.e get\]; update;"
+	    # and simultaneously build up a script
+	    if { $isarray } {
+		append okscript "global $j; set $i \[$f2.e get\]; update;"
+	    } else {
+		append okscript "global $i; set $i \[$f2.e get\]; update;"
+	    }
+	    append okscript \
+		"regsub -all \"%$index\" \$command \[$f2.e get\] command;"
+
 	} else {
-	    append okscript "global $i; set $i \[$f2.e get\]; update;"
+	    # use standard UI elements
+	    set ay(bok) $w.f2.bok
+	    set ay(bca) $w.f2.bca
+	    global ToolParams
+	    set nami [lindex $argstrings $index]
+	    set nam [string range $nami 0 end-1]
+	    regsub -all "\[^\[:alnum:\]\]" $nam "_" nami
+
+	    # XXXX TODO: use same varname as in uie.tcl
+	    eval "set vali \$$i"
+	    set ToolParams($nami) $vali
+	    while { 1 } {
+		if { $vali != "" } {
+		    if { [string is double $vali] } {
+			addParam $w.f1 ToolParams $nami
+			break;
+		    }
+		    if { [string is integer $vali] } {
+			set l ""
+			catch {eval "set l \$${nami}_l"}
+			if { $l != "" } {
+			    addMenu $w.f1 ToolParams $nami $l
+			} else {
+			    addParam $w.f1 ToolParams $nami
+			}
+			break;
+		    }
+		    if { [string is boolean $vali] } {
+			addCheck $w.f1 ToolParams $nami
+			break;
+		    }
+		}
+		addString $w.f1 ToolParams $nami
+		break;
+	    }
+	    # while
+
+	    # and simultaneously build up a script
+	    if { $isarray } {
+	       append okscript "global $j; set $i \$ToolParams($nami); update;"
+	    } else {
+	       append okscript "global $i; set $i \$ToolParams($nami); update;"
+	    }
+	    append okscript \
+	       "regsub -all \"%$index\" \$command \$ToolParams($nami) command;"
 	}
-	append okscript \
-	    "regsub -all \"%$index\" \$command \[$f2.e get\] command;"
 	incr index
     }
     # foreach
