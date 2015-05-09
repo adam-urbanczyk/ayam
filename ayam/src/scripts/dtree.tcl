@@ -64,10 +64,70 @@ proc tree_openSub { tree newstate node } {
     global ay
     set ay(ts) 1;
     $tree itemconfigure $node -open $newstate
-    after idle "Tree::_draw_tree $tree"
+    if { [Widget::getoption $tree -redraw] } {
+	after idle "Tree::_draw_tree $tree"
+    }
  return;
 }
 # tree_openSub
+
+#tree_expand:
+# open all nodes
+proc tree_expand { } {
+    global ay
+    $ay(tree) configure -redraw 0
+    set nlist [$ay(tree) nodes root]
+    foreach n $nlist {
+	$ay(tree) opentree $n
+    }
+    $ay(tree) configure -redraw 1
+ return;
+}
+# tree_expand
+
+#tree_collapse:
+# close all nodes
+proc tree_collapse { } {
+    global ay
+    $ay(tree) configure -redraw 0
+    set tree $ay(tree)
+    set nlist [$tree nodes root]
+    foreach n $nlist {
+	$tree closetree $n
+    }
+    # show selection or current level (again)
+    set sel ""
+    set sel [$tree selection get]
+
+    if { ($sel == "") && ($ay(CurrentLevel) != "root") } {
+	set sel ${ay(CurrentLevel)}:0
+    }
+
+    if { $sel != "" } {
+	set fsel [lindex $sel 0]
+	set index 5
+	set done 0
+	while { ! $done } {
+	    set index [string first : $fsel $index]
+	    if { $index == -1 ||
+		 ([string first : $fsel [expr $index]] == -1) } {
+		set done 1
+	    } else {
+		incr index -1
+		set item [string range $fsel 0 $index]
+		incr index 2
+		tree_openSub $tree 1 $item
+	    }
+	    # if
+	}
+	# while
+	$tree see $sel
+    }
+    # if
+    $ay(tree) configure -redraw 1
+ return;
+}
+# tree_collapse
 
 
 # ------------------------------------------------------------------------------
