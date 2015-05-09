@@ -33,10 +33,10 @@ code example of 6 lines text (needs another 2 for the upper/lower lines)
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>28. Feb 2015
+<date>9. May 2015
 
 <abstract>
-This is the documentation of Ayam 1.21 &ndash; a free 3D modelling environment
+This is the documentation of Ayam 1.22 &ndash; a free 3D modelling environment
 for the RenderMan interface.
 
 Please note, that this document is a reference manual,
@@ -11752,7 +11752,7 @@ scripting interface command <ref id="screfineknnc" name="refineknNC">.
 <sect2>Coarsen Tool<label id="coart">
 <p>
 <figure loc="ht">
-<eps file="pics/coarsen.ps" height="4cm">
+<eps file="pics/coarsen.ps" height="5cm">
 <img src="pics/coarsen.gif">
 <caption>Successive Application of Coarsen Tool</caption>
 </figure>
@@ -11803,7 +11803,7 @@ scripting interface command <ref id="scelevatenc" name="elevateNC">.
 <sect2>Extend Tool<label id="extendt">
 <p>
 <figure loc="ht">
-<eps file="pics/extendnc.ps" height="4cm">
+<eps file="pics/extendnc.ps" height="6cm">
 <img src="pics/extendnc.gif">
 <caption>Extend Tool Example (Original Curve (upper), Original Curve and Extended Curve Superimposed (lower))</caption>
 </figure>
@@ -11834,7 +11834,7 @@ scripting interface command <ref id="scextendnc" name="extendNC">.
 <sect2>Clamp Tool<label id="clat">
 <p>
 <figure loc="ht">
-<eps file="pics/clampnc.ps" height="4cm">
+<eps file="pics/clampnc.ps" height="5cm">
 <img src="pics/clampnc.gif">
 <caption>Clamp Tool (left: original curve, right: clamped curve)</caption>
 </figure>
@@ -15852,6 +15852,18 @@ If <tt/r/ is 0, only objects from the current level will be processed.
 If the <tt/"-type"/ option is given, only objects of the specified type
 <tt/t/ will be processed.
 <p>
+Prior to Ayam 1.22, potential errors from the command(s) were suppressed and
+processing continued regardless. But this made interactive usage and
+debugging unnecessarily difficult.
+From 1.22 on, errors are reported to the user and processing immediately
+stops. Errors may still be suppressed using the <tt/"catch"/ command
+like this:
+<tt>"forAll &lcub; catch &lcub; commands &rcub; &rcub;"</tt>
+<p>
+As the command will potentially be called multiple times, result
+values of any kind can not be delivered using the <tt/"return"/
+command but should rather be collected in global variables.
+<p>
 The global variable <tt/"ay(CurrentLevel)"/ will be maintained while
 a recursive forAll browses the scene. In addition, the global variable
 <tt/"i"/ will be set to the index of the current object.
@@ -16730,6 +16742,20 @@ by the following scripting interface command (in the Ayam console):
 Action icon variants (e.g.~for the scale about actions) can also be created
 automatically by changing the <tt/"createVariants"/ variable in
 the script file.
+
+<sect2>Dynamic Tree<label id="dtreetcl">
+<p>
+The script <tt>"dtree.tcl"</tt> (dynamic/fast tree) replaces some of
+BWidgets tree code for faster interaction with many objects.
+
+If activated, the tree no longer creates a canvas item for every node.
+Instead, there are only as many canvas items as there are nodes visible
+in the current scroll region. Therefore, working with many objects in
+long lists becomes much faster.
+
+In contrast to the normal tree, the DTree does not support initiating
+a drag-and-drop operation from a currently un-selected level with a
+single click.
 
 <#if out=latex><x/newpage/</#if>
 
@@ -20449,6 +20475,7 @@ Index:
 <item>Draw Object CS: <ref id="vmconf" name="view menu entry">
 <item>Draw Selection only: <ref id="vmconf" name="view menu entry">
 <item>DrawSub: <ref id="sdmattr" name="SDMesh attribute">
+<item>dtree.tcl: <ref id="dtreetcl" name="example/helper script">
 <item>DXF:
 <itemize>
 <item><ref id="impdxf" name="DXF import plugin">,
