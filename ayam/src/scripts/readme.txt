@@ -1,4 +1,4 @@
-[readme.txt - 16. Jan 2015]
+[readme.txt - 9. May 2015]
 
 This directory contains a collection of various scripts for Ayam.
 
@@ -25,7 +25,7 @@ winheader.tcl - helper to create header files from the original sources
 Internal Helpers
 ----------------
 
-Many of those scripts can be added to the preference setting Scripts.
+Many of those scripts can be added to the preference setting "Scripts".
 
 GUI helpers:
 2lcons.tcl - restrict the console to two lines height
@@ -34,6 +34,8 @@ intfd.tcl - use internal file dialogs (MacOSX only!)
 kdialog.tcl - use KDE dialogs (kdialog)
 zdialog.tcl - use Gnome dialogs (zenity)
 myicons.tcl - replace icon image with user defined ones
+dtree.tcl - dynamic/fast tree widget (replaces some of BWidgets tree code
+  for faster interaction with many objects)
 
 showwin.tcl - show all application windows
 zap.tcl - hide all application windows
