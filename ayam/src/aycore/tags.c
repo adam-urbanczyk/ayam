@@ -180,7 +180,6 @@ ay_tags_copyall(ay_object *src, ay_object *dst)
 void
 ay_tags_append(ay_object *o, ay_tag *tag)
 {
- int ay_status = AY_OK;
  static ay_object *last_object = NULL;
  static ay_tag **next_tag = NULL;
 
