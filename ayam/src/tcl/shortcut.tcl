@@ -584,7 +584,7 @@ proc shortcut_view { w } {
     bind $w <[repctrl $ayviewshortcuts(OSSUp)]>\
 	"selAdd 0; after idle \"focus %W\""
     bind $w <[repctrl $ayviewshortcuts(OSSDown)]>\
-	"selAdd 1; after idle \"focus %W\"]"
+	"selAdd 1; after idle \"focus %W\""
     # scene hierarchy navigation
     bind $w <[repctrl $ayviewshortcuts(OSLeft)]> {
 	set oldfocus [focus]
