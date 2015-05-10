@@ -2922,7 +2922,7 @@ cleanup:
 
   if(np)
     {
-      ay_stess_destroy(np);
+      ay_stess_destroy(stess);
     }
 
   /* free temporary polymesh */
@@ -3013,8 +3013,6 @@ ay_stess_TessNP(ay_object *o, int qf, ay_stess_patch *stess)
     } /* if */
 
     stess->qf = qf;
-
-cleanup:
 
   if(ay_status)
     {
