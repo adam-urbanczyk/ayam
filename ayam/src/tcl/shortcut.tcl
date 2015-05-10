@@ -295,6 +295,8 @@ proc shortcut_main { w } {
     bind $w <Shift-space> "tree_toggleTree 0;break"
     bind $w <plus> "tree_toggleTree 1;break"
     bind $w <minus> "tree_toggleTree 2;break"
+    bind $w <Key-$aymainshortcuts(ExpandAll)> "tree_expand \$ay(tree)"
+    bind $w <Key-$aymainshortcuts(CollapseAll)> "tree_collapse \$ay(tree)"
 
     bind $w <[repctrl $aymainshortcuts(SProp0)]> "plb_showprop 0"
     bind $w <[repctrl $aymainshortcuts(SProp1)]> "plb_showprop 1"

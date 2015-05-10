@@ -57,7 +57,6 @@ proc tree_handleSelection { } {
 }
 # tree_handleSelection
 
-
 #tree_openSub:
 # open/close subtree in tree view
 proc tree_openSub { tree newstate node } {
@@ -71,110 +70,17 @@ proc tree_openSub { tree newstate node } {
 }
 # tree_openSub
 
-#tree_expand:
-# open all nodes
-proc tree_expand { } {
+#tree_gotop:
+# go to top level
+proc tree_gotop { } {
     global ay
-    $ay(tree) configure -redraw 0
-    set nlist [$ay(tree) nodes root]
-    foreach n $nlist {
-	$ay(tree) opentree $n
-    }
-    $ay(tree) configure -redraw 1
+    goTop
+    set ay(CurrentLevel) "root"
+    set ay(SelectedLevel) "root"
+    after idle "Tree::_draw_tree $ay(tree)"
  return;
 }
-# tree_expand
-
-#tree_collapse:
-# close all nodes
-proc tree_collapse { } {
-    global ay
-    $ay(tree) configure -redraw 0
-    set tree $ay(tree)
-    set nlist [$tree nodes root]
-    foreach n $nlist {
-	$tree closetree $n
-    }
-    # show selection or current level (again)
-    set sel ""
-    set sel [$tree selection get]
-
-    if { ($sel == "") && ($ay(CurrentLevel) != "root") } {
-	set sel ${ay(CurrentLevel)}:0
-    }
-
-    if { $sel != "" } {
-	set fsel [lindex $sel 0]
-	set index 5
-	set done 0
-	while { ! $done } {
-	    set index [string first : $fsel $index]
-	    if { $index == -1 ||
-		 ([string first : $fsel [expr $index]] == -1) } {
-		set done 1
-	    } else {
-		incr index -1
-		set item [string range $fsel 0 $index]
-		incr index 2
-		tree_openSub $tree 1 $item
-	    }
-	    # if
-	}
-	# while
-	$tree see $sel
-    }
-    # if
-    $ay(tree) configure -redraw 1
- return;
-}
-# tree_collapse
-
-#tree_toggleTree:
-# toggle/open/close all selected sub-trees recursively
-proc tree_toggleTree { mode } {
-    global ay
-    if { $ay(lb) == 1 } { return }
-    $ay(tree) configure -redraw 0
-    set sel [$ay(tree) selection get]
-    foreach node $sel {
-	switch $mode {
-	    0 {
-		# toggle
-		if { [$ay(tree) itemcget $node -open] } {
-		    foreach n [$ay(tree) nodes $node] {
-			$ay(tree) closetree $n
-		    }
-		    $ay(tree) closetree $node
-		} else {
-		    foreach n [$ay(tree) nodes $node] {
-			$ay(tree) opentree $n
-		    }
-		    $ay(tree) opentree $node
-		}
-	    }
-	    1 {
-		# open
-		foreach n [$ay(tree) nodes $node] {
-		    $ay(tree) opentree $n
-		}
-		$ay(tree) opentree $node
-	    }
-	    2 {
-		# close
-		foreach n [$ay(tree) nodes $node] {
-		    $ay(tree) closetree $n
-		}
-		$ay(tree) closetree $node
-	    }
-	}
-	# switch mode
-    }
-    # foreach sel
-    $ay(tree) configure -redraw 1
- return;
-}
-# tree_toggleTree
-
+# tree_gotop
 
 
 # ------------------------------------------------------------------------------
