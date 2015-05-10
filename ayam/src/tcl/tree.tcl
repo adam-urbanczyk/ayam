@@ -692,12 +692,24 @@ proc tree_move { } {
 
 #tree_expand:
 # open all nodes
-proc tree_expand { } {
+proc tree_expand { tree } {
     global ay
-    set nlist [$ay(tree) nodes root]
-    foreach n $nlist {
-	$ay(tree) opentree $n
+    $tree configure -redraw 0
+
+    set nodes [$tree nodes root]
+    foreach node $nodes {
+	$tree opentree $node
     }
+    # show selection or current level (again)
+    set sel [$tree selection get]
+    if { ($sel == "") && ($ay(CurrentLevel) != "root") } {
+	set sel ${ay(CurrentLevel)}:0
+    }
+    if { $sel != "" } {
+	$tree see $sel
+    }
+
+    $tree configure -redraw 1
  return;
 }
 # tree_expand
@@ -705,15 +717,16 @@ proc tree_expand { } {
 
 #tree_collapse:
 # close all nodes
-proc tree_collapse { } {
+proc tree_collapse { tree } {
     global ay
-    set tree $ay(tree)
-    set nlist [$tree nodes root]
-    foreach n $nlist {
-	$tree closetree $n
+    $tree configure -redraw 0
+
+    set nodes [$tree nodes root]
+    foreach node $nodes {
+	$tree closetree $node
     }
+
     # show selection or current level (again)
-    set sel ""
     set sel [$tree selection get]
 
     if { ($sel == "") && ($ay(CurrentLevel) != "root") } {
@@ -722,26 +735,23 @@ proc tree_collapse { } {
 
     if { $sel != "" } {
 	set fsel [lindex $sel 0]
-	set index 5
-	set done 0
-	while { ! $done } {
-	    set index [string first : $fsel $index]
-	    if { $index == -1 ||
-		 ([string first : $fsel [expr $index]] == -1) } {
-		set done 1
-	    } else {
-		incr index -1
-		set item [string range $fsel 0 $index]
-		incr index 2
-		tree_openSub $tree 1 $item
-	    }
-	    # if
+	set parents ""
+	set pnode [$tree parent $fsel]
+	while { 1 } {
+	    if { $pnode != "root" } {
+		lappend parents $pnode
+		set pnode [$tree parent $pnode]
+	    } else { break }
 	}
-	# while
+	foreach parent [lreverse $parents] {
+	    tree_openSub $tree 1 $parent
+	}
+
 	$tree see $sel
     }
-    # if
+    # if sel
 
+    $tree configure -redraw 1
  return;
 }
 # tree_collapse
@@ -960,9 +970,6 @@ bind $ay(tree) <Escape> {
     shortcut_addescescbinding $ay(tree)
 }
 
-bind $ay(tree) <Key-$aymainshortcuts(ExpandAll)> tree_expand
-bind $ay(tree) <Key-$aymainshortcuts(CollapseAll)> tree_collapse
-
 # XXXX unfortunately, this does not work
 # because this steals all events otherwise
 # meant for nodes
@@ -1059,7 +1066,6 @@ proc tree_toggle { } {
 proc tree_reset { } {
     global ay
 
-    set sel ""
     set sel [$ay(tree) selection get]
 
     tree_update root
@@ -1119,7 +1125,7 @@ proc tree_toggleTree { mode } {
 
     if { $ay(lb) == 1 } { return }
 
-    set sel ""
+    $ay(tree) configure -redraw 0
     set sel [$ay(tree) selection get]
     foreach node $sel {
 	switch $mode {
@@ -1155,6 +1161,7 @@ proc tree_toggleTree { mode } {
 	# switch mode
     }
     # foreach sel
+    $ay(tree) configure -redraw 1
  return;
 }
 # tree_toggleTree
