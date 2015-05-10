@@ -1867,7 +1867,7 @@ double ay_trafo_round(double value, int digits)
   if(value < pow(10, -digits))
     return 0.0;
 
-  i = digits - log10(value);
+  i = (long int) (digits - log10(value));
 
   if(i)
     {
@@ -1879,7 +1879,7 @@ double ay_trafo_round(double value, int digits)
     }
 
   b = value * a;
-  i = b + 0.5;
+  i = (long int) (b + 0.5);
   value = i / a;
 
  return neg ? -value : value;
