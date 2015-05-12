@@ -768,13 +768,17 @@ ay_pact_pentcb(struct Togl *togl, int argc, char *argv[])
 	      Tcl_ObjSetVar2(interp, toa, ton, to,
 			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+	      Tcl_SetStringObj(ton,"lw",-1);
 	      if(pe.rational)
 		{
-		  Tcl_SetStringObj(ton,"lw",-1);
 		  to = Tcl_NewDoubleObj(coords[3]);
-		  Tcl_ObjSetVar2(interp, toa, ton, to,
-				 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-		} /* if */
+		}
+	      else
+		{
+		  to = Tcl_NewDoubleObj(1.0);
+		}
+	      Tcl_ObjSetVar2(interp, toa, ton, to,
+			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
 	      if(pe.rational)
 		{
@@ -804,13 +808,17 @@ ay_pact_pentcb(struct Togl *togl, int argc, char *argv[])
 	      Tcl_ObjSetVar2(interp, toa, ton, to,
 			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+	      Tcl_SetStringObj(ton,"ww",-1);
 	      if(pe.rational)
 		{
-		  Tcl_SetStringObj(ton,"ww",-1);
 		  to = Tcl_NewDoubleObj(wcoords[3]);
-		  Tcl_ObjSetVar2(interp, toa, ton, to,
-				 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-		} /* if */
+		}
+	      else
+		{
+		  to = Tcl_NewDoubleObj(1.0);
+		}
+	      Tcl_ObjSetVar2(interp, toa, ton, to,
+			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
 	      Tcl_SetStringObj(ton,"valid",-1);
 	      to = Tcl_NewIntObj(1);
@@ -820,12 +828,11 @@ ay_pact_pentcb(struct Togl *togl, int argc, char *argv[])
 	      Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
 
 	      ay_pact_clearpointedit(&pe);
-	    } /* if */
-
+	    } /* if have picked point */
 	  sel = sel->next;
 	} /* while */
       return TCL_OK;
-    } /* if */
+    } /* if start */
 
   if(!strcmp(argv[2], "-apply"))
     {
@@ -963,7 +970,7 @@ ay_pact_pentcb(struct Togl *togl, int argc, char *argv[])
       Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
 
       return TCL_OK;
-    } /* if */
+    } /* if apply */
 
 cleanup:
 
