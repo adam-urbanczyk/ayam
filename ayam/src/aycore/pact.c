@@ -753,18 +753,34 @@ ay_pact_pentcb(struct Togl *togl, int argc, char *argv[])
 
 	      coords = pe.coords[0];
 
+	      if(pe.rational)
+		{
+		  memcpy(wcoords, coords, 4*sizeof(double));
+		  if(ay_prefs.rationalpoints)
+		    {
+		      wcoords[0] *= wcoords[3];
+		      wcoords[1] *= wcoords[3];
+		      wcoords[2] *= wcoords[3];
+		    }
+		}
+	      else
+		{
+		  memcpy(wcoords, coords, 3*sizeof(double));
+		  wcoords[3] = 1.0;
+		}
+
 	      Tcl_SetStringObj(ton,"lx",-1);
-	      to = Tcl_NewDoubleObj(coords[0]);
+	      to = Tcl_NewDoubleObj(wcoords[0]);
 	      Tcl_ObjSetVar2(interp, toa, ton, to,
 			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
 	      Tcl_SetStringObj(ton,"ly",-1);
-	      to = Tcl_NewDoubleObj(coords[1]);
+	      to = Tcl_NewDoubleObj(wcoords[1]);
 	      Tcl_ObjSetVar2(interp, toa, ton, to,
 			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
 	      Tcl_SetStringObj(ton,"lz",-1);
-	      to = Tcl_NewDoubleObj(coords[2]);
+	      to = Tcl_NewDoubleObj(wcoords[2]);
 	      Tcl_ObjSetVar2(interp, toa, ton, to,
 			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
@@ -779,16 +795,6 @@ ay_pact_pentcb(struct Togl *togl, int argc, char *argv[])
 		}
 	      Tcl_ObjSetVar2(interp, toa, ton, to,
 			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-	      if(pe.rational)
-		{
-		  memcpy(wcoords, coords, 4*sizeof(double));
-		}
-	      else
-		{
-		  memcpy(wcoords, coords, 3*sizeof(double));
-		  wcoords[3] = 1.0;
-		}
 
 	      /* convert to world coordinates */
 	      ay_trafo_applyall(ay_currentlevel->next, o, wcoords);
@@ -912,6 +918,12 @@ ay_pact_pentcb(struct Togl *togl, int argc, char *argv[])
 			  if(selp->rational)
 			    {
 			      memcpy(selp->point, tcoords, 4*sizeof(double));
+			      if(ay_prefs.rationalpoints)
+				{
+				  selp->point[0] /= selp->point[3];
+				  selp->point[1] /= selp->point[3];
+				  selp->point[2] /= selp->point[3];
+				}
 			    }
 			  else
 			    {
