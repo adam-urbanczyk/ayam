@@ -828,8 +828,8 @@ ay_pmt_tonpatchmulti(ay_object *o, ay_object **result)
       break;
     }
 
-  w = pm->width/su;
-  h = pm->height/sv;
+  w = (pm->width-3)/su+1;
+  h = (pm->height-3)/sv+1;
 
   if(pm->close_u)
     {
