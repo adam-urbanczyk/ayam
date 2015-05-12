@@ -803,6 +803,7 @@ ay_pmt_tonpatchmulti(ay_object *o, ay_object **result)
       su = 2;
       break;
     case AY_BTCATMULLROM:
+    case AY_BTBSPLINE:
       su = 1;
       break;
     default:
@@ -819,6 +820,7 @@ ay_pmt_tonpatchmulti(ay_object *o, ay_object **result)
       sv = 2;
       break;
     case AY_BTCATMULLROM:
+    case AY_BTBSPLINE:
       sv = 1;
       break;
     default:
