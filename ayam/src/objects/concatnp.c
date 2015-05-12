@@ -228,7 +228,7 @@ ay_concatnp_drawhcb(struct Togl *togl, ay_object *o)
 
   if(concatnp->npatch)
     {
-      ay_npt_drawrohandles((ay_nurbpatch_object *)concatnp->npatch);
+      ay_npt_drawrohandles((ay_nurbpatch_object *)concatnp->npatch->refine);
     }
 
  return AY_OK;

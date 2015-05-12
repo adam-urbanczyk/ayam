@@ -181,7 +181,7 @@ ay_swing_drawhcb(struct Togl *togl, ay_object *o)
 
   if(swing->npatch)
     {
-      ay_npt_drawrohandles((ay_nurbpatch_object *)swing->npatch);
+      ay_npt_drawrohandles((ay_nurbpatch_object *)swing->npatch->refine);
     }
 
  return AY_OK;

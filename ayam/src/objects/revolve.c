@@ -183,7 +183,7 @@ ay_revolve_drawhcb(struct Togl *togl, ay_object *o)
 
   if(revolve->npatch)
     {
-      ay_npt_drawrohandles((ay_nurbpatch_object *)revolve->npatch);
+      ay_npt_drawrohandles((ay_nurbpatch_object *)revolve->npatch->refine);
     }
 
  return AY_OK;

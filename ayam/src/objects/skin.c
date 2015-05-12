@@ -183,7 +183,7 @@ ay_skin_drawhcb(struct Togl *togl, ay_object *o)
 
   if(skin->npatch)
     {
-      ay_npt_drawrohandles((ay_nurbpatch_object *)skin->npatch);
+      ay_npt_drawrohandles((ay_nurbpatch_object *)skin->npatch->refine);
     }
 
  return AY_OK;

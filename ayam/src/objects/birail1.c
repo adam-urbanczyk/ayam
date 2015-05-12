@@ -183,7 +183,7 @@ ay_birail1_drawhcb(struct Togl *togl, ay_object *o)
 
   if(birail1->npatch)
     {
-      ay_npt_drawrohandles((ay_nurbpatch_object *)birail1->npatch);
+      ay_npt_drawrohandles((ay_nurbpatch_object *)birail1->npatch->refine);
     }
 
  return AY_OK;

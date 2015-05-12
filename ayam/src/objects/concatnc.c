@@ -192,10 +192,23 @@ ay_concatnc_drawhcb(struct Togl *togl, ay_object *o)
 		(GLfloat)ay_prefs.obb);
 
       glBegin(GL_POINTS);
-       for(i = 0; i < nc->length; i++)
+       if(ay_prefs.rationalpoints)
 	 {
-	   glVertex3dv((GLdouble *)&pnts[a]);
-	   a += 4;
+	   for(i = 0; i < nc->length; i++)
+	     {
+	       glVertex3d((GLdouble)pnts[0]*pnts[3],
+			  (GLdouble)pnts[1]*pnts[3],
+			  (GLdouble)pnts[2]*pnts[3]);
+	       pnts += 4;
+	     }
+	 }
+       else
+	 {
+	   for(i = 0; i < nc->length; i++)
+	     {
+	       glVertex3dv((GLdouble *)&pnts[a]);
+	       a += 4;
+	     }
 	 }
       glEnd();
 
