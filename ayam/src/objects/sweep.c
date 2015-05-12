@@ -184,7 +184,7 @@ ay_sweep_drawhcb(struct Togl *togl, ay_object *o)
 
   if(sweep->npatch)
     {
-      ay_npt_drawrohandles((ay_nurbpatch_object *)sweep->npatch);
+      ay_npt_drawrohandles((ay_nurbpatch_object *)sweep->npatch->refine);
     }
 
  return AY_OK;

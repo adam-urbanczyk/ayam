@@ -185,7 +185,7 @@ ay_gordon_drawhcb(struct Togl *togl, ay_object *o)
 
   if(gordon->npatch)
     {
-      ay_npt_drawrohandles((ay_nurbpatch_object *)gordon->npatch);
+      ay_npt_drawrohandles((ay_nurbpatch_object *)gordon->npatch->refine);
     }
 
  return AY_OK;

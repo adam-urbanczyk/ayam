@@ -185,7 +185,7 @@ ay_extrude_drawhcb(struct Togl *togl, ay_object *o)
 
   if(extrude->npatch)
     {
-      ay_npt_drawrohandles((ay_nurbpatch_object *)extrude->npatch);
+      ay_npt_drawrohandles((ay_nurbpatch_object *)extrude->npatch->refine);
     }
 
  return AY_OK;

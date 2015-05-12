@@ -216,7 +216,7 @@ ay_extrnp_drawhcb(struct Togl *togl, ay_object *o)
 
   if(extrnp->npatch)
     {
-      ay_npt_drawrohandles((ay_nurbpatch_object *)extrnp->npatch);
+      ay_npt_drawrohandles((ay_nurbpatch_object *)extrnp->npatch->refine);
     }
 
  return AY_OK;

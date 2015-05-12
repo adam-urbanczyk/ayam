@@ -186,7 +186,7 @@ ay_bevel_drawhcb(struct Togl *togl, ay_object *o)
 
   if(bevel->npatch)
     {
-      ay_npt_drawrohandles((ay_nurbpatch_object *)bevel->npatch);
+      ay_npt_drawrohandles((ay_nurbpatch_object *)bevel->npatch->refine);
     }
 
  return AY_OK;

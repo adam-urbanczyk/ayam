@@ -156,7 +156,7 @@ ay_cap_drawhcb(struct Togl *togl, ay_object *o)
 
   if(cap->npatch)
     {
-      ay_npt_drawrohandles((ay_nurbpatch_object *)cap->npatch);
+      ay_npt_drawrohandles((ay_nurbpatch_object *)cap->npatch->refine);
     }
 
  return AY_OK;
