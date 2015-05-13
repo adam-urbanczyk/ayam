@@ -1226,7 +1226,7 @@ ay_npt_drawrohandles(ay_nurbpatch_object *patch)
 		(GLfloat)ay_prefs.obb);
 
       glBegin(GL_POINTS);
-       if(ay_prefs.rationalpoints)
+       if(patch->is_rat && ay_prefs.rationalpoints)
 	 {
 	   for(i = 0; i < patch->width*patch->height; i++)
 	     {
