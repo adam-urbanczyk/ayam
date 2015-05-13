@@ -847,9 +847,9 @@ catch {bind $tree <Key-Next> "$tree yview scroll 1 pages; break"}
 # and not on a node
 bind $tree <ButtonRelease-1> "+\
  global ay;\
- if { \$ay(sellock) == 0 } {\
+ if { \$ay(sellock) == 0 && \$ayprefs(SelectLast) } {\
  after 10 { tree_selectLast }; };\
- focus \$ay(tree)"
+ focus -force \$ay(tree);"
 
 # toggle selection without affecting selection of other objects
 $tree bindText <Control-ButtonPress-1> "tree_toggleSelection $sw.tree"
