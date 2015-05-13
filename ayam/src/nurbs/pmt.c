@@ -861,14 +861,15 @@ ay_pmt_tonpatchmulti(ay_object *o, ay_object **result)
 	  for(ii = 0; ii < 4; ii++)
 	    {
 	      ri = j*su + ii;
-	      if(ri > pm->width)
-		ri = ii;
+	      if(ri > pm->width-1)
+		ri -= pm->width;
+
 
 	      for(jj = 0; jj < 4; jj++)
 		{
 		  rj = i*sv + jj;
-		  if(rj > pm->height)
-		    rj = jj;
+		  if(rj > pm->height-1)
+		    rj -= pm->height;
 
 		  b = (ri*pm->height+rj)*4;
 
