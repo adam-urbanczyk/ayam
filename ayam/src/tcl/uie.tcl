@@ -182,7 +182,8 @@ proc addParam { w prop name {def {}} } {
 
     set bw 1
 
-    set f [frame $w.f${name} -relief sunken -bd $bw]
+    regsub -all $ay(fixvname) $name "_" fname
+    set f [frame $w.f${fname} -relief sunken -bd $bw]
 
     label $f.l -width 14 -text ${name}:
 
@@ -190,9 +191,9 @@ proc addParam { w prop name {def {}} } {
 	balloon_set $f.l ${name}
     }
 
-    bind $f.l <Double-ButtonPress-1> "pclip_toggleomit $f.l $name"
+    bind $f.l <Double-ButtonPress-1> "pclip_toggleomit $f.l $fname"
 
-    set e [entry $f.e -width 8 -textvariable ${prop}(${name}) -bd $bw]
+    set e [entry $f.e -width 8 -textvariable ${prop}(${fname}) -bd $bw]
     eval [subst "bindtags $f.e \{$f.e pge Entry all\}"]
     bind $f.e <Key-Escape> $escapecmd
 
@@ -206,11 +207,11 @@ proc addParam { w prop name {def {}} } {
 	incr he -5
     }
     button $f.b1 -bd $bw -wi $wi -he $he -image ay_TriangleL_img\
-	-command "updateParam $w $prop $name /2"\
+	-command "updateParam $w $prop $fname /2"\
 	-takefocus 0 -highlightthickness 0
 
     button $f.b2 -bd $bw -wi $wi -he $he -image ay_TriangleR_img\
-	-command "updateParam $w $prop $name *2"\
+	-command "updateParam $w $prop $fname *2"\
 	-takefocus 0 -highlightthickness 0
 
     set mb ""
@@ -240,11 +241,11 @@ proc addParam { w prop name {def {}} } {
          \[winfo rooty $mb\];tk_menuSetFocus $f.b3.m;break"
     }
 
-    bind $f.b1 <Control-ButtonPress-1> "updateParam $w $prop $name m01;break"
-    bind $f.b2 <Control-ButtonPress-1> "updateParam $w $prop $name p01;break"
+    bind $f.b1 <Control-ButtonPress-1> "updateParam $w $prop $fname m01;break"
+    bind $f.b2 <Control-ButtonPress-1> "updateParam $w $prop $fname p01;break"
 
-    bind $f.b1 <Alt-ButtonPress-1> "updateParam $w $prop $name m1;break"
-    bind $f.b2 <Alt-ButtonPress-1> "updateParam $w $prop $name p1;break"
+    bind $f.b1 <Alt-ButtonPress-1> "updateParam $w $prop $fname m1;break"
+    bind $f.b2 <Alt-ButtonPress-1> "updateParam $w $prop $fname p1;break"
 
     if { ! $ay(iapplydisable) } {
 	global aymainshortcuts
@@ -639,10 +640,11 @@ proc addCheck { w prop name } {
     set bw 1
     set ws ""
 
-    set f [frame $w.f${name} -relief sunken -bd $bw]
+    regsub -all $ay(fixvname) $name "_" fname
+    set f [frame $w.f${fname} -relief sunken -bd $bw]
 
     label $f.l -width 14 -text ${name}:
-    bind $f.l <Double-ButtonPress-1> "pclip_toggleomit $f.l $name"
+    bind $f.l <Double-ButtonPress-1> "pclip_toggleomit $f.l $fname"
 
     if {[string length ${name}] > 12} {
 	balloon_set $f.l ${name}
@@ -651,7 +653,7 @@ proc addCheck { w prop name } {
     if { $ay(ws) == "Win32" } {
 	# damn windows
 	set ff [frame $f.fcb -highlightthickness 1]
-	set cb [checkbutton $ff.cb -image emptyimg -variable ${prop}(${name})\
+	set cb [checkbutton $ff.cb -image emptyimg -variable ${prop}(${fname})\
 		    -bd $bw -indicatoron 0 -selectcolor #b03060]
 
 	bind $ff <Enter> { %W configure -background #ececec }
@@ -669,7 +671,7 @@ proc addCheck { w prop name } {
 	if { $ay(ws) == "Aqua" } {
 	    # also Aqua gets its "Extrawurst"
 	    set ff [frame $f.fcb -highlightthickness 1]
-	    set cb [checkbutton $ff.cb -variable ${prop}(${name}) -bd $bw]
+	    set cb [checkbutton $ff.cb -variable ${prop}(${fname}) -bd $bw]
 	    bind $ff <1> { %W.cb invoke }
 	    pack $f.l -in $f -side left
 	    pack $f.fcb -in $f -side left -expand yes -fill both
@@ -680,7 +682,7 @@ proc addCheck { w prop name } {
 	    bind $ff.cb [repctrl $aymainshortcuts(Help)] "uie_callhelp %W"
 	} else {
 	    # generic (X11) implementation
-	    set cb [checkbutton $f.cb -variable ${prop}(${name}) -bd $bw\
+	    set cb [checkbutton $f.cb -variable ${prop}(${fname}) -bd $bw\
 		    -pady 1 -padx 30]
 	    pack $f.l -in $f -side left
 	    pack $f.cb -in $f -side left -fill x -expand yes
@@ -748,10 +750,11 @@ proc addMenu { w prop name elist } {
 
     set bw 1
 
-    set f [frame $w.f${name} -relief sunken -bd $bw]
+    regsub -all $ay(fixvname) $name "_" fname
+    set f [frame $w.f${fname} -relief sunken -bd $bw]
 
     label $f.l -width 14 -text ${name}:
-    bind $f.l <Double-ButtonPress-1> "pclip_toggleomit $f.l $name"
+    bind $f.l <Double-ButtonPress-1> "pclip_toggleomit $f.l $fname"
 
     if {[string length ${name}] > 12} {
 	balloon_set $f.l ${name}
@@ -789,16 +792,16 @@ proc addMenu { w prop name elist } {
 
     foreach i $elist {
 	$m add command -label $i -command "global ${prop};\
-		catch {set ${prop}($name) $val};\
+		catch {set ${prop}($fname) $val};\
 		$f.mb configure -text {$i}"
 	incr val
     }
 
-    $m invoke [subst \$${prop}($name)]
+    $m invoke [subst \$${prop}($fname)]
 
-    trace variable ${prop}($name) w "updateMenu $m"
+    trace variable ${prop}($fname) w "updateMenu $m"
 
-    bind $f.mb <Destroy> "trace vdelete ${prop}($name) w \"updateMenu $m\""
+    bind $f.mb <Destroy> "trace vdelete ${prop}($fname) w \"updateMenu $m\""
 
     pack $f.l -in $f -side left -fill x
     pack $f.mb -in $f -side left -fill x -expand yes -pady 0
@@ -840,17 +843,17 @@ proc addString { w prop name  {def {}}} {
     }
 
     set bw 1
-
-    set f [frame $w.f${name} -relief sunken -bd $bw]
+    regsub -all $ay(fixvname) $name "_" fname
+    set f [frame $w.f${fname} -relief sunken -bd $bw]
 
     label $f.l -width 14 -text ${name}:
-    bind $f.l <Double-ButtonPress-1> "pclip_toggleomit $f.l $name"
+    bind $f.l <Double-ButtonPress-1> "pclip_toggleomit $f.l $fname"
 
     if {[string length ${name}] > 12} {
 	balloon_set $f.l ${name}
     }
 
-    set e [entry $f.e -textvariable ${prop}(${name}) -width 15 -bd $bw]
+    set e [entry $f.e -textvariable ${prop}(${fname}) -width 15 -bd $bw]
     eval [subst "bindtags $f.e \{$f.e pge Entry all\}"]
     bind $f.e <Key-Escape> $escapecmd
     uie_fixEntry $f.e

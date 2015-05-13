@@ -747,6 +747,7 @@ array set ay {
  cVDrawMark 0
  vaoldfocus ""
  motion 0
+ fixvname "\[^\[:alnum:\]|-\]"
 }
 # array ay
 
