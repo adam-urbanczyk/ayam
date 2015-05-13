@@ -7445,13 +7445,18 @@ settings:
 <itemize>
 <item><tt/"Type"/ may be set to <tt/"Bilinear"/ or <tt/"Bicubic"/.
 <item><tt/"Width"/ and <tt/"Height"/ control the dimensions of the patch.
+Note that for bicubic patch meshes, the basis type may impose restrictions
+on the valid values for width and height; e.g. for the
+basis type <tt/"Bezier"/ (with step size 3) valid values are 4, 7,
+10, &hellip;. The other basis type that imposes this restriction is
+<tt/"Hermite"/ with step size 2, where valid values are 4, 6, 8, &hellip;.
 <item><tt/"Close_U"/ and <tt/"Close_V"/ determine, whether the patch
 mesh should be closed in U and V direction respectively.
-<item><tt/"IsRat"/ informs you, whether the patch mesh
+<item><tt/"IsRat"/ informs, whether the patch mesh
 is rational (uses weight values different from
 1.0).<footnote>Since 1.21.</footnote>
 <item><tt/"BType_U"/ and <tt/"BType_V"/ control the basis type
-for bicubic patches. You may choose between the basis types:
+for bicubic patches. The following basis types are available:
 <tt/"Bezier"/, <tt/"B-Spline"/, <tt/"Catmull-Rom"/,
 <tt/"Hermite"/, <tt/"Power"/, and <tt/"Custom"/.
 In the latter case (<tt/"Custom"/), additional parameters may be set.
@@ -17624,7 +17629,7 @@ primitives:
 <item>subdivision meshes (with all tags).
 </itemize>
 
-Furthermore, the plugin supports reading of CSG, object-instances,
+Furthermore, the plugin supports reading of CSG, object instances,
 archives, light sources (including area-lights), arbitrary linear
 transformations (except shear transformations), arbitrary
 RiOptions and RiAttributes, shaders (except transformation
@@ -17634,11 +17639,14 @@ shaders and without array arguments), arbitrary primitive variables
 archives<footnote>Since 1.9.</footnote>.<newline>
 Texture coordinates will import as TC tags
 (see also section <ref id="tctag" name="TC (Texture Coordinates) Tag">).
+The handedness of the scene (set via RiOrientation) is tracked and
+converted to the right-handed default of Ayam.
+<footnote>Since 1.22.</footnote>
 <p>
 The RRIB plugin does not support reading of curves, implicit surfaces
-(blobby models) and calls to the RenderMan Interface that are not
+(blobby models) and calls to the RenderMan interface that are not
 so much useful for a RIB import like e.g.~RiMakeTexture.<newline>
-Unsupported geometric primitives and other calls to the RenderMan Interface
+Unsupported geometric primitives and other calls to the RenderMan interface
 are silently ignored.
 <p>
 Also note that for NURBS patches and bicubic patch meshes, points of type
@@ -17651,9 +17659,12 @@ See also section <ref id="ummtag" name="UMM/VMM (U/V Min Max) Tag">.
 Furthermore, objects of type (general) polygon and polygon mesh will
 always be promoted to general polygon meshes.
 <p>
-Object-instances are resolved to normal objects while importing.
+Object instances are resolved to normal objects while importing.
 Instances may be easily created again using Automatic Instancing
 (see section <ref id="ai" name="Automatic Instancing">).
+If there are multiple objects in a RenderMan object instance, an
+enclosing Level object will be created.
+<footnote>Since 1.22.</footnote>
 <p>
 Procedural objects will not be evaluated, instead, RiProc objects
 will be created, that carry all arguments and create the same
@@ -17704,6 +17715,9 @@ NURBS patches and trim curves so that the distances between different
 knots are not smaller than the given value. Using a value of 1.0e-04 leads
 to NURBS that may be safely drawn using GLU. The default value 0.0 means
 no scaling.
+<item><tt/"Progress"/: displays the progress of the import in terms of
+line numbers of the file to import (archives do not advance the
+progress).
 </itemize>
 
 <sect1>RenderMan Interface Bytestream (RIB) Export<label id="exprib">
@@ -19241,8 +19255,8 @@ point of the click. This option is enabled by default.
 These tags will be copied verbatim to converted and provided
 objects. Default value: <tt/"TP,TC"/.
 
-<item><tt/"CycleHiddenWire"/, determines whether the slow HiddenWire drawing
-mode is included in the list of modes that are cycled by keyboard
+<item><tt/"CycleHiddenWire"/, determines whether the slow <tt/"HiddenWire"/
+drawing mode is included in the list of modes that are cycled by keyboard
 (via <tt>"Ctrl+PageUp"/"Ctrl+PageDown"</tt>), default: 0 &ndash; no.
 
 <item><tt/"DailyTips"/: a list of strings that appear as tips
@@ -19326,11 +19340,11 @@ normalizing process should leave intact (Default: 6).
 
 <item><tt/"NormalizePoints"/, controls whether the selected points
 should be normalized, after interactive modelling actions
-(Default: 1 - yes).
+(Default: 1 &ndash; yes).
 
 <item><tt/"NormalizeTrafos"/, controls whether the transformation
 attributes should be normalized, after interactive modelling actions
-(Default: 1 - yes).
+(Default: 1 &ndash; yes).
 
 <item><tt/"PanDist"/: the distance about which panning in views by
 keyboard occurs; positive values are absolute in pixels, negative values are
@@ -19413,6 +19427,10 @@ This option is enabled by default on Win32.
 drawing mode, 0 &ndash; off, 1 &ndash; z-buffer, 2 &ndash; color,
 3 &ndash; z-buffer and color. The default is 3.
 
+<item><tt/"SelectLast"/ determines whether clicks into the tree
+widget (but not on any node) should select the last object of the current
+level. Default 1.
+
 <item><tt/"SelLineWidth"/, line width used for drawing the lines of
 selected objects (white lines in standard color configuration).
 The default value is 1.0. Ayam is not checking, whether the specified
@@ -19429,6 +19447,14 @@ systems where pressing the Shift together with the Tab key does not
 produce "&lt;Shift-Tab&gt;" (the default) but some other symbol like
 e.g.~"&lt;ISO_Left_Tab&gt;" (many, but not all, modern X11 systems often use
 this).
+
+<item><tt/"SimpleToolGUI"/ controls whether the standard UI elements
+(as known from the property GUIs) should be used in tool dialogs or
+just simple entry widgets. Default 0, use standard UI elements.
+
+<item><tt/"StripShaderArch"/ determines whether a second extension
+(the architecture) should be stripped from the file names of compiled
+shaders when scanning for shaders. Default 1 &ndash; yes.
 
 <item><tt/"SwapMB"/, <tt/"SwapMBSC"/ allow to swap mouse buttons 2 and 3
 on MacOSX/Aqua (not X11!) for specified mouse bindings (<tt/"SwapMBSC"/),
@@ -21284,9 +21310,10 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 </itemize>
 <item>Select All: <ref id="mmedit" name="main menu entry">
 <item>Select None: <ref id="mmedit" name="main menu entry">
-<item>Selected Objects: <ref id="mmspecial" name="main menu entry">
 <item>Select Renderer: <ref id="mmspecial" name="main menu entry">
+<item>Selected Objects: <ref id="mmspecial" name="main menu entry">
 <item>Selection: <ref id="prefdraw" name="preference setting">
+<item>SelectLast: <ref id="hidprefs" name="hidden preference setting">
 <item>SelLineWidth: <ref id="hidprefs" name="hidden preference setting">
 <item>selOb: <ref id="scselob" name="scripting interface command">
 <item>selPnts: <ref id="scselpnts" name="scripting interface command">
@@ -21333,6 +21360,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="vmtype" name="view menu entry">,
 <item><ref id="extrncp" name="ExtrNC attribute">
 </itemize>
+<item>SimpleToolGUI: <ref id="hidprefs" name="hidden preference setting">
 <item>SingleWindow: <ref id="prefmain" name="preference setting">
 <item>Skin:
 <itemize>
@@ -21372,6 +21400,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>StepSize: <ref id="moattr" name="MetaObj attributes">
 <item>Stretch: <ref id="scalac" name="stretch object">
 <item>String: <ref id="textattr" name="Text attribute">
+<item>StripShaderArch: <ref id="hidprefs" name="hidden preference setting">
 <item>Subdivision Mesh: <ref id="sdmeshobj" name="SDMesh object">
 <item>Superformula Curve: <ref id="sfcurveobj" name="SfCurve object">
 <item>Surface: <ref id="matshader" name="shader">
