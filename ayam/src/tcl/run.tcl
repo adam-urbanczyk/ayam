@@ -62,7 +62,7 @@ proc runTool { argvars argstrings command title {advargs ""} } {
 	}
 
 	# create GUI
-	if { 0 } {
+	if { $ayprefs(SimpleToolGUI) } {
 	    set f2 [frame $f.f$index]
 
 	    label $f2.l -text [lindex $argstrings $index ] -width 14
