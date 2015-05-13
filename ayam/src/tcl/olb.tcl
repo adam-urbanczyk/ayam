@@ -137,13 +137,15 @@ if { $ay(ws) == "Aqua" && $ayprefs(SwapMB) } {
     bind $f.li <ButtonPress-3> "tk_popup $m %X %Y"
 }
 
-
 # scrollbar
 set ay(olbs) $f.s
 scrollbar $f.s -command {global ay; $ay(olb) yview} -takefocus 0
 pack $f.la -in $f -side top -fill x
 pack $f.li -in $f -side left -fill both -expand yes
 pack $f.s -in $f -side left -fill y -expand no
+
+# focus management
+bind $f.la <ButtonPress-1> "focus -force $ay(olb)"
 
 # switch from listbox to tree
 bind $f.la <Double-1> tree_toggle

@@ -884,6 +884,7 @@ if { !$::ayprefs(SingleWindow) } {
 } else {
     bind $tree <Key-Tab> "focus .fu.fMain.fview3;break"
 }
+bind $la <ButtonPress-1> "focus -force $tree"
 
 # arrange for switching back to good old listbox
 bind $la <Double-ButtonPress-1> tree_toggle
