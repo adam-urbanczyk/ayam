@@ -245,6 +245,7 @@ array set ayprefs {
  StripShaderArch 1
 
  SimpleToolGUI 0
+ SelectLast 1
 
  Docs "http://ayam.sourceforge.net/docs/"
  DailyTips {
