@@ -103,31 +103,30 @@ proc runTool { argvars argstrings command title {advargs ""} } {
 	    set nam [string range $nami 0 end-1]
 	    regsub -all "\[^\[:alnum:\]\]" $nam "_" nami
 
-	    # XXXX TODO: use same varname as in uie.tcl
 	    eval "set vali \$$i"
 	    set ToolParams($nami) $vali
 	    while { 1 } {
 		if { $vali != "" } {
 		    if { [string is double $vali] } {
-			addParam $w.f1 ToolParams $nami
+			addParam $w.f1 ToolParams $nam
 			break;
 		    }
 		    if { [string is integer $vali] } {
 			set l ""
 			catch {eval "set l \$${nami}_l"}
 			if { $l != "" } {
-			    addMenu $w.f1 ToolParams $nami $l
+			    addMenu $w.f1 ToolParams $nam $l
 			} else {
-			    addParam $w.f1 ToolParams $nami
+			    addParam $w.f1 ToolParams $nam
 			}
 			break;
 		    }
 		    if { [string is boolean $vali] } {
-			addCheck $w.f1 ToolParams $nami
+			addCheck $w.f1 ToolParams $nam
 			break;
 		    }
 		}
-		addString $w.f1 ToolParams $nami
+		addString $w.f1 ToolParams $nam
 		break;
 	    }
 	    # while
