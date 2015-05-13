@@ -1514,7 +1514,7 @@ ay_tess_npatch(ay_object *o,
 	{
 	  if((texcoords = malloc(width*height*2*sizeof(float))))
 	    {
-	      for(i = 0; i < width*height*2; i++)
+	      for(i = 0; i < (unsigned int)(width*height*2); i++)
 		texcoords[i] = (float)tc[i];
 
 	      to.has_tc = AY_TRUE;
