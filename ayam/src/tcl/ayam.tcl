@@ -244,6 +244,8 @@ array set ayprefs {
 
  StripShaderArch 1
 
+ SimpleToolGUI 0
+
  Docs "http://ayam.sourceforge.net/docs/"
  DailyTips {
 {Always click on drawn pixels, when picking vertices.}
