@@ -306,7 +306,10 @@ The object tree view is quite complex and may be slow on slow machines
 that contain many objects. This should not be a problem nowadays.
 Nevertheless, Ayam tries to keep tree update delays as low as possible,
 but this works only if the scene uses the hierarchy and changes
-happen in sub levels (not the root level).
+happen in sub levels (not the root level). Further speedups may be achieved
+with the help of the DTree script
+(see section <ref id="dtreetcl" name="Dynamic Tree">).
+<footnote>Since 1.22.</footnote>
 <p>
 In the tree view, objects may be selected using the left mouse button.
 Multiple selection of objects is possible by holding down the
@@ -2237,10 +2240,16 @@ started outside the Ayam context, i.e.~when rendering exported RIB files
 from a shell.
 <p>
 Since Ayam 1.22, the shader paths support globbing, i.e.~it is
-possible to specify "/usr/share/aqsis/shaders/*/" to include
-"/usr/share/aqsis/shaders/surface/", "/usr/share/aqsis/shaders/displacement/",
-"/usr/share/aqsis/shaders/volume/", "/usr/share/aqsis/shaders/light/" etc.
-with just a single entry. More complex styles of globbing, using
+possible to specify
+<tscreen><verb>"/usr/share/aqsis/shaders/*/"</verb></tscreen>
+to include
+<tscreen><verb>
+"/usr/share/aqsis/shaders/surface/"
+"/usr/share/aqsis/shaders/displacement/"
+"/usr/share/aqsis/shaders/volume/"
+"/usr/share/aqsis/shaders/light/"
+</verb></tscreen>
+etc.~with just a single entry. More complex styles of globbing, using
 e.g.~the question mark, are also supported.
 
 <item><tt/"Scan for Shaders!"/ initiates a rebuild of the internal
@@ -2347,9 +2356,9 @@ Thus, the default value "plugins" leads to Ayam searching for plugins
 in the directory "plugins" located in the directory, where the Ayam
 executable resides:
 <tscreen><verb>
-.../ayam/bin/Ayam.exe
-.../ayam/bin/plugins/
-.../ayam/bin/plugins/ayslx.dll
+&hellip;/ayam/bin/Ayam.exe
+&hellip;/ayam/bin/plugins/
+&hellip;/ayam/bin/plugins/ayslx.dll
 </verb></tscreen>
 Multiple entries have to be separated by a colon (<tt/":"/) on Unix and
 by a semicolon (<tt/";"/) on Win32.<newline>
@@ -2493,10 +2502,35 @@ Either the control hull (or control polygon) is drawn (ControlHull), or
 just the outlines of the polygons created by the tesselation
 (OutlinePoly), or just the outlines of the patch (OutlinePatch).
 <p><p>
-Note that this setting does not affect shaded patches.
+The GLU variants tesselate the surface according to the current
+camera transformation, which is slow (needs to be done for every view
+window) but delivers high quality where needed. In addition, surfaces
+outside the current viewing volume are culled. Due to the dynamic
+sampling, the NURBS parameterization can not be judged easily.<newline>
+STESS, on the other hand, is tesselating in a uniform way and therefore
+the NURBS parameterization can be inferred easily. The tesselation is
+done only once, even if there are multiple views, and then cached.
+Consequently, the startup cost and memory requirements
+of STESS are higher than GLU, but repeated drawing is much faster,
+even though culling in STESS is currently done on the basis of tesselated
+triangles, not entire surfaces.<newline>
+Another aspect to consider is that GLU operates on the floating point
+data type <tt/"float"/ and imposes a serious constraint on knot values:
+knots that differ in less than 10E-4 are considered equal.
+STESS operates on the floating point data type <tt/"double"/ and uses
+a more relaxed epsilon of 10E-6.
+<footnote>Ayam may be recompiled with a different epsilon if this is still limiting.</footnote>
 <p>
-Note also, that this setting has no effect for objects that override it
-using a local DisplayMode setting different from <tt/"Global"/.
+Note that the <tt/"NPDisplayMode"/ setting also influences display of
+shaded NURBS:
+ControlHull shades the control polygon, OutlinePoly (GLU) and
+OutlinePatch (GLU) use GLU, and OutlinePatch (STESS) shades the STESS
+tesselation. The STESS tesselation of trimmed NURBS surfaces is of
+low quality.
+<p>
+Note also, that the <tt/"NPDisplayMode"/ setting has no effect for
+objects that override it locally using a <tt/"DisplayMode"/ attribute
+different from <tt/"Global"/.
 <p>
 Toggling between drawing of hulls and outlines may also be
 done easily using the keyboard shortcut <tt>&lt;F4&gt;</tt>.
@@ -2505,8 +2539,10 @@ done easily using the keyboard shortcut <tt>&lt;F4&gt;</tt>.
 The control hull (control polygon) or the curve or a
 combination of both may be displayed.
 <p><p>
+See also the discussion of GLU vs. STESS above.
+<p>
 Note that this setting has no effect for objects that override it
-using a local DisplayMode setting different from <tt/"Global"/.
+locally using a <tt/"DisplayMode"/ attribute different from <tt/"Global"/.
 <p>
 Toggling between drawing of hulls and curves may also be
 done easily using the keyboard shortcut <tt>&lt;F4&gt;</tt>.
