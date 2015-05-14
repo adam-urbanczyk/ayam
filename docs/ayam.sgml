@@ -2536,7 +2536,7 @@ Toggling between drawing of hulls and outlines may also be
 done easily using the keyboard shortcut <tt>&lt;F4&gt;</tt>.
 
 <item><tt/"NCDisplayMode"/ sets the display mode for NURBS curves,
-The control hull (control polygon) or the curve or a
+just like for surfaces the control hull (control polygon) or the curve or a
 combination of both may be displayed.
 <p><p>
 See also the discussion of GLU vs. STESS above.
@@ -7493,7 +7493,12 @@ Note that for bicubic patch meshes, the basis type may impose restrictions
 on the valid values for width and height; e.g. for the
 basis type <tt/"Bezier"/ (with step size 3) valid values are 4, 7,
 10, &hellip;. The other basis type that imposes this restriction is
-<tt/"Hermite"/ with step size 2, where valid values are 4, 6, 8, &hellip;.
+<tt/"Hermite"/ with step size 2, where valid values are 4, 6,
+8, &hellip;.<newline>
+Closing the surface complicates the matter a bit further. A valid
+width for a closed bicubic patch mesh of basis type <tt/"Bezier"/ is e.g. 6;
+it is actually still 7, but the last point is equal to the first and
+will be omitted.
 <item><tt/"Close_U"/ and <tt/"Close_V"/ determine, whether the patch
 mesh should be closed in U and V direction respectively.
 <item><tt/"IsRat"/ informs, whether the patch mesh
@@ -7505,14 +7510,13 @@ for bicubic patches. The following basis types are available:
 <tt/"Hermite"/, <tt/"Power"/, and <tt/"Custom"/.
 In the latter case (<tt/"Custom"/), additional parameters may be set.
 Those are <tt/"Step_U"//<tt/"Step_V"/ (the step size of the basis) and
-<tt/"Basis_U"//<tt/"Basis_V"/ the basis itself
-(please see the RenderMan Companion for a discussion of basis types).
+<tt/"Basis_U"//<tt/"Basis_V"/ the basis itself.
+Please see the RenderMan Companion for a more in depth discussion of
+the different basis types.
 </itemize>
-The parameters <tt/"BType_U"/ and <tt/"BType_V"/ and consequently
-<tt/"Step_U"//<tt/"Step_V"/ and <tt/"Basis_U"//<tt/"Basis_V"/ are
+The parameters <tt/"BType_U"/, <tt/"BType_V"/, <tt/"Step_U"/,
+<tt/"Step_V"/, <tt/"Basis_U"/, and <tt/"Basis_V"/ are
 only available to bicubic patch meshes.
-
-<#if out=latex><x/newpage/</#if>
 
 The next parameters control the appearance of the patch for display
 in Ayam:
@@ -21446,6 +21450,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>StdDisplay: <ref id="rio" name="RenderMan interface option">
 <item>Step_U, Step_V: <ref id="pmattr" name="PatchMesh attribute">
 <item>StepSize: <ref id="moattr" name="MetaObj attributes">
+<item>STESS: <ref id="prefdraw" name="preference setting">
 <item>Stretch: <ref id="scalac" name="stretch object">
 <item>String: <ref id="textattr" name="Text attribute">
 <item>StripShaderArch: <ref id="hidprefs" name="hidden preference setting">
