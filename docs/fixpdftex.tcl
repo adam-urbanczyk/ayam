@@ -16,7 +16,7 @@
 # o inline graphics (icons in tables)
 # o improve itemize/enumerate environments line spread and paragraph distance
 
-set procs { fixheight fixsection fixenddoc fixdocclass fixitemize fixenum fixlist insnewpage insneedspace insphantomsection insinlinegfx fixtoc fixhyperref fixpara }
+set procs { fixheight fixsection fixenddoc fixdocclass fixitemize fixenditemize fixenum fixlist insnewpage insneedspace insphantomsection insinlinegfx fixtoc fixhyperref fixpara }
 
 proc fixheight { buf outfile } {
     global height
@@ -114,18 +114,36 @@ proc fixlist { buf outfile } {
 }
 
 proc fixitemize { buf outfile } {
-    global rewriteLists
+    global rewriteLists itemizeLevel
     set found 0
     set index [ string first "\\begin\{itemize" $buf ]
     if { ($index > -1) } {
 	if {  $rewriteLists } {
-	puts $outfile\
+	    puts $outfile\
      "\\begin\{itemize\}\\setstretch\{0.95\}\\setlength\{\\itemsep\}\{0.5ex\}"
 	    puts $outfile "\\vspace\{-1.5ex\}"
 	} else {
-	puts $outfile\
-	    "\\vspace\{-1.5ex\}\\begin\{itemize\}\\setstretch\{1\}\\setlength\{\\itemsep\}\{0.33ex\}\\setlength\{\\parsep\}\{1ex\}"
+	    if { $itemizeLevel > 1 } {
+		puts $outfile\
+		    "\\vspace\{-0.5ex\}\\begin\{itemize\}\\setstretch\{1\}\\setlength\{\\itemsep\}\{0.33ex\}\\setlength\{\\parsep\}\{1ex\}"
+	    } else {
+		puts $outfile\
+		    "\\vspace\{-1.5ex\}\\begin\{itemize\}\\setstretch\{1\}\\setlength\{\\itemsep\}\{0.33ex\}\\setlength\{\\parsep\}\{1ex\}"
+	    }
 	}
+	incr itemizeLevel
+	set found 1
+    }
+    return $found;
+}
+
+proc fixenditemize { buf outfile } {
+    global itemizeLevel
+    set found 0
+    set index [ string first "\\end\{itemize" $buf ]
+    if { ($index > -1) } {
+	incr itemizeLevel -1
+	puts $outfile $buf
 	set found 1
     }
     return $found;
@@ -149,7 +167,7 @@ proc fixpara { buf outfile } {
     if { ($index > -1) } {
 	set out "~\\\\\\vskip -2.2ex"
 	append out [string range $buf 3 end]
-	puts $outfile $out    
+	puts $outfile $out
 	set found 1
     }
     return $found;
@@ -247,6 +265,7 @@ proc template { buf outfile } {
 set infile [ open [lindex $argv 0] r ]
 set outfile [ open [lindex $argv 1] w ]
 set rewriteLists 0
+set itemizeLevel 0
 set height 0
 while { ![eof $infile] } {
     gets $infile buf
