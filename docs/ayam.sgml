@@ -2437,7 +2437,15 @@ In euclidean style the weights are not multiplied in, whereas in the
 homogeneous style the weights are multiplied in prior to display.
 This preference setting also influences the control hull display of
 NURBS curves and surfaces and some modelling actions like setting the
-mark from points.
+mark from points. See also the following image, showing two NURBS
+circles with their control hulls in euclidean and homogeneous style.
+<p>
+<figure loc="ht">
+<eps file="pics/euchom.ps" height="5cm">
+<img src="pics/euchom.gif">
+<caption>Euclidean (left) vs. Homogeneous (right) Display of Rational Points</caption>
+</figure>
+<p>
 
 <item><tt/"GlobalMark"/ toggles whether each view should manage its
 own mark (off), or whether there should be just one global
@@ -19426,10 +19434,12 @@ This option is enabled by default on Win32.
 <item><tt/"SDMode"/, silhouette detection mode for the hidden wire
 drawing mode, 0 &ndash; off, 1 &ndash; z-buffer, 2 &ndash; color,
 3 &ndash; z-buffer and color. The default is 3.
+<footnote>Since 1.21.</footnote>
 
 <item><tt/"SelectLast"/ determines whether clicks into the tree
 widget (but not on any node) should select the last object of the current
 level. Default 1.
+<footnote>Since 1.22.</footnote>
 
 <item><tt/"SelLineWidth"/, line width used for drawing the lines of
 selected objects (white lines in standard color configuration).
@@ -19451,10 +19461,12 @@ this).
 <item><tt/"SimpleToolGUI"/ controls whether the standard UI elements
 (as known from the property GUIs) should be used in tool dialogs or
 just simple entry widgets. Default 0, use standard UI elements.
+<footnote>Since 1.22.</footnote>
 
 <item><tt/"StripShaderArch"/ determines whether a second extension
 (the architecture) should be stripped from the file names of compiled
 shaders when scanning for shaders. Default 1 &ndash; yes.
+<footnote>Since 1.22.</footnote>
 
 <item><tt/"SwapMB"/, <tt/"SwapMBSC"/ allow to swap mouse buttons 2 and 3
 on MacOSX/Aqua (not X11!) for specified mouse bindings (<tt/"SwapMBSC"/),
