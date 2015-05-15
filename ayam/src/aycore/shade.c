@@ -547,18 +547,18 @@ ay_shade_detectsil(struct Togl *togl, int selection)
 			{
 			  *s = 0;
 			}
-		    }
+		    } /* if */
 		  c1++;
 		  c2++;
 		  c3++;
-		}
+		} /* for */
 
 	      c1++;
 	      c2++;
 	      c3++;
 	      s++;
-	    }
-	}
+	    } /* for */
+	} /* for */
     } /* if sdmode > 1 (color or both) */
 
   /*
@@ -729,9 +729,9 @@ ay_shade_object(struct Togl *togl, ay_object *o, int push_name)
 		   glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE,
 				color);
 		 } /* if */
-	     } /* if */
-	 } /* if */
-     } /* if */
+	     } /* if mat */
+	 } /* if usematcolor */
+     } /* if pushname */
 
    arr = ay_shadecbt.arr;
    cb = (ay_drawcb *)(arr[o->type]);
@@ -751,8 +751,8 @@ ay_shade_object(struct Togl *togl, ay_object *o, int push_name)
 	 {
 	   ay_shade_object(togl, down, push_name);
 	   down = down->next;
-	 } /* while */
-     } /* if */
+	 }
+     }
 
 cleanup:
 
@@ -916,11 +916,13 @@ ay_shade_view(struct Togl *togl)
       if(!view->drawsel && silsel)
 	{
 	  if(!view->antialiaslines && (ay_prefs.sellinewidth < 1.5))
-	    if(!ay_shade_cleansil(togl, AY_TRUE, silsel))
-	      {
-		free(silsel);
-		silsel = NULL;
-	      }
+	    {
+	      if(!ay_shade_cleansil(togl, AY_TRUE, silsel))
+		{
+		  free(silsel);
+		  silsel = NULL;
+		}
+	    }
 	}
       if(sil)
 	ay_draw_silhouettes(togl, sil);
@@ -1015,7 +1017,6 @@ ay_shade_view(struct Togl *togl)
 			    (GLdouble)o->scalz);
 
 		   cb = (ay_drawcb *)(arr[o->type]);
-
 		   if(cb)
 		     {
 		       ay_status = cb(togl, o);
@@ -1025,9 +1026,8 @@ ay_shade_view(struct Togl *togl)
 				    "draw handle callback failed");
 			 }
 		     }
-
 		  glPopMatrix();
-		} /* if */
+		} /* if !hidden */
 	      sel = sel->next;
 	    } /* while */
 
@@ -1072,7 +1072,6 @@ ay_shade_view(struct Togl *togl)
 			point = point->next;
 		      }
 		   glEnd();
-
 		  glPopMatrix();
 		}
 	      sel = sel->next;
@@ -1091,9 +1090,9 @@ ay_shade_view(struct Togl *togl)
 	      glDepthRange(0.0, 1.0);
 	      glDepthFunc(GL_LESS);
 	    }
-	} /* if */
+	} /* if draw handles */
       glPopMatrix();
-    } /* if */
+    } /* if sel */
 
   glDisable(GL_LIGHTING);
   glDisable(GL_DITHER);
@@ -1102,7 +1101,7 @@ ay_shade_view(struct Togl *togl)
   if(view->drawmark)
     {
       ay_draw_mark(togl);
-    } /* if */
+    }
 
   if(view->drawlevel)
     {
