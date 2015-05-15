@@ -4973,6 +4973,7 @@ void
 ay_rrib_pushattribs(void)
 {
  ay_rrib_attrstate *newstate = NULL;
+ ay_tag *tag = NULL, **newtagptr = NULL;
  char fname[] = "ay_rrib_pushattribs";
  int ay_status = AY_OK;
 
@@ -5020,7 +5021,19 @@ ay_rrib_pushattribs(void)
 				     &(newstate->eshader));
 	}
 
-      /* XXXX todo: copy tags? */
+      if(ay_rrib_cattributes->tags)
+	{
+	  tag = ay_rrib_cattributes->tags;
+	  newtagptr = &(newstate->tags);
+	  while(tag)
+	    {
+	      ay_status = ay_tags_copy(tag, newtagptr);
+	      if(ay_status)
+		break;
+	      newtagptr = &((*newtagptr)->next);
+	      tag = tag->next;
+	    }
+	}
 
       if(ay_rrib_cattributes->ubasisptr)
 	{
