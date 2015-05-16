@@ -46,9 +46,10 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 {
  int ay_status = AY_OK;
  int i, is_planar, is_roundtocap, do_integrate;
- int winding = 0, side = 0, revert = AY_FALSE;
+ int winding = 0, side = 0, dir = 0;
  int capintknottype = AY_KTCUSTOM;
  double param = 0.0, *mp = NULL, *normals = NULL, *tangents = NULL;
+ double radius = 0.0;
  ay_object curve = {0}, *alignedcurve = NULL;
  ay_object *bevel = NULL, *bevelcurve = NULL;
  ay_object **next = dst, *extrcurve = NULL;
@@ -152,7 +153,9 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 	      if(bparams->force3d[i])
 		is_planar = AY_FALSE;
 	      else
-		ay_nct_isplanar(&curve, &alignedcurve, &is_planar);
+		{
+		  ay_nct_isplanar(&curve, &alignedcurve, &is_planar);
+		}
 
 	    }
 	  else
@@ -182,6 +185,9 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		}
 	    }
 
+	  radius = bparams->radii[i];
+	  dir = bparams->dirs[i];
+
 	  if(is_planar)
 	    {
 	      /* 2D bevel */
@@ -190,63 +196,70 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		case 0:
 		  if(winding > 0)
 		    {
-		      revert = !bparams->dirs[i];
-		      bparams->radii[i] = -bparams->radii[i];
+		      dir = !bparams->dirs[i];
+		      radius = -bparams->radii[i];
 		    }
+		  /*
 		  else
 		    {
-		      revert = bparams->dirs[i];
-		      /*bparams->radii[i] = bparams->radii[i];*/
+		      dir = bparams->dirs[i];
+		      radius = bparams->radii[i];
 		    }
+		  */
 		  break;
 		case 1:
 		  if(winding > 0)
 		    {
-		      revert = bparams->dirs[i];
-		      /*bparams->radii[i] = bparams->radii[i];*/
+		      /*
+		      dir = bparams->dirs[i];
+		      radius = bparams->radii[i];
+		      */
 		    }
 		  else
 		    {
-		      revert = !bparams->dirs[i];
-		      bparams->radii[i] = -bparams->radii[i];
+		      dir = !bparams->dirs[i];
+		      radius = -bparams->radii[i];
 		    }
 		  break;
 		case 2:
 		  if(winding > 0)
 		    {
-		      revert = bparams->dirs[i];
-		      /*bparams->radii[i] = bparams->radii[i];*/
+		      /*
+		      dir = bparams->dirs[i];
+		      radius = bparams->radii[i];
+		      */
 		    }
 		  else
 		    {
-		      revert = !bparams->dirs[i];
-		      bparams->radii[i] = -bparams->radii[i];
+		      dir = !bparams->dirs[i];
+		      radius = -bparams->radii[i];
 		    }
 		  break;
 		case 3:
 		  if(winding > 0)
 		    {
-		      revert = !bparams->dirs[i];
-		      bparams->radii[i] = -bparams->radii[i];
+		      dir = !bparams->dirs[i];
+		      radius = -bparams->radii[i];
 		    }
 		  else
 		    {
-		      revert = bparams->dirs[i];
-		      /*bparams->radii[i] = bparams->radii[i];*/
+		      /*
+		      dir = bparams->dirs[i];
+		      radius = bparams->radii[i];
+		      */
 		    }
 		  break;
 		default:
-		  revert = AY_FALSE;
+		  dir = AY_FALSE;
 		  break;
 		} /* switch */
 
-	      if(revert)
+	      if(dir)
 		{
 		  ay_nct_revert((ay_nurbcurve_object *)alignedcurve->refine);
 		}
 
-	      ay_status = ay_bevelt_createc(bparams->radii[i],
-					    alignedcurve, bevelcurve,
+	      ay_status = ay_bevelt_createc(radius, alignedcurve, bevelcurve,
 			     (ay_nurbpatch_object**)(void*)&(bevel->refine));
 
 	      /* rotate bevel created from aligned curve
@@ -282,52 +295,51 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		case 0:
 		  if(winding > 0)
 		    {
-		      bparams->dirs[i] = !bparams->dirs[i];
-		      bparams->radii[i] = -bparams->radii[i];
+		      dir = !bparams->dirs[i];
+		      radius = -bparams->radii[i];
 		    }
 		  /*
 		  else
 		    {
-		      bparams->dirs[i] = bparams->dirs[i];
-		      bparams->radii[i] = bparams->radii[i];
+		      dir = bparams->dirs[i];
+		      radius = bparams->radii[i];
 		    }
 		  */
 		  break;
 		case 1:
 		  if(winding > 0)
 		    {
-		      /*bparams->dirs[i] = bparams->dirs[i];*/
-		      bparams->radii[i] = -bparams->radii[i];
+		      radius = -bparams->radii[i];
 		    }
 		  else
 		    {
-		      bparams->dirs[i] = !bparams->dirs[i];
-		      /*bparams->radii[i] = bparams->radii[i];*/
+		      dir = !bparams->dirs[i];
+		      /*radius = bparams->radii[i];*/
 		    }
 		  break;
 		case 2:
 		  if(winding > 0)
 		    {
-		    /*bparams->dirs[i] = bparams->dirs[i];*/
-		      bparams->radii[i] = -bparams->radii[i];
+		      /*dir = bparams->dirs[i];*/
+		      radius = -bparams->radii[i];
 		    }
 		  else
 		    {
-		      bparams->dirs[i] = !bparams->dirs[i];
-		      /*bparams->radii[i] = bparams->radii[i];*/
+		      dir = !bparams->dirs[i];
+		      /*radius = bparams->radii[i];*/
 		    }
 		  break;
 		case 3:
 		  if(winding > 0)
 		    {
-		      bparams->dirs[i] = !bparams->dirs[i];
-		      bparams->radii[i] = -bparams->radii[i];
+		      dir = !bparams->dirs[i];
+		      radius = -bparams->radii[i];
 		    }
 		  /*
 		  else
 		    {
-		      bparams->dirs[i] = bparams->dirs[i];
-		      bparams->radii[i] = bparams->radii[i];
+		      dir = bparams->dirs[i];
+		      radius = bparams->radii[i];
 		    }
 		  */
 		  break;
@@ -337,15 +349,13 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 
 	      if(is_roundtocap)
 		{
-		  ay_status = ay_bevelt_createroundtocap(bparams->radii[i],
-							 bparams->dirs[i],
+		  ay_status = ay_bevelt_createroundtocap(radius, dir,
 							 &curve, tangents, 9,
 			     (ay_nurbpatch_object**)(void*)&(bevel->refine));
 		}
 	      else
 		{
-		  ay_status = ay_bevelt_createc3d(bparams->radii[i],
-						  bparams->dirs[i],
+		  ay_status = ay_bevelt_createc3d(radius, dir,
 						  &curve, bevelcurve,
 						  normals, 9, tangents, 9,
 			     (ay_nurbpatch_object**)(void*)&(bevel->refine));
