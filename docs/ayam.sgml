@@ -1325,7 +1325,7 @@ copied arguments of both shaders have the same names and types).
 
 <item><tt>"Instances/Resolve all Instances"</tt>, opens a small dialog
 where the scope of the resolve operation may be
-adjusted.<footnote>Since 1.21.</footnote>
+adjusted and the operation may be started<footnote>Since 1.21.</footnote>.
 
 In contrast to converting the selected Instance objects, this operation
 does not stop until no Instances are left in the processed object
@@ -1337,15 +1337,21 @@ where the automatic instantiation may be parameterised and started
 See section <ref id="ai" name="Automatic Instancing">
 for more information.
 
-<item><tt>"Tags/Add RiOption"</tt>, pops up a small dialog box, where you may
-select and parameterise a RiOption tag to add as tag to the Root object
+<item><tt>"Tags/Add RiOption"</tt>, pops up a small dialog box, where
+a RiOption may be selected, parameterised, and added as tag to the Root
+object
 (see <ref id="riotag" name="RiOption Tag">). The Root object does
 not have to be selected and the current selection will not be changed
-by this action.
+by this action.<newline>
+The database of available RiOptions is controlled by the ayamrc
+file (see also section <ref id="ayamrc" name="Ayamrc File">).
 
 <item><tt>"Tags/Add RiAttribute"</tt>, pops up a small dialog box, where
-you may select and parameterise a RiAttribute tag to add as tag to the
-currently selected object(s) (see <ref id="riatag" name="RiAttribute Tag">).
+a RiAttribute may be selected, parameterised, and added as tag to the
+currently selected object(s) (see <ref id="riatag" name="RiAttribute Tag">)
+.<newline>
+The database of available RiAttributes is controlled by the ayamrc
+file (see also section <ref id="ayamrc" name="Ayamrc File">).
 
 <item><tt>"Tags/Edit TexCoords"</tt>, opens the texture coordinates editor.
 (see also section <ref id="tctag" name="TC (Texture Coordinates) Tag">).
@@ -1360,7 +1366,7 @@ tags can be managed easily for all selected objects
 
 <item><tt>"RIB-Export/From Camera"</tt>, writes a complete RIB of
 the current scene with the camera transformations taken from the
-currently selected camera object. The size of the rendered image will
+currently selected Camera object. The size of the rendered image will
 be taken from the RiOptions of the Root object. If they are zero,
 default values of 400 pixels width and 300 pixels height will be used.
 The type of the projection written will be perspective.
@@ -1374,8 +1380,8 @@ as on normal export operations, and light objects are simply ignored.
 Note also that the created RIB, since it e.g.~lacks camera transformation
 and WorldBegin/End directives, may not be rendered directly by a
 RenderMan compliant renderer (unless the renderer is really forgiving
-about mis-structured RIBs).
-The main use of this feature is to let you create RIBs that may be easily
+about mis-structured RIBs).<newline>
+The main use of this feature is to aid in the creation RIBs that may be easily
 included in other RIBs using e.g.~the ReadArchive directive.
 
 <item><tt>"RIB-Export/Create ShadowMap"</tt>, creates the shadow maps
@@ -1415,8 +1421,8 @@ about the ayamrc file.
 
 <item><tt>"Reset Layout"</tt> resets the pane layout in single window
 GUI mode so that the upper internal views get an approximately even share
-of available screen space and the object selection widget and property
-GUI are completely visible.
+of the available horizontal screen space and the object selection widget
+and property GUI are completely visible.
 
 <item><tt/"Toggle Toolbox"/ closes or opens the toolbox window
 (see <ref id="toolb" name="The Toolbox Window">). From version 1.3 on,
@@ -2494,6 +2500,9 @@ range from 1 to 100.
 This setting has no effect for objects that override it
 using a local tolerance setting different from 0.
 <p><p>
+STESS derives a quality/sampling factor from this setting, that leads
+to comparable sampling quality for a standard viewing distance.
+<p>
 Using the keyboard shortcuts <tt>&lt;F2&gt;</tt> and <tt>&lt;F3&gt;</tt>
 the GLU tolerance may also be set easily.
 
@@ -2505,8 +2514,8 @@ just the outlines of the polygons created by the tesselation
 The GLU variants tesselate the surface according to the current
 camera transformation, which is slow (needs to be done for every view
 window) but delivers high quality where needed. In addition, surfaces
-outside the current viewing volume are culled. Due to the dynamic
-sampling, the NURBS parameterization can not be judged easily.<newline>
+outside the current viewing volume are culled. Due to the dynamic sampling,
+the NURBS parameterization can not be judged easily.<newline>
 STESS, on the other hand, is tesselating in a uniform way and therefore
 the NURBS parameterization can be inferred easily. The tesselation is
 done only once, even if there are multiple views, and then cached.
@@ -2517,15 +2526,20 @@ triangles, not entire surfaces.<newline>
 Another aspect to consider is that GLU operates on the floating point
 data type <tt/"float"/ and imposes a serious constraint on knot values:
 knots that differ in less than 10E-4 are considered equal.
-STESS operates on the floating point data type <tt/"double"/ and uses
-a more relaxed epsilon of 10E-6.
+In contrast, STESS operates on the floating point data type <tt/"double"/
+and uses a more relaxed epsilon of 10E-6.
 <footnote>Ayam may be recompiled with a different epsilon if this is still limiting.</footnote>
+<newline>
+Finally, the application of instancing does not speed up drawing with GLU,
+but lowers the tesselation and memory costs of STESS, as instances use
+the cached tesselation of the respective master objects.
 <p>
 Note that the <tt/"NPDisplayMode"/ setting also influences display of
 shaded NURBS:
-ControlHull shades the control polygon, OutlinePoly (GLU) and
+ControlHull shades the control polygon<footnote>Since 1.22.</footnote>,
+OutlinePoly (GLU) and
 OutlinePatch (GLU) use GLU, and OutlinePatch (STESS) shades the STESS
-tesselation. The STESS tesselation of trimmed NURBS surfaces is of
+tesselation. The shaded STESS tesselation of trimmed NURBS surfaces is of
 low quality.
 <p>
 Note also, that the <tt/"NPDisplayMode"/ setting has no effect for
@@ -2570,8 +2584,8 @@ uses the color defined by the material of an object for
 rendering.
 
 <item><tt/"Background"/, <tt/"Object"/, <tt/"Selection"/, <tt/"Grid"/,
-<tt/"Tag"/, <tt/"Shade"/, and <tt/"Light"/ let you set colors that
-will be used when drawing or shading.
+<tt/"Tag"/, <tt/"Shade"/, and <tt/"Light"/ set the colors that
+will be used when drawing or shading the respective primitives.
 </itemize>
 
 <#if out=latex><x/newpage/</#if>
@@ -20697,6 +20711,7 @@ Index:
 <item>Gimbal Lock: <ref id="gimb" name="avoiding gimbal locks">
 <item>Global: <ref id="editlocal" name="Editing in Local Spaces">
 <item>GlobalMark: <ref id="prefmodel" name="preference setting">
+<item>GLU: <ref id="prefdraw" name="preference setting">
 <item>goDown: <ref id="scgodown" name="scripting interface command">
 <item>goTop: <ref id="scgotop" name="scripting interface command">
 <item>Gordon: <ref id="gordonobj" name="Gordon object">
