@@ -1,4 +1,4 @@
-[10. May 2015] CVS-Head:
+[17. May 2015] CVS-Head:
 =======================
 Bug Fixes:
 o silhouettes are missing when draw selection only is active (SF 499)
@@ -8,6 +8,7 @@ o rotation attributes swapped after normalization (SF 502)
 o crash when automatic instancing compares tags (SF 503)
 o automatic instancing creates instances of light sources (SF 504)
 o conversion of patchmesh objects with height > 4 (SF 505)
+o orientation of hole bevels in extrusion objects (SF 506)
 
 Modelling:
 o added option to display rational points in homogeneous style
@@ -21,6 +22,7 @@ o allow negative values for "ToleranceA" that result in a relative
 GUI:
 o the Shaders preference setting now supports path globbing
 o about dialog now only displays OpenGL/GLU extensions on request/click
+o improved selection handling after paste
 
 Scripts/Scripting Interface:
 o added commands to tween NURBS curves and surfaces ("tweenNC" and "tweenNP")
