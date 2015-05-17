@@ -131,8 +131,8 @@ set ay(editmenu) $m
 $m add command -label "Copy" -command {copOb} -underline 0
 $m add command -label "Cut" -command {cutOb; cS;
 global ay; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1} -underline 2
-$m add command -label "Paste" -command {pasOb; cS;
-global ay; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1} -underline 0
+$m add command -label "Paste" -command {global ay; pasOb; uCR;
+    sL $ay(ucrcount); rV; set ay(sc) 1} -underline 0
 $m add command -label "Delete" -command {delOb; cS;
 global ay; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1} -underline 0
 $m add separator

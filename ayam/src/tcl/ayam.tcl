@@ -1090,6 +1090,7 @@ proc uCR { } {
 		incr count
 	    }
 	}
+	set ay(ucrcount) [expr {$count-$oldcount}]
     } else {
 	# ListBox is active
 	uS
@@ -1189,7 +1190,7 @@ proc uS { {update_prop "" } {maintain_selection "" } } {
 
 # sL - select Last
 # select the last object in the current level
-proc sL { } {
+proc sL { {count ""} } {
     global ay
 
     if { $ay(lb) == 1 } {
@@ -1204,7 +1205,14 @@ proc sL { } {
     } else {
 	# TreeView is active
 	$ay(tree) selection clear
-	$ay(tree) selection set [$ay(tree) nodes $ay(CurrentLevel) end]
+	if { $count != "" } {
+	    set nodes [$ay(tree) nodes $ay(CurrentLevel)]
+	    set first [expr {[llength $nodes] - $count}]
+	    eval "\$ay(tree) selection set \
+		[$ay(tree) nodes $ay(CurrentLevel) $first end]"
+	} else {
+	    $ay(tree) selection set [$ay(tree) nodes $ay(CurrentLevel) end]
+	}
 	tree_handleSelection
 	plb_update
 	$ay(tree) see [$ay(tree) nodes $ay(CurrentLevel) end]
