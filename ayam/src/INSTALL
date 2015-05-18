@@ -1,4 +1,4 @@
-INSTALL [5. May 2012]
+INSTALL [17. May 2015]
 
 Compilation Instructions for Ayam
 ---------------------------------
@@ -623,7 +623,7 @@ a JavaScript comment:
 3.13 luainterp (Lua Scripting) Plugin
 -------------------------------------------
 
-Additional prerequisites to compile the jsinterp plugin are:
+Additional prerequisites to compile the luainterp plugin are:
 Lua V5.2.0 ( get it from http://www.lua.org/ )
 
 In order to compile the plugin, adapt the following variables
