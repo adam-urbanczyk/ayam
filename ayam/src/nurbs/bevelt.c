@@ -507,7 +507,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		    }
 		}
 
-	      if(cparams->integrate[i])
+	      if(cparams->integrate[i] && cparams->types[i] > 1)
 		{
 		  if(is_roundtocap)
 		    {
