@@ -157,7 +157,7 @@ ay_capt_addcaps(ay_cparam *cparams, ay_bparam *bparams,
 	  if(ay_status)
 	    goto cleanup;
 
-	  if(cparams->integrate[i])
+	  if(cparams->integrate[i] && cparams->types[i] > 1)
 	    {
 	      ay_status = ay_capt_integrate(cap, i, AY_KTCUSTOM, o);
 	      (void)ay_object_delete(cap);
