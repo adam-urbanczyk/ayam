@@ -601,11 +601,11 @@ ay_capt_integrate(ay_object *c, int side, int knottype, ay_object *s)
 
   if(knottype == AY_KTNURB)
     ay_status = ay_npt_concat(cc, /*type=*/0, order, knottype,
-			      /*-1*/0, /*-0.2*/0, AY_TRUE, uv,
+			      /*fillet_type=*/0, /*ftlen=*/0.0, AY_TRUE, uv,
 			      &o);
   else
     ay_status = ay_npt_concat(cc, /*type=*/0, order, knottype,
-			      0, 0.0, AY_TRUE, uv,
+			      /*fillet_type=*/0, /*ftlen=*/0.0, AY_TRUE, uv,
 			      &o);
 
   if(ay_status)

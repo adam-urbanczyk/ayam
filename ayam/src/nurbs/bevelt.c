@@ -1378,7 +1378,7 @@ ay_bevelt_integrate(int side, ay_object *s, ay_object *b)
   knottype = AY_KTCUSTOM;
 
   ay_status = ay_npt_concat(sb, /*type=*/0, order, knottype,
-			    /*fillet_type=*/1, /*ftlen=*/0.0,
+			    /*fillet_type=*/0, /*ftlen=*/0.0,
 			    /*compatible=*/AY_TRUE, uv,
 			    &o);
 
