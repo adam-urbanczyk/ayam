@@ -8278,14 +8278,16 @@ ay_nct_extendtcmd(ClientData clientData, Tcl_Interp *interp,
  * Compute mean distance of two 1D control point arrays.
  *
  * \param[in] cvlen number of points in \a cva _and_ \a cvb
- * \param[in] cvstride size of a point in \a cva _and_ \a cvb (>=3, unchecked)
+ * \param[in] cvastride size of a point in \a cva (>=3, unchecked)
  * \param[in] cva first coordinate array
+ * \param[in] cvbstride size of a point in \a cvb (>=3, unchecked)
  * \param[in] cvb second coordinate array
  *
  * \returns mean distance
  */
 double
-ay_nct_meandist(int cvlen, int cvstride, double *cva, double *cvb)
+ay_nct_meandist(int cvlen, int cvastride, double *cva,
+		int cvbstride, double *cvb)
 {
  int a = 0, b = 0, t = 0, i;
  double v[3] = {0}, len = 0.0, tlen = 0.0;
@@ -8304,8 +8306,8 @@ ay_nct_meandist(int cvlen, int cvstride, double *cva, double *cvb)
 	  tlen += len;
 	  t++;
 	}
-      a += cvstride;
-      b += cvstride;
+      a += cvastride;
+      b += cvbstride;
     }
 
   if(t > 0)
@@ -8340,7 +8342,7 @@ ay_nct_shifttominmeandist(int cvlen, int cvstride, double *cva, double *cvb)
 
   for(i = 0; i < cvlen; i++)
     {
-      len = ay_nct_meandist(cvlen, cvstride, cva, &(cvb2[b]));
+      len = ay_nct_meandist(cvlen, cvstride, cva, cvstride, &(cvb2[b]));
       if(len < minlen)
 	{
 	  minlen = len;
