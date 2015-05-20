@@ -940,7 +940,8 @@ int ay_nct_extendtcmd(ClientData clientData, Tcl_Interp *interp,
 
 /** Compute mean distance of two 1D control point arrays.
  */
-double ay_nct_meandist(int cvlen, int cvstride, double *cva, double *cvb);
+double ay_nct_meandist(int cvlen, int cvastride, double *cva,
+		       int cvbstride, double *cvb);
 
 /** Shift 1D control point array to minimum mean distance to a second array.
  */

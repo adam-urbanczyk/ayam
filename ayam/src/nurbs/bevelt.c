@@ -59,13 +59,15 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
   if(!bparams || !o || !dst)
     return AY_ENULL;
 
-  if(o->type != AY_IDNPATCH)
-    return AY_ERROR;
-
-  np = (ay_nurbpatch_object*)o->refine;
-
   for(i = 0; i < 4; i++)
     {
+      if(o->type != AY_IDNPATCH)
+	return AY_ERROR;
+
+      /* must fetch np for every iteration, as the previous iteration could
+	 have changed o->refine while integrating a bevel... */
+      np = (ay_nurbpatch_object*)o->refine;
+
       if(bparams->states[i])
 	{
 	  is_planar = AY_TRUE;
@@ -1335,6 +1337,7 @@ ay_bevelt_integrate(int side, ay_object *s, ay_object *b)
  ay_nurbpatch_object *np = NULL, *bevel = NULL;
  char *uv = NULL, uvs[][4] = {"Vu","vu","Uu","uu"};
  int knottype = AY_KTCUSTOM, order = 0;
+ double d1, d2;
 
   if(!s || !b)
     return AY_ENULL;
@@ -1374,6 +1377,41 @@ ay_bevelt_integrate(int side, ay_object *s, ay_object *b)
       order = np->uorder;
       break;
     } /* switch */
+
+  switch(side)
+    {
+    case 0:
+      d1 = ay_nct_meandist(bevel->height, 4, bevel->controlv,
+		   np->height*4, np->controlv);
+      d2 = ay_nct_meandist(bevel->height, 4, bevel->controlv,
+       -np->height*4, &(np->controlv[(np->width*np->height-np->height-1)*4]));
+      break;
+    case 1:
+      d1 = ay_nct_meandist(bevel->height, 4, bevel->controlv,
+			   np->height*4, &(np->controlv[(np->height-1)*4]));
+      d2 = ay_nct_meandist(bevel->height, 4, bevel->controlv,
+		  -np->height*4, &(np->controlv[(np->width*np->height-1)*4]));
+      break;
+    case 2:
+      d1 = ay_nct_meandist(bevel->height, 4, bevel->controlv,
+			   4, np->controlv);
+      d2 = ay_nct_meandist(bevel->height, 4, bevel->controlv,
+			   -4, &(np->controlv[(np->height-1)*4]));
+      break;
+    case 3:
+      d1 = ay_nct_meandist(bevel->height, 4, bevel->controlv,
+		   4, &(np->controlv[(np->width*np->height-np->height-1)*4]));
+      d2 = ay_nct_meandist(bevel->height, 4, bevel->controlv,
+			   -4, &(np->controlv[(np->width*np->height-1)*4]));
+      break;
+    } /* switch */
+
+  if(d1 > d2)
+    {
+      ay_status = ay_npt_revertv(bevel);
+      if(ay_status)
+	goto cleanup;
+    }
 
   knottype = AY_KTCUSTOM;
 

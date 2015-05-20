@@ -47,6 +47,8 @@ ay_capt_addcaps(ay_cparam *cparams, ay_bparam *bparams,
       if(o->type != AY_IDNPATCH)
 	return AY_ERROR;
 
+      /* must fetch np for every iteration, as the previous iteration could
+	 have changed o->refine while integrating a cap... */
       np = (ay_nurbpatch_object*)o->refine;
 
       if(cparams->states[i] && !bparams->states[i])
