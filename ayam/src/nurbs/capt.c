@@ -560,8 +560,9 @@ ay_capt_integrate(ay_object *c, int side, int knottype, ay_object *s)
  ay_object *cc = NULL, *o = NULL, *oldnext;
  ay_nurbpatch_object *npc = NULL;
  ay_nurbpatch_object *nps = NULL;
- char *uv = NULL, uvs[][4] = {"Vu","vu","Uv","uv"};
+ char *uv = NULL, uvs[][4] = {"Vu","vu","Uu","uu"};
  int order = 0;
+ double d1, d2;
 
   if(!c || !s)
     return AY_ENULL;
@@ -569,8 +570,10 @@ ay_capt_integrate(ay_object *c, int side, int knottype, ay_object *s)
   if(c->type != AY_IDNPATCH || s->type != AY_IDNPATCH)
     return AY_ERROR;
 
-  nps = (ay_nurbpatch_object*)s->refine;
   npc = (ay_nurbpatch_object*)c->refine;
+  nps = (ay_nurbpatch_object*)s->refine;
+
+  ay_npt_swapuv(npc);
 
   uv = uvs[side];
 
@@ -601,6 +604,41 @@ ay_capt_integrate(ay_object *c, int side, int knottype, ay_object *s)
   if(ay_status)
     goto cleanup;
 
+  switch(side)
+    {
+    case 0:
+      d1 = ay_nct_meandist(npc->height, 4, npc->controlv,
+			   nps->height*4, nps->controlv);
+      d2 = ay_nct_meandist(npc->height, 4, npc->controlv, -nps->height*4,
+		 &(nps->controlv[(nps->width*nps->height-nps->height-1)*4]));
+      break;
+    case 1:
+      d1 = ay_nct_meandist(npc->height, 4, npc->controlv,
+		   nps->height*4, &(nps->controlv[(nps->height-1)*4]));
+      d2 = ay_nct_meandist(npc->height, 4, npc->controlv, -nps->height*4,
+			   &(nps->controlv[(nps->width*nps->height-1)*4]));
+      break;
+    case 2:
+      d1 = ay_nct_meandist(npc->height, 4, npc->controlv,
+			   4, nps->controlv);
+      d2 = ay_nct_meandist(npc->height, 4, npc->controlv,
+			   -4, &(nps->controlv[(nps->height-1)*4]));
+      break;
+    case 3:
+      d1 = ay_nct_meandist(npc->height, 4, npc->controlv,
+	   4, &(nps->controlv[(nps->width*nps->height-nps->height-1)*4]));
+      d2 = ay_nct_meandist(npc->height, 4, npc->controlv,
+			 -4, &(nps->controlv[(nps->width*nps->height-1)*4]));
+      break;
+    } /* switch */
+
+  if(d1 > d2)
+    {
+      ay_status = ay_npt_revertv(npc);
+      if(ay_status)
+	goto cleanup;
+    }
+
   if(knottype == AY_KTNURB)
     ay_status = ay_npt_concat(cc, /*type=*/0, order, knottype,
 			      /*fillet_type=*/0, /*ftlen=*/0.0, AY_TRUE, uv,
@@ -622,7 +660,6 @@ ay_capt_integrate(ay_object *c, int side, int knottype, ay_object *s)
 
   if(side == 2)
     ay_npt_revertu(o->refine);
-
 
   /* replace old patch with new */
   ay_npt_destroy(s->refine);
