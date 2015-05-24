@@ -1,5 +1,5 @@
-[17. May 2015] CVS-Head:
-=======================
+[24. May 2015] CVS-Head:
+========================
 Bug Fixes:
 o silhouettes are missing when draw selection only is active (SF 499)
 o moving objects in the hierarchy by keyboard does not notify/redraw (SF 500)
@@ -18,11 +18,13 @@ o NURBS tesselation using STESS is much faster now, in addition,
   caching two tesselations
 o allow negative values for "ToleranceA" that result in a relative
   scaling of the sampling tolerance
+o improved bevel and cap integration
 
 GUI:
 o the Shaders preference setting now supports path globbing
 o about dialog now only displays OpenGL/GLU extensions on request/click
-o improved selection handling after paste
+o improved selection handling after paste (pasted objects are now selected)
+o improved startup error reporting on Win32
 
 Scripts/Scripting Interface:
 o added commands to tween NURBS curves and surfaces ("tweenNC" and "tweenNP")
