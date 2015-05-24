@@ -239,7 +239,7 @@ static void DisplayWarning(interp, msg, title)
 		|| (GetFileType(handle) != FILE_TYPE_CHAR);
     }
     if (notty) {
-	MessageBox(NULL, msg, title, MB_OK | MB_ICONEXCLAMATION
+	MessageBoxA(NULL, msg, title, MB_OK | MB_ICONEXCLAMATION
 		| MB_SYSTEMMODAL | MB_SETFOREGROUND | MB_TOPMOST);
     } else
 #endif
