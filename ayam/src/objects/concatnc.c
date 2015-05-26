@@ -534,12 +534,19 @@ ay_concatnc_notifycb(ay_object *o)
   if(concatnc->knot_type == 1)
     {
       /* to create the custom knot vector, all parameter curve
-	 knots must be defined in the range (0.0-1.0) */
+	 knots must start at 0.0 */
       ncurve = curves;
       while(ncurve)
 	{
 	  nc = (ay_nurbcurve_object*)ncurve->refine;
-	  ay_knots_rescaletorange(nc->length+nc->order, nc->knotv, 0.0, 1.0);
+	  if(fabs(nc->knotv[0]) > AY_EPSILON)
+	    {
+	      ay_status = ay_knots_rescaletorange(nc->length+nc->order,
+						  nc->knotv, 0.0,
+		             nc->knotv[nc->length+nc->order-1]-nc->knotv[0]);
+	      if(ay_status)
+		goto cleanup;
+	    }
 	  ncurve = ncurve->next;
 	} /* while */
     }

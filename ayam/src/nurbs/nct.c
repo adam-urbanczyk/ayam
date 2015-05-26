@@ -4287,8 +4287,8 @@ ay_nct_concatmultiple(int closed, int knot_type, int fillgaps,
 {
  int ay_status;
  char fname[] = "nct_concatmultiple";
- double *newknotv = NULL, *newcontrolv = NULL, *ncv = NULL;
- int numcurves = 0, i, j, k, a, order = -1, length = 0, ktype;
+ double *newknotv = NULL, *newcontrolv = NULL, *ncv = NULL, lastu = 0.0;
+ int numcurves = 0, i, k, a, order = -1, length = 0, ktype;
  int glu_display_mode = 0;
  double glu_sampling_tolerance = 0.0;
  ay_nurbcurve_object *nc;
@@ -4354,7 +4354,7 @@ ay_nct_concatmultiple(int closed, int knot_type, int fillgaps,
 	}
 
       a = 0;
-      j = 0;
+      lastu = 0.0;
       k = 0;
       o = curves;
       while(o)
@@ -4365,7 +4365,7 @@ ay_nct_concatmultiple(int closed, int knot_type, int fillgaps,
 
 	      for(i = k; i < nc->length+nc->order; i++)
 		{
-		  newknotv[a] = nc->knotv[i]+j;
+		  newknotv[a] = nc->knotv[i]+lastu;
 		  a++;
 		}
 
@@ -4375,9 +4375,9 @@ ay_nct_concatmultiple(int closed, int knot_type, int fillgaps,
 
 	      if(o && (o->type == AY_IDNCURVE))
 		{
+		  lastu = newknotv[a-1];
 		  nc = (ay_nurbcurve_object *)o->refine;
 		  k = nc->order;
-		  j++;
 		}
 	    }
 	  else
