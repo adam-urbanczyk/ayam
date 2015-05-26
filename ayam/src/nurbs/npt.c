@@ -3126,8 +3126,8 @@ ay_npt_concat(ay_object *o, int type, int order,
  ay_object *curve = NULL, *allcurves = NULL, **nextcurve = NULL;
  ay_list_object *curvelist = NULL, **nextlist = NULL, *rem;
  ay_nurbpatch_object *np = NULL;
- double *newknotv = NULL, u1, u2;
- int a = 0, i = 0, j = 0, k = 0, l = 0, ncurves = 0, uvlen = 0;
+ double *newknotv = NULL, u1, u2, lastu;
+ int a = 0, i = 0, k = 0, l = 0, ncurves = 0, uvlen = 0;
  int max_order = 0, create_trimrect = AY_FALSE;
  char *swapuv;
 
@@ -3213,7 +3213,8 @@ ay_npt_concat(ay_object *o, int type, int order,
 		      AY_EPSILON))
 		    {
 		      ay_status = ay_knots_rescaletorange(np->width+np->uorder,
-							  np->uknotv, 0, 1);
+							  np->uknotv, 0,
+                             np->uknotv[np->width+np->uorder-1]-np->uknotv[0]);
 		      if(ay_status)
 			goto cleanup;
 		    }
@@ -3242,12 +3243,14 @@ ay_npt_concat(ay_object *o, int type, int order,
 			    {
 			    (void)ay_npt_rescaletrims(o->down, 1,
 						      np->vknotv[0],
-			      np->vknotv[np->height+np->vorder-1], 0, 1);
+			      np->vknotv[np->height+np->vorder-1], 0,
+			   np->vknotv[np->height+np->vorder-1]-np->vknotv[0]);
 			    }
 
 			  ay_status = ay_knots_rescaletorange(np->height +
 							      np->vorder,
-							      np->vknotv, 0, 1);
+							      np->vknotv, 0,
+			   np->vknotv[np->height+np->vorder-1]-np->vknotv[0]);
 			  if(ay_status)
 			    goto cleanup;
 			} /* if */
@@ -3274,12 +3277,14 @@ ay_npt_concat(ay_object *o, int type, int order,
 			    {
 			    (void)ay_npt_rescaletrims(o->down, 0,
 						      np->uknotv[0],
-				     np->uknotv[np->width+np->uorder-1], 0, 1);
+				     np->uknotv[np->width+np->uorder-1], 0, 
+		          np->uknotv[np->width+np->uorder-1]-np->uknotv[0]);
 			    }
 
 			  ay_status = ay_knots_rescaletorange(np->width+
 							      np->uorder,
-							  np->uknotv, 0, 1);
+							  np->uknotv, 0,
+		          np->uknotv[np->width+np->uorder-1]-np->uknotv[0]);
 			  if(ay_status)
 			    goto cleanup;
 			} /* if */
@@ -3412,7 +3417,8 @@ ay_npt_concat(ay_object *o, int type, int order,
 	}
       np->uknotv = newknotv;
       a = order;
-      j = 0;
+      lastu = 0.0;
+
       o = patches;
       i = 0;
 
@@ -3428,17 +3434,16 @@ ay_npt_concat(ay_object *o, int type, int order,
 		  k = np->vorder;
 		  for(l = k; l < np->height+np->vorder; l++)
 		    {
-		      newknotv[a] = np->vknotv[l]+j;
+		      newknotv[a] = np->vknotv[l]+lastu;
 		      a++;
 		    }
 		}
 	      else
 		{
 		  k = np->uorder;
-		  u1 = np->uknotv[k]+j;
 		  for(l = k; l < np->width+np->uorder; l++)
 		    {
-		      newknotv[a] = np->uknotv[l]+j;
+		      newknotv[a] = np->uknotv[l]+lastu;
 		      a++;
 		    }
 		}
@@ -3448,7 +3453,7 @@ ay_npt_concat(ay_object *o, int type, int order,
 		  swapuv = NULL;
 		  if(uvlen > 0 && uvlen > i)
 		    swapuv = &(uv[i]);
-		  if(j == 0)
+		  if(lastu == 0.0)
 		    u1 = 0.0;
 		  else
 		    u1 = newknotv[a-(l-1)];
@@ -3461,14 +3466,14 @@ ay_npt_concat(ay_object *o, int type, int order,
 
 	      if(!o->selected)
 		i++;
-	      j++;
+	      lastu = newknotv[a-1];
 	    }
 	  else
 	    {
 	      /* must be a curve => add a single knot */
-	      newknotv[a] = j;
+	      newknotv[a] = lastu+1.0;
 	      a++;
-	      j++;
+	      lastu += 1.0;
 	    }
 	  o = o->next;
 	} /* while */
