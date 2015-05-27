@@ -2002,6 +2002,7 @@ while { $i < $argc } {
 	    set ay(noview) 1
 
 	    set ay_error ""
+	    set cdir [pwd]
 
 	    # make absolute filename for MRU
 	    set absfilename $filename
@@ -2031,6 +2032,7 @@ while { $i < $argc } {
 	    set j 1
 	} else {
 	    set ay_error ""
+	    cd $cdir
 	    insertScene $filename
 	    if { $ay_error < 2 } {
 		ayError 4 "insertScene" "Done inserting scene from:"
@@ -2050,6 +2052,7 @@ while { $i < $argc } {
 }
 # while
 grab release .fu
+catch {unset cdir i j}
 
 # are documents connected to Ayam.app double clicked on MacOSX/Aqua?
 if { [info exists tk_mac_OpenDocuments] } {
@@ -2059,12 +2062,11 @@ if { [info exists tk_mac_OpenDocuments] } {
 
 # save preference settings for use with the "Def."-Button in the
 # preferences dialog
-set avnames [array names ayprefs]
-foreach j $avnames {
-    set ayprefsdefaults($j) $ayprefs($j)
+set prefnames [array names ayprefs]
+foreach name $prefnames {
+    set ayprefsdefaults($name) $ayprefs($name)
 }
-catch {unset avnames}
-
+catch {unset prefnames name}
 
 # build most recently used files menu entries
 io_mruUMenu
