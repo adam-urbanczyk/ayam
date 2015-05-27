@@ -3441,9 +3441,10 @@ int
 ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
- int tcl_status = AY_OK;
+ int tcl_status = TCL_OK;
+ int ay_status = AY_OK;
  ay_list_object *lev = ay_currentlevel;
- ay_object *parent = NULL;
+ ay_object *parent = NULL, *p = NULL;
  ay_nurbpatch_object *patch = NULL;
  ay_nurbcurve_object *curve = NULL;
  double def_controls[20] = { 1.0, 1.0, 0.0, 1.0,
@@ -3454,6 +3455,7 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
  double knots[7] = {0.0, 0.0, 0.25, 0.5, 0.75, 1.0, 1.0};
  double width = 1.0, height = 1.0;
  int i = 0, create_trim = AY_FALSE, notify_parent = AY_FALSE;
+ int is_provided = AY_FALSE;
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
 
@@ -3490,8 +3492,10 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 
   do
     {
+      is_provided = AY_FALSE;
       if(create_trim)
 	{
+	  /* find patch */
 	  if(sel && (sel->object->type == AY_IDNPATCH))
 	    {
 	      patch = (ay_nurbpatch_object *)sel->object->refine;
@@ -3510,6 +3514,17 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 			} /* if */
 		    } /* if */
 		} /* if */
+
+	      if(!patch)
+		{
+		  ay_status = ay_provide_object(sel->object, AY_IDNPATCH,
+						&p);
+		  if(p)
+		    {
+		      is_provided = AY_TRUE;
+		      patch = (ay_nurbpatch_object *)p->refine;
+		    }
+		}
 	    } /* if */
 
 	  if(!patch)
@@ -3523,10 +3538,11 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	} /* if create_trim */
 
+      /* create new curve object */
       if(!(o = calloc(1, sizeof(ay_object))))
 	{
-	  ay_error(AY_EOMEM, argv[0], NULL);
-	  return TCL_OK;
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
 	}
 
       o->type = AY_IDNCURVE;
@@ -3536,24 +3552,20 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(!(curve = calloc(1, sizeof(ay_nurbcurve_object))))
 	{
-	  free(o);
-	  ay_error(AY_EOMEM, argv[0], NULL);
-	  return TCL_OK;
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
 	}
 
       if(!(curve->controlv = malloc(20*sizeof(double))))
 	{
-	  free(o);
-	  free(curve);
-	  ay_error(AY_EOMEM, argv[0], NULL);
-	  return TCL_OK;
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
 	}
 
       if(!(curve->knotv = malloc(7*sizeof(double))))
 	{
-	  free(o); free(curve->controlv); free(curve);
-	  ay_error(AY_EOMEM, argv[0], NULL);
-	  return TCL_OK;
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
 	}
 
       curve->length = 5;
@@ -3604,32 +3616,54 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 
       o->type = AY_IDNCURVE;
       o->refine = curve;
-
       ay_nct_recreatemp(curve);
+      curve = NULL;
 
-      if(create_trim)
+      /* link new curve object */
+      if(create_trim && !is_provided)
 	{
 	  if(sel)
 	    {
+	      /* link to selected NPatch */
 	      o->next = sel->object->down;
 	      sel->object->down = o;
 	    }
 	  else
 	    {
+	      /* link as first child of our parent (the NPatch) */
 	      o->next = parent->down;
 	      parent->down = o;
 	    }
 	}
       else
 	{
+	  /* normal rectangles and trim-rects for tool objects =>
+	     link to the end of the current level */
 	  ay_object_link(o);
 	} /* if */
 
       (void)ay_notify_object(o);
       notify_parent = AY_TRUE;
+      o = NULL;
 
       if(sel)
 	sel = sel->next;
+
+cleanup:
+      if(o)
+	free(o);
+
+      if(curve)
+	ay_nct_destroy(curve);
+
+      if(is_provided)
+	(void)ay_object_deletemulti(p, AY_FALSE);
+
+      if(ay_status)
+	{
+	  ay_error(ay_status, argv[0], NULL);
+	  break;
+	}
 
     } while(sel && create_trim);
 
