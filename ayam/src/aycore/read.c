@@ -174,135 +174,141 @@ ay_read_header(FILE *fileptr)
 
   ay_read_version = 1;
 
-  if(!strcmp(version,"1.0"))
+  if(!strcmp(version,"1.22"))
     {
-      ay_read_version = 0;
+      ay_read_version = 16;
       version_unknown = AY_FALSE;
     }
-
-  if(!strcmp(version,"1.1"))
+  else
+  if(!strcmp(version,"1.21"))
     {
-      ay_read_version = 1;
+      ay_read_version = 16;
       version_unknown = AY_FALSE;
     }
-
-  if(!strcmp(version,"1.2"))
-    {
-      ay_read_version = 2;
-      version_unknown = AY_FALSE;
-    }
-
-  if(!strcmp(version,"1.3"))
-    {
-      ay_read_version = 3;
-      version_unknown = AY_FALSE;
-    }
-
-  if(!strcmp(version,"1.4"))
-    {
-      ay_read_version = 4;
-      version_unknown = AY_FALSE;
-    }
-
-  if(!strcmp(version,"1.5"))
-    {
-      ay_read_version = 4;
-      version_unknown = AY_FALSE;
-    }
-
-  if(!strcmp(version,"1.6"))
-    {
-      ay_read_version = 5;
-      version_unknown = AY_FALSE;
-    }
-
-  if(!strcmp(version,"1.7"))
-    {
-      ay_read_version = 6;
-      version_unknown = AY_FALSE;
-    }
-
-  if(!strcmp(version,"1.8"))
-    {
-      ay_read_version = 7;
-      version_unknown = AY_FALSE;
-    }
-
-  if(!strcmp(version,"1.9"))
-    {
-      ay_read_version = 8;
-      version_unknown = AY_FALSE;
-    }
-
-  if(!strcmp(version,"1.10"))
-    {
-      ay_read_version = 9;
-      version_unknown = AY_FALSE;
-    }
-
-  if(!strcmp(version,"1.11"))
-    {
-      ay_read_version = 9;
-      version_unknown = AY_FALSE;
-    }
-
-  if(!strcmp(version,"1.12"))
-    {
-      ay_read_version = 9;
-      version_unknown = AY_FALSE;
-    }
-
-  if(!strcmp(version,"1.13"))
-    {
-      ay_read_version = 10;
-      version_unknown = AY_FALSE;
-    }
-
-  if(!strcmp(version,"1.14"))
-    {
-      ay_read_version = 11;
-      version_unknown = AY_FALSE;
-    }
-
-  if(!strcmp(version,"1.15"))
-    {
-      ay_read_version = 12;
-      version_unknown = AY_FALSE;
-    }
-
-  if(!strcmp(version,"1.16"))
-    {
-      ay_read_version = 13;
-      version_unknown = AY_FALSE;
-    }
-
-  if(!strcmp(version,"1.17"))
-    {
-      ay_read_version = 13;
-      version_unknown = AY_FALSE;
-    }
-
-  if(!strcmp(version,"1.18"))
-    {
-      ay_read_version = 13;
-      version_unknown = AY_FALSE;
-    }
-
-  if(!strcmp(version,"1.19"))
-    {
-      ay_read_version = 14;
-      version_unknown = AY_FALSE;
-    }
-
+  else
   if(!strcmp(version,"1.20"))
     {
       ay_read_version = 15;
       version_unknown = AY_FALSE;
     }
-
-  if(!strcmp(version,"1.21"))
+  else
+  if(!strcmp(version,"1.19"))
     {
-      ay_read_version = 16;
+      ay_read_version = 14;
+      version_unknown = AY_FALSE;
+    }
+  else
+  if(!strcmp(version,"1.18"))
+    {
+      ay_read_version = 13;
+      version_unknown = AY_FALSE;
+    }
+  else
+  if(!strcmp(version,"1.17"))
+    {
+      ay_read_version = 13;
+      version_unknown = AY_FALSE;
+    }
+  else
+  if(!strcmp(version,"1.16"))
+    {
+      ay_read_version = 13;
+      version_unknown = AY_FALSE;
+    }
+  else
+  if(!strcmp(version,"1.15"))
+    {
+      ay_read_version = 12;
+      version_unknown = AY_FALSE;
+    }
+  else
+  if(!strcmp(version,"1.14"))
+    {
+      ay_read_version = 11;
+      version_unknown = AY_FALSE;
+    }
+  else
+  if(!strcmp(version,"1.13"))
+    {
+      ay_read_version = 10;
+      version_unknown = AY_FALSE;
+    }
+  else
+  if(!strcmp(version,"1.12"))
+    {
+      ay_read_version = 9;
+      version_unknown = AY_FALSE;
+    }
+  else
+  if(!strcmp(version,"1.11"))
+    {
+      ay_read_version = 9;
+      version_unknown = AY_FALSE;
+    }
+  else
+  if(!strcmp(version,"1.10"))
+    {
+      ay_read_version = 9;
+      version_unknown = AY_FALSE;
+    }
+  else
+  if(!strcmp(version,"1.9"))
+    {
+      ay_read_version = 8;
+      version_unknown = AY_FALSE;
+    }
+  else
+  if(!strcmp(version,"1.8"))
+    {
+      ay_read_version = 7;
+      version_unknown = AY_FALSE;
+    }
+  else
+  if(!strcmp(version,"1.7"))
+    {
+      ay_read_version = 6;
+      version_unknown = AY_FALSE;
+    }
+  else
+  if(!strcmp(version,"1.6"))
+    {
+      ay_read_version = 5;
+      version_unknown = AY_FALSE;
+    }
+  else
+  if(!strcmp(version,"1.5"))
+    {
+      ay_read_version = 4;
+      version_unknown = AY_FALSE;
+    }
+  else
+  if(!strcmp(version,"1.4"))
+    {
+      ay_read_version = 4;
+      version_unknown = AY_FALSE;
+    }
+  else
+  if(!strcmp(version,"1.3"))
+    {
+      ay_read_version = 3;
+      version_unknown = AY_FALSE;
+    }
+  else
+  if(!strcmp(version,"1.2"))
+    {
+      ay_read_version = 2;
+      version_unknown = AY_FALSE;
+    }
+  else
+  if(!strcmp(version,"1.1"))
+    {
+      ay_read_version = 1;
+      version_unknown = AY_FALSE;
+    }
+  else
+  if(!strcmp(version,"1.0"))
+    {
+      ay_read_version = 0;
       version_unknown = AY_FALSE;
     }
 
