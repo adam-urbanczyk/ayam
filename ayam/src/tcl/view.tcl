@@ -572,6 +572,9 @@ proc viewOpen { width height {establish_bindings 1} {internal_view 0} } {
     vmenu_open $w
     pack $w.fMenu -side top -fill x
 
+    bind $w.fMenu <ButtonPress-1> "focus -force $w"
+
+
     # create the 3D widget
     frame $w.f3D -takefocus 0
 
