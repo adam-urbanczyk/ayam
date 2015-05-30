@@ -805,6 +805,9 @@ set ay(tree) $tree
 
 # bindings
 
+# focus management
+bind $f.la <ButtonPress-1> "focus -force $ay(tree)"
+
 # scroll tree with wheel
 bind $tree <ButtonPress-4> "$tree yview scroll -1 pages; break"
 bind $tree <ButtonPress-5> "$tree yview scroll 1 pages; break"
@@ -888,8 +891,9 @@ bind $la <ButtonPress-1> "focus -force $tree"
 
 # arrange for switching back to good old listbox
 bind $la <Double-ButtonPress-1> tree_toggle
+
+# see ms.tcl ms_initmainlabels
 set ay(treel) $la
-balloon_set $la [ms tree_label]
 
 # pack widgets
 pack $fr -side top -expand yes -fill both

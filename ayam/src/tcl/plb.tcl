@@ -24,8 +24,9 @@ bind $w.la <Double-ButtonPress-1> {
     plb_update
     resetFocus
 }
+
+# see ms.tcl ms_initmainlabels
 set ay(plbl) $w.la
-balloon_set $w.la [ms plb_label]
 
 # the properties listbox
 set f $w

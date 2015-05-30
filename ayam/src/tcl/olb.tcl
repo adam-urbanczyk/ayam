@@ -149,8 +149,9 @@ bind $f.la <ButtonPress-1> "focus -force $ay(olb)"
 
 # switch from listbox to tree
 bind $f.la <Double-1> tree_toggle
+
+# see ms.tcl ms_initmainlabels
 set ay(olbl) $f.la
-balloon_set $f.la [ms olb_label]
 
 # buttons
 frame $w.fb -highlightthickness 1

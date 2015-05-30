@@ -38,13 +38,13 @@ proc ms_init { lang } {
 #  initialize main labels that were created before we knew
 #  the current locale from ayamrc
 proc ms_initmainlabels { } {
-    global ay
+    global ay ayprefs
 
-    catch { balloon_set $ay(plbl) [ms plb_label] }
+    catch { balloon_set $ay(plbl) [ms plb_label] [expr $ayprefs(Balloon)*3] }
 
-    catch { balloon_set $ay(olbl) [ms olb_label] }
+    catch { balloon_set $ay(olbl) [ms olb_label] [expr $ayprefs(Balloon)*3] }
 
-    catch { balloon_set $ay(treel) [ms tree_label] }
+    catch { balloon_set $ay(treel) [ms tree_label] [expr $ayprefs(Balloon)*3] }
 
  return;
 }

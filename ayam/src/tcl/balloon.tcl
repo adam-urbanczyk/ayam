@@ -18,8 +18,8 @@
 # balloon_set:
 #  set balloon help text <text> to window <w>
 #
-proc balloon_set {w help} {
-    global balloonwin balloontime ayprefs
+proc balloon_set {w help {time 0}} {
+    global ay balloonwin balloontime ayprefs
 
     set balloonwin ""
     set balloontime $ayprefs(Balloon)
@@ -29,11 +29,17 @@ proc balloon_set {w help} {
     # (realizing, that I implemented the browse-balloons-feature in < 5 min)
 
     regsub -all "%" $help "%%" help2
-
-    bind $w <Enter> "+
-     if { \$balloonwin == \"\" } {
-      after \$balloontime {set balloonwin %W ; balloon_show %W [list $help2] };
-     }"
+    if { $time != 0 } {
+	bind $w <Enter> "+
+          if { \$balloonwin == \"\" } {
+            after $time {set balloonwin %W ; balloon_show %W [list $help2] };
+          }"
+    } else {
+	bind $w <Enter> "+
+          if { \$balloonwin == \"\" } {
+            after \$balloontime {set balloonwin %W ; balloon_show %W [list $help2] };
+          }"
+    }
 
     bind $w <Leave> "+
 	if { \$balloonwin != \"\" } {
