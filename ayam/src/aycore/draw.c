@@ -850,9 +850,9 @@ ay_draw_arrow(struct Togl *togl, double *from, double *to)
  GLint vp[4];
  double l = ay_prefs.handle_size*0.75;
 
-  if(l < 6)
+  if(l < 7)
     {
-      l = 6.1;
+      l = 7.1;
     }
 
   glGetDoublev(GL_MODELVIEW_MATRIX, mvm);
