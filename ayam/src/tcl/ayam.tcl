@@ -1068,7 +1068,6 @@ proc uCL { mode {addargs ""} } {
 # uCR: an optimized "update Selection" just for the
 # case of newly created objects (CR); just adds new nodes
 # to the current level of the tree
-# currently only handles flat nodes (without children)
 proc uCR { } {
     global ay
 
@@ -1078,18 +1077,27 @@ proc uCR { } {
 	set l ""
 	getLevel l dummy
 
+	$ay(tree) configure -redraw 0
+
 	set count 0
 	foreach node $l {
 	    if { $node != ".." } {
 		if { $count >= $oldcount } {
 		    $ay(tree) insert end $ay(CurrentLevel)\
-		    $ay(CurrentLevel):$count -text $node -drawcross auto\
-		    -open 0 -fill black -image emptybm
-		    #tree_createSub $ay(tree) $ay(CurrentLevel) $node
+			$ay(CurrentLevel):$count -text $node -drawcross auto\
+			-image emptybm -fill black
+		    treeGetString subtree $ay(CurrentLevel):$count
+		    if { $subtree != "" } {
+			tree_createSub $ay(tree) $ay(CurrentLevel):$count\
+			    [linsert $subtree 0 ..]
+		    }
 		}
 		incr count
 	    }
 	}
+
+	$ay(tree) configure -redraw 1
+
 	set ay(ucrcount) [expr {$count-$oldcount}]
     } else {
 	# ListBox is active
