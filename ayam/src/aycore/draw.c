@@ -848,20 +848,11 @@ ay_draw_arrow(struct Togl *togl, double *from, double *to)
  GLdouble mvm[16], pm[16], win1x, win1y, win1z, win2x, win2y, win2z;
  GLdouble p1x, p1y, p2x, p2y, alpha;
  GLint vp[4];
- double l = 1.25*ay_prefs.handle_size;
+ double l = ay_prefs.handle_size*0.75;
 
-  if(l < 7)
+  if(l < 6)
     {
-      l = 7;
-    }
-
-  if(view->antialiaslines)
-    {
-      glLineWidth((GLfloat)ay_prefs.aasellinewidth);
-    }
-  else
-    {
-      glLineWidth((GLfloat)ay_prefs.sellinewidth*2.0f);
+      l = 6.1;
     }
 
   glGetDoublev(GL_MODELVIEW_MATRIX, mvm);
@@ -916,6 +907,34 @@ ay_draw_arrow(struct Togl *togl, double *from, double *to)
     glTranslated(win1x,win1y,0.0);
     glRotated(alpha,0.0,0.0,1.0);
     glTranslated(-win1x,-win1y,0.0);
+    if(!view->antialiaslines)
+      glTranslated(0.375,0.375,0.0);
+    if(view->antialiaslines)
+      {
+	glLineWidth((GLfloat)ay_prefs.aasellinewidth*2.0f);
+      }
+    else
+      {
+	glLineWidth((GLfloat)ay_prefs.sellinewidth*4.0f);
+      }
+    glColor3f((GLfloat)ay_prefs.bgr, (GLfloat)ay_prefs.bgg,
+	      (GLfloat)ay_prefs.bgb);
+    glBegin(GL_LINE_STRIP);
+     glVertex3d(p1x,p1y,win1z);
+     glVertex3d(win1x,win1y,win1z);
+     glVertex3d(p2x,p2y,win1z);
+    glEnd();
+
+    if(view->antialiaslines)
+      {
+	glLineWidth((GLfloat)ay_prefs.aasellinewidth);
+      }
+    else
+      {
+	glLineWidth((GLfloat)ay_prefs.sellinewidth*2.0f);
+      }
+    glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+	      (GLfloat)ay_prefs.seb);
     glBegin(GL_LINE_STRIP);
      glVertex3d(p1x,p1y,win1z);
      glVertex3d(win1x,win1y,win1z);
