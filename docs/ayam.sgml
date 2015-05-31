@@ -2510,17 +2510,20 @@ the GLU tolerance may also be set easily.
 Either the control hull (or control polygon) is drawn (ControlHull), or
 just the outlines of the polygons created by the tesselation
 (OutlinePoly), or just the outlines of the patch (OutlinePatch).
+The latter are available in GLU and STESS variants.
 <p><p>
 The GLU variants tesselate the surface according to the current
-camera transformation, which is slow (needs to be done for every view
-window) but delivers high quality where needed. In addition, surfaces
+camera transformation. Zooming into an object increases the sampling rate.
+This approach is slow, needs to be done for every view
+window separately, but delivers high quality where needed.
+In addition, surfaces
 outside the current viewing volume are culled. Due to the dynamic sampling,
 the NURBS parameterization can not be judged easily.<newline>
 STESS, on the other hand, is tesselating in a uniform way and therefore
 the NURBS parameterization can be inferred easily. The tesselation is
 done only once, even if there are multiple views, and then cached.
 Consequently, the startup cost and memory requirements
-of STESS are higher than GLU, but repeated drawing is much faster,
+of STESS are higher than those of GLU, but repeated drawing is much faster,
 even though culling in STESS is currently done on the basis of tesselated
 triangles, not entire surfaces.<newline>
 Another aspect to consider is that GLU operates on the floating point
@@ -2539,8 +2542,8 @@ shaded NURBS:
 ControlHull shades the control polygon<footnote>Since 1.22.</footnote>,
 OutlinePoly (GLU) and
 OutlinePatch (GLU) use GLU, and OutlinePatch (STESS) shades the STESS
-tesselation. The shaded STESS tesselation of trimmed NURBS surfaces is of
-low quality.
+tesselation. The shaded STESS tesselation of non-planar trimmed NURBS
+surfaces is of low quality.
 <p>
 Note also, that the <tt/"NPDisplayMode"/ setting has no effect for
 objects that override it locally using a <tt/"DisplayMode"/ attribute
@@ -11621,7 +11624,8 @@ which was created with an arc value of 180.0, 10 sections, and order 4).
 <descrip>
 <tag/Arguments/ Radius, Arc.
 <tag/Operation/ The NURBCircle tool creates a circular NURBS curve
-of desired radius and arc in the XY plane, centered around the origin.
+of desired radius and arc in the XY plane, centered around the origin
+(see also the image above).
 The order of the curve will be 3. The number of control points used
 differs according to the arc, e.g.~9 points for full circles,
 5 for half circles,
@@ -11644,12 +11648,17 @@ the radius of the circle determines the thickness.
 
 <sect2>Rectangle Tool<label id="nrrt">
 <p>
+<figure loc="ht">
+<eps file="pics/rect.ps" height="5cm">
+<img src="pics/rect.gif">
+<caption>A Rectangle</caption>
+</figure>
 <descrip>
 <tag/Arguments/ Width, Height
 <tag/Operation/ The rectangle tool creates a non-rational,
-two-dimensional, piecewise linear, centered NURBS curve of
+piecewise linear, planar, centered NURBS curve of
 rectangular shape and twice the specified width and height
-in the XY plane.
+in the XY plane (see also the image above).
 
 <tag/Notes/
 The created curve will be marked as closed and the generation
@@ -11660,14 +11669,23 @@ See also section <ref id="ncurvemp" name="Multiple Points">.
 
 <sect2>TrimRect Tool<label id="trrt">
 <p>
+<figure loc="ht">
+<eps file="pics/trect.ps" height="4cm">
+<img src="pics/trect.gif">
+<caption>A TrimRect</caption>
+</figure>
 <descrip>
-<tag/Arguments/ None
-<tag/Operation/ The TrimRect tool creates a non-rational, two-dimensional,
-piecewise linear NURBS curve of rectangular shape in the XY plane, that
-fits in the (u,v) parameter space of a NURBS patch, for use as trim curve.
-<tag/Notes/ To fit the curve to the parameter space of a NURBS patch,
-the NURBS patch object should be selected or the current level should be
-inside the NURBS patch.
+<tag/Arguments/ The TrimRect tool takes the selected NPatch objects
+(or NPatch providing objects<footnote>Since 1.22.</footnote>) from the
+selection. If the current level
+is inside a NPatch object, the respective parent object is used.
+<tag/Operation/ For each selected patch, the TrimRect tool creates a
+non-rational, piecewise linear, planar NURBS curve of rectangular
+shape in the XY plane, that fits in the (u, v) parameter space of this NURBS
+patch, for use as outer trim curve. See also the image above, depicting a
+rectangle for a NPatch defined on the knot intervals<newline>
+<f/0.0, 0.0, 1.0, 1.0/<newline>and<newline>
+<f/0.0, 0.08<ovl/3/, 0.16<ovl/6/, 0.25,/ &hellip; <f/, 0.75, 0.8<ovl/3/, 0.91<ovl/6/, 1.0/.
 
 The created curve will be marked as closed and the generation
 of multiple points will be enabled, so that point edit actions know that
@@ -11705,9 +11723,8 @@ third curve defines the ratio of influence with its y coordinates.
 If one of the curves knot vector types is <tt/"Custom"/ or the
 respective knot vector types are different, the resulting
 knot vector type will be <tt/"Custom"/ and the knot values will
-also be interpolated/tweened.<newline>
-Otherwise a matching knot vector will be generated according
-to the type.
+also be interpolated/tweened. Otherwise a matching knot vector will be
+generated according to the type.
 
 The original NURBS curves will not be deleted by this tool.
 
@@ -12531,9 +12548,8 @@ They need not be defined on the same knot vectors, however.
 If one of the patches knot vector types is <tt/"Custom"/ or the
 respective knot vector types are different, the resulting
 knot vector type will be <tt/"Custom"/ and the knot values will
-also be interpolated/tweened.<newline>
-Otherwise a matching knot vector will be generated according
-to the type.
+also be interpolated/tweened. Otherwise a matching knot vector will be
+generated according to the type.
 
 The original NURBS patches will not be deleted by this tool.
 
@@ -12541,8 +12557,8 @@ See also the documentation of the corresponding
 scripting interface command <ref id="sctweennp" name="tweenNP">.
 </descrip>
 
-
 <#if out=latex><x/newpage/</#if>
+
 <sect1>Surface Modification Tools
 <p>
 These tools modify parametric surface objects.
