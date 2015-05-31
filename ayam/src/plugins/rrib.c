@@ -1181,8 +1181,8 @@ ay_rrib_RiLightSource(RtToken name,
   l.colg = 255;
   l.colb = 255;
 
-  l.cone_angle = 30.0;
-  l.cone_delta_angle = 5.0;
+  l.cone_angle = AY_D2R(30.0);
+  l.cone_delta_angle = AY_D2R(5.0);
   l.beam_distribution = 2.0;
   l.sm_resolution = 0;
 
@@ -1240,6 +1240,18 @@ ay_rrib_RiLightSource(RtToken name,
 	      l.colr = (int)((*col)[0]*255.0);
 	      l.colg = (int)((*col)[1]*255.0);
 	      l.colb = (int)((*col)[2]*255.0);
+	    }
+	  if(!strcmp(tokens[i], "coneangle"))
+	    {
+	      l.cone_angle = (double)(*((float*)(parms[i])));
+	    }
+	  if(!strcmp(tokens[i], "conedeltaangle"))
+	    {
+	      l.cone_delta_angle = (double)(*((float*)(parms[i])));
+	    }
+	  if(!strcmp(tokens[i], "beamdistribution"))
+	    {
+	      l.beam_distribution = (double)(*((float*)(parms[i])));
 	    }
 	} /* for */
     }
