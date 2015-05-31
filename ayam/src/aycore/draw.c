@@ -879,16 +879,22 @@ ay_draw_arrow(struct Togl *togl, double *from, double *to)
   p2x = win1x+l;
   p2y = win1y-l;
 
+  if(!view->antialiaslines)
+    {
+      p1x -= 0.735;
+      p1y -= 0.735;
+    }
+
   if(win2x-win1x != 0.0)
     {
       alpha = AY_R2D(atan((win2y-win1y)/(win2x-win1x)));
 
-      if(win2x<win1x)
+      if(win2x < win1x)
 	alpha = 180.0+alpha;
     }
   else
     {
-      if(win2y>win1y)
+      if(win2y > win1y)
 	alpha = 90.0;
       else
 	alpha = -90.0;
