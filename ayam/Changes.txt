@@ -1,4 +1,4 @@
-[24. May 2015] CVS-Head:
+[31. May 2015] CVS-Head:
 ========================
 Bug Fixes:
 o silhouettes are missing when draw selection only is active (SF 499)
@@ -9,22 +9,35 @@ o crash when automatic instancing compares tags (SF 503)
 o automatic instancing creates instances of light sources (SF 504)
 o conversion of patchmesh objects with height > 4 (SF 505)
 o orientation of hole bevels in extrusion objects (SF 506)
+o loading of multiple files from a different directory via command
+  line arguments (SF 507)
 
 Modelling:
 o added option to display rational points in homogeneous style
   (new preference option "Modelling/RationalPoints")
-o NURBS tesselation using STESS is much faster now, in addition,
-  constant re-tesselation when switching between actions is avoided by
-  caching two tesselations
+o NURBS tesselation using STESS is much faster now; in addition,
+  constant re-tesselation when using interactive modelling actions is
+  avoided by caching two variants of the tesselation
 o allow negative values for "ToleranceA" that result in a relative
   scaling of the sampling tolerance
 o improved bevel and cap integration
+o custom knots of concatenated curves/surfaces (ConcatNC/ConcatNP objects)
+  now preserve the relative knot ranges of the parameter objects
+o creating trimrects now works with NPatch providing objects
 
 GUI:
 o the Shaders preference setting now supports path globbing
-o about dialog now only displays OpenGL/GLU extensions on request/click
+o the about dialog now only displays the available OpenGL/GLU extensions
+  on request/click for a cleaner initial layout
 o improved selection handling after paste (pasted objects are now selected)
 o improved startup error reporting on Win32
+o selection of last object upon "empty" click into the tree widget can
+  now be turned off via hidden preference setting "SelectLast"
+o improved focus management of object tree/list and internal view windows
+o tool dialogs now use the standard UI elements from property GUIs, element
+  types are inferred from the default/current values, the old style UIs
+  can also be enabled via the hidden preference setting "SimpleToolGUI"
+o improved balloon timing on main labels
 
 Scripts/Scripting Interface:
 o added commands to tween NURBS curves and surfaces ("tweenNC" and "tweenNP")
@@ -36,6 +49,7 @@ o X3D import of extrusion nodes improved
 o improved attributes of object instances imported from RIB files
 o added handling of RiOrientation (handedness) to RIB import
 o added progress report and cancel functionality to RIB import
+o improved import of spot lights in RIB import
 
 
 [7. Feb 2015] Ayam-1.21:
