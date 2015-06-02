@@ -33,7 +33,7 @@ code example of 6 lines text (needs another 2 for the upper/lower lines)
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>9. May 2015
+<date>2. Jun 2015
 
 <abstract>
 This is the documentation of Ayam 1.22 &ndash; a free 3D modelling environment
@@ -3530,7 +3530,7 @@ dimensional.<footnote>Since 1.21.</footnote>
 <p>
 Additionally, when the set mark action is active, the following keyboard
 shortcuts are available:
-<itemize>
+<list>
 <item><tt/&lt;Return&gt;/ accept the current mark (useful, if one
 first rotates about a point then decides to also scale about
 the same point: <tt/&lt;ra&gt;/, drag mouse, <tt/&lt;sa&gt;/,
@@ -3543,7 +3543,7 @@ currently selected points.
 box of all currently selected points.
 The image below demonstrates the difference between the
 center of the bounding box and the center of gravity.
-</itemize>
+</list>
 The marked point will be shown as a little red cross in the view window
 (see also the image below).
 <p>
@@ -11685,7 +11685,7 @@ shape in the XY plane, that fits in the (u, v) parameter space of this NURBS
 patch, for use as outer trim curve. See also the image above, depicting a
 rectangle for a NPatch defined on the knot intervals<newline>
 <f/0.0, 0.0, 1.0, 1.0/<newline>and<newline>
-<f/0.0, 0.08<ovl/3/, 0.16<ovl/6/, 0.25,/ &hellip; <f/, 0.75, 0.8<ovl/3/, 0.91<ovl/6/, 1.0/.
+<f/0.0, 0.08<ovl/3/, 0.1<ovl/6/, 0.25,/ &hellip; <f/, 0.75, 0.8<ovl/3/, 0.91<ovl/6/, 1.0/.
 
 The created curve will be marked as closed and the generation
 of multiple points will be enabled, so that point edit actions know that
@@ -20290,7 +20290,7 @@ Overview:
 Index:
 <p>
 <label id="index">
-<label id="index0"><tt/<bf/0//
+<label id="index0"><tt/&nbsp;&nbsp;<bf/0//
 <list>
 <item>2lcons.tcl: <ref id="twolconstcl" name="example/helper script">
 <item>3DM:
@@ -20306,8 +20306,10 @@ Index:
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
-
-<label id="indexa"><tt/<bf/A//
+<p>
+&nbsp;<newline>&nbsp;
+<#if out=latex>&nbsp;<newline>&nbsp;</#if>
+<label id="indexa"><tt/&nbsp;&nbsp;<bf/A//
 <list>
 <item>aac.tcl: <ref id="aactcl" name="example/helper script">
 <item>About: <ref id="mmhelp" name="main menu entry">
@@ -20364,8 +20366,9 @@ Index:
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
-
-<label id="indexb"><tt/<bf/B//
+<p>
+&nbsp;<newline>&nbsp;
+<label id="indexb"><tt/&nbsp;&nbsp;<bf/B//
 <list>
 <item>Background: <ref id="prefdraw" name="preference setting">
 <item>Background Image: <ref id="vat" name="View attribute">
@@ -20404,8 +20407,9 @@ Index:
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
-
-<label id="indexc"><tt/<bf/C//
+<p>
+&nbsp;<newline>&nbsp;
+<label id="indexc"><tt/&nbsp;&nbsp;<bf/C//
 <list>
 <item>CalcBBS: <ref id="aycsg" name="AyCSG plugin option">
 <item>Camera:
@@ -20541,8 +20545,9 @@ Index:
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
-
-<label id="indexd"><tt/<bf/D//
+<p>
+&nbsp;<newline>&nbsp;
+<label id="indexd"><tt/&nbsp;&nbsp;<bf/D//
 <list>
 <item>DANS: <ref id="anstag" name="tag type">
 <item>Data: <ref id="riprocp" name="RiProc attribute">
@@ -20593,8 +20598,9 @@ Index:
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
-
-<label id="indexe"><tt/<bf/E//
+<p>
+&nbsp;<newline>&nbsp;
+<label id="indexe"><tt/&nbsp;&nbsp;<bf/E//
 <list>
 <item>Edit:
 <itemize>
@@ -20659,8 +20665,9 @@ Index:
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
-
-<label id="indexf"><tt/<bf/F//
+<p>
+&nbsp;<newline>&nbsp;
+<label id="indexf"><tt/&nbsp;&nbsp;<bf/F//
 <list>
 <item>FAQ: <ref id="secref" name="Ayam FAQ WWW reference">
 <item>Far: <ref id="camp" name="camera property">
@@ -20712,8 +20719,9 @@ Index:
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
-
-<label id="indexg"><tt/<bf/G//
+<p>
+&nbsp;<newline>&nbsp;
+<label id="indexg"><tt/&nbsp;&nbsp;<bf/G//
 <list>
 <item>genfnPo: <ref id="scgenfnPo" name="scripting interface command">
 <item>gensnPo: <ref id="scgensnPo" name="scripting interface command">
@@ -20740,8 +20748,9 @@ Index:
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
-
-<label id="indexh"><tt/<bf/H//
+<p>
+&nbsp;<newline>&nbsp;
+<label id="indexh"><tt/&nbsp;&nbsp;<bf/H//
 <list>
 <item>Half Size: <ref id="vmconf" name="view menu entry">
 <item>HandleSize: <ref id="prefmodel" name="preference setting">
@@ -20779,8 +20788,9 @@ Index:
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
-
-<label id="indexi"><tt/<bf/I//
+<p>
+&nbsp;<newline>&nbsp;
+<label id="indexi"><tt/&nbsp;&nbsp;<bf/I//
 <list>
 <item>IconGamma: <ref id="hidprefs" name="hidden preference setting">
 <item>ICurve: <ref id="icurveobj" name="ICurve object">
@@ -20843,15 +20853,17 @@ Index:
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
-
-<label id="indexj"><tt/<bf/J//
+<p>
+&nbsp;<newline>&nbsp;
+<label id="indexj"><tt/&nbsp;&nbsp;<bf/J//
 <list>
 <item>JavaScript: <ref id="jsinterp" name="JavaScript Scripting Interface">
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
-
-<label id="indexk"><tt/<bf/K//
+<p>
+&nbsp;<newline>&nbsp;
+<label id="indexk"><tt/&nbsp;&nbsp;<bf/K//
 <list>
 <item>kdialog.tcl: <ref id="kdialogtcl" name="example/helper script">
 <item>Keyboard Shortcuts:
@@ -20886,8 +20898,9 @@ Index:
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
-
-<label id="indexl"><tt/<bf/L//
+<p>
+&nbsp;<newline>&nbsp;
+<label id="indexl"><tt/&nbsp;&nbsp;<bf/L//
 <list>
 <item>Last (None): <ref id="mmtools" name="main menu entry">
 <item>Lathe: <ref id="revolveobj" name="Revolve object">
@@ -20932,8 +20945,9 @@ Index:
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
-
-<label id="indexm"><tt/<bf/M//
+<p>
+&nbsp;<newline>&nbsp;
+<label id="indexm"><tt/&nbsp;&nbsp;<bf/M//
 <list>
 <item>MajorRad: <ref id="top" name="Torus attribute">
 <item>Make Compatible: <ref id="makecompt" name="NCurve tool">
@@ -20990,8 +21004,9 @@ Index:
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
-
-<label id="indexn"><tt/<bf/N//
+<p>
+&nbsp;<newline>&nbsp;
+<label id="indexn"><tt/&nbsp;&nbsp;<bf/N//
 <list>
 <item>nameOb: <ref id="scnameob" name="scripting interface command">
 <item>NCDisplayMode: <ref id="prefdraw" name="preference setting">
@@ -21022,8 +21037,9 @@ Index:
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
-
-<label id="indexo"><tt/<bf/O//
+<p>
+&nbsp;<newline>&nbsp;
+<label id="indexo"><tt/&nbsp;&nbsp;<bf/O//
 <list>
 <item>ObeyNoExport: <ref id="exp3dmopt" name="3DM (Rhino) export option">
 <item>OBJ:
@@ -21074,8 +21090,9 @@ Index:
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
-
-<label id="indexp"><tt/<bf/P//
+<p>
+&nbsp;<newline>&nbsp;
+<label id="indexp"><tt/&nbsp;&nbsp;<bf/P//
 <list>
 <item>P1, P2: <ref id="hyp" name="Hyperboloid attribute">
 <item>PanDist: <ref id="hidprefs" name="hidden preference setting">
@@ -21129,8 +21146,9 @@ Index:
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
-
-<label id="indexq"><tt/<bf/Q//
+<p>
+&nbsp;<newline>&nbsp;
+<label id="indexq"><tt/&nbsp;&nbsp;<bf/Q//
 <list>
 <item>QuadAsBRep: <ref id="exp3dmopt" name="3DM (Rhino) export option">
 <item>QRender, QRenderPT, QRenderUI:
@@ -21145,8 +21163,9 @@ Index:
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
-
-<label id="indexr"><tt/<bf/R//
+<p>
+&nbsp;<newline>&nbsp;
+<label id="indexr"><tt/&nbsp;&nbsp;<bf/R//
 <list>
 <item>Radius:
 <itemize>
@@ -21328,8 +21347,9 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
-
-<label id="indexs"><tt/<bf/S//
+<p>
+&nbsp;<newline>&nbsp;
+<label id="indexs"><tt/&nbsp;&nbsp;<bf/S//
 <list>
 <item>SafeAutoFocus: <ref id="hidprefs" name="hidden preference setting">
 <item>Samples: <ref id="lip" name="Light attribute">
@@ -21505,8 +21525,9 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
-
-<label id="indext"><tt/<bf/T//
+<p>
+&nbsp;<newline>&nbsp;
+<label id="indext"><tt/&nbsp;&nbsp;<bf/T//
 <list>
 <item>Tag: <ref id="prefdraw" name="preference setting">
 <item>Tags:
@@ -21621,8 +21642,9 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
-
-<label id="indexu"><tt/<bf/U//
+<p>
+&nbsp;<newline>&nbsp;
+<label id="indexu"><tt/&nbsp;&nbsp;<bf/U//
 <list>
 <item>uCL: <ref id="scucl" name="scripting interface command">
 <item>uCR: <ref id="scucr" name="scripting interface command">
@@ -21660,8 +21682,9 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
-
-<label id="indexv"><tt/<bf/V//
+<p>
+&nbsp;<newline>&nbsp;
+<label id="indexv"><tt/&nbsp;&nbsp;<bf/V//
 <list>
 <item>Variance: <ref id="rio" name="RenderMan interface option">
 <item>View:
@@ -21674,8 +21697,9 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
-
-<label id="indexw"><tt/<bf/W//
+<p>
+&nbsp;<newline>&nbsp;
+<label id="indexw"><tt/&nbsp;&nbsp;<bf/W//
 <list>
 <item>Wait: <ref id="hidprefs" name="hidden preference setting">
 <item>WarnPropPasteToSel: <ref id="hidprefs" name="hidden preference setting">
@@ -21718,8 +21742,9 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
-
-<label id="indexx"><tt/<bf/X//
+<p>
+&nbsp;<newline>&nbsp;
+<label id="indexx"><tt/&nbsp;&nbsp;<bf/X//
 <list>
 <item>X3D:
 <itemize>
@@ -21729,16 +21754,18 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
-
-<label id="indexy"><tt/<bf/Y//
+<p>
+&nbsp;<newline>&nbsp;
+<label id="indexy"><tt/&nbsp;&nbsp;<bf/Y//
 <list>
 <item>.
 </list>
 
 
 <#if out=latex><x/phantomsection/</#if>
-
-<label id="indexz"><tt/<bf/Z//
+<p>
+&nbsp;<newline>&nbsp;
+<label id="indexz"><tt/&nbsp;&nbsp;<bf/Z//
 <list>
 <item>Zap Ayam: <ref id="mmspecial" name="main menu entry">
 <item>zap.tcl: <ref id="zaptcl" name="example/helper script">
