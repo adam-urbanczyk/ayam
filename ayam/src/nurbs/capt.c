@@ -562,7 +562,7 @@ ay_capt_integrate(ay_object *c, int side, int knottype, ay_object *s)
  ay_nurbpatch_object *nps = NULL;
  char *uv = NULL, uvs[][4] = {"Vu","vu","Uu","uu"};
  int order = 0;
- double d1, d2;
+ double d1 = 0.0, d2 = 0.0;
 
   if(!c || !s)
     return AY_ENULL;
