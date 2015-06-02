@@ -196,7 +196,7 @@ proc printHotKeys { filename } {
     puts $id "\\hline"
     puts $id "Set Mark / Clear Mark & \\verb|<[remkpkr $ayviewshortcuts(About)]>|, \\verb|<Double-M3>| / \\verb|<[remkpkr $ayviewshortcuts(ClearMark)]>|\\\\"
     puts $id "\\hline"
-    puts $id "Mark Objs. COG / Pnts. COG& \\verb|<[remkpkr $ayviewshortcuts(About)][remkpkr $ayviewshortcuts(CenterO)]>| / \\verb|<[remkpkr $ayviewshortcuts(About)][remkpkr $ayviewshortcuts(CenterP)]>|\\\\"
+    puts $id "Mark Objs. COG / Pnts. COG, BBC& \\verb|<[remkpkr $ayviewshortcuts(About)][remkpkr $ayviewshortcuts(CenterO)]>| / \\verb|<[remkpkr $ayviewshortcuts(About)][remkpkr $ayviewshortcuts(CenterPC)]>|, \\verb|<[remkpkr $ayviewshortcuts(About)][remkpkr $ayviewshortcuts(CenterPB)]>|\\\\"
     puts $id "\\hline"
     puts $id "\\hline"
     puts $id "Edit Points (directly)& \\verb|<[remkpkr $ayviewshortcuts(Edit)]>| (\\verb|<[remkpkr $ayviewshortcuts(EditN)]>|)\\\\"
