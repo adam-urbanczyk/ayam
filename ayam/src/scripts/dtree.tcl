@@ -448,3 +448,18 @@ addToProc shortcut_main {
     }
     # bind
 }
+
+addToProc uS {
+    if { $ay(lb) == 0 } {
+	if { $maintain_selection && ($sel != "") } {
+	    $t see [lindex $sel end]
+	    $t see [lindex $sel 0]
+	} else {
+	    if { $root } {
+		$t see root
+	    } else {
+		$t see $ay(CurrentLevel)
+	    }
+	}
+    }
+}
