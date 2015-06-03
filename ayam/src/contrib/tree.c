@@ -365,7 +365,6 @@ ay_tree_gettreetcmd(ClientData clientData, Tcl_Interp *interp,
 
   Tcl_DStringInit(&ds);
 
-  Tcl_UnsetVar(interp, argv[1], TCL_LEAVE_ERR_MSG);
   Tcl_SetVar(interp, argv[1], "", TCL_LEAVE_ERR_MSG);
 
   ay_tree_crttreestring(interp, o, &ds);
