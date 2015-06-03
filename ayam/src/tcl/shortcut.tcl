@@ -1086,8 +1086,8 @@ Management (View Windows):
  Show Objects         <$svsc(Show)>
 
 Function Keys (View Windows):
- Adjust NURBS Sampling Rate: <${aymainshortcuts(SetSTL)}> / <${aymainshortcuts(SetSTP)}>
- Toggle Wire/NURBS:          <${aymainshortcuts(SwNURBSWire)}>
+ Adjust NURBS Sampling Rate  <${aymainshortcuts(SetSTL)}> / <${aymainshortcuts(SetSTP)}>
+ Toggle Wire/NURBS           <${aymainshortcuts(SwNURBSWire)}>
  Toggle Lazy Notification    <${aymainshortcuts(SwLazyNotify)}>
  Update                      <${aymainshortcuts(Update)}>
 
