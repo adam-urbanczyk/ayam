@@ -1162,9 +1162,11 @@ proc uS { {update_prop "" } {maintain_selection "" } } {
 
 	if { $ay(ul) == "" } {
 	    tree_update root
+	    set root 1
 	} else {
 	    tree_update $ay(ul)
 	    set ay(ul) ""
+	    set root 0
 	}
 
 	if { $ay(SelectedLevel) != "" } {
