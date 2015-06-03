@@ -880,6 +880,9 @@ proc searchOb { expression action {gui 0} } {
     global ay ObjectSearch
 
     if { $ObjectSearch(ClearHighlight) } {
+	foreach node $ObjectSearch(nodes) {
+	    $ay(tree) itemconfigure $node -fill darkgrey
+	}
 	tree_paintTree root
 	set ObjectSearch(nodes) ""
     }
@@ -1251,4 +1254,5 @@ HighlightColor_R 180
 HighlightColor_G 0
 HighlightColor_B 0
 HighlightColor #b40000
+nodes {}
 }
