@@ -952,20 +952,23 @@ proc searchOb { expression action {gui 0} } {
 	set ObjectSearch(cx) $cx
     } else {
 	# expression is not a variable comparison
-	if { [string first "Master" $ObjectSearch(Expression)] == 0 } {
+	if { [string first "Master " $ObjectSearch(Expression)] == 0 } {
 	    set cx "set j \$i;incr j -1;"
 	    append cx "expr \{ \"$ObjectSearch(master)\" == "
 	    append cx "\"\$::ay(CurrentLevel):\$j\" \}"
 	    set ObjectSearch(cx) $cx
-	} elseif { [string first "Instances" $ObjectSearch(Expression)]
+	} elseif { [string first "Instances " $ObjectSearch(Expression)]
 		   == 0 } {
 	    set cx "getType type; if \{ \$type == \"Instance\" \} \{"
 	    append cx "getMaster m; expr \{ \"\$m\" == "
 	    append cx "\"$ObjectSearch(master)\" \} \}"
 	    set ObjectSearch(cx) $cx
-	} else {
+	} elseif { [string first "\[" $ObjectSearch(Expression)] == 0 } {
 	    # expression is a procedure call
 	    set ObjectSearch(cx) $ObjectSearch(Expression)
+	} else {
+	    # expression is unspecified pattern
+	    set ObjectSearch(cx) "matchOb $ObjectSearch(Expression)"
 	}
     }
 
@@ -1083,7 +1086,46 @@ proc searchOb { expression action {gui 0} } {
 # searchOb
 
 
-# searchObjects:
+# matchOb:
+# match name/type/material name of selected objects against a string pattern
+proc matchOb { pattern } {
+
+    getType type
+    if { [string match -nocase $pattern $type] } {
+	return true;
+    }
+
+    getName name
+    if { [string match -nocase $pattern $name] } {
+	return true;
+    }
+
+    if { $type == "Material" } {
+	global MaterialAttrData
+	getProp
+	if { [string match -nocase $pattern $MaterialAttrData(Materialname)] } {
+	    return true;
+	}
+    }
+
+    global ${type}_props
+    if { ! [info exists ${type}_props] } {
+	init_${type}
+    }
+    if { [lsearch -exact ${type}_props Material] != -1 } {
+	global matPropData
+	getMat
+	if { [string match -nocase $pattern $matPropData(Materialname)] } {
+	    return true;
+	}
+    }
+
+  return false;
+}
+# matchOb
+
+
+# objectsearch_open:
 #  object search facility
 #  finds objects matching user defined expressions
 #  and highlights them in the object tree view or
@@ -1167,10 +1209,10 @@ proc objectsearch_open { } {
 
     # build example expressions
     if { $master != "" || $type == "Instance" } {
-	lappend expressions "Instances"
+	lappend expressions "Instances "
     }
     if { $type == "Instance" } {
-	lappend expressions "Master"
+	lappend expressions "Master "
     }
     if { $name != "" } {
 	lappend expressions "\$name == \"$name\""
