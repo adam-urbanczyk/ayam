@@ -921,7 +921,7 @@ ay_object_gettypeornametcmd(ClientData clientData, Tcl_Interp *interp,
  char *typeorname = NULL;
 
   /* check args */
-  if(argc != 2)
+  if(argc < 2)
     {
       ay_error(AY_EARGS, argv[0], "varname");
       return TCL_OK;
@@ -963,7 +963,8 @@ ay_object_gettypeornametcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  if(argv[0][3] == 'N')
 	    {
-	      ay_error(AY_EWARN, argv[0], "Object has no name.");
+	      if((argc < 3) && argv[2][0])
+		ay_error(AY_EWARN, argv[0], "Object has no name.");
 	    }
 	  else
 	    {
