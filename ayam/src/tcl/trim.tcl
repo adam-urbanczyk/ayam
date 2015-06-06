@@ -32,7 +32,7 @@ ScaleMode 0
 set w [frame $ay(pca).$TrimAttr(w)]
 addVSpace $w s1 2
 addParam $w TrimAttrData PatchNum
-addMenu $w TrimAttrData ScaleMode {Absolute Relative Automatic}
+addMenu $w TrimAttrData ScaleMode {Absolute Relative}
 return;
 }
 # init_Trim
