@@ -3471,9 +3471,9 @@ ay_npt_concat(ay_object *o, int type, int order,
 	  else
 	    {
 	      /* must be a curve => add a single knot */
-	      newknotv[a] = lastu+1.0;
+	      newknotv[a] = lastu+0.5;
 	      a++;
-	      lastu += 1.0;
+	      lastu += 0.5;
 	    }
 	  o = o->next;
 	} /* while */
