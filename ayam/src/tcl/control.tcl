@@ -902,7 +902,7 @@ proc searchOb { expression action {gui 0} } {
 	while { [string first "\$" $rem] != -1 } {
 	    if { [string first "\$name" $rem] == 0 } {
 		# object name comparison
-		append cx "getName name;"
+		append cx "getName name 0;"
 	    } elseif { [string first "\$type" $rem] == 0 } {
 		# object type comparison
 		append cx "getType type;"
@@ -1095,7 +1095,7 @@ proc matchOb { pattern } {
 	return true;
     }
 
-    getName name
+    getName name 0
     if { [string match -nocase $pattern $name] } {
 	return true;
     }
@@ -1173,7 +1173,7 @@ proc objectsearch_open { } {
 	}
 
 	# get name/type/material of first selected object
-	getName name
+	getName name 0
 	getType type
 
 	if { $type == "Material" } {
