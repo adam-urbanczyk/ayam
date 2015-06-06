@@ -370,7 +370,7 @@ addCommand $w c1 "Remove all Tags" {delTags all;plb_update}
 # getProperty:
 #
 #
-proc getProperty { property varName } {
+proc getProperty { property varName {report 0} } {
 upvar $varName vname
 global ay ay_error
 
@@ -418,8 +418,10 @@ global ay ay_error
 	    set propindex ""
 	    catch {set propindex [lsearch -exact $props $arrayname]}
 	    if { $propindex == -1 } {
-		ayError 2 "getProperty" "Could not find property: $arrayname."
-		return;
+		if { $report } {
+		    ayError 2 "getProperty" "Could not find property: $arrayname."
+		}
+		return 0;
 	    }
 
 	    # get property data
@@ -436,7 +438,7 @@ global ay ay_error
 	}
 	incr obj
     }
- return;
+ return 1;
 }
 # getProperty
 

@@ -902,7 +902,7 @@ proc searchOb { expression action {gui 0} } {
 	while { [string first "\$" $rem] != -1 } {
 	    if { [string first "\$name" $rem] == 0 } {
 		# object name comparison
-		append cx "getName name 0;"
+		append cx "getName name 1;"
 	    } elseif { [string first "\$type" $rem] == 0 } {
 		# object type comparison
 		append cx "getType type;"
@@ -923,7 +923,7 @@ proc searchOb { expression action {gui 0} } {
 		    if { [lsearch -exact $mappings $prop] == -1 } {
 			append cx "getProperty "
 			append cx $prop
-			append cx " val$vi;"
+			append cx " val$vi 0; "
 			lappend mappings $prop
 			lappend mappings "val$vi"
 			incr vi
@@ -965,7 +965,8 @@ proc searchOb { expression action {gui 0} } {
 	    set ObjectSearch(cx) $cx
 	} elseif { [string first "\[" $ObjectSearch(Expression)] == 0 } {
 	    # expression is a procedure call
-	    set ObjectSearch(cx) $ObjectSearch(Expression)
+	    set ObjectSearch(cx) \
+		[string range $ObjectSearch(Expression) 1 end-1]
 	} else {
 	    # expression is unspecified pattern
 	    set ObjectSearch(cx) "matchOb $ObjectSearch(Expression)"
@@ -1095,7 +1096,7 @@ proc matchOb { pattern } {
 	return true;
     }
 
-    getName name 0
+    getName name 1
     if { [string match -nocase $pattern $name] } {
 	return true;
     }
@@ -1173,7 +1174,7 @@ proc objectsearch_open { } {
 	}
 
 	# get name/type/material of first selected object
-	getName name 0
+	getName name 1
 	getType type
 
 	if { $type == "Material" } {
@@ -1233,7 +1234,7 @@ proc objectsearch_open { } {
 	lappend expressions "\$mat == \"matname\""
     }
     lappend expressions "\$SphereAttr(Radius) == 1.0"
-    lappend expressions "myProc"
+    lappend expressions "[myProc]"
 
     if { ![info exists ObjectSearch(Action)] } {
 	set ObjectSearch(Action) "Highlight"
