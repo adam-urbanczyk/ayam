@@ -919,19 +919,24 @@ ay_object_gettypeornametcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
  char *typeorname = NULL;
+ int silence = AY_FALSE;
 
   /* check args */
   if(argc < 2)
     {
-      ay_error(AY_EARGS, argv[0], "varname");
+      ay_error(AY_EARGS, argv[0], "varname [silence]");
       return TCL_OK;
     }
+
+  if((argc > 2) && (argv[2][0] == '1'))
+    silence = AY_TRUE;
 
   Tcl_SetVar(interp, argv[1], "", TCL_LEAVE_ERR_MSG);
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, argv[0], NULL);
+      if(!silence)
+	ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -963,7 +968,7 @@ ay_object_gettypeornametcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  if(argv[0][3] == 'N')
 	    {
-	      if((argc < 3) || argv[2][0])
+	      if(!silence)
 		ay_error(AY_EWARN, argv[0], "Object has no name.");
 	    }
 	  else
