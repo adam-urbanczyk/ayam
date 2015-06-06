@@ -963,7 +963,7 @@ ay_object_gettypeornametcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  if(argv[0][3] == 'N')
 	    {
-	      if((argc < 3) && argv[2][0])
+	      if((argc < 3) || argv[2][0])
 		ay_error(AY_EWARN, argv[0], "Object has no name.");
 	    }
 	  else
