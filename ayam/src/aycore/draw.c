@@ -477,7 +477,10 @@ ay_draw_annos(struct Togl *togl, int draw_offset)
 	  glLoadIdentity();
 	  ay_trafo_concatparent(ay_currentlevel->next);
 	}
-
+      if(view->type == AY_VTTRIM)
+	{
+	  glLoadIdentity();
+	}
       sel = ay_selection;
       while(sel)
 	{
