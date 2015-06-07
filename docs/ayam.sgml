@@ -2060,19 +2060,29 @@ are explained in depth in the respective sections below.
 The option <tt/"HighlightColor"/ defines the color to be used by the
 <tt/"Highlight"/ action.
 
-Using the parameter <tt/"Scope"/ the search may be limited to just
-the selected objects and their children (<tt/"Selection"/) or all objects of
+Using the parameter <tt/"Scope"/ the search may be limited to certain
+sets of objects. By default, when scope is <tt/"All"/, all objects in the
+scene are processed, even if the current level is not the root level
+and no objects are selected.
+If the scope is <tt/"Selection"/ just the selected objects and their
+children will be searched. If the scope is <tt/"Level"/ all objects of
 the current level regardless of selection but again including all children
-(<tt/"Level"/).<newline>
-By default (when scope is "All"), all objects in the scene are processed,
-even if the current level is not the root level and no objects are
-selected.
+will be searched.
+Note that the clipboard is never searched.
 
 If the options <tt/"ClearHighlight"/ or <tt/"ClearClipboard"/ are switched
 on, the highlights and the object clipboard are cleared before a search
 starts respectively.
 
 <sect2>Search Expressions
+<p>
+When just a simple string is used as search expression, this string
+is matched against the types, names, and materials of the objects
+to be searched in a case insensitive manner.<footnote>Since 1.22.</footnote>
+The matching allows usage of <tt/"*"/ (matches any sequence of characters),
+<tt/"?"/ (matches a single character), and character ranges specified
+like this <tt/"[A-z]"/. To match any of <tt/*?[]/ precede them with a
+backslash.
 <p>
 The following special search expressions are defined:
 <descrip>
@@ -2103,7 +2113,7 @@ with the same master.
 <tag/Procedure Call/ find objects for which a procedure or command returns 1,
 for example
 <tscreen>
-<tt>hasChild</tt>
+<tt>[hasChild]</tt>
 </tscreen>
 finds all objects that have children.
 
@@ -7156,7 +7166,7 @@ These objects enable direct manipulation of freeform surfaces.
 <figure loc="ht">
 <eps file="pics/npatch.ps" height="5cm">
 <img src="pics/npatch.gif">
-<caption>NURBS patch: surface (blue) from control polygon (white)</caption>
+<caption>NURBS Patch: Surface (blue) from Control Polygon (white)</caption>
 </figure>
 <p>
 The NPatch object allows to model NURBS surfaces in a direct way, e.g.~by
@@ -7231,19 +7241,25 @@ outlines of the patch (<tt/"OutlinePatch"/). The default setting
 
 <sect3>Trim Curves<label id="trim">
 <p><#if out=latex>&nbsp;<newline></#if>
-Trim curves may be used to cut out certain parts of a NURBS patch.
+<figure loc="ht">
+<eps file="pics/tnpatch.ps" height="5cm">
+<img src="pics/tnpatch.gif">
+<caption>A Trimmed NURBS Patch</caption>
+</figure>
+Trim curves may be used to cut out certain parts of a NURBS patch (see
+alse the image above).
 They are simple 2D NURBS curves defined in the parametric space
 of the associated NURBS patch. Trim curves have to be defined as child
 objects of the NURBS patch object they belong to. In contrast to other
 child objects, however, they do not inherit the transformation attributes
-of the parent object. Trim curve editing should take place in views
-of type <tt>Trim</tt>, that draw the boundaries of the parametric
+of the parent object. Trim curve editing can take place in views
+of type <tt>"Trim"</tt>, that draw the boundaries of the parametric
 space of the corresponding NURBS patch as rectangle, but otherwise
-act as normal <tt>Front</tt> views.
+act as normal <tt>"Front"</tt> views.
 <p>
 Note that the direction of the trim curve determines which part of
-the NURBS patch should be cut out. You can use the <tt/Revert/ tool
-(<tt>Tools/NURBCurve</tt> menu) to easily change the direction
+the NURBS patch should be cut out. The <tt/Revert/ tool
+(<tt>Tools/NURBCurve</tt> menu) can be used to easily change the direction
 of a trim curve.
 <p>
 Some special restrictions apply to trim curves:
@@ -9549,6 +9565,15 @@ will be scaled to the patch appropriately, no matter how the
 parametric space of the patch actually looks like (i.e.~it works
 the same for a patch where the knots range from 0 to 1, 0 to 2,
 or even 3 to 3.5).
+<!--
+<newline>
+The scale mode <tt/"Automatic"/ derives a scale factor from the
+knot vector and extension of the first trim loop in the respective
+dimension and then scales all trim curves by this value.
+If e.g. the patch is defined on the knot interval 0 to 2, and the
+first loops is defined between -0.5 and 0.5, the scale factor used
+for.
+-->
 </itemize>
 
 <sect3>Conversion Support
@@ -16293,7 +16318,7 @@ then pressing <tt/&lt;Ctrl+T&gt;/ multiple times.
 <p>
 Here are some complete example scripts for the Ayam Tcl scripting interface.
 <p>
-You may copy and paste all examples directly from the documentation
+All examples may be copied from the documentation and pasted directly
 into the console of Ayam.
 
 <sect2>Moving Objects<label id="scexmov">
@@ -16423,20 +16448,22 @@ proc easySweep { } {
 # easySweep
 </code>
 
+<#if out=latex><x/newpage/</#if>
+
 Run this procedure by selecting a NURBS curve object, then type
 into the console:
 <tscreen>
 &raquo;&thinsp;easySweep
 </tscreen>
 
-You may add this command to the main menu as well:
+This command may be added to the main menu as well:
 <code>
 global ay
 $ay(cm) add command -label "Easy Sweep" -command {
  easySweep
 }
 </code>
-After running the above script you should have a new menu
+After running the above script there should now be a new menu
 entry <tt>"Custom/Easy Sweep"</tt> that calls the <tt>easySweep</tt>
 procedure.
 
@@ -16470,7 +16497,7 @@ if { ![winfo exists $b] } {
   # display the button:
   toolbox_layout
 
-  # from now on, it will be under the
+  # from now on, the button will be under the
   # automatic toolbox layout management
 }
 </code>
@@ -16478,22 +16505,22 @@ if { ![winfo exists $b] } {
 This example shows that a) toolbox buttons have to be created in the
 frame <tt/".tbw.f"/ for multi-window GUI configurations or
 <tt/".fv.fTools.f"/ for single-window GUI configurations,
-b) Ayam manages a list of all toolbox buttons in the global array ay
-in <tt/"ay(toolbuttons)"/, the order in that list is the order
+b) Ayam manages a list of all toolbox buttons in the global array
+<tt/"ay"/ in <tt/"ay(toolbuttons)"/, the order in that list is the order
 in which the buttons appear in the toolbox, c) automatic layout
 management is carried out by the procedure <tt/"toolbox_layout"/.
 <p>
 Adding buttons with just text is a little bit more involved,
-as the sizes of the new buttons often do not fit well in the
+as the sizes of those buttons often do not fit well in the
 icon button scheme with its constant button size. However,
 the procedure <tt/"toolbox_add"/ can be of
 considerable help.<footnote>Since 1.14.</footnote>
 <p>
 See also the script <tt>"scripts/topoly.tcl"</tt>
 for an example.
-<p>
 <#if out=latex><x/newpage/</#if>
-Here is another example that adds two buttons to the bottom of the
+<p>
+The following example script adds two buttons to the bottom of the
 toolbox spanning the whole window (this works best with the
 standard toolbox layout of 4 by 12 buttons used in the multi-window
 GUI configuration):
@@ -16831,7 +16858,7 @@ the script file.
 The script <tt>"dtree.tcl"</tt> (dynamic/fast tree) replaces some of
 BWidgets tree code for faster interaction with many objects.
 
-If activated, the tree no longer creates a canvas item for every node.
+If activated, the tree widget no longer creates a canvas item for every node.
 Instead, there are only as many canvas items as there are nodes visible
 in the current scroll region. Therefore, working with many objects in
 long lists becomes much faster.
@@ -19460,13 +19487,13 @@ Default values are 1.0, 1.0.
 <item><tt/"Prompt"/: controls the prompt for the Ayam console. If
 set to an empty string, a default of
 <tscreen><tt>
-\[Undo:$ay(undoo)/Redo:$ay(redoo)\].../[file tail [pwd]]&gt;
+\[Undo:$ay(undoo)/Redo:$ay(redoo)\]\[Repeat:$ay(repo)\].../[file tail [pwd]]&gt;
 </tt></tscreen>
 will be used, which displays the name of the operations that can be
-undone and redone and the last component of the current
-directory of Ayam like this:
+undone and redone, the tool to be repeated, and the last component of
+the current directory of Ayam like this:
 <tscreen><tt>
-[Undo:None/Redo:None].../scn&gt;
+[Undo:None/Redo:None][Repeat:None].../scn&gt;
 </tt></tscreen>
 .
 
