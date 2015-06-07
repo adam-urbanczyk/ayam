@@ -885,6 +885,9 @@ ay_instance_providecb(ay_object *o, unsigned int type, ay_object **result)
       if(!o->tags || !ay_instance_hasrptrafo(o))
 	ay_trafo_copy(o, *result);
 
+      if(*result)
+	ay_notify_object(*result);
+
     }
   else
     {
