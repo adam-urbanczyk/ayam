@@ -1113,7 +1113,8 @@ proc matchOb { pattern } {
     if { ! [info exists ${type}_props] } {
 	init_${type}
     }
-    if { [lsearch -exact ${type}_props Material] != -1 } {
+    eval [subst "set props \{\$${type}_props\}"]
+    if { [lsearch -exact $props Material] != -1 } {
 	global matPropData
 	getMat
 	if { [string match -nocase $pattern $matPropData(Materialname)] } {
@@ -1234,7 +1235,7 @@ proc objectsearch_open { } {
 	lappend expressions "\$mat == \"matname\""
     }
     lappend expressions "\$SphereAttr(Radius) == 1.0"
-    lappend expressions "[myProc]"
+    lappend expressions "\[myProc\]"
 
     if { ![info exists ObjectSearch(Action)] } {
 	set ObjectSearch(Action) "Highlight"
