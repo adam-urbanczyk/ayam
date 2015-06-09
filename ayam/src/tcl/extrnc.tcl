@@ -60,7 +60,7 @@ proc extrnc_getAttr { } {
 	if { $trim == "Level" || $trim == "NCurve" } {
 	    lappend sides Trim$cnt
 	} else {
-	    lappend sides $trim
+	    lappend sides Trim${cnt}($trim)
 	}
 	incr cnt
     }
