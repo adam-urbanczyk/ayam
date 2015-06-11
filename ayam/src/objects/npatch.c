@@ -1726,45 +1726,45 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!npatch)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  toa = Tcl_NewStringObj(n1, -1);
+  ton = Tcl_NewStringObj(n1, -1);
 
   /* get new values from Tcl */
-  Tcl_SetStringObj(ton,"Width",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &new_width);
+  Tcl_SetStringObj(ton, "Width", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &new_width);
 
-  Tcl_SetStringObj(ton,"Height",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &new_height);
+  Tcl_SetStringObj(ton, "Height", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &new_height);
 
-  Tcl_SetStringObj(ton,"Order_U",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &new_uorder);
+  Tcl_SetStringObj(ton, "Order_U", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &new_uorder);
 
-  Tcl_SetStringObj(ton,"Order_V",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &new_vorder);
+  Tcl_SetStringObj(ton, "Order_V", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &new_vorder);
 
-  Tcl_SetStringObj(ton,"Knot-Type_U",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &new_uknot_type);
+  Tcl_SetStringObj(ton, "Knot-Type_U", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &new_uknot_type);
 
-  Tcl_SetStringObj(ton,"Knot-Type_V",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &new_vknot_type);
+  Tcl_SetStringObj(ton, "Knot-Type_V", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &new_vknot_type);
 
-  Tcl_SetStringObj(ton,"CreateMP",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(npatch->createmp));
+  Tcl_SetStringObj(ton, "CreateMP", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(npatch->createmp));
 
-  Tcl_SetStringObj(ton,"Tolerance",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &(npatch->glu_sampling_tolerance));
+  Tcl_SetStringObj(ton, "Tolerance", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(npatch->glu_sampling_tolerance));
 
-  Tcl_SetStringObj(ton,"DisplayMode",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(npatch->display_mode));
+  Tcl_SetStringObj(ton, "DisplayMode", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(npatch->display_mode));
 
   Tcl_SetStringObj(ton, "Knots_U-Modified", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -1774,26 +1774,26 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &vknots_modified);
 
-  Tcl_SetStringObj(ton,"BevelsChanged",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &i);
+  Tcl_SetStringObj(ton, "BevelsChanged", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &i);
   if(i)
     {
       update = AY_TRUE;
 
       to = Tcl_NewIntObj(0);
-      Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
     }
 
-  Tcl_SetStringObj(ton,"CapsChanged",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &i);
+  Tcl_SetStringObj(ton, "CapsChanged", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &i);
   if(i)
     {
       update = AY_TRUE;
 
       to = Tcl_NewIntObj(0);
-      Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
     }
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
@@ -1812,7 +1812,7 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       ay_status = ay_npt_resizew(npatch, new_width);
 
       if(ay_status)
-       ay_error(AY_ERROR,fname,"Could not resize patch!");
+       ay_error(AY_ERROR, fname, "Could not resize patch!");
 
       updateKnots = AY_TRUE;
       o->modified = AY_TRUE;
@@ -1828,7 +1828,7 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       ay_status = ay_npt_resizeh(npatch, new_height);
 
       if(ay_status)
-       ay_error(AY_ERROR,fname,"Could not resize patch!");
+       ay_error(AY_ERROR, fname, "Could not resize patch!");
 
       updateKnots = AY_TRUE;
       o->modified = AY_TRUE;
@@ -1869,7 +1869,7 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     {
       if(npatch->uorder != npatch->width)
 	{
-	  ay_error(AY_EWARN,fname, "Changing uorder to match width!");
+	  ay_error(AY_EWARN, fname, "Changing uorder to match width!");
 	  npatch->uorder = npatch->width;
 	}
     }
@@ -1968,7 +1968,7 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	  free(nknotv);
 
 	  /* create new knots */
-	  ay_error(AY_EWARN,fname, "Falling back to knot type NURB!");
+	  ay_error(AY_EWARN, fname, "Falling back to knot type NURB!");
 	  npatch->uknot_type = AY_KTNURB;
 
 	  ay_status = ay_knots_createnp(npatch);
@@ -1986,7 +1986,7 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   /* decompose vknot-list (create custom knot sequence) */
   if((npatch->vknot_type == AY_KTCUSTOM) && vknots_modified)
     {
-      Tcl_SplitList(interp,Tcl_GetVar2(interp, n1, "Knots_V",
+      Tcl_SplitList(interp, Tcl_GetVar2(interp, n1, "Knots_V",
 				       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY),
 		    &knotc, &knotv);
 
@@ -2023,7 +2023,7 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	  free(nknotv);
 
 	  /* create new knots */
-	  ay_error(AY_EWARN,fname, "Falling back to knot type NURB!");
+	  ay_error(AY_EWARN, fname, "Falling back to knot type NURB!");
 	  npatch->vknot_type = AY_KTNURB;
 
 	  ay_status = ay_knots_createnp(npatch);
@@ -2087,94 +2087,94 @@ ay_npatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!npatch)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  toa = Tcl_NewStringObj(n1, -1);
+  ton = Tcl_NewStringObj(n1, -1);
 
-  Tcl_SetStringObj(ton,"Width",-1);
+  Tcl_SetStringObj(ton, "Width", -1);
   to = Tcl_NewIntObj(npatch->width);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Height",-1);
+  Tcl_SetStringObj(ton, "Height", -1);
   to = Tcl_NewIntObj(npatch->height);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Order_U",-1);
+  Tcl_SetStringObj(ton, "Order_U", -1);
   to = Tcl_NewIntObj(npatch->uorder);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Order_V",-1);
+  Tcl_SetStringObj(ton, "Order_V", -1);
   to = Tcl_NewIntObj(npatch->vorder);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Knot-Type_U",-1);
+  Tcl_SetStringObj(ton, "Knot-Type_U", -1);
   to = Tcl_NewIntObj(npatch->uknot_type);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Knot-Type_V",-1);
+  Tcl_SetStringObj(ton, "Knot-Type_V", -1);
   to = Tcl_NewIntObj(npatch->vknot_type);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetVar2(interp,n1,"Knots_U","", TCL_LEAVE_ERR_MSG |
+  Tcl_SetVar2(interp, n1, "Knots_U", "", TCL_LEAVE_ERR_MSG |
 	      TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton,"Knots_U",-1);
-  for(i=0; i<npatch->width+npatch->uorder; i++)
+  Tcl_SetStringObj(ton, "Knots_U", -1);
+  for(i = 0; i < npatch->width+npatch->uorder; i++)
     {
 
       to = Tcl_NewDoubleObj((npatch->uknotv)[i]);
 
-      Tcl_ObjSetVar2(interp,toa,ton,to,TCL_APPEND_VALUE |
+      Tcl_ObjSetVar2(interp, toa, ton, to, TCL_APPEND_VALUE |
 		     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG |
 		     TCL_GLOBAL_ONLY);
     }
 
-  Tcl_SetVar2(interp,n1,"Knots_V","", TCL_LEAVE_ERR_MSG |
+  Tcl_SetVar2(interp, n1, "Knots_V", "", TCL_LEAVE_ERR_MSG |
 	      TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton,"Knots_V",-1);
-  for(i=0; i<npatch->height+npatch->vorder; i++)
+  Tcl_SetStringObj(ton, "Knots_V", -1);
+  for(i = 0; i < npatch->height+npatch->vorder; i++)
     {
 
       to = Tcl_NewDoubleObj((npatch->vknotv)[i]);
 
-      Tcl_ObjSetVar2(interp,toa,ton,to,TCL_APPEND_VALUE |
+      Tcl_ObjSetVar2(interp, toa, ton, to, TCL_APPEND_VALUE |
 		     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG |
 		     TCL_GLOBAL_ONLY);
     }
 
-  Tcl_SetStringObj(ton,"CreateMP",-1);
+  Tcl_SetStringObj(ton, "CreateMP", -1);
   to = Tcl_NewIntObj(npatch->createmp);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Tolerance",-1);
+  Tcl_SetStringObj(ton, "Tolerance", -1);
   to = Tcl_NewDoubleObj(npatch->glu_sampling_tolerance);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"DisplayMode",-1);
+  Tcl_SetStringObj(ton, "DisplayMode", -1);
   to = Tcl_NewIntObj(npatch->display_mode);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"IsRat", -1);
+  Tcl_SetStringObj(ton, "IsRat", -1);
   if(npatch->is_rat)
     to = Tcl_NewStringObj("yes", -1);
   else
     to = Tcl_NewStringObj("no", -1);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Knots_U-Modified",-1);
+  Tcl_SetStringObj(ton, "Knots_U-Modified", -1);
   to = Tcl_NewIntObj(0);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Knots_V-Modified",-1);
+  Tcl_SetStringObj(ton, "Knots_V-Modified", -1);
   to = Tcl_NewIntObj(0);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
@@ -2194,18 +2194,18 @@ ay_npatch_readcb(FILE *fileptr, ay_object *o)
  ay_nurbpatch_object *npatch = NULL;
  int i, a;
 
- if(!fileptr || !o)
-   return AY_ENULL;
+  if(!fileptr || !o)
+    { return AY_ENULL; }
 
   if(!(npatch = calloc(1, sizeof(ay_nurbpatch_object))))
     { return AY_EOMEM; }
 
-  fscanf(fileptr,"%d\n",&npatch->width);
-  fscanf(fileptr,"%d\n",&npatch->height);
-  fscanf(fileptr,"%d\n",&npatch->uorder);
-  fscanf(fileptr,"%d\n",&npatch->vorder);
-  fscanf(fileptr,"%d\n",&npatch->uknot_type);
-  fscanf(fileptr,"%d\n",&npatch->vknot_type);
+  fscanf(fileptr, "%d\n", &npatch->width);
+  fscanf(fileptr, "%d\n", &npatch->height);
+  fscanf(fileptr, "%d\n", &npatch->uorder);
+  fscanf(fileptr, "%d\n", &npatch->vorder);
+  fscanf(fileptr, "%d\n", &npatch->uknot_type);
+  fscanf(fileptr, "%d\n", &npatch->vknot_type);
 
   ay_status = ay_knots_createnp(npatch);
   if(ay_status)
@@ -2221,7 +2221,9 @@ ay_npatch_readcb(FILE *fileptr, ay_object *o)
 	{ ay_npt_destroy(npatch); return AY_EOMEM; }
 
       for(i = 0; i < (npatch->width + npatch->uorder); i++)
-	fscanf(fileptr,"%lg\n",&(npatch->uknotv[i]));
+	{
+	  fscanf(fileptr, "%lg\n", &(npatch->uknotv[i]));
+	}
     }
 
   if(npatch->vknot_type == AY_KTCUSTOM)
@@ -2235,7 +2237,7 @@ ay_npatch_readcb(FILE *fileptr, ay_object *o)
 	{ ay_npt_destroy(npatch); return AY_EOMEM; }
 
       for(i = 0; i < (npatch->height + npatch->vorder); i++)
-	fscanf(fileptr,"%lg\n",&(npatch->vknotv[i]));
+	fscanf(fileptr, "%lg\n", &(npatch->vknotv[i]));
     }
 
   if(!(npatch->controlv = calloc(npatch->width*npatch->height*4,
@@ -2245,19 +2247,19 @@ ay_npatch_readcb(FILE *fileptr, ay_object *o)
   a = 0;
   for(i = 0; i < (npatch->width*npatch->height); i++)
     {
-      fscanf(fileptr,"%lg %lg %lg %lg\n", &(npatch->controlv[a]),
+      fscanf(fileptr, "%lg %lg %lg %lg\n", &(npatch->controlv[a]),
 	     &(npatch->controlv[a+1]),
 	     &(npatch->controlv[a+2]),
 	     &(npatch->controlv[a+3]));
       a += 4;
     }
 
-  fscanf(fileptr,"%lg\n",&(npatch->glu_sampling_tolerance));
-  fscanf(fileptr,"%d\n",&(npatch->display_mode));
+  fscanf(fileptr, "%lg\n", &(npatch->glu_sampling_tolerance));
+  fscanf(fileptr, "%d\n", &(npatch->display_mode));
 
   if(ay_read_version >= 9)
     {
-      fscanf(fileptr,"%d\n",&(npatch->createmp));
+      fscanf(fileptr, "%d\n", &(npatch->createmp));
     }
   else
     {
@@ -2313,24 +2315,24 @@ ay_npatch_writecb(FILE *fileptr, ay_object *o)
 
   if(npatch->uknot_type == AY_KTCUSTOM)
     {
-      for(i=0;i<(npatch->width+npatch->uorder);i++)
+      for(i = 0; i < (npatch->width+npatch->uorder); i++)
 	fprintf(fileptr,"%g\n",npatch->uknotv[i]);
     }
 
   if(npatch->vknot_type == AY_KTCUSTOM)
     {
-      for(i=0;i<(npatch->height+npatch->vorder);i++)
+      for(i = 0; i < (npatch->height+npatch->vorder); i++)
 	fprintf(fileptr,"%g\n",npatch->vknotv[i]);
     }
 
   a = 0;
-  for(i=0;i<npatch->width*npatch->height;i++)
+  for(i = 0; i < npatch->width*npatch->height; i++)
     {
       fprintf(fileptr,"%g %g %g %g\n", npatch->controlv[a],
 	      npatch->controlv[a+1],
 	      npatch->controlv[a+2],
 	      npatch->controlv[a+3]);
-      a+=4;
+      a += 4;
     }
 
   fprintf(fileptr, "%g\n", npatch->glu_sampling_tolerance);
@@ -2563,6 +2565,9 @@ ay_npatch_wribtrimcurves(ay_object *o)
 	} /* switch */
       trim = trim->next;
     } /* while */
+
+  if(totalcurves == 0)
+    goto cleanup;
 
   if(!(order = malloc(totalcurves*sizeof(RtInt))))
     { ay_status = AY_EOMEM; goto cleanup; }

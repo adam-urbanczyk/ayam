@@ -1499,9 +1499,9 @@ ay_ncurve_readcb(FILE *fileptr, ay_object *o)
   if(!(ncurve = calloc(1, sizeof(ay_nurbcurve_object))))
     { return AY_EOMEM; }
 
-  fscanf(fileptr,"%d\n",&ncurve->length);
-  fscanf(fileptr,"%d\n",&ncurve->order);
-  fscanf(fileptr,"%d\n",&ncurve->knot_type);
+  fscanf(fileptr, "%d\n", &ncurve->length);
+  fscanf(fileptr, "%d\n", &ncurve->order);
+  fscanf(fileptr, "%d\n", &ncurve->knot_type);
 
   if(ncurve->knot_type == AY_KTCUSTOM)
     {
@@ -1510,29 +1510,34 @@ ay_ncurve_readcb(FILE *fileptr, ay_object *o)
 	{ free(ncurve); return AY_EOMEM; }
 
       for(i = 0; i<(ncurve->length + ncurve->order); i++)
-	fscanf(fileptr,"%lg\n",&(ncurve->knotv[i]));
+	fscanf(fileptr, "%lg\n", &(ncurve->knotv[i]));
     }
 
   if(!(ncurve->controlv = calloc(ncurve->length*4, sizeof(double))))
-    {if(ncurve->knotv){free(ncurve->knotv);} free(ncurve); return AY_EOMEM;}
+    {
+      if(ncurve->knotv)
+	{free(ncurve->knotv);}
+      free(ncurve);
+      return AY_EOMEM;
+    }
 
   a = 0;
   for(i = 0; i < ncurve->length; i++)
     {
-      fscanf(fileptr,"%lg %lg %lg %lg\n",&(ncurve->controlv[a]),
+      fscanf(fileptr, "%lg %lg %lg %lg\n", &(ncurve->controlv[a]),
 	     &(ncurve->controlv[a+1]),
 	     &(ncurve->controlv[a+2]),
 	     &(ncurve->controlv[a+3]));
       a += 4;
     }
 
-  fscanf(fileptr,"%d\n",&(ncurve->type));
-  fscanf(fileptr,"%lg\n",&(ncurve->glu_sampling_tolerance));
-  fscanf(fileptr,"%d\n",&(ncurve->display_mode));
+  fscanf(fileptr, "%d\n", &(ncurve->type));
+  fscanf(fileptr, "%lg\n", &(ncurve->glu_sampling_tolerance));
+  fscanf(fileptr, "%d\n", &(ncurve->display_mode));
 
   if(ay_read_version >= 1)
     {
-      fscanf(fileptr,"%d\n",&(ncurve->createmp));
+      fscanf(fileptr, "%d\n", &(ncurve->createmp));
     }
   else
     {
@@ -1596,14 +1601,14 @@ ay_ncurve_writecb(FILE *fileptr, ay_object *o)
 
   if(ncurve->knot_type == AY_KTCUSTOM)
     {
-      for(i=0;i<(ncurve->length+ncurve->order);i++)
-	fprintf(fileptr,"%g\n",ncurve->knotv[i]);
+      for(i = 0; i < (ncurve->length+ncurve->order); i++)
+	fprintf(fileptr, "%g\n", ncurve->knotv[i]);
     }
 
   a = 0;
-  for(i=0;i<ncurve->length;i++)
+  for(i = 0; i < ncurve->length; i++)
     {
-      fprintf(fileptr,"%g %g %g %g\n", ncurve->controlv[a],
+      fprintf(fileptr, "%g %g %g %g\n", ncurve->controlv[a],
 	      ncurve->controlv[a+1],
 	      ncurve->controlv[a+2],
 	      ncurve->controlv[a+3]);

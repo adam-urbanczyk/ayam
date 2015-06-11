@@ -8730,7 +8730,7 @@ ay_nct_gndp(char dir, ay_nurbcurve_object *nc, double *p,
  return;
 } /* ay_nct_gndp */
 
-
+#if 0
 int
 ay_nct_expanddisc(double **p, int *plen)
 {
@@ -8781,7 +8781,7 @@ ay_nct_expanddisc(double **p, int *plen)
 
  return AY_OK;
 } /* ay_nct_expanddisc */
-
+#endif
 
 /* templates */
 #if 0
