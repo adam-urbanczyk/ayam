@@ -38,6 +38,9 @@ o tool dialogs now use the standard UI elements from property GUIs, element
   types are inferred from the default/current values, the old style UIs
   can also be enabled via the hidden preference setting "SimpleToolGUI"
 o improved balloon timing on main labels
+o add simple search variant (on types, names, and materials) to object
+  search facility
+o improved visibility of direction arrows
 
 Scripts/Scripting Interface:
 o added commands to tween NURBS curves and surfaces ("tweenNC" and "tweenNP")
