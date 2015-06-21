@@ -828,7 +828,7 @@ int
 ay_ncurve_drawacb(struct Togl *togl, ay_object *o)
 {
  ay_nurbcurve_object *ncurve;
- double *ver = NULL;
+ double *a, *b;
 
   if(!o)
     return AY_ENULL;
@@ -838,10 +838,20 @@ ay_ncurve_drawacb(struct Togl *togl, ay_object *o)
   if(!ncurve)
     return AY_ENULL;
 
-  ver = ncurve->controlv;
+  a = &(ncurve->controlv[ncurve->length*4-8]);
+  b = &(ncurve->controlv[ncurve->length*4-4]);
 
-  ay_draw_arrow(togl, &(ver[ncurve->length*4-8]),
-		&(ver[ncurve->length*4-4]));
+  while(AY_V3COMP(a, b))
+    {
+      a -= 4;
+      if(a < ncurve->controlv)
+	{
+	  a = &(ncurve->controlv[ncurve->length*4-8]);
+	  break;
+	}
+    }
+
+  ay_draw_arrow(togl, a, b);
 
  return AY_OK;
 } /* ay_ncurve_drawacb */
