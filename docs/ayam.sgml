@@ -2084,6 +2084,9 @@ The matching allows usage of <tt/"*"/ (matches any sequence of characters),
 like this <tt/"[A-z]"/. To match any of <tt/*?[]/ precede them with a
 backslash.
 <p>
+If the search expression starts with a <tt/"$"/, <tt/"("/, or <tt/"["/ it is
+considered a special expression.
+<p>
 The following special search expressions are defined:
 <descrip>
 <tag/Type/ find objects of a certain type, for example
@@ -2429,8 +2432,8 @@ depending on references of changed objects takes place:
 <itemize>
 <item><tt/"Never"/, for manual control of complete notification
 (manual complete notification can be carried out using the main
-menu entry <tt>"Tools/Force Notification"</tt>) or using the
-keyboard shortcut <tt>&lt;F5&gt;</tt>;
+menu entry <tt>"Tools/Force Notification"</tt> or using the
+keyboard shortcut <tt>&lt;F5&gt;</tt>);
 <item><tt/"Always"/, a complete notification is done whenever the
 normal notification is carried out;
 <item><tt/"Lazy"/, the complete notification runs
@@ -2458,17 +2461,19 @@ the next invocation of the single point editing modelling action.
 <item><tt/"RationalPoints"/ determines the display style of rational points.
 <footnote>Since 1.22.</footnote>
 <p><p>
-In euclidean style the weights are not multiplied in, whereas in the
-homogeneous style the weights are multiplied in prior to display.
+In the <em/euclidean/ style the weights are not multiplied in, whereas in the
+<em/homogeneous/ style the weights are multiplied in prior to display.
 This preference setting also influences the control hull display of
 NURBS curves and surfaces and some modelling actions like setting the
-mark from points. See also the following image, showing two NURBS
-circles with their control hulls in euclidean and homogeneous style.
+mark from points. See also the following image, showing two standard
+nine point NURBS circles, where every second control point has a weight
+value of 0.75, with their control hulls in euclidean and
+homogeneous style.
 <p>
 <figure loc="ht">
 <eps file="pics/euchom.ps" height="5cm">
 <img src="pics/euchom.gif">
-<caption>Euclidean (left) vs. Homogeneous (right) Display of Rational Points</caption>
+<caption>Euclidean (left) vs.~Homogeneous (right) Display of Rational Points</caption>
 </figure>
 <p>
 
@@ -2562,11 +2567,11 @@ different from <tt/"Global"/.
 Toggling between drawing of hulls and outlines may also be
 done easily using the keyboard shortcut <tt>&lt;F4&gt;</tt>.
 
-<item><tt/"NCDisplayMode"/ sets the display mode for NURBS curves,
+<item><tt/"NCDisplayMode"/ sets the display mode for NURBS curves;
 just like for surfaces the control hull (control polygon) or the curve or a
 combination of both may be displayed.
 <p><p>
-See also the discussion of GLU vs. STESS above.
+See also the discussion of GLU vs.~STESS above.
 <p>
 Note that this setting has no effect for objects that override it
 locally using a <tt/"DisplayMode"/ attribute different from <tt/"Global"/.
@@ -2576,25 +2581,37 @@ done easily using the keyboard shortcut <tt>&lt;F4&gt;</tt>.
 
 <item><tt/"ToleranceA"/ is the GLU sampling tolerance that is
 used for display of NURBS curves or patches in all interactive
-actions. The value 0.0 means no change from the <tt/"Tolerance"/ setting.
+actions, i.e.~while interactively moving objects or editing
+control points.
+<p><p>
+Negative values are interpreted as multiplicator in the following
+way. A value of -2 means: use the value from the <tt/"Tolerance"/ setting
+multiplied by 2, e.g.~if the <tt/"Tolerance"/ is set to 40, a value of 80 will
+be used in actions.<footnote>Since 1.22.</footnote>
+<p>
+The default value 0.0 means no change from the <tt/"Tolerance"/ setting.
+<p>
 In contrast to the <tt/"Tolerance"/ setting above, objects can
 <em>not</em> override this setting locally.
 
 <item><tt/"NPDisplayModeA"/ controls the display mode of NURBS
 patches for all interactive actions.
 The first and default value (<tt/"NPDisplayMode"/) means: no change.
+<p><p>
 In contrast to the <tt/"NPDisplayMode"/ setting above, objects can
 <em>not</em> override this setting locally.
 
 <item><tt/"NCDisplayModeA"/ controls the display mode of NURBS
 curves for all interactive actions.
 The first and default value (<tt/"NCDisplayMode"/) means: no change.
+<p><p>
 In contrast to the <tt/"NCDisplayMode"/ setting above, objects can
 <em>not</em> override this setting locally.
 
 <item><tt/"UseMatColor"/ determines, whether the shaded representation
 uses the color defined by the material of an object for
-rendering.
+rendering. If disabled, the color defined by the <tt/"Shade"/ option
+(below) will be used instead. 
 
 <item><tt/"Background"/, <tt/"Object"/, <tt/"Selection"/, <tt/"Grid"/,
 <tt/"Tag"/, <tt/"Shade"/, and <tt/"Light"/ set the colors that
@@ -2646,7 +2663,7 @@ rendering is finished and the display window of the renderer is closed.
 
 <item><tt/"Image"/ specifies the image file that will be created,
 when the exported RIB file is rendered.
-When <tt/"Image"/ is set to <tt/"RIB"/, rendering will create image
+When this option is set to <tt/"RIB"/, rendering will create image
 files that are named as the exported RIB file (with the last
 file extension replaced by <tt/".tif"/). Again, setting
 it to <tt/"Ask"/ will cause a dialog box to appear,
@@ -4163,7 +4180,7 @@ attributes and is rotated via the control points.
 
 <sect>Objects, Properties, and Tags<label id="obandprp">
 <p>
-This section informs you about the different object types of Ayam and
+This section informs about the different object types of Ayam and
 about the property GUIs that appear in the properties section of the
 main window if a single object and a property have been selected.
 <p>
@@ -6406,7 +6423,7 @@ aforementioned types.
 created for this curve. See also the discussion in
 section <ref id="ncurvemp" name="Multiple Points">.
 
-<item><tt/"IsRat"/ informs you, whether the curve
+<item><tt/"IsRat"/ informs, whether the curve
 is rational (uses weight values different from
 1.0).<footnote>Since 1.9.</footnote>
 </itemize>
@@ -7216,7 +7233,7 @@ created for this surface. See also the discussion in
 section
 <ref id="ncurvemp" name="Multiple Points">.<footnote>Since 1.10.</footnote>
 
-<item><tt/"IsRat"/ informs you, whether the patch
+<item><tt/"IsRat"/ informs, whether the patch
 is rational (uses weight values different from
 1.0).<footnote>Since 1.9.</footnote>
 </itemize>
@@ -7247,7 +7264,7 @@ outlines of the patch (<tt/"OutlinePatch"/). The default setting
 <caption>A Trimmed NURBS Patch</caption>
 </figure>
 Trim curves may be used to cut out certain parts of a NURBS patch (see
-alse the image above).
+also the image above).
 They are simple 2D NURBS curves defined in the parametric space
 of the associated NURBS patch. Trim curves have to be defined as child
 objects of the NURBS patch object they belong to. In contrast to other
@@ -19535,7 +19552,7 @@ drawing mode, 0 &ndash; off, 1 &ndash; z-buffer, 2 &ndash; color,
 
 <item><tt/"SelectLast"/ determines whether clicks into the tree
 widget (but not on any node) should select the last object of the current
-level. Default 1.
+level. Default 1 &ndash; yes.
 <footnote>Since 1.22.</footnote>
 
 <item><tt/"SelLineWidth"/, line width used for drawing the lines of
