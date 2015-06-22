@@ -7012,7 +7012,7 @@ patch.<footnote>Since 1.13.</footnote>
 data that is the "middle axis" (simply the medium of all control points
 of a patch in the designated
 dimension).<footnote>Since 1.15.</footnote><newline>
-This option is useful to re-engineer swept surfaces, delivered
+This option is e.g.~useful to re-engineer swept surfaces, delivered
 as simple patches.
 <item><tt/"Trim"/, all trim curves and loops of the current patch will
 appear here.
@@ -7020,20 +7020,22 @@ appear here.
 Note, that their extraction will result in an approximation
 of the 3D representation of the corresponding trim boundary only. In
 particular, the extracted curve will not be compatible to the trim curve.
-The approximation quality can be adjusted using <tt/"Parameter"/ below.
+The approximation quality can be adjusted using <tt/"Parameter"/ (see below).
 </itemize>
 Note that if <tt/"Side"/ is <tt/"U0"/, <tt/"Un"/, <tt/"V0"/, or <tt/"Vn"/
 the extraction process just copies the respective boundary control points,
 which is fast but only works correctly for clamped knot vectors. To extract
 a boundary from a surface with e.g.~a B-Spline knot vector, <tt/"U0"/ should
-not be used but <tt/"U"/ with <tt/"Parameter"/ set to 0.0 and <tt/"Relative"/
-enabled as <tt/"U"/ uses a different, more expensive, extraction process
-(which involves knot insertion).
+<em/not/ be used but <tt/"U"/ with <tt/"Parameter"/ set to 0.0 and
+<tt/"Relative"/ enabled as <tt/"U"/ uses a different, more expensive,
+extraction process (which involves knot insertion).
 
 <item><tt/"Parameter"/ controls the parametric value in U or V
 direction in the parameter space of the NURBS patch object where the
-curve should be extracted. This parameter is only used when <tt/"Side"/
-is <tt/"U"/ or <tt/"V"/. The valid range of parameter values depends
+curve should be extracted or the approximation quality of extracted
+trim curves. Consequently, this parameter is only used when <tt/"Side"/
+is <tt/"U"/, <tt/"V"/ or <tt/"Trim"/.
+The valid range of parameter values depends
 on the knot vectors of the NURBS patch.<newline>
 If a trim boundary is to be extracted, this parameter controls the
 sampling just like the preference setting <tt>"Drawing/Tolerance"</tt>.
@@ -7540,13 +7542,13 @@ settings:
 <item><tt/"Type"/ may be set to <tt/"Bilinear"/ or <tt/"Bicubic"/.
 <item><tt/"Width"/ and <tt/"Height"/ control the dimensions of the patch.
 Note that for bicubic patch meshes, the basis type may impose restrictions
-on the valid values for width and height; e.g. for the
+on the valid values for width and height; e.g.~for the
 basis type <tt/"Bezier"/ (with step size 3) valid values are 4, 7,
 10, &hellip;. The other basis type that imposes this restriction is
 <tt/"Hermite"/ with step size 2, where valid values are 4, 6,
 8, &hellip;.<newline>
 Closing the surface complicates the matter a bit further. A valid
-width for a closed bicubic patch mesh of basis type <tt/"Bezier"/ is e.g. 6;
+width for a closed bicubic patch mesh of basis type <tt/"Bezier"/ is e.g.~6;
 it is actually still 7, but the last point is equal to the first and
 will be omitted.
 <item><tt/"Close_U"/ and <tt/"Close_V"/ determine, whether the patch
@@ -9587,7 +9589,7 @@ or even 3 to 3.5).
 The scale mode <tt/"Automatic"/ derives a scale factor from the
 knot vector and extension of the first trim loop in the respective
 dimension and then scales all trim curves by this value.
-If e.g. the patch is defined on the knot interval 0 to 2, and the
+If e.g.~the patch is defined on the knot interval 0 to 2, and the
 first loops is defined between -0.5 and 0.5, the scale factor used
 for.
 -->
@@ -14500,7 +14502,7 @@ upOb &ndash; move object(s) upward in the current level:
  <item>Description: Move the currently selected object(s) upwards
 in the current level. Non contiguous selections are supported.
 If the first of the selected objects is the first in the current level,
-nothing will be changed, i.e. either all selected objects move, or none.
+nothing will be changed, i.e.~either all selected objects move, or none.
 </itemize>
 
 <p>
@@ -14514,7 +14516,7 @@ downOb &ndash; move object(s) downward in the current level:
  <item>Description: Move the currently selected object(s) downwards
 in the current level. Non contiguous selections are supported.
 If the last of the selected objects is the last in the current level,
-nothing will be changed, i.e. either all selected objects move, or none.
+nothing will be changed, i.e.~either all selected objects move, or none.
 </itemize>
 
 
@@ -16888,8 +16890,14 @@ single click.
 
 <sect2>Create Truncated Cones<label id="tconetcl">
 <p>
+<figure loc="ht">
+<eps file="pics/tcone.ps" height="4cm">
+<img src="pics/tcone.gif">
+<caption>Truncated Cone with ZMax 2.0</caption>
+</figure>
+<p>
 The script <tt>"tcone.tcl"</tt> creates truncated cones with arguments
-similar to the cylinder primitive.
+similar to the cylinder primitive, see also the above image.
 <p>
 This script must be used in a Script object of type <tt/"Create"/.
 For convenience, there is also a property GUI; one must add a <tt/"NP"/ tag
@@ -16914,6 +16922,10 @@ default is 360.
 Internally, the script creates a Hyperboloid; further information about
 conversion capabilities and RIB export may be found in
 section <ref id="hyperboloidobj" name="Hyperboloid">.
+
+An example scene file containing such an object is distributed with Ayam,
+see the file:<newline>
+<tt>"ayam/scn/scripts/tcone.ay"</tt>.
 
 <#if out=latex><x/newpage/</#if>
 
