@@ -1,5 +1,5 @@
-[31. May 2015] CVS-Head:
-========================
+[23. Jun 2015] Ayam-1.22:
+=========================
 Bug Fixes:
 o silhouettes are missing when draw selection only is active (SF 499)
 o moving objects in the hierarchy by keyboard does not notify/redraw (SF 500)
