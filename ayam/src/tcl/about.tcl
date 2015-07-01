@@ -86,6 +86,9 @@ Show Extensions: "
 
 set ay(aboutCBIndex) [$w.ftext.text index end]
 checkbutton $w.ftext.text.extb -variable ay(aboutShowsExt) -pady 0
+if { $ay(ws) == "w32" } {
+    $w.ftext.text.extb conf -bg [$w.ftext.text cget -bg]
+}
 $w.ftext.text window create $ay(aboutCBIndex) -window $w.ftext.text.extb
 
 if { $ay(aboutShowsExt) } {
