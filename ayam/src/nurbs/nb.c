@@ -4170,11 +4170,13 @@ ay_nb_DecomposeCurve(int stride, int n, int p, double *U, double *Pw,
  int m = n+p+1;
  int a = p, b = p+1, mult, r, save;
  int i, j, k, s, i1, i2, Qwlen;
- double numer, alpha, *alphas = NULL, *lQw = *Qw;
- double *Qwnb, *Qwnb1, *temp;
+ double numer, alpha, *alphas;
+ double *lQw, *Qwnb, *Qwnb1, *temp;
 
   if(!nb || !Pw || !Qw)
     return AY_ENULL;
+
+  lQw = *Qw;
 
   *nb = 0;
   if(!(alphas = calloc(p+2, sizeof(double))))
