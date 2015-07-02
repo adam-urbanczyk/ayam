@@ -1,3 +1,9 @@
+[2. Jul 2015] CVS-Head:
+================
+Bug Fixes:
+o DXF export of polymeshes misses transformation attributes (SF 508)
+
+
 [23. Jun 2015] Ayam-1.22:
 =========================
 Bug Fixes:
