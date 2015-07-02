@@ -241,7 +241,7 @@ proc objio_import { } {
     # establish "Help"-binding
     shortcut_addcshelp $w ayam-7.html impwav
 
-    winRestoreORCenter $w $t
+    winRestoreOrCenter $w $t
     grab $w
     focus $w.f2.bok
     tkwait window $w
