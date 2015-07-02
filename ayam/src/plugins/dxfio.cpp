@@ -1884,7 +1884,6 @@ dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m)
 {
  int ay_status = AY_OK;
  ay_pomesh_object *pm, *trpm = NULL;
- double m1[16] = {0}, m2[16] = {0};
  int stride = 3, iverts = 0;
  bool needtess = false;
  unsigned int a, f = 0, i, j, p = 0, q = 0, r = 0;
@@ -1895,10 +1894,6 @@ dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m)
     return AY_ENULL;
 
   pm = (ay_pomesh_object *)(o->refine);
-
-  memcpy(m2, m, 16*sizeof(double));
-  ay_trafo_creatematrix(o, m1);
-  ay_trafo_multmatrix(m2, m1);
 
   for(i = 0; i < pm->npolys; i++)
     {
@@ -1961,7 +1956,7 @@ dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m)
 	{ ay_status = AY_EOMEM; goto cleanup; }
 
       memcpy(v3, &(pm->controlv[a]), 3*sizeof(double));
-      ay_trafo_apply3(v3, m2);
+      ay_trafo_apply3(v3, m);
       v.setValue(v3[0], v3[1], v3[2]);
       cvert->setCoords(v);
       cvert->setFlags(dimeVertex::POLYFACE_MESH_VERTEX);
@@ -2109,9 +2104,7 @@ dxfio_writenpatch(ay_object *o, dimeModel *dm, double *m)
 	{
 	  if(t->type == AY_IDPOMESH)
 	    {
-
 	      ay_status = dxfio_writeobject(t, dm);
-
 	    } // if
 	  t = t->next;
 	} // while
@@ -2132,7 +2125,6 @@ dxfio_writencurve(ay_object *o, dimeModel *dm, double *m)
 {
  int ay_status = AY_OK;
  ay_nurbcurve_object *nc = NULL;
- double m1[16] = {0}, m2[16] = {0};
  int stride = 4, a = 0;
  bool has_weights = false;
  dimeSpline *sp = NULL;
@@ -2146,10 +2138,6 @@ dxfio_writencurve(ay_object *o, dimeModel *dm, double *m)
     return AY_OK;
 
   nc = (ay_nurbcurve_object *)(o->refine);
-
-  memcpy(m2, m, 16*sizeof(double));
-  ay_trafo_creatematrix(o, m1);
-  ay_trafo_multmatrix(m2, m1);
 
   if(nc->is_rat)
     {
@@ -2189,7 +2177,7 @@ dxfio_writencurve(ay_object *o, dimeModel *dm, double *m)
     {
       double v[3];
       memcpy(v, &(nc->controlv[a]), 3*sizeof(double));
-      ay_trafo_apply3(v, m2);
+      ay_trafo_apply3(v, m);
       dv[i].setValue((dxfdouble)v[0], (dxfdouble)v[1], (dxfdouble)v[2]);
       a += stride;
     }
