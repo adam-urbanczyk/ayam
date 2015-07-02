@@ -801,7 +801,8 @@ objio_writelevel(FILE *fileptr, ay_object *o, double *m)
   if(o->down && o->down->next)
     {
       memcpy(m1, tm, 16*sizeof(double));
-      memcpy(tm, m, 16*sizeof(double));
+      if(tm != m)
+	memcpy(tm, m, 16*sizeof(double));
       down = o->down;
       while(down->next && down->next->next)
 	{
