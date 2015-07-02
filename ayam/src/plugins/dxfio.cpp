@@ -2237,7 +2237,8 @@ dxfio_writelevel(ay_object *o, dimeModel *dm, double *m)
   if(o->down && o->down->next)
     {
       memcpy(m1, tm, 16*sizeof(double));
-      memcpy(tm, m, 16*sizeof(double));
+      if(m != tm)
+	memcpy(tm, m, 16*sizeof(double));
 
       down = o->down;
       while(down->next)
