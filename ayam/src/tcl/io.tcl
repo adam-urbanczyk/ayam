@@ -1339,7 +1339,7 @@ proc io_importScene { filename } {
 	    # XXXX import procedure name
 	    set import_proc "${plugin}_import"
 	    #
-	    if { ! [info exists $import_proc] } {
+	    if { [llength [info commands $import_proc]] == 0 } {
 		io_lcAuto $plugin
 	    }
 	    # XXXX import options array
@@ -1367,7 +1367,7 @@ proc io_importScene { filename } {
     # foreach
 
     if { ! $imported } {
-	ayError 2 "io_importScene" "Unknown extension: $ext"
+	ayError 2 "io_importScene" "Unknown extension: $ext \nCurrently known: $ayprefs(ALFileTypes)"
     }
 
     winAutoFocusOn
