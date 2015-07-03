@@ -2008,7 +2008,7 @@ ay_mfio_writenurbpatch(MF3D_FilePtr fileptr, ay_object *o)
 
   /* write trimcurves */
   trim = o->down;
-  if(trim->next)
+  if(trim && trim->next)
     {
       tco.objectType = kMF3DObjTrimCurves;
       /* we write out the trimcurve-object now */
@@ -3416,6 +3416,21 @@ Mfio_Init(Tcl_Interp *interp)
 
   ay_status += ay_mfio_registerreadcb((char *)(kMF3DObjBox),
 				      ay_mfio_readbox);
+
+  ay_status += ay_mfio_registerreadcb((char *)(kMF3DObjEllipsoid),
+				      ay_mfio_readellipsoid);
+
+  ay_status += ay_mfio_registerreadcb((char *)(kMF3DObjCone),
+				      ay_mfio_readcone);
+
+  ay_status += ay_mfio_registerreadcb((char *)(kMF3DObjCylinder),
+				      ay_mfio_readcylinder);
+
+  ay_status += ay_mfio_registerreadcb((char *)(kMF3DObjDisk),
+				      ay_mfio_readdisk);
+
+  ay_status += ay_mfio_registerreadcb((char *)(kMF3DObjTorus),
+				      ay_mfio_readtorus);
 
   ay_status += ay_mfio_registerreadcb((char *)(kMF3DObjContainer),
 				      ay_mfio_readcntr);
