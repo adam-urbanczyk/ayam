@@ -1336,10 +1336,10 @@ proc io_importScene { filename } {
 	if { ! [string compare -nocase $ext $alext] } {
 	    # get the name of the plugin that supports $ext files
 	    set plugin [lindex $ayprefs(ALPlugins) $i]
-	    # XXXX import procedure name
-	    set import_proc "${plugin}_import"
+
+	    set import_cmd "${plugin}_import"
 	    #
-	    if { [llength [info commands $import_proc]] == 0 } {
+	    if { [llength [info commands $import_cmd]] == 0 } {
 		io_lcAuto $plugin
 	    }
 	    # XXXX import options array
@@ -1348,17 +1348,15 @@ proc io_importScene { filename } {
 	    # set file name to import in the import options GUI
 	    set ${option_array}(filename) $filename
 	    update
-	    set body ""
-	    catch { set body [ info body $import_proc ] }
-	    if { $body != "" } {
+	    if { [llength [info commands $import_cmd]] > 0 } {
 		set imported 1
-		# now, call the import procedure
-		$import_proc
+		# now, call the import procedure/command
+		$import_cmd
 	    } else {
 		ayError 2 "io_importScene" "Failed to load plugin: $plugin"
 	    }
 	}
-	# if
+	# if extension matches
 	if { $imported } {
 	    break
 	}
