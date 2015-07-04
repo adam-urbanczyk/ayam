@@ -918,6 +918,7 @@ objio_writebox(FILE *fileptr, ay_object *o, double *m)
   lh = (GLdouble)(box->length * 0.5);
   hh = (GLdouble)(box->height * 0.5);
 
+  /* set up 8 vertices */
   v[0] = -wh;
   v[1] = -hh;
   v[2] = -lh;
@@ -951,7 +952,6 @@ objio_writebox(FILE *fileptr, ay_object *o, double *m)
   v[22] = -hh;
   v[23] = lh;
 
-
   for(i = 0; i < 8; i++)
     {
       ay_trafo_apply3(&(v[i*3]), m);
@@ -962,11 +962,11 @@ objio_writebox(FILE *fileptr, ay_object *o, double *m)
 
   /* write faces */
   fprintf(fileptr,"f -8 -7 -6 -5\n");
-  fprintf(fileptr,"f -4 -3 -2 -1\n");
-  fprintf(fileptr,"f -8 -7 -4 -3\n");
-  fprintf(fileptr,"f -6 -5 -2 -1\n");
-  fprintf(fileptr,"f -8 -6 -4 -2\n");
-  fprintf(fileptr,"f -7 -5 -3 -1\n");
+  fprintf(fileptr,"f -1 -2 -3 -4\n");
+  fprintf(fileptr,"f -3 -7 -8 -4\n");
+  fprintf(fileptr,"f -5 -6 -2 -1\n");
+  fprintf(fileptr,"f -5 -1 -4 -8\n");
+  fprintf(fileptr,"f -6 -7 -3 -2\n");
 
  return AY_OK;
 } /* objio_writebox */
