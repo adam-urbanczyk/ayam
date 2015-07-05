@@ -499,17 +499,11 @@ void ay_nb_FirstDerSurf3DM(int n, int m, int p, int q, double *U, double *V,
 int ay_nb_CreateNurbsCircleArc(double r, double ths, double the,
 			       int *length, double **knotv, double **controlv);
 
-/** Refine knot vector of rational NURBS curve with a new vector.
+/** Refine knot vector of NURBS curve with a new vector.
  */
-void ay_nb_RefineKnotVectCurve4D(int stride, int n, int p,
-				 double *U, double *Pw,
-				 double *X, int r, double *Ubar, double *Qw);
-
-/** Refine knot vector of non-rational NURBS curve with a new vector.
- */
-void ay_nb_RefineKnotVectCurve3D(int stride, int n, int p,
-				 double *U, double *Pw,
-				 double *X, int r, double *Ubar, double *Qw);
+void ay_nb_RefineKnotVectCurve(int is_rat, int n, int p,
+			       double *U, double *Pw,
+			       double *X, int r, double *Ubar, double *Qw);
 
 /** Elevate degree of NURBS surface in U direction.
  */
@@ -525,15 +519,15 @@ int ay_nb_DegreeElevateSurfV4D(int stride, int w, int h, int p, double *V,
 
 /** Refine U knot vector of NURBS surface with a new vector.
  */
-int ay_nb_RefineKnotVectSurfU4D(int stride, int w, int h, int p, double *U,
-				double *Pw, double *X, int r,
-				double *Ubar, double *Qw);
+int ay_nb_RefineKnotVectSurfU(int is_rat, int w, int h, int p, double *U,
+			      double *Pw, double *X, int r,
+			      double *Ubar, double *Qw);
 
 /** Refine V knot vector of NURBS surface with a new vector.
  */
-int ay_nb_RefineKnotVectSurfV4D(int stride, int w, int h, int p, double *V,
-				double *Pw, double *X, int r,
-				double *Vbar, double *Qw);
+int ay_nb_RefineKnotVectSurfV(int is_rat, int w, int h, int p, double *V,
+			      double *Pw, double *X, int r,
+			      double *Vbar, double *Qw);
 
 /** Decompose NURBS curve into Bezier segments.
  */

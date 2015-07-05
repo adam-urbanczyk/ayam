@@ -846,18 +846,9 @@ ay_nct_refinekn(ay_nurbcurve_object *curve, int maintain_ends,
     }
 
   /* fill Ubar & Qw */
-  if(curve->is_rat)
-    {
-      ay_nb_RefineKnotVectCurve4D(4, curve->length-1, curve->order-1,
-				  curve->knotv, curve->controlv,
-				  X, count-1, Ubar, Qw);
-    }
-  else
-    {
-      ay_nb_RefineKnotVectCurve3D(4, curve->length-1, curve->order-1,
-				  curve->knotv, curve->controlv,
-				  X, count-1, Ubar, Qw);
-    }
+  ay_nb_RefineKnotVectCurve(curve->is_rat, curve->length-1, curve->order-1,
+			    curve->knotv, curve->controlv,
+			    X, count-1, Ubar, Qw);
 
   free(curve->knotv);
   curve->knotv = Ubar;

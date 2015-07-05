@@ -741,9 +741,9 @@ ay_knots_mergenc(ay_nurbcurve_object *curve, double *Ubar, int Ubarlen)
       free(X); free(Ufoo); return AY_EOMEM;
     }
 
-  ay_nb_RefineKnotVectCurve4D(4, curve->length-1,
-			      curve->order-1, curve->knotv, curve->controlv,
-			      X, r-1, Ufoo, Qw);
+  ay_nb_RefineKnotVectCurve(curve->is_rat, curve->length-1,
+			    curve->order-1, curve->knotv, curve->controlv,
+			    X, r-1, Ufoo, Qw);
 
   free(curve->knotv);
   curve->knotv = Ufoo;
@@ -824,10 +824,11 @@ ay_knots_mergenp(ay_nurbpatch_object *patch,
 	      free(X); free(Ufoo); return AY_EOMEM;
 	    }
 
-	  ay_nb_RefineKnotVectSurfU4D(4, patch->width-1, patch->height-1,
-				      patch->uorder-1, patch->uknotv,
-				      patch->controlv,
-				      X, r-1, Ufoo, Qw);
+	  ay_nb_RefineKnotVectSurfU(patch->is_rat,
+				    patch->width-1, patch->height-1,
+				    patch->uorder-1, patch->uknotv,
+				    patch->controlv,
+				    X, r-1, Ufoo, Qw);
 
 	  free(patch->uknotv);
 	  patch->uknotv = Ufoo;
@@ -892,10 +893,11 @@ ay_knots_mergenp(ay_nurbpatch_object *patch,
 	  free(X); free(Vfoo); return AY_EOMEM;
 	}
 
-      ay_nb_RefineKnotVectSurfV4D(4, patch->width-1, patch->height-1,
-				  patch->vorder-1, patch->vknotv,
-				  patch->controlv,
-				  X, r-1, Vfoo, Qw);
+      ay_nb_RefineKnotVectSurfV(patch->is_rat,
+				patch->width-1, patch->height-1,
+				patch->vorder-1, patch->vknotv,
+				patch->controlv,
+				X, r-1, Vfoo, Qw);      
 
       free(patch->vknotv);
       patch->vknotv = Vfoo;

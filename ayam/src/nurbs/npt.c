@@ -13773,9 +13773,9 @@ ay_npt_refineu(ay_nurbpatch_object *patch, double *newknotv, int newknotvlen)
     }
 
   /* fill Ubar & Qw */
-  ay_nb_RefineKnotVectSurfU4D(4, patch->width-1, patch->height-1,
-			      patch->uorder-1, patch->uknotv, patch->controlv,
-			      X, count-1, Ubar, Qw);
+  ay_nb_RefineKnotVectSurfU(patch->is_rat, patch->width-1, patch->height-1,
+			    patch->uorder-1, patch->uknotv, patch->controlv,
+			    X, count-1, Ubar, Qw);
 
   free(patch->uknotv);
   patch->uknotv = Ubar;
@@ -13881,9 +13881,9 @@ ay_npt_refinev(ay_nurbpatch_object *patch, double *newknotv, int newknotvlen)
     }
 
   /* fill Vbar & Qw */
-  ay_nb_RefineKnotVectSurfV4D(4, patch->width-1, patch->height-1,
-			      patch->vorder-1, patch->vknotv, patch->controlv,
-			      X, count-1, Vbar, Qw);
+  ay_nb_RefineKnotVectSurfV(patch->is_rat, patch->width-1, patch->height-1,
+			    patch->vorder-1, patch->vknotv, patch->controlv,
+			    X, count-1, Vbar, Qw);
 
   free(patch->vknotv);
   patch->vknotv = Vbar;
