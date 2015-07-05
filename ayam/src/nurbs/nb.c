@@ -2832,31 +2832,23 @@ ay_nb_CreateNurbsCircleArc(double r, double ths, double the,
 
 
 /*
- * ay_nb_RefineKnotVectCurve4D:
+ * ay_nb_RefineKnotVectCurve:
  * original algorithm by Boehm and Prautzsch
  * refine the knot vector of the curve
- * (stride, n, p, U[], Pw[]) with the new knots in X[r];
+ * (n, p, U[], Pw[]) with the new knots in X[r];
+ * where is_rat should be 0 or 1;
  * results in new knots in Ubar[n+p+r] and new
  * control points in Qw[n+r] both allocated outside!
  */
 void
-ay_nb_RefineKnotVectCurve4D(int stride, int n, int p, double *U, double *Pw,
-			    double *X, int r, double *Ubar, double *Qw)
+ay_nb_RefineKnotVectCurve(int is_rat, int n, int p, double *U, double *Pw,
+			  double *X, int r, double *Ubar, double *Qw)
 {
  int m, a, b;
  int i, j, k, l, ind;
  double alfa, td;
  int ti, tj;
-
-  /* convert rational coordinates from euclidean to homogeneous style */
-  a = 0;
-  for(i = 0; i <= n; i++)
-    {
-      Pw[a]   *= Pw[a+3];
-      Pw[a+1] *= Pw[a+3];
-      Pw[a+2] *= Pw[a+3];
-      a += stride;
-    }
+ int stride = 4;
 
   m = n+p+1;
 
@@ -2932,123 +2924,11 @@ ay_nb_RefineKnotVectCurve4D(int stride, int n, int p, double *U, double *Pw,
 	      Qw[ti]   = alfa * Qw[ti]   + (1.0 - alfa) * Qw[tj];
 	      Qw[ti+1] = alfa * Qw[ti+1] + (1.0 - alfa) * Qw[tj+1];
 	      Qw[ti+2] = alfa * Qw[ti+2] + (1.0 - alfa) * Qw[tj+2];
-	      if(stride == 4)
+	      if(is_rat)
 		{
 		  Qw[ti+3] = alfa * Qw[ti+3] + (1.0 - alfa) * Qw[tj+3];
-		} /* if */
-	    } /* if */
-	} /* for */
-
-      Ubar[k] = X[j];
-      k--;
-    } /* for */
-
-  /* convert rational coordinates from homogeneous to euclidean style */
-  a = 0;
-  for(i = 0; i <= n+r; i++)
-    {
-      Qw[a]   /= Qw[a+3];
-      Qw[a+1] /= Qw[a+3];
-      Qw[a+2] /= Qw[a+3];
-      a += stride;
-    }
-
- return;
-} /* ay_nb_RefineKnotVectCurve4D */
-
-
-/*
- * ay_nb_RefineKnotVectCurve3D:
- * original algorithm by Boehm and Prautzsch
- * refine the knot vector of the curve
- * (stride, n, p, U[], Pw[]) with the new knots in X[r];
- * results in new knots in Ubar[n+p+r] and new
- * control points in Qw[n+r] both allocated outside!
- */
-void
-ay_nb_RefineKnotVectCurve3D(int stride, int n, int p, double *U, double *Pw,
-			    double *X, int r, double *Ubar, double *Qw)
-{
- int m, a, b;
- int i, j, k, l, ind;
- double alfa, td;
- int ti, tj;
-
-  m = n+p+1;
-
-  a = ay_nb_FindSpan(n, p, X[0], U);
-  b = ay_nb_FindSpan(n, p, X[r], U);
-
-  b++;
-
-  for(j = 0; j <= (a-p); j++)
-    {
-      /* Qw[j] = Pw[j]; */
-      memcpy(&(Qw[j*stride]), &(Pw[j*stride]), stride*sizeof(double));
-    }
-
-  for(j = b-1; j <= n; j++)
-    {
-      /* Qw[j+r+1] = Pw[j]; */
-      memcpy(&(Qw[(j+r+1)*stride]), &(Pw[(j)*stride]), stride*sizeof(double));
-    }
-
-  for(j = 0; j <= a; j++)
-    {
-      Ubar[j] = U[j];
-    }
-
-  for(j = b+p; j <= m; j++)
-    {
-      Ubar[j+r+1] = U[j];
-    }
-
-  i = b+p-1;
-  k = b+p+r;
-
-  for(j = r; j >= 0; j--)
-    {
-      while((X[j] <= U[i]) && (i > a))
-	{
-	  /* Qw[k-p-1] = Pw[i-p-1]; */
-	  memcpy(&(Qw[(k-p-1)*stride]), &(Pw[(i-p-1)*stride]),
-		 stride*sizeof(double));
-
-	  Ubar[k] = U[i];
-	  k--;
-	  i--;
-	} /* while */
-
-      /* Qw[k-p-1] = Qw[k-p]; */
-      memcpy(&(Qw[(k-p-1)*stride]), &(Qw[(k-p)*stride]),
-	     stride*sizeof(double));
-
-      for(l = 1; l <= p; l++)
-	{
-	  ind = k-p+l;
-	  alfa = Ubar[k+l] - X[j];
-	  if(fabs(alfa) == 0.0)
-	    {
-	      /* Qw[ind-1] = Qw[ind]; */
-	      memcpy(&(Qw[(ind-1)*stride]), &(Qw[ind*stride]),
-		     stride*sizeof(double));
-	    }
-	  else
-	    {
-	      /* alfa = alfa / (Ubar[k+l] - U[i-p+l]); */
-	      td = (Ubar[k+l] - U[i-p+l]);
-	      if(td != 0.0)
-		alfa /= td;
+		}
 	      else
-		alfa = 0.0;
-
-	      /* Qw[ind-1] = alfa * Qw[ind-1] + (1.0 - alfa) * Qw[ind]; */
-	      ti = (ind-1)*stride;
-	      tj = ind*stride;
-	      Qw[ti]   = alfa * Qw[ti]   + (1.0 - alfa) * Qw[tj];
-	      Qw[ti+1] = alfa * Qw[ti+1] + (1.0 - alfa) * Qw[tj+1];
-	      Qw[ti+2] = alfa * Qw[ti+2] + (1.0 - alfa) * Qw[tj+2];
-	      if(stride == 4)
 		{
 		  Qw[ti+3] = 1.0;
 		} /* if */
@@ -3060,7 +2940,7 @@ ay_nb_RefineKnotVectCurve3D(int stride, int n, int p, double *U, double *Pw,
     } /* for */
 
  return;
-} /* ay_nb_RefineKnotVectCurve3D */
+} /* ay_nb_RefineKnotVectCurve */
 
 
 /*
@@ -3881,13 +3761,15 @@ cleanup:
 
 
 /*
- * ay_nb_RefineKnotVectSurfU4D: (NURBS++)
- * Refine knot vector U of surface: stride, w, h, p, U[], Pw[]
- * with new knots in X[r], results in new knots in Ubar[wi+p+r] and new
+ * ay_nb_RefineKnotVectSurfU: (NURBS++)
+ * Refine knot vector U of surface: w, h, p, U[], Pw[]
+ * with new knots in X[r];
+ * is_rat should be 0 or 1;
+ * results in new knots in Ubar[wi+p+r] and new
  * control points in Qw[(wi+r)*(he)*stride], both allocated outside
  */
 int
-ay_nb_RefineKnotVectSurfU4D(int stride, int w, int h, int p, double *U,
+ay_nb_RefineKnotVectSurfU(int is_rat, int w, int h, int p, double *U,
 			    double *Pw, double *X, int r,
 			    double *Ubar, double *Qw)
 {
@@ -3895,16 +3777,7 @@ ay_nb_RefineKnotVectSurfU4D(int stride, int w, int h, int p, double *U,
  double alpha;
  int m, n, a, b, i, j, k, l, ind, col;
  int i1, i2;
-
-  /* convert rational coordinates from euclidean to homogeneous style */
-  a = 0;
-  for(i = 0; i < (w+1)*(h+1); i++)
-    {
-      Pw[a]   *= Pw[a+3];
-      Pw[a+1] *= Pw[a+3];
-      Pw[a+2] *= Pw[a+3];
-      a += stride;
-    }
+ int stride = 4;
 
   m = w+p+1;
   n = w;
@@ -3994,8 +3867,10 @@ ay_nb_RefineKnotVectSurfU4D(int stride, int w, int h, int p, double *U,
 	      Qw[i1]   = alpha*Qw[i1]   + (1.0-alpha)*Qw[i2];
 	      Qw[i1+1] = alpha*Qw[i1+1] + (1.0-alpha)*Qw[i2+1];
 	      Qw[i1+2] = alpha*Qw[i1+2] + (1.0-alpha)*Qw[i2+2];
-	      if(stride > 3)
+	      if(is_rat)
 		Qw[i1+3] = alpha*Qw[i1+3] + (1.0-alpha)*Qw[i2+3];
+	      else
+		Qw[i1+3] = 1.0;
 	    } /* for */
 	} /* for */
 
@@ -4003,45 +3878,28 @@ ay_nb_RefineKnotVectSurfU4D(int stride, int w, int h, int p, double *U,
       k--;
     } /* for */
 
-  /* convert rational coordinates from homogeneous to euclidean style */
-  a = 0;
-  for(i = 0; i < (w+r+1)*h; i++)
-    {
-      Qw[a]   /= Qw[a+3];
-      Qw[a+1] /= Qw[a+3];
-      Qw[a+2] /= Qw[a+3];
-      a += stride;
-    }
-
  return ay_status;
-} /* ay_nb_RefineKnotVectSurfU4D */
+} /* ay_nb_RefineKnotVectSurfU */
 
 
 /*
- * ay_nb_RefineKnotVectSurfV4D: (NURBS++)
- * Refine knot vector V of surface: stride, w, h, p, V[], Pw[]
- * with new knots in X[r], results in new knots in Vbar[he+p+r] and new
+ * ay_nb_RefineKnotVectSurfV: (NURBS++)
+ * Refine knot vector V of surface: w, h, p, V[], Pw[]
+ * with new knots in X[r];
+ * is_rat should be 0 or 1;
+ * results in new knots in Vbar[he+p+r] and new
  * control points in Qw[(wi)*(he+r)*stride], both allocated outside
  */
 int
-ay_nb_RefineKnotVectSurfV4D(int stride, int w, int h, int p, double *V,
-			    double *Pw, double *X, int r,
-			    double *Vbar, double *Qw)
+ay_nb_RefineKnotVectSurfV(int is_rat, int w, int h, int p, double *V,
+			  double *Pw, double *X, int r,
+			  double *Vbar, double *Qw)
 {
  int ay_status = AY_OK;
  double alpha;
  int m, n, a, b, i, j, k, l, ind, row;
  int i1, i2, he = h+r+2;
-
-  /* convert rational coordinates from euclidean to homogeneous style */
-  a = 0;
-  for(i = 0; i < (w+1)*(h+1); i++)
-    {
-      Pw[a]   *= Pw[a+3];
-      Pw[a+1] *= Pw[a+3];
-      Pw[a+2] *= Pw[a+3];
-      a += stride;
-    }
+ int stride = 4;
 
   m = h+p+1;
   n = h;
@@ -4133,8 +3991,10 @@ ay_nb_RefineKnotVectSurfV4D(int stride, int w, int h, int p, double *V,
 	      Qw[i1]   = alpha*Qw[i1]   + (1.0-alpha)*Qw[i2];
 	      Qw[i1+1] = alpha*Qw[i1+1] + (1.0-alpha)*Qw[i2+1];
 	      Qw[i1+2] = alpha*Qw[i1+2] + (1.0-alpha)*Qw[i2+2];
-	      if(stride>3)
+	      if(is_rat)
 		Qw[i1+3] = alpha*Qw[i1+3] + (1.0-alpha)*Qw[i2+3];
+	      else
+		Qw[i1+3] = 1.0;
 	    } /* for */
 	} /* for */
 
@@ -4142,18 +4002,8 @@ ay_nb_RefineKnotVectSurfV4D(int stride, int w, int h, int p, double *V,
       k--;
     } /* for */
 
-  /* convert rational coordinates from homogeneous to euclidean style */
-  a = 0;
-  for(i = 0; i < w*(h+r+1); i++)
-    {
-      Qw[a]   /= Qw[a+3];
-      Qw[a+1] /= Qw[a+3];
-      Qw[a+2] /= Qw[a+3];
-      a += stride;
-    }
-
  return ay_status;
-} /* ay_nb_RefineKnotVectSurfV4D */
+} /* ay_nb_RefineKnotVectSurfV */
 
 
 /*
