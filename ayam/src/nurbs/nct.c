@@ -3694,7 +3694,7 @@ ay_nct_crtcircbspcv(int sections, double radius, double arc, int order,
   if((sections < 2) && (fabs(arc) > 180.0))
     return AY_ERROR;
 
-  if((radius < 0.0) || (order < 2))
+  if(order < 2)
     return AY_ERROR;
 
   if(!result)
