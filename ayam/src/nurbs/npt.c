@@ -3277,7 +3277,7 @@ ay_npt_concat(ay_object *o, int type, int order,
 			    {
 			    (void)ay_npt_rescaletrims(o->down, 0,
 						      np->uknotv[0],
-				     np->uknotv[np->width+np->uorder-1], 0, 
+				     np->uknotv[np->width+np->uorder-1], 0,
 		          np->uknotv[np->width+np->uorder-1]-np->uknotv[0]);
 			    }
 
@@ -3666,7 +3666,7 @@ ay_npt_revolve(ay_object *o, double arc, int sections, int order,
 	}
       else
 	{
-	  ay_status = ay_nct_crtcircbspcv(sections, radius, arc, order,
+	  ay_status = ay_nct_crtcircbspcv(sections, fabs(radius), arc, order,
 					  &tcontrolv);
 	} /* if */
 
