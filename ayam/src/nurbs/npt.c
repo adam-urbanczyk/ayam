@@ -7570,6 +7570,7 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo,
  ay_nurbcurve_object *u0 = NULL, *un = NULL, *v0 = NULL, *vn = NULL;
  ay_nurbpatch_object *np;
  ay_object o0 = {0}, o1 = {0}, o2 = {0}, o3 = {0}, *c = NULL;
+ ay_object *list, **next;
 
   if(!o || !result)
     return AY_ENULL;
@@ -7630,6 +7631,8 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo,
   ay_nct_revert(un);
   ay_nct_revert(v0);
 
+  next = &list;
+
   if(ay_nct_isdegen(u0))
     o0.type = AY_IDLAST;
   else
@@ -7637,6 +7640,8 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo,
       ay_object_defaults(&o0);
       o0.refine = u0;
       o0.type = AY_IDNCURVE;
+      *next = &o0;
+      next = &(o0.next);
     }
   if(ay_nct_isdegen(vn))
     o1.type = AY_IDLAST;
@@ -7645,6 +7650,8 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo,
       ay_object_defaults(&o1);
       o1.refine = vn;
       o1.type = AY_IDNCURVE;
+      *next = &o1;
+      next = &(o1.next);
     }
   if(ay_nct_isdegen(un))
     o2.type = AY_IDLAST;
@@ -7653,6 +7660,8 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo,
       ay_object_defaults(&o2);
       o2.refine = un;
       o2.type = AY_IDNCURVE;
+      *next = &o2;
+      next = &(o2.next);
     }
   if(ay_nct_isdegen(v0))
     o3.type = AY_IDLAST;
@@ -7661,20 +7670,20 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo,
       ay_object_defaults(&o3);
       o3.refine = v0;
       o3.type = AY_IDNCURVE;
+      *next = &o3;
     }
 
-  o0.next = &o1;
-  o1.next = &o2;
-  o2.next = &o3;
+  if(!list)
+    {ay_status = AY_ERROR; goto cleanup;}
 
   /* in case the surface has different orders for U/V
      make the curves compatible (this also clamps them) */
-  ay_status = ay_nct_makecompatible(&o0);
+  ay_status = ay_nct_makecompatible(list);
   if(ay_status)
     {ay_status = AY_ERROR; goto cleanup;}
 
   /* concatenate all four extracted curves */
-  ay_status = ay_nct_concatmultiple(AY_FALSE, 1, AY_FALSE, &o0, &c);
+  ay_status = ay_nct_concatmultiple(AY_FALSE, 1, AY_FALSE, list, &c);
   if(ay_status || !c)
     {ay_status = AY_ERROR; goto cleanup;}
 
