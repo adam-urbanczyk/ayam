@@ -209,7 +209,7 @@ proc printHotKeys { filename } {
     puts $id "\\hline"
     puts $id "Insert / Delete Point & \\verb|<[remkpkr $ayviewshortcuts(InsertP)]>| / \\verb|<[remkpkr $ayviewshortcuts(DeleteP)]>|\\\\"
     puts $id "\\hline"
-    puts $id "Snap Points to Grid (2D / 3D)& \\verb|<[remkpkr $ayviewshortcuts(SnapGrid2D)]>| / \\verb|<[remkpkr $ayviewshortcuts(SnapGrid3D)]>|\\\\"
+    puts $id "Snap Points to Grid (2D / 3D / Mark)& \\verb|<[remkpkr $ayviewshortcuts(SnapGrid2D)]>| / \\verb|<[remkpkr $ayviewshortcuts(SnapGrid3D)]>|/ \\verb|<[remkpkr $ayviewshortcuts(SnapMark)]>|\\\\"
     puts $id "\\hline"
     puts $id "\\end\{tabular\}"
 
