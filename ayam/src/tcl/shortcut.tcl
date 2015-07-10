@@ -1046,6 +1046,7 @@ Modelling Actions (View Windows):
  Explode Selected     <$svsc(ExplP)>
  Snap to Grid 2D      <$svsc(SnapGrid2D)>
  Snap to Grid 3D      <$svsc(SnapGrid3D)>
+ Snap to Mark         <$svsc(SnapMark)>
 
  FindU                <$svsc(FindU)>
  FindUV               <$svsc(FindUV)>
