@@ -1124,10 +1124,10 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "remknNC", ay_nct_removekntcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "collMP", ay_nct_collapsetcmd,
+  Tcl_CreateCommand(interp, "collMP", ay_selp_collapsetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "explMP", ay_nct_explodetcmd,
+  Tcl_CreateCommand(interp, "explMP", ay_selp_explodetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Togl_CreateCommand("finduac", ay_nct_finducb);
@@ -1659,10 +1659,10 @@ ay_safeinit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "remknNC", ay_nct_removekntcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "collMP", ay_nct_collapsetcmd,
+  Tcl_CreateCommand(interp, "collMP", ay_selp_collapsetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "explMP", ay_nct_explodetcmd,
+  Tcl_CreateCommand(interp, "explMP", ay_selp_explodetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "splitNC", ay_nct_splittcmd,

@@ -656,18 +656,6 @@ int ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
-/** Tcl command to collapse selected points of selected NURBS
- *  curves/patches to multiple points.
- */
-int ay_nct_collapsetcmd(ClientData clientData, Tcl_Interp *interp,
-			int argc, char *argv[]);
-
-/** Tcl command to explode selected multiple points of selected NURBS
- *  curves/patches to single points.
- */
-int ay_nct_explodetcmd(ClientData clientData, Tcl_Interp *interp,
-		       int argc, char *argv[]);
-
 /** Find point on NURBS curve.
  */
 int ay_nct_findu(struct Togl *togl, ay_object *o,
