@@ -1220,3 +1220,160 @@ ay_selp_normalize(ay_object *o, int digits)
 
  return;
 } /* ay_selp_normalize */
+
+
+/** ay_selp_collapsetcmd:
+ *  Collapse selected points of selected NURBS curves/patches to
+ *  multiple points.
+ *  Implements the \a collMP scripting interface command.
+ *  See also the corresponding section in the \ayd{sccollmp}.
+ *
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_selp_collapsetcmd(ClientData clientData, Tcl_Interp *interp,
+		     int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ ay_list_object *sel = ay_selection;
+ int notify_parent = AY_FALSE;
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, argv[0], NULL);
+      return TCL_OK;
+    }
+
+  while(sel)
+    {
+      switch(sel->object->type)
+	{
+	case AY_IDNCURVE:
+	  {
+	    ay_status = ay_nct_collapseselp(sel->object);
+	    if(ay_status)
+	      {
+		ay_error(ay_status, argv[0], "Collapse operation failed.");
+	      }
+
+	    if(sel->object->selp)
+	      {
+		ay_selp_clear(sel->object);
+	      }
+	    sel->object->modified = AY_TRUE;
+
+	    /* re-create tesselation of curve */
+	    (void)ay_notify_object(sel->object);
+	    notify_parent = AY_TRUE;
+	  }
+	  break;
+	case AY_IDNPATCH:
+	  {
+	    ay_status = ay_npt_collapseselp(sel->object);
+	    if(ay_status)
+	      {
+		ay_error(ay_status, argv[0], "Collapse operation failed.");
+	      }
+
+	    if(sel->object->selp)
+	      {
+		ay_selp_clear(sel->object);
+	      }
+	    sel->object->modified = AY_TRUE;
+	    notify_parent = AY_TRUE;
+	  }
+	  break;
+	default:
+	  {
+	    ay_error(AY_EWARN, argv[0], ay_error_igntype);
+	  }
+	  break;
+	} /* switch */
+
+      sel = sel->next;
+    } /* while */
+
+  if(notify_parent)
+    (void)ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_selp_collapsetcmd */
+
+
+/** ay_selp_explodetcmd:
+ *  Explode selected multiple points of selected NURBS curves/patches to
+ *  single points.
+ *  Implements the \a explMP scripting interface command.
+ *  See also the corresponding section in the \ayd{scexplmp}.
+ *
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_selp_explodetcmd(ClientData clientData, Tcl_Interp *interp,
+		    int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ ay_list_object *sel = ay_selection;
+ int notify_parent = AY_FALSE;
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, argv[0], NULL);
+      return TCL_OK;
+    }
+
+  while(sel)
+    {
+      switch(sel->object->type)
+	{
+	case AY_IDNCURVE:
+	  {
+	    ay_status = ay_nct_explodemp(sel->object);
+	    if(ay_status)
+	      {
+		ay_error(ay_status, argv[0], "Explode operation failed.");
+	      }
+
+ 	    if(sel->object->selp)
+	      {
+		ay_selp_clear(sel->object);
+	      }
+	    sel->object->modified = AY_TRUE;
+	    /* re-create tesselation of curve */
+	    (void)ay_notify_object(sel->object);
+	    notify_parent = AY_TRUE;
+	  }
+	  break;
+	case AY_IDNPATCH:
+	  {
+	    ay_status = ay_npt_explodemp(sel->object);
+	    if(ay_status)
+	      {
+		ay_error(ay_status, argv[0], "Explode operation failed.");
+	      }
+
+ 	    if(sel->object->selp)
+	      {
+		ay_selp_clear(sel->object);
+	      }
+	    sel->object->modified = AY_TRUE;
+	    notify_parent = AY_TRUE;
+	  }
+	  break;
+	default:
+	  {
+	    ay_error(AY_EWARN, argv[0], ay_error_igntype);
+	    return TCL_OK;
+	  }
+	  break;
+	} /* switch */
+
+      sel = sel->next;
+    } /* while */
+
+  if(notify_parent)
+    (void)ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_selp_explodetcmd */
+

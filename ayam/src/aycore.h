@@ -1219,6 +1219,18 @@ void ay_selp_selectmpnc(ay_object *o, int select_all);
  */
 void ay_selp_normalize(ay_object *o, int digits);
 
+/** Tcl command to collapse selected points of selected NURBS
+ *  curves/patches to multiple points.
+ */
+int ay_selp_collapsetcmd(ClientData clientData, Tcl_Interp *interp,
+			 int argc, char *argv[]);
+
+/** Tcl command to explode selected multiple points of selected NURBS
+ *  curves/patches to single points.
+ */
+int ay_selp_explodetcmd(ClientData clientData, Tcl_Interp *interp,
+			int argc, char *argv[]);
+
 
 /* shade.c */
 
