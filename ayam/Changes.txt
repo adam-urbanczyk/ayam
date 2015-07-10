@@ -1,7 +1,15 @@
-[2. Jul 2015] CVS-Head:
-================
+[10. Jul 2015] CVS-Head:
+=======================
 Bug Fixes:
 o DXF export of polymeshes misses transformation attributes (SF 508)
+o OBJ export of Box objects is broken (SF 509)
+o Tcl error when loading the objio plugin (SF 510)
+o extraction of complete boundary curve from rational surface (SF 511)
+
+Modelling:
+o Revolve objects now support parameter curves that touch or cross the
+  y-axis in B-Spline mode
+
 
 
 [23. Jun 2015] Ayam-1.22:
