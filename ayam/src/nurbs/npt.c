@@ -5753,7 +5753,7 @@ ay_npt_skinu(ay_object *curves, int order, int knot_type,
     return AY_ENULL;
 
   i = AY_TRUE;
-  ay_status = ay_nct_iscompatible(curves, &i);
+  ay_status = ay_nct_iscompatible(curves, /*level=*/1, &i);
   if(ay_status)
     {goto cleanup;}
 
@@ -5932,7 +5932,7 @@ ay_npt_skinv(ay_object *curves, int order, int knot_type,
     return AY_ENULL;
 
   i = AY_TRUE;
-  ay_status = ay_nct_iscompatible(curves, &i);
+  ay_status = ay_nct_iscompatible(curves, /*level=*/1, &i);
   if(ay_status)
     {goto cleanup;}
 
