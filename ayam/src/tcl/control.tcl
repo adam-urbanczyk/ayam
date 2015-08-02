@@ -824,7 +824,7 @@ proc selMUD { up } {
 	}
     } else {
 	# listbox
-	set w  $ay(olb)
+	set w $ay(olb)
 	set sel ""
 	set sel [$w curselection]
 	if { $sel ne "" } {
@@ -1127,6 +1127,22 @@ proc matchOb { pattern } {
 # matchOb
 
 
+proc toggleSearchOption { } {
+    global ObjectSearch
+    set w .searchw
+    if { $ObjectSearch(MoreOptions) == 1 } {
+	addColor $w ObjectSearch HighlightColor
+	addCheck $w ObjectSearch ClearHighlight
+	addCheck $w ObjectSearch ClearClipboard
+    } else {
+	catch {destroy $w.flHighlightColor}
+	catch {destroy $w.fHighlightColor}
+	catch {destroy $w.fClearHighlight}
+	catch {destroy $w.fClearClipboard}
+    }
+ return;
+}
+
 # objectsearch_open:
 #  object search facility
 #  finds objects matching user defined expressions
@@ -1245,10 +1261,9 @@ proc objectsearch_open { } {
     addString $w.f1 ObjectSearch Expression $expressions
     addString $w.f1 ObjectSearch Action\
 	{Highlight Collect Copy Delete "\[myProc\]"}
-    addColor $w ObjectSearch HighlightColor
     addMenu $w ObjectSearch Scope {All Selection Level Collection}
-    addCheck $w ObjectSearch ClearHighlight
-    addCheck $w ObjectSearch ClearClipboard
+    addOptionToggle $w ObjectSearch MoreOptions \
+	"Advanced Options" toggleSearchOption
 
     set f [frame $w.fb]
 
@@ -1266,6 +1281,8 @@ proc objectsearch_open { } {
     # ok
 
     button $f.bca -text "Cancel" -width 5 -command "\
+      set ::ObjectSearch(MoreOptions) 0;\
+      toggleSearchOption; update idletasks;\
       grab release $w;\
       restoreFocus $oldFocus;\
       destroy $w"
@@ -1299,4 +1316,5 @@ HighlightColor_G 0
 HighlightColor_B 0
 HighlightColor #b40000
 nodes {}
+MoreOptions 0
 }
