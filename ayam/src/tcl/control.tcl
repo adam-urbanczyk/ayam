@@ -996,7 +996,11 @@ proc searchOb { expression action {gui 0} } {
     set ObjectSearch(numfound) 0
     forAll 1 {
 	global i ay ObjectSearch
-	if { [eval $ObjectSearch(cx)] } {
+	set result [eval $ObjectSearch(cx)]
+	if { $ObjectSearch(InvertMatch) == 1 } {
+	    set result [expr {$result ? 0 : 1}]
+	}
+	if { $result } {
 	    # found an object
 	    incr ObjectSearch(numfound)
 	    # execute action
@@ -1134,11 +1138,13 @@ proc toggleSearchOption { } {
 	addColor $w ObjectSearch HighlightColor
 	addCheck $w ObjectSearch ClearHighlight
 	addCheck $w ObjectSearch ClearClipboard
+	addCheck $w ObjectSearch InvertMatch
     } else {
 	catch {destroy $w.flHighlightColor}
 	catch {destroy $w.fHighlightColor}
 	catch {destroy $w.fClearHighlight}
 	catch {destroy $w.fClearClipboard}
+	catch {destroy $w.fInvertMatch}
     }
  return;
 }
@@ -1311,6 +1317,7 @@ proc objectsearch_open { } {
 array set ObjectSearch {
 Scope All
 ClearHighlight 1
+InvertMatch 0
 HighlightColor_R 180
 HighlightColor_G 0
 HighlightColor_B 0
