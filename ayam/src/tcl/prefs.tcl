@@ -15,7 +15,7 @@
 proc prefs_set {} {
     global env ay ayprefs tcl_precision
     set tcl_precision $ayprefs(TclPrecision)
-    set env(SHADERS) $ayprefs(Shaders)
+    set env(SHADERS) [shader_unglobShaderPaths $ayprefs(Shaders)]
     setPrefs
 
     if { $ayprefs(EnvFile) != "" } {
@@ -168,7 +168,7 @@ proc prefs_open {} {
     addMFileB $fw ayprefse Scripts [ms ayprefse_Scripts]
     addMDirB $fw ayprefse Plugins [ms ayprefse_Plugins]
 
-    set docdefs  {"http://ayam.sourceforge.net/docs/"}
+    set docdefs {"http://ayam.sourceforge.net/docs/"}
     global AYWITHAQUA
     if { $AYWITHAQUA == 1 } {
 	set t [file join [file dirname [info nameofexecutable]] \
@@ -187,7 +187,7 @@ proc prefs_open {} {
     set fw [$nb insert end Modeling -text Modeling\
 	    -raisecmd "prefs_rsnb $nb Modeling"]
     addParamB $fw ayprefse PickEpsilon [ms ayprefse_PickEpsilon]\
-	{0.01 0.05 0.1 0.2}
+	{ 0.01 0.05 0.1 0.2 }
     addParamB $fw ayprefse HandleSize [ms ayprefse_HandleSize] { 4 5 6 8 }
     addCheckB $fw ayprefse LazyNotify [ms ayprefse_LazyNotify]
     addMenuB $fw ayprefse CompleteNotify [ms ayprefse_CompleteNotify]\
@@ -216,7 +216,7 @@ proc prefs_open {} {
     addMenuB $fw ayprefse NCDisplayMode [ms ayprefse_NCDisplayMode] $l
 
     addParamB $fw ayprefse ToleranceA [ms ayprefse_ToleranceA]\
-	    { 5 10 25 50 75 90 }
+	    { -3 -2 -1.5 0 50 75 90 }
     set l "NPDisplayMode"
     foreach m [lrange $ay(npdisplaymodes) 1 end] { lappend l $m }
     addMenuB $fw ayprefse NPDisplayModeA [ms ayprefse_NPDisplayModeA] $l
@@ -280,6 +280,8 @@ proc prefs_open {} {
     addStringB $fw ayprefse SMFileType [ms ayprefse_SMFileType]\
 	    [list "z" "avgz" "volshadow" ]
     addCheckB $fw ayprefse SMChangeShaders [ms ayprefse_SMChangeShaders]
+
+    uie_setLabelWidth $fw 16
 
     global AYENABLEPPREV
     if { $AYENABLEPPREV == 1 } {
@@ -635,7 +637,7 @@ proc prefs_toggleSurfaceWire { } {
 	    set ayprefs(NPDisplayMode) 2
 	    set ayprefse(NCDisplayMode) 2
 	    set ayprefs(NCDisplayMode) 2
-	    ayError 4  $aymainshortcuts(SwNURBSWire)\
+	    ayError 4 $aymainshortcuts(SwNURBSWire)\
 		    "Drawing of Curves/Surfaces turned on."
 	    setPrefs
 	    set ay(draw_nurbs) 1
