@@ -1,4 +1,4 @@
-[10. Jul 2015] CVS-Head:
+[2. Aug 2015] CVS-Head:
 =======================
 Bug Fixes:
 o DXF export of polymeshes misses transformation attributes (SF 508)
@@ -10,6 +10,14 @@ Modelling:
 o Revolve objects now support parameter curves that touch or cross the
   y-axis in B-Spline mode
 
+GUI:
+o moved some search options to a new section "Advanced Options" that
+  will be shown on request/click only
+o added "InvertMatch" search option
+
+Scripts/Scripting Interface:
+o added "-level" option to "isCompNC" command
+o added "isCompNP command to check NURBS surfaces for compatibility
 
 
 [23. Jun 2015] Ayam-1.22:
