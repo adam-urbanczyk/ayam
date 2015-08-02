@@ -48,6 +48,24 @@ proc uie_fixEntry { w } {
 }
 # uie_fixEntry
 
+
+# uie_setLabelWidth:
+#
+#
+proc uie_setLabelWidth { w width } {
+    foreach child [winfo children $w] {
+	foreach subwin [winfo children $child] {
+	    if { [string last ".l" $subwin] ==
+		 [expr [string length $subwin]-2]} {
+		$subwin conf -width $width
+	    }
+	}
+    }
+ return;
+}
+# uie_setLabelWidth
+
+
 #
 #
 #
@@ -459,7 +477,7 @@ proc updateColorFromE { w prop name button } {
 #
 #
 #
-proc addColorB { w prop name help {def {}}} {
+proc addColorB { w prop name help {def {}} } {
 
     addColor $w $prop $name $def
 
@@ -472,7 +490,7 @@ proc addColorB { w prop name help {def {}}} {
 #
 #
 #
-proc addColor { w prop name {def {}}} {
+proc addColor { w prop name {def {}} } {
     global $prop ay ayprefs aymainshortcuts
 
     if { [winfo toplevel $w] == "." } {
@@ -833,7 +851,7 @@ proc addStringB { w prop name help {def {}} } {
 #
 #
 #
-proc addString { w prop name  {def {}}} {
+proc addString { w prop name {def {}} } {
     global $prop ay ayprefs
 
     if { [winfo toplevel $w] == "." } {
@@ -1193,7 +1211,7 @@ proc addMDir { w prop name } {
     catch {bind $f.e <Key-KP_Enter> "$::ay(bok) invoke;break"}
 
     bind $f.e <1> "+balloon_setsplit $f.e \[$f.e get\] 15"
-    eval balloon_setsplit $f.e  \$${prop}(${name}) 15
+    eval balloon_setsplit $f.e \$${prop}(${name}) 15
 
     button $f.b -text "Add" -width 4 -bd $bw -padx 0 -pady 0 -takefocus 0\
      -command "\
@@ -1366,7 +1384,7 @@ proc addCommand { w name text command } {
 #
 #
 #
-proc addText { w name text} {
+proc addText { w name text } {
 
     set f [frame $w.f${name}]
 
@@ -1430,8 +1448,8 @@ proc addInfo { w prop name } {
 }
 # addInfo
 
-#
-#
+# updateProgress:
+# 
 #
 proc updateProgress { w val n1 n2 op } {
     SetProgress $w $val
@@ -1439,7 +1457,7 @@ proc updateProgress { w val n1 n2 op } {
 }
 # updateProgress
 
-#
+# addProgress:
 #
 #
 proc addProgress { w prop name } {
@@ -1469,9 +1487,9 @@ proc addProgress { w prop name } {
 }
 # addProgress
 
-#
-#
-#
+# addVSpace
+#  add vertical space elementto improve property GUI layouts
+#  that do not start with labels
 proc addVSpace { w name h } {
     set f [frame $w.f${name}]
     set l [label $w.f${name}.${name} -height $h -image ay_Empty_img]
@@ -1503,3 +1521,38 @@ proc addPropertyGUI { name {sproc ""} {gproc ""} } {
  return $w;
 }
 # addPropertyGUI
+
+# updateOption:
+# helper for addOptionToggle below;
+# toggles the button image and calls the user specified toggling command
+proc updateOptionToggle { w prop name cmd } {
+    global $prop
+    set b $w.f${name}.b
+    eval "set v \$${prop}($name)"
+    if { $v == 1 } {
+	$b conf -image ay_TriangleR_img
+	set ${prop}($name) 0
+    } else {
+	$b conf -image ay_Triangle_img
+	set ${prop}($name) 1
+    }
+    eval $cmd
+ return;
+}
+# updateOptionToggle
+
+# addOptionToggle:
+#
+#
+proc addOptionToggle { w prop name txt cmd } {
+    global $prop ay ayprefs
+    set f [frame $w.f${name}]
+    set b [button $w.f${name}.b -compound right -text $txt \
+	       -image ay_TriangleR_img -bd 1 \
+	       -command "updateOptionToggle $w $prop $name $cmd"]
+    $b conf -height 8
+    pack $b -in $f -side left -fill x -expand yes
+    pack $f -in $w -side top -fill x
+ return;
+}
+# addOptionToggle
