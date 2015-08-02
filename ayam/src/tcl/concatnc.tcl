@@ -21,7 +21,6 @@ arr   ConcatNCAttrData
 sproc ""
 gproc ""
 w     fConcatNCAttr
-
 }
 
 array set ConcatNCAttrData {

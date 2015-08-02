@@ -16,7 +16,6 @@ global ay Birail2_props Birail2Attr Birail2AttrData
 
 set Birail2_props { Transformations Attributes Material Tags Bevels Caps Birail2Attr }
 
-
 array set Birail2Attr {
 arr   Birail2AttrData
 sproc ""
