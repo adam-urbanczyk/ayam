@@ -801,7 +801,7 @@ int ay_nct_intersectca(ay_object *cu, ay_object *cv, double *intersections);
 
 /** Check a number of curves for compatibility.
  */
-int ay_nct_iscompatible(ay_object *curves, int *result);
+int ay_nct_iscompatible(ay_object *curves, int level, int *result);
 
 /** Make a number of curves compatible.
  */

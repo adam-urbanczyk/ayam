@@ -3017,8 +3017,13 @@ ay_nct_concattcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_nct_concattcmd */
 
 
-/* ay_nct_crtncircle:
+/** ay_nct_crtncircle
+ * Create a full standard 9 point NURBS circle of desired radius.
  *
+ * \param[in] radius desired radius
+ * \param[in,out] curve pointer where to store the new curve object
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_crtncircle(double radius, ay_nurbcurve_object **curve)
@@ -3083,8 +3088,14 @@ ay_nct_crtncircle(double radius, ay_nurbcurve_object **curve)
 } /* ay_nct_crtncircle */
 
 
-/* ay_nct_crtncirclearc:
+/** ay_nct_crtncirclearc
+ * Create a circular arc of desired angle and radius.
  *
+ * \param radius desired radius
+ * \param arc desired angle
+ * \param[in,out] curve pointer where to store the new curve object
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_crtncirclearc(double radius, double arc, ay_nurbcurve_object **curve)
@@ -3122,8 +3133,13 @@ ay_nct_crtncirclearc(double radius, double arc, ay_nurbcurve_object **curve)
 } /* ay_nct_crtncirclearc */
 
 
-/* ay_nct_crtnhcircle:
+/** ay_nct_crtnhcircle:
+ * Create a half NURBS circle of desired radius.
  *
+ * \param[in] radius desired radius
+ * \param[in,out] curve pointer where to store the new curve object
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_crtnhcircle(double radius, ay_nurbcurve_object **curve)
@@ -3516,7 +3532,9 @@ cleanup:
 } /* ay_nct_crtrecttcmd */
 
 
-/* ay_nct_crtcircbspcv:
+/** ay_nct_crtcircbspcv
+ *  Create control points for a circular closed B-Spline curve with
+ *  desired number of control points, radius, arc, and order.
  *
  *  To improve performance for repeated calls with nearly identical
  *  parameters (e.g. by ay_npt_revolve()) this function supports
@@ -3524,6 +3542,14 @@ cleanup:
  *  Since no error check can be performed regarding the size of this memory
  *  region it is highly suggested to simply reuse the region allocated by
  *  a first call of this function.
+ *
+ * \param[in] sections desired number of sections, must be > 0
+ * \param[in] radius desired radius
+ * \param[in] arc desired angle
+ * \param[in] order desired order, must be > 1
+ * \param[in,out] result pointer where to store the new control point array
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_crtcircbspcv(int sections, double radius, double arc, int order,
@@ -3584,7 +3610,17 @@ ay_nct_crtcircbspcv(int sections, double radius, double arc, int order,
 } /* ay_nct_crtcircbspcv */
 
 
-/* ay_nct_crtcircbsp:
+/** ay_nct_crtcircbsp
+ * Create a circular closed B-Spline curve with desired number of
+ * control points, radius, arc, and order.
+ *
+ * \param[in] sections number of sections, must be > 0
+ * \param[in] radius desired radius
+ * \param[in] arc desired angle
+ * \param[in] order desired order, must be > 1
+ * \param[in,out] result pointer where to store the new curve object
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_crtcircbsp(int sections, double radius, double arc, int order,
@@ -4120,7 +4156,9 @@ ay_nct_homtoeuc(ay_nurbcurve_object *nc)
  * NURBS curves.
  *
  * \param[in] o list of objects to concatenate
- * \param[in,out] result where to store the resulting object
+ * \param[in,out] result pointer where to store the resulting object
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 void
 ay_nct_concatobjs(ay_object *o, ay_object **result)
@@ -4142,12 +4180,22 @@ ay_nct_concatobjs(ay_object *o, ay_object **result)
 } /* ay_nct_concatobjs */
 
 
-/* ay_nct_concatmultiple:
- *  concat multiple NURBS curves in curves to a new single
- *  curve, which is returned via result; order and knot type
- *  are taken from the first curve as well as glu_sampling_tolerance
- *  and display_mode settings; the curves are expected to overlap
- *  at their ends
+/** ay_nct_concatmultiple:
+ * Concatenate multiple NURBS curve objects to a single curve.
+ * NURBS curve providing objects are not supported here!
+ * Order, tolerance and display mode are taken from the first curve.
+ *
+ * \param[in] closed determines whether to create a closed curve
+ *  (0 - no, 1 - yes)
+ * \param[in] knot_type if 0, a knot vector of type NURB will be generated,
+ * otherwise a custom knot vector will be created that incorporates all
+ * features of the parameter curves
+ * \param[in] fillgaps determines whether gaps between the parameter curves
+ * should be filled with additional fillet curves
+ * \param[in] curves a list of curve objects
+ * \param[in,out] result pointer where to store the resulting object
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_concatmultiple(int closed, int knot_type, int fillgaps,
@@ -5184,16 +5232,19 @@ ay_nct_intersectca(ay_object *cu, ay_object *cv, double *intersections)
 
 /** ay_nct_iscompatible:
  * Checks the curve objects for compatibility (whether or not they
- * are defined on the same knot vector).
+ * are of the same length, order, and defined on the same knot vector).
  *
  * \param[in] curves a number of NURBS curve objects
+ * \param[in] level determines which level of compatibility to check:
+ *            0 - only check length and order,
+ *            1 - check length, order, and knots
  * \param[in,out] result is set to AY_TRUE if the curves are compatible,
  *  AY_FALSE else
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_nct_iscompatible(ay_object *curves, int *result)
+ay_nct_iscompatible(ay_object *curves, int level, int *result)
 {
  ay_object *o1, *o2;
  ay_nurbcurve_object *curve1 = NULL, *curve2 = NULL;
@@ -5223,11 +5274,14 @@ ay_nct_iscompatible(ay_object *curves, int *result)
 	  return AY_OK;
 	}
 
-      if(memcmp(curve1->knotv, curve2->knotv,
-		(curve1->length+curve1->order)*sizeof(double)))
+      if(level)
 	{
-	  *result = AY_FALSE;
-	  return AY_OK;
+	  if(memcmp(curve1->knotv, curve2->knotv,
+		    (curve1->length+curve1->order)*sizeof(double)))
+	    {
+	      *result = AY_FALSE;
+	      return AY_OK;
+	    }
 	}
 
       o1 = o1->next;
@@ -5932,15 +5986,24 @@ int
 ay_nct_iscomptcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ int ay_status = AY_OK, tcl_status = TCL_OK;
  ay_object *o = NULL, *curves = NULL;
  ay_list_object *sel = NULL;
- int comp = AY_FALSE, i = 0;
+ int comp = AY_FALSE, i = 0, level = 1;
 
   if(!ay_selection)
     {
       ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
+    }
+
+  if(argc > 1)
+    {
+      if((argv[1][0] == '-') && (argv[1][0] == 'l'))
+	{
+	  tcl_status = Tcl_GetInt(interp, argv[2], &level);
+	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	}
     }
 
   sel = ay_selection;
@@ -5971,7 +6034,7 @@ ay_nct_iscomptcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       (curves[i-1]).next = NULL;
 
-      ay_status = ay_nct_iscompatible(curves, &comp);
+      ay_status = ay_nct_iscompatible(curves, level, &comp);
       if(ay_status)
 	{
 	  ay_error(ay_status, argv[0], "Could not check the curves.");
@@ -6061,7 +6124,7 @@ ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!force)
     {
-      ay_status = ay_nct_iscompatible(src, &is_comp);
+      ay_status = ay_nct_iscompatible(src, /*level=*/1, &is_comp);
       if(ay_status)
 	{
 	  ay_error(ay_status, argv[0],
