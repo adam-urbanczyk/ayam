@@ -16,13 +16,11 @@ global ay Cylinder_props CylinderAttr CylinderAttrData
 
 set Cylinder_props { Transformations Attributes Material Tags CylinderAttr }
 
-
 array set CylinderAttr {
 arr   CylinderAttrData
 sproc ""
 gproc ""
 w     fCylinderAttr
-
 }
 
 # create CylinderAttr-UI

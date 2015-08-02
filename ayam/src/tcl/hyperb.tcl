@@ -16,7 +16,6 @@ global ay Hyperboloid_props HyperboloidAttr HyperbAttrData
 
 set Hyperboloid_props { Transformations Attributes Material Tags HyperboloidAttr }
 
-
 array set HyperboloidAttr {
 arr   HyperbAttrData
 sproc ""
