@@ -714,9 +714,6 @@ proc plb_addremprop { {rem 0} } {
 	    global AllProps
 	    getType type
 
-	    if { ! [info exists ::${type}_props] } {
-		eval ${type}_init
-	    }
 	    eval set props \$::${type}_props
 	    foreach prop $props {
 		set AllProps($prop) 1
