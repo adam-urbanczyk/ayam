@@ -354,24 +354,24 @@ ay_error_reportdrange(char *fname, char *pname, double lb, double ub)
 
   if(pname)
     {
-      if((msg = calloc(strlen(pname)+TCL_DOUBLE_SPACE*2+64, sizeof(char))))
+      if((msg = malloc((strlen(pname)+TCL_DOUBLE_SPACE*2+64)*sizeof(char))))
 	sprintf(msg, "Parameter %s out of range, should be [%lg, %lg].",
 		pname, lb, ub);
     }
   else
     {
-      if((msg = calloc(TCL_DOUBLE_SPACE*2+64, sizeof(char))))
+      if((msg = malloc((TCL_DOUBLE_SPACE*2+64)*sizeof(char))))
 	sprintf(msg, "Parameter out of range, should be [%lg, %lg].",
 		lb, ub);
     }
 
   if(msg)
-    ay_error(AY_ERROR, fname, msg);
+    {
+      ay_error(AY_ERROR, fname, msg);
+      free(msg);
+    }
   else
     ay_error(AY_ERANGE, fname, pname);
-
-  if(msg)
-    free(msg);
 
  return AY_ERANGE;
 } /* ay_error_reportdrange */
@@ -387,24 +387,24 @@ ay_error_reportirange(char *fname, char *pname, int lb, int ub)
 
   if(pname)
     {
-      if((msg = calloc(strlen(pname)+TCL_INTEGER_SPACE*2+64, sizeof(char))))
+      if((msg = malloc((strlen(pname)+TCL_INTEGER_SPACE*2+64)*sizeof(char))))
 	sprintf(msg, "Parameter %s out of range, should be [%d, %d].",
 		pname, lb, ub);
     }
   else
     {
-      if((msg = calloc(TCL_INTEGER_SPACE*2+64, sizeof(char))))
+      if((msg = malloc((TCL_INTEGER_SPACE*2+64)*sizeof(char))))
 	sprintf(msg, "Parameter out of range, should be [%d, %d].",
 		lb, ub);
     }
 
   if(msg)
-    ay_error(AY_ERROR, fname, msg);
+    {
+      ay_error(AY_ERROR, fname, msg);
+      free(msg);
+    }
   else
     ay_error(AY_ERANGE, fname, pname);
-
-  if(msg)
-    free(msg);
 
  return AY_ERANGE;
 } /* ay_error_reportirange */
