@@ -328,7 +328,7 @@ proc toolbox_open { {w .tbw} } {
 		break;
 	    }
 	    balloon_set $f.bconv\
-		    "convert object\nShift: convert object in place"
+		    "convert object\nShift: in place"
 
 	    #####
 	    button $f.bnot -image ay_Notify_img -padx 0 -pady 0 -command {
