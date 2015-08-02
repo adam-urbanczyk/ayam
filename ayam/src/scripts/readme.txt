@@ -1,4 +1,4 @@
-[readme.txt - 9. May 2015]
+[readme.txt - 2. Aug 2015]
 
 This directory contains a collection of various scripts for Ayam.
 
@@ -36,7 +36,6 @@ zdialog.tcl - use Gnome dialogs (zenity)
 myicons.tcl - replace icon image with user defined ones
 dtree.tcl - dynamic/fast tree widget (replaces some of BWidgets tree code
   for faster interaction with many objects)
-
 showwin.tcl - show all application windows
 zap.tcl - hide all application windows
 
@@ -55,6 +54,8 @@ apnt.tcl - automatically invoke the point modelling mode after each point
  selection
 rc.tcl - revert cursor key bindings for parallel (modelling) views
 ssp.tcl - save point selection to tags
+cvview.tcl - show control points in a property
+
 
 Misc:
 aytest.tcl - test Ayam
@@ -85,3 +86,5 @@ crtspiralgui.tcl - create spirals with GUI (type: Create)
 polyhedron.js - create polyhedrons from Conway notation
                 (needs jsinterp plugin!) (type: Create)
 tcone.tcl - truncated cone primitive with GUI (type: Create)
+tweenc.tcl - tween incompatible curves of arbitrary type (type: Modify)
+tweencgui.tcl - as above with GUI for the tween parameter (type: Modify)
