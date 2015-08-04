@@ -1545,6 +1545,9 @@ ay_view_dropcb(ay_object *o)
 	  view->roll = camera->roll;
 	  view->zoom = camera->zoom;
 
+	  view->nearp = camera->nearp;
+	  view->farp = camera->farp;
+
 	  ay_toglcb_reshape(view->togl);
 	  ay_toglcb_display(view->togl);
 
