@@ -1043,9 +1043,6 @@ ay_bpatch_init(Tcl_Interp *interp)
 				   ay_bpatch_bbccb,
 				   AY_IDBPATCH);
 
-  Tcl_SetVar(interp, "propertyList", "BPatchAttr", TCL_APPEND_VALUE |
-	     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
   ay_status += ay_convert_register(ay_bpatch_convertcb, AY_IDBPATCH);
 
   ay_status += ay_provide_register(ay_bpatch_providecb, AY_IDBPATCH);
