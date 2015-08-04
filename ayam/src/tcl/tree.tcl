@@ -920,9 +920,9 @@ global aymainshortcuts
 $m add command -label "Rebuild <$aymainshortcuts(Update)>"\
     -command "tree_reset"
 $m add command -label "Expand All <$aymainshortcuts(ExpandAll)>"\
-    -command "tree_expand"
+    -command "tree_expand $tree"
 $m add command -label "Collapse All <$aymainshortcuts(CollapseAll)>"\
-    -command "tree_collapse"
+    -command "tree_collapse $tree"
 $m add command -label "Expand Selected <+>" -command "tree_toggleTree 1"
 $m add command -label "Collapse Selected <->" -command "tree_toggleTree 2"
 $m add command -label "Toggle Selected <space>" -command "tree_toggleTree 0"
