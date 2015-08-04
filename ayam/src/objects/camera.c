@@ -757,6 +757,9 @@ ay_camera_dropcb(ay_object *o)
 	  camera->roll = view->roll;
 	  camera->zoom = view->zoom;
 
+	  camera->nearp = view->nearp;
+	  camera->farp = view->farp;
+
 	  /* now restore original selection */
 	  ay_selection = oldsel;
 
