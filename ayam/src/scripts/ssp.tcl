@@ -31,6 +31,9 @@ proc ssp_save { } {
     forAll {
 	selPnts -get pnts
 	if { $pnts != "" } {
+	    if { [hasTag sp] } {
+		delTags SP
+	    }
 	    addTag SP $pnts
 	}
     }
