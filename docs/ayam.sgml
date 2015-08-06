@@ -33,7 +33,7 @@ code example of 6 lines text (needs another 2 for the upper/lower lines)
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>2. Jun 2015
+<date>29. Jul 2015
 
 <abstract>
 This is the documentation of Ayam 1.22 &ndash; a free 3D modelling environment
@@ -727,7 +727,7 @@ the amount of the movement and rotation.
 <p>
 For more information regarding the console, please refer to the
 appropriate documentation by the original author Jeffrey Hobbs
-(see the console context menu, that you may open with your right
+(see the console context menu, that can be opened with the right
 mouse button).
 
 <sect1>Main Menu<label id="mm">
@@ -924,14 +924,13 @@ level of the scene.<newline>
 This operation cannot be undone!
 
 Note that the content of the clipboard remains intact
-after this operation, this means that you can paste multiple times!
-You can move objects out of the clipboard (clearing it) using the menu entry
+after this operation, this means that it can be used multiple times.
+Objects can be moved out of the clipboard (clearing it) using the menu entry
 <tt>"Special/Clipboard/Paste (Move)"</tt>.
 Also note that referenced objects, when moved into the clipboard with
 <tt/"Cut"/, can not be moved out of it using a simple <tt/"Paste"/, use
 <tt>"Special/Clipboard/Paste (Move)"</tt> instead!
 See also section <ref id="instclip" name="Instances and the Object Clipboard">.
-
 
 <item><tt/"Delete"/, removes the selected object(s) and their children
 from the scene.<newline>
@@ -993,8 +992,8 @@ see also section <ref id="objsearch" name="Object Search">.
 
 <label id="mmcreate">
 The <tt/"Create"/ menu entries let you create objects. In contrast
-to the object creation via the toolbox some menu entries present you
-with small dialogs, where parameters for the object to be created
+to the object creation via the toolbox some menu entries open
+small dialogs, where parameters for the object to be created
 may be adjusted.
 The entry fields in those dialogs support Tcl expressions as detailed
 in section <ref id="scexpdiag" name="Expression Support in Dialog Entries">.
@@ -1088,7 +1087,7 @@ section <ref id="cloneobj" name="Clone Object">
 section <ref id="mirrorobj" name="Mirror Object">
 
 <item><tt/"Material"/, create a new material. A small dialog box will
-pop up, where you have to specify the name of the new material. See
+pop up, where the name of the new material must be specified. See
 also section <ref id="materialobj" name="Material Object">.
 
 <item><tt/"Camera"/, create a new camera. Camera objects may be used
@@ -1676,7 +1675,7 @@ image will be drawn.
 
 <item><tt/"Set BGImage"/, may be used to set the current background
 image of the view, which should be a TIFF file.
-You can also set this image using the view attribute <tt/BGImage/.
+This image may also be specified using the view attribute <tt/BGImage/.
 
 <item><tt/"Draw Grid"/, if this is enabled the grid will be drawn.
 
@@ -1992,8 +1991,9 @@ compare it also to the complete image above.
 <p>
 The toolbox window displays some buttons that start interactive
 modelling actions, modelling tools, or create objects.
-You can open and close it using the main menu entry
-<tt>"Special/Toggle Toolbox"</tt>.
+The toolbox can be opened and closed using the main menu entry
+<tt>"Special/Toggle Toolbox"</tt> unless Ayam is in single window
+GUI mode.
 <p>
 Note that in contrast to the keyboard shortcuts of the
 view windows, the buttons in the toolbox may switch to the modelling
@@ -2067,7 +2067,8 @@ and no objects are selected.
 If the scope is <tt/"Selection"/ just the selected objects and their
 children will be searched. If the scope is <tt/"Level"/ all objects of
 the current level regardless of selection but again including all children
-will be searched.
+will be searched. If the scope is <tt/"Collection"/ just the objects
+found by the previous search are searched.
 Note that the clipboard is never searched.
 
 If the options <tt/"ClearHighlight"/ or <tt/"ClearClipboard"/ are switched
@@ -2860,7 +2861,7 @@ stack trace can also become very handy, while writing and debugging
 Tcl scripts.
 
 <item><tt/"Logging"/ determines, whether error messages should
-be written to the file specified by <tt/"LogFile"/.
+be written to the file specified by the <tt/"LogFile"/ option.
 If this is enabled, you should clear the log manually from time
 to time, as Ayam will always append to <tt/"LogFile"/.
 
@@ -2963,9 +2964,9 @@ mode, the action will be started in the current internal view only
 (unless <tt/"AutoFocus"/ is enabled).
 <p>
 It is perfectly ok to start and work with many different actions at
-the same time in different views: you can have e.g.~a view, where you move
-objects, a second where you rotate objects and a third, where you pick
-objects. The layout, drawing style, and grids may also differ between
+the same time in different views: one can have e.g.~a view, where objects
+are moved, a second where objects are rotated and a third, where objects
+are picked. The layout, drawing style, and grids may also differ between
 the different views. Together with the feature, that the selection may be
 changed while actions are active and even panning and zooming of views
 is possible (using the rightmost and middle mouse buttons respectively) while
@@ -2997,7 +2998,7 @@ and <tt/&lt;Ctrl+y&gt;/ (see section
 Grids are available to restrict the modelling actions to certain
 points and help in exact modelling.
 <p>
-Also note that you may use the middle and rightmost mouse button
+Also note that the middle and rightmost mouse buttons may be used
 to zoom and move the view while modelling actions are active.
 <p>
 For actions that modify the camera of a view please see section
@@ -3266,8 +3267,7 @@ or not can be adjusted (see <tt/"PickTolerance"/ in
 <sect1>Moving Objects or Selected Points
 <p>
 Using the modelling action <tt/"Move"/ (shortcut: <tt/&lt;m&gt;/)
-you may move selected objects or the selected (tagged) points
-of the selected objects.
+selected objects or selected (tagged) points can be moved.
 <p>
 Note that the objects/points will be moved in the XY-plane for
 Front-views, the ZY-plane for Side-views, and the XZ-plane
@@ -3305,8 +3305,7 @@ Move Z|<tt/&lt;mz&gt;/|
 <sect1>Rotating Objects or Selected Points<label id="rotac">
 <p>
 Using the modelling action <tt/"Rotate"/ (shortcut: <tt/&lt;r&gt;/)
-you may rotate objects or the selected (tagged) points
-of the selected objects.
+objects or selected (tagged) points can be rotated.
 <p>
 The axis of rotation is always parallel to the Z-axis in Front-views, the
 Y-axis in Top-views, and the X-axis in Side-views of the local
@@ -3869,7 +3868,7 @@ section <ref id="prefmisc" name="Miscellaneous Preferences">).
 <p>
 The numeric point edit dialog also has a context menu.
 <footnote>Since 1.21</footnote>
-The entries in this menu allow you to:
+The entries in this menu allow to:
 <itemize>
 <item> <tt/"Clear"/ all entries,
 <item> <tt/"Reset"/ all entries to the last fetched values (undo edits), or
@@ -4063,8 +4062,8 @@ Find UV|<tt/&lt;U&gt;/|
 <p>
 The modelling action <tt/"Split Curve"/ (shortcut <tt/&lt;c&gt;/)
 may be applied to NURBS curves (objects of type NCurve) only.
-Using this action you may split a NURBS curve into two new curves
-at a point on the curve that may be specified by picking a point
+Using this action a NURBS curve may be split into two new curves
+at a point on the curve that is specified by picking a point
 on the curve.
 Remember to exactly pick a point on the curve or nearby otherwise
 the calculation of the parametric value for the split will fail.
@@ -4291,7 +4290,7 @@ Material|No|N/A|N/A|No<#if out=latex>@<hline></#if>
 <caption>Scene Organization</caption>
 </table>
 
-<sect2>CSG/Solid Primitives
+<sect2>CSG&thinsp;/&thinsp;Solid Primitives
 <p>
 These objects serve as geometric primitives in CSG hierarchies:
 <p>
@@ -4307,7 +4306,7 @@ Torus|No|Yes|NPatch<f/<sup/+//|No*@<hline>
 Paraboloid|No|Yes|NPatch<f/<sup/+//|No*@<hline>
 Hyperboloid|No|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 </tabular>
-<caption>CSG/Solid Primitives</caption>
+<caption>CSG&thinsp;/&thinsp;Solid Primitives</caption>
 </table>
 
 <sect2>Freeform Curves
@@ -4433,7 +4432,7 @@ The Root object holds rendering options global to the scene like RiOptions,
 atmosphere and imager shaders. Furthermore, all currently open
 view windows are represented as child objects of the Root object.
 <p>
-If you hide the Root object, the little red/green/blue coordinate system
+If the Root object is hidden, the little red/green/blue coordinate system
 will not be drawn in any view.
 <p>
 The Root object also aids in per-scene window geometry management
@@ -4467,10 +4466,10 @@ statement will be written to the RIB, which looks like this:
 
 <tscreen><verb>Display "unnamed.tif" "file" "rgba"</verb></tscreen>
 
-If you disable this option, be sure to add at least one
-RiDisplay tag to the Root object (see also section
-<ref id="ridtag" name="RiDisplay Tag">), otherwise your RIB will
-not contain a RiDisplay statement. This option has no effect on
+If this option is disabled, at least one RiDisplay tag should be
+added to the Root object (see also section
+<ref id="ridtag" name="RiDisplay Tag">), otherwise the exported RIB
+will not contain a RiDisplay statement. This option has no effect on
 RIBs created by the QuickRender and Render actions in view windows.
 
 <item><tt/"Variance"/, maximum allowed variance of two pixel values.
@@ -4789,14 +4788,14 @@ Light|Yes|No|N/A|Yes<#if out=latex>@<hline></#if>
 
 <sect3>LightAttr Property<label id="lip"><label id="lightattrprop">
 <p><#if out=latex>&nbsp;<newline></#if>
+The parameter <tt/"Type"/ determines the type of the light source.<newline>
 Depending on the type of the light source, the light attribute
-property contains different parameters. Parameters that
+property contains different sets of parameters. Parameters that
 are not displayed will not be used on RIB export, consequently.
-<p>
-Using <tt/"Type"/ you can change the type of the light source.
-When you change the type of a light source, the property GUI will
+When the type of a light source is changed, the property GUI will
 be adapted to show only the options available for the new light
-source type, but only after you used the <tt/"Apply"/-button.
+source type. Note that this adaptation happens when the <tt/"Apply"/-button
+is used.
 <p>
 <tt/"IsOn"/ allows you to switch the light off or on. The default
 value is on.
@@ -4818,7 +4817,7 @@ magically enable shadows on renderers that create shadows by
 shadow maps. It will merely be interpreted by raytracing
 renderers like BMRT.
 <p>
-The attribute <tt/"Samples"/ determines the number of times to sample
+The parameter <tt/"Samples"/ determines the number of times to sample
 an area light source, independent of pixel samples, the default value
 is 1. This attribute is available for custom lights only.
 <p>
@@ -4859,8 +4858,8 @@ falls off in the beam of the spot light. Larger values result in narrower
 lit areas.
 </itemize>
 
-In order to ease the parameterisation of spot lights, you may drop the
-light source object onto a view object or into a view window
+In order to ease the parameterisation of spot lights, the light source
+object may be dropped onto a view object or into a view window
 (preferably one with a perspective viewing transformation and with equal
 width and height) to see what objects of the scene are actually lit
 by the light object.
@@ -5641,14 +5640,18 @@ into the Ayam console:
 &raquo;&thinsp;addTag RP Transformations
 </tt></tscreen>
 <p>
-This special case of an instance is sometimes also called reference.
+This special case of an instance is sometimes also called <em/reference/.
 
 <sect3>Instances and the Object Clipboard<label id="instclip">
 <p><#if out=latex>&nbsp;<newline></#if>
-It is not possible to copy a master object and some instances
+This section contains additional information on instances and
+what happens to them when copied and pasted using the object
+clipboard.
+<p>
+All copies of instance objects, that are created by the object clipboard,
+always point to the same original master object.
+Therefore, it is not possible to copy a master object and some instances
 of it, so that the new instances point to the newly created master.
-All copies of instance objects always point to the same original
-master object.
 <p>
 For example, when the following two objects are copied and pasted back to the
 scene
@@ -5671,8 +5674,9 @@ The new instance still points to the original master and <em>not</em>
 to the copy of the master.
 <p>
 It is possible to move masters and instances through the scene hierarchy
-using drag and drop in the tree view or using the clipboard with
-<tt>"Edit/Cut"</tt> and then <tt>"Special/Clipboard/Paste (Move)"</tt>.
+using drag and drop in the tree view or using the object clipboard with
+<tt>"Edit/Cut"</tt> and then <tt>"Special/Clipboard/Paste (Move)"</tt>
+however.
 
 <sect3>Conversion Support
 <p><#if out=latex>&nbsp;<newline></#if>
@@ -5693,10 +5697,15 @@ mechanism.
 This means, every master object in the scene will be written
 in a separate archive (RIB file) on disk, and every instance will
 cause that archive file to be read when rendering the RIB file.
-You can change this behaviour using the RIB export preference setting
+The resulting RIB file is not self contained: multiple files
+need to be transferred to other systems when rendering shall occur
+there.
+<p>
+This behaviour can be changed using the RIB export preference setting
 <tt/"ResInstances"/: If <tt/"ResInstances"/ is enabled, all instances
 will be resolved temporarily to normal objects before being exported
-to RIB. The resulting RIB file will then be self contained.
+to RIB. The resulting RIB file will then be self contained but probably
+also much larger.
 <!--
 add info about file names
 -->
@@ -5846,7 +5855,7 @@ RiProcedural(...);
 </tt></tscreen>
 
 <#if out=latex><x/newpage/</#if>
-<sect1>CSG/Solid Primitives
+<sect1>CSG&thinsp;/&thinsp;Solid Primitives
 <p>
 These objects serve as geometric primitives in CSG hierarchies.
 
@@ -6590,14 +6599,13 @@ in the general case but it might help in some edge cases.
 
 <item><tt/"Derivatives"/ allows to choose between automatic and
 manual derivatives.
-
-
+<p><p>
 If automatic derivatives are switched on, the direction of the derivatives
 will be determined from the first, second, second to last, and last
 data points for open curves and from the second and second to last data
 points for closed curves. In addition, the respective derivative
 vector will be scaled by <tt/"SDLen"/ and <tt/"EDLen"/.
-
+<p>
 If manual derivatives are is switched on, two more
 editable points appear in the single point editing modes. Those
 additional points directly control the derivatives in the
@@ -6839,8 +6847,8 @@ If <tt/"Knot-Type"/ is <tt/"NURBS"/, the shape of the concatenated curve
 will differ from the parameter curves if any of the parameter curves has
 a custom knot vector with non equidistant knots.<newline>
 If <tt/"Knot-Type"/ is <tt/"Custom"/, the shape of the parameter curves
-will be preserved, but the knot vector will then contain internal multiple
-knots.
+will be preserved completely, but the knot vector of the concatenated
+curve will then contain internal multiple knots.
 <p>
 Attributes like display mode and tolerance for the new concatenated curve
 are simply taken from the first parameter curve.
@@ -7150,8 +7158,7 @@ The following parameters control the offsetting process:
 <item>The first parameter <tt/"Mode"/ determines, which algorithm
 to use for the offsetting process.
 
-<item>Using <tt/"Revert"/ you may revert the direction of the
-offset curve.
+<item>Using <tt/"Revert"/ the direction of the offset curve may be reversed.
 
 <item><tt/"Offset"/ determines the distance between original curve and
 offset curve. Negative values are allowed.
@@ -7306,7 +7313,7 @@ trimming.
 <item>Drawing trimmed NURBS patches with certain implementations of
 OpenGL may require a special trim curve (a rectangular piecewise linear
 curve that encloses the whole NURBS patch) to be present. Such a curve
-may be generated with the <tt/TrimRect/ tool. You can find this tool in
+may be generated with the <tt/TrimRect/ tool. This tool can be found in
 the <tt>"Tools/Create"</tt> menu. This curve is needed if you want to cut
 out a hole with a single trim curve. This curve is generally not needed
 if you want to render the patch with BMRT but it should not hurt if it
@@ -7316,7 +7323,7 @@ is present.
 
 <item>Trim curves may not intersect each other or them self.
 </itemize>
-Note that Ayam is not checking whether your trim curves
+Note that Ayam is not checking whether the trim curves
 follow these rules.
 <p>
 Warning: Certain OpenGL implementations may be easily crashed
@@ -8549,9 +8556,9 @@ of curves, the order of the generated surface will be silently
 set to the number of curves.
 If <tt/"Order_U"/ is 0, a default value of 4 will be used.
 <p>
-Using the next parameter <tt/"Knot-Type_U"/, you can adapt the
-type of the knot vector that should be used in the U direction of the
-skinned surface. Note that this setting will have no effect if
+Using the next parameter <tt/"Knot-Type_U"/, the type of the knot vector
+that should be used in the U direction of the skinned surface can be
+adapted. Note that this setting will have no effect if
 interpolation is switched on because then a chord length parameterisation
 will be used. If the knot type is Bezier and the specified
 order (see above) does not exactly match the number of skinned curves,
@@ -8854,7 +8861,8 @@ Bevel|NCurve<f/<sup/+//|Yes|NPatch|No*<#if out=latex>@<hline></#if>
 The following parameters of the Bevel object control
 the creation of the bevelled surface:
 <itemize>
-<item><tt/"BevelType"/ lets you choose between different shapes of bevels:
+<item><tt/"BevelType"/ determines the shape of the bevel by choosing
+from a set of cross section curves:
  <itemize>
  <item><tt/"Round"/ a quarter circle,
 
@@ -9458,7 +9466,8 @@ Text|No|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 <p><#if out=latex>&nbsp;<newline></#if>
 The following attributes control the creation of the text objects.
 <itemize>
-<item>Using <tt/"FontName"/ you specify a TrueType font description file.
+<item>Using <tt/"FontName"/ a TrueType font description file is
+specified.
 Those files usually have the file name extension <tt/".ttf"/.
 Only real TrueType font files, containing Bezier curve font descriptions,
 are supported. There are also rastered, bitmap containing TrueType
@@ -9542,10 +9551,10 @@ object.<footnote>Since 1.16.</footnote>
 The first child of the Trim object is the NURBS patch providing object
 and the second object is the trim curve (defined in the parametric
 space of the NURBS surface). More curves and loops may follow.
-All curves must obey the rules for trimming as outlined in section
+All parameter curves must obey the rules for trimming as outlined in section
 <ref id="trim" name="Trim Curves">.
 The surface may already be trimmed and there may be multiple provided
-patches, however only one of them will be trimmed by the Trim object.
+patches, however, only one of them will be trimmed by the Trim object.
 <p>
 The object hierarchy of a Trim object, thus, looks like this:
 <tscreen><verb>
@@ -9577,9 +9586,10 @@ The following parameters control the trimming process:
 patch providing object deliver a list. This way, a bevel of an
 extrusion might be trimmed.
 <item><tt/"ScaleMode"/ controls how the trim curve is scaled
-to the NURBS patch parameter space. In mode <tt/"Absolute"/
-no scaling happens. In mode <tt/"Relative"/ the trim curves are
-expected to be defined between 0 and 1 (in x <em/and/ y dimension) and
+to the NURBS patch parameter space:<newline>
+In mode <tt/"Absolute"/ no scaling happens.<newline>
+In mode <tt/"Relative"/ the trim curves are expected to be defined
+between 0 and 1 (in x <em/and/ y dimension) and
 will be scaled to the patch appropriately, no matter how the
 parametric space of the patch actually looks like (i.e.~it works
 the same for a patch where the knots range from 0 to 1, 0 to 2,
@@ -9623,8 +9633,8 @@ have been modeled using the polygonal modelling paradigm
 in Ayam scenes.
 <p>
 There are no special modelling actions for this type of object, but
-you may select and modify single points as you can do it with other
-object types, e.g.~curves.
+its control points can be selected and modified as it can be done with
+other object types, e.g.~curves.
 <p>
 The PolyMesh object is equivalent to the general points polygons
 primitive of the RenderMan interface. This means, each PolyMesh
@@ -9644,9 +9654,9 @@ Furthermore, Ayam supports vertex normals (normals stored for every
 control point).
 <p>
 Note that storing a bunch of triangles each in its own PolyMesh
-object will lead to a real waste of memory. You may use the
-merge tool (main menu <tt>"Tools/PolyMesh/Merge"</tt>) to merge
-many PolyMesh objects into a single PolyMesh object.
+object will lead to a real waste of memory. The
+merge tool (main menu <tt>"Tools/PolyMesh/Merge"</tt>) can be used
+to combine many PolyMesh objects into a single PolyMesh object.
 <p>
 The following table briefly lists some capabilities of the PolyMesh object.
 <p>
@@ -9704,8 +9714,8 @@ have been modeled using the subdivision modelling paradigm
 in Ayam scenes (see also the image above).
 <p>
 There are no special modelling actions for this type of object, but
-you may select and modify single points as you can do it with other
-object types, e.g.~curves.
+its control points can be selected and modified as it can be done with
+other object types, e.g.~curves.
 <p>
 The SDMesh object is equivalent to the Subdivision Mesh
 primitive of the RenderMan interface. This means, each SDMesh
@@ -9952,7 +9962,7 @@ Note also, that <tt/"SP"/ must <em/never/ contain <tt/"SP"/. All copies
 of a Script object must share the same set of individual vs.~shared
 parameters. If objects need to store differing/individual
 amounts of parameter data, lists can be used as individual parameters.
-<p>
+<p><p>
 Script objects may also use arbitrary, plugin provided,
 scripting languages.<footnote>Since 1.18.</footnote>
 To switch to a different language, the first line
@@ -11774,6 +11784,10 @@ The original NURBS curves will not be deleted by this tool.
 
 See also the documentation of the corresponding
 scripting interface command <ref id="sctweennc" name="tweenNC">.
+
+To tween NURBS curve providing objects or incompatible NURBS curve objects,
+a Script object must be used, as shown in the distributed example scene
+file <tt/"tweenc.ay"/ and script <tt/"tweenc.tcl"/.
 </descrip>
 
 <#if out=latex><x/newpage/</#if>
