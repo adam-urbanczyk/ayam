@@ -58,7 +58,13 @@ proc ms { name } {
     # Do we have a balloon text in the current locale?
     if { ![info exists ms::$ayprefs(Locale)($name)] } {
 	# no, return english string
-	return [subst "Translation missing!\n\$ms::en($name)"]
+	if { ![info exists ms::$ayprefs(Locale)(Missing)] } {
+	    return [subst "Translation missing!\n\$ms::en($name)"]
+	} else {
+	    set str [subst "\$ms::$ayprefs(Locale)(Missing)"]
+	    append str [subst "\n\$ms::en($name)"]
+	    return $str
+	}
     } else {
 	# yes, return language specific string
 	return [subst "\$ms::$ayprefs(Locale)($name)"]
@@ -250,7 +256,7 @@ ms_set en objio_options_WriteCurves "Write NURBS curves to exported file?"
 #
 # fill "de"-locale
 ms_init de
-
+ms_set de Missing "Übersetzung fehlt!"
 ms_set de ayprefse_Shaders "Eine Liste von Verzeichnissen, in denen sich\
 \nübersetzte Shader befinden."
 ms_set de ayprefse_ScanShaders "Baut interne Shader-Datenbank neu auf."
@@ -468,6 +474,7 @@ ms_set de objio_options_WriteCurves "Sollen NURBS Kurven exportiert werden?"
 #
 # fill "fr"-locale...
 ms_init fr
+ms_set fr Missing "Manquant de traduction!"
 ms_set fr ayprefse_Shaders " Liste de chemins où résident vos shaders\
 compilés."
 ms_set fr ayprefse_ScanShaders "Initialise la reconstruction de la base\
