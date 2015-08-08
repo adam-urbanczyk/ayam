@@ -943,7 +943,7 @@ if { $tcl_platform(platform) == "windows" } {
 	# X11 specific settings:
 	# improve dialog box appearance
 	if { [option get . Ayam Font] == "" } {
-	    option add *Dialog.msg.font {Helvetica 10}
+	    option add *Dialog.msg.font {variable}
 	}
 	option add *Dialog.msg.wrapLength 6i
     }
