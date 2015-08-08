@@ -207,7 +207,7 @@ ay_riattr_init(Tcl_Interp *interp)
 {
 
   /* register RiAttribute tag type */
-  ay_tags_register(interp, ay_riattr_tagname, &ay_riattr_tagtype);
+  ay_tags_register(ay_riattr_tagname, &ay_riattr_tagtype);
 
  return;
 } /* ay_riattr_init */

@@ -1866,12 +1866,12 @@ ay_knots_init(Tcl_Interp *interp)
     return AY_ENULL;
 
   /* register UMM tag type */
-  ay_status = ay_tags_register(interp, ay_umm_tagname, &ay_umm_tagtype);
+  ay_status = ay_tags_register(ay_umm_tagname, &ay_umm_tagtype);
   if(ay_status)
     return ay_status;
 
   /* register VMM tag type */
-  ay_status = ay_tags_register(interp, ay_vmm_tagname, &ay_vmm_tagtype);
+  ay_status = ay_tags_register(ay_vmm_tagname, &ay_vmm_tagtype);
 
  return ay_status;
 } /* ay_knots_init */

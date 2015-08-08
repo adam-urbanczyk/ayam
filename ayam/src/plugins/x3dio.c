@@ -11141,7 +11141,7 @@ X_Init(Tcl_Interp *interp)
     }
 
   /* register MN tag type */
-  ay_status = ay_tags_register(interp, x3dio_mn_tagname, &x3dio_mn_tagtype);
+  ay_status = ay_tags_register(x3dio_mn_tagname, &x3dio_mn_tagtype);
 
   if(ay_status)
     return TCL_ERROR;

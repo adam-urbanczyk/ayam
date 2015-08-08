@@ -602,7 +602,7 @@ ay_tgui_init(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* register TP tag type */
-  ay_tags_register(interp, ay_tp_tagname, &ay_tp_tagtype);
+  ay_tags_register(ay_tp_tagname, &ay_tp_tagtype);
 
  return ay_status;
 } /* ay_tgui_init */

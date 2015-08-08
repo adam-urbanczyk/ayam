@@ -1329,7 +1329,7 @@ void ay_tags_append(ay_object *o, ay_tag *tag);
 
 /** register a tag type
  */
-int ay_tags_register(Tcl_Interp *interp, char *name, char **result);
+int ay_tags_register(char *name, char **result);
 
 /** Tcl command to set the tags property
  */
@@ -1382,6 +1382,10 @@ int ay_tags_remnonm(ay_object *o, ay_object *m);
  */
 int ay_tag_copyselected(ay_object *src, ay_object *dst,
 			char **types, int typeslen);
+
+/** Tcl command to register a new tag type */
+int ay_tags_registertcmd(ClientData clientData, Tcl_Interp *interp,
+			 int argc, char *argv[]);
 
 
 /* tc.c */

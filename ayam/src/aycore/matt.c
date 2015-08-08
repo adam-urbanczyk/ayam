@@ -614,7 +614,7 @@ ay_matt_init(Tcl_Interp *interp)
   Tcl_InitHashTable(&ay_matt_blacklist_ht, TCL_ONE_WORD_KEYS);
 
   /* register Material-ID tag type */
-  ay_tags_register(interp, ay_matt_mitagname, &ay_matt_mitagtype);
+  ay_tags_register(ay_matt_mitagname, &ay_matt_mitagtype);
 
  return;
 } /* ay_matt_init */

@@ -4355,7 +4355,7 @@ Idr_Init(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* register IDR tag type */
-  ay_status = ay_tags_register(interp, idr_idrtagname, &idr_idrtagtype);
+  ay_status = ay_tags_register(idr_idrtagname, &idr_idrtagtype);
   if(ay_status)
     {
       ay_error(AY_ERROR, fname, "Error registering IDR tag type!");
@@ -4363,35 +4363,35 @@ Idr_Init(Tcl_Interp *interp)
     }
 
   /* register internal IDR tag types */
-  ay_status = ay_tags_register(interp, idr_iidrtagname, &idr_iidrtagtype);
+  ay_status = ay_tags_register(idr_iidrtagname, &idr_iidrtagtype);
   if(ay_status)
     {
       ay_error(AY_ERROR, fname, "Error registering IIDR tag type!");
       return TCL_OK;
     }
 
-  ay_status = ay_tags_register(interp, idr_ridrtagname, &idr_ridrtagtype);
+  ay_status = ay_tags_register(idr_ridrtagname, &idr_ridrtagtype);
   if(ay_status)
     {
       ay_error(AY_ERROR, fname, "Error registering RIDR tag type!");
       return TCL_OK;
     }
 
-  ay_status = ay_tags_register(interp, idr_r3idrtagname, &idr_r3idrtagtype);
+  ay_status = ay_tags_register(idr_r3idrtagname, &idr_r3idrtagtype);
   if(ay_status)
     {
       ay_error(AY_ERROR, fname, "Error registering R3IDR tag type!");
       return TCL_OK;
     }
 
-  ay_status = ay_tags_register(interp, idr_cidrtagname, &idr_cidrtagtype);
+  ay_status = ay_tags_register(idr_cidrtagname, &idr_cidrtagtype);
   if(ay_status)
     {
       ay_error(AY_ERROR, fname, "Error registering CIDR tag type!");
       return TCL_OK;
     }
 
-  ay_status = ay_tags_register(interp, idr_ccidrtagname, &idr_ccidrtagtype);
+  ay_status = ay_tags_register(idr_ccidrtagname, &idr_ccidrtagtype);
   if(ay_status)
     {
       ay_error(AY_ERROR, fname, "Error registering CCIDR tag type!");

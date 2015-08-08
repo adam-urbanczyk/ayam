@@ -193,11 +193,11 @@ ay_ns_init(Tcl_Interp *interp)
 {
 
   /* register NS tag types */
-  ay_tags_register(interp, ay_bns_tagname, &ay_bns_tagtype);
-  ay_tags_register(interp, ay_ans_tagname, &ay_ans_tagtype);
+  ay_tags_register(ay_bns_tagname, &ay_bns_tagtype);
+  ay_tags_register(ay_ans_tagname, &ay_ans_tagtype);
 
-  ay_tags_register(interp, ay_dbns_tagname, &ay_dbns_tagtype);
-  ay_tags_register(interp, ay_dans_tagname, &ay_dans_tagtype);
+  ay_tags_register(ay_dbns_tagname, &ay_dbns_tagtype);
+  ay_tags_register(ay_dans_tagname, &ay_dans_tagtype);
 
  return;
 } /* ay_ns_init */

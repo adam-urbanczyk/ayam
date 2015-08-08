@@ -747,7 +747,7 @@ ay_notify_init(Tcl_Interp *interp)
  int ay_status = AY_OK;
 
   /* register NC tag type */
-  ay_status = ay_tags_register(interp, ay_nc_tagname, &ay_nc_tagtype);
+  ay_status = ay_tags_register(ay_nc_tagname, &ay_nc_tagtype);
 
  return ay_status;
 } /* ay_notify_init */
