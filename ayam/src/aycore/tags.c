@@ -212,7 +212,7 @@ ay_tags_append(ay_object *o, ay_tag *tag)
  *  register a new tag type
  */
 int
-ay_tags_register(Tcl_Interp *interp, char *name, char **result)
+ay_tags_register(char *name, char **result)
 {
  int new_item = 0;
  Tcl_HashEntry *entry = NULL;
@@ -729,7 +729,7 @@ ay_tags_hastcmd(ClientData clientData, Tcl_Interp *interp,
   tag = o->tags;
   while(tag)
     {
-      if(!ay_comp_strcase(tag->name, argv[1]))
+      if(!strcmp(tag->name, argv[1]))
 	{
 	  Tcl_SetResult(interp, "1", TCL_VOLATILE);
 	  return TCL_OK;
@@ -1296,3 +1296,27 @@ ay_tag_copyselected(ay_object *src, ay_object *dst,
 
  return ay_status;
 } /* ay_tag_copyselected */
+
+
+/* ay_tags_registertcmd:
+ *  register a new tag type
+ *  Implements the \a registerTag scripting interface command.
+ *  See also the corresponding section in the \ayd{scregistertag}.
+ *
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_tags_registertcmd(ClientData clientData, Tcl_Interp *interp,
+		     int argc, char *argv[])
+{
+ char *dummy;
+
+  if(argc < 2)
+    {
+      ay_error(AY_EARGS, argv[0], "tag-type");
+    }
+
+  (void)ay_tags_register(argv[1], &dummy);
+
+ return TCL_OK;
+} /* ay_tags_registertcmd */
