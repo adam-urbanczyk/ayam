@@ -117,7 +117,7 @@ ay_tc_init(Tcl_Interp *interp)
 {
 
   /* register TC tag type */
-  ay_tags_register(interp, ay_tc_tagname, &ay_tc_tagtype);
+  ay_tags_register(ay_tc_tagname, &ay_tc_tagtype);
 
  return;
 } /* ay_tc_init */

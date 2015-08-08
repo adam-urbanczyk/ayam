@@ -3,7 +3,7 @@
 # Makefile for libsub
 #
 #
-# $Id: Makefile.linux,v 1.1 2011/01/01 16:48:38 randolf Exp $
+# $Id: Makefile.linux,v 1.2 2015/08/08 14:26:44 randolf Exp $
 # $Source: /home/randi/bak/ayam/src/plugins/subdivide/src/Makefile.linux,v $
 #
 ##############################################################################
@@ -64,7 +64,7 @@ DEFS =
 
 #include directories
 #INCS = -I. -I../include -I../template -I../../qvlib/include
-INCS = -I. -I../include -I../template
+INCS = -I. -I../include -I../template -I/usr/include/i386-linux-gnu/bits/
 
 # other C and C++ common options
 

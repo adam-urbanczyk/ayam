@@ -1772,14 +1772,14 @@ Aycsg_Init(Tcl_Interp *interp)
   aycsg_root = NULL;
 
   // register TM tag type
-  ay_status = ay_tags_register(interp, aycsg_tm_tagname, &aycsg_tm_tagtype);
+  ay_status = ay_tags_register(aycsg_tm_tagname, &aycsg_tm_tagtype);
   if(ay_status)
     return TCL_OK;
 
   aycsg_tmtags = NULL;
 
   // register DC tag type
-  ay_status = ay_tags_register(interp, aycsg_dc_tagname, &aycsg_dc_tagtype);
+  ay_status = ay_tags_register(aycsg_dc_tagname, &aycsg_dc_tagtype);
   if(ay_status)
     return TCL_OK;
 

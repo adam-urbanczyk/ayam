@@ -206,7 +206,7 @@ ay_riopt_init(Tcl_Interp *interp)
 {
 
   /* register RiOption tag type */
-  ay_tags_register(interp, ay_riopt_tagname, &ay_riopt_tagtype);
+  ay_tags_register(ay_riopt_tagname, &ay_riopt_tagtype);
 
  return;
 } /* ay_riopt_init */

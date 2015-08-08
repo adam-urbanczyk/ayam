@@ -510,16 +510,16 @@ ay_init(Tcl_Interp *interp)
   ay_tgui_init(interp);
 
   /* register SaveMainGeom tag type */
-  ay_tags_register(interp, ay_savegeom_tagname, &ay_savegeom_tagtype);
+  ay_tags_register(ay_savegeom_tagname, &ay_savegeom_tagtype);
 
   /* register SavePaneLayout tag type */
-  ay_tags_register(interp, ay_savelayout_tagname, &ay_savelayout_tagtype);
+  ay_tags_register(ay_savelayout_tagname, &ay_savelayout_tagtype);
 
   /* register NP (NewProperty) tag type */
-  ay_tags_register(interp, ay_np_tagname, &ay_np_tagtype);
+  ay_tags_register(ay_np_tagname, &ay_np_tagtype);
 
   /* register RP (RemoveProperty) tag type */
-  ay_tags_register(interp, ay_rp_tagname, &ay_rp_tagtype);
+  ay_tags_register(ay_rp_tagname, &ay_rp_tagtype);
 
   /* initialize NURBS knots module */
   ay_knots_init(interp);
@@ -528,31 +528,31 @@ ay_init(Tcl_Interp *interp)
   ay_pmt_init();
 
   /* register BP (Bevel Parameters) tag type */
-  ay_tags_register(interp, ay_bp_tagname, &ay_bp_tagtype);
+  ay_tags_register(ay_bp_tagname, &ay_bp_tagtype);
 
   /* register CP (Cap Parameters) tag type */
-  ay_tags_register(interp, ay_cp_tagname, &ay_cp_tagtype);
+  ay_tags_register(ay_cp_tagname, &ay_cp_tagtype);
 
   /* register HC (Has Child) tag type */
-  ay_tags_register(interp, ay_hc_tagname, &ay_hc_tagtype);
+  ay_tags_register(ay_hc_tagname, &ay_hc_tagtype);
 
   /* register NO (Notify Object) tag type */
-  ay_tags_register(interp, ay_no_tagname, &ay_no_tagtype);
+  ay_tags_register(ay_no_tagname, &ay_no_tagtype);
 
   /* register NM (Notify Master) tag type */
-  ay_tags_register(interp, ay_nm_tagname, &ay_nm_tagtype);
+  ay_tags_register(ay_nm_tagname, &ay_nm_tagtype);
 
   /* register NT (Normals&Tangents) tag type */
-  ay_tags_register(interp, ay_nt_tagname, &ay_nt_tagtype);
+  ay_tags_register(ay_nt_tagname, &ay_nt_tagtype);
 
   /* register AsWire tag type */
-  ay_tags_register(interp, ay_aswire_tagname, &ay_aswire_tagtype);
+  ay_tags_register(ay_aswire_tagname, &ay_aswire_tagtype);
 
   /* register MN tag type */
-  ay_tags_register(interp, ay_mn_tagname, &ay_mn_tagtype);
+  ay_tags_register(ay_mn_tagname, &ay_mn_tagtype);
 
   /* register MP tag type */
-  ay_tags_register(interp, ay_mp_tagname, &ay_mp_tagtype);
+  ay_tags_register(ay_mp_tagname, &ay_mp_tagtype);
 
   /* create root object */
   if((ay_status = ay_object_create(AY_IDROOT, &ay_root)))
@@ -892,6 +892,9 @@ Tcl_AppInit(Tcl_Interp *interp)
 		      (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
   Tcl_CreateCommand(interp, "delTags", ay_tags_deletetcmd,
 		      (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+  Tcl_CreateCommand(interp, "registerTag", ay_tags_registertcmd,
+		      (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
 
   /* tcmd.c */
   Tcl_CreateCommand(interp, "revertC", ay_tcmd_reverttcmd,
@@ -1564,6 +1567,8 @@ ay_safeinit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "hasTag", ay_tags_hastcmd,
 		      (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
   Tcl_CreateCommand(interp, "delTags", ay_tags_deletetcmd,
+		      (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+  Tcl_CreateCommand(interp, "registerTag", ay_tags_registertcmd,
 		      (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* tcmd.c */

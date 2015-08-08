@@ -1044,7 +1044,7 @@ void
 ay_instt_init(Tcl_Interp *interp)
 {
   /* register ObjectID tag type */
-  ay_tags_register(interp, ay_oi_tagname, &ay_oi_tagtype);
+  ay_tags_register(ay_oi_tagname, &ay_oi_tagtype);
 
   /* hash table for id -> master object pointers */
   Tcl_InitHashTable(&ay_instt_oidptr_ht, TCL_STRING_KEYS);
