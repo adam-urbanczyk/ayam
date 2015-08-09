@@ -14,6 +14,14 @@
 
 /* table.c - functions for function/callback tables */
 
+/** ay_table_init:
+ * Initialize a callback table by allocating memory and setting the
+ * size attribute accordingly.
+ * 
+ * \param[in,out] table callback table to initialize
+ * 
+ * \returns AY_OK on success, error code otherwise.
+ */
 int
 ay_table_init(ay_ftable *table)
 {
@@ -24,6 +32,19 @@ ay_table_init(ay_ftable *table)
  return AY_OK;
 } /* ay_table_init */
 
+
+/** ay_table_additem:
+ * Add an item (function pointer) to a callback table.
+ * If the supplied index is larger than the current size of the
+ * table, the table will grow automatically to accomodate for the
+ * new index.
+ *
+ * \param table callback table to manipulate
+ * \param item function pointer to set
+ * \param index designates the slot in the table to manipulate
+ * 
+ * \returns AY_OK on success, error code otherwise.
+ */
 int
 ay_table_additem(ay_ftable *table, ay_voidfp item, unsigned int index)
 {
@@ -33,7 +54,7 @@ ay_table_additem(ay_ftable *table, ay_voidfp item, unsigned int index)
   if(!arr)
     return AY_ERROR;
 
-  if(index > table->size)
+  while(index >= table->size)
     {
       if(!(tmp = realloc(arr, table->size*sizeof(ay_voidfp) +
 			 (64*sizeof(ay_voidfp)))))
