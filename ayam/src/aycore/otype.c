@@ -14,15 +14,31 @@
 
 /* otype.c - object type management */
 
-
-/* ay_otype_register:
- *  register a new object type, filling pointers
- *  to the callbacks into various tables
- *  In:
- *   name: typename
- *   crtcb: create callback
- *  Out:
- *   type_index: type identificator
+/** ay_otype_register:
+ *  Register a new (custom) object type, filling pointers
+ *  to the callback functions into various global callback tables.
+ *
+ *  It is also possible to overwrite the callbacks of a core or
+ *  custom object type by calling this function with an already
+ *  registered type name.
+ *
+ * \param[in] name type name
+ * \param[in] crtcb create callback
+ * \param[in] delcb delete callback
+ * \param[in] copycb copy callback
+ * \param[in] drawcb draw callback
+ * \param[in] drawhcb draw handles callback
+ * \param[in] shadecb shade callback
+ * \param[in] setpropcb set property callback
+ * \param[in] getpropcb get property callback
+ * \param[in] getpntcb get point callback
+ * \param[in] readcb read callback
+ * \param[in] writecb write callback
+ * \param[in] wribcb RIB export callback
+ * \param[in] bbccb bounding box calculation callback
+ * \param[in,out] type_index pointer where to store the type index
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_otype_register(char *name,
@@ -135,30 +151,47 @@ ay_otype_register(char *name,
 } /* ay_otype_register */
 
 
-/* ay_otype_registercore:
- *  register a new core object type, filling pointers
- *  to the callbacks into various tables
- *  In:
- *   name: typename
- *   crtcb: create callback
- *   type_index: type identificator
+/** ay_otype_registercore:
+ *  Register a new core object type, filling pointers
+ *  to the callback functions into various global callback tables.
+ *
+ *  It is not possible to overwrite the callbacks of a core object
+ *  type by calling this function multiple times with the same name.
+ *
+ * \param[in] name type name
+ * \param[in] crtcb create callback
+ * \param[in] delcb delete callback
+ * \param[in] copycb copy callback
+ * \param[in] drawcb draw callback
+ * \param[in] drawhcb draw handles callback
+ * \param[in] shadecb shade callback
+ * \param[in] setpropcb set property callback
+ * \param[in] getpropcb get property callback
+ * \param[in] getpntcb get point callback
+ * \param[in] readcb read callback
+ * \param[in] writecb write callback
+ * \param[in] wribcb RIB export callback
+ * \param[in] bbccb bounding box calculation callback
+ * \param[in] type_index index in callback table
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_otype_registercore(char *name,
-			   ay_createcb  *crtcb,
-			   ay_deletecb  *delcb,
-			   ay_copycb    *copycb,
-			   ay_drawcb    *drawcb,
-			   ay_drawcb    *drawhcb,
-			   ay_drawcb    *shadecb,
-			   ay_propcb    *setpropcb,
-			   ay_propcb    *getpropcb,
-			   ay_getpntcb  *getpntcb,
-			   ay_readcb    *readcb,
-			   ay_writecb   *writecb,
-			   ay_wribcb    *wribcb,
-			   ay_bbccb     *bbccb,
-			   unsigned int type_index)
+		      ay_createcb  *crtcb,
+		      ay_deletecb  *delcb,
+		      ay_copycb    *copycb,
+		      ay_drawcb    *drawcb,
+		      ay_drawcb    *drawhcb,
+		      ay_drawcb    *shadecb,
+		      ay_propcb    *setpropcb,
+		      ay_propcb    *getpropcb,
+		      ay_getpntcb  *getpntcb,
+		      ay_readcb    *readcb,
+		      ay_writecb   *writecb,
+		      ay_wribcb    *wribcb,
+		      ay_bbccb     *bbccb,
+		      unsigned int type_index)
 {
  int ay_status = AY_OK;
  /* char fname[] = "ay_otype_registercore";*/
