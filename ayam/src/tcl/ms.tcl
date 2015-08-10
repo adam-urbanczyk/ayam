@@ -103,6 +103,7 @@ ms_set en ayprefse_TmpDir "A path where temporary files are to be saved."
 ms_set en ayprefse_PickEpsilon "Maximum allowed distance from picked point\
 to editable point."
 ms_set en ayprefse_HandleSize "Size of the handles of editable points."
+ms_set en ayprefse_PickCycle "Cycle through pick candidates by further clicks?"
 ms_set en ayprefse_LazyNotify "Notify parent objects about changes just on\
 mouse up?"
 ms_set en ayprefse_CompleteNotify "When shall a complete notification be\
@@ -313,6 +314,8 @@ ms_set de ayprefse_CreateAtMark "Sollen neue Objekte an der Marke erzeugt\
 werden?"
 ms_set de ayprefse_DefaultAction "Modellier-Aktion, die beim Drücken der\
 \n<Esc>-Taste gestartet werden soll."
+ms_set de ayprefse_PickCycle "Mit weiteren Clicks durch Auswahlkandidaten\
+wechseln?"
 ms_set de ayprefse_UndoLevels "Anzahl zurücknehmbarer Modellierschritte;\
 \n0 schaltet das Undo-System aus."
 
@@ -519,10 +522,11 @@ ms_set fr ayprefse_EditSnaps "Faire correspondre les coordonnées des points\
 #editing modes?"
 #ms_set fr ayprefse_RationalPoints "Display type of rational points."
 #ms_set fr ayprefse_GlobalMark "Maintain a single, global mark, or many local\
-#marks (for each view)?"
+#marks (one for each view)?"
 #ms_set fr ayprefse_CreateAtMark "Create objects at the mark?"
 #ms_set fr ayprefse_DefaultAction "Modelling action invoked, when <Esc> key\
 #is pressed."
+#ms_set fr ayprefse_PickCycle "Cycle through pick candidates by further clicks?"
 ms_set fr ayprefse_UndoLevels "Nombre de pas d'annulation dans l'historique\
 de modélisation;\n-1 correspond à la désactivation de l'historique."
 

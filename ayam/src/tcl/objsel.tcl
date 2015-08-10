@@ -10,13 +10,15 @@
 # objsel.tcl - scripts for object selection on viewport
 
 array set rArray {
-	lb ""
-	yscroll ""
-	xscroll ""
-	selection ""
-	oldLevel ""
-	oldSelection ""
-	result ""
+    lb ""
+    yscroll ""
+    xscroll ""
+    selection ""
+    oldLevel ""
+    oldSelection ""
+    result ""
+    cycleList ""
+    cycleIndex 0
 }
 
 #reconsider:
@@ -29,7 +31,7 @@ array set rArray {
 # the user to reconsider (hence the name) the selected candidate.
 proc reconsider { Selection } {
     global rArray ay ayprefs
-    
+
     set w .reconsider
 
     if { [winfo exists $w] } {
@@ -38,13 +40,13 @@ proc reconsider { Selection } {
     }
 
     winAutoFocusOff
-    
+
     # Save current values
     set rArray(selection) $Selection
     set rArray(oldLevel) $ay(CurrentLevel)
     set rArray(oldSelection) ""
     getSel rArray(oldSelection)
-    
+
     # Create the window
     toplevel $w -class Ayam
     wm title $w "Ambiguous Pick"
@@ -73,13 +75,13 @@ proc reconsider { Selection } {
     # Create a frame where to place the listbox and the scrollbar
     set f [frame $w.f1]
     pack $f -in $w -side top -fill both -expand yes
-    
+
     # Create the listbox
     listbox $f.lo -height 8 -selectmode browse -activestyle none \
 	-exportselection 0 \
 	-yscrollcommand {global rArray; $rArray(yscroll) set} \
 	-xscrollcommand {global rArray; $rArray(xscroll) set}
-    
+
     set entry ""
     set maxlen 0
     foreach i $Selection {
@@ -100,18 +102,18 @@ proc reconsider { Selection } {
 	set len [string length $path]
 	if { $len > $maxlen } { set maxlen $len }
     }
-    
+
     $f.lo configure -width ${maxlen}
     $f.lo delete 0 end
     eval [ subst "$f.lo insert end $entry"]
 
     # Create the vertical scrollbar
     scrollbar $f.sv -command {global rArray; $rArray(lb) yview} -takefocus 0
-    
+
     # Create the horizontal scrollbar
     scrollbar $f.sh -command {global rArray; $rArray(lb) xview} \
     	-takefocus 0 -orient h
-    
+
     # Uses a grid to manage widgets (listbox, horizontal & vertical scrollbars)
     grid $f.lo $f.sv -sticky news
     grid $f.sh -sticky ew
@@ -129,22 +131,22 @@ proc reconsider { Selection } {
     # Button Ok
     button $f.bok -text "Ok" -width 5 -command {
 	global rArray ay
-	
+
 	# Store the selected item into rArray(result)
 	set item [$rArray(lb) curselection]
 	set rArray(result) [lindex $rArray(selection) $item]
-	
+
 	# Restore the current level so that the tree knows that the
 	# level has eventually changed
 	set ay(CurrentLevel) $rArray(oldLevel)
 	focus $ay(currentView)
 	destroy .reconsider
     }
-    
+
     # Button Cancel
     button $f.bca -text "Cancel" -width 5 -command {
 	global rArray ay
-	
+
 	set selection ""
 	set rArray(result) ""
 	# Restore previous state
@@ -160,7 +162,7 @@ proc reconsider { Selection } {
 	append rArray(oldLevel) [lindex $rArray(oldSelection) 0]
 	goLevObjSel $rArray(oldLevel)
 	selOb $rArray(oldSelection)
-	
+
 	if { $ay(lb) == 1 } {
 	    olb_select
 	} else {
@@ -171,17 +173,17 @@ proc reconsider { Selection } {
     }
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x
-    
+
     bind $rArray(lb) <<ListboxSelect>> {
 	# Get the node selected by the user
 	set node [lindex $rArray(selection) [$rArray(lb) curselection]]
 	# Go to the corresponding level
 	goLevObjSel $node
-	
+
 	# Get the selected item
 	set object [split $node :]
 	set item [lindex $object end]
-	
+
 	# Put the item in the selection then update the views
 	selOb
 	selOb $item
@@ -194,11 +196,11 @@ proc reconsider { Selection } {
     set node [lindex $Selection 0]
     # Go to the corresponding level
     goLevObjSel $node
-	
+
     # Get the selected item
     set object [split $node :]
     set item [lindex $object end]
-	
+
     # Put the first item in the selection then update the views
     selOb
     selOb $item
@@ -217,7 +219,7 @@ proc reconsider { Selection } {
     focus $w.f1.lo
 
     winToMouse $w
-    
+
     tkwait window $w
 
     winAutoFocusOn
@@ -237,7 +239,7 @@ proc reconsider { Selection } {
 proc cleanObjSel { Selection } {
     global ay
     set cleanedSelect ""
-    
+
     if { $ay(lb) == 1 } {
 	# For each item picked by the user :
 	foreach i $ay(LastSelection) {
@@ -256,9 +258,9 @@ proc cleanObjSel { Selection } {
 		    lappend cleanedSelect $i
 		}
 	    }
-	} 
+	}
     } else {
-    
+
 	# For each item picked by the user :
 	foreach i $ay(LastSelection) {
 	    # Is the item already stored in the current selection ?
@@ -270,7 +272,7 @@ proc cleanObjSel { Selection } {
 	    }
 	}
     }
-    
+
     set ay(LastSelection) $cleanedSelect
 
  return;
@@ -296,7 +298,7 @@ proc goLevObjSel { node } {
     foreach i [lrange $hierarchy 0 $end] {
         goDown $i
     }
-    
+
     return [lindex $hierarchy end]
 }
 
@@ -321,23 +323,37 @@ proc listBoxObjSel { Selection } {
 #singleObjSel:
 # Replace the current selection by one picked object.
 proc singleObjSel { node } {
-    global ay rArray
-    
+    global ay rArray ayprefs
+
     if { $node != "" } {
 	set ay(LastSelection) [split $node " "]
 	set Selection [lindex $ay(LastSelection) 0]
 
 	# If the user has picked several objects then reconsider...
 	if {[llength $ay(LastSelection)] > 1} {
-	    set rArray(result) ""
-	    reconsider $ay(LastSelection)
-	    if { $rArray(result) != "" } {
-		set Selection $rArray(result)
+	    if { $ayprefs(PickCycle) == 0 } {
+		# ask
+		set rArray(result) ""
+		reconsider $ay(LastSelection)
+		if { $rArray(result) != "" } {
+		    set Selection $rArray(result)
+		} else {
+		    return
+		}
 	    } else {
-		return
+		# cycle
+		if { $rArray(cycleList) == $ay(LastSelection) } {
+		    if { $rArray(cycleIndex) >= [llength $rArray(cycleList)] } {
+			set rArray(cycleIndex) 0
+		    }
+		    set Selection\
+			[lindex $ay(LastSelection) $rArray(cycleIndex)]
+		}
+		set rArray(cycleList) $ay(LastSelection)
+		incr rArray(cycleIndex)
 	    }
 	}
-	
+
 	# Determine whether the listbox is enabled or not
 	if {$ay(lb) == 1} {
 	    set lb $ay(olb)
@@ -364,7 +380,7 @@ proc multipleObjSel { node } {
 	set ay(LastSelection) [split $node " "]
 	# Remove items that do not belong to the current level
 	cleanObjSel ""
-	
+
 	# If the user has picked items that are already selected or that
 	# do not belong to the current level then $ay(Selection) is empty
 	# (it has been emptied by cleanObjSel) else we can process the user's
@@ -375,7 +391,7 @@ proc multipleObjSel { node } {
 	        set lb $ay(olb)
 		# Empty the current selection
 		selOb
-		
+
 		# Unselect all items of the listbox and replace them by
 		# the new selection
 		$lb selection clear 0 end
@@ -389,7 +405,7 @@ proc multipleObjSel { node } {
 		    }
 		    $lb selection set $item
 		}
-		
+
 		# Scroll the listbox so that selected items are visible
 		$lb see $item
 		olb_select
@@ -426,9 +442,9 @@ proc addObjSel { node } {
 	# Remove already selected items and items that do not belong to the
 	# current level
 	cleanObjSel $Selected
-	
+
 	set Selection [lindex $ay(LastSelection) 0]
-	
+
 	# If the user has picked items that are already selected or that
 	# do not belong to the current level then $ay(Selection) is empty
 	# (it has been emptied by cleanObjSel) else we can process the user's
@@ -447,7 +463,7 @@ proc addObjSel { node } {
 		set oldSelection ""
 		# Save the current selection
 		getSel oldSelection
-		
+
 		# Reconsider the ambiguous picking
 		reconsider $ay(LastSelection)
 		if { $rArray(result) != "" } {
@@ -455,12 +471,12 @@ proc addObjSel { node } {
 		} else {
 		    return
 		}
-		
+
 		# Restore the previous selection
 		selOb
 		selOb $oldSelection
 	    }
-	
+
 	    # Determine whether the listbox is enabled or not
 	    if { $ay(lb) == 1 } {
 		set item [lindex [split $Selection :] end]
@@ -500,11 +516,11 @@ proc addMultipleObjSel { node } {
 	} else {
 	    set Selected [$ay(tree) selection get]
 	}
-	
+
 	# Remove already selected items and items that do not belong to the
 	# current level
 	cleanObjSel $Selected
-	
+
 	# If the user has picked items that are already selected or that
 	# do not belong to the current level then $ay(Selection) is empty
 	# (it has been emptied by cleanObjSel) else we can process the user's
