@@ -23,7 +23,9 @@ proc forAll_callcmd { cmd type } {
     }
 
     if { [catch {eval $cmd} err] } {
-	puts stderr "forAll command failed:\n$err"
+	if { $err != -1 } {
+	    puts stderr "forAll command failed:\n$err"
+	}
 	return -1;
     }
 
