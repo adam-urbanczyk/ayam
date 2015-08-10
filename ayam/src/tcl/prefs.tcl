@@ -202,6 +202,7 @@ proc prefs_open {} {
 
     set l $ay(defactions)
     addMenuB $fw ayprefse DefaultAction [ms ayprefse_DefaultAction] $l
+    addCheckB $fw ayprefse PickCycle [ms ayprefse_PickCycle]
     addParamB $fw ayprefse UndoLevels [ms ayprefse_UndoLevels] { 0 1 10 20 }
 
     # Drawing

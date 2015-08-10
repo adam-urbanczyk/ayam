@@ -246,6 +246,7 @@ array set ayprefs {
 
  SimpleToolGUI 0
  SelectLast 1
+ PickCycle 0
 
  Docs "http://ayam.sourceforge.net/docs/"
  DailyTips {
