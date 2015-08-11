@@ -11425,7 +11425,11 @@ of a Revolve object. Whenever the thetamax is changed, the number
 of sections adapt, so that each section always spans the same angle.
 The backslash characters are only necessary when entering the
 script in the add/edit tag dialog. They merely avoid that the dialog
-evaluates the expr command.
+evaluates the <tt/expr/ command. The function call <tt/int()/ is
+needed because the C code for the <tt/setProp/ command of the
+RevolveAttr property only looks for integer data in the variable
+<tt/Sections/ and without <tt/int()/ the variable would contain
+incompatible floating point data.
 <p>
 <bf/Notes/
 <p>
