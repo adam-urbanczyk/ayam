@@ -11416,6 +11416,17 @@ of the object changed (see also section
 A simple BNS tag could look like this:
 <tscreen><verb>BNS puts "notify callback about to fire"</verb></tscreen>
 <p>
+A more useful example (that is also available as example scene
+<tt>"ayam/scn/scripts/bnstag.ay"</tt>):
+<tscreen><verb>BNS getProp;set ::RevolveAttrData(Sections) &hellip;
+&hellip; \[expr int(\$::RevolveAttrData(ThetaMax)/10)\];setProp</verb></tscreen>
+This tag computes the number of sections from the thetamax value
+of a Revolve object. Whenever the thetamax is changed, the number
+of sections adapt, so that each section always spans the same angle.
+The backslash characters are only necessary when entering the
+script in the add/edit tag dialog. They merely avoid that the dialog
+evaluates the expr command.
+<p>
 <bf/Notes/
 <p>
 In Ayam versions prior to 1.16 BNS tag scripts could use any
