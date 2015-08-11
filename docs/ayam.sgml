@@ -2493,6 +2493,15 @@ are to be created at the current mark position
 that will be active after a press of the <tt/&lt;Esc&gt;/ key
 in a view window.
 
+<item><tt/"PickCycle"/ exchanges the object pick candidates dialog with
+a cycling mechanism:<footnote>Since 1.23.</footnote> when multiple
+candidates are available, the first
+click selects the first object in the list and each further click on the
+same position selects the next object in the list of candidates.
+See also section
+<ref id="objsel" name="Selecting Objects by Picking">
+for more information about picking objects.
+
 <item><tt/"UndoLevels"/ determines the number of modelling steps
 that should be saved in the undo buffer.
 If <tt/"UndoLevels"/ is set to 0, the undo system will be disabled
@@ -21203,6 +21212,7 @@ Index:
 <item>Perspective: <ref id="vmtype" name="view menu entry">
 <item>PhiMin, PhiMax: <ref id="top" name="Torus attribute">
 <item>Pick: <ref id="objsel" name="selecting objects by picking">
+<item>PickCycle: <ref id="prefmodel" name="preference setting">
 <item>PickEpsilon: <ref id="prefmodel" name="preference setting">
 <item>PickTolerance: <ref id="hidprefs" name="hidden preference setting">
 <item>Pivot: <ref id="rotaac" name="modelling action">
