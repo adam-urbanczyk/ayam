@@ -2094,8 +2094,9 @@ The matching allows usage of <tt/"*"/ (matches any sequence of characters),
 <tt/"?"/ (matches a single character), and character ranges specified
 like this <tt/"[A-z]"/. To match any of <tt/*?[]/ precede them with a
 backslash.
-<p>
+
 <#if out=latex><x/newpage/</#if>
+<p>
 If the search expression starts with a <tt/"$"/, <tt/"("/, or <tt/"["/ it is
 considered a special expression.
 <p>
