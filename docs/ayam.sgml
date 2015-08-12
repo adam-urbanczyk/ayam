@@ -2040,30 +2040,30 @@ when the main window gets iconified.
 <sect1>Object Search<label id="objsearch">
 <p>
 <figure loc="ht">
-<eps file="pics/objsearch.ps" height="4.5cm">
+<eps file="pics/objsearch.ps" height="3.4cm">
 <img src="pics/objsearch.gif">
 <caption>Object Search Dialog</caption>
 </figure>
 <p>
 The object search facility allows to find objects in the scene hierarchy
 according to many different, even script defined criteria and highlight
-them in the tree view or execute arbitrary actions on them (see also
-the image above).<footnote>Since 1.21.</footnote>
+them in the tree view or execute arbitrary actions on
+them.<footnote>Since 1.21.</footnote>
+Object search is controlled by a dialog, see also
+the image above.
 
-Note, that the search dialog is not closed immediately after a search,
-this allows multiple search actions with possibly refined parameters.
+Note, that the object search dialog is not closed immediately after a
+search operation, this allows multiple search operations with possibly
+refined parameters.
 
 The first two options <tt/"Expression"/ and <tt/"Action"/ let the
 user specify which objects to find and what to do with them, they
 are explained in depth in the respective sections below.
 
-The option <tt/"HighlightColor"/ defines the color to be used by the
-<tt/"Highlight"/ action.
-
 Using the parameter <tt/"Scope"/ the search may be limited to certain
 sets of objects. By default, when scope is <tt/"All"/, all objects in the
 scene are processed, even if the current level is not the root level
-and no objects are selected.
+and no objects are selected.<newline>
 If the scope is <tt/"Selection"/ just the selected objects and their
 children will be searched. If the scope is <tt/"Level"/ all objects of
 the current level regardless of selection but again including all children
@@ -2071,9 +2071,19 @@ will be searched. If the scope is <tt/"Collection"/ just the objects
 found by the previous search are searched.
 Note that the clipboard is never searched.
 
+More options are made available, when the <tt/"Advanced Options"/
+button is pressed.
+
+The option <tt/"HighlightColor"/ defines the color to be used by the
+<tt/"Highlight"/ action.
+
 If the options <tt/"ClearHighlight"/ or <tt/"ClearClipboard"/ are switched
 on, the highlights and the object clipboard are cleared before a search
 starts respectively.
+
+Finally, <tt/"InvertMatch"/ reverts the search logic: if enabled, the
+search finds all objects for whose the search expression delivers a
+negative results.
 
 <sect2>Search Expressions
 <p>
@@ -2085,6 +2095,7 @@ The matching allows usage of <tt/"*"/ (matches any sequence of characters),
 like this <tt/"[A-z]"/. To match any of <tt/*?[]/ precede them with a
 backslash.
 <p>
+<#if out=latex><x/newpage/</#if>
 If the search expression starts with a <tt/"$"/, <tt/"("/, or <tt/"["/ it is
 considered a special expression.
 <p>
@@ -20413,7 +20424,11 @@ Index:
 <item><ref id="exp3dmopt" name="3DM (Rhino) export option">
 </itemize>
 <item>ACurve: <ref id="acurveobj" name="ACurve object">
-<item>Action: <ref id="iac" name="interactive actions">
+<item>Action:
+<itemize>
+<item><ref id="iac" name="interactive actions">
+<item><ref id="objsearch" name="object search option">
+</itemize>
 <item>Active: <ref id="scriptattr" name="Script attribute">
 <item>Adaptive: <ref id="moattr" name="MetaObj attributes">
 <item>AddExtensions: <ref id="prefgui" name="preference setting">
@@ -20538,6 +20553,8 @@ Index:
 <item>clampuNP: <ref id="scclampunp" name="scripting interface command">
 <item>clampvNP: <ref id="scclampvnp" name="scripting interface command">
 <item>Clear: <ref id="mmspecial" name="main menu entry">
+<item>ClearHighlight: <ref id="objsearch" name="object search option">
+<item>ClearClipboard: <ref id="objsearch" name="object search option">
 <item>clearClip: <ref id="scclearclip" name="scripting interface command">
 <item>Clipboard:
 <itemize>
@@ -20876,6 +20893,7 @@ Index:
 </itemize>
 <item>Hide All: <ref id="mmtools" name="main menu entry">
 <item>Hider: <ref id="rihtag" name="RiHider tag type">
+<item>HighlightColor: <ref id="objsearch" name="object search option">
 <item>Hole: <ref id="handb" name="using holes">
 <item>hSL: <ref id="schsl" name="scripting interface command">
 <item>Hyperboloid: <ref id="hyperboloidobj" name="Hyperboloid object">
@@ -20932,6 +20950,7 @@ Index:
 <item>Interpolation: <ref id="attrs" name="RenderMan/BMRT attribute">
 <item>InterpolCtrl: <ref id="birail2p" name="Birail2 attribute">
 <item>Intersection: <ref id="levelobj" name="Level object">
+<item>InvertMatch: <ref id="objsearch" name="object search option">
 <item>Invert Selection: <ref id="mmspecial" name="main menu entry">
 <item>IPatch: <ref id="ipatchobj" name="IPatch object">
 <item>isCompNC: <ref id="sciscompnc" name="scripting interface command">
@@ -21483,6 +21502,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="parseshd" name="shader parsing">
 </itemize>
 <item>Scheme: <ref id="sdmattr" name="SDMesh attribute">
+<item>Scope: <ref id="objsearch" name="object search option">
 <item>Script:
 <itemize>
 <item><ref id="script" name="scripting interface">,
