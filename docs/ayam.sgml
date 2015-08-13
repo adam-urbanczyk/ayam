@@ -2065,10 +2065,12 @@ sets of objects. By default, when scope is <tt/"All"/, all objects in the
 scene are processed, even if the current level is not the root level
 and no objects are selected.<newline>
 If the scope is <tt/"Selection"/ just the selected objects and their
-children will be searched. If the scope is <tt/"Level"/ all objects of
+children will be searched.<newline>
+If the scope is <tt/"Level"/ all objects of
 the current level regardless of selection but again including all children
-will be searched. If the scope is <tt/"Collection"/ just the objects
-found by the previous search are searched.
+will be searched.<newline>
+If the scope is <tt/"Collection"/ just the objects found by the previous
+search are searched.<newline>
 Note that the clipboard is never searched.
 
 More options are made available, when the <tt/"Advanced Options"/
@@ -2150,7 +2152,7 @@ bit more complex expressions that use the negation operator:
 </tscreen>
 
 Also note that all string based comparisons of e.g.~types or names
-via <tt>==</tt> are case sensitive.
+via <tt>"=="</tt> are case sensitive.
 
 The default value menu of the <tt/"Expression"/ entry is pre-seeded with
 meaningful entries when the search dialog is opened.
@@ -2162,7 +2164,6 @@ of the first entries, so that searching for objects of this material is
 just a matter of two mouse clicks.
 If the object is an instance, the first two entries in this menu will
 be <tt/"Master"/ and <tt/"Instances"/.
-
 
 <sect2>Search Actions
 <p>
@@ -2195,21 +2196,22 @@ e.g.<newline>
 can also be specified as action.
 However, as the object search is based on the <tt/"forAll"/ scripting
 interface command, certain restrictions apply:<newline>
-the action must not change the scene hierarchy, i.e.~no objects must be
+<itemize>
+<item>The action must not change the scene hierarchy, i.e.~no objects must be
 deleted, cut, or created in the command&thinsp;/&thinsp;procedure call.
 Changing the objects themselves, even converting them in-place,
-however, is allowed.<newline>
-The script has no access to global variables, unless special measures
-are taken.<newline>
-See section
-<ref id="scifall" name="Applying Commands to a Number of Objects">.
+however, is allowed.
+<item>The script has no access to global variables, unless special measures
+are taken (see section
+<ref id="scifall" name="Applying Commands to a Number of Objects">).
+</itemize>
 
 See also section
 <ref id="sccomm" name="Procedures and Commands"> for a listing of
 available commands.
 
 The special action <tt/"Highlight"/ also collects the found node names
-in the Tcl list <tt>"ObjectSearch(nodes)"</tt>.
+in the global Tcl list <tt>"ObjectSearch(nodes)"</tt>.
 
 <#if out=latex><x/newpage/</#if>
 <sect1>Preferences<label id="prefs">
@@ -2470,6 +2472,10 @@ the single point modelling actions when they would be modified by
 a click and drag action.
 Note that a change of this preference option only takes effect for
 the next invocation of the single point editing modelling action.
+<p><p>
+Also note, that there is a similar, albeit hidden, preference option
+that controls the flashing of picked objects (<tt/"FlashObjects"/), 
+See also section <ref id="hidprefs" name="Hidden Preference Settings">.
 
 <item><tt/"RationalPoints"/ determines the display style of rational points.
 <footnote>Since 1.22.</footnote>
@@ -2913,6 +2919,10 @@ Note that you may lose model precision in doing so. The default value used
 by Tcl is 12 and results in no loss of precision. The default value
 used by Ayam is 6 and should result in a good balance between precision
 and readability.
+<p><p>
+Related hidden preference options are <tt/"NormalizeDigits"/,
+<tt/"NormalizePoints"/, and <tt/"NormalizeTrafos"/, see also
+section <ref id="hidprefs" name="Hidden Preference Settings">.
 
 <item><tt/"SaveDialogGeom"/ controls when the geometry of various dialog
 windows should be remembered by Ayam, <tt/"Never"/: the dialog windows are
@@ -10647,7 +10657,7 @@ How to use the rotation attributes?<label id="gimb">
 The orientation of an object in space may be expressed using
 so called Euler angles. This notation (simply three angles determining
 a rotation about the principal axes of the coordinate system)
-suffers from a phenomenon called gimbal lock.
+suffers from a phenomenon called <em/gimbal lock/.
 <p>
 To avoid gimbal locks, Ayam internally holds the orientation
 of an object in a quaternion.
@@ -18892,7 +18902,8 @@ The following parameters, additionally, control the X3D (Web3D) export:
 <itemize>
 <item><tt>"FileName"</tt>: is the filename of the X3D file;
 <item><tt/"ScaleFactor"/: allows to apply a scaling factor to all
-exported objects;
+exported objects (this will be realized by an extra <tt/Transform/-node
+in the scene hierarchy);
 <item><tt>"WriteSelected"</tt>: exports only the currently selected object(s);
 <item><tt>"ObeyNoExport"</tt>: toggles export of objects with <tt/"NoExport"/
 tags;
@@ -19469,6 +19480,12 @@ by default on all platforms.
 <item><tt/"FixX11Menu"/ enables a workaround for non-sticky menus
 on X11 (displaced menus do not stay open). This option is enabled
 by default and not used on the Win32 and Aqua platforms.
+
+<item><tt/"FlashObjects"/ enables flashing of objects while object
+picking. When enabled, this option needs a considerable amount of resources
+due to constant picking operations while the mouse pointer travels over the
+view window and also leads to a lot of visual noise. Therefore it
+is disabled by default.
 
 <item><tt/"IconGamma"/: this setting may be used to adapt the contrast
 of all icons (in view menu and the toolbox) to your display gamma. If you
@@ -20802,6 +20819,7 @@ Index:
 <item>FixDialogTitles: <ref id="hidprefs" name="hidden preference setting">
 <item>FixImageButtons: <ref id="hidprefs" name="hidden preference setting">
 <item>FixX11Menu: <ref id="hidprefs" name="hidden preference setting">
+<item>FlashObjects: <ref id="hidprefs" name="hidden preference setting">
 <item>FlashPoints: <ref id="prefmodel" name="preference setting">
 <item>Flatness: <ref id="moattr" name="MetaObj attributes">
 <item>FontName: <ref id="textattr" name="Text attribute">
