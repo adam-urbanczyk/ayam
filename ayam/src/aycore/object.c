@@ -354,6 +354,9 @@ ay_object_delete(ay_object *o)
  *  object_candelete(),
  *  otherwise access to freed memory/crashes can occur later (via the
  *  references)!
+ *
+ *  It is safe to call this function with hierarchies that have no
+ *  endlevel-terminator(s).
  */
 int
 ay_object_deletemulti(ay_object *o, int force)
@@ -377,7 +380,7 @@ ay_object_deletemulti(ay_object *o, int force)
     {
       if(force)
 	{
-	  if(d->down && d->down->next)
+	  if(d->down && d->down != ay_endlevel)
 	    {
 	      (void)ay_object_deletemulti(d->down, force);
 	      d->down = NULL;
