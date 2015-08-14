@@ -612,8 +612,15 @@ ay_extrude_notifycb(ay_object *o)
 
 	  ay_status = ay_npt_createnpatchobject(&(ext->npatch));
 
-	  ay_npt_extrude(ext->height, c, (ay_nurbpatch_object **)(void*)
-			 &(ext->npatch->refine));
+	  if(ay_status)
+	    goto cleanup;
+
+	  ay_status = ay_npt_extrude(ext->height, c,
+				     (ay_nurbpatch_object **)(void*)
+				     &(ext->npatch->refine));
+
+	  if(ay_status)
+	    goto cleanup;
 
 	  ((ay_nurbpatch_object *)ext->npatch->refine)->
 	    display_mode = display_mode;
@@ -629,7 +636,12 @@ ay_extrude_notifycb(ay_object *o)
 	      bparams.states[2] = 0;
 	      if(extrusion)
 		bparams.dirs[3] = !bparams.dirs[3];
-	      ay_bevelt_addbevels(&bparams, &cparams, ext->npatch, nextcb);
+	      ay_status = ay_bevelt_addbevels(&bparams, &cparams,
+					      ext->npatch, nextcb);
+
+	      if(ay_status)
+		goto cleanup;
+
 	      endb = *nextcb;
 	      nextcb = &(endb->next);
 	      bparams.states[2] = bstate;
@@ -641,6 +653,7 @@ ay_extrude_notifycb(ay_object *o)
 	  if(ext->has_upper_cap)
 	    {
 	      ay_status = ay_object_copy(c, &trim);
+
 	      if(ay_status)
 		goto cleanup;
 
@@ -683,8 +696,18 @@ ay_extrude_notifycb(ay_object *o)
 
 		  ay_status = ay_npt_createnpatchobject(&cap);
 
-		  ay_npt_createcap(z,curve,&uminx,&umaxx,&uminy,&umaxy,
+		  if(ay_status)
+		    goto cleanup;
+
+		  ay_status = ay_npt_createcap(z, curve,
+					       &uminx, &umaxx, &uminy, &umaxy,
 			       (ay_nurbpatch_object **)(void*)&(cap->refine));
+
+		  if(ay_status)
+		    {
+		      free(cap);
+		      goto cleanup;
+		    }
 
 		  umaxx *= trim->scalx;
 		  uminx *= trim->scalx;
@@ -700,11 +723,11 @@ ay_extrude_notifycb(ay_object *o)
 		  nextcb = &(cap->next);
 		  upper_cap = cap;
 
-		  ay_status = ay_nct_getorientation((ay_nurbcurve_object *)
-						    curve, 4, 1, 0, &angle);
+		  (void)ay_nct_getorientation((ay_nurbcurve_object *)
+					      curve, 4, 1, 0, &angle);
 
 		  if(angle < 0.0)
-		    ay_nct_revert(trim->refine);
+		    (void)ay_nct_revert(trim->refine);
 
 		  trim->scalx /= fabs(umaxx-uminx);
 		  trim->scaly /= fabs(umaxy-uminy);
@@ -738,11 +761,11 @@ ay_extrude_notifycb(ay_object *o)
 		      ay_nct_applytrafo(trim);
 		    } /* if */
 
-		  ay_status = ay_nct_getorientation((ay_nurbcurve_object *)
-					       trim->refine, 4, 1, 0, &angle);
+		  (void)ay_nct_getorientation((ay_nurbcurve_object *)
+					      trim->refine, 4, 1, 0, &angle);
 
 		  if(angle > 0.0)
-		    ay_nct_revert(trim->refine);
+		    (void)ay_nct_revert(trim->refine);
 
 		  if(!has_endb)
 		    {
@@ -768,7 +791,7 @@ ay_extrude_notifycb(ay_object *o)
 		  *nexttrimu = trim;
 		  nexttrimu = &(trim->next);
 		} /* if */
-	    } /* if */
+	    } /* if upper cap */
 
 	  /* create and link lower bevel */
 	  if(bparams.states[2])
@@ -777,7 +800,12 @@ ay_extrude_notifycb(ay_object *o)
 	      bparams.states[3] = 0;
 	      if(extrusion)
 		bparams.dirs[2] = !bparams.dirs[2];
-	      ay_bevelt_addbevels(&bparams, &cparams, ext->npatch, nextcb);
+	      ay_status = ay_bevelt_addbevels(&bparams, &cparams,
+					      ext->npatch, nextcb);
+
+	      if(ay_status)
+		goto cleanup;
+
 	      startb = *nextcb;
 	      nextcb = &(startb->next);
 	      bparams.states[3] = bstate;
@@ -834,8 +862,18 @@ ay_extrude_notifycb(ay_object *o)
 
 		  ay_status = ay_npt_createnpatchobject(&cap);
 
-		  ay_npt_createcap(z,curve,&lminx,&lmaxx,&lminy,&lmaxy,
+		  if(ay_status)
+		    goto cleanup;
+
+		  ay_status = ay_npt_createcap(z, curve,
+					       &lminx, &lmaxx, &lminy, &lmaxy,
 			       (ay_nurbpatch_object **)(void*)&(cap->refine));
+
+		  if(ay_status)
+		    {
+		      free(cap);
+		      goto cleanup;
+		    }
 
 		  lmaxx *= trim->scalx;
 		  lminx *= trim->scalx;
@@ -853,11 +891,11 @@ ay_extrude_notifycb(ay_object *o)
 		  nextcb = &(cap->next);
 		  lower_cap = cap;
 
-		  ay_status = ay_nct_getorientation((ay_nurbcurve_object *)
-						   curve, 4, 1, 0, &angle);
+		  (void)ay_nct_getorientation((ay_nurbcurve_object *)
+					      curve, 4, 1, 0, &angle);
 
 		  if(angle < 0.0)
-		    ay_nct_revert(trim->refine);
+		    (void)ay_nct_revert(trim->refine);
 
 		  trim->scalx /= fabs(lmaxx-lminx);
 		  trim->scaly /= fabs(lmaxy-lminy);
@@ -891,11 +929,11 @@ ay_extrude_notifycb(ay_object *o)
 		      ay_nct_applytrafo(trim);
 		    } /* if */
 
-		  ay_status = ay_nct_getorientation((ay_nurbcurve_object *)
-					       trim->refine, 4, 1, 0, &angle);
+		  (void)ay_nct_getorientation((ay_nurbcurve_object *)
+					      trim->refine, 4, 1, 0, &angle);
 
 		  if(angle > 0.0)
-		    ay_nct_revert(trim->refine);
+		    (void)ay_nct_revert(trim->refine);
 
 		  if(!has_startb)
 		    {
@@ -921,11 +959,12 @@ ay_extrude_notifycb(ay_object *o)
 		  *nexttriml = trim;
 		  nexttriml = &(trim->next);
 		} /* if */
-	    } /* if */
+	    } /* if lower cap */
 
 	  if(is_provided)
 	    {
-	      ay_object_deletemulti(c, AY_FALSE);
+	      (void)ay_object_deletemulti(c, AY_FALSE);
+	      c = NULL;
 	    }
 
 	} /* if c */
@@ -969,6 +1008,11 @@ cleanup:
 	ay_extrude_getpntcb(3, o, NULL, NULL);
       else
 	ay_selp_clear(o);
+    }
+
+  if(is_provided && c)
+    {
+      (void)ay_object_deletemulti(c, AY_FALSE);
     }
 
  return ay_status;
