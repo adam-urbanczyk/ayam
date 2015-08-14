@@ -694,7 +694,7 @@ proc plb_addremprop { {rem 0} } {
 
     if { $rem == 1 } {
 	set lb $ay(plb)
-	if { [$lb size] > 1 } {
+	if { [$lb curselection] != "" } {
 	    set AddRemProp(Property) [$lb get [$lb curselection]]
 	}
     }
