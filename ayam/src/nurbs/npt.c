@@ -2775,6 +2775,9 @@ ay_npt_fillgaps(ay_object *o, int type, int fillet_type,
 	  o = o->next;
 	} /* while */
 
+      if(!last)
+	return ay_status;
+
       fillet = NULL;
       if(!uv)
 	fuv = NULL;
@@ -2808,7 +2811,7 @@ ay_npt_fillgaps(ay_object *o, int type, int fillet_type,
 	    }
 	  else
 	    {
-	      ay_status = ay_npt_setback(o, o->next, ftlen, fuv);
+	      ay_status = ay_npt_setback(last, first, ftlen, fuv);
 	      if(ay_status)
 		return ay_status;
 	    }
