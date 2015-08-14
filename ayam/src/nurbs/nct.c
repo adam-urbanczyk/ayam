@@ -3366,7 +3366,7 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 		    } /* if */
 		} /* if */
 
-	      if(!patch)
+	      if(!patch && sel)
 		{
 		  ay_status = ay_provide_object(sel->object, AY_IDNPATCH,
 						&p);
@@ -4241,6 +4241,9 @@ ay_nct_concatmultiple(int closed, int knot_type, int fillgaps,
 	}
       o = o->next;
     } /* while */
+
+  if(length == 0)
+    return AY_ERROR;
 
   if(closed && !fillgaps)
     {
