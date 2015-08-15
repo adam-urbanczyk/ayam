@@ -4234,10 +4234,16 @@ ay_nct_concatmultiple(int closed, int knot_type, int fillgaps,
     {
       if(o->type == AY_IDNCURVE)
 	{
-	  nc = (ay_nurbcurve_object *)o->refine;
-
+	  nc = (ay_nurbcurve_object *)o->refine;	
 	  length += nc->length;
 	  numcurves++;
+	  /* take order, tolerance, and display_mode from first curve */
+	  if(order == -1)
+	    {
+	      order = nc->order;
+	      glu_sampling_tolerance = nc->glu_sampling_tolerance;
+	      glu_display_mode = nc->display_mode;
+	    }
 	}
       o = o->next;
     } /* while */
@@ -4249,13 +4255,6 @@ ay_nct_concatmultiple(int closed, int knot_type, int fillgaps,
     {
       length++;
     }
-
-  /* take order, tolerance, and display_mode from first curve */
-  o = curves;
-  nc = (ay_nurbcurve_object *)o->refine;
-  order = nc->order;
-  glu_sampling_tolerance = nc->glu_sampling_tolerance;
-  glu_display_mode = nc->display_mode;
 
   /* construct new knot vector */
   if(knot_type == 0)
