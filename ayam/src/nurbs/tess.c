@@ -900,10 +900,10 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
       numtris++;
       tri = tri->next;
     }
-  
+
   if(numtris % 2)
     return AY_ERROR;
-  
+
   /* create new object (the PolyMesh) */
   if(!(new = calloc(1, sizeof(ay_object))))
     {
@@ -1216,14 +1216,22 @@ cleanup:
 } /* ay_tess_tristoquadpomesh */
 #endif
 
-
+/** 
+ * 
+ * 
+ * \param t1 
+ * \param t2 
+ * \param q 
+ * 
+ * \return 
+ */
 int
 ay_tess_tristoquad(double **t1, double **t2,
 		   int *q)
 {
  int i, j, have_point1 = AY_FALSE, have_point2 = AY_FALSE;
  int cp1t1, cp1t2, cp2t1, cp2t2, t;
- double angle = 0.0, eps = 1e999, N1[3] = {0}, N2[3] = {0};
+ double angle = 0.0, eps = DBL_MAX, N1[3] = {0}, N2[3] = {0};
 
   /* find two common points */
   for(i = 0; i < 3; i++)
@@ -1259,7 +1267,7 @@ ay_tess_tristoquad(double **t1, double **t2,
   ay_geom_calcnfrom3(t1[0],t1[1],t1[2],N1);
   ay_geom_calcnfrom3(t2[0],t2[1],t2[2],N2);
   angle = acos(AY_V3DOT(N1,N2));
-  if(1||angle < eps)
+  if(angle < eps)
     {
       /* emit one quad */
       t = 0;
@@ -1278,7 +1286,7 @@ ay_tess_tristoquad(double **t1, double **t2,
       q[0] = q[1]-1;
       if(q[0] < 0)
 	q[0] = 2;
-      
+
       if(cp1t1 > cp2t1)
 	{
 	  t = q[0];
@@ -1514,8 +1522,7 @@ ay_tess_tristomixedpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 	  ay_status = ay_tess_tristoquad(pt1, pt2, q);
 	  if(ay_status)
 	    {
-	      printf("FAIL\n");
-	      /*goto cleanup;*/
+	      /* XXXX goto cleanup; ? */
 	      tri = tri->next;
 	      continue;
 	    }
