@@ -2903,7 +2903,7 @@ ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
  int use_tc = AY_FALSE, use_vc = AY_FALSE, use_vn = AY_FALSE;
  int smethod = ay_prefs.smethod;
  double sparamu = ay_prefs.sparamu, sparamv = ay_prefs.sparamv;
- int refine_trim = 0;
+ int refine_trim = 0, primitives = 0;
 
   if(!o)
     return AY_ENULL;
@@ -2930,8 +2930,8 @@ ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  if(tag->type == ay_tp_tagtype)
 	    {
 	      if(tag->val)
-		sscanf(tag->val,"%d,%lg,%lg,%d", &smethod,
-		       &sparamu, &sparamv, &refine_trim);
+		sscanf(tag->val,"%d,%lg,%lg,%d,%d", &smethod,
+		       &sparamu, &sparamv, &refine_trim, &primitives);
 	    }
 	  tag = tag->next;
 	} /* while */
@@ -2939,7 +2939,7 @@ ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
       /* tesselate */
       ay_status = ay_tess_npatch(o, smethod, sparamu, sparamv,
 				 use_tc, NULL, use_vc, NULL, use_vn, NULL,
-				 refine_trim,
+				 refine_trim, primitives,
 				 result);
 
       if(*result)

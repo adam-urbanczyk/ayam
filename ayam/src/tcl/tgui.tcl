@@ -39,13 +39,14 @@ uplevel #0 { array set tgui_tessparam {
     UseVertNormals 0
 
     RefineTrims 0
+    Primitives 0
 
     LazyUpdate 0
 
     MB1Down 0
     ReadTag 0
     OldSMethod -1
-    NumTriangles 0
+    NumPolys 0
 }
 array set tgui_tessparamdefaults [array get tgui_tessparam]
 }
@@ -205,6 +206,7 @@ proc tgui_update args {
     trace vdelete tgui_tessparam(UseVertColors) w tgui_update
     trace vdelete tgui_tessparam(UseVertNormals) w tgui_update
     trace vdelete tgui_tessparam(RefineTrims) w tgui_update
+    trace vdelete tgui_tessparam(Primitives) w tgui_update
 
     .tguiw.f1.fSParamU.e delete 0 end
     .tguiw.f1.fSParamU.e insert 0 $tgui_tessparam(SParamU)
@@ -288,13 +290,13 @@ proc tgui_update args {
 	tguiCmd up $tgui_tessparam(SMethod) $tgui_tessparam(SParamU)\
 	    $tgui_tessparam(SParamV) $tgui_tessparam(UseTexCoords)\
 	    $tgui_tessparam(UseVertColors) $tgui_tessparam(UseVertNormals)\
-	    $tgui_tessparam(RefineTrims)
+	    $tgui_tessparam(RefineTrims) $tgui_tessparam(Primitives)
     } else {
 	if { $tgui_tessparam(MB1Down) == 0 } {
 	    tguiCmd up $tgui_tessparam(SMethod) $tgui_tessparam(SParamU)\
 		$tgui_tessparam(SParamV) $tgui_tessparam(UseTexCoords)\
 		$tgui_tessparam(UseVertColors) $tgui_tessparam(UseVertNormals)\
-		$tgui_tessparam(RefineTrims)
+		$tgui_tessparam(RefineTrims) $tgui_tessparam(Primitives)
 	}
     }
 
@@ -306,6 +308,7 @@ proc tgui_update args {
     trace variable tgui_tessparam(UseVertColors) w tgui_update
     trace variable tgui_tessparam(UseVertNormals) w tgui_update
     trace variable tgui_tessparam(RefineTrims) w tgui_update
+    trace variable tgui_tessparam(Primitives) w tgui_update
 
  return;
 }
@@ -383,9 +386,9 @@ proc tgui_addtag { } {
 
     undo save AddTPTag
     set tgui_tessparam(tagval) \
-	[format "%d,%g,%g,%d" [expr $tgui_tessparam(SMethod) + 1]\
+	[format "%d,%g,%g,%d,%d" [expr $tgui_tessparam(SMethod) + 1]\
 	     $tgui_tessparam(SParamU) $tgui_tessparam(SParamV)\
-	     $tgui_tessparam(RefineTrims)]
+	     $tgui_tessparam(RefineTrims) $tgui_tessparam(Primitives)]
 
     forAll -recursive 0 {
 	global tgui_tessparam
@@ -445,8 +448,9 @@ proc tgui_readtag { } {
 	    set sparamu 20
 	    set sparamv 20
 	    set rtrims 0
+	    set rprims 0
 
-	    scan $val "%d,%g,%g,%d" smethod sparamu sparamv rtrims
+	    scan $val "%d,%g,%g,%d" smethod sparamu sparamv rtrims rprims
 
 	    set tgui_tessparam(FT${smethod}) 0
 
@@ -460,6 +464,7 @@ proc tgui_readtag { } {
 	    set tgui_tessparam(SParamU) $sparamu
 	    set tgui_tessparam(SParamV) $sparamv
 	    set tgui_tessparam(RefineTrims) $rtrims
+	    set tgui_tessparam(Primitives) $rprims
 
 	    set tgui_tessparam(ReadTag) 1
 	}
@@ -513,6 +518,8 @@ proc tgui_open { } {
     addCheck $f tgui_tessparam UseVertColors
     addCheck $f tgui_tessparam UseVertNormals
     addParam $f tgui_tessparam RefineTrims {0 1 2 3 4 5}
+    addMenu $f tgui_tessparam Primitives\
+	{"Triangles" "TrianglesAndQuads" "Quads"}
 
     # SMethod
     addMenu $f tgui_tessparam SMethod $ay(smethods)
@@ -573,7 +580,7 @@ proc tgui_open { } {
 
     set f $w.f1
     addText $f t2 "Tesselation Results"
-    addInfo $f tgui_tessparam NumTriangles
+    addInfo $f tgui_tessparam NumPolys
 
     # set up undo system
     set ::ay(need_undo_clear) 0
@@ -647,6 +654,7 @@ proc tgui_open { } {
     trace variable tgui_tessparam(UseVertColors) w tgui_update
     trace variable tgui_tessparam(UseVertNormals) w tgui_update
     trace variable tgui_tessparam(RefineTrims) w tgui_update
+    trace variable tgui_tessparam(Primitives) w tgui_update
 
     trace variable tgui_tessparam(SMethod) w tgui_update
 
