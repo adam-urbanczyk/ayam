@@ -1511,7 +1511,7 @@ int ay_tess_npatch(ay_object *o,
 		   int use_tc, char *myst,
 		   int use_vc, char *mycs,
 		   int use_vn, char *myn,
-		   int refine_trims,
+		   int refine_trims, int primitives,
 		   ay_object **pm);
 
 /** Tcl command to tesselate selected NURBS patches
