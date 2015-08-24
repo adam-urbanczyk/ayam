@@ -980,9 +980,8 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
  double *pt1[12] = {0}, *pt2[12] = {0};
  unsigned int numtris = 0, numquads = 0, i, stride;
  int q[4] = {0};
- char buf[256], *tctagbuf = NULL, *vctagbuf = NULL;
+ char *tctagbuf = NULL, *vctagbuf = NULL;
  char *tctagptr = NULL, *vctagptr = NULL;
-
 
   if(!tris || !result || (has_tc && !myst) || (has_vc && !myvc))
     return AY_ENULL;
@@ -1294,8 +1293,6 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 
       tag->next = new->tags;
       new->tags = tag;
-
-      tctagbuf = NULL;
     } /* if has_tc */
 
   if(has_vc)
@@ -1320,11 +1317,10 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
       ay_pv_fixnumelems(vctagbuf, numquads*4);
 
       tag->val = vctagbuf;
+      vctagbuf = NULL;
 
       tag->next = new->tags;
       new->tags = tag;
-
-      vctagbuf = NULL;
     } /* if has_vc */
 
   *result = new;
@@ -1388,11 +1384,9 @@ ay_tess_tristomixedpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
  ay_tess_tri *tri, *tri1, *tri2;
  double *pt1[12] = {0}, *pt2[12] = {0};
  unsigned int numtris = 0, numquads = 0, i, stride;
- unsigned int tctagbuflen = 0;
- unsigned int vctagbuflen = 0;
  int q[4] = {0};
- char buf[256], *tctagbuf = NULL, *vctagbuf = NULL;
- char *tmp = NULL;
+ char *tctagbuf = NULL, *vctagbuf = NULL;
+ char *tctagptr = NULL, *vctagptr = NULL;
 
   if(!tris || !result || (has_tc && !myst) || (has_vc && !myvc))
     return AY_ENULL;
@@ -1502,24 +1496,28 @@ ay_tess_tristomixedpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 
   if(has_tc)
     {
-      if(!(tctagbuf = calloc(strlen(myst)+64, sizeof(char))))
+      if(!(tctagbuf = calloc(strlen(myst)+64+
+			     (numquads*4+numtris*3)*2*(TCL_DOUBLE_SPACE+1),
+			     sizeof(char))))
 	{
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
 	}
-      sprintf(tctagbuf, "%s,varying,g,%d", myst, numtris*3);
-      tctagbuflen = strlen(tctagbuf);
+      sprintf(tctagbuf, "%s,varying,g,%u", myst, numquads*4+numtris*3);
+      tctagptr = tctagbuf+strlen(tctagbuf);
     }
 
   if(has_vc)
     {
-      if(!(vctagbuf = calloc(strlen(myvc)+64, sizeof(char))))
+      if(!(vctagbuf = calloc(strlen(myvc)+64+
+			     (numquads*4+numtris*3)*2*(TCL_DOUBLE_SPACE+1),
+			     sizeof(char))))
 	{
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
 	}
-      sprintf(vctagbuf, "%s,varying,c,%d", myvc, numtris*3);
-      vctagbuflen = strlen(vctagbuf);
+      sprintf(vctagbuf, "%s,varying,c,%u", myvc, numquads*4+numtris*3);
+      vctagptr = vctagbuf+strlen(vctagbuf);
     }
 
   /* process quads */
@@ -1603,42 +1601,24 @@ ay_tess_tristomixedpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 		}
 	      if(has_tc)
 		{
-		  sprintf(buf, ",%g,%g,%g,%g,%g,%g,%g,%g",
-			  *(pt1[q[0]+6]), *(pt1[q[0]+6]+1),
-			  *(pt1[q[1]+6]), *(pt1[q[1]+6]+1),
-			  *(pt1[q[2]+6]), *(pt1[q[2]+6]+1),
-			  *(pt2[q[3]+6]), *(pt2[q[3]+6]+1));
-
-		  if(!(tmp = realloc(tctagbuf,
-				     tctagbuflen+(strlen(buf)+1)*sizeof(char))))
-		    {
-		      ay_status = AY_EOMEM;
-		      goto cleanup;
-		    }
-		  tctagbuf = tmp;
-		  strcpy(&(tctagbuf[tctagbuflen]), buf);
-		  tctagbuflen += strlen(buf);
+		  tctagptr += sprintf(tctagptr,
+				     ",%g,%g,%g,%g,%g,%g,%g,%g",
+				     *(pt1[q[0]+6]), *(pt1[q[0]+6]+1),
+				     *(pt1[q[1]+6]), *(pt1[q[1]+6]+1),
+				     *(pt1[q[2]+6]), *(pt1[q[2]+6]+1),
+				     *(pt2[q[3]+6]), *(pt2[q[3]+6]+1));
 		}
 
 	      if(has_vc)
 		{
-		  sprintf(buf, ",%g,%g,%g,%g,%g,%g,%g,%g,%g,%g,%g,%g",
+		  vctagptr += sprintf(vctagptr,
+				      ",%g,%g,%g,%g,%g,%g,%g,%g,%g,%g,%g,%g",
 			  *(pt1[q[0]+9]), *(pt1[q[0]+9]+1), *(pt1[q[0]+9]+2),
 			  *(pt1[q[1]+9]), *(pt1[q[1]+9]+1), *(pt1[q[1]+9]+2),
 			  *(pt1[q[2]+9]), *(pt1[q[2]+9]+1), *(pt1[q[2]+9]+2),
 			  *(pt2[q[3]+9]), *(pt2[q[3]+9]+1), *(pt2[q[3]+9]+2));
 
-		  if(!(tmp = realloc(vctagbuf,
-				     vctagbuflen+(strlen(buf)+1)*sizeof(char))))
-		    {
-		      ay_status = AY_EOMEM;
-		      goto cleanup;
-		    }
-		  vctagbuf = tmp;
-		  strcpy(&(vctagbuf[vctagbuflen]), buf);
-		  vctagbuflen += strlen(buf);
 		}
-
 	    }
 
 	  i += (4*stride);
@@ -1676,37 +1656,20 @@ ay_tess_tristomixedpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 
 	  if(has_tc)
 	    {
-	      sprintf(buf, ",%g,%g,%g,%g,%g,%g", tri->t1[0], tri->t1[1],
-		      tri->t2[0], tri->t2[1],
-		      tri->t3[0], tri->t3[1]);
-
-	      if(!(tmp = realloc(tctagbuf,
-				 tctagbuflen+(strlen(buf)+1)*sizeof(char))))
-		{
-		  ay_status = AY_EOMEM;
-		  goto cleanup;
-		}
-	      tctagbuf = tmp;
-	      strcpy(&(tctagbuf[tctagbuflen]), buf);
-	      tctagbuflen += strlen(buf);
+	      tctagptr += sprintf(tctagptr,
+				  ",%g,%g,%g,%g,%g,%g",
+				  tri->t1[0], tri->t1[1],
+				  tri->t2[0], tri->t2[1],
+				  tri->t3[0], tri->t3[1]);
 	    }
 
 	  if(has_vc)
 	    {
-	      sprintf(buf, ",%g,%g,%g,%g,%g,%g,%g,%g,%g",
-		      tri->c1[0], tri->c1[1], tri->c1[2],
-		      tri->c2[0], tri->c2[1], tri->c2[2],
-		      tri->c3[0], tri->c3[1], tri->c3[2]);
-
-	      if(!(tmp = realloc(vctagbuf,
-				 vctagbuflen+(strlen(buf)+1)*sizeof(char))))
-		{
-		  ay_status = AY_EOMEM;
-		  goto cleanup;
-		}
-	      vctagbuf = tmp;
-	      strcpy(&(vctagbuf[vctagbuflen]), buf);
-	      vctagbuflen += strlen(buf);
+	      tctagptr += sprintf(tctagptr,
+				  ",%g,%g,%g,%g,%g,%g,%g,%g,%g",
+				  tri->c1[0], tri->c1[1], tri->c1[2],
+				  tri->c2[0], tri->c2[1], tri->c2[2],
+				  tri->c3[0], tri->c3[1], tri->c3[2]);
 	    }
 
 	  i += (3*stride);
@@ -1738,8 +1701,6 @@ ay_tess_tristomixedpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 
       tag->next = new->tags;
       new->tags = tag;
-
-      tctagbuf = NULL;
     } /* if has_tc */
 
   if(has_vc)
@@ -1761,11 +1722,10 @@ ay_tess_tristomixedpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
       strcpy(tag->name, "PV");
 
       tag->val = vctagbuf;
+      vctagbuf = NULL;
 
       tag->next = new->tags;
       new->tags = tag;
-
-      vctagbuf = NULL;
     } /* if has_vc */
 
   *result = new;
@@ -1827,10 +1787,8 @@ ay_tess_tristopomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
  ay_tag *tag = NULL;
  ay_tess_tri *tri;
  unsigned int numtris = 0, i, stride;
- unsigned int tctagbuflen = 0;
- unsigned int vctagbuflen = 0;
- char buf[256], *tctagbuf = NULL, *vctagbuf = NULL;
- char *tmp = NULL;
+ char *tctagbuf = NULL, *vctagbuf = NULL;
+ char *tctagptr = NULL, *vctagptr = NULL;
 
   if(!tris || !result || (has_tc && !myst) || (has_vc && !myvc))
     return AY_ENULL;
@@ -1926,24 +1884,28 @@ ay_tess_tristopomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 
   if(has_tc)
     {
-      if(!(tctagbuf = calloc(strlen(myst)+64, sizeof(char))))
+      if(!(tctagbuf = calloc(strlen(myst) + 64 +
+			     numtris*3*2*(TCL_DOUBLE_SPACE+1),
+			     sizeof(char))))
 	{
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
 	}
-      sprintf(tctagbuf, "%s,varying,g,%d", myst, numtris*3);
-      tctagbuflen = strlen(tctagbuf);
+      sprintf(tctagbuf, "%s,varying,g,%u", myst, numtris*3);
+      tctagptr = tctagbuf+strlen(tctagbuf);
     }
 
   if(has_vc)
     {
-      if(!(vctagbuf = calloc(strlen(myvc)+64, sizeof(char))))
+      if(!(vctagbuf = calloc(strlen(myvc) + 64 +
+			     numtris*3*3*(TCL_DOUBLE_SPACE+1),
+			     sizeof(char))))
 	{
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
 	}
-      sprintf(vctagbuf, "%s,varying,c,%d", myvc, numtris*3);
-      vctagbuflen = strlen(vctagbuf);
+      sprintf(vctagbuf, "%s,varying,c,%u", myvc, numtris*3);
+      vctagptr = vctagbuf+strlen(vctagbuf);
     }
 
   i = 0;
@@ -1968,41 +1930,23 @@ ay_tess_tristopomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 
       if(has_tc)
 	{
-	  sprintf(buf, ",%g,%g,%g,%g,%g,%g", tri->t1[0], tri->t1[1],
-		  tri->t2[0], tri->t2[1],
-		  tri->t3[0], tri->t3[1]);
-
-	  if(!(tmp = realloc(tctagbuf,
-			     tctagbuflen+(strlen(buf)+1)*sizeof(char))))
-	    {
-	      ay_status = AY_EOMEM;
-	      goto cleanup;
-	    }
-	  tctagbuf = tmp;
-	  strcpy(&(tctagbuf[tctagbuflen]), buf);
-	  tctagbuflen += strlen(buf);
+	  tctagptr += sprintf(tctagptr,
+			      ",%g,%g,%g,%g,%g,%g",
+			      tri->t1[0], tri->t1[1],
+			      tri->t2[0], tri->t2[1],
+			      tri->t3[0], tri->t3[1]);
 	}
 
       if(has_vc)
 	{
-	  sprintf(buf, ",%g,%g,%g,%g,%g,%g,%g,%g,%g",
-		  tri->c1[0], tri->c1[1], tri->c1[2],
-		  tri->c2[0], tri->c2[1], tri->c2[2],
-		  tri->c3[0], tri->c3[1], tri->c3[2]);
-
-	  if(!(tmp = realloc(vctagbuf,
-			     vctagbuflen+(strlen(buf)+1)*sizeof(char))))
-	    {
-	      ay_status = AY_EOMEM;
-	      goto cleanup;
-	    }
-	  vctagbuf = tmp;
-	  strcpy(&(vctagbuf[vctagbuflen]), buf);
-	  vctagbuflen += strlen(buf);
+	  vctagptr += sprintf(vctagptr,
+			      ",%g,%g,%g,%g,%g,%g,%g,%g,%g",
+			      tri->c1[0], tri->c1[1], tri->c1[2],
+			      tri->c2[0], tri->c2[1], tri->c2[2],
+			      tri->c3[0], tri->c3[1], tri->c3[2]);
 	}
 
       i += (3*stride);
-
       tri = tri->next;
     } /* while */
 
@@ -2029,8 +1973,6 @@ ay_tess_tristopomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 
       tag->next = new->tags;
       new->tags = tag;
-
-      tctagbuf = NULL;
     } /* if has_tc */
 
   if(has_vc)
@@ -2052,11 +1994,10 @@ ay_tess_tristopomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
       strcpy(tag->name, "PV");
 
       tag->val = vctagbuf;
+      vctagbuf = NULL;
 
       tag->next = new->tags;
       new->tags = tag;
-
-      vctagbuf = NULL;
     } /* if has_vc */
 
   *result = new;
