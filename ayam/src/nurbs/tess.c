@@ -110,6 +110,12 @@ void ay_tess_combinedata(GLdouble c[3], void *d[4], GLfloat w[4], void **out,
 
 void ay_tess_managecombined(void *userData);
 
+int ay_tess_tristoquad(double **t1, double **t2, int *q);
+
+int ay_tess_tristoquadpomesh(ay_tess_tri *tris,
+			      int has_vn, int has_vc, int has_tc,
+			      char *myst, char *myvc, ay_object **result);
+
 int ay_tess_tristomixedpomesh(ay_tess_tri *tris,
 			      int has_vn, int has_vc, int has_tc,
 			      char *myst, char *myvc, ay_object **result);
@@ -849,10 +855,115 @@ ay_tess_managecombined(void *data)
  return;
 } /* ay_tess_managecombined */
 
-#if 0
+
+/** ay_tess_tristoquad:
+ * Compare two triangles, check for two common points, calculate
+ * four indices to form a quad (three indices from triangle 1, one
+ * index from triangle 2).
+ *
+ * \param[in] t1 array of pointers to coordinates, normals etc. of triangle 1
+ * \param[in] t2 array of pointers to coordinates, normals etc. of triangle 2
+ * \param[in,out] q array where the four quad indices are stored
+ *
+ * \return AY_OK on success, error code otherwise.
+ */
+int
+ay_tess_tristoquad(double **t1, double **t2, int *q)
+{
+ int i, j, have_point1 = AY_FALSE, have_point2 = AY_FALSE;
+ int cp1t1, cp1t2, cp2t1, cp2t2, t;
+ double angle = 0.0, eps = DBL_MAX, N1[3] = {0}, N2[3] = {0};
+
+  /* find two common points */
+  for(i = 0; i < 3; i++)
+    {
+      for(j = 0; j < 3; j++)
+	{
+	  if(have_point1)
+	    {
+	      if(AY_V3COMP(t1[i],t2[j]))
+		{
+		  cp2t1 = i;
+		  cp2t2 = j;
+		  have_point2 = AY_TRUE;
+		  break;
+		}
+	    }
+	  else
+	    {
+	      if(AY_V3COMP(t1[i],t2[j]))
+		{
+		  cp1t1 = i;
+		  cp1t2 = j;
+		  have_point1 = AY_TRUE;
+		}
+	    }
+	}
+    }
+
+  if(!(have_point1 && have_point2))
+    return AY_ERROR;
+
+  if(eps != DBL_MAX)
+    {
+      /* employ flatness check */
+      ay_geom_calcnfrom3(t1[0],t1[1],t1[2],N1);
+      ay_geom_calcnfrom3(t2[0],t2[1],t2[2],N2);
+      angle = acos(AY_V3DOT(N1,N2));
+    }
+
+  if(angle < eps)
+    {
+      /* emit one quad */
+      t = 0;
+      if(t == cp1t1 || t == cp2t1)
+	{
+	  t++;
+	  if(t == cp1t1 || t == cp2t1)
+	    {
+	      t++;
+	    }
+	}
+      q[1] = t;
+      q[2] = q[1]+1;
+      if(q[2] > 2)
+	q[2] = 0;
+      q[0] = q[1]-1;
+      if(q[0] < 0)
+	q[0] = 2;
+
+      if(cp1t1 > cp2t1)
+	{
+	  t = q[0];
+	  q[0] = q[2];
+	  q[2] = t;
+	}
+
+      t = 0;
+      if(t == cp1t2 || t == cp2t2)
+	{
+	  t++;
+	  if(t == cp1t2 || t == cp2t2)
+	    {
+	      t++;
+	    }
+	}
+      q[3] = t;
+
+    }
+  else
+    {
+      /* split along edge into two quads */
+      q[0] = -1;
+    }
+
+ return AY_OK;
+} /* ay_tess_tristoquad */
+
 
 /* ay_tess_tristoquadpomesh:
  *  convert a bunch of tesselated triangles to a PolyMesh object
+ *  containing only quads (albeit some of them may be degenerate)
  *  according to <has_vc> and <has_tc> PV tags will be created that
  *  carry the vertex colors and texture coordinates respectively
  */
@@ -901,9 +1012,6 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
       tri = tri->next;
     }
 
-  if(numtris % 2)
-    return AY_ERROR;
-
   /* create new object (the PolyMesh) */
   if(!(new = calloc(1, sizeof(ay_object))))
     {
@@ -920,47 +1028,7 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
     }
   po = (ay_pomesh_object*)new->refine;
 
-  numquads = numtris/2;
-  po->npolys = numquads;
-
-  /* XXXX what happens, when numtris/numcontrolv gets too big for
-     an unsigned int? */
-
-  /* create index structures */
-  if(!(po->nloops = calloc(numquads, sizeof(unsigned int))))
-    {
-      return AY_EOMEM;
-    }
-  for(i = 0; i < numquads; i++)
-    {
-      /* each polygon has just one loop */
-      po->nloops[i] = 1;
-    } /* for */
-
-  if(!(po->nverts = calloc(numquads, sizeof(unsigned int))))
-    {
-      ay_status = AY_EOMEM;
-      goto cleanup;
-    }
-  for(i = 0; i < numquads; i++)
-    {
-      /* each loop has just three vertices (is a triangle) */
-      po->nverts[i] = 4;
-    } /* for */
-
-  if(!(po->verts = calloc(numquads*4, sizeof(unsigned int))))
-    {
-      ay_status = AY_EOMEM;
-      goto cleanup;
-    }
-  for(i = 0; i < numquads*4; i++)
-    {
-      /* vertex indices are simply ordered (user may remove multiply used
-	 vertices using PolyMesh optimization later) */
-      po->verts[i] = i;
-    } /* for */
-
-  po->ncontrols = numquads*4;
+  numquads = numtris;
   po->has_normals = has_vn;
 
   /* now copy all the vertices and normals */
@@ -970,86 +1038,134 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
       goto cleanup;
     }
 
-  if(has_tc)
-    {
-      if(!(tctagbuf = calloc(strlen(myst)+64, sizeof(char))))
-	{
-	  ay_status = AY_EOMEM;
-	  goto cleanup;
-	}
-      sprintf(tctagbuf, "%s,varying,g,%d", myst, numtris*3);
-      tctagbuflen = strlen(tctagbuf);
-    }
-
-  if(has_vc)
-    {
-      if(!(vctagbuf = calloc(strlen(myvc)+64, sizeof(char))))
-	{
-	  ay_status = AY_EOMEM;
-	  goto cleanup;
-	}
-      sprintf(vctagbuf, "%s,varying,c,%d", myvc, numtris*3);
-      vctagbuflen = strlen(vctagbuf);
-    }
-
+  numquads = 0;
   i = 0;
   tri1 = tris;
   tri2 = tri1->next;
-  while(tri1 && tri2)
+  while(tri1)
     {
-      pt1[0] = tri1->p1;
-      pt1[1] = tri1->p2;
-      pt1[2] = tri1->p3;
-
-      pt2[0] = tri2->p1;
-      pt2[1] = tri2->p2;
-      pt2[2] = tri2->p3;
-
-      if(has_vn)
+      if(!tri2)
 	{
-	  pt1[3] = tri1->n1;
-	  pt1[4] = tri1->n2;
-	  pt1[5] = tri1->n3;
+	  ay_status = AY_ERROR;
+	}
+      else
+	{
+	  pt1[0] = tri1->p1;
+	  pt1[1] = tri1->p2;
+	  pt1[2] = tri1->p3;
 
-	  pt2[3] = tri2->n1;
-	  pt2[4] = tri2->n2;
-	  pt2[5] = tri2->n3;
+	  pt2[0] = tri2->p1;
+	  pt2[1] = tri2->p2;
+	  pt2[2] = tri2->p3;
+
+	  if(has_vn)
+	    {
+	      pt1[3] = tri1->n1;
+	      pt1[4] = tri1->n2;
+	      pt1[5] = tri1->n3;
+
+	      pt2[3] = tri2->n1;
+	      pt2[4] = tri2->n2;
+	      pt2[5] = tri2->n3;
+	    }
+
+	  if(has_tc)
+	    {
+	      pt1[6] = tri1->t1;
+	      pt1[7] = tri1->t2;
+	      pt1[8] = tri1->t3;
+
+	      pt2[6] = tri2->t1;
+	      pt2[7] = tri2->t2;
+	      pt2[8] = tri2->t3;
+	    }
+
+	  if(has_vc)
+	    {
+	      pt1[9] = tri1->c1;
+	      pt1[10] = tri1->c2;
+	      pt1[11] = tri1->c3;
+
+	      pt2[9] = tri2->c1;
+	      pt2[10] = tri2->c2;
+	      pt2[11] = tri2->c3;
+	    }
+
+	  ay_status = ay_tess_tristoquad(pt1, pt2, q);
 	}
 
-      if(has_tc)
-	{
-	  pt1[6] = tri1->t1;
-	  pt1[7] = tri1->t2;
-	  pt1[8] = tri1->t3;
-
-	  pt2[6] = tri2->t1;
-	  pt2[7] = tri2->t2;
-	  pt2[8] = tri2->t3;
-	}
-
-      if(has_vc)
-	{
-	  pt1[9] = tri1->c1;
-	  pt1[10] = tri1->c2;
-	  pt1[11] = tri1->c3;
-
-	  pt2[9] = tri2->c1;
-	  pt2[10] = tri2->c2;
-	  pt2[11] = tri2->c3;
-	}
-
-      ay_status = ay_tess_tristoquad(pt1, pt2, q);
       if(ay_status)
 	{
-	  printf("FAIL\n");
-	goto cleanup;
+	  /* triangles are incompatible => create degenerate quad from tri1 */
+	  numquads++;
+
+	  if(has_vn)
+	    {
+	      memcpy(&(po->controlv[i]), tri1->p1, 3*sizeof(double));
+	      memcpy(&(po->controlv[i+3]), tri1->n1, 3*sizeof(double));
+	      memcpy(&(po->controlv[i+6]), tri1->p2, 3*sizeof(double));
+	      memcpy(&(po->controlv[i+9]), tri1->n2, 3*sizeof(double));
+	      memcpy(&(po->controlv[i+12]), tri1->p3, 3*sizeof(double));
+	      memcpy(&(po->controlv[i+15]), tri1->n3, 3*sizeof(double));
+	      memcpy(&(po->controlv[i+18]), tri1->p3, 3*sizeof(double));
+	      memcpy(&(po->controlv[i+21]), tri1->n3, 3*sizeof(double));
+	    }
+	  else
+	    {
+	      memcpy(&(po->controlv[i]), tri1->p1, 3*sizeof(double));
+	      memcpy(&(po->controlv[i+3]), tri1->p2, 3*sizeof(double));
+	      memcpy(&(po->controlv[i+6]), tri1->p3, 3*sizeof(double));
+	      memcpy(&(po->controlv[i+9]), tri1->p3, 3*sizeof(double));
+	    }
+
+	  if(has_tc)
+	    {
+	      sprintf(buf, ",%g,%g,%g,%g,%g,%g,%g,%g", tri1->t1[0], tri1->t1[1],
+		      tri1->t2[0], tri1->t2[1],
+		      tri1->t3[0], tri1->t3[1],
+		      tri1->t3[0], tri1->t3[1]);
+
+	      if(!(tmp = realloc(tctagbuf,
+				 tctagbuflen+(strlen(buf)+1)*sizeof(char))))
+		{
+		  ay_status = AY_EOMEM;
+		  goto cleanup;
+		}
+	      tctagbuf = tmp;
+	      strcpy(&(tctagbuf[tctagbuflen]), buf);
+	      tctagbuflen += strlen(buf);
+	    }
+
+	  if(has_vc)
+	    {
+	      sprintf(buf, ",%g,%g,%g,%g,%g,%g,%g,%g,%g,%g,%g,%g",
+		      tri1->c1[0], tri1->c1[1], tri1->c1[2],
+		      tri1->c2[0], tri1->c2[1], tri1->c2[2],
+		      tri1->c3[0], tri1->c3[1], tri1->c3[2],
+		      tri1->c3[0], tri1->c3[1], tri1->c3[2]);
+
+	      if(!(tmp = realloc(vctagbuf,
+				 vctagbuflen+(strlen(buf)+1)*sizeof(char))))
+		{
+		  ay_status = AY_EOMEM;
+		  goto cleanup;
+		}
+	      vctagbuf = tmp;
+	      strcpy(&(vctagbuf[vctagbuflen]), buf);
+	      vctagbuflen += strlen(buf);
+	    }
+
+	  i += (4*stride);
+	  tri1 = tri1->next;
+	  if(tri2)
+	    tri2 = tri2->next;
+	  continue;
 	}
-      else{
-	printf("%d\n",i/4/stride);
-      }
+
       if(q[0] != -1)
 	{
 	  /* one quad => just copy the relevant data */
+	  numquads++;
 	  if(has_vn)
 	    {
 	      memcpy(&(po->controlv[i]), pt1[q[0]], 3*sizeof(double));
@@ -1119,6 +1235,70 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
       if(tri1)
 	tri2 = tri1->next;
     } /* while */
+
+  ay_status = AY_OK;
+  po->ncontrols = numquads*4;
+  po->npolys = numquads;
+
+  /* XXXX what happens, when numtris/numcontrolv gets too big for
+     an unsigned int? */
+
+  /* create index structures */
+  if(!(po->nloops = calloc(numquads, sizeof(unsigned int))))
+    {
+      return AY_EOMEM;
+    }
+  for(i = 0; i < numquads; i++)
+    {
+      /* each polygon has just one loop */
+      po->nloops[i] = 1;
+    } /* for */
+
+  if(!(po->nverts = calloc(numquads, sizeof(unsigned int))))
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
+  for(i = 0; i < numquads; i++)
+    {
+      /* each loop has just three vertices (is a triangle) */
+      po->nverts[i] = 4;
+    } /* for */
+
+  if(!(po->verts = calloc(numquads*4, sizeof(unsigned int))))
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
+  for(i = 0; i < numquads*4; i++)
+    {
+      /* vertex indices are simply ordered (user may remove multiply used
+	 vertices using PolyMesh optimization later) */
+      po->verts[i] = i;
+    } /* for */
+
+
+  if(has_tc)
+    {
+      if(!(tctagbuf = calloc(strlen(myst)+64, sizeof(char))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+      sprintf(tctagbuf, "%s,varying,g,%d", myst, numtris*3);
+      tctagbuflen = strlen(tctagbuf);
+    }
+
+  if(has_vc)
+    {
+      if(!(vctagbuf = calloc(strlen(myvc)+64, sizeof(char))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+      sprintf(vctagbuf, "%s,varying,c,%d", myvc, numtris*3);
+      vctagbuflen = strlen(vctagbuf);
+    }
 
   if(has_tc)
     {
@@ -1214,106 +1394,6 @@ cleanup:
 
  return ay_status;
 } /* ay_tess_tristoquadpomesh */
-#endif
-
-/** 
- * 
- * 
- * \param t1 
- * \param t2 
- * \param q 
- * 
- * \return 
- */
-int
-ay_tess_tristoquad(double **t1, double **t2,
-		   int *q)
-{
- int i, j, have_point1 = AY_FALSE, have_point2 = AY_FALSE;
- int cp1t1, cp1t2, cp2t1, cp2t2, t;
- double angle = 0.0, eps = DBL_MAX, N1[3] = {0}, N2[3] = {0};
-
-  /* find two common points */
-  for(i = 0; i < 3; i++)
-    {
-      for(j = 0; j < 3; j++)
-	{
-	  if(have_point1)
-	    {
-	      if(AY_V3COMP(t1[i],t2[j]))
-		{
-		  cp2t1 = i;
-		  cp2t2 = j;
-		  have_point2 = AY_TRUE;
-		  break;
-		}
-	    }
-	  else
-	    {
-	      if(AY_V3COMP(t1[i],t2[j]))
-		{
-		  cp1t1 = i;
-		  cp1t2 = j;
-		  have_point1 = AY_TRUE;
-		}
-	    }
-	}
-    }
-
-  if(!(have_point1 && have_point2))
-    return AY_ERROR;
-
-  /* employ flatness check */
-  ay_geom_calcnfrom3(t1[0],t1[1],t1[2],N1);
-  ay_geom_calcnfrom3(t2[0],t2[1],t2[2],N2);
-  angle = acos(AY_V3DOT(N1,N2));
-  if(angle < eps)
-    {
-      /* emit one quad */
-      t = 0;
-      if(t == cp1t1 || t == cp2t1)
-	{
-	  t++;
-	  if(t == cp1t1 || t == cp2t1)
-	    {
-	      t++;
-	    }
-	}
-      q[1] = t;
-      q[2] = q[1]+1;
-      if(q[2] > 2)
-	q[2] = 0;
-      q[0] = q[1]-1;
-      if(q[0] < 0)
-	q[0] = 2;
-
-      if(cp1t1 > cp2t1)
-	{
-	  t = q[0];
-	  q[0] = q[2];
-	  q[2] = t;
-	}
-
-      t = 0;
-      if(t == cp1t2 || t == cp2t2)
-	{
-	  t++;
-	  if(t == cp1t2 || t == cp2t2)
-	    {
-	      t++;
-	    }
-	}
-      q[3] = t;
-
-    }
-  else
-    {
-      /* split along edge into two quads */
-      q[0] = -1;
-    }
-
- return AY_OK;
-} /* ay_tess_tristoquad */
 
 
 /* ay_tess_tristomixedpomesh:
@@ -2488,6 +2568,11 @@ ay_tess_npatch(ay_object *o,
       /* Triangles and Quads */
       ay_status = ay_tess_tristomixedpomesh(to.tris, AY_TRUE, have_vc, have_tc,
 					    myst, mycs, &new);
+      break;
+    case 2:
+      /* Quads */
+      ay_status = ay_tess_tristoquadpomesh(to.tris, AY_TRUE, have_vc, have_tc,
+					   myst, mycs, &new);
       break;
     default:
       break;
