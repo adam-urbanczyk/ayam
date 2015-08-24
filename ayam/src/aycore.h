@@ -1000,6 +1000,10 @@ int ay_pv_getvc(ay_object *o, char *myc, int stride,
  */
 int ay_pv_count(ay_object *o);
 
+/** fix/correct number of elements in a PV tag
+ */
+void ay_pv_fixnumelems(char *buf, unsigned int numelems);
+
 /** initialize pv module
  */
 void ay_pv_init(Tcl_Interp *interp);

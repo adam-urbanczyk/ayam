@@ -1236,6 +1236,45 @@ ay_pv_count(ay_object *o)
 } /* ay_pv_count */
 
 
+/** ay_pv_fixnumelems:
+ * Fix/correct the number of elements of a PV tag.
+ * Only works correctly if the new number of elements is smaller
+ * than the current!
+ *
+ * \param buf value buffer of PV tag to fix
+ * \param numelems correct number of elements
+ */
+void
+ay_pv_fixnumelems(char *buf, unsigned int numelems)
+{
+ char *bufptr;
+ int i;
+
+  if(!buf)
+    return;
+
+  bufptr = buf;
+  for(i = 0; i < 3; i++)
+    {
+      bufptr = strchr(bufptr, ',');
+      if(!bufptr)
+	break;
+      bufptr++;
+    }
+  if(bufptr)
+    {
+      bufptr += sprintf(bufptr, "%u", numelems);
+      while(*bufptr != ',')
+	{
+	  *bufptr = ' ';
+	  bufptr++;
+	}
+    }
+
+ return;
+} /* ay_pv_fixnumelems */
+
+
 /* ay_pv_init:
  *  initialize pv module by registering the PV tag type
  */
