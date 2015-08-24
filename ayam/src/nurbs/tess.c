@@ -110,6 +110,8 @@ void ay_tess_combinedata(GLdouble c[3], void *d[4], GLfloat w[4], void **out,
 
 void ay_tess_managecombined(void *userData);
 
+int ay_tess_addtag(ay_object *o, char *val);
+
 int ay_tess_tristoquad(double **t1, double **t2, int *q);
 
 int ay_tess_tristoquadpomesh(ay_tess_tri *tris,
@@ -856,6 +858,45 @@ ay_tess_managecombined(void *data)
 } /* ay_tess_managecombined */
 
 
+/** ay_tess_addtag:
+ * Add a PV tag for texture coordinates or vertex colors to an object.
+ *
+ * \param[in,out] o object to manipulate
+ * \param[in] val tag value string
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_tess_addtag(ay_object *o, char *val)
+{
+ ay_tag *tag;
+
+  if(!o || !val)
+    return AY_ENULL;
+
+  if(!(tag = calloc(1, sizeof(ay_tag))))
+    {
+      return AY_EOMEM;
+    }
+
+  tag->type = ay_pv_tagtype;
+
+  if(!(tag->name = calloc(3, sizeof(char))))
+    {
+      free(tag);
+      return AY_EOMEM;
+    }
+  strcpy(tag->name, "PV");
+
+  tag->val = val;
+
+  tag->next = o->tags;
+  o->tags = tag;
+
+  return AY_OK;
+} /* ay_tess_addtag */
+
+
 /** ay_tess_tristoquad:
  * Compare two triangles, check for two common points, calculate
  * four indices to form a quad (three indices from triangle 1, one
@@ -865,7 +906,7 @@ ay_tess_managecombined(void *data)
  * \param[in] t2 array of pointers to coordinates, normals etc. of triangle 2
  * \param[in,out] q array where the four quad indices are stored
  *
- * \return AY_OK on success, error code otherwise.
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_tess_tristoquad(double **t1, double **t2, int *q)
@@ -949,7 +990,6 @@ ay_tess_tristoquad(double **t1, double **t2, int *q)
 	    }
 	}
       q[3] = t;
-
     }
   else
     {
@@ -975,7 +1015,6 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
  int ay_status = AY_OK;
  ay_object *new = NULL;
  ay_pomesh_object *po = NULL;
- ay_tag *tag = NULL;
  ay_tess_tri *tri, *tri1, *tri2;
  double *pt1[12] = {0}, *pt2[12] = {0};
  unsigned int numtris = 0, numquads = 0, i, stride;
@@ -1266,61 +1305,20 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
       po->verts[i] = i;
     } /* for */
 
-
   if(has_tc)
     {
-      if(!(tag = calloc(1, sizeof(ay_tag))))
-	{
-	  ay_status = AY_EOMEM;
-	  goto cleanup;
-	}
-
-      tag->type = ay_pv_tagtype;
-
-      if(!(tag->name = calloc(3, sizeof(char))))
-	{
-	  free(tag);
-	  ay_status = AY_EOMEM;
-	  goto cleanup;
-	}
-      strcpy(tag->name, "PV");
-
-      /* correct numquads in tagbuf */
-      ay_pv_fixnumelems(tctagbuf, numquads*4);
-
-      tag->val = tctagbuf;
+      ay_status = ay_tess_addtag(new, tctagbuf);
+      if(ay_status)
+	goto cleanup;
       tctagbuf = NULL;
-
-      tag->next = new->tags;
-      new->tags = tag;
     } /* if has_tc */
 
   if(has_vc)
     {
-      if(!(tag = calloc(1, sizeof(ay_tag))))
-	{
-	  ay_status = AY_EOMEM;
-	  goto cleanup;
-	}
-
-      tag->type = ay_pv_tagtype;
-
-      if(!(tag->name = calloc(3, sizeof(char))))
-	{
-	  free(tag);
-	  ay_status = AY_EOMEM;
-	  goto cleanup;
-	}
-      strcpy(tag->name, "PV");
-
-      /* correct numquads in tagbuf */
-      ay_pv_fixnumelems(vctagbuf, numquads*4);
-
-      tag->val = vctagbuf;
+      ay_status = ay_tess_addtag(new, vctagbuf);
+      if(ay_status)
+	goto cleanup;
       vctagbuf = NULL;
-
-      tag->next = new->tags;
-      new->tags = tag;
     } /* if has_vc */
 
   *result = new;
@@ -1380,7 +1378,6 @@ ay_tess_tristomixedpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
  int ay_status = AY_OK;
  ay_object *new = NULL;
  ay_pomesh_object *po = NULL;
- ay_tag *tag = NULL;
  ay_tess_tri *tri, *tri1, *tri2;
  double *pt1[12] = {0}, *pt2[12] = {0};
  unsigned int numtris = 0, numquads = 0, i, stride;
@@ -1680,52 +1677,18 @@ ay_tess_tristomixedpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 
   if(has_tc)
     {
-      if(!(tag = calloc(1, sizeof(ay_tag))))
-	{
-	  ay_status = AY_EOMEM;
-	  goto cleanup;
-	}
-
-      tag->type = ay_pv_tagtype;
-
-      if(!(tag->name = calloc(3, sizeof(char))))
-	{
-	  free(tag);
-	  ay_status = AY_EOMEM;
-	  goto cleanup;
-	}
-      strcpy(tag->name, "PV");
-
-      tag->val = tctagbuf;
+      ay_status = ay_tess_addtag(new, tctagbuf);
+      if(ay_status)
+	goto cleanup;
       tctagbuf = NULL;
-
-      tag->next = new->tags;
-      new->tags = tag;
     } /* if has_tc */
 
   if(has_vc)
     {
-      if(!(tag = calloc(1, sizeof(ay_tag))))
-	{
-	  ay_status = AY_EOMEM;
-	  goto cleanup;
-	}
-
-      tag->type = ay_pv_tagtype;
-
-      if(!(tag->name = calloc(3, sizeof(char))))
-	{
-	  free(tag);
-	  ay_status = AY_EOMEM;
-	  goto cleanup;
-	}
-      strcpy(tag->name, "PV");
-
-      tag->val = vctagbuf;
+      ay_status = ay_tess_addtag(new, vctagbuf);
+      if(ay_status)
+	goto cleanup;
       vctagbuf = NULL;
-
-      tag->next = new->tags;
-      new->tags = tag;
     } /* if has_vc */
 
   *result = new;
@@ -1784,7 +1747,6 @@ ay_tess_tristopomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
  int ay_status = AY_OK;
  ay_object *new = NULL;
  ay_pomesh_object *po = NULL;
- ay_tag *tag = NULL;
  ay_tess_tri *tri;
  unsigned int numtris = 0, i, stride;
  char *tctagbuf = NULL, *vctagbuf = NULL;
@@ -1952,52 +1914,18 @@ ay_tess_tristopomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 
   if(has_tc)
     {
-      if(!(tag = calloc(1, sizeof(ay_tag))))
-	{
-	  ay_status = AY_EOMEM;
-	  goto cleanup;
-	}
-
-      tag->type = ay_pv_tagtype;
-
-      if(!(tag->name = calloc(3, sizeof(char))))
-	{
-	  free(tag);
-	  ay_status = AY_EOMEM;
-	  goto cleanup;
-	}
-      strcpy(tag->name, "PV");
-
-      tag->val = tctagbuf;
+      ay_status = ay_tess_addtag(new, tctagbuf);
+      if(ay_status)
+	goto cleanup;
       tctagbuf = NULL;
-
-      tag->next = new->tags;
-      new->tags = tag;
     } /* if has_tc */
 
   if(has_vc)
     {
-      if(!(tag = calloc(1, sizeof(ay_tag))))
-	{
-	  ay_status = AY_EOMEM;
-	  goto cleanup;
-	}
-
-      tag->type = ay_pv_tagtype;
-
-      if(!(tag->name = calloc(3, sizeof(char))))
-	{
-	  free(tag);
-	  ay_status = AY_EOMEM;
-	  goto cleanup;
-	}
-      strcpy(tag->name, "PV");
-
-      tag->val = vctagbuf;
+      ay_status = ay_tess_addtag(new, vctagbuf);
+      if(ay_status)
+	goto cleanup;
       vctagbuf = NULL;
-
-      tag->next = new->tags;
-      new->tags = tag;
     } /* if has_vc */
 
   *result = new;
