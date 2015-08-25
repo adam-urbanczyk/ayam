@@ -170,11 +170,13 @@ ay_tess_createtri(ay_tess_object *to)
 {
  ay_tess_tri *tri = NULL;
 
-  if(!(tri = calloc(1, sizeof(ay_tess_tri))))
+  if(!(tri = malloc(sizeof(ay_tess_tri))))
     return;
 
   tri->next = to->tris;
   to->tris = tri;
+
+  tri->is_quad = AY_FALSE;
 
   memcpy(tri->p1, to->p1, 3*sizeof(double));
   memcpy(tri->p2, to->p2, 3*sizeof(double));
@@ -213,11 +215,13 @@ ay_tess_createtrirev(ay_tess_object *to)
 {
  ay_tess_tri *tri = NULL;
 
-  if(!(tri = calloc(1, sizeof(ay_tess_tri))))
+  if(!(tri = malloc(sizeof(ay_tess_tri))))
     return;
 
   tri->next = to->tris;
   to->tris = tri;
+
+  tri->is_quad = AY_FALSE;
 
   memcpy(tri->p1, to->p3, 3*sizeof(double));
   memcpy(tri->p2, to->p2, 3*sizeof(double));
@@ -487,13 +491,14 @@ ay_tess_vertexdata(GLfloat *vertex, void *userData)
 
 	      if(ay_tess_checktri(to->p2, to->p4, to->p3))
 		{
-		  if(!(tri = calloc(1, sizeof(ay_tess_tri))))
+		  if(!(tri = malloc(sizeof(ay_tess_tri))))
 		    return;
 		  tri->next = to->tris;
 		  to->tris = tri;
 		  if(check_quad)
 		    tri->is_quad = AY_TRUE;
-
+		  else
+		    tri->is_quad = AY_FALSE;
 		  memcpy(tri->p1, to->p2, 3*sizeof(double));
 		  memcpy(tri->p2, to->p4, 3*sizeof(double));
 		  memcpy(tri->p3, to->p3, 3*sizeof(double));
@@ -836,7 +841,7 @@ ay_tess_managecombined(void *data)
 
   if(data)
     { /* add new pointer to the list */
-      if(!(new = calloc(1, sizeof(ay_tess_listobject))))
+      if(!(new = malloc(sizeof(ay_tess_listobject))))
 	return;
 
       new->data = data;
@@ -881,7 +886,7 @@ ay_tess_addtag(ay_object *o, char *val)
 
   tag->type = ay_pv_tagtype;
 
-  if(!(tag->name = calloc(3, sizeof(char))))
+  if(!(tag->name = malloc(3*sizeof(char))))
     {
       free(tag);
       return AY_EOMEM;
@@ -1069,7 +1074,7 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
   po->has_normals = has_vn;
 
   /* now copy all the vertices and normals */
-  if(!(po->controlv = calloc(numquads*4*stride, sizeof(double))))
+  if(!(po->controlv = malloc(numquads*4*stride*sizeof(double))))
     {
       ay_status = AY_EOMEM;
       goto cleanup;
@@ -1077,8 +1082,8 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 
   if(has_tc)
     {
-      if(!(tctagbuf = calloc(strlen(myst)+64+
-			     (numquads*4*2*(TCL_DOUBLE_SPACE+1)),
+      if(!(tctagbuf = malloc((strlen(myst) + 64 +
+			      (numquads*4*2*(TCL_DOUBLE_SPACE+1)))*
 			     sizeof(char))))
 	{
 	  ay_status = AY_EOMEM;
@@ -1090,8 +1095,8 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 
   if(has_vc)
     {
-      if(!(vctagbuf = calloc(strlen(myvc)+64+
-			     (numquads*4*3*(TCL_DOUBLE_SPACE+1)),
+      if(!(vctagbuf = malloc((strlen(myvc) + 64 +
+			      (numquads*4*3*(TCL_DOUBLE_SPACE+1)))*
 			     sizeof(char))))
 	{
 	  ay_status = AY_EOMEM;
@@ -1272,7 +1277,7 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
      an unsigned int? */
 
   /* create index structures */
-  if(!(po->nloops = calloc(numquads, sizeof(unsigned int))))
+  if(!(po->nloops = malloc(numquads*sizeof(unsigned int))))
     {
       return AY_EOMEM;
     }
@@ -1282,7 +1287,7 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
       po->nloops[i] = 1;
     } /* for */
 
-  if(!(po->nverts = calloc(numquads, sizeof(unsigned int))))
+  if(!(po->nverts = malloc(numquads*sizeof(unsigned int))))
     {
       ay_status = AY_EOMEM;
       goto cleanup;
@@ -1293,7 +1298,7 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
       po->nverts[i] = 4;
     } /* for */
 
-  if(!(po->verts = calloc(numquads*4, sizeof(unsigned int))))
+  if(!(po->verts = malloc(numquads*4*sizeof(unsigned int))))
     {
       ay_status = AY_EOMEM;
       goto cleanup;
@@ -1443,7 +1448,7 @@ ay_tess_tristomixedpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
      an unsigned int? */
 
   /* create index structures */
-  if(!(po->nloops = calloc(numquads+numtris, sizeof(unsigned int))))
+  if(!(po->nloops = malloc((numquads+numtris)*sizeof(unsigned int))))
     {
       return AY_EOMEM;
     }
@@ -1453,7 +1458,7 @@ ay_tess_tristomixedpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
       po->nloops[i] = 1;
     } /* for */
 
-  if(!(po->nverts = calloc(numquads+numtris, sizeof(unsigned int))))
+  if(!(po->nverts = malloc((numquads+numtris)*sizeof(unsigned int))))
     {
       ay_status = AY_EOMEM;
       goto cleanup;
@@ -1469,7 +1474,7 @@ ay_tess_tristomixedpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
       po->nverts[i] = 3;
     } /* for */
 
-  if(!(po->verts = calloc(numquads*4+numtris*3, sizeof(unsigned int))))
+  if(!(po->verts = malloc((numquads*4+numtris*3)*sizeof(unsigned int))))
     {
       ay_status = AY_EOMEM;
       goto cleanup;
@@ -1485,7 +1490,7 @@ ay_tess_tristomixedpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
   po->has_normals = has_vn;
 
   /* now copy all the vertices and normals */
-  if(!(po->controlv = calloc((numquads*4+numtris*3)*stride, sizeof(double))))
+  if(!(po->controlv = malloc((numquads*4+numtris*3)*stride*sizeof(double))))
     {
       ay_status = AY_EOMEM;
       goto cleanup;
@@ -1493,8 +1498,8 @@ ay_tess_tristomixedpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 
   if(has_tc)
     {
-      if(!(tctagbuf = calloc(strlen(myst)+64+
-			     (numquads*4+numtris*3)*2*(TCL_DOUBLE_SPACE+1),
+      if(!(tctagbuf = malloc((strlen(myst) + 64 +
+			      (numquads*4+numtris*3)*2*(TCL_DOUBLE_SPACE+1)) *
 			     sizeof(char))))
 	{
 	  ay_status = AY_EOMEM;
@@ -1506,8 +1511,8 @@ ay_tess_tristomixedpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 
   if(has_vc)
     {
-      if(!(vctagbuf = calloc(strlen(myvc)+64+
-			     (numquads*4+numtris*3)*2*(TCL_DOUBLE_SPACE+1),
+      if(!(vctagbuf = malloc((strlen(myvc) + 64 +
+			      (numquads*4+numtris*3)*2*(TCL_DOUBLE_SPACE+1)) *
 			     sizeof(char))))
 	{
 	  ay_status = AY_EOMEM;
@@ -1801,7 +1806,7 @@ ay_tess_tristopomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
      an unsigned int? */
 
   /* create index structures */
-  if(!(po->nloops = calloc(numtris, sizeof(unsigned int))))
+  if(!(po->nloops = malloc(numtris*sizeof(unsigned int))))
     {
       return AY_EOMEM;
     }
@@ -1811,7 +1816,7 @@ ay_tess_tristopomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
       po->nloops[i] = 1;
     } /* for */
 
-  if(!(po->nverts = calloc(numtris, sizeof(unsigned int))))
+  if(!(po->nverts = malloc(numtris*sizeof(unsigned int))))
     {
       ay_status = AY_EOMEM;
       goto cleanup;
@@ -1822,7 +1827,7 @@ ay_tess_tristopomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
       po->nverts[i] = 3;
     } /* for */
 
-  if(!(po->verts = calloc(numtris*3, sizeof(unsigned int))))
+  if(!(po->verts = malloc(numtris*3*sizeof(unsigned int))))
     {
       ay_status = AY_EOMEM;
       goto cleanup;
@@ -1838,7 +1843,7 @@ ay_tess_tristopomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
   po->has_normals = has_vn;
 
   /* now copy all the vertices and normals */
-  if(!(po->controlv = calloc(numtris*3*stride, sizeof(double))))
+  if(!(po->controlv = malloc(numtris*3*stride*sizeof(double))))
     {
       ay_status = AY_EOMEM;
       goto cleanup;
@@ -1846,8 +1851,8 @@ ay_tess_tristopomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 
   if(has_tc)
     {
-      if(!(tctagbuf = calloc(strlen(myst) + 64 +
-			     numtris*3*2*(TCL_DOUBLE_SPACE+1),
+      if(!(tctagbuf = malloc((strlen(myst) + 64 +
+			      numtris*3*2*(TCL_DOUBLE_SPACE+1)) *
 			     sizeof(char))))
 	{
 	  ay_status = AY_EOMEM;
@@ -1859,8 +1864,8 @@ ay_tess_tristopomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 
   if(has_vc)
     {
-      if(!(vctagbuf = calloc(strlen(myvc) + 64 +
-			     numtris*3*3*(TCL_DOUBLE_SPACE+1),
+      if(!(vctagbuf = malloc((strlen(myvc) + 64 +
+			      numtris*3*3*(TCL_DOUBLE_SPACE+1)) *
 			     sizeof(char))))
 	{
 	  ay_status = AY_EOMEM;
