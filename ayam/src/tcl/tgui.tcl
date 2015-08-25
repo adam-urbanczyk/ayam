@@ -10,29 +10,29 @@
 # tgui.tcl - Tesselation GUI Tcl code
 
 uplevel #0 { array set tgui_tessparam {
-    SMethod 0
-    SParamU 20
-    SParamV 20
+    SamplingMethod 0
+    SamplingParamU 20
+    SamplingParamV 20
 
     FT1 1
-    SParamU1 10
-    SParamV1 10
+    SamplingParamU1 10
+    SamplingParamV1 10
 
     FT2 1
-    SParamU2 0.5
-    SParamV2 0.5
+    SamplingParamU2 0.5
+    SamplingParamV2 0.5
 
     FT3 1
-    SParamU3 1
-    SParamV3 1
+    SamplingParamU3 1
+    SamplingParamV3 1
 
     FT4 1
-    SParamU4 1
-    SParamV4 1
+    SamplingParamU4 1
+    SamplingParamV4 1
 
     FT5 1
-    SParamU5 1
-    SParamV5 1
+    SamplingParamU5 1
+    SamplingParamV5 1
 
     UseTexCoords 0
     UseVertColors 0
@@ -45,7 +45,7 @@ uplevel #0 { array set tgui_tessparam {
 
     MB1Down 0
     ReadTag 0
-    OldSMethod -1
+    OldSamplingMethod -1
     NumPolys 0
 }
 array set tgui_tessparamdefaults [array get tgui_tessparam]
@@ -198,9 +198,9 @@ proc tgui_unblock { } {
 proc tgui_update args {
     global ay ayprefs tgui_tessparam
 
-    trace vdelete tgui_tessparam(SMethod) w tgui_update
-    #trace vdelete tgui_tessparam(SParamU) w tgui_update
-    #trace vdelete tgui_tessparam(SParamV) w tgui_update
+    trace vdelete tgui_tessparam(SamplingMethod) w tgui_update
+    #trace vdelete tgui_tessparam(SamplingParamU) w tgui_update
+    #trace vdelete tgui_tessparam(SamplingParamV) w tgui_update
 
     trace vdelete tgui_tessparam(UseTexCoords) w tgui_update
     trace vdelete tgui_tessparam(UseVertColors) w tgui_update
@@ -208,101 +208,101 @@ proc tgui_update args {
     trace vdelete tgui_tessparam(RefineTrims) w tgui_update
     trace vdelete tgui_tessparam(Primitives) w tgui_update
 
-    .tguiw.f1.fSParamU.e delete 0 end
-    .tguiw.f1.fSParamU.e insert 0 $tgui_tessparam(SParamU)
-    .tguiw.f1.fSParamV.e delete 0 end
-    .tguiw.f1.fSParamV.e insert 0 $tgui_tessparam(SParamV)
+    .tguiw.f1.fSamplingParamU.e delete 0 end
+    .tguiw.f1.fSamplingParamU.e insert 0 $tgui_tessparam(SamplingParamU)
+    .tguiw.f1.fSamplingParamV.e delete 0 end
+    .tguiw.f1.fSamplingParamV.e insert 0 $tgui_tessparam(SamplingParamV)
 
-    if { $tgui_tessparam(SMethod) == 0 } {
-	if { $tgui_tessparam(OldSMethod) != $tgui_tessparam(SMethod) } {
+    if { $tgui_tessparam(SamplingMethod) == 0 } {
+	if { $tgui_tessparam(OldSamplingMethod) != $tgui_tessparam(SamplingMethod) } {
 	    if { $tgui_tessparam(FT1) == 1 } {
-		set tgui_tessparam(SParamU) $tgui_tessparam(SParamU1)
-		set tgui_tessparam(SParamV) $tgui_tessparam(SParamV1)
+		set tgui_tessparam(SamplingParamU) $tgui_tessparam(SamplingParamU1)
+		set tgui_tessparam(SamplingParamV) $tgui_tessparam(SamplingParamV1)
 		set tgui_tessparam(FT1) 0
 	    }
-	    .tguiw.f1.fSParamU.ll conf -text "0"
-	    .tguiw.f1.fSParamU.lr conf -text "100"
-	    .tguiw.f1.fSParamU.s conf -from 0 -to 100
-	    .tguiw.f1.fSParamU.s conf -resolution 1
+	    .tguiw.f1.fSamplingParamU.ll conf -text "0"
+	    .tguiw.f1.fSamplingParamU.lr conf -text "100"
+	    .tguiw.f1.fSamplingParamU.s conf -from 0 -to 100
+	    .tguiw.f1.fSamplingParamU.s conf -resolution 1
 	}
-	.tguiw.f1.fSParamV.s conf -state disabled
-	.tguiw.f1.fSParamV.e conf -state disabled
+	.tguiw.f1.fSamplingParamV.s conf -state disabled
+	.tguiw.f1.fSamplingParamV.e conf -state disabled
     }
 
-    if { $tgui_tessparam(SMethod) == 1 } {
-	if { $tgui_tessparam(OldSMethod) != $tgui_tessparam(SMethod) } {
+    if { $tgui_tessparam(SamplingMethod) == 1 } {
+	if { $tgui_tessparam(OldSamplingMethod) != $tgui_tessparam(SamplingMethod) } {
 	    if { $tgui_tessparam(FT2) == 1 } {
-		set tgui_tessparam(SParamU) $tgui_tessparam(SParamU2)
-		set tgui_tessparam(SParamV) $tgui_tessparam(SParamV2)
+		set tgui_tessparam(SamplingParamU) $tgui_tessparam(SamplingParamU2)
+		set tgui_tessparam(SamplingParamV) $tgui_tessparam(SamplingParamV2)
 		set tgui_tessparam(FT2) 0
 	    }
-	    .tguiw.f1.fSParamU.ll conf -text "0"
-	    .tguiw.f1.fSParamU.lr conf -text "100"
-	    .tguiw.f1.fSParamU.s conf -from 0 -to 100
-	    .tguiw.f1.fSParamU.s conf -resolution 1
+	    .tguiw.f1.fSamplingParamU.ll conf -text "0"
+	    .tguiw.f1.fSamplingParamU.lr conf -text "100"
+	    .tguiw.f1.fSamplingParamU.s conf -from 0 -to 100
+	    .tguiw.f1.fSamplingParamU.s conf -resolution 1
 	}
-	.tguiw.f1.fSParamV.s conf -state disabled
-	.tguiw.f1.fSParamV.e conf -state disabled
+	.tguiw.f1.fSamplingParamV.s conf -state disabled
+	.tguiw.f1.fSamplingParamV.e conf -state disabled
     }
 
-    if { ($tgui_tessparam(SMethod) > 1) } {
-	if { $tgui_tessparam(OldSMethod) != $tgui_tessparam(SMethod) } {
-	    if { ($tgui_tessparam(SMethod) == 2) &&
+    if { ($tgui_tessparam(SamplingMethod) > 1) } {
+	if { $tgui_tessparam(OldSamplingMethod) != $tgui_tessparam(SamplingMethod) } {
+	    if { ($tgui_tessparam(SamplingMethod) == 2) &&
 		 ($tgui_tessparam(FT3) == 1 ) } {
-		set tgui_tessparam(SParamU) $tgui_tessparam(SParamU3)
-		set tgui_tessparam(SParamV) $tgui_tessparam(SParamV3)
+		set tgui_tessparam(SamplingParamU) $tgui_tessparam(SamplingParamU3)
+		set tgui_tessparam(SamplingParamV) $tgui_tessparam(SamplingParamV3)
 		set tgui_tessparam(FT3) 0
 	    }
-	    if { ($tgui_tessparam(SMethod) == 3) &&
+	    if { ($tgui_tessparam(SamplingMethod) == 3) &&
 		 ($tgui_tessparam(FT4) == 1 ) } {
-		set tgui_tessparam(SParamU) $tgui_tessparam(SParamU4)
-		set tgui_tessparam(SParamV) $tgui_tessparam(SParamV4)
+		set tgui_tessparam(SamplingParamU) $tgui_tessparam(SamplingParamU4)
+		set tgui_tessparam(SamplingParamV) $tgui_tessparam(SamplingParamV4)
 		set tgui_tessparam(FT4) 0
 	    }
-	    .tguiw.f1.fSParamU.ll conf -text "0"
-	    .tguiw.f1.fSParamU.lr conf -text "20"
-	    .tguiw.f1.fSParamU.s conf -from 0 -to 20
-	    .tguiw.f1.fSParamV.ll conf -text "0"
-	    .tguiw.f1.fSParamV.lr conf -text "20"
-	    .tguiw.f1.fSParamV.s conf -from 0 -to 20
+	    .tguiw.f1.fSamplingParamU.ll conf -text "0"
+	    .tguiw.f1.fSamplingParamU.lr conf -text "20"
+	    .tguiw.f1.fSamplingParamU.s conf -from 0 -to 20
+	    .tguiw.f1.fSamplingParamV.ll conf -text "0"
+	    .tguiw.f1.fSamplingParamV.lr conf -text "20"
+	    .tguiw.f1.fSamplingParamV.s conf -from 0 -to 20
 
-	    if { ($tgui_tessparam(SMethod) == 4) &&
+	    if { ($tgui_tessparam(SamplingMethod) == 4) &&
 		 ($tgui_tessparam(FT5) == 1 ) } {
-		.tguiw.f1.fSParamU.lr conf -text "5"
-		.tguiw.f1.fSParamU.s conf -from 0 -to 5
-		.tguiw.f1.fSParamV.lr conf -text "5"
-		.tguiw.f1.fSParamV.s conf -from 0 -to 5
-		set tgui_tessparam(SParamU) $tgui_tessparam(SParamU5)
-		set tgui_tessparam(SParamV) $tgui_tessparam(SParamV5)
+		.tguiw.f1.fSamplingParamU.lr conf -text "5"
+		.tguiw.f1.fSamplingParamU.s conf -from 0 -to 5
+		.tguiw.f1.fSamplingParamV.lr conf -text "5"
+		.tguiw.f1.fSamplingParamV.s conf -from 0 -to 5
+		set tgui_tessparam(SamplingParamU) $tgui_tessparam(SamplingParamU5)
+		set tgui_tessparam(SamplingParamV) $tgui_tessparam(SamplingParamV5)
 		set tgui_tessparam(FT5) 0
 	    }
 
-	    .tguiw.f1.fSParamU.s conf -resolution 0.1
-	    .tguiw.f1.fSParamV.s conf -resolution 0.1
+	    .tguiw.f1.fSamplingParamU.s conf -resolution 0.1
+	    .tguiw.f1.fSamplingParamV.s conf -resolution 0.1
 	}
-	.tguiw.f1.fSParamV.s conf -state normal
-	.tguiw.f1.fSParamV.e conf -state normal
+	.tguiw.f1.fSamplingParamV.s conf -state normal
+	.tguiw.f1.fSamplingParamV.e conf -state normal
     }
 
-    set tgui_tessparam(OldSMethod) $tgui_tessparam(SMethod)
+    set tgui_tessparam(OldSamplingMethod) $tgui_tessparam(SamplingMethod)
 
     if { ! $tgui_tessparam(LazyUpdate) } {
-	tguiCmd up $tgui_tessparam(SMethod) $tgui_tessparam(SParamU)\
-	    $tgui_tessparam(SParamV) $tgui_tessparam(UseTexCoords)\
+	tguiCmd up $tgui_tessparam(SamplingMethod) $tgui_tessparam(SamplingParamU)\
+	    $tgui_tessparam(SamplingParamV) $tgui_tessparam(UseTexCoords)\
 	    $tgui_tessparam(UseVertColors) $tgui_tessparam(UseVertNormals)\
 	    $tgui_tessparam(RefineTrims) $tgui_tessparam(Primitives)
     } else {
 	if { $tgui_tessparam(MB1Down) == 0 } {
-	    tguiCmd up $tgui_tessparam(SMethod) $tgui_tessparam(SParamU)\
-		$tgui_tessparam(SParamV) $tgui_tessparam(UseTexCoords)\
+	    tguiCmd up $tgui_tessparam(SamplingMethod) $tgui_tessparam(SamplingParamU)\
+		$tgui_tessparam(SamplingParamV) $tgui_tessparam(UseTexCoords)\
 		$tgui_tessparam(UseVertColors) $tgui_tessparam(UseVertNormals)\
 		$tgui_tessparam(RefineTrims) $tgui_tessparam(Primitives)
 	}
     }
 
-    trace variable tgui_tessparam(SMethod) w tgui_update
-    #trace variable tgui_tessparam(SParamU) w tgui_update
-    #trace variable tgui_tessparam(SParamV) w tgui_update
+    trace variable tgui_tessparam(SamplingMethod) w tgui_update
+    #trace variable tgui_tessparam(SamplingParamU) w tgui_update
+    #trace variable tgui_tessparam(SamplingParamV) w tgui_update
 
     trace variable tgui_tessparam(UseTexCoords) w tgui_update
     trace variable tgui_tessparam(UseVertColors) w tgui_update
@@ -321,29 +321,29 @@ proc tgui_update args {
 proc tgui_recalcslider { slider val } {
 
     if { $slider == 0 } {
-	set rmin [.tguiw.f1.fSParamU.s cget -from]
+	set rmin [.tguiw.f1.fSamplingParamU.s cget -from]
 	if { $val < $rmin } {
-	    .tguiw.f1.fSParamU.s conf -from $val
-	    .tguiw.f1.fSParamU.ll conf -text $val
+	    .tguiw.f1.fSamplingParamU.s conf -from $val
+	    .tguiw.f1.fSamplingParamU.ll conf -text $val
 	    set rmin $val
 	}
-	set rmax [.tguiw.f1.fSParamU.s cget -to]
+	set rmax [.tguiw.f1.fSamplingParamU.s cget -to]
 	if { $val > $rmax } {
-	    .tguiw.f1.fSParamU.s conf -to $val
-	    .tguiw.f1.fSParamU.lr conf -text $val
+	    .tguiw.f1.fSamplingParamU.s conf -to $val
+	    .tguiw.f1.fSamplingParamU.lr conf -text $val
 	    set rmax $val
 	}
     } else {
-	set rmin [.tguiw.f1.fSParamV.s cget -from]
+	set rmin [.tguiw.f1.fSamplingParamV.s cget -from]
 	if { $val < $rmin } {
-	    .tguiw.f1.fSParamV.s conf -from $val
-	    .tguiw.f1.fSParamV.ll conf -text $val
+	    .tguiw.f1.fSamplingParamV.s conf -from $val
+	    .tguiw.f1.fSamplingParamV.ll conf -text $val
 	    set rmin $val
 	}
-	set rmax [.tguiw.f1.fSParamV.s cget -to]
+	set rmax [.tguiw.f1.fSamplingParamV.s cget -to]
 	if { $val > $rmax } {
-	    .tguiw.f1.fSParamV.s conf -to $val
-	    .tguiw.f1.fSParamV.lr conf -text $val
+	    .tguiw.f1.fSamplingParamV.s conf -to $val
+	    .tguiw.f1.fSamplingParamV.lr conf -text $val
 	    set rmax $val
 	}
     }
@@ -368,9 +368,9 @@ proc tgui_recalcslider { slider val } {
     # if
 
     if { $slider == 0 } {
-	.tguiw.f1.fSParamU.s configure -resolution $tb
+	.tguiw.f1.fSamplingParamU.s configure -resolution $tb
     } else {
-	.tguiw.f1.fSParamV.s configure -resolution $tb
+	.tguiw.f1.fSamplingParamV.s configure -resolution $tb
     }
 
  return;
@@ -386,8 +386,8 @@ proc tgui_addtag { } {
 
     undo save AddTPTag
     set tgui_tessparam(tagval) \
-	[format "%d,%g,%g,%d,%d" [expr $tgui_tessparam(SMethod) + 1]\
-	     $tgui_tessparam(SParamU) $tgui_tessparam(SParamV)\
+	[format "%d,%g,%g,%d,%d" [expr $tgui_tessparam(SamplingMethod) + 1]\
+	     $tgui_tessparam(SamplingParamU) $tgui_tessparam(SamplingParamV)\
 	     $tgui_tessparam(RefineTrims) $tgui_tessparam(Primitives)]
 
     forAll -recursive 0 {
@@ -459,10 +459,10 @@ proc tgui_readtag { } {
 	    tgui_recalcslider 0 $sparamu
 	    tgui_recalcslider 1 $sparamv
 
-	    set tgui_tessparam(OldSMethod) $smethod
-	    set tgui_tessparam(SMethod) $smethod
-	    set tgui_tessparam(SParamU) $sparamu
-	    set tgui_tessparam(SParamV) $sparamv
+	    set tgui_tessparam(OldSamplingMethod) $smethod
+	    set tgui_tessparam(SamplingMethod) $smethod
+	    set tgui_tessparam(SamplingParamU) $sparamu
+	    set tgui_tessparam(SamplingParamV) $sparamv
 	    set tgui_tessparam(RefineTrims) $rtrims
 	    set tgui_tessparam(Primitives) $rprims
 
@@ -510,8 +510,8 @@ proc tgui_open { } {
 	array set tgui_tessparam [array get tgui_tessparamdefaults]
 	set tgui_tessparam(ReadTag) $t
 	tgui_update
-	tgui_recalcslider 0 $tgui_tessparam(SParamU)
-	tgui_recalcslider 1 $tgui_tessparam(SParamV)
+	tgui_recalcslider 0 $tgui_tessparam(SamplingParamU)
+	tgui_recalcslider 1 $tgui_tessparam(SamplingParamV)
     }
     addCheck $f tgui_tessparam LazyUpdate
     addCheck $f tgui_tessparam UseTexCoords
@@ -521,12 +521,12 @@ proc tgui_open { } {
     addMenu $f tgui_tessparam Primitives\
 	{"Triangles" "TrianglesAndQuads" "Quads"}
 
-    # SMethod
-    addMenu $f tgui_tessparam SMethod $ay(smethods)
+    # SamplingMethod
+    addMenu $f tgui_tessparam SamplingMethod $ay(smethods)
 
-    # SParamU
-    set f [frame $f.fSParamU -relief sunken -borderwidth 1]
-    label $f.l -text "SParamU:" -width 14
+    # SamplingParamU
+    set f [frame $f.fSamplingParamU -relief sunken -borderwidth 1]
+    label $f.l -text "SamplingParamU:" -width 14
 
     label $f.ll -text "0"
     scale $f.s -showvalue 0 -orient h -from 0 -to 100\
@@ -551,10 +551,10 @@ proc tgui_open { } {
 
     pack $f -in $w.f1 -side top -fill x -expand yes
 
-    # SParamV
+    # SamplingParamV
     set f $w.f1
-    set f [frame $f.fSParamV -relief sunken -borderwidth 1]
-    label $f.l -text "SParamV:" -width 14
+    set f [frame $f.fSamplingParamV -relief sunken -borderwidth 1]
+    label $f.l -text "SamplingParamV:" -width 14
 
     label $f.ll -text "0"
     scale $f.s -showvalue 0 -orient h -from 0 -to 100\
@@ -581,6 +581,8 @@ proc tgui_open { } {
     set f $w.f1
     addText $f t2 "Tesselation Results"
     addInfo $f tgui_tessparam NumPolys
+
+    uie_setLabelWidth $f 16
 
     # set up undo system
     set ::ay(need_undo_clear) 0
@@ -640,8 +642,8 @@ proc tgui_open { } {
     winRestoreOrCenter $w $t
     focus $w.f2.bok
 
-    tgui_recalcslider 0 $tgui_tessparam(SParamU)
-    tgui_recalcslider 1 $tgui_tessparam(SParamV)
+    tgui_recalcslider 0 $tgui_tessparam(SamplingParamU)
+    tgui_recalcslider 1 $tgui_tessparam(SamplingParamV)
 
     # create first tesselation
     tgui_update
@@ -656,16 +658,16 @@ proc tgui_open { } {
     trace variable tgui_tessparam(RefineTrims) w tgui_update
     trace variable tgui_tessparam(Primitives) w tgui_update
 
-    trace variable tgui_tessparam(SMethod) w tgui_update
+    trace variable tgui_tessparam(SamplingMethod) w tgui_update
 
-    set f $w.f1.fSParamU
-    $f.s conf -variable tgui_tessparam(SParamU) -command tgui_update
-    #trace variable tgui_tessparam(SParamU) w tgui_update
-    bind $f.e <<CommitTG>> "if { \[$f.e get\] != \$tgui_tessparam(SParamU) } {\
+    set f $w.f1.fSamplingParamU
+    $f.s conf -variable tgui_tessparam(SamplingParamU) -command tgui_update
+    #trace variable tgui_tessparam(SamplingParamU) w tgui_update
+    bind $f.e <<CommitTG>> "if { \[$f.e get\] != \$tgui_tessparam(SamplingParamU) } {\
 	                         $f.s conf -command \"\"; \
 				 tgui_recalcslider 0 \[$f.e get\]; \
 				 $f.s set \[$f.e get\]; \
-				 set tgui_tessparam(SParamU) \[$f.e get\]; \
+				 set tgui_tessparam(SamplingParamU) \[$f.e get\]; \
 				 $f.s conf -command tgui_update; \
 			     };"
     if {$::tcl_platform(platform) == "windows" } {
@@ -673,14 +675,14 @@ proc tgui_open { } {
 	bind $f.e <<CommitTG>> "+if { \"%K\" == \"KP_Enter\" } {break};"
     }
 
-    set f $w.f1.fSParamV
-    $f.s conf -variable tgui_tessparam(SParamV) -command tgui_update
-    #trace variable tgui_tessparam(SParamV) w tgui_update
-    bind $f.e <<CommitTG>> "if { \[$f.e get\] != \$tgui_tessparam(SParamV) } {\
+    set f $w.f1.fSamplingParamV
+    $f.s conf -variable tgui_tessparam(SamplingParamV) -command tgui_update
+    #trace variable tgui_tessparam(SamplingParamV) w tgui_update
+    bind $f.e <<CommitTG>> "if { \[$f.e get\] != \$tgui_tessparam(SamplingParamV) } {\
 	                         $f.s conf -command \"\"; \
 				 tgui_recalcslider 1 \[$f.e get\]; \
 				 $f.s set \[$f.e get\]; \
-				 set tgui_tessparam(SParamV) \[$f.e get\]; \
+				 set tgui_tessparam(SamplingParamV) \[$f.e get\]; \
 				 $f.s conf -command tgui_update; \
 			     };"
     if {$::tcl_platform(platform) == "windows" } {
@@ -695,7 +697,7 @@ proc tgui_open { } {
 
     tkwait window $w
 
-    trace vdelete tgui_tessparam(SMethod) w tgui_update
+    trace vdelete tgui_tessparam(SamplingMethod) w tgui_update
 
     after idle tgui_unblock
 
