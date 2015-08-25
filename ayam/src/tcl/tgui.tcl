@@ -40,6 +40,7 @@ uplevel #0 { array set tgui_tessparam {
 
     RefineTrims 0
     Primitives 0
+    QuadEps 5.0
 
     LazyUpdate 0
 
@@ -290,13 +291,15 @@ proc tgui_update args {
 	tguiCmd up $tgui_tessparam(SamplingMethod) $tgui_tessparam(SamplingParamU)\
 	    $tgui_tessparam(SamplingParamV) $tgui_tessparam(UseTexCoords)\
 	    $tgui_tessparam(UseVertColors) $tgui_tessparam(UseVertNormals)\
-	    $tgui_tessparam(RefineTrims) $tgui_tessparam(Primitives)
+	    $tgui_tessparam(RefineTrims) $tgui_tessparam(Primitives)\
+	    $tgui_tessparam(QuadEps)
     } else {
 	if { $tgui_tessparam(MB1Down) == 0 } {
 	    tguiCmd up $tgui_tessparam(SamplingMethod) $tgui_tessparam(SamplingParamU)\
 		$tgui_tessparam(SamplingParamV) $tgui_tessparam(UseTexCoords)\
 		$tgui_tessparam(UseVertColors) $tgui_tessparam(UseVertNormals)\
-		$tgui_tessparam(RefineTrims) $tgui_tessparam(Primitives)
+		$tgui_tessparam(RefineTrims) $tgui_tessparam(Primitives)\
+		$tgui_tessparam(QuadEps)
 	}
     }
 

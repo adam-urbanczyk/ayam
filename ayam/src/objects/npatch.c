@@ -2903,6 +2903,7 @@ ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
  int use_tc = AY_FALSE, use_vc = AY_FALSE, use_vn = AY_FALSE;
  int smethod = ay_prefs.smethod;
  double sparamu = ay_prefs.sparamu, sparamv = ay_prefs.sparamv;
+ double quad_eps = AY_EPSILON;
  int refine_trim = 0, primitives = 0;
 
   if(!o)
@@ -2939,7 +2940,7 @@ ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
       /* tesselate */
       ay_status = ay_tess_npatch(o, smethod, sparamu, sparamv,
 				 use_tc, NULL, use_vc, NULL, use_vn, NULL,
-				 refine_trim, primitives,
+				 refine_trim, primitives, quad_eps,
 				 result);
 
       if(*result)
