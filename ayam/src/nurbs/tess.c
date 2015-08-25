@@ -112,15 +112,17 @@ void ay_tess_managecombined(void *userData);
 
 int ay_tess_addtag(ay_object *o, char *val);
 
-int ay_tess_tristoquad(double **t1, double **t2, int *q);
+int ay_tess_tristoquad(double **t1, double **t2, double quad_eps, int *q);
 
 int ay_tess_tristoquadpomesh(ay_tess_tri *tris,
-			      int has_vn, int has_vc, int has_tc,
-			      char *myst, char *myvc, ay_object **result);
+			     int has_vn, int has_vc, int has_tc,
+			     char *myst, char *myvc, double quad_eps,
+			     ay_object **result);
 
 int ay_tess_tristomixedpomesh(ay_tess_tri *tris,
 			      int has_vn, int has_vc, int has_tc,
-			      char *myst, char *myvc, ay_object **result);
+			      char *myst, char *myvc, double quad_eps,
+			      ay_object **result);
 
 int ay_tess_tristopomesh(ay_tess_tri *tris,
 			 int has_vn, int has_vc, int has_tc,
@@ -914,7 +916,7 @@ ay_tess_addtag(ay_object *o, char *val)
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_tess_tristoquad(double **t1, double **t2, int *q)
+ay_tess_tristoquad(double **t1, double **t2, double quad_eps, int *q)
 {
  int i, j, have_point1 = AY_FALSE, have_point2 = AY_FALSE;
  int cp1t1, cp1t2, cp2t1, cp2t2, t;
@@ -950,12 +952,21 @@ ay_tess_tristoquad(double **t1, double **t2, int *q)
   if(!(have_point1 && have_point2))
     return AY_ERROR;
 
-  if(eps != DBL_MAX)
+  if(quad_eps != DBL_MAX)
     {
       /* employ flatness check */
       ay_geom_calcnfrom3(t1[0],t1[1],t1[2],N1);
       ay_geom_calcnfrom3(t2[0],t2[1],t2[2],N2);
-      angle = acos(AY_V3DOT(N1,N2));
+
+      if(!AY_V3COMP(N1,N2))
+	{
+	  angle = AY_R2D(acos(AY_V3DOT(N1,N2)));
+	  /* XXXX split? */
+	  if(fabs(angle) > quad_eps)
+	    {
+	      return AY_ERROR;
+	    }
+	}
     }
 
   if(angle < eps)
@@ -1014,7 +1025,7 @@ ay_tess_tristoquad(double **t1, double **t2, int *q)
  */
 int
 ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
-			 char *myst, char *myvc,
+			 char *myst, char *myvc, double quad_eps,
 			 ay_object **result)
 {
  int ay_status = AY_OK;
@@ -1159,7 +1170,7 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 	      pt2[11] = tri2->c3;
 	    }
 
-	  ay_status = ay_tess_tristoquad(pt1, pt2, q);
+	  ay_status = ay_tess_tristoquad(pt1, pt2, quad_eps, q);
 	}
 
       if(ay_status)
@@ -1223,8 +1234,8 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 	      memcpy(&(po->controlv[i+3]), pt1[q[0]+3], 3*sizeof(double));
 	      memcpy(&(po->controlv[i+6]), pt1[q[1]], 3*sizeof(double));
 	      memcpy(&(po->controlv[i+9]), pt1[q[1]+3], 3*sizeof(double));
-	      memcpy(&(po->controlv[i+12]), pt2[q[2]], 3*sizeof(double));
-	      memcpy(&(po->controlv[i+15]), pt2[q[2]+3], 3*sizeof(double));
+	      memcpy(&(po->controlv[i+12]), pt1[q[2]], 3*sizeof(double));
+	      memcpy(&(po->controlv[i+15]), pt1[q[2]+3], 3*sizeof(double));
 	      memcpy(&(po->controlv[i+18]), pt2[q[3]], 3*sizeof(double));
 	      memcpy(&(po->controlv[i+21]), pt2[q[3]+3], 3*sizeof(double));
 	    }
@@ -1232,7 +1243,7 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 	    {
 	      memcpy(&(po->controlv[i]), pt1[q[0]], 3*sizeof(double));
 	      memcpy(&(po->controlv[i+3]), pt1[q[1]], 3*sizeof(double));
-	      memcpy(&(po->controlv[i+6]), pt2[q[2]], 3*sizeof(double));
+	      memcpy(&(po->controlv[i+6]), pt1[q[2]], 3*sizeof(double));
 	      memcpy(&(po->controlv[i+9]), pt2[q[3]], 3*sizeof(double));
 	    }
 
@@ -1242,7 +1253,7 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 				  ",%g,%g,%g,%g,%g,%g,%g,%g",
 				  *(pt1[q[0]+6]), *(pt1[q[0]+6]+1),
 				  *(pt1[q[1]+6]), *(pt1[q[1]+6]+1),
-				  *(pt2[q[2]+6]), *(pt2[q[2]+6]+1),
+				  *(pt1[q[2]+6]), *(pt1[q[2]+6]+1),
 				  *(pt2[q[3]+6]), *(pt2[q[3]+6]+1));
 	    }
 
@@ -1252,7 +1263,7 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 				  ",%g,%g,%g,%g,%g,%g,%g,%g,%g,%g,%g,%g",
 		      *(pt1[q[0]+9]), *(pt1[q[0]+9]+1), *(pt1[q[0]+9]+2),
 		      *(pt1[q[1]+9]), *(pt1[q[1]+9]+1), *(pt1[q[1]+9]+2),
-		      *(pt2[q[2]+9]), *(pt2[q[2]+9]+1), *(pt2[q[2]+9]+2),
+		      *(pt1[q[2]+9]), *(pt1[q[2]+9]+1), *(pt1[q[2]+9]+2),
 		      *(pt2[q[3]+9]), *(pt2[q[3]+9]+1), *(pt2[q[3]+9]+2));
 	    }
 	}
@@ -1377,7 +1388,7 @@ cleanup:
  */
 int
 ay_tess_tristomixedpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
-			  char *myst, char *myvc,
+			  char *myst, char *myvc, double quad_eps,
 			  ay_object **result)
 {
  int ay_status = AY_OK;
@@ -1573,7 +1584,7 @@ ay_tess_tristomixedpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 	      pt2[11] = tri2->c3;
 	    }
 
-	  ay_status = ay_tess_tristoquad(pt1, pt2, q);
+	  ay_status = ay_tess_tristoquad(pt1, pt2, quad_eps, q);
 	  if(ay_status)
 	    {
 	      /* XXXX goto cleanup; ? */
@@ -2001,7 +2012,7 @@ ay_tess_npatch(ay_object *o,
 	       int use_tc, char *myst,
 	       int use_vc, char *mycs,
 	       int use_vn, char *myn,
-	       int refine_trims, int primitives,
+	       int refine_trims, int primitives, double quad_eps,
 	       ay_object **pm)
 {
 #ifndef GLU_VERSION_1_3
@@ -2415,12 +2426,12 @@ ay_tess_npatch(ay_object *o,
     case 1:
       /* Triangles and Quads */
       ay_status = ay_tess_tristomixedpomesh(to.tris, AY_TRUE, have_vc, have_tc,
-					    myst, mycs, &new);
+					    myst, mycs, quad_eps, &new);
       break;
     case 2:
       /* Quads */
       ay_status = ay_tess_tristoquadpomesh(to.tris, AY_TRUE, have_vc, have_tc,
-					   myst, mycs, &new);
+					   myst, mycs, quad_eps, &new);
       break;
     default:
       break;
@@ -2515,6 +2526,7 @@ ay_tess_npatchtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL, *new = NULL;
  double sparamu = ay_prefs.sparamu, sparamv = ay_prefs.sparamv;
+ double quad_eps = DBL_MAX;
  int smethod = ay_prefs.smethod+1;
  int use_tc = AY_FALSE, use_vc = AY_FALSE, use_vn = AY_FALSE;
  int refine_trims = 0, primitives = 0;
@@ -2580,6 +2592,10 @@ ay_tess_npatchtcmd(ClientData clientData, Tcl_Interp *interp,
 	    if(primitives > 5)
 	      primitives = 5;
 	}
+      if(argc > 9)
+	{
+	  Tcl_GetDouble(interp, argv[9], &quad_eps);
+	}
     } /* if */
 
   while(sel)
@@ -2595,6 +2611,7 @@ ay_tess_npatchtcmd(ClientData clientData, Tcl_Interp *interp,
 				     use_vn, NULL,
 				     refine_trims,
 				     primitives,
+				     quad_eps,
 				     &new);
 	  if(!ay_status)
 	    {

@@ -167,7 +167,7 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
  int numpolys = 0;
  int use_tc = AY_FALSE, use_vc = AY_FALSE, use_vn = AY_FALSE;
  int smethod = 0, refine_trims = 0, primitives = 0;
- double sparamu = 0.0, sparamv = 0.0;
+ double sparamu = 0.0, sparamv = 0.0, quad_eps = 0.0;
 
   /* get new tesselation parameters */
   if(argc < 7)
@@ -185,6 +185,7 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
   sscanf(argv[6], "%d", &use_vn);
   sscanf(argv[7], "%d", &refine_trims);
   sscanf(argv[8], "%d", &primitives);
+  sscanf(argv[9], "%lg", &quad_eps);
 
   if(refine_trims < 0)
     refine_trims = 0;
@@ -228,6 +229,7 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 			       use_vn, NULL,
 			       refine_trims,
 			       primitives,
+			       quad_eps,
 			       &tmp);
 
 	  /* process caps and bevels (if any) */
@@ -252,6 +254,7 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 				       use_vn, NULL,
 				       refine_trims,
 				       primitives,
+				       quad_eps,
 				       &tmp);
 		  if(tmp)
 		    {
@@ -292,6 +295,7 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 					   use_vn, NULL,
 					   refine_trims,
 					   primitives,
+					   quad_eps,
 					   &tmp);
 		      if(tmp)
 			{
@@ -323,6 +327,7 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 				       use_vn, NULL,
 				       refine_trims,
 				       primitives,
+				       quad_eps,
 				       &tmp);
 		} /* if */
 	      (void)ay_object_deletemulti(tmpnp, AY_FALSE);
