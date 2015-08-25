@@ -1388,9 +1388,9 @@ proc addText { w name text } {
 
     set f [frame $w.f${name}]
 
-    label $f.l -text $text
+    label $f.tl -text $text
 
-    pack $f.l -in $f -side left -fill x -expand yes
+    pack $f.tl -in $f -side left -fill x -expand yes
     pack $f -in $w -side top
 
  return;
