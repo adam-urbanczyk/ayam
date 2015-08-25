@@ -82,7 +82,11 @@
 #include <slx.h>
 #endif /* AYUSESLXARGS */
 
+#ifndef __sgi
+#define AYGLUCBTYPE (_GLUfuncptr)
+#else
 #define AYGLUCBTYPE
+#endif
 
 #ifdef WIN32
  #undef AYGLUCBTYPE
