@@ -969,7 +969,7 @@ ay_tess_tristoquad(double **t1, double **t2, double quad_eps, int *q)
 	}
     }
 
-  if(angle < eps)
+  if(fabs(angle) < eps)
     {
       /* emit one quad */
       t = 0;
