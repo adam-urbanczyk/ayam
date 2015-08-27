@@ -863,6 +863,10 @@ int ay_pomesht_genfacenormals(ay_pomesh_object *po, double **result);
  */
 int ay_pomesht_gensmoothnormals(ay_pomesh_object *po, double **result);
 
+/** remove smooth normals from a polymesh object
+ */
+int ay_pomesht_remsmoothnormals(ay_pomesh_object *po);
+
 /** Tcl command to create smooth vertex normals or face normal PV tags
  *  for the selected polymesh objects.
  */

@@ -1721,6 +1721,54 @@ cleanup:
 } /* ay_pomesht_gensmoothnormals */
 
 
+/** ay_pomesht_remsmoothnormals:
+ *  Remove smooth vertex normals for an arbitrary PolyMesh.
+ *
+ * \param[in,out] po PoMesh object to remove the normals from
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_pomesht_remsmoothnormals(ay_pomesh_object *po)
+{
+ int ay_status = AY_OK;
+ unsigned int a, b, i;
+ double *newcv = NULL;
+
+  if(!po)
+    return AY_ENULL;
+
+  if(po->npolys == 0)
+    return AY_ERROR;
+
+  if(po->has_normals)
+    {
+      if(!(newcv = calloc(po->ncontrols*3, sizeof(double))))
+	{ay_status = AY_EOMEM; goto cleanup;}
+
+      a = 0;
+      b = 0;
+      for(i = 0; i < po->ncontrols; i++)
+	{
+	  memcpy(&(newcv[a]), &(po->controlv[b]), 3*sizeof(double));
+	  a += 3;
+	  b += 6;
+	}
+
+      po->controlv = newcv;
+      newcv = NULL;
+      po->has_normals = AY_FALSE;
+    }
+
+cleanup:
+
+  if(newcv)
+    free(newcv);
+
+ return ay_status;
+} /* ay_pomesht_remsmoothnormals */
+
+
 /** ay_pomesht_gennormtcmd:
  * Generate normals for all selected PoMesh objects.
  * Implements the \a genfnPo scripting interface command.
@@ -1739,7 +1787,7 @@ ay_pomesht_gennormtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_pomesh_object *pomesh;
  double *fn = NULL;
- int smooth = AY_FALSE;
+ int smooth = AY_FALSE, remsmooth = AY_FALSE;
  char *nname = ay_prefs.normalname;
 
   if(!sel)
@@ -1750,6 +1798,9 @@ ay_pomesht_gennormtcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!strcmp(argv[0], "gensnPo"))
     smooth = AY_TRUE;
+
+  if(!strcmp(argv[0], "remsnPo"))
+    remsmooth = AY_TRUE;
 
   while(sel)
     {
@@ -1768,20 +1819,31 @@ ay_pomesht_gennormtcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	  else
 	    {
-	      fn = pomesh->face_normals;
-	      if(!fn)
+	      if(remsmooth)
 		{
-		  if((ay_status = ay_pomesht_genfacenormals(pomesh, &fn)))
+		  if((ay_status = ay_pomesht_remsmoothnormals(pomesh)))
 		    {
 		      ay_error(ay_status, argv[0], NULL);
 		      return TCL_OK;
 		    }
 		}
+	      else
+		{
+		  fn = pomesh->face_normals;
+		  if(!fn)
+		    {
+		      if((ay_status = ay_pomesht_genfacenormals(pomesh, &fn)))
+			{
+			  ay_error(ay_status, argv[0], NULL);
+			  return TCL_OK;
+			}
+		    }
 
-	      ay_pv_add(o, nname, "uniform", "n", pomesh->npolys, 3, fn);
+		  ay_pv_add(o, nname, "uniform", "n", pomesh->npolys, 3, fn);
 
-	      if(!pomesh->face_normals)
-		free(fn);
+		  if(!pomesh->face_normals)
+		    free(fn);
+		}
 	    } /* if */
 	}
       else
