@@ -3198,7 +3198,7 @@ sdnpatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   if(itemp != 3 && itemp != 5 && itemp != 7)
     {
-      ay_error(AY_EOMEM, fname, "Unsupported degree, must be 3, 5, or 7!");
+      ay_error(AY_ERROR, fname, "Unsupported degree, must be 3, 5, or 7!");
     }
   else
     {
@@ -5359,7 +5359,7 @@ sdnpatch_mergepatchtcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_EOMEM, argv[0], NULL);
+	  ay_error(AY_ERROR, argv[0], NULL);
 	  if(c)
 	    ay_object_deletemulti(c, AY_FALSE);
 	  goto cleanup;
