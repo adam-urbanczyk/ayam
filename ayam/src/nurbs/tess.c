@@ -905,12 +905,15 @@ ay_tess_addtag(ay_object *o, char *val)
 
 
 /** ay_tess_tristoquad:
- * Compare two triangles, check for two common points, calculate
+ * Compare two triangles, check for two common points, check normals
+ * against maximum deviation, if all checks were positive: calculate
  * four indices to form a quad (three indices from triangle 1, one
  * index from triangle 2).
  *
  * \param[in] t1 array of pointers to coordinates, normals etc. of triangle 1
  * \param[in] t2 array of pointers to coordinates, normals etc. of triangle 2
+ * \param[in] quad_eps maximum angle (in degrees) the normals of t1 and t2 may
+ *  differentiate in order to be considered compatible
  * \param[in,out] q array where the four quad indices are stored
  *
  * \returns AY_OK on success, error code otherwise.
@@ -955,8 +958,8 @@ ay_tess_tristoquad(double **t1, double **t2, double quad_eps, int *q)
   if(quad_eps != DBL_MAX)
     {
       /* employ flatness check */
-      ay_geom_calcnfrom3(t1[0],t1[1],t1[2],N1);
-      ay_geom_calcnfrom3(t2[0],t2[1],t2[2],N2);
+      ay_geom_calcnfrom3(t1[0], t1[1], t1[2], N1);
+      ay_geom_calcnfrom3(t2[0], t2[1], t2[2], N2);
 
       if(!AY_V3COMP(N1,N2))
 	{
@@ -1031,9 +1034,9 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
  int ay_status = AY_OK;
  ay_object *new = NULL;
  ay_pomesh_object *po = NULL;
- ay_tess_tri *tri, *tri1, *tri2;
+ ay_tess_tri *tri, *tri1, *tri2, **dquads = NULL;
  double *pt1[12] = {0}, *pt2[12] = {0};
- unsigned int numtris = 0, numquads = 0, i, stride;
+ unsigned int numtris = 0, numquads = 0, numdquads = 0, i, j, k, stride;
  int q[4] = {0};
  char *tctagbuf = NULL, *vctagbuf = NULL;
  char *tctagptr = NULL, *vctagptr = NULL;
@@ -1083,6 +1086,12 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 
   numquads = numtris;
   po->has_normals = has_vn;
+
+  if(!(dquads = malloc(numquads*sizeof(ay_tess_tri*))))
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
 
   /* now copy all the vertices and normals */
   if(!(po->controlv = malloc(numquads*4*stride*sizeof(double))))
@@ -1176,8 +1185,9 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
       if(ay_status)
 	{
 	  /* triangles are incompatible => create degenerate quad from tri1 */
-	  numquads++;
-
+	  dquads[numdquads] = tri1;
+	  numdquads++;
+#if 0
 	  if(has_vn)
 	    {
 	      memcpy(&(po->controlv[i]), tri1->p1, 3*sizeof(double));
@@ -1218,6 +1228,7 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 	    }
 
 	  i += (4*stride);
+#endif
 	  tri1 = tri1->next;
 	  if(tri2)
 	    tri2 = tri2->next;
@@ -1266,6 +1277,8 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 		      *(pt1[q[2]+9]), *(pt1[q[2]+9]+1), *(pt1[q[2]+9]+2),
 		      *(pt2[q[3]+9]), *(pt2[q[3]+9]+1), *(pt2[q[3]+9]+2));
 	    }
+
+	  i += (4*stride);
 	}
       else
 	{
@@ -1273,12 +1286,188 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 
 	}
 
-      i += (4*stride);
-
       tri1 = tri2->next;
       if(tri1)
 	tri2 = tri1->next;
     } /* while */
+
+  /* search degenerate quads for potential partners */
+  for(j = 0; j < numdquads; j++)
+    {
+      tri1 = dquads[j];
+      if(tri1)
+	{
+	  pt1[0] = tri1->p1;
+	  pt1[1] = tri1->p2;
+	  pt1[2] = tri1->p3;
+
+	  if(has_vn)
+	    {
+	      pt1[3] = tri1->n1;
+	      pt1[4] = tri1->n2;
+	      pt1[5] = tri1->n3;
+	    }
+
+	  if(has_tc)
+	    {
+	      pt1[6] = tri1->t1;
+	      pt1[7] = tri1->t2;
+	      pt1[8] = tri1->t3;
+	    }
+
+	  if(has_vc)
+	    {
+	      pt1[9] = tri1->c1;
+	      pt1[10] = tri1->c2;
+	      pt1[11] = tri1->c3;
+	    }
+
+	  for(k = j+1; k < numdquads; k++)
+	    {
+	      tri2 = dquads[k];
+	      if(tri2)
+		{
+		  pt2[0] = tri2->p1;
+		  pt2[1] = tri2->p2;
+		  pt2[2] = tri2->p3;
+
+		  if(has_vn)
+		    {
+		      pt2[3] = tri2->n1;
+		      pt2[4] = tri2->n2;
+		      pt2[5] = tri2->n3;
+		    }
+
+		  if(has_tc)
+		    {
+		      pt2[6] = tri2->t1;
+		      pt2[7] = tri2->t2;
+		      pt2[8] = tri2->t3;
+		    }
+
+		  if(has_vc)
+		    {
+		      pt2[9] = tri2->c1;
+		      pt2[10] = tri2->c2;
+		      pt2[11] = tri2->c3;
+		    }
+
+		  ay_status = ay_tess_tristoquad(pt1, pt2, quad_eps, q);
+
+		  if(!ay_status && q[0] != -1)
+		    {
+		      /* one quad => just copy the relevant data */
+		      numquads++;
+		      if(has_vn)
+			{
+			  memcpy(&(po->controlv[i]), pt1[q[0]],
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+3]), pt1[q[0]+3],
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+6]), pt1[q[1]],
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+9]), pt1[q[1]+3],
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+12]), pt1[q[2]],
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+15]), pt1[q[2]+3],
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+18]), pt2[q[3]],
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+21]), pt2[q[3]+3],
+				 3*sizeof(double));
+			}
+		      else
+			{
+			  memcpy(&(po->controlv[i]), pt1[q[0]],
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+3]), pt1[q[1]],
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+6]), pt1[q[2]],
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+9]), pt2[q[3]],
+				 3*sizeof(double));
+			}
+
+		      if(has_tc)
+			{
+			  tctagptr += sprintf(tctagptr,
+					      ",%g,%g,%g,%g,%g,%g,%g,%g",
+					      *(pt1[q[0]+6]), *(pt1[q[0]+6]+1),
+					      *(pt1[q[1]+6]), *(pt1[q[1]+6]+1),
+					      *(pt1[q[2]+6]), *(pt1[q[2]+6]+1),
+					      *(pt2[q[3]+6]), *(pt2[q[3]+6]+1));
+			}
+
+		      if(has_vc)
+			{
+			  vctagptr += sprintf(vctagptr,
+				      ",%g,%g,%g,%g,%g,%g,%g,%g,%g,%g,%g,%g",
+			  *(pt1[q[0]+9]), *(pt1[q[0]+9]+1), *(pt1[q[0]+9]+2),
+			  *(pt1[q[1]+9]), *(pt1[q[1]+9]+1), *(pt1[q[1]+9]+2),
+			  *(pt1[q[2]+9]), *(pt1[q[2]+9]+1), *(pt1[q[2]+9]+2),
+			  *(pt2[q[3]+9]), *(pt2[q[3]+9]+1), *(pt2[q[3]+9]+2));
+			}
+
+		      /* signal successful processing of tri1/tri2 */
+		      dquads[j] = NULL;
+		      dquads[k] = NULL;
+
+		      i += (4*stride);
+
+		      break;
+		    } /* one quad */
+		} /* if tri2 */
+	    } /* for k */
+
+	  if(dquads[j])
+	    {
+	      /* found no matching triangle => create degenerate quad */
+	      numquads++;
+
+	      if(has_vn)
+		{
+		  memcpy(&(po->controlv[i]), tri1->p1, 3*sizeof(double));
+		  memcpy(&(po->controlv[i+3]), tri1->n1, 3*sizeof(double));
+		  memcpy(&(po->controlv[i+6]), tri1->p2, 3*sizeof(double));
+		  memcpy(&(po->controlv[i+9]), tri1->n2, 3*sizeof(double));
+		  memcpy(&(po->controlv[i+12]), tri1->p3, 3*sizeof(double));
+		  memcpy(&(po->controlv[i+15]), tri1->n3, 3*sizeof(double));
+		  memcpy(&(po->controlv[i+18]), tri1->p3, 3*sizeof(double));
+		  memcpy(&(po->controlv[i+21]), tri1->n3, 3*sizeof(double));
+		}
+	      else
+		{
+		  memcpy(&(po->controlv[i]), tri1->p1, 3*sizeof(double));
+		  memcpy(&(po->controlv[i+3]), tri1->p2, 3*sizeof(double));
+		  memcpy(&(po->controlv[i+6]), tri1->p3, 3*sizeof(double));
+		  memcpy(&(po->controlv[i+9]), tri1->p3, 3*sizeof(double));
+		}
+
+	      if(has_tc)
+		{
+		  tctagptr += sprintf(tctagptr,
+				      ",%g,%g,%g,%g,%g,%g,%g,%g",
+				      tri1->t1[0], tri1->t1[1],
+				      tri1->t2[0], tri1->t2[1],
+				      tri1->t3[0], tri1->t3[1],
+				      tri1->t3[0], tri1->t3[1]);
+		}
+
+	      if(has_vc)
+		{
+		  vctagptr += sprintf(vctagptr,
+				      ",%g,%g,%g,%g,%g,%g,%g,%g,%g,%g,%g,%g",
+				      tri1->c1[0], tri1->c1[1], tri1->c1[2],
+				      tri1->c2[0], tri1->c2[1], tri1->c2[2],
+				      tri1->c3[0], tri1->c3[1], tri1->c3[2],
+				      tri1->c3[0], tri1->c3[1], tri1->c3[2]);
+		}
+
+	      i += (4*stride);
+	    } /* if degen */
+	} /* if tri1 */
+    } /* for j */
 
   ay_status = AY_OK;
   po->ncontrols = numquads*4;
@@ -1375,6 +1564,9 @@ cleanup:
 
   if(vctagbuf)
     free(vctagbuf);
+
+  if(dquads)
+    free(dquads);
 
  return ay_status;
 } /* ay_tess_tristoquadpomesh */
