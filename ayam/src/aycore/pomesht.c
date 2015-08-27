@@ -1722,7 +1722,7 @@ cleanup:
 
 
 /** ay_pomesht_remsmoothnormals:
- *  Remove smooth vertex normals for an arbitrary PolyMesh.
+ *  Remove smooth vertex normals from an arbitrary PolyMesh.
  *
  * \param[in,out] po PoMesh object to remove the normals from
  *
@@ -1755,6 +1755,7 @@ ay_pomesht_remsmoothnormals(ay_pomesh_object *po)
 	  b += 6;
 	}
 
+      free(po->controlv);
       po->controlv = newcv;
       newcv = NULL;
       po->has_normals = AY_FALSE;
