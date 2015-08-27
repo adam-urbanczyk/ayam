@@ -7573,7 +7573,7 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo,
  ay_nurbcurve_object *u0 = NULL, *un = NULL, *v0 = NULL, *vn = NULL;
  ay_nurbpatch_object *np;
  ay_object o0 = {0}, o1 = {0}, o2 = {0}, o3 = {0}, *c = NULL;
- ay_object *list, **next;
+ ay_object *list = NULL, **next;
 
   if(!o || !result)
     return AY_ENULL;
