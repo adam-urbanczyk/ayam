@@ -171,6 +171,8 @@ proc pomesh_optimize { } {
 	    set ay(sc) 1
 	}
 
+	plb_update
+
 	grab release .pomeshopt
 	restoreFocus $pomeshopt_options(oldfocus)
 	destroy .pomeshopt
