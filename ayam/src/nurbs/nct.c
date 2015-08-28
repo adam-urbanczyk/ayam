@@ -6593,6 +6593,10 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 	      newcontrolv = NULL;
 	      free(newknotv);
 	      newknotv = NULL;
+
+	      if(curve->is_rat)
+		(void)ay_nct_homtoeuc(curve);
+
 	      break;
 	    }
 
