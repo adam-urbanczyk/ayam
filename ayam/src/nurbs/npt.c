@@ -13454,6 +13454,9 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
 	      return TCL_OK;
 	    }
 
+	  if(patch->is_rat)
+	    (void)ay_npt_euctohom(patch);
+
 	  /* remove the knot */
 	  ay_status = ay_nb_RemoveKnotSurfV(patch->width-1, patch->height-1,
 					    patch->vorder-1,
@@ -13468,6 +13471,10 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
 	      newcontrolv = NULL;
 	      free(newknotv);
 	      newknotv = NULL;
+
+	      if(patch->is_rat)
+		(void)ay_npt_homtoeuc(patch);
+
 	      break;
 	    }
 
@@ -13478,6 +13485,9 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
 	  free(patch->vknotv);
 	  patch->controlv = newcontrolv;
 	  patch->vknotv = newknotv;
+
+	  if(patch->is_rat)
+	    (void)ay_npt_homtoeuc(patch);
 
 	  patch->vknot_type = ay_knots_classify(patch->vorder, patch->vknotv,
 						patch->vorder+patch->height,
@@ -13651,6 +13661,9 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 	      return TCL_OK;
 	    }
 
+	  if(patch->is_rat)
+	    (void)ay_npt_euctohom(patch);
+
 	  /* remove the knot */
 	  ay_status = ay_nb_RemoveKnotSurfV(patch->width-1, patch->height-1,
 					    patch->vorder-1,
@@ -13665,6 +13678,10 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 	      newcontrolv = NULL;
 	      free(newknotv);
 	      newknotv = NULL;
+
+	      if(patch->is_rat)
+		(void)ay_npt_homtoeuc(patch);
+
 	      break;
 	    }
 
@@ -13675,6 +13692,9 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 	  free(patch->vknotv);
 	  patch->controlv = newcontrolv;
 	  patch->vknotv = newknotv;
+
+	  if(patch->is_rat)
+	    (void)ay_npt_homtoeuc(patch);
 
 	  patch->vknot_type = ay_knots_classify(patch->vorder, patch->vknotv,
 						patch->vorder+patch->height,
@@ -13784,6 +13804,9 @@ ay_npt_refineu(ay_nurbpatch_object *patch, double *newknotv, int newknotvlen)
       return AY_ERROR;
     }
 
+  if(patch->is_rat)
+    (void)ay_npt_euctohom(patch);
+
   /* fill Ubar & Qw */
   ay_nb_RefineKnotVectSurfU(patch->is_rat, patch->width-1, patch->height-1,
 			    patch->uorder-1, patch->uknotv, patch->controlv,
@@ -13801,6 +13824,9 @@ ay_npt_refineu(ay_nurbpatch_object *patch, double *newknotv, int newknotvlen)
     }
 
   patch->width += count;
+
+  if(patch->is_rat)
+    (void)ay_npt_homtoeuc(patch);
 
   patch->uknot_type = ay_knots_classify(patch->uorder, patch->uknotv,
 				       patch->uorder+patch->width,
@@ -13892,6 +13918,9 @@ ay_npt_refinev(ay_nurbpatch_object *patch, double *newknotv, int newknotvlen)
       return AY_ERROR;
     }
 
+  if(patch->is_rat)
+    (void)ay_npt_euctohom(patch);
+
   /* fill Vbar & Qw */
   ay_nb_RefineKnotVectSurfV(patch->is_rat, patch->width-1, patch->height-1,
 			    patch->vorder-1, patch->vknotv, patch->controlv,
@@ -13909,6 +13938,9 @@ ay_npt_refinev(ay_nurbpatch_object *patch, double *newknotv, int newknotvlen)
     }
 
   patch->height += count;
+
+  if(patch->is_rat)
+    (void)ay_npt_homtoeuc(patch);
 
   patch->vknot_type = ay_knots_classify(patch->vorder, patch->vknotv,
 				       patch->vorder+patch->height,
