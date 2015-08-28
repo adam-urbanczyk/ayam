@@ -845,6 +845,9 @@ ay_nct_refinekn(ay_nurbcurve_object *curve, int maintain_ends,
       return AY_EOMEM;
     }
 
+  if(curve->is_rat)
+    (void)ay_nct_euctohom(curve);
+
   /* fill Ubar & Qw */
   ay_nb_RefineKnotVectCurve(curve->is_rat, curve->length-1, curve->order-1,
 			    curve->knotv, curve->controlv,
@@ -862,6 +865,9 @@ ay_nct_refinekn(ay_nurbcurve_object *curve, int maintain_ends,
     }
 
   curve->length += count;
+
+  if(curve->is_rat)
+    (void)ay_nct_homtoeuc(curve);
 
   curve->knot_type = ay_knots_classify(curve->order, curve->knotv,
 				       curve->order+curve->length,
@@ -4234,7 +4240,7 @@ ay_nct_concatmultiple(int closed, int knot_type, int fillgaps,
     {
       if(o->type == AY_IDNCURVE)
 	{
-	  nc = (ay_nurbcurve_object *)o->refine;	
+	  nc = (ay_nurbcurve_object *)o->refine;
 	  length += nc->length;
 	  numcurves++;
 	  /* take order, tolerance, and display_mode from first curve */
@@ -6571,6 +6577,9 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 	      return TCL_OK;
 	    }
 
+	  if(curve->is_rat)
+	    (void)ay_nct_euctohom(curve);
+
 	  /* remove the knot */
 	  ay_status = ay_nb_RemoveKnotCurve4D(curve->length-1, curve->order-1,
 					      curve->knotv, curve->controlv,
@@ -6597,6 +6606,9 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 	  newcontrolv = NULL;
 	  free(newknotv);
 	  newknotv = NULL;
+
+	  if(curve->is_rat)
+	    (void)ay_nct_homtoeuc(curve);
 
 	  curve->knot_type = ay_knots_classify(curve->order, curve->knotv,
 					       curve->order+curve->length,
