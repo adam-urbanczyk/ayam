@@ -849,6 +849,18 @@ ay_pomesht_addvertextohash(ay_pomesht_hash *phash, int ignore_normals,
 } /* ay_pomesht_addvertextohash */
 
 
+/** ay_pomesht_optimizecoords:
+ * Optimize control vertices of a polymesh object so that they are
+ * unique when this function is finished.
+ * 
+ * \param pomesh PolyMesh object to optimize
+ * \param ignore_normals if AY_TRUE, vertex normals are ignored when
+ *  comparing the vertices
+ * \param selp vertices to process (may be NULL, to indicate that all
+ *  vertices are to be processed)
+ * 
+ * \returns AY_OK on success, error code otherwise.
+ */
 int
 ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals,
 			  ay_point *selp)
@@ -902,7 +914,6 @@ ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals,
      we have to set ignore_normals to true */
   if(!ignore_normals && !pomesh->has_normals)
     ignore_normals = AY_TRUE;
-
 
   for(i = 0; i < total_verts; i++)
     {
@@ -1022,6 +1033,7 @@ ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  sscanf(argv[i+1], "%d", &optimize_faces);
 	}
+      else
       if(!strcmp(argv[i], "-s"))
 	{
 	  sscanf(argv[i+1], "%d", &optimize_selected);
