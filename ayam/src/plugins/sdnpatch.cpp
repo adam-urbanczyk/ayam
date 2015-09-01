@@ -5432,7 +5432,7 @@ sdnpatch_getcontrolvertices(sdnpatch_object *sdnpatch)
  std::vector<Vertex*>::iterator it;
  std::vector<Vertex*> *tmp = NULL;
  Vertex *v;
- unsigned int a = 0;
+ unsigned int a = 0, maxID;
 
   if(!sdnpatch || !sdnpatch->controlMesh)
     return AY_ENULL;
@@ -5461,6 +5461,8 @@ sdnpatch_getcontrolvertices(sdnpatch_object *sdnpatch)
 	  it != tmp->end();
 	  it++)
 	{
+	  // XXXX ID might be larger than tmp->size() due to
+	  // culled/non-real vertices!
 	  (*sdnpatch->controlVertices)[(*it)->getID()] = *it;
 	}
 

@@ -120,6 +120,7 @@ proc pomesh_merge { } {
 uplevel #0 { array set pomeshopt_options {
     OptimizeCoords 1
     IgnoreNormals 1
+    SelectedPoints 0
     OptimizeFaces 0
 }   }
 
@@ -149,6 +150,7 @@ proc pomesh_optimize { } {
     }
     addCheck $f pomeshopt_options OptimizeCoords
     addCheck $f pomeshopt_options IgnoreNormals
+    addCheck $f pomeshopt_options SelectedPoints
     addCheck $f pomeshopt_options OptimizeFaces
 
     set f [frame $w.f2]
@@ -161,6 +163,7 @@ proc pomesh_optimize { } {
 
 	optiPo -c $pomeshopt_options(OptimizeCoords)\
 		-n $pomeshopt_options(IgnoreNormals)\
+		-s $pomeshopt_options(SelectedPoints)\
 		-f $pomeshopt_options(OptimizeFaces);
 
 	rV
@@ -171,11 +174,11 @@ proc pomesh_optimize { } {
 	    set ay(sc) 1
 	}
 
-	plb_update
-
 	grab release .pomeshopt
 	restoreFocus $pomeshopt_options(oldfocus)
 	destroy .pomeshopt
+
+	after idle {plb_update}
     }
 
     button $f.bca -text "Cancel" -width 5 -command "\

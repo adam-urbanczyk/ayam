@@ -2639,7 +2639,7 @@ ay_tess_npatch(ay_object *o,
   if(!primitives && new && !have_tc && !have_vc)
     {
       ay_status = ay_pomesht_optimizecoords((ay_pomesh_object*)new->refine,
-					    AY_FALSE);
+					    AY_FALSE, NULL);
 
       if(ay_status)
 	goto cleanup;
@@ -2959,7 +2959,7 @@ ay_tess_pomeshf(ay_pomesh_object *pomesh,
   /* immediately optimize the polymesh (remove multiply used vertices) */
   if(optimize)
     ay_status = ay_pomesht_optimizecoords((ay_pomesh_object*)tmpo->refine,
-					  AY_FALSE);
+					  AY_FALSE, NULL);
 
   /* return result */
   *trpomesh = tmpo->refine;
@@ -3085,7 +3085,7 @@ ay_tess_pomesh(ay_pomesh_object *pomesh, int optimize, double *normal,
   /* immediately optimize the polymesh (remove multiply used vertices) */
   if(optimize)
     ay_status = ay_pomesht_optimizecoords((ay_pomesh_object*)tmpo->refine,
-					  AY_FALSE);
+					  AY_FALSE, NULL);
 
   /* return result */
   *trpomesh = tmpo->refine;

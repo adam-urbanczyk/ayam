@@ -850,15 +850,20 @@ ay_pomesht_addvertextohash(ay_pomesht_hash *phash, int ignore_normals,
 
 
 int
-ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals)
+ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals,
+			  ay_point *selp)
 {
  int ay_status = AY_OK;
- ay_pomesh_object *new = NULL;
+ ay_point *s;
  ay_pomesht_hash *phash;
  unsigned int i, total_loops = 0, total_verts = 0;
- unsigned int p, dp, t;
- int stride;
- double *tmp = NULL;
+ unsigned int p, dp, *newverts = NULL;
+ int found, stride;
+ double *newcontrolv = NULL, *tmp = NULL;
+
+  /* can we optimize at all? */
+  if(pomesh->npolys <= 1)
+     return AY_OK;
 
   /* calc total verts */
   for(i = 0; i < pomesh->npolys; i++)
@@ -871,33 +876,25 @@ ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals)
       total_verts += pomesh->nverts[i];
     } /* for */
 
-  /* should we optimize at all? */
-  if(pomesh->npolys <= 1)
-     return AY_OK;
-
-  if(!(new = (ay_pomesh_object *)calloc(1, sizeof(ay_pomesh_object))))
-    return AY_EOMEM;
-
-  if(!(new->verts = (unsigned int *)calloc(1, sizeof(unsigned int) *
+  if(!(newverts = (unsigned int *)calloc(1, sizeof(unsigned int) *
 					   total_verts)))
-    { free(new); return AY_EOMEM; }
-  new->ncontrols = 0;
+    { return AY_EOMEM; }
 
   if(pomesh->has_normals)
     stride = 6;
   else
     stride = 3;
 
-  if(!(new->controlv = (double *)calloc(1, pomesh->ncontrols * stride *
+  if(!(newcontrolv = (double *)calloc(1, pomesh->ncontrols * stride *
 					sizeof(double))))
-    { free(new->verts); free(new); return AY_EOMEM; }
+    { free(newverts); return AY_EOMEM; }
 
   phash = (ay_pomesht_hash *)calloc(1, sizeof(ay_pomesht_hash));
   phash->T = total_verts/5;		/* hashtablesize */
   phash->c = 1024;
 
   if(ay_pomesht_inithash(phash) == AY_EOMEM)
-    { free(new->verts); free(new->controlv); free(new); return AY_EOMEM; }
+    { free(newverts); free(newcontrolv); return AY_EOMEM; }
 
   dp = 0;
 
@@ -919,46 +916,73 @@ ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals)
 
       if(ay_status)
 	{
-	  /* XXXX early exit, potential memory leak! */
-	  return ay_status;
+	  break;
 	}
 
       if(phash->found)
 	{
-	  new->verts[i] = phash->index;
+	  if(!selp)
+	    {
+	      newverts[i] = phash->index;
+	    }
+	  else
+	    {
+	      /* only optimize selected points */
+	      found = AY_FALSE;
+	      s = selp;
+	      while(s)
+		{
+		  if(s->index == pomesh->verts[i])
+		    {
+		      found = AY_TRUE;
+		      newverts[i] = phash->index;
+		      break;
+		    }
+		  s = s->next;
+		}
+	      if(!found)
+		{
+		  newverts[i] = dp;
+		  memcpy(&(newcontrolv[dp*stride]), &(pomesh->controlv[p]),
+			 stride * sizeof(double));
+		  dp++;
+		}
+	    }
 	}
       else
 	{
-	  new->verts[i] = dp;
-	  t = dp * stride;
-	  dp++;
-	  new->ncontrols++;
-	  memcpy(&(new->controlv[t]), &(pomesh->controlv[p]),
+	  newverts[i] = dp;
+	  memcpy(&(newcontrolv[dp*stride]), &(pomesh->controlv[p]),
 		 stride * sizeof(double));
+	  dp++;
 	} /* if */
     } /* for */
 
   ay_pomesht_destroyhash(phash);
 
-  if(pomesh->verts)
-    free(pomesh->verts);
-
-  if(pomesh->controlv)
-    free(pomesh->controlv);
-
-  pomesh->verts = new->verts;
-  pomesh->controlv = new->controlv;
-  pomesh->ncontrols = new->ncontrols;
-  if(!(tmp = realloc(pomesh->controlv, new->ncontrols * stride *
-		     sizeof(double))))
+  if(!ay_status)
     {
-      ay_status = AY_EOMEM;
+
+      if(pomesh->verts)
+	free(pomesh->verts);
+
+      if(pomesh->controlv)
+	free(pomesh->controlv);
+
+      pomesh->verts = newverts;
+      pomesh->controlv = newcontrolv;
+      pomesh->ncontrols = dp;
+      if((tmp = realloc(pomesh->controlv, pomesh->ncontrols * stride *
+			sizeof(double))))
+	{
+	  pomesh->controlv = tmp;
+	}
     }
   else
     {
-      pomesh->controlv = tmp;
+      free(newverts);
+      free(newcontrolv);
     }
-  free(new);
 
  return ay_status;
 } /* ay_pomesht_optimizecoords */
@@ -977,7 +1001,9 @@ ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  int i = 1, optimize_coords = 1, ignore_normals = 1, optimize_faces = 0;
+ int optimize_selected = 0;
  ay_object *o = NULL;
+ ay_point *selp = NULL;
  ay_list_object *sel = ay_selection;
 
   while(i+1 < argc)
@@ -996,7 +1022,10 @@ ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  sscanf(argv[i+1], "%d", &optimize_faces);
 	}
-
+      if(!strcmp(argv[i], "-s"))
+	{
+	  sscanf(argv[i+1], "%d", &optimize_selected);
+	}
       i += 2;
   } /* while */
 
@@ -1015,7 +1044,12 @@ ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_status = AY_OK;
 	  if(optimize_coords)
 	    {
-	      ay_status = ay_pomesht_optimizecoords(o->refine, ignore_normals);
+	      if(optimize_selected)
+		selp = o->selp;
+	      else
+		selp = NULL;
+	      ay_status = ay_pomesht_optimizecoords(o->refine, ignore_normals,
+						    selp);
 	    }
 	  if(ay_status)
 	    { /* emit error message */
