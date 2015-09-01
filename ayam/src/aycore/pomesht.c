@@ -1914,17 +1914,16 @@ ay_pomesht_gennormtcmd(ClientData clientData, Tcl_Interp *interp,
  *
  * \returns AY_OK on success, error code otherwise.
  */
-int
+void
 ay_pomesht_fliploops(ay_pomesh_object *po)
 {
- int ay_status = AY_OK;
  unsigned int i, j, k, l = 0, m = 0, n = 0, t;
 
   if(!po)
-    return AY_ENULL;
+    return;
 
   if(po->npolys == 0)
-    return AY_ERROR;
+    return;
 
   for(i = 0; i < po->npolys; i++)
     {
@@ -1942,7 +1941,7 @@ ay_pomesht_fliploops(ay_pomesh_object *po)
       l++;
     } /* for polys */
 
- return AY_OK;
+ return;
 } /* ay_pomesht_fliploops */
 
 

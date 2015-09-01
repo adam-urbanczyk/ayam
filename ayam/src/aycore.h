@@ -876,7 +876,7 @@ int ay_pomesht_gennormtcmd(ClientData clientData, Tcl_Interp *interp,
 
 /** flip/reverse all loops of a polymesh object
  */
-int ay_pomesht_fliploops(ay_pomesh_object *po);
+void ay_pomesht_fliploops(ay_pomesh_object *po);
 
 /** flip/reverse all vertex normals of a polymesh object
  */
