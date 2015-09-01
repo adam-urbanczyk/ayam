@@ -873,6 +873,15 @@ int ay_pomesht_remsmoothnormals(ay_pomesh_object *po);
 int ay_pomesht_gennormtcmd(ClientData clientData, Tcl_Interp *interp,
 			   int argc, char *argv[]);
 
+/** flip/reverse all loops of a polymesh object
+ */
+int ay_pomesht_fliploops(ay_pomesh_object *po);
+
+/** flip/reverse all vertex normals of a polymesh object
+ */
+void ay_pomesht_flipnormals(ay_pomesh_object *po);
+
+
 /* prefs.c */
 
 /** Tcl command to get the preferences (C => Tcl)

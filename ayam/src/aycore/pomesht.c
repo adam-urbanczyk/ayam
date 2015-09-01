@@ -1860,3 +1860,80 @@ ay_pomesht_gennormtcmd(ClientData clientData, Tcl_Interp *interp,
  return TCL_OK;
 } /* ay_pomesht_gennormtcmd */
 
+
+/** ay_pomesht_fliploops:
+ * Flip (revert) all loops of a PolyMesh.
+ *
+ * \param[in,out] po PoMesh object to process
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_pomesht_fliploops(ay_pomesh_object *po)
+{
+ int ay_status = AY_OK;
+ unsigned int i, j, k, l = 0, m = 0, n = 0, t;
+
+  if(!po)
+    return AY_ENULL;
+
+  if(po->npolys == 0)
+    return AY_ERROR;
+
+  for(i = 0; i < po->npolys; i++)
+    {
+      for(j = 0; j < po->nloops[l]; j++)
+	{
+	  for(k = 0; k < po->nverts[m]/2; k++)
+	    {
+	      t = po->verts[n+k];
+	      po->verts[n+k] = po->verts[n+po->nverts[m]-1-k];
+	      po->verts[n+po->nverts[m]-1-k] = t;
+	    } /* for verts */
+	  n += po->nverts[m];
+	  m++;
+	} /* for loops */
+      l++;
+    } /* for polys */
+
+ return AY_OK;
+} /* ay_pomesht_fliploops */
+
+
+/** ay_pomesht_flipnormals:
+ * Flip (revert) all vertex normals of a PolyMesh.
+ *
+ * \param[in,out] po PoMesh object to process
+ *
+ */
+void
+ay_pomesht_flipnormals(ay_pomesh_object *po)
+{
+ unsigned int i, j, a;
+ double *cv;
+
+  if(!po)
+    return;
+
+  if(po->ncontrols == 0)
+    return;
+
+  if(!po->has_normals)
+    return;
+
+  a = 3;
+  cv = po->controlv;
+  for(i = 0; i < po->ncontrols; i++)
+    {
+      for(j = 0; j < 3; j++)
+	{
+	  if(cv[a+j] != 0.0)
+	    {
+	      cv[a+j] *= -1.0;
+	    }
+	}
+      a += 6;
+    }
+
+ return;
+} /* ay_pomesht_flipnormals */
