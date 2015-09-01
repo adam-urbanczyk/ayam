@@ -2632,6 +2632,9 @@ ay_tess_npatch(ay_object *o,
   if(ay_status)
     goto cleanup;
 
+  (void)ay_pomesht_fliploops((ay_pomesh_object*)new->refine);
+  (void)ay_pomesht_flipnormals((ay_pomesh_object*)new->refine);
+
   /* immediately optimize the polymesh (remove multiply used vertices) */
   if(!primitives && new && !have_tc && !have_vc)
     {
