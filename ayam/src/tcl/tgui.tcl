@@ -453,7 +453,7 @@ proc tgui_readtag { } {
 	    set rtrims 0
 	    set rprims 0
 
-	    scan $val "%d,%g,%g,%d" smethod sparamu sparamv rtrims rprims
+	    scan $val "%d,%g,%g,%d,%d" smethod sparamu sparamv rtrims rprims
 
 	    set tgui_tessparam(FT${smethod}) 0
 
