@@ -1022,7 +1022,6 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
       if(ay_status)
 	goto cleanup;
 
-
       if((ay_status = ay_npt_createnpatchobject(&new)))
 	goto cleanup;
 
@@ -1045,11 +1044,12 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      disk.radius = sqrt(paraboloid->zmin/paraboloid->zmax);
 	      disk.height = paraboloid->zmin;
 	      ay_provide_object(&d, AY_IDNPATCH, n);
-	    } /* if */
 
-	  if(*n)
-	    {
-	      n = &((*n)->next);
+	      if(*n)
+		{
+		  ay_npt_revertu((*n)->refine);
+		  n = &((*n)->next);
+		} /* if */
 	    } /* if */
 
 	  disk.radius = paraboloid->rmax;
@@ -1105,8 +1105,8 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      if(ay_status)
 		goto cleanup;
 
+	      ay_npt_revertu(np);
 	      newp->refine = np;
-
 	      *n = newp;
 	      n = &((*n)->next);
 
@@ -1125,7 +1125,7 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      ay_quat_axistoquat(zaxis, -AY_D2R(paraboloid->thetamax), quat);
 	      (*n)->rotz += paraboloid->thetamax;
 	      ay_quat_add((*n)->quat, quat, (*n)->quat);
-
+	      ay_npt_revertu((*n)->refine);
 	      ay_npt_applytrafo(*n);
 	      ay_trafo_copy(o, *n);
 
