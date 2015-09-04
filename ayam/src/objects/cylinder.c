@@ -278,9 +278,7 @@ ay_cylinder_shadecb(struct Togl *togl, ay_object *o)
 	  gluQuadricOrientation(ay_gluquadobj, GLU_INSIDE);
 	  gluDisk(ay_gluquadobj, 0.0, radius, 8, 1);
 	  gluQuadricOrientation(ay_gluquadobj, GLU_OUTSIDE);
-
 	  glTranslated(0.0, 0.0, -cylinder->zmin+cylinder->zmax);
-
 	  gluDisk(ay_gluquadobj, 0.0, radius, 8, 1);
 	}
 
@@ -302,59 +300,56 @@ ay_cylinder_shadecb(struct Togl *togl, ay_object *o)
 
   /* draw */
   glBegin(GL_QUAD_STRIP);
-  for(i = 0; i <= 8; i++)
-    {
-      glNormal3d(-P1[i*2], -P1[i*2+1], 0.0);
-      glVertex3d(P1[i*2], P1[i*2+1], zmin);
-      glVertex3d(P1[i*2], P1[i*2+1], zmax);
-    }
+   for(i = 0; i <= 8; i++)
+     {
+       glNormal3d(P1[i*2], P1[i*2+1], 0.0);
+       glVertex3d(P1[i*2], P1[i*2+1], zmax);
+       glVertex3d(P1[i*2], P1[i*2+1], zmin);
+     }
   glEnd();
 
   if(cylinder->closed)
     {
+      /* draw caps */
       glPushMatrix();
 
-       glNormal3d(0.0, 1.0, 0.0);
+       /* side cap */
+       glNormal3d(0.0, -1.0, 0.0);
        glBegin(GL_QUADS);
         glVertex3d(0.0,    0.0, zmin);
-	glVertex3d(0.0,    0.0, zmax);
-	glVertex3d(radius, 0.0, zmax);
 	glVertex3d(radius, 0.0, zmin);
+	glVertex3d(radius, 0.0, zmax);
+	glVertex3d(0.0,    0.0, zmax);
+
        glEnd();
 
-       glNormal3d(0.0, -1.0, 0.0);
+       /* side cap */
+       glNormal3d(0.0, 1.0, 0.0);
        glRotated(thetamax, 0.0, 0.0, 1.0);
 
        glBegin(GL_QUADS);
         glVertex3d(0.0,    0.0, zmin);
-	glVertex3d(radius, 0.0, zmin);
-	glVertex3d(radius, 0.0, zmax);
 	glVertex3d(0.0,    0.0, zmax);
+	glVertex3d(radius, 0.0, zmax);
+	glVertex3d(radius, 0.0, zmin);
        glEnd();
-
+	
       glPopMatrix();
 
-      /* draw caps */
+      /* lower cap */
       glPushMatrix();
-
-       gluQuadricOrientation(ay_gluquadobj, GLU_INSIDE);
-
-       glTranslated(0.0,0.0,zmin);
+       glTranslated(0.0, 0.0, zmin);
        glRotated(thetamax-90.0, 0.0, 0.0, 1.0);
-
+       gluQuadricOrientation(ay_gluquadobj, GLU_INSIDE);
        gluPartialDisk(ay_gluquadobj, 0.0, radius, 8, 1, 0.0, thetamax);
-
        gluQuadricOrientation(ay_gluquadobj, GLU_OUTSIDE);
-
       glPopMatrix();
 
+      /* upper cap */
       glPushMatrix();
-
        glTranslated(0.0, 0.0, zmax);
        glRotated(thetamax-90.0, 0.0, 0.0, 1.0);
-
        gluPartialDisk(ay_gluquadobj, 0.0, radius, 8, 1, 0.0, thetamax);
-
       glPopMatrix();
     } /* if */
 
@@ -1007,6 +1002,7 @@ ay_cylinder_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  ay_provide_object(&d, AY_IDNPATCH, n);
 	  if(*n)
 	    {
+	      ay_npt_revertu((*n)->refine);
 	      n = &((*n)->next);
 	      disk.height = cylinder->zmax;
 	      ay_provide_object(&d, AY_IDNPATCH, n);
@@ -1029,6 +1025,7 @@ ay_cylinder_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      ay_provide_object(&d, AY_IDNPATCH, n);
 	      if(*n)
 		{
+		  ay_npt_revertu((*n)->refine);
 		  n = &((*n)->next);
 		  memcpy(bpatch.p1, &(controlv[height*stride-stride]),
 			 3*sizeof(double));

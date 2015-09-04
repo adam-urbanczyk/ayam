@@ -277,20 +277,20 @@ ay_cone_shadecb(struct Togl *togl, ay_object *o)
     {
       glPushMatrix();
 
-       glNormal3d(0.0, 1.0, 0.0);
+       glNormal3d(0.0, -1.0, 0.0);
        glBegin(GL_TRIANGLES);
         glVertex3d(0.0,    0.0, 0.0);
-	glVertex3d(0.0,    0.0, height);
 	glVertex3d(radius, 0.0, 0.0);
+	glVertex3d(0.0,    0.0, height);
        glEnd();
 
-       glNormal3d(0.0, -1.0, 0.0);
+       glNormal3d(0.0, 1.0, 0.0);
        glRotated(thetamax, 0.0, 0.0, 1.0);
 
        glBegin(GL_TRIANGLES);
         glVertex3d(0.0,    0.0, 0.0);
-	glVertex3d(radius, 0.0, 0.0);
 	glVertex3d(0.0,    0.0, height);
+	glVertex3d(radius, 0.0, 0.0);
        glEnd();
 
       glPopMatrix();
@@ -306,7 +306,6 @@ ay_cone_shadecb(struct Togl *togl, ay_object *o)
        gluQuadricOrientation(ay_gluquadobj, GLU_OUTSIDE);
 
       glPopMatrix();
-
     }
 
  return AY_OK;
@@ -881,7 +880,7 @@ ay_cone_providecb(ay_object *o, unsigned int type, ay_object **result)
 
       if(cone->closed)
 	{
-	  /* create caps */
+	  /* create cap */
 	  n = &(new->next);
 	  ay_object_defaults(&d);
 	  ay_trafo_copy(o, &d);
@@ -893,6 +892,7 @@ ay_cone_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  ay_provide_object(&d, AY_IDNPATCH, n);
 	  if(*n)
 	    {
+	      ay_npt_revertu((*n)->refine);
 	      n = &((*n)->next);
 	    } /* if */
 
@@ -911,6 +911,10 @@ ay_cone_providecb(ay_object *o, unsigned int type, ay_object **result)
 		  memcpy(bpatch.p1, &(controlv[height*stride-stride]),
 			 3*sizeof(double));
 		  ay_provide_object(&d, AY_IDNPATCH, n);
+		  if(*n)
+		    {
+		      ay_npt_revertu((*n)->refine);
+		    }
 		} /* if */
 	    } /* if */
 	} /* if */
