@@ -852,13 +852,13 @@ ay_pomesht_addvertextohash(ay_pomesht_hash *phash, int ignore_normals,
 /** ay_pomesht_optimizecoords:
  * Optimize control vertices of a polymesh object so that they are
  * unique when this function is finished.
- * 
+ *
  * \param pomesh PolyMesh object to optimize
  * \param ignore_normals if AY_TRUE, vertex normals are ignored when
  *  comparing the vertices
  * \param selp vertices to process (may be NULL, to indicate that all
  *  vertices are to be processed)
- * 
+ *
  * \returns AY_OK on success, error code otherwise.
  */
 int
@@ -1834,7 +1834,7 @@ ay_pomesht_gennormtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_pomesh_object *pomesh;
  double *fn = NULL;
- int smooth = AY_FALSE, remsmooth = AY_FALSE;
+ int mode = 0;
  char *nname = ay_prefs.normalname;
 
   if(!sel)
@@ -1844,10 +1844,13 @@ ay_pomesht_gennormtcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   if(!strcmp(argv[0], "gensnPo"))
-    smooth = AY_TRUE;
-
+    mode = 1;
+  else
   if(!strcmp(argv[0], "remsnPo"))
-    remsmooth = AY_TRUE;
+    mode = 2;
+  else
+  if(!strcmp(argv[0], "flipPo"))
+    mode = 3;
 
   while(sel)
     {
@@ -1856,42 +1859,49 @@ ay_pomesht_gennormtcmd(ClientData clientData, Tcl_Interp *interp,
       if(o->type == AY_IDPOMESH)
 	{
 	  pomesh = (ay_pomesh_object *)o->refine;
-	  if(smooth)
+	  switch(mode)
 	    {
-	      if((ay_status = ay_pomesht_gensmoothnormals(pomesh, NULL)))
+	    case 0:
+	      fn = pomesh->face_normals;
+	      if(!fn)
 		{
-		  ay_error(ay_status, argv[0], NULL);
-		  return TCL_OK;
-		}
-	    }
-	  else
-	    {
-	      if(remsmooth)
-		{
-		  if((ay_status = ay_pomesht_remsmoothnormals(pomesh)))
+		  if((ay_status = ay_pomesht_genfacenormals(pomesh, &fn)))
 		    {
 		      ay_error(ay_status, argv[0], NULL);
 		      return TCL_OK;
 		    }
 		}
-	      else
+
+	      ay_pv_add(o, nname, "uniform", "n", pomesh->npolys, 3, fn);
+
+	      if(!pomesh->face_normals)
+		free(fn);
+	      break;
+	    case 1:
+	      if((ay_status = ay_pomesht_gensmoothnormals(pomesh, NULL)))
 		{
-		  fn = pomesh->face_normals;
-		  if(!fn)
-		    {
-		      if((ay_status = ay_pomesht_genfacenormals(pomesh, &fn)))
-			{
-			  ay_error(ay_status, argv[0], NULL);
-			  return TCL_OK;
-			}
-		    }
-
-		  ay_pv_add(o, nname, "uniform", "n", pomesh->npolys, 3, fn);
-
-		  if(!pomesh->face_normals)
-		    free(fn);
+		  ay_error(ay_status, argv[0], NULL);
+		  return TCL_OK;
 		}
-	    } /* if */
+	      break;
+	    case 2:
+	      if((ay_status = ay_pomesht_remsmoothnormals(pomesh)))
+		{
+		  ay_error(ay_status, argv[0], NULL);
+		  return TCL_OK;
+		}
+	      break;
+	    case 3:
+	      ay_pomesht_fliploops(pomesh);
+	      ay_pomesht_flipnormals(pomesh);
+	      break;
+	      /*
+	    case 4:
+	      break;
+	      */
+	    default:
+	      break;
+	    } /* switch */
 	}
       else
 	{
