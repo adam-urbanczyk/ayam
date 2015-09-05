@@ -816,6 +816,8 @@ Tcl_AppInit(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
   Tcl_CreateCommand(interp, "remsnPo", ay_pomesht_gennormtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+  Tcl_CreateCommand(interp, "flipPo", ay_pomesht_gennormtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* prop.c */
   Tcl_CreateCommand(interp, "setProp", ay_prop_settcmd,
@@ -1510,6 +1512,8 @@ ay_safeinit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "gensnPo", ay_pomesht_gennormtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
   Tcl_CreateCommand(interp, "remsnPo", ay_pomesht_gennormtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+  Tcl_CreateCommand(interp, "flipPo", ay_pomesht_gennormtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* prop.c */
