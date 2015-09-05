@@ -322,22 +322,26 @@ ay_hyperb_shadecb(struct Togl *togl, ay_object *o)
       glPopMatrix();
 
       /* "side" patches */
-      glBegin(GL_QUADS);
-       glNormal3d(0.0, 1.0, 0.0);
-       glVertex3dv(h->p1);
-       glVertex3d(0.0,0.0,h->p1[2]);
-       glVertex3d(0.0,0.0,h->p2[2]);
-       glVertex3dv(h->p2);
-      glEnd();
-      glPushMatrix();
-       glRotated(h->thetamax,0.0,0.0,1.0);
-       glBegin(GL_QUADS);
-        glVertex3dv(h->p1);
-        glVertex3d(0.0,0.0,h->p1[2]);
-        glVertex3d(0.0,0.0,h->p2[2]);
-        glVertex3dv(h->p2);
-       glEnd();
-      glPopMatrix();
+      if(fabs(h->thetamax) != 360.0)
+	{
+	  glBegin(GL_QUADS);
+	   glNormal3d(0.0, -1.0, 0.0);
+	   glVertex3dv(h->p1);
+	   glVertex3dv(h->p2);
+	   glVertex3d(0.0,0.0,h->p2[2]);
+	   glVertex3d(0.0,0.0,h->p1[2]);
+	  glEnd();
+	  glPushMatrix();
+	   glNormal3d(0.0, 1.0, 0.0);
+           glRotated(h->thetamax,0.0,0.0,1.0);
+	   glBegin(GL_QUADS);
+	    glVertex3dv(h->p1);
+	    glVertex3d(0.0,0.0,h->p1[2]);
+	    glVertex3d(0.0,0.0,h->p2[2]);
+	    glVertex3dv(h->p2);
+	   glEnd();
+	  glPopMatrix();
+	}
     }
 
  return AY_OK;
