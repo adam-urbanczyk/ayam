@@ -374,75 +374,80 @@ ay_sphere_shadecb(struct Togl *togl, ay_object *o)
 
   if(sphere->closed)
     {
+      /* draw caps */
+
       if(fabs(thetamax) != 360.0)
 	{
+	  /* side cap at tmin */
 	  glPushMatrix();
-	  glNormal3d(0.0,-1.0,0.0);
-	  glBegin(GL_TRIANGLE_FAN);
-	   glVertex3d(0.0,  0.0, zmin<zmax?zmin:zmax);
-	   for(i = 0; i < 5; i++)
-	     {
-	       glVertex3dv(&(P1[i*3]));
-	     }
-	  glEnd();
-	  glBegin(GL_TRIANGLES);
-	   glVertex3d(0.0,  0.0, zmin<zmax?zmin:zmax);
-	   glVertex3d(zmin<zmax?rmax:rmin, 0.0, zmin>zmax?zmin:zmax);
-	   glVertex3d(0.0,  0.0, zmin>zmax?zmin:zmax);
-	  glEnd();
+	   glNormal3d(0.0, -1.0, 0.0);
+	   glBegin(GL_TRIANGLE_FAN);
+	    glVertex3d(0.0, 0.0, zmin<zmax?zmin:zmax);
+	    for(i = 0; i < 5; i++)
+	      {
+		glVertex3dv(&(P1[i*3]));
+	      }
+	   glEnd();
 
-	  glRotated(thetamax, 0.0, 0.0, 1.0);
+	   glBegin(GL_TRIANGLES);
+	    glVertex3d(0.0, 0.0, zmin<zmax?zmin:zmax);
+	    glVertex3d(zmin<zmax?rmax:rmin, 0.0, zmin>zmax?zmin:zmax);
+	    glVertex3d(0.0, 0.0, zmin>zmax?zmin:zmax);
+	   glEnd();
 
-	  glBegin(GL_TRIANGLE_FAN);
-	   glVertex3d(0.0,  0.0, zmin<zmax?zmin:zmax);
-	   for(i = 0; i < 5; i++)
-	     {
-	       glVertex3dv(&(P1[i*3]));
-	     }
-	  glEnd();
-	  glBegin(GL_TRIANGLES);
-	   glVertex3d(0.0,  0.0, zmin<zmax?zmin:zmax);
-	   glVertex3d(zmin<zmax?rmax:rmin, 0.0, zmin>zmax?zmin:zmax);
-	   glVertex3d(0.0,  0.0, zmin>zmax?zmin:zmax);
-	  glEnd();
+	   /* side cap at tmax */
+	   glRotated(thetamax, 0.0, 0.0, 1.0);
+	   glNormal3d(0.0, 1.0, 0.0);
+	   glBegin(GL_TRIANGLE_FAN);
+	    glVertex3d(0.0, 0.0, zmin<zmax?zmin:zmax);
+	    for(i = 4; i >= 0; i--)
+	      {
+		glVertex3dv(&(P1[i*3]));
+	      }
+	   glEnd();
+
+	   glBegin(GL_TRIANGLES);
+	    glVertex3d(0.0, 0.0, zmin<zmax?zmin:zmax);
+	    glVertex3d(0.0, 0.0, zmin>zmax?zmin:zmax);
+	    glVertex3d(zmin<zmax?rmax:rmin, 0.0, zmin>zmax?zmin:zmax);
+	   glEnd();
 
 	  glPopMatrix();
 	}
 
-      /* draw caps */
       if(rmin != 0.0)
 	{
+	  /* cap at zmin */
 	  glPushMatrix();
-
-	  glTranslated(0.0,0.0,zmin);
-	  if(fabs(thetamax) != 360.0)
-	    {
-	      glRotated(thetamax-90.0, 0.0, 0.0, 1.0);
-	      gluPartialDisk(ay_gluquadobj, 0.0, rmin, 8, 1, 0.0, thetamax);
-	    }
-	  else
-	    {
-	      gluDisk(ay_gluquadobj, 0.0, rmin, 8, 1);
-	    }
-
+	   glTranslated(0.0, 0.0, zmin);
+	   gluQuadricOrientation(ay_gluquadobj, GLU_INSIDE);
+	   if(fabs(thetamax) != 360.0)
+	     {
+	       glRotated(thetamax-90.0, 0.0, 0.0, 1.0);
+	       gluPartialDisk(ay_gluquadobj, 0.0, rmin, 8, 1, 0.0, thetamax);
+	     }
+	   else
+	     {
+	       gluDisk(ay_gluquadobj, 0.0, rmin, 8, 1);
+	     }
+	   gluQuadricOrientation(ay_gluquadobj, GLU_OUTSIDE);
 	  glPopMatrix();
 	}
 
       if(rmax != 0.0)
 	{
+	  /* cap at zmax */
 	  glPushMatrix();
-
-	  glTranslated(0.0, 0.0, zmax);
-	  if(fabs(thetamax) != 360.0)
-	    {
-	      glRotated(thetamax-90.0, 0.0, 0.0, 1.0);
-	      gluPartialDisk(ay_gluquadobj, 0.0, rmax, 8, 1, 0.0, thetamax);
-	    }
-	  else
-	    {
-	      gluDisk(ay_gluquadobj, 0.0, rmax, 8, 1);
-	    }
-
+	   glTranslated(0.0, 0.0, zmax);
+	   if(fabs(thetamax) != 360.0)
+	     {
+	       glRotated(thetamax-90.0, 0.0, 0.0, 1.0);
+	       gluPartialDisk(ay_gluquadobj, 0.0, rmax, 8, 1, 0.0, thetamax);
+	     }
+	   else
+	     {
+	       gluDisk(ay_gluquadobj, 0.0, rmax, 8, 1);
+	     }
 	  glPopMatrix();
 	}
     } /* if */
