@@ -247,23 +247,22 @@ ay_torus_shadecb(struct Togl *togl, ay_object *o)
   for(i = 0; i < 8; i++)
     {
       glBegin(GL_QUAD_STRIP);
-      for(j = 0; j <= 8; j++)
-	{
-	  glNormal3d((P1[j*2])*cos(angle), (P1[j*2])*sin(angle),
-		     P1[j*2+1]);
+       for(j = 0; j <= 8; j++)
+	 {
+	   glNormal3d((P1[j*2])*cos(angle), (P1[j*2])*sin(angle),
+		      P1[j*2+1]);
 
-	  glVertex3d((mar+P1[j*2])*cos(angle), (mar+P1[j*2])*sin(angle),
-		     P1[j*2+1]);
+	   glVertex3d((mar+P1[j*2])*cos(angle), (mar+P1[j*2])*sin(angle),
+		      P1[j*2+1]);
 
-	  glNormal3d((P1[j*2])*cos(angle+AY_D2R(thetadiff)),
-		     (P1[j*2])*sin(angle+AY_D2R(thetadiff)),
-		     P1[j*2+1]);
+	   glNormal3d((P1[j*2])*cos(angle+AY_D2R(thetadiff)),
+		      (P1[j*2])*sin(angle+AY_D2R(thetadiff)),
+		      P1[j*2+1]);
 
-	  glVertex3d((mar+P1[j*2])*cos(angle+AY_D2R(thetadiff)),
-		     (mar+P1[j*2])*sin(angle+AY_D2R(thetadiff)),
-		     P1[j*2+1]);
-
-	} /* for */
+	   glVertex3d((mar+P1[j*2])*cos(angle+AY_D2R(thetadiff)),
+		      (mar+P1[j*2])*sin(angle+AY_D2R(thetadiff)),
+		      P1[j*2+1]);
+	 } /* for */
       glEnd();
       angle += AY_D2R(thetadiff);
     } /* for */
@@ -279,15 +278,15 @@ ay_torus_shadecb(struct Togl *togl, ay_object *o)
 	  glBegin(GL_QUAD_STRIP);
 	  for(j = 0; j <= 8; j++)
 	    {
-	      glNormal3d((P2[0])*cos(angle),
-			 (P2[0])*sin(angle),
-			 P2[0+1]);
-
-	      glVertex3d(mar*cos(angle), mar*sin(angle), 0.0);
+	      glNormal3d(-(P2[0])*cos(angle),
+			 -(P2[0])*sin(angle),
+			 -P2[0+1]);
 
 	      glVertex3d((mar+P1[0])*cos(angle),
 			 (mar+P1[0])*sin(angle),
 			 P1[0+1]);
+
+	      glVertex3d(mar*cos(angle), mar*sin(angle), 0.0);
 
 	      angle += AY_D2R(thetadiff);
 	    }
