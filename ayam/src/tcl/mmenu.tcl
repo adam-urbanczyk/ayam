@@ -768,6 +768,17 @@ $m.pm add command -label "Gen. Face Normals" -command {
 $m.pm add command -label "Gen. Smooth Normals" -command {
     undo save GenSmoothNorm; gensnPo; rV }\
     -underline 0
+$m.pm add command -label "Rem. Smooth Normals" -command {
+    undo save RemSmoothNorm; remsnPo; rV }\
+    -underline 0
+$m.pm add command -label "Flip Smooth Normals" -command {
+    undo save FlipSmoothNorm; flipPo 1; rV }\
+    -underline 0
+$m.pm add separator
+$m.pm add command -label "Flip Loops" -command {
+    undo save FlipLoops; flipPo 2; rV }\
+    -underline 0
+
 
 $m add separator
 
