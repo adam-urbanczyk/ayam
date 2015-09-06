@@ -1834,7 +1834,7 @@ ay_pomesht_gennormtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_pomesh_object *pomesh;
  double *fn = NULL;
- int mode = 0;
+ int mode = 0, flip = 0;
  char *nname = ay_prefs.normalname;
 
   if(!sel)
@@ -1850,7 +1850,13 @@ ay_pomesht_gennormtcmd(ClientData clientData, Tcl_Interp *interp,
     mode = 2;
   else
   if(!strcmp(argv[0], "flipPo"))
-    mode = 3;
+    {
+      mode = 3;
+      if(argc > 2)
+	{
+	  sscanf(argv[1], "%d", &flip);
+	}
+    }
 
   while(sel)
     {
@@ -1892,8 +1898,22 @@ ay_pomesht_gennormtcmd(ClientData clientData, Tcl_Interp *interp,
 		}
 	      break;
 	    case 3:
-	      ay_pomesht_fliploops(pomesh);
-	      ay_pomesht_flipnormals(pomesh);
+	      if(flip == 0)
+		{
+		  ay_pomesht_fliploops(pomesh);
+		  ay_pomesht_flipnormals(pomesh);
+		}
+	      else
+		{
+		  if(flip == 1)
+		    {
+		      ay_pomesht_flipnormals(pomesh);
+		    }
+		  else
+		    {
+		      ay_pomesht_fliploops(pomesh);
+		    }
+		}
 	      break;
 	      /*
 	    case 4:
