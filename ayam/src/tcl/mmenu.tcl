@@ -777,7 +777,7 @@ $m.pm add command -label "Flip Smooth Normals" -command {
 $m.pm add separator
 $m.pm add command -label "Flip Loops" -command {
     undo save FlipLoops; flipPo 2; rV }\
-    -underline 0
+    -underline 1
 
 
 $m add separator
