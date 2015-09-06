@@ -143,7 +143,6 @@ void ay_tess_setautonormal(double *v1, double *v2, double *v3);
 int
 ay_tess_checktri(double *p1, double *p2, double *p3)
 {
- double angle;
 
   /* check p1 vs. p2 */
   if((fabs(p1[0] - p2[0]) < AY_EPSILON) &&
@@ -1593,29 +1592,39 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 			(*(pt1[q[2]+9]+2) - *(pt1[q[0]+9]+2))*0.5;
 		    }
 
-#define S3D 3*sizeof(double)
-
 		  if(ay_tess_checkquad(pt1[q[0]], pt1[q[1]], pt1[q[2]], mid))
 		    {
 		      numquads++;
 		      /* Q1 */
 		      if(has_vn)
 			{
-			  memcpy(&(po->controlv[i]), pt1[q[0]], S3D);
-			  memcpy(&(po->controlv[i+3]), pt1[q[0]+3], S3D);
-			  memcpy(&(po->controlv[i+6]), pt1[q[1]], S3D);
-			  memcpy(&(po->controlv[i+9]), pt1[q[1]+3], S3D);
-			  memcpy(&(po->controlv[i+12]), pt1[q[2]], S3D);
-			  memcpy(&(po->controlv[i+15]), pt1[q[2]+3], S3D);
-			  memcpy(&(po->controlv[i+18]), mid, S3D);
-			  memcpy(&(po->controlv[i+21]), &(mid[3]), S3D);
+			  memcpy(&(po->controlv[i]), pt1[q[0]],
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+3]), pt1[q[0]+3],
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+6]), pt1[q[1]],
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+9]), pt1[q[1]+3],
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+12]), pt1[q[2]],
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+15]), pt1[q[2]+3],
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+18]), mid,
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+21]), &(mid[3]),
+				 3*sizeof(double));
 			}
 		      else
 			{
-			  memcpy(&(po->controlv[i]), pt1[q[0]], S3D);
-			  memcpy(&(po->controlv[i+3]), pt1[q[1]], S3D);
-			  memcpy(&(po->controlv[i+6]), pt1[q[2]], S3D);
-			  memcpy(&(po->controlv[i+9]), mid, S3D);
+			  memcpy(&(po->controlv[i]), pt1[q[0]],
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+3]), pt1[q[1]],
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+6]), pt1[q[2]],
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+9]), mid,
+				 3*sizeof(double));
 			}
 
 		      if(has_tc)
@@ -1647,21 +1656,33 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 		      /* Q2 */
 		      if(has_vn)
 			{
-			  memcpy(&(po->controlv[i]), pt1[q[2]], S3D);
-			  memcpy(&(po->controlv[i+3]), pt1[q[2]+3], S3D);
-			  memcpy(&(po->controlv[i+6]), pt2[q[3]], S3D);
-			  memcpy(&(po->controlv[i+9]), pt2[q[3]+3], S3D);
-			  memcpy(&(po->controlv[i+12]), pt1[q[0]], S3D);
-			  memcpy(&(po->controlv[i+15]), pt1[q[0]+3], S3D);
-			  memcpy(&(po->controlv[i+18]), mid, S3D);
-			  memcpy(&(po->controlv[i+21]), &(mid[3]), S3D);
+			  memcpy(&(po->controlv[i]), pt1[q[2]],
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+3]), pt1[q[2]+3],
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+6]), pt2[q[3]],
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+9]), pt2[q[3]+3],
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+12]), pt1[q[0]],
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+15]), pt1[q[0]+3],
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+18]), mid,
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+21]), &(mid[3]),
+				 3*sizeof(double));
 			}
 		      else
 			{
-			  memcpy(&(po->controlv[i]), pt1[q[2]], S3D);
-			  memcpy(&(po->controlv[i+3]), pt2[q[3]], S3D);
-			  memcpy(&(po->controlv[i+6]), pt1[q[0]], S3D);
-			  memcpy(&(po->controlv[i+9]), mid, S3D);
+			  memcpy(&(po->controlv[i]), pt1[q[2]],
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+3]), pt2[q[3]],
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+6]), pt1[q[0]],
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+9]), mid,
+				 3*sizeof(double));
 			}
 
 		      if(has_tc)
@@ -1700,21 +1721,33 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 
 		      if(has_vn)
 			{
-			  memcpy(&(po->controlv[i]), tri1->p1, S3D);
-			  memcpy(&(po->controlv[i+3]), tri1->n1, S3D);
-			  memcpy(&(po->controlv[i+6]), tri1->p2, S3D);
-			  memcpy(&(po->controlv[i+9]), tri1->n2, S3D);
-			  memcpy(&(po->controlv[i+12]), tri1->p3, S3D);
-			  memcpy(&(po->controlv[i+15]), tri1->n3, S3D);
-			  memcpy(&(po->controlv[i+18]), tri1->p3, S3D);
-			  memcpy(&(po->controlv[i+21]), tri1->n3, S3D);
+			  memcpy(&(po->controlv[i]), tri1->p1,
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+3]), tri1->n1,
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+6]), tri1->p2,
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+9]), tri1->n2,
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+12]), tri1->p3,
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+15]), tri1->n3,
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+18]), tri1->p3,
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+21]), tri1->n3,
+				 3*sizeof(double));
 			}
 		      else
 			{
-			  memcpy(&(po->controlv[i]), tri1->p1, S3D);
-			  memcpy(&(po->controlv[i+3]), tri1->p2, S3D);
-			  memcpy(&(po->controlv[i+6]), tri1->p3, S3D);
-			  memcpy(&(po->controlv[i+9]), tri1->p3, S3D);
+			  memcpy(&(po->controlv[i]), tri1->p1,
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+3]), tri1->p2,
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+6]), tri1->p3,
+				 3*sizeof(double));
+			  memcpy(&(po->controlv[i+9]), tri1->p3,
+				 3*sizeof(double));
 			}
 
 		      if(has_tc)
@@ -2097,7 +2130,6 @@ ay_tess_tristomixedpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 			  *(pt1[q[1]+9]), *(pt1[q[1]+9]+1), *(pt1[q[1]+9]+2),
 			  *(pt1[q[2]+9]), *(pt1[q[2]+9]+1), *(pt1[q[2]+9]+2),
 			  *(pt2[q[3]+9]), *(pt2[q[3]+9]+1), *(pt2[q[3]+9]+2));
-
 		}
 	    }
 
