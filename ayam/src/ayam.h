@@ -1452,6 +1452,8 @@ typedef struct ay_preferences_s
   double aafudge; /**< correction offset for anti-aliased lines */
   int sdmode; /**< silhouette detection mode (0 off, 1 z, 2 color, 3 both) */
 
+  int cullfaces; /**< enable culling of back faces in OpenGL? */
+
   /* error handling */
   char onerror; /**< what to do if errors occur? 0 stop, 1 continue */
   char errorlevel; /**< what to output to the console? 0 nothing - 3 all */
