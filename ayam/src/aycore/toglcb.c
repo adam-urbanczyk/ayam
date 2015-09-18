@@ -269,6 +269,11 @@ ay_toglcb_reshape(struct Togl *togl)
 
   /*  glMatrixMode (GL_MODELVIEW);*/
 
+  if(ay_prefs.cullfaces)
+    {
+      glEnable(GL_CULL_FACE);
+    }
+
  return;
 } /* ay_toglcb_reshape */
 

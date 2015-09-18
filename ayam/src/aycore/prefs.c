@@ -216,6 +216,10 @@ ay_prefs_gettcmd(ClientData clientData, Tcl_Interp *interp,
   to = Tcl_NewIntObj((int)(ay_prefs.sxb*255));
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton, "CullFaces", -1);
+  to = Tcl_NewIntObj(ay_prefs.cullfaces);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
 
   /* RIB */
   Tcl_SetStringObj(ton, "ResInstances", -1);
@@ -468,6 +472,12 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 	      }
 	    free(cvtags);
 	  }
+
+
+	Tcl_SetStringObj(ton, "CullFaces", 9);
+	to = Tcl_ObjGetVar2(interp, toa, ton,
+			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &ay_prefs.cullfaces);
       } /* C... */
 
     if(setall || (argv[i][0] == 'D'))
