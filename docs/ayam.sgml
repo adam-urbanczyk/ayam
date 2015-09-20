@@ -19450,6 +19450,12 @@ point of the click. This option is enabled by default.
 These tags will be copied verbatim to converted and provided
 objects. Default value: <tt/"TP,TC"/.
 
+<item><tt/"CullFaces"/, enables culling/discarding of back facing
+polygons prior to display with OpenGL. This can improve the visual
+quality of shaded surfaces at their edges. Note however, that culling
+back faces can also disrupt the CSG preview
+using AyCSG. Default value: 0 &ndash; no.
+
 <item><tt/"CycleHiddenWire"/, determines whether the slow <tt/"HiddenWire"/
 drawing mode is included in the list of modes that are cycled by keyboard
 (via <tt>"Ctrl+PageUp"/"Ctrl+PageDown"</tt>), default: 0 &ndash; no.
@@ -20660,6 +20666,7 @@ Index:
 <item><ref id="levelobj" name="Level object">,
 <item><ref id="aycsg" name="AyCSG CSG preview plugin">
 </itemize>
+<item>CullFaces: <ref id="hidprefs" name="hidden preference setting">
 <item>Curvature: <ref id="plotcurt" name="plot curvature tool">
 <item>Custom:
 <itemize>
@@ -20670,6 +20677,7 @@ Index:
 <item>Cut: <ref id="mmedit" name="main menu entry">
 <item>Cut (Add): <ref id="mmspecial" name="main menu entry">
 <item>cutOb: <ref id="sccutob" name="scripting interface command">
+<item>CycleHiddenWire: <ref id="hidprefs" name="hidden preference setting">
 <item>Cylinder: <ref id="cylinderobj" name="Cylinder object">
 </list>
 
