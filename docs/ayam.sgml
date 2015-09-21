@@ -15766,6 +15766,35 @@ normals will be generated using the same algorithm as implemented in the
 <tt/"genfnPo"/ command above.
 </itemize>
 
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
+<label id="scremsnPo">
+remsnPo &ndash; remove smooth normals:
+<itemize>
+ <item>Synopsis: <tt/"remsnPo"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Removes all smooth/vertex normals from the selected
+PolyMesh object(s).
+</itemize>
+
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
+<label id="scflipPo">
+flipPo &ndash; flip normals or loops:
+<itemize>
+ <item>Synopsis: <tt/"flipPo [0|1|2]"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Flips smooth/vertex normals of the selected
+PolyMesh object(s). By default, and if the parameter is 0, also all
+loops will be flipped. If the parameter is 1, only the normals are
+reversed. If the parameter is 2, only the loops are reversed.
+</itemize>
+
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
 
 <sect2>Manipulating Points<label id="scipoints">
 <p>
@@ -20830,6 +20859,7 @@ Index:
 <item>FlashObjects: <ref id="hidprefs" name="hidden preference setting">
 <item>FlashPoints: <ref id="prefmodel" name="preference setting">
 <item>Flatness: <ref id="moattr" name="MetaObj attributes">
+<item>flipPo: <ref id="scflipPo" name="scripting interface command">
 <item>FontName: <ref id="textattr" name="Text attribute">
 <item>forAll: <ref id="scforall" name="scripting interface command">
 <item>Force3D: <ref id="bevelp" name="Bevel attribute">
@@ -21384,6 +21414,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>remknNC: <ref id="scremknnc" name="scripting interface command">
 <item>remknuNP: <ref id="scremknunp" name="scripting interface command">
 <item>remknvNP: <ref id="scremknvnp" name="scripting interface command">
+<item>remsnPo: <ref id="scremsnPo" name="scripting interface command">
 <item>Remove Knot: <ref id="remknt" name="remove knot tool">
 <item>RemoveMerged: <ref id="mmtools" name="Merge PolyMesh tool option">
 <item>Render:
