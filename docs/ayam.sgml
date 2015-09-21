@@ -1190,6 +1190,17 @@ Already existing vertex normals will be destroyed.
 If face normals exist, they will be used, otherwise, new face
 normals will be generated automatically using the same algorithm
 as implemented in the <tt/"Gen. Face Normals"/ tool above.
+
+<item><tt/"Rem. Smooth Normals"/: Remove all smooth vertex normals from
+the selected PolyMesh object(s). Afterwards, the objects will be shaded
+in a faceted look.
+
+<item><tt/"Flip Smooth Normals"/: Flips/reverts all smooth vertex normals
+of the selected PolyMesh object(s).
+
+<item><tt/"Flip Loops"/: Flips/reverts all loops of
+the selected PolyMesh object(s).
+
 </itemize>
 
 <item><tt/"Points"/: sub-menu for tools that work on points:
