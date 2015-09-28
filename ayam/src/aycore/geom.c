@@ -96,9 +96,9 @@ ay_geom_intersectlines2D(double *p1, double *t1,
  */
 void
 ay_geom_pointstoplane(double x1, double y1, double z1,
-		       double x2, double y2, double z2,
-		       double x3, double y3, double z3,
-		       double *A, double *B, double *C, double *D)
+		      double x2, double y2, double z2,
+		      double x3, double y3, double z3,
+		      double *A, double *B, double *C, double *D)
 {
 
   *A = y1 * (z2 - z3) + y2 * (z3 - z1) + y3 * (z1 - z2);
@@ -111,12 +111,17 @@ ay_geom_pointstoplane(double x1, double y1, double z1,
 } /* ay_geom_pointstoplane */
 
 
-/* ay_geom_calcnfrom3:
- *  calculate normal from three 3D points <p1>, <p2>, and <p3>
- *  returns the normal in <n>
+/** ay_geom_normalfrom3pnts:
+ * Calculate normal vector for the plane spanned by three 3D points.
+ * Does not check for equal points.
+ *
+ * \param[in] p1 first point
+ * \param[in] p2 second point
+ * \param[in] p3 third point
+ * \param[in,out] n where to store the result
  */
 void
-ay_geom_calcnfrom3(double *p1, double *p2, double *p3, double *n)
+ay_geom_normalfrom3pnts(double *p1, double *p2, double *p3, double *n)
 {
  double v1[3], v2[3], len;
 
@@ -131,7 +136,55 @@ ay_geom_calcnfrom3(double *p1, double *p2, double *p3, double *n)
     AY_V3SCAL(n, 1.0/len)
 
  return;
-} /* ay_geom_calcnfrom3 */
+} /* ay_geom_normalfrom3pnts */
+
+
+/** ay_geom_anglefrom3pnts:
+ * Calculate angle from three 3D points. If a normal is provided,
+ * the angle will be signed with respect to this normal, otherwise
+ * it will always be positive.
+ * Does not check for equal points.
+ *
+ * \param[in] p1 first point
+ * \param[in] p2 second point (apex of angle)
+ * \param[in] p3 third point
+ * \param[in] n normal vector (may be NULL) 
+ * 
+ * \returns angle in radians or 0.0 if any of p1, p2, p3 are NULL
+ */
+double
+ay_geom_anglefrom3pnts(double *p1, double *p2, double *p3, double *n)
+{
+ double V1[3], V2[3], VC[3], angle, len, dir;
+
+  if(!p1 || !p2 || !p3)
+   return 0.0;
+
+  AY_V3SUB(V1, p1, p2);
+  len = AY_V3LEN(V1);
+  if(len > AY_EPSILON)
+    AY_V3SCAL(V1, 1.0/len)
+
+  AY_V3SUB(V2, p3, p2);
+  len = AY_V3LEN(V2);
+  if(len > AY_EPSILON)
+    AY_V3SCAL(V2, 1.0/len)
+
+  angle = acos(AY_V3DOT(V1, V2));
+
+  if(n)
+    {
+      /* normal provided => calculate direction */
+      AY_V3CROSS(VC, V1, V2);
+
+      dir = AY_V3DOT(VC, n);
+
+      if(dir < 0)
+	angle *= -1.0;
+    }
+
+ return angle;
+} /* ay_geom_anglefrom3pnts */
 
 
 /** ay_geom_extractmiddlepoint:
@@ -144,7 +197,7 @@ ay_geom_calcnfrom3(double *p1, double *p2, double *p3, double *n)
  * \param[in] cvlen number of points in \a cv
  * \param[in] cvstride size of a point in \a cv (>=3, unchecked)
  * \param[in,out] tcv temporary array of size 4*cvlen (to avoid reallocation for
- *  repeated calls, only used for mode 1), may be NULL
+ *  repeated calls, only used for mode 1), may be NULL if mode is 0
  * \param[in,out] result pointer where to store the resulting center point
  *
  * \returns AY_OK on success, error code otherwise
@@ -302,14 +355,17 @@ ay_geom_extractmeannormal(double *cv, int cvlen, int cvstride,
     {
       if((!AY_V3COMP(p1,p2)) && (!AY_V3COMP(m,p1)) && (!AY_V3COMP(m,p2)))
 	{
-	  ay_geom_calcnfrom3(m, p1, p2, psn);
+	  ay_geom_normalfrom3pnts(m, p1, p2, psn);
 	  len = AY_V3LEN(psn);
-	  if(fabs(len) > AY_EPSILON)
+	  if(len == len)
 	    {
-	      AY_V3SCAL(psn,1.0/len);
+	      if(fabs(len) > AY_EPSILON)
+		{
+		  AY_V3SCAL(psn,1.0/len);
+		}
+	      snlen++;
+	      psn += 3;
 	    }
-	  snlen++;
-	  psn += 3;
 	}
 
       p1 = p2;
