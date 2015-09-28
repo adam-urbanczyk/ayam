@@ -9316,40 +9316,40 @@ ay_npt_isplanar(ay_nurbpatch_object *np, double *n)
      by definition) */
   if(AY_V3COMP(p1, p2))
     {
-      ay_geom_calcnfrom3(p1, p3, p4, n1);
+      ay_geom_normalfrom3pnts(p1, p3, p4, n1);
       goto storen;
     }
 
   if(AY_V3COMP(p1, p3))
     {
-      ay_geom_calcnfrom3(p1, p2, p4, n1);
+      ay_geom_normalfrom3pnts(p1, p2, p4, n1);
       goto storen;
     }
 
   if(AY_V3COMP(p2, p4))
     {
-      ay_geom_calcnfrom3(p2, p3, p1, n1);
+      ay_geom_normalfrom3pnts(p2, p3, p1, n1);
       goto storen;
     }
 
   if(AY_V3COMP(p3, p4))
     {
-      ay_geom_calcnfrom3(p3, p1, p2, n1);
+      ay_geom_normalfrom3pnts(p3, p1, p2, n1);
       goto storen;
     }
 
   /* patch seems to be quadrilateral, check all normals */
-  ay_geom_calcnfrom3(p1, p3, p2, n1);
+  ay_geom_normalfrom3pnts(p1, p3, p2, n1);
 
-  ay_geom_calcnfrom3(p1, p4, p2, n2);
+  ay_geom_normalfrom3pnts(p1, p4, p2, n2);
   if(!AY_V3COMP(n1, n2))
     return AY_FALSE;
 
-  ay_geom_calcnfrom3(p2, p3, p4, n2);
+  ay_geom_normalfrom3pnts(p2, p3, p4, n2);
   if(!AY_V3COMP(n1, n2))
     return AY_FALSE;
 
-  ay_geom_calcnfrom3(p4, p1, p3, n2);
+  ay_geom_normalfrom3pnts(p4, p1, p3, n2);
   if(!AY_V3COMP(n1, n2))
     return AY_FALSE;
 
@@ -12291,7 +12291,7 @@ ay_npt_gndvp(char dir, ay_nurbpatch_object *np, int j, double *p,
 
 
 #define AY_UPDATENORMAL(p1,p2,p3) {\
-    ay_geom_calcnfrom3(p1, p2, p3, normal2);\
+    ay_geom_normalfrom3pnts(p1, p2, p3, normal2);\
     if(nnormals)\
       {\
 	normal1[0] += normal2[0];\

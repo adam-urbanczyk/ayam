@@ -359,16 +359,16 @@ ay_bpatch_shadecb(struct Togl *togl, ay_object *o)
 
   glBegin(GL_QUADS);
    /*  XXXX should we cache the normals? */
-   ay_geom_calcnfrom3(bpatch->p4, bpatch->p1, bpatch->p2, n);
+   ay_geom_normalfrom3pnts(bpatch->p4, bpatch->p1, bpatch->p2, n);
    glNormal3dv((GLdouble *)n);
    glVertex3dv((GLdouble *)(bpatch->p1));
-   ay_geom_calcnfrom3(bpatch->p1, bpatch->p2, bpatch->p3, n);
+   ay_geom_normalfrom3pnts(bpatch->p1, bpatch->p2, bpatch->p3, n);
    glNormal3dv((GLdouble *)n);
    glVertex3dv((GLdouble *)(bpatch->p2));
-   ay_geom_calcnfrom3(bpatch->p2, bpatch->p3, bpatch->p4, n);
+   ay_geom_normalfrom3pnts(bpatch->p2, bpatch->p3, bpatch->p4, n);
    glNormal3dv((GLdouble *)n);
    glVertex3dv((GLdouble *)(bpatch->p3));
-   ay_geom_calcnfrom3(bpatch->p3, bpatch->p4, bpatch->p1, n);
+   ay_geom_normalfrom3pnts(bpatch->p3, bpatch->p4, bpatch->p1, n);
    glNormal3dv((GLdouble *)n);
    glVertex3dv((GLdouble *)(bpatch->p4));
   glEnd();
