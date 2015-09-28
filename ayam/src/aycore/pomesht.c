@@ -2012,3 +2012,879 @@ ay_pomesht_flipnormals(ay_pomesh_object *po)
 
  return;
 } /* ay_pomesht_flipnormals */
+
+
+
+#define AY_V3DIST(v1,v2) sqrt(((v1[0]-v2[0])*(v1[0]-v2[0]))+((v1[1]-v2[1])*(v1[1]-v2[1]))+((v1[2]-v2[2])*(v1[2]-v2[2])))
+
+#define AY_V3SDIST(v1,v2) (((v1[0]-v2[0])*(v1[0]-v2[0]))+((v1[1]-v2[1])*(v1[1]-v2[1]))+((v1[2]-v2[2])*(v1[2]-v2[2])))
+
+
+#if 0
+int
+ay_selp_sort(ay_point *p, unsigned int np, ay_point **result)
+{
+ ay_point *p1, *p2, *minp, *sorted;
+ double minlen, len;
+ unsigned int i = 0;
+
+  if(!p)
+   return AY_ENULL;
+
+  if(!(sorted = malloc(np*sizeof(ay_point))))
+    return AY_EOMEM;
+
+  memcpy(sorted, p, sizeof(ay_point));
+  i++;
+
+  p1 = p;
+  while(p1)
+    {
+      p2 = p1->next;
+      minlen = DBL_MAX;
+      while(p2)
+	{
+	  len = AY_V3SDIST(p1->point, p2->point);
+	  if(minlen < len)
+	    {
+	      minp = p2;
+	      minlen = len;
+	    }
+	  p2 = p2->next;
+	}
+      if(minp)
+	{
+	  memcpy(&(sorted[i]), p2, sizeof(ay_point));
+	  i++;
+	}
+      p1 = p1->next;
+    }
+
+  *result = sorted;
+
+ return AY_OK;
+}
+#endif
+
+int
+ay_selp_sort(ay_point *p, unsigned int np, ay_point **result)
+{
+ ay_point *p1, *p2, *minp, *maxp, *sorted, t;
+ double s, minlen, maxlen, len, M[3] = {0};
+ unsigned int i = 0, j = 0;
+
+  if(!p)
+   return AY_ENULL;
+
+  if(!(sorted = malloc(np*sizeof(ay_point))))
+    return AY_EOMEM;
+
+  /*
+    if(!closed)
+    {
+  */
+
+  /* find mean of selected points */
+  s = 1.0/np;
+  p1 = p;
+  while(p1)
+    {
+      M[0] += p1->point[0]*s;
+      M[1] += p1->point[1]*s;
+      M[2] += p1->point[2]*s;
+      p1 = p1->next;
+    }
+
+  /* find start (point of farthest distance to mean) */
+  p1 = p;
+  maxlen = 0.0;
+  while(p1)
+    {
+      len = AY_V3SDIST(p1->point, M);
+      if(len > maxlen)
+	{
+	  maxlen = len;
+	  maxp = p1;
+	}
+      p1 = p1->next;
+    }
+
+  p1 = maxp;
+  while(p1)
+    {
+      memcpy(&(sorted[i]), p1, sizeof(ay_point));
+      i++;
+      p1 = p1->next;
+    }
+
+  p1 = p;
+  while(p1 != maxp)
+    {
+      memcpy(&(sorted[i]), p1, sizeof(ay_point));
+      i++;
+      p1 = p1->next;
+    }
+
+
+  /*
+    } !closed
+  */
+
+  for(i = 0; i < np; i++)
+    {
+      minp = NULL;
+      minlen = DBL_MAX;
+      p1 = &(sorted[i]);
+      for(j = i+1; j < np; j++)
+	{
+	  p2 = &(sorted[j]);
+	  len = AY_V3SDIST(p1->point, p2->point);
+	  if(len < minlen)
+	    {
+	      minp = p2;
+	      minlen = len;
+	    }
+	}
+      if(minp && (minp != &(sorted[i+1])))
+	{
+	  memcpy(&t, &(sorted[i+1]), sizeof(ay_point));
+	  memcpy(&(sorted[i+1]), minp, sizeof(ay_point));
+	  memcpy(minp, &t, sizeof(ay_point));
+	}
+    }
+
+  *result = sorted;
+
+ return AY_OK;
+}
+
+
+void
+ay_selp_rotatemindist(ay_point *p1, ay_point *p2, unsigned int p2len)
+{
+ ay_point *shifted = NULL, *p, *q, *mq = NULL, t;
+ double *v1, *v2;
+ double dist, mindist = DBL_MAX;
+ unsigned int qi = 0, mqi = 0;
+ int closed = AY_FALSE;
+
+  if(!p1 || !p2)
+    return;
+
+  if(closed)
+    {
+      p = p1;
+      q = p2;
+      while(q)
+	{
+	  dist = AY_V3SDIST(p->point, q->point);
+	  if(!(dist != dist) && (dist < mindist))
+	    {
+	      mindist = dist;
+	      mqi = qi;
+	      mq = q;
+	    }
+	  qi++;
+	  q = q->next;
+	}
+
+      if(mq != p2)
+	{
+	  if(!(shifted = malloc(p2len*sizeof(ay_point))))
+	    return;
+
+	  memcpy(shifted, mq, (p2len-mqi)*sizeof(ay_point));
+	  memcpy(&(shifted[p2len-mqi]), p2, (mqi-1)*sizeof(ay_point));
+
+	  memcpy(p2, shifted, p2len*sizeof(ay_point));
+	  free(shifted);
+	}
+
+      /* check flip */
+      v1 = p1[1].point;
+      v2 = p2[1].point;
+      dist = AY_V3SDIST(v1,v2);
+      v1 = p1[1].point;
+      v2 = p2[p2len-1].point;
+      mindist = AY_V3SDIST(v1,v2);
+      if(dist > mindist)
+	{
+	  /* need flip */
+	  for(qi = 0; qi < p2len/2; qi++)
+	    {
+	      memcpy(&t, &(p2[qi]), sizeof(ay_point));
+	      memcpy(&(p2[qi]), &(p2[p2len-1-qi]), sizeof(ay_point));
+	      memcpy(&(p2[p2len-1-qi]), &t, sizeof(ay_point));
+	    }
+	}
+    }
+  else
+    {
+      v1 = p1[0].point;
+      v2 = p2[0].point;
+      dist = AY_V3SDIST(v1,v2);
+      v1 = p1[0].point;
+      v2 = p2[p2len-1].point;
+      mindist = AY_V3SDIST(v1,v2);
+      if(dist > mindist)
+	{
+	  /* need flip */
+	  for(qi = 0; qi < p2len/2; qi++)
+	    {
+	      memcpy(&t, &(p2[qi]), sizeof(ay_point));
+	      memcpy(&(p2[qi]), &(p2[p2len-1-qi]), sizeof(ay_point));
+	      memcpy(&(p2[p2len-1-qi]), &t, sizeof(ay_point));
+	    }
+	}
+    }
+
+ return;
+}
+
+
+/** ay_pomesht_vertanglesums:
+ * Compute all vertex angle sums, this value can be used to decide
+ * whether a vertex is
+ * a) on the edge of the mesh (sum is << 360 deg) or
+ * b) in the interior (sum is 360 deg).
+ *
+ * \param[in] po PoMesh object to process
+ * \param[in,out] result where to store the resulting array of angle sums
+ *
+ */
+void
+ay_pomesht_vertanglesums(ay_pomesh_object *po, double **result)
+{
+ unsigned int i, j, k, l = 0, m = 0, n = 0;
+ double len, angle, *angles = NULL, *p1, *p2, *p3, V1[3], V2[3];
+ int stride = 3;
+
+  if(!po)
+    return;
+
+  if(po->npolys == 0)
+    return;
+
+  if(po->has_normals)
+    stride = 6;
+
+  if(!(angles = calloc(po->ncontrols, sizeof(double))))
+    {
+      return;
+    }
+
+  for(i = 0; i < po->npolys; i++)
+    {
+      for(j = 0; j < po->nloops[l]; j++)
+	{
+	  /* set up pointers for first angle, where p1 is actually
+	     the last in the loop */
+	  p1 = &(po->controlv[po->verts[n+(po->nverts[m]-1)]*stride]);
+	  p2 = &(po->controlv[po->verts[n]*stride]);
+	  p3 = &(po->controlv[po->verts[n+1]*stride]);
+	  for(k = 0; k < po->nverts[m]; k++)
+	    {
+	      /* compute angle for p2 */
+	      AY_V3SUB(V1,p1,p2);
+	      len = AY_V3LEN(V1);
+	      if(fabs(len) > AY_EPSILON)
+		AY_V3SCAL(V1,1.0/len);
+
+	      AY_V3SUB(V2,p3,p2);
+	      len = AY_V3LEN(V2);
+	      if(fabs(len) > AY_EPSILON)
+		AY_V3SCAL(V2,1.0/len);
+
+	      angle = AY_R2D(acos(AY_V3DOT(V1, V2)));
+
+	      if(!(angle != angle))
+		angles[po->verts[n+k]] += angle;
+
+	      /* advance pointers */
+	      if(k < (po->nverts[m]-1))
+		{
+		  p1 = &(po->controlv[po->verts[n+k]*stride]);
+		  p2 = &(po->controlv[po->verts[n+k+1]*stride]);
+		  if(k+2 == po->nverts[m])
+		    {
+		      /* special case for last angle, where p3 is actually
+			 the first in the loop */
+		      p3 = &(po->controlv[po->verts[n]*stride]);
+		    }
+		  else
+		    {
+		      p3 = &(po->controlv[po->verts[n+k+2]*stride]);
+		    }
+		}
+	    } /* for verts */
+	  n += po->nverts[m];
+	  m++;
+	} /* for loops */
+      l++;
+    } /* for polys */
+
+  /* return result */
+  *result = angles;
+
+ return;
+} /* ay_pomesht_vertanglesums */
+
+
+/** ay_pomesht_updateoffset:
+ * Calculate the partial offset for an edge point. Each adjoining
+ * triangle will pull that edge point to the interior along the
+ * angle bisecting vector and with an amount relative to the angle
+ * of the triangle at the point (in relation to the sum of all such
+ * angles at that point).
+ *
+ * \param[in] vertanglesum sum of all vertex angles in vp
+ * \param[in] vp edge point for which to compute the offset
+ * \param[in] vp1 end of first edge in vp
+ * \param[in] vp2 end of second edge in vp
+ * \param[in,out] N offset to update
+ */
+void
+ay_pomesht_updateoffset(double vertanglesum, double *vp,
+			double *vp1, double *vp2, double *N)
+{
+ double angle, V1[3], V2[3], H[3];
+ double l1, l2;
+
+  /* calculate and normalize two vectors */
+  AY_V3SUB(V1, vp, vp1);
+  l1 = AY_V3LEN(V1);
+  if(l1 > AY_EPSILON)
+    AY_V3SCAL(V1, 1.0/l1);
+
+  AY_V3SUB(V2, vp, vp2);
+  l2 = AY_V3LEN(V2);
+  if(l2 > AY_EPSILON)
+    AY_V3SCAL(V2, 1.0/l2);
+
+  /* remember shortest edge */
+  if(l1 < N[3])
+    N[3] = l1;
+  if(l2 < N[3])
+    N[3] = l2;
+
+  /* calculate angle and bisecting vector */
+  angle = AY_R2D(acos(AY_V3DOT(V1, V2)));
+
+  AY_V3ADD(H, V1, V2);
+
+  l1 = AY_V3LEN(H);
+  if(l1 > AY_EPSILON)
+    AY_V3SCAL(H, 1.0/l1);
+
+  /* scale bisecting vector wrt. the ratio of angle and
+     the sum of all angles (of all triangles) meeting at vp */
+  AY_V3SCAL(H, angle/vertanglesum);
+
+  AY_V3ADD(N,N,H);
+
+ return;
+} /* ay_pomesht_updateoffset */
+
+
+/** ay_pomesht_offsetedge:
+ * Offset the selected edge of a polymesh.
+ * Does not work, if the polymesh has no interior points.
+ *
+ * \param pm[in,out] polymesh object to process
+ * \param selp[in] list of selected points denominating the edge to offset
+ * \param isint[in] array of vertex angle sums to determine whether a point
+ *  is on edge or interior (created by ay_pomesht_vertanglesums() above)
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_pomesht_offsetedge(ay_pomesh_object *pm, ay_point *selp, double *isint)
+{
+ int found, iscorner, stride = 3, numsp = 0;
+ ay_point *sp = NULL, *ip = NULL;
+ unsigned int i, j, k, kk, kp, kn, l = 0, m = 0, n = 0, p;
+ double *offsets = NULL, *N;
+ double *vp;
+
+  if(!pm || !selp || !isint)
+    return AY_ENULL;
+
+  if(pm->has_normals)
+    stride = 6;
+
+  sp = selp;
+  while(sp)
+    {
+      numsp++;
+      sp = sp->next;
+    }
+
+  if(!(offsets = calloc(numsp*4, sizeof(double))))
+    {
+      return AY_EOMEM;
+    }
+
+  /* calculate offsets */
+  sp = selp;
+  p = 0;
+  while(sp)
+    {
+      l = 0;
+      m = 0;
+      n = 0;
+      for(i = 0; i < pm->npolys; i++)
+	{
+	  for(j = 0; j < pm->nloops[l]; j++)
+	    {
+	      for(k = 0; k < pm->nverts[m]; k++)
+		{
+		  if(pm->verts[n+k] == sp->index)
+		    {
+		      /* check whether pm->verts[n+k]/p is a corner;
+			 this is the case if it is not interior and
+			 there is an exterior edge where the endpoint
+			 is not selected, i.e. not also present in selp */
+		      if(!isint[pm->verts[n+k]] > 360.0-AY_EPSILON)
+			{
+			  /* pm->verts[n+k]/p is not interior */
+			  iscorner = AY_FALSE;
+			  for(kk = 0; kk < pm->nverts[m]; kk++)
+			    {
+			      if(kk != k)
+				{
+				  if(!isint[pm->verts[n+kk]] > 360.0-AY_EPSILON)
+				    {
+				      /* pm->verts[k+kk] is endpoint of
+					 an exterior edge */
+				      found = AY_FALSE;
+				      ip = selp;
+				      while(ip)
+					{
+					  if(ip->index == pm->verts[n+kk])
+					    {
+					      found = AY_TRUE;
+					      break;
+					    }
+					  ip = ip->next;
+					}
+				      if(!found)
+					{
+					  iscorner = AY_TRUE;
+					  /* we also compute N now; corner
+					     vertices are offset along the
+					     edge pointing to the other
+					     non-interior and not-selected
+					     vertice, to keep the surface
+					     shape largely intact */
+					  vp = &(pm->controlv[pm->verts[n+kk]*
+							      stride]);
+					  N = &(offsets[p*4]);
+					  AY_V3SUB(N, vp, sp->point);
+					  AY_V3SCAL(N, 0.5);
+					}
+				    }
+				} /* if kk != k */
+			    } /* for kk */
+
+			  /* compute offset/N for pm->verts[k]/p */
+			  if(!iscorner)
+			    {
+			      if(k == 0)
+				kp = n+k+pm->nverts[m];
+			      else
+				kp = n+k-1;
+
+			      if(k == k+pm->nverts[m]-1)
+				kn = n+k;
+			      else
+				kn = n+k+1;
+
+			      N = &(offsets[p*4]);
+			      ay_pomesht_updateoffset(isint[pm->verts[n+k]],
+						      sp->point,
+				        &(pm->controlv[pm->verts[kp]*stride]),
+				        &(pm->controlv[pm->verts[kn]*stride]),
+						      N);
+			    } /* if not corner */
+			} /* if not interior */
+		    } /* if k is sp->index */
+		  k++;
+		} /* for verts */
+	      n += pm->nverts[m];
+	      m++;
+	    } /* for loops */
+	  l++;
+	} /* for polys */
+      p++;
+      sp = sp->next;
+    } /* while sp */
+
+  /* apply offsets */
+  sp = selp;
+  N = offsets;
+  while(sp)
+    {
+      vp = sp->point;
+
+      /* scale offset to shortest edge */
+      AY_V3SCAL(N, N[3]*0.5);
+
+      AY_V3ADD(vp, vp, N);
+
+      N += 4;
+      sp = sp->next;
+    }
+
+  free(offsets);
+
+ return AY_OK;
+} /* ay_pomesht_offsetedge */
+
+
+/** ay_pomesht_connect:
+ * Connect selected edges of two PoMesh objects by offsetting the
+ * meshes at their edges (in the direction of the surface tangent)
+ * and then creating a third mesh that fills the gap.
+ *
+ * \param[in,out] o1 first polymesh object
+ * \param[in,out] o2 second polymesh object
+ * \param[in,out] result where to store the new gap filling
+ *  polymesh object
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_pomesht_connect(ay_object *o1, ay_object *o2, ay_object **result)
+{
+ int ay_status = AY_OK;
+ char fname[] = "connectPo";
+ ay_pomesh_object *pm = NULL, *pm1 = NULL, *pm2 = NULL;
+ ay_object *newo = NULL;
+ ay_point *sp = NULL, *pp = NULL, *qq = NULL;
+ ay_point *p1, *p2, *q1, *q2;
+ double *vas1 = NULL, *vas2 = NULL;
+ double *cv = NULL, dist1, dist2;
+ unsigned int np1 = 0, np2 = 0;
+ unsigned int i, j;
+ unsigned int numtris = 0, maxtris;
+ int stride = 3;
+
+  if(!o1 || !o2 || !result)
+    return AY_ENULL;
+
+  if((o1->type != AY_IDPOMESH) || (o2->type != AY_IDPOMESH))
+    return AY_ERROR;
+
+  pm1 = (ay_pomesh_object*)o1->refine;
+
+  pm2 = (ay_pomesh_object*)o2->refine;
+
+  if(pm1->has_normals != pm2->has_normals)
+    return AY_ERROR;
+
+  if(pm1->has_normals)
+    stride = 6;
+
+  if(!o1->selp || !o2->selp)
+    return AY_ERROR;
+
+  sp = o1->selp;
+  while(sp)
+    {
+      np1++;
+      sp = sp->next;
+    }
+
+  sp = o2->selp;
+  while(sp)
+    {
+      np2++;
+      sp = sp->next;
+    }
+
+  if(np1 < 2 || np2 < 2)
+    return AY_ERROR;
+
+  /* pre-process o1 and o1->selp */
+
+  ay_pomesht_vertanglesums(pm1, &vas1);
+
+  ay_status = ay_pomesht_offsetedge(pm1, o1->selp, vas1);
+
+  if(ay_status)
+    goto cleanup;
+
+  ay_status = ay_selp_sort(o1->selp, np1, &pp);
+
+  if(ay_status)
+    goto cleanup;
+  /*
+for(i = 0; i < np1; i++)
+  printf("selp1 %d: %lg %lg %lg\n",i,pp[i].point[0],pp[i].point[1],
+	 pp[i].point[2]);
+  */
+  /* pre-process o2 and o2->selp */
+
+  ay_pomesht_vertanglesums(pm2, &vas2);
+
+  ay_status = ay_pomesht_offsetedge(pm2, o2->selp, vas2);
+
+  if(ay_status)
+    goto cleanup;
+
+  ay_status = ay_selp_sort(o2->selp, np2, &qq);
+
+  if(ay_status)
+    goto cleanup;
+  /*
+for(i = 0; i < np2; i++)
+  printf("selp2 %d: %lg %lg %lg\n",i,qq[i].point[0],qq[i].point[1],
+	 qq[i].point[2]);
+  */
+  /* rotate/shift list of selected points in qq to a good match to o1 */
+  ay_selp_rotatemindist(pp, qq, np2);
+
+  /* generate gap filling triangles */
+  maxtris = np1+np2;
+  if(!(cv = malloc(maxtris*3*stride*sizeof(double))))
+    return AY_EOMEM;
+
+  p1 = pp;
+  q1 = qq;
+  i = 0;
+
+  while((p1 != &(pp[np1-1])) || (q1 != &(qq[np2-1])) ||
+	((p1 == &(pp[np1-1]) && q2 <= &(qq[np2-1]))) ||
+	((q1 == &(qq[np2-1]) && p2 <= &(pp[np1-1]))))
+    {
+      p2 = p1+1;
+      q2 = q1+1;
+      /* create fan at p1 until q2 takes over, or q1 reaches the end */
+      if(q2 <= &(qq[np2-1]))
+      do
+	{
+	  if(ay_tess_checktri(p1->point, q1->point, q2->point))
+	    {
+	      numtris++;
+	      memcpy(&(cv[i]), p1->point, stride*sizeof(double));
+	      i += stride;
+	      memcpy(&(cv[i]), q1->point, stride*sizeof(double));
+	      i += stride;
+	      memcpy(&(cv[i]), q2->point, stride*sizeof(double));
+	      i += stride;
+	      if(numtris == maxtris)
+		break;
+	    }
+	  q1 = q2;
+	  q2++;
+
+	  if(q1 == &(qq[np2-1]))
+	    break;
+
+	  if(numtris == maxtris)
+	    break;
+
+	  dist1 = AY_V3SDIST(p1->point,q1->point);
+	  dist2 = AY_V3SDIST(p1->point,q2->point);
+	}
+      while(dist1 > dist2);
+
+      if(numtris == maxtris)
+	break;
+
+      /* FLIP */
+
+      /* create fan at q1 until p2 takes over, or p1 reaches the end */
+      if(p2 <= &(pp[np1-1]))
+      do
+	{
+	  if(ay_tess_checktri(q1->point, p2->point, p1->point))
+	    {
+	      numtris++;
+	      memcpy(&(cv[i]), q1->point, stride*sizeof(double));
+	      i += stride;
+	      memcpy(&(cv[i]), p2->point, stride*sizeof(double));
+	      i += stride;
+	      memcpy(&(cv[i]), p1->point, stride*sizeof(double));
+	      i += stride;
+	      if(numtris == maxtris)
+		break;
+	    }
+	  p1 = p2;
+	  p2++;
+
+	  if(p1 == &(pp[np1-1]))
+	    break;
+
+	  if(numtris == maxtris)
+	    break;
+
+	  dist1 = AY_V3SDIST(q1->point,p1->point);
+	  dist2 = AY_V3SDIST(q1->point,p2->point);
+	}
+      while(dist1 > dist2);
+
+      if(numtris == maxtris)
+	break;
+    } /* while */
+
+  if(!(pm = calloc(1, sizeof(ay_pomesh_object))))
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
+
+  pm->npolys = numtris;
+
+  if(!(pm->nloops = malloc(numtris*sizeof(unsigned int))))
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
+  for(i = 0; i < numtris; i++)
+    pm->nloops[i] = 1;
+
+  if(!(pm->nverts = malloc(numtris*sizeof(unsigned int))))
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
+  for(i = 0; i < numtris; i++)
+    pm->nverts[i] = 3;
+
+  if(!(pm->verts = malloc(numtris*3*sizeof(unsigned int))))
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
+  j = 0;
+  for(i = 0; i < numtris*3; i++)
+    {
+      pm->verts[i] = j;
+      j++;
+    }
+
+  pm->has_normals = pm2->has_normals;
+  pm->ncontrols = j;
+  pm->controlv = cv;
+
+  if(!(newo = calloc(1, sizeof(ay_object))))
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
+
+  ay_object_defaults(newo);
+  newo->type = AY_IDPOMESH;
+  newo->refine = pm;
+
+  /* return result */
+  *result = newo;
+
+  /* prevent cleanup code from doing something harmful */
+  pm = NULL;
+
+cleanup:
+
+  if(vas1)
+    free(vas1);
+
+  if(vas2)
+    free(vas2);
+
+  if(pp)
+    free(pp);
+
+  if(qq)
+    free(qq);
+
+  if(pm)
+    {
+      if(pm->nloops)
+	free(pm->nloops);
+      if(pm->nverts)
+	free(pm->nverts);
+      if(pm->verts)
+	free(pm->verts);
+      free(pm);
+    }
+
+ return ay_status;
+} /* ay_pomesht_connect */
+
+
+/** ay_pomesht_connecttcmd:
+ *  Connect the selected PolyMesh objects over their selected edges.
+ *  Implements the \a connectPo scripting interface command.
+ *  See also the corresponding section in the \ayd{scconnectpo}.
+ *
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_pomesht_connecttcmd(ClientData clientData, Tcl_Interp *interp,
+		       int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ int i = 1, mergepvtags = AY_FALSE;
+ ay_list_object *sel = ay_selection;
+ ay_object *o1 = NULL, *o2 = NULL, *no = NULL;
+
+  if(!ay_selection)
+    {
+      ay_error(AY_ENOSEL, argv[0], NULL);
+      return TCL_OK;
+    }
+
+  while(i+1 < argc)
+    {
+      if(!strcmp(argv[i], "-p"))
+	{
+	  sscanf(argv[i+1], "%d", &mergepvtags);
+	}
+      i += 2;
+    }
+
+  while(sel)
+    {
+      if(sel->object && sel->object->type == AY_IDPOMESH)
+	{
+	  if(o1)
+	    {
+	      o2 = sel->object;
+	    }
+	  else
+	    {
+	      o1 = sel->object;
+	    }
+
+	  if(o1 && o2)
+	    break;
+	}
+      sel = sel->next;
+    }
+
+  if(!o1 || !o2)
+    {
+      ay_error(AY_ERROR, argv[0], "Need two PoMesh objects!");
+      return TCL_OK;
+    }
+
+  if(!o1->selp || !o2->selp)
+    {
+      ay_error(AY_ERROR, argv[0], "Need selected edges!");
+      return TCL_OK;
+    }
+
+  ay_status = ay_pomesht_connect(o1, o2, &no);
+
+  if(ay_status)
+    { /* emit error message */
+      ay_error(AY_ERROR, argv[0], "Connect operation failed!");
+    }
+  else
+    { /* link the new PolyMesh to the scene */
+      ay_object_link(no);
+    }
+
+ return TCL_OK;
+} /* ay_pomesht_connecttcmd */
