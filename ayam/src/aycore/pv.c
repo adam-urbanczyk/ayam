@@ -544,6 +544,88 @@ cleanup:
 } /* ay_pv_merge */
 
 
+/* ay_pv_mergeinto:
+ *  merge two PV tags (<t1>, <t2>) into one
+ *  the elements in <t2> will be appended to the elements in <t1>
+ *
+ *  The value array of t1 must be large enough to hold all data already!
+ *
+ */
+int
+ay_pv_mergeinto(ay_tag *t1, ay_tag *t2)
+{
+ int ay_status = AY_OK;
+ char *comma1 = NULL, *comma2 = NULL, *comma4, buf[128];
+ char *dst;
+ int i = 0, buflen;
+ unsigned int n1, n2;
+
+  if(!t1 || !t2)
+    return AY_ENULL;
+
+  /* find the third comma in t1->val */
+  comma1 = t1->val;
+  while((i < 3) && (comma1 = strchr(comma1, ',')))
+    { i++; comma1++; }
+  if(!comma1)
+    { ay_status = AY_ERROR; goto cleanup; }
+
+  /* find the fourth comma in t1->val */
+  comma4 = strchr(comma1+1, ',');
+  if(!comma4)
+    { ay_status = AY_ERROR; goto cleanup; }
+
+  sscanf(comma1, "%u", &n1);
+
+  /* find the third comma in t2->val */
+  comma2 = t2->val;
+  i = 0;
+  while((i < 3) && (comma2 = strchr(comma2, ',')))
+    { i++; comma2++; }
+  if(!comma2)
+    { ay_status = AY_ERROR; goto cleanup; }
+
+  sscanf(comma2, "%u", &n2);
+
+  /* compute and print new number of elements */
+  buflen = sprintf(buf, "%u", n1+n2);
+
+  if(buflen > comma4-comma1)
+    {
+      /* need to shift data in t1 (add three spaces, so that we do
+	 not run into this case for the next invocation) */
+      strncpy(&(buf[buflen]), "   ", 3*sizeof(char));
+      buflen += 3;
+      comma1++;
+      /* shift t1 values */
+      memmove(comma1+buflen, comma1, strlen(comma1)*sizeof(char));
+      /* write new number of elements into the tag */
+      memcpy(comma1, buf, (buflen*sizeof(char)));
+    }
+  else
+    {
+      /* no shifting needed */
+
+      /* write new number of elements into the tag */
+      strncpy(comma1+1, buf, buflen*sizeof(char));
+    }
+
+  /* append t2 values to t1 */
+  dst = t1->val+strlen(t1->val);
+
+  /* find the fourth comma in t2->val */
+  comma4 = strchr(comma2+1, ',');
+  if(!comma4)
+    { ay_status = AY_ERROR; goto cleanup; }
+
+  strcpy(dst, comma4);
+
+cleanup:
+
+ return ay_status;
+} /* ay_pv_mergeinto */
+
+
 /* ay_pv_cmpndt:
  *  compare the primitive variable names, details, and data types
  *  of the PV tags <t1> and <t2>
