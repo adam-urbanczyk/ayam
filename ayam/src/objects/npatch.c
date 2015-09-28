@@ -3082,7 +3082,7 @@ ay_npatch_setnttag(ay_object *o, double *normal)
       memcpy(btval->payload, normal, 3*sizeof(double));
     }
 
-  return;
+ return;
 } /* ay_npatch_setnttag */
 
 
