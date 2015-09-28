@@ -7444,7 +7444,7 @@ ay_nct_cmppnt(const void *p1, const void *p2)
      (fabs(((double*)p1)[2] - ((double*)p2)[2]) > AY_EPSILON))
     return 1;
 
-  return 0;
+ return 0;
 } /* ay_nct_cmppnt */
 
 
