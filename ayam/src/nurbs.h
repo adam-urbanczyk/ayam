@@ -1504,6 +1504,8 @@ int ay_stess_TessNP(ay_object *o, int qf, ay_stess_patch *stess);
 
 /* tess.c */
 
+int ay_tess_checktri(double *p1, double *p2, double *p3);
+
 /** Tesselate NURBS patch (convert to PolyMesh) with GLU.
  */
 int ay_tess_npatch(ay_object *o,
