@@ -2031,6 +2031,10 @@ extern char *ay_error_igntype;
 
 #define AY_V2DOT(v1,v2) (v1[0]*v2[0] + v1[1]*v2[1])
 
+#define AY_V3DIST(v1,v2) sqrt(((v1[0]-v2[0])*(v1[0]-v2[0]))+((v1[1]-v2[1])*(v1[1]-v2[1]))+((v1[2]-v2[2])*(v1[2]-v2[2])))
+
+#define AY_V3SDIST(v1,v2) (((v1[0]-v2[0])*(v1[0]-v2[0]))+((v1[1]-v2[1])*(v1[1]-v2[1]))+((v1[2]-v2[2])*(v1[2]-v2[2])))
+
 #define AY_V4COMP(v1, v2) ((fabs(v1[0]-v2[0]) < AY_EPSILON) &&\
 			   (fabs(v1[1]-v2[1]) < AY_EPSILON) &&\
 			   (fabs(v1[2]-v2[2]) < AY_EPSILON) &&\
