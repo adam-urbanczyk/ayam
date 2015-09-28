@@ -2015,57 +2015,6 @@ ay_pomesht_flipnormals(ay_pomesh_object *po)
 
 
 
-#define AY_V3DIST(v1,v2) sqrt(((v1[0]-v2[0])*(v1[0]-v2[0]))+((v1[1]-v2[1])*(v1[1]-v2[1]))+((v1[2]-v2[2])*(v1[2]-v2[2])))
-
-#define AY_V3SDIST(v1,v2) (((v1[0]-v2[0])*(v1[0]-v2[0]))+((v1[1]-v2[1])*(v1[1]-v2[1]))+((v1[2]-v2[2])*(v1[2]-v2[2])))
-
-
-#if 0
-int
-ay_selp_sort(ay_point *p, unsigned int np, ay_point **result)
-{
- ay_point *p1, *p2, *minp, *sorted;
- double minlen, len;
- unsigned int i = 0;
-
-  if(!p)
-   return AY_ENULL;
-
-  if(!(sorted = malloc(np*sizeof(ay_point))))
-    return AY_EOMEM;
-
-  memcpy(sorted, p, sizeof(ay_point));
-  i++;
-
-  p1 = p;
-  while(p1)
-    {
-      p2 = p1->next;
-      minlen = DBL_MAX;
-      while(p2)
-	{
-	  len = AY_V3SDIST(p1->point, p2->point);
-	  if(minlen < len)
-	    {
-	      minp = p2;
-	      minlen = len;
-	    }
-	  p2 = p2->next;
-	}
-      if(minp)
-	{
-	  memcpy(&(sorted[i]), p2, sizeof(ay_point));
-	  i++;
-	}
-      p1 = p1->next;
-    }
-
-  *result = sorted;
-
- return AY_OK;
-}
-#endif
-
 int
 ay_selp_sort(ay_point *p, unsigned int np, ay_point **result)
 {
@@ -2545,6 +2494,8 @@ ay_pomesht_offsetedge(ay_pomesh_object *pm, ay_point *selp, double *isint)
  * Connect selected edges of two PoMesh objects by offsetting the
  * meshes at their edges (in the direction of the surface tangent)
  * and then creating a third mesh that fills the gap.
+ *
+ * XXXX Todo: detect and handle closed edges
  *
  * \param[in,out] o1 first polymesh object
  * \param[in,out] o2 second polymesh object
