@@ -87,7 +87,6 @@ typedef struct ay_tess_object_s {
 
 /* prototypes of functions local to this module */
 
-int ay_tess_checktri(double *p1, double *p2, double *p3);
 
 int ay_tess_checkquad(double *p1, double *p2, double *p3, double *p4);
 
@@ -164,6 +163,7 @@ ay_tess_checktri(double *p1, double *p2, double *p3)
 
  return AY_TRUE;
 } /* ay_tess_checktri */
+
 
 
 /* ay_tess_checkquad:
@@ -974,7 +974,7 @@ ay_tess_addtag(ay_object *o, char *val)
   tag->next = o->tags;
   o->tags = tag;
 
-  return AY_OK;
+ return AY_OK;
 } /* ay_tess_addtag */
 
 
@@ -1032,8 +1032,8 @@ ay_tess_tristoquad(double **t1, double **t2, double quad_eps, int *q)
   if(quad_eps != DBL_MAX)
     {
       /* employ flatness check */
-      ay_geom_calcnfrom3(t1[0], t1[1], t1[2], N1);
-      ay_geom_calcnfrom3(t2[0], t2[1], t2[2], N2);
+      ay_geom_normalfrom3pnts(t1[0], t1[1], t1[2], N1);
+      ay_geom_normalfrom3pnts(t2[0], t2[1], t2[2], N2);
 
       if(!AY_V3COMP(N1,N2))
 	{
@@ -1365,6 +1365,143 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
       if(tri1)
 	tri2 = tri1->next;
     } /* while */
+
+  /* search degenerate quads for potential partners */
+  for(j = 0; j < numdquads; j++)
+    {
+      tri1 = dquads[j];
+      if(tri1)
+	{
+	  pt1[0] = tri1->p1;
+	  pt1[1] = tri1->p2;
+	  pt1[2] = tri1->p3;
+
+	  if(has_vn)
+	    {
+	      pt1[3] = tri1->n1;
+	      pt1[4] = tri1->n2;
+	      pt1[5] = tri1->n3;
+	    }
+
+	  if(has_tc)
+	    {
+	      pt1[6] = tri1->t1;
+	      pt1[7] = tri1->t2;
+	      pt1[8] = tri1->t3;
+	    }
+
+	  if(has_vc)
+	    {
+	      pt1[9] = tri1->c1;
+	      pt1[10] = tri1->c2;
+	      pt1[11] = tri1->c3;
+	    }
+
+	  tri = NULL;
+
+	  for(k = j+1; k < numdquads; k++)
+	    {
+	      tri2 = dquads[k];
+	      if(tri2)
+		{
+		  pt2[0] = tri2->p1;
+		  pt2[1] = tri2->p2;
+		  pt2[2] = tri2->p3;
+
+		  if(has_vn)
+		    {
+		      pt2[3] = tri2->n1;
+		      pt2[4] = tri2->n2;
+		      pt2[5] = tri2->n3;
+		    }
+
+		  if(has_tc)
+		    {
+		      pt2[6] = tri2->t1;
+		      pt2[7] = tri2->t2;
+		      pt2[8] = tri2->t3;
+		    }
+
+		  if(has_vc)
+		    {
+		      pt2[9] = tri2->c1;
+		      pt2[10] = tri2->c2;
+		      pt2[11] = tri2->c3;
+		    }
+
+		  ay_status = ay_tess_tristoquad(pt1, pt2, quad_eps, q);
+
+		  if(!ay_status && q[0] != -1)
+		    {
+		      /* one quad => just copy the relevant data */
+		      if(ay_tess_checkquad(pt1[q[0]], pt1[q[1]],
+					   pt1[q[2]], pt2[q[3]]))
+			{
+			  numquads++;
+			  if(has_vn)
+			    {
+			      memcpy(&(po->controlv[i]), pt1[q[0]],
+				     3*sizeof(double));
+			      memcpy(&(po->controlv[i+3]), pt1[q[0]+3],
+				     3*sizeof(double));
+			      memcpy(&(po->controlv[i+6]), pt1[q[1]],
+				     3*sizeof(double));
+			      memcpy(&(po->controlv[i+9]), pt1[q[1]+3],
+				     3*sizeof(double));
+			      memcpy(&(po->controlv[i+12]), pt1[q[2]],
+				     3*sizeof(double));
+			      memcpy(&(po->controlv[i+15]), pt1[q[2]+3],
+				     3*sizeof(double));
+			      memcpy(&(po->controlv[i+18]), pt2[q[3]],
+				     3*sizeof(double));
+			      memcpy(&(po->controlv[i+21]), pt2[q[3]+3],
+				     3*sizeof(double));
+			    }
+			  else
+			    {
+			      memcpy(&(po->controlv[i]), pt1[q[0]],
+				     3*sizeof(double));
+			      memcpy(&(po->controlv[i+3]), pt1[q[1]],
+				     3*sizeof(double));
+			      memcpy(&(po->controlv[i+6]), pt1[q[2]],
+				     3*sizeof(double));
+			      memcpy(&(po->controlv[i+9]), pt2[q[3]],
+				     3*sizeof(double));
+			    }
+
+			  if(has_tc)
+			    {
+			      tctagptr += sprintf(tctagptr,
+					      ",%g,%g,%g,%g,%g,%g,%g,%g",
+					      *(pt1[q[0]+6]), *(pt1[q[0]+6]+1),
+					      *(pt1[q[1]+6]), *(pt1[q[1]+6]+1),
+					      *(pt1[q[2]+6]), *(pt1[q[2]+6]+1),
+					      *(pt2[q[3]+6]), *(pt2[q[3]+6]+1));
+			    }
+
+			  if(has_vc)
+			    {
+			      vctagptr += sprintf(vctagptr,
+				      ",%g,%g,%g,%g,%g,%g,%g,%g,%g,%g,%g,%g",
+			  *(pt1[q[0]+9]), *(pt1[q[0]+9]+1), *(pt1[q[0]+9]+2),
+			  *(pt1[q[1]+9]), *(pt1[q[1]+9]+1), *(pt1[q[1]+9]+2),
+			  *(pt1[q[2]+9]), *(pt1[q[2]+9]+1), *(pt1[q[2]+9]+2),
+			  *(pt2[q[3]+9]), *(pt2[q[3]+9]+1), *(pt2[q[3]+9]+2));
+			    }
+
+			  i += (4*stride);
+			}
+
+		      /* signal successful processing of tri1/tri2 */
+		      dquads[j] = NULL;
+		      dquads[k] = NULL;
+
+		      break;
+		    }
+		} /* if tri2 */
+	    } /* for k */
+	} /* if tri1 */
+    } /* for j */
 
   /* search degenerate quads for potential partners */
   for(j = 0; j < numdquads; j++)
