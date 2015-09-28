@@ -286,7 +286,7 @@ void ay_geom_pointstoplane(double x1, double y1, double z1,
 
 /** calculate normal from three points
  */
-void ay_geom_calcnfrom3(double *p1, double *p2, double *p3, double *n);
+void ay_geom_normalfrom3pnts(double *p1, double *p2, double *p3, double *n);
 
 /** Extract middle point.
  */
@@ -882,6 +882,10 @@ void ay_pomesht_fliploops(ay_pomesh_object *po);
  */
 void ay_pomesht_flipnormals(ay_pomesh_object *po);
 
+/** Tcl command to connect polymesh object edges.
+ */
+int ay_pomesht_connecttcmd(ClientData clientData, Tcl_Interp *interp,
+			   int argc, char *argv[]);
 
 /* prefs.c */
 
@@ -979,6 +983,10 @@ int ay_pv_add(ay_object *o,
 /** merge two PV tags into one
  */
 int ay_pv_merge(ay_tag *t1, ay_tag *t2, ay_tag **mt);
+
+/** merge two PV tags into one
+ */
+int ay_pv_mergeinto(ay_tag *t1, ay_tag *t2);
 
 /** compare two PV tags name, detail, and data type
  */
