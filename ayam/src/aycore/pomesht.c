@@ -2014,9 +2014,17 @@ ay_pomesht_flipnormals(ay_pomesh_object *po)
 } /* ay_pomesht_flipnormals */
 
 
-
+/** 
+ * 
+ * 
+ * \param[in] p the list of points to sort
+ * \param[in] np number of points in list
+ * \param[in,out] result the sorted points as array
+ * 
+ * \return 
+ */
 int
-ay_selp_sort(ay_point *p, unsigned int np, ay_point **result)
+ay_selp_sort(ay_point *p, unsigned int np, int closed, ay_point **result)
 {
  ay_point *p1, *p2, *minp, *maxp, *sorted, t;
  double s, minlen, maxlen, len, M[3] = {0};
@@ -2109,18 +2117,18 @@ ay_selp_sort(ay_point *p, unsigned int np, ay_point **result)
 
 
 void
-ay_selp_rotatemindist(ay_point *p1, ay_point *p2, unsigned int p2len)
+ay_selp_rotatemindist(ay_point *p1, ay_point *p2, unsigned int p2len,
+		      int p2closed)
 {
  ay_point *shifted = NULL, *p, *q, *mq = NULL, t;
  double *v1, *v2;
  double dist, mindist = DBL_MAX;
  unsigned int qi = 0, mqi = 0;
- int closed = AY_FALSE;
 
   if(!p1 || !p2)
     return;
 
-  if(closed)
+  if(p2closed)
     {
       p = p1;
       q = p2;
@@ -2343,11 +2351,14 @@ ay_pomesht_updateoffset(double vertanglesum, double *vp,
  * \param selp[in] list of selected points denominating the edge to offset
  * \param isint[in] array of vertex angle sums to determine whether a point
  *  is on edge or interior (created by ay_pomesht_vertanglesums() above)
+ * \param pm[in,out] isclosed set to AY_FALSE if a corner is found,
+ *   set to AY_TRUE otherwise (may be null)
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_pomesht_offsetedge(ay_pomesh_object *pm, ay_point *selp, double *isint)
+ay_pomesht_offsetedge(ay_pomesh_object *pm, ay_point *selp,
+		      double *isint, int *isclosed)
 {
  int found, iscorner, stride = 3, numsp = 0;
  ay_point *sp = NULL, *ip = NULL;
@@ -2367,6 +2378,9 @@ ay_pomesht_offsetedge(ay_pomesh_object *pm, ay_point *selp, double *isint)
       numsp++;
       sp = sp->next;
     }
+
+  if(isclosed)
+    *isclosed = AY_TRUE;
 
   if(!(offsets = calloc(numsp*4, sizeof(double))))
     {
@@ -2419,6 +2433,10 @@ ay_pomesht_offsetedge(ay_pomesh_object *pm, ay_point *selp, double *isint)
 				      if(!found)
 					{
 					  iscorner = AY_TRUE;
+
+					  if(isclosed)
+					    *isclosed = AY_FALSE;
+
 					  /* we also compute N now; corner
 					     vertices are offset along the
 					     edge pointing to the other
@@ -2495,8 +2513,6 @@ ay_pomesht_offsetedge(ay_pomesh_object *pm, ay_point *selp, double *isint)
  * meshes at their edges (in the direction of the surface tangent)
  * and then creating a third mesh that fills the gap.
  *
- * XXXX Todo: detect and handle closed edges
- *
  * \param[in,out] o1 first polymesh object
  * \param[in,out] o2 second polymesh object
  * \param[in,out] result where to store the new gap filling
@@ -2518,7 +2534,7 @@ ay_pomesht_connect(ay_object *o1, ay_object *o2, ay_object **result)
  unsigned int np1 = 0, np2 = 0;
  unsigned int i, j;
  unsigned int numtris = 0, maxtris;
- int stride = 3;
+ int stride = 3, isclosed1 = AY_TRUE, isclosed2 = AY_TRUE;
 
   if(!o1 || !o2 || !result)
     return AY_ENULL;
@@ -2560,12 +2576,12 @@ ay_pomesht_connect(ay_object *o1, ay_object *o2, ay_object **result)
 
   ay_pomesht_vertanglesums(pm1, &vas1);
 
-  ay_status = ay_pomesht_offsetedge(pm1, o1->selp, vas1);
+  ay_status = ay_pomesht_offsetedge(pm1, o1->selp, vas1, &isclosed1);
 
   if(ay_status)
     goto cleanup;
 
-  ay_status = ay_selp_sort(o1->selp, np1, &pp);
+  ay_status = ay_selp_sort(o1->selp, np1, isclosed1, &pp);
 
   if(ay_status)
     goto cleanup;
@@ -2578,12 +2594,12 @@ for(i = 0; i < np1; i++)
 
   ay_pomesht_vertanglesums(pm2, &vas2);
 
-  ay_status = ay_pomesht_offsetedge(pm2, o2->selp, vas2);
+  ay_status = ay_pomesht_offsetedge(pm2, o2->selp, vas2, &isclosed2);
 
   if(ay_status)
     goto cleanup;
 
-  ay_status = ay_selp_sort(o2->selp, np2, &qq);
+  ay_status = ay_selp_sort(o2->selp, np2, isclosed2, &qq);
 
   if(ay_status)
     goto cleanup;
@@ -2593,10 +2609,12 @@ for(i = 0; i < np2; i++)
 	 qq[i].point[2]);
   */
   /* rotate/shift list of selected points in qq to a good match to o1 */
-  ay_selp_rotatemindist(pp, qq, np2);
+  ay_selp_rotatemindist(pp, qq, np2, isclosed2);
 
   /* generate gap filling triangles */
   maxtris = np1+np2;
+  if(isclosed2)
+    maxtris += 2;
   if(!(cv = malloc(maxtris*3*stride*sizeof(double))))
     return AY_EOMEM;
 
@@ -2679,6 +2697,36 @@ for(i = 0; i < np2; i++)
 	break;
     } /* while */
 
+  /* create triangles to close the mesh */
+  if(isclosed2)
+    {
+      p1 = pp;
+      p2 = &(pp[np1-1]);
+      q1 = qq;
+      q2 = &(qq[np2-1]);
+      if(numtris < maxtris && ay_tess_checktri(p1->point, p2->point, q1->point))
+	{
+	  numtris++;
+	  memcpy(&(cv[i]), p1->point, stride*sizeof(double));
+	  i += stride;
+	  memcpy(&(cv[i]), p2->point, stride*sizeof(double));
+	  i += stride;
+	  memcpy(&(cv[i]), q1->point, stride*sizeof(double));
+	  i += stride;
+	}
+      if(numtris < maxtris && ay_tess_checktri(q1->point, p2->point, q2->point))
+	{
+	  numtris++;
+	  memcpy(&(cv[i]), q1->point, stride*sizeof(double));
+	  i += stride;
+	  memcpy(&(cv[i]), p2->point, stride*sizeof(double));
+	  i += stride;
+	  memcpy(&(cv[i]), q2->point, stride*sizeof(double));
+	  i += stride;
+	}
+    }
+
+  /* construct the new polymesh object */
   if(!(pm = calloc(1, sizeof(ay_pomesh_object))))
     {
       ay_status = AY_EOMEM;
