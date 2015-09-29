@@ -1858,7 +1858,7 @@ ay_pomesht_gennormtcmd(ClientData clientData, Tcl_Interp *interp,
   if(!strcmp(argv[0], "flipPo"))
     {
       mode = 3;
-      if(argc > 2)
+      if(argc > 1)
 	{
 	  sscanf(argv[1], "%d", &flip);
 	}
@@ -2150,7 +2150,7 @@ ay_pomesht_alignpoints(ay_point *p1, ay_point *p2, unsigned int p2len,
  ay_point *shifted = NULL, *p, *q, *mq = NULL, t;
  double *v1, *v2;
  double dist, mindist = DBL_MAX;
- unsigned int qi = 0, mqi = 0;
+ unsigned int i, qi = 0, mqi = 0;
 
   if(!p1 || !p2)
     return;
@@ -2159,7 +2159,7 @@ ay_pomesht_alignpoints(ay_point *p1, ay_point *p2, unsigned int p2len,
     {
       p = p1;
       q = p2;
-      while(q)
+      for(i = 0; i < p2len; i++)
 	{
 	  dist = AY_V3SDIST(p->point, q->point);
 	  if(!(dist != dist) && (dist < mindist))
@@ -2169,7 +2169,7 @@ ay_pomesht_alignpoints(ay_point *p1, ay_point *p2, unsigned int p2len,
 	      mq = q;
 	    }
 	  qi++;
-	  q = q->next;
+	  q++;
 	}
 
       if(mq != p2)
@@ -2178,7 +2178,7 @@ ay_pomesht_alignpoints(ay_point *p1, ay_point *p2, unsigned int p2len,
 	    return;
 
 	  memcpy(shifted, mq, (p2len-mqi)*sizeof(ay_point));
-	  memcpy(&(shifted[p2len-mqi]), p2, (mqi-1)*sizeof(ay_point));
+	  memcpy(&(shifted[p2len-mqi]), p2, (mqi)*sizeof(ay_point));
 
 	  memcpy(p2, shifted, p2len*sizeof(ay_point));
 	  free(shifted);
@@ -2346,9 +2346,9 @@ ay_pomesht_updateoffset(double vertanglesum, double *vp,
     AY_V3SCAL(V2, 1.0/l2);
 
   /* remember shortest edge */
-  if(l1 < N[3])
+  if(l1 > AY_EPSILON && l1 < N[3])
     N[3] = l1;
-  if(l2 < N[3])
+  if(l2 > AY_EPSILON && l2 < N[3])
     N[3] = l2;
 
   /* calculate angle and bisecting vector */
@@ -2414,6 +2414,13 @@ ay_pomesht_offsetedge(ay_pomesh_object *pm, ay_point *selp,
       return AY_EOMEM;
     }
 
+  N = offsets;
+  for(i = 0; i < numsp; i++)
+    {
+      N[3] = DBL_MAX;
+      N += 4;
+    }
+
   /* calculate offsets */
   sp = selp;
   p = 0;
@@ -2434,7 +2441,7 @@ ay_pomesht_offsetedge(ay_pomesh_object *pm, ay_point *selp,
 			 this is the case if it is not interior and
 			 there is an exterior edge where the endpoint
 			 is not selected, i.e. not also present in selp */
-		      if(!isint[pm->verts[n+k]] > 360.0-AY_EPSILON)
+		      if(!(isint[pm->verts[n+k]] > 360.0-AY_EPSILON))
 			{
 			  /* pm->verts[n+k]/p is not interior */
 			  iscorner = AY_FALSE;
@@ -2442,9 +2449,10 @@ ay_pomesht_offsetedge(ay_pomesh_object *pm, ay_point *selp,
 			    {
 			      if(kk != k)
 				{
-				  if(!isint[pm->verts[n+kk]] > 360.0-AY_EPSILON)
+				  if(!(isint[pm->verts[n+kk]] >
+				       360.0-AY_EPSILON))
 				    {
-				      /* pm->verts[k+kk] is endpoint of
+				      /* pm->verts[n+kk] is endpoint of
 					 an exterior edge */
 				      found = AY_FALSE;
 				      ip = selp;
@@ -2460,7 +2468,7 @@ ay_pomesht_offsetedge(ay_pomesh_object *pm, ay_point *selp,
 				      if(!found)
 					{
 					  iscorner = AY_TRUE;
-
+					  //printf("corner at %d\n",sp->index);
 					  if(isclosed)
 					    *isclosed = AY_FALSE;
 
@@ -2473,8 +2481,11 @@ ay_pomesht_offsetedge(ay_pomesh_object *pm, ay_point *selp,
 					  vp = &(pm->controlv[pm->verts[n+kk]*
 							      stride]);
 					  N = &(offsets[p*4]);
+					  memset(N, 0, 3*sizeof(double));
 					  AY_V3SUB(N, vp, sp->point);
 					  AY_V3SCAL(N, 0.5);
+					  N[3] = -1.0;
+					  break;
 					}
 				    }
 				} /* if kk != k */
@@ -2483,26 +2494,27 @@ ay_pomesht_offsetedge(ay_pomesh_object *pm, ay_point *selp,
 			  /* compute offset/N for pm->verts[k]/p */
 			  if(!iscorner)
 			    {
+			      /* wrap around */
 			      if(k == 0)
-				kp = n+k+pm->nverts[m];
+				kp = n+(pm->nverts[m]-1);
 			      else
 				kp = n+k-1;
 
-			      if(k == k+pm->nverts[m]-1)
-				kn = n+k;
+			      if(k == pm->nverts[m]-1)
+				kn = n;
 			      else
 				kn = n+k+1;
 
 			      N = &(offsets[p*4]);
-			      ay_pomesht_updateoffset(isint[pm->verts[n+k]],
-						      sp->point,
+			      if(N[3] != -1.0)
+				ay_pomesht_updateoffset(isint[pm->verts[n+k]],
+							sp->point,
 				        &(pm->controlv[pm->verts[kp]*stride]),
 				        &(pm->controlv[pm->verts[kn]*stride]),
-						      N);
+							N);
 			    } /* if not corner */
 			} /* if not interior */
 		    } /* if k is sp->index */
-		  k++;
 		} /* for verts */
 	      n += pm->nverts[m];
 	      m++;
@@ -2521,7 +2533,7 @@ ay_pomesht_offsetedge(ay_pomesh_object *pm, ay_point *selp,
       vp = sp->point;
 
       /* scale offset to shortest edge */
-      AY_V3SCAL(N, N[3]*0.5);
+      AY_V3SCAL(N, N[3]*-0.5);
 
       AY_V3ADD(vp, vp, N);
 
