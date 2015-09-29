@@ -69,6 +69,12 @@ int ay_pomesht_addvertextohash(ay_pomesht_hash *phash, int ignore_normals,
 			       double *point);
 
 
+void ay_pomesht_alignpoints(ay_point *p1, ay_point *p2, unsigned int p2len,
+			    int p2closed);
+
+int ay_pomesht_sortpoints(ay_point *p, unsigned int np, int closed,
+			  ay_point **result);
+
 /* functions */
 
  /* ay_pomesht_destroy:
@@ -2014,17 +2020,27 @@ ay_pomesht_flipnormals(ay_pomesh_object *po)
 } /* ay_pomesht_flipnormals */
 
 
-/** 
- * 
- * 
+/** ay_pomesht_sortpoints:
+ * Sort a list of points so that it starts with the point farthest
+ * away from the mean and all other points follow by their minimum
+ * distance compared to their predecessor.
+ *
+ * Does only work correctly if the edge is not self-intersecting or
+ * touching, or even coming closer than the respective intermediate
+ * distances.
+ *
+ * Helper for ay_pomesht_connect().
+ *
  * \param[in] p the list of points to sort
  * \param[in] np number of points in list
- * \param[in,out] result the sorted points as array
- * 
- * \return 
+ * \param[in] closed whether the points represent a closed edge
+ * \param[in,out] result the sorted points (in array form)
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_selp_sort(ay_point *p, unsigned int np, int closed, ay_point **result)
+ay_pomesht_sortpoints(ay_point *p, unsigned int np, int closed,
+		      ay_point **result)
 {
  ay_point *p1, *p2, *minp, *maxp, *sorted, t;
  double s, minlen, maxlen, len, M[3] = {0};
@@ -2113,12 +2129,23 @@ ay_selp_sort(ay_point *p, unsigned int np, int closed, ay_point **result)
   *result = sorted;
 
  return AY_OK;
-}
+} /* ay_pomesht_sortpoints */
 
 
+/** ay_pomesht_alignpoints:
+ * Align a list of points to a second list of points, possibly
+ * shifting and/or flipping it.
+ *
+ * Helper for ay_pomesht_connect().
+ *
+ * \param[in] p1 first list (in array form)
+ * \param[in,out] p2 second list (in array form), will be aligned
+ * \param[in] p2len length of second list
+ * \param[in] p2closed whether the second list represents a closed edge
+ */
 void
-ay_selp_rotatemindist(ay_point *p1, ay_point *p2, unsigned int p2len,
-		      int p2closed)
+ay_pomesht_alignpoints(ay_point *p1, ay_point *p2, unsigned int p2len,
+		       int p2closed)
 {
  ay_point *shifted = NULL, *p, *q, *mq = NULL, t;
  double *v1, *v2;
@@ -2196,7 +2223,7 @@ ay_selp_rotatemindist(ay_point *p1, ay_point *p2, unsigned int p2len,
     }
 
  return;
-}
+} /* ay_pomesht_alignpoints */
 
 
 /** ay_pomesht_vertanglesums:
@@ -2581,7 +2608,7 @@ ay_pomesht_connect(ay_object *o1, ay_object *o2, ay_object **result)
   if(ay_status)
     goto cleanup;
 
-  ay_status = ay_selp_sort(o1->selp, np1, isclosed1, &pp);
+  ay_status = ay_pomesht_sortpoints(o1->selp, np1, isclosed1, &pp);
 
   if(ay_status)
     goto cleanup;
@@ -2599,7 +2626,7 @@ for(i = 0; i < np1; i++)
   if(ay_status)
     goto cleanup;
 
-  ay_status = ay_selp_sort(o2->selp, np2, isclosed2, &qq);
+  ay_status = ay_pomesht_sortpoints(o2->selp, np2, isclosed2, &qq);
 
   if(ay_status)
     goto cleanup;
@@ -2609,7 +2636,7 @@ for(i = 0; i < np2; i++)
 	 qq[i].point[2]);
   */
   /* rotate/shift list of selected points in qq to a good match to o1 */
-  ay_selp_rotatemindist(pp, qq, np2, isclosed2);
+  ay_pomesht_alignpoints(pp, qq, np2, isclosed2);
 
   /* generate gap filling triangles */
   maxtris = np1+np2;
