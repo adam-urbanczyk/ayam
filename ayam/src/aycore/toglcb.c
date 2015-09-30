@@ -349,7 +349,7 @@ ay_toglcb_display(struct Togl *togl)
 	  ay_prefs.nc_display_mode = ncdm;
 	  ay_prefs.glu_sampling_tolerance = tol;
 	  ay_prefs.stess_qf = stqf;
-	  //	  view->display_list_active = AY_FALSE;
+	  /*view->display_list_active = AY_FALSE;*/
 	}
     } /* if !altdisp */
 
