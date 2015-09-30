@@ -859,10 +859,10 @@ ay_pomesht_addvertextohash(ay_pomesht_hash *phash, int ignore_normals,
  * Optimize control vertices of a polymesh object so that they are
  * unique when this function is finished.
  *
- * \param pomesh PolyMesh object to optimize
- * \param ignore_normals if AY_TRUE, vertex normals are ignored when
+ * \param[in,out] pomesh PolyMesh object to optimize
+ * \param[in] ignore_normals if AY_TRUE, vertex normals are ignored when
  *  comparing the vertices
- * \param selp vertices to process (may be NULL, to indicate that all
+ * \param[in] selp vertices to process (may be NULL, to indicate that all
  *  vertices are to be processed)
  *
  * \returns AY_OK on success, error code otherwise.
@@ -2026,8 +2026,8 @@ ay_pomesht_flipnormals(ay_pomesh_object *po)
  * distance compared to their predecessor.
  *
  * Does only work correctly if the edge is not self-intersecting or
- * touching, or even coming closer than the respective intermediate
- * distances.
+ * touching, or even coming closer to itself than the respective
+ * intermediate point distances on the edge.
  *
  * Helper for ay_pomesht_connect().
  *
@@ -2374,22 +2374,23 @@ ay_pomesht_updateoffset(double vertanglesum, double *vp,
  * Offset the selected edge of a polymesh.
  * Does not work, if the polymesh has no interior points.
  *
- * \param pm[in,out] polymesh object to process
- * \param selp[in] list of selected points denominating the edge to offset
- * \param isint[in] array of vertex angle sums to determine whether a point
+ * \param[in,out] pm polymesh object to process
+ * \param[in] offset distance the points are to be moved (0.0-1.0)
+ * \param[in] selp list of selected points denominating the edge to offset
+ * \param[in] isint array of vertex angle sums to determine whether a point
  *  is on edge or interior (created by ay_pomesht_vertanglesums() above)
- * \param pm[in,out] isclosed set to AY_FALSE if a corner is found,
+ * \param[in,out] isclosed set to AY_FALSE if a corner is found,
  *   set to AY_TRUE otherwise (may be null)
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_pomesht_offsetedge(ay_pomesh_object *pm, ay_point *selp,
+ay_pomesht_offsetedge(ay_pomesh_object *pm, double offset, ay_point *selp,
 		      double *isint, int *isclosed)
 {
- int found, iscorner, stride = 3, numsp = 0;
+ int found, iscorner, stride = 3;
  ay_point *sp = NULL, *ip = NULL;
- unsigned int i, j, k, kk, kp, kn, l = 0, m = 0, n = 0, p;
+ unsigned int numsp, i, j, k, kk, kp, kn, l, m, n, p;
  double *offsets = NULL, *N;
  double *vp;
 
@@ -2483,7 +2484,7 @@ ay_pomesht_offsetedge(ay_pomesh_object *pm, ay_point *selp,
 					  N = &(offsets[p*4]);
 					  memset(N, 0, 3*sizeof(double));
 					  AY_V3SUB(N, vp, sp->point);
-					  AY_V3SCAL(N, 0.5);
+					  AY_V3SCAL(N, offset);
 					  N[3] = -1.0;
 					  break;
 					}
@@ -2533,7 +2534,7 @@ ay_pomesht_offsetedge(ay_pomesh_object *pm, ay_point *selp,
       vp = sp->point;
 
       /* scale offset to shortest edge */
-      AY_V3SCAL(N, N[3]*-0.5);
+      AY_V3SCAL(N, N[3]*offset);
 
       AY_V3ADD(vp, vp, N);
 
@@ -2554,13 +2555,17 @@ ay_pomesht_offsetedge(ay_pomesh_object *pm, ay_point *selp,
  *
  * \param[in,out] o1 first polymesh object
  * \param[in,out] o2 second polymesh object
+ * \param[in] offset1 distance the points of o1 are to be moved
+ * \param[in] offset2 distance the points of o2 are to be moved
  * \param[in,out] result where to store the new gap filling
  *  polymesh object
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_pomesht_connect(ay_object *o1, ay_object *o2, ay_object **result)
+ay_pomesht_connect(ay_object *o1, ay_object *o2,
+		   double offset1, double offset2,
+		   ay_object **result)
 {
  int ay_status = AY_OK;
  char fname[] = "connectPo";
@@ -2615,7 +2620,7 @@ ay_pomesht_connect(ay_object *o1, ay_object *o2, ay_object **result)
 
   ay_pomesht_vertanglesums(pm1, &vas1);
 
-  ay_status = ay_pomesht_offsetedge(pm1, o1->selp, vas1, &isclosed1);
+  ay_status = ay_pomesht_offsetedge(pm1, offset1, o1->selp, vas1, &isclosed1);
 
   if(ay_status)
     goto cleanup;
@@ -2633,7 +2638,7 @@ for(i = 0; i < np1; i++)
 
   ay_pomesht_vertanglesums(pm2, &vas2);
 
-  ay_status = ay_pomesht_offsetedge(pm2, o2->selp, vas2, &isclosed2);
+  ay_status = ay_pomesht_offsetedge(pm2, offset2, o2->selp, vas2, &isclosed2);
 
   if(ay_status)
     goto cleanup;
@@ -2863,7 +2868,8 @@ ay_pomesht_connecttcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[])
 {
  int ay_status = AY_OK;
- int i = 1, mergepvtags = AY_FALSE;
+ int i = 1;
+ double offset1 = 0.5, offset2 = 0.5;
  ay_list_object *sel = ay_selection;
  ay_object *o1 = NULL, *o2 = NULL, *no = NULL;
 
@@ -2875,9 +2881,13 @@ ay_pomesht_connecttcmd(ClientData clientData, Tcl_Interp *interp,
 
   while(i+1 < argc)
     {
-      if(!strcmp(argv[i], "-p"))
+      if(!strcmp(argv[i], "-o1"))
 	{
-	  sscanf(argv[i+1], "%d", &mergepvtags);
+	  sscanf(argv[i+1], "%lg", &offset1);
+	}
+      if(!strcmp(argv[i], "-o2"))
+	{
+	  sscanf(argv[i+1], "%lg", &offset2);
 	}
       i += 2;
     }
@@ -2907,13 +2917,13 @@ ay_pomesht_connecttcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  if(!o1->selp || !o2->selp)
+  if(!o1->selp || !o1->selp->next || !o2->selp || !o2->selp->next)
     {
       ay_error(AY_ERROR, argv[0], "Need selected edges!");
       return TCL_OK;
     }
 
-  ay_status = ay_pomesht_connect(o1, o2, &no);
+  ay_status = ay_pomesht_connect(o1, o2, offset1, offset2, &no);
 
   if(ay_status)
     { /* emit error message */
