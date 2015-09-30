@@ -2285,20 +2285,17 @@ ay_pomesht_vertanglesums(ay_pomesh_object *po, double **result)
 		angles[po->verts[n+k]] += angle;
 
 	      /* advance pointers */
-	      if(k < (po->nverts[m]-1))
+	      p1 = &(po->controlv[po->verts[n+k]*stride]);
+	      p2 = &(po->controlv[po->verts[n+k+1]*stride]);
+	      if(k+2 == po->nverts[m])
 		{
-		  p1 = &(po->controlv[po->verts[n+k]*stride]);
-		  p2 = &(po->controlv[po->verts[n+k+1]*stride]);
-		  if(k+2 == po->nverts[m])
-		    {
-		      /* special case for last angle, where p3 is actually
-			 the first in the loop */
-		      p3 = &(po->controlv[po->verts[n]*stride]);
-		    }
-		  else
-		    {
-		      p3 = &(po->controlv[po->verts[n+k+2]*stride]);
-		    }
+		  /* special case for last angle, where p3 is actually
+		     the first in the loop */
+		  p3 = &(po->controlv[po->verts[n]*stride]);
+		}
+	      else
+		{
+		  p3 = &(po->controlv[po->verts[n+k+2]*stride]);
 		}
 	    } /* for verts */
 	  n += po->nverts[m];
@@ -2390,7 +2387,7 @@ ay_pomesht_offsetedge(ay_pomesh_object *pm, double offset, ay_point *selp,
 {
  int found, iscorner, stride = 3;
  ay_point *sp = NULL, *ip = NULL;
- unsigned int numsp, i, j, k, kk, kp, kn, l, m, n, p;
+ unsigned int numsp = 0, i, j, k, kk, kp, kn, l, m, n, p;
  double *offsets = NULL, *N;
  double *vp;
 
@@ -2442,7 +2439,8 @@ ay_pomesht_offsetedge(ay_pomesh_object *pm, double offset, ay_point *selp,
 			 this is the case if it is not interior and
 			 there is an exterior edge where the endpoint
 			 is not selected, i.e. not also present in selp */
-		      if(!(isint[pm->verts[n+k]] > 360.0-AY_EPSILON))
+
+		      if(!(isint[pm->verts[n+k]] > 358.0-AY_EPSILON))
 			{
 			  /* pm->verts[n+k]/p is not interior */
 			  iscorner = AY_FALSE;
@@ -2450,8 +2448,9 @@ ay_pomesht_offsetedge(ay_pomesh_object *pm, double offset, ay_point *selp,
 			    {
 			      if(kk != k)
 				{
+				  //printf("angl %lg\n",isint[pm->verts[n+kk]]);
 				  if(!(isint[pm->verts[n+kk]] >
-				       360.0-AY_EPSILON))
+				       358.0-AY_EPSILON))
 				    {
 				      /* pm->verts[n+kk] is endpoint of
 					 an exterior edge */
@@ -2469,7 +2468,7 @@ ay_pomesht_offsetedge(ay_pomesh_object *pm, double offset, ay_point *selp,
 				      if(!found)
 					{
 					  iscorner = AY_TRUE;
-					  //printf("corner at %d\n",sp->index);
+					  printf("corner at %d\n",sp->index);
 					  if(isclosed)
 					    *isclosed = AY_FALSE;
 
