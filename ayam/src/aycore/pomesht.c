@@ -2448,7 +2448,6 @@ ay_pomesht_offsetedge(ay_pomesh_object *pm, double offset, ay_point *selp,
 			    {
 			      if(kk != k)
 				{
-				  //printf("angl %lg\n",isint[pm->verts[n+kk]]);
 				  if(!(isint[pm->verts[n+kk]] >
 				       358.0-AY_EPSILON))
 				    {
@@ -2468,7 +2467,7 @@ ay_pomesht_offsetedge(ay_pomesh_object *pm, double offset, ay_point *selp,
 				      if(!found)
 					{
 					  iscorner = AY_TRUE;
-					  printf("corner at %d\n",sp->index);
+					/*printf("corner at %d\n",sp->index);*/
 					  if(isclosed)
 					    *isclosed = AY_FALSE;
 
