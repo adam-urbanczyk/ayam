@@ -2532,7 +2532,7 @@ ay_pomesht_offsetedge(ay_pomesh_object *pm, double offset, ay_point *selp,
       vp = sp->point;
 
       /* scale offset to shortest edge */
-      AY_V3SCAL(N, N[3]*offset);
+      AY_V3SCAL(N, N[3]*-offset);
 
       AY_V3ADD(vp, vp, N);
 
@@ -2674,14 +2674,14 @@ for(i = 0; i < np2; i++)
       if(q2 <= &(qq[np2-1]))
       do
 	{
-	  if(ay_tess_checktri(p1->point, q1->point, q2->point))
+	  if(ay_tess_checktri(p1->point, q2->point, q1->point))
 	    {
 	      numtris++;
 	      memcpy(&(cv[i]), p1->point, stride*sizeof(double));
 	      i += stride;
-	      memcpy(&(cv[i]), q1->point, stride*sizeof(double));
-	      i += stride;
 	      memcpy(&(cv[i]), q2->point, stride*sizeof(double));
+	      i += stride;
+	      memcpy(&(cv[i]), q1->point, stride*sizeof(double));
 	      i += stride;
 	      if(numtris == maxtris)
 		break;
@@ -2709,14 +2709,14 @@ for(i = 0; i < np2; i++)
       if(p2 <= &(pp[np1-1]))
       do
 	{
-	  if(ay_tess_checktri(q1->point, p2->point, p1->point))
+	  if(ay_tess_checktri(q1->point, p1->point, p2->point))
 	    {
 	      numtris++;
 	      memcpy(&(cv[i]), q1->point, stride*sizeof(double));
 	      i += stride;
-	      memcpy(&(cv[i]), p2->point, stride*sizeof(double));
-	      i += stride;
 	      memcpy(&(cv[i]), p1->point, stride*sizeof(double));
+	      i += stride;
+	      memcpy(&(cv[i]), p2->point, stride*sizeof(double));
 	      i += stride;
 	      if(numtris == maxtris)
 		break;
@@ -2746,24 +2746,24 @@ for(i = 0; i < np2; i++)
       p2 = &(pp[np1-1]);
       q1 = qq;
       q2 = &(qq[np2-1]);
-      if(numtris < maxtris && ay_tess_checktri(p1->point, p2->point, q1->point))
+      if(numtris < maxtris && ay_tess_checktri(p1->point, q1->point, p2->point))
 	{
 	  numtris++;
 	  memcpy(&(cv[i]), p1->point, stride*sizeof(double));
 	  i += stride;
-	  memcpy(&(cv[i]), p2->point, stride*sizeof(double));
-	  i += stride;
 	  memcpy(&(cv[i]), q1->point, stride*sizeof(double));
 	  i += stride;
+	  memcpy(&(cv[i]), p2->point, stride*sizeof(double));
+	  i += stride;
 	}
-      if(numtris < maxtris && ay_tess_checktri(q1->point, p2->point, q2->point))
+      if(numtris < maxtris && ay_tess_checktri(q1->point, q2->point, p2->point))
 	{
 	  numtris++;
 	  memcpy(&(cv[i]), q1->point, stride*sizeof(double));
 	  i += stride;
-	  memcpy(&(cv[i]), p2->point, stride*sizeof(double));
-	  i += stride;
 	  memcpy(&(cv[i]), q2->point, stride*sizeof(double));
+	  i += stride;
+	  memcpy(&(cv[i]), p2->point, stride*sizeof(double));
 	  i += stride;
 	}
     }
