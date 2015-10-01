@@ -753,6 +753,8 @@ array set ay {
  vaoldfocus ""
  motion 0
  fixvname "\[^\[:alnum:\]|-\]"
+ pmoff1 0.5
+ pmoff2 0.5
 }
 # array ay
 
