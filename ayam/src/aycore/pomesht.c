@@ -2238,7 +2238,7 @@ ay_pomesht_hasedge(ay_pomesh_object *po, unsigned int i1, unsigned int i2)
 	{
 	  for(k = 0; k < po->nverts[m]; k++)
 	    {
-	      if(po->verts[n] == i1)
+	      if(po->verts[n+k] == i1)
 		{
 		  for(kk = 0; kk < po->nverts[m]; kk++)
 		    {
