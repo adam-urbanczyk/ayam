@@ -72,8 +72,7 @@ int ay_pomesht_addvertextohash(ay_pomesht_hash *phash, int ignore_normals,
 void ay_pomesht_alignpoints(ay_point *p1, ay_point *p2, unsigned int p2len,
 			    int p2closed);
 
-int ay_pomesht_sortpoints(ay_point *p, unsigned int np, double *vas,
-			  int *closed, ay_point **result);
+int ay_pomesht_sortpoints(ay_point *p, unsigned int np, ay_point **result);
 
 
 /* functions */
@@ -2034,22 +2033,19 @@ ay_pomesht_flipnormals(ay_pomesh_object *po)
  *
  * \param[in] p the list of points to sort
  * \param[in] np number of points in list
- * \param[in] vas vertex angle sums as computed by ay_pomesht_vertanglesums()
- *  below
- * \param[in,out] closed whether the points represent a closed edge
  * \param[in,out] result the sorted points (in array form)
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_pomesht_sortpoints(ay_point *p, unsigned int np, double *vas, int *closed,
+ay_pomesht_sortpoints(ay_point *p, unsigned int np,
 		      ay_point **result)
 {
  ay_point *p1, *p2, *minp, *maxp, *sorted, t;
  double s, minlen, maxlen, len, M[3] = {0};
  unsigned int i = 0, j = 0;
 
-  if(!p || !vas || !closed)
+  if(!p)
    return AY_ENULL;
 
   if(!(sorted = malloc(np*sizeof(ay_point))))
@@ -2117,16 +2113,6 @@ ay_pomesht_sortpoints(ay_point *p, unsigned int np, double *vas, int *closed,
 	  memcpy(&(sorted[i+1]), minp, sizeof(ay_point));
 	  memcpy(minp, &t, sizeof(ay_point));
 	}
-    }
-
-  /* check first/last point */
-  if(vas[sorted[0].index] < 358.0 || vas[sorted[np-1].index] < 358.0 )
-    {
-      *closed = AY_FALSE;
-    }
-  else
-    {
-      *closed = AY_TRUE;
     }
 
   *result = sorted;
@@ -2227,6 +2213,53 @@ ay_pomesht_alignpoints(ay_point *p1, ay_point *p2, unsigned int p2len,
 
  return;
 } /* ay_pomesht_alignpoints */
+
+
+/** ay_pomesht_hasedge:
+ * Search for an edge between two given vertex indices.
+ *
+ * \param[in] po PoMesh object to process
+ * \param[in] i1 index of first edge vertice
+ * \param[in] i2 index of second edge vertice
+ *
+ * \returns AY_TRUE if the edge was found, AY_FALSE else.
+ */
+int
+ay_pomesht_hasedge(ay_pomesh_object *po, unsigned int i1, unsigned int i2)
+{
+ unsigned int i, j, k, l = 0, m = 0, n = 0, kk;
+
+  if(!po)
+   return AY_FALSE;
+
+  for(i = 0; i < po->npolys; i++)
+    {
+      for(j = 0; j < po->nloops[l]; j++)
+	{
+	  for(k = 0; k < po->nverts[m]; k++)
+	    {
+	      if(po->verts[n] == i1)
+		{
+		  for(kk = 0; kk < po->nverts[m]; kk++)
+		    {
+		      if(kk != k)
+			{
+			  if(po->verts[n+kk] == i2)
+			    {
+			      return AY_TRUE;
+			    }
+			}
+		    }
+		}
+	    } /* for verts */
+	  n += po->nverts[m];
+	  m++;
+	} /* for loops */
+      l++;
+    } /* for polys */
+
+ return AY_FALSE;
+} /* ay_pomesht_hasedge */
 
 
 /** ay_pomesht_vertanglesums:
@@ -2625,10 +2658,12 @@ ay_pomesht_connect(ay_object *o1, ay_object *o2,
 
   ay_pomesht_vertanglesums(pm1, &vas1);
 
-  ay_status = ay_pomesht_sortpoints(o1->selp, np1, vas1, &isclosed1, &pp);
+  ay_status = ay_pomesht_sortpoints(o1->selp, np1, &pp);
 
   if(ay_status)
     goto cleanup;
+
+  isclosed1 = ay_pomesht_hasedge(pm1, pp[0].index, pp[np1-1].index);
 
   ay_status = ay_pomesht_offsetedge(pm1, offset1, o1->selp, vas1, isclosed1,
 				    pp, &(pp[np1-1]));
@@ -2646,10 +2681,12 @@ for(i = 0; i < np1; i++)
 
   ay_pomesht_vertanglesums(pm2, &vas2);
 
-  ay_status = ay_pomesht_sortpoints(o2->selp, np2, vas2, &isclosed2, &qq);
+  ay_status = ay_pomesht_sortpoints(o2->selp, np2, &qq);
 
   if(ay_status)
     goto cleanup;
+
+  isclosed2 = ay_pomesht_hasedge(pm2, qq[0].index, qq[np2-1].index);
 
   ay_status = ay_pomesht_offsetedge(pm2, offset2, o2->selp, vas2, isclosed2,
 				    qq, &(qq[np2-1]));
