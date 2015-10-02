@@ -72,8 +72,9 @@ int ay_pomesht_addvertextohash(ay_pomesht_hash *phash, int ignore_normals,
 void ay_pomesht_alignpoints(ay_point *p1, ay_point *p2, unsigned int p2len,
 			    int p2closed);
 
-int ay_pomesht_sortpoints(ay_point *p, unsigned int np, int closed,
-			  ay_point **result);
+int ay_pomesht_sortpoints(ay_point *p, unsigned int np, double *vas,
+			  int *closed, ay_point **result);
+
 
 /* functions */
 
@@ -2033,29 +2034,26 @@ ay_pomesht_flipnormals(ay_pomesh_object *po)
  *
  * \param[in] p the list of points to sort
  * \param[in] np number of points in list
- * \param[in] closed whether the points represent a closed edge
+ * \param[in] vas vertex angle sums as computed by ay_pomesht_vertanglesums()
+ *  below
+ * \param[in,out] closed whether the points represent a closed edge
  * \param[in,out] result the sorted points (in array form)
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_pomesht_sortpoints(ay_point *p, unsigned int np, int closed,
+ay_pomesht_sortpoints(ay_point *p, unsigned int np, double *vas, int *closed,
 		      ay_point **result)
 {
  ay_point *p1, *p2, *minp, *maxp, *sorted, t;
  double s, minlen, maxlen, len, M[3] = {0};
  unsigned int i = 0, j = 0;
 
-  if(!p)
+  if(!p || !vas || !closed)
    return AY_ENULL;
 
   if(!(sorted = malloc(np*sizeof(ay_point))))
     return AY_EOMEM;
-
-  /*
-    if(!closed)
-    {
-  */
 
   /* find mean of selected points */
   s = 1.0/np;
@@ -2098,11 +2096,6 @@ ay_pomesht_sortpoints(ay_point *p, unsigned int np, int closed,
       p1 = p1->next;
     }
 
-
-  /*
-    } !closed
-  */
-
   for(i = 0; i < np; i++)
     {
       minp = NULL;
@@ -2124,6 +2117,16 @@ ay_pomesht_sortpoints(ay_point *p, unsigned int np, int closed,
 	  memcpy(&(sorted[i+1]), minp, sizeof(ay_point));
 	  memcpy(minp, &t, sizeof(ay_point));
 	}
+    }
+
+  /* check first/last point */
+  if(vas[sorted[0].index] < 358.0 || vas[sorted[np-1].index] < 358.0 )
+    {
+      *closed = AY_FALSE;
+    }
+  else
+    {
+      *closed = AY_TRUE;
     }
 
   *result = sorted;
@@ -2285,17 +2288,20 @@ ay_pomesht_vertanglesums(ay_pomesh_object *po, double **result)
 		angles[po->verts[n+k]] += angle;
 
 	      /* advance pointers */
-	      p1 = &(po->controlv[po->verts[n+k]*stride]);
-	      p2 = &(po->controlv[po->verts[n+k+1]*stride]);
-	      if(k+2 == po->nverts[m])
+	      if(k+1 < po->nverts[m])
 		{
-		  /* special case for last angle, where p3 is actually
-		     the first in the loop */
-		  p3 = &(po->controlv[po->verts[n]*stride]);
-		}
-	      else
-		{
-		  p3 = &(po->controlv[po->verts[n+k+2]*stride]);
+		  p1 = &(po->controlv[po->verts[n+k]*stride]);
+		  p2 = &(po->controlv[po->verts[n+k+1]*stride]);
+		  if(k+2 == po->nverts[m])
+		    {
+		      /* special case for last angle, where p3 is actually
+			 the first in the loop */
+		      p3 = &(po->controlv[po->verts[n]*stride]);
+		    }
+		  else
+		    {
+		      p3 = &(po->controlv[po->verts[n+k+2]*stride]);
+		    }
 		}
 	    } /* for verts */
 	  n += po->nverts[m];
@@ -2374,24 +2380,26 @@ ay_pomesht_updateoffset(double vertanglesum, double *vp,
  * \param[in,out] pm polymesh object to process
  * \param[in] offset distance the points are to be moved (0.0-1.0)
  * \param[in] selp list of selected points denominating the edge to offset
- * \param[in] isint array of vertex angle sums to determine whether a point
+ * \param[in] vas array of vertex angle sums to determine whether a point
  *  is on edge or interior (created by ay_pomesht_vertanglesums() above)
- * \param[in,out] isclosed set to AY_FALSE if a corner is found,
- *   set to AY_TRUE otherwise (may be null)
+ * \param[in] isclosed whether the edge is closed
+ * \param[in] fc first corner (may be NULL if edge is closed)
+ * \param[in] lc last corner (may be NULL if edge is closed)
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_pomesht_offsetedge(ay_pomesh_object *pm, double offset, ay_point *selp,
-		      double *isint, int *isclosed)
+		      double *vas, int isclosed, ay_point *fc, ay_point *lc)
 {
- int found, iscorner, stride = 3;
+ int found, stride = 3;
  ay_point *sp = NULL, *ip = NULL;
  unsigned int numsp = 0, i, j, k, kk, kp, kn, l, m, n, p;
  double *offsets = NULL, *N;
  double *vp;
+ int offs = AY_TRUE, offe = AY_TRUE;
 
-  if(!pm || !selp || !isint)
+  if(!pm || !selp || !vas)
     return AY_ENULL;
 
   if(pm->has_normals)
@@ -2403,9 +2411,6 @@ ay_pomesht_offsetedge(ay_pomesh_object *pm, double offset, ay_point *selp,
       numsp++;
       sp = sp->next;
     }
-
-  if(isclosed)
-    *isclosed = AY_TRUE;
 
   if(!(offsets = calloc(numsp*4, sizeof(double))))
     {
@@ -2435,21 +2440,22 @@ ay_pomesht_offsetedge(ay_pomesh_object *pm, double offset, ay_point *selp,
 		{
 		  if(pm->verts[n+k] == sp->index)
 		    {
-		      /* check whether pm->verts[n+k]/p is a corner;
-			 this is the case if it is not interior and
-			 there is an exterior edge where the endpoint
-			 is not selected, i.e. not also present in selp */
-
-		      if(!(isint[pm->verts[n+k]] > 358.0-AY_EPSILON))
+		      /* check whether pm->verts[n+k]/p is a corner */
+		      if(!isclosed &&
+			 (((pm->verts[n+k] == fc->index) && offs) ||
+			  ((pm->verts[n+k] == lc->index) && offe)))
 			{
-			  /* pm->verts[n+k]/p is not interior */
-			  iscorner = AY_FALSE;
+			  /*
+			    it is a corner; => offset differently:
+			    find an edge where the endpoint is not selected,
+			    i.e. not also present in selp;
+			    then offset along that edge alone
+			  */
 			  for(kk = 0; kk < pm->nverts[m]; kk++)
 			    {
 			      if(kk != k)
 				{
-				  if(!(isint[pm->verts[n+kk]] >
-				       358.0-AY_EPSILON))
+				  if(vas[pm->verts[n+kk]] < 358.0)
 				    {
 				      /* pm->verts[n+kk] is endpoint of
 					 an exterior edge */
@@ -2466,11 +2472,6 @@ ay_pomesht_offsetedge(ay_pomesh_object *pm, double offset, ay_point *selp,
 					}
 				      if(!found)
 					{
-					  iscorner = AY_TRUE;
-					/*printf("corner at %d\n",sp->index);*/
-					  if(isclosed)
-					    *isclosed = AY_FALSE;
-
 					  /* we also compute N now; corner
 					     vertices are offset along the
 					     edge pointing to the other
@@ -2484,35 +2485,41 @@ ay_pomesht_offsetedge(ay_pomesh_object *pm, double offset, ay_point *selp,
 					  AY_V3SUB(N, vp, sp->point);
 					  AY_V3SCAL(N, offset);
 					  N[3] = -1.0;
+					  /* remember that we offset
+					     this point already */
+					  if(pm->verts[n+k] == fc->index)
+					    offs = AY_FALSE;
+					  else
+					    offe = AY_FALSE;
 					  break;
 					}
 				    }
 				} /* if kk != k */
 			    } /* for kk */
-
+			}
+		      else
+			{
 			  /* compute offset/N for pm->verts[k]/p */
-			  if(!iscorner)
-			    {
-			      /* wrap around */
-			      if(k == 0)
-				kp = n+(pm->nverts[m]-1);
-			      else
-				kp = n+k-1;
 
-			      if(k == pm->nverts[m]-1)
-				kn = n;
-			      else
-				kn = n+k+1;
+			  /* wrap around */
+			  if(k == 0)
+			    kp = n+(pm->nverts[m]-1);
+			  else
+			    kp = n+k-1;
 
-			      N = &(offsets[p*4]);
-			      if(N[3] != -1.0)
-				ay_pomesht_updateoffset(isint[pm->verts[n+k]],
+			  if(k == pm->nverts[m]-1)
+			    kn = n;
+			  else
+			    kn = n+k+1;
+
+			  N = &(offsets[p*4]);
+			  if(N[3] != -1.0)
+			    ay_pomesht_updateoffset(vas[pm->verts[n+k]],
 							sp->point,
 				        &(pm->controlv[pm->verts[kp]*stride]),
 				        &(pm->controlv[pm->verts[kn]*stride]),
-							N);
-			    } /* if not corner */
-			} /* if not interior */
+						    N);
+			} /* if closed */
 		    } /* if k is sp->index */
 		} /* for verts */
 	      n += pm->nverts[m];
@@ -2618,38 +2625,38 @@ ay_pomesht_connect(ay_object *o1, ay_object *o2,
 
   ay_pomesht_vertanglesums(pm1, &vas1);
 
-  ay_status = ay_pomesht_offsetedge(pm1, offset1, o1->selp, vas1, &isclosed1);
+  ay_status = ay_pomesht_sortpoints(o1->selp, np1, vas1, &isclosed1, &pp);
 
   if(ay_status)
     goto cleanup;
 
-  ay_status = ay_pomesht_sortpoints(o1->selp, np1, isclosed1, &pp);
+  ay_status = ay_pomesht_offsetedge(pm1, offset1, o1->selp, vas1, isclosed1,
+				    pp, &(pp[np1-1]));
 
   if(ay_status)
     goto cleanup;
+
   /*
 for(i = 0; i < np1; i++)
   printf("selp1 %d: %lg %lg %lg\n",i,pp[i].point[0],pp[i].point[1],
 	 pp[i].point[2]);
   */
+
   /* pre-process o2 and o2->selp */
 
   ay_pomesht_vertanglesums(pm2, &vas2);
 
-  ay_status = ay_pomesht_offsetedge(pm2, offset2, o2->selp, vas2, &isclosed2);
+  ay_status = ay_pomesht_sortpoints(o2->selp, np2, vas2, &isclosed2, &qq);
 
   if(ay_status)
     goto cleanup;
 
-  ay_status = ay_pomesht_sortpoints(o2->selp, np2, isclosed2, &qq);
+  ay_status = ay_pomesht_offsetedge(pm2, offset2, o2->selp, vas2, isclosed2,
+				    qq, &(qq[np2-1]));
 
   if(ay_status)
     goto cleanup;
-  /*
-for(i = 0; i < np2; i++)
-  printf("selp2 %d: %lg %lg %lg\n",i,qq[i].point[0],qq[i].point[1],
-	 qq[i].point[2]);
-  */
+
   /* rotate/shift list of selected points in qq to a good match to o1 */
   ay_pomesht_alignpoints(pp, qq, np2, isclosed2);
 
