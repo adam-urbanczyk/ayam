@@ -2613,6 +2613,7 @@ ay_pomesht_connect(ay_object *o1, ay_object *o2,
  ay_point *p1, *p2, *q1, *q2;
  double *vas1 = NULL, *vas2 = NULL;
  double *cv = NULL, dist1, dist2;
+ double m[16];
  unsigned int np1 = 0, np2 = 0;
  unsigned int i, j;
  unsigned int numtris = 0, maxtris;
@@ -2663,6 +2664,18 @@ ay_pomesht_connect(ay_object *o1, ay_object *o2,
   if(ay_status)
     goto cleanup;
 
+  if(AY_ISTRAFO(o1))
+    {
+      ay_trafo_creatematrix(o1, m);
+      cv = pm1->controlv;
+      for(i = 0; i < pm1->ncontrols; i++)
+	{
+	  ay_trafo_apply3(cv, m);
+	  cv += stride;
+	}
+      ay_trafo_defaults(o1);
+    }
+
   isclosed1 = ay_pomesht_hasedge(pm1, pp[0].index, pp[np1-1].index);
 
   ay_status = ay_pomesht_offsetedge(pm1, offset1, o1->selp, vas1, isclosed1,
@@ -2685,6 +2698,18 @@ for(i = 0; i < np1; i++)
 
   if(ay_status)
     goto cleanup;
+
+  if(AY_ISTRAFO(o2))
+    {
+      ay_trafo_creatematrix(o2, m);
+      cv = pm2->controlv;
+      for(i = 0; i < pm2->ncontrols; i++)
+	{
+	  ay_trafo_apply3(cv, m);
+	  cv += stride;
+	}
+      ay_trafo_defaults(o2);
+    }
 
   isclosed2 = ay_pomesht_hasedge(pm2, qq[0].index, qq[np2-1].index);
 
