@@ -1174,6 +1174,15 @@ may decrease the memory consumption of the control points
 by a factor of about six, depending on the connectivity of the original
 mesh.
 
+<item><tt/"Connect Edges"/: connects the first two selected PolyMesh objects
+via their selected edges (all control points of the edge must be
+selected). The edges are first offset into the interior of the
+respective mesh along the surface tangent, then a strip of new
+triangles will be generated. The new triangles will be put into
+a new (third) PolyMesh object.
+The offset values can be adjusted; they are interpreted relative to
+the shortest edge of each control point to be moved.
+
 <item><tt/"Gen. Face Normals"/: Generates face normals for the selected
 PolyMesh object(s) using the robust Newell algorithm. The generated
 normals will be stored in a PV tag.
@@ -20677,6 +20686,7 @@ Index:
 <item>concatS: <ref id="scconcats" name="scripting interface command">
 <item>Cone: <ref id="coneobj" name="Cone object">
 <item>ConeAngle, ConeDAngle: <ref id="lip" name="Light attribute">
+<item>Connect Edges: <ref id="mmtools" name="PolyMesh tool">
 <item>Console: <ref id="cons" name="what is">
 <item>ConsoleCursorEnd: <ref id="hidprefs" name="hidden preference setting">
 <item>ConsoleTakeFocus: <ref id="hidprefs" name="hidden preference setting">
