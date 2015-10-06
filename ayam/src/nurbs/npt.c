@@ -14288,16 +14288,16 @@ ay_npt_gentexcoords(ay_nurbpatch_object *np, ay_tag *tags, double **result)
     } /* while tag */
 
   u0 = np->uknotv[np->uorder-1];
-  ud = (np->uknotv[np->width]-u0)/np->width;
+  ud = (np->uknotv[np->width]-u0)/(np->width-1);
   v0 = np->vknotv[np->vorder-1];
-  vd = (np->vknotv[np->height]-v0)/np->height;
+  vd = (np->vknotv[np->height]-v0)/(np->height-1);
 
   a = 0;
   u = u0;
-  for(i = 0; i < np->width; i++)
+  for(i = 1; i <= np->width; i++)
     {
       v = v0;
-      for(j = 0; j < np->height; j++)
+      for(j = 1; j <= np->height; j++)
 	{
 	  tc[a] = u;
 	  tc[a+1] = v;
