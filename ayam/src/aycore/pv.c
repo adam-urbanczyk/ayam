@@ -596,9 +596,9 @@ ay_pv_mergeinto(ay_tag *t1, ay_tag *t2)
 	 not run into this case for the next invocation) */
       strncpy(&(buf[buflen]), "   ", 3*sizeof(char));
       buflen += 3;
-      comma1++;
+
       /* shift t1 values */
-      memmove(comma1+buflen, comma1, strlen(comma1)*sizeof(char));
+      memmove(comma1+buflen, comma4, strlen(comma1)*sizeof(char));
       /* write new number of elements into the tag */
       memcpy(comma1, buf, (buflen*sizeof(char)));
     }
@@ -607,7 +607,7 @@ ay_pv_mergeinto(ay_tag *t1, ay_tag *t2)
       /* no shifting needed */
 
       /* write new number of elements into the tag */
-      strncpy(comma1+1, buf, buflen*sizeof(char));
+      strncpy(comma1, buf, buflen*sizeof(char));
     }
 
   /* append t2 values to t1 */
