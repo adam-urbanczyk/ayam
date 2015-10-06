@@ -396,7 +396,7 @@ int
 ay_pomesht_merge(int merge_pv_tags, ay_list_object *list, ay_object **result)
 {
  char fname[] = "mergePo";
- ay_list_object *lo = list;
+ ay_list_object *lo = list, *lot;
  ay_object *o = NULL, *no = NULL;
  ay_pomesh_object *pm = NULL, *npm = NULL;
  unsigned int i = 0, j = 0, k = 0;
@@ -409,8 +409,9 @@ ay_pomesht_merge(int merge_pv_tags, ay_list_object *list, ay_object **result)
  double tm[16], rtm[16];
  int have_trafo = AY_FALSE, have_pv_tags = AY_TRUE;
  int have_rotation = AY_FALSE;
- ay_tag *tag1 = NULL, *tag2 = NULL, *mtag = NULL;
+ ay_tag *tag1 = NULL, *tag2 = NULL;
  char *ct;
+ size_t totallen;
 
   while(lo)
     {
@@ -621,6 +622,49 @@ ay_pomesht_merge(int merge_pv_tags, ay_list_object *list, ay_object **result)
 			  tag1 = tag1->next;
 			} /* while */
 		      (void)ay_tags_copyall(o, no);
+
+		      /* extend all PV tags to merge, so that we
+			 can use ay_pv_mergeinto() later */
+		      if(have_pv_tags)
+			{
+
+			  tag1 = no->tags;
+			  while(tag1)
+			    {
+			      if(tag1->type == ay_pv_tagtype &&
+				 ay_pv_getdetail(tag1, NULL) >= 2)
+				{
+				  totallen = strlen(tag1->val);
+				  lot = lo->next;
+				  while(lot && lot->object)
+				    {
+				      tag2 = lot->object->tags;
+				      while(tag2)
+					{
+					  if((tag2->type == ay_pv_tagtype) &&
+					     ay_pv_cmpndt(tag1, tag2))
+					    {
+					      totallen += strlen(tag2->val);
+					      break;
+					    }
+					  tag2 = tag2->next;
+					} /* while */
+				      lot = lot->next;
+				    } /* while */
+				} /* if */
+
+			      if(!(ct =
+				   realloc(tag1->val, totallen*sizeof(char))))
+				{
+				  ay_object_delete(no);
+				  return AY_EOMEM;
+				}
+
+			      tag1->val = ct;
+
+			      tag1 = tag1->next;
+			    } /* while */
+			} /* if */
 		    } /* if */
 		}
 	      else
@@ -637,18 +681,11 @@ ay_pomesht_merge(int merge_pv_tags, ay_list_object *list, ay_object **result)
 			  tag2 = o->tags;
 			  while(tag2)
 			    {
-			      mtag = NULL;
 			      if((tag2->type == ay_pv_tagtype) &&
 				 ay_pv_cmpndt(tag1, tag2))
-				(void)ay_pv_merge(tag1, tag2, &mtag);
-			      if(mtag)
 				{
-				  /* swap value strings tag1<>mtag */
-				  ct = tag1->val;
-				  tag1->val = mtag->val;
-				  mtag->val = ct;
-				  ay_tags_free(mtag);
-				} /* if */
+				  (void)ay_pv_mergeinto(tag1, tag2);
+				}
 			      tag2 = tag2->next;
 			    } /* while */
 			} /* if */
