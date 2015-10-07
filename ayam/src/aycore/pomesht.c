@@ -72,8 +72,10 @@ int ay_pomesht_addvertextohash(ay_pomesht_hash *phash, int ignore_normals,
 void ay_pomesht_alignpoints(ay_point *p1, ay_point *p2, unsigned int p2len,
 			    int p2closed);
 
-int ay_pomesht_sortpoints(ay_point *p, unsigned int np, ay_point **result);
+int ay_pomesht_sortpoints(ay_point *p, unsigned int np, ay_point *maxp,
+			  ay_point **result);
 
+int ay_pomesht_selectedge(ay_pomesh_object *po, ay_point *selp);
 
 /* functions */
 
@@ -2062,6 +2064,9 @@ ay_pomesht_flipnormals(ay_pomesh_object *po)
  * away from the mean and all other points follow by their minimum
  * distance compared to their predecessor.
  *
+ * If a first point is provided, the sorted list starts at that
+ * point and no mean computation takes place.
+ *
  * Does only work correctly if the edge is not self-intersecting or
  * touching, or even coming closer to itself than the respective
  * intermediate point distances on the edge.
@@ -2070,15 +2075,16 @@ ay_pomesht_flipnormals(ay_pomesh_object *po)
  *
  * \param[in] p the list of points to sort
  * \param[in] np number of points in list
+ * \param[in] maxp first point (may be NULL)
  * \param[in,out] result the sorted points (in array form)
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_pomesht_sortpoints(ay_point *p, unsigned int np,
-		      ay_point **result)
+		      ay_point *maxp, ay_point **result)
 {
- ay_point *p1, *p2, *minp, *maxp, *sorted, t;
+ ay_point *p1, *p2, *minp, *sorted, t;
  double s, minlen, maxlen, len, M[3] = {0};
  unsigned int i = 0, j = 0;
 
@@ -2088,29 +2094,33 @@ ay_pomesht_sortpoints(ay_point *p, unsigned int np,
   if(!(sorted = malloc(np*sizeof(ay_point))))
     return AY_EOMEM;
 
-  /* find mean of selected points */
-  s = 1.0/np;
-  p1 = p;
-  while(p1)
-    {
-      M[0] += p1->point[0]*s;
-      M[1] += p1->point[1]*s;
-      M[2] += p1->point[2]*s;
-      p1 = p1->next;
-    }
-
   /* find start (point of farthest distance to mean) */
-  p1 = p;
-  maxlen = 0.0;
-  while(p1)
+  if(!maxp)
     {
-      len = AY_V3SDIST(p1->point, M);
-      if(len > maxlen)
+
+      /* find mean of selected points */
+      s = 1.0/np;
+      p1 = p;
+      while(p1)
 	{
-	  maxlen = len;
-	  maxp = p1;
+	  M[0] += p1->point[0]*s;
+	  M[1] += p1->point[1]*s;
+	  M[2] += p1->point[2]*s;
+	  p1 = p1->next;
 	}
-      p1 = p1->next;
+
+      p1 = p;
+      maxlen = 0.0;
+      while(p1)
+	{
+	  len = AY_V3SDIST(p1->point, M);
+	  if(len > maxlen)
+	    {
+	      maxlen = len;
+	      maxp = p1;
+	    }
+	  p1 = p1->next;
+	}
     }
 
   p1 = maxp;
@@ -2283,7 +2293,40 @@ ay_pomesht_hasedge(ay_pomesh_object *po, unsigned int i1, unsigned int i2)
 			{
 			  if(po->verts[n+kk] == i2)
 			    {
-			      return AY_TRUE;
+			      if(po->nverts[m] > 3)
+				{
+				  /* i1 and i2 appear in the same loop,
+				     but are they also neighbors? */
+				  if(k == 0)
+				    {
+				      /* i1 is first in this loop */
+				      if((n+kk) == (n+k+1))
+					return AY_TRUE;
+				      if((n+kk) == (n+po->nverts[m]-1))
+					return AY_TRUE;
+				    }
+				  else
+				    {
+				      if(k == po->nverts[m]-1)
+					{
+					  /* i1 is last in this loop */
+					  if((n+kk) == (n))
+					    return AY_TRUE;
+					  if((n+kk) == (n+k-1))
+					    return AY_TRUE;
+					}
+				      else
+					{
+					  /* general case */
+					  if((n+kk) == (n+k+1))
+					    return AY_TRUE;
+					  if((n+kk) == (n+k-1))
+					    return AY_TRUE;
+					}
+				    }
+				}
+			      else
+				return AY_TRUE;
 			    }
 			}
 		    }
@@ -2696,7 +2739,7 @@ ay_pomesht_connect(ay_object *o1, ay_object *o2,
 
   ay_pomesht_vertanglesums(pm1, &vas1);
 
-  ay_status = ay_pomesht_sortpoints(o1->selp, np1, &pp);
+  ay_status = ay_pomesht_sortpoints(o1->selp, np1, NULL, &pp);
 
   if(ay_status)
     goto cleanup;
@@ -2721,17 +2764,11 @@ ay_pomesht_connect(ay_object *o1, ay_object *o2,
   if(ay_status)
     goto cleanup;
 
-  /*
-for(i = 0; i < np1; i++)
-  printf("selp1 %d: %lg %lg %lg\n",i,pp[i].point[0],pp[i].point[1],
-	 pp[i].point[2]);
-  */
-
   /* pre-process o2 and o2->selp */
 
   ay_pomesht_vertanglesums(pm2, &vas2);
 
-  ay_status = ay_pomesht_sortpoints(o2->selp, np2, &qq);
+  ay_status = ay_pomesht_sortpoints(o2->selp, np2, NULL, &qq);
 
   if(ay_status)
     goto cleanup;
@@ -3040,3 +3077,159 @@ ay_pomesht_connecttcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_pomesht_connecttcmd */
+
+
+/** ay_pomesht_selectedge:
+ * Select all points of an edge pointed to by a single selected point.
+ *
+ * \param[in] po PoMesh object to process
+ * \param[in,out] selp a single selected point on the edge to select
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_pomesht_selectedge(ay_pomesh_object *po, ay_point *selp)
+{
+ unsigned int fi, li, i, j, k, kk, l = 0, m = 0, n = 0, c = 0;
+ double *vas = NULL, *cv;
+ int found = AY_FALSE, stride = 3;
+ ay_point *cand = NULL, *scand = NULL, *p, *newp, **nextp;
+
+  if(!po || !selp)
+   return AY_ENULL;
+
+  if(po->has_normals)
+    stride = 6;
+
+  ay_pomesht_vertanglesums(po, &vas);
+
+  for(i = 0; i < po->ncontrols; i++)
+    {
+      if(vas[i] < 358.0)
+	{
+	  if(i == selp->index)
+	    {
+	      fi = i;
+	      found = AY_TRUE;
+	    }
+	  c++;
+	}
+    }
+
+  if(!found)
+    {
+      /* selp is not on edge! */
+      free(vas);
+      return AY_ERROR;
+    }
+
+  if(!(cand = malloc(c*sizeof(ay_point))))
+    {
+      free(vas);
+      return AY_EOMEM;
+    }
+
+  cv = po->controlv;
+  j = 0;
+  for(i = 0; i < po->ncontrols; i++)
+    {
+      if(vas[i] < 358.0)
+	{
+	  cand[j].index = i;
+	  if(i == fi)
+	    p = &(cand[j]);
+	  cand[j].point = &(cv[i*stride]);
+	  cand[j].next = &(cand[j+1]);
+	  j++;
+	}
+    }
+
+  cand[j-1].next = NULL;
+
+  ay_pomesht_sortpoints(cand, c, p, &scand);
+
+  if(!scand)
+    {
+      free(vas);
+      free(cand);
+      return AY_ERROR;
+    }
+
+  /* find end (this is the endpoint of the edge
+     originating at selp that is also not cand[0]-cand[1]) */
+  found = AY_FALSE;
+  p = &(scand[1]);
+  for(i = 0; i < po->npolys; i++)
+    {
+      for(j = 0; j < po->nloops[l]; j++)
+	{
+	  for(k = 0; k < po->nverts[m]; k++)
+	    {
+	      if(po->verts[n+k] == fi)
+		{
+		  for(kk = 0; kk < po->nverts[m]; kk++)
+		    {
+		      if((kk != k) && (po->verts[n+kk] != p->index))
+			{
+			  if(vas[po->verts[n+kk]] < 358.0)
+			    {
+			      li = po->verts[n+kk];
+			      found = AY_TRUE;
+			      goto crtlist;
+			    }
+			}
+		    }
+		}
+	    } /* for verts */
+	  n += po->nverts[m];
+	  m++;
+	} /* for loops */
+      l++;
+    } /* for polys */
+
+crtlist:
+  if(found)
+    {
+      nextp = &(selp->next);
+      found = AY_FALSE;
+      j = 0;
+      while(p->index != li)
+	{
+	  if(!(newp = malloc(sizeof(ay_point))))
+	    return AY_EOMEM;
+
+	  newp->next = NULL;
+	  newp->rational = AY_FALSE;
+	  newp->readonly = AY_FALSE;
+	  newp->point = p->point;
+	  newp->index = p->index;
+
+	  *nextp = newp;
+	  nextp = &(newp->next);
+	  p++;
+	}
+
+      /* add last point */
+      if(!(newp = malloc(sizeof(ay_point))))
+	return AY_EOMEM;
+
+      newp->next = NULL;
+      newp->rational = AY_FALSE;
+      newp->readonly = AY_FALSE;
+      newp->point = p->point;
+      newp->index = p->index;
+
+      *nextp = newp;
+    }
+
+  if(vas)
+    free(vas);
+
+  if(cand)
+    free(cand);
+
+  if(scand)
+    free(scand);
+
+ return AY_OK;
+} /* ay_pomesht_selectedge */
