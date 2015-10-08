@@ -178,11 +178,11 @@ ay_pact_getminlevelscale()
  GLdouble m[16];
  double minlevelscale = 1.0;
 
- ay_trafo_identitymatrix(m);
- if(ay_currentlevel->object != ay_root)
-   {
-     ay_trafo_getsomeparent(ay_currentlevel->next, AY_SCA, m);
-   }
+  ay_trafo_identitymatrix(m);
+  if(ay_currentlevel->object != ay_root)
+    {
+      ay_trafo_getsomeparent(ay_currentlevel->next, AY_SCA, m);
+    }
 
    minlevelscale = fabs(m[0]);
    if(fabs(m[5]) < minlevelscale)
@@ -192,6 +192,85 @@ ay_pact_getminlevelscale()
 
  return minlevelscale;
 } /* ay_pact_getminlevelscale */
+
+
+/* ay_pact_selboundtcb:
+ *  select (tag) all points that form a boundary of an object
+ */
+int
+ay_pact_selboundtcb(struct Togl *togl, int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "selpac";
+ Tcl_Interp *interp = Togl_Interp(togl);
+ ay_point *newp = NULL;
+ ay_pointedit pe = {0};
+ ay_list_object *sel = ay_selection;
+ ay_view_object *view = Togl_GetClientData(togl);
+ ay_object *o = NULL;
+ double winX = 0.0, winY = 0.0;
+ double minlevelscale = 1.0, obj[3] = {0};
+
+  if(!ay_selection)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  Tcl_GetDouble(interp, argv[2], &winX);
+  Tcl_GetDouble(interp, argv[3], &winY);
+
+  minlevelscale = ay_pact_getminlevelscale();
+
+  while(sel)
+    {
+      o = sel->object;
+
+      /* so that we may use continue */
+      sel = sel->next;
+
+      if(o->type != AY_IDPOMESH)
+	continue;
+
+      ay_viewt_wintoobj(togl, o, winX, winY, &(obj[0]), &(obj[1]), &(obj[2]));
+
+      ay_status = ay_pact_pickpoint(o, view, minlevelscale, obj, &pe);
+
+      if(!ay_status && pe.coords)
+	{
+	  ay_selp_clear(o);
+
+	  /* create new point object */
+	  if(!(newp = malloc(sizeof(ay_point))))
+	    {
+	      ay_error(AY_EOMEM, fname, NULL);
+	      return TCL_OK;
+	    }
+
+	  newp->next = o->selp;
+	  o->selp = newp;
+	  newp->point = pe.coords[0];
+
+	  if(pe.indices)
+	    {
+	      newp->index = pe.indices[0];
+	    }
+	  else
+	    {
+	      newp->index = 0;
+	    }
+
+	  newp->rational = pe.rational;
+	  newp->readonly = pe.readonly;
+
+	  ay_status = ay_pomesht_selectbound(o->refine, o->selp);
+	} /* if */
+
+      ay_pact_clearpointedit(&pe);
+    } /* while */
+
+ return TCL_OK;
+} /* ay_pact_selboundtcb */
 
 
 /* ay_pact_seltcb:

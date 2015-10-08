@@ -762,6 +762,10 @@ int ay_pact_pickpoint(ay_object *o, ay_view_object *view,
  */
 int ay_pact_seltcb(struct Togl *togl, int argc, char *argv[]);
 
+/** tag/select boundary action
+ */
+int ay_pact_selboundtcb(struct Togl *togl, int argc, char *argv[]);
+
 /** insert point action
  */
 int ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[]);
@@ -886,6 +890,11 @@ void ay_pomesht_flipnormals(ay_pomesh_object *po);
  */
 int ay_pomesht_connecttcmd(ClientData clientData, Tcl_Interp *interp,
 			   int argc, char *argv[]);
+
+/** select all points of a boundary of a polymesh object
+ */
+int ay_pomesht_selectbound(ay_pomesh_object *po, ay_point *selp);
+
 
 /* prefs.c */
 

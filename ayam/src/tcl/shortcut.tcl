@@ -554,6 +554,9 @@ proc shortcut_view { w } {
     bind $w <[repctrl $ayviewshortcuts(SnapMarkO)]>\
 	"actionSnapToMarkO $w.f3D.togl;break"
 
+    bind $w <[repctrl $ayviewshortcuts(TagB)]>\
+	"actionTagB $w.f3D.togl;break"
+
     set m $ay(toolsmenu)
     bind $w <[repctrl $ayviewshortcuts(Hide)]>\
 	"$m invoke 12;break"

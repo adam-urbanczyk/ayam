@@ -1075,6 +1075,53 @@ proc actionDelTagP { w } {
 # actionDelTagP
 
 
+#
+proc actionTagB { w } {
+    global ayprefs ayviewshortcuts
+
+    viewTitle $w "" "Select_Bounds"
+    viewSetMAIcon $w ay_Tag_img "Select_Bounds"
+
+    if { $ayprefs(TagResetTagged) == 1 } {
+	selPnts; rV
+    }
+
+    actionClearB1 $w
+
+    bind $w <ButtonPress-1> {
+	# undo save TagP
+	%W mc
+    }
+
+    bind $w <ButtonRelease-1> {
+	%W selbac %x %y
+	rV
+	update
+	focus %W
+    }
+
+    bind $w <Motion> ""
+
+    if { $ayprefs(FlashPoints) == 1 } {
+	bind $w <Motion> {
+	    %W startpepac %x %y -readonly -flash
+	}
+	if { $ayprefs(FixFlashPoints) == 1 } {
+	    bind $w <ButtonRelease-1> "+\
+          %W startpepac %x %y -readonly -flash -ignoreold;\
+          %W startpepac %x %y -readonly -flash -ignoreold"
+	} else {
+	    bind $w <ButtonRelease-1> "+\
+          %W startpepac %x %y -readonly -flash -ignoreold;"
+	}
+    }
+    $w setconf -drawh 1
+
+ return;
+}
+# actionTagB
+
+
 # in this global array the numeric edit points
 # action keeps its data
 array set editPntArr {
