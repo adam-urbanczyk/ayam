@@ -3079,7 +3079,7 @@ ay_pomesht_connecttcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_pomesht_connecttcmd */
 
 
-/** ay_pomesht_selectedge:
+/** ay_pomesht_selectbound:
  * Select all points of an edge pointed to by a single selected point.
  *
  * \param[in] po PoMesh object to process
@@ -3088,7 +3088,7 @@ ay_pomesht_connecttcmd(ClientData clientData, Tcl_Interp *interp,
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_pomesht_selectedge(ay_pomesh_object *po, ay_point *selp)
+ay_pomesht_selectbound(ay_pomesh_object *po, ay_point *selp)
 {
  unsigned int fi, li, i, j, k, kk, l = 0, m = 0, n = 0, c = 0;
  double *vas = NULL, *cv;
@@ -3232,4 +3232,66 @@ crtlist:
     free(scand);
 
  return AY_OK;
-} /* ay_pomesht_selectedge */
+} /* ay_pomesht_selectbound */
+
+
+/** ay_pomesht_applytrafo:
+ * Apply transformation attributes to coordinates (and smooth normals).
+ *
+ * \param[in,out] o polymesh object to process
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_pomesht_applytrafo(ay_object *o)
+{
+ ay_pomesh_object *pm = NULL;
+ double tm[16], rm[16], *cv;
+ unsigned int i, stride = 3;
+
+  if(!o)
+    return AY_ENULL;
+
+  if(o->type != AY_IDPOMESH)
+    return AY_ERROR;
+
+  pm = (ay_pomesh_object*)o->refine;
+
+  if(AY_ISTRAFO(o))
+    {
+      if(pm->has_normals)
+	  stride = 6;
+
+      ay_trafo_creatematrix(o, tm);
+
+      cv = pm->controlv;
+      for(i = 0; i < pm->ncontrols; i++)
+	{
+	  ay_trafo_apply3(cv, tm);
+	  cv += stride;
+	}
+
+      if(pm->has_normals)
+	{
+	  if((fabs(o->quat[0]) > AY_EPSILON) ||
+	     (fabs(o->quat[1]) > AY_EPSILON) ||
+	     (fabs(o->quat[2]) > AY_EPSILON) ||
+	     (fabs(1.0 - o->quat[3]) > AY_EPSILON))
+	    {
+	      ay_quat_torotmatrix(o->quat, rm);
+	      cv = &(pm->controlv[3]);
+	      for(i = 0; i < pm->ncontrols; i++)
+		{
+		  ay_trafo_apply3(cv, rm);
+		  cv += stride;
+		}
+	    } /* if isrotate */
+	} /* if hasnormals */
+
+      ay_trafo_defaults(o);
+
+    } /* if istrafo */
+
+ return AY_OK;
+} /* ay_pomesht_applytrafo */
+

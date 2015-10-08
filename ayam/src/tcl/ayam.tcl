@@ -449,7 +449,7 @@ array set ayviewshortcuts {
     About "a"
     CenterO "c"
     CenterPC "C"
-    CenterPB "b"
+    CenterPB "B"
     TransO "o"
     TransP "p"
 
@@ -490,6 +490,8 @@ array set ayviewshortcuts {
     PickModKey "Control_L"
 
     TagMod "Control"
+
+    TagB "b"
 
     SelAllP "A"
     InvSelP "I"

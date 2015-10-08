@@ -1010,6 +1010,8 @@ Tcl_AppInit(Tcl_Interp *interp)
   /* pact.c */
   Togl_CreateCommand("selpac", ay_pact_seltcb);
 
+  Togl_CreateCommand("selbac", ay_pact_selboundtcb);
+
   Togl_CreateCommand("insertpac", ay_pact_insertptcb);
 
   Togl_CreateCommand("deletepac", ay_pact_deleteptcb);
