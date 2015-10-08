@@ -3080,10 +3080,10 @@ ay_pomesht_connecttcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /** ay_pomesht_selectbound:
- * Select all points of an edge pointed to by a single selected point.
+ * Select all points of a mesh boundary pointed to by a single selected point.
  *
  * \param[in] po PoMesh object to process
- * \param[in,out] selp a single selected point on the edge to select
+ * \param[in,out] selp a single selected point on the boundary to select
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -3101,6 +3101,7 @@ ay_pomesht_selectbound(ay_pomesh_object *po, ay_point *selp)
   if(po->has_normals)
     stride = 6;
 
+  /* form candidates (all boundary points of the mesh) */
   ay_pomesht_vertanglesums(po, &vas);
 
   for(i = 0; i < po->ncontrols; i++)
@@ -3118,7 +3119,7 @@ ay_pomesht_selectbound(ay_pomesh_object *po, ay_point *selp)
 
   if(!found)
     {
-      /* selp is not on edge! */
+      /* selp is not on boundary! */
       free(vas);
       return AY_ERROR;
     }
