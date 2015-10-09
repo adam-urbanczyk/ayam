@@ -895,6 +895,10 @@ int ay_pomesht_connecttcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int ay_pomesht_selectbound(ay_pomesh_object *po, ay_point *selp);
 
+/** apply transformations to control points and normals
+ */
+int ay_pomesht_applytrafo(ay_object *o);
+
 
 /* prefs.c */
 
