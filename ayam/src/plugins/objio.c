@@ -1194,7 +1194,8 @@ objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
       ay_status = ay_pomesht_merge(AY_FALSE, lihead, &to);
       if(to)
 	{
-	  ay_status = ay_pomesht_optimizecoords(to->refine, AY_FALSE, NULL);
+	  ay_status = ay_pomesht_optimizecoords(to->refine, AY_FALSE, NULL,
+						NULL, NULL);
 	  ay_object_defaults(to);
 	  to->type = AY_IDPOMESH;
 	  /*ay_trafo_copy(o, to);*/

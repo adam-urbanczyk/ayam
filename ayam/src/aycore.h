@@ -834,7 +834,8 @@ int ay_pomesht_mergetcmd(ClientData clientData, Tcl_Interp *interp,
 /** optimize polymesh object
  */
 int ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals,
-			      ay_point *selp);
+			      ay_point *selp,
+			      unsigned int *ois, unsigned int *oislen);
 
 /** Tcl command to optimize the selected polymesh objects.
  */
