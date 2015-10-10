@@ -752,6 +752,155 @@ ay_pomesht_mergetcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_pomesht_mergetcmd */
 
 
+/** ay_pomesht_optimizepv:
+ * Optimize the PV tags of an object after the coordinates have
+ * been optimized.
+ *
+ * Helper for ay_pomesht_optimizecoords() below.
+ * 
+ * \param[in,out] o object to process
+ * \param[in] ois array of old indices
+ * \param[in] oislen length of ois
+ * 
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_pomesht_optimizepv(ay_object *o, unsigned int *ois, unsigned int oislen)
+{
+ int ay_status = AY_OK;
+ ay_tag *tag;
+ unsigned int i, j, stride, numelems;
+ char *comma2, *comma3, *comma4, *nv, *cur, *old, *oldend;
+
+  tag = o->tags;
+  while(tag)
+    {
+      /* only work on varying tags */
+      if(tag->type == ay_pv_tagtype && ay_pv_getdetail(tag, NULL) >= 2)
+	{
+	  nv = NULL;
+
+	  /* find the second comma (data type) in t1->val */
+	  comma2 = tag->val;
+	  i = 0;
+	  while((i < 2) && (comma2 = strchr(comma2, ',')))
+	    { i++; comma2++; }
+	  if(!comma2)
+	    { ay_status = AY_ERROR; goto cleanup; }
+
+	  /* derive stride from data type */
+	  switch(*comma2)
+	    {
+	    case 'f':
+	    case 's':
+	      stride = 1;
+	      break;
+	    case 'g':
+	      stride = 2;
+	      break;
+	    case 'c':
+	    case 'p':
+	    case 'n':
+	    case 'v':
+	      stride = 3;
+	      break;
+	    case 'd':
+	      stride = 4;
+	      break;
+	    default:
+	      stride = 0;
+	      break;
+	    } /* switch */
+
+	  /* find the third comma (numelems) in t1->val */
+	  comma3 = strchr(comma2, ',');
+	  if(!comma3)
+	    { ay_status = AY_ERROR; goto cleanup; }
+	  comma3++;
+
+	  sscanf(comma3, "%u", &numelems);
+
+	  /* find the fourth comma (data) in t1->val */
+	  comma4 = strchr(comma3, ',');
+	  if(!comma4)
+	    { ay_status = AY_ERROR; goto cleanup; }
+
+	  /* now we can construct a new value string by selectively
+	     copying elements from the old string */
+	  if(!(nv = malloc(strlen(tag->val)+1)))
+	    { ay_status = AY_EOMEM; goto cleanup; }
+
+	  /* copy name and data type */
+	  memcpy(nv, tag->val, comma3-(char*)tag->val);
+
+	  /* add new number of elements */
+	  sprintf(&(nv[comma3-(char*)tag->val]), "%u", oislen);
+
+	  /* selectively copy data elements */
+	  cur = nv;
+	  while(*cur != '\0')
+	    cur++;
+
+	  for(j = 0; j < oislen; j++)
+	    {
+	      /* find the data element in t1->val */
+	      old = comma4;
+	      if(ois[j] > 0)
+		{
+		  i = 0;
+		  old++;
+		  while((i < ois[j]*stride) && (old = strchr(old, ',')))
+		    { i++; old++; }
+		  if(!old)
+		    { ay_status = AY_ERROR; goto cleanup; }
+		  old--;
+		}
+
+	      if(ois[j] < numelems-1)
+		{
+		  i = 0;
+		  oldend = old+1;
+		  while((i < stride) && (oldend = strchr(oldend, ',')))
+		    { i++; oldend++; }
+		  if(!oldend)
+		    { ay_status = AY_ERROR; goto cleanup; }
+		  oldend--;
+
+		  /* got end, copy data */
+		  memcpy(cur, old, oldend-old);
+		  cur += (oldend-old);
+		}
+	      else
+		{
+		  /* copy last elem which misses a trailing comma,
+		     hence this special case... */
+		  strcpy(cur, old);
+		  while(*cur != '\0')
+		    cur++;
+		}
+	    } /* for */
+
+	  /* terminate new value string */
+	  *cur = '\0';
+
+	  free(tag->val);
+	  tag->val = nv;
+	  nv = NULL;
+	} /* if varying */
+
+      tag = tag->next;
+    } /* while tag */
+
+cleanup:
+
+  if(nv)
+    free(nv);
+
+ return ay_status;
+} /* ay_pomesht_optimizepv */
+
+
+
 /* ay_pomesht_inithash:
  *  helper for ay_pomesht_optimizecoords() below
  *  initialize the hash table
@@ -903,12 +1052,16 @@ ay_pomesht_addvertextohash(ay_pomesht_hash *phash, int ignore_normals,
  *  comparing the vertices
  * \param[in] selp vertices to process (may be NULL, to indicate that all
  *  vertices are to be processed)
+ * \param[in,out] ois an array where to store the original indices (may be NULL)
+ * \param[in,out] oislen where to store the number of indices written to
+ *  ois above (may be NULL)
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals,
-			  ay_point *selp)
+			  ay_point *selp,
+			  unsigned int *ois, unsigned int *oislen)
 {
  int ay_status = AY_OK;
  ay_point *s;
@@ -996,11 +1149,14 @@ ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals,
 		    }
 		  s = s->next;
 		}
+
 	      if(!found)
 		{
 		  newverts[i] = dp;
 		  memcpy(&(newcontrolv[dp*stride]), &(pomesh->controlv[p]),
 			 stride * sizeof(double));
+		  if(ois)
+		    ois[dp] = pomesh->verts[i];
 		  dp++;
 		}
 	    }
@@ -1010,6 +1166,8 @@ ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals,
 	  newverts[i] = dp;
 	  memcpy(&(newcontrolv[dp*stride]), &(pomesh->controlv[p]),
 		 stride * sizeof(double));
+	  if(ois)
+	    ois[dp] = pomesh->verts[i];
 	  dp++;
 	} /* if */
     } /* for */
@@ -1018,7 +1176,6 @@ ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals,
 
   if(!ay_status)
     {
-
       if(pomesh->verts)
 	free(pomesh->verts);
 
@@ -1033,6 +1190,11 @@ ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals,
 	{
 	  pomesh->controlv = tmp;
 	}
+      if(ois && oislen)
+	{
+	  *oislen = dp;
+	}
+
     }
   else
     {
@@ -1061,6 +1223,8 @@ ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL;
  ay_point *selp = NULL;
  ay_list_object *sel = ay_selection;
+ ay_pomesh_object *pomesh;
+ unsigned int *ois = NULL, oislen = 0;
 
   while(i+1 < argc)
     {
@@ -1105,8 +1269,25 @@ ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp *interp,
 		selp = o->selp;
 	      else
 		selp = NULL;
+	      pomesh = (ay_pomesh_object *)o->refine;
+
+	      /* */
+	      if(!(ois = malloc(pomesh->ncontrols*sizeof(unsigned int))))
+		{
+		  ay_error(AY_EOMEM, argv[0], NULL);
+		  return TCL_OK;
+		}
+	      
 	      ay_status = ay_pomesht_optimizecoords(o->refine, ignore_normals,
-						    selp);
+						    selp, ois, &oislen);
+
+	      ay_status = ay_pomesht_optimizepv(o, ois, oislen);
+
+	      if(ois)
+		{
+		  free(ois);
+		  ois = NULL;
+		}
 	    }
 	  if(ay_status)
 	    { /* emit error message */
@@ -1116,6 +1297,13 @@ ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      /* update pointers to controlv */
 	      ay_selp_clear(o);
+
+	      /* update PV data */
+	      if(ois)
+		{
+		  ay_pomesht_optimizepv(o, ois, oislen);
+		  free(ois);
+		}
 	    } /* if */
 	}
       else
