@@ -757,11 +757,11 @@ ay_pomesht_mergetcmd(ClientData clientData, Tcl_Interp *interp,
  * been optimized.
  *
  * Helper for ay_pomesht_optimizecoords() below.
- * 
+ *
  * \param[in,out] o object to process
  * \param[in] ois array of old indices
  * \param[in] oislen length of ois
- * 
+ *
  * \returns AY_OK on success, error code otherwise.
  */
 int
@@ -898,7 +898,6 @@ cleanup:
 
  return ay_status;
 } /* ay_pomesht_optimizepv */
-
 
 
 /* ay_pomesht_inithash:
@@ -1052,7 +1051,9 @@ ay_pomesht_addvertextohash(ay_pomesht_hash *phash, int ignore_normals,
  *  comparing the vertices
  * \param[in] selp vertices to process (may be NULL, to indicate that all
  *  vertices are to be processed)
- * \param[in,out] ois an array where to store the original indices (may be NULL)
+ * \param[in,out] ois an array where to store the original indices (we
+ *  need this information when optimizing the PV tags, must be of length
+ *  ncontrols; may be NULL)
  * \param[in,out] oislen where to store the number of indices written to
  *  ois above (may be NULL)
  *
@@ -1194,7 +1195,6 @@ ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals,
 	{
 	  *oislen = dp;
 	}
-
     }
   else
     {
@@ -1277,10 +1277,11 @@ ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp *interp,
 		  ay_error(AY_EOMEM, argv[0], NULL);
 		  return TCL_OK;
 		}
-	      
+
 	      ay_status = ay_pomesht_optimizecoords(o->refine, ignore_normals,
 						    selp, ois, &oislen);
 
+	      /* XXXX TODO only do this, when we actually optimized */
 	      ay_status = ay_pomesht_optimizepv(o, ois, oislen);
 
 	      if(ois)
