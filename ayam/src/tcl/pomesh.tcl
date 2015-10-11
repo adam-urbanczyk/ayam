@@ -119,10 +119,26 @@ proc pomesh_merge { } {
 
 uplevel #0 { array set pomeshopt_options {
     OptimizeCoords 1
+    CoordinateEpsilon 0.0
+    OptimizePV 1
     IgnoreNormals 1
+    NormalEpsilon Inf
     SelectedPoints 0
     OptimizeFaces 0
 }   }
+
+proc toggleOptimizeOptions { } {
+    global pomeshopt_options
+    set w .pomeshopt
+    if { $pomeshopt_options(MoreOptions) == 1 } {
+	addCheck $f pomeshopt_options SelectedPoints
+	#addParam $f pomeshopt_options CoordinateEpsilon
+    } else {
+	catch {destroy $w.fSelectedPoints}
+	#catch {destroy $w.fCoordinateEpsilon}
+    }
+ return;
+}
 
 
 # pomesh_optimize:
@@ -149,9 +165,14 @@ proc pomesh_optimize { } {
 	addText $f e1 $t
     }
     addCheck $f pomeshopt_options OptimizeCoords
-    addCheck $f pomeshopt_options IgnoreNormals
+    addCheck $f pomeshopt_options OptimizePV
+    addParam $f pomeshopt_options NormalEpsilon { 0.0 0.1 15.0 Inf }
     addCheck $f pomeshopt_options SelectedPoints
-    addCheck $f pomeshopt_options OptimizeFaces
+    if { 0 } {
+    addOptionToggle $w pomeshopt_options MoreOptions \
+	"Advanced Options" toggleOptimizeOptions
+    }
+    #addCheck $f pomeshopt_options OptimizeFaces
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
@@ -162,9 +183,10 @@ proc pomesh_optimize { } {
 	undo save OptPoMesh
 
 	optiPo -c $pomeshopt_options(OptimizeCoords)\
-		-n $pomeshopt_options(IgnoreNormals)\
-		-s $pomeshopt_options(SelectedPoints)\
-		-f $pomeshopt_options(OptimizeFaces);
+	    -n $pomeshopt_options(NormalEpsilon)\
+	    -p $pomeshopt_options(OptimizePV)\
+	    -s $pomeshopt_options(SelectedPoints)\
+	    -f $pomeshopt_options(OptimizeFaces);
 
 	rV
 

@@ -65,9 +65,8 @@ int ay_pomesht_inithash(ay_pomesht_hash *hash);
 
 void ay_pomesht_destroyhash(ay_pomesht_hash *hash);
 
-int ay_pomesht_addvertextohash(ay_pomesht_hash *phash, int ignore_normals,
+int ay_pomesht_addvertextohash(ay_pomesht_hash *phash, double normal_epsilon,
 			       double *point);
-
 
 void ay_pomesht_alignpoints(ay_point *p1, ay_point *p2, unsigned int p2len,
 			    int p2closed);
@@ -959,13 +958,13 @@ ay_pomesht_destroyhash(ay_pomesht_hash *hash)
  *  (if it is not present already)
  */
 int
-ay_pomesht_addvertextohash(ay_pomesht_hash *phash, int ignore_normals,
+ay_pomesht_addvertextohash(ay_pomesht_hash *phash, double normal_epsilon,
 			   double *point)
 {
  unsigned int index;
  ay_pomesht_htentry *entry;
  ay_pomesht_htentry *chain;
- double x, y, z;
+ double x, y, z, angle, V1[3], *V2;
 
   x = point[0];
   y = point[1];
@@ -985,7 +984,7 @@ ay_pomesht_addvertextohash(ay_pomesht_hash *phash, int ignore_normals,
       while(chain)
 	{
 	  /* ignore normals? */
-          if(ignore_normals)
+          if(normal_epsilon == DBL_MAX)
 	    {
 	      if(AYVCOMP(chain->x, chain->y, chain->z, x, y, z))
 		{
@@ -996,15 +995,21 @@ ay_pomesht_addvertextohash(ay_pomesht_hash *phash, int ignore_normals,
 	    }
 	  else
 	    {
-	      if(AYVCOMP(chain->x, chain->y, chain->z, x, y, z) &&
-     AYVCOMP(chain->nx, chain->ny, chain->nz, point[3], point[4], point[5]))
-	        {
-		  phash->index = chain->index;
-		  phash->found = AY_TRUE;
-		  break;
+	      if(AYVCOMP(chain->x, chain->y, chain->z, x, y, z))
+		{
+		  V1[0] = chain->nx;
+		  V1[1] = chain->ny;
+		  V1[2] = chain->nz;
+		  V2 = &(point[3]);
+		  angle = AY_R2D(acos(AY_V3DOT(V1, V2)));
+		  if(angle <= normal_epsilon)
+		    {
+		      phash->index = chain->index;
+		      phash->found = AY_TRUE;
+		      break;
+		    } /* if */
 		} /* if */
 	    } /* if */
-
 	  chain = chain->next;
 	} /* while */
     } /* if */
@@ -1025,7 +1030,7 @@ ay_pomesht_addvertextohash(ay_pomesht_hash *phash, int ignore_normals,
       new->z = z;
 
       /* use normals? */
-      if(!ignore_normals)
+      if(normal_epsilon != DBL_MAX)
 	{
 	  new->nx = point[3];
 	  new->ny = point[4];
@@ -1047,8 +1052,10 @@ ay_pomesht_addvertextohash(ay_pomesht_hash *phash, int ignore_normals,
  * unique when this function is finished.
  *
  * \param[in,out] pomesh PolyMesh object to optimize
- * \param[in] ignore_normals if AY_TRUE, vertex normals are ignored when
- *  comparing the vertices
+ * \param[in] normal_epsilon a positive angle in degrees that is used
+ *  to decide wether two coordinates are eligible for optimization;
+ *  set to 0.0 to only optimize vertices with identical normals,
+ *  set to DBL_MAX to totally ignore the normals
  * \param[in] selp vertices to process (may be NULL, to indicate that all
  *  vertices are to be processed)
  * \param[in,out] ois an array where to store the original indices (we
@@ -1060,7 +1067,7 @@ ay_pomesht_addvertextohash(ay_pomesht_hash *phash, int ignore_normals,
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals,
+ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, double normal_epsilon,
 			  ay_point *selp,
 			  unsigned int *ois, unsigned int *oislen)
 {
@@ -1088,7 +1095,7 @@ ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals,
     } /* for */
 
   if(!(newverts = (unsigned int *)calloc(1, sizeof(unsigned int) *
-					   total_verts)))
+					 total_verts)))
     { return AY_EOMEM; }
 
   if(pomesh->has_normals)
@@ -1097,7 +1104,7 @@ ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals,
     stride = 3;
 
   if(!(newcontrolv = (double *)calloc(1, pomesh->ncontrols * stride *
-					sizeof(double))))
+				      sizeof(double))))
     { free(newverts); return AY_EOMEM; }
 
   phash = (ay_pomesht_hash *)calloc(1, sizeof(ay_pomesht_hash));
@@ -1110,9 +1117,9 @@ ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals,
   dp = 0;
 
   /* if the user requested to honour normals but we have no normals
-     we have to set ignore_normals to true */
-  if(!ignore_normals && !pomesh->has_normals)
-    ignore_normals = AY_TRUE;
+     we have to set normal_epsilon to DBL_MAX */
+  if(!normal_epsilon != DBL_MAX && !pomesh->has_normals)
+    normal_epsilon = DBL_MAX;
 
   for(i = 0; i < total_verts; i++)
     {
@@ -1121,7 +1128,7 @@ ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals,
       phash->found = AY_FALSE;
       phash->index = dp;
 
-      ay_status = ay_pomesht_addvertextohash(phash, ignore_normals,
+      ay_status = ay_pomesht_addvertextohash(phash, normal_epsilon,
 					     &(pomesh->controlv[p]));
 
       if(ay_status)
@@ -1218,8 +1225,9 @@ ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[])
 {
  int ay_status = AY_OK;
- int i = 1, optimize_coords = 1, ignore_normals = 1, optimize_faces = 0;
+ int i = 1, optimize_coords = 1, optimize_faces = 0, optimize_pv = 1;
  int optimize_selected = 0;
+ double normal_epsilon = DBL_MAX;
  ay_object *o = NULL;
  ay_point *selp = NULL;
  ay_list_object *sel = ay_selection;
@@ -1235,7 +1243,16 @@ ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp *interp,
       else
       if(!strcmp(argv[i], "-n"))
 	{
-	  sscanf(argv[i+1], "%d", &ignore_normals);
+	  sscanf(argv[i+1], "%lg", &normal_epsilon);
+	  if(normal_epsilon < 0.0)
+	    normal_epsilon = 0.0;
+	  if(normal_epsilon > DBL_MAX)
+	    normal_epsilon = DBL_MAX;
+	}
+      else
+      if(!strcmp(argv[i], "-p"))
+	{
+	  sscanf(argv[i+1], "%d", &optimize_pv);
 	}
       else
       if(!strcmp(argv[i], "-f"))
@@ -1272,23 +1289,17 @@ ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp *interp,
 	      pomesh = (ay_pomesh_object *)o->refine;
 
 	      /* */
-	      if(!(ois = malloc(pomesh->ncontrols*sizeof(unsigned int))))
+	      if(optimize_pv)
 		{
-		  ay_error(AY_EOMEM, argv[0], NULL);
-		  return TCL_OK;
+		  if(!(ois = malloc(pomesh->ncontrols*sizeof(unsigned int))))
+		    {
+		      ay_error(AY_EOMEM, argv[0], NULL);
+		      return TCL_OK;
+		    }
 		}
 
-	      ay_status = ay_pomesht_optimizecoords(o->refine, ignore_normals,
+	      ay_status = ay_pomesht_optimizecoords(o->refine, normal_epsilon,
 						    selp, ois, &oislen);
-
-	      /* XXXX TODO only do this, when we actually optimized */
-	      ay_status = ay_pomesht_optimizepv(o, ois, oislen);
-
-	      if(ois)
-		{
-		  free(ois);
-		  ois = NULL;
-		}
 	    }
 	  if(ay_status)
 	    { /* emit error message */
@@ -1299,11 +1310,12 @@ ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp *interp,
 	      /* update pointers to controlv */
 	      ay_selp_clear(o);
 
-	      /* update PV data */
+	      /* update/optimize PV data */
 	      if(ois)
 		{
 		  ay_pomesht_optimizepv(o, ois, oislen);
 		  free(ois);
+		  ois = NULL;
 		}
 	    } /* if */
 	}
