@@ -1369,7 +1369,7 @@ onio_writepomesh(ay_object *o, ONX_Model *p_m, double *m)
       if(to)
 	{
 	  ay_status = ay_pomesht_optimizecoords((ay_pomesh_object*)to->refine,
-						AY_FALSE, NULL, NULL, NULL);
+						0.0, NULL, NULL, NULL);
 	  ay_object_defaults(to);
 	  to->type = AY_IDPOMESH;
 	  // ay_trafo_copy(o, to);
