@@ -4151,12 +4151,25 @@ The selected curve will be changed by this action, and
 a new curve will be created. It is currently not possible to undo
 the changes of a split!
 
-<sect1>Selecting Boundary Points<label id="selbac">
+<sect1>Selecting/Tagging Boundary Points<label id="selbac">
 <p>
-The modelling action <tt/"Selecting Boundary Points"/ (shortcut <tt/&lt;b&gt;/)
+The modelling action <tt/"Select Boundary Points"/ (shortcut <tt/&lt;b&gt;/)
 may be applied to PolyMesh objects only.<newline>
 This action can be used to select all control points of a PolyMesh
-boundary after picking a point on that boundary.
+boundary after picking a point on that
+boundary.<footnote>Since 1.23.</footnote>
+See also the table below.
+<p>
+<table loc="ht">
+<tabular ca="|c|c|c|"><hline>
+<bf/Name/|<bf/Shortcut/|<bf/Icon/@<hline>
+Select Boundary|<tt/&lt;b&gt;/|
+<#if out=latex><x>inlinegfx pics/tagbac.png 0.7cm </x></#if>
+<#if out=html><img src="pics/tagbac.gif"></#if>
+<#if out=latex>@<hline></#if>
+</tabular>
+<caption>Select Boundary Points Action</caption>
+</table>
 
 <#if out=latex><x/newpage/</#if>
 
