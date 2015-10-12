@@ -769,7 +769,7 @@ ay_pomesht_optimizepv(ay_object *o, unsigned int *ois, unsigned int oislen)
  int ay_status = AY_OK;
  ay_tag *tag;
  unsigned int i, j, stride, numelems;
- char *comma2, *comma3, *comma4, *nv, *cur, *old, *oldend;
+ char *nv = NULL, *comma2, *comma3, *comma4, *cur, *old, *oldend;
 
   tag = o->tags;
   while(tag)
