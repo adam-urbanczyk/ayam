@@ -166,7 +166,7 @@ proc pomesh_optimize { } {
     }
     addCheck $f pomeshopt_options OptimizeCoords
     addCheck $f pomeshopt_options OptimizePV
-    addParam $f pomeshopt_options NormalEpsilon { 0.0 0.1 15.0 Inf }
+    addParam $f pomeshopt_options NormalEpsilon { 0.0 1e-06 0.1 15.0 Inf }
     addCheck $f pomeshopt_options SelectedPoints
     if { 0 } {
     addOptionToggle $w pomeshopt_options MoreOptions \
