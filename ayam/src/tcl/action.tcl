@@ -1080,7 +1080,7 @@ proc actionTagB { w } {
     global ayprefs ayviewshortcuts
 
     viewTitle $w "" "Select_Bounds"
-    viewSetMAIcon $w ay_Tag_img "Select_Bounds"
+    viewSetMAIcon $w ay_TagB_img "Select_Bounds"
 
     if { $ayprefs(TagResetTagged) == 1 } {
 	selPnts; rV

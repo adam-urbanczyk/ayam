@@ -806,4 +806,12 @@ R0lGODlhDgAOAIABAAAAAP///yH5BAEAAAEALAAAAAAOAA4AAAIXjI+pywbQzou0Shjm0tr662Bd
 JpbfVwAAOw==}
 image create photo ay_Resizehandle_img -format GIF -data $imgdata
 
+# Tag Boundary
+set imgdata {\
+R0lGODdhGQAZAMIHALy8vAAAAK8AANJeXVhYWZiZmL28vP///ywAAAAAGQAZ
+AAADbQi63P7LGBBaZfdJwVf4HqgZnPCdKDqWYXZCEmXN8JQpt1zrHr12OBFF
+2NhwUkhihAQcupRLHs7niOWuEICVKi0SWAowQNwgfI5ndKCUA5jTCzFZ8YZm
+GXX73Y3cO/Ivfg8pgn8gentCBIWMfgkAOw==}
+image create photo ay_TagB_img -format GIF -data $imgdata
+
 catch {unset imgdata}
