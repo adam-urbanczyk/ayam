@@ -1141,6 +1141,9 @@ be used instead.
 and modelling tools, that are explained in depth in section
 <ref id="nmtool" name="NURBS Modelling Tools">.
 
+<#if out=latex><x/phantomsection/</#if>
+
+<label id="polymeshtools">
 <item><tt/"PolyMesh"/: sub-menu for polygonal mesh related tools:
 <itemize>
 <item><tt/"Merge"/: merges all currently selected PolyMesh objects into
@@ -1166,29 +1169,55 @@ be started immediately after splitting using the <tt/"OptimizeNew"/-option.
 <item><tt/"Optimize"/: optimizes the selected PolyMesh object(s)
 by removing all multiply used (and unused) control points (if the option
 <tt/"OptimizeCoords"/ is enabled) or multiply used faces (not implemented
-yet). If the option <tt/"IgnoreNormals"/ is enabled, the optimize-tool will
-consider points with equal coordinates but differing normals
-to be equal (and optimize them).
+yet).
+<p><p>
+The option <tt/"NormalEpsilon"/ additionally controls which points are
+considered equal by comparing also the vertex normals (if present):<newline>
+A value of <tt/"0.0"/ means, the normals must be bitwise identical, a value
+of <tt/"Inf"/ means, the normals are totally ignored, any other value defines
+the maximum angle (in degrees) between the two
+normals.<footnote>Since 1.23.</footnote>
+<p>
+The option <tt/"OptimizePV"/ determines whether the PV tags should also
+be optimized.<footnote>Since 1.23.</footnote>
+<p>
+If <tt/"OptimizeSelected"/ is enabled, only the selected points of the
+PolyMesh are processed.
+<p>
 Removing multiply used control points using the <tt/"Optimize"/-tool
 may decrease the memory consumption of the control points
 by a factor of about six, depending on the connectivity of the original
 mesh.
 
-<item><tt/"Connect Edges"/: connects the first two selected PolyMesh objects
-via their selected edges (all control points of the edge must be
-selected). The edges are first offset into the interior of the
+<item><tt/"Connect"/: connects the first two selected PolyMesh
+objects via their selected boundaries.
+This tool can e.g.~be used to close gaps between tesselated NURBS surfaces
+that are incompatible (watertight tesselation).
+<p><p>
+All control points of the respective boundary must be selected.
+The select boundary points modelling action can be used
+to easily select all those points interactively
+(see also section <ref id="selbac" name="Selecting Boundary Points">).
+The PolyMesh objects must be optimized atleast in the direct
+neighborhood of the boundary (all control points used by the faces on
+the boundary).
+<p>
+The boundary edges are first offset into the interior of the
 respective mesh along the surface tangent, then a strip of new
 triangles will be generated. The new triangles will be put into
 a new (third) PolyMesh object.
+<p>
 The offset values can be adjusted; they are interpreted relative to
-the shortest edge of each control point to be moved.
+the shortest edge incident to each control point to be moved.
+Note that too large offset values may lead to degenerate
+triangles/meshes for boundary faces with unfavourable shape.
 
-<item><tt/"Gen. Face Normals"/: Generates face normals for the selected
-PolyMesh object(s) using the robust Newell algorithm. The generated
+<item><tt/"Gen./&nbsp;<tt/Face Normals"/: Generates face normals for the
+selected PolyMesh object(s) using the robust Newell algorithm. The generated
 normals will be stored in a PV tag.
 
-<item><tt/"Gen. Smooth Normals"/: Generates smooth vertex normals for
-the selected PolyMesh object(s), averaging the surrounding face normals
+<item><tt/"Gen./&nbsp;<tt/Smooth Normals"/: Generates smooth vertex normals
+for the selected PolyMesh object(s), averaging the surrounding face normals
 of each vertex. The face normals will be weighted by the vertex
 face-centroid distance, which takes both, face area and face shape,
 into account.
@@ -1198,10 +1227,10 @@ Already existing vertex normals will be destroyed.
 <p>
 If face normals exist, they will be used, otherwise, new face
 normals will be generated automatically using the same algorithm
-as implemented in the <tt/"Gen. Face Normals"/ tool above.
+as implemented in the <tt/"Gen./&nbsp;<tt/Face Normals"/ tool above.
 
-<item><tt/"Rem. Smooth Normals"/: Remove all smooth vertex normals from
-the selected PolyMesh object(s). Afterwards, the objects will be shaded
+<item><tt/"Rem./&nbsp;<tt/Smooth Normals"/: Remove all smooth vertex normals
+from the selected PolyMesh object(s). Afterwards, the objects will be shaded
 in a faceted look.
 
 <item><tt/"Flip Smooth Normals"/: Flips/reverts all smooth vertex normals
@@ -3616,7 +3645,7 @@ the same point: <tt/&lt;ra&gt;/, drag mouse, <tt/&lt;sa&gt;/,
 currently selected objects coordinate systems,
 <item><tt/&lt;C&gt;/ set the mark to the center of gravity of all
 currently selected points.
-<item><tt/&lt;b&gt;/ set the mark to the center of the bounding
+<item><tt/&lt;B&gt;/ set the mark to the center of the bounding
 box of all currently selected points.
 The image below demonstrates the difference between the
 center of the bounding box and the center of gravity.
@@ -4115,12 +4144,19 @@ The modelling action <tt/"Split Curve"/ (shortcut <tt/&lt;c&gt;/)
 may be applied to NURBS curves (objects of type NCurve) only.
 Using this action a NURBS curve may be split into two new curves
 at a point on the curve that is specified by picking a point
-on the curve.
+on the curve.<newline>
 Remember to exactly pick a point on the curve or nearby otherwise
 the calculation of the parametric value for the split will fail.
 The selected curve will be changed by this action, and
 a new curve will be created. It is currently not possible to undo
 the changes of a split!
+
+<sect1>Selecting Boundary Points<label id="selbac">
+<p>
+The modelling action <tt/"Selecting Boundary Points"/ (shortcut <tt/&lt;b&gt;/)
+may be applied to PolyMesh objects only.<newline>
+This action can be used to select all control points of a PolyMesh
+boundary after picking a point on that boundary.
 
 <#if out=latex><x/newpage/</#if>
 
@@ -9683,7 +9719,8 @@ The PolyMesh object may be used to include objects that
 have been modeled using the polygonal modelling paradigm
 in Ayam scenes.
 <p>
-There are no special modelling actions for this type of object, but
+There are just a few special modelling actions for this type of object
+(see section <ref id="polymeshtools" name="PolyMesh tools">), but
 its control points can be selected and modified as it can be done with
 other object types, e.g.~curves.
 <p>
@@ -9704,8 +9741,8 @@ of the outer loop of a polygon.
 Furthermore, Ayam supports vertex normals (normals stored for every
 control point).
 <p>
-Note that storing a bunch of triangles each in its own PolyMesh
-object will lead to a real waste of memory. The
+Note that storing single triangles in PolyMesh
+objects will lead to a real waste of memory. The
 merge tool (main menu <tt>"Tools/PolyMesh/Merge"</tt>) can be used
 to combine many PolyMesh objects into a single PolyMesh object.
 <p>
@@ -20686,7 +20723,7 @@ Index:
 <item>concatS: <ref id="scconcats" name="scripting interface command">
 <item>Cone: <ref id="coneobj" name="Cone object">
 <item>ConeAngle, ConeDAngle: <ref id="lip" name="Light attribute">
-<item>Connect Edges: <ref id="mmtools" name="PolyMesh tool">
+<item>Connect: <ref id="mmtools" name="Connect PolyMesh tool">
 <item>Console: <ref id="cons" name="what is">
 <item>ConsoleCursorEnd: <ref id="hidprefs" name="hidden preference setting">
 <item>ConsoleTakeFocus: <ref id="hidprefs" name="hidden preference setting">
@@ -21318,6 +21355,7 @@ Index:
 <item>Point: <ref id="pdsl" name="light type">
 <item>polyhedron.js: <ref id="polyhedronjs" name="example/helper script">
 <item>PolyMesh: <ref id="polymeshobj" name="PolyMesh object">
+<item>PolyMesh tools: <ref id="polymeshtools" name="PolyMesh tools">
 <item>PolyOffset: <ref id="hidprefs" name="hidden preference setting">
 <item>PPRender: <ref id="prefrib" name="preference setting">
 <item>Preferences:
@@ -21899,6 +21937,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>WarnPropPasteToSel: <ref id="hidprefs" name="hidden preference setting">
 <item>WarnUnknownTag: <ref id="hidprefs" name="hidden preference setting">
 <item>WatchCorners: <ref id="gop" name="Gordon attribute">
+<item>Watertight Tesselation: <ref id="mmtools" name="Connect PolyMesh tool">
 <item>Wavefront OBJ:
 <itemize>
 <item><ref id="impwav" name="Wavefront OBJ import">,
