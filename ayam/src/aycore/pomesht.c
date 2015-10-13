@@ -407,12 +407,12 @@ ay_pomesht_merge(int merge_pv_tags, ay_list_object *list, ay_object **result)
  unsigned int nextloops = 0, nextnverts = 0, nextverts = 0,
    nextcontrols = 0, oldpmncontrols = 0;
  int has_normals = -1, stride = 0;
- double tm[16], rtm[16];
  int have_trafo = AY_FALSE, have_pv_tags = AY_TRUE;
  int have_rotation = AY_FALSE;
  ay_tag *tag1 = NULL, *tag2 = NULL;
- char *ct;
- size_t totallen;
+ char *ct = NULL;
+ size_t totallen = 0;
+ double tm[16], rtm[16];
 
   while(lo)
     {
@@ -3279,7 +3279,7 @@ ay_pomesht_selectbound(ay_pomesh_object *po, ay_point *selp)
  unsigned int fi, li, i, j, k, kk, l = 0, m = 0, n = 0, c = 0;
  double *vas = NULL, *cv;
  int found = AY_FALSE, stride = 3;
- ay_point *cand = NULL, *scand = NULL, *p, *newp, **nextp;
+ ay_point *cand = NULL, *scand = NULL, *p = NULL, *newp, **nextp;
 
   if(!po || !selp)
    return AY_ENULL;
@@ -3329,6 +3329,11 @@ ay_pomesht_selectbound(ay_pomesh_object *po, ay_point *selp)
 	  cand[j].next = &(cand[j+1]);
 	  j++;
 	}
+    }
+
+  if(j == 0)
+    {
+      return AY_ERROR;
     }
 
   cand[j-1].next = NULL;
