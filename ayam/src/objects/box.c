@@ -674,10 +674,10 @@ ay_box_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  n = &((*n)->next);
 	}
       /* create lower cap */
-      memcpy(bpatch.p1, &(controlv[6*stride]), 3*sizeof(double));
-      memcpy(bpatch.p2, &(controlv[7*stride]), 3*sizeof(double));
-      memcpy(bpatch.p3, &(controlv[8*stride]), 3*sizeof(double));
-      memcpy(bpatch.p4, &(controlv[9*stride]), 3*sizeof(double));
+      memcpy(bpatch.p1, &(controlv[9*stride]), 3*sizeof(double));
+      memcpy(bpatch.p2, &(controlv[8*stride]), 3*sizeof(double));
+      memcpy(bpatch.p3, &(controlv[7*stride]), 3*sizeof(double));
+      memcpy(bpatch.p4, &(controlv[6*stride]), 3*sizeof(double));
       ay_provide_object(&d, AY_IDNPATCH, n);
       if(*n)
 	{
