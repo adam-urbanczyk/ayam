@@ -4158,6 +4158,7 @@ may be applied to PolyMesh objects only.<newline>
 This action can be used to select all control points of a PolyMesh
 boundary after picking a point on that
 boundary.<footnote>Since 1.23.</footnote>
+Note that the PolyMesh must be optimized for best results.
 See also the table below.
 <p>
 <table loc="ht">
@@ -11910,6 +11911,9 @@ file <tt/"tweenc.ay"/ and script <tt/"tweenc.tcl"/.
 <sect1>Curve Modification Tools
 <p>
 These tools modify parametric curve objects.
+<p>
+Unless noted otherwise, PV tags are <em/not/ supported/modified
+by these tools.
 
 <sect2>Revert Tool<label id="revertt">
 <p>
@@ -11919,7 +11923,7 @@ ICurve, and ACurve objects from the selection.
 <tag/Operation/ The direction of the selected curves will be
 reversed. This tool also reverts the relative knot distances
 of NURBS curves
-so that a NURBS curve defined on the (asymmetric) knot vector
+so that for example a NURBS curve defined on the (asymmetric) knot vector
 
 <tt/"0.0 0.0 0.0 0.75 1.0 1.0 1.0"/
 
@@ -11936,8 +11940,6 @@ a small arrow at the end of the curve.
 
 Eventually selected points will still be selected after this
 operation.
-
-PV tags will not be modified.
 
 See also the documentation of the corresponding
 scripting interface command <ref id="screvert" name="revertC">.
@@ -12330,8 +12332,6 @@ be managed correctly.
 
 <tag/Notes/ Eventually selected points will still be selected after this
 operation. See also the image above.
-
-PV tags will not be modified.
 
 See also the documentation of the corresponding
 scripting interface command <ref id="scshiftc" name="shiftC">.
@@ -12736,6 +12736,9 @@ scripting interface command <ref id="sctweennp" name="tweenNP">.
 <sect1>Surface Modification Tools
 <p>
 These tools modify parametric surface objects.
+<p>
+Unless noted otherwise, PV tags are <em/not/ supported/modified
+by these tools.
 
 <sect2>Revert U Tool<label id="revertut">
 <p>
@@ -21653,8 +21656,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <itemize>
 <item><ref id="selectobj" name="Select object">,
 <item><ref id="obj" name="select objects with the tree/listbox">,
-<item><ref id="objsel" name="select objects within a view">,
-<item><ref id="selac" name="select points">
+<item><ref id="objsel" name="select objects action">,
+<item><ref id="selac" name="select points action">
 </itemize>
 <item>Select All: <ref id="mmedit" name="main menu entry">
 <item>Select None: <ref id="mmedit" name="main menu entry">
