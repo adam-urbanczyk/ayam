@@ -34,6 +34,10 @@ uplevel #0 { array set tgui_tessparam {
     SamplingParamU5 1
     SamplingParamV5 1
 
+    FT6 1
+    SamplingParamU6 1
+    SamplingParamV6 1
+
     UseTexCoords 0
     UseVertColors 0
     UseVertNormals 0
@@ -214,78 +218,57 @@ proc tgui_update args {
     .tguiw.f1.fSamplingParamV.e delete 0 end
     .tguiw.f1.fSamplingParamV.e insert 0 $tgui_tessparam(SamplingParamV)
 
-    if { $tgui_tessparam(SamplingMethod) == 0 } {
-	if { $tgui_tessparam(OldSamplingMethod) != $tgui_tessparam(SamplingMethod) } {
-	    if { $tgui_tessparam(FT1) == 1 } {
-		set tgui_tessparam(SamplingParamU) $tgui_tessparam(SamplingParamU1)
-		set tgui_tessparam(SamplingParamV) $tgui_tessparam(SamplingParamV1)
-		set tgui_tessparam(FT1) 0
-	    }
-	    .tguiw.f1.fSamplingParamU.ll conf -text "0"
-	    .tguiw.f1.fSamplingParamU.lr conf -text "100"
-	    .tguiw.f1.fSamplingParamU.s conf -from 0 -to 100
-	    .tguiw.f1.fSamplingParamU.s conf -resolution 1
+    if { $tgui_tessparam(OldSamplingMethod) !=
+	 $tgui_tessparam(SamplingMethod) } {
+	set i [expr $tgui_tessparam(SamplingMethod) + 1]
+	if { [subst "\$tgui_tessparam(FT$i)"] == 1 } {
+	    eval "set tgui_tessparam(SamplingParamU)\
+                   \$tgui_tessparam(SamplingParamU$i)"
+	    eval "set tgui_tessparam(SamplingParamV)\
+                   \$tgui_tessparam(SamplingParamV$i)"
+	    eval "set tgui_tessparam(FT$i) 0"
 	}
-	.tguiw.f1.fSamplingParamV.s conf -state disabled
-	.tguiw.f1.fSamplingParamV.e conf -state disabled
-    }
-
-    if { $tgui_tessparam(SamplingMethod) == 1 } {
-	if { $tgui_tessparam(OldSamplingMethod) != $tgui_tessparam(SamplingMethod) } {
-	    if { $tgui_tessparam(FT2) == 1 } {
-		set tgui_tessparam(SamplingParamU) $tgui_tessparam(SamplingParamU2)
-		set tgui_tessparam(SamplingParamV) $tgui_tessparam(SamplingParamV2)
-		set tgui_tessparam(FT2) 0
-	    }
+	if { $tgui_tessparam(SamplingMethod) == 0 } {
 	    .tguiw.f1.fSamplingParamU.ll conf -text "0"
-	    .tguiw.f1.fSamplingParamU.lr conf -text "100"
-	    .tguiw.f1.fSamplingParamU.s conf -from 0 -to 100
-	    .tguiw.f1.fSamplingParamU.s conf -resolution 1
+	    .tguiw.f1.fSamplingParamU.lr conf -text "1"
+	    .tguiw.f1.fSamplingParamU.s conf -from 0 -to 1
+	    .tguiw.f1.fSamplingParamU.s conf -resolution 0.05
+	    .tguiw.f1.fSamplingParamV.s conf -state disabled
+	    .tguiw.f1.fSamplingParamV.e conf -state disabled
 	}
-	.tguiw.f1.fSamplingParamV.s conf -state disabled
-	.tguiw.f1.fSamplingParamV.e conf -state disabled
-    }
-
-    if { ($tgui_tessparam(SamplingMethod) > 1) } {
-	if { $tgui_tessparam(OldSamplingMethod) != $tgui_tessparam(SamplingMethod) } {
-	    if { ($tgui_tessparam(SamplingMethod) == 2) &&
-		 ($tgui_tessparam(FT3) == 1 ) } {
-		set tgui_tessparam(SamplingParamU) $tgui_tessparam(SamplingParamU3)
-		set tgui_tessparam(SamplingParamV) $tgui_tessparam(SamplingParamV3)
-		set tgui_tessparam(FT3) 0
-	    }
-	    if { ($tgui_tessparam(SamplingMethod) == 3) &&
-		 ($tgui_tessparam(FT4) == 1 ) } {
-		set tgui_tessparam(SamplingParamU) $tgui_tessparam(SamplingParamU4)
-		set tgui_tessparam(SamplingParamV) $tgui_tessparam(SamplingParamV4)
-		set tgui_tessparam(FT4) 0
-	    }
+	if { $tgui_tessparam(SamplingMethod) == 1 } {
+	    .tguiw.f1.fSamplingParamU.ll conf -text "0"
+	    .tguiw.f1.fSamplingParamU.lr conf -text "5"
+	    .tguiw.f1.fSamplingParamU.s conf -from 0 -to 5
+	    .tguiw.f1.fSamplingParamU.s conf -resolution 0.1
+	    .tguiw.f1.fSamplingParamV.s conf -state disabled
+	    .tguiw.f1.fSamplingParamV.e conf -state disabled
+	}
+	if { ($tgui_tessparam(SamplingMethod) == 2) ||
+	     ($tgui_tessparam(SamplingMethod) == 3) } {
 	    .tguiw.f1.fSamplingParamU.ll conf -text "0"
 	    .tguiw.f1.fSamplingParamU.lr conf -text "20"
 	    .tguiw.f1.fSamplingParamU.s conf -from 0 -to 20
 	    .tguiw.f1.fSamplingParamV.ll conf -text "0"
 	    .tguiw.f1.fSamplingParamV.lr conf -text "20"
 	    .tguiw.f1.fSamplingParamV.s conf -from 0 -to 20
-
-	    if { ($tgui_tessparam(SamplingMethod) == 4) &&
-		 ($tgui_tessparam(FT5) == 1 ) } {
-		.tguiw.f1.fSamplingParamU.lr conf -text "5"
-		.tguiw.f1.fSamplingParamU.s conf -from 0 -to 5
-		.tguiw.f1.fSamplingParamV.lr conf -text "5"
-		.tguiw.f1.fSamplingParamV.s conf -from 0 -to 5
-		set tgui_tessparam(SamplingParamU) $tgui_tessparam(SamplingParamU5)
-		set tgui_tessparam(SamplingParamV) $tgui_tessparam(SamplingParamV5)
-		set tgui_tessparam(FT5) 0
-	    }
-
+	}
+	if { ($tgui_tessparam(SamplingMethod) == 4) ||
+	     ($tgui_tessparam(SamplingMethod) == 5) } {
+	    .tguiw.f1.fSamplingParamU.lr conf -text "5"
+	    .tguiw.f1.fSamplingParamU.s conf -from 0 -to 5
+	    .tguiw.f1.fSamplingParamV.lr conf -text "5"
+	    .tguiw.f1.fSamplingParamV.s conf -from 0 -to 5
+	}
+	if { ($tgui_tessparam(SamplingMethod) > 1) } {
 	    .tguiw.f1.fSamplingParamU.s conf -resolution 0.1
 	    .tguiw.f1.fSamplingParamV.s conf -resolution 0.1
+	    .tguiw.f1.fSamplingParamV.s conf -state normal
+	    .tguiw.f1.fSamplingParamV.e conf -state normal
 	}
-	.tguiw.f1.fSamplingParamV.s conf -state normal
-	.tguiw.f1.fSamplingParamV.e conf -state normal
-    }
 
-    set tgui_tessparam(OldSamplingMethod) $tgui_tessparam(SamplingMethod)
+	set tgui_tessparam(OldSamplingMethod) $tgui_tessparam(SamplingMethod)
+    }
 
     if { ! $tgui_tessparam(LazyUpdate) } {
 	tguiCmd up $tgui_tessparam(SamplingMethod) $tgui_tessparam(SamplingParamU)\
