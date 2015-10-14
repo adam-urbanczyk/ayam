@@ -2622,7 +2622,7 @@ cleanup:
  return ay_status;
 } /* ay_tess_tristopomesh */
 
-
+#if 0
 /* ay_tess_npatch:
  *  tesselate the NURBS patch object o into a PolyMesh object
  *  using the GLU (V1.3+) tesselation facility
@@ -3148,7 +3148,542 @@ cleanup:
  return ay_status;
 #endif
 } /* ay_tess_npatch */
+#endif
 
+/* ay_tess_npatch:
+ *  tesselate the NURBS patch object o into a PolyMesh object
+ *  using the GLU (V1.3+) tesselation facility
+ *  smethod - sampling method:
+ *   1: GLU_OBJECT_PARAMETRIC_ERROR
+ *   2: GLU_OBJECT_PATH_LENGTH
+ *   3: GLU_DOMAIN_DISTANCE
+ *   4: AY_NORMALIZED_DOMAIN_DISTANCE
+ *   5: AY_ADAPTIVE_DOMAIN_DISTANCE
+ *   6: AY_ADAPTIVE_KNOT_DISTANCE
+ *  sparamu/sparamv - sampling parameters (sparamv only used by
+ *  smethod 3 - 6)
+ *  use_tc - use texture coordinates delivered by a PV tag
+ *  myst - name of PV tag used for the texture coordinates
+ *  use_vc - use vertex colors delivered by a PV tag
+ *  mycs - name of PV tag used for the vertex colors
+ *  use_vn - use vertex normals delivered by a PV tag
+ *  myn - name of PV tag used for the vertex normals
+ *  pm - resulting PolyMesh object
+ */
+int
+ay_tess_npatch(ay_object *o,
+	       int smethod, double sparamu, double sparamv,
+	       int use_tc, char *myst,
+	       int use_vc, char *mycs,
+	       int use_vn, char *myn,
+	       int refine_trims, int primitives, double quad_eps,
+	       ay_object **pm)
+{
+#ifndef GLU_VERSION_1_3
+ char fname[] = "tess_npatch";
+ ay_error(AY_ERROR, fname, "This function is just available on GLU V1.3+ !");
+ return AY_ERROR;
+#else
+ int ay_status = AY_OK;
+ ay_object *new = NULL;
+ ay_nurbpatch_object *npatch = NULL;
+ int uorder = 0, vorder = 0, width = 0, height = 0;
+ int j, uknot_scount = 0, vknot_scount = 0;
+ unsigned int uknot_count = 0, vknot_count = 0, i = 0, a = 0;
+ GLfloat *uknots = NULL, *vknots = NULL, *controls = NULL;
+ GLfloat *texcoords = NULL, *vcolors = NULL, *vnormals = NULL;
+ GLfloat *vcolors4 = NULL;
+ unsigned int texcoordlen, vcolorlen, vnormallen;
+ char have_tc = AY_FALSE, have_vc = AY_FALSE, have_vn = AY_FALSE;
+ ay_tag *tag = NULL;
+ ay_tess_object to = {0};
+ double p1[3], p2[3], p3[3], p4[3], n1[3], n2[3], n3[3], n4[3];
+ double t1[2], t2[2], t3[2], t4[2];
+ double c1[4], c2[4], c3[4], c4[4];
+ double knotlen, w, *tc = NULL;
+ ay_tess_tri *tr1 = NULL, *tr2;
+
+  if(!o || !pm)
+   return AY_ENULL;
+
+  if(use_tc && !myst)
+    myst = ay_prefs.texcoordname;
+
+  if(use_vc && !mycs)
+    mycs = ay_prefs.colorname;
+
+  if(use_vn && !myn)
+    myn = ay_prefs.normalname;
+
+  if(o->type != AY_IDNPATCH)
+    return AY_ERROR;
+
+  npatch = (ay_nurbpatch_object *)(o->refine);
+
+  /* properly initialize tesselation object */
+  to.has_vn = AY_TRUE;
+  to.has_tc = use_tc;
+  to.p1 = p1;
+  to.p2 = p2;
+  to.p3 = p3;
+  to.p4 = p4;
+  to.n1 = n1;
+  to.n2 = n2;
+  to.n3 = n3;
+  to.n4 = n4;
+
+  to.t1 = t1;
+  to.t2 = t2;
+  to.t3 = t3;
+  to.t4 = t4;
+
+  to.c1 = c1;
+  to.c2 = c2;
+  to.c3 = c3;
+  to.c4 = c4;
+
+  to.nextpd = &(to.p1);
+  to.nextnd = &(to.n1);
+  to.nextcd = &(to.c1);
+  to.nexttd = &(to.t1);
+
+  /* convert npatch data from double to float */
+  uorder = npatch->uorder;
+  vorder = npatch->vorder;
+  width = npatch->width;
+  height = npatch->height;
+
+  uknot_count = width + uorder;
+  vknot_count = height + vorder;
+
+  if(!(uknots = calloc(uknot_count, sizeof(GLfloat))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  if(!(vknots = calloc(vknot_count, sizeof(GLfloat))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  if(!(controls = calloc(width*height*4, sizeof(GLfloat))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  a = 0;
+  for(i = 0; i < uknot_count; i++)
+    {
+      uknots[a] = (GLfloat)npatch->uknotv[a];
+      a++;
+    }
+  a = 0;
+  for(i = 0; i < vknot_count; i++)
+    {
+      vknots[a] = (GLfloat)npatch->vknotv[a];
+      a++;
+    }
+  a = 0;
+  for(i = 0; i < (unsigned int)width*height; i++)
+    {
+      w = npatch->controlv[a+3];
+      controls[a] = (GLfloat)(npatch->controlv[a]*w);
+      a++;
+      controls[a] = (GLfloat)(npatch->controlv[a]*w);
+      a++;
+      controls[a] = (GLfloat)(npatch->controlv[a]*w);
+      a++;
+      controls[a] = (GLfloat)npatch->controlv[a];
+      a++;
+    }
+
+#ifdef AYGLUATTRIBBUG
+  glPushAttrib((GLbitfield) GL_EVAL_BIT);
+#endif
+
+  if(npatch->no)
+    {
+      gluDeleteNurbsRenderer(npatch->no);
+      npatch->no = NULL;
+    }
+
+  npatch->no = gluNewNurbsRenderer();
+  if(npatch->no == NULL)
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  /* register error handling callback */
+  gluNurbsCallback(npatch->no, GLU_ERROR, AYGLUCBTYPE ay_error_glucb);
+
+  /* set properties */
+  gluNurbsProperty(npatch->no, GLU_NURBS_MODE, GLU_NURBS_TESSELLATOR);
+
+  gluNurbsProperty(npatch->no, GLU_DISPLAY_MODE, GLU_FILL);
+
+  /* set sampling method and parameter(s) */
+  switch(smethod)
+    {
+    case 1:
+      gluNurbsProperty(npatch->no, GLU_SAMPLING_METHOD,
+		       GLU_OBJECT_PARAMETRIC_ERROR);
+      gluNurbsProperty(npatch->no, GLU_PARAMETRIC_TOLERANCE,
+		       (GLfloat)sparamu);
+      break;
+    case 2:
+      gluNurbsProperty(npatch->no, GLU_SAMPLING_METHOD,
+		       GLU_OBJECT_PATH_LENGTH);
+      gluNurbsProperty(npatch->no, GLU_SAMPLING_TOLERANCE,
+		       (GLfloat)sparamu);
+      break;
+    case 3:
+      /* use sparamu/sparamv unchanged */
+      break;
+    case 4:
+      /* U */
+      knotlen = npatch->uknotv[npatch->width] -
+	npatch->uknotv[npatch->uorder - 1];
+      sparamu = sparamu / knotlen;
+      /* V */
+      knotlen = npatch->vknotv[npatch->height] -
+	npatch->vknotv[npatch->vorder - 1];
+      sparamv = sparamv / knotlen;
+      break;
+    case 5:
+      /* U */
+      knotlen = npatch->uknotv[npatch->width] -
+	npatch->uknotv[npatch->uorder - 1];
+      sparamu = ((4 + npatch->width) * sparamu) / knotlen;
+      /* V */
+      knotlen = npatch->vknotv[npatch->height] -
+	npatch->vknotv[npatch->vorder -  1];
+      sparamv = ((4 + npatch->height) * sparamv) / knotlen;
+      break;
+    case 6:
+      /* U */
+      knotlen = npatch->uknotv[npatch->width] -
+	npatch->uknotv[npatch->uorder - 1];
+      for(j = npatch->uorder - 1; j <= npatch->width; j++)
+	{
+	  if(fabs(npatch->uknotv[j] - npatch->uknotv[j+1]) > AY_EPSILON)
+	    uknot_scount++;
+	}
+      sparamu = (uknot_scount * sparamu) / knotlen;
+      /* V */
+      knotlen = npatch->vknotv[npatch->height] -
+	npatch->vknotv[npatch->vorder -  1];
+      for(j = npatch->vorder - 1; j <= npatch->height; j++)
+	{
+	  if(fabs(npatch->vknotv[j] - npatch->vknotv[j+1]) > AY_EPSILON)
+	    vknot_scount++;
+	}
+      sparamv = (vknot_scount * sparamv) / knotlen;
+      break;
+    default:
+      break;
+    } /* switch */
+
+  if(smethod > 2)
+    {
+      gluNurbsProperty(npatch->no, GLU_SAMPLING_METHOD, GLU_DOMAIN_DISTANCE);
+      gluNurbsProperty(npatch->no, GLU_U_STEP, (GLfloat)sparamu);
+      gluNurbsProperty(npatch->no, GLU_V_STEP, (GLfloat)sparamv);
+    }
+  /*
+  gluNurbsProperty(npatch->no, GLU_AUTO_LOAD_MATRIX, GL_FALSE);
+  */
+
+  /* register callbacks to get tesselated data back from GLU */
+  gluNurbsCallbackData(npatch->no, (void *)(&to));
+  gluNurbsCallback(npatch->no, GLU_NURBS_BEGIN_DATA,
+		   AYGLUCBTYPE ay_tess_begindata);
+  gluNurbsCallback(npatch->no, GLU_NURBS_VERTEX_DATA,
+		   AYGLUCBTYPE ay_tess_vertexdata);
+  gluNurbsCallback(npatch->no, GLU_NURBS_NORMAL_DATA,
+		   AYGLUCBTYPE ay_tess_normaldata);
+  gluNurbsCallback(npatch->no, GLU_NURBS_END_DATA,
+		   AYGLUCBTYPE ay_tess_enddata);
+
+  if(use_tc)
+    {
+      gluNurbsCallback(npatch->no, GLU_NURBS_TEXTURE_COORD_DATA,
+		       AYGLUCBTYPE ay_tess_texcoorddata);
+    }
+
+  if(use_vc)
+    {
+      gluNurbsCallback(npatch->no, GLU_NURBS_COLOR_DATA,
+		       AYGLUCBTYPE ay_tess_colordata);
+    }
+
+  /* tesselate the patch */
+  gluBeginSurface(npatch->no);
+
+  /* put surface data */
+  gluNurbsSurface(npatch->no, (GLint)uknot_count, uknots,
+		  (GLint)vknot_count, vknots,
+		  (GLint)height*4, (GLint)4, controls,
+		  (GLint)npatch->uorder, (GLint)npatch->vorder,
+		  GL_MAP2_VERTEX_4);
+
+  if((use_tc || use_vc || use_vn) && o->tags)
+    {
+      tag = o->tags;
+      while(tag)
+	{
+	  /* put texture coordinates */
+	  if(use_tc && !have_tc)
+	    {
+	      if(ay_pv_checkndt(tag, myst, "varying", "g"))
+		{
+		  ay_status = ay_pv_convert(tag, 1, &texcoordlen,
+					    (void**)(void*)&texcoords);
+
+		  if(!ay_status && texcoords)
+		    {
+		      to.has_tc = AY_TRUE;
+		      /*
+			the use of (GLint)2, (GLint)width*2
+			for s_stride, t_stride as opposed to
+			(GLint)height*4, (GLint)4, above
+			caters for the fact that PV tag data is
+			stored in u-major (whereas the (GLU)
+			NURBS patch is in v-major order
+		      */
+		      gluNurbsSurface(npatch->no, (GLint)uknot_count, uknots,
+			  (GLint)vknot_count, vknots,
+			  (GLint)2, (GLint)width*2, texcoords,
+			  (GLint)npatch->uorder, (GLint)npatch->vorder,
+			  GL_MAP2_TEXTURE_COORD_2);
+		    }
+		  have_tc = AY_TRUE;
+		  tag = tag->next;
+		  continue;
+		} /* if */
+	    } /* if */
+
+	  /* put vertex colors */
+	  if(use_vc && !have_vc)
+	    {
+	      if(ay_pv_checkndt(tag, mycs, "varying", "c") ||
+		 ay_pv_checkndt(tag, mycs, "varying", "d"))
+		{
+		  ay_status = ay_pv_convert(tag, 1, &vcolorlen,
+					    (void**)(void*)&vcolors);
+
+		  if(!ay_status && vcolors)
+		    {
+		      if(!(vcolors4 = calloc(vcolorlen*4, sizeof(GLfloat))))
+			{ ay_status = AY_EOMEM; goto cleanup; }
+		      a = 0;
+		      if(ay_pv_checkndt(tag, mycs, "varying", "c"))
+			{
+			  for(i = 0; i < vcolorlen; i++)
+			    {
+			      memcpy(&(vcolors4[a]), &(vcolors[i*3]),
+				     3*sizeof(GLfloat));
+			      /*vcolors4[a+3] = 1.0;*/
+			      a += 4;
+			    }
+			}
+		      else
+			{
+			  for(i = 0; i < vcolorlen; i++)
+			    {
+			      memcpy(&(vcolors4[a]), &(vcolors[i*4]),
+				     4*sizeof(GLfloat));
+			      a += 4;
+			    }
+			}
+		      to.has_vc = AY_TRUE;
+		      /*
+			the use of (GLint)4, (GLint)width*4
+			for s_stride, t_stride as opposed to
+			(GLint)height*4, (GLint)4, above
+			caters for the fact that PV tag data is
+			stored in u-major (whereas the (GLU)
+			NURBS patch is in v-major order
+		      */
+		      gluNurbsSurface(npatch->no, (GLint)uknot_count, uknots,
+			      (GLint)vknot_count, vknots,
+			      (GLint)4, (GLint)width*4, vcolors4,
+			      (GLint)npatch->uorder, (GLint)npatch->vorder,
+			      GL_MAP2_COLOR_4);
+		    }
+		  have_vc = AY_TRUE;
+		  tag = tag->next;
+		  continue;
+		} /* if */
+	    } /* if */
+
+	  /* put vertex normals */
+	  if(use_vn && !have_vn)
+	    {
+	      if(ay_pv_checkndt(tag, myn, "varying", "n"))
+		{
+		  ay_status = ay_pv_convert(tag, 1, &vnormallen,
+					    (void**)(void*)&vnormals);
+
+		  if(!ay_status && vnormals)
+		    {
+		      /*
+			the use of (GLint)3, (GLint)width*3
+			for s_stride, t_stride as opposed to
+			(GLint)height*4, (GLint)4, above
+			caters for the fact that PV tag data is
+			stored in u-major (whereas the (GLU)
+			NURBS patch is in v-major order
+		      */
+		      gluNurbsSurface(npatch->no, (GLint)uknot_count, uknots,
+			      (GLint)vknot_count, vknots,
+			      (GLint)3, (GLint)width*3, vnormals,
+			      (GLint)npatch->uorder, (GLint)npatch->vorder,
+			      GL_MAP2_NORMAL);
+		    }
+		  have_vn = AY_TRUE;
+		  tag = tag->next;
+		  continue;
+		} /* if */
+	    } /* if */
+
+	  tag = tag->next;
+	} /* while */
+    } /* if */
+
+  if(use_tc && !have_tc)
+    {
+      ay_npt_gentexcoords(npatch, o->tags, &tc);
+
+      if(tc)
+	{
+	  if((texcoords = malloc(width*height*2*sizeof(float))))
+	    {
+	      for(i = 0; i < (unsigned int)(width*height*2); i++)
+		texcoords[i] = (float)tc[i];
+
+	      to.has_tc = AY_TRUE;
+	      /*
+		the use of (GLint)2, (GLint)width*2
+		for s_stride, t_stride as opposed to
+		(GLint)height*4, (GLint)4, above
+		caters for the fact that PV tag data is
+		stored in u-major (whereas the (GLU)
+		NURBS patch is in v-major order
+	      */
+	      gluNurbsSurface(npatch->no, (GLint)uknot_count, uknots,
+			      (GLint)vknot_count, vknots,
+			      (GLint)2, (GLint)width*2, texcoords,
+			      (GLint)npatch->uorder, (GLint)npatch->vorder,
+			      GL_MAP2_TEXTURE_COORD_2);
+	      have_tc = AY_TRUE;
+	    }
+	  free(tc);
+	}
+    }
+
+  /* put trimcurves */
+  if(o->down && o->down->next)
+    {
+      ay_status = ay_npt_drawtrimcurves(o, refine_trims);
+    } /* if */
+
+  gluEndSurface(npatch->no);
+
+  gluDeleteNurbsRenderer(npatch->no);
+  npatch->no = NULL;
+
+#ifdef AYGLUATTRIBBUG
+  glPopAttrib();
+#endif
+
+  /* the tess_object should now contain lots of triangles;
+     convert them to a PolyMesh object */
+  switch(primitives)
+    {
+    case 0:
+      /* Triangles */
+      ay_status = ay_tess_tristopomesh(to.tris, AY_TRUE, have_vc, have_tc,
+				       myst, mycs, &new);
+      break;
+    case 1:
+      /* Triangles and Quads */
+      ay_status = ay_tess_tristomixedpomesh(to.tris, AY_TRUE, have_vc, have_tc,
+					    myst, mycs, quad_eps, &new);
+      break;
+    case 2:
+      /* Quads */
+      ay_status = ay_tess_tristoquadpomesh(to.tris, AY_TRUE, have_vc, have_tc,
+					   myst, mycs, quad_eps, &new);
+      break;
+    default:
+      break;
+    }
+
+  if(ay_status)
+    goto cleanup;
+
+  ay_pomesht_fliploops((ay_pomesh_object*)new->refine);
+  ay_pomesht_flipnormals((ay_pomesh_object*)new->refine);
+
+  /* immediately optimize the polymesh (remove multiply used vertices) */
+  if(!primitives && new && !have_tc && !have_vc)
+    {
+      ay_status = ay_pomesht_optimizecoords((ay_pomesh_object*)new->refine,
+					    0.0, NULL, NULL, NULL);
+
+      if(ay_status)
+	goto cleanup;
+    }
+
+  /* return result */
+  *pm = new;
+
+  /* clean up */
+
+cleanup:
+  if(uknots)
+    {
+      free(uknots);
+    }
+
+  if(vknots)
+    {
+      free(vknots);
+    }
+
+  if(controls)
+    {
+      free(controls);
+    }
+
+  if(npatch->no)
+    {
+      gluDeleteNurbsRenderer(npatch->no);
+      npatch->no = NULL;
+    }
+
+  if(texcoords)
+    {
+      free(texcoords);
+    }
+
+  if(vnormals)
+    {
+      free(vnormals);
+    }
+
+  if(vcolors)
+    {
+      free(vcolors);
+    }
+
+  if(vcolors4)
+    {
+      free(vcolors4);
+    }
+
+  tr1 = to.tris;
+  while(tr1)
+    {
+      tr2 = tr1;
+      tr1 = tr1->next;
+      free(tr2);
+    } /* while */
+  to.tris = NULL;
+
+ return ay_status;
+#endif
+} /* ay_tess_npatch */
 
 /* ay_tess_npatchtcmd:
  *  Tesselate selected NURBS patches (convert to PolyMesh) with GLU.
