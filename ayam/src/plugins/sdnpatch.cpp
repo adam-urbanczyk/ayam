@@ -1135,7 +1135,7 @@ FaceExtruder::closeFace(void)
 	  fabs(cv[4]-cv[7]) > AY_EPSILON||
 	  fabs(cv[5]-cv[8]) > AY_EPSILON))
 	{
-	  ay_geom_calcnfrom3(&(cv[0]), &(cv[3]), &(cv[6]), N);
+	  ay_geom_normalfrom3pnts(&(cv[0]), &(cv[3]), &(cv[6]), N);
 	}
 
       /* apply scale factor */
@@ -4444,6 +4444,23 @@ sdnpatch_convnptcmd(ClientData clientData, Tcl_Interp *interp,
 } /* sdnpatch_convnptcmd */
 
 
+void
+sdnpatch_findselp(ay_point *selp, unsigned int index, ay_point **s,
+		  unsigned int *i)
+{
+  while(selp)
+    {
+      if(selp->index == index)
+	{
+	  *s = selp;
+	  return;
+	}
+      *i = *i+1;
+      selp = selp->next;
+    }
+ return;
+}
+
 /* sdnpatch_convpo:
  *  convert PolyMesh to SDNPatch
  */
@@ -4452,9 +4469,10 @@ sdnpatch_convpo(int mode, ay_object *p, ay_object **result)
 {
  ay_object *newo = NULL;
  ay_pomesh_object *po = NULL;
+ ay_point *selp = NULL, *s[6];
  sdnpatch_object *sdnpatch = NULL;
  double *cv = NULL;
- unsigned int i = 0, j = 0, k = 0, m = 0, n = 0, a = 0;
+ unsigned int i = 0, j = 0, k = 0, m = 0, n = 0, a = 0, c = 0, si[6], ci[8];
  int stride = 3;
 
   if(!p || !result)
@@ -4503,20 +4521,94 @@ sdnpatch_convpo(int mode, ay_object *p, ay_object **result)
       k++;
       a += stride;
     }
+
+  /* selected points form a ring of dummy vertices/faces */
+  selp = p->selp;
+  while(selp)
+    {
+      meshBuilder->addVertex(selp->point[0], selp->point[1], selp->point[2],
+			     1.0, k);
+      k++;
+      selp = selp->next;
+    }
+
+  /* add eight corner vertices */
+  if(p->selp)
+  for(i = 0; i < 8; i++)
+    {
+      meshBuilder->addVertex(0.0, 0.0, 0.0, 1.0, k);
+      ci[i] = k;
+      k++;
+    }
+
   meshBuilder->finishVertices();
 
   for(i = 0; i < po->npolys; i++)
     {
       if((po->nloops[i] == 1) && (po->nverts[n] == 4))
 	{
+	  memset(s,0,4*sizeof(ay_point*));
+	  memset(si,0,4*sizeof(unsigned int));
 	  meshBuilder->startFace(po->nverts[n]);
 	  for(k = 0; k < po->nverts[n]; k++)
 	    {
+	      sdnpatch_findselp(p->selp, po->verts[m], &(s[k]), &(si[k]));
 	      meshBuilder->addToFace(po->verts[m]);
 	      m++;
 	    }
 	  meshBuilder->closeFace();
 	  n++;
+
+	  // add dummy faces
+	  s[4] = s[0];
+	  si[4] = si[0];
+	  s[5] = s[1];
+	  si[5] = si[1];
+	  for(k = 0; k < 4; k++)
+	    {
+	      // check for corner
+	      if(s[k] && s[k+1] && s[k+2])
+		{
+		  /* boundary dummy face at corner */
+		  meshBuilder->startFace(4);
+		  meshBuilder->addToFace(po->verts[(m-4)+k]);
+		  meshBuilder->addToFace(po->ncontrols+si[k]);
+		  meshBuilder->addToFace(ci[c]);
+		  if(k+1 == 4)
+		    meshBuilder->addToFace(po->verts[m-4]);
+		  else
+		    meshBuilder->addToFace(po->verts[(m-4)+k+1]);
+		  meshBuilder->closeFace();
+
+		  /* corner dummy face */
+		  meshBuilder->startFace(4);
+		  if(k+1 == 4)
+		    meshBuilder->addToFace(po->verts[m-4]);
+		  else
+		    meshBuilder->addToFace(po->verts[(m-4)+k+1]);
+		  meshBuilder->addToFace(ci[c]);
+		  meshBuilder->addToFace(ci[c+1]);
+		  meshBuilder->addToFace(po->ncontrols+si[k+1]);
+		  meshBuilder->closeFace();
+		  c += 2;
+		}
+	      else
+		{
+		  // check for simple boundary
+		  if(s[k] && s[k+1])
+		    {
+		      meshBuilder->startFace(4);
+		      meshBuilder->addToFace(po->verts[(m-4)+k]);
+		      meshBuilder->addToFace(po->ncontrols+si[k]);
+		      meshBuilder->addToFace(po->ncontrols+si[k+1]);
+		      if(k+1 == 4)
+			meshBuilder->addToFace(po->verts[m-4]);
+		      else
+			meshBuilder->addToFace(po->verts[(m-4)+k+1]);
+		      meshBuilder->closeFace();
+		    }
+		}
+	    }
 	}
       else
 	{
@@ -4560,7 +4652,7 @@ sdnpatch_convpotcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL, *p = NULL, *newo = NULL;
- int i = 0;
+ int is_copy = AY_FALSE, i = 0;
 
   /* parse args */
   if(argc > 2)
@@ -4600,10 +4692,11 @@ sdnpatch_convpotcmd(ClientData clientData, Tcl_Interp *interp,
       if(o->type != AY_IDPOMESH)
 	{
 	  ay_status = ay_provide_object(o, AY_IDPOMESH, &p);
+	  is_copy = AY_TRUE;
 	}
       else
 	{
-	  ay_status = ay_object_copy(o, &p);
+	  p = o;
 	} // if
 
       if(p)
@@ -4614,7 +4707,8 @@ sdnpatch_convpotcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_object_link(newo);
 	    }
 
-	  ay_object_deletemulti(p, AY_FALSE);
+	  if(is_copy)
+	    ay_object_deletemulti(p, AY_FALSE);
 	}
 
       sel = sel->next;
@@ -5432,7 +5526,7 @@ sdnpatch_getcontrolvertices(sdnpatch_object *sdnpatch)
  std::vector<Vertex*>::iterator it;
  std::vector<Vertex*> *tmp = NULL;
  Vertex *v;
- unsigned int a = 0, maxID;
+ unsigned int a = 0, maxID = 0;
 
   if(!sdnpatch || !sdnpatch->controlMesh)
     return AY_ENULL;
@@ -5453,8 +5547,16 @@ sdnpatch_getcontrolvertices(sdnpatch_object *sdnpatch)
 
   if(tmp)
     {
+      for(it = tmp->begin();
+	  it != tmp->end();
+	  it++)
+	{
+	  if(maxID < (*it)->getID())
+	    maxID = (*it)->getID();
+	}
+
       sdnpatch->controlVertices = new std::vector<Vertex *>;
-      sdnpatch->controlVertices->resize(tmp->size());
+      sdnpatch->controlVertices->resize(maxID>tmp->size()?maxID:tmp->size());
 
       // correct order for our own ID scheme
       for(it = tmp->begin();
@@ -5478,11 +5580,13 @@ sdnpatch_getcontrolvertices(sdnpatch_object *sdnpatch)
 	  it++)
 	{
 	  v = *it;
-	  sdnpatch->controlCoords[a]   = v->getX();
-	  sdnpatch->controlCoords[a+1] = v->getY();
-	  sdnpatch->controlCoords[a+2] = v->getZ();
-	  sdnpatch->controlCoords[a+3] = v->getW();
-
+	  if(v)
+	    {
+	      sdnpatch->controlCoords[a]   = v->getX();
+	      sdnpatch->controlCoords[a+1] = v->getY();
+	      sdnpatch->controlCoords[a+2] = v->getZ();
+	      sdnpatch->controlCoords[a+3] = v->getW();
+	    }
 	  a += 4;
 	}
       delete tmp;
