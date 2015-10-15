@@ -308,7 +308,7 @@ if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
 	    -padx 0 -pady 0 -borderwidth 0
     global ayviewshortcuts
     set lmk $ayviewshortcuts(Local2)
-    balloon_set $w.fMenu.mm "change global/local mode\ncycle with ${lmk}"
+    balloon_set $w.fMenu.mm "change global/local mode\ncycle with <${lmk}>"
     set m [menu $w.fMenu.mm.m -tearoff 0]
 } else {
     set m [menu $mb.mm -tearoff 0]
@@ -350,7 +350,7 @@ if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
     global ayviewshortcuts
     set dmu $ayviewshortcuts(DMUp)
     set dmd $ayviewshortcuts(DMDown)
-    balloon_set $w.fMenu.dm "change drawing mode\ntoggle with ${dmu}/${dmd}"
+    balloon_set $w.fMenu.dm "change drawing mode\ncycle with <${dmu}>/<${dmd}>"
     set m [menu $w.fMenu.dm.m -tearoff 0]
 
     set ay(dmodem) fMenu.dm.m
@@ -398,7 +398,7 @@ if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
 	    -padx 0 -pady 0 -borderwidth 0
     set gu $ayviewshortcuts(GridCycleUp)
     set gd $ayviewshortcuts(GridCycleDown)
-    balloon_set $w.fMenu.g "change gridsize\ncycle with ${gu}/${gd}"
+    balloon_set $w.fMenu.g "change gridsize\ncycle with <${gu}>/<${gd}>"
     set m [menu $w.fMenu.g.m -tearoff 0]
     if { [winfo toplevel $w] == $w } {
 	bind ayview <$aymainshortcuts(MenuMod)-g> "viewPostMenu %W.fMenu.g.m"
@@ -478,7 +478,6 @@ if { $AYWITHAQUA && (! ([winfo toplevel $w] != $w)) } {
     $m add command -label "Show Shortcuts" -command "shortcut_show"
     $m add command -label "About" -command "aboutAyam"
     $m add checkbutton -label "Show Tooltips" -variable ayprefs(showtt)
-
 }
 # if
 
