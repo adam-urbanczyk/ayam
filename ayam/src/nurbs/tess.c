@@ -988,7 +988,8 @@ ay_tess_addtag(ay_object *o, char *val)
  * \param[in] t2 array of pointers to coordinates, normals etc. of triangle 2
  * \param[in] quad_eps maximum angle (in degrees) the normals of t1 and t2 may
  *  differentiate in order to be considered compatible
- * \param[in,out] q array where the four quad indices are stored
+ * \param[in,out] q array where the four quad indices are stored (may be
+ *  NULL, in which case only the compatibility check(s) will be done)
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -1045,6 +1046,9 @@ ay_tess_tristoquad(double **t1, double **t2, double quad_eps, int *q)
 	    }
 	}
     }
+
+  if(!q)
+    return AY_OK;
 
   if(fabs(angle) < eps)
     {
@@ -2033,8 +2037,9 @@ ay_tess_tristomixedpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
  ay_pomesh_object *po = NULL;
  ay_tess_tri *tri, *tri1, *tri2;
  double *pt1[12] = {0}, *pt2[12] = {0};
- unsigned int numtris = 0, numquads = 0, i, stride;
+ unsigned int numtris = 0, numquads = 0, i = 0, stride;
  int q[4] = {0};
+ char *isquad = NULL;
  char *tctagbuf = NULL, *vctagbuf = NULL;
  char *tctagptr = NULL, *vctagptr = NULL;
 
@@ -2057,22 +2062,67 @@ ay_tess_tristomixedpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
     stride += 2;
   */
 
+  tri = tris;
+  while(tri)
+    {
+      numtris++;
+      tri = tri->next;
+    }
+
+  if(!(isquad = malloc((numtris)*sizeof(char))))
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
+
+  numtris = 0;
   /* first, count the quads and triangles */
   tri = tris;
   while(tri)
     {
       if(tri->is_quad && tri->next && tri->next->is_quad)
 	{
+	  tri1 = tri;
+	  tri2 = tri->next;
+
+	  pt1[0] = tri1->p1;
+	  pt1[1] = tri1->p2;
+	  pt1[2] = tri1->p3;
+
+	  pt2[0] = tri2->p1;
+	  pt2[1] = tri2->p2;
+	  pt2[2] = tri2->p3;
+
+	  ay_status = ay_tess_tristoquad(pt1, pt2, quad_eps, NULL);
+	  if(ay_status)
+	    {
+	      numtris++;
+	      isquad[i] = 0;
+	      i++;
+	      tri = tri->next;
+	      continue;
+	    }
+
 	  numquads++;
+	  isquad[i] = 1;
+	  i++;
+	  isquad[i] = 1;
+	  i++;
+
 	  tri = tri->next;
+
 	  /* */
 	  if(!tri)
 	    break;
 	}
       else
-	numtris++;
+	{
+	  isquad[i] = 0;
+	  i++;
+	  numtris++;
+	}
       tri = tri->next;
-    }
+    } /* while tri */
 
   /* create new object (the PolyMesh) */
   if(!(new = calloc(1, sizeof(ay_object))))
@@ -2098,7 +2148,8 @@ ay_tess_tristomixedpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
   /* create index structures */
   if(!(po->nloops = malloc((numquads+numtris)*sizeof(unsigned int))))
     {
-      return AY_EOMEM;
+      ay_status = AY_EOMEM;
+      goto cleanup;
     }
   for(i = 0; i < numquads+numtris; i++)
     {
@@ -2111,16 +2162,22 @@ ay_tess_tristomixedpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
       ay_status = AY_EOMEM;
       goto cleanup;
     }
-  for(i = 0; i < numquads; i++)
+  for(i = 0; i < numquads+numtris; i++)
     {
-      /* each loop has just four vertices (is a quad) */
-      po->nverts[i] = 4;
+      /* each loop has just three/four vertices (depending on
+	 whether it is a tri or a quad) */
+      if(isquad[i])
+	{
+	  po->nverts[i] = 4;
+	}
+      else
+	{
+	  po->nverts[i] = 3;
+	}
     } /* for */
-  for(i = numquads; i < numquads+numtris; i++)
-    {
-      /* each loop has just three vertices (is a triangle) */
-      po->nverts[i] = 3;
-    } /* for */
+
+  free(isquad);
+  isquad = NULL;
 
   if(!(po->verts = malloc((numquads*4+numtris*3)*sizeof(unsigned int))))
     {
@@ -2170,7 +2227,7 @@ ay_tess_tristomixedpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
       vctagptr = vctagbuf+strlen(vctagbuf);
     }
 
-  /* process quads */
+  /* create controlv and tag data */
   i = 0;
   tri = tris;
   while(tri)
@@ -2224,8 +2281,45 @@ ay_tess_tristomixedpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 	  ay_status = ay_tess_tristoquad(pt1, pt2, quad_eps, q);
 	  if(ay_status)
 	    {
-	      /* XXXX goto cleanup; ? */
+	      /* emit tri as triangle */
+	      if(has_vn)
+		{
+		  memcpy(&(po->controlv[i]), tri->p1, 3*sizeof(double));
+		  memcpy(&(po->controlv[i+3]), tri->n1, 3*sizeof(double));
+		  memcpy(&(po->controlv[i+6]), tri->p2, 3*sizeof(double));
+		  memcpy(&(po->controlv[i+9]), tri->n2, 3*sizeof(double));
+		  memcpy(&(po->controlv[i+12]), tri->p3, 3*sizeof(double));
+		  memcpy(&(po->controlv[i+15]), tri->n3, 3*sizeof(double));
+		}
+	      else
+		{
+		  memcpy(&(po->controlv[i]), tri->p1, 3*sizeof(double));
+		  memcpy(&(po->controlv[i+3]), tri->p2, 3*sizeof(double));
+		  memcpy(&(po->controlv[i+6]), tri->p3, 3*sizeof(double));
+		}
+
+	      if(has_tc)
+		{
+		  tctagptr += sprintf(tctagptr,
+				      ",%g,%g,%g,%g,%g,%g",
+				      tri->t1[0], tri->t1[1],
+				      tri->t2[0], tri->t2[1],
+				      tri->t3[0], tri->t3[1]);
+		}
+
+	      if(has_vc)
+		{
+		  tctagptr += sprintf(tctagptr,
+				      ",%g,%g,%g,%g,%g,%g,%g,%g,%g",
+				      tri->c1[0], tri->c1[1], tri->c1[2],
+				      tri->c2[0], tri->c2[1], tri->c2[2],
+				      tri->c3[0], tri->c3[1], tri->c3[2]);
+		}
+
+	      i += (3*stride);
+
 	      tri = tri->next;
+	      ay_status = AY_OK;
 	      continue;
 	    }
 	  if(q[0] != -1)
@@ -2272,21 +2366,10 @@ ay_tess_tristomixedpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 
 	  i += (4*stride);
 	  tri = tri->next;
-	} /* if is quad */
-      if(tri)
-	tri = tri->next;
-    } /* while tri */
-
-  /* process tris */
-  tri = tris;
-  while(tri)
-    {
-      if(tri->is_quad)
-	{
-	  tri = tri->next;
 	}
       else
 	{
+	  /* emit tri as triangle */
 	  if(has_vn)
 	    {
 	      memcpy(&(po->controlv[i]), tri->p1, 3*sizeof(double));
@@ -2322,10 +2405,11 @@ ay_tess_tristomixedpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 	    }
 
 	  i += (3*stride);
-	} /* if is tri */
+	} /* if is quad */
+
       if(tri)
 	tri = tri->next;
-    } /* while */
+    } /* while tri */
 
   if(has_tc)
     {
@@ -2350,6 +2434,10 @@ ay_tess_tristomixedpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
   po = NULL;
 
 cleanup:
+
+  if(isquad)
+    free(isquad);
+
   if(new)
     {
       if(new->tags)
