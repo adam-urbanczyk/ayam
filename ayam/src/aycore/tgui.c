@@ -479,7 +479,7 @@ ay_tgui_ok(void)
       o = o->next;
     }
 
-  while(ay_tgui_origrefs)
+  while(ay_tgui_origrefs && ay_tgui_origs)
     {
       o = ay_tgui_origs;
       ay_tgui_origs = o->next;
