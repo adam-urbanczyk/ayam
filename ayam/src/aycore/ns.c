@@ -159,6 +159,9 @@ ay_ns_execute(ay_object *o, char *script)
     }
 
 cleanup:
+  if(ay_status)
+    ay_error(AY_ERROR, fname, "Error setting up the script environment!");
+
   /* restore current level */
   (void)ay_clevel_delall();
   if(ay_currentlevel)
