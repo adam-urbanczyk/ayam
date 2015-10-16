@@ -785,7 +785,10 @@ ay_pv_gettype(ay_tag *t)
 
   c++;
 
-  c = strchr(t->val, ',');
+  c = strchr(c, ',');
+
+  if(!c)
+    return result;
 
   c++;
 
