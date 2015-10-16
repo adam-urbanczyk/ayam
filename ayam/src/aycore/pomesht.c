@@ -1906,7 +1906,7 @@ ay_pomesht_gensmoothnormals(ay_pomesh_object *po, double **result)
     }
 
   if(!(centroids = calloc(po->npolys*3, sizeof(double))))
-    {ay_status = AY_EOMEM; goto cleanup;}
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   for(i = 0; i < po->npolys; i++)
     {
@@ -2009,7 +2009,7 @@ cleanup:
   if(centroids)
     free(centroids);
 
- return AY_OK;
+ return ay_status;
 } /* ay_pomesht_gensmoothnormals */
 
 
@@ -3093,7 +3093,6 @@ ay_pomesht_connect(ay_object *o1, ay_object *o2,
 	  memcpy(&(cv[i]), q2->point, stride*sizeof(double));
 	  i += stride;
 	  memcpy(&(cv[i]), p2->point, stride*sizeof(double));
-	  i += stride;
 	}
     }
 
@@ -3383,8 +3382,6 @@ crtlist:
   if(found)
     {
       nextp = &(selp->next);
-      found = AY_FALSE;
-      j = 0;
       while(p->index != li)
 	{
 	  if(!(newp = malloc(sizeof(ay_point))))
