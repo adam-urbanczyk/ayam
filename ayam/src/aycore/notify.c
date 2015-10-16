@@ -293,7 +293,7 @@ ay_notify_parentof(ay_object *o, int silent)
       goto cleanup;
     } /* if */
 
-  if(ay_currentlevel->next && ay_currentlevel->next->object)
+  if(ay_currentlevel && ay_currentlevel->next && ay_currentlevel->next->object)
     ay_currentlevel->next->object->modified = AY_TRUE;
 
   ay_status = ay_notify_parent();
