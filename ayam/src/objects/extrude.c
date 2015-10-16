@@ -675,7 +675,7 @@ ay_extrude_notifycb(ay_object *o)
 		     this is the same vector as the vector from the
 		     curve, but displaced by bevel_radius...
 		   */
-		  if(has_endb)
+		  if(has_endb && endb)
 		    {
 		      patch = (ay_nurbpatch_object*)endb->refine;
 		      free(curve->controlv);
@@ -742,7 +742,7 @@ ay_extrude_notifycb(ay_object *o)
 	      else
 		{
 		  /* not first curve  */
-		  if(has_endb)
+		  if(has_endb && endb)
 		    {
 		      patch = (ay_nurbpatch_object*)endb->refine;
 		      free(curve->controlv);
@@ -841,7 +841,7 @@ ay_extrude_notifycb(ay_object *o)
 		     this is the same vector as the vector from the
 		     curve, but displaced by bevel_radius...
 		   */
-		  if(has_startb)
+		  if(has_startb && startb)
 		    {
 		      patch = (ay_nurbpatch_object*)startb->refine;
 		      free(curve->controlv);
@@ -911,7 +911,7 @@ ay_extrude_notifycb(ay_object *o)
 		}
 	      else
 		{ /* not first curve  */
-		  if(has_startb)
+		  if(has_startb && startb)
 		    {
 		      patch = (ay_nurbpatch_object*)startb->refine;
 		      free(curve->controlv);
