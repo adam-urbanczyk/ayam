@@ -526,7 +526,7 @@ ay_revolve_notifycb(ay_object *o)
   if(curve->type != AY_IDNCURVE)
     {
       ay_status = ay_provide_object(curve, AY_IDNCURVE, &pobject);
-      if(!pobject)
+      if(ay_status || !pobject)
 	{
 	  ay_status = AY_ERROR;
 	  goto cleanup;
