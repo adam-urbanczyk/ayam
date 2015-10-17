@@ -11,32 +11,32 @@
 
 uplevel #0 { array set tgui_tessparam {
     SamplingMethod 0
-    SamplingParamU 20
-    SamplingParamV 20
+    SamplingParamU 0.25
+    SamplingParamV 0.25
 
     FT1 1
-    SamplingParamU1 10
-    SamplingParamV1 10
+    SamplingParamU1 0.25
+    SamplingParamV1 0.25
 
     FT2 1
-    SamplingParamU2 0.5
-    SamplingParamV2 0.5
+    SamplingParamU2 1.5
+    SamplingParamV2 1.5
 
     FT3 1
-    SamplingParamU3 1
-    SamplingParamV3 1
+    SamplingParamU3 10
+    SamplingParamV3 10
 
     FT4 1
-    SamplingParamU4 1
-    SamplingParamV4 1
+    SamplingParamU4 10
+    SamplingParamV4 10
 
     FT5 1
     SamplingParamU5 1
     SamplingParamV5 1
 
     FT6 1
-    SamplingParamU6 1
-    SamplingParamV6 1
+    SamplingParamU6 3
+    SamplingParamV6 3
 
     UseTexCoords 0
     UseVertColors 0
@@ -220,14 +220,6 @@ proc tgui_update args {
 
     if { $tgui_tessparam(OldSamplingMethod) !=
 	 $tgui_tessparam(SamplingMethod) } {
-	set i [expr $tgui_tessparam(SamplingMethod) + 1]
-	if { [subst "\$tgui_tessparam(FT$i)"] == 1 } {
-	    eval "set tgui_tessparam(SamplingParamU)\
-                   \$tgui_tessparam(SamplingParamU$i)"
-	    eval "set tgui_tessparam(SamplingParamV)\
-                   \$tgui_tessparam(SamplingParamV$i)"
-	    eval "set tgui_tessparam(FT$i) 0"
-	}
 	if { $tgui_tessparam(SamplingMethod) == 0 } {
 	    .tguiw.f1.fSamplingParamU.ll conf -text "0"
 	    .tguiw.f1.fSamplingParamU.lr conf -text "1"
@@ -255,9 +247,9 @@ proc tgui_update args {
 	}
 	if { ($tgui_tessparam(SamplingMethod) == 4) ||
 	     ($tgui_tessparam(SamplingMethod) == 5) } {
-	    .tguiw.f1.fSamplingParamU.lr conf -text "5"
+	    .tguiw.f1.fSamplingParamU.lr conf -text "10"
 	    .tguiw.f1.fSamplingParamU.s conf -from 0 -to 5
-	    .tguiw.f1.fSamplingParamV.lr conf -text "5"
+	    .tguiw.f1.fSamplingParamV.lr conf -text "10"
 	    .tguiw.f1.fSamplingParamV.s conf -from 0 -to 5
 	}
 	if { ($tgui_tessparam(SamplingMethod) > 1) } {
@@ -266,7 +258,14 @@ proc tgui_update args {
 	    .tguiw.f1.fSamplingParamV.s conf -state normal
 	    .tguiw.f1.fSamplingParamV.e conf -state normal
 	}
-
+	set i [expr $tgui_tessparam(SamplingMethod) + 1]
+	if { [subst "\$tgui_tessparam(FT$i)"] == 1 } {
+	    eval "set tgui_tessparam(SamplingParamU)\
+                   \$tgui_tessparam(SamplingParamU$i)"
+	    eval "set tgui_tessparam(SamplingParamV)\
+                   \$tgui_tessparam(SamplingParamV$i)"
+	    eval "set tgui_tessparam(FT$i) 0"
+	}
 	set tgui_tessparam(OldSamplingMethod) $tgui_tessparam(SamplingMethod)
     }
 
