@@ -157,9 +157,9 @@ array set ayprefs {
 
  Prompt {}
 
- SMethod 3
- SParamU 10
- SParamV 10
+ SMethod 5
+ SParamU 5
+ SParamV 5
  SaveDialogGeom 1
  PrefsGeom ""
  PrefsSection "Main"
