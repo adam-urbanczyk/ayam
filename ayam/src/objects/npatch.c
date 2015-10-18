@@ -1471,7 +1471,7 @@ ay_npatch_drawhcb(struct Togl *togl, ay_object *o)
   /* draw multiple points */
   if(npatch->mpoints)
     {
-      glPointSize((GLfloat)(point_size*1.25));
+      glPointSize((GLfloat)(point_size*1.4));
       glBegin(GL_POINTS);
        if(npatch->is_rat && ay_prefs.rationalpoints)
 	 {
@@ -2494,7 +2494,6 @@ ay_npatch_wribtrimcurves(ay_object *o)
       switch(trim->type)
 	{
 	case AY_IDNCURVE:
-	  valid_loop = AY_TRUE;
 	  totalcurves++;
 	  curve = (ay_nurbcurve_object *)(trim->refine);
 	  totalcontrol += curve->length;
