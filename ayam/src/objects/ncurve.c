@@ -905,7 +905,7 @@ ay_ncurve_drawhcb(struct Togl *togl, ay_object *o)
   /* draw multiple points */
   if(ncurve->mpoints)
     {
-      glPointSize((GLfloat)(point_size*1.25));
+      glPointSize((GLfloat)(point_size*1.4));
       glBegin(GL_POINTS);
        mp = ncurve->mpoints;
        while(mp)
