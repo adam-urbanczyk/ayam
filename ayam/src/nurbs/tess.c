@@ -88,7 +88,8 @@ typedef struct ay_tess_object_s {
 /* prototypes of functions local to this module */
 
 
-int ay_tess_checkquad(double *p1, double *p2, double *p3, double *p4);
+int ay_tess_checkquad(double *p1, double *p2, double *p3, double *p4,
+		      int check_convexity);
 
 void ay_tess_createtri(ay_tess_object *to);
 
@@ -167,15 +168,16 @@ ay_tess_checktri(double *p1, double *p2, double *p3)
 
 
 /* ay_tess_checkquad:
- *  check quad built from p1,p2,p3,p4 for degeneracy (line shape);
+ *  check quad built from p1,p2,p3,p4 for degeneracy (line shape, convexity);
  *  returns AY_FALSE if quad is degenerated,
  *  otherwise returns AY_TRUE
  */
 int
-ay_tess_checkquad(double *p1, double *p2, double *p3, double *p4)
+ay_tess_checkquad(double *p1, double *p2, double *p3, double *p4,
+		  int check_convexity)
 {
- double V1[3], V2[3], angle, len;
- int cnt = 4;
+  double V1[3], V2[3], N[16], *n, angle, len;
+ int i, j, cnt = 4;
 
   AY_V3SUB(V1, p2, p1);
   len = AY_V3LEN(V1);
@@ -190,6 +192,9 @@ ay_tess_checkquad(double *p1, double *p2, double *p3, double *p4)
      fabs(angle) > AY_PI-AY_EPSILON)
     cnt--;
 
+  n = N;
+  AY_V3CROSS(n, V1, V2);
+
   AY_V3SUB(V1, p3, p2);
   len = AY_V3LEN(V1);
   if(len > AY_EPSILON)
@@ -202,6 +207,9 @@ ay_tess_checkquad(double *p1, double *p2, double *p3, double *p4)
   if(angle != angle || fabs(angle) < AY_EPSILON ||
      fabs(angle) > AY_PI-AY_EPSILON)
     cnt--;
+
+  n = &(N[3]);
+  AY_V3CROSS(n, V1, V2);
 
   AY_V3SUB(V1, p4, p3);
   len = AY_V3LEN(V1);
@@ -216,6 +224,9 @@ ay_tess_checkquad(double *p1, double *p2, double *p3, double *p4)
      fabs(angle) > AY_PI-AY_EPSILON)
     cnt--;
 
+  n = &(N[6]);
+  AY_V3CROSS(n, V1, V2);
+
   AY_V3SUB(V1, p1, p4);
   len = AY_V3LEN(V1);
   if(len > AY_EPSILON)
@@ -229,9 +240,33 @@ ay_tess_checkquad(double *p1, double *p2, double *p3, double *p4)
      fabs(angle) > AY_PI-AY_EPSILON)
     cnt--;
 
+  n = &(N[9]);
+  AY_V3CROSS(n, V1, V2);
+
   if(cnt < 3)
     {
       return AY_FALSE;
+    }
+
+  /* check signs of normals */
+  if(check_convexity)
+    {
+      memcpy(&(N[12]), N, 3*sizeof(double));
+      for(i = 0; i < 3; i++)
+	{
+	  for(j = 0; j < 3; j++)
+	    {
+	      if((fabs(N[i*3+j]) > AY_EPSILON) &&
+		 (fabs(N[(i+1)*3+j]) > AY_EPSILON))
+		{
+		  if(((N[i*3+j] < 0) && (N[(i+1)*3+j] > 0)) ||
+		     ((N[i*3+j] > 0) && (N[(i+1)*3+j] < 0)))
+		    {
+		      return AY_FALSE;
+		    }
+		}
+	    }
+	}
     }
 
  return AY_TRUE;
@@ -1439,7 +1474,8 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 		    {
 		      /* one quad => just copy the relevant data */
 		      if(ay_tess_checkquad(pt1[q[0]], pt1[q[1]],
-					   pt1[q[2]], pt2[q[3]]))
+					   pt1[q[2]], pt2[q[3]],
+					   AY_TRUE))
 			{
 			  numquads++;
 			  if(has_vn)
@@ -1494,13 +1530,13 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 			    }
 
 			  i += (4*stride);
+
+
+			  /* signal successful processing of tri1/tri2 */
+			  dquads[j] = NULL;
+			  dquads[k] = NULL;
+			  break;
 			}
-
-		      /* signal successful processing of tri1/tri2 */
-		      dquads[j] = NULL;
-		      dquads[k] = NULL;
-
-		      break;
 		    }
 		} /* if tri2 */
 	    } /* for k */
@@ -1576,7 +1612,8 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 		    {
 		      /* one quad => just copy the relevant data */
 		      if(ay_tess_checkquad(pt1[q[0]], pt1[q[1]],
-					   pt1[q[2]], pt2[q[3]]))
+					   pt1[q[2]], pt2[q[3]],
+					   AY_TRUE))
 			{
 			  numquads++;
 			  if(has_vn)
@@ -1631,13 +1668,14 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 			    }
 
 			  i += (4*stride);
+
+
+			  /* signal successful processing of tri1/tri2 */
+			  dquads[j] = NULL;
+			  dquads[k] = NULL;
+
+			  break;
 			}
-
-		      /* signal successful processing of tri1/tri2 */
-		      dquads[j] = NULL;
-		      dquads[k] = NULL;
-
-		      break;
 		    }
 		  else
 		    {
@@ -1733,7 +1771,8 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 			(*(pt1[q[2]+9]+2) - *(pt1[q[0]+9]+2))*0.5;
 		    }
 
-		  if(ay_tess_checkquad(pt1[q[0]], pt1[q[1]], pt1[q[2]], mid))
+		  if(ay_tess_checkquad(pt1[q[0]], pt1[q[1]], pt1[q[2]], mid,
+				       AY_FALSE))
 		    {
 		      numquads++;
 		      /* Q1 */
@@ -1791,7 +1830,8 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 		      i += 4*stride;
 		    }
 
-		  if(ay_tess_checkquad(pt1[q[2]], pt2[q[3]], pt1[q[0]], mid))
+		  if(ay_tess_checkquad(pt1[q[2]], pt2[q[3]], pt1[q[0]], mid,
+				       AY_FALSE))
 		    {
 		      numquads++;
 		      /* Q2 */
@@ -1848,6 +1888,7 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 
 		      i += 4*stride;
 		    }
+
 		  /* signal successful processing of tri1/tri */
 		  dquads[j] = NULL;
 		  dquads[trik] = NULL;
@@ -1856,7 +1897,8 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 		{
 		  /* found no matching triangle
 		     => create degenerate quad from tri1 */
-		  if(ay_tess_checkquad(tri1->p1, tri1->p2, tri1->p3, tri1->p3))
+		  if(ay_tess_checkquad(tri1->p1, tri1->p2, tri1->p3, tri1->p3,
+				       AY_FALSE))
 		    {
 		      numquads++;
 
@@ -2106,8 +2148,6 @@ ay_tess_tristomixedpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 	  numquads++;
 	  isquad[i] = 1;
 	  i++;
-	  isquad[i] = 1;
-	  i++;
 
 	  tri = tri->next;
 
@@ -2319,7 +2359,6 @@ ay_tess_tristomixedpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 	      i += (3*stride);
 
 	      tri = tri->next;
-	      ay_status = AY_OK;
 	      continue;
 	    }
 	  if(q[0] != -1)
@@ -3246,6 +3285,7 @@ cleanup:
 #endif
 } /* ay_tess_npatch */
 
+
 /* ay_tess_npatchtcmd:
  *  Tesselate selected NURBS patches (convert to PolyMesh) with GLU.
  *  Implements the \a tessNP scripting interface command.
@@ -3270,16 +3310,32 @@ ay_tess_npatchtcmd(ClientData clientData, Tcl_Interp *interp,
     {
       Tcl_GetInt(interp, argv[1], &smethod);
 
-      if(smethod == 1)
-	{
-	  sparamu = 0.5;
-	  sparamv = 0.5;
-	}
+      if(smethod < 0)
+	smethod = 0;
+      else
+	if(smethod > 6)
+	  smethod = 6;
 
-      if(smethod == 2)
+      switch(smethod)
 	{
-	  sparamu = 50.0;
-	  sparamv = 50.0;
+	case 1:
+	  sparamu = 0.25;
+	  break;
+	case 2:
+	  sparamu = 1.5;
+	  break;
+	case 3:
+	case 4:
+	case 5:
+	  sparamu = 10.0;
+	  sparamv = 10.0;
+	  break;
+	case 6:
+	  sparamu = 3.0;
+	  sparamv = 3.0;
+	  break;
+	default:
+	  break;
 	}
 
       if(argc > 2)
@@ -3360,7 +3416,7 @@ ay_tess_npatchtcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_ERROR, fname, "Object is not a NPatch!");
+	  ay_error(AY_EWTYPE, fname, "NPatch");
 	} /* if */
 
       sel = sel->next;
