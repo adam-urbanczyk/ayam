@@ -1463,12 +1463,20 @@ proc actionEditP { w } {
 	undo save EditPnt
 	%W mc
 	if { $ayprefs(FlashPoints) == 1 } {
-	    %W startpepac %x %y -flash
+	    %W startpepac %x %y -flash -ignoreold;
 	    %W pepac -start %x %y -flash
 	} else {
 	    %W startpepac %x %y
 	    %W pepac -start %x %y
 	}
+    }
+
+    bind $w <ButtonPress-1> {
+	set ay(action) 1
+	undo save EditPnt
+	%W mc
+	%W startpepac %x %y
+	%W pepac -start %x %y	
     }
 
     bind $w <B1-Motion> {
@@ -1482,15 +1490,10 @@ proc actionEditP { w } {
     }
 
     actionBindRelease $w
-    if { $ayprefs(FlashPoints) == 1 } {
-	if { $ayprefs(FixFlashPoints) == 1 } {
-	    bind $w <ButtonRelease-1> "+\
+    if { ($ayprefs(FlashPoints) == 1) && ($ayprefs(FixFlashPoints) == 1) } {
+	bind $w <ButtonRelease-1> "+\
           %W startpepac %x %y -flash -ignoreold;\
           %W startpepac %x %y -flash -ignoreold"
-	} else {
-	    bind $w <ButtonRelease-1> "+\
-          %W startpepac %x %y -flash -ignoreold;"
-	}
     }
 
     $w setconf -drawh 1

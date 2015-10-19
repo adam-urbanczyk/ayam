@@ -518,7 +518,9 @@ ay_pact_flashpoint(int ignore_old, double *pnt, ay_object *o)
        /* draw new point? */
        if(pnt && o)
 	 {
-	   /*printf("flashing %lg %lg %lg\n",pnt[0],pnt[1],pnt[2]);*/
+	   /*
+	   printf("flashing %lg %lg %lg\n",pnt[0],pnt[1],pnt[2]);
+	   */
 	   glPushMatrix();
 	    glTranslated(o->movx, o->movy, o->movz);
 	    ay_quat_torotmatrix(o->quat, m);
@@ -784,7 +786,6 @@ ay_pact_pentcb(struct Togl *togl, int argc, char *argv[])
     }
 
   interp = Togl_Interp(togl);
-
 
   if(!strcmp(argv[2], "-start"))
     {
@@ -2120,7 +2121,7 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 
       if(argc >= 4)
 	{
-	  if(!strcmp(argv[2],"-winxy"))
+	  if(!strcmp(argv[2], "-winxy"))
 	    {
 	      Tcl_GetDouble(interp, argv[3], &winx);
 	      Tcl_GetDouble(interp, argv[4], &winy);
@@ -2132,7 +2133,7 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 	    }
 	  else
 	    {
-	      if(!strcmp(argv[2],"-start"))
+	      if(!strcmp(argv[2], "-start"))
 		{
 		  start = AY_TRUE;
 		  Tcl_GetDouble(interp, argv[3], &winx);
@@ -2283,30 +2284,30 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
   oldwinx = winx;
   oldwiny = winy;
 
-  if(redraw)
+  /* flash option given? */
+  if(start && argc > 4)
     {
-      if(!ay_prefs.lazynotify || start)
+      if(*pact_ratcpo && ay_prefs.rationalpoints && coords)
 	{
-	  (void)ay_notify_parent();
+	  w = pact_pe.coords[0][3];
+	  uccoords[0] = coords[0]*w;
+	  uccoords[1] = coords[1]*w;
+	  uccoords[2] = coords[2]*w;
+	  ay_pact_flashpoint(AY_TRUE, uccoords, o);
 	}
+      else
+	ay_pact_flashpoint(AY_TRUE, coords, o);
+    }
+  else
+    if(redraw)
+      {
+	if(!ay_prefs.lazynotify || start)
+	  {
+	    (void)ay_notify_parent();
+	  }
 
-      ay_toglcb_display(togl);
-
-      /* flash option given? */
-      if(argc > 5)
-	{
-	  if(*pact_ratcpo && ay_prefs.rationalpoints)
-	    {
-	      w = pact_pe.coords[0][3];
-	      uccoords[0] = coords[0]*w;
-	      uccoords[1] = coords[1]*w;
-	      uccoords[2] = coords[2]*w;
-	      ay_pact_flashpoint(AY_TRUE, uccoords, o);
-	    }
-	  else
-	    ay_pact_flashpoint(AY_TRUE, coords, o);
-	}
-    } /* if */
+	ay_toglcb_display(togl);
+      } /* if */
 
  return TCL_OK;
 } /* ay_pact_petcb */
@@ -2876,7 +2877,7 @@ ay_pact_multiptcb(struct Togl *togl, int argc, char *argv[])
 	  else
 	    {
 	      notify_parent = AY_TRUE;
-	      ay_status = ay_notify_object(o);
+	      (void)ay_notify_object(o);
 	      o->modified = AY_TRUE;
 	    } /* if */
 	} /* if */
