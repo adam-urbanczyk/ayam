@@ -667,7 +667,7 @@ ay_ncurve_drawglu(ay_view_object *view, ay_nurbcurve_object *ncurve)
  int knot_count;
  GLdouble sampling_tolerance = ay_prefs.glu_sampling_tolerance;
 
- if((ncurve->glu_sampling_tolerance > 0.0) && !view->action_state)
+  if((ncurve->glu_sampling_tolerance > 0.0) && !view->action_state)
     sampling_tolerance = ncurve->glu_sampling_tolerance;
 
   knot_count = ncurve->length + ncurve->order;
@@ -1568,9 +1568,9 @@ ay_ncurve_readcb(FILE *fileptr, ay_object *o)
       a = 0;
       for(i = 0; i < ncurve->length; i++)
 	{
+	  ncurve->controlv[a]   /= ncurve->controlv[a+3];
 	  ncurve->controlv[a+1] /= ncurve->controlv[a+3];
 	  ncurve->controlv[a+2] /= ncurve->controlv[a+3];
-	  ncurve->controlv[a+3] /= ncurve->controlv[a+3];
 	  a += 4;
 	}
     }

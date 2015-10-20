@@ -931,15 +931,15 @@ ay_pamesh_readcb(FILE *fileptr, ay_object *o)
   if(!(pamesh = calloc(1, sizeof(ay_pamesh_object))))
     { return AY_EOMEM; }
 
-  fscanf(fileptr,"%d\n",&pamesh->width);
-  fscanf(fileptr,"%d\n",&pamesh->height);
-  fscanf(fileptr,"%d\n",&pamesh->close_u);
-  fscanf(fileptr,"%d\n",&pamesh->close_v);
-  fscanf(fileptr,"%d\n",&pamesh->type);
-  fscanf(fileptr,"%d\n",&pamesh->btype_u);
-  fscanf(fileptr,"%d\n",&pamesh->btype_v);
-  fscanf(fileptr,"%d\n",&pamesh->ustep);
-  fscanf(fileptr,"%d\n",&pamesh->vstep);
+  fscanf(fileptr, "%d\n", &pamesh->width);
+  fscanf(fileptr, "%d\n", &pamesh->height);
+  fscanf(fileptr, "%d\n", &pamesh->close_u);
+  fscanf(fileptr, "%d\n", &pamesh->close_v);
+  fscanf(fileptr, "%d\n", &pamesh->type);
+  fscanf(fileptr, "%d\n", &pamesh->btype_u);
+  fscanf(fileptr, "%d\n", &pamesh->btype_v);
+  fscanf(fileptr, "%d\n", &pamesh->ustep);
+  fscanf(fileptr, "%d\n", &pamesh->vstep);
 
   if(ay_read_version < 15)
     {
@@ -992,17 +992,30 @@ ay_pamesh_readcb(FILE *fileptr, ay_object *o)
   a = 0;
   for(i = 0; i < pamesh->width*pamesh->height; i++)
     {
-      fscanf(fileptr,"%lg %lg %lg %lg\n",&(pamesh->controlv[a]),
+      fscanf(fileptr, "%lg %lg %lg %lg\n", &(pamesh->controlv[a]),
 	     &(pamesh->controlv[a+1]),
 	     &(pamesh->controlv[a+2]),
 	     &(pamesh->controlv[a+3]));
       a += 4;
     }
 
-  fscanf(fileptr,"%lg\n",&(pamesh->glu_sampling_tolerance));
-  fscanf(fileptr,"%d\n",&(pamesh->display_mode));
+  fscanf(fileptr, "%lg\n", &(pamesh->glu_sampling_tolerance));
+  fscanf(fileptr, "%d\n", &(pamesh->display_mode));
 
   pamesh->is_rat = ay_pmt_israt(pamesh);
+
+  /* Prior to 1.19 Ayam used pre-multiplied rational coordinates... */
+  if(pamesh->is_rat && (ay_read_version < 14))
+    {
+      a = 0;
+      for(i = 0; i < pamesh->width*pamesh->height; i++)
+	{
+	  pamesh->controlv[a]   /= pamesh->controlv[a+3];
+	  pamesh->controlv[a+1] /= pamesh->controlv[a+3];
+	  pamesh->controlv[a+2] /= pamesh->controlv[a+3];
+	  a += 4;
+	}
+    }
 
   o->refine = pamesh;
 

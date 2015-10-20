@@ -2276,9 +2276,9 @@ ay_npatch_readcb(FILE *fileptr, ay_object *o)
       a = 0;
       for(i = 0; i < npatch->width*npatch->height; i++)
 	{
+	  npatch->controlv[a]   /= npatch->controlv[a+3];
 	  npatch->controlv[a+1] /= npatch->controlv[a+3];
 	  npatch->controlv[a+2] /= npatch->controlv[a+3];
-	  npatch->controlv[a+3] /= npatch->controlv[a+3];
 	  a += 4;
 	}
     }
@@ -2316,19 +2316,19 @@ ay_npatch_writecb(FILE *fileptr, ay_object *o)
   if(npatch->uknot_type == AY_KTCUSTOM)
     {
       for(i = 0; i < (npatch->width+npatch->uorder); i++)
-	fprintf(fileptr,"%g\n",npatch->uknotv[i]);
+	fprintf(fileptr, "%g\n", npatch->uknotv[i]);
     }
 
   if(npatch->vknot_type == AY_KTCUSTOM)
     {
       for(i = 0; i < (npatch->height+npatch->vorder); i++)
-	fprintf(fileptr,"%g\n",npatch->vknotv[i]);
+	fprintf(fileptr, "%g\n", npatch->vknotv[i]);
     }
 
   a = 0;
   for(i = 0; i < npatch->width*npatch->height; i++)
     {
-      fprintf(fileptr,"%g %g %g %g\n", npatch->controlv[a],
+      fprintf(fileptr, "%g %g %g %g\n", npatch->controlv[a],
 	      npatch->controlv[a+1],
 	      npatch->controlv[a+2],
 	      npatch->controlv[a+3]);
