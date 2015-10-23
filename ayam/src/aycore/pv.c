@@ -611,7 +611,7 @@ ay_pv_mergeinto(ay_tag *t1, ay_tag *t2)
     }
 
   /* append t2 values to t1 */
-  dst = t1->val+strlen(t1->val);
+  dst = ((char*)t1->val)+strlen(t1->val);
 
   /* find the fourth comma in t2->val */
   comma4 = strchr(comma2+1, ',');
