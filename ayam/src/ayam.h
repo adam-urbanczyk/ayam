@@ -36,6 +36,11 @@
 
 #ifdef AYWITHAQUA
   #include <OpenGL/glu.h>
+  #ifdef __cplusplus
+    typedef GLvoid (*_GLUfuncptr)();
+  #else
+    typedef GLvoid (*_GLUfuncptr)(GLvoid);
+  #endif 
 #else
   #include <GL/glu.h>
 #endif /* AYWITHAQUA */
