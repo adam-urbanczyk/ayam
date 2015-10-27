@@ -186,6 +186,13 @@ coordinate system).
 In the default modelling view of type <tt/"Front"/, the positive
 X-axis points to the right, the positive Y-axis points upwards
 and the Z-axis points outside the screen, to the user.
+See also the following image.
+<p>
+<figure loc="ht">
+<eps file="pics/rhcs.ps" height="4cm">
+<img src="pics/rhcs.gif">
+<caption>Right Handed Coordinate System</caption>
+</figure>
 <p>
 All coordinate values in Ayam are dimensionless. It is up to the
 user to define what a value of 1.0 means: e.g.~one centimeter
@@ -194,25 +201,32 @@ or one meter.
 Due to the limited precision of floating point arithmetics used in Ayam,
 coordinate values should be defined in the range between -10.0 and 10.0
 for most accurate results.
+
+<sect2>Rational Style
 <p>
 NURBS curves and surfaces support rational coordinate values by
 allowing a fourth value (the weight) to be specified for each
 control point.
 In Ayam versions prior to 1.19 those weights were always multiplied
-with the coordinate values (i.e.~homogenous rational coordinates)
+with the coordinate values (i.e.~<em/homogenous/ rational coordinates)
 to allow faster drawing with OpenGL/GLU, which expects rational
 coordinate values to be delivered this way.
 But a negative side effect of this approach was that modification
 of coordinates or weights for modelling purposes was unnecessarily
-complicated.
-Therefore, since Ayam 1.19, rational coordinates are now euclidean
+complicated.<newline>
+Therefore, since Ayam 1.19, rational coordinates are now <em/euclidean/
 rational, the weight is not pre-multiplied with the coordinates anymore
 (this will be done internally when handing the coordinates over for
-drawing or export purposes).
-Scene files from older versions are converted automatically to the
-new coordinate scheme when read by Ayam 1.19, but loading of scene files
-written by Ayam 1.19 into older versions of Ayam requires conversion
-(e.g.~by means of a script).
+drawing or export purposes).<newline>
+Ayam can still display the coordinates in both styles, controlled by
+the preference option <tt/"RationalPoints"/ (see also section
+<ref id="prefmodel" name="Modelling Preferences">), but internally
+the coordinates are kept in euclidean rational style.
+<p>
+Scene files from older versions of Ayam are converted automatically to the
+new rational style when read by Ayam 1.19 and above, but loading of
+scene files written by Ayam 1.19 and above into older versions of
+Ayam requires manual intervention (e.g.~by means of a script).
 
 <sect>The Ayam GUI
 <p>
@@ -2963,7 +2977,7 @@ main menu for quick access.
 
 <item><tt/"TclPrecision"/; this is the precision Tcl handles floating
 point number to string conversions with. You may want to decrease this
-number to about 5 if any numbers in the entry fields are represented
+value to about 5 if any numbers in the entry fields are represented
 in an exact, but also too lengthy and hard to read fashion,
 like 0.4999999 instead of 0.5. Note that you may lose model precision
 in doing so. The default value used by Tcl is 12 and results in no
@@ -2985,8 +2999,7 @@ to the currently open preferences section, no matter how <tt/"SaveDialogGeom"/
 is set.
 
 <item><tt/"SMethod"/; is the sampling method used by the NURBS tesselation
-facility that converts NURBS surfaces to PolyMesh objects and is based
-on the GLU (V1.3+) NURBS tesselator.
+facility that converts NURBS surfaces to PolyMesh objects.
 See also section <ref id="tesst" name="Tesselation Tool">.
 Six sampling methods are available:
 <enum>
@@ -3027,6 +3040,10 @@ since Ayam 1.23.
 Note that the sampling method controlled by this preference option
 is <em/not/ used for NURBS display in Ayam.
 See also <ref id="prefdraw" name="Drawing Preferences">.
+<p>
+The tesselation facility is based
+on the GLU (V1.3+) NURBS tesselator.
+
 
 <item><tt/"SParamU"/; is a parameter for the sampling method above.<newline>
 The default value for the sampling method <tt/"AdaptiveKnotDistance"/ is 3.
