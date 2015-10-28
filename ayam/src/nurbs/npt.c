@@ -11908,7 +11908,7 @@ ay_npt_gndu(char dir, ay_nurbpatch_object *np, int i, double *p,
  */
 void
 ay_npt_gndv(char dir, ay_nurbpatch_object *np, int j, double *p,
-	   double **dp)
+	    double **dp)
 {
  int offset, stride = 4;
  double *p2 = NULL;
@@ -14312,6 +14312,158 @@ ay_npt_gentexcoords(ay_nurbpatch_object *np, ay_tag *tags, double **result)
 
  return;
 } /* ay_npt_gentexcoords */
+
+
+/** ay_npt_iscompatible:
+ * Checks the patch objects for compatibility (whether or not they
+ * are defined on the same knot vector).
+ *
+ * \param[in] patches a number of NURBS patch objects
+ * \param[in,out] result is set to AY_TRUE if the patches are compatible,
+ *  AY_FALSE else
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_npt_iscompatible(ay_object *patches, int *result)
+{
+ ay_object *o1, *o2;
+ ay_nurbpatch_object *patch1 = NULL, *patch2 = NULL;
+
+  if(!patches)
+    return AY_ENULL;
+
+  *result = AY_TRUE;
+
+  o1 = patches;
+
+  while(o1->next)
+    {
+      o2 = o1->next;
+      patch1 = (ay_nurbpatch_object *) o1->refine;
+      patch2 = (ay_nurbpatch_object *) o2->refine;
+
+      if(patch1->width != patch2->width)
+	{
+	  *result = AY_FALSE;
+	  return AY_OK;
+	}
+
+      if(patch1->height != patch2->height)
+	{
+	  *result = AY_FALSE;
+	  return AY_OK;
+	}
+
+      if(patch1->uorder != patch2->uorder)
+	{
+	  *result = AY_FALSE;
+	  return AY_OK;
+	}
+
+      if(patch1->vorder != patch2->vorder)
+	{
+	  *result = AY_FALSE;
+	  return AY_OK;
+	}
+
+      if(memcmp(patch1->uknotv, patch2->uknotv,
+		(patch1->width+patch1->uorder)*sizeof(double)))
+	{
+	  *result = AY_FALSE;
+	  return AY_OK;
+	}
+
+      if(memcmp(patch1->vknotv, patch2->vknotv,
+		(patch1->height+patch1->vorder)*sizeof(double)))
+	{
+	  *result = AY_FALSE;
+	  return AY_OK;
+	}
+
+      o1 = o1->next;
+    } /* while */
+
+ return AY_OK;
+} /* ay_npt_iscompatible */
+
+
+/** ay_npt_iscomptcmd:
+ *  Check selected NURBS patches for compatibility.
+ *  Implements the \a isCompNP scripting interface command.
+ *  See also the corresponding section in the \ayd{sciscompnp}.
+ *
+ *  \returns 1 if the selected patches are compatible.
+ */
+int
+ay_npt_iscomptcmd(ClientData clientData, Tcl_Interp *interp,
+		  int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ ay_object *o = NULL, *patches = NULL;
+ ay_list_object *sel = NULL;
+ int comp = AY_FALSE, i = 0;
+
+  if(!ay_selection)
+    {
+      ay_error(AY_ENOSEL, argv[0], NULL);
+      return TCL_OK;
+    }
+
+  sel = ay_selection;
+  while(sel)
+    {
+      o = sel->object;
+      if(o->type == AY_IDNPATCH)
+	i++;
+      sel = sel->next;
+    }
+
+  if(i > 1)
+    {
+      patches = malloc(i*sizeof(ay_object));
+
+      i = 0;
+      sel = ay_selection;
+      while(sel)
+	{
+	  o = sel->object;
+	  if(o->type == AY_IDNPATCH)
+	    {
+	      (patches[i]).refine = o->refine;
+	      (patches[i]).next = &(patches[i+1]);
+	      i++;
+	    }
+	  sel = sel->next;
+	}
+      (patches[i-1]).next = NULL;
+
+      ay_status = ay_npt_iscompatible(patches, &comp);
+      if(ay_status)
+	{
+	  ay_error(ay_status, argv[0], "Could not check the surfaces.");
+	}
+      else
+	{
+	  if(comp)
+	    {
+	      Tcl_SetResult(interp, "1", TCL_VOLATILE);
+	    }
+	  else
+	    {
+	      Tcl_SetResult(interp, "0", TCL_VOLATILE);
+	    }
+	}
+
+      free(patches);
+    }
+  else
+    {
+      ay_error(AY_ERROR, argv[0], "Not enough surfaces selected.");
+    } /* if */
+
+ return TCL_OK;
+} /* ay_npt_iscomptcmd */
 
 
 /* templates */
