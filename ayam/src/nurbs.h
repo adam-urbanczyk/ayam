@@ -1404,6 +1404,14 @@ int ay_npt_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 void ay_npt_gentexcoords(ay_nurbpatch_object *np, ay_tag *tags,
 			 double **result);
 
+/** Check compatibility of surfaces.
+ */
+int ay_npt_iscompatible(ay_object *patches, int *result);
+
+/** Tcl command to check compatibility of selected surfaces.
+ */
+int ay_npt_iscomptcmd(ClientData clientData, Tcl_Interp *interp,
+		      int argc, char *argv[]);
 
 /* pmt.c */
 
