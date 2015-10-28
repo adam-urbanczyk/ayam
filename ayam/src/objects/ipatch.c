@@ -1983,18 +1983,18 @@ ay_ipatch_readcb(FILE *fileptr, ay_object *o)
   if(!(ipatch = calloc(1, sizeof(ay_ipatch_object))))
     { return AY_EOMEM; }
 
-  fscanf(fileptr,"%d\n",&ipatch->width);
-  fscanf(fileptr,"%d\n",&ipatch->height);
-  fscanf(fileptr,"%d\n",&ipatch->close_u);
-  fscanf(fileptr,"%d\n",&ipatch->close_v);
-  fscanf(fileptr,"%d\n",&ipatch->order_u);
-  fscanf(fileptr,"%d\n",&ipatch->order_v);
-  fscanf(fileptr,"%d\n",&ipatch->ktype_u);
-  fscanf(fileptr,"%d\n",&ipatch->ktype_v);
-  fscanf(fileptr,"%lg\n",&ipatch->sdlen_u);
-  fscanf(fileptr,"%lg\n",&ipatch->edlen_u);
-  fscanf(fileptr,"%lg\n",&ipatch->sdlen_v);
-  fscanf(fileptr,"%lg\n",&ipatch->edlen_v);
+  fscanf(fileptr, "%d\n", &ipatch->width);
+  fscanf(fileptr, "%d\n", &ipatch->height);
+  fscanf(fileptr, "%d\n", &ipatch->close_u);
+  fscanf(fileptr, "%d\n", &ipatch->close_v);
+  fscanf(fileptr, "%d\n", &ipatch->order_u);
+  fscanf(fileptr, "%d\n", &ipatch->order_v);
+  fscanf(fileptr, "%d\n", &ipatch->ktype_u);
+  fscanf(fileptr, "%d\n", &ipatch->ktype_v);
+  fscanf(fileptr, "%lg\n", &ipatch->sdlen_u);
+  fscanf(fileptr, "%lg\n", &ipatch->edlen_u);
+  fscanf(fileptr, "%lg\n", &ipatch->sdlen_v);
+  fscanf(fileptr, "%lg\n", &ipatch->edlen_v);
 
   if(!(ipatch->controlv = calloc(ipatch->width*ipatch->height*3,
 				 sizeof(double))))
@@ -2013,7 +2013,7 @@ ay_ipatch_readcb(FILE *fileptr, ay_object *o)
       a += 3;
     }
 
-  fscanf(fileptr,"%d\n",&(ipatch->derivs_u));
+  fscanf(fileptr, "%d\n", &(ipatch->derivs_u));
   if(ipatch->derivs_u)
     {
       if(!(ipatch->sderiv_u = calloc(ipatch->height*3, sizeof(double))))
@@ -2049,7 +2049,7 @@ ay_ipatch_readcb(FILE *fileptr, ay_object *o)
 	}
     }
 
-  fscanf(fileptr,"%d\n",&(ipatch->derivs_v));
+  fscanf(fileptr, "%d\n", &(ipatch->derivs_v));
   if(ipatch->derivs_v)
     {
       if(!(ipatch->sderiv_v = calloc(ipatch->width*3, sizeof(double))))
@@ -2085,8 +2085,8 @@ ay_ipatch_readcb(FILE *fileptr, ay_object *o)
 	}
     }
 
-  fscanf(fileptr,"%lg\n",&(ipatch->glu_sampling_tolerance));
-  fscanf(fileptr,"%d\n",&(ipatch->display_mode));
+  fscanf(fileptr, "%lg\n", &(ipatch->glu_sampling_tolerance));
+  fscanf(fileptr, "%d\n", &(ipatch->display_mode));
 
   o->refine = ipatch;
 
@@ -2149,7 +2149,7 @@ ay_ipatch_writecb(FILE *fileptr, ay_object *o)
   a = 0;
   for(i = 0; i < ipatch->width*ipatch->height; i++)
     {
-      fprintf(fileptr,"%g %g %g\n", ipatch->controlv[a],
+      fprintf(fileptr, "%g %g %g\n", ipatch->controlv[a],
 	      ipatch->controlv[a+1],
 	      ipatch->controlv[a+2]);
       a += 3;
@@ -2161,7 +2161,7 @@ ay_ipatch_writecb(FILE *fileptr, ay_object *o)
       a = 0;
       for(i = 0; i < ipatch->height; i++)
 	{
-	  fprintf(fileptr,"%g %g %g\n", ipatch->sderiv_u[a],
+	  fprintf(fileptr, "%g %g %g\n", ipatch->sderiv_u[a],
 		  ipatch->sderiv_u[a+1],
 		  ipatch->sderiv_u[a+2]);
 	  a += 3;
@@ -2169,7 +2169,7 @@ ay_ipatch_writecb(FILE *fileptr, ay_object *o)
       a = 0;
       for(i = 0; i < ipatch->height; i++)
 	{
-	  fprintf(fileptr,"%g %g %g\n", ipatch->ederiv_u[a],
+	  fprintf(fileptr, "%g %g %g\n", ipatch->ederiv_u[a],
 		  ipatch->ederiv_u[a+1],
 		  ipatch->ederiv_u[a+2]);
 	  a += 3;
@@ -2182,7 +2182,7 @@ ay_ipatch_writecb(FILE *fileptr, ay_object *o)
       a = 0;
       for(i = 0; i < ipatch->width; i++)
 	{
-	  fprintf(fileptr,"%g %g %g\n", ipatch->sderiv_v[a],
+	  fprintf(fileptr, "%g %g %g\n", ipatch->sderiv_v[a],
 		  ipatch->sderiv_v[a+1],
 		  ipatch->sderiv_v[a+2]);
 	  a += 3;
@@ -2190,7 +2190,7 @@ ay_ipatch_writecb(FILE *fileptr, ay_object *o)
       a = 0;
       for(i = 0; i < ipatch->width; i++)
 	{
-	  fprintf(fileptr,"%g %g %g\n", ipatch->ederiv_v[a],
+	  fprintf(fileptr, "%g %g %g\n", ipatch->ederiv_v[a],
 		  ipatch->ederiv_v[a+1],
 		  ipatch->ederiv_v[a+2]);
 	  a += 3;
