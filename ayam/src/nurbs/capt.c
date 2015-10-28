@@ -587,7 +587,7 @@ ay_capt_integrate(ay_object *c, int side, int knottype, ay_object *s)
     case 1:
       if(nps->vorder > npc->uorder)
 	{
-	  ay_status = ay_npt_elevateu(npc, nps->vorder-npc->uorder);
+	  ay_status = ay_npt_elevateu(npc, nps->vorder-npc->uorder, AY_FALSE);
 	}
       order = nps->vorder;
       break;
@@ -595,7 +595,7 @@ ay_capt_integrate(ay_object *c, int side, int knottype, ay_object *s)
     case 3:
       if(nps->uorder > npc->uorder)
 	{
-	  ay_status = ay_npt_elevateu(npc, nps->uorder-npc->uorder);
+	  ay_status = ay_npt_elevateu(npc, nps->uorder-npc->uorder, AY_FALSE);
 	}
       order = nps->uorder;
       break;
