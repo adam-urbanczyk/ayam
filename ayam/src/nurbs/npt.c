@@ -3207,7 +3207,8 @@ ay_npt_concat(ay_object *o, int type, int order,
 		     a character from uvselect */
 		  if(np->uorder < max_order)
 		    {
-		      ay_status = ay_npt_elevateu(np, max_order-np->uorder);
+		      ay_status = ay_npt_elevateu(np, max_order-np->uorder,
+						  AY_FALSE);
 		      if(ay_status)
 			goto cleanup;
 		    }
@@ -3228,7 +3229,8 @@ ay_npt_concat(ay_object *o, int type, int order,
 		    {
 		      if(np->vorder < max_order)
 			{
-			  ay_status = ay_npt_elevatev(np, max_order-np->vorder);
+			  ay_status = ay_npt_elevatev(np, max_order-np->vorder,
+						      AY_FALSE);
 			  if(ay_status)
 			    goto cleanup;
 			}
@@ -3262,7 +3264,8 @@ ay_npt_concat(ay_object *o, int type, int order,
 		    {
 		      if(np->uorder < max_order)
 			{
-			  ay_status = ay_npt_elevateu(np, max_order-np->uorder);
+			  ay_status = ay_npt_elevateu(np, max_order-np->uorder,
+						      AY_FALSE);
 			  if(ay_status)
 			    goto cleanup;
 			}
@@ -6490,43 +6493,48 @@ ay_npt_getpntfromindex(ay_nurbpatch_object *patch, int indexu, int indexv,
  *
  * \param[in,out] patch NURBS patch object to process
  * \param[in] t how many times shall the order be increased
+ * \param[in] is_clamped if AY_TRUE, the patch will not be clamped
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_npt_elevateu(ay_nurbpatch_object *patch, int t)
+ay_npt_elevateu(ay_nurbpatch_object *patch, int t, int is_clamped)
 {
  int ay_status = AY_OK;
  double *Uh = NULL, *Qw = NULL, *realQw = NULL, *realUh = NULL;
  int clamp_me = AY_FALSE, nw = 0;
  char fname[] = "npt_elevateu";
 
-  if(patch->uknot_type == AY_KTBSPLINE)
+  if(!is_clamped)
     {
-      clamp_me = AY_TRUE;
-    }
-  else
-    {
-      if(patch->uknot_type == AY_KTCUSTOM)
+      if(patch->uknot_type == AY_KTBSPLINE)
 	{
 	  clamp_me = AY_TRUE;
 	}
       else
 	{
-	  if(patch->uknot_type > AY_KTCUSTOM && patch->utype == AY_CTPERIODIC)
+	  if(patch->uknot_type == AY_KTCUSTOM)
 	    {
 	      clamp_me = AY_TRUE;
 	    }
+	  else
+	    {
+	      if(patch->uknot_type > AY_KTCUSTOM &&
+		 patch->utype == AY_CTPERIODIC)
+		{
+		  clamp_me = AY_TRUE;
+		}
+	    } /* if */
 	} /* if */
-    } /* if */
 
-  if(clamp_me)
-    {
-      ay_status = ay_npt_clampu(patch, 0);
-      if(ay_status)
+      if(clamp_me)
 	{
-	  ay_error(AY_ERROR, fname, "Clamp operation failed.");
-	  return AY_ERROR;
+	  ay_status = ay_npt_clampu(patch, 0);
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, fname, "Clamp operation failed.");
+	      return AY_ERROR;
+	    } /* if */
 	} /* if */
     } /* if */
 
@@ -6596,43 +6604,48 @@ ay_npt_elevateu(ay_nurbpatch_object *patch, int t)
  *
  * \param[in,out] patch NURBS patch object to process
  * \param[in] t how many times shall the order be increased
+ * \param[in] is_clamped if AY_TRUE, the patch will not be clamped
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_npt_elevatev(ay_nurbpatch_object *patch, int t)
+ay_npt_elevatev(ay_nurbpatch_object *patch, int t, int is_clamped)
 {
  int ay_status = AY_OK;
  double *Vh = NULL, *Qw = NULL, *realQw = NULL, *realVh = NULL;
  int i, clamp_me = AY_FALSE, nh = 0, ind1, ind2;
  char fname[] = "npt_elevatev";
 
-  if(patch->vknot_type == AY_KTBSPLINE)
+  if(!is_clamped)
     {
-      clamp_me = AY_TRUE;
-    }
-  else
-    {
-      if(patch->vknot_type == AY_KTCUSTOM)
+      if(patch->vknot_type == AY_KTBSPLINE)
 	{
 	  clamp_me = AY_TRUE;
 	}
       else
 	{
-	  if(patch->vknot_type > AY_KTCUSTOM && patch->vtype == AY_CTPERIODIC)
+	  if(patch->vknot_type == AY_KTCUSTOM)
 	    {
 	      clamp_me = AY_TRUE;
 	    }
+	  else
+	    {
+	      if(patch->vknot_type > AY_KTCUSTOM &&
+		 patch->vtype == AY_CTPERIODIC)
+		{
+		  clamp_me = AY_TRUE;
+		}
+	    } /* if */
 	} /* if */
-    } /* if */
 
-  if(clamp_me)
-    {
-      ay_status = ay_npt_clampv(patch, 0);
-      if(ay_status)
+      if(clamp_me)
 	{
-	  ay_error(AY_ERROR, fname, "Clamp operation failed.");
-	  return AY_ERROR;
+	  ay_status = ay_npt_clampv(patch, 0);
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, fname, "Clamp operation failed.");
+	      return AY_ERROR;
+	    } /* if */
 	} /* if */
     } /* if */
 
@@ -6746,9 +6759,9 @@ ay_npt_elevateuvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  patch = (ay_nurbpatch_object *)sel->object->refine;
 
 	  if(elevatev)
-	    ay_status = ay_npt_elevatev(patch, t);
+	    ay_status = ay_npt_elevatev(patch, t, AY_FALSE);
 	  else
-	    ay_status = ay_npt_elevateu(patch, t);
+	    ay_status = ay_npt_elevateu(patch, t, AY_FALSE);
 
 	  if(ay_status)
 	    {
@@ -7108,22 +7121,22 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
 
   /* elevate surfaces to highest uorder/vorder */
   if(skinu->uorder < uo)
-    ay_status = ay_npt_elevateu(skinu, uo-skinu->uorder);
+    ay_status = ay_npt_elevateu(skinu, uo-skinu->uorder, AY_FALSE);
 
   if(skinu->vorder < vo)
-    ay_status = ay_npt_elevatev(skinu, vo-skinu->vorder);
+    ay_status = ay_npt_elevatev(skinu, vo-skinu->vorder, AY_FALSE);
 
   if(skinv->uorder < uo)
-    ay_status = ay_npt_elevateu(skinv, uo-skinv->uorder);
+    ay_status = ay_npt_elevateu(skinv, uo-skinv->uorder, AY_FALSE);
 
   if(skinv->vorder < vo)
-    ay_status = ay_npt_elevatev(skinv, vo-skinv->vorder);
+    ay_status = ay_npt_elevatev(skinv, vo-skinv->vorder, AY_FALSE);
 
   if(interpatch->uorder < uo)
-    ay_status = ay_npt_elevateu(interpatch, uo-interpatch->uorder);
+    ay_status = ay_npt_elevateu(interpatch, uo-interpatch->uorder, AY_FALSE);
 
   if(interpatch->vorder < vo)
-    ay_status = ay_npt_elevatev(interpatch, vo-interpatch->vorder);
+    ay_status = ay_npt_elevatev(interpatch, vo-interpatch->vorder, AY_FALSE);
 
   /* make surfaces compatible (defined on the same knot vector) */
   ay_status = ay_knots_unify(skinu->uknotv, skinu->width+skinu->uorder,
@@ -14464,6 +14477,325 @@ ay_npt_iscomptcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_npt_iscomptcmd */
+
+
+/** ay_npt_makecompatible:
+ *  make a number of patches compatible i.e. of the same order
+ *  and defined on the same knot vector
+ *
+ * \param[in,out] patches a number of NURBS patch objects
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_npt_makecompatible(ay_object *patches, int side)
+{
+ int ay_status = AY_OK;
+ ay_object *o;
+ ay_nurbpatch_object *patch = NULL;
+ int max_uorder = 0, max_vorder = 0;
+ int Ualen = 0, Ublen = 0, Ubarlen = 0;
+ int Valen = 0, Vblen = 0, Vbarlen = 0;
+ double *Ubar = NULL, *Ua = NULL, *Ub = NULL;
+ double *Vbar = NULL, *Va = NULL, *Vb = NULL;
+
+  if(!patches)
+    return AY_ENULL;
+
+  /* prepare the patches (clamp, rescale knots to range 0.0 - 1.0);
+     and determine the max order */
+  o = patches;
+  while(o)
+    {
+      patch = (ay_nurbpatch_object *) o->refine;
+
+      if(side == 0 || side == 1)
+	{
+	  if(!ay_knots_isclamped(0, patch->uorder, patch->uknotv,
+				 patch->width+patch->uorder, AY_EPSILON))
+	    {
+	      ay_status = ay_npt_clampu(patch, side);
+	      if(ay_status)
+		break;
+	    }
+
+	  if(patch->uknotv[0] != 0.0 ||
+	     patch->uknotv[patch->width+patch->uorder-1] != 1.0)
+	    {
+	      ay_status = ay_knots_rescaletorange(patch->width+patch->uorder,
+						  patch->uknotv, 0.0, 1.0);
+	      if(ay_status)
+		break;
+	    }
+
+	  if(patch->uorder > max_uorder)
+	    max_uorder = patch->uorder;
+	} /* if U */
+
+      if(side == 0 || side == 2)
+	{
+	  if(!ay_knots_isclamped(0, patch->vorder, patch->vknotv,
+				 patch->height+patch->vorder, AY_EPSILON))
+	    {
+	      ay_status = ay_npt_clampv(patch, side);
+	      if(ay_status)
+		break;
+	    }
+
+	  if(patch->vknotv[0] != 0.0 ||
+	     patch->vknotv[patch->height+patch->vorder-1] != 1.0)
+	    {
+	      ay_status = ay_knots_rescaletorange(patch->height+patch->vorder,
+						  patch->vknotv, 0.0, 1.0);
+	      if(ay_status)
+		break;
+	    }
+
+	  if(patch->vorder > max_vorder)
+	    max_vorder = patch->vorder;
+	} /* if V */
+
+      o = o->next;
+    } /* while */
+
+  if(ay_status)
+    return ay_status;
+
+  /* degree elevate */
+  o = patches;
+  while(o)
+    {
+      patch = (ay_nurbpatch_object *) o->refine;
+      if(side == 0 || side == 1)
+	{
+	  if(patch->uorder < max_uorder)
+	    {
+	      ay_status = ay_npt_elevateu(patch, max_uorder-patch->uorder,
+					  AY_TRUE);
+	      if(ay_status)
+		break;
+	    } /* if */
+	} /* if U */
+      if(side == 0 || side == 2)
+	{
+	  if(patch->vorder < max_vorder)
+	    {
+	      ay_status = ay_npt_elevatev(patch, max_vorder-patch->vorder,
+					  AY_TRUE);
+	      if(ay_status)
+		break;
+	    } /* if */
+	} /* if V */
+      o = o->next;
+    } /* while */
+
+  if(ay_status)
+    return ay_status;
+
+  /* unify U knots */
+  o = patches;
+  patch = (ay_nurbpatch_object *) o->refine;
+
+  Ua = patch->uknotv;
+  Ualen = patch->width+patch->uorder;
+
+  if(side == 0 || side == 1)
+    {
+      o = o->next;
+      while(o)
+	{
+	  patch = (ay_nurbpatch_object *)o->refine;
+	  Ub = patch->uknotv;
+	  Ublen = patch->width+patch->uorder;
+
+	  ay_status = ay_knots_unify(Ua, Ualen, Ub, Ublen, &Ubar, &Ubarlen);
+	  if(ay_status)
+	    goto cleanup;
+
+	  Ua = Ubar;
+	  Ualen = Ubarlen;
+
+	  o = o->next;
+	} /* while */
+
+      if(ay_status)
+	return ay_status;
+    } /* if U */
+
+  /* unify V knots */
+  o = patches;
+  patch = (ay_nurbpatch_object *) o->refine;
+
+  Va = patch->vknotv;
+  Valen = patch->height+patch->vorder;
+
+  if(side == 0 || side == 2)
+    {
+      o = o->next;
+      while(o)
+	{
+	  patch = (ay_nurbpatch_object *)o->refine;
+	  Vb = patch->vknotv;
+	  Vblen = patch->height+patch->vorder;
+
+	  ay_status = ay_knots_unify(Va, Valen, Vb, Vblen, &Vbar, &Vbarlen);
+	  if(ay_status)
+	    goto cleanup;
+
+	  Va = Vbar;
+	  Valen = Vbarlen;
+
+	  o = o->next;
+	} /* while */
+
+      if(ay_status)
+	return ay_status;
+    } /* if V */
+
+  /* merge knots */
+  o = patches;
+  while(o)
+    {
+      patch = (ay_nurbpatch_object *) o->refine;
+
+      ay_status = ay_knots_mergenp(patch, Ubar, Ubarlen, Vbar, Vbarlen);
+      if(ay_status)
+	goto cleanup;
+
+      ay_npt_recreatemp(patch);
+
+      o = o->next;
+    } /* while */
+
+cleanup:
+
+  if(Ubar)
+    free(Ubar);
+
+  if(Vbar)
+    free(Vbar);
+
+ return ay_status;
+} /* ay_npt_makecompatible */
+
+
+/** ay_npt_makecomptcmd:
+ *  Make selected NURBS patches compatible.
+ *  Implements the \a makeCompNP scripting interface command.
+ *  See also the corresponding section in the \ayd{scmakecompnc}.
+ *
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_npt_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
+		    int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ int is_comp = AY_FALSE, force = AY_FALSE;
+ ay_list_object *sel = ay_selection;
+ ay_nurbpatch_object *nc = NULL;
+ ay_object *o = NULL, *p = NULL, *src = NULL, **nxt = NULL;
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, argv[0], NULL);
+      return TCL_OK;
+    }
+
+  if(argc > 1)
+    {
+      if((argv[1][0] == '-') && (argv[1][0] == 'f'))
+	{
+	  force = AY_TRUE;
+	}
+    }
+
+  /* make copies of all patches */
+  nxt = &(src);
+  while(sel)
+    {
+      o = sel->object;
+      if(o->type != AY_IDNPATCH)
+	{
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
+	}
+      else
+	{
+	  ay_status = ay_object_copy(o, nxt);
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, argv[0], "Could not copy object.");
+	      goto cleanup;
+	    }
+	  nxt = &((*nxt)->next);
+	} /* if */
+
+      sel = sel->next;
+    } /* while */
+
+  if(!src || !src->next)
+    {
+      ay_error(AY_ERROR, argv[0], "Please select atleast two NURBS patches.");
+      goto cleanup;
+    } /* if */
+
+  if(!force)
+    {
+      ay_status = ay_npt_iscompatible(src, &is_comp);
+      if(ay_status)
+	{
+	  ay_error(ay_status, argv[0],
+		   "Could not check the patches, assuming incompatibility.");
+	  is_comp = AY_FALSE;
+	}
+      if(is_comp)
+	goto cleanup;
+    } /* if */
+
+  /* try to make the copies compatible */
+  ay_status = ay_npt_makecompatible(src, 0);
+  if(ay_status)
+    {
+      ay_error(AY_ERROR, argv[0],
+	       "Failed to make selected patches compatible.");
+      goto cleanup;
+    }
+
+  /* now exchange the nurbpatch objects */
+  p = src;
+  sel = ay_selection;
+  while(sel)
+    {
+      o = sel->object;
+      if(o->type == AY_IDNPATCH)
+	{
+	  nc = (ay_nurbpatch_object*)o->refine;
+	  if(!p)
+	    goto cleanup;
+	  o->refine = p->refine;
+	  p->refine = nc;
+	  /* update pointers to controlv;
+	     re-create tesselation of the patch */
+	  if(o->selp)
+	    {
+	      ay_selp_clear(o);
+	    }
+	  o->modified = AY_TRUE;
+	  (void)ay_notify_object(o);
+
+	  p = p->next;
+	} /* if */
+      sel = sel->next;
+    } /* while */
+
+  (void)ay_notify_parent();
+
+cleanup:
+  if(src)
+    (void)ay_object_deletemulti(src, AY_TRUE);
+
+ return TCL_OK;
+} /* ay_npt_makecomptcmd */
 
 
 /* templates */

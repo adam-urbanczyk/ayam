@@ -1156,11 +1156,11 @@ int ay_npt_getpntfromindex(ay_nurbpatch_object *patch, int indexu, int indexv,
 
 /** Elevate U order of NURBS patch.
  */
-int ay_npt_elevateu(ay_nurbpatch_object *patch, int t);
+int ay_npt_elevateu(ay_nurbpatch_object *patch, int t, int is_clamped);
 
 /** Elevate V order of NURBS patch.
  */
-int ay_npt_elevatev(ay_nurbpatch_object *patch, int t);
+int ay_npt_elevatev(ay_nurbpatch_object *patch, int t, int is_clamped);
 
 /** Tcl command to elevate U/V order of selected NURBS patches.
  */
@@ -1412,6 +1412,16 @@ int ay_npt_iscompatible(ay_object *patches, int *result);
  */
 int ay_npt_iscomptcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
+
+/** Make a number of NURBS surfaces compatible.
+ */
+int ay_npt_makecompatible(ay_object *patches, int side);
+
+/** Tcl command to make selected NURBS surfaces compatible.
+ */
+int ay_npt_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
+		    int argc, char *argv[]);
+
 
 /* pmt.c */
 

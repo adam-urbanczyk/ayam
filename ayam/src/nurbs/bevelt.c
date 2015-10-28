@@ -1360,7 +1360,8 @@ ay_bevelt_integrate(int side, ay_object *s, ay_object *b)
     case 1:
       if(np->vorder > bevel->uorder)
 	{
-	  ay_status = ay_npt_elevateu(bevel, np->vorder-bevel->uorder);
+	  ay_status = ay_npt_elevateu(bevel, np->vorder-bevel->uorder,
+				      AY_FALSE);
 	  if(ay_status)
 	    goto cleanup;
 	}
@@ -1370,7 +1371,8 @@ ay_bevelt_integrate(int side, ay_object *s, ay_object *b)
     case 3:
       if(np->uorder > bevel->uorder)
 	{
-	  ay_status = ay_npt_elevateu(bevel, np->uorder-bevel->uorder);
+	  ay_status = ay_npt_elevateu(bevel, np->uorder-bevel->uorder,
+				      AY_FALSE);
 	  if(ay_status)
 	    goto cleanup;
 	}
