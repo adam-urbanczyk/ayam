@@ -805,7 +805,7 @@ int ay_nct_iscompatible(ay_object *curves, int level, int *result);
 
 /** Make a number of curves compatible.
  */
-int ay_nct_makecompatible(ay_object *curves);
+int ay_nct_makecompatible(ay_object *curves, int level);
 
 /** Shift control points of a 1D (curve) control vector.
  */
@@ -1406,7 +1406,7 @@ void ay_npt_gentexcoords(ay_nurbpatch_object *np, ay_tag *tags,
 
 /** Check compatibility of surfaces.
  */
-int ay_npt_iscompatible(ay_object *patches, int *result);
+int ay_npt_iscompatible(ay_object *patches, int level, int *result);
 
 /** Tcl command to check compatibility of selected surfaces.
  */
@@ -1415,7 +1415,7 @@ int ay_npt_iscomptcmd(ClientData clientData, Tcl_Interp *interp,
 
 /** Make a number of NURBS surfaces compatible.
  */
-int ay_npt_makecompatible(ay_object *patches, int side);
+int ay_npt_makecompatible(ay_object *patches, int side, int level);
 
 /** Tcl command to make selected NURBS surfaces compatible.
  */

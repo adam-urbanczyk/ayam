@@ -3397,7 +3397,7 @@ ay_npt_concat(ay_object *o, int type, int order,
   /* make all curves compatible */
   if(!compatible)
     {
-      ay_status = ay_nct_makecompatible(allcurves);
+      ay_status = ay_nct_makecompatible(allcurves, /*level=*/1);
       if(ay_status)
 	goto cleanup;
     }
@@ -5223,7 +5223,7 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
 	  (void)ay_object_delete(curve);
 	  return ay_status;
 	}
-      ay_status = ay_nct_makecompatible(curve);
+      ay_status = ay_nct_makecompatible(curve, /*level=*/1);
       if(ay_status)
 	{
 	  (void)ay_object_deletemulti(curve, AY_TRUE);
@@ -5765,7 +5765,7 @@ ay_npt_skinu(ay_object *curves, int order, int knot_type,
 
   if(!i)
     {
-      ay_status = ay_nct_makecompatible(curves);
+      ay_status = ay_nct_makecompatible(curves, /*level=*/1);
       if(ay_status)
 	{goto cleanup;}
     }
@@ -5944,7 +5944,7 @@ ay_npt_skinv(ay_object *curves, int order, int knot_type,
 
   if(!i)
     {
-      ay_status = ay_nct_makecompatible(curves);
+      ay_status = ay_nct_makecompatible(curves, /*level=*/1);
       if(ay_status)
 	{goto cleanup;}
     }
@@ -6953,8 +6953,8 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
     vorder = numcu;
 
   /* make curves compatible (defined on the same knot vector) */
-  ay_status = ay_nct_makecompatible(cu);
-  ay_status = ay_nct_makecompatible(cv);
+  ay_status = ay_nct_makecompatible(cu, /*level=*/1);
+  ay_status = ay_nct_makecompatible(cv, /*level=*/1);
 
   if(!in)
     {
@@ -7694,7 +7694,7 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo,
 
   /* in case the surface has different orders for U/V
      make the curves compatible (this also clamps them) */
-  ay_status = ay_nct_makecompatible(list);
+  ay_status = ay_nct_makecompatible(list, /*level=*/1);
   if(ay_status)
     {ay_status = AY_ERROR; goto cleanup;}
 
@@ -14332,13 +14332,16 @@ ay_npt_gentexcoords(ay_nurbpatch_object *np, ay_tag *tags, double **result)
  * are defined on the same knot vector).
  *
  * \param[in] patches a number of NURBS patch objects
+ * \param[in] level determines which level of compatibility to check:
+ *            0 - only check length and order,
+ *            1 - check length, order, and knots
  * \param[in,out] result is set to AY_TRUE if the patches are compatible,
  *  AY_FALSE else
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_npt_iscompatible(ay_object *patches, int *result)
+ay_npt_iscompatible(ay_object *patches, int level, int *result)
 {
  ay_object *o1, *o2;
  ay_nurbpatch_object *patch1 = NULL, *patch2 = NULL;
@@ -14380,18 +14383,21 @@ ay_npt_iscompatible(ay_object *patches, int *result)
 	  return AY_OK;
 	}
 
-      if(memcmp(patch1->uknotv, patch2->uknotv,
-		(patch1->width+patch1->uorder)*sizeof(double)))
+      if(level > 0)
 	{
-	  *result = AY_FALSE;
-	  return AY_OK;
-	}
+	  if(memcmp(patch1->uknotv, patch2->uknotv,
+		    (patch1->width+patch1->uorder)*sizeof(double)))
+	    {
+	      *result = AY_FALSE;
+	      return AY_OK;
+	    }
 
-      if(memcmp(patch1->vknotv, patch2->vknotv,
-		(patch1->height+patch1->vorder)*sizeof(double)))
-	{
-	  *result = AY_FALSE;
-	  return AY_OK;
+	  if(memcmp(patch1->vknotv, patch2->vknotv,
+		    (patch1->height+patch1->vorder)*sizeof(double)))
+	    {
+	      *result = AY_FALSE;
+	      return AY_OK;
+	    }
 	}
 
       o1 = o1->next;
@@ -14412,15 +14418,24 @@ int
 ay_npt_iscomptcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_object *o = NULL, *patches = NULL;
  ay_list_object *sel = NULL;
- int comp = AY_FALSE, i = 0;
+ int comp = AY_FALSE, level = 1, i = 0;
 
   if(!ay_selection)
     {
       ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
+    }
+
+  if(argc > 1)
+    {
+      if((argv[1][0] == '-') && (argv[1][1] == 'l'))
+	{
+	  tcl_status = Tcl_GetInt(interp, argv[2], &level);
+	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	}
     }
 
   sel = ay_selection;
@@ -14451,7 +14466,7 @@ ay_npt_iscomptcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       (patches[i-1]).next = NULL;
 
-      ay_status = ay_npt_iscompatible(patches, &comp);
+      ay_status = ay_npt_iscompatible(patches, level, &comp);
       if(ay_status)
 	{
 	  ay_error(ay_status, argv[0], "Could not check the surfaces.");
@@ -14484,11 +14499,14 @@ ay_npt_iscomptcmd(ClientData clientData, Tcl_Interp *interp,
  *  and defined on the same knot vector
  *
  * \param[in,out] patches a number of NURBS patch objects
+ * \param[in] side which dimension to consider: 0 - both, 1 - U, 2 - V
+ * \param[in] level desired level of compatibility: 0 - length/order,
+ *  1 - length/order/knots
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_npt_makecompatible(ay_object *patches, int side)
+ay_npt_makecompatible(ay_object *patches, int side, int level)
 {
  int ay_status = AY_OK;
  ay_object *o;
@@ -14592,6 +14610,9 @@ ay_npt_makecompatible(ay_object *patches, int side)
   if(ay_status)
     return ay_status;
 
+  if(level == 0)
+    goto cleanup;
+
   /* unify U knots */
   o = patches;
   patch = (ay_nurbpatch_object *) o->refine;
@@ -14690,8 +14711,8 @@ int
 ay_npt_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
- int ay_status = AY_OK;
- int is_comp = AY_FALSE, force = AY_FALSE;
+ int tcl_status = TCL_OK, ay_status = AY_OK;
+ int i = 1, is_comp = AY_FALSE, force = AY_FALSE, level = 1, side = 0;
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *nc = NULL;
  ay_object *o = NULL, *p = NULL, *src = NULL, **nxt = NULL;
@@ -14702,12 +14723,27 @@ ay_npt_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  if(argc > 1)
+  while(i < argc)
     {
-      if((argv[1][0] == '-') && (argv[1][0] == 'f'))
+      if((argv[1][0] == '-') && (argv[1][1] == 'f'))
 	{
 	  force = AY_TRUE;
 	}
+      else
+      if((argv[i][0] == '-') && (argv[i][1] == 'l'))
+	{
+	  tcl_status = Tcl_GetInt(interp, argv[i+1], &level);
+	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	  i++;
+	}
+      else
+      if((argv[i][0] == '-') && (argv[i][1] == 's'))
+	{
+	  tcl_status = Tcl_GetInt(interp, argv[i+1], &side);
+	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	  i++;
+	}
+      i++;
     }
 
   /* make copies of all patches */
@@ -14741,7 +14777,7 @@ ay_npt_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!force)
     {
-      ay_status = ay_npt_iscompatible(src, &is_comp);
+      ay_status = ay_npt_iscompatible(src, level, &is_comp);
       if(ay_status)
 	{
 	  ay_error(ay_status, argv[0],
@@ -14753,7 +14789,7 @@ ay_npt_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
     } /* if */
 
   /* try to make the copies compatible */
-  ay_status = ay_npt_makecompatible(src, 0);
+  ay_status = ay_npt_makecompatible(src, side, level);
   if(ay_status)
     {
       ay_error(AY_ERROR, argv[0],
