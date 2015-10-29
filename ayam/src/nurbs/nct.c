@@ -5304,11 +5304,12 @@ ay_nct_iscompatible(ay_object *curves, int level, int *result)
  *  and defined on the same knot vector
  *
  * \param[in,out] curves a number of NURBS curve objects
+ * \param[in] level desired level of compatibility
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_nct_makecompatible(ay_object *curves)
+ay_nct_makecompatible(ay_object *curves, int level)
 {
  int ay_status = AY_OK;
  ay_object *o;
@@ -5460,6 +5461,9 @@ ay_nct_makecompatible(ay_object *curves)
 	} /* if */
       o = o->next;
     } /* while */
+
+  if(level < 1)
+    goto cleanup;
 
   /* unify knots */
   o = curves;
@@ -6007,7 +6011,7 @@ ay_nct_iscomptcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc > 1)
     {
-      if((argv[1][0] == '-') && (argv[1][0] == 'l'))
+      if((argv[1][0] == '-') && (argv[1][1] == 'l'))
 	{
 	  tcl_status = Tcl_GetInt(interp, argv[2], &level);
 	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
@@ -6081,8 +6085,8 @@ int
 ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
- int ay_status = AY_OK;
- int is_comp = AY_FALSE, force = AY_FALSE;
+ int tcl_status = TCL_OK, ay_status = AY_OK;
+ int i = 1, is_comp = AY_FALSE, force = AY_FALSE, level = 1;
  ay_list_object *sel = ay_selection;
  ay_nurbcurve_object *nc = NULL;
  ay_object *o = NULL, *p = NULL, *src = NULL, **nxt = NULL;
@@ -6093,12 +6097,20 @@ ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  if(argc > 1)
+  while(i < argc)
     {
-      if((argv[1][0] == '-') && (argv[1][0] == 'f'))
+      if((argv[i][0] == '-') && (argv[i][1] == 'f'))
 	{
 	  force = AY_TRUE;
 	}
+      else
+	if((argv[i][0] == '-') && (argv[i][1] == 'l'))
+	  {
+	    tcl_status = Tcl_GetInt(interp, argv[i+1], &level);
+	    AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	    i++;
+	  }
+      i++;
     }
 
   /* make copies of all curves */
@@ -6132,7 +6144,7 @@ ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!force)
     {
-      ay_status = ay_nct_iscompatible(src, /*level=*/1, &is_comp);
+      ay_status = ay_nct_iscompatible(src, level, &is_comp);
       if(ay_status)
 	{
 	  ay_error(ay_status, argv[0],
@@ -6144,7 +6156,7 @@ ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
     } /* if */
 
   /* try to make the copies compatible */
-  ay_status = ay_nct_makecompatible(src);
+  ay_status = ay_nct_makecompatible(src, level);
   if(ay_status)
     {
       ay_error(AY_ERROR, argv[0],
