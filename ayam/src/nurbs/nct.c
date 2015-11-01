@@ -6083,7 +6083,7 @@ ay_nct_iscomptcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK, tcl_status = TCL_OK;
  ay_object *o = NULL, *curves = NULL;
  ay_list_object *sel = NULL;
- int comp = AY_FALSE, i = 0, level = 1;
+ int comp = AY_FALSE, i = 0, level = 2;
 
   if(!ay_selection)
     {
@@ -6168,7 +6168,7 @@ ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
  int tcl_status = TCL_OK, ay_status = AY_OK;
- int i = 1, is_comp = AY_FALSE, force = AY_FALSE, level = 1;
+ int i = 1, is_comp = AY_FALSE, force = AY_FALSE, level = 2;
  ay_list_object *sel = ay_selection;
  ay_nurbcurve_object *nc = NULL;
  ay_object *o = NULL, *p = NULL, *src = NULL, **nxt = NULL;

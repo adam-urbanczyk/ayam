@@ -14333,8 +14333,9 @@ ay_npt_gentexcoords(ay_nurbpatch_object *np, ay_tag *tags, double **result)
  *
  * \param[in] patches a number of NURBS patch objects
  * \param[in] level determines which level of compatibility to check:
- *            0 - only check length and order,
- *            1 - check length, order, and knots
+ *            0 - only check the order,
+ *            1 - check length and order,
+ *            2 - check length, order, and knots
  * \param[in,out] result is set to AY_TRUE if the patches are compatible,
  *  AY_FALSE else
  *
@@ -14359,18 +14360,6 @@ ay_npt_iscompatible(ay_object *patches, int level, int *result)
       patch1 = (ay_nurbpatch_object *) o1->refine;
       patch2 = (ay_nurbpatch_object *) o2->refine;
 
-      if(patch1->width != patch2->width)
-	{
-	  *result = AY_FALSE;
-	  return AY_OK;
-	}
-
-      if(patch1->height != patch2->height)
-	{
-	  *result = AY_FALSE;
-	  return AY_OK;
-	}
-
       if(patch1->uorder != patch2->uorder)
 	{
 	  *result = AY_FALSE;
@@ -14385,20 +14374,36 @@ ay_npt_iscompatible(ay_object *patches, int level, int *result)
 
       if(level > 0)
 	{
-	  if(memcmp(patch1->uknotv, patch2->uknotv,
-		    (patch1->width+patch1->uorder)*sizeof(double)))
+	  if(patch1->width != patch2->width)
 	    {
 	      *result = AY_FALSE;
 	      return AY_OK;
 	    }
 
-	  if(memcmp(patch1->vknotv, patch2->vknotv,
-		    (patch1->height+patch1->vorder)*sizeof(double)))
+	  if(patch1->height != patch2->height)
 	    {
 	      *result = AY_FALSE;
 	      return AY_OK;
 	    }
-	}
+
+	  if(level > 1)
+	    {
+	      /* XXXX TODO replace with AY_EPSILON based comparison */
+	      if(memcmp(patch1->uknotv, patch2->uknotv,
+			(patch1->width+patch1->uorder)*sizeof(double)))
+		{
+		  *result = AY_FALSE;
+		  return AY_OK;
+		}
+
+	      if(memcmp(patch1->vknotv, patch2->vknotv,
+			(patch1->height+patch1->vorder)*sizeof(double)))
+		{
+		  *result = AY_FALSE;
+		  return AY_OK;
+		}
+	    } /* if */
+	} /* if */
 
       o1 = o1->next;
     } /* while */
@@ -14421,7 +14426,7 @@ ay_npt_iscomptcmd(ClientData clientData, Tcl_Interp *interp,
  int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_object *o = NULL, *patches = NULL;
  ay_list_object *sel = NULL;
- int comp = AY_FALSE, level = 1, i = 0;
+ int comp = AY_FALSE, level = 2, i = 0;
 
   if(!ay_selection)
     {
@@ -14500,8 +14505,10 @@ ay_npt_iscomptcmd(ClientData clientData, Tcl_Interp *interp,
  *
  * \param[in,out] patches a number of NURBS patch objects
  * \param[in] side which dimension to consider: 0 - both, 1 - U, 2 - V
- * \param[in] level desired level of compatibility: 0 - length/order,
- *  1 - length/order/knots
+ * \param[in] level desired level of compatibility:
+ *  0 - order,
+ *  1 - length,
+ *  2 - length/order/knots
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -14511,11 +14518,13 @@ ay_npt_makecompatible(ay_object *patches, int side, int level)
  int ay_status = AY_OK;
  ay_object *o;
  ay_nurbpatch_object *patch = NULL;
- int max_uorder = 0, max_vorder = 0;
+ int i, j;
+ int max_uorder = 0, max_vorder = 0, max_width = 0, max_height = 0;
  int Ualen = 0, Ublen = 0, Ubarlen = 0;
  int Valen = 0, Vblen = 0, Vbarlen = 0;
  double *Ubar = NULL, *Ua = NULL, *Ub = NULL;
  double *Vbar = NULL, *Va = NULL, *Vb = NULL;
+ double ud, *u1, *u2;
 
   if(!patches)
     return AY_ENULL;
@@ -14612,6 +14621,163 @@ ay_npt_makecompatible(ay_object *patches, int side, int level)
 
   if(level == 0)
     goto cleanup;
+
+  if(level < 2)
+    {
+      if(side == 0 || side == 1)
+	{
+	  /* find max width */
+	  o = patches;
+	  while(o)
+	    {
+	      patch = (ay_nurbpatch_object *) o->refine;
+
+	      if(patch->width > max_width)
+		max_width = patch->width;
+
+	      o = o->next;
+	    }
+
+	  o = patches;
+	  while(o)
+	    {
+	      patch = (ay_nurbpatch_object *) o->refine;
+
+	      if(patch->width < max_width)
+		{
+		  if(!(Ub = malloc((patch->width + patch->uorder +
+				   (max_width - patch->width))*sizeof(double))))
+		    {
+		      ay_status = AY_EOMEM;
+		      goto cleanup;
+		    }
+
+		  memcpy(Ub, patch->uknotv, (patch->width + patch->uorder) *
+			 sizeof(double));
+
+		  Ubarlen = max_width - patch->width;
+		  if(!(Ubar = malloc(Ubarlen*sizeof(double))))
+		    {
+		      free(Ub);
+		      ay_status = AY_EOMEM;
+		      goto cleanup;
+		    }
+
+		  for(i = 0; i < Ubarlen; i++)
+		    {
+		      ud = 0;
+		      u1 = &Ub[patch->uorder-1];
+		      u2 = &Ub[patch->width+i];
+		      for(j = patch->uorder-1; j < patch->width-1+i; j++)
+			{
+			  if(fabs(Ub[j]-Ub[j+1]) > AY_EPSILON)
+			    {
+			      if(fabs(Ub[j]-Ub[j+1]) > ud)
+				{
+				  ud = fabs(Ub[j] - Ub[j+1]);
+				  u1 = &(Ub[j]);
+				  u2 = &(Ub[j+1]);
+				}
+			    }
+			}
+		      Ubar[i] = *u1 + (*u2 - *u1) / 2.0;
+		      memmove(u2+1, u2, (Ubarlen-i)*sizeof(double));
+		      *u2 = Ubar[i];
+		    } /* for */
+
+		  ay_status = ay_npt_refineu(patch, Ubar, Ubarlen);
+
+		  free(Ub);
+		  Ub = NULL;
+		  free(Ubar);
+		  Ubar = NULL;
+
+		  if(ay_status)
+		    goto cleanup;
+		} /* if */
+
+	      o = o->next;
+	    } /* while */
+	} /* if */
+
+      if(side == 0 || side == 2)
+	{
+	  /* find max height */
+	  o = patches;
+	  while(o)
+	    {
+	      patch = (ay_nurbpatch_object *) o->refine;
+
+	      if(patch->height > max_height)
+		max_height = patch->height;
+
+	      o = o->next;
+	    }
+
+	  o = patches;
+	  while(o)
+	    {
+	      patch = (ay_nurbpatch_object *) o->refine;
+
+	      if(patch->height < max_height)
+		{
+		  if(!(Ub = malloc((patch->height + patch->vorder +
+	                        (max_height - patch->height))*sizeof(double))))
+		    {
+		      ay_status = AY_EOMEM;
+		      goto cleanup;
+		    }
+
+		  memcpy(Ub, patch->vknotv, (patch->height + patch->vorder) *
+			 sizeof(double));
+
+		  Ubarlen = max_height - patch->height;
+		  if(!(Ubar = malloc(Ubarlen*sizeof(double))))
+		    {
+		      free(Ub);
+		      ay_status = AY_EOMEM;
+		      goto cleanup;
+		    }
+
+		  for(i = 0; i < Ubarlen; i++)
+		    {
+		      ud = 0;
+		      u1 = &Ub[patch->vorder-1];
+		      u2 = &Ub[patch->height+i];
+		      for(j = patch->vorder-1; j < patch->height-1+i; j++)
+			{
+			  if(fabs(Ub[j]-Ub[j+1]) > AY_EPSILON)
+			    {
+			      if(fabs(Ub[j]-Ub[j+1]) > ud)
+				{
+				  ud = fabs(Ub[j] - Ub[j+1]);
+				  u1 = &(Ub[j]);
+				  u2 = &(Ub[j+1]);
+				}
+			    }
+			}
+		      Ubar[i] = *u1 + (*u2 - *u1) / 2.0;
+		      memmove(u2+1, u2, (Ubarlen-i)*sizeof(double));
+		      *u2 = Ubar[i];
+		    } /* for */
+
+		  ay_status = ay_npt_refineu(patch, Ubar, Ubarlen);
+
+		  free(Ub);
+		  Ub = NULL;
+		  free(Ubar);
+		  Ubar = NULL;
+
+		  if(ay_status)
+		    goto cleanup;
+		} /* if */
+
+	      o = o->next;
+	    } /* while */
+	} /* if */
+
+      goto cleanup;
+    } /* if */
 
   /* unify U knots */
   o = patches;
@@ -14712,7 +14878,7 @@ ay_npt_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
  int tcl_status = TCL_OK, ay_status = AY_OK;
- int i = 1, is_comp = AY_FALSE, force = AY_FALSE, level = 1, side = 0;
+ int i = 1, is_comp = AY_FALSE, force = AY_FALSE, level = 2, side = 0;
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *nc = NULL;
  ay_object *o = NULL, *p = NULL, *src = NULL, **nxt = NULL;
