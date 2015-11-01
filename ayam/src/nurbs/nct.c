@@ -2505,7 +2505,7 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 
       ton = Tcl_NewStringObj("u", -1);
       to = Tcl_NewDoubleObj(u);
-      Tcl_ObjSetVar2(interp,ton,NULL,to,TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
+      Tcl_ObjSetVar2(interp, ton, NULL, to, TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
       Tcl_Eval(interp, cmd);
       Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
     }
@@ -5240,12 +5240,13 @@ ay_nct_intersectca(ay_object *cu, ay_object *cv, double *intersections)
 
 /** ay_nct_iscompatible:
  * Checks the curve objects for compatibility (whether or not they
- * are of the same length, order, and defined on the same knot vector).
+ * are of the same order, length, and defined on the same knot vector).
  *
  * \param[in] curves a number of NURBS curve objects
  * \param[in] level determines which level of compatibility to check:
- *            0 - only check length and order,
- *            1 - check length, order, and knots
+ *            0 - check only the order,
+ *            1 - check order and length,
+ *            2 - check order, length, and knot values
  * \param[in,out] result is set to AY_TRUE if the curves are compatible,
  *  AY_FALSE else
  *
@@ -5270,25 +5271,28 @@ ay_nct_iscompatible(ay_object *curves, int level, int *result)
       curve1 = (ay_nurbcurve_object *) o1->refine;
       curve2 = (ay_nurbcurve_object *) o2->refine;
 
-      if(curve1->length != curve2->length)
-	{
-	  *result = AY_FALSE;
-	  return AY_OK;
-	}
-
       if(curve1->order != curve2->order)
 	{
 	  *result = AY_FALSE;
 	  return AY_OK;
 	}
 
-      if(level)
+      if(level > 0)
 	{
-	  if(memcmp(curve1->knotv, curve2->knotv,
-		    (curve1->length+curve1->order)*sizeof(double)))
+	  if(curve1->length != curve2->length)
 	    {
 	      *result = AY_FALSE;
 	      return AY_OK;
+	    }
+	  if(level > 1)
+	    {
+	      /* XXXX TODO: replace with AY_EPSILON based check? */
+	      if(memcmp(curve1->knotv, curve2->knotv,
+			(curve1->length+curve1->order)*sizeof(double)))
+		{
+		  *result = AY_FALSE;
+		  return AY_OK;
+		}
 	    }
 	}
 
@@ -5314,12 +5318,12 @@ ay_nct_makecompatible(ay_object *curves, int level)
  int ay_status = AY_OK;
  ay_object *o;
  ay_nurbcurve_object *curve = NULL;
- int max_order = 0;
+ int max_order = 0, max_length = 0;
  int stride, nh = 0, numknots = 0, t = 0, i, j, a, b;
  int Ualen = 0, Ublen = 0, Ubarlen = 0, clamp_me;
  double *Uh = NULL, *Qw = NULL, *realUh = NULL, *realQw = NULL;
  double *Ubar = NULL, *Ua = NULL, *Ub = NULL;
- double u = 0.0;
+ double u = 0.0, ud, *u1, *u2;
 
   if(!curves)
     return AY_ENULL;
@@ -5464,6 +5468,84 @@ ay_nct_makecompatible(ay_object *curves, int level)
 
   if(level < 1)
     goto cleanup;
+
+  if(level < 2)
+    {
+      /* find max length */
+      o = curves;
+      while(o)
+	{
+	  curve = (ay_nurbcurve_object *) o->refine;
+	  if(curve->length > max_length)
+	    max_length = curve->length;
+
+	  o = o->next;
+	}
+
+      o = curves;
+      while(o)
+	{
+	  curve = (ay_nurbcurve_object *) o->refine;
+
+	  if(curve->length < max_length)
+	    {
+	      if(!(Ub = malloc((curve->length + curve->order +
+				(max_length - curve->length))*sizeof(double))))
+		{
+		  ay_status = AY_EOMEM;
+		  goto cleanup;
+		}
+
+	      memcpy(Ub, curve->knotv, (curve->length + curve->order) *
+		     sizeof(double));
+
+	      Ubarlen = max_length - curve->length;
+	      if(!(Ubar = malloc(Ubarlen*sizeof(double))))
+		{
+		  free(Ub);
+		  ay_status = AY_EOMEM;
+		  goto cleanup;
+		}
+
+	      for(i = 0; i < Ubarlen; i++)
+		{
+		  ud = 0;
+		  u1 = &Ub[curve->order-1];
+		  u2 = &Ub[curve->length+i];
+		  for(j = curve->order-1; j < curve->length-1+i; j++)
+		    {
+		      if(fabs(Ub[j]-Ub[j+1]) > AY_EPSILON)
+			{
+			  if(fabs(Ub[j]-Ub[j+1]) > ud)
+			    {
+			      ud = fabs(Ub[j] - Ub[j+1]);
+			      u1 = &(Ub[j]);
+			      u2 = &(Ub[j+1]);
+			    }
+			}
+		    }
+		  Ubar[i] = *u1 + (*u2 - *u1) / 2.0;
+		  memmove(u2+1, u2, (Ubarlen-i)*sizeof(double));
+		  *u2 = Ubar[i];
+		}
+
+	      ay_status = ay_nct_refinekn(curve, /*maintain_ends=*/AY_TRUE,
+					  Ubar, Ubarlen);
+
+	      free(Ub);
+	      Ub = NULL;
+	      free(Ubar);
+	      Ubar = NULL;
+
+	      if(ay_status)
+		goto cleanup;
+	    } /* if */
+
+	  o = o->next;
+	} /* while */
+
+      goto cleanup;
+    }
 
   /* unify knots */
   o = curves;

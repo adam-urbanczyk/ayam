@@ -3397,7 +3397,7 @@ ay_npt_concat(ay_object *o, int type, int order,
   /* make all curves compatible */
   if(!compatible)
     {
-      ay_status = ay_nct_makecompatible(allcurves, /*level=*/1);
+      ay_status = ay_nct_makecompatible(allcurves, /*level=*/2);
       if(ay_status)
 	goto cleanup;
     }
@@ -5223,7 +5223,7 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
 	  (void)ay_object_delete(curve);
 	  return ay_status;
 	}
-      ay_status = ay_nct_makecompatible(curve, /*level=*/1);
+      ay_status = ay_nct_makecompatible(curve, /*level=*/2);
       if(ay_status)
 	{
 	  (void)ay_object_deletemulti(curve, AY_TRUE);
@@ -5759,13 +5759,13 @@ ay_npt_skinu(ay_object *curves, int order, int knot_type,
     return AY_ENULL;
 
   i = AY_TRUE;
-  ay_status = ay_nct_iscompatible(curves, /*level=*/1, &i);
+  ay_status = ay_nct_iscompatible(curves, /*level=*/2, &i);
   if(ay_status)
     {goto cleanup;}
 
   if(!i)
     {
-      ay_status = ay_nct_makecompatible(curves, /*level=*/1);
+      ay_status = ay_nct_makecompatible(curves, /*level=*/2);
       if(ay_status)
 	{goto cleanup;}
     }
@@ -5938,13 +5938,13 @@ ay_npt_skinv(ay_object *curves, int order, int knot_type,
     return AY_ENULL;
 
   i = AY_TRUE;
-  ay_status = ay_nct_iscompatible(curves, /*level=*/1, &i);
+  ay_status = ay_nct_iscompatible(curves, /*level=*/2, &i);
   if(ay_status)
     {goto cleanup;}
 
   if(!i)
     {
-      ay_status = ay_nct_makecompatible(curves, /*level=*/1);
+      ay_status = ay_nct_makecompatible(curves, /*level=*/2);
       if(ay_status)
 	{goto cleanup;}
     }
@@ -6953,8 +6953,8 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
     vorder = numcu;
 
   /* make curves compatible (defined on the same knot vector) */
-  ay_status = ay_nct_makecompatible(cu, /*level=*/1);
-  ay_status = ay_nct_makecompatible(cv, /*level=*/1);
+  ay_status = ay_nct_makecompatible(cu, /*level=*/2);
+  ay_status = ay_nct_makecompatible(cv, /*level=*/2);
 
   if(!in)
     {
@@ -7694,7 +7694,7 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo,
 
   /* in case the surface has different orders for U/V
      make the curves compatible (this also clamps them) */
-  ay_status = ay_nct_makecompatible(list, /*level=*/1);
+  ay_status = ay_nct_makecompatible(list, /*level=*/2);
   if(ay_status)
     {ay_status = AY_ERROR; goto cleanup;}
 
