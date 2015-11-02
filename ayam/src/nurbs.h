@@ -1406,7 +1406,7 @@ void ay_npt_gentexcoords(ay_nurbpatch_object *np, ay_tag *tags,
 
 /** Check compatibility of surfaces.
  */
-int ay_npt_iscompatible(ay_object *patches, int level, int *result);
+int ay_npt_iscompatible(ay_object *patches, int side, int level, int *result);
 
 /** Tcl command to check compatibility of selected surfaces.
  */

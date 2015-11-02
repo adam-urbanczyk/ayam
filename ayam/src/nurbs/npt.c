@@ -14346,6 +14346,7 @@ ay_npt_gentexcoords(ay_nurbpatch_object *np, ay_tag *tags, double **result)
  * are defined on the same knot vector).
  *
  * \param[in] patches a number of NURBS patch objects
+ * \param[in] side which dimension to consider: 0 - both, 1 - U, 2 - V
  * \param[in] level determines which level of compatibility to check:
  *            0 - only check the order,
  *            1 - check length and order,
@@ -14356,7 +14357,7 @@ ay_npt_gentexcoords(ay_nurbpatch_object *np, ay_tag *tags, double **result)
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_npt_iscompatible(ay_object *patches, int level, int *result)
+ay_npt_iscompatible(ay_object *patches, int side, int level, int *result)
 {
  ay_object *o1, *o2;
  ay_nurbpatch_object *patch1 = NULL, *patch2 = NULL;
@@ -14374,48 +14375,66 @@ ay_npt_iscompatible(ay_object *patches, int level, int *result)
       patch1 = (ay_nurbpatch_object *) o1->refine;
       patch2 = (ay_nurbpatch_object *) o2->refine;
 
-      if(patch1->uorder != patch2->uorder)
+      if(side == 0 || side == 1)
 	{
-	  *result = AY_FALSE;
-	  return AY_OK;
-	}
-
-      if(patch1->vorder != patch2->vorder)
-	{
-	  *result = AY_FALSE;
-	  return AY_OK;
-	}
-
-      if(level > 0)
-	{
-	  if(patch1->width != patch2->width)
+	  if(patch1->uorder != patch2->uorder)
 	    {
 	      *result = AY_FALSE;
 	      return AY_OK;
 	    }
+	}
 
-	  if(patch1->height != patch2->height)
+      if(side == 0 || side == 2)
+	{
+	  if(patch1->vorder != patch2->vorder)
 	    {
 	      *result = AY_FALSE;
 	      return AY_OK;
+	    }
+	}
+
+      if(level > 0)
+	{
+	  if(side == 0 || side == 1)
+	    {
+	      if(patch1->width != patch2->width)
+		{
+		  *result = AY_FALSE;
+		  return AY_OK;
+		}
+	    }
+
+	  if(side == 0 || side == 2)
+	    {
+	      if(patch1->height != patch2->height)
+		{
+		  *result = AY_FALSE;
+		  return AY_OK;
+		}
 	    }
 
 	  if(level > 1)
 	    {
 	      /* XXXX TODO replace with AY_EPSILON based comparison */
-	      if(memcmp(patch1->uknotv, patch2->uknotv,
-			(patch1->width+patch1->uorder)*sizeof(double)))
+	      if(side == 0 || side == 1)
 		{
-		  *result = AY_FALSE;
-		  return AY_OK;
+		  if(memcmp(patch1->uknotv, patch2->uknotv,
+			    (patch1->width+patch1->uorder)*sizeof(double)))
+		    {
+		      *result = AY_FALSE;
+		      return AY_OK;
+		    }
 		}
 
-	      if(memcmp(patch1->vknotv, patch2->vknotv,
-			(patch1->height+patch1->vorder)*sizeof(double)))
+	      if(side == 0 || side == 2)
 		{
-		  *result = AY_FALSE;
-		  return AY_OK;
-		}
+		  if(memcmp(patch1->vknotv, patch2->vknotv,
+			    (patch1->height+patch1->vorder)*sizeof(double)))
+		    {
+		      *result = AY_FALSE;
+		      return AY_OK;
+		    }
+		} /* if */
 	    } /* if */
 	} /* if */
 
@@ -14440,7 +14459,7 @@ ay_npt_iscomptcmd(ClientData clientData, Tcl_Interp *interp,
  int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_object *o = NULL, *patches = NULL;
  ay_list_object *sel = NULL;
- int comp = AY_FALSE, level = 2, i = 0;
+ int comp = AY_FALSE, level = 2, side = 0, i = 1;
 
   if(!ay_selection)
     {
@@ -14448,13 +14467,25 @@ ay_npt_iscomptcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  if(argc > 1)
+  while(i < argc)
     {
-      if((argv[1][0] == '-') && (argv[1][1] == 'l'))
+      if((argv[i][0] == '-') && (argv[i][1] == 'l'))
 	{
 	  tcl_status = Tcl_GetInt(interp, argv[2], &level);
 	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	  i++;
 	}
+      else
+      if((argv[i][0] == '-') && (argv[i][1] == 'u'))
+	{
+	  side = 1;
+	}
+      else
+      if((argv[i][0] == '-') && (argv[i][1] == 'v'))
+	{
+	  side = 2;
+	}
+      i++;
     }
 
   sel = ay_selection;
@@ -14485,7 +14516,7 @@ ay_npt_iscomptcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       (patches[i-1]).next = NULL;
 
-      ay_status = ay_npt_iscompatible(patches, level, &comp);
+      ay_status = ay_npt_iscompatible(patches, side, level, &comp);
       if(ay_status)
 	{
 	  ay_error(ay_status, argv[0], "Could not check the surfaces.");
@@ -14917,11 +14948,14 @@ ay_npt_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
 	  i++;
 	}
       else
-      if((argv[i][0] == '-') && (argv[i][1] == 's'))
+      if((argv[i][0] == '-') && (argv[i][1] == 'u'))
 	{
-	  tcl_status = Tcl_GetInt(interp, argv[i+1], &side);
-	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
-	  i++;
+	  side = 1;
+	}
+      else
+      if((argv[i][0] == '-') && (argv[i][1] == 'v'))
+	{
+	  side = 2;
 	}
       i++;
     }
@@ -14957,7 +14991,7 @@ ay_npt_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!force)
     {
-      ay_status = ay_npt_iscompatible(src, level, &is_comp);
+      ay_status = ay_npt_iscompatible(src, side, level, &is_comp);
       if(ay_status)
 	{
 	  ay_error(ay_status, argv[0],
