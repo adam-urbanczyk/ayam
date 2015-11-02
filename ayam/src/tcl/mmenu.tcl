@@ -219,12 +219,12 @@ $m.cu add command -label "NURBCurve" -command {
 } -underline 4
 #  ^^^^^^^^^^^ => C
 $m.cu add command -label "ICurve" -command {
-    runTool {ay(iclen) ay(ncadda)} { "Length:" "AddArgs:"}\
+    runTool {ay(iclen) ay(ncadda)} {"Length:" "AddArgs:"}\
 	"crtOb ICurve -length %0 %1; uCR; sL; notifyOb; rV;"\
 	"Create ICurve"
 } -underline 0
 $m.cu add command -label "ACurve" -command {
-    runTool {ay(aclen) ay(ncadda)} { "Length:" "AddArgs:"}\
+    runTool {ay(aclen) ay(ncadda)} {"Length:" "AddArgs:"}\
 	"crtOb ACurve -length %0 %1; uCR; sL; notifyOb; rV;"\
 	"Create ACurve"
 } -underline 0
@@ -427,7 +427,7 @@ $m.nct add command -label "Close" -command { undo save Close;
 $m.nct add command -label "Make Periodic" -command { undo save "Make Periodic";
                                             ncurve_makeperiodic;
                                             plb_update; rV }
-$m.nct add command -label "Concat" -command { concatNC; uCR; rV}
+$m.nct add command -label "Concat" -command { concatNC; uCR; rV }
 $m.nct add command -label "Split" -command {
     runTool ay(splitu) {"Split at:"}\
 	"undo save Split; splitNC %0; uCR; sL; rV"\
@@ -742,6 +742,8 @@ $m.npt add command -label "Reset Weights" -underline 0 -command {
 	ayError 2 "Reset_Weights" "Need an open view!"
     }
 }
+$m.npt add command -label "Make Compatible" -underline 0 -command {
+    undo save MakeCompNP; makeCompNP; rV; }
 $m.npt add command -label "Tween" -underline 1 -command {
     runTool ay(tweenr) {"Ratio:"}\
 	"undo save TweenNP; tweenNP %0; uCR; rV"\
