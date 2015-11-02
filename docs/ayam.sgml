@@ -15765,12 +15765,18 @@ concatS &ndash; concatenate surfaces:
  <item>Synopsis: <tt/"concatS [-o order | -t type | -k knottype | -u uvselect]"/
  <item>Background: Yes, Undo: No, Safe: No
  <item>Description: Concatenate the selected surface objects into a
-single NURBS patch. The option <tt/"-o"/ determines the desired order
-of the surface in U direction. The option <tt/"-t"/ allows to set a
-surface type
-(0 &ndash; open, 1 &ndash; closed, 3 &ndash; periodic; default 0), and
-<tt/"-k"/ allows to set a knot type (default 1 &ndash; NURB).
+single NURBS patch.
+<p><p>
+The option <tt/"-o"/ determines the desired order
+of the surface in U direction.
+<p>
+The option <tt/"-t"/ allows to set a surface type
+(0 &ndash; open, 1 &ndash; closed, 3 &ndash; periodic; default 0).
+<p>
+The option <tt/"-k"/ allows to set a knot type (default 1 &ndash; NURB).
+<p>
 Finally, the <tt/"-u"/ option allows to specify the uv-select-string.
+<p>
 See also section <ref id="concatnpp" name="ConcatNPAttr Property">
 for more information on these options.
 </itemize>
@@ -15848,12 +15854,18 @@ See also section <ref id="buildnpt" name="Build from Curves Tool">.
 <label id="sciscompnp">
 isCompNP:
 <itemize>
- <item>Synopsis: <tt>"isCompNP [-s side | -l level]"</tt>
+ <item>Synopsis: <tt>"isCompNP [(-u|-v) | -l level]"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: This command returns 1 if the selected NURBS surfaces
 are compatible (i.e.~defined on the same knot vector), otherwise it returns 0.
-If the option <tt/"-l"/ is 0, only width/height and order of the surfaces
-are compared.
+<p><p>
+If the option <tt/"-u"/ is given, only the U dimension will be checked.<newline>
+If the option <tt/"-v"/ is given, only the V dimension will be checked.
+<p>
+If the option <tt/"-l"/ is 0, only width/height of the surfaces
+are compared.<newline>
+If the option <tt/"-l"/ is 1, width/height and order of the surfaces are
+compared.
 </itemize>
 
 <p>
@@ -15862,11 +15874,14 @@ are compared.
 <label id="scmakecompnp">
 makeCompNP &ndash; make NURBS surfaces compatible
 <itemize>
- <item>Synopsis: <tt/"makeCompNP [-f | -s side | -l level]"/
+ <item>Synopsis: <tt/"makeCompNP [-f | (-u|-v) | -l level]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: makes the selected NURBS surfaces compatible
 i.e.~of the same order and defined on the same knot vectors.
 <p><p>
+If the option <tt/"-u"/ is given, only the U dimension will be adapted.<newline>
+If the option <tt/"-v"/ is given, only the V dimension will be adapted.
+<p>
 If the option <tt/"-l"/ is 0, only the orders will be adapted.<newline>
 If the option <tt/"-l"/ is 1, only the orders and lengths will be adapted.
 <p>
