@@ -202,13 +202,13 @@ Due to the limited precision of floating point arithmetics used in Ayam,
 coordinate values should be defined in the range between -10.0 and 10.0
 for most accurate results.
 
-<sect2>Rational Style
+<sect2>Rational Style<label id="rats">
 <p>
 NURBS curves and surfaces support rational coordinate values by
 allowing a fourth value (the weight) to be specified for each
 control point.
 In Ayam versions prior to 1.19 those weights were always multiplied
-with the coordinate values (i.e.~<em/homogenous/ rational coordinates)
+with the coordinate values (i.e.~<em/homogeneous/ rational coordinates)
 to allow faster drawing with OpenGL/GLU, which expects rational
 coordinate values to be delivered this way.
 But a negative side effect of this approach was that modification
@@ -12244,8 +12244,8 @@ be removed <it/r/ times from the knot vector of the selected curves if
 the shape of the resulting curve does not deviate more than <it/tol/
 from the original curve in any point. Since Ayam 1.20 the knot to remove
 may also be specified using its (zero based)
-index in the knot vector (by entering -i index instead of a parametric
-value t, i.e.~use <tt/"-i 3"/ instead of <tt/"0.5"/ for the knot vector
+index in the knot vector (i.e.~by entering <tt/"-i 3"/ instead of
+<tt/"0.5"/ for the knot vector
 <tt/"0 0 0 0.5 1 1 1"/).<newline>
 If the knot can not be removed <it/r/ times due to the tolerance given, an
 error is reported and the original curve is left unchanged.
@@ -12424,7 +12424,7 @@ scripting interface command <ref id="sctoxyc" name="toXYC">.
 <caption>Make Compatible Tool (left: Original Curves, right: Compatible Curves)</caption>
 </figure>
 <descrip>
-<tag/Arguments/ The Make Compatible tool takes a number of
+<tag/Arguments/ The make compatible tool takes a number of
 NURBS curves from the selection.
 <tag/Operation/ The curves will be made compatible, so that they
 are of the same length and order and defined on the same knot vector.
@@ -12993,8 +12993,8 @@ removed <it/r/ times from the knot vector of the selected surfaces if the
 shape of the resulting surfaces does not deviate more than <it/tol/ from
 the original surfaces in any point. Since Ayam 1.20
 the knot to remove may also be specified using its (zero based)
-index in the knot vector (by entering -i index instead of a parametric
-value t, i.e.~use <tt/"-i 3"/ instead of <tt/"0.5"/ for the knot vector
+index in the knot vector (i.e.~by entering <tt/"-i 3"/ instead of
+<tt/"0.5"/ for the knot vector
 <tt/"0 0 0 0.5 1 1 1"/).<newline>
 If the knot can not be removed <it/r/ times due to the tolerance given, an
 error is reported and the original surface is left unchanged.
@@ -13088,6 +13088,26 @@ This tool does not change the geometry of the patches.
 See also the documentation of the corresponding
 scripting interface command <ref id="screscaleknnp" name="rescaleknNP">.
 </descrip>
+
+<sect2>Make Compatible Tool<label id="makecompst">
+<p>
+
+<descrip>
+<tag/Arguments/ The make compatible tool takes a number of
+NURBS surfaces from the selection.
+<tag/Operation/ The surfaces will be made compatible, so that they
+are of the same width/height and orders and defined on the same knot vector.
+<tag/Notes/ This tool does not change the geometry of the surfaces.
+However, since clamping, degree elevation, and knot insertion may be
+used on the surfaces, their order, knot vectors, and control points
+may be changed.
+
+The point selection will be removed from the original objects.
+
+See also the documentation of the corresponding
+scripting interface command <ref id="scmakecompnp" name="makeCompNP">.
+</descrip>
+
 
 <#if out=latex><x/newpage/</#if>
 <sect1>Conversion Tools
@@ -14873,7 +14893,7 @@ addTag:
  <item>Description: Add a tag with type-string <tt/type/ and value-string
 <tt/value/ to the currently selected objects.<newline>
 It is legal to deliver <tt>""</tt> as value parameter. This is
-e.g.~needed for the <tt/"NoExport"/ tag.<newline>
+e.g.~needed for the <tt/"NoExport"/ tag type.<newline>
 Potentially existing tags of the designated type will <em/not/ be
 changed.<newline>
 If the tag type is not registered, a corresponding warning message may be
@@ -15064,17 +15084,17 @@ remknNC &ndash; remove knot from NURBS curve:
  <item>Synopsis: <tt/"remknNC (u | -i ind) r [tol]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Remove a knot at the position
-specified by u (u must be in the valid range of the knot vector
-of the selected curve) r times from the curve. Since Ayam 1.20
+specified by <em/u/ (u must be in the valid range of the knot vector
+of the selected curve) <em/r/ times from the curve. Since Ayam 1.20
 the knot to remove may also be specified using its (zero based)
 index in the knot vector (i.e.~use <tt/"remknNC -i 3 1"/ instead of
 <tt/"remknNC 0.5 1"/ for the knot vector <tt/"0 0 0 0.5 1 1 1"/).
 <p><p>
-Note that the
-shape of the curve may be changed by this tool unless the parameter
-tol is specified. If tol is specified the new curve does not deviate
-from the original curve more than tol in any point on the curve.
-If the knot can not be removed r times due to the tolerance, an
+Note that the shape of the curve may be changed by this tool unless
+the parameter <em/tol/ is specified.
+If <em/tol/ is specified the new curve does not deviate
+from the original curve more than <em/tol/ in any point on the curve.
+If the knot can not be removed <em/r/ times due to the tolerance, an
 error is reported and the original curve is left unchanged.
 <p>
 See also section <ref id="remknt" name="Remove Knot Tool">.
@@ -15327,10 +15347,12 @@ of the curve will be changed to <tt/"Custom"/.
 <label id="sciscompnc">
 isCompNC:
 <itemize>
- <item>Synopsis: <tt>"isCompNC"</tt>
+ <item>Synopsis: <tt>"isCompNC [-l level]"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: This command returns 1 if the selected NURBS curves
 are compatible (i.e.~defined on the same knot vector), otherwise it returns 0.
+If the option <tt/"-l"/ is 0, only length and order of the curves
+are compared.
 </itemize>
 
 <p>
@@ -15339,11 +15361,14 @@ are compatible (i.e.~defined on the same knot vector), otherwise it returns 0.
 <label id="scmakecompnc">
 makeCompNC &ndash; make NURBS curves compatible
 <itemize>
- <item>Synopsis: <tt/"makeCompNC"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Synopsis: <tt/"makeCompNC [-f | -l level]"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: makes the selected NURBS curves compatible
 i.e.~of the same order and defined on the same knot vector.
 <p><p>
+If the option <tt/"-l"/ is 0, only the orders will be adapted.<newline>
+If the option <tt/"-l"/ is 1, only the orders and lengths will be adapted.
+<p>
 See also section <ref id="makecompt" name="Make Compatible Tool">.
 </itemize>
 
@@ -15521,7 +15546,7 @@ the knot to remove may also be specified using its (zero based)
 index in the knot vector (i.e.~use <tt/"remknuNP -i 3 1"/ instead of
 <tt/"remknuNP 0.5 1"/ for the knot vector <tt/"0 0 0 0.5 1 1 1"/).
 Note that the shape of the surface may be changed by this tool unless the
-parameter tol is specified. If tol is specified, the new surface does
+parameter tol is specified. If <tt/tol/ is specified, the new surface does
 not deviate from the original surface more than tol in any point.
 If the knot can not be removed r times due to the tolerance, an
 error is reported and the original surface is left unchanged.
@@ -15544,7 +15569,7 @@ the knot to remove may also be specified using its (zero based)
 index in the knot vector (i.e.~use <tt/"remknvNP -i 3 1"/ instead of
 <tt/"remknvNP 0.5 1"/ for the knot vector <tt/"0 0 0 0.5 1 1 1"/).
 Note that the shape of the surface may be changed by this tool unless
-the parameter tol is specified. If tol is specified, the new surface does
+the parameter tol is specified. If <tt/tol/ is specified, the new surface does
 not deviate from the original surface more than tol in any point.
 If the knot can not be removed r times due to the tolerance, an
 error is reported and the original surface is left unchanged.
@@ -15815,6 +15840,37 @@ The option <tt/"-t"/ allows to set a surface type
 The option <tt/"-k"/ allows to set a knot type (default 1 &ndash; NURB).
 <p>
 See also section <ref id="buildnpt" name="Build from Curves Tool">.
+</itemize>
+
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
+<label id="sciscompnp">
+isCompNP:
+<itemize>
+ <item>Synopsis: <tt>"isCompNP [-s side | -l level]"</tt>
+ <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Description: This command returns 1 if the selected NURBS surfaces
+are compatible (i.e.~defined on the same knot vector), otherwise it returns 0.
+If the option <tt/"-l"/ is 0, only width/height and order of the surfaces
+are compared.
+</itemize>
+
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
+<label id="scmakecompnp">
+makeCompNP &ndash; make NURBS surfaces compatible
+<itemize>
+ <item>Synopsis: <tt/"makeCompNP [-f | -s side | -l level]"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: makes the selected NURBS surfaces compatible
+i.e.~of the same order and defined on the same knot vectors.
+<p><p>
+If the option <tt/"-l"/ is 0, only the orders will be adapted.<newline>
+If the option <tt/"-l"/ is 1, only the orders and lengths will be adapted.
+<p>
+See also section <ref id="makecompst" name="Make Compatible Tool">.
 </itemize>
 
 
@@ -21245,7 +21301,11 @@ Index:
 <label id="indexm"><tt/&nbsp;&nbsp;<bf/M//
 <list>
 <item>MajorRad: <ref id="top" name="Torus attribute">
-<item>Make Compatible: <ref id="makecompt" name="NCurve tool">
+<item>Make Compatible:
+<itemize>
+<item><ref id="makecompt" name="curve tool">,
+<item><ref id="makecompst" name="surface tool">
+</itemize>
 <item>Mark: <ref id="vat" name="View attribute">
 <item>MarkHidden: <ref id="hidprefs" name="hidden preference settings">
 <item>Master: <ref id="mmedit" name="edit menu entry">
@@ -22012,7 +22072,11 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="impwav" name="Wavefront OBJ import">,
 <item><ref id="expwav" name="Wavefront OBJ export">
 </itemize>
-<item>Weight: <ref id="iac" name="single point weight editing">
+<item>Weight:
+<itemize>
+<item><ref id="editac" name="single point weight editing">
+<item><ref id="rats" name="rational style">
+</itemize>
 <item>WheelZoom: <ref id="hidprefs" name="hidden preference setting">
 <item>Width:
 <itemize>
