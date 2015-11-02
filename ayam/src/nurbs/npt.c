@@ -13806,13 +13806,20 @@ ay_npt_refineu(ay_nurbpatch_object *patch, double *newknotv, int newknotvlen)
   if(!(Ubar = malloc((patch->width + patch->uorder + count)*
 		     sizeof(double))))
     {
-      free(X);
+      if(!newknotv)
+	{
+	  free(X);
+	}
       ay_error(AY_EOMEM, fname, NULL);
       return AY_ERROR;
     }
   if(!(Qw = malloc((patch->width + count)*patch->height*4*sizeof(double))))
     {
-      free(X); free(Ubar);
+      if(!newknotv)
+	{
+	  free(X);
+	}
+      free(Ubar);
       ay_error(AY_EOMEM, fname, NULL);
       return AY_ERROR;
     }
@@ -13920,13 +13927,20 @@ ay_npt_refinev(ay_nurbpatch_object *patch, double *newknotv, int newknotvlen)
   if(!(Vbar = malloc((patch->height + patch->vorder + count)*
 		     sizeof(double))))
     {
-      free(X);
+      if(!newknotv)
+	{
+	  free(X);
+	}
       ay_error(AY_EOMEM, fname, NULL);
       return AY_ERROR;
     }
   if(!(Qw = malloc((patch->height + count)*patch->width*4*sizeof(double))))
     {
-      free(X); free(Vbar);
+      if(!newknotv)
+	{
+	  free(X);
+	}
+      free(Vbar);
       ay_error(AY_EOMEM, fname, NULL);
       return AY_ERROR;
     }
