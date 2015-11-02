@@ -1,4 +1,4 @@
-[14. Oct 2015] CVS-Head:
+[2. Nov 2015] CVS-Head:
 ========================
 Bug Fixes:
 o DXF export of polymeshes misses transformation attributes (SF 508)
@@ -27,6 +27,10 @@ o added a tool that connects PolyMesh objects on their edge (to realize
 o added interactive action to select all points of a boundary of a
   PolyMesh by picking a point on that boundary, started via new shortcut <b>
 o default shortcut for "Set Mark to BoundaryBox Center" is now <B>
+o added tool to make NURBS surfaces compatible
+o added tool to check the compatibility of NURBS surfaces
+o added option to compatibility checking/making for NURBS surfaces to only
+  adapt orders/lengths
 
 GUI:
 o moved some search options to a new section "Advanced Options" that
@@ -47,6 +51,7 @@ o added example/helper scripts "tweenc.tcl"/"tweencgui.tcl" that allow
   to tween incompatible curves using a Script object
 o added command "remsnPo" to remove the smooth normals from a PolyMesh
 o added command "flipPo" to flip normals and/or loops of a PolyMesh
+
 
 [23. Jun 2015] Ayam-1.22:
 =========================
