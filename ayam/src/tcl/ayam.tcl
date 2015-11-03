@@ -675,6 +675,8 @@ array set ay {
  remknr 1
  remtol Inf
  refinekn 0.5
+ refineknu ""
+ refineknv ""
  splitu 0.5
  trimumin 0.0
  trimumax 1.0
@@ -735,8 +737,13 @@ array set ay {
  curvatp 100
  curvatw 5.0
  curvats 1.0
+ closet 0
+ closee 1
+ closek 0
  elevnpu 1
  elevnpv 1
+ clevel_l {"Order" "Order&Length" "Full"}
+ clevel 2
  soext "so"
  shiftcbsp 1
  askedscriptdisable 0

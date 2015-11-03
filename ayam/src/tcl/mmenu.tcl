@@ -537,8 +537,12 @@ $m.nct add command -label "Tween" -command {
 
 $m.nct add command -label "To XY" -command {
     undo save ToXYNC; toXYNC; rV; }
+
 $m.nct add command -label "Make Compatible" -command {
-    undo save MakeCompNC; makeCompNC; rV; }
+    runTool ay(clevel) {"Level:"}\
+	"undo save MakeCompNC; makeCompNC -l %0; rV"\
+	"Make Compatible" makecompt
+}
 
 $m add separator
 
@@ -743,7 +747,10 @@ $m.npt add command -label "Reset Weights" -underline 0 -command {
     }
 }
 $m.npt add command -label "Make Compatible" -underline 0 -command {
-    undo save MakeCompNP; makeCompNP; rV; }
+    runTool ay(clevel) {"Level:"}\
+	"undo save MakeCompNP; makeCompNP -l %0; rV"\
+	"Make Compatible" makecompst
+}
 $m.npt add command -label "Tween" -underline 1 -command {
     runTool ay(tweenr) {"Ratio:"}\
 	"undo save TweenNP; tweenNP %0; uCR; rV"\
