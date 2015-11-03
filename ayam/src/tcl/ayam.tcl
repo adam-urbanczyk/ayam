@@ -674,7 +674,7 @@ array set ay {
  remknu 0.5
  remknr 1
  remtol Inf
- refinekn 0.5
+ refinekn ""
  refineknu ""
  refineknv ""
  splitu 0.5
