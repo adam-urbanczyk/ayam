@@ -107,18 +107,24 @@ proc runTool { argvars argstrings command title {advargs ""} } {
 	    set ToolParams($nami) $vali
 	    while { 1 } {
 		if { $vali != "" } {
-		    if { [string is double $vali] } {
-			addParam $w.f1 ToolParams $nam
-			break;
-		    }
 		    if { [string is integer $vali] } {
 			set l ""
-			catch {eval "set l \$${nami}_l"}
+			set il $i
+			if { $isarray } {
+			    set il [ string map {")" "_l)"} $il ]
+			} else {
+			    append il _l
+			}
+			catch {eval "set l \$::${il}"}
 			if { $l != "" } {
 			    addMenu $w.f1 ToolParams $nam $l
 			} else {
 			    addParam $w.f1 ToolParams $nam
 			}
+			break;
+		    }
+		    if { [string is double $vali] } {
+			addParam $w.f1 ToolParams $nam
 			break;
 		    }
 		    if { [string is boolean $vali] } {
