@@ -55,8 +55,6 @@ int ay_pact_deleteic(ay_icurve_object *icurve, int *index,
 int ay_pact_deleteac(ay_acurve_object *acurve, int *index,
 		     double objX, double objY, double objZ);
 
-void ay_pact_flashpoint(int ignore_old, double *pnt, ay_object *o);
-
 int ay_pact_notify(ay_object *o, int j, int k);
 
 int ay_pact_multincnc(ay_object *o);
@@ -2285,7 +2283,7 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
   oldwiny = winy;
 
   /* flash option given? */
-  if(start && argc > 4)
+  if(start && argc > 5)
     {
       if(*pact_ratcpo && ay_prefs.rationalpoints && coords)
 	{

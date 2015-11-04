@@ -351,6 +351,9 @@ ay_toglcb_display(struct Togl *togl)
 	  ay_prefs.stess_qf = stqf;
 	  /*view->display_list_active = AY_FALSE;*/
 	}
+
+      /* front buffer can not contain flashed points anymore now */
+      ay_pact_flashpoint(AY_FALSE, NULL, NULL);
     } /* if !altdisp */
 
 #ifdef AYENABLEPPREV
