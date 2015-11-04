@@ -1463,20 +1463,11 @@ proc actionEditP { w } {
 	undo save EditPnt
 	%W mc
 	if { $ayprefs(FlashPoints) == 1 } {
-	    %W startpepac %x %y -flash -ignoreold;
-	    %W pepac -start %x %y -flash
+	    %W pepac -start %x %y
 	} else {
 	    %W startpepac %x %y
 	    %W pepac -start %x %y
 	}
-    }
-
-    bind $w <ButtonPress-1> {
-	set ay(action) 1
-	undo save EditPnt
-	%W mc
-	%W startpepac %x %y
-	%W pepac -start %x %y
     }
 
     bind $w <B1-Motion> {

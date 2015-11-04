@@ -786,6 +786,10 @@ int ay_pact_pentcb(struct Togl *togl, int argc, char *argv[]);
  */
 void ay_pact_griddify(double *n, double grid);
 
+/** helper to flash points
+ */
+void ay_pact_flashpoint(int ignore_old, double *pnt, ay_object *o);
+
 /** direct point edit action
  */
 int ay_pact_petcb(struct Togl *togl, int argc, char *argv[]);
