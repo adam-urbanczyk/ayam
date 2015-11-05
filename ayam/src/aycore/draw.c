@@ -618,7 +618,7 @@ ay_draw_grid(struct Togl *togl)
 
       /*
 	protect from drawing more lines than the view has pixels;
-	more precisely, we even stop drawing the grid if we do not
+	more precisely, we already stop drawing the grid if we do not
 	have more than two blank pixels between two grid lines
       */
       if((dx < 3.0) || (dy < 3.0))
@@ -671,7 +671,7 @@ ay_draw_grid(struct Togl *togl)
 
       /*
 	protect from drawing more lines than the view has pixels;
-	more precisely, we even stop drawing the grid if we do not
+	more precisely, we already stop drawing the grid if we do not
 	have more than two blank pixels between two grid lines
       */
       if((grid/view->conv_x < 3.0) || (grid/view->conv_y < 3.0))
@@ -681,53 +681,23 @@ ay_draw_grid(struct Togl *togl)
 	{
 	case AY_VTFRONT:
 	case AY_VTTRIM:
-	  if(aspect > 1.0)
-	    {
-	      minwinx = ((-aspect * view->zoom) + view->from[0]) - grid;
-	      minwiny = ((-view->zoom) + view->from[1]) - grid;
-	    }
-	  else
-	    {
-	      minwiny = ((view->zoom/-aspect) + view->from[1]) - grid;
-	      minwinx = ((-view->zoom) + view->from[0] - grid);
-	    }
+	  minwinx = ((-aspect * view->zoom) + view->from[0]) - grid;
+	  minwiny = ((-view->zoom) + view->from[1]) - grid;
 	  break;
 	case AY_VTSIDE:
-	  if(aspect > 1.0)
-	    {
-	      minwinx = ((-aspect * view->zoom) + view->from[2]) - grid;
-	      minwiny = ((-view->zoom) + view->from[1]) - grid;
-	    }
-	  else
-	    {
-	      minwiny = ((view->zoom/-aspect) + view->from[1]) - grid;
-	      minwinx = ((-view->zoom) + view->from[2] - grid);
-	    }
+	  minwinx = ((-aspect * view->zoom) + view->from[2]) - grid;
+	  minwiny = ((-view->zoom) + view->from[1]) - grid;
 	  break;
 	case AY_VTTOP:
-	  if(aspect > 1.0)
-	    {
-	      minwinx = ((-aspect * view->zoom) + view->from[0]) - grid;
-	      minwiny = ((-view->zoom) + view->from[2]) - grid;
-	    }
-	  else
-	    {
-	      minwiny = ((-aspect * view->zoom) + view->from[2]) - grid;
-	      minwinx = ((-view->zoom) + view->from[0] - grid);
-	    }
+	  minwinx = ((-aspect * view->zoom) + view->from[0]) - grid;
+	  minwiny = ((-view->zoom) + view->from[2]) - grid;
+	  break;
+	default:
 	  break;
 	}
 
-      if(aspect > 1.0)
-	{
-	  maxwinx = minwinx + 2*((aspect * view->zoom)) + grid;
-	  maxwiny = minwiny + 2*(view->zoom) + grid;
-	}
-      else
-	{
-	  maxwinx = minwinx + 2*((view->zoom/aspect)) + grid;
-	  maxwiny = minwiny + 2*(-view->zoom) + grid;
-	}
+      maxwinx = minwinx + 2*((aspect * view->zoom)) + grid;
+      maxwiny = minwiny + 2*(view->zoom) + grid;
 
       glColor3f((GLfloat)ay_prefs.grr, (GLfloat)ay_prefs.grg,
 		(GLfloat)ay_prefs.grb);
