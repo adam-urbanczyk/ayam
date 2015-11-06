@@ -12425,18 +12425,21 @@ scripting interface command <ref id="sctoxyc" name="toXYC">.
 </figure>
 <descrip>
 <tag/Arguments/ The make compatible tool takes a number of
-NURBS curves from the selection.
-<tag/Operation/ The curves will be made compatible, so that they
-are of the same length and order and defined on the same knot vector.
+NURBS curves from the selection and requests a level.
+<tag/Operation/ The curves will be made compatible, so that, based on
+the level parameter given, they are of the same length, order and defined
+on the same knot vector.
 <tag/Notes/ This tool does not change the geometry of the curves.
 However, since clamping, degree elevation, and knot insertion may be
 used on the curves, their order, knot vectors, and control points
 may be changed.
-
+<p><p>
 The point selection will be removed from the original objects.
-
+<p>
 See also the documentation of the corresponding
-scripting interface command <ref id="scmakecompnc" name="makeCompNC">.
+scripting interface command <ref id="scmakecompnc" name="makeCompNC">
+and the related tool for
+surfaces <ref id="makecompst" name="Make Compatible Tool">.
 </descrip>
 
 <sect2>Rescale Knots to Range Tool<label id="resckrt">
@@ -13089,14 +13092,20 @@ See also the documentation of the corresponding
 scripting interface command <ref id="screscaleknnp" name="rescaleknNP">.
 </descrip>
 
-<sect2>Make Compatible Tool<label id="makecompst">
+<sect2>Make Surfaces Compatible Tool<label id="makecompst">
 <p>
-
+<p>
+<figure loc="ht">
+<eps file="pics/makecomps.ps" height="5cm">
+<img src="pics/makecomps.gif">
+<caption>Make Compatible Tool (u: Original Surfaces, m: Compatible by Order, l: Fully Compatible Surfaces)</caption>
+</figure>
 <descrip>
 <tag/Arguments/ The make compatible tool takes a number of
-NURBS surfaces from the selection.
-<tag/Operation/ The surfaces will be made compatible, so that they
-are of the same width/height and orders and defined on the same knot vector.
+NURBS surfaces from the selection and requests a level.
+<tag/Operation/ The surfaces will be made compatible, so that, based
+on the level parameter given, they are of the same width/height,
+orders and defined on the same knot vector.
 <tag/Notes/ This tool does not change the geometry of the surfaces.
 However, since clamping, degree elevation, and knot insertion may be
 used on the surfaces, their order, knot vectors, and control points
@@ -13105,7 +13114,9 @@ may be changed.
 The point selection will be removed from the original objects.
 
 See also the documentation of the corresponding
-scripting interface command <ref id="scmakecompnp" name="makeCompNP">.
+scripting interface command <ref id="scmakecompnp" name="makeCompNP">
+and the related tool for
+curves <ref id="makecompt" name="Make Compatible Tool">.
 </descrip>
 
 
