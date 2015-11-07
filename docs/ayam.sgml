@@ -33,7 +33,7 @@ code example of 6 lines text (needs another 2 for the upper/lower lines)
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>29. Jul 2015
+<date>07. Nov 2015
 
 <abstract>
 This is the documentation of Ayam 1.22 &ndash; a free 3D modelling environment
@@ -11992,7 +11992,10 @@ Eventually selected points will still be selected after this
 operation.
 
 See also the documentation of the corresponding
-scripting interface command <ref id="screvert" name="revertC">.
+scripting interface command <ref id="screvert" name="revertC">
+and the related tools for
+surfaces <ref id="revertut" name="Revert U Surface Tool"> and
+<ref id="revertvt" name="Revert V Surface Tool">.
 </descrip>
 
 <sect2>Refine Tool<label id="refit">
@@ -12056,7 +12059,9 @@ certain control points does.
 The point selection will be removed from the original objects.
 
 See also the documentation of the corresponding
-scripting interface command <ref id="screfineknnc" name="refineknNC">.
+scripting interface command <ref id="screfineknnc" name="refineknNC">
+and the related tool for
+surfaces <ref id="refinest" name="Refine Knots Surface Tool">.
 </descrip>
 
 <sect2>Coarsen Tool<label id="coart">
@@ -12107,7 +12112,9 @@ of old control points may be changed in the progress.
 The point selection will be removed from the original objects.
 
 See also the documentation of the corresponding
-scripting interface command <ref id="scelevatenc" name="elevateNC">.
+scripting interface command <ref id="scelevatenc" name="elevateNC">
+and the related tool for
+surfaces <ref id="elevuvt" name="Elevate Surface Tool">.
 </descrip>
 
 <sect2>Extend Tool<label id="extendt">
@@ -12169,7 +12176,9 @@ Furthermore, curves with multiple knots in the end region(s) could not be
 clamped, this works ok now.
 
 See also the documentation of the corresponding
-scripting interface command <ref id="scclampnc" name="clampNC">.
+scripting interface command <ref id="scclampnc" name="clampNC">
+and the related tool for
+surfaces <ref id="clanpt" name="Clamp Surface Tool">.
 </descrip>
 
 <sect2>Unclamp Tool<label id="unclat">
@@ -12199,7 +12208,9 @@ The point selection will be removed from the original objects if
 the curve needs to be clamped before unclamping.
 
 See also the documentation of the corresponding
-scripting interface command <ref id="scunclampnc" name="unclampNC">.
+scripting interface command <ref id="scunclampnc" name="unclampNC">
+and the related tool for
+surfaces <ref id="unclanpt" name="Unclamp Surface Tool">.
 </descrip>
 
 <sect2>Insert Knot Tool<label id="insknt">
@@ -12224,7 +12235,9 @@ shape of the curve(s).
 The point selection will be removed from the original objects.
 
 See also the documentation of the corresponding
-scripting interface command <ref id="scinsknnc" name="insknNC">.
+scripting interface command <ref id="scinsknnc" name="insknNC">
+and the related tool for
+surfaces <ref id="insknnpt" name="Insert Knot Surface Tool">.
 </descrip>
 
 <sect2>Remove Knot Tool<label id="remknt">
@@ -12259,7 +12272,9 @@ regardless of potential curve changes.
 The point selection will be removed from the original objects.
 
 See also the documentation of the corresponding
-scripting interface command <ref id="scremknnc" name="remknNC">.
+scripting interface command <ref id="scremknnc" name="remknNC">
+and the related tool for
+surfaces <ref id="remknnpt" name="Remove Knot Surface Tool">.
 </descrip>
 
 <sect2>Concat Tool<label id="conct">
@@ -12316,7 +12331,9 @@ All new curve objects will be appended to the current level.
 The point selection will be removed from the original curves.
 
 See also the documentation of the corresponding
-scripting interface command <ref id="scsplitnc" name="splitNC">.
+scripting interface command <ref id="scsplitnc" name="splitNC">
+and the related tool for
+surfaces <ref id="splitnpt" name="Split Surface Tool">.
 </descrip>
 
 <sect2>Curve Trim Tool<label id="ctrimt">
@@ -12456,7 +12473,9 @@ does not change the knot type.
 This tool does not change the geometry of the curves.
 
 See also the documentation of the corresponding
-scripting interface command <ref id="screscaleknnc" name="rescaleknNC">.
+scripting interface command <ref id="screscaleknnc" name="rescaleknNC">
+and the related tool for
+surfaces <ref id="resckrnpt" name="Rescale Knots to Range Surface Tool">.
 </descrip>
 
 <sect2>Rescale Knots to Mindist Tool<label id="resckmt">
@@ -12474,7 +12493,9 @@ does not change the knot type.
 This tool does not change the geometry of the curves.
 
 See also the documentation of the corresponding
-scripting interface command <ref id="screscaleknnc" name="rescaleknNC">.
+scripting interface command <ref id="screscaleknnc" name="rescaleknNC">
+and the related tool for
+surfaces <ref id="resckmnpt" name="Rescale Knots to Mindist Surface Tool">.
 </descrip>
 
 <sect2>Collapse Points Tool<label id="collt">
@@ -12807,7 +12828,9 @@ For IPatch objects the respective derivatives are reverted.
 <tag/Notes/ PV tags will not be modified.
 
 See also the documentation of the corresponding
-scripting interface command <ref id="screvertus" name="revertuS">.
+scripting interface command <ref id="screvertus" name="revertuS">
+and the related tool for
+curves <ref id="revertt" name="Revert Tool">.
 </descrip>
 
 <sect2>Revert V Tool<label id="revertvt">
@@ -12824,7 +12847,9 @@ For IPatch objects the respective derivatives are reverted.
 <tag/Notes/ PV tags will not be modified.
 
 See also the documentation of the corresponding
-scripting interface command <ref id="screvertvs" name="revertvS">.
+scripting interface command <ref id="screvertvs" name="revertvS">
+and the related tool for
+curves <ref id="revertt" name="Revert Tool">.
 </descrip>
 
 <sect2>Swap UV Tool<label id="swapuvt">
@@ -12864,9 +12889,14 @@ be changed to <tt/"Custom"/.
 
 The point selection will be removed from the original object(s).
 
+There are also tools available that refine only the U or
+V knots.
+
 See also the documentation of the corresponding scripting interface commands
 <ref id="screfineunp" name="refineuNP"> and
-<ref id="screfinevnp" name="refinevNP">.
+<ref id="screfinevnp" name="refinevNP">
+and the related tool for
+curves <ref id="refknit" name="Refine Knots Tool">.
 </descrip>
 
 <sect2>Elevate Surface Tool<label id="elevuvt">
@@ -12883,9 +12913,14 @@ of old control points may be changed in the progress.
 
 The point selection will be removed from the original objects.
 
+There are also tools available that elevate a patch in U or
+V direction only.
+
 See also the documentation of the corresponding scripting interface commands
 <ref id="scelevateunp" name="elevateuNP"> and
-<ref id="scelevatevnp" name="elevatevNP">.
+<ref id="scelevatevnp" name="elevatevNP">
+and the related tool for
+curves <ref id="elevt" name="Elevate Tool">.
 </descrip>
 
 <sect2>Clamp Surface Tool<label id="clanpt">
@@ -12916,7 +12951,9 @@ V direction only.
 
 See also the documentation of the corresponding scripting interface commands
 <ref id="scclampunp" name="clampuNP"> and
-<ref id="scclampvnp" name="clampvNP">.
+<ref id="scclampvnp" name="clampvNP">
+and the related tool for
+curves <ref id="clat" name="Clamp Tool">.
 </descrip>
 
 <sect2>Unclamp Surface Tool<label id="unclanpt">
@@ -12949,7 +12986,9 @@ the surface needs to be clamped for unclamping.
 
 See also the documentation of the corresponding scripting interface commands
 <ref id="scunclampunp" name="unclampuNP"> and
-<ref id="scunclampvnp" name="unclampvNP">.
+<ref id="scunclampvnp" name="unclampvNP">
+and the related tool for
+curves <ref id="unclat" name="Unclamp Tool">.
 </descrip>
 
 <sect2>Insert Knot Surface Tool<label id="insknnpt">
@@ -12976,7 +13015,9 @@ The point selection will be removed from the original object(s).
 
 See also the documentation of the corresponding scripting interface commands
 <ref id="scinsknunp" name="insknuNP"> and
-<ref id="scinsknvnp" name="insknvNP">.
+<ref id="scinsknvnp" name="insknvNP">
+and the related tool for
+curves <ref id="insknt" name="Insert Knot Tool">.
 </descrip>
 
 <sect2>Remove Knot Surface Tool<label id="remknnpt">
@@ -13011,7 +13052,9 @@ The point selection will be removed from the original object(s).
 
 See also the documentation of the corresponding scripting interface commands
 <ref id="scremknunp" name="remknuNP">, and
-<ref id="scremknunp" name="remknvNP">.
+<ref id="scremknunp" name="remknvNP">
+and the related tool for
+curves <ref id="remknt" name="Remove Knot Tool">.
 </descrip>
 
 <sect2>Split Surface Tool<label id="splitnpt">
@@ -13070,7 +13113,9 @@ does not change the knot type.
 This tool does not change the geometry of the patches.
 
 See also the documentation of the corresponding
-scripting interface command <ref id="screscaleknnp" name="rescaleknNP">.
+scripting interface command <ref id="screscaleknnp" name="rescaleknNP">
+and the related tool for
+curves <ref id="resckrt" name="Rescale Knots to Range Tool">.
 </descrip>
 
 <sect2>Rescale Knots to Mindist Surface Tool<label id="resckmnpt">
@@ -13089,14 +13134,16 @@ does not change the knot type.
 This tool does not change the geometry of the patches.
 
 See also the documentation of the corresponding
-scripting interface command <ref id="screscaleknnp" name="rescaleknNP">.
+scripting interface command <ref id="screscaleknnp" name="rescaleknNP">
+and the related tool for
+curves <ref id="resckmt" name="Rescale Knots to Mindist Tool">.
 </descrip>
 
 <sect2>Make Surfaces Compatible Tool<label id="makecompst">
 <p>
 <p>
 <figure loc="ht">
-<eps file="pics/makecomps.ps" height="5cm">
+<eps file="pics/makecomps.ps" height="7cm">
 <img src="pics/makecomps.gif">
 <caption>Make Compatible Tool (u: Original Surfaces, m: Compatible by Order, l: Fully Compatible Surfaces)</caption>
 </figure>
@@ -13104,8 +13151,8 @@ scripting interface command <ref id="screscaleknnp" name="rescaleknNP">.
 <tag/Arguments/ The make compatible tool takes a number of
 NURBS surfaces from the selection and requests a level.
 <tag/Operation/ The surfaces will be made compatible, so that, based
-on the level parameter given, they are of the same width/height,
-orders and defined on the same knot vector.
+on the level parameter given, they are of the same orders, width/height,
+and defined on the same knot vector.
 <tag/Notes/ This tool does not change the geometry of the surfaces.
 However, since clamping, degree elevation, and knot insertion may be
 used on the surfaces, their order, knot vectors, and control points
