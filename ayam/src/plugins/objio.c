@@ -87,7 +87,7 @@ static int objio_tesspomesh = AY_FALSE;
 
 static int objio_writecurves = AY_TRUE;
 
-static int objio_writedmw = AY_FALSE; /** < de-multiply weights? */
+static int objio_rationalstyle = 0;
 
 static unsigned int objio_allobjcnt = 0;
 static unsigned int objio_curobjcnt = 0;
@@ -195,11 +195,23 @@ objio_writevertices(FILE *fileptr, unsigned int n, int stride, double *v)
 	}
       break;
     case 4:
-      for(i = 0; i < n; i++)
+      if(objio_rationalstyle)
 	{
-	  fprintf(fileptr, "v %g %g %g %g\n", v[j], v[j+1], v[j+2],
-		  v[j+3]);
-	  j += stride;
+	  for(i = 0; i < n; i++)
+	    {
+	      fprintf(fileptr, "v %g %g %g %g\n", v[j]*v[j+3], v[j+1]*v[j+3],
+		      v[j+2]*v[j+3], v[j+3]);
+	      j += stride;
+	    }
+	}
+      else
+	{
+	  for(i = 0; i < n; i++)
+	    {
+	      fprintf(fileptr, "v %g %g %g %g\n", v[j], v[j+1], v[j+2],
+		      v[j+3]);
+	      j += stride;
+	    }
 	}
       break;
     default:
@@ -1580,6 +1592,7 @@ objio_writescenetcmd(ClientData clientData, Tcl_Interp *interp,
 
   objio_tesspomesh = AY_FALSE;
   objio_writecurves = AY_TRUE;
+  objio_rationalstyle = 0;
 
   while(i+1 < argc)
     {
@@ -1601,6 +1614,11 @@ objio_writescenetcmd(ClientData clientData, Tcl_Interp *interp,
       if(!strcmp(argv[i], "-f"))
 	{
 	  sscanf(argv[i+1], "%lg", &objio_scalefactor);
+	}
+      else
+      if(!strcmp(argv[i], "-r"))
+	{
+	  sscanf(argv[i+1], "%d", &objio_rationalstyle);
 	}
       i += 2;
     } /* while */
@@ -3257,7 +3275,7 @@ objio_fixnpatch(ay_nurbpatch_object *np)
 	{
 	  memcpy(p1, p2, stride * sizeof(double));
 
-	  if(objio_writedmw && (p1[3] != 1.0))
+	  if(objio_rationalstyle && (p1[3] != 1.0))
 	    {
 	      p1[0] /= p1[3];
 	      p1[1] /= p1[3];
@@ -3317,7 +3335,7 @@ objio_fixncurve(ay_nurbcurve_object *nc)
 
   nc->is_rat = ay_nct_israt(nc);
 
-  if(nc->is_rat && objio_writedmw)
+  if(nc->is_rat && objio_rationalstyle)
     {
       for(i = 0; i < nc->length; i++)
 	{
@@ -3901,6 +3919,7 @@ objio_readscenetcmd(ClientData clientData, Tcl_Interp *interp,
   objio_rescaleknots = 0.0;
   objio_checkdegen = AY_TRUE;
   objio_readstrim = AY_TRUE;
+  objio_rationalstyle = 0;
 
   while(i+1 < argc)
     {
@@ -3919,7 +3938,7 @@ objio_readscenetcmd(ClientData clientData, Tcl_Interp *interp,
 	  sscanf(argv[i+1], "%d", &objio_mergepvtags);
 	}
       else
-      if(!strcmp(argv[i], "-r"))
+      if(!strcmp(argv[i], "-k"))
 	{
 	  sscanf(argv[i+1], "%lg", &objio_rescaleknots);
 	}
@@ -3938,7 +3957,11 @@ objio_readscenetcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  sscanf(argv[i+1], "%d", &objio_checkdegen);
 	}
-
+      else
+      if(!strcmp(argv[i], "-r"))
+	{
+	  sscanf(argv[i+1], "%d", &objio_rationalstyle);
+	}
       i += 2;
     } /* while */
 

@@ -22,6 +22,7 @@ FileName "unnamed.obj"
 Progress 0
 CheckDegen 1
 ReadSTrim 1
+RationalStyle 0
 }   }
 
 
@@ -61,6 +62,7 @@ proc objio_export { } {
     addCheckB $f objio_options WriteCurves [ms objio_options_WriteCurves]
     addCheckB $f objio_options TessPoMesh [ms objio_options_TessPoMesh]
     addParam $f objio_options ScaleFactor [list 0.01 0.1 1.0 10.0 100.0]
+    addMenu $f objio_options RationalStyle {"Euclidean" "Homogeneous"}
     set objio_options(Progress) 0
     addProgress $f objio_options Progress
 
@@ -80,10 +82,12 @@ proc objio_export { } {
 	set objio_options(Cancel) 0
 	update
 
-	objioWrite $filename -s $objio_options(WriteSelected)\
+	objioWrite $filename\
+	    -s $objio_options(WriteSelected)\
 	    -p $objio_options(TessPoMesh)\
 	    -c $objio_options(WriteCurves)\
-	    -f $objio_options(ScaleFactor)
+	    -f $objio_options(ScaleFactor)\
+	    -r $objio_options(RationalStyle)
 
 	cd $oldcd
 
@@ -171,6 +175,7 @@ proc objio_import { } {
     addParam $f objio_options RescaleKnots [list 0.0 1.0e-4]
     addParam $f objio_options ScaleFactor  [list 0.01 0.1 1.0 10.0 100.0]
     addCheck $f objio_options CheckDegen
+    addMenu $f objio_options RationalStyle {"Euclidean" "Homogeneous"}
     set objio_options(Progress) 0
     addProgress $f objio_options Progress
 
@@ -185,13 +190,14 @@ proc objio_import { } {
 	set objio_options(Cancel) 0
 	update
 	objioRead [file tail $objio_options(FileName)]\
-		-m $objio_options(MergeFaces)\
-		-c $objio_options(ReadCurves)\
-		-p $objio_options(MergePVTags)\
-		-r $objio_options(RescaleKnots)\
-	        -f $objio_options(ScaleFactor)\
-	        -d $objio_options(CheckDegen)\
-	        -s $objio_options(ReadSTrim)
+	    -m $objio_options(MergeFaces)\
+	    -c $objio_options(ReadCurves)\
+	    -p $objio_options(MergePVTags)\
+	    -k $objio_options(RescaleKnots)\
+	    -f $objio_options(ScaleFactor)\
+	    -d $objio_options(CheckDegen)\
+	    -s $objio_options(ReadSTrim)\
+	    -r $objio_options(RationalStyle)
 
 	if { $ay_error < 2 } {
 	    ayError 4 "importOBJ" "Done importing scene from:"
