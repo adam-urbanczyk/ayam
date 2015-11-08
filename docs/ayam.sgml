@@ -15434,8 +15434,12 @@ isCompNC:
  <item>Synopsis: <tt>"isCompNC [-l level]"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: This command returns 1 if the selected NURBS curves
-are compatible (i.e.~defined on the same knot vector), otherwise it returns 0.
-If the option <tt/"-l"/ is 0, only length and order of the curves
+are compatible (i.e.~defined on the same knot vector), otherwise it
+returns 0.
+<p><p>
+If the option <tt/"-l"/ is 0, only the orders of the curves
+are compared.<newline>
+If the option <tt/"-l"/ is 1, only the orders and lengths of the curves
 are compared.
 </itemize>
 
@@ -15946,9 +15950,9 @@ are compatible (i.e.~defined on the same knot vector), otherwise it returns 0.
 If the option <tt/"-u"/ is given, only the U dimension will be checked.<newline>
 If the option <tt/"-v"/ is given, only the V dimension will be checked.
 <p>
-If the option <tt/"-l"/ is 0, only width/height of the surfaces
+If the option <tt/"-l"/ is 0, only the orders of the surfaces
 are compared.<newline>
-If the option <tt/"-l"/ is 1, width/height and order of the surfaces are
+If the option <tt/"-l"/ is 1, width/height and orders of the surfaces are
 compared.
 </itemize>
 
@@ -21301,6 +21305,7 @@ Index:
 <item>Invert Selection: <ref id="mmspecial" name="main menu entry">
 <item>IPatch: <ref id="ipatchobj" name="IPatch object">
 <item>isCompNC: <ref id="sciscompnc" name="scripting interface command">
+<item>isCompNP: <ref id="sciscompnp" name="scripting interface command">
 <item>IsLocal: <ref id="lip" name="Light attribute">
 <item>IsoLevel: <ref id="moattr" name="MetaObj attribute">
 <item>IsOn: <ref id="lip" name="Light attribute">
