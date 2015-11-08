@@ -1213,7 +1213,7 @@ All control points of the respective boundary must be selected.
 The select boundary points modelling action can be used
 to easily select all those points interactively
 (see also section <ref id="selbac" name="Selecting Boundary Points">).
-The PolyMesh objects must be optimized atleast in the direct
+The PolyMesh objects must be optimized at least in the direct
 neighborhood of the boundary (all control points used by the faces on
 the boundary).
 <p>
@@ -3966,7 +3966,7 @@ other objects may be selected to e.g.~infer new point coordinates from
 their properties and apply them to the original object.
 Furthermore notice that the coordinate values displayed in the numeric
 point editing window will not update when the point is modified by
-another modelling action (in another view). Simply click on the point
+another modelling action (e.g.~in another view). Simply click on the point
 again in a view where the numeric point editing action is active, to
 update the coordinate values in the numeric point editing dialog.
 <p>
@@ -6005,7 +6005,7 @@ RiProcedural(...);
 </tt></tscreen>
 
 <#if out=latex><x/newpage/</#if>
-<sect1>CSG&thinsp;/&thinsp;Solid Primitives
+<sect1>CSG&thinsp;/&thinsp;Solid Primitives<label id="solids">
 <p>
 These objects serve as geometric primitives in CSG hierarchies.
 
@@ -6422,7 +6422,7 @@ for this bug (found by T. E. Burge).
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Freeform Curve Objects
+<sect1>Freeform Curve Objects<label id="curves">
 <p>
 These objects are mainly used as child objects for the surface
 generating tool objects.
@@ -6583,7 +6583,7 @@ created for this curve. See also the discussion in
 section <ref id="ncurvemp" name="Multiple Points">.
 
 <item><tt/"IsRat"/ informs, whether the curve
-is rational (uses weight values different from
+is rational (has any weight values different from
 1.0).<footnote>Since 1.9.</footnote>
 </itemize>
 
@@ -7333,7 +7333,7 @@ curve).
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Freeform Surface Objects
+<sect1>Freeform Surface Objects<label id="surfaces">
 <p>
 These objects enable direct manipulation of freeform surfaces.
 
@@ -7393,7 +7393,7 @@ section
 <ref id="ncurvemp" name="Multiple Points">.<footnote>Since 1.10.</footnote>
 
 <item><tt/"IsRat"/ informs, whether the patch
-is rational (uses weight values different from
+is rational (has any weight values different from
 1.0).<footnote>Since 1.9.</footnote>
 </itemize>
 
@@ -7711,7 +7711,7 @@ will be omitted.
 <item><tt/"Close_U"/ and <tt/"Close_V"/ determine, whether the patch
 mesh should be closed in U and V direction respectively.
 <item><tt/"IsRat"/ informs, whether the patch mesh
-is rational (uses weight values different from
+is rational (has any weight values different from
 1.0).<footnote>Since 1.21.</footnote>
 <item><tt/"BType_U"/ and <tt/"BType_V"/ control the basis type
 for bicubic patches. The following basis types are available:
@@ -7825,11 +7825,15 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 The Revolve object supports the standard caps as lined out in section
 <ref id="capsprop" name="Caps Property">
 and the standard bevels as lined out in section
-<ref id="bevelsprop" name="Bevels Property">.<newline>
-The boundary names are <tt/Upper/ (curve formed by revolving the start
-point of the cross section), <tt/Lower/ (curve formed by revolving the
-end point of the cross section), <tt/Start/ (cross section), and
-<tt/End/ (cross section at end of revolution).
+<ref id="bevelsprop" name="Bevels Property">.
+<p>
+The boundary names are:<newline>
+<tt/Upper/ &ndash; curve formed by revolving the start
+point of the cross section,<newline>
+<tt/Lower/ &ndash; curve formed by revolving the
+end point of the cross section,<newline>
+<tt/Start/ &ndash; cross section, and<newline>
+<tt/End/ &ndash; cross section at end of revolution.
 
 <sect3>Conversion Support
 <p><#if out=latex>&nbsp;<newline></#if>
@@ -8073,11 +8077,15 @@ field always displays the parameters of the created NURBS patch.
 The Swing object supports the standard caps as lined out in section
 <ref id="capsprop" name="Caps Property">
 and the standard bevels as lined out in section
-<ref id="bevelsprop" name="Bevels Property">.<newline>
-The boundary names are <tt/Start/ (cross section), <tt/End/ (cross section
-at end of sweep), <tt/Upper/ (curve formed by sweeping the start point of the
-cross section), and <tt/Lower/ (curve formed by sweeping the end point of the
-cross section).
+<ref id="bevelsprop" name="Bevels Property">.
+<p>
+The boundary names are:<newline>
+<tt/Start/ &ndash; cross section,<newline>
+<tt/End/ &ndash; cross section at end of sweep,<newline>
+<tt/Upper/ &ndash; curve formed by sweeping the start point of the
+cross section, and<newline>
+<tt/Lower/ &ndash; curve formed by sweeping the end point of the
+cross section.
 
 <sect3>Conversion Support
 <p><#if out=latex>&nbsp;<newline></#if>
@@ -8274,11 +8282,15 @@ the Sweep object.
 The Sweep object supports the standard caps as lined out in section
 <ref id="capsprop" name="Caps Property">
 and the standard bevels as lined out in section
-<ref id="bevelsprop" name="Bevels Property">.<newline>
-The boundary names are <tt/Start/ (cross section), <tt/End/ (cross section
-at end of sweep), <tt/Left/ (curve formed by sweeping the start point of the
-cross section), and <tt/Right/ (curve formed by sweeping the end point of the
-cross section).
+<ref id="bevelsprop" name="Bevels Property">.
+<p>
+The boundary names are:<newline>
+<tt/Start/ &ndash; cross section,<newline>
+<tt/End/ &ndash; cross section at end of sweep,<newline>
+<tt/Left/ &ndash; curve formed by sweeping the start point of the
+cross section, and<newline>
+<tt/Right/ &ndash; curve formed by sweeping the end point of the
+cross section.
 
 <sect3>Conversion Support
 <p><#if out=latex>&nbsp;<newline></#if>
@@ -8422,11 +8434,15 @@ the Birail1 object.
 The Birail1 object supports the standard caps as lined out in section
 <ref id="capsprop" name="Caps Property">
 and the standard bevels as lined out in section
-<ref id="bevelsprop" name="Bevels Property">.<newline>
-The boundary names are <tt/Start/ (cross section), <tt/End/ (cross section
-at end of sweep), <tt/Left/ (curve formed by sweeping the start point of the
-cross section), and <tt/Right/ (curve formed by sweeping the end point of the
-cross section).
+<ref id="bevelsprop" name="Bevels Property">.
+<p>
+The boundary names are:<newline>
+<tt/Start/ &ndash; cross section,<newline>
+<tt/End/ &ndash; cross section at end of sweep,<newline>
+<tt/Left/ &ndash; curve formed by sweeping the start point of the
+cross section, and<newline>
+<tt/Right/ &ndash; curve formed by sweeping the end point of the
+cross section.
 
 <sect3>Conversion Support
 <p><#if out=latex>&nbsp;<newline></#if>
@@ -8587,11 +8603,15 @@ the Birail2 object.
 The Birail2 object supports the standard caps as lined out in section
 <ref id="capsprop" name="Caps Property">
 and the standard bevels as lined out in section
-<ref id="bevelsprop" name="Bevels Property">.<newline>
-The boundary names are <tt/Start/ (first cross section), <tt/End/ (second
-cross section), <tt/Left/ (curve formed by sweeping the start point of the
-first cross section), and <tt/Right/ (curve formed by sweeping the end
-point of the first cross section).
+<ref id="bevelsprop" name="Bevels Property">.
+<p>
+The boundary names are:
+<tt/Start/ &ndash; first cross section,<newline>
+<tt/End/ &ndash; second cross section,<newline>
+<tt/Left/ &ndash; curve formed by sweeping the start point of the
+first cross section, and<newline>
+<tt/Right/ &ndash; curve formed by sweeping the end
+point of the first cross section.
 
 <sect3>Conversion Support
 <p><#if out=latex>&nbsp;<newline></#if>
@@ -8727,10 +8747,13 @@ field always displays the parameters of the created NURBS patch.
 The Skin object supports the standard caps as lined out in section
 <ref id="capsprop" name="Caps Property">
 and the standard bevels as lined out in section
-<ref id="bevelsprop" name="Bevels Property">.<newline>
-The boundary names are <tt/Start/ (first parameter curve), <tt/End/ (last
-parameter curve), <tt/Left/ (curve through start points of parameter curves),
-and <tt/Right/ (curve through end points of parameter curves).
+<ref id="bevelsprop" name="Bevels Property">.
+<p>
+The boundary names are:<newline>
+<tt/Start/ &ndash; first parameter curve,<newline>
+<tt/End/ &ndash; last parameter curve,<newline>
+<tt/Left/ &ndash; curve through start points of parameter curves, and<newline>
+<tt/Right/ &ndash; curve through end points of parameter curves.
 
 <sect3>Conversion Support
 <p><#if out=latex>&nbsp;<newline></#if>
@@ -8915,10 +8938,13 @@ field always displays the parameters of the created NURBS patch.
 The Gordon object supports the standard caps as lined out in section
 <ref id="capsprop" name="Caps Property">
 and the standard bevels as lined out in section
-<ref id="bevelsprop" name="Bevels Property">.<newline>
-The boundary names are <tt/U0/ (first curve of first set), <tt/U1/ (last
-curve of first set),
-<tt/V0/ (first curve of second set), and <tt/V1/ (last curve of second set).
+<ref id="bevelsprop" name="Bevels Property">.
+<p>
+The boundary names are:<newline>
+<tt/U0/ &ndash; first curve of first set,<newline>
+<tt/U1/ &ndash; last curve of first set,<newline>
+<tt/V0/ &ndash; first curve of second set, and<newline>
+<tt/V1/ &ndash; last curve of second set.
 
 <sect3>Conversion Support
 <p><#if out=latex>&nbsp;<newline></#if>
@@ -16050,14 +16076,10 @@ reversed. If the parameter is 2, only the loops are reversed.
 
 <sect2>Manipulating Points<label id="scipoints">
 <p>
-Use these two commands to read or manipulate single points of arbitrary
-objects.
-Note that the exact arguments needed depend on the type of the selected
-object, e.g.~manipulating the points of a NURBS curve requires just one
-index parameter (indexu), whereas manipulating the points of a NURBS
-patch requires two index parameters (indexu and indexv) to be specified.
-
+Use these two commands to read or manipulate the control points of
+objects that support point editing.
 <p>
+<#if out=latex><x/newpage/</#if>
 <#if out=latex><x/phantomsection/</#if>
 
 <label id="scgetpnt">
@@ -16069,6 +16091,11 @@ getPnt &ndash; get point(s):
 and write the coordinate values into the variables varx, vary, varz, and
 varw.
 <p><p>
+The index arguments needed depend on the type of the selected
+object, e.g.~reading the points of a NURBS curve requires just one
+index parameter (index), whereas reading the points of a NURBS
+patch requires two index parameters (indexu and indexv) to be specified.
+<p>
 If the optional argument <tt/"-trafo"/ is given, the coordinates
 will additionally be transformed by the values given in the objects
 Transformation property.
@@ -16102,19 +16129,25 @@ values to the variables <tt/"x y z w"/.
 </itemize>
 
 <p>
+<#if out=latex><x/newpage/</#if>
 <#if out=latex><x/phantomsection/</#if>
 
 <label id="scsetpnt">
 setPnt &ndash; set point(s):
 <itemize>
  <item>Synopsis:
-<tt/"setPnt [-world] (indexu [indexv] (x y z [w] | -vn varname) | -all varname)"/
+<tt/"setPnt [-world] (index | indexu indexv) (x y z [w] | -vn varname) | -all varname)"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Set a control point of the
 currently selected object to the coordinates x, y, z, and w or to
 coordinates from a list, or set all control points from a list of
 coordinate values.
 <p><p>
+The index arguments needed depend on the type of the selected
+object, e.g.~manipulating the points of a NURBS curve requires just one
+index parameter (index), whereas manipulating the points of a NURBS
+patch requires two index parameters (indexu and indexv) to be specified.
+<p>
 If the optional parameter <tt/"-world"/ is given, the coordinate values are
 expressed in world space and will be transformed to appropriate
 object space coordinates before setting.
@@ -20722,6 +20755,8 @@ Index:
 <label id="indexa"><tt/&nbsp;&nbsp;<bf/A//
 <list>
 <item>aac.tcl: <ref id="aactcl" name="example/helper script">
+<item>AAFudge: <ref id="hidprefs" name="hidden preference setting">
+<item>AALineWidth, AASelLineWidth: <ref id="hidprefs" name="hidden preference setting">
 <item>About: <ref id="mmhelp" name="main menu entry">
 <item>Accuracy:
 <itemize>
@@ -20905,6 +20940,20 @@ Index:
 </itemize>
 <item>Compatible: <ref id="concatnpp" name="ConcatNP attribute">
 <item>CompleteNotify: <ref id="prefmodel" name="preference setting">
+<item>Concat: <ref id="conct" name="Concat tool">
+<item>ConcatNC: <ref id="concatncobj" name="ConcatNC object">
+<item>ConcatNP: <ref id="concatnpobj" name="ConcatNP object">
+<item>concatS: <ref id="scconcats" name="scripting interface command">
+<item>Cone: <ref id="coneobj" name="Cone object">
+<item>ConeAngle, ConeDAngle: <ref id="lip" name="Light attribute">
+<item>Connect: <ref id="mmtools" name="Connect PolyMesh tool">
+<item>Console: <ref id="cons" name="main window component">
+<item>ConsoleCursorEnd: <ref id="hidprefs" name="hidden preference setting">
+<item>ConsoleTakeFocus: <ref id="hidprefs" name="hidden preference setting">
+<item>Convert: <ref id="mmtools" name="main menu entry">
+<item>ConvertTags: <ref id="hidprefs" name="hidden preference setting">
+<item>convOb: <ref id="scconvob" name="scripting interface command">
+<item>Coons Patch: <ref id="gordonobj" name="Gordon object">
 <item>copOb: <ref id="sccopob" name="scripting interface command">
 <item>Copy: <ref id="mmedit" name="main menu entry">
 <item>Copy (Add): <ref id="mmspecial" name="main menu entry">
@@ -20913,20 +20962,6 @@ Index:
 <item><ref id="mmedit" name="main menu entry">,
 <item><ref id="propgui" name="copying properties">
 </itemize>
-<item>Concat: <ref id="conct" name="Concat tool">
-<item>ConcatNC: <ref id="concatncobj" name="ConcatNC object">
-<item>ConcatNP: <ref id="concatnpobj" name="ConcatNP object">
-<item>concatS: <ref id="scconcats" name="scripting interface command">
-<item>Cone: <ref id="coneobj" name="Cone object">
-<item>ConeAngle, ConeDAngle: <ref id="lip" name="Light attribute">
-<item>Connect: <ref id="mmtools" name="Connect PolyMesh tool">
-<item>Console: <ref id="cons" name="what is">
-<item>ConsoleCursorEnd: <ref id="hidprefs" name="hidden preference setting">
-<item>ConsoleTakeFocus: <ref id="hidprefs" name="hidden preference setting">
-<item>Convert: <ref id="mmtools" name="main menu entry">
-<item>ConvertTags: <ref id="hidprefs" name="hidden preference setting">
-<item>convOb: <ref id="scconvob" name="scripting interface command">
-<item>Coons Patch: <ref id="gordonobj" name="Gordon object">
 <item>Create: <ref id="mmcreate" name="create menu">
 <item>CreateAtMark: <ref id="prefmodel" name="preference setting">
 <item>CreateMP:
@@ -20951,6 +20986,7 @@ Index:
 </itemize>
 <item>CullFaces: <ref id="hidprefs" name="hidden preference setting">
 <item>Curvature: <ref id="plotcurt" name="plot curvature tool">
+<item>Curves: <ref id="curves" name="curve primitives">
 <item>Custom:
 <itemize>
 <item><ref id="cul" name="light type">,
@@ -21091,7 +21127,7 @@ Index:
 <list>
 <item>FAQ: <ref id="secref" name="Ayam FAQ WWW reference">
 <item>Far: <ref id="camp" name="camera property">
-<item>FDShowHidden: <ref id="hidprefs" name="hidden preference setting">
+<item>FDShowHidden, FDShowHiddenBtn: <ref id="hidprefs" name="hidden preference setting">
 <item>File:
 <itemize>
 <item><ref id="mmfile" name="file menu">,
@@ -21480,7 +21516,7 @@ Index:
 <item>Objectname: <ref id="attrs" name="attribute">
 <item>Objects:
 <itemize>
-<item><ref id="obj" name="tree/listbox">,
+<item><ref id="obj" name="main window component">,
 <item><ref id="obandprp" name="object types">
 </itemize>
 <item>OffsetNC: <ref id="offsetncobj" name="OffsetNC object">
@@ -21568,7 +21604,7 @@ Index:
 </itemize>
 <item>Procedurals: <ref id="rio" name="RenderMan interface option">
 <item>Prompt: <ref id="hidprefs" name="hidden preference setting">
-<item>Properties: <ref id="propgui" name="property GUI">
+<item>Properties: <ref id="propgui" name="main window component">
 <item>Primitive: <ref id="levelobj" name="Level object">
 <item>Primitive Variable: <ref id="pvtag" name="tag type">
 <item>PRManSpec: <ref id="rio" name="RenderMan interface option">
@@ -21915,6 +21951,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>SMRes: <ref id="lip" name="Light attribute">
 <item>Snap Points to Grid: <ref id="snapac" name="modelling action">
 <item>Snap3D: <ref id="prefmodel" name="preference setting">
+<item>Solids: <ref id="solids" name="solid primitives">
 <item>SP: <ref id="scriptattrprop" name="Script object">
 <item>SParamU, SParamV: <ref id="prefmisc" name="preference setting">
 <item>Special: <ref id="mmspecial" name="special menu">
@@ -21942,6 +21979,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Subdivision Mesh: <ref id="sdmeshobj" name="SDMesh object">
 <item>Superformula Curve: <ref id="sfcurveobj" name="SfCurve object">
 <item>Surface: <ref id="matshader" name="shader">
+<item>Surfaces: <ref id="surfaces" name="surface primitives">
 <item>SwapMB: <ref id="hidprefs" name="hidden preference setting">
 <item>Swap UV: <ref id="swapuvt" name="swap uv tool">
 <item>swapuvS <ref id="scswapuvs" name="scripting interface command">
