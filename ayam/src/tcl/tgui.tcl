@@ -14,27 +14,21 @@ uplevel #0 { array set tgui_tessparam {
     SamplingParamU 0.25
     SamplingParamV 0.25
 
-    FT1 1
     SamplingParamU1 0.25
     SamplingParamV1 0.25
 
-    FT2 1
     SamplingParamU2 1.5
     SamplingParamV2 1.5
 
-    FT3 1
-    SamplingParamU3 10
-    SamplingParamV3 10
+    SamplingParamU3 8
+    SamplingParamV3 8
 
-    FT4 1
     SamplingParamU4 10
     SamplingParamV4 10
 
-    FT5 1
     SamplingParamU5 1
     SamplingParamV5 1
 
-    FT6 1
     SamplingParamU6 3
     SamplingParamV6 3
 
@@ -51,7 +45,11 @@ uplevel #0 { array set tgui_tessparam {
     MB1Down 0
     ReadTag 0
     OldSamplingMethod -1
+    OldSamplingParamU -1
+    OldSamplingParamV -1
     NumPolys 0
+
+    updatelock 0
 }
 array set tgui_tessparamdefaults [array get tgui_tessparam]
 }
@@ -203,20 +201,15 @@ proc tgui_unblock { } {
 proc tgui_update args {
     global ay ayprefs tgui_tessparam
 
-    trace vdelete tgui_tessparam(SamplingMethod) w tgui_update
-    #trace vdelete tgui_tessparam(SamplingParamU) w tgui_update
-    #trace vdelete tgui_tessparam(SamplingParamV) w tgui_update
+    if { $tgui_tessparam(updatelock) == 1 } {
+	return;
+    }
 
-    trace vdelete tgui_tessparam(UseTexCoords) w tgui_update
-    trace vdelete tgui_tessparam(UseVertColors) w tgui_update
-    trace vdelete tgui_tessparam(UseVertNormals) w tgui_update
-    trace vdelete tgui_tessparam(RefineTrims) w tgui_update
-    trace vdelete tgui_tessparam(Primitives) w tgui_update
+    set tgui_tessparam(updatelock) 1
 
-    .tguiw.f1.fSamplingParamU.e delete 0 end
-    .tguiw.f1.fSamplingParamU.e insert 0 $tgui_tessparam(SamplingParamU)
-    .tguiw.f1.fSamplingParamV.e delete 0 end
-    .tguiw.f1.fSamplingParamV.e insert 0 $tgui_tessparam(SamplingParamV)
+    tgui_deletetraces
+
+    set i [expr $tgui_tessparam(SamplingMethod) + 1]
 
     if { $tgui_tessparam(OldSamplingMethod) !=
 	 $tgui_tessparam(SamplingMethod) } {
@@ -258,32 +251,78 @@ proc tgui_update args {
 	    .tguiw.f1.fSamplingParamV.s conf -state normal
 	    .tguiw.f1.fSamplingParamV.e conf -state normal
 	}
-	set i [expr $tgui_tessparam(SamplingMethod) + 1]
-	if { [subst "\$tgui_tessparam(FT$i)"] == 1 } {
-	    eval "set tgui_tessparam(SamplingParamU)\
+	eval "set tgui_tessparam(SamplingParamU)\
                    \$tgui_tessparam(SamplingParamU$i)"
-	    eval "set tgui_tessparam(SamplingParamV)\
+	eval "set tgui_tessparam(SamplingParamV)\
                    \$tgui_tessparam(SamplingParamV$i)"
-	    eval "set tgui_tessparam(FT$i) 0"
-	}
-	set tgui_tessparam(OldSamplingMethod) $tgui_tessparam(SamplingMethod)
+    } else {
+	eval "set tgui_tessparam(SamplingParamU$i)\
+                   \$tgui_tessparam(SamplingParamU)"
+	eval "set tgui_tessparam(SamplingParamV$i)\
+                   \$tgui_tessparam(SamplingParamV)"
     }
 
-    if { ! $tgui_tessparam(LazyUpdate) } {
-	tguiCmd up $tgui_tessparam(SamplingMethod) $tgui_tessparam(SamplingParamU)\
-	    $tgui_tessparam(SamplingParamV) $tgui_tessparam(UseTexCoords)\
-	    $tgui_tessparam(UseVertColors) $tgui_tessparam(UseVertNormals)\
-	    $tgui_tessparam(RefineTrims) $tgui_tessparam(Primitives)\
-	    $tgui_tessparam(QuadEps)
-    } else {
-	if { $tgui_tessparam(MB1Down) == 0 } {
-	    tguiCmd up $tgui_tessparam(SamplingMethod) $tgui_tessparam(SamplingParamU)\
+    if { ( $tgui_tessparam(OldSamplingMethod) !=
+	   $tgui_tessparam(SamplingMethod) ) ||
+	 ( $tgui_tessparam(OldSamplingParamU) !=
+	   $tgui_tessparam(SamplingParamU) ) ||
+	 ( $tgui_tessparam(OldSamplingParamV) !=
+	   $tgui_tessparam(SamplingParamV) ) } {
+	if { ! $tgui_tessparam(LazyUpdate) } {
+	    tguiCmd up\
+	      $tgui_tessparam(SamplingMethod) $tgui_tessparam(SamplingParamU)\
+	      $tgui_tessparam(SamplingParamV) $tgui_tessparam(UseTexCoords)\
+	      $tgui_tessparam(UseVertColors) $tgui_tessparam(UseVertNormals)\
+	      $tgui_tessparam(RefineTrims) $tgui_tessparam(Primitives)\
+	      $tgui_tessparam(QuadEps)
+	} else {
+	    if { $tgui_tessparam(MB1Down) == 0 } {
+		tguiCmd up\
+		$tgui_tessparam(SamplingMethod) $tgui_tessparam(SamplingParamU)\
 		$tgui_tessparam(SamplingParamV) $tgui_tessparam(UseTexCoords)\
 		$tgui_tessparam(UseVertColors) $tgui_tessparam(UseVertNormals)\
 		$tgui_tessparam(RefineTrims) $tgui_tessparam(Primitives)\
 		$tgui_tessparam(QuadEps)
+	    }
 	}
     }
+
+    set tgui_tessparam(OldSamplingMethod) $tgui_tessparam(SamplingMethod)
+    set tgui_tessparam(OldSamplingParamU) $tgui_tessparam(SamplingParamU)
+    set tgui_tessparam(OldSamplingParamV) $tgui_tessparam(SamplingParamV)
+
+    .tguiw.f1.fSamplingParamU.e delete 0 end
+    .tguiw.f1.fSamplingParamU.e insert 0 $tgui_tessparam(SamplingParamU)
+    .tguiw.f1.fSamplingParamV.e delete 0 end
+    .tguiw.f1.fSamplingParamV.e insert 0 $tgui_tessparam(SamplingParamV)
+
+    tgui_establishtraces
+
+    set tgui_tessparam(updatelock) 0
+
+ return;
+}
+# tgui_update
+
+
+proc tgui_deletetraces { } {
+    global tgui_tessparam
+
+    trace vdelete tgui_tessparam(SamplingMethod) w tgui_update
+    #trace vdelete tgui_tessparam(SamplingParamU) w tgui_update
+    #trace vdelete tgui_tessparam(SamplingParamV) w tgui_update
+
+    trace vdelete tgui_tessparam(UseTexCoords) w tgui_update
+    trace vdelete tgui_tessparam(UseVertColors) w tgui_update
+    trace vdelete tgui_tessparam(UseVertNormals) w tgui_update
+    trace vdelete tgui_tessparam(RefineTrims) w tgui_update
+    trace vdelete tgui_tessparam(Primitives) w tgui_update
+
+ return;
+}
+
+proc tgui_establishtraces { } {
+    global tgui_tessparam
 
     trace variable tgui_tessparam(SamplingMethod) w tgui_update
     #trace variable tgui_tessparam(SamplingParamU) w tgui_update
@@ -297,7 +336,6 @@ proc tgui_update args {
 
  return;
 }
-# tgui_update
 
 
 # tgui_recalcslider:
@@ -480,6 +518,8 @@ proc tgui_open { } {
     set t "Tesselation"
     winDialog $w $t
 
+    tgui_deletetraces
+
     set ay(bca) $w.f2.bca
     set ay(bok) $w.f2.bok
 
@@ -491,12 +531,17 @@ proc tgui_open { } {
     addText $f t1 "Tesselation Parameters"
     addCommand $f c1 "Reset All!" {
 	global tgui_tessparam tgui_tessparamdefaults
-	set t $tgui_tessparam(ReadTag)
+	tgui_deletetraces
+	set rt $tgui_tessparam(ReadTag)
 	array set tgui_tessparam [array get tgui_tessparamdefaults]
-	set tgui_tessparam(ReadTag) $t
+	set tgui_tessparam(ReadTag) $rt
 	tgui_update
-	tgui_recalcslider 0 $tgui_tessparam(SamplingParamU)
-	tgui_recalcslider 1 $tgui_tessparam(SamplingParamV)
+	if { $tgui_tessparam(SamplingParamU) !=
+	     $tgui_tessparamdefaults(SamplingParamU) } {
+	    set tgui_tessparam(SamplingParamU)\
+		$tgui_tessparamdefaults(SamplingParamU)
+	    tgui_update
+	}
     }
     addCheck $f tgui_tessparam LazyUpdate
     addCheck $f tgui_tessparam UseTexCoords
@@ -627,23 +672,16 @@ proc tgui_open { } {
     winRestoreOrCenter $w $t
     focus $w.f2.bok
 
-    tgui_recalcslider 0 $tgui_tessparam(SamplingParamU)
-    tgui_recalcslider 1 $tgui_tessparam(SamplingParamV)
-
     # create first tesselation
+    set tgui_tessparam(OldSamplingMethod) -1
     tgui_update
+
+    # lock tgui_update from events generated by the next sections
+    set tgui_tessparam(updatelock) 1
 
     # initiate update machinery
     event add <<CommitTG>> <KeyPress-Return> <FocusOut>
     catch {event add <<CommitTG>> <Key-KP_Enter>}
-
-    trace variable tgui_tessparam(UseTexCoords) w tgui_update
-    trace variable tgui_tessparam(UseVertColors) w tgui_update
-    trace variable tgui_tessparam(UseVertNormals) w tgui_update
-    trace variable tgui_tessparam(RefineTrims) w tgui_update
-    trace variable tgui_tessparam(Primitives) w tgui_update
-
-    trace variable tgui_tessparam(SamplingMethod) w tgui_update
 
     set f $w.f1.fSamplingParamU
     $f.s conf -variable tgui_tessparam(SamplingParamU) -command tgui_update
@@ -675,6 +713,12 @@ proc tgui_open { } {
 	bind $f.e <<CommitTG>> "+if { \"%K\" == \"KP_Enter\" } {break};"
     }
 
+    update idletasks
+
+    tgui_establishtraces
+
+    set tgui_tessparam(updatelock) 0
+
     # establish "Help"-binding
     shortcut_addcshelp $w ayam-5.html tesst
 
@@ -682,7 +726,7 @@ proc tgui_open { } {
 
     tkwait window $w
 
-    trace vdelete tgui_tessparam(SamplingMethod) w tgui_update
+    tgui_deletetraces
 
     after idle tgui_unblock
 
