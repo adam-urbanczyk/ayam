@@ -233,7 +233,6 @@ button $f.b2 -text "Reset" -padx 10 -pady 0 -command {
     set prop [$lb get $sel]
     global $prop pclip_reset
     eval [subst "set arrname \$${prop}(arr)"]
-
     array set $arrname [array get pclip_reset]
 } -takefocus 0 -highlightthickness 0
 
@@ -289,7 +288,7 @@ if { ($tcl_platform(platform) == "windows") } {
     bind all <MouseWheel> {
 	if { ([focus] != "") && ([focus] != ".fl.con.console") &&
 	     ([winfo toplevel [focus]] == ".") &&
-	     ([string first "view" [focus]] == -1)} {
+	     ([string first "view" [focus]] == -1) } {
 	    global ay
 	    if { %D < 0.0 } {
 		$ay(pca) yview scroll 1 pages
@@ -481,7 +480,7 @@ proc plb_update { } {
 	# if
 
 	# re-create old propgui?
-	if { $oldsel != ""} {
+	if { $oldsel != "" } {
 	    if { $oldsel <= [$lb index end] } {
 		$lb selection set $oldsel
 		set tmp [$lb curselection]
@@ -733,7 +732,7 @@ proc plb_addremprop { {rem 0} } {
     } else {
 	# add operation, compile list of
 	# candidates for addition
-	array set AllProps { Caps 1 Bevels 1}
+	array set AllProps { Caps 1 Bevels 1 }
 	forAll -recursive 0 {
 	    global AllProps
 	    set tagnames ""
