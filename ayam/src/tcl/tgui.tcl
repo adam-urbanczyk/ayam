@@ -536,11 +536,14 @@ proc tgui_open { } {
 	array set tgui_tessparam [array get tgui_tessparamdefaults]
 	set tgui_tessparam(ReadTag) $rt
 	tgui_update
-	if { $tgui_tessparam(SamplingParamU) !=
-	     $tgui_tessparamdefaults(SamplingParamU) } {
-	    set tgui_tessparam(SamplingParamU)\
-		$tgui_tessparamdefaults(SamplingParamU)
-	    tgui_update
+	if { ! [info exists tgui_tessparam(firstreset)] } {
+	    after idle {
+		tgui_deletetraces
+		array set tgui_tessparam [array get tgui_tessparamdefaults]
+		set tgui_tessparam(ReadTag) $rt
+		tgui_update
+		set tgui_tessparamdefaults(firstreset) 1
+	    }
 	}
     }
     addCheck $f tgui_tessparam LazyUpdate
