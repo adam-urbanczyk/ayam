@@ -99,23 +99,21 @@ bind $f.li <<ListboxSelect>> {
 
     # improve focus traversal (speed-wise)
     global tcl_platform AYWITHAQUA
+    if { ![info exists ay(focusnext)] } {
+	set ay(focusnext) [tk_focusNext $ay(pca).$ww]
+    }
+    set nw $ay(focusnext)
     if { $ay(lb) == 1 } {
-	bind $ay(olb) <Key-Tab>\
-		"focus [tk_focusNext $ay(pca).$ww];plb_focus;break"
-	bind [tk_focusNext $ay(pca).$ww] <Shift-Tab>\
-		"focus $ay(olb);break"
+	bind $ay(olb) <Key-Tab> "focus $nw;plb_focus;break"
+	bind $nw <Shift-Tab> "focus $ay(olb);break"
 	if { ( $tcl_platform(platform) != "windows" ) && ( ! $AYWITHAQUA ) } {
-	    catch {bind [tk_focusNext $ay(pca).$ww] <ISO_Left_Tab>\
-		       "focus $ay(olb);break"}
+	    catch {bind $nw <ISO_Left_Tab> "focus $ay(olb);break"}
 	}
     } else {
-	bind $ay(tree) <Key-Tab>\
-		"focus [tk_focusNext $ay(pca).$ww];plb_focus;break"
-	bind [tk_focusNext $ay(pca).$ww] <Shift-Tab>\
-		"focus $ay(tree);break"
+	bind $ay(tree) <Key-Tab> "focus $nw;plb_focus;break"
+	bind $nw <Shift-Tab> "focus $ay(tree);break"
 	if { ( $tcl_platform(platform) != "windows" ) && ( ! $AYWITHAQUA ) } {
-	    catch {bind [tk_focusNext $ay(pca).$ww] <ISO_Left_Tab>\
-		       "focus $ay(tree);break"}
+	    catch {bind $w <ISO_Left_Tab> "focus $ay(tree);break"}
 	}
     }
     # if
