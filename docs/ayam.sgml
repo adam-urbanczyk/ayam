@@ -3044,7 +3044,6 @@ See also <ref id="prefdraw" name="Drawing Preferences">.
 The tesselation facility is based
 on the GLU (V1.3+) NURBS tesselator.
 
-
 <item><tt/"SParamU"/; is a parameter for the sampling method above.<newline>
 The default value for the sampling method <tt/"AdaptiveKnotDistance"/ is 3.
 Higher values lead to better quality and more tesselated polygons.<newline>
@@ -3065,6 +3064,51 @@ Note that <tt/"SParamU"/ is expressed in object space units for the
 The default value is equal to the respective value of the <tt/"SParamU"/
 parameter above.
 </itemize>
+<p>
+See also the next two images and corresponding tables that allow to
+compare the results of four main sampling methods with different parameters.
+<p>
+<#if out=latex><x/newpage/</#if>
+<figure loc="ht">
+<eps file="pics/smethods-def.ps" height="12cm">
+<img src="pics/smethods-def.gif">
+<caption>Sampling Method Comparison, Defaults
+(l: ParametricError, ml: PathLength, mr: DomainDistance, r: AdaptiveKnotDistance)</caption>
+</figure>
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+Method|<bf/ParametricError/|<bf/PathLength/|<bf/DomainDistance/|<bf/AdaptiveKnotDistance/@<hline>
+Parameter|0.25|1.5|8&thinsp;/&thinsp;8|3&thinsp;/&thinsp;3@<hline>
+Cylinder|88|104|368|192@<hline>
+Sphere|96|80|112|120@<hline>
+Box|36|60|384|108@<hline>
+Total|220|244|864|420
+<#if out=latex>@<hline></#if>
+</tabular>
+<caption>Sampling Methods Parameters and Results (1/2)</caption>
+</table>
+<p>&nbsp;<p>
+<#if out=latex><x/newpage/</#if>
+<figure loc="ht">
+<eps file="pics/smethods-hi.ps" height="12cm">
+<img src="pics/smethods-hi.gif">
+<caption>Sampling Method Comparison, Higher Quality
+(l: ParametricError, ml: PathLength, mr: DomainDistance, r: AdaptiveKnotDistance)</caption>
+</figure>
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+Method|<bf/ParametricError/|<bf/PathLength/|<bf/DomainDistance/|<bf/AdaptiveKnotDistance/@<hline>
+Parameter|0.125|0.9|12&thinsp;/&thinsp;12|4&thinsp;/&thinsp;4@<hline>
+Cylinder|152|168|840|352@<hline>
+Sphere|216|160|264|224@<hline>
+Box|36|108|864|192@<hline>
+Total|404|436|1968|768
+<#if out=latex>@<hline></#if>
+</tabular>
+<caption>Sampling Methods Parameters and Results (2/2)</caption>
+</table>
+
+<#if out=latex><x/newpage/</#if>
 
 <sect>Modelling Actions<label id="iac">
 <p>
