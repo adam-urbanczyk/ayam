@@ -53,7 +53,7 @@ proc toNPatch { } {
 
 # attach to custom menu
 global ay
-$ay(cm) add command -label "ToNPatch" -command {
+$ay(cm) add command -label "To NPatch" -command {
     toNPatch; uS; rV; }
 
 # attach to tool window
@@ -63,7 +63,8 @@ set f [toolbox_add ftonpatch 3]
 
 if { $f != "" } {
     # create a button inside the frame:
-    button $f.b1 -width 10 -text "ToNPatch" -command { toNPatch; uS; rV; }
+    button $f.b1 -width 10 -takefocus 0 -text "To NPatch"\
+	-command { toNPatch; uS; rV; }
 
     # display the button
     pack $f.b1 -side left -fill x -expand yes

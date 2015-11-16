@@ -62,7 +62,7 @@ proc toPoly { } {
 
 # attach to custom menu
 global ay
-$ay(cm) add command -label "ToPolyMesh" -command {
+$ay(cm) add command -label "To PolyMesh" -command {
     toPoly; uS; rV; }
 
 # attach to tool window
@@ -72,7 +72,8 @@ set f [toolbox_add ftopoly 3]
 
 if { $f != "" } {
     # create a button inside the frame:
-    button $f.b1 -width 10 -text "ToPolyMesh" -command { toPoly; uS; rV; }
+    button $f.b1 -width 10 -takefocus 0 -text "To PolyMesh"\
+	-command { toPoly; uS; rV; }
 
     # display the button
     pack $f.b1 -side left -fill x -expand yes
