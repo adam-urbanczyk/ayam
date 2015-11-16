@@ -674,9 +674,7 @@ array set ay {
  remknu 0.5
  remknr 1
  remtol Inf
- refinekn ""
- refineknu ""
- refineknv ""
+ refinekn 0.5
  splitu 0.5
  trimumin 0.0
  trimumax 1.0
@@ -737,13 +735,8 @@ array set ay {
  curvatp 100
  curvatw 5.0
  curvats 1.0
- closet 0
- closee 1
- closek 0
  elevnpu 1
  elevnpv 1
- clevel_l {"Order" "Order&Length" "Full"}
- clevel 2
  soext "so"
  shiftcbsp 1
  askedscriptdisable 0
@@ -1851,11 +1844,18 @@ bind . <Escape> {
 }
 
 
-# additional key binding for the console
+# additional key binding(s) for the console
 bind .fl.con.console <$aymainshortcuts(SwCon)> {
     focus [tk_focusPrev .fl.con];
     break;
 }
+if { "$ayprefs(ShiftTab)" != "<$aymainshortcuts(SwCon)>" } {
+    bind .fl.con.console $ayprefs(ShiftTab) {
+	focus [tk_focusPrev .fl.con];
+	break;
+    }
+}
+
 
 # arrange to properly exit the program when the main window is closed
 wm protocol . WM_DELETE_WINDOW {
