@@ -54,7 +54,7 @@ proc easySweep { } {
 
 # attach to custom menu
 global ay
-$ay(cm) add command -label "EasySweep" -command {
+$ay(cm) add command -label "Easy Sweep" -command {
     easySweep; }
 
 # add the frame to the toolbox
@@ -62,7 +62,8 @@ set f [toolbox_add feasysweep 3]
 
 if { $f != "" } {
     # create a button inside the frame:
-    button $f.b1 -width 10 -text "EasySweep" -command { easySweep; }
+    button $f.b1 -width 10 -takefocus 0 -text "Easy Sweep"\
+	-command { easySweep; }
 
     # display the button
     pack $f.b1 -side left -fill x -expand yes

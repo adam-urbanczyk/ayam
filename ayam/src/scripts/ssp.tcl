@@ -59,13 +59,15 @@ proc ssp_restore { } {
 # add to toolbox
 set b $ay(tbw).ssp
 if { ![winfo exists $b] } {
-    button $b -padx 0 -pady 0 -image ay_SSP_img -command ssp_save
+    button $b -padx 0 -pady 0 -takefocus 0 -image ay_SSP_img\
+	-command ssp_save
     lappend ay(toolbuttons) ssp
     balloon_set $b "Save selected points to tag"
 }
 set b $ay(tbw).rsp
 if { ![winfo exists $b] } {
-    button $b -padx 0 -pady 0 -image ay_RSP_img -command ssp_restore
+    button $b -padx 0 -pady 0 -takefocus 0 -image ay_RSP_img\
+	-command ssp_restore
     lappend ay(toolbuttons) rsp
     balloon_set $b "Restore selected points from tag"
 }
