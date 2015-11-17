@@ -1256,7 +1256,9 @@ the selected PolyMesh object(s).
 
 </itemize>
 
-<item><tt/"Points"/: sub-menu for tools that work on points:
+<#if out=latex><p><x/phantomsection/</#if>
+
+<item><tt/"Points"/: sub-menu for tools that work on points:<label id="mmpnts">
 <itemize>
 <item><tt>"Select All Points"</tt>, selects all points of the currently
 selected object(s).
@@ -3047,7 +3049,7 @@ on the GLU (V1.3+) NURBS tesselator.
 <item><tt/"SParamU"/; is a parameter for the sampling method above.<newline>
 The default value for the sampling method <tt/"AdaptiveKnotDistance"/ is 3.
 Higher values lead to better quality and more tesselated polygons.<newline>
-The default value for the sampling method <tt/"DomainDistance"/ is 10. Higher
+The default value for the sampling method <tt/"DomainDistance"/ is 8. Higher
 values lead to better quality and more tesselated polygons.<newline>
 The default value for the sampling method <tt/"PathLength"/ is 1.5.
 Smaller values lead to better quality and more tesselated polygons.<newline>
@@ -16178,10 +16180,9 @@ values to the variables <tt/"x y z w"/.
 
 <p>
 <#if out=latex><x/newpage/</#if>
-<#if out=latex><x/phantomsection/</#if>
+<#if out=latex><p><x/phantomsection/</#if>
 
-<label id="scsetpnt">
-setPnt &ndash; set point(s):
+setPnt &ndash; set point(s):<label id="scsetpnt">
 <itemize>
  <item>Synopsis:
 <tt/"setPnt [-world] (index | indexu indexv) (x y z [w] | -vn varname) | -all varname)"/
@@ -18567,6 +18568,9 @@ knots are not smaller than the given value. A <tt/"RescaleKnots"/ value of
 The default value 0.0 means no scaling.
 <item><tt/"ScaleFactor"/: allows to apply a scaling factor to all
 imported objects.
+<item><tt/"RationalStyle"/: determines how rational coordinates are
+stored in the file to be imported
+(see also section <ref id="rats" name="Rational Style">);
 <item><tt/"Progress"/: displays the progress of the import;
 from 0 to 100 percent, the objio plugin is reading lines from the
 Wavefront OBJ file and creating Ayam objects. The number may be a
@@ -18637,6 +18641,8 @@ curve providing objects to the exported Wavefront OBJ file (This option does
 <em>not</em> influence the export of trim curves.);
 <item><tt/"ScaleFactor"/: allows to apply a scaling factor to all
 exported objects;
+<item><tt/"RationalStyle"/: determines how to write rational coordinates
+(see also section <ref id="rats" name="Rational Style">);
 <item><tt/"Progress"/: displays the progress of the export;
 from 0 to 100 percent, the objio plugin is writing the Ayam objects
 to the Wavefront OBJ file.
@@ -20778,6 +20784,9 @@ Overview:
 <ref id="indexy" name=" Y ">&nbsp;
 <ref id="indexz" name=" Z ">&nbsp;
 </#if>
+<!--
+<#if out=latex><p><p><x/needspace 3/</#if>
+ -->
 Index:
 <p>
 <label id="index">
@@ -20836,6 +20845,7 @@ Index:
 <item>AntiAlias Lines: <ref id="vmconf" name="view menu entry">
 <item>apnt.tcl: <ref id="apnttcl" name="example/helper script">
 <item>Apply: <ref id="propgui" name="apply property GUI">
+<item>Apply To All/Selected: <ref id="mmpnts" name="main menu entry">
 <item>applyTrafo: <ref id="scapplytrafo" name="scripting interface command">
 <item>Archives: <ref id="rio" name="RenderMan interface option">
 <item>Area Light: <ref id="alob" name="creation of">
@@ -20926,7 +20936,7 @@ Index:
 <item>Chamfer: <ref id="bevelobj" name="Bevel object">,
 <item>CheckLights: <ref id="prefrib" name="preference setting">
 <item>Chordal: <ref id="ncurveattrprop" name="knot type">
-<item>Center All Points: <ref id="mmspecial" name="main menu entry">
+<item>Center All Points: <ref id="mmpnts" name="main menu entry">
 <item>Centripetal: <ref id="ncurveattrprop" name="knot type">
 <item>Circle:
 <itemize>
@@ -21068,6 +21078,7 @@ Index:
 <item><ref id="insdelac" name="delete points">
 </itemize>
 <item>delOb: <ref id="scdelob" name="scripting interface command">
+<item>Deselect All Points: <ref id="mmpnts" name="main menu entry">
 <item>Derivatives: <ref id="icp" name="ICurve attribute">
 <item>Derivatives_U, Derivatives_V: <ref id="ipattr" name="IPatch attribute">
 <item>Difference: <ref id="levelobj" name="Level object">
@@ -21197,6 +21208,7 @@ Index:
 <item>FlashObjects: <ref id="hidprefs" name="hidden preference setting">
 <item>FlashPoints: <ref id="prefmodel" name="preference setting">
 <item>Flatness: <ref id="moattr" name="MetaObj attributes">
+<item>Flip Loops&thinsp;/&thinsp;Smooth Normals: <ref id="mmtools" name="polymesh tool">
 <item>flipPo: <ref id="scflipPo" name="scripting interface command">
 <item>FontName: <ref id="textattr" name="Text attribute">
 <item>forAll: <ref id="scforall" name="scripting interface command">
@@ -21229,6 +21241,7 @@ Index:
 &nbsp;<newline>&nbsp;
 <label id="indexg"><tt/&nbsp;&nbsp;<bf/G//
 <list>
+<item>Gen.~Face/Smooth Normals: <ref id="mmtools" name="polymesh tool">
 <item>genfnPo: <ref id="scgenfnPo" name="scripting interface command">
 <item>gensnPo: <ref id="scgensnPo" name="scripting interface command">
 <item>getName: <ref id="scgetname" name="scripting interface command">
@@ -21346,7 +21359,7 @@ Index:
 <item>InterpolCtrl: <ref id="birail2p" name="Birail2 attribute">
 <item>Intersection: <ref id="levelobj" name="Level object">
 <item>InvertMatch: <ref id="objsearch" name="object search option">
-<item>Invert Selection: <ref id="mmspecial" name="main menu entry">
+<item>Invert Selection: <ref id="mmpnts" name="main menu entry">
 <item>IPatch: <ref id="ipatchobj" name="IPatch object">
 <item>isCompNC: <ref id="sciscompnc" name="scripting interface command">
 <item>isCompNP: <ref id="sciscompnp" name="scripting interface command">
@@ -21697,6 +21710,11 @@ Index:
 </itemize>
 <item>RadSteps: <ref id="rio" name="RenderMan interface option">
 <item>RationalPoints: <ref id="prefmodel" name="preference setting">
+<item>RationalStyle:
+<itemize>
+<item><ref id="rats" name="concept explanation">,
+<item><ref id="impwav" name="Wavefront OBJ import/export option">
+</itemize>
 <item>rc.tcl: <ref id="rctcl" name="example/helper script">
 <item>ReadCurves:
 <itemize>
@@ -21758,6 +21776,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="extrncp" name="ExtrNC attribute">,
 <item><ref id="extrnpp" name="ExtrNP attribute">
 </itemize>
+<item>Rem.~Smooth Normals: <ref id="mmtools" name="polymesh tool">
 <item>remknNC: <ref id="scremknnc" name="scripting interface command">
 <item>remknuNP: <ref id="scremknunp" name="scripting interface command">
 <item>remknvNP: <ref id="scremknvnp" name="scripting interface command">
@@ -21932,6 +21951,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="selac" name="select points action">
 </itemize>
 <item>Select All: <ref id="mmedit" name="main menu entry">
+<item>Select All Points: <ref id="mmpnts" name="main menu entry">
 <item>Select None: <ref id="mmedit" name="main menu entry">
 <item>Select Renderer: <ref id="mmspecial" name="main menu entry">
 <item>Selected Objects: <ref id="mmspecial" name="main menu entry">
