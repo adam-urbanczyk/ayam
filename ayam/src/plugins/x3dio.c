@@ -72,6 +72,7 @@ int x3dio_writeparam = AY_FALSE;
 int x3dio_writemat = AY_FALSE;
 int x3dio_writex3dom = AY_FALSE;
 int x3dio_resolveinstances = AY_FALSE;
+int x3dio_rationalstyle = 0;
 
 char *x3dio_x3domtemplate = "x3dom-template.xhtml";
 int x3dio_x3domwidth = 0;
@@ -4622,6 +4623,19 @@ x3dio_readnurbscurve(scew_element *element, unsigned int dim)
 		}
 	      if(has_weights)
 		{
+		  /*
+		  if(fabs(w[i]) < AY_EPSILON)
+		    w[i] = AY_EPSILON;
+		  */
+		  if(x3dio_rationalstyle)
+		    {
+		      nc.controlv[i*stride]   /= w[i];
+		      nc.controlv[i*stride+1] /= w[i];
+		      if(dim > 2)
+			{
+			  nc.controlv[i*stride+2] /= w[i];
+			}
+		    }
 		  nc.controlv[i*stride+3] = w[i];
 		}
 	      else
@@ -4637,6 +4651,19 @@ x3dio_readnurbscurve(scew_element *element, unsigned int dim)
 	      memcpy(&(nc.controlv[i*stride]), &(dcv[i*3]), 3*sizeof(double));
 	      if(has_weights)
 		{
+		  /*
+		  if(fabs(w[i]) < AY_EPSILON)
+		    w[i] = AY_EPSILON;
+		  */
+		  if(x3dio_rationalstyle)
+		    {
+		      nc.controlv[i*stride]   /= w[i];
+		      nc.controlv[i*stride+1] /= w[i];
+		      if(dim > 2)
+			{
+			  nc.controlv[i*stride+2] /= w[i];
+			}
+		    }
 		  nc.controlv[i*stride+3] = w[i];
 		}
 	      else
@@ -4820,6 +4847,12 @@ x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
 	      np.controlv[i*stride+2] = cv[i*2+2];
 	      if(has_weights)
 		{
+		  if(x3dio_rationalstyle)
+		    {
+		      np.controlv[i*stride]   /= w[i];
+		      np.controlv[i*stride+1] /= w[i];
+		      np.controlv[i*stride+2] /= w[i];
+		    }
 		  np.controlv[i*stride+3] = w[i];
 		}
 	      else
@@ -4835,6 +4868,12 @@ x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
 	      memcpy(&(np.controlv[i*stride]), &(dcv[i*3]), 3*sizeof(double));
 	      if(has_weights)
 		{
+		  if(x3dio_rationalstyle)
+		    {
+		      np.controlv[i*stride]   /= w[i];
+		      np.controlv[i*stride+1] /= w[i];
+		      np.controlv[i*stride+2] /= w[i];
+		    }
 		  np.controlv[i*stride+3] = w[i];
 		}
 	      else
@@ -6637,7 +6676,7 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 	  sscanf(argv[i+1], "%d", &x3dio_importviews);
 	}
       else
-      if(!strcmp(argv[i], "-r"))
+      if(!strcmp(argv[i], "-k"))
 	{
 	  sscanf(argv[i+1], "%lg", &x3dio_rescaleknots);
 	}
@@ -6655,6 +6694,11 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
       if(!strcmp(argv[i], "-m"))
 	{
 	  sscanf(argv[i+1], "%d", &x3dio_mergeinlinedefs);
+	}
+      else
+      if(!strcmp(argv[i], "-r"))
+	{
+	  sscanf(argv[i+1], "%d", &x3dio_rationalstyle);
 	}
       else
       if(!strcmp(argv[i], "-l"))
@@ -7162,12 +7206,16 @@ x3dio_writedoublepoints(scew_element *element, char *name, unsigned int dim,
 	  buflen = sprintf(buf, "%g %g, ", value[a], value[a+1]);
 	  break;
 	case 3:
-	  buflen = sprintf(buf, "%g %g %g, ", value[a], value[a+1],
-			   value[a+2]);
+	  if(stride == 4 && x3dio_rationalstyle)
+	    buflen = sprintf(buf, "%g %g %g, ", value[a]*value[a+3],
+			     value[a+1]*value[a+3], value[a+2]*value[a+3]);
+	  else
+	    buflen = sprintf(buf, "%g %g %g, ", value[a], value[a+1],
+			     value[a+2]);
 	  break;
 	case 4:
-	  buflen = sprintf(buf, "%g %g %g %g, ", value[a], value[a+1],
-			   value[a+2], value[a+3]);
+	    buflen = sprintf(buf, "%g %g %g %g, ", value[a], value[a+1],
+			     value[a+2], value[a+3]);
 	  break;
 	default:
 	  return AY_ERROR;
@@ -11096,7 +11144,7 @@ x3dio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 	  sscanf(argv[i+1], "%d", &x3dio_writemat);
 	}
       else
-      if(!strcmp(argv[i], "-r"))
+      if(!strcmp(argv[i], "-i"))
 	{
 	  sscanf(argv[i+1], "%d", &x3dio_resolveinstances);
 	}
@@ -11104,6 +11152,11 @@ x3dio_writetcmd(ClientData clientData, Tcl_Interp *interp,
       if(!strcmp(argv[i], "-x"))
 	{
 	  sscanf(argv[i+1], "%d", &x3dio_writex3dom);
+	}
+      else
+      if(!strcmp(argv[i], "-r"))
+	{
+	  sscanf(argv[i+1], "%d", &x3dio_rationalstyle);
 	}
       i += 2;
     } /* while */

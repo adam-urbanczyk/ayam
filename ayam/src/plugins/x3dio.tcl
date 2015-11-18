@@ -31,6 +31,7 @@ uplevel #0 { array set x3dio_options {
     RescaleKnots 0.0
     TopLevelLayers 0
     ScaleFactor 1.0
+    RationalStyle 0
     Progress 0.0
     filename ""
     FileName "unnamed.x3d"
@@ -80,6 +81,7 @@ proc x3dio_import { } {
     addParam $f x3dio_options ReadLayers [list "-1" 1 1-10]
     addParam $f x3dio_options RescaleKnots [list 0.0 1.0e-4]
     addCheck $f x3dio_options MergeInlineDefs
+    addMenu $f x3dio_options RationalStyle {"Euclidean" "Homogeneous"}
     addProgress $f x3dio_options Progress
 
     set f [frame $w.f2]
@@ -96,8 +98,9 @@ proc x3dio_import { } {
 	    -v $x3dio_options(ReadViewpoints)\
 	    -l $x3dio_options(ReadLayers)\
 	    -s $x3dio_options(ReadSTrim)\
-	    -r $x3dio_options(RescaleKnots)\
+	    -k $x3dio_options(RescaleKnots)\
 	    -f $x3dio_options(ScaleFactor)\
+	    -r $x3dio_options(RationalStyle)\
 	    -m $x3dio_options(MergeInlineDefs)
 
 	cd $oldcd
@@ -211,6 +214,7 @@ proc x3dio_export { } {
     addCheck $f x3dio_options WriteMaterials
     addCheck $f x3dio_options ResolveInstances
     addCheck $f x3dio_options TopLevelLayers
+    addMenu $f x3dio_options RationalStyle {"Euclidean" "Homogeneous"}
     addCheck $f x3dio_options WriteX3dom
     addProgress $f x3dio_options Progress
 
@@ -234,13 +238,12 @@ proc x3dio_export { } {
 	    -c $x3dio_options(WriteCurves)\
 	    -v $x3dio_options(WriteViews)\
 	    -s $x3dio_options(WriteSelected)\
-	    -o $x3dio_options(ObeyNoExport)\
-	    -i $x3dio_options(IgnoreHidden)\
 	    -l $x3dio_options(TopLevelLayers)\
 	    -m $x3dio_options(WriteMaterials)\
 	    -f $x3dio_options(ScaleFactor)\
 	    -p $x3dio_options(WriteParametrics)\
 	    -x $x3dio_options(WriteX3dom)\
+	    -r $x3dio_options(RationalStyle)
 
 	cd $oldcd
 	update
