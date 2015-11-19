@@ -31,7 +31,7 @@ uplevel #0 { array set x3dio_options {
     RescaleKnots 0.0
     TopLevelLayers 0
     ScaleFactor 1.0
-    RationalStyle 0
+    RationalStyle 1
     Progress 0.0
     filename ""
     FileName "unnamed.x3d"
