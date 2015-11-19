@@ -43,6 +43,7 @@ static int mfio_dataformat = AY_FALSE;
 static double mfio_scalefactor = 1.0;
 static double mfio_rescaleknots = 0.0;
 static int mfio_readingtrims = 0;
+static int mfio_rationalstyle = 0;
 
 /*
 static int export_colors;
@@ -229,23 +230,32 @@ ay_mfio_readnurbpatch(MF3DVoidObjPtr object)
     {
       for(j = 0; j < height; j++)
 	{
-	  controlv[b++] = (o->points)[a].x;
-	  controlv[b++] = (o->points)[a].y;
-	  controlv[b++] = (o->points)[a].z;
+	  if(mfio_rationalstyle/* && fabs(o->points)[a].w > AY_EPSILON*/ )
+	    {
+	      controlv[b++] = (o->points)[a].x/(o->points)[a].w;
+	      controlv[b++] = (o->points)[a].y/(o->points)[a].w;
+	      controlv[b++] = (o->points)[a].z/(o->points)[a].w;
+	     }
+	  else
+	    {
+	      controlv[b++] = (o->points)[a].x;
+	      controlv[b++] = (o->points)[a].y;
+	      controlv[b++] = (o->points)[a].z;
+	    }
 	  controlv[b++] = (o->points)[a].w;
 	  a++;
 	} /* for */
     } /* for */
 
   a = 0;
-  for(i = 0;i < width+(signed)o->uOrder;i++)
+  for(i = 0; i < width+(signed)o->uOrder; i++)
     {
       uknotv[a] = (o->uKnots)[a];
       a++;
     } /* for */
 
   a = 0;
-  for(i = 0;i < height+(signed)o->vOrder;i++)
+  for(i = 0; i < height+(signed)o->vOrder; i++)
     {
       vknotv[a] = (o->vKnots)[a];
       a++;
@@ -370,15 +380,24 @@ ay_mfio_readnurbcurve(MF3DVoidObjPtr object)
   a = 0; b = 0;
   for(i = 0; i < length; i++)
     {
-      controlv[b++] = (o->points)[a].x;
-      controlv[b++] = (o->points)[a].y;
-      controlv[b++] = (o->points)[a].z;
+      if(mfio_rationalstyle/* && fabs(o->points)[a].w > AY_EPSILON*/ )
+	{
+	  controlv[b++] = (o->points)[a].x/(o->points)[a].w;
+	  controlv[b++] = (o->points)[a].y/(o->points)[a].w;
+	  controlv[b++] = (o->points)[a].z/(o->points)[a].w;
+	}
+      else
+	{
+	  controlv[b++] = (o->points)[a].x;
+	  controlv[b++] = (o->points)[a].y;
+	  controlv[b++] = (o->points)[a].z;
+	}
       controlv[b++] = (o->points)[a].w;
       a++;
     } /* for */
 
   a = 0;
-  for(i = 0;i < length+(signed)o->order;i++)
+  for(i = 0; i < length+(signed)o->order; i++)
     {
       knotv[a] = (o->knots)[a];
       a++;
@@ -453,15 +472,23 @@ ay_mfio_readnurbcurve2d(MF3DVoidObjPtr object)
   a = 0; b = 0;
   for(i = 0; i < length; i++)
     {
-      controlv[b++] = (o->points)[a].x;
-      controlv[b++] = (o->points)[a].y;
+      if(mfio_rationalstyle/* && fabs(o->points)[a].w > AY_EPSILON*/ )
+	{
+	  controlv[b++] = (o->points)[a].x/(o->points)[a].w;
+	  controlv[b++] = (o->points)[a].y/(o->points)[a].w;
+	}
+      else
+	{
+	  controlv[b++] = (o->points)[a].x;
+	  controlv[b++] = (o->points)[a].y;
+	}
       b++;
       controlv[b++] = (o->points)[a].w;
       a++;
     } /* for */
 
   a = 0;
-  for(i = 0;i < length+(signed)o->order;i++)
+  for(i = 0; i < length+(signed)o->order; i++)
     {
       knotv[a] = (o->knots)[a];
       a++;
@@ -1902,6 +1929,13 @@ ay_mfio_writetrimcurve(MF3D_FilePtr fileptr, ay_object *o)
       w = curve->controlv[b];
       b++;
 
+      if(mfio_rationalstyle && curve->is_rat)
+	{
+	  x *= w;
+	  y *= w;
+	  z *= w;
+	}
+
       (mf3do.points)[a].x = m[0]*x + m[4]*y + m[8]*z + m[12]*w;
       (mf3do.points)[a].y = m[1]*x + m[5]*y + m[9]*z + m[13]*w;
       (mf3do.points)[a].w = w;
@@ -1971,11 +2005,20 @@ ay_mfio_writenurbpatch(MF3D_FilePtr fileptr, ay_object *o)
     {
       for(j = 0; j < patch->height; j++)
 	{
-	  (mf3do.points)[a].x = patch->controlv[b++];
-	  (mf3do.points)[a].y = patch->controlv[b++];
-	  (mf3do.points)[a].z = patch->controlv[b++];
+	  if(mfio_rationalstyle && patch->is_rat)
+	    {
+	      (mf3do.points)[a].x = patch->controlv[b]*patch->controlv[b+3];
+	      (mf3do.points)[a].y = patch->controlv[b+1]*patch->controlv[b+3];
+	      (mf3do.points)[a].z = patch->controlv[b+2]*patch->controlv[b+3];
+	      b += 3;
+	    }
+	  else
+	    {
+	      (mf3do.points)[a].x = patch->controlv[b++];
+	      (mf3do.points)[a].y = patch->controlv[b++];
+	      (mf3do.points)[a].z = patch->controlv[b++];
+	    }
 	  (mf3do.points)[a].w = patch->controlv[b++];
-
 	  a++;
 	} /* for */
     } /* for */
@@ -2108,11 +2151,20 @@ ay_mfio_writenurbcurve(MF3D_FilePtr fileptr, ay_object *o)
   a = 0; b = 0;
   for(i = 0; i < curve->length; i++)
     {
-      (mf3do.points)[a].x = curve->controlv[b++];
-      (mf3do.points)[a].y = curve->controlv[b++];
-      (mf3do.points)[a].z = curve->controlv[b++];
+      if(mfio_rationalstyle && curve->is_rat)
+	{
+	  (mf3do.points)[a].x = curve->controlv[b]*curve->controlv[b+3];
+	  (mf3do.points)[a].y = curve->controlv[b+1]*curve->controlv[b+3];
+	  (mf3do.points)[a].z = curve->controlv[b+2]*curve->controlv[b+3];
+	  b += 3;
+	}
+      else
+	{
+	  (mf3do.points)[a].x = curve->controlv[b++];
+	  (mf3do.points)[a].y = curve->controlv[b++];
+	  (mf3do.points)[a].z = curve->controlv[b++];
+	}
       (mf3do.points)[a].w = curve->controlv[b++];
-
       a++;
     } /* for */
 
@@ -3077,7 +3129,7 @@ ay_mfio_importscenetcmd(ClientData clientData, Tcl_Interp * interp,
 	  sscanf(argv[i+1], "%d", &mfio_readstrim);
 	}
       else
-      if(!strcmp(argv[i], "-r"))
+      if(!strcmp(argv[i], "-k"))
 	{
 	  sscanf(argv[i+1], "%lg", &mfio_rescaleknots);
 	}
@@ -3085,6 +3137,11 @@ ay_mfio_importscenetcmd(ClientData clientData, Tcl_Interp * interp,
       if(!strcmp(argv[i], "-f"))
 	{
 	  sscanf(argv[i+1], "%lg", &mfio_scalefactor);
+	}
+      else
+      if(!strcmp(argv[i], "-r"))
+	{
+	  sscanf(argv[i+1], "%d", &mfio_rationalstyle);
 	}
 
       i += 2;
@@ -3154,6 +3211,11 @@ ay_mfio_exportscenetcmd(ClientData clientData, Tcl_Interp *interp,
       if(!strcmp(argv[i], "-b"))
 	{
 	  sscanf(argv[i+1], "%d", &mfio_dataformat);
+	}
+      else
+      if(!strcmp(argv[i], "-r"))
+	{
+	  sscanf(argv[i+1], "%d", &mfio_rationalstyle);
 	}
       i += 2;
     } /* while */

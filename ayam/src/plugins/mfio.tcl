@@ -22,6 +22,7 @@ uplevel #0 { array set mfio_options {
     RescaleKnots 0.0
     TopLevelLayers 0
     ScaleFactor 1.0
+    RationalStyle 1
     Progress 0.0
     filename ""
     FileName "unnamed.3dmf"
@@ -65,6 +66,7 @@ proc mfio_import { } {
     addCheck $f mfio_options ReadCurves
     addCheck $f mfio_options ReadSTrim
     addParam $f mfio_options RescaleKnots [list 0.0 1.0e-4]
+    addMenu $f mfio_options RationalStyle {"Euclidean" "Homogeneous"}
 #    addProgress $f mfio_options Progress
 
     set f [frame $w.f2]
@@ -77,9 +79,10 @@ proc mfio_import { } {
 	mfioRead [file tail $mfio_options(FileName)]\
 	    -c $mfio_options(ReadCurves)\
 	    -i $mfio_options(IgnoreFirstTrim)\
-	    -r $mfio_options(RescaleKnots)\
+	    -k $mfio_options(RescaleKnots)\
 	    -s $mfio_options(ReadSTrim)\
-	    -f $mfio_options(ScaleFactor)
+	    -f $mfio_options(ScaleFactor)\
+	    -r  $mfio_options(RationalStyle)
 
 	cd $oldcd
 	goTop
@@ -180,6 +183,7 @@ proc mfio_export { } {
 #    addCheck $f mfio_options ObeyNoExport
 #    addCheck $f mfio_options IgnoreHidden
     addCheck $f mfio_options WriteCurves
+    addMenu $f mfio_options RationalStyle {"Euclidean" "Homogeneous"}
 #    addCheck $f mfio_options QuadAsBRep
 #    addCheck $f mfio_options TopLevelLayers
 #    addProgress $f mfio_options Progress
@@ -198,7 +202,8 @@ proc mfio_export { } {
 	    -c $mfio_options(WriteCurves)\
 	    -b $mfio_options(WriteBinary)\
 	    -s $mfio_options(WriteSelected)\
-	    -f $mfio_options(ScaleFactor)
+	    -f $mfio_options(ScaleFactor)\
+	    -r $mfio_options(RationalStyle)\
 
 	cd $oldcd
 	update
