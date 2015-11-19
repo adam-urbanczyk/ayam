@@ -174,6 +174,12 @@ ay_read_header(FILE *fileptr)
 
   ay_read_version = 1;
 
+  if(!strcmp(version,"1.23"))
+    {
+      ay_read_version = 16;
+      version_unknown = AY_FALSE;
+    }
+  else
   if(!strcmp(version,"1.22"))
     {
       ay_read_version = 16;
