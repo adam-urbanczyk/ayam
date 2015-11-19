@@ -166,7 +166,6 @@ ay_tess_checktri(double *p1, double *p2, double *p3)
 } /* ay_tess_checktri */
 
 
-
 /* ay_tess_checkquad:
  *  check quad built from p1,p2,p3,p4 for degeneracy (line shape, convexity);
  *  returns AY_FALSE if quad is degenerated,
@@ -176,7 +175,7 @@ int
 ay_tess_checkquad(double *p1, double *p2, double *p3, double *p4,
 		  int check_convexity)
 {
-  double V1[3], V2[3], N[16], *n, angle, len;
+ double V1[3], V2[3], N[16], *n, angle, len;
  int i, j, cnt = 4;
 
   AY_V3SUB(V1, p2, p1);
@@ -1475,7 +1474,7 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 		      /* one quad => just copy the relevant data */
 		      if(ay_tess_checkquad(pt1[q[0]], pt1[q[1]],
 					   pt1[q[2]], pt2[q[3]],
-					   AY_TRUE))
+					   /*check_convexity=*/AY_TRUE))
 			{
 			  numquads++;
 			  if(has_vn)
@@ -1531,13 +1530,12 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 
 			  i += (4*stride);
 
-
 			  /* signal successful processing of tri1/tri2 */
 			  dquads[j] = NULL;
 			  dquads[k] = NULL;
 			  break;
-			}
-		    }
+			} /* if quad is ok */
+		    } /* if tri1/tri2 form a quad */
 		} /* if tri2 */
 	    } /* for k */
 	} /* if tri1 */
@@ -1613,7 +1611,7 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 		      /* one quad => just copy the relevant data */
 		      if(ay_tess_checkquad(pt1[q[0]], pt1[q[1]],
 					   pt1[q[2]], pt2[q[3]],
-					   AY_TRUE))
+					   /*check_convexity=*/AY_TRUE))
 			{
 			  numquads++;
 			  if(has_vn)
@@ -1669,17 +1667,15 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 
 			  i += (4*stride);
 
-
 			  /* signal successful processing of tri1/tri2 */
 			  dquads[j] = NULL;
 			  dquads[k] = NULL;
 
 			  break;
-			}
+			} /* if quad is ok */
 		    }
 		  else
 		    {
-
 		      if(!tri)
 			{
 			  /* XXXX this simply picks the first compatible
@@ -1694,7 +1690,6 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 			      tri = tri2;
 			    }
 			}
-
 		  } /* one quad */
 		} /* if tri2 */
 	    } /* for k */
@@ -1772,7 +1767,7 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 		    }
 
 		  if(ay_tess_checkquad(pt1[q[0]], pt1[q[1]], pt1[q[2]], mid,
-				       AY_FALSE))
+				       /*check_convexity=*/AY_FALSE))
 		    {
 		      numquads++;
 		      /* Q1 */
@@ -1828,10 +1823,10 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 			}
 
 		      i += 4*stride;
-		    }
+		    } /* if quad is ok */
 
 		  if(ay_tess_checkquad(pt1[q[2]], pt2[q[3]], pt1[q[0]], mid,
-				       AY_FALSE))
+				       /*check_convexity=*/AY_FALSE))
 		    {
 		      numquads++;
 		      /* Q2 */
@@ -1898,7 +1893,7 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 		  /* found no matching triangle
 		     => create degenerate quad from tri1 */
 		  if(ay_tess_checkquad(tri1->p1, tri1->p2, tri1->p3, tri1->p3,
-				       AY_FALSE))
+				       /*check_convexity=*/AY_FALSE))
 		    {
 		      numquads++;
 
@@ -1954,8 +1949,8 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 			}
 
 		      i += (4*stride);
-		    }
-		}
+		    } /* if quad is ok */
+		} /* if found no match */
 	    } /* if degen */
 	} /* if tri1 */
     } /* for j */
@@ -2361,6 +2356,9 @@ ay_tess_tristomixedpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 	      tri = tri->next;
 	      continue;
 	    }
+
+	  /* XXXX TODO call checkquad()? */
+
 	  if(q[0] != -1)
 	    {
 	      /* one quad => just copy the relevant data */
@@ -3231,6 +3229,7 @@ ay_tess_npatch(ay_object *o,
   /* clean up */
 
 cleanup:
+
   if(uknots)
     {
       free(uknots);
@@ -3373,6 +3372,7 @@ ay_tess_npatchtcmd(ClientData clientData, Tcl_Interp *interp,
 	    if(refine_trims > 5)
 	      refine_trims = 5;
 	}
+
       if(argc > 8)
 	{
 	  Tcl_GetInt(interp, argv[8], &primitives);
@@ -3380,9 +3380,10 @@ ay_tess_npatchtcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(primitives < 0)
 	    primitives = 0;
 	  else
-	    if(primitives > 5)
-	      primitives = 5;
+	    if(primitives > 2)
+	      primitives = 2;
 	}
+
       if(argc > 9)
 	{
 	  Tcl_GetDouble(interp, argv[9], &quad_eps);
