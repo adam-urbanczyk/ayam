@@ -40,7 +40,7 @@
     typedef GLvoid (*_GLUfuncptr)();
   #else
     typedef GLvoid (*_GLUfuncptr)(GLvoid);
-  #endif 
+  #endif
 #else
   #include <GL/glu.h>
 #endif /* AYWITHAQUA */
@@ -2091,11 +2091,11 @@ extern char *ay_error_igntype;
 
 /** \name Version Strings and Numbers */
 /*@{*/
-#define AY_VERSIONSTR "1.22"
+#define AY_VERSIONSTR "1.23pre"
 #define AY_VERSIONSTRMI "0"
 
 #define AY_VERSIONMA 1
-#define AY_VERSION   22
+#define AY_VERSION   23
 #define AY_VERSIONMI 0
 /*@}*/
 
