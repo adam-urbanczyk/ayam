@@ -1,4 +1,4 @@
-[13. Nov 2015] CVS-Head:
+[20. Nov 2015] CVS-Head:
 ========================
 Bug Fixes:
 o DXF export of polymeshes misses transformation attributes (SF 508)
@@ -59,6 +59,8 @@ o added command "flipPo" to flip normals and/or loops of a PolyMesh
 
 Import/Export:
 o added "RationalStyle" option to Wavefront OBJ import/export
+o added "RationalStyle" option to X3D import/export
+o added "RationalStyle" option to 3DMF import/export
 
 
 [23. Jun 2015] Ayam-1.22:
