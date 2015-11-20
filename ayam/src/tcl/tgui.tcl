@@ -241,9 +241,9 @@ proc tgui_update args {
 	if { ($tgui_tessparam(SamplingMethod) == 4) ||
 	     ($tgui_tessparam(SamplingMethod) == 5) } {
 	    .tguiw.f1.fSamplingParamU.lr conf -text "10"
-	    .tguiw.f1.fSamplingParamU.s conf -from 0 -to 5
+	    .tguiw.f1.fSamplingParamU.s conf -from 0 -to 10
 	    .tguiw.f1.fSamplingParamV.lr conf -text "10"
-	    .tguiw.f1.fSamplingParamV.s conf -from 0 -to 5
+	    .tguiw.f1.fSamplingParamV.s conf -from 0 -to 10
 	}
 	if { ($tgui_tessparam(SamplingMethod) > 1) } {
 	    .tguiw.f1.fSamplingParamU.s conf -resolution 0.1
