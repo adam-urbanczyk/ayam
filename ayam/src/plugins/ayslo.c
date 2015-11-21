@@ -151,6 +151,9 @@ ayslo_scanslotcmd(ClientData clientData, Tcl_Interp *interp,
     {
       ay_error(AY_ERROR, fname, "Slo_SetShader failed for:");
       ay_error(AY_ERROR, fname, argv[1]);
+
+      Tcl_DStringFree(&dsp);
+
       return TCL_OK;
     }
 
@@ -256,6 +259,9 @@ ayslo_scanslotcmd(ClientData clientData, Tcl_Interp *interp,
 		  ay_error(AY_ERROR, fname, "Could not get array element:");
 		  ay_error(AY_ERROR, fname, symbol->svd_name);
 		  Tcl_DStringFree(&ds);
+
+		  Tcl_DStringFree(&dsp);
+
 		  return TCL_OK;
 		} /* if */
 	      ayslo_scanslosarg(element, &ds);
@@ -284,6 +290,8 @@ ayslo_scanslotcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_SetVar(interp, argv[2], Tcl_DStringValue(&ds), TCL_LEAVE_ERR_MSG);
 
   Tcl_DStringFree(&ds);
+
+  Tcl_DStringFree(&dsp);
 
  return TCL_OK;
 } /* ayslo_scanslotcmd */
