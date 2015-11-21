@@ -110,8 +110,12 @@ ayslo_scanslotcmd(ClientData clientData, Tcl_Interp *interp,
  SLO_TYPE type;
  char buffer[255];
  int arraylen;
- Tcl_DString ds;
+ Tcl_DString ds, dsp;
  char vname[] = "env(SHADERS)";
+#ifdef WIN32
+ char vnamewin[] = "ay(PixieShaders)", command[] = "aysdr_rewritepath";
+ char *c = NULL;
+#endif
 
   if(argc < 3)
     {
@@ -119,7 +123,29 @@ ayslo_scanslotcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  Slo_SetPath(Tcl_GetVar(interp, vname, TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
+  Tcl_DStringInit(&dsp);
+
+#ifdef WIN32
+  /* change '...;C:/bla...' to '...;//C/bla...' */
+  Tcl_Eval(interp, command);
+  Tcl_DStringAppend(&dsp, Tcl_GetVar(interp, vnamewin,
+				     TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG), -1);
+#else
+  Tcl_DStringAppend(&dsp, Tcl_GetVar(interp, vname,
+				     TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG), -1);
+#endif
+
+#ifdef WIN32
+  /* change all ; to : in shader search path */
+  c = strchr(Tcl_DStringValue(&dsp), ';');
+  while(c)
+    {
+      *c = ':';
+      c = strchr(c, ';');
+    }
+#endif
+
+  Slo_SetPath(Tcl_DStringValue(&dsp));
 
   if((Slo_SetShader(argv[1])) == -1)
     {
@@ -285,6 +311,13 @@ Ayslo_Init(Tcl_Interp *interp)
     }
 
   Tcl_SetVar(interp, vname, vval, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  /* source aysdr.tcl, it contains Tcl-code for path rewriting */
+  if((Tcl_EvalFile(interp, "aysdr.tcl")) != TCL_OK)
+     {
+       ay_error(AY_ERROR, fname, "Error while sourcing \"aysdr.tcl\"!");
+       return TCL_OK;
+     }
 
   Tcl_CreateCommand(interp, "shaderScan", ayslo_scanslotcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
