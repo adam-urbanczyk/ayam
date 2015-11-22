@@ -33,10 +33,10 @@ code example of 6 lines text (needs another 2 for the upper/lower lines)
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>07. Nov 2015
+<date>19. Nov 2015
 
 <abstract>
-This is the documentation of Ayam 1.22 &ndash; a free 3D modelling environment
+This is the documentation of Ayam 1.23 &ndash; a free 3D modelling environment
 for the RenderMan interface.
 
 Please note, that this document is a reference manual,
@@ -4030,7 +4030,8 @@ the original point data is unchanged and its accuracy is not affected
 as long as the new data is not applied.
 See also the discussion of the <tt/"TclPrecision"/ preference option in
 section <ref id="prefmisc" name="Miscellaneous Preferences">).
-<p>
+<#if out=latex><x/phantomsection/</#if>
+<p><label id="nmpmenu">
 The numeric point edit dialog also has a context menu.
 <footnote>Since 1.21</footnote>
 The entries in this menu allow to:
@@ -9176,9 +9177,9 @@ PV tags are supported.<footnote>Since 1.20.</footnote>
 The cap object forms a surface that fills a closed NURBS curve.
 Since Ayam 1.21, four different types of cap surfaces with different
 characteristics and parameter curve requirements are supported:
-Trim, Gordon, Simple, Simple3D.
+Trim, Gordon, Simple, and Simple3D.
 <p>
-The <bf/Trim/ type needs planar parameter curves but they may be concave.
+The <bf/Trim/ cap type needs planar parameter curves but they may be concave.
 Furthermore, if multiple curves are present as child objects, the curves
 following the first curve define holes in the cap surface, similar to the
 parameter curves of an extruded surface (see also section
@@ -9199,7 +9200,7 @@ Note that the cap generation may fail, if the control points of the
 first curve have weights and the curve leaves the convex hull of the
 control polygon.
 <p>
-The <bf/Gordon/ type supports only a single parameter curve but this curve
+The <bf/Gordon/ cap type supports only a single parameter curve but this curve
 may be non planar. Internally the cap object will split the
 parameter curve into four sections and build a Gordon surface from
 the four sections (see the following image for an example).
@@ -9209,12 +9210,12 @@ the four sections (see the following image for an example).
 <caption>Cap from Non-Planar Curve (left: Curve, right: Resulting Cap Surface)</caption>
 </figure>
 <p>
-The <bf/Simple/ type just extends the parameter curve linearly to a middle
+The <bf/Simple/ cap type just extends the parameter curve linearly to a middle
 point, not supporting non planar curves well and not supporting concave curves
 at all but ensuring compatibility with the progenitor curve/surface
 (which may be important for tesselation or further surface processing).
 <p>
-The <bf/Simple3D/ type extends the parameter curve to a middle point via
+The <bf/Simple3D/ cap type extends the parameter curve to a middle point via
 an additional planar and circular
 ring of control points, therefore rounding more smoothly to the middle
 (especially useful for non planar parameter curves or parameter curves
@@ -13395,6 +13396,11 @@ The option <tt>"RefineTrims"</tt> controls how many times the trim
 curves are to be refined before tesselation for improved tesselation
 fidelity along trim edges.<footnote>Since 1.21.</footnote>
 <p>
+The option <tt>"Primitives"</tt> allows to keep the quads created
+by the tesselation (mode <tt>"TrianglesAndQuads"</tt>) or
+to synthesize new quads from compatible
+triangles (mode <tt>"Quads"</tt>).<footnote>Since 1.23.</footnote>
+<p>
 If the <tt/"Ok"/ button is pressed, the tesselation tool will be
 closed and all selected objects will be replaced by their tesselated
 counterparts. The original objects will be deleted.<newline>
@@ -13428,6 +13434,8 @@ The values of the parameter slider bounds may be changed by simply entering
 values that are out of the current bounds into the respective entry widget,
 then pressing the <tt/&lt;Tab&gt;/ key. Range and resolution of the slider
 will be recalculated automatically from the value in the entry widget.
+
+The PolyMesh objects created by this tool will <em/not/ be optimized.
 </descrip>
 
 See section
@@ -19083,7 +19091,7 @@ Viewpoint elements will be imported as view objects (with corresponding
 view window) or camera objects depending on the <tt>"ReadViewpoints"</tt>
 import option.
 
-<item><bf>Non geometric/Scene structure:</bf>
+<item><bf>Non geometric&thinsp;/&thinsp;Scene structure:</bf>
 Transformation, Shape, Group, StaticGroup, Inline.
 <p><p>
 Shear transformations are not supported.
@@ -19202,6 +19210,9 @@ knots are not smaller than the given value. A <tt/"RescaleKnots"/ value of
 The default value 0.0 means no scaling.
 <item><tt/"ScaleFactor"/: allows to apply a scaling factor to all
 imported objects.
+<item><tt/"RationalStyle"/: determines how rational coordinates are
+stored in the file to be imported
+(see also section <ref id="rats" name="Rational Style">);
 <item><tt/"Progress"/: displays the progress of the import;
 from 0 to 50 percent, the x3dio plugin is reading the XML file,
 from 50 to 100 percent the x3dio plugin is creating Ayam objects.
@@ -19302,6 +19313,8 @@ result unless the
 <tt>"ResolveInstances"</tt> option is switched on;
 <item><tt>"TopLevelLayers"</tt>: arranges for all child objects of top level
 objects in the Ayam scene to be put in CADLayer nodes;
+<item><tt/"RationalStyle"/: determines how to write rational coordinates
+(see also section <ref id="rats" name="Rational Style">);
 <item><tt>"WriteX3dom"</tt>: toggles X3DOM-export mode. If this option is
 enabled,
 <enum>
@@ -19579,7 +19592,7 @@ continues,
 it; if this registration fails (because there is already a material
 with that name registered; this material can <em>only</em> be in the
 clipboard, as all other objects were deleted before opening the file),
-the material object read will be renamed by appending a number, and the
+the new material object will be renamed by appending a number and the
 registration is attempted again, those steps will be repeated until
 successful (prior to version 1.21
 Ayam did not attempt to rename the material and other objects were
@@ -19609,8 +19622,8 @@ material,
 read operation,
 <item> if a material object is read, Ayam will immediately register
 it; if this registration fails (because there is already a material
-with that name registered), the material object read will be renamed by
-appending a number, and the registration is attempted again, those
+with that name registered), the new material object will be renamed by
+appending a number and the registration is attempted again, those
 steps will be repeated until successful; prior to version 1.21,
 Ayam did not attempt to rename the material and other objects were
 then connected to the already existing material,
@@ -20601,12 +20614,7 @@ possible to do with OpenGL at all?), transformation widgets,
 true support for subdivision surfaces, lift some deficiencies (see above),
 import/export plugins.
 The project page of Ayam on SourceForge lists some more tasks and
-you are always welcome to discuss such matters in the public forum
-or in the feature request tracker.
-<item>Donate money by registering ShellyLib.
-ShellyLibs source will be converted to a first high level custom object
-that creates objects of type seashell for Ayam. This object, however,
-will be Shareware.
+you are always welcome to discuss such matters in the public forum.
 </enum>
 
 Please do not implement custom objects like simple triangles or polygons.
@@ -21498,7 +21506,8 @@ Index:
 <item><ref id="mm" name="main menu">,
 <item><ref id="vm" name="view menu">,
 <item><ref id="treecontm" name="tree context menu">,
-<item><ref id="lbcontm" name="listbox context menu">
+<item><ref id="lbcontm" name="listbox context menu">,
+<item><ref id="nmpmenu" name="numeric point edit menu">
 </itemize>
 <item>Merge: <ref id="mmtools" name="Merge PolyMesh tool">
 <item>MergeFaces <ref id="impwav" name="Wavefront OBJ import option">
@@ -21602,7 +21611,6 @@ Index:
 <item>Order:
 <itemize>
 <item><ref id="ncattr" name="NCurve attribute">,
-<item><ref id="npattr" name="NPatch attribute">,
 <item><ref id="acp" name="ACurve attribute">,
 <item><ref id="icp" name="ICurve attribute">,
 <item><ref id="rep" name="Revolve attribute">,
@@ -21610,10 +21618,15 @@ Index:
 </itemize>
 <item>Order_U:
 <itemize>
+<item><ref id="npattr" name="NPatch attribute">,
+<item><ref id="ipattr" name="IPatch attribute">
 <item><ref id="skp" name="Skin attribute">,
+</itemize>
+<item>Order_V:
+<itemize>
+<item><ref id="npattr" name="NPatch attribute">,
 <item><ref id="ipattr" name="IPatch attribute">
 </itemize>
-<item>Order_V: <ref id="ipattr" name="IPatch attribute">
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
@@ -21669,6 +21682,7 @@ Index:
 <item>Properties: <ref id="propgui" name="main window component">
 <item>Primitive: <ref id="levelobj" name="Level object">
 <item>Primitive Variable: <ref id="pvtag" name="tag type">
+<item>Primitives: <ref id="tesst" name="tesselation option">
 <item>PRManSpec: <ref id="rio" name="RenderMan interface option">
 <item>PV: <ref id="pvtag" name="tag type">
 <item>PVColorName: <ref id="hidprefs" name="hidden preference setting">
@@ -21713,7 +21727,12 @@ Index:
 <item>RationalStyle:
 <itemize>
 <item><ref id="rats" name="concept explanation">,
-<item><ref id="impwav" name="Wavefront OBJ import/export option">
+<item><ref id="imp3dmfopt" name="3DMF import option">,
+<item><ref id="exp3dmfopt" name="3DMF export option">,
+<item><ref id="impwavopt" name="Wavefront OBJ import option">,
+<item><ref id="expwavopt" name="Wavefront OBJ export option">,
+<item><ref id="impx3dopt" name="X3D import option">,
+<item><ref id="expx3dopt" name="X3D export option">
 </itemize>
 <item>rc.tcl: <ref id="rctcl" name="example/helper script">
 <item>ReadCurves:
@@ -22063,6 +22082,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="swint" name="Swing tool">
 </itemize>
 <item>Symmetric: <ref id="acp" name="ACurve attribute">
+<item>Symmetry: <ref id="mirrorobj" name="Mirror object">
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
@@ -22165,6 +22185,11 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>TrimRect: <ref id="trrt" name="TrimRect tool">
 <item>TrueDisp: <ref id="attrs" name="RenderMan/BMRT attribute">
 <item>truncated cone: <ref id="tconetcl" name="example/helper script">
+<item>Tween:
+<itemize>
+<item><ref id="tweennct" name="curve tool">,
+<item><ref id="tweennpt" name="surface tool">
+</itemize>
 <item>tweenNC: <ref id="sctweennc" name="scripting interface command">
 <item>TwmCompat: <ref id="prefgui" name="preference setting">
 <item>Type:
