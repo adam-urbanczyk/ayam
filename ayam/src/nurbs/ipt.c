@@ -524,7 +524,7 @@ ay_ipt_interpolateud(ay_nurbpatch_object *np, int order, int ktype,
     }
   uk[np->width-1] = 1.0;
 
-  for(i = 0; i < (np->width+2-pu); i++)
+  for(i = 0; i < (np->width+1-pu); i++)
     {
       ind1 = i+pu+1;
       U[ind1] = 0.0;
@@ -1201,7 +1201,7 @@ ay_ipt_interpolatevd(ay_nurbpatch_object *np, int order, int ktype,
     }
   vk[np->height-1] = 1.0;
 
-  for(i = 0; i < (np->height+2-pv); i++)
+  for(i = 0; i < (np->height+1-pv); i++)
     {
       ind = i+pv+1;
       V[ind] = 0.0;
