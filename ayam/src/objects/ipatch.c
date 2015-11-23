@@ -2276,6 +2276,8 @@ ay_ipatch_notifycb(ay_object *o)
  ay_bparam bparams = {0};
  ay_cparam cparams = {0};
  double tolerance, *cv = NULL;
+ double *sderiv_v = NULL, *ederiv_v = NULL;
+ ay_nurbcurve_object *ncs = NULL, *nce = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -2374,6 +2376,82 @@ ay_ipatch_notifycb(ay_object *o)
   if(ip->height > 2 && ip->order_v > 2)
     {
       /* interpolate along V */
+
+      if(ip->width > 2 && ip->order_u > 2 && ip->derivs_u)
+	{
+	  /* we do not have enough derivatives for V because we
+	     interpolated manually in U;
+	     but we can just interpolate the derivative vectors to
+	     get enough data to proceed */
+	  if(ip->close_v)
+	    {
+	      ay_status = ay_ict_interpolateG3DClosed(ip->order_u, ip->width,
+						      ip->sdlen_u, ip->edlen_u,
+						      1, ip->ktype_u,
+						      ip->sderiv_v,
+						    ip->sderiv_u, ip->ederiv_u,
+						      &ncs);
+	    }
+	  else
+	    {
+	      ay_status = ay_ict_interpolateG3D(ip->order_u, ip->width,
+						ip->sdlen_u, ip->edlen_u,
+						1, ip->ktype_u,
+						ip->sderiv_v,
+						ip->sderiv_u, ip->ederiv_u,
+						&ncs);
+	    }
+
+	  if(ay_status)
+	    goto cleanup;
+
+	  if(ip->close_v)
+	    {
+	      ay_status = ay_ict_interpolateG3DClosed(ip->order_u, ip->width,
+						      ip->sdlen_u, ip->edlen_u,
+						      1, ip->ktype_u,
+						      ip->ederiv_v,
+	  &(ip->sderiv_u[(ip->height-1)*3]), &(ip->ederiv_u[(ip->height-1)*3]),
+						      &nce);
+	    }
+	  else
+	    {
+	      ay_status = ay_ict_interpolateG3D(ip->order_u, ip->width,
+						ip->sdlen_u, ip->edlen_u,
+						1, ip->ktype_u,
+						ip->ederiv_v,
+	  &(ip->sderiv_u[(ip->height-1)*3]), &(ip->ederiv_u[(ip->height-1)*3]),
+						&nce);
+	    }
+
+	  if(ay_status)
+	    goto cleanup;
+
+	  sderiv_v = ncs->controlv;
+	  ederiv_v = nce->controlv;
+
+	  a = 3;
+	  b = 4;
+	  for(i = 0; i < ncs->length-1; i++)
+	    {
+	      sderiv_v[a]   = sderiv_v[b];
+	      sderiv_v[a+1] = sderiv_v[b+1];
+	      sderiv_v[a+2] = sderiv_v[b+2];
+
+	      ederiv_v[a]   = ederiv_v[b];
+	      ederiv_v[a+1] = ederiv_v[b+1];
+	      ederiv_v[a+2] = ederiv_v[b+2];
+
+	      a += 3;
+	      b += 4;
+	    }
+	}
+      else
+	{
+	  sderiv_v = ip->sderiv_v;
+	  ederiv_v = ip->ederiv_v;
+	}
+
       if(ip->close_v)
 	{
 	  /* if derivatives are not enabled, use automatic mode */
@@ -2383,7 +2461,7 @@ ay_ipatch_notifycb(ay_object *o)
 	    a = 0;
 	  ay_status = ay_ipt_interpolatevdc(np, ip->order_v, ip->ktype_v,
 					    a, ip->sdlen_v, ip->edlen_v,
-					    ip->sderiv_v, ip->ederiv_v);
+					    sderiv_v, ederiv_v);
 	}
       else
 	{
@@ -2391,7 +2469,7 @@ ay_ipatch_notifycb(ay_object *o)
 	    {
 	      ay_status = ay_ipt_interpolatevd(np, ip->order_v, ip->ktype_v,
 			           ip->derivs_v-1, ip->sdlen_v, ip->edlen_v,
-					       ip->sderiv_v, ip->ederiv_v);
+					       sderiv_v, ederiv_v);
 	    }
 	  else
 	    {
@@ -2472,6 +2550,12 @@ cleanup:
 
   if(p)
     (void)ay_object_deletemulti(p, AY_FALSE);
+
+  if(ncs)
+    ay_nct_destroy(ncs);
+
+  if(nce)
+    ay_nct_destroy(nce);
 
  return ay_status;
 } /* ay_ipatch_notifycb */
