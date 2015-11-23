@@ -2377,12 +2377,13 @@ ay_ipatch_notifycb(ay_object *o)
     {
       /* interpolate along V */
 
-      if(ip->width > 2 && ip->order_u > 2 && ip->derivs_u)
+      if(ip->width > 2 && ip->order_u > 2 && ip->derivs_u && ip->derivs_v)
 	{
 	  /* we do not have enough derivatives for V because we
-	     interpolated manually in U;
-	     but we can just interpolate the derivative vectors to
-	     get enough data to proceed */
+	     interpolated with derivatives in U;
+	     but we can just interpolate the V derivative vectors
+	     in the same way we already interpolated the control points;
+	     this will then result in enough data to proceed */
 	  if(ip->close_v)
 	    {
 	      ay_status = ay_ict_interpolateG3DClosed(ip->order_u, ip->width,
@@ -2430,6 +2431,7 @@ ay_ipatch_notifycb(ay_object *o)
 	  sderiv_v = ncs->controlv;
 	  ederiv_v = nce->controlv;
 
+	  /* convert from 4D NURBS control points to 3D */
 	  a = 3;
 	  b = 4;
 	  for(i = 0; i < ncs->length-1; i++)
