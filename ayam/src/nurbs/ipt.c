@@ -1486,7 +1486,7 @@ ay_ipt_interpolatevdc(ay_nurbpatch_object *np, int order, int ktype,
       memcpy(Qt, &(Pw[ind1]), stride*sizeof(double));
 
       /* inner points */
-      memcpy(&(Qt[8]), &(Pw[ind1+stride]), (K-3)*stride*sizeof(double));
+      memcpy(&(Qt[8]), &(Pw[ind1+stride]), (K-4)*stride*sizeof(double));
 
       /* last point */
       memcpy(&(Qt[(K-1)*4]), &(Pw[ind1]), stride*sizeof(double));
