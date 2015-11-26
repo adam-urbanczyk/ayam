@@ -549,7 +549,7 @@ of the currently selected object.
 If there are multiple selected objects, the properties listbox will
 display no properties at all.
 <p>
-Unlike the object tree/listbox, where you can select multiple entries,
+Unlike the object tree/listbox, where multiple entries can be selected,
 only one property may be selected.
 If a property is selected, the associated GUI will be shown in the
 appropriate area (on the right hand side).
@@ -566,9 +566,9 @@ organized in list form. The lists may be scrolled if they get too long
 to fit into the window.
 <p>
 If Ayam is in floating windows GUI mode and the elements of the current
-property GUI do not fit into the screen space that is defined by the main
-window size, Ayam can automatically resize the main window. This behaviour
-may be controlled using the preference setting
+property GUI do not fit horizontally into the screen space that is
+defined by the main window size, Ayam can automatically resize the
+main window. This behaviour may be controlled using the preference setting
 <tt/"AutoResize"/ (see section <ref id="prefs" name="Preferences">).
 <p>
 If an object and a property are selected and a different object is selected,
@@ -3394,8 +3394,12 @@ intersect this line are considered to be possible candidates for selection.
 </itemize>
 
 If the selection is ambiguous Ayam displays a window that contains a list of
-the possible candidates for selection (see image below).
-When you click a name in the list,
+the possible candidates for selection (see image below), or, if the
+<tt/"PickCycle"/ option is activated, Ayam just cycles through the
+candidate objects by further clicks on the same
+position.<footnote>Since 1.23.</footnote>
+<p>
+When a name in the candidate list is selected,
 the corresponding object is highlighted. Click <tt/"Ok"/ when you have
 determined which object to select or <tt/"Cancel"/ to close the list and keep
 the previous selection unchanged.
@@ -3424,7 +3428,6 @@ a better view of the temporarily selected object.
 <item>The tolerance used to determine whether an object should be picked
 or not can be adjusted (see <tt/"PickTolerance"/ in
 <ref id="hidprefs" name="Hidden Preference Settings">).
-
 </itemize>
 
 <#if out=latex><x/newpage/</#if>
@@ -7330,9 +7333,9 @@ a primitive variable tag that contains normal information for the curve
 (vertex normals). Such tags can be created manually or automatically
 e.g.~when extracting curves from surfaces using the <tt/"ExtrNC"/ object.
 <p>
-As the geometry of the offset curve is completely defined by
-the master curve, OffsetNC objects do not support own transformation
-attributes.<footnote>Since 1.19.</footnote>
+As the geometry of the offset curve is completely defined by the master
+curve and the offset parameter, OffsetNC objects do not support own
+transformation attributes.<footnote>Since 1.19.</footnote>
 <p>
 The <tt/"Bevel3D"/ offset algorithm has been removed since Ayam 1.19.
 <p>
@@ -8652,7 +8655,7 @@ The Birail2 object supports the standard caps as lined out in section
 and the standard bevels as lined out in section
 <ref id="bevelsprop" name="Bevels Property">.
 <p>
-The boundary names are:
+The boundary names are:<newline>
 <tt/Start/ &ndash; first cross section,<newline>
 <tt/End/ &ndash; second cross section,<newline>
 <tt/Left/ &ndash; curve formed by sweeping the start point of the
@@ -9605,9 +9608,9 @@ See also the image above.
 Trim curves are copied verbatim from the parameter surface to the
 offset surface.
 <p>
-As the geometry of the offset surface is completely defined by
-the master surface, OffsetNP objects do not support own transformation
-attributes.<footnote>Since 1.19.</footnote>
+As the geometry of the offset surface is completely defined by the master
+surface and the offset parameter, OffsetNP objects do not support own
+transformation attributes.<footnote>Since 1.19.</footnote>
 <p>
 The following table briefly lists some capabilities of the OffsetNP object.
 <p>
@@ -9634,10 +9637,27 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 of the created NURBS surface.
 </itemize>
 
+<sect3>Caps and Bevels
+<p><#if out=latex>&nbsp;<newline></#if>
+The OffsetNP object supports the standard caps as lined out in section
+<ref id="capsprop" name="Caps Property">
+and the standard bevels as lined out in section
+<ref id="bevelsprop" name="Bevels Property">.<newline>
+The boundary names are <tt/U0/, <tt/U1/, <tt/V0/, and <tt/V1/.
+
 <sect3>Conversion Support
 <p><#if out=latex>&nbsp;<newline></#if>
 The offset surface may be converted to an ordinary NURBS patch using the
 main menu entry <tt>"Tools/Convert"</tt>.
+<p>
+If bevels or caps are present, an enclosing Level object will be created
+and the bevels or caps follow the offset surface in the following
+order: U0, U1, V0, V1.
+<p>
+Integrated bevels or caps do not appear as extra objects.
+<p>
+The OffsetNP object provides a list of NURBS patch objects in the
+same order as created upon conversion.
 
 <sect3>RIB Export
 <p><#if out=latex>&nbsp;<newline></#if>
@@ -9645,8 +9665,11 @@ OffsetNP objects will be exported as NURBS patch primitives:
 <tscreen>
 <tt>RiNuPatch(...);</tt>
 </tscreen>
-
-PV tags are supported.<footnote>Since 1.20.</footnote>
+If bevels or caps are present, those follow as potentially trimmed NURBS
+patch primitives in the following order: U0, U1, V0, V1.
+<p>
+PV tags are supported but all NURBS patch primitives will get
+the same set of tags.<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -19072,7 +19095,7 @@ All NURBS elements are fully supported.
 <item><bf/CAD:/
 QuadSet, IndexedQuadSet, CADLayer, CADAssembly, CADPart, CADFace.
 <p><p>
-CADLayer objects will be imported as top level level objects.
+CADLayer objects will be imported as top level Level objects.
 CADAssembly and CADPart objects will be imported as level objects.
 
 <item><bf/Light sources:/
@@ -19347,7 +19370,8 @@ be corrected.<newline>
 Note, that only modifications of objects can be undone. This includes changes
 made by interactive modelling actions, changes made using property GUIs,
 but also changes to views (type changes or changes to the camera settings
-associated with a view).<newline>
+associated with a view, unless explicitly disabled using the view attribute
+<tt>"EnableUndo"</tt>).<newline>
 It is currently <em>not</em> possible to undo any changes to the object
 hierarchy, including clipboard (e.g.~cut, paste) and drag and drop
 operations. If an object is deleted, it is gone! If an object is,
@@ -19374,7 +19398,7 @@ Several actions will completely clear the undo buffer (i.e.~no undo is
 possible after one of those actions):
 New Scene, Open (Replace) Scene, and Close View.
 <p>
-Also note, that undo/redo will also modify objects that
+Furthermore, undo/redo operations will also modify objects that
 reside in the object clipboard (if they have saved states in the undo buffer).
 This means that the following sequence of operations leads to a sphere
 placed at <tt>"0,0,0"</tt>:
