@@ -149,6 +149,11 @@ ay_pact_pickpoint(ay_object *o, ay_view_object *view,
   ay_prefs.pick_epsilon = oldpickepsilon / minlevelscale / minobjscale *
     250 * view->conv_x;
 
+  if(view->type == AY_VTPERSP)
+    {
+      ay_prefs.pick_epsilon *= 4;
+    }
+
   /* now try to pick points on object o */
   arr = ay_getpntcbt.arr;
   cb = (ay_getpntcb *)(arr[o->type]);
