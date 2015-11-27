@@ -1172,12 +1172,12 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       /* select all points */
       pe->num = ipatch->width * ipatch->height;
 
-      if(ipatch->derivs_u && ipatch->sderiv_u && ipatch->ederiv_u)
+      if((ipatch->derivs_u > 1) && ipatch->sderiv_u && ipatch->ederiv_u)
 	{
 	  pe->num += 2*ipatch->height;
 	}
 
-      if(ipatch->derivs_v && ipatch->sderiv_v && ipatch->ederiv_v)
+      if((ipatch->derivs_v > 1) && ipatch->sderiv_v && ipatch->ederiv_v)
 	{
 	  pe->num += 2*ipatch->width;
 	}
@@ -1192,7 +1192,7 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	  a += 3;
 	}
 
-      if(ipatch->derivs_u && ipatch->sderiv_u && ipatch->ederiv_u)
+      if((ipatch->derivs_u > 1) && ipatch->sderiv_u && ipatch->ederiv_u)
 	{
 	  a = 0;
 	  for(i = 0; i < ipatch->height; i++)
@@ -1210,7 +1210,7 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	    }
 	}
 
-      if(ipatch->derivs_v && ipatch->sderiv_v && ipatch->ederiv_v)
+      if((ipatch->derivs_v > 1) && ipatch->sderiv_v && ipatch->ederiv_v)
 	{
 	  a = 0;
 	  for(i = 0; i < ipatch->width; i++)
@@ -1247,7 +1247,7 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	  j += 3;
 	}
 
-      if(ipatch->derivs_u && ipatch->sderiv_u && ipatch->ederiv_u)
+      if((ipatch->derivs_u > 1) && ipatch->sderiv_u && ipatch->ederiv_u)
 	{
 	  j = 0;
 	  for(i = 0; i < ipatch->height; i++)
@@ -1280,7 +1280,7 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	    } /* for */
 	} /* if */
 
-      if(ipatch->derivs_v && ipatch->sderiv_v && ipatch->ederiv_v)
+      if((ipatch->derivs_v > 1) && ipatch->sderiv_v && ipatch->ederiv_v)
 	{
 	  j = 0;
 	  for(i = 0; i < ipatch->width; i++)
@@ -1356,7 +1356,7 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	  j += 3;
 	} /* for */
 
-      if(ipatch->derivs_u && ipatch->sderiv_u && ipatch->ederiv_u)
+      if((ipatch->derivs_u > 1) && ipatch->sderiv_u && ipatch->ederiv_u)
 	{
 	  j = 0;
 	  for(i = 0; i < ipatch->height; i++)
@@ -1408,7 +1408,7 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	    } /* for */
 	} /* if */
 
-      if(ipatch->derivs_v && ipatch->sderiv_v && ipatch->ederiv_v)
+      if((ipatch->derivs_v > 1) && ipatch->sderiv_v && ipatch->ederiv_v)
 	{
 	  j = 0;
 	  for(i = 0; i < ipatch->width; i++)
