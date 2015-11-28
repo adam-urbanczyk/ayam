@@ -109,6 +109,8 @@ set riopt(runtime) { a b }
 </verb></tscreen>
 <item>Commands:<newline>
 &raquo;&thinsp;command arguments
+<#if out=html><item>Historical annotations appear when the mouse pointer
+hovers over the asterisk:&nbsp;<footnote>Since 1.19</footnote></#if>
 </itemize>
 
 <#if out=latex><x/newpage/</#if>
@@ -560,6 +562,18 @@ using the numeric keypad). <tt/&lt;0&gt;/ always selects the last and
 often the only object type specific property, whereas <tt/&lt;1&gt;/
 selects the first property, which often contains the standard
 transformations.<footnote>Since 1.8</footnote>
+<#if out=latex><x/phantomsection/</#if>
+<p><label id="plbcontm">
+The properties listbox also has a context menu. The entries in this
+menu allow to:
+<itemize>
+<item>Deselect the current property,
+<item>Copy/Paste the currently selected property to/from the property
+clipboard,
+<item>Add/Remove a property to/from the currently selected object
+by means of NP/RP tags,
+<item>display the help section of the currently selected property.
+</itemize>
 <p>
 All property GUIs use more or less standardized GUI elements that are
 organized in list form. The lists may be scrolled if they get too long
@@ -591,25 +605,27 @@ The various things that may be changed using a property GUI
 will normally not be applied to the selected object until the
 <tt/"Apply"/-button is pressed.
 <p>
-Holding down the <tt/"Shift"/ button while
-interacting with the property GUI or pressing <tt/"Return"/
-when entry widgets have the keyboard input focus will also lead
-to an instant apply.<footnote>Since 1.8.3.</footnote>
+However, holding down the <tt/"Shift"/ button while
+interacting with the property GUI or pressing the <tt/"Return"/ key
+when entry widgets have the keyboard input focus will lead
+to an instant application of all changed
+values.<footnote>Since 1.8.3.</footnote><newline>
+Note that property GUIs of custom objects may offer interactive
+elements that also do an instant "Apply" operation. But most property GUI
+elements of the core objects of Ayam do not change anything until
+the <tt/"Apply"/-button is used.
 <p>
-You can undo all changes to the arguments of a property that have been
-made after the last <tt/"Apply"/ operation with the <tt/"Reset"/-button.
-This does, however, not use the undo mechanism of Ayam.
-<p>
-Note also that property GUIs of custom objects may offer interactive
-elements that do an instant "Apply" operation. Most GUIs of the core
-objects of Ayam do not change anything until the <tt/"Apply"/-button
-is used, however.
+All changes to the arguments of a property that have been made since
+either opening the property or the last <tt/"Apply"/ operation (whatever
+was last) can be reverted with the <tt/"Reset"/-button.
+Mind that this does not use the undo mechanism of Ayam but rather copies
+Tcl data, just like the property clipboard.
 <p>
 If a property GUI element has the keyboard input focus (it is then usually
 displayed with a black rim around it), all the keyboard shortcuts for
 the main menu and scene navigation will have no effect until the
-keyboard input focus is moved away from the property GUI. You may
-accomplish this easily using the <tt/&lt;Esc&gt;/ key.
+keyboard input focus is moved away from the property GUI. This may be
+accomplished easily using the <tt/&lt;Esc&gt;/ key.
 <p>
 A property may be copied and pasted to another object, see the
 <tt/"Edit"/ menu. You can also paste property values to different types
@@ -633,6 +649,7 @@ If this property is then copied, all marked parameters will be omitted.
 <p>
 It is also possible to copy just the selected parameters using
 <tt/"Copy Marked Prop"/.
+<#if out=latex><x/newpage/</#if>
 <p>
 A simple example for the property clipboard:
 <p>
@@ -738,7 +755,8 @@ listing of all the available commands.
 Note that the example uses a side effect (the variable <tt/"i"/ that
 holds the index of the currently processed object) to calculate
 the amount of the movement and rotation.
-<p>
+<#if out=latex><x/phantomsection/</#if>
+<p><label id="conscontm">
 For more information regarding the console, please refer to the
 appropriate documentation by the original author Jeffrey Hobbs
 (see the console context menu, that can be opened with the right
@@ -7556,6 +7574,12 @@ main menu entry <tt>"Tools/Convert"</tt>.
 This process is also called tesselation and thus, the tesselation
 parameters from TP tags will be used in the conversion process (if present)
 (see also section <ref id="tptag" name="TP Tag">).
+<p>
+If bevels or caps are present, an enclosing Level object will be created
+and the tesselated bevels or caps follow the tesselated NPatch in the
+following order: U0, U1, V0, V1.
+<p>
+Integrated bevels or caps do not appear as extra objects.
 
 <sect3>RIB Export
 <p><#if out=latex>&nbsp;<newline></#if>
@@ -8702,10 +8726,10 @@ the same set of tags.<footnote>Since 1.20.</footnote>
 <caption>Skin Object (left: Curves, right: Resulting Skinned Surface)</caption>
 </figure>
 <p>
-The skin object forms a surface defined by a set of cross section curves,
+The Skin object forms a surface defined by a set of cross section curves,
 where the first and last curve will always be interpolated by the surface
 (this process is sometimes also called <em>lofting</em>). When only two
-parameter curves are used the skin forms a so called <em>ruled surface</em>.
+parameter curves are used, the skin forms a so called <em>ruled surface</em>.
 <p>
 The complete template for the Skin object hierarchy, consequently,
 looks like this:
@@ -8730,10 +8754,10 @@ clamped ones; then, for every curve with low order degree elevation
 has to be done; then a uniform knot vector has to be found; then all
 curves have to be refined using this new knot vector; interpolation
 adds another dimension of complexity. If you experience
-lags when editing the child curves of a skin object try to switch
+lags when editing the child curves of a Skin object try to switch
 to lazy notification.
-Since Ayam 1.9, a skin object will also use all the curves of a
-tool object, that provides multiple curves, e.g.~a clone object
+Since Ayam 1.9, a Skin object will also use all the curves of a
+tool object, that provides multiple curves, e.g.~a Clone object
 in mirror mode.
 <p>
 The direction of the parameter curves will be parallel to the V
@@ -8747,7 +8771,7 @@ For example, a skinned patch from two curves of length 4 but one with
 order 4 and the other with order 2 will result in a patch with
 a width of 2 and a height of 10.
 <p>
-The skin object has the generating NURBS curves as child objects
+The Skin object has the generating NURBS curves as child objects
 and watches their changes and adapts to them automagically.
 <p>
 The following table briefly lists some capabilities of the Skin object.
@@ -9036,7 +9060,7 @@ the same set of tags.<footnote>Since 1.20.</footnote>
 <caption>Bevel Object (left: Curve, right: Resulting Bevelled Surface)</caption>
 </figure>
 <p>
-The bevel object forms a bevelled surface from a single parameter
+The Bevel object forms a bevelled surface from a single parameter
 curve. The bevel cross section shape may be defined by a second curve.
 Consequently, the template for the object hierarchy of a Bevel object
 looks like this:
@@ -9177,7 +9201,7 @@ PV tags are supported.<footnote>Since 1.20.</footnote>
 <caption>Cap Object (left: Curve, right: Resulting Cap Surface)</caption>
 </figure>
 <p>
-The cap object forms a surface that fills a closed NURBS curve.
+The Cap object forms a surface that fills a closed NURBS curve.
 Since Ayam 1.21, four different types of cap surfaces with different
 characteristics and parameter curve requirements are supported:
 Trim, Gordon, Simple, and Simple3D.
@@ -9204,7 +9228,7 @@ first curve have weights and the curve leaves the convex hull of the
 control polygon.
 <p>
 The <bf/Gordon/ cap type supports only a single parameter curve but this curve
-may be non planar. Internally the cap object will split the
+may be non planar. Internally the Cap object will split the
 parameter curve into four sections and build a Gordon surface from
 the four sections (see the following image for an example).
 <figure loc="!ht">
@@ -10190,8 +10214,9 @@ look like this:
 convOb -inplace; revertC
 </verb></tscreen>
 </itemize>
-
-<item><tt/"Script"/ is the script code. The corresponding widget
+<#if out=latex><x/phantomsection/</#if>
+<item><tt/"Script"/ is the script code.<label id="scobjcontm">
+The corresponding widget
 is a standard Tcl text widget that allows to directly edit the code.
 It is also possible to edit the code in an external editor and
 copy it to the Script object using the operating system clipboard
@@ -10300,13 +10325,6 @@ using the <tt/"applyTrafo"/ command on the created objects in the script.
 Script objects convert to the objects they create/modify
 using the main menu entry <tt>"Tools/Convert"</tt>.
 
-When the script created a master object and instances, normal
-conversion will not be able to duplicate this relationship
-(due to the copy semantics of instance objects, see also section
-<ref id="instclip" name="Instances and the Object Clipboard">).
-To get around this, just copy the Script object and then use
-in place conversion on the copy.
-
 When converting in place, some special rules are in effect:<newline>
 if there is just one created/modified object, its tags
 are appended to the tags of the Script object and its material
@@ -10315,11 +10333,17 @@ If there are multiple created/modified objects, the
 Script object is transformed into a Level object, keeping its tags
 and material settings.
 The created/modified objects will become children of the new
-Level object (with tags and material properties unchanged).
-
+Level object (with tags and material properties unchanged).<newline>
 The current children of the Script object will be removed prior
-to conversion. If this fails (due to references), they may end
+to conversion. If this fails (e.g.~due to references), they may end
 up in the object clipboard.
+
+When the script created a master object and instances of this master, normal
+conversion will <em/not/ be able to duplicate this relationship
+(due to the copy semantics of instance objects, see also section
+<ref id="instclip" name="Instances and the Object Clipboard">).
+To get around this, just copy the Script object and then use
+in place conversion on the copy.
 
 <sect3>RIB Export
 <p><#if out=latex>&nbsp;<newline></#if>
@@ -11161,7 +11185,8 @@ or to change the type or value of the tag.
 <caption>Add&thinsp;/&thinsp;Edit Tag Dialog</caption>
 </figure>
 </itemize>
-<p>
+<#if out=latex><x/phantomsection/</#if>
+<p><label id="tagpropcontm">
 All tag entries have a context menu, where the corresponding tag can
 be copied/added to the property
 clipboard.<footnote>Since 1.21.</footnote>
@@ -12022,7 +12047,7 @@ by the TrimRect tool.
 <tag/Arguments/ The tween curve tool takes two NURBS curves from
 the selection and requests a parameter <em/r/.
 <tag/Operation/ The selected NURBS curves will be interpolated (tweened)
-and a new third curve incorporating features from the original curves
+and a new curve incorporating features from both of the original curves
 will be created.
 The parameter <em/r/ defines the ratio of influence of the first and
 the second curve (the latter using <em>1-r</em>).
@@ -12876,7 +12901,7 @@ original clipboard contents are lost when this tool finishes.
 <tag/Arguments/ The tween tool takes two NURBS patches from
 the selection and requests a parameter <em/r/.
 <tag/Operation/ The selected NURBS patches will be interpolated (tweened)
-and a new third patch incorporating features from the original patches
+and a new patch incorporating features from both of the original patches
 will be created.
 The parameter <em/r/ defines the ratio of influence of the first and
 the second patch (the latter using <em>1-r</em>).
@@ -19691,7 +19716,8 @@ and the scene changed state will be set to "unchanged",
 
 <sect1>Ayamrc File<label id="ayamrc">
 <p>
-To customize Ayam the ayamrc file may be used.
+To customize Ayam beyond the capabilities of the preferences dialog,
+the ayamrc file may be used.
 This file is either pointed to by the environment
 variable <tt>AYAMRC</tt> or is determined as following:
 <itemize>
@@ -21040,6 +21066,16 @@ Index:
 <item>Console: <ref id="cons" name="main window component">
 <item>ConsoleCursorEnd: <ref id="hidprefs" name="hidden preference setting">
 <item>ConsoleTakeFocus: <ref id="hidprefs" name="hidden preference setting">
+<item>Context Menu:
+<itemize>
+<item><ref id="treecontm" name="object tree context menu">,
+<item><ref id="lbcontm" name="object listbox context menu">,
+<item><ref id="plbcontm" name="property listbox context menu">,
+<item><ref id="conscontm" name="console context menu">,
+<item><ref id="scobjcontm" name="Script object context menu">,
+<item><ref id="tagpropcontm" name="Tags property context menu">,
+<item><ref id="nmpmenu" name="Numeric point edit context menu">
+</itemize>
 <item>Convert: <ref id="mmtools" name="main menu entry">
 <item>ConvertTags: <ref id="hidprefs" name="hidden preference setting">
 <item>convOb: <ref id="scconvob" name="scripting interface command">
