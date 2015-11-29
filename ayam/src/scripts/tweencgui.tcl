@@ -2,7 +2,7 @@
 # tweencgui.tcl: example script for Ayam Script object
 # this script wants Script Object Type "Modify";
 # it creates a tweened/interpolated curve from two arbitrary curves;
-# it also has a property GUI, just add a tag "NP TweenCAttrData"
+# it also has a property GUI, just add a tag "NP TweenCAttr"
 # to the script object to see it
 if { ![info exists ::TweenCAttrData] } {
     array set ::TweenCAttrData {
@@ -22,4 +22,4 @@ if { [llength $type] == 2 } {
     tweenNC $TweenCAttrData(Parameter)
     delOb
 }
-# tweenncgui.tcl
+# tweencgui.tcl
