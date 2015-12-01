@@ -562,6 +562,7 @@ using the numeric keypad). <tt/&lt;0&gt;/ always selects the last and
 often the only object type specific property, whereas <tt/&lt;1&gt;/
 selects the first property, which often contains the standard
 transformations.<footnote>Since 1.8</footnote>
+<p>
 <#if out=latex><x/phantomsection/</#if>
 <p><label id="plbcontm">
 The properties listbox also has a context menu. The entries in this
@@ -569,15 +570,25 @@ menu allow to:
 <itemize>
 <item>Deselect the current property,
 <item>Copy/Paste the currently selected property to/from the property
-clipboard,
+clipboard (see below),
 <item>Add/Remove a property to/from the currently selected object
-by means of NP/RP tags,
+by means of NP/RP tags (see also sections
+<ref id="nptag" name="NP (New Property) Tag"> and
+<ref id="rptag" name="RP (Remove Property) Tag">),
 <item>display the help section of the currently selected property.
 </itemize>
 <p>
+
+<sect3>Property GUIs
+<p>
 All property GUIs use more or less standardized GUI elements that are
-organized in list form. The lists may be scrolled if they get too long
-to fit into the window.
+organized in list form, see also the image above. The lists may be
+scrolled if they get too long to fit into the window.
+<p>
+What properties exactly will be shown, and how the GUIs look alike
+depends on the selected object and the selected property.
+This is documented comprehensively in section
+<ref id="obandprp" name="Objects, Properties, and Tags">.
 <p>
 If Ayam is in floating windows GUI mode and the elements of the current
 property GUI do not fit horizontally into the screen space that is
@@ -593,13 +604,6 @@ To avoid that or to clear the property GUI for fast browsing through the
 scene you may either double click on the "Properties" label, hit the
 <tt/&lt;Esc&gt;/ key three times, or use the context menu of the properties
 listbox to de-select the current property.
-<p>
-What properties exactly will be shown, and how the GUIs look alike
-depends on the selected object and the selected property.
-This is documented comprehensively in section
-<ref id="obandprp" name="Objects, Properties, and Tags">.
-<p>
-Here are some general remarks about object properties:
 <p>
 The various things that may be changed using a property GUI
 will normally not be applied to the selected object until the
@@ -626,6 +630,8 @@ displayed with a black rim around it), all the keyboard shortcuts for
 the main menu and scene navigation will have no effect until the
 keyboard input focus is moved away from the property GUI. This may be
 accomplished easily using the <tt/&lt;Esc&gt;/ key.
+
+<sect3>Property Clipboard<label id="propclip">
 <p>
 A property may be copied and pasted to another object, see the
 <tt/"Edit"/ menu. You can also paste property values to different types
@@ -651,7 +657,7 @@ It is also possible to copy just the selected parameters using
 <tt/"Copy Marked Prop"/.
 <#if out=latex><x/newpage/</#if>
 <p>
-A simple example for the property clipboard:
+A simple example for such advanced use of the property clipboard:
 <p>
 Our task is to give a big number of material objects the same color,
 but they already have different opacity settings. Copying the complete
@@ -6521,6 +6527,15 @@ NCurve|No|No|N/A|Yes<#if out=latex>@<hline></#if>
 <caption>NCurve Object Capabilities</caption>
 </table>
 <p>
+NCurve objects may be created via the toolbox, the main menu, several
+tools as documented in
+section <ref id="cctools" name="Curve Creation Tools">, or the
+scripting interface, see also
+section <ref id="sccrtnc" name="Creating Objects">.
+<p>
+Tools that process NCurve objects are documented in
+<ref id="cmtools" name="Curve Modification Tools">.
+<p>
 The next section details the NCurve object property.
 
 <sect3>NCurveAttr Property<label id="ncattr"><label id="ncurveattrprop">
@@ -6792,6 +6807,9 @@ ICurve|No|No|NCurve|Yes<#if out=latex>@<hline></#if>
 </tabular>
 <caption>ICurve Object Capabilities</caption>
 </table>
+<p>
+ICurve objects may be created via the toolbox, the main menu, or the
+scripting interface, see also <ref id="sccrtic" name="Creating Objects">.
 
 <sect3>ICurveAttr Property<label id="icp"><label id="icurveattrprop">
 <p><#if out=latex>&nbsp;<newline></#if>
@@ -6894,6 +6912,9 @@ ACurve|No|No|NCurve|Yes<#if out=latex>@<hline></#if>
 </tabular>
 <caption>ACurve Object Capabilities</caption>
 </table>
+<p>
+ACurve objects may be created via the main menu or the
+scripting interface, see also <ref id="sccrtac" name="Creating Objects">.
 
 <sect3>ACurveAttr Property<label id="acp"><label id="acurveattrprop">
 <p><#if out=latex>&nbsp;<newline></#if>
@@ -7059,9 +7080,9 @@ curve will result.
 </enum>
 <p>
 The knot sequence of the new concatenated curve will be of type
-<tt/"NURBS"/ or a custom knot vector will be computed (depending
+<tt/"NURB"/ or a custom knot vector will be computed (depending
 on the setting of <tt/"Knot-Type"/).<newline>
-If <tt/"Knot-Type"/ is <tt/"NURBS"/, the shape of the concatenated curve
+If <tt/"Knot-Type"/ is <tt/"NURB"/, the shape of the concatenated curve
 will differ from the parameter curves if any of the parameter curves has
 a custom knot vector with non equidistant knots.<newline>
 If <tt/"Knot-Type"/ is <tt/"Custom"/, the shape of the parameter curves
@@ -7435,6 +7456,14 @@ NPatch|NCurve<f/<sup/+///&thinsp;Level<f/<sup/+//|Yes|PolyMesh|Yes<#if out=latex
 </tabular>
 <caption>NPatch Object Capabilities</caption>
 </table>
+<p>
+NPatch objects may be created via the toolbox, the main menu, some tools
+as documented in section <ref id="sctools" name="Surface Creation Tools">,
+or the scripting interface, see
+also <ref id="sccrtnp" name="Creating Objects">.
+<p>
+Tools that process NPatch objects are documented in section
+<ref id="smtools" name="Surface Modification Tools">.
 
 <sect3>NPatchAttr Property<label id="npattr"><label id="npatchattrprop">
 <p><#if out=latex>&nbsp;<newline></#if>
@@ -7612,6 +7641,9 @@ IPatch|No|Yes|NPatch|Yes<#if out=latex>@<hline></#if>
 </tabular>
 <caption>IPatch Object Capabilities</caption>
 </table>
+<p>
+IPatch objects may be created via the main menu or the
+scripting interface, see also <ref id="sccrtip" name="Creating Objects">.
 
 <sect3>IPatchAttr Property<label id=ipattr><label id="ipatchattrprop">
 <p><#if out=latex>&nbsp;<newline></#if>
@@ -12079,7 +12111,7 @@ file <tt/"tweenc.ay"/ and script <tt/"tweenc.tcl"/.
 </descrip>
 
 <#if out=latex><x/newpage/</#if>
-<sect1>Curve Modification Tools
+<sect1>Curve Modification Tools<label id="cmtools">
 <p>
 These tools modify parametric curve objects.
 <p>
@@ -12928,7 +12960,7 @@ scripting interface command <ref id="sctweennp" name="tweenNP">.
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Surface Modification Tools
+<sect1>Surface Modification Tools<label id="smtools">
 <p>
 These tools modify parametric surface objects.
 <p>
@@ -20424,9 +20456,9 @@ ISBN 0-88986-303-2</it>
 The AyCSG plugin may be used to resolve and preview CSG operations.
 For this, the plugin uses image based CSG rendering algorithms provided
 by the OpenCSG library by Florian Kirsch. The OpenCSG library, currently,
-supports the Goldfeather and the SCS algorithm. The latter only works
-properly with convex primitives. Since both, Goldfeather and SCS, are
-image based rendering algorithms, there is no limit in geometric object
+supports the <em/Goldfeather/ and the <em/SCS/ algorithm. The latter
+only works properly with convex primitives. Since both, Goldfeather and SCS,
+are image based rendering algorithms, there is no limit in geometric object
 types that may be used in CSG hierarchies. You may e.g.~use Quadrics, NURBS,
 and Metaballs in every possible combination. You just have to make sure,
 that every CSG primitive describes a closed space.
@@ -21740,6 +21772,7 @@ Index:
 <item>Procedurals: <ref id="rio" name="RenderMan interface option">
 <item>Prompt: <ref id="hidprefs" name="hidden preference setting">
 <item>Properties: <ref id="propgui" name="main window component">
+<item>Property Clipboard: <ref id="propclip" name="property clipboard">
 <item>Primitive: <ref id="levelobj" name="Level object">
 <item>Primitive Variable: <ref id="pvtag" name="tag type">
 <item>Primitives: <ref id="tesst" name="tesselation option">
