@@ -6345,6 +6345,9 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
       t = (curve->length-(p*2))/2+(curve->length-(p*2)) % 2;
       newlength = curve->length-t;
 
+      if((newlength == curve->length) || (newlength - t < curve->order))
+	return AY_OK;
+
       /* coarsen (custom-) knots */
       if(curve->knot_type == AY_KTCUSTOM)
 	{
@@ -6399,7 +6402,7 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
       newlength = curve->length-t;
 
       /* no control points to remove? */
-      if(newlength < curve->order)
+      if(newlength == curve->length || newlength < curve->order)
 	return AY_OK;
 
       /* coarsen (custom-) knots */
