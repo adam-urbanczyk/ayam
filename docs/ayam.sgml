@@ -12075,12 +12075,18 @@ by the TrimRect tool.
 
 <sect2>Tween Curve Tool<label id="tweennct">
 <p>
+<figure loc="ht">
+<eps file="pics/tweenc.ps" height="4cm">
+<img src="pics/tweenc.gif">
+<caption>Tweened Curve (white) from two Parameter Curves (blue)
+with <em/r/ 0.5</caption>
+</figure>
 <descrip>
 <tag/Arguments/ The tween curve tool takes two NURBS curves from
 the selection and requests a parameter <em/r/.
 <tag/Operation/ The selected NURBS curves will be interpolated (tweened)
 and a new curve incorporating features from both of the original curves
-will be created.
+will be created. See also the image above.
 The parameter <em/r/ defines the ratio of influence of the first and
 the second curve (the latter using <em>1-r</em>).
 <tscreen><verb>
@@ -12209,7 +12215,7 @@ successive refinement of a simple NURBS curve. Note that the shape
 of the curve does not change, but the position of
 certain control points does.
 
-The point selection will be removed from the original objects.
+The point selection will be removed from the processed objects.
 
 See also the documentation of the corresponding
 scripting interface command <ref id="screfineknnc" name="refineknNC">
@@ -12228,7 +12234,9 @@ surfaces <ref id="refinest" name="Refine Knots Surface Tool">.
 <tag/Arguments/ The coarsen tool takes a number of NURBS curves from
 the selection.
 <tag/Operation/ Every second control point in the control vectors of
-the selected NURBS curves will be deleted.
+the selected NURBS curves will be deleted. If the new length of the
+curve would be smaller than the current order, the coarsen tool
+will not change anything.
 <tag/Notes/ For periodic curves the coarsen tool will not remove
 control points from the first (last) <em/p/ intervals (where <em/p/
 is the degree of the curve).
@@ -12238,7 +12246,7 @@ For closed curves, the coarsen tool will not remove the last point.
 The coarsen tool will also remove knot values from curves with
 custom knot vectors.
 
-The point selection will be removed from the original objects.
+The point selection will be removed from the processed objects.
 
 See also the documentation of the corresponding
 scripting interface command <ref id="sccoarsennc" name="coarsenNC">.
@@ -12262,7 +12270,7 @@ will be clamped automatically. The knot type of the curve will
 be changed to custom. New control points will be added and the position
 of old control points may be changed in the progress.
 
-The point selection will be removed from the original objects.
+The point selection will be removed from the processed objects.
 
 See also the documentation of the corresponding
 scripting interface command <ref id="scelevatenc" name="elevateNC">
@@ -12295,7 +12303,7 @@ to the curve and the current shape must be maintained, the new curve
 may form unusual/unwanted big arcs if the new point deviates too
 much from the tangent in the endpoint of the original curve.
 
-The point selection will be removed from the original objects.
+The point selection will be removed from the processed objects.
 
 See also the documentation of the corresponding
 scripting interface command <ref id="scextendnc" name="extendNC">.
@@ -12321,7 +12329,7 @@ the weights of those points are 1.0).
 
 <tag/Notes/ The knot type of the curves will be changed to <tt/"Custom"/.
 
-The point selection will be removed from the original objects.
+The point selection will be removed from the processed objects.
 
 In Ayam versions prior to 1.18 it was an error if the curve was already
 clamped at either side, this is no longer the case.
@@ -12357,7 +12365,7 @@ Unclamping is <em/not/ an exact reversal of clamping (and vice versa).
 However, as the unclamp operation only works on completely clamped curves,
 the unclamp tool may need to clamp the curve first.
 
-The point selection will be removed from the original objects if
+The point selection will be removed from the processed objects if
 the curve needs to be clamped before unclamping.
 
 See also the documentation of the corresponding
@@ -12385,7 +12393,7 @@ shape of the curve(s).
 
 <tag/Notes/ The knot type of the curves will be changed to <tt/"Custom"/.
 
-The point selection will be removed from the original objects.
+The point selection will be removed from the processed objects.
 
 See also the documentation of the corresponding
 scripting interface command <ref id="scinsknnc" name="insknNC">
@@ -12422,7 +12430,7 @@ knots will be removed.
 If <it/tol/ is <tt/"Inf"/ (infinity) the specified knot will be removed
 regardless of potential curve changes.
 
-The point selection will be removed from the original objects.
+The point selection will be removed from the processed objects.
 
 See also the documentation of the corresponding
 scripting interface command <ref id="scremknnc" name="remknNC">
@@ -13770,12 +13778,12 @@ Here is a comprehensive list of available arguments sorted by
 object type:
 <p>
 
-<#if out=latex><x/newpage/</#if>
+<#if out=latex><x/newpage/<p></#if>
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="sccrtnc">
   <itemize>
-  <item><tt/"NCurve"/: NURBS curves accept the following arguments:
+  <item><tt/"NCurve"/: NURBS curves accept the following
+arguments:<label id="sccrtnc">
   <itemize>
   <item><tt/"-length"/: length of the new curve, the length defaults to 4.
   <item><tt/"-order"/: order of the new curve, the order defaults to 4.
@@ -13855,11 +13863,11 @@ vector, control points at -1 0 0, -0.5 0 0, 0 0 0, 0.5 0 0, 1 0 0
 In versions of Ayam prior to 1.17, NURBS curves only accepted the
 <tt/"-length"/ argument.
 
-<#if out=latex><x/newpage/</#if>
+<#if out=latex><x/newpage/<p></#if>
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="sccrtic">
-  <item><tt/"ICurve"/: Interpolating curves accept the following arguments:
+  <item><tt/"ICurve"/: Interpolating curves accept the following
+arguments:<label id="sccrtic">
   <itemize>
 
   <item><tt/"-type"/: the type of the new curve, must be one of
@@ -13946,11 +13954,11 @@ straight upwards with length 0.5 in their respective end.
 In versions of Ayam prior to 1.17, interpolating curves only accepted the
 <tt/"-length"/ argument.
 
-<#if out=latex><x/newpage/</#if>
+<#if out=latex><x/newpage/<p></#if>
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="sccrtac">
-  <item><tt/"ACurve"/: Approximating curves accept the following arguments:
+  <item><tt/"ACurve"/: Approximating curves accept the following
+arguments:<label id="sccrtac">
   <itemize>
 
   <item><tt/"-type"/: the type of the new curve, must be one of
@@ -14015,11 +14023,11 @@ creates a centered approximating curve from 5 data points: -0.5 0 0,
 In versions of Ayam prior to 1.17, approximating curves only accepted the
 <tt/"-length"/ argument.
 
-<#if out=latex><x/newpage/</#if>
+<#if out=latex><x/newpage/<p></#if>
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="sccrtnp">
-  <item><tt/"NPatch"/: NURBS patches accept the following arguments:
+  <item><tt/"NPatch"/: NURBS patches accept the following
+arguments:<label id="sccrtnp">
   <itemize>
   <item><tt/"-width"/: width of the new patch, the width defaults to 4.
   <item><tt/"-height"/: height of the new patch, the height defaults to 4.
@@ -14144,11 +14152,12 @@ a smooth shape).
 In versions of Ayam prior to 1.17, NURBS patches only accepted the
 <tt/"-width"/ and <tt/"-height"/ argument.
 
-<#if out=latex><x/newpage/</#if>
+<#if out=latex><x/newpage/<p></#if>
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="sccrtip">
-  <item><tt/"IPatch"/: Interpolating patches accept the following arguments:
+
+  <item><tt/"IPatch"/: Interpolating patches accept the following
+arguments:<label id="sccrtip">
   <itemize>
   <item><tt/"-width"/: width of the new patch, the width defaults to 4.
   <item><tt/"-height"/: height of the new patch, the height defaults to 4.
