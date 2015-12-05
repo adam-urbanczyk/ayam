@@ -580,7 +580,7 @@ by means of NP/RP tags (see also sections
 <p>
 
 <sect3>Property GUIs
-<p>
+<p><#if out=latex>&nbsp;<newline></#if>
 All property GUIs use more or less standardized GUI elements that are
 organized in list form, see also the image above. The lists may be
 scrolled if they get too long to fit into the window.
@@ -632,7 +632,7 @@ keyboard input focus is moved away from the property GUI. This may be
 accomplished easily using the <tt/&lt;Esc&gt;/ key.
 
 <sect3>Property Clipboard<label id="propclip">
-<p>
+<p><#if out=latex>&nbsp;<newline></#if>
 A property may be copied and pasted to another object, see the
 <tt/"Edit"/ menu. You can also paste property values to different types
 of properties (e.g.~pasting parameters from a surface shader to the
@@ -1842,6 +1842,9 @@ See also the image below:
 <caption>Drawing Mode Icon Menu</caption>
 </figure>
 <p>
+See section <ref id="drawingmodes" name="Drawing Modes"> for a discussion
+of the different drawing modes. 
+<p>
 The <tt/"Grid"/ icon menu may be used to quickly change the current grid
 size:
 <p>
@@ -1912,9 +1915,10 @@ parallel views.
 camera around the point it is looking to.
 
 <item>Rotating the view is also possible in any
-modelling mode, by holding down the <tt/&lt;Alt&gt;/-key.
+modelling mode, by holding down the <tt/&lt;Alt&gt;/-key while dragging
+the mouse.
 
-<item><tt/&lt;o&gt;/ starts zooming the view. Dragging the mouse up
+<item><tt/&lt;Z&gt;/ starts zooming the view. Dragging the mouse up
 zooms in and dragging the mouse down zooms out.
 
 <item>Zooming the view into a rectangular region
@@ -1931,7 +1935,7 @@ Pan View|<tt/&lt;v&gt;/|
 <#if out=latex><x>inlinegfx pics/movevac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/movevac.gif"></#if>
 @<hline>
-Zoom View|<tt/&lt;V&gt;/|
+Zoom View|<tt/&lt;Z&gt;/|
 <#if out=latex><x>inlinegfx pics/zoomvac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/zoomvac.gif"></#if>
 @<hline>
@@ -1957,7 +1961,8 @@ types.<footnote>Since 1.15.</footnote>
 <tt/&lt;Ctrl+PgUp&gt;/ and <tt/&lt;Ctrl+PgDown&gt;/
 cycle through the drawing modes.<footnote>Since 1.16.</footnote>
 <p>
-<tt/&lt;Insert&gt;/ and <tt/&lt;Delete&gt;/ cycle through the grid sizes.
+<tt/&lt;Insert&gt;/ and <tt/&lt;Delete&gt;/ cycle through the grid
+sizes.<newline>
 <tt/&lt;Shift-Insert&gt;/ and <tt/&lt;Shift-Delete&gt;/ modify the current
 grid size.<footnote>Since 1.21.</footnote>
 <p>
@@ -4902,11 +4907,11 @@ the rotate and scale about modelling actions.
 entries above should be used as new mark coordinates when the
 changes to the <tt/"ViewAttrib"/ property are applied.
 
-<item><tt/"EnableUndo"/ is switched on by default and allows to
-control undo for the interactive view actions, e.g.~panning or zooming
-a view.
+<item><tt/"EnableUndo"/ allows to control undo for the interactive
+view actions, e.g.~panning or zooming a view.
 If this option is disabled, these actions will not be recorded in the
-undo system and also do not change the scene changed state.
+undo system and also do not change the scene changed state.<newline>
+This option is switched on by default.
 </itemize>
 
 <sect3>Drag and Drop Support
@@ -5880,19 +5885,19 @@ of it, so that the new instances point to the newly created master.
 For example, when the following two objects are copied and pasted back to the
 scene
 <tscreen><verb>
---NCurve   <-----
+--NCurve   <-----.
                  |
---Instance  -----
+--Instance  -----'
 </verb></tscreen>
 the following scene hierarchy results:
 <tscreen><verb>
---NCurve   <-------
+--NCurve   <-----+-.
                  | |
---Instance  -----  |
+--Instance  -----' |
                    | !
 --NCurve           |
                    |
---Instance  -------
+--Instance  -------'
 </verb></tscreen>
 The new instance still points to the original master and <em>not</em>
 to the copy of the master.
@@ -13244,11 +13249,17 @@ See also the documentation of the corresponding scripting interface commands
 
 <sect2>Interpolate Surface Tool<label id="interpnpt">
 <p>
+<figure loc="ht">
+<eps file="pics/interpnp.ps" height="5cm">
+<img src="pics/interpnp.gif">
+<caption>Interpolate Surface Tool (left-white: original surface, left-blue and right: interpolated surface)</caption>
+</figure>
 <descrip>
 <tag/Arguments/ The interpolate surface tool takes a number of NURBS
 patches from the selection and requests an additional parameter o.
 <tag/Operation/ The patches will be modified so that they interpolate
 all original control points with the desired interpolation order o.
+See also the image above.
 
 <tag/Notes/
 The point selection will be removed from the original object(s).
@@ -13812,10 +13823,10 @@ above.
   <item><tt/"-cv"/: the control vector of the new curve. The value of this
 option is a list of floating point numbers that describe the 4D euclidean
 rational (weight <em>not</em> multiplied in) coordinates of the control
-points.
+points.<newline>
 This list may also only specify one point, which is then taken as starting
 point and DX/DY/DZ (see below) are used to create the missing control points
-automatically.
+automatically.<newline>
 To specify a complete control vector, this list should have
 length&thinsp;&middot;&thinsp;4 elements, e.g.~for a curve of length 3,
 specify 12 values:
@@ -14008,8 +14019,6 @@ This option is only in effect if no <tt/"-cv"/ option is specified.
 
 </itemize>
 
-<#if out=latex><x/newpage/</#if>
-
 Examples:
 <enum>
 <item><bf/<tt/"crtOb ACurve -length 6"//<newline>
@@ -14124,8 +14133,6 @@ This option is only in effect if no <tt/"-cv"/ option is specified.
 of multiple points. The default value is 0.
 </itemize>
 
-<#if out=latex><x/newpage/</#if>
-
 Examples:
 <enum>
 <item><bf/<tt/"crtOb NPatch"//<newline>
@@ -14210,10 +14217,10 @@ There is no default value.
 
   <item><tt/"-cv"/: the control vector of the new patch. The value of this
 option is a list of floating point numbers that describe the 3D
-non rational coordinates of the data points to be interpolated.
+non rational coordinates of the data points to be interpolated.<newline>
 This list may also only specify one point, which is then taken as starting
 point and UDX/UDY/UDZ and VDX/VDY/VDZ (see below) are used to create the
-missing control points automatically.
+missing control points automatically.<newline>
 To specify a complete control vector, this list should have
 width&thinsp;&middot;&thinsp;height&thinsp;&middot;&thinsp;3 elements,
 e.g.~for a patch of width 2 and height 2, specify 12 values:
