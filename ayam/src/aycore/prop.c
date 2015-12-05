@@ -758,13 +758,13 @@ ay_prop_getncinfo(Tcl_Interp *interp, char *n1, ay_object *o)
 	  sprintf(&(buffer3[11])/*, sizeof(buffer)*/, "CUSTOM\n");
 	  break;
 	case AY_KTCHORDAL:
-	  sprintf(&(buffer3[13])/*, sizeof(buffer)*/, "Chordal\n");
+	  sprintf(&(buffer3[11])/*, sizeof(buffer)*/, "Chordal\n");
 	  break;
 	case AY_KTCENTRI:
-	  sprintf(&(buffer3[13])/*, sizeof(buffer)*/, "Centripetal\n");
+	  sprintf(&(buffer3[11])/*, sizeof(buffer)*/, "Centripetal\n");
 	  break;
 	default:
-	  sprintf(&(buffer3[13])/*, sizeof(buffer)*/, "Unknown\n");
+	  sprintf(&(buffer3[11])/*, sizeof(buffer)*/, "Unknown\n");
 	  break;
 	}
 
