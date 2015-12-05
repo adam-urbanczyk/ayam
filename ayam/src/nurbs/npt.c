@@ -14957,6 +14957,13 @@ ay_npt_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  side = 2;
 	}
+      else
+      if((argv[i][0] == '-') && (argv[i][1] == 's'))
+	{
+	  tcl_status = Tcl_GetInt(interp, argv[i+1], &side);
+	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	  i++;
+	}
       i++;
     }
 
