@@ -709,6 +709,11 @@ proc viewBindMenus { w } {
     $w.fMenu.c conf -underline 1
     # bind Grid-menu
     bind $w <$aymainshortcuts(MenuMod)-g> "viewPostMenu %W.fMenu.g.m;break"
+
+    # bind to global help
+    bind $w <$aymainshortcuts(MenuMod)-h> "::tk::TraverseToMenu . %A;break"
+
+ return;
 }
 # viewBindMenus
 
