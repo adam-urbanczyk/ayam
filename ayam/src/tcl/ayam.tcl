@@ -757,6 +757,10 @@ array set ay {
  fixvname "\[^\[:alnum:\]|-\]"
  pmoff1 0.5
  pmoff2 0.5
+ clevel 2
+ clevel_l {"Order" "Order&Length" "Full"}
+ side 0
+ side_l {"Both" "U" "V"}
 }
 # array ay
 

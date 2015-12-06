@@ -747,8 +747,8 @@ $m.npt add command -label "Reset Weights" -underline 0 -command {
     }
 }
 $m.npt add command -label "Make Compatible" -underline 0 -command {
-    runTool ay(clevel) {"Level:"}\
-	"undo save MakeCompNP; makeCompNP -l %0; rV"\
+    runTool {ay(side) ay(clevel)} {"Side:" "Level:"}\
+	"undo save MakeCompNP; makeCompNP -s %0 -l %1; rV"\
 	"Make Compatible" makecompst
 }
 $m.npt add command -label "Tween" -underline 1 -command {
