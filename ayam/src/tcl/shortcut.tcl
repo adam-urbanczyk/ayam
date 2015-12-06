@@ -691,6 +691,8 @@ proc shortcut_viewalt { ww } {
     $w mc
     $w configure -cursor exchange
     set ay(vaoldfocus) [focus]
+    update idletasks
+
  return;
 }
 
@@ -700,7 +702,7 @@ proc shortcut_viewactions { w } {
  global ay ayviewshortcuts
 
     # Rotate by mouse
-    bind all <KeyRelease-$ayviewshortcuts(RotModKey)> "update idletasks"
+    bind all <KeyRelease-$ayviewshortcuts(RotModKey)> "update idletasks;"
 
     # as the Alt modifier is repeating on Win32 we must immediately
     # disable further events; otherwise our Release-binding below
@@ -708,15 +710,15 @@ proc shortcut_viewactions { w } {
     # pressing/releasing <Alt> and then the wheel would not work anymore
     # for zooming the view (until <B1> is used to 'repair' the focus)
     bind $w <KeyPress-$ayviewshortcuts(RotModKey)> {
-	if { [string first ".view" %W] == 0 } {
-	    set w [winfo toplevel %W]
-	} else {
-	    set w %W
-	}
-	bind $w <KeyPress-$ayviewshortcuts(RotModKey)> ""
+	bind %W <KeyPress-$ayviewshortcuts(RotModKey)> ""
 	shortcut_viewalt %W
     }
     bind $w <KeyRelease-$ayviewshortcuts(RotModKey)> {
+	bind %W <KeyPress-$ayviewshortcuts(RotModKey)> {
+	    bind %W <KeyPress-$ayviewshortcuts(RotModKey)> ""
+	    shortcut_viewalt %W
+	}
+
 	if { [string first ".view" %W] != 0 } {
 	    set w %W.f3D.togl
 	} else {
@@ -726,22 +728,24 @@ proc shortcut_viewactions { w } {
 	$w configure -cursor {}
 
 	if { $ay(vaoldfocus) != "" } {
-	    focus -force $ay(vaoldfocus)
-	}
-	if { [string first ".view" %W] == 0 } {
-	    set w [winfo toplevel %W]
-	} else {
-	    set w %W
-	}
-	bind $w <KeyPress-$ayviewshortcuts(RotModKey)> {
-	    if { [string first ".view" %W] == 0 } {
-		set w [winfo toplevel %W]
+	    if { [winfo exists $ay(vaoldfocus)] } {
+		focus -force $ay(vaoldfocus)
 	    } else {
-		set w %W
+		set ay(vaoldfocus) ""
 	    }
-	    bind $w <KeyPress-$ayviewshortcuts(RotModKey)> ""
+	}
+    }
+    bind $w <Enter> {
+	bind %W <KeyPress-$ayviewshortcuts(RotModKey)> {
+	    bind %W <KeyPress-$ayviewshortcuts(RotModKey)> ""
 	    shortcut_viewalt %W
 	}
+	if { [string first ".view" %W] != 0 } {
+	    set w %W.f3D.togl
+	} else {
+	    set w [winfo toplevel %W].f3D.togl
+	}
+	$w configure -cursor {}
     }
 
     set i $ayviewshortcuts(RotButton)

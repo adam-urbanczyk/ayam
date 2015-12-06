@@ -710,8 +710,12 @@ proc viewBindMenus { w } {
     # bind Grid-menu
     bind $w <$aymainshortcuts(MenuMod)-g> "viewPostMenu %W.fMenu.g.m;break"
 
-    # bind to global help
-    bind $w <$aymainshortcuts(MenuMod)-h> "::tk::TraverseToMenu . %A;break"
+    # explicitly bind to global menus so that the "break;" can prevent
+    # the single action key (e.g. <t>) to fire inadvertently
+    foreach key { f e c t u s h } {
+	bind $w <$aymainshortcuts(MenuMod)-$key>\
+	    "::tk::TraverseToMenu . %A;break"
+    }
 
  return;
 }
