@@ -735,7 +735,7 @@ proc shortcut_viewactions { w } {
 	    }
 	}
     }
-    bind $w <Enter> {
+    bind $w <Enter> {+
 	bind %W <KeyPress-$ayviewshortcuts(RotModKey)> {
 	    bind %W <KeyPress-$ayviewshortcuts(RotModKey)> ""
 	    shortcut_viewalt %W
