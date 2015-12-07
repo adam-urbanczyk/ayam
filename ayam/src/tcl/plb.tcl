@@ -118,7 +118,12 @@ bind $f.li <<ListboxSelect>> {
     }
     # if
 
-    after idle {$ay(pca) configure -scrollregion [$ay(pca) bbox all]}
+    after idle {
+	global ay
+	set ay(bbox) [$ay(pca) bbox all]
+	lset ay(bbox) 3 [expr [lindex $ay(bbox) 3] + 6]
+	$ay(pca) configure -scrollregion $ay(bbox)
+    }
 }
 # bind
 
