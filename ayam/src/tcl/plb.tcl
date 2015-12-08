@@ -118,12 +118,7 @@ bind $f.li <<ListboxSelect>> {
     }
     # if
 
-    after idle {
-	global ay
-	set ay(bbox) [$ay(pca) bbox all]
-	lset ay(bbox) 3 [expr [lindex $ay(bbox) 3] + 6]
-	$ay(pca) configure -scrollregion $ay(bbox)
-    }
+    after idle plb_setscrollregion
 }
 # bind
 
@@ -503,7 +498,7 @@ proc plb_update { } {
     }
     # if
 
-    after idle {$ay(pca) configure -scrollregion [$ay(pca) bbox all]}
+    after idle plb_setscrollregion
 
     set ay(plblock) 0
 
@@ -821,3 +816,11 @@ proc plb_bindtab { } {
  return;
 }
 # plb_bindtab
+
+proc plb_setscrollregion { } {
+    global ay
+    set ay(bbox) [$ay(pca) bbox all]
+    lset ay(bbox) 3 [expr [lindex $ay(bbox) 3] + 6]
+    $ay(pca) configure -scrollregion $ay(bbox)
+ return;
+}
