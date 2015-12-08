@@ -687,10 +687,10 @@ proc shader_DbToArray { shader } {
 #
 proc shader_unglobShaderPaths { shaders } {
     global ay
-    regsub -all $ay(separator) $shaders " " tmp;
+    set pathlist [split $shaders $ay(separator)]
     set alldirs ""
-    foreach entry $tmp {
-	set dirs [glob -type d $entry]
+    foreach entry $pathlist {
+	set dirs [glob -nocomplain -type d $entry]
 	foreach dir $dirs {
 	    append alldirs "$dir"
 	    append alldirs $ay(separator)
@@ -706,16 +706,13 @@ proc shader_unglobShaderPaths { shaders } {
 proc shader_findShader { sname } {
  global ay ayprefs
     set shaders [shader_unglobShaderPaths $ayprefs(Shaders)]
-    set tmp ""
-    regsub -all $ay(separator) $shaders " " tmp;
-    set alldirs [shader_unglobShaderPaths $tmp]
+    set alldirs [split $shaders $ay(separator)]
     foreach dir $alldirs {
 	set fname $dir/${sname}$ay(sext)
 	if { [file readable $fname] } {
 	    return $fname;
 	}
     }
-
  return "";
 }
 # shader_findShader
