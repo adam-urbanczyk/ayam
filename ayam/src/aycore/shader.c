@@ -541,7 +541,7 @@ ay_shader_free(ay_shader *shader)
 	      free(arg->name);
 	    }
 
-	  if(arg->type == AY_SASTRING)
+	  if(arg->type == AY_SASTRING && arg->val.string)
 	    {
 	      free(arg->val.string);
 	    }
@@ -582,7 +582,7 @@ ay_shader_copyarg(ay_shader_arg *source, ay_shader_arg **dest)
   strcpy(newval, source->name);
   newp->name = newval;
 
-  if(source->type == AY_SASTRING)
+  if(source->type == AY_SASTRING && source->val.string)
     {
       /* copy string */
       if(!(newval = malloc((strlen(source->val.string)+1)*sizeof(char))))
@@ -1060,9 +1060,14 @@ ay_shader_gettcmd(ClientData clientData, Tcl_Interp *interp,
 	case AY_SASTRING:
 	  Tcl_SetVar2(interp,n1,"ArgTypes", "string", TCL_LEAVE_ERR_MSG |
 		      TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT);
-	  Tcl_SetVar2(interp,n1, arg->name, arg->val.string,
-		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	  if(arg->val.string)
+	    Tcl_SetVar2(interp,n1, arg->name, arg->val.string,
+			TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	  else
+	    Tcl_SetVar2(interp,n1, arg->name, "",
+			TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	  break;
+
 	case AY_SAMATRIX:
 	  Tcl_SetVar2(interp,n1,"ArgTypes", "matrix", TCL_LEAVE_ERR_MSG |
 		      TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT);
