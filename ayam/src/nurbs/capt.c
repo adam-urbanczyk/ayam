@@ -161,6 +161,12 @@ ay_capt_addcaps(ay_cparam *cparams, ay_bparam *bparams,
 
 	  if(cparams->integrate[i] && cparams->types[i] > 1)
 	    {
+	      if(i < 2)
+		{
+		  ay_status = ay_npt_swapuv(cap->refine);
+		  if(ay_status)
+		    goto cleanup;
+		}
 	      ay_status = ay_capt_integrate(cap, i, AY_KTCUSTOM, o);
 	      (void)ay_object_delete(cap);
 	      cap = NULL;
