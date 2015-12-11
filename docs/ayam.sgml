@@ -2144,8 +2144,7 @@ The object search facility allows to find objects in the scene hierarchy
 according to many different, even script defined criteria and highlight
 them in the tree view or execute arbitrary actions on
 them.<footnote>Since 1.21.</footnote>
-Object search is controlled by a dialog, see also
-the image above.
+Object search is controlled by a dialog, see also the image above.
 
 Note, that the object search dialog is not closed immediately after a
 search operation, this allows multiple search operations with possibly
@@ -5236,7 +5235,15 @@ shadow maps, e.g.~Photorealistic RenderMan (prman) or Aqsis.
 </enum>
 
 This scene is distributed with Ayam as an example scene named
-<tt>"shadowmaps.ay"</tt>.
+<tt>"shadowmaps.ay"</tt>, see also the following image that
+was created with an additional point light and Aqsis as renderer:
+<p>
+<figure loc="ht">
+<eps file="pics/shadowmaps.ps" height="4cm">
+<img src="pics/shadowmaps.gif">
+<caption>Shadowmaps Example</caption>
+</figure>
+
 <p>
 Note that for Aqsis you should add a RiHider hidden,depthfilter,s,midpoint
 tag to your Root object if shadow maps are in use. Other renderers might
@@ -12617,6 +12624,10 @@ However, since clamping, degree elevation, and knot insertion may be
 used on the curves, their order, knot vectors, and control points
 may be changed.
 <p><p>
+The orders of all curves will simply be raised to the maximum order of
+all curves; no attempt is made to check, whether lowering orders
+leads to a simpler result.
+<p>
 The point selection will be removed from the original objects.
 <p>
 See also the documentation of the corresponding
@@ -13321,14 +13332,18 @@ curves <ref id="resckmt" name="Rescale Knots to Mindist Tool">.
 </figure>
 <descrip>
 <tag/Arguments/ The make compatible tool takes a number of
-NURBS surfaces from the selection and requests a level.
+NURBS surfaces from the selection and requests a side and a level.
 <tag/Operation/ The surfaces will be made compatible, so that, based
-on the level parameter given, they are of the same orders, width/height,
-and defined on the same knot vector.
+on the side and level parameters given, they are of the same orders,
+width/height, and defined on the same knot vector.
 <tag/Notes/ This tool does not change the geometry of the surfaces.
 However, since clamping, degree elevation, and knot insertion may be
 used on the surfaces, their order, knot vectors, and control points
 may be changed.
+
+The orders of all surfaces will simply be raised to the maximum order of
+all surfaces; no attempt is made to check, whether lowering orders
+leads to a simpler result.
 
 The point selection will be removed from the original objects.
 
@@ -14731,7 +14746,7 @@ produced in the output variable.<footnote>Since 1.21.</footnote>
  <item>Notes: This procedure runs more slowly than calling the appropriate
 get-procedure and accessing the data array that is associated with the
 property in question directly, especially if multiple values are to be
-fetched.
+fetched.<newline>
 However, the name of the data array and the appropriate procedure
 are inferred automatically and errors are caught and reported.
 See below for more information regarding direct access of property values.
@@ -15888,7 +15903,7 @@ splituNP &ndash; split NURBS patch:
  <item>Synopsis: <tt/"splituNP u"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Splits the selected NPatch objects into two patches
-at parametric value u.
+at the parametric value <em/u/.<newline>
 The selected NPatch will be modified and a new NPatch object will
 be created and appended as new object to the
 current level of the scene.
@@ -15905,7 +15920,7 @@ splitvNP &ndash; split NURBS patch:
  <item>Synopsis: <tt/"splitvNP v"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Splits the selected NPatch objects into two patches
-at parametric value v.
+at the parametric value <em/v/.<newline>
 The selected NPatch will be modified and a new NPatch object will
 be created and appended as new object to the
 current level of the scene.
@@ -16050,7 +16065,7 @@ breakNP &ndash; break NURBS patch into curves:
 along parametric dimension U or V (depending on whether the option
 <tt/"-u"/ or <tt/"-v"/ is specified, default is u).
 <p><p>
-If the option <tt/"-a"/ is omitted, the transformations of the NPatch
+If the option <tt/"-a"/ is specified, the transformations of the NPatch
 objects will be applied to the control points and the NCurve objects
 will be created with default transformation attributes, otherwise the
 control points will be copied verbatim and the NCurve objects will get
@@ -19552,9 +19567,9 @@ deliver them to their respective parent object.
 The pure hierarchical dependency scheme may be broken up by instance objects:
 <tscreen><verb>
 +-Tool_Object(Revolve)
- \ Parameter_Object(NCurve) --------------
+ \ Parameter_Object(NCurve) --------------.
 +-Tool_Object(Revolve)                    | !
- \ Parameter_Object(Instance_of_NCurve) <-
+ \ Parameter_Object(Instance_of_NCurve) <-'
 </verb></tscreen>
 In the scene above, the second Revolve tool object depends on the shape
 of the first parameter object. The Instance object transports the data
