@@ -784,6 +784,7 @@ proc addMenu { w prop name elist } {
 	    set l [string length $i]
 	}
     }
+    incr l
 
     menubutton $f.mb -text Eimer -menu $f.mb.m -relief raised -bd $bw\
 	-padx 0 -pady 1 -takefocus 1 -width $l -highlightthickness 1\
