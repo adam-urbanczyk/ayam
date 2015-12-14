@@ -20,10 +20,15 @@ int ay_bevelt_integrate(int side, ay_object *s, ay_object *b);
 
 void ay_bevelt_createbevelcurve(int index);
 
+int ay_bevelt_getwinding(ay_nurbcurve_object *nc, double *normals,
+			 int normalstride);
+
+
 /* global variables: */
 
 /** standard bevel curves */
 static ay_object *ay_bevelt_curves[3] = {0};
+
 
 /* functions: */
 
@@ -46,10 +51,10 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 {
  int ay_status = AY_OK;
  int i, is_planar, is_roundtocap, do_integrate;
- int winding = 0, side = 0, dir = 0;
+ int windingc = 0, windinga = 0, side = 0, dir = 0;
  int capintknottype = AY_KTCUSTOM;
  double param = 0.0, *mp = NULL, *normals = NULL, *tangents = NULL;
- double radius = 0.0;
+ double radius = 0.0, wv[3] = {0}, *cv, *p0, *p1;
  ay_object curve = {0}, *alignedcurve = NULL;
  ay_object *bevel = NULL, *bevelcurve = NULL;
  ay_object **next = dst, *extrcurve = NULL;
@@ -76,6 +81,10 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 	  ay_object_defaults(&curve);
 	  ay_trafo_defaults(&curve);
 	  curve.type = AY_IDNCURVE;
+
+	  /* calculate parameters for curve extraction and a vector that
+	     points away from the surface at the respective border */
+	  cv = np->controlv;
 	  param = 0.0;
 	  switch(i)
 	    {
@@ -85,6 +94,9 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		side = 0;
 	      else
 		side = 4;
+
+	      p0 = cv;
+	      ay_npt_gnd(AY_SOUTH, np, 0, p0, &p1);
 	      break;
 	    case 1:
 	      if(ay_knots_isclamped(/*side=*/2, np->vorder, np->vknotv,
@@ -95,6 +107,9 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		  side = 4;
 		  param = 1.0;
 		}
+
+	      p0 = cv+((np->height-1)*4);
+	      ay_npt_gnd(AY_NORTH, np, np->height-1, p0, &p1);
 	      break;
 	    case 2:
 	      if(ay_knots_isclamped(/*side=*/1, np->uorder, np->uknotv,
@@ -102,6 +117,9 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		side = 2;
 	      else
 		side = 5;
+
+	      p0 = cv;
+	      ay_npt_gnd(AY_EAST, np, 0, p0, &p1);
 	      break;
 	    case 3:
 	      if(ay_knots_isclamped(/*side=*/2, np->uorder, np->uknotv,
@@ -112,11 +130,27 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		  side = 5;
 		  param = 1.0;
 		}
+
+	      p0 = cv+(np->width*np->height*4)-4;
+	      ay_npt_gnd(AY_WEST, np, np->width-1, p0, &p1);
 	      break;
 	    default:
 	      break;
 	    } /* switch */
 
+	  if(p1 != NULL)
+	    {
+	      AY_V3SUB(wv, p0, p1);
+	    }
+	  else
+	    {
+	      /* XXXX report error? bail out? */
+	      wv[0] = 0.0;
+	      wv[1] = 0.0;
+	      wv[2] = 1.0;
+	    }
+
+	  /* extract the boundary curve */
 	  normals = NULL;
 	  ay_status = ay_npt_extractnc(o, side, param,
 				       /*relative=*/AY_TRUE,
@@ -127,6 +161,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 	  if(ay_status || !curve.refine)
 	    goto cleanup;
 
+	  /* check/analyze the extracted curve */
 	  if(ay_nct_isdegen((ay_nurbcurve_object*)(void*)curve.refine))
 	    {
 	      ay_nct_destroy(curve.refine);
@@ -135,8 +170,9 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 	      continue;
 	    }
 
-	  winding = ay_nct_getwinding(curve.refine, normals, 9);
+	  windingc = ay_nct_getwinding(curve.refine, wv);
 
+	  /* create the bevel surface on the extracted curve */
 	  bevel = NULL;
 	  ay_status = ay_npt_createnpatchobject(&bevel);
 	  if(ay_status || !bevel)
@@ -156,9 +192,9 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		is_planar = AY_FALSE;
 	      else
 		{
-		  ay_nct_isplanar(&curve, &alignedcurve, &is_planar);
+		  ay_nct_isplanar(&curve, /*allow_flip=*/AY_FALSE,
+				  &alignedcurve, &is_planar);
 		}
-
 	    }
 	  else
 	    {
@@ -179,7 +215,8 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		}
 	      else
 		{
-		  ay_nct_isplanar(&curve, NULL, &do_integrate);
+		  ay_nct_isplanar(&curve, /*allow_flip=*/AY_FALSE,
+				  NULL, &do_integrate);
 		  if(do_integrate)
 		    do_integrate = AY_FALSE;
 		  else
@@ -193,68 +230,24 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 	  if(is_planar)
 	    {
 	      /* 2D bevel */
-	      switch(i)
+	      radius = -bparams->radii[i];
+	      dir = !bparams->dirs[i];
+
+	      wv[0] = 0;
+	      wv[1] = 0;
+	      wv[2] = 1;
+	      windinga = ay_nct_getwinding(alignedcurve->refine, wv);
+
+	      if(windinga < 0)
 		{
-		case 0:
-		  if(winding > 0)
-		    {
-		      dir = !bparams->dirs[i];
-		      radius = -bparams->radii[i];
-		    }
-		  /*
-		  else
-		    {
-		      dir = bparams->dirs[i];
-		      radius = bparams->radii[i];
-		    }
-		  */
-		  break;
-		case 1:
-		  if(winding > 0)
-		    {
-		      /*
-		      dir = bparams->dirs[i];
-		      radius = bparams->radii[i];
-		      */
-		    }
-		  else
-		    {
-		      dir = !bparams->dirs[i];
-		      radius = -bparams->radii[i];
-		    }
-		  break;
-		case 2:
-		  if(winding > 0)
-		    {
-		      /*
-		      dir = bparams->dirs[i];
-		      radius = bparams->radii[i];
-		      */
-		    }
-		  else
-		    {
-		      dir = !bparams->dirs[i];
-		      radius = -bparams->radii[i];
-		    }
-		  break;
-		case 3:
-		  if(winding > 0)
-		    {
-		      dir = !bparams->dirs[i];
-		      radius = -bparams->radii[i];
-		    }
-		  else
-		    {
-		      /*
-		      dir = bparams->dirs[i];
-		      radius = bparams->radii[i];
-		      */
-		    }
-		  break;
-		default:
-		  dir = AY_FALSE;
-		  break;
-		} /* switch */
+		  dir = !dir;
+		}
+
+	      if(windinga == windingc)
+		{
+		  dir = !dir;
+		  radius = -radius;
+		}
 
 	      if(dir)
 		{
@@ -276,6 +269,9 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 	    {
 	      /* 3D bevel */
 
+	      dir = !bparams->dirs[i];
+	      radius = -bparams->radii[i];
+
 	      /* pick the correct tangents */
 	      if(is_roundtocap)
 		{
@@ -292,10 +288,12 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		    tangents = &(normals[6]);
 		}
 
+	      windinga = ay_bevelt_getwinding(curve.refine, normals, 9);
+
 	      switch(i)
 		{
 		case 0:
-		  if(winding > 0)
+		  if(windinga > 0)
 		    {
 		      dir = !bparams->dirs[i];
 		      radius = -bparams->radii[i];
@@ -309,7 +307,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		  */
 		  break;
 		case 1:
-		  if(winding > 0)
+		  if(windinga > 0)
 		    {
 		      radius = -bparams->radii[i];
 		    }
@@ -320,7 +318,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		    }
 		  break;
 		case 2:
-		  if(winding > 0)
+		  if(windinga > 0)
 		    {
 		      /*dir = bparams->dirs[i];*/
 		      radius = -bparams->radii[i];
@@ -332,7 +330,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		    }
 		  break;
 		case 3:
-		  if(winding > 0)
+		  if(windinga > 0)
 		    {
 		      dir = !bparams->dirs[i];
 		      radius = -bparams->radii[i];
@@ -1623,3 +1621,62 @@ cleanup:
 
  return;
 } /* ay_bevelt_createbevelcurve */
+
+
+/** ay_bevelt_getwinding:
+ *  Calculate winding of arbitrary (3D) NURBS curve.
+ *
+ * \param[in] nc NURBS curve to interrogate
+ * \param[in] normals a vector of normals at control point positions
+ * \param[in] normalstride stride in normals array
+ *
+ * \returns -1 if curve winding is negative, 1 if it is positive, 0
+ *  if the curve is degenerate
+ */
+int
+ay_bevelt_getwinding(ay_nurbcurve_object *nc, double *normals,
+		     int normalstride)
+{
+ double *cv, *p1, *p2;
+ double V1[3], V2[3];
+ double l1 = 0.0, l2 = 0.0;
+ int i, stride = 4;
+ int a = 0, b = stride, c = 0, d = normalstride;
+
+  if(nc && normals)
+    {
+      cv = nc->controlv;
+      for(i = 0; i < nc->length-1; i++)
+	{
+	  p1 = &(cv[a]);
+	  p2 = &(cv[b]);
+	  if(!AY_V3COMP(p1, p2))
+	    {
+	      AY_V3SUB(V1, p2, p1);
+	      l1 += AY_V3LEN(V1);
+	      memcpy(V1, &(normals[c]), 3*sizeof(double));
+
+	      AY_V3SUB(V1, V1, p1);
+	      memcpy(V2, &(normals[d]), 3*sizeof(double));
+	      AY_V3SUB(V2, V2, p2);
+	      AY_V3SUB(V1, V2, V1);
+	      l2 += AY_V3LEN(V1);
+	    } /* if */
+
+	  a += stride;
+	  b += stride;
+	  c += normalstride;
+	  d += normalstride;
+	} /* for */
+    } /* if */
+
+  if(l1 != 0.0)
+    {
+      if(l1 < l2)
+	return -1;
+      else
+	return 1;
+    }
+
+ return 0;
+} /* ay_bevelt_getwinding */

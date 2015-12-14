@@ -530,7 +530,8 @@ ay_bevel_notifycb(ay_object *o)
       if(force3d)
 	is_planar = AY_FALSE;
       else
-	ay_nct_isplanar(curve, &alignedcurve, &is_planar);
+	ay_nct_isplanar(curve, /*allow_flip=*/AY_TRUE,
+			&alignedcurve, &is_planar);
     }
   else
     {

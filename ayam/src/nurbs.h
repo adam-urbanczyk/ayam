@@ -732,8 +732,7 @@ ay_nct_getorientation3d(ay_nurbcurve_object *curve, int stride,
 /** Calculate winding of arbitrary (3D) NURBS curve.
  */
 int
-ay_nct_getwinding(ay_nurbcurve_object *curve, double *normals,
-		  int normalstride);
+ay_nct_getwinding(ay_nurbcurve_object *curve, double *v);
 
 /** Check NURBS curve closeness.
  */
@@ -904,7 +903,8 @@ int ay_nct_homtoeuc(ay_nurbcurve_object *nc);
 
 /** Check planarity of curve.
 */
-void ay_nct_isplanar(ay_object *c, ay_object **cp, int *is_planar);
+void ay_nct_isplanar(ay_object *c, int allow_flip, ay_object **cp,
+		     int *is_planar);
 
 /** Tcl command to unclamp the selected NURBS curves.
  */
@@ -1389,6 +1389,11 @@ int ay_npt_refinev(ay_nurbpatch_object *patch,
  */
 int ay_npt_refineuvtcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
+
+/** Get next different control point in designated direction.
+ */
+void ay_npt_gnd(char dir, ay_nurbpatch_object *np, int ij, double *p,
+		double **dp);
 
 /** Get all normals from control points.
  */
