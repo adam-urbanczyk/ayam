@@ -12303,6 +12303,59 @@ ay_npt_gndvp(char dir, ay_nurbpatch_object *np, int j, double *p,
 } /* ay_npt_gndvp */
 
 
+/* ay_npt_gnd:
+ * get next different control point in direction <dir>
+ * in an arbitrary NURBS surface <np> where the current points location in
+ * its row/column is <ij> and its memory address is <p>;
+ * <dir> must be one of:
+ * 0 - North
+ * 1 - South
+ * 3 - East
+ * 4 - West
+ * returns result (new address) in <dp>
+ * <dp> is set to NULL if there is no different point in the designated
+ * direction (e.g. if the patch is degenerated in this column)
+ */
+void
+ay_npt_gnd(char dir, ay_nurbpatch_object *np, int ij, double *p,
+	   double **dp)
+{
+ ay_npt_gndcb *gnducb = ay_npt_gndu;
+ ay_npt_gndcb *gndvcb = ay_npt_gndv;
+
+  if(!np || !p || !dp)
+    return;
+
+  if(np->utype == AY_CTCLOSED)
+    gnducb = ay_npt_gnduc;
+  else
+    if(np->utype == AY_CTPERIODIC)
+      gnducb = ay_npt_gndup;
+
+  if(np->vtype == AY_CTCLOSED)
+    gndvcb = ay_npt_gndvc;
+  else
+    if(np->vtype == AY_CTPERIODIC)
+      gndvcb = ay_npt_gndvp;
+
+  switch(dir)
+    {
+    case AY_NORTH:
+    case AY_SOUTH:
+      return gndvcb(dir, np, ij, p, dp);
+      break;
+    case AY_EAST:
+    case AY_WEST:
+      return gnducb(dir, np, ij, p, dp);
+      break;
+    default:
+      break;
+    }
+
+ return;
+} /* ay_npt_gnd */
+
+
 #define AY_UPDATENORMAL(p1,p2,p3) {\
     ay_geom_normalfrom3pnts(p1, p2, p3, normal2);\
     if(nnormals)\

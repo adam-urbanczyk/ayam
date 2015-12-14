@@ -3882,58 +3882,114 @@ ay_nct_getorientation3d(ay_nurbcurve_object *curve, int stride,
  *  Calculate winding of arbitrary (3D) NURBS curve.
  *
  * \param[in] nc NURBS curve to interrogate
- * \param[in] normals a vector of normals at control point positions
- * \param[in] normalstride stride in normals array
+ * \param[in] v vector specifiying the direction from where to look
  *
  * \returns -1 if curve winding is negative, 1 if it is positive, 0
  *  if the curve is degenerate
  */
 int
-ay_nct_getwinding(ay_nurbcurve_object *nc, double *normals,
-		  int normalstride)
+ay_nct_getwinding(ay_nurbcurve_object *nc, double *v)
 {
  double *cv, *p1, *p2;
- double V1[3], V2[3];
- double l1 = 0.0, l2 = 0.0;
- int i, stride = 4;
- int a = 0, b = stride, c = 0, d = normalstride;
+ double lxy = 0.0, lzy = 0.0, lxz = 0.0;
+ int i, stride = 4, plane = -1;
+ int a = 0, b = stride, winding = 0;
 
-  if(nc && normals)
+  if(!nc || !v)
+    return 0;
+
+  cv = nc->controlv;
+  for(i = 0; i < nc->length; i++)
     {
-      cv = nc->controlv;
-      for(i = 0; i < nc->length-1; i++)
-	{
-	  p1 = &(cv[a]);
-	  p2 = &(cv[b]);
-	  if(!AY_V3COMP(p1, p2))
-	    {
-	      AY_V3SUB(V1, p2, p1);
-	      l1 += AY_V3LEN(V1);
-	      memcpy(V1, &(normals[c]), 3*sizeof(double));
-
-	      AY_V3SUB(V1, V1, p1);
-	      memcpy(V2, &(normals[d]), 3*sizeof(double));
-	      AY_V3SUB(V2, V2, p2);
-	      AY_V3SUB(V1, V2, V1);
-	      l2 += AY_V3LEN(V1);
-	    } /* if */
-
-	  a += stride;
-	  b += stride;
-	  c += normalstride;
-	  d += normalstride;
-	} /* for */
-    } /* if */
-
-  if(l1 != 0.0)
-    {
-      if(l1 < l2)
-	return -1;
+      p1 = &(cv[a]);
+      if(i == nc->length-1)
+	p2 = cv;
       else
-	return 1;
+	p2 = &(cv[b]);
+      if(!AY_V3COMP(p1, p2))
+	{
+	  lxy += p1[0]*p2[1]-p2[0]*p1[1];
+	  lzy += p1[2]*p2[1]-p2[2]*p1[1];
+	  lxz += p1[0]*p2[2]-p2[0]*p1[2];
+	} /* if */
+
+      a += stride;
+      b += stride;
+    } /* for */
+
+  if((fabs(v[0]) < AY_EPSILON) &&
+     (fabs(v[1]) > AY_EPSILON) && (fabs(v[2]) > AY_EPSILON))
+    {
+      if(fabs(v[1]) > fabs(v[2]))
+	plane = AY_XY;
+      else
+	plane = AY_XZ;
     }
 
- return 0;
+  if((plane == -1) && (fabs(v[1]) < AY_EPSILON) &&
+     (fabs(v[1]) > AY_EPSILON) && (fabs(v[2]) > AY_EPSILON))
+    {
+      if(fabs(v[1]) > fabs(v[2]))
+	plane = AY_YZ;
+      else
+	plane = AY_XZ;
+    }
+
+  if((plane == -1) && (fabs(v[2]) < AY_EPSILON) &&
+     (fabs(v[0]) > AY_EPSILON) && (fabs(v[1]) > AY_EPSILON))
+    {
+      if(fabs(v[0]) > fabs(v[1]))
+	plane = AY_XZ;
+      else
+	plane = AY_YZ;
+    }
+
+  if((plane == -1) && (fabs(v[2]) >= fabs(v[0])) && (fabs(v[2]) >= fabs(v[1])))
+    {
+      plane = AY_XY;
+    }
+
+  if((plane == -1) && (fabs(v[0]) >= fabs(v[1])) && (fabs(v[0]) >= fabs(v[2])))
+    {
+      plane = AY_YZ;
+    }
+
+  if((plane == -1) && (fabs(v[1]) >= fabs(v[0])) && (fabs(v[1]) >= fabs(v[2])))
+    {
+      plane = AY_XZ;
+    }
+
+  switch(plane)
+    {
+    case AY_XY:
+      if(lxy > 0)
+	winding = 1;
+      else
+	winding = -1;
+      if(v[2] < 0)
+	winding = -winding;
+      break;
+    case AY_YZ:
+      if(lzy > 0)
+	winding = 1;
+      else
+	winding = -1;
+      if(v[0] > 0)
+	winding = -winding;
+      break;
+    case AY_XZ:
+      if(lxz > 0)
+	winding = 1;
+      else
+	winding = -1;
+      if(v[1] > 0)
+	winding = -winding;
+      break;
+    default:
+      break;
+    }
+
+ return winding;
 } /* ay_nct_getwinding */
 
 
@@ -5971,6 +6027,7 @@ ay_nct_toxy(int allow_flip, ay_object *c)
     {
       if(allow_flip)
 	{
+	  printf("FLIPPING\n");
 	  ay_nct_revert(c->refine);
 	}
       return AY_OK;
@@ -6000,9 +6057,9 @@ ay_nct_toxy(int allow_flip, ay_object *c)
   ay_quat_axistoquat(B, AY_D2R(angle), quat);
   ay_quat_add(c->quat, quat, c->quat);
   ay_quat_toeuler(c->quat, euler);
-  c->rotx = AY_R2D(euler[0]);
+  c->rotx = AY_R2D(euler[2]);
   c->roty = AY_R2D(euler[1]);
-  c->rotz = AY_R2D(euler[2]);
+  c->rotz = AY_R2D(euler[0]);
 
   c->scalx = 1.0;
   c->scaly = 1.0;
@@ -7928,6 +7985,7 @@ cleanup:
  *  Z-coordinates are different (to each other).
  *
  * \param[in] c NURBS curve to check
+ * \param[in] allow_flip allow curve reversal
  * \param[in,out] cp pointer where to store the curve rotated to XY,
     may be NULL
  * \param[in,out] is_planar pointer where to store the result (AY_TRUE if the
@@ -7936,7 +7994,7 @@ cleanup:
  *  _not_ be changed
  */
 void
-ay_nct_isplanar(ay_object *c, ay_object **cp, int *is_planar)
+ay_nct_isplanar(ay_object *c, int allow_flip, ay_object **cp, int *is_planar)
 {
  int ay_status;
  ay_object *tmp = NULL;
@@ -7952,7 +8010,7 @@ ay_nct_isplanar(ay_object *c, ay_object **cp, int *is_planar)
   if(ay_status || !tmp)
     return;
 
-  ay_status = ay_nct_toxy(/*allow_flip=*/AY_TRUE, tmp);
+  ay_status = ay_nct_toxy(allow_flip, tmp);
 
   if(!ay_status)
     {
