@@ -616,7 +616,7 @@ ay_capt_integrate(ay_object *c, int side, int knottype, ay_object *s)
       d1 = ay_nct_meandist(npc->height, 4, npc->controlv,
 			   nps->height*4, nps->controlv);
       d2 = ay_nct_meandist(npc->height, 4, npc->controlv, -nps->height*4,
-		 &(nps->controlv[(nps->width*nps->height-nps->height-1)*4]));
+		 &(nps->controlv[(nps->width*nps->height-nps->height)*4]));
       break;
     case 1:
       d1 = ay_nct_meandist(npc->height, 4, npc->controlv,
@@ -632,7 +632,7 @@ ay_capt_integrate(ay_object *c, int side, int knottype, ay_object *s)
       break;
     case 3:
       d1 = ay_nct_meandist(npc->height, 4, npc->controlv,
-	   4, &(nps->controlv[(nps->width*nps->height-nps->height-1)*4]));
+	   4, &(nps->controlv[(nps->width*nps->height-nps->height)*4]));
       d2 = ay_nct_meandist(npc->height, 4, npc->controlv,
 			 -4, &(nps->controlv[(nps->width*nps->height-1)*4]));
       break;
