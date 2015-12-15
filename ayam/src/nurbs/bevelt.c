@@ -297,14 +297,13 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		    {
 		      dir = !bparams->dirs[i];
 		      radius = -bparams->radii[i];
-		    }
-		  /*
+		    }		  
 		  else
 		    {
 		      dir = bparams->dirs[i];
 		      radius = bparams->radii[i];
 		    }
-		  */
+		  
 		  break;
 		case 1:
 		  if(windinga > 0)
@@ -314,19 +313,19 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		  else
 		    {
 		      dir = !bparams->dirs[i];
-		      /*radius = bparams->radii[i];*/
+		      radius = bparams->radii[i];
 		    }
 		  break;
 		case 2:
 		  if(windinga > 0)
 		    {
-		      /*dir = bparams->dirs[i];*/
+		      dir = bparams->dirs[i];
 		      radius = -bparams->radii[i];
 		    }
 		  else
 		    {
 		      dir = !bparams->dirs[i];
-		      /*radius = bparams->radii[i];*/
+		      radius = bparams->radii[i];
 		    }
 		  break;
 		case 3:
@@ -334,14 +333,12 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		    {
 		      dir = !bparams->dirs[i];
 		      radius = -bparams->radii[i];
-		    }
-		  /*
+		    }		  
 		  else
 		    {
 		      dir = bparams->dirs[i];
 		      radius = bparams->radii[i];
-		    }
-		  */
+		    }		  
 		  break;
 		default:
 		  break;
@@ -349,9 +346,21 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 
 	      if(is_roundtocap)
 		{
-		  ay_status = ay_bevelt_createroundtocap(radius, dir,
+		  if(bparams->types[i] > 3)
+		    {
+		      ay_status = ay_bevelt_createroundtonormal(-radius, dir,
+								&curve,
+								normals, 9,
+								tangents, 9,
+								NULL,
+			     (ay_nurbpatch_object**)(void*)&(bevel->refine));
+		    }
+		  else
+		    {
+		      ay_status = ay_bevelt_createroundtocap(-radius, dir,
 							 &curve, tangents, 9,
 			     (ay_nurbpatch_object**)(void*)&(bevel->refine));
+		    }
 		}
 	      else
 		{
@@ -1384,7 +1393,7 @@ ay_bevelt_integrate(int side, ay_object *s, ay_object *b)
       d1 = ay_nct_meandist(bevel->height, 4, bevel->controlv,
 		   np->height*4, np->controlv);
       d2 = ay_nct_meandist(bevel->height, 4, bevel->controlv,
-       -np->height*4, &(np->controlv[(np->width*np->height-np->height-1)*4]));
+       -np->height*4, &(np->controlv[(np->width*np->height-np->height)*4]));
       break;
     case 1:
       d1 = ay_nct_meandist(bevel->height, 4, bevel->controlv,
@@ -1400,7 +1409,7 @@ ay_bevelt_integrate(int side, ay_object *s, ay_object *b)
       break;
     case 3:
       d1 = ay_nct_meandist(bevel->height, 4, bevel->controlv,
-		   4, &(np->controlv[(np->width*np->height-np->height-1)*4]));
+		   4, &(np->controlv[(np->width*np->height-np->height)*4]));
       d2 = ay_nct_meandist(bevel->height, 4, bevel->controlv,
 			   -4, &(np->controlv[(np->width*np->height-1)*4]));
       break;
