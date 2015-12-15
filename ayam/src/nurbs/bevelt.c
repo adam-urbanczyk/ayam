@@ -639,7 +639,7 @@ int
 ay_bevelt_createconcat(int side, ay_object *o, ay_object *c, ay_object **bevel)
 {
  int ay_status = AY_OK;
- char *uv = NULL, uvs[][4] = {"Vu","vu","Uu","uu"};
+ char *uv = NULL, uvs[][4] = {"Vu","vu","Uv","uv"};
 
   if(!o || !c || !bevel)
     return AY_ENULL;
