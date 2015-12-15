@@ -3939,9 +3939,9 @@ ay_nct_getwinding(ay_nurbcurve_object *nc, double *v)
      (fabs(v[0]) > AY_EPSILON) && (fabs(v[1]) > AY_EPSILON))
     {
       if(fabs(v[0]) > fabs(v[1]))
-	plane = AY_XZ;
-      else
 	plane = AY_YZ;
+      else
+	plane = AY_XZ;
     }
 
   if((plane == -1) && (fabs(v[2]) >= fabs(v[0])) && (fabs(v[2]) >= fabs(v[1])))
