@@ -297,17 +297,17 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		    {
 		      dir = !bparams->dirs[i];
 		      radius = -bparams->radii[i];
-		    }		  
+		    }
 		  else
 		    {
 		      dir = bparams->dirs[i];
 		      radius = bparams->radii[i];
 		    }
-		  
 		  break;
 		case 1:
 		  if(windinga > 0)
 		    {
+		      dir = bparams->dirs[i];
 		      radius = -bparams->radii[i];
 		    }
 		  else
@@ -333,12 +333,12 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		    {
 		      dir = !bparams->dirs[i];
 		      radius = -bparams->radii[i];
-		    }		  
+		    }
 		  else
 		    {
 		      dir = bparams->dirs[i];
 		      radius = bparams->radii[i];
-		    }		  
+		    }
 		  break;
 		default:
 		  break;
@@ -346,9 +346,26 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 
 	      if(is_roundtocap)
 		{
+		  if(i < 2 && windinga < 0)
+		    {
+		      dir = !dir;
+		      radius = -radius;
+		    }
+
+		  if(i > 1)
+		    {
+		      dir = !dir;
+		    }
+
+		  if(i > 1 && windinga < 0)
+		    {
+		      dir = !dir;
+		      radius = -radius;
+		    }
+
 		  if(bparams->types[i] > 3)
 		    {
-		      ay_status = ay_bevelt_createroundtonormal(-radius, dir,
+		      ay_status = ay_bevelt_createroundtonormal(radius, !dir,
 								&curve,
 								normals, 9,
 								tangents, 9,
@@ -357,7 +374,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		    }
 		  else
 		    {
-		      ay_status = ay_bevelt_createroundtocap(-radius, dir,
+		      ay_status = ay_bevelt_createroundtocap(radius, !dir,
 							 &curve, tangents, 9,
 			     (ay_nurbpatch_object**)(void*)&(bevel->refine));
 		    }
