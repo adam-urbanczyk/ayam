@@ -2547,6 +2547,9 @@ ay_npt_fillgap(ay_object *o1, ay_object *o2,
     { ay_status = AY_EOMEM; goto cleanup; }
   ncv = new->controlv;
 
+  if(np1->is_rat || np2->is_rat)
+    new->is_rat = AY_TRUE;
+
   /* calculate the fillet control points */
   cv1 = np1->controlv;
   cv2 = np2->controlv;
