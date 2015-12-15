@@ -101,7 +101,7 @@ proc bevel_setTags { bnames {bids ""} } {
 	    set type $BevelTags(${bname}Type)
 	    set l [expr [llength $ay(bevelmodes)] - 1]
 	    if { $type > $l } {
-		set type [expr $l - $type]
+		set type [expr -($l - $type)]
 	    }
 
 	    lappend newtags [format "%d,%d,%g,%d,%d,%d" $j\
