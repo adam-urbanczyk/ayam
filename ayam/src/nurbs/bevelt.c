@@ -167,6 +167,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 	      ay_nct_destroy(curve.refine);
 	      if(normals)
 		free(normals);
+	      normals = NULL;
 	      continue;
 	    }
 
