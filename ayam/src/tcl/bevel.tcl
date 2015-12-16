@@ -101,7 +101,7 @@ proc bevel_setTags { bnames {bids ""} } {
 	    set type $BevelTags(${bname}Type)
 	    set l [expr [llength $ay(bevelmodes)] - 1]
 	    if { $type > $l } {
-		set type [expr -($l - $type)]
+		set type [expr $l - $type]
 	    }
 
 	    lappend newtags [format "%d,%d,%g,%d,%d,%d" $j\
@@ -413,7 +413,8 @@ proc bevel_updateCustomBevels { } {
     getLevel names types
     set i 0
     foreach name $names {
-	if { [string first "Bevels" $name] == 0 } {
+	if { ([string first "Bevels" $name] == 0 ) ||
+	     ([string first "!Bevels" $name] == 0 ) } {
 	    if { [lindex $types $i] eq "Level" } {
 		goDown $i
 		getLevel cnames ctypes
