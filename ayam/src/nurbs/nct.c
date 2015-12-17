@@ -7503,11 +7503,13 @@ ay_nct_offsetsection(ay_object *o, double offset,
 	}
     } /* if */
 
-  /* set weights */
+  /* set z and weights */
+  po = curve->controlv;
   if(curve->is_rat)
     {
       for(j = 0; j < curve->length; j++)
 	{
+	  newcv[j*stride+2] = curve->controlv[j*stride+2];
 	  newcv[j*stride+3] = curve->controlv[j*stride+3];
 	}
     }
@@ -7515,6 +7517,7 @@ ay_nct_offsetsection(ay_object *o, double offset,
     {
       for(j = 0; j < curve->length; j++)
 	{
+	  newcv[j*stride+2] = curve->controlv[j*stride+2];
 	  newcv[j*stride+3] = 1.0;
 	}
     } /* if */
