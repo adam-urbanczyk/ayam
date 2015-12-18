@@ -50,7 +50,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		    ay_object **dst)
 {
  int ay_status = AY_OK;
- int i, is_planar, is_roundtocap, do_integrate;
+ int i, j, is_planar, is_roundtocap, do_integrate;
  int windingc = 0, windinga = 0, side = 0, dir = 0;
  int capintknottype = AY_KTCUSTOM;
  double param = 0.0, *mp = NULL, *normals = NULL, *tangents = NULL;
@@ -60,6 +60,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
  ay_object **next = dst, *extrcurve = NULL;
  ay_object *allcaps = NULL, **nextcap = &allcaps;
  ay_nurbpatch_object *np = NULL;
+ ay_nurbcurve_object *nc = NULL;
 
   if(!bparams || !o || !dst)
     return AY_ENULL;
@@ -389,16 +390,9 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		}
 	    } /* if 2D or 3D */
 
-	  ay_nct_destroy((ay_nurbcurve_object*)curve.refine);
-	  curve.refine = NULL;
-
 	  if(alignedcurve)
 	    (void)ay_object_delete(alignedcurve);
 	  alignedcurve = NULL;
-
-	  if(normals)
-	    free(normals);
-	  normals = NULL;
 
 	  if(ay_status || !bevel->refine)
 	    {
@@ -443,10 +437,57 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		}
 	      else
 		{
-		  ay_status = ay_npt_extractnc(bevel, 3, 0.0,
-					       AY_FALSE, AY_FALSE,
-					       AY_FALSE, NULL,
+		  if(is_roundtocap)
+		    {
+		      ay_nct_isplanar(&curve, /*allow_flip=*/AY_FALSE,
+				  &alignedcurve, &is_planar);
+		    }
+
+		  if(is_roundtocap && is_planar)
+		    {
+		      if(i == 1 || i == 3)
+			{
+			  ay_nct_revert(alignedcurve->refine);
+			  radius = -radius;
+			}
+		      ay_nct_offset(alignedcurve, 1, radius,
+ 			 (ay_nurbcurve_object**)(void*)&(extrcurve->refine));
+
+		      if(extrcurve->refine)
+			{
+			  ay_trafo_copy(alignedcurve, extrcurve);
+			  ay_nct_applytrafo(extrcurve);
+			  nc = (ay_nurbcurve_object*)extrcurve->refine;
+			  cv = nc->controlv;
+			  p1 = NULL;
+			  ay_status = ay_geom_extractmiddlepoint(1, tangents, 9,
+							 nc->length, &p1, wv);
+			  if(p1)
+			    free(p1);
+			  param = AY_V3LEN(wv);
+			  if(param > AY_EPSILON)
+			    {
+			      AY_V3SCAL(wv, 1.0/param);
+			      AY_V3SCAL(wv, radius);
+			      for(j = 0; j < nc->length; j++)
+				{
+				  cv[j*4]   -= wv[0];
+				  cv[j*4+1] -= wv[1];
+				  cv[j*4+2] -= wv[2];
+				}
+			    }
+			}
+		    }
+		  else
+		    ay_status = ay_npt_extractnc(bevel, 3, 0.0,
+						 AY_FALSE, AY_FALSE,
+						 AY_FALSE, NULL,
 			 (ay_nurbcurve_object**)(void*)&(extrcurve->refine));
+
+
+		  if(alignedcurve)
+		    (void)ay_object_delete(alignedcurve);
+		  alignedcurve = NULL;
 		}
 	      if(ay_status)
 		goto cleanup;
@@ -564,12 +605,24 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		    nextcap = &((*nextcap)->next);
 		}
 	    } /* if cap on this side */
+
+	  ay_nct_destroy((ay_nurbcurve_object*)curve.refine);
+	  curve.refine = NULL;
+
+	  if(normals)
+	    free(normals);
+	  normals = NULL;
 	} /* if bevel on this side */
     } /* for all sides */
 
   *next = allcaps;
 
 cleanup:
+
+  if(curve.refine)
+    {
+      ay_nct_destroy((ay_nurbcurve_object*)curve.refine);
+    }
 
   if(normals)
     free(normals);
@@ -1085,6 +1138,7 @@ ay_bevelt_createroundtocap(double radius, int revert,
       controlv[b+1] = controlv[a+1] - v2[1]*radius;
       controlv[b+2] = controlv[a+2] - v2[2]*radius;
       controlv[b+3] = controlv[a+3];
+
       p += stride;
       a += stride;
       b += stride;
