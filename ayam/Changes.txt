@@ -1,4 +1,4 @@
-[27. Nov 2015] CVS-Head:
+[19. Dec 2015] CVS-Head:
 ========================
 Bug Fixes:
 o DXF export of polymeshes misses transformation attributes (SF 508)
@@ -12,6 +12,7 @@ o edit points action loses the selected point (SF 515)
 o auto-generated texture coordinates are wrong (SF 516)
 o grids are not drawing in upright views (SF 517)
 o IPatch objects with manual derivatives are wrong (SF 518)
+o custom bevel curves are not found when level is hidden (SF 521)
 
 Modelling:
 o Revolve objects now support parameter curves that touch or cross the
@@ -36,6 +37,8 @@ o added option to compatibility checking/making for NURBS surfaces to only
 o IPatch objects with automatic derivatives no longer present those as
   editable points when e.g. the "select all points" action is used
 o improved accuracy of point picking in perspective views
+o RoundToCap bevels on planar boundaries now preserve planarity and
+  shape created by rational coordinates
 
 GUI:
 o moved some search options to a new section "Advanced Options" that
