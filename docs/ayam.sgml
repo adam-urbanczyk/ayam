@@ -33,7 +33,7 @@ code example of 6 lines text (needs another 2 for the upper/lower lines)
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>19. Nov 2015
+<date>16. Dec 2015
 
 <abstract>
 This is the documentation of Ayam 1.23 &ndash; a free 3D modelling environment
@@ -9166,7 +9166,9 @@ from a set of cross section curves:
 
  <item><tt/"RoundToCap"/ a surface that starts in the direction of a
 progenitor surface tangent and rounds off to a cap surface (tangents
-must be present as tag on the parameter curve),
+must be present as tag on the parameter curve), this types provides a
+smoother transition from the progenitor surface to the bevel than a
+round bevel, see also the image below,
 
  <item><tt/"RoundToNormal"/ a surface that starts in the direction of a
 progenitor surface tangent and rounds off to a mean normal
@@ -9179,6 +9181,13 @@ also appear as potential bevel type. Those curves should follow
 the rules laid out above for the second parameter curve of the
 Bevel object.
  </itemize>
+
+See also the following image for a comparison of some bevel types.
+<figure loc="ht">
+<eps file="pics/btypes.ps" height="4.5cm">
+<img src="pics/btypes.gif">
+<caption>Bevel Types (l: Round, m: RoundToCap, r: RoundToNormal)</caption>
+</figure>
 
 Note that the bevel types <tt/"RoundCapped"/ and <tt/"LinearCapped"/
 are no longer available<footnote>Since Ayam 1.21.</footnote>,
