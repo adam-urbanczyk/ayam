@@ -370,8 +370,8 @@ section <ref id="mmedit" name="Main Menu">.
 object.
 </itemize>
 <p>
-Since Ayam 1.6 the scene may be navigated and objects may be selected
-using the keyboard alone:<label id="treesc">
+The scene may also be navigated and objects may be selected
+using the keyboard:<label id="treesc"><footnote>Since 1.6.</footnote>
 <itemize>
 <item><tt/&lt;Up&gt;/ and <tt/&lt;Down&gt;/ move the selection to the previous
 or next object.
@@ -479,8 +479,8 @@ section <ref id="mmedit" name="Main Menu">.
 object.
 </itemize>
 
-Since Ayam 1.6 the scene may be navigated and objects may be selected
-using the keyboard alone:<label id="olbsc">
+The scene may also be navigated and objects may be selected
+using the keyboard:<label id="olbsc"><footnote>Since 1.6.</footnote>
 <itemize>
 <item><tt/&lt;Up&gt;/ and <tt/&lt;Down&gt;/ move the selection to the previous
 or next object.
@@ -9171,10 +9171,10 @@ smoother transition from the progenitor surface to the bevel than a
 round bevel, see also the image below,
 
  <item><tt/"RoundToNormal"/ a surface that starts in the direction of a
-progenitor surface tangent and rounds off to a mean normal
-(normals and tangents must be present as tag on the parameter curve, the
-mean normal can also be provided by a MN tag,
-see section <ref id="mntag" name="MN (Mean Normal) Tag">),
+progenitor surface tangent and rounds off to a mean normal,
+see also the image below, normals and tangents must be present as tag
+on the parameter curve, the mean normal can also be provided by a MN tag,
+see section <ref id="mntag" name="MN (Mean Normal) Tag">,
 
  <item>Any curves defined in a global level named <tt/"Bevels"/
 also appear as potential bevel type. Those curves should follow
@@ -9190,7 +9190,7 @@ See also the following image for a comparison of some bevel types.
 </figure>
 
 Note that the bevel types <tt/"RoundCapped"/ and <tt/"LinearCapped"/
-are no longer available<footnote>Since Ayam 1.21.</footnote>,
+are no longer available<footnote>Since 1.21.</footnote>,
 use the <tt/"Caps"/ property to create caps.
 
 <item><tt/"Radius"/ controls the size and direction of the bevelled
@@ -9210,6 +9210,7 @@ for the bevel radius.
 is enabled, non-planar parameter curves are supported, but normals
 and tangents must be present as PV tag on the parameter curve.
 </itemize>
+<#if out=latex><x/newpage/</#if>
 <p>
 To create the tag with the normal and tangent information,
 the <tt/"Extract"/ option of the ExtrNC object can be used.
@@ -9222,6 +9223,16 @@ uS;sL
 addTag PV "N,varying,n,4, -1,0,0, 1,0,0, 0,1,0, -1,0,0"
 addTag PV "T,varying,n,4, 0,0,1, 0,0,1, 0,0,1, 0,0,1"
 </verb></tscreen>
+However, when bevels are created via the Bevels property, the normals and
+tangents will be extracted from the surface automatically and no
+PV tags need to be created.
+<p>
+Also note that the planarity and exact shape defined by rational
+coordinate values (e.g. circular arcs) will not be preserved by
+the bevel types that support non-planar curves with one exception:
+RoundToCap bevels on fully planar curves/boundaries do preserve
+the boundary shape fully (unless overridden by
+<tt/"Force3D"/).<footnote>Since 1.23.</footnote>
 <p>
 See section <ref id="npattr" name="NPatchAttr"> for a description
 of the two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/
@@ -9812,15 +9823,15 @@ file (or even letter) you may need to toggle this to get caps.
 (see section <ref id="extrattr" name="ExtrudeAttr Property"> for a more
 exhaustive description of those parameters).
 
-<item><tt/"Add Start Bevel!"/, <tt/"Add End Bevel!"/:
+<item><tt/"Add Lower Bevel!"/, <tt/"Add Upper Bevel!"/:
 Since Ayam 1.10 the bevel parameters of the text object are saved
 in bevel parameter tags and the property GUI changed to conform to
 all other bevel supporting tool objects. The old options <tt/"LowerBevel"/,
 <tt/"UpperBevel"/, <tt/"BevelType"/, <tt/"BevelRadius"/, and
 <tt/"RevertBevels"/ are no longer available. They were replaced with
 new dynamic tag creating bevel property GUI sections that are accessible
-through the new command entries <tt/"Add Start Bevel!"/ and
-<tt/"Add End Bevel!"/
+through the new command entries <tt/"Add Lower Bevel!"/ and
+<tt/"Add Upper Bevel!"/
 respectively. If one of those entries is used, a bevel parameter tag
 is created and more options will be made available in the property
 GUI to adjust the bevel parameters or remove the tag again.
@@ -21588,6 +21599,7 @@ Index:
 </itemize>
 <item>LightAttr: <ref id="lip" name="property">
 <item>LightShader: <ref id="lightobj" name="light">
+<item>Linear: <ref id="bevelp" name="Bevel type">
 <item>LineWidth: <ref id="hidprefs" name="hidden preference setting">
 <item>ListTypes: <ref id="hidprefs" name="hidden preference setting">
 <item>LoadEnv: <ref id="hidprefs" name="hidden preference settings">
@@ -22003,6 +22015,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>RIB import: <ref id="imprib" name="RIB Import">
 <item>RIBFile: <ref id="prefrib" name="preference setting">
 <item>RiDisplay: <ref id="ridtag" name="tag type">
+<item>Ridge: <ref id="bevelp" name="Bevel type">
 <item>RiHider: <ref id="rihtag" name="tag type">
 <item>RiInc: <ref id="riincobj" name="RiInc object">
 <item>RiOption: <ref id="riotag" name="tag type">
@@ -22030,6 +22043,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Rotational Sweep: <ref id="swingobj" name="Swing object">
 <item>rotOb: <ref id="scrotob" name="scripting interface command">
 <item>rotPnts: <ref id="scrotpnts" name="scripting interface command">
+<item>Round, RoundToCap, RoundToNormal: <ref id="bevelp" name="Bevel type">
 <item>RP: <ref id="rptag" name="tag type">
 <item>Ruled surface: <ref id="skinobj" name="Skin object">
 <item>RunProgram: <ref id="riprocp" name="RiProc attribute">
