@@ -16,7 +16,8 @@
 
 /* prototypes of functions local to this module: */
 
-int ay_bevelt_createconcatp(int side, double radius, double *tangents,
+int ay_bevelt_createconcatp(int side, int revert, double radius,
+			    double *tangents,
 			    ay_object *o, ay_object *ac,
 			    ay_object **bevel);
 
@@ -357,8 +358,74 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 			{
 			  (void)ay_object_delete(bevel);
 			  bevel = NULL;
-			  ay_status = ay_bevelt_createconcatp(i, radius,
-					   tangents, o, alignedcurve,
+			  dir = !bparams->dirs[i];
+			  radius = -bparams->radii[i];
+
+			  wv[0] = 0;
+			  wv[1] = 0;
+			  wv[2] = 1;
+			  windinga = ay_nct_getwinding(alignedcurve->refine,
+						       wv);
+
+			  switch(i)
+			    {
+			    case 0:
+			      if(windinga > 0)
+				{
+				  dir = !bparams->dirs[i];
+				  radius = -bparams->radii[i];
+				}
+			      else
+				{
+				  dir = bparams->dirs[i];
+				  radius = bparams->radii[i];
+				}
+			      break;
+			    case 1:
+			      if(windinga > 0)
+				{
+				  dir = bparams->dirs[i];
+				  radius = -bparams->radii[i];
+				}
+			      else
+				{
+				  dir = !bparams->dirs[i];
+				  radius = bparams->radii[i];
+				}
+			      break;
+			    case 2:
+			      if(windinga > 0)
+				{
+				  dir = !bparams->dirs[i];
+				  radius = -bparams->radii[i];
+				}
+			      else
+				{
+				  dir = bparams->dirs[i];
+				  radius = bparams->radii[i];
+				}
+			      break;
+			    case 3:
+			      if(windinga > 0)
+				{
+				  dir = bparams->dirs[i];
+				  radius = -bparams->radii[i];
+				}
+			      else
+				{
+				  dir = !bparams->dirs[i];
+				  radius = bparams->radii[i];
+				}
+			      break;
+			    default:
+			      break;
+			    } /* switch */
+			  /*
+			  printf("s %d | d %d | wa %d | wc %d\n",
+				 i, dir, windinga, windingc);
+			  */
+			  ay_status = ay_bevelt_createconcatp(i, !dir, radius,
+						  tangents, o, alignedcurve,
 							      &bevel);
 			}
 		      else
@@ -590,6 +657,7 @@ ay_bevelt_parsetags(ay_tag *tag, ay_bparam *params)
  * Create a (2D) bevel by the concatenation fillet creation algorithm.
  *
  * \param[in] side boundary on which to create the bevel
+ * \param[in] revert direction of bevel (0 - inwards, 1 - outwards)
  * \param[in] radius size of bevel
  * \param[in] tangents tangent vectors extracted from the progenitor surface
  * \param[in] o surface to be beveled
@@ -600,7 +668,7 @@ ay_bevelt_parsetags(ay_tag *tag, ay_bparam *params)
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_bevelt_createconcatp(int side, double radius, double *tangents,
+ay_bevelt_createconcatp(int side, int revert, double radius, double *tangents,
 			ay_object *o, ay_object *ac,
 			ay_object **bevel)
 {
@@ -613,12 +681,6 @@ ay_bevelt_createconcatp(int side, double radius, double *tangents,
 
   if(!o || !bevel)
     return AY_ENULL;
-
-  if(side == 1 || side == 3)
-    {
-      ay_nct_revert(ac->refine);
-      radius = -radius;
-    }
 
   ay_nct_offset(ac, 1, radius, (ay_nurbcurve_object**)(void*)&(t.refine));
   t.type = AY_IDNCURVE;
@@ -637,7 +699,14 @@ ay_bevelt_createconcatp(int side, double radius, double *tangents,
       len = AY_V3LEN(mnv);
       if(len > AY_EPSILON)
 	{
-	  AY_V3SCAL(mnv, 1.0/len);
+	  if(revert)
+	    {
+	      AY_V3SCAL(mnv, -1.0/len);
+	    }
+	  else
+	    {
+	      AY_V3SCAL(mnv, 1.0/len);
+	    }
 	  AY_V3SCAL(mnv, radius);
 	  for(j = 0; j < nc->length; j++)
 	    {
@@ -657,14 +726,6 @@ ay_bevelt_createconcatp(int side, double radius, double *tangents,
 
   if(ay_status)
     goto cleanup;
-
-  if(side == 1 || side == 3)
-    {
-      ay_status = ay_npt_revertu(c->refine);
-
-      if(ay_status)
-	goto cleanup;
-    }
 
   uv = uvs[side];
   ay_status = ay_npt_fillgap(o, c, -0.33, uv, bevel);
