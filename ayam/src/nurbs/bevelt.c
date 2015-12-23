@@ -324,7 +324,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		  break;
 		} /* switch */
 
-	      if(is_roundtocap && !bparams->force3d[i])
+	      if(is_roundtocap)
 		{
 		  if(i < 2 && windinga < 0)
 		    {
@@ -354,7 +354,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		    }
 		  else
 		    {
-		      if(is_planar)
+		      if(is_planar && !bparams->force3d[i])
 			{
 			  (void)ay_object_delete(bevel);
 			  bevel = NULL;
