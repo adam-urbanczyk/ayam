@@ -99,10 +99,15 @@ bind $f.li <<ListboxSelect>> {
 
     # improve focus traversal (speed-wise)
     global tcl_platform AYWITHAQUA
-    if { ![info exists ay(focusnext)] } {
-	set ay(focusnext) [tk_focusNext $ay(pca).$ww]
+
+    set nw ""
+    catch {eval [subst "set nw \$${prop}(nw)"]}
+
+    if { $nw == "" } {
+	set nw [tk_focusNext $ay(pca).$ww]
+	eval [subst "set ${prop}(nw) $nw"]
     }
-    set nw $ay(focusnext)
+
     if { $ay(lb) == 1 } {
 	bind $ay(olb) <Key-Tab> "focus $nw;plb_focus;break"
 	bind $nw <Shift-Tab> "focus $ay(olb);break"
@@ -807,6 +812,7 @@ proc plb_bindtab { } {
     } else {
 	set w $ay(tree)
     }
+
     if { $ayprefs(SingleWindow) == 1 } {
 	bind $w <Key-Tab> "focus .fu.fMain.fview3;break"
     } else {
