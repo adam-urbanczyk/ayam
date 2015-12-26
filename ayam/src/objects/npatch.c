@@ -956,16 +956,17 @@ ay_npatch_drawch(ay_nurbpatch_object *npatch)
       fcv = &(npatch->fltcv[width+height+npatch->uorder+npatch->vorder]);
       a = 0;
 
-      if(ay_prefs.rationalpoints)
+      if(!ay_prefs.rationalpoints)
 	{
+	  /* euclidean */
 	  for(i = 0; i < width; i++)
 	    {
 	      glBegin(GL_LINE_STRIP);
 	       for(j = 0; j < height; j++)
 		 {
-		   glVertex3f((GLfloat)fcv[a]*fcv[a+3],
-			      (GLfloat)fcv[a+1]*fcv[a+3],
-			      (GLfloat)fcv[a+2]*fcv[a+3]);
+		   glVertex3f((GLfloat)fcv[a]/fcv[a+3],
+			      (GLfloat)fcv[a+1]/fcv[a+3],
+			      (GLfloat)fcv[a+2]/fcv[a+3]);
 		   a += 4;
 		 }
 	      glEnd();
@@ -977,9 +978,9 @@ ay_npatch_drawch(ay_nurbpatch_object *npatch)
 	      glBegin(GL_LINE_STRIP);
 	       for(i = 0; i < width; i++)
 		 {
-		   glVertex3f((GLfloat)fcv[a]*fcv[a+3],
-			      (GLfloat)fcv[a+1]*fcv[a+3],
-			      (GLfloat)fcv[a+2]*fcv[a+3]);
+		   glVertex3f((GLfloat)fcv[a]/fcv[a+3],
+			      (GLfloat)fcv[a+1]/fcv[a+3],
+			      (GLfloat)fcv[a+2]/fcv[a+3]);
 		   a += (4 * height);
 		 }
 	      glEnd();
@@ -987,6 +988,7 @@ ay_npatch_drawch(ay_nurbpatch_object *npatch)
 	}
       else
 	{
+	  /* homogeneous */
 	  for(i = 0; i < width; i++)
 	    {
 	      glBegin(GL_LINE_STRIP);
@@ -1134,26 +1136,59 @@ ay_npatch_shadech(ay_nurbpatch_object *npatch)
 
       fcv = &(npatch->fltcv[npatch->width+npatch->height+
 			    npatch->uorder+npatch->vorder]);
-      for(i = 0; i < npatch->width-1; i++)
+
+      if(!ay_prefs.rationalpoints)
 	{
-	  a = i*npatch->height*4;
-	  b = a+(npatch->height*4);
-	  c = i*npatch->height*3;
-	  d = c+(npatch->height*3);
-	  glBegin(GL_QUAD_STRIP);
-	  for(j = 0; j < npatch->height; j++)
+	  /* euclidean */
+	  for(i = 0; i < npatch->width-1; i++)
 	    {
-	      glNormal3dv(&(stess->tessv[c]));
-	      glVertex3fv(&(fcv[a]));
-	      glNormal3dv(&(stess->tessv[d]));
-	      glVertex3fv(&(fcv[b]));
-	      a += 4;
-	      b += 4;
-	      c += 3;
-	      d += 3;
+	      a = i*npatch->height*4;
+	      b = a+(npatch->height*4);
+	      c = i*npatch->height*3;
+	      d = c+(npatch->height*3);
+	      glBegin(GL_QUAD_STRIP);
+	      for(j = 0; j < npatch->height; j++)
+		{
+		  glNormal3dv(&(stess->tessv[c]));
+		  glVertex3f(fcv[a]/fcv[a+3],
+			     fcv[a+1]/fcv[a+3],
+			     fcv[a+2]/fcv[a+3]);
+		  glNormal3dv(&(stess->tessv[d]));
+		  glVertex3f(fcv[b]/fcv[b+3],
+			     fcv[b+1]/fcv[b+3],
+			     fcv[b+2]/fcv[b+3]);
+		  a += 4;
+		  b += 4;
+		  c += 3;
+		  d += 3;
+		} /* for */
+	      glEnd();
 	    } /* for */
-	  glEnd();
-	} /* for */
+	}
+      else
+	{
+	  /* homogeneous */
+	  for(i = 0; i < npatch->width-1; i++)
+	    {
+	      a = i*npatch->height*4;
+	      b = a+(npatch->height*4);
+	      c = i*npatch->height*3;
+	      d = c+(npatch->height*3);
+	      glBegin(GL_QUAD_STRIP);
+	      for(j = 0; j < npatch->height; j++)
+		{
+		  glNormal3dv(&(stess->tessv[c]));
+		  glVertex3fv(&(fcv[a]));
+		  glNormal3dv(&(stess->tessv[d]));
+		  glVertex3fv(&(fcv[b]));
+		  a += 4;
+		  b += 4;
+		  c += 3;
+		  d += 3;
+		} /* for */
+	      glEnd();
+	    } /* for */
+	}
     }
   else
     {
@@ -1177,7 +1212,8 @@ ay_npatch_shadech(ay_nurbpatch_object *npatch)
 	    } /* for */
 	  glEnd();
 	} /* for */
-    }
+    } /* if is rat */
+
  return AY_OK;
 } /* ay_npatch_shadech */
 
