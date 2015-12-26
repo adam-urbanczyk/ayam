@@ -104,6 +104,9 @@ bind $f.li <<ListboxSelect>> {
     catch {eval [subst "set nw \$${prop}(nw)"]}
 
     if { $nw == "" } {
+	if { $AYWITHAQUA } {
+	    update idletasks
+	}
 	set nw [tk_focusNext $ay(pca).$ww]
 	eval [subst "set ${prop}(nw) $nw"]
     }
