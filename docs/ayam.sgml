@@ -2436,7 +2436,7 @@ This option is not available on the Win32 platform and on MacOSX Aqua.
 the preferences settings to the ayamrc file when the program quits.
 
 <item><tt/"BakOnReplace"/, if this is switched on, Ayam will make
-a backup copy of each scene file it loads via the main menu entry
+a backup copy of each scene file loaded via the main menu entry
 <tt>"File/Open"</tt> or via the most recently used list.
 The backup file will be placed right next to the loaded file
 and get an additional file name extension according to the hidden
@@ -2446,12 +2446,13 @@ preference setting <tt/"BackupExt"/.
 automatically add file name extensions to saved files (if they
 do not have already a proper extension).
 
-<item><tt/"EnvFile"/; This file typically contains some view
-objects to create a standard 2-, 3-, or 4-view working environment
-and is automatically loaded upon startup of Ayam (if the hidden
-preference option <tt/"LoadEnv"/ is switched on) and upon clearing
-the scene using <tt>"File/New"</tt> (if the hidden preference option
-<tt/"NewLoadsEnv"/ is switched on).
+<item><tt/"EnvFile"/ specifies the working environment scene file.
+This file typically contains some view objects to create a standard
+2-, 3-, or 4-view working environment and is automatically loaded
+upon each start of Ayam (unless the hidden
+preference option <tt/"LoadEnv"/ is switched off) and upon each clearing
+of the scene using <tt>"File/New"</tt> (unless the hidden preference option
+<tt/"NewLoadsEnv"/ is switched off).
 See also section <ref id="hidprefs" name="Hidden Preference Settings">.
 
 <item><tt/"Scripts"/ is a list of Tcl script files that will
@@ -2472,6 +2473,9 @@ the directory where the Ayam executable resides).
 Multiple entries have to be separated by a colon (<tt/":"/) on Unix and by
 a semicolon (<tt/";"/) on Win32.<newline>
 If unsure about the correct syntax, just use the <tt/"Add"/ button.
+<p><p>
+See section <ref id="scripts" name="Helper Scripts"> for documentation
+on the scripts distributed with Ayam.
 
 <item><tt/"Plugins"/ is a list of directories that contain custom
 objects or plugins. Those directories will e.g.~be searched for
@@ -2491,6 +2495,9 @@ executable resides:
 Multiple entries have to be separated by a colon (<tt/":"/) on Unix and
 by a semicolon (<tt/";"/) on Win32.<newline>
 If unsure about the correct syntax, just use the <tt/"Add"/ button.
+<p><p>
+See section <ref id="plugov" name="Plugins Overview"> for more
+information regarding Ayam plugins.
 
 <item><tt/"Docs"/ is an URL that points to the documentation in
 HTML format.
@@ -2990,10 +2997,12 @@ to time, as Ayam will always append to <tt/"LogFile"/.
 
 <item><tt/"ErrorLevel"/, this option controls how many messages
 should be written to the Ayam console. Available
-values are: <tt/"Silence"/ no output,
-<tt/"Errors"/ only error messages,
-<tt/"Warnings"/, only error and warning messages,
-and finally <tt/"All"/ (default), all messages, even informative,
+values are:<newline>
+<tt/"Silence"/ no output,<newline>
+<tt/"Errors"/ only error messages,<newline>
+<tt/"Warnings"/ only error and warning messages,
+and finally<newline>
+<tt/"All"/ (default) all messages, even informative,
 should be written to the console.
 
 </itemize>
@@ -3009,7 +3018,7 @@ main menu for quick access.
 point number to string conversions with. You may want to decrease this
 value to about 5 if any numbers in the entry fields are represented
 in an exact, but also too lengthy and hard to read fashion,
-like 0.4999999 instead of 0.5. Note that you may lose model precision
+like 0.4999999 instead of 0.5. Note that some model precision is lost
 in doing so. The default value used by Tcl is 12 and results in no
 loss of precision. The default value used by Ayam is 6 and should
 result in a good balance between precision and readability.
@@ -3018,12 +3027,16 @@ Related hidden preference options are <tt/"NormalizeDigits"/,
 <tt/"NormalizePoints"/, and <tt/"NormalizeTrafos"/, see also
 section <ref id="hidprefs" name="Hidden Preference Settings">.
 
-<item><tt/"SaveDialogGeom"/ controls when the geometry of various dialog
-windows should be remembered by Ayam, <tt/"Never"/: the dialog windows are
-always opened in standard size, centered on the screen; <tt/"WhileRunning"/:
+<item><tt/"SaveDialogGeom"/ controls whether the geometry of various dialog
+windows should be remembered by Ayam, the settings available are<newline>
+<tt/"Never"/: the dialog windows are
+always opened in standard size, centered on the screen;<newline>
+<tt/"WhileRunning"/:
 the window geometry will be remembered as long as Ayam is
-running; <tt/"Always"/: the window geometry will be remembered
+running;<newline>
+<tt/"Always"/: the window geometry will be remembered
 in the saved preferences, thus, also surviving a restart of Ayam.
+<p><p>
 Note that the height of the preferences window will always be adapted
 to the currently open preferences section, no matter how <tt/"SaveDialogGeom"/
 is set.
@@ -12742,19 +12755,54 @@ These tools create parametric surface objects.
 
 <sect2>NURBSphere Tool<label id="nspt">
 <p>
+<#if out=latex>
+<table loc="ht">
+<tabular ca="cc">
+<x>inlinegfx pics/nsphere-w.png 4cm </x>|
+<x>inlinegfx pics/nsphere-s.png 4cm </x>
+</tabular>
+<caption>NURB Sphere (l: Control Polygon, r: Shaded Surface)</caption>
+</table>
+</#if>
+<#if out=html>
+<figure loc="ht">
+<img src="pics/nsphere-w.gif">
+<img src="pics/nsphere-s.gif">
+<caption>NURB Sphere (l: Control Polygon, r: Shaded Surface)</caption>
+</figure>
+</#if>
 <descrip>
 <tag/Arguments/ None.
 <tag/Operation/ The NURBSphere tool creates a half circle NURBS curve
 and revolves it about the Y axis thus forming a sphere of radius 1.
+Due to this construction method, the NURBS surface is degenerate at the
+poles which can lead to shading artefacts (compare the image above).
 <tag/Notes/ The NURBS curve is deleted afterwards.
 </descrip>
 
 <sect2>NURBSphere2 Tool<label id="nsp2t">
 <p>
+<#if out=latex>
+<table loc="ht">
+<tabular ca="cc">
+<x>inlinegfx pics/nsphere2-w.png 4cm </x>|
+<x>inlinegfx pics/nsphere2-s.png 4cm </x>
+</tabular>
+<caption>Cobb NURB Sphere (l: Control Polygon, r: Shaded Surface)</caption>
+</table>
+</#if>
+<#if out=html>
+<figure loc="ht">
+<img src="pics/nsphere2-w.gif">
+<img src="pics/nsphere2-s.gif">
+<caption>Cobb NURB Sphere (l: Control Polygon, r: Shaded Surface)</caption>
+</figure>
+</#if>
 <descrip>
 <tag/Arguments/ None.
-<tag/Operation/ The NURBSphere tool creates a Cobb-NURBSphere,
-consisting of six NURBS patches.
+<tag/Operation/ The NURBSphere2 tool creates a Cobb NURB Sphere,
+consisting of six NURBS patches arranged in a configuration resembling
+a box, see also the above image.
 <tag/Notes/ The NURBS patches are of high order (5).
 </descrip>
 
@@ -17125,7 +17173,7 @@ pack $f.b1 $f.b2 -side left -fill x -expand yes
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Helper Scripts
+<sect1>Helper Scripts<label id="scripts">
 <p>
 This sections contains the documentation of some helper scripts
 that are distributed with Ayam.
@@ -21126,6 +21174,7 @@ Index:
 <item><ref id="sccoarsennc" name="scripting interface command">,
 <item><ref id="coart" name="coarsen tool">
 </itemize>
+<item>Cobb NURBS Sphere: <ref id="nsp2t" name="create surface tool">
 <item>Collapse:
 <itemize>
 <item><ref id="collt" name="collapse points tool">,
