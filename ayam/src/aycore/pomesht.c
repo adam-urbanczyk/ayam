@@ -3276,7 +3276,7 @@ int
 ay_pomesht_selectbound(ay_pomesh_object *po, ay_point *selp)
 {
  unsigned int fi, li, i, j, k, kk, l = 0, m = 0, n = 0, c = 0;
- double *vas = NULL, *cv;
+ double ast = 300.0, *vas = NULL, *cv;
  int found = AY_FALSE, stride = 3;
  ay_point *cand = NULL, *scand = NULL, *p = NULL, *newp, **nextp;
 
@@ -3291,7 +3291,7 @@ ay_pomesht_selectbound(ay_pomesh_object *po, ay_point *selp)
 
   for(i = 0; i < po->ncontrols; i++)
     {
-      if(vas[i] < 358.0)
+      if(vas[i] < ast)
 	{
 	  if(i == selp->index)
 	    {
@@ -3319,7 +3319,7 @@ ay_pomesht_selectbound(ay_pomesh_object *po, ay_point *selp)
   j = 0;
   for(i = 0; i < po->ncontrols; i++)
     {
-      if(vas[i] < 358.0)
+      if(vas[i] < ast)
 	{
 	  cand[j].index = i;
 	  if(i == fi)
@@ -3362,7 +3362,7 @@ ay_pomesht_selectbound(ay_pomesh_object *po, ay_point *selp)
 		    {
 		      if((kk != k) && (po->verts[n+kk] != p->index))
 			{
-			  if(vas[po->verts[n+kk]] < 358.0)
+			  if(vas[po->verts[n+kk]] < ast)
 			    {
 			      li = po->verts[n+kk];
 			      found = AY_TRUE;
