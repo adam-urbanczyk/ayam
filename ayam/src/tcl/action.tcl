@@ -165,8 +165,8 @@ proc actionSetMark { w { nextaction "" } } {
 	# take over old mark
 	bind $t <Key-Return> "bind $t <Key-Return> \"\";\
                               $nextaction $t.f3D.togl;"
-
     }
+    # if nextaction
 
     actionBindCenter $w $nextaction
 
@@ -188,6 +188,7 @@ proc actionSetMark { w { nextaction "" } } {
           %W startpepac %x %y -readonly -flash -ignoreold;"
 	}
     }
+    # if flash
 
     bind $w <ButtonRelease-1> "+focus %W"
 
@@ -1047,16 +1048,18 @@ proc actionTagP { w } {
 	    bind $w <ButtonRelease-1> "+\
           %W startpepac %x %y -readonly -flash -ignoreold;\
           %W startpepac %x %y -readonly -flash -ignoreold"
-	    bind $w <Shift-ButtonRelease-1> "+\
+	    bind $w <${ayviewshortcuts(TagMod)}-ButtonRelease-1> "+\
           %W startpepac %x %y -readonly -flash -ignoreold;\
           %W startpepac %x %y -readonly -flash -ignoreold"
 	} else {
 	    bind $w <ButtonRelease-1> "+\
           %W startpepac %x %y -readonly -flash -ignoreold;"
-	    bind $w <Shift-ButtonRelease-1> "+\
+	    bind $w <${ayviewshortcuts(TagMod)}-ButtonRelease-1> "+\
           %W startpepac %x %y -readonly -flash -ignoreold;"
 	}
     }
+    # if flash
+
     $w setconf -drawh 1
 
  return;
@@ -1432,11 +1435,14 @@ proc actionEditNumP { w } {
     }
 
     bind $w <Motion> ""
-#    bind $w <ButtonRelease-1> "focus %W"
 
     if { $ayprefs(FlashPoints) == 1 } {
 	bind $w <Motion> {
 	    %W startpepac %x %y -flash
+	}
+	if { $ayprefs(FixFlashPoints) == 1 } {
+	    bind $w <ButtonRelease-1> "+\
+          %W startpepac %x %y -flash -ignoreold;"
 	}
     }
 
