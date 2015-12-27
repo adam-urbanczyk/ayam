@@ -262,7 +262,8 @@ proc tgui_update args {
                    \$tgui_tessparam(SamplingParamV)"
     }
 
-    if { ( $tgui_tessparam(OldSamplingMethod) !=
+    if { $tgui_tessparam(LazyUpdate) ||
+	 ( $tgui_tessparam(OldSamplingMethod) !=
 	   $tgui_tessparam(SamplingMethod) ) ||
 	 ( $tgui_tessparam(OldSamplingParamU) !=
 	   $tgui_tessparam(SamplingParamU) ) ||
