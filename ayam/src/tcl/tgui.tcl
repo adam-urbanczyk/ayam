@@ -47,6 +47,8 @@ uplevel #0 { array set tgui_tessparam {
     OldSamplingMethod -1
     OldSamplingParamU -1
     OldSamplingParamV -1
+    OldRefineTrims -1
+    OldPrimitives -1
     NumPolys 0
 
     updatelock 0
@@ -263,6 +265,10 @@ proc tgui_update args {
     }
 
     if { $tgui_tessparam(LazyUpdate) ||
+	 ( $tgui_tessparam(OldPrimitives) !=
+	   $tgui_tessparam(Primitives) ) ||
+	 ( $tgui_tessparam(OldRefineTrims) !=
+	   $tgui_tessparam(RefineTrims) ) ||
 	 ( $tgui_tessparam(OldSamplingMethod) !=
 	   $tgui_tessparam(SamplingMethod) ) ||
 	 ( $tgui_tessparam(OldSamplingParamU) !=
@@ -291,6 +297,8 @@ proc tgui_update args {
     set tgui_tessparam(OldSamplingMethod) $tgui_tessparam(SamplingMethod)
     set tgui_tessparam(OldSamplingParamU) $tgui_tessparam(SamplingParamU)
     set tgui_tessparam(OldSamplingParamV) $tgui_tessparam(SamplingParamV)
+    set tgui_tessparam(OldPrimitives) $tgui_tessparam(Primitives)
+    set tgui_tessparam(OldRefineTrims) $tgui_tessparam(RefineTrims)
 
     .tguiw.f1.fSamplingParamU.e delete 0 end
     .tguiw.f1.fSamplingParamU.e insert 0 $tgui_tessparam(SamplingParamU)
