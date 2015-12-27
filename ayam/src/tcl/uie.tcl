@@ -802,7 +802,7 @@ proc addMenu { w prop name elist } {
     }
 
     if { $ay(ws) == "Aqua" } {
-	$f.mb configure -pady 2 -width 1
+	$f.mb configure -pady 2 -width $l
     }
 
     set m [menu $f.mb.m -tearoff 0]
@@ -1450,7 +1450,7 @@ proc addInfo { w prop name } {
 # addInfo
 
 # updateProgress:
-# 
+#
 #
 proc updateProgress { w val n1 n2 op } {
     SetProgress $w $val
