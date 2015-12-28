@@ -838,15 +838,15 @@ ay_ncurve_drawacb(struct Togl *togl, ay_object *o)
   if(!ncurve)
     return AY_ENULL;
 
-  a = &(ncurve->controlv[ncurve->length*4-8]);
   b = &(ncurve->controlv[ncurve->length*4-4]);
+  a = b-4;
 
   while(AY_V3COMP(a, b))
     {
       a -= 4;
       if(a < ncurve->controlv)
 	{
-	  a = &(ncurve->controlv[ncurve->length*4-8]);
+	  a = b-4;
 	  break;
 	}
     }
