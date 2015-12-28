@@ -47,8 +47,7 @@ uplevel #0 { array set tgui_tessparam {
     OldSamplingMethod -1
     OldSamplingParamU -1
     OldSamplingParamV -1
-    OldRefineTrims -1
-    OldPrimitives -1
+
     NumPolys 0
 
     updatelock 0
@@ -209,6 +208,13 @@ proc tgui_update args {
 
     set tgui_tessparam(updatelock) 1
 
+    # only need to check changes when called from the slider,
+    # and not when called from a variable trace
+    set checkChanges 0
+    if { [llength $args] == 1 } {
+	set checkChanges 1
+    }
+
     tgui_deletetraces
 
     set i [expr $tgui_tessparam(SamplingMethod) + 1]
@@ -264,41 +270,40 @@ proc tgui_update args {
                    \$tgui_tessparam(SamplingParamV)"
     }
 
-    if { $tgui_tessparam(LazyUpdate) ||
-	 ( $tgui_tessparam(OldPrimitives) !=
-	   $tgui_tessparam(Primitives) ) ||
-	 ( $tgui_tessparam(OldRefineTrims) !=
-	   $tgui_tessparam(RefineTrims) ) ||
-	 ( $tgui_tessparam(OldSamplingMethod) !=
-	   $tgui_tessparam(SamplingMethod) ) ||
-	 ( $tgui_tessparam(OldSamplingParamU) !=
-	   $tgui_tessparam(SamplingParamU) ) ||
-	 ( $tgui_tessparam(OldSamplingParamV) !=
-	   $tgui_tessparam(SamplingParamV) ) } {
-	if { ! $tgui_tessparam(LazyUpdate) } {
-	    tguiCmd up\
-	      $tgui_tessparam(SamplingMethod) $tgui_tessparam(SamplingParamU)\
-	      $tgui_tessparam(SamplingParamV) $tgui_tessparam(UseTexCoords)\
-	      $tgui_tessparam(UseVertColors) $tgui_tessparam(UseVertNormals)\
-	      $tgui_tessparam(RefineTrims) $tgui_tessparam(Primitives)\
-	      $tgui_tessparam(QuadEps)
-	} else {
-	    if { $tgui_tessparam(MB1Down) == 0 } {
-		tguiCmd up\
-		$tgui_tessparam(SamplingMethod) $tgui_tessparam(SamplingParamU)\
-		$tgui_tessparam(SamplingParamV) $tgui_tessparam(UseTexCoords)\
-		$tgui_tessparam(UseVertColors) $tgui_tessparam(UseVertNormals)\
-		$tgui_tessparam(RefineTrims) $tgui_tessparam(Primitives)\
-		$tgui_tessparam(QuadEps)
+    set doTess 0
+    if { $checkChanges } {
+	if { ( $tgui_tessparam(OldSamplingMethod) !=
+	       $tgui_tessparam(SamplingMethod) ) ||
+	     ( $tgui_tessparam(OldSamplingParamU) !=
+	       $tgui_tessparam(SamplingParamU) ) ||
+	     ( $tgui_tessparam(OldSamplingParamV) !=
+	       $tgui_tessparam(SamplingParamV) ) } {
+	    if { $tgui_tessparam(LazyUpdate) } {
+		if { $tgui_tessparam(MB1Down) == 0 } { set doTess 1 }
+	    } else {
+		set doTess 1
 	    }
 	}
+    } else {
+	if { $tgui_tessparam(LazyUpdate) } {
+	    if { $tgui_tessparam(MB1Down) == 0 } { set doTess 1 }
+	} else {
+	    set doTess 1
+	}
+    }
+
+    if { $doTess } {
+	tguiCmd up\
+	    $tgui_tessparam(SamplingMethod) $tgui_tessparam(SamplingParamU)\
+	    $tgui_tessparam(SamplingParamV) $tgui_tessparam(UseTexCoords)\
+	    $tgui_tessparam(UseVertColors) $tgui_tessparam(UseVertNormals)\
+	    $tgui_tessparam(RefineTrims) $tgui_tessparam(Primitives)\
+	    $tgui_tessparam(QuadEps)
     }
 
     set tgui_tessparam(OldSamplingMethod) $tgui_tessparam(SamplingMethod)
     set tgui_tessparam(OldSamplingParamU) $tgui_tessparam(SamplingParamU)
     set tgui_tessparam(OldSamplingParamV) $tgui_tessparam(SamplingParamV)
-    set tgui_tessparam(OldPrimitives) $tgui_tessparam(Primitives)
-    set tgui_tessparam(OldRefineTrims) $tgui_tessparam(RefineTrims)
 
     .tguiw.f1.fSamplingParamU.e delete 0 end
     .tguiw.f1.fSamplingParamU.e insert 0 $tgui_tessparam(SamplingParamU)
