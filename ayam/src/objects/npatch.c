@@ -1437,8 +1437,7 @@ int
 ay_npatch_drawacb(struct Togl *togl, ay_object *o)
 {
  ay_nurbpatch_object *npatch = NULL;
- int width = 0, height = 0;
- double *cv = NULL;
+ double *a, *b;
 
   if(!o)
     return AY_ENULL;
@@ -1448,13 +1447,20 @@ ay_npatch_drawacb(struct Togl *togl, ay_object *o)
   if(!npatch)
     return AY_ENULL;
 
-  width = npatch->width;
-  height = npatch->height;
+  b = &(npatch->controlv[npatch->width*npatch->height*4-4]);
+  a = b-4;
 
-  cv = npatch->controlv;
+  while(AY_V3COMP(a, b))
+    {
+      a -= 4;
+      if(a < b-(npatch->height*4))
+	{
+	  a = b-4;
+	  break;
+	}
+    }
 
-  /* draw arrow */
-  ay_draw_arrow(togl, &(cv[width*height*4-8]), &(cv[width*height*4-4]));
+  ay_draw_arrow(togl, a, b);
 
  return AY_OK;
 } /* ay_npatch_drawacb */
