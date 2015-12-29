@@ -3034,12 +3034,16 @@ always opened in standard size, centered on the screen;<newline>
 <tt/"WhileRunning"/:
 the window geometry will be remembered as long as Ayam is
 running;<newline>
-<tt/"Always"/: the window geometry will be remembered
+<tt/"Always"/: the window geometry will be stored
 in the saved preferences, thus, also surviving a restart of Ayam.
 <p><p>
-Note that the height of the preferences window will always be adapted
+Note that the height of the preferences dialog window will always be adapted
 to the currently open preferences section, no matter how <tt/"SaveDialogGeom"/
 is set.
+<p>
+For more geometry saving related information, see also sections
+<ref id="savemaingeomtag" name="SaveMainGeom"> and
+<ref id="savepanelayouttag" name="SavePaneLayout">.
 
 <item><tt/"SMethod"/; is the sampling method used by the NURBS tesselation
 facility that converts NURBS surfaces to PolyMesh objects.
@@ -12772,12 +12776,12 @@ These tools create parametric surface objects.
 </figure>
 </#if>
 <descrip>
-<tag/Arguments/ None.
+<tag/Arguments/ Radius.
 <tag/Operation/ The NURBSphere tool creates a half circle NURBS curve
-and revolves it about the Y axis thus forming a sphere of radius 1.
-Due to this construction method, the NURBS surface is degenerate at the
-poles which can lead to shading artefacts (compare the image above).
-<tag/Notes/ The NURBS curve is deleted afterwards.
+of given radius and revolves it about the Y axis thus forming a sphere.
+<tag/Notes/ Due to the construction method, the NURBS surface is
+degenerate at the poles which can lead to shading artefacts (compare
+the image above).
 </descrip>
 
 <sect2>NURBSphere2 Tool<label id="nsp2t">
@@ -12800,10 +12804,10 @@ poles which can lead to shading artefacts (compare the image above).
 </#if>
 <descrip>
 <tag/Arguments/ None.
-<tag/Operation/ The NURBSphere2 tool creates a Cobb NURB Sphere,
+<tag/Operation/ The NURBSphere2 tool creates a Cobb NURB sphere of radius 1.0,
 consisting of six NURBS patches arranged in a configuration resembling
 a box, see also the above image.
-<tag/Notes/ The NURBS patches are of high order (5).
+<tag/Notes/ The NURBS patches are of comparatively high order (5).
 </descrip>
 
 <sect2>Revolve Tool<label id="revt">
@@ -12822,6 +12826,10 @@ for more information regarding the revolve object.
 
 This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
+
+Holding down the <tt/&lt;Ctrl&gt;/ key while clicking on the
+corresponding icon in the toolbox will keep the parameter curve
+selected and the current level will also be changed.
 </descrip>
 
 <sect2>Swing Tool<label id="swint">
@@ -12832,13 +12840,19 @@ the selection.
 <tag/Operation/ The tool creates a Swing object, and moves
 the selected objects to it.
 <tscreen><verb>
-|-NCurve     ==>     +-Swing
-                      \-NCurve
+|-CrossSection(NCurve)           +-Swing
+|-Trajectory(NCurve)     ==>      |-CrossSection(NCurve)
+                                  \-Trajectory(NCurve)
 </verb></tscreen>
 <tag/Notes/ See section <ref id="swingobj" name="Swing Object">
 for more information regarding the Swing object.
+
 This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
+
+Holding down the <tt/&lt;Ctrl&gt;/ key while clicking on the
+corresponding icon in the toolbox will keep the parameter curves
+selected and the current level will also be changed.
 </descrip>
 
 <sect2>Extrude Tool<label id="extt">
@@ -12858,6 +12872,10 @@ for more information regarding the Extrude object.
 
 This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
+
+Holding down the <tt/&lt;Ctrl&gt;/ key while clicking on the
+corresponding icon in the toolbox will keep the parameter curve
+selected and the current level will also be changed.
 </descrip>
 
 <sect2>Sweep Tool<label id="swpt">
@@ -12874,8 +12892,13 @@ the selected objects to it.
 </verb></tscreen>
 <tag/Notes/ See section <ref id="sweepobj" name="Sweep Object">
 for more information regarding the Sweep object.
+
 This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
+
+Holding down the <tt/&lt;Ctrl&gt;/ key while clicking on the
+corresponding icon in the toolbox will keep the parameter curve
+selected and the current level will also be changed.
 </descrip>
 
 <sect2>Bevel Tool<label id="bevt">
@@ -12887,14 +12910,17 @@ the selection.
 the selected objects to it.
 <tscreen><verb>
 |-NCurve             +-Bevel
-|-NCurve     ==>      |-NCurve
-                      \-NCurve
+             ==>      \-NCurve
 </verb></tscreen>
 <tag/Notes/ See section <ref id="bevelobj" name="Bevel Object">
 for more information regarding the Bevel object.
 
 This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
+
+Holding down the <tt/&lt;Ctrl&gt;/ key while clicking on the
+corresponding icon in the toolbox will keep the parameter curve
+selected and the current level will also be changed.
 </descrip>
 
 <sect2>Cap Tool<label id="capt">
@@ -12914,6 +12940,10 @@ for more information regarding the Cap object.
 
 This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
+
+Holding down the <tt/&lt;Ctrl&gt;/ key while clicking on the
+corresponding icon in the toolbox will keep the parameter curve
+selected and the current level will also be changed.
 </descrip>
 
 <sect2>Birail1 Tool<label id="bi1t">
@@ -12934,6 +12964,10 @@ for more information regarding the Birail1 object.
 
 This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
+
+Holding down the <tt/&lt;Ctrl&gt;/ key while clicking on the
+corresponding icon in the toolbox will keep the parameter curve
+selected and the current level will also be changed.
 </descrip>
 
 <sect2>Birail2 Tool<label id="bi2t">
@@ -12955,6 +12989,10 @@ for more information regarding the Birail2 object.
 
 This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
+
+Holding down the <tt/&lt;Ctrl&gt;/ key while clicking on the
+corresponding icon in the toolbox will keep the parameter curve
+selected and the current level will also be changed.
 </descrip>
 
 <sect2>Gordon Tool<label id="gort">
@@ -12977,6 +13015,10 @@ for more information regarding the Gordon object.
 
 This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
+
+Holding down the <tt/&lt;Ctrl&gt;/ key while clicking on the
+corresponding icon in the toolbox will keep the parameter curve
+selected and the current level will also be changed.
 </descrip>
 
 <sect2>Skin Tool<label id="skit">
@@ -12997,6 +13039,10 @@ for more information regarding the Skin object.
 
 This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
+
+Holding down the <tt/&lt;Ctrl&gt;/ key while clicking on the
+corresponding icon in the toolbox will keep the parameter curve
+selected and the current level will also be changed.
 </descrip>
 
 <sect2>Trim Tool<label id="trimt">
@@ -13017,6 +13063,10 @@ for more information regarding the Trim object.
 
 This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
+
+Holding down the <tt/&lt;Ctrl&gt;/ key while clicking on the
+corresponding icon in the toolbox will keep the parameter curve
+selected and the current level will also be changed.
 </descrip>
 
 <sect2>Tween Surfaces Tool<label id="tweennpt">
@@ -13550,6 +13600,8 @@ of the tesselation quality and the number of created polygonal elements.
 If the option <tt>"LazyUpdate"</tt> is enabled,
 updates of the tesselation that normally occur while dragging the
 slider(s) will be deferred until the mouse button is released.
+The initial value of this option will be determined from the
+<tt>"LazyNotify"</tt> preference setting.
 <p>
 The options <tt/"UseTexCoords"/ and <tt/"UseVertColors"/ control processing
 of texture coordinates and vertex colors stored as PV tags in the objects
@@ -13563,9 +13615,11 @@ If the <tt/"UseTexCoords"/ option is enabled, but no matching PV tag
 is present, texture coordinates will be generated from the data
 provided by a TC tag or (if no TC tag is present) from the knot
 values of the NURBS surfaces to be tesselated.<footnote>Since 1.21.</footnote>
+See also section <ref id="tctag" name="TC (Texture Coordinates) Tag">.
 <p>
 The option <tt/"UseVertNormals"/ controls processing of
-vertex normals stored as PV tags in the objects to be tesselated.
+vertex normals stored as PV tags in the objects to be
+tesselated (see also section <ref id="pvtag" name="PV Tag">).
 When enabled, the resulting PolyMesh objects will have normals derived
 from these tags instead of normals derived from the NURBS surface.<newline>
 Note that the PV tags must be named as defined by the hidden preference
@@ -13616,6 +13670,9 @@ The values of the parameter slider bounds may be changed by simply entering
 values that are out of the current bounds into the respective entry widget,
 then pressing the <tt/&lt;Tab&gt;/ key. Range and resolution of the slider
 will be recalculated automatically from the value in the entry widget.
+
+PV tags that do not provide enough data for the surface to be tesselated
+will be silently ignored.
 
 The PolyMesh objects created by this tool will <em/not/ be optimized.
 </descrip>
