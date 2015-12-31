@@ -773,7 +773,7 @@ $m.pm add command -label "Optimize" -command { pomesh_optimize } -underline 0
 $m.pm add command -label "Connect" -command {
     runTool {ay(pmoff1) ay(pmoff2)} {"Offset1:" "Offset2:"}\
 	"undo save ConnectPo; connectPo -o1 %0 -o2 %1; uCR; sL; notifyOb; rV;"\
-	"Connect Edges"
+	"Connect Edges" {ayam-2.html polymeshtools}
 } -underline 0
 $m.pm add separator
 $m.pm add command -label "Gen. Face Normals" -command {

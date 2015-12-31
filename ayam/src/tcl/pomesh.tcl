@@ -103,6 +103,8 @@ proc pomesh_merge { } {
     bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
+    shortcut_addcshelp $w ayam-2.html polymeshtools
+
     winRestoreOrCenter $w $t
     grab $w
     focus $w.f2.bok
@@ -215,6 +217,8 @@ proc pomesh_optimize { } {
     bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
+    shortcut_addcshelp $w ayam-2.html polymeshtools
+
     winRestoreOrCenter $w $t
     grab $w
     focus $w.f2.bok
@@ -296,6 +300,8 @@ proc pomesh_split { } {
     # Esc-key && close via window decoration == Cancel button
     bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
+
+    shortcut_addcshelp $w ayam-2.html polymeshtools
 
     winRestoreOrCenter $w $t
     grab $w
