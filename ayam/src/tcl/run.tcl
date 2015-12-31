@@ -169,7 +169,11 @@ proc runTool { argvars argstrings command title {advargs ""} } {
     bind $w <Escape> "$f.bca invoke"
 
     if { $advargs != "" } {
-	shortcut_addcshelp $w ayam-5.html $advargs
+	if { [llength $advargs] > 1 } {
+	    shortcut_addcshelp $w [lindex $advargs 0] [lindex $advargs 1]
+	} else {
+	    shortcut_addcshelp $w ayam-5.html $advargs
+	}
     }
 
     winRestoreOrCenter $w $title
