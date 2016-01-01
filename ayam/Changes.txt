@@ -1,5 +1,5 @@
-[19. Dec 2015] CVS-Head:
-========================
+[1. Jan 2016] CVS-Head:
+=======================
 Bug Fixes:
 o DXF export of polymeshes misses transformation attributes (SF 508)
 o OBJ export of Box objects is broken (SF 509)
@@ -25,6 +25,7 @@ o added tesselation mode "AdaptiveKnotDistance" that is easier to handle
   than AdaptiveDomainDistance and delivers more consistent tesselations
 o improved the subdivision compatibility of tesselated NURBS surfaces
 o improved shading of various solid primitives for CSG preview using AyCSG
+o added PV tag support to PolyMesh optimization
 o added a tool that connects two PolyMesh objects via a common boundary
   (to realize watertight NURBS tesselation)
 o added interactive action to select all points of a boundary of a
