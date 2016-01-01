@@ -1189,19 +1189,24 @@ and modelling tools, that are explained in depth in section
 a single PolyMesh object, without checking for doubly used points,
 loops, or faces. The currently selected PolyMesh objects will not
 be changed by this tool. But the merge-tool can delete them
-immediately after the merging operation, when the<tt/"RemoveMerged"/ option
+immediately after the merging operation, when the <tt/"RemoveMerged"/-option
 is enabled.
+<p><p>
 If the <tt/"OptimizeNew"/-option is enabled, the <tt/"Optimize"/-tool
 (see below) will be started right after the merge operation with the
 newly created merged object as argument.
+<p>
+The option <tt/"MergePVTags"/ controls wether the merge tool should also
+merge all PV tags.
 
 <item><tt/"Split"/: splits the faces from the selected PolyMesh objects
 off and into a second PolyMesh object. The faces to be split off are selected
 by selecting all their control points with the select points modelling
 action (see also section <ref id="selac" name="Selecting Points">).
 The original selected PolyMesh objects will be changed, the selected
-faces will be removed. The changes to the original objects cannot be
-undone. Since the split operation does not
+faces will be removed.
+<p>
+Since the split operation does not
 create optimized new objects, the <tt/"Optimize"/-tool (see below) may
 be started immediately after splitting using the <tt/"OptimizeNew"/-option.
 
@@ -13372,8 +13377,9 @@ The point selection will be removed from the original object(s).
 Eventually present trim curves will not be honored properly.
 
 See also the documentation of the corresponding scripting interface commands
-<ref id="scsplitunp" name="splituNP"> and
-<ref id="scsplitvnp" name="splitvNP">.
+<ref id="scsplitunp" name="splituNP">,
+<ref id="scsplitvnp" name="splitvNP"> and the related tool for
+curves <ref id="splitt" name="Split Tool">.
 </descrip>
 
 <sect2>Interpolate Surface Tool<label id="interpnpt">
@@ -21152,11 +21158,11 @@ Index:
 <item>Box: <ref id="boxobj" name="Box object">
 <item>BP: <ref id="bptag" name="tag type">
 <item>BPatch: <ref id="bpatchobj" name="BPatch object">
-<item>Break: <ref id="breaknpt" name="break into curves tool">
+<item>Break: <ref id="breaknpt" name="NPatch tool">
 <item>breakNP: <ref id="scbreaknp" name="scripting interface command">
 <item>B-Spline: <ref id="ncurveattrprop" name="knot type">
 <item>BType_U, BType_V: <ref id="pmattr" name="PatchMesh attribute">
-<item>Build: <ref id="buildnpt" name="build from curves tool">
+<item>Build: <ref id="buildnpt" name="NCurve tool">
 <item>buildNP: <ref id="scbuildnp" name="scripting interface command">
 </list>
 
@@ -21191,8 +21197,8 @@ Index:
 </itemize>
 <item>Clamp:
 <itemize>
-<item><ref id="clat" name="clamp curve tool">,
-<item><ref id="clanpt" name="clamp patch tool">
+<item><ref id="clat" name="NCurve tool">,
+<item><ref id="clanpt" name="NPatch tool">
 </itemize>
 <item>clampNC: <ref id="scclampnc" name="scripting interface command">
 <item>clampuNP: <ref id="scclampunp" name="scripting interface command">
@@ -21300,7 +21306,7 @@ Index:
 <item><ref id="aycsg" name="AyCSG CSG preview plugin">
 </itemize>
 <item>CullFaces: <ref id="hidprefs" name="hidden preference setting">
-<item>Curvature: <ref id="plotcurt" name="plot curvature tool">
+<item>Curvature: <ref id="plotcurt" name="NCurve tool">
 <item>Curves: <ref id="curves" name="curve primitives">
 <item>Custom:
 <itemize>
@@ -21387,9 +21393,12 @@ Index:
 <item>EditSnaps: <ref id="prefmodel" name="preference setting">
 <item>EDLen: <ref id="icp" name="ICurve attribute">
 <item>EFlush: <ref id="hidprefs" name="hidden preference setting">
-<item>Elevate: <ref id="elevt" name="elevate tool">
+<item>Elevate:
+<itemize>
+<item><ref id="elevt" name="NCurve tool">,
+<item><ref id="elevuvt" name="NPatch tool">
+</itemize>
 <item>elevateNC: <ref id="scelevatenc" name="scripting interface command">
-<item>Elevate UV: <ref id="elevuvt" name="elevate uv tool">
 <item>EnableUndo: <ref id="vat" name="View attribute">
 <item>Enable Scripts: <ref id="mmspecial" name="main menu entry">
 <item>EndBevel: <ref id="extrattr" name="Extrude attribute">
@@ -21572,7 +21581,6 @@ Index:
 <item>IconGamma: <ref id="hidprefs" name="hidden preference setting">
 <item>ICurve: <ref id="icurveobj" name="ICurve object">
 <item>IDR: <ref id="idr" name="IDR plugin">
-<item>IgnoreFirstTrim: <ref id="imp3dmopt" name="3DM (Rhino) import option">
 <item>IgnoreHidden: <ref id="exp3dmopt" name="3DM (Rhino) export option">
 <item>IgnoreNormals: <ref id="mmtools" name="Optimize PolyMesh tool option">
 <item>Image: <ref id="prefrib" name="preference setting">
@@ -21596,7 +21604,11 @@ Index:
 <item>insknNC: <ref id="scinsknnc" name="scripting interface command">
 <item>insknuNP: <ref id="scinsknunp" name="scripting interface command">
 <item>insknvNP: <ref id="scinsknvnp" name="scripting interface command">
-<item>Insert Knot: <ref id="insknt" name="insert knot tool">
+<item>Insert Knot:
+<itemize>
+<item><ref id="insknt" name="NCurve tool">,
+<item><ref id="insknnpt" name="NPatch tool">
+</itemize>
 <item>insertScene: <ref id="scinsertscene" name="scripting interface command">
 <item>Instance: <ref id="instanceobj" name="Instance object">
 <item>Instant Apply: <ref id="propgui" name="instant apply facility">
@@ -21610,7 +21622,8 @@ Index:
 <item>Interpolate:
 <itemize>
 <item><ref id="swp" name="Sweep attribute">,
-<item><ref id="skp" name="Skin attribute">
+<item><ref id="skp" name="Skin attribute">,
+<item><ref id="interpnpt" name="NPatch tool">
 </itemize>
 <item>Interpolation: <ref id="attrs" name="RenderMan/BMRT attribute">
 <item>InterpolCtrl: <ref id="birail2p" name="Birail2 attribute">
@@ -21732,8 +21745,8 @@ Index:
 <item>MajorRad: <ref id="top" name="Torus attribute">
 <item>Make Compatible:
 <itemize>
-<item><ref id="makecompt" name="curve tool">,
-<item><ref id="makecompst" name="surface tool">
+<item><ref id="makecompt" name="NCurve tool">,
+<item><ref id="makecompst" name="NPatch tool">
 </itemize>
 <item>Mark: <ref id="vat" name="View attribute">
 <item>MarkHidden: <ref id="hidprefs" name="hidden preference settings">
@@ -21759,7 +21772,7 @@ Index:
 <item><ref id="lbcontm" name="listbox context menu">,
 <item><ref id="nmpmenu" name="numeric point edit menu">
 </itemize>
-<item>Merge: <ref id="mmtools" name="Merge PolyMesh tool">
+<item>Merge: <ref id="mmtools" name="PolyMesh tool">
 <item>MergeFaces <ref id="impwav" name="Wavefront OBJ import option">
 <item>MergePVTags <ref id="impwav" name="Wavefront OBJ import option">
 <item>MetaObj, MetaComp: <ref id="metaobjobj" name="MetaObj object">
@@ -21805,6 +21818,7 @@ Index:
 <item>NewLoadsEnv: <ref id="hidprefs" name="hidden preference settings">
 <item>newScene: <ref id="scnewscene" name="scripting interface command">
 <item>NoExport: <ref id="noexporttag" name="tag type">
+<item>NormalEpsilon: <ref id="mmtools" name="optimize PolyMesh tool option">
 <item>NormalizedDomainDistance: <ref id="prefmisc" name="NURBS tesselation mode">
 <item>NormalizeDigits, NormalizePoints, NormalizeTrafos: <ref id="hidprefs" name="hidden preference setting">
 <item>notifyOb: <ref id="scnotifyob" name="scripting interface command">
@@ -21853,10 +21867,12 @@ Index:
 <item><ref id="imprhino" name="3DM (Rhino) Import">,
 <item><ref id="exprhino" name="3DM (Rhino) Export">
 </itemize>
-<item>Optimize: <ref id="mmtools" name="Optimize PolyMesh tool">
-<item>OptimizeCoords: <ref id="mmtools" name="Optimize PolyMesh tool option">
-<item>OptimizeFaces: <ref id="mmtools" name="Optimize PolyMesh tool option">
-<item>OptimizeNew: <ref id="mmtools" name="Merge PolyMesh tool option">
+<item>Optimize: <ref id="mmtools" name="PolyMesh tool">
+<item>OptimizeCoords: <ref id="mmtools" name="optimize PolyMesh tool option">
+<item>OptimizeFaces: <ref id="mmtools" name="optimize PolyMesh tool option">
+<item>OptimizeNew: <ref id="mmtools" name="merge PolyMesh tool option">
+<item>OptimizePV: <ref id="mmtools" name="optimize PolyMesh tool option">
+<item>Optimize: <ref id="mmtools" name="merge PolyMesh tool option">
 <item>Option: <ref id="riotag" name="RiOption tag type">
 <item>Order:
 <itemize>
@@ -21915,7 +21931,7 @@ Index:
 <item>PickTolerance: <ref id="hidprefs" name="hidden preference setting">
 <item>Pivot: <ref id="rotaac" name="modelling action">
 <item>Plane: <ref id="mirrorattr" name="Mirror attribute">
-<item>Plot Curvature: <ref id="plotcurt" name="plot curvature tool">
+<item>Plot Curvature: <ref id="plotcurt" name="NCurve tool">
 <item>Point: <ref id="pdsl" name="light type">
 <item>polyhedron.js: <ref id="polyhedronjs" name="example/helper script">
 <item>PolyMesh: <ref id="polymeshobj" name="PolyMesh object">
@@ -22035,7 +22051,11 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="refit" name="curve tool">,
 <item><ref id="refinest" name="surface tool">
 </itemize>
-<item>Refine Knots: <ref id="refknit" name="Refine Knots Tool">
+<item>Refine Knots:
+<itemize>
+<item><ref id="refknit" name="NCurve tool">,
+<item><ref id="refinest" name="NPatch tool">
+</itemize>
 <item>refineC: <ref id="screfinec" name="scripting interface command">
 <item>refineknNC: <ref id="screfineknnc" name="scripting interface command">
 <item>RefineTrims: <ref id="tesst" name="tesselation option">
@@ -22046,13 +22066,17 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="extrncp" name="ExtrNC attribute">,
 <item><ref id="extrnpp" name="ExtrNP attribute">
 </itemize>
-<item>Rem.~Smooth Normals: <ref id="mmtools" name="polymesh tool">
+<item>Rem.~Smooth Normals: <ref id="mmtools" name="PolyMesh tool">
 <item>remknNC: <ref id="scremknnc" name="scripting interface command">
 <item>remknuNP: <ref id="scremknunp" name="scripting interface command">
 <item>remknvNP: <ref id="scremknvnp" name="scripting interface command">
 <item>remsnPo: <ref id="scremsnPo" name="scripting interface command">
-<item>Remove Knot: <ref id="remknt" name="remove knot tool">
-<item>RemoveMerged: <ref id="mmtools" name="Merge PolyMesh tool option">
+<item>Remove Knot:
+<itemize>
+<item><ref id="remknt" name="NCurve tool">,
+<item><ref id="remknnpt" name="NPatch tool">
+</itemize>
+<item>RemoveMerged: <ref id="mmtools" name="merge PolyMesh tool option">
 <item>Render:
 <itemize>
 <item><ref id="vm" name="view menu entry">,
@@ -22263,8 +22287,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="shadowmaps" name="using shadowmaps">
 </itemize>
 <item>Shadows: <ref id="lip" name="Light attribute">
-<item>Shift Closed Curve:
-<item><ref id="shiftclc" name="shift closed curve tool">
+<item>Shift: <ref id="shiftclc" name="curve tool">
 <item>ShiftTab: <ref id="hidprefs" name="hidden preference setting">
 <item>Show: <ref id="mmtools" name="main menu entry">
 <item>Show All: <ref id="mmtools" name="main menu entry">
@@ -22301,8 +22324,13 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="sphereobj" name="Sphere object">,
 <item><ref id="nspt" name="NURBS sphere tool">
 </itemize>
+<item>Split:
+<itemize>
+<item><ref id="splitt" name="NCurve tool">,
+<item><ref id="splitnpt" name="NPatch tool">,
+<item><ref id="mmtools" name="PolyMesh tool">
+</itemize>
 <item>Split Curve: <ref id="splitncac" name="modelling action">
-<item>Split Polymesh: <ref id="mmtools" name="split polymesh tool">
 <item>splitNC: <ref id="scsplitnc" name="scripting interface command">
 <item>splituNP: <ref id="scsplitunp" name="scripting interface command">
 <item>splitvNP: <ref id="scsplitvnp" name="scripting interface command">
@@ -22322,7 +22350,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Surface: <ref id="matshader" name="shader">
 <item>Surfaces: <ref id="surfaces" name="surface primitives">
 <item>SwapMB: <ref id="hidprefs" name="hidden preference setting">
-<item>Swap UV: <ref id="swapuvt" name="swap uv tool">
+<item>Swap UV: <ref id="swapuvt" name="surface tool">
 <item>swapuvS <ref id="scswapuvs" name="scripting interface command">
 <item>Sweep:
 <itemize>
@@ -22367,7 +22395,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="luatclvar" name="Lua scripting interface function">
 </itemize>
 <item>tcone.tcl: <ref id="tconetcl" name="example/helper script">
-<item>Tesselate: <ref id="tesst" name="tesselation tool">
+<item>Tesselate: <ref id="tesst" name="NPatch tool">
 <item>TessPoMesh <ref id="expwav" name="Wavefront OBJ export option">
 <item>Text: <ref id="textobj" name="Text object">
 <item>Textures: <ref id="rio" name="RenderMan interface option">
@@ -22440,8 +22468,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>truncated cone: <ref id="tconetcl" name="example/helper script">
 <item>Tween:
 <itemize>
-<item><ref id="tweennct" name="curve tool">,
-<item><ref id="tweennpt" name="surface tool">
+<item><ref id="tweennct" name="NCurve tool">,
+<item><ref id="tweennpt" name="NPatch tool">
 </itemize>
 <item>tweenNC: <ref id="sctweennc" name="scripting interface command">
 <item>TwmCompat: <ref id="prefgui" name="preference setting">
@@ -22468,6 +22496,11 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>uCL: <ref id="scucl" name="scripting interface command">
 <item>uCR: <ref id="scucr" name="scripting interface command">
 <item>UMM: <ref id="ummtag" name="tag type">
+<item>Unclamp:
+<itemize>
+<item><ref id="unclat" name="NCurve tool">,
+<item><ref id="unclanpt" name="NPatch tool">
+</itemize>
 <item>unclampNC: <ref id="scunclampnc" name="scripting interface command">
 <item>unclampuNP: <ref id="scunclampunp" name="scripting interface command">
 <item>unclampvNP: <ref id="scunclampvnp" name="scripting interface command">
