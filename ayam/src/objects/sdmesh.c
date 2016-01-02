@@ -132,6 +132,7 @@ ay_sdmesh_createcb(int argc, char *argv[], ay_object *o)
 		      controlv = NULL;
 		    }
 		  tcl_status = ay_tcmd_convdlist(argv[i+1], &avlen, &controlv);
+		  controlvlen = avlen;
 		  option_handled = AY_TRUE;
 		  break;
 		case 'v':
