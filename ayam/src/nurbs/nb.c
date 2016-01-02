@@ -934,8 +934,8 @@ ay_nb_InsertKnotCurve4D(int np, int p, double *UP, double *Pw, double u,
 			int k, int s, int r, int *nq, double *UQ,
 			double *Qw)
 {
- int i, j, L = 0, i1, i2;
- double mp = 0.0, alpha = 0.0, *Rw = NULL;
+ int i, j, L = 0, i1, i2, mp;
+ double alpha = 0.0, *Rw = NULL;
 
   mp = np + p + 1;
   *nq = np + r;
@@ -1016,9 +1016,12 @@ ay_nb_InsertKnotCurve4D(int np, int p, double *UP, double *Pw, double u,
   free(Rw);
 
   /* load new knot vector */
-  for(i = 0; i <= k; i++) UQ[i] = UP[i];
-  for(i = 1; i <= r; i++) UQ[k+i] = u;
-  for(i = k+1; i <= mp; i++) UQ[i+r] = UP[i];
+  for(i = 0; i <= k; i++)
+    UQ[i] = UP[i];
+  for(i = 1; i <= r; i++)
+    UQ[k+i] = u;
+  for(i = k+1; i <= mp; i++)
+    UQ[i+r] = UP[i];
 
  return AY_OK;
 } /* ay_nb_InsertKnotCurve4D */
@@ -1035,13 +1038,13 @@ ay_nb_InsertKnotCurve3D(int np, int p, double *UP, double *P, double u,
 			int k, int s, int r, int *nq, double *UQ,
 			double *Q)
 {
- int i, j, L = 0, i1, i2;
- double mp = 0.0, alpha = 0.0, *R = NULL;
+ int i, j, L = 0, i1, i2, mp;
+ double alpha = 0.0, *R = NULL;
 
   mp = np+p+1;
   *nq = np + r;
 
-  if(!(R = calloc((p+1)*3,sizeof(double))))
+  if(!(R = calloc((p+1)*3, sizeof(double))))
     return AY_EOMEM;
 
   /* save unaltered control points */
@@ -1109,12 +1112,15 @@ ay_nb_InsertKnotCurve3D(int np, int p, double *UP, double *P, double u,
   free(R);
 
   /* load new knot vector */
-  for(i=0; i<=k; i++) UQ[i] = UP[i];
-  for(i=1; i<=r; i++) UQ[k+i] = u;
-  for(i=k+1; i<=mp; i++) UQ[i+r] = UP[i];
+  for(i = 0; i <= k; i++)
+    UQ[i] = UP[i];
+  for(i = 1; i <= r; i++)
+    UQ[k+i] = u;
+  for(i = k+1; i <= mp; i++)
+    UQ[i+r] = UP[i];
 
   /* fix weights */
-  for(i = 0; i < *nq; i++)
+  for(i = 0; i <= *nq; i++)
     {
       Q[i*4+3] = 1.0;
     }
