@@ -4989,12 +4989,25 @@ Camera objects never appear in RIB output.
 
 <sect2>Light Object<label id="lightobj">
 <p>
-Light objects let you bring light into your scenes.
+<figure loc="ht">
+<eps file="pics/lights.ps" height="4.5cm">
+<img src="pics/lights.gif">
+<caption>Lightsource Examples (l: Distant, m: Point, r: Spot)</caption>
+</figure>
 <p>
-The behaviour of a light source object depends heavily on the type
-of the light source.
+Light objects represent light sources.
+<p>
 There are currently four different light types available in Ayam:
-<tt/"Custom"/, <tt/"Point"/, <tt/"Distant"/ and <tt/"Spot"/.
+<tt/"Point"/, <tt/"Distant"/, <tt/"Spot"/, and <tt/"Custom"/
+(see also the image above).
+<p>
+Point-, Distant-, and Spotlights:<label id="pdsl">
+<p>
+These standard light sources have well defined parameters that
+will be displayed in the <tt/"LightAttr"/ property.
+Please refer to the RenderMan documentation for more information
+about these standard light sources (see section
+<ref id="secref" name="References">).
 <p>
 Custom Lights:<label id="cul">
 <p>
@@ -5006,24 +5019,17 @@ The names <tt/"from"/ and <tt/"to"/ denote location and destination
 of the light source. Those names should not be used for other things
 in the light shaders.
 <p>
-Point-, Distant-, and Spotlights:<label id="pdsl">
-<p>
-These (standard) light sources have well defined parameters that
-will be displayed in the <tt/"LightAttr"/ property.
-Please refer to the RenderMan documentation for more information
-about the standard light sources (see section
-<ref id="secref" name="References">).
-<p>
 In contrast to the light sources as defined in the RenderMan
 interface, Ayam light sources are always global by default. This
 means, regardless of the place of a light source in the scene
 hierarchy, it will always light all other objects (unless the
 <tt/"IsLocal"/ attribute is used).
 <p>
-Note that you can not preview the effect of a light source in
+Note that the effect of a light source can not be previewed in
 shaded Ayam views, currently. However it is possible to estimate
 the effect of a spot light source by simply dropping it into
-a perspective view window, the view will then show you the objects
+a perspective view window; the view will then adapt the camera
+attributes (from, to, and zoom) of the view to show the objects
 lit by the spot.
 <p>
 The following table briefly lists some capabilities of the Light object.
@@ -5230,6 +5236,7 @@ You have to manually switch to a shader that
 makes use of the shadow maps (<tt/"shadowdistant"/ in this case) to
 actually get shadows.
 <p>
+<#if out=latex><x/newpage/</#if>
 <bf>ShadowMap Mini Tutorial</bf>
 <p>
 Here is a short example for a scene using a shadow map:
@@ -5265,7 +5272,6 @@ was created with an additional point light and Aqsis as renderer:
 <img src="pics/shadowmaps.gif">
 <caption>Shadowmaps Example</caption>
 </figure>
-
 <p>
 Note that for Aqsis you should add a RiHider hidden,depthfilter,s,midpoint
 tag to your Root object if shadow maps are in use. Other renderers might
@@ -5273,6 +5279,7 @@ require additional tweaking using shadow bias RiOption tags.
 Please consult the documentation of your renderer on how to achieve
 the best results using shadow maps.
 
+<#if out=latex><x/newpage/</#if>
 <sect3>Using AreaLights<label id="alob">
 <p><#if out=latex>&nbsp;<newline></#if>
 The common idealized standard light sources <tt/"Point"/, <tt/"Distant"/
@@ -5688,11 +5695,9 @@ between two instances: the clone <tt/"n+1"/ is offset by <tt/"Translate_X"/,
 It is also rotated by <tt/"Rotate_X"/, <tt/"Rotate_Y"/, and <tt/"Rotate_Z"/
 and scaled by <tt/"Scale_X"/, <tt/"Scale_Y"/, <tt/"Scale_Z"/ in relation
 to the previous clone.
-
 <p>
 Note however, that the transformation attributes
 do not affect the first clone.
-
 <p>
 The transformation attributes are also in effect if a trajectory
 curve is present, they will be applied after moving of the
@@ -9984,6 +9989,12 @@ paradigms to be included in Ayam scenes.
 
 <sect2>PolyMesh Object<label id="polymeshobj">
 <p>
+<figure loc="!ht">
+<eps file="pics/pomesh.ps" height="4cm">
+<img src="pics/pomesh.gif">
+<caption>PolyMesh Example</caption>
+</figure>
+<p>
 The PolyMesh object may be used to include objects that
 have been modeled using the polygonal modelling paradigm
 in Ayam scenes.
@@ -9997,8 +10008,10 @@ The PolyMesh object is equivalent to the general points polygons
 primitive of the RenderMan interface. This means, each PolyMesh
 object may contain multiple general (convex or concave) polygons,
 which in turn may consist of an outer loop and an arbitrary number
-of inner loops that describe holes in the polygon. The loops use a point
-indexing scheme to efficiently reuse coordinate values.
+of inner loops that describe holes in the polygon (see also the
+image above, showing a polygonal mesh with one pentagonal face and
+a triangular hole). The loops use a point indexing scheme to
+efficiently reuse coordinate values.
 This general approach requires a so called tesselation to be carried
 out, in order for the PolyMesh object to be shaded.
 For the tesselation, Ayam uses routines of the GLU library.
