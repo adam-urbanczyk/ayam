@@ -1012,7 +1012,9 @@ If the selected object has no material yet, a new material
 will be created: Ayam will prompt for the name of the new
 material, the material object will be created, if successful,
 the material will be linked to <em>all</em> currently selected objects
-(even if they are already linked to other objects).
+(even if they are already linked to other objects),
+see also section <ref id="materialobj" name="Material Object">.
+
 
 <item><tt/"Master"/, searches for the master object of the
 currently selected instance object and selects it for editing,
@@ -3482,7 +3484,7 @@ or not can be adjusted (see <tt/"PickTolerance"/ in
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Moving Objects or Selected Points
+<sect1>Moving Objects or Selected Points<label id="moveac">
 <p>
 Using the modelling action <tt/"Move"/ (shortcut: <tt/&lt;m&gt;/)
 selected objects or selected (tagged) points can be moved.
@@ -21143,6 +21145,11 @@ Index:
 &nbsp;<newline>&nbsp;
 <label id="indexb"><tt/&nbsp;&nbsp;<bf/B//
 <list>
+<item>B-Spline:
+<itemize>
+<item><ref id="ncurveattrprop" name="knot type">
+<item><ref id="pmattr" name="PatchMesh basis type">
+</itemize>
 <item>Background: <ref id="prefdraw" name="preference setting">
 <item>Background Image: <ref id="vat" name="View attribute">
 <item>BackupExt: <ref id="hidprefs" name="hidden preference setting">
@@ -21159,12 +21166,24 @@ Index:
 </itemize>
 <item>Bevel3D: <ref id="offsetncp" name="offset mode">
 <item>BevelRadius, BevelRevert, BevelType: <ref id="bevelp" name="Bevel attribute">
-<item>Bezier: <ref id="ncurveattrprop" name="knot type">
+<item>Bezier:
+<itemize>
+<item><ref id="ncurveattrprop" name="knot type">,
+<item><ref id="pmattr" name="PatchMesh basis type">
+</itemize>
 <item>bgconvert.tcl: <ref id="bgconverttcl" name="example/helper script">
 <item>BGImage: <ref id="vat" name="View attribute">
 <item>bicubic/bilinear PatchMesh: <ref id="patchmeshobj" name="PatchMesh object">
-<item>Birail1: <ref id="birail1obj" name="Birail1 object">
-<item>Birail2: <ref id="birail2obj" name="Birail2 object">
+<item>Birail1:
+<itemize>
+<item><ref id="birail1obj" name="Birail1 object">,
+<item><ref id="bi1t" name="Birail1 tool">
+</itemize>
+<item>Birail2:
+<itemize>
+<item><ref id="birail2obj" name="Birail2 object">,
+<item><ref id="bi2t" name="Birail2 tool">
+</itemize>
 <item>BNS: <ref id="bnstag" name="tag type">
 <item>Bound: <ref id="riattrs" name="RenderMan/BMRT attribute">
 <item>BoundCoord: <ref id="riattrs" name="RenderMan/BMRT attribute">
@@ -21173,7 +21192,6 @@ Index:
 <item>BPatch: <ref id="bpatchobj" name="BPatch object">
 <item>Break: <ref id="breaknpt" name="NPatch tool">
 <item>breakNP: <ref id="scbreaknp" name="scripting interface command">
-<item>B-Spline: <ref id="ncurveattrprop" name="knot type">
 <item>BType_U, BType_V: <ref id="pmattr" name="PatchMesh attribute">
 <item>Build: <ref id="buildnpt" name="NCurve tool">
 <item>buildNP: <ref id="scbuildnp" name="scripting interface command">
@@ -21198,6 +21216,7 @@ Index:
 </itemize>
 <item>CastShadows: <ref id="riattrs" name="RenderMan/BMRT attribute">
 <item>Cat: <ref id="hidprefs" name="hidden preference setting">
+<item>Catmull Rom: <ref id="pmattr" name="PatchMesh basis type">
 <item>Chamfer: <ref id="bevelobj" name="Bevel object">,
 <item>CheckLights: <ref id="prefrib" name="preference setting">
 <item>Chordal: <ref id="ncurveattrprop" name="knot type">
@@ -21323,8 +21342,9 @@ Index:
 <item>Curves: <ref id="curves" name="curve primitives">
 <item>Custom:
 <itemize>
+<item><ref id="mmcustom" name="custom menu">,
 <item><ref id="cul" name="light type">,
-<item><ref id="mmcustom" name="custom menu">
+<item><ref id="pmattr" name="PatchMesh basis type">
 </itemize>
 <item>Custom Object: <ref id="customobj" name="what is">
 <item>Cut: <ref id="mmedit" name="main menu entry">
@@ -21445,10 +21465,15 @@ Index:
 <item><ref id="extnct" name="extract curve tool">,
 <item><ref id="extrnpt" name="extract patch tool">
 </itemize>
-<item>ExtrNC: <ref id="extrncobj" name="ExtrNC object">
+<item>ExtrNC:
+<itemize>
+<item><ref id="extrncobj" name="ExtrNC object">,
+<item><ref id="extnct" name="ExtrNC tool">
+</itemize>
 <item>ExtrNP:
 <itemize>
 <item><ref id="extrnpobj" name="ExtrNP object">,
+<item><ref id="extrnpt" name="ExtrNP tool">,
 <item><ref id="scextrnp" name="scripting interface command">
 </itemize>
 <item>Extrude:
@@ -21536,7 +21561,11 @@ Index:
 <item>GLU: <ref id="prefdraw" name="preference setting">
 <item>goDown: <ref id="scgodown" name="scripting interface command">
 <item>goTop: <ref id="scgotop" name="scripting interface command">
-<item>Gordon: <ref id="gordonobj" name="Gordon object">
+<item>Gordon:
+<itemize>
+<item><ref id="gordonobj" name="Gordon object">,
+<item><ref id="gort" name="Gordon tool">
+</itemize>
 <item>goUp: <ref id="scgoup" name="scripting interface command">
 <item>Grid:
 <itemize>
@@ -21571,6 +21600,7 @@ Index:
 <item><ref id="schelp" name="scripting interface command">
 </itemize>
 <item>Help on object: <ref id="mmhelp" name="main menu entry">
+<item>Hermite: <ref id="pmattr" name="PatchMesh basis type">
 <item>Hidden Preferences: <ref id="hidprefs" name="hidden preference settings">
 <item>HiddenWire:<ref id="vmconf" name="view menu entry">
 <item>Hide:
@@ -21761,7 +21791,11 @@ Index:
 <item><ref id="makecompt" name="NCurve tool">,
 <item><ref id="makecompst" name="NPatch tool">
 </itemize>
-<item>Mark: <ref id="vat" name="View attribute">
+<item>Mark:
+<itemize>
+<item><ref id="vat" name="View attribute">,
+<item><ref id="markac" name="modelling action">
+</itemize>
 <item>MarkHidden: <ref id="hidprefs" name="hidden preference settings">
 <item>Master: <ref id="mmedit" name="edit menu entry">
 <item>Material:
@@ -21805,7 +21839,7 @@ Index:
 <item>Move:
 <itemize>
 <item><ref id="vwsc" name="view action">,
-<item><ref id="iac" name="modelling action">
+<item><ref id="moveac" name="modelling action">
 </itemize>
 <item>movOb: <ref id="scmovob" name="scripting interface command">
 <item>movPnts: <ref id="scmovpnts" name="scripting interface command">
@@ -21898,13 +21932,15 @@ Index:
 <item>Order_U:
 <itemize>
 <item><ref id="npattr" name="NPatch attribute">,
-<item><ref id="ipattr" name="IPatch attribute">
+<item><ref id="ipattr" name="IPatch attribute">,
 <item><ref id="skp" name="Skin attribute">,
+<item><ref id="gop" name="Gordon attribute">
 </itemize>
 <item>Order_V:
 <itemize>
 <item><ref id="npattr" name="NPatch attribute">,
-<item><ref id="ipattr" name="IPatch attribute">
+<item><ref id="ipattr" name="IPatch attribute">,
+<item><ref id="gop" name="Gordon attribute">
 </itemize>
 </list>
 
@@ -21931,6 +21967,7 @@ Index:
 <item>PatchNum:
 <itemize>
 <item><ref id="extrncp" name="ExtrNC attribute">,
+<item><ref id="extrnpp" name="ExtrNP attribute">,
 <item><ref id="selectp" name="Select attribute">,
 <item><ref id="trimp" name="Trim attribute">
 </itemize>
@@ -21950,6 +21987,7 @@ Index:
 <item>PolyMesh: <ref id="polymeshobj" name="PolyMesh object">
 <item>PolyMesh tools: <ref id="polymeshtools" name="PolyMesh tools">
 <item>PolyOffset: <ref id="hidprefs" name="hidden preference setting">
+<item>Power: <ref id="pmattr" name="PatchMesh basis type">
 <item>PPRender: <ref id="prefrib" name="preference setting">
 <item>Preferences:
 <itemize>
@@ -22054,11 +22092,11 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Refcount: <ref id="attrs" name="attribute">
 <item>Reference Counter:
 <itemize>
-<item><ref id="instanceobj" name="Instance Object">,
-<item><ref id="materialobj" name="Material Object">
+<item><ref id="instanceobj" name="Instance object">,
+<item><ref id="materialobj" name="Material object">
 </itemize>
-<item>Reference: <ref id="referencing" name="Reference">
-<item>References: <ref id="secref" name="references">
+<item>Reference: <ref id="referencing" name="instance type">
+<item>References: <ref id="secref" name="literature">
 <item>Refine:
 <itemize>
 <item><ref id="refit" name="curve tool">,
@@ -22355,7 +22393,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Step_U, Step_V: <ref id="pmattr" name="PatchMesh attribute">
 <item>StepSize: <ref id="moattr" name="MetaObj attributes">
 <item>STESS: <ref id="prefdraw" name="preference setting">
-<item>Stretch: <ref id="scalac" name="stretch object">
+<item>Stretch: <ref id="scalac" name="modelling action">
 <item>String: <ref id="textattr" name="Text attribute">
 <item>StripShaderArch: <ref id="hidprefs" name="hidden preference setting">
 <item>Subdivision Mesh: <ref id="sdmeshobj" name="SDMesh object">
@@ -22508,6 +22546,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <list>
 <item>uCL: <ref id="scucl" name="scripting interface command">
 <item>uCR: <ref id="scucr" name="scripting interface command">
+<item>UMax, UMin:<ref id="extrnpp" name="ExtrNP attribute">
 <item>UMM: <ref id="ummtag" name="tag type">
 <item>Unclamp:
 <itemize>
@@ -22558,6 +22597,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="viewwin" name="Anatomy of a View">
 </itemize>
 <item>ViewAttrib: <ref id="vat" name="property">
+<item>VMax, VMin:<ref id="extrnpp" name="ExtrNP attribute">
 <item>VMM: <ref id="ummtag" name="tag type">
 </list>
 
