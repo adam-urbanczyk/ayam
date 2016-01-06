@@ -200,7 +200,7 @@ ay_otype_registercore(char *name,
 
   /* check, whether type is already registered */
   /* this should not happen, btw. ... */
-  if((entry = Tcl_FindHashEntry(&ay_otypesht, name)))
+  if(Tcl_FindHashEntry(&ay_otypesht, name))
     { /* yes, we already have registered this type */
       return AY_ETYPE;
     }

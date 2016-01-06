@@ -1601,7 +1601,7 @@ ay_tcmd_registerlang(char *name, char **result)
  char fname[] = "registerlang";
 
   /* check, if language is already registered */
-  if((entry = Tcl_FindHashEntry(&ay_languagesht, name)))
+  if(Tcl_FindHashEntry(&ay_languagesht, name))
     {
       ay_error(AY_ERROR, fname, "Language is already registered.");
       return AY_ERROR;

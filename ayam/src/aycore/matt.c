@@ -49,7 +49,7 @@ ay_matt_registermaterial(char *name, ay_mat_object *mat)
   if(!mat)
     return AY_ENULL;
 
-  if((entry = Tcl_FindHashEntry(ht, name)))
+  if(Tcl_FindHashEntry(ht, name))
     {
       mat->registered = AY_FALSE;
       return AY_ERROR; /* name already registered */

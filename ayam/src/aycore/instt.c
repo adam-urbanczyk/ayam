@@ -50,7 +50,7 @@ ay_instt_createoidht(ay_object *o)
 	    {
 	      if(tag->type == ay_oi_tagtype)
 		{
-		  if((entry = Tcl_FindHashEntry(ht, tag->val)))
+		  if(Tcl_FindHashEntry(ht, tag->val))
 		    return AY_ERROR; /* Oops, OID already registered? */
 
 		  entry = Tcl_CreateHashEntry(ht, tag->val, &new_item);
