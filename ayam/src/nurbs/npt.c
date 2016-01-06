@@ -3694,6 +3694,7 @@ ay_npt_revolve(ay_object *o, double arc, int sections, int order,
 	  new->controlv[c+1] = point[1];
 	  new->controlv[c+2] = tcontrolv[b+1];
 	  new->controlv[c+3] = tcontrolv[b+3]*w;
+
 	  b += 4;
 	  c += 4;
 	} /* for */
@@ -4447,10 +4448,11 @@ ay_npt_sweepperiodic(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 
     } /* for */
 
-  new->is_rat = ay_npt_israt(new);
-
   (void)ay_npt_closeu(new, 3);
   new->utype = AY_CTPERIODIC;
+
+  new->is_rat = ay_npt_israt(new);
+
   ay_npt_setuvtypes(new, 2);
 
   /* return result */
@@ -5116,11 +5118,11 @@ ay_npt_birail1periodic(ay_object *o1, ay_object *o2, ay_object *o3,
       memcpy(T0, T1, 3*sizeof(double));
     } /* for */
 
+  (void)ay_npt_closeu(new, 3);
+  new->utype = AY_CTPERIODIC;
 
   new->is_rat = ay_npt_israt(new);
 
-  (void)ay_npt_closeu(new, 3);
-  new->utype = AY_CTPERIODIC;
   ay_npt_setuvtypes(new, 2);
 
   /* return result */
