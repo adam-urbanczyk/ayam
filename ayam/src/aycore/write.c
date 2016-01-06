@@ -22,8 +22,8 @@ ay_write_header(FILE *fileptr)
 {
  int ay_status = AY_OK;
 
- fprintf(fileptr,"Ayam\n");
- fprintf(fileptr,"%s\n", AY_VERSIONSTR);
+  fprintf(fileptr,"Ayam\n");
+  fprintf(fileptr,"%s\n", AY_VERSIONSTR);
 
  return ay_status;
 } /* ay_write_header */
@@ -324,17 +324,27 @@ ay_write_scene(char *fname, int selected)
 
   /* clear oid tags from scene */
   ay_status = ay_instt_clearoidtags(ay_root);
+
   /* reset oid counter for saving of Instance objects */
-  ay_status = ay_instt_createoid(NULL);
+  ay_status += ay_instt_createoid(NULL);
+
   /* create oid tags for master objects */
-  ay_status = ay_instt_createorigids(o);
+  ay_status += ay_instt_createorigids(o);
+
   /* create oid tags for instance objects */
-  ay_status = ay_instt_createinstanceids(o);
+  ay_status += ay_instt_createinstanceids(o);
 
   /* clear Material ID tags from scene */
-  ay_status = ay_matt_clearmaterialids(ay_root);
+  ay_status += ay_matt_clearmaterialids(ay_root);
+
   /* create new Material ID tags */
-  ay_status = ay_matt_creatematerialids(ay_root);
+  ay_status += ay_matt_creatematerialids(ay_root);
+
+  if(ay_status)
+    {
+      ay_status = AY_ERROR;
+      goto cleanup;
+    }
 
   /* write header information */
   ay_write_header(fileptr);
@@ -358,10 +368,13 @@ ay_write_scene(char *fname, int selected)
 	{ fclose(fileptr); return ay_status; }
       o = o->next;
     }
+
   if(ferror(fileptr))
     {
       ay_error(AY_ERROR, fname, strerror(errno));
     }
+
+cleanup:
 
   if(fclose(fileptr))
     {
