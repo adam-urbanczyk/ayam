@@ -672,8 +672,11 @@ ay_clevel_cltcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_clevel_del();
 	      lc += 3;
 	    } /* while */
-	  o = ay_currentlevel->object;
-	  t = o;
+	  if(ay_currentlevel)
+	    {
+	      o = ay_currentlevel->object;
+	      t = o;
+	    }
 	}
       else
 	{
