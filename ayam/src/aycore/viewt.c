@@ -1847,8 +1847,8 @@ ay_viewt_updatemark(struct Togl *togl, int local)
 {
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  double dummy, mm[16], pm[16];
- int i, vp[4], height = Togl_Height(togl);
- GLint gl_status = GL_TRUE;
+ int i, height = Togl_Height(togl);
+ GLint vp[4], gl_status = GL_TRUE;
  Tcl_Obj *to = NULL;
  Tcl_Interp *interp = ay_interp;
 
@@ -2664,9 +2664,9 @@ ay_viewt_warpmouse(struct Togl *togl, double *coord, ay_object *o,
 		   double *newwinx, double *newwiny)
 {
  double winx, winy, dummy, /*rm[16],*/ mm[16], pm[16];
- int vp[4], height = Togl_Height(togl);
- GLint gl_status = GL_TRUE;
+ int height = Togl_Height(togl);
  char *cmd = NULL, warpcmd[] = "warpMouse";
+ GLint vp[4], gl_status = GL_TRUE;
 
   glGetIntegerv(GL_VIEWPORT, vp);
 
