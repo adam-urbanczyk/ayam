@@ -1232,3 +1232,74 @@ ay_object_candeletelist(ay_list_object *l, ay_object *o)
 
  return ay_status;
 } /* ay_object_candeletelist */
+
+
+/** ay_object_getpathname:
+ * _Recursively_ build up the full path name of an object in the scene
+ * hierarchy.
+ * 
+ * \param c hierarchy where to search for o (usually ay_root)
+ * \param o object to search for
+ * \param totallen helper variable, should be initialized with 0
+ * \param found indicates wether o was found in c
+ * \param result where to store the result
+ * 
+ * \returns AY_OK on success, error code otherwise
+ */
+int
+ay_object_getpathname(ay_object *c, ay_object *o, size_t *totallen, int *found,
+		char **result)
+{
+ int ay_status = AY_OK;
+ size_t curlen, curtotallen;
+ char *curname;
+
+  while(c->next)
+    {
+      curname = ay_object_getname(c);
+      curlen = strlen(curname);
+      curtotallen = *totallen;
+
+      /* +1 for the final NULL terminator or
+	 the separator for any intermediate level */
+      *totallen += curlen+1;
+
+      if(c != o)
+	{
+	  if(c->down && c->down->next)
+	    {
+	      /* go down */
+	      ay_status = ay_object_getpathname(c->down, o, totallen,
+						found, result);
+	      if(ay_status)
+		break;
+	      if(*found)
+		{
+		  /* prepend current (level) name */
+		  strncpy(&((*result)[curtotallen]), curname, curlen);
+		  (*result)[curtotallen+curlen] = ':';
+		  return AY_OK;
+		}
+	    }
+	}
+      else
+	{
+	  /* found the object */
+
+	  /* allocate memory for result */
+	  if(!(*result = malloc(*totallen*sizeof(char))))
+	     return AY_EOMEM;
+
+	  /* save current (object) name to end of result */
+	  strcpy(&((*result)[*totallen-curlen-1]), curname);
+	  *found = AY_TRUE;
+	  return AY_OK;
+	} /* if */
+
+      *totallen -= curlen+1;
+
+      c = c->next;
+    } /* while c */
+
+ return ay_status;
+} /* ay_object_getpathname */
