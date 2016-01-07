@@ -1438,14 +1438,6 @@ int ay_tags_registertcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int ay_tc_wrib(ay_object *o);
 
-/** write single TC tag from object o to RIB
- */
-int ay_tc_wribindex(ay_object *o, int index);
-
-/** count TC tags of object o
- */
-int ay_tc_count(ay_object *o);
-
 /** initialize tc module by registering the TC tag type
  */
 void ay_tc_init(Tcl_Interp *interp);
