@@ -641,6 +641,11 @@ int ay_object_candelete(ay_object *p, ay_object *o);
  */
 int ay_object_candeletelist(ay_list_object *l, ay_object *o);
 
+/** get complete object path name
+ */
+int ay_object_getpathname(ay_object *c, ay_object *o,
+			  size_t *totallen, int *found, char **result);
+
 
 /* otype.c */
 
