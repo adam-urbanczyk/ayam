@@ -20,6 +20,9 @@
 int
 ay_tc_wrib(ay_object *o)
 {
+ char fname[] = "ay_tc_wrib", *opath;
+ int count, found = AY_FALSE;
+ size_t len = 0;
  ay_tag *tag = NULL;
  RtFloat s1, s2, s3, s4, t1, t2, t3, t4;
 
@@ -32,8 +35,19 @@ ay_tc_wrib(ay_object *o)
     {
       if(tag->type == ay_tc_tagtype)
 	{
-	  sscanf(tag->val,"%f,%f,%f,%f,%f,%f,%f,%f",
-		 &s1, &t1, &s2, &t2, &s3, &t3, &s4, &t4);
+	  count = sscanf(tag->val,"%f,%f,%f,%f,%f,%f,%f,%f",
+			 &s1, &t1, &s2, &t2, &s3, &t3, &s4, &t4);
+	  if(count != 8)
+	    {
+	      ay_error(AY_ERROR, fname, "Invalid TC tag encountered.");
+	      (void)ay_object_getpathname(ay_root, o, &len, &found, &opath);
+	      if(opath)
+		{
+		  ay_error(AY_ERROR, fname, opath);
+		  free(opath);
+		}
+	      return AY_ERROR;
+	    }
 	  RiTextureCoordinates(s1, t1, s2, t2, s3, t3, s4, t4);
 	  return AY_OK;
 	} /* if(tagtype== */
