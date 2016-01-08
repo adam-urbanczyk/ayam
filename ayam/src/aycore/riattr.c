@@ -20,15 +20,17 @@
 int
 ay_riattr_wrib(ay_object *o)
 {
+ int ay_status = AY_OK;
  ay_tag *tag = NULL;
- RtColor color = {0.0f,0.0f,0.0f};
  char *tagvaltmp = NULL, *attrname = NULL, *parname = NULL,
-   *partype = NULL, *parval = NULL, *parval2 = NULL;
+   *partype = NULL, *parval = NULL;
  char tok[] = ",";
+ int count;
  RtInt itemp, i2temp[2] = {0};
  RtFloat ftemp, f2temp[2] = {0.0f,0.0f};
  RtPoint ptemp = {0.0f,0.0f,0.0f};
- char fname[] = "riattr_wrib", e1[] = "Missing value in RiAttribute tag!";
+ RtColor color = {0.0f,0.0f,0.0f};
+ char fname[] = "riattr_wrib", e1[] = "Malformed RiAttribute tag encountered!";
 
   if(!o)
     return AY_ENULL;
@@ -61,130 +63,138 @@ ay_riattr_wrib(ay_object *o)
 	      parname = NULL;
 
 	      /* get name */
-	      parname = strtok(NULL,tok);
+	      parname = strtok(NULL, tok);
 	      /* get type */
 	      if(parname)
-		partype = strtok(NULL,tok);
+		partype = strtok(NULL, tok);
 	      else
 		partype = NULL;
 
 	      if(partype)
 		{
 		  /* get value */
-		  parval = strtok(NULL,tok);
+		  parval = strtok(NULL, tok);
 		  if(parval)
 		    {
+		      parval = tag->val;
+		      for(count = 0; count < 3; count++)
+			parval = strchr(parval, ',')+1;
+
+		      ay_status = AY_OK;
 		      switch(*partype)
 			{
 			case 'i':
-			  RiDeclare(parname, "integer");
-			  sscanf(parval, "%d", &itemp);
-			  RiAttribute(attrname, parname,
-				      (RtPointer)&itemp, RI_NULL);
+			  count = sscanf(parval, "%d", &itemp);
+			  if(count == 1)
+			    {
+			      RiDeclare(parname, "integer");
+			      RiAttribute(attrname, parname,
+					  (RtPointer)&itemp, RI_NULL);
+			    }
+			  else
+			    {
+			      ay_status = AY_ERROR;
+			    }
 			  break;
 			case 'j':
-			  RiDeclare(parname, "integer[2]");
-
-			  sscanf(parval, "%d", &(i2temp[0]));
-			  parval2 = strtok(NULL, tok);
-			  if(parval2)
+			  count = sscanf(parval, "%d,%d",
+					 &(i2temp[0]), &(i2temp[1]));
+			  if(count == 2)
 			    {
-			      sscanf(parval2, "%d", &(i2temp[1]));
+			      RiDeclare(parname, "integer[2]");
+			      RiAttribute(attrname, parname,
+					  (RtPointer)&i2temp, RI_NULL);
 			    }
 			  else
 			    {
-			      ay_error(AY_ERROR, fname, e1);
+			      ay_status = AY_ERROR;
 			    }
-			  RiAttribute(attrname, parname,
-				      (RtPointer)&i2temp,
-				      RI_NULL);
 			  break;
 			case 'f':
-			  RiDeclare(parname, "float");
-			  sscanf(parval, "%f", &ftemp);
-			  RiAttribute(attrname, parname,
-				      (RtPointer)&ftemp, RI_NULL);
-			  break;
-			case 'g':
-			  RiDeclare(parname, "float[2]");
-
-			  sscanf(parval, "%f", &(f2temp[0]));
-			  parval2 = strtok(NULL, tok);
-			  if(parval2)
+			  count = sscanf(parval, "%f", &ftemp);
+			  if(count == 1)
 			    {
-			      sscanf(parval2, "%f", &(f2temp[1]));
+			      RiDeclare(parname, "float");
+			      RiAttribute(attrname, parname,
+					  (RtPointer)&ftemp, RI_NULL);
 			    }
 			  else
 			    {
-			      ay_error(AY_ERROR, fname, e1);
+			      ay_status = AY_ERROR;
 			    }
-			  RiAttribute(attrname, parname,
-				      (RtPointer)&f2temp,
-				      RI_NULL);
+			  break;
+			case 'g':
+			  count = sscanf(parval, "%f,%f",
+					 &(f2temp[0]), &(f2temp[1]));
+			  if(count == 2)
+			    {
+			      RiDeclare(parname, "float[2]");
+			      RiAttribute(attrname, parname,
+					  (RtPointer)&f2temp, RI_NULL);
+			    }
+			  else
+			    {
+			      ay_status = AY_ERROR;
+			    }
 			  break;
 			case 's':
 			  RiDeclare(parname, "string");
 			  RiAttribute(attrname, parname,
 				      (RtPointer)&parval, RI_NULL);
-			break;
+			  break;
 			case 'p':
-			  RiDeclare(parname, "point");
-			  sscanf(parval, "%f", &ptemp[0]);
-			  parval = strtok(NULL, tok);
-			  if(parval)
+			  count = sscanf(parval, "%f,%f,%f",
+					 &ptemp[0], &ptemp[1], &ptemp[2]);
+			  if(count == 3)
 			    {
-			      sscanf(parval, "%f", &ptemp[1]);
+			      RiDeclare(parname, "point");
+			      RiAttribute(attrname, parname,
+					  (RtPointer)&ptemp, RI_NULL);
 			    }
 			  else
 			    {
-			      ay_error(AY_ERROR, fname, e1);
+			      ay_status = AY_ERROR;
 			    }
-			  parval = strtok(NULL, tok);
-			  if(parval)
-			    {
-			      sscanf(parval, "%f", &ptemp[2]);
-			    }
-			  else
-			    {
-			      ay_error(AY_ERROR, fname, e1);
-			    }
-			  RiAttribute(attrname, parname,
-				      (RtPointer)&ptemp, RI_NULL);
 			  break;
 			case 'c':
-			  RiDeclare(parname, "color");
-			  sscanf(parval, "%f", &color[0]);
-			  parval = strtok(NULL, tok);
-			  if(parval)
+			  count = sscanf(parval, "%f,%f,%f",
+					 &color[0], &color[1], &color[2]);
+			  if(count == 3)
 			    {
-			      sscanf(parval, "%f", &color[1]);
+			      RiDeclare(parname, "color");
+			      RiAttribute(attrname, parname,
+					  (RtPointer)&color, RI_NULL);
 			    }
 			  else
 			    {
-			      ay_error(AY_ERROR, fname, e1);
+			      ay_status = AY_ERROR;
 			    }
-			  parval = strtok(NULL, tok);
-			  if(parval)
-			    {
-			      sscanf(parval, "%f", &color[2]);
-			    }
-			  else
-			    {
-			      ay_error(AY_ERROR, fname, e1);
-			    }
-			  RiAttribute(attrname, parname,
-				      (RtPointer)&color, RI_NULL);
 			  break;
 			default:
+			  ay_status = AY_ERROR;
 			  break;
 			} /* switch */
-
+		    }
+		  else
+		    {
+		      ay_status = AY_ERROR;
 		    } /* if(parval */
-
+		}
+	      else
+		{
+		  ay_status = AY_ERROR;
 		} /* if(partype */
-
+	    }
+	  else
+	    {
+	      ay_status = AY_ERROR;
 	    } /* if(attrname */
 
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, fname, e1);
+	      ay_error_reportobject(AY_ERROR, fname, o);
+	    }
 	} /* if(tagtype== */
 
       tag = tag->next;
