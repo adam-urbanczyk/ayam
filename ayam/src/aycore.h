@@ -257,6 +257,10 @@ int ay_error_reportdrange(char *fname, char *pname, double lb, double ub);
  */
 int ay_error_reportirange(char *fname, char *pname, int lb, int ub);
 
+/** Format and print object path name as error message.
+ */
+int ay_error_reportobject(int ecode, char *fname, ay_object *o);
+
 /** Get the current GL error state and report it to the user.
  */
 int ay_error_getglerrortcmd(ClientData clientData, Tcl_Interp *interp,
