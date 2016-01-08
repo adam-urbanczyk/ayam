@@ -1237,26 +1237,26 @@ ay_object_candeletelist(ay_list_object *l, ay_object *o)
 /** ay_object_getpathname:
  * _Recursively_ build up the full path name of an object in the scene
  * hierarchy.
- * 
- * \param c hierarchy where to search for o (usually ay_root)
+ *
  * \param o object to search for
+ * \param h hierarchy where to search for o (usually ay_root)
  * \param totallen helper variable, should be initialized with 0
  * \param found indicates wether o was found in c
  * \param result where to store the result
- * 
+ *
  * \returns AY_OK on success, error code otherwise
  */
 int
-ay_object_getpathname(ay_object *c, ay_object *o, size_t *totallen, int *found,
-		char **result)
+ay_object_getpathname(ay_object *o, ay_object *h, size_t *totallen, int *found,
+		      char **result)
 {
  int ay_status = AY_OK;
  size_t curlen, curtotallen;
  char *curname;
 
-  while(c->next)
+  while(h->next)
     {
-      curname = ay_object_getname(c);
+      curname = ay_object_getname(h);
       curlen = strlen(curname);
       curtotallen = *totallen;
 
@@ -1264,12 +1264,12 @@ ay_object_getpathname(ay_object *c, ay_object *o, size_t *totallen, int *found,
 	 the separator for any intermediate level */
       *totallen += curlen+1;
 
-      if(c != o)
+      if(h != o)
 	{
-	  if(c->down && c->down->next)
+	  if(h->down && h->down->next)
 	    {
 	      /* go down */
-	      ay_status = ay_object_getpathname(c->down, o, totallen,
+	      ay_status = ay_object_getpathname(h->down, o, totallen,
 						found, result);
 	      if(ay_status)
 		break;
@@ -1298,7 +1298,7 @@ ay_object_getpathname(ay_object *c, ay_object *o, size_t *totallen, int *found,
 
       *totallen -= curlen+1;
 
-      c = c->next;
+      h = h->next;
     } /* while c */
 
  return ay_status;
