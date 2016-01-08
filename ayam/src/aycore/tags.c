@@ -220,7 +220,7 @@ ay_tags_register(char *name, char **result)
  char fname[] = "tags_register";
 
   /* check, if type is already registered */
-  if((entry = Tcl_FindHashEntry(&ay_tagtypesht, name)))
+  if(Tcl_FindHashEntry(&ay_tagtypesht, name))
     {
       ay_error(AY_ERROR, fname, "tag type already registered");
       return AY_ERROR;
@@ -271,7 +271,7 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  if(!strcmp(argv[1],"-index"))
+  if(!strcmp(argv[1], "-index"))
     {
       if(argc < 5)
 	{
