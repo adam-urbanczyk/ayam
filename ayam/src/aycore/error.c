@@ -423,7 +423,7 @@ ay_error_reportobject(int ecode, char *fname, ay_object *o)
   if(!o)
     return AY_ENULL;
 
-  (void)ay_object_getpathname(ay_root, o, &len, &found, &opath);
+  (void)ay_object_getpathname(o, ay_root, &len, &found, &opath);
   if(opath)
     {
       ay_error(ecode, fname, opath);
