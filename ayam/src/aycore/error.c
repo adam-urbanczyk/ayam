@@ -410,6 +410,32 @@ ay_error_reportirange(char *fname, char *pname, int lb, int ub)
 } /* ay_error_reportirange */
 
 
+/* ay_error_reportobject:
+ *  format and output object path name
+ */
+int
+ay_error_reportobject(int ecode, char *fname, ay_object *o)
+{
+ char *opath = NULL;
+ int found = AY_FALSE;
+ size_t len = 0;
+
+  if(!o)
+    return AY_ENULL;
+
+  (void)ay_object_getpathname(ay_root, o, &len, &found, &opath);
+  if(opath)
+    {
+      ay_error(ecode, fname, opath);
+      free(opath);
+    }
+  else
+    return AY_ERROR;
+
+ return AY_OK;
+} /* ay_error_reportobject */
+
+
 /* ay_error_getglerrortcmd:
  *  get current GL error state and string
  *  and call ay_error with it for output
