@@ -599,10 +599,9 @@ ay_wrib_object(char *file, ay_object *o)
   if((!ay_prefs.resolveinstances) && (o->type != AY_IDMATERIAL) &&
      (o->refcount) && (cb))
     {
-
       ay_status = ay_wrib_refobject(file, o);
 
-      return AY_OK; /* XXXX early exit */
+      return ay_status; /* XXXX early exit */
     }
 
   if(cb)
@@ -1376,8 +1375,9 @@ ay_wrib_lights(char *file, ay_object *o)
 		  vstr = Tcl_GetVar2(ay_interp, arrname, ccvarname,
 				     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 		  if(vstr)
-		    Tcl_GetInt(ay_interp, vstr, &changeshaders);
-
+		    {
+		      Tcl_GetInt(ay_interp, vstr, &changeshaders);
+		    }
 		  filenlen = strlen(file);
 
 		  if(!(shadowptr = calloc(filenlen+64, sizeof(char))))
@@ -1402,7 +1402,6 @@ ay_wrib_lights(char *file, ay_object *o)
 	    case AY_LITCUSTOM:
 	      if(light->lshader)
 		{
-
 		  if(o->down && o->down->next)
 		    { /* this is an AreaLight */
 		      RiAttributeBegin();
@@ -1428,6 +1427,7 @@ ay_wrib_lights(char *file, ay_object *o)
 		    } /* if */
 		} /* if */
 	      break;
+
 	    case AY_LITPOINT:
 	      RiDeclare("intensity","float");
 	      RiDeclare("lightcolor","color");
@@ -1471,8 +1471,8 @@ ay_wrib_lights(char *file, ay_object *o)
 					RI_NULL);
 		} /* if */
 	      break;
-	    case AY_LITSPOT:
 
+	    case AY_LITSPOT:
 	      RiDeclare("intensity","float");
 	      RiDeclare("lightcolor","color");
 	      RiDeclare("from","point");
@@ -1514,6 +1514,7 @@ ay_wrib_lights(char *file, ay_object *o)
 			RI_NULL);
 		} /* if */
 	      break;
+
 	    case AY_LITDISTANT:
 	      RiDeclare("intensity","float");
 	      RiDeclare("lightcolor","color");
@@ -1663,19 +1664,26 @@ ay_wrib_scene(char *file, char *image, int temp, int rtf,
   if(!ay_prefs.resolveinstances)
     {
       /* reset oid counter */
-      ay_instt_createoid(NULL);
+      ay_status = ay_instt_createoid(NULL);
       /* create OI tags for all original (referenced) objects */
-      ay_status = ay_instt_createorigids(o);
+      ay_status += ay_instt_createorigids(o);
+
       /* create OI tags for all instance (referencing) objects */
       /*ay_status = ay_instt_createinstanceids(o);*/
+
       /* write archive files for all original (referenced) objects */
       if(ay_prefs.use_sm >= 1)
 	{
-	  ay_status = ay_instt_wribiarchives(objfile, o);
+	  ay_status += ay_instt_wribiarchives(objfile, o);
 	}
       else
 	{
-	  ay_status = ay_instt_wribiarchives(file, o);
+	  ay_status += ay_instt_wribiarchives(file, o);
+	}
+      if(ay_status)
+	{
+	  ay_status = AY_ERROR;
+	  goto cleanup;
 	}
     } /* if */
 
@@ -1714,7 +1722,7 @@ ay_wrib_scene(char *file, char *image, int temp, int rtf,
       ay_prefs.wrib_sm = AY_TRUE;
 
       /* write root RiOption tags (possibly containing shadow bias) */
-      ay_status = ay_riopt_wrib(ay_root);
+      (void)ay_riopt_wrib(ay_root);
 
       ay_sm_wriballsm(file, objfile, ay_root->next, NULL, width, height,
 		      AY_FALSE);
@@ -1867,6 +1875,7 @@ ay_wrib_scene(char *file, char *image, int temp, int rtf,
       RiEnd();
     } /* if */
 
+cleanup:
   /* clean up */
   if(objfile)
     {
