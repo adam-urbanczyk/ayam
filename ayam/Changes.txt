@@ -1,4 +1,4 @@
-[1. Jan 2016] CVS-Head:
+[9. Jan 2016] CVS-Head:
 =======================
 Bug Fixes:
 o DXF export of polymeshes misses transformation attributes (SF 508)
@@ -13,6 +13,8 @@ o auto-generated texture coordinates are wrong (SF 516)
 o grids are not drawing in upright views (SF 517)
 o IPatch objects with manual derivatives are wrong (SF 518)
 o custom bevel curves are not found when level is hidden (SF 521)
+o creating polymeshes from scripts fails when -cn is used (SF 522)
+o creating subdivison meshes from scripts fails when -cn is used (SF 523)
 
 Modelling:
 o Revolve objects now support parameter curves that touch or cross the
