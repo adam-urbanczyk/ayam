@@ -92,14 +92,13 @@ ay_notify_parent(void)
 
       /* in case we did not call any notification callbacks up to now,
          maybe the structure of the current level changed using e.g.
-         clipboard operations, check for that and call notification */
+         clipboard operations, call notification on parent */
       if(!did_notify)
 	{
-	  if(lev->next && lev->next->object && lev->next->object->modified)
+	  if(lev->next && lev->next->object)
 	    {
 	      ay_notify_object(lev->next->object);
 	      ay_status = ay_notify_complete(lev->next->object);
-	      lev->next->object->modified = AY_FALSE;
 	    }
 	} /* if */
       return ay_status;
