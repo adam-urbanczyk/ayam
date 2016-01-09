@@ -764,7 +764,7 @@ ay_pmt_tonpatchmulti(ay_object *o, ay_object **result)
  double tcv[4*4*4], *cv = NULL;
  int w, h, su, sv;
  int ri, rj, i, j, ii, jj, a, b;
- ay_object t = {0}, *row, **nextrow, *col, **nextcol;
+ ay_object t = {0}, *row = NULL, **nextrow, *col, **nextcol;
  ay_pamesh_object *pm = NULL, tpm = {0};
 
   if(!o || !result)
@@ -863,7 +863,6 @@ ay_pmt_tonpatchmulti(ay_object *o, ay_object **result)
 	      ri = j*su + ii;
 	      if(ri > pm->width-1)
 		ri -= pm->width;
-
 
 	      for(jj = 0; jj < 4; jj++)
 		{
