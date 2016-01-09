@@ -18,6 +18,8 @@ static char *ay_ncircle_name = "NCircle";
 
 int ay_ncircle_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe);
 
+int ay_ncircle_notifycb(ay_object *o);
+
 /* functions: */
 
 /* ay_ncircle_createcb:
@@ -117,9 +119,18 @@ ay_ncircle_createcb(int argc, char *argv[], ay_object *o)
 
   o->refine = ncircle;
 
-  ay_notify_object(o);
+  ay_status = ay_ncircle_notifycb(o);
+
+  if(ay_status)
+    goto cleanup;
+
+  /* prevent cleanup code from doing something harmful */
+  ncircle = NULL;
 
 cleanup:
+
+  if(ncircle)
+    free(ncircle);
 
  return ay_status;
 } /* ay_ncircle_createcb */

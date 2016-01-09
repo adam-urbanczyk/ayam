@@ -20,6 +20,8 @@ void ay_ipatch_drawcp(ay_ipatch_object *ipatch);
 
 void ay_ipatch_drawders(ay_ipatch_object *ipatch);
 
+int ay_ipatch_notifycb(ay_object *o);
+
 /* functions: */
 
 /* ay_ipatch_createcb:
@@ -551,7 +553,10 @@ ay_ipatch_createcb(int argc, char *argv[], ay_object *o)
 
   o->refine = (void *)ip;
 
-  ay_notify_object(o);
+  ay_status = ay_ipatch_notifycb(o);
+
+  if(ay_status)
+    goto cleanup;
 
   /* prevent cleanup code from doing something harmful */
   ip = NULL;
@@ -580,12 +585,6 @@ cleanup:
 
   if(ederiv_v)
     free(ederiv_v);
-
-  if(ay_status == AY_EOMEM)
-    {
-      ay_error(AY_EOMEM, fname, NULL);
-      ay_status = AY_ERROR;
-    }
 
  return ay_status;
 } /* ay_ipatch_createcb */
