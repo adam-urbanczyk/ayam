@@ -16,6 +16,8 @@
 
 static char *ay_acurve_name = "ACurve";
 
+int ay_acurve_notifycb(ay_object *o);
+
 /* functions: */
 
 /* ay_acurve_createcb:
@@ -298,21 +300,22 @@ ay_acurve_createcb(int argc, char *argv[], ay_object *o)
 
   o->refine = acurve;
 
-  ay_notify_object(o);
+  ay_status = ay_acurve_notifycb(o);
+
+  if(ay_status)
+    goto cleanup;
 
   /* prevent cleanup code from doing something harmful */
+  acurve = NULL;
   cv = NULL;
 
 cleanup:
 
+  if(acurve)
+    free(acurve);
+
   if(cv)
     free(cv);
-
-  if(ay_status == AY_EOMEM)
-    {
-      ay_error(AY_EOMEM, fname, NULL);
-      ay_status = AY_ERROR;
-    }
 
  return ay_status;
 } /* ay_acurve_createcb */

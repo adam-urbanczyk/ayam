@@ -432,12 +432,6 @@ cleanup:
   if(pomesh)
     free(pomesh);
 
-  if(ay_status == AY_EOMEM)
-    {
-      ay_error(AY_EOMEM, fname, NULL);
-      ay_status = AY_ERROR;
-    }
-
  return ay_status;
 } /* ay_pomesh_createcb */
 

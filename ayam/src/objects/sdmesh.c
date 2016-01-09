@@ -512,12 +512,6 @@ cleanup:
   if(sdmesh)
     free(sdmesh);
 
-  if(ay_status == AY_EOMEM)
-    {
-      ay_error(AY_EOMEM, fname, NULL);
-      ay_status = AY_ERROR;
-    }
-
  return ay_status;
 } /* ay_sdmesh_createcb */
 
@@ -771,7 +765,7 @@ ay_sdmesh_shadecb(struct Togl *togl, ay_object *o)
       ay_shade_object(togl, sdmesh->pomesh, AY_FALSE);
     }
   else
-    {      
+    {
       ay_status = ay_sdmesht_tesselate(sdmesh);
     }
 
@@ -1450,7 +1444,8 @@ ay_sdmesh_wribcb(char *file, ay_object *o)
       parms[0] = (RtPointer)controls;
 
       n = 1;
-      ay_status = ay_pv_filltokpar(o, AY_TRUE, 1, &n, tokens, parms);
+      ay_status = ay_pv_filltokpar(o, /*declare=*/AY_TRUE, /*start=*/1,
+				   &n, tokens, parms);
       if(!ay_status)
 	{
 	  if(sdmesh->ntags > 0)

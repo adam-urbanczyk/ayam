@@ -534,12 +534,6 @@ cleanup:
   if(vkv)
     free(vkv);
 
-  if(ay_status == AY_EOMEM)
-    {
-      ay_error(AY_EOMEM, fname, NULL);
-      ay_status = AY_ERROR;
-    }
-
  return ay_status;
 } /* ay_npatch_createcb */
 
