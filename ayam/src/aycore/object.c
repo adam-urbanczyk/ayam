@@ -536,8 +536,6 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
       try_again = t;
     } /* while */
 
-  ay_notify_parent();
-
  return TCL_OK;
 } /* ay_object_deletetcmd */
 

@@ -164,7 +164,7 @@ proc toolbox_open { {w .tbw} } {
 		after 100 "%W configure -relief raised"
 		break;
 	    }
-	    balloon_set $f.sel "select (tag) points <[remkpkr $ayviewshortcuts(Select)]>\nShift: deselect points <[remkpkr $ayviewshortcuts(DeSelect)]>"
+	    balloon_set $f.sel "select (tag) points <[remkpkr $ayviewshortcuts(Select)]>\n<Shift>: deselect points <[remkpkr $ayviewshortcuts(DeSelect)]>"
 
 
 	}
@@ -328,7 +328,7 @@ proc toolbox_open { {w .tbw} } {
 		break;
 	    }
 	    balloon_set $f.bconv\
-		    "convert object\nShift: in place"
+		    "convert object\n<Shift>: in place"
 
 	    #####
 	    button $f.bnot -image ay_Notify_img -padx 0 -pady 0 -command {
@@ -342,7 +342,7 @@ proc toolbox_open { {w .tbw} } {
 		break;
 	    }
 	    balloon_set $f.bnot\
-		    "force notification\nShift: complete notification"
+		    "force notification\n<Shift>: complete notification"
 	    #####
 	    button $f.bund -image ay_Undo_img -padx 0 -pady 0 -command {
 		global ay
@@ -377,7 +377,7 @@ proc toolbox_open { {w .tbw} } {
 		after 100 "%W configure -relief raised"
 		break;
 	    }
-	    balloon_set $f.blevel "create Level\nShift: and move objects into"
+	    balloon_set $f.blevel "create Level\n<Shift>: and move objects into"
 	    #####
 	    button $f.blight -image ay_Light_img -padx 0 -pady 0 -command {
 		crtOb Light; uCR; sL; rV;
@@ -434,7 +434,7 @@ proc toolbox_open { {w .tbw} } {
 	    button $f.bref -image ay_Refine_img -padx 0 -pady 0 -command {
 		undo save Refine; refineC; plb_update; rV
 	    }
-	    balloon_set $f.bref "refine curve\nShift: coarsen curve"
+	    balloon_set $f.bref "refine curve\n<Shift>: coarsen curve"
 	    bind $f.bref <Shift-ButtonPress-1> {
 		%W configure -relief sunken
 		undo save Coarsen; coarsenNC; plb_update; rV
@@ -483,7 +483,7 @@ proc toolbox_open { {w .tbw} } {
 		after 100 "%W configure -relief raised"
 		break;
 	    }
-	    balloon_set $f.bclamp "clamp curve\nShift: unclamp curve"
+	    balloon_set $f.bclamp "clamp curve\n<Shift>: unclamp curve"
 
 	}
 	##################
@@ -497,7 +497,7 @@ proc toolbox_open { {w .tbw} } {
 		} else {
 		    eval crtOb NCurve -length $ay(nclen) $ay(ncadda);
 		}
-		uCR; sL; notifyOb; rV;
+		uCR; sL; notifyOb -parent; rV;
 	    }
 	    bind $f.bnc <Control-ButtonPress-1> {
 		%W configure -relief sunken
@@ -506,11 +506,11 @@ proc toolbox_open { {w .tbw} } {
 		} else {
 		    eval crtOb NCurve -length $ay(nclen) $ay(ncadda);
 		}
-		uCR; rV;
+		uCR; notifyOb -parent; rV;
 		after 100 "%W configure -relief raised"
 		break;
 	    }
-	    balloon_set $f.bnc "create NCurve"
+	    balloon_set $f.bnc "create NCurve\n<Ctrl>: keep selection"
 
 	    #####
 	    button $f.bic -image ay_ICurve_img -padx 0 -pady 0 -command {
@@ -519,7 +519,7 @@ proc toolbox_open { {w .tbw} } {
 		} else {
 		    eval crtOb ICurve -length $ay(iclen) $ay(icadda);
 		}
-		uCR; sL; rV;
+		uCR; sL; notifyOb -parent; rV;
 	    }
 	    bind $f.bic <Control-ButtonPress-1> {
 		%W configure -relief sunken
@@ -528,11 +528,11 @@ proc toolbox_open { {w .tbw} } {
 		} else {
 		    eval crtOb ICurve -length $ay(iclen) $ay(icadda);
 		}
-		uCR; rV;
+		uCR; notifyOb -parent; rV;
 		after 100 "%W configure -relief raised"
 		break;
 	    }
-	    balloon_set $f.bic "create ICurve"
+	    balloon_set $f.bic "create ICurve\n<Ctrl>: keep selection"
 
 	    #####
 	    button $f.bnci -image ay_NCircle_img -padx 0 -pady 0 -command {
@@ -542,14 +542,14 @@ proc toolbox_open { {w .tbw} } {
 	    bind $f.bnci <Shift-ButtonPress-1> {
 		global  ay
 		%W configure -relief sunken
-		crtOb NCircle; uCR; sL; notifyOb; rV;
+		crtOb NCircle; uCR; sL; notifyOb -parent; rV;
 		after 100 "%W configure -relief raised"
 		break;
 	    }
 	    bind $f.bnci <Control-ButtonPress-1> {
 		%W configure -relief sunken
 		crtClosedBS -s $ay(cbspsec) -o $ay(cbsporder)\
-		    -a $ay(cbsptmax) -r $ay(cbsprad); uCR; rV;
+		  -a $ay(cbsptmax) -r $ay(cbsprad); uCR; notifyOb -parent; rV;
 		after 100 "%W configure -relief raised"
 		break;
 	    }
@@ -557,15 +557,16 @@ proc toolbox_open { {w .tbw} } {
 		%W configure -relief sunken
 		crtOb NCircle; uCR
 		pushSel
-		  hSL
-		  notifyOb
+		 hSL
+		 notifyOb
 		popSel
 		rV
 		after 100 "%W configure -relief raised"
 		break;
 	    }
 	    balloon_set $f.bnci \
-		"create circular B-Spline\nShift: create NCircle object"
+		"create circular B-Spline\n<Shift>: create NCircle object\
+\n<Ctrl>: keep selection"
 
 	    #####
 	    button $f.bnp -image ay_NPatch_img -padx 0 -pady 0 -command {
@@ -575,7 +576,7 @@ proc toolbox_open { {w .tbw} } {
 		    eval crtOb NPatch -width $ay(npwidth)\
 			-height $ay(npheight) $ay(npadda);
 		}
-		uCR; sL; rV;
+		uCR; sL; notifyOb -parent; rV;
 	    }
 	    bind $f.bnp <Control-ButtonPress-1> {
 		%W configure -relief sunken
@@ -585,11 +586,11 @@ proc toolbox_open { {w .tbw} } {
 		    eval crtOb NPatch -width $ay(npwidth)\
 			-height $ay(npheight) $ay(npadda);
 		}
-		uCR; rV;
+		uCR; notifyOb -parent; rV;
 		after 100 "%W configure -relief raised"
 		break;
 	    }
-	    balloon_set $f.bnp "create NPatch"
+	    balloon_set $f.bnp "create NPatch\n<Ctrl>: keep selection"
 
 	}
 	##################
@@ -600,7 +601,7 @@ proc toolbox_open { {w .tbw} } {
 	    button $f.brevo -image ay_Revolve_img -padx 0 -pady 0 -command {
 		level_crt Revolve;
 	    }
-	    balloon_set $f.brevo "create Revolve"
+	    balloon_set $f.brevo "create Revolve\n<Ctrl>: keep selection"
 	    bind $f.brevo <Control-ButtonPress-1> {
 		%W configure -relief sunken
 		level_crt Revolve "" 1
@@ -611,7 +612,7 @@ proc toolbox_open { {w .tbw} } {
 	    button $f.bex -image ay_Extrude_img -padx 0 -pady 0 -command {
 		level_crt Extrude;
 	    }
-	    balloon_set $f.bex "create Extrude"
+	    balloon_set $f.bex "create Extrude\n<Ctrl>: keep selection"
 	    bind $f.bex <Control-ButtonPress-1> {
 		%W configure -relief sunken
 		level_crt Extrude "" 1
@@ -623,7 +624,7 @@ proc toolbox_open { {w .tbw} } {
 		level_crt Sweep
 		sweep_rotcross
 	    }
-	    balloon_set $f.bswp "create Sweep"
+	    balloon_set $f.bswp "create Sweep\n<Ctrl>: keep selection"
 	    bind $f.bswp <Control-ButtonPress-1> {
 		%W configure -relief sunken
 		level_crt Sweep "" 1
@@ -635,7 +636,7 @@ proc toolbox_open { {w .tbw} } {
 	    button $f.bcap -image ay_Cap_img -padx 0 -pady 0 -command {
 		level_crt Cap;
 	    }
-	    balloon_set $f.bcap "create Cap"
+	    balloon_set $f.bcap "create Cap\n<Ctrl>: keep selection"
 	    bind $f.bcap <Control-ButtonPress-1> {
 		%W configure -relief sunken
 		level_crt Cap "" 1
@@ -653,7 +654,7 @@ proc toolbox_open { {w .tbw} } {
 	    button $f.bbirail1 -image ay_Birail1_img -padx 0 -pady 0 -command {
 		level_crt Birail1;
 	    }
-	    balloon_set $f.bbirail1 "create Birail1"
+	    balloon_set $f.bbirail1 "create Birail1\n<Ctrl>: keep selection"
 	    bind $f.bbirail1 <Control-ButtonPress-1> {
 		%W configure -relief sunken
 		level_crt Birail1 "" 1
@@ -664,7 +665,7 @@ proc toolbox_open { {w .tbw} } {
 	    button $f.bbirail2 -image ay_Birail2_img -padx 0 -pady 0 -command {
 		level_crt Birail2;
 	    }
-	    balloon_set $f.bbirail2 "create Birail2"
+	    balloon_set $f.bbirail2 "create Birail2\n<Ctrl>: keep selection"
 	    bind $f.bbirail2 <Control-ButtonPress-1> {
 		%W configure -relief sunken
 		level_crt Birail2 "" 1
@@ -674,7 +675,7 @@ proc toolbox_open { {w .tbw} } {
 	    button $f.bgord -image ay_Gordon_img -padx 0 -pady 0 -command {
 		level_crt Gordon;
 	    }
-	    balloon_set $f.bgord "create Gordon"
+	    balloon_set $f.bgord "create Gordon\n<Ctrl>: keep selection"
 	    bind $f.bgord <Control-ButtonPress-1> {
 		%W configure -relief sunken
 		level_crt Gordon "" 1
@@ -685,7 +686,7 @@ proc toolbox_open { {w .tbw} } {
 	    button $f.bskin -image ay_Skin_img -padx 0 -pady 0 -command {
 		level_crt Skin;
 	    }
-	    balloon_set $f.bskin "create Skin"
+	    balloon_set $f.bskin "create Skin\n<Ctrl>: keep selection"
 	    bind $f.bskin <Control-ButtonPress-1> {
 		%W configure -relief sunken
 		level_crt Skin "" 1
@@ -701,7 +702,7 @@ proc toolbox_open { {w .tbw} } {
 	    button $f.bextrnc -image ay_NPExtrNC_img -padx 0 -pady 0 -command {
 		level_crt ExtrNC "" -1;
 	    }
-	    balloon_set $f.bextrnc "extract NURBCurve"
+	    balloon_set $f.bextrnc "extract NURBCurve\n<Ctrl>: no instance"
 	    bind $f.bextrnc <Control-ButtonPress-1> {
 		%W configure -relief sunken
 		level_crt ExtrNC "" 1

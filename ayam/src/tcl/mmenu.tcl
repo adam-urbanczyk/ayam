@@ -112,28 +112,26 @@ if { ! [io_warnChanged] } {io_mruLoad 3}} -underline 0
 $m add separator
 $m add command -label "Exit!" -command io_exit -underline 1
 
-
+#
+# Edit Menu
+#
 if { ! $AYWITHAQUA } {
     pack $w.fMenu.fil -in $w.fMenu -side left
-
-    # Edit
     menubutton $w.fMenu.ed -text "Edit" -menu $w.fMenu.ed.m -padx 3\
 	-underline 0
     menu $w.fMenu.ed.m -tearoff 0
     set m $w.fMenu.ed.m
 } else {
-    # Edit
     set m [menu $mb.medi -tearoff 0]
     $mb add cascade -label "Edit" -menu $m -underline 0
-
 }
 set ay(editmenu) $m
 $m add command -label "Copy" -command {copOb} -underline 0
-$m add command -label "Cut" -command {cutOb; cS;
+$m add command -label "Cut" -command {cutOb; cS; notifyOb -parent;
 global ay; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1} -underline 2
 $m add command -label "Paste" -command {global ay; pasOb; uCR;
-    sL $ay(ucrcount); rV; set ay(sc) 1} -underline 0
-$m add command -label "Delete" -command {delOb; cS;
+    sL $ay(ucrcount); notifyOb -parent; rV; set ay(sc) 1} -underline 0
+$m add command -label "Delete" -command {delOb; cS; notifyOb -parent;
 global ay; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1} -underline 0
 $m add separator
 $m add command -label "Select All" -command {
