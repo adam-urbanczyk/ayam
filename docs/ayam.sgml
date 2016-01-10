@@ -16990,7 +16990,7 @@ addColor:
  <item>Synopsis: <tt>"addColor window arrayname paramname [defaults]"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: This command adds a property GUI element for a single
-string parameter.
+color parameter.
 <p><p>
 The <tt/"window"/ parameter should contain the window name as returned by
 <tt/"addPropertyGUI"/ above.
@@ -17072,7 +17072,7 @@ The <tt/"window"/ parameter should contain the window name as returned by
 <tt/"addPropertyGUI"/ above.
 <p>
 The <tt/"name"/ parameter is the name of the corresponding
-button widget.
+button widget. The names must be unique in each property GUI.
 <p>
 The <tt/"text"/ parameter is the string to be put on the button.
 <p>
@@ -17094,7 +17094,7 @@ The <tt/"window"/ parameter should contain the window name as returned by
 <tt/"addPropertyGUI"/ above.
 <p>
 The <tt/"name"/ parameter is the name of the corresponding
-button widget.
+label widget. The names must be unique in each property GUI.
 <p>
 The <tt/"text"/ parameter is the string to be displayed.
 <item>Example:
@@ -17153,7 +17153,8 @@ improve the layout.
 The <tt/"window"/ parameter should contain the window name as returned by
 <tt/"addPropertyGUI"/ above.
 <p>
-The <tt/"name"/ parameter is the name of the corresponding widget.
+The <tt/"name"/ parameter is the name of the corresponding
+widget. The names must be unique in each property GUI.
 <p>
 The <tt/"height"/ parameter is the desired height in pixels.
 <item>Example:
