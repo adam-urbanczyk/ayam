@@ -33,7 +33,7 @@ code example of 6 lines text (needs another 2 for the upper/lower lines)
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>16. Dec 2015
+<date>10. Jan 2016
 
 <abstract>
 This is the documentation of Ayam 1.23 &ndash; a free 3D modelling environment
@@ -409,7 +409,7 @@ selected object(s).<footnote>Since 1.21.</footnote>
 <item><tt/&lt;-&gt;/ closes all sub-levels of the
 selected object(s).<footnote>Since 1.21.</footnote>
 
-<item><tt/&lt;Alt+Up&gt;/ and <tt/&lt;Alt+Down&gt;/ move the
+<item><tt/&lt;Alt+Up&gt;/ and <tt/&lt;Alt+Down&gt;/ shuffle the
 selected objects in the current level in the respective direction,
 unless the root object is selected and unless the first object is
 selected for up-movement or the last object for
@@ -1398,6 +1398,7 @@ and all views. In order to include geometric objects in the
 environment or to exclude the Root object and just save view
 objects use <tt>"File/Save"</tt> or <tt>"Special/Save Selected as"</tt>
 respectively.
+
 <item><tt>"Clipboard/Paste (Move)"</tt>, moves objects from the clipboard
 back to the scene (clearing the clipboard). This is the only way to
 get referenced objects out of the clipboard.
@@ -1433,6 +1434,9 @@ where the automatic instantiation may be parameterised and started
 See section <ref id="ai" name="Automatic Instancing">
 for more information.
 
+<#if out=latex><p><x/newpage/<x/phantomsection/</#if>
+
+<label id="mmtags">
 <item><tt>"Tags/Add RiOption"</tt>, pops up a small dialog box, where
 a RiOption may be selected, parameterised, and added as tag to the Root
 object
@@ -4638,6 +4642,8 @@ SDMesh|No|Yes|PolyMesh|Yes<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Polygonal and Subdivision Objects</caption>
 </table>
+
+<#if out=latex><x/newpage/</#if>
 
 <sect2>Scripts and Plugins
 <p>
@@ -10549,7 +10555,7 @@ withOb 1 {estlenNC len}
 cutOb
 crtOb Clone
 goDown -1
-pasmovOb
+pasOb -move
 goUp
 sL
 getProp
@@ -14957,7 +14963,8 @@ copOb &ndash; copy object(s):
 If the option <tt/"-append"/ is used, the clipboard will not be cleared
 before this operation.
  <item>Notes: May fail if the clipboard contains referenced objects.
-If the append option is set, this operation never fails.
+If the append option is set, this operation only fails if there is
+not enough memory.
 </itemize>
 <p>
 <#if out=latex><x/phantomsection/</#if>
@@ -15093,12 +15100,13 @@ The following commands move objects around in the hierarchy:
 <#if out=latex><x/phantomsection/</#if>
 
 <label id="scupob">
-upOb &ndash; move object(s) upward in the current level:
+upOb &ndash; shuffle object(s) backward in the current level:
 <itemize>
  <item>Synopsis: <tt/"upOb"/
  <item>Background: Yes, Undo: No, Safe: Yes
- <item>Description: Move the currently selected object(s) upwards
-in the current level. Non contiguous selections are supported.
+ <item>Description: Shuffle the currently selected object(s) backwards
+(towards the first object) in the current level. Non contiguous selections
+are supported.
 If the first of the selected objects is the first in the current level,
 nothing will be changed, i.e.~either all selected objects move, or none.
 </itemize>
@@ -15107,12 +15115,13 @@ nothing will be changed, i.e.~either all selected objects move, or none.
 <#if out=latex><x/phantomsection/</#if>
 
 <label id="scdownob">
-downOb &ndash; move object(s) downward in the current level:
+downOb &ndash; shuffle object(s) forward in the current level:
 <itemize>
  <item>Synopsis: <tt/"downOb"/
  <item>Background: Yes, Undo: No, Safe: Yes
- <item>Description: Move the currently selected object(s) downwards
-in the current level. Non contiguous selections are supported.
+ <item>Description: Shuffle the currently selected object(s) forwards
+(towards the last object) in the current level. Non contiguous selections
+are supported.
 If the last of the selected objects is the last in the current level,
 nothing will be changed, i.e.~either all selected objects move, or none.
 </itemize>
@@ -15217,6 +15226,9 @@ delegTrafo &ndash; delegate transformations:
 with the selected objects to their child objects. Additionally,
 the transformations of the selected objects will be reset to the
 default values.
+<p><p>
+This operation fails for complex setups (i.e.~if the combination of
+parent and child transformation is a shear transformations).
 </itemize>
 
 <p>
@@ -16725,16 +16737,6 @@ object from multiple selected objects. All objects stay selected.
 <p>
 These commands help to load scenes from and save them to Ayam scene
 files:
-<p>
-<#if out=latex><x/phantomsection/</#if>
-
-<label id="scnewscene">
-newScene:
-<itemize>
- <item>Synopsis: <tt>"newScene"</tt>
- <item>Background: Yes, Undo: No, Safe: No
- <item>Description: clears the current scene.
-</itemize>
 
 <p>
 <#if out=latex><x/phantomsection/</#if>
@@ -16745,7 +16747,13 @@ replaceScene:
  <item>Synopsis: <tt>"replaceScene filename"</tt>
  <item>Background: Yes, Undo: No, Safe: No
  <item>Description: clears the current scene, then loads a new scene
-from filename.
+from the file designated by the <tt/"filename"/ parameter.
+ <item>Notes: In contrast to using the main menu, 
+further house keeping tasks detailed
+in section <ref id="opensf" name="Opening Scene Files">
+will <em/not/ be executed. In particular, this command
+does <em/not/ check or modify the scene changed state and does <em/not/ set
+the most recently used list. Furthermore, automatic import is not working.
 </itemize>
 
 <p>
@@ -16757,7 +16765,13 @@ insertScene:
 <itemize>
  <item>Synopsis: <tt>"insertScene filename"</tt>
  <item>Background: Yes, Undo: No, Safe: No
- <item>Description: inserts a scene from filename.
+ <item>Description: inserts a scene from the file designated by the
+<tt/"filename"/ parameter.
+ <item>Notes: In contrast to using the main menu, 
+some house keeping tasks detailed
+in section <ref id="insertsf" name="Inserting Scene Files">
+will <em/not/ be executed. In particular, this command
+does <em/not/ modify the scene changed state.
 </itemize>
 
 <p>
@@ -16766,9 +16780,32 @@ insertScene:
 <label id="scsavescene">
 saveScene:
 <itemize>
- <item>Synopsis: <tt>"saveScene filename"</tt>
+ <item>Synopsis: <tt>"saveScene filename [selected]"</tt>
  <item>Background: Yes, Undo: No, Safe: No
- <item>Description: saves the current scene to filename.
+ <item>Description: saves the current scene to the file designated by the
+<tt/"filename"/ parameter. If the optional parameter <tt/"selected"/ is 1,
+only the selected objects will be saved.
+ <item>Notes: In contrast to using the main menu,
+some house keeping tasks detailed
+in section <ref id="savesf" name="Saving Scene Files">
+will <em/not/ be executed. In particular, this command
+does <em/not/ modify the scene changed state and does <em/not/ set
+the most recently used list. Furthermore, automatic export and
+saving of window geometries are not working.
+</itemize>
+
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
+<label id="scnewscene">
+newScene:
+<itemize>
+ <item>Synopsis: <tt>"newScene"</tt>
+ <item>Background: Yes, Undo: No, Safe: No
+ <item>Description: clears the current scene.
+ <item>Notes:
+In contrast to using the main menu, this command does <em/not/ check
+or modify the scene changed state.
 </itemize>
 
 
@@ -17138,9 +17175,9 @@ proc easySweep { } {
  rotOb 0 90 0
  scalOb 0.25 0.25 1.0
 
- # move trajectory back (we use "pasmovOb" and _not_ "pasOb", because we
+ # move trajectory back (we use "-move", because we
  # really want to move (and not copy) the curve object
- pasmovOb
+ pasOb -move
 
  # go up to where we came from
  goUp
@@ -21094,6 +21131,8 @@ Index:
 <item><ref id="objsearch" name="object search option">
 </itemize>
 <item>Active: <ref id="scriptattr" name="Script attribute">
+<item>Add RiOption, RiAttribute, Property:
+<ref id="mmtags" name="Tag management">
 <item>Adaptive: <ref id="moattr" name="MetaObj attributes">
 <item>AdaptiveDomainDistance, AdaptiveKnotDistance: <ref id="prefmisc" name="NURBS tesselation mode">
 <item>AddExtensions: <ref id="prefgui" name="preference setting">
@@ -21423,6 +21462,7 @@ Index:
 <item><ref id="vmconf" name="view menu entry">,
 <item><ref id="editlocal" name="Editing in Local Space">
 </itemize>
+<item>Edit TexCoords: <ref id="mmtags" name="Tag management">
 <item>EditSnaps: <ref id="prefmodel" name="preference setting">
 <item>EDLen: <ref id="icp" name="ICurve attribute">
 <item>EFlush: <ref id="hidprefs" name="hidden preference setting">
@@ -22122,6 +22162,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>remknuNP: <ref id="scremknunp" name="scripting interface command">
 <item>remknvNP: <ref id="scremknvnp" name="scripting interface command">
 <item>remsnPo: <ref id="scremsnPo" name="scripting interface command">
+<item>Remove Property: <ref id="mmtags" name="Tag management">
 <item>Remove Knot:
 <itemize>
 <item><ref id="remknt" name="NCurve tool">,
@@ -22242,7 +22283,9 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Samples_Y: <ref id="rio" name="RenderMan interface option">
 <item>Save: <ref id="mmfile" name="main menu entry">
 <item>Save as: <ref id="mmfile" name="main menu entry">
+<item>Save Environment: <ref id="mmspecial" name="main menu entry">
 <item>Save Prefs: <ref id="mmfile" name="main menu entry">
+<item>Save Selected as: <ref id="mmspecial" name="main menu entry">
 <item>SaveAddsMRU: <ref id="prefmisc" name="preference setting">
 <item>SaveDialogGeom: <ref id="prefmisc" name="preference setting">
 <item>SaveMainGeom: <ref id="savemaingeomtag" name="tag type">
@@ -22300,7 +22343,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Select All: <ref id="mmedit" name="main menu entry">
 <item>Select All Points: <ref id="mmpnts" name="main menu entry">
 <item>Select None: <ref id="mmedit" name="main menu entry">
-<item>Select Renderer: <ref id="mmspecial" name="main menu entry">
+<item>Select Renderer: <ref id="mmtags" name="main menu entry">
 <item>Selected Objects: <ref id="mmspecial" name="main menu entry">
 <item>Selection: <ref id="prefdraw" name="preference setting">
 <item>SelectLast: <ref id="hidprefs" name="hidden preference setting">
