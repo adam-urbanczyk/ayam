@@ -10527,7 +10527,9 @@ named <tt>"SomePropertyNameData"</tt> to exist.
 The GUI setup code should just run once, therefore it checks for the
 presence of the variable LineAttrGUI (which is set on the first run of
 <tt>"addPropertyGUI"</tt>) first.
-See also section
+See also sections
+<ref id="scaddpropertygui" name="Property GUI Management">
+and
 <ref id="ayproparr" name="Global Property Management and Data Arrays">
 for more information about property GUIs and the Ayam scripting interface.
 <p>
@@ -13905,6 +13907,8 @@ All procedures and commands are documented in the following scheme:
 <bf/Undo:/ can the result of the command be undone,
 <bf/Safe:/ is the command available in the safe interpreter (for Script
 objects and notify script tags),
+<bf/Type:/ Procedure &ndash; this is actually not a command but a procedure
+implemented in Tcl
  <item><bf/Description:/ detailed description of the command and its
 parameters,
  <item><bf/Notes:/ additional information completing the detailed description,
@@ -15286,11 +15290,40 @@ or <tt/"interior"/. The shader data will be written to an associative
 array pointed to by varname.
 </itemize>
 
+<p>
+<#if out=latex><x/newpage/</#if>
+
 <sect2>Manipulating Tags<label id="scitags">
 <p>
 These commands may be used to modify the tags of an object:
 <p>
 <#if out=latex><x/phantomsection/</#if>
+
+<label id="scsettag">
+setTag:
+<itemize>
+ <item>Synopsis: <tt/"setTag type value"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Set a tag with type-string <tt/type/ and value-string
+<tt/value/ to the currently selected object(s).<newline>
+If a tag of matching type already exists, the new value will be set to
+the first matching tag. Otherwise a new tag will be added to the
+selected object(s);<newline>
+It is legal to deliver <tt>""</tt> as value parameter. This is
+e.g.~needed for the <tt/"NoExport"/ tag type.<newline>
+If the tag type is not registered, a corresponding warning message may be
+emitted. This warning can be inhibited using the hidden preference
+setting <tt/"WarnUnknownTag"/.
+<item>Examples:
+<enum>
+<item><bf><tt>"setTag NoExport """</tt></bf><newline>
+sets or adds a <tt/"NoExport"/ tag to the selected objects.
+<item><bf><tt>"setTag RP Transformations"</tt></bf><newline>
+sets or adds a <tt/"RP"/ (remove property) tag to the selected objects
+that hides the Transformations property GUI.
+</enum>
+</itemize>
+
 
 <label id="scaddtag">
 addTag:
@@ -15316,7 +15349,18 @@ that hides the Transformations property GUI.
 </enum>
 </itemize>
 
+<label id="schastag">
+hasTag:
+<itemize>
+ <item>Synopsis: <tt/"hasTag type"/
+ <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Description: This command returns <tt/"1"/ if the selected
+object has atleast one tag of the designated type. Otherwise <tt/"0"/
+is returned.
+</itemize>
+
 <p>
+<#if out=latex><x/newpage/</#if>
 <#if out=latex><x/phantomsection/</#if>
 
 <label id="scdeltags">
@@ -15337,9 +15381,6 @@ removes all <tt>"RP"</tt> tags from the selected objects.
 </enum>
 </itemize>
 
-<p>
-<#if out=latex><x/phantomsection/</#if>
-
 <label id="scgettags">
 getTags:
 <itemize>
@@ -15350,9 +15391,6 @@ the currently selected object and put them as lists into two
 variables named tvname for the tag types and vvname for the tag
 values.
 </itemize>
-
-<p>
-<#if out=latex><x/phantomsection/</#if>
 
 <label id="scsettags">
 setTags:
@@ -15384,6 +15422,9 @@ the currently selected object and put it into the designated variable.
 If there is no tag of the specified type, the variable will be set
 to <tt/""/.
 </itemize>
+
+<p>
+<#if out=latex><x/newpage/</#if>
 
 <sect2>Manipulating NURBS Curves and Surfaces<label id="scinurbs">
 <p>
@@ -16398,17 +16439,14 @@ reversed. If the parameter is 2, only the loops are reversed.
 </itemize>
 
 <p>
+<#if out=latex><x/newpage/</#if>
 <#if out=latex><x/phantomsection/</#if>
-
 
 <sect2>Manipulating Points<label id="scipoints">
 <p>
 Use these two commands to read or manipulate the control points of
 objects that support point editing.
 <p>
-<#if out=latex><x/newpage/</#if>
-<#if out=latex><x/phantomsection/</#if>
-
 <label id="scgetpnt">
 getPnt &ndash; get point(s):
 <itemize>
@@ -16510,6 +16548,7 @@ patch object to <tt/"0.0 0.2 0.3 1.0"/.
 </enum>
 </itemize>
 
+<#if out=latex><x/newpage/</#if>
 
 <sect2>Updating the GUI<label id="sciupd">
 <p>
@@ -16884,15 +16923,14 @@ preference option <tt/"ErrorLevel"/ see section
 
 <sect2>Property GUI Management<label id="scipgui">
 <p>
-These commands help to manage property GUIs.
+These procedures help to manage property GUIs.
 
 <label id="scaddpropertygui">
-
 addPropertyGUI:
 <itemize>
  <item>Synopsis: <tt>"addPropertyGUI name"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
- <item>Description: This command sets up a property GUI management
+ <item>Description: This procedure sets up a property GUI management
 array and creates an enclosing frame for GUI elements whose window
 name will be returned.
 <p><p>
@@ -16922,7 +16960,7 @@ addParam:
 <itemize>
  <item>Synopsis: <tt>"addParam window arrayname paramname [defaults]"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
- <item>Description: This command adds a property GUI element for a single
+ <item>Description: This procedure adds a property GUI element for a single
 integer or floating point number parameter.
 <p><p>
 The <tt/"window"/ parameter should contain the window name as returned by
@@ -16945,7 +16983,7 @@ addString:
 <itemize>
  <item>Synopsis: <tt>"addString window arrayname paramname [defaults]"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
- <item>Description: This command adds a property GUI element for a single
+ <item>Description: This procedure adds a property GUI element for a single
 string parameter.
 <p><p>
 The <tt/"window"/ parameter should contain the window name as returned by
@@ -16968,7 +17006,7 @@ addCheck:
 <itemize>
  <item>Synopsis: <tt>"addCheck window arrayname paramname"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
- <item>Description: This command adds a property GUI element for a single
+ <item>Description: This procedure adds a property GUI element for a single
 boolean parameter realized by a check-button.
 <p><p>
 The <tt/"window"/ parameter should contain the window name as returned by
@@ -16989,7 +17027,7 @@ addColor:
 <itemize>
  <item>Synopsis: <tt>"addColor window arrayname paramname [defaults]"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
- <item>Description: This command adds a property GUI element for a single
+ <item>Description: This procedure adds a property GUI element for a single
 color parameter.
 <p><p>
 The <tt/"window"/ parameter should contain the window name as returned by
@@ -17012,7 +17050,7 @@ addMenu:
 <itemize>
  <item>Synopsis: <tt>"addMenu window arrayname paramname choices"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
- <item>Description: This command adds a property GUI element for a
+ <item>Description: This procedure adds a property GUI element for a
 menu&thinsp;/&thinsp;multiple choice parameter, realized through
 a drop down menu. The value of the parameter will be the index
 of the choosen menu item.
@@ -17028,9 +17066,9 @@ The <tt/"paramname"/ parameter is the name of the parameter.
 The <tt/"choices"/ parameter is a list
 of strings that will be presented in the menu.
 <p>
-In contrast to the other user interface element generating commands,
+In contrast to the other user interface element generating procedures,
 the corresponding entry in the property data array <em/must/ exist
-before this command is called.
+before this procedure is called.
 <item>Example:
 <bf><tt>"addMenu $w MyPropertyData MyMenu {Choice1 Choice2}"</tt></bf>
 </itemize>
@@ -17040,7 +17078,7 @@ addFile:
 <itemize>
  <item>Synopsis: <tt>"addFile window arrayname paramname [defaults]"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
- <item>Description: This command adds a property GUI element for a
+ <item>Description: This procedure adds a property GUI element for a
 file name.
 <p><p>
 The <tt/"window"/ parameter should contain the window name as returned by
@@ -17054,7 +17092,7 @@ The <tt/"paramname"/ parameter is the name of the parameter.
 The <tt/"defaults"/ parameter is a list
 of default values. Those values will be presented to the user as an
 additional drop down menu on the right side of the interface element.
- <item>Notes: There is a variation of this command for file names
+ <item>Notes: There is a variation of this procedure for file names
 meant to be used for saving: <tt>"addSFile"</tt>
  <item>Example:<newline>
 <bf><tt>"addFile $w MyPropertyData MyFile {"/tmp/file1" "/tmp/file2"}"</tt></bf>
@@ -17065,8 +17103,8 @@ addCommand:
 <itemize>
  <item>Synopsis: <tt>"addCommand window name text command"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
- <item>Description: This command adds a property GUI element to let
-the user initiate a command.
+ <item>Description: This procedure adds a property GUI element to let
+the user initiate a command with the help of a push-button.
 <p><p>
 The <tt/"window"/ parameter should contain the window name as returned by
 <tt/"addPropertyGUI"/ above.
@@ -17087,7 +17125,7 @@ addText:
 <itemize>
  <item>Synopsis: <tt>"addText window name text"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
- <item>Description: This command adds a property GUI element to
+ <item>Description: This procedure adds a property GUI element to
 display static information, e.g.~a parameter section name.
 <p><p>
 The <tt/"window"/ parameter should contain the window name as returned by
@@ -17106,7 +17144,7 @@ addInfo:
 <itemize>
  <item>Synopsis: <tt>"addInfo window arrayname paramname"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
- <item>Description: This command adds a property GUI element to
+ <item>Description: This procedure adds a property GUI element to
 display dynamic textual information.
 <p><p>
 The <tt/"window"/ parameter should contain the window name as returned by
@@ -17127,7 +17165,7 @@ addProgress:
 <itemize>
  <item>Synopsis: <tt>"addProgress window arrayname paramname"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
- <item>Description: This command adds a property GUI element to
+ <item>Description: This procedure adds a property GUI element to
 display progress information.
 <p><p>
 The <tt/"window"/ parameter should contain the window name as returned by
@@ -17147,8 +17185,8 @@ addVSpace:
 <itemize>
  <item>Synopsis: <tt>"addVSpace window name height"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
- <item>Description: This command adds an empty property GUI element to
-improve the layout.
+ <item>Description: This procedure adds an empty property GUI element with
+defined height to improve the layout of a property GUI.
 <p><p>
 The <tt/"window"/ parameter should contain the window name as returned by
 <tt/"addPropertyGUI"/ above.
@@ -21416,6 +21454,8 @@ Index:
 <item>Adaptive: <ref id="moattr" name="MetaObj attributes">
 <item>AdaptiveDomainDistance, AdaptiveKnotDistance: <ref id="prefmisc" name="NURBS tesselation mode">
 <item>AddExtensions: <ref id="prefgui" name="preference setting">
+<item>addPropertyGUI: <ref id="scaddpropertygui" name="scripting interface command">
+<item>addTag: <ref id="scaddtag" name="scripting interface command">
 <item>addToProc: <ref id="scaddtoproc" name="scripting interface command">
 <item>AddViewParams: <ref id="hidprefs" name="hidden preference setting">
 <item>ALength: <ref id="acp" name="ACurve attribute">
@@ -21902,6 +21942,7 @@ Index:
 <item>Half Size: <ref id="vmconf" name="view menu entry">
 <item>HandleSize: <ref id="prefmodel" name="preference setting">
 <item>hasChild: <ref id="schaschild" name="scripting interface command">
+<item>hasTag: <ref id="schastag" name="scripting interface command">
 <item>Height:
 <itemize>
 <item><ref id="rio" name="RenderMan interface option">,
@@ -22637,6 +22678,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>SetMark: <ref id="vat" name="View attribute">
 <item>setPnt: <ref id="scsetpnt" name="scripting interface command">
 <item>setPrefs: <ref id="scsetprefs" name="scripting interface command">
+<item>setTag: <ref id="scsettag" name="scripting interface command">
 <item>setTags: <ref id="scsettags" name="scripting interface command">
 <item>setProperty: <ref id="scsetproperty" name="scripting interface command">
 <item>SfCurve: <ref id="sfcurveobj" name="SfCurve object">
