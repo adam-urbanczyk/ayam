@@ -580,6 +580,28 @@ ay_tags_addtcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       strcpy(new->val, argv[2]);
 
+      if(argv[0][0] == 's')
+	{
+	  /* setTag */
+	  t = o->tags;
+	  while(t)
+	    {
+	      if(t->type == new->type)
+		break;
+	      t = t->next;
+	    }
+
+	  if(t)
+	    {
+	      free(t->val);
+	      t->val = new->val;
+	      free(new->name);
+	      free(new);
+	      sel = sel->next;
+	      continue;
+	    }
+	} /* if is setTag */
+
       if(!o->tags)
 	{
 	  o->tags = new;
