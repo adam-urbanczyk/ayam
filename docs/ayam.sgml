@@ -15423,6 +15423,16 @@ If there is no tag of the specified type, the variable will be set
 to <tt/""/.
 </itemize>
 
+<#if out=latex><x/phantomsection/</#if>
+
+<label id="scregistertag">
+registerTag:
+<itemize>
+ <item>Synopsis: <tt/"registerTag type"/
+ <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Description: This command registers the designated tag type.
+</itemize>
+
 <p>
 <#if out=latex><x/newpage/</#if>
 
@@ -16795,10 +16805,9 @@ does <em/not/ check or modify the scene changed state and does <em/not/ set
 the most recently used list. Furthermore, automatic import is not working.
 </itemize>
 
-<p>
-<#if out=latex><x/newpage/</#if>
 <#if out=latex><x/phantomsection/</#if>
 
+<p>
 <label id="scinsertscene">
 insertScene:
 <itemize>
@@ -16929,7 +16938,7 @@ These procedures help to manage property GUIs.
 addPropertyGUI:
 <itemize>
  <item>Synopsis: <tt>"addPropertyGUI name"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes, Undo: No, Safe: Yes, Type: Procedure
  <item>Description: This procedure sets up a property GUI management
 array and creates an enclosing frame for GUI elements whose window
 name will be returned.
@@ -16959,7 +16968,7 @@ section <ref id="scriptobjex" name="Script Object Examples">.
 addParam:
 <itemize>
  <item>Synopsis: <tt>"addParam window arrayname paramname [defaults]"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes, Undo: No, Safe: Yes, Type: Procedure
  <item>Description: This procedure adds a property GUI element for a single
 integer or floating point number parameter.
 <p><p>
@@ -16982,7 +16991,7 @@ additional drop down menu on the right side of the interface element.
 addString:
 <itemize>
  <item>Synopsis: <tt>"addString window arrayname paramname [defaults]"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes, Undo: No, Safe: Yes, Type: Procedure
  <item>Description: This procedure adds a property GUI element for a single
 string parameter.
 <p><p>
@@ -17005,7 +17014,7 @@ additional drop down menu on the right side of the interface element.
 addCheck:
 <itemize>
  <item>Synopsis: <tt>"addCheck window arrayname paramname"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes, Undo: No, Safe: Yes, Type: Procedure
  <item>Description: This procedure adds a property GUI element for a single
 boolean parameter realized by a check-button.
 <p><p>
@@ -17022,11 +17031,12 @@ The <tt/"paramname"/ parameter is the name of the parameter.
 
 <p>
 <#if out=latex><x/newpage/</#if>
+<#if out=latex><x/phantomsection/</#if>
 
 addColor:
 <itemize>
  <item>Synopsis: <tt>"addColor window arrayname paramname [defaults]"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes, Undo: No, Safe: Yes, Type: Procedure
  <item>Description: This procedure adds a property GUI element for a single
 color parameter.
 <p><p>
@@ -17049,7 +17059,7 @@ additional drop down menu on the right side of the interface element.
 addMenu:
 <itemize>
  <item>Synopsis: <tt>"addMenu window arrayname paramname choices"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes, Undo: No, Safe: Yes, Type: Procedure
  <item>Description: This procedure adds a property GUI element for a
 menu&thinsp;/&thinsp;multiple choice parameter, realized through
 a drop down menu. The value of the parameter will be the index
@@ -17077,7 +17087,7 @@ before this procedure is called.
 addFile:
 <itemize>
  <item>Synopsis: <tt>"addFile window arrayname paramname [defaults]"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes, Undo: No, Safe: Yes, Type: Procedure
  <item>Description: This procedure adds a property GUI element for a
 file name.
 <p><p>
@@ -17102,7 +17112,7 @@ meant to be used for saving: <tt>"addSFile"</tt>
 addCommand:
 <itemize>
  <item>Synopsis: <tt>"addCommand window name text command"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes, Undo: No, Safe: Yes, Type: Procedure
  <item>Description: This procedure adds a property GUI element to let
 the user initiate a command with the help of a push-button.
 <p><p>
@@ -17124,7 +17134,7 @@ button is pushed.
 addText:
 <itemize>
  <item>Synopsis: <tt>"addText window name text"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes, Undo: No, Safe: Yes, Type: Procedure
  <item>Description: This procedure adds a property GUI element to
 display static information, e.g.~a parameter section name.
 <p><p>
@@ -17143,7 +17153,7 @@ The <tt/"text"/ parameter is the string to be displayed.
 addInfo:
 <itemize>
  <item>Synopsis: <tt>"addInfo window arrayname paramname"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes, Undo: No, Safe: Yes, Type: Procedure
  <item>Description: This procedure adds a property GUI element to
 display dynamic textual information.
 <p><p>
@@ -17160,11 +17170,12 @@ value is to be displayed.
 </itemize>
 
 <#if out=latex><x/newpage/</#if>
+<#if out=latex><x/phantomsection/</#if>
 
 addProgress:
 <itemize>
  <item>Synopsis: <tt>"addProgress window arrayname paramname"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes, Undo: No, Safe: Yes, Type: Procedure
  <item>Description: This procedure adds a property GUI element to
 display progress information.
 <p><p>
@@ -17184,7 +17195,7 @@ the progress is stored in percent.
 addVSpace:
 <itemize>
  <item>Synopsis: <tt>"addVSpace window name height"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes, Undo: No, Safe: Yes, Type: Procedure
  <item>Description: This procedure adds an empty property GUI element with
 defined height to improve the layout of a property GUI.
 <p><p>
@@ -22473,6 +22484,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>RefineTrims: <ref id="tesst" name="tesselation option">
 <item>refineuNP: <ref id="screfineunp" name="scripting interface command">
 <item>refinevNP: <ref id="screfinevnp" name="scripting interface command">
+<item>registerTag: <ref id="scregistertag" name="scripting interface command">
 <item>Relative:
 <itemize>
 <item><ref id="extrncp" name="ExtrNC attribute">,
