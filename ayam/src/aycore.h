@@ -1401,8 +1401,7 @@ int ay_tags_gettcmd(ClientData clientData, Tcl_Interp *interp,
 
 /** check for existence of a tag
  */
-int ay_tags_hastag(const ay_object *o, const char *tagname,
-		   const char *tagtype);
+int ay_tags_hastag(const ay_object *o, const char *tagtype);
 
 /** Tcl command to check for existence of a tag
  */

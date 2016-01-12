@@ -621,7 +621,7 @@ ay_tags_addtcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_tags_addtcmd */
 
 
-/* ay_tags_gettcmd:
+/** ay_tags_gettcmd:
  *  return all tags of the (first) selected object
  *  Implements the \a getTags scripting interface command.
  *  See also the corresponding section in the \ayd{scgettags}.
@@ -690,10 +690,10 @@ ay_tags_gettcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /** ay_tags_hastag:
- *  check for existence of a tag given a tag name or type
+ *  check for existence of a tag given a tag type
  */
 int
-ay_tags_hastag(const ay_object *o, const char *tagname, const char *tagtype)
+ay_tags_hastag(const ay_object *o, const char *tagtype)
 {
  ay_tag *tag;
 
@@ -701,20 +701,12 @@ ay_tags_hastag(const ay_object *o, const char *tagname, const char *tagtype)
     return AY_FALSE;
 
   tag = o->tags;
-  if(tagname)
-    while(tag)
-      {
-	if(!ay_comp_strcase(tag->name, tagname))
-	  return AY_TRUE;
-	tag = tag->next;
-      }
-  else
-    while(tag)
-      {
-	if(tag->type == tagtype)
-	  return AY_TRUE;
-	tag = tag->next;
-      }
+  while(tag)
+    {
+      if(tag->type == tagtype)
+	return AY_TRUE;
+      tag = tag->next;
+    }
 
  return AY_FALSE;
 } /* ay_tags_hastag */
@@ -765,7 +757,7 @@ ay_tags_hastcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_tags_hastcmd */
 
 
-/* ay_tags_deletetcmd:
+/** ay_tags_deletetcmd:
  *  delete all tags of the selected object(s)
  *  Implements the \a delTags scripting interface command.
  *  See also the corresponding section in the \ayd{scdeltags}.
@@ -1320,7 +1312,7 @@ ay_tag_copyselected(ay_object *src, ay_object *dst,
 } /* ay_tag_copyselected */
 
 
-/* ay_tags_registertcmd:
+/** ay_tags_registertcmd:
  *  register a new tag type
  *  Implements the \a registerTag scripting interface command.
  *  See also the corresponding section in the \ayd{scregistertag}.
@@ -1336,6 +1328,7 @@ ay_tags_registertcmd(ClientData clientData, Tcl_Interp *interp,
   if(argc < 2)
     {
       ay_error(AY_EARGS, argv[0], "tag-type");
+      return TCL_OK;
     }
 
   (void)ay_tags_register(argv[1], &dummy);

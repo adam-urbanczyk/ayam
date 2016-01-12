@@ -7612,7 +7612,7 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
     return AY_ENULL;
 
   /* write this patch as wire frame? */
-  if(ay_tags_hastag(o, NULL, ay_aswire_tagtype))
+  if(ay_tags_hastag(o, ay_aswire_tagtype))
     {
       /* yes */
       return x3dio_writenpwire(element, o);
@@ -9213,7 +9213,7 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
   if(!element || !o)
    return AY_ENULL;
 
-  if(ay_tags_hastag(o, NULL, ay_aswire_tagtype))
+  if(ay_tags_hastag(o, ay_aswire_tagtype))
     return x3dio_writepomeshwire(element, o);
 
   po = (ay_pomesh_object *)o->refine;
