@@ -12343,18 +12343,14 @@ ay_npt_gnd(char dir, ay_nurbpatch_object *np, int ij, double *p,
     if(np->vtype == AY_CTPERIODIC)
       gndvcb = ay_npt_gndvp;
 
-  switch(dir)
+  if((dir == AY_NORTH) || (dir == AY_SOUTH))
     {
-    case AY_NORTH:
-    case AY_SOUTH:
-      return gndvcb(dir, np, ij, p, dp);
-      break;
-    case AY_EAST:
-    case AY_WEST:
-      return gnducb(dir, np, ij, p, dp);
-      break;
-    default:
-      break;
+      gndvcb(dir, np, ij, p, dp);
+    }
+  else
+    {
+      /* AY_EAST || AY_WEST */
+      gnducb(dir, np, ij, p, dp);
     }
 
  return;
