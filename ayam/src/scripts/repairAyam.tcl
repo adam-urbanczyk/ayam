@@ -65,6 +65,7 @@ set ::ay(sstlock) 0
 set ::ay(tblock) 0
 set ::ay(treelock) 0
 set ::ay(viewlock) 0
+set ::ay(vaoldfocus) 0
 update
 catch [plb_update]
 catch [goTop]
