@@ -2589,7 +2589,7 @@ ay_viewt_saveimgtcb(struct Togl *togl, int argc, char *argv[])
  TIFF *tif;
  unsigned int i, w, h, s = 3;
  unsigned char *pixels;
- int dim[4];
+ GLint dim[4];
 
   if(argc <= 1)
     {
