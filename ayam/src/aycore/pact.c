@@ -267,6 +267,10 @@ ay_pact_selboundtcb(struct Togl *togl, int argc, char *argv[])
 	  newp->readonly = pe.readonly;
 
 	  ay_status = ay_pomesht_selectbound(o->refine, o->selp);
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, argv[0], "Select boundary failed.");
+	    }
 	} /* if */
 
       ay_pact_clearpointedit(&pe);
@@ -3019,23 +3023,14 @@ ay_pact_multincnc(ay_object *o)
       pnt1 = pnt2;
     } /* while pnt1 */
 
-cleanup:
-
-  while(pnt1)
-    {
-      pnt2 = pnt1->next;
-      free(pnt1);
-      pnt1 = pnt2;
-    }
-
-  /* update pointers in selected points */
-  ay_status = ay_pact_getpoint(3, o, NULL, NULL);
-
   /* create new knot vectors */
   if(nc->knot_type != AY_KTCUSTOM)
     {
       ay_status = ay_knots_createnc(nc);
     }
+
+  /* update pointers in selected points */
+  (void)ay_pact_getpoint(3, o, NULL, NULL);
 
   /* re-create multiple points */
   if(nc->createmp)
@@ -3048,6 +3043,15 @@ cleanup:
   if(nc->type == AY_CTPERIODIC)
     {
       ay_nct_settype(nc);
+    }
+
+cleanup:
+
+  while(pnt1)
+    {
+      pnt2 = pnt1->next;
+      free(pnt1);
+      pnt1 = pnt2;
     }
 
  return ay_status;
@@ -3188,17 +3192,6 @@ ay_pact_multdecnc(ay_object *o)
       pnt1 = pnt2;
     } /* while */
 
-cleanup:
-
-  /* remove the copy of selected points */
-  pnt1 = opnt1;
-  while(pnt1)
-    {
-      pnt2 = pnt1->next;
-      free(pnt1);
-      pnt1 = pnt2;
-    }
-
   /* create new knot vectors */
   if(nc->knot_type != AY_KTCUSTOM)
     {
@@ -3211,6 +3204,18 @@ cleanup:
 
   /* correct the curve type */
   ay_nct_settype(nc);
+    
+
+cleanup:
+
+  /* remove the copy of selected points */
+  pnt1 = opnt1;
+  while(pnt1)
+    {
+      pnt2 = pnt1->next;
+      free(pnt1);
+      pnt1 = pnt2;
+    }
 
  return ay_status;
 } /* ay_pact_multdecnc */
