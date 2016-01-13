@@ -84,6 +84,8 @@ proc x3dio_import { } {
     addMenu $f x3dio_options RationalStyle {"Euclidean" "Homogeneous"}
     addProgress $f x3dio_options Progress
 
+    uie_setLabelWidth $f 16
+
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
 	global x3dio_options
@@ -217,6 +219,8 @@ proc x3dio_export { } {
     addMenu $f x3dio_options RationalStyle {"Euclidean" "Homogeneous"}
     addCheck $f x3dio_options WriteX3dom
     addProgress $f x3dio_options Progress
+
+    uie_setLabelWidth $f 16
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
