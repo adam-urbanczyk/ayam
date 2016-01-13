@@ -694,8 +694,13 @@ ay_bevelt_createconcatp(int side, int revert, double radius, double *tangents,
       p1 = NULL;
       ay_status = ay_geom_extractmiddlepoint(1, tangents, 9,
 					     nc->length, &p1, mnv);
+
       if(p1)
 	free(p1);
+
+      if(ay_status)
+	goto cleanup;
+
       len = AY_V3LEN(mnv);
       if(len > AY_EPSILON)
 	{
