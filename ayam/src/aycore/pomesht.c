@@ -2887,7 +2887,6 @@ ay_pomesht_connect(ay_object *o1, ay_object *o2,
 		   ay_object **result)
 {
  int ay_status = AY_OK;
- char fname[] = "connectPo";
  ay_pomesh_object *pm = NULL, *pm1 = NULL, *pm2 = NULL;
  ay_object *newo = NULL;
  ay_point *sp = NULL, *pp = NULL, *qq = NULL;
