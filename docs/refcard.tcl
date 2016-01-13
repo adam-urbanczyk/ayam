@@ -179,7 +179,7 @@ proc printHotKeys { filename } {
     puts $id "& (\\verb|<[remkpkr $ayviewshortcuts(MoveO)][remkpkr $ayviewshortcuts(RestrictX)]>|, \\verb|<[remkpkr $ayviewshortcuts(MoveO)][remkpkr $ayviewshortcuts(RestrictY)]>|, \\verb|<[remkpkr $ayviewshortcuts(MoveO)][remkpkr $ayviewshortcuts(RestrictZ)]>|)\\\\"
     puts $id "\\hline"
     puts $id "\\multirow\{2\}\{*\}\{Rotate (about Mark/Objs./Pnts.)\} & \\verb|<[remkpkr $ayviewshortcuts(RotO)]>|\\\\"
-    puts $id "& (\\verb|<[remkpkr $ayviewshortcuts(RotO)][remkpkr $ayviewshortcuts(About)]>| / \\verb|<[remkpkr $ayviewshortcuts(RotO)][remkpkr $ayviewshortcuts(CenterO)]>| / \\verb|<[remkpkr $ayviewshortcuts(RotO)][remkpkr $ayviewshortcuts(CenterP)]>|)\\\\"
+    puts $id "& (\\verb|<[remkpkr $ayviewshortcuts(RotO)][remkpkr $ayviewshortcuts(About)]>| / \\verb|<[remkpkr $ayviewshortcuts(RotO)][remkpkr $ayviewshortcuts(CenterO)]>| / \\verb|<[remkpkr $ayviewshortcuts(RotO)][remkpkr $ayviewshortcuts(CenterPC)]>|)\\\\"
     puts $id "\\hline"
     puts $id "Scale 1D X (about Mark/Objs.)& \\verb|<[remkpkr $ayviewshortcuts(Scal2)][remkpkr $ayviewshortcuts(RestrictX)]>| (\\verb|<[remkpkr $ayviewshortcuts(Scal2)][remkpkr $ayviewshortcuts(RestrictX)][remkpkr $ayviewshortcuts(About)]>| / \\verb|<[remkpkr $ayviewshortcuts(Scal2)][remkpkr $ayviewshortcuts(RestrictX)][remkpkr $ayviewshortcuts(CenterO)]>|)\\\\"
     puts $id "\\hline"
