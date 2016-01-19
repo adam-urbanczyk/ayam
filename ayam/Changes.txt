@@ -1,5 +1,5 @@
-[9. Jan 2016] CVS-Head:
-=======================
+[13. Jan 2016] Ayam 1.23:
+=========================
 Bug Fixes:
 o DXF export of polymeshes misses transformation attributes (SF 508)
 o OBJ export of Box objects is broken (SF 509)
@@ -67,6 +67,7 @@ o added example/helper scripts "tweenc.tcl"/"tweencgui.tcl" that allow
   to tween incompatible curves using a Script object
 o added command "remsnPo" to remove the smooth normals from a PolyMesh
 o added command "flipPo" to flip normals and/or loops of a PolyMesh
+o added command "setTag" to set/add a single tag
 
 Import/Export:
 o added "RationalStyle" option to Wavefront OBJ import/export
