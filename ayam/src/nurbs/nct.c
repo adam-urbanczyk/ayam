@@ -7657,6 +7657,7 @@ ay_nct_estlen(ay_nurbcurve_object *nc, double *len)
 {
  int ay_status = AY_OK;
  double v[3], slen, tlen, *Qw = NULL;
+ double *oldQw = NULL, *oldU = NULL;
  int a, i, j, nb = 0;
  int stride = 4, freeQw = AY_FALSE;
 
@@ -7688,10 +7689,41 @@ ay_nct_estlen(ay_nurbcurve_object *nc, double *len)
       return ay_status;
     } /* if */
 
+  if(!ay_knots_isclamped(/*side=*/0, nc->order, nc->knotv,
+			 nc->length+nc->order, AY_EPSILON))
+    {
+      oldU = nc->knotv;
+      oldQw = nc->controlv;
+
+      if(!(nc->knotv = malloc((nc->length+nc->order)*sizeof(double))))
+	{
+	  nc->knotv = oldU;
+	  return AY_EOMEM;
+	}
+
+      if(!(nc->controlv = malloc(nc->length*stride*sizeof(double))))
+	{
+	  free(nc->knotv);
+	  nc->knotv = oldU;
+	  nc->controlv = oldQw;
+	  return AY_EOMEM;
+	}
+
+      memcpy(nc->knotv, oldU, (nc->length+nc->order)*sizeof(double));
+      memcpy(nc->controlv, oldQw, nc->length*stride*sizeof(double));
+
+      ay_status = ay_nct_clamp(nc, /*side=*/0);
+      if(ay_status)
+	goto cleanup;
+    }
+
   if(nc->length != nc->order)
     {
       if(!(Qw = malloc(nc->order*stride*sizeof(double))))
-	return AY_EOMEM;
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
 
       freeQw = AY_TRUE;
 
@@ -7752,9 +7784,25 @@ ay_nct_estlen(ay_nurbcurve_object *nc, double *len)
       a += stride;
     } /* for */
 
+cleanup:
+
   if(freeQw)
     {
       free(Qw);
+    }
+
+  if(oldU)
+    {
+      if(nc->knotv)
+	free(nc->knotv);
+      nc->knotv = oldU;
+    }
+
+  if(oldQw)
+    {
+      if(nc->controlv)
+	free(nc->controlv);
+      nc->controlv = oldQw;
     }
 
  return ay_status;
@@ -7828,37 +7876,66 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_error(AY_ERROR, argv[0], "Provide failed.");
 	      goto cleanup;
 	    }
+
+	  o = po;
+	  while(o)
+	    {
+	      if(apply_trafo)
+		{
+		  ay_nct_applytrafo(o);
+		}
+	      curve = (ay_nurbcurve_object *)o->refine;
+
+	      /* get length */
+	      ay_status = ay_nct_estlen(curve, &len);
+
+	      if(ay_status)
+		goto cleanup;
+
+	      /* put result into Tcl context */
+	      to = Tcl_NewDoubleObj(len);
+	      Tcl_ObjSetVar2(interp, ton, NULL, to,
+		    TCL_LEAVE_ERR_MSG | TCL_APPEND_VALUE | TCL_LIST_ELEMENT);
+
+	      o = o->next;
+	    }
 	}
       else
 	{
 	  curve = (ay_nurbcurve_object *)o->refine;
-	}
 
-      if(apply_trafo)
-	{
-	  if(!po)
-	    ay_status = ay_object_copy(o, &po);
+	  if(apply_trafo)
+	    {
+	      ay_status = ay_object_copy(o, &po);
 
-	  if(ay_status || !po)
+	      if(ay_status || !po)
+		goto cleanup;
+
+	      ay_nct_applytrafo(po);
+	      curve = (ay_nurbcurve_object *)po->refine;
+	    }
+
+	  /* get length */
+	  ay_status = ay_nct_estlen(curve, &len);
+
+	  if(ay_status)
 	    goto cleanup;
 
-	  ay_nct_applytrafo(po);
-	  curve = (ay_nurbcurve_object *)po->refine;
+	  /* put result into Tcl context */
+	  to = Tcl_NewDoubleObj(len);
+	  Tcl_ObjSetVar2(interp, ton, NULL, to,
+		    TCL_LEAVE_ERR_MSG | TCL_APPEND_VALUE | TCL_LIST_ELEMENT);
 	}
 
-      /* get length */
-      ay_status = ay_nct_estlen(curve, &len);
-
-      if(ay_status)
-	goto cleanup;
-
-      /* put result into Tcl context */
-      to = Tcl_NewDoubleObj(len);
-      Tcl_ObjSetVar2(interp, ton, NULL, to,
-		     TCL_LEAVE_ERR_MSG | TCL_APPEND_VALUE | TCL_LIST_ELEMENT);
+      if(po)
+	{
+	  (void)ay_object_deletemulti(po, AY_TRUE);
+	}
 
       sel = sel->next;
     } /* while */
+
+  po = NULL;
 
   /* cleanup */
 cleanup:
