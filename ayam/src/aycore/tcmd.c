@@ -28,7 +28,12 @@ int ay_tcmd_getallpoints(Tcl_Interp *interp, char *fname, char *vn,
 /** ay_tcmd_convdlist:
  *  convert a Tcl list of doubles to a C array of doubles
  *
- *  \returns TCL_OK upon successful completion, TCL_ERROR else.
+ * \param[in] vname name of a Tcl variable that contains the list of values
+ *  to convert
+ * \param[in,out] dllen where to store the length of the array
+ * \param[in,out] dl where to sotre the array of doubles
+ *
+ * \returns TCL_OK upon successful completion, TCL_ERROR else.
  */
 int
 ay_tcmd_convdlist(char *vname, int *dllen, double **dl)
@@ -83,7 +88,7 @@ ay_tcmd_convdlist(char *vname, int *dllen, double **dl)
 } /* ay_tcmd_convdlist */
 
 
-/* ay_tcmd_reverttcmd:
+/** ay_tcmd_reverttcmd:
  *  revert selected curves
  *  Implements the \a revertC scripting interface command.
  *  See also the corresponding section in the \ayd{screvertc}.
@@ -167,6 +172,10 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp *interp,
  *  _recursively_ set the hidden flag of all children of object
  *  \a o and \a o to \a val (showing/hiding the objects)
  *  if \a val is -1, the hide state of the objects is toggled
+ *
+ * \param[in,out] o object(s) to process
+ * \param val[in] if -1 the hide flag is toggled; if 0 the flag is cleared;
+ * if 1 the flag is set
  */
 void
 ay_tcmd_showhideall(ay_object *o, int val)
@@ -424,7 +433,7 @@ ay_tcmd_getallpoints(Tcl_Interp *interp, char *fname, char *vn,
 } /* ay_tcmd_getallpoints */
 
 
-/* ay_tcmd_getpointtcmd:
+/** ay_tcmd_getpointtcmd:
  *  get points of selected objects
  *  Implements the \a getPnt scripting interface command.
  *  See also the corresponding section in the \ayd{scgetpnt}.
@@ -1055,7 +1064,7 @@ ay_tcmd_setallpoints(Tcl_Interp *interp, char *fname, char *vn,
 } /* ay_tcmd_setallpoints */
 
 
-/* ay_tcmd_setpointtcmd:
+/** ay_tcmd_setpointtcmd:
  *  set points of selected objects
  *  Implements the \a setPnt scripting interface command.
  *  See also the corresponding section in the \ayd{scsetpnt}.
@@ -1388,7 +1397,7 @@ ay_tcmd_waitpidtcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 #ifdef AYENABLEFEXIT
-/* ay_tcmd_fastexittcmd:
+/** ay_tcmd_fastexittcmd:
  *  this command exits the application (without trying to clean up properly);
  *  it seems that this is the only way to quit Ayam on Mac OS X (atleast
  *  using Tcl/Tk8.2.2...)
@@ -1402,7 +1411,7 @@ ay_tcmd_fastexittcmd(ClientData clientData, Tcl_Interp *interp,
 #endif /* AYENABLEFEXIT */
 
 
-/* ay_tcmd_withobtcmd:
+/** ay_tcmd_withobtcmd:
  *  execute command(s) for one of the selected objects;
  *  this command modifies the selection before executing
  *  another command of the Ayam scripting interface
@@ -1491,7 +1500,15 @@ ay_tcmd_withobtcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_tcmd_getstring:
- *  get string from Tcl variable
+ *  get a copy of a string from a Tcl variable
+ * 
+ * \param interp Tcl interpreter to use, may be NULL to designate usage
+ *  of the main interpreter
+ * \param arr array part of variable name
+ * \param var name part of variable name
+ * \param result pointer where to store the new string
+ * 
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_tcmd_getstring(Tcl_Interp *interp, Tcl_Obj *arr, Tcl_Obj *var, char **result)
@@ -1533,8 +1550,14 @@ ay_tcmd_getstring(Tcl_Interp *interp, Tcl_Obj *arr, Tcl_Obj *var, char **result)
 } /* ay_tcmd_getstring */
 
 
-/* ay_tcmd_getuint:
+/** ay_tcmd_getuint:
  *  convert string to unsigned int
+ *  conversion errors will be reported to the user via ay_error()
+ * 
+ * \param str string to convert
+ * \param uint pointer where to store the converted result
+ * 
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_tcmd_getuint(char *str, unsigned int *uint)
@@ -1589,8 +1612,14 @@ ay_tcmd_getuint(char *str, unsigned int *uint)
 } /* ay_tcmd_getuint */
 
 
-/* ay_tcmd_registerlang:
- *  register a new language
+/** ay_tcmd_registerlang:
+ *  register a new scripting language
+ * 
+ * \param[in] name name of scripting language
+ * \param result pointer where to store the corresponding index
+ *  in the script evaluation callback table (using ay_table_additem())
+ * 
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_tcmd_registerlang(char *name, char **result)
@@ -1618,8 +1647,11 @@ ay_tcmd_registerlang(char *name, char **result)
 } /* ay_tcmd_registerlang */
 
 
-/* ay_tcmd_menustatetcmd:
- *  set action state from menu state
+/** ay_tcmd_menustatetcmd:
+ *  set action state from menu state; bound to <Map>/<Unmap>
+ *  of any menu to switch to faster drawing of views during
+ *  menu interactions
+ *
  *  Implements the \a menuState scripting interface command.
  *  \returns TCL_OK in any case.
  */
