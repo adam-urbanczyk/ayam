@@ -51,24 +51,30 @@ proc swing_rotcross { } {
     global transfPropData
     goDown -1
     selOb 0
-    getTrafo
-    set rotated 0
-    if { $transfPropData(Rotate_Y) == 0.0 } {
-	rotOb 0 90 0
-	set rotated 1
+    getType type
+    if { ($type == "NCurve") || ($type == "ICurve") || ($type == "ACurve") } {
+	toYZC
+	resetTrafo
+    } else {
+	getTrafo
+	if { $transfPropData(Rotate_Y) == 0.0 } {
+	    rotOb 0 90 0
+	}
+	notifyOb
     }
     selOb 1
-    getTrafo
-    if { $transfPropData(Rotate_X) == 0.0 } {
-	rotOb 90 0 0
-	set rotated 1
-    }
-    if { $rotated } {
+    getType type
+    if { ($type == "NCurve") || ($type == "ICurve") || ($type == "ACurve") } {
+	toXZC
+	resetTrafo
+    } else {
+	getTrafo
+	if { $transfPropData(Rotate_X) == 0.0 } {
+	    rotOb 90 0 0
+	}
 	notifyOb
-	rV
     }
-    goUp
-    sL
+    rV; goUp; sL
  return;
 }
 # swing_rotcross
