@@ -16,7 +16,7 @@
 
 /* clevel.c - functions for current level management */
 
-/* ay_clevel_set:
+/** ay_clevel_set:
  *  set list object on top of current level stack
  *  pointing to <o>
  */
@@ -31,7 +31,7 @@ ay_clevel_set(ay_object *o)
 } /* ay_clevel_set */
 
 
-/* ay_clevel_find:
+/** ay_clevel_find:
  *  _recursively_ search through all objects beneath and below <c>
  *  for object <o> and build a stack of list objects pointing from the
  *  ay_root to the object <o> in <ay_currentlevel>
@@ -75,7 +75,7 @@ ay_clevel_find(ay_object *c, ay_object *o, int *found)
 } /* ay_clevel_find */
 
 
-/* ay_clevel_add:
+/** ay_clevel_add:
  *  put list object pointing to <o> to top of current level stack
  */
 int
@@ -99,7 +99,7 @@ ay_clevel_add(ay_object *o)
 } /* ay_clevel_add */
 
 
-/* ay_clevel_del:
+/** ay_clevel_del:
  *  remove topmost list object from current level stack
  */
 void
@@ -117,7 +117,7 @@ ay_clevel_del(void)
 } /* ay_clevel_del */
 
 
-/* ay_clevel_delall:
+/** ay_clevel_delall:
  *  deletes all clevel objects but not the first
  *  two that point to NULL and to ay_root
  */
@@ -137,7 +137,7 @@ ay_clevel_delall(void)
 } /* ay_clevel_delall */
 
 
-/* ay_clevel_gotop:
+/** ay_clevel_gotop:
  *  change the current level to the top level;
  *  additionally, reset ay_next to the end of the top level
  */
@@ -161,7 +161,7 @@ ay_clevel_gotop()
 } /* ay_clevel_gotop */
 
 
-/* ay_clevel_gotoptcmd:
+/** ay_clevel_gotoptcmd:
  *  Implements the \a goTop scripting interface command.
  *  See also the corresponding section in the \ayd{scgotop}.
  *  \returns TCL_OK in any case.
@@ -185,7 +185,7 @@ ay_clevel_gotoptcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_clevel_gotoptcmd */
 
 
-/* ay_clevel_gouptcmd:
+/** ay_clevel_gouptcmd:
  *  Implements the \a goUp scripting interface command.
  *  See also the corresponding section in the \ayd{scgoup}.
  *  \returns TCL_OK in any case.
@@ -270,7 +270,7 @@ ay_clevel_gouptcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_clevel_gouptcmd */
 
 
-/* ay_clevel_godowntcmd:
+/** ay_clevel_godowntcmd:
  *  Implements the \a goDown scripting interface command.
  *  See also the corresponding section in the \ayd{scgodown}.
  *  \returns TCL_OK in any case.
@@ -413,7 +413,7 @@ ay_clevel_godowntcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_clevel_godowntcmd */
 
 
-/* ay_clevel_gettcmd:
+/** ay_clevel_gettcmd:
  *  Implements the \a getLevel scripting interface command.
  *  See also the corresponding section in the \ayd{scgetlevel}.
  *  \returns TCL_OK in any case.
@@ -498,7 +498,6 @@ ay_clevel_gettcmd(ClientData clientData, Tcl_Interp *interp,
 		     TCL_LEAVE_ERR_MSG);
 
 		  Tcl_DStringFree(&ds);
-
 		}
 	      else
 		{
@@ -588,8 +587,11 @@ ay_clevel_dup(ay_list_object *src)
 } /* ay_clevel_dup */
 
 
-/* ay_clevel_cltcmd:
+/** ay_clevel_cltcmd:
  *  Tcl command to set the current level (cl - change level)
+ *  Implements the \a cl scripting interface command.
+ *  See also the corresponding section in the \ayd{sccl}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_clevel_cltcmd(ClientData clientData, Tcl_Interp *interp,
@@ -600,7 +602,7 @@ ay_clevel_cltcmd(ClientData clientData, Tcl_Interp *interp,
  static ay_object **oay_next = NULL;
  ay_list_object *tcl;
  ay_object **tay_next = NULL;
- ay_object *o = ay_root, *t;
+ ay_object *o = ay_root, *t = ay_root;
  int i, lindex = 0;
  char *lc = NULL; /* level component */
 
@@ -682,7 +684,7 @@ ay_clevel_cltcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  /* no, absolute level */
 	  ay_clevel_delall();
-	  t = ay_root;
+	  /* t = ay_root; */
 	} /* if */
 
       ay_next = &(t->next);
