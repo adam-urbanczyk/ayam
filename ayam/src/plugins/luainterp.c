@@ -205,6 +205,8 @@ static const struct luaL_Reg luainterplib [] = {
       {"extrNP", luainterp_wraptclcmd},
       {"concatS", luainterp_wraptclcmd},
       {"tobasisPM", luainterp_wraptclcmd},
+      {"tweenNC", luainterp_wraptclcmd},
+      {"tweenNP", luainterp_wraptclcmd},
 
       {"tcleval", luainterp_wrapevalcmd},
       {"tclset", luainterp_tclset},
