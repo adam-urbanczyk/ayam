@@ -386,7 +386,7 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, double *mp,
       if(!rc)
 	goto cleanup;
 
-      (void)ay_nct_toxy(/*allow_flip=*/AY_FALSE, rc);
+      (void)ay_nct_toplane(AY_XY, /*allow_flip=*/AY_FALSE, rc);
 
       rnc = (ay_nurbcurve_object *)(rc->refine);
 
@@ -513,11 +513,13 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, double *mp,
     {
       /* 2D mode */
       a = nc->length*stride;
+      b = 0;
       for(i = 0; i < nc->length; i++)
 	{
 	  memcpy(&(np->controlv[a]), m, 3*sizeof(double));
-	  np->controlv[a+3] = 1.0;/*nc->controlv[b+3];*/
+	  np->controlv[a+3] = nc->controlv[b+3];
 	  a += stride;
+	  b += stride;
 	}
     } /* if mode */
 
@@ -720,7 +722,7 @@ ay_capt_crttrimcap(ay_object *c, ay_object **cap)
       if(!ay_nct_isclosed(c->refine))
 	{ ay_status = AY_ERROR; goto cleanup; }
 
-      ay_status = ay_nct_toxy(/*allow_flip=*/AY_FALSE, c);
+      ay_status = ay_nct_toplane(AY_XY, /*allow_flip=*/AY_FALSE, c);
       if(ay_status)
 	{ ay_status = AY_ERROR; goto cleanup; }
 

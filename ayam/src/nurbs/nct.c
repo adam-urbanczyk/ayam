@@ -4463,7 +4463,7 @@ ay_nct_fillgap(int order, double tanlen,
 	       ay_nurbcurve_object *c1, ay_nurbcurve_object *c2,
 	       ay_object **result)
 {
-  double p1[4] = {0}, p2[4] = {0}, p3[4], p4[4], n1[3], n2[3], l[3];
+ double p1[4] = {0}, p2[4] = {0}, p3[4], p4[4], n1[3], n2[3], l[3];
  double *U, *Pw, u, d, len;
  double *controlv = NULL;
  int n, p, numcontrol;
@@ -4980,10 +4980,10 @@ ay_nct_getcurvature(ay_nurbcurve_object *c, double t)
     {
       if(c->is_rat)
 	ay_nb_SecondDer4D(c->length-1, c->order-1, c->knotv, c->controlv,
-			      t, acc);
+			  t, acc);
       else
 	ay_nb_SecondDer3D(c->length-1, c->order-1, c->knotv, c->controlv,
-			      t, acc);
+			  t, acc);
       AY_V3CROSS(cross, vel, acc);
       numer = AY_V3LEN(cross);
       denom = pow(velsqrlen, 1.5);
@@ -5872,8 +5872,9 @@ ay_nct_getplane(int cvlen, int cvstride, double *cv)
 } /* ay_nct_getplane */
 
 
-/** ay_nct_toxy:
- *  modify the planar curve \a c, so that it is defined in the XY plane
+/** ay_nct_toplane:
+ *  modify the planar curve \a c, so that it is defined in the
+ *  XY, YZ, or XZ plane
  *  by detecting the current orientation, adding the relevant rotation
  *  information to the transformation attributes and rotating the control
  *  points of the planar curve to the XY plane
@@ -5885,7 +5886,7 @@ ay_nct_getplane(int cvlen, int cvstride, double *cv)
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_nct_toxy(int allow_flip, ay_object *c)
+ay_nct_toplane(int plane, int allow_flip, ay_object *c)
 {
  int ay_status = AY_OK;
  ay_acurve_object *ac = NULL;
@@ -5893,7 +5894,7 @@ ay_nct_toxy(int allow_flip, ay_object *c)
  ay_nurbcurve_object *nc = NULL;
  double *p, *tp1, *tp2, *tp3, V1[3], V2[3], A[3], B[3];
  double tcv[9];
- double Z[3] = {0,0,1};
+ double X[3] = {1,0,0}, Y[3] = {0,1,0}, Z[3] = {0,0,1};
  double angle, len, m[16], quat[4], euler[3];
  double *cv = NULL;
  int cvlen = 0;
@@ -6013,15 +6014,54 @@ ay_nct_toxy(int allow_flip, ay_object *c)
   len = AY_V3LEN(A);
   AY_V3SCAL(A, (1.0/len));
 
-  /* A is now perpendicular to the plane in which the curve is defined
-     thus, we calculate angle and rotation axis (B) between A and Z (0,0,1) */
-  angle = AY_R2D(acos(AY_V3DOT(A, Z)));
-  if((fabs(angle) < AY_EPSILON))
+  switch(plane)
     {
-      /* Nothing to do, as curve ist properly aligned with
-	 XY plane already...*/
-      return AY_OK;
+    case AY_XY:
+      /* A is now perpendicular to the plane in which the curve
+	 is defined thus, we calculate angle and rotation axis (B)
+	 between A and Z (0,0,1) */
+      angle = AY_R2D(acos(AY_V3DOT(A, Z)));
+      if((fabs(angle) < AY_EPSILON))
+	{
+	  /* Nothing to do, as curve ist properly aligned with
+	     XY plane already...*/
+	  return AY_OK;
+	}
+      AY_V3CROSS(B, A, Z);
+      break;
+    case AY_XZ:
+      /* A is now perpendicular to the plane in which the curve
+	 is defined thus, we calculate angle and rotation axis (B)
+	 between A and Y (0,1,0) */
+      angle = AY_R2D(acos(AY_V3DOT(A, Y)));
+      if((fabs(angle) < AY_EPSILON))
+	{
+	  /* Nothing to do, as curve ist properly aligned with
+	     XZ plane already...*/
+	  return AY_OK;
+	}
+      AY_V3CROSS(B, A, Y);
+      break;
+    case AY_YZ:
+      /* A is now perpendicular to the plane in which the curve
+	 is defined thus, we calculate angle and rotation axis (B)
+	 between A and X (1,0,0) */
+      angle = AY_R2D(acos(AY_V3DOT(A, X)));
+      if((fabs(angle) < AY_EPSILON))
+	{
+	  /* Nothing to do, as curve ist properly aligned with
+	     YZ plane already...*/
+	  return AY_OK;
+	}
+      AY_V3CROSS(B, A, X);
+      break;
+
+    default:
+      break;
     }
+
+  len = AY_V3LEN(B);
+  AY_V3SCAL(B, (1.0/len));
 
   if(fabs(angle - 180.0) < AY_EPSILON)
     {
@@ -6032,10 +6072,6 @@ ay_nct_toxy(int allow_flip, ay_object *c)
 	}
       return AY_OK;
     }
-
-  AY_V3CROSS(B, A, Z);
-  len = AY_V3LEN(B);
-  AY_V3SCAL(B, (1.0/len));
 
   /* calculate rotation matrix */
   ay_trafo_identitymatrix(m);
@@ -6066,12 +6102,14 @@ ay_nct_toxy(int allow_flip, ay_object *c)
   c->scalz = 1.0;
 
  return ay_status;
-} /* ay_nct_toxy */
+} /* ay_nct_toplane */
 
 
 /** ay_nct_toxytcmd:
- *  Rotate selected NURBS curves to XY plane.
- *  Implements the \a toxyNC scripting interface command.
+ *  Rotate selected NURBS curves to XY, YZ, or XZ plane.
+ *  Implements the \a toXYC scripting interface command.
+ *  Implements the \a toYZC scripting interface command.
+ *  Implements the \a toXZC scripting interface command.
  *  See also the corresponding section in the \ayd{sctoxync}.
  *
  *  \returns TCL_OK in any case.
@@ -6084,12 +6122,20 @@ ay_nct_toxytcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *src = NULL;
  int notify_parent = AY_FALSE;
+ int plane = AY_XY;
 
   if(!sel)
     {
       ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
+
+  /* distinguish between "toXYC", "toYZC", and "toXZC" */
+  if(argv[0][2] == 'Y')
+    plane = AY_YZ;
+  else
+    if(argv[0][3] == 'Z')
+      plane = AY_XZ;
 
   while(sel)
     {
@@ -6101,7 +6147,7 @@ ay_nct_toxytcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_status = ay_nct_toxy(/*allow_flip=*/AY_FALSE, src);
+	  ay_status = ay_nct_toplane(plane, /*allow_flip=*/AY_FALSE, src);
 	  if(ay_status)
 	    {
 	      ay_error(ay_status, argv[0],
@@ -8090,7 +8136,7 @@ ay_nct_isplanar(ay_object *c, int allow_flip, ay_object **cp, int *is_planar)
   if(ay_status || !tmp)
     return;
 
-  ay_status = ay_nct_toxy(allow_flip, tmp);
+  ay_status = ay_nct_toplane(AY_XY, allow_flip, tmp);
 
   if(!ay_status)
     {

@@ -816,11 +816,11 @@ int
 ay_nct_shiftctcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[]);
 
-/** Rotate curve to XY plane.
+/** Rotate curve to XY/YZ/XZ plane.
  */
-int ay_nct_toxy(int allow_flip, ay_object *c);
+int ay_nct_toplane(int plane, int allow_flip, ay_object *c);
 
-/** Tcl command to rotate selected NURBS curves to XY plane.
+/** Tcl command to rotate selected NURBS curves to XY/YZ/XZ plane.
  */
 int ay_nct_toxytcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[]);
@@ -1527,6 +1527,8 @@ int ay_stess_TessNP(ay_object *o, int qf, ay_stess_patch *stess);
 
 /* tess.c */
 
+/** Check triangle for degeneracy.
+ */
 int ay_tess_checktri(double *p1, double *p2, double *p3);
 
 /** Tesselate NURBS patch (convert to PolyMesh) with GLU.
