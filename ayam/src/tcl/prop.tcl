@@ -22,34 +22,45 @@ array set transfPropData {
     QuaternionBall "n/a"
 }
 
+proc resetTrafo { { undo 0 } { redraw 0 } } {
+ global transfPropData
+
+    if { $undo } {
+	undo save ResetTrafos
+    }
+
+    set transfPropData(Translate_X) 0.0
+    set transfPropData(Translate_Y) 0.0
+    set transfPropData(Translate_Z) 0.0
+
+    set transfPropData(Scale_X) 1.0
+    set transfPropData(Scale_Y) 1.0
+    set transfPropData(Scale_Z) 1.0
+
+    set transfPropData(Rotate_X) 0.0
+    set transfPropData(Rotate_Y) 0.0
+    set transfPropData(Rotate_Z) 0.0
+
+    set transfPropData(Quat0) 0.0
+    set transfPropData(Quat1) 0.0
+    set transfPropData(Quat2) 0.0
+    set transfPropData(Quat3) 1.0
+
+    set transfPropData(Quaternion) "\[0, 0, 0, 1\]"
+
+    setTrafo
+
+    if { $redraw } {
+	rV
+    }
+
+ return;
+}
+
 # create Transformations-UI
 set w [frame $ay(pca).$Transformations(w)]
 addVSpace $w s1 2
-addCommand $w c1 "Reset All!" {
-global transfPropData
-undo save ResetTrafos
-set transfPropData(Translate_X) 0.0
-set transfPropData(Translate_Y) 0.0
-set transfPropData(Translate_Z) 0.0
-
-set transfPropData(Scale_X) 1.0
-set transfPropData(Scale_Y) 1.0
-set transfPropData(Scale_Z) 1.0
-
-set transfPropData(Rotate_X) 0.0
-set transfPropData(Rotate_Y) 0.0
-set transfPropData(Rotate_Z) 0.0
-
-set transfPropData(Quat0) 0.0
-set transfPropData(Quat1) 0.0
-set transfPropData(Quat2) 0.0
-set transfPropData(Quat3) 1.0
-
-set transfPropData(Quaternion) "\[0, 0, 0, 1\]"
-
-setTrafo
-rV
-}
+addCommand $w c1 "Reset All!" {resetTrafo 1 1}
 
 addText $w e1 "Translation:"
 addParam $w transfPropData Translate_X
@@ -66,7 +77,6 @@ addText $w e3 "Scale:"
 addParam $w transfPropData Scale_X
 addParam $w transfPropData Scale_Y
 addParam $w transfPropData Scale_Z
-
 
 # Attributes property
 

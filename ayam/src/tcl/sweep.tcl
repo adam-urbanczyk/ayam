@@ -56,17 +56,21 @@ return;
 # sweep_rotcross:
 #  helper for Sweep creation; rotates the cross section to YZ plane
 proc sweep_rotcross { } {
-    global transfPropData
     goDown -1
     selOb 0
-    getTrafo
-    if { $transfPropData(Rotate_Y) == 0.0 } {
-	rotOb 0 90 0
+    getType type
+    if { ($type == "NCurve") || ($type == "ICurve") || ($type == "ACurve") } {
+	toYZC
+	resetTrafo
+    } else {
+	global transfPropData
+	getTrafo
+	if { $transfPropData(Rotate_Y) == 0.0 } {
+	    rotOb 0 90 0
+	}
 	notifyOb
-	rV
     }
-    goUp
-    sL
+    rV; goUp; sL
  return;
 }
 # sweep_rotcross
