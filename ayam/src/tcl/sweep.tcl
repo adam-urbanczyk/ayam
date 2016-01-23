@@ -60,8 +60,7 @@ proc sweep_rotcross { } {
     selOb 0
     getType type
     if { ($type == "NCurve") || ($type == "ICurve") || ($type == "ACurve") } {
-	toYZC
-	resetTrafo
+	toYZC; resetTrafo; normTrafos
     } else {
 	global transfPropData
 	getTrafo
