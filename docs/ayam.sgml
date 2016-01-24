@@ -8195,10 +8195,16 @@ The object hierarchy of a Swing object, thus, looks like this:
  \ Trajectory(NCurve)
 </verb></tscreen>
 <p>
-The swing operation will occur around the Y-axis.
+The swing operation will occur around the Y-axis, i.e.~the
+trajectory should be defined in the XZ plane.
 <p>
-The base plane for the swing operation is the YZ-plane. The cross section
-curve should be defined in this plane and the trajectory should start here.
+The cross section curve should be defined in the YZ-plane and the
+trajectory should start here.
+Note that the swing create tool will automatically modify the
+control points of NCurve, ICurve, and ACurve objects so that they
+are defined in the proper plane. For all other object types, the
+transformation attributes will be set (Rotate_Y is set to
+90 if currently set to 0).<footnote>Since 1.24.</footnote>
 <p>
 The dimensions and orders of the swung surface will be taken from the
 respective parameter curves as follows: width and order in U direction
@@ -8302,13 +8308,16 @@ will be fully ignored. All other transformation attributes
 place, orientation, and size of the Sweep object.
 <p>
 The cross section curve has to be defined in the YZ-plane of the
-Sweep objects coordinate system but it also has to be defined in the
-XY-plane of its own coordinate system. This means that a simple circular
+Sweep objects coordinate system. This means that a simple circular
 curve as e.g.~created with the toolbox has to be rotated by 90 degrees
-around the Y-axis using its transformation attributes to follow these
-rules. Later editing of this curve has to be done in a Side view (or
-in an aligned local Front view, if the Sweep object itself is transformed
-somehow).
+around the Y-axis. This can be done either by modifying the control points,
+or by setting the transformation attributes accordingly.
+Later editing of this curve has to be done in a Side view.
+Note that the sweep create tool will automatically modify the
+control points of NCurve, ICurve, and ACurve objects so that they
+are defined in the proper plane. For all other object types, the
+transformation attributes will be set (Rotate_Y is set to
+90 if currently set to 0).<footnote>Since 1.24.</footnote>
 <p>
 The scaling function is sampled for each section and the Y-component
 of the coordinates of the current curve point will be used as
@@ -8333,13 +8342,13 @@ Here is a short example for the creation of a sweep:
 <enum>
 <item>Create a circular B-Spline curve using the toolbox. (This will be our
 cross section.)
-<item>Rotate the curve by 90 degrees around the Y-axis. (Use the
-<tt/"Transformations"/ property for that.)
 <item>Create a simple NURBS curve using the toolbox. (This will be our
 trajectory.)
 <item>Select both curves. (Select the first curve, hold down
 the <tt/"Shift"/ key and select the other curve.)
 <item>Create the Sweep object using the toolbox.
+<item>Observe that the cross section curve was rotated automatically
+to the YZ-plane.
 <item>Now you may enter the Sweep object and modify
 e.g.~the second curve, the trajectory. (Press <tt/&lt;e&gt;/,
 then drag some control points around.)
@@ -12865,8 +12874,9 @@ selected and the current level will also be changed.
 <descrip>
 <tag/Arguments/ The swing tool takes the selected objects from
 the selection.
-<tag/Operation/ The tool creates a Swing object, and moves
-the selected objects to it.
+<tag/Operation/ The tool creates a Swing object, moves
+the selected objects to it, and rotates the first curve to
+the YZ-plane and the second curve to the XZ-plane.
 <tscreen><verb>
 |-CrossSection(NCurve)           +-Swing
 |-Trajectory(NCurve)     ==>      |-CrossSection(NCurve)
@@ -12911,8 +12921,9 @@ selected and the current level will also be changed.
 <descrip>
 <tag/Arguments/ The sweep tool takes the selected objects from
 the selection.
-<tag/Operation/ The tool creates a Sweep object, and moves
-the selected objects to it.
+<tag/Operation/ The tool creates a Sweep object, moves
+the selected objects to it, and rotates the first curve object
+to the YZ plane.
 <tscreen><verb>
 |-NCurve             +-Sweep
 |-NCurve     ==>      |-NCurve
@@ -14646,6 +14657,7 @@ creates a material named Wood.
 <tt/"crtOb Sphere; uS; rV"/.
 </itemize>
 
+
 There are some helper commands, that create certain often used
 curves:
 <p>
@@ -15099,6 +15111,7 @@ goTop:
 </itemize>
 
 <p>
+
 The following commands move objects around in the hierarchy:
 
 <#if out=latex><x/phantomsection/</#if>
@@ -15323,8 +15336,9 @@ sets or adds a <tt/"RP"/ (remove property) tag to the selected objects
 that hides the Transformations property GUI.
 </enum>
 </itemize>
-
-
+<!--
+<#if out=html><x/<div style="height: 0.7em">&nbsp;</div>/</#if>
+ -->
 <label id="scaddtag">
 addTag:
 <itemize>
@@ -16350,7 +16364,6 @@ If the option <tt/"-l"/ is 1, only the orders and lengths will be adapted.
 See also section <ref id="makecompst" name="Make Compatible Tool">.
 </itemize>
 
-
 <p>
 <#if out=latex><x/phantomsection/</#if>
 
@@ -16675,6 +16688,7 @@ getPrefs &ndash; get preferences data:
  <item>Description: Copy preferences data from the C to the Tcl context.
 </itemize>
 
+
 <p><label id="scsetprefs">
 setPrefs &ndash; set preferences data:
 <itemize>
@@ -16805,9 +16819,9 @@ does <em/not/ check or modify the scene changed state and does <em/not/ set
 the most recently used list. Furthermore, automatic import is not working.
 </itemize>
 
+<p>
 <#if out=latex><x/phantomsection/</#if>
 
-<p>
 <label id="scinsertscene">
 insertScene:
 <itemize>
@@ -16958,7 +16972,6 @@ section <ref id="scriptobjex" name="Script Object Examples">.
 
 <item>Example:
 <bf><tt>"set w [addPropertyGUI MyProperty]"</tt></bf>
-
 </itemize>
 
 <p>
@@ -17277,6 +17290,7 @@ if { $ay_error > 1 } {
 <p>
 <#if out=latex><x/phantomsection/</#if>
 
+
 <label id="scconvob">
 convOb:
 <itemize>
@@ -17296,6 +17310,7 @@ or 1 &ndash; yes.
 
 <p>
 <#if out=latex><x/phantomsection/</#if>
+
 
 <label id="scnotifyob">
 notifyOb:
@@ -17331,6 +17346,7 @@ this command ignores all parameters.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 
+
 <label id="scaddtoproc">
 addToProc:
 <itemize>
@@ -17342,6 +17358,7 @@ the procedure procedure.
 Tcl and works only correctly for procedures, that end with
 a single <tt>"return;"</tt> statement.
 </itemize>
+
 
 <#if out=latex><x/newpage/</#if>
 
@@ -17355,7 +17372,7 @@ It is e.g.~possible to enter
 $::u
 </code>
 instead of a numeric knot value in the insert knot tool parameter dialog
-to infer the parametric value from the global variable u (that
+to infer the parametric value from the global variable <tt/u/ (that
 may have been set before using the find u modelling action) and
 insert a knot at the picked point.
 
@@ -17368,6 +17385,13 @@ or call into own procedures (that have to return appropriately
 typed values):
 <code>
 [myproc]
+</code>
+where <tt/"myproc"/ is defined elsewhere (e.g.~in a Tcl script file
+loaded via the Scripts preference setting) as follows:
+<code>
+proc myproc { } {
+  return [expr sin(45)];
+}
 </code>
 .
 
