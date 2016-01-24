@@ -628,7 +628,9 @@ proc toolbox_open { {w .tbw} } {
 	    bind $f.bswp <Control-ButtonPress-1> {
 		%W configure -relief sunken
 		level_crt Sweep "" 1
-		sweep_rotcross
+		goUp
+		sweep_rotcross 0
+		after idle {uS 1 1; rV}
 		after 100 "%W configure -relief raised"
 		break;
 	    }
