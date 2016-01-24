@@ -55,7 +55,7 @@ return;
 
 # sweep_rotcross:
 #  helper for Sweep creation; rotates the cross section to YZ plane
-proc sweep_rotcross { } {
+proc sweep_rotcross { {goup 1} } {
     goDown -1
     selOb 0
     undo save ToPlane
@@ -70,7 +70,10 @@ proc sweep_rotcross { } {
 	}
 	notifyOb
     }
-    rV; goUp; sL
+    rV
+    if { $goup } {
+	goUp; sL
+    }
  return;
 }
 # sweep_rotcross
