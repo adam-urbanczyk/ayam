@@ -50,6 +50,8 @@ return;
 proc swing_rotcross { } {
     global transfPropData
     goDown -1
+    selOb 0 1
+    undo save ToPlane
     selOb 0
     getType type
     if { ($type == "NCurve") || ($type == "ICurve") || ($type == "ACurve") } {
