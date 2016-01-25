@@ -159,6 +159,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 
 	  /* extract the respective boundary curve */
 	  normals = NULL;
+	  curve.refine = NULL;
 	  ay_status = ay_npt_extractnc(o, side, param,
 				       /*relative=*/AY_TRUE,
 				       /*apply_trafo=*/AY_FALSE,
@@ -172,6 +173,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 	  if(ay_nct_isdegen((ay_nurbcurve_object*)(void*)curve.refine))
 	    {
 	      ay_nct_destroy(curve.refine);
+	      curve.refine = NULL;
 	      if(normals)
 		free(normals);
 	      normals = NULL;
