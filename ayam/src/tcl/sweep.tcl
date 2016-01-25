@@ -61,7 +61,7 @@ proc sweep_rotcross { {goup 1} } {
     undo save ToPlane
     getType type
     if { ($type == "NCurve") || ($type == "ICurve") || ($type == "ACurve") } {
-	toYZC; resetTrafo; normTrafos
+	toYZC; resetRotate; normTrafos
     } else {
 	global transfPropData
 	getTrafo

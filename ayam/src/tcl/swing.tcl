@@ -55,7 +55,7 @@ proc swing_rotcross { } {
     selOb 0
     getType type
     if { ($type == "NCurve") || ($type == "ICurve") || ($type == "ACurve") } {
-	toYZC; resetTrafo; normTrafos
+	toYZC; resetRotate; normTrafos
     } else {
 	getTrafo
 	if { $transfPropData(Rotate_Y) == 0.0 } {
@@ -66,7 +66,7 @@ proc swing_rotcross { } {
     selOb 1
     getType type
     if { ($type == "NCurve") || ($type == "ICurve") || ($type == "ACurve") } {
-	toXZC; resetTrafo; normTrafos
+	toXZC; resetRotate; normTrafos
     } else {
 	getTrafo
 	if { $transfPropData(Rotate_X) == 0.0 } {

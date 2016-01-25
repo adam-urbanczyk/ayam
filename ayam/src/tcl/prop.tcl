@@ -23,7 +23,7 @@ array set transfPropData {
 }
 
 proc resetTrafo { { undo 0 } { redraw 0 } } {
- global transfPropData
+ global ay transfPropData
 
     if { $undo } {
 	undo save ResetTrafos
@@ -36,6 +36,35 @@ proc resetTrafo { { undo 0 } { redraw 0 } } {
     set transfPropData(Scale_X) 1.0
     set transfPropData(Scale_Y) 1.0
     set transfPropData(Scale_Z) 1.0
+
+    set transfPropData(Rotate_X) 0.0
+    set transfPropData(Rotate_Y) 0.0
+    set transfPropData(Rotate_Z) 0.0
+
+    set transfPropData(Quat0) 0.0
+    set transfPropData(Quat1) 0.0
+    set transfPropData(Quat2) 0.0
+    set transfPropData(Quat3) 1.0
+
+    set transfPropData(Quaternion) "\[0, 0, 0, 1\]"
+
+    setTrafo
+
+    if { $redraw } {
+	rV
+    }
+
+ return;
+}
+
+proc resetRotate { { undo 0 } { redraw 0 } } {
+ global ay transfPropData
+
+    if { $undo } {
+	undo save ResetRotate
+    }
+
+    getTrafo
 
     set transfPropData(Rotate_X) 0.0
     set transfPropData(Rotate_Y) 0.0
