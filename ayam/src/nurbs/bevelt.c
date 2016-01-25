@@ -502,7 +502,10 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 
 		}
 	      if(ay_status)
-		goto cleanup;
+		{
+		  free(extrcurve);
+		  goto cleanup;
+		}
 
 	      if(ay_nct_isdegen(
 			    (ay_nurbcurve_object*)(void*)extrcurve->refine))
