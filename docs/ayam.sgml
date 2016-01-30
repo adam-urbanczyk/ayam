@@ -3170,6 +3170,9 @@ Total|404|436|1968|768
 
 <sect>Modelling Actions<label id="iac">
 <p>
+This section contains the documentation of the interactive modelling
+actions available in Ayam.
+<p>
 Before invoking any modelling action one or more objects should be
 selected using the object hierarchy in the main window, the pick action,
 or selection manipulating keyboard shortcuts.
@@ -4793,6 +4796,8 @@ Atmosphere shaders are volume shaders that
 may be used to implement global atmospheric
 optical effects like fog.
 
+<#if out=latex><x/newpage/</#if>
+
 <sect3>RIB Export
 <p><#if out=latex>&nbsp;<newline></#if>
 The Root object appears in RIB output in different places as collection
@@ -5948,6 +5953,8 @@ It is possible to move masters and instances through the scene hierarchy
 using drag and drop in the tree view or using the object clipboard with
 <tt>"Edit/Cut"</tt> and then <tt>"Special/Clipboard/Paste (Move)"</tt>
 however.
+
+<#if out=latex><x/newpage/</#if>
 
 <sect3>Conversion Support
 <p><#if out=latex>&nbsp;<newline></#if>
@@ -7656,6 +7663,8 @@ and the tesselated bevels or caps follow the tesselated NPatch in the
 following order: U0, U1, V0, V1.
 <p>
 Integrated bevels or caps do not appear as extra objects.
+
+<#if out=latex><x/newpage/</#if>
 
 <sect3>RIB Export
 <p><#if out=latex>&nbsp;<newline></#if>
@@ -9769,6 +9778,8 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 of the created NURBS surface.
 </itemize>
 
+<#if out=latex><x/newpage/</#if>
+
 <sect3>Caps and Bevels
 <p><#if out=latex>&nbsp;<newline></#if>
 The OffsetNP object supports the standard caps as lined out in section
@@ -9982,6 +9993,8 @@ first loops is defined between -0.5 and 0.5, the scale factor used
 for.
 -->
 </itemize>
+
+<#if out=latex><x/newpage/</#if>
 
 <sect3>Conversion Support
 <p><#if out=latex>&nbsp;<newline></#if>
@@ -12106,6 +12119,8 @@ The amount of movement determines the radius of the torus, whereas
 the radius of the circle determines the thickness.
 </descrip>
 
+<#if out=latex><x/newpage/</#if>
+
 <sect2>Rectangle Tool<label id="nrrt">
 <p>
 <figure loc="ht">
@@ -12126,6 +12141,8 @@ of multiple points will be enabled, so that point edit actions know that
 they may need to move two points.
 See also section <ref id="ncurvemp" name="Multiple Points">.
 </descrip>
+
+<#if out=latex><x/newpage/</#if>
 
 <sect2>TrimRect Tool<label id="trrt">
 <p>
@@ -12158,6 +12175,8 @@ See section <ref id="trim" name="Trim Curves"> for a more detailed
 discussion of trim curves and how to use the rectangular curve created
 by the TrimRect tool.
 </descrip>
+
+<#if out=latex><x/newpage/</#if>
 
 <sect2>Tween Curve Tool<label id="tweennct">
 <p>
@@ -12877,6 +12896,11 @@ the selection.
 <tag/Operation/ The tool creates a Swing object, moves
 the selected objects to it, and rotates the first curve to
 the YZ-plane and the second curve to the XZ-plane.
+If the respective curve is of type
+NCurve, ICurve, or ACurve, the control points will be modified
+and the rotation attributes will be reset, other objects will be
+rotated by their transformation attributes. The rotation will
+be recorded in the undo buffer.
 <tscreen><verb>
 |-CrossSection(NCurve)           +-Swing
 |-Trajectory(NCurve)     ==>      |-CrossSection(NCurve)
@@ -12923,7 +12947,11 @@ selected and the current level will also be changed.
 the selection.
 <tag/Operation/ The tool creates a Sweep object, moves
 the selected objects to it, and rotates the first curve object
-to the YZ plane.
+to the YZ plane. If the cross section curve is of type
+NCurve, ICurve, or ACurve, the control points will be modified
+and the rotation attributes will be reset, other objects will be
+rotated by their transformation attributes. The rotation will
+be recorded in the undo buffer.
 <tscreen><verb>
 |-NCurve             +-Sweep
 |-NCurve     ==>      |-NCurve
