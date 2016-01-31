@@ -1,4 +1,4 @@
-INSTALL [17. May 2015]
+INSTALL [31. Jan 2016]
 
 Compilation Instructions for Ayam
 ---------------------------------
@@ -750,6 +750,8 @@ supported by Ayam:
 Platform support:
 AYWITHAQUA - set if you compile for Mac OS X Aqua (also enables work-arounds
  for bugs in Apple OpenGL)
+AYLOCALGLUQUADOBJ - set if your GLU implementation ties the quadric object
+to the GL context (this option is automatically set if AYWITHAQUA is set)
 AYIRIXBUG - enable workaround for SGI GLU bug
 SOLARIS_BUG - enable workaround for Solaris Xmu bug in Togl
 AYENABLEWAIT - enable bugfix to avoid zombie processes upon rendering (Linux)
