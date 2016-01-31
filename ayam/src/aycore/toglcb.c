@@ -119,6 +119,13 @@ ay_toglcb_create(struct Togl *togl)
 
   /* glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color); */
 
+#ifdef AYLOCALGLUQUADOBJ
+  if(!(view->gluquadobj = gluNewQuadric()))
+    {
+      /* XXXX error handling? */
+      return;
+    }
+#else
   if(!ay_gluquadobj)
     {
       if(!(ay_gluquadobj = gluNewQuadric()))
@@ -127,6 +134,7 @@ ay_toglcb_create(struct Togl *togl)
 	  return;
 	}
     }
+#endif /* AYLOCALGLUQUADOBJ */
 
  return;
 } /* ay_toglcb_create */
@@ -230,6 +238,13 @@ ay_toglcb_destroy(struct Togl *togl)
       if(view->bgcv)
 	free(view->bgcv);
 
+#ifdef AYLOCALGLUQUADOBJ
+      if(view->gluquadobj)
+	{
+	  gluDeleteQuadric(view->gluquadobj);
+	}
+#endif /* AYLOCALGLUQUADOBJ */
+
       free(view);
     }
 
@@ -293,6 +308,10 @@ ay_toglcb_display(struct Togl *togl)
     {
       return;
     }
+
+#ifdef AYLOCALGLUQUADOBJ
+  ay_gluquadobj = view->gluquadobj;
+#endif /* AYLOCALGLUQUADOBJ */
 
   if(view->altdispcb)
     {
