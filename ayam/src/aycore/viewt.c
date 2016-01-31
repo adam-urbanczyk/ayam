@@ -937,6 +937,10 @@ ay_viewt_redrawtcb(struct Togl *togl, int argc, char *argv[])
 {
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
 
+#ifdef AYLOCALGLUQUADOBJ
+  ay_gluquadobj = view->gluquadobj;
+#endif /* AYLOCALGLUQUADOBJ */
+
   if(view->altdispcb)
     {
       (view->altdispcb)(togl);
