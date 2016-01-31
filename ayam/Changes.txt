@@ -1,3 +1,17 @@
+[31. Jan 2016 CVS-Head:
+=======================
+Bug Fixes:
+o added missing scripting interface commands to JavaScript and Lua scripting
+  language plugins (SF )
+o shading of quadric primitives in external views on MacOSX/Aqua (SF )
+
+Scripts/Scripting Interface:
+o added "setTag" command that adds a tag if it is not present, otherwise
+  just sets the value
+o added "toYZC" and "toXZC" commands to rotate curves to the respective
+  planes
+
+
 [13. Jan 2016] Ayam 1.23:
 =========================
 Bug Fixes:
