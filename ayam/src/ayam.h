@@ -41,9 +41,9 @@
   #else
     typedef GLvoid (*_GLUfuncptr)(GLvoid);
   #endif
+  #define AYLOCALGLUQUADOBJ 1
 #else
   #include <GL/glu.h>
-  #define AYLOCALGLUQUADOBJ 1
 #endif /* AYWITHAQUA */
 
 /*
