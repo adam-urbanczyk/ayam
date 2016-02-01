@@ -112,6 +112,10 @@ proc apnt_actionTagP { w } {
     viewTitle $w "" "Select_Points"
     viewSetMAIcon $w ay_Tag_img "Select_Points"
 
+    if { $ayprefs(TagResetTagged) == 1 } {
+	selPnts; rV
+    }
+
     actionClearB1 $w
 
     bind $w <ButtonPress-1> {
