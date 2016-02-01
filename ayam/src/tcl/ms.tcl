@@ -210,6 +210,9 @@ ms_set en ayprefse_SMFileType "Type of shadow map.\
 \nshadowvol: volume shadow map (Gelato only!)"
 ms_set en ayprefse_SMChangeShaders "Change shader names (prepend\
  \"shadow\")\nwhen rendering with shadow maps?"
+ms_set en ayprefse_AutoCloseUI "Automatically close the user interface\
+when rendering is finished?"
+
 
 ms_set en ayprefse_PPRender "Renderer to use for the permanent preview feature."
 
@@ -253,6 +256,13 @@ ms_set en objio_options_Selected "Export only selected object(s)."
 ms_set en objio_options_TessPoMesh "Tesselate all PolyMesh objects to\
 triangles."
 ms_set en objio_options_WriteCurves "Write NURBS curves to exported file?"
+
+# info dialogs
+ms_set en info_sc1 "Scene changed!"
+ms_set en info_sc2 "Select \"Ok\" to lose all changes.\nSelect \"Cancel\" to stop operation."
+ms_set de info_sc1 "Szene geändert!"
+ms_set de info_sc2 "\"Ok\" um Änderungen zu verwerfen.\n\"Abbruch\" um Änderungen zu erhalten."
+
 
 #
 # fill "de"-locale
@@ -419,6 +429,8 @@ ms_set de ayprefse_SMFileType "Typ der ShadowMaps.\
 \nvolz: Volumen ShadowMap (nur Gelato!)"
 ms_set de ayprefse_SMChangeShaders "Sollen Shadernamen angepasst werden\
 \nwenn ShadowMaps benutzt werden?"
+ms_set de ayprefse_AutoCloseUI "Soll das Render-Fenster geschlossen werden\
+wenn der Renderer fertig ist?"
 
 # Misc
 ms_set de ayprefse_RedirectTcl "Sollen alle Fehlermeldungen von Tcl auf\
@@ -619,6 +631,8 @@ progression dans la sortie."
 #\nshadowvol: volume shadow map (Gelato only!)"
 #ms_set fr ayprefse_SMChangeShaders "Change shader names (prepend\
 # \"shadow\")\nwhen rendering with shadow maps?"
+#ms_set fr ayprefse_AutoCloseUI "Automatically close the user interface\
+#when rendering is finished?"
 
 ms_set fr ayprefse_PPRender "Moteur de rendu à utiliser pour l'aperçu\
 permanent."

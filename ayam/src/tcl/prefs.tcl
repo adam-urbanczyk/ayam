@@ -251,7 +251,7 @@ proc prefs_open {} {
     addCheckB $fw ayprefse ExcludeHidden [ms ayprefse_ExcludeHidden]
     addMenuB $fw ayprefse RenderMode [ms ayprefse_RenderMode]\
 	    [list CommandLineArg RiDisplay]
-
+    addCheckB $fw ayprefse AutoCloseUI [ms ayprefse_AutoCloseUI]
     addStringB $fw ayprefse QRender [ms ayprefse_QRender]\
 	    [list "rgl %s" "rgl -rd 10 %s"]
     addCheckB $fw ayprefse QRenderUI [ms ayprefse_QRenderUI]
