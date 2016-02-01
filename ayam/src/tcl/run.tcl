@@ -192,12 +192,16 @@ proc runTool { argvars argstrings command title {advargs ""} } {
 # the corresponding rendering window, also computes
 # the elapsed/remaining rendering time
 proc updateRenderProgress { num percent } {
-    global ay
+    global ay ayprefs
     update
-    if { [string index [.render${num}.f2.la cget -text] 0] == "~" } {
 
+    if { [catch { set str [string index [.render${num}.f2.la cget -text] 0] } ]
+	 != 0 } {
+	return;
+    }
+
+    if { $str == "~" } {
 	catch { SetProgress .render${num}.f1.p $percent }
-
 	set cur [clock seconds]
 	set start $ay(rstarttime${num})
 	set fulltime [expr ($cur-$start)*100.0/$percent]
@@ -217,6 +221,11 @@ proc updateRenderProgress { num percent } {
 			    $hours $mins $secs]
 	    catch { .render${num}.f2.la configure -text $string }
 	    if {$ay(renderbeep${num})} {bell}
+
+	    if { $ayprefs(AutoCloseUI) == 1 } {
+		after idle ".render${num}.bca invoke"
+	    }
+
 	}
 	# if
     }

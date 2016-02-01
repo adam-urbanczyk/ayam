@@ -248,6 +248,7 @@ array set ayprefs {
  SelectLast 1
  PickCycle 0
  CullFaces 0
+ AutoCloseUI 1
 
  Docs "http://ayam.sourceforge.net/docs/"
  DailyTips {
@@ -2146,6 +2147,7 @@ if { $ayprefs(FixX11Menu) } {
 # if
 
 # allow customized keyboard menu traversal
+
 if { $tcl_version > 8.3 } {
     bind all <${aymainshortcuts(MenuMod)}-Key> {
 	::tk::TraverseToMenu %W %A;
@@ -2175,6 +2177,7 @@ if { $tcl_version > 8.3 } {
 	tkTraverseToMenu %W %A;
     }
 }
+
 
 # improve redraw speed when browsing through menus
 bind Menu <Map> {menuState}
