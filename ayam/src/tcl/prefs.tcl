@@ -725,8 +725,8 @@ proc prefs_warnNeedRestart { warn } {
 	}
     } else {
 	if { $ay(warnrestart) } {
-	    set t "Need Restart!"
-	    set m "Some of your changes need a restart of Ayam to take effect!"
+	    set t [ms info_rs1]
+	    set m [ms info_rs2]
 
 	    if { $ayprefs(FixDialogTitles) == 1 } {
 		set m "$t\n\n$m"
