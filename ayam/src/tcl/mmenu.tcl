@@ -920,14 +920,14 @@ $m add command -label "Show All" -command "showOb -all; uS 1 1; rV" \
 $m add separator
 $m add command -label "Convert" -command {
     global ay
-    convOb; update; cS; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1
+    convOb; update; cS; notifyOb; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1
 } -underline 3
 $m add command -label "Convert (In Place)" -command {
     global ay
     set ay(need_undo_clear) 0
     forAll -recursive 0 { if { [hasChild] } { set ::ay(need_undo_clear) 1 } }
     if { $ay(need_undo_clear) == 0 } { undo save Convert }
-    convOb -inplace; update
+    convOb -inplace; notifyOb; update
     if { $ay(need_undo_clear) } { undo clear }
     set ay(ul) $ay(CurrentLevel); uS 1 1; rV
 }

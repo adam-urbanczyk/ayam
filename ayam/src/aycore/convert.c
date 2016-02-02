@@ -170,6 +170,9 @@ ay_convert_nptoolobj(ay_object *o, ay_object *p, ay_object *cb, int in_place)
   if(!o || !p)
     return AY_ENULL;
 
+  if(ay_prefs.conv_keep_caps || ay_prefs.conv_keep_bevels)
+    cb = NULL;
+
   if(p->next || cb)
     {
       /* object converts to multiple patches or there are caps/bevels */
@@ -240,7 +243,7 @@ ay_convert_nptoolobj(ay_object *o, ay_object *p, ay_object *cb, int in_place)
     }
   else
     {
-      /* object converts to a single patch with no caps/bevels */
+      /* object converts to a single patch */
       ay_status = ay_object_copy(p, &new);
       if(!ay_status && new)
 	{
@@ -249,6 +252,10 @@ ay_convert_nptoolobj(ay_object *o, ay_object *p, ay_object *cb, int in_place)
 	  new->parent = AY_TRUE;
 	  if(!new->down)
 	    new->down = ay_endlevel;
+
+	  /* copy some tags */
+	  (void)ay_tag_copyselected(o, new, ay_prefs.converttags,
+				    ay_prefs.converttagslen);
 	} /* if */
     } /* if */
 
@@ -294,3 +301,4 @@ ay_convert_nptoolobj(ay_object *o, ay_object *p, ay_object *cb, int in_place)
 
  return ay_status;
 } /* ay_convert_nptoolobj */
+

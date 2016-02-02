@@ -467,6 +467,12 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 		    ay_prefs.converttags = tmp;
 		    ay_prefs.converttags[ay_prefs.converttagslen] = tagtype;
 		    ay_prefs.converttagslen++;
+
+		    if(tagtype == ay_cp_tagtype)
+		      ay_prefs.conv_keep_caps = AY_TRUE;
+
+		    if(tagtype == ay_bp_tagtype)
+		      ay_prefs.conv_keep_bevels = AY_TRUE;
 		  }
 		tagname = strtok(NULL, ",");
 	      }
@@ -877,13 +883,13 @@ cleanup:
 
 /** ay_prefs_setcolor:
  * Helper to get a color value from Tcl.
- * 
+ *
  * \param interp Tcl interpreter to use
  * \param arr string object with array name (ayprefs)
  * \param var base color variable name in arr (e.g. Light)
  * \param r where to store the red component
- * \param g where to store the green component 
- * \param b where to store the blue component 
+ * \param g where to store the green component
+ * \param b where to store the blue component
  */
 void
 ay_prefs_setcolor(Tcl_Interp *interp, Tcl_Obj *arr, char *var,

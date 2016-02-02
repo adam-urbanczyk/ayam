@@ -1507,6 +1507,10 @@ typedef struct ay_preferences_s
 
   /** should conversion reset the display_mode/sampling_tolerance? */
   int conv_reset_display;
+  /** should conversion keep caps via CP tags? */
+  int conv_keep_caps;
+  /** should conversion keep bevels via BP tags? */
+  int conv_keep_bevels;
 
   /* PV tag names */
   char *texcoordname; /**< default name for texture coordinate PV tags */

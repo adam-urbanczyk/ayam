@@ -239,7 +239,7 @@ array set ayprefs {
  NormalizePoints 1
  NormalizeDigits 6
 
- ConvertTags "TP,TC"
+ ConvertTags "TP,TC,BP,CP"
  CycleHiddenWire 0
 
  StripShaderArch 1
