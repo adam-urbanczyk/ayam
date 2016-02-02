@@ -496,7 +496,7 @@ if { $ay(ws) == "Win32" } {
 }
 
 ms_set de info_rs1 "Neustart erforderlich!"
-ms_set de info_rs2 "Ayam muss neu gestartet werden, damit die Änderungen angewendet werden können."
+ms_set de info_rs2 "Ayam muss neu gestartet werden,\num die Änderungen anzuwenden."
 
 
 
