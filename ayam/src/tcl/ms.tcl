@@ -260,8 +260,9 @@ ms_set en objio_options_WriteCurves "Write NURBS curves to exported file?"
 # info dialogs
 ms_set en info_sc1 "Scene changed!"
 ms_set en info_sc2 "Select \"Ok\" to lose all changes.\nSelect \"Cancel\" to stop operation."
-ms_set de info_sc1 "Szene geändert!"
-ms_set de info_sc2 "\"Ok\" um Änderungen zu verwerfen.\n\"Abbruch\" um Änderungen zu erhalten."
+
+ms_set en info_rs1 "Need restart!"
+ms_set en info_rs2 "Changes need a restart of Ayam to take effect!"
 
 
 #
@@ -484,6 +485,19 @@ ms_set de objio_options_TessPoMesh "Wandelt alle PolyMesh-Objekte zu\
 Dreiecksnetzen."
 ms_set de objio_options_WriteCurves "Sollen NURBS Kurven exportiert werden?"
 
+# info dialogs
+ms_set de info_sc1 "Szene geändert!"
+if { $ay(ws) == "Win32" } {
+    ms_set de info_sc2 "\"OK\" - Änderungen verwerfen.\n\
+     \"Abbrechen\" - Operation abbrechen."
+} else {
+    ms_set de info_sc2 "\"OK\" - Änderungen verwerfen.\n\
+     \"Cancel\" - Operation abbrechen."
+}
+
+ms_set de info_rs1 "Neustart erforderlich!"
+ms_set de info_rs2 "Ayam muss neu gestartet werden, damit die Änderungen angewendet werden können."
+
 
 
 #
@@ -678,3 +692,14 @@ Mops?"
 #ms_set fr objio_options_TessPoMesh "Tesselate all PolyMesh objects to\
 #triangles."
 #ms_set fr objio_options_WriteCurves "Write NURBS curves to exported file?"
+
+# info dialogs
+ms_set fr info_sc1 "Changement scène!"
+if { $ay(ws) == "Win32" } {
+#ms_set fr info_sc2 "Select \"OK\" to lose all changes.\nSelect \"Annuler\" to stop operation."
+} else {
+#ms_set fr info_sc2 "Select \"OK\" to lose all changes.\nSelect \"Cancel\" to stop operation."
+}
+
+ms_set fr info_rs1 "Redémarrage nécessaire!"
+#ms_set fr info_rs2 "Changes need a restart of Ayam to take effect!"

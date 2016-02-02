@@ -710,9 +710,8 @@ proc io_warnChanged { } {
 	if { $ay(sc) == 1 } {
 
 	    winAutoFocusOff
-
-	    set t "Scene has changed!"
-	    set m "Select \"Ok\" to lose all changes.\nSelect \"Cancel\" to stop operation."
+	    set t [ms info_sc1]
+	    set m [ms info_sc2]
 
 	    if { $ayprefs(FixDialogTitles) == 1 } {
 		set m "$t\n\n$m"
