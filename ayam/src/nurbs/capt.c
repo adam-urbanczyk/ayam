@@ -176,6 +176,7 @@ ay_capt_addcaps(ay_cparam *cparams, ay_bparam *bparams,
 
 	  if(cap)
 	    {
+	      cap->modified = AY_TRUE;
 	      *nextcap = cap;
 	      nextcap = &(cap->next);
 	    }

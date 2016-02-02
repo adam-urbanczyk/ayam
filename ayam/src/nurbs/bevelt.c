@@ -580,8 +580,11 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		}
 	      else
 		{
-		  if(nextcap)
-		    nextcap = &((*nextcap)->next);
+		  if(*nextcap)
+		    {
+		      (*nextcap)->modified = AY_TRUE;
+		      nextcap = &((*nextcap)->next);
+		    }
 		}
 	    } /* if cap on this side */
 
