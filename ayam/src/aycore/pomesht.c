@@ -2934,6 +2934,10 @@ ay_pomesht_connect(ay_object *o1, ay_object *o2,
   if(np1 < 2 || np2 < 2)
     return AY_ERROR;
 
+  /* make sure, pp is the coarser one */
+  if(np1 > np2)
+    return ay_pomesht_connect(o2, o1, offset2, offset1, result);
+
   /* pre-process o1 and o1->selp */
 
   ay_pomesht_vertanglesums(pm1, &vas1);
