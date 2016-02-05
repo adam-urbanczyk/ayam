@@ -158,6 +158,9 @@ ay_read_header(FILE *fileptr)
   if(ay_status)
     return ay_status;
 
+  if(!nbuffer)
+    return AY_EFORMAT;
+
   if(!strstr(nbuffer, "Ayam"))
     {
       free(nbuffer);
@@ -170,6 +173,12 @@ ay_read_header(FILE *fileptr)
     {
       free(nbuffer);
       return ay_status;
+    }
+
+  if(!version)
+    {
+      free(nbuffer);
+      return AY_EFORMAT;
     }
 
   ay_read_version = 1;
@@ -416,6 +425,9 @@ ay_read_tags(FILE *fileptr, ay_object *o)
       if(ay_status)
 	{ free(tag); return ay_status; }
 
+      if(!tag->name)
+	{ free(tag); return AY_ERROR; }
+
       if(!(entry = Tcl_FindHashEntry(&ay_tagtypesht, tag->name)))
 	{
 	  if(ay_prefs.wutag)
@@ -632,6 +644,9 @@ ay_read_object(FILE *fileptr)
       ay_status = ay_read_string(fileptr, &(typename));
       if(ay_status)
 	{ ay_object_delete(o); return ay_status; }
+
+      if(!typename)
+	{ ay_object_delete(o); return AY_ERROR; }
 
       /* is the type name registered? */
       if((entry = Tcl_FindHashEntry(&ay_otypesht, typename)))
