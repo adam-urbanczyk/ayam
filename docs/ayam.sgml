@@ -1352,6 +1352,11 @@ a Revolve object will e.g.~be converted to a level containing NURBS
 patches that make up the surface of revolution and the caps.
 This operation can not be undone, i.e.~the newly created objects
 will not be removed, using the undo system.
+Potentially present <tt/"TP"/ and <tt/"TC"/ tags will be preserved.
+This can be configured via the
+hidden preference setting <tt/"ConvertTags"/,
+see section <ref id="hidprefs" name="Hidden Preference Settings"> for
+more information.
 
 <item><tt/"Convert (In Place)"/, starts the convert action as
 outlined above, but replaces the original objects with the
@@ -20506,7 +20511,11 @@ point of the click. This option is enabled by default.
 
 <item><tt/"ConvertTags"/, a comma separated list of tag names.
 These tags will be copied verbatim to converted and provided
-objects. Default value: <tt/"TP,TC"/.
+objects. If any of <tt/"BP"/ or <tt/"CP"/ are in this list,
+the conversion of tool objects with caps or bevels to NPatch objects
+does not generate multiple objects in a Level but just one object
+with all caps and bevels<footnote>Since 1.24.</footnote>.
+Default value: <tt/"TP,TC,BP,CP"/.
 
 <item><tt/"CullFaces"/, enables culling/discarding of back facing
 polygons prior to display with OpenGL. This can improve the visual
