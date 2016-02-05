@@ -2868,6 +2868,10 @@ of forcing a renderer to render to the screen (via a RiDisplay statement
 in the exported RIB, necessary for e.g.~PRMan and RDC;
 or via a command line argument, e.g.~<tt>-d</tt> for rendrib from BMRT).
 
+<item><tt/"AutoCloseUI"/ controls whether the Rendering GUI dialog
+window should be closed automatically when the renderer signals
+that the rendering finished.
+
 <item><tt/"QRender"/ determines the command that should be executed
 upon quick rendering a view, <tt>%s</tt> denotes the name of the RIB file.
 
@@ -21561,6 +21565,7 @@ Index:
 <item><ref id="impdxf" name="AutoCAD DXF import">,
 <item><ref id="expdxf" name="AutoCAD DXF export">
 </itemize>
+<item>AutoCloseUI: <ref id="prefrib" name="preference setting">
 <item>AutoFocus: <ref id="prefgui" name="preference setting">
 <item>Automatic Instancing: <ref id="mmspecial" name="main menu entry">
 <item>Automatic Redraw: <ref id="vmconf" name="view menu entry">
