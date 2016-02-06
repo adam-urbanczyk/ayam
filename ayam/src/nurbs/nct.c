@@ -665,6 +665,117 @@ ay_nct_close(ay_nurbcurve_object *curve)
 } /* ay_nct_close */
 
 
+/** ay_nct_open:
+ *  open a (currently closed) NURBS curve
+ *
+ * \param[in,out] curve NURBS curve object to open
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_nct_open(ay_nurbcurve_object *curve)
+{
+ int ay_status = AY_OK;
+ int stride = 4, i;
+ double *end = NULL, *d, *f, v[3] = {0}, u[3] = {0};
+ ay_nct_gndcb *gndcb = ay_nct_gnd;
+
+  if(!curve)
+    return AY_ENULL;
+
+  switch(curve->type)
+    {
+    case AY_CTCLOSED:
+      gndcb = ay_nct_gndc;
+      end = &(curve->controlv[(curve->length*4)-4]);
+      gndcb(1, curve, end, &d);
+      AY_V3SUB(v, d, end);
+      AY_V3SCAL(v, 0.1);
+      while(d != end)
+	{
+	  AY_V3ADD(end, end, v);
+	  end -= stride;
+	}
+      break;
+    case AY_CTPERIODIC:
+      gndcb = ay_nct_gndp;
+      end = &(curve->controlv[(curve->length*4)-4]);
+      gndcb(0, curve, end, &d);
+      f = end-stride;
+      for(i = 0; i < curve->order-1; i++)
+	{
+	  AY_V3SUB(u, d, end);
+	  AY_V3SUB(v, f, end);
+	  AY_V3ADD(u, u, v);
+	  AY_V3SCAL(u, -0.1);
+	  AY_V3ADD(end, end, u);
+	  end -= stride;
+	  f -= stride;
+	}
+      break;
+    default:
+      break;
+    } /* switch */
+
+ return ay_status;
+} /* ay_nct_open */
+
+
+/** ay_nct_opentcmd:
+ *  Open a closed curve.
+ *  Implements the \a openC scripting interface command.
+ *  See also the corresponding section in the \ayd{scopenc}.
+ *
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_nct_opentcmd(ClientData clientData, Tcl_Interp *interp,
+		int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ int notify_parent = AY_FALSE;
+ ay_list_object *sel = ay_selection;
+ ay_nurbcurve_object *nc = NULL;
+
+  while(sel)
+    {
+      switch(sel->object->type)
+	{
+	case AY_IDNCURVE:
+	  if(sel->object->selp)
+	    ay_selp_clear(sel->object);
+
+	  nc = (ay_nurbcurve_object *)sel->object->refine;
+
+	  ay_status = ay_nct_open(nc);
+
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, argv[0], "Error opening object.");
+	    }
+
+	  ay_nct_recreatemp(nc);
+
+	  sel->object->modified = AY_TRUE;
+
+	  /* re-create tesselation of curve */
+	  (void)ay_notify_object(sel->object);
+	  notify_parent = AY_TRUE;
+	  break;
+	default:
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
+	  break;
+	} /* switch */
+      sel = sel->next;
+    } /* while */
+
+  if(notify_parent)
+    (void)ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_nct_opentcmd */
+
+
 /** ay_nct_revert:
  *  revert a NURBS curve
  *
@@ -6067,7 +6178,6 @@ ay_nct_toplane(int plane, int allow_flip, ay_object *c)
     {
       if(allow_flip)
 	{
-	  printf("FLIPPING\n");
 	  ay_nct_revert(c->refine);
 	}
       return AY_OK;

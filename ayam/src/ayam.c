@@ -1116,6 +1116,9 @@ Tcl_AppInit(Tcl_Interp *interp)
   /* NURBS */
 
   /* nurbs/nct.c */
+  Tcl_CreateCommand(interp, "openC", ay_nct_opentcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   Tcl_CreateCommand(interp, "refineC", ay_nct_refinetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
@@ -1673,6 +1676,9 @@ ay_safeinit(Tcl_Interp *interp)
   /* NURBS */
 
   /* nurbs/nct.c */
+  Tcl_CreateCommand(interp, "openC", ay_nct_opentcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   Tcl_CreateCommand(interp, "refineC", ay_nct_refinetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
