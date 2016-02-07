@@ -736,6 +736,8 @@ ay_nct_opentcmd(ClientData clientData, Tcl_Interp *interp,
  int notify_parent = AY_FALSE;
  ay_list_object *sel = ay_selection;
  ay_nurbcurve_object *nc = NULL;
+ ay_icurve_object *ic = NULL;
+ ay_acurve_object *ac = NULL;
 
   while(sel)
     {
@@ -761,6 +763,32 @@ ay_nct_opentcmd(ClientData clientData, Tcl_Interp *interp,
 	  /* re-create tesselation of curve */
 	  (void)ay_notify_object(sel->object);
 	  notify_parent = AY_TRUE;
+	  break;
+	case AY_IDICURVE:
+	  ic = (ay_icurve_object *)sel->object->refine;
+
+	  if(ic->type == AY_CTCLOSED)
+	    {
+	      ic->type = AY_CTOPEN;
+	      sel->object->modified = AY_TRUE;
+
+	      /* re-create tesselation of curve */
+	      (void)ay_notify_object(sel->object);
+	      notify_parent = AY_TRUE;
+	    }
+	  break;
+	case AY_IDACURVE:
+	  ac = (ay_acurve_object *)sel->object->refine;
+
+	  if(ac->closed)
+	    {
+	      ac->closed = AY_FALSE;
+	      sel->object->modified = AY_TRUE;
+
+	      /* re-create tesselation of curve */
+	      (void)ay_notify_object(sel->object);
+	      notify_parent = AY_TRUE;
+	    }
 	  break;
 	default:
 	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
