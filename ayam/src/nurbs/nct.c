@@ -690,7 +690,7 @@ ay_nct_open(ay_nurbcurve_object *curve)
       end = &(curve->controlv[(curve->length*4)-4]);
       gndcb(1, curve, end, &d);
       AY_V3SUB(v, d, end);
-      AY_V3SCAL(v, 0.1);
+      AY_V3SCAL(v, 0.2);
       while(d != end)
 	{
 	  AY_V3ADD(end, end, v);
@@ -733,11 +733,14 @@ ay_nct_opentcmd(ClientData clientData, Tcl_Interp *interp,
 		int argc, char *argv[])
 {
  int ay_status = AY_OK;
- int notify_parent = AY_FALSE;
+ int close = AY_FALSE, notify_parent = AY_FALSE;
  ay_list_object *sel = ay_selection;
  ay_nurbcurve_object *nc = NULL;
  ay_icurve_object *ic = NULL;
  ay_acurve_object *ac = NULL;
+
+  if(argv[0][0] == 'c')
+    close = AY_TRUE;
 
   while(sel)
     {
@@ -748,12 +751,20 @@ ay_nct_opentcmd(ClientData clientData, Tcl_Interp *interp,
 	    ay_selp_clear(sel->object);
 
 	  nc = (ay_nurbcurve_object *)sel->object->refine;
-
-	  ay_status = ay_nct_open(nc);
+	  if(close)
+	    {
+	      nc->type = AY_CTCLOSED;
+	      ay_status = ay_nct_close(nc);
+	    }
+	  else
+	    ay_status = ay_nct_open(nc);
 
 	  if(ay_status)
 	    {
-	      ay_error(AY_ERROR, argv[0], "Error opening object.");
+	      if(close)
+		ay_error(AY_ERROR, argv[0], "Error closing object.");
+	      else
+		ay_error(AY_ERROR, argv[0], "Error opening object.");
 	    }
 
 	  ay_nct_recreatemp(nc);
@@ -766,28 +777,56 @@ ay_nct_opentcmd(ClientData clientData, Tcl_Interp *interp,
 	  break;
 	case AY_IDICURVE:
 	  ic = (ay_icurve_object *)sel->object->refine;
-
-	  if(ic->type == AY_CTCLOSED)
+	  if(close)
 	    {
-	      ic->type = AY_CTOPEN;
-	      sel->object->modified = AY_TRUE;
+	      if(ic->type == AY_CTOPEN)
+		{
+		  ic->type = AY_CTCLOSED;
+		  sel->object->modified = AY_TRUE;
 
-	      /* re-create tesselation of curve */
-	      (void)ay_notify_object(sel->object);
-	      notify_parent = AY_TRUE;
+		  /* re-create tesselation of curve */
+		  (void)ay_notify_object(sel->object);
+		  notify_parent = AY_TRUE;
+		}
+	    }
+	  else
+	    {
+	      if(ic->type == AY_CTCLOSED)
+		{
+		  ic->type = AY_CTOPEN;
+		  sel->object->modified = AY_TRUE;
+
+		  /* re-create tesselation of curve */
+		  (void)ay_notify_object(sel->object);
+		  notify_parent = AY_TRUE;
+		}
 	    }
 	  break;
 	case AY_IDACURVE:
 	  ac = (ay_acurve_object *)sel->object->refine;
-
-	  if(ac->closed)
+	  if(close)
 	    {
-	      ac->closed = AY_FALSE;
-	      sel->object->modified = AY_TRUE;
+	      if(!ac->closed)
+		{
+		  ac->closed = AY_TRUE;
+		  sel->object->modified = AY_TRUE;
 
-	      /* re-create tesselation of curve */
-	      (void)ay_notify_object(sel->object);
-	      notify_parent = AY_TRUE;
+		  /* re-create tesselation of curve */
+		  (void)ay_notify_object(sel->object);
+		  notify_parent = AY_TRUE;
+		}
+	    }
+	  else
+	    {
+	      if(ac->closed)
+		{
+		  ac->closed = AY_FALSE;
+		  sel->object->modified = AY_TRUE;
+
+		  /* re-create tesselation of curve */
+		  (void)ay_notify_object(sel->object);
+		  notify_parent = AY_TRUE;
+		}
 	    }
 	  break;
 	default:
