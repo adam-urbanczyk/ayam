@@ -469,6 +469,9 @@ array set ayviewshortcuts {
     IncMultP "asterisk"
     DecMultP "slash"
 
+    OpenC "parenleft"
+    CloseC "parenright"
+
     MoveV "v"
     MoveZV "V"
     RotV "R"
