@@ -416,11 +416,9 @@ menu $m.nct -tearoff 0
 
 $m.nct add command -label "Revert" -command { undo save RevertC; revertC;
                                               plb_update; rV }
-$m.nct add command -label "Open" -command { undo save Open;
-                                            ncurve_open;
+$m.nct add command -label "Open" -command { undo save Open; openC;
                                             plb_update; rV }
-$m.nct add command -label "Close" -command { undo save Close;
-                                            ncurve_close;
+$m.nct add command -label "Close" -command { undo save Close; closeC;
                                             plb_update; rV }
 $m.nct add command -label "Make Periodic" -command { undo save "Make Periodic";
                                             ncurve_makeperiodic;

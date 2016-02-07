@@ -912,6 +912,9 @@ proc shortcut_viewactions { w } {
     bind $w <$ayviewshortcuts(IncMultP)> "actionIncMultP $w.f3D.togl"
     bind $w <$ayviewshortcuts(DecMultP)> "actionDecMultP $w.f3D.togl"
 
+    bind $w <$ayviewshortcuts(OpenC)> "undo save OpenC;openC;plb_update;rV"
+    bind $w <$ayviewshortcuts(CloseC)> "undo save CloseC;closeC;plb_update;rV"
+
     bind $w <$ayviewshortcuts(Pick)> "actionPick $w.f3D.togl"
 
     bind $w.f3D.togl <[repctrl $ayviewshortcuts(SetMark)]>\
