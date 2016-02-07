@@ -168,8 +168,10 @@ static JSFunctionSpec jsinterp_global_functions[] = {
   {"centerPnts", jsinterp_wraptcmd, 0, 0, 0},
 
   {"revertC", jsinterp_wraptcmd, 0, 0, 0},
-
+  {"openC", jsinterp_wraptcmd, 0, 0, 0},
+  {"closeC", jsinterp_wraptcmd, 0, 0, 0},
   {"refineC", jsinterp_wraptcmd, 0, 0, 0},
+
   {"refineknNC", jsinterp_wraptcmd, 0, 0, 0},
   {"coarsenNC", jsinterp_wraptcmd, 0, 0, 0},
   {"clampNC", jsinterp_wraptcmd, 0, 0, 0},
