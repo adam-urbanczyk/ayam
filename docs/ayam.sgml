@@ -12283,8 +12283,11 @@ the first (multiple end points will be managed correctly).
 For periodic NURBS curves, the last <em/p/ points will be moved away
 from the first <em/p/ (where <em/p/ is the degree of the curve).
 
-For ACurve and ICurve objects the closed attribute will be cleared
+For ACurve and ICurve objects the <tt/"Closed"/ attribute will be cleared
 and no control points will be modified.
+<tag/Notes/
+See also the documentation of the corresponding
+scripting interface command <ref id="scopenc" name="openC">.
 </descrip>
 
 <sect2>Close Tool<label id="closect">
@@ -12297,8 +12300,11 @@ For NCurve objects the last point will be made identical to
 the first, however, this does not guarantee a closed curve
 shape unless the knot vector is clamped.
 
-For ACurve and ICurve objects the closed attribute will be set
+For ACurve and ICurve objects the <tt/"Closed"/ attribute will be set
 and no control points will be modified.
+<tag/Notes/
+See also the documentation of the corresponding
+scripting interface command <ref id="scclosec" name="closeC">.
 </descrip>
 
 <sect2>Refine Tool<label id="refit">
