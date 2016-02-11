@@ -15642,6 +15642,32 @@ See also section <ref id="remknt" name="Remove Knot Tool">.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 
+<label id="scopenc">
+openC &ndash; open curve:
+<itemize>
+ <item>Synopsis: <tt/"openC"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Open a NCurve, ACurve, or ICurve.
+<p><p>
+See also section <ref id="openct" name="Open Tool">.
+</itemize>
+
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
+<label id="scclosec">
+closeC &ndash; close curve:
+<itemize>
+ <item>Synopsis: <tt/"closeC"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Close a NCurve, ACurve, or ICurve.
+<p><p>
+See also section <ref id="closect" name="Close Tool">.
+</itemize>
+
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
 <label id="screfinenc"><label id="screfinec">
 refineC &ndash; refine curve:
 <itemize>
@@ -21713,6 +21739,7 @@ Index:
 </itemize>
 <item>Clone: <ref id="cloneobj" name="Clone object">
 <item>Close: <ref id="treecontm" name="tree context menu entry">
+<item>closeC: <ref id="scclosec" name="scripting interface command">
 <item>Closed:
 <itemize>
 <item><ref id="spattr" name="Sphere attribute">,
@@ -22375,8 +22402,10 @@ Index:
 <item>Open:
 <itemize>
 <item><ref id="mmfile" name="main menu entry">,
-<item><ref id="treecontm" name="tree context menu entry">
+<item><ref id="treecontm" name="tree context menu entry">,
+<item><ref id="openct" name="open tool">
 </itemize>
+<item>openC: <ref id="scopenc" name="scripting interface command">
 <item>OpenNURBS:
 <itemize>
 <item><ref id="imprhino" name="3DM (Rhino) Import">,
