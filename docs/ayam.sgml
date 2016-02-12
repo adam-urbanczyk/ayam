@@ -12275,7 +12275,7 @@ surfaces <ref id="revertut" name="Revert U Surface Tool"> and
 <p>
 <descrip>
 <tag/Arguments/ The open tool takes all NCurve,
-ICurve, and ACurve objects from the selection.
+ICurve, ACurve, and ConcatNC objects from the selection.
 <tag/Operation/ The curves will be opened.
 For closed NCurve objects, the last point will be moved away from
 the first (multiple end points will be managed correctly).
@@ -12283,8 +12283,8 @@ the first (multiple end points will be managed correctly).
 For periodic NURBS curves, the last <em/p/ points will be moved away
 from the first <em/p/ (where <em/p/ is the degree of the curve).
 
-For ACurve and ICurve objects the <tt/"Closed"/ attribute will be cleared
-and no control points will be modified.
+For ACurve, ICurve, and ConcatNC objects the <tt/"Closed"/ attribute
+will be cleared and no control points will be modified.
 <tag/Notes/
 See also the documentation of the corresponding
 scripting interface command <ref id="scopenc" name="openC">.
@@ -12294,14 +12294,14 @@ scripting interface command <ref id="scopenc" name="openC">.
 <p>
 <descrip>
 <tag/Arguments/ The close tool takes all NCurve,
-ICurve, and ACurve objects from the selection.
+ICurve, ACurve, and ConcatNC objects from the selection.
 <tag/Operation/ The curves will be closed.
 For NCurve objects the last point will be made identical to
 the first, however, this does not guarantee a closed curve
 shape unless the knot vector is clamped.
 
-For ACurve and ICurve objects the <tt/"Closed"/ attribute will be set
-and no control points will be modified.
+For ACurve, ICurve, and ConcatNC objects the <tt/"Closed"/ attribute
+will be set and no control points will be modified.
 <tag/Notes/
 See also the documentation of the corresponding
 scripting interface command <ref id="scclosec" name="closeC">.
@@ -15653,7 +15653,7 @@ openC &ndash; open curve:
 <itemize>
  <item>Synopsis: <tt/"openC"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Open a NCurve, ACurve, or ICurve.
+ <item>Description: Open a NCurve, ACurve, ICurve, or ConcatNC.
 <p><p>
 See also section <ref id="openct" name="Open Tool">.
 </itemize>
@@ -15666,7 +15666,7 @@ closeC &ndash; close curve:
 <itemize>
  <item>Synopsis: <tt/"closeC"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Close a NCurve, ACurve, or ICurve.
+ <item>Description: Close a NCurve, ACurve, ICurve, or ConcatNC.
 <p><p>
 See also section <ref id="closect" name="Close Tool">.
 </itemize>
