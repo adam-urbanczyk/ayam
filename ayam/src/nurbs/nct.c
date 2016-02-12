@@ -724,6 +724,7 @@ ay_nct_open(ay_nurbcurve_object *curve)
 /** ay_nct_opentcmd:
  *  Open a closed curve.
  *  Implements the \a openC scripting interface command.
+ *  Also implements the \a closeC scripting interface command.
  *  See also the corresponding section in the \ayd{scopenc}.
  *
  *  \returns TCL_OK in any case.
@@ -738,6 +739,7 @@ ay_nct_opentcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbcurve_object *nc = NULL;
  ay_icurve_object *ic = NULL;
  ay_acurve_object *ac = NULL;
+ ay_concatnc_object *cc = NULL;
 
   if(argv[0][0] == 'c')
     close = AY_TRUE;
@@ -821,6 +823,33 @@ ay_nct_opentcmd(ClientData clientData, Tcl_Interp *interp,
 	      if(ac->closed)
 		{
 		  ac->closed = AY_FALSE;
+		  sel->object->modified = AY_TRUE;
+
+		  /* re-create tesselation of curve */
+		  (void)ay_notify_object(sel->object);
+		  notify_parent = AY_TRUE;
+		}
+	    }
+	  break;
+	case AY_IDCONCATNC:
+	  cc = (ay_concatnc_object *)sel->object->refine;
+	  if(close)
+	    {
+	      if(!cc->closed)
+		{
+		  cc->closed = AY_TRUE;
+		  sel->object->modified = AY_TRUE;
+
+		  /* re-create tesselation of curve */
+		  (void)ay_notify_object(sel->object);
+		  notify_parent = AY_TRUE;
+		}
+	    }
+	  else
+	    {
+	      if(cc->closed)
+		{
+		  cc->closed = AY_FALSE;
 		  sel->object->modified = AY_TRUE;
 
 		  /* re-create tesselation of curve */
