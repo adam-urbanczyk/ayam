@@ -22,6 +22,8 @@
 
 Tk_RestrictAction ay_ns_restrictall(ClientData clientData, XEvent *eventPtr);
 
+void ay_ns_disable(ay_tag *tag);
+
 
 /* functions: */
 
@@ -104,7 +106,7 @@ ay_ns_restrictall(ClientData clientData,
  *
  */
 int
-ay_ns_execute(ay_object *o, char *script)
+ay_ns_execute(ay_object *o, ay_tag *tag)
 {
  static int lock = 0;
  int ay_status = AY_OK, result = TCL_OK;
@@ -113,8 +115,9 @@ ay_ns_execute(ay_object *o, char *script)
  ay_list_object *old_currentlevel;
  ClientData old_restrictcd;
  Tcl_Interp *interp = NULL;
+ char *script = NULL;
 
-  if(!o || !script)
+  if(!o || !tag)
     return AY_ENULL;
 
   /* this lock protects ourselves from running in an endless
@@ -127,6 +130,8 @@ ay_ns_execute(ay_object *o, char *script)
     {
       lock = 1;
     } /* if */
+
+  script = tag->val;
 
 #ifdef AYNOSAFEINTERP
   interp = ay_interp;
@@ -155,7 +160,13 @@ ay_ns_execute(ay_object *o, char *script)
 
   if(result == TCL_ERROR)
     {
-      ay_error(AY_ERROR, fname, "Script failed!");
+      if(ay_prefs.disablefailedscripts)
+	{
+	  ay_error(AY_ERROR, fname, "Script failed and disabled!");
+	  ay_ns_disable(tag);
+	}
+      else
+	ay_error(AY_ERROR, fname, "Script failed!");
     }
 
 cleanup:
@@ -186,6 +197,52 @@ cleanup:
 
  return AY_OK;
 } /* ay_ns_execute */
+
+
+void
+ay_ns_disable(ay_tag *tag)
+{
+
+  if(!tag)
+    return;
+
+  if(tag->type == ay_ans_tagtype)
+    {
+      tag->type = ay_dans_tagtype;
+      memcpy(tag->name, ay_dans_tagname, 4*sizeof(char));
+    }
+
+  if(tag->type == ay_bns_tagtype)
+    {
+      tag->type = ay_dbns_tagtype;
+      memcpy(tag->name, ay_dbns_tagname, 4*sizeof(char));
+    }
+
+ return;
+}
+
+
+void
+ay_ns_enable(ay_tag *tag)
+{
+
+  if(!tag)
+    return;
+
+  if(tag->type == ay_dans_tagtype)
+    {
+      tag->type = ay_ans_tagtype;
+      memcpy(tag->name, ay_ans_tagname, 4*sizeof(char));
+    }
+
+  if(tag->type == ay_dbns_tagtype)
+    {
+      tag->type = ay_bns_tagtype;
+      memcpy(tag->name, ay_bns_tagname, 4*sizeof(char));
+    }
+
+ return;
+}
 
 
 /* ay_ns_init:

@@ -667,6 +667,7 @@ ay_init(Tcl_Interp *interp)
 
   ay_prefs.globalmark = AY_TRUE;
   ay_prefs.createatmark = AY_TRUE;
+  ay_prefs.disablefailedscripts = AY_TRUE;
 
  return ay_status;
 } /* ay_init */

@@ -123,7 +123,7 @@ ay_notify_parent(void)
 	  while(tag)
 	    {
 	      if(tag->type == ay_bns_tagtype)
-		ay_ns_execute(o, tag->val);
+		ay_ns_execute(o, tag);
 	      tag = tag->next;
 	    }
 
@@ -155,7 +155,7 @@ ay_notify_parent(void)
 	  while(tag)
 	    {
 	      if(tag->type == ay_ans_tagtype)
-		ay_ns_execute(o, tag->val);
+		ay_ns_execute(o, tag);
 	      tag = tag->next;
 	    }
 	} /* if */
@@ -205,7 +205,7 @@ ay_notify_object(ay_object *o)
   while(tag)
     {
       if(tag->type == ay_bns_tagtype)
-	ay_ns_execute(o, tag->val);
+	ay_ns_execute(o, tag);
       tag = tag->next;
     }
 
@@ -237,7 +237,7 @@ ay_notify_object(ay_object *o)
   while(tag)
     {
       if(tag->type == ay_ans_tagtype)
-	ay_ns_execute(o, tag->val);
+	ay_ns_execute(o, tag);
       tag = tag->next;
     }
 

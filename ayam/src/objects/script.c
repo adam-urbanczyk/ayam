@@ -1555,6 +1555,12 @@ resenv:
 	      ay_error(AY_ERROR, fname, l1);
 	    }
 	} /* if */
+
+      if(ay_prefs.disablefailedscripts)
+	{
+	  ay_error(AY_ERROR, fname, "Script disabled.");
+	  sc->active = AY_FALSE;
+	}
     } /* if */
 
   /* manage read only points */

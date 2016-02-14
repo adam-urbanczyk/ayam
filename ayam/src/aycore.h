@@ -473,7 +473,7 @@ Tk_RestrictAction ay_ns_restrictall(ClientData clientData,
 
 /** execute script from ANS/BNS tag
  */
-int ay_ns_execute(ay_object *o, char *script);
+int ay_ns_execute(ay_object *o, ay_tag *tag);
 
 /** initialize notify script tag module
  */
