@@ -1521,6 +1521,8 @@ typedef struct ay_preferences_s
 
   char **converttags;  /**< tags to keep/copy upon provide/conversion */
   int converttagslen; /**< number of tag types in converttags */
+
+  int disablefailedscripts;  /**< disable scripts after errors */
 } ay_preferences;
 
 
