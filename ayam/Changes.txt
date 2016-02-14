@@ -14,6 +14,11 @@ o improved support for "BP"/"CP" tags in "ConvertTags" preference
   setting, if provided, conversion of e.g. a Revolve object with caps
   now creates a single NPatch with "CP" tags instead of a level with
   multiple NPatch objects
+o the open curve tool now modifies control points so that subsequent
+  editing becomes easier, it can also now more easily invoked by the
+  new keyboard shortcut <(>
+o the close curve tool can now more easily invoked by the new
+  keyboard shortcut <)>
 
 GUI:
 o added RIB-Export rendering option "AutoCloseUI" to automatically close
