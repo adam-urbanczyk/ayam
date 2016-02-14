@@ -1,15 +1,32 @@
-[31. Jan 2016 CVS-Head:
+[14. Feb 2016 CVS-Head:
 =======================
 Bug Fixes:
 o added missing scripting interface commands to JavaScript and Lua scripting
-  language plugins (SF )
-o shading of quadric primitives in external views on MacOSX/Aqua (SF )
+  language plugins (SF 526)
+o shading of quadric primitives in external views on MacOSX/Aqua (SF 525)
+o crash creating a bevel on a degenerate curve (SF 524)
+o conversion of tool objects without caps/bevels destroying TP/TC tags (SF 527)
+
+Modelling:
+o the create Sweep/Swing tools now rotate the parameter curves to the
+  proper plane by control point manipulation if possible
+o improved support for "BP"/"CP" tags in "ConvertTags" preference
+  setting, if provided, conversion of e.g. a Revolve object with caps
+  now creates a single NPatch with "CP" tags instead of a level with
+  multiple NPatch objects
+
+GUI:
+o added RIB-Export rendering option "AutoCloseUI" to automatically close
+  the render user interface window when rendering is finished
 
 Scripts/Scripting Interface:
 o added "setTag" command that adds a tag if it is not present, otherwise
   just sets the value
 o added "toYZC" and "toXZC" commands to rotate curves to the respective
   planes
+o added hidden preference option "DisableFailedScripts" that controls
+  whether script object scripts and scripts in tags should be disabled
+  when they fail
 
 
 [13. Jan 2016] Ayam 1.23:
