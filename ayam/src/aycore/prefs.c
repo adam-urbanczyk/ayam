@@ -343,6 +343,10 @@ ay_prefs_gettcmd(ClientData clientData, Tcl_Interp *interp,
   to = Tcl_NewStringObj(ay_prefs.colorname, -1);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton, "DisableFailedScripts", -1);
+  to = Tcl_NewIntObj(ay_prefs.disablefailedscripts);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
@@ -492,6 +496,10 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 	to = Tcl_ObjGetVar2(interp, toa, ton,
 			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	Tcl_GetIntFromObj(interp, to, &ay_prefs.defaultmat);
+	Tcl_SetStringObj(ton, "DisableFailedScripts", 20);
+	to = Tcl_ObjGetVar2(interp, toa, ton,
+			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &ay_prefs.disablefailedscripts);
       } /* D... */
 
     if(setall || (argv[i][0] == 'E'))
