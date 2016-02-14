@@ -249,6 +249,7 @@ array set ayprefs {
  PickCycle 0
  CullFaces 0
  AutoCloseUI 1
+ DisableFailedScripts 1
 
  Docs "http://ayam.sourceforge.net/docs/"
  DailyTips {
