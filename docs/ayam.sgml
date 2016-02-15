@@ -10230,6 +10230,11 @@ GUI of Ayam should be avoided. In particular, the following
 procedures and commands should <em>not</em> be used: <tt/uS/, <tt/uCR/,
 <tt/uCL/, <tt/selOb/, <tt/plb_update/, <tt/undo/!
 <p>
+If a script fails, the Script object will be disabled by means
+of the <tt>"Active"</tt> attribute.<footnote>Since 1.24.</footnote>
+Furthermore, the script line where the error occurred will be
+highlighted.
+<p>
 Script objects may also create their own property
 GUIs for e.g.~script parameters.<footnote>Since 1.8.2.</footnote>
 This may be accomplished by adding tags of type <tt>"NP"</tt> with the
@@ -10247,7 +10252,7 @@ and thus users are blocked from unintentionally changing it.
 <p>
 Starting with Ayam 1.16, the environment for running Script objects scripts
 has been refined to allow more complex scripts (that traverse the scene or
-use the clipboard) to be written:
+use the clipboard) to be written:<newline>
 When a script is running, the current level is the child level of the
 respective Script object. Furthermore, the object clipboard is saved
 for running the script and re-established after the script finished,
@@ -11867,6 +11872,9 @@ It will not be executed then.
 Disabled notify script tags may be enabled after careful inspection
 by simply changing their type back to <tt/"BNS"/
 or by using the main menu entry <tt>"Special/Enable Scripts"</tt>.
+<p>
+If the script of a BNS tag fails, the tag will be disabled by 
+changing the type to DBNS.<footnote>Since 1.24.</footnote>
 
 <sect2>ANS (After Notify Script) Tag<label id="anstag">
 <p>
@@ -11905,6 +11913,9 @@ It will not be executed then.
 Disabled notify script tags may be enabled after careful inspection
 by simply changing their type back to <tt/"ANS"/
 or by using the main menu entry <tt>"Special/Enable Scripts"</tt>.
+<p>
+If the script of a ANS tag fails, the tag will be disabled by 
+changing the type to DANS.<footnote>Since 1.24.</footnote>
 
 <sect2>UMM/VMM (U/V Min Max) Tag<label id="ummtag">
 <p>
@@ -12286,6 +12297,9 @@ from the first <em/p/ (where <em/p/ is the degree of the curve).
 For ACurve, ICurve, and ConcatNC objects the <tt/"Closed"/ attribute
 will be cleared and no control points will be modified.
 <tag/Notes/
+The open tool can be conveniently invoked from view windows
+using the keyboard shortcut <tt/&lt;(&gt;/.
+
 See also the documentation of the corresponding
 scripting interface command <ref id="scopenc" name="openC">.
 </descrip>
@@ -12303,6 +12317,9 @@ shape unless the knot vector is clamped.
 For ACurve, ICurve, and ConcatNC objects the <tt/"Closed"/ attribute
 will be set and no control points will be modified.
 <tag/Notes/
+The close tool can be conveniently invoked from view windows
+using the keyboard shortcut <tt/&lt;)&gt;/.
+
 See also the documentation of the corresponding
 scripting interface command <ref id="scclosec" name="closeC">.
 </descrip>
@@ -20596,6 +20613,10 @@ drawing mode is included in the list of modes that are cycled by keyboard
 <item><tt/"DailyTips"/: a list of strings that appear as tips
 on startup in the console (default: large).
 
+<item><tt/"DisableFailedScripts"/: specifies whether scripts in
+Script objects or BNS/ANS tags should be disabled when they
+fail (default: 1 &ndash; yes).
+
 <item><tt/"EFlush"/: time in ms between two flushes of the error message
 buffer (default: 2000 - 2s).
 
@@ -21878,6 +21899,7 @@ Index:
 <item>Derivatives_U, Derivatives_V: <ref id="ipattr" name="IPatch attribute">
 <item>Difference: <ref id="levelobj" name="Level object">
 <item>Direct Editing: <ref id="editac" name="edit points">
+<item>DisableFailedScripts: <ref id="hidprefs" name="hidden preference setting">
 <item>Disk: <ref id="diskobj" name="Disk object">
 <item>Displacement: <ref id="matshader" name="shader">
 <item>Display: <ref id="ridtag" name="RiDisplay tag type">
