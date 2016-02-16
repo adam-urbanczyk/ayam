@@ -389,6 +389,7 @@ ay_object_deletemulti(ay_object *o, int force)
 	}
 
       next = d->next;
+
       ay_status = ay_object_delete(d);
       if(!force && ay_status)
 	{
@@ -1032,6 +1033,12 @@ ay_object_replace(ay_object *src, ay_object *dst)
 	}
       else
 	{
+	  d = dst->down;
+	  while(d)
+	    {
+	      ay_undo_clearobj(d);
+	      d = d->next;
+	    }
 	  (void)ay_object_deletemulti(dst->down, AY_TRUE);
 	}
     }
