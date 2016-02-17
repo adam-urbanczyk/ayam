@@ -22,9 +22,6 @@
 
 Tk_RestrictAction ay_ns_restrictall(ClientData clientData, XEvent *eventPtr);
 
-void ay_ns_disable(ay_tag *tag);
-
-
 /* functions: */
 
 /* ay_ns_restrictall:
@@ -199,26 +196,45 @@ cleanup:
 } /* ay_ns_execute */
 
 
-void
+int
 ay_ns_disable(ay_tag *tag)
 {
+ char *tc;
 
   if(!tag)
-    return;
+    return AY_ENULL;
 
   if(tag->type == ay_ans_tagtype)
     {
-      tag->type = ay_dans_tagtype;
-      memcpy(tag->name, ay_dans_tagname, 4*sizeof(char));
+      tc = realloc(tag->name, (strlen(ay_dans_tagname)+1)*sizeof(char));
+      if(tc)
+	{
+	  tag->type = ay_dans_tagtype;
+	  tag->name = tc;
+	  strcpy(tag->name, ay_dans_tagname);
+	}
+      else
+	{
+	  return AY_EOMEM;
+	}
     }
 
   if(tag->type == ay_bns_tagtype)
     {
-      tag->type = ay_dbns_tagtype;
-      memcpy(tag->name, ay_dbns_tagname, 4*sizeof(char));
+      tc = realloc(tag->name, (strlen(ay_dbns_tagname)+1)*sizeof(char));
+      if(tc)
+	{
+	  tag->type = ay_dbns_tagtype;
+	  tag->name = tc;
+	  strcpy(tag->name, ay_dbns_tagname);
+	}
+      else
+	{
+	  return AY_EOMEM;
+	}
     }
 
- return;
+ return AY_OK;
 }
 
 
