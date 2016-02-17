@@ -402,7 +402,6 @@ ay_read_tags(FILE *fileptr, ay_object *o)
  char fname[] = "read_tags";
 #ifdef AYNOSAFEINTERP
  int deactivate = 0;
- char *tc = NULL;
  char a1[] = "ay", n1[] = "scriptdisable";
  char script_disable_cmd[] = "script_disable";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
@@ -450,9 +449,6 @@ ay_read_tags(FILE *fileptr, ay_object *o)
 	    { free(tag->name); free(tag); return AY_EOMEM; }
 	}
 
-      *next = tag;
-      next = &(tag->next);
-
 #ifdef AYNOSAFEINTERP
      /* if there is no safe interpreter, disable all ANS/BNS tags
 	by manipulating their type */
@@ -467,13 +463,11 @@ ay_read_tags(FILE *fileptr, ay_object *o)
 
 	 if(deactivate)
 	   {
-	     tag->type = ay_dbns_tagtype;
-	     tc = NULL;
-	     tc = realloc(tag->name, (strlen(ay_dbns_tagname)+1)*sizeof(char));
-	     if(tc)
+	     ay_status = ay_ns_disable(tag);
+	     if(ay_status)
 	       {
-		 tag->name = tc;
-		 strcpy(tag->name, ay_dbns_tagname);
+		 ay_tags_free(tag);
+		 break;
 	       }
 	   }
 
@@ -491,13 +485,11 @@ ay_read_tags(FILE *fileptr, ay_object *o)
 
 	 if(deactivate)
 	   {
-	     tag->type = ay_dans_tagtype;
-	     tc = NULL;
-	     tc = realloc(tag->name, (strlen(ay_dans_tagname)+1)*sizeof(char));
-	     if(tc)
+	     ay_status = ay_ns_disable(tag);
+	     if(ay_status)
 	       {
-		 tag->name = tc;
-		 strcpy(tag->name, ay_dans_tagname);
+		 ay_tags_free(tag);
+		 break;
 	       }
 	   }
 
@@ -505,6 +497,10 @@ ay_read_tags(FILE *fileptr, ay_object *o)
 	 Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
        } /* if */
 #endif /* AYNOSAFEINTERP */
+
+      *next = tag;
+      next = &(tag->next);
+
     } /* for */
 
  return ay_status;
