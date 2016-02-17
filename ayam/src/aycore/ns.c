@@ -196,6 +196,13 @@ cleanup:
 } /* ay_ns_execute */
 
 
+/** ay_ns_disable:
+ * Disables a BNS/ANS tag by setting its type/name to DBNS/DANS respectively.
+ *
+ * \param[in,out] tag tag to disable
+ *
+ * \return AY_OK on success, error code otherwise
+ */
 int
 ay_ns_disable(ay_tag *tag)
 {
@@ -235,7 +242,7 @@ ay_ns_disable(ay_tag *tag)
     }
 
  return AY_OK;
-}
+} /* ay_ns_disable */
 
 
 void
