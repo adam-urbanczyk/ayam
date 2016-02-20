@@ -651,7 +651,8 @@ dxfio.so:
 
 x3dio.so:
 	$(CC) -c $(CFLAGS) plugins/x3dio.c -o plugins/x3dio.o $(AYINC) $(X3DIOINC)
-	$(CC) $(SHLFLAGS) plugins/x3dio.o -o plugins/x3dio.so $(X3DIOLIBS)
+	$(CC) -c $(CFLAGS) plugins/scew_copy.c -o plugins/scew_copy.o $(AYINC) $(X3DIOINC)
+	$(CC) $(SHLFLAGS) plugins/x3dio.o plugins/scew_copy.o -o plugins/x3dio.so  $(X3DIOLIBS)
 
 sdnpatch.so:
 	$(CXX) -c $(CFLAGS) plugins/sdnpatch.cpp -o plugins/sdnpatch.o $(AYINC) $(SDNPATCHINC)
