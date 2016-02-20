@@ -18,6 +18,8 @@
 /* SCEW includes (also pull in Expat includes): */
 #include "scew.h"
 
+#include "scew_copy.h"
+
 #include <stdio.h>
 
 
@@ -47,6 +49,9 @@ static Tcl_HashTable *x3dio_defs_ht = NULL;
 /* MN tags are used to temporarily store x3dio generated Master/DEF names */
 char *x3dio_mn_tagtype = NULL;
 char *x3dio_mn_tagname = "mn";
+
+char *x3dio_xml_tagtype = NULL;
+char *x3dio_xml_tagname = "XML";
 
 
 char *x3dio_truestring = "true";
@@ -10146,9 +10151,19 @@ x3dio_writelight(scew_element *element, ay_object *o)
 int
 x3dio_writematerial(scew_element *shape_element, ay_object *o)
 {
+ char fname[] = "x3dio_writematerial";
  scew_element *appearance_element = NULL;
  scew_element *material_element = NULL;
  char buf[128];
+ unsigned int size;
+ ay_tag *tag = NULL;
+ char errstr[256];
+ scew_tree *tree = NULL;
+ scew_parser *parser = NULL;
+ scew_error errcode;
+ enum XML_Error expat_code;
+ scew_element *element = NULL, *child = NULL, *elementcopy = NULL, *target;
+ scew_attribute *attribute = NULL, *attributecopy = NULL;
 
   if(!shape_element || !o)
     return AY_ENULL;
@@ -10168,6 +10183,71 @@ x3dio_writematerial(scew_element *shape_element, ay_object *o)
   else
     {
       scew_element_add_attr_pair(material_element, "diffuseColor", "1 1 1");
+    }
+
+  if(o->mat)
+    tag = o->mat->objptr->tags;
+
+  while(tag)
+    {
+      if(tag->type == x3dio_xml_tagtype/*ay_xmldata_tagtype*/)
+	{
+	  parser = scew_parser_create();
+	  scew_parser_ignore_whitespaces(parser, 1);
+
+	  size = strlen(tag->val);
+	  if(scew_parser_load_buffer(parser, tag->val, size))
+	    {
+	      tree = scew_parser_tree(parser);
+	      element = scew_tree_root(tree);
+
+	      if(!strcmp(scew_element_name(material_element),
+			 scew_element_name(element)))
+		target = material_element;
+	      else
+		target = appearance_element;
+
+	      while((child = scew_element_next(element, child)))
+		{
+		  elementcopy = scew_element_copy(element);
+		  if(elementcopy)
+		    {
+		      scew_element_add_elem(target, elementcopy);
+		    }
+		}
+	      while((attribute = scew_attribute_next(element, attribute)))
+		{
+		  attributecopy = scew_attribute_copy(attribute);
+		  if(attributecopy)
+		    {
+		      scew_element_add_attr(target, attributecopy);
+		    }
+		}
+	    }
+	  else
+	    {
+	      errcode = scew_error_code();
+	      sprintf(errstr,
+		      "Unable to process xml data tag (error #%d: %s)\n",
+		      errcode,
+		      scew_error_string(errcode));
+	      ay_error(AY_ERROR, fname, errstr);
+	      if(errcode == scew_error_expat)
+		{
+		  expat_code = scew_error_expat_code(parser);
+		  sprintf(errstr, "Expat error #%d (line %d, column %d): %s\n",
+			  expat_code,
+			  scew_error_expat_line(parser),
+			  scew_error_expat_column(parser),
+			  scew_error_expat_string(expat_code));
+		  ay_error(AY_ERROR, fname, errstr);
+		}
+	    }
+
+	  scew_tree_free(tree);
+	  scew_parser_free(parser);
+	}
+      tag = tag->next;
     }
 
  return AY_OK;
@@ -11200,6 +11280,12 @@ X_Init(Tcl_Interp *interp)
   if(ay_status)
     return TCL_ERROR;
 
+  /* register XML tag type */
+  ay_status = ay_tags_register(x3dio_xml_tagname, &x3dio_xml_tagtype);
+
+  if(ay_status)
+    return TCL_ERROR;
+
   /* init hash table for write callbacks */
   Tcl_InitHashTable(&x3dio_write_ht, TCL_ONE_WORD_KEYS);
 
@@ -11305,6 +11391,9 @@ X_Init(Tcl_Interp *interp)
 
   Tcl_CreateCommand(interp, "x3dioWrite", x3dio_writetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  /* reconnect potentially present XML */
+  ay_tags_reconnect(ay_root, x3dio_xml_tagtype, x3dio_xml_tagname);
 
   ay_error(AY_EOUTPUT, fname, "Plugin 'x3dio' successfully loaded.");
 
