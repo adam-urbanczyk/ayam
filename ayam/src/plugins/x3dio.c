@@ -10209,16 +10209,14 @@ x3dio_writematerial(scew_element *shape_element, ay_object *o)
 
 	      while((child = scew_element_next(element, child)))
 		{
-		  elementcopy = scew_element_copy(element);
-		  if(elementcopy)
+		  if((elementcopy = scew_element_copy(child)))
 		    {
 		      scew_element_add_elem(target, elementcopy);
 		    }
 		}
 	      while((attribute = scew_attribute_next(element, attribute)))
 		{
-		  attributecopy = scew_attribute_copy(attribute);
-		  if(attributecopy)
+		  if((attributecopy = scew_attribute_copy(attribute)))
 		    {
 		      scew_element_add_attr(target, attributecopy);
 		    }
