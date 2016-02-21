@@ -9,6 +9,10 @@ typedef int scew_bool;
 #define SCEW_TRUE 1;
 #define SCEW_FALSE 0;
 
+/* global variables */
+static XML_Char cdatabegin[] = "\n<![CDATA[\n";
+static XML_Char cdataend[] = "\n]]>\n";
+
 /* prototypes of functions local to this module: */
 
 static scew_bool copy_children_ (scew_element *new_element,
@@ -22,14 +26,49 @@ scew_element*
 scew_element_copy (scew_element const *element)
 {
   scew_element *new_elem = NULL;
+  scew_bool need_cdata = SCEW_FALSE;
+  XML_Char *contents;
+
 
   new_elem = calloc (1, sizeof (scew_element));
 
   if (new_elem != NULL)
     {
-      scew_bool copied =
-        ((NULL == element->contents)
-         || (scew_element_set_contents (new_elem, element->contents) != NULL));
+      scew_bool copied;
+
+      if(element->contents && strchr(element->contents, '<'))
+	{
+	  need_cdata = SCEW_TRUE;
+	}
+      else
+	if(element->contents && strchr(element->contents, '>'))
+	  {
+	    need_cdata = SCEW_TRUE;
+	  }
+
+      if (need_cdata)
+	{
+	  contents = malloc((strlen(element->contents)+16)*sizeof(XML_Char));
+	  if(contents)
+	    {
+	      strcpy(contents, cdatabegin);
+	      strcpy(&(contents[11]), element->contents);
+	      strcpy(&(contents[11+strlen(element->contents)]), cdataend);
+
+	      copied = (scew_element_set_contents (new_elem, contents)
+			!= NULL);
+
+	      free(contents);
+	    }
+	  else
+	    copied = SCEW_FALSE;
+	}
+      else
+	{
+	  copied = ((NULL == element->contents)
+		    || (scew_element_set_contents (new_elem, element->contents)
+			!= NULL));
+	}
 
       copied = copied
         && (scew_element_set_name (new_elem, element->name) != NULL)
