@@ -1,15 +1,22 @@
+/** \file scew_copy.c backport of SCEW copy functionality */
 
 #include "scew.h"
 #include "xelement.h"
+
+/* local types: */
 
 typedef int scew_bool;
 #define SCEW_TRUE 1;
 #define SCEW_FALSE 0;
 
+/* prototypes of functions local to this module: */
+
 static scew_bool copy_children_ (scew_element *new_element,
                                  scew_element const *element);
 static scew_bool copy_attributes_ (scew_element *new_element,
                                    scew_element const *element);
+
+/* functions: */
 
 scew_element*
 scew_element_copy (scew_element const *element)
