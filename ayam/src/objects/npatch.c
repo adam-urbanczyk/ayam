@@ -2951,7 +2951,7 @@ ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   if(!result)
     {
-      if(type == AY_IDPOMESH)
+      if((type == AY_IDPOMESH) || (type == AY_IDNPATCH))
 	return AY_OK;
       else
 	return AY_ERROR;
@@ -2998,6 +2998,16 @@ ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 	    } /* while */
 	} /* if */
     } /* if */
+
+  if(type == AY_IDNPATCH)
+    {
+      ay_status = ay_object_copy(o, result);
+      if(*result && npatch->caps_and_bevels)
+	{
+	  ay_status = ay_object_copymulti(npatch->caps_and_bevels,
+					  &((*result)->next));
+	}
+    }
 
  return ay_status;
 } /* ay_npatch_providecb */
