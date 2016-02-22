@@ -565,9 +565,13 @@ ay_extrnp_notifycb(ay_object *o)
     goto cleanup;
 
   n = o->down;
-  if(n->type != AY_IDNPATCH)
+  if(n->type != AY_IDNPATCH || pnum > 0)
     {
-      ay_status = ay_provide_object(n, AY_IDNPATCH, &pobject);
+      if(n->type == AY_IDINSTANCE)
+	ay_status = ay_provide_object(n->refine, AY_IDNPATCH, &pobject);
+      else
+	ay_status = ay_provide_object(n, AY_IDNPATCH, &pobject);
+
       if(!pobject)
 	{
 	  goto cleanup;
