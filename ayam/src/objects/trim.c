@@ -433,20 +433,17 @@ ay_trim_notifycb(ay_object *o)
       return AY_OK;
     }
 
-  if(down->type == AY_IDNPATCH)
+  if(down->type != AY_IDNPATCH || trim->patchnum > 0)
     {
-      (void)ay_object_copy(down, &npatch);
-      if(npatch)
-	{
-	  np = (ay_nurbpatch_object*)down->refine;
-	  if(np->caps_and_bevels)
-	    {
-	      (void)ay_object_copymulti(np->caps_and_bevels, &(npatch->next));
-	    }
-	}
+      if(down->type == AY_IDINSTANCE)
+	ay_status = ay_provide_object(down->refine, AY_IDNPATCH, &npatch);
+      else
+	ay_status = ay_provide_object(down, AY_IDNPATCH, &npatch);
     }
   else
-    ay_status = ay_provide_object(down, AY_IDNPATCH, &npatch);
+    {
+      (void)ay_object_copy(down, &npatch);
+    }
 
   if(npatch)
     {

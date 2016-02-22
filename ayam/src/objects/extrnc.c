@@ -404,7 +404,7 @@ ay_extrnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		  else
 		    {
 		      /* not enough patches for pnum! */
-		      /* report error? */		      
+		      /* report error? */
 		      goto cleanup;
 		    }
 		}
@@ -601,9 +601,13 @@ ay_extrnc_notifycb(ay_object *o)
     goto cleanup;
 
   npatch = o->down;
-  if(npatch->type != AY_IDNPATCH)
+  if(npatch->type != AY_IDNPATCH || pnum > 0)
     {
-      ay_status = ay_provide_object(npatch, AY_IDNPATCH, &pobject);
+      if(npatch->type == AY_IDINSTANCE)
+	ay_status = ay_provide_object(npatch->refine, AY_IDNPATCH, &pobject);
+      else
+	ay_status = ay_provide_object(npatch, AY_IDNPATCH, &pobject);
+
       if(!pobject)
 	{
 	  goto cleanup;
