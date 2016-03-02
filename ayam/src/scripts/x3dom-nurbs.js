@@ -652,7 +652,6 @@ function Tesselator(lnn) {
 		}
 	    } // foreach edge
 	    tlp.push(tlp[0]);
-	    alert(tlp);
 	} // foreach loop
 	this.curveHash = null;
 	this.edge_thresh = edt;
