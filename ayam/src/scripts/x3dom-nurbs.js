@@ -658,7 +658,7 @@ function Tesselator(lnn) {
     } /* initTrims */
 
     this.trimFinal = function (tri) {
-	if (this.tloops && this.inOut(tri, ips) == 0)
+	if (this.tloops && this.inOut(tri) == 0)
 	    this.renderTrimmed(tri);
 	else
 	    this.renderFinal(tri);
