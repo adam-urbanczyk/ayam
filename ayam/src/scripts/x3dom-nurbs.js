@@ -220,7 +220,7 @@ function Tesselator(lnn) {
     this.W = lnn._vf.weight;
     this.surfaceHash = [];
     this.indexHash = [];
-    this.curveHash = [];
+    this.curveHash = null;
     this.coordinates = [];
     this.indices = [];
     this.coordIndex = 0;
@@ -501,7 +501,7 @@ function Tesselator(lnn) {
 	this.renderFinal(tri);
     } /* renderTrimmed */
 
-    this.inOut = function (tri) {
+    this.inOut = function (tri, ips) {
 	var a = [], ad = [];
 
 	//counters for intersections
@@ -581,6 +581,7 @@ function Tesselator(lnn) {
     /* Construct straight edged approximation of the trimming curves */
     this.initTrims = function ( ) {
 	this.ttloops = [];
+	this.curveHash = [];
 	var edt = this.edge_thresh;
 	this.edge_thresh = this.trim_thresh;
 	for(var ilp = 0; ilp < this.tloops.length; ilp++) {
@@ -620,6 +621,7 @@ function Tesselator(lnn) {
 
 	    // refine trim edges
 	    var tlp = this.ttloops[ilp];
+
 	    var x = 0;
 	    while( x < tlp.length ) {
 		var p0u = ttus[x];
@@ -650,13 +652,14 @@ function Tesselator(lnn) {
 		}
 	    } // foreach edge
 	    tlp.push(tlp[0]);
+	    alert(tlp);
 	} // foreach loop
 	this.curveHash = null;
 	this.edge_thresh = edt;
     } /* initTrims */
 
     this.trimFinal = function (tri) {
-	if (this.tloops && this.inOut(tri) == 0)
+	if (this.tloops && this.inOut(tri, ips) == 0)
 	    this.renderTrimmed(tri);
 	else
 	    this.renderFinal(tri);
@@ -765,7 +768,8 @@ x3dom.registerNodeType(
 		this._vf.solid = false;
 
 		var tess = new Tesselator(this);
-		if(this._cf.trimmingContour){
+		if(this._cf.trimmingContour &&
+		   this._cf.trimmingContour.nodes.length){
 		    tess.tloops = [];
 		    var len = this._cf.trimmingContour.nodes.length;
 		    for(var i = 0; i < len; i++) {
