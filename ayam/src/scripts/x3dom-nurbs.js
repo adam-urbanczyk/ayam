@@ -202,7 +202,8 @@ function curvePoint2D(n, p, U, P, u)
 
 
 function Tesselator(lnn) {
-    this.edge_thresh = 0.2;
+    this.edge_thresh = 0.4;
+    this.trim_thresh = 0.1;
     this.split_bias = 0.7;
     this.skew_thresh = 0.0001;
 
@@ -410,6 +411,9 @@ function Tesselator(lnn) {
 				 uv[0], uv[1]);
 	}
 
+	if(this.curveHash)
+	    return pnt;
+
 	// memoize pnt
 	if(!this.surfaceHash[indu])
 	    this.surfaceHash[indu] = [];
@@ -531,7 +535,7 @@ function Tesselator(lnn) {
 		    var d0 = p0[0]*a[i][0] + p0[1]*a[i][1] - ad[i];
 		    var d1 = p1[0]*a[i][0] + p1[1]*a[i][1] - ad[i];
 
-		    ni += (d0<0.) ? 1 : -1;
+		    ni += (d0<0) ? 1 : -1;
 
 		    if ((d0<0) ? (d1<0) : (d1>=0))
 			continue;//no intersection
@@ -577,7 +581,8 @@ function Tesselator(lnn) {
     /* Construct straight edged approximation of the trimming curves */
     this.initTrims = function ( ) {
 	this.ttloops = [];
-	this.edge_thresh = 0.3;
+	var edt = this.edge_thresh;
+	this.edge_thresh = this.trim_thresh;
 	for(var ilp = 0; ilp < this.tloops.length; ilp++) {
 	    var lp = this.tloops[ilp];
 	    this.curveHash[ilp] = [];
@@ -647,7 +652,7 @@ function Tesselator(lnn) {
 	    tlp.push(tlp[0]);
 	} // foreach loop
 	this.curveHash = null;
-	this.edge_thresh = 0.2;
+	this.edge_thresh = edt;
     } /* initTrims */
 
     this.trimFinal = function (tri) {
@@ -786,7 +791,7 @@ x3dom.registerNodeType(
 		its._vf.solid = false;
 		its._vf.ccw = false;
 		its._vf.index = tess.indices;
-
+		x3dom.debug.logInfo("num triangles:"+tess.indices.length/3);
 		var co = new x3dom.nodeTypes.Coordinate();
 		co._nameSpace = this._nameSpace;
 		co._vf.point =
