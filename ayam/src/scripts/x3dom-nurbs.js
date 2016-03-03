@@ -93,7 +93,7 @@ function surfacePoint3DH(n, m, p, q, U, V, P, W, u, v)
 	  temp[j+k] = 0.0;
       for(k = 0; k <= p; k++)
 	{
-	  i = ((indu+k)*(m+1))+indv;
+	  i = indu+k+(indv*(n+1));
 	  temp[j+0] += Nu[k]*P[i].x;
 	  temp[j+1] += Nu[k]*P[i].y;
 	  temp[j+2] += Nu[k]*P[i].z;
@@ -138,7 +138,7 @@ function surfacePoint3D(n, m, p, q, U, V, P, u, v)
       temp[j+2] = 0.0;
       for(k = 0; k <= p; k++)
 	{
-	  i = ((indu+k)*(m+1))+indv;
+	  i = indu+k+(indv*(n+1));
 	  temp[j+0] += Nu[k]*P[i].x;
 	  temp[j+1] += Nu[k]*P[i].y;
 	  temp[j+2] += Nu[k]*P[i].z;
@@ -202,17 +202,17 @@ function curvePoint2D(n, p, U, P, u)
 
 
 function Tesselator(lnn) {
-    this.edge_thresh = 0.4;
+    this.edge_thresh = 0.1;
     this.trim_thresh = 0.1;
     this.split_bias = 0.7;
     this.skew_thresh = 0.0001;
 
-    this.h = lnn._vf.uDimension-1;
-    this.w = lnn._vf.vDimension-1;
-    this.q = lnn._vf.uOrder-1;
-    this.p = lnn._vf.vOrder-1;
-    this.V = lnn._vf.uKnot;
-    this.U = lnn._vf.vKnot;
+    this.w = lnn._vf.uDimension-1;
+    this.h = lnn._vf.vDimension-1;
+    this.p = lnn._vf.uOrder-1;
+    this.q = lnn._vf.vOrder-1;
+    this.U = lnn._vf.uKnot;
+    this.V = lnn._vf.vKnot;
     var coordNode = lnn._cf.controlPoint.node;
     x3dom.debug.assert(coordNode);
     this.P = coordNode.getPoints();
@@ -652,6 +652,7 @@ function Tesselator(lnn) {
 		}
 	    } // foreach edge
 	    tlp.push(tlp[0]);
+
 	} // foreach loop
 	this.curveHash = null;
 	this.edge_thresh = edt;
