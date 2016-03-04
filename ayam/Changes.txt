@@ -1,5 +1,5 @@
-[21. Feb 2016 CVS-Head:
-=======================
+[4. Mar 2016 CVS-Head:
+======================
 Bug Fixes:
 o added missing scripting interface commands to JavaScript and Lua scripting
   language plugins (SF 526)
@@ -19,6 +19,7 @@ o the open curve tool now modifies control points so that subsequent
   new keyboard shortcut <(>
 o the close curve tool can now more easily invoked by the new
   keyboard shortcut <)>
+o ExtrNC/ExtrNP now work for NPatch objects with caps and bevels
 
 GUI:
 o added RIB-Export rendering option "AutoCloseUI" to automatically close
@@ -38,6 +39,7 @@ o X3D export of materials now supports the new tag type "XML" that can be
   used to a) add custom attributes to the exported <Material>-node or
   b) add complete node hierarchies to the <Appearance>-node
   (e.g. a <ComposedShader>)
+o added a script that implements NURBS surface nodes for x3dom
 
 
 [13. Jan 2016] Ayam 1.23:
