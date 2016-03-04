@@ -1,4 +1,4 @@
-[readme.txt - 2. Aug 2015]
+[readme.txt - 4. Mar 2016]
 
 This directory contains a collection of various scripts for Ayam.
 
@@ -20,6 +20,10 @@ ayrepair.tcl - repair the Ayam application state (emergency use only!)
 
 winheader.tcl - helper to create header files from the original sources
  (for compilation on MS Windows)
+
+x3dom-impex.js - improve x3doms default navigation mode mouse handling
+
+x3dom-nurbs.js - NURBS nodes for x3dom
 
 
 Internal Helpers
