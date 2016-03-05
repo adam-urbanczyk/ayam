@@ -881,14 +881,14 @@ ay_stess_IntersectLines2D(double *p1, double *p2, double *p3, double *p4,
 
   r = ((p1[1]-p3[1])*(p4[0]-p3[0])-(p1[0]-p3[0])*(p4[1]-p3[1]))/den;
 
-  if((r < 0.0) || (r > 1.0))
+  if((r < AY_EPSILON) || (r > (1.0-AY_EPSILON)))
     {
       return 0; /* XXXX early exit! */
     }
 
   s = ((p1[1]-p3[1])*(p2[0]-p1[0])-(p1[0]-p3[0])*(p2[1]-p1[1]))/den;
 
-  if((s < 0.0) || (s > 1.0))
+  if((s < AY_EPSILON) || (s > (1.0-AY_EPSILON)))
     {
       return 0; /* XXXX early exit! */
     }
