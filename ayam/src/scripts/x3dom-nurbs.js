@@ -51,7 +51,7 @@ function basisFuns(i, u, p, U)
  var j, r;
 
   N[0] = 1.0;
-  for(j = 0; j <= p; j++){
+  for(j = 0; j <= p; j++) {
       left[j] = 0;
       right[j] = 0;
   }
@@ -202,8 +202,8 @@ function curvePoint2D(n, p, U, P, u)
 
 
 function Tesselator(lnn) {
-    this.edge_thresh = 0.1;
-    this.trim_thresh = 0.1;
+    this.edge_thresh = 0.05;
+    this.trim_thresh = 0.05;
     this.split_bias = 0.7;
     this.skew_thresh = 0.0001;
 
@@ -244,16 +244,16 @@ function Tesselator(lnn) {
     } /* tessTri */
 
     this.refineTri = function (tri) {
-	/* cull entire tile? */
+	/* cull entire triangle? */
 	if (this.tloops && this.inOut(tri) < 0)
 	    return [];
 
 	/***** Measure facet degeneracy ****/
 
 	//area of triangle
-	var area = tri[0][0]*tri[1][1] - tri[1][0]*tri[0][1]
-	    + tri[1][0]*tri[2][1] - tri[2][0]*tri[1][1]
-	    + tri[2][0]*tri[0][1] - tri[0][0]*tri[2][1];
+	var area = tri[0][0]*tri[1][1] - tri[1][0]*tri[0][1] +
+	           tri[1][0]*tri[2][1] - tri[2][0]*tri[1][1] +
+	           tri[2][0]*tri[0][1] - tri[0][0]*tri[2][1];
 	if (area < 0)
 	    area = -area;
 
@@ -301,8 +301,7 @@ function Tesselator(lnn) {
 		mv[i][0] = 0.5*(tri[j0][0] + tri[j1][0]);
 		mv[i][1] = 0.5*(tri[j0][1] + tri[j1][1]);
 		m[i] = i - 3;
-	    }
-	    else {
+	    } else {
 		//move midpt to vertex closer to center
 		if (eds[j0] > eds[j1]) {
 		    mv[i] = tri[j0];
@@ -440,7 +439,7 @@ function Tesselator(lnn) {
 	}
 	// hash lookup failed, compute the point
 	var pnt, crv = this.tloops[loop][seg];
-	if(crv[4].length){
+	if(crv[4].length) {
 	    pnt = curvePoint2DH(crv[0], crv[1], crv[2], crv[3], crv[4], u);
 	} else {
 	    pnt = curvePoint2D(crv[0], crv[1], crv[2], crv[3], u);
@@ -475,7 +474,7 @@ function Tesselator(lnn) {
       To avoid missing high frequency detail (e.g. spikes in functions)
       should all three edges fall below the split threshold, this function
       is called to determine if the triangle should be split by adding
-      a vertex to its center.  An interval bound on the function over the
+      a vertex to its center. An interval bound on the function over the
       domain of the triangle is one possible immplementation.
     */
     this.splitCenter = function (tri) {
@@ -496,14 +495,133 @@ function Tesselator(lnn) {
 	}
     } /* renderFinal */
 
+    this.intersectTrim = function (p1, p2) {
+	for(var ilp = 0; ilp < this.ttloops.length; ilp++) {
+	    var lp = this.ttloops[ilp];
+	    for(var k = 0; k < lp.length-1; k++ ) {
+		var p3 = lp[k];
+		var p4 = lp[k+1];
+
+		if(((Math.abs(p1[0]-p3[0])<10e-6) &&
+		    (Math.abs(p1[1]-p3[1])<10e-6)) ||
+		   ((Math.abs(p1[0]-p4[0])<10e-6) &&
+		    (Math.abs(p1[1]-p4[1])<10e-6)))
+		    continue;
+
+		if(((Math.abs(p2[0]-p3[0])<10e-6) &&
+		    (Math.abs(p2[1]-p3[1])<10e-6)) ||
+		   ((Math.abs(p2[0]-p4[0])<10e-6) &&
+		    (Math.abs(p2[1]-p4[1])<10e-6)))
+		    continue;
+
+		var den = ((p2[0]-p1[0])*(p4[1]-p3[1]) -
+			   (p2[1]-p1[1])*(p4[0]-p3[0]));
+
+		if(Math.abs(den) < 10e-6) {
+		    continue;
+		}
+
+		var r = ((p1[1]-p3[1])*(p4[0]-p3[0]) -
+			 (p1[0]-p3[0])*(p4[1]-p3[1]))/den;
+
+		if((r < 10e-6) || (r > (1.0-10e-6)))
+		    continue;
+
+		var s = ((p1[1]-p3[1])*(p2[0]-p1[0]) -
+			 (p1[0]-p3[0])*(p2[1]-p1[1]))/den;
+
+		if((s < 10e-6) || (s > (1.0-10e-6)))
+		    continue;
+
+		return [p1[0]+r*(p2[0]-p1[0]), p1[1]+r*(p2[1]-p1[1])];
+	    }
+	}
+	return [];
+    } /* intersectTrim */
+
     /*
       User supplied function for rendering the trimmed tile.
     */
     this.renderTrimmed = function (tri) {
-	this.renderFinal(tri);
+	var t = 0.3;
+	var ip0 = this.intersectTrim(tri[0], tri[1]);
+	var ip1 = this.intersectTrim(tri[1], tri[2]);
+	var ip2 = this.intersectTrim(tri[2], tri[0]);
+	var len = ip0.length+ip1.length+ip2.length;
+	if(len == 2) {
+	    return;
+	}
+	if(len != 4) {
+	    // no intersection or complex intersection (all edges)
+	    var out = 0;
+	    if(this.inOut([tri[0],
+	[tri[0][0]+(tri[1][0]-tri[0][0])*t,tri[0][1]+(tri[1][1]-tri[0][1])*t],
+   [tri[0][0]+(tri[2][0]-tri[0][0])*t,tri[0][1]+(tri[2][1]-tri[0][1])*t]]) < 0)
+		out++;
+	    if(this.inOut([tri[1],
+	[tri[1][0]+(tri[0][0]-tri[1][0])*t,tri[1][1]+(tri[0][1]-tri[1][1])*t],
+   [tri[1][0]+(tri[2][0]-tri[1][0])*t,tri[1][1]+(tri[2][1]-tri[1][1])*t]]) < 0)
+		out++;
+	    if(this.inOut([tri[2],
+	[tri[2][0]+(tri[1][0]-tri[2][0])*t,tri[2][1]+(tri[1][1]-tri[2][1])*t],
+   [tri[2][0]+(tri[0][0]-tri[2][0])*t,tri[2][1]+(tri[0][1]-tri[2][1])*t]]) < 0)
+		out++;
+	    if(out > 1) {
+		return;
+	    }
+	    this.renderFinal(tri);
+	} else {
+	    // simple intersection on two edges, split tri
+	    if(!ip0.length) {
+		// ip1 and ip2 are valid
+		this.computeSurface(ip1);
+		this.computeSurface(ip2);
+		if(this.inOut([tri[2],
+	[tri[2][0]+(ip2[0]-tri[2][0])*t,tri[2][1]+(ip2[1]-tri[2][1])*t],
+   [tri[2][0]+(ip1[0]-tri[2][0])*t,tri[2][1]+(ip1[1]-tri[2][1])*t]]) < 0) {
+		    // tri[2] is outside
+		    this.renderFinal([tri[0], ip1, ip2]);
+		    this.renderFinal([tri[0], tri[1], ip1]);
+		} else {
+		    // tri[2] is inside
+		    this.renderFinal([tri[2], ip2, ip1]);
+		}
+	    } else {
+		if(!ip1.length) {
+		    // ip0 and ip2 are valid
+		    this.computeSurface(ip0);
+		    this.computeSurface(ip2);
+		    if(this.inOut([tri[0],
+	[tri[0][0]+(ip2[0]-tri[0][0])*t,tri[0][1]+(ip2[1]-tri[0][1])*t],
+   [tri[0][0]+(ip0[0]-tri[0][0])*t,tri[0][1]+(ip0[1]-tri[0][1])*t]]) < 0) {
+			// tri[0] is outside
+			this.renderFinal([tri[1], ip2, ip0]);
+			this.renderFinal([tri[1], tri[2], ip2]);
+		    } else {
+			// tri[0] is inside
+			this.renderFinal([tri[0], ip0, ip2]);
+		    }
+		} else {
+		    // ip0 and ip1 are valid
+		    this.computeSurface(ip0);
+		    this.computeSurface(ip1);
+		    if(this.inOut([tri[1],
+	[tri[1][0]+(ip0[0]-tri[1][0])*t,tri[1][1]+(ip0[1]-tri[1][1])*t],
+   [tri[1][0]+(ip1[0]-tri[1][0])*t,tri[1][1]+(ip1[1]-tri[1][1])*t]]) < 0) {
+			// tri[1] is outside
+			this.renderFinal([tri[0], ip0, ip1]);
+			this.renderFinal([tri[0], ip1, tri[2]]);
+		    } else {
+			// tri[1] is inside
+			this.renderFinal([tri[1], ip1, ip0]);
+		    }
+		}
+	    }
+	}
+
     } /* renderTrimmed */
 
-    this.inOut = function (tri, ips) {
+    this.inOut = function (tri) {
 	var a = [], ad = [];
 
 	//counters for intersections
@@ -527,11 +645,9 @@ function Tesselator(lnn) {
 
 	for(var ilp = 0; ilp < this.ttloops.length; ilp++) {
 	    var lp = this.ttloops[ilp];
-
 	    for(var k = 0; k < lp.length-1; k++ ) {
 		var p0 = lp[k];
-		var j = k+1;
-		var p1 = lp[j];
+		var p1 = lp[k+1];
 		var ni = 0;
 		for(var i = 0; i < 3; i++) {
 		    var d0 = p0[0]*a[i][0] + p0[1]*a[i][1] - ad[i];
@@ -544,8 +660,9 @@ function Tesselator(lnn) {
 
 		    //find intersection point
 		    var ip = (p1[ndx[i]]*d0 - p0[ndx[i]]*d1) / (d0-d1);
-		    var ba = ip<tri[i][ndx[i]];
-		    var bb = ip<tri[(i+1)%3][ndx[i]];
+
+		    var ba = ip<tri[i][ndx[i]]+10e-6;
+		    var bb = ip<tri[(i+1)%3][ndx[i]]+10e-6;
 		    if (ba && bb) {
 			cl[i]++;
 		    } else {
@@ -556,7 +673,6 @@ function Tesselator(lnn) {
 			}
 		    }
 		}
-
 		//point inside tile
 		if ((ni == 3) || (ni == -3))
 		    return 0;
@@ -629,7 +745,7 @@ function Tesselator(lnn) {
 		var p0u = ttus[x];
 		var p0seg = Math.floor(p0u);
 		var y = x+1;
-		if(y == tlp.length){
+		if(y == tlp.length) {
 		    y = 0;
 		}
 		var p1u = ttus[y];
@@ -771,7 +887,7 @@ x3dom.registerNodeType(
 
 		var tess = new Tesselator(this);
 		if(this._cf.trimmingContour &&
-		   this._cf.trimmingContour.nodes.length){
+		   this._cf.trimmingContour.nodes.length) {
 		    tess.tloops = [];
 		    var len = this._cf.trimmingContour.nodes.length;
 		    for(var i = 0; i < len; i++) {
