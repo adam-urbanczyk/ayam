@@ -202,8 +202,8 @@ function curvePoint2D(n, p, U, P, u)
 
 
 function Tesselator(lnn) {
-    this.edge_thresh = 0.05;
-    this.trim_thresh = 0.05;
+    this.edge_thresh = 0.2;
+    this.trim_thresh = 0.2;
     this.split_bias = 0.7;
     this.skew_thresh = 0.0001;
 
