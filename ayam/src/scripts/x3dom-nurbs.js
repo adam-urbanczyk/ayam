@@ -359,7 +359,7 @@ function Tesselator(lnn) {
 	var cv = [];
 	cv[0] = (tri[0][0] + tri[1][0] + tri[2][0])/3.0;
 	cv[1] = (tri[0][1] + tri[1][1] + tri[2][1])/3.0;
-
+	this.computeSurface(cv);
 	for(var ed = 0; ed < 3; ed++) {
 	    var divs = [], d = [];
 	    var e1 = (ed+1)%3;
@@ -369,7 +369,7 @@ function Tesselator(lnn) {
 
 	    divs[0] = 1.0;
 	    var beg = 0.0;
-	    while( !divs.length ) {
+	    while( divs.length ) {
 		var a = [], b = [];
 		var end = divs[0];
 		a[0] = tri[ed][0] + d[0]*beg;
@@ -381,6 +381,8 @@ function Tesselator(lnn) {
 		    divs.splice(0, 0, 0.5*(beg+end));
 		} else {
 		    //render it
+		    this.computeSurface(a);
+		    this.computeSurface(b);
 		    var slice = [cv, a, b];
 		    this.trimFinal(slice);
 		    divs.pop();
