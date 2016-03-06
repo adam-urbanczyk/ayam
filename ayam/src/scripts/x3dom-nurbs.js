@@ -205,7 +205,7 @@ function Tesselator(lnn) {
     this.edge_thresh = 0.2;
     this.trim_thresh = 0.2;
     this.split_bias = 0.7;
-    this.skew_thresh = 0.0001;
+    this.skew_thresh = 0.001;
 
     this.w = lnn._vf.uDimension-1;
     this.h = lnn._vf.vDimension-1;
@@ -226,6 +226,28 @@ function Tesselator(lnn) {
     this.coordIndex = 0;
 
     this.tesselate = function () {
+
+	if(this.W && this.W.length != this.P.length)
+	    this.W = null;
+
+	var mi = Number.MAX_VALUE;
+	var mx = -Number.MAX_VALUE;
+	var bb = [mi,mi,mi,mx,mx,mx];
+	for(var i = 0; i < this.P.length; i++){
+	    if(this.P[i].x<bb[0])bb[0]=this.P[i].x;
+	    if(this.P[i].y<bb[1])bb[1]=this.P[i].y;
+	    if(this.P[i].z<bb[2])bb[2]=this.P[i].z;
+	    if(this.P[i].x>bb[3])bb[3]=this.P[i].x;
+	    if(this.P[i].y>bb[4])bb[4]=this.P[i].y;
+	    if(this.P[i].z>bb[5])bb[5]=this.P[i].z;
+	}
+	var ex = Math.sqrt((bb[0]-bb[3])*(bb[0]-bb[3])+
+			     (bb[1]-bb[4])*(bb[1]-bb[4])+
+			     (bb[2]-bb[5])*(bb[2]-bb[5]))/20.0;
+	//alert(ex);
+	//this.edge_thresh /= ex;
+	//this.trim_thresh /= ex;
+
 	var u0 = this.U[this.p];
 	var u1 = this.U[this.U.length-this.p];
 	var v0 = this.V[this.q];
@@ -384,7 +406,7 @@ function Tesselator(lnn) {
 		    this.computeSurface(b);
 		    var slice = [cv, a, b];
 		    this.trimFinal(slice);
-		    divs.pop();
+		    divs.splice(0, 1);
 		    beg = end;
 		}
 	    }
@@ -460,6 +482,7 @@ function Tesselator(lnn) {
     this.splitEdge = function (a, b) {
 	var pa = this.computeSurface(a);
 	var pb = this.computeSurface(b);
+	//alert(pa+"/"+pb);
 	if(Math.abs(pa.x-pb.x) > 10e-6 ||
 	   Math.abs(pa.y-pb.y) > 10e-6 ||
 	   Math.abs(pa.z-pb.z) > 10e-6)
@@ -814,7 +837,7 @@ x3dom.registerNodeType(
 
 		var tess = new Tesselator(this);
 		tess.tesselate();
-
+		x3dom.debug.logInfo("num triangles:"+tess.indices.length/3);
 		var its = new x3dom.nodeTypes.IndexedTriangleSet();
 		its._nameSpace = this._nameSpace;
 		its._vf.solid = false;
