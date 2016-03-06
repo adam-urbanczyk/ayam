@@ -13,7 +13,7 @@
 /* NURBS for x3dom */
 
 /*
-  The NURBS Tesselator is based on idea and example code from
+  The NURBS Tessellator is based on idea and example code from
   A. J. Chung and A. J. Field (https://sourceforge.net/projects/emvise/)
 */
 
@@ -201,8 +201,8 @@ function curvePoint2D(n, p, U, P, u)
 } /* curvePoint2D */
 
 
-function Tesselator(lnn) {
-    this.edge_thresh = 0.2;
+function Tessellator(lnn) {
+    this.edge_thresh = 0.3;
     this.trim_thresh = 0.2;
     this.split_bias = 0.7;
     this.skew_thresh = 0.0001;
@@ -225,7 +225,7 @@ function Tesselator(lnn) {
     this.indices = [];
     this.coordIndex = 0;
 
-    this.tesselate = function () {
+    this.tessellate = function () {
 
 	if(this.W && this.W.length != this.P.length)
 	    this.W = null;
@@ -814,7 +814,7 @@ function Tesselator(lnn) {
 	else
 	    this.renderFinal(tri);
     } /* trimFinal */
-} /* Tesselator */
+} /* Tessellator */
 
 
 x3dom.registerNodeType(
@@ -844,8 +844,8 @@ x3dom.registerNodeType(
 		this._vf.ccw = false;
 		this._vf.solid = false;
 
-		var tess = new Tesselator(this);
-		tess.tesselate();
+		var tess = new Tessellator(this);
+		tess.tessellate();
 		x3dom.debug.logInfo("num triangles:"+tess.indices.length/3);
 		var its = new x3dom.nodeTypes.IndexedTriangleSet();
 		its._nameSpace = this._nameSpace;
@@ -917,7 +917,7 @@ x3dom.registerNodeType(
 		this._vf.ccw = false;
 		this._vf.solid = false;
 
-		var tess = new Tesselator(this);
+		var tess = new Tessellator(this);
 		if(this._cf.trimmingContour &&
 		   this._cf.trimmingContour.nodes.length) {
 		    tess.tloops = [];
@@ -938,7 +938,7 @@ x3dom.registerNodeType(
 		    }
 		    tess.initTrims();
 		}
-		tess.tesselate();
+		tess.tessellate();
 
 		var its = new x3dom.nodeTypes.IndexedTriangleSet();
 		its._nameSpace = this._nameSpace;
