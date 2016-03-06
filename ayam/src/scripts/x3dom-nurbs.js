@@ -205,7 +205,7 @@ function Tesselator(lnn) {
     this.edge_thresh = 0.2;
     this.trim_thresh = 0.2;
     this.split_bias = 0.7;
-    this.skew_thresh = 0.001;
+    this.skew_thresh = 0.0001;
 
     this.w = lnn._vf.uDimension-1;
     this.h = lnn._vf.vDimension-1;
@@ -250,10 +250,18 @@ function Tesselator(lnn) {
 
 	var u0 = this.U[this.p];
 	var u1 = this.U[this.U.length-this.p];
+	var u05 = (u0+u1)*0.5;
 	var v0 = this.V[this.q];
 	var v1 = this.V[this.V.length-this.q];
-	this.tessTri([[u0,v0],[u0,v1],[u1,v0]]);
-	this.tessTri([[u1,v1],[u1,v0],[u0,v1]]);
+	var v05 = (v0+v1)*0.5;
+	this.tessTri([[u0,v0],[u0,v05],[u05,v0]]);
+	this.tessTri([[u0,v05],[u05,v05],[u05,v0]]);
+	this.tessTri([[u0,v05],[u0,v1],[u05,v05]]);
+	this.tessTri([[u0,v1],[u05,v1],[u05,v05]]);
+	this.tessTri([[u05,v0],[u05,v05],[u1,v0]]);
+	this.tessTri([[u05,v05],[u1,v05],[u1,v0]]);
+	this.tessTri([[u05,v05],[u05,v1],[u1,v05]]);
+	this.tessTri([[u05,v1],[u1,v1],[u1,v05]]);
     }
 
     this.tessTri = function (tri) {
@@ -365,7 +373,7 @@ function Tesselator(lnn) {
 	    a[1] = (1./3.)*(tri[0][1] + tri[1][1] + tri[2][1]);
 
 	    for(var i = 0; i < 3; i++) {
-		res[i] = [tri[i], tri[(i+1)%2], a];
+		res[i] = [tri[i], tri[(i+1)%3], a];
 	    }
 	    return res;
 	}
@@ -501,6 +509,7 @@ function Tesselator(lnn) {
       domain of the triangle is one possible immplementation.
     */
     this.splitCenter = function (tri) {
+	//alert(tri);
 	return false;
     } /* splitCenter */
 
