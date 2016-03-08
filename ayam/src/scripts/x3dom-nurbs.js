@@ -202,10 +202,11 @@ function curvePoint2D(n, p, U, P, u)
 
 
 function Tessellator(lnn) {
-    this.edge_thresh = 0.3;
-    this.trim_thresh = 0.2;
+    this.edge_thresh = 0.7;
+    this.trim_thresh = 0.1;
     this.split_bias = 0.7;
-    this.skew_thresh = 0.0001;
+    this.skew_thresh = 0.01;
+    this.max_rec = 4;
 
     this.w = lnn._vf.uDimension-1;
     this.h = lnn._vf.vDimension-1;
@@ -538,13 +539,15 @@ function Tessellator(lnn) {
 		    (Math.abs(p1[1]-p3[1])<10e-6)) ||
 		   ((Math.abs(p1[0]-p4[0])<10e-6) &&
 		    (Math.abs(p1[1]-p4[1])<10e-6)))
-		    continue;
+		    return [];
+		    //continue;
 
 		if(((Math.abs(p2[0]-p3[0])<10e-6) &&
 		    (Math.abs(p2[1]-p3[1])<10e-6)) ||
 		   ((Math.abs(p2[0]-p4[0])<10e-6) &&
 		    (Math.abs(p2[1]-p4[1])<10e-6)))
-		    continue;
+		    return [];
+		    //continue;
 
 		var den = ((p2[0]-p1[0])*(p4[1]-p3[1]) -
 			   (p2[1]-p1[1])*(p4[0]-p3[0]));
@@ -575,13 +578,19 @@ function Tessellator(lnn) {
       User supplied function for rendering the trimmed tile.
     */
     this.renderTrimmed = function (tri) {
+
 	var t = 0.3;
 	var ip0 = this.intersectTrim(tri[0], tri[1]);
 	var ip1 = this.intersectTrim(tri[1], tri[2]);
 	var ip2 = this.intersectTrim(tri[2], tri[0]);
 	var len = ip0.length+ip1.length+ip2.length;
 	if(len == 2) {
-	    return;
+	    if(this.max_rec) {
+		this.max_rec--;
+		this.diceTri(tri);
+		this.max_rec++;
+		return;
+	    }
 	}
 	if(len != 4) {
 	    // no intersection or complex intersection (all edges)
@@ -650,7 +659,7 @@ function Tessellator(lnn) {
 		}
 	    }
 	}
-
+	return;
     } /* renderTrimmed */
 
     this.inOut = function (tri) {
@@ -693,8 +702,8 @@ function Tessellator(lnn) {
 		    //find intersection point
 		    var ip = (p1[ndx[i]]*d0 - p0[ndx[i]]*d1) / (d0-d1);
 
-		    var ba = ip<tri[i][ndx[i]]+10e-6;
-		    var bb = ip<tri[(i+1)%3][ndx[i]]+10e-6;
+		    var ba = ip<tri[i][ndx[i]]-10e-6;
+		    var bb = ip<tri[(i+1)%3][ndx[i]]-10e-6;
 		    if (ba && bb) {
 			cl[i]++;
 		    } else {
@@ -811,8 +820,26 @@ function Tessellator(lnn) {
     this.trimFinal = function (tri) {
 	if (this.tloops && this.inOut(tri) == 0)
 	    this.renderTrimmed(tri);
-	else
+	else {
+	    var t = 0.3;
+	    var out = 0;
+	    if(this.inOut([tri[0],
+	[tri[0][0]+(tri[1][0]-tri[0][0])*t,tri[0][1]+(tri[1][1]-tri[0][1])*t],
+   [tri[0][0]+(tri[2][0]-tri[0][0])*t,tri[0][1]+(tri[2][1]-tri[0][1])*t]]) < 0)
+		out++;
+	    if(this.inOut([tri[1],
+	[tri[1][0]+(tri[0][0]-tri[1][0])*t,tri[1][1]+(tri[0][1]-tri[1][1])*t],
+   [tri[1][0]+(tri[2][0]-tri[1][0])*t,tri[1][1]+(tri[2][1]-tri[1][1])*t]]) < 0)
+		out++;
+	    if(this.inOut([tri[2],
+	[tri[2][0]+(tri[1][0]-tri[2][0])*t,tri[2][1]+(tri[1][1]-tri[2][1])*t],
+   [tri[2][0]+(tri[0][0]-tri[2][0])*t,tri[2][1]+(tri[0][1]-tri[2][1])*t]]) < 0)
+		out++;
+	    if(out > 0) {
+		return;
+	    }
 	    this.renderFinal(tri);
+	}
     } /* trimFinal */
 } /* Tessellator */
 
@@ -828,15 +855,16 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'vDimension', 0);
             this.addField_SFInt32(ctx, 'uOrder', 3);
             this.addField_SFInt32(ctx, 'vOrder', 3);
+            this.addField_SFFloat(ctx, 'uTesselation', 0.0);
+            this.addField_SFFloat(ctx, 'vTesselation', 0.0);
             this.addField_MFFloat(ctx, "uKnot", []);
             this.addField_MFFloat(ctx, "vKnot", []);
             this.addField_MFFloat(ctx, "weight", []);
 
-            this.addField_SFNode ('controlPoint',
-				  x3dom.nodeTypes.X3DCoordinateNode);
+            this.addField_SFNode('controlPoint',
+				 x3dom.nodeTypes.X3DCoordinateNode);
 
             this._needReRender = true;
-	    this.myctx = ctx;
         },
         {
             nodeChanged: function() {
@@ -909,7 +937,6 @@ x3dom.registerNodeType(
             this.addField_MFNode ('trimmingContour', x3dom.nodeTypes.Contour2D);
 
             this._needReRender = true;
-	    this.myctx = ctx;
         },
         {
             nodeChanged: function() {
