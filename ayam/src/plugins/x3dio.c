@@ -110,6 +110,8 @@ unsigned int x3dio_inuse = 0;
 /* pointer to last read object */
 ay_object *x3dio_lrobject = NULL;
 
+char *x3dio_contfieldstr = "containerField";
+
 /* prototypes of functions local to this module: */
 
 /* low-level import support functions */
@@ -7495,7 +7497,6 @@ x3dio_writetrimcurve(scew_element *element, ay_object *o)
  int i, a = 0, stride = 4;
  double m[16] = {0};
  scew_element *curve_element = NULL;
- scew_element *coord_element = NULL;
 
   if(!element || !o || !o->refine)
     return AY_ENULL;
@@ -7531,9 +7532,6 @@ x3dio_writetrimcurve(scew_element *element, ay_object *o)
   if(nc->order == 2)
     {
       curve_element = scew_element_add(element, "ContourPolyline2D");
-
-      x3dio_writedoublepoints(curve_element, "controlPoint", 2,
-			      nc->length, 4, nc->controlv);
     }
   else
     {
@@ -7547,11 +7545,13 @@ x3dio_writetrimcurve(scew_element *element, ay_object *o)
 	{
 	  x3dio_writeweights(curve_element, "weight", nc->length, nc->controlv);
 	}
-
-      coord_element = scew_element_add(curve_element, "Coordinate");
-      x3dio_writedoublepoints(coord_element, "point", 2, nc->length, 4,
-			      nc->controlv);
     }
+
+  x3dio_writedoublepoints(curve_element, "controlPoint", 2,
+			  nc->length, 4, nc->controlv);
+
+  scew_element_add_attr_pair(curve_element, x3dio_contfieldstr,
+			     "children");
 
 cleanup:
 
@@ -7705,6 +7705,7 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
   coord_element = scew_element_add(patch_element, "Coordinate");
   x3dio_writedoublepoints(coord_element, "point", 3, np->width*np->height,
 			  copystride, v);
+  scew_element_add_attr_pair(coord_element, x3dio_contfieldstr, "controlPoint");
 
   /* write texture coordinates */
   if(have_texcoords)
@@ -7720,6 +7721,9 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
       while(down->next)
 	{
 	  contour_element = scew_element_add(patch_element, "Contour2D");
+	  scew_element_add_attr_pair(contour_element, x3dio_contfieldstr,
+				     "trimmingContour");
+
 	  if(down->type == AY_IDLEVEL)
 	    {
 	      ay_status = x3dio_writetrimloop(contour_element, down);
