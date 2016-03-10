@@ -203,7 +203,7 @@ function curvePoint2D(n, p, U, P, u)
 
 function Tessellator(lnn) {
     this.edge_thresh = 0.7;
-    this.trim_thresh = 0.1;
+    this.trim_thresh = 0.2;
     this.split_bias = 0.7;
     this.skew_thresh = 0.01;
     this.max_rec = 4;
@@ -470,7 +470,7 @@ function Tessellator(lnn) {
 	}
 	// hash lookup failed, compute the point
 	var pnt, crv = this.tloops[loop][seg];
-	if(crv[4].length) {
+	if(crv[4] && crv[4].length) {
 	    pnt = curvePoint2DH(crv[0], crv[1], crv[2], crv[3], crv[4], u);
 	} else {
 	    pnt = curvePoint2D(crv[0], crv[1], crv[2], crv[3], u);
@@ -917,12 +917,23 @@ x3dom.registerNodeType(
 );
 
 x3dom.registerNodeType(
+    "ContourPolyline2D",
+    "Grouping",
+    defineClass(x3dom.nodeTypes.X3DGroupingNode,
+        function (ctx) {
+            x3dom.nodeTypes.ContourPolyline2D.superClass.call(this, ctx);
+            this.addField_MFFloat(ctx, "controlPoint", []);
+	}, { }
+    )
+);
+
+x3dom.registerNodeType(
     "Contour2D",
     "Grouping",
     defineClass(x3dom.nodeTypes.X3DGroupingNode,
         function (ctx) {
             x3dom.nodeTypes.Contour2D.superClass.call(this, ctx);
-            this.addField_MFNode('children', x3dom.nodeTypes.NurbsCurve2D);
+            this.addField_MFNode('children', x3dom.nodeTypes.X3DChildNode);
 	}, { }
     )
 );
@@ -956,6 +967,20 @@ x3dom.registerNodeType(
 			    var trim = c2dnode._cf.children.nodes;
 			    for(var j = 0; j < trim.length; j++) {
 				var tc = trim[j];
+				if(!tc._vf.order){
+				    tc._vf.order = 2;
+				}
+				if(!tc._vf.knot){
+				    var knots = [];
+				    knots.push(0);
+				    knots.push(0);
+				    for(var k = 2;
+					k < tc._vf.controlPoint.length/2; k++)
+					knots.push(k-1);
+				    knots.push(knots[knots.length-1]+1);
+				    knots.push(knots[knots.length-1]);
+				    tc._vf.knot = knots;
+				}
 				tess.tloops[i].push([
 				    tc._vf.controlPoint.length-1,
 				    tc._vf.order-1, tc._vf.knot,
