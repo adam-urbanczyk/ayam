@@ -247,11 +247,11 @@ function Tessellator(lnn) {
 	this.tessTri([[u05,v1],[u1,v1],[u1,v05]]);
     } // tesselate
 
-    this.setThresholds = function () {
+    this.adjustThresholds = function () {
 	var mi = Number.MAX_VALUE;
 	var mx = -Number.MAX_VALUE;
 	var bb = [mi,mi,mi,mx,mx,mx];
-	for(var i = 0; i < this.P.length; i++){
+	for(var i = 0; i < this.P.length; i++) {
 	    if(this.P[i].x<bb[0])bb[0]=this.P[i].x;
 	    if(this.P[i].y<bb[1])bb[1]=this.P[i].y;
 	    if(this.P[i].z<bb[2])bb[2]=this.P[i].z;
@@ -264,7 +264,7 @@ function Tessellator(lnn) {
 			     (bb[2]-bb[5])*(bb[2]-bb[5]))/5.0;
 	this.edge_thresh *= ex;
 	this.trim_thresh *= ex;
-    } // setThresholds
+    } // adjustThresholds
 
     this.tessTri = function (tri) {
 	var work = [tri];
@@ -362,7 +362,7 @@ function Tessellator(lnn) {
 	    //center tile
 	    if (j) {
 		if ((m[0]==m[1]) || (m[1]==m[2]) || (m[2]==m[0])) {
-		    //cerr << "degenerate center tile\n";
+		    // avoid degenerate center tile
 		    return [];
 		}
 		res[0] = [mv[0], mv[1], mv[2]];
@@ -444,6 +444,7 @@ function Tessellator(lnn) {
 				 uv[0], uv[1]);
 	}
 
+	// do not output this point whilst tesselating trim curves
 	if(this.curveHash)
 	    return pnt;
 
@@ -483,12 +484,10 @@ function Tessellator(lnn) {
      return pnt;
     } /* computeCurve */
 
-    /*
-      User function that decides if an edge should be split
+    /* User function that decides if an edge should be split
       Return value gives a measure on which to prioritise edge splitting
       (e.g. edge length) and values below the set threshold will not be
-      split; must be commutative
-    */
+      split; must be commutative */
     this.splitEdge = function (a, b) {
 	var pa = this.computeSurface(a);
 	var pb = this.computeSurface(b);
@@ -503,22 +502,17 @@ function Tessellator(lnn) {
 	    return 0.0;
     } /* splitEdge */
 
-    /*
-      To avoid missing high frequency detail (e.g. spikes in functions)
-      should all three edges fall below the split threshold, this function
-      is called to determine if the triangle should be split by adding
-      a vertex to its center. An interval bound on the function over the
-      domain of the triangle is one possible immplementation.
-    */
+    /* To avoid missing high frequency detail (e.g. spikes in functions)
+       should all three edges fall below the split threshold, this function
+       is called to determine if the triangle should be split by adding
+       a vertex to its center. An interval bound on the function over the
+       domain of the triangle is one possible immplementation. */
     this.splitCenter = function (tri) {
 	//alert(tri);
 	return false;
     } /* splitCenter */
 
-    /*
-      User supplied function typically for rendering the refined tile
-      once all edges match the acceptance criteria.
-    */
+    /* Render the refined tile once all edges match the acceptance criteria. */
     this.renderFinal = function (tri) {
 	for(var i = 0; i < 3; i++) {
 	    var uv = tri[i];
@@ -529,9 +523,11 @@ function Tessellator(lnn) {
 	}
     } /* renderFinal */
 
+    /* Find true intersection of line segment with trims. */
     this.intersectTrim = function (p1, p2) {
 	for(var ilp = 0; ilp < this.ttloops.length; ilp++) {
 	    var lp = this.ttloops[ilp];
+	    // XXXX TODO: add bbox test for speedup?
 	    for(var k = 0; k < lp.length-1; k++ ) {
 		var p3 = lp[k];
 		var p4 = lp[k+1];
@@ -575,9 +571,7 @@ function Tessellator(lnn) {
 	return [];
     } /* intersectTrim */
 
-    /*
-      User supplied function for rendering the trimmed tile.
-    */
+    /* Render a trimmed tile. */
     this.renderTrimmed = function (tri) {
 	var t = 0.3;
 	var ip0 = this.intersectTrim(tri[0], tri[1]);
@@ -686,6 +680,7 @@ function Tessellator(lnn) {
 
 	for(var ilp = 0; ilp < this.ttloops.length; ilp++) {
 	    var lp = this.ttloops[ilp];
+	    // XXXX TODO: add bbox test for speedup?
 	    for(var k = 0; k < lp.length-1; k++ ) {
 		var p0 = lp[k];
 		var p1 = lp[k+1];
@@ -702,8 +697,8 @@ function Tessellator(lnn) {
 		    //find intersection point
 		    var ip = (p1[ndx[i]]*d0 - p0[ndx[i]]*d1) / (d0-d1);
 
-		    var ba = ip<tri[i][ndx[i]]-10e-6;
-		    var bb = ip<tri[(i+1)%3][ndx[i]]-10e-6;
+		    var ba = ip<tri[i][ndx[i]];
+		    var bb = ip<tri[(i+1)%3][ndx[i]];
 		    if (ba && bb) {
 			cl[i]++;
 		    } else {
@@ -818,7 +813,7 @@ function Tessellator(lnn) {
     } /* initTrims */
 
     this.trimFinal = function (tri) {
-	if (this.tloops && this.inOut(tri) == 0){
+	if (this.tloops && this.inOut(tri) == 0) {
 	    this.renderTrimmed(tri);
 	} else {
 	    var t = 0.3;
@@ -836,7 +831,7 @@ function Tessellator(lnn) {
    [tri[2][0]+(tri[0][0]-tri[2][0])*t,tri[2][1]+(tri[0][1]-tri[2][1])*t]]) < 0)
 		out++;
 	    if(out > 0) {
-		return;//this.renderTrimmed(tri);
+		return;
 	    }
 	    this.renderFinal(tri);
 	}
@@ -873,7 +868,7 @@ x3dom.registerNodeType(
 		this._vf.solid = false;
 
 		var tess = new Tessellator(this);
-		tess.setThresholds();
+		tess.adjustThresholds();
 		tess.tessellate();
 
 		var its = new x3dom.nodeTypes.IndexedTriangleSet();
@@ -891,7 +886,6 @@ x3dom.registerNodeType(
 		its._xmlNode = this._xmlNode;
 		this._mesh = its._mesh;
             },
-
             fieldChanged: function(fieldName) {
 		//nodeChanged();
             }
@@ -955,7 +949,7 @@ x3dom.registerNodeType(
 		this._vf.solid = false;
 
 		var tess = new Tessellator(this);
-		tess.setThresholds();
+		tess.adjustThresholds();
 		if(this._cf.trimmingContour &&
 		   this._cf.trimmingContour.nodes.length) {
 		    tess.tloops = [];
@@ -967,10 +961,10 @@ x3dom.registerNodeType(
 			    var trim = c2dnode._cf.children.nodes;
 			    for(var j = 0; j < trim.length; j++) {
 				var tc = trim[j];
-				if(!tc._vf.order){
+				if(!tc._vf.order) {
 				    tc._vf.order = 2;
 				}
-				if(!tc._vf.knot){
+				if(!tc._vf.knot) {
 				    var knots = [];
 				    knots.push(0);
 				    knots.push(0);
@@ -1007,7 +1001,6 @@ x3dom.registerNodeType(
 		its._xmlNode = this._xmlNode;
 		this._mesh = its._mesh;
             },
-
             fieldChanged: function(fieldName) {
 		//nodeChanged();
             }
