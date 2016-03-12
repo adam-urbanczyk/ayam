@@ -202,8 +202,8 @@ function curvePoint2D(n, p, U, P, u)
 
 
 function Tessellator(lnn) {
-    this.edge_thresh = 0.7;
-    this.trim_thresh = 0.2;
+    this.edge_thresh = 0.1;
+    this.trim_thresh = 0.1;
     this.split_bias = 0.7;
     this.skew_thresh = 0.01;
     this.max_rec = 4;
@@ -231,24 +231,6 @@ function Tessellator(lnn) {
 	if(this.W && this.W.length != this.P.length)
 	    this.W = null;
 
-	var mi = Number.MAX_VALUE;
-	var mx = -Number.MAX_VALUE;
-	var bb = [mi,mi,mi,mx,mx,mx];
-	for(var i = 0; i < this.P.length; i++){
-	    if(this.P[i].x<bb[0])bb[0]=this.P[i].x;
-	    if(this.P[i].y<bb[1])bb[1]=this.P[i].y;
-	    if(this.P[i].z<bb[2])bb[2]=this.P[i].z;
-	    if(this.P[i].x>bb[3])bb[3]=this.P[i].x;
-	    if(this.P[i].y>bb[4])bb[4]=this.P[i].y;
-	    if(this.P[i].z>bb[5])bb[5]=this.P[i].z;
-	}
-	var ex = Math.sqrt((bb[0]-bb[3])*(bb[0]-bb[3])+
-			     (bb[1]-bb[4])*(bb[1]-bb[4])+
-			     (bb[2]-bb[5])*(bb[2]-bb[5]))/20.0;
-	//alert(ex);
-	//this.edge_thresh /= ex;
-	//this.trim_thresh /= ex;
-
 	var u0 = this.U[this.p];
 	var u1 = this.U[this.U.length-this.p];
 	var u05 = (u0+u1)*0.5;
@@ -263,7 +245,26 @@ function Tessellator(lnn) {
 	this.tessTri([[u05,v05],[u1,v05],[u1,v0]]);
 	this.tessTri([[u05,v05],[u05,v1],[u1,v05]]);
 	this.tessTri([[u05,v1],[u1,v1],[u1,v05]]);
-    }
+    } // tesselate
+
+    this.setThresholds = function () {
+	var mi = Number.MAX_VALUE;
+	var mx = -Number.MAX_VALUE;
+	var bb = [mi,mi,mi,mx,mx,mx];
+	for(var i = 0; i < this.P.length; i++){
+	    if(this.P[i].x<bb[0])bb[0]=this.P[i].x;
+	    if(this.P[i].y<bb[1])bb[1]=this.P[i].y;
+	    if(this.P[i].z<bb[2])bb[2]=this.P[i].z;
+	    if(this.P[i].x>bb[3])bb[3]=this.P[i].x;
+	    if(this.P[i].y>bb[4])bb[4]=this.P[i].y;
+	    if(this.P[i].z>bb[5])bb[5]=this.P[i].z;
+	}
+	var ex = Math.sqrt((bb[0]-bb[3])*(bb[0]-bb[3])+
+			     (bb[1]-bb[4])*(bb[1]-bb[4])+
+			     (bb[2]-bb[5])*(bb[2]-bb[5]))/5.0;
+	this.edge_thresh *= ex;
+	this.trim_thresh *= ex;
+    } // setThresholds
 
     this.tessTri = function (tri) {
 	var work = [tri];
@@ -424,8 +425,8 @@ function Tessellator(lnn) {
 
     this.computeSurface = function(uv) {
 	// first try the hash
-	var indu = Math.floor(uv[0]*10e6);
-	var indv = Math.floor(uv[1]*10e6);
+	var indu = Math.floor(uv[0]*10e10);
+	var indv = Math.floor(uv[1]*10e10);
 	if(this.surfaceHash[indu]) {
 	    var memoizedPoint = this.surfaceHash[indu][indv];
 	    if(memoizedPoint)
@@ -462,7 +463,7 @@ function Tessellator(lnn) {
 
     this.computeCurve = function(loop, seg, u) {
 	// first try the hash
-	var indu = Math.floor(u*10e6);
+	var indu = Math.floor(u*10e10);
 	if(this.curveHash[loop][seg]) {
 	    var memoizedPoint = this.curveHash[loop][seg][indu];
 	    if(memoizedPoint)
@@ -521,8 +522,8 @@ function Tessellator(lnn) {
     this.renderFinal = function (tri) {
 	for(var i = 0; i < 3; i++) {
 	    var uv = tri[i];
-	    var indu = Math.floor(uv[0]*10e6);
-	    var indv = Math.floor(uv[1]*10e6);
+	    var indu = Math.floor(uv[0]*10e10);
+	    var indv = Math.floor(uv[1]*10e10);
 	    if(this.indexHash[indu])
 		this.indices.push(this.indexHash[indu][indv]);
 	}
@@ -578,7 +579,6 @@ function Tessellator(lnn) {
       User supplied function for rendering the trimmed tile.
     */
     this.renderTrimmed = function (tri) {
-
 	var t = 0.3;
 	var ip0 = this.intersectTrim(tri[0], tri[1]);
 	var ip1 = this.intersectTrim(tri[1], tri[2]);
@@ -607,19 +607,19 @@ function Tessellator(lnn) {
 	[tri[2][0]+(tri[1][0]-tri[2][0])*t,tri[2][1]+(tri[1][1]-tri[2][1])*t],
    [tri[2][0]+(tri[0][0]-tri[2][0])*t,tri[2][1]+(tri[0][1]-tri[2][1])*t]]) < 0)
 		out++;
-	    if(out > 1) {
+	    if(out > 0) {
 		return;
 	    }
 	    this.renderFinal(tri);
 	} else {
-	    // simple intersection on two edges, split tri
+	    // len is 4 => simple intersection on two edges, split tri
 	    if(!ip0.length) {
 		// ip1 and ip2 are valid
 		this.computeSurface(ip1);
 		this.computeSurface(ip2);
 		if(this.inOut([tri[2],
 	[tri[2][0]+(ip2[0]-tri[2][0])*t,tri[2][1]+(ip2[1]-tri[2][1])*t],
-   [tri[2][0]+(ip1[0]-tri[2][0])*t,tri[2][1]+(ip1[1]-tri[2][1])*t]]) < 0) {
+   [tri[2][0]+(ip1[0]-tri[2][0])*t,tri[2][1]+(ip1[1]-tri[2][1])*t]]) <= 0) {
 		    // tri[2] is outside
 		    this.renderFinal([tri[0], ip1, ip2]);
 		    this.renderFinal([tri[0], tri[1], ip1]);
@@ -634,7 +634,7 @@ function Tessellator(lnn) {
 		    this.computeSurface(ip2);
 		    if(this.inOut([tri[0],
 	[tri[0][0]+(ip2[0]-tri[0][0])*t,tri[0][1]+(ip2[1]-tri[0][1])*t],
-   [tri[0][0]+(ip0[0]-tri[0][0])*t,tri[0][1]+(ip0[1]-tri[0][1])*t]]) < 0) {
+   [tri[0][0]+(ip0[0]-tri[0][0])*t,tri[0][1]+(ip0[1]-tri[0][1])*t]]) <= 0) {
 			// tri[0] is outside
 			this.renderFinal([tri[1], ip2, ip0]);
 			this.renderFinal([tri[1], tri[2], ip2]);
@@ -648,7 +648,7 @@ function Tessellator(lnn) {
 		    this.computeSurface(ip1);
 		    if(this.inOut([tri[1],
 	[tri[1][0]+(ip0[0]-tri[1][0])*t,tri[1][1]+(ip0[1]-tri[1][1])*t],
-   [tri[1][0]+(ip1[0]-tri[1][0])*t,tri[1][1]+(ip1[1]-tri[1][1])*t]]) < 0) {
+   [tri[1][0]+(ip1[0]-tri[1][0])*t,tri[1][1]+(ip1[1]-tri[1][1])*t]]) <= 0) {
 			// tri[1] is outside
 			this.renderFinal([tri[0], ip0, ip1]);
 			this.renderFinal([tri[0], ip1, tri[2]]);
@@ -818,9 +818,9 @@ function Tessellator(lnn) {
     } /* initTrims */
 
     this.trimFinal = function (tri) {
-	if (this.tloops && this.inOut(tri) == 0)
+	if (this.tloops && this.inOut(tri) == 0){
 	    this.renderTrimmed(tri);
-	else {
+	} else {
 	    var t = 0.3;
 	    var out = 0;
 	    if(this.inOut([tri[0],
@@ -836,7 +836,7 @@ function Tessellator(lnn) {
    [tri[2][0]+(tri[0][0]-tri[2][0])*t,tri[2][1]+(tri[0][1]-tri[2][1])*t]]) < 0)
 		out++;
 	    if(out > 0) {
-		return;
+		return;//this.renderTrimmed(tri);
 	    }
 	    this.renderFinal(tri);
 	}
@@ -873,19 +873,18 @@ x3dom.registerNodeType(
 		this._vf.solid = false;
 
 		var tess = new Tessellator(this);
+		tess.setThresholds();
 		tess.tessellate();
-		x3dom.debug.logInfo("num triangles:"+tess.indices.length/3);
+
 		var its = new x3dom.nodeTypes.IndexedTriangleSet();
 		its._nameSpace = this._nameSpace;
 		its._vf.solid = false;
 		its._vf.ccw = false;
 		its._vf.index = tess.indices;
-
 		var co = new x3dom.nodeTypes.Coordinate();
 		co._nameSpace = this._nameSpace;
 		co._vf.point =
 		    new x3dom.fields.MFVec3f(tess.coordinates);
-
 		its.addChild(co)
 		its.nodeChanged();
 
@@ -956,6 +955,7 @@ x3dom.registerNodeType(
 		this._vf.solid = false;
 
 		var tess = new Tessellator(this);
+		tess.setThresholds();
 		if(this._cf.trimmingContour &&
 		   this._cf.trimmingContour.nodes.length) {
 		    tess.tloops = [];
@@ -997,12 +997,10 @@ x3dom.registerNodeType(
 		its._vf.solid = false;
 		its._vf.ccw = false;
 		its._vf.index = tess.indices;
-		x3dom.debug.logInfo("num triangles:"+tess.indices.length/3);
 		var co = new x3dom.nodeTypes.Coordinate();
 		co._nameSpace = this._nameSpace;
 		co._vf.point =
 		    new x3dom.fields.MFVec3f(tess.coordinates);
-
 		its.addChild(co)
 		its.nodeChanged();
 
