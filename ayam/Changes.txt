@@ -1,11 +1,12 @@
-[4. Mar 2016 CVS-Head:
-======================
+[12. Mar 2016 CVS-Head:
+=======================
 Bug Fixes:
 o added missing scripting interface commands to JavaScript and Lua scripting
   language plugins (SF 526)
 o shading of quadric primitives in external views on MacOSX/Aqua (SF 525)
 o crash creating a bevel on a degenerate curve (SF 524)
 o conversion of tool objects without caps/bevels destroying TP/TC tags (SF 527)
+o trim curve coordinates for X3D export (SF 528)
 
 Modelling:
 o the create Sweep/Swing tools now rotate the parameter curves to the
@@ -33,12 +34,15 @@ o added "toYZC" and "toXZC" commands to rotate curves to the respective
 o added hidden preference option "DisableFailedScripts" that controls
   whether script object scripts and scripts in tags should be disabled
   when they fail
+o added a script to display NURBS in x3dom (x3dom-nurbs)
 
 Import/Export:
 o X3D export of materials now supports the new tag type "XML" that can be
   used to a) add custom attributes to the exported <Material>-node or
   b) add complete node hierarchies to the <Appearance>-node
   (e.g. a <ComposedShader>)
+o X3D export of NURBS surfaces now also contains some "containerField"
+  attributes vital for e.g. x3dom-nurbs
 o added a script that implements NURBS surface nodes for x3dom
 
 
