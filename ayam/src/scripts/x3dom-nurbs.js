@@ -223,6 +223,7 @@ function Tessellator(lnn) {
     this.indexHash = [];
     this.curveHash = null;
     this.coordinates = [];
+    this.texcoords = [];
     this.indices = [];
     this.coordIndex = 0;
 
@@ -458,7 +459,7 @@ function Tessellator(lnn) {
 	this.indexHash[indu][indv] = this.coordIndex;
 	this.coordIndex++;
 	this.coordinates.push(pnt);
-
+	this.texcoords.push(uv);
      return pnt;
     } /* computeSurface */
 
@@ -588,23 +589,30 @@ function Tessellator(lnn) {
 	}
 	if(len != 4) {
 	    // no intersection or complex intersection (all edges)
-	    var out = 0;
-	    if(this.inOut([tri[0],
+	    if(0&&len == 6 && this.max_rec) {
+		this.max_rec--;
+		this.diceTri(tri);
+		this.max_rec++;
+		return;
+	    } else {
+		var out = 0;
+		if(this.inOut([tri[0],
 	[tri[0][0]+(tri[1][0]-tri[0][0])*t,tri[0][1]+(tri[1][1]-tri[0][1])*t],
    [tri[0][0]+(tri[2][0]-tri[0][0])*t,tri[0][1]+(tri[2][1]-tri[0][1])*t]]) < 0)
-		out++;
-	    if(this.inOut([tri[1],
+		    out++;
+		if(this.inOut([tri[1],
 	[tri[1][0]+(tri[0][0]-tri[1][0])*t,tri[1][1]+(tri[0][1]-tri[1][1])*t],
    [tri[1][0]+(tri[2][0]-tri[1][0])*t,tri[1][1]+(tri[2][1]-tri[1][1])*t]]) < 0)
-		out++;
-	    if(this.inOut([tri[2],
+		    out++;
+		if(this.inOut([tri[2],
 	[tri[2][0]+(tri[1][0]-tri[2][0])*t,tri[2][1]+(tri[1][1]-tri[2][1])*t],
    [tri[2][0]+(tri[0][0]-tri[2][0])*t,tri[2][1]+(tri[0][1]-tri[2][1])*t]]) < 0)
-		out++;
-	    if(out > 0) {
-		return;
+		    out++;
+		if(out > 0) {
+		    return;
+		}
+		this.renderFinal(tri);
 	    }
-	    this.renderFinal(tri);
 	} else {
 	    // len is 4 => simple intersection on two edges, split tri
 	    if(!ip0.length) {
@@ -813,31 +821,52 @@ function Tessellator(lnn) {
     } /* initTrims */
 
     this.trimFinal = function (tri) {
-	if (this.tloops && this.inOut(tri) == 0) {
-	    this.renderTrimmed(tri);
-	} else {
-	    var t = 0.3;
-	    var out = 0;
-	    if(this.inOut([tri[0],
+	if(this.tloops) {
+	    if (this.inOut(tri) == 0) {
+		this.renderTrimmed(tri);
+		return;
+	    } else {
+		var t = 0.3;
+		var out = 0;
+		if(this.inOut([tri[0],
 	[tri[0][0]+(tri[1][0]-tri[0][0])*t,tri[0][1]+(tri[1][1]-tri[0][1])*t],
    [tri[0][0]+(tri[2][0]-tri[0][0])*t,tri[0][1]+(tri[2][1]-tri[0][1])*t]]) < 0)
-		out++;
-	    if(this.inOut([tri[1],
+		    out++;
+		if(this.inOut([tri[1],
 	[tri[1][0]+(tri[0][0]-tri[1][0])*t,tri[1][1]+(tri[0][1]-tri[1][1])*t],
    [tri[1][0]+(tri[2][0]-tri[1][0])*t,tri[1][1]+(tri[2][1]-tri[1][1])*t]]) < 0)
-		out++;
-	    if(this.inOut([tri[2],
+		    out++;
+		if(this.inOut([tri[2],
 	[tri[2][0]+(tri[1][0]-tri[2][0])*t,tri[2][1]+(tri[1][1]-tri[2][1])*t],
    [tri[2][0]+(tri[0][0]-tri[2][0])*t,tri[2][1]+(tri[0][1]-tri[2][1])*t]]) < 0)
-		out++;
-	    if(out > 0) {
-		return;
+		    out++;
+		if(out > 0) {
+		    return;
+		}
 	    }
-	    this.renderFinal(tri);
 	}
+	this.renderFinal(tri);
     } /* trimFinal */
 } /* Tessellator */
 
+function tessToITS(tess, nobj) {
+    var its = new x3dom.nodeTypes.IndexedTriangleSet();
+    its._nameSpace = nobj._nameSpace;
+    its._vf.solid = false;
+    its._vf.ccw = false;
+    its._vf.index = tess.indices;
+    var co = new x3dom.nodeTypes.Coordinate();
+    co._nameSpace = nobj._nameSpace;
+    co._vf.point = new x3dom.fields.MFVec3f(tess.coordinates);
+    its.addChild(co)
+    var tc = new x3dom.nodeTypes.TextureCoordinate();
+    tc._nameSpace = nobj._nameSpace;
+    tc._vf.point = new x3dom.fields.MFVec3f(tess.texcoords);
+    its.addChild(tc)
+    its.nodeChanged();
+    its._xmlNode = nobj._xmlNode;
+    return its;
+} /* tessToITS */
 
 x3dom.registerNodeType(
     "NurbsPatchSurface",
@@ -870,20 +899,7 @@ x3dom.registerNodeType(
 		var tess = new Tessellator(this);
 		tess.adjustThresholds();
 		tess.tessellate();
-
-		var its = new x3dom.nodeTypes.IndexedTriangleSet();
-		its._nameSpace = this._nameSpace;
-		its._vf.solid = false;
-		its._vf.ccw = false;
-		its._vf.index = tess.indices;
-		var co = new x3dom.nodeTypes.Coordinate();
-		co._nameSpace = this._nameSpace;
-		co._vf.point =
-		    new x3dom.fields.MFVec3f(tess.coordinates);
-		its.addChild(co)
-		its.nodeChanged();
-
-		its._xmlNode = this._xmlNode;
+		var its = tessToITS(tess, this);
 		this._mesh = its._mesh;
             },
             fieldChanged: function(fieldName) {
@@ -985,20 +1001,7 @@ x3dom.registerNodeType(
 		    tess.initTrims();
 		}
 		tess.tessellate();
-
-		var its = new x3dom.nodeTypes.IndexedTriangleSet();
-		its._nameSpace = this._nameSpace;
-		its._vf.solid = false;
-		its._vf.ccw = false;
-		its._vf.index = tess.indices;
-		var co = new x3dom.nodeTypes.Coordinate();
-		co._nameSpace = this._nameSpace;
-		co._vf.point =
-		    new x3dom.fields.MFVec3f(tess.coordinates);
-		its.addChild(co)
-		its.nodeChanged();
-
-		its._xmlNode = this._xmlNode;
+		var its = tessToITS(tess, this);
 		this._mesh = its._mesh;
             },
             fieldChanged: function(fieldName) {
