@@ -206,7 +206,7 @@ function Tessellator(lnn) {
     this.trim_thresh = 0.1;
     this.split_bias = 0.7;
     this.skew_thresh = 0.01;
-    this.max_rec = 4;
+    this.max_rec = 3;
 
     this.w = lnn._vf.uDimension-1;
     this.h = lnn._vf.vDimension-1;
@@ -459,7 +459,7 @@ function Tessellator(lnn) {
 	this.indexHash[indu][indv] = this.coordIndex;
 	this.coordIndex++;
 	this.coordinates.push(pnt);
-	this.texcoords.push(uv);
+	this.texcoords.push(new x3dom.fields.SFVec2f(uv[0],uv[1]));
      return pnt;
     } /* computeSurface */
 
@@ -589,7 +589,7 @@ function Tessellator(lnn) {
 	}
 	if(len != 4) {
 	    // no intersection or complex intersection (all edges)
-	    if(0&&len == 6 && this.max_rec) {
+	    if(len == 6 && this.max_rec) {
 		this.max_rec--;
 		this.diceTri(tri);
 		this.max_rec++;
@@ -609,6 +609,11 @@ function Tessellator(lnn) {
    [tri[2][0]+(tri[0][0]-tri[2][0])*t,tri[2][1]+(tri[0][1]-tri[2][1])*t]]) < 0)
 		    out++;
 		if(out > 0) {
+		    if(this.max_rec) {
+			this.max_rec--;
+			this.diceTri(tri);
+			this.max_rec++;
+		    }
 		    return;
 		}
 		this.renderFinal(tri);
@@ -861,7 +866,7 @@ function tessToITS(tess, nobj) {
     its.addChild(co)
     var tc = new x3dom.nodeTypes.TextureCoordinate();
     tc._nameSpace = nobj._nameSpace;
-    tc._vf.point = new x3dom.fields.MFVec3f(tess.texcoords);
+    tc._vf.point = new x3dom.fields.MFVec2f(tess.texcoords);
     its.addChild(tc)
     its.nodeChanged();
     its._xmlNode = nobj._xmlNode;
