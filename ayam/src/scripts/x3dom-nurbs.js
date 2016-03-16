@@ -605,22 +605,6 @@ function Tessellator(lnn) {
 	this.diceTri([ip2,ip1,tri[2]]);
     }
 
-    this.isTrimPoint = function (p) {
-	for(var ilp = 0; ilp < this.ttloops.length; ilp++) {
-	    var lp = this.ttloops[ilp];
-	    // XXXX TODO: add bbox test for speedup?
-	    for(var k = 0; k < lp.length; k++ ) {
-		var pp = lp[k];
-		if(((Math.abs(p[0]-pp[0])<10e-6) &&
-		    (Math.abs(p[1]-pp[1])<10e-6))){
-		    //alert(p);
-		    return true;
-		}
-	    }
-	}
-	return false;
-    }
-
     /* Render a trimmed tile. */
     this.renderTrimmed = function (tri) {
 	var t = 0.3;
@@ -697,55 +681,8 @@ function Tessellator(lnn) {
 		this.max_rec++;
 		return;
 	    }
-	}
-	if(0&&len == 1) {
-	    if(ip0.length && this.isTrimPoint(tri[2])) {
-		//alert(tri);
-		this.computeSurface(ip0);
-		if(this.inOut([tri[0],
-	[tri[0][0]+(tri[1][0]-tri[0][0])*t,tri[0][1]+(tri[1][1]-tri[0][1])*t],
-   [tri[0][0]+(tri[2][0]-tri[0][0])*t,tri[0][1]+(tri[2][1]-tri[0][1])*t]]) > 0)
-		    this.renderFinal([ip0,tri[0],tri[2]]);
-		if(this.inOut([tri[1],
-	[tri[1][0]+(tri[0][0]-tri[1][0])*t,tri[1][1]+(tri[0][1]-tri[1][1])*t],
-   [tri[1][0]+(tri[2][0]-tri[1][0])*t,tri[1][1]+(tri[2][1]-tri[1][1])*t]]) > 0)
-		    this.renderFinal([ip0,tri[1],tri[2]]);
-		return;
-	    } else
-	    if(ip1.length && this.isTrimPoint(tri[0])) {
-		//alert(tri);
-		this.computeSurface(ip1);
-		if(this.inOut([tri[1],
-	[tri[1][0]+(tri[0][0]-tri[1][0])*t,tri[1][1]+(tri[0][1]-tri[1][1])*t],
-   [tri[1][0]+(tri[2][0]-tri[1][0])*t,tri[1][1]+(tri[2][1]-tri[1][1])*t]]) > 0)
-		    this.renderFinal([ip1,tri[1],tri[0]]);
-		if(this.inOut([tri[2],
-	[tri[2][0]+(tri[1][0]-tri[2][0])*t,tri[2][1]+(tri[1][1]-tri[2][1])*t],
-   [tri[2][0]+(tri[0][0]-tri[2][0])*t,tri[2][1]+(tri[0][1]-tri[2][1])*t]]) > 0)
-		    this.renderFinal([ip1,tri[2],tri[0]]);
-		return;
-	    } else
-	    if(ip2.length && this.isTrimPoint(tri[1])) {
-		//alert(tri);
-		this.computeSurface(ip2);
-		if(this.inOut([tri[2],
-	[tri[2][0]+(tri[1][0]-tri[2][0])*t,tri[2][1]+(tri[1][1]-tri[2][1])*t],
-   [tri[2][0]+(tri[0][0]-tri[2][0])*t,tri[2][1]+(tri[0][1]-tri[2][1])*t]]) > 0)
-		    this.renderFinal([ip2,tri[2],tri[1]]);
-		if(this.inOut([tri[0],
-	[tri[0][0]+(tri[1][0]-tri[0][0])*t,tri[0][1]+(tri[1][1]-tri[0][1])*t],
-   [tri[0][0]+(tri[2][0]-tri[0][0])*t,tri[0][1]+(tri[2][1]-tri[0][1])*t]]) > 0)
-		    this.renderFinal([ip2,tri[0],tri[2]]);
-		return;
-	    }
-	    if(this.max_rec) {
-		this.max_rec--;
-		this.diceTri(tri);
-		this.max_rec++;
-		return;
-	    }
-	    return;
-	}
+	} /* if len == 1 */
+
 	if(len != 2) {
 	    // no intersection or complex intersection (all edges)
 	    if(len == 3) {
