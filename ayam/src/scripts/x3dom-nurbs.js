@@ -206,7 +206,7 @@ function Tessellator(lnn) {
     this.trim_thresh = 0.1;
     this.split_bias = 0.7;
     this.skew_thresh = 0.01;
-    this.max_rec = 3;
+    this.max_rec = 5;
 
     this.w = lnn._vf.uDimension-1;
     this.h = lnn._vf.vDimension-1;
@@ -261,8 +261,8 @@ function Tessellator(lnn) {
 	    if(this.P[i].z>bb[5])bb[5]=this.P[i].z;
 	}
 	var ex = Math.sqrt((bb[0]-bb[3])*(bb[0]-bb[3])+
-			     (bb[1]-bb[4])*(bb[1]-bb[4])+
-			     (bb[2]-bb[5])*(bb[2]-bb[5]))/5.0;
+			   (bb[1]-bb[4])*(bb[1]-bb[4])+
+			   (bb[2]-bb[5])*(bb[2]-bb[5]))/5.0;
 	this.edge_thresh *= ex;
 	this.trim_thresh *= ex;
     } // adjustThresholds
@@ -525,11 +525,16 @@ function Tessellator(lnn) {
     } /* renderFinal */
 
     /* Find true intersection of line segment with trims. */
-    this.intersectTrim = function (p1, p2) {
-	for(var ilp = 0; ilp < this.ttloops.length; ilp++) {
+    this.intersectTrim = function (p1, p2, prev) {
+	var sl = 0, ss = 0;
+	if(prev){
+	    sl = prev[2];
+	    ss = prev[3]+1;
+	}
+	for(var ilp = sl; ilp < this.ttloops.length; ilp++) {
 	    var lp = this.ttloops[ilp];
 	    // XXXX TODO: add bbox test for speedup?
-	    for(var k = 0; k < lp.length-1; k++ ) {
+	    for(var k = ss; k < lp.length-1; k++ ) {
 		var p3 = lp[k];
 		var p4 = lp[k+1];
 
@@ -538,14 +543,14 @@ function Tessellator(lnn) {
 		   ((Math.abs(p1[0]-p4[0])<10e-6) &&
 		    (Math.abs(p1[1]-p4[1])<10e-6)))
 		    return [];
-		    //continue;
+		//continue;
 
 		if(((Math.abs(p2[0]-p3[0])<10e-6) &&
 		    (Math.abs(p2[1]-p3[1])<10e-6)) ||
 		   ((Math.abs(p2[0]-p4[0])<10e-6) &&
 		    (Math.abs(p2[1]-p4[1])<10e-6)))
 		    return [];
-		    //continue;
+		//continue;
 
 		var den = ((p2[0]-p1[0])*(p4[1]-p3[1]) -
 			   (p2[1]-p1[1])*(p4[0]-p3[0]));
@@ -566,11 +571,55 @@ function Tessellator(lnn) {
 		if((s < 10e-6) || (s > (1.0-10e-6)))
 		    continue;
 
-		return [p1[0]+r*(p2[0]-p1[0]), p1[1]+r*(p2[1]-p1[1])];
+		return [p1[0]+r*(p2[0]-p1[0]), p1[1]+r*(p2[1]-p1[1]), ilp, k];
 	    }
+	    if(prev)
+		return [];
 	}
 	return [];
     } /* intersectTrim */
+
+    /* render four triangles created by a trim loop entering and leaving
+       on one triangle edge */
+    this.renderDiced = function (p0, p1, p2, tm, ip0, ip1) {
+	var ip0s = ip0;
+	var ip1s = ip1;
+	if(((p0[0]-ip0[0])*(p0[0]-ip0[0])+(p0[1]-ip0[1])*(p0[1]-ip0[1])) >
+	   ((p0[0]-ip1[0])*(p0[0]-ip1[0])+(p0[1]-ip1[1])*(p0[1]-ip1[1]))) {
+	    ip0s = ip1;
+	    ip1s = ip0;
+	}
+	this.renderFinal([p0,tm,p2]);
+	this.renderFinal([p0,ip0s,tm]);
+	this.renderFinal([p1,p2,tm]);
+	this.renderFinal([p1,tm,ip1s]);
+    }
+
+    /* render a triangle with a complex trim pattern (all edges have
+       valid intersections with the trim loops), the triangle is
+       basically just subdivided via the intersection points */
+    this.renderComplex = function (tri, ip0, ip1, ip2) {
+	this.diceTri([tri[0],ip0,ip2]);
+	this.diceTri([ip0,tri[1],ip1]);
+	this.diceTri([ip0,ip1,ip2]);
+	this.diceTri([ip2,ip1,tri[2]]);
+    }
+
+    this.isTrimPoint = function (p) {
+	for(var ilp = 0; ilp < this.ttloops.length; ilp++) {
+	    var lp = this.ttloops[ilp];
+	    // XXXX TODO: add bbox test for speedup?
+	    for(var k = 0; k < lp.length; k++ ) {
+		var pp = lp[k];
+		if(((Math.abs(p[0]-pp[0])<10e-6) &&
+		    (Math.abs(p[1]-pp[1])<10e-6))){
+		    //alert(p);
+		    return true;
+		}
+	    }
+	}
+	return false;
+    }
 
     /* Render a trimmed tile. */
     this.renderTrimmed = function (tri) {
@@ -578,8 +627,70 @@ function Tessellator(lnn) {
 	var ip0 = this.intersectTrim(tri[0], tri[1]);
 	var ip1 = this.intersectTrim(tri[1], tri[2]);
 	var ip2 = this.intersectTrim(tri[2], tri[0]);
-	var len = ip0.length+ip1.length+ip2.length;
-	if(len == 2) {
+	var len = (ip0.length>0)+(ip1.length>0)+(ip2.length>0);
+	if(len == 1) {
+	    var ip = [ip0,ip1,ip2];
+	    // check loop touching triangle point
+	    for(var i = 0; i < 3; i++)
+		if(ip[i].length) {
+		    if(((Math.abs(tri[i][0]-ip[i][0])<10e-6) &&
+			(Math.abs(tri[i][1]-ip[i][1])<10e-6)) ||
+		       ((Math.abs(tri[(i+1)%3][0]-ip[i][0])<10e-6) &&
+			(Math.abs(tri[(i+1)%3][1]-ip[i][1])<10e-6))) {
+			this.renderFinal(tri);
+			return;
+		    }
+		}
+	    // check loop entering and leaving on the same edge
+	    if(ip0.length) {
+		var ip01 = this.intersectTrim(tri[0], tri[1], ip0);
+		if(ip01.length) {
+		    var tm = this.ttloops[ip01[2]][ip01[3]];
+		    this.computeSurface(tm);
+		    this.computeSurface(ip0);
+		    this.computeSurface(ip01);
+		    if(this.inOut([tri[2],
+	[tri[2][0]+(tri[1][0]-tri[2][0])*t,tri[2][1]+(tri[1][1]-tri[2][1])*t],
+   [tri[2][0]+(tri[0][0]-tri[2][0])*t,tri[2][1]+(tri[0][1]-tri[2][1])*t]])> 0){
+			this.renderDiced(tri[0],tri[1],tri[2],tm,ip0,ip01);
+		    } else {
+			this.renderFinal([ip0,tm,ip01]);
+		    }
+		    return;
+		}
+	    } else if(ip1.length) {
+		var ip11 = this.intersectTrim(tri[1], tri[2], ip1);
+		if(ip11.length) {
+		    var tm = this.ttloops[ip11[2]][ip11[3]];
+		    this.computeSurface(tm);
+		    this.computeSurface(ip1);
+		    this.computeSurface(ip11);
+		    if(this.inOut([tri[0],
+	[tri[0][0]+(tri[1][0]-tri[0][0])*t,tri[0][1]+(tri[1][1]-tri[0][1])*t],
+   [tri[0][0]+(tri[2][0]-tri[0][0])*t,tri[0][1]+(tri[2][1]-tri[0][1])*t]])> 0){
+			this.renderDiced(tri[1],tri[2],tri[0],tm,ip1,ip11);
+		    } else {
+			this.renderFinal([ip1,tm,ip11]);
+		    }
+		    return;
+		}
+	    } else if(ip2.length) {
+		var ip21 = this.intersectTrim(tri[2], tri[0], ip2);
+		if(ip21.length) {
+		    var tm = this.ttloops[ip21[2]][ip21[3]];
+		    this.computeSurface(tm);
+		    this.computeSurface(ip2);
+		    this.computeSurface(ip21);
+		    if(this.inOut([tri[1],
+	[tri[1][0]+(tri[0][0]-tri[1][0])*t,tri[1][1]+(tri[0][1]-tri[1][1])*t],
+   [tri[1][0]+(tri[2][0]-tri[1][0])*t,tri[1][1]+(tri[2][1]-tri[1][1])*t]])> 0){
+			this.renderDiced(tri[2],tri[0],tri[1],tm,ip2,ip21);
+		    } else {
+			this.renderFinal([ip2,tm,ip21]);
+		    }
+		    return;
+		}
+	    }
 	    if(this.max_rec) {
 		this.max_rec--;
 		this.diceTri(tri);
@@ -587,12 +698,58 @@ function Tessellator(lnn) {
 		return;
 	    }
 	}
-	if(len != 4) {
-	    // no intersection or complex intersection (all edges)
-	    if(len == 6 && this.max_rec) {
+	if(0&&len == 1) {
+	    if(ip0.length && this.isTrimPoint(tri[2])) {
+		//alert(tri);
+		this.computeSurface(ip0);
+		if(this.inOut([tri[0],
+	[tri[0][0]+(tri[1][0]-tri[0][0])*t,tri[0][1]+(tri[1][1]-tri[0][1])*t],
+   [tri[0][0]+(tri[2][0]-tri[0][0])*t,tri[0][1]+(tri[2][1]-tri[0][1])*t]]) > 0)
+		    this.renderFinal([ip0,tri[0],tri[2]]);
+		if(this.inOut([tri[1],
+	[tri[1][0]+(tri[0][0]-tri[1][0])*t,tri[1][1]+(tri[0][1]-tri[1][1])*t],
+   [tri[1][0]+(tri[2][0]-tri[1][0])*t,tri[1][1]+(tri[2][1]-tri[1][1])*t]]) > 0)
+		    this.renderFinal([ip0,tri[1],tri[2]]);
+		return;
+	    } else
+	    if(ip1.length && this.isTrimPoint(tri[0])) {
+		//alert(tri);
+		this.computeSurface(ip1);
+		if(this.inOut([tri[1],
+	[tri[1][0]+(tri[0][0]-tri[1][0])*t,tri[1][1]+(tri[0][1]-tri[1][1])*t],
+   [tri[1][0]+(tri[2][0]-tri[1][0])*t,tri[1][1]+(tri[2][1]-tri[1][1])*t]]) > 0)
+		    this.renderFinal([ip1,tri[1],tri[0]]);
+		if(this.inOut([tri[2],
+	[tri[2][0]+(tri[1][0]-tri[2][0])*t,tri[2][1]+(tri[1][1]-tri[2][1])*t],
+   [tri[2][0]+(tri[0][0]-tri[2][0])*t,tri[2][1]+(tri[0][1]-tri[2][1])*t]]) > 0)
+		    this.renderFinal([ip1,tri[2],tri[0]]);
+		return;
+	    } else
+	    if(ip2.length && this.isTrimPoint(tri[1])) {
+		//alert(tri);
+		this.computeSurface(ip2);
+		if(this.inOut([tri[2],
+	[tri[2][0]+(tri[1][0]-tri[2][0])*t,tri[2][1]+(tri[1][1]-tri[2][1])*t],
+   [tri[2][0]+(tri[0][0]-tri[2][0])*t,tri[2][1]+(tri[0][1]-tri[2][1])*t]]) > 0)
+		    this.renderFinal([ip2,tri[2],tri[1]]);
+		if(this.inOut([tri[0],
+	[tri[0][0]+(tri[1][0]-tri[0][0])*t,tri[0][1]+(tri[1][1]-tri[0][1])*t],
+   [tri[0][0]+(tri[2][0]-tri[0][0])*t,tri[0][1]+(tri[2][1]-tri[0][1])*t]]) > 0)
+		    this.renderFinal([ip2,tri[0],tri[2]]);
+		return;
+	    }
+	    if(this.max_rec) {
 		this.max_rec--;
 		this.diceTri(tri);
 		this.max_rec++;
+		return;
+	    }
+	    return;
+	}
+	if(len != 2) {
+	    // no intersection or complex intersection (all edges)
+	    if(len == 3) {
+		this.renderComplex(tri, ip0, ip1, ip2);
 		return;
 	    } else {
 		var out = 0;
@@ -609,17 +766,12 @@ function Tessellator(lnn) {
    [tri[2][0]+(tri[0][0]-tri[2][0])*t,tri[2][1]+(tri[0][1]-tri[2][1])*t]]) < 0)
 		    out++;
 		if(out > 0) {
-		    if(this.max_rec) {
-			this.max_rec--;
-			this.diceTri(tri);
-			this.max_rec++;
-		    }
 		    return;
 		}
 		this.renderFinal(tri);
 	    }
 	} else {
-	    // len is 4 => simple intersection on two edges, split tri
+	    // len is 2 => simple intersection on two edges, split tri
 	    if(!ip0.length) {
 		// ip1 and ip2 are valid
 		this.computeSurface(ip1);
@@ -827,7 +979,7 @@ function Tessellator(lnn) {
 
     this.trimFinal = function (tri) {
 	if(this.tloops) {
-	    if (this.inOut(tri) == 0) {
+	    if(this.inOut(tri) >= 0) {
 		this.renderTrimmed(tri);
 		return;
 	    } else {
