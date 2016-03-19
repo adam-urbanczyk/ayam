@@ -773,13 +773,13 @@ $m.pm add command -label "Connect" -command {
 } -underline 0
 $m.pm add separator
 $m.pm add command -label "Gen. Face Normals" -command {
-    undo save GenFaceNorm; genfnPo; rV }\
+    undo save GenFaceNorm; genfnPo; rV; plb_update }\
     -underline 5
 $m.pm add command -label "Gen. Smooth Normals" -command {
-    undo save GenSmoothNorm; gensnPo; rV }\
+    undo save GenSmoothNorm; gensnPo; rV; plb_update }\
     -underline 0
 $m.pm add command -label "Rem. Smooth Normals" -command {
-    undo save RemSmoothNorm; remsnPo; rV }\
+    undo save RemSmoothNorm; remsnPo; rV; plb_update }\
     -underline 0
 $m.pm add command -label "Flip Smooth Normals" -command {
     undo save FlipSmoothNorm; flipPo 1; rV }\
