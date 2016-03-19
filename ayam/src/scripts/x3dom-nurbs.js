@@ -233,10 +233,10 @@ function Tessellator(lnn) {
 	    this.W = null;
 
 	var u0 = this.U[this.p];
-	var u1 = this.U[this.U.length-this.p];
+	var u1 = this.U[this.U.length-this.p-1];
 	var u05 = (u0+u1)*0.5;
 	var v0 = this.V[this.q];
-	var v1 = this.V[this.V.length-this.q];
+	var v1 = this.V[this.V.length-this.q-1];
 	var v05 = (v0+v1)*0.5;
 	this.tessTri([[u0,v0],[u0,v05],[u05,v0]]);
 	this.tessTri([[u0,v05],[u05,v05],[u05,v0]]);
@@ -864,7 +864,7 @@ function Tessellator(lnn) {
 
 		var ui = lp[j][1];//p
 		var u = U[ui];//U[p]
-		ue = U[(U.length-ui)];//U[Ulen-p]
+		ue = U[(U.length-ui-1)];//U[Ulen-p]
 		while(u < ue) {
 		    this.ttloops[ilp].push(this.computeCurve(ilp, j, u));
 		    ttus.push(u);
