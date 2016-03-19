@@ -372,11 +372,12 @@ function Tessellator(lnn) {
 	}
 	else if (this.splitCenter( mv )) {
 	    //no edges split; add vertex to center?
-	    a[0] = (1./3.)*(tri[0][0] + tri[1][0] + tri[2][0]);
-	    a[1] = (1./3.)*(tri[0][1] + tri[1][1] + tri[2][1]);
+	    var c = [];
+	    c[0] = (tri[0][0] + tri[1][0] + tri[2][0])/3.0;
+	    c[1] = (tri[0][1] + tri[1][1] + tri[2][1])/3.0;
 
 	    for(var i = 0; i < 3; i++) {
-		res[i] = [tri[i], tri[(i+1)%3], a];
+		res[i] = [tri[i], tri[(i+1)%3], c];
 	    }
 	    return res;
 	}
