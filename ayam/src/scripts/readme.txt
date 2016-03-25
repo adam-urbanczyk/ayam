@@ -21,9 +21,9 @@ ayrepair.tcl - repair the Ayam application state (emergency use only!)
 winheader.tcl - helper to create header files from the original sources
  (for compilation on MS Windows)
 
-x3dom-impex.js - improve x3doms default navigation mode mouse handling
+x3dom-impex.js - improve mouse handling of x3dom default navigation mode 
 
-x3dom-nurbs.js - NURBS nodes for x3dom
+x3dom-nurbs - NURBS nodes for x3dom
 
 
 Internal Helpers
