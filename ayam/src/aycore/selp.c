@@ -683,7 +683,7 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  unsigned int i = 1, indiceslen = 0, *indices = NULL;
- int select_all = AY_FALSE, select_none = AY_FALSE;
+ int count = AY_FALSE, select_all = AY_FALSE, select_none = AY_FALSE;
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
  ay_point *p;
@@ -708,6 +708,18 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(argv[1][1] == 'a')
 	    {
 	      select_all = AY_TRUE;
+	    }
+	  /* -count */
+	  if(argv[1][1] == 'c')
+	    {
+	      if(argc != 3)
+		{
+		  ay_error(AY_EARGS, argv[0], "-count varname");
+		  return TCL_OK;
+		}
+	      toa = Tcl_NewStringObj(argv[2], -1);
+	      Tcl_SetVar(interp, argv[2], "", TCL_LEAVE_ERR_MSG);
+	      count = AY_TRUE;
 	    }
 	  /* -none */
 	  if(argv[1][1] == 'n')
@@ -751,7 +763,7 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   /* parse list of indices */
-  if(!select_none && !select_all)
+  if(!count && !select_none && !select_all)
     {
       if(!(indices = calloc(argc, sizeof(unsigned int))))
 	{
@@ -773,6 +785,25 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
   while(sel)
     {
       o = sel->object;
+      if(count)
+	{
+	  i = 0;
+	  p = o->selp;
+	  while(p)
+	    {
+	      i++;
+	      p = p->next;
+	    }
+
+	  if(i < (unsigned int)INT_MAX)
+	    to = Tcl_NewIntObj(i);
+	  else
+	    to = Tcl_NewWideIntObj((Tcl_WideInt)i);
+	  Tcl_ObjSetVar2(interp, toa, NULL, to, TCL_APPEND_VALUE |
+			 TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
+	  sel = sel->next;
+	  continue;
+	}
 
       if(select_none)
 	{
