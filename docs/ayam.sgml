@@ -14959,11 +14959,14 @@ This command manipulates the point selection.
 <label id="scselpnts">
 selPnts &ndash; select points:
 <itemize>
- <item>Synopsis: <tt/"selPnts [-get vname | -all | index1 index2 ...]"/
+ <item>Synopsis: <tt/"selPnts [(-count | -get) vname | -all | index1 index2 ...]"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description:
  <itemize>
   <item>If called without arguments, this command deselects all points.
+  <item>If the argument is <tt/"-count"/, this command puts the number
+of all currently selected points into the variable specified by the
+<tt/"vname"/ argument.
   <item>If the argument is <tt/"-get"/, this command puts the indices
 of all currently selected points into the variable specified by the
 <tt/"vname"/ argument.
