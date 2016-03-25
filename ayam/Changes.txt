@@ -1,4 +1,4 @@
-[12. Mar 2016 CVS-Head:
+[25. Mar 2016 CVS-Head:
 =======================
 Bug Fixes:
 o added missing scripting interface commands to JavaScript and Lua scripting
@@ -7,6 +7,7 @@ o shading of quadric primitives in external views on MacOSX/Aqua (SF 525)
 o crash creating a bevel on a degenerate curve (SF 524)
 o conversion of tool objects without caps/bevels destroying TP/TC tags (SF 527)
 o trim curve coordinates for X3D export (SF 528)
+o crash when generating smooth normals (SF 529)
 
 Modelling:
 o the create Sweep/Swing tools now rotate the parameter curves to the
