@@ -12,6 +12,11 @@
 
 /* NURBS for x3dom */
 
+/*
+  The tessellator is based on idea and example code from
+  A. J. Chung and A. J. Field (https://sourceforge.net/projects/emvise/).
+*/
+
 function findSpan(n, p, u, U)
 {
  var low, mid, high;
@@ -195,9 +200,10 @@ function curvePoint2D(n, p, U, P, u)
  return C;
 } /* curvePoint2D */
 
+
 function Tessellator(nurb) {
     this.use_objectspace = true;
-    this.edge_thresh = 0.2;
+    this.edge_thresh = 0.1;
     this.trim_thresh = 0.1;
     this.split_bias = 0.2;
     this.skew_thresh = 0.01;
@@ -990,7 +996,7 @@ function Tessellator(nurb) {
 		    out++;
 		if(out > 0) {
 		    // TODO: or call into renderTrimmed()?
-		    this.renderTrimmed(tri);
+		    //this.renderTrimmed(tri);
 		    return;
 		}
 	    }
