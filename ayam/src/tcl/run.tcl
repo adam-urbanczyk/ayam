@@ -42,6 +42,7 @@ proc runTool { argvars argstrings command title {advargs ""} } {
 	pack $f.l -in $f -side top -fill x
     }
 
+    set naml 0
     set index 0
     foreach i $argvars {
 
@@ -100,6 +101,10 @@ proc runTool { argvars argstrings command title {advargs ""} } {
 	    set ay(bca) $w.f2.bca
 	    global ToolParams
 	    set nami [lindex $argstrings $index]
+	    set l [string length $nami]
+	    if { $l > $naml } {
+		set naml $l
+	    }
 	    set nam [string range $nami 0 end-1]
 	    regsub -all "\[^\[:alnum:\]\]" $nam "_" nami
 
@@ -149,6 +154,10 @@ proc runTool { argvars argstrings command title {advargs ""} } {
 	incr index
     }
     # foreach
+
+    if { $naml > 0 } {
+	uie_setLabelWidth $w.f1 $naml
+    }
 
     # complete the script
     append okscript "set ay(lasttool) \$command;"
