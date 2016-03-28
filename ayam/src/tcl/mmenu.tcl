@@ -767,7 +767,12 @@ $m.pm add command -label "Merge" -command { pomesh_merge } -underline 0
 $m.pm add command -label "Split" -command { pomesh_split } -underline 0
 $m.pm add command -label "Optimize" -command { pomesh_optimize } -underline 0
 $m.pm add command -label "Connect" -command {
-    runTool {ay(pmoff1) ay(pmoff2)} {"Offset1:" "Offset2:"}\
+    selPnts -count ay(pmoffpnts)
+    set ay(pmoff1label) "Offset1 ("
+    append ay(pmoff1label) [lindex $ay(pmoffpnts) 0] " points):"
+    set ay(pmoff2label) "Offset2 ("
+    append ay(pmoff2label) [lindex $ay(pmoffpnts) 1] " points):"
+    runTool {ay(pmoff1) ay(pmoff2)} [list $ay(pmoff1label) $ay(pmoff2label)]\
 	"undo save ConnectPo; connectPo -o1 %0 -o2 %1; uCR; sL; notifyOb; rV;"\
 	"Connect Edges" {ayam-2.html polymeshtools}
 } -underline 0
