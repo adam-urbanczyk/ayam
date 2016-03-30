@@ -15,6 +15,7 @@
 function createITS(data, node) {
     var its = new x3dom.nodeTypes.IndexedTriangleSet();
     its._nameSpace = node._nameSpace;
+    its._vf.normalPerVertex = node._vf.normalPerVertex;
     its._vf.solid = false;
     its._vf.ccw = false;
     its._vf.index = data[0];
@@ -94,6 +95,7 @@ x3dom.registerNodeType(
             this.addField_MFFloat(ctx, 'uKnot', []);
             this.addField_MFFloat(ctx, 'vKnot', []);
             this.addField_MFFloat(ctx, 'weight', []);
+            this.addField_SFBool(ctx, 'normalPerVertex', true);
             this.addField_SFNode('controlPoint',
 				 x3dom.nodeTypes.X3DCoordinateNode);
 
