@@ -249,30 +249,36 @@ function Tessellator(nurb) {
 	this.tessTri([[u05,v1],[u1,v1],[u1,v05]]);
     } // tesselate
 
-    this.adjustThresholds = function (tparam) {
-	if(tparam < 0) {
+    this.adjustThresholds = function (uparam, vparam) {
+	if(uparam < 0) {
 	    this.use_objectspace = false;
-	    this.edge_thresh *= -tparam;
-	    this.trim_thresh *= -tparam;
+	    if(vparam >= 0.0)
+		vparam = uparam;
+	    var ul = 2.0/(this.w+1);
+	    var vl = 2.0/(this.h+1);
+	    ul *= (this.U[this.U.length-this.p-1] - this.U[this.p]);
+	    vl *= (this.V[this.V.length-this.q-1] - this.V[this.q]);
+	    this.edge_thresh_u = -uparam*ul;
+	    this.edge_thresh_v = -vparam*vl;
 	} else {
 	    var mi = Number.MAX_VALUE;
 	    var mx = -Number.MAX_VALUE;
 	    var bb = [mi,mi,mi,mx,mx,mx];
 	    for(var i = 0; i < this.P.length; i++) {
-		if(this.P[i].x<bb[0])bb[0]=this.P[i].x;
-		if(this.P[i].y<bb[1])bb[1]=this.P[i].y;
-		if(this.P[i].z<bb[2])bb[2]=this.P[i].z;
-		if(this.P[i].x>bb[3])bb[3]=this.P[i].x;
-		if(this.P[i].y>bb[4])bb[4]=this.P[i].y;
-		if(this.P[i].z>bb[5])bb[5]=this.P[i].z;
+		if(this.P[i].x < bb[0]) bb[0] = this.P[i].x;
+		if(this.P[i].y < bb[1]) bb[1] = this.P[i].y;
+		if(this.P[i].z < bb[2]) bb[2] = this.P[i].z;
+		if(this.P[i].x > bb[3]) bb[3] = this.P[i].x;
+		if(this.P[i].y > bb[4]) bb[4] = this.P[i].y;
+		if(this.P[i].z > bb[5]) bb[5] = this.P[i].z;
 	    }
 	    var ex = Math.sqrt((bb[0]-bb[3])*(bb[0]-bb[3])+
 			       (bb[1]-bb[4])*(bb[1]-bb[4])+
 			       (bb[2]-bb[5])*(bb[2]-bb[5]))/5.0;
-	    if(tparam <= 10e-6)
-		tparam = 1.0;
-	    this.edge_thresh *= ex * tparam;
-	    this.trim_thresh *= ex * tparam;
+	    if(uparam <= 10e-6)
+		uparam = 1.0;
+	    this.edge_thresh *= ex * uparam;
+	    this.trim_thresh *= ex * uparam;
 	}
     } // adjustThresholds
 
@@ -497,17 +503,14 @@ function Tessellator(nurb) {
      return pnt;
     } /* computeCurve */
 
-    /* User function that decides if an edge should be split
-      Return value gives a measure on which to prioritise edge splitting
-      (e.g. edge length) and values below the set threshold will not be
-      split; must be commutative */
+    /* Decide if an edge should be split;
+       must be commutative to avoid cracks. */
     this.splitEdge = function (a, b) {
-
 	var pa = this.computeSurface(a);
 	var pb = this.computeSurface(b);
 	if(!this.use_objectspace) {
-	    var dist = Math.sqrt((a[0]-b[0])*(a[0]-b[0])+
-				 (a[1]-b[1])*(a[1]-b[1]));
+	    var dist = Math.sqrt((a[0]-b[0])*(a[0]-b[0])/this.edge_thresh_u+
+				 (a[1]-b[1])*(a[1]-b[1])/this.edge_thresh_v);
 	    return dist;
 	}
 
@@ -558,7 +561,7 @@ function Tessellator(nurb) {
 	cv[1] = (tri[0][1] + tri[1][1] + tri[2][1])/3.0;
 	var ed = 0.0;
 	for(var i = 0; i < 3; i++)
-	    ed += this.splitEdge(tri[i],cv);
+	    ed += this.splitEdge(tri[i], cv);
 	this.curveHash = null;
 	if(ed*0.5 > this.edge_thresh){
 	    this.computeSurface(cv);

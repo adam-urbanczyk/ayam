@@ -16,7 +16,7 @@ importScripts('x3dom-nurbs-tess.js');
 
 onmessage = function(e) {
     var tess = new Tessellator(e.data);
-    tess.adjustThresholds(e.data[8]);
+    tess.adjustThresholds(e.data[8], e.data[9]);
     if(e.data[10] && e.data[10].length){
 	tess.initTrims();
     } else {
