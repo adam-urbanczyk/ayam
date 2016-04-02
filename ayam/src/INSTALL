@@ -19,8 +19,10 @@ source distribution.
 Contents:
 1. Compiling a Shared Version of Ayam
 2. Compiling a Wrapped Standalone Version of Ayam
-3. Additional Targets (Compiling Plugins/Fill MacOSX Application Bundle)
+3. Additional Targets (Compiling Plugins/Fill Mac OS X Application Bundle)
 4. Compile Time Configuration Options
+
+
 
 1. Compiling a Shared Version of Ayam
 -------------------------------------
@@ -32,7 +34,8 @@ The following requirements _must_ be met to compile a shared
 version of Ayam:
 
 - ANSI-C-compiler
-- Tcl/Tk sources ( at least V8.2, at most V8.4.19 )
+- Tcl/Tk sources ( at least V8.2, at most V8.4.19,
+  V8.5 and V8.6 will _not_ do! )
   http://tcl.sourceforge.net/
   Note that a complete installation _and_ the sources of Tcl/Tk are
   required.
@@ -94,7 +97,7 @@ No compiling of this Tcl/Tk is necessary but you need the configured
 sources in order to compile Ayam!
 
 Note 2:
-If OpenGL 1.1 is not available to you, you can still compile Ayam, if your
+If OpenGL 1.1 is not available to you, Ayam can still be compiled if your
 OpenGL is supporting the polygon offset extension (e.g. on IRIX 6.2).
 
 
@@ -264,12 +267,12 @@ to the Ayam directory, editing of the Makefile will be easier.
 
 Note 1:
 The official Ayam 1.13 Linux executable proves that with some surgery, also
-newer Tcl/Tk versions work with Wrap0.3 (atleast the Tcl scripts in the
+newer Tcl/Tk versions work with Wrap0.3. But atleast the Tcl scripts in the
 wrap0.3/lib directory need to be replaced with the new versions from the
-Tcl/Tk distribution).
+Tcl/Tk distribution.
 
 Note 2:
-If OpenGL 1.1 is not available to you, you can still compile Ayam, if your
+If OpenGL 1.1 is not available to you, Ayam can still be compiled if your
 OpenGL is supporting the polygon offset extension (e.g. on IRIX 6.2).
 
 
@@ -685,8 +688,8 @@ to make clean but not remove the objects that never change,
 like Apples mf3d code and Affines sribw code.
 
 
-3.16 Creating an application bundle on MacOSX
----------------------------------------------
+3.16 Creating an application bundle on Mac OS X
+-----------------------------------------------
 
 Since Ayam 1.9, the Ayam source distribution contains a skeleton
 directory structure for an application bundle in the "bin" directory
@@ -727,7 +730,7 @@ to mate the frameworks and the Ayam executable in the application bundle.
 
 Note that the application bundle targets only work properly for the Aqua
 version of Ayam and that the Aqua version of Ayam will not respond to any
-MacOSX AppleScript application events unless started from the application
+Mac OS X AppleScript application events unless started from the application
 bundle.
 
 
