@@ -119,8 +119,8 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'normalPerVertex', true);
             this.addField_SFNode('controlPoint',
 				 x3dom.nodeTypes.X3DCoordinateNode);
-
             this._needReRender = true;
+	    this._myctx = ctx;
         },
         {
             nodeChanged: function() {
