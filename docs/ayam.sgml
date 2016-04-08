@@ -18096,7 +18096,8 @@ single click.
 The script <tt>"tcone.tcl"</tt> creates truncated cones with arguments
 similar to the cylinder primitive, see also the above image.
 <p>
-This script must be used in a Script object of type <tt/"Create"/.
+This script must be used in a Script object of type <tt/"Create"/
+(see section <ref id="scriptobj" name="Script Object">).
 For convenience, there is also a property GUI; one must add a <tt/"NP"/ tag
 of value <tt/"TConeAttr"/ to the Script object to see it.
 <p>
@@ -18141,7 +18142,8 @@ The script is based on the online Polyhedron VRML generator by
 George W. Hart:<newline>
 <tt>http://www.georgehart.com/virtual-polyhedra/conway_notation.html</tt>
 <p>
-This script must be used in a Script object of type <tt/"Create"/.
+This script must be used in a Script object of type <tt/"Create"/
+(see section <ref id="scriptobj" name="Script Object">).
 For convenience, there is also a property GUI; to make this GUI visible
 a <tt/"NP"/ tag of value <tt/"PolyhedronAttr"/ must be added to the Script
 object.
@@ -18149,8 +18151,7 @@ object.
 The Conway notation defines a set of operations executed consecutively
 on a seed/basic shape.
 The script currently supports the following seeds and operations
-(information taken from George W. Harts fine web pages,
-see also section <ref id="secref" name="References">).
+(information taken from George W. Harts fine web pages, see above).
 <p>
 <bf/Seeds:/<newline>
 The Platonic solids are denoted T, O, C, I, and D, according to their
@@ -18193,6 +18194,145 @@ explain the operations in more detail:
 </table>
 
 These abbreviated explanations were again taken from George W. Hart.
+
+<#if out=latex><x/newpage/</#if>
+
+<sect2>NURBS for X3DOM<label id="x3domnurbsjs">
+<p>
+<figure loc="ht">
+<eps file="pics/x3dom-nurbs-ex.ps" height="6cm">
+<img src="pics/x3dom-nurbs-ex.gif">
+<caption>X3dom NURBS Display</caption>
+</figure>
+<p>
+The script(s) <tt>"x3dom-nurbs-*.js"</tt> implement the
+<tt>&lt;NurbsPatchSurface&gt;</tt> and <tt>&lt;NurbsTrimmedSurface&gt;</tt>
+X3D NURBS nodes for x3dom (see <tt>http://www.x3dom.org/</tt>) in
+JavaScript.<newline>
+This allows to directly publish NURBS
+models on the web without prior conversion to a polygonal representation
+which is cumbersome, unflexible, and leads to higher bandwidth consumption.
+<p>
+The tessellator is based on idea and example code from
+A. J. Chung and A. J. Field: <em>"A Simple Recursive Tessellator for Adaptive Surface Triangulation"</em> in Journal of Graphics Tools Vol. 5, Iss. 3, 2000.
+<p>
+The implementation spans four script files:
+<itemize>
+<item><tt/x3dom-nurbs-nodes.js/ &ndash; interface of the tessellator to x3dom
+<item><tt/x3dom-nurbs-pool.js/ &ndash; worker management (current pool size is 3)
+<item><tt/x3dom-nurbs-worker.js/ &ndash; a worker
+<item><tt/x3dom-nurbs-tess.js/ &ndash; the tessellator
+</itemize>
+
+In order to use the tessellator just add the following to your XHTML file
+after inclusion of <tt>"x3dom.js"</tt>:
+<tscreen><verb>
+ <script type="text/javascript" src="x3dom-nurbs-pool.js"/>
+ <script type="text/javascript" src="x3dom-nurbs-nodes.js"/>
+</verb></tscreen>
+
+As the tessellator is fully automatic, no further adjustments are needed.
+
+Proper XHTML files can be created using the X3D export in x3dom-mode, see
+section <ref id="expx3dopt" name="X3D (Web3D) export options">.
+
+While the tessellator runs in the background an initial polygonal
+representation that is directly derived from the control polygon of
+the NURBS surface is shown. Additionally, a busy prompt is displayed,
+see also the image below.
+As the busy prompt is derived from the x3dom loading prompt, it may also
+be styled with the <tt>"x3dom-progress"</tt> style in <tt>"x3dom.css"</tt>.
+<figure loc="ht">
+<eps file="pics/x3dom-nurbs-busy.ps" height="6cm">
+<img src="pics/x3dom-nurbs-busy.gif">
+<caption>X3dom NURBS Busy Prompt</caption>
+</figure>
+
+The tessellation runs in so called webworkers, processes that run in
+parallel to the main browser thread, in order to not block user interaction
+and employ multi-core CPUs.
+The webworker pool is currently hard coded to only use three such
+webworkers at any given time. This value may be adapted easily in
+<tt>"x3dom-nurbs-pool.js"</tt> (e.g.~if your CPU has more cores).
+
+By default, the tessellator tries to create a tessellation that represents
+all important surface features in a way that a visual inspection from
+mid to close viewing distance does not reveal the nature of the underlying
+triangular representation. This may be too fine/slow for objects that are
+never viewed from close distance or too coarse for very detailed objects.
+
+Therefore, the tessellation quality and speed may be adjusted using the
+<tt>"uTessellation"</tt> and <tt>"vTessellation"</tt> attributes as
+explained in the next sections.
+
+<sect3>Oject Space Based Sampling
+<p>
+If no <tt>"uTessellation"</tt> attribute is specified, or its value
+is positive, the tessellator uses the so called <em>object space sampling</em>
+mode. In this mode the tessellator subdivides an initial set of triangles
+recursively until all edges of those triangles are shorter than a given
+threshold value (in object space). The threshold value is set automatically
+so that an object spanning one unit by one unit in object space is subdivided
+to about 15 by 15 by two triangles.
+The <tt>"uTessellation"</tt> attribute value is simply multiplied into
+this automatically determined threshold.
+
+Therefore <tt>"uTessellation"</tt> values larger than 1.0 lead to a coarser
+and faster tessellation, whereas values smaller than 1.0 lead to a
+finer and slower tessellation.
+
+Note that the value of the <tt>"vTessellation"</tt>
+attribute is <em>not</em> considered.
+
+Also note that in highly curved regions and at trim edges, even smaller
+triangles than determined by the edge length criterion may be created.
+
+<sect3>Parametric Space Based Sampling
+<p>
+If the <tt>"uTessellation"</tt> attribute value is negative, the
+tessellator switches to <em>parametric space sampling</em>.
+In this mode also the <tt>"vTessellation"</tt> attribute is considered.
+
+As in the object space sampling mode an automatic threshold value is
+computed, but here the extension of the object in parametric space
+(i.e.~the number of control points) is used. This actually results
+in two threshold values, one for each parametric dimension.
+The <tt>"uTessellation"</tt> and <tt>"vTessellation"</tt> attributes are
+multiplied into those thresholds.
+
+Therefore, values larger than -1.0 (in absolute value) lead
+to a coarser and faster tessellation in the respective dimension.
+Values smaller than -1.0 (in absolute
+value) lead to a finer and slower tessellation in the respective dimension.
+This means a value of -2.0 leads to roughly half as many triangles
+compared to the default and a value of -0.5 leads to twice as many
+triangles when compared to the default in the respective parametric
+dimension.
+
+As the edge length computation is simpler and no curvature analysis is
+taking place, the parametric space sampling is considerably faster than
+object space sampling.
+
+Note that at trim curve edges even smaller triangles than determined by
+the edge length criterion may be created.
+
+<sect3>Restrictions and Implementation Deficiencies
+<p>
+Due to memoization of surface points, parametric values must not
+exceed
+<eq>
+1,7976931348623157e308 / 10e10 = 1,7976931348623157e297
+</eq>.
+
+Texture coordinates are always directly derived from the parametric values.
+
+There is <em/no/ support for the <tt>&lt;NurbsSet&gt;</tt>,
+<tt>&lt;NurbsTextureCoordinate&gt;</tt>,
+<tt>&lt;NurbsSweptSurface&gt;</tt>,
+<tt>&lt;NurbsSwungSurface&gt;</tt>,
+<tt>&lt;NurbsCurve&gt;</tt>, and
+<tt>&lt;Nurbs*Interpolator&gt;</tt>
+nodes.
 
 <#if out=latex><x/newpage/</#if>
 
@@ -20082,9 +20222,9 @@ objects in the Ayam scene to be put in CADLayer nodes;
 <item><tt/"RationalStyle"/: determines how to write rational coordinates
 (see also section <ref id="rats" name="Rational Style">);
 <item><tt>"WriteX3dom"</tt>: toggles X3DOM-export mode. If this option is
-enabled,
+enabled, the X3D export will 
 <enum>
-<item>the X3D export will first read a XHTML template file (named
+<item>first read a XHTML template file (named
 <tt/"x3dom-template.xhtml"/),
 <item>then inject the scene to be exported into the
 X3D <tt/"&lt;Scene&gt;"/-tag of the template (already present child
