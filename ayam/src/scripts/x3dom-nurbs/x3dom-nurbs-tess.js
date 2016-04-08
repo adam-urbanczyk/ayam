@@ -205,7 +205,7 @@ function Tessellator(nurb) {
     this.use_objectspace = true;
     this.edge_thresh = 0.1;
     this.trim_thresh = 0.1;
-    this.split_bias = 0.2;
+    this.split_bias = 0.5;
     this.skew_thresh = 0.01;
     this.max_rec = 5;
 
@@ -385,6 +385,9 @@ function Tessellator(nurb) {
 	    }
 	    return res;
 	}
+	/* check disabled, because the curvature check in splitEdge()
+	   already does enough */
+/*
 	else if (this.splitCenter( mv )) {
 	    //no edges split; add vertex to center and do a simple dice?
 	    var c = [];
@@ -397,7 +400,7 @@ function Tessellator(nurb) {
 
 	    return res;
 	}
-
+*/
 	this.trimFinal(tri);
 
 	return [];
@@ -463,14 +466,19 @@ function Tessellator(nurb) {
 				 uv[0], uv[1]);
 	}
 
-	// do not output this point whilst tesselating trim curves
-	if(nooutput || this.curveHash)
+	// do not memoize this point whilst tesselating trim curves
+	if(this.curveHash)
 	    return pnt;
 
 	// memoize pnt
 	if(!this.surfaceHash[indu])
 	    this.surfaceHash[indu] = [];
 	this.surfaceHash[indu][indv] = pnt;
+
+	// do not output this point whilst checking edge curvature
+	if(nooutput)
+	    return pnt;
+
 	if(!this.indexHash[indu])
 	    this.indexHash[indu] = [];
 	this.indexHash[indu][indv] = this.coordIndex;
