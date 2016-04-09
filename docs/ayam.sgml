@@ -11406,7 +11406,8 @@ TC|Texture Coordinates@<hline>
 TM|Transformation Matrix*@<hline>
 TP|Tesselation Parameters@<hline>
 UMM|U Min Max@<hline>
-VMM|V Min Max<#if out=latex>@<hline></#if>
+VMM|V Min Max@<hline>
+XML|XML Data<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Tags Overview (2/2), * &ndash; internal</caption>
 </table>
@@ -11976,6 +11977,34 @@ the cap. On Cap objects, the cap number may be omitted.
 <p>
 A MP tag could look like this:
 <tscreen><verb>MP 0.5,0.25,0.1,0</verb></tscreen>
+
+<sect2>XML Tag<label id="xmltag">
+<p>
+The tag type <tt/"XML"/ can be used to enrich XML based export
+formats with arbitrary user defined data (attributes and
+nodes).<footnote>Since 1.24.</footnote>
+It can currently only be added to Material objects for X3D export
+(see also section <ref id="expx3d" name="X3D (Web3D) Export">).
+The value string of this tag must be a valid XML node hierarchy
+where the outer node specifies the target node of the XML data.
+Attributes of the outer node will be added to the target XML node
+for export, already existing attributes will be overwritten
+(i.e.~the XML data tag will be processed after the XML export
+converted the corresponding Ayam object to a XML node hierarchy).
+Likewise, child nodes of the outer node will be added to the
+matching target XML node. CDATA sections are also supported
+properly (this is important for GLSL shader source code).
+<p>
+<bf/Examples/
+<p>
+XML tags could look like this:
+<tscreen><verb>XML &lt;Material shininess='0.7'/&gt;</verb></tscreen>
+<tscreen><verb>XML
+&lt;Appearance&gt;
+&lt;ComposedShader language='GLSL'&gt;
+...
+&lt;/ComposedShader&gt;
+&lt;/Appearance&gt;</verb></tscreen>
 
 <sect2>Internal Tags
 <p>
@@ -20169,6 +20198,11 @@ X3D always assumes a perspective viewing transformation. This means,
 views of type <tt/"Front"/, <tt/"Side"/, or <tt/"Top"/ will not be
 exported properly.
 <p>
+Material objects are supported in a very minimalistic way,
+i.e.~only the material color will be exported as diffuseColor.
+However, XML tags can be used to add more attributes or even shaders to the
+exported materials, see also section <ref id="xmltag" name="XML tag">.
+<p>
 Object names will be converted to DEF attributes.
 <p>
 Instances can be resolved or exported as USE/DEF pairs.
@@ -23334,6 +23368,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="impx3d" name="X3D (Web3D) Import">,
 <item><ref id="expx3d" name="X3D (Web3D) Export">
 </itemize>
+<item>XML: <ref id="xmltag" name="XML tag">
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
