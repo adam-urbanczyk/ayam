@@ -9212,6 +9212,8 @@ Bevel|NCurve<f/<sup/+//|Yes|NPatch|No*<#if out=latex>@<hline></#if>
 <caption>Bevel Object Capabilities</caption>
 </table>
 
+<#if out=latex><x/newpage/</#if>
+
 <sect3>BevelAttr Property<label id="bevelp"><label id="bevelattrprop">
 <p><#if out=latex>&nbsp;<newline></#if>
 The following parameters of the Bevel object control
@@ -11934,21 +11936,53 @@ An UMM tag could look like this:
 <p>
 The tag type <tt/"BP"/ (bevel parameters) is used by all bevel
 supporting tool objects to store their bevel information.
+See also sections
+<ref id="bevelsprop" name="Bevels property"> and
+<ref id="bevelp" name="BevelAttr Property">.<newline>
 The syntax of the BP tag is:
 <tscreen><tt>
 "&lt;side&gt;,&lt;type&gt;,&lt;radius&gt;,&lt;revert&gt;"
 </tt></tscreen>
-where <tt/"&lt;side&gt;"/ is an integer value from 0 - 3
-defining the side of the surface, where the bevel should be applied
-to, <tt/"&lt;type&gt;"/ is an integer value from 0 - 4 defining
-the type of the bevel, <tt/"&lt;radius&gt;"/ is a floating point
-value defining the radius of the bevel, and <tt/"&lt;revert&gt;"/
+where<newline>
+<tt/&lt;side&gt;/ is an integer value from 0 - 3
+defining the side of the surface, to add the bevel to,<newline>
+<tt/&lt;type&gt;/ is an integer value defining
+the type of the bevel,<newline>
+<tt/&lt;radius&gt;/ is a floating point
+value defining the radius of the bevel, and<newline>
+<tt/&lt;revert&gt;/
 is either 0 or 1 and may be used to revert the bevel.
 <p>
 <bf/Example/
 <p>
 A BP tag could look like this:
 <tscreen><verb>BP 0,0,0.1,0</verb></tscreen>
+
+<sect2>CP (Cap Parameters) Tag<label id="cptag">
+<p>
+The tag type <tt/"CP"/ (cap parameters) is used by all cap
+supporting tool objects to store their cap information.
+See also sections
+<ref id="capsprop" name="Caps property"> and
+<ref id="capp" name="Capttr Property">.<newline>
+The syntax of the CP tag is:
+<tscreen><tt>
+"&lt;side&gt;,&lt;type&gt;,&lt;integrate&gt;,&lt;fraction&gt;"
+</tt></tscreen>
+where<newline>
+<tt/&lt;side&gt;/ is an integer value from 0 - 3
+defining the side of the surface, to add the cap to,<newline>
+<tt/&lt;type&gt;/ is an integer value from 0 - 3 defining
+the type of the cap,<newline>
+<tt/&lt;integrate&gt;/ determines whether to integrate the cap into the
+progenitor surface (0 or 1)<newline>
+<tt/&lt;fraction&gt;/ a floating point parameter value for the Simple3D cap
+type.
+<p>
+<bf/Example/
+<p>
+A CP tag could look like this:
+<tscreen><verb>CP 0,0,0,0.5</verb></tscreen>
 
 <sect2>MN (Mean Normal) Tag<label id="mntag">
 <p>
@@ -11991,7 +12025,7 @@ Attributes of the outer node will be added to the target XML node
 for export, already existing attributes will be overwritten
 (i.e.~the XML data tag will be processed after the XML export
 converted the corresponding Ayam object to a XML node hierarchy).
-Likewise, child nodes of the outer node will be added to the
+Likewise, all child nodes of the outer node will be added to the
 matching target XML node. CDATA sections are also supported
 properly (this is important for GLSL shader source code).
 <p>
@@ -22012,6 +22046,7 @@ Index:
 <item><ref id="mmedit" name="main menu entry">,
 <item><ref id="propgui" name="copying properties">
 </itemize>
+<item>CP: <ref id="cptag" name="tag type">
 <item>Create: <ref id="mmcreate" name="create menu">
 <item>CreateAtMark: <ref id="prefmodel" name="preference setting">
 <item>CreateMP:
