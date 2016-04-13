@@ -657,6 +657,9 @@ proc tree_move { } {
 		set node [lindex $sel 0]
 		update
 		$ay(tree) see $node
+		if { $pos == "node" } {
+		    tree_paintLevel $ay(CurrentLevel)
+		}
 	    }
 	    notifyOb -all
 	    plb_update
