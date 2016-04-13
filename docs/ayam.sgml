@@ -18379,6 +18379,16 @@ object space sampling.
 Note that at trim curve edges even smaller triangles than determined by
 the edge length criterion may be created.
 
+<sect3>Additional Attributes
+<p>
+To aid in parameterisation of the <tt>"uTessellation"</tt> and
+<tt>"vTessellation"</tt> attributes, a <tt>"normalPerVertex"</tt> attribute
+can be added to the respective <tt>&lt;NurbsPatchSurface&gt;</tt> or
+<tt>&lt;NurbsTrimmedSurface&gt;</tt> node. This attribute will then also
+be set for the corresponding <tt>&lt;IndexedTriangleSet&gt;</tt> node.
+If the value of this attribute is <tt/"false"/, x3dom will display
+this surface in a flat shaded style and the triangles will be visible.
+
 <sect3>Restrictions and Implementation Deficiencies
 <p>
 Due to memoization of surface points, parametric values must not
@@ -19396,8 +19406,7 @@ The DXF import may be controlled via different options:
 be imported.
 <item><tt/"ScaleFactor"/: allows to apply a scaling factor to all
 imported objects.
-<item><tt/"ReadLayers"/:
-Using the <tt/"ReadLayers"/: using this import option, a single layer or
+<item><tt/"ReadLayers"/: using this import option, a single layer or
 a range of layers may be selected for import.
 By default, all entities from all layers will be imported.
 <item><tt/"RescaleKnots"/: allows to rescale the knot vectors of imported
@@ -21130,6 +21139,8 @@ values (if provided) are three float values in curly braces, such as
 values in curly braces, such as <tt>{1.0 1.0 1.0}</tt>.
 </itemize>
 
+<#if out=latex><x/newpage/</#if>
+
 <sect1>Environment Variables<label id="envvars">
 <p>
 This section documents the environment variables used by Ayam.
@@ -21150,6 +21161,8 @@ of the Netscape WWW browser (used to display the documentation URL).
 <item><tt>"SHADERS"</tt>: initial value of <tt>"Shaders"</tt> preference
 setting (used if no ayamrc file exists).
 </itemize>
+
+<#if out=latex><x/newpage/</#if>
 
 <sect1>Plugins Overview<label id="plugov">
 <p>
@@ -21189,6 +21202,8 @@ object (see section <ref id="sdmeshobj" name="SDMesh Object">).
 </itemize>
 
 </descrip>
+
+<#if out=latex><x/newpage/</#if>
 
 <sect1>Shader Parsing Plugins<label id="spplugins">
 <p>
@@ -23403,6 +23418,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="impx3d" name="X3D (Web3D) Import">,
 <item><ref id="expx3d" name="X3D (Web3D) Export">
 </itemize>
+<item>x3dom-nurbs: <ref id="x3domnurbsjs" name="NURBS for X3DOM">
 <item>XML: <ref id="xmltag" name="XML tag">
 </list>
 
