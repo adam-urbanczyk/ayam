@@ -444,6 +444,7 @@ ay_knots_createnc(ay_nurbcurve_object *curve)
  *   o 2 - too many knots
  *   o 3 - knot multiplicity too high
  *   o 4 - decreasing knots
+ *   o 5 - a knot is NaN
  *   returns -1 if NULL pointer is delivered
  */
 int
@@ -463,6 +464,8 @@ ay_knots_check(int length, int order, int knot_count, double *knotv)
 
   for(i = 0; i < (knot_count-1); i++)
     {
+      if(knotv[i] != knotv[i])
+	return 5;
       if(knotv[i] == knotv[i+1])
 	{
 	  mult_count++;
@@ -477,6 +480,9 @@ ay_knots_check(int length, int order, int knot_count, double *knotv)
 	    return 4;
 	} /* if */
     } /* for */
+
+  if(knotv[knot_count-1] != knotv[knot_count-1])
+    return 5;
 
  return 0;
 } /* ay_knots_check */
@@ -506,6 +512,9 @@ ay_knots_printerr(char *location, int errcode)
       break;
     case 4:
       ay_error(AY_ERROR, location, "Knot sequence has decreasing knots!");
+      break;
+    case 5:
+      ay_error(AY_ERROR, location, "Knot sequence contains NaN!");
       break;
     default:
       break;
@@ -897,7 +906,7 @@ ay_knots_mergenp(ay_nurbpatch_object *patch,
 				patch->width-1, patch->height-1,
 				patch->vorder-1, patch->vknotv,
 				patch->controlv,
-				X, r-1, Vfoo, Qw);      
+				X, r-1, Vfoo, Qw);
 
       free(patch->vknotv);
       patch->vknotv = Vfoo;
