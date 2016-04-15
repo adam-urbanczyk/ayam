@@ -49,8 +49,10 @@ proc tree_handleSelection { } {
     set snodes [$ay(tree) selection get]
     if { $ay(SelectedLevel) != $ay(CurrentLevel) } {
 	set ay(CurrentLevel) $ay(SelectedLevel)
-	Tree::_draw_tree $ay(tree)
+	set ay(drawTreeOnRelease) 1
 	$ay(tree) selection set $snodes
+    } else {
+	set ay(drawTreeOnRelease) 0
     }
     eval [subst "treeSelect $snodes"]
  return;
@@ -463,3 +465,10 @@ addToProc uS {
 	}
     }
 }
+
+bind $ay(tree) <ButtonRelease-1> "+\
+ if \{ \$ay(drawTreeOnRelease) == 1 \} {\
+    Tree::_draw_tree $ay(tree)
+ \};"
+
+set ay(drawTreeOnRelease) 0
