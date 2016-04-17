@@ -442,6 +442,8 @@ ay_read_tags(FILE *fileptr, ay_object *o)
       if(ay_status)
 	{ free(tag->name); free(tag); return ay_status; }
 
+      ay_tags_vttonl((char*)tag->val);
+
       /* avoid null value */
       if(!tag->val)
 	{
