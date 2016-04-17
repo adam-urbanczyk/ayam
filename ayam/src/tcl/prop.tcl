@@ -229,9 +229,18 @@ foreach tag $names {
 }
 
 addCommand $w c2 "Add Tag!" {addTagp}
+
 set i 0
 foreach tag $names {
     set val [lindex $values $i]
+    set ind [string first "\n" $val]
+    if { $ind > -1 } {
+	incr ind -1
+	if { $ind >= 0 } {
+	    set val [string range $val 0 $ind]
+	}
+	set val "${val}..."
+    }
     set len [string length $val]
     if { $len > $ayprefs(MaxTagLen) } {
 	set val [string range $val 0 $ayprefs(MaxTagLen)]
@@ -287,7 +296,8 @@ proc editTagshelper { index } {
  global tagsPropData
  undo save EditTag
  set tagsPropData(names) [lreplace $tagsPropData(names) $index $index [.addTag.fu.e get]]
- set tagsPropData(values) [lreplace $tagsPropData(values) $index $index [.addTag.fm.e get]]
+ set val [string trimright [.addTag.fm.t get 1.0 end]]
+ set tagsPropData(values) [lreplace $tagsPropData(values) $index $index $val]
  grab release .addTag
  focus .
  destroy .addTag
@@ -324,9 +334,33 @@ bind $f.e <Key-Return> ".addTag.fd.bok invoke;break"
 catch {bind $f.e <Key-KP_Enter> ".addTag.fd.bok invoke;break"}
 uie_fixEntry $f.e
 
+set mbs [expr [winfo reqheight $f.e] - 4]
+if { $ay(ws) == "Aqua" } {
+    incr mbs -8
+}
+if { $ay(ws) == "Win32" } {
+    incr mbs 4
+}
+
+set mb [menubutton $f.mb -height $mbs -width $mbs -bd 2\
+	    -image ay_Triangle_img -takefocus 0\
+	    -highlightthickness 0 -relief raised -menu $f.mb.m]
+
+if { $ay(ws) == "Aqua" } {
+    $mb conf -height [$f.e cget -height]
+}
+
+set m [menu $mb.m -tearoff 0]
+foreach val $ayprefs(Tags) {
+    set tt [lindex $val 0]
+    $m add command -label $val\
+	-command "$f.e delete 0 end; $f.e insert end $tt;"
+}
+
 pack $f.lt -in $f -padx 2 -pady 2 -side left
 pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
-pack $f -in $w -side top -fill x -expand yes
+pack $f.mb -in $f -padx 2 -pady 2 -side left
+pack $f -in $w -side top -fill x -expand no
 
 if { $edit >= 0 } {
     $f.e insert 0 [lindex $tagsPropData(names) $edit]
@@ -334,19 +368,22 @@ if { $edit >= 0 } {
 
 set f [frame $w.fm]
 label $f.lv -text "Value:" -width 6
-entry $f.e -width 30
-eval [subst "bindtags $f.e \{$f.e Entry all\}"]
-bind $f.e <Key-Escape> ".addTag.fd.bca invoke;break"
-bind $f.e <Key-Return> ".addTag.fd.bok invoke;break"
-catch {bind $f.e <Key-KP_Enter> ".addTag.fd.bok invoke;break"}
-uie_fixEntry $f.e
+text $f.t -width 30 -height 1
+eval [subst "bindtags $f.t \{$f.t Text all\}"]
+bind $f.t <Key-Escape> ".addTag.fd.bca invoke;break"
+set height 24
+incr height [expr [font metrics [$f.t cget -font] -linespace] - 13]
+bind $f.t <Key-Return> "\
+if \{\[winfo height $f.t\] < $height \} \{.addTag.fd.bok invoke;break\}"
+catch {bind $f.t <Key-KP_Enter> [bind $f.t <Key-Return>]}
+uie_fixEntry $f.t
 
 pack $f.lv -in $f -padx 2 -pady 2 -side left
-pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
-pack $f -in $w -side top -fill x -expand yes
+pack $f.t -in $f -padx 2 -pady 2 -side left -fill both -expand yes
+pack $f -in $w -side top -fill both -expand yes
 
 if { $edit >= 0 } {
-    $f.e insert 0 [lindex $tagsPropData(values) $edit]
+    $f.t insert end [lindex $tagsPropData(values) $edit]
 }
 
 set f [frame $w.fd]
@@ -354,7 +391,7 @@ button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command {
     global ay
     undo save AddTag
     if { [.addTag.fu.e get] != "" } {
-	addTag [.addTag.fu.e get] [.addTag.fm.e get]
+	addTag [.addTag.fu.e get] [string trimright [.addTag.fm.t get 1.0 end]]
     }
     grab release .addTag
     focus .
@@ -364,16 +401,16 @@ button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command {
 
 button $f.bclr -text "Clear" -pady $ay(pady) -width 5 -command {
     global ay
-
     .addTag.fu.e delete 0 end
-    .addTag.fm.e delete 0 end
+    .addTag.fm.t delete 1.0 end
 }
 
 if { $edit >= 0 } {
-$f.bok configure -command "editTagshelper $edit"
+    $f.bok configure -command "editTagshelper $edit"
 }
 
-button $f.bca -text "Cancel" -pady $ay(pady) -width 5 -command "grab release .addTag; focus .; destroy $w"
+button $f.bca -text "Cancel" -pady $ay(pady) -width 5\
+    -command "grab release .addTag; focus .; destroy $w"
 
 pack $f.bok $f.bclr $f.bca -in $f -side left -fill x -expand yes
 pack $f -in $w -side top -fill x
@@ -384,7 +421,11 @@ wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
 winRestoreOrCenter $w $t
 grab $w
-focus .addTag.fu.e
+if { $edit >= 0 } {
+    focus .addTag.fm.t
+} else {
+    focus .addTag.fu.e
+}
 tkwait window $w
 
 winAutoFocusOn
