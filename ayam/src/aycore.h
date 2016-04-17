@@ -1439,6 +1439,14 @@ int ay_tags_remnonm(ay_object *o, ay_object *m);
 int ay_tag_copyselected(ay_object *src, ay_object *dst,
 			char **types, int typeslen);
 
+/** convert newline characters
+ */
+void ay_tags_nltovt(char *str);
+
+/** convert newline characters
+ */
+void ay_tags_vttonl(char *str);
+
 /** Tcl command to register a new tag type */
 int ay_tags_registertcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);

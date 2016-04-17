@@ -120,7 +120,9 @@ ay_write_tags(FILE *fileptr, ay_object *o)
       if(tag->name && tag->val && !tag->is_intern && !tag->is_binary)
 	{
 	  fprintf(fileptr,"%s\n",tag->name);
+	  ay_tags_nltovt((char*)tag->val);
 	  fprintf(fileptr,"%s\n",(char*)tag->val);
+	  ay_tags_vttonl((char*)tag->val);
 	}
       tag = tag->next;
     }

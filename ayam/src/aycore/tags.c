@@ -1312,6 +1312,50 @@ ay_tag_copyselected(ay_object *src, ay_object *dst,
 } /* ay_tag_copyselected */
 
 
+/** ay_tags_nltovt:
+ * Replace newline ('\n') chars by vertical tab ('\v') chars.
+ *
+ * \param[in,out] str string to process
+ *
+ */
+void
+ay_tags_nltovt(char *str)
+{
+ char *c = str;
+
+  while(*c != '\0')
+    {
+      if(*c == '\n')
+	*c = '\v';
+      c++;
+    }
+
+ return;
+} /* ay_tags_nltovt */
+
+
+/** ay_tags_vttonl:
+ * Replace vertical tab ('\v') chars by ('\n') chars.
+ *
+ * \param[in,out] str string to process
+ *
+ */
+void
+ay_tags_vttonl(char *str)
+{
+ char *c = str;
+
+  while(*c != '\0')
+    {
+      if(*c == '\v')
+	*c = '\n';
+      c++;
+    }
+
+ return;
+} /* ay_tags_vttonl */
+
+
 /** ay_tags_registertcmd:
  *  register a new tag type
  *  Implements the \a registerTag scripting interface command.
