@@ -252,6 +252,13 @@ array set ayprefs {
  DisableFailedScripts 1
 
  Docs "http://ayam.sourceforge.net/docs/"
+ Tags {
+ {BNS "Before Notify Script"}
+ {ANS "After Notify Script"}
+ {NP "New Property"}
+ {RP "Remove Property"}
+ {TC "Texture Coordinates"}
+}
  DailyTips {
 {Always click on drawn pixels, when picking vertices.}
 {There is a console-menu on the right mouse button.}
