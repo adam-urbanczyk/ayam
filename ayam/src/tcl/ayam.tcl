@@ -253,11 +253,19 @@ array set ayprefs {
 
  Docs "http://ayam.sourceforge.net/docs/"
  Tags {
+ {NoExport "Omit object from RIB"}
  {BNS "Before Notify Script"}
  {ANS "After Notify Script"}
  {NP "New Property"}
  {RP "Remove Property"}
  {TC "Texture Coordinates"}
+ {UMM "U Min Max"}
+ {VMM "V Min Max"}
+ {RiHider "RenderMan Export"}
+ {SaveMainGeom "Add to Root only!"}
+ {SavePaneLayout "Add to Root only!"}
+ {AsWire "Export as wireframe (X3D)"}
+ {XML "Additional attributes/nodes (X3D)"}
 }
  DailyTips {
 {Always click on drawn pixels, when picking vertices.}
