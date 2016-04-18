@@ -368,6 +368,7 @@ if { $edit >= 0 } {
 
 set f [frame $w.fm]
 label $f.lv -text "Value:" -width 6
+
 text $f.t -width 30 -height 1
 eval [subst "bindtags $f.t \{$f.t Text all\}"]
 bind $f.t <Key-Escape> ".addTag.fd.bca invoke;break"
@@ -376,8 +377,9 @@ incr height [expr [font metrics [$f.t cget -font] -linespace] - 13]
 bind $f.t <Key-Return> "\
 if \{\[winfo height $f.t\] < $height \} \{.addTag.fd.bok invoke;break\}"
 catch {bind $f.t <Key-KP_Enter> [bind $f.t <Key-Return>]}
+bind $f.t <Key-Tab> "\
+if \{\[winfo height $f.t\] < $height \} \{focus \[tk_focusNext $f.t\];break\}"
 uie_fixEntry $f.t
-
 pack $f.lv -in $f -padx 2 -pady 2 -side left
 pack $f.t -in $f -padx 2 -pady 2 -side left -fill both -expand yes
 pack $f -in $w -side top -fill both -expand yes
@@ -419,6 +421,7 @@ pack $f -in $w -side top -fill x
 bind $w <Escape> "$f.bca invoke"
 wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
+set t "Add Tag"
 winRestoreOrCenter $w $t
 grab $w
 if { $edit >= 0 } {
