@@ -11321,10 +11321,17 @@ to quickly select and remove a single tag from the object.
 
 <item><tt/"Add Tag!"/ opens a small dialog window, where a new tag type
 and value may be entered (see also the image below).
+The tag type line has a default value menu, containing the most
+important tag types.<footnote>Since 1.24.</footnote><newline>
 After pressing the <tt/"Ok"/ button, a new entry will be added to the
 tags property, displaying the new tag. Just click on the entry to get
 back to the dialog, to remove the tag using <tt/"Clear"/ then <tt/"Ok"/,
-or to change the type or value of the tag.
+or to change the type or value of the tag.<newline>
+The tag edit dialog supports multiline tag
+editing.<footnote>Since 1.24.</footnote> Just enlarge the
+dialog window to switch to multiline editing. Note that in multiline
+mode, the <tt>&lt;Enter&gt;</tt>, <tt>&lt;Return&gt;</tt>, and also
+<tt>&lt;Tab&gt;</tt> key will behave differently.
 <p>
 <figure loc="ht">
 <eps file="pics/addmodtag.ps" height="2.5cm">
@@ -11337,6 +11344,9 @@ or to change the type or value of the tag.
 All tag entries have a context menu, where the corresponding tag can
 be copied/added to the property
 clipboard.<footnote>Since 1.21.</footnote>
+<p>
+Long and multiline tag values will be displayed in abbreviated
+fashion (with an ellipsis &ndash; &hellip;).
 <p>
 The next sub-sections describe the tag types currently available in Ayam
 and the plugins distributed with Ayam.
@@ -18142,10 +18152,6 @@ Instead, there are only as many canvas items as there are nodes visible
 in the current scroll region. Therefore, working with many objects in
 long lists becomes much faster.
 
-In contrast to the normal tree, the DTree does not support initiating
-a drag-and-drop operation from a currently un-selected level with a
-single click.
-
 <#if out=latex><x/newpage/</#if>
 
 <sect2>Create Truncated Cones<label id="tconetcl">
@@ -18317,6 +18323,8 @@ and employ multi-core CPUs.
 The webworker pool is currently hard coded to only use three such
 webworkers at any given time. This value may be adapted easily in
 <tt>"x3dom-nurbs-pool.js"</tt> (e.g.~if your CPU has more cores).
+Note that each webworker will tessellate a single NURBS surface, i.e.~scenes
+with only one surface will not benefit from the parallelity.
 
 By default, the tessellator tries to create a tessellation that represents
 all important surface features in a way that a visual inspection from
@@ -18385,9 +18393,11 @@ To aid in parameterisation of the <tt>"uTessellation"</tt> and
 <tt>"vTessellation"</tt> attributes, a <tt>"normalPerVertex"</tt> attribute
 can be added to the respective <tt>&lt;NurbsPatchSurface&gt;</tt> or
 <tt>&lt;NurbsTrimmedSurface&gt;</tt> node. This attribute will then also
-be set for the corresponding <tt>&lt;IndexedTriangleSet&gt;</tt> node.
+be set for the corresponding <tt>&lt;IndexedTriangleSet&gt;</tt> node
+that is created by the tessellator.
 If the value of this attribute is <tt/"false"/, x3dom will display
-this surface in a flat shaded style and the triangles will be visible.
+this surface in a flat shaded style and the tesselated triangles will be
+visible allowing easier judgment and adjustment of the tesselation quality.
 
 <sect3>Restrictions and Implementation Deficiencies
 <p>
@@ -18399,13 +18409,15 @@ exceed
 
 Texture coordinates are always directly derived from the parametric values.
 
-There is <em/no/ support for the <tt>&lt;NurbsSet&gt;</tt>,
-<tt>&lt;NurbsTextureCoordinate&gt;</tt>,
-<tt>&lt;NurbsSweptSurface&gt;</tt>,
-<tt>&lt;NurbsSwungSurface&gt;</tt>,
-<tt>&lt;NurbsCurve&gt;</tt>, and
-<tt>&lt;Nurbs*Interpolator&gt;</tt>
-nodes.
+There is <em/no/ support for the following nodes:
+<list>
+<item><tt>&lt;NurbsSet&gt;</tt>,
+<item><tt>&lt;NurbsTextureCoordinate&gt;</tt>,
+<item><tt>&lt;NurbsSweptSurface&gt;</tt>,
+<item><tt>&lt;NurbsSwungSurface&gt;</tt>,
+<item><tt>&lt;NurbsCurve&gt;</tt>, and all
+<item><tt>&lt;Nurbs*Interpolator&gt;</tt> nodes.
+</list>
 
 <#if out=latex><x/newpage/</#if>
 
