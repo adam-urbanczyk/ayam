@@ -14,7 +14,10 @@
 
 /*
   The tessellator is based on idea and example code from
-  A. J. Chung and A. J. Field (https://sourceforge.net/projects/emvise/).
+  A. J. Chung and A. J. Field 
+  "A Simple Recursive Tessellator for Adaptive Surface Triangulation"
+  in Journal of Graphics Tools Vol. 5, Iss. 3, 2000,
+  (https://sourceforge.net/projects/emvise/).
 */
 
 function findSpan(n, p, u, U)
