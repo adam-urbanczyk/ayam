@@ -251,8 +251,11 @@ foreach tag $names {
     pack $b -fill x -expand yes
 
     set m [menu $b.popup -tearoff 0]
-    $m add command -label "Copy" -command "copyTagp $i"
+    $m add command -label "Copy (Replace)" -command "copyTagp $i"
     $m add command -label "Copy (Add)" -command "copyTagp $i 1"
+    $m add separator
+    $m add command -label "Remove"\
+	-command "undo save RemTag;setTags -delete $i;plb_update"
     bind $b <ButtonPress-$aymainshortcuts(CMButton)> "winOpenPopup $b"
 
     incr i
