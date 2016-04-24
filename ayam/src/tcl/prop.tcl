@@ -365,6 +365,7 @@ pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
 pack $f.mb -in $f -padx 2 -pady 2 -side left
 pack $f -in $w -side top -fill x -expand no
 
+# insert initial tag type
 if { $edit >= 0 } {
     $f.e insert 0 [lindex $tagsPropData(names) $edit]
 }
@@ -425,13 +426,13 @@ bind $f.t <$mb> {
     set ay(xy) [winfo pointerxy .]
     tk_popup .addTag.fm.t.popup [lindex $ay(xy) 0] [lindex $ay(xy) 1]
 }
-# bind
 
-
+# insert initial tag value
 if { $edit >= 0 } {
     $f.t insert end [lindex $tagsPropData(values) $edit]
 }
 
+# create ok/clear/cancel buttons
 set f [frame $w.fd]
 button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command {
     global ay
@@ -467,7 +468,7 @@ wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
 set t "Add Tag"
 winRestoreOrCenter $w $t
-#grab $w
+grab $w
 if { $edit >= 0 } {
     focus .addTag.fm.t
 } else {
