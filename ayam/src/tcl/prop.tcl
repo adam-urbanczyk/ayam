@@ -387,6 +387,47 @@ pack $f.lv -in $f -padx 2 -pady 2 -side left
 pack $f.t -in $f -padx 2 -pady 2 -side left -fill both -expand yes
 pack $f -in $w -side top -fill both -expand yes
 
+# create popup menu
+set m [menu $f.t.popup -tearoff 0]
+$m add command -label "Clear" -command "$f.t delete 1.0 end"
+$m add command -label "Paste (Replace)" -command {
+    catch { set ay(nt) ""; set ay(nt) [selection get -selection CLIPBOARD] }
+    if { $ay(nt) != "" } {
+	.addTag.fm.t delete 1.0 end
+	.addTag.fm.t insert end $ay(nt)
+    }
+}
+$m add command -label "Load from file" -command {
+    set newfilename [tk_getOpenFile -parent .\
+		-title "Select file to load:"]
+    if { $newfilename != "" } {
+	set scfile [open $newfilename r]
+	if { $scfile != "" } {
+	    set nt [read $scfile]
+	    if { $nt != "" } {
+		.addTag.fm.t delete 1.0 end
+		.addTag.fm.t insert end $nt
+	    }
+	}
+    }
+}
+$m add separator
+$m add command -label "Reset Multiline" -command "\
+set aygeom(addTag_Add_Tag) \"\";
+after idle \{wm geom .addTag \"\" \}"
+
+# bind popup menu
+set mb 3
+if { $ay(ws) == "Aqua" && $ayprefs(SwapMB) } {
+    set mb 2
+}
+bind $f.t <$mb> {
+    set ay(xy) [winfo pointerxy .]
+    tk_popup .addTag.fm.t.popup [lindex $ay(xy) 0] [lindex $ay(xy) 1]
+}
+# bind
+
+
 if { $edit >= 0 } {
     $f.t insert end [lindex $tagsPropData(values) $edit]
 }
@@ -426,7 +467,7 @@ wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
 set t "Add Tag"
 winRestoreOrCenter $w $t
-grab $w
+#grab $w
 if { $edit >= 0 } {
     focus .addTag.fm.t
 } else {
