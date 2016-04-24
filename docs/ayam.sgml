@@ -33,10 +33,10 @@ code example of 6 lines text (needs another 2 for the upper/lower lines)
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>13. Jan 2016
+<date>23. Apr 2016
 
 <abstract>
-This is the documentation of Ayam 1.23 &ndash; a free 3D modelling environment
+This is the documentation of Ayam 1.24 &ndash; a free 3D modelling environment
 for the RenderMan interface.
 
 Please note, that this document is a reference manual,
@@ -11331,7 +11331,9 @@ The tag edit dialog supports multiline tag
 editing.<footnote>Since 1.24.</footnote> Just enlarge the
 dialog window to switch to multiline editing. Note that in multiline
 mode, the <tt>&lt;Enter&gt;</tt>, <tt>&lt;Return&gt;</tt>, and also
-<tt>&lt;Tab&gt;</tt> key will behave differently.
+<tt>&lt;Tab&gt;</tt> key will behave differently.<newline>
+The tag value widget also has a context menu, allowing text to be
+fetched from the system clipboard or files.
 <p>
 <figure loc="ht">
 <eps file="pics/addmodtag.ps" height="2.5cm">
