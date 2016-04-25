@@ -109,21 +109,10 @@ if { $ay(ws) == "Win32" } {
 # create popup menu
 set m [menu $t.popup -tearoff 0]
 $m add command -label "Clear All" -command "$t delete 1.0 end"
-$m add command -label "Paste (Replace)" -command {
-    global ay ScriptAttr
-    set t $ay(pca).${ScriptAttr(w)}.tScript
-    set nt ""
-    set nt [selection get -selection CLIPBOARD]
-    if { $nt != "" } {
-	$t delete 1.0 end
-	$t insert end $nt
-    }
-}
+$m add command -label "Paste (Replace)" -command "_pasteToText $t"
+
 $m add command -label "Load from file" -command {
     global ay ScriptAttr
-    set t $ay(pca).${ScriptAttr(w)}.tScript
-    set nt ""
-
     set types {{"Script Files" {".tcl" ".js" ".lua"}} {"All files" *}}
     set newfilename ""
     set newfilename [tk_getOpenFile -filetypes $types -parent .\
@@ -134,8 +123,8 @@ $m add command -label "Load from file" -command {
 	if { $scfile != "" } {
 	    set nt [read $scfile]
 	    if { $nt != "" } {
-		$t delete 1.0 end
-		$t insert end $nt
+		$ay(pca).${ScriptAttr(w)}.tScript delete 1.0 end
+		$ay(pca).${ScriptAttr(w)}.tScript insert end $nt
 	    }
 	}
     }
@@ -147,11 +136,9 @@ if { $ay(ws) == "Aqua" && $ayprefs(SwapMB) } {
 }
 bind $t <$mb> {
     global ay ScriptAttr
-    set t $ay(pca).${ScriptAttr(w)}.tScript
-    set xy [winfo pointerxy .]
-    set x [lindex $xy 0]
-    set y [lindex $xy 1]
-    tk_popup $t.popup $x $y
+    set ay(xy) [winfo pointerxy .]
+    tk_popup $ay(pca).${ScriptAttr(w)}.tScript.popup\
+	[lindex $ay(xy) 0] [lindex $ay(xy) 1]
 }
 # bind
 

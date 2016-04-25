@@ -309,6 +309,16 @@ proc editTagshelper { index } {
 }
 #editTagshelper
 
+# _pasteToText
+# paste text from system clipboard to designated text widget
+proc _pasteToText { t } {
+    catch {set nt ""; set nt [selection get -selection CLIPBOARD]}
+    if { $nt != "" } {
+	$t delete 1.0 end
+	$t insert end $nt
+    }
+}
+# _pasteToText
 
 # addTagp:
 #  used to edit and add tags
@@ -391,13 +401,8 @@ pack $f -in $w -side top -fill both -expand yes
 # create popup menu
 set m [menu $f.t.popup -tearoff 0]
 $m add command -label "Clear" -command "$f.t delete 1.0 end"
-$m add command -label "Paste (Replace)" -command {
-    catch { set ay(nt) ""; set ay(nt) [selection get -selection CLIPBOARD] }
-    if { $ay(nt) != "" } {
-	.addTag.fm.t delete 1.0 end
-	.addTag.fm.t insert end $ay(nt)
-    }
-}
+$m add command -label "Paste (Replace)" -command "_pasteToText $f.t"
+
 $m add command -label "Load from file" -command {
     set newfilename [tk_getOpenFile -parent .\
 		-title "Select file to load:"]
