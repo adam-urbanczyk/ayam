@@ -2729,7 +2729,7 @@ used for display of NURBS curves or patches in all interactive
 actions, i.e.~while interactively moving objects or editing
 control points.
 <p><p>
-Negative values are interpreted as multiplicator in the following
+Negative values are interpreted as multiplicand in the following
 way. A value of -2 means: use the value from the <tt/"Tolerance"/ setting
 multiplied by 2, e.g.~if the <tt/"Tolerance"/ is set to 40, a value of 80 will
 be used in actions.<footnote>Since 1.22.</footnote>
@@ -9292,7 +9292,7 @@ tangents will be extracted from the surface automatically and no
 PV tags need to be created.
 <p>
 Also note that the planarity and exact shape defined by rational
-coordinate values (e.g. circular arcs) will not be preserved by
+coordinate values (e.g.~circular arcs) will not be preserved by
 the bevel types that support non-planar curves with one exception:
 RoundToCap bevels on fully planar curves/boundaries do preserve
 the boundary shape fully (unless overridden by
@@ -11354,6 +11354,8 @@ The next sub-sections describe the tag types currently available in Ayam
 and the plugins distributed with Ayam.
 Note that foreign extensions and plugins may define their own types.
 
+<#if out=latex><x/newpage/</#if>
+
 <sect1>Tags<label id="tags">
 <p>
 Tags provide an easy way to attach arbitrary information (e.g.~additional
@@ -11369,8 +11371,6 @@ The following two tables contains a compact list of tag names and short
 explanations, for all tag types that are
 known in Ayam and in all accompanying extensions (plugins);
 tag types marked with an asterisk are for internal use only.
-
-<#if out=latex><x/newpage/</#if>
 
 <table loc="ht">
 <tabular ca="|c|c|"><hline>
@@ -15379,7 +15379,7 @@ rotPnts &ndash; rotate selected points:
  <item>Synopsis: <tt/"rotPnts dx dy dz"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Rotate the selected points by dx degrees around the
-objects X axis then by dy degrees around objects Y axi,s and finally
+objects X axis, then by dy degrees around objects Y axis, and finally
 by dz degrees around the objects Z axis. Note the order of the rotations.
 </itemize>
 
@@ -15413,7 +15413,7 @@ the transformations of the selected objects will be reset to the
 default values.
 <p><p>
 This operation fails for complex setups (i.e.~if the combination of
-parent and child transformation is a shear transformations).
+parent and child transformation is a shear transformation).
 </itemize>
 
 <p>
@@ -17270,7 +17270,7 @@ addMenu:
  <item>Description: This procedure adds a property GUI element for a
 menu&thinsp;/&thinsp;multiple choice parameter, realized through
 a drop down menu. The value of the parameter will be the index
-of the choosen menu item.
+of the chosen menu item.
 <p><p>
 The <tt/"window"/ parameter should contain the window name as returned by
 <tt/"addPropertyGUI"/ above.
@@ -18282,7 +18282,7 @@ X3D NURBS nodes for x3dom (see <tt>http://www.x3dom.org/</tt>) in
 JavaScript.<newline>
 This allows to directly publish NURBS
 models on the web without prior conversion to a polygonal representation
-which is cumbersome, unflexible, and leads to higher bandwidth consumption.
+which is cumbersome, inflexible, and leads to higher bandwidth consumption.
 <p>
 The tessellator is based on idea and example code from
 A. J. Chung and A. J. Field: <em>"A Simple Recursive Tessellator for Adaptive Surface Triangulation"</em> in Journal of Graphics Tools Vol. 5, Iss. 3, 2000.
@@ -18326,7 +18326,7 @@ The webworker pool is currently hard coded to only use three such
 webworkers at any given time. This value may be adapted easily in
 <tt>"x3dom-nurbs-pool.js"</tt> (e.g.~if your CPU has more cores).
 Note that each webworker will tessellate a single NURBS surface, i.e.~scenes
-with only one surface will not benefit from the parallelity.
+with only one surface will not benefit from the parallelism.
 
 By default, the tessellator tries to create a tessellation that represents
 all important surface features in a way that a visual inspection from
@@ -20255,7 +20255,7 @@ X3D always assumes a perspective viewing transformation. This means,
 views of type <tt/"Front"/, <tt/"Side"/, or <tt/"Top"/ will not be
 exported properly.
 <p>
-Material objects are supported in a very minimalistic way,
+Material objects are supported in a very minimalist way,
 i.e.~only the material color will be exported as diffuseColor.
 However, XML tags can be used to add more attributes or even shaders to the
 exported materials, see also section <ref id="xmltag" name="XML tag">.
