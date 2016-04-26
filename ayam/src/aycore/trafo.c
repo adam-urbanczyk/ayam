@@ -619,8 +619,10 @@ ay_trafo_add(ay_object *src, ay_object *dst)
 } /* ay_trafo_add */
 
 
-/* ay_trafo_defaults:
+/** ay_trafo_defaults:
+ * Reset the transformation attributes of an object.
  *
+ * \param o object to process
  */
 void
 ay_trafo_defaults(ay_object *o)
@@ -652,7 +654,7 @@ ay_trafo_defaults(ay_object *o)
 } /* ay_trafo_defaults */
 
 
-/* ay_trafo_movobtcmd:
+/** ay_trafo_movobtcmd:
  *  Translate selected objects.
  *  Implements the \a movOb scripting interface command.
  *  See also the corresponding section in the \ayd{scmovob}.
@@ -699,7 +701,7 @@ ay_trafo_movobtcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_trafo_movobtcmd */
 
 
-/* ay_trafo_movpntstcmd:
+/** ay_trafo_movpntstcmd:
  *  Translate selected points.
  *  Implements the \a movPnts scripting interface command.
  *  See also the corresponding section in the \ayd{scmovpnts}.
@@ -715,7 +717,7 @@ ay_trafo_movpntstcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_point *point = NULL;
- GLdouble mm[16];
+ double mm[16];
  double tpoint[4] = {0};
  int notify_parent = AY_FALSE;
 
@@ -732,11 +734,8 @@ ay_trafo_movpntstcmd(ClientData clientData, Tcl_Interp *interp,
   tcl_status = Tcl_GetDouble(interp, argv[3], &dz);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
 
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-   glTranslated(dx,dy,dz);
-   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
-  glPopMatrix();
+  ay_trafo_identitymatrix(mm);
+  ay_trafo_translatematrix(dx, dy, dz, mm);
 
   while(sel)
     {
@@ -754,6 +753,7 @@ ay_trafo_movpntstcmd(ClientData clientData, Tcl_Interp *interp,
 
 		  point = point->next;
 		}
+	      ay_notify_object(o);
 	      o->modified = AY_TRUE;
 	      notify_parent = AY_TRUE;
 	    } /* if */
@@ -769,7 +769,7 @@ ay_trafo_movpntstcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_trafo_movpntstcmd */
 
 
-/* ay_trafo_scalobtcmd:
+/** ay_trafo_scalobtcmd:
  *  Scale selected objects.
  *  Implements the \a scalOb scripting interface command.
  *  See also the corresponding section in the \ayd{scscalob}.
@@ -823,7 +823,7 @@ ay_trafo_scalobtcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_trafo_scalobtcmd */
 
 
-/* ay_trafo_scalpntstcmd:
+/** ay_trafo_scalpntstcmd:
  *  Scale selected points.
  *  Implements the \a scalPnts scripting interface command.
  *  See also the corresponding section in the \ayd{scscalpnts}.
@@ -839,7 +839,7 @@ ay_trafo_scalpntstcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_point *point = NULL;
- GLdouble mm[16];
+ double mm[16];
  double tpoint[4] = {0};
  int notify_parent = AY_FALSE;
 
@@ -863,11 +863,8 @@ ay_trafo_scalpntstcmd(ClientData clientData, Tcl_Interp *interp,
   if(dz == 0.0)
     dz = 1.0;
 
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-   glScaled(dx, dy, dz);
-   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
-  glPopMatrix();
+  ay_trafo_identitymatrix(mm);
+  ay_trafo_scalematrix(dx, dy, dz, mm);
 
   while(sel)
     {
@@ -885,6 +882,7 @@ ay_trafo_scalpntstcmd(ClientData clientData, Tcl_Interp *interp,
 
 		  point = point->next;
 		}
+	      ay_notify_object(o);
 	      o->modified = AY_TRUE;
 	      notify_parent = AY_TRUE;
 	    } /* if */
@@ -900,7 +898,7 @@ ay_trafo_scalpntstcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_trafo_scalpntstcmd */
 
 
-/* ay_trafo_rotobtcmd:
+/** ay_trafo_rotobtcmd:
  *  Rotate selected objects.
  *  Implements the \a rotOb scripting interface command.
  *  See also the corresponding section in the \ayd{scrotob}.
@@ -966,7 +964,7 @@ ay_trafo_rotobtcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_trafo_rotobtcmd */
 
 
-/* ay_trafo_rotpntstcmd:
+/** ay_trafo_rotpntstcmd:
  *  Rotate selected points.
  *  Implements the \a rotPnts scripting interface command.
  *  See also the corresponding section in the \ayd{scrotpnts}.
@@ -982,7 +980,7 @@ ay_trafo_rotpntstcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_point *point = NULL;
- GLdouble mm[16];
+ double mm[16];
  double tpoint[4] = {0};
  int notify_parent = AY_FALSE;
 
@@ -999,13 +997,13 @@ ay_trafo_rotpntstcmd(ClientData clientData, Tcl_Interp *interp,
   tcl_status = Tcl_GetDouble(interp, argv[3], &dz);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
 
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-   glRotated(dx, 1.0, 0.0, 0.0);
-   glRotated(dy, 0.0, 1.0, 0.0);
-   glRotated(dz, 0.0, 0.0, 1.0);
-   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
-  glPopMatrix();
+  ay_trafo_identitymatrix(mm);
+  if(dx != 0.0)
+    ay_trafo_rotatematrix(dx, 1.0, 0.0, 0.0, mm);
+  if(dy != 0.0)
+    ay_trafo_rotatematrix(dy, 0.0, 1.0, 0.0, mm);
+  if(dz != 0.0)
+    ay_trafo_rotatematrix(dz, 0.0, 0.0, 1.0, mm);
 
   while(sel)
     {
@@ -1023,6 +1021,7 @@ ay_trafo_rotpntstcmd(ClientData clientData, Tcl_Interp *interp,
 
 		  point = point->next;
 		}
+	      ay_notify_object(o);
 	      o->modified = AY_TRUE;
 	      notify_parent = AY_TRUE;
 	    } /* if */
