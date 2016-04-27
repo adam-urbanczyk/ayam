@@ -1,4 +1,4 @@
-[17. Apr 2016 CVS-Head:
+[27. Apr 2016 CVS-Head:
 =======================
 Bug Fixes:
 o added missing scripting interface commands to JavaScript and Lua scripting
@@ -28,8 +28,8 @@ o added RIB-Export rendering option "AutoCloseUI" to automatically close
   the render user interface window when rendering is finished
 o the "Connect Edges" dialog now displays the number of points in the
   respective edge to connect
-o revamped Tag add/edit dialog, now showing a menu of available tags and
-  allowing multi-line tag values
+o revamped Tag add/edit dialog, now showing a menu of available tags,
+  allowing multi-line tag values, and having a context menu
 
 Scripts/Scripting Interface:
 o added "setTag" command that adds a tag if it is not present, otherwise
