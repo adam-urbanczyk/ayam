@@ -13941,6 +13941,10 @@ various parts of the GUI (property GUIs, view windows) explicitly
 However, since Ayam 1.13 it is also possible to automatically run GUI
 updating commands in the console by using <tt/&lt;Shift+Return&gt;/
 instead of <tt/&lt;Return&gt;/ when issuing scripting interface commands.
+Note however that even though no updates of the GUI take place, all
+notification processes are carried out immediately. The scene will
+be consistent and up to date when the scripting interface command
+returns.
 <p>
 If you want your changes to be recorded in the undo buffer, you have
 to arrange for this manually too (see the documentation of the undo
@@ -15433,6 +15437,35 @@ are readonly.
 Additionally, if any points of an object are modified, the transformations
 of this object will be reset to the default values.
 </itemize>
+
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
+<label id="scnormtrafos">
+normTrafos &ndash; normalize transformation values:
+<itemize>
+ <item>Synopsis: <tt/"normTrafos"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Normalize all transformation attribute values
+of the selected objects. The values will be rounded to the number of
+significant digits specified via the hidden preference setting
+<tt/"NormalizeDigits"/ (by default 6).
+</itemize>
+
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
+<label id="scnormpnts">
+normPnts &ndash; normalize points:
+<itemize>
+ <item>Synopsis: <tt/"normPnts"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Normalize all selected points
+of the selected objects. The values will be rounded to the number of
+significant digits specified via the hidden preference setting
+<tt/"NormalizeDigits"/ (by default 6).
+</itemize>
+
 
 <sect2>Manipulating Shaders<label id="scishaders">
 <p>
@@ -22632,6 +22665,8 @@ Index:
 <item>NormalEpsilon: <ref id="mmtools" name="optimize PolyMesh tool option">
 <item>NormalizedDomainDistance: <ref id="prefmisc" name="NURBS tesselation mode">
 <item>NormalizeDigits, NormalizePoints, NormalizeTrafos: <ref id="hidprefs" name="hidden preference setting">
+<item>normPnts: <ref id="scnormpnts" name="scripting interface command">
+<item>normTrafos: <ref id="scnormtrafos" name="scripting interface command">
 <item>notifyOb: <ref id="scnotifyob" name="scripting interface command">
 <item>NP: <ref id="nptag" name="tag type">
 <item>NPatch: <ref id="npatchobj" name="NPatch object">
