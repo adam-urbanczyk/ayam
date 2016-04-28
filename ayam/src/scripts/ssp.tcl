@@ -79,4 +79,7 @@ set m $ay(cm)
 $m add command -label "Save Point Selection" -command ssp_save
 $m add command -label "Restore Point Selection" -command ssp_restore
 
+# register our tag type
+registerTag SP
+
 # EOF
