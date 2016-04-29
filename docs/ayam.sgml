@@ -4705,7 +4705,7 @@ The following table briefly lists some capabilities of the Root object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Root|View<f/<sup/+//|No|N/A|No@<hline>
+Root|View<f/<sup/+//|No|N/A|No<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Root Object Capabilities</caption>
 </table>
@@ -5286,8 +5286,8 @@ shadow maps, e.g.~Photorealistic RenderMan (prman) or Aqsis.
 </enum>
 
 This scene is distributed with Ayam as an example scene named
-<tt>"shadowmaps.ay"</tt>, see also the following image that
-was created with an additional point light and Aqsis as renderer:
+<tt>"shadowmaps.ay"</tt>, see also the following image from that scene
+that was created with an additional point light and Aqsis as renderer:
 <p>
 <figure loc="ht">
 <eps file="pics/shadowmaps.ps" height="4cm">
@@ -5302,22 +5302,24 @@ Please consult the documentation of your renderer on how to achieve
 the best results using shadow maps.
 
 <#if out=latex><x/newpage/</#if>
-<sect3>Using AreaLights<label id="alob">
+<sect3>Using Area Lights<label id="alob">
 <p><#if out=latex>&nbsp;<newline></#if>
+
 The common idealized standard light sources <tt/"Point"/, <tt/"Distant"/
 and <tt/"Spot"/ have no own geometric extension in space.
 This means, shadows resulting from such light sources will have sharp
 borders which does not look too natural.
 Good looking soft shadows may be generated using area lights.
+See also the image below.
 <p>
 Area lights may be created by simply placing a single object as child
 object of a <tt/"Custom"/ light object that has the <tt>"arealight"</tt>
-shader attached:
+shader attached, i.e.~the scene hierarchy looks like this:
 <tscreen><verb>
 +-AreaLight(Light)
  \ AreaLightGeometry(Sphere)
 </verb></tscreen>
-This child object determines the geometry, place, <em>and</em> extension
+This child object determines the geometry (place <em>and</em> extension)
 of the light source.
 According to L. Gritz, Spheres and Cylinders work best as area light
 geometry for BMRT, because of special sampling code.
@@ -5325,9 +5327,9 @@ geometry for BMRT, because of special sampling code.
 An example:
 <itemize>
 <item>Create a custom light object.
-<item>Assign the arealight light shader to it.
+<item>Assign the <tt/"arealight"/ light shader to it.
 <item>Create a sphere.
-<item>Drag and drop the sphere onto the Light object so that it becomes
+<item>Drag and drop the sphere onto the light object so that it becomes
 a child of the light object.
 <item>Transform the sphere object to your hearts content; the position
 and size of the object determines the position and size of the light
@@ -5335,7 +5337,24 @@ source.
 </itemize>
 
 There is an example scene named <tt>"arealight.ay"</tt> distributed with
-Ayam.
+Ayam, see also the following images from that scene that
+were created with BMRT 2.6 as renderer:
+<#if out=latex>
+<table loc="ht">
+<tabular ca="cc">
+<x>inlinegfx pics/arealight.png 3cm </x>|
+<x>inlinegfx pics/pointlight.png 3cm </x>
+</tabular>
+<caption>Area Light (l) and Point Light (r)</caption>
+</table>
+</#if>
+<#if out=html>
+<figure loc="ht">
+<img src="pics/arealight.gif">&emsp;
+<img src="pics/pointlight.gif">
+<caption>Area Light (l) and Point Light (r)</caption>
+</figure>
+</#if>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -12963,7 +12982,7 @@ These tools create parametric surface objects.
 </#if>
 <#if out=html>
 <figure loc="ht">
-<img src="pics/nsphere-w.gif">
+<img src="pics/nsphere-w.gif">&emsp;
 <img src="pics/nsphere-s.gif">
 <caption>NURB Sphere (l: Control Polygon, r: Shaded Surface)</caption>
 </figure>
@@ -12990,7 +13009,7 @@ the image above).
 </#if>
 <#if out=html>
 <figure loc="ht">
-<img src="pics/nsphere2-w.gif">
+<img src="pics/nsphere2-w.gif">&emsp;
 <img src="pics/nsphere2-s.gif">
 <caption>Cobb NURB Sphere (l: Control Polygon, r: Shaded Surface)</caption>
 </figure>
