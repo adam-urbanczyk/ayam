@@ -5360,7 +5360,7 @@ were created with BMRT 2.6 as renderer:
 
 <sect2>Material Object<label id="materialobj">
 <p>
-Material objects are used to attach RiAttributes and shaders to
+Material objects are used to attach RenderMan attributes and shaders to
 geometric objects.
 <p>
 As long as geometric objects are connected to a material object,
@@ -18206,6 +18206,26 @@ Instead, there are only as many canvas items as there are nodes visible
 in the current scroll region. Therefore, working with many objects in
 long lists becomes much faster.
 
+<sect2>Control Vertice View<label id="cvviewtcl">
+<p>
+<figure loc="ht">
+<eps file="pics/cvview.ps" height="6cm">
+<img src="pics/cvview.gif">
+<caption>Control Vertice View Example</caption>
+</figure>
+<p>
+The script <tt>"cvview.tcl"</tt> (control vertice view) allows to
+view the control points of NURBS surface objects as property,
+see also the image above.
+
+If the script is loaded, there is a new entry in the <tt>"Custom"</tt> menu
+that allows to add a new property to a surface object.
+The <tt>"CVView"</tt> property displays all control vertices in a
+regular grid. The coordinates of each vertice will be shown when
+the mouse pointer hovers over it.
+Additionally, the point selection may be adjusted by clicking on the
+circles.
+
 <#if out=latex><x/newpage/</#if>
 
 <sect2>Create Truncated Cones<label id="tconetcl">
@@ -22163,6 +22183,7 @@ Index:
 <item>Cut: <ref id="mmedit" name="main menu entry">
 <item>Cut (Add): <ref id="mmspecial" name="main menu entry">
 <item>cutOb: <ref id="sccutob" name="scripting interface command">
+<item>cvview.tcl: <ref id="cvviewtcl" name="example/helper script">
 <item>CycleHiddenWire: <ref id="hidprefs" name="hidden preference setting">
 <item>Cylinder: <ref id="cylinderobj" name="Cylinder object">
 </list>
