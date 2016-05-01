@@ -13548,22 +13548,22 @@ curves <ref id="insknt" name="Insert Knot Tool">.
 <descrip>
 <tag/Arguments/ The remove knot surface tool takes a number of NURBS
 surfaces from
-the selection and requests three additional values, a parametric value <it/t/,
-an integer value <it/r/, and a tolerance value <it/tol/.
-<tag/Operation/ The knot at the specified parametric value <it/t/ will be
-removed <it/r/ times from the knot vector of the selected surfaces if the
-shape of the resulting surfaces does not deviate more than <it/tol/ from
+the selection and requests three additional values, a parametric value <em/t/,
+an integer value <em/r/, and a tolerance value <em/tol/.
+<tag/Operation/ The knot at the specified parametric value <em/t/ will be
+removed <em/r/ times from the knot vector of the selected surfaces if the
+shape of the resulting surfaces does not deviate more than <em/tol/ from
 the original surfaces in any point. Since Ayam 1.20
 the knot to remove may also be specified using its (zero based)
 index in the knot vector (i.e.~by entering <tt/"-i 3"/ instead of
 <tt/"0.5"/ for the knot vector
 <tt/"0 0 0 0.5 1 1 1"/).<newline>
-If the knot can not be removed <it/r/ times due to the tolerance given, an
+If the knot can not be removed <em/r/ times due to the tolerance given, an
 error is reported and the original surface is left unchanged.
-<tag/Notes/ If <it/tol/ is <tt/"0.0"/ the remove knot tool tries to
+<tag/Notes/ If <em/tol/ is <tt/"0.0"/ the remove knot tool tries to
 work without changing the shape of the surface, i.e.~only superfluous
 knots will be removed.
-If <it/tol/ is <tt/"Inf"/ (infinity) the specified knot will be removed
+If <em/tol/ is <tt/"Inf"/ (infinity) the specified knot will be removed
 regardless of potential surface changes.
 
 The point selection will be removed from the original object(s).
@@ -15346,9 +15346,9 @@ movOb &ndash; move objects:
 <itemize>
  <item>Synopsis: <tt/"movOb dx dy dz"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Move the selected object(s) by dx in direction of the
-objects X axis, by dy in direction of the objects Y axis, and by dz in
-direction of the objects Z axis.
+ <item>Description: Move the selected object(s) by <tt/dx/ in direction of the
+objects X axis, by <tt/dy/ in direction of the objects Y axis, and by
+<tt/dz/ in direction of the objects Z axis.
 </itemize>
 
 <p>
@@ -15359,9 +15359,9 @@ rotOb &ndash; rotate objects:
 <itemize>
  <item>Synopsis: <tt/"rotOb dx dy dz"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Rotate the selected object(s) by dx degrees around the
-objects X axis, then by dy degrees around objects Y axis, and finally by
-dz degrees around the objects Z axis. Note the order of the rotations.
+ <item>Description: Rotate the selected object(s) by <tt/dx/ degrees around the
+objects X axis, then by <tt/dy/ degrees around objects Y axis, and finally by
+<tt/dz/ degrees around the objects Z axis. Note the order of the rotations.
 </itemize>
 
 <p>
@@ -15372,9 +15372,9 @@ scalOb &ndash; scale objects:
 <itemize>
  <item>Synopsis: <tt/"scalOb dx dy dz"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Scale the selected object(s) by a factor of dx in
-direction of the objects X axis, by a factor of dy in
-direction of the objects Y axis, and by a factor of dz in
+ <item>Description: Scale the selected object(s) by a factor of <tt/dx/ in
+direction of the objects X axis, by a factor of <tt/dy/ in
+direction of the objects Y axis, and by a factor of <tt/dz/ in
 direction of the objects Z axis.
 <item>Note: A scale factor of zero is generally a bad idea and thus will
 be changed to 1.0 silently.
@@ -15388,9 +15388,9 @@ movPnts &ndash; move selected points:
 <itemize>
  <item>Synopsis: <tt/"movPnts dx dy dz"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Move the selected points by dx in direction of the
-objects X axis, by dy in direction of the objects Y axis, and by dz in
-direction of the objects Z axis.
+ <item>Description: Move the selected points by <tt/dx/ in direction of the
+objects X axis, by <tt/dy/ in direction of the objects Y axis, and by
+<tt/dz/ in direction of the objects Z axis.
 </itemize>
 
 <p>
@@ -15401,9 +15401,9 @@ rotPnts &ndash; rotate selected points:
 <itemize>
  <item>Synopsis: <tt/"rotPnts dx dy dz"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Rotate the selected points by dx degrees around the
-objects X axis, then by dy degrees around objects Y axis, and finally
-by dz degrees around the objects Z axis. Note the order of the rotations.
+ <item>Description: Rotate the selected points by <tt/dx/ degrees around the
+objects X axis, then by <tt/dy/ degrees around objects Y axis, and finally
+by <tt/dz/ degrees around the objects Z axis. Note the order of the rotations.
 </itemize>
 
 <p>
@@ -15414,9 +15414,9 @@ scalPnts &ndash; scale selected points:
 <itemize>
  <item>Synopsis: <tt/"scalPnts dx dy dz"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Scale the selected points by a factor of dx in
-direction of the objects X axis, by a factor of dy in
-direction of the objects Y axis, and by a factor of dz in
+ <item>Description: Scale the selected points by a factor of <tt/dx/ in
+direction of the objects X axis, by a factor of <tt/dy/ in
+direction of the objects Y axis, and by a factor of <tt/dz/ in
 direction of the objects Z axis.
 <item>Note: A scale factor of zero is generally a bad idea and thus will
 be changed to 1.0 silently.
@@ -15516,11 +15516,11 @@ shaderGet:
 <itemize>
  <item>Synopsis: <tt/"shaderGet shadertype varname"/
  <item>Background: Yes, Undo: No, Safe: Yes
- <item>Description: Get the shader of type shadertype for the selected
+ <item>Description: Get the shader of type <tt/shadertype/ for the selected
 object. Type may be one of <tt/"surface"/, <tt/"displacement"/,
 <tt/"light"/, <tt/"imager"/, <tt/"atmosphere"/, <tt/"exterior"/
 or <tt/"interior"/. The shader data will be written to an associative
-array pointed to by varname.
+array pointed to by <tt/varname/.
 </itemize>
 
 <p>
@@ -15977,7 +15977,7 @@ splitNC &ndash; split NURBS curve
  <item>Synopsis: <tt/"splitNC u"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: splits the selected NURBS curves at the designated
-parametric value <it/u/ into two curves, creating one new curve and
+parametric value <em/u/ into two curves, creating one new curve and
 <em>modifying the original</em> selected curve.
 <p><p>
 See also section <ref id="splitt" name="Split Tool">.
@@ -18215,14 +18215,19 @@ long lists becomes much faster.
 </figure>
 <p>
 The script <tt>"cvview.tcl"</tt> (control vertice view) allows to
-view the control points of NURBS surface objects as property,
+view the control points of NURBS surface or curve objects as property,
 see also the image above.
 
+The script currently supports the following object types:
+NPatch, NCurve, IPatch, PatchMesh, ACurve, and ICurve.
+
 If the script is loaded, there is a new entry in the <tt>"Custom"</tt> menu
-that allows to add a new property to a surface object.
+that allows to add a new property to an individual surface or curve object.
 The <tt>"CVView"</tt> property displays all control vertices in a
 regular grid. The coordinates of each vertice will be shown when
-the mouse pointer hovers over it.
+the mouse pointer hovers over it. This also works if the control points
+lump together in 3D space or have unusual values.
+
 Additionally, the point selection may be adjusted by clicking on the
 circles.
 
