@@ -978,8 +978,9 @@ int
 ay_nct_refinekn(ay_nurbcurve_object *curve, int maintain_ends,
 		double *newknotv, int newknotvlen)
 {
+ int ay_status = AY_OK;
  double *X = NULL, *Ubar = NULL, *Qw = NULL, *knotv;
- int count = 0, i, j, start, end;
+ int count = 0, i, j, m, start, end;
 
   if(!curve)
     return AY_ENULL;
@@ -1060,31 +1061,44 @@ ay_nct_refinekn(ay_nurbcurve_object *curve, int maintain_ends,
 			    curve->knotv, curve->controlv,
 			    X, count-1, Ubar, Qw);
 
-  free(curve->knotv);
-  curve->knotv = Ubar;
-
-  free(curve->controlv);
-  curve->controlv = Qw;
-
-  if(!newknotv)
+  if(ay_knots_check(curve->length + count, curve->order,
+		    curve->length + count + curve->order, Ubar) != 0)
     {
-      free(X);
+      free(Ubar);
+      free(Qw);
+      ay_status = AY_ERROR;
     }
+  else
+    {
+      free(curve->knotv);
+      curve->knotv = Ubar;
 
-  curve->length += count;
+      free(curve->controlv);
+      curve->controlv = Qw;
+
+      if(!newknotv)
+	{
+	  free(X);
+	}
+
+      curve->length += count;
+    }
 
   if(curve->is_rat)
     (void)ay_nct_homtoeuc(curve);
 
-  curve->knot_type = ay_knots_classify(curve->order, curve->knotv,
-				       curve->order+curve->length,
-				       AY_EPSILON);
+  if(!ay_status)
+    {
+      curve->knot_type = ay_knots_classify(curve->order, curve->knotv,
+					   curve->order+curve->length,
+					   AY_EPSILON);
 
-  /* since we do not create new multiple points
-     we only need to re-create them if there were
-     already multiple points in the original curve */
-  if(curve->mpoints)
-    ay_nct_recreatemp(curve);
+      /* since we do not create new multiple points
+	 we only need to re-create them if there were
+	 already multiple points in the original curve */
+      if(curve->mpoints)
+	ay_nct_recreatemp(curve);
+    }
 
  return AY_OK;
 } /* ay_nct_refinekn */
