@@ -71,3 +71,21 @@ proc ncurve_makeperiodic {} {
  return;
 }
 # ncurve_makeperiodic
+
+proc ncurve_getrknots {} {
+    global ay NCurveAttrData
+    set ay(refinekn) ""
+    set ui [expr $NCurveAttrData(Order) - 1]
+    while { $ui < [expr $NCurveAttrData(Length)] } {
+	set u1 [lindex $NCurveAttrData(Knots) $ui]
+	incr ui
+	set u2 [lindex $NCurveAttrData(Knots) $ui]
+	if { $u1 != $u2 } {
+	    lappend ay(refinekn) [expr $u1 + ($u2-$u1)*0.5]
+	}
+    }
+    if { [llength $ay(refinekn)] == 1 } {
+	lappend ay(refinekn) [lindex $ay(refinekn) 0]
+    }
+}
+# ncurve_getrknots
