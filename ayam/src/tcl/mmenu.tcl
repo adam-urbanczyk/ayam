@@ -484,7 +484,7 @@ $m.nct.kn add command -label "Refine Knots" -command { undo save RefineKn;
     refineknNC; plb_update; rV } -underline 1
 
 $m.nct.kn add command -label "Refine Knots with" -command {
-    getProp; set ay(okn) $::NCurveAttrData(Knots);
+    getProp; set ay(okn) $::NCurveAttrData(Knots); ncurve_getrknots;
     runTool [list ay(okn) ay(refinekn)] {"Old Knots:" "New Knots:"}\
 	"undo save RefineKn; refineknNC \{%1\}; plb_update; rV"\
         "Refine Knots" refknit
