@@ -980,7 +980,7 @@ ay_nct_refinekn(ay_nurbcurve_object *curve, int maintain_ends,
 {
  int ay_status = AY_OK;
  double *X = NULL, *Ubar = NULL, *Qw = NULL, *knotv;
- int count = 0, i, j, m, start, end;
+ int count = 0, i, j, start, end;
 
   if(!curve)
     return AY_ENULL;

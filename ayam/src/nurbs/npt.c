@@ -13808,6 +13808,7 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 int
 ay_npt_refineu(ay_nurbpatch_object *patch, double *newknotv, int newknotvlen)
 {
+ int ay_status = AY_OK;
  double *X = NULL, *Ubar = NULL, *Qw = NULL, *knotv;
  int count = 0, i, j;
  char fname[] = "npt_refineu";
@@ -13886,33 +13887,46 @@ ay_npt_refineu(ay_nurbpatch_object *patch, double *newknotv, int newknotvlen)
 			    patch->uorder-1, patch->uknotv, patch->controlv,
 			    X, count-1, Ubar, Qw);
 
-  free(patch->uknotv);
-  patch->uknotv = Ubar;
-
-  free(patch->controlv);
-  patch->controlv = Qw;
-
-  if(!newknotv)
+  if(ay_knots_check(patch->width + count, patch->uorder,
+		    patch->width + count + patch->uorder, Ubar) != 0)
     {
-      free(X);
+      free(Ubar);
+      free(Qw);
+      ay_status = AY_ERROR;
     }
+  else
+    {
+      free(patch->uknotv);
+      patch->uknotv = Ubar;
 
-  patch->width += count;
+      free(patch->controlv);
+      patch->controlv = Qw;
+
+      if(!newknotv)
+	{
+	  free(X);
+	}
+
+      patch->width += count;
+    }
 
   if(patch->is_rat)
     (void)ay_npt_homtoeuc(patch);
 
-  patch->uknot_type = ay_knots_classify(patch->uorder, patch->uknotv,
-				       patch->uorder+patch->width,
-				       AY_EPSILON);
+  if(!ay_status)
+    {
+      patch->uknot_type = ay_knots_classify(patch->uorder, patch->uknotv,
+					    patch->uorder+patch->width,
+					    AY_EPSILON);
 
-  /* since we do not create new multiple points
-     we only need to re-create them if there were
-     already multiple points in the original patch */
-  if(patch->mpoints)
-    ay_npt_recreatemp(patch);
+      /* since we do not create new multiple points
+	 we only need to re-create them if there were
+	 already multiple points in the original patch */
+      if(patch->mpoints)
+	ay_npt_recreatemp(patch);
+    }
 
- return AY_OK;
+ return ay_status;
 } /* ay_nct_refineu */
 
 
@@ -13929,6 +13943,7 @@ ay_npt_refineu(ay_nurbpatch_object *patch, double *newknotv, int newknotvlen)
 int
 ay_npt_refinev(ay_nurbpatch_object *patch, double *newknotv, int newknotvlen)
 {
+ int ay_status = AY_OK;
  double *X = NULL, *Vbar = NULL, *Qw = NULL, *knotv;
  int count = 0, i, j;
  char fname[] = "npt_refinev";
@@ -14007,33 +14022,46 @@ ay_npt_refinev(ay_nurbpatch_object *patch, double *newknotv, int newknotvlen)
 			    patch->vorder-1, patch->vknotv, patch->controlv,
 			    X, count-1, Vbar, Qw);
 
-  free(patch->vknotv);
-  patch->vknotv = Vbar;
-
-  free(patch->controlv);
-  patch->controlv = Qw;
-
-  if(!newknotv)
+  if(ay_knots_check(patch->height + count, patch->vorder,
+		    patch->height + count + patch->vorder, Vbar) != 0)
     {
-      free(X);
+      free(Vbar);
+      free(Qw);
+      ay_status = AY_ERROR;
     }
+  else
+    {
+      free(patch->vknotv);
+      patch->vknotv = Vbar;
 
-  patch->height += count;
+      free(patch->controlv);
+      patch->controlv = Qw;
+
+      if(!newknotv)
+	{
+	  free(X);
+	}
+
+      patch->height += count;
+    }
 
   if(patch->is_rat)
     (void)ay_npt_homtoeuc(patch);
 
-  patch->vknot_type = ay_knots_classify(patch->vorder, patch->vknotv,
-				       patch->vorder+patch->height,
-				       AY_EPSILON);
+  if(!ay_status)
+    {
+      patch->vknot_type = ay_knots_classify(patch->vorder, patch->vknotv,
+					    patch->vorder+patch->height,
+					    AY_EPSILON);
 
-  /* since we do not create new multiple points
-     we only need to re-create them if there were
-     already multiple points in the original patch */
-  if(patch->mpoints)
-    ay_npt_recreatemp(patch);
+      /* since we do not create new multiple points
+	 we only need to re-create them if there were
+	 already multiple points in the original patch */
+      if(patch->mpoints)
+	ay_npt_recreatemp(patch);
+    }
 
- return AY_OK;
+ return ay_status;
 } /* ay_nct_refinev */
 
 
