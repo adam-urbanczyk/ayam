@@ -680,7 +680,7 @@ $m.npt.kn add command -label "Refine Knots U" -command {
 }
 
 $m.npt.kn add command -label "Refine Knots U with" -command {
-    getProp; set ay(okn) $::NPatchAttrData(Knots_U);
+    getProp; set ay(okn) $::NPatchAttrData(Knots_U); npatch_getrknotsu;
     runTool [list ay(okn) ay(refineknu)] {"Old Knots:" "New Knots:"}\
 	"undo save RefineKnUNP; refineuNP \{%1\}; plb_update; rV"\
         "Refine Knots U" refinest
@@ -691,7 +691,7 @@ $m.npt.kn add command -label "Refine Knots V" -command {
 }
 
 $m.npt.kn add command -label "Refine Knots V with" -command {
-    getProp; set ay(okn) $::NPatchAttrData(Knots_V);
+    getProp; set ay(okn) $::NPatchAttrData(Knots_V); npatch_getrknotsv;
     runTool [list ay(okn) ay(refineknv)] {"Old Knots:" "New Knots:"}\
 	"undo save RefineKnVNP; refinevNP \{%1\}; plb_update; rV"\
         "Refine Knots V" refinest
