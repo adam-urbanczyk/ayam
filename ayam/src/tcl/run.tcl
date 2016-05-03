@@ -21,6 +21,9 @@
 # argstrings: labels for the argument entry fields
 # command:    the command that calls the tool, where
 #              "%0" will be substituted with first argument etc.
+# title: title string to display in dialog window decoration
+# advargs: link to documentation (html page and anchor, or just anchor)
+#
 # example:
 # runTool splitCurveu {"Split at u:"} "splitCurve %0"
 proc runTool { argvars argstrings command title {advargs ""} } {
@@ -138,6 +141,10 @@ proc runTool { argvars argstrings command title {advargs ""} } {
 		    }
 		}
 		addString $w.f1 ToolParams $nam
+		set l [string length $vali]
+		if { $l > 64 } { set l 64 }
+		$w.f1.f$nami.e conf -width $l
+
 		break;
 	    }
 	    # while
