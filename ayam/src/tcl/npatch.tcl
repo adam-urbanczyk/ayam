@@ -135,3 +135,42 @@ proc npatch_break { } {
  return;
 }
 # npatch_break
+
+# compute suggested new knots for refine knots with operation
+proc npatch_getrknotsu {} {
+    global ay NPatchAttrData
+    set ay(refineknu) ""
+    set ui [expr $NPatchAttrData(Order_U) - 1]
+    while { $ui < [expr $NPatchAttrData(Width)] } {
+	set u1 [lindex $NPatchAttrData(Knots_U) $ui]
+	incr ui
+	set u2 [lindex $NPatchAttrData(Knots_U) $ui]
+	if { $u1 != $u2 } {
+	    lappend ay(refineknu) [expr $u1 + ($u2-$u1)*0.5]
+	}
+    }
+    if { [llength $ay(refineknu)] == 1 } {
+	lappend ay(refineknu) [lindex $ay(refineknu) 0]
+    }
+}
+# npatch_getrknotsu
+
+# compute suggested new knots for refine knots with operation
+proc npatch_getrknotsv {} {
+    global ay NPatchAttrData
+    set ay(refineknv) ""
+    set vi [expr $NPatchAttrData(Order_V) - 1]
+    while { $vi < [expr $NPatchAttrData(Height)] } {
+	set v1 [lindex $NPatchAttrData(Knots_V) $vi]
+	incr vi
+	set v2 [lindex $NPatchAttrData(Knots_V) $vi]
+	if { $v1 != $v2 } {
+	    lappend ay(refineknv) [expr $v1 + ($v2-$v1)*0.5]
+	}
+    }
+    if { [llength $ay(refineknv)] == 1 } {
+	lappend ay(refineknv) [lindex $ay(refineknv) 0]
+    }
+}
+# npatch_getrknotsv
+
