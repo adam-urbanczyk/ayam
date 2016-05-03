@@ -72,6 +72,7 @@ proc ncurve_makeperiodic {} {
 }
 # ncurve_makeperiodic
 
+# compute suggested new knots for refine knots with operation
 proc ncurve_getrknots {} {
     global ay NCurveAttrData
     set ay(refinekn) ""
