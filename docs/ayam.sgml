@@ -4835,7 +4835,7 @@ you are asking for trouble otherwise!
 <p>
 Each view is associated with a virtual camera.
 The type of the view determines the Up-vector of that camera.
-If the type is "Top" the Up-vector corresponds to the world
+If the type is <tt/"Top"/ the Up-vector corresponds to the world
 Z-axis, else the world Y-axis.
 The type of the view, additionally, determines the so called input plane
 of the view. Interactive modelling actions in a view are limited to that
@@ -12484,6 +12484,30 @@ and the related tool for
 surfaces <ref id="refinest" name="Refine Knots Surface Tool">.
 </descrip>
 
+<sect2>Refine Knots With Tool<label id="refknwit">
+<p>
+<descrip>
+<tag/Arguments/ The refine knots with tool takes a number of NURBS curves
+from the selection and requests a vector of new knot values.
+<tag/Operation/ The knot vectors of the selected NURBS curves will be
+refined by inserting all knots from the specified vector at once.
+New control points will be added and the position of old control points
+may be changed in the progress.
+The resulting knot vector must be valid, otherwise an error will
+be reported and the respective curve is not changed.
+
+<tag/Notes/ Note that the shapes
+of the curves do not change, but the position of
+certain control points does.
+
+The point selection will be removed from the processed objects.
+
+See also the documentation of the corresponding
+scripting interface command <ref id="screfineknnc" name="refineknNC">
+and the related tool for
+surfaces <ref id="refinewst" name="Refine Knots With Surface Tool">.
+</descrip>
+
 <sect2>Coarsen Tool<label id="coart">
 <p>
 <figure loc="ht">
@@ -13396,7 +13420,7 @@ scripting interface command <ref id="scswapuvs" name="swapuvS">.
 <caption>Successive Application of Refine Knots Surface (U) Tool</caption>
 </figure>
 <descrip>
-<tag/Arguments/ The refine knots surface tool takes a number of NURBS
+<tag/Arguments/ The refine knots surface with tool takes a number of NURBS
 patches from the selection.
 <tag/Operation/ The respective knot vectors of the selected NURBS patches
 will be refined without changing the shape of the patches. New control
@@ -13415,6 +13439,33 @@ See also the documentation of the corresponding scripting interface commands
 <ref id="screfinevnp" name="refinevNP">
 and the related tool for
 curves <ref id="refknit" name="Refine Knots Tool">.
+</descrip>
+
+<sect2>Refine Knots With Surface Tool<label id="refinewst">
+<p>
+<descrip>
+<tag/Arguments/ The refine knots with surface tool takes a number of NURBS
+patches from the selection and requests a vector of new knot values.
+<tag/Operation/ The respective knot vectors of the selected NURBS patches
+will be refined by inserting all knots from the specified vector at once.
+New control points will be added and the position of old control points
+may be changed in the progress.
+The resulting knot vector must be valid, otherwise an error will
+be reported and the respective patch is not changed.
+
+<tag/Notes/ The respective knot type of the patch may
+be changed to <tt/"Custom"/.
+
+The point selection will be removed from the original object(s).
+
+There are also tools available that refine only the U or
+V knots.
+
+See also the documentation of the corresponding scripting interface commands
+<ref id="screfineunp" name="refineuNP"> and
+<ref id="screfinevnp" name="refinevNP">
+and the related tool for
+curves <ref id="refknwit" name="Refine Knots With Tool">.
 </descrip>
 
 <sect2>Elevate Surface Tool<label id="elevuvt">
@@ -18416,7 +18467,7 @@ Therefore, the tessellation quality and speed may be adjusted using the
 explained in the next sections.
 
 <sect3>Oject Space Based Sampling
-<p>
+<p><#if out=latex>&nbsp;<newline></#if>
 If no <tt>"uTessellation"</tt> attribute is specified, or its value
 is positive, the tessellator uses the so called <em>object space sampling</em>
 mode. In this mode the tessellator subdivides an initial set of triangles
@@ -18438,7 +18489,7 @@ Also note that in highly curved regions and at trim edges, even smaller
 triangles than determined by the edge length criterion may be created.
 
 <sect3>Parametric Space Based Sampling
-<p>
+<p><#if out=latex>&nbsp;<newline></#if>
 If the <tt>"uTessellation"</tt> attribute value is negative, the
 tessellator switches to <em>parametric space sampling</em>.
 In this mode also the <tt>"vTessellation"</tt> attribute is considered.
@@ -18467,7 +18518,7 @@ Note that at trim curve edges even smaller triangles than determined by
 the edge length criterion may be created.
 
 <sect3>Additional Attributes
-<p>
+<p><#if out=latex>&nbsp;<newline></#if>
 To aid in parameterisation of the <tt>"uTessellation"</tt> and
 <tt>"vTessellation"</tt> attributes, a <tt>"normalPerVertex"</tt> attribute
 can be added to the respective <tt>&lt;NurbsPatchSurface&gt;</tt> or
@@ -18479,7 +18530,7 @@ this surface in a flat shaded style and the tesselated triangles will be
 visible allowing easier judgment and adjustment of the tesselation quality.
 
 <sect3>Restrictions and Implementation Deficiencies
-<p>
+<p><#if out=latex>&nbsp;<newline></#if>
 Due to memoization of surface points, parametric values must not
 exceed
 <eq>
@@ -22952,6 +23003,11 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <itemize>
 <item><ref id="refknit" name="NCurve tool">,
 <item><ref id="refinest" name="NPatch tool">
+</itemize>
+<item>Refine Knots with:
+<itemize>
+<item><ref id="refknwit" name="NCurve tool">,
+<item><ref id="refinewst" name="NPatch tool">
 </itemize>
 <item>refineC: <ref id="screfinec" name="scripting interface command">
 <item>refineknNC: <ref id="screfineknnc" name="scripting interface command">
