@@ -14931,9 +14931,6 @@ ay_npt_makecompatible(ay_object *patches, int side, int level)
 
 	  o = o->next;
 	} /* while */
-
-      if(ay_status)
-	return ay_status;
     } /* if U */
 
   /* unify V knots */
@@ -14961,9 +14958,6 @@ ay_npt_makecompatible(ay_object *patches, int side, int level)
 
 	  o = o->next;
 	} /* while */
-
-      if(ay_status)
-	return ay_status;
     } /* if V */
 
   /* merge knots */
