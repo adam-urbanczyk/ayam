@@ -6737,11 +6737,16 @@ Chordal (lower) Knot Vectors</caption>
 </figure>
 
 <item><tt/"Knots"/ allows to enter own custom knot sequences.
-Note that <tt/"Knots"/ are not in use if <tt/"Knot-Type"/ (above)
-is of type <tt/"NURB"/, <tt/"B-Spline"/, <tt/"Bezier"/, <tt/"Chordal"/,
-or <tt/"Centripetal"/. Note also, that the content of this parameter
-will be overwritten, if the knot type is switched to any of the
-aforementioned types.
+Note that this only works if the <tt/"Knot-Type"/ (above)
+is <tt/"Custom"/. Otherwise, the <tt/"Knots"/ parameter just displays
+the automatically generated knot sequence and changes to the values
+have no effect.
+
+<p>
+Each knot vector has <f>l+o</f> knot values, where <f/l/ is the
+length of the curve and <f/o/ its order.
+The knot values must be strictly monotonous (increasing) and the maximum
+number of equal values in a row must not exceed the order of the curve.
 
 <item><tt/"CreateMP"/ toggles, whether multiple points should be
 created for this curve. See also the discussion in
@@ -6783,13 +6788,14 @@ When the curve type is changed using the NCurveAttr property
 Ayam may also have to change the position of some control points
 as follows:
 <itemize>
-<item>When the type is changed from open to closed, the last control
-point is moved to be identical to the first one. In addition, if the
-current knot type of the curve is <tt/"B-Spline"/, it will be reset to
-knot type <tt/"NURB"/.
-<item>When the type is changed from open or closed to periodic, the last
-p control points will be moved to be identical to the first p, where
-p is the degree of the curve (order-1). For a cubic curve (order 4),
+<item>When the type is changed from <tt/"Open"/ to <tt/"Closed"/,
+the last control point is moved to be identical to the first one.
+In addition, if the current knot type of the curve is <tt/"B-Spline"/,
+it will be reset to knot type <tt/"NURB"/.
+<item>When the type is changed from <tt/"Open"/ or <tt/"Closed"/ to
+<tt/"Periodic"/, the last
+<f/p/ control points will be moved to be identical to the first <f/p/, where
+<f/p/ is the degree of the curve (<f/order-1/). For a cubic curve (order 4),
 consequently, the last three control points will be moved. In addition,
 if the current knot type of the curve is <tt/"NURB"/ or <tt/"Bezier"/
 it will be changed to <tt/"B-Spline"/ automatically.
@@ -6812,7 +6818,8 @@ The NURBS curves of Ayam support so called multiple points.
 A multiple point is made of a number of different control points
 that have the same coordinates.
 Modelling actions will always modify all the control points that
-make up a multiple point.
+make up a multiple point even if just one of the control points is
+selected.
 Multiple points will be drawn with a bigger handle than normal points
 (see image above).
 They may e.g.~be used to create closed curves. Note that the control
@@ -6842,11 +6849,12 @@ curve).
 
 <sect2>ICurve (Interpolating Curve) Object<label id="icurveobj">
 <p>
-The ICurve object creates a global interpolating NURBS curve from n
+The ICurve object creates a global interpolating NURBS curve from <f/n/
 3D non-rational ordered data points.
-The curve may be closed, the order of the curve may be configured,
+The curve may be open or closed, the order of the curve may be configured,
 the parameterisation may be adapted, and end derivatives may be specified.
-The open versions create n+2 NURBS control points, and the closed ones n+3.
+The open versions create <f/n+2/ NURBS control points, and the closed ones
+<f/n+3/.
 <p>
 <figure loc="!ht">
 <eps file="pics/icurves.ps" height="7cm">
@@ -7235,7 +7243,8 @@ outlined above.
 <itemize>
 <item>If <tt/"Knot-Type"/ is <tt/"NURB"/ a simple knot vector
 with equidistant knots is generated, which leads to a concatenated curve
-that does not exactly preserve the shapes of the original curves.
+that does not exactly preserve the shapes of the original curves if any
+of the parameter curves has a custom knot vector with non equidistant knots.
 Furthermore, all transitions between parameter curves are always smoothed
 out.
 
@@ -7689,8 +7698,6 @@ parameters from TP tags will be used in the conversion process (if present)
 If bevels or caps are present, an enclosing Level object will be created
 and the tesselated bevels or caps follow the tesselated NPatch in the
 following order: U0, U1, V0, V1.
-<p>
-Integrated bevels or caps do not appear as extra objects.
 
 <#if out=latex><x/newpage/</#if>
 
@@ -7792,6 +7799,14 @@ outlines of the patch (<tt/"OutlinePatch"/). The default setting
 <item>Finally, a <tt/"NPInfo"/ field informs about the actual configuration
 of the created NURBS patch.
 </itemize>
+
+<sect3>Caps and Bevels
+<p><#if out=latex>&nbsp;<newline></#if>
+The IPatch object supports the standard caps as lined out in section
+<ref id="capsprop" name="Caps Property">
+and the standard bevels as lined out in section
+<ref id="bevelsprop" name="Bevels Property">.<newline>
+The boundary names are <tt/U0/, <tt/U1/, <tt/V0/, and <tt/V1/.
 
 <sect3>Conversion Support
 <p><#if out=latex>&nbsp;<newline></#if>
