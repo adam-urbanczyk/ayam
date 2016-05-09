@@ -700,8 +700,8 @@ ay_bevelt_createconcatp(int side, int revert, double radius, double *tangents,
       nc = (ay_nurbcurve_object*)t.refine;
       cv = nc->controlv;
       p1 = NULL;
-      ay_status = ay_geom_extractmiddlepoint(1, tangents, 9,
-					     nc->length, &p1, mnv);
+      ay_status = ay_geom_extractmiddlepoint(1, tangents, nc->length, 9,
+					     &p1, mnv);
 
       if(p1)
 	free(p1);
