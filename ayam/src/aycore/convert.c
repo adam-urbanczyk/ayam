@@ -271,6 +271,10 @@ ay_convert_nptoolobj(ay_object *o, ay_object *p, ay_object *cb, int in_place)
 	}
       while(b)
 	{
+	  /* re-create caps and bevels */
+	  b->modified = AY_TRUE;
+	  ay_notify_object(b);
+
 	  /* reset display mode and sampling tolerance
 	     of new patch to "global"? */
 	  if(!in_place && ay_prefs.conv_reset_display)
