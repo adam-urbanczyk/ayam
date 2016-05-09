@@ -1144,12 +1144,14 @@ ay_ipatch_drawhcb(struct Togl *togl, ay_object *o)
 int
 ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
+ int ay_status = AY_OK;
  ay_ipatch_object *ipatch = NULL;
  ay_point *pnt = NULL, **lastpnt = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
  double *pecoord = NULL, **pecoords = NULL, **pecoordstmp;
  double *control = NULL, *c;
- int i = 0, j = 0, a = 0, found = AY_FALSE;
+ int i = 0, j = 0, k = 0, a = 0, found = AY_FALSE;
+ unsigned int *itmp, peindex = 0, *peindices = NULL;
 
   if(!o || ((mode != 3) && (!p || !pe)))
     return AY_ENULL;
@@ -1184,9 +1186,13 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       if(!(pe->coords = calloc(pe->num, sizeof(double*))))
 	return AY_EOMEM;
 
+      if(!(pe->indices = calloc(pe->num, sizeof(unsigned int))))
+	return AY_EOMEM;
+
       for(i = 0; i < (ipatch->width*ipatch->height); i++)
 	{
 	  pe->coords[j] = &(ipatch->controlv[a]);
+	  pe->indices[j] = j;
 	  j++;
 	  a += 3;
 	}
@@ -1197,6 +1203,7 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	  for(i = 0; i < ipatch->height; i++)
 	    {
 	      pe->coords[j] = &(ipatch->sderiv_u[a]);
+	      pe->indices[j] = j;
 	      j++;
 	      a += 3;
 	    }
@@ -1204,6 +1211,7 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	  for(i = 0; i < ipatch->height; i++)
 	    {
 	      pe->coords[j] = &(ipatch->ederiv_u[a]);
+	      pe->indices[j] = j;
 	      j++;
 	      a += 3;
 	    }
@@ -1215,6 +1223,7 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	  for(i = 0; i < ipatch->width; i++)
 	    {
 	      pe->coords[j] = &(ipatch->sderiv_v[a]);
+	      pe->indices[j] = j;
 	      j++;
 	      a += 3;
 	    }
@@ -1222,6 +1231,7 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	  for(i = 0; i < ipatch->width; i++)
 	    {
 	      pe->coords[j] = &(ipatch->ederiv_v[a]);
+	      pe->indices[j] = j;
 	      j++;
 	      a += 3;
 	    }
@@ -1240,9 +1250,10 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	  if(dist < min_dist)
 	    {
 	      pecoord = &(control[j]);
+	      peindex = i;
 	      min_dist = dist;
 	    }
-
+	  k++;
 	  j += 3;
 	}
 
@@ -1258,9 +1269,10 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	      if(dist < min_dist)
 		{
 		  pecoord = &(ipatch->sderiv_u[j]);
+		  peindex = k;
 		  min_dist = dist;
 		}
-
+	      k++;
 	      j += 3;
 	    } /* for */
 	  j = 0;
@@ -1273,8 +1285,10 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	      if(dist < min_dist)
 		{
 		  pecoord = &(ipatch->ederiv_u[j]);
+		  peindex = k;
 		  min_dist = dist;
 		}
+	      k++;
 	      j += 3;
 	    } /* for */
 	} /* if */
@@ -1291,9 +1305,10 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	      if(dist < min_dist)
 		{
 		  pecoord = &(ipatch->sderiv_v[j]);
+		  peindex = k;
 		  min_dist = dist;
 		}
-
+	      k++;
 	      j += 3;
 	    } /* for */
 	  j = 0;
@@ -1306,12 +1321,13 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	      if(dist < min_dist)
 		{
 		  pecoord = &(ipatch->ederiv_v[j]);
+		  peindex = k;
 		  min_dist = dist;
 		}
+	      k++;
 	      j += 3;
 	    } /* for */
 	} /* if */
-
 
       if(!pecoord)
 	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
@@ -1320,8 +1336,11 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	{
 	  if(!(pe->coords = calloc(1, sizeof(double*))))
 	    return AY_EOMEM;
+	  if(!(pe->indices = calloc(1, sizeof(unsigned int))))
+	    return AY_EOMEM;
 
 	  pe->coords[0] = pecoord;
+	  pe->indices[0] = peindex;
 	  pe->num = 1;
 	}
       break;
@@ -1342,16 +1361,21 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	    {
 	      if(!(pecoordstmp = realloc(pecoords, (a+1)*sizeof(double *))))
 		{
-		  if(pecoords)
-		    free(pecoords);
-		  return AY_EOMEM;
+		  ay_status = AY_EOMEM;
+		  goto cleanup;
 		}
 	      pecoords = pecoordstmp;
-
+	      if(!(itmp = realloc(peindices, (a+1)*sizeof(unsigned int))))
+		{
+		  ay_status = AY_EOMEM;
+		  goto cleanup;
+		}
+	      peindices = itmp;
 	      pecoords[a] = c;
+	      peindices[a] = i;
 	      a++;
 	    } /* if */
-
+	  k++;
 	  j += 3;
 	} /* for */
 
@@ -1370,15 +1394,21 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 		{
 		  if(!(pecoordstmp = realloc(pecoords, (a+1)*sizeof(double *))))
 		    {
-		      if(pecoords)
-			free(pecoords);
-		      return AY_EOMEM;
+		      ay_status = AY_EOMEM;
+		      goto cleanup;
 		    }
 		  pecoords = pecoordstmp;
-
+		  if(!(itmp = realloc(peindices, (a+1)*sizeof(unsigned int))))
+		    {
+		      ay_status = AY_EOMEM;
+		      goto cleanup;
+		    }
+		  peindices = itmp;
 		  pecoords[a] = c;
+		  peindices[a] = k;
 		  a++;
 		} /* if */
+	      k++;
 	      j += 3;
 	    } /* for */
 	  j = 0;
@@ -1394,15 +1424,21 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 		{
 		  if(!(pecoordstmp = realloc(pecoords, (a+1)*sizeof(double *))))
 		    {
-		      if(pecoords)
-			free(pecoords);
-		      return AY_EOMEM;
+		      ay_status = AY_EOMEM;
+		      goto cleanup;
 		    }
 		  pecoords = pecoordstmp;
-
+		  if(!(itmp = realloc(peindices, (a+1)*sizeof(unsigned int))))
+		    {
+		      ay_status = AY_EOMEM;
+		      goto cleanup;
+		    }
+		  peindices = itmp;
 		  pecoords[a] = c;
+		  peindices[a] = k;
 		  a++;
 		} /* if */
+	      k++;
 	      j += 3;
 	    } /* for */
 	} /* if */
@@ -1420,18 +1456,23 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
 		 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 		{
-
 		  if(!(pecoordstmp = realloc(pecoords, (a+1)*sizeof(double *))))
 		    {
-		      if(pecoords)
-			free(pecoords);
-		      return AY_EOMEM;
+		      ay_status = AY_EOMEM;
+		      goto cleanup;
 		    }
 		  pecoords = pecoordstmp;
-
+		  if(!(itmp = realloc(peindices, (a+1)*sizeof(unsigned int))))
+		    {
+		      ay_status = AY_EOMEM;
+		      goto cleanup;
+		    }
+		  peindices = itmp;
 		  pecoords[a] = c;
+		  peindices[a] = k;
 		  a++;
 		} /* if */
+	      k++;
 	      j += 3;
 	    } /* for */
 	  j = 0;
@@ -1447,15 +1488,21 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 		{
 		  if(!(pecoordstmp = realloc(pecoords, (a+1)*sizeof(double *))))
 		    {
-		      if(pecoords)
-			free(pecoords);
-		      return AY_EOMEM;
+		      ay_status = AY_EOMEM;
+		      goto cleanup;
 		    }
 		  pecoords = pecoordstmp;
-
+		  if(!(itmp = realloc(peindices, (a+1)*sizeof(unsigned int))))
+		    {
+		      ay_status = AY_EOMEM;
+		      goto cleanup;
+		    }
+		  peindices = itmp;
 		  pecoords[a] = c;
+		  peindices[a] = k;
 		  a++;
 		} /* if */
+	      k++;
 	      j += 3;
 	    } /* for */
 	} /* if */
@@ -1464,8 +1511,12 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
 
       pe->coords = pecoords;
+      pe->indices = peindices;
       pe->num = a;
 
+      /* prevent cleanup code from doing something harmful */
+      pecoords = NULL;
+      peindices = NULL;
       break;
     case 3:
       /* rebuild from o->selp */
@@ -1492,7 +1543,15 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       break;
     } /* switch */
 
- return AY_OK;
+ cleanup:
+
+  if(pecoords)
+    free(pecoords);
+
+  if(peindices)
+    free(peindices);
+
+ return ay_status;
 } /* ay_ipatch_getpntcb */
 
 
