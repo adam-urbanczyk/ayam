@@ -8155,8 +8155,7 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
 	  ay_geom_extractmiddlepoint(0, &(np->controlv[i*np->height*stride]),
 				     np->height, 4,
 				     NULL, &cv[i*stride]);
-	  if(!np->is_rat)
-	    cv[i*stride+3] = 1.0;
+	  cv[i*stride+3] = 1.0;
 	}
       memcpy(nc->knotv, np->uknotv, (nc->length+nc->order)*sizeof(double));
       break;
@@ -8167,8 +8166,7 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
 	  ay_geom_extractmiddlepoint(0, &(np->controlv[i*stride]),
 				     np->width, np->height*stride,
 				     NULL, &cv[i*stride]);
-	  if(!np->is_rat)
-	    cv[i*stride+3] = 1.0;
+	  cv[i*stride+3] = 1.0;
 	}
       memcpy(nc->knotv, np->vknotv, (nc->length+nc->order)*sizeof(double));
       break;
