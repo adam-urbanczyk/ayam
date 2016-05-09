@@ -196,7 +196,7 @@ ay_geom_anglefrom3pnts(double *p1, double *p2, double *p3, double *n)
  * \param[in] cv coordinate array
  * \param[in] cvlen number of points in \a cv
  * \param[in] cvstride size of a point in \a cv (>=3, unchecked)
- * \param[in,out] tcv temporary array of size 4*cvlen (to avoid reallocation for
+ * \param[in,out] tcv temporary array of size 3*cvlen (to avoid reallocation for
  *  repeated calls, only used for mode 1), may be NULL if mode is 0
  * \param[in,out] result pointer where to store the resulting center point
  *
@@ -207,7 +207,7 @@ ay_geom_extractmiddlepoint(int mode, double *cv, int cvlen, int cvstride,
 			   double **tcv, double *result)
 {
  int ay_status = AY_OK;
- int stride = 4, a, i, j;
+ int stride = 3, a, i, j;
  double *p = NULL, *t = NULL;
  double minmax[6];
 
@@ -279,7 +279,6 @@ ay_geom_extractmiddlepoint(int mode, double *cv, int cvlen, int cvstride,
 	  result[0] += t[a];
 	  result[1] += t[a+1];
 	  result[2] += t[a+2];
-	  result[3] += t[a+3];
 
 	  /* skip over sequence of equal points */
 	  if((i < (cvlen-1)) &&
@@ -302,7 +301,6 @@ ay_geom_extractmiddlepoint(int mode, double *cv, int cvlen, int cvstride,
       result[0] /= j;
       result[1] /= j;
       result[2] /= j;
-      result[3] /= j;
     } /* if */
 
  return ay_status;
@@ -327,7 +325,7 @@ ay_geom_extractmeannormal(double *cv, int cvlen, int cvstride,
 {
  int ay_status = AY_OK;
  int i, snlen = 0;
- double mm[4] = {0}, *p1, *p2, *psn;
+ double mm[3] = {0}, *p1, *p2, *psn;
  double len, *sn = NULL;
 
   if(!cv || !result)

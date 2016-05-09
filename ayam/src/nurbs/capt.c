@@ -212,7 +212,7 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, double *mp,
  double knotv1[6] = {0.0,0.0,0.0,1.0,1.0,1.0};
  double knotv2[8] = {0.0,0.0,0.0,0.0,1.0,1.0,1.0,1.0};
  int a, b = 0, i = 0, stride = 4, shiftlen, numuniq;
- double r = 0.0, m[4] = {0}, n[3] = {0}, z[3] = {0.0,0.0,1.0};
+ double r = 0.0, m[3] = {0}, n[3] = {0}, z[3] = {0.0,0.0,1.0};
  double *p, *q1, *q2, angle, anglem, len, rm[16], rotaxis[3], *circcv = NULL;
  ay_object *rc = NULL;
 
