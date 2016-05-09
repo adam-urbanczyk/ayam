@@ -148,8 +148,8 @@ ay_geom_normalfrom3pnts(double *p1, double *p2, double *p3, double *n)
  * \param[in] p1 first point
  * \param[in] p2 second point (apex of angle)
  * \param[in] p3 third point
- * \param[in] n normal vector (may be NULL) 
- * 
+ * \param[in] n normal vector (may be NULL)
+ *
  * \returns angle in radians or 0.0 if any of p1, p2, p3 are NULL
  */
 double
@@ -198,7 +198,7 @@ ay_geom_anglefrom3pnts(double *p1, double *p2, double *p3, double *n)
  * \param[in] cvstride size of a point in \a cv (>=3, unchecked)
  * \param[in,out] tcv temporary array of size 3*cvlen (to avoid reallocation for
  *  repeated calls, only used for mode 1), may be NULL if mode is 0
- * \param[in,out] result pointer where to store the resulting center point
+ * \param[in,out] result pointer where to store the center point ([3])
  *
  * \returns AY_OK on success, error code otherwise
  */
@@ -315,7 +315,7 @@ ay_geom_extractmiddlepoint(int mode, double *cv, int cvlen, int cvstride,
  * \param[in] cvlen number of points in \a cv
  * \param[in] cvstride size of a point in \a cv (>=3, unchecked)
  * \param[in] m center point in which the normal is calculated, may be NULL
- * \param[in,out] result pointer where the resulting normal is stored
+ * \param[in,out] result pointer where the resulting normal is stored ([3])
  *
  * \returns AY_OK on success, error code otherwise
  */
