@@ -26,8 +26,8 @@ w     fRevolveAttr
 array set RevolveAttrData {
 DisplayMode 1
 NPInfoBall "n/a"
-BoundaryNames { "Upper" "Lower" "Start" "End" }
-BoundaryIDs { 2 3 0 1 }
+BoundaryNames { "Start" "End" "Upper" "Lower" }
+BoundaryIDs { 0 1 2 3 }
 }
 
 # create RevolveAttr-UI
