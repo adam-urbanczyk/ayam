@@ -8826,7 +8826,7 @@ ay_nct_shifttominmeandist(int cvlen, int cvstride, double *cva, double *cvb)
 int
 ay_nct_rotatetominmeandist(int cvlen, int cvstride, double *cva, double *cvb)
 {
- double minangle = 0.0, angle = 0.0, n[3], m[4], rm[16];
+ double minangle = 0.0, angle = 0.0, n[3], m[3], rm[16];
  double cvbt[3], vd[3];
  double len, minlen = DBL_MAX;
  int ay_status = AY_OK, i;
