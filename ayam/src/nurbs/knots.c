@@ -1518,9 +1518,9 @@ ay_knots_isclamped(unsigned int side, unsigned int order,
   if(side == 1)
     {
       /* check first order intervals */
-      for(i = 1; i < order; i++)
+      for(i = 0; i < order-1; i++)
 	{
-	  if(fabs(U[i+1]-U[i]) > eps)
+	  if(fabs(U[i+1] - U[i]) > eps)
 	    {
 	      is_clamped = AY_FALSE;
 	      break;
