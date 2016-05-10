@@ -442,14 +442,14 @@ ay_read_tags(FILE *fileptr, ay_object *o)
       if(ay_status)
 	{ free(tag->name); free(tag); return ay_status; }
 
-      ay_tags_vttonl((char*)tag->val);
-
       /* avoid null value */
       if(!tag->val)
 	{
 	  if(!(tag->val = calloc(1, sizeof(char))))
 	    { free(tag->name); free(tag); return AY_EOMEM; }
 	}
+
+      ay_tags_vttonl((char*)tag->val);
 
 #ifdef AYNOSAFEINTERP
      /* if there is no safe interpreter, disable all ANS/BNS tags
