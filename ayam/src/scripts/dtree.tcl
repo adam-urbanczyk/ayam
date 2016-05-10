@@ -468,7 +468,8 @@ addToProc uS {
 
 bind $ay(tree) <ButtonRelease-1> "+\
  if \{ \$ay(drawTreeOnRelease) == 1 \} {\
-    Tree::_draw_tree $ay(tree)
+    Tree::_draw_tree $ay(tree);\
+    $ay(tree) selection set \[$ay(tree) selection get\]
  \};"
 
 set ay(drawTreeOnRelease) 0
