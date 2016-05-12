@@ -1533,9 +1533,92 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	    }
 	  else
 	    {
-	      *lastpnt = pnt->next;
-	      free(pnt);
-	      pnt = *lastpnt;
+	      found = AY_FALSE;
+	      if((ipatch->derivs_u > 1) && ipatch->sderiv_u && ipatch->ederiv_u)
+		{
+		  /* have u derivatives */
+		  if(pnt->index < (unsigned int)(ipatch->width * ipatch->height
+						 + ipatch->height * 2))
+		    {
+		      if(pnt->index < (unsigned int)(ipatch->width *
+						     ipatch->height +
+						     ipatch->height))
+			{
+			  pnt->point = &(ipatch->sderiv_u[(pnt->index -
+					  ipatch->width * ipatch->height)*3]);
+			}
+		      else
+			{
+			  pnt->point = &(ipatch->ederiv_u[(pnt->index -
+			   ipatch->width * ipatch->height - ipatch->height)*3]);
+			}
+		      found = AY_TRUE;
+		    }
+		  else
+		    {
+		      /* have u derivatives _and_ v derivatives */
+		      if((ipatch->derivs_v > 1) &&
+			 ipatch->sderiv_v && ipatch->ederiv_v)
+			{
+			  if(pnt->index < (unsigned int)(ipatch->width *
+			     ipatch->height + ipatch->height * 2 +
+							 ipatch->width * 2))
+			    {
+			      if(pnt->index < (unsigned int)(ipatch->width *
+			         ipatch->height + ipatch->height * 2 +
+							     ipatch->width))
+				{
+				  pnt->point = &(ipatch->sderiv_v[(pnt->index -
+                                               ipatch->width * ipatch->height -
+						       ipatch->height * 2)*3]);
+				}
+			      else
+				{
+				  pnt->point = &(ipatch->ederiv_v[(pnt->index -
+					       ipatch->width * ipatch->height -
+                                       ipatch->height * 2 - ipatch->width)*3]);
+				}
+			      found = AY_TRUE;
+			    }
+			}
+		    }
+		}
+	      else
+		{
+		  if((ipatch->derivs_v > 1) &&
+		     ipatch->sderiv_v && ipatch->ederiv_v)
+		    {
+		      /* have only v derivatives */
+		      if(pnt->index < (unsigned int)(ipatch->width *
+				       ipatch->height + ipatch->width * 2))
+			{
+			  if(pnt->index < (unsigned int)(ipatch->width *
+					     ipatch->height + ipatch->width))
+			    {
+			      pnt->point = &(ipatch->sderiv_v[(pnt->index -
+                                          ipatch->width * ipatch->height)*3]);
+			    }
+			  else
+			    {
+			      pnt->point = &(ipatch->ederiv_v[(pnt->index -
+                           ipatch->width * ipatch->height - ipatch->width)*3]);
+			    }
+			  found = AY_TRUE;
+			}
+		    }
+		}
+	      if(found)
+		{
+		  pnt->rational = AY_FALSE;
+		  lastpnt = &(pnt->next);
+		  pnt = pnt->next;
+		}
+	      else
+		{
+		  *lastpnt = pnt->next;
+		  free(pnt);
+		  pnt = *lastpnt;
+		}
 	    }
 	} /* while */
       break;
