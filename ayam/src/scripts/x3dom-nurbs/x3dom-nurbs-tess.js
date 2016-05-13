@@ -252,6 +252,7 @@ function Tessellator(nurb) {
 	this.tessTri([[u05,v1],[u1,v1],[u1,v05]]);
     } // tesselate
 
+    /* Adapt thresholds to current NURBS configuration. */
     this.adjustThresholds = function (uparam, vparam) {
 	if(uparam < 0) {
 	    this.use_objectspace = false;
@@ -287,7 +288,7 @@ function Tessellator(nurb) {
 
     this.tessTri = function (tri) {
 	var work = [tri];
-	while( work.length ) {
+	while(work.length) {
 	    var cur = work.splice(0, 1);
 	    var pieces = this.refineTri(cur[0]);
 	    work = pieces.concat(work);
@@ -295,20 +296,20 @@ function Tessellator(nurb) {
     } // tessTri
 
     this.refineTri = function (tri) {
-	/* cull entire triangle? */
-	if (this.tloops && this.inOut(tri) < 0)
+	// 0 cull entire triangle?
+	if(this.tloops && this.inOut(tri) < 0)
 	    return [];
 
-	/***** Measure facet degeneracy ****/
+	// 1 measure triangle degeneracy
 
-	//area of triangle
+	// area of triangle
 	var area = tri[0][0]*tri[1][1] - tri[1][0]*tri[0][1] +
 	           tri[1][0]*tri[2][1] - tri[2][0]*tri[1][1] +
 	           tri[2][0]*tri[0][1] - tri[0][0]*tri[2][1];
-	if (area < 0)
+	if(area < 0)
 	    area = -area;
 
-	//calc sum of squares of edge lengths
+	// calc sum of squares of edge lengths
 	var a = [], b = [];
 	a[0] = tri[0][0] - tri[1][0];
 	a[1] = tri[0][1] - tri[1][1];
@@ -321,15 +322,17 @@ function Tessellator(nurb) {
 	max_ed += a[0]*a[0] + a[1]*a[1];
 
 	area /= max_ed;
-	if (area <= this.skew_thresh) {
+	if(area <= this.skew_thresh) {
+	    // triangle is skewed => dice rather than split edges
 	    this.diceTri(tri);
 	    return [];
 	}
 
-	//split edges
+	// 2 split edges
+
 	var eds = [];
 	max_ed = 0.0;
-	for (var i = 0; i < 3; i++) {
+	for(var i = 0; i < 3; i++) {
 	    var j0 = (i+1)%3;
 	    var j1 = (i+2)%3;
 	    a = tri[j0];
@@ -342,19 +345,19 @@ function Tessellator(nurb) {
 	max_ed *= this.split_bias;
 
 	var m = [], mv = [], co = 0;
-	for (var i = 0; i < 3; i++) {
+	for(var i = 0; i < 3; i++) {
 	    var j0 = (i+1)%3;
 	    var j1 = (i+2)%3;
 
-	    if ((eds[i] > this.edge_thresh) && (eds[i] >= max_ed)) {
+	    if((eds[i] > this.edge_thresh) && (eds[i] >= max_ed)) {
 		co++;
 		mv[i] = [];
 		mv[i][0] = 0.5*(tri[j0][0] + tri[j1][0]);
 		mv[i][1] = 0.5*(tri[j0][1] + tri[j1][1]);
 		m[i] = i - 3;
 	    } else {
-		//move midpt to vertex closer to center
-		if (eds[j0] > eds[j1]) {
+		// move midpt to vertex closer to center
+		if(eds[j0] > eds[j1]) {
 		    mv[i] = tri[j0];
 		    m[i] = j0;
 		} else {
@@ -364,22 +367,22 @@ function Tessellator(nurb) {
 	    }
 	}
 	var res = [];
-	if (co) {
-	    //add one for center tile
+	if(co) {
+	    // add one for center tile
 	    co++;
 
-	    //corner tiles
+	    // corner tiles
 	    var j = co;
-	    for (var i = 0; i < 3; i++) {
+	    for(var i = 0; i < 3; i++) {
 		var j0 = (i+1)%3;
 		var j1 = (i+2)%3;
-		if ((m[j1] != i) && (m[j0] != i)) {
+		if((m[j1] != i) && (m[j0] != i)) {
 		    res[--j] = [tri[i], mv[j1], mv[j0]];
 		}
 	    }
 
-	    //center tile
-	    if (j) {
+	    // center tile
+	    if(j) {
 		if ((m[0]==m[1]) || (m[1]==m[2]) || (m[2]==m[0])) {
 		    // avoid degenerate center tile
 		    return [];
@@ -392,7 +395,7 @@ function Tessellator(nurb) {
 	   already does enough */
 /*
 	else if (this.splitCenter( mv )) {
-	    //no edges split; add vertex to center and do a simple dice?
+	    // no edges split; add vertex to center and do a simple dice?
 	    var c = [];
 	    c[0] = (tri[0][0] + tri[1][0] + tri[2][0])/3.0;
 	    c[1] = (tri[0][1] + tri[1][1] + tri[2][1])/3.0;
@@ -409,8 +412,9 @@ function Tessellator(nurb) {
 	return [];
     } // refineTri
 
-    this.diceTri = function ( tri ) {
-	//pick a central point
+    /* Refine a triangle around a middle point. */
+    this.diceTri = function (tri) {
+	// pick a central point
 	var cv = [];
 	cv[0] = (tri[0][0] + tri[1][0] + tri[2][0])/3.0;
 	cv[1] = (tri[0][1] + tri[1][1] + tri[2][1])/3.0;
@@ -424,7 +428,7 @@ function Tessellator(nurb) {
 
 	    divs[0] = 1.0;
 	    var beg = 0.0;
-	    while( divs.length ) {
+	    while(divs.length) {
 		var a = [], b = [];
 		var end = divs[0];
 		a[0] = tri[ed][0] + d[0]*beg;
@@ -432,10 +436,10 @@ function Tessellator(nurb) {
 		b[0] = tri[ed][0] + d[0]*end;
 		b[1] = tri[ed][1] + d[1]*end;
 		if (this.splitEdge(a, b) > this.edge_thresh) {
-		    //split edge
+		    // split edge
 		    divs.splice(0, 0, 0.5*(beg+end));
 		} else {
-		    //render it
+		    // render it
 		    this.computeSurface(a);
 		    this.computeSurface(b);
 		    var slice = [cv, a, b];
@@ -459,7 +463,7 @@ function Tessellator(nurb) {
 	}
 	// hash lookup failed, compute the point
 	var pnt;
-	if (this.W) {
+	if(this.W) {
 	    pnt = surfacePoint3DH(this.w, this.h, this.p, this.q,
 				  this.U, this.V, this.P, this.W,
 				  uv[0], uv[1]);
@@ -488,7 +492,7 @@ function Tessellator(nurb) {
 	this.coordIndex++;
 	this.coordinates.push(pnt);
 	this.texcoords.push([uv[0],uv[1]]);
-     return pnt;
+	return pnt;
     } /* computeSurface */
 
     /* Compute a point on a trim curve. */
@@ -511,7 +515,7 @@ function Tessellator(nurb) {
 	if(!this.curveHash[loop][seg])
 	    this.curveHash[loop][seg] = [];
 	this.curveHash[loop][seg][indu] = pnt;
-     return pnt;
+	return pnt;
     } /* computeCurve */
 
     /* Decide if an edge should be split;
@@ -564,7 +568,7 @@ function Tessellator(nurb) {
        should all three edges fall below the split threshold, this function
        is called to determine if the triangle should be split by adding
        a vertex to its center. An interval bound on the function over the
-       domain of the triangle is one possible immplementation. */
+       domain of the triangle is one possible implementation. */
     this.splitCenter = function (tri) {
 	var cv = [];
 	this.curveHash = [];
@@ -647,8 +651,8 @@ function Tessellator(nurb) {
 	return [];
     } // intersectTrim
 
-    /* render four triangles created by a trim loop entering and leaving
-       on one triangle edge */
+    /* Render four triangles created by a trim loop entering _and_ leaving
+       on one triangle edge. */
     this.renderDiced = function (p0, p1, p2, tm, ip0, ip1) {
 	var ip0s = ip0;
 	var ip1s = ip1;
@@ -663,9 +667,9 @@ function Tessellator(nurb) {
 	this.renderFinal([p1,tm,ip1s]);
     } // renderDiced
 
-    /* render a triangle with a complex trim pattern (all edges have
+    /* Render a triangle with a complex trim pattern (all edges have
        valid intersections with the trim loops), the triangle is
-       basically just subdivided via the intersection points */
+       basically just subdivided via the intersection points. */
     this.renderComplex = function (tri, ip0, ip1, ip2) {
 	// it is safe to use diceTri() since we only get here with
 	// triangles that already meet the edge_thresh criterion so that
@@ -832,9 +836,9 @@ function Tessellator(nurb) {
     this.inOut = function (tri) {
 	var a = [], ad = [];
 
-	//counters for intersections
-	var cl = []; //less
-	var cg = []; //greater
+	// counters for intersections
+	var cl = []; // less
+	var cg = []; // greater
 	var ndx = [];
 
 	for(var i = 0; i < 3; i++) {
@@ -842,7 +846,7 @@ function Tessellator(nurb) {
 	    var va = tri[i];
 	    var vb = tri[(i+1)%3];
 
-	    //make line equation for edge
+	    // make line equation for edge
 	    a[i][0] = va[1] - vb[1];
 	    a[i][1] = vb[0] - va[0];
 	    ad[i] = a[i][0]*va[0] + a[i][1]*va[1];
@@ -864,34 +868,34 @@ function Tessellator(nurb) {
 
 		    ni += (d0<0) ? 1 : -1;
 
-		    if ((d0<0) ? (d1<0) : (d1>=0))
-			continue;//no intersection
+		    if((d0<0) ? (d1<0) : (d1>=0))
+			continue; // no intersection
 
-		    //find intersection point
+		    // find intersection point
 		    var ip = (p1[ndx[i]]*d0 - p0[ndx[i]]*d1) / (d0-d1);
 
 		    var ba = ip<tri[i][ndx[i]];
 		    var bb = ip<tri[(i+1)%3][ndx[i]];
-		    if (ba && bb) {
+		    if(ba && bb) {
 			cl[i]++;
 		    } else {
-			if (!(ba || bb)) {
+			if(!(ba || bb)) {
 			    cg[i]++;
 			} else {
 			    return 0;
 			}
 		    }
 		}
-		//point inside tile
-		if ((ni == 3) || (ni == -3))
+		// point inside tile
+		if((ni == 3) || (ni == -3))
 		    return 0;
 	    }
 	}
 
-	if ((cl[0]&1) && (cl[1]&1) && (cl[2]&1)) return 1;
-	if ( !((cl[0]&1) || (cl[1]&1) || (cl[2]&1)) ) return -1;
+	if((cl[0]&1) && (cl[1]&1) && (cl[2]&1)) return 1;
+	if( !((cl[0]&1) || (cl[1]&1) || (cl[2]&1)) ) return -1;
 
-     return 0;
+	return 0;
     } // inOut
 
     /*
@@ -950,7 +954,7 @@ function Tessellator(nurb) {
 	    var tlp = this.ttloops[ilp];
 
 	    var x = 0;
-	    while( x < tlp.length ) {
+	    while(x < tlp.length) {
 		var p0u = ttus[x];
 		var p0seg = Math.floor(p0u);
 		var y = x+1;
@@ -960,7 +964,7 @@ function Tessellator(nurb) {
 		var p1u = ttus[y];
 
 		if(lp[p0seg][1] > 1 && this.refineTrim(ilp, p0u, p1u)) {
-		    //split edge
+		    // split edge
 		    var um;
 		    if(y == 0) {
 			um = 0.5 * (p0u + ue);
