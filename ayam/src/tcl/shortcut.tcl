@@ -374,6 +374,12 @@ proc shortcut_main { w } {
     }
     # if
 
+    bind $w <[repctrl $aymainshortcuts(View1)]> {
+	if { $ayprefs(SingleWindow) } {
+	    focus -force [lindex $ay(views) 0]
+	}
+    }
+
  return;
 }
 # shortcut_main
