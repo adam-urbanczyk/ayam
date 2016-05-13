@@ -81,12 +81,12 @@ function createCoarseITS(node) {
 function tessProgress(x3de, onoff) {
     if(!x3de.tessProgressDiv) {
 	var progressDiv = document.createElement('div');
-	progressDiv.setAttribute("class", "x3dom-progress");
+	progressDiv.setAttribute('class', 'x3dom-progress');
 	var _text = document.createElement('strong');
 	_text.appendChild(document.createTextNode('Tessellating...'));
 	progressDiv.appendChild(_text);
 	var _inner = document.createElement('span');
-	_inner.setAttribute('style', "width: 25%;");
+	_inner.setAttribute('style', 'width: 25%;');
 	_inner.appendChild(document.createTextNode(' '));
 	progressDiv.appendChild(_inner);
 	x3de.tessProgressDiv = progressDiv;
@@ -142,9 +142,9 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.NurbsCurve2D.superClass.call(this, ctx);
 
             this.addField_SFInt32(ctx, 'order', 3);
-            this.addField_MFFloat(ctx, "knot", []);
-            this.addField_MFFloat(ctx, "controlPoint", []);
-            this.addField_MFFloat(ctx, "weight", []);
+            this.addField_MFFloat(ctx, 'knot', []);
+            this.addField_MFFloat(ctx, 'controlPoint', []);
+            this.addField_MFFloat(ctx, 'weight', []);
 	}, { }
     )
 );
@@ -155,7 +155,7 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DGroupingNode,
         function (ctx) {
             x3dom.nodeTypes.ContourPolyline2D.superClass.call(this, ctx);
-            this.addField_MFFloat(ctx, "controlPoint", []);
+            this.addField_MFFloat(ctx, 'controlPoint', []);
 	}, { }
     )
 );
@@ -178,7 +178,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.NurbsTrimmedSurface.superClass.call(this, ctx);
 
-            this.addField_MFNode ('trimmingContour', x3dom.nodeTypes.Contour2D);
+            this.addField_MFNode('trimmingContour', x3dom.nodeTypes.Contour2D);
             this._needReRender = true;
 	    this._myctx = ctx;
         },
@@ -208,6 +208,7 @@ x3dom.registerNodeType(
 			    var trim = c2dnode._cf.children.nodes;
 			    for(var j = 0; j < trim.length; j++) {
 				var tc = trim[j];
+				// convert polyline to NURBS
 				if(!tc._vf.order) {
 				    tc._vf.order = 2;
 				}
