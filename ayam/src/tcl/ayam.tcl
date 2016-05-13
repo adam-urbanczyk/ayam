@@ -406,6 +406,7 @@ array set aymainshortcuts {
     CMButton 3
     ExpandAll "asterisk"
     CollapseAll "underscore"
+    View1 "asciicircum"
 }
 # array aymainshortcuts
 
