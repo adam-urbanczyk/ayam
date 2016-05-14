@@ -18554,6 +18554,12 @@ exceed
 
 Texture coordinates are always directly derived from the parametric values.
 
+Surface normals are not computed by the tessellator, but by x3dom.
+This can lead to normals that are off for very coarse tessellations
+but is much faster. Another benefit of this approach is, that normals
+in non-differentiable surface points (e.g.~the poles of the standard
+NURBS sphere) do not flip.
+
 There is <em/no/ support for the following nodes:
 <list>
 <item><tt>&lt;NurbsSet&gt;</tt>,
