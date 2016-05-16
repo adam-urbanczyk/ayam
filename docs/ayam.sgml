@@ -374,7 +374,7 @@ The scene may also be navigated and objects may be selected
 using the keyboard:<label id="treesc"><footnote>Since 1.6.</footnote>
 <itemize>
 <item><tt/&lt;Up&gt;/ and <tt/&lt;Down&gt;/ move the selection to the previous
-or next object.
+or next object in the current level.
 
 <item><tt/&lt;Shift-Up&gt;/ and <tt/&lt;Shift-Down&gt;/ will not move the
 selection, but rather extend it in the respective
@@ -414,6 +414,9 @@ selected objects in the current level in the respective direction,
 unless the root object is selected and unless the first object is
 selected for up-movement or the last object for
 down-movement.<footnote>Since 1.21.</footnote>
+
+<item><tt/&lt;&circ;&gt;/ moves the focus to the first view
+(in single window GUI mode).<footnote>Since 1.24.</footnote>
 
 </itemize>
 <p>
@@ -483,7 +486,7 @@ The scene may also be navigated and objects may be selected
 using the keyboard:<label id="olbsc"><footnote>Since 1.6.</footnote>
 <itemize>
 <item><tt/&lt;Up&gt;/ and <tt/&lt;Down&gt;/ move the selection to the previous
-or next object.
+or next object in the current level.
 
 <item><tt/&lt;Shift-Up&gt;/ and <tt/&lt;Shift-Down&gt;/ will not move the
 selection, but rather extend it in the respective
@@ -511,6 +514,9 @@ selected objects in the current level in the respective direction,
 unless the root object is selected and unless the first object is
 selected for up-movement or the last object for
 down-movement.<footnote>Since 1.21.</footnote>
+
+<item><tt/&lt;&circ;&gt;/ moves the focus to the first view
+(in single window GUI mode).<footnote>Since 1.24.</footnote>
 
 </itemize>
 <p>
@@ -7623,7 +7629,7 @@ act as normal <tt>"Front"</tt> views.
 <p>
 Note that the direction of the trim curve determines which part of
 the NURBS patch should be cut out. The <tt/Revert/ tool
-(<tt>Tools/NURBCurve</tt> menu) can be used to easily change the direction
+(<tt>"Tools/Curve"</tt> menu) can be used to easily change the direction
 of a trim curve.
 <p>
 Some special restrictions apply to trim curves:
@@ -8896,9 +8902,10 @@ curves have to be refined using this new knot vector; interpolation
 adds another dimension of complexity. If you experience
 lags when editing the child curves of a Skin object try to switch
 to lazy notification.
-Since Ayam 1.9, a Skin object will also use all the curves of a
+<p>
+A Skin object will also use all the curves of a
 tool object, that provides multiple curves, e.g.~a Clone object
-in mirror mode.
+in mirror mode.<footnote>Since Ayam 1.9.</footnote>
 <p>
 The direction of the parameter curves will be parallel to the V
 dimension (height) of the skinned surface. The number of the parameter
@@ -8944,11 +8951,11 @@ Using the next parameter <tt/"Knot-Type_U"/, the type of the knot vector
 that should be used in the U direction of the skinned surface can be
 adapted. Note that this setting will have no effect if
 interpolation is switched on because then a chord length parameterisation
-will be used. If the knot type is Bezier and the specified
+will be used. If the knot type is <tt/"Bezier"/ and the specified
 order (see above) does not exactly match the number of skinned curves,
 then the order will be silently adapted to the number of skinned curves.
-New in Ayam 1.7 is support for the knot type Custom, which creates
-a chord length parameterisation, even if interpolation is not enabled.
+The knot type <tt/"Custom"/ creates a chord length parameterisation, even
+if interpolation is not enabled.<footnote>Since Ayam 1.7.</footnote>
 <p>
 See section <ref id="npattr" name="NPatchAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
@@ -12393,6 +12400,11 @@ surfaces <ref id="revertut" name="Revert U Surface Tool"> and
 
 <sect2>Open Tool<label id="openct">
 <p>
+<figure loc="ht">
+<eps file="pics/openc.ps" height="4cm">
+<img src="pics/openc.gif">
+<caption>Open Tool (l: Closed Curve, r: Opened Curve)</caption>
+</figure>
 <descrip>
 <tag/Arguments/ The open tool takes all NCurve,
 ICurve, ACurve, and ConcatNC objects from the selection.
@@ -17074,7 +17086,9 @@ Note that forAll will run slowly if a property GUI is displayed.
 By de-selecting the property using e.g.~the property context menu first,
 it will run much faster.
 <p>
-Since Ayam 1.9 forAll correctly maintains the current selection.
+Furthermore, the current selection is correctly
+maintained.<footnote>Since Ayam 1.9.</footnote>
+
  <item>Deficiencies:
  <itemize>
   <item>A recursive forAll will
