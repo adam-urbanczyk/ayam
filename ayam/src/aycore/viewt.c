@@ -2509,6 +2509,7 @@ ay_viewt_markfromselp(struct Togl *togl, int mode)
  GLint vp[4];
  GLdouble mm[16], mp[16], winx, winy, winz;
  unsigned int numo = 0;
+ int temp_selp = AY_FALSE;
 
   sel = ay_selection;
   while(sel)
@@ -2522,7 +2523,24 @@ ay_viewt_markfromselp(struct Togl *togl, int mode)
     }
 
   if(numo == 0)
-    return AY_ERROR;
+    {
+      /* no points selected, try a temporary full selection */
+      sel = ay_selection;
+      while(sel)
+	{
+	  o = sel->object;
+	  (void)ay_selp_selall(o);
+	  if(o->selp)
+	    {
+	      numo++;
+	    }
+	  sel = sel->next;
+	}
+      if(numo == 0)
+	return AY_ERROR;
+      else
+	temp_selp = AY_TRUE;
+    }
 
   sel = ay_selection;
   while(sel)
@@ -2546,7 +2564,8 @@ ay_viewt_markfromselp(struct Togl *togl, int mode)
 	      cog[1] += tcog[1]/(double)numo;
 	      cog[2] += tcog[2]/(double)numo;
 	    }
-
+	  if(temp_selp)
+	    ay_selp_clear(o);
 	} /* if */
       sel = sel->next;
     } /* while */
@@ -2661,7 +2680,7 @@ cleanup:
 
 
 /* ay_viewt_warpmouse:
- *  arrange to warp the mouse to new coordinates
+ *  arrange to warp the mouse pointer to new coordinates
  */
 void
 ay_viewt_warpmouse(struct Togl *togl, double *coord, ay_object *o,
