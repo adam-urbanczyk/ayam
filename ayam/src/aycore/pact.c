@@ -204,7 +204,7 @@ int
 ay_pact_selboundtcb(struct Togl *togl, int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "selpac";
+ char fname[] = "selbac";
  Tcl_Interp *interp = Togl_Interp(togl);
  ay_point *newp = NULL;
  ay_pointedit pe = {0};
@@ -3204,7 +3204,7 @@ ay_pact_multdecnc(ay_object *o)
 
   /* correct the curve type */
   ay_nct_settype(nc);
-    
+
 
 cleanup:
 
