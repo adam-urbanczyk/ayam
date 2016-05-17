@@ -1,4 +1,4 @@
-[27. Apr 2016 CVS-Head:
+[17. May 2016 CVS-Head:
 =======================
 Bug Fixes:
 o added missing scripting interface commands to JavaScript and Lua scripting
@@ -22,6 +22,10 @@ o the open curve tool now modifies control points so that subsequent
 o the close curve tool can now more easily invoked by the new
   keyboard shortcut <)>
 o ExtrNC/ExtrNP now work for NPatch objects with caps and bevels
+o improved error checking of the "refine knots with" tools
+o improved suggested new knots of the "refine knots with" tools
+o setting the mark to the selected points center now establishes
+  a temporary point selection of all points, if no points are selected
 
 GUI:
 o added RIB-Export rendering option "AutoCloseUI" to automatically close
