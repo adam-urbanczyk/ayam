@@ -3409,10 +3409,10 @@ ay_nct_crtnhcircle(double radius, ay_nurbcurve_object **curve)
   new->length = 5;
   new->knot_type = AY_KTCUSTOM;
 
-  memcpy(controlv,controls,5*4*sizeof(double));
+  memcpy(controlv, controls, 5*4*sizeof(double));
   new->controlv = controlv;
 
-  memcpy(knotv,knots,8*sizeof(double));
+  memcpy(knotv, knots, 8*sizeof(double));
   new->knotv = knotv;
 
   new->is_rat = AY_TRUE;
@@ -3595,8 +3595,7 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      if(!patch && sel)
 		{
-		  ay_status = ay_provide_object(sel->object, AY_IDNPATCH,
-						&p);
+		  ay_status = ay_provide_object(sel->object, AY_IDNPATCH, &p);
 		  if(p)
 		    {
 		      is_provided = AY_TRUE;
@@ -4997,7 +4996,10 @@ ay_nct_arrange(ay_object *o, ay_object *t, int rotate)
     {
       if(tr->type == AY_CTOPEN)
 	{
-	  u = tr->knotv[tr->order-1]+(((double)i/(n-1))*plen);
+	  if(n > 1)
+	    u = tr->knotv[tr->order-1]+(((double)i/(n-1))*plen);
+	  else
+	    u = tr->knotv[tr->order-1];
 	}
       else
 	{
