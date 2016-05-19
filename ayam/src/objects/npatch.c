@@ -390,6 +390,51 @@ ay_npatch_createcb(int argc, char *argv[], ay_object *o)
 	  cv = NULL;
 	  center = AY_FALSE;
 	}
+    }
+  else
+    {
+      if(!(cv = calloc(width*height*stride, sizeof(double))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+
+      if(center)
+	{
+	  if(fabs(udx) > AY_EPSILON)
+	    ext = (width-1)*udx;
+	  if(fabs(vdx) > AY_EPSILON)
+	    ext += (height-1)*vdx;
+	  s[0] = -(ext/2.0);
+	  ext = 0.0;
+	  if(fabs(udy) > AY_EPSILON)
+	    ext = (width-1)*udy;
+	  if(fabs(vdy) > AY_EPSILON)
+	    ext += (height-1)*vdy;
+	  s[1] = -(ext/2.0);
+	  ext = 0.0;
+	  if(fabs(udz) > AY_EPSILON)
+	    ext = (width-1)*udz;
+	  if(fabs(vdz) > AY_EPSILON)
+	    ext += (height-1)*vdz;
+	  s[2] = -(ext/2.0);
+	}
+
+      k = 0;
+      for(i = 0; i < width; i++)
+	{
+	  for(j = 0; j < height; j++)
+	    {
+	      cv[k]   = s[0] + (double)j*vdx;
+	      cv[k+1] = s[1] + (double)j*vdy;
+	      cv[k+2] = s[2] + (double)j*vdz;
+	      cv[k+3] = 1.0;
+	      k += stride;
+	    }
+	  s[0] += udx;
+	  s[1] += udy;
+	  s[2] += udz;
+	}
     } /* if */
 
   if(ukv)
@@ -462,48 +507,6 @@ ay_npatch_createcb(int argc, char *argv[], ay_object *o)
   o->parent = AY_TRUE;
   /* but hide them under normal circumstances */
   o->hide_children = AY_TRUE;
-
-  if(!cv)
-    {
-      cv = npatch->controlv;
-
-      if(center)
-	{
-	  if(fabs(udx) > AY_EPSILON)
-	    ext = (width-1)*udx;
-	  if(fabs(vdx) > AY_EPSILON)
-	    ext += (height-1)*vdx;
-	  s[0] = -(ext/2.0);
-	  ext = 0.0;
-	  if(fabs(udy) > AY_EPSILON)
-	    ext = (width-1)*udy;
-	  if(fabs(vdy) > AY_EPSILON)
-	    ext += (height-1)*vdy;
-	  s[1] = -(ext/2.0);
-	  ext = 0.0;
-	  if(fabs(udz) > AY_EPSILON)
-	    ext = (width-1)*udz;
-	  if(fabs(vdz) > AY_EPSILON)
-	    ext += (height-1)*vdz;
-	  s[2] = -(ext/2.0);
-	}
-
-      k = 0;
-      for(i = 0; i < width; i++)
-	{
-	  for(j = 0; j < height; j++)
-	    {
-	      cv[k]   = s[0] + (double)j*vdx;
-	      cv[k+1] = s[1] + (double)j*vdy;
-	      cv[k+2] = s[2] + (double)j*vdz;
-	      cv[k+3] = 1.0;
-	      k += stride;
-	    }
-	  s[0] += udx;
-	  s[1] += udy;
-	  s[2] += udz;
-	}
-    } /* if */
 
   ay_npt_setuvtypes(npatch, 0);
 
