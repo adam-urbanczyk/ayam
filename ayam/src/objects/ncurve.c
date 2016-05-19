@@ -309,7 +309,32 @@ ay_ncurve_createcb(int argc, char *argv[], ay_object *o)
 	  if(fabs(cv[i*4+3]) < AY_EPSILON)
 	    cv[i*4+3] = 1.0;
 	}
-    } /* if */
+    }
+  else
+    {
+      if(!(cv = calloc(stride*length, sizeof(double))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+      if(center)
+	{
+	  if(dx > 0.0)
+	    s[0] = -(((length-1)*dx)/2.0);
+	  if(dy > 0.0)
+	    s[1] = -(((length-1)*dy)/2.0);
+	  if(dz > 0.0)
+	    s[2] = -(((length-1)*dz)/2.0);
+	}
+
+      for(i = 0; i < length; i++)
+	{
+	  cv[i*4]   = s[0]+(double)i*dx;
+	  cv[i*4+1] = s[1]+(double)i*dy;
+	  cv[i*4+2] = s[2]+(double)i*dz;
+	  cv[i*4+3] = 1.0;
+	}
+    }
 
   if(kv)
     {
@@ -345,29 +370,6 @@ ay_ncurve_createcb(int argc, char *argv[], ay_object *o)
       ay_error(ay_status, fname, NULL);
       ay_status = AY_ERROR;
       goto cleanup;
-    }
-
-  if(!cv)
-    {
-      cv = ((ay_nurbcurve_object*)(o->refine))->controlv;
-
-      if(center)
-	{
-	  if(dx > 0.0)
-	    s[0] = -(((length-1)*dx)/2.0);
-	  if(dy > 0.0)
-	    s[1] = -(((length-1)*dy)/2.0);
-	  if(dz > 0.0)
-	    s[2] = -(((length-1)*dz)/2.0);
-	}
-
-      for(i = 0; i < (length); i++)
-	{
-	  cv[i*4]   = s[0]+(double)i*dx;
-	  cv[i*4+1] = s[1]+(double)i*dy;
-	  cv[i*4+2] = s[2]+(double)i*dz;
-	  cv[i*4+3] = 1.0;
-	}
     }
 
   ay_nct_settype((ay_nurbcurve_object*)(o->refine));
