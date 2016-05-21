@@ -12410,7 +12410,8 @@ surfaces <ref id="revertut" name="Revert U Surface Tool"> and
 ICurve, ACurve, and ConcatNC objects from the selection.
 <tag/Operation/ The curves will be opened.
 For closed NCurve objects, the last point will be moved away from
-the first (multiple end points will be managed correctly).
+the first (multiple end points will be managed correctly),
+see also the image above.
 
 For periodic NURBS curves, the last <em/p/ points will be moved away
 from the first <em/p/ (where <em/p/ is the degree of the curve).
@@ -18433,10 +18434,13 @@ These abbreviated explanations were again taken from George W. Hart.
 <caption>X3dom NURBS Display</caption>
 </figure>
 <p>
-The script(s) <tt>"x3dom-nurbs-*.js"</tt> implement the
+The <tt>"x3dom-nurbs"</tt> script implements the
 <tt>&lt;NurbsPatchSurface&gt;</tt> and <tt>&lt;NurbsTrimmedSurface&gt;</tt>
 X3D NURBS nodes for x3dom (see <tt>http://www.x3dom.org/</tt>) in
 JavaScript.<newline>
+After loading of the scene into the web browser, the NURBS surfaces
+from these nodes are tessellated into <tt>&lt;IndexedTriangleSet&gt;</tt>
+nodes.
 This allows to directly publish NURBS
 models on the web without prior conversion to a polygonal representation
 which is cumbersome, inflexible, and leads to higher bandwidth consumption.
@@ -18561,10 +18565,20 @@ visible allowing easier judgment and adjustment of the tesselation quality.
 <sect3>Restrictions and Implementation Deficiencies
 <p><#if out=latex>&nbsp;<newline></#if>
 Due to memoization of surface points, parametric values must not
-exceed
+exceed:
+<#if out=latex>
 <eq>
-1,7976931348623157e308 / 10e10 = 1,7976931348623157e297
-</eq>.
+<fr><nu>1.7976931348623157<rf/&middot;/10<sup/308/</nu><de>10<rf/&middot;/10 <sup/10/</de></fr> = 1.7976931348623157<rf/&middot;/10<sup/297/
+</eq>
+</#if>
+<#if out=html>
+<eq>
+1,7976931348623157&middot;10<sup/308/ / 10&middot;10<sup/10/ = 1,7976931348623157&middot;10<sup/297/
+</eq>
+</#if>
+<#if out=txt>
+1.7976931348623157*10E297.
+</#if>
 
 Texture coordinates are always directly derived from the parametric values.
 
