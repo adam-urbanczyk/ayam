@@ -6190,11 +6190,11 @@ Box|No|Yes|NPatch<f/<sup/&lowast;//|No*<#if out=latex>@<hline></#if>
 The following parameters control the shape of the box:
 <itemize>
 <item><tt/"Width"/ is the width of the box (size of the box in
-direction of the X axis of the objects coordinate system).
+direction of the X-axis of the objects coordinate system).
 <item><tt/"Length"/ is the length of the box (size of the box in
-direction of the Z axis of the objects coordinate system).
+direction of the Z-axis of the objects coordinate system).
 <item><tt/"Height"/ is the height of the box (size of the box in
-direction of the Y axis of the objects coordinate system).
+direction of the Y-axis of the objects coordinate system).
 </itemize>
 
 <sect3>Conversion Support
@@ -6232,9 +6232,9 @@ be automatically sealed (closed by matching cap surfaces).<newline>
 Only when this option is enabled, the sphere
 may be used in CSG operations safely.
 <item><tt/"Radius"/ is the radius of the sphere, default is 1.
-<item><tt/"ZMin"/ is the lower limit of the sphere on the Z axis,
+<item><tt/"ZMin"/ is the lower limit of the sphere on the Z-axis,
 default is -1.
-<item><tt/"ZMax"/ is the upper limit of the sphere on the Z axis,
+<item><tt/"ZMax"/ is the upper limit of the sphere on the Z-axis,
 default is 1.
 <item><tt/"ThetaMax"/ is the sweeping angle of the sphere in degrees, default
 is 360.
@@ -6283,7 +6283,7 @@ Disk|No|Yes|NPatch|No*<#if out=latex>@<hline></#if>
 The following parameters control the shape of the disk:
 <itemize>
 <item><tt/"Radius"/ is the radius of the disk, default is 1.
-<item><tt/"ZMin"/ displaces the disk along the Z axis, default is 0.
+<item><tt/"ZMin"/ displaces the disk along the Z-axis, default is 0.
 <item><tt/"ThetaMax"/ is the sweeping angle of the disk in degrees,
 default is 360.
 </itemize>
@@ -6412,7 +6412,7 @@ and two polygons.
 A torus, centered at the origin of the object coordinate system.
 A torus is a donut like shape, that results from sweeping
 a small circle (that has been displaced along X sufficiently)
-around the Z axis.
+around the Z-axis.
 <p>
 The following table briefly lists some capabilities of the Torus object.
 <p>
@@ -6433,7 +6433,7 @@ be automatically sealed (closed by matching cap surfaces).<newline>
 Only when this option is enabled, the torus
 may be used in CSG operations safely.
 <item><tt/"MajorRad"/ is the radius of the torus, measured
-from the Z axis to the center of the swept smaller circle, default is 0.75.
+from the Z-axis to the center of the swept smaller circle, default is 0.75.
 <item><tt/"MinorRad"/ is the radius of the swept circle, default is 0.25.
 <item><tt/"PhiMin"/ determines an angle to limit the swept circle,
 default is 0.
@@ -6490,9 +6490,9 @@ Only when this option is enabled, the paraboloid
 may be used in CSG operations safely.
 <item><tt/"RMax"/ is the radius of the paraboloid at a Z of <tt/"ZMax"/,
 the base of the paraboloid surface, default is 1.
-<item><tt/"ZMin"/ limits the paraboloid surface on the Z axis,
+<item><tt/"ZMin"/ limits the paraboloid surface on the Z-axis,
 must be positive, default is 0.
-<item><tt/"ZMax"/ limits the paraboloid surface on the Z axis and
+<item><tt/"ZMax"/ limits the paraboloid surface on the Z-axis and
 determines the Z location of the base, must be positive, default is 1.
 <item><tt/"ThetaMax"/ is the sweeping angle of the paraboloid in degrees,
 default is 360.
@@ -6525,7 +6525,7 @@ CSG hierarchy of at most one paraboloid, two disks, and two bicubic patches.
 <p>
 A hyperboloid, centered at the origin of the object coordinate system.
 The shape of the hyperboloid will be created by sweeping a line specified
-by two points in space around the Z axis. Thus, disk, cylinder, and cone are
+by two points in space around the Z-axis. Thus, disk, cylinder, and cone are
 special cases of the hyperboloid.
 <p>
 The following table briefly lists some capabilities of the Hyperboloid object.
@@ -7988,8 +7988,8 @@ The Revolve object forms a surface of revolution from a NURBS curve.
 The Revolve object has the generating NURBS curve as child object
 and watches its changes and adapts to it automagically.
 <p>
-The axis of revolution is always the Y axis.
-The parameter curve should be defined in the XY plane.
+The axis of revolution is always the Y-axis.
+The parameter curve should be defined in the XY-plane.
 If not, the curve will be projected to this plane before revolving.
 <p>
 The following table briefly lists some capabilities of the Revolve object.
@@ -8110,7 +8110,7 @@ with weights!
 <p>
 The sharp corners between caps and extrusion may be beveled.
 <p>
-The axis of the extrusion is always the Z axis.
+The axis of the extrusion is always the Z-axis.
 The parameter curves should be defined in the XY plane.
 If not, they will be squashed down to this plane.
 See section
@@ -8237,9 +8237,9 @@ the same set of tags.<footnote>Since 1.20.</footnote>
 </figure>
 <p>
 The Swing object forms a surface that results from rotating a NURBS curve
-(cross section or profile) around an axis while
-scaling it according to a second NURBS curve (trajectory or
-path).<footnote>Since 1.14.</footnote><newline>
+(called <em/cross section/ or <em/profile/) around an axis while
+scaling it according to a second NURBS curve (called <em/trajectory/ or
+<em/path/).<footnote>Since 1.14.</footnote><newline>
 This process is sometimes also called <em>rotational sweep</em>.
 <p>
 The Swing object has the generating NURBS curves as child objects
@@ -8254,7 +8254,7 @@ The object hierarchy of a Swing object, thus, looks like this:
 </verb></tscreen>
 <p>
 The swing operation will occur around the Y-axis, i.e.~the
-trajectory should be defined in the XZ plane.
+trajectory should be defined in the XZ-plane.
 <p>
 The cross section curve should be defined in the YZ-plane and the
 trajectory should start here.
@@ -8279,6 +8279,7 @@ Swing|NCurve<f/<sup/&lowast;//|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline><
 <caption>Swing Object Capabilities</caption>
 </table>
 
+<#if out=latex><x/newpage/</#if>
 <sect3>SwingAttr Property<label id="swingattrprop">
 <p><#if out=latex>&nbsp;<newline></#if>
 The swung surface is completely controlled by the parameter curves.
@@ -8342,10 +8343,11 @@ the same set of tags.<footnote>Since 1.20.</footnote>
 </figure>
 <p>
 The Sweep object forms a surface that results from moving a NURBS curve
-(cross section or profile) along a second NURBS curve (trajectory or path).
+(called <em/cross section/ or <em/profile/) along a second NURBS curve
+(called <em/trajectory/ or <em/path/).
 The cross section may be scaled while sweeping using a third curve, the
 scaling function. Swept surfaces may be closed in the direction of the
-trajectory and, since Ayam 1.10, they may even be periodic.
+trajectory and they may also be periodic.<footnote>Since 1.10.</footnote>
 <p>
 The Sweep object has the generating NURBS curves as child objects
 and watches their movements and adapts to them automagically.
@@ -8429,6 +8431,7 @@ Sweep|NCurve<f/<sup/&lowast;//|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline><
 <caption>Sweep Object Capabilities</caption>
 </table>
 
+<#if out=latex><x/newpage/</#if>
 <sect3>SweepAttr Property<label id="swp"><label id="sweepattrprop">
 <p><#if out=latex>&nbsp;<newline></#if>
 The <tt/"Type"/ attribute controls whether the
@@ -8497,6 +8500,7 @@ the Sweep object.
 <caption>Sweep Parameterisation Examples</caption>
 </table>
 
+<#if out=latex><x/newpage/</#if>
 <sect3>Caps and Bevels
 <p><#if out=latex>&nbsp;<newline></#if>
 The Sweep object supports the standard caps as lined out in section
@@ -13042,7 +13046,7 @@ These tools create parametric surface objects.
 <descrip>
 <tag/Arguments/ Radius.
 <tag/Operation/ The NURBSphere tool creates a half circle NURBS curve
-of given radius and revolves it about the Y axis thus forming a sphere.
+of given radius and revolves it about the Y-axis thus forming a sphere.
 <tag/Notes/ Due to the construction method, the NURBS surface is
 degenerate at the poles which can lead to shading artefacts (compare
 the image above).
@@ -14938,7 +14942,7 @@ crtNCircle &ndash; create NURBS circle:
  <item>Description: This command creates a circular NURBS curve
 with radius as defined via the <tt/-r/ option and arc as
 defined via the <tt/-a/ option. The curve always starts on the
-positive X axis. The radius defaults to 1.0 and
+positive X-axis. The radius defaults to 1.0 and
 the arc to 360.0. The arc option supports negative values.
 <p>
 See also section <ref id="ncirct" name="NURB Circle Tool">.
@@ -14954,7 +14958,7 @@ crtClosedBS &ndash; create closed (circular) B-Spline:
  <item>Description: This command creates a circular B-Spline curve
 with desired number of sections (defaults to 6), order (defaults to 4),
 arc (defaults to 360.0, negative values are allowed), and
-radius (defaults to 1.0). The curve always starts on the positive X axis.
+radius (defaults to 1.0). The curve always starts on the positive X-axis.
 <p>
 See also section <ref id="cbspt" name="Circular B-Spline Tool">.
 </itemize>
@@ -15426,8 +15430,8 @@ movOb &ndash; move objects:
  <item>Synopsis: <tt/"movOb dx dy dz"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Move the selected object(s) by <tt/dx/ in direction of the
-objects X axis, by <tt/dy/ in direction of the objects Y axis, and by
-<tt/dz/ in direction of the objects Z axis.
+objects X-axis, by <tt/dy/ in direction of the objects Y-axis, and by
+<tt/dz/ in direction of the objects Z-axis.
 </itemize>
 
 <p>
@@ -15439,8 +15443,8 @@ rotOb &ndash; rotate objects:
  <item>Synopsis: <tt/"rotOb dx dy dz"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Rotate the selected object(s) by <tt/dx/ degrees around the
-objects X axis, then by <tt/dy/ degrees around objects Y axis, and finally by
-<tt/dz/ degrees around the objects Z axis. Note the order of the rotations.
+objects X-axis, then by <tt/dy/ degrees around objects Y-axis, and finally by
+<tt/dz/ degrees around the objects Z-axis. Note the order of the rotations.
 </itemize>
 
 <p>
@@ -15452,9 +15456,9 @@ scalOb &ndash; scale objects:
  <item>Synopsis: <tt/"scalOb dx dy dz"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Scale the selected object(s) by a factor of <tt/dx/ in
-direction of the objects X axis, by a factor of <tt/dy/ in
-direction of the objects Y axis, and by a factor of <tt/dz/ in
-direction of the objects Z axis.
+direction of the objects X-axis, by a factor of <tt/dy/ in
+direction of the objects Y-axis, and by a factor of <tt/dz/ in
+direction of the objects Z-axis.
 <item>Note: A scale factor of zero is generally a bad idea and thus will
 be changed to 1.0 silently.
 </itemize>
@@ -15468,8 +15472,8 @@ movPnts &ndash; move selected points:
  <item>Synopsis: <tt/"movPnts dx dy dz"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Move the selected points by <tt/dx/ in direction of the
-objects X axis, by <tt/dy/ in direction of the objects Y axis, and by
-<tt/dz/ in direction of the objects Z axis.
+objects X-axis, by <tt/dy/ in direction of the objects Y-axis, and by
+<tt/dz/ in direction of the objects Z-axis.
 </itemize>
 
 <p>
@@ -15481,8 +15485,8 @@ rotPnts &ndash; rotate selected points:
  <item>Synopsis: <tt/"rotPnts dx dy dz"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Rotate the selected points by <tt/dx/ degrees around the
-objects X axis, then by <tt/dy/ degrees around objects Y axis, and finally
-by <tt/dz/ degrees around the objects Z axis. Note the order of the rotations.
+objects X-axis, then by <tt/dy/ degrees around objects Y-axis, and finally
+by <tt/dz/ degrees around the objects Z-axis. Note the order of the rotations.
 </itemize>
 
 <p>
@@ -15494,9 +15498,9 @@ scalPnts &ndash; scale selected points:
  <item>Synopsis: <tt/"scalPnts dx dy dz"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Scale the selected points by a factor of <tt/dx/ in
-direction of the objects X axis, by a factor of <tt/dy/ in
-direction of the objects Y axis, and by a factor of <tt/dz/ in
-direction of the objects Z axis.
+direction of the objects X-axis, by a factor of <tt/dy/ in
+direction of the objects Y-axis, and by a factor of <tt/dz/ in
+direction of the objects Z-axis.
 <item>Note: A scale factor of zero is generally a bad idea and thus will
 be changed to 1.0 silently.
 </itemize>
@@ -20478,7 +20482,7 @@ primitives:
 <item><tt>"WriteMaterials"</tt>: controls whether appearance and
 material nodes should be exported for each shape;
 <item><tt>"ResolveInstances"</tt>: controls whether instance objects should
-be resolved to normal objects or exported as DEF/USE pairs, note that no
+be resolved to normal objects or exported as DEF/USE pairs. Note, that no
 attempt is made to detect whether the master objects (the DEFs) will be
 exported for all exported instances (USE); this may happen especially in
 conjunction with the X3D export options <tt>"WriteSelected"</tt> or
@@ -20492,8 +20496,8 @@ objects in the Ayam scene to be put in CADLayer nodes;
 <item><tt>"WriteX3dom"</tt>: toggles X3DOM-export mode. If this option is
 enabled, the X3D export will 
 <enum>
-<item>first read a XHTML template file (named
-<tt/"x3dom-template.xhtml"/),
+<item>first read a XHTML template file from the export target directory
+(named <tt/"x3dom-template.xhtml"/),
 <item>then inject the scene to be exported into the
 X3D <tt/"&lt;Scene&gt;"/-tag of the template (already present child
 elements of this tag will be preserved),
