@@ -9988,10 +9988,19 @@ the same set of tags.<footnote>Since 1.20.</footnote>
 
 <sect2>Trim Object<label id="trimobj">
 <p>
+<figure loc="ht">
+<eps file="pics/trimo.ps" height="5cm">
+<img src="pics/trimo.gif">
+<caption>Trimmed Swing Object Example</caption>
+</figure>
+<p>
 The Trim object may be used in hierarchies
 of tool objects to trim NURBS patch providing objects otherwise
 unavailable to trimming like e.g.~a Revolve
 object.<footnote>Since 1.16.</footnote>
+<p>
+See also the image above which depicts the swung surface example
+further trimmed by a Trim object.
 <p>
 The first child of the Trim object is the NURBS patch providing object
 and the second object is the trim curve (defined in the parametric
@@ -10022,6 +10031,8 @@ Trim|NPatch&thinsp;/&thinsp;NCurve<f/<sup/+///&thinsp;Level<f/<sup/+//|Yes|NPatc
 </tabular>
 <caption>Trim Object Capabilities</caption>
 </table>
+
+<#if out=latex><x/newpage/</#if>
 
 <sect3>TrimAttrib Property<label id="trimp"><label id="trimattrprop">
 <p><#if out=latex>&nbsp;<newline></#if>
@@ -10262,6 +10273,10 @@ that are embedded in the Script objects themselves.
 Those small embedded scripts may employ functionality from Tcl and
 the Tcl scripting interface of Ayam
 (see also section <ref id="script" name="Scripting Interface">).
+See also the image above, depicting a simple example script object
+that creates a NURBS curve and puts the control points of the curve
+in a circle in the XY-plane while continuously offsetting in Z so
+that a spiral forms. This example is also distributed with Ayam.
 <p>
 Script objects may also use arbitrary, plugin provided,
 scripting languages, like JavaScript, provided by the
