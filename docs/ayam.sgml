@@ -10248,6 +10248,12 @@ mechanism.
 
 <sect2>Script Object<label id="scriptobj">
 <p>
+<figure loc="ht">
+<eps file="pics/script.ps" height="5cm">
+<img src="pics/script.gif">
+<caption>Script Object Example</caption>
+</figure>
+<p>
 Script objects are the most flexible object type of Ayam.
 They may be used to create new objects, modify existing objects,
 or realise mechanisms like constraints using small scripts
@@ -10539,6 +10545,8 @@ in place conversion on the copy.
 <p><#if out=latex>&nbsp;<newline></#if>
 Script objects will be exported to RIB files as the objects
 they create/modify.
+
+<#if out=latex><x/newpage/</#if>
 
 <sect3>Script Object Examples<label id="scriptobjex">
 <p><#if out=latex>&nbsp;<newline></#if>
