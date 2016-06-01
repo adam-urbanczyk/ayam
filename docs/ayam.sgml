@@ -4341,26 +4341,27 @@ Select Boundary|<tt/&lt;b&gt;/|
 <p>
 Normally, all editing takes place in world space and the input
 plane of all modelling actions is constrained to the world
-XY-, ZY-, or XZ-plane (depending on the type of view used).
+XY-, ZY-, or XZ-plane (depending on the type of the
+view &ndash; <tt/"Front"/, <tt/"Side"/, or <tt/"Top"/ respectively).
 <p>
 However, if a view is <em>aligned</em> and switched to <em>local</em>,
-editing in local object space is possible. This means a planar parameter
-curve of a Skin object may be edited where both objects
-are rotated and scaled arbitrarily via their transformation attributes
-and the parameter curve is guaranteed to remain planar all the time.
-<p>
-In other words, the input plane of an aligned local view
-will match the XY-, ZY-, or XZ-plane of the local object space,
-depending on the type of the view (<tt/"Front"/, <tt/"Side"/, or <tt/"Top"/).
+editing in object space is possible. The input plane of an
+aligned local view will match the XY-, ZY-, or XZ-plane of the
+local object space, again depending on the type of the view.
 Editing and other modelling actions take place in that plane.
+<p>
+This means that in an aligned local view a planar parameter curve of a
+Skin object may be edited and the parameter curve is guaranteed to
+remain planar all the time, even if both objects, curve and Skin,
+are rotated and scaled arbitrarily via their transformation attributes.
 <p>
 Furthermore, grids will also act as if defined in local object space.
 Note that in contrast to their normal behaviour, grids can also be scaled
 differently in X-window and Y-window coordinates in aligned local views
 (if the local object space is deformed this way).
 <p>
-To make a view object local and aligned the object must be selected first.
-Now, pressing <tt/&lt;l&gt;/ <em>twice</em> makes the current view local
+To make a view <em/object-local/ and aligned the object must be selected first.
+Now, pressing <tt/&lt;l&gt;/ <em>twice</em> makes the current view object-local
 (in external views <tt/&lt;Ctrl+l&gt;/ can also be used).
 In Ayam versions prior to 1.18 the view also needed to be aligned
 manually using <tt/&lt;L&gt;/ (or <tt/&lt;Ctrl+a&gt;/ in external
@@ -4383,9 +4384,9 @@ images:
 </figure>
 <p>
 A Sweep object with a circular B-Spline curve as cross section (rotated
-about the y axis by 90 degrees using the transformation attributes) and a
+about the Y-axis by 90 degrees using the transformation attributes) and a
 straight standard curve as trajectory.
-The Sweep itself is rotated about the z axis by 30 degrees. The view is a
+The Sweep itself is rotated about the Z-axis by 30 degrees. The view is a
 front view, the cross section and trajectory are both selected.
 Note how inadequate the grid spacing would be to edit the trajectory curve
 (it is e.g.~near impossible to edit the curve and keep it straight).
@@ -4417,7 +4418,7 @@ trajectory, in fact it is perfectly aligned to the trajectory.
 Now the view is object-local and aligned to the first of the selected
 objects (the cross section curve); look at the modelling mode icon,
 it is now displaying a O in the lower right corner. As the selected
-cross section curve was rotated by 90 degrees around the y axis, the
+cross section curve was rotated by 90 degrees around the Y-axis, the
 front view now displays a circle. Note again the orientation
 of the Root object coordinate system. The cross section curve can now
 be edited safely, it will stay planar.
@@ -10570,7 +10571,7 @@ lines, otherwise unavailable in Ayam.
 <p>
 We start with a simple version, that first creates a NURBS curve object with
 two control points and then places the control points each at +/- half the
-desired line length on the x axis. Just copy the following code to the
+desired line length on the X-axis. Just copy the following code to the
 Script property of a Script object of type <tt/"Create"/, and activate it.
 <code>
 set length 1
@@ -17143,7 +17144,7 @@ withOb &ndash; execute a command on certain selected object(s):
  <item>Synopsis: <tt/"withOb index [do] command"/
  <item>Background: depends on command, Undo: depends on command, Safe: Yes
  <item>Description: Use this command to execute command on a
-single object (designated by index) from a multiple selection
+single object (designated by the zero based index) from a multiple selection
 without changing the selection state of any objects.
  <item>Example: <tt>"withOb 2 {movOb 0 1 0}"</tt> moves the third
 object from multiple selected objects. All objects stay selected.
@@ -22608,6 +22609,7 @@ Index:
 <item><ref id="impx3d" name="X3D Import">
 </itemize>
 <item>Importance Driven Rendering: <ref id="idr" name="IDR plugin">
+<item>Input Plane: <ref id="editlocal" name="Editing in Local Spaces">
 <item>Insert:
 <itemize>
 <item><ref id="mmfile" name="main menu entry">,
