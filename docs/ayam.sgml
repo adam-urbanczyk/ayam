@@ -8258,7 +8258,17 @@ The swing operation will occur around the Y-axis, i.e.~the
 trajectory should be defined in the XZ-plane.
 <p>
 The cross section curve should be defined in the YZ-plane and the
-trajectory should start here.
+trajectory should start here. See also the image below.
+<p>
+<figure loc="ht">
+<eps file="pics/swingc.ps" height="5cm">
+<img src="pics/swingc.gif">
+<caption>Swing Cross Section (l), Trajectory (r), Surface (blue)</caption>
+</figure>
+
+<#if out=latex><x/newpage/</#if>
+
+<p>
 Note that the swing create tool will automatically modify the
 control points of NCurve, ICurve, and ACurve objects so that they
 are defined in the proper plane. For all other object types, the
@@ -8280,7 +8290,6 @@ Swing|NCurve<f/<sup/&lowast;//|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline><
 <caption>Swing Object Capabilities</caption>
 </table>
 
-<#if out=latex><x/newpage/</#if>
 <sect3>SwingAttr Property<label id="swingattrprop">
 <p><#if out=latex>&nbsp;<newline></#if>
 The swung surface is completely controlled by the parameter curves.
@@ -8305,6 +8314,8 @@ The boundary names are:<newline>
 cross section, and<newline>
 <tt/Lower/ &ndash; curve formed by sweeping the end point of the
 cross section.
+
+<#if out=latex><x/newpage/</#if>
 
 <sect3>Conversion Support
 <p><#if out=latex>&nbsp;<newline></#if>
