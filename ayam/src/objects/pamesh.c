@@ -1442,51 +1442,17 @@ cleanup:
 int
 ay_pamesh_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
- int ay_status = AY_OK;
- char fname[] = "pamesh_providecb";
  ay_pamesh_object *pm = NULL;
- ay_object *new = NULL;
 
   if(!o)
     return AY_ENULL;
-
-  if(!result)
-    {
-      if(type == AY_IDNPATCH)
-	return AY_OK;
-      else
-	return AY_ERROR;
-    }
 
   pm = (ay_pamesh_object *) o->refine;
 
   if(!pm)
     return AY_ENULL;
 
-  if(type == AY_IDNPATCH)
-    {
-      if(!pm->npatch)
-	return AY_ERROR;
-
-      if(pm->npatch)
-	{
-	  ay_status = ay_object_copy(pm->npatch, &new);
-	  if(!new || ay_status)
-	    {
-	      ay_error(ay_status, fname, NULL);
-	      return AY_ERROR;
-	    }
-	  ay_trafo_copy(o, new);
-	} /* if */
-
-      /* copy some tags */
-      (void)ay_tag_copyselected(o, new, ay_prefs.converttags,
-				ay_prefs.converttagslen);
-
-      *result = new;
-    } /* if */
-
- return ay_status;
+ return ay_provide_nptoolobj(o, type, pm->npatch, pm->caps_and_bevels, result);
 } /* ay_pamesh_providecb */
 
 
@@ -1496,50 +1462,17 @@ ay_pamesh_providecb(ay_object *o, unsigned int type, ay_object **result)
 int
 ay_pamesh_convertcb(ay_object *o, int in_place)
 {
- int ay_status = AY_OK;
- ay_pamesh_object *pamesh = NULL;
- ay_object *new = NULL;
+ ay_pamesh_object *pm = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  pamesh = (ay_pamesh_object *) o->refine;
+  pm = (ay_pamesh_object *) o->refine;
 
-  if(!pamesh)
+  if(!pm)
     return AY_ENULL;
 
-  if(pamesh->npatch)
-    {
-      /* first, create new objects */
-      ay_status = ay_object_copy(pamesh->npatch, &new);
-      if(new)
-	{
-	  /* reset display mode and sampling tolerance
-	     of new patch to "global"? */
-	  if(ay_prefs.conv_reset_display)
-	    {
-	      ay_npt_resetdisplay(new);
-	    }
-
-	  ay_trafo_copy(o, new);
-
-	  /* copy some tags */
-	  (void)ay_tag_copyselected(o, new, ay_prefs.converttags,
-				    ay_prefs.converttagslen);
-
-	  /* second, link new objects, or replace old objects with them */
-	  if(!in_place)
-	    {
-	      ay_object_link(new);
-	    }
-	  else
-	    {
-	      ay_status = ay_object_replace(new, o);
-	    } /* if */
-	} /* if */
-    } /* if */
-
- return ay_status;
+ return ay_convert_nptoolobj(o, pm->npatch, pm->caps_and_bevels, in_place);
 } /* ay_pamesh_convertcb */
 
 
