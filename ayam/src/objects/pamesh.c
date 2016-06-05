@@ -121,6 +121,9 @@ ay_pamesh_deletecb(void *c)
   if(pamesh->npatch)
     (void)ay_object_delete(pamesh->npatch);
 
+  if(pamesh->caps_and_bevels)
+    (void)ay_object_deletemulti(pamesh->caps_and_bevels, AY_FALSE);
+
   free(pamesh);
 
  return AY_OK;
@@ -186,6 +189,7 @@ ay_pamesh_copycb(void *src, void **dst)
     }
 
   pamesh->npatch = NULL;
+  pamesh->caps_and_bevels = NULL;
 
   *dst = (void *)pamesh;
 
@@ -293,6 +297,7 @@ ay_pamesh_drawcb(struct Togl *togl, ay_object *o)
 {
  int display_mode = ay_prefs.np_display_mode;
  ay_pamesh_object *pamesh = NULL;
+ ay_object *p = NULL;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
 
   if(!o)
@@ -323,6 +328,16 @@ ay_pamesh_drawcb(struct Togl *togl, ay_object *o)
 	} /* if */
     } /* if */
 
+  if(pamesh->caps_and_bevels)
+    {
+      p = pamesh->caps_and_bevels;
+      while(p)
+	{
+	  ay_draw_object(togl, p, AY_TRUE);
+	  p = p->next;
+	}
+    }
+
  return AY_OK;
 } /* ay_pamesh_drawcb */
 
@@ -334,6 +349,7 @@ int
 ay_pamesh_shadecb(struct Togl *togl, ay_object *o)
 {
  ay_pamesh_object *pamesh;
+ ay_object *p = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -346,6 +362,16 @@ ay_pamesh_shadecb(struct Togl *togl, ay_object *o)
   if(pamesh->npatch)
     {
       ay_shade_object(togl, pamesh->npatch, AY_FALSE);
+    }
+
+  if(pamesh->caps_and_bevels)
+    {
+      p = pamesh->caps_and_bevels;
+      while(p)
+	{
+	  ay_shade_object(togl, p, AY_FALSE);
+	  p = p->next;
+	}
     }
 
  return AY_OK;
@@ -594,11 +620,10 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  char *n1 = "PatchMeshAttrData";
  char fname[] = "pamesh_setpropcb";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- ay_nurbpatch_object *np = NULL;
  ay_pamesh_object *pamesh = NULL;
  int new_close_u, new_width, new_btype_u, new_step_u;
  int new_close_v, new_height, new_btype_v, new_step_v;
- int new_type, j, update = AY_FALSE;
+ int new_type, i, j, update = AY_FALSE;
  double dtemp;
  char *man[] = {"_0","_1","_2","_3","_4","_5","_6","_7","_8","_9","_10","_11","_12","_13","_14","_15"};
 
@@ -610,36 +635,36 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!pamesh)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  toa = Tcl_NewStringObj(n1, -1);
+  ton = Tcl_NewStringObj(n1, -1);
 
-  Tcl_SetStringObj(ton,"Width",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &new_width);
+  Tcl_SetStringObj(ton, "Width", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &new_width);
 
-  Tcl_SetStringObj(ton,"Height",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &new_height);
+  Tcl_SetStringObj(ton, "Height", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &new_height);
 
-  Tcl_SetStringObj(ton,"Close_U",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &new_close_u);
+  Tcl_SetStringObj(ton, "Close_U", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &new_close_u);
 
-  Tcl_SetStringObj(ton,"Close_V",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &new_close_v);
+  Tcl_SetStringObj(ton, "Close_V", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &new_close_v);
 
-  Tcl_SetStringObj(ton,"Type",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &new_type);
+  Tcl_SetStringObj(ton, "Type", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &new_type);
 
-  Tcl_SetStringObj(ton,"BType_U",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &new_btype_u);
+  Tcl_SetStringObj(ton, "BType_U", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &new_btype_u);
 
-  Tcl_SetStringObj(ton,"BType_V",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &new_btype_v);
+  Tcl_SetStringObj(ton, "BType_V", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &new_btype_v);
 
   if((pamesh->width != new_width)||(pamesh->height != new_height)||
      (pamesh->btype_u != new_btype_u)||(pamesh->btype_v != new_btype_v)||
@@ -670,17 +695,18 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	} /* if */
       for(j = 0; j < 16; j++)
 	{
-	  Tcl_SetStringObj(ton,"Basis_U",-1);
-	  Tcl_AppendStringsToObj(ton,man[j],NULL);
+	  Tcl_SetStringObj(ton, "Basis_U", -1);
+	  Tcl_AppendStringsToObj(ton, man[j], NULL);
 	  to  = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
 			       TCL_GLOBAL_ONLY);
 	  Tcl_GetDoubleFromObj(interp, to, &dtemp);
 	  pamesh->ubasis[j] = dtemp;
 	} /* for */
 
-      Tcl_SetStringObj(ton,"Step_U",-1);
-      to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-      Tcl_GetIntFromObj(interp,to, &(new_step_u));
+      Tcl_SetStringObj(ton, "Step_U", -1);
+      to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
+			  TCL_GLOBAL_ONLY);
+      Tcl_GetIntFromObj(interp, to,  &(new_step_u));
       if(new_step_u <= 0)
 	pamesh->ustep = 1;
     }
@@ -705,17 +731,18 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	} /* if */
       for(j = 0; j < 16; j++)
 	{
-	  Tcl_SetStringObj(ton,"Basis_V",-1);
-	  Tcl_AppendStringsToObj(ton,man[j],NULL);
+	  Tcl_SetStringObj(ton, "Basis_V", -1);
+	  Tcl_AppendStringsToObj(ton, man[j], NULL);
 	  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
 			      TCL_GLOBAL_ONLY);
 	  Tcl_GetDoubleFromObj(interp, to, &dtemp);
 	  pamesh->vbasis[j] = dtemp;
 	} /* for */
 
-      Tcl_SetStringObj(ton,"Step_V",-1);
-      to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-      Tcl_GetIntFromObj(interp,to, &(new_step_v));
+      Tcl_SetStringObj(ton, "Step_V", -1);
+      to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
+			  TCL_GLOBAL_ONLY);
+      Tcl_GetIntFromObj(interp, to, &(new_step_v));
       if(new_step_v <= 0)
 	pamesh->vstep = 1;
     }
@@ -726,14 +753,35 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       pamesh->vbasis = NULL;
     } /* if */
 
-  Tcl_SetStringObj(ton,"Tolerance",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &(pamesh->glu_sampling_tolerance));
+  Tcl_SetStringObj(ton, "Tolerance", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(pamesh->glu_sampling_tolerance));
 
-  Tcl_SetStringObj(ton,"DisplayMode",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(pamesh->display_mode));
+  Tcl_SetStringObj(ton, "DisplayMode", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(pamesh->display_mode));
 
+  Tcl_SetStringObj(ton,"BevelsChanged",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &i);
+  if(i)
+    {
+      update = AY_TRUE;
+
+      to = Tcl_NewIntObj(0);
+      Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+    }
+
+  Tcl_SetStringObj(ton,"CapsChanged",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &i);
+  if(i)
+    {
+      update = AY_TRUE;
+
+      to = Tcl_NewIntObj(0);
+      Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+    }
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
@@ -754,7 +802,7 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 				      new_width);
 
       if(ay_status)
-	ay_error(AY_ERROR,fname,"Could not resize patch!");
+	ay_error(AY_ERROR, fname, "Could not resize patch!");
       else
 	pamesh->width = new_width;
     } /* if */
@@ -771,7 +819,7 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 				      new_height);
 
       if(ay_status)
-	ay_error(AY_ERROR,fname,"Could not resize patch!");
+	ay_error(AY_ERROR, fname, "Could not resize patch!");
       else
 	pamesh->height = new_height;
     } /* if */
@@ -783,14 +831,6 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       o->modified = AY_TRUE;
       (void)ay_notify_parent();
     }
-
-  /* set new display mode/sampling tolerance */
-  if(pamesh->npatch)
-    {
-      np = (ay_nurbpatch_object *)pamesh->npatch->refine;
-      np->display_mode = pamesh->display_mode;
-      np->glu_sampling_tolerance = pamesh->glu_sampling_tolerance;
-    } /* if */
 
  return AY_OK;
 } /* ay_pamesh_setpropcb */
@@ -816,40 +856,40 @@ ay_pamesh_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!pamesh)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  toa = Tcl_NewStringObj(n1, -1);
+  ton = Tcl_NewStringObj(n1, -1);
 
-  Tcl_SetStringObj(ton,"Width",-1);
+  Tcl_SetStringObj(ton, "Width", -1);
   to = Tcl_NewIntObj(pamesh->width);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Height",-1);
+  Tcl_SetStringObj(ton, "Height", -1);
   to = Tcl_NewIntObj(pamesh->height);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Close_U",-1);
+  Tcl_SetStringObj(ton, "Close_U", -1);
   to = Tcl_NewIntObj(pamesh->close_u);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Close_V",-1);
+  Tcl_SetStringObj(ton, "Close_V", -1);
   to = Tcl_NewIntObj(pamesh->close_v);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Type",-1);
+  Tcl_SetStringObj(ton, "Type", -1);
   to = Tcl_NewIntObj(pamesh->type);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"BType_U",-1);
+  Tcl_SetStringObj(ton, "BType_U", -1);
   to = Tcl_NewIntObj(pamesh->btype_u);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"BType_V",-1);
+  Tcl_SetStringObj(ton, "BType_V", -1);
   to = Tcl_NewIntObj(pamesh->btype_v);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
 
@@ -866,9 +906,9 @@ ay_pamesh_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 			     TCL_GLOBAL_ONLY);
 	    } /* for */
 	} /* if */
-      Tcl_SetStringObj(ton,"Step_U",-1);
+      Tcl_SetStringObj(ton, "Step_U", -1);
       to = Tcl_NewIntObj(pamesh->ustep);
-      Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+      Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		     TCL_GLOBAL_ONLY);
     } /* if */
 
@@ -885,28 +925,28 @@ ay_pamesh_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 			     TCL_GLOBAL_ONLY);
 	    } /* for */
 	} /* if */
-      Tcl_SetStringObj(ton,"Step_V",-1);
+      Tcl_SetStringObj(ton, "Step_V", -1);
       to = Tcl_NewIntObj(pamesh->vstep);
-      Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+      Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		     TCL_GLOBAL_ONLY);
     } /* if */
 
-  Tcl_SetStringObj(ton,"IsRat", -1);
+  Tcl_SetStringObj(ton, "IsRat", -1);
   if(pamesh->is_rat)
     to = Tcl_NewStringObj("yes", -1);
   else
     to = Tcl_NewStringObj("no", -1);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Tolerance",-1);
+  Tcl_SetStringObj(ton, "Tolerance", -1);
   to = Tcl_NewDoubleObj(pamesh->glu_sampling_tolerance);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"DisplayMode",-1);
+  Tcl_SetStringObj(ton, "DisplayMode", -1);
   to = Tcl_NewIntObj(pamesh->display_mode);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
@@ -1090,6 +1130,7 @@ ay_pamesh_wribcb(char *file, ay_object *o)
 {
  int ay_status = AY_OK;
  ay_pamesh_object *patch = NULL;
+ ay_object *p;
  RtInt nu, nv;
  RtToken uwrap = RI_NONPERIODIC, vwrap = RI_NONPERIODIC, type;
  RtInt ustep, vstep;
@@ -1265,6 +1306,13 @@ ay_pamesh_wribcb(char *file, ay_object *o)
 
   free(controls);
 
+  p = patch->caps_and_bevels;
+  while(p)
+    {
+      ay_wrib_object(file, p);
+      p = p->next;
+    }
+
  return ay_status;
 } /* ay_pamesh_wribcb */
 
@@ -1299,6 +1347,9 @@ ay_pamesh_notifycb(ay_object *o)
  int ay_status = AY_OK;
  ay_pamesh_object *pamesh = NULL;
  ay_nurbpatch_object *np = NULL;
+ ay_object *bevel = NULL, **nextcb;
+ ay_bparam bparams = {0};
+ ay_cparam cparams = {0};
 
   if(!o)
     return AY_ENULL;
@@ -1308,10 +1359,18 @@ ay_pamesh_notifycb(ay_object *o)
   if(!pamesh)
     return AY_ENULL;
 
+  nextcb = &(pamesh->caps_and_bevels);
+
   if(pamesh->npatch)
     {
       (void)ay_object_delete(pamesh->npatch);
       pamesh->npatch = NULL;
+    }
+
+  if(pamesh->caps_and_bevels)
+    {
+      (void)ay_object_deletemulti(pamesh->caps_and_bevels, AY_FALSE);
+      pamesh->caps_and_bevels = NULL;
     }
 
   if(ay_pmt_valid(pamesh))
@@ -1326,7 +1385,52 @@ ay_pamesh_notifycb(ay_object *o)
       np = (ay_nurbpatch_object *)pamesh->npatch->refine;
       np->display_mode = pamesh->display_mode;
       np->glu_sampling_tolerance = pamesh->glu_sampling_tolerance;
+
+      /* get bevel and cap parameters */
+      if(o->tags)
+	{
+	  ay_bevelt_parsetags(o->tags, &bparams);
+	  ay_capt_parsetags(o->tags, &cparams);
+	}
+
+      /* create/add caps */
+      if(cparams.has_caps)
+	{
+	  ay_status = ay_capt_addcaps(&cparams, &bparams, pamesh->npatch,
+				      nextcb);
+	  if(ay_status)
+	    goto cleanup;
+
+	  while(*nextcb)
+	    nextcb = &((*nextcb)->next);
+	}
+
+      /* create/add bevels */
+      if(bparams.has_bevels)
+	{
+	  bparams.dirs[1] = !bparams.dirs[1];
+	  bparams.dirs[2] = !bparams.dirs[2];
+	  bparams.radii[2] = -bparams.radii[2];
+
+	  ay_status = ay_bevelt_addbevels(&bparams, &cparams, pamesh->npatch,
+					  nextcb);
+	  if(ay_status)
+	    goto cleanup;
+	}
+
+      bevel = pamesh->caps_and_bevels;
+      while(bevel)
+	{
+	  ((ay_nurbpatch_object *)
+	   (bevel->refine))->glu_sampling_tolerance =
+	    pamesh->glu_sampling_tolerance;
+	  ((ay_nurbpatch_object *)
+	   (bevel->refine))->display_mode = pamesh->display_mode;
+	  bevel = bevel->next;
+	}
     } /* if */
+
+cleanup:
 
  return ay_status;
 } /* ay_pamesh_notifycb */

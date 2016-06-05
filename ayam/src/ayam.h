@@ -606,6 +606,9 @@ typedef struct ay_pamesh_object_s {
   /** cached NURBS patch representation */
   ay_object *npatch;
 
+  /** cached caps and bevel objects */
+  ay_object *caps_and_bevels;
+
   double glu_sampling_tolerance; /**< drawing quality */
   int display_mode; /**< drawing mode */
 } ay_pamesh_object;
@@ -2103,11 +2106,11 @@ extern char *ay_error_igntype;
 
 /** \name Version Strings and Numbers */
 /*@{*/
-#define AY_VERSIONSTR "1.23"
+#define AY_VERSIONSTR "1.24pre"
 #define AY_VERSIONSTRMI "0"
 
 #define AY_VERSIONMA 1
-#define AY_VERSION   23
+#define AY_VERSION   24
 #define AY_VERSIONMI 0
 /*@}*/
 
