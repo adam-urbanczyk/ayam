@@ -33,7 +33,7 @@ code example of 6 lines text (needs another 2 for the upper/lower lines)
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>23. Apr 2016
+<date>5. Jun 2016
 
 <abstract>
 This is the documentation of Ayam 1.24 &ndash; a free 3D modelling environment
@@ -7953,6 +7953,15 @@ outlines of the patch (OutlinePatch). The default setting
 (Global) means, that the global preference setting
 <tt>"Drawing/DisplayMode"</tt> should be used.
 </itemize>
+
+<sect3>Caps and Bevels
+<p><#if out=latex>&nbsp;<newline></#if>
+The PatchMesh object supports the standard caps as lined out in section
+<ref id="capsprop" name="Caps Property">
+and the standard bevels as lined out in section
+<ref id="bevelsprop" name="Bevels Property">
+.<footnote>Since 1.24.</footnote><newline>
+The boundary names are <tt/U0/, <tt/U1/, <tt/V0/, and <tt/V1/.
 
 <sect3>Conversion Support
 <p><#if out=latex>&nbsp;<newline></#if>
