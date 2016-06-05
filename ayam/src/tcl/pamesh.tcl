@@ -14,7 +14,7 @@ set PatchMesh 1
 proc init_PatchMesh { } {
 global ay PatchMesh_props PatchMeshAttr PatchMeshAttrData
 
-set PatchMesh_props { Transformations Attributes Material Tags PatchMeshAttr }
+set PatchMesh_props { Transformations Attributes Material Tags Bevels Caps PatchMeshAttr }
 
 array set PatchMeshAttr {
 arr   PatchMeshAttrData
@@ -30,6 +30,9 @@ BType_V 0
 Step_U 0
 Step_V 0
 DisplayMode 1
+BoundaryNames { "U0" "U1" "V0" "V1" }
+BevelsChanged 0
+CapsChanged 0
 }
 
 for {set i 0} {$i < 16} {incr i} {
