@@ -1669,7 +1669,7 @@ x3dio_readcone(scew_element *element)
 void
 x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
 {
- int ay_status = AY_OK;
+ int ay_status;
  char *tcname = ay_prefs.texcoordname;
  char *nname = ay_prefs.normalname;
  char *cname = ay_prefs.colorname;
@@ -1723,7 +1723,6 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
     {
       ay_status = x3dio_readindex(element, "texCoordIndex", AY_TRUE,
 				  &texcoordilen, &texcoordi);
-
     }
 
   /* process data */
@@ -11181,8 +11180,8 @@ x3dio_writetcmd(ClientData clientData, Tcl_Interp *interp,
   x3dio_writex3dom = AY_FALSE;
   x3dio_resolveinstances = AY_FALSE;
   x3dio_scalefactor = 1.0;
-  x3dio_x3domwidth = 0;
-  x3dio_x3domheight = 0;
+  x3dio_x3domwidth = ((ay_root_object*)ay_root->refine)->riopt->width;
+  x3dio_x3domheight = ((ay_root_object*)ay_root->refine)->riopt->height;
 
   while(i+1 < argc)
     {
