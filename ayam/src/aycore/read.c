@@ -183,145 +183,151 @@ ay_read_header(FILE *fileptr)
 
   ay_read_version = 1;
 
-  if(!strcmp(version,"1.23"))
+  if(!strcmp(version, "1.24"))
     {
       ay_read_version = 16;
       version_unknown = AY_FALSE;
     }
   else
-  if(!strcmp(version,"1.22"))
+  if(!strcmp(version, "1.23"))
     {
       ay_read_version = 16;
       version_unknown = AY_FALSE;
     }
   else
-  if(!strcmp(version,"1.21"))
+  if(!strcmp(version, "1.22"))
     {
       ay_read_version = 16;
       version_unknown = AY_FALSE;
     }
   else
-  if(!strcmp(version,"1.20"))
+  if(!strcmp(version, "1.21"))
+    {
+      ay_read_version = 16;
+      version_unknown = AY_FALSE;
+    }
+  else
+  if(!strcmp(version, "1.20"))
     {
       ay_read_version = 15;
       version_unknown = AY_FALSE;
     }
   else
-  if(!strcmp(version,"1.19"))
+  if(!strcmp(version, "1.19"))
     {
       ay_read_version = 14;
       version_unknown = AY_FALSE;
     }
   else
-  if(!strcmp(version,"1.18"))
+  if(!strcmp(version, "1.18"))
     {
       ay_read_version = 13;
       version_unknown = AY_FALSE;
     }
   else
-  if(!strcmp(version,"1.17"))
+  if(!strcmp(version, "1.17"))
     {
       ay_read_version = 13;
       version_unknown = AY_FALSE;
     }
   else
-  if(!strcmp(version,"1.16"))
+  if(!strcmp(version, "1.16"))
     {
       ay_read_version = 13;
       version_unknown = AY_FALSE;
     }
   else
-  if(!strcmp(version,"1.15"))
+  if(!strcmp(version, "1.15"))
     {
       ay_read_version = 12;
       version_unknown = AY_FALSE;
     }
   else
-  if(!strcmp(version,"1.14"))
+  if(!strcmp(version, "1.14"))
     {
       ay_read_version = 11;
       version_unknown = AY_FALSE;
     }
   else
-  if(!strcmp(version,"1.13"))
+  if(!strcmp(version, "1.13"))
     {
       ay_read_version = 10;
       version_unknown = AY_FALSE;
     }
   else
-  if(!strcmp(version,"1.12"))
+  if(!strcmp(version, "1.12"))
     {
       ay_read_version = 9;
       version_unknown = AY_FALSE;
     }
   else
-  if(!strcmp(version,"1.11"))
+  if(!strcmp(version, "1.11"))
     {
       ay_read_version = 9;
       version_unknown = AY_FALSE;
     }
   else
-  if(!strcmp(version,"1.10"))
+  if(!strcmp(version, "1.10"))
     {
       ay_read_version = 9;
       version_unknown = AY_FALSE;
     }
   else
-  if(!strcmp(version,"1.9"))
+  if(!strcmp(version, "1.9"))
     {
       ay_read_version = 8;
       version_unknown = AY_FALSE;
     }
   else
-  if(!strcmp(version,"1.8"))
+  if(!strcmp(version, "1.8"))
     {
       ay_read_version = 7;
       version_unknown = AY_FALSE;
     }
   else
-  if(!strcmp(version,"1.7"))
+  if(!strcmp(version, "1.7"))
     {
       ay_read_version = 6;
       version_unknown = AY_FALSE;
     }
   else
-  if(!strcmp(version,"1.6"))
+  if(!strcmp(version, "1.6"))
     {
       ay_read_version = 5;
       version_unknown = AY_FALSE;
     }
   else
-  if(!strcmp(version,"1.5"))
+  if(!strcmp(version, "1.5"))
     {
       ay_read_version = 4;
       version_unknown = AY_FALSE;
     }
   else
-  if(!strcmp(version,"1.4"))
+  if(!strcmp(version, "1.4"))
     {
       ay_read_version = 4;
       version_unknown = AY_FALSE;
     }
   else
-  if(!strcmp(version,"1.3"))
+  if(!strcmp(version, "1.3"))
     {
       ay_read_version = 3;
       version_unknown = AY_FALSE;
     }
   else
-  if(!strcmp(version,"1.2"))
+  if(!strcmp(version, "1.2"))
     {
       ay_read_version = 2;
       version_unknown = AY_FALSE;
     }
   else
-  if(!strcmp(version,"1.1"))
+  if(!strcmp(version, "1.1"))
     {
       ay_read_version = 1;
       version_unknown = AY_FALSE;
     }
   else
-  if(!strcmp(version,"1.0"))
+  if(!strcmp(version, "1.0"))
     {
       ay_read_version = 0;
       version_unknown = AY_FALSE;
@@ -351,34 +357,34 @@ ay_read_attributes(FILE *fileptr, ay_object *o)
   if(!o)
     return AY_ENULL;
 
-  fscanf(fileptr,"%d\n", &trafos);
+  fscanf(fileptr, "%d\n", &trafos);
 
   if(trafos)
     {
-      fscanf(fileptr,"%lg\n",&o->movx);
-      fscanf(fileptr,"%lg\n",&o->movy);
-      fscanf(fileptr,"%lg\n",&o->movz);
+      fscanf(fileptr, "%lg\n", &o->movx);
+      fscanf(fileptr, "%lg\n", &o->movy);
+      fscanf(fileptr, "%lg\n", &o->movz);
 
-      fscanf(fileptr,"%lg\n",&o->rotx);
-      fscanf(fileptr,"%lg\n",&o->roty);
-      fscanf(fileptr,"%lg\n",&o->rotz);
+      fscanf(fileptr, "%lg\n", &o->rotx);
+      fscanf(fileptr, "%lg\n", &o->roty);
+      fscanf(fileptr, "%lg\n", &o->rotz);
 
-      fscanf(fileptr,"%lg\n",&o->quat[0]);
-      fscanf(fileptr,"%lg\n",&o->quat[1]);
-      fscanf(fileptr,"%lg\n",&o->quat[2]);
-      fscanf(fileptr,"%lg\n",&o->quat[3]);
+      fscanf(fileptr, "%lg\n", &o->quat[0]);
+      fscanf(fileptr, "%lg\n", &o->quat[1]);
+      fscanf(fileptr, "%lg\n", &o->quat[2]);
+      fscanf(fileptr, "%lg\n", &o->quat[3]);
 
-      fscanf(fileptr,"%lg\n",&o->scalx);
-      fscanf(fileptr,"%lg\n",&o->scaly);
-      fscanf(fileptr,"%lg\n",&o->scalz);
+      fscanf(fileptr, "%lg\n", &o->scalx);
+      fscanf(fileptr, "%lg\n", &o->scaly);
+      fscanf(fileptr, "%lg\n", &o->scalz);
 
       ay_quat_norm(o->quat);
     }
 
-  fscanf(fileptr,"%d\n",&o->parent);
-  fscanf(fileptr,"%d\n",&o->inherit_trafos);
-  fscanf(fileptr,"%d\n",&o->hide);
-  fscanf(fileptr,"%d",&o->hide_children);
+  fscanf(fileptr, "%d\n", &o->parent);
+  fscanf(fileptr, "%d\n", &o->inherit_trafos);
+  fscanf(fileptr, "%d\n", &o->hide);
+  fscanf(fileptr, "%d", &o->hide_children);
   read = fgetc(fileptr);
   if(read == EOF)
     return AY_ERROR;
@@ -532,8 +538,8 @@ ay_read_shader(FILE *fileptr, ay_shader **result)
   if(ay_status)
     { free(shader); return ay_status; }
 
-  fscanf(fileptr,"%d\n", &(shader->type));
-  fscanf(fileptr,"%d\n", &argcount);
+  fscanf(fileptr, "%d\n", &(shader->type));
+  fscanf(fileptr, "%d\n", &argcount);
 
   prevargptr = &(shader->arg);
 
@@ -546,7 +552,7 @@ ay_read_shader(FILE *fileptr, ay_shader **result)
       if(ay_status)
 	{ free(sarg); goto cleanup;}
 
-      fscanf(fileptr,"%d", &(sarg->type));
+      fscanf(fileptr, "%d", &(sarg->type));
       read = fgetc(fileptr);
       if(read == EOF)
 	{ free(sarg->name); free(sarg); ay_status = AY_ERROR; goto cleanup; }
@@ -554,19 +560,19 @@ ay_read_shader(FILE *fileptr, ay_shader **result)
       switch(sarg->type)
 	{
 	case AY_SACOLOR:
-	  fscanf(fileptr,"%g\n", &((sarg->val).color[0]));
-	  fscanf(fileptr,"%g\n", &((sarg->val).color[1]));
-	  fscanf(fileptr,"%g\n", &((sarg->val).color[2]));
+	  fscanf(fileptr, "%g\n", &((sarg->val).color[0]));
+	  fscanf(fileptr, "%g\n", &((sarg->val).color[1]));
+	  fscanf(fileptr, "%g\n", &((sarg->val).color[2]));
 	  break;
 	case AY_SAVECTOR:
 	case AY_SANORMAL:
 	case AY_SAPOINT:
-	  fscanf(fileptr,"%g\n", &((sarg->val).point[0]));
-	  fscanf(fileptr,"%g\n", &((sarg->val).point[1]));
-	  fscanf(fileptr,"%g\n", &((sarg->val).point[2]));
+	  fscanf(fileptr, "%g\n", &((sarg->val).point[0]));
+	  fscanf(fileptr, "%g\n", &((sarg->val).point[1]));
+	  fscanf(fileptr, "%g\n", &((sarg->val).point[2]));
 	  break;
 	case AY_SASCALAR:
-	  fscanf(fileptr,"%g\n", &((sarg->val).scalar));
+	  fscanf(fileptr, "%g\n", &((sarg->val).scalar));
 	  break;
 	case AY_SASTRING:
 	  ay_status = ay_read_string(fileptr, &((sarg->val).string));
@@ -576,9 +582,9 @@ ay_read_shader(FILE *fileptr, ay_shader **result)
 	case AY_SAMATRIX:
 	  for(i = 0; i < 15; i++)
 	    {
-	      fscanf(fileptr,"%g ", &((sarg->val).matrix[i]));
+	      fscanf(fileptr, "%g ", &((sarg->val).matrix[i]));
 	    }
-	  fscanf(fileptr,"%g\n", &((sarg->val).matrix[15]));
+	  fscanf(fileptr, "%g\n", &((sarg->val).matrix[15]));
 	  break;
 	} /* switch */
 
@@ -789,7 +795,7 @@ ay_read_scene(Tcl_Interp *interp, char *filename, int insert)
   /* reading a root object will set the save_rootviews state to AY_TRUE */
   ay_prefs.save_rootviews = AY_FALSE;
 
-  if(!(fileptr = fopen(filename,"rb")))
+  if(!(fileptr = fopen(filename, "rb")))
     {
       ay_error(AY_EOPENFILE, fname, filename);
       ay_prefs.save_rootviews = old_save_rv;
