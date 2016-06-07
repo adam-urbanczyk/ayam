@@ -18,8 +18,8 @@ set Script_props { Attributes Tags ScriptAttr }
 
 array set ScriptAttr {
 arr   ScriptAttrData
-sproc setScriptp
-gproc getScriptp
+sproc script_set
+gproc script_get
 w     fScriptAttr
 
 }
@@ -148,7 +148,7 @@ return;
 
 
 # Tcl -> C
-proc setScriptp { } {
+proc script_set { } {
  global ay ScriptAttr ScriptAttrData
 
     set t $ay(pca).$ScriptAttr(w).tScript
@@ -162,10 +162,10 @@ proc setScriptp { } {
     setProp
 
 }
-# setScriptp
+# script_set
 
 # C -> Tcl
-proc getScriptp { } {
+proc script_get { } {
  global ay ScriptAttr ScriptAttrData
 
     set t $ay(pca).$ScriptAttr(w).tScript
@@ -190,7 +190,7 @@ proc getScriptp { } {
 
  return;
 }
-# getScriptp
+# script_get
 
 # script_disable:
 #  ask user for permission to disable all script objects loaded
@@ -230,9 +230,9 @@ plb_update
 
 # activate all script object scripts
 forAll -type script {
-    getScriptp
+    script_get
     set ::ScriptAttrData(Active) 1
-    setScriptp
+    script_set
 }
 
 # activate script tags by renaming all DBNS/DANS tags to BNS/ANS tags
