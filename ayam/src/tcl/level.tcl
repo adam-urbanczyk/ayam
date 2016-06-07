@@ -100,6 +100,8 @@ proc level_crt { objtype {crtargs "" } {keepsel 0} } {
 		$tree itemconfigure $n -fill black
 	    }
 
+	    update idletasks
+
 	    # select the nodes
 	    set nodes [$tree nodes $ay(CurrentLevel)]
 	    if { [llength $nodes] > 0 } {
