@@ -1,5 +1,5 @@
-[17. May 2016 CVS-Head:
-=======================
+[7. Jun 2016 CVS-Head:
+======================
 Bug Fixes:
 o added missing scripting interface commands to JavaScript and Lua scripting
   language plugins (SF 526)
@@ -8,6 +8,7 @@ o crash creating a bevel on a degenerate curve (SF 524)
 o conversion of tool objects without caps/bevels destroying TP/TC tags (SF 527)
 o trim curve coordinates for X3D export (SF 528)
 o crash when generating smooth normals (SF 529)
+o creating NCurve/NPatch objects with knot type chordal (SF 531)
 
 Modelling:
 o the create Sweep/Swing tools now rotate the parameter curves to the
@@ -26,6 +27,7 @@ o improved error checking of the "refine knots with" tools
 o improved suggested new knots of the "refine knots with" tools
 o setting the mark to the selected points center now establishes
   a temporary point selection of all points, if no points are selected
+o PatchMesh objects now support bevels and caps
 
 GUI:
 o added RIB-Export rendering option "AutoCloseUI" to automatically close
