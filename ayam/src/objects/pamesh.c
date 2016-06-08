@@ -761,26 +761,32 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &(pamesh->display_mode));
 
-  Tcl_SetStringObj(ton,"BevelsChanged",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &i);
-  if(i)
+  Tcl_SetStringObj(ton, "BevelsChanged", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  if(to)
     {
-      update = AY_TRUE;
-
-      to = Tcl_NewIntObj(0);
-      Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_GetIntFromObj(interp, to, &i);
+      if(i)
+	{
+	  update = AY_TRUE;
+	  to = Tcl_NewIntObj(0);
+	  Tcl_ObjSetVar2(interp, toa, ton, to,
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	}
     }
 
-  Tcl_SetStringObj(ton,"CapsChanged",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &i);
-  if(i)
+  Tcl_SetStringObj(ton, "CapsChanged", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  if(to)
     {
-      update = AY_TRUE;
-
-      to = Tcl_NewIntObj(0);
-      Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_GetIntFromObj(interp, to, &i);
+      if(i)
+	{
+	  update = AY_TRUE;
+	  to = Tcl_NewIntObj(0);
+	  Tcl_ObjSetVar2(interp, toa, ton, to,
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	}
     }
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
