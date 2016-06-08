@@ -167,17 +167,15 @@ puts $log "Testing default object callbacks...\n"
 # these types do not support getPnt (when empty):
 set nopnttypes ""
 lappend nopnttypes Revolve Extrude Sweep Swing Skin Birail1 Birail2 Gordon
-
 lappend nopnttypes Cap Bevel ExtrNC ExtrNP OffsetNC OffsetNP ConcatNC ConcatNP
-
 lappend nopnttypes Clone Mirror Script Text
 
 # these types do not support conversion (or flag errors upon conversion
 # attempts, when empty):
 set noconvtypes ""
 lappend noconvtypes Camera Light Material RiInc RiProc Select
-lappend noconvtypes Bevel Birail1 Birail2 ConcatNP Extrude OffsetNP Gordon
-lappend noconvtypes Skin Sweep Swing
+lappend noconvtypes Cap Bevel Birail1 Birail2 ConcatNP Extrude OffsetNP Gordon
+lappend noconvtypes Revolve Skin Sweep Swing Trim Text ExtrNP OffsetNC
 
 set view1 ""
 if { [winfo exists .fv.fViews.fview1.f3D.togl] } {
