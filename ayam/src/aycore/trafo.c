@@ -1544,7 +1544,7 @@ ay_trafo_identitymatrix(double *m)
 /** ay_trafo_isidentitymatrix:
  *  check transformation matrix \a m for identity
  *
- * \param[in,out] m matrix to process
+ * \param[in] m matrix to process
  *
  * \returns AY_TRUE if the matrix is a identity transformation, AY_FALSE else
  */
