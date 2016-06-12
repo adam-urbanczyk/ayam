@@ -1703,6 +1703,10 @@ void ay_trafo_decomposematrix(double *m, ay_object *o);
  */
 void ay_trafo_identitymatrix(double *m);
 
+/** check transformation matrix m for identity
+ */
+int ay_trafo_isidentitymatrix(double *m);
+
 /** add a translation to transformation matrix \a m
  */
 void ay_trafo_translatematrix(double x, double y, double z, double *m);
@@ -1925,7 +1929,7 @@ int ay_wrib_checklights(ay_object *o);
 
 /** export the lights to a RIB file
  */
-int ay_wrib_lights(char *file, ay_object *o);
+int ay_wrib_alllights(char *file);
 
 /** export the root object shaders to a RIB file
  */
