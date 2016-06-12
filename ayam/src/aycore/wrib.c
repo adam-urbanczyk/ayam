@@ -1275,8 +1275,14 @@ ay_wrib_checklights(ay_object *o)
 } /* ay_wrib_checklights */
 
 
-/* ay_wrib_lights:
+/** ay_wrib_lights:
+ * Recursively browse the scene hierarchy and export all light source
+ * objects found.
  *
+ * \param[in] file name of RIB file to be created
+ * \param[in] o current object to process
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_wrib_lights(char *file, ay_object *o)
@@ -1307,6 +1313,7 @@ ay_wrib_lights(char *file, ay_object *o)
     {
       if(o->down)
 	{
+	  /* XXXX ToDo: error handling */
 	  ay_clevel_add(o);
 	  ay_clevel_add(o->down);
 	  ay_wrib_lights(file, o->down);
@@ -1332,8 +1339,8 @@ ay_wrib_lights(char *file, ay_object *o)
 	    {
 	      RiTransformBegin();
 
-	      for(i=0;i<4;i++)
-		for(j=0;j<4;j++)
+	      for(i = 0; i < 4; i++)
+		for(j = 0; j < 4; j++)
 		  rim[i][j] = (RtFloat)m[i*4+j];
 
 	      RiConcatTransform(rim);
@@ -2239,7 +2246,7 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp *interp,
 /** ay_wrib_alllights:
  * Prepares a new current level list and writes all light sources.
  *
- * \param file name of RIB file to be created
+ * \param[in] file name of RIB file to be created
  *
  * \returns AY_OK on success, error code otherwise.
  */
