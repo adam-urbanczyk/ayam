@@ -1961,7 +1961,7 @@ idr_wrib_scene(char *file, char *image, double importance, int exclude,
 
   /* Lights! */
   RiArchiveRecord(RI_COMMENT, "Lights!");
-  ay_status = ay_wrib_lights(file, ay_root->next);
+  ay_status = ay_wrib_alllights(file);
 
   RiIdentity();
 

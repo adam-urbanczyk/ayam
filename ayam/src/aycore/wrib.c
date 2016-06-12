@@ -22,6 +22,7 @@ int ay_wrib_sm(char *file, char *image, int width, int height,
 
 void ay_wrib_getup(double *dir, double *up, double *roll);
 
+int ay_wrib_lights(char *file, ay_object *o);
 
 /* functions: */
 
@@ -1275,8 +1276,7 @@ ay_wrib_checklights(ay_object *o)
 
 
 /* ay_wrib_lights:
- *  XXXX Bug! The method of accumulating transformations via
- *  the OpenGL MODELVIEW_MATRIX stack fails, if no view is open!
+ *
  */
 int
 ay_wrib_lights(char *file, ay_object *o)
@@ -1297,7 +1297,7 @@ ay_wrib_lights(char *file, ay_object *o)
  size_t filenlen = 0;
  RtLightHandle light_handle;
  char arrname[] = "ayprefs", ccvarname[] = "SMChangeShaders";
- int changeshaders = AY_TRUE;
+ int has_trafo = AY_FALSE, changeshaders = AY_TRUE;
  const char *vstr = NULL;
 
   if(!o || !file)
@@ -1307,14 +1307,11 @@ ay_wrib_lights(char *file, ay_object *o)
     {
       if(o->down)
 	{
-	  glPushMatrix();
-	   glTranslated((GLdouble)o->movx, (GLdouble)o->movy,
-			(GLdouble)o->movz);
-	   ay_quat_torotmatrix(o->quat, m);
-	   glMultMatrixd((GLdouble *)m);
-	   glScaled (o->scalx, o->scaly, o->scalz);
-	   ay_wrib_lights(file, o->down);
-	  glPopMatrix();
+	  ay_clevel_add(o);
+	  ay_clevel_add(o->down);
+	  ay_wrib_lights(file, o->down);
+	  ay_clevel_del();
+	  ay_clevel_del();
 	}
 
       if((o->type == AY_IDLIGHT) && (!(ay_wrib_noexport(o))))
@@ -1328,23 +1325,20 @@ ay_wrib_lights(char *file, ay_object *o)
 	      ay_status = ay_riattr_wrib(o);
 	    }
 
-	  RiTransformBegin();
-
 	  /* write transformation */
-	  glPushMatrix();
-	   glTranslated((GLdouble)o->movx, (GLdouble)o->movy,
-			(GLdouble)o->movz);
-	   ay_quat_torotmatrix(o->quat, m);
-	   glMultMatrixd((GLdouble *)m);
-	   glScaled (o->scalx, o->scaly, o->scalz);
-	   glGetDoublev(GL_MODELVIEW_MATRIX, m);
-	  glPopMatrix();
+	  ay_trafo_identitymatrix(m);
+	  ay_trafo_getall(ay_currentlevel, o, m);
+	  if(!ay_trafo_isidentitymatrix(m))
+	    {
+	      RiTransformBegin();
 
-	  for(i=0;i<4;i++)
-	    for(j=0;j<4;j++)
-	      rim[i][j] = (RtFloat)m[i*4+j];
+	      for(i=0;i<4;i++)
+		for(j=0;j<4;j++)
+		  rim[i][j] = (RtFloat)m[i*4+j];
 
-	  RiConcatTransform(rim);
+	      RiConcatTransform(rim);
+	      has_trafo = AY_TRUE;
+	    }
 
 	  from[0] = (RtFloat)light->tfrom[0];
 	  from[1] = (RtFloat)light->tfrom[1];
@@ -1363,9 +1357,9 @@ ay_wrib_lights(char *file, ay_object *o)
 	    {
 	      RiDeclare((RtToken)"shadows", "string");
 	      if(light->shadows)
-		RiAttribute("light","shadows",(RtPointer)&onstr, RI_NULL);
+		RiAttribute("light", "shadows", (RtPointer)&onstr, RI_NULL);
 	      else
-		RiAttribute("light","shadows",(RtPointer)&offstr, RI_NULL);
+		RiAttribute("light", "shadows", (RtPointer)&offstr, RI_NULL);
 	    }
 
 	  if((ay_prefs.use_sm > 0) && light->use_sm && changeshaders)
@@ -1408,7 +1402,7 @@ ay_wrib_lights(char *file, ay_object *o)
 		    } /* if */
 
 		  if(light->samples > 1)
-		    RiAttribute("light","nsamples",
+		    RiAttribute("light", "nsamples",
 				(RtPointer)(&light->samples), RI_NULL);
 
 		  if(o->down && o->down->next)
@@ -1550,6 +1544,11 @@ ay_wrib_lights(char *file, ay_object *o)
 
 	  light->light_handle = light_handle;
 
+	  if(o->tags)
+	    {
+	      RiAttributeEnd();
+	    }
+
 	  /* immediately switch on all lights that are not local */
 	  switch(light->type)
 	    {
@@ -1570,12 +1569,11 @@ ay_wrib_lights(char *file, ay_object *o)
 	      break;
 	    } /* switch */
 
-	  RiTransformEnd();
-
-	  if(o->tags)
+	  if(has_trafo)
 	    {
-	      RiAttributeEnd();
+	      RiTransformEnd();
 	    }
+
 	} /* if */
       o = o->next;
     } /* while */
@@ -1821,7 +1819,7 @@ ay_wrib_scene(char *file, char *image, int temp, int rtf,
 
     /* Lights! */
     RiArchiveRecord(RI_COMMENT, "Lights!");
-    ay_status = ay_wrib_lights(file, ay_root->next);
+    ay_status = ay_wrib_alllights(file);
 
     RiIdentity();
 
@@ -2238,6 +2236,51 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_wrib_tcmd */
 
 
+/** ay_wrib_alllights:
+ * Prepares a new current level list and writes all light sources.
+ *
+ * \param file name of RIB file to be created
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_wrib_alllights(char *file)
+{
+ int ay_status = AY_OK;
+ ay_list_object *oldclevel, *lev;
+
+  oldclevel = ay_currentlevel;
+
+  ay_currentlevel = NULL;
+
+  if((ay_status = ay_clevel_add(NULL)))
+    {
+      goto cleanup;
+    }
+
+  if((ay_status = ay_clevel_add(ay_root)))
+    {
+      ay_clevel_del();
+      goto cleanup;
+    }
+
+  ay_status = ay_wrib_lights(file, ay_root->next);
+
+cleanup:
+
+  while(ay_currentlevel)
+    {
+      lev = ay_currentlevel->next;
+      free(ay_currentlevel);
+      ay_currentlevel = lev;
+    }
+
+  ay_currentlevel = oldclevel;
+
+ return ay_status;
+} /* ay_wrib_alllights */
+
+
 #ifdef AYENABLEPPREV
 /* ay_wrib_pprevdraw:
  *
@@ -2373,8 +2416,9 @@ ay_wrib_pprevdraw(ay_view_object *view)
 
   /* Lights! */
   RiArchiveRecord(RI_COMMENT, "Lights!");
-  ay_status = ay_wrib_lights(pprender, ay_root->next);
 
+  ay_status = ay_wrib_lights(pprender, ay_root->next);
+  ay_currentlevel = orig_clevel;
   RiIdentity();
 
   /* Action! */

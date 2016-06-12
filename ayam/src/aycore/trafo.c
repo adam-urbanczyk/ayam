@@ -1541,6 +1541,44 @@ ay_trafo_identitymatrix(double *m)
 } /* ay_trafo_identitymatrix */
 
 
+/** ay_trafo_isidentitymatrix:
+ *  check transformation matrix \a m for identity
+ *
+ * \param[in,out] m matrix to process
+ *
+ * \returns AY_TRUE if the matrix is a identity transformation, AY_FALSE else
+ */
+int
+ay_trafo_isidentitymatrix(double *m)
+{
+
+  if(!m)
+    return AY_FALSE;
+
+  /* row #1 */
+  if((fabs(m[0]-1.0) > AY_EPSILON) || (fabs(m[1]) > AY_EPSILON) ||
+     (fabs(m[2]) > AY_EPSILON) || (fabs(m[3]) > AY_EPSILON))
+    return AY_FALSE;
+
+  /* row #2 */
+  if((fabs(m[5]-1.0) > AY_EPSILON) || (fabs(m[4]) > AY_EPSILON) ||
+     (fabs(m[6]) > AY_EPSILON) || (fabs(m[7]) > AY_EPSILON))
+    return AY_FALSE;
+
+  /* row #3 */
+  if((fabs(m[10]-1.0) > AY_EPSILON) || (fabs(m[8]) > AY_EPSILON) ||
+     (fabs(m[9]) > AY_EPSILON) || (m[11]) > AY_EPSILON)
+    return AY_FALSE;
+
+  /* row #4 */
+  if((fabs(m[15]-1.0) > AY_EPSILON) || (fabs(m[12]) > AY_EPSILON) ||
+     (fabs(m[13]) > AY_EPSILON) || (fabs(m[14]) > AY_EPSILON))
+    return AY_FALSE;
+
+ return AY_TRUE;
+} /* ay_trafo_isidentitymatrix */
+
+
 /** ay_trafo_translatematrix:
  *  add a translation to the transformation matrix \a m
  *
