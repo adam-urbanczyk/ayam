@@ -18207,6 +18207,24 @@ allows to save the point selection to tags of type
 <p>
 After running the script, two new buttons appear in the toolbox
 that allow to save and restore the point selection respectively.
+See also the images below.
+<#if out=latex>
+<table loc="ht">
+<tabular ca="cc">
+<x>inlinegfx pics/ssp.png 0.7cm </x>|
+<x>inlinegfx pics/rsp.png 0.7cm </x>
+</tabular>
+<caption>Save/Restore Selected Points</caption>
+</table>
+</#if>
+<#if out=html>
+<figure loc="ht">
+<img src="pics/ssp.gif">&emsp;
+<img src="pics/rsp.gif">
+<caption>Save/Restore Selected Points</caption>
+</figure>
+</#if>
+<p>
 There are also two corresponding entries in the custom menu.
 <p>
 Note that the tags can be saved to scene files and also copied
