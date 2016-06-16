@@ -14,7 +14,8 @@
 
 /* clear.c - clear scenes */
 
-/* ay_clear_scene:
+/** ay_clear_scene:
+ * Clears the current scene.
  *
  */
 int
@@ -94,9 +95,12 @@ ay_clear_scene(void)
 } /* ay_clear_scene */
 
 
-/* ay_clear_scenetcmd:
+/** ay_clear_scenetcmd:
+ * Clears the current scene.
+ *
  *  Implements the \a newScene scripting interface command.
  *  See also the corresponding section in the \ayd{scnewscene}.
+ *
  *  \returns TCL_OK in any case.
  */
 int

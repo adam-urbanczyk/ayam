@@ -737,10 +737,12 @@ ay_instt_clearclipboard(ay_object *o)
 } /* ay_instt_clearclipboard */
 
 
-/* ay_instt_resolvetcmd:
+/** ay_instt_resolvetcmd:
  *  resolve selected instance object by copying its master object
+ *
  *  Implements the \a resolveIn scripting interface command.
  *  See also the corresponding section in the \ayd{scresolvein}.
+ *
  *  \returns TCL_OK in any case.
  */
 int
