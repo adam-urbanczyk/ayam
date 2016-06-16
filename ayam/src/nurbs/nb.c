@@ -1349,7 +1349,7 @@ ay_nb_FindSpan(int n, int p, double u, double *U)
       mid = (low+high)/2;
     } /* while */
 
- return(mid);
+ return mid;
 } /* ay_nb_FindSpan */
 
 
@@ -1367,6 +1367,18 @@ ay_nb_FindSpanMult(int n, int p, double u, double *U, int *s)
   if(u >= U[n])
     {
       mid = n;
+
+      l = mid;
+
+      while(l < n+p+1)
+	{
+	  l++;
+
+	  if(fabs(U[l]-u) > AY_EPSILON)
+	    break;
+	}
+
+      *s = l - mid;
     }
   else
     {
@@ -1391,25 +1403,26 @@ ay_nb_FindSpanMult(int n, int p, double u, double *U, int *s)
 	      mid = (low+high)/2;
 	    } /* while */
 	} /* if */
-    } /* if */
 
-  l = mid;
+      l = mid;
 
-  while(l >= 0)
-    {
-      /*
-      if(U[l] != u)
-	break;
-      */
+      while(l >= 0)
+	{
+	  /*
+	    if(U[l] != u)
+	    break;
+	  */
 
-      if(fabs(U[l]-u) > AY_EPSILON)
-	break;
+	  if(fabs(U[l]-u) > AY_EPSILON)
+	    break;
 
-      l--;
-    }
-  *s = mid - l;
+	  l--;
+	}
 
- return(mid);
+      *s = mid - l;
+   } /* if */
+
+ return mid;
 } /* ay_nb_FindSpanMult */
 
 
