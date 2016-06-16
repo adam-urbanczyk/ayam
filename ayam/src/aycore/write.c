@@ -22,8 +22,8 @@ ay_write_header(FILE *fileptr)
 {
  int ay_status = AY_OK;
 
-  fprintf(fileptr,"Ayam\n");
-  fprintf(fileptr,"%s\n", AY_VERSIONSTR);
+  fprintf(fileptr, "Ayam\n");
+  fprintf(fileptr, "%s\n", AY_VERSIONSTR);
 
  return ay_status;
 } /* ay_write_header */
@@ -46,41 +46,41 @@ ay_write_attributes(FILE *fileptr, ay_object *o)
      (o->quat[0] != 0.0) || (o->quat[1] != 0.0) || (o->quat[2] != 0.0) ||
      (o->quat[3] != 1.0))
     {
-      fprintf(fileptr,"1\n");
-      fprintf(fileptr,"%g\n",o->movx);
-      fprintf(fileptr,"%g\n",o->movy);
-      fprintf(fileptr,"%g\n",o->movz);
+      fprintf(fileptr, "1\n");
+      fprintf(fileptr, "%g\n", o->movx);
+      fprintf(fileptr, "%g\n", o->movy);
+      fprintf(fileptr, "%g\n", o->movz);
 
-      fprintf(fileptr,"%g\n",o->rotx);
-      fprintf(fileptr,"%g\n",o->roty);
-      fprintf(fileptr,"%g\n",o->rotz);
+      fprintf(fileptr, "%g\n", o->rotx);
+      fprintf(fileptr, "%g\n", o->roty);
+      fprintf(fileptr, "%g\n", o->rotz);
 
-      fprintf(fileptr,"%g\n",o->quat[0]);
-      fprintf(fileptr,"%g\n",o->quat[1]);
-      fprintf(fileptr,"%g\n",o->quat[2]);
-      fprintf(fileptr,"%g\n",o->quat[3]);
+      fprintf(fileptr, "%g\n", o->quat[0]);
+      fprintf(fileptr, "%g\n", o->quat[1]);
+      fprintf(fileptr, "%g\n", o->quat[2]);
+      fprintf(fileptr, "%g\n", o->quat[3]);
 
-      fprintf(fileptr,"%g\n",o->scalx);
-      fprintf(fileptr,"%g\n",o->scaly);
-      fprintf(fileptr,"%g\n",o->scalz);
+      fprintf(fileptr, "%g\n", o->scalx);
+      fprintf(fileptr, "%g\n", o->scaly);
+      fprintf(fileptr, "%g\n", o->scalz);
     }
   else
     {
-      fprintf(fileptr,"0\n");
+      fprintf(fileptr, "0\n");
     }
 
-  fprintf(fileptr,"%d\n", o->parent);
-  fprintf(fileptr,"%d\n", o->inherit_trafos);
-  fprintf(fileptr,"%d\n", o->hide);
-  fprintf(fileptr,"%d\n", o->hide_children);
+  fprintf(fileptr, "%d\n", o->parent);
+  fprintf(fileptr, "%d\n", o->inherit_trafos);
+  fprintf(fileptr, "%d\n", o->hide);
+  fprintf(fileptr, "%d\n", o->hide_children);
 
   if(o->name)
     {
-      fprintf(fileptr,"%s\n", o->name);
+      fprintf(fileptr, "%s\n", o->name);
     }
   else
     {
-      fprintf(fileptr,"\n");
+      fprintf(fileptr, "\n");
     }
 
  return ay_status;
@@ -111,7 +111,7 @@ ay_write_tags(FILE *fileptr, ay_object *o)
       tag = tag->next;
     }
 
-  fprintf(fileptr,"%d\n",tcount);
+  fprintf(fileptr, "%d\n", tcount);
 
   /* write tags */
   tag = o->tags;
@@ -119,9 +119,9 @@ ay_write_tags(FILE *fileptr, ay_object *o)
     {
       if(tag->name && tag->val && !tag->is_intern && !tag->is_binary)
 	{
-	  fprintf(fileptr,"%s\n",tag->name);
+	  fprintf(fileptr, "%s\n", tag->name);
 	  ay_tags_nltovt((char*)tag->val);
-	  fprintf(fileptr,"%s\n",(char*)tag->val);
+	  fprintf(fileptr, "%s\n", (char*)tag->val);
 	  ay_tags_vttonl((char*)tag->val);
 	}
       tag = tag->next;
@@ -143,8 +143,8 @@ ay_write_shader(FILE *fileptr, ay_shader *shader)
   if(!fileptr || !shader)
     return;
 
-  fprintf(fileptr,"%s\n",shader->name);
-  fprintf(fileptr,"%d\n",shader->type);
+  fprintf(fileptr, "%s\n", shader->name);
+  fprintf(fileptr, "%d\n", shader->type);
 
   /* count args */
   argcount = 0;
@@ -156,42 +156,42 @@ ay_write_shader(FILE *fileptr, ay_shader *shader)
     }
   sarg = shader->arg;
 
-  fprintf(fileptr,"%d\n",argcount);
+  fprintf(fileptr, "%d\n", argcount);
 
   while(sarg)
     {
-      fprintf(fileptr,"%s\n",sarg->name);
-      fprintf(fileptr,"%d\n",sarg->type);
+      fprintf(fileptr, "%s\n", sarg->name);
+      fprintf(fileptr, "%d\n", sarg->type);
 
       switch(sarg->type)
 	{
 	case AY_SACOLOR:
-	  fprintf(fileptr,"%g\n",sarg->val.color[0]);
-	  fprintf(fileptr,"%g\n",sarg->val.color[1]);
-	  fprintf(fileptr,"%g\n",sarg->val.color[2]);
+	  fprintf(fileptr, "%g\n", sarg->val.color[0]);
+	  fprintf(fileptr, "%g\n", sarg->val.color[1]);
+	  fprintf(fileptr, "%g\n", sarg->val.color[2]);
 	  break;
 	case AY_SAVECTOR:
 	case AY_SANORMAL:
 	case AY_SAPOINT:
-	  fprintf(fileptr,"%g\n",sarg->val.point[0]);
-	  fprintf(fileptr,"%g\n",sarg->val.point[1]);
-	  fprintf(fileptr,"%g\n",sarg->val.point[2]);
+	  fprintf(fileptr, "%g\n", sarg->val.point[0]);
+	  fprintf(fileptr, "%g\n", sarg->val.point[1]);
+	  fprintf(fileptr, "%g\n", sarg->val.point[2]);
 	  break;
 	case AY_SASCALAR:
-	  fprintf(fileptr,"%g\n",sarg->val.scalar);
+	  fprintf(fileptr, "%g\n", sarg->val.scalar);
 	  break;
 	case AY_SASTRING:
 	  if(sarg->val.string)
-	    fprintf(fileptr,"%s\n",sarg->val.string);
+	    fprintf(fileptr, "%s\n", sarg->val.string);
 	  else
-	    fprintf(fileptr,"\n");
+	    fprintf(fileptr, "\n");
 	  break;
 	case AY_SAMATRIX:
 	  for(i = 0; i < 16; i++)
 	    {
-	      fprintf(fileptr,"%g ",sarg->val.matrix[i]);
+	      fprintf(fileptr, "%g ", sarg->val.matrix[i]);
 	    }
-	  fprintf(fileptr,"\n");
+	  fprintf(fileptr, "\n");
 	  break;
 	}
       sarg = sarg->next;
@@ -221,20 +221,20 @@ ay_write_object(FILE *fileptr, ay_object *o)
 
   if(o->type < AY_IDLAST)
     {
-      fprintf(fileptr,"0\n%u\n", o->type);
+      fprintf(fileptr, "0\n%u\n", o->type);
     }
   else
     {
-      fprintf(fileptr,"1\n%s\n", ay_object_gettypename(o->type));
+      fprintf(fileptr, "1\n%s\n", ay_object_gettypename(o->type));
     }
 
   if(o->down && o->down->next)
     {
-      fprintf(fileptr,"1\n");
+      fprintf(fileptr, "1\n");
     }
   else
     {
-      fprintf(fileptr,"0\n");
+      fprintf(fileptr, "0\n");
     }
 
   ay_status = ay_write_attributes(fileptr, o);
