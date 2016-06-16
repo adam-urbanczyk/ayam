@@ -508,7 +508,6 @@ ay_read_tags(FILE *fileptr, ay_object *o)
 
       *next = tag;
       next = &(tag->next);
-
     } /* for */
 
  return ay_status;
@@ -736,7 +735,8 @@ ay_read_object(FILE *fileptr)
 	}
       else
 	{
-	  ay_error(ay_status, fname, "read callback failed");
+	  ay_error(ay_status, fname, NULL);
+	  ay_error(AY_ERROR, fname, "read callback failed");
 	  ay_object_delete(o);
 	  return ay_status;
 	} /* if */
@@ -867,8 +867,13 @@ ay_read_scene(Tcl_Interp *interp, char *filename, int insert)
 } /* ay_read_scene */
 
 
-/* ay_read_replacetcmd:
+/** ay_read_replacetcmd:
+ *  Replace the current scene with a scene from a scene file.
  *
+ *  Implements the \a replaceScene scripting interface command.
+ *  See also the corresponding section in the \ayd{screplacecene}.
+ *
+ *  \returns TCL_OK in any case.
  */
 int
 ay_read_replacetcmd(ClientData clientData, Tcl_Interp *interp,
@@ -904,8 +909,13 @@ ay_read_replacetcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_read_replacetcmd */
 
 
-/* ay_read_inserttcmd:
+/** ay_read_inserttcmd:
+ *  Insert a scene from a scene file into the current level.
  *
+ *  Implements the \a insertScene scripting interface command.
+ *  See also the corresponding section in the \ayd{scinsertscene}.
+ *
+ *  \returns TCL_OK in any case.
  */
 int
 ay_read_inserttcmd(ClientData clientData, Tcl_Interp *interp,
