@@ -871,6 +871,7 @@ if { $tcl_platform(platform) == "windows" } {
     set ayviewshortcuts(OSRight) "M1-Key-6"
 
     set ayviewshortcuts(Reset) "M1-Key-5"
+    set ayviewshortcuts(View1) "Multi_key"
 
     catch {unset sc scdir}
 } else {
