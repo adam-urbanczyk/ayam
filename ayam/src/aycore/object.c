@@ -1243,11 +1243,11 @@ ay_object_candeletelist(ay_list_object *l, ay_object *o)
  * _Recursively_ build up the full path name of an object in the scene
  * hierarchy.
  *
- * \param o object to search for
- * \param h hierarchy where to search for o (usually ay_root)
- * \param totallen helper variable, should be initialized with 0
- * \param found indicates wether o was found in c
- * \param result where to store the result
+ * \param[in] o object to search for
+ * \param[in] h hierarchy where to search for o (usually ay_root)
+ * \param[in,out] totallen helper variable, should be initialized with 0
+ * \param[in,out] found indicates wether o was found in c
+ * \param[in,out] result where to store the result
  *
  * \returns AY_OK on success, error code otherwise
  */

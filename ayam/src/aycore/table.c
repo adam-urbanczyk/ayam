@@ -39,9 +39,9 @@ ay_table_init(ay_ftable *table)
  * table, the table will grow automatically to accomodate for the
  * new index.
  *
- * \param table callback table to manipulate
- * \param item function pointer to set
- * \param index designates the slot in the table to manipulate
+ * \param[in,out] table callback table to manipulate
+ * \param[in] item function pointer to set
+ * \param[in] index designates the slot in the table to manipulate
  * 
  * \returns AY_OK on success, error code otherwise.
  */

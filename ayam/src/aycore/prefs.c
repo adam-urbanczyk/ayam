@@ -892,12 +892,12 @@ cleanup:
 /** ay_prefs_setcolor:
  * Helper to get a color value from Tcl.
  *
- * \param interp Tcl interpreter to use
- * \param arr string object with array name (ayprefs)
- * \param var base color variable name in arr (e.g. Light)
- * \param r where to store the red component
- * \param g where to store the green component
- * \param b where to store the blue component
+ * \param[in] interp Tcl interpreter to use
+ * \param[in] arr string object with array name (ayprefs)
+ * \param[in] var base color variable name in arr (e.g. Light)
+ * \param[in,out] r where to store the red component
+ * \param[in,out] g where to store the green component
+ * \param[in,out] b where to store the blue component
  */
 void
 ay_prefs_setcolor(Tcl_Interp *interp, Tcl_Obj *arr, char *var,

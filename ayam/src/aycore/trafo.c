@@ -622,7 +622,7 @@ ay_trafo_add(ay_object *src, ay_object *dst)
 /** ay_trafo_defaults:
  * Reset the transformation attributes of an object.
  *
- * \param o object to process
+ * \param[in,out] o object to process
  */
 void
 ay_trafo_defaults(ay_object *o)
