@@ -175,11 +175,11 @@ ay_interpol_trafos(double p, ay_object *o1, ay_object *o2, ay_object *ta)
 /** ay_interpol_ncurves:
  * Interpolate (tween) between two curves.
  *
- * \param p ratio of c1 and c2 (0.0 - 1.0)
- * \param c1 first NURBS curve
- * \param c2 second NURBS curve
- * \param ic interpolation control NURBS curve (may be NULL)
- * \param ta where to store the resulting curve
+ * \param[in] p ratio of c1 and c2 (0.0 - 1.0)
+ * \param[in] c1 first NURBS curve
+ * \param[in] c2 second NURBS curve
+ * \param[in] ic interpolation control NURBS curve (may be NULL)
+ * \param[in,out] ta where to store the resulting curve
  *
  * \returns AY_OK on success, error code otherwise
  */
@@ -307,6 +307,7 @@ cleanup:
 
 
 /** ay_interpol_curvestcmd:
+ * Interpolate/tween curves.
  *
  *  Implements the \a tweenNC scripting interface command.
  *  See also the corresponding section in the \ayd{sctweennc}.
@@ -370,10 +371,10 @@ ay_interpol_curvestcmd(ClientData clientData, Tcl_Interp *interp,
 /** ay_interpol_npatches:
  * Interpolate (tween) between two NURBS patches.
  *
- * \param r ratio of p1 and p2 (0.0 - 1.0)
- * \param p1 first NURBS patch
- * \param p2 second NURBS patch
- * \param ta where to store the resulting patch
+ * \param[in] r ratio of p1 and p2 (0.0 - 1.0)
+ * \param[in] p1 first NURBS patch
+ * \param[in] p2 second NURBS patch
+ * \param[in,out] ta where to store the resulting patch
  *
  * \returns AY_OK on success, error code otherwise
  */

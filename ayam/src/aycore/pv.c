@@ -1326,8 +1326,8 @@ ay_pv_count(ay_object *o)
  * Only works correctly if the new number of elements is smaller
  * than the current!
  *
- * \param buf value buffer of PV tag to fix
- * \param numelems correct number of elements
+ * \param[in,out] buf value buffer of PV tag to fix
+ * \param[in] numelems correct number of elements
  */
 void
 ay_pv_fixnumelems(char *buf, unsigned int numelems)

@@ -295,8 +295,8 @@ ay_shade_thinsil(int w, int h, unsigned char *src)
  * lighting setup and detect edges in the resulting z- and
  * color-buffer data.
  *
- * \param togl view to use
- * \param selection if AY_TRUE create the silhouettes for
+ * \param[in] togl view to use
+ * \param[in] selection if AY_TRUE create the silhouettes for
  *  the selected objects only
  *
  * \returns silhouette texture or NULL (in case of an error)

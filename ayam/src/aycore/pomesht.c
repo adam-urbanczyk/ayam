@@ -2471,12 +2471,12 @@ ay_pomesht_alignpoints(ay_point *p1, ay_point *p2, unsigned int p2len,
  *
  * Helper for ay_pomesht_connect().
  *
- * \param p1 first list (in array form)
- * \param p1len length of first list
- * \param p2 second list (in array form), will be aligned
- * \param p2len length of second list
- * \param result where to store the merged result (in array form)
- * \param resultlen length of result
+ * \param[in] p1 first list (in array form)
+ * \param[in] p1len length of first list
+ * \param[in] p2 second list (in array form), will be aligned
+ * \param[in] p2len length of second list
+ * \param[in,out] result where to store the merged result (in array form)
+ * \param[in,out] resultlen length of result
  *
  * \returns AY_OK on success, error code otherwise.
  */

@@ -174,7 +174,7 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp *interp,
  *  if \a val is -1, the hide state of the objects is toggled
  *
  * \param[in,out] o object(s) to process
- * \param val[in] if -1 the hide flag is toggled; if 0 the flag is cleared;
+ * \param[in] val if -1 the hide flag is toggled; if 0 the flag is cleared;
  * if 1 the flag is set
  */
 void
@@ -1502,11 +1502,11 @@ ay_tcmd_withobtcmd(ClientData clientData, Tcl_Interp *interp,
 /* ay_tcmd_getstring:
  *  get a copy of a string from a Tcl variable
  * 
- * \param interp Tcl interpreter to use, may be NULL to designate usage
+ * \param[in] interp Tcl interpreter to use, may be NULL to designate usage
  *  of the main interpreter
- * \param arr array part of variable name
- * \param var name part of variable name
- * \param result pointer where to store the new string
+ * \param[in] arr array part of variable name
+ * \param[in] var name part of variable name
+ * \param[in,out] result pointer where to store the new string
  * 
  * \returns AY_OK on success, error code otherwise.
  */
@@ -1554,8 +1554,8 @@ ay_tcmd_getstring(Tcl_Interp *interp, Tcl_Obj *arr, Tcl_Obj *var, char **result)
  *  convert string to unsigned int
  *  conversion errors will be reported to the user via ay_error()
  * 
- * \param str string to convert
- * \param uint pointer where to store the converted result
+ * \param[in] str string to convert
+ * \param[in,out] uint pointer where to store the converted result
  * 
  * \returns AY_OK on success, error code otherwise.
  */
@@ -1616,7 +1616,7 @@ ay_tcmd_getuint(char *str, unsigned int *uint)
  *  register a new scripting language
  * 
  * \param[in] name name of scripting language
- * \param result pointer where to store the corresponding index
+ * \param[in,out] result pointer where to store the corresponding index
  *  in the script evaluation callback table (using ay_table_additem())
  * 
  * \returns AY_OK on success, error code otherwise.

@@ -2863,9 +2863,9 @@ cleanup:
  *  split NURBCurve object \a src at parametric value \a u into two;
  *  modifies \a src, returns second curve in \a result
  *
- * \param src curve object to split
- * \param u parametric value at which to split
- * \param result where to store the second curve
+ * \param[in,out] src curve object to split
+ * \param[in] u parametric value at which to split
+ * \param[out] result where to store the second curve
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -3318,8 +3318,8 @@ ay_nct_crtncircle(double radius, ay_nurbcurve_object **curve)
 /** ay_nct_crtncirclearc
  * Create a circular arc of desired angle and radius.
  *
- * \param radius desired radius
- * \param arc desired angle
+ * \param[in] radius desired radius
+ * \param[in] arc desired angle
  * \param[in,out] curve pointer where to store the new curve object
  *
  * \returns AY_OK on success, error code otherwise.
