@@ -53,7 +53,6 @@ char *x3dio_mn_tagname = "mn";
 char *x3dio_xml_tagtype = NULL;
 char *x3dio_xml_tagname = "XML";
 
-
 char *x3dio_truestring = "true";
 char *x3dio_falsestring = "false";
 
@@ -240,7 +239,6 @@ int x3dio_readnurbsset(scew_element *element);
 /* Lights */
 int x3dio_readlight(scew_element *element, int type);
 
-
 /* non-geometric/scene structure */
 int x3dio_readviewpoint(scew_element *element);
 
@@ -266,7 +264,7 @@ int x3dio_readelement(scew_element *element);
 
 int x3dio_readtree(scew_tree *tree);
 
-/* Tcl interface */
+/* Tcl interface for import */
 int x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[]);
 
@@ -307,6 +305,8 @@ int x3dio_writeknots(scew_element *element, char *name,
 		     unsigned int length, double *value);
 
 int x3dio_writencurve(scew_element *element, int dim, ay_nurbcurve_object *c);
+
+int x3dio_writexmltag(int numtargets, scew_element **targets, ay_tag *tag);
 
 /* export callback functions */
 int x3dio_writencurveobj(scew_element *element, ay_object *o);
@@ -363,13 +363,12 @@ int x3dio_writeswingobj(scew_element *element, ay_object *o);
 int x3dio_writeextrudeobj(scew_element *element, ay_object *o);
 
 /* export */
-
 int x3dio_writeobject(scew_element *element, ay_object *o, int count);
 
 
 int x3dio_writescene(char *filename, int selected, int toplevellayers);
 
-/* Tcl interface */
+/* Tcl interface for export */
 int x3dio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[]);
 
@@ -1258,7 +1257,7 @@ x3dio_readnormals(scew_element *element, unsigned int *len, double **res)
 	} /* if */
     } /* while */
 
-  return AY_OK;
+ return AY_OK;
 } /* x3dio_readnormals */
 
 
@@ -7611,6 +7610,7 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
  scew_element *coord_element = NULL;
  scew_element *texcoord_element = NULL;
  scew_element *contour_element = NULL;
+ scew_element *targets[1] = {0};
 
   if(!element || !o || !o->refine)
     return AY_ENULL;
@@ -7734,6 +7734,18 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
 	  down = down->next;
 	} /* while */
     } /* if */
+
+  /* process xml data tags */
+  targets[0] = patch_element;
+  tag = o->tags;
+  while(tag)
+    {
+      if(tag->type == x3dio_xml_tagtype/*ay_xmldata_tagtype*/)
+	{
+	  x3dio_writexmltag(1, targets, tag);
+	}
+      tag = tag->next;
+    }
 
   /* write the caps and bevels */
   down = np->caps_and_bevels;
@@ -10154,19 +10166,11 @@ x3dio_writelight(scew_element *element, ay_object *o)
 int
 x3dio_writematerial(scew_element *shape_element, ay_object *o)
 {
- char fname[] = "x3dio_writematerial";
  scew_element *appearance_element = NULL;
  scew_element *material_element = NULL;
  char buf[128];
- unsigned int size;
+ scew_element *targets[2] = {0};
  ay_tag *tag = NULL;
- char errstr[256];
- scew_tree *tree = NULL;
- scew_parser *parser = NULL;
- scew_error errcode;
- enum XML_Error expat_code;
- scew_element *element = NULL, *child = NULL, *elementcopy = NULL, *target;
- scew_attribute *attribute = NULL, *attributecopy = NULL;
 
   if(!shape_element || !o)
     return AY_ENULL;
@@ -10191,68 +10195,102 @@ x3dio_writematerial(scew_element *shape_element, ay_object *o)
   if(o->mat)
     tag = o->mat->objptr->tags;
 
+  targets[0] = appearance_element;
+  targets[1] = material_element;
+
   while(tag)
     {
       if(tag->type == x3dio_xml_tagtype/*ay_xmldata_tagtype*/)
 	{
-	  parser = scew_parser_create();
-	  scew_parser_ignore_whitespaces(parser, 1);
-
-	  size = strlen(tag->val);
-	  if(scew_parser_load_buffer(parser, tag->val, size))
-	    {
-	      tree = scew_parser_tree(parser);
-	      element = scew_tree_root(tree);
-
-	      if(!strcmp(scew_element_name(material_element),
-			 scew_element_name(element)))
-		target = material_element;
-	      else
-		target = appearance_element;
-
-	      while((child = scew_element_next(element, child)))
-		{
-		  if((elementcopy = scew_element_copy(child)))
-		    {
-		      scew_element_add_elem(target, elementcopy);
-		    }
-		}
-	      while((attribute = scew_attribute_next(element, attribute)))
-		{
-		  if((attributecopy = scew_attribute_copy(attribute)))
-		    {
-		      scew_element_add_attr(target, attributecopy);
-		    }
-		}
-	    }
-	  else
-	    {
-	      errcode = scew_error_code();
-	      sprintf(errstr,
-		      "Unable to process xml data tag (error #%d: %s)\n",
-		      errcode,
-		      scew_error_string(errcode));
-	      ay_error(AY_ERROR, fname, errstr);
-	      if(errcode == scew_error_expat)
-		{
-		  expat_code = scew_error_expat_code(parser);
-		  sprintf(errstr, "Expat error #%d (line %d, column %d): %s\n",
-			  expat_code,
-			  scew_error_expat_line(parser),
-			  scew_error_expat_column(parser),
-			  scew_error_expat_string(expat_code));
-		  ay_error(AY_ERROR, fname, errstr);
-		}
-	    }
-
-	  scew_tree_free(tree);
-	  scew_parser_free(parser);
+	  x3dio_writexmltag(2, targets, tag);
 	}
       tag = tag->next;
     }
 
  return AY_OK;
 } /* x3dio_writematerial */
+
+
+/* x3dio_writexmltag:
+ *
+ */
+int
+x3dio_writexmltag(int numtargets, scew_element **targets, ay_tag *tag)
+{
+ char fname[] = "x3dio_writexmltag";
+ char errstr[256] = {0};
+ unsigned int size;
+ int i;
+ scew_tree *tree = NULL;
+ scew_parser *parser = NULL;
+ scew_error errcode;
+ enum XML_Error expat_code;
+ scew_element *element = NULL, *child = NULL, *elementcopy = NULL;
+ scew_element *target = NULL;
+ scew_attribute *attribute = NULL, *attributecopy = NULL;
+
+  parser = scew_parser_create();
+  scew_parser_ignore_whitespaces(parser, 1);
+
+  size = strlen(tag->val);
+  if(scew_parser_load_buffer(parser, tag->val, size))
+    {
+      tree = scew_parser_tree(parser);
+      element = scew_tree_root(tree);
+
+      for(i = 0; i < numtargets; i++)
+	{
+	  if(!strcmp(scew_element_name(targets[i]),
+		     scew_element_name(element)))
+	    {
+	      target = targets[i];
+	      break;
+	    }
+	}
+
+      if(!target)
+	return AY_ERROR;
+
+      while((child = scew_element_next(element, child)))
+	{
+	  if((elementcopy = scew_element_copy(child)))
+	    {
+	      scew_element_add_elem(target, elementcopy);
+	    }
+	}
+      while((attribute = scew_attribute_next(element, attribute)))
+	{
+	  if((attributecopy = scew_attribute_copy(attribute)))
+	    {
+	      scew_element_add_attr(target, attributecopy);
+	    }
+	}
+    }
+  else
+    {
+      errcode = scew_error_code();
+      snprintf(errstr, 255,
+	      "Unable to process xml data tag (error #%d: %s)\n",
+	      errcode,
+	      scew_error_string(errcode));
+      ay_error(AY_ERROR, fname, errstr);
+      if(errcode == scew_error_expat)
+	{
+	  expat_code = scew_error_expat_code(parser);
+	  snprintf(errstr, 255, "Expat error #%d (line %d, column %d): %s\n",
+		  expat_code,
+		  scew_error_expat_line(parser),
+		  scew_error_expat_column(parser),
+		  scew_error_expat_string(expat_code));
+	  ay_error(AY_ERROR, fname, errstr);
+	}
+    }
+
+  scew_tree_free(tree);
+  scew_parser_free(parser);
+
+ return AY_OK;
+} /* x3dio_writexmltag */
 
 
 /* x3dio_writerevolveobj:
@@ -10901,7 +10939,7 @@ x3dio_writescene(char *filename, int selected, int toplevellayers)
 {
  int ay_status = AY_OK;
  char fname[] = "x3dio_writescene";
- char buf[256];
+ char buf[256] = {0};
  ay_object *o = ay_root->next, *d = NULL;
  ay_list_object *sel = NULL;
  scew_error errcode;
@@ -10958,14 +10996,14 @@ x3dio_writescene(char *filename, int selected, int toplevellayers)
       if(!scew_parser_load_file(parser, x3dio_x3domtemplate))
 	{
 	  errcode = scew_error_code();
-	  sprintf(buf, "Unable to load file (error #%d: %s)\n",
+	  snprintf(buf, 255, "Unable to load file (error #%d: %s)\n",
 		  errcode,
 		  scew_error_string(errcode));
 	  ay_error(AY_ERROR, fname, buf);
 	  if(errcode == scew_error_expat)
 	    {
 	      expat_code = scew_error_expat_code(parser);
-	      sprintf(buf, "Expat error #%d (line %d, column %d): %s\n",
+	      snprintf(buf, 255, "Expat error #%d (line %d, column %d): %s\n",
 		      expat_code,
 		      scew_error_expat_line(parser),
 		      scew_error_expat_column(parser),
@@ -11161,7 +11199,6 @@ int
 x3dio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 		int argc, char *argv[])
 {
- int ay_status = AY_OK;
  int selected = AY_FALSE, toplevellayers = AY_FALSE, i = 2;
 
   /* check args */
@@ -11242,7 +11279,7 @@ x3dio_writetcmd(ClientData clientData, Tcl_Interp *interp,
       i += 2;
     } /* while */
 
-  ay_status = x3dio_writescene(argv[1], selected, toplevellayers);
+  (void)x3dio_writescene(argv[1], selected, toplevellayers);
 
  return TCL_OK;
 } /* x3dio_writetcmd */
@@ -11393,7 +11430,7 @@ X_Init(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "x3dioWrite", x3dio_writetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  /* reconnect potentially present XML */
+  /* reconnect potentially present XML tags */
   ay_tags_reconnect(ay_root, x3dio_xml_tagtype, x3dio_xml_tagname);
 
   ay_error(AY_EOUTPUT, fname, "Plugin 'x3dio' successfully loaded.");
