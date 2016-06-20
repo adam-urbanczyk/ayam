@@ -346,19 +346,19 @@ ay_wrib_rioptions(void)
   switch(riopt->FilterFunc)
     {
     case 1:
-      RiPixelFilter(RiTriangleFilter,(RtFloat)fw,(RtFloat)fh);
+      RiPixelFilter(RiTriangleFilter, (RtFloat)fw, (RtFloat)fh);
       break;
     case 2:
-      RiPixelFilter(RiCatmullRomFilter,(RtFloat)fw,(RtFloat)fh);
+      RiPixelFilter(RiCatmullRomFilter, (RtFloat)fw, (RtFloat)fh);
       break;
     case 3:
-      RiPixelFilter(RiBoxFilter,(RtFloat)fw,(RtFloat)fh);
+      RiPixelFilter(RiBoxFilter, (RtFloat)fw, (RtFloat)fh);
       break;
     case 4:
-      RiPixelFilter(RiSincFilter,(RtFloat)fw,(RtFloat)fh);
+      RiPixelFilter(RiSincFilter, (RtFloat)fw, (RtFloat)fh);
       break;
     default:
-      RiPixelFilter(RiGaussianFilter,(RtFloat)fw,(RtFloat)fh);
+      RiPixelFilter(RiGaussianFilter, (RtFloat)fw, (RtFloat)fh);
     }
 
   RiExposure((RtFloat)riopt->ExpGain, (RtFloat)riopt->ExpGamma);
@@ -446,7 +446,6 @@ ay_wrib_rioptions(void)
     RiOption((RtToken)"limits", (RtToken)"geommemory",
 	     &rtitemp, RI_NULL);
   }
-
 
  return ay_status;
 } /* ay_wrib_rioptions */
@@ -617,7 +616,6 @@ ay_wrib_object(char *file, ay_object *o)
 		  RiDeclare(parname, "string");
 		  RiAttribute("identifier", parname,
 			      (RtPointer)&o->name, RI_NULL);
-
 		}
 	      else
 		{
@@ -1030,7 +1028,6 @@ ay_wrib_displaytags(void)
 		  free(values);
 		  values = NULL;
 		}
-
 	    }
 	  else
 	    {
@@ -1474,13 +1471,13 @@ ay_wrib_lights(char *file, ay_object *o)
 	      break;
 
 	    case AY_LITSPOT:
-	      RiDeclare("intensity","float");
-	      RiDeclare("lightcolor","color");
-	      RiDeclare("from","point");
-	      RiDeclare("to","point");
-	      RiDeclare("coneangle","float");
-	      RiDeclare("conedeltaangle","float");
-	      RiDeclare("beamdistribution","float");
+	      RiDeclare("intensity", "float");
+	      RiDeclare("lightcolor", "color");
+	      RiDeclare("from", "point");
+	      RiDeclare("to", "point");
+	      RiDeclare("coneangle", "float");
+	      RiDeclare("conedeltaangle", "float");
+	      RiDeclare("beamdistribution", "float");
 	      coneangle = (RtFloat)light->cone_angle;
 	      conedeltaangle = (RtFloat)light->cone_delta_angle;
 	      beamdistribution = (RtFloat)light->beam_distribution;
@@ -1491,13 +1488,13 @@ ay_wrib_lights(char *file, ay_object *o)
 		 RiDeclare("shadowname", "uniform string");
 		  sprintf(shadowptr, "%s.spot%d.shd", file, countsm);
 		  light_handle = RiLightSource("shadowspot",
-			"intensity",(RtPointer)&intensity,
-			"lightcolor",(RtPointer)&color,
-			"from",(RtPointer)&from,
-			"to",(RtPointer)&to,
-			"coneangle",(RtPointer)&coneangle,
-			"conedeltaangle",(RtPointer)&conedeltaangle,
-			"beamdistribution",(RtPointer)&beamdistribution,
+			"intensity", (RtPointer)&intensity,
+			"lightcolor", (RtPointer)&color,
+			"from", (RtPointer)&from,
+			"to", (RtPointer)&to,
+			"coneangle", (RtPointer)&coneangle,
+			"conedeltaangle", (RtPointer)&conedeltaangle,
+			"beamdistribution", (RtPointer)&beamdistribution,
 			"shadowname", (RtPointer)&shadowptr,
 			RI_NULL);
 		  countsm++;
@@ -1505,22 +1502,22 @@ ay_wrib_lights(char *file, ay_object *o)
 	      else
 		{ /* no, write normal lightsource */
 		  light_handle = RiLightSource("spotlight",
-			"intensity",(RtPointer)&intensity,
-			"lightcolor",(RtPointer)&color,
-			"from",(RtPointer)&from,
-			"to",(RtPointer)&to,
-			"coneangle",(RtPointer)&coneangle,
-			"conedeltaangle",(RtPointer)&conedeltaangle,
-			"beamdistribution",(RtPointer)&beamdistribution,
+			"intensity", (RtPointer)&intensity,
+			"lightcolor", (RtPointer)&color,
+			"from", (RtPointer)&from,
+			"to", (RtPointer)&to,
+			"coneangle", (RtPointer)&coneangle,
+			"conedeltaangle", (RtPointer)&conedeltaangle,
+			"beamdistribution", (RtPointer)&beamdistribution,
 			RI_NULL);
 		} /* if */
 	      break;
 
 	    case AY_LITDISTANT:
-	      RiDeclare("intensity","float");
-	      RiDeclare("lightcolor","color");
-	      RiDeclare("from","point");
-	      RiDeclare("to","point");
+	      RiDeclare("intensity", "float");
+	      RiDeclare("lightcolor", "color");
+	      RiDeclare("from", "point");
+	      RiDeclare("to", "point");
 	      /* use shadowmap? */
 	      if((ay_prefs.use_sm > 0) && light->use_sm && changeshaders)
 		{ /* yes */
@@ -1978,8 +1975,8 @@ ay_wrib_sm(char *file, char *image, int width, int height, int selonly)
 } /* ay_wrib_sm */
 
 
-/* ay_wrib_cb:
- *
+/** ay_wrib_cb:
+ * Togl callback to export the scene to a RIB (RenderMan Interface Bytestream).
  */
 int
 ay_wrib_cb(struct Togl *togl, int argc, char *argv[])
@@ -2071,8 +2068,11 @@ ay_wrib_cb(struct Togl *togl, int argc, char *argv[])
 } /* ay_wrib_cb */
 
 
-/* ay_wrib_tcmd
+/** ay_wrib_tcmd:
+ *  Export the scene to a RIB (RenderMan Interface Bytestream).
  *
+ *  Implements the \a wrib scripting interface command.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_wrib_tcmd(ClientData clientData, Tcl_Interp *interp,
@@ -2368,7 +2368,7 @@ ay_wrib_pprevdraw(ay_view_object *view)
   RiFrameAspectRatio((RtFloat)aspect);
 
   swleft = (RtFloat)-aspect;
-  swright =  (RtFloat)aspect;
+  swright = (RtFloat)aspect;
   swbot = (RtFloat)-1.0;
   swtop = (RtFloat)1.0;
 
@@ -2448,7 +2448,7 @@ ay_wrib_pprevdraw(ay_view_object *view)
   RiFrameEnd();
 
   /* XXXX */
-  for(i = 0;i < 500; i++)
+  for(i = 0; i < 500; i++)
     {
       RiArchiveRecord(RI_COMMENT, "Redraw please!\n");
     }
@@ -2511,7 +2511,7 @@ ay_wrib_pprevclose()
 	    {
 	      ay_error(AY_EOUTPUT, fname,
 		    "Please close the permanent preview window now manually,");
-	      ay_error(AY_EOUTPUT, fname,"using the Esc-key!");
+	      ay_error(AY_EOUTPUT, fname, "using the Esc-key!");
 
 	      /* corresponding RiBegin(); was issued in pprevopen() above */
 	      RiEnd();
