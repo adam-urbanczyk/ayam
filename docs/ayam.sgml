@@ -3807,7 +3807,7 @@ the same point: <tt/&lt;ra&gt;/, drag mouse, <tt/&lt;sa&gt;/,
 currently selected objects coordinate systems,
 <item><tt/&lt;C&gt;/ set the mark to the center of gravity of all
 currently selected points.
-<item><tt/&lt;B&gt;/ set the mark to the center of the bounding
+<item><tt/&lt;b&gt;/ set the mark to the center of the bounding
 box of all currently selected points.
 The image below demonstrates the difference between the
 center of the bounding box and the center of gravity.
@@ -4316,7 +4316,7 @@ the changes of a split!
 
 <sect1>Selecting/Tagging Boundary Points<label id="selbac">
 <p>
-The modelling action <tt/"Select Boundary Points"/ (shortcut <tt/&lt;b&gt;/)
+The modelling action <tt/"Select Boundary Points"/ (shortcut <tt/&lt;B&gt;/)
 may be applied to PolyMesh objects only.<newline>
 This action can be used to select all control points of a PolyMesh
 boundary after picking a point on that
@@ -4327,7 +4327,7 @@ See also the table below.
 <table loc="ht">
 <tabular ca="|c|c|c|"><hline>
 <bf/Name/|<bf/Shortcut/|<bf/Icon/@<hline>
-Select Boundary|<tt/&lt;b&gt;/|
+Select Boundary|<tt/&lt;B&gt;/|
 <#if out=latex><x>inlinegfx pics/tagbac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/tagbac.gif"></#if>
 <#if out=latex>@<hline></#if>
@@ -10082,8 +10082,6 @@ for.
 -->
 </itemize>
 
-<#if out=latex><x/newpage/</#if>
-
 <sect3>Conversion Support
 <p><#if out=latex>&nbsp;<newline></#if>
 The trimmed surface may be converted to an ordinary NURBS patch
@@ -10400,7 +10398,7 @@ of type <tt/"Create"/ looks like this:
 <tscreen><verb>
 crtOb NCurve
 </verb></tscreen>
-Or, with further parameterisation
+or, with further parameterisation:
 <tscreen><verb>
 crtOb NCurve
 sL
@@ -10464,7 +10462,7 @@ parameters of the Script object. Note that only parameters from this
 list will be saved to Ayam scene files.
 Note also, that <tt/"SP"/ must <em/never/ contain <tt/"SP"/. All copies
 of a Script object must share the same set of individual vs.~shared
-parameters. If objects need to store differing/individual
+parameters. If Script objects need to store differing/individual
 amounts of parameter data, lists can be used as individual parameters.
 <p><p>
 Script objects may also use arbitrary, plugin provided,
