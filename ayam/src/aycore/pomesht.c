@@ -1233,6 +1233,8 @@ ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_pomesh_object *pomesh;
  unsigned int *ois = NULL, oislen = 0;
+ unsigned int oldnumcvs;
+ char buf[256];
 
   while(i+1 < argc)
     {
@@ -1297,7 +1299,7 @@ ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp *interp,
 		      return TCL_OK;
 		    }
 		}
-
+	      oldnumcvs = pomesh->ncontrols;
 	      ay_status = ay_pomesht_optimizecoords(o->refine, normal_epsilon,
 						    selp, ois, &oislen);
 	    }
@@ -1309,6 +1311,18 @@ ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      /* update pointers to controlv */
 	      ay_selp_clear(o);
+
+	      if(pomesh->ncontrols != oldnumcvs)
+		{
+		  snprintf(buf, 255, "%u control vertices saved.",
+			   oldnumcvs-pomesh->ncontrols);
+		  buf[255] = '\0';
+		  ay_error(AY_EOUTPUT, argv[0], buf);
+		}
+	      else
+		{
+		  ay_error(AY_EOUTPUT, argv[0], "No control vertices saved.");
+		}
 
 	      /* update/optimize PV data */
 	      if(ois)
