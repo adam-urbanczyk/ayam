@@ -1319,6 +1319,7 @@ proc objectsearch_open { } {
 array set ObjectSearch {
 Scope All
 ClearHighlight 1
+ClearClipboard 0
 InvertMatch 0
 HighlightColor_R 180
 HighlightColor_G 0
