@@ -188,6 +188,7 @@ proc pomesh_optimize { } {
 	    -n $pomeshopt_options(NormalEpsilon)\
 	    -p $pomeshopt_options(OptimizePV)\
 	    -s $pomeshopt_options(SelectedPoints)\
+	    -r 1\
 	    -f $pomeshopt_options(OptimizeFaces);
 
 	rV
