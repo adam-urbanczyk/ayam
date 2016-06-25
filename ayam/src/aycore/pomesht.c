@@ -1226,7 +1226,7 @@ ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  int i = 1, optimize_coords = 1, optimize_faces = 0, optimize_pv = 1;
- int optimize_selected = 0;
+ int optimize_selected = 0, report_statistics = AY_FALSE;
  double normal_epsilon = DBL_MAX;
  ay_object *o = NULL;
  ay_point *selp = NULL;
@@ -1260,6 +1260,11 @@ ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp *interp,
       if(!strcmp(argv[i], "-f"))
 	{
 	  sscanf(argv[i+1], "%d", &optimize_faces);
+	}
+      else
+      if(!strcmp(argv[i], "-r"))
+	{
+	  sscanf(argv[i+1], "%d", &report_statistics);
 	}
       else
       if(!strcmp(argv[i], "-s"))
@@ -1312,16 +1317,20 @@ ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp *interp,
 	      /* update pointers to controlv */
 	      ay_selp_clear(o);
 
-	      if(pomesh->ncontrols != oldnumcvs)
+	      if(report_statistics)
 		{
-		  snprintf(buf, 255, "%u control vertices saved.",
-			   oldnumcvs-pomesh->ncontrols);
-		  buf[255] = '\0';
-		  ay_error(AY_EOUTPUT, argv[0], buf);
-		}
-	      else
-		{
-		  ay_error(AY_EOUTPUT, argv[0], "No control vertices saved.");
+		  if(pomesh->ncontrols != oldnumcvs)
+		    {
+		      snprintf(buf, 255, "%u control vertices saved.",
+			       oldnumcvs-pomesh->ncontrols);
+		      buf[255] = '\0';
+		      ay_error(AY_EOUTPUT, argv[0], buf);
+		    }
+		  else
+		    {
+		      ay_error(AY_EOUTPUT, argv[0],
+			       "No control vertices saved.");
+		    }
 		}
 
 	      /* update/optimize PV data */
