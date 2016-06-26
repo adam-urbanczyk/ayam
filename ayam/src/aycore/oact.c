@@ -1756,13 +1756,18 @@ ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[])
       else
 	dscalx = 1.0;
 
-      /* transform mark from world to current level space */
-      ay_trafo_identitymatrix(mm);
-      if(view->type != AY_VTTRIM)
+      if(!view->transform_points)
 	{
-	  if(ay_currentlevel->object != ay_root)
+	  /* transform mark from world to current level space,
+	     unless transforming points where we can re-use the full
+	     transformations in already present in mm */
+	  ay_trafo_identitymatrix(mm);
+	  if(view->type != AY_VTTRIM)
 	    {
-	      ay_trafo_getparent(ay_currentlevel->next, mm);
+	      if(ay_currentlevel->object != ay_root)
+		{
+		  ay_trafo_getparent(ay_currentlevel->next, mm);
+		}
 	    }
 	}
       ay_trafo_invmatrix(mm, mmi);
@@ -1791,8 +1796,9 @@ ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[])
 						AY_SCA | AY_ROT, mm);
 		    }
 		}
-	      ay_trafo_translatematrix(mov-o->movx, 0.0, 0.0, mm);
+	      ay_trafo_translatematrix(a[0], a[1], a[2], mm);
 	      ay_trafo_scalematrix(dscalx, 1.0, 1.0, mm);
+	      ay_trafo_translatematrix(-a[0], -a[1], -a[2], mm);
 	      if(!view->local)
 		{
 		  if(ay_currentlevel->object != ay_root)
@@ -1811,7 +1817,7 @@ ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[])
 
 	      o->modified = AY_TRUE;
 	      ay_notify_object(o);
-	    } /* if */
+	    } /* if have editable points */
 	}
       else
 	{
@@ -1961,13 +1967,18 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
       else
 	dscaly = 1.0;
 
-      /* transform mark from world to current level space */
-      ay_trafo_identitymatrix(mm);
-      if(view->type != AY_VTTRIM)
+      if(!view->transform_points)
 	{
-	  if(ay_currentlevel->object != ay_root)
+	  /* transform mark from world to current level space,
+	     unless transforming points where we can re-use the full
+	     transformations in already present in mm */
+	  ay_trafo_identitymatrix(mm);
+	  if(view->type != AY_VTTRIM)
 	    {
-	      ay_trafo_getparent(ay_currentlevel->next, mm);
+	      if(ay_currentlevel->object != ay_root)
+		{
+		  ay_trafo_getparent(ay_currentlevel->next, mm);
+		}
 	    }
 	}
       ay_trafo_invmatrix(mm, mmi);
@@ -1996,8 +2007,9 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
 						AY_SCA | AY_ROT, mm);
 		    }
 		}
-	      ay_trafo_translatematrix(0.0, mov-o->movy, 0.0, mm);
+	      ay_trafo_translatematrix(a[0], a[1], a[2], mm);
 	      ay_trafo_scalematrix(1.0, dscaly, 1.0, mm);
+	      ay_trafo_translatematrix(-a[0], -a[1], -a[2], mm);
 	      if(!view->local)
 		{
 		  if(ay_currentlevel->object != ay_root)
@@ -2016,7 +2028,7 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
 
 	      o->modified = AY_TRUE;
 	      ay_notify_object(o);
-	    } /* if */
+	    } /* if have editable points */
 	}
       else
 	{
@@ -2166,13 +2178,18 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
       else
 	dscalz = 1.0;
 
-      /* transform mark from world to current level space */
-      ay_trafo_identitymatrix(mm);
-      if(view->type != AY_VTTRIM)
+      if(!view->transform_points)
 	{
-	  if(ay_currentlevel->object != ay_root)
+	  /* transform mark from world to current level space,
+	     unless transforming points where we can re-use the full
+	     transformations in already present in mm */
+	  ay_trafo_identitymatrix(mm);
+	  if(view->type != AY_VTTRIM)
 	    {
-	      ay_trafo_getparent(ay_currentlevel->next, mm);
+	      if(ay_currentlevel->object != ay_root)
+		{
+		  ay_trafo_getparent(ay_currentlevel->next, mm);
+		}
 	    }
 	}
       ay_trafo_invmatrix(mm, mmi);
@@ -2201,8 +2218,9 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
 						AY_SCA | AY_ROT, mm);
 		    }
 		}
-	      ay_trafo_translatematrix(0.0, 0.0, mov-o->movz, mm);
+	      ay_trafo_translatematrix(a[0], a[1], a[2], mm);
 	      ay_trafo_scalematrix(1.0, 1.0, dscalz, mm);
+	      ay_trafo_translatematrix(-a[0], -a[1], -a[2], mm);
 	      if(!view->local)
 		{
 		  if(ay_currentlevel->object != ay_root)
@@ -2221,7 +2239,7 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
 
 	      o->modified = AY_TRUE;
 	      ay_notify_object(o);
-	    } /* if */
+	    } /* if have editable points */
 	}
       else
 	{
