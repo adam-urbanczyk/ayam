@@ -1,4 +1,4 @@
-[16. Jun 2016 CVS-Head:
+[26. Jun 2016 CVS-Head:
 =======================
 Bug Fixes:
 o added missing scripting interface commands to JavaScript and Lua scripting
@@ -9,6 +9,7 @@ o conversion of tool objects without caps/bevels destroying TP/TC tags (SF 527)
 o trim curve coordinates for X3D export (SF 528)
 o crash when generating smooth normals (SF 529)
 o creating NCurve/NPatch objects with knot type chordal (SF 531)
+o scaling points about the mark fails when object is transformed (SF 532)
 
 Modelling:
 o the create Sweep/Swing tools now rotate the parameter curves to the
@@ -56,7 +57,6 @@ o X3D export of materials now supports the new tag type "XML" that can be
   (e.g. a <ComposedShader>)
 o X3D export of NURBS surfaces now also contains some "containerField"
   attributes vital for e.g. x3dom-nurbs
-o added a script that implements NURBS surface nodes for x3dom
 
 
 [13. Jan 2016] Ayam 1.23:
