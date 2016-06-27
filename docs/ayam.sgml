@@ -234,8 +234,16 @@ Ayam requires manual intervention (e.g.~by means of a script).
 <p>
 This section describes the user interface of Ayam.
 <p>
-Until Ayam 1.14 all windows were always separate top level windows &ndash;
-a so called <em>floating windows GUI mode</em>. Since
+The user interface of Ayam is split into three types of windows:
+a main window, a toolbox and an arbitrary number of view windows.
+The main window displays the object hierarchy and allows to edit
+object properties. The toolbox window is for easy creation of
+objects and starting of modelling actions and tools. The modelling
+actions are then carried out in view windows, where also the scene
+is displayed.
+<p>
+Until Ayam 1.14 all those windows were always separate top
+level windows &ndash; a so called <em>floating windows GUI mode</em>. Since
 version 1.14, a new GUI mode is available where the main window, three view
 windows and the toolbox are integrated in one top level window. This mode
 is called <em>single window GUI mode</em>, see also the image above.
@@ -250,16 +258,10 @@ limited to three, albeit all extra views will become extra top level windows.
 <caption>Single Window GUI Mode</caption>
 </figure>
 <p>
-The user interface of Ayam is split into three types of windows:
-a main window, a toolbox and an arbitrary number of view windows.
-The main window displays the object hierarchy and allows to edit
-object properties. The toolbox window is for easy creation of
-objects and starting of modelling actions and tools. The modelling
-actions are then carried out in view windows, where also the scene
-is displayed.
-<p>
 The next sections document the three types of windows (main, toolbox,
 and views) in detail.
+
+<#if out=latex><x/newpage/</#if>
 
 <sect1>Anatomy of the Main Window
 <p>
@@ -296,7 +298,7 @@ The two representations have very different properties regarding
 speed, use of resources, and versatility. The tree is, due to the
 drag and drop operations, much more versatile but also slower.
 <p>
-Both representations manage a so called <tt/"current level"/.
+Both representations manage a so called <em/current level/.
 This level is the scene level that is displayed in the object listbox.
 In the tree view the current level is drawn in black while all
 other levels are grayed out. Selection of objects
@@ -441,6 +443,7 @@ current level to the root level.
 Thus, if you feel lost anywhere in Ayam, just press <tt/&lt;Esc&gt;/
 twice or thrice.
 
+<#if out=latex><x/newpage/</#if>
 
 <bf/Object Listbox:/<label id="listbox">
 <p>
@@ -1070,8 +1073,9 @@ field where additional command line arguments to
 the <tt/"crtOb ACurve"/ command may be specified, as outlined in section
 <ref id="sccrtac" name="Creating Objects">.<footnote>Since 1.19.</footnote>
 
-<item><tt/"NCircle"/, create a new NURBS circle. See
-also section <ref id="ncircleobj" name="NCircle Object">.
+<item><tt/"NCircle"/, create a new NURBS circle. A small dialog box will
+pop up, where the radius, start angle, and end angle of the new circle
+may be specified. See also section <ref id="ncircleobj" name="NCircle Object">.
 
 For the other entries see section
 <ref id="cctools" name="Curve Creation Tools">.
@@ -1198,7 +1202,7 @@ a single PolyMesh object, without checking for doubly used points,
 loops, or faces. The currently selected PolyMesh objects will not
 be changed by this tool. But the merge-tool can delete them
 immediately after the merging operation, when the <tt/"RemoveMerged"/-option
-is enabled.
+is enabled. If the merge fails, the original objects will not be removed.
 <p><p>
 If the <tt/"OptimizeNew"/-option is enabled, the <tt/"Optimize"/-tool
 (see below) will be started right after the merge operation with the
@@ -1227,8 +1231,8 @@ The option <tt/"NormalEpsilon"/ additionally controls which points are
 considered equal by comparing also the vertex normals (if present):<newline>
 A value of <tt/"0.0"/ means, the normals must be bitwise identical, a value
 of <tt/"Inf"/ means, the normals are totally ignored, any other value defines
-the maximum angle (in degrees) between the two
-normals.<footnote>Since 1.23.</footnote>
+the maximum angle (in degrees) between two
+normals to be considered equal.<footnote>Since 1.23.</footnote>
 <p>
 The option <tt/"OptimizePV"/ determines whether the PV tags should also
 be optimized.<footnote>Since 1.23.</footnote>
@@ -12351,6 +12355,9 @@ of multiple points will be enabled, so that point edit actions know that
 they may need to move two points.
 See also section <ref id="ncurvemp" name="Multiple Points">.
 
+If a NPatch object is selected, the new curve will be linked as child
+of this NPatch object. Otherwise it will be linked to the current level.
+
 The <tt>"CreateAtMark"</tt> option is ignored.
 
 See section <ref id="trim" name="Trim Curves"> for a more detailed
@@ -13118,6 +13125,8 @@ the image above).
 consisting of six NURBS patches arranged in a configuration resembling
 a box, see also the above image.
 <tag/Notes/ The NURBS patches are of comparatively high order (5).
+In contrast to the standard NURBS sphere, the Cobb sphere is not degenerate
+and no shading artefacts result.
 </descrip>
 
 <sect2>Revolve Tool<label id="revt">
