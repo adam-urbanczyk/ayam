@@ -1073,9 +1073,10 @@ field where additional command line arguments to
 the <tt/"crtOb ACurve"/ command may be specified, as outlined in section
 <ref id="sccrtac" name="Creating Objects">.<footnote>Since 1.19.</footnote>
 
-<item><tt/"NCircle"/, create a new NURBS circle. A small dialog box will
-pop up, where the radius, start angle, and end angle of the new circle
-may be specified. See also section <ref id="ncircleobj" name="NCircle Object">.
+<item><tt/"NCircle"/, create a new NURBS circle (NCircle object).
+A small dialog box will pop up, where the radius, start angle, and end
+angle of the new circle may be specified.
+See also section <ref id="ncircleobj" name="NCircle Object">.
 
 For the other entries see section
 <ref id="cctools" name="Curve Creation Tools">.
@@ -4264,7 +4265,7 @@ Find UV|<tt/&lt;U&gt;/|
 
 <sect1>Interactively Splitting Curves<label id="splitncac">
 <p>
-The modelling action <tt/"Split Curve"/ (shortcut <tt/&lt;c&gt;/)
+The modelling action <tt/"Split Curve"/ (shortcut <tt/&lt;&verbar;&gt;/)
 may be applied to NURBS curves (objects of type NCurve) only.
 Using this action a NURBS curve may be split into two new curves
 at a point on the curve that is specified by picking a point
@@ -13977,7 +13978,7 @@ and all selected objects remain unchanged.
 
 <tag/Notes/ The tesselation tool will block most other parts of Ayam
 while it is running, i.e.~it is not possible to change the selection
-or run other tools. It is, however, possible to adjust view parameters
+or run other tools. It is, however, allowed to adjust view parameters
 while the tesselation tool is open, to examine the tesselation result
 more closely or from different viewing angles.
 
@@ -13996,7 +13997,7 @@ The tesselation facility is based on the GLU (V1.3+) NURBS tesselator.
 
 <#if out=latex><x/newpage/</#if>
 
-<sect3>Tesselation Methods and Parameters
+<sect3>Sampling Methods and Parameters
 <p><#if out=latex>&nbsp;<newline></#if>
 Six sampling methods are available:
 <enum>
