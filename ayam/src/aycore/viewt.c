@@ -1930,6 +1930,11 @@ ay_viewt_updateglobalmark(struct Togl *togl)
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  ay_object *o = ay_root->down;
  ay_view_object *v = NULL;
+ char fname[] = "Global mark set to", buf[TCL_DOUBLE_SPACE*3+10] = "";
+
+  sprintf(buf, "%lg, %lg, %lg.", view->markworld[0], view->markworld[1],
+	  view->markworld[2]);
+  ay_error(AY_EOUTPUT, fname, buf);
 
   while(o && o->next)
     {
