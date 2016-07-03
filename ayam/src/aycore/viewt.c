@@ -1417,6 +1417,8 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 
 		  ay_pact_clearpointedit(&pe);
 
+		  ay_viewt_printmark(view);
+
 		  if(view->drawmark || ay_prefs.globalmark)
 		    {
 		      ay_viewt_updatemark(togl, /*local=*/AY_FALSE);
@@ -1815,6 +1817,8 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
      (need_updatemark && ay_prefs.globalmark))
     {
       ay_viewt_updatemark(togl, /*local=*/AY_TRUE);
+
+      ay_viewt_printmark(view);
     }
 
   if(need_redraw)
@@ -1920,6 +1924,39 @@ ay_viewt_updatemark(struct Togl *togl, int local)
 } /* ay_viewt_updatemark */
 
 
+/** ay_viewt_printmark:
+ * print new mark coordinates to console
+ */
+void
+ay_viewt_printmark(ay_view_object *view)
+{
+ char sgmark[] = "Global mark set to";
+ char lgmark[] = "Local mark set to";
+ char mbuf[TCL_DOUBLE_SPACE*3+10] = "";
+
+  if(!view)
+    return;
+
+  if(view->drawmark)
+    {
+      sprintf(mbuf, "%lg, %lg, %lg.",
+	      view->markworld[0], view->markworld[1],
+	      view->markworld[2]);
+
+      if(ay_prefs.globalmark)
+	{
+	  ay_error(AY_EOUTPUT, sgmark, mbuf);
+	}
+      else
+	{
+	  ay_error(AY_EOUTPUT, lgmark, mbuf);
+	}
+    }
+
+ return;
+} /* ay_viewt_printmark */
+
+
 /** ay_viewt_updateglobalmark:
  *  manage the global mark after change in view \a togl
  *  (copy the mark from the view to all other views)
@@ -1930,11 +1967,6 @@ ay_viewt_updateglobalmark(struct Togl *togl)
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  ay_object *o = ay_root->down;
  ay_view_object *v = NULL;
- char fname[] = "Global mark set to", buf[TCL_DOUBLE_SPACE*3+10] = "";
-
-  sprintf(buf, "%lg, %lg, %lg.", view->markworld[0], view->markworld[1],
-	  view->markworld[2]);
-  ay_error(AY_EOUTPUT, fname, buf);
 
   while(o && o->next)
     {
@@ -2496,6 +2528,8 @@ ay_viewt_markfromsel(struct Togl *togl)
       ay_viewt_updateglobalmark(togl);
     }
 
+  ay_viewt_printmark(view);
+
  return AY_OK;
 } /* ay_viewt_markfromsel */
 
@@ -2602,6 +2636,8 @@ ay_viewt_markfromselp(struct Togl *togl, int mode)
     {
       ay_viewt_updateglobalmark(togl);
     }
+
+  ay_viewt_printmark(view);
 
  return AY_OK;
 } /* ay_viewt_markfromselp */

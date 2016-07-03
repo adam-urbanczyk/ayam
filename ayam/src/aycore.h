@@ -1838,6 +1838,10 @@ int ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[]);
  */
 int ay_viewt_updatemark(struct Togl *togl, int local);
 
+/** print new mark coordinates to console
+ */
+void ay_viewt_printmark(ay_view_object *view);
+
 /** manage the global mark after change in view togl
  */
 void ay_viewt_updateglobalmark(struct Togl *togl);
