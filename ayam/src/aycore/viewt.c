@@ -1355,6 +1355,8 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 			{
 			  break;
 			}
+
+		      pe.rational = AY_FALSE;
 		      sel = sel->next;
 		    }
 		  if(pe.coords)
@@ -1817,8 +1819,6 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
      (need_updatemark && ay_prefs.globalmark))
     {
       ay_viewt_updatemark(togl, /*local=*/AY_TRUE);
-
-      ay_viewt_printmark(view);
     }
 
   if(need_redraw)
