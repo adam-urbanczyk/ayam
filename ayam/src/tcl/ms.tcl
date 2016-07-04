@@ -81,7 +81,7 @@ ms_set en ayprefse_Shaders "A list of paths where your compiled shaders reside."
 ms_set en ayprefse_ScanShaders "Initiates rebuild of internal shader database."
 ms_set en ayprefse_Locale "Language to use for balloon help texts.\
 \nChanges will take effect after restart of Ayam!"
-ms_set en ayprefse_SingleWindow "Switch to single toplevel GUI?\
+ms_set en ayprefse_SingleWindow "Switch to single toplevel window GUI?\
 \nChanges will take effect after restart of Ayam!"
 ms_set en ayprefse_AutoResize "Resize main window according to property GUI?"
 ms_set en ayprefse_AutoFocus "Move focus to window with mouse cursor?\
@@ -123,7 +123,7 @@ ms_set en ayprefse_UndoLevels "Number of undoable modelling steps;\
 \n0 means Undo/Redo is disabled."
 
 # Drawing
-ms_set en ayprefse_Tolerance "Sampling tolerance used when tesselating\
+ms_set en ayprefse_Tolerance "Sampling tolerance used when drawing\
 NURBS curves or surfaces.\nSmaller values lead to slower rendering but higher\
  quality.\nNURBS objects may override this setting locally."
 ms_set en ayprefse_NPDisplayMode "Determine how surfaces should be drawn\
@@ -504,14 +504,14 @@ ms_set de info_rs2 "Ayam muss neu gestartet werden,\num die Änderungen anzuwende
 # fill "fr"-locale...
 ms_init fr
 ms_set fr Missing "Manquant de traduction!"
-ms_set fr ayprefse_Shaders " Liste de chemins où résident vos shaders\
+ms_set fr ayprefse_Shaders "Liste de chemins où résident vos shaders\
 compilés."
 ms_set fr ayprefse_ScanShaders "Initialise la reconstruction de la base\
 interne Shader."
 ms_set fr ayprefse_Locale "Langue des bulles d'aide.\
 \nLe changement prendra effet après le redémarrage d'Ayam!"
 
-#ms_set fr ayprefse_SingleWindow "Switch to single toplevel GUI?"
+#ms_set fr ayprefse_SingleWindow "Switch to single toplevel window GUI?"
 
 ms_set fr ayprefse_AutoResize "Redéfinir la taille de la fenêtre principale\
 selon les propriétés par défaut."
@@ -554,11 +554,11 @@ ms_set fr ayprefse_EditSnaps "Faire correspondre les coordonnées des points\
 #is pressed."
 #ms_set fr ayprefse_PickCycle "Cycle through pick candidates by further clicks?"
 ms_set fr ayprefse_UndoLevels "Nombre de pas d'annulation dans l'historique\
-de modélisation;\n-1 correspond à la désactivation de l'historique."
+de modélisation;\n0 correspond à la désactivation de l'historique."
 
 # Drawing
-ms_set fr ayprefse_Tolerance "Tolérance utilisée pour les courbes NURBS\
-ou les surfaces NURBS.\nLes petites valeurs induisent un rendu plus lent\
+ms_set fr ayprefse_Tolerance "Tolérance utilisée pour afficher de courbes\
+ou surfaces NURBS.\nLes petites valeurs induisent un rendu plus lent\
 mais une meilleure qualité.\nLes objets NURBS peuvent outrepasser\
 localement cette configuration."
 ms_set fr ayprefse_NPDisplayMode "Détermine comment les surfaces seront\
@@ -567,8 +567,8 @@ configuration."
 ms_set fr ayprefse_NCDisplayMode "Détermine comment les courbes seront\
 tracées\nLes objets Courbe objects peuvent outrepasser localement\
 cette configuration."
-#ms_set fr ayprefse_ToleranceA "Sampling tolerance used for tesselating\
-#NURBS curves or surfaces\nwhen an action is active."
+ms_set fr ayprefse_ToleranceA "Tolérance utilisée pour afficher de courbes\
+ou surfaces NURBS quand une action est active."
 #ms_set fr ayprefse_NPDisplayModeA "Determine how surfaces should be drawn\
 #\nwhen an action is active."
 #ms_set fr ayprefse_NCDisplayModeA "Determine how curves should be drawn\
