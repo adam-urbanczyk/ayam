@@ -436,7 +436,7 @@ ay_error_reportobject(int ecode, char *fname, ay_object *o)
 } /* ay_error_reportobject */
 
 
-/* ay_error_getglerrortcmd:
+/* ay_error_printglerrortcmd:
  *  get current GL error state and string
  *  and call ay_error with it for output
  *  Implements the \a getGLErr scripting interface command.
@@ -444,11 +444,11 @@ ay_error_reportobject(int ecode, char *fname, ay_object *o)
  *  \returns TCL_OK in any case.
  */
 int
-ay_error_getglerrortcmd(ClientData clientData, Tcl_Interp *interp,
-		       int argc, char *argv[])
+ay_error_printglerrortcmd(ClientData clientData, Tcl_Interp *interp,
+			  int argc, char *argv[])
 {
 
   ay_error(AY_EOUTPUT, argv[0], (char *)gluErrorString(glGetError()));
 
  return TCL_OK;
-} /* ay_error_getglerrortcmd */
+} /* ay_error_printglerrortcmd */

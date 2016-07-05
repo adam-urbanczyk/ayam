@@ -263,8 +263,8 @@ int ay_error_reportobject(int ecode, char *fname, ay_object *o);
 
 /** Get the current GL error state and report it to the user.
  */
-int ay_error_getglerrortcmd(ClientData clientData, Tcl_Interp *interp,
-			    int argc, char *argv[]);
+int ay_error_printglerrortcmd(ClientData clientData, Tcl_Interp *interp,
+			      int argc, char *argv[]);
 
 
 /* geom.c */
