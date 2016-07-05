@@ -97,6 +97,7 @@ proc prefs_open {} {
     #set width 400
     #}
     toplevel $w -class Ayam -width $width -height 400
+    wm withdraw $w
     if { $ayprefs(SingleWindow) } {
 	if { $ay(ws) == "Aqua" } {
 	    winMakeFloat $w
@@ -106,7 +107,6 @@ proc prefs_open {} {
     }
     wm title $w "Ayam Preferences"
     wm iconname $w "Prefs"
-    wm withdraw $w
 
     # center window (if no saved geometry is available)
     update idletasks
