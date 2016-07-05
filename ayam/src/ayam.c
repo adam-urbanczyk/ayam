@@ -761,7 +761,7 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "ayError", ay_error_tcmd,
 		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "getGLErr", ay_error_getglerrortcmd,
+  Tcl_CreateCommand(interp, "printGLError", ay_error_printglerrortcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* instt.c */
