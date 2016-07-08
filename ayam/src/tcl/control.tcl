@@ -994,6 +994,12 @@ proc searchOb { expression action {gui 0} } {
 	selOb
     }
 
+    # clear eventually present outermost brackets from the action
+    if { [string first "\[" $ObjectSearch(Action)] == 0 } {
+	# action is a procedure call
+	set ObjectSearch(Action) [string range $ObjectSearch(Action) 1 end-1]
+    }
+
     # now go find the objects
     set ObjectSearch(numfound) 0
     forAll 1 {
