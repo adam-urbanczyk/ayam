@@ -205,7 +205,7 @@ proc material_edit { } {
 	    set ay(CurrentLevel) "root"
 	}
 
-	forAll -type material {
+	forAll -type Material {
 	    global ay mat MaterialAttrData matlevel matobject
 
 	    getProp
@@ -215,7 +215,6 @@ proc material_edit { } {
 		getSel matobject
 		return -1;
 	    }
-	    return 1;
 	}
 	# forAll
 
