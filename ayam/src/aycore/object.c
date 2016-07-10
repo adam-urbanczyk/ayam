@@ -1308,3 +1308,40 @@ ay_object_getpathname(ay_object *o, ay_object *h, size_t *totallen, int *found,
 
  return ay_status;
 } /* ay_object_getpathname */
+
+
+/** ay_clevel_find:
+ *  _recursively_ search through all objects beneath and below <c>
+ *  for object <o>
+ *
+ * \returns AY_TRUE if the object was found, AY_FALSE else
+ */
+int
+ay_object_find(ay_object *c, ay_object *o)
+{
+ int found = AY_FALSE;
+
+  if(!c || !o)
+    return AY_FALSE;
+
+  while(c->next)
+    {
+      if(c != o)
+	{
+	  if(c->down)
+	    {
+	      found = ay_object_find(c->down, o);
+	      if(found)
+		return AY_TRUE;
+	    } /* if */
+	}
+      else
+	{
+	  return AY_TRUE;
+	} /* if */
+      c = c->next;
+    } /* while */
+
+ return AY_FALSE;
+} /* ay_object_find */
+

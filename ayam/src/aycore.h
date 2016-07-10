@@ -654,6 +654,10 @@ int ay_object_candeletelist(ay_list_object *l, ay_object *o);
 int ay_object_getpathname(ay_object *o, ay_object *h,
 			  size_t *totallen, int *found, char **result);
 
+/** find object in scene hierarchy
+ */
+int ay_object_find(ay_object *c, ay_object *o);
+
 
 /* otype.c */
 
@@ -1207,6 +1211,10 @@ int ay_sel_hsltcmd(ClientData clientData, Tcl_Interp *interp,
 /** helper to clear selected flags from object hierarchies
  */
 void ay_sel_clearselflag(ay_object *o);
+
+/** clean selection from removed objects
+ */
+void ay_sel_clean();
 
 
 /* selp.c */
