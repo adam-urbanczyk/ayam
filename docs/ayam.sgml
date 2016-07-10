@@ -1024,7 +1024,6 @@ the material will be linked to <em>all</em> currently selected objects
 (even if they are already linked to other objects),
 see also section <ref id="materialobj" name="Material Object">.
 
-
 <item><tt/"Master"/, searches for the master object of the
 currently selected instance object and selects it for editing,
 see also section <ref id="instanceobj" name="Instance Object">.
@@ -11809,14 +11808,16 @@ to <tt/"NPatch"/ objects). Those tesselation parameters
 will be used when the NPatch object is tesselated for e.g.~a
 conversion to a PolyMesh object. The syntax of the TP tag is:
 <tt>"&lt;smethod&gt;,&lt;sparamu&gt;,&lt;sparamv&gt;[,&lt;refinetrims&gt;]"</tt>
-where <tt/"&lt;smethod&gt;"/ is an integer value between 1 and 6,
+where<newline>
+<tt/&lt;smethod&gt;/ is an integer value between 1 and 6,
 describing which sampling method to use (1 &ndash; ParametricError,
 2 &ndash; PathLength,
 3 &ndash; DomainDistance,
 4 &ndash; NormalizedDomainDistance,
 5 &ndash; AdaptiveDomainDistance, and
 6 &ndash; AdaptiveKnotDistance)
-and <tt/"&lt;sparamu&gt;"/ and <tt/"&lt;sparamv&gt;"/ are float values
+and<newline>
+<tt/&lt;sparamu&gt;/ and <tt/&lt;sparamv&gt;/ are float values
 describing the respective parameter value for the chosen sampling
 method. The second parameter value is ignored for the sampling methods
 1 and 2.
@@ -17189,14 +17190,18 @@ like this:
 As the command will potentially be called multiple times, result
 values of any kind can not be delivered using the <tt/"return"/
 command but should rather be collected in global variables.
+In fact, returning any value that is not <tt/-1/ will be interpreted
+as error and the processing will stop immediately.
+Returning <tt/-1/ in a recursive forAll will stop the processing
+without raising an error.
 <p>
 The global variable <tt/"ay(CurrentLevel)"/ will be maintained while
 a recursive forAll browses the scene. In addition, the global variable
 <tt/"i"/ will be set to the index of the current object.
 <p>
 Note that forAll will run slowly if a property GUI is displayed.
-By de-selecting the property using e.g.~the property context menu first,
-it will run much faster.
+If the current property is de-selected first (using e.g.~the property
+context menu), it will run much faster.
 <p>
 Furthermore, the current selection is correctly
 maintained.<footnote>Since Ayam 1.9.</footnote>
