@@ -1494,6 +1494,10 @@ ay_tcmd_withobtcmd(ClientData clientData, Tcl_Interp *interp,
     {
       ay_error(AY_ERROR, argv[0], "Object not found in selection.");
     }
+  else
+    {
+      ay_sel_clean();
+    }
 
  return TCL_OK;
 } /* ay_tcmd_withobtcmd */
@@ -1501,13 +1505,13 @@ ay_tcmd_withobtcmd(ClientData clientData, Tcl_Interp *interp,
 
 /* ay_tcmd_getstring:
  *  get a copy of a string from a Tcl variable
- * 
+ *
  * \param[in] interp Tcl interpreter to use, may be NULL to designate usage
  *  of the main interpreter
  * \param[in] arr array part of variable name
  * \param[in] var name part of variable name
  * \param[in,out] result pointer where to store the new string
- * 
+ *
  * \returns AY_OK on success, error code otherwise.
  */
 int
@@ -1528,7 +1532,7 @@ ay_tcmd_getstring(Tcl_Interp *interp, Tcl_Obj *arr, Tcl_Obj *var, char **result)
     {
       str = Tcl_GetStringFromObj(to, &len);
       if(str)
-	{	  
+	{
 	  if(*result)
 	    {
 	      if(!strcmp(*result, str))
@@ -1553,10 +1557,10 @@ ay_tcmd_getstring(Tcl_Interp *interp, Tcl_Obj *arr, Tcl_Obj *var, char **result)
 /** ay_tcmd_getuint:
  *  convert string to unsigned int
  *  conversion errors will be reported to the user via ay_error()
- * 
+ *
  * \param[in] str string to convert
  * \param[in,out] uint pointer where to store the converted result
- * 
+ *
  * \returns AY_OK on success, error code otherwise.
  */
 int
@@ -1614,11 +1618,11 @@ ay_tcmd_getuint(char *str, unsigned int *uint)
 
 /** ay_tcmd_registerlang:
  *  register a new scripting language
- * 
+ *
  * \param[in] name name of scripting language
  * \param[in,out] result pointer where to store the corresponding index
  *  in the script evaluation callback table (using ay_table_additem())
- * 
+ *
  * \returns AY_OK on success, error code otherwise.
  */
 int

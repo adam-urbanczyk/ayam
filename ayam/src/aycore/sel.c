@@ -335,3 +335,34 @@ ay_sel_clearselflag(ay_object *o)
  return;
 } /* ay_sel_clearselflag */
 
+
+/** ay_sel_clean:
+ *  clean selection from removed objects
+ */
+void
+ay_sel_clean()
+{
+ ay_list_object *sel = ay_selection, **selp = &ay_selection, *seln = NULL;
+
+  while(sel)
+    {
+      seln = sel->next;
+      if(!ay_object_find(ay_root, sel->object))
+	{
+	  if(selp == &ay_selection)
+	    {
+	      ay_selection = seln;
+	    }
+	  else
+	    {
+	      *selp = seln;
+	    }
+	  free(sel);
+	}
+      else
+	selp = &(sel->next);
+      sel = seln;
+    }
+
+ return;
+} /* ay_sel_clean */
