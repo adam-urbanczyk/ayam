@@ -1246,7 +1246,7 @@ ay_object_candeletelist(ay_list_object *l, ay_object *o)
  * \param[in] o object to search for
  * \param[in] h hierarchy where to search for o (usually ay_root)
  * \param[in,out] totallen helper variable, should be initialized with 0
- * \param[in,out] found indicates wether o was found in c
+ * \param[in,out] found indicates wether o was found in h
  * \param[in,out] result where to store the result
  *
  * \returns AY_OK on success, error code otherwise
@@ -1317,20 +1317,20 @@ ay_object_getpathname(ay_object *o, ay_object *h, size_t *totallen, int *found,
  * \returns AY_TRUE if the object was found, AY_FALSE else
  */
 int
-ay_object_find(ay_object *c, ay_object *o)
+ay_object_find(ay_object *o, ay_object *h)
 {
  int found = AY_FALSE;
 
-  if(!c || !o)
+  if(!h || !o)
     return AY_FALSE;
 
-  while(c->next)
+  while(h->next)
     {
-      if(c != o)
+      if(h != o)
 	{
-	  if(c->down)
+	  if(h->down)
 	    {
-	      found = ay_object_find(c->down, o);
+	      found = ay_object_find(h->down, o);
 	      if(found)
 		return AY_TRUE;
 	    } /* if */
@@ -1339,7 +1339,7 @@ ay_object_find(ay_object *c, ay_object *o)
 	{
 	  return AY_TRUE;
 	} /* if */
-      c = c->next;
+      h = h->next;
     } /* while */
 
  return AY_FALSE;

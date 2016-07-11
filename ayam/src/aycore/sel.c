@@ -347,7 +347,7 @@ ay_sel_clean()
   while(sel)
     {
       seln = sel->next;
-      if(!ay_object_find(ay_root, sel->object))
+      if(!ay_object_find(sel->object, ay_root))
 	{
 	  if(selp == &ay_selection)
 	    {
