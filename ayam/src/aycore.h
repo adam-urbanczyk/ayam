@@ -656,7 +656,7 @@ int ay_object_getpathname(ay_object *o, ay_object *h,
 
 /** find object in scene hierarchy
  */
-int ay_object_find(ay_object *c, ay_object *o);
+int ay_object_find(ay_object *o, ay_object *h);
 
 
 /* otype.c */
