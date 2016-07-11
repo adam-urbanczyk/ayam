@@ -1002,8 +1002,9 @@ $sm add command -label "Add Property" -command "plb_addremprop " -underline 4
 $sm add command -label "Remove Property" -command "plb_addremprop 1"\
  -underline 0
 # r
-
-
+$sm add command -label "Add Tag" -command "addTagp"\
+ -underline 6
+# g
 
 #$m add command -label "Create ShadowMaps" -command "riopt_addp"
 
