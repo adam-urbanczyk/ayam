@@ -159,23 +159,23 @@ ay_wrib_aimz(RtPoint direction)
   if(direction[1] > 0.0)
     {
       if(fabs(xrot) > AY_EPSILON)
-	RiRotate(xrot, (RtFloat)1.0,(RtFloat)0.0,(RtFloat)0.0);
+	RiRotate(xrot, (RtFloat)1.0, (RtFloat)0.0, (RtFloat)0.0);
     }
   else
     {
       if(fabs(xrot) > AY_EPSILON)
-	RiRotate(-xrot, (RtFloat)1.0,(RtFloat)0.0,(RtFloat)0.0);
+	RiRotate(-xrot, (RtFloat)1.0, (RtFloat)0.0, (RtFloat)0.0);
     }
 
   if(direction[0] < 0.0)
     {
       if(fabs(yrot) > AY_EPSILON)
-	RiRotate(yrot, (RtFloat)0.0,(RtFloat)1.0,(RtFloat)0.0);
+	RiRotate(yrot, (RtFloat)0.0, (RtFloat)1.0, (RtFloat)0.0);
     }
   else
     {
       if(fabs(yrot) > AY_EPSILON)
-	RiRotate(-yrot, (RtFloat)0.0,(RtFloat)1.0,(RtFloat)0.0);
+	RiRotate(-yrot, (RtFloat)0.0, (RtFloat)1.0, (RtFloat)0.0);
     }
 
  return;
