@@ -1,5 +1,5 @@
-[4. Jul 2016 CVS-Head:
-======================
+[11. Jul 2016 CVS-Head:
+=======================
 Bug Fixes:
 o added missing scripting interface commands to JavaScript and Lua scripting
   language plugins (SF 526)
@@ -11,6 +11,7 @@ o crash when generating smooth normals (SF 529)
 o creating NCurve/NPatch objects with knot type chordal (SF 531)
 o scaling points about the mark fails when object is transformed (SF 532)
 o setting the mark from non rational points fails (SF 533)
+o crash when using delOb as withOb command (SF 534)
 
 Modelling:
 o the create Sweep/Swing tools now rotate the parameter curves to the
@@ -40,6 +41,8 @@ o the "Connect Edges" dialog now displays the number of points in the
   respective edge to connect
 o revamped Tag add/edit dialog, now showing a menu of available tags,
   allowing multi-line tag values, and having a context menu
+o add menu entry to add a tag to multiple selected objects
+  ("Special/Tags/Add Tag")
 
 Scripts/Scripting Interface:
 o added "setTag" command that adds a tag if it is not present, otherwise
