@@ -716,6 +716,7 @@ proc prefs_warnNeedRestart { warn } {
     if { !$warn } {
 	if { ($ayprefs(Locale) != $ayprefse(Locale)) ||
 	     ($ayprefs(SingleWindow) != $ayprefse(SingleWindow)) ||
+	     ($ayprefs(Scripts) != $ayprefse(Scripts)) ||
 	     ($ayprefs(ToolBoxTrans) != $ayprefse(ToolBoxTrans)) ||
 	     ($ayprefs(RGTrans) != $ayprefse(RGTrans))
 	 } {
