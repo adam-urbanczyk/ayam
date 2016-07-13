@@ -202,8 +202,12 @@ cleanup:
 } /* ay_sel_selobtcmd */
 
 
-/* ay_sel_getseltcmd:
- *  get the current selection
+/** ay_sel_getseltcmd:
+ *  Get the current selection.
+ *
+ *  Implements the \a getSel scripting interface command.
+ *
+ *  \returns TCL_OK in any case.
  */
 int
 ay_sel_getseltcmd(ClientData clientData, Tcl_Interp *interp,
@@ -227,7 +231,7 @@ ay_sel_getseltcmd(ClientData clientData, Tcl_Interp *interp,
       if(o->selected)
 	{
 	  to = Tcl_NewIntObj(i);
-	  Tcl_ObjSetVar2(interp,toa,NULL,to,TCL_APPEND_VALUE |
+	  Tcl_ObjSetVar2(interp, toa, NULL, to, TCL_APPEND_VALUE |
 			 TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
 	}
       i++;
