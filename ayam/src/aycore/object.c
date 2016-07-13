@@ -1310,9 +1310,12 @@ ay_object_getpathname(ay_object *o, ay_object *h, size_t *totallen, int *found,
 } /* ay_object_getpathname */
 
 
-/** ay_clevel_find:
- *  _recursively_ search through all objects beneath and below <c>
- *  for object <o>
+/** ay_object_find:
+ *  _Recursively_ search through all objects beneath and below \a h
+ *  for object \a o.
+ *
+ * \param[in] o object to search for
+ * \param[in] h hierarchy where to search for o (usually ay_root)
  *
  * \returns AY_TRUE if the object was found, AY_FALSE else
  */
