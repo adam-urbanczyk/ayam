@@ -139,6 +139,11 @@ proc reconsider { Selection } {
 	# Restore the current level so that the tree knows that the
 	# level has eventually changed
 	set ay(CurrentLevel) $rArray(oldLevel)
+
+	if { $ay(lb) == 0 } {
+	    tree_handleSelection
+	}
+
 	focus $ay(currentView)
 	destroy .reconsider
     }
