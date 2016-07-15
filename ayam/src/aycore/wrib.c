@@ -73,35 +73,6 @@ ay_wrib_isprimitive(ay_object *o)
 } /* ay_wrib_isprimitive */
 
 
-/* ay_wrib_noexport:
- *  check for presence of NoExport tag for object o;
- *  returns AY_TRUE if found, else returns AY_FALSE
- */
-int
-ay_wrib_noexport(ay_object *o)
-{
- ay_tag *tag = NULL;
-
-  if(o)
-    {
-      if(o->tags)
-	{
-	  tag = o->tags;
-	  while(tag)
-	    {
-	      if(tag->type == ay_noexport_tagtype)
-		{
-		  return AY_TRUE;
-		}
-	      tag = tag->next;
-	    } /* while */
-	} /* if */
-    } /* if */
-
- return AY_FALSE;
-} /* ay_wrib_noexport */
-
-
 /* cot() used by currently unused FrameCamera() */
 /*
 double
@@ -590,7 +561,7 @@ ay_wrib_object(char *file, ay_object *o)
   if(ay_prefs.excludehidden && o->hide)
     return AY_OK;
 
-  if(ay_wrib_noexport(o))
+  if(ay_tags_hastag(o, ay_noexport_tagtype))
     return AY_OK;
 
   arr = ay_wribcbt.arr;
@@ -1243,7 +1214,8 @@ ay_wrib_checklights(ay_object *o)
 	    }
 	}
 
-      if((o->type == AY_IDLIGHT) && (!(ay_wrib_noexport(o))))
+      if((o->type == AY_IDLIGHT) &&
+	 (!(ay_tags_hastag(o, ay_noexport_tagtype))))
 	{
 	  light = (ay_light_object *)o->refine;
 
@@ -1318,7 +1290,8 @@ ay_wrib_lights(char *file, ay_object *o)
 	  ay_clevel_del();
 	}
 
-      if((o->type == AY_IDLIGHT) && (!(ay_wrib_noexport(o))))
+      if((o->type == AY_IDLIGHT) &&
+	 (!(ay_tags_hastag(o, ay_noexport_tagtype))))
 	{
 	  light = (ay_light_object *)o->refine;
 

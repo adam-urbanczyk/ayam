@@ -526,7 +526,8 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 			  selonly);
 	}
 
-      if((o->type == AY_IDLIGHT) && (!(ay_wrib_noexport(o))))
+      if((o->type == AY_IDLIGHT) &&
+	 (!(ay_tags_hastag(o, ay_noexport_tagtype))))
 	{
 	  if(selonly && (!o->selected))
 	    break;

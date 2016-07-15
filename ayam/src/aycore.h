@@ -1919,10 +1919,6 @@ int ay_w32t_w32killtcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int ay_wrib_isprimitive(ay_object *o);
 
-/** check for NoExport tags of an object
- */
-int ay_wrib_noexport(ay_object *o);
-
 /** set up camera for RIB export
  */
 void ay_wrib_aimz(RtPoint direction);
