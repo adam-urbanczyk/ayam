@@ -145,7 +145,9 @@ ay_object_createargs(unsigned int index, int argc, char **argv, ay_object **o)
 } /* ay_object_createargs */
 
 
-/* ay_object_createtcmd:
+/** ay_object_createtcmd:
+ *  Create a new object and link it to the scene hierarchy (as last
+ *  object in the current level).
  *  Implements the \a crtOb scripting interface command.
  *  See also the corresponding section in the \ayd{sccrtob}.
  *
@@ -402,7 +404,7 @@ ay_object_deletemulti(ay_object *o, int force)
 } /* ay_object_deletemulti */
 
 
-/* ay_object_deletetcmd:
+/** ay_object_deletetcmd:
  *  Delete selected objects.
  *  Implements the \a delOb scripting interface command.
  *  See also the corresponding section in the \ayd{scdelob}.
@@ -668,7 +670,8 @@ ay_object_getname(ay_object *o)
 } /* ay_object_getname */
 
 
-/* ay_object_setnametcmd:
+/** ay_object_setnametcmd:
+ *  Set the name of an object.
  *  Implements the \a nameOb scripting interface command.
  *  See also the corresponding section in the \ayd{scnameob}.
  *
@@ -867,8 +870,12 @@ ay_object_copymulti(ay_object *src, ay_object **dst)
 } /* ay_object_copymulti */
 
 
-/* ay_object_haschildtcmd:
- *  returns 1 if selected object has a regular (other than
+/** ay_object_haschildtcmd:
+ *  Check whether an object has child objects.
+ *  Implements the \a hasChild scripting interface command.
+ *  See also the corresponding section in the \ayd{schaschild}.
+ *
+ *  \returns 1 if selected object has a regular (other than
  *  endlevel) child object
  */
 int
@@ -906,7 +913,7 @@ ay_object_haschildtcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_object_haschildtcmd */
 
 
-/* ay_object_gettypeornametcmd:
+/** ay_object_gettypeornametcmd:
  *  Implements the \a getType scripting interface command.
  *  Also implements the \a getName scripting interface command.
  *  See also the corresponding section in the \ayd{scgettype}.

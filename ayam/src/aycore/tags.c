@@ -692,8 +692,8 @@ ay_tags_gettcmd(ClientData clientData, Tcl_Interp *interp,
 /** ay_tags_hastag:
  *  check for existence of a tag given a tag type
  *
- * \param o object to process
- * \param tagtype tag type to search for
+ * \param[in] o object to process
+ * \param[in] tagtype tag type to search for
  *
  * \returns AY_TRUE if a tag of given type was found, AY_FALSE else
  */
