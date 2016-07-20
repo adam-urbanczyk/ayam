@@ -5013,24 +5013,40 @@ ay_rrib_pushattribs(void)
 	{
 	  ay_status = ay_shader_copy(ay_rrib_cattributes->sshader,
 				     &(newstate->sshader));
+	  if(ay_status)
+	    {
+	      goto cleanup;
+	    }
 	}
 
       if(ay_rrib_cattributes->dshader)
 	{
 	  ay_status = ay_shader_copy(ay_rrib_cattributes->dshader,
 				     &(newstate->dshader));
+	  if(ay_status)
+	    {
+	      goto cleanup;
+	    }
 	}
 
       if(ay_rrib_cattributes->ishader)
 	{
 	  ay_status = ay_shader_copy(ay_rrib_cattributes->ishader,
 				     &(newstate->ishader));
+	  if(ay_status)
+	    {
+	      goto cleanup;
+	    }
 	}
 
       if(ay_rrib_cattributes->eshader)
 	{
 	  ay_status = ay_shader_copy(ay_rrib_cattributes->eshader,
 				     &(newstate->eshader));
+	  if(ay_status)
+	    {
+	      goto cleanup;
+	    }
 	}
 
       if(ay_rrib_cattributes->tags)
@@ -5041,7 +5057,9 @@ ay_rrib_pushattribs(void)
 	    {
 	      ay_status = ay_tags_copy(tag, newtagptr);
 	      if(ay_status)
-		break;
+		{
+		  goto cleanup;
+		}
 	      newtagptr = &((*newtagptr)->next);
 	      tag = tag->next;
 	    }
@@ -5051,8 +5069,7 @@ ay_rrib_pushattribs(void)
 	{
 	  if(!(newstate->ubasisptr = malloc(1*sizeof(RtBasis))))
 	    {
-	      free(newstate);
-	      return;
+	      goto cleanup;
 	    }
 	  memcpy(newstate->ubasisptr, ay_rrib_cattributes->ubasisptr,
 		 sizeof(RtBasis));
@@ -5062,10 +5079,7 @@ ay_rrib_pushattribs(void)
 	{
 	  if(!(newstate->vbasisptr = malloc(1*sizeof(RtBasis))))
 	    {
-	      if(newstate->ubasisptr)
-		free(newstate->ubasisptr);
-	      free(newstate);
-	      return;
+	      goto cleanup;
 	    }
 	  memcpy(newstate->vbasisptr, ay_rrib_cattributes->vbasisptr,
 		 sizeof(RtBasis));
@@ -5073,8 +5087,12 @@ ay_rrib_pushattribs(void)
 
       if(ay_rrib_cattributes->trimcurves)
 	{
-	  (void)ay_object_copymulti(ay_rrib_cattributes->trimcurves,
-				    &newstate->trimcurves);
+	  ay_status = ay_object_copymulti(ay_rrib_cattributes->trimcurves,
+					  &newstate->trimcurves);
+	  if(ay_status)
+	    {
+	      goto cleanup;
+	    }
 	}
     }
   else
@@ -5106,6 +5124,66 @@ ay_rrib_pushattribs(void)
   /* link new state to stack */
   newstate->next = ay_rrib_cattributes;
   ay_rrib_cattributes = newstate;
+
+  /* prevent cleanup code from doing something harmful */
+  newstate = NULL;
+
+cleanup:
+
+  if(newstate)
+    {
+      if(newstate->sshader)
+	{
+	  ay_shader_free(newstate->sshader);
+	}
+
+      if(newstate->dshader)
+	{
+	  ay_shader_free(newstate->dshader);
+	}
+
+      if(newstate->ishader)
+	{
+	  ay_shader_free(newstate->ishader);
+	}
+
+      if(newstate->eshader)
+	{
+	  ay_shader_free(newstate->eshader);
+	}
+
+      if(newstate->tags)
+	{
+	  while(newstate->tags)
+	    {
+	      tag = newstate->tags;
+	      newstate->tags = tag->next;
+	      ay_tags_free(tag);
+	    }
+	} /* if */
+
+      if(newstate->ubasisptr)
+	{
+	  free(newstate->ubasisptr);
+	}
+
+      if(newstate->vbasisptr)
+	{
+	  free(newstate->vbasisptr);
+	}
+
+      if(newstate->trimcurves)
+	{
+	  ay_object_deletemulti(newstate->trimcurves, AY_FALSE);
+	}
+
+      free(newstate);
+    } /* if */
+
+  if(ay_status)
+    {
+      ay_error(ay_status, fname, NULL);
+    }
 
  return;
 } /* ay_rrib_pushattribs */
