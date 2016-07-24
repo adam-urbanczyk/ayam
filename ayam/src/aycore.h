@@ -619,10 +619,10 @@ int ay_object_copy(ay_object *src, ay_object **dst);
  */
 int ay_object_copymulti(ay_object *src, ay_object **dst);
 
-/** Tcl command to inquire whether an object has children.
+/** Tcl command to inquire whether an object has certain properties.
  */
-int ay_object_haschildtcmd(ClientData clientData, Tcl_Interp *interp,
-			   int argc, char *argv[]);
+int ay_object_ishastcmd(ClientData clientData, Tcl_Interp *interp,
+			int argc, char *argv[]);
 
 /** Tcl command to get the type or name of an object.
  */

@@ -12,7 +12,7 @@
 
 #include "ayam.h"
 
-/* object.c - general object management*/
+/* object.c - general object management */
 
 /* ay_object_defaults:
  *  reset object attributes of ay_object <o> to safe default settings
@@ -870,8 +870,8 @@ ay_object_copymulti(ay_object *src, ay_object **dst)
 } /* ay_object_copymulti */
 
 
-/** ay_object_haschildtcmd:
- *  Check whether an object has child objects.
+/** ay_object_ishastcmd:
+ *  Check whether an object has certain properties (i.e. has child objects).
  *  Implements the \a hasChild scripting interface command.
  *  See also the corresponding section in the \ayd{schaschild}.
  *
@@ -879,8 +879,8 @@ ay_object_copymulti(ay_object *src, ay_object **dst)
  *  endlevel) child object
  */
 int
-ay_object_haschildtcmd(ClientData clientData, Tcl_Interp *interp,
-		       int argc, char *argv[])
+ay_object_ishastcmd(ClientData clientData, Tcl_Interp *interp,
+		    int argc, char *argv[])
 {
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
@@ -895,22 +895,92 @@ ay_object_haschildtcmd(ClientData clientData, Tcl_Interp *interp,
   while(sel)
     {
       o = sel->object;
+      sel = sel->next;
 
-      if(o->down && o->down != ay_endlevel)
-	res = yes;
+      if(argv[0][0] == 'h')
+	{
+	  /* is has... */
+	  switch(argv[0][3])
+	    {
+	    case 'C':
+	      /* is hasChild */
+	      if(o->down && o->down != ay_endlevel)
+		res = yes;
+	      else
+		res = no;
+	      break;
+	    case 'M':
+	      /* is hasMat */
+	      if(o->mat)
+		res = yes;
+	      else
+		res = no;
+	      break;
+	    case 'R':
+	      /* is hasRefs */
+	      if(o->refcount)
+		res = yes;
+	      else
+		res = no;
+	      break;
+	    case 'T':
+	      /* is hasTrafo */
+	      if(AY_ISTRAFO(o))
+		res = yes;
+	      else
+		res = no;
+	      break;
+	    default:
+	      /* break the loop */
+	      sel = NULL;
+	      break;
+	    }
+	}
       else
-	res = no;
+	{
+	  /* is is... */
+	  switch(argv[0][3])
+	    {
+	    case 'C':
+	      /* is isCurve */
+	      if(o->type == AY_IDNCURVE)
+		res = yes;
+	      else
+		{
+		  if(ay_provide_object(o, AY_IDNCURVE, NULL) == AY_OK)
+		    res = yes;
+		  else
+		    res = no;
+		}
+	      break;
+	    case 'S':
+	      /* is isSurface */
+	      if(o->type == AY_IDNPATCH)
+		res = yes;
+	      else
+		{
+		  if(ay_provide_object(o, AY_IDNPATCH, NULL) == AY_OK)
+		    res = yes;
+		  else
+		    res = no;
+		}
+	      break;
+	    default:
+	      /* break the loop */
+	      sel = NULL;
+	      break;
+	    }
+	}
 
       if(ay_selection->next)
 	Tcl_AppendElement(interp, res);
       else
 	Tcl_SetResult(interp, res, TCL_VOLATILE);
 
-      sel = sel->next;
-    }
+    } /* while sel */
 
  return TCL_OK;
-} /* ay_object_haschildtcmd */
+} /* ay_object_ishastcmd */
 
 
 /** ay_object_gettypeornametcmd:
