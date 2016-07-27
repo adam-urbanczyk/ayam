@@ -531,6 +531,7 @@ ay_draw_annos(struct Togl *togl, int draw_offset)
  return;
 } /* ay_draw_annos */
 
+#define AY_PI4 AY_PI*0.25
 
 /* ay_draw_grid:
  *  draw the current grid
@@ -544,7 +545,7 @@ ay_draw_grid(struct Togl *togl)
  int height = Togl_Height(togl);
  double aspect = (double)width / (double)height;
  double grid = view->grid;
- double j, dx, dy;
+ double a, j, h, dx, dy, dz;
  double minwinx = 0.0, minwiny = 0.0, maxwinx = 0.0, maxwiny = 0.0;
  double m[16];
  GLdouble mp[16], mm[16], owinx, owiny, owinz, gwinx, gwiny, gwinz;
@@ -699,6 +700,11 @@ ay_draw_grid(struct Togl *togl)
       maxwinx = minwinx + 2*((aspect * view->zoom)) + grid;
       maxwiny = minwiny + 2*(view->zoom) + grid;
 
+      dx = fabs(view->from[0]-view->to[0]);
+      dy = fabs(view->from[1]-view->to[1]);
+      dz = fabs(view->from[2]-view->to[2]);
+      j = 2500;
+
       glColor3f((GLfloat)ay_prefs.grr, (GLfloat)ay_prefs.grg,
 		(GLfloat)ay_prefs.grb);
 
@@ -710,6 +716,27 @@ ay_draw_grid(struct Togl *togl)
 	{
 	case AY_VTFRONT:
 	case AY_VTTRIM:
+	  if(dx > AY_EPSILON)
+	    {
+	      h = sqrt(dx*dx+dz*dz);
+	      a = asin(dx/h);
+	      if(fabs(a) > AY_EPSILON)
+		{
+		  minwinx -= a/AY_PI4*j;
+		  maxwinx += a/AY_PI4*j;
+		}
+	    }
+	  if(dy > AY_EPSILON)
+	    {
+	      h = sqrt(dy*dy+dz*dz);
+	      a = asin(dy/h);
+	      if(fabs(a) > AY_EPSILON)
+		{
+		  minwiny -= a/AY_PI4*j;
+		  maxwiny += a/AY_PI4*j;
+		}
+	    }
+
 	  /* vertical lines */
 	  for(j = 0.0; j < maxwinx; j += view->grid)
 	    {
@@ -735,6 +762,27 @@ ay_draw_grid(struct Togl *togl)
 	    }
 	  break;
 	case AY_VTSIDE:
+	  if(dz > AY_EPSILON)
+	    {
+	      h = sqrt(dz*dz+dx*dx);
+	      a = asin(dz/h);
+	      if(fabs(a) > AY_EPSILON)
+		{
+		  minwinx -= a/AY_PI4*j;
+		  maxwinx += a/AY_PI4*j;
+		}
+	    }
+	  if(dy > AY_EPSILON)
+	    {
+	      h = sqrt(dy*dy+dx*dx);
+	      a = asin(dy/h);
+	      if(fabs(a) > AY_EPSILON)
+		{
+		  minwiny -= a/AY_PI4*j;
+		  maxwiny += a/AY_PI4*j;
+		}
+	    }
+
 	  /* vertical lines */
 	  for(j = 0.0; j < maxwinx; j += view->grid)
 	    {
@@ -760,6 +808,26 @@ ay_draw_grid(struct Togl *togl)
 	    }
 	  break;
 	case AY_VTTOP:
+	  if(dx > AY_EPSILON)
+	    {
+	      h = sqrt(dx*dx+dy*dy);
+	      a = asin(dx/h);
+	      if(fabs(a) > AY_EPSILON)
+		{
+		  minwinx -= a/AY_PI4*j;
+		  maxwinx += a/AY_PI4*j;
+		}
+	    }
+	  if(dz > AY_EPSILON)
+	    {
+	      h = sqrt(dz*dz+dy*dy);
+	      a = asin(dz/h);
+	      if(fabs(a) > AY_EPSILON)
+		{
+		  minwiny -= a/AY_PI4*j;
+		  maxwiny += a/AY_PI4*j;
+		}
+	    }
 	  /* vertical lines */
 	  for(j = 0.0; j < maxwinx; j += view->grid)
 	    {
@@ -790,7 +858,7 @@ ay_draw_grid(struct Togl *togl)
 	  maxwinx = (25.0 * view->grid);
 	  maxwiny = (25.0 * view->grid);
 	  /* draw lines */
-	  for(j = -25.0 * view->grid; j < maxwinx; j += view->grid)
+	  for(j = -25.0 * view->grid; j <= maxwinx; j += view->grid)
 	    {
 	      /* vertical */
 	      glVertex3d((GLdouble)j, (GLdouble)0.0, (GLdouble)minwiny);
