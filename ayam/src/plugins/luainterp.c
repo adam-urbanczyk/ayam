@@ -101,6 +101,13 @@ static const struct luaL_Reg luainterplib [] = {
       {"nameOb", luainterp_wraptclcmd},
       {"showOb", luainterp_wraptclcmd},
       {"hideOb", luainterp_wraptclcmd},
+      {"hasTag", luainterp_wraptclcmd},
+      {"hasChild", luainterp_wraptclcmd},
+      {"hasMat", luainterp_wraptclcmd},
+      {"hasRefs", luainterp_wraptclcmd},
+      {"hasTrafo", luainterp_wraptclcmd},
+      {"isCurve", luainterp_wraptclcmd},
+      {"isSurface", luainterp_wraptclcmd},
 
       {"mergePo", luainterp_wraptclcmd},
       {"optiPo", luainterp_wraptclcmd},
@@ -124,6 +131,7 @@ static const struct luaL_Reg luainterplib [] = {
       {"selOb", luainterp_wraptclcmd},
       {"getSel", luainterp_wraptclcmd},
       {"sL", luainterp_wraptclcmd},
+
       {"setTags", luainterp_wraptclcmd},
       {"addTag", luainterp_wraptclcmd},
       {"setTag", luainterp_wraptclcmd},

@@ -122,6 +122,12 @@ static JSFunctionSpec jsinterp_global_functions[] = {
   {"nameOb", jsinterp_wraptcmdargs, 0, 0, 0},
   {"showOb", jsinterp_wraptcmdargs, 0, 0, 0},
   {"hideOb", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"hasChild", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"hasMat", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"hasRefs", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"hasTrafo", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"isCurve", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"isSurface", jsinterp_wraptcmdargs, 0, 0, 0},
 
   {"mergePo", jsinterp_wraptcmd, 0, 0, 0},
   {"optiPo", jsinterp_wraptcmd, 0, 0, 0},
@@ -145,6 +151,7 @@ static JSFunctionSpec jsinterp_global_functions[] = {
   {"selOb", jsinterp_wraptcmd, 0, 0, 0},
   {"getSel", jsinterp_wraptcmdargs, 0, 0, 0},
   {"sL", jsinterp_wraptcmd, 0, 0, 0},
+
   {"setTags", jsinterp_wraptcmdargs, 0, 0, 0},
   {"addTag", jsinterp_wraptcmdargs, 0, 0, 0},
   {"setTag", jsinterp_wraptcmdargs, 0, 0, 0},
