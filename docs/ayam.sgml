@@ -8348,9 +8348,16 @@ Note that the <tt/"Translate"/ attributes of the cross section curve
 will be fully ignored. All other transformation attributes
 (of cross section and trajectory) will be used to determine
 place, orientation, and size of the Sweep object.
-<p>
 The cross section curve has to be defined in the YZ-plane of the
-Sweep objects coordinate system. This means that a simple circular
+Sweep objects coordinate system. See also the image below.
+<p>
+<figure loc="ht">
+<eps file="pics/sweepc.ps" height="5cm">
+<img src="pics/sweepc.gif">
+<caption>Sweep Cross Section (l), Trajectory (r), Surface (blue)</caption>
+</figure>
+
+This means that a simple circular
 curve as e.g.~created with the toolbox has to be rotated by 90 degrees
 around the Y-axis. This can be done either by modifying the control points,
 or by setting the transformation attributes accordingly.
@@ -8413,7 +8420,6 @@ Sweep|NCurve<f/<sup/&lowast;//|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline><
 <caption>Sweep Object Capabilities</caption>
 </table>
 
-<#if out=latex><x/newpage/</#if>
 <sect3>SweepAttr Property<label id="swp"><label id="sweepattrprop">
 <p><#if out=latex>&nbsp;<newline></#if>
 The <tt/"Type"/ attribute controls whether the
@@ -18416,10 +18422,13 @@ the script file.
 The script <tt>"dtree.tcl"</tt> (dynamic/fast tree) replaces some of
 BWidgets tree code for faster interaction with many objects.
 
-If activated, the tree widget no longer creates a canvas item for every node.
-Instead, there are only as many canvas items as there are nodes visible
-in the current scroll region. Therefore, working with many objects in
-long lists becomes much faster.
+The original BWidget tree widget (and accompanying script code in Ayam)
+creates a canvas item for every object in the scene, even if it is not visible. Therefore, tree update operations can get slow,
+when a scene has many objects.
+
+If the dtree script is active, there are only as many canvas items as
+there are nodes visible in the current scroll region. Therefore, working
+with many objects in long lists becomes much faster.
 
 <sect2>Control Vertice View<label id="cvviewtcl">
 <p>
