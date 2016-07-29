@@ -15169,7 +15169,75 @@ hasChild:
  <item>Synopsis: <tt>"hasChild"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: This command returns 1 if the selected object
-has child objects, otherwise it returns 0.
+has child objects, otherwise it returns 0. If multiple objects are
+selected, a list is returned.
+</itemize>
+
+<#if out=latex><x/newpage/</#if>
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
+<label id="schasmat">
+hasMat:
+<itemize>
+ <item>Synopsis: <tt>"hasMat"</tt>
+ <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Description: This command returns 1 if the selected object
+has a material assigned, otherwise it returns 0. If multiple objects are
+selected, a list is returned.
+</itemize>
+
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
+<label id="schasrefs">
+hasRefs:
+<itemize>
+ <item>Synopsis: <tt>"hasRefs"</tt>
+ <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Description: This command returns 1 if the selected object
+has references (e.g.~it is a master), otherwise it returns 0.
+If multiple objects are selected, a list is returned.
+</itemize>
+
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
+<label id="schastrafo">
+hasTrafo:
+<itemize>
+ <item>Synopsis: <tt>"hasTrafo"</tt>
+ <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Description: This command returns 1 if the selected object
+has non-default transformation attributes, otherwise it returns 0.
+If multiple objects are selected, a list is returned.
+</itemize>
+
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
+<label id="sciscurve">
+isCurve:
+<itemize>
+ <item>Synopsis: <tt>"isCurve"</tt>
+ <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Description: This command returns 1 if the selected object
+is (or provides/converts to) a parametric curve, otherwise it returns 0.
+If multiple objects are selected, a list is returned.
+</itemize>
+
+
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
+<label id="scissurface">
+isSurface:
+<itemize>
+ <item>Synopsis: <tt>"isSurface"</tt>
+ <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Description: This command returns 1 if the selected object
+is (or provides/converts to) a parametric surface, otherwise it returns 0.
+If multiple objects are selected, a list is returned.
 </itemize>
 
 
@@ -22666,7 +22734,10 @@ Index:
 <item>Half Size: <ref id="vmconf" name="view menu entry">
 <item>HandleSize: <ref id="prefmodel" name="preference setting">
 <item>hasChild: <ref id="schaschild" name="scripting interface command">
+<item>hasMat: <ref id="schasmat" name="scripting interface command">
+<item>hasRefs: <ref id="schasrefs" name="scripting interface command">
 <item>hasTag: <ref id="schastag" name="scripting interface command">
+<item>hasTrafe: <ref id="schastrafo" name="scripting interface command">
 <item>Height:
 <itemize>
 <item><ref id="rio" name="RenderMan interface option">,
@@ -22762,6 +22833,7 @@ Index:
 <item>IPatch: <ref id="ipatchobj" name="IPatch object">
 <item>isCompNC: <ref id="sciscompnc" name="scripting interface command">
 <item>isCompNP: <ref id="sciscompnp" name="scripting interface command">
+<item>isCurve: <ref id="sciscurve" name="scripting interface command">
 <item>IsLocal: <ref id="lip" name="Light attribute">
 <item>IsoLevel: <ref id="moattr" name="MetaObj attribute">
 <item>IsOn: <ref id="lip" name="Light attribute">
@@ -22770,6 +22842,7 @@ Index:
 <item><ref id="ncattr" name="NCurve attribute">,
 <item><ref id="npattr" name="NPatch attribute">,
 <item><ref id="pmattr" name="PatchMesh attribute">
+<item>isSurface: <ref id="scissurface" name="scripting interface command">
 </itemize>
 </list>
 
