@@ -9,6 +9,52 @@
 
 # ms.tcl - msgcat "equivalent"
 
+# ms_create:
+# create a translation file from english blueprint
+proc ms_create { lang } {
+    global ms::en ms::$lang
+
+    set fname ${lang}.tcl
+    set newfile [open $fname w]
+
+    # write header
+    puts $newfile "# Emacs, this is -*- Mode: Tcl -*-\n"
+    puts $newfile "# This is a translation file for Ayam, a free"
+    puts $newfile "# 3D modeling environment for the RenderMan interface."
+    puts $newfile "# See: http://www.ayam3d.org/\n"
+    puts $newfile "# Edit, if you wish, but keep in mind:"
+    puts $newfile "# _This file is parsed by Tcl!_\n"
+
+    # write translations
+    puts $newfile "ms_init $lang\n"
+
+    set map {"\n" "" "\\" "" "\"" "\\\""}
+    set names [lsort [array names ms::en]]
+    foreach elem $names {
+	set name "ms::${lang}($elem)"
+	if { [info exists $name] } {
+	    eval [subst "set val {\$name}"]
+	    set val [string map $map $val]
+	    puts $newfile "ms_set $lang $elem \"$val\""
+	} else {
+	    eval [subst "set val {\$ms::en($elem)}"]
+	    set val [string map $map $val]
+	    puts $newfile "#ms_set $lang $elem \"$val\""
+	}
+    }
+
+    # write footer
+    puts $newfile "\nreturn;"
+
+    close $newfile
+
+    ayError 4 "ms_create" "Done creating translation file \"$fname\"."
+
+ return;
+}
+# ms_create
+
+
 # ms_set:
 #  fill language specific text database for language <lang>;
 #  the entry for GUI element <name> will get the description <val>
@@ -26,8 +72,13 @@ proc ms_set { lang name val } {
 # ms_init:
 #  initialize ms module for language <lang> by creating a dummy entry
 proc ms_init { lang } {
+    global ay
 
     array set ms::$lang { Dummy 1 }
+
+    if { [lsearch $ay(locales) $lang] == -1 } {
+	lappend ay(locales) $lang
+    }
 
  return;
 }
