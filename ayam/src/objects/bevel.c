@@ -420,6 +420,7 @@ ay_bevel_notifycb(ay_object *o)
  int ay_status = AY_OK;
  int mode = 0;
  ay_bevel_object *bevel = NULL;
+ ay_nurbcurve_object *nc = NULL;
  ay_object *npatch = NULL, *curve = NULL, *bcurve = NULL, *t = NULL;
  ay_object *alignedcurve = NULL;
  ay_object *pobject1 = NULL, *pobject2 = NULL, **nextcb;
@@ -429,6 +430,7 @@ ay_bevel_notifycb(ay_object *o)
  int is_planar = AY_TRUE, has_b = AY_FALSE;
  int b_type, b_sense, is_round = AY_FALSE, force3d = AY_FALSE;
  int nstride, tstride = 0, freen = AY_FALSE, freet = AY_FALSE;
+ unsigned int nlen = 0, tlen = 0;
  double b_radius, tolerance;
  double *normals = NULL, *tangents = NULL, *mn = NULL, v[3];
 
@@ -559,6 +561,7 @@ ay_bevel_notifycb(ay_object *o)
   else
     {
       /* get normals and tangents from PV tags */
+      nc = (ay_nurbcurve_object *)curve->refine;
       tag = curve->tags;
       while(tag)
 	{
@@ -572,17 +575,25 @@ ay_bevel_notifycb(ay_object *o)
 	    }
 	  if(ay_pv_checkndt(tag, ay_prefs.normalname, "varying", "n"))
 	    {
-	      ay_pv_convert(tag, 0, NULL, (void**)&normals);
+	      ay_pv_convert(tag, 0, &nlen, (void**)&normals);
 	      nstride = 3;
 	      freen = AY_TRUE;
+
+	      if(nlen != (unsigned int)nc->length)
+		goto cleanup;
+
 	      if(tangents)
 		break;
 	    }
 	  if(ay_pv_checkndt(tag, ay_prefs.tangentname, "varying", "n"))
 	    {
-	      ay_pv_convert(tag, 0, NULL, (void**)&tangents);
+	      ay_pv_convert(tag, 0, &tlen, (void**)&tangents);
 	      tstride = 3;
 	      freet = AY_TRUE;
+
+	      if(tlen != (unsigned int)nc->length)
+		goto cleanup;
+
 	      if(normals)
 		break;
 	    }
