@@ -958,7 +958,7 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
 	  *data = fa;
 	}
       if(datalen)
-	*datalen = i*2;
+	*datalen = i/2;
       break;
 
     case 'c':
@@ -1015,7 +1015,7 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
 	  *data = fa;
 	}
       if(datalen)
-	*datalen = i*3;
+	*datalen = i/3;
     break;
 
     case 'd':
@@ -1076,7 +1076,7 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
 	  *data = fa;
 	}
       if(datalen)
-	*datalen = i*4;
+	*datalen = i/4;
     break;
 
     default:
