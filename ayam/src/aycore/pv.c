@@ -862,6 +862,9 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
   c2++;
   sscanf(c2, "%u", &count);
 
+  if(!count)
+    return AY_ERROR;
+
   /* find the data */
   c3 = strchr(c2, ',');
   if(!c3)
@@ -885,7 +888,7 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
 	      i++;
 	      c3++;
 	    }
-	  while((c3 = strchr(c3, ',')));
+	  while((c3 = strchr(c3, ',')) && (i < count));
 	  /* prepare result */
 	  *data = da;
 	}
@@ -903,12 +906,12 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
 	      i++;
 	      c3++;
 	    }
-	  while((c3 = strchr(c3, ',')));
+	  while((c3 = strchr(c3, ',')) && (i < count));
 	  /* prepare result */
 	  *data = fa;
 	}
       if(datalen)
-	*datalen = count;
+	*datalen = i;
       break;
 
     case 'g':
@@ -929,7 +932,7 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
 		break;
 	      c3++;
 	    }
-	  while((c3 = strchr(c3, ',')));
+	  while((c3 = strchr(c3, ',')) && (i < count*2));
 	  /* prepare result */
 	  *data = da;
 	}
@@ -950,12 +953,12 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
 		break;
 	      c3++;
 	    }
-	  while((c3 = strchr(c3, ',')));
+	  while((c3 = strchr(c3, ',')) && (i < count*2));
 	  /* prepare result */
 	  *data = fa;
 	}
       if(datalen)
-	*datalen = count;
+	*datalen = i*2;
       break;
 
     case 'c':
@@ -983,7 +986,7 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
 		break;
 	      c3++;
 	    }
-	  while((c3 = strchr(c3, ',')));
+	  while((c3 = strchr(c3, ',')) && (i < count*3));
 	  /* prepare result */
 	  *data = da;
 	}
@@ -1007,12 +1010,12 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
 		break;
 	      c3++;
 	    }
-	  while((c3 = strchr(c3, ',')));
+	  while((c3 = strchr(c3, ',')) && (i < count*3));
 	  /* prepare result */
 	  *data = fa;
 	}
       if(datalen)
-	*datalen = count;
+	*datalen = i*3;
     break;
 
     case 'd':
@@ -1040,7 +1043,7 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
 		break;
 	      c3++;
 	    }
-	  while((c3 = strchr(c3, ',')));
+	  while((c3 = strchr(c3, ',')) && (i < count*4));
 	  /* prepare result */
 	  *data = da;
 	}
@@ -1068,12 +1071,12 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
 		break;
 	      c3++;
 	    }
-	  while((c3 = strchr(c3, ',')));
+	  while((c3 = strchr(c3, ',')) && (i < count*4));
 	  /* prepare result */
 	  *data = fa;
 	}
       if(datalen)
-	*datalen = count;
+	*datalen = i*4;
     break;
 
     default:
