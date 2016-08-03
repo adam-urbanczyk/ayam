@@ -214,7 +214,7 @@ ay_geom_extractmiddlepoint(int mode, double *cv, int cvlen, int cvstride,
   if(!result)
     return AY_ENULL;
 
-  memset(result, 0, 4*sizeof(double));
+  memset(result, 0, 3*sizeof(double));
 
   if(mode == 0)
     {
