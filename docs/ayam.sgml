@@ -9226,11 +9226,14 @@ the appropriate curve type should be set in the curve object,
 otherwise the bevelled surface may expose defects.
 <p>
 Since Ayam 1.19 the Bevel object supports a second parameter curve
-that defines the bevels cross section shape. It should run from
-0,0 to 1,1. If present, the type parameter is ignored as the shape
-of the bevel is completely defined by the second curve.
-Note that even if the curve should end at 1,1, this is not mandatory
-and therefore allows for bevels of differing width and height to be created.
+that defines the bevels cross section shape. It should be defined in the
+XY plane and run from
+(<f/0/, <f/0/) to (<f/1/, <f/1/).
+If this curve is present, the Bevel type parameter is ignored as the shape
+of the bevel is already completely defined.
+Note that even though the curve should end at (<f/1/, <f/1/), this is not
+mandatory and therefore allows for bevels of differing width and height
+to be created.
 <p>
 The Bevel object watches the child object and adapts to it automatically
 via the notification mechanism.
@@ -9283,7 +9286,7 @@ See also the following image for a comparison of some bevel types.
 <figure loc="ht">
 <eps file="pics/btypes.ps" height="4.5cm">
 <img src="pics/btypes.gif">
-<caption>Bevel Types (l: Round, m: RoundToCap, r: RoundToNormal)</caption>
+<caption>Bevel Types (<em/l/: Round, <em/m/: RoundToCap, <em/r/: RoundToNormal)</caption>
 </figure>
 
 Note that the bevel types <tt/"RoundCapped"/ and <tt/"LinearCapped"/
@@ -9306,6 +9309,9 @@ for the bevel radius.
 <item><tt/"Force3D"/ switches to 3D mode for all bevel types; if this
 is enabled, non-planar parameter curves are supported, but normals
 and tangents must be present as PV tag on the parameter curve.
+However, when bevels are created via the Bevels property, the normals and
+tangents will be extracted from the progenitor surface automatically and no
+PV tags need to be created.
 </itemize>
 <#if out=latex><x/newpage/</#if>
 <p>
@@ -9320,9 +9326,6 @@ uS;sL
 addTag PV "N,varying,n,4, -1,0,0, 1,0,0, 0,1,0, -1,0,0"
 addTag PV "T,varying,n,4, 0,0,1, 0,0,1, 0,0,1, 0,0,1"
 </verb></tscreen>
-However, when bevels are created via the Bevels property, the normals and
-tangents will be extracted from the surface automatically and no
-PV tags need to be created.
 <p>
 Also note that the planarity and exact shape defined by rational
 coordinate values (e.g.~circular arcs) will not be preserved by
@@ -22003,6 +22006,15 @@ Helping to make Ayam even better will spice up your life too.
 Here is how to do it:
 <enum>
 <item>Write/translate tutorials.
+<item>Translate some balloon help texts. Create a new translation script file
+by entering into the Ayam console
+<tscreen>
+&raquo;&thinsp;ms_create lang
+</tscreen>
+(replacing <tt/lang/ with a two character language designation like <tt/it/
+for italian).
+Now edit/translate the new script file. Test it out by adding it to the
+<tt/"Scripts"/ preference setting.
 <item>Create and submit example objects, scenes, and images.
 <item>Implement custom objects like trees, landscape, sky, XSplines,
 T-Splines, or whatever you can think of. Note that the license of Ayam
