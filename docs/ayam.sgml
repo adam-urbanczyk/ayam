@@ -6228,7 +6228,7 @@ eight disks.
 
 <sect2>Disk Object<label id="diskobj">
 <p>
-A disk in the XY plane, centered at the origin of the object coordinate system.
+A disk in the XY-plane, centered at the origin of the object coordinate system.
 <p>
 The following table briefly lists some capabilities of the Disk object.
 <p>
@@ -6268,7 +6268,7 @@ RiDisk(...);
 <sect2>Cone Object<label id="coneobj">
 <p>
 A cone, centered at the origin of the object coordinate system,
-with the base in the XY plane.
+with the base in the XY-plane.
 <p>
 The following table briefly lists some capabilities of the Cone object.
 <p>
@@ -7049,7 +7049,7 @@ curve).
 </figure>
 <p>
 The NCircle object creates a circular NURBS curve or a circular arc in
-the XY plane centered at the origin with designated radius and start/end
+the XY-plane centered at the origin with designated radius and start/end
 angles (see image above).<footnote>Since 1.12.</footnote>
 <p>
 In order to revert the created NURBS curve
@@ -8082,11 +8082,11 @@ with weights!
 The sharp corners between caps and extrusion may be beveled.
 <p>
 The axis of the extrusion is always the Z-axis.
-The parameter curves should be defined in the XY plane.
+The parameter curves should be defined in the XY-plane.
 If not, they will be squashed down to this plane.
 See section
 <ref id="toxyt" name="To XY Tool"> for information on
-how to easily achieve curves in the XY plane.
+how to easily achieve curves in the XY-plane.
 <p>
 The dimensions and orders of the extruded surface(s) will be taken from the
 respective parameter curves as follows: width and order in U direction
@@ -9227,7 +9227,7 @@ otherwise the bevelled surface may expose defects.
 <p>
 Since Ayam 1.19 the Bevel object supports a second parameter curve
 that defines the bevels cross section shape. It should be defined in the
-XY plane and run from
+XY-plane and run from
 (<f/0/, <f/0/) to (<f/1/, <f/1/).
 If this curve is present, the Bevel type parameter is ignored as the shape
 of the bevel is already completely defined.
@@ -11516,9 +11516,14 @@ or a point: "0.4,0.5,1.0").
 <p>
 Some examples for valid RiAttribute tags:
 <tscreen><verb>
-RiAttribute render,truedisplacement,i,1
-RiAttribute dice,numprobes,j,3,3
-RiAttribute radiosity,specularcolor,c,0.5,0.5,0.5
+RiAttribute
+render,truedisplacement,i,1
+
+RiAttribute
+dice,numprobes,j,3,3
+
+RiAttribute
+radiosity,specularcolor,c,0.5,0.5,0.5
 </verb></tscreen>
 <p>
 <bf/Notes/
@@ -11542,8 +11547,11 @@ The syntax is similar to the <tt/"RiAttribute"/ tag type, see above.
 <bf/Example/
 <p>
 <tscreen><verb>
-RiOption radiosity,steps,i,16
-RiOption shadow,bias0,f,0.01
+RiOption
+radiosity,steps,i,16
+
+RiOption
+shadow,bias0,f,0.01
 </verb></tscreen>
 <p>
 <bf/Notes/
@@ -11568,16 +11576,19 @@ to the new specified values.
 <p>
 <bf/Example/
 <p>
-<tscreen><verb>TC 0,0,10,0,0,10,10,10</verb></tscreen>
+<tscreen><verb>TC
+0,0,10,0,0,10,10,10</verb></tscreen>
 Changes the texture coordinate space so that more and smaller tiles
 of a texture would be displayed on a primitive.
 
-<tscreen><verb>TC 0,0,0,1,1,0,1,1</verb></tscreen>
+<tscreen><verb>TC
+0,0,0,1,1,0,1,1</verb></tscreen>
 Flips the texture coordinate space over two corners.
 A shader normally generating vertical stripes will create
 horizontal stripes now.
 
-<tscreen><verb>TC 0,1,0,0,1,1,1,0</verb></tscreen>
+<tscreen><verb>TC
+0,1,0,0,1,1,1,0</verb></tscreen>
 Turns the texture coordinate space by 90 degrees.
 A shader normally generating vertical stripes will create
 horizontal stripes now.
@@ -11691,10 +11702,12 @@ consisting of <tt/&lt;ndata&gt;/ elements of type <tt/&lt;type&gt;/.
 <p>
 <bf/Examples/
 <p>
-<tscreen><verb>PV mycolor,constant,c,1,0,1,0</verb></tscreen>
+<tscreen><verb>PV
+mycolor,constant,c,1,0,1,0</verb></tscreen>
 adds a single color value (0,1,0), which is the same all over the primitive,
 the respective surface shader should have a parameter <tt/"color mycolor"/;
-<tscreen><verb>PV mys,varying,f,4,0.1,0.2,0.3,0.4</verb></tscreen>
+<tscreen><verb>PV
+mys,varying,f,4,0.1,0.2,0.3,0.4</verb></tscreen>
 could be used to add a distinct float value to each corner point of a
 four point NURBS patch (of order, width, and height 2),
 the respective surface shader should have a parameter
@@ -11738,7 +11751,8 @@ of triplets consisting of name, type, and value of a parameter.
 <p>
 A RiHider tag could look like this:
 <p>
-<tscreen><verb>RiHider hidden,depthfilter,s,midpoint</verb></tscreen>
+<tscreen><verb>RiHider
+hidden,depthfilter,s,midpoint</verb></tscreen>
 
 <sect2>RiDisplay Tag<label id="ridtag">
 <p>
@@ -11760,7 +11774,8 @@ of triplets consisting of name, type, and value of a parameter.
 <p>
 A RiDisplay tag to add output of the depth-buffer information to the
 file <tt/"imagez.tif"/ could look like this:
-<tscreen><verb>RiDisplay imagez.tif,file,z</verb></tscreen>
+<tscreen><verb>RiDisplay
+imagez.tif,file,z</verb></tscreen>
 <p>
 <bf/Notes/
 <p>
@@ -11846,7 +11861,8 @@ be started with the main menu entry <tt>"Tools/Surface/Tesselate"</tt>
 <bf/Example/
 <p>
 A TP tag could look like this:
-<tscreen><verb>TP 1,0.5,0.6</verb></tscreen>
+<tscreen><verb>TP
+1,0.5,0.6</verb></tscreen>
 
 <sect2>DC (Depth Complexity) Tag<label id="dctag">
 <p>
@@ -11862,7 +11878,8 @@ for more information regarding the depth complexity value.
 <bf/Example/
 <p>
 A DC tag (valid for e.g.~a torus) could look like this:
-<tscreen><verb>DC 2</verb></tscreen>
+<tscreen><verb>DC
+2</verb></tscreen>
 
 <sect2>NP (New Property) Tag<label id="nptag">
 <p>
@@ -11875,7 +11892,19 @@ property list box.
 <p>
 <bf/Example/
 <p>
-<tscreen><verb>NP Transformations</verb></tscreen>
+<tscreen><verb>NP
+Transformations</verb></tscreen>
+This tag can e.g.~be added to Script objects that create objects.
+<p>
+Any script controlled property GUI of a Script object must also be
+enabled using a NP tag like this:
+<tscreen><verb>NP
+MyProperty</verb></tscreen>
+<p>
+<bf/Notes/
+<p>
+NP tags can be managed more easily using a specialized dialog that
+is available in the main menu <tt>"Special/Tags/Add Property"</tt>.
 
 <sect2>RP (Remove Property) Tag<label id="rptag">
 <p>
@@ -11888,11 +11917,23 @@ and values may still be set using the scripting interface.
 <p>
 <bf/Example/
 <p>
-<tscreen><verb>RP Script</verb></tscreen>
+<tscreen><verb>RP
+Script</verb></tscreen>
 removes direct access to the Script property of a Script object.
 Ideally, the Script object also has a <tt/"NP"/ tag, to allow
 direct control of script parameters. This way, the user does not
 see the script (code), just a clean parameter GUI.
+<p>
+Here is another example: the tag
+<tscreen><verb>RP
+Transformations</verb></tscreen>
+can be added to Instance objects to turn them into references
+(instances without own transformation attributes).
+<p>
+<bf/Notes/
+<p>
+RP tags can be managed more easily using a specialized dialog that
+is available in the main menu <tt>"Special/Tags/Remove Property"</tt>.
 
 <sect2>BNS (Before Notify Script) Tag<label id="bnstag">
 <p>
@@ -11902,18 +11943,23 @@ that object starts.
 A notification, in turn, will be executed because e.g.~one of the children
 of the object changed (see also section
 <ref id="toolobj" name="The Modelling Concept Tool-Objects">).
+When the script runs, the respective object with the BNS tag will already
+be selected. Current level and selection will be restored when the
+script finishes, neither need to be done by the script.
 <p>
 <bf/Example/
 <p>
 A simple BNS tag could look like this:
-<tscreen><verb>BNS puts "notify callback about to fire"</verb></tscreen>
+<tscreen><verb>BNS
+puts "notify callback about to fire"</verb></tscreen>
 <p>
 A more useful example (that is also available as example scene
 <tt>"ayam/scn/scripts/bnstag.ay"</tt>):
-<tscreen><verb>BNS getProp;set ::RevolveAttrData(Sections) &hellip;
+<tscreen><verb>BNS
+getProp;set ::RevolveAttrData(Sections) &hellip;
 &hellip; \[expr int(\$::RevolveAttrData(ThetaMax)/10)\];setProp</verb></tscreen>
-This tag computes the number of sections from the thetamax value
-of a Revolve object. Whenever the thetamax is changed, the number
+This tag computes the number of sections from the ThetaMax value
+of a Revolve object. Whenever the ThetaMax is changed, the number
 of sections adapt, so that each section always spans the same angle.
 The backslash characters are only necessary when entering the
 script in the add/edit tag dialog. They merely avoid that the dialog
@@ -11922,6 +11968,14 @@ needed because the C code for the <tt/setProp/ command of the
 RevolveAttr property only looks for integer data in the variable
 <tt/Sections/ and without <tt/int()/ the variable would contain
 incompatible floating point data.
+<p>
+Here is another shorter example; the BNS tag
+<tscreen><verb>BNS
+applyTrafo -all</verb></tscreen>
+makes sure, that a NCurve or NPatch object always has the default
+transformations, as any changes to the transformation attributes
+will immediately be applied to the control points and the transformation
+attributes will be reset in the progress.
 <p>
 <bf/Notes/
 <p>
@@ -11949,6 +12003,9 @@ or by using the main menu entry <tt>"Special/Enable Scripts"</tt>.
 <p>
 If the script of a BNS tag fails, the tag will be disabled by 
 changing the type to DBNS.<footnote>Since 1.24.</footnote>
+<p>
+Also note that BNS tag scripts must not change the scene hierarchy,
+i.e.~they must not create or delete objects or use the object clipboard.
 
 <sect2>ANS (After Notify Script) Tag<label id="anstag">
 <p>
@@ -11958,11 +12015,15 @@ that object completed.
 The notification, in turn, will be executed because e.g.~one of the children
 of the object changed (see also section
 <ref id="toolobj" name="The Modelling Concept Tool-Objects">).
+When the script runs, the respective object with the ANS tag will already
+be selected. Current level and selection will be restored when the
+script finishes, neither need to be done by the script.
 <p>
 <bf/Example/
 <p>
 A simple ANS tag could look like this:
-<tscreen><verb>ANS puts "notify callback completed"</verb></tscreen>
+<tscreen><verb>ANS
+puts "notify callback completed"</verb></tscreen>
 <p>
 <bf/Notes/
 <p>
@@ -11990,6 +12051,9 @@ or by using the main menu entry <tt>"Special/Enable Scripts"</tt>.
 <p>
 If the script of a ANS tag fails, the tag will be disabled by 
 changing the type to DANS.<footnote>Since 1.24.</footnote>
+<p>
+Also note that ANS tag scripts must not change the scene hierarchy,
+i.e.~they must not create or delete objects or use the object clipboard.
 
 <sect2>UMM/VMM (U/V Min Max) Tag<label id="ummtag">
 <p>
@@ -12001,7 +12065,8 @@ modes do not honor those tags, but the RIB export does.
 <bf/Example/
 <p>
 An UMM tag could look like this:
-<tscreen><verb>UMM 0.4,0.6</verb></tscreen>
+<tscreen><verb>UMM
+0.4,0.6</verb></tscreen>
 
 <sect2>BP (Bevel Parameters) Tag<label id="bptag">
 <p>
@@ -12027,7 +12092,8 @@ is either 0 or 1 and may be used to revert the bevel.
 <bf/Example/
 <p>
 A BP tag could look like this:
-<tscreen><verb>BP 0,0,0.1,0</verb></tscreen>
+<tscreen><verb>BP
+0,0,0.1,0</verb></tscreen>
 
 <sect2>CP (Cap Parameters) Tag<label id="cptag">
 <p>
@@ -12053,7 +12119,8 @@ type.
 <bf/Example/
 <p>
 A CP tag could look like this:
-<tscreen><verb>CP 0,0,0,0.5</verb></tscreen>
+<tscreen><verb>CP
+0,0,0,0.5</verb></tscreen>
 
 <sect2>MN (Mean Normal) Tag<label id="mntag">
 <p>
@@ -12066,7 +12133,8 @@ a 3D vector. The vector does not have to be normalized.
 <bf/Example/
 <p>
 A MN tag could look like this:
-<tscreen><verb>MN 0.0,1.0,0.1</verb></tscreen>
+<tscreen><verb>MN
+0.0,1.0,0.1</verb></tscreen>
 
 <sect2>MP (Mean Point) Tag<label id="mptag">
 <p>
@@ -12081,7 +12149,8 @@ the cap. On Cap objects, the cap number may be omitted.
 <bf/Example/
 <p>
 A MP tag could look like this:
-<tscreen><verb>MP 0.5,0.25,0.1,0</verb></tscreen>
+<tscreen><verb>MP
+0.5,0.25,0.1,0</verb></tscreen>
 
 <sect2>XML Tag<label id="xmltag">
 <p>
@@ -12103,13 +12172,19 @@ properly (this is important for GLSL shader source code).
 <bf/Examples/
 <p>
 XML tags could look like this:
-<tscreen><verb>XML &lt;Material shininess='0.7'/&gt;</verb></tscreen>
+<tscreen><verb>XML
+&lt;Material shininess='0.7'/&gt;</verb></tscreen>
+
+to add the shininess attribute to a Material.
+
 <tscreen><verb>XML
 &lt;Appearance&gt;
 &lt;ComposedShader language='GLSL'&gt;
 ...
 &lt;/ComposedShader&gt;
 &lt;/Appearance&gt;</verb></tscreen>
+
+to add a GLSL shader to a Material.
 
 <sect2>Internal Tags
 <p>
@@ -12212,7 +12287,7 @@ These tools create parametric curve objects.
 <tag/Arguments/ Radius, Arc, Sections, Order.
 <tag/Operation/ This tool creates a non-rational B-Spline curve with
 Sections+1+Order (Arc=360.0) or Sections+1+(Order/2) (other Arc values)
-control points in the XY plane. The control points
+control points in the XY-plane. The control points
 are arranged in a circle of the given radius, centered around the origin.
 This gives the curve a circular appearance (see image above) but it
 is <em>not</em> a true circle:
@@ -12251,7 +12326,7 @@ which was created with an arc value of 180.0, 10 sections, and order 4).
 <descrip>
 <tag/Arguments/ Radius, Arc.
 <tag/Operation/ The NURBCircle tool creates a circular NURBS curve
-of desired radius and arc in the XY plane, centered around the origin
+of desired radius and arc in the XY-plane, centered around the origin
 (see also the image above).
 The order of the curve will be 3. The number of control points used
 differs according to the arc, e.g.~9 points for full circles,
@@ -12287,7 +12362,7 @@ the radius of the circle determines the thickness.
 <tag/Operation/ The rectangle tool creates a non-rational,
 piecewise linear, planar, centered NURBS curve of
 rectangular shape and twice the specified width and height
-in the XY plane (see also the image above).
+in the XY-plane (see also the image above).
 
 <tag/Notes/
 The created curve will be marked as closed and the generation
@@ -12312,7 +12387,7 @@ selection. If the current level
 is inside a NPatch object, the respective parent object is used.
 <tag/Operation/ For each selected patch, the TrimRect tool creates a
 non-rational, piecewise linear, planar NURBS curve of rectangular
-shape in the XY plane, that fits in the (u, v) parameter space of this NURBS
+shape in the XY-plane, that fits in the (u, v) parameter space of this NURBS
 patch, for use as outer trim curve. See also the image above, depicting a
 rectangle for a NPatch defined on the knot intervals<newline>
 <f/0.0, 0.0, 1.0, 1.0/<newline>and<newline>
@@ -12911,14 +12986,14 @@ scripting interface command <ref id="scshiftc" name="shiftC">.
 NCurve, ACurve, or ICurve objects from the selection. The curves should be
 planar. Curves that form a single straight line are not supported.
 <tag/Operation/ The control points of the curve(s) will be rotated,
-so that they are in the XY plane of the respective object space defined by
+so that they are in the XY-plane of the respective object space defined by
 the curve object(s). Additionally, the rotation attributes of
 the curve object(s) will be changed so that the curve does not
 change its orientation with regard to other objects or the world space.
 The scale attributes will be reset to 1.0.
 <p>
 See also the image above, where the left curve, planar but not defined
-in the XY plane will be changed, so that it is defined in the XY plane
+in the XY-plane will be changed, so that it is defined in the XY-plane
 (mind the two different object coordinate systems in conjunction with
 the world coordinate system in the middle).
 <tag/Notes/ A reverse operation, apart from undo, would be to apply the
@@ -13178,7 +13253,7 @@ selected and the current level will also be changed.
 the selection.
 <tag/Operation/ The tool creates a Sweep object, moves
 the selected objects to it, and rotates the first curve object
-to the YZ plane. If the cross section curve is of type
+to the YZ-plane. If the cross section curve is of type
 NCurve, ICurve, or ACurve, the control points will be modified
 and the rotation attributes will be reset, other objects will be
 rotated by their transformation attributes. The rotation will
@@ -14708,11 +14783,11 @@ Examples:
 <item><bf/<tt/"crtOb NPatch"//<newline>
 creates a flat patch with width 4, height 4, uorder 4, vorder 4,
 standard (clamped) NURBS knot vectors, control points arranged in a
-equidistant grid in the XY plane from 0 0 0 to 0.75 0.75 0 (all weights 1).
+equidistant grid in the XY-plane from 0 0 0 to 0.75 0.75 0 (all weights 1).
 <item><bf/<tt/"crtOb NPatch -vdy 0 -vdz 0.25"//<newline>
-creates the same patch as above in the XZ plane (ground plane).
+creates the same patch as above in the XZ-plane (ground plane).
 <item><bf/<tt/"crtOb NPatch -udy 0.25"//<newline>
-creates a sheared version of the standard NURBS patch in the XY plane.
+creates a sheared version of the standard NURBS patch in the XY-plane.
 <item><bf/<tt/"crtOb NPatch -udy 0.25 -vdz 0.25"//<newline>
 creates a 3D sheared version of the standard NURBS patch.
 <item><bf/<tt/"crtOb NPatch -width 2 -height 2 -center 1 -udx 2 -vdy 2"//
@@ -14721,7 +14796,7 @@ creates a centered patch with width 2, height 2, uorder 2, vorder 2,
 standard (clamped) NURBS knot vectors, control points at -1 0 0, 1 0 0,
 -1 1 0, 1 1 0 (all weights 1).
 <item><bf/<tt/"crtOb NPatch -width 3 -height 2 -uorder 2 -cv {-1 0 1 1  1 0 1 1  -1 0 0 1  1 0 0 1  -1 1 0 1  1 1 0 1}"//<newline>
-creates a angular patch in the XZ and XY plane (remove <tt/-uorder 2/ to get
+creates a angular patch in the XZ- and XY-plane (remove <tt/-uorder 2/ to get
 a smooth shape).
 </enum>
 
@@ -14838,11 +14913,11 @@ Examples:
 <item><bf/<tt/"crtOb IPatch"//<newline>
 creates a flat patch with width 4, height 4, uorder 4, vorder 4,
 chordal parameterisation, data points arranged in a
-equidistant grid in the XY plane from 0 0 0 to 0.75 0.75 0.
+equidistant grid in the XY-plane from 0 0 0 to 0.75 0.75 0.
 <item><bf/<tt/"crtOb IPatch -vdy 0 -vdz 0.25"//<newline>
-creates the same patch as above in the XZ plane (ground plane).
+creates the same patch as above in the XZ-plane (ground plane).
 <item><bf/<tt/"crtOb IPatch -udy 0.25"//<newline>
-creates a sheared version of the standard IPatch in the XY plane.
+creates a sheared version of the standard IPatch in the XY-plane.
 <item><bf/<tt/"crtOb IPatch -udy 0.25 -vdz 0.25"//<newline>
 creates a 3D sheared version of the standard IPatch.
 <item><bf/<tt/"crtOb IPatch -width 3 -height 3 -center 1 -udx 2 -vdy 2"//
@@ -15088,7 +15163,7 @@ crtNRect &ndash; create a rectangular NURBS curve:
  <item>Synopsis: <tt/"crtNRect [-w width] [-h height]"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: This command creates a centered rectangular NURBS curve
-of twice the given width and height in the XY plane.
+of twice the given width and height in the XY-plane.
 </itemize>
 
 <p>
@@ -16274,12 +16349,12 @@ See also section <ref id="shiftclc" name="Shift Closed Curve Tool">.
 <#if out=latex><x/phantomsection/</#if>
 
 <label id="sctoxyc"><label id="sctoxync">
-toXYC &ndash; move curve to XY plane
+toXYC &ndash; move curve to XY-plane
 <itemize>
  <item>Synopsis: <tt/"toXYC"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: moves the control points of the selected NCurve,
-ACurve, and ICurve objects to their respective XY plane, modifying
+ACurve, and ICurve objects to their respective XY-plane, modifying
 the transformation attributes accordingly.
 <p><p>
 See also section <ref id="toxyt" name="To XY Tool">.
