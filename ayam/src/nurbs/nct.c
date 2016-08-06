@@ -2657,14 +2657,14 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 
   if(argc > 2)
     {
-      if(!strcmp(argv[2],"-start"))
+      if(!strcmp(argv[2], "-start"))
 	{
 	  /*	  view->drawhandles = AY_FALSE;
 		  display_cb(togl);*/
 	  fvalid = AY_FALSE;
 	  return TCL_OK;
 	}
-      if(!strcmp(argv[2],"-end"))
+      if(!strcmp(argv[2], "-end"))
 	{
 	  /* draw cross */
 	  if(fvalid)
@@ -4928,7 +4928,7 @@ ay_nct_fillgaps(int closed, int order, double tanlen, ay_object *curves)
  *  arrange objects in o along trajectory t (a NURBS curve);
  *  if rotate is AY_TRUE, additionally rotate all objects in
  *  o so that their local X axis is parallel to the curve
- *  points derivative
+ *  points tangent
  */
 int
 ay_nct_arrange(ay_object *o, ay_object *t, int rotate)
@@ -5152,6 +5152,7 @@ ay_nct_rescaleknvtcmd(ClientData clientData, Tcl_Interp *interp,
 						  curve->knotv,
 						  rmin, rmax);
 	    }
+
 	  if(ay_status)
 	    {
 	      ay_error(ay_status, argv[0], "Could not rescale knots.");
@@ -8099,13 +8100,13 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
   /* parse args */
   if(argc > 1)
     {
-      if(!strcmp(argv[1],"-trafo"))
+      if(!strcmp(argv[1], "-trafo"))
 	{
 	  apply_trafo = 1;
 	  i++;
 	}
       /*
-      if(!strcmp(argv[2],"-world"))
+      if(!strcmp(argv[2], "-world"))
 	{
 	  apply_trafo = 2;
 	  i++;

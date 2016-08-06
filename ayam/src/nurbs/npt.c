@@ -12999,14 +12999,14 @@ ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[])
 
   if(argc > 2)
     {
-      if(!strcmp(argv[2],"-start"))
+      if(!strcmp(argv[2], "-start"))
 	{
 	  /*	  view->drawhandles = AY_FALSE;
 		  display_cb(togl);*/
 	  fvalid = AY_FALSE;
 	  return TCL_OK;
 	}
-      if(!strcmp(argv[2],"-end"))
+      if(!strcmp(argv[2], "-end"))
 	{
 	  /* draw cross */
 	  if(fvalid)
