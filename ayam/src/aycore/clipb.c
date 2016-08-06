@@ -578,6 +578,15 @@ ay_clipb_hmovtcmd(ClientData clientData, Tcl_Interp *interp,
  return TCL_OK;
 } /* ay_clipb_hmovtcmd */
 
+
+/** ay_clipb_prepend:
+ * Move all objects pointed to by \a o (i.e. including its siblings)
+ * to the clipboard. The objects must be properly unlinked.
+ * The objects will be prepended to the clipboard.
+ *
+ * \param o objects to move
+ * \param fname if not null use this as place to report this to the user
+ */
 void
 ay_clipb_prepend(ay_object *o, char *fname)
 {
