@@ -588,167 +588,126 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
   while(sel && sel->object)
     {
       o = sel->object;
-
-      ay_quat_torotmatrix(o->quat, mm);
-
-      switch(view->type)
+      if(!view->transform_points)
 	{
-	case AY_VTSIDE:
-	  /* rotate about x */
+	  /* transform objects */
+	  ay_quat_torotmatrix(o->quat, mm);
 
-	  /* get old rotation about X */
-	  AY_APTRAN3(v3, zaxis, mm);
-	  v2[0] = v3[2];
-	  v2[1] = v3[1];
-	  xangle = AY_R2D(acos(v2[0]/AY_V2LEN(v2)));
-	  if(v2[1] > 0.0)
-	    xangle = 360.0 - xangle;
-
-	  /* transform ax/ay to object space */
-	  ay_trafo_identitymatrix(mm);
-	  if(ay_currentlevel->object != ay_root)
+	  switch(view->type)
 	    {
-	      ay_trafo_getparent(ay_currentlevel->next, mm);
-	    }
-	  ay_trafo_translatematrix(o->movx, o->movy, o->movz, mm);
-	  ay_trafo_rotatematrix(xangle, 1.0, 0.0, 0.0, mm);
-	  if(view->transform_points)
-	    {
-	      ay_trafo_scalematrix(o->scalx, o->scaly, o->scalz, mm);
-	    }
-	  ay_trafo_invmatrix(mm, mmi);
-	  AY_APTRAN3(v4, view->markworld, mmi);
+	    case AY_VTSIDE:
+	      /* rotate about x */
 
-	  ay_trafo_identitymatrix(mm);
-	  ay_trafo_rotatematrix(xangle, 1.0, 0.0, 0.0, mm);
-	  ay_trafo_translatematrix(0.0, -v4[1], -v4[2], mm);
-	  ay_trafo_rotatematrix(-angle, 1.0, 0.0, 0.0, mm);
-	  ay_trafo_translatematrix(0.0, v4[1], v4[2], mm);
+	      /* get old rotation about X */
+	      AY_APTRAN3(v3, zaxis, mm);
+	      v2[0] = v3[2];
+	      v2[1] = v3[1];
+	      xangle = AY_R2D(acos(v2[0]/AY_V2LEN(v2)));
+	      if(v2[1] > 0.0)
+		xangle = 360.0 - xangle;
 
-	  memset(v1, 0, 3*sizeof(double));
-
-	  AY_APTRAN3(v2,v1,mm);
-	  break;
-	case AY_VTFRONT:
-	case AY_VTTRIM:
-	  /* rotate about z */
-
-	  /* get old rotation about Z */
-	  AY_APTRAN3(v3,xaxis,mm);
-	  v2[0] = v3[0];
-	  v2[1] = v3[1];
-	  zangle = AY_R2D(acos(v2[0]/AY_V2LEN(v2)));
-	  if(v2[1] < 0.0)
-	    zangle = 360.0 - zangle;
-
-	  /* transform ax/ay to object space */
-	  ay_trafo_identitymatrix(mm);
-	  if(ay_currentlevel->object != ay_root)
-	    {
-	      ay_trafo_getparent(ay_currentlevel->next, mm);
-	    }
-	  ay_trafo_translatematrix(o->movx, o->movy, o->movz, mm);
-	  ay_trafo_rotatematrix(zangle, 0.0, 0.0, 1.0, mm);
-	  if(view->transform_points)
-	    {
-	      ay_trafo_scalematrix(o->scalx, o->scaly, o->scalz, mm);
-	    }
-	  ay_trafo_invmatrix(mm,mmi);
-	  AY_APTRAN3(v4,view->markworld,mmi);
-
-	  ay_trafo_identitymatrix(mm);
-	  ay_trafo_rotatematrix(zangle, 0.0, 0.0, 1.0, mm);
-	  ay_trafo_translatematrix(-v4[0], -v4[1], 0.0, mm);
-	  ay_trafo_rotatematrix(-angle, 0.0, 0.0, 1.0, mm);
-	  ay_trafo_translatematrix(v4[0], v4[1], 0.0, mm);
-
-	  memset(v1, 0, 3*sizeof(double));
-
-	  AY_APTRAN3(v2,v1,mm);
-	  break;
-	case AY_VTTOP:
-	  /* rotate about y */
-
-	  /* get old rotation about Y */
-	  AY_APTRAN3(v3,xaxis,mm);
-	  v2[0] = v3[0];
-	  v2[1] = v3[2];
-	  yangle = AY_R2D(acos(v2[0]/AY_V2LEN(v2)));
-	  if(v2[1] > 0.0)
-	    yangle = 360.0 - yangle;
-
-	  /* transform ax/ay to object space */
-	  ay_trafo_identitymatrix(mm);
-	  if(ay_currentlevel->object != ay_root)
-	    {
-	      ay_trafo_getparent(ay_currentlevel->next, mm);
-	    }
-	  ay_trafo_translatematrix(o->movx, o->movy, o->movz, mm);
-	  ay_trafo_rotatematrix(yangle, 0.0, 1.0, 0.0, mm);
-	  if(view->transform_points)
-	    {
-	      ay_trafo_scalematrix(o->scalx, o->scaly, o->scalz, mm);
-	    }
-	  ay_trafo_invmatrix(mm, mmi);
-	  AY_APTRAN3(v4, view->markworld, mmi);
-
-	  ay_trafo_identitymatrix(mm);
-	  ay_trafo_rotatematrix(yangle, 0.0, 1.0, 0.0, mm);
-	  ay_trafo_translatematrix(-v4[0], 0.0, -v4[2], mm);
-	  ay_trafo_rotatematrix(-angle, 0.0, 1.0, 0.0, mm);
-	  ay_trafo_translatematrix(v4[0], 0.0, v4[2], mm);
-
-	  memset(v1, 0, 3*sizeof(double));
-
-	  AY_APTRAN3(v2, v1, mm);
-	  break;
-	default:
-	  break;
-	} /* switch */
-
-      if(view->transform_points)
-	{
-	  if(o->selp && (!o->selp->readonly))
-	    {
-	      point = o->selp;
+	      /* transform ax/ay to object space */
+	      ay_trafo_identitymatrix(mm);
+	      if(ay_currentlevel->object != ay_root)
+		{
+		  ay_trafo_getparent(ay_currentlevel->next, mm);
+		}
+	      ay_trafo_translatematrix(o->movx, o->movy, o->movz, mm);
+	      ay_trafo_rotatematrix(xangle, 1.0, 0.0, 0.0, mm);
+	      if(view->transform_points)
+		{
+		  ay_trafo_scalematrix(o->scalx, o->scaly, o->scalz, mm);
+		}
+	      ay_trafo_invmatrix(mm, mmi);
+	      AY_APTRAN3(v4, view->markworld, mmi);
 
 	      ay_trafo_identitymatrix(mm);
+	      ay_trafo_rotatematrix(xangle, 1.0, 0.0, 0.0, mm);
+	      ay_trafo_translatematrix(0.0, -v4[1], -v4[2], mm);
+	      ay_trafo_rotatematrix(-angle, 1.0, 0.0, 0.0, mm);
+	      ay_trafo_translatematrix(0.0, v4[1], v4[2], mm);
 
-	      switch(view->type)
-		{
-		case AY_VTFRONT:
-		case AY_VTTRIM:
-		  /* rotate about z */
-		  ay_trafo_translatematrix(-v2[0], -v2[1], 0.0, mm);
-		  ay_trafo_rotatematrix(-angle, 0.0, 0.0, 1.0, mm);
-		  break;
-		case AY_VTSIDE:
-		  /* rotate about x */
-		  ay_trafo_translatematrix(0.0, -v2[1], -v2[2], mm);
-		  ay_trafo_rotatematrix(-angle, 1.0, 0.0, 0.0, mm);
-		  break;
-		case AY_VTTOP:
-		  /* rotate about y */
-		  ay_trafo_translatematrix(-v2[0], 0.0, -v2[2], mm);
-		  ay_trafo_rotatematrix(-angle, 0.0, 1.0, 0.0, mm);
-		  break;
-		default:
-		  break;
-		} /* switch */
+	      memset(v1, 0, 3*sizeof(double));
 
-	      while(point)
+	      AY_APTRAN3(v2,v1,mm);
+	      break;
+	    case AY_VTFRONT:
+	    case AY_VTTRIM:
+	      /* rotate about z */
+
+	      /* get old rotation about Z */
+	      AY_APTRAN3(v3,xaxis,mm);
+	      v2[0] = v3[0];
+	      v2[1] = v3[1];
+	      zangle = AY_R2D(acos(v2[0]/AY_V2LEN(v2)));
+	      if(v2[1] < 0.0)
+		zangle = 360.0 - zangle;
+
+	      /* transform ax/ay to object space */
+	      ay_trafo_identitymatrix(mm);
+	      if(ay_currentlevel->object != ay_root)
 		{
-		  AY_APTRAN3(tpoint,point->point,mm);
-		  memcpy(point->point, tpoint, 3*sizeof(double));
-		  point = point->next;
+		  ay_trafo_getparent(ay_currentlevel->next, mm);
 		}
+	      ay_trafo_translatematrix(o->movx, o->movy, o->movz, mm);
+	      ay_trafo_rotatematrix(zangle, 0.0, 0.0, 1.0, mm);
+	      if(view->transform_points)
+		{
+		  ay_trafo_scalematrix(o->scalx, o->scaly, o->scalz, mm);
+		}
+	      ay_trafo_invmatrix(mm,mmi);
+	      AY_APTRAN3(v4,view->markworld,mmi);
 
-	      o->modified = AY_TRUE;
-	      ay_notify_object(o);
-	    } /* if */
-	}
-      else
-	{
+	      ay_trafo_identitymatrix(mm);
+	      ay_trafo_rotatematrix(zangle, 0.0, 0.0, 1.0, mm);
+	      ay_trafo_translatematrix(-v4[0], -v4[1], 0.0, mm);
+	      ay_trafo_rotatematrix(-angle, 0.0, 0.0, 1.0, mm);
+	      ay_trafo_translatematrix(v4[0], v4[1], 0.0, mm);
+
+	      memset(v1, 0, 3*sizeof(double));
+
+	      AY_APTRAN3(v2,v1,mm);
+	      break;
+	    case AY_VTTOP:
+	      /* rotate about y */
+
+	      /* get old rotation about Y */
+	      AY_APTRAN3(v3,xaxis,mm);
+	      v2[0] = v3[0];
+	      v2[1] = v3[2];
+	      yangle = AY_R2D(acos(v2[0]/AY_V2LEN(v2)));
+	      if(v2[1] > 0.0)
+		yangle = 360.0 - yangle;
+
+	      /* transform ax/ay to object space */
+	      ay_trafo_identitymatrix(mm);
+	      if(ay_currentlevel->object != ay_root)
+		{
+		  ay_trafo_getparent(ay_currentlevel->next, mm);
+		}
+	      ay_trafo_translatematrix(o->movx, o->movy, o->movz, mm);
+	      ay_trafo_rotatematrix(yangle, 0.0, 1.0, 0.0, mm);
+	      if(view->transform_points)
+		{
+		  ay_trafo_scalematrix(o->scalx, o->scaly, o->scalz, mm);
+		}
+	      ay_trafo_invmatrix(mm, mmi);
+	      AY_APTRAN3(v4, view->markworld, mmi);
+
+	      ay_trafo_identitymatrix(mm);
+	      ay_trafo_rotatematrix(yangle, 0.0, 1.0, 0.0, mm);
+	      ay_trafo_translatematrix(-v4[0], 0.0, -v4[2], mm);
+	      ay_trafo_rotatematrix(-angle, 0.0, 1.0, 0.0, mm);
+	      ay_trafo_translatematrix(v4[0], 0.0, v4[2], mm);
+
+	      memset(v1, 0, 3*sizeof(double));
+
+	      AY_APTRAN3(v2, v1, mm);
+	      break;
+	    default:
+	      break;
+	    } /* switch */
+
 	  switch(view->type)
 	    {
 	    case AY_VTSIDE:
@@ -798,7 +757,56 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 	      break;
 	    } /* switch */
 	  o->modified = AY_TRUE;
-	} /* if */
+	}
+      else
+	{
+	  /* transform points */
+	  if(o->selp && (!o->selp->readonly))
+	    {
+	      point = o->selp;
+
+	      ay_trafo_identitymatrix(mm);
+	      ay_trafo_getall(ay_currentlevel, o, mm);
+	      ay_trafo_invmatrix(mm, mmi);
+	      ay_trafo_translatematrix(view->markworld[0],
+				       view->markworld[1],
+				       view->markworld[2], mmi);
+	      switch(view->type)
+		{
+		case AY_VTFRONT:
+		case AY_VTTRIM:
+		  /* rotate about z */
+		  ay_trafo_rotatematrix(angle, 0.0, 0.0, -1.0, mmi);
+		  break;
+		case AY_VTTOP:
+		  /* rotate about y */
+		  ay_trafo_rotatematrix(angle, 0.0, -1.0, 0.0, mmi);
+		  break;
+		case AY_VTSIDE:
+		  /* rotate about x */
+		  ay_trafo_rotatematrix(angle, -1.0, 0.0, 0.0, mmi);
+		  break;
+		default:
+		  break;
+		} /* switch */
+
+	      ay_trafo_translatematrix(-view->markworld[0],
+				       -view->markworld[1],
+				       -view->markworld[2], mmi);
+
+	      ay_trafo_multmatrix(mmi, mm);
+
+	      while(point)
+		{
+		  AY_APTRAN3(tpoint,point->point,mmi);
+		  memcpy(point->point, tpoint, 3*sizeof(double));
+		  point = point->next;
+		}
+
+	      o->modified = AY_TRUE;
+	      ay_notify_object(o);
+	    } /* if have modifiable points */
+	} /* if transform objects or points */
 
       sel = sel->next;
     } /* while */
