@@ -1,5 +1,5 @@
-[11. Jul 2016 CVS-Head:
-=======================
+[8. Aug 2016 CVS-Head:
+======================
 Bug Fixes:
 o added missing scripting interface commands to JavaScript and Lua scripting
   language plugins (SF 526)
@@ -12,6 +12,7 @@ o creating NCurve/NPatch objects with knot type chordal (SF 531)
 o scaling points about the mark fails when object is transformed (SF 532)
 o setting the mark from non rational points fails (SF 533)
 o crash when using delOb as withOb command (SF 534)
+o rotating points about the mark fails for rotated objects (SF 535)
 
 Modelling:
 o the create Sweep/Swing tools now rotate the parameter curves to the
@@ -54,6 +55,9 @@ o added hidden preference option "DisableFailedScripts" that controls
   when they fail
 o added "-count" option to "selPnts" command
 o added a script to display NURBS in x3dom (x3dom-nurbs)
+o added commands to check object attributes: "hasChild", "hasMat", "hasRefs",
+  and "hasTrafo"
+o added commands to check object types: "isCurve" and "isSurface"
 
 Import/Export:
 o X3D export of materials now supports the new tag type "XML" that can be
