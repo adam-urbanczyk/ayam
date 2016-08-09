@@ -433,6 +433,73 @@ ay_tcmd_getallpoints(Tcl_Interp *interp, char *fname, char *vn,
 } /* ay_tcmd_getallpoints */
 
 
+/** ay_tcmd_evalcurve:
+ * Helper for ay_tcmd_getpointtcmd/"getPnt" below.
+ * Evaluate a NURBS curve.
+ *
+ * \param[in] fname a name for error reporting purposes
+ * \param[in] nc the curve to evaluate
+ * \param[in] u parametric value where to evaluate the curve
+ * \param[in] relative interpret \a u in a relative way?
+ * \param[in,out] p where to store the evaluated point coordinates
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_tcmd_evalcurve(char *fname, ay_nurbcurve_object *nc, double u, int relative,
+		  double *p)
+{
+ int ay_status = AY_OK;
+ double ru;
+
+  if(relative)
+    {
+      if(u == 0.0)
+	ru = nc->knotv[nc->order-1];
+      else
+	if(u == 1.0)
+	  ru = nc->knotv[nc->length];
+	else
+	  ru = nc->knotv[nc->order-1] + (nc->knotv[nc->length] -
+					 nc->knotv[nc->order-1]) * u;
+    }
+  else
+    {
+      ru = u;
+    }
+
+  /* check parameter */
+  if((ru < nc->knotv[nc->order-1]) ||
+     (ru > nc->knotv[nc->length]))
+    {
+      (void)ay_error_reportdrange(fname, "\"u\"",
+				  nc->knotv[nc->order-1],
+				  nc->knotv[nc->length]);
+    }
+
+  /* evaluate the curve */
+  if(nc->is_rat)
+    {
+      ay_status = ay_nb_CurvePoint4D(nc->length-1, nc->order-1,
+				     nc->knotv, nc->controlv,
+				     ru, p);
+    }
+  else
+    {
+      ay_status = ay_nb_CurvePoint3D(nc->length-1, nc->order-1,
+				     nc->knotv, nc->controlv,
+				     ru, p);
+    }
+
+  if(ay_status)
+    {
+      ay_error(AY_ERROR, fname, "Evaluation failed.");
+    }
+
+ return ay_status;
+} /* ay_tcmd_evalcurve */
+
+
 /** ay_tcmd_getpointtcmd:
  *  get points of selected objects
  *  Implements the \a getPnt scripting interface command.
@@ -451,7 +518,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbpatch_object *np = NULL;
  ay_object *o = NULL, *po = NULL;
  int indexu = 0, indexv = 0, i = 1, j = 1, argc2 = argc;
- int rational = AY_FALSE, apply_trafo = AY_FALSE;
+ int rational = AY_FALSE, apply_trafo = AY_FALSE, relative = AY_FALSE;
  int to_world = AY_FALSE, eval = AY_FALSE, vn = AY_FALSE;
  int handled = AY_FALSE, freepo = AY_FALSE;
  double *p = NULL, *tp = NULL, tmp[4] = {0}, utmp[4] = {0};
@@ -496,6 +563,13 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  /* -eval */
 	  eval = AY_TRUE;
+	  i++;
+	  argc2--;
+	}
+      if(argv[j][0] == '-' && argv[j][1] == 'r')
+	{
+	  /* -relative */
+	  relative = AY_TRUE;
 	  i++;
 	  argc2--;
 	}
@@ -562,36 +636,9 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	      p = utmp;
 	      nc = (ay_nurbcurve_object *)(o->refine);
-
-	      /* check parameter */
-	      if((u < nc->knotv[nc->order-1]) ||
-		 (u > nc->knotv[nc->length]))
-		{
-		  (void)ay_error_reportdrange(argv[0], "\"u\"",
-					      nc->knotv[nc->order-1],
-					      nc->knotv[nc->length]);
-		  goto cleanup;
-		}
-
-	      /* evaluate the curve */
-	      if(nc->is_rat)
-		{
-		  ay_status = ay_nb_CurvePoint4D(nc->length-1, nc->order-1,
-						 nc->knotv, nc->controlv,
-						 u, p);
-		}
-	      else
-		{
-		  ay_status = ay_nb_CurvePoint3D(nc->length-1, nc->order-1,
-						 nc->knotv, nc->controlv,
-						 u, p);
-		}
-
+	      ay_status = ay_tcmd_evalcurve(argv[0], nc, u, relative, p);
 	      if(ay_status)
-		{
-		  ay_error(AY_ERROR, argv[0], "Evaluation failed.");
-		  return TCL_OK;
-		}
+		goto cleanup;
 	      rational = AY_FALSE;
 	    } /* if */
 	  j = i+1;
@@ -815,10 +862,13 @@ eval_provided_curve:
 			{
 			  tcl_status = Tcl_GetDouble(interp, argv[i], &u);
 			  AY_CHTCLERRGOT(tcl_status, argv[0], interp);
+
 			  p = utmp;
 			  nc = (ay_nurbcurve_object *)(po->refine);
-			  ay_nb_CurvePoint4D(nc->length-1, nc->order-1,
-					     nc->knotv, nc->controlv, u, p);
+			  ay_status = ay_tcmd_evalcurve(argv[0], nc, u,
+							relative, p);
+			  if(ay_status)
+			    goto cleanup;
 			  rational = AY_FALSE;
 			} /* if */
 		      j = i+1;
