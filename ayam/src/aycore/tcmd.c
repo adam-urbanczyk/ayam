@@ -475,6 +475,7 @@ ay_tcmd_evalcurve(char *fname, ay_nurbcurve_object *nc, double u, int relative,
       (void)ay_error_reportdrange(fname, "\"u\"",
 				  nc->knotv[nc->order-1],
 				  nc->knotv[nc->length]);
+      return AY_ERROR;
     }
 
   /* evaluate the curve */
@@ -498,6 +499,96 @@ ay_tcmd_evalcurve(char *fname, ay_nurbcurve_object *nc, double u, int relative,
 
  return ay_status;
 } /* ay_tcmd_evalcurve */
+
+
+/** ay_tcmd_evalsurface:
+ * Helper for ay_tcmd_getpointtcmd/"getPnt" below.
+ * Evaluate a NURBS surface.
+ *
+ * \param[in] fname a name for error reporting purposes
+ * \param[in] np the surface to evaluate
+ * \param[in] u parametric value where to evaluate the surface
+ * \param[in] v parametric value where to evaluate the surface
+ * \param[in] relative interpret \a u and \a v in a relative way?
+ * \param[in,out] p where to store the evaluated point coordinates
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_tcmd_evalsurface(char *fname, ay_nurbpatch_object *np, double u, double v,
+		    int relative, double *p)
+{
+ int ay_status = AY_OK;
+ double ru, rv;
+
+  if(relative)
+    {
+      if(u == 0.0)
+	ru = np->uknotv[np->uorder-1];
+      else
+	if(u == 1.0)
+	  ru = np->uknotv[np->width];
+	else
+	  ru = np->uknotv[np->uorder-1] + (np->uknotv[np->width] -
+					   np->uknotv[np->uorder-1]) * u;
+
+      if(v == 0.0)
+	rv = np->vknotv[np->vorder-1];
+      else
+	if(v == 1.0)
+	  rv = np->vknotv[np->height];
+	else
+	  rv = np->vknotv[np->vorder-1] + (np->vknotv[np->height] -
+					   np->vknotv[np->vorder-1]) * v;
+    }
+  else
+    {
+      ru = u;
+      rv = v;
+    }
+
+  /* check parameters */
+  if((ru < np->uknotv[np->uorder-1]) ||
+     (ru > np->uknotv[np->width]))
+    {
+      (void)ay_error_reportdrange(fname, "\"u\"",
+				  np->uknotv[np->uorder-1],
+				  np->uknotv[np->width]);
+      return AY_ERROR;
+    }
+
+  if((rv < np->vknotv[np->vorder-1]) ||
+     (rv > np->vknotv[np->height]))
+    {
+      (void)ay_error_reportdrange(fname, "\"v\"",
+				  np->vknotv[np->vorder-1],
+				  np->vknotv[np->height]);
+      return AY_ERROR;
+    }
+
+  /* evaluate the patch */
+  if(np->is_rat)
+    {
+      ay_status = ay_nb_SurfacePoint4D(np->width-1, np->height-1,
+				       np->uorder-1, np->vorder-1,
+				       np->uknotv, np->vknotv,
+				       np->controlv, ru, rv, p);
+    }
+  else
+    {
+      ay_status = ay_nb_SurfacePoint3D(np->width-1, np->height-1,
+				       np->uorder-1, np->vorder-1,
+				       np->uknotv, np->vknotv,
+				       np->controlv, ru, rv, p);
+    }
+
+  if(ay_status)
+    {
+      ay_error(AY_ERROR, fname, "Evaluation failed.");
+    }
+
+ return ay_status;
+} /* ay_tcmd_evalsurface */
 
 
 /** ay_tcmd_getpointtcmd:
@@ -697,47 +788,9 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	      p = utmp;
 	      np = (ay_nurbpatch_object *)(o->refine);
-
-	      /* check parameters */
-	      if((u < np->uknotv[np->uorder-1]) ||
-		 (u > np->uknotv[np->width]))
-		{
-		  (void)ay_error_reportdrange(argv[0], "\"u\"",
-					      np->uknotv[np->uorder-1],
-					      np->uknotv[np->width]);
-		  goto cleanup;
-		}
-
-	      if((v < np->vknotv[np->vorder-1]) ||
-		 (v > np->vknotv[np->height]))
-		{
-		  (void)ay_error_reportdrange(argv[0], "\"v\"",
-					      np->vknotv[np->vorder-1],
-					      np->vknotv[np->height]);
-		  goto cleanup;
-		}
-
-	      /* evaluate the patch */
-	      if(np->is_rat)
-		{
-		  ay_status = ay_nb_SurfacePoint4D(np->width-1, np->height-1,
-						   np->uorder-1, np->vorder-1,
-						   np->uknotv, np->vknotv,
-						   np->controlv, u, v, p);
-		}
-	      else
-		{
-		  ay_status = ay_nb_SurfacePoint3D(np->width-1, np->height-1,
-						   np->uorder-1, np->vorder-1,
-						   np->uknotv, np->vknotv,
-						   np->controlv, u, v, p);
-		}
-
+	      ay_status = ay_tcmd_evalsurface(argv[0], np, u, v, relative, p);
 	      if(ay_status)
-		{
-		  ay_error(AY_ERROR, argv[0], "Evaluation failed.");
-		  return TCL_OK;
-		}
+		goto cleanup;
 	      rational = AY_FALSE;
 	    } /* if */
 	  j = i+2;
@@ -907,10 +960,10 @@ eval_provided_surface:
 			  AY_CHTCLERRGOT(tcl_status, argv[0], interp);
 			  p = utmp;
 			  np = (ay_nurbpatch_object *)(po->refine);
-			  ay_nb_SurfacePoint4D(np->width-1, np->height-1,
-					       np->uorder-1, np->vorder-1,
-					       np->uknotv, np->vknotv,
-					       np->controlv, u, v, p);
+			  ay_status = ay_tcmd_evalsurface(argv[0], np, u, v,
+							  relative, p);
+			  if(ay_status)
+			    goto cleanup;
 			  rational = AY_FALSE;
 			} /* if */
 		      j = i+2;
