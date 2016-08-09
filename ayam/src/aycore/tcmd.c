@@ -603,7 +603,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	      return TCL_OK;
 	    }
 	  if(eval)
-	    goto eval_provided;
+	    goto eval_provided_curve;
 	  tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
 	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	  ay_act_getpntfromindex((ay_acurve_object*)(o->refine),
@@ -618,7 +618,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	      return TCL_OK;
 	    }
 	  if(eval)
-	    goto eval_provided;
+	    goto eval_provided_curve;
 	  tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
 	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	  ay_ict_getpntfromindex((ay_icurve_object*)(o->refine),
@@ -702,7 +702,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	      return TCL_OK;
 	    }
 	  if(eval)
-	    goto eval_provided;
+	    goto eval_provided_surface;
 	  tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
 	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	  tcl_status = Tcl_GetInt(interp, argv[i+1], &indexv);
@@ -713,11 +713,13 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  j = i+2;
 	  break;
 	case AY_IDBPATCH:
-	  if(!vn && (argc2 < 5))
+	  if(!vn && (argc2+eval < 5))
 	    {
 	      ay_error(AY_EARGS, argv[0], fargs);
 	      return TCL_OK;
 	    }
+	  if(eval)
+	    goto eval_provided_surface;
 	  tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
 	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	  ay_tcmd_getbppntfromindex((ay_bpatch_object*)(o->refine),
@@ -726,11 +728,13 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  j = i+1;
 	  break;
 	case AY_IDPAMESH:
-	  if(!vn && (argc2 < 7))
+	  if(!vn && (argc2+eval < 7))
 	    {
 	      ay_error(AY_EARGS, argv[0], fargs);
 	      return TCL_OK;
 	    }
+	  if(eval)
+	    goto eval_provided_surface;
 	  tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
 	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	  tcl_status = Tcl_GetInt(interp, argv[i+1], &indexv);
@@ -785,9 +789,9 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(!handled)
 	    {
-eval_provided:
-	      if((!vn && argc2 < 7) || (vn && argc2 < 5))
+	      if((!vn && argc2+eval < 7) || (vn && argc2+eval < 5))
 		{
+eval_provided_curve:
 		  po = NULL;
 		  ay_provide_object(o, AY_IDNCURVE, &po);
 		  if(po)
@@ -823,6 +827,7 @@ eval_provided:
 		}
 	      else
 		{
+eval_provided_surface:
 		  po = NULL;
 		  ay_provide_object(o, AY_IDNPATCH, &po);
 		  if(po)
