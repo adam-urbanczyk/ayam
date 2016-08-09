@@ -15256,7 +15256,7 @@ selected, a list is returned.
 <#if out=latex><x/phantomsection/</#if>
 
 <label id="schasmat">
-hasMat:
+hasMat &ndash; has material:
 <itemize>
  <item>Synopsis: <tt>"hasMat"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
@@ -15269,7 +15269,7 @@ selected, a list is returned.
 <#if out=latex><x/phantomsection/</#if>
 
 <label id="schasrefs">
-hasRefs:
+hasRefs &ndash; has references:
 <itemize>
  <item>Synopsis: <tt>"hasRefs"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
@@ -15282,7 +15282,7 @@ If multiple objects are selected, a list is returned.
 <#if out=latex><x/phantomsection/</#if>
 
 <label id="schastrafo">
-hasTrafo:
+hasTrafo &ndash; has transformations:
 <itemize>
  <item>Synopsis: <tt>"hasTrafo"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
@@ -17062,7 +17062,7 @@ objects that support point editing.
 <label id="scgetpnt">
 getPnt &ndash; get point(s):
 <itemize>
- <item>Synopsis: <tt/"getPnt [-trafo | -world | -eval] (index | indexu indexv | u | u v (varx vary varz [varw] | -vn varname) | -all varname)"/
+ <item>Synopsis: <tt/"getPnt [-trafo | -world | -eval | -relative] (index | indexu indexv | u | u v (varx vary varz [varw] | -vn varname) | -all varname)"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Get a control point of the currently selected object
 and write the coordinate values into the variables varx, vary, varz, and
@@ -17085,6 +17085,10 @@ and <tt/"indexv"/ values are interpreted as parametric values of a
 NURBS curve or surface and the corresponding point on the curve or
 surface is delivered in varx, vary, and varz.
 <p>
+If the optional argument <tt/"-relative"/ is specified, the parametric
+value for NURBS curve or surface evaluation is interpreted in a relative
+way and must consequently be in the range 0.0 - 1.0.
+<p>
 If the alternative argument <tt/"-vn"/ is given, the coordinate values
 will be appended to the list variable specified by <tt/"varname"/.
 <p>
@@ -17099,9 +17103,9 @@ were written, this is no longer the case.
 <item><bf/<tt/"getPnt 1 x y z w"//<newline>
 gets the coordinate values of the second point of the selected NURBS
 curve and writes the values to the variables <tt/"x y z w"/.
-<item><bf/<tt/"getPnt -eval 0.5 x y z w"//<newline>
+<item><bf/<tt/"getPnt -eval 0.5 x y z"//<newline>
 gets the curve point at parametric value <tt/"0.5"/ and writes the
-values to the variables <tt/"x y z w"/.
+values to the variables <tt/"x y z"/.
 </enum>
 </itemize>
 
