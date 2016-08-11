@@ -284,7 +284,7 @@ foreach tag $names {
 }
 
 if { [llength $alltags] > 0 } {
-    eval [subst "setTags $alltags"]
+    eval setTags $alltags
 }
 
 notifyOb
