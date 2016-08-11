@@ -611,10 +611,10 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
  int indexu = 0, indexv = 0, i = 1, j = 1, argc2 = argc;
  int rational = AY_FALSE, apply_trafo = AY_FALSE, relative = AY_FALSE;
  int to_world = AY_FALSE, eval = AY_FALSE, vn = AY_FALSE;
- int handled = AY_FALSE, freepo = AY_FALSE;
+ int handled = AY_FALSE;
  double *p = NULL, *tp = NULL, tmp[4] = {0}, utmp[4] = {0};
  double m[16], u = 0.0, v = 0.0;
- char fargs[] = "[-trafo|-world|-eval] (index | indexu indexv | u | u v (varx vary varz [varw] | -vn varname)|-all varname)";
+ char fargs[] = "[-trafo|-world|-eval|-relative] (index | indexu indexv | u | u v (varx vary varz [varw] | -vn varname)|-all varname)";
  Tcl_Obj *to = NULL, *ton = NULL;
  int lflags = TCL_LEAVE_ERR_MSG | TCL_APPEND_VALUE | TCL_LIST_ELEMENT |
    TCL_PARSE_PART1;
@@ -704,7 +704,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
       o = sel->object;
       p = NULL;
       rational = AY_FALSE;
-      freepo = AY_FALSE;
+
       switch(o->type)
 	{
 	case AY_IDNCURVE:
@@ -896,7 +896,6 @@ eval_provided_curve:
 		  ay_provide_object(o, AY_IDNCURVE, &po);
 		  if(po)
 		    {
-		      freepo = AY_TRUE;
 		      if(!vn && (argc2+eval < 6))
 			{
 			  ay_error(AY_EARGS, argv[0], fargs);
@@ -935,7 +934,6 @@ eval_provided_surface:
 		  ay_provide_object(o, AY_IDNPATCH, &po);
 		  if(po)
 		    {
-		      freepo = AY_TRUE;
 		      if(!vn && (argc2+eval < 7))
 			{
 			  ay_error(AY_EARGS, argv[0], fargs);
@@ -1049,23 +1047,22 @@ eval_provided_surface:
 		}
 	    } /* if */
 	  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
-	} /* if */
+	} /* if have point to output */
 
-      if(freepo)
+      if(po)
 	{
-	  if(po)
-	    (void)ay_object_deletemulti(po, AY_FALSE);
-	} /* if */
+	  (void)ay_object_deletemulti(po, AY_FALSE);
+	  po = NULL;
+	}
 
       sel = sel->next;
     } /* while */
 
 cleanup:
 
-  if(freepo)
+  if(po)
     {
-      if(po)
-	(void)ay_object_deletemulti(po, AY_FALSE);
+      (void)ay_object_deletemulti(po, AY_FALSE);
     } /* if */
 
  return TCL_OK;
