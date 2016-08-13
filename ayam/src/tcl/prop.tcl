@@ -293,21 +293,38 @@ rV
 # setTagsp
 
 
-# editTagshelper:
-#  used to edit tags
-proc editTagshelper { index } {
- global tagsPropData
- undo save EditTag
- set tagsPropData(names) [lreplace $tagsPropData(names) $index $index [.addTag.fu.e get]]
- set val [string trimright [.addTag.fm.t get 1.0 end]]
- set tagsPropData(values) [lreplace $tagsPropData(values) $index $index $val]
- grab release .addTag
- focus .
- destroy .addTag
- setTagsp
- plb_update
+# _commitTag:
+#  used to add/edit tags
+proc _commitTag { index } {
+    global ay tagsPropData
+    set ay(addTagHeight) [.addTag.fm.t cget -height]
+
+    if { $index > -1 } {
+	undo save EditTag
+	if { [.addTag.fu.e get] != "" } {
+	    setTags -index $index [.addTag.fu.e get]\
+		[string trimright [.addTag.fm.t get 1.0 end]]
+	} else {
+	    setTags -delete $index
+	}
+    } else {
+	undo save AddTag
+	if { [.addTag.fu.e get] != "" } {
+	    addTag [.addTag.fu.e get]\
+		[string trimright [.addTag.fm.t get 1.0 end]]
+	}
+    }
+
+    grab release .addTag
+    focus .
+    destroy .addTag
+
+    plb_update
+
+ return;
 }
-#editTagshelper
+#_commitTag
+
 
 # _pasteToText
 # paste text from system clipboard to designated text widget
@@ -319,6 +336,7 @@ proc _pasteToText { t } {
     }
 }
 # _pasteToText
+
 
 # addTagp:
 #  used to edit and add tags
@@ -383,7 +401,12 @@ if { $edit >= 0 } {
 set f [frame $w.fm]
 label $f.lv -text "Value:" -width 6
 
-text $f.t -width 30 -height 1
+set he 1
+if {[info exists ay(addTagHeight)]} {
+    set he $ay(addTagHeight)
+}
+
+text $f.t -width 30 -height $he
 eval [subst "bindtags $f.t \{$f.t Text all\}"]
 bind $f.t <Key-Escape> ".addTag.fd.bca invoke;break"
 set height 24
@@ -394,6 +417,14 @@ catch {bind $f.t <Key-KP_Enter> [bind $f.t <Key-Return>]}
 bind $f.t <Key-Tab> "\
 if \{\[winfo height $f.t\] < $height \} \{focus \[tk_focusNext $f.t\];break\}"
 uie_fixEntry $f.t
+
+bind $f.t <Alt-Down> \
+    "$f.t conf -height \[expr \[$f.t cget -height\] + 1\]; wm geom $w \"\";\
+     break"
+bind $f.t <Alt-Up> \
+    "$f.t conf -height \[expr \[$f.t cget -height\] - 1\]; wm geom $w \"\";\
+     break"
+
 pack $f.lv -in $f -padx 2 -pady 2 -side left
 pack $f.t -in $f -padx 2 -pady 2 -side left -fill both -expand yes
 pack $f -in $w -side top -fill both -expand yes
@@ -419,8 +450,10 @@ $m add command -label "Load from file" -command {
 }
 $m add separator
 $m add command -label "Reset Multiline" -command "\
-set aygeom(addTag_Add_Tag) \"\";
-after idle \{wm geom .addTag \"\" \}"
+  set ay(addTagHeight) 1;
+  $f.t conf -height 1;
+  set aygeom(addTag_Add_Tag) \"\";
+  after idle \{ wm geom .addTag \"\" \}"
 
 # bind popup menu
 set mb 3
@@ -439,17 +472,7 @@ if { $edit >= 0 } {
 
 # create ok/clear/cancel buttons
 set f [frame $w.fd]
-button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command {
-    global ay
-    undo save AddTag
-    if { [.addTag.fu.e get] != "" } {
-	addTag [.addTag.fu.e get] [string trimright [.addTag.fm.t get 1.0 end]]
-    }
-    grab release .addTag
-    focus .
-    destroy .addTag
-    plb_update
-}
+button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command "_commitTag $edit"
 
 button $f.bclr -text "Clear" -pady $ay(pady) -width 5 -command {
     global ay
@@ -457,12 +480,9 @@ button $f.bclr -text "Clear" -pady $ay(pady) -width 5 -command {
     .addTag.fm.t delete 1.0 end
 }
 
-if { $edit >= 0 } {
-    $f.bok configure -command "editTagshelper $edit"
-}
-
 button $f.bca -text "Cancel" -pady $ay(pady) -width 5\
-    -command "grab release .addTag; focus .; destroy $w"
+    -command "global ay; set ay(addTagHeight) \[.addTag.fm.t cget -height\];\
+              grab release .addTag; focus .; destroy $w"
 
 pack $f.bok $f.bclr $f.bca -in $f -side left -fill x -expand yes
 pack $f -in $w -side top -fill x
