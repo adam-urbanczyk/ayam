@@ -1838,7 +1838,7 @@ object of the current level if no object is currently selected.
 Apart from the text based menus documented above, there are also some icon
 based menus in the view window menu bar:
 <p>
-The <tt/"Modelling mode"/ icon menu may be used to quickly change the current
+The <tt/"Modelling Mode"/ icon menu may be used to quickly change the current
 modelling mode (global or local, see also section
 <ref id="editlocal" name="Editing in Local Spaces">). Apart from a
 different icon, the local modes will display a L or O in the lower
@@ -1858,7 +1858,7 @@ See also the image below:
 <caption>Modelling Mode Icon Menu</caption>
 </figure>
 <p>
-The <tt/"Drawing mode"/ icon menu may be used to quickly change the current
+The <tt/"Drawing Mode"/ icon menu may be used to quickly change the current
 drawing mode, drawing, shading, drawing and shading, or hidden wires.
 See also the image below:
 <p>
@@ -2292,7 +2292,15 @@ the object will be selected and an action will be executed.
 The following special actions are defined:
 <descrip>
 <tag/Highlight/
-All found objects will be colored in the object tree.
+All found objects will be colored in the object tree, see also the
+following image.
+<p>
+<figure loc="ht">
+<eps file="pics/objsearchr.ps" height="6cm">
+<img src="pics/objsearchr.gif">
+<caption>Object Search Result of Search String <tt/"clay"/</caption>
+</figure>
+<p>
 Highlighted objects stay highlighted until the tree view is updated
 completely (e.g.~via the keyboard shortcut <tt>&lt;F5&gt;</tt>) or partially
 (for instance after drag and drop or object clipboard operations).
@@ -3311,7 +3319,7 @@ Delete Points|<tt/&lt;d&gt;/|
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Transforming Objects or Selected Points
+<sect1>Transforming Objects or Selected Points<label id="objorpnt">
 <p>
 Many modelling actions either work on objects transformation attributes
 or coordinates of selected points. Before Ayam 1.18 this was controlled
@@ -17105,7 +17113,7 @@ gets the coordinate values of the second point of the selected NURBS
 curve and writes the values to the variables <tt/"x y z w"/.
 <item><bf/<tt/"getPnt -eval 0.5 x y z"//<newline>
 gets the curve point at parametric value <tt/"0.5"/ and writes the
-values to the variables <tt/"x y z"/.
+coordinate values to the variables <tt/"x y z"/.
 </enum>
 </itemize>
 
@@ -18654,7 +18662,7 @@ see the file:<newline>
 <figure loc="ht">
 <eps file="pics/polyh-jtD.ps" height="5cm">
 <img src="pics/polyh-jtD.gif">
-<caption>Polyhedron generated from Conway notation: jtD</caption>
+<caption>Polyhedron generated from Conway notation: <tt/"jtD"/</caption>
 </figure>
 <p>
 Since Ayam 1.18 there is a complete example script for the JavaScript
@@ -18788,9 +18796,13 @@ mid to close viewing distance does not reveal the nature of the underlying
 triangular representation. This may be too fine/slow for objects that are
 never viewed from close distance or too coarse for very detailed objects.
 
-Therefore, the tessellation quality and speed may be adjusted using the
-<tt>"uTessellation"</tt> and <tt>"vTessellation"</tt> attributes as
-explained in the next sections.
+Therefore, and in concordance with the respective suggestions of the X3D
+specification, the tessellation quality and speed may be adjusted using the
+<tt>"uTessellation"</tt> and <tt>"vTessellation"</tt> attributes of the
+<tt>&lt;NurbsPatchSurface&gt;</tt> or
+<tt>&lt;NurbsTrimmedSurface&gt;</tt> nodes as explained in the next sections.
+
+<#if out=latex><x/newpage/</#if>
 
 <sect3>Oject Space Based Sampling
 <p><#if out=latex>&nbsp;<newline></#if>
@@ -18808,8 +18820,8 @@ Therefore <tt>"uTessellation"</tt> values larger than 1.0 lead to a coarser
 and faster tessellation, whereas values smaller than 1.0 lead to a
 finer and slower tessellation.
 
-Note that the value of the <tt>"vTessellation"</tt>
-attribute is <em>not</em> considered.
+Note that in this mode the value of the <tt>"vTessellation"</tt>
+attribute is <em>not</em> considered at all.
 
 Also note that in highly curved regions and at trim edges, even smaller
 triangles than determined by the edge length criterion may be created.
@@ -18842,6 +18854,8 @@ object space sampling.
 
 Note that at trim curve edges even smaller triangles than determined by
 the edge length criterion may be created.
+
+<#if out=latex><x/newpage/</#if>
 
 <sect3>Additional Attributes
 <p><#if out=latex>&nbsp;<newline></#if>
@@ -18883,8 +18897,8 @@ NURBS sphere) do not flip.
 
 There is <em/no/ support for the following nodes:
 <list>
-<item><tt>&lt;NurbsSet&gt;</tt>,
 <item><tt>&lt;NurbsTextureCoordinate&gt;</tt>,
+<item><tt>&lt;NurbsSet&gt;</tt>,
 <item><tt>&lt;NurbsSweptSurface&gt;</tt>,
 <item><tt>&lt;NurbsSwungSurface&gt;</tt>,
 <item><tt>&lt;NurbsCurve&gt;</tt>, and all
@@ -20999,7 +21013,8 @@ Ayam reads or writes a scene file.
 
 <sect2>Opening Scene Files<label id="opensf">
 <p>
-When reading a scene using <tt>"File/Open"</tt> or the MRU list:
+When reading a scene using <tt>"File/Open"</tt> or the
+MRU (most recently used) list:
 <enum>
 <item> Ayam will first check the scene changed state of the currently
 loaded scene and warn the user, if the current scene contains unsaved
@@ -21052,7 +21067,7 @@ are opened and parameterized).
 (except for the first three view objects in single window GUI mode,
 where only the configuration of the view objects read will be copied
 to the already existing view objects of the three internal views),
-<item> if one object is of a currently undefined type (i.e.~defined
+<item> if an object is of a currently undefined type (i.e.~defined
 by a plugin), Ayam will derive a potential plugin name from the
 object type name and attempt to load the plugin, then scene reading
 continues,
@@ -21125,9 +21140,10 @@ to their materials, when reading the scene file again,
 if the save views flag was cleared while reading the previous scene file,
 root and views will be omitted (i.e.~scene files without root and views
 stay scene files without root and views, even if new views
-are opened and parameterized),
-<item> if no errors occurred during saving the file, the file name
-will be put to the first most recently used files entry in the file menu,
+were opened and parameterized while the scene was loaded),
+<item> if no errors occurred during writing of the scene file, the file name
+will be put to the first most recently used files entry in the file menu
+(also depending on the preference setting <tt/"SaveAddsMRU"/),
 and the scene changed state will be set to "unchanged",
 <item> if errors occurred, the current scene changed state will be kept.
 </enum>
@@ -21160,10 +21176,12 @@ The ayamrc file contains:
 <enum>
 <item>preference settings (including some hidden settings that require
 just occasional tweaking and are not reachable using the GUI preference
-editor)
-<item>position and size of the main window and the toolbox window
-<item>keyboard shortcuts to menu entries and modelling actions
-<item>RiOption and RiAttribute databases
+editor),
+<item>position and size of the main window and the toolbox window,
+<item>position and size of various dialog windows (if the preference
+setting <tt/"SaveDialogGeom"/ is set accordingly),
+<item>keyboard shortcuts to menu entries and modelling actions,
+<item>RiOption and RiAttribute databases.
 </enum>
 
 You may edit the file with any text editor (while Ayam is <em>not</em>
@@ -22640,6 +22658,7 @@ Index:
 <item>Draw Level only: <ref id="vmconf" name="view menu entry">
 <item>Draw Object CS: <ref id="vmconf" name="view menu entry">
 <item>Draw Selection only: <ref id="vmconf" name="view menu entry">
+<item>Drawing modes: <ref id="drawingmodes" name="Drawing Modes">
 <item>DrawSub: <ref id="sdmattr" name="SDMesh attribute">
 <item>dtree.tcl: <ref id="dtreetcl" name="example/helper script">
 <item>DXF:
@@ -22731,6 +22750,7 @@ Index:
 &nbsp;<newline>&nbsp;
 <label id="indexf"><tt/&nbsp;&nbsp;<bf/F//
 <list>
+<item>Face normals: <ref id="polymeshtools" name="PolyMesh tool">
 <item>FAQ: <ref id="secref" name="Ayam FAQ WWW reference">
 <item>Far: <ref id="camp" name="camera property">
 <item>FDShowHidden, FDShowHiddenBtn: <ref id="hidprefs" name="hidden preference setting">
@@ -22788,7 +22808,7 @@ Index:
 &nbsp;<newline>&nbsp;
 <label id="indexg"><tt/&nbsp;&nbsp;<bf/G//
 <list>
-<item>Gen.~Face/Smooth Normals: <ref id="mmtools" name="polymesh tool">
+<item>Gen.~Face/Smooth Normals: <ref id="polymeshtools" name="polymesh tool">
 <item>genfnPo: <ref id="scgenfnPo" name="scripting interface command">
 <item>gensnPo: <ref id="scgensnPo" name="scripting interface command">
 <item>getName: <ref id="scgetname" name="scripting interface command">
@@ -23084,6 +23104,12 @@ Index:
 <item>Mirror: <ref id="mirrorobj" name="Mirror object">
 <item>MN: <ref id="mntag" name="tag type">
 <item>Modelling: <ref id="iac" name="Modelling Actions">
+<item>Modelling Modes:
+<itemize>
+<item><ref id="objorpnt" name="Transforming Objects or Selected Points">,
+<item><ref id="editlocal" name="Editing in Local Spaces">
+</itemize>
+
 <item>Mode: <ref id="offsetncp" name="OffsetNC attribute">
 <item>Mops Import: <ref id="impmops" name="Import of Mops Scenes">
 <item>Move:
@@ -23095,6 +23121,7 @@ Index:
 <item>movPnts: <ref id="scmovpnts" name="scripting interface command">
 <item>MP: <ref id="mptag" name="tag type">
 <item>Multiple Point: <ref id="ncurvemp" name="Multiple Points">
+<item>Multiplicity: <ref id="multac" name="modelling action">
 <item>myicons.tcl: <ref id="myiconstcl" name="example/helper script">
 </list>
 
@@ -23467,7 +23494,11 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="rioptdb" name="RiOption and RiAttributes Database">
 </itemize>
 <item>RIStandard: <ref id="prefrib" name="preference setting">
-<item>RMax: <ref id="pap" name="Paraboloid attribute">
+<item>RMax:
+<itemize><ref id="pap" name="Paraboloid attribute">,
+<item><ref id="tconetcl" name="Truncated cone attribute">
+</itemize>
+<item>RMin<ref id="tconetcl" name="Truncated cone attribute">
 <item>Roll: <ref id="camp" name="Camera attribute">
 <item>Root: <ref id="rootobj" name="Root object">
 <item>Rotate:
@@ -23629,10 +23660,12 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 </itemize>
 <item>SMFileFormat: <ref id="prefrib" name="preference setting">
 <item>SMFileType: <ref id="prefrib" name="preference setting">
+<item>Smooth normals: <ref id="polymeshtools" name="PolyMesh tool">
 <item>SMRender, SMRenderUI, SMRenderPT:
 <ref id="prefrib" name="preference setting">
 <item>SMRes: <ref id="lip" name="Light attribute">
 <item>Snap Points to Grid: <ref id="snapac" name="modelling action">
+<item>Snap Points to Mark: <ref id="snapmac" name="modelling action">
 <item>Snap3D: <ref id="prefmodel" name="preference setting">
 <item>Solids: <ref id="solids" name="solid primitives">
 <item>SP: <ref id="scriptattrprop" name="Script object">
@@ -23659,6 +23692,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>splitvNP: <ref id="scsplitvnp" name="scripting interface command">
 <item>Spot: <ref id="pdsl" name="light type">
 <item>ssp.tcl: <ref id="ssptcl" name="example/helper script">
+<item>Standard Properties: <ref id="stdprop" name="Standard Properties">
 <item>StartBevel: <ref id="extrattr" name="Extrude attribute">
 <item>StartCap: <ref id="extrattr" name="Extrude attribute">
 <item>StdDisplay: <ref id="rio" name="RenderMan interface option">
@@ -23736,7 +23770,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="top" name="Torus attribute">,
 <item><ref id="pap" name="Paraboloid attribute">,
 <item><ref id="hyp" name="Hyperboloid attribute">,
-<item><ref id="rep" name="Revolve attribute">
+<item><ref id="rep" name="Revolve attribute">,
+<item><ref id="tconetcl" name="Truncated cone attribute">
 </itemize>
 <item>Threshold: <ref id="moattr" name="MetaObj attributes">
 <item>TMin, TMax: <ref id="ncircleattrprop" name="NCircle attribute">
@@ -23959,7 +23994,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="spattr" name="Sphere attribute">,
 <item><ref id="dkp" name="Disk attribute">,
 <item><ref id="cyp" name="Cylinder attribute">,
-<item><ref id="pap" name="Paraboloid attribute">
+<item><ref id="pap" name="Paraboloid attribute">,
+<item><ref id="tconetcl" name="Truncated cone attribute">
 </itemize>
 <item>Zoom:
 <itemize>
