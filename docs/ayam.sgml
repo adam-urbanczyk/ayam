@@ -12165,7 +12165,8 @@ A MP tag could look like this:
 The tag type <tt/"XML"/ can be used to enrich XML based export
 formats with arbitrary user defined data (attributes and
 nodes).<footnote>Since 1.24.</footnote>
-It can currently only be added to Material objects for X3D export
+It can currently only be added to Material and NURBS surface objects
+for X3D export
 (see also section <ref id="expx3d" name="X3D (Web3D) Export">).
 The value string of this tag must be a valid XML node hierarchy
 where the outer node specifies the target node of the XML data.
@@ -20725,6 +20726,9 @@ if combined by the union operator.
 <p>
 Clamping the knot ranges of NURBS via UMM/VMM tags is not supported.
 <p>
+NURBS surfaces suport XML tags to set <tt/"uTesselation"/ and/or
+<tt/"vTesselation"/ attributes.
+<p>
 PolyMesh objects will be exported to IndexedFaceSet nodes.
 PolyMesh faces with holes are automatically tesselated. PolyMesh faces
 with more than three points are tesselated if the export option
@@ -20740,7 +20744,8 @@ views of type <tt/"Front"/, <tt/"Side"/, or <tt/"Top"/ will not be
 exported properly.
 <p>
 Material objects are supported in a very minimalist way,
-i.e.~only the material color will be exported as diffuseColor.
+i.e.~only the material color will be exported as <tt/"diffuseColor"/
+attribute.
 However, XML tags can be used to add more attributes or even shaders to the
 exported materials, see also section <ref id="xmltag" name="XML tag">.
 <p>
