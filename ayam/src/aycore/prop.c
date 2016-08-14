@@ -135,8 +135,8 @@ ay_prop_gettrafotcmd(ClientData clientData, Tcl_Interp *interp,
 	  o->quat[0], o->quat[1], o->quat[2], o->quat[3]);
   to = Tcl_NewStringObj(quatstr, -1);
   Tcl_SetStringObj(ton, "QuaternionBall", -1);
-
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton, "Rotate_X", -1);
   to = Tcl_NewDoubleObj(o->rotx);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -146,6 +146,7 @@ ay_prop_gettrafotcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_SetStringObj(ton, "Rotate_Z", -1);
   to = Tcl_NewDoubleObj(o->rotz);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton, "Scale_X", -1);
   to = Tcl_NewDoubleObj(o->scalx);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -678,7 +679,6 @@ ay_prop_getnpinfo(Tcl_Interp *interp, char *n1, ay_object *o)
 	}
 
       Tcl_AppendToObj(to2, buffer5, -1);
-
     }
   else
     {
