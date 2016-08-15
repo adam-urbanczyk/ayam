@@ -106,6 +106,10 @@ if { $ay(ws) == "Win32" } {
     resizeHandle:Create $w.rsh $t
 }
 
+if { $ay(ws) == "Aqua" } {
+    $t conf -relief sunken -bd 2
+}
+
 # create popup menu
 set m [menu $t.popup -tearoff 0]
 $m add command -label "Clear All" -command "$t delete 1.0 end"
