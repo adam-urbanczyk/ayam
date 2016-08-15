@@ -985,6 +985,9 @@ if { $ay(ws) == "Aqua"  } {
 text $w.ftext.text -yscrollcommand "$w.ftext.sbar set" \
 	-setgrid 1 -font $font -height 20 -width 40 -wrap none
 # -tabs {32c left}
+if { $ay(ws) == "Aqua"  } {
+    $w.ftext conf -relief sunken -bd 2
+}
 scrollbar $w.ftext.sbar -takefocus 0 -command "$w.ftext.text yview"
 
 pack $w.ftext.sbar -in $w.ftext -side right -fill y

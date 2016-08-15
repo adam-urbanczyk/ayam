@@ -377,10 +377,6 @@ set mb [menubutton $f.mb -height $mbs -width $mbs -bd 2\
 	    -image ay_Triangle_img -takefocus 0\
 	    -highlightthickness 0 -relief raised -menu $f.mb.m]
 
-if { $ay(ws) == "Aqua" } {
-    $mb conf -height [$f.e cget -height]
-}
-
 set m [menu $mb.m -tearoff 0]
 foreach val $ayprefs(Tags) {
     set tt [lindex $val 0]
@@ -424,6 +420,10 @@ bind $f.t <Alt-Down> \
 bind $f.t <Alt-Up> \
     "$f.t conf -height \[expr \[$f.t cget -height\] - 1\]; wm geom $w \"\";\
      break"
+
+if { $ay(ws) == "Aqua" } {
+    $f.t conf -relief sunken -bd 2
+}
 
 pack $f.lv -in $f -padx 2 -pady 2 -side left
 pack $f.t -in $f -padx 2 -pady 2 -side left -fill both -expand yes
