@@ -217,6 +217,10 @@ bind $f.mb <Key-Escape> "resetFocus;break"
 if { $tcl_platform(platform) == "windows" } {
     $f.mb configure -pady 1
 }
+if { $ay(ws) == "Aqua" } {
+    pack conf $f.mb -ipady 0 -anchor n -expand 0
+}
+
 set m [menu $f.mb.m -tearoff 0]
 pack $f.mb -in $f -side left -fill x -expand yes -pady 0
 pack $f -in $w -side top -fill x
@@ -368,6 +372,7 @@ uie_fixEntry $f.e
 set mbs [expr [winfo reqheight $f.e] - 4]
 if { $ay(ws) == "Aqua" } {
     incr mbs -8
+    $f.e conf -bd 2 -highlightthickness 1
 }
 if { $ay(ws) == "Win32" } {
     incr mbs 4
@@ -422,7 +427,7 @@ bind $f.t <Alt-Up> \
      break"
 
 if { $ay(ws) == "Aqua" } {
-    $f.t conf -relief sunken -bd 2
+    $f.t conf -relief sunken -bd 2 -highlightthickness 1
 }
 
 pack $f.lv -in $f -padx 2 -pady 2 -side left
