@@ -481,6 +481,7 @@ int
 ay_acurve_drawacb(struct Togl *togl, ay_object *o)
 {
  ay_acurve_object *acurve;
+ ay_nurbcurve_object *ncurve = NULL;
  double *ver;
 
   if(!o)
@@ -491,10 +492,20 @@ ay_acurve_drawacb(struct Togl *togl, ay_object *o)
   if(!acurve)
     return AY_ENULL;
 
-  ver = acurve->controlv;
-
-  /* draw arrow */
-  ay_draw_arrow(togl, &(ver[acurve->length*3-6]), &(ver[acurve->length*3-3]));
+  /* draw orientation arrow */
+  if(acurve->ncurve)
+    {
+      ncurve = acurve->ncurve->refine;
+      ver = ncurve->controlv;
+      ay_draw_arrow(togl, &(ver[ncurve->length*4-8]),
+		    &(ver[ncurve->length*4-4]));
+    }
+  else
+    {
+      ver = acurve->controlv;
+      ay_draw_arrow(togl, &(ver[acurve->length*3-6]),
+		    &(ver[acurve->length*3-3]));
+    }
 
  return AY_OK;
 } /* ay_acurve_drawacb */
