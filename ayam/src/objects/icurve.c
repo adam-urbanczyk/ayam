@@ -609,6 +609,7 @@ int
 ay_icurve_drawacb(struct Togl *togl, ay_object *o)
 {
  ay_icurve_object *icurve = NULL;
+ ay_nurbcurve_object *ncurve = NULL;
  GLdouble *ver = NULL;
 
   icurve = (ay_icurve_object *) o->refine;
@@ -616,14 +617,23 @@ ay_icurve_drawacb(struct Togl *togl, ay_object *o)
   if(!icurve)
     return AY_ENULL;
 
-  ver = icurve->controlv;
-
-  /* draw arrow */
-  if(icurve->type)
-    ay_draw_arrow(togl, &(ver[icurve->length*3-3]), &(ver[0]));
+  /* draw orientation arrow */
+  if(icurve->ncurve)
+    {
+      ncurve = icurve->ncurve->refine;
+      ver = ncurve->controlv;
+      ay_draw_arrow(togl, &(ver[ncurve->length*4-8]),
+		    &(ver[ncurve->length*4-4]));
+    }
   else
-    ay_draw_arrow(togl, &(ver[icurve->length*3-6]),
-		  &(ver[icurve->length*3-3]));
+    {
+      ver = icurve->controlv;
+      if(icurve->type)
+	ay_draw_arrow(togl, &(ver[icurve->length*3-3]), &(ver[0]));
+      else
+	ay_draw_arrow(togl, &(ver[icurve->length*3-6]),
+		      &(ver[icurve->length*3-3]));
+    }
 
   /* draw deriv arrows? */
  return AY_OK;
