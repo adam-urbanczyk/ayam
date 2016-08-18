@@ -142,7 +142,7 @@ ay_matt_removeallrefs(ay_object *o)
 	    } /* if */
 	} /* if */
 
-      if(o->down)
+      if(o->down && o->down->next)
 	{
 	  ay_matt_removeallrefs(o->down);
 	} /* if */
@@ -325,7 +325,7 @@ ay_matt_creatematerialids(ay_object *o)
 	  o->tags = newtag;
 	}
 
-      if(o->down)
+      if(o->down && o->down->next)
 	ay_status = ay_matt_creatematerialids(o->down);
 
       if(ay_status)

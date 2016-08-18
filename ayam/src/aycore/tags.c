@@ -1086,7 +1086,7 @@ ay_tags_reconnect(ay_object *o, char *tagtype, char *tagname)
 
   while(o)
     {
-      if(o->down)
+      if(o->down && o->down->next)
 	{
 	  ay_tags_reconnect(o->down, tagtype, tagname);
 	}
