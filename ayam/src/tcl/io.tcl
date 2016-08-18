@@ -43,7 +43,7 @@ proc io_replaceScene { {newfilename ""} } {
 	set types [subst {
 	    {"Ayam Scene" ".ay"}
 	    {"Supported Files" {$ayprefs(ALFileTypes)}}
-	    {"All files" *}}]
+	    {"All Files" *}}]
 
 	if { $ay(ws) != "Aqua" } {
 	    set newfilename [tk_getOpenFile -filetypes $types -parent .\
@@ -61,6 +61,7 @@ proc io_replaceScene { {newfilename ""} } {
 	    }
 	}
     }
+    # if have no filename
 
     if { $newfilename != "" } {
 	viewCloseAll
@@ -133,6 +134,7 @@ proc io_replaceScene { {newfilename ""} } {
 
 	after idle viewMouseToCurrent
     }
+    # if have filename
 
     winAutoFocusOn
 
@@ -162,7 +164,7 @@ proc io_insertScene { {ifilename ""} } {
 
 	set types [subst {{"Ayam Scene" ".ay"}
 	    {"Supported Files" {$ayprefs(ALFileTypes)}}
-	    {"All files" *}}]
+	    {"All Files" *}}]
 
 	if { $ay(ws) != "Aqua" } {
 	    set ifilename [tk_getOpenFile -filetypes $types -parent .\
@@ -180,6 +182,7 @@ proc io_insertScene { {ifilename ""} } {
 	    }
 	}
     }
+    # if have no filename
 
     if { $ifilename != "" } {
 	cS; plb_update
@@ -223,6 +226,7 @@ proc io_insertScene { {ifilename ""} } {
 	update
 	after idle viewMouseToCurrent
     }
+    # if have filename
 
     winAutoFocusOn
 
@@ -253,7 +257,7 @@ proc io_saveScene { ask selected } {
 
 	set types [subst {{"Ayam Scene" ".ay"}
 	    {"Supported Files" {$ayprefs(ALFileTypes)}}
-	    {"All files" *}}]
+	    {"All Files" *}}]
 
 	if { $ay(ws) != "Aqua" } {
 	    set filename [tk_getSaveFile -filetypes $types -parent .\
@@ -273,10 +277,11 @@ proc io_saveScene { ask selected } {
 	    return;
 	}
     }
+    # if have no filename
 
     if { $filename != "" } {
 	# append extension
-	set newfilename [io_appext $filename ".ay"]
+	set filename [io_appext $filename ".ay"]
 
 	# fix window positions
 	viewUPos
@@ -303,6 +308,7 @@ proc io_saveScene { ask selected } {
 	    ayError 2 "Ayam" "$filename"
 	}
     }
+    # if have filename
 
     winAutoFocusOn
 
@@ -365,7 +371,7 @@ proc io_exportRIB { {expview "" } } {
 	    incr index
 	}
     }
-    # foreach
+    # foreach view
 
     if { $ocw != "" } {
 	$ocw mc
@@ -411,7 +417,7 @@ proc io_exportRIB { {expview "" } } {
 	restoreFocus $ay(expRIBFocus)
 	destroy .exportRIBw
     }
-    # button
+    # ok button
 
     button $f.bca -text "Cancel" -pady $ay(pady) -width 5 -command "\
 	    grab release .exportRIBw;\
@@ -514,7 +520,7 @@ proc io_loadCustom { } {
 
     set pftype .$ay(soext)
 
-    set filetypes [list [list "Plugin" $pftype] {"All files" *}]
+    set filetypes [list [list "Plugin" $pftype] {"All Files" *}]
 
     set idir ""
 
@@ -675,6 +681,7 @@ proc io_mruLoad { index } {
 
 	after idle viewMouseToCurrent
     }
+    # if mru index is valid
 
  return;
 }
@@ -763,7 +770,7 @@ proc io_saveEnv { } {
      if { $dirname == "." } { set dirname [pwd] }
  }
 
- set types {{"Ayam Scene" ".ay"} {"All files" *}}
+ set types {{"Ayam Scene" ".ay"} {"All Files" *}}
 
  if { $tcl_platform(os) != "Darwin" } {
      set savefilename [tk_getSaveFile -filetypes $types -parent .\
@@ -858,7 +865,7 @@ proc io_getRIBName { } {
 
     # first, create RIB file name
     if { $ayprefs(RIBFile) == "Ask" || $ayprefs(RIBFile) == "" } {
-	set filetypes {{"RIB" ".rib"} {"All files" *}}
+	set filetypes {{"RIB" ".rib"} {"All Files" *}}
 	set ribname [tk_getSaveFile -filetypes $filetypes -parent .\
 		-title "Export to file:"]
     } else {
@@ -887,7 +894,7 @@ proc io_getRIBName { } {
 
     # second, create image file name
     if { $ayprefs(Image) == "Ask" } {
-	set filetypes {{"TIF" ".tif"} {"TIFF" ".tiff"} {"All files" *}}
+	set filetypes {{"TIF" ".tif"} {"TIFF" ".tiff"} {"All Files" *}}
 	set imagename "[tk_getSaveFile -filetypes $filetypes -parent .\
 		-title "Render to file:"]"
 	if { $imagename == "" } { set ribname "" }
@@ -907,7 +914,7 @@ proc io_getRIBName { } {
 # io_getRIBName
 
 
-# exportRIBfC:
+# io_exportRIBfC:
 #  export RIB from selected camera object
 #
 proc io_exportRIBfC { } {
@@ -1263,7 +1270,7 @@ proc ::tk::mac::OpenDocument { args } {
 # OpenDocument
 
 }
-# if
+# if is Aqua
 
 
 # io_exit
@@ -1333,26 +1340,31 @@ proc io_importScene { filename } {
 
     set ext [file extension $filename ]
     set i 0
-    set imported 0
+    set found 0
     foreach alext $ayprefs(ALFileTypes) {
 	# look for matching supported file name extension
 	if { ! [string compare -nocase $ext $alext] } {
+	    set found 1
+
 	    # get the name of the plugin that supports $ext files
 	    set plugin [lindex $ayprefs(ALPlugins) $i]
 
 	    set import_cmd "${plugin}_import"
-	    #
+
+	    # see if import command exists
 	    if { [llength [info commands $import_cmd]] == 0 } {
+		# import command not available => attempt to load the plugin
 		io_lcAuto $plugin
 	    }
-	    # XXXX import options array
+
+	    # access import options array
 	    set option_array "${plugin}_options"
 	    global $option_array
+
 	    # set file name to import in the import options GUI
 	    set ${option_array}(filename) $filename
 	    update
 	    if { [llength [info commands $import_cmd]] > 0 } {
-		set imported 1
 		# now, call the import procedure/command
 		$import_cmd
 	    } else {
@@ -1360,14 +1372,15 @@ proc io_importScene { filename } {
 	    }
 	}
 	# if extension matches
-	if { $imported } {
+
+	if { $found } {
 	    break
 	}
 	incr i
     }
-    # foreach
+    # foreach extension
 
-    if { ! $imported } {
+    if { ! $found } {
 	ayError 2 "io_importScene" "Unknown extension: $ext \nCurrently known: $ayprefs(ALFileTypes)"
     }
 
@@ -1390,44 +1403,48 @@ proc io_exportScene { filename } {
 
     set ext [file extension $filename ]
     set i 0
-    set exported 0
+    set found 0
     foreach alext $ayprefs(ALFileTypes) {
 	# look for matching supported file name extension
 	if { ! [string compare -nocase $ext $alext] } {
+	    set found 1
 	    # get the name of the plugin that supports $ext files
 	    set plugin [lindex $ayprefs(ALPlugins) $i]
-	    # XXXX export procedure name
-	    set export_proc "${plugin}_export"
-	    #
-	    if { ! [info exists $export_proc] } {
+
+	    set export_cmd "${plugin}_export"
+
+	    # see if export command exists
+	    if { ! [info exists $export_cmd] } {
+		# export command not available => attempt to load the plugin
 		io_lcAuto $plugin
 	    }
-	    # XXXX export options array
+
+	    # access export options array
 	    set option_array "${plugin}_options"
 	    global $option_array
+
 	    # set file name to export in the export options GUI
 	    set ${option_array}(filename) $filename
 	    update
-	    set body ""
-	    catch { set body [ info body $export_proc ] }
-	    if { $body != "" } {
-		set exported 1
+
+	    if { [llength [info commands $export_cmd]] > 0 } {
 		# now, call the export procedure
-		$export_proc
+		$export_cmd
 	    } else {
 		ayError 2 "io_exportScene" "Failed to load plugin: $plugin"
 	    }
 	}
-	# if
-	if { $exported } {
+	# if extension matches
+
+	if { $found } {
 	    break
 	}
 	incr i
     }
-    # foreach
+    # foreach extension
 
-    if { ! $exported } {
-	ayError 2 "io_exportScene" "Unknown extension: $ext"
+    if { ! $found } {
+	ayError 2 "io_exportScene" "Unknown extension: $ext \nCurrently known: $ayprefs(ALFileTypes)"
     }
 
     winAutoFocusOn
@@ -1435,3 +1452,22 @@ proc io_exportScene { filename } {
  return;
 }
 # io_exportScene
+
+
+# rrib_export:
+#  enable RIB export via/from io_exportScene
+proc rrib_export { } {
+    global ayprefs rrib_options
+
+    # save current RIBFile preference setting
+    set ribfilename $ayprefs(RIBFile)
+    set ayprefs(RIBFile) $rrib_options(filename)
+
+    io_exportRIB
+
+    # restore RIBFile preference setting
+    set ayprefs(RIBFile) $ribfilename
+
+ return;
+}
+# rrib_export
