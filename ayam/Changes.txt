@@ -1,5 +1,5 @@
-[8. Aug 2016 CVS-Head:
-======================
+[18. Aug 2016 CVS-Head:
+=======================
 Bug Fixes:
 o added missing scripting interface commands to JavaScript and Lua scripting
   language plugins (SF 526)
@@ -44,6 +44,8 @@ o revamped Tag add/edit dialog, now showing a menu of available tags,
   allowing multi-line tag values, and having a context menu
 o add menu entry to add a tag to multiple selected objects
   ("Special/Tags/Add Tag")
+o improved MRU file management (file saving could lead to extraneous and
+  not working entries without path)
 
 Scripts/Scripting Interface:
 o added "setTag" command that adds a tag if it is not present, otherwise
@@ -58,6 +60,8 @@ o added a script to display NURBS in x3dom (x3dom-nurbs)
 o added commands to check object attributes: "hasChild", "hasMat", "hasRefs",
   and "hasTrafo"
 o added commands to check object types: "isCurve" and "isSurface"
+o added "-relative" option to getPnt command to improve evaluation of
+  curves/surfaces
 
 Import/Export:
 o X3D export of materials now supports the new tag type "XML" that can be
@@ -66,6 +70,7 @@ o X3D export of materials now supports the new tag type "XML" that can be
   (e.g. a <ComposedShader>)
 o X3D export of NURBS surfaces now also contains some "containerField"
   attributes vital for e.g. x3dom-nurbs
+o RIB files can now be exported via "File/Save as"
 
 
 [13. Jan 2016] Ayam 1.23:
