@@ -1929,7 +1929,7 @@ void ay_wrib_placecamera(RtPoint position, RtPoint direction, double roll);
 
 /** export the RiOptions to a RIB file
  */
-int ay_wrib_rioptions(void);
+void ay_wrib_rioptions(void);
 
 /** look through the scene whether there are any lights switched on
  */
@@ -1949,7 +1949,7 @@ void ay_wrib_defmat(char *file);
 
 /** export transformations of an object to a RIB file
  */
-int ay_wrib_trafos(ay_object *o);
+void ay_wrib_trafos(ay_object *o);
 
 /** export an object to a RIB file
  */

@@ -64,7 +64,7 @@ ay_instt_createoidht(ay_object *o)
 	} /* if */
 
       /* recurse into children of o */
-      if(o->down)
+      if(o->down && o->down->next)
 	{
 	  ay_status = ay_instt_createoidht(o->down);
 	  if(ay_status)
@@ -248,7 +248,7 @@ ay_instt_createorigids(ay_object *o)
 	    }
 	} /* if */
 
-      if(o->down)
+      if(o->down && o->down->next)
 	ay_status = ay_instt_createorigids(o->down);
 
       if(ay_status)
@@ -323,7 +323,7 @@ ay_instt_createinstanceids(ay_object *o)
 	    }
 	} /* if instance */
 
-      if(o->down)
+      if(o->down && o->down->next)
 	{
 	  ay_status = ay_instt_createinstanceids(o->down);
 
@@ -611,7 +611,7 @@ ay_instt_clearoidtags(ay_object *o)
 	    } /* while */
 	} /* if */
 
-      if(o->down)
+      if(o->down && o->down->next)
 	ay_status = ay_instt_clearoidtags(o->down);
 
       if(ay_status)
@@ -645,7 +645,7 @@ ay_instt_findinstance(ay_object *m, ay_object *o)
 	    return AY_ERROR;
 	}
 
-      if(o->down)
+      if(o->down && o->down->next)
 	{
 	  ay_status = ay_instt_findinstance(m, o->down);
 
