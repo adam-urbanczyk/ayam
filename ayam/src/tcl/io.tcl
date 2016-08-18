@@ -566,8 +566,12 @@ proc io_loadCustom { } {
 #  add <filename> to MRU list menu entries
 #  possibly rotating/swapping existing entries
 proc io_mruAdd { filename } {
-
     global ayprefs
+
+    # if filename has no path, prepend current directory
+    if { [file tail $filename] == $filename } {
+        set filename [file join [pwd] $filename]
+    }
 
     set found 0
     set i 0
