@@ -538,8 +538,13 @@ ay_wrib_refobject(char *file, ay_object *o)
 } /* ay_wrib_refobject */
 
 
-/* ay_wrib_object:
+/** ay_wrib_object:
+ * Export a single object to a RIB.
  *
+ * \param[in] file RIB
+ * \param[in] o object to export
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_wrib_object(char *file, ay_object *o)
@@ -568,9 +573,7 @@ ay_wrib_object(char *file, ay_object *o)
   if((!ay_prefs.resolveinstances) && (o->type != AY_IDMATERIAL) &&
      (o->refcount) && (cb))
     {
-      ay_status = ay_wrib_refobject(file, o);
-
-      return ay_status; /* XXXX early exit */
+      return ay_wrib_refobject(file, o);
     }
 
   if(cb)
@@ -617,11 +620,16 @@ ay_wrib_object(char *file, ay_object *o)
 	  /* write tags */
 	  if(o->tags)
 	    {
-	      ay_status = ay_riattr_wrib(o);
-	      ay_status = ay_tc_wrib(o);
+	      ay_status += ay_riattr_wrib(o);
+	      ay_status += ay_tc_wrib(o);
 	    } /* if */
+
+	  if(ay_status)
+	    {
+	      return AY_ERROR;
+	    }
 	}  /* if */
-    } /* if */
+    } /* if have export callback */
 
   /* write child objects, but do not descend into light sources as
      the arealight geometry has been written long ago in the lights
@@ -1024,7 +1032,7 @@ ay_wrib_hidertags(void)
  int i = 0;
  char *val = NULL, *type = NULL;
  size_t len;
- RtToken htype = RI_HIDDEN;
+ RtToken htype;
  RtToken *tokens = NULL;
  RtPointer *values = NULL;
  RtInt argc;
@@ -1127,30 +1135,33 @@ ay_wrib_hidertags(void)
  *  if imager is 1, write imager shader
  *  if imager is 0, write atmosphere shader
  */
-void
+int
 ay_wrib_rootsh(int imager)
 {
+ int ay_status = AY_OK;
  ay_root_object *root = NULL;
 
   root = (ay_root_object *)ay_root->refine;
 
   if(!imager)
     { /* write the atmosphere shader */
-      ay_shader_wrib(root->atmosphere, AY_STATMOSPHERE, NULL);
+      if(root->atmosphere)
+	ay_status = ay_shader_wrib(root->atmosphere, AY_STATMOSPHERE, NULL);
     }
   else
     { /* write the imager shader */
-      ay_shader_wrib(root->imager, AY_STIMAGER, NULL);
+      if(root->imager)
+	ay_status = ay_shader_wrib(root->imager, AY_STIMAGER, NULL);
     } /* if */
 
- return;
+ return ay_status;
 } /* ay_wrib_rootsh */
 
 
 /* ay_wrib_defmat:
  *  write default material
  */
-void
+int
 ay_wrib_defmat(char *file)
 {
  int ay_status = AY_OK;
@@ -1168,9 +1179,9 @@ ay_wrib_defmat(char *file)
       ay_status = ay_matt_getmaterial("default", &m);
       if(ay_status == AY_ERROR)
 	{
-	  ay_error(AY_EWARN, fname,
-		   "No material named default. Using matte.");
+	  ay_error(AY_EWARN, fname, "No material named default. Using matte.");
 	  RiSurface("matte", RI_NULL);
+	  ay_status = AY_OK;
 	}
       else
 	{
@@ -1181,7 +1192,7 @@ ay_wrib_defmat(char *file)
       break;
     } /* switch */
 
- return;
+ return ay_status;
 } /* ay_wrib_defmat */
 
 
@@ -1385,7 +1396,7 @@ ay_wrib_lights(char *file, ay_object *o)
 		      ay_status = ay_shader_wrib(light->lshader,
 						 AY_STAREALIGHT,
 						 &light_handle);
-		      ay_status = ay_wrib_object(file, o->down);
+		      ay_status += ay_wrib_object(file, o->down);
 		      RiAttributeEnd();
 		    }
 		  else
@@ -1394,7 +1405,13 @@ ay_wrib_lights(char *file, ay_object *o)
 						 AY_STLIGHT,
 						 &light_handle);
 		    } /* if */
+		  if(ay_status)
+		    {
+		      ay_status = AY_ERROR;
+		      goto cleanup;
+		    }
 		} /* if */
+	      /* XXXX else report error/issue warning? */
 	      break;
 
 	    case AY_LITPOINT:
@@ -1696,7 +1713,6 @@ ay_wrib_scene(char *file, char *image, int temp, int rtf,
 
       /* write root RiOption tags (possibly containing shadow bias) */
       ay_status = ay_riopt_wrib(ay_root);
-
       if(ay_status)
 	{
 	  RiEnd();
@@ -1731,8 +1747,14 @@ ay_wrib_scene(char *file, char *image, int temp, int rtf,
    ay_wrib_displaytags();
    /* write RiHider statements from tags */
    ay_wrib_hidertags();
+
    /* write imager shader */
-   ay_wrib_rootsh(AY_TRUE);
+   ay_status = ay_wrib_rootsh(AY_TRUE);
+   if(ay_status)
+     {
+       RiEnd();
+       goto cleanup;
+     }
 
    /* Camera! */
    RiFormat(width, height, (RtFloat)-1.0);
@@ -1787,6 +1809,7 @@ ay_wrib_scene(char *file, char *image, int temp, int rtf,
    RiArchiveRecord(RI_COMMENT, "rh->lh");
    RiScale((RtFloat)-1.0, (RtFloat)1.0, (RtFloat)1.0);
 
+   /* write camera */
    RiArchiveRecord(RI_COMMENT, "Camera!");
    ay_wrib_placecamera(f, d, roll);
 
@@ -1795,7 +1818,6 @@ ay_wrib_scene(char *file, char *image, int temp, int rtf,
 
    /* write root RiOption tags */
    ay_status = ay_riopt_wrib(ay_root);
-
    if(ay_status)
      {
        RiEnd();
@@ -1820,10 +1842,14 @@ ay_wrib_scene(char *file, char *image, int temp, int rtf,
     RiArchiveRecord(RI_COMMENT, "Action!");
 
     /* write atmosphere shader */
-    ay_wrib_rootsh(AY_FALSE);
+    ay_status = ay_wrib_rootsh(AY_FALSE);
+    if(ay_status)
+      return ay_status;
 
     /* write default material */
-    ay_wrib_defmat(file);
+    ay_status = ay_wrib_defmat(file);
+    if(ay_status)
+      return ay_status;
 
     /* write objects */
     if(!ay_prefs.use_sm)
@@ -1949,7 +1975,6 @@ ay_wrib_sm(char *file, char *image, int width, int height, int selonly)
 
   /* write RiOption tags (possibly containing shadow bias settings) */
   ay_status = ay_riopt_wrib(ay_root);
-
   if(ay_status)
     goto cleanup;
 
@@ -2371,7 +2396,9 @@ ay_wrib_pprevdraw(ay_view_object *view)
   ay_wrib_hidertags();
 
   /* write imager shader */
-  ay_wrib_rootsh(AY_TRUE);
+  ay_status = ay_wrib_rootsh(AY_TRUE);
+  if(ay_status)
+    goto cleanup;
 
   /* Camera! */
   RiFormat(width, height, (RtFloat)-1.0);
@@ -2425,37 +2452,51 @@ ay_wrib_pprevdraw(ay_view_object *view)
   /* convert rh to lh */
   RiArchiveRecord(RI_COMMENT, "rh->lh");
   RiScale((RtFloat)-1.0, (RtFloat)1.0, (RtFloat)1.0);
+
+   /* write camera */
   RiArchiveRecord(RI_COMMENT, "Camera!");
   ay_wrib_placecamera(f, d, roll+addroll);
 
   /* write RiOptions */
   ay_status = ay_wrib_rioptions();
+  if(ay_status)
+    goto cleanup;
 
   /* write root RiOption tags */
   ay_status = ay_riopt_wrib(ay_root);
+  if(ay_status)
+    goto cleanup;
 
   RiWorldBegin();
 
   /* Lights! */
   RiArchiveRecord(RI_COMMENT, "Lights!");
+  ay_status = ay_wrib_alllights(pprender);
+  if(ay_status)
+    goto cleanup;
 
-  ay_status = ay_wrib_lights(pprender, ay_root->next);
-  ay_currentlevel = orig_clevel;
   RiIdentity();
 
   /* Action! */
   RiArchiveRecord(RI_COMMENT, "Action!");
 
   /* write atmosphere shader */
-  ay_wrib_rootsh(AY_FALSE);
+  ay_status = ay_wrib_rootsh(AY_FALSE);
+  if(ay_status)
+    goto cleanup;
 
   /* write default material */
-  ay_wrib_defmat(pprender);
+  ay_status = ay_wrib_defmat(pprender);
+  if(ay_status)
+    goto cleanup;
 
    o = ay_root->next;
    while(o->next)
      {
        ay_status = ay_wrib_object(pprender, o);
+       if(ay_status)
+	 goto cleanup;
+
        o = o->next;
      }
 
@@ -2467,6 +2508,8 @@ ay_wrib_pprevdraw(ay_view_object *view)
     {
       RiArchiveRecord(RI_COMMENT, "Redraw please!\n");
     }
+
+cleanup:
 
   ay_prefs.resolveinstances = old_resinstances;
 

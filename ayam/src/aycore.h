@@ -1941,11 +1941,11 @@ int ay_wrib_alllights(char *file);
 
 /** export the root object shaders to a RIB file
  */
-void ay_wrib_rootsh(int imager);
+int ay_wrib_rootsh(int imager);
 
 /** export the default material to a RIB file
  */
-void ay_wrib_defmat(char *file);
+int ay_wrib_defmat(char *file);
 
 /** export transformations of an object to a RIB file
  */
