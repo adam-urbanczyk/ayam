@@ -1972,7 +1972,7 @@ int ay_wrib_scene(char *file, char *image, int temp, int rtf,
 
 /** Togl callback for exporting the scene to a RIB file
  */
-int ay_wrib_cb(struct Togl *togl, int argc, char *argv[]);
+int ay_wrib_viewtcb(struct Togl *togl, int argc, char *argv[]);
 
 /** export RiDisplay tags to a RIB file
  */

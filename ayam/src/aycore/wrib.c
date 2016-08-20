@@ -2011,11 +2011,11 @@ cleanup:
 } /* ay_wrib_sm */
 
 
-/** ay_wrib_cb:
+/** ay_wrib_viewtcb:
  * Togl callback to export the scene to a RIB (RenderMan Interface Bytestream).
  */
 int
-ay_wrib_cb(struct Togl *togl, int argc, char *argv[])
+ay_wrib_viewtcb(struct Togl *togl, int argc, char *argv[])
 {
  int ay_status = AY_OK;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
@@ -2101,7 +2101,7 @@ ay_wrib_cb(struct Togl *togl, int argc, char *argv[])
     }
 
  return TCL_OK;
-} /* ay_wrib_cb */
+} /* ay_wrib_viewtcb */
 
 
 /** ay_wrib_tcmd:
