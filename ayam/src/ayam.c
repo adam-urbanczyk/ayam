@@ -1107,7 +1107,7 @@ Tcl_AppInit(Tcl_Interp *interp)
 #endif
 
   /* wrib.c */
-  Togl_CreateCommand("wrib", ay_wrib_cb);
+  Togl_CreateCommand("wrib", ay_wrib_viewtcb);
 
   Tcl_CreateCommand(interp, "wrib", ay_wrib_tcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
