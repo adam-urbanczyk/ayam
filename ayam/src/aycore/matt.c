@@ -119,6 +119,7 @@ ay_matt_getmaterial(char *name, ay_mat_object **material)
 /* ay_matt_removeallrefs:
  *  _recursively_ remove all references to all material objects from
  *  all objects besides and beneath <o>
+ *  End-Level-Terminators need not be present.
  */
 void
 ay_matt_removeallrefs(ay_object *o)
@@ -142,7 +143,7 @@ ay_matt_removeallrefs(ay_object *o)
 	    } /* if */
 	} /* if */
 
-      if(o->down && o->down->next)
+      if(o->down)
 	{
 	  ay_matt_removeallrefs(o->down);
 	} /* if */
@@ -157,6 +158,7 @@ ay_matt_removeallrefs(ay_object *o)
 /* ay_matt_removerefs:
  *  _recursively_ remove all references to material object <material>
  *  from all objects besides and beneath <o>
+ *  End-Level-Terminators need not be present.
  */
 void
 ay_matt_removerefs(ay_object *o, ay_mat_object *material)
@@ -194,6 +196,7 @@ ay_matt_removerefs(ay_object *o, ay_mat_object *material)
 
 /* ay_matt_removecliprefs:
  *  used by ay_clear_scene(); see there for description
+ *  End-Level-Terminators need not be present.
  */
 void
 ay_matt_removecliprefs(ay_object *o)
@@ -203,7 +206,7 @@ ay_matt_removecliprefs(ay_object *o)
   if(!o)
     return;
 
-  while(o->next)
+  while(o)
     {
       if(o->type == AY_IDMATERIAL)
 	{
@@ -229,6 +232,8 @@ ay_matt_removecliprefs(ay_object *o)
 /* ay_matt_connect:
  *  connect objects to the appropriate material objects
  *  (using MI tags and the material id hashtable)
+ *  End-Level-Terminators must be present (i.e. the objects must be
+ *  properly linked to the scene).
  */
 void
 ay_matt_connect(ay_object *o)
@@ -373,7 +378,7 @@ ay_matt_clearmaterialids(ay_object *o)
 
 	} /* if */
 
-      if(o->down)
+      if(o->down && o->down->next)
 	ay_status = ay_matt_clearmaterialids(o->down);
 
       if(ay_status)

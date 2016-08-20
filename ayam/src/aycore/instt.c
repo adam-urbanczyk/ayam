@@ -21,6 +21,8 @@ static Tcl_HashTable ay_instt_oidptr_ht;
  *  object ids to object pointers
  *  if called with NULL, clears the object id hashtable
  *  returns AY_OK on success, AY_ERROR on error (OID already exists)
+ *  End-Level-Terminators must be present (i.e. the objects must be
+ *  properly linked to the scene).
  */
 int
 ay_instt_createoidht(ay_object *o)
@@ -85,6 +87,8 @@ ay_instt_createoidht(ay_object *o)
  *  returns AY_OK on success, AY_ERROR on error (master not found)
  *  to avoid crashes, unconnected instances will be removed
  *  immediately
+ *  End-Level-Terminators must be present (i.e. the objects must be
+ *  properly linked to the scene).
  */
 void
 ay_instt_connect(ay_object *o, ay_object **last)
@@ -197,6 +201,8 @@ ay_instt_createoid(char **dest)
 /* ay_instt_createorigids:
  *  _recursively_ create object id tags for all original or
  *  master or referenced objects
+ *  End-Level-Terminators must be present (i.e. the objects must be
+ *  properly linked to the scene).
  */
 int
 ay_instt_createorigids(ay_object *o)
@@ -263,6 +269,8 @@ ay_instt_createorigids(ay_object *o)
 
 /* ay_instt_createinstanceids:
  *  create object id tags for all instance objects
+ *  End-Level-Terminators must be present (i.e. the objects must be
+ *  properly linked to the scene).
  */
 int
 ay_instt_createinstanceids(ay_object *o)
@@ -339,6 +347,8 @@ ay_instt_createinstanceids(ay_object *o)
 
 /* ay_instt_wribiarchives:
  *  wrib instance archives
+ *  End-Level-Terminators must be present (i.e. the objects must be
+ *  properly linked to the scene).
  */
 int
 ay_instt_wribiarchives(char *file, ay_object *o)
@@ -354,7 +364,7 @@ ay_instt_wribiarchives(char *file, ay_object *o)
  ay_level_object *l = NULL;
  char *parname = "name";
 
-  while(o->next)
+  while(o)
     {
       arr = ay_wribcbt.arr;
       cb = (ay_wribcb *)(arr[o->type]);
@@ -565,10 +575,10 @@ ay_instt_wribiarchives(char *file, ay_object *o)
 
 	    } /* if */
 
-	} /* if */
+	} /* if have children */
 
       if(ay_status)
-	return ay_status;
+	break;
 
       o = o->next;
     } /* while */
@@ -579,6 +589,8 @@ ay_instt_wribiarchives(char *file, ay_object *o)
 
 /* ay_instt_clearoidtags:
  *  clear all object id tags from scene
+ *  End-Level-Terminators must be present (i.e. the objects must be
+ *  properly linked to the scene).
  */
 int
 ay_instt_clearoidtags(ay_object *o)
@@ -622,41 +634,6 @@ ay_instt_clearoidtags(ay_object *o)
 
  return ay_status;
 } /* ay_instt_clearoidtags */
-
-
-/* ay_instt_findinstance:
- *  _recursively_ check objects pointed to by "o" for instance objects
- *  whose master is "m"; returns AY_ERROR immediately
- *  if a single such instance has been found
- */
-int
-ay_instt_findinstance(ay_object *m, ay_object *o)
-{
- int ay_status = AY_OK;
-
-  if(!o)
-    return AY_OK;
-
-  while(o)
-    {
-      if(o->type == AY_IDINSTANCE)
-	{
-	  if(((ay_object *)o->refine) == m)
-	    return AY_ERROR;
-	}
-
-      if(o->down && o->down->next)
-	{
-	  ay_status = ay_instt_findinstance(m, o->down);
-
-	  if(ay_status)
-	    return ay_status;
-	}
-      o = o->next;
-    }
-
- return ay_status;
-} /* ay_instt_findinstance */
 
 
 /** ay_instt_removeinstances:
@@ -709,6 +686,7 @@ ay_instt_removeinstances(ay_object **o, ay_object *m)
  *  hierarchy \a o in the clipboard and remove/delete them from
  *  the clipboard. The hierarchy can "change" because refcounts
  *  can be decreased in the progress.
+ *  End-Level-Terminators need not be present.
  *
  * \param[in,out] o object hierarchy to check
  */
@@ -726,7 +704,7 @@ ay_instt_clearclipboard(ay_object *o)
 	  ay_instt_removeinstances(&(ay_clipboard), o);
 	}
 
-      if(o->down && o->down->next)
+      if(o->down)
 	{
 	  ay_instt_clearclipboard(o->down);
 	}
@@ -809,7 +787,7 @@ ay_instt_checkinstance(ay_object *o, ay_object *target,
  int res = AY_FALSE;
  int check = AY_FALSE;
 
-  while(o->next)
+  while(o)
     {
       if(o == target)
 	{
@@ -977,6 +955,8 @@ ay_instt_getmastertcmd(ClientData clientData, Tcl_Interp *interp,
  *  _recursively_ search for instances of master <m>
  *  in the list of objects <o> (and all their children)
  *  and count all found references in <refs>
+ *  End-Level-Terminators must be present (i.e. the objects must be
+ *  properly linked to the scene).
  */
 void
 ay_instt_countrefs(ay_object *o, ay_object *m, unsigned int *refs)
