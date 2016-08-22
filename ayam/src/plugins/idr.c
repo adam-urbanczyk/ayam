@@ -1798,7 +1798,7 @@ idr_wrib_scene(char *file, char *image, double importance, int exclude,
 {
  int ay_status = AY_OK;
  ay_object *o = ay_root;
- RtPoint f, t, d;
+ RtPoint f, d;
  RtFloat aspect = 1.0, swleft, swright, swtop, swbot;
  double fakt;
  /* RtFloat bias0 = 0.5, bias1 = 0.5;*/
@@ -1824,10 +1824,6 @@ idr_wrib_scene(char *file, char *image, double importance, int exclude,
   f[0] = (RtFloat) from[0];
   f[1] = (RtFloat) from[1];
   f[2] = (RtFloat) from[2];
-
-  t[0] = (RtFloat) to[0];
-  t[1] = (RtFloat) to[1];
-  t[2] = (RtFloat) to[2];
 
   d[0] = (RtFloat)(to[0] - from[0]);
   d[1] = (RtFloat)(to[1] - from[1]);
@@ -1952,7 +1948,7 @@ idr_wrib_scene(char *file, char *image, double importance, int exclude,
   ay_wrib_placecamera(f, d, roll);
 
   /* wrib RiOptions */
-  ay_status = ay_wrib_rioptions();
+  ay_wrib_rioptions();
 
   /* wrib root objects RiOption tags*/
   ay_status = ay_riopt_wrib(ay_root);
@@ -3129,7 +3125,6 @@ idr_wrib_tcb(struct Togl *togl, int argc, char *argv[])
  char fname[] = "idr_wrib";
  int width = Togl_Width (togl);
  int height = Togl_Height (togl);
- int left, top, right, bottom;
  int i1, i2, i1opt, i2opt, i, k, krit;
  int wasted;
  idr_picpart *part, *optpart, *nextpart;
@@ -3272,11 +3267,6 @@ idr_wrib_tcb(struct Togl *togl, int argc, char *argv[])
 	  rioptions->Samples_X /= 2.0;
 	  rioptions->Samples_Y /= 2.0;
         }
-
-      left = -width/2;
-      bottom = -height/2;
-      right = -width/2+width;
-      top = -height/2+height;
 
 
       switch((params[i]).optimizebb)
