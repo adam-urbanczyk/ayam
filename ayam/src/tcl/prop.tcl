@@ -342,6 +342,23 @@ proc _pasteToText { t } {
 # _pasteToText
 
 
+# _toggleMultiline
+# toggle tag add/edit dialogs multiline feature
+proc _toggleMultiline { t } {
+    global ay
+    if { $ay(addTagHeight) > 1 } {
+	set ay(addTagHeight) 1
+	$t conf -height 1
+    } else {
+	set ay(addTagHeight) 3;
+	$t conf -height 3
+    }
+    set aygeom(addTag_Add_Tag) ""
+    after idle { wm geom .addTag "" }
+}
+# _toggleMultiline
+
+
 # addTagp:
 #  used to edit and add tags
 proc addTagp { {edit -1} } {
@@ -405,6 +422,8 @@ label $f.lv -text "Value:" -width 6
 set he 1
 if {[info exists ay(addTagHeight)]} {
     set he $ay(addTagHeight)
+} else {
+    set ay(addTagHeight) 1
 }
 
 text $f.t -width 30 -height $he
@@ -419,6 +438,7 @@ bind $f.t <Key-Tab> "\
 if \{\[winfo height $f.t\] < $height \} \{focus \[tk_focusNext $f.t\];break\}"
 uie_fixEntry $f.t
 
+# use ayviewshortcuts(RotMod)?
 bind $f.t <Alt-Down> \
     "$f.t conf -height \[expr \[$f.t cget -height\] + 1\]; wm geom $w \"\";\
      break"
@@ -454,11 +474,7 @@ $m add command -label "Load from file" -command {
     }
 }
 $m add separator
-$m add command -label "Reset Multiline" -command "\
-  set ay(addTagHeight) 1;
-  $f.t conf -height 1;
-  set aygeom(addTag_Add_Tag) \"\";
-  after idle \{ wm geom .addTag \"\" \}"
+$m add command -label "Toggle Multiline" -command "_toggleMultiline $f.t"
 
 # bind popup menu
 set mb 3
