@@ -438,11 +438,11 @@ bind $f.t <Key-Tab> "\
 if \{\[winfo height $f.t\] < $height \} \{focus \[tk_focusNext $f.t\];break\}"
 uie_fixEntry $f.t
 
-# use ayviewshortcuts(RotMod)?
-bind $f.t <Alt-Down> \
+global ayviewshortcuts
+bind $f.t <$ayviewshortcuts(RotMod)-Down> \
     "$f.t conf -height \[expr \[$f.t cget -height\] + 1\]; wm geom $w \"\";\
      break"
-bind $f.t <Alt-Up> \
+bind $f.t <$ayviewshortcuts(RotMod)-Up> \
     "$f.t conf -height \[expr \[$f.t cget -height\] - 1\]; wm geom $w \"\";\
      break"
 
@@ -474,7 +474,7 @@ $m add command -label "Load from file" -command {
     }
 }
 $m add separator
-$m add command -label "Toggle Multiline" -command "_toggleMultiline $f.t"
+$m add command -label "Toggle Multiline   <$ayviewshortcuts(RotMod)-Down> / <$ayviewshortcuts(RotMod)-Up>" -command "_toggleMultiline $f.t"
 
 # bind popup menu
 set mb 3
