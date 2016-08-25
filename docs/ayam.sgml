@@ -1402,7 +1402,8 @@ such a scene later on.
 
 <item><tt/"Save Environment"/, saves the Root object and all
 views to a so called environment scene file, which is read
-automatically on program startup and <tt>"File/New"</tt>.
+automatically on program startup and when the scene is reset
+using the main menu entry <tt>"File/New"</tt>.
 Initially, the file requester that asks for the name
 of the new environment uses the value of the preference
 setting <tt>"Main/EnvFile"</tt>. Note that there will be no
@@ -1417,16 +1418,28 @@ respectively.
 <item><tt>"Clipboard/Paste (Move)"</tt>, moves objects from the clipboard
 back to the scene (clearing the clipboard). This is the only way to
 get referenced objects out of the clipboard.
+<newline>
+This operation may fail, if the result is an illegal instance
+configuration.
+
 <item><tt>"Clipboard/Replace"</tt>, replaces the currently selected
 object(s) with the object clipboard content, moving the replaced
 objects into the clipboard. If multiple objects are selected
 in non consecutive sequences, only the first consecutive sequence
 or single object is replaced.
+<newline>
+This operation may fail, if the result is an illegal instance
+configuration.
 <item><tt>"Clipboard/Copy (Add)"</tt>, copies the selected objects
 to the clipboard without cleaning it beforehand.
 <item><tt>"Clipboard/Cut (Add)"</tt>, moves the selected objects
 to the clipboard without cleaning it beforehand.
+
 <item><tt>"Clipboard/Clear"</tt>, clears the object clipboard.
+<newline>
+This operation may fail if there are referenced objects (Material
+objects or master objects of instances) in the clipboard.
+
 <item><tt>"Clipboard/Paste Property to Selected"</tt> paste the property
 from the property clipboard to the currently selected
 property of the currently selected object. No type check of the
@@ -1435,11 +1448,14 @@ a radius value from a sphere to a cylinder or to copy
 settings from a displacement shader to a surface shader (as long as the
 copied arguments of both shaders have the same names and types).
 
-<item><tt>"Instances/Resolve all Instances"</tt>, opens a small dialog
+<item><tt>"Instances/Resolve all Instances"</tt>, converts all instance
+objects to copies of their respective master objects.
+If the menu entry is used, a small dialog opens
 where the scope of the resolve operation may be
 adjusted and the operation may be started<footnote>Since 1.21.</footnote>.
 
-In contrast to converting the selected Instance objects, this operation
+In contrast to converting the selected Instance objects via
+e.g.~the menu entry <tt>"Tools/Convert"</tt>, this operation
 does not stop until no Instances are left in the processed object
 hierarchies.
 
@@ -1478,6 +1494,10 @@ tags can be managed easily for all selected objects
 <item><tt>"Tags/Remove Property"</tt>, opens a dialog where <tt/"RP"/
 tags can be managed easily for all selected objects
 (see also section <ref id="rptag" name="RP (Remove Property) Tag">).
+
+<item><tt>"Tags/Add Tag"</tt>, opens a dialog where a new
+tag can be added to the selected objects
+(see also section <ref id="tags" name="Tags">).
 
 <item><tt>"RIB-Export/From Camera"</tt>, writes a complete RIB of
 the current scene with the camera transformations taken from the
@@ -1540,15 +1560,16 @@ of the available horizontal screen space and the object selection widget
 and property GUI are completely visible.
 
 <item><tt/"Toggle Toolbox"/ closes or opens the toolbox window
-(see <ref id="toolb" name="The Toolbox Window">). From version 1.3 on,
-Ayam remembers the state of the toolbox in the saved preferences.
+(see <ref id="toolb" name="The Toolbox Window">). 
+The state of the toolbox is also remembered in the saved
+preferences.<footnote>Since 1.3.</footnote><newline>
 This option is not available if Ayam is in single window GUI mode.
 
-<item><tt/"Toggle TreeView"/ toggles object tree view and object listbox.
-From version 1.3 on, Ayam remembers whether the tree view or the
-object listbox is open in the saved preferences
-(see also section <ref id="obj" name="Objects"> for more information
-about both representations).
+<item><tt/"Toggle TreeView"/ toggles between object tree view and object
+listbox (see also section <ref id="obj" name="Objects"> for more
+information about both representations).<newline>
+This state is also remembered in the saved
+preferences.<footnote>Since 1.3.</footnote>
 
 <item><tt>"Zap Ayam"</tt> iconifies all currently open windows of Ayam.
 If one of the iconified windows is de-iconified later, all other zapped
@@ -1570,6 +1591,11 @@ this feature will not work with frame redirects
 e.g.~<tt>"http://www.ayam3d.org/"</tt>; use
 <tt>"http://ayam.sourceforge.net/docs/"</tt> or a <tt>"file:"</tt>-URL
 as base URL in the <tt/"Docs"/ preference setting instead!
+
+<item><tt/"Help on property"/, opens a web browser and displays
+documentation about the currently selected property, the URL
+is derived in the same way as for the <tt/"Help on object"/
+entry above.
 
 <item><tt/"Show Shortcuts"/, displays some important shortcuts for modelling
 actions, you may leave this window open when doing your first
@@ -5321,14 +5347,14 @@ were created with BMRT 2.6 as renderer:
 <x>inlinegfx pics/arealight.png 3cm </x>|
 <x>inlinegfx pics/pointlight.png 3cm </x>
 </tabular>
-<caption>Area Light (l) and Point Light (r)</caption>
+<caption>Area Light (<bf/l/) and Point Light (<bf/r/)</caption>
 </table>
 </#if>
 <#if out=html>
 <figure loc="ht">
 <img src="pics/arealight.gif">&emsp;
 <img src="pics/pointlight.gif">
-<caption>Area Light (l) and Point Light (r)</caption>
+<caption>Area Light (<bf/l/) and Point Light (<bf/r/)</caption>
 </figure>
 </#if>
 
@@ -7053,7 +7079,7 @@ curve).
 <figure loc="ht">
 <eps file="pics/ncircles.ps" height="5cm">
 <img src="pics/ncircles.gif">
-<caption>Different NCircle Objects (l: default, m: TMax 180, r: Radius 0.5, TMax -200)</caption>
+<caption>Different NCircle Objects (<bf/l/: default, <bf/m/: TMax 180, <bf/r/: Radius 0.5, TMax -200)</caption>
 </figure>
 <p>
 The NCircle object creates a circular NURBS curve or a circular arc in
@@ -7856,8 +7882,8 @@ PV tags are supported.
 <caption>Bicubic (left) and Bilinear (right) PatchMesh Surfaces (blue) from their Respective Control Polygons (white)</caption>
 </figure>
 <p>
-The PatchMesh object may be used to model with bilinear and
-bicubic patch meshes.
+The PatchMesh object may be used to model with bicubic and
+bilinear patch meshes.
 <p>
 Like NCurve objects, PatchMesh objects mark their last control point with
 a small arrow. Note that the arrow points in the V direction (height).
@@ -7877,13 +7903,13 @@ PatchMesh|No|Yes|NPatch|Yes<#if out=latex>@<hline></#if>
 The first section of the PatchMeshAttr property contains patch specific
 settings:
 <itemize>
-<item><tt/"Type"/ may be set to <tt/"Bilinear"/ or <tt/"Bicubic"/.
+<item><tt/"Type"/ may be set to <tt/"Bicubic"/ or <tt/"Bilinear"/.
 <item><tt/"Width"/ and <tt/"Height"/ control the dimensions of the patch.
 Note that for bicubic patch meshes, the basis type may impose restrictions
 on the valid values for width and height; e.g.~for the
-basis type <tt/"Bezier"/ (with step size 3) valid values are 4, 7,
-10, &hellip;. The other basis type that imposes this restriction is
-<tt/"Hermite"/ with step size 2, where valid values are 4, 6,
+basis type <tt/"Bezier"/ (with step size 3) valid values are: 4, 7,
+10, &hellip;. Another basis type that imposes this restriction is
+<tt/"Hermite"/ (with step size 2), where valid values are: 4, 6,
 8, &hellip;.<newline>
 Closing the surface complicates the matter a bit further. A valid
 width for a closed bicubic patch mesh of basis type <tt/"Bezier"/ is e.g.~6;
@@ -22350,10 +22376,11 @@ Index:
 <item><ref id="objsearch" name="object search option">
 </itemize>
 <item>Active: <ref id="scriptattr" name="Script attribute">
-<item>Add RiOption, RiAttribute, Property:
-<ref id="mmtags" name="Tag management">
 <item>Adaptive: <ref id="moattr" name="MetaObj attributes">
 <item>AdaptiveDomainDistance, AdaptiveKnotDistance: <ref id="prefmisc" name="NURBS tesselation mode">
+<item>Add RiOption, RiAttribute, Property, Tag:
+<ref id="mmtags" name="Tag management">
+<item>Add Tag: <ref id="mmtags" name="Tag management">
 <item>AddExtensions: <ref id="prefgui" name="preference setting">
 <item>addPropertyGUI: <ref id="scaddpropertygui" name="scripting interface command">
 <item>addTag: <ref id="scaddtag" name="scripting interface command">
@@ -22872,6 +22899,7 @@ Index:
 <item><ref id="schelp" name="scripting interface command">
 </itemize>
 <item>Help on object: <ref id="mmhelp" name="main menu entry">
+<item>Help on property: <ref id="mmhelp" name="main menu entry">
 <item>Hermite: <ref id="pmattr" name="PatchMesh basis type">
 <item>Hidden Preferences: <ref id="hidprefs" name="hidden preference settings">
 <item>HiddenWire:<ref id="vmconf" name="view menu entry">
@@ -23582,6 +23610,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>SDLen: <ref id="icp" name="ICurve attribute">
 <item>SDMesh: <ref id="sdmeshobj" name="SDMesh object">
 <item>SDNPatch: <ref id="sdnpatchobj" name="SDNPatch object">
+<item>Search: <ref id="objsearch" name="object search">
 <item>Sections:
 <itemize>
 <item><ref id="swp" name="Sweep attribute">,
@@ -23951,7 +23980,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="exp3dmopt" name="3DM (Rhino) export option">,
 <item><ref id="expx3dopt" name="X3D (Web3D) export option">
 </itemize>
-<item>WriteMaterials<ref id="expx3dopt" name="X3D (Web3D) export option">
+<item>WriteMaterials: <ref id="expx3dopt" name="X3D (Web3D) export option">
 <item>WriteParametrics: <ref id="expx3dopt" name="X3D (Web3D) export option">
 <item>WriteIdent: <ref id="prefrib" name="preference setting">
 <item>WriteSelected:
