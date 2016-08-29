@@ -357,6 +357,7 @@ ay_bevel_wribcb(char *file, ay_object *o)
 {
  ay_bevel_object *bevel;
  ay_object *b;
+ unsigned int ci = 1;
 
   if(!o)
    return AY_ENULL;
@@ -372,7 +373,8 @@ ay_bevel_wribcb(char *file, ay_object *o)
   b = bevel->caps;
   while(b)
     {
-      ay_wrib_object(file, b);
+      ay_wrib_caporbevel(file, o, b, ci);
+      ci++;
       b = b->next;
     }
 
