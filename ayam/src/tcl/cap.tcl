@@ -78,7 +78,8 @@ proc cap_parseTags { tagnames tagvalues bnames {bids ""} } {
 	    scan $tagvalue "%d," bplace
 
 	    if { $bids != "" } {
-		set bplace [lindex $bids $bplace]
+		# reverse map bid to bplace
+		set bplace [lsearch $bids $bplace]
 	    }
 
 	    set CapTags(Cap${bplace}) 1
