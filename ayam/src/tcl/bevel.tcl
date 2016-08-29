@@ -33,7 +33,8 @@ proc bevel_parseTags { tagnames tagvalues bnames {bids ""} } {
 	    scan $tagvalue "%d," bplace
 
 	    if { $bids != "" } {
-		set bplace [lindex $bids $bplace]
+		# reverse map bid to bplace
+		set bplace [lsearch $bids $bplace]
 	    }
 
 	    set BevelTags(Bevel${bplace}) 1
@@ -231,7 +232,8 @@ array set BevelAttr {
 
 array set BevelAttrData {
     DisplayMode 1
-    BoundaryNames {"Start" "End"}
+    BoundaryNames { "Start" "End" }
+    BoundaryIDs { 2 3 }
 }
 
 return;
