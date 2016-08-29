@@ -799,7 +799,7 @@ int
 ay_wrib_toolobject(char *file, ay_object *o, ay_object *t)
 {
  int ay_status = AY_OK;
- ay_tag *old_tags = NULL, *tag = NULL, *pvtags = NULL;
+ ay_tag *old_tags = NULL, *tag = NULL, *new_tags = NULL;
  unsigned int i = 0;
 
   if(!file || !o)
@@ -820,7 +820,7 @@ ay_wrib_toolobject(char *file, ay_object *o, ay_object *t)
 	{
 	  /* copy the PV tags temporarily into an array (pseudo-list)
 	     but without actually copying the tag values */
-	  if(!(pvtags = calloc(i, sizeof(ay_tag))))
+	  if(!(new_tags = calloc(i, sizeof(ay_tag))))
 	    {
 	      return AY_EOMEM;
 	    }
@@ -830,25 +830,26 @@ ay_wrib_toolobject(char *file, ay_object *o, ay_object *t)
 	    {
 	      if(tag->type == ay_pv_tagtype)
 		{
-		  (pvtags[i]).type = ay_pv_tagtype;
+		  (new_tags[i]).type = ay_pv_tagtype;
 		  /* no need to copy the name... */
-		  (pvtags[i]).val = tag->val;
-		  (pvtags[i]).next = &(pvtags[i+1]);
+		  (new_tags[i]).val = tag->val;
+		  (new_tags[i]).next = &(new_tags[i+1]);
 		  i++;
 		}
+
 	      tag = tag->next;
 	    } /* while */
 	  /* terminate the pseudo-list */
-	  (pvtags[i-1]).next = NULL;
+	  (new_tags[i-1]).next = NULL;
 	} /* if */
 
       old_tags = o->tags;
-      o->tags = pvtags;
+      o->tags = new_tags;
       ay_status = ay_wrib_object(file, o);
       o->tags = old_tags;
 
-      if(pvtags)
-	free(pvtags);
+      if(new_tags)
+	free(new_tags);
     }
   else
     {
@@ -857,6 +858,53 @@ ay_wrib_toolobject(char *file, ay_object *o, ay_object *t)
 
  return ay_status;
 } /* ay_wrib_toolobject */
+
+
+/* ay_wrib_caporbevel:
+ *  export a cap or bevel from a tool object to a RIB file
+ *  adding a proper TC tag, if the tool object provides many
+ */
+int
+ay_wrib_caporbevel(char *file, ay_object *o, ay_object *c, unsigned int ci)
+{
+ int ay_status = AY_OK;
+ ay_tag *tag, *old_tags, *old_next;
+ unsigned int i = 0;
+
+  if(!file || !o)
+    return AY_ENULL;
+
+  /* check the tags for TC tags */
+  tag = o->tags;
+  while(tag)
+    {
+      if(tag->type == ay_tc_tagtype)
+	{
+	  if(i == ci)
+	    break;
+	  i++;
+	}
+      tag = tag->next;
+    }
+
+  if(tag)
+    {
+      old_next = tag->next;
+      tag->next = o->tags;
+      old_tags = o->tags;
+      o->tags = tag;
+    }
+
+  ay_status = ay_wrib_object(file, c);
+
+  if(tag)
+    {
+      tag->next = old_next;
+      o->tags = old_tags;
+    }
+
+ return ay_status;
+} /* ay_wrib_caporbevel */
 
 
 /* ay_wrib_displaytags:
