@@ -890,9 +890,9 @@ ay_wrib_caporbevel(char *file, ay_object *o, ay_object *c, unsigned int ci)
   if(tag)
     {
       old_next = tag->next;
-      tag->next = o->tags;
-      old_tags = o->tags;
-      o->tags = tag;
+      tag->next = c->tags;
+      old_tags = c->tags;
+      c->tags = tag;
     }
 
   ay_status = ay_wrib_object(file, c);
@@ -900,7 +900,7 @@ ay_wrib_caporbevel(char *file, ay_object *o, ay_object *c, unsigned int ci)
   if(tag)
     {
       tag->next = old_next;
-      o->tags = old_tags;
+      c->tags = old_tags;
     }
 
  return ay_status;
