@@ -2741,6 +2741,7 @@ ay_npatch_wribcb(char *file, ay_object *o)
  RtToken *tokens = NULL;
  RtPointer *parms = NULL;
  int i = 0, j = 0, a = 0, b = 0, n = 0, pvc = 0;
+ unsigned int ci = 1;
 
   if(!o)
     return AY_OK;
@@ -2886,7 +2887,8 @@ ay_npatch_wribcb(char *file, ay_object *o)
   cb = patch->caps_and_bevels;
   while(cb)
     {
-      ay_wrib_object(file, cb);
+      ay_wrib_caporbevel(file, o, cb, ci);
+      ci++;
       cb = cb->next;
     }
 

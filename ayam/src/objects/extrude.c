@@ -454,6 +454,7 @@ ay_extrude_wribcb(char *file, ay_object *o)
 {
  ay_extrude_object *extrude = NULL;
  ay_object *p = NULL;
+ unsigned int ci = 1;
 
   if(!o)
    return AY_ENULL;
@@ -473,7 +474,8 @@ ay_extrude_wribcb(char *file, ay_object *o)
   p = extrude->caps_and_bevels;
   while(p)
     {
-      ay_wrib_object(file, p);
+      ay_wrib_caporbevel(file, o, p, ci);
+      ci++;
       p = p->next;
     }
 

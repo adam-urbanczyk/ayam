@@ -2354,6 +2354,7 @@ ay_ipatch_wribcb(char *file, ay_object *o)
  int ay_status = AY_OK;
  ay_ipatch_object *ipatch = NULL;
  ay_object *p;
+ unsigned int ci = 1;
 
   if(!o)
     return AY_ENULL;
@@ -2373,7 +2374,8 @@ ay_ipatch_wribcb(char *file, ay_object *o)
   p = ipatch->caps_and_bevels;
   while(p)
     {
-      ay_wrib_object(file, p);
+      ay_wrib_caporbevel(file, o, p, ci);
+      ci++;
       p = p->next;
     }
 

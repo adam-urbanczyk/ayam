@@ -400,6 +400,7 @@ ay_birail1_wribcb(char *file, ay_object *o)
 {
  ay_birail1_object *birail1;
  ay_object *b;
+ unsigned int ci = 1;
 
   if(!o)
    return AY_ENULL;
@@ -417,7 +418,8 @@ ay_birail1_wribcb(char *file, ay_object *o)
       b = birail1->caps_and_bevels;
       while(b)
 	{
-	  ay_wrib_toolobject(file, b, o);
+	  ay_wrib_caporbevel(file, o, b, ci);
+	  ci++;
 	  b = b->next;
 	}
     }
