@@ -1,4 +1,4 @@
-[18. Aug 2016 CVS-Head:
+[31. Aug 2016 CVS-Head:
 =======================
 Bug Fixes:
 o added missing scripting interface commands to JavaScript and Lua scripting
@@ -71,6 +71,8 @@ o X3D export of materials now supports the new tag type "XML" that can be
 o X3D export of NURBS surfaces now also contains some "containerField"
   attributes vital for e.g. x3dom-nurbs
 o RIB files can now be exported via "File/Save as"
+o Caps or bevels can now be exported to RIB files with their own texture
+  coordinates supplied by additional TC tags.
 
 
 [13. Jan 2016] Ayam 1.23:
