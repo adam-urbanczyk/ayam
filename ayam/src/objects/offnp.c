@@ -465,6 +465,7 @@ ay_offnp_wribcb(char *file, ay_object *o)
 {
  ay_offnp_object *offnp = NULL;
  ay_object *b;
+ unsigned int ci = 1;
 
   if(!o)
    return AY_ENULL;
@@ -480,7 +481,8 @@ ay_offnp_wribcb(char *file, ay_object *o)
   b = offnp->caps_and_bevels;
   while(b)
     {
-      ay_wrib_object(file, b);
+      ay_wrib_caporbevel(file, o, b, ci);
+      ci++;
       b = b->next;
     }
 

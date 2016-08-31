@@ -421,6 +421,7 @@ ay_revolve_wribcb(char *file, ay_object *o)
 {
  ay_revolve_object *revolve = NULL;
  ay_object *b;
+ unsigned int ci = 1;
 
   if(!o)
    return AY_ENULL;
@@ -438,7 +439,8 @@ ay_revolve_wribcb(char *file, ay_object *o)
       b = revolve->caps_and_bevels;
       while(b)
 	{
-	  ay_wrib_object(file, b);
+	  ay_wrib_caporbevel(file, o, b, ci);
+	  ci++;
 	  b = b->next;
 	}
     }
@@ -562,6 +564,11 @@ ay_revolve_notifycb(ay_object *o)
     {
       ay_bevelt_parsetags(o->tags, &bparams);
       ay_capt_parsetags(o->tags, &cparams);
+    }
+
+  if(0&&(cparams.has_caps || bparams.has_bevels))
+    {
+      ay_npt_setuvtypes(newo->refine, 0);
     }
 
   /* create/add caps */

@@ -428,6 +428,7 @@ ay_sweep_wribcb(char *file, ay_object *o)
 {
  ay_sweep_object *sweep;
  ay_object *b;
+ unsigned int ci = 1;
 
   if(!o)
    return AY_ENULL;
@@ -445,7 +446,8 @@ ay_sweep_wribcb(char *file, ay_object *o)
       b = sweep->caps_and_bevels;
       while(b)
 	{
-	  ay_wrib_toolobject(file, b, o);
+	  ay_wrib_caporbevel(file, o, b, ci);
+	  ci++;
 	  b = b->next;
 	}
     }
