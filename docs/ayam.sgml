@@ -7883,7 +7883,7 @@ PV tags are supported.
 </figure>
 <p>
 The PatchMesh object may be used to model with bicubic and
-bilinear patch meshes.
+bilinear patch meshes, see the image above for two examples.
 <p>
 Like NCurve objects, PatchMesh objects mark their last control point with
 a small arrow. Note that the arrow points in the V direction (height).
@@ -7988,7 +7988,8 @@ These objects create freeform surfaces from curves or other surfaces.
 <caption>Revolve Object (left: Curve, right: Surface of Revolution)</caption>
 </figure>
 <p>
-The Revolve object forms a surface of revolution from a NURBS curve.
+The Revolve object forms a surface of revolution from a NURBS curve,
+see the image above for an example.
 <p>
 The Revolve object has the generating NURBS curve as child object
 and watches its changes and adapts to it automagically.
@@ -8053,7 +8054,7 @@ end point of the cross section,<newline>
 
 <sect3>Conversion Support
 <p><#if out=latex>&nbsp;<newline></#if>
-The surface of revolution and the caps
+The surface of revolution and the bevels and caps
 may be converted to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
 <p>
@@ -8089,7 +8090,8 @@ the same set of tags.<footnote>Since 1.20.</footnote>
 right: Extrusion with Caps)</caption>
 </figure>
 <p>
-The Extrude object forms an extrusion from a number of planar NURBS curves.
+The Extrude object forms a linear extrusion from a number of planar NURBS
+curves, see the image above for an example.
 <p>
 The first curve determines the outline and the other curves determine
 holes in the extrusion object. Holes may be used by objects that form
@@ -8246,6 +8248,7 @@ The Swing object forms a surface that results from rotating a NURBS curve
 scaling it according to a second NURBS curve (called <em/trajectory/ or
 <em/path/).<footnote>Since 1.14.</footnote><newline>
 This process is sometimes also called <em>rotational sweep</em>.
+See the image above for an example.
 <p>
 The Swing object has the generating NURBS curves as child objects
 and watches their movements and adapts to them automagically.
@@ -8361,8 +8364,10 @@ the same set of tags.<footnote>Since 1.20.</footnote>
 The Sweep object forms a surface that results from moving a NURBS curve
 (called <em/cross section/ or <em/profile/) along a second NURBS curve
 (called <em/trajectory/ or <em/path/).
+See the image above for an example.
+<p>
 The cross section may be scaled while sweeping using a third curve, the
-scaling function. Swept surfaces may be closed in the direction of the
+<em/scaling function/. Swept surfaces may be closed in the direction of the
 trajectory and they may also be periodic.<footnote>Since 1.10.</footnote>
 <p>
 The Sweep object has the generating NURBS curves as child objects
@@ -8578,8 +8583,10 @@ the same set of tags.<footnote>Since 1.20.</footnote>
 <caption>Birail1 Object (left: Curves, right: Resulting Swept Surface)</caption>
 </figure>
 <p>
-The Birail1 object forms a surface by sweeping a cross section
-(or profile) curve along two so called rail curves.
+The Birail1 object forms a surface by sweeping a <em/cross section/
+(or <em/profile/) curve along two so called <em/rail/ curves.
+See the image above for an example.
+<p>
 The object hierarchy of a Birail1 object, thus, looks like this:
 <tscreen><verb>
 +-Birail1
@@ -8729,10 +8736,13 @@ the same set of tags.<footnote>Since 1.20.</footnote>
 <caption>Birail2 Object (left: Curves, right: Resulting Swept Surface)</caption>
 </figure>
 <p>
-The Birail2 object forms a surface by sweeping a cross section
-(or profile) curve along two so called rail curves, while morphing it
-into a second cross section (or profile) curve. The morphing process
-may be controlled by a fifth parameter curve.
+The Birail2 object forms a surface by sweeping a <em/cross section/
+(or <em/profile/) curve along two so called <em/rail/ curves, while
+morphing it into a second cross section (or profile) curve.
+See also the image above for an example.
+<p>
+The morphing process may be controlled by a fifth parameter curve,
+the <em/interpolation control/ curve.
 The object hierarchy of a Birail2 object, thus, looks like this:
 <tscreen><verb>
 +-Birail2
@@ -8898,10 +8908,13 @@ the same set of tags.<footnote>Since 1.20.</footnote>
 <caption>Skin Object (left: Curves, right: Resulting Skinned Surface)</caption>
 </figure>
 <p>
-The Skin object forms a surface defined by a set of cross section curves,
+The Skin object forms a surface defined by a set of <em/cross section/ curves,
 where the first and last curve will always be interpolated by the surface
-(this process is sometimes also called <em>lofting</em>). When only two
-parameter curves are used, the skin forms a so called <em>ruled surface</em>.
+(this process is sometimes also called <em>lofting</em>).
+See also the image above.
+<p>
+When only two parameter curves are used, the skin forms a so called
+<em>ruled surface</em>.
 <p>
 The complete template for the Skin object hierarchy, consequently,
 looks like this:
@@ -9234,7 +9247,8 @@ the same set of tags.<footnote>Since 1.20.</footnote>
 </figure>
 <p>
 The Bevel object forms a bevelled surface from a single parameter
-curve. The bevel cross section shape may be defined by a second curve.
+curve. See also the image above. The bevel cross section shape may be
+defined by a second curve.
 Consequently, the template for the object hierarchy of a Bevel object
 looks like this:
 <tscreen><verb>
@@ -9375,10 +9389,23 @@ of the <tt/"BevelAttr"/ property.
 To help in the exact configuration of the bevel surface, the <tt/"NPInfo"/
 field always displays the parameters of the created NURBS patch.
 
+<sect3>Caps
+<p><#if out=latex>&nbsp;<newline></#if>
+The Bevel object supports the standard caps as lined out in section
+<ref id="capsprop" name="Caps Property">.
+<p>
+The boundary names are:<newline>
+<tt/Start/ &ndash; start of bevel cross section,<newline>
+<tt/End/ &ndash; end of bevel cross section.
+
 <sect3>Conversion Support
 <p><#if out=latex>&nbsp;<newline></#if>
 The bevelled surface may be converted to an ordinary NURBS patch using the
 main menu entry <tt>"Tools/Convert"</tt>.
+<p>
+If caps are present, an enclosing Level object will be created
+and the caps follow the bevel surface in the following order:
+start cap, end cap.
 
 <sect3>RIB Export
 <p><#if out=latex>&nbsp;<newline></#if>
@@ -9387,7 +9414,12 @@ Bevel objects will be exported as NURBS patch primitives:
 <tt>RiNuPatch(...);</tt>
 </tscreen>
 
+If caps are present, those follow as potentially trimmed
+NURBS patch primitives in the following order: start cap, end cap.
+
 PV tags are supported.<footnote>Since 1.20.</footnote>
+
+Multiple TC tags are also supported.<footnote>Since 1.24.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -9400,11 +9432,14 @@ PV tags are supported.<footnote>Since 1.20.</footnote>
 </figure>
 <p>
 The Cap object forms a surface that fills a closed NURBS curve.
-Since Ayam 1.21, four different types of cap surfaces with different
-characteristics and parameter curve requirements are supported:
-Trim, Gordon, Simple, and Simple3D.
+See also the image above.
 <p>
-The <bf/Trim/ cap type needs planar parameter curves but they may be concave.
+Four different types of cap surfaces with different
+characteristics and parameter curve requirements are supported:
+<em/Trim/, <em/Gordon/, <em/Simple/, and
+<em/Simple3D/.<footnote>Since 1.21.</footnote>
+<p>
+The <bf/Trim/ cap type requires planar parameter curves but they may be concave.
 Furthermore, if multiple curves are present as child objects, the curves
 following the first curve define holes in the cap surface, similar to the
 parameter curves of an extruded surface (see also section
@@ -9818,15 +9853,17 @@ The OffsetNP object creates offset surfaces from
 NURBS surfaces using a simple algorithm: each control point is moved
 along a normal vector obtained by all direct neighboring control
 points.<footnote>Since 1.17.</footnote>
+See also the image above.
+<p>
+The offset surface will always match the original surface in width, height,
+orders, and knots.
+<p>
 The offsetting also works for closed and periodic surfaces in any
 possible combinations in the two dimensions.<footnote>Since 1.19.</footnote>
 Degenerate surfaces are supported.<footnote>Since 1.21.</footnote>
 However note that rational surfaces are still not supported.
 No attempt is made to prevent collisions or self intersections.
 <p>
-The offset surface will always match the original surface in width, height,
-orders, and knots.
-See also the image above.
 Trim curves are copied verbatim from the parameter surface to the
 offset surface.
 <p>
@@ -10024,7 +10061,7 @@ of tool objects to trim NURBS patch providing objects otherwise
 unavailable to trimming like e.g.~a Revolve
 object.<footnote>Since 1.16.</footnote>
 <p>
-See also the image above which depicts the swung surface example
+See also the image above which depicts the swung surface example object
 further trimmed by a Trim object.
 <p>
 The first child of the Trim object is the NURBS patch providing object
@@ -10117,7 +10154,7 @@ paradigms to be included in Ayam scenes.
 <p>
 The PolyMesh object may be used to include objects that
 have been modeled using the polygonal modelling paradigm
-in Ayam scenes.
+in Ayam scenes. See the image above for a simple example.
 <p>
 There are just a few special modelling actions for this type of object
 (see section <ref id="polymeshtools" name="PolyMesh tools">), but
@@ -11419,9 +11456,13 @@ tags property, displaying the new tag. Just click on the entry to get
 back to the dialog, to remove the tag using <tt/"Clear"/ then <tt/"Ok"/,
 or to change the type or value of the tag.<newline>
 The tag edit dialog supports multiline tag
-editing.<footnote>Since 1.24.</footnote> Just enlarge the
-dialog window to switch to multiline editing. Note that in multiline
-mode, the <tt>&lt;Enter&gt;</tt>, <tt>&lt;Return&gt;</tt>, and also
+editing.<footnote>Since 1.24.</footnote>
+Just enlarge the dialog window to switch to multiline editing.
+Another way to control multiline mode is to use the keyboard
+shortcuts <tt>&lt;Alt-Down&gt;</tt> and <tt>&lt;Alt-Up&gt;</tt>
+respectively.
+Note that in multiline mode, the <tt>&lt;Enter&gt;</tt>,
+<tt>&lt;Return&gt;</tt>, and also
 <tt>&lt;Tab&gt;</tt> key will behave differently.<newline>
 The tag value widget also has a context menu, allowing text to be
 fetched from the system clipboard or files.
@@ -11461,7 +11502,7 @@ or the scripting interface.
 The following two tables contains a compact list of tag names and short
 explanations, for all tag types that are
 known in Ayam and in all accompanying extensions (plugins);
-tag types marked with an asterisk are for internal use only.
+tag types marked with an asterisk (*) are for internal use only.
 
 <table loc="ht">
 <tabular ca="|c|c|"><hline>
