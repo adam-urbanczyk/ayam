@@ -74,7 +74,7 @@ proc io_replaceScene { {newfilename ""} } {
 	update
 
 	# see, if this is an Ayam scene file
-	set ext [file extension $filename ]
+	set ext [file extension $filename]
 	if { ($ext != "") && ([string compare -nocase $ext ".ay"]) } {
 	    # no, try to import it
 	    io_importScene $filename
@@ -97,6 +97,8 @@ proc io_replaceScene { {newfilename ""} } {
 	    Console:prompt .fl.con "\n"
 	}
 
+	set wh "replaceScene"
+
 	# read the file
 	replaceScene $filename
 
@@ -104,8 +106,8 @@ proc io_replaceScene { {newfilename ""} } {
 	    set windowfilename [file tail [file rootname $filename]]
 	    wm title . "Ayam - Main - $windowfilename : --"
 	    set ay(filename) $filename
-	    ayError 4 "replaceScene" "Done reading scene from:"
-	    ayError 4 "replaceScene" "$filename"
+	    ayError 4 $wh "Done reading scene from:"
+	    ayError 4 $wh "$filename"
 
 	    # restore main window geometry from tag
 	    io_readMainGeom
@@ -113,8 +115,8 @@ proc io_replaceScene { {newfilename ""} } {
 	} else {
 	    wm title . "Ayam - Main - : --"
 	    set ay(filename) ""
-	    ayError 2 "Ayam" "There were errors while loading:"
-	    ayError 2 "Ayam" "$filename"
+	    ayError 2 $wh "There were errors while loading:"
+	    ayError 2 $wh "$filename"
 	}
 
 	goTop
@@ -192,7 +194,7 @@ proc io_insertScene { {ifilename ""} } {
 	set ay_error ""
 
 	# see, if this is an Ayam scene file
-	set ext [file extension $ifilename ]
+	set ext [file extension $ifilename]
 	if { ($ext != "") && ([string compare -nocase $ext ".ay"]) } {
 	    # no, try to import it
 	    io_importScene $ifilename
@@ -201,15 +203,15 @@ proc io_insertScene { {ifilename ""} } {
 
 	foreach view $ay(views) { viewUnBind $view }
 	update
+	set wh "insertScene"
 
 	insertScene $ifilename
-
 	if { $ay_error < 2 } {
-	    ayError 4 "insertScene" "Done inserting objects from:"
-	    ayError 4 "insertScene" "$ifilename"
+	    ayError 4 $wh "Done inserting objects from:"
+	    ayError 4 $wh "$ifilename"
 	} else {
-	    ayError 2 "Ayam" "There were errors while loading:"
-	    ayError 2 "Ayam" "$ifilename"
+	    ayError 2 $wh "There were errors inserting objects from:"
+	    ayError 2 $wh "$ifilename"
 	}
 
 	goTop
@@ -270,7 +272,7 @@ proc io_saveScene { ask selected } {
 	}
 
 	# see, if the user wants to save to an Ayam scene file
-	set ext [file extension $filename ]
+	set ext [file extension $filename]
 	if { ($ext != "") && ([string compare -nocase $ext ".ay"]) } {
 	    # no, try to export the scene...
 	    io_exportScene $filename
@@ -295,17 +297,18 @@ proc io_saveScene { ask selected } {
 	global ay_error
 	set ay_error ""
 	saveScene $filename $selected
+	set wh "saveScene"
 	if { $ay_error < 2 } {
 	    set windowfilename [file tail [file rootname $filename]]
 	    wm title . "Ayam - Main - $windowfilename : --"
 	    set ay(filename) $filename
-	    ayError 4 "saveScene" "Done saving scene to:"
-	    ayError 4 "saveScene" "$filename"
+	    ayError 4 $wh "Done saving scene to:"
+	    ayError 4 $wh "$filename"
 	    io_mruAdd $filename
 	    set ay(sc) 0
 	} else {
-	    ayError 2 "Ayam" "There were errors while saving to:"
-	    ayError 2 "Ayam" "$filename"
+	    ayError 2 $wh "There were errors while saving to:"
+	    ayError 2 $wh "$filename"
 	}
     }
     # if have filename
@@ -399,20 +402,26 @@ proc io_exportRIB { {expview "" } } {
 	    set imagename [lindex $ribname 1]
 
 	    if { $efilename != "" } {
+		set wh "exportRIB"
+		set ay_error ""
+
 		if { $imagename != "" } {
 		    $name.f3D.togl wrib -file $efilename -image $imagename
-		    ayError 4 "exportRIB" "Done exporting scene to:"
-		    ayError 4 "exportRIB" "$efilename"
 		} else {
 		    .$name.f3D.togl wrib -file $efilename
-		    ayError 4 "exportRIB" "Done exporting scene to:"
-		    ayError 4 "exportRIB" "$efilename"
 		}
-		# if
+
+		if { $ay_error < 2 } {
+		    ayError 4 $wh "Done exporting scene to:"
+		    ayError 4 $wh "$efilename"
+		} else {
+		    ayError 2 $wh "There were errors exporting to:"
+		    ayError 2 $wh "$efilename"
+		}
 	    }
-	    # if
+	    # if have export file name
 	}
-	# if
+	# if have selected view
 	grab release .exportRIBw
 	restoreFocus $ay(expRIBFocus)
 	destroy .exportRIBw
@@ -457,7 +466,6 @@ proc loadPlugin { pname } {
 #
 #
 proc io_lc { filename } {
-
     set sopath [file dirname $filename]
     if { "$sopath" != "" } {
 	set oldcdir [pwd]
@@ -467,7 +475,6 @@ proc io_lc { filename } {
     } else {
 	load $filename
     }
-
  return;
 }
 # io_lc
@@ -648,6 +655,8 @@ proc io_mruLoad { index } {
 	    Console:prompt .fl.con "\n"
 	}
 
+	set wh "replaceScene"
+
 	# read the file
 	replaceScene $filename
 
@@ -655,15 +664,15 @@ proc io_mruLoad { index } {
 	    set windowfilename [file tail [file rootname $filename]]
 	    wm title . "Ayam - Main - $windowfilename : --"
 	    set ay(filename) $filename
-	    ayError 4 "replaceScene" "Done reading scene from:"
-	    ayError 4 "replaceScene" "$filename"
+	    ayError 4 $wh "Done reading scene from:"
+	    ayError 4 $wh "$filename"
 	    # restore main window geometry from tag
 	    io_readMainGeom
 	} else {
 	    wm title . "Ayam - Main - : --"
 	    set ay(filename) ""
-	    ayError 2 "Ayam" "There were errors while loading:"
-	    ayError 2 "Ayam" "$filename"
+	    ayError 2 $wh "There were errors while loading:"
+	    ayError 2 $wh "$filename"
 	}
 
 	goTop
@@ -793,13 +802,14 @@ proc io_saveEnv { } {
 	 selOb 0
 	 # save scene changed status
 	 set temp $ay(sc)
+	 set wh "saveEnv"
 	 set ay_error 0
 	 saveScene $savefilename
 
 	 if { $ay_error < 2 } {
 
-	     ayError 4 "saveEnv" "Done writing environment to:"
-	     ayError 4 "saveEnv" "$savefilename"
+	     ayError 4 $wh "Done writing environment to:"
+	     ayError 4 $wh "$savefilename"
 
 	     if { $ayprefs(EnvFile) != $savefilename } {
 
@@ -831,8 +841,8 @@ proc io_saveEnv { } {
 		 set ayprefse(LoadEnv) 1
 	     }
 	 } else {
-	     ayError 2 "saveEnv" "There were errors while writing:"
-	     ayError 2 "saveEnv" "$savefilename"
+	     ayError 2 $wh "There were errors while writing:"
+	     ayError 2 $wh "$savefilename"
 	 }
 	 # reset scene changed status to old value
 	 set ay(sc) $temp
@@ -924,28 +934,20 @@ proc io_exportRIBfC { } {
     set efilename [lindex $ribname 0]
     set imagename [lindex $ribname 1]
     set ay_error ""
-
+    set wh "exportRIB"
     if { $efilename != "" } {
 	if { $imagename != "" } {
 	    wrib $efilename -image $imagename
-	    if { $ay_error < 2 } {
-		ayError 4 "exportRIB" "Done exporting scene to:"
-		ayError 4 "exportRIB" "$efilename"
-	    } else {
-		ayError 2 "exportRIB" "Could not export scene!"
-	    }
-	    # if
 	} else {
 	    wrib $efilename
-	    if { $ay_error < 2 } {
-		ayError 4 "exportRIB" "Done exporting scene to:"
-		ayError 4 "exportRIB" "$efilename"
-	    } else {
-		ayError 2 "exportRIB" "Could not export scene!"
-	    }
-	    # if
 	}
-	# if
+	if { $ay_error < 2 } {
+	    ayError 4 $wh "Done exporting scene to:"
+	    ayError 4 $wh "$efilename"
+	} else {
+	    ayError 2 $wh "There were errors exporting to:"
+	    ayError 2 $wh "$efilename"
+	}
     }
     # if
 
@@ -989,7 +991,7 @@ proc io_RenderSM { w all } {
     set ribname [io_getRIBName]
     set efilename [lindex $ribname 0]
     set imagename [lindex $ribname 1]
-
+    set wh "createSM"
     set ay_error ""
 
     if { $efilename != ""} {
@@ -1000,11 +1002,12 @@ proc io_RenderSM { w all } {
 		wrib $efilename -image $imagename -smonly -selonly
 	    }
 	    if { $ay_error < 2 } {
-		ayError 4 "Create SM" "Done exporting scene to:"
-		ayError 4 "Create SM" "$efilename"
+		ayError 4 $wh "Done exporting scene to:"
+		ayError 4 $wh "$efilename"
 		set render 1
 	    } else {
-		ayError 2 "Create SM" "Could not export scene!"
+		ayError 2 $wh "There were errors exporting to:"
+		ayError 2 $wh "$efilename"
 		set render 0
 	    }
 	} else {
@@ -1014,11 +1017,12 @@ proc io_RenderSM { w all } {
 		wrib $efilename -image $imagename -smonly -selonly
 	    }
 	    if { $ay_error < 2 } {
-		ayError 4 "Create SM" "Done exporting scene to:"
-		ayError 4 "Create SM" "$efilename"
+		ayError 4 $wh "Done exporting scene to:"
+		ayError 4 $wh "$efilename"
 		set render 1
 	    } else {
-		ayError 2 "Create SM" "Could not export scene!"
+		ayError 2 $wh "There were errors exporting to:"
+		ayError 2 $wh "$efilename"
 		set render 0
 	    }
 	}
@@ -1212,20 +1216,19 @@ proc ::tk::mac::OpenDocument { args } {
 		 ([file extension $arg] == ".AY") } {
 
 	    regsub -all {\\} $arg {/} filename
-
+	    set ay_error ""
 	    if { $j == 0 } {
 		# close all views
 		viewCloseAll
-
-		set ay_error ""
+		set wh "replaceScene"
 
 		replaceScene $filename
 		if { $ay_error < 2 } {
 		    set ay(filename) $filename
 		    set windowfilename [file tail [file rootname $filename]]
 		    wm title . "Ayam - Main - $windowfilename : --"
-		    ayError 4 "replaceScene" "Done reading scene from:"
-		    ayError 4 "replaceScene" "$filename"
+		    ayError 4 $wh "Done reading scene from:"
+		    ayError 4 $wh "$filename"
 		    if { [file exists $filename] } {
 			set dirname [file dirname $filename]
 			cd $dirname
@@ -1233,21 +1236,21 @@ proc ::tk::mac::OpenDocument { args } {
 		    }
 		    io_mruAdd $filename
 		} else {
-		    ayError 2 "replaceScene" "There were errors while loading:"
-		    ayError 2 "replaceScene" "$filename"
+		    ayError 2 $wh "There were errors while loading:"
+		    ayError 2 $wh "$filename"
 		}
 		set j 1
 	    } else {
-		set ay_error ""
+		set wh "insertScene"
+
 		insertScene $filename
 		if { $ay_error < 2 } {
-		    ayError 4 "insertScene" "Done inserting scene from:"
-		    ayError 4 "insertScene" "$filename"
+		    ayError 4 $wh "Done inserting objects from:"
+		    ayError 4 $wh "$filename"
 		} else {
-		    ayError 2 "insertScene" "There were errors while loading:"
-		    ayError 2 "insertScene" "$filename"
+		    ayError 2 $wh "There were errors inserting objects from:"
+		    ayError 2 $wh "$filename"
 		}
-		# if
 	    }
 	    # if
 	    uS; rV
@@ -1259,9 +1262,9 @@ proc ::tk::mac::OpenDocument { args } {
 		return;
 	    }
 	}
-	# if
+	# if extension
     }
-    # foreach
+    # foreach arg
 
     grab release .fu
 
@@ -1338,7 +1341,7 @@ proc io_importScene { filename } {
 	return;
     }
 
-    set ext [file extension $filename ]
+    set ext [file extension $filename]
     set i 0
     set found 0
     foreach alext $ayprefs(ALFileTypes) {
@@ -1401,7 +1404,7 @@ proc io_exportScene { filename } {
 	return;
     }
 
-    set ext [file extension $filename ]
+    set ext [file extension $filename]
     set i 0
     set found 0
     foreach alext $ayprefs(ALFileTypes) {
