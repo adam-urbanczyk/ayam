@@ -7711,6 +7711,8 @@ NPatch objects will be exported as NURBS patch primitives:
 </tscreen>
 PV tags are supported and also trim curves may appear.
 
+Multiple TC tags are also supported.<footnote>Since 1.24.</footnote>
+
 <#if out=latex><x/newpage/</#if>
 
 <sect2>IPatch (Interpolating Patch) Object<label id="ipatchobj">
@@ -7823,6 +7825,8 @@ IPatch objects will be exported as NURBS patch primitives:
 <tt>RiNuPatch(...);</tt>
 </tscreen>
 PV tags are currently not supported.
+
+Multiple TC tags are also supported.<footnote>Since 1.24.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -7974,6 +7978,8 @@ PatchMesh objects will be exported as patch mesh primitives:
 </tscreen>
 PV tags are supported.
 
+Multiple TC tags are also supported.<footnote>Since 1.24.</footnote>
+
 <#if out=latex><x/newpage/</#if>
 
 <sect1>Surface Tool Objects
@@ -8076,8 +8082,9 @@ Revolve objects will be exported as NURBS patch primitives:
 If bevels or caps are present, those follow as potentially trimmed NURBS
 patch primitives in the following order: upper, lower, start, end.
 <p>
-PV tags are supported but all NURBS patch primitives will get
-the same set of tags.<footnote>Since 1.20.</footnote>
+PV tags are supported.<footnote>Since 1.20.</footnote>
+
+Multiple TC tags are also supported.<footnote>Since 1.24.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -8348,8 +8355,9 @@ Swing objects will be exported as NURBS patch primitives:
 If bevels or caps are present, those follow as potentially trimmed NURBS
 patch primitives in the following order: upper, lower, start, end.
 <p>
-PV tags are supported but all NURBS patch primitives will get
-the same set of tags.<footnote>Since 1.20.</footnote>
+PV tags are supported.<footnote>Since 1.20.</footnote>
+
+Multiple TC tags are also supported.<footnote>Since 1.24.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -8569,9 +8577,10 @@ If caps or bevels are present, those follow as potentially trimmed
 NURBS patch primitives in the following order: start bevel, start cap,
 end bevel, end cap, left bevel, left cap,
 right bevel, right cap.
-<p>
-PV tags are supported but all NURBS patch primitives will get
-the same set of tags.<footnote>Since 1.20.</footnote>
+
+PV tags are supported.<footnote>Since 1.20.</footnote>
+
+Multiple TC tags are also supported.<footnote>Since 1.24.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -8722,9 +8731,10 @@ Birail1 objects will be exported as NURBS patch primitives:
 If caps or bevels are present, those follow as potentially trimmed
 NURBS patch primitives in the following order: end bevel, end cap,
 start bevel, start cap, left bevel, left cap, right bevel, right cap.
-<p>
-PV tags are supported but all NURBS patch primitives will get
-the same set of tags.<footnote>Since 1.20.</footnote>
+
+PV tags are supported.<footnote>Since 1.20.</footnote>
+
+Multiple TC tags are also supported.<footnote>Since 1.24.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -8895,8 +8905,9 @@ If caps or bevels are present, those follow as potentially trimmed
 NURBS patch primitives in the following order: end bevel, end cap,
 start bevel, start cap, left bevel, left cap, right bevel, right cap.
 <p>
-PV tags are supported but all NURBS patch primitives will get
-the same set of tags.<footnote>Since 1.20.</footnote>
+PV tags are supported.<footnote>Since 1.20.</footnote>
+
+Multiple TC tags are also supported.<footnote>Since 1.24.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -9042,8 +9053,9 @@ NURBS patch primitives in the following order: start bevel, start cap,
 end bevel, end cap, left bevel, left cap,
 right bevel, right cap.
 <p>
-PV tags are supported but all NURBS patch primitives will get
-the same set of tags.<footnote>Since 1.20.</footnote>
+PV tags are supported.<footnote>Since 1.20.</footnote>
+
+Multiple TC tags are also supported.<footnote>Since 1.24.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -9232,9 +9244,10 @@ If caps or bevels are present, those follow as potentially trimmed
 NURBS patch primitives in the following order: u0 bevel, u0 cap,
 u1 bevel, u1 cap, v0 bevel, v0 cap, v1 bevel, v1
 cap.<footnote>Since 1.21.</footnote>
-<p>
-PV tags are supported but all NURBS patch primitives will get
-the same set of tags.<footnote>Since 1.20.</footnote>
+
+PV tags are supported.<footnote>Since 1.20.</footnote>
+
+Multiple TC tags are also supported.<footnote>Since 1.24.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -9726,6 +9739,8 @@ cap.<footnote>Since 1.21.</footnote>
 PV tags are supported but all NURBS patch primitives will get
 the same set of tags.<footnote>Since 1.20.</footnote>
 
+Multiple TC tags are also supported.<footnote>Since 1.24.</footnote>
+
 <#if out=latex><x/newpage/</#if>
 
 <sect2>ExtrNP (Extract NURBS Patch) Object<label id="extrnpobj">
@@ -9839,6 +9854,8 @@ patch primitives in the following order: U0, U1, V0, V1.
 PV tags are supported but all NURBS patch primitives will get
 the same set of tags.<footnote>Since 1.20.</footnote>
 
+Multiple TC tags are also supported.<footnote>Since 1.24.</footnote>
+
 <#if out=latex><x/newpage/</#if>
 
 <sect2>OffsetNP (Offset NURBS Surfaces) Object<label id="offsetnpobj">
@@ -9931,6 +9948,8 @@ patch primitives in the following order: U0, U1, V0, V1.
 <p>
 PV tags are supported but all NURBS patch primitives will get
 the same set of tags.<footnote>Since 1.20.</footnote>
+
+Multiple TC tags are also supported.<footnote>Since 1.24.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
