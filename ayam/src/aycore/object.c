@@ -161,6 +161,7 @@ ay_object_createtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_voidfp *arr = NULL;
  unsigned int index;
  Tcl_HashEntry *entry = NULL;
+ Tcl_Interp *ointerp = ay_interp;
  ay_createcb *cb = NULL;
  ay_object *o = NULL;
  char *a = "ay", *n = "sc", *v = "1";
@@ -192,7 +193,14 @@ ay_object_createtcmd(ClientData clientData, Tcl_Interp *interp,
   arr = ay_createcbt.arr;
   cb = (ay_createcb *)(arr[index]);
   if(cb)
-    ay_status = cb(argc, argv, o);
+    {
+      /* this kludge allows create callbacks to use variables/data from
+	 the safe interpreter when the crtOb command is e.g. called in
+	 a Script object script */
+      ay_interp = interp;
+      ay_status = cb(argc, argv, o);
+      ay_interp = ointerp;
+    }
 
   if(ay_status)
     {
@@ -201,7 +209,7 @@ ay_object_createtcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  if(!o->parent)
+  if(!o->parent && (interp != ay_safeinterp))
     {
       ay_object_placemark(o);
     }
