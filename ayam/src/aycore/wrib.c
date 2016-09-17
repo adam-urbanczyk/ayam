@@ -790,10 +790,16 @@ ay_wrib_object(char *file, ay_object *o)
 } /* ay_wrib_object */
 
 
-/* ay_wrib_toolobject:
- *  export a sub-object from a tool object to a RIB file
- *  temporarily replacing the (PV) tags from the sub-object
- *  with the ones from the tool-object
+/** ay_wrib_toolobject:
+ * Exports a sub-object from a tool object to a RIB file
+ * temporarily replacing the (PV) tags from the sub-object
+ * with the ones from the tool-object.
+ *
+ * \param[in] file RIB file name
+ * \param[in] o object to export (e.g. a NPatch)
+ * \param[in] t tool object with PV tags (e.g. Revolve)
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_wrib_toolobject(char *file, ay_object *o, ay_object *t)
@@ -860,9 +866,16 @@ ay_wrib_toolobject(char *file, ay_object *o, ay_object *t)
 } /* ay_wrib_toolobject */
 
 
-/* ay_wrib_caporbevel:
- *  export a cap or bevel from a tool object to a RIB file
- *  adding a proper TC tag, if the tool object provides many
+/** ay_wrib_caporbevel:
+ * Export a cap or bevel from a tool object to a RIB file
+ * adding a proper TC tag, if the tool object provides many.
+ *
+ * \param[in] file RIB file name
+ * \param[in] o tool object (e.g. Revolve)
+ * \param[in] c cap or bevel object to export
+ * \param[in] ci number of \a c
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_wrib_caporbevel(char *file, ay_object *o, ay_object *c, unsigned int ci)
@@ -1339,12 +1352,20 @@ ay_wrib_lights(char *file, ay_object *o)
     {
       if(o->down && o->down->next)
 	{
-	  /* XXXX ToDo: error handling */
-	  ay_clevel_add(o);
-	  ay_clevel_add(o->down);
-	  ay_wrib_lights(file, o->down);
+	  ay_status = ay_clevel_add(o);
+	  if(ay_status)
+	    return ay_status;
+	  ay_status = ay_clevel_add(o->down);
+	  if(ay_status)
+	    {
+	      ay_clevel_del();
+	      return ay_status;
+	    }
+	  ay_status = ay_wrib_lights(file, o->down);
 	  ay_clevel_del();
 	  ay_clevel_del();
+	  if(ay_status)
+	    return ay_status;
 	}
 
       if((o->type == AY_IDLIGHT) &&
@@ -1357,6 +1378,11 @@ ay_wrib_lights(char *file, ay_object *o)
 	    {
 	      RiAttributeBegin();
 	      ay_status = ay_riattr_wrib(o);
+	      if(ay_status)
+		{
+		  RiAttributeEnd();
+		  return ay_status;
+		}
 	    }
 
 	  /* write transformation */
