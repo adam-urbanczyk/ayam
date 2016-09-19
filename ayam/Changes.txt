@@ -1,4 +1,4 @@
-[31. Aug 2016 CVS-Head:
+[19. Sep 2016 CVS-Head:
 =======================
 Bug Fixes:
 o added missing scripting interface commands to JavaScript and Lua scripting
@@ -62,6 +62,8 @@ o added commands to check object attributes: "hasChild", "hasMat", "hasRefs",
 o added commands to check object types: "isCurve" and "isSurface"
 o added "-relative" option to getPnt command to improve evaluation of
   curves/surfaces
+o added example script "cbox.tcl" to create box objects with cylindrical
+  topology
 
 Import/Export:
 o X3D export of materials now supports the new tag type "XML" that can be
