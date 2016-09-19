@@ -6,21 +6,21 @@
 if { ![info exists ::CBoxAttrData] } {
     array set ::CBoxAttrData {
 	Width 1.0
-	Length 1.0
+	Depth 1.0
 	Height 1.0
-	SP {Width Length Height}
+	SP {Width Depth Height}
     }
 }
 if { ![info exists ::CBoxAttrGUI] } {
     set w [addPropertyGUI CBoxAttr "" ""]
     addParam $w CBoxAttrData Width
-    addParam $w CBoxAttrData Length
+    addParam $w CBoxAttrData Depth
     addParam $w CBoxAttrData Height
 }
 
 set wh [expr $CBoxAttrData(Width) * 0.5]
 set wm [expr -$wh]
-set lh [expr $CBoxAttrData(Length) * 0.5]
+set lh [expr $CBoxAttrData(Depth) * 0.5]
 set lm [expr -$lh]
 set hh [expr $CBoxAttrData(Height) * 0.5]
 set hm [expr -$hh]
