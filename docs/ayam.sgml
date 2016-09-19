@@ -18744,6 +18744,39 @@ see the file:<newline>
 
 <#if out=latex><x/newpage/</#if>
 
+<sect2>Create Boxes with Cylindrical Topology<label id="cboxtcl">
+<p>
+<figure loc="ht">
+<eps file="pics/cbox.ps" height="4cm">
+<img src="pics/cbox.gif">
+<caption>Box with Cylindrical Topology</caption>
+</figure>
+<p>
+The script <tt>"cbox.tcl"</tt> creates box objects with a cylindrical
+topology, see also the above image.
+<p>
+This script must be used in a Script object of type <tt/"Create"/
+(see section <ref id="scriptobj" name="Script Object">).
+For convenience, there is also a property GUI; one must add a <tt/"NP"/ tag
+of value <tt/"CBoxAttr"/ to the Script object to see it.
+<p>
+These are the parameters of the cylindrical box:
+<itemize>
+<item><tt/"Width"/ extension of the box along the X-axis.
+<item><tt/"Depth"/ extension of the box along the Z-axis.
+<item><tt/"Height"/ extension of the box along the Y-axis.
+</itemize>
+
+In contrast to the standard Box object, the cylindrical box converts
+to a single NURBS patch. However, this patch has poles and, conseqently,
+shading artefacts may appear on the top and down side.
+
+An example scene file containing such an object is distributed with Ayam,
+see the file:<newline>
+<tt>"ayam/scn/scripts/cbox.ay"</tt>.
+
+<#if out=latex><x/newpage/</#if>
+
 <sect2>Create Polyhedrons from Conway Notations<label id="polyhedronjs">
 <p>
 <figure loc="ht">
@@ -22565,6 +22598,7 @@ Index:
 <item>CastShadows: <ref id="riattrs" name="RenderMan/BMRT attribute">
 <item>Cat: <ref id="hidprefs" name="hidden preference setting">
 <item>Catmull Rom: <ref id="pmattr" name="PatchMesh basis type">
+<item>cbox.tcl<ref id="cboxtcl" name="example/helper script">
 <item>Chamfer: <ref id="bevelobj" name="Bevel object">,
 <item>CheckLights: <ref id="prefrib" name="preference setting">
 <item>Chordal: <ref id="ncurveattrprop" name="knot type">
@@ -23588,7 +23622,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 </itemize>
 <item>RIStandard: <ref id="prefrib" name="preference setting">
 <item>RMax:
-<itemize><ref id="pap" name="Paraboloid attribute">,
+<itemize>
+<item><ref id="pap" name="Paraboloid attribute">,
 <item><ref id="tconetcl" name="Truncated cone attribute">
 </itemize>
 <item>RMin<ref id="tconetcl" name="Truncated cone attribute">
