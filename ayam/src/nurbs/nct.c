@@ -7281,7 +7281,7 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
  char *nname = ay_prefs.normalname;
  unsigned int vnlen = 0;
  double *vn = NULL, vlen;
- int vnstride = 3;
+ int vnstride = 3, free_vn = AY_FALSE;
 
   /* sanity check */
   if(!o || !nc)
@@ -7389,6 +7389,7 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 	      if(ay_pv_checkndt(tag, nname, "varying", "n"))
 		{
 		  ay_pv_convert(tag, 0, &vnlen, (void**)(void*)&vn);
+		  free_vn = AY_TRUE;
 		  break;
 		}
 	      tag = tag->next;
@@ -7454,7 +7455,7 @@ cleanup:
 	free(newkv);
     }
 
-  if(vn)
+  if(free_vn && vn)
     free(vn);
 
   if(offcurve1)
