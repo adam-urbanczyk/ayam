@@ -7404,6 +7404,7 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 		  if(tag->type == ay_nt_tagtype)
 		    {
 		      vn = ((ay_btval*)(tag->val))->payload;
+		      vnlen = curve->length;
 		      vnstride = 9;
 		      break;
 		    }
