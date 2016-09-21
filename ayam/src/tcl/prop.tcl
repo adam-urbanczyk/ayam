@@ -260,7 +260,10 @@ foreach tag $names {
     $m add separator
     $m add command -label "Remove"\
 	-command "undo save RemTag;setTags -delete $i;plb_update"
+
     bind $b <ButtonPress-$aymainshortcuts(CMButton)> "winOpenPopup $b"
+    bind $b <Key-F10> "winOpenPopup $b;break"
+    bind $b <Key-space> "$b invoke;break"
 
     incr i
 }
@@ -363,6 +366,8 @@ proc _toggleMultiline { t } {
 #  used to edit and add tags
 proc addTagp { {edit -1} } {
 global ay ayprefs tagsPropData Tags
+
+set focusWin [focus]
 
 winAutoFocusOff
 
@@ -523,6 +528,8 @@ if { $edit >= 0 } {
 tkwait window $w
 
 winAutoFocusOn
+
+after idle "restoreFocus $focusWin"
 
  return;
 }
