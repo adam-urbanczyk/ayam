@@ -2617,7 +2617,7 @@ dxfio_writetcmd(ClientData clientData, Tcl_Interp *interp,
   // fill entities section
   li = 0;
   o = ay_root->next;
-  while(o)
+  while(o && o->next)
     {
       ay_trafo_identitymatrix(tm);
 
