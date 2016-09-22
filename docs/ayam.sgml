@@ -16882,6 +16882,8 @@ points will <em/not/ be interpolated by the surface. The surface will
 interpolate the old control point positions.
 <p>
 The u knot type of the interpolated surfaces will be changed to <tt/"Custom"/.
+<p>
+See also section <ref id="interpnpt" name="Interpolate Surface Tool">.
 </itemize>
 
 <p>
@@ -16914,6 +16916,8 @@ points will <em/not/ be interpolated by the surface. The surface will
 interpolate the old control point positions.
 <p>
 The v knot type of the interpolated surfaces will be changed to <tt/"Custom"/.
+<p>
+See also section <ref id="interpnpt" name="Interpolate Surface Tool">.
 </itemize>
 
 <p>
@@ -17049,7 +17053,7 @@ See also section <ref id="makecompst" name="Make Compatible Tool">.
 </itemize>
 
 <p>
-<#if out=latex><x/phantomsection/</#if>
+<#if out=latex><x/newpage/</#if>
 
 <label id="sctobasispm">
 tobasisPM &ndash; convert PatchMesh to a different basis:
@@ -17078,7 +17082,14 @@ to Custom.
 <p>
 See also section <ref id="basist" name="Basis Tool">.
 -->
+<item>Example:
+<bf><tt>"tobasisPM -t 0"</tt></bf><newline>
+converts the selected bicubic patch meshes to the Bezier basis.
 </itemize>
+
+<p>
+<#if out=latex><x/newpage/</#if>
+<#if out=latex><x/phantomsection/</#if>
 
 <sect2>Manipulating PolyMesh Objects<label id="scipomesh">
 <p>
@@ -22598,7 +22609,7 @@ Index:
 <item>CastShadows: <ref id="riattrs" name="RenderMan/BMRT attribute">
 <item>Cat: <ref id="hidprefs" name="hidden preference setting">
 <item>Catmull Rom: <ref id="pmattr" name="PatchMesh basis type">
-<item>cbox.tcl<ref id="cboxtcl" name="example/helper script">
+<item>cbox.tcl: <ref id="cboxtcl" name="example/helper script">
 <item>Chamfer: <ref id="bevelobj" name="Bevel object">,
 <item>CheckLights: <ref id="prefrib" name="preference setting">
 <item>Chordal: <ref id="ncurveattrprop" name="knot type">
