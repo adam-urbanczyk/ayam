@@ -11492,15 +11492,23 @@ fetched from the system clipboard or files.
 <caption>Add&thinsp;/&thinsp;Edit Tag Dialog</caption>
 </figure>
 </itemize>
+Long and multiline tag values will be displayed in abbreviated
+fashion (with an ellipsis &ndash; &hellip;).
+<p>
 <#if out=latex><x/phantomsection/</#if>
+<#if out=latex><x/newpage/</#if>
 <p><label id="tagpropcontm">
 All tag entries have a context menu, where the corresponding tag can
 be copied/added to the property
 clipboard.<footnote>Since 1.21.</footnote>
+See also the image below.
+<figure loc="ht">
+<eps file="pics/tagcm.ps" height="5cm">
+<img src="pics/tagcm.gif">
+<caption>Tags Property GUI with Context Menu</caption>
+</figure>
 <p>
-Long and multiline tag values will be displayed in abbreviated
-fashion (with an ellipsis &ndash; &hellip;).
-<p>
+
 The next sub-sections describe the tag types currently available in Ayam
 and the plugins distributed with Ayam.
 Note that foreign extensions and plugins may define their own types.
