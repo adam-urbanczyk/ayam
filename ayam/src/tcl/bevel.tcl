@@ -169,6 +169,8 @@ proc bevel_add { bplace arr bids } {
     }
     # if
 
+    after idle "bevel_see $bplace $bname"
+
  return;
 }
 # bevel_add
@@ -212,6 +214,14 @@ proc bevel_rem { bplace arr bids } {
  return;
 }
 # bevel_rem
+
+proc bevel_see { i bn } {
+    global ay Bevels
+    set w $ay(pca).$Bevels(w)
+    plb_focus $w.f${bn}Force3D
+    plb_focus $w.fc${i}.b
+ return;
+}
 
 set Bevel 1
 
