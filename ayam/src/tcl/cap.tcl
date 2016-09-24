@@ -192,6 +192,8 @@ proc cap_add { bplace arr bids } {
     }
     # if
 
+    after idle "cap_see $bplace $bname"
+
  return;
 }
 # cap_add
@@ -236,6 +238,14 @@ proc cap_rem { bplace arr bids } {
 }
 # cap_rem
 
+proc cap_see { i bn } {
+    global ay Caps
+    set w $ay(pca).$Caps(w)
+    plb_focus $w.f${bn}Fraction.e
+    plb_focus $w.fc${i}.b
+ return;
+}
+
 proc cap_getCaps { } {
     global ay CapTags Caps CapsData
 
@@ -255,51 +265,48 @@ proc cap_getCaps { } {
 	global ${type}AttrData
 
 	if { [info exists ${type}AttrData(BoundaryNames)] } {
-
-	eval set bnames \$${type}AttrData(BoundaryNames)
-
-	set bids ""
-	if { [info exists ${type}AttrData(BoundaryIDs)] } {
-	    eval set bids \$${type}AttrData(BoundaryIDs)
-	}
-	set tagnames ""
-	set tagvalues ""
-	getTags tagnames tagvalues
-	cap_parseTags $tagnames $tagvalues $bnames $bids
-
-	set i 0
-	foreach bname $bnames {
-	    if { $CapTags(Cap${i}) } {
-		set str "Remove "
-		append str $bname
-		append str " Cap!"
-		set cmd "cap_rem "
-		append cmd $i
-		append cmd " ${type}AttrData"
-		append cmd " {$bids}"
-		addCommand $w c$i $str $cmd
-		addMenu $w CapTags ${bname}Type \
-		    [list "Trim" "Gordon" "Simple" "Simple3D" ]
-		addCheck $w CapTags ${bname}Integrate
-		addParam $w CapTags ${bname}Fraction
-
-	    } else {
-		set str "Add "
-		append str $bname
-		append str " Cap!"
-		set cmd "cap_add "
-		append cmd $i
-		append cmd " ${type}AttrData"
-		append cmd " {$bids}"
-		addCommand $w c$i $str $cmd
+	    eval set bnames \$${type}AttrData(BoundaryNames)
+	    set bids ""
+	    if { [info exists ${type}AttrData(BoundaryIDs)] } {
+		eval set bids \$${type}AttrData(BoundaryIDs)
 	    }
+	    set tagnames ""
+	    set tagvalues ""
+	    getTags tagnames tagvalues
+	    cap_parseTags $tagnames $tagvalues $bnames $bids
 
-	    incr i
+	    set i 0
+	    foreach bname $bnames {
+		if { $CapTags(Cap${i}) } {
+		    set str "Remove "
+		    append str $bname
+		    append str " Cap!"
+		    set cmd "cap_rem "
+		    append cmd $i
+		    append cmd " ${type}AttrData"
+		    append cmd " {$bids}"
+		    addCommand $w c$i $str $cmd
+		    addMenu $w CapTags ${bname}Type \
+			[list "Trim" "Gordon" "Simple" "Simple3D"]
+		    addCheck $w CapTags ${bname}Integrate
+		    addParam $w CapTags ${bname}Fraction
+		} else {
+		    set str "Add "
+		    append str $bname
+		    append str " Cap!"
+		    set cmd "cap_add "
+		    append cmd $i
+		    append cmd " ${type}AttrData"
+		    append cmd " {$bids}"
+		    addCommand $w c$i $str $cmd
+		}
+
+		incr i
+	    }
+	    set ${type}AttrData(CapsChanged) 0
+	} else {
+	    addText $w e1 "Not supported here!"
 	}
-	set ${type}AttrData(CapsChanged) 0
-    } else {
-	addText $w e1 "Not supported here!"
-    }
 
     }
     # if
