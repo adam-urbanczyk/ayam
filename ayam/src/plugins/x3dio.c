@@ -348,7 +348,7 @@ int x3dio_writepomeshobj(scew_element *element, ay_object *o);
 
 int x3dio_writepomeshwire(scew_element *element, ay_object *o);
 
-int x3dio_writeview(scew_element *element, ay_object *o);
+void x3dio_writeview(scew_element *element, ay_object *o);
 
 int x3dio_writelight(scew_element *element, ay_object *o);
 
@@ -9834,7 +9834,7 @@ cleanup:
 /* x3dio_writeview:
  *
  */
-int
+void
 x3dio_writeview(scew_element *element, ay_object *o)
 {
  struct Togl *togl;
@@ -9851,7 +9851,7 @@ x3dio_writeview(scew_element *element, ay_object *o)
   if(!element || !o)
     {
       vnum = 1;
-      return AY_ENULL;
+      return;
     }
 
   if(o->type == AY_IDVIEW)
@@ -10002,7 +10002,7 @@ x3dio_writeview(scew_element *element, ay_object *o)
  */
   vnum++;
 
- return AY_OK;
+ return;
 } /* x3dio_writeview */
 
 
@@ -11039,14 +11039,14 @@ x3dio_writescene(char *filename, int selected, int toplevellayers)
   if(x3dio_writeviews)
     {
       /* reset view number */
-      (void)x3dio_writeview(NULL, NULL);
+      x3dio_writeview(NULL, NULL);
       /* loop through the view level */
       o = ay_root->down;
       while(o)
 	{
-	  if(o->type == AY_IDVIEW)
+	  if(o->type == AY_IDVIEW && !ay_tags_hastag(o, ay_noexport_tagtype))
 	    {
-	      ay_status = x3dio_writeview(scene_element, o);
+	      x3dio_writeview(scene_element, o);
 	    }
 	  o = o->next;
 	}
