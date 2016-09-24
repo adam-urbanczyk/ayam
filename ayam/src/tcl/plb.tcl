@@ -558,9 +558,11 @@ proc plb_resize { } {
 #  this proc is bound to the Tab-key and scrolls the property
 #  canvas to display the new item that gets the focus if it is
 #  outside the current visible region of the property canvas
-proc plb_focus { } {
+proc plb_focus { {w ""} } {
     global ay
-    set w [focus]
+    if { $w == "" } {
+	set w [focus]
+    }
     if { $w != "" } {
 	if { [string first $ay(pca) $w] != -1 } {
 	    set ca $ay(pca)
