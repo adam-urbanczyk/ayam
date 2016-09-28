@@ -190,6 +190,13 @@ upvar #0 pclip_clipboard clipboard
 # copyTagp
 
 
+proc _remTags { } {
+    set fw [focus];
+    undo save RemTags;delTags all;plb_update
+    restoreFocus $fw
+}
+
+
 # getTagsp:
 #
 proc getTagsp { } {
@@ -205,7 +212,7 @@ set ay(bok) $ay(appb)
 catch {destroy $ay(pca).$Tags(w)}
 set w [frame $ay(pca).$Tags(w)]
 addVSpace $w s1 2
-addCommand $w c0 "Remove all Tags!" {undo save RemTags;delTags all;plb_update}
+addCommand $w c0 "Remove all Tags!" _remTags
 
 set bw 1
 set f [frame $w.fDelete -relief sunken -bd $bw]
