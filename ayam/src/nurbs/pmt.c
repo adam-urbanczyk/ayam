@@ -829,16 +829,25 @@ ay_pmt_tonpatchmulti(ay_object *o, ay_object **result)
     }
 
   w = (pm->width-3)/su+1;
+
+  if(su == 1)
+    w--;
+
   h = (pm->height-3)/sv+1;
+
+  if(sv == 1)
+    h--;
 
   if(pm->close_u)
     {
+      w = (pm->width-3)/su+1;
       while(((w+1)*su) < pm->width)
 	w++;
     }
 
   if(pm->close_v)
     {
+      h = (pm->height-3)/sv+1;
       while(((h+1)*sv) < pm->height)
 	h++;
     }
