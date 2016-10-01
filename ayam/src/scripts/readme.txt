@@ -1,4 +1,4 @@
-[readme.txt - 4. Mar 2016]
+[readme.txt - 1. Oct 2016]
 
 This directory contains a collection of various scripts for Ayam.
 
@@ -90,5 +90,6 @@ crtspiralgui.tcl - create spirals with GUI (type: Create)
 polyhedron.js - create polyhedrons from Conway notation
                 (needs jsinterp plugin!) (type: Create)
 tcone.tcl - truncated cone primitive with GUI (type: Create)
+cbox.tcl - cylindrical box primitive (type: Create)
 tweenc.tcl - tween incompatible curves of arbitrary type (type: Modify)
 tweencgui.tcl - as above with GUI for the tween parameter (type: Modify)
