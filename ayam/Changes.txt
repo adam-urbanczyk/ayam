@@ -13,6 +13,8 @@ o scaling points about the mark fails when object is transformed (SF 532)
 o setting the mark from non rational points fails (SF 533)
 o crash when using delOb as withOb command (SF 534)
 o rotating points about the mark fails for rotated objects (SF 535)
+o offsetting a extracted curve in 3DPVN mode fails (SF 536)
+o display/conversion of patch meshes with basis type Catmull-Rom (SF 537)
 
 Modelling:
 o the create Sweep/Swing tools now rotate the parameter curves to the
@@ -44,6 +46,7 @@ o revamped Tag add/edit dialog, now showing a menu of available tags,
   allowing multi-line tag values, and having a context menu
 o add menu entry to add a tag to multiple selected objects
   ("Special/Tags/Add Tag")
+o improved keyboard and focus handling of Tags property GUI
 o improved MRU file management (file saving could lead to extraneous and
   not working entries without path)
 
@@ -64,6 +67,7 @@ o added "-relative" option to getPnt command to improve evaluation of
   curves/surfaces
 o added example script "cbox.tcl" to create box objects with cylindrical
   topology
+o added example script "tcircle.tcl" to create triangle based NURBS circles
 
 Import/Export:
 o X3D export of materials now supports the new tag type "XML" that can be
