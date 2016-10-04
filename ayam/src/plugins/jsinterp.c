@@ -256,7 +256,6 @@ static Tcl_ObjType *jsinterp_BooleanType = NULL;
 static Tcl_ObjType *jsinterp_ByteArrayType = NULL;
 static Tcl_ObjType *jsinterp_DoubleType = NULL;
 static Tcl_ObjType *jsinterp_IntType = NULL;
-static Tcl_ObjType *jsinterp_LongType = NULL;
 static Tcl_ObjType *jsinterp_ListType = NULL;
 static Tcl_ObjType *jsinterp_StringType = NULL;
 static Tcl_ObjType *jsinterp_WideIntType = NULL;
@@ -428,7 +427,7 @@ jsinterp_objtoval(Tcl_Obj *to, jsval *v)
  Tcl_Obj **objv;
  jsval elemv, arrv;
 
-  if((to->typePtr == jsinterp_IntType) || (to->typePtr == jsinterp_LongType))
+  if((to->typePtr == jsinterp_IntType))
     {
       if(JS_NewNumberValue(jsinterp_cx, (double)to->internalRep.longValue, v))
 	{
@@ -1235,7 +1234,6 @@ Jsinterp_Init(Tcl_Interp *interp)
   jsinterp_ByteArrayType = Tcl_GetObjType("bytearray");
   jsinterp_DoubleType = Tcl_GetObjType("double");
   jsinterp_IntType = Tcl_GetObjType("int");
-  jsinterp_LongType = Tcl_GetObjType("long");
   jsinterp_ListType = Tcl_GetObjType("list");
   jsinterp_StringType = Tcl_GetObjType("string");
   jsinterp_WideIntType = Tcl_GetObjType("wideInt");
