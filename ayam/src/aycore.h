@@ -29,6 +29,10 @@ int ay_bbc_fromarr(double *arr, int len, int stride, double *bbox);
  */
 int ay_bbc_fromlist(ay_object *o, int update, double *bbox);
 
+/** Tcl command to get the bounding box of the selected object(s).
+ */
+int ay_bbc_gettcmd(ClientData clientData, Tcl_Interp *interp,
+		   int argc, char *argv[]);
 
 /* clear.c */
 

@@ -350,3 +350,93 @@ ay_bbc_fromlist(ay_object *o, int update, double *bbox)
 
  return AY_OK;
 } /* ay_bbc_fromlist */
+
+
+/** ay_bbc_gettcmd:
+ *  Get the bounding box of the selected objects;
+ *  Implements the \a getBB scripting interface command.
+ *  See also the corresponding section in the \ayd{scgetbb}.
+ *
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_bbc_gettcmd(ClientData clientData, Tcl_Interp *interp,
+	       int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ int i, a;
+ double xmin = DBL_MAX, xmax = -DBL_MAX, ymin = DBL_MAX;
+ double ymax = -DBL_MAX, zmin = DBL_MAX, zmax = -DBL_MAX;
+ double bbt[24] = {0};
+ ay_object *o = NULL;
+ ay_list_object *sel = ay_selection;
+ Tcl_Obj *res = NULL, *to = NULL;
+
+  while(sel)
+    {
+      o = sel->object;
+
+      ay_status = ay_bbc_get(o, bbt);
+
+      if(ay_status)
+	{
+	  sel = sel->next;
+	  continue;
+	}
+
+      a = 0;
+      for(i = 0; i < 8; i++)
+	{
+	  if(bbt[a] < xmin)
+	    xmin = bbt[a];
+	  if(bbt[a] > xmax)
+	    xmax = bbt[a];
+	  a += 3;
+	} /* for */
+
+      a = 1;
+      for(i = 0; i < 8; i++)
+	{
+	  if(bbt[a] < ymin)
+	    ymin = bbt[a];
+	  if(bbt[a] > ymax)
+	    ymax = bbt[a];
+	  a += 3;
+	} /* for */
+
+      a = 2;
+      for(i = 0; i < 8; i++)
+	{
+	  if(bbt[a] < zmin)
+	    zmin = bbt[a];
+	  if(bbt[a] > zmax)
+	    zmax = bbt[a];
+	  a += 3;
+	} /* for */
+
+      sel = sel->next;
+    }
+
+  res = Tcl_NewListObj(0, NULL);
+  if(res)
+    {
+      to = Tcl_NewDoubleObj(xmin);
+      Tcl_ListObjAppendElement(interp, res, to);
+      to = Tcl_NewDoubleObj(ymin);
+      Tcl_ListObjAppendElement(interp, res, to);
+      to = Tcl_NewDoubleObj(zmin);
+      Tcl_ListObjAppendElement(interp, res, to);
+
+      to = Tcl_NewDoubleObj(xmax);
+      Tcl_ListObjAppendElement(interp, res, to);
+      to = Tcl_NewDoubleObj(ymax);
+      Tcl_ListObjAppendElement(interp, res, to);
+      to = Tcl_NewDoubleObj(zmax);
+      Tcl_ListObjAppendElement(interp, res, to);
+
+      Tcl_SetObjResult(interp, res);
+    }
+
+ return TCL_OK;
+} /* ay_bbc_gettcmd */
+

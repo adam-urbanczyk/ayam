@@ -706,6 +706,10 @@ Tcl_AppInit(Tcl_Interp *interp)
   Togl_DisplayFunc(ay_toglcb_display);
   Togl_ReshapeFunc(ay_toglcb_reshape);
 
+  /* bbc.c */
+  Tcl_CreateCommand(interp, "getBB", ay_bbc_gettcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   /* clear.c */
   Tcl_CreateCommand(interp, "newScene", ay_clear_scenetcmd,
 		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
@@ -1463,6 +1467,9 @@ ay_safeinit(Tcl_Interp *interp)
 {
  int ay_status = AY_OK;
 
+  /* bbc.c */
+  Tcl_CreateCommand(interp, "getBB", ay_bbc_gettcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* clevel.c */
   Tcl_CreateCommand(interp, "goTop", ay_clevel_gotoptcmd,
