@@ -16534,6 +16534,8 @@ makeCompNC &ndash; make NURBS curves compatible
  <item>Description: makes the selected NURBS curves compatible
 i.e.~of the same order and defined on the same knot vector.
 <p><p>
+If the option <tt/"-f"/ is present, there will be no prior compatibility check.
+<p>
 If the option <tt/"-l"/ is 0, only the orders will be adapted.<newline>
 If the option <tt/"-l"/ is 1, only the orders and lengths will be adapted.
 <p>
@@ -17051,6 +17053,8 @@ makeCompNP &ndash; make NURBS surfaces compatible
  <item>Description: makes the selected NURBS surfaces compatible
 i.e.~of the same order and defined on the same knot vectors.
 <p><p>
+If the option <tt/"-f"/ is present, there will be no prior compatibility check.
+<p>
 If the option <tt/"-u"/ is given, only the U dimension will be adapted.<newline>
 If the option <tt/"-v"/ is given, only the V dimension will be adapted.
 <p>
@@ -17068,7 +17072,7 @@ tobasisPM &ndash; convert PatchMesh to a different basis:
 <itemize>
  <item>Synopsis: <tt/"tobasisPM [-t type | -s step | -b basis]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Converts all selected PatchMesh objects to a
+ <item>Description: Converts all selected bicubic PatchMesh objects to a
 different basis. Both dimensions will be converted to the same
 basis; it is not an error if one dimension is already of the
 target basis type.
@@ -18793,6 +18797,37 @@ shading artefacts may appear on the top and down side.
 An example scene file containing such an object is distributed with Ayam,
 see the file:<newline>
 <tt>"ayam/scn/scripts/cbox.ay"</tt>.
+
+<#if out=latex><x/newpage/</#if>
+
+<sect2>NURBS Circle with Triangular Base<label id="tcircletcl">
+<p>
+<figure loc="ht">
+<eps file="pics/tcircle.ps" height="5cm">
+<img src="pics/tcircle.gif">
+<caption>NURBS Circle with Triangular Base</caption>
+</figure>
+<p>
+The script <tt>"tcircle.tcl"</tt> creates NURBS circles with a triangular base,
+see also the above image.
+<p>
+In contrast to the standard 9 point NURBS circle, the triangular
+circle has just 7 control points. However, this leads to a slightly worse
+parameterisation.
+<p>
+This script must be used in a Script object of type <tt/"Create"/
+(see section <ref id="scriptobj" name="Script Object">).
+For convenience, there is also a property GUI; one must add a <tt/"NP"/ tag
+of value <tt/"TCircleAttr"/ to the Script object to see it.
+<p>
+These are the parameters of the triangular circle:
+<itemize>
+<item><tt/"Radius"/ radius of the circle.
+</itemize>
+
+An example scene file containing such an object is distributed with Ayam,
+see the file:<newline>
+<tt>"ayam/scn/scripts/tcircle.ay"</tt>.
 
 <#if out=latex><x/newpage/</#if>
 
@@ -23883,6 +23918,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="scitags" name="scripting interface commands">
 </itemize>
 <item>TC: <ref id="tctag" name="tag type">
+<item>tcircle.tcl: <ref id="tcircletcl" name="example/helper script">
 <item>tcleval:
 <itemize>
 <item><ref id="tcleval" name="JavaScript scripting interface function">,
