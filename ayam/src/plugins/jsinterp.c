@@ -240,6 +240,7 @@ static JSFunctionSpec jsinterp_global_functions[] = {
   {"tobasisPM", jsinterp_wraptcmdargs, 0, 0, 0},
   {"tweenNC", jsinterp_wraptcmdargs, 0, 0, 0},
   {"tweenNP", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"getBB", jsinterp_wraptcmd, 0, 0, 0},
 
   {"tcleval", jsinterp_wrapevalcmd, 0, 0, 0},
   {"tclvar", jsinterp_tclvar, 0, 0, 0},
