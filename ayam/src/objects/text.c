@@ -303,15 +303,15 @@ ay_text_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     }
   strcpy(text->fontname, result);
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  toa = Tcl_NewStringObj(n1, -1);
+  ton = Tcl_NewStringObj(n1, -1);
 
-  Tcl_SetStringObj(ton,"Height",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &(text->height));
+  Tcl_SetStringObj(ton, "Height", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(text->height));
 
-  Tcl_SetStringObj(ton,"String",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetStringObj(ton, "String", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   unistr = Tcl_GetUnicode(to);
 
   if(text->unistring)
@@ -328,25 +328,25 @@ ay_text_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     }
   memcpy(text->unistring, unistr, Tcl_UniCharLen(unistr)*sizeof(Tcl_UniChar));
 
-  Tcl_SetStringObj(ton,"Revert",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(text->revert));
+  Tcl_SetStringObj(ton, "Revert", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(text->revert));
 
-  Tcl_SetStringObj(ton,"UpperCap",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(text->has_upper_cap));
+  Tcl_SetStringObj(ton, "UpperCap", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(text->has_upper_cap));
 
-  Tcl_SetStringObj(ton,"LowerCap",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(text->has_lower_cap));
+  Tcl_SetStringObj(ton, "LowerCap", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(text->has_lower_cap));
 
-  Tcl_SetStringObj(ton,"DisplayMode",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(text->display_mode));
+  Tcl_SetStringObj(ton, "DisplayMode", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(text->display_mode));
 
-  Tcl_SetStringObj(ton,"Tolerance",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &(text->glu_sampling_tolerance));
+  Tcl_SetStringObj(ton, "Tolerance", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(text->glu_sampling_tolerance));
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
@@ -381,46 +381,46 @@ ay_text_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!text)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
+  toa = Tcl_NewStringObj(n1, -1);
 
-  ton = Tcl_NewStringObj("FontName",-1);
+  ton = Tcl_NewStringObj("FontName", -1);
   to = Tcl_NewStringObj(text->fontname, -1);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"String",-1);
+  Tcl_SetStringObj(ton, "String", -1);
   if(text->unistring && (text->unistring[0] != 0))
     to = Tcl_NewUnicodeObj(text->unistring, Tcl_UniCharLen(text->unistring));
   else
     to = Tcl_NewStringObj(emptystring, -1);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Height",-1);
+  Tcl_SetStringObj(ton, "Height", -1);
   to = Tcl_NewDoubleObj(text->height);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Revert",-1);
+  Tcl_SetStringObj(ton, "Revert", -1);
   to = Tcl_NewIntObj(text->revert);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"UpperCap",-1);
+  Tcl_SetStringObj(ton, "UpperCap", -1);
   to = Tcl_NewIntObj(text->has_upper_cap);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"LowerCap",-1);
+  Tcl_SetStringObj(ton, "LowerCap", -1);
   to = Tcl_NewIntObj(text->has_lower_cap);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"DisplayMode",-1);
+  Tcl_SetStringObj(ton, "DisplayMode", -1);
   to = Tcl_NewIntObj(text->display_mode);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Tolerance",-1);
+  Tcl_SetStringObj(ton, "Tolerance", -1);
   to = Tcl_NewDoubleObj(text->glu_sampling_tolerance);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
@@ -714,8 +714,8 @@ ay_text_notifycb(ay_object *o)
       text->pnts = NULL;
     }
 
-  if(!text->fontname || text->fontname[0] == '\0' ||
-     !text->unistring || text->unistring[0] == 0)
+  if(!text->fontname || (text->fontname[0] == '\0') ||
+     !text->unistring || (text->unistring[0] == 0))
     goto cleanup;
 
   ext.type = AY_IDEXTRUDE;
@@ -951,7 +951,7 @@ ay_text_notifycb(ay_object *o)
 	     using realloc()) */
 	  while(patch)
 	    {
-	      if(patch->down == NULL || patch->down == ay_endlevel)
+	      if((patch->down == NULL) || (patch->down == ay_endlevel))
 		{
 		  ay_status = ay_pact_getpoint(0, patch, dummy, &pe);
 
@@ -1074,21 +1074,21 @@ ay_text_init(Tcl_Interp *interp)
 {
  int ay_status = AY_OK;
 
- ay_status = ay_otype_registercore(ay_text_name,
-				   ay_text_createcb,
-				   ay_text_deletecb,
-				   ay_text_copycb,
-				   ay_text_drawcb,
-				   ay_text_drawhcb,
-				   ay_text_shadecb,
-				   ay_text_setpropcb,
-				   ay_text_getpropcb,
-				   ay_text_getpntcb,
-				   ay_text_readcb,
-				   ay_text_writecb,
-				   ay_text_wribcb,
-				   ay_text_bbccb,
-				   AY_IDTEXT);
+  ay_status = ay_otype_registercore(ay_text_name,
+				    ay_text_createcb,
+				    ay_text_deletecb,
+				    ay_text_copycb,
+				    ay_text_drawcb,
+				    ay_text_drawhcb,
+				    ay_text_shadecb,
+				    ay_text_setpropcb,
+				    ay_text_getpropcb,
+				    ay_text_getpntcb,
+				    ay_text_readcb,
+				    ay_text_writecb,
+				    ay_text_wribcb,
+				    ay_text_bbccb,
+				    AY_IDTEXT);
 
 
   ay_status += ay_notify_register(ay_text_notifycb, AY_IDTEXT);

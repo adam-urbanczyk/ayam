@@ -1002,8 +1002,8 @@ ay_torus_providecb(ay_object *o, unsigned int type, ay_object **result)
 	} /* if */
 
       /* copy some tags */
-      (void)ay_tag_copyselected(o, new->down, ay_prefs.converttags,
-				ay_prefs.converttagslen);
+      (void)ay_tags_copyselected(o, new->down, ay_prefs.converttags,
+				 ay_prefs.converttagslen);
 
       /* return result */
       *result = new;

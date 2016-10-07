@@ -679,8 +679,8 @@ ay_disk_providecb(ay_object *o, unsigned int type, ay_object **result)
       new->refine = np;
 
       /* copy some tags */
-      ay_tag_copyselected(o, new, ay_prefs.converttags,
-			  ay_prefs.converttagslen);
+      ay_tags_copyselected(o, new, ay_prefs.converttags,
+			   ay_prefs.converttagslen);
 
       /* return result */
       *result = new;

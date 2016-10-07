@@ -1259,7 +1259,7 @@ ay_tags_remnonm(ay_object *o, ay_object *m)
 } /* ay_tags_remnonm */
 
 
-/** ay_tag_copyselected:
+/** ay_tags_copyselected:
  * Copy selected tags from an object to a list of other objects.
  *
  * \param[in] src object that contains the tags to be copied
@@ -1270,8 +1270,8 @@ ay_tags_remnonm(ay_object *o, ay_object *m)
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_tag_copyselected(ay_object *src, ay_object *dst,
-		    char **types, int typeslen)
+ay_tags_copyselected(ay_object *src, ay_object *dst,
+		     char **types, int typeslen)
 {
  int ay_status = AY_OK;
  int i, copy;
@@ -1314,7 +1314,7 @@ ay_tag_copyselected(ay_object *src, ay_object *dst,
     } /* while */
 
  return ay_status;
-} /* ay_tag_copyselected */
+} /* ay_tags_copyselected */
 
 
 /** ay_tags_nltovt:
