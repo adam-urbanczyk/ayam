@@ -15421,6 +15421,19 @@ is (or provides/converts to) a parametric surface, otherwise it returns 0.
 If multiple objects are selected, a list is returned.
 </itemize>
 
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
+<label id="scgetbb">
+getBB &ndash; get the bounding box:
+<itemize>
+ <item>Synopsis: <tt>"getBB"</tt>
+ <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Description: This command returns the axis parallel bounding box
+of the selected object(s) as a list of six double values (xmin, ymin, zmin,
+xmax, ymax, zmax).
+</itemize>
+
 
 <sect2>Manipulating the Selection<label id="selob">
 <p>
@@ -22991,6 +23004,7 @@ Index:
 <item>Gen.~Face/Smooth Normals: <ref id="polymeshtools" name="polymesh tool">
 <item>genfnPo: <ref id="scgenfnPo" name="scripting interface command">
 <item>gensnPo: <ref id="scgensnPo" name="scripting interface command">
+<item>getBB: <ref id="scgetbb" name="scripting interface command">
 <item>getName: <ref id="scgetname" name="scripting interface command">
 <item>getPnt: <ref id="scgetpnt" name="scripting interface command">
 <item>getPrefs: <ref id="scgetprefs" name="scripting interface command">
