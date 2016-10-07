@@ -1009,8 +1009,8 @@ ay_bpatch_providecb(ay_object *o, unsigned int type, ay_object **result)
       cv[15] = 1.0;
 
       /* copy some tags */
-      (void)ay_tag_copyselected(o, new, ay_prefs.converttags,
-				ay_prefs.converttagslen);
+      (void)ay_tags_copyselected(o, new, ay_prefs.converttags,
+				 ay_prefs.converttagslen);
 
       *result = new;
     } /* if */
