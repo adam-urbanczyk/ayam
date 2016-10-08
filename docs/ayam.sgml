@@ -11401,16 +11401,25 @@ e.g.~<tt>"Edit/Copy Marked Prop"</tt>
 (see also the description of the property clipboard in section
 <ref id="propgui" name="Properties">).
 
+<#if out=latex><x/newpage/</#if>
+
 <sect2>Caps Property<label id="capsprop">
 <p>
 Many tool object have a <tt/"Caps"/ property to easily close the
 created surface.
 <p>
+<figure loc="ht">
+<eps file="pics/capprop.ps" height="5.5cm">
+<img src="pics/capprop.gif">
+<caption>Cap Property of NPatch Object</caption>
+</figure>
+<p>
 The exact names of the attributes available in this property are
 object type specific as each object types boundary names are different:
 the boundary names of a Skin object are e.g.~<tt/"Left"/, <tt/"Right"/,
 <tt/"Start"/, and <tt/"End"/, whereas the boundary names of a NPatch object
-are <tt/"U0"/, <tt/"U1"/, <tt/"V0"/, and <tt/"V1"/.
+are <tt/"U0"/, <tt/"U1"/, <tt/"V0"/, and <tt/"V1"/ (see also the image
+above).
 <p>
 To reduce GUI clutter, initially, the Caps property only contains buttons
 that allow to enable/disable the associated cap and control appearance of
@@ -11430,16 +11439,25 @@ cap will integrate into the bevel instead.
 Integration will change the number of provided objects and the parameters
 of the progenitor surface.
 
+<#if out=latex><x/newpage/</#if>
+
 <sect2>Bevels Property<label id="bevelsprop">
 <p>
 Many tool object have a <tt/"Bevels"/ property to easily round the
 otherwise sharp borders of the created surface.
 <p>
+<figure loc="ht">
+<eps file="pics/bevelprop.ps" height="6.25cm">
+<img src="pics/bevelprop.gif">
+<caption>Bevel Property of NPatch Object</caption>
+</figure>
+<p>
 The exact names of the attributes available in this property are
 object type specific as each object types boundary names are different:
 the boundary names of a Skin object are e.g.~<tt/"Left"/, <tt/"Right"/,
 <tt/"Start"/, and <tt/"End"/, whereas the boundary names of a NPatch object
-are <tt/"U0"/, <tt/"U1"/, <tt/"V0"/, and <tt/"V1"/.
+are <tt/"U0"/, <tt/"U1"/, <tt/"V0"/, and <tt/"V1"/ (see also the image
+above).
 <p>
 To reduce GUI clutter, initially, the Bevels property only contains buttons
 that allow to enable/disable the associated bevel and control appearance of
@@ -11453,12 +11471,28 @@ tool object via the additional parameter <tt/"Integrate"/.
 Integration will change the number of provided objects and the parameters
 of the progenitor surface.
 
+<#if out=latex><x/newpage/</#if>
+
 <sect2>Tags Property<label id="tagsprop">
 <p>
 Use the <tt/"Tags"/ property to edit the tags of an object.
+See also the image below.
 <p>
-The tags property GUI consists of the following standard
-elements:
+<figure loc="ht">
+<eps file="pics/tagcm.ps" height="5cm">
+<img src="pics/tagcm.gif">
+<caption>Tags Property GUI with Context Menu</caption>
+</figure>
+<p><label id="tagpropcontm">
+All tag entries have a context menu, where the corresponding tag can
+be copied/added to the property
+clipboard.<footnote>Since 1.21.</footnote>
+<p>
+Long and multiline tag values will be displayed in abbreviated
+fashion (with an ellipsis &ndash; &hellip;).
+<p>
+The tags property GUI also consists of the following standard
+elements (see also above image):
 <itemize>
 <item><tt/"Remove all Tags!"/ immediately removes all tags
 from the object.
@@ -11485,29 +11519,15 @@ Note that in multiline mode, the <tt>&lt;Enter&gt;</tt>,
 <tt>&lt;Tab&gt;</tt> key will behave differently.<newline>
 The tag value widget also has a context menu, allowing text to be
 fetched from the system clipboard or files.
-<p>
+
+<#if out=latex><x/newpage/</#if>
+
 <figure loc="ht">
 <eps file="pics/addmodtag.ps" height="2.5cm">
 <img src="pics/addmodtag.gif">
 <caption>Add&thinsp;/&thinsp;Edit Tag Dialog</caption>
 </figure>
 </itemize>
-Long and multiline tag values will be displayed in abbreviated
-fashion (with an ellipsis &ndash; &hellip;).
-<p>
-<#if out=latex><x/phantomsection/</#if>
-<#if out=latex><x/newpage/</#if>
-<p><label id="tagpropcontm">
-All tag entries have a context menu, where the corresponding tag can
-be copied/added to the property
-clipboard.<footnote>Since 1.21.</footnote>
-See also the image below.
-<figure loc="ht">
-<eps file="pics/tagcm.ps" height="5cm">
-<img src="pics/tagcm.gif">
-<caption>Tags Property GUI with Context Menu</caption>
-</figure>
-<p>
 
 The next sub-sections describe the tag types currently available in Ayam
 and the plugins distributed with Ayam.
