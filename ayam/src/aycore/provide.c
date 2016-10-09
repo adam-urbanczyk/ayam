@@ -14,9 +14,13 @@
 
 /* provide.c - functions for provide mechanism */
 
-/* ay_provide_register:
- *  register the provide callback <provcb> for
- *  objects of type <type_id>
+/** ay_provide_register:
+ * register a provide callback
+ *
+ * \param[in] provcb provide callback
+ * \param[in] type_id object type for which to register the callback (AY_ID...)
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_provide_register(ay_providecb *provcb, unsigned int type_id)
@@ -30,8 +34,15 @@ ay_provide_register(ay_providecb *provcb, unsigned int type_id)
 } /* ay_provide_register */
 
 
-/* ay_provide_object:
- *  call conversion callback of object o
+/** ay_provide_object:
+ * call provide callback of an object
+ *
+ * \param[in] o object to process
+ * \param[in] type desired type of object to be provided by \a o (AY_ID...)
+ * \param[in,out] result where to store the resulting objects,
+ *   may be NULL to designate a check
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_provide_object(ay_object *o, unsigned int type, ay_object **result)
@@ -80,13 +91,20 @@ ay_provide_object(ay_object *o, unsigned int type, ay_object **result)
 	*/
     } /* if */
 
-
  return AY_OK;
 } /* ay_provide_object */
 
 
-/* ay_provide_nptoolobj:
- *  helper for tool objects that provide NURBS surfaces with caps/bevels
+/** ay_provide_nptoolobj:
+ * helper for tool objects that provide NURBS surfaces with caps/bevels
+ *
+ * \param[in] o original tool object
+ * \param[in] type desired target object type
+ * \param[in] npatch NURBS patch
+ * \param[in] cb caps and bevels
+ * \param[in,out] result
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_provide_nptoolobj(ay_object *o, unsigned int type,
