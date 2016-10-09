@@ -14,9 +14,13 @@
 
 /* convert.c - functions for object conversion */
 
-/* ay_convert_register:
- *  register the conversion callback convcb for
- *  objects of type type_id
+/** ay_convert_register:
+ * register a conversion callback
+ *
+ * \param[in] convcb conversion callback
+ * \param[in] type_id object type for which to register the callback (AY_ID...)
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_convert_register(ay_convertcb *convcb, unsigned int type_id)
@@ -30,8 +34,14 @@ ay_convert_register(ay_convertcb *convcb, unsigned int type_id)
 } /* ay_convert_register */
 
 
-/* ay_convert_object:
- *  call conversion callback of object o
+/** ay_convert_object:
+ * call conversion callback of an object
+ *
+ * \param[in,out] o object to convert
+ * \param[in] in_place designates whether to replace \a o with the
+ *   result of the conversion
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_convert_object(ay_object *o, int in_place)
@@ -66,11 +76,11 @@ ay_convert_object(ay_object *o, int in_place)
 } /* ay_convert_object */
 
 
-/* ay_convert_objecttcmd:
- *  force conversion of selected object(s)
- *  Implements the \a convOb scripting interface command.
- *  See also the corresponding section in the \ayd{scconvob}.
- *  \returns TCL_OK in any case.
+/** ay_convert_objecttcmd:
+ * force conversion of selected object(s)
+ * Implements the \a convOb scripting interface command.
+ * See also the corresponding section in the \ayd{scconvob}.
+ * \returns TCL_OK in any case.
  */
 int
 ay_convert_objecttcmd(ClientData clientData, Tcl_Interp *interp,
@@ -147,14 +157,14 @@ ay_convert_objecttcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /** ay_convert_nptoolobj:
- *  helper for tool objects that convert to a NURBS patch
- *  plus caps/bevels
+ * Helper for tool objects that convert to a NURBS patch
+ * plus caps/bevels.
  *
- *  \param[in,out] o original object to be converted
- *  \param[in] p patch object(s) o converts to
- *  \param[in] cb caps and bevels
- *  \param[in] in_place if AY_TRUE, o will be replaced by the
- *  converted objec(s), if AY_FALSE, the converted objects will
+ * \param[in,out] o original object to be converted
+ * \param[in] p patch object(s) o converts to
+ * \param[in] cb caps and bevels
+ * \param[in] in_place if AY_TRUE, o will be replaced by the
+ *  converted object(s), if AY_FALSE, the converted objects will
  *  be linked to the current level of the scene
  *
  * \returns AY_OK on success, error code otherwise.
