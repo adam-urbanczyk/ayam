@@ -3742,6 +3742,8 @@ cleanup:
 	  break;
 	}
 
+      patch = NULL;
+
     } while(sel && create_trim);
 
   if(notify_parent)
