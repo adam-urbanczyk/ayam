@@ -244,11 +244,11 @@ ay_clevel_gouptcmd(ClientData clientData, Tcl_Interp *interp,
   sprintf(tmp, "%s", string);
 
   /* Remove the last component */
-  while ((length > 0) && (tmp[length] != ':'))
+  while((length > 0) && (tmp[length] != ':'))
     {
       length--;
     }
-  if (length > 0)
+  if(length > 0)
     {
       tmp[length] = 0;
     }
