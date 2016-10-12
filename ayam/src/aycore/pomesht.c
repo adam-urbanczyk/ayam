@@ -190,7 +190,7 @@ ay_pomesht_ManageCombined(void *data)
 
   if(data)
     { /* add new pointer to the list */
-      if(!(new = calloc(1, sizeof(ay_pomesht_listobject))))
+      if(!(new = malloc(sizeof(ay_pomesht_listobject))))
 	return;
 
       new->data = data;

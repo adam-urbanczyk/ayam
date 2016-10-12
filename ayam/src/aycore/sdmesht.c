@@ -88,7 +88,7 @@ ay_sdmesht_ManageCombined(void *data)
 
   if(data)
     { /* add new pointer to the list */
-      if(!(new = calloc(1, sizeof(ay_sdmesht_listobject))))
+      if(!(new = malloc(sizeof(ay_sdmesht_listobject))))
 	return;
 
       new->data = data;
