@@ -15427,7 +15427,6 @@ is (or provides/converts to) a parametric curve, otherwise it returns 0.
 If multiple objects are selected, a list is returned.
 </itemize>
 
-
 <p>
 <#if out=latex><x/phantomsection/</#if>
 
@@ -18845,8 +18844,9 @@ The script <tt>"tcircle.tcl"</tt> creates NURBS circles with a triangular base,
 see also the above image.
 <p>
 In contrast to the standard 9 point NURBS circle, the triangular
-circle has just 7 control points. However, this leads to a slightly worse
-parameterisation.
+circle consists of just 7 control points. This can save some memory, e.g.
+in long sweep objects. However, the parameterisation of the triangular
+circle is also slightly worse.
 <p>
 This script must be used in a Script object of type <tt/"Create"/
 (see section <ref id="scriptobj" name="Script Object">).
@@ -22785,7 +22785,9 @@ Index:
 <item><ref id="mmedit" name="main menu entry">,
 <item><ref id="propgui" name="copying properties">
 </itemize>
+<item>Corner: <ref id="sdmeshobj" name="subdivision mesh tag">
 <item>CP: <ref id="cptag" name="tag type">
+<item>Crease: <ref id="sdmeshobj" name="subdivision mesh tag">
 <item>Create: <ref id="mmcreate" name="create menu">
 <item>CreateAtMark: <ref id="prefmodel" name="preference setting">
 <item>CreateMP:
@@ -23062,7 +23064,7 @@ Index:
 <item>hasMat: <ref id="schasmat" name="scripting interface command">
 <item>hasRefs: <ref id="schasrefs" name="scripting interface command">
 <item>hasTag: <ref id="schastag" name="scripting interface command">
-<item>hasTrafe: <ref id="schastrafo" name="scripting interface command">
+<item>hasTrafo: <ref id="schastrafo" name="scripting interface command">
 <item>Height:
 <itemize>
 <item><ref id="rio" name="RenderMan interface option">,
@@ -23093,7 +23095,11 @@ Index:
 <item>Hide All: <ref id="mmtools" name="main menu entry">
 <item>Hider: <ref id="rihtag" name="RiHider tag type">
 <item>HighlightColor: <ref id="objsearch" name="object search option">
-<item>Hole: <ref id="handb" name="using holes">
+<item>Hole:
+<itemize>
+<item><ref id="handb" name="using extrusion holes">,
+<item><ref id="sdmeshobj" name="subdivision mesh tag">
+</itemize>
 <item>hSL: <ref id="schsl" name="scripting interface command">
 <item>Hyperboloid: <ref id="hyperboloidobj" name="Hyperboloid object">
 </list>
@@ -23151,6 +23157,7 @@ Index:
 <item><ref id="skp" name="Skin attribute">,
 <item><ref id="interpnpt" name="NPatch tool">
 </itemize>
+<item>Interpolate Boundary: <ref id="sdmeshobj" name="subdivision mesh tag">
 <item>Interpolation: <ref id="attrs" name="RenderMan/BMRT attribute">
 <item>InterpolCtrl: <ref id="birail2p" name="Birail2 attribute">
 <item>Intersection: <ref id="levelobj" name="Level object">
@@ -23949,7 +23956,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Tags:
 <itemize>
 <item><ref id="tags" name="tags property">,
-<item><ref id="scitags" name="scripting interface commands">
+<item><ref id="scitags" name="scripting interface commands">,
+<item><ref id="sdmeshobj" name="subdivision mesh tags">
 </itemize>
 <item>TC: <ref id="tctag" name="tag type">
 <item>tcircle.tcl: <ref id="tcircletcl" name="example/helper script">
