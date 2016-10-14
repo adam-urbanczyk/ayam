@@ -294,7 +294,15 @@ cleanup:
 
 
 /** ay_sdmesht_genfacenormals:
- *  Generate face normals for SDMesh.
+ *  Generate face normals for an arbitrary SDMesh using Newell's method
+ *  which is more robust than a simple cross product.
+ *
+ *  The generated normal vectors will be normalized.
+ *
+ * \param[in] sd SDMesh object to generate the normals for
+ * \param[in,out] result where to store the normals
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_sdmesht_genfacenormals(ay_sdmesh_object *sd, double **result)
