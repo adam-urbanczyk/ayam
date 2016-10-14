@@ -563,7 +563,7 @@ proc plb_focus { {w ""} } {
     if { $w == "" } {
 	set w [focus]
     }
-    if { $w != "" } {
+    if { $w != "" && [winfo exists $w] } {
 	if { [string first $ay(pca) $w] != -1 } {
 	    set ca $ay(pca)
 	    set height [$ca cget -height]
