@@ -817,7 +817,7 @@ dxfio_getpolyline(const class dimeState *state,
   if(!(newcv = (double*)calloc(len*stride, sizeof(double))))
     { free(newo); return AY_EOMEM; }
 
-  for(i = 0; i < len; i++)
+  for(i = 0; i < polyline->getNumCoordVertices(); i++)
     {
       vert = NULL;
       vert = polyline->getCoordVertex(i);
@@ -842,7 +842,7 @@ dxfio_getpolyline(const class dimeState *state,
 
   if(polyline->getFlags() & dimePolyline::CLOSED)
     {
-      memcpy(&(newcv[(len-2)*stride]), newcv, stride*sizeof(double));
+      memcpy(&(newcv[(len-1)*stride]), newcv, stride*sizeof(double));
     }
 
   ay_nct_create(2, len, AY_KTNURB, newcv, NULL,
