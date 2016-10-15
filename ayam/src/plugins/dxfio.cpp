@@ -654,9 +654,10 @@ dxfio_readinsert(const class dimeState *state,
 	  if(dblock->getNumEntities() > 1)
 	    {
 	      if(!(newl = (ay_level_object*)calloc(1,
-					      sizeof(ay_level_object))))
+						   sizeof(ay_level_object))))
 		{ free(newo); return AY_EOMEM; }
 
+	      newl->type = AY_LTLEVEL;
 	      //ay_object_defaults(newo);
 
 	      newo->type = AY_IDLEVEL;
@@ -2166,7 +2167,7 @@ dxfio_writencurve(ay_object *o, dimeModel *dm, double *m)
       dk[i] = (dxfdouble)nc->knotv[i];
     }
   sp->setKnotValues(dk, nc->length+nc->order, NULL);
-  free(dk);  
+  free(dk);
   dk = NULL;
 
   dv = (dimeVec3f*)calloc(nc->length, sizeof(dimeVec3f));
