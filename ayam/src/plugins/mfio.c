@@ -1501,6 +1501,8 @@ ay_mfio_readcntr(MF3DVoidObjPtr object)
   if(!(newl = calloc(1, sizeof(ay_level_object))))
     { return AY_EOMEM; }
 
+  newl->type = AY_LTLEVEL;
+
   if(!(newo = calloc(1, sizeof(ay_object))))
     { free(newl); return AY_EOMEM; }
   ay_object_defaults(newo);
