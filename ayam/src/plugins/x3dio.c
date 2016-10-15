@@ -5939,6 +5939,7 @@ x3dio_readshape(scew_element *element)
  int ay_status = AY_OK;
  scew_element *child = NULL;
  ay_object *o = NULL, **old_aynext;
+ ay_level_object *l = NULL;
 
   if(!element)
     return AY_ENULL;
@@ -5948,10 +5949,12 @@ x3dio_readshape(scew_element *element)
       return AY_EOMEM;
     }
 
-  if(!(o->refine = calloc(1, sizeof(ay_level_object))))
+  if(!(l = calloc(1, sizeof(ay_level_object))))
     {
       free(o); return AY_EOMEM;
     }
+  l->type = AY_LTLEVEL;
+  o->refine = l;
 
   ay_object_defaults(o);
 
