@@ -2199,6 +2199,9 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 
       ay_status = onio_writeobject(o, &model);
 
+      if(ay_status)
+	break;
+
       o = o->next;
     } // while
 
@@ -3384,6 +3387,8 @@ onio_readlayer(ONX_Model &model, int li, double accuracy)
     return AY_EOMEM;
   if(!(newlevel = (ay_level_object*)calloc(1, sizeof(ay_level_object))))
     {free(newo); return AY_EOMEM;}
+
+  newlevel->type = AY_LTLEVEL;
 
   ay_object_defaults(newo);
   newo->type = AY_IDLEVEL;
