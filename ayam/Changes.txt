@@ -1,5 +1,5 @@
-[2. Oct 2016 CVS-Head:
-======================
+[15. Oct 2016 CVS-Head:
+=======================
 Bug Fixes:
 o added missing scripting interface commands to JavaScript and Lua scripting
   language plugins (SF 526)
@@ -15,6 +15,10 @@ o crash when using delOb as withOb command (SF 534)
 o rotating points about the mark fails for rotated objects (SF 535)
 o offsetting a extracted curve in 3DPVN mode fails (SF 536)
 o display/conversion of patch meshes with basis type Catmull-Rom (SF 537)
+o tcleval fails to return string data to JavaScript (SF 538)
+o DXF import of closed PolyLine objects fails (SF 539)
+o X3D import of trim loops fails (SF 540)
+o 3DM (Rhino) import of layers fails (SF 541)
 
 Modelling:
 o the create Sweep/Swing tools now rotate the parameter curves to the
