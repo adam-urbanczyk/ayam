@@ -12195,10 +12195,12 @@ ay_npt_gndup(char dir, ay_nurbpatch_object *np, int i, double *p,
 	{
 	  /* wrap around */
 	  p2 = p - ((np->width-np->uorder) * np->height * stride);
+	  i = 0;
 	}
       else
 	{
 	  p2 = p + offset;
+	  i++;
 	}
     }
   else
@@ -12209,10 +12211,12 @@ ay_npt_gndup(char dir, ay_nurbpatch_object *np, int i, double *p,
 	{
 	  /* wrap around */
 	  p2 = p + ((np->width-np->uorder) * np->height * stride);
+	  i = np->width-np->uorder;
 	}
       else
 	{
 	  p2 = p + offset;
+	  i--;
 	}
     }
 
@@ -12229,6 +12233,25 @@ ay_npt_gndup(char dir, ay_nurbpatch_object *np, int i, double *p,
 	{
 	  *dp = NULL;
 	  return;
+	}
+
+      if(dir == AY_EAST)
+	{
+	  if(i >= np->width-1)
+	    {
+	      *dp = NULL;
+	      return;
+	    }
+	  i++;
+	}
+      else
+	{
+	  if(i <= 0)
+	    {
+	      *dp = NULL;
+	      return;
+	    }
+	  i--;
 	}
     } /* while */
 
@@ -12263,10 +12286,12 @@ ay_npt_gndvp(char dir, ay_nurbpatch_object *np, int j, double *p,
 	{
 	  /* wrap around */
 	  p2 = p + ((np->height-np->vorder) * stride);
+	  j = np->height-np->vorder;
 	}
       else
 	{
 	  p2 = p + offset;
+	  j--;
 	}
     }
   else
@@ -12276,11 +12301,13 @@ ay_npt_gndvp(char dir, ay_nurbpatch_object *np, int j, double *p,
       if(j == np->height-1)
 	{
 	  /* wrap around */
-	  p2 = p - ((np->height-np->vorder) * stride);
+	  p2 = p - ((np->height-1) * stride);
+	  j = 0;
 	}
       else
 	{
 	  p2 = p + offset;
+	  j++;
 	}
     }
 
@@ -12293,10 +12320,29 @@ ay_npt_gndvp(char dir, ay_nurbpatch_object *np, int j, double *p,
       p2 += offset;
 
       /* degeneracy check */
-      if(p == p2)
+      if(p2 == p)
 	{
 	  *dp = NULL;
 	  return;
+	}
+
+      if(dir == AY_NORTH)
+	{
+	  if(j <= 0)
+	    {
+	      *dp = NULL;
+	      return;
+	    }
+	  j--;
+	}
+      else
+	{
+	  if(j >= np->height-1)
+	    {
+	      *dp = NULL;
+	      return;
+	    }
+	  j++;
 	}
     } /* while */
 
