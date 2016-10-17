@@ -275,6 +275,7 @@ proc cap_getCaps { } {
 	    getTags tagnames tagvalues
 	    cap_parseTags $tagnames $tagvalues $bnames $bids
 
+	    addVSpace $w s1 2
 	    set i 0
 	    foreach bname $bnames {
 		if { $CapTags(Cap${i}) } {
