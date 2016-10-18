@@ -1218,6 +1218,8 @@ ay_stess_ReTessTrimCurves(ay_object *o, int qf, int numtrims, double **tt,
 	  c = (ay_nurbcurve_object*)trim->refine;
 	  if(c->order == 2)
 	    ay_stess_TessTrimCurve(trim, tt, tl, NULL, &i, -qf);
+	  else
+	    i++;
 	  break;
 	case AY_IDLEVEL:
 	  loop = trim->down;
@@ -1230,6 +1232,8 @@ ay_stess_ReTessTrimCurves(ay_object *o, int qf, int numtrims, double **tt,
 		  c = (ay_nurbcurve_object*)cnc->refine;
 		  if(c->order == 2)
 		    ay_stess_TessTrimCurve(cnc, tt, tl, NULL, &i, -qf);
+		  else
+		    i++;
 		  ay_object_delete(cnc);
 		}
 	    }
@@ -1244,6 +1248,8 @@ ay_stess_ReTessTrimCurves(ay_object *o, int qf, int numtrims, double **tt,
 	      c = (ay_nurbcurve_object*)nc->refine;
 	      if(c->order == 2)
 		ay_stess_TessTrimCurve(nc, tt, tl, NULL, &i, -qf);
+	      else
+		i++;
 	      nc = nc->next;
 	    }
 	  (void)ay_object_deletemulti(p, AY_FALSE);
