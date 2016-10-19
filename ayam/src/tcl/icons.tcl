@@ -9,18 +9,15 @@
 
 # icons.tcl - this file carries all icon images
 
-# all icons are of size 25x25
+# most icons are of size 25x25 pixels
 # image data (base64 encoded) may be created by juen/uuencode as follows:
-# juen -a image.gif
-# uuencode -m image.gif image
+# >juen -a image.gif
+# >uuencode -m image.gif image
 
 #set imgdata {\}
 #image create photo ay_Level_img -format GIF -data $imgdata
 
 # Objects:
-
-#set imgdata {\}
-#image create photo ay_Level_img -format GIF -data $imgdata
 
 # Box
 set imgdata {\
@@ -33,12 +30,6 @@ G6qVzRm50RwMLBKNA8ENuM8c5gzdKxqZAsLZ2ucMYy0FHQWs2cTm3PLzHjMiKBTIBy2eGH8sfOgb
 cODADg04anjYccGYxIsuQgAAOw}
 image create photo ay_Box_img -format GIF -data $imgdata
 
-set imgdata {\
-R0lGODdhCgAKAIQAAL29vSMhHFpUSGVfVDAtKMS9rsO3nr6ymbeumrerk7SokbGljykmIa6jjame
-iaOZhKugiqabhqCWgpyTf5iPfKKXgpSNfaqjla6om7a0rgAAAAAAAAAAAAAAAAAAAAAAACwAAAAA
-CgAKAAAFPiAgjiQQCGgqDCZRGPCBJC1sHImyAAxzz4qGA0Bg4HTCB4+BhEQeEoAg0IA4oBOKKOCI
-VCZZi8jyfVwwGUAIADs}
-image create photo ay_Boxt_img -format GIF -data $imgdata
 # Cone
 set imgdata {\
 R0lGODdhGQAZAIQAAMe7osO3nsCzm6ieiouCcCwpIxsZFWRfVoJ7bLWuns/Cp7azrDk1Lr67t1ZS
@@ -49,6 +40,7 @@ HAgQDgcmCT+TlWaJaxUDCBMRE6ESsBwDk3cBewMPDgwQJhYbv7ASsqVqFhMMDBQmqgTNBL/AwgME
 DAUFWSILFNvc3XIRGuEOKIEPEOcQBxMOEQwaBgYahIUH9RPr7O0F8AagKbkO8rWr9s5AhBULBCKz
 VvAANhQQkFUr8E5eDREcckVoReHhxY8gS4QAADs}
 image create photo ay_Cone_img -format GIF -data $imgdata
+
 # Cylinder
 set imgdata {\
 R0lGODdhGQAZAIQAALasmKiein14bby0pG5nWqCVgaihkqachg4NCyYkH5qQfa6jjayhi66omq+l
@@ -58,6 +50,7 @@ SjedzKBDJmtPhEsXOh24yx0MRnImaSaT7lHQeZMBchILTCYWCXlrDGNlgBIOCwwBJwYJh2p8jIGP
 kQeEJB+VlmB/gQuQAQcUniQXCJUTFB2Ac5ucFBWEKhsIrgkBjYKnB6kVEHVFvAiakLYVBRAFLBsJ
 CAKPwsTPCkMsDXnMqLfPEArGLxcFAeHOEOQKGTMW2doKCqsvGQHj9apEJRYNAt7zB6MGwRIhAAA7}
 image create photo ay_Cylinder_img -format GIF -data $imgdata
+
 # Disk
 set imgdata {\
 R0lGODdhGQAZAIQAAIh/boZ9bKKYhJGIdo+GdIuCcKidiZSLeIyDc6uijrWvpZqQfb2+vbarlaqf
@@ -68,6 +61,7 @@ d4WQkgMDlZgXYg+OnR0HoBILKAkYmW6EepGqBBIIGJWCg3ALtaC3BQVmJgqbp6ifA8IACDR4vp6q
 zBLDAAF8KBgQHNPBEtYA2M8sFr/L1dfkFi4b1ATCBeMBAQg5JjMiCgvy8/UAdBHxYCHDg3nYBmBo
 NxAFvoYQWYQAADs}
 image create photo ay_Disk_img -format GIF -data $imgdata
+
 # Hyperboloid
 set imgdata {\
 R0lGODdhGQAZAIQAAHdvYKqikr+6sNTKtIB4aHx0ZJSLeHFqXI+Hdod/boV9bIR7a351ZZKIdT47
@@ -79,6 +73,7 @@ ubseB6EdE3MbABkYC7eQyBIAHhskEQsM198bZbi6vHAkAUMHGQ4YB9NmyBcADhApwSifPgePIsm7
 RsBEhAwGMWDo9O/aAV8mEDjQJzFVNXP8UkQ4oC8DAkG5GD5d25CtBwdy5hK0jNEhwsIIM2l2aJIi
 BAA7}
 image create photo ay_Hyperboloid_img -format GIF -data $imgdata
+
 # Paraboloid
 set imgdata {\
 R0lGODdhGQAZAIQAAKGZisXBt25oW4Z/cr27uK2onpqRfl9ZTpaNer29vpKJdnRuYpKLfKahlq6j
@@ -89,6 +84,7 @@ KQASkoaIHKIcjAs0JQMLnheFWx0QAbGXFhIAJgMCAqutFg4cshC0gSMJCxO5C59bDooOCAJjJQsH
 B8eqGANmrh2NB6ckDxoa1daehAo5VAIpBh4e4tTHAqoSEsYew0wREe7v8NTUNERYx0JAhQr79vVz
 F6HCARcZDkqcWIEChTcvCkSwyJFjhGgl4ojIMKEjhQn5C4DAyMDgm8qXJUIAADs}
 image create photo ay_Paraboloid_img -format GIF -data $imgdata
+
 # Sphere
 set imgdata {\
 R0lGODlhGQAZAPcAAAQGBIyCbExGPMzCpKyijGxmVCwmJJySfHR2bLyynFxWTOzixDQ2NJSKdFRO
@@ -114,6 +110,7 @@ iBkOWIvUWEzwwwoJB6wQqLCdwPIqEiDsaGMAQFCCCGZIaLBy+YEe3kGwggdJ1BBdQTkIMAQYMNjg
 IEdgRLFCCknQAEAOCCnRxgpRQLAGGEAUoIUPAlQIwBsKHZGEAD68VIIDAoghBRYAoMCQDlBIkQQL
 DCRhABZOhJCBRSNsAQITTdAgRQtDCrQEkVBGaVBAADs}
 image create photo ay_Sphere_img -format GIF -data $imgdata
+
 # Torus
 set imgdata {\
 R0lGODdhGQAZAIQAAHFqWz48NlFNRXp1aaGXgtjLsYN8bqGckpyVhpqThK2nnZqQfZaMeby8vMS4
@@ -197,7 +194,7 @@ E+NAqRQZXUnkc0k15ZrYUrNK2XaL4I5XXERVCuhyz3VCu9/wFttkprjVyLx+z5cQ+xqAFTQ0ggMR
 ADs}
 image create photo ay_Edit_img -format GIF -data $imgdata
 
-# EditW
+# Edit Weights
 set imgdata {\
 R0lGODdhGQAZAOMAAAAAAL28vHNzc01NTf7+/ry8vL29vLy8vby9vAAAAAAAAAAAAAAAAAAAAAAA
 AAAAACwAAAAAGQAZAAAEarDISSsNaGbLu9ldeB0SYHImgJ5p675wka6qNYvSgJO4LvIiH643xN2K
@@ -205,7 +202,7 @@ thayInAJlpSm6QmdSAFU5BWGHZoIKQIYMPaKv+Gzl/w9s2si9BtcNs7R9bh47GZbgCVcShUgElsw
 WRMBBYtVFBEAOw}
 image create photo ay_EditW_img -format GIF -data $imgdata
 
-# ResetW
+# Reset Weights
 set imgdata {\
 R0lGODdhGQAZAOMAALy8vL28vLy9vL29vLy8vQAAAE1NTa8AAHNzc/7+/gAAAAAAAAAAAAAAAAAA
 AAAAACwAAAAAGQAZAAAEgBDISSsNYmbL+9hdeBFSYXJmgZ5p674wkK6qNYuSgZO4LvIiH45yOFSE
@@ -213,7 +210,7 @@ kqKoaCydksql0gVgDqtFl/UKPRS23AkzykW0mC3E0JT4jgvtmgieQDMT7bX7gK9n5SFocGx7OHeE
 g35NHHd4bHFwYABAfzBniwAgEmaWJmoVAQChYRYRADs=}
 image create photo ay_ResetW_img -format GIF -data $imgdata
 
-# EditN
+# Edit Numeric
 set imgdata {\
 R0lGODdhGQAZAMIAAAAAAL28vLy9vby8vL29vLy8vby9vAAAACwAAAAAGQAZAAADWji6rGGtQQCi
 jVRVvRcgTbeNmgcETFYOpKoVobdmHSvEc07mL2uWlJYKAHOtUpjaZcm0KJuXJxQzbUqrvsp1GsRG
@@ -253,7 +250,6 @@ MzQ1ithYcMMTgw6G/FDTNyFLmAWm/ITx8ILIhz9FcGTqAI2UGgtsbKDACO2BhUphRgC46CGHjgic
 Hpj4VGWFAGCuIoArsiMMFo+d1br0CPNgTpcLvHzw4aKixI82QQAAOw}
 image create photo ay_Scale3D_img -format GIF -data $imgdata
 
-
 # Scale2D
 set imgdata {\
 R0lGODdhGQAZAIAAAL29vQAAACwAAAAAGQAZAAACSYSPqRptHZYE8VE7Zd151Qt2xwd+pAdF0OiI
@@ -292,6 +288,29 @@ R0lGODdhGQAZAIACAL29vQAAACwAAAAAGQAZAAACS4SPqRptHVJc78Q5AaQI
 Vw1lS+aF29h9oCiFa+dw8hPP3GmnNJnXDPvD7XwtF8w4Qg6BrRuTYak9ZcJc
 0UqpYnfboxJr6h7FEjK2AAA7}
 image create photo ay_Stretch2D_img -format GIF -data $imgdata
+
+# Tag Boundary
+set imgdata {\
+R0lGODdhGQAZAMIHALy8vAAAAK8AANJeXVhYWZiZmL28vP///ywAAAAAGQAZ
+AAADbQi63P7LGBBaZfdJwVf4HqgZnPCdKDqWYXZCEmXN8JQpt1zrHr12OBFF
+2NhwUkhihAQcupRLHs7niOWuEICVKi0SWAowQNwgfI5ndKCUA5jTCzFZ8YZm
+GXX73Y3cO/Ivfg8pgn8gentCBIWMfgkAOw==}
+image create photo ay_TagB_img -format GIF -data $imgdata
+
+# FindUV
+set imgdata {\
+R0lGODlhGQAZAKUjAAAAAHRtXpmPfKKYg6qgibGljrSokbaqk7erlLitl7uu
+l7uvl7ywmL6ymb+ymsG0m8O2ncS3nru5tcW4oLy7vMi6oby8vLy8vb28vLy9
+vLy9vb29vL29vcu+pdDDqdTHrdjLsd3Qtejbwf//////////////////////
+////////////////////////////////////////////////////////////
+/////////////////////////////////ywAAAAAGQAZAAAG/kCLcEgsEjGZ
+YdISCBiZzWhxs2Q2otgFAqFgOI+XYSDSAYU+nYhjkVAsrsVLNdD5hECeyqOx
+cDPgRBoaGEICAiB4FRAODAsLfw5fT0IBZ2kPjY9/D5JDHGGUIGkAjW4ADg8Q
+EZ1CoExpDgoACQkADakTFaxFYw0JCAcAAAsOEBMdHbtEAQwIBgUGwgwPxx8f
+AYSTAQcF3QAGCAAQZSJ3ypQE6QAEBQgNAB8i8iDnTAP36QUHDBUg8mf1AhjC
+B21BBA+I0CTTZkgAQXfHOlSYeA6LxSgQVK2aZEHCEwoSJFjkSNKIsJIAhADg
+kFIlS5UkW65saWElzJgua+rkoBNlEk2bKVPyLDkk6NCWPGkSXWohCAA7}
+image create photo ay_FindUV_img -format GIF -data $imgdata
 
 
 # NURBS Tools:
@@ -649,7 +668,6 @@ FxKSKVCWoZYPFBcLC547CQeWGBmsFqYODgMjTxkaGgUaGIEUUhtjerYmAxzHx7oEFw4bzgypAAMd
 ADs}
 image create photo ay_NPExtrNC_img -format GIF -data $imgdata
 
-
 # Birail1
 set imgdata {\
 R0lGODdhGQAZAIQAALq7urq6u7u6u7q6uru7u7u6urq7u4SEhGxrawAAALu7uby8urq3sKqfibOs
@@ -767,21 +785,6 @@ image create photo ay_MoveVZ_img -w 25 -h 25
 ay_MoveVZ_img copy ay_MoveV_img
 ay_MoveVZ_img copy ay_Scale1DZ_img -from 0 0 7 8 -to 17 0
 
-# FindUV
-set imgdata {\
-R0lGODlhGQAZAKUjAAAAAHRtXpmPfKKYg6qgibGljrSokbaqk7erlLitl7uu
-l7uvl7ywmL6ymb+ymsG0m8O2ncS3nru5tcW4oLy7vMi6oby8vLy8vb28vLy9
-vLy9vb29vL29vcu+pdDDqdTHrdjLsd3Qtejbwf//////////////////////
-////////////////////////////////////////////////////////////
-/////////////////////////////////ywAAAAAGQAZAAAG/kCLcEgsEjGZ
-YdISCBiZzWhxs2Q2otgFAqFgOI+XYSDSAYU+nYhjkVAsrsVLNdD5hECeyqOx
-cDPgRBoaGEICAiB4FRAODAsLfw5fT0IBZ2kPjY9/D5JDHGGUIGkAjW4ADg8Q
-EZ1CoExpDgoACQkADakTFaxFYw0JCAcAAAsOEBMdHbtEAQwIBgUGwgwPxx8f
-AYSTAQcF3QAGCAAQZSJ3ypQE6QAEBQgNAB8i8iDnTAP36QUHDBUg8mf1AhjC
-B21BBA+I0CTTZkgAQXfHOlSYeA6LxSgQVK2aZEHCEwoSJFjkSNKIsJIAhADg
-kFIlS5UkW65saWElzJgua+rkoBNlEk2bKVPyLDkk6NCWPGkSXWohCAA7}
-image create photo ay_FindUV_img -format GIF -data $imgdata
-
 # Triangles
 # down
 set imgdata {\
@@ -806,12 +809,5 @@ R0lGODlhDgAOAIABAAAAAP///yH5BAEAAAEALAAAAAAOAA4AAAIXjI+pywbQzou0Shjm0tr662Bd
 JpbfVwAAOw==}
 image create photo ay_Resizehandle_img -format GIF -data $imgdata
 
-# Tag Boundary
-set imgdata {\
-R0lGODdhGQAZAMIHALy8vAAAAK8AANJeXVhYWZiZmL28vP///ywAAAAAGQAZ
-AAADbQi63P7LGBBaZfdJwVf4HqgZnPCdKDqWYXZCEmXN8JQpt1zrHr12OBFF
-2NhwUkhihAQcupRLHs7niOWuEICVKi0SWAowQNwgfI5ndKCUA5jTCzFZ8YZm
-GXX73Y3cO/Ivfg8pgn8gentCBIWMfgkAOw==}
-image create photo ay_TagB_img -format GIF -data $imgdata
-
+# cleanup
 catch {unset imgdata}
