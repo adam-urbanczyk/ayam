@@ -1506,6 +1506,12 @@ ay_safeinit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "repOb", ay_clipb_replacetcmd,
 		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "upOb", ay_clipb_hmovtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "downOb", ay_clipb_hmovtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   /* conv.c */
   Tcl_CreateCommand(interp, "convOb", ay_convert_objecttcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
