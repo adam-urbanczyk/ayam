@@ -2460,7 +2460,7 @@ ay_nct_findu(struct Togl *togl, ay_object *o,
  GLint viewport[4];
  GLdouble modelMatrix[16], projMatrix[16], winx, winy;
  GLfloat winz = 0.0f;
- double m[16], mi[16];
+ double m[16];
  GLfloat pixel1[3] = {0.9f,0.9f,0.9f}, pixel[3] = {0.0f,0.0f,0.0f};
  ay_nurbcurve_object *c = NULL;
  int dx[25] = {0,1,1,0,-1,-1,-1,0,1,2,2,2,1,0,-1,-2,-2,-2,-2,-2,-1,0,1,2,2};
@@ -2621,9 +2621,7 @@ ay_nct_findu(struct Togl *togl, ay_object *o,
   ay_nb_CurvePoint4D(c->length-1, c->order-1, c->knotv,
 		     c->controlv, *u, point);
 
-  ay_trafo_invmatrix(m, mi);
-
-  ay_trafo_apply4(point, mi);
+  ay_trafo_apply3(point, modelMatrix);
 
   worldXYZ[0] = point[0];
   worldXYZ[1] = point[1];
