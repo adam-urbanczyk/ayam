@@ -75,7 +75,7 @@ proc viewSetType { w type {redraw 1} } {
 ##############################
 # viewCycleType:
 proc viewCycleType { w dir {recover 1} } {
-    global ay
+    global ay ayprefs
 
     set togl $w.f3D.togl
 
@@ -103,10 +103,15 @@ proc viewCycleType { w dir {recover 1} } {
 
     set type [expr $ay(cVType) + $dir]
 
+    set lasttype 2
+    if { $ayprefs(CycleToPerspective) } {
+	set lasttype 3
+    }
+
     # wrap around
-    if { $type < 0 } { set type 3 }
+    if { $type < 0 } { set type $lasttype }
     # wrap around; omit 4 (trim view)
-    if { $type > 3 } { set type 0 }
+    if { $type > $lasttype } { set type 0 }
     # set new view type (also completely resets the camera)
     viewSetType $w $type 0
 
@@ -138,6 +143,12 @@ proc viewCycleType { w dir {recover 1} } {
 		# from side to front
 		$togl setconf -fromx $oldtox -fromz [expr {10.0 + $oldfromz}] \
 		    -fromy $oldfromy -tox $oldtox -toy $oldtoy -toz $oldtoz \
+		    -zoom $oldzoom -redraw 0
+	    }
+	    if { $oldtype == 2 && $type == 0 } {
+		# from top to front
+		$togl setconf -fromx $oldtox -fromz [expr {10.0 + $oldfromz}] \
+		    -fromy $oldtoy -tox $oldtox -toy $oldtoy -toz $oldtoz \
 		    -zoom $oldzoom -redraw 0
 	    }
 	} else {
