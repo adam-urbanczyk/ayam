@@ -233,18 +233,21 @@ ay_clipb_pastetcmd(ClientData clientData, Tcl_Interp *interp,
     move = AY_TRUE;
 
   /* first, check whether we are moving instances into their masters */
-  while(clip)
+  if(ay_currentlevel->next && ay_currentlevel->next->object != ay_root)
     {
-      instanceerr = ay_instt_check(clip, ay_currentlevel->object);
-
-      if(instanceerr)
+      while(clip)
 	{
-	  ay_error(AY_ERROR, argv[0], "Recursive instances would result!");
-	  return TCL_OK;
-	}
+	  instanceerr = ay_instt_check(clip, ay_currentlevel->next->object);
 
-      clip = clip->next;
-    } /* while */
+	  if(instanceerr)
+	    {
+	      ay_error(AY_ERROR, argv[0], "Recursive instances would result!");
+	      return TCL_OK;
+	    }
+
+	  clip = clip->next;
+	} /* while */
+    } /* if */
 
   clip = ay_clipboard;
   while(clip)
@@ -350,19 +353,22 @@ ay_clipb_replacetcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   /* first, check whether we would be moving instances into their masters */
-  while(clip)
+  if(ay_currentlevel->next && ay_currentlevel->next->object != ay_root)
     {
-      instanceerr = ay_instt_check(clip, ay_currentlevel->object);
-
-      if(instanceerr)
+      while(clip)
 	{
-	  ay_error(AY_ERROR, argv[0], "Recursive instances would result!");
-	  return TCL_OK;
-	}
+	  instanceerr = ay_instt_check(clip, ay_currentlevel->object);
 
-      clipend = clip;
-      clip = clip->next;
-    } /* while */
+	  if(instanceerr)
+	    {
+	      ay_error(AY_ERROR, argv[0], "Recursive instances would result!");
+	      return TCL_OK;
+	    }
+
+	  clipend = clip;
+	  clip = clip->next;
+	} /* while */
+    } /* if */
 
   /* find pointer to first selected object */
   if(ay_currentlevel->next->object)
