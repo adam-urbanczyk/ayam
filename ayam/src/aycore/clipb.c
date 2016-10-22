@@ -357,7 +357,7 @@ ay_clipb_replacetcmd(ClientData clientData, Tcl_Interp *interp,
     {
       while(clip)
 	{
-	  instanceerr = ay_instt_check(clip, ay_currentlevel->object);
+	  instanceerr = ay_instt_check(clip, ay_currentlevel->next->object);
 
 	  if(instanceerr)
 	    {
