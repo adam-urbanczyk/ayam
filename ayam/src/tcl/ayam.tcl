@@ -250,7 +250,7 @@ array set ayprefs {
  CullFaces 0
  AutoCloseUI 1
  DisableFailedScripts 1
- CycleToPerspective 0
+ CyclePerspective 0
 
  Docs "http://ayam.sourceforge.net/docs/"
  Tags {

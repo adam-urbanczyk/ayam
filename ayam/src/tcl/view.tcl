@@ -104,7 +104,7 @@ proc viewCycleType { w dir {recover 1} } {
     set type [expr $ay(cVType) + $dir]
 
     set lasttype 2
-    if { $ayprefs(CycleToPerspective) } {
+    if { $ayprefs(CyclePerspective) } {
 	set lasttype 3
     }
 
