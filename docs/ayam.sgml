@@ -2474,13 +2474,13 @@ move the focus to a view or the main window, when the mouse pointer
 enters it. However, depending on the operating system, window manager,
 or their settings, this may only work correctly, when a window
 of Ayam already has the focus. On some operating systems or window
-managers AutoFocus might not work at all. Furthermore, note that moving
+managers auto focus might not work at all. Furthermore, note that moving
 the focus to a toplevel window might also raise it.
 <p><p>
-In single window GUI mode, AutoFocus additionally manages the input
+In single window GUI mode, auto focus additionally manages the input
 focus of the internal views, tree view, property GUI, and console.
 <p>
-While the preference editor is open, AutoFocus is temporarily
+While the preference editor is open, auto focus is temporarily
 turned off and changes to the <tt/"AutoFocus"/ preference setting will
 only be realized after the preferences editor is closed.
 
@@ -7079,7 +7079,7 @@ curve).
 <figure loc="ht">
 <eps file="pics/ncircles.ps" height="5cm">
 <img src="pics/ncircles.gif">
-<caption>Different NCircle Objects (<bf/l/: default, <bf/m/: TMax 180, <bf/r/: Radius 0.5, TMax -200)</caption>
+<caption>Different NCircle Objects (l: default, m: TMax 180, r: Radius 0.5, TMax -200)</caption>
 </figure>
 <p>
 The NCircle object creates a circular NURBS curve or a circular arc in
@@ -9347,7 +9347,7 @@ See also the following image for a comparison of some bevel types.
 <figure loc="ht">
 <eps file="pics/btypes.ps" height="4.5cm">
 <img src="pics/btypes.gif">
-<caption>Bevel Types (<em/l/: Round, <em/m/: RoundToCap, <em/r/: RoundToNormal)</caption>
+<caption>Bevel Types (l: Round, m: RoundToCap, r: RoundToNormal)</caption>
 </figure>
 
 Note that the bevel types <tt/"RoundCapped"/ and <tt/"LinearCapped"/
@@ -18573,6 +18573,8 @@ via the keyboard shortcut <tt/&lt;o&gt;/.
 To temporarily disable the modified behavior, the global keyboard
 shortcut <tt/&lt;F12&gt;/ can be used.
 
+<#if out=latex><x/newpage/</#if>
+
 <sect2>Save Selected Points<label id="ssptcl">
 <p>
 The script <tt>"ssp.tcl"</tt> (for <bf/s/ave <bf/s/elected <bf/p/oints)
@@ -18581,23 +18583,23 @@ allows to save the point selection to tags of type
 <p>
 After running the script, two new buttons appear in the toolbox
 that allow to save and restore the point selection respectively.
-See also the images below.
-<#if out=latex>
+See also the table below.
+
 <table loc="ht">
-<tabular ca="cc">
-<x>inlinegfx pics/ssp.png 0.7cm </x>|
-<x>inlinegfx pics/rsp.png 0.7cm </x>
+<tabular ca="|c|c|"><hline>
+<bf/Operation/|<bf/Icon/@<hline>
+Save|
+<#if out=latex><x>inlinegfx pics/ssp.png 0.7cm </x></#if>
+<#if out=html><img src="pics/ssp.gif"></#if>
+@<hline>
+Restore|
+<#if out=latex><x>inlinegfx pics/rsp.png 0.7cm </x></#if>
+<#if out=html><img src="pics/rsp.gif"></#if>
+<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Save/Restore Selected Points</caption>
 </table>
-</#if>
-<#if out=html>
-<figure loc="ht">
-<img src="pics/ssp.gif">&emsp;
-<img src="pics/rsp.gif">
-<caption>Save/Restore Selected Points</caption>
-</figure>
-</#if>
+
 <p>
 There are also two corresponding entries in the custom menu.
 <p>
@@ -21543,6 +21545,10 @@ using AyCSG. Default value: 0 &ndash; no.
 drawing mode is included in the list of modes that are cycled by keyboard
 (via <tt>"Ctrl+PageUp"/"Ctrl+PageDown"</tt>), default: 0 &ndash; no.
 
+<item><tt/"CyclePerspective"/, determines whether the <tt/"Perspective"/
+view type is included in the list of types that are cycled by keyboard
+(via <tt>"PageUp"/"PageDown"</tt>), default: 0 &ndash; no.
+
 <item><tt/"DailyTips"/: a list of strings that appear as tips
 on startup in the console (default: large).
 
@@ -22819,12 +22825,13 @@ Index:
 <item><ref id="cul" name="light type">,
 <item><ref id="pmattr" name="PatchMesh basis type">
 </itemize>
-<item>Custom Object: <ref id="customobj" name="what is">
+<item>Custom Object: <ref id="customobj" name="object type">
 <item>Cut: <ref id="mmedit" name="main menu entry">
 <item>Cut (Add): <ref id="mmspecial" name="main menu entry">
 <item>cutOb: <ref id="sccutob" name="scripting interface command">
 <item>cvview.tcl: <ref id="cvviewtcl" name="example/helper script">
 <item>CycleHiddenWire: <ref id="hidprefs" name="hidden preference setting">
+<item>CyclePerspective: <ref id="hidprefs" name="hidden preference setting">
 <item>Cylinder: <ref id="cylinderobj" name="Cylinder object">
 </list>
 
