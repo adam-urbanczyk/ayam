@@ -3609,6 +3609,14 @@ ay_npt_revolve(ay_object *o, double arc, int sections, int order,
 	{
 	  V[i] = (double)i/(knot_count-1);
 	}
+
+      /* improve knot vector */
+      if(order == 2)
+	{
+	  V[1] = 0.0;
+	  V[knot_count-2] = 1.0;
+	}
+
       new->vknotv = V;
     }
   else
@@ -8074,7 +8082,6 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
 	{
 	  Qw = np->controlv;
 	}
-
 
       if(r > 0)
 	 a = k - (np->vorder-1) + (np->vorder-1-s+r-1)/2 + 1;
