@@ -1408,3 +1408,94 @@ ay_selp_explodetcmd(ClientData clientData, Tcl_Interp *interp,
  return TCL_OK;
 } /* ay_selp_explodetcmd */
 
+
+/** ay_selp_managelist:
+ * Compile array of points from a list of objects.
+ *
+ * \param o list of objects
+ * \param lenptr where to store the compiled number of points
+ * \param pntsptr where to store the compiled points
+ */
+void
+ay_selp_managelist(ay_object *o, unsigned int *lenptr, double **pntsptr)
+{
+ int ay_status = AY_OK;
+ unsigned int pntslen = 0, j, a = 0;
+ double *pnts = NULL, *p1, *p2, dummy[3], m[16];
+ ay_pointedit pe = {0};
+
+  if(!o || !lenptr || !pntsptr)
+    return;
+
+  while(o)
+    {
+      ay_status = ay_pact_getpoint(0, o, dummy, &pe);
+
+      if(!ay_status && pe.num)
+	{
+	  pntslen += pe.num;
+	  p1 = realloc(pnts, pntslen*4*sizeof(double));
+
+	  if(p1)
+	    {
+	      pnts = p1;
+	      if(AY_ISTRAFO(o))
+		{
+		  ay_trafo_creatematrix(o, m);
+
+		  for(j = 0; j < pe.num; j++)
+		    {
+		      p1 = &(pnts[a]);
+		      p2 = pe.coords[j];
+		      AY_APTRAN3(p1, p2, m);
+		      if(pe.rational)
+			{
+			  p1[3] = pe.coords[j][3];
+			}
+		      else
+			{
+			  p1[3] = 1.0;
+			}
+		      a += 4;
+		    } /* for */
+		}
+	      else
+		{
+		  for(j = 0; j < pe.num; j++)
+		    {
+		      p1 = &(pnts[a]);
+		      p2 = pe.coords[j];
+		      memcpy(p1, p2, 3*sizeof(double));
+		      if(pe.rational)
+			{
+			  p1[3] = pe.coords[j][3];
+			}
+		      else
+			{
+			  p1[3] = 1.0;
+			}
+		      a += 4;
+		    }
+		}
+	    }
+	  else
+	    {
+	      /* realloc() failed! */
+	      ay_pact_clearpointedit(&pe);
+	      if(pnts)
+		free(pnts);
+	      return;
+	    } /* if */
+	} /* if */
+
+      ay_pact_clearpointedit(&pe);
+
+      o = o->next;
+    } /* while */
+
+  /* return results */
+  *lenptr = pntslen;
+  *pntsptr = pnts;
+
+ return;
+} /* ay_selp_managelist */
