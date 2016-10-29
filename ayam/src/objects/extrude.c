@@ -18,6 +18,8 @@ static char *ay_extrude_name = "Extrude";
 
 int ay_extrude_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe);
 
+int ay_extrude_notifycb(ay_object *o);
+
 /* functions: */
 
 /* ay_extrude_createcb:
@@ -66,6 +68,10 @@ ay_extrude_deletecb(void *c)
   if(extrude->caps_and_bevels)
     (void)ay_object_deletemulti(extrude->caps_and_bevels, AY_FALSE);
 
+  /* free read only points */
+  if(extrude->pnts)
+    free(extrude->pnts);
+
   free(extrude);
 
  return AY_OK;
@@ -90,6 +96,9 @@ ay_extrude_copycb(void *src, void **dst)
 
   extrude->npatch = NULL;
   extrude->caps_and_bevels = NULL;
+
+  extrude->pnts = NULL;
+  extrude->pntslen = 0;
 
   *dst = (void *)extrude;
 
@@ -173,6 +182,8 @@ ay_extrude_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_extrude_drawhcb(struct Togl *togl, ay_object *o)
 {
+ unsigned int i;
+ double *pnts;
  ay_extrude_object *extrude;
 
   if(!o)
@@ -183,9 +194,29 @@ ay_extrude_drawhcb(struct Togl *togl, ay_object *o)
   if(!extrude)
     return AY_ENULL;
 
-  if(extrude->npatch)
+  if(!extrude->pnts)
     {
-      ay_npt_drawrohandles((ay_nurbpatch_object *)extrude->npatch->refine);
+      extrude->pntslen = 1;
+      ay_extrude_notifycb(o);
+    }
+
+  if(extrude->pnts)
+    {
+      pnts = extrude->pnts;
+
+      glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+		(GLfloat)ay_prefs.obb);
+
+      glBegin(GL_POINTS);
+       for(i = 0; i < extrude->pntslen; i++)
+	 {
+	   glVertex3dv((GLdouble *)pnts);
+	   pnts += 4;
+	 }
+      glEnd();
+
+      glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+		(GLfloat)ay_prefs.seb);
     }
 
  return AY_OK;
@@ -209,14 +240,23 @@ ay_extrude_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
   if(!extrude)
     return AY_ENULL;
 
-  if(extrude->npatch)
+  if(extrude->npatch && extrude->npatch->next)
+    {
+      if(!extrude->pnts)
+	{
+	  extrude->pntslen = 1;
+	  ay_extrude_notifycb(o);
+	}
+
+      return ay_selp_getpnts(mode, o, p, pe, 1, extrude->pntslen, 4,
+			     extrude->pnts);
+    }
+  else
     {
       patch = (ay_nurbpatch_object *)extrude->npatch->refine;
       return ay_selp_getpnts(mode, o, p, pe, 1, patch->width*patch->height, 4,
 			     patch->controlv);
     }
-
- return AY_ERROR;
 } /* ay_extrude_getpntcb */
 
 
@@ -559,6 +599,13 @@ ay_extrude_notifycb(ay_object *o)
 
   tolerance = ext->glu_sampling_tolerance;
   display_mode = ext->display_mode;
+
+  /* always clear the old read only points */
+  if(ext->pnts)
+    {
+      free(ext->pnts);
+      ext->pnts = NULL;
+    }
 
   /* clear old extrusions, caps and bevels */
   if(ext->npatch)
@@ -1002,6 +1049,12 @@ ay_extrude_notifycb(ay_object *o)
 	} /* while */
     } /* if */
 
+  /* manage read only points */
+  if(ext->pntslen)
+    {
+      ay_selp_managelist(ext->npatch, &ext->pntslen, &ext->pnts);
+    }
+
 cleanup:
   /* recover selected points */
   if(o->selp)
@@ -1010,6 +1063,12 @@ cleanup:
 	ay_extrude_getpntcb(3, o, NULL, NULL);
       else
 	ay_selp_clear(o);
+    }
+
+  /* correct any inconsistent values of pnts and pntslen */
+  if(ext->pntslen && !ext->pnts)
+    {
+      ext->pntslen = 0;
     }
 
   if(is_provided && c)

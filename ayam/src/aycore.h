@@ -1296,6 +1296,10 @@ int ay_selp_collapsetcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_selp_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
+/** Compile array of points from a list of objects.
+ */
+void ay_selp_managelist(ay_object *o, unsigned int *lenptr, double **pntsptr);
+
 
 /* shade.c */
 
