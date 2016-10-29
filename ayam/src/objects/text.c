@@ -687,12 +687,10 @@ ay_text_notifycb(ay_object *o)
  ay_object *patch, **nextnpatch;
  ay_object ext = {0}, endlevel = {0};
  ay_extrude_object extrude = {0};
- ay_pointedit pe = {0};
  Tcl_UniChar *uc;
  int i;
- unsigned int j, a = 0;
  double xoffset = 0.0, yoffset = 0.0;
- double *p1, *p2, dummy[3], m[16];
+
 
   if(!o)
     return AY_ENULL;
@@ -938,69 +936,10 @@ ay_text_notifycb(ay_object *o)
       uc++;
     } /* while */
 
-  /* manage read only points */
-  if(text->pntslen)
+  if(text->pntslen && text->npatch)
     {
-      if(text->pntslen && text->npatch)
-	{
-	  patch = text->npatch;
-	  text->pntslen = 0;
-	  /* iterate over all patches and transform/copy
-	     their points according to the respective trafos
-	     into a big points vector (built up dynamically
-	     using realloc()) */
-	  while(patch)
-	    {
-	      if((patch->down == NULL) || (patch->down == ay_endlevel))
-		{
-		  ay_status = ay_pact_getpoint(0, patch, dummy, &pe);
-
-		  if(!ay_status && pe.num)
-		    {
-		      text->pntslen += pe.num;
-
-		      p1 = realloc(text->pnts,
-				   text->pntslen*4*sizeof(double));
-
-		      if(p1)
-			{
-			  text->pnts = p1;
-
-			  ay_trafo_creatematrix(patch, m);
-
-			  for(j = 0; j < pe.num; j++)
-			    {
-			      p1 = &(text->pnts[a]);
-			      p2 = pe.coords[j];
-			      AY_APTRAN3(p1, p2, m);
-			      if(pe.rational)
-				{
-				  p1[3] = pe.coords[j][3];
-				}
-			      else
-				{
-				  p1[3] = 1.0;
-				}
-			      a += 4;
-			    } /* for */
-			}
-		      else
-			{
-			  /* realloc() failed! */
-			  ay_pact_clearpointedit(&pe);
-			  free(text->pnts);
-			  text->pnts = NULL;
-			  break;
-			} /* if */
-		    } /* if */
-
-		  ay_pact_clearpointedit(&pe);
-		} /* if */
-
-	      patch = patch->next;
-	    } /* while */
-	} /* if */
-    } /* if */
+      ay_selp_managelist(text->npatch, &text->pntslen, &text->pnts);
+    }
 
 cleanup:
 
