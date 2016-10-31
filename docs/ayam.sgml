@@ -14472,8 +14472,8 @@ Tags|tagsPropData|getTagsp|setTagsp<#if out=latex>@<hline></#if>
 <caption>Property Arrays and Callbacks</caption>
 </table>
 <p>
-Note that this list is pretty much incomplete, however you can always
-infer such information using commands like <tt/"parray Tags"/ in the Ayam
+Note that this list is pretty much incomplete, however such information
+can always be inferred using commands like <tt/"parray Tags"/ in the Ayam
 console.
 <p>
 See also section
@@ -18317,7 +18317,7 @@ procedure.
 
 <sect2>Toolbox Buttons<label id="scextoolbox">
 <p>
-Here is another example script that shows how you may add buttons
+Here is another example script that shows how buttons may be added
 to the toolbox.
 myImage should be an image created e.g.~from a GIF file of
 the size 25 by 25 pixels.
@@ -18348,13 +18348,18 @@ if { ![winfo exists $b] } {
 }
 </code>
 
-This example shows that a) toolbox buttons have to be created in the
-frame <tt/".tbw.f"/ for multi-window GUI configurations or
-<tt/".fv.fTools.f"/ for single-window GUI configurations,
-b) Ayam manages a list of all toolbox buttons in the global array
-<tt/"ay"/ in <tt/"ay(toolbuttons)"/, the order in that list is the order
-in which the buttons appear in the toolbox, c) automatic layout
-management is carried out by the procedure <tt/"toolbox_layout"/.
+This example shows that
+<enum>
+<item>toolbox buttons have to be created in a frame whose path and
+window name are stored in the global variable <tt/"ay(tbw)"/
+(this is <tt/".tbw.f"/ for multi-window GUI configurations or
+<tt/".fv.fTools.f"/ for single-window GUI configurations),
+<item>Ayam manages a list of all toolbox buttons in the global variable
+<tt/"ay(toolbuttons)"/, the order in that list is the order
+in which the buttons appear in the toolbox,
+<item>automatic layout management is carried out by the
+procedure <tt/"toolbox_layout"/.
+</enum>
 <p>
 Adding buttons with just text is a little bit more involved,
 as the sizes of those buttons often do not fit well in the
@@ -18704,8 +18709,8 @@ preferences, you still have to switch to Pixie using the main menu
 
 <sect2>Replace Icons<label id="myiconstcl">
 <p>
-The script <tt>"myicons.tcl"</tt>
-allows to replace the icons of Ayam with a set of user defined ones.
+The script <tt>"myicons.tcl"</tt> allows to replace icons of the Ayam
+user interface, e.g.~toolbox icons, with user defined ones.
 The new icons must be GIF image files of size 25 by 25 and reside
 in the <tt/"icons"/ directory relative to the Ayam executable.
 
@@ -18722,15 +18727,20 @@ the script file.
 <sect2>Dynamic Tree<label id="dtreetcl">
 <p>
 The script <tt>"dtree.tcl"</tt> (dynamic/fast tree) replaces some of
-BWidgets tree code for faster interaction with many objects.
+BWidgets tree code for faster interaction in scenes with many objects.
 
 The original BWidget tree widget (and accompanying script code in Ayam)
-creates a canvas item for every object in the scene, even if it is not visible. Therefore, tree update operations can get slow,
-when a scene has many objects.
+creates a canvas item for every object in the scene, even if it is not
+visible in the tree widget. Therefore, tree update operations that
+occur e.g.~after loading of a scene or after drag-and-drop operations,
+can become very slow, when a scene has many objects.
 
 If the dtree script is active, there are only as many canvas items as
 there are nodes visible in the current scroll region. Therefore, working
-with many objects in long lists becomes much faster.
+with many objects in long lists becomes much faster for operations that
+require tree updates. However, operations like opening or closing
+sub trees or even just scrolling in the tree will become a bit slower,
+as canvas items need to be created constantly.
 
 <sect2>Control Vertice View<label id="cvviewtcl">
 <p>
@@ -18759,7 +18769,7 @@ circles.
 
 <#if out=latex><x/newpage/</#if>
 
-<sect2>Create Truncated Cones<label id="tconetcl">
+<sect2>Truncated Cone<label id="tconetcl">
 <p>
 <figure loc="ht">
 <eps file="pics/tcone.ps" height="4cm">
@@ -18767,7 +18777,8 @@ circles.
 <caption>Truncated Cone with ZMax 2.0</caption>
 </figure>
 <p>
-The script <tt>"tcone.tcl"</tt> creates truncated cones with arguments
+The file <tt>"tcone.tcl"</tt> is a Script object script that creates
+truncated cones with arguments
 similar to the cylinder primitive, see also the above image.
 <p>
 This script must be used in a Script object of type <tt/"Create"/
@@ -18801,7 +18812,7 @@ see the file:<newline>
 
 <#if out=latex><x/newpage/</#if>
 
-<sect2>Create Boxes with Cylindrical Topology<label id="cboxtcl">
+<sect2>Box with Cylindrical Topology<label id="cboxtcl">
 <p>
 <figure loc="ht">
 <eps file="pics/cbox.ps" height="4cm">
@@ -18809,8 +18820,8 @@ see the file:<newline>
 <caption>Box with Cylindrical Topology</caption>
 </figure>
 <p>
-The script <tt>"cbox.tcl"</tt> creates box objects with a cylindrical
-topology, see also the above image.
+The file <tt>"cbox.tcl"</tt> is a Script object script that creates
+box objects with a cylindrical topology, see also the above image.
 <p>
 This script must be used in a Script object of type <tt/"Create"/
 (see section <ref id="scriptobj" name="Script Object">).
@@ -18842,13 +18853,14 @@ see the file:<newline>
 <caption>NURBS Circle with Triangular Base</caption>
 </figure>
 <p>
-The script <tt>"tcircle.tcl"</tt> creates NURBS circles with a triangular base,
+The file <tt>"tcircle.tcl"</tt> is a Script object script that creates
+NURBS circles with a triangular base,
 see also the above image.
 <p>
-In contrast to the standard 9 point NURBS circle, the triangular
-circle consists of just 7 control points. This can save some memory, e.g.
-in long sweep objects. However, the parameterisation of the triangular
-circle is also slightly worse.
+In contrast to the standard 9 point NURBS circle with rectangular base,
+the triangular circle consists of just 7 control points.
+This can save some memory, e.g.~in long sweep objects. However,
+the parameterisation of the triangular circle is also slightly worse.
 <p>
 This script must be used in a Script object of type <tt/"Create"/
 (see section <ref id="scriptobj" name="Script Object">).
@@ -19032,8 +19044,9 @@ finer and slower tessellation.
 Note that in this mode the value of the <tt>"vTessellation"</tt>
 attribute is <em>not</em> considered at all.
 
-Also note that in highly curved regions and at trim edges, even smaller
-triangles than determined by the edge length criterion may be created.
+Also note that in highly curved regions of the surface and at trim edges,
+even smaller triangles than determined by the edge length criterion may
+be created.
 
 <sect3>Parametric Space Based Sampling
 <p><#if out=latex>&nbsp;<newline></#if>
