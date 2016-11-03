@@ -48,6 +48,12 @@ ay_level_createcb(int argc, char *argv[], ay_object *o)
       level->type = (unsigned int) atoi(argv[2]);
     }
 
+  if(level->type <= 0)
+    level->type = 1;
+
+  if(level->type > 5)
+    level->type = 1;
+
  return AY_OK;
 } /* ay_level_createcb */
 
@@ -160,12 +166,12 @@ ay_level_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!level)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-
-  ton = Tcl_NewStringObj("Type",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &level->type);
+  toa = Tcl_NewStringObj(n1, -1);
+  ton = Tcl_NewStringObj("Type", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &level->type);
   level->type++;
+
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
@@ -192,12 +198,11 @@ ay_level_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!level)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-
-  ton = Tcl_NewStringObj("Type",-1);
+  toa = Tcl_NewStringObj(n1, -1);
+  ton = Tcl_NewStringObj("Type", -1);
   itmp = level->type-1;
   to = Tcl_NewIntObj(itmp);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
@@ -218,7 +223,7 @@ ay_level_readcb(FILE *fileptr, ay_object *o)
   if(!fileptr || !o)
     return AY_ENULL;
 
-  fscanf(fileptr,"%d\n",&type);
+  fscanf(fileptr, "%d\n", &type);
 
   if(type == AY_LTEND)
     {
@@ -356,7 +361,6 @@ ay_level_providecb(ay_object *o, unsigned int type, ay_object **result)
   last = result;
   while(d->next)
     {
-
       ay_trafo_creatematrix(d, m1);
 
       *last = NULL;
