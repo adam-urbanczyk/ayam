@@ -240,23 +240,28 @@ ay_extrude_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
   if(!extrude)
     return AY_ENULL;
 
-  if(extrude->npatch && extrude->npatch->next)
+  if(extrude->npatch)
     {
-      if(!extrude->pnts)
+      if(extrude->npatch->next)
 	{
-	  extrude->pntslen = 1;
-	  ay_extrude_notifycb(o);
-	}
+	  if(!extrude->pnts)
+	    {
+	      extrude->pntslen = 1;
+	      ay_extrude_notifycb(o);
+	    }
 
-      return ay_selp_getpnts(mode, o, p, pe, 1, extrude->pntslen, 4,
-			     extrude->pnts);
+	  return ay_selp_getpnts(mode, o, p, pe, 1, extrude->pntslen, 4,
+				 extrude->pnts);
+	}
+      else
+	{
+	  patch = (ay_nurbpatch_object *)extrude->npatch->refine;
+	  return ay_selp_getpnts(mode, o, p, pe, 1, patch->width*patch->height,
+				 4, patch->controlv);
+	}
     }
-  else
-    {
-      patch = (ay_nurbpatch_object *)extrude->npatch->refine;
-      return ay_selp_getpnts(mode, o, p, pe, 1, patch->width*patch->height, 4,
-			     patch->controlv);
-    }
+
+ return AY_ERROR;
 } /* ay_extrude_getpntcb */
 
 
@@ -635,7 +640,7 @@ ay_extrude_notifycb(ay_object *o)
 
   /* create new extrusions, caps and bevels */
   down = o->down;
-  while(down)
+  while(down && down->next)
     {
       is_provided = AY_FALSE;
       c = NULL;
