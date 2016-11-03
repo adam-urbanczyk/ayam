@@ -116,8 +116,8 @@ ay_selp_selall(ay_object *o)
 } /* ay_selp_selall */
 
 
-/* ay_selp_applytrafotcmd:
- *  apply transformations to editable points of selected objects
+/** ay_selp_applytrafotcmd:
+ *  Apply transformations to editable points of selected objects.
  *
  *  Implements the \a applyTrafo scripting interface command.
  *  See also the corresponding section in the \ayd{scapplytrafo}.
@@ -255,8 +255,8 @@ ay_selp_invert(ay_object *o)
 } /* ay_selp_invert */
 
 
-/* ay_selp_inverttcmd:
- *  invert point selection of selected objects
+/** ay_selp_inverttcmd:
+ *  Invert point selection of selected objects.
  *
  *  Implements the \a invPnts scripting interface command.
  *  See also the corresponding section in the \ayd{scinvpnts}.
@@ -530,9 +530,9 @@ ay_selp_getcenter(ay_point *p, int mode, double *center)
 } /* ay_selp_getcenter */
 
 
-/* ay_selp_centertcmd:
- *  moves all points of the selected objects so that their
- *  center is identical to the object coordinate systems center
+/** ay_selp_centertcmd:
+ *  Moves all points of the selected objects so that their
+ *  center is identical to the object coordinate systems center.
  *
  *  Implements the \a centerPnts scripting interface command.
  *  See also the corresponding section in the \ayd{sccenterpnts}.
@@ -669,8 +669,8 @@ ay_selp_sel(ay_object *o, unsigned int indiceslen, unsigned int *indices)
 } /* ay_selp_sel */
 
 
-/* ay_selp_seltcmd:
- *  select points of selected objects
+/** ay_selp_seltcmd:
+ *  Select points of selected objects.
  *
  *  Implements the \a selPnts scripting interface command.
  *  See also the corresponding section in the \ayd{scselpnts}.
@@ -1475,8 +1475,8 @@ ay_selp_managelist(ay_object *o, unsigned int *lenptr, double **pntsptr)
 			  p1[3] = 1.0;
 			}
 		      a += 4;
-		    }
-		}
+		    } /* for */
+		} /* if is trafo */
 	    }
 	  else
 	    {
