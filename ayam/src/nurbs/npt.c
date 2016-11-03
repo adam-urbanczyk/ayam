@@ -7392,6 +7392,7 @@ ay_npt_gordonwcgetends(ay_object *o,
  ay_icurve_object *ic;
  ay_acurve_object *ac;
  double *pps, *ppe;
+ int stride = 3;
 
   switch(o->type)
     {
@@ -7401,6 +7402,7 @@ ay_npt_gordonwcgetends(ay_object *o,
       ppe = &(nc->controlv[(nc->length-1)*4]);
       *ss = pps;
       *se = ppe;
+      stride = 4;
       break;
     case AY_IDICURVE:
       ic = (ay_icurve_object *)o->refine;
@@ -7429,11 +7431,13 @@ ay_npt_gordonwcgetends(ay_object *o,
               ay_trafo_creatematrix(p, tm);
               AY_APTRAN3(s, pps, tm)
               AY_APTRAN3(e, ppe, tm)
+	      s[3] = pps[3];
+	      e[3] = ppe[3];
             }
           else
             {
-              memcpy(s, pps, 3*sizeof(double));
-              memcpy(e, ppe, 3*sizeof(double));
+              memcpy(s, pps, 4*sizeof(double));
+              memcpy(e, ppe, 4*sizeof(double));
             }
           ay_object_deletemulti(p, AY_FALSE);
         }
@@ -7456,11 +7460,16 @@ ay_npt_gordonwcgetends(ay_object *o,
           ay_trafo_invmatrix(tm, tmi);
           AY_APTRAN3(s, pps, tm)
           AY_APTRAN3(e, ppe, tm)
+	  if(stride == 4)
+	    {
+	      s[3] = pps[3];
+	      e[3] = ppe[3];
+	    }
         }
       else
         {
-          memcpy(s, pps, 3*sizeof(double));
-          memcpy(e, ppe, 3*sizeof(double));
+          memcpy(s, pps, stride*sizeof(double));
+          memcpy(e, ppe, stride*sizeof(double));
         }
     }
 
@@ -7481,7 +7490,7 @@ ay_npt_gordonwc(ay_object *g)
  int istrafo[4] = {0};
  double fum[16], lum[16], fvm[16], lvm[16];
  double fumi[16], lumi[16], fvmi[16], lvmi[16];
- double p1[3], p2[3], p3[3], p4[3], p5[3], p6[3], p7[3], p8[3];
+ double p1[4], p2[4], p3[4], p4[4], p5[4], p6[4], p7[4], p8[4];
  double *pp1 = NULL, *pp2 = NULL, *pp3 = NULL, *pp4 = NULL;
  double *pp5 = NULL, *pp6 = NULL, *pp7 = NULL, *pp8 = NULL;
  double *mi1, *mi2;
