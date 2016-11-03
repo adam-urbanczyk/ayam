@@ -244,6 +244,7 @@ ay_init(Tcl_Interp *interp)
 {
  int ay_status = AY_OK;
  char fname[] = "ay_init";
+ ay_level_object *level = NULL;
 
   ay_interp = interp;
 
@@ -564,6 +565,9 @@ ay_init(Tcl_Interp *interp)
   ay_endlevel = ay_root->next;
   ay_endlevel->parent = AY_FALSE;
   ay_endlevel->down = NULL;
+
+  level = (ay_level_object *)ay_endlevel->refine;
+  level->type = AY_LTEND;
 
   /* create terminating level object in views level */
   ay_root->down = ay_root->next;
