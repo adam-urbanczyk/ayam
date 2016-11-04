@@ -817,7 +817,9 @@ proc toolbox_layout { {w ".tbw"} } {
     set numb [llength $ay(toolbuttons)]
 
     if { [expr $rows*$columns] < $numb } {
-	ayError 1 toolbox_layout "Can not display all buttons! Resizing..."
+	if { $w != $internal } {
+	    ayError 1 toolbox_layout "Can not display all buttons! Resizing..."
+	}
 	set height [expr ceil(double($numb)/$columns)*$size]
 	if { $w == $internal } {
 	    # toolbox is integrated in main window
@@ -866,6 +868,7 @@ proc toolbox_layout { {w ".tbw"} } {
 	pack configure $w -expand no
     }
 
+    # restore configure binding
     bind $w <Configure> {
 	if { $ay(tbwidth) != %w || $ay(tbheight) != %h } {
 	    if { $ayprefs(SingleWindow) } {
