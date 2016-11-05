@@ -1139,7 +1139,7 @@ FaceExtruder::closeFace(void)
 	}
 
       /* apply scale factor */
-      ay_trafo_scalecog(m_scale, cv, m_faceVerts.size(), 3);
+      ay_geom_scalecog(m_scale, cv, m_faceVerts.size(), 3);
 
       /* create the new vertices */
 
@@ -5299,7 +5299,7 @@ sdnpatch_editknottcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* sdnpatch_reverttcmd:
- *  Tcl command to remove faces
+ *  Tcl command to revert faces
  */
 int
 sdnpatch_reverttcmd(ClientData clientData, Tcl_Interp *interp,
