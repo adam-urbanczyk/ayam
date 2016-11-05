@@ -306,6 +306,10 @@ int ay_geom_extractmiddlepoint(int mode, double *cv, int cvlen, int cvstride,
 int ay_geom_extractmeannormal(double *cv, int cvlen, int cvstride,
 			      double *m, double *result);
 
+/** apply scale around cog for a number of points
+ */
+void ay_geom_scalecog(double scale, double *cv, int len, int stride);
+
 
 /* instt.c */
 
@@ -1731,10 +1735,6 @@ void ay_trafo_scalematrix(double x, double y, double z, double *m);
  */
 void ay_trafo_rotatematrix(double angle, double x, double y, double z,
 			   double *m);
-
-/** apply scale around cog for a number of points
- */
-void ay_trafo_scalecog(double scale, double *cv, int len, int stride);
 
 /** normalize the transformation attributes
  */

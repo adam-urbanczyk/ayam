@@ -392,3 +392,51 @@ ay_geom_extractmeannormal(double *cv, int cvlen, int cvstride,
  return AY_OK;
 } /* ay_geom_extractmeannormal */
 
+
+/** ay_geom_scalecog:
+ *  scale a number of points around their center of gravity
+ * 
+ * \param scale scale factor
+ * \param cv points
+ * \param len number of points
+ * \param stride size of a point
+ */
+void
+ay_geom_scalecog(double scale, double *cv, int len, int stride)
+{
+ int i;
+ double *p, cog[3] = {0};
+
+  if(!cv)
+    return;
+
+  p = cv;
+  for(i = 0; i < len; i++)
+    {
+      cog[0] += (p[0]/len);
+      cog[1] += (p[1]/len);
+      cog[2] += (p[2]/len);
+
+      p += stride;
+    } /* for */
+
+  p = cv;
+  for(i = 0; i < len; i++)
+    {
+      p[0] -= cog[0];
+      p[1] -= cog[1];
+      p[2] -= cog[2];
+
+      p[0] *= scale;
+      p[1] *= scale;
+      p[2] *= scale;
+
+      p[0] += cog[0];
+      p[1] += cog[1];
+      p[2] += cog[2];
+
+      p += stride;
+    } /* for */
+
+ return;
+} /* ay_geom_scalecog */

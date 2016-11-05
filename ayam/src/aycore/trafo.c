@@ -105,7 +105,7 @@ ay_trafo_apply4v(double *c, unsigned int clen, unsigned int stride, double *m)
 /** ay_trafo_getparent:
  *  Accumulate all parent transformations starting from specified
  *  level up to ay_root (unless a parent stops inheritance of the
- *  transformation attributes).
+ *  transformation attributes in between).
  *
  * \param[in] lo current level
  * \param[in,out] tm transformation matrix (double[16]) to process
@@ -153,7 +153,7 @@ ay_trafo_getparent(ay_list_object *lo, double *tm)
 /** ay_trafo_getparentinv:
  *  Accumulate all inverse parent transformations starting from specified
  *  level up to ay_root (unless a parent stops inheritance of the
- *  transformation attributes).
+ *  transformation attributes in between).
  *
  * \param[in] lo current level
  * \param[in,out] tm transformation matrix (double[16]) to process
@@ -203,7 +203,7 @@ ay_trafo_getparentinv(ay_list_object *lo, double *tm)
 /** ay_trafo_getsomeparent:
  *  Accumulate some parent transformations starting from specified
  *  level up to ay_root (unless a parent stops inheritance of the
- *  transformation attributes).
+ *  transformation attributes in between).
  *
  * \param[in] lo current level
  * \param[in] what specifies which transformation attributes to get
@@ -254,10 +254,10 @@ ay_trafo_getsomeparent(ay_list_object *lo, int what, double *tm)
 } /* ay_trafo_getsomeparent */
 
 
-/* ay_trafo_getsomeparentinv:
+/** ay_trafo_getsomeparentinv:
  *  Accumulate some inverse parent transformations starting from specified
  *  level up to ay_root (unless a parent stops inheritance of the
- *  transformation attributes).
+ *  transformation attributes in between).
  *
  * \param[in] lo current level
  * \param[in] what specifies which transformation attributes to get
@@ -459,7 +459,7 @@ ay_trafo_delegate(ay_object *o)
 } /* ay_trafo_delegate */
 
 
-/* ay_trafo_delegatetcmd:
+/** ay_trafo_delegatetcmd:
  *  Delegate transformations of selected objects to their
  *  respective child objects.
  *  Implements the \a delegTrafo scripting interface command.
@@ -1523,7 +1523,7 @@ ay_trafo_decomposematrix(double *m, ay_object *o)
 
 
 /** ay_trafo_identitymatrix:
- *  initialize transformation matrix \a m to identity
+ *  Initialize transformation matrix \a m to identity.
  *
  * \param[in,out] m matrix to process
  */
@@ -1542,7 +1542,7 @@ ay_trafo_identitymatrix(double *m)
 
 
 /** ay_trafo_isidentitymatrix:
- *  check transformation matrix \a m for identity
+ *  Check transformation matrix \a m for identity.
  *
  * \param[in] m matrix to process
  *
@@ -1580,7 +1580,7 @@ ay_trafo_isidentitymatrix(double *m)
 
 
 /** ay_trafo_translatematrix:
- *  add a translation to the transformation matrix \a m
+ *  Add a translation to the transformation matrix \a m.
  *
  * \param[in] x translation in x
  * \param[in] y translation in y
@@ -1601,7 +1601,7 @@ ay_trafo_translatematrix(double x, double y, double z, double *m)
 
 
 /** ay_trafo_scalematrix:
- *  add a scale transformation to transformation matrix \a m
+ *  Add a scale transformation to transformation matrix \a m.
  *
  * \param[in] x scale factor
  * \param[in] y scale factor
@@ -1622,8 +1622,8 @@ ay_trafo_scalematrix(double x, double y, double z, double *m)
 
 
 /** ay_trafo_rotatematrix:
- *  add a rotation to the transformation matrix \a m;
- *  code taken from Mesa (Erich Boleyn (erich@uruk.org))
+ *  Add a rotation to the transformation matrix \a m;
+ *  code taken from Mesa (Erich Boleyn (erich@uruk.org)).
  *
  * \param[in] angle rotation angle (in degrees)
  * \param[in] x x component of rotation axis
@@ -1741,50 +1741,6 @@ ay_trafo_rotatematrix(double angle, double x, double y, double z, double *m)
 
  return;
 } /* ay_trafo_rotatematrix */
-
-
-/* ay_trafo_scalecog:
- *
- */
-void
-ay_trafo_scalecog(double scale, double *cv, int len, int stride)
-{
- int i;
- double *p, cog[3] = {0};
-
-  if(!cv)
-    return;
-
-  p = cv;
-  for(i = 0; i < len; i++)
-    {
-      cog[0] += (p[0]/len);
-      cog[1] += (p[1]/len);
-      cog[2] += (p[2]/len);
-
-      p += stride;
-    } /* for */
-
-  p = cv;
-  for(i = 0; i < len; i++)
-    {
-      p[0] -= cog[0];
-      p[1] -= cog[1];
-      p[2] -= cog[2];
-
-      p[0] *= scale;
-      p[1] *= scale;
-      p[2] *= scale;
-
-      p[0] += cog[0];
-      p[1] += cog[1];
-      p[2] += cog[2];
-
-      p += stride;
-    } /* for */
-
- return;
-} /* ay_trafo_scalecog */
 
 
 /** ay_trafo_normalize:
@@ -1940,6 +1896,7 @@ ay_trafo_getall(ay_list_object *lo, ay_object *o, double *tm)
     {
       ay_trafo_getparent(lo->next, tm);
     }
+
   ay_trafo_translatematrix(o->movx, o->movy, o->movz, tm);
   ay_quat_torotmatrix(o->quat, m);
   ay_trafo_multmatrix(tm, m);
