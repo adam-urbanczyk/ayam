@@ -1324,7 +1324,7 @@ ay_nb_FindSpan(int n, int p, double u, double *U)
 {
  int low, mid, high;
 
-  if(u >= U[n])
+  if(u >= U[n+1])
     return n;
 
   /* never return a span 0-p, because this would make
@@ -1364,7 +1364,7 @@ ay_nb_FindSpanMult(int n, int p, double u, double *U, int *s)
 {
  int low, mid, high, l;
 
-  if(u >= U[n])
+  if(u >= U[n+1])
     {
       mid = n;
 
