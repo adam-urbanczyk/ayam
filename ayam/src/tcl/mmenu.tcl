@@ -415,50 +415,78 @@ $m add cascade -menu $m.nct -label "Curve" -underline 0
 menu $m.nct -tearoff 0
 
 $m.nct add command -label "Revert" -command { undo save RevertC; revertC;
-                                              plb_update; rV }
+                                              plb_update; rV } \
+ -underline 0
+# ^^^^^^^^^^^ => R
+
 $m.nct add command -label "Open" -command { undo save Open; openC;
-                                            plb_update; rV }
+                                            plb_update; rV } \
+ -underline 0
+# ^^^^^^^^^^^ => O
+
 $m.nct add command -label "Close" -command { undo save Close; closeC;
-                                            plb_update; rV }
+                                            plb_update; rV } \
+ -underline 0
+# ^^^^^^^^^^^ => C
+
 $m.nct add command -label "Make Periodic" -command { undo save "Make Periodic";
                                             ncurve_makeperiodic;
-                                            plb_update; rV }
-$m.nct add command -label "Concat" -command { concatNC; uCR; rV }
+                                            plb_update; rV } \
+ -underline 5
+# ^^^^^^^^^^^ => P
+
+$m.nct add command -label "Concat" -command { concatNC; uCR; rV } \
+ -underline 2
+# ^^^^^^^^^^^ => N
 $m.nct add command -label "Split" -command {
     runTool ay(splitu) {"Split at:"}\
 	"undo save Split; splitNC %0; uCR; sL; rV"\
 	"Split Curve" splitt
-}
+} -underline 0
+#  ^^^^^^^^^^^ => S
+
 $m.nct add command -label "Trim" -command {
     runTool [list ay(trimumin) ay(trimumax)]\
 	[list "UMin:" "UMax:"]\
 	"undo save TrimNC; trimNC %0 %1; plb_update; rV"\
 	"Trim Curve" ctrimt
-}
+} -underline 0
+#  ^^^^^^^^^^^ => T
 
 $m.nct add command -label "Refine" -command { undo save Refine;
-    refineC; plb_update; rV }
+    refineC; plb_update; rV } \
+ -underline 2
+# ^^^^^^^^^^^ => F
+
 
 $m.nct add command -label "Coarsen" -command { undo save Coarsen; coarsenNC;
-                                              plb_update; rV }
+                                              plb_update; rV } \
+ -underline 2
+# ^^^^^^^^^^^ => A
 
 $m.nct add command -label "Clamp" -command { undo save ClampNC; clampNC;
-                                             plb_update; rV }
+                                             plb_update; rV } \
+ -underline 3
+# ^^^^^^^^^^^ => M
 
 $m.nct add command -label "Unclamp" -command { undo save UnclampNC; unclampNC;
-                                             plb_update; rV }
+                                             plb_update; rV } \
+ -underline 0
+# ^^^^^^^^^^^ => U
 
 $m.nct add command -label "Elevate" -command {
     runTool ay(elevd) {"Elevate by:"}\
 	"undo save Elevate; elevateNC %0; plb_update; rV"\
 	"Elevate Curve" elevt
-}
+} -underline 1
+#  ^^^^^^^^^^^ => L
 
 $m.nct add command -label "Extend" -command {
     runTool [list ay(extendx) ay(extendy) ay(extendz)] [list "X:" "Y:" "Z:"]\
 	"undo save Extend; extendNC %0 %1 %2; plb_update; rV"\
 	"Extend Curve" extendt
-}
+} -underline 1
+#  ^^^^^^^^^^^ => X
 
 
 $m.nct add cascade -menu $m.nct.kn -label "Knots" -underline 0
@@ -524,15 +552,20 @@ $m.nct add command -label "Shift" -command {
     runTool ay(shiftcbsp) {"Times:"}\
 	"undo save ShiftC; shiftC %0; rV"\
 	"Shift Curve" shiftclc
-}
+} -underline 2
+#  ^^^^^^^^^^^ => I
+
 $m.nct add command -label "Tween" -command {
     runTool ay(tweenr) {"Ratio:"}\
 	"undo save TweenNC; tweenNC %0; uCR; rV"\
 	"Tween Curves" tweennct
-}
+} -underline 2
+#  ^^^^^^^^^^^ => E
 
 $m.nct add command -label "To XY" -command {
-    undo save ToXYNC; toXYNC; rV; }
+    undo save ToXYNC; toXYNC; rV; } \
+ -underline 4
+# ^^^^^^^^^^^ => Y
 
 $m.nct add command -label "Make Compatible" -command {
     runTool ay(clevel) {"Level:"}\
