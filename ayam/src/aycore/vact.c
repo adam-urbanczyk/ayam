@@ -14,6 +14,7 @@
 
 /* vact.c - view related interactive actions */
 
+
 /* ay_vact_movetcb:
  *  move/pan view modelling action
  */
@@ -25,8 +26,7 @@ ay_vact_movetcb(struct Togl *togl, int argc, char *argv[])
  static double oldwinx = 0.0, oldwiny = 0.0;
  double winx = 0.0, winy = 0.0;
  double dxw = 0.0, dyw = 0.0;
- double t[3] = {0}, t2[2] = {0};
- GLdouble mm[16] = {0}, rotx = 0.0, roty = 0.0;
+ double len, d[3], t[3] = {0}, u[3];
  char fname[] = "move_view";
 
   /* parse args */
@@ -66,74 +66,27 @@ ay_vact_movetcb(struct Togl *togl, int argc, char *argv[])
 
   if(view->type == AY_VTPERSP)
     {
-     dxw *= (1.0/view->zoom)*4;
-     dyw *= (1.0/view->zoom)*4;
+      dxw *= (1.0/view->zoom)*4;
+      dyw *= (1.0/view->zoom)*4;
     }
 
   t[0] = view->from[0] - view->to[0];
   t[1] = view->from[1] - view->to[1];
   t[2] = view->from[2] - view->to[2];
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-   glLoadIdentity();
-   /* check, whether we are able to derive camera orientation angles from t */
-   if((fabs(t[0]) < AY_EPSILON) && (fabs(t[2]) < AY_EPSILON))
-     {
-       /* no, this (hopefully just) happens with Top views, that
-	  are Y-Axis aligned and express a useful angle in view->up */
 
-       /* XXXX this currently only works for real Y-aligned Top views */
-       t[0] = -view->up[0];
-       t[1] = -view->up[1];
-       t[2] = -view->up[2];
-       roty = AY_R2D(atan2(t[0], t[2]));
+  AY_V3CROSS(d, t, view->up);
+  len = AY_V3LEN(d);
+  AY_V3SCAL(d, (-dxw/len));
 
-       if(fabs(view->roll) > AY_EPSILON)
-	 glRotated(-view->roll, 0.0, 1.0, 0.0);
+  memcpy(u, view->up, 3*sizeof(double));
+  len = AY_V3LEN(u);
+  AY_V3SCAL(u, (dyw/len));
 
-       glRotated(roty, 0.0, 1.0, 0.0);
+  AY_V3ADD(view->from, view->from, d);
+  AY_V3ADD(view->from, view->from, u);
 
-       glTranslated(dxw, 0.0, -dyw);
-
-       glRotated(-roty, 0.0, 1.0, 0.0);
-
-       if(fabs(view->roll) > AY_EPSILON)
-	 glRotated(view->roll, 0.0, 1.0, 0.0);
-     }
-   else
-     {
-       /* yes, derive angles from t */
-       roty = AY_R2D(atan2(t[0], t[2]));
-
-       t2[0] = t[0];
-       t2[1] = t[2];
-       if((fabs(t[0]) > AY_EPSILON) && (fabs(t[2]) > AY_EPSILON))
-	 {
-	   rotx = AY_R2D(atan2(t[1], AY_V2LEN(t2)));
-	 }
-
-       if(fabs(view->roll) > AY_EPSILON)
-	 glRotated(-view->roll, 0.0, 0.0, 1.0);
-
-       glRotated(roty, 0.0, 1.0, 0.0);
-       glRotated(-rotx, 1.0, 0.0, 0.0);
-
-       if(view->up[1] > 0.0)
-	 glTranslated(dxw, dyw, 0.0);
-       else
-	 glTranslated(-dxw, -dyw, 0.0);
-
-       glRotated(rotx, 1.0, 0.0, 0.0);
-       glRotated(-roty, 0.0, 1.0, 0.0);
-
-       if(fabs(view->roll) > AY_EPSILON)
-	 glRotated(view->roll, 0.0, 0.0, 1.0);
-     }
-   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
-  glPopMatrix();
-
-  ay_trafo_apply3(view->from, mm);
-  ay_trafo_apply3(view->to, mm);
+  AY_V3ADD(view->to, view->to, d);
+  AY_V3ADD(view->to, view->to, u);
 
   ay_toglcb_reshape(togl);
 
