@@ -1903,9 +1903,14 @@ int ay_viewt_saveimgtcb(struct Togl *togl, int argc, char *argv[]);
 void ay_viewt_warpmouse(struct Togl *togl, double *coord, ay_object *o,
 			double *newwinx, double *newwiny);
 
+/** get rolled up vector
+ */
+void ay_viewt_getrolledup(ay_view_object *view, double *u);
+
 /** initialize view tools module
  */
 void ay_viewt_init();
+
 
 /* w32t.c */
 #ifdef WIN32
