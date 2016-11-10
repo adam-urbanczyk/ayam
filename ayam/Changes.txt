@@ -1,4 +1,4 @@
-[29. Oct 2016 CVS-Head:
+[10. Nov 2016 CVS-Head:
 =======================
 Bug Fixes:
 o added missing scripting interface commands to JavaScript and Lua scripting
@@ -11,11 +11,11 @@ o crash when generating smooth normals (SF 529)
 o creating NCurve/NPatch objects with knot type chordal (SF 531)
 o scaling points about the mark fails when object is transformed (SF 532)
 o setting the mark from non rational points fails (SF 533)
-o crash when using delOb as withOb command (SF 534)
+o crash when using "delOb" as "withOb" command (SF 534)
 o rotating points about the mark fails for rotated objects (SF 535)
 o offsetting a extracted curve in 3DPVN mode fails (SF 536)
 o display/conversion of patch meshes with basis type Catmull-Rom (SF 537)
-o tcleval fails to return string data to JavaScript (SF 538)
+o "tcleval" command fails to return string data to JavaScript (SF 538)
 o DXF import of closed PolyLine objects fails (SF 539)
 o X3D import of trim loops fails (SF 540)
 o 3DM (Rhino) import of layers fails (SF 541)
@@ -24,6 +24,8 @@ o "upOb"/"downOb" commands missing in safe interpreter (SF 543)
 o find u/uv not setting the mark correctly for transformed objects (SF 544)
 o pasting instances to the level with their master fails (SF 545)
 o extrusions with holes do not show all points (SF 546)
+o WatchCorners feature of the Gordon tool object for NCurves (SF 547)
+o splitting quadratic curves with three control points (SF 548)
 
 Modelling:
 o the create Sweep/Swing tools now rotate the parameter curves to the
@@ -48,6 +50,7 @@ o improved knot insertion error detection
 o if the mark is set the new coordinates will now be printed to the console
 o cycling view types via <PageUp>/<PageDown> now omits "Perspective", but the
   new hidden preference option "CyclePerspective" can be used to restore this
+o improved panning of arbitrarily oriented especially aligned local views
 
 GUI:
 o added RIB-Export rendering option "AutoCloseUI" to automatically close
@@ -60,7 +63,7 @@ o added menu entry to add a tag to multiple selected objects
   ("Special/Tags/Add Tag")
 o improved keyboard and focus handling of Tags property GUI
 o improved MRU file management (file saving could lead to extraneous and
-  defunct entries without path)
+  defunct menu entries without path)
 
 Scripts/Scripting Interface:
 o added "setTag" command that adds a tag if it is not present, otherwise
@@ -89,8 +92,8 @@ o X3D export of materials now supports the new tag type "XML" that can be
 o X3D export of NURBS surfaces now also contains some "containerField"
   attributes vital for e.g. x3dom-nurbs
 o RIB files can now be exported via "File/Save as"
-o Caps or bevels can now be exported to RIB files with their own texture
-  coordinates supplied by additional TC tags.
+o caps or bevels can now be exported to RIB files with their own texture
+  coordinates supplied by additional TC tags
 
 
 [13. Jan 2016] Ayam 1.23:
