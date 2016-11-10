@@ -26,7 +26,7 @@ ay_vact_movetcb(struct Togl *togl, int argc, char *argv[])
  static double oldwinx = 0.0, oldwiny = 0.0;
  double winx = 0.0, winy = 0.0;
  double dxw = 0.0, dyw = 0.0;
- double len, d[3], t[3] = {0}, u[3];
+ double len, d[3], t[3], u[3];
  char fname[] = "move_view";
 
   /* parse args */
@@ -52,7 +52,7 @@ ay_vact_movetcb(struct Togl *togl, int argc, char *argv[])
       return TCL_OK;
     }
 
-  /* adjust marker */
+  /* adjust mark */
   if(view->drawmark)
     {
       view->markx -= (oldwinx - winx);
@@ -74,11 +74,13 @@ ay_vact_movetcb(struct Togl *togl, int argc, char *argv[])
   t[1] = view->from[1] - view->to[1];
   t[2] = view->from[2] - view->to[2];
 
-  AY_V3CROSS(d, t, view->up);
+  ay_viewt_getrolledup(view, u);
+
+  /* compute a vector perpendicular to view direction (t) and up (u)*/
+  AY_V3CROSS(d, t, u);
   len = AY_V3LEN(d);
   AY_V3SCAL(d, (-dxw/len));
 
-  memcpy(u, view->up, 3*sizeof(double));
   len = AY_V3LEN(u);
   AY_V3SCAL(u, (dyw/len));
 

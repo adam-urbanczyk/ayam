@@ -2787,6 +2787,36 @@ ay_viewt_warpmouse(struct Togl *togl, double *coord, ay_object *o,
 } /* ay_viewt_warpmouse */
 
 
+/** ay_viewt_getrolledup:
+ * Compute an up vector that is rotated around the view direction
+ * according to the roll camera attribute.
+ *
+ * \param[in] view view to compute the up vector for
+ * \param[in,out] u where to store the computed vector (double[3])
+ */
+void
+ay_viewt_getrolledup(ay_view_object *view, double *u)
+{
+ double m[16], t[3];
+
+  memcpy(u, view->up, 3*sizeof(double));
+
+  if(fabs(view->roll) > AY_EPSILON)
+    {
+      t[0] = view->to[0] - view->from[0];
+      t[1] = view->to[1] - view->from[1];
+      t[2] = view->to[2] - view->from[2];
+
+      /* roll the up vector*/
+      ay_trafo_identitymatrix(m);
+      ay_trafo_rotatematrix(view->roll, t[0], t[1], t[2], m);
+      ay_trafo_apply3(u, m);
+    }
+
+ return;
+} /* ay_viewt_getrolledup */
+
+
 /* ay_viewt_init:
  *  Initialize this module.
  *
