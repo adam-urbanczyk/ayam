@@ -1768,7 +1768,7 @@ ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[])
 	{
 	  /* transform mark from world to current level space,
 	     unless transforming points where we can re-use the full
-	     transformations in already present in mm */
+	     transformations already present in mm */
 	  ay_trafo_identitymatrix(mm);
 	  if(view->type != AY_VTTRIM)
 	    {
@@ -1979,7 +1979,7 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
 	{
 	  /* transform mark from world to current level space,
 	     unless transforming points where we can re-use the full
-	     transformations in already present in mm */
+	     transformations already present in mm */
 	  ay_trafo_identitymatrix(mm);
 	  if(view->type != AY_VTTRIM)
 	    {
@@ -2190,7 +2190,7 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
 	{
 	  /* transform mark from world to current level space,
 	     unless transforming points where we can re-use the full
-	     transformations in already present in mm */
+	     transformations already present in mm */
 	  ay_trafo_identitymatrix(mm);
 	  if(view->type != AY_VTTRIM)
 	    {
@@ -2289,7 +2289,7 @@ ay_oact_sc2DAcb(struct Togl *togl, int argc, char *argv[])
  double ax = 0.0, ay = 0.0;
  double winx = 0.0, winy = 0.0, dscal = 1.0;
  double tpoint[4] = {0}, t1, t2, v1[2], v2[2];
- GLdouble a[3], mm[16], mmi[16];
+ GLdouble a[3], rm[16], mm[16], mmi[16];
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_point *point = NULL;
@@ -2379,33 +2379,55 @@ ay_oact_sc2DAcb(struct Togl *togl, int argc, char *argv[])
 						AY_SCA | AY_ROT, mm);
 		    }
 		}
-	       ay_trafo_translatematrix(-o->movx, -o->movy, -o->movz, mm);
-	       ay_trafo_translatematrix(a[0], a[1], a[2], mm);
-	       switch(view->type)
-		 {
-		 case AY_VTFRONT:
-		 case AY_VTTRIM:
-		   ay_trafo_scalematrix(dscal, dscal, 1.0, mm);
-		   break;
-		 case AY_VTTOP:
-		   ay_trafo_scalematrix(dscal, 1.0, dscal, mm);
-		   break;
-		 case AY_VTSIDE:
-		   ay_trafo_scalematrix(1.0, dscal, dscal, mm);
-		   break;
-		 default:
-		   break;
-		 }
-	       ay_trafo_translatematrix(-a[0], -a[1], -a[2], mm);
-	       ay_trafo_translatematrix(o->movx, o->movy, o->movz, mm);
-	       if(!view->local)
-		 {
-		   if(ay_currentlevel->object != ay_root)
-		     {
-		       ay_trafo_getsomeparent(ay_currentlevel->next,
-					      AY_SCA | AY_ROT, mm);
-		     }
-		 }
+
+	      if((fabs(1.0 - o->quat[3]) > AY_EPSILON) ||\
+		       (fabs(1.0 - o->scalx) > AY_EPSILON) ||\
+		       (fabs(1.0 - o->scaly) > AY_EPSILON) ||\
+		       (fabs(1.0 - o->scalz) > AY_EPSILON))
+		{
+		  o->quat[3] *= -1;
+		  ay_quat_torotmatrix(o->quat, rm);
+		  o->quat[3] *= -1;
+		  ay_trafo_multmatrix(mm, rm);
+		}
+
+	      ay_trafo_translatematrix(-o->movx, -o->movy, -o->movz, mm);
+	      ay_trafo_translatematrix(a[0], a[1], a[2], mm);
+	      switch(view->type)
+		{
+		case AY_VTFRONT:
+		case AY_VTTRIM:
+		  ay_trafo_scalematrix(dscal, dscal, 1.0, mm);
+		  break;
+		case AY_VTTOP:
+		  ay_trafo_scalematrix(dscal, 1.0, dscal, mm);
+		  break;
+		case AY_VTSIDE:
+		  ay_trafo_scalematrix(1.0, dscal, dscal, mm);
+		  break;
+		default:
+		  break;
+		}
+	      ay_trafo_translatematrix(-a[0], -a[1], -a[2], mm);
+	      ay_trafo_translatematrix(o->movx, o->movy, o->movz, mm);
+
+	      if((fabs(1.0 - o->quat[3]) > AY_EPSILON) ||\
+		       (fabs(1.0 - o->scalx) > AY_EPSILON) ||\
+		       (fabs(1.0 - o->scaly) > AY_EPSILON) ||\
+		       (fabs(1.0 - o->scalz) > AY_EPSILON))
+		{
+		  ay_quat_torotmatrix(o->quat, rm);
+		  ay_trafo_multmatrix(mm, rm);
+		}
+
+	      if(!view->local)
+		{
+		  if(ay_currentlevel->object != ay_root)
+		    {
+		      ay_trafo_getsomeparent(ay_currentlevel->next,
+					     AY_SCA | AY_ROT, mm);
+		    }
+		}
 
 	      while(point)
 		{
