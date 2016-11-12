@@ -3091,7 +3091,9 @@ ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
 	      return TCL_OK;
 	    } /* if */
 
-	  ay_object_link(new);
+	  /* ay_object_link(new); */
+	  new->next = sel->object->next;
+	  sel->object->next = new;
 
 	  /* remove all selected points */
 	  if(sel->object->selp)
