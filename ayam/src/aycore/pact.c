@@ -2079,7 +2079,7 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
  static int warp = AY_FALSE;
  double winx = 0.0, winy = 0.0, w;
  double movX, movY, movZ, dx = 0.0, dy = 0.0, dz = 0.0, *coords = NULL;
- double quat[4] = {0}, uccoords[3] = {0};
+ double quat[4] = {0}, uccoords[3] = {0}, wcoords[3];
  int i = 0, j, k = 0, start = AY_FALSE, redraw = AY_FALSE;
  double m[16] = {0}, rm[16] = {0};
  /*GLdouble mo[16] = {0};*/
@@ -2111,20 +2111,20 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 	}
       ay_trafo_translatematrix(-o->movx, -o->movy, -o->movz, m);
 
-       if(!view->local)
-	 {
-	   if(ay_currentlevel->object != ay_root)
-	     {
-	       ay_trafo_getparentinv(ay_currentlevel->next, m);
-	     }
-	 }
-       else
-	 {
-	   if(ay_currentlevel->object != ay_root)
-	     {
-	       ay_trafo_getsomeparentinv(ay_currentlevel->next, AY_SCA, m);
-	     }
-	 }
+      if(!view->local)
+	{
+	  if(ay_currentlevel->object != ay_root)
+	    {
+	      ay_trafo_getparentinv(ay_currentlevel->next, m);
+	    }
+	}
+      else
+	{
+	  if(ay_currentlevel->object != ay_root)
+	    {
+	      ay_trafo_getsomeparentinv(ay_currentlevel->next, AY_SCA, m);
+	    }
+	}
 
       if(argc >= 4)
 	{
@@ -2206,8 +2206,16 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 				      /* warp mouse to new coords */
 				      if(ay_prefs.allow_warp)
 					{
+					  memcpy(wcoords, coords,
+						 3*sizeof(double));
+					  if(view->local)
+					    {
+					      ay_trafo_applyall(
+					       ay_currentlevel->next, o,
+					       wcoords);
+					    }
 					  warp = AY_TRUE;
-					  ay_viewt_warpmouse(togl, coords, o,
+					  ay_viewt_warpmouse(togl, wcoords, o,
 							     &winx, &winy);
 					  warp = AY_FALSE;
 					}

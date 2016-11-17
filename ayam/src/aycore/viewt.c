@@ -2172,7 +2172,6 @@ ay_viewt_griddify(struct Togl *togl, double *winx, double *winy)
 
   if(view->grid != 0.0)
     {
-
       if(!view->local)
 	{
 	  /* get reference point in window coords */
@@ -2191,6 +2190,8 @@ ay_viewt_griddify(struct Togl *togl, double *winx, double *winy)
 	      refx = (width/2.0)-(view->from[0]/view->conv_x);
 	      refy = (height/2.0)-(view->from[2]/view->conv_y);
 	      break;
+	    default:
+	      break;
 	    }
 	}
       else
@@ -2198,6 +2199,8 @@ ay_viewt_griddify(struct Togl *togl, double *winx, double *winy)
 	  /* get reference point and grid size in window coords */
 	  glGetIntegerv(GL_VIEWPORT, vp);
 	  glGetDoublev(GL_PROJECTION_MATRIX, mp);
+
+	  ay_trafo_identitymatrix(mm);
 
 	  if(ay_currentlevel->object != ay_root)
 	    {
@@ -2207,7 +2210,6 @@ ay_viewt_griddify(struct Togl *togl, double *winx, double *winy)
 	   if(view->aligned && ay_selection)
 	     {
 	       o = ay_selection->object;
-
 	       ay_trafo_creatematrix(o, m);
 	       ay_trafo_multmatrix(mm, m);
 	     } /* if */
@@ -2236,6 +2238,8 @@ ay_viewt_griddify(struct Togl *togl, double *winx, double *winy)
 	      gl_status = gluProject(view->grid, 0.0, view->grid, mm, mp, vp,
 				     &gridx, &gridy, &gridz);
 	      break;
+	    default:
+	      break;
 	    }
 	  if(gl_status == GL_FALSE)
 	    {
@@ -2252,8 +2256,10 @@ ay_viewt_griddify(struct Togl *togl, double *winx, double *winy)
 	 compute new window coordinates, that are snapped to the grid;
          snapping to new coordinate values occurs halfway between two
 	 grid corners (thus, the use of ghx/ghy) */
-      gdx = fmod(*winx-refx, gridx);
-      gdy = fmod(*winy-refy, gridy);
+        //if(fabs(gridx) > AY_EPSILON)
+	gdx = fmod(*winx-refx, gridx);
+	//if(fabs(gridy) > AY_EPSILON)
+	gdy = fmod(*winy-refy, gridy);
 
       if(*winx>refx)
 	{
@@ -2284,7 +2290,6 @@ ay_viewt_griddify(struct Togl *togl, double *winx, double *winy)
 	  else
 	    *winy -= gdy;
 	} /* if */
-
     } /* if */
 
  return AY_OK;
