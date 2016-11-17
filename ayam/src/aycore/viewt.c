@@ -2256,9 +2256,10 @@ ay_viewt_griddify(struct Togl *togl, double *winx, double *winy)
 	 compute new window coordinates, that are snapped to the grid;
          snapping to new coordinate values occurs halfway between two
 	 grid corners (thus, the use of ghx/ghy) */
-        //if(fabs(gridx) > AY_EPSILON)
+      /* XXXX TODO: employ this robustness "fix"? */
+        /*if(fabs(gridx) > AY_EPSILON)*/
 	gdx = fmod(*winx-refx, gridx);
-	//if(fabs(gridy) > AY_EPSILON)
+	/*if(fabs(gridy) > AY_EPSILON)*/
 	gdy = fmod(*winy-refy, gridy);
 
       if(*winx>refx)
