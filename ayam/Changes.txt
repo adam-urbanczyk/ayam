@@ -1,4 +1,4 @@
-[10. Nov 2016 CVS-Head:
+[17. Nov 2016 CVS-Head:
 =======================
 Bug Fixes:
 o added missing scripting interface commands to JavaScript and Lua scripting
@@ -26,12 +26,14 @@ o pasting instances to the level with their master fails (SF 545)
 o extrusions with holes do not show all points (SF 546)
 o WatchCorners feature of the Gordon tool object for NCurves (SF 547)
 o splitting quadratic curves with three control points (SF 548)
+o panning of aligned object local views (SF 549)
+o single point editing in aligned object local views (SF 550)
 
 Modelling:
 o the create Sweep/Swing tools now rotate the parameter curves to the
   proper plane by control point manipulation if possible
 o improved support for "BP"/"CP" tags in "ConvertTags" preference
-  setting, if provided, conversion of e.g. a Revolve object with caps
+  setting: by default, conversion of e.g. a Revolve object with caps
   now creates a single NPatch with "CP" tags instead of a level with
   multiple NPatch objects
 o the open curve tool now modifies control points so that subsequent
@@ -50,7 +52,8 @@ o improved knot insertion error detection
 o if the mark is set the new coordinates will now be printed to the console
 o cycling view types via <PageUp>/<PageDown> now omits "Perspective", but the
   new hidden preference option "CyclePerspective" can be used to restore this
-o improved panning of arbitrarily oriented especially aligned local views
+o splitting curves now links the new curves right after the respective
+  originals and not to the end of the current level
 
 GUI:
 o added RIB-Export rendering option "AutoCloseUI" to automatically close
