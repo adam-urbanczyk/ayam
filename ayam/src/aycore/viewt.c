@@ -2204,7 +2204,7 @@ ay_viewt_griddify(struct Togl *togl, double *winx, double *winy)
 
 	  if(ay_currentlevel->object != ay_root)
 	    {
-	      ay_trafo_concatparent(ay_currentlevel->next);
+	      ay_trafo_getparent(ay_currentlevel->next, mm);
 	    }
 
 	   if(view->aligned && ay_selection)
@@ -2212,7 +2212,7 @@ ay_viewt_griddify(struct Togl *togl, double *winx, double *winy)
 	       o = ay_selection->object;
 	       ay_trafo_creatematrix(o, m);
 	       ay_trafo_multmatrix(mm, m);
-	     } /* if */
+	     }
 
 	  if(GL_FALSE == gluProject(0.0, 0.0, 0.0, mm, mp, vp,
 				    &refx, &refy, &refz))
