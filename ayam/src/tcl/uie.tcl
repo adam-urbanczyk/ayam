@@ -646,7 +646,7 @@ proc addCheckB { w prop name help } {
 #
 #
 #
-proc addCheck { w prop name } {
+proc addCheck { w prop name {onoffvals ""} } {
     global $prop ay ayprefs aymainshortcuts
 
     if { [winfo toplevel $w] == "." } {
@@ -724,6 +724,11 @@ proc addCheck { w prop name } {
 
     bind $cb <Key-Return> "$ay(bok) invoke;break"
     catch {bind $cb <Key-KP_Enter> "$ay(bok) invoke;break"}
+
+    if { $onoffvals != "" } {
+	$cb conf -onvalue [lindex $onoffvals 0]
+	$cb conf -offvalue [lindex $onoffvals 1]
+    }
 
     pack $f -in $w -side top -fill x
 
