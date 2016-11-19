@@ -136,7 +136,7 @@ proc runTool { argvars argstrings command title {advargs ""} } {
 			break;
 		    }
 		    if { [string is boolean $vali] } {
-			addCheck $w.f1 ToolParams $nam
+			addCheck $w.f1 ToolParams $nam {true false}
 			break;
 		    }
 		}
