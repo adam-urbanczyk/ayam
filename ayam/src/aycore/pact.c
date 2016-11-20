@@ -562,7 +562,8 @@ ay_pact_flashpoint(int ignore_old, double *pnt, ay_object *o)
 
 /* ay_pact_startpetcb:
  *  prepares everything for the single point editing modes
- *
+ *  (it is bound to moving the mouse pointer, and it is flashing
+ *   potentially affected points on the go)
  */
 int
 ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
@@ -770,7 +771,7 @@ ay_pact_pentcb(struct Togl *togl, int argc, char *argv[])
 {
  int ay_status = AY_OK, tcl_status = TCL_OK;
  Tcl_Interp *interp = NULL;
- ay_view_object  *view = (ay_view_object *)Togl_GetClientData(togl);
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  double winX = 0.0, winY = 0.0;
  double obj[3] = {0};
  char *n1 = "editPntArr", fname[] = "editPntNum";
@@ -786,6 +787,7 @@ ay_pact_pentcb(struct Togl *togl, int argc, char *argv[])
  ay_point *selp = NULL;
  ay_nurbcurve_object *nc = NULL;
  ay_nurbpatch_object *np = NULL;
+ ay_pamesh_object *pm = NULL;
 
   if(argc < 1)
     {
@@ -1055,6 +1057,11 @@ ay_pact_pentcb(struct Togl *togl, int argc, char *argv[])
 		  np = (ay_nurbpatch_object *)o->refine;
 		  np->is_rat = ay_npt_israt(np);
 		}
+	      if(o->type == AY_IDPAMESH)
+		{
+		  pm = (ay_pamesh_object *)o->refine;
+		  pm->is_rat = ay_pmt_israt(pm);
+		}
 	      if(o->modified)
 		{
 		  ay_notify_object(o);
@@ -1196,7 +1203,6 @@ ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
 		  j++;
 		  inserted = AY_TRUE;
 		}
-
 	    }
 	  else
 	    {
@@ -1464,7 +1470,6 @@ ay_pact_insertic(ay_icurve_object *icurve, int *index,
 	      j++;
 	      inserted = AY_TRUE;
 	    }
-
 	}
       else
 	{
@@ -1476,7 +1481,6 @@ ay_pact_insertic(ay_icurve_object *icurve, int *index,
 
   if((icurve->type) && (*index == icurve->length-2))
     {
-
       inserted = AY_TRUE;
     }
 
