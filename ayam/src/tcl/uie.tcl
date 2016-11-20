@@ -633,9 +633,9 @@ proc addColor { w prop name {def {}} } {
 #
 #
 #
-proc addCheckB { w prop name help } {
+proc addCheckB { w prop name help {onoffvals ""} } {
 
-    addCheck $w $prop $name
+    addCheck $w $prop $name $onoffvals
 
     balloon_set $w.f${name}.l "${name}:\n${help}"
 
