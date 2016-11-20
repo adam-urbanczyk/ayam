@@ -3071,9 +3071,11 @@ ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argv[1][0] == '-' && argv[1][1] == 'a')
     {
-      if(argc > 1)
+      if(argc > 2)
 	{
 	  tcl_status = Tcl_GetBoolean(interp, argv[2], &append);
+	  if(tcl_status != TCL_OK)
+	    tcl_status = Tcl_GetInt(interp, argv[2], &append);
 	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	}
       i += 2;
@@ -3081,7 +3083,7 @@ ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc <= i)
     {
-      ay_error(AY_EARGS, argv[0], "[-a false|true] u");
+      ay_error(AY_EARGS, argv[0], "[-a 0|1] u");
       return TCL_OK;
     }
 
