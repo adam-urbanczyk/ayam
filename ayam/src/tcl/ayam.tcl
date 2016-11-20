@@ -698,6 +698,7 @@ array set ay {
  remtol Inf
  refinekn 0.5
  splitu 0.5
+ splitappend false
  trimumin 0.0
  trimumax 1.0
  ncircradius 1.0

@@ -3060,13 +3060,8 @@ ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *new = NULL;
  double u = 0.0;
- int notify_parent = AY_FALSE;
-
-  if(argc < 2)
-    {
-      ay_error(AY_EARGS, argv[0], "u");
-      return TCL_OK;
-    }
+ int i = 1;
+ int notify_parent = AY_FALSE, append = AY_FALSE;
 
   if(!sel)
     {
@@ -3074,7 +3069,23 @@ ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  tcl_status = Tcl_GetDouble(interp, argv[1], &u);
+  if(argv[1][0] == '-' && argv[1][1] == 'a')
+    {
+      if(argc > 1)
+	{
+	  tcl_status = Tcl_GetBoolean(interp, argv[2], &append);
+	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	}
+      i += 2;
+    }
+
+  if(argc <= i)
+    {
+      ay_error(AY_EARGS, argv[0], "[-a false|true] u");
+      return TCL_OK;
+    }
+
+  tcl_status = Tcl_GetDouble(interp, argv[i], &u);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
 
   while(sel)
@@ -3086,14 +3097,19 @@ ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
 	  if((ay_status = ay_nct_split(sel->object, u, &new)))
 	    {
 	      if(!new)
-
-	      ay_error(ay_status, argv[0], NULL);
+		ay_error(ay_status, argv[0], NULL);
 	      return TCL_OK;
 	    } /* if */
 
-	  /* ay_object_link(new); */
-	  new->next = sel->object->next;
-	  sel->object->next = new;
+	  if(append)
+	    {
+	      ay_object_link(new);
+	    }
+	  else
+	    {
+	      new->next = sel->object->next;
+	      sel->object->next = new;
+	    }
 
 	  /* remove all selected points */
 	  if(sel->object->selp)
