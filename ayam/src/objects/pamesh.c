@@ -706,9 +706,11 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       Tcl_SetStringObj(ton, "Step_U", -1);
       to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
 			  TCL_GLOBAL_ONLY);
-      Tcl_GetIntFromObj(interp, to,  &(new_step_u));
+      Tcl_GetIntFromObj(interp, to, &(new_step_u));
       if(new_step_u <= 0)
 	pamesh->ustep = 1;
+      else
+	pamesh->ustep = new_step_u;
     }
   else
     {
@@ -745,6 +747,8 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       Tcl_GetIntFromObj(interp, to, &(new_step_v));
       if(new_step_v <= 0)
 	pamesh->vstep = 1;
+      else
+	pamesh->vstep = new_step_v;
     }
   else
     {
