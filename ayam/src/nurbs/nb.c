@@ -1366,7 +1366,7 @@ ay_nb_FindSpanMult(int n, int p, double u, double *U, int *s)
 
   if(u >= U[n+1])
     {
-      mid = n;
+      mid = n+1;
 
       l = mid;
 
