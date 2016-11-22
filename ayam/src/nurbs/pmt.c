@@ -442,6 +442,26 @@ ay_pmt_tobasis(ay_pamesh_object *pm, int btype, int bstep, double *basis)
 	case AY_BTBEZIER:
 	  memcpy(mu, mbi, 16*sizeof(double));
 	  break;
+	case AY_BTCATMULLROM:
+	  if(ay_trafo_invgenmatrix(mc, mi))
+	    {
+	      return AY_ERROR;
+	    }
+	  have_mi = AY_TRUE;
+	  memcpy(mu, mi, 16*sizeof(double));
+	  break;
+	case AY_BTHERMITE:
+	  if(ay_trafo_invgenmatrix(mh, mi))
+	    {
+	      return AY_ERROR;
+	    }
+	  have_mi = AY_TRUE;
+	  memcpy(mu, mi, 16*sizeof(double));
+	  break;
+	case AY_BTPOWER:
+	  have_mi = AY_TRUE;
+	  ay_trafo_identitymatrix(mu);
+	  break;
 	default:
 	  if(ay_trafo_invgenmatrix(basis, mi))
 	    {
@@ -500,6 +520,23 @@ ay_pmt_tobasis(ay_pamesh_object *pm, int btype, int bstep, double *basis)
 	  break;
 	case AY_BTBEZIER:
 	  memcpy(mv, mbi, 16*sizeof(double));
+	  break;
+	case AY_BTCATMULLROM:
+	  if(ay_trafo_invgenmatrix(mc, mi))
+	    {
+	      return AY_ERROR;
+	    }
+	  memcpy(mv, mi, 16*sizeof(double));
+	  break;
+	case AY_BTHERMITE:
+	  if(ay_trafo_invgenmatrix(mh, mi))
+	    {
+	      return AY_ERROR;
+	    }
+	  memcpy(mv, mi, 16*sizeof(double));
+	  break;
+	case AY_BTPOWER:
+	  ay_trafo_identitymatrix(mv);
 	  break;
 	default:
 	  if(!have_mi)
