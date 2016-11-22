@@ -1472,6 +1472,9 @@ int ay_pmt_israt(ay_pamesh_object *pm);
 int ay_pmt_tobasistcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
+/** Get basis matrix */
+void ay_pmt_getbasis(int btype, double **result);
+
 /** Initialize the patch mesh tools module.
  */
 void ay_pmt_init();
