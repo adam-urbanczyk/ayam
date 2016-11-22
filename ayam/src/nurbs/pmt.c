@@ -25,9 +25,8 @@ static double mc[16] = {-0.5, 1, -0.5, 0,  1.5, -2.5, 0, 1,  -1.5, 2, 0.5, 0,
 static double ms[16] = {-1.0/6, 3.0/6, -3.0/6, 1.0/6,  3.0/6, -1, 0, 4.0/6,
 			-3.0/6, 3.0/6, 3.0/6, 1.0/6,  1.0/6, 0, 0, 0};
 /* Power */
-#if 0
 static double mp[16] = {1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1};
-#endif
+
 
 static double mbi[16];
 
@@ -1140,6 +1139,41 @@ cleanup:
 
  return ay_status;
 } /* ay_pmt_tonpatch */
+
+/** ay_pmt_getbasis:
+ * Get basis matrix.
+ *
+ * \param[in] btype desired basis type (AY_BT*)
+ * \param[in,out] result where to store the pointer to the matrix
+ *
+ */
+void
+ay_pmt_getbasis(int btype, double **result)
+{
+
+  switch(btype)
+    {
+    case AY_BTBSPLINE:
+      *result = ms;
+      break;
+    case AY_BTBEZIER:
+      *result = mb;
+      break;
+    case AY_BTCATMULLROM:
+      *result = mc;
+      break;
+    case AY_BTHERMITE:
+      *result = mh;
+      break;
+    case AY_BTPOWER:
+      *result = mp;
+      break;
+    default:
+      break;
+    }
+
+ return;
+} /* ay_pmt_getbasis */
 
 
 /** ay_pmt_init:

@@ -624,7 +624,7 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  int new_close_u, new_width, new_btype_u, new_step_u;
  int new_close_v, new_height, new_btype_v, new_step_v;
  int new_type, i, j, update = AY_FALSE;
- double dtemp;
+ double dtemp, *basis;
  char *man[] = {"_0","_1","_2","_3","_4","_5","_6","_7","_8","_9","_10","_11","_12","_13","_14","_15"};
 
   if(!interp || !o)
@@ -674,40 +674,46 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       update = AY_TRUE;
     }
 
-  pamesh->type = new_type;
-  pamesh->btype_u = new_btype_u;
-  pamesh->btype_v = new_btype_v;
-
-  pamesh->close_u = new_close_u;
-  pamesh->close_v = new_close_v;
-
-  if(pamesh->btype_u == AY_BTCUSTOM)
+  if(new_btype_u == AY_BTCUSTOM)
     {
+      update = AY_TRUE;
       if(!pamesh->ubasis)
 	{
 	  if(!(pamesh->ubasis = calloc(16, sizeof(double))))
 	    {
-	      Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-	      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 	      ay_error(AY_EOMEM, fname, NULL);
-	      return AY_OK;
+	      goto cleanup;
 	    } /* if */
 	} /* if */
-      for(j = 0; j < 16; j++)
+
+      if(pamesh->btype_u == AY_BTCUSTOM)
 	{
-	  Tcl_SetStringObj(ton, "Basis_U", -1);
-	  Tcl_AppendStringsToObj(ton, man[j], NULL);
-	  to  = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-			       TCL_GLOBAL_ONLY);
-	  Tcl_GetDoubleFromObj(interp, to, &dtemp);
-	  pamesh->ubasis[j] = dtemp;
-	} /* for */
+	  for(j = 0; j < 16; j++)
+	    {
+	      Tcl_SetStringObj(ton, "Basis_U", -1);
+	      Tcl_AppendStringsToObj(ton, man[j], NULL);
+	      to  = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
+				   TCL_GLOBAL_ONLY);
+	      Tcl_GetDoubleFromObj(interp, to, &dtemp);
+	      pamesh->ubasis[j] = dtemp;
+	    } /* for */
+	}
+      else
+	{
+	  /* switching from another basis to custom */
+	  basis = NULL;
+	  ay_pmt_getbasis(pamesh->btype_u, &basis);
+	  if(basis)
+	    {
+	      memcpy(pamesh->ubasis, basis, 16*sizeof(double));
+	    }
+	}
 
       Tcl_SetStringObj(ton, "Step_U", -1);
       to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
 			  TCL_GLOBAL_ONLY);
       Tcl_GetIntFromObj(interp, to, &(new_step_u));
-      if(new_step_u <= 0)
+      if(new_step_u <= 0 || new_step_v > 4)
 	pamesh->ustep = 1;
       else
 	pamesh->ustep = new_step_u;
@@ -719,33 +725,45 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       pamesh->ubasis = NULL;
     } /* if */
 
-  if(pamesh->btype_v == AY_BTCUSTOM)
+  if(new_btype_v == AY_BTCUSTOM)
     {
+      update = AY_TRUE;
       if(!pamesh->vbasis)
 	{
 	  if(!(pamesh->vbasis = calloc(16, sizeof(double))))
 	    {
-	      Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-	      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 	      ay_error(AY_EOMEM, fname, NULL);
-	      return AY_OK;
+	      goto cleanup;
 	    } /* if */
 	} /* if */
-      for(j = 0; j < 16; j++)
+      if(pamesh->btype_v == AY_BTCUSTOM)
 	{
-	  Tcl_SetStringObj(ton, "Basis_V", -1);
-	  Tcl_AppendStringsToObj(ton, man[j], NULL);
-	  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-			      TCL_GLOBAL_ONLY);
-	  Tcl_GetDoubleFromObj(interp, to, &dtemp);
-	  pamesh->vbasis[j] = dtemp;
-	} /* for */
+	  for(j = 0; j < 16; j++)
+	    {
+	      Tcl_SetStringObj(ton, "Basis_V", -1);
+	      Tcl_AppendStringsToObj(ton, man[j], NULL);
+	      to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
+				  TCL_GLOBAL_ONLY);
+	      Tcl_GetDoubleFromObj(interp, to, &dtemp);
+	      pamesh->vbasis[j] = dtemp;
+	    } /* for */
+	}
+      else
+	{
+	  /* switching from another basis to custom */
+	  basis = NULL;
+	  ay_pmt_getbasis(pamesh->btype_v, &basis);
+	  if(basis)
+	    {
+	      memcpy(pamesh->vbasis, basis, 16*sizeof(double));
+	    }
+	}
 
       Tcl_SetStringObj(ton, "Step_V", -1);
       to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
 			  TCL_GLOBAL_ONLY);
       Tcl_GetIntFromObj(interp, to, &(new_step_v));
-      if(new_step_v <= 0)
+      if(new_step_v <= 0 || new_step_v > 4)
 	pamesh->vstep = 1;
       else
 	pamesh->vstep = new_step_v;
@@ -756,6 +774,13 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	free(pamesh->vbasis);
       pamesh->vbasis = NULL;
     } /* if */
+
+  pamesh->type = new_type;
+  pamesh->btype_u = new_btype_u;
+  pamesh->btype_v = new_btype_v;
+
+  pamesh->close_u = new_close_u;
+  pamesh->close_v = new_close_v;
 
   Tcl_SetStringObj(ton, "Tolerance", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -792,10 +817,6 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	}
     }
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
-
 
   /* apply changed values to patch */
 
@@ -841,6 +862,10 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       o->modified = AY_TRUE;
       (void)ay_notify_parent();
     }
+
+cleanup:
+  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
+  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
  return AY_OK;
 } /* ay_pamesh_setpropcb */
