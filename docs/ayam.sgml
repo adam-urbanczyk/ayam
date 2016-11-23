@@ -2480,9 +2480,9 @@ the focus to a toplevel window might also raise it.
 In single window GUI mode, auto focus additionally manages the input
 focus of the internal views, tree view, property GUI, and console.
 <p>
-While the preference editor is open, auto focus is temporarily
-turned off and changes to the <tt/"AutoFocus"/ preference setting will
-only be realized after the preferences editor is closed.
+Note that while the preference editor is open, auto focus is always
+temporarily turned off and changes to the <tt/"AutoFocus"/ preference
+setting will only be realized after the preferences editor is closed.
 
 <item><tt/"TwmCompat"/ changes, how Ayam tells the window manager
 new geometries of windows. This option has to be toggled if Ayam
@@ -2494,8 +2494,9 @@ This option is not available on the Win32 platform and on MacOSX Aqua.
 
 <item><tt/"AutoSavePrefs"/, if this is switched on, Ayam will write
 the preferences settings to the ayamrc file when the program quits.
+See also section <ref id="ayamrc" name="Ayamrc File">.
 
-<item><tt/"BakOnReplace"/, if this is switched on, Ayam will make
+<item><tt/"BakOnReplace"/, controls whether Ayam will make
 a backup copy of each scene file loaded via the main menu entry
 <tt>"File/Open"</tt> or via the most recently used list.
 The backup file will be placed right next to the loaded file
@@ -7930,7 +7931,13 @@ for bicubic patches. The following basis types are available:
 <tt/"Hermite"/, <tt/"Power"/, and <tt/"Custom"/.
 In the latter case (<tt/"Custom"/), additional parameters may be set.
 Those are <tt/"Step_U"//<tt/"Step_V"/ (the step size of the basis) and
-<tt/"Basis_U"//<tt/"Basis_V"/ the basis itself.
+<tt/"Basis_U"//<tt/"Basis_V"/ the basis itself.<newline>
+When a basis type is changed to <tt/"Custom"/, the
+initial values of the basis matrix will be of those of
+the previous type.<footnote>Since Ayam 1.24.</footnote><newline>
+Also note, that changing a basis type via the property GUI is not the
+same as converting a patch mesh via the tobasiPM command,
+see also section <ref id="sctobasispm" name="tobasisPM command">.<newline>
 Please see the RenderMan Companion for a more in depth discussion of
 the different basis types.
 </itemize>
@@ -11521,7 +11528,7 @@ The tag value widget also has a context menu, allowing text to be
 fetched from the system clipboard or files.
 
 <#if out=latex><x/newpage/</#if>
-
+<p>
 <figure loc="ht">
 <eps file="pics/addmodtag.ps" height="2.5cm">
 <img src="pics/addmodtag.gif">
@@ -13009,6 +13016,7 @@ for t=0.5)</caption>
 <descrip>
 <tag/Arguments/ The split curves tool takes a number of NURBS curves from
 the selection and additionally requests a parametric value <it/u/.
+In addition an append option can be set.
 <tag/Operation/ The selected NURBS curves will be split into two
 NURBS curves at the designated parametric value <it/u/. The splitting process
 involves application of knot insertion, so that all new curves will
@@ -13019,7 +13027,10 @@ get a custom knot vector.
 </verb></tscreen>
 <tag/Notes/ The original selected NURBS curve objects will be changed.
 
-All new curve objects will be appended to the current level.
+The new curve(s) will be inserted
+into the level right after the respective curve(s) to split unless
+the append option is set.
+<footnote>Since 1.24</footnote></#if>
 
 The point selection will be removed from the original curves.
 
@@ -15812,6 +15823,7 @@ If the last of the selected objects is the last in the current level,
 nothing will be changed, i.e.~either all selected objects move, or none.
 </itemize>
 
+<#if out=latex><x/newpage/</#if>
 
 <sect2>Transformations<label id="scitrafo">
 <p>
@@ -15963,6 +15975,7 @@ significant digits specified via the hidden preference setting
 <tt/"NormalizeDigits"/ (by default 6).
 </itemize>
 
+<#if out=latex><x/newpage/</#if>
 
 <sect2>Manipulating Shaders<label id="scishaders">
 <p>
@@ -16314,6 +16327,8 @@ is the degree of the curve).
 See also section <ref id="refit" name="Refine Tool">.
 </itemize>
 
+<#if out=latex><x/newpage/</#if>
+
 <p>
 <#if out=latex><x/phantomsection/</#if>
 
@@ -16452,11 +16467,16 @@ See also section <ref id="resckrt" name="Rescale Knots to Range Tool">.
 <label id="scsplitnc">
 splitNC &ndash; split NURBS curve
 <itemize>
- <item>Synopsis: <tt/"splitNC u"/
+ <item>Synopsis: <tt/"splitNC [-a 0|1] u"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: splits the selected NURBS curves at the designated
 parametric value <em/u/ into two curves, creating one new curve and
 <em>modifying the original</em> selected curve.
+<p>
+If the option <em/-a/ is set to 1 the new curve(s) will be appended
+to the current level. Otherwise the new curve(s) will be inserted
+into the level right after the respective curve(s) to split.
+<footnote>Since 1.24</footnote></#if>
 <p><p>
 See also section <ref id="splitt" name="Split Tool">.
 </itemize>
@@ -17098,9 +17118,10 @@ See also section <ref id="makecompst" name="Make Compatible Tool">.
 
 <p>
 <#if out=latex><x/newpage/</#if>
-
+tobasisPM &ndash; convert PatchMesh to a different
+basis:
+<#if out=latex><x/phantomsection/</#if>
 <label id="sctobasispm">
-tobasisPM &ndash; convert PatchMesh to a different basis:
 <itemize>
  <item>Synopsis: <tt/"tobasisPM [-t type | -s step | -b basis]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -17126,7 +17147,7 @@ to Custom.
 <p>
 See also section <ref id="basist" name="Basis Tool">.
 -->
-<item>Example:
+<item>Example:<newline>
 <bf><tt>"tobasisPM -t 0"</tt></bf><newline>
 converts the selected bicubic patch meshes to the Bezier basis.
 </itemize>
@@ -17775,7 +17796,7 @@ additional drop down menu on the right side of the interface element.
 
 addCheck:
 <itemize>
- <item>Synopsis: <tt>"addCheck window arrayname paramname"</tt>
+ <item>Synopsis: <tt>"addCheck window arrayname paramname [onoffvalues]"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes, Type: Procedure
  <item>Description: This procedure adds a property GUI element for a single
 boolean parameter realized by a check-button.
@@ -17787,6 +17808,10 @@ The <tt/"arrayname"/ parameter is the name of the corresponding
 data array of the property.
 <p>
 The <tt/"paramname"/ parameter is the name of the parameter.
+<p>
+The <tt/"onoffvalues"/ parameter is a list of two values that will
+be used when setting the corresponding variable when the check-button is
+enabled or disabled.
 <item>Example:
 <bf><tt>"addCheck $w MyPropertyData MyBool"</tt></bf>
 </itemize>
@@ -22604,7 +22629,7 @@ Index:
 <item>Area Light: <ref id="alob" name="creation of">
 <item>Array: <ref id="cloneobj" name="Clone object">
 <item>AskScriptDisable: <ref id="hidprefs" name="hidden preference setting">
-<item>Atmosphere: <ref id="imager" name="property">
+<item>Atmosphere: <ref id="imager" name="shader property">
 <item>Attributes:
 <itemize>
 <item><ref id="attrs" name="attributes property">,
@@ -22703,6 +22728,7 @@ Index:
 </itemize>
 <item>CastShadows: <ref id="riattrs" name="RenderMan/BMRT attribute">
 <item>Cat: <ref id="hidprefs" name="hidden preference setting">
+<item>Catmull-Clark: <ref id="sdmattr" name="SDMesh subdivision scheme">
 <item>Catmull Rom: <ref id="pmattr" name="PatchMesh basis type">
 <item>cbox.tcl: <ref id="cboxtcl" name="example/helper script">
 <item>Chamfer: <ref id="bevelobj" name="Bevel object">,
@@ -22875,7 +22901,7 @@ Index:
 <item>Direct Editing: <ref id="editac" name="edit points">
 <item>DisableFailedScripts: <ref id="hidprefs" name="hidden preference setting">
 <item>Disk: <ref id="diskobj" name="Disk object">
-<item>Displacement: <ref id="matshader" name="shader">
+<item>Displacement: <ref id="matshader" name="shader property">
 <item>Display: <ref id="ridtag" name="RiDisplay tag type">
 <item>DisplayMode:
 <itemize>
@@ -22956,7 +22982,7 @@ Index:
 <item>Expression: <ref id="mcattr" name="MetaComp attribute">
 <item>extendNC: <ref id="scextendnc" name="scripting interface command">
 <item>Extend: <ref id="extendt" name="extend curve tool">
-<item>Exterior: <ref id="matshader" name="shader">
+<item>Exterior: <ref id="matshader" name="shader property">
 <item>Extract:
 <itemize>
 <item><ref id="extnct" name="extract curve tool">,
@@ -23135,7 +23161,7 @@ Index:
 <item>IgnoreHidden: <ref id="exp3dmopt" name="3DM (Rhino) export option">
 <item>IgnoreNormals: <ref id="mmtools" name="Optimize PolyMesh tool option">
 <item>Image: <ref id="prefrib" name="preference setting">
-<item>Imager: <ref id="imager" name="property">
+<item>Imager: <ref id="imager" name="shader property">
 <item>Import:
 <itemize>
 <item><ref id="imprhino" name="3DM (Rhino) Import">,
@@ -23170,7 +23196,7 @@ Index:
 <item><ref id="bevelsprop" name="Cap attribute">
 </itemize>
 <item>Intensity: <ref id="lip" name="Light attribute">
-<item>Interior: <ref id="matshader" name="shader">
+<item>Interior: <ref id="matshader" name="shader property">
 <item>Interpolate:
 <itemize>
 <item><ref id="swp" name="Sweep attribute">,
@@ -23287,6 +23313,7 @@ Index:
 <item>Loft: <ref id="skinobj" name="Skin object">
 <item>LogFile: <ref id="prefgui" name="preference setting">
 <item>Logging: <ref id="prefgui" name="preference setting">
+<item>Loop: <ref id="sdmattr" name="SDMesh subdivision scheme">
 <item>LowerBevel: <ref id="textattr" name="Text attribute">
 <item>LowerCap: <ref id="textattr" name="Text attribute">
 <item>Lua: <ref id="luainterp" name="Lua Scripting Interface">
@@ -23948,7 +23975,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>StripShaderArch: <ref id="hidprefs" name="hidden preference setting">
 <item>Subdivision Mesh: <ref id="sdmeshobj" name="SDMesh object">
 <item>Superformula Curve: <ref id="sfcurveobj" name="SfCurve object">
-<item>Surface: <ref id="matshader" name="shader">
+<item>Surface: <ref id="matshader" name="shader property">
 <item>Surfaces: <ref id="surfaces" name="surface primitives">
 <item>SwapMB: <ref id="hidprefs" name="hidden preference setting">
 <item>Swap UV: <ref id="swapuvt" name="surface tool">
