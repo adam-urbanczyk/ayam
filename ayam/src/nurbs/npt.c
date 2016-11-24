@@ -11516,8 +11516,10 @@ ay_npt_splituvtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *new = NULL;
  double t = 0.0;
+ int i = 1;
  int splitv = AY_FALSE;
  int notify_parent = AY_FALSE;
+ int append = AY_FALSE;
 
   /* distinguish between
      splituNP and
@@ -11526,19 +11528,31 @@ ay_npt_splituvtcmd(ClientData clientData, Tcl_Interp *interp,
   if(argv[0][5] == 'v')
     splitv = AY_TRUE;
 
-  if(argc < 2)
-    {
-      ay_error(AY_EARGS, argv[0], "t");
-      return TCL_OK;
-    }
-
   if(!sel)
     {
       ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
-  tcl_status = Tcl_GetDouble(interp, argv[1], &t);
+  if(argv[1][0] == '-' && argv[1][1] == 'a')
+    {
+      if(argc > 2)
+	{
+	  tcl_status = Tcl_GetBoolean(interp, argv[2], &append);
+	  if(tcl_status != TCL_OK)
+	    tcl_status = Tcl_GetInt(interp, argv[2], &append);
+	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	}
+      i += 2;
+    }
+
+  if(argc <= i)
+    {
+      ay_error(AY_EARGS, argv[0], "[-a 0|1] t");
+      return TCL_OK;
+    }
+
+  tcl_status = Tcl_GetDouble(interp, argv[i], &t);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
 
   while(sel)
@@ -11563,7 +11577,15 @@ ay_npt_splituvtcmd(ClientData clientData, Tcl_Interp *interp,
 	      return TCL_OK;
 	    } /* if */
 
-	  ay_object_link(new);
+	  if(append)
+	    {
+	      ay_object_link(new);
+	    }
+	  else
+	    {
+	      new->next = sel->object->next;
+	      sel->object->next = new;
+	    }
 
 	  sel->object->modified = AY_TRUE;
 
