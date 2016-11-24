@@ -596,14 +596,16 @@ $m.npt add command -label "Close V" -command {
 }
 
 $m.npt add command -label "Split U" -command {
-    runTool ay(splitu) {"Split at:"}\
-	"undo save SplitUNP; splituNP %0; uCR; sL; rV"\
+    runTool {ay(splitu) ay(splitappend)} {"Split at:" "Append:"}\
+	"undo save SplitUNP; splituNP -a %1 %0;\
+if \{ %1 \} \{uCR; rV\} else \{cS; set ay(ul) $ay(CurrentLevel); uS; rV\}"\
 	"Split Surface U" splitnpt
 }
 
 $m.npt add command -label "Split V" -command {
-    runTool ay(splitu) {"Split at:"}\
-	"undo save SplitVNP; splitvNP %0; uCR; sL; rV"\
+    runTool {ay(splitu) ay(splitappend)} {"Split at:" "Append:"}\
+	"undo save SplitVNP; splitvNP -a %1 %0;\
+if \{ %1 \} \{uCR; rV\} else \{cS; set ay(ul) $ay(CurrentLevel); uS; rV\}"\
 	"Split Surface V" splitnpt
 }
 
