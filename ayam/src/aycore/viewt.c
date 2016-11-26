@@ -938,7 +938,8 @@ ay_viewt_redrawtcb(struct Togl *togl, int argc, char *argv[])
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
 
 #ifdef AYLOCALGLUQUADOBJ
-  ay_gluquadobj = view->gluquadobj;
+  if(!(ay_gluquadobj = gluNewQuadric()))
+    return;
 #endif /* AYLOCALGLUQUADOBJ */
 
   if(view->altdispcb)
@@ -968,6 +969,10 @@ ay_viewt_redrawtcb(struct Togl *togl, int argc, char *argv[])
   if(view->ppreview)
     ay_wrib_pprevdraw(view);
 #endif
+
+#ifdef AYLOCALGLUQUADOBJ
+  gluDeleteQuadric(ay_gluquadobj);
+#endif /* AYLOCALGLUQUADOBJ */
 
  return TCL_OK;
 } /* ay_viewt_redrawtcb */
