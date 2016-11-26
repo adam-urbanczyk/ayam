@@ -119,13 +119,7 @@ ay_toglcb_create(struct Togl *togl)
 
   /* glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color); */
 
-#ifdef AYLOCALGLUQUADOBJ
-  if(!(view->gluquadobj = gluNewQuadric()))
-    {
-      /* XXXX error handling? */
-      return;
-    }
-#else
+#ifndef AYLOCALGLUQUADOBJ
   if(!ay_gluquadobj)
     {
       if(!(ay_gluquadobj = gluNewQuadric()))
@@ -310,7 +304,8 @@ ay_toglcb_display(struct Togl *togl)
     }
 
 #ifdef AYLOCALGLUQUADOBJ
-  ay_gluquadobj = view->gluquadobj;
+  if(!(ay_gluquadobj = gluNewQuadric()))
+    return;
 #endif /* AYLOCALGLUQUADOBJ */
 
   if(view->altdispcb)
@@ -380,6 +375,10 @@ ay_toglcb_display(struct Togl *togl)
   if(view->ppreview)
     ay_wrib_pprevdraw(view);
 #endif
+
+#ifdef AYLOCALGLUQUADOBJ
+  gluDeleteQuadric(ay_gluquadobj));
+#endif /* AYLOCALGLUQUADOBJ */
 
  return;
 } /* ay_toglcb_display */

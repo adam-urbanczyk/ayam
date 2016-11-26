@@ -1361,11 +1361,6 @@ typedef struct ay_view_object_s
   int action_state; /**< is an action active in this view? (0 no, 1 yes) */
 
   int full_notify;  /**< controls scope of notification */
-
-#ifdef AYLOCALGLUQUADOBJ
-  GLUquadric *gluquadobj; /**< local GLU quadric object, tied to the
-			     GL on Aqua */
-#endif
 } ay_view_object;
 
 
