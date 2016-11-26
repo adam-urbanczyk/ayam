@@ -370,7 +370,7 @@ ay_toglcb_display(struct Togl *togl)
 #endif
 
 #ifdef AYLOCALGLUQUADOBJ
-  gluDeleteQuadric(ay_gluquadobj));
+  gluDeleteQuadric(ay_gluquadobj);
 #endif /* AYLOCALGLUQUADOBJ */
 
  return;
