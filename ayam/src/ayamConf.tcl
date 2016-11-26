@@ -174,7 +174,7 @@ proc create_makefile {} {
 	set LD "CC"
     } elseif {[regexp "Mac" $osval]} {
 	if {$useaqua} {
-	    set CFLAGS "-DAYWITHAQUA -DAYENABLEFEXIT -DMAC_OSX_TK"
+	    set CFLAGS "-DAYWITHAQUA -DAYENABLEFEXIT -DMAC_OSX_TK -DAYLOCALGLUQUADOBJ"
 	} else {
 	    set CFLAGS "-DAYENABLEFEXIT"
 	}

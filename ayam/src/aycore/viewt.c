@@ -939,7 +939,7 @@ ay_viewt_redrawtcb(struct Togl *togl, int argc, char *argv[])
 
 #ifdef AYLOCALGLUQUADOBJ
   if(!(ay_gluquadobj = gluNewQuadric()))
-    return;
+    return TCL_ERROR;
 #endif /* AYLOCALGLUQUADOBJ */
 
   if(view->altdispcb)
