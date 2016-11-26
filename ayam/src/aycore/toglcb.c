@@ -232,13 +232,6 @@ ay_toglcb_destroy(struct Togl *togl)
       if(view->bgcv)
 	free(view->bgcv);
 
-#ifdef AYLOCALGLUQUADOBJ
-      if(view->gluquadobj)
-	{
-	  gluDeleteQuadric(view->gluquadobj);
-	}
-#endif /* AYLOCALGLUQUADOBJ */
-
       free(view);
     }
 
