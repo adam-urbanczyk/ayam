@@ -26,6 +26,9 @@ code example of 6 lines text (needs another 2 for the upper/lower lines)
 5) for convenience, <newline> translates into <br> in HTML and \\ in LaTeX
    output
 .
+The next line fixes problems with the HTML output, that appear in section
+NURBS Modelling Tools, where, suddenly, the preprocessing mechanism via
+if-directives stops to work altogether.
 </#if></#if>
  -->
 <article>
@@ -13584,6 +13587,12 @@ selected and the current level will also be changed.
 
 <sect2>Tween Surfaces Tool<label id="tweennpt">
 <p>
+<figure loc="ht">
+<eps file="pics/tweenp.ps" height="5cm">
+<img src="pics/tweenp.gif">
+<caption>Tweened Surface (white) from two Parameter Surfaces (blue)
+with <em/r/ 0.5</caption>
+</figure>
 <descrip>
 <tag/Arguments/ The tween tool takes two NURBS patches from
 the selection and requests a parameter <em/r/.
@@ -15531,8 +15540,9 @@ crtOb NCurve
 sL
 </code>
 <item>Note: In the main Tcl interpreter, sL is a procedure that operates
-on information in the Tcl context alone, leaving out uS or uCR before
-calling sL will possibly lead to the wrong objects being selected.
+on information in the Tcl context alone.
+Calling sL on outdated hierarchy data (e.g.~by leaving out uS or uCR after
+object creation) will possibly lead to the wrong objects being selected.
 </itemize>
 
 <p>
