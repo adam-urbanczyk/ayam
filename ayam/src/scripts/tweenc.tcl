@@ -1,4 +1,4 @@
-# tweencgui.tcl: example script for Ayam Script object
+# tweenc.tcl: example script for Ayam Script object
 # this script wants Script Object Type "Modify";
 # it creates a tweened/interpolated curve from two arbitrary curves
 getType type
