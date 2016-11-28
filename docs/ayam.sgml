@@ -13621,9 +13621,9 @@ The original NURBS patches will not be deleted by this tool.
 See also the documentation of the corresponding
 scripting interface command <ref id="sctweennp" name="tweenNP">.
 </descrip>
-<!--
+
 <#if out="latex"><x/newpage/</#if>
- -->
+
 <sect1>Surface Modification Tools<label id="smtools">
 <p>
 These tools modify parametric surface objects.
@@ -13901,8 +13901,15 @@ and the related tool for
 curves <ref id="remknt" name="Remove Knot Tool">.
 </descrip>
 
+<#if out="latex"><x/newpage/</#if>
+
 <sect2>Split Surface Tool<label id="splitnpt">
 <p>
+<figure loc="ht">
+<eps file="pics/splitnp.ps" height="5cm">
+<img src="pics/splitnp.gif">
+<caption>Split Surface Tool (left: original surface, right: the surface was split at t=0.5)</caption>
+</figure>
 <descrip>
 <tag/Arguments/ The split surface tool takes a number of NURBS patches from
 the selection and requests a parametric value t (in U or V parametric dimension,
@@ -13931,6 +13938,8 @@ See also the documentation of the corresponding scripting interface commands
 <ref id="scsplitvnp" name="splitvNP"> and the related tool for
 curves <ref id="splitt" name="Split Tool">.
 </descrip>
+
+<#if out="latex"><x/newpage/</#if>
 
 <sect2>Interpolate Surface Tool<label id="interpnpt">
 <p>
@@ -14027,8 +14036,8 @@ and the related tool for
 curves <ref id="makecompt" name="Make Compatible Tool">.
 </descrip>
 
-
 <#if out="latex"><x/newpage/</#if>
+
 <sect1>Conversion Tools
 <p>
 These tools convert between parametric objects.
@@ -22798,7 +22807,7 @@ Index:
 <item><ref id="sciclip" name="scripting interface commands">
 </itemize>
 <item>Clone: <ref id="cloneobj" name="Clone object">
-<item>Close: <ref id="treecontm" name="tree context menu entry">
+<item>Close: <ref id="closect" name="close curve tool">
 <item>closeC: <ref id="scclosec" name="scripting interface command">
 <item>Closed:
 <itemize>
@@ -22817,11 +22826,8 @@ Index:
 <item><ref id="pmattr" name="PatchMesh attribute">,
 <item><ref id="ipattr" name="IPatch attribute">
 </itemize>
-<item>coarsenNC:
-<itemize>
-<item><ref id="sccoarsennc" name="scripting interface command">,
-<item><ref id="coart" name="coarsen tool">
-</itemize>
+<item>Coarsen: <ref id="coart" name="coarsen tool">
+<item>CoarsenNC: <ref id="sccoarsennc" name="scripting interface command">
 <item>Cobb NURBS Sphere: <ref id="nsp2t" name="create surface tool">
 <item>Collapse:
 <itemize>
@@ -22933,6 +22939,7 @@ Index:
 </itemize>
 <item>delOb: <ref id="scdelob" name="scripting interface command">
 <item>Deselect All Points: <ref id="mmpnts" name="main menu entry">
+<item>Deselect Object: <ref id="treecontm" name="tree context menu entry">
 <item>Derivatives: <ref id="icp" name="ICurve attribute">
 <item>Derivatives_U, Derivatives_V: <ref id="ipattr" name="IPatch attribute">
 <item>Difference: <ref id="levelobj" name="Level object">
@@ -23368,6 +23375,8 @@ Index:
 <item><ref id="makecompt" name="NCurve tool">,
 <item><ref id="makecompst" name="NPatch tool">
 </itemize>
+<item>makeCompNC: <ref id="scmakecompnc" name="scripting interface command">
+<item>makeCompNP: <ref id="scmakecompnp" name="scripting interface command">
 <item>Mark:
 <itemize>
 <item><ref id="vat" name="View attribute">,
@@ -23493,7 +23502,6 @@ Index:
 <item>Open:
 <itemize>
 <item><ref id="mmfile" name="main menu entry">,
-<item><ref id="treecontm" name="tree context menu entry">,
 <item><ref id="openct" name="open tool">
 </itemize>
 <item>openC: <ref id="scopenc" name="scripting interface command">
@@ -23943,6 +23951,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 </itemize>
 <item>Shadows: <ref id="lip" name="Light attribute">
 <item>Shift: <ref id="shiftclc" name="curve tool">
+<item>shiftC: <ref id="scshiftc" name="scripting interface command">
 <item>ShiftTab: <ref id="hidprefs" name="hidden preference setting">
 <item>Show: <ref id="mmtools" name="main menu entry">
 <item>Show All: <ref id="mmtools" name="main menu entry">
@@ -24120,6 +24129,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>topoly.tcl: <ref id="topolytcl" name="example/helper script">
 <item>Torus: <ref id="torusobj" name="Torus object">
 <item>To XY: <ref id="toxyt" name="To XY tool">
+<item>toXYC: <ref id="sctoxyc" name="scripting interface command">
 <item>TP: <ref id="tptag" name="tag type">
 <item>Transformations: <ref id="trap" name="transformations property">
 <item>Translation: <ref id="trap" name="transformations property">
