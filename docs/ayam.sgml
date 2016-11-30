@@ -3131,9 +3131,10 @@ by <tt/"SParamU"/ and the tesselation method
 <item><tt/"DomainDistance"/ (the default up to 1.22) simply tesselates
 the NURBS surface into equally sized pieces with regard to parametric
 space; <tt/"SParamU"/ and <tt/"SParamV"/ control the number of sampling
-points in U and V direction respectively per unit length.
-This leads to different numbers of samples for knot vectors
-of different total length in parameter space.
+points in U and V direction respectively per unit length in parameter
+space.
+However, this leads to different numbers of samples for knot vectors
+of different total length.
 
 <item><tt/"NormalizedDomainDistance"/
 ensures that the tesselation creates the same number of sample
@@ -3147,7 +3148,7 @@ sample points depending on the number of control points (width or
 height of the patch) to provide a better adaptation to complex
 patches.<footnote>Since 1.9.</footnote>
 
-<item><tt/"AdaptiveKnotDistance"/ normalizes the number of sample
+<item><tt/"AdaptiveKnotDistance"/, finally, normalizes the number of sample
 points to the number of knot intervals and the total length of
 the knot vector.<footnote>Since 1.23.</footnote>
 </enum>
@@ -6205,6 +6206,9 @@ A box object may be converted to three NURBS patches
 using the main menu entry
 <tt>"Tools/Convert"</tt>.<footnote>Since 1.8.2.</footnote>
 
+See section <ref id="cboxtcl" name="Cylindrical Box"> for a Script
+object that converts to a single NURBS patch.
+
 <sect3>RIB Export
 <p><#if out="latex">&nbsp;<newline></#if>
 The box object will always be exported as six bilinear patches.
@@ -6309,6 +6313,10 @@ RiDisk(...);
 <p>
 A cone, centered at the origin of the object coordinate system,
 with the base in the XY-plane.
+<p>
+The standard cone is always pointed.
+See section <ref id="tconetcl" name="Truncated Cone"> for a Script
+object that implements a truncated cone.
 <p>
 The following table briefly lists some capabilities of the Cone object.
 <p>
@@ -13944,7 +13952,7 @@ curves <ref id="splitt" name="Split Tool">.
 <sect2>Interpolate Surface Tool<label id="interpnpt">
 <p>
 <figure loc="ht">
-<eps file="pics/interpnp.ps" height="5cm">
+<eps file="pics/interpnp.ps" height="7cm">
 <img src="pics/interpnp.gif">
 <caption>Interpolate Surface Tool (left-white: original surface, left-blue and right: interpolated surface)</caption>
 </figure>
@@ -13963,6 +13971,40 @@ See also the documentation of the corresponding scripting interface commands
 <ref id="scinterpvnp" name="interpvNP">.
 </descrip>
 
+<#if out="latex"><x/newpage/</#if>
+
+<sect2>Make Surfaces Compatible Tool<label id="makecompst">
+<p>
+<p>
+<figure loc="ht">
+<eps file="pics/makecomps.ps" height="8cm">
+<img src="pics/makecomps.gif">
+<caption>Make Compatible Tool (u: Original Surfaces, m: Compatible by Order, l: Fully Compatible Surfaces)</caption>
+</figure>
+<descrip>
+<tag/Arguments/ The make compatible tool takes a number of
+NURBS surfaces from the selection and requests a side and a level.
+<tag/Operation/ The surfaces will be made compatible, so that, based
+on the side and level parameters given, they are of the same orders,
+width/height, and defined on the same knot vector.
+<tag/Notes/ This tool does not change the geometry of the surfaces.
+However, since clamping, degree elevation, and knot insertion may be
+used on the surfaces, their order, knot vectors, and control points
+may be changed.
+
+The orders of all surfaces will simply be raised to the maximum order of
+all surfaces; no attempt is made to check, whether lowering orders
+leads to a simpler result.
+
+The point selection will be removed from the original objects.
+
+See also the documentation of the corresponding
+scripting interface command <ref id="scmakecompnp" name="makeCompNP">
+and the related tool for
+curves <ref id="makecompt" name="Make Compatible Tool">.
+</descrip>
+
+<#if out="latex"><x/newpage/</#if>
 
 <sect2>Rescale Knots to Range Surface Tool<label id="resckrnpt">
 <p>
@@ -14003,37 +14045,6 @@ See also the documentation of the corresponding
 scripting interface command <ref id="screscaleknnp" name="rescaleknNP">
 and the related tool for
 curves <ref id="resckmt" name="Rescale Knots to Mindist Tool">.
-</descrip>
-
-<sect2>Make Surfaces Compatible Tool<label id="makecompst">
-<p>
-<p>
-<figure loc="ht">
-<eps file="pics/makecomps.ps" height="7cm">
-<img src="pics/makecomps.gif">
-<caption>Make Compatible Tool (u: Original Surfaces, m: Compatible by Order, l: Fully Compatible Surfaces)</caption>
-</figure>
-<descrip>
-<tag/Arguments/ The make compatible tool takes a number of
-NURBS surfaces from the selection and requests a side and a level.
-<tag/Operation/ The surfaces will be made compatible, so that, based
-on the side and level parameters given, they are of the same orders,
-width/height, and defined on the same knot vector.
-<tag/Notes/ This tool does not change the geometry of the surfaces.
-However, since clamping, degree elevation, and knot insertion may be
-used on the surfaces, their order, knot vectors, and control points
-may be changed.
-
-The orders of all surfaces will simply be raised to the maximum order of
-all surfaces; no attempt is made to check, whether lowering orders
-leads to a simpler result.
-
-The point selection will be removed from the original objects.
-
-See also the documentation of the corresponding
-scripting interface command <ref id="scmakecompnp" name="makeCompNP">
-and the related tool for
-curves <ref id="makecompt" name="Make Compatible Tool">.
 </descrip>
 
 <#if out="latex"><x/newpage/</#if>
@@ -22721,7 +22732,7 @@ Index:
 <item><ref id="bevelobj" name="Bevel object">,
 <item><ref id="bevt" name="Bevel tool">,
 <item><ref id="bevelsprop" name="Bevels property">,
-<item><ref id="handb" name="using bevels">,
+<item><ref id="handb" name="using bevels">
 </itemize>
 <item>Bevel3D: <ref id="offsetncp" name="offset mode">
 <item>BevelRadius, BevelRevert, BevelType: <ref id="bevelp" name="Bevel attribute">
@@ -22778,7 +22789,7 @@ Index:
 <item>Catmull-Clark: <ref id="sdmattr" name="SDMesh subdivision scheme">
 <item>Catmull Rom: <ref id="pmattr" name="PatchMesh basis type">
 <item>cbox.tcl: <ref id="cboxtcl" name="example/helper script">
-<item>Chamfer: <ref id="bevelobj" name="Bevel object">,
+<item>Chamfer: <ref id="bevelobj" name="Bevel object">
 <item>CheckLights: <ref id="prefrib" name="preference setting">
 <item>Chordal: <ref id="ncurveattrprop" name="knot type">
 <item>Center All Points: <ref id="mmpnts" name="main menu entry">
@@ -23291,7 +23302,7 @@ Index:
 <item><ref id="vwsc" name="view window shortcuts">,
 <item><ref id="vm" name="main menu shortcuts">,
 <item><ref id="treesc" name="object tree shortcuts">,
-<item><ref id="olbsc" name="object list shortcuts">,
+<item><ref id="olbsc" name="object list shortcuts">
 </itemize>
 
 <item>Kill: <ref id="hidprefs" name="hidden preference setting">
@@ -23347,6 +23358,7 @@ Index:
 <item>Linear: <ref id="bevelp" name="Bevel type">
 <item>LineWidth: <ref id="hidprefs" name="hidden preference setting">
 <item>ListTypes: <ref id="hidprefs" name="hidden preference setting">
+<item>List View: <ref id="listbox" name="List View">
 <item>LoadEnv: <ref id="hidprefs" name="hidden preference settings">
 <item>Load Plugin: <ref id="mmfile" name="main menu entry">
 <item>Local:
