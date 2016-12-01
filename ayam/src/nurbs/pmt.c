@@ -128,6 +128,9 @@ ay_pmt_valid(ay_pamesh_object *pamesh)
 	case AY_BTHERMITE:
 	  stepu = 2;
 	  break;
+	case AY_BTPOWER:
+	  stepu = 4;
+	  break;
 	case AY_BTCUSTOM:
 	  stepu = pamesh->ustep;
 	  break;
@@ -135,7 +138,7 @@ ay_pmt_valid(ay_pamesh_object *pamesh)
 	  break;
 	} /* switch */
 
-      if(stepu <= 0)
+      if(stepu <= 0 || stepu > 4)
 	{
 	  return 2;
 	}
@@ -170,6 +173,9 @@ ay_pmt_valid(ay_pamesh_object *pamesh)
 	case AY_BTHERMITE:
 	  stepv = 2;
 	  break;
+	case AY_BTPOWER:
+	  stepv = 4;
+	  break;
 	case AY_BTCUSTOM:
 	  stepv = pamesh->vstep;
 	  break;
@@ -177,7 +183,7 @@ ay_pmt_valid(ay_pamesh_object *pamesh)
 	  break;
 	} /* switch */
 
-      if(stepv <= 0)
+      if(stepv <= 0 || stepv > 4)
 	{
 	  return 2;
 	}
@@ -832,6 +838,9 @@ ay_pmt_tonpatchmulti(ay_object *o, ay_object **result)
 
   switch(pm->btype_u)
     {
+    case AY_BTPOWER:
+      su = 4;
+      break;
     case AY_BTBEZIER:
       su = 3;
       break;
@@ -849,6 +858,9 @@ ay_pmt_tonpatchmulti(ay_object *o, ay_object **result)
 
   switch(pm->btype_v)
     {
+    case AY_BTPOWER:
+      sv = 4;
+      break;
     case AY_BTBEZIER:
       sv = 3;
       break;
@@ -1139,6 +1151,7 @@ cleanup:
 
  return ay_status;
 } /* ay_pmt_tonpatch */
+
 
 /** ay_pmt_getbasis:
  * Get basis matrix.
