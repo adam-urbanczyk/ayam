@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile [25. Mar 2012]
+# Makefile [2. Dec 2016]
 # Makefile for the installation of Ayam (precompiled wrapped version)
 
 # Choose an installation prefix.
@@ -46,6 +46,12 @@ install:
 	-$(INSTALL) plugins/libtiff.so* $(LIBDIR)
 	-cd $(LIBDIR);ln -sf libtiff.so.? libtiff.so
 	-cd $(LIBDIR);ln -sf libtiff.so.*.* libtiff.so.?
+	-$(INSTALL) plugins/libjbig.so* $(LIBDIR)
+	-cd $(LIBDIR);ln -sf libjbig.so.? libjbig.so
+	-cd $(LIBDIR);ln -sf libjbig.so.*.* libjbig.so.?
+	-$(INSTALL) plugins/libjpeg.so* $(LIBDIR)
+	-cd $(LIBDIR);ln -sf libjpeg.so.? libjpeg.so
+	-cd $(LIBDIR);ln -sf libjpeg.so.*.* libjpeg.so.?
 	-$(INSTALL) plugins/metaobj.so $(LIBDIR)
 	-$(INSTALL) plugins/metaobj.tcl $(LIBDIR)
 	-$(INSTALL) plugins/metacomp.tcl $(LIBDIR)
