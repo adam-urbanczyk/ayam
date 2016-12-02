@@ -1,4 +1,4 @@
-[INSTALL, 14. Nov 2012]
+[INSTALL, 2. Dec 2016]
 
 Installation Instructions for Ayam (Unix only).
 
@@ -45,7 +45,9 @@ or
 first.
 
 Ayam also integrates with Unix desktop environments.
-The next steps need the xdg-utils from the Portland project to be installed.
+The next steps need the xdg-utils (more specifically the xdg-mime,
+xdg-desktop-icon, and xdg-icon-resource commands) from the Portland project
+to be installed.
 
 To install a system wide applications menu entry, enter:
 root> make sysmenu
