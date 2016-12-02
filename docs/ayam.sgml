@@ -6873,7 +6873,7 @@ The open versions create <f/n+2/ NURBS control points, and the closed ones
 <f/n+3/.
 <p>
 <figure loc="!ht">
-<eps file="pics/icurves.ps" height="7cm">
+<eps file="pics/icurves.ps" height="6cm">
 <img src="pics/icurves.gif">
 <caption>Different ICurves resulting from identical data point configurations
 (Upper Left: Open, Order 3; Upper Right: Open, Order 4; Lower Left: Closed, Order 3; Lower Right: Closed, Order 4)</caption>
@@ -6987,7 +6987,7 @@ curve).
 <sect2>ACurve (Approximating Curve) Object<label id="acurveobj">
 <p>
 <figure loc="!ht">
-<eps file="pics/acurves.ps" height="7cm">
+<eps file="pics/acurves.ps" height="6cm">
 <img src="pics/acurves.gif">
 <caption>Different ACurves (Upper Left: ALength 3, Order 3; Upper Right: ALength 4, Order 4; Lower Left: ALength 4, Order 4; Lower Right: ALength 6, Order 3)</caption>
 </figure>
