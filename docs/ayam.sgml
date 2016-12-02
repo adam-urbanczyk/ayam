@@ -7091,7 +7091,7 @@ curve).
 <sect2>NCircle (NURBS Circle) Object<label id="ncircleobj">
 <p>
 <figure loc="ht">
-<eps file="pics/ncircles.ps" height="5cm">
+<eps file="pics/ncircles.ps" height="4cm">
 <img src="pics/ncircles.gif">
 <caption>Different NCircle Objects (l: default, m: TMax 180, r: Radius 0.5, TMax -200)</caption>
 </figure>
@@ -7099,6 +7099,11 @@ curve).
 The NCircle object creates a circular NURBS curve or a circular arc in
 the XY-plane centered at the origin with designated radius and start/end
 angles (see image above).<footnote>Since 1.12.</footnote>
+<p>
+A full circle is created using nine rational control points in a rectangular
+configuration; see
+section <ref id="tcircletcl" name="NURBS Circle with Triangular Base"> for
+a Script object that implements a circle with less control points.
 <p>
 In order to revert the created NURBS curve
 the start/end angles may be used, e.g.~<tt/"TMin"/ 0.0,
@@ -18825,15 +18830,15 @@ require tree updates. However, operations like opening or closing
 sub trees or even just scrolling in the tree will become a bit slower,
 as canvas items need to be created constantly.
 
-<sect2>Control Vertice View<label id="cvviewtcl">
+<sect2>Control Vertex View<label id="cvviewtcl">
 <p>
 <figure loc="ht">
 <eps file="pics/cvview.ps" height="6cm">
 <img src="pics/cvview.gif">
-<caption>Control Vertice View Example</caption>
+<caption>Control Vertex View Example</caption>
 </figure>
 <p>
-The script <tt>"cvview.tcl"</tt> (control vertice view) allows to
+The script <tt>"cvview.tcl"</tt> (control vertex view) allows to
 view the control points of NURBS surface or curve objects as property,
 see also the image above.
 
@@ -18843,12 +18848,13 @@ NPatch, NCurve, IPatch, PatchMesh, ACurve, and ICurve.
 If the script is loaded, there is a new entry in the <tt>"Custom"</tt> menu
 that allows to add a new property to an individual surface or curve object.
 The <tt>"CVView"</tt> property displays all control vertices in a
-regular grid. The coordinates of each vertice will be shown when
+regular grid. The coordinates of each vertex will be shown when
 the mouse pointer hovers over it. This also works if the control points
 lump together in 3D space or have unusual values.
 
-Additionally, the point selection may be adjusted by clicking on the
-circles.
+Additionally, the current point selection is visualized by painting
+the selected vertices in red and the selection may also be adjusted
+by clicking on the circles.
 
 <#if out="latex"><x/newpage/</#if>
 
@@ -18919,7 +18925,7 @@ These are the parameters of the cylindrical box:
 </itemize>
 
 In contrast to the standard Box object, the cylindrical box converts
-to a single NURBS patch. However, this patch has poles and, conseqently,
+to a single NURBS patch. However, this patch has poles and, consequently,
 shading artefacts may appear on the top and down side.
 
 An example scene file containing such an object is distributed with Ayam,
@@ -18940,10 +18946,12 @@ The file <tt>"tcircle.tcl"</tt> is a Script object script that creates
 NURBS circles with a triangular base,
 see also the above image.
 <p>
-In contrast to the standard 9 point NURBS circle with rectangular base,
-the triangular circle consists of just 7 control points.
+In contrast to the standard nine point NURBS circle with rectangular base,
+the triangular circle consists of just seven control points.
 This can save some memory, e.g.~in long sweep objects. However,
 the parameterisation of the triangular circle is also slightly worse.
+Furthermore, only full circles that start on the positive X-axis are
+supported.
 <p>
 This script must be used in a Script object of type <tt/"Create"/
 (see section <ref id="scriptobj" name="Script Object">).
@@ -21030,7 +21038,7 @@ if combined by the union operator.
 <p>
 Clamping the knot ranges of NURBS via UMM/VMM tags is not supported.
 <p>
-NURBS surfaces suport XML tags to set <tt/"uTesselation"/ and/or
+NURBS surfaces support XML tags to set <tt/"uTesselation"/ and/or
 <tt/"vTesselation"/ attributes.
 <p>
 PolyMesh objects will be exported to IndexedFaceSet nodes.
