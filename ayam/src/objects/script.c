@@ -534,7 +534,7 @@ ay_script_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       break;
     } /* switch */
 
-  Tcl_SetStringObj(ton,"Script",-1);
+  Tcl_SetStringObj(ton, "Script", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   string = Tcl_GetStringFromObj(to, &stringlen);
   if(!string)
@@ -977,7 +977,6 @@ ay_script_writecb(FILE *fileptr, ay_object *o)
 
       Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
       Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
-
     } /* if */
 
  return AY_OK;
