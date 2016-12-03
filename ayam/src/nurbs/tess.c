@@ -2790,7 +2790,7 @@ ay_tess_npatch(ay_object *o,
  unsigned int uknot_count = 0, vknot_count = 0, i = 0, a = 0;
  GLfloat *uknots = NULL, *vknots = NULL, *controls = NULL;
  GLfloat *texcoords = NULL, *vcolors = NULL, *vnormals = NULL;
- GLfloat *vcolors4 = NULL;
+ GLfloat *vcolors4 = NULL, *tmp = NULL;
  unsigned int texcoordlen, vcolorlen, vnormallen;
  char have_tc = AY_FALSE, have_vc = AY_FALSE, have_vn = AY_FALSE;
  ay_tag *tag = NULL;
@@ -3038,7 +3038,8 @@ ay_tess_npatch(ay_object *o,
 			stored in u-major (whereas the (GLU)
 			NURBS patch is in v-major order
 		      */
-		      gluNurbsSurface(npatch->no, (GLint)uknot_count, uknots,
+		      if(texcoordlen == (unsigned int)(width*height))
+			gluNurbsSurface(npatch->no, (GLint)uknot_count, uknots,
 			  (GLint)vknot_count, vknots,
 			  (GLint)2, (GLint)width*2, texcoords,
 			  (GLint)npatch->uorder, (GLint)npatch->vorder,
@@ -3092,7 +3093,8 @@ ay_tess_npatch(ay_object *o,
 			stored in u-major (whereas the (GLU)
 			NURBS patch is in v-major order
 		      */
-		      gluNurbsSurface(npatch->no, (GLint)uknot_count, uknots,
+		      if(vcolorlen == (unsigned int)(width*height))
+			gluNurbsSurface(npatch->no, (GLint)uknot_count, uknots,
 			      (GLint)vknot_count, vknots,
 			      (GLint)4, (GLint)width*4, vcolors4,
 			      (GLint)npatch->uorder, (GLint)npatch->vorder,
@@ -3114,6 +3116,21 @@ ay_tess_npatch(ay_object *o,
 
 		  if(!ay_status && vnormals)
 		    {
+		      if(vnormallen < (unsigned int)(width*height))
+			{
+			  if((tmp = realloc(vnormals, width * height * 3 *
+					    sizeof(GLfloat))))
+			    {
+			      vnormals = tmp;
+			      for(i = 0; i < (width * height) - vnormallen; i++)
+				{
+				  memcpy(&(vnormals[(vnormallen+i)*3]),
+					 &(vnormals[(vnormallen-1)*3]),
+					 3*sizeof(GLfloat));
+				}
+			      vnormallen = width * height;
+			    }
+			}
 		      /*
 			the use of (GLint)3, (GLint)width*3
 			for s_stride, t_stride as opposed to
@@ -3122,7 +3139,8 @@ ay_tess_npatch(ay_object *o,
 			stored in u-major (whereas the (GLU)
 			NURBS patch is in v-major order
 		      */
-		      gluNurbsSurface(npatch->no, (GLint)uknot_count, uknots,
+		      if(vnormallen == (unsigned int)(width*height))
+			gluNurbsSurface(npatch->no, (GLint)uknot_count, uknots,
 			      (GLint)vknot_count, vknots,
 			      (GLint)3, (GLint)width*3, vnormals,
 			      (GLint)npatch->uorder, (GLint)npatch->vorder,
@@ -3138,6 +3156,7 @@ ay_tess_npatch(ay_object *o,
 	} /* while */
     } /* if */
 
+  /* synthesize texture coordinates */
   if(use_tc && !have_tc)
     {
       ay_npt_gentexcoords(npatch, o->tags, &tc);
