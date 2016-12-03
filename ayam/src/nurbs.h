@@ -780,7 +780,7 @@ int ay_nct_fillgap(int order, double tanlen,
  */
 int ay_nct_fillgaps(int closed, int order, double tanlen, ay_object *curves);
 
-/** Arrange objects.
+/** Place objects on a curve.
  */
 int ay_nct_arrange(ay_object *o, ay_object *t, int rotate);
 
