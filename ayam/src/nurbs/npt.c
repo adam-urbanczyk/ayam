@@ -2929,7 +2929,7 @@ ay_npt_fliptrims(ay_nurbpatch_object *np, ay_object *trim, int mode)
  * \param[in] o NURBS surface with trim curves to copy
  * \param[in] u1 new u minimum
  * \param[in] u2 new u maximum
- * \param[in] uv di
+ * \param[in] uv dimension to flip (may be NULL)
  * \param[in,out] target NURBS surface where copies will be added
  *
  * \returns AY_OK on success, error code otherwise.
@@ -3088,7 +3088,7 @@ ay_npt_createtrimrect(ay_object *o)
 
       r->next = o->down;
       o->down = r;
-    }
+    } /* if o is npatch */
 
  return AY_OK;
 } /* ay_npt_createtrimrect */
