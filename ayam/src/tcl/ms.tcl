@@ -311,7 +311,7 @@ ms_set en objio_options_WriteCurves "Write NURBS curves to exported file?"
 
 # info dialogs
 ms_set en info_sc1 "Scene changed!"
-ms_set en info_sc2 "Select \"Ok\" to lose all changes.\nSelect \"Cancel\" to stop operation."
+ms_set en info_sc2 "Select \"OK\" to lose all changes.\nSelect \"Cancel\" to stop operation."
 
 ms_set en info_rs1 "Need restart!"
 ms_set en info_rs2 "Changes need a restart of Ayam to take effect!"
