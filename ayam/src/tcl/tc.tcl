@@ -14,7 +14,7 @@
 #
 proc tc_updateCanvas { ca } {
     global ay tc
-    
+
     set graycolor #A0A0A0
 
     $ca delete all
@@ -229,7 +229,7 @@ proc tc_edit { } {
     winDialog $w $t
 
     if { $ayprefs(FixDialogTitles) == 1 } {
-	pack [frame $w.fl] -in $w -side top   
+	pack [frame $w.fl] -in $w -side top
 	pack [label $w.fl.l -text $t] -in $w.fl -side left -fill x -expand yes
     }
 
@@ -345,7 +345,7 @@ proc tc_edit { } {
 	tc_updateCanvas .tcEditw.fc.ca
     }
 
-    pack $f.e  -pady 0 -fill both -in $f -side left -expand yes
+    pack $f.e -pady 0 -fill both -in $f -side left -expand yes
     pack $f.b1 $f.b2 $f.b3 $f.b4\
 	    -in $f -side left -fill x -expand yes
     pack $f -side top -fill x -expand no
@@ -378,7 +378,6 @@ proc tc_edit { } {
     }
     pack $f -side top -fill x -expand no
 
-
     # 3 buttons
     set f [frame $w.fb1]
 
@@ -399,7 +398,7 @@ proc tc_edit { } {
     pack $f.mb1 $f.mb2 -in $f -side left -fill x -expand yes
     pack $f -in $w -side top -fill x
 
-    # dismiss button
+    # close button
     set f [frame $w.fb2]
     button $f.bd -text "Close" -pady $ay(pady) -command {
 	global tclist tcindex tc
@@ -410,7 +409,6 @@ proc tc_edit { } {
     }
     pack $f.bd -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x
-
 
     # Esc-key && close via window decoration == Close button
     bind $w <Escape> "$f.bd invoke"
