@@ -6,8 +6,8 @@
 /* local types: */
 
 typedef int scew_bool;
-#define SCEW_TRUE 1;
-#define SCEW_FALSE 0;
+#define SCEW_TRUE 1
+#define SCEW_FALSE 0
 
 /* global variables */
 static XML_Char cdatabegin[] = "\n<![CDATA[\n";

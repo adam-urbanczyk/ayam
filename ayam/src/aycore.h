@@ -1919,6 +1919,11 @@ void ay_viewt_init();
  */
 int ay_w32t_w32killtcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
+
+/* As long as we do not use the return value...
+ */
+#define snprintf sprintf_s
+
 #endif
 
 
