@@ -22,6 +22,9 @@
 
 #include <stdio.h>
 
+#ifdef WIN32
+#define snprintf sprintf_s
+#endif
 
 /* local types: */
 
