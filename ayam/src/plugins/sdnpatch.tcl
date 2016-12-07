@@ -555,28 +555,21 @@ proc sdnpatch_crtcube { w h d dx dy dz } {
     # convert to SDNPatch
     sdnconvertPO
 
-    # move the SDNPatch to parent level, go up and remove this
+    # move the SDNPatch to the clipboard, go up and remove this
     # level where the temporary polymesh objects were created
     selOb 7
-
     cutOb
-
     goUp
-
     uCR
-
     sL
-
     delOb
 
     # paste/move the SDNPatch back to the scene
     pasmovOb
 
-    # update tree view and redraw
-    uCL cl
-
+    # update tree view, select the new SDNPatch object and redraw
+    uS
     sL
-
     rV
 
 return;
