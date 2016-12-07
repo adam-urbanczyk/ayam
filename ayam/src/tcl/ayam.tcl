@@ -1835,7 +1835,9 @@ if { $ayprefs(Scripts) != "" } {
 	    set origwd [pwd]
 	    cd [file dirname [info nameofexecutable]]
 	    set paths scripts
-	    lappend paths [split "$ayprefs(Plugins)" $ay(separator)]
+	    foreach elem [split "$ayprefs(Plugins)" $ay(separator)] {
+		lappend paths $elem
+	    }
 	    foreach path $paths {
 		set nscript [file join $path $script]
 		if { ![file exists $nscript] } {
