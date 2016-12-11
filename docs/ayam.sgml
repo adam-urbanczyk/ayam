@@ -37,7 +37,7 @@ if-directives stops to work altogether.
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>5. Jun 2016
+<date>4. Dec 2016
 
 <abstract>
 This is the documentation of Ayam 1.24 &ndash; a free 3D modelling environment
@@ -6948,9 +6948,9 @@ data points for open curves and from the second and second to last data
 points for closed curves. In addition, the respective derivative
 vector will be scaled by <tt/"SDLen"/ and <tt/"EDLen"/.
 <p>
-If manual derivatives are is switched on, two more
+If manual derivatives are switched on, two more
 editable points appear in the single point editing modes. Those
-additional points directly control the derivatives in the
+additional points directly control the derivatives for the
 endpoints of the interpolating curve. The parameters <tt/"SDLen"/ and
 <tt/"EDLen"/ do not influence those derivatives.
 
@@ -7101,7 +7101,7 @@ the XY-plane centered at the origin with designated radius and start/end
 angles (see image above).<footnote>Since 1.12.</footnote>
 <p>
 A full circle is created using nine rational control points in a rectangular
-configuration; see
+configuration, circular arcs are created with fewer control points. See
 section <ref id="tcircletcl" name="NURBS Circle with Triangular Base"> for
 a Script object that implements a circle with less control points.
 <p>
@@ -7139,6 +7139,8 @@ of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
 <item>Finally, a <tt/"NCInfo"/ field informs about the actual configuration
 of the created NURBS curve.
 </itemize>
+
+<#if out="latex"><x/newpage/</#if>
 
 <sect3>Conversion Support
 <p><#if out="latex">&nbsp;<newline></#if>
@@ -7954,7 +7956,7 @@ When a basis type is changed to <tt/"Custom"/, the
 initial values of the basis matrix will be of those of
 the previous type.<footnote>Since Ayam 1.24.</footnote><newline>
 Also note, that changing a basis type via the property GUI is not the
-same as converting a patch mesh via the tobasiPM command,
+same as converting a patch mesh via the <tt>tobasisPM</tt> command,
 see also section <ref id="sctobasispm" name="tobasisPM command">.<newline>
 Please see the RenderMan Companion for a more in depth discussion of
 the different basis types.
@@ -11101,7 +11103,7 @@ SDNPatch|No|Yes|PolyMesh|Yes<#if out="latex">@<hline></#if>
 <caption>SDNPatch Object Capabilities</caption>
 </table>
 
-<sect3>SDNPatchAttr Property<label id=sdnpattr><label id="sdnpatchattrprop">
+<sect3>SDNPatchAttr Property<label id="sdnpattr"><label id="sdnpatchattrprop">
 <p><#if out="latex">&nbsp;<newline></#if>
 The SDNPatchAttr property allows to set the following SDNPatch specific
 attributes:
@@ -11112,7 +11114,7 @@ the only valid values are currently 3, 5, and 7.
 many polygons and a smooth surface; useful values range from 0 to 5.
 </itemize>
 
-<sect3>SDNPatch Modelling Actions
+<sect3>SDNPatch Modelling Actions<label id="sdnpact"
 <p><#if out="latex">&nbsp;<newline></#if>
 This section, briefly, explains the special modelling actions defined
 for the SDNPatch custom object. In order to select a face or edge for
@@ -11297,7 +11299,7 @@ already has a material, this material object is searched for
 and selected for editing.
 
 <item><tt/"Materialname"/ is the name of the material of this object.
-If you change the name, the object will be disconnected from the
+If the name is changed, the object will be disconnected from the
 old material and connected to the new material.
 An easier way to connect geometric objects to material objects is to simply
 drop the geometric objects onto the material object using drag and drop
@@ -11809,7 +11811,7 @@ to a single object.
 Note that the tag numbers in the menu entries count TC tags only.
 <p>
 The texture coordinate dialog is mode-less, it may stay open
-while modeling. The <tt/"Dismiss"/ button closes the dialog.
+while modeling.
 
 <sect2>PV (Primitive Variable) Tag<label id="pvtag">
 <p>
@@ -12574,7 +12576,7 @@ the selection and requests a parameter <em/r/.
 and a new curve incorporating features from both of the original curves
 will be created. See also the image above.
 The parameter <em/r/ defines the ratio of influence of the first and
-the second curve (the latter using <em>1-r</em>).
+the second curve (the latter is using a ratio of <em>1-r</em>).
 <tscreen><verb>
 |-NCurve             |-NCurve
 |-NCurve     ==>     |-NCurve
@@ -13613,7 +13615,7 @@ the selection and requests a parameter <em/r/.
 and a new patch incorporating features from both of the original patches
 will be created.
 The parameter <em/r/ defines the ratio of influence of the first and
-the second patch (the latter using <em>1-r</em>).
+the second patch (the latter is using a ratio of <em>1-r</em>).
 <tscreen><verb>
 |-NPatch             |-NPatch
 |-NPatch     ==>     |-NPatch
@@ -13653,7 +13655,7 @@ IPatch, BPatch, or PatchMesh objects from the selection.
 will be reversed in the U dimension (width).
 For NURBS patches this tool also reverts the relative knot distances
 of the corresponding knot vector so that the surface does not
-change in shape.
+change in shape. However, trim curves will not be modified.<newline>
 For IPatch objects the respective derivatives are reverted.
 <tag/Notes/ PV tags will not be modified.
 
@@ -13672,7 +13674,7 @@ IPatch, BPatch, or PatchMesh objects from the selection.
 will be reversed in the V dimension (height).
 For NURBS patches this tool also reverts the relative knot distances
 of the corresponding knot vector so that the surface does not
-change in shape.
+change in shape. However, trim curves will not be modified.<newline>
 For IPatch objects the respective derivatives are reverted.
 <tag/Notes/ PV tags will not be modified.
 
@@ -13695,6 +13697,8 @@ will be exchanged) without altering the shape of the patches.
 The point selection will be removed from the original object(s).
 
 PV tags will not be modified.
+
+Also trim curves will not be modified.
 
 See also the documentation of the corresponding
 scripting interface command <ref id="scswapuvs" name="swapuvS">.
@@ -13982,7 +13986,7 @@ See also the documentation of the corresponding scripting interface commands
 <p>
 <p>
 <figure loc="ht">
-<eps file="pics/makecomps.ps" height="8cm">
+<eps file="pics/makecomps.ps" height="7.5cm">
 <img src="pics/makecomps.gif">
 <caption>Make Compatible Tool (u: Original Surfaces, m: Compatible by Order, l: Fully Compatible Surfaces)</caption>
 </figure>
@@ -17097,7 +17101,7 @@ breakNP &ndash; break NURBS patch into curves:
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Breaks the selected NPatch objects into NURBS curves,
 along parametric dimension U or V (depending on whether the option
-<tt/"-u"/ or <tt/"-v"/ is specified, default is u).
+<tt/"-u"/ or <tt/"-v"/ is specified, default is U).
 <p><p>
 If the option <tt/"-a"/ is specified, the transformations of the NPatch
 objects will be applied to the control points and the NCurve objects
@@ -17130,7 +17134,10 @@ direction (default <f/min(4,width)/).
 The option <tt/"-t"/ allows to set a surface type
 (0 &ndash; open, 1 &ndash; closed, 3 &ndash; periodic; default 0).
 <p>
-The option <tt/"-k"/ allows to set a knot type (default 1 &ndash; NURB).
+The option <tt/"-k"/ allows to set a knot type (0 &ndash; Bezier,
+1 &ndash; B-Spline, 2 &ndash; NURB, 4 &ndash; Chordal,
+5 &ndash; Centripetal, default 2 &ndash; NURB). Custom knots
+are not supported.
 <p>
 See also section <ref id="buildnpt" name="Build from Curves Tool">.
 </itemize>
@@ -17194,18 +17201,20 @@ basis; it is not an error if one dimension is already of the
 target basis type.
 <p><p>
 The option <tt/"-t"/ controls the new basis type
-(0 - Bezier, 1 - B-Spline, 2 - CatmullRom, 3 - Hermite, 4 - Power,
-5 - Custom), default is 1 (conversion to B-Spline).
+(0 &ndash; <tt/"Bezier"/, 1 &ndash; <tt/"B-Spline"/,
+2 &ndash; <tt/"Catmull-Rom"/, 3 &ndash; <tt/"Hermite"/,
+4 &ndash; <tt/"Power"/, 5 &ndash; <tt/"Custom"/),
+default is 1 (conversion to <tt/"B-Spline"/).
 <p>
 The option <tt/"-s"/ determines the new step size (1 to 4), it defaults
 to the natural step size of the target basis type and thus can be
-omitted safely, unless the target type is Custom, in which case the step
+omitted safely, unless the target type is <tt/"Custom"/, in which case the step
 size <em/must/ be specified.
 <p>
 The option <tt/"-b"/ allows to convert to a custom basis and thus
 is a list of 16 floating point values specifying a 4 by 4 basis matrix
 in column major order. If <tt/"-b"/ is given, the target type defaults
-to Custom.
+to <tt/"Custom"/ and the option <tt/"-t"/ can be omitted.
 <!--
 <p>
 See also section <ref id="basist" name="Basis Tool">.
@@ -17531,16 +17540,17 @@ to let all changes take effect.
 <p>
 This command manages custom objects (plugins):
 <p><label id="scio_lc"><label id="scloadPlugin">
-loadPlugin &ndash; load custom:
+loadPlugin &ndash; load custom object&thinsp;/&thinsp;plugin:
 <itemize>
  <item>Synopsis: <tt/"loadPlugin name"/
  <item>Background: No, Undo: No, Safe: No, Type: Procedure
- <item>Description: Load a custom object (plugin). If <tt/name/ is a complete
+ <item>Description: Load a custom object&thinsp;/&thinsp;plugin.
+If <tt/name/ is a complete
 filename and the designated file exists, it will be loaded directly.
 Otherwise, the file to load will be searched for in the list of configured
 plugin directories (see <tt/"Plugins"/ preference setting).
-Note that it is currently not possible to unload a custom object from
-Ayam.
+Note that it is currently not possible to unload a custom object or plugin
+from Ayam.
 </itemize>
 
 
@@ -21755,11 +21765,11 @@ keyboard occurs; positive values are absolute in pixels, negative values are
 relative to the current window dimension; a value of -10 means a
 tenth of the current window width/height. The default value is -10.
 
-<item><tt/"PaneMargins"/, is a list of currently five floating
-point values, used as a safety margin for the panes:
-console vs.~hierarchy, hierarchy vs.~upper-views, lower-view vs.~property,
-property vs.~hierarchy, upper-view-2 vs.~upper-view-1 (in this
-order).
+<item><tt/"PaneMargins"/ is a list of currently five floating
+point values that are used as a safety margin for the panes
+when they are resized (1: console vs.~hierarchy, 2: hierarchy vs.~upper-views,
+3: lower-view vs.~property, 4: property vs.~hierarchy,
+5: upper-view-2 vs.~upper-view-1).
 These values control the minimum size of a pane expressed in an
 inverse (1/x) and relative way:
 the smaller the number, the bigger the margin. The safety margin
@@ -22795,7 +22805,7 @@ Index:
 <item>CastShadows: <ref id="riattrs" name="RenderMan/BMRT attribute">
 <item>Cat: <ref id="hidprefs" name="hidden preference setting">
 <item>Catmull-Clark: <ref id="sdmattr" name="SDMesh subdivision scheme">
-<item>Catmull Rom: <ref id="pmattr" name="PatchMesh basis type">
+<item>Catmull-Rom: <ref id="pmattr" name="PatchMesh basis type">
 <item>cbox.tcl: <ref id="cboxtcl" name="example/helper script">
 <item>Chamfer: <ref id="bevelobj" name="Bevel object">
 <item>CheckLights: <ref id="prefrib" name="preference setting">
@@ -23075,6 +23085,7 @@ Index:
 &nbsp;<newline>&nbsp;
 <label id="indexf"><tt/&nbsp;&nbsp;<bf/F//
 <list>
+<item>Face Extrude/Remove/Merge/Connect: <ref id="sdnpact" name="SDNPatch modelling action">
 <item>Face normals: <ref id="polymeshtools" name="PolyMesh tool">
 <item>FAQ: <ref id="secref" name="Ayam FAQ WWW reference">
 <item>Far: <ref id="camp" name="camera property">
@@ -23566,6 +23577,8 @@ Index:
 <label id="indexp"><tt/&nbsp;&nbsp;<bf/P//
 <list>
 <item>P1, P2: <ref id="hyp" name="Hyperboloid attribute">
+<item>Pan<ref id="vwsc" name="view action">
+<item>Pan to Mark<ref id="markac" name="mark action">
 <item>PanDist: <ref id="hidprefs" name="hidden preference setting">
 <item>PaneMargins: <ref id="hidprefs" name="hidden preference setting">
 <item>Paraboloid: <ref id="paraboloidobj" name="Paraboloid object">
