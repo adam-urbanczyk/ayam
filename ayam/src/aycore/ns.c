@@ -22,6 +22,7 @@
 
 Tk_RestrictAction ay_ns_restrictall(ClientData clientData, XEvent *eventPtr);
 
+
 /* functions: */
 
 /* ay_ns_restrictall:
@@ -99,10 +100,13 @@ ay_ns_restrictall(ClientData clientData,
 } /* ay_ns_restrictall */
 
 
-/* ay_ns_execute:
+/** ay_ns_execute:
+ * Execute a ANS/BNS tag.
+ *
+ * \param[in] o object with ANS/BNS tag
+ * \param[in] tag tag to execute
  *
  */
-int
 ay_ns_execute(ay_object *o, ay_tag *tag)
 {
  static int lock = 0;
@@ -245,6 +249,12 @@ ay_ns_disable(ay_tag *tag)
 } /* ay_ns_disable */
 
 
+/** ay_ns_ensable:
+ * Enables a DBNS/DANS tag by setting its type/name to BNS/ANS respectively.
+ *
+ * \param[in,out] tag tag to enable
+ *
+ */
 void
 ay_ns_enable(ay_tag *tag)
 {
@@ -265,7 +275,7 @@ ay_ns_enable(ay_tag *tag)
     }
 
  return;
-}
+} /* ay_ns_enable */
 
 
 /* ay_ns_init:
