@@ -477,7 +477,7 @@ Tk_RestrictAction ay_ns_restrictall(ClientData clientData,
 
 /** execute script from ANS/BNS tag
  */
-int ay_ns_execute(ay_object *o, ay_tag *tag);
+void ay_ns_execute(ay_object *o, ay_tag *tag);
 
 /** disable a ANS/BNS tag
  */
