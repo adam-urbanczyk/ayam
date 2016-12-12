@@ -612,7 +612,8 @@ ay_object_unlink(ay_object *o)
     { /* no */
       p1 = clevelobj;
       p2 = p1;
-      p1 = p1->next;
+      if(p1)
+	p1 = p1->next;
       done = AY_FALSE;
       while(p1 && !done)
 	{
