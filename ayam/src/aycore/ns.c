@@ -107,6 +107,7 @@ ay_ns_restrictall(ClientData clientData,
  * \param[in] tag tag to execute
  *
  */
+void
 ay_ns_execute(ay_object *o, ay_tag *tag)
 {
  static int lock = 0;
@@ -119,13 +120,13 @@ ay_ns_execute(ay_object *o, ay_tag *tag)
  char *script = NULL;
 
   if(!o || !tag)
-    return AY_ENULL;
+    return;
 
   /* this lock protects ourselves from running in an endless
      recursive loop should the script modify our child objects */
   if(lock)
     {
-      return AY_OK;
+      return;
     }
   else
     {
@@ -196,7 +197,7 @@ cleanup:
 
   lock = 0;
 
- return AY_OK;
+ return;
 } /* ay_ns_execute */
 
 
