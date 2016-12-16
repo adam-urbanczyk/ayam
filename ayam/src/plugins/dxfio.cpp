@@ -1704,7 +1704,7 @@ dxfio_countentities(dimeModel *model)
 
   char fname[] = "dxfio_countentities";
   char message[64];
-  sprintf(message, "%d entities to convert.\n", dxfio_totalents);
+  sprintf(message, "%d entities to convert.", dxfio_totalents);
   ay_error(AY_EOUTPUT, fname, message);
 
  return AY_OK;
