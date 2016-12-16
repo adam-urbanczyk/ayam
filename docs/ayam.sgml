@@ -851,7 +851,8 @@ Also files supported by any of the import plugins
 may be imported using this route. See above
 (<tt/"Open"/).<footnote>Since 1.13.</footnote>
 
-<item><tt/"Save as"/, saves the current scene asking for a new file name.
+<item><tt/"Save as"/, saves the current scene to a file
+asking for a new file name.
 
 <p>
 All objects in the scene will be saved to the scene file, but
@@ -865,8 +866,9 @@ Also files supported by any of the export plugins
 may be exported using this route. Just pick a file name with the
 desired extension (see above, <tt/"Open"/).<footnote>Since 1.13.</footnote>
 
-<item><tt/"Save"/, saves the scene. If the scene has not been saved before
-(the scene file name is "unnamed") Ayam will ask for a file name first.
+<item><tt/"Save"/, saves the scene to a file. If the scene has not been
+saved before (the scene file name is "unnamed") Ayam will ask for a file
+name first.
 
 <p>
 All objects in the scene will be saved to the scene file, but
@@ -1400,7 +1402,7 @@ may create entries here.
 The <tt/"Special"/ menu contains seldom used tools:
 <itemize>
 <item><tt/"Save Selected as"/, saves just the currently selected objects
-to disk. Note that Ayam will not check, whether the objects are saved
+to a scene file. Note that Ayam will not check, whether the objects are saved
 with their materials. It is also possible to save instance objects
 without their master objects. This will lead to errors while loading
 such a scene later on.
@@ -13180,8 +13182,8 @@ used on the curves, their order, knot vectors, and control points
 may be changed.
 <p><p>
 The orders of all curves will simply be raised to the maximum order of
-all curves; no attempt is made to check, whether lowering orders
-leads to a simpler result.
+all curves; no attempt is made to check, whether lowering orders would
+lead to a simpler result.
 <p>
 The point selection will be removed from the original objects.
 <p>
@@ -14002,8 +14004,8 @@ used on the surfaces, their order, knot vectors, and control points
 may be changed.
 
 The orders of all surfaces will simply be raised to the maximum order of
-all surfaces; no attempt is made to check, whether lowering orders
-leads to a simpler result.
+all surfaces; no attempt is made to check, whether lowering orders would
+lead to a simpler result.
 
 The point selection will be removed from the original objects.
 
@@ -14495,10 +14497,10 @@ like this:
 <#if out="latex"><x/needspace 7/</#if>
 <code>
 Transformations {
-arr   transfPropData
-sproc setTrafo
-gproc getTrafo
-w     fTrafoAttr
+  arr   transfPropData
+  sproc setTrafo
+  gproc getTrafo
+  w     fTrafoAttr
 }
 </code>
 The first entry, <tt/"arr"/, designates the name of the global property
@@ -16344,7 +16346,7 @@ openC &ndash; open curve:
 <itemize>
  <item>Synopsis: <tt/"openC"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Open a NCurve, ACurve, ICurve, or ConcatNC.
+ <item>Description: Open a NCurve, ACurve, ICurve, or ConcatNC object.
 <p><p>
 See also section <ref id="openct" name="Open Tool">.
 </itemize>
@@ -16357,7 +16359,7 @@ closeC &ndash; close curve:
 <itemize>
  <item>Synopsis: <tt/"closeC"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Close a NCurve, ACurve, ICurve, or ConcatNC.
+ <item>Description: Close a NCurve, ACurve, ICurve, or ConcatNC object.
 <p><p>
 See also section <ref id="closect" name="Close Tool">.
 </itemize>
@@ -16371,8 +16373,8 @@ refineC &ndash; refine curve:
  <item>Synopsis: <tt/"refineC"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Refine the control vector of the selected
-curves, changing the shape of the curve. If the curve has
-selected points, only the interval between the first and the
+NCurve, ICurve, and ACurve objects, changing the shapes of the curves.
+If a curve has selected points, only the interval between the first and the
 last of the selected points is refined. For periodic NURBS
 curves, the last <em/p/ intervals are not refined (where <em/p/
 is the degree of the curve).
@@ -20155,7 +20157,8 @@ instead of using the values from the Mops scene file.
 <p>
 The <tt>"dxfio"</tt> plugin allows to import AutoCAD DXF (drawing interchange
 format) files into Ayam with the help of the Dime library (from Systems in
-Motion, Kongsberg SIM AS, Norway).
+Motion, Kongsberg SIM AS, Norway). This plugin only supports files
+up to version 14 of the file format.
 <p>
 Start importing a DXF file using the main menu entry
 <tt>"File/Import/AutoCAD DXF"</tt>
@@ -21586,14 +21589,14 @@ The default value is 1.3. Ayam is not checking, whether the specified
 value is supported by the OpenGL implementation used.
 
 <item><tt/"AAFudge"/, offset added to any line ends to accommodate
-for different OpenGL implementations wrt. anti-aliasing (default 1.0).
+for different OpenGL implementations wrt.~anti-aliasing (default 1.0).
 
 <item><tt/"AASelLineWidth"/, line width used for drawing the lines of
 selected objects (white lines in standard color configuration)
 when anti-aliasing is enabled.
 The default value is 1.5 (a tad higher than <tt/"AALineWidth"/ above,
 to make the perceived line width equal compared to normal lines, in the
-case of drawing a selected curve over a not selected resulting surface).
+case of drawing a selected curve over a unselected resulting surface).
 Ayam is not checking, whether the specified
 value is supported by the OpenGL implementation used.
 
@@ -21630,7 +21633,7 @@ files. Default values are <tt>"&tilde;"</tt> for Unix and
 <item><tt/"Cat"/: name of a program that can read from and write to
 a pipe (used by the Rendering GUI) (default: <tt>"cat"</tt>)
 (a setting of <tt>"cat"</tt> will be
-automatically replaced by <tt>"cat.exe"</tt> on Win32)
+automatically replaced by <tt>"cat.exe"</tt> on Win32).
 
 <item><tt/"ConsoleTakeFocus"/: can be used to exclude the console
 from focus traversal via <tt/&lt;Tab&gt;/ when set to 0, the default
@@ -21895,7 +21898,7 @@ This option is not used in single window GUI mode. Default is 1 &ndash; yes.
 <item><tt>"ToolBoxTrans"</tt>, decides if the toolbox window should
 be made transient. It will then, depending on the window manager or its
 configuration, get a different or no decoration, no icon (or no entry in the
-task bar on Windows), and will always be iconified when the main window
+task bar on Win32), and will always be iconified when the main window
 gets iconified. Not used in single window GUI mode.
 The default value is 1 &ndash; yes.
 
@@ -21916,7 +21919,7 @@ unknown tag types (default: 1 &ndash; yes).
 for zombie processes created by the Rendering GUI.
 This is e.g.~necessary for the Linux platform.
 
-<item><tt/"WheelZoom"/, a float value that controls the zoom factor,
+<item><tt/"WheelZoom"/, a float value that controls the zoom factor
 for the mouse wheel; the default value is 0.5.
 
 </itemize>
