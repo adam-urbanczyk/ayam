@@ -948,7 +948,7 @@ ay_object_ishastcmd(ClientData clientData, Tcl_Interp *interp,
       else
 	{
 	  /* is is... */
-	  switch(argv[0][3])
+	  switch(argv[0][2])
 	    {
 	    case 'C':
 	      /* is isCurve */
