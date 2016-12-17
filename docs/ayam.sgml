@@ -967,6 +967,10 @@ operations, undo actions, and lets you open the preferences editor:
 <itemize>
 <item><tt/"Copy"/, copies the currently selected object(s) into the
 clipboard.<newline>
+This is a deep copy, reference counters of master or material objects
+may be increased and there are special rules for instances, see also
+section <ref id="instclip" name="Instances and the Object Clipboard">.
+
 This operation cannot be undone!
 
 <item><tt/"Cut"/, moves the currently selected object(s) into the
@@ -11163,7 +11167,7 @@ NURBS patch objects (or NURBS patch providing objects) and PolyMesh
 objects (or PolyMesh providing objects) to SDNPatch objects.
 
 Note that the PolyMesh to SDNPatch conversion only accepts closed
-quadrilateral polygon meshes (Triangles are omitted) and expects
+quadrilateral polygon meshes (triangles are omitted) and expects
 an optimized mesh (i.e.~adjacent faces should share the same vertices).
 
 <sect3>Conversion Support
@@ -12889,8 +12893,8 @@ the selection.
 changed using knot insertion so that the first and the last knot
 have a multiplicity equal to the order of the curve,
 without changing the shape of the curve. The curve will
-interpolate the first and the last control point afterwards (if also
-the weights of those points are 1.0).
+interpolate the first and the last control point afterwards (unless
+the weights of those points are not 1.0).
 
 <tag/Notes/ The knot type of the curves will be changed to <tt/"Custom"/.
 
@@ -13802,10 +13806,9 @@ changed using knot insertion so that the first and the last knot
 (in the respective direction).
 <tag/Notes/ The shape of the patches will not change but the position of some
 control points will. The patches interpolate the first and the last control
-points in the respective direction afterwards (if also the weights of those
-points are 1.0).
-The knot types of the patches will be changed to type
-<tt/"Custom"/.
+points in the respective direction afterwards (unless the weights of those
+points are not 1.0).
+The knot types of the patches will be changed to type <tt/"Custom"/.
 
 The point selection will be removed from the original object(s).
 
@@ -13865,9 +13868,9 @@ inserted 1 time at t=0.5)</caption>
 <descrip>
 <tag/Arguments/ The insert knot surface tool takes a number of NURBS
 patches from
-the selection and requests two additional values, a parametric value t
-and an integer value i.
-<tag/Operation/ The specified knot (t) will be inserted i
+the selection and requests two additional values, a parametric value <em/t/
+and an integer value <em/i/.
+<tag/Operation/ The specified knot (<em/t/) will be inserted <em/i/
 times into the knot vector of the selected patches, without changing their
 shape.
 <tag/Notes/ The knot type of the patch will be changed to <tt/"Custom"/.
@@ -13931,10 +13934,10 @@ curves <ref id="remknt" name="Remove Knot Tool">.
 </figure>
 <descrip>
 <tag/Arguments/ The split surface tool takes a number of NURBS patches from
-the selection and requests a parametric value t (in U or V parametric dimension,
-respectively).
+the selection and requests a parametric value <em/t/ (in U or V parametric
+dimension, respectively).
 In addition, an append option can be set.
-<tag/Operation/ The patches will be split at the parametric value t
+<tag/Operation/ The patches will be split at the parametric value <em/t/
 into two patches (in U or V parametric dimension, respectively) using
 knot insertion.
 <tscreen><verb>
@@ -15711,6 +15714,10 @@ copOb &ndash; copy object(s):
  <item>Description: Copy the selected object(s) to the object clipboard.
 If the option <tt/"-append"/ is used, the clipboard will not be cleared
 before this operation.
+This is a deep copy, reference counters of master or material objects
+may be increased and there are special rules for instances, see also
+section <ref id="instclip" name="Instances and the Object Clipboard">.
+
  <item>Notes: May fail if the clipboard contains referenced objects.
 If the append option is set, this operation only fails if there is
 not enough memory.
@@ -15741,8 +15748,8 @@ pasOb &ndash; paste object(s):
 clipboard to the current level. If the option <tt/"-move"/ is given,
 the objects are moved and not copied, i.e.~after a move, the clipboard
 is empty.
- <item>Notes: This operation may fail if the result is an illegal
-instance configuration (recursive references).
+ <item>Notes: This operation may fail if the result would be an illegal
+instance configuration (i.e.~recursive references).
 </itemize>
 <p>
 <#if out="latex"><x/phantomsection/</#if>
@@ -15756,8 +15763,8 @@ repOb &ndash; replace clipboard content with selected object(s):
 with the currently selected object(s). If multiple objects are selected
 in non consecutive sequences, only the first consecutive sequence
 or single object is replaced.
- <item>Notes: This operation may fail if the result is an illegal
-instance configuration (recursive references).
+ <item>Notes: This operation may fail if the result would be an illegal
+instance configuration (i.e.~recursive references).
 </itemize>
 <p>
 <#if out="latex"><x/phantomsection/</#if>
@@ -17775,15 +17782,15 @@ ayError:
  <item>Synopsis: <tt>"ayError code place detail"</tt>
  <item>Background: No, Undo: No, Safe: No
  <item>Description: This command reports errors or warnings.
-You should always use ayError instead of puts because the error
+<tt/ayError/ should be preferred to <tt/puts/ because the error
 reporting mechanism of Ayam features consistently formatted output,
 compression of repeated messages, and logging.
-Code should be one of: 1: warning, 2:
-error, 3: flush messages, 4: unspecified output.
+The code parameter should be one of: 1 &ndash; warning, 2 &ndash; error,
+3 &ndash; flush messages, 4 &ndash; unspecified output.
 There are more codes defined (see ayam.h, look for Return/Error Codes)
 but they are generally not needed in the Tcl script context.
-Place should describe the procedure where the error occurred.
-Detail is the string to be output.
+The place parameter should describe the procedure where the error occurred.
+The detail parameter is the string to be output.
 <item>Notes: The actual output in the Ayam console depends on the
 preference option <tt/"ErrorLevel"/ see section
 <ref id="prefmisc" name="Miscellaneous Preferences">.
@@ -17819,9 +17826,8 @@ section <ref id="scriptobjex" name="Script Object Examples">.
 <bf><tt>"set w [addPropertyGUI MyProperty]"</tt></bf>
 </itemize>
 
-<p>
-<#if out="latex"><x/newpage/</#if>
-<#if out="latex"><x/phantomsection/</#if>
+The following procedures add user interface elements to the
+property GUIs created by <tt/"addPropertyGUI"/.
 
 addParam:
 <itemize>
@@ -17845,6 +17851,9 @@ additional drop down menu on the right side of the interface element.
 <bf><tt>"addParam $w MyPropertyData MyFloat {0.1 0.5 1.5}"</tt></bf>
 </itemize>
 
+<p>
+<#if out="latex"><x/newpage/</#if>
+<#if out="latex"><x/phantomsection/</#if>
 
 addString:
 <itemize>
@@ -17868,7 +17877,6 @@ additional drop down menu on the right side of the interface element.
 <bf><tt>"addString $w MyPropertyData MyString {"a" "b" "abc"}"</tt></bf>
 </itemize>
 
-
 addCheck:
 <itemize>
  <item>Synopsis: <tt>"addCheck window arrayname paramname [onoffvalues]"</tt>
@@ -17890,10 +17898,6 @@ enabled or disabled.
 <item>Example:
 <bf><tt>"addCheck $w MyPropertyData MyBool"</tt></bf>
 </itemize>
-
-<p>
-<#if out="latex"><x/newpage/</#if>
-<#if out="latex"><x/phantomsection/</#if>
 
 addColor:
 <itemize>
@@ -17917,6 +17921,27 @@ additional drop down menu on the right side of the interface element.
 <bf><tt>"addColor $w MyPropertyData MyColor"</tt></bf>
 </itemize>
 
+<p>
+<#if out="latex"><x/newpage/</#if>
+<#if out="latex"><x/phantomsection/</#if>
+
+addMatrix:
+<itemize>
+ <item>Synopsis: <tt>"addMatrix window arrayname paramname"</tt>
+ <item>Background: Yes, Undo: No, Safe: Yes, Type: Procedure
+ <item>Description: This procedure adds a property GUI element for a
+four by four element matrix, e.g.~a transformation matrix.
+<p><p>
+The <tt/"window"/ parameter should contain the window name as returned by
+<tt/"addPropertyGUI"/ above.
+<p>
+The <tt/"arrayname"/ parameter is the name of the corresponding
+data array of the property.
+<p>
+The <tt/"paramname"/ parameter is the name of the parameter.
+<item>Example:
+<bf><tt>"addMatrix $w MyPropertyData MyMatrix"</tt></bf>
+</itemize>
 
 addMenu:
 <itemize>
@@ -17945,7 +17970,6 @@ before this procedure is called.
 <bf><tt>"addMenu $w MyPropertyData MyMenu {Choice1 Choice2}"</tt></bf>
 </itemize>
 
-
 addFile:
 <itemize>
  <item>Synopsis: <tt>"addFile window arrayname paramname [defaults]"</tt>
@@ -17970,6 +17994,9 @@ meant to be used for saving: <tt>"addSFile"</tt>
 <bf><tt>"addFile $w MyPropertyData MyFile {"/tmp/file1" "/tmp/file2"}"</tt></bf>
 </itemize>
 
+<p>
+<#if out="latex"><x/newpage/</#if>
+<#if out="latex"><x/phantomsection/</#if>
 
 addCommand:
 <itemize>
@@ -18091,6 +18118,7 @@ extension appended) into the variable designated by varname.
 </itemize>
 
 <p>
+<#if out="latex"><x/newpage/</#if>
 <#if out="latex"><x/phantomsection/</#if>
 
 <label id="scundo">
@@ -18159,7 +18187,7 @@ or 1 &ndash; yes.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="latex"><x/newpage/</#if>
 
 <label id="scnotifyob">
 notifyOb:
