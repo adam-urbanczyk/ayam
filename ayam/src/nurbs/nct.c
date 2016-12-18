@@ -5620,7 +5620,7 @@ ay_nct_makecompatible(ay_object *curves, int level)
  ay_nurbcurve_object *curve = NULL;
  int max_order = 0, max_length = 0;
  int stride, nh = 0, numknots = 0, t = 0, i, j, a, b;
- int Ualen = 0, Ublen = 0, Ubarlen = 0, clamp_me;
+ int Ualen = 0, Ublen = 0, Ubarlen = 0, clamped;
  double *Uh = NULL, *Qw = NULL, *realUh = NULL, *realQw = NULL;
  double *Ubar = NULL, *Ua = NULL, *Ub = NULL;
  double u = 0.0, ud, *u1, *u2;
@@ -5633,12 +5633,13 @@ ay_nct_makecompatible(ay_object *curves, int level)
   while(o)
     {
       curve = (ay_nurbcurve_object *) o->refine;
-      clamp_me = AY_FALSE;
+      clamped = AY_FALSE;
       if((curve->knot_type == AY_KTBSPLINE) ||
 	 ((curve->type == AY_CTPERIODIC) &&
 	  ((curve->knot_type == AY_KTCHORDAL) ||
 	   (curve->knot_type == AY_KTCENTRI))))
 	{
+	  clamped = AY_TRUE;
 	  ay_status = ay_nct_clampperiodic(curve);
 	}
       else
@@ -5660,18 +5661,21 @@ ay_nct_makecompatible(ay_object *curves, int level)
 
 	      if((a < (curve->order)) || (b < (curve->order)))
 		{
-		  clamp_me = AY_TRUE;
+		  clamped = AY_TRUE;
+		  ay_status = ay_nct_clamp(curve, 0);
 		}
 	    } /* if */
 	} /* if */
 
-      if(clamp_me)
-	{
-	  ay_status = ay_nct_clamp(curve, 0);
-	}
-
       if(ay_status)
 	return ay_status;
+
+      if(clamped)
+	{
+	  curve->knot_type = ay_knots_classify(curve->order, curve->knotv,
+					       curve->order+curve->length,
+					       AY_EPSILON);
+	}
 
       o = o->next;
     } /* while */
