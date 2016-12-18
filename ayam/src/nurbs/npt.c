@@ -10244,8 +10244,11 @@ ay_npt_clampu(ay_nurbpatch_object *patch, int side)
 
       memcpy(newknotv, &(patch->uknotv[rs]),
 	     (patch->width+patch->uorder)*sizeof(double));
-      /* improve phantom knot */
+      /* improve phantom knot(s) */
       newknotv[0] = newknotv[1];
+      if(side == 0)
+	newknotv[patch->width+patch->uorder-1] =
+	  newknotv[patch->width+patch->uorder-2];
       break;
     case 2:
       /* clamped end: ignore last re knots */
@@ -10438,8 +10441,10 @@ ay_npt_clampv(ay_nurbpatch_object *patch, int side)
 
       memcpy(newknotv, &(patch->vknotv[rs]),
 	     (patch->height+patch->vorder)*sizeof(double));
-      /* improve phantom knot */
+      /* improve phantom knot(s) */
       newknotv[0] = newknotv[1];
+      newknotv[patch->height+patch->vorder-1] =
+	newknotv[patch->height+patch->vorder-2];
       break;
     case 2:
       /* clamped end: ignore last re knots */
