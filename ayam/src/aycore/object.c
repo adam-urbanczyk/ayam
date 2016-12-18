@@ -839,7 +839,7 @@ ay_object_copy(ay_object *src, ay_object **dst)
 
 	  sub = sub->next;
 	} /* while */
-    }
+    } /* if have children */
 
   new->modified = AY_TRUE;
   new->selected = AY_FALSE;
@@ -943,7 +943,7 @@ ay_object_ishastcmd(ClientData clientData, Tcl_Interp *interp,
 	      /* break the loop */
 	      sel = NULL;
 	      break;
-	    }
+	    } /* switch */
 	}
       else
 	{
@@ -978,8 +978,8 @@ ay_object_ishastcmd(ClientData clientData, Tcl_Interp *interp,
 	      /* break the loop */
 	      sel = NULL;
 	      break;
-	    }
-	}
+	    } /* switch */
+	} /* if has or is */
 
       if(ay_selection->next)
 	Tcl_AppendElement(interp, res);
@@ -1066,7 +1066,7 @@ ay_object_gettypeornametcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	}
       sel = sel->next;
-    }
+    } /* while sel */
 
  return TCL_OK;
 } /* ay_object_gettypeornametcmd */
@@ -1390,7 +1390,7 @@ ay_object_getpathname(ay_object *o, ay_object *h, size_t *totallen, int *found,
       *totallen -= curlen+1;
 
       h = h->next;
-    } /* while c */
+    } /* while */
 
  return ay_status;
 } /* ay_object_getpathname */
