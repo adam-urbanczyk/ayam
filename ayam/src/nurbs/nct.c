@@ -1822,8 +1822,11 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
 
       memcpy(newknotv, &(curve->knotv[rs]),
 	     (curve->length+curve->order)*sizeof(double));
-      /* improve phantom knot */
+      /* improve phantom knot(s) */
       newknotv[0] = newknotv[1];
+      if(side == 0)
+	newknotv[curve->length+curve->order-1] =
+	  newknotv[curve->length+curve->order-2];
       break;
     case 2:
       /* clamped end: ignore last re knots */
