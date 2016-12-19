@@ -10443,8 +10443,9 @@ ay_npt_clampv(ay_nurbpatch_object *patch, int side)
 	     (patch->height+patch->vorder)*sizeof(double));
       /* improve phantom knot(s) */
       newknotv[0] = newknotv[1];
-      newknotv[patch->height+patch->vorder-1] =
-	newknotv[patch->height+patch->vorder-2];
+      if(side == 0)
+	newknotv[patch->height+patch->vorder-1] =
+	  newknotv[patch->height+patch->vorder-2];
       break;
     case 2:
       /* clamped end: ignore last re knots */
