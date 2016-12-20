@@ -14757,6 +14757,9 @@ ay_npt_makecompatible(ay_object *patches, int side, int level)
 	      ay_status = ay_npt_clampu(patch, side);
 	      if(ay_status)
 		break;
+	      patch->uknot_type = ay_knots_classify(patch->uorder,
+						    patch->uknotv,
+				patch->width+patch->uorder, AY_EPSILON);
 	    }
 
 	  if(patch->uknotv[0] != 0.0 ||
@@ -14780,6 +14783,9 @@ ay_npt_makecompatible(ay_object *patches, int side, int level)
 	      ay_status = ay_npt_clampv(patch, side);
 	      if(ay_status)
 		break;
+	      patch->vknot_type = ay_knots_classify(patch->vorder,
+						    patch->vknotv,
+				      patch->height+patch->vorder, AY_EPSILON);
 	    }
 
 	  if(patch->vknotv[0] != 0.0 ||
