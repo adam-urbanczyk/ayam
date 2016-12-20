@@ -514,7 +514,7 @@ ay_nct_resize(ay_nurbcurve_object *curve, int new_length)
   if(new_length < curve->length)
     {
       a = 0;
-      for(i=0; i<new_length; i++)
+      for(i = 0; i < new_length; i++)
 	{
 	  memcpy(&ncontrolv[a], &(curve->controlv[a]), 4*sizeof(double));
 	  a += 4;
@@ -961,10 +961,10 @@ ay_nct_revertarr(double *cv, int cvlen, int stride)
 
 
 /** ay_nct_refinekn:
- *  refine a NURBS curve by inserting knots at the right places,
+ *  Refine a NURBS curve by inserting knots at the right places,
  *  thus not changing the shape of the curve;
  *  if newknotv is NULL, a knot is inserted into every possible
- *  place in the knot vector (multiple knots will not be changed)
+ *  place in the knot vector (multiple knots will not be changed).
  *  The knot type may change in the process.
  *
  * \param[in,out] curve NURBS curve object to refine
@@ -1228,8 +1228,8 @@ ay_nct_refinearray(double *Pw, int len, int stride, ay_point *selp,
 
 
 /** ay_nct_refinecv:
- *  refine a NURBS curve by inserting control points at the right places,
- *  changing the shape of the curve
+ *  Refine a NURBS curve by inserting control points at the right places,
+ *  changing the shape of the curve.
  *  The knot type does not change, but new knots will be generated.
  *
  * \param[in,out] curve NURBS curve object to refine
@@ -5611,7 +5611,10 @@ ay_nct_iscompatible(ay_object *curves, int level, int *result)
  *  and defined on the same knot vector
  *
  * \param[in,out] curves a number of NURBS curve objects
- * \param[in] level desired level of compatibility
+ * \param[in] level desired level of compatibility:
+ *  0 - order,
+ *  1 - length,
+ *  2 - length/order/knots
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -6130,7 +6133,8 @@ ay_nct_getplane(int cvlen, int cvstride, double *cv)
  *  information to the transformation attributes and rotating the control
  *  points of the planar curve to the XY plane
  *
- * \param[in] allow_flip if AY_TRUE also curves in the XY plane with
+ * \param[in] plane target plane (AY_XY, AY_YZ, AY_XZ)
+ * \param[in] allow_flip if AY_TRUE also curves in the target plane with
  *  non clockwise winding will be changed (flipped)
  * \param[in,out] c curve object to process
  *
@@ -7241,7 +7245,7 @@ ay_nct_trimtcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /** ay_nct_isdegen:
- *  check curve for degeneracy (all points equal)
+ *  Check curve for degeneracy (all points equal).
  *
  *  Deliberately not checking the weights, as curves with
  *  equal coordinates but different weights also collapse
@@ -7276,7 +7280,7 @@ ay_nct_isdegen(ay_nurbcurve_object *curve)
 
 
 /** ay_nct_offset:
- *  create offset curve
+ *  Create offset curve.
  *
  * \param[in] o NURBS curve object to offset
  * \param[in] mode offset mode:
@@ -7943,7 +7947,7 @@ ay_nct_cmppntp(const void *p1, const void *p2)
 
 
 /** ay_nct_estlen:
- *  estimate length of NURBS curve
+ *  Estimate length of NURBS curve.
  *
  * \param[in] nc NURBS curve object
  * \param[in,out] len estimated length
