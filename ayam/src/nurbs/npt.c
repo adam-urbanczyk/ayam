@@ -13190,8 +13190,8 @@ cleanup:
  * \param[in] width width of cv
  * \param[in] height height of cv
  * \param[in] stride stride in cv
- * \param[in,out] avlens resulting average distances [width-1]
- *  avlens[0] is the average distance of column0 to column1
+ * \param[in,out] avlens resulting average distances [width-1];
+ *  avlens[0] is the average distance of column0 to column1,
  *  avlens[1] the average distance of column1 to column2...
  *
  * \returns AY_OK on success, error code otherwise.
@@ -13248,8 +13248,8 @@ ay_npt_avglensu(double *cv, int width, int height, int stride,
  * \param[in] width width of cv
  * \param[in] height height of cv
  * \param[in] stride stride in cv
- * \param[in,out] avlens resulting average distances [height-1]
- *  avlens[0] is the average distance of row0 to row1
+ * \param[in,out] avlens resulting average distances [height-1];
+ *  avlens[0] is the average distance of row0 to row1,
  *  avlens[1] the average distance of row1 to row2...
  *
  * \returns AY_OK on success, error code otherwise.
@@ -14713,8 +14713,8 @@ ay_npt_iscomptcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /** ay_npt_makecompatible:
- *  make a number of patches compatible i.e. of the same order
- *  and defined on the same knot vector
+ * Make a number of patches compatible, i.e. of the same order
+ * and defined on the same knot vector.
  *
  * \param[in,out] patches a number of NURBS patch objects
  * \param[in] side which dimension to consider: 0 - both, 1 - U, 2 - V
