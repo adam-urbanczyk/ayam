@@ -1011,7 +1011,7 @@ cleanup:
 /** ay_ict_resize:
  * Resize an approximating curve.
  *
- * \param[in,out] curve approximating curve to revert
+ * \param[in,out] curve approximating curve to process
  * \param[in] new_length desired new length
  *
  * \returns AY_OK on success, error code otherwise.
