@@ -1788,7 +1788,7 @@ ay_ipt_crtderiv(int mode, ay_ipatch_object *ip)
       dv = ip->sderiv_v;
       a = 0;
       b = stride;
-      j = ip->height;
+      j = ip->width;
       aoff = ip->height*stride;
       boff = ip->height*stride;
       len = ip->sdlen_v;
@@ -1803,7 +1803,7 @@ ay_ipt_crtderiv(int mode, ay_ipatch_object *ip)
       dv = ip->ederiv_v;
       a = (ip->height-1)*stride;
       b = a-stride;
-      j = ip->height;
+      j = ip->width;
       aoff = ip->height*stride;
       boff = ip->height*stride;
       len = ip->edlen_v;
