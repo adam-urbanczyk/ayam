@@ -781,6 +781,35 @@ set NPatch_2(valcmd) {
 
 # ToDo: NPatch with Custom knots
 
+
+#############
+# IPatch
+#############
+
+# IPatch Variation #1
+array set IPatch_1 {
+    arr IPatchAttrData
+    freevars {Width Height Order_U Order_V Close_U Close_V Knot-Type_U Knot-Type_V Derivatives_U Derivatives_V}
+    fixedvars {dummy}
+    fixedvals { {0} }
+}
+set IPatch_1(Width) $lengthvals
+set IPatch_1(Height) $lengthvals
+set IPatch_1(Order_U) $ordervals
+set IPatch_1(Order_V) $ordervals
+set IPatch_1(Close_U) {0 1}
+set IPatch_1(Close_V) {0 1}
+set IPatch_1(Knot-Type_U) {0 1 2}
+set IPatch_1(Knot-Type_V) {0 1 2}
+set IPatch_1(Derivatives_U) {0 1 2}
+set IPatch_1(Derivatives_V) {0 1 2}
+
+set IPatch_1(valcmd) {
+    [expr {($::IPatchAttrData(Order_U) <= $::IPatchAttrData(Width)) &&
+	   ($::IPatchAttrData(Order_V) <= $::IPatchAttrData(Height))}]
+}
+
+
 ###
 foreach type $types {
     puts $log "Testing $type ...\n"
@@ -1841,6 +1870,7 @@ proc aytest_var { type } {
 		  eval append cmds \$::${type}_${i}(valcmd)
 		  append cmds " \} \{ "
 	      }
+
 	      append cmds {\
 		  selOb 0;copOb;pasOb;hSL;
 		  setProp;
@@ -2008,7 +2038,7 @@ set aytest_2items $items
 
 # set up types to test in test #3
 set items {}
-lappend items NCurve ICurve ACurve NPatch
+lappend items NCurve ICurve ACurve NPatch IPatch
 set aytest_3items $items
 
 # set up types to test in test #4
