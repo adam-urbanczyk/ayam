@@ -1916,6 +1916,16 @@ ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       ipatch->order_v = (ipatch->height < 4)?ipatch->height:4;
     }
 
+  if(ipatch->order_u == 2)
+    {
+      ipatch->derivs_u = AY_FALSE;
+    }
+
+  if(ipatch->order_v == 2)
+    {
+      ipatch->derivs_v = AY_FALSE;
+    }
+
   /* create end derivative arrays */
   if(ipatch->derivs_u)
     {
@@ -1932,10 +1942,15 @@ ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       if(ay_status_s || ay_status_e)
 	{
 	  if(ipatch->sderiv_u)
-	    free(ipatch->sderiv_u);
-	  ipatch->sderiv_u = NULL;
+	    {
+	      free(ipatch->sderiv_u);
+	      ipatch->sderiv_u = NULL;
+	    }
 	  if(ipatch->ederiv_u)
-	    free(ipatch->ederiv_u);
+	    {
+	      free(ipatch->ederiv_u);
+	      ipatch->ederiv_u = NULL;
+	    }
 	  ipatch->derivs_u = AY_FALSE;
 	}
     } /* if */
@@ -1955,11 +1970,15 @@ ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       if(ay_status_s || ay_status_e)
 	{
 	  if(ipatch->sderiv_v)
-	    free(ipatch->sderiv_v);
-	  ipatch->sderiv_v = NULL;
+	    {
+	      free(ipatch->sderiv_v);
+	      ipatch->sderiv_v = NULL;
+	    }
 	  if(ipatch->ederiv_v)
-	    free(ipatch->ederiv_v);
-	  ipatch->ederiv_v = NULL;
+	    {
+	      free(ipatch->ederiv_v);
+	      ipatch->ederiv_v = NULL;
+	    }
 	  ipatch->derivs_v = AY_FALSE;
 	}
     } /* if */
