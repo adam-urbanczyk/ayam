@@ -292,7 +292,7 @@ set floatvals {-1000 -100 -20 -2.5 -2 -1.5 -1.0 -0.9 -0.1 0.1 0.9 1.0 1.5 2 2.5 
 #  postcmd - actual commands to test the implementation
 #  arr - array to put all variable data into
 #  fixedvars - list of fixed variables in array arr
-#  vals - list of value sets for all variables in fixedvars
+#  fixedvals - list of value sets for all variables in fixedvars
 #  freevars - list of free variables in array arr
 #             (their values will be automatically
 #              varied by a cartesian product!)
@@ -309,7 +309,7 @@ array set Box_1 {
     arr BoxAttrData
     freevars {Width Length Height}
     fixedvars {dummy}
-    vals { {0} }
+    fixedvals { {0} }
 }
 set Box_1(Width) $floatvals
 set Box_1(Length) $floatvals
@@ -332,17 +332,17 @@ set Sphere_1(ThetaMax) $angles
 #set Sphere_1(ThetaMax) {-180 -1 1 90}
 #set Sphere_1(postcmd) {aytest_varcmds}
 
-lappend Sphere_1(vals) { 1.0 -1.0 1.0 }
-lappend Sphere_1(vals) { 1.0 -0.1 0.1 }
-lappend Sphere_1(vals) { 1.0 -0.2 0.2 }
-lappend Sphere_1(vals) { 1.0 -0.5 0.5 }
+lappend Sphere_1(fixedvals) { 1.0 -1.0 1.0 }
+lappend Sphere_1(fixedvals) { 1.0 -0.1 0.1 }
+lappend Sphere_1(fixedvals) { 1.0 -0.2 0.2 }
+lappend Sphere_1(fixedvals) { 1.0 -0.5 0.5 }
 
-lappend Sphere_1(vals) { 1.0 -0.5 1.0 }
-lappend Sphere_1(vals) { 1.0 0.0 1.0 }
-lappend Sphere_1(vals) { 1.0 0.5 1.0 }
-lappend Sphere_1(vals) { 1.0 -1.0 -0.5 }
-lappend Sphere_1(vals) { 1.0 -1.0 0.0 }
-lappend Sphere_1(vals) { 1.0 -1.0 0.5 }
+lappend Sphere_1(fixedvals) { 1.0 -0.5 1.0 }
+lappend Sphere_1(fixedvals) { 1.0 0.0 1.0 }
+lappend Sphere_1(fixedvals) { 1.0 0.5 1.0 }
+lappend Sphere_1(fixedvals) { 1.0 -1.0 -0.5 }
+lappend Sphere_1(fixedvals) { 1.0 -1.0 0.0 }
+lappend Sphere_1(fixedvals) { 1.0 -1.0 0.5 }
 
 
 # Sphere Variation #2
@@ -356,12 +356,12 @@ array set Sphere_2 {
 set Sphere_2(ThetaMax) $angles
 
 # take all valsets from Sphere_1 but adapt the radius
-foreach valset $Sphere_1(vals) {
+foreach valset $Sphere_1(fixedvals) {
     set val {}
     lappend val [expr [lindex $valset 0] * 2.0 ]
     lappend val [lindex $valset 1]
     lappend val [lindex $valset 2]
-    lappend Sphere_2(vals) $val
+    lappend Sphere_2(fixedvals) $val
 }
 # foreach
 
@@ -377,12 +377,12 @@ array set Sphere_3 {
 set Sphere_3(ThetaMax) $angles
 
 # take all valsets from Sphere_1 but adapt the radius
-foreach valset $Sphere_1(vals) {
+foreach valset $Sphere_1(fixedvals) {
     set val {}
     lappend val [expr [lindex $valset 0] * 0.5 ]
     lappend val [lindex $valset 1]
     lappend val [lindex $valset 2]
-    lappend Sphere_3(vals) $val
+    lappend Sphere_3(fixedvals) $val
 }
 # foreach
 
@@ -400,16 +400,16 @@ array set Cylinder_1 {
 }
 set Cylinder_1(ThetaMax) $angles
 
-lappend Cylinder_1(vals) { 1.0 -1.0 1.0 }
-lappend Cylinder_1(vals) { 1.0 -0.1 0.1 }
-lappend Cylinder_1(vals) { 1.0 -0.5 0.5 }
-lappend Cylinder_1(vals) { 1.0 -2.0 2.0 }
-lappend Cylinder_1(vals) { 1.0 0.0 1.0 }
-lappend Cylinder_1(vals) { 1.0 -1.0 0.0 }
-lappend Cylinder_1(vals) { 1.0 -2.0 -1.0 }
-lappend Cylinder_1(vals) { 1.0 1.0 2.0 }
-lappend Cylinder_1(vals) { 1.0 -2.1 -0.1 }
-lappend Cylinder_1(vals) { 1.0 0.1 2.1 }
+lappend Cylinder_1(fixedvals) { 1.0 -1.0 1.0 }
+lappend Cylinder_1(fixedvals) { 1.0 -0.1 0.1 }
+lappend Cylinder_1(fixedvals) { 1.0 -0.5 0.5 }
+lappend Cylinder_1(fixedvals) { 1.0 -2.0 2.0 }
+lappend Cylinder_1(fixedvals) { 1.0 0.0 1.0 }
+lappend Cylinder_1(fixedvals) { 1.0 -1.0 0.0 }
+lappend Cylinder_1(fixedvals) { 1.0 -2.0 -1.0 }
+lappend Cylinder_1(fixedvals) { 1.0 1.0 2.0 }
+lappend Cylinder_1(fixedvals) { 1.0 -2.1 -0.1 }
+lappend Cylinder_1(fixedvals) { 1.0 0.1 2.1 }
 
 
 # Cylinder Variation #2
@@ -422,12 +422,12 @@ array set Cylinder_2 {
 set Cylinder_2(ThetaMax) $angles
 
 # take all valsets from Cylinder_1 but adapt the radius
-foreach valset $Cylinder_1(vals) {
+foreach valset $Cylinder_1(fixedvals) {
     set val {}
     lappend val [expr [lindex $valset 0] * 0.5 ]
     lappend val [lindex $valset 1]
     lappend val [lindex $valset 2]
-    lappend Cylinder_2(vals) $val
+    lappend Cylinder_2(fixedvals) $val
 }
 # foreach
 
@@ -442,12 +442,12 @@ array set Cylinder_3 {
 set Cylinder_3(ThetaMax) $angles
 
 # take all valsets from Cylinder_1 but adapt the radius
-foreach valset $Cylinder_1(vals) {
+foreach valset $Cylinder_1(fixedvals) {
     set val {}
     lappend val [expr [lindex $valset 0] * 2.0 ]
     lappend val [lindex $valset 1]
     lappend val [lindex $valset 2]
-    lappend Cylinder_3(vals) $val
+    lappend Cylinder_3(fixedvals) $val
 }
 # foreach
 
@@ -465,7 +465,7 @@ array set Cone_1 {
     Radius {0.1 0.5 1.0 1.5 2.0}
     Height {-2.0 -1.5 -1.0 -0.5 -0.1 0.1 0.5 1.0 1.5 2.0}
     fixedvars {}
-    vals {1}
+    fixedvals {1}
 }
 set Cone_1(ThetaMax) $angles
 
@@ -482,7 +482,7 @@ array set Disk_1 {
     Radius {0.1 0.5 1.0 1.5 2.0}
     Height {-2.0 -1.5 -1.0 -0.5 -0.1 0.1 0.5 1.0 1.5 2.0}
     fixedvars {}
-    vals {1}
+    fixedvals {1}
 }
 set Disk_1(ThetaMax) $angles
 
@@ -501,20 +501,20 @@ array set Hyperboloid_1 {
 set Hyperboloid_1(ThetaMax) $angles
 
 # a hyperboloid as you know it
-lappend Hyperboloid_1(vals) { 0.0 -1.0 -0.5  1.0 0.0 0.5 }
-lappend Hyperboloid_1(vals) { 1.0 0.0 0.5  0.0 -1.0 -0.5 }
+lappend Hyperboloid_1(fixedvals) { 0.0 -1.0 -0.5  1.0 0.0 0.5 }
+lappend Hyperboloid_1(fixedvals) { 1.0 0.0 0.5  0.0 -1.0 -0.5 }
 
 # cylinder
-lappend Hyperboloid_1(vals) { 0.0 1.0 -0.5  0.0 1.0 0.5 }
-lappend Hyperboloid_1(vals) { 0.0 1.0 0.5  0.0 1.0 -0.5 }
-lappend Hyperboloid_1(vals) { 1.0 0.0 -0.5  1.0 0.0 0.5 }
-lappend Hyperboloid_1(vals) { 1.0 0.0 0.5  1.0 0.0 -0.5 }
+lappend Hyperboloid_1(fixedvals) { 0.0 1.0 -0.5  0.0 1.0 0.5 }
+lappend Hyperboloid_1(fixedvals) { 0.0 1.0 0.5  0.0 1.0 -0.5 }
+lappend Hyperboloid_1(fixedvals) { 1.0 0.0 -0.5  1.0 0.0 0.5 }
+lappend Hyperboloid_1(fixedvals) { 1.0 0.0 0.5  1.0 0.0 -0.5 }
 
 # ring (disk with hole)
-lappend Hyperboloid_1(vals) { 0.5 0.0 0.0  1.0 0.0 0.0 }
+lappend Hyperboloid_1(fixedvals) { 0.5 0.0 0.0  1.0 0.0 0.0 }
 
 # frustum (cone without apex)
-lappend Hyperboloid_1(vals) { 0.0 1.0 -0.5  0.0 0.5 0.5 }
+lappend Hyperboloid_1(fixedvals) { 0.0 1.0 -0.5  0.0 0.5 0.5 }
 
 
 
@@ -532,23 +532,23 @@ array set Paraboloid_1 {
 set Paraboloid_1(ThetaMax) $angles
 
 
-lappend Paraboloid_1(vals) { 1.0 0.0 0.5 }
-lappend Paraboloid_1(vals) { 1.0 0.0 1.0 }
-lappend Paraboloid_1(vals) { 1.0 0.0 1.5 }
-lappend Paraboloid_1(vals) { 1.0 0.0 2.0 }
+lappend Paraboloid_1(fixedvals) { 1.0 0.0 0.5 }
+lappend Paraboloid_1(fixedvals) { 1.0 0.0 1.0 }
+lappend Paraboloid_1(fixedvals) { 1.0 0.0 1.5 }
+lappend Paraboloid_1(fixedvals) { 1.0 0.0 2.0 }
 
-lappend Paraboloid_1(vals) { 1.0 0.1 0.5 }
-lappend Paraboloid_1(vals) { 1.0 0.1 1.0 }
-lappend Paraboloid_1(vals) { 1.0 0.1 1.5 }
-lappend Paraboloid_1(vals) { 1.0 0.1 2.0 }
+lappend Paraboloid_1(fixedvals) { 1.0 0.1 0.5 }
+lappend Paraboloid_1(fixedvals) { 1.0 0.1 1.0 }
+lappend Paraboloid_1(fixedvals) { 1.0 0.1 1.5 }
+lappend Paraboloid_1(fixedvals) { 1.0 0.1 2.0 }
 
-lappend Paraboloid_1(vals) { 1.0 1.0 0.1 }
-lappend Paraboloid_1(vals) { 1.0 1.0 0.5 }
-lappend Paraboloid_1(vals) { 1.0 1.0 0.9 }
+lappend Paraboloid_1(fixedvals) { 1.0 1.0 0.1 }
+lappend Paraboloid_1(fixedvals) { 1.0 1.0 0.5 }
+lappend Paraboloid_1(fixedvals) { 1.0 1.0 0.9 }
 
-lappend Paraboloid_1(vals) { 1.0 2.0 0.1 }
-lappend Paraboloid_1(vals) { 1.0 2.0 0.5 }
-lappend Paraboloid_1(vals) { 1.0 2.0 0.9 }
+lappend Paraboloid_1(fixedvals) { 1.0 2.0 0.1 }
+lappend Paraboloid_1(fixedvals) { 1.0 2.0 0.5 }
+lappend Paraboloid_1(fixedvals) { 1.0 2.0 0.9 }
 
 
 # Paraboloid Variation #2
@@ -562,12 +562,12 @@ set Paraboloid_2(ThetaMax) $angles
 
 
 # take all valsets from Paraboloid_1 but adapt RMax
-foreach valset $Paraboloid_1(vals) {
+foreach valset $Paraboloid_1(fixedvals) {
     set val {}
     lappend val [expr [lindex $valset 0] * 0.5 ]
     lappend val [lindex $valset 1]
     lappend val [lindex $valset 2]
-    lappend Paraboloid_2(vals) $val
+    lappend Paraboloid_2(fixedvals) $val
 }
 # foreach
 
@@ -582,12 +582,12 @@ array set Paraboloid_3 {
 set Paraboloid_3(ThetaMax) $angles
 
 # take all valsets from Paraboloid_1 but adapt RMax
-foreach valset $Paraboloid_1(vals) {
+foreach valset $Paraboloid_1(fixedvals) {
     set val {}
     lappend val [expr [lindex $valset 0] * 2.0 ]
     lappend val [lindex $valset 1]
     lappend val [lindex $valset 2]
-    lappend Paraboloid_3(vals) $val
+    lappend Paraboloid_3(fixedvals) $val
 }
 # foreach
 
@@ -605,20 +605,20 @@ array set Torus_1 {
 }
 set Torus_1(ThetaMax) $angles
 
-lappend Torus_1(vals) { 0.25 0.25 0.0 360.0 }
-lappend Torus_1(vals) { 0.75 0.25 0.0 360.0 }
-lappend Torus_1(vals) { 1.0 0.25 0.0 360.0 }
-lappend Torus_1(vals) { 1.0 0.5 0.0 360.0 }
+lappend Torus_1(fixedvals) { 0.25 0.25 0.0 360.0 }
+lappend Torus_1(fixedvals) { 0.75 0.25 0.0 360.0 }
+lappend Torus_1(fixedvals) { 1.0 0.25 0.0 360.0 }
+lappend Torus_1(fixedvals) { 1.0 0.5 0.0 360.0 }
 
-lappend Torus_1(vals) { 0.25 0.25 90.0 360.0 }
-lappend Torus_1(vals) { 0.75 0.25 90.0 360.0 }
-lappend Torus_1(vals) { 1.0 0.25 90.0 360.0 }
-lappend Torus_1(vals) { 1.0 0.5 90.0 360.0 }
+lappend Torus_1(fixedvals) { 0.25 0.25 90.0 360.0 }
+lappend Torus_1(fixedvals) { 0.75 0.25 90.0 360.0 }
+lappend Torus_1(fixedvals) { 1.0 0.25 90.0 360.0 }
+lappend Torus_1(fixedvals) { 1.0 0.5 90.0 360.0 }
 
-lappend Torus_1(vals) { 0.25 0.25 180.0 360.0 }
-lappend Torus_1(vals) { 0.75 0.25 180.0 360.0 }
-lappend Torus_1(vals) { 1.0 0.25 180.0 360.0 }
-lappend Torus_1(vals) { 1.0 0.5 180.0 360.0 }
+lappend Torus_1(fixedvals) { 0.25 0.25 180.0 360.0 }
+lappend Torus_1(fixedvals) { 0.75 0.25 180.0 360.0 }
+lappend Torus_1(fixedvals) { 1.0 0.25 180.0 360.0 }
+lappend Torus_1(fixedvals) { 1.0 0.5 180.0 360.0 }
 
 
 # XXXX TODO: add torus variations for phimin/phimax
@@ -669,7 +669,7 @@ array set NCurve_1 {
     arr NCurveAttrData
     freevars {Length Order Knot-Type}
     fixedvars {dummy}
-    vals { {0} }
+    fixedvals { {0} }
 }
 set NCurve_1(Length) $lengthvals
 set NCurve_1(Order) $ordervals
@@ -684,7 +684,7 @@ array set NCurve_2 {
     arr NCurveAttrData
     freevars {Length Order}
     fixedvars {Knot-Type}
-    vals { {0} }
+    fixedvals { {0} }
 }
 set NCurve_2(Length) $lengthvals
 set NCurve_2(Order) $ordervals
@@ -694,6 +694,50 @@ set NCurve_2(valcmd) {
 
 
 # ToDo: NCurve with Custom knots
+
+#############
+# ICurve
+#############
+
+# ICurve Variation #1
+array set ICurve_1 {
+    arr ICurveAttrData
+    freevars {Type Length Order ParamType Derivatives SDLen EDLen}
+    fixedvars {dummy}
+    fixedvals { {0} }
+}
+set ICurve_1(Type) {0 1}
+set ICurve_1(Length) $lengthvals
+set ICurve_1(Order) [lrange $ordervals 1 end]
+set ICurve_1(ParamType) {0 1 2}
+set ICurve_1(Derivatives) {0 1}
+set ICurve_1(SDLen) $floatvals
+set ICurve_1(EDLen) $floatvals
+set ICurve_1(valcmd) {
+    [expr {$::ICurveAttrData(Order) <= $::ICurveAttrData(Length)}]
+}
+
+
+#############
+# ACurve
+#############
+
+# ACurve Variation #1
+array set ACurve_1 {
+    arr ACurveAttrData
+    freevars {Length ALength Order Closed Symmetric}
+    fixedvars {dummy}
+    fixedvals { {0} }
+}
+set ACurve_1(Length) [lrange $lengthvals 1 end]
+set ACurve_1(ALength) $lengthvals
+set ACurve_1(Order) $ordervals
+set ACurve_1(Closed) {0 1}
+set ACurve_1(Symmetric) {0 1}
+set ACurve_1(valcmd) {
+    [expr {($::ACurveAttrData(ALength) <= $::ACurveAttrData(Length)) &&
+     ($::ACurveAttrData(Order) <= $::ACurveAttrData(ALength))}]
+}
 
 
 #############
@@ -705,7 +749,7 @@ array set NPatch_1 {
     arr NPatchAttrData
     freevars {Width Height Order_U Order_V Knot-Type_U Knot-Type_V}
     fixedvars {dummy}
-    vals { {0} }
+    fixedvals { {0} }
 }
 set NPatch_1(Width) $lengthvals
 set NPatch_1(Height) $lengthvals
@@ -723,14 +767,12 @@ array set NPatch_2 {
     arr NPatchAttrData
     freevars {Width Height Order_U Order_V}
     fixedvars {Knot-Type_U Knot-Type_V}
-    vals { {0 0} }
+    fixedvals { {0 0} }
 }
 set NPatch_2(Width) $lengthvals
 set NPatch_2(Height) $lengthvals
 set NPatch_2(Order_U) $ordervals
 set NPatch_2(Order_V) $ordervals
-set NPatch_2(Knot-Type_U) $ktvals
-set NPatch_2(Knot-Type_V) $ktvals
 set NPatch_2(valcmd) {
     [expr {($::NPatchAttrData(Order_U) == $::NPatchAttrData(Width)) &&
 	   ($::NPatchAttrData(Order_V) == $::NPatchAttrData(Height))}]
@@ -798,11 +840,11 @@ set Revolve_1(ThetaMax) $angles
 # of the precmd, thus enabling it to check the value of
 # <l> (set by aytest_var) and creating a different parameter
 # curve for each iteration
-lappend Revolve_1(vals) { 0 0 }
-lappend Revolve_1(vals) { 0 0 }
-lappend Revolve_1(vals) { 0 0 }
-lappend Revolve_1(vals) { 0 0 }
-lappend Revolve_1(vals) { 0 0 }
+lappend Revolve_1(fixedvals) { 0 0 }
+lappend Revolve_1(fixedvals) { 0 0 }
+lappend Revolve_1(fixedvals) { 0 0 }
+lappend Revolve_1(fixedvals) { 0 0 }
+lappend Revolve_1(fixedvals) { 0 0 }
 
 
 # Revolve Variation #2
@@ -819,7 +861,7 @@ array set Revolve_2 {
 }
 set Revolve_2(ThetaMax) $angles
 
-lappend Revolve_2(vals) { 0 0 }
+lappend Revolve_2(fixedvals) { 0 0 }
 
 
 # Revolve Variation #3
@@ -835,7 +877,7 @@ array set Revolve_3 {
     Sections { 2 5 10 100 }
     Order { 2 3 4 5 6 }
     fixedvars { dummy }
-    vals { {0} }
+    fixedvals { {0} }
 }
 set Revolve_3(ThetaMax) $angles
 
@@ -868,13 +910,13 @@ array set Extrude_1 {
     fixedvars {Height}
 }
 
-lappend Extrude_1(vals) { 1.0 }
-lappend Extrude_1(vals) { 1.0 }
-lappend Extrude_1(vals) { 1.0 }
-lappend Extrude_1(vals) { 1.0 }
-lappend Extrude_1(vals) { 1.0 }
-lappend Extrude_1(vals) { 1.0 }
-lappend Extrude_1(vals) { 1.0 }
+lappend Extrude_1(fixedvals) { 1.0 }
+lappend Extrude_1(fixedvals) { 1.0 }
+lappend Extrude_1(fixedvals) { 1.0 }
+lappend Extrude_1(fixedvals) { 1.0 }
+lappend Extrude_1(fixedvals) { 1.0 }
+lappend Extrude_1(fixedvals) { 1.0 }
+lappend Extrude_1(fixedvals) { 1.0 }
 
 
 # Extrude Variation #2
@@ -887,11 +929,11 @@ array set Extrude_2 {
     fixedvars {Height}
 }
 
-lappend Extrude_2(vals) { 0.1 }
-lappend Extrude_2(vals) { 0.5 }
-lappend Extrude_2(vals) { 1.0 }
-lappend Extrude_2(vals) { 2.0 }
-lappend Extrude_2(vals) { 10.0 }
+lappend Extrude_2(fixedvals) { 0.1 }
+lappend Extrude_2(fixedvals) { 0.5 }
+lappend Extrude_2(fixedvals) { 1.0 }
+lappend Extrude_2(fixedvals) { 2.0 }
+lappend Extrude_2(fixedvals) { 10.0 }
 
 
 # Extrude Variation #3
@@ -904,11 +946,11 @@ array set Extrude_3 {
     fixedvars {Height}
 }
 
-lappend Extrude_3(vals) { 0.1 }
-lappend Extrude_3(vals) { 0.5 }
-lappend Extrude_3(vals) { 1.0 }
-lappend Extrude_3(vals) { 2.0 }
-lappend Extrude_3(vals) { 10.0 }
+lappend Extrude_3(fixedvals) { 0.1 }
+lappend Extrude_3(fixedvals) { 0.5 }
+lappend Extrude_3(fixedvals) { 1.0 }
+lappend Extrude_3(fixedvals) { 2.0 }
+lappend Extrude_3(fixedvals) { 10.0 }
 
 
 # XXXX TODO: add bevels, add holes
@@ -927,7 +969,7 @@ array set Sweep_1 {
     Rotate {0 1}
     Interpolate {0 1}
     fixedvars { dummy }
-    vals { {0} }
+    fixedvals { {0} }
 }
 
 
@@ -945,7 +987,7 @@ array set Sweep_2 {
     StartCap {0 1}
     EndCap {0 1}
     fixedvars { dummy }
-    vals { {0} }
+    fixedvals { {0} }
 }
 
 
@@ -963,7 +1005,7 @@ array set Sweep_3 {
     StartCap {0 1}
     EndCap {0 1}
     fixedvars { dummy }
-    vals { {0} }
+    fixedvals { {0} }
 }
 
 # XXXX TODO: add bevels
@@ -982,7 +1024,7 @@ array set Birail1_1 {
     }
     arr Birail1AttrData
     fixedvars { dummy }
-    vals { {0} }
+    fixedvals { {0} }
 }
 
 
@@ -999,7 +1041,7 @@ array set Birail2_1 {
     }
     arr Birail2AttrData
     fixedvars { dummy }
-    vals { {0} }
+    fixedvals { {0} }
 }
 
 
@@ -1014,7 +1056,7 @@ array set Gordon_1 {
     }
     arr GordonAttrData
     fixedvars { dummy }
-    vals { {0} }
+    fixedvals { {0} }
 }
 
 
@@ -1028,7 +1070,7 @@ array set Skin_1 {
     }
     arr SkinAttrData
     fixedvars { dummy }
-    vals { {0} }
+    fixedvals { {0} }
 }
 
 # Skin Variation #2
@@ -1044,7 +1086,7 @@ array set Skin_2 {
     StartCap {0 1}
     EndCap {0 1}
     fixedvars { dummy }
-    vals { {0} }
+    fixedvals { {0} }
 }
 
 # Skin Variation #3
@@ -1065,7 +1107,7 @@ array set Skin_3 {
     Knot-Type_U { 1 2 3 }
     Order_U { 2 3 4 5 }
     fixedvars { dummy }
-    vals { 0 }
+    fixedvals { 0 }
 }
 
 # Skin Variation #4
@@ -1101,9 +1143,9 @@ array set Skin_4 {
     fixedvars { Knot-Type_U Order_U }
 }
 
-lappend Skin_4(vals) {0 5}
-lappend Skin_4(vals) {0 4}
-lappend Skin_4(vals) {0 3}
+lappend Skin_4(fixedvals) {0 5}
+lappend Skin_4(fixedvals) {0 4}
+lappend Skin_4(fixedvals) {0 3}
 
 
 # Skin Variation #5
@@ -1145,10 +1187,10 @@ array set Skin_5 {
 
 }
 
-lappend Skin_5(vals) { 0 }
-lappend Skin_5(vals) { 0 }
-lappend Skin_5(vals) { 0 }
-lappend Skin_5(vals) { 0 }
+lappend Skin_5(fixedvals) { 0 }
+lappend Skin_5(fixedvals) { 0 }
+lappend Skin_5(fixedvals) { 0 }
+lappend Skin_5(fixedvals) { 0 }
 
 
 # XXXX TODO: add bevels
@@ -1178,10 +1220,10 @@ array set Cap_1 {
     fixedvars {dummy}
 }
 
-lappend Cap_1(vals) { 0 }
-lappend Cap_1(vals) { 0 }
-lappend Cap_1(vals) { 0 }
-lappend Cap_1(vals) { 0 }
+lappend Cap_1(fixedvals) { 0 }
+lappend Cap_1(fixedvals) { 0 }
+lappend Cap_1(fixedvals) { 0 }
+lappend Cap_1(fixedvals) { 0 }
 
 
 # Bevel Variation #1
@@ -1206,10 +1248,10 @@ array set Bevel_1 {
     fixedvars {dummy}
 }
 
-lappend Bevel_1(vals) { 0 }
-lappend Bevel_1(vals) { 0 }
-lappend Bevel_1(vals) { 0 }
-lappend Bevel_1(vals) { 0 }
+lappend Bevel_1(fixedvals) { 0 }
+lappend Bevel_1(fixedvals) { 0 }
+lappend Bevel_1(fixedvals) { 0 }
+lappend Bevel_1(fixedvals) { 0 }
 
 
 
@@ -1243,10 +1285,10 @@ array set ExtrNC_1 {
     fixedvars {dummy}
 }
 
-lappend ExtrNC_1(vals) { 0 }
-lappend ExtrNC_1(vals) { 0 }
-lappend ExtrNC_1(vals) { 0 }
-lappend ExtrNC_1(vals) { 0 }
+lappend ExtrNC_1(fixedvals) { 0 }
+lappend ExtrNC_1(fixedvals) { 0 }
+lappend ExtrNC_1(fixedvals) { 0 }
+lappend ExtrNC_1(fixedvals) { 0 }
 
 
 
@@ -1263,9 +1305,9 @@ array set ExtrNP_1 {
     fixedvars { UMin UMax VMin VMax }
 }
 
-lappend ExtrNP_1(vals) { 0.1 0.9 0.1 0.9 }
-lappend ExtrNP_1(vals) { 0.5 1.0 0.1 0.9 }
-lappend ExtrNP_1(vals) { 0.5 1.0 0.5 1.0 }
+lappend ExtrNP_1(fixedvals) { 0.1 0.9 0.1 0.9 }
+lappend ExtrNP_1(fixedvals) { 0.5 1.0 0.1 0.9 }
+lappend ExtrNP_1(fixedvals) { 0.5 1.0 0.5 1.0 }
 
 
 
@@ -1300,13 +1342,13 @@ array set OffsetNC_1 {
     fixedvars {Offset}
 }
 
-lappend OffsetNC_1(vals) { 0.1 }
-lappend OffsetNC_1(vals) { 0.1 }
-lappend OffsetNC_1(vals) { 0.1 }
-lappend OffsetNC_1(vals) { 0.1 }
-lappend OffsetNC_1(vals) { 0.1 }
-lappend OffsetNC_1(vals) { 0.1 }
-lappend OffsetNC_1(vals) { 0.1 }
+lappend OffsetNC_1(fixedvals) { 0.1 }
+lappend OffsetNC_1(fixedvals) { 0.1 }
+lappend OffsetNC_1(fixedvals) { 0.1 }
+lappend OffsetNC_1(fixedvals) { 0.1 }
+lappend OffsetNC_1(fixedvals) { 0.1 }
+lappend OffsetNC_1(fixedvals) { 0.1 }
+lappend OffsetNC_1(fixedvals) { 0.1 }
 
 
 # OffsetNP Variation #1
@@ -1322,12 +1364,12 @@ array set OffsetNP_1 {
     fixedvars { Offset }
 }
 
-lappend OffsetNP_1(vals) { 0.1 }
-lappend OffsetNP_1(vals) { 0.5 }
-lappend OffsetNP_1(vals) { 1.0 }
-lappend OffsetNP_1(vals) { -0.1 }
-lappend OffsetNP_1(vals) { -0.5 }
-lappend OffsetNP_1(vals) { -1.0 }
+lappend OffsetNP_1(fixedvals) { 0.1 }
+lappend OffsetNP_1(fixedvals) { 0.5 }
+lappend OffsetNP_1(fixedvals) { 1.0 }
+lappend OffsetNP_1(fixedvals) { -0.1 }
+lappend OffsetNP_1(fixedvals) { -0.5 }
+lappend OffsetNP_1(fixedvals) { -1.0 }
 
 
 # ConcatNC Variation #1
@@ -1339,7 +1381,7 @@ array set ConcatNC_1 {
     }
     arr ConcatNCAttrData
     fixedvars { dummy }
-    vals { {0} }
+    fixedvals { {0} }
 }
 
 
@@ -1365,9 +1407,9 @@ array set ConcatNP_1 {
     fixedvars { dummy }
 }
 
-lappend ConcatNP_1(vals) { 0 }
-lappend ConcatNP_1(vals) { 0 }
-lappend ConcatNP_1(vals) { 0 }
+lappend ConcatNP_1(fixedvals) { 0 }
+lappend ConcatNP_1(fixedvals) { 0 }
+lappend ConcatNP_1(fixedvals) { 0 }
 
 
 # Trim Variation #1
@@ -1379,7 +1421,7 @@ array set Trim_1 {
     }
     arr TrimAttrData
     fixedvars { dummy }
-    vals { {0} }
+    fixedvals { {0} }
 }
 
 ###
@@ -1437,7 +1479,7 @@ array set Box_1 {
     postcmd {aytest_varcmds}
     freevars {Width Length Height}
     fixedvars {dummy}
-    vals { {0} }
+    fixedvals { {0} }
 }
 set Box_1(Width) $floatvals
 set Box_1(Length) $floatvals
@@ -1454,7 +1496,7 @@ array set Sphere_1 {
     freevars {Closed ThetaMax Radius ZMin ZMax}
     Closed {0 1}
     fixedvars {dummy}
-    vals { {0} }
+    fixedvals { {0} }
 }
 set Sphere_1(ThetaMax) $angles
 set Sphere_1(Radius) $floatvals
@@ -1472,7 +1514,7 @@ array set Cylinder_1 {
     freevars {Closed ThetaMax Radius ZMin ZMax}
     Closed {0 1}
     fixedvars {dummy}
-    vals { {0} }
+    fixedvals { {0} }
 }
 
 set Cylinder_1(ThetaMax) $angles
@@ -1491,7 +1533,7 @@ array set Cone_1 {
     freevars {Closed ThetaMax Radius Height}
     Closed {0 1}
     fixedvars {dummy}
-    vals { {0} }
+    fixedvals { {0} }
 }
 set Cone_1(ThetaMax) $angles
 set Cone_1(Radius) $floatvals
@@ -1507,7 +1549,7 @@ array set Disk_1 {
     postcmd {aytest_varcmds}
     freevars {Radius Height ThetaMax}
     fixedvars {dummy}
-    vals { {0} }
+    fixedvals { {0} }
 }
 set Disk_1(ThetaMax) $angles
 set Disk_1(Radius) $floatvals
@@ -1525,8 +1567,8 @@ array set Hyperboloid_1 {
     Closed {0 1}
     fixedvars {P2_X P2_Y P2_Z}
 }
-lappend Hyperboloid_1(vals) { 0.0 0.0 0.0 }
-lappend Hyperboloid_1(vals) { 1.0 -1.0 1.0 }
+lappend Hyperboloid_1(fixedvals) { 0.0 0.0 0.0 }
+lappend Hyperboloid_1(fixedvals) { 1.0 -1.0 1.0 }
 set Hyperboloid_1(ThetaMax) $angles
 set Hyperboloid_1(P1_X) $floatvals
 set Hyperboloid_1(P1_Y) $floatvals
@@ -1540,8 +1582,8 @@ array set Hyperboloid_2 {
     Closed {0 1}
     fixedvars {P1_X P1_Y P1_Z}
 }
-lappend Hyperboloid_2(vals) { 0.0 0.0 0.0 }
-lappend Hyperboloid_2(vals) { 1.0 -1.0 1.0 }
+lappend Hyperboloid_2(fixedvals) { 0.0 0.0 0.0 }
+lappend Hyperboloid_2(fixedvals) { 1.0 -1.0 1.0 }
 set Hyperboloid_2(ThetaMax) $angles
 set Hyperboloid_2(P2_X) $floatvals
 set Hyperboloid_2(P2_Y) $floatvals
@@ -1558,7 +1600,7 @@ array set Paraboloid_1 {
     freevars {Closed ThetaMax RMax ZMin ZMax}
     Closed {0 1}
     fixedvars {dummy}
-    vals { {0} }
+    fixedvals { {0} }
 }
 set Paraboloid_1(ThetaMax) $angles
 set Paraboloid_1(RMax) $floatvals
@@ -1576,7 +1618,7 @@ array set Torus_1 {
     freevars {Closed ThetaMax MajorRad MinorRad PhiMin PhiMax}
     Closed {0 1}
     fixedvars {dummy}
-    vals { {0} }
+    fixedvals { {0} }
 }
 set Torus_1(ThetaMax) $angles
 set Torus_1(MajorRad) $floatvals
@@ -1751,10 +1793,10 @@ proc aytest_var { type } {
 
       eval set arr \$::${type}_${i}(arr)
       eval set fixedvars \$::${type}_${i}(fixedvars)
-      eval set vals \$::${type}_${i}(vals)
+      eval set fixedvals \$::${type}_${i}(fixedvals)
       set l 0
 
-      foreach valset $vals {
+      foreach valset $fixedvals {
 
 	  # create a Level for each value set tested
 	  crtOb Level
@@ -1966,7 +2008,7 @@ set aytest_2items $items
 
 # set up types to test in test #3
 set items {}
-lappend items NCurve NPatch
+lappend items NCurve ICurve ACurve NPatch
 set aytest_3items $items
 
 # set up types to test in test #4
