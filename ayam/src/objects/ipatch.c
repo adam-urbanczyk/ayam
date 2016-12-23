@@ -2539,18 +2539,19 @@ ay_ipatch_notifycb(ay_object *o)
     {
       /* interpolate along V */
 
-      if(ip->width > 2 && ip->order_u > 2 && ip->derivs_u && ip->derivs_v)
+      if(ip->width > 2 && ip->order_u > 2 && (ip->derivs_u || ip->close_u)
+	 && ip->derivs_v)
 	{
 	  /* we do not have enough derivatives for V because we
-	     interpolated with derivatives in U;
+	     interpolated with derivatives in U or U is closed;
 	     but we can just interpolate the V derivative vectors
 	     in the same way we already interpolated the control points;
 	     this will then result in enough data to proceed */
-	  if(ip->close_v)
+	  if(ip->close_u)
 	    {
 	      ay_status = ay_ict_interpolateG3DClosed(ip->order_u, ip->width,
 						      ip->sdlen_u, ip->edlen_u,
-						      1, ip->ktype_u,
+						      ip->derivs_u, ip->ktype_u,
 						      ip->sderiv_v,
 						    ip->sderiv_u, ip->ederiv_u,
 						      &ncs);
@@ -2568,11 +2569,11 @@ ay_ipatch_notifycb(ay_object *o)
 	  if(ay_status)
 	    goto cleanup;
 
-	  if(ip->close_v)
+	  if(ip->close_u)
 	    {
 	      ay_status = ay_ict_interpolateG3DClosed(ip->order_u, ip->width,
 						      ip->sdlen_u, ip->edlen_u,
-						      1, ip->ktype_u,
+						      ip->derivs_u, ip->ktype_u,
 						      ip->ederiv_v,
 	  &(ip->sderiv_u[(ip->height-1)*3]), &(ip->ederiv_u[(ip->height-1)*3]),
 						      &nce);
