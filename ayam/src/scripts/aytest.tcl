@@ -762,7 +762,7 @@ set NPatch_1(valcmd) {
 	   ($::NPatchAttrData(Order_V) <= $::NPatchAttrData(Height))}]
 }
 
-# NPatch Variation #2 (Bezier knots)
+# NPatch Variation #2 (Bezier knots U & V)
 array set NPatch_2 {
     arr NPatchAttrData
     freevars {Width Height Order_U Order_V}
@@ -776,6 +776,38 @@ set NPatch_2(Order_V) $ordervals
 set NPatch_2(valcmd) {
     [expr {($::NPatchAttrData(Order_U) == $::NPatchAttrData(Width)) &&
 	   ($::NPatchAttrData(Order_V) == $::NPatchAttrData(Height))}]
+}
+
+# NPatch Variation #3 (Bezier knots U)
+array set NPatch_3 {
+    arr NPatchAttrData
+    freevars {Width Height Order_U Order_V Knot-Type_V}
+    fixedvars {Knot-Type_U}
+    fixedvals { {0} }
+}
+set NPatch_3(Width) $lengthvals
+set NPatch_3(Height) $lengthvals
+set NPatch_3(Order_U) $ordervals
+set NPatch_3(Order_V) $ordervals
+set NPatch_3(Knot-Type_V) $ktvals
+set NPatch_3(valcmd) {
+    [expr {($::NPatchAttrData(Order_U) == $::NPatchAttrData(Width))}]
+}
+
+# NPatch Variation #4 (Bezier knots V)
+array set NPatch_4 {
+    arr NPatchAttrData
+    freevars {Width Height Order_U Order_V Knot-Type_U}
+    fixedvars {Knot-Type_V}
+    fixedvals { {0} }
+}
+set NPatch_4(Width) $lengthvals
+set NPatch_4(Height) $lengthvals
+set NPatch_4(Order_U) $ordervals
+set NPatch_4(Order_V) $ordervals
+set NPatch_4(Knot-Type_U) $ktvals
+set NPatch_4(valcmd) {
+    [expr {($::NPatchAttrData(Order_V) == $::NPatchAttrData(Height))}]
 }
 
 
@@ -803,7 +835,6 @@ set IPatch_1(Knot-Type_U) {0 1 2}
 set IPatch_1(Knot-Type_V) {0 1 2}
 set IPatch_1(Derivatives_U) {0 1 2}
 set IPatch_1(Derivatives_V) {0 1 2}
-
 set IPatch_1(valcmd) {
     [expr {($::IPatchAttrData(Order_U) <= $::IPatchAttrData(Width)) &&
 	   ($::IPatchAttrData(Order_V) <= $::IPatchAttrData(Height))}]
