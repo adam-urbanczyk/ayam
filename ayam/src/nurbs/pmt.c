@@ -814,7 +814,10 @@ ay_pmt_tonpatchmulti(ay_object *o, ay_object **result)
 
   pm = (ay_pamesh_object*)o->refine;
   cv = pm->controlv;
-
+  /*
+  printf("w%d h%d cu%d cv%d tu%d tv%d\n", pm->width, pm->height,
+	 pm->close_u, pm->close_v, pm->btype_u, pm->btype_v);
+  */
   /* set up temporary pamesh (t and tpm) */
   ay_object_defaults(&t);
   t.type = AY_IDPAMESH;
@@ -950,13 +953,22 @@ ay_pmt_tonpatchmulti(ay_object *o, ay_object **result)
 			/*compatible=*/AY_TRUE,
 			/*uv=*/NULL,
 			nextcol);
+
+	  if(row)
+	    {
+	      (void)ay_object_deletemulti(row, AY_FALSE);
+	    }
 	}
       else
 	{
 	  *nextcol = row;
 	}
+
       row = NULL;
-      nextcol = &((*nextcol)->next);
+      if(*nextcol)
+	nextcol = &((*nextcol)->next);
+      else
+	break;
     } /* for all eval windows in y */
 
   /* concatenate all rows? */
@@ -967,6 +979,10 @@ ay_pmt_tonpatchmulti(ay_object *o, ay_object **result)
 		    /*compatible=*/AY_TRUE,
 		    /*uv=*/uv,
 		    result);
+      if(col)
+	{
+	  (void)ay_object_deletemulti(col, AY_FALSE);
+	}
     }
   else
     {
@@ -1105,7 +1121,7 @@ ay_pmt_tonpatch(ay_object *o, int btype, ay_object **result)
 		 (h-pamesh->height)*4*sizeof(double));
 	  a += (h-pamesh->height)*4;
 	}
-      b += h*4;
+      b += pamesh->height*4;
     }
   b = 0;
   if(w > pamesh->width)
