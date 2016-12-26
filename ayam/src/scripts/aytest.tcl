@@ -841,6 +841,47 @@ set IPatch_1(valcmd) {
 }
 
 
+#############
+# PatchMesh
+#############
+
+# PatchMesh Variation #1 (bilinear)
+array set PatchMesh_1 {
+    arr PatchMeshAttrData
+    freevars {Width Height Close_U Close_V}
+    fixedvars { Type }
+    fixedvals { {1} }
+}
+set PatchMesh_1(Width) $lengthvals
+set PatchMesh_1(Height) $lengthvals
+set PatchMesh_1(Close_U) {0 1}
+set PatchMesh_1(Close_V) {0 1}
+
+
+# PatchMesh Variation #2 (bicubic)
+set l 4
+while { $l < 50 } {
+    lappend pmlengths $l
+    incr l
+}
+
+array set PatchMesh_2 {
+    arr PatchMeshAttrData
+    freevars {Width Height Close_U Close_V BType_U BType_V}
+    fixedvars {dummy}
+    fixedvals { {0} }
+}
+set PatchMesh_2(Width) $pmlengths
+set PatchMesh_2(Height) $pmlengths
+set PatchMesh_2(Close_U) {0 1}
+set PatchMesh_2(Close_V) {0 1}
+set PatchMesh_2(BType_U) {0 1 2 3 4}
+set PatchMesh_2(BType_V) {0 1 2 3 4}
+
+set PatchMesh_2(valcmd) {
+    [aytest_checkpml $::PatchMeshAttrData(Width) $::PatchMeshAttrData(BType_U) $::PatchMeshAttrData(Close_U) $::PatchMeshAttrData(Height) $::PatchMeshAttrData(BType_V) $::PatchMeshAttrData(Close_V)]
+}
+
 ###
 foreach type $types {
     puts $log "Testing $type ...\n"
@@ -854,6 +895,29 @@ puts -nonewline "\n"
 }
 }
 # aytest_3
+
+proc aytest_checkpml { w tu cu h tv cv } {
+    set su [lindex { 3 1 3 2 4 1 } $tu]
+    set sv [lindex { 3 1 3 2 4 1 } $tv]
+    if { $w == 4 } {
+	set w $su
+    }
+    if { $h == 4 } {
+	set h $sv
+    }
+    # closed?
+    if { $cu == 1 } {
+	incr w -1
+    }
+    if { $cv == 1 } {
+	incr h -1
+    }
+    if { [expr {(fmod($w,$su) < 1e-06) || (fmod($h,$sv) < 1e-06)}] == 0 } {
+	return 0;
+    } else {
+	return 1;
+    }
+}
 
 
 #
@@ -1899,7 +1963,7 @@ proc aytest_var { type } {
 	      if { [info exists ::${type}_${i}(valcmd)] } {
 		  append cmds "if \{ "
 		  eval append cmds \$::${type}_${i}(valcmd)
-		  append cmds " \} \{ "
+		  append cmds "\} \{ "
 	      }
 
 	      append cmds {\
@@ -2069,7 +2133,7 @@ set aytest_2items $items
 
 # set up types to test in test #3
 set items {}
-lappend items NCurve ICurve ACurve NPatch IPatch
+lappend items NCurve ICurve ACurve NPatch IPatch PatchMesh
 set aytest_3items $items
 
 # set up types to test in test #4
