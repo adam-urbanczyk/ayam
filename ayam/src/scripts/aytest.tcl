@@ -693,7 +693,19 @@ set NCurve_2(valcmd) {
 }
 
 
-# ToDo: NCurve with Custom knots
+# NCurve Variation #3 (Custom knots)
+array set NCurve_3 {
+    arr NCurveAttrData
+    freevars {Length Order}
+    fixedvars {Knot-Type}
+    fixedvals { {3} }
+}
+set NCurve_3(Length) $lengthvals
+set NCurve_3(Order) $ordervals
+set NCurve_3(valcmd) {
+    [set ::NCurveAttrData(Knots) [aytest_crtknots $::NCurveAttrData(Length) $::NCurveAttrData(Order)]] != ""
+}
+
 
 #############
 # ICurve
@@ -895,6 +907,50 @@ puts -nonewline "\n"
 }
 }
 # aytest_3
+
+# aytest_crtknots:
+# create a custom knot vector
+proc aytest_crtknots { l o } {
+    global aytestknots
+
+    if { $l < $o } {
+	return "";
+    }
+
+    set vname "aytestknots("
+    append vname $l "+" $o ")"
+
+    if { [info exists $vname] } {
+	return [subst "\$$vname"];
+    }
+
+    set i 0
+    while { $i < $o } {
+	lappend v 0.0
+	incr i
+    }
+    set d 0.5
+    set k $d
+    while { $i < $l } {
+	lappend v $k
+	set k [expr {$k+$d}]
+	if { $i < 3 } {
+	    set d [expr {$d*0.5}]
+	}
+	incr i
+    }
+    set l [expr {$l+$o}]
+    while { $i < $l } {
+	lappend v $k
+	incr i
+    }
+
+    set $vname $v
+
+ return $v;
+}
+# aytest_crtknots
+
 
 # aytest_checkpml:
 # check PatchMesh parameter configuration for validity wrt. implied
