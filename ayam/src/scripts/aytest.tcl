@@ -896,6 +896,9 @@ puts -nonewline "\n"
 }
 # aytest_3
 
+# aytest_checkpml:
+# check PatchMesh parameter configuration for validity wrt. implied
+# basis step size
 proc aytest_checkpml { w tu cu h tv cv } {
     set su [lindex { 3 1 3 2 4 1 } $tu]
     set sv [lindex { 3 1 3 2 4 1 } $tv]
@@ -912,12 +915,12 @@ proc aytest_checkpml { w tu cu h tv cv } {
     if { $cv == 1 } {
 	incr h -1
     }
-    if { [expr {(fmod($w,$su) < 1e-06) || (fmod($h,$sv) < 1e-06)}] == 0 } {
-	return 0;
-    } else {
+    if { [expr {(fmod($w,$su) < 1e-06) && (fmod($h,$sv) < 1e-06)}] == 1 } {
 	return 1;
     }
+ return 0;
 }
+# aytest_checkpml
 
 
 #
@@ -2084,13 +2087,13 @@ proc aytest_runTests { tests items } {
 
 	    incr test
 
-	    puts "Running Test $test..."
+	    puts "Running test $test..."
 
 	    catch {aytest_$test $items}
 
 	    close $::log
 
-	    puts "\nFinished Test $test..."
+	    puts "\nFinished test $test..."
 	}
 	# foreach
     } else {
