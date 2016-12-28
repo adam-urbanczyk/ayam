@@ -822,6 +822,20 @@ set NPatch_4(valcmd) {
     [expr {($::NPatchAttrData(Order_V) == $::NPatchAttrData(Height))}]
 }
 
+# NPatch Variation #5 (Custom knots)
+array set NPatch_5 {
+    arr NPatchAttrData
+    freevars {Width Height Order_U Order_V}
+    fixedvars {Knot-Type_U Knot-Type_V}
+    fixedvals { {3 3} }
+}
+set NPatch_5(Width) $lengthvals
+set NPatch_5(Height) $lengthvals
+set NPatch_5(Order_U) $ordervals
+set NPatch_5(Order_V) $ordervals
+set NPatch_5(valcmd) {
+    ([set ::NPatchAttrData(Knots_U) [aytest_crtknots $::NPatchAttrData(Width) $::NPatchAttrData(Order_U)]] != "") && ([set ::NPatchAttrData(Knots_V) [aytest_crtknots $::NPatchAttrData(Height) $::NPatchAttrData(Order_V)]] != "")
+}
 
 # ToDo: NPatch with Custom knots
 
