@@ -803,7 +803,7 @@ set NPatch_3(Order_U) $ordervals
 set NPatch_3(Order_V) $ordervals
 set NPatch_3(Knot-Type_V) $ktvals
 set NPatch_3(valcmd) {
-    [expr {($::NPatchAttrData(Order_U) == $::NPatchAttrData(Width))}]
+    ($::NPatchAttrData(Order_U) == $::NPatchAttrData(Width))
 }
 
 # NPatch Variation #4 (Bezier knots V)
@@ -819,7 +819,7 @@ set NPatch_4(Order_U) $ordervals
 set NPatch_4(Order_V) $ordervals
 set NPatch_4(Knot-Type_U) $ktvals
 set NPatch_4(valcmd) {
-    [expr {($::NPatchAttrData(Order_V) == $::NPatchAttrData(Height))}]
+    ($::NPatchAttrData(Order_V) == $::NPatchAttrData(Height))
 }
 
 # NPatch Variation #5 (Custom knots)
@@ -837,7 +837,35 @@ set NPatch_5(valcmd) {
     ([set ::NPatchAttrData(Knots_U) [aytest_crtknots $::NPatchAttrData(Width) $::NPatchAttrData(Order_U)]] != "") && ([set ::NPatchAttrData(Knots_V) [aytest_crtknots $::NPatchAttrData(Height) $::NPatchAttrData(Order_V)]] != "")
 }
 
-# ToDo: NPatch with Custom knots
+# NPatch Variation #6 (Bezier knots U, Custom knots V)
+array set NPatch_6 {
+    arr NPatchAttrData
+    freevars {Width Height Order_U Order_V}
+    fixedvars {Knot-Type_U Knot-Type_V}
+    fixedvals { {0 3} }
+}
+set NPatch_6(Width) $lengthvals
+set NPatch_6(Height) $lengthvals
+set NPatch_6(Order_U) $ordervals
+set NPatch_6(Order_V) $ordervals
+set NPatch_6(valcmd) {
+    ($::NPatchAttrData(Order_U) == $::NPatchAttrData(Width)) && ([set ::NPatchAttrData(Knots_V) [aytest_crtknots $::NPatchAttrData(Height) $::NPatchAttrData(Order_V)]] != "")
+}
+
+# NPatch Variation #7 (Custom knots U, Bezier knots V)
+array set NPatch_7 {
+    arr NPatchAttrData
+    freevars {Width Height Order_U Order_V}
+    fixedvars {Knot-Type_U Knot-Type_V}
+    fixedvals { {3 0} }
+}
+set NPatch_7(Width) $lengthvals
+set NPatch_7(Height) $lengthvals
+set NPatch_7(Order_U) $ordervals
+set NPatch_7(Order_V) $ordervals
+set NPatch_7(valcmd) {
+    ($::NPatchAttrData(Order_V) == $::NPatchAttrData(Height)) && ([set ::NPatchAttrData(Knots_U) [aytest_crtknots $::NPatchAttrData(Width) $::NPatchAttrData(Order_U)]] != "")
+}
 
 
 #############
