@@ -289,7 +289,7 @@ set floatvals {-1000 -100 -20 -2.5 -2 -1.5 -1.0 -0.9 -0.1 0.1 0.9 1.0 1.5 2 2.5 
 # Every object variation array contains the following components:
 #  precmd - commands to run after object creation but before variation
 #  valcmd - command to rule out invalid combinations of parameters
-#  postcmd - actual commands to test the implementation
+#  tstcmd - actual commands to test the implementation
 #  arr - array to put all variable data into
 #  fixedvars - list of fixed variables in array arr
 #  fixedvals - list of value sets for all variables in fixedvars
@@ -314,7 +314,7 @@ array set Box_1 {
 set Box_1(Width) $floatvals
 set Box_1(Length) $floatvals
 set Box_1(Height) $floatvals
-#set Box_1(postcmd) {aytest_varcmds}
+#set Box_1(tstcmd) {aytest_varcmds}
 
 
 #############
@@ -330,7 +330,7 @@ array set Sphere_1 {
 }
 set Sphere_1(ThetaMax) $angles
 #set Sphere_1(ThetaMax) {-180 -1 1 90}
-#set Sphere_1(postcmd) {aytest_varcmds}
+#set Sphere_1(tstcmd) {aytest_varcmds}
 
 lappend Sphere_1(fixedvals) { 1.0 -1.0 1.0 }
 lappend Sphere_1(fixedvals) { 1.0 -0.1 0.1 }
@@ -1668,12 +1668,117 @@ puts -nonewline "\n"
 #
 # Test 5 - Modelling Tools
 #
-proc aytest_5 { actions } {
-set ::actions $actions
+proc aytest_5 { tools } {
+set ::aytesttools $tools
 uplevel #0 {
+
+set lengths {4 5 6}
+
+array set Revert {
+    types { NCurve ICurve ACurve }
+    command { revertC }
+}
+
+array set RevertUS {
+    types { BPatch NPatch IPatch PatchMesh }
+    command { revertuS }
+}
+
+array set RevertVS {
+    types { BPatch NPatch IPatch PatchMesh }
+    command { revertvS }
+}
+
+array set SwapUVS {
+    types { BPatch NPatch IPatch PatchMesh }
+    command { swapuvS }
+}
+
+array set NCurve_1 {
+    arr NCurveAttrData
+    freevars {Length}
+    fixedvars {dummy}
+    fixedvals { {0} }
+}
+set NCurve_1(Length) $lengths
+
+array set ICurve_1 {
+    arr ICurveAttrData
+    freevars {Length}
+    fixedvars {dummy}
+    fixedvals { {0} }
+}
+set ICurve_1(Length) $lengths
+
+array set ACurve_1 {
+    arr ACurveAttrData
+    freevars {Length}
+    fixedvars {dummy}
+    fixedvals { {0} }
+}
+set ACurve_1(Length) $lengths
+
+array set BPatch_1 {
+    arr BPatchAttrData
+    freevars {P1_X}
+    fixedvars {dummy}
+    fixedvals { {0} }
+}
+set BPatch_1(P1_X) {-0.5 -0.5}
+
+array set NPatch_1 {
+    arr NPatchAttrData
+    freevars {Width Height}
+    fixedvars {dummy}
+    fixedvals { {0} }
+}
+set NPatch_1(Width) $lengths
+set NPatch_1(Height) $lengths
+
+array set IPatch_1 {
+    arr IPatchAttrData
+    freevars {Width Height}
+    fixedvars {dummy}
+    fixedvals { {0} }
+}
+set IPatch_1(Width) $lengths
+set IPatch_1(Height) $lengths
+
+array set PatchMesh_1 {
+    arr PatchMeshAttrData
+    freevars {Width Height}
+    fixedvars {dummy}
+    fixedvals { {0} }
+}
+set PatchMesh_1(Width) $lengths
+set PatchMesh_1(Height) $lengths
+
 
 # test modelling tools
 puts $log "Testing modelling tools ...\n"
+foreach tool $aytesttools {
+    puts $log "Testing $tool ...\n"
+
+    puts -nonewline "${tool}, "
+    update
+    set cmd [subst "\$${tool}(command)"]
+    set types [subst "\$${tool}(types)"]
+    foreach type $types {
+
+	set ${type}_1(tstcmd) $cmd
+
+	aytest_var $type
+
+	if { $::cancelled } {
+	    set ::cancelled 0
+	    return;
+	}
+
+    }
+    # foreach type
+}
+# foreach tool
+puts -nonewline "\n"
 
 }
 }
@@ -1701,7 +1806,7 @@ set floatvals {-1000 -100 -20 -2.5 -2 -1.5 -1.0 -0.9 -0.1 -0 0 0.1 0.9 1.0 1.5 2
 
 array set Box_1 {
     arr BoxAttrData
-    postcmd {aytest_varcmds}
+    tstcmd {aytest_varcmds}
     freevars {Width Length Height}
     fixedvars {dummy}
     fixedvals { {0} }
@@ -1717,7 +1822,7 @@ set Box_1(Height) $floatvals
 
 array set Sphere_1 {
     arr SphereAttrData
-    postcmd {aytest_varcmds}
+    tstcmd {aytest_varcmds}
     freevars {Closed ThetaMax Radius ZMin ZMax}
     Closed {0 1}
     fixedvars {dummy}
@@ -1735,7 +1840,7 @@ set Sphere_1(ZMax) $floatvals
 
 array set Cylinder_1 {
     arr CylinderAttrData
-    postcmd {aytest_varcmds}
+    tstcmd {aytest_varcmds}
     freevars {Closed ThetaMax Radius ZMin ZMax}
     Closed {0 1}
     fixedvars {dummy}
@@ -1754,7 +1859,7 @@ set Cylinder_1(ZMax) $floatvals
 
 array set Cone_1 {
     arr ConeAttrData
-    postcmd {aytest_varcmds}
+    tstcmd {aytest_varcmds}
     freevars {Closed ThetaMax Radius Height}
     Closed {0 1}
     fixedvars {dummy}
@@ -1771,7 +1876,7 @@ set Cone_1(Height) $floatvals
 
 array set Disk_1 {
     arr DiskAttrData
-    postcmd {aytest_varcmds}
+    tstcmd {aytest_varcmds}
     freevars {Radius Height ThetaMax}
     fixedvars {dummy}
     fixedvals { {0} }
@@ -1787,7 +1892,7 @@ set Disk_1(Height) $floatvals
 
 array set Hyperboloid_1 {
     arr HyperboloidAttrData
-    postcmd {aytest_varcmds}
+    tstcmd {aytest_varcmds}
     freevars {Closed ThetaMax P1_X P1_Y P1_Z}
     Closed {0 1}
     fixedvars {P2_X P2_Y P2_Z}
@@ -1802,7 +1907,7 @@ set Hyperboloid_1(P1_Z) $floatvals
 
 array set Hyperboloid_2 {
     arr HyperboloidAttrData
-    postcmd {aytest_varcmds}
+    tstcmd {aytest_varcmds}
     freevars {Closed ThetaMax P2_X P2_Y P2_Z}
     Closed {0 1}
     fixedvars {P1_X P1_Y P1_Z}
@@ -1821,7 +1926,7 @@ set Hyperboloid_2(P2_Z) $floatvals
 
 array set Paraboloid_1 {
     arr ParaboloidAttrData
-    postcmd {aytest_varcmds}
+    tstcmd {aytest_varcmds}
     freevars {Closed ThetaMax RMax ZMin ZMax}
     Closed {0 1}
     fixedvars {dummy}
@@ -1839,7 +1944,7 @@ set Paraboloid_1(ZMax) $floatvals
 
 array set Torus_1 {
     arr TorusAttrData
-    postcmd {aytest_varcmds}
+    tstcmd {aytest_varcmds}
     freevars {Closed ThetaMax MajorRad MinorRad PhiMin PhiMax}
     Closed {0 1}
     fixedvars {dummy}
@@ -2073,8 +2178,8 @@ proc aytest_var { type } {
 		  movOb $k $l $i;
 		  incr k 2;\
 	      }
-	      if { [info exists ::${type}_${i}(postcmd)] } {
-		  eval append cmds \$::${type}_${i}(postcmd)
+	      if { [info exists ::${type}_${i}(tstcmd)] } {
+		  eval append cmds \$::${type}_${i}(tstcmd)
 	      }
 	      if { ! $::aytestprefs(KeepObjects) } {
 		  append cmds ";delOb;"
@@ -2098,8 +2203,8 @@ proc aytest_var { type } {
 
 	      movOb $j $i 0.0;
 
-	      if { [info exists ::${type}_${i}(postcmd)] } {
-		  eval \$::${type}_${i}(postcmd)
+	      if { [info exists ::${type}_${i}(tstcmd)] } {
+		  eval \$::${type}_${i}(tstcmd)
 	      }
 	  }
 	  # if
@@ -2244,8 +2349,10 @@ lappend items Cap Bevel ExtrNC ExtrNP OffsetNC OffsetNP ConcatNC ConcatNP
 lappend items Trim
 set aytest_4items $items
 
-# set up actions to test in test #5
+# set up tools to test in test #5
 set items {}
+lappend items Revert RevertUS RevertVS SwapUVS
+#lappend items Refine Coarsen RefineKnots Split
 set aytest_5items $items
 
 # set up types to test in test #6
