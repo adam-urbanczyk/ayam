@@ -640,11 +640,14 @@ puts -nonewline "\n"
 #
 # Test 3 - Valid NURBS Object Variations
 #
-proc aytest_3 { types } {
-set ::types $types
-uplevel #0 {
 
-puts $log "Testing valid NURBS object variations ...\n"
+# aytest_crtnvars:
+# helper to create variation arrays
+# (also in use by modelling tools test)
+proc aytest_crtnvars { } {
+global NCurve_1 NCurve_2 NCurve_3 ICurve_1 ACurve_1
+global NPatch_1 NPatch_2 NPatch_3 NPatch_4 NPatch_5 NPatch_6 NPatch_7
+global IPatch_1 PatchMesh_1
 
 # lengths/widths/heights to test
 set lengthvals { 2 3 4 5 6 7 8 9 10 100 }
@@ -935,6 +938,16 @@ set PatchMesh_2(BType_V) {0 1 2 3 4}
 set PatchMesh_2(valcmd) {
     [aytest_checkpml $::PatchMeshAttrData(Width) $::PatchMeshAttrData(BType_U) $::PatchMeshAttrData(Close_U) $::PatchMeshAttrData(Height) $::PatchMeshAttrData(BType_V) $::PatchMeshAttrData(Close_V)]
 }
+}
+# aytest_crtnvars
+
+proc aytest_3 { types } {
+set ::types $types
+uplevel #0 {
+
+puts $log "Testing valid NURBS object variations ...\n"
+
+aytest_crtnvars
 
 ###
 foreach type $types {
@@ -1673,10 +1686,12 @@ set ::aytesttools $tools
 uplevel #0 {
 
 set lengths {4 5 6}
+set trimic {set ICurve_1(SDLen) {0.1 1.0}; set ICurve_1(EDLen) {0.1 1.0};}
 
 array set Revert {
     types { NCurve ICurve ACurve }
     command { revertC }
+    precmd $trimic
 }
 
 array set RevertUS {
@@ -1692,6 +1707,54 @@ array set RevertVS {
 array set SwapUVS {
     types { BPatch NPatch IPatch PatchMesh }
     command { swapuvS }
+}
+
+array set Refine {
+    types { NCurve ICurve ACurve }
+    command { refineC }
+    precmd $trimic
+}
+
+array set RefineUNP {
+    types { NPatch }
+    command { refineuNP }
+}
+
+array set RefineVNP {
+    types { NPatch }
+    command { refinevNP }
+}
+
+array set RefineK {
+    types { NCurve }
+    command { refineknNC }
+}
+
+array set CoarsenNC {
+    types { NCurve }
+    command { coarsenNC }
+}
+
+array set OpenC {
+    types { NCurve ICurve ACurve }
+    command { openC }
+    precmd $trimic
+}
+
+array set CloseC {
+    types { NCurve ICurve ACurve }
+    command { closeC }
+    precmd $trimic
+}
+
+array set ClampNC {
+    types { NCurve }
+    command { clampNC }
+}
+
+array set UnclampNC {
+    types { NCurve }
+    command { unclampNC }
 }
 
 array set NCurve_1 {
@@ -1753,6 +1816,7 @@ array set PatchMesh_1 {
 set PatchMesh_1(Width) $lengths
 set PatchMesh_1(Height) $lengths
 
+aytest_crtnvars
 
 # test modelling tools
 puts $log "Testing modelling tools ...\n"
@@ -1764,8 +1828,14 @@ foreach tool $aytesttools {
     set cmd [subst "\$${tool}(command)"]
     set types [subst "\$${tool}(types)"]
     foreach type $types {
-
-	set ${type}_1(tstcmd) $cmd
+	if { [info exists ${tool}(precmd)] } {
+	    eval [subst "\$${tool}(precmd)"]
+	}
+	set i 1
+	while { [info exists ${type}_${i}] } {
+	    set ${type}_${i}(tstcmd) $cmd
+	    incr i
+	}
 
 	aytest_var $type
 
@@ -2351,8 +2421,9 @@ set aytest_4items $items
 
 # set up tools to test in test #5
 set items {}
-lappend items Revert RevertUS RevertVS SwapUVS
-#lappend items Refine Coarsen RefineKnots Split
+lappend items Revert RevertUS RevertVS SwapUVS Refine RefineUNP RefineVNP
+lappend items RefineK CoarsenNC OpenC CloseC ClampNC UnclampNC
+# Split
 set aytest_5items $items
 
 # set up types to test in test #6
