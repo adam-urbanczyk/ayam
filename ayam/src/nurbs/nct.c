@@ -6755,7 +6755,11 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
       /* open and closed curves */
 
       /* calc number of points to remove */
-      t = (curve->length-2)/2;
+      if(fmod(curve->length,2.0) == 0.0)
+	t = (curve->length-2)/2;
+      else
+	t = (curve->length-2)/2+1;
+
       newlength = curve->length-t;
 
       /* no control points to remove? */
