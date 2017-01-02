@@ -1752,10 +1752,95 @@ array set ClampNC {
     command { clampNC }
 }
 
+array set ClampNCS {
+    types { NCurve }
+    command { clampNC -s }
+}
+
+array set ClampNCE {
+    types { NCurve }
+    command { clampNC -e }
+}
+
 array set UnclampNC {
     types { NCurve }
     command { unclampNC }
 }
+
+array set UnclampNCS {
+    types { NCurve }
+    command { unclampNC -s }
+}
+
+array set UnclampNCE {
+    types { NCurve }
+    command { unclampNC -e }
+}
+
+array set ClampUNP {
+    types { NPatch }
+    command { clampuNP }
+}
+
+array set ClampUNPS {
+    types { NPatch }
+    command { clampuNP -s }
+}
+
+array set ClampUNPE {
+    types { NPatch }
+    command { clampuNP -e }
+}
+
+array set ClampVNP {
+    types { NPatch }
+    command { clampvNP }
+}
+
+array set ClampVNPS {
+    types { NPatch }
+    command { clampvNP -s }
+}
+
+array set ClampVNPE {
+    types { NPatch }
+    command { clampvNP -e }
+}
+
+array set UnclampUNP {
+    types { NPatch }
+    command { unclampuNP }
+}
+
+array set UnclampUNPS {
+    types { NPatch }
+    command { unclampuNP -s }
+}
+
+array set UnclampUNPE {
+    types { NPatch }
+    command { unclampuNP -e }
+}
+
+array set UnclampVNP {
+    types { NPatch }
+    command { unclampvNP }
+}
+
+array set UnclampVNPS {
+    types { NPatch }
+    command { unclampvNP -s }
+}
+
+array set UnclampVNPE {
+    types { NPatch }
+    command { unclampvNP -e }
+}
+
+
+#
+#
+#
 
 array set NCurve_1 {
     arr NCurveAttrData
@@ -2422,7 +2507,14 @@ set aytest_4items $items
 # set up tools to test in test #5
 set items {}
 lappend items Revert RevertUS RevertVS SwapUVS Refine RefineUNP RefineVNP
-lappend items RefineK CoarsenNC OpenC CloseC ClampNC UnclampNC
+lappend items RefineK CoarsenNC OpenC CloseC
+lappend items ClampNC ClampNCS ClampNCE
+lappend items UnclampNC UnclampNCS UnclampNCE
+lappend items ClampUNP ClampUNPS ClampUNPE
+lappend items ClampVNP ClampVNPS ClampVNPE
+lappend items UnclampUNP UnclampUNPS UnclampUNPE
+lappend items UnclampVNP UnclampVNPS UnclampVNPE
+
 # Split
 set aytest_5items $items
 
