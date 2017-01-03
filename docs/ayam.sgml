@@ -7210,6 +7210,8 @@ curve will then contain internal multiple knots.
 <p>
 Attributes like display mode and tolerance for the new concatenated curve
 are simply taken from the first parameter curve.
+<p>
+For best results, only clamped curves should be used as parameter objects.
 
 <#if out="latex"><x/newpage/</#if>
 
@@ -9622,14 +9624,16 @@ Eventually present trim curves will be copied and transformed to the
 appropriate place and orientation in the concatenated surface, according
 to the new knot domain.<footnote>Since 1.21.</footnote>
 
+Attributes like display mode and tolerance for the new concatenated patch
+are simply taken from the first parameter patch.
+
 Since the ConcatNP object also
 provides a NURBS patch, it is possible to use it as child object for
 another ConcatNP object (with possibly different parameters).
 This way, a hierarchy of ConcatNP objects can be used to emulate
 patch based modelling to certain extents.
 
-Attributes like display mode and tolerance for the new concatenated patch
-are simply taken from the first parameter patch.
+For best results, only clamped surfaces should be used as parameter objects.
 
 The following table briefly lists some capabilities of the ConcatNP object.
 <p>
@@ -15095,8 +15099,6 @@ This option is only in effect if no <tt/"-cv"/ option is specified.
 
 </itemize>
 
-<#if out="latex"><x/newpage/</#if>
-
 Examples:
 <enum>
 <item><bf/<tt/"crtOb IPatch"//<newline>
@@ -17939,6 +17941,8 @@ The <tt/"arrayname"/ parameter is the name of the corresponding
 data array of the property.
 <p>
 The <tt/"paramname"/ parameter is the name of the parameter.
+The individual matrix value variable names will be formed by appending a
+<tt/"_0"/ to <tt/"_15"/ to the <tt/"paramname"/.
 <item>Example:
 <bf><tt>"addMatrix $w MyPropertyData MyMatrix"</tt></bf>
 </itemize>
@@ -19313,14 +19317,17 @@ interpreter; one can e.g.~type into the Ayam console:
 and Ayam quits (see also section:
 <ref id="safeinterp" name="Safe Interpreter">).
 
+<#if out="latex"><x/newpage/</#if>
+
 <sect2>JavaScript Functions
 <p>
 This subsection informs about the global functions additionally
 available in the Ayam JavaScript interpreter.
 <p>
-Those are converted Tcl commands, <tt>"tcleval"</tt>, <tt>"tclvar"</tt>,
-and <tt>"tclset"</tt>.
+Those are converted Tcl commands (e.g.~<tt>"crtOb()"</tt>),
+<tt>"tcleval()"</tt>, <tt>"tclvar()"</tt>, and <tt>"tclset()"</tt>.
 <p>
+<tt/<bf/Converted Commands://<label id="jscc"><newline>
 The functionality of Ayam is accessible from JavaScript via a larger
 set of global functions, named as the corresponding Tcl commands.
 For instance, Ayam objects can be created in JavaScript using a function call
@@ -19338,14 +19345,14 @@ available as converted function (refer to section
 for a more or less complete list of those commands).
 <p>
 Note that Tcl procedures are generally not available as global JavaScript
-function, but they can be called using <tt>"tcleval"</tt> as documented
+function, but they can be called using <tt>"tcleval()"</tt> as documented
 in the next paragraph.
 
 <#if out="latex"><x/phantomsection/</#if>
 
-<tt/<bf/tcleval://<label id="tcleval"><newline>
+<tt/<bf/tcleval()://<label id="tcleval"><newline>
 Apart from Tcl commands converted to JavaScript functions, there is the
-global JavaScript function <tt>"tcleval"</tt>, that allows to evaluate
+global JavaScript function <tt>"tcleval()"</tt>, that allows to evaluate
 arbitrary Tcl scripts, delivered as string argument:
 <tscreen><tt>
 var a = 42;<newline>
@@ -19353,7 +19360,7 @@ a = tcleval("<bf>puts </bf>" + a + "<bf>; return 5;</bf>");<newline>
 tcleval("<bf>puts </bf>" + a);<newline>
 /* expected output: 42 5 */
 </tt></tscreen>
-The <tt>"tcleval"</tt> function provides access to all the
+The <tt>"tcleval()"</tt> function provides access to all the
 functionality of Ayam that is just available as a Tcl procedure.
 Note that return values are properly transferred back to JavaScript
 according to the rules for data conversion as documented below.
@@ -19363,11 +19370,11 @@ by other means, see below.
 
 <#if out="latex"><x/phantomsection/</#if>
 
-<tt/<bf/tclvar://<label id="tclvar"><newline>
-Using the JavaScript function <tt>"tclvar"</tt> a link between a Tcl
+<tt/<bf/tclvar()://<label id="tclvar"><newline>
+Using the JavaScript function <tt>"tclvar()"</tt> a link between a Tcl
 variable and a corresponding variable in the
 JavaScript context may be established.
-The <tt>"tclvar"</tt> function essentially creates a write trace on the Tcl
+The <tt>"tclvar()"</tt> function essentially creates a write trace on the Tcl
 variable, so that changes on the Tcl side are always automatically
 reflected on the JavaScript side:
 <tscreen><tt>
@@ -19380,25 +19387,25 @@ Mind that the corresponding variable on the JavaScript side does
 <em>not</em> exist until the first write operation on the Tcl variable
 occurs.
 The Tcl variable, in turn, does not have to exist, when the
-<tt>"tclvar"</tt> function is called (i.e.~all the work is done
+<tt>"tclvar()"</tt> function is called (i.e.~all the work is done
 in the trace callback). If the variable name contains a namespace
-specifier, this namespace has to exist, when <tt/"tclvar"/ is called.
+specifier, this namespace has to exist, when <tt/"tclvar()"/ is called.
 <p>
-Even though it looks a perfect fit, <tt/"tclvar"/ can not be used to
+Even though it looks a perfect fit, <tt/"tclvar()"/ can not be used to
 manage a property data array (if the array contains components
 to be saved to Ayam scene files). This is, because upon reading a scene
 file with such saved array items, the items will be read (and put into
 the Tcl context) before the script can establish the write trace using
-<tt/"tclvar"/ and the data from the scene file never arrives in the JavaScript
-context.
+<tt/"tclvar()"/ and the data from the scene file never arrives in the
+JavaScript context.
 There is no easy way to get around this.
 A suggested way to manage a property data array is shown in the
 complete examples section below.
 
 <#if out="latex"><x/phantomsection/</#if>
 
-<tt/<bf/tclset://<label id="tclset"><newline>
-The third global JavaScript function is <tt>"tclset"</tt> that
+<tt/<bf/tclset()://<label id="tclset"><newline>
+The third global JavaScript function is <tt>"tclset()"</tt> that
 allows to efficiently set Tcl variables from the JavaScript context
 avoiding conversion to string data and back.
 For example:
@@ -19426,8 +19433,8 @@ tclset("::MyNameSpace::Radius", 1.2);
 <sect2>Data Conversion
 <p>
 When data is transferred from the Tcl to the JavaScript side
-(e.g.~while converting return values of <tt/"tcleval"/ or variable
-values linked via <tt/"tclvar"/),
+(e.g.~while converting return values of <tt/"tcleval()"/ or variable
+values linked via <tt/"tclvar()"/),
 the following conversions are in effect:
 Scalar data types will be converted to their directly matching counterparts,
 except for Booleans, which will be converted to integer values.
@@ -19511,7 +19518,7 @@ failing if the child object of the Script object is not a Sphere
 object.
 Now the radius value is transferred back to Tcl directly into
 the property data array to the ZMin and ZMax entries respectively
-with the help of <tt/"tclset"/.
+with the help of <tt/"tclset()"/.
 Finally the modified property is transferred back to the Sphere object
 again with a converted Tcl Ayam command <tt/"setProp()"/.
 
@@ -19621,14 +19628,18 @@ interpreter; one can e.g.~type into the Ayam console:
 and Ayam quits (see also section:
 <ref id="safeinterp" name="Safe Interpreter">).
 
+<#if out="latex"><x/newpage/</#if>
+
 <sect2>Lua Functions
 <p>
 This subsection informs about the global functions additionally
 available in the Ayam Lua interpreter.
 <p>
-Those are converted Tcl commands, <tt>"tcleval"</tt>, <tt>"tclvar"</tt>,
-and <tt>"tclset"</tt>.
+Those are converted Tcl commands (e.g.~<tt>"crtOb()"</tt>),
+<tt>"tcleval()"</tt>, <tt>"tclvar()"</tt>,
+and <tt>"tclset()"</tt>.
 <p>
+<tt/<bf/Converted Commands://<label id="luacc"><newline>
 The functionality of Ayam is accessible from Lua via a larger
 set of global functions, named as the corresponding Tcl commands.
 For instance, Ayam objects can be created in Lua using a function call
@@ -19646,14 +19657,14 @@ available as converted function (refer to section
 for a more or less complete list of those commands).
 <p>
 Note that Tcl procedures are generally not available as global Lua function,
-but they can be called using <tt>"tcleval"</tt> as documented
+but they can be called using <tt>"tcleval()"</tt> as documented
 in the next paragraph.
 
 <#if out="latex"><x/phantomsection/</#if>
 
-<tt/<bf/tcleval://<label id="luatcleval"><newline>
+<tt/<bf/tcleval()://<label id="luatcleval"><newline>
 Apart from Tcl commands converted to Lua functions, there is the
-global Lua function <tt>"tcleval"</tt>, that allows to evaluate
+global Lua function <tt>"tcleval()"</tt>, that allows to evaluate
 arbitrary Tcl scripts, delivered as string argument:
 <tscreen><tt>
 a = 42;<newline>
@@ -19661,7 +19672,7 @@ a = tcleval("<bf>puts </bf>" ..&ensp;a ..&ensp;"<bf>; return 5;</bf>");<newline>
 tcleval("<bf>puts </bf>" ..&ensp;a);<newline>
 <f/--/ expected output:&ensp;42 5
 </tt></tscreen>
-The <tt>"tcleval"</tt> function provides access to all the
+The <tt>"tcleval()"</tt> function provides access to all the
 functionality of Ayam that is just available as a Tcl procedure.
 Note that return values are properly transferred back to Lua
 according to the rules for data conversion as documented below.
@@ -19671,10 +19682,10 @@ by other means, see below.
 
 <#if out="latex"><x/phantomsection/</#if>
 
-<tt/<bf/tclvar://<label id="luatclvar"><newline>
-Using the Lua function <tt>"tclvar"</tt> a link between a Tcl variable
+<tt/<bf/tclvar()://<label id="luatclvar"><newline>
+Using the Lua function <tt>"tclvar()"</tt> a link between a Tcl variable
 and a corresponding variable in the Lua context can be established.
-The <tt>"tclvar"</tt> function creates a write trace on the Tcl
+The <tt>"tclvar()"</tt> function creates a write trace on the Tcl
 variable, so that changes on the Tcl side are always automatically
 reflected on the Lua side:
 <tscreen><tt>
@@ -19687,16 +19698,16 @@ Mind that the corresponding variable on the Lua side does
 <em>not</em> exist until the first write operation onto the Tcl
 variable occurs.
 The Tcl variable, in turn, does not have to exist, when the
-<tt>"tclvar"</tt> function is called (i.e.~all the work is done
+<tt>"tclvar()"</tt> function is called (i.e.~all the work is done
 in the trace callback). If the variable name contains a namespace
-specifier, this namespace has to exist, when <tt/"tclvar"/ is called.
+specifier, this namespace has to exist, when <tt/"tclvar()"/ is called.
 <p>
-Even though it looks a perfect fit, <tt/"tclvar"/ can not be used to
+Even though it looks a perfect fit, <tt/"tclvar()"/ can not be used to
 manage a property data array (if the array contains components
 to be saved to Ayam scene files). This is, because upon reading a scene
 file with such saved array items, the items will be read (and put into
 the Tcl context) before the script can establish the write trace using
-<tt/"tclvar"/ and the data from the scene file never arrives in the Lua
+<tt/"tclvar()"/ and the data from the scene file never arrives in the Lua
 context.
 There is no easy way to get around this.
 A suggested way to manage a property data array is shown in the
@@ -19704,8 +19715,8 @@ complete examples section below.
 
 <#if out="latex"><x/phantomsection/</#if>
 
-<tt/<bf/tclset://<label id="luatclset"><newline>
-The third global Lua function is <tt>"tclset"</tt> that
+<tt/<bf/tclset()://<label id="luatclset"><newline>
+The third global Lua function is <tt>"tclset()"</tt> that
 allows to efficiently set Tcl variables from the Lua context
 avoiding conversion to string data and back.
 For example:
@@ -19733,8 +19744,8 @@ tclset("::MyNameSpace::Radius", 1.2);
 <sect2>Data Conversion
 <p>
 When data is transferred from the Tcl to the Lua side
-(e.g.~while converting return values of <tt/"tcleval"/ or variable
-values linked via <tt/"tclvar"/),
+(e.g.~while converting return values of <tt/"tcleval()"/ or variable
+values linked via <tt/"tclvar()"/),
 the following conversions are in effect:
 Scalar data types will be converted to their directly matching counterparts.
 Lists will be converted to array-tables (nesting is allowed and will
