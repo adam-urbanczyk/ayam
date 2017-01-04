@@ -1686,12 +1686,10 @@ set ::aytesttools $tools
 uplevel #0 {
 
 set lengths {4 5 6}
-set trimic {set ICurve_1(SDLen) {0.1 1.0}; set ICurve_1(EDLen) {0.1 1.0};}
 
 array set Revert {
     types { NCurve ICurve ACurve }
     command { revertC }
-    precmd $trimic
 }
 
 array set RevertUS {
@@ -1712,7 +1710,6 @@ array set SwapUVS {
 array set Refine {
     types { NCurve ICurve ACurve }
     command { refineC }
-    precmd $trimic
 }
 
 array set RefineUNP {
@@ -1738,13 +1735,26 @@ array set CoarsenNC {
 array set OpenC {
     types { NCurve ICurve ACurve }
     command { openC }
-    precmd $trimic
 }
 
 array set CloseC {
     types { NCurve ICurve ACurve }
     command { closeC }
-    precmd $trimic
+}
+
+array set ElevateNC {
+    types { NCurve  }
+    command { elevateNC }
+}
+
+array set ElevateNC2 {
+    types { NCurve  }
+    command { elevateNC 2 }
+}
+
+array set ElevateNC3 {
+    types { NCurve  }
+    command { elevateNC 3 }
 }
 
 array set ClampNC {
@@ -1837,6 +1847,11 @@ array set UnclampVNPE {
     command { unclampvNP -e }
 }
 
+set trimic {set ICurve_1(SDLen) {0.1 1.0}; set ICurve_1(EDLen) {0.1 1.0};}
+
+foreach tool { Revert Refine OpenC CloseC } {
+    set ${tool}(precmd) $trimic
+}
 
 #
 #
@@ -2233,11 +2248,12 @@ hSL
 
 
 # forall:
-#  taken from http://wiki.tcl.tk/2546
-#  (Cartesian product of a list of lists)
-#  original author: Eric Boudaillier;
-#  create cartesian product of a list of lists,
-#  run cmd for every combination, synopsis:
+# create cartesian product of a list of lists
+# and run a cmd for every resulting combination
+# taken from: http://wiki.tcl.tk/2546
+# (Cartesian product of a list of lists)
+# original author: Eric Boudaillier;
+# Synopsis:
 #  forall var1 list1 var2 list2 [varn listn] cmd
 #  example:
 #  forall a {1 2 3} b {3 4} {puts "$a $b"}
@@ -2508,12 +2524,14 @@ set aytest_4items $items
 set items {}
 lappend items Revert RevertUS RevertVS SwapUVS Refine RefineUNP RefineVNP
 lappend items RefineK CoarsenNC OpenC CloseC
+lappend items ElevateNC ElevateNC2 ElevateNC3
 lappend items ClampNC ClampNCS ClampNCE
 lappend items UnclampNC UnclampNCS UnclampNCE
 lappend items ClampUNP ClampUNPS ClampUNPE
 lappend items ClampVNP ClampVNPS ClampVNPE
 lappend items UnclampUNP UnclampUNPS UnclampUNPE
 lappend items UnclampVNP UnclampVNPS UnclampVNPE
+
 
 # Split
 set aytest_5items $items
