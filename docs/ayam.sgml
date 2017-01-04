@@ -19340,7 +19340,7 @@ or, with additional arguments:
 crtOb("NCircle", "-radius", 3.0);
 </tt></tscreen>
 In general, all commands available in the safe Ayam Tcl interpreter are also
-available as converted function (refer to section
+available as function (refer to section
 <ref id="sccomm" name="Procedures and Commands">
 for a more or less complete list of those commands).
 <p>
@@ -19351,9 +19351,8 @@ in the next paragraph.
 <#if out="latex"><x/phantomsection/</#if>
 
 <tt/<bf/tcleval()://<label id="tcleval"><newline>
-Apart from Tcl commands converted to JavaScript functions, there is the
-global JavaScript function <tt>"tcleval()"</tt>, that allows to evaluate
-arbitrary Tcl scripts, delivered as string argument:
+This global JavaScript function allows to evaluate arbitrary
+Tcl scripts, delivered as string argument:
 <tscreen><tt>
 var a = 42;<newline>
 a = tcleval("<bf>puts </bf>" + a + "<bf>; return 5;</bf>");<newline>
@@ -19652,7 +19651,7 @@ or, with additional arguments:
 crtOb("NCircle", "-radius", 3.0);
 </tt></tscreen>
 In general, all commands available in the safe Ayam Tcl interpreter are also
-available as converted function (refer to section
+available as function (refer to section
 <ref id="sccomm" name="Procedures and Commands">
 for a more or less complete list of those commands).
 <p>
@@ -19663,9 +19662,8 @@ in the next paragraph.
 <#if out="latex"><x/phantomsection/</#if>
 
 <tt/<bf/tcleval()://<label id="luatcleval"><newline>
-Apart from Tcl commands converted to Lua functions, there is the
-global Lua function <tt>"tcleval()"</tt>, that allows to evaluate
-arbitrary Tcl scripts, delivered as string argument:
+This Lua function allows to evaluate arbitrary
+Tcl scripts, delivered as string argument:
 <tscreen><tt>
 a = 42;<newline>
 a = tcleval("<bf>puts </bf>" ..&ensp;a ..&ensp;"<bf>; return 5;</bf>");<newline>
