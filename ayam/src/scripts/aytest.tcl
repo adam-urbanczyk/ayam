@@ -1727,6 +1727,16 @@ array set RefineK {
     command { refineknNC }
 }
 
+array set InsertK {
+    types { NCurve }
+    command { insknNC 0.5 1 }
+}
+
+array set InsertK2 {
+    types { NCurve }
+    command { insknNC 0.5 2 }
+}
+
 array set CoarsenNC {
     types { NCurve }
     command { coarsenNC }
@@ -1846,6 +1856,57 @@ array set UnclampVNPE {
     types { NPatch }
     command { unclampvNP -e }
 }
+
+array set ElevateUNP {
+    types { NPatch  }
+    command { elevateuNP }
+}
+
+array set ElevateUNP2 {
+    types { NPatch  }
+    command { elevateuNP 2 }
+}
+
+array set ElevateUNP3 {
+    types { NPatch  }
+    command { elevateuNP 3 }
+}
+
+array set ElevateVNP {
+    types { NPatch  }
+    command { elevatevNP }
+}
+
+array set ElevateVNP2 {
+    types { NPatch  }
+    command { elevatevNP 2 }
+}
+
+array set ElevateVNP3 {
+    types { NPatch  }
+    command { elevatevNP 3 }
+}
+
+array set InsertKUNP {
+    types { NPatch }
+    command { insknuNP 0.5 1 }
+}
+
+array set InsertK2UNP {
+    types { NPatch }
+    command { insknuNP 0.5 2 }
+}
+
+array set InsertKVNP {
+    types { NPatch }
+    command { insknvNP 0.5 1 }
+}
+
+array set InsertK2VNP {
+    types { NPatch }
+    command { insknvNP 0.5 2 }
+}
+
 
 set trimic {set ICurve_1(SDLen) {0.1 1.0}; set ICurve_1(EDLen) {0.1 1.0};}
 
@@ -2523,7 +2584,7 @@ set aytest_4items $items
 # set up tools to test in test #5
 set items {}
 lappend items Revert RevertUS RevertVS SwapUVS Refine RefineUNP RefineVNP
-lappend items RefineK CoarsenNC OpenC CloseC
+lappend items RefineK InsertK InsertK2 CoarsenNC OpenC CloseC
 lappend items ElevateNC ElevateNC2 ElevateNC3
 lappend items ClampNC ClampNCS ClampNCE
 lappend items UnclampNC UnclampNCS UnclampNCE
@@ -2531,9 +2592,10 @@ lappend items ClampUNP ClampUNPS ClampUNPE
 lappend items ClampVNP ClampVNPS ClampVNPE
 lappend items UnclampUNP UnclampUNPS UnclampUNPE
 lappend items UnclampVNP UnclampVNPS UnclampVNPE
+lappend items ElevateUNP ElevateUNP2 ElevateUNP3
+lappend items ElevateVNP ElevateVNP2 ElevateVNP3
+lappend items InsertKUNP InsertK2UNP InsertKVNP InsertK2VNP
 
-
-# Split
 set aytest_5items $items
 
 # set up types to test in test #6
