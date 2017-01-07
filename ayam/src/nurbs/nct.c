@@ -7012,7 +7012,8 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  /* calculate knot multiplicity */
 	  s = 1;
-	  while(fabs(curve->knotv[i] - curve->knotv[i+s]) < AY_EPSILON)
+	  while(((i+s) < (curve->length+curve->order)) &&
+		(fabs(curve->knotv[i] - curve->knotv[i+s]) < AY_EPSILON))
 	    {
 	      s++;
 	    }
@@ -7021,6 +7022,13 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(r > s)
 	    {
 	      r = s;
+	    }
+
+	  /* we can (or should) also not lower the curve order */
+	  if((curve->length - r) < curve->order)
+	    {
+	      ay_error(AY_ERROR, argv[0], "Can not lower curve order.");
+	      break;
 	    }
 
 	  if(!(newcontrolv = malloc(curve->length*4*sizeof(double))))
