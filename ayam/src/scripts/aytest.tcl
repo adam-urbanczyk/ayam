@@ -1921,7 +1921,7 @@ array set RemoveKUNP {
     types { NPatch }
     command {
 	getProp;
-	set kn [lindex $::NPatchAttrData(Knots_V) $::NCurveAttrData(Order_U)];
+	set kn [lindex $::NPatchAttrData(Knots_U) $::NPatchAttrData(Order_U)];
 	remknuNP $kn 1 Inf
     }
 }
@@ -1930,7 +1930,7 @@ array set RemoveKVNP {
     types { NPatch }
     command {
 	getProp;
-	set kn [lindex $::NPatchAttrData(Knots_V) $::NCurveAttrData(Order_V)];
+	set kn [lindex $::NPatchAttrData(Knots_V) $::NPatchAttrData(Order_V)];
 	remknvNP $kn 1 Inf
     }
 }
