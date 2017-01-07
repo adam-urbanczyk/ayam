@@ -1737,6 +1737,16 @@ array set InsertK2 {
     command { insknNC 0.5 2 }
 }
 
+array set RemoveK {
+    types { NCurve }
+    command {
+	getProp;
+	set kn [lindex $::NCurveAttrData(Knots) $::NCurveAttrData(Order)];
+	# set kn 1 => CRASH
+	remknNC $kn 1 Inf
+    }
+}
+
 array set CoarsenNC {
     types { NCurve }
     command { coarsenNC }
@@ -1905,6 +1915,24 @@ array set InsertKVNP {
 array set InsertK2VNP {
     types { NPatch }
     command { insknvNP 0.5 2 }
+}
+
+array set RemoveKUNP {
+    types { NPatch }
+    command {
+	getProp;
+	set kn [lindex $::NPatchAttrData(Knots_V) $::NCurveAttrData(Order_U)];
+	remknuNP $kn 1 Inf
+    }
+}
+
+array set RemoveKVNP {
+    types { NPatch }
+    command {
+	getProp;
+	set kn [lindex $::NPatchAttrData(Knots_V) $::NCurveAttrData(Order_V)];
+	remknvNP $kn 1 Inf
+    }
 }
 
 
@@ -2584,7 +2612,7 @@ set aytest_4items $items
 # set up tools to test in test #5
 set items {}
 lappend items Revert RevertUS RevertVS SwapUVS Refine RefineUNP RefineVNP
-lappend items RefineK InsertK InsertK2 CoarsenNC OpenC CloseC
+lappend items RefineK InsertK InsertK2 RemoveK CoarsenNC OpenC CloseC
 lappend items ElevateNC ElevateNC2 ElevateNC3
 lappend items ClampNC ClampNCS ClampNCE
 lappend items UnclampNC UnclampNCS UnclampNCE
@@ -2595,6 +2623,7 @@ lappend items UnclampVNP UnclampVNPS UnclampVNPE
 lappend items ElevateUNP ElevateUNP2 ElevateUNP3
 lappend items ElevateVNP ElevateVNP2 ElevateVNP3
 lappend items InsertKUNP InsertK2UNP InsertKVNP InsertK2VNP
+lappend items RemoveKUNP RemoveKVNP
 
 set aytest_5items $items
 
