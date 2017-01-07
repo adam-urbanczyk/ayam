@@ -13574,7 +13574,8 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  /* calculate knot multiplicity */
 	  s = 1;
-	  while(fabs(patch->uknotv[i] - patch->uknotv[i+s]) < AY_EPSILON)
+	  while(((i+s) < (patch->width+patch->uorder)) &&
+		(fabs(patch->uknotv[i] - patch->uknotv[i+s]) < AY_EPSILON))
 	    {
 	      s++;
 	    }
@@ -13583,6 +13584,13 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(r > s)
 	    {
 	      r = s;
+	    }
+
+	  /* we can (or should) also not lower the surface order */
+	  if((patch->width - r) < patch->uorder)
+	    {
+	      ay_error(AY_ERROR, argv[0], "Can not lower surface order.");
+	      break;
 	    }
 
 	  /* swap U/V, for there is no RemoveKnotSurfU() */
@@ -13789,7 +13797,8 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  /* calculate knot multiplicity */
 	  s = 1;
-	  while(fabs(patch->vknotv[i] - patch->vknotv[i+s]) < AY_EPSILON)
+	  while(((i+s) < (patch->height+patch->vorder)) &&
+		(fabs(patch->vknotv[i] - patch->vknotv[i+s]) < AY_EPSILON))
 	    {
 	      s++;
 	    }
@@ -13798,6 +13807,13 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(r > s)
 	    {
 	      r = s;
+	    }
+
+	  /* we can (or should) also not lower the surface order */
+	  if((patch->height - r) < patch->vorder)
+	    {
+	      ay_error(AY_ERROR, argv[0], "Can not lower surface order.");
+	      break;
 	    }
 
 	  if(!(newcontrolv = malloc(patch->width*(patch->height-r)*4*
