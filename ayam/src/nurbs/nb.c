@@ -995,12 +995,15 @@ ay_nb_InsertKnotCurve4D(int np, int p, double *UP, double *Pw, double u,
       Qw[i1+2] = Rw[2] / Rw[3];
       Qw[i1+3] = Rw[3];
 
-      i1 = (k+r-j-s)*4;
       i2 = (p-j-s)*4;
-      Qw[i1] = Rw[i2] / Rw[i2+3];
-      Qw[i1+1] = Rw[i2+1] / Rw[i2+3];
-      Qw[i1+2] = Rw[i2+2] / Rw[i2+3];
-      Qw[i1+3] = Rw[i2+3];
+      if(i2 > 0)
+	{
+	  i1 = (k+r-j-s)*4;
+	  Qw[i1] = Rw[i2] / Rw[i2+3];
+	  Qw[i1+1] = Rw[i2+1] / Rw[i2+3];
+	  Qw[i1+2] = Rw[i2+2] / Rw[i2+3];
+	  Qw[i1+3] = Rw[i2+3];
+	}
     } /* for */
 
   for(i = L+1; i < (k-s); i++)
@@ -1093,11 +1096,14 @@ ay_nb_InsertKnotCurve3D(int np, int p, double *UP, double *P, double u,
       Q[i1+1] = R[1];
       Q[i1+2] = R[2];
 
-      i1 = (k+r-j-s)*4;
       i2 = (p-j-s)*3;
-      Q[i1]   = R[i2];
-      Q[i1+1] = R[i2+1];
-      Q[i1+2] = R[i2+2];
+      if(i2 > 0)
+	{
+	  i1 = (k+r-j-s)*4;
+	  Q[i1]   = R[i2];
+	  Q[i1+1] = R[i2+1];
+	  Q[i1+2] = R[i2+2];
+	}
     } /* for */
 
   for(i = L+1; i < k-s; i++)
@@ -4234,13 +4240,16 @@ ay_nb_InsertKnotSurfU(int stride, int w, int h, int p, double *UP, double *Pw,
 	  Qw[i1+2] /= Qw[i1+3];
 
 	  /*Qw[k+r-j-s][row] = Rw[p-j-s];*/
-	  i1 = ((k+r-j-s)*h1+row)*stride;
 	  i2 = (p-j-s)*stride;
-	  memcpy(&(Qw[i1]), &(Rw[i2]), stride*sizeof(double));
-	  /* convert homogeneous rational to euclidean */
-	  Qw[i1] /= Qw[i1+3];
-	  Qw[i1+1] /= Qw[i1+3];
-	  Qw[i1+2] /= Qw[i1+3];
+	  if(i2 > 0)
+	    {
+	      i1 = ((k+r-j-s)*h1+row)*stride;
+	      memcpy(&(Qw[i1]), &(Rw[i2]), stride*sizeof(double));
+	      /* convert homogeneous rational to euclidean */
+	      Qw[i1] /= Qw[i1+3];
+	      Qw[i1+1] /= Qw[i1+3];
+	      Qw[i1+2] /= Qw[i1+3];
+	    }
 
 	  /* Load the remaining control points. */
 	  for(i = L+1; i < k-s; i++)
@@ -4369,13 +4378,16 @@ ay_nb_InsertKnotSurfV(int stride, int w, int h, int q, double *VP, double *Pw,
 	  Qw[i1+2] /= Qw[i1+3];
 
 	  /*Qw[col][k+r-j-s] = Rw[q-j-s];*/
-	  i1 = (col*nh+(k+r-j-s))*stride;
 	  i2 = (q-j-s)*stride;
-	  memcpy(&(Qw[i1]), &(Rw[i2]), stride*sizeof(double));
-	  /* convert homogeneous rational to euclidean */
-	  Qw[i1] /= Qw[i1+3];
-	  Qw[i1+1] /= Qw[i1+3];
-	  Qw[i1+2] /= Qw[i1+3];
+	  if(i2 > 0)
+	    {
+	      i1 = (col*nh+(k+r-j-s))*stride;
+	      memcpy(&(Qw[i1]), &(Rw[i2]), stride*sizeof(double));
+	      /* convert homogeneous rational to euclidean */
+	      Qw[i1] /= Qw[i1+3];
+	      Qw[i1+1] /= Qw[i1+3];
+	      Qw[i1+2] /= Qw[i1+3];
+	    }
 
 	  /* Load the remaining control points. */
 	  for(i = L+1; i < k-s; i++)
