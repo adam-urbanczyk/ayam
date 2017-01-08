@@ -1747,6 +1747,45 @@ array set RemoveK {
     }
 }
 
+array set SplitNC {
+    types { NCurve }
+    command {
+	getProp;
+	set index [expr $::NCurveAttrData(Order)-1]
+	set k1 [lindex $::NCurveAttrData(Knots) $index];
+	incr index;
+	set k2 [lindex $::NCurveAttrData(Knots) $index];
+	set kn [expr {$k1+($k2-$k1)*0.5}]
+	splitNC $kn; hSL; delOb; hSL
+    }
+}
+
+array set SplitNPU {
+    types { NPatch }
+    command {
+	getProp;
+	set index [expr $::NPatchAttrData(Order_U)-1]
+	set k1 [lindex $::NPatchAttrData(Knots_U) $index];
+	incr index;
+	set k2 [lindex $::NPatchAttrData(Knots_U) $index];
+	set kn [expr {$k1+($k2-$k1)*0.5}]
+	splituNP $kn; hSL; delOb; hSL
+    }
+}
+
+array set SplitNPV {
+    types { NPatch }
+    command {
+	getProp;
+	set index [expr $::NPatchAttrData(Order_V)-1]
+	set k1 [lindex $::NPatchAttrData(Knots_V) $index];
+	incr index;
+	set k2 [lindex $::NPatchAttrData(Knots_V) $index];
+	set kn [expr {$k1+($k2-$k1)*0.5}]
+	splitvNP $kn; hSL; delOb; hSL
+    }
+}
+
 array set CoarsenNC {
     types { NCurve }
     command { coarsenNC }
@@ -1762,6 +1801,31 @@ array set CloseC {
     command { closeC }
 }
 
+array set ShiftC {
+    types { NCurve ICurve ACurve }
+    command { shiftC }
+}
+
+array set ShiftC2 {
+    types { NCurve ICurve ACurve }
+    command { shiftC 2 }
+}
+
+array set ShiftCM {
+    types { NCurve ICurve ACurve }
+    command { shiftC -1 }
+}
+
+array set ShiftCM2 {
+    types { NCurve ICurve ACurve }
+    command { shiftC -2 }
+}
+
+array set EstLenNC {
+    types { NCurve  }
+    command { estlenNC len }
+}
+
 array set ElevateNC {
     types { NCurve  }
     command { elevateNC }
@@ -1775,6 +1839,11 @@ array set ElevateNC2 {
 array set ElevateNC3 {
     types { NCurve  }
     command { elevateNC 3 }
+}
+
+array set ExtendNC {
+    types { NCurve  }
+    command { extendNC 10.0 20.0 30.0 }
 }
 
 array set ClampNC {
@@ -2613,7 +2682,8 @@ set aytest_4items $items
 set items {}
 lappend items Revert RevertUS RevertVS SwapUVS Refine RefineUNP RefineVNP
 lappend items RefineK InsertK InsertK2 RemoveK CoarsenNC OpenC CloseC
-lappend items ElevateNC ElevateNC2 ElevateNC3
+lappend items ShiftC ShiftC2 ShiftCM ShiftCM2
+lappend items ElevateNC ElevateNC2 ElevateNC3 EstLenNC ExtendNC SplitNC
 lappend items ClampNC ClampNCS ClampNCE
 lappend items UnclampNC UnclampNCS UnclampNCE
 lappend items ClampUNP ClampUNPS ClampUNPE
@@ -2623,7 +2693,7 @@ lappend items UnclampVNP UnclampVNPS UnclampVNPE
 lappend items ElevateUNP ElevateUNP2 ElevateUNP3
 lappend items ElevateVNP ElevateVNP2 ElevateVNP3
 lappend items InsertKUNP InsertK2UNP InsertKVNP InsertK2VNP
-lappend items RemoveKUNP RemoveKVNP
+lappend items RemoveKUNP RemoveKVNP SplitNPU SplitNPV
 
 set aytest_5items $items
 
