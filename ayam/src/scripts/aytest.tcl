@@ -1821,6 +1821,30 @@ array set ShiftCM2 {
     command { shiftC -2 }
 }
 
+array set ToXYC {
+    types { NCurve ICurve ACurve }
+    command { 
+	setPnt 0 0.5 0.5 0.5;
+	toXYC
+    }
+}
+
+array set ToXZC {
+    types { NCurve ICurve ACurve }
+    command { 
+	setPnt 0 0.5 0.5 0.5;
+	toXZC
+    }
+}
+
+array set ToYZC {
+    types { NCurve ICurve ACurve }
+    command { 
+	setPnt 0 0.5 0.5 0.5;
+	toYZC
+    }
+}
+
 array set EstLenNC {
     types { NCurve  }
     command { estlenNC len }
@@ -2007,7 +2031,7 @@ array set RemoveKVNP {
 
 set trimic {set ICurve_1(SDLen) {0.1 1.0}; set ICurve_1(EDLen) {0.1 1.0};}
 
-foreach tool { Revert Refine OpenC CloseC } {
+foreach tool { Revert Refine OpenC CloseC ToXYC ToXZC ToYZC } {
     set ${tool}(precmd) $trimic
 }
 
@@ -2074,7 +2098,7 @@ array set PatchMesh_1 {
 set PatchMesh_1(Width) $lengths
 set PatchMesh_1(Height) $lengths
 
-aytest_crtnvars
+#aytest_crtnvars
 
 # test modelling tools
 puts $log "Testing modelling tools ...\n"
@@ -2682,7 +2706,7 @@ set aytest_4items $items
 set items {}
 lappend items Revert RevertUS RevertVS SwapUVS Refine RefineUNP RefineVNP
 lappend items RefineK InsertK InsertK2 RemoveK CoarsenNC OpenC CloseC
-lappend items ShiftC ShiftC2 ShiftCM ShiftCM2
+lappend items ShiftC ShiftC2 ShiftCM ShiftCM2 ToXYC ToXZC ToYZC
 lappend items ElevateNC ElevateNC2 ElevateNC3 EstLenNC ExtendNC SplitNC
 lappend items ClampNC ClampNCS ClampNCE
 lappend items UnclampNC UnclampNCS UnclampNCE
