@@ -1747,6 +1747,20 @@ array set RemoveK {
     }
 }
 
+array set TrimNC {
+    types { NCurve }
+    command {
+	getProp;
+	set index [expr $::NCurveAttrData(Order)-1]
+	set k1 [lindex $::NCurveAttrData(Knots) $index];
+	incr index;
+	set k2 [lindex $::NCurveAttrData(Knots) $index];
+	set kn1 [expr {$k1+($k2-$k1)*0.25}]
+	set kn2 [expr {$k1+($k2-$k1)*0.75}]
+	trimNC $kn1 $kn2
+    }
+}
+
 array set SplitNC {
     types { NCurve }
     command {
@@ -2098,7 +2112,7 @@ array set PatchMesh_1 {
 set PatchMesh_1(Width) $lengths
 set PatchMesh_1(Height) $lengths
 
-#aytest_crtnvars
+aytest_crtnvars
 
 # test modelling tools
 puts $log "Testing modelling tools ...\n"
@@ -2708,7 +2722,7 @@ lappend items Revert RevertUS RevertVS SwapUVS Refine RefineUNP RefineVNP
 lappend items RefineK InsertK InsertK2 RemoveK CoarsenNC OpenC CloseC
 lappend items ShiftC ShiftC2 ShiftCM ShiftCM2 ToXYC ToXZC ToYZC
 lappend items ElevateNC ElevateNC2 ElevateNC3 EstLenNC ExtendNC SplitNC
-lappend items ClampNC ClampNCS ClampNCE
+lappend items TrimNC ClampNC ClampNCS ClampNCE
 lappend items UnclampNC UnclampNCS UnclampNCE
 lappend items ClampUNP ClampUNPS ClampUNPE
 lappend items ClampVNP ClampVNPS ClampVNPE
