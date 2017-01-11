@@ -6405,7 +6405,7 @@ ay_nct_toxytcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(ay_status)
 	    {
 	      ay_error(ay_status, argv[0],
-		       "Could not align object to XY plane.");
+		       "Could not align object to plane.");
 	    }
 	  else
 	    {
