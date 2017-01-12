@@ -9116,7 +9116,7 @@ Also note that this configuration is in fact equivalent to a Coons patch.
 <caption>Gordon Surface with Parameter Curves (white)</caption>
 </figure>
 <p>
-The curves may be of arbitrary length and order. It is e.g.~ possible
+The curves may be of arbitrary length and order. It is e.g.~possible
 to use a curve of order 2 and length 6 with a second curve
 of order 4 and length 4 and a third curve with order 3 and 5
 control points for the U parametric dimension. Note, however,
@@ -10704,11 +10704,9 @@ setPnt 1 [expr {$length/2.0}] 0.0 0.0 1.0
 <p>
 This code works, but if lines of a different length than 1 are needed,
 the user must edit the script which is not very convenient and error
-prone.
+prone.<newline>
 A complete, easy to use, and safe GUI for the length parameter
-can be added by changing the script code
-(<tt>&quot;&num; &circ;&circ;&circ;&quot;</tt> lines designate changed
-or added code):
+can be added by changing the script code to:
 <#if out="latex"><x/newpage/</#if>
 <code>
 # Ayam, save array: LineAttrData
@@ -10723,7 +10721,6 @@ if { ![info exists ::LineAttrGUI] } {
     addParam $w LineAttrData Length
 }
 set length $::LineAttrData(Length)
-# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 crtOb NCurve -length 2
 sL
 setPnt 0 [expr {-$length/2.0}] 0.0 0.0 1.0
@@ -10790,7 +10787,7 @@ This little script first determines the length of the curve,
 then it creates a Clone object and moves the children of the Script
 object to it (via the object clipboard). Finally, the Clone object
 is parameterised, so that the trajectory is completely filled (assuming
-that each copy of the first child needs 1 length unit on the trajectory)
+that each copy of the first child needs one length unit on the trajectory)
 with objects.
 The curve can now be modified using interactive modelling actions,
 or its length can be changed, and the trajectory will always be completely
@@ -12577,7 +12574,7 @@ by the TrimRect tool.
 <eps file="pics/tweenc.ps" height="4cm">
 <img src="pics/tweenc.gif">
 <caption>Tweened Curve (white) from two Parameter Curves (blue)
-with <em/r/ 0.5</caption>
+with <em/r/&thinsp;=&thinsp;0.5</caption>
 </figure>
 <descrip>
 <tag/Arguments/ The tween curve tool takes two NURBS curves from
@@ -12586,7 +12583,7 @@ the selection and requests a parameter <em/r/.
 and a new curve incorporating features from both of the original curves
 will be created. See also the image above.
 The parameter <em/r/ defines the ratio of influence of the first and
-the second curve (the latter is using a ratio of <em>1-r</em>).
+the second curve (the latter is using a ratio of 1&thinsp;-&thinsp;<em/r/).
 <tscreen><verb>
 |-NCurve             |-NCurve
 |-NCurve     ==>     |-NCurve
@@ -12607,7 +12604,9 @@ generated according to the type.
 The original NURBS curves will not be deleted by this tool.
 
 See also the documentation of the corresponding
-scripting interface command <ref id="sctweennc" name="tweenNC">.
+scripting interface command <ref id="sctweennc" name="tweenNC">
+and the related tool for
+surfaces <ref id="tweennpt" name="Tween Surfaces Tool">.
 
 To tween NURBS curve providing objects or incompatible NURBS curve objects,
 a Script object must be used, as shown in the distributed example scene
@@ -12953,7 +12952,7 @@ surfaces <ref id="unclanpt" name="Unclamp Surface Tool">.
 <eps file="pics/inskn.ps" height="4cm">
 <img src="pics/inskn.gif">
 <caption>Insert Knot Tool (left: original curve, right: a knot has been
-inserted 1 time at u=0.5)</caption>
+inserted one time at <em/u/&thinsp;=&thinsp;0.5)</caption>
 </figure>
 <descrip>
 <tag/Arguments/ The insert knot tool takes a number of NURBS curves from
@@ -12979,7 +12978,8 @@ surfaces <ref id="insknnpt" name="Insert Knot Surface Tool">.
 <figure loc="ht">
 <eps file="pics/remkn.ps" height="4cm">
 <img src="pics/remkn.gif">
-<caption>Remove Knot Tool (left: original curve, right: the knot at t=0.5 has been removed 1 time)</caption>
+<caption>Remove Knot Tool (left: original curve, right: the knot
+at <em/t/&thinsp;=&thinsp;0.5 has been removed one time)</caption>
 </figure>
 <descrip>
 <tag/Arguments/ The remove knot tool takes a number of NURBS curves from
@@ -13046,7 +13046,7 @@ scripting interface command <ref id="scconcatnc" name="concatNC">.
 <eps file="pics/splitnc.ps" height="4cm">
 <img src="pics/splitnc.gif">
 <caption>Split Tool (left: original curve, right: resulting split curves
-for t=0.5)</caption>
+for <em/u/&thinsp;=&thinsp;0.5)</caption>
 </figure>
 <descrip>
 <tag/Arguments/ The split curves tool takes a number of NURBS curves from
@@ -13081,13 +13081,14 @@ surfaces <ref id="splitnpt" name="Split Surface Tool">.
 <eps file="pics/trimnc.ps" height="4cm">
 <img src="pics/trimnc.gif">
 <caption>Trim Tool (left: original curve, right: resulting trimmed curve for
-umin=0.1, umax=0.5)</caption>
+<em/umin/&thinsp;=&thinsp;0.1, <em/umax/&thinsp;=&thinsp;0.5)</caption>
 </figure>
 <descrip>
 <tag/Arguments/ The trim curves tool takes all selected NURBS curves from
-the selection and additionally requests two parametric values, umin and umax.
+the selection and additionally requests two parametric values, <em/umin/ and
+<em/umax/.
 <tag/Operation/ The selected NURBS curves will be trimmed to the
-designated parametric range (umin, umax).
+designated parametric range (<em/umin/, <em/umax/).
 <tag/Notes/ The trimming process involves the application of knot insertion
 so that the curves will get a custom knot vector.
 
@@ -13127,10 +13128,11 @@ and by the specified height value. See also the image above.
 closed curves (NCurve, ICurve, and ACurve objects are supported),
 from the selection and requests one additional integer parameter <it/i/.
 <tag/Operation/ The control points of the curve(s) will be shifted
-<it/i/ times.
+<it/i/ times.<newline>
 The parameter <it/i/ may be negative to revert the direction of the
-shifting.
-For a simple closed curve, shifting with <it/i/=1, the first control
+shifting.<newline>
+For a simple closed curve, shifting with <it/i/&thinsp;=&thinsp;1, the
+first control
 point will get the coordinates of the former last control point.
 This means, positive shifts occur in the direction of the curve.
 Note that for closed and periodic NURBS curves, the multiple points will
@@ -13617,7 +13619,7 @@ selected and the current level will also be changed.
 <eps file="pics/tweenp.ps" height="5cm">
 <img src="pics/tweenp.gif">
 <caption>Tweened Surface (white) from two Parameter Surfaces (blue)
-with <em/r/ 0.5</caption>
+with <em/r/&thinsp;=&thinsp;0.5</caption>
 </figure>
 <descrip>
 <tag/Arguments/ The tween tool takes two NURBS patches from
@@ -13626,7 +13628,7 @@ the selection and requests a parameter <em/r/.
 and a new patch incorporating features from both of the original patches
 will be created.
 The parameter <em/r/ defines the ratio of influence of the first and
-the second patch (the latter is using a ratio of <em>1-r</em>).
+the second patch (the latter is using a ratio of 1&thinsp;-&thinsp;<em/r/).
 <tscreen><verb>
 |-NPatch             |-NPatch
 |-NPatch     ==>     |-NPatch
@@ -13645,7 +13647,9 @@ generated according to the type.
 The original NURBS patches will not be deleted by this tool.
 
 See also the documentation of the corresponding
-scripting interface command <ref id="sctweennp" name="tweenNP">.
+scripting interface command <ref id="sctweennp" name="tweenNP">
+and the related tool for
+curves <ref id="tweennct" name="Tween Curves Tool">.
 </descrip>
 
 <#if out="latex"><x/newpage/</#if>
@@ -13868,7 +13872,7 @@ curves <ref id="unclat" name="Unclamp Tool">.
 <eps file="pics/insknnp.ps" height="5cm">
 <img src="pics/insknnp.gif">
 <caption>Insert Knot Surface Tool (left: original patch, right: a knot has been
-inserted 1 time at t=0.5)</caption>
+inserted one time at <em/t/&thinsp;=&thinsp;0.5)</caption>
 </figure>
 <descrip>
 <tag/Arguments/ The insert knot surface tool takes a number of NURBS
@@ -13896,7 +13900,8 @@ curves <ref id="insknt" name="Insert Knot Tool">.
 <figure loc="ht">
 <eps file="pics/remknnp.ps" height="5cm">
 <img src="pics/remknnp.gif">
-<caption>Remove Knot Surface Tool (left: original surface, right: the knot at t=0.5 has been removed 1 time)</caption>
+<caption>Remove Knot Surface Tool (left: original surface, right: the knot
+at <em/t/&thinsp;=&thinsp;0.5 has been removed one time)</caption>
 </figure>
 <descrip>
 <tag/Arguments/ The remove knot surface tool takes a number of NURBS
@@ -13937,7 +13942,8 @@ curves <ref id="remknt" name="Remove Knot Tool">.
 <figure loc="ht">
 <eps file="pics/splitnp.ps" height="5cm">
 <img src="pics/splitnp.gif">
-<caption>Split Surface Tool (left: original surface, right: the surface was split at t=0.5)</caption>
+<caption>Split Surface Tool (left: original surface, right: the surface was
+split at <em/t/&thinsp;=&thinsp;0.5)</caption>
 </figure>
 <descrip>
 <tag/Arguments/ The split surface tool takes a number of NURBS patches from
@@ -13979,9 +13985,9 @@ curves <ref id="splitt" name="Split Tool">.
 </figure>
 <descrip>
 <tag/Arguments/ The interpolate surface tool takes a number of NURBS
-patches from the selection and requests an additional parameter o.
+patches from the selection and requests an additional parameter <em/o/.
 <tag/Operation/ The patches will be modified so that they interpolate
-all original control points with the desired interpolation order o.
+all original control points with the desired interpolation order <em/o/.
 See also the image above.
 
 <tag/Notes/
