@@ -645,7 +645,7 @@ puts -nonewline "\n"
 # helper to create variation arrays
 # (also in use by modelling tools test)
 proc aytest_crtnvars { } {
-global NCurve_1 NCurve_2 NCurve_3 ICurve_1 ACurve_1
+global NCurve_1 NCurve_2 NCurve_3 NCurve_4 NCurve_5 ICurve_1 ACurve_1
 global NPatch_1 NPatch_2 NPatch_3 NPatch_4 NPatch_5 NPatch_6 NPatch_7
 global IPatch_1 PatchMesh_1
 
@@ -671,8 +671,8 @@ set floatvals {-1000 -100 -20 -2.5 -2 -1.5 -1.0 -0.9 -0.1 0.1 0.9 1.0 1.5 2 2.5 
 array set NCurve_1 {
     arr NCurveAttrData
     freevars {Length Order Knot-Type}
-    fixedvars {dummy}
-    fixedvals { {0} }
+    fixedvars {rational}
+    fixedvals {0 1}
 }
 set NCurve_1(Length) $lengthvals
 set NCurve_1(Order) $ordervals
@@ -680,7 +680,11 @@ set NCurve_1(Knot-Type) $ktvals
 set NCurve_1(valcmd) {
     [expr {$::NCurveAttrData(Order) <= $::NCurveAttrData(Length)}]
 }
-
+set NCurve_1(precmd) {
+    if { $l == 1 } {
+	setPnt 0 0 0 0 0.5
+    }
+}
 
 # NCurve Variation #2 (Bezier knots)
 array set NCurve_2 {
@@ -708,6 +712,12 @@ set NCurve_3(Order) $ordervals
 set NCurve_3(valcmd) {
     [set ::NCurveAttrData(Knots) [aytest_crtknots $::NCurveAttrData(Length) $::NCurveAttrData(Order)]] != ""
 }
+
+# rational variants of #2 and #3
+array set NCurve_4 [array get NCurve_2]
+set NCurve_4(precmd) {setPnt 0 0 0 0 0.5;}
+array set NCurve_5 [array get NCurve_3]
+set NCurve_5(precmd) {setPnt 0 0 0 0 0.5;}
 
 
 #############
@@ -1837,7 +1847,7 @@ array set ShiftCM2 {
 
 array set ToXYC {
     types { NCurve ICurve ACurve }
-    command { 
+    command {
 	setPnt 0 0.5 0.5 0.5;
 	toXYC
     }
@@ -1845,7 +1855,7 @@ array set ToXYC {
 
 array set ToXZC {
     types { NCurve ICurve ACurve }
-    command { 
+    command {
 	setPnt 0 0.5 0.5 0.5;
 	toXZC
     }
@@ -1853,7 +1863,7 @@ array set ToXZC {
 
 array set ToYZC {
     types { NCurve ICurve ACurve }
-    command { 
+    command {
 	setPnt 0 0.5 0.5 0.5;
 	toYZC
     }
