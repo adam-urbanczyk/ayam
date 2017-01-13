@@ -773,8 +773,8 @@ set ACurve_1(valcmd) {
 array set NPatch_1 {
     arr NPatchAttrData
     freevars {Width Height Order_U Order_V Knot-Type_U Knot-Type_V}
-    fixedvars {dummy}
-    fixedvals { {0} }
+    fixedvars {rational}
+    fixedvals {0 1}
 }
 set NPatch_1(Width) $lengthvals
 set NPatch_1(Height) $lengthvals
@@ -785,6 +785,11 @@ set NPatch_1(Knot-Type_V) $ktvals
 set NPatch_1(valcmd) {
     [expr {($::NPatchAttrData(Order_U) <= $::NPatchAttrData(Width)) &&
 	   ($::NPatchAttrData(Order_V) <= $::NPatchAttrData(Height))}]
+}
+set NPatch_1(precmd) {
+    if { $l == 1 } {
+	setPnt 0 0 0 0 0 0.5
+    }
 }
 
 # NPatch Variation #2 (Bezier knots U & V)
