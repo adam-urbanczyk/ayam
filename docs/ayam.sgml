@@ -12624,6 +12624,11 @@ by these tools.
 
 <sect2>Revert Tool<label id="revertt">
 <p>
+<figure loc="ht">
+<eps file="pics/revertnc.ps" height="4cm">
+<img src="pics/revertnc.gif">
+<caption>Revert Tool (l: Original Curve, r: Reversed Curve)</caption>
+</figure>
 <descrip>
 <tag/Arguments/ The revert tool takes all NCurve,
 ICurve, and ACurve objects from the selection.
@@ -12654,6 +12659,8 @@ and the related tools for
 surfaces <ref id="revertut" name="Revert U Surface Tool"> and
 <ref id="revertvt" name="Revert V Surface Tool">.
 </descrip>
+
+<#if out="latex"><x/newpage/</#if>
 
 <sect2>Open Tool<label id="openct">
 <p>
