@@ -26,10 +26,6 @@ code example of 6 lines text (needs another 2 for the upper/lower lines)
 5) for convenience, <newline> translates into <br> in HTML and \\ in LaTeX
    output
 .
-The next line fixes problems with the HTML output, that appear in section
-NURBS Modelling Tools, where, suddenly, the preprocessing mechanism via
-if-directives stops to work altogether.
-</#if></#if>
  -->
 <article>
 
@@ -12998,7 +12994,7 @@ be removed <it/r/ times from the knot vector of the selected curves if
 the shape of the resulting curve does not deviate more than <it/tol/
 from the original curve in any point. Since Ayam 1.20 the knot to remove
 may also be specified using its (zero based)
-index in the knot vector (i.e.~by entering <tt/"-i 3"/ instead of
+index in the knot vector (for instance by entering <tt/"-i 3"/ instead of
 <tt/"0.5"/ for the knot vector
 <tt/"0 0 0 0.5 1 1 1"/).<newline>
 If the knot can not be removed <it/r/ times due to the tolerance given, an
@@ -13072,7 +13068,7 @@ get a custom knot vector.
 The new curve(s) will be inserted
 into the level right after the respective curve(s) to split unless
 the append option is set.
-<footnote>Since 1.24</footnote></#if>
+<footnote>Since 1.24.</footnote>
 
 The point selection will be removed from the original curves.
 
@@ -13969,7 +13965,7 @@ knot insertion.
 The new surface(s) will be inserted
 into the level right after the respective surface(s) to split unless
 the append option is set.
-<footnote>Since 1.24</footnote></#if>
+<footnote>Since 1.24.</footnote>
 
 The point selection will be removed from the original object(s).
 
@@ -16559,7 +16555,7 @@ parametric value <em/u/ into two curves, creating one new curve and
 If the option <em/-a/ is set to 1 the new curve(s) will be appended
 to the current level. Otherwise the new curve(s) will be inserted
 into the level right after the respective curve(s) to split.
-<footnote>Since 1.24</footnote></#if>
+<footnote>Since 1.24.</footnote>
 <p><p>
 See also section <ref id="splitt" name="Split Tool">.
 </itemize>
@@ -16973,7 +16969,7 @@ at the parametric value <em/u/, creating one new NPatch object and
 If the option <em/-a/ is set to 1 the new NPatch object(s) will be appended
 to the current level. Otherwise the new NPatch object(s) will be inserted
 into the level right after the respective NPatch object(s) to split.
-This is the new default.<footnote>Since 1.24</footnote></#if>
+This is the new default.<footnote>Since 1.24.</footnote>
 <p><p>
 See also section <ref id="splitnpt" name="Split Surface Tools">.
 </itemize>
@@ -16993,7 +16989,7 @@ at the parametric value <em/v/, creating one new NPatch object and
 If the option <em/-a/ is set to 1 the new NPatch object(s) will be appended
 to the current level. Otherwise the new NPatch object(s) will be inserted
 into the level right after the respective NPatch object(s) to split.
-This is the new default.<footnote>Since 1.24</footnote></#if>
+This is the new default.<footnote>Since 1.24.</footnote>
 <p><p>
 See also section <ref id="splitnpt" name="Split Surface Tools">.
 </itemize>
@@ -17124,7 +17120,7 @@ selected patches. The parameter <em/r/ defines the
 ratio of influence of the first and the second patch (the latter
 using <em>1-r</em>). This parameter defaults to 0.5.<newline>
 The two patches must be of the same width, height, uorder, and vorder.
-They need not be defined on the same knot vectors, however.<newline>
+They need not be defined on the same knot vectors, however.
 <p><p>
 See also section <ref id="tweennpt" name="Tween Surfaces Tool">.
 </itemize>
@@ -23315,6 +23311,7 @@ Index:
 <item><ref id="impx3d" name="X3D Import">
 </itemize>
 <item>Importance Driven Rendering: <ref id="idr" name="IDR plugin">
+<item>Indices: <ref id="selectp" name="Select attribute">
 <item>Input Plane: <ref id="editlocal" name="Editing in Local Spaces">
 <item>Insert:
 <itemize>
@@ -24251,6 +24248,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="tweennpt" name="NPatch tool">
 </itemize>
 <item>tweenNC: <ref id="sctweennc" name="scripting interface command">
+<item>tweenNP: <ref id="sctweennp" name="scripting interface command">
 <item>TwmCompat: <ref id="prefgui" name="preference setting">
 <item>Type:
 <itemize>
