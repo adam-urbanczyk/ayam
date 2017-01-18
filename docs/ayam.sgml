@@ -1139,10 +1139,10 @@ object, see section <ref id="instanceobj" name="Instance Object">
 for more information regarding instances.
 
 <item><tt/"Clone"/, create a Clone object, see
-section <ref id="cloneobj" name="Clone Object">
+section <ref id="cloneobj" name="Clone Object">.
 
 <item><tt/"Mirror"/, create a Mirror object, see
-section <ref id="mirrorobj" name="Mirror Object">
+section <ref id="mirrorobj" name="Mirror Object">.
 
 <item><tt/"Material"/, create a new material. A small dialog box will
 pop up, where the name of the new material must be specified. See
@@ -4114,7 +4114,7 @@ section <ref id="prefmisc" name="Miscellaneous Preferences">).
 <#if out="latex"><x/phantomsection/</#if>
 <p><label id="nmpmenu">
 The numeric point edit dialog also has a context menu.
-<footnote>Since 1.21</footnote>
+<footnote>Since 1.21.</footnote>
 The entries in this menu allow to:
 <itemize>
 <item> <tt/"Clear"/ all entries,
@@ -4799,8 +4799,10 @@ memory rendrib (from BMRT) should use at maximum to cache textures and
 tesselated geometry.
 </itemize>
 
-Renderer specific options may also be set with RiOption tags,
-see section <ref id="riotag" name="RiOption Tag">.
+Renderer specific options may also be set with RiOption tags
+(see section <ref id="riotag" name="RiOption Tag">), most comfortably
+added via the main menu <tt>"Special/Tags/Add RiOption"</tt>
+(see section <ref id="mmtags" name="Tags Special Menu">).
 
 <sect3>Imager, Atmosphere Property<label id="imager">
 <p><#if out="latex">&nbsp;<newline></#if>
@@ -4947,7 +4949,7 @@ is present as child of the View object,
 the image will be mapped onto this object instead of filling the
 complete view window background.
 
-<item><tt/"BGImage"/ is the name of a TIFF file, that will
+<item><tt/"BGImage"/ is the name of a TIFF image file, that will
 be used as texture for the background image. Ayam will read this image file
 when the changes to the <tt/"ViewAttrib"/ property are applied,
 but also reread the image file if the notification callback of the view
@@ -5011,7 +5013,7 @@ Camera|No|No|N/A|Yes<#if out="latex">@<hline></#if>
 
 <sect3>Drag and Drop Support
 <p><#if out="latex">&nbsp;<newline></#if>
-When a view object is dropped onto a Camera object the camera settings
+When a View object is dropped onto a Camera object the camera settings
 from the view will be copied to the Camera object.
 
 <sect3>RIB Export
@@ -22375,12 +22377,12 @@ In case of the Goldfeather algorithm, the literature denotes this as
 layered Goldfeather algorithm.
 Note that this option requires a stencil buffer which must be enabled
 on the creation of a view window using additional view parameters
-(preferences option AddViewParams, see also the section on
+(preferences option <tt/"AddViewParams"/, see also the section on
 <ref id="hidprefs" name="hidden preference settings">).
-If stencil buffers are not enabled, Ayam will automatically add the
-relevant option to the preferences but this only has an effect on newly
-created view windows (i.e.~you might also want to restart Ayam, if you
-switch to DCSampling).
+If stencil buffers are not enabled, the AyCSG plugin will automatically
+add the relevant option to the Ayam preferences but this only has an effect
+on newly created view windows (i.e.~you might also want to restart Ayam,
+if you switch to this sampling strategy).
 If <tt/"DCSampling"/ is enabled (and the <tt/"Algorithm"/ is set to
 Goldfeather), DC tags need <em>not</em> to be present as the
 depth complexity of primitives is calculated internally.
