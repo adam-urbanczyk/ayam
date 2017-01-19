@@ -2057,6 +2057,15 @@ array set RemoveKVNP {
     }
 }
 
+array set CloseUNP {
+    types { NPatch  }
+    command { closeuNP }
+}
+
+array set CloseVNP {
+    types { NPatch  }
+    command { closevNP }
+}
 
 set trimic {set ICurve_1(SDLen) {0.1 1.0}; set ICurve_1(EDLen) {0.1 1.0};}
 
@@ -2746,7 +2755,7 @@ lappend items UnclampVNP UnclampVNPS UnclampVNPE
 lappend items ElevateUNP ElevateUNP2 ElevateUNP3
 lappend items ElevateVNP ElevateVNP2 ElevateVNP3
 lappend items InsertKUNP InsertK2UNP InsertKVNP InsertK2VNP
-lappend items RemoveKUNP RemoveKVNP SplitNPU SplitNPV
+lappend items RemoveKUNP RemoveKVNP SplitNPU SplitNPV CloseUNP CloseVNP
 
 set aytest_5items $items
 
