@@ -8876,25 +8876,12 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 
 		  free(np->controlv);
 		  np->controlv = newcontrolv;
-
 		  np->width++;
-		}
-
-	      if(knots > -1 || extend)
-		{
-		  if(knots == -1)
-		    knots = AY_KTNURB;
-		  tknotv = np->vknotv;
-		  np->vknotv = NULL;
-		  np->uknot_type = knots;
-		  ay_status = ay_knots_createnp(np);
-		  free(np->vknotv);
-		  np->vknotv = tknotv;
-		}
+		} /* if extend */
 	    }
 	  else
 	    {
-	      /* mode > 3 => make periodic*/
+	      /* mode >= 3 => make periodic */
 	      if(extend)
 		{
 		  if(!(newcontrolv = malloc((np->width + (np->uorder-1)) *
@@ -8911,44 +8898,32 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 
 		  free(np->controlv);
 		  np->controlv = newcontrolv;
-
 		  np->width += (np->uorder-1);
-		  /*
-		    if(!(newknotv = calloc(np->width + np->uorder +
-                         (np->uorder-1),
-			 sizeof(double))))
-			 {
-			 ay_error(AY_EOMEM, argv[0], NULL);
-			 return TCL_OK;
-			 }
-
-			 memcpy(newknotv, np->uknotv, (np->width + np->uorder +
-			 (np->uorder-1)) *
-			 sizeof(double));
-
-			 free(np->uknotv);
-			 np->uknotv = newknotv;
-		  */
-		}
-
-	      if(knots > -1 || extend)
-		{
-		  if(knots == -1)
-		    knots = AY_KTBSPLINE;
-		  tknotv = np->vknotv;
-		  np->vknotv = NULL;
-		  np->uknot_type = knots;
-		  ay_status = ay_knots_createnp(np);
-		  free(np->vknotv);
-		  np->vknotv = tknotv;
-		}
-	    } /* if */
+		} /* if extend */
+	    } /* if mode */
 
 	  ay_status = ay_npt_closeu(np, mode);
 
 	  if(ay_status)
 	    {
 	      ay_error(AY_ERROR, argv[0], "Error closing object.");
+	    }
+
+	  if(knots > -1 || extend)
+	    {
+	      if(knots == -1)
+		{
+		  if(mode < 3)
+		    knots = AY_KTNURB;
+		  else
+		    knots = AY_KTBSPLINE;
+		}
+	      tknotv = np->vknotv;
+	      np->vknotv = NULL;
+	      np->uknot_type = knots;
+	      ay_status = ay_knots_createnp(np);
+	      free(np->vknotv);
+	      np->vknotv = tknotv;
 	    }
 
 	  ay_npt_recreatemp(np);
@@ -9190,25 +9165,12 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 
 		  free(np->controlv);
 		  np->controlv = newcontrolv;
-
 		  np->height++;
-		}
-
-	      if(knots >- 1 || extend)
-		{
-		  if(knots == -1)
-		    knots = AY_KTNURB;
-		  tknotv = np->uknotv;
-		  np->uknotv = NULL;
-		  np->vknot_type = knots;
-		  ay_status = ay_knots_createnp(np);
-		  free(np->uknotv);
-		  np->uknotv = tknotv;
-		}
+		} /* if extend */
 	    }
 	  else
 	    {
-	      /* mode > 3 => make periodic*/
+	      /* mode >= 3 => make periodic */
 	      if(extend)
 		{
 		  if(!(newcontrolv = malloc(np->width * (np->height +
@@ -9231,26 +9193,31 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 		  free(np->controlv);
 		  np->controlv = newcontrolv;
 		  np->height += (np->vorder-1);
-		}
-
-	      if(knots > -1 || extend)
-		{
-		  if(knots == -1)
-		    knots = AY_KTBSPLINE;
-		  tknotv = np->uknotv;
-		  np->uknotv = NULL;
-		  np->vknot_type = knots;
-		  ay_status = ay_knots_createnp(np);
-		  free(np->uknotv);
-		  np->uknotv = tknotv;
-		}
-	    } /* if */
+		} /* if extend */
+	    } /* if mode */
 
 	  ay_status = ay_npt_closev(np, mode);
 
 	  if(ay_status)
 	    {
 	      ay_error(AY_ERROR, argv[0], "Error closing object.");
+	    }
+
+	  if(knots >- 1 || extend)
+	    {
+	      if(knots == -1)
+		{
+		  if(mode < 3)
+		    knots = AY_KTNURB;
+		  else
+		    knots = AY_KTBSPLINE;
+		}
+	      tknotv = np->uknotv;
+	      np->uknotv = NULL;
+	      np->vknot_type = knots;
+	      ay_status = ay_knots_createnp(np);
+	      free(np->uknotv);
+	      np->uknotv = tknotv;
 	    }
 
 	  ay_npt_recreatemp(np);
