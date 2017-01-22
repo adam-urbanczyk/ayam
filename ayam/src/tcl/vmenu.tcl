@@ -287,20 +287,35 @@ $m add command -label "Align to Object" -command "\
 	$w.f3D.togl mc; $w.f3D.togl align; \$ay(currentView) mc"
 
 
-# XXXX This could be just a label or a menu displaying current action
-# or even allowing to start modeling actions, but which actions, all?
-#menubutton $w.fMenu.a -image ay_Move_img -menu $w.fMenu.a.m -padx 3
-#menu $w.fMenu.a.m -tearoff 0
-#$w.fMenu.a.m add command\
-#-label "Quick Render"\
-#-command {exit}
-
 # Modelling Action Menu
 if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
     menubutton $w.fMenu.a -image ay_Empty_img -menu $w.fMenu.a.m\
 	-padx 0 -pady 0 -borderwidth 0
-    menu $w.fMenu.a.m -tearoff 0
+    set m [menu $w.fMenu.a.m -tearoff 0]
+} else {
+    set m [menu $mb.ma -tearoff 0]
+    $mb add cascade -label Action -menu $m
 }
+
+$m add command -image ay_Pick_img -hidemargin 1\
+    -command "actionPick $w.f3D.togl"
+
+$m add command -image ay_Tag_img -hidemargin 1\
+    -command "actionTagP $w.f3D.togl"
+
+$m add command -image ay_Mark_img -hidemargin 1\
+    -command "actionSetMark $w.f3D.togl"
+
+$m add command -image ay_Empty_img -hidemargin 1\
+    -command "actionClear $w.f3D.togl 1"
+
+if { $AYWITHAQUA } {
+    $m entryconfigure 0 -image {} -label "Pick"
+    $m entryconfigure 1 -image {} -label "Tag"
+    $m entryconfigure 2 -image {} -label "Mark"
+    $m entryconfigure 2 -image {} -label "None"
+}
+
 
 # Modelling Mode Menu
 if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
