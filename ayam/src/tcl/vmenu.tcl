@@ -313,7 +313,7 @@ if { $AYWITHAQUA } {
     $m entryconfigure 0 -image {} -label "Pick"
     $m entryconfigure 1 -image {} -label "Tag"
     $m entryconfigure 2 -image {} -label "Mark"
-    $m entryconfigure 2 -image {} -label "None"
+    $m entryconfigure 3 -image {} -label "None"
 }
 
 
