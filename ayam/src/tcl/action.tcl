@@ -1960,7 +1960,7 @@ proc actionClearKbd { w } {
 #actionClear:
 # not really an action, clears all bindings, establishes picking bindings
 # when requested via preferences and is normally bound to the Esc-key
-proc actionClear { w } {
+proc actionClear { w {only_clear 0} } {
     global ayprefs ayviewshortcuts
 
     actionClearB1 $w
@@ -1976,7 +1976,7 @@ proc actionClear { w } {
 
     bind $w <Motion> ""
 
-    if { $ayprefs(DefaultAction) == 0 } {
+    if { $only_clear || ($ayprefs(DefaultAction) == 0) } {
 	viewTitle $w "" "None"
 	viewSetMAIcon $w ay_Empty_img ""
     } else {
