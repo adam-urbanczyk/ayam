@@ -33,7 +33,7 @@ code example of 6 lines text (needs another 2 for the upper/lower lines)
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>4. Jan 2017
+<date>22. Jan 2017
 
 <abstract>
 This is the documentation of Ayam 1.24 &ndash; a free 3D modelling environment
@@ -1870,6 +1870,16 @@ object of the current level if no object is currently selected.
 
 Apart from the text based menus documented above, there are also some icon
 based menus in the view window menu bar:
+<p>
+The <tt/"Action"/ icon menu hosts basic selection
+actions.<footnote>Since 1.24.</footnote>
+See also the image below:
+<p>
+<figure loc="ht">
+<eps file="pics/amenu.ps" height="5cm">
+<img src="pics/amenu.gif">
+<caption>Action Icon Menu</caption>
+</figure>
 <p>
 The <tt/"Modelling Mode"/ icon menu may be used to quickly change the current
 modelling mode (global or local, see also section
