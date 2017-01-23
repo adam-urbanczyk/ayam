@@ -1200,7 +1200,7 @@ proc viewSetMModeIcon { w mode } {
 	eval "$conf -image $vimage"
     } else {
 	# external views on Aqua
-	set conf "$w.menubar entryconfigure 4"
+	set conf "$w.menubar entryconfigure 5"
 
 	if { [info exists ay(cVType)] } {
 	    set type $ay(cVType)
