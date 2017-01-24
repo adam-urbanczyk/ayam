@@ -1552,7 +1552,8 @@ proc updateOptionToggle { w prop name cmd } {
 #
 proc addOptionToggle { w prop name txt cmd } {
     global $prop ay ayprefs
-    set f [frame $w.f${name}]
+    set bw 1
+    set f [frame $w.f${name} -relief sunken -bd $bw]
     set b [button $w.f${name}.b -compound right -text $txt \
 	       -image ay_TriangleR_img -bd 1 \
 	       -command "updateOptionToggle $w $prop $name $cmd"]

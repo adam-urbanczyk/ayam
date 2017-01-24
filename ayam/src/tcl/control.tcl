@@ -1141,7 +1141,7 @@ proc matchOb { pattern } {
 
 proc toggleSearchOption { } {
     global ObjectSearch
-    set w .searchw
+    set w .searchw.f1
     if { $ObjectSearch(MoreOptions) == 1 } {
 	addColor $w ObjectSearch HighlightColor
 	addCheck $w ObjectSearch ClearHighlight
@@ -1179,7 +1179,7 @@ proc objectsearch_open { } {
     set t "Search Objects"
     winDialog $w $t
 
-    set f [frame $w.f1]
+    set f [frame $w.f1 -bd 2]
     pack $f -in $w -side top -fill x
 
     set ay(bca) $w.fb.bca
@@ -1275,9 +1275,9 @@ proc objectsearch_open { } {
     addString $w.f1 ObjectSearch Expression $expressions
     addString $w.f1 ObjectSearch Action\
 	{Highlight Collect Copy Delete "\[myProc\]"}
-    addMenu $w ObjectSearch Scope {All Selection Level Collection}
-    addOptionToggle $w ObjectSearch MoreOptions \
-	"Advanced Options" toggleSearchOption
+    addMenu $w.f1 ObjectSearch Scope {All Selection Level Collection}
+    addOptionToggle $w.f1 ObjectSearch MoreOptions \
+	"Advanced Options  " toggleSearchOption
 
     set f [frame $w.fb]
 
