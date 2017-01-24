@@ -1563,6 +1563,9 @@ proc addOptionToggle { w prop name txt cmd } {
     if { $ay(ws) == "X11" } {
 	$b conf -height 8
     }
+    if { $ay(ws) == "Aqua" } {
+	$b conf -height 11
+    }
     pack $b -in $f -side left -fill x -expand yes
     pack $f -in $w -side top -fill x
  return;
