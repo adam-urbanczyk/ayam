@@ -517,6 +517,8 @@ if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
 
 	# fix image menus for Tk8.4
 	if { $tcl_patchLevel > "8.3" } {
+	    set m [$w.fMenu.a cget -menu]
+	    $m entryconfigure 0 -hidemargin 0
 	    set m [$w.fMenu.dm cget -menu]
 	    $m entryconfigure 0 -hidemargin 0
 	    set m [$w.fMenu.mm cget -menu]
