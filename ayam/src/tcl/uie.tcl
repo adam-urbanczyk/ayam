@@ -864,6 +864,9 @@ proc addString { w prop name {def {}} } {
 	set escapecmd "resetFocus;break"
     } else {
 	set escapecmd "after idle {$ay(bca) invoke}"
+	if { $ay(ws) == "Win32" } {
+	    append escapecmd ";break"
+	}
     }
 
     set bw 1
