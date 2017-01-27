@@ -1875,27 +1875,27 @@ array set ToYZC {
 }
 
 array set EstLenNC {
-    types { NCurve  }
+    types { NCurve }
     command { estlenNC len }
 }
 
 array set ElevateNC {
-    types { NCurve  }
+    types { NCurve }
     command { elevateNC }
 }
 
 array set ElevateNC2 {
-    types { NCurve  }
+    types { NCurve }
     command { elevateNC 2 }
 }
 
 array set ElevateNC3 {
-    types { NCurve  }
+    types { NCurve }
     command { elevateNC 3 }
 }
 
 array set ExtendNC {
-    types { NCurve  }
+    types { NCurve }
     command { extendNC 10.0 20.0 30.0 }
 }
 
@@ -1990,32 +1990,32 @@ array set UnclampVNPE {
 }
 
 array set ElevateUNP {
-    types { NPatch  }
+    types { NPatch }
     command { elevateuNP }
 }
 
 array set ElevateUNP2 {
-    types { NPatch  }
+    types { NPatch }
     command { elevateuNP 2 }
 }
 
 array set ElevateUNP3 {
-    types { NPatch  }
+    types { NPatch }
     command { elevateuNP 3 }
 }
 
 array set ElevateVNP {
-    types { NPatch  }
+    types { NPatch }
     command { elevatevNP }
 }
 
 array set ElevateVNP2 {
-    types { NPatch  }
+    types { NPatch }
     command { elevatevNP 2 }
 }
 
 array set ElevateVNP3 {
-    types { NPatch  }
+    types { NPatch }
     command { elevatevNP 3 }
 }
 
@@ -2058,12 +2058,12 @@ array set RemoveKVNP {
 }
 
 array set CloseUNP {
-    types { NPatch  }
+    types { NPatch }
     command { closeuNP }
 }
 
 array set CloseVNP {
-    types { NPatch  }
+    types { NPatch }
     command { closevNP }
 }
 
@@ -2715,7 +2715,7 @@ set items {}
 lappend items Box Sphere Cylinder Cone Disk Hyperboloid Paraboloid Torus
 lappend items NCurve ICurve ACurve NCircle
 lappend items NPatch IPatch BPatch PatchMesh
-lappend items Revolve Extrude Sweep Swing Skin Birail1 Birail2  Gordon
+lappend items Revolve Extrude Sweep Swing Skin Birail1 Birail2 Gordon
 lappend items Cap Bevel ExtrNC ExtrNP OffsetNC OffsetNP ConcatNC ConcatNP
 lappend items Trim Text
 lappend items Camera Light Material RiInc RiProc Script Select
