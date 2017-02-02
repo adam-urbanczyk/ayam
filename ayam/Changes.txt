@@ -1,5 +1,5 @@
-[17. Nov 2016 CVS-Head:
-=======================
+[24. Jan 2017 Ayam 1.24:
+========================
 Bug Fixes:
 o added missing scripting interface commands to JavaScript and Lua scripting
   language plugins (SF 526)
@@ -28,6 +28,8 @@ o WatchCorners feature of the Gordon tool object for NCurves (SF 547)
 o splitting quadratic curves with three control points (SF 548)
 o panning of aligned object local views (SF 549)
 o single point editing in aligned object local views (SF 550)
+o setting the step size of custom basis matrices for PatchMeshes (SF 551)
+o "tobasisPM" for target basis types Catmull-Rom/Hermite/Custom (SF 552)
 
 Modelling:
 o the create Sweep/Swing tools now rotate the parameter curves to the
@@ -37,9 +39,9 @@ o improved support for "BP"/"CP" tags in "ConvertTags" preference
   now creates a single NPatch with "CP" tags instead of a level with
   multiple NPatch objects
 o the open curve tool now modifies control points so that subsequent
-  editing becomes easier, it can also now more easily invoked by the
+  editing becomes easier, it can also now more easily be invoked by the
   new keyboard shortcut <(>
-o the close curve tool can now more easily invoked by the new
+o the close curve tool can now more easily be invoked by the new
   keyboard shortcut <)>
 o ExtrNC/ExtrNP now work for NPatch objects with caps and bevels
 o improved error checking of the "refine knots with" tools
@@ -67,6 +69,7 @@ o added menu entry to add a tag to multiple selected objects
 o improved keyboard and focus handling of Tags property GUI
 o improved MRU file management (file saving could lead to extraneous and
   defunct menu entries without path)
+o added a icon menu that hosts basic selection actions
 
 Scripts/Scripting Interface:
 o added "setTag" command that adds a tag if it is not present, otherwise
