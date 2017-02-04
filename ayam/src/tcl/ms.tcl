@@ -518,11 +518,11 @@ zu\nPolyMesh Umwandlungen benutzt wird."
 
 
 ms_set de plb_label \
-"Diesen Text doppelclicken\num die Eigenschaft zu schlieﬂen."
+"Diesen Text doppelklicken\num die Eigenschaft zu schlieﬂen."
 
-ms_set de olb_label "Diesen Text doppelclicken\num zum Baum zu wechseln."
+ms_set de olb_label "Diesen Text doppelklicken\num zum Baum zu wechseln."
 
-ms_set de tree_label "Diesen Text doppelclicken\num zur Liste zu wechseln."
+ms_set de tree_label "Diesen Text doppelklicken\num zur Liste zu wechseln."
 
 
 # Mops-Import
