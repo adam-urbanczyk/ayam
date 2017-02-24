@@ -213,18 +213,18 @@ menu $m.cu -tearoff 0
 $m.cu add command -label "NURBCurve" -command {
     runTool {ay(nclen) ay(ncadda)} {"Length:" "AddArgs:"}\
 	"crtOb NCurve -length %0 %1; uCR; sL; notifyOb; rV;"\
-	"Create NCurve"
+	"Create NCurve" {ayam-6.html sccrtnc}
 } -underline 4
 #  ^^^^^^^^^^^ => C
 $m.cu add command -label "ICurve" -command {
     runTool {ay(iclen) ay(ncadda)} {"Length:" "AddArgs:"}\
 	"crtOb ICurve -length %0 %1; uCR; sL; notifyOb; rV;"\
-	"Create ICurve"
+	"Create ICurve" {ayam-6.html sccrtic}
 } -underline 0
 $m.cu add command -label "ACurve" -command {
     runTool {ay(aclen) ay(ncadda)} {"Length:" "AddArgs:"}\
 	"crtOb ACurve -length %0 %1; uCR; sL; notifyOb; rV;"\
-	"Create ACurve"
+	"Create ACurve" {ayam-6.html sccrtac}
 } -underline 0
 $m.cu add command -label "NCircle" -command {
     runTool {ay(ncircradius) ay(ncirctmin) ay(ncirctmax)}\
@@ -268,13 +268,13 @@ $m.su add command -label "NURBPatch" -command {
     runTool {ay(npwidth) ay(npheight) ay(npadda)}\
 	{"Width:" "Height:" "AddArgs:"}\
 	"crtOb NPatch -width %0 -height %1 %2; uCR; sL; notifyOb; rV;"\
-	"Create NPatch"
+	"Create NPatch" {ayam-6.html sccrtnp}
 } -underline 0
 $m.su add command -label "IPatch" -command {
     runTool {ay(ipwidth) ay(ipheight) ay(ipadda)}\
 	{"Width:" "Height:" "AddArgs:"}\
 	"crtOb IPatch -width %0 -height %1 %2; uCR; sL; notifyOb; rV;"\
-	"Create IPatch"
+	"Create IPatch" {ayam-6.html sccrtip}
 } -underline 0
 $m.su add command -label "BPatch" -command {
     crtOb BPatch; uCR; sL; notifyOb; rV;
