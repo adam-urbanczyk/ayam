@@ -703,13 +703,14 @@ proc tgui_open { } {
     set f $w.f1.fSamplingParamU
     $f.s conf -variable tgui_tessparam(SamplingParamU) -command tgui_update
     #trace variable tgui_tessparam(SamplingParamU) w tgui_update
-    bind $f.e <<CommitTG>> "if { \[$f.e get\] != \$tgui_tessparam(SamplingParamU) } {\
-	                         $f.s conf -command \"\"; \
-				 tgui_recalcslider 0 \[$f.e get\]; \
-				 $f.s set \[$f.e get\]; \
-				 set tgui_tessparam(SamplingParamU) \[$f.e get\]; \
-				 $f.s conf -command tgui_update; \
-			     };"
+    bind $f.e <<CommitTG>> "if { !\[string is double \[$f.e get\]\] } break;\
+                    if { \[$f.e get\] != \$tgui_tessparam(SamplingParamU) } {\
+	                 $f.s conf -command \"\"; \
+			 tgui_recalcslider 0 \[$f.e get\]; \
+			 $f.s set \[$f.e get\]; \
+			 set tgui_tessparam(SamplingParamU) \[$f.e get\]; \
+			 $f.s conf -command tgui_update; \
+		       };"
     if {$::tcl_platform(platform) == "windows" } {
 	bind $f.e <<CommitTG>> "+if { \"%K\" == \"Return\" } {break};"
 	bind $f.e <<CommitTG>> "+if { \"%K\" == \"KP_Enter\" } {break};"
@@ -718,13 +719,14 @@ proc tgui_open { } {
     set f $w.f1.fSamplingParamV
     $f.s conf -variable tgui_tessparam(SamplingParamV) -command tgui_update
     #trace variable tgui_tessparam(SamplingParamV) w tgui_update
-    bind $f.e <<CommitTG>> "if { \[$f.e get\] != \$tgui_tessparam(SamplingParamV) } {\
-	                         $f.s conf -command \"\"; \
-				 tgui_recalcslider 1 \[$f.e get\]; \
-				 $f.s set \[$f.e get\]; \
-				 set tgui_tessparam(SamplingParamV) \[$f.e get\]; \
-				 $f.s conf -command tgui_update; \
-			     };"
+    bind $f.e <<CommitTG>> "if { !\[string is double \[$f.e get\]\] } break;\
+                    if { \[$f.e get\] != \$tgui_tessparam(SamplingParamV) } {\
+	                 $f.s conf -command \"\"; \
+			 tgui_recalcslider 1 \[$f.e get\]; \
+			 $f.s set \[$f.e get\]; \
+			 set tgui_tessparam(SamplingParamV) \[$f.e get\]; \
+			 $f.s conf -command tgui_update; \
+		       };"
     if {$::tcl_platform(platform) == "windows" } {
 	bind $f.e <<CommitTG>> "+if { \"%K\" == \"Return\" } {break};"
 	bind $f.e <<CommitTG>> "+if { \"%K\" == \"KP_Enter\" } {break};"
