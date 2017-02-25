@@ -1886,9 +1886,9 @@ modelling mode (global or local, see also section
 <ref id="editlocal" name="Editing in Local Spaces">). Apart from a
 different icon, the local modes will display a L or O in the lower
 right corner of the icon.
-The icon, additionally, conveys whether objects or points will currently
-modified by a modelling action (for points, a red dot will be present
-in the upper right corner of the icon).
+The icon, additionally, conveys whether objects or points would be
+modified by a modelling action: for points, a red dot will be present
+in the upper right corner of the icon.
 Furthermore, the type of the view will be displayed in the upper left
 corner of the icon as letter F, S, T, or P for front, side, top, or
 perspective views, respectively. Views of type trim get no designating
@@ -12404,7 +12404,7 @@ for curves extracted from surfaces.
 <sect>NURBS Modelling Tools<label id="nmtool">
 <p>
 This section describes NURBS curve and surface related modelling
-tools.
+tools of Ayam.
 <p>
 Note that pressing the <tt/&lt;F1&gt;/ key in tool dialog windows
 can be used to directly jump to the appropriate
@@ -14655,7 +14655,7 @@ object type:
 <#if out="latex"><x/phantomsection/</#if>
 
   <itemize>
-  <item><tt/"NCurve"/: NURBS curves accept the following
+  <item><tt>"<bf>NCurve</bf>"</tt>: NURBS curves accept the following
 arguments:<label id="sccrtnc">
   <itemize>
   <item><tt/"-length"/: length of the new curve, the length defaults to 4.
@@ -14736,10 +14736,12 @@ vector, control points at -1 0 0, -0.5 0 0, 0 0 0, 0.5 0 0, 1 0 0
 In versions of Ayam prior to 1.17, NURBS curves only accepted the
 <tt/"-length"/ argument.
 
+See also section <ref id="ncurveobj" name="NCurve Object">.
+
 <#if out="latex"><x/newpage/<p></#if>
 <#if out="latex"><x/phantomsection/</#if>
 
-  <item><tt/"ICurve"/: Interpolating curves accept the following
+  <item><tt>"<bf>ICurve</bf>"</tt>: Interpolating curves accept the following
 arguments:<label id="sccrtic">
   <itemize>
 
@@ -14827,10 +14829,12 @@ straight upwards with length 0.5 in their respective end.
 In versions of Ayam prior to 1.17, interpolating curves only accepted the
 <tt/"-length"/ argument.
 
+See also section <ref id="icurveobj" name="ICurve Object">.
+
 <#if out="latex"><x/newpage/<p></#if>
 <#if out="latex"><x/phantomsection/</#if>
 
-  <item><tt/"ACurve"/: Approximating curves accept the following
+  <item><tt>"<bf>ACurve</bf>"</tt>: Approximating curves accept the following
 arguments:<label id="sccrtac">
   <itemize>
 
@@ -14894,10 +14898,12 @@ creates a centered approximating curve from 5 data points: -0.5 0 0,
 In versions of Ayam prior to 1.17, approximating curves only accepted the
 <tt/"-length"/ argument.
 
+See also section <ref id="acurveobj" name="ACurve Object">.
+
 <#if out="latex"><x/newpage/<p></#if>
 <#if out="latex"><x/phantomsection/</#if>
 
-  <item><tt/"NPatch"/: NURBS patches accept the following
+  <item><tt>"<bf>NPatch</bf>"</tt>: NURBS patches accept the following
 arguments:<label id="sccrtnp">
   <itemize>
   <item><tt/"-width"/: width of the new patch, the width defaults to 4.
@@ -15021,11 +15027,13 @@ a smooth shape).
 In versions of Ayam prior to 1.17, NURBS patches only accepted the
 <tt/"-width"/ and <tt/"-height"/ argument.
 
+See also section <ref id="npatchobj" name="NPatch Object">.
+
 <#if out="latex"><x/newpage/<p></#if>
 <#if out="latex"><x/phantomsection/</#if>
 
 
-  <item><tt/"IPatch"/: Interpolating patches accept the following
+  <item><tt>"<bf>IPatch</bf>"</tt>: Interpolating patches accept the following
 arguments:<label id="sccrtip">
   <itemize>
   <item><tt/"-width"/: width of the new patch, the width defaults to 4.
@@ -15140,9 +15148,13 @@ creates a 3D sheared version of the standard IPatch.
 creates a centered patch with width 3, height 3, uorder 3, and vorder 3.
 </enum>
 
+<p>
+See also section <ref id="ipatchobj" name="IPatch Object">.
+
 <#if out="latex"><x/newpage/</#if>
 
-  <item><tt/"PolyMesh"/: Polymeshes accept the following arguments:
+  <item><tt>"<bf>PolyMesh</bf>"</tt>: Polygonal meshes accept the following
+arguments:
   <itemize>
 
   <item><tt/"-polys"/: the value of this option specifies the number of
@@ -15213,11 +15225,15 @@ Undetected errors include: degenerated or non-planar polygons,
 hole loops geometrically outside or touching the outline loop, disagreeing
 loop winding orders between faces, non-manifold meshes, unused control points.
 Those errors may be problematic for further processing steps &ndash; some
-may go unnoticed in Ayam and will only be detected later in other applications.
+may even go unnoticed in Ayam and will only be detected later in other
+applications.
+<p>
+See also section <ref id="polymeshobj" name="PolyMesh Object">.
 
 <#if out="latex"><x/newpage/</#if>
 
-  <item><tt/"SDMesh"/: Subdivision meshes accept the following arguments:
+  <item><tt>"<bf>SDMesh</bf>"</tt>: Subdivision meshes accept the following
+arguments:
   <itemize>
 
   <item><tt/"-scheme"/: the value of this option specifies the subdivision
@@ -15303,15 +15319,19 @@ Undetected errors include: degenerated or non-planar faces,
 faces with unsuitable vertex counts (for the selected subdivision scheme),
 non-manifold meshes, unused control points, wrong tag arguments.
 Those errors may be problematic for further processing steps &ndash; some
-may go unnoticed in Ayam and will only be detected later in other applications.
+may even go unnoticed in Ayam and will only be detected later in other
+applications.
+<p>
+See also section <ref id="sdmeshobj" name="SDMesh Object">.
 
 <#if out="latex"><x/newpage/</#if>
 
-  <item><tt/"Level"/: Levels must be given an additional argument
-determining the type of the new level, this argument may be one of:
+  <item><tt>"<bf>Level</bf>"</tt>: these objects must be given an
+additional type argument, this argument
+may be one of:
 <tt/"0"/ (level), <tt/"1"/ (union), <tt/"2"/ (intersection),
 <tt/"3"/ (difference), or <tt/"4"/ (primitive).
-
+<p><p>
 Examples:
 <enum>
 <item><bf/<tt/"crtOb Level 0"//<newline>
@@ -15319,16 +15339,31 @@ creates a simple level object.
 <item><bf/<tt/"crtOb Level 3"//<newline>
 creates a CSG difference level object.
 </enum>
- <item><tt/"Material"/: Materials must be given an additional
-argument giving the name of the new material.
+<p>
+See also section <ref id="levelobj" name="Level Object">.
 
+ <item><tt>"<bf>Material</bf>"</tt>: Materials must be given an additional
+argument giving the name of the new material.
+<p><p>
 Example:
 <enum>
 <item><bf/<tt/"crtOb Material Wood"//<newline>
 creates a material named Wood.
 </enum>
+<p>
+See also section <ref id="materialobj" name="Material Object">.
 
- <item><tt/"Instance"/: creates an instance of the selected object.
+ <item><tt>"<bf>Instance</bf>"</tt>: creates an instance of the selected object.
+<p><p>
+Example:
+<enum>
+<item><bf/<tt/"crtOb Sphere; selOb -1; crtOb Instance"//<newline>
+creates a Sphere and an instance of it.
+</enum>
+
+<p>
+See also section <ref id="instanceobj" name="Instance Object">.
+
  <item>...
  </itemize>
  <item>Example: Create a sphere and update the GUI:
@@ -17929,7 +17964,7 @@ data array of the property.
 <p>
 The <tt/"paramname"/ parameter is the name of the parameter.
 <p>
-The <tt/"onoffvalues"/ parameter is a list of two values that will
+The optional <tt/"onoffvalues"/ parameter is a list of two values that will
 be used when setting the corresponding variable when the check-button is
 enabled or disabled.
 <item>Example:
