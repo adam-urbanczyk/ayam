@@ -148,7 +148,21 @@ proc actionSetMark { w { nextaction "" } } {
     bind $w <ButtonPress-1> {
 	%W mc
 	%W setconf -mark %x %y
+	set oldx %x
+	set oldy %y
     }
+    bind $w <ButtonRelease-1> {
+	%W setconf -rect $oldx $oldy %x %y 0
+	if { %x != $oldx || %y != $oldy } {
+	    %W setconf -mark %x %y $oldx $oldy
+	}
+    }
+
+    bind $w <B1-Motion> {
+	%W setconf -rect $oldx $oldy %x %y 1
+    }
+
+    bind $w <Motion> ""
 
     # if nextaction is not empty, we are an intermediate
     # action, embedded into some other action, which we arrange
