@@ -989,14 +989,12 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
  Tcl_Interp *interp = ay_interp;
  ay_object *o = NULL;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
- ay_list_object *sel;
- ay_pointedit pe = {0};
  int width = Togl_Width(togl);
  int height = Togl_Height(togl);
  int argi = 0, need_redraw = AY_TRUE, need_updatemark = AY_FALSE;
  double argd = 0.0, rotx = 0.0, roty = 0.0, rotz = 0.0;
  double old_rect_xmin, old_rect_ymin, old_rect_xmax, old_rect_ymax;
- double minlevelscale = 1.0, temp[3] = {0};
+ double temp[3] = {0};
  double dxw, dyw, t[3] = {0}, t2[2] = {0}, mm[16] = {0};
  int i = 2;
  int kbdact_in_progress = AY_FALSE;
@@ -1340,99 +1338,10 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 		}
 	      else
 		{
-		  Tcl_GetDouble(interp, argv[i+1], &view->markx);
-		  Tcl_GetDouble(interp, argv[i+2], &view->marky);
-		  sel = ay_selection;
-		  if(sel)
-		    {
-		      minlevelscale = ay_pact_getminlevelscale();
-		    }
-		  while(sel)
-		    {
-		      o = sel->object;
-		      ay_viewt_wintoobj(togl, o,
-					view->markx, view->marky,
-					&(t[0]), &(t[1]), &(t[2]));
-
-		      ay_status = ay_pact_pickpoint(o, view, minlevelscale,
-						    t, &pe);
-		      if(!ay_status && pe.coords)
-			{
-			  break;
-			}
-
-		      pe.rational = AY_FALSE;
-		      sel = sel->next;
-		    }
-		  if(pe.coords)
-		    {
-		      memcpy(t, pe.coords[0], 3*sizeof(double));
-
-		      /* to world */
-		      ay_trafo_identitymatrix(mm);
-		      ay_trafo_getall(ay_currentlevel, o, mm);
-
-		      ay_trafo_apply3(t, mm);
-		      view->markworld[0] = t[0];
-		      view->markworld[1] = t[1];
-		      view->markworld[2] = t[2];
-
-		      if(pe.rational && ay_prefs.rationalpoints)
-			{
-			  view->markworld[0] *= pe.coords[0][3];
-			  view->markworld[1] *= pe.coords[0][3];
-			  view->markworld[2] *= pe.coords[0][3];
-			}
-		    }
-		  else
-		    {
-		      if(view->usegrid)
-			ay_viewt_griddify(togl, &view->markx, &view->marky);
-		      ay_viewt_wintoworld(togl, view->markx, view->marky,
-					  &(temp[0]),
-					  &(temp[1]),
-					  &(temp[2]));
-
-		      switch(view->type)
-			{
-			case AY_VTFRONT:
-			case AY_VTTRIM:
-			  view->markworld[0] = temp[0];
-			  view->markworld[1] = temp[1];
-			  if(!ay_prefs.globalmark)
-			    view->markworld[2] = 0.0;
-			  break;
-			case AY_VTSIDE:
-			  if(!ay_prefs.globalmark)
-			    view->markworld[0] = 0.0;
-			  view->markworld[1] = temp[1];
-			  view->markworld[2] = temp[2];
-			  break;
-			case AY_VTTOP:
-			  view->markworld[0] = temp[0];
-			  if(!ay_prefs.globalmark)
-			    view->markworld[1] = 0.0;
-			  view->markworld[2] = temp[2];
-			  break;
-			default:
-			  /* XXXX output proper error message */
-			  break;
-			} /* switch */
-		    } /* if */
-
-		  view->drawmark = AY_TRUE;
-
-		  ay_pact_clearpointedit(&pe);
-
-		  ay_viewt_printmark(view);
-
-		  if(view->drawmark || ay_prefs.globalmark)
-		    {
-		      ay_viewt_updatemark(togl, /*local=*/AY_FALSE);
-		      need_updatemark = AY_FALSE;
-		    }
+		  need_updatemark = ay_viewt_markfromwin(togl,
+							 argc-3, &(argv[3]));
 		} /* if */
-	    } /* if */
+	    }
 	  break;
 	case 'n':
 	  /*if(!strcmp(argv[i], "-name"))*/
@@ -2429,6 +2338,201 @@ ay_viewt_setupintview(int viewnum, ay_object *o, ay_view_object *vtemp)
 
  return;
 } /* ay_viewt_setupintview */
+
+
+/* ay_viewt_markfromwin:
+ *  set mark from window coordinates
+ */
+int
+ay_viewt_markfromwin(struct Togl *togl, int argc, char *argv[])
+{
+ Tcl_Interp *interp = ay_interp;
+ int ay_status = AY_OK;
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
+ ay_object *o = NULL;
+ ay_list_object *sel = ay_selection;
+ ay_pointedit mpe = {0}, pe = {0};
+ double minlevelscale = 1.0, t[3] = {0}, mm[16] = {0};
+ double obj[24] = {0}, pl[16] = {0};
+ double winX1 = 0.0, winY1 = 0.0, winX2 = 0.0, winY2 = 0.0;
+ double xmin = DBL_MAX, xmax = -DBL_MAX, ymin = DBL_MAX;
+ double ymax = -DBL_MAX, zmin = DBL_MAX, zmax = -DBL_MAX;
+ int need_updatemark = AY_TRUE;
+ unsigned int i;
+
+  Tcl_GetDouble(interp, argv[0], &winX1);
+  Tcl_GetDouble(interp, argv[1], &winY1);
+
+  if(argc > 2)
+    {
+      Tcl_GetDouble(interp, argv[2], &winX2);
+      Tcl_GetDouble(interp, argv[3], &winY2);
+
+      while(sel)
+	{
+	  o = sel->object;
+	  ay_viewt_winrecttoobj(togl, o, winX1, winY1, winX2, winY2, obj);
+
+	  /* create plane equation coefficients */
+	  ay_geom_pointstoplane(obj[0], obj[1], obj[2],
+				 obj[3], obj[4], obj[5],
+				 obj[12], obj[13], obj[14],
+				 &(pl[0]), &(pl[1]), &(pl[2]), &(pl[3]));
+
+	  ay_geom_pointstoplane(obj[3], obj[4], obj[5],
+				 obj[9], obj[10], obj[11],
+				 obj[15], obj[16], obj[17],
+				 &(pl[4]), &(pl[5]), &(pl[6]), &(pl[7]));
+
+	  ay_geom_pointstoplane(obj[6], obj[7], obj[8],
+				 obj[18], obj[19], obj[20],
+				 obj[9], obj[10], obj[11],
+				 &(pl[8]), &(pl[9]), &(pl[10]), &(pl[11]));
+
+	  ay_geom_pointstoplane(obj[0], obj[1], obj[2],
+				 obj[12], obj[13], obj[14],
+				 obj[6], obj[7], obj[8],
+				 &(pl[12]), &(pl[13]), &(pl[14]), &(pl[15]));
+
+	  ay_status = ay_pact_getpoint(2, o, pl, &mpe);
+
+	  if(!ay_status && mpe.coords)
+	    {
+	      for(i = 0; i < mpe.num; i++)
+		{
+		  memcpy(t, mpe.coords[i], 3*sizeof(double));
+
+		  /* to world */
+		  ay_trafo_identitymatrix(mm);
+		  ay_trafo_getall(ay_currentlevel, o, mm);
+		  ay_trafo_apply3(t, mm);
+
+		  if(t[0] < xmin)
+		    xmin = t[0];
+		  if(t[0] > xmax)
+		    xmax = t[0];
+
+		  if(t[1] < ymin)
+		    ymin = t[1];
+		  if(t[1] > ymax)
+		    ymax = t[1];
+
+		  if(t[2] < zmin)
+		    zmin = t[2];
+		  if(t[2] > zmax)
+		    zmax = t[2];
+		} /* for */
+	    } /* if */
+
+	  ay_pact_clearpointedit(&mpe);
+
+	  pe.rational = AY_FALSE;
+	  sel = sel->next;
+	} /* while sel */
+
+      view->markworld[0] = xmin+((xmax-xmin)*0.5);
+      view->markworld[1] = ymin+((ymax-ymin)*0.5);
+      view->markworld[2] = zmin+((zmax-zmin)*0.5);
+    }
+  else
+    {
+      view->markx = winX1;
+      view->marky = winY1;
+
+      if(sel)
+	{
+	  minlevelscale = ay_pact_getminlevelscale();
+	}
+
+      while(sel)
+	{
+	  o = sel->object;
+
+	  ay_viewt_wintoobj(togl, o, winX1, winY1,
+			    &(t[0]), &(t[1]), &(t[2]));
+
+	  ay_status = ay_pact_pickpoint(o, view, minlevelscale, t, &pe);
+
+	  if(!ay_status && pe.coords)
+	    {
+	      break;
+	    }
+
+	  pe.rational = AY_FALSE;
+	  sel = sel->next;
+	} /* while sel */
+
+      if(pe.coords)
+	{
+	  memcpy(t, pe.coords[0], 3*sizeof(double));
+
+	  /* to world */
+	  ay_trafo_identitymatrix(mm);
+	  ay_trafo_getall(ay_currentlevel, o, mm);
+
+	  ay_trafo_apply3(t, mm);
+	  view->markworld[0] = t[0];
+	  view->markworld[1] = t[1];
+	  view->markworld[2] = t[2];
+
+	  if(pe.rational && ay_prefs.rationalpoints)
+	    {
+	      view->markworld[0] *= pe.coords[0][3];
+	      view->markworld[1] *= pe.coords[0][3];
+	      view->markworld[2] *= pe.coords[0][3];
+	    }
+	}
+      else
+	{
+	  if(view->usegrid)
+	    ay_viewt_griddify(togl, &view->markx, &view->marky);
+	  ay_viewt_wintoworld(togl, view->markx, view->marky,
+			      &(t[0]),
+			      &(t[1]),
+			      &(t[2]));
+
+	  switch(view->type)
+	    {
+	    case AY_VTFRONT:
+	    case AY_VTTRIM:
+	      view->markworld[0] = t[0];
+	      view->markworld[1] = t[1];
+	      if(!ay_prefs.globalmark)
+		view->markworld[2] = 0.0;
+	      break;
+	    case AY_VTSIDE:
+	      if(!ay_prefs.globalmark)
+		view->markworld[0] = 0.0;
+	      view->markworld[1] = t[1];
+	      view->markworld[2] = t[2];
+	      break;
+	    case AY_VTTOP:
+	      view->markworld[0] = t[0];
+	      if(!ay_prefs.globalmark)
+		view->markworld[1] = 0.0;
+	      view->markworld[2] = t[2];
+	      break;
+	    default:
+	      /* XXXX output proper error message */
+	      break;
+	    } /* switch */
+	} /* if */
+    } /* if */
+
+  view->drawmark = AY_TRUE;
+
+  ay_pact_clearpointedit(&pe);
+
+  ay_viewt_printmark(view);
+
+  if(view->drawmark || ay_prefs.globalmark)
+    {
+      ay_viewt_updatemark(togl, /*local=*/AY_FALSE);
+      need_updatemark = AY_FALSE;
+    }
+
+ return need_updatemark;
+} /* ay_viewt_markfromwin */
 
 
 /* ay_viewt_markfromsel:
