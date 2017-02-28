@@ -9401,7 +9401,7 @@ use the <tt/"Caps"/ property to create caps.
 surface when seen from the top of the parameter curve. Note that the
 size of the bevel is expressed in units defined by the object coordinate
 system of the controlling object. Scale values of the controlling object
-affect the bevel size. Negative values are allowed and reverse the
+also affect the bevel size. Negative values are allowed and reverse the
 surface.
 
 <item><tt/"Revert"/ allows to revert the sense of the bevelled surface,
@@ -10651,9 +10651,11 @@ the standard interactive modelling actions, like move or scale.
 Note, that upon provide or conversion the transformations from the
 Script object will be added to the transformations of the objects
 created by the script in the same way as by the delegate
-transformations tool, which fails for complex setups.
-However, this problem can be avoided by
-using the <tt/"applyTrafo"/ command on the created objects in the script.
+transformations tool, which fails for complex setups (e.g.~shear
+transformations).
+However, if the objects created by the script have editable points,
+this problem can be avoided by using the <tt/"applyTrafo"/ command
+in the script.
 
 <sect3>Conversion Support
 <p><#if out="latex">&nbsp;<newline></#if>
@@ -12235,7 +12237,7 @@ An UMM tag could look like this:
 <sect2>BP (Bevel Parameters) Tag<label id="bptag">
 <p>
 The tag type <tt/"BP"/ (bevel parameters) is used by all bevel
-supporting tool objects to store their bevel information.
+supporting tool objects to store their bevel parameter information.
 See also sections
 <ref id="bevelsprop" name="Bevels property"> and
 <ref id="bevelp" name="BevelAttr Property">.<newline>
@@ -12262,7 +12264,7 @@ A BP tag could look like this:
 <sect2>CP (Cap Parameters) Tag<label id="cptag">
 <p>
 The tag type <tt/"CP"/ (cap parameters) is used by all cap
-supporting tool objects to store their cap information.
+supporting tool objects to store their cap parameter information.
 See also sections
 <ref id="capsprop" name="Caps property"> and
 <ref id="capp" name="Capttr Property">.<newline>
@@ -14844,12 +14846,14 @@ arguments:<label id="sccrtac">
   <item><tt/"-length"/: length (number of data points to approximate)
 of the new curve, the length defaults to 4.
 
-  <item><tt/"-alength"/: number of control points to use for the
-approximating curve, the alength defaults to 3.
+  <item><tt/"-alength"/: number of NURBS control points to use for the
+approximating curve, must be smaller than the length above;
+this parameter defaults to length-1.
 
   <item><tt/"-order"/: order of the new curve, the order defaults to 3.
-If a value greater than the length is specified, the order will be made
-identical to the length value.
+If a value greater than the output length is specified, the order will be made
+identical to the output length value. Currently, only values larger than
+2 are supported.
 
   <item><tt/"-symmetric"/: toggles creation of symmetric curves,
 must be one of 0 &ndash; Asymmetric, 1 &ndash; Symmetric; default is 0.
@@ -14888,10 +14892,10 @@ This option is only in effect if no <tt/"-cv"/ option is specified.
 Examples:
 <enum>
 <item><bf/<tt/"crtOb ACurve -length 6"//<newline>
-creates an approximating curve from 6 data points: 0 0 0, 0.25 0 0, 0.5 0 0,
+creates an approximating curve from six data points: 0 0 0, 0.25 0 0, 0.5 0 0,
 0.75 0 0, 1 0 0, 1.25 0 0.
 <item><bf/<tt/"crtOb ACurve -l 5 -center 1"//<newline>
-creates a centered approximating curve from 5 data points: -0.5 0 0,
+creates a centered approximating curve from five data points: -0.5 0 0,
 -0.25 0 0, 0 0 0, 0.25 0 0, 0.5 0 0.
 </enum>
 <p>
@@ -15497,7 +15501,7 @@ hasChild:
  <item>Synopsis: <tt>"hasChild"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: This command returns 1 if the selected object
-has child objects, otherwise it returns 0. If multiple objects are
+has child objects, otherwise 0 is returned. If multiple objects are
 selected, a list is returned.
 </itemize>
 
@@ -15511,7 +15515,7 @@ hasMat &ndash; has material:
  <item>Synopsis: <tt>"hasMat"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: This command returns 1 if the selected object
-has a material assigned, otherwise it returns 0. If multiple objects are
+has a material assigned, otherwise 0 is returned. If multiple objects are
 selected, a list is returned.
 </itemize>
 
@@ -15524,7 +15528,7 @@ hasRefs &ndash; has references:
  <item>Synopsis: <tt>"hasRefs"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: This command returns 1 if the selected object
-has references (e.g.~it is a master), otherwise it returns 0.
+has references (e.g.~it is a master), otherwise 0 is returned.
 If multiple objects are selected, a list is returned.
 </itemize>
 
@@ -15537,7 +15541,7 @@ hasTrafo &ndash; has transformations:
  <item>Synopsis: <tt>"hasTrafo"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: This command returns 1 if the selected object
-has non-default transformation attributes, otherwise it returns 0.
+has non-default transformation attributes, otherwise 0 is returned.
 If multiple objects are selected, a list is returned.
 </itemize>
 
@@ -15550,7 +15554,8 @@ isCurve:
  <item>Synopsis: <tt>"isCurve"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: This command returns 1 if the selected object
-is (or provides/converts to) a parametric curve, otherwise it returns 0.
+is (or provides&thinsp;/&thinsp;converts to) a parametric curve, otherwise
+0 is returned.
 If multiple objects are selected, a list is returned.
 </itemize>
 
@@ -15563,7 +15568,8 @@ isSurface:
  <item>Synopsis: <tt>"isSurface"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: This command returns 1 if the selected object
-is (or provides/converts to) a parametric surface, otherwise it returns 0.
+is (or provides&thinsp;/&thinsp;converts to) a parametric surface, otherwise
+0 is returned.
 If multiple objects are selected, a list is returned.
 </itemize>
 
@@ -15704,8 +15710,8 @@ getProperty &ndash; get single property value
  <item>Synopsis: <tt/"getProperty propname(elemname) varname"/
  <item>Background: Yes, Undo: No, Safe: Yes, Type: Procedure
  <item>Description: This procedure gets a single property element
-named elemname from the property named propname of the currently
-selected object and writes the result into the variable named varname.
+named <tt/elemname/ from the property named <tt/propname/ of the currently
+selected object and writes the result into the variable named <tt/varname/.
 Multiple selected objects are supported and lead to a list of values
 produced in the output variable.<footnote>Since 1.21.</footnote>
  <item>Notes: This procedure runs more slowly than calling the appropriate
@@ -15737,8 +15743,8 @@ setProperty &ndash; set single property value
  <item>Synopsis: <tt/"setProperty propname(elemname) value"/
  <item>Background: Yes, Undo: Yes, Safe: Yes, Type: Procedure
  <item>Description: This procedure sets a single property element
-named elemname of the property named propname for the currently
-selected object to the new value given in value.
+named <tt/elemname/ of the property named <tt/propname/ for the currently
+selected object to the new value given in <tt/value/.
 Multiple selected objects are supported.<footnote>Since 1.21.</footnote>
  <item>Notes: This procedure runs more slowly than accessing the data array
 that is associated with a property and calling the appropriate set-procedure
@@ -15852,8 +15858,8 @@ copyProp &ndash; copy a property to the property clipboard
  <item>Background: Yes, Undo: No, Safe: No, Type: Procedure
  <item>Description: Copy the currently selected property from the
 currently selected object to the property clipboard.
-If mode is 0 (default), all marked entries will be omitted.
-If mode is 1 only the marked entries will be copied.
+If <tt/mode/ is 0 (default), all marked entries will be omitted.
+If <tt/mode/ is 1 only the marked entries will be copied.
 Property entries are usually marked by double clicks
 on the respective entry labels but they can also be marked programmatically
 by adding the respective property element names to the global array
@@ -15883,9 +15889,9 @@ goDown:
 <itemize>
  <item>Synopsis: <tt/"goDown index"/
  <item>Background: Yes, Undo: No, Safe: Yes
- <item>Description: Enter the object determined by index. If index is 0
-and the current level is inside some other object (not the root)
-the parent level will be entered instead. If index is -1, the last
+ <item>Description: Enter the object determined by <tt/index/. If
+<tt/index/ is 0 and the current level is inside some object
+the parent level will be entered instead. If <tt/index/ is -1, the last
 object of the current level will be entered.
 </itemize>
 
@@ -18303,8 +18309,8 @@ addToProc:
 <itemize>
  <item>Synopsis: <tt>"addToProc procedure addition"</tt>
  <item>Background: Yes, Undo: No, Safe: No, Type: Procedure
- <item>Description: This procedure adds the code from addition to
-the procedure procedure.
+ <item>Description: This procedure adds the code from <tt/addition/ to
+the Tcl procedure <tt/procedure/.
  <item>Note: This procedure uses the introspection facilities of
 Tcl and works only correctly for procedures, that end with
 a single <tt>"return;"</tt> statement.
@@ -19113,7 +19119,7 @@ The script currently supports the following seeds and operations
 The Platonic solids are denoted T, O, C, I, and D, according to their
 first letter. Other polyhedra which are implemented here include prisms:
 Pn, antiprisms: An, and pyramids: Yn, where n is a number (3 or greater)
-which must be specified to indicate the size of the base, e.g.,
+which must be specified to indicate the size of the base, e.g.~,
 Y3=T, P4=C, and A3=O.
 <p>
 <bf/Operations:/<newline>
