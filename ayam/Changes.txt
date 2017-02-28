@@ -1,5 +1,16 @@
-[24. Jan 2017 Ayam 1.24:
+[28. Feb 2017] CVS-Head:
 ========================
+Bug Fixes:
+o entering non number data to tesselation parameter entries (SF 554)
+
+
+Modelling:
+o the set mark action now supports drag selection of multiple points,
+  setting the mark to their bounding box center
+
+
+[24. Jan 2017] Ayam 1.24:
+=========================
 Bug Fixes:
 o added missing scripting interface commands to JavaScript and Lua scripting
   language plugins (SF 526)
