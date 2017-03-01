@@ -180,7 +180,7 @@ completely eliminating the need for BMRT. Furthermore, shader parsing
 plugins are available for all major RenderMan compliant renderers allowing
 a tight integration of Ayam with any of those renderers.
 
-<sect2>Coordinate Systems and Units
+<sect2>Coordinate Systems and Units<label id="coords">
 <p>
 Ayam uses a right-handed coordinate system as used by OpenGL
 but as opposed to RenderMan (the latter is using a left-handed
@@ -2595,6 +2595,7 @@ settings since Ayam 1.14, see section
 The next section of the preferences, <tt/"Modelling"/,
 contains modelling related settings:
 <itemize>
+
 <item><tt/"PickEpsilon"/ is used by the single point editing actions
 (see section <ref id="editac" name="Editing Points">)
 to determine which point of an object has been selected.
@@ -2607,6 +2608,10 @@ a smaller value will be used (and vice versa).
 In older versions of Ayam (prior to 1.8), a value of 0.0 was
 allowed and default. This is no longer the case, the new default
 value is 0.05.
+
+<item><tt/"HandleSize"/ controls the drawing size of editable points. Note,
+that there is no check, whether the size value is supported by the
+OpenGL implementation used.
 
 <item><tt/"LazyNotify"/ determines whether notification shall
 occur on all mouse movements or just on release of the mouse button,
@@ -2674,6 +2679,8 @@ homogeneous style.
 <caption>Euclidean (left) vs.~Homogeneous (right) Display of Rational Points</caption>
 </figure>
 <p>
+
+<#if out="latex"><x/newpage/</#if>
 
 <item><tt/"GlobalMark"/ toggles whether each view should manage its
 own mark (off), or whether there should be just one global
@@ -12267,7 +12274,7 @@ The tag type <tt/"CP"/ (cap parameters) is used by all cap
 supporting tool objects to store their cap parameter information.
 See also sections
 <ref id="capsprop" name="Caps property"> and
-<ref id="capp" name="Capttr Property">.<newline>
+<ref id="capp" name="CapAttr Property">.<newline>
 The syntax of the CP tag is:
 <tscreen><tt>
 "&lt;side&gt;,&lt;type&gt;,&lt;integrate&gt;,&lt;fraction&gt;"
@@ -15330,10 +15337,10 @@ See also section <ref id="sdmeshobj" name="SDMesh Object">.
 
 <#if out="latex"><x/newpage/</#if>
 
-  <item><tt>"<bf>Level</bf>"</tt>: these objects must be given an
+  <item><tt>"<bf>Level</bf>"</tt>: these objects can be given an
 additional type argument, this argument
 may be one of:
-<tt/"0"/ (level), <tt/"1"/ (union), <tt/"2"/ (intersection),
+<tt/"0"/ (level - default), <tt/"1"/ (union), <tt/"2"/ (intersection),
 <tt/"3"/ (difference), or <tt/"4"/ (primitive).
 <p><p>
 Examples:
@@ -15893,6 +15900,9 @@ goDown:
 <tt/index/ is 0 and the current level is inside some object
 the parent level will be entered instead. If <tt/index/ is -1, the last
 object of the current level will be entered.
+ <item>Example: <bf/<tt/"crtOb Level; goDown -1; crtOb Sphere"//
+creates a simple Level, enters it, and creates a Sphere as child of
+this level.
 </itemize>
 
 <p>
@@ -23296,6 +23306,7 @@ Index:
 <label id="indexh"><tt/&nbsp;&nbsp;<bf/H//
 <list>
 <item>Half Size: <ref id="vmconf" name="view menu entry">
+<item>handedness: <ref id="coords" name="Coordinate Systems and Units">
 <item>HandleSize: <ref id="prefmodel" name="preference setting">
 <item>hasChild: <ref id="schaschild" name="scripting interface command">
 <item>hasMat: <ref id="schasmat" name="scripting interface command">
