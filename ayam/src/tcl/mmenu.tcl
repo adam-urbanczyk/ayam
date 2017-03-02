@@ -494,7 +494,9 @@ $m.nct add cascade -menu $m.nct.kn -label "Knots" -underline 0
 menu $m.nct.kn -tearoff 0
 
 $m.nct.kn add command -label "Insert Knot" -command {
-    getProp; set ay(okn) $::NCurveAttrData(Knots);
+    getType ay(typ) 1; if { $ay(typ) == "NCurve" } {
+	getProp; set ay(okn) $::NCurveAttrData(Knots);
+    }
     runTool [list ay(okn) ay(insknu) ay(insknr)]\
 	[list "Old knots:" "Insert knot at:" "Insert times:"]\
 	"undo save InsKn; insknNC %1 %2; plb_update; rV"\
@@ -502,7 +504,9 @@ $m.nct.kn add command -label "Insert Knot" -command {
 } -underline 0
 
 $m.nct.kn add command -label "Remove Knot" -command {
-    getProp; set ay(okn) $::NCurveAttrData(Knots);
+    getType ay(typ) 1; if { $ay(typ) == "NCurve" } {
+	getProp; set ay(okn) $::NCurveAttrData(Knots);
+    }
     runTool [list ay(okn) ay(remknu) ay(remknr) ay(remtol)]\
 	[list "Old knots:" "Remove knot:" "Remove times:" "Tolerance:"]\
 	"undo save RemKn; remknNC %1 %2 %3; plb_update; rV"\
@@ -513,7 +517,9 @@ $m.nct.kn add command -label "Refine Knots" -command { undo save RefineKn;
     refineknNC; plb_update; rV } -underline 1
 
 $m.nct.kn add command -label "Refine Knots with" -command {
-    getProp; set ay(okn) $::NCurveAttrData(Knots); ncurve_getrknots;
+    getType ay(typ) 1; if { $ay(typ) == "NCurve" } {
+	getProp; set ay(okn) $::NCurveAttrData(Knots); ncurve_getrknots;
+    }
     runTool [list ay(okn) ay(refinekn)] {"Old Knots:" "New Knots:"}\
 	"undo save RefineKn; refineknNC \{%1\}; plb_update; rV"\
         "Refine Knots" refknit
@@ -696,7 +702,9 @@ $m.npt.kn add command -label "Insert Knot V" -command {
 }
 
 $m.npt.kn add command -label "Remove Knot U" -command {
-    getProp; set ay(okn) $::NPatchAttrData(Knots_U);
+    getType ay(typ) 1; if { $ay(typ) == "NPatch" } {
+	getProp; set ay(okn) $::NPatchAttrData(Knots_U);
+    }
     runTool [list ay(okn) ay(remknu) ay(remknr) ay(remtol)]\
 	[list "Old knots:" "Remove knot:" "Remove times:" "Tolerance:"]\
 	"undo save RemKnU; remknuNP %1 %2 %3; plb_update; rV"\
@@ -704,7 +712,9 @@ $m.npt.kn add command -label "Remove Knot U" -command {
 }
 
 $m.npt.kn add command -label "Remove Knot V" -command {
-    getProp; set ay(okn) $::NPatchAttrData(Knots_V);
+    getType ay(typ) 1; if { $ay(typ) == "NPatch" } {
+	getProp; set ay(okn) $::NPatchAttrData(Knots_V);
+    }
     runTool [list ay(okn) ay(remknu) ay(remknr) ay(remtol)]\
 	[list "Old knots:" "Remove knot:" "Remove times:" "Tolerance:"]\
 	"undo save RemKnV; remknvNP %1 %2 %3; plb_update; rV"\
@@ -716,7 +726,9 @@ $m.npt.kn add command -label "Refine Knots U" -command {
 }
 
 $m.npt.kn add command -label "Refine Knots U with" -command {
-    getProp; set ay(okn) $::NPatchAttrData(Knots_U); npatch_getrknotsu;
+    getType ay(typ) 1; if { $ay(typ) == "NPatch" } {
+	getProp; set ay(okn) $::NPatchAttrData(Knots_U); npatch_getrknotsu;
+    }
     runTool [list ay(okn) ay(refineknu)] {"Old Knots:" "New Knots:"}\
 	"undo save RefineKnUNP; refineuNP \{%1\}; plb_update; rV"\
         "Refine Knots U" refinest
@@ -727,7 +739,9 @@ $m.npt.kn add command -label "Refine Knots V" -command {
 }
 
 $m.npt.kn add command -label "Refine Knots V with" -command {
-    getProp; set ay(okn) $::NPatchAttrData(Knots_V); npatch_getrknotsv;
+    getType ay(typ) 1; if { $ay(typ) == "NPatch" } {
+	getProp; set ay(okn) $::NPatchAttrData(Knots_V); npatch_getrknotsv;
+    }
     runTool [list ay(okn) ay(refineknv)] {"Old Knots:" "New Knots:"}\
 	"undo save RefineKnVNP; refinevNP \{%1\}; plb_update; rV"\
         "Refine Knots V" refinest
