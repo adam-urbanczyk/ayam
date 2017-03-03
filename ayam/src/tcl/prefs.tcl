@@ -234,6 +234,8 @@ proc prefs_open {} {
     addColorB $fw ayprefse Shade [ms ayprefse_Shade]
     addColorB $fw ayprefse Light [ms ayprefse_Light]
 
+    uie_setLabelWidth $fw 15
+
     # RIB Export
     set fw [$nb insert end RIB-Export -text RIB-Export\
 	    -raisecmd "prefs_rsnb $nb RIB-Export"]
@@ -314,6 +316,8 @@ proc prefs_open {} {
 	    $ay(smethods)
     addParamB $fw ayprefse SParamU [ms ayprefse_SParam] { 10 0.5 1 30 }
     addParamB $fw ayprefse SParamV [ms ayprefse_SParam] { 10 0.5 1 30 }
+
+    uie_setLabelWidth $fw 16
 
     # end of PrefsGUIs
 
