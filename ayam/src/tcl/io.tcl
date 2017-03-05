@@ -1417,7 +1417,7 @@ proc io_exportScene { filename } {
 	    set export_cmd "${plugin}_export"
 
 	    # see if export command exists
-	    if { ! [info exists $export_cmd] } {
+	    if { [llength [info commands $export_cmd]] > 0 } {
 		# export command not available => attempt to load the plugin
 		io_lcAuto $plugin
 	    }
