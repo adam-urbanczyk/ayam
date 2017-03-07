@@ -1,13 +1,18 @@
-[readme.txt - 16. Jan 2015]
+[readme.txt - 7. Mar 2017]
 
 This directory contains a collection of various plugins for Ayam.
 
 This file gives just an overview about what is here; for more complete
-documentation please refer to the main Ayam documentation.
+documentation please refer to the main Ayam documentation:
+http://ayam.sourceforge.net/docs/ayam-8.html#plugov
+.
 
-The plugins can be grouped in five categories, shader parsing plugins,
-import/export plugins, object type plugins, scripting language plugins, and
-miscellaneous helper plugins.
+The plugins can be grouped in five categories:
+1) shader parsing plugins,
+2) import/export plugins,
+3) object type plugins,
+4) scripting language plugins, and
+5) modelling helper plugins.
 
 Shader Parsing Plugins
 ----------------------
@@ -50,8 +55,8 @@ jsinterp - JavaScript plugin
 luainterp - Lua plugin
 
 
-Misc
-----
+Modelling Helper Plugins
+------------------------
 
 aycsg - CSG preview using OpenCSG
 idr - importance driven rendering
