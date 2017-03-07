@@ -22128,7 +22128,7 @@ setting (used if no ayamrc file exists).
 This section serves as a overview of the various plugins available
 in Ayam.
 <p>
-There are currently four major types of plugins for Ayam:
+There are currently five major types of plugins for Ayam:
 <descrip>
 <tag/shader parsing plugins/
 aysdr, ayslb, ayslc, ayslo, ayslo3d, ayslx, ayso.
@@ -22145,12 +22145,16 @@ dxfio, mfio, mopsi, objio, onio, rrib, x3dio.
 
 See also section <ref id="impex" name="Import and Export">.
 
-<tag/modelling helper plugins/
+<tag>scripting language plugins</tag>
 <itemize>
 <item>jsinterp &ndash; JavaScript scripting interface
 (see section <ref id="jsinterp" name="JavaScript Scripting Interface">),
 <item>luainterp &ndash; Lua scripting interface
-(see section <ref id="luainterp" name="Lua Scripting Interface">),
+(see section <ref id="luainterp" name="Lua Scripting Interface">).
+</itemize>
+
+<tag/modelling helper plugins/
+<itemize>
 <item>AyCSG &ndash; CSG rendering
 (see section <ref id="aycsg" name="CSG preview using the AyCSG plugin">),
 <item>IDR &ndash; Importance Driven Rendering
