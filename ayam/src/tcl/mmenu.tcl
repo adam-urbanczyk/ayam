@@ -14,7 +14,7 @@
 #
 proc mmenu_open { w } {
 
-global ay AYWITHAQUA
+global ay ayprefs AYWITHAQUA
 
 if { ! $AYWITHAQUA } {
     frame $w.fMenu -bd 2 -relief raised
@@ -42,9 +42,7 @@ if { ! $AYWITHAQUA } {
 
 set ay(filemenu) $m
 
-$m add command -label "New"\
-	-command {
-    global ay ayprefs tcl_platform
+$m add command -label "New" -command {
     if { ! [io_warnChanged] } {
 	cS; plb_update; goTop
 	set ay(CurrentLevel) "root"
@@ -95,20 +93,25 @@ $m add separator
 $m add command -label "Load Plugin" -command "io_loadCustom" -underline 0
 $m add separator
 $m add command -label "Save Prefs" -command "prefs_save" -underline 5
+
 $m add separator
-global ayprefs
+
 set label "1. [lindex $ayprefs(mru) 0]"
-$m add command -label $label -command { global ay
-if { ! [io_warnChanged] } {io_mruLoad 0}} -underline 0
+$m add command -label $label -command {
+    if { ! [io_warnChanged] } { io_mruLoad 0 }
+} -underline 0
 set label "2. [lindex $ayprefs(mru) 1]"
-$m add command -label $label -command { global ay
-if { ! [io_warnChanged] } {io_mruLoad 1}} -underline 0
+$m add command -label $label -command {
+    if { ! [io_warnChanged] } { io_mruLoad 1 }
+} -underline 0
 set label "3. [lindex $ayprefs(mru) 2]"
-$m add command -label $label -command { global ay
-if { ! [io_warnChanged] } {io_mruLoad 2}} -underline 0
+$m add command -label $label -command {
+    if { ! [io_warnChanged] } { io_mruLoad 2 }
+} -underline 0
 set label "4. [lindex $ayprefs(mru) 3]"
-$m add command -label $label -command { global ay
-if { ! [io_warnChanged] } {io_mruLoad 3}} -underline 0
+$m add command -label $label -command {
+    if { ! [io_warnChanged] } { io_mruLoad 3 }
+} -underline 0
 $m add separator
 $m add command -label "Exit!" -command io_exit -underline 1
 
@@ -126,20 +129,23 @@ if { ! $AYWITHAQUA } {
     $mb add cascade -label "Edit" -menu $m -underline 0
 }
 set ay(editmenu) $m
-$m add command -label "Copy" -command {copOb} -underline 0
-$m add command -label "Cut" -command {cutOb; cS; notifyOb -parent;
-global ay; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1} -underline 2
-$m add command -label "Paste" -command {global ay; pasOb; uCR;
-    sL $ay(ucrcount); notifyOb -parent; rV; set ay(sc) 1} -underline 0
-$m add command -label "Delete" -command {delOb; cS; notifyOb -parent;
-global ay; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1} -underline 0
+$m add command -label "Copy" -command { copOb } -underline 0
+$m add command -label "Cut" -command {
+    cutOb; cS; notifyOb -parent;
+    set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1
+} -underline 2
+$m add command -label "Paste" -command {
+    pasOb; uCR; sL $ay(ucrcount); notifyOb -parent; rV; set ay(sc) 1
+} -underline 0
+$m add command -label "Delete" -command {
+    delOb; cS; notifyOb -parent; set ay(ul) $ay(CurrentLevel); uS;
+    rV; set ay(sc) 1
+} -underline 0
 $m add separator
 $m add command -label "Select All" -command {
-    global ay
     if { $ay(lb) == 0 } {
 	set tree $ay(tree)
 	set nodes [$tree nodes $ay(CurrentLevel)]
-
 	if { $ay(CurrentLevel) == "root" } {
 	    set nodes [lrange $nodes 1 end]
 	}
@@ -161,18 +167,18 @@ $m add command -label "Select All" -command {
 } -underline 8
 #  ^^^^^^^^^^^ l
 $m add command -label "Select None" -command {
-    cS
-    plb_update
+    cS; plb_update
     if { $ay(need_redraw) == 1 } {
 	rV
     }
 } -underline 7
 #  ^^^^^^^^^^^ n
 $m add separator
-$m add command -label "Copy Property" -command {pclip_copy 0}
-$m add command -label "Copy Marked Prop" -command {pclip_copy 1}
-$m add command -label "Paste Property" -command {global ay;
-pclip_paste; set ay(sc) 1}
+$m add command -label "Copy Property" -command { pclip_copy 0 }
+$m add command -label "Copy Marked Prop" -command { pclip_copy 1 }
+$m add command -label "Paste Property" -command {
+    pclip_paste; set ay(sc) 1
+}
 $m add separator
 $m add command -label "Undo" -command {
     set oldfocus [focus]
@@ -185,16 +191,15 @@ $m add command -label "Redo" -command {
     after idle "focus $oldfocus"
 } -underline 0
 $m add separator
-$m add command -label "Material" -command {material_edit;} -underline 0
-$m add command -label "Master" -command {instance_edit;} -underline 1
+$m add command -label "Material" -command { material_edit } -underline 0
+$m add command -label "Master" -command { instance_edit } -underline 1
 $m add separator
-$m add command -label "Search" -command {objectsearch_open;} -underline 1
+$m add command -label "Search" -command { objectsearch_open } -underline 1
 $m add separator
-$m add command -label "Preferences" -command {prefs_open; rV} -underline 3
+$m add command -label "Preferences" -command { prefs_open; rV } -underline 3
 
 if { ! $AYWITHAQUA } {
     pack $w.fMenu.ed -in $w.fMenu -side left
-
     # Create
     menubutton $w.fMenu.cr -text "Create" -menu $w.fMenu.cr.m -padx 3\
 	-underline 0
@@ -260,8 +265,6 @@ $m.cu add command -label "OffsetNC" -command "level_crt OffsetNC \"\" -1;" \
 $m.cu add command -label "ExtrNC" -command "level_crt ExtrNC \"\" -1;" \
     -underline 1
 
-
-
 $m add cascade -menu $m.su -label "Surface" -underline 0
 menu $m.su -tearoff 0
 $m.su add command -label "NURBPatch" -command {
@@ -295,10 +298,10 @@ $m.su add command -label "NURBSphere" -command {
 
 $m.su add command -label "Revolve" -command "level_crt Revolve;" -underline 0
 $m.su add command -label "Extrude" -command "level_crt Extrude;" -underline 0
-$m.su add command -label "Sweep" -command\
-    "level_crt Sweep; sweep_rotcross" -underline 1
-$m.su add command -label "Swing" -command\
-    "level_crt Swing; swing_rotcross;" -underline 4
+$m.su add command -label "Sweep" -command "level_crt Sweep; sweep_rotcross"\
+    -underline 1
+$m.su add command -label "Swing" -command "level_crt Swing; swing_rotcross;"\
+    -underline 4
 $m.su add command -label "Cap" -command "level_crt Cap;" -underline 1
 $m.su add command -label "Bevel" -command "level_crt Bevel;" -underline 2
 $m.su add command -label "Birail1" -command "level_crt Birail1;" -underline 6
@@ -395,7 +398,6 @@ $m add command -label "Text" \
 
 if { ! $AYWITHAQUA } {
     pack $w.fMenu.cr -in $w.fMenu -side left
-
     # Tools
     menubutton $w.fMenu.tool -text "Tools" -menu $w.fMenu.tool.m -padx 3\
 	-underline 0
@@ -828,21 +830,21 @@ $m.pm add command -label "Connect" -command {
 } -underline 0
 $m.pm add separator
 $m.pm add command -label "Gen. Face Normals" -command {
-    undo save GenFaceNorm; genfnPo; rV; plb_update }\
-    -underline 5
+    undo save GenFaceNorm; genfnPo; rV; plb_update
+} -underline 5
 $m.pm add command -label "Gen. Smooth Normals" -command {
-    undo save GenSmoothNorm; gensnPo; rV; plb_update }\
-    -underline 0
+    undo save GenSmoothNorm; gensnPo; rV; plb_update
+} -underline 0
 $m.pm add command -label "Rem. Smooth Normals" -command {
-    undo save RemSmoothNorm; remsnPo; rV; plb_update }\
-    -underline 0
+    undo save RemSmoothNorm; remsnPo; rV; plb_update
+} -underline 0
 $m.pm add command -label "Flip Smooth Normals" -command {
-    undo save FlipSmoothNorm; flipPo 1; rV }\
-    -underline 0
+    undo save FlipSmoothNorm; flipPo 1; rV
+} -underline 0
 $m.pm add separator
 $m.pm add command -label "Flip Loops" -command {
-    undo save FlipLoops; flipPo 2; rV }\
-    -underline 1
+    undo save FlipLoops; flipPo 2; rV
+} -underline 1
 
 
 $m add separator
@@ -857,40 +859,33 @@ $sm add command -label "Invert Selection" -command "invPnts; rV" \
     -underline 0
 
 $sm add separator
-$sm add command -label "Collapse Points" -command {collMP; rV; set ay(sc) 1}
-$sm add command -label "Explode Points" -command {explMP; rV; set ay(sc) 1}
+
+$sm add command -label "Collapse Points" -command {collMP; rV; set ay(sc) 1}\
+    -underline 0
+$sm add command -label "Explode Points" -command {explMP; rV; set ay(sc) 1}\
+    -underline 0
+
 $sm add separator
 
 $sm add command -label "Apply Trafo To All Points"\
-	-command "undo save ApplyTrafo; applyTrafo;\
-	 plb_update; notifyOb; rV" \
+    -command "undo save ApplyTrafo; applyTrafo; plb_update; notifyOb; rV" \
     -underline 0
-
 $sm add command -label "Apply Trafo To Selected Points"\
-	-command "undo save ApplyTrafo; applyTrafo -sel;\
-	plb_update; notifyOb; rV" \
+    -command "undo save ApplyTrafo; applyTrafo -sel; plb_update; notifyOb; rV" \
     -underline 1
-
 $sm add command -label "Center All Points (3D)"\
-	-command "undo save CenterPnts; centerPnts;\
-	plb_update; rV" \
-    -underline 0
-
+    -command "undo save CenterPnts; centerPnts; plb_update; rV" \
+    -underline 1
 $sm add command -label "Center All Points (2D-XY)"\
-	-command "undo save CenterPntsXY; centerPnts 1;\
-	plb_update; rV" \
+	-command "undo save CenterPntsXY; centerPnts 1;	plb_update; rV" \
     -underline 22
 #    ^^^^^^^^^^^^ => X
-
 $sm add command -label "Center All Points (2D-ZY)"\
-	-command "undo save CenterPntsZY; centerPnts 2;\
-	plb_update; rV" \
+	-command "undo save CenterPntsZY; centerPnts 2;	plb_update; rV" \
     -underline 23
 #    ^^^^^^^^^^^^ => Y
-
 $sm add command -label "Center All Points (2D-XZ)"\
-	-command "undo save CenterPntsXZ; centerPnts 3;\
-	plb_update; rV" \
+	-command "undo save CenterPntsXZ; centerPnts 3;	plb_update; rV" \
     -underline 23
 #    ^^^^^^^^^^^^ => Z
 
@@ -961,7 +956,6 @@ $m.nc add command -label "Trim" -command "level_crt Trim;" -underline 3
 $m add separator
 
 $m add command -label "Hide/Show" -command {
-    global ay
     undo save HideShow
     hideOb -t
     set ay(ul) $ay(CurrentLevel); uS 1 1; rV
@@ -972,11 +966,10 @@ $m add command -label "Show All" -command "showOb -all; uS 1 1; rV" \
     -underline 3
 $m add separator
 $m add command -label "Convert" -command {
-    global ay
-    convOb; update; cS; notifyOb; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1
+    convOb; update; cS; notifyOb;
+    set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1
 } -underline 3
 $m add command -label "Convert (In Place)" -command {
-    global ay
     set ay(need_undo_clear) 0
     forAll -recursive 0 { if { [hasChild] } { set ::ay(need_undo_clear) 1 } }
     if { $ay(need_undo_clear) == 0 } { undo save Convert }
@@ -1002,7 +995,6 @@ if { ! $AYWITHAQUA } {
 	-underline 0
     set m [menu $w.fMenu.spec.m -tearoff 0]
     pack $w.fMenu.spec -in $w.fMenu -side left
-
 } else {
     # Custom
     set m [menu $mb.mcust -tearoff 0]
@@ -1021,15 +1013,17 @@ $m add command -label "Save Environment" -command "io_saveEnv" \
 
 $m add cascade -menu $m.clp -label "Clipboard" -underline 0
 set sm [menu $m.clp -tearoff 0]
-$sm add command -label "Paste (Move)" -command {pasOb -move; cS;
-global ay; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1} -underline 0
-$sm add command -label "Replace" -command {repOb; cS;
-global ay; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1} -underline 0
+$sm add command -label "Paste (Move)" -command {
+    pasOb -move; cS; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1
+} -underline 0
+$sm add command -label "Replace" -command {
+    repOb; cS; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1
+} -underline 0
 $sm add command -label "Copy (Add)" -command {copOb -add} -underline 1
 $sm add command -label "Cut (Add)" -command {cutOb -add} -underline 1
 $sm add command -label "Clear" -command "clearClip" -underline 1
 $sm add separator
-$sm add command -label "Paste Property to Selected"\
+$sm add command -label "Paste Property to Selected" \
     -command "pclip_pastetosel; notifyOb; rV" -underline 18
 
 $m add cascade -menu $m.ins -label "Instances" -underline 0
@@ -1047,13 +1041,15 @@ $sm add command -label "Add RiAttribute" -command "riattr_addp" -underline 6
 # a
 $sm add command -label "Edit TexCoords" -command "tc_edit" -underline 5
 # t
-$sm add command -label "Add Property" -command "plb_addremprop " -underline 4
+$sm add command -label "Add Property" -command "plb_addremprop" -underline 4
 # p
-$sm add command -label "Remove Property" -command "plb_addremprop 1"\
- -underline 0
+
+$sm add command -label "Remove Property" -command "plb_addremprop 1" \
+    -underline 0
+
 # r
-$sm add command -label "Add Tag" -command "addTagp"\
- -underline 6
+$sm add command -label "Add Tag" -command "addTagp" \
+    -underline 6
 # g
 
 #$m add command -label "Create ShadowMaps" -command "riopt_addp"
@@ -1102,11 +1098,10 @@ $m add command -label "Zap Ayam" -command "zap" -underline 0
 
 if { ! $AYWITHAQUA } {
     # Help
-    menubutton $w.fMenu.hlp -text "Help" -menu $w.fMenu.hlp.m -padx 3\
+    menubutton $w.fMenu.hlp -text "Help" -menu $w.fMenu.hlp.m -padx 3 \
 	-underline 0
     set m [menu $w.fMenu.hlp.m -tearoff 0]
     pack $w.fMenu.hlp -in $w.fMenu -side right
-
 } else {
     # Help
     set m [menu $mb.help -tearoff 0]
