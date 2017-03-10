@@ -13399,13 +13399,14 @@ the selected objects to it, and rotates the first curve to
 the YZ-plane and the second curve to the XZ-plane.
 If the respective curve is of type
 NCurve, ICurve, or ACurve, the control points will be modified
-and the rotation attributes will be reset, other objects will be
-rotated by their transformation attributes. The rotation will
-be recorded in the undo buffer.
+and the rotation attributes will be reset, objects of other types will be
+rotated by their transformation attributes.
+<footnote>Since 1.24.</footnote>
+The rotation will be recorded in the undo buffer.
 <tscreen><verb>
-|-CrossSection(NCurve)           +-Swing
-|-Trajectory(NCurve)     ==>      |-CrossSection(NCurve)
-                                  \-Trajectory(NCurve)
+|-Cross_section(NCurve)         +-Swing
+|-Trajectory(NCurve)      ==>   |-Cross_section(NCurve)
+                                \-Trajectory(NCurve)
 </verb></tscreen>
 <tag/Notes/ See section <ref id="swingobj" name="Swing Object">
 for more information regarding the Swing object.
@@ -13426,9 +13427,9 @@ the selection.
 <tag/Operation/ The tool creates an Extrude object, and moves
 the selected objects to it.
 <tscreen><verb>
-|-NCurve             +-Extrude
-|-NCurve     ==>      |-NCurve
-                      \-NCurve
+|-Outline(NCurve)       +-Extrude
+|-Hole(NCurve)     ==>  |-Outline(NCurve)
+                        \-Hole(NCurve)
 </verb></tscreen>
 <tag/Notes/ See section <ref id="extrudeobj" name="Extrude Object">
 for more information regarding the Extrude object.
@@ -13450,13 +13451,14 @@ the selection.
 the selected objects to it, and rotates the first curve object
 to the YZ-plane. If the cross section curve is of type
 NCurve, ICurve, or ACurve, the control points will be modified
-and the rotation attributes will be reset, other objects will be
-rotated by their transformation attributes. The rotation will
-be recorded in the undo buffer.
+and the rotation attributes will be reset, objects of other types will be
+rotated by their transformation attributes.
+<footnote>Since 1.24.</footnote>
+The rotation will be recorded in the undo buffer.
 <tscreen><verb>
-|-NCurve             +-Sweep
-|-NCurve     ==>      |-NCurve
-                      \-NCurve
+|-Cross_section(NCurve)         +-Sweep
+|-Trajectory(NCurve)     ==>    |-Cross_section(NCurve)
+                                \-Trajectory(NCurve)
 </verb></tscreen>
 <tag/Notes/ See section <ref id="sweepobj" name="Sweep Object">
 for more information regarding the Sweep object.
@@ -13467,6 +13469,8 @@ original clipboard contents are lost when this tool finishes.
 Holding down the <tt/&lt;Ctrl&gt;/ key while clicking on the
 corresponding icon in the toolbox will keep the parameter curve
 selected and the current level will also be changed.
+
+This tool can also be invoked using the
 </descrip>
 
 <sect2>Bevel Tool<label id="bevt">
@@ -13499,9 +13503,9 @@ the selection.
 <tag/Operation/ The tool creates a Cap object, and moves
 the selected objects to it.
 <tscreen><verb>
-|-NCurve             +-Cap
-|-NCurve     ==>      |-NCurve
-                      \-NCurve
+|-Outline(NCurve)         +-Cap
+|-Hole(NCurve)      ==>   |-Outline(NCurve)
+                          \-Hole(NCurve)
 </verb></tscreen>
 <tag/Notes/ See section <ref id="capobj" name="Cap Object">
 for more information regarding the Cap object.
@@ -13522,10 +13526,10 @@ the selection.
 <tag/Operation/ The tool creates a Birail1 object, and moves
 the selected objects to it.
 <tscreen><verb>
-|-NCurve             +-Birail1
-|-NCurve     ==>      |-NCurve
-|-NCurve              |-NCurve
-                      \-NCurve
+|-Cross_section(NCurve)      +-Birail1
+|-Rail1(NCurve)         ==>  |-Cross_section(NCurve)
+|-Rail2(NCurve)              |-Rail1(NCurve)
+                             \-Rail2(NCurve)
 </verb></tscreen>
 <tag/Notes/ See section <ref id="birail1obj" name="Birail1 Object">
 for more information regarding the Birail1 object.
@@ -13546,11 +13550,11 @@ the selection.
 <tag/Operation/ The tool creates a Birail2 object, and moves
 the selected objects to it.
 <tscreen><verb>
-|-NCurve             +-Birail2
-|-NCurve              |-NCurve
-|-NCurve     ==>      |-NCurve
-|-NCurve              |-NCurve
-                      \-NCurve
+|-Cross_section1(NCurve)       +-Birail2
+|-Rail1(NCurve)                |-Cross_section1(NCurve)
+|-Rail2(NCurve)           ==>  |-Rail1(NCurve)
+|-Cross_section2(NCurve)       |-Rail2(NCurve)
+                               \-Cross_section2(NCurve
 </verb></tscreen>
 <tag/Notes/ See section <ref id="birail2obj" name="Birail2 Object">
 for more information regarding the Birail2 object.
