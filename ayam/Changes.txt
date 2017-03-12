@@ -1,8 +1,8 @@
-[28. Feb 2017] CVS-Head:
+[12. Mar 2017] CVS-Head:
 ========================
 Bug Fixes:
 o entering non number data to tesselation parameter entries (SF 554)
-
+o chordal/centripetal knots for periodic curves/surfaces are wrong (SF 555)
 
 Modelling:
 o the set mark action now supports drag selection of multiple points,
