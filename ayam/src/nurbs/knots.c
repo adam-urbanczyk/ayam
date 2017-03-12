@@ -26,7 +26,7 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
  int index = 0, i = 0, j = 0, kts = 0;
  double *ub = NULL;
  /*int start = 0;*/
- double *U = NULL, *V = NULL;
+ double ud = 0.0, *U = NULL, *V = NULL;
 
   /* sanity check */
   if(!patch)
@@ -142,6 +142,7 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
 	}
 
       /* knot averaging */
+      memset(U, 0, uknot_count*sizeof(double));
       for(j = 1; j < width-deg; j++)
 	{
 	  index = j + (uorder - 1);
@@ -163,11 +164,13 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
       else
 	{
 	  /* periodic surfaces get periodic knot extensions */
-	  for(i = 0; i < deg; i++)
-	    U[i] = U[i+(width-deg)] - 1.0;
+	  ud = U[uorder+1] - U[uorder];
+	  for(i = deg; i >= 0; i--)
+	    U[i] = U[i+1]-ud;
 
+	  ud = U[width-1] - U[width-2];
 	  for(i = width; i < uknot_count; i++)
-	    U[i] = 1.0 + U[i-(width-deg)];
+	    U[i] = U[i-1]+ud;
 	}
 
       free(ub);
@@ -250,6 +253,7 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
 	}
 
       /* knot averaging */
+      memset(V, 0, vknot_count*sizeof(double));
       for(j = 1; j < height-deg; j++)
 	{
 	  index = j + (vorder - 1);
@@ -271,11 +275,13 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
       else
 	{
 	  /* periodic surfaces get periodic knot extensions */
-	  for(i = 0; i < deg; i++)
-	    V[i] = V[i+(height-deg)] - 1.0;
+	  ud = U[vorder+1] - U[vorder];
+	  for(i = deg; i >= 0; i--)
+	    U[i] = U[i+1]-ud;
 
+	  ud = U[height-1] - U[height-2];
 	  for(i = height; i < vknot_count; i++)
-	    V[i] = 1.0 + V[i-(height-deg)];
+	    U[i] = U[i-1]+ud;
 	}
 
       free(ub);
@@ -420,11 +426,11 @@ ay_knots_createnc(ay_nurbcurve_object *curve)
       else
 	{
 	  /* periodic curves get periodic knot extensions */
-	  ud = U[order+1]-U[order];
+	  ud = U[order+1] - U[order];
 	  for(i = deg; i >= 0; i--)
 	    U[i] = U[i+1]-ud;
 
-	  ud = (U[length-1]-U[length-2]);
+	  ud = U[length-1] - U[length-2];
 	  for(i = length; i < knot_count; i++)
 	    U[i] = U[i-1]+ud;
 	}
