@@ -275,13 +275,13 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
       else
 	{
 	  /* periodic surfaces get periodic knot extensions */
-	  ud = U[vorder+1] - U[vorder];
+	  ud = V[vorder+1] - V[vorder];
 	  for(i = deg; i >= 0; i--)
-	    U[i] = U[i+1]-ud;
+	    V[i] = V[i+1]-ud;
 
-	  ud = U[height-1] - U[height-2];
+	  ud = V[height-1] - V[height-2];
 	  for(i = height; i < vknot_count; i++)
-	    U[i] = U[i-1]+ud;
+	    V[i] = V[i-1]+ud;
 	}
 
       free(ub);
