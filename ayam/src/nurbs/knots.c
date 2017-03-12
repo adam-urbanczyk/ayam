@@ -301,7 +301,7 @@ ay_knots_createnc(ay_nurbcurve_object *curve)
 {
  int order = 0, deg = 0, length = 0, knot_count = 0;
  int index, i = 0, j = 0, kts = 0;
- double *ub = NULL, *U = NULL;
+ double ud = 0.0, *ub = NULL, *U = NULL;
 
   /* sanity check */
   if(!curve)
@@ -398,6 +398,7 @@ ay_knots_createnc(ay_nurbcurve_object *curve)
 	}
 
       /* knot averaging */
+      memset(U, 0, knot_count*sizeof(double));
       for(j = 1; j < length-deg; j++)
 	{
 	  index = j + (order - 1);
@@ -419,11 +420,13 @@ ay_knots_createnc(ay_nurbcurve_object *curve)
       else
 	{
 	  /* periodic curves get periodic knot extensions */
-	  for(i = 0; i < deg; i++)
-	    U[i] = U[i+(length-deg)] - 1.0;
+	  ud = U[order+1]-U[order];
+	  for(i = deg; i >= 0; i--)
+	    U[i] = U[i+1]-ud;
 
+	  ud = (U[length-1]-U[length-2]);
 	  for(i = length; i < knot_count; i++)
-	    U[i] = 1.0 + U[i-(length-deg)];
+	    U[i] = U[i-1]+ud;
 	}
 
       free(ub);
