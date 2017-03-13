@@ -27,7 +27,6 @@ static Tcl_Obj *tolobj = NULL;
 static Tcl_Obj *dmobj = NULL;
 static Tcl_Obj *knotsmodobj = NULL;
 static Tcl_Obj *isratobj = NULL;
-static Tcl_Obj *isdegenobj = NULL;
 
 
 /* prototypes of functions local to this module: */
@@ -1425,14 +1424,6 @@ ay_ncurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!ncurve)
     return AY_ENULL;
 
-  if(argc > 1 && argv[1][0] == '-' && argv[1][1] == 'i')
-    {
-      to = Tcl_NewIntObj(ay_nct_isdegen(ncurve));
-      Tcl_ObjSetVar2(interp, arrobj, isdegenobj, to,
-		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-      return AY_OK;
-    }
-
   to = Tcl_NewIntObj(ncurve->length);
   Tcl_ObjSetVar2(interp, arrobj, lengthobj, to,
 		 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -1453,7 +1444,7 @@ ay_ncurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp, arrobj, knottypeobj, to,
 		 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  to = Tcl_NewStringObj("",-1);
+  to = Tcl_NewStringObj("", -1);
   Tcl_ObjSetVar2(interp, arrobj, knotsobj, to,
 		 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
@@ -1827,7 +1818,6 @@ ay_ncurve_init(Tcl_Interp *interp)
   dmobj = Tcl_NewStringObj("DisplayMode",-1);
   knotsmodobj = Tcl_NewStringObj("Knots-Modified",-1);
   isratobj = Tcl_NewStringObj("IsRat",-1);
-  isdegenobj = Tcl_NewStringObj("IsDegen",-1);
 
  return ay_status;
 } /* ay_ncurve_init */
