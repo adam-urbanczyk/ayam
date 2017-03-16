@@ -1764,9 +1764,14 @@ ay_trafo_normalize(ay_object *o, int digits)
   o->movy = ay_trafo_round(o->movy, digits);
   o->movz = ay_trafo_round(o->movz, digits);
 
-  o->scalx = ay_trafo_round(o->scalx, digits);
-  o->scaly = ay_trafo_round(o->scaly, digits);
-  o->scalz = ay_trafo_round(o->scalz, digits);
+  if(fabs(o->scalx) > pow(10, -digits))
+     o->scalx = ay_trafo_round(o->scalx, digits);
+
+  if(fabs(o->scaly) > pow(10, -digits))
+     o->scaly = ay_trafo_round(o->scaly, digits);
+
+  if(fabs(o->scalz) > pow(10, -digits))
+     o->scalz = ay_trafo_round(o->scalz, digits);
 
   if(fabs(o->quat[0]) < pow(10, -digits))
     o->quat[0] = 0.0;
@@ -1792,7 +1797,8 @@ ay_trafo_normalize(ay_object *o, int digits)
 
 
 /** ay_trafo_normalizetcmd:
- *  Normalize transformation attributes of selected objects.
+ *  Normalize transformation attributes or coordinates of selected points
+ *  of the selected objects.
  *
  *  Implements the \a normTrafos scripting interface command.
  *  Also implements the \a normPnts scripting interface command.
