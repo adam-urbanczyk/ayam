@@ -2333,11 +2333,8 @@ ay_npatch_readcb(FILE *fileptr, ay_object *o)
 
   o->refine = npatch;
 
-  npatch->is_planar = (char)ay_npt_isplanar(npatch, normal);
-  if(npatch->is_planar)
-    {
-      ay_npatch_setnttag(o, normal);
-    }
+  /* trigger attribute computation in notify callback */
+  o->modified = AY_TRUE;
 
  return AY_OK;
 } /* ay_npatch_readcb */
