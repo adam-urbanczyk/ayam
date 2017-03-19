@@ -645,7 +645,7 @@ puts -nonewline "\n"
 # helper to create variation arrays
 # (also in use by modelling tools test)
 proc aytest_crtnvars { } {
-global NCurve_1 NCurve_2 NCurve_3 NCurve_4 NCurve_5 ICurve_1 ACurve_1
+global NCurve_1 NCurve_2 NCurve_3 NCurve_4 NCurve_5 NCurve_6 ICurve_1 ACurve_1
 global NPatch_1 NPatch_2 NPatch_3 NPatch_4 NPatch_5 NPatch_6 NPatch_7
 global IPatch_1 PatchMesh_1
 
@@ -718,6 +718,21 @@ array set NCurve_4 [array get NCurve_2]
 set NCurve_4(precmd) {setPnt 0 0 0 0 0.5;}
 array set NCurve_5 [array get NCurve_3]
 set NCurve_5(precmd) {setPnt 0 0 0 0 0.5;}
+
+# NCurve Variation #6 (Periodic curves)
+array set NCurve_6 {
+    arr NCurveAttrData
+    freevars {Length Order Knot-Type}
+    fixedvars {dummy}
+    fixedvals { {0} }
+}
+set NCurve_6(Length) $lengthvals
+set NCurve_6(Order) $ordervals
+set NCurve_6(Knot-Type) $ktvals
+set NCurve_6(valcmd) {
+    [expr ($::NCurveAttrData(Length) - $::NCurveAttrData(Order)) > $::NCurveAttrData(Order)]
+}
+set NCurve_6(tstcmd) {set ::NCurveAttrData(Type) 2; setProp;}
 
 
 #############
