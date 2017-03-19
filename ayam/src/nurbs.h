@@ -179,11 +179,11 @@ int ay_ipt_swapuv(ay_ipatch_object *ip);
 
 /** Revert interpolating patch in U direction.
  */
-int ay_ipt_revertu(ay_ipatch_object *ip);
+void ay_ipt_revertu(ay_ipatch_object *ip);
 
 /** Revert interpolating patch in V direction.
  */
-int ay_ipt_revertv(ay_ipatch_object *ip);
+void ay_ipt_revertv(ay_ipatch_object *ip);
 
 /** Interpolate NURBS patch in U direction.
  */
@@ -1458,11 +1458,11 @@ int ay_pmt_swapuv(ay_pamesh_object *pm);
 
 /** Revert patchmesh in U direction.
  */
-int ay_pmt_revertu(ay_pamesh_object *pm);
+void ay_pmt_revertu(ay_pamesh_object *pm);
 
 /** Revert patchmesh in V direction.
  */
-int ay_pmt_revertv(ay_pamesh_object *pm);
+void ay_pmt_revertv(ay_pamesh_object *pm);
 
 /** Check whether any weight of a patch mesh is != 1.0.
  */
