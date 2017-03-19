@@ -291,12 +291,14 @@ ay_pmt_swapuv(ay_pamesh_object *pm)
  *
  * \returns AY_OK on success, error code otherwise.
  */
-int
+void
 ay_pmt_revertu(ay_pamesh_object *pm)
 {
- int ay_status = AY_OK;
  int i, j, ii, jj, stride = 4;
  double t[4];
+
+  if(!pm)
+    return;
 
   for(i = 0; i < pm->height; i++)
     {
@@ -311,7 +313,7 @@ ay_pmt_revertu(ay_pamesh_object *pm)
 	}
     }
 
- return ay_status;
+ return;
 } /* ay_pmt_revertu */
 
 
@@ -322,12 +324,14 @@ ay_pmt_revertu(ay_pamesh_object *pm)
  *
  * \returns AY_OK on success, error code otherwise.
  */
-int
+void
 ay_pmt_revertv(ay_pamesh_object *pm)
 {
- int ay_status = AY_OK;
  int i, j, ii, jj, stride = 4;
  double t[4];
+
+  if(!pm)
+    return;
 
   for(i = 0; i < pm->width; i++)
     {
@@ -344,7 +348,7 @@ ay_pmt_revertv(ay_pamesh_object *pm)
 	}
     }
 
- return ay_status;
+ return;
 } /* ay_pmt_revertv */
 
 

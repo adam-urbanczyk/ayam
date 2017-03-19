@@ -117,14 +117,14 @@ ay_ipt_swapuv(ay_ipatch_object *ip)
  *
  * \returns AY_OK on success, error code otherwise.
  */
-int
+void
 ay_ipt_revertu(ay_ipatch_object *ip)
 {
  int i, j, ii, jj, stride = 3;
  double t[4], *dp;
 
   if(!ip)
-    return AY_ENULL;
+    return;
 
   for(i = 0; i < ip->height; i++)
     {
@@ -161,7 +161,7 @@ ay_ipt_revertu(ay_ipatch_object *ip)
 	}
     }
 
- return AY_OK;
+ return;
 } /* ay_ipt_revertu */
 
 
@@ -172,15 +172,14 @@ ay_ipt_revertu(ay_ipatch_object *ip)
  *
  * \returns AY_OK on success, error code otherwise.
  */
-int
+void
 ay_ipt_revertv(ay_ipatch_object *ip)
 {
- int ay_status = AY_OK;
  int i, j, ii, jj, stride = 3;
  double t[4], *dp;
 
   if(!ip)
-    return AY_ENULL;
+    return;
 
   for(i = 0; i < ip->width; i++)
     {
@@ -219,7 +218,7 @@ ay_ipt_revertv(ay_ipatch_object *ip)
 	}
     }
 
- return ay_status;
+ return;
 } /* ay_ipt_revertv */
 
 
