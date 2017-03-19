@@ -485,7 +485,7 @@ ay_nct_explodemp(ay_object *o)
 
 
 /** ay_nct_resize:
- *  resize a NURBS curve
+ *  Change the number of control points of a NURBS curve.
  *
  * \param[in,out] curve NURBS curve object
  * \param[in] new_length new length of curve
