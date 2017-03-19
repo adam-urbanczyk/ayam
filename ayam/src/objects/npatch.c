@@ -32,6 +32,8 @@ int ay_npatch_shadeglu(ay_view_object *view, ay_object *o);
 
 int ay_npatch_shadech(ay_nurbpatch_object *npatch);
 
+void ay_npatch_setnttag(ay_object *o, double *normal);
+
 /* Export trim curves to RIB. */
 void ay_npatch_wribtrimcurve(ay_object *o,
 			     RtFloat *min, RtFloat *max, RtFloat *knot,
@@ -509,6 +511,12 @@ ay_npatch_createcb(int argc, char *argv[], ay_object *o)
   o->hide_children = AY_TRUE;
 
   ay_npt_setuvtypes(npatch, 0);
+
+  npatch->is_planar = (char)ay_npt_isplanar(npatch, s);
+  if(npatch->is_planar)
+    {
+      ay_npatch_setnttag(o, s);
+    }
 
   if(createmp>-1)
     {
@@ -2232,6 +2240,7 @@ ay_npatch_readcb(FILE *fileptr, ay_object *o)
  int ay_status = AY_OK;
  ay_nurbpatch_object *npatch = NULL;
  int i, a;
+ double normal[3];
 
   if(!fileptr || !o)
     { return AY_ENULL; }
@@ -2323,6 +2332,12 @@ ay_npatch_readcb(FILE *fileptr, ay_object *o)
     }
 
   o->refine = npatch;
+
+  npatch->is_planar = (char)ay_npt_isplanar(npatch, normal);
+  if(npatch->is_planar)
+    {
+      ay_npatch_setnttag(o, normal);
+    }
 
  return AY_OK;
 } /* ay_npatch_readcb */
@@ -3084,7 +3099,7 @@ ay_npatch_convertcb(ay_object *o, int in_place)
 
 
 /* ay_npatch_setnttag:
- *
+ *  create a NT tag (or update its value, if already present)
  */
 void
 ay_npatch_setnttag(ay_object *o, double *normal)
