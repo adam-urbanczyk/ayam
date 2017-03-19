@@ -597,7 +597,7 @@ int ay_nct_collapseselp(ay_object *o);
  */
 int ay_nct_explodemp(ay_object *o);
 
-/** Resize NURBS curve to new length.
+/** Change the number of control points of a NURBS curve.
  */
 int ay_nct_resize(ay_nurbcurve_object *curve, int new_length);
 
