@@ -1171,3 +1171,21 @@ proc tree_toggleTree { mode } {
  return;
 }
 # tree_toggleTree
+
+
+# tree_sync:
+# synchronize tree widget selection state with current selOb selection
+proc tree_sync { tree } {
+    global ay
+    getSel sel
+    if { [llength $sel] > 0 } {
+	foreach s $sel {
+	    lappend nodes $ay(CurrentLevel):$s
+	}
+	eval $tree selection set $nodes
+    } else {
+	cS
+    }
+ return;
+}
+# tree_sync
