@@ -442,9 +442,7 @@ $m.nct add command -label "Concat" -command { concatNC; uCR; rV } \
 # ^^^^^^^^^^^ => N
 $m.nct add command -label "Split" -command {
     runTool {ay(splitu) ay(splitappend)} {"Split at:" "Append:"}\
-       "undo save Split; splitNC -a %1 %0;\
-if \{ %1 \} \{uCR; rV\} else \{cS; set ay(ul) $ay(CurrentLevel); uS; rV\}"\
-       "Split Curve" splitt
+       "ncurve_split %0 %1;" "Split Curve" splitt
 } -underline 0
 #  ^^^^^^^^^^^ => S
 

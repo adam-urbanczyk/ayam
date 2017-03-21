@@ -90,3 +90,32 @@ proc ncurve_getrknots {} {
     }
 }
 # ncurve_getrknots
+
+# split curve at parametric value
+proc ncurve_split { u {a 0} } {
+    global ay
+    undo save Split
+    getSel sel
+    splitNC $u
+    cS
+    if { $a } {
+	uCR; sL; getSel lsel
+	lappend sel $lsel
+    } else {
+	set ay(ul) $ay(CurrentLevel); uS
+	if { [llength $sel] == 1 } {
+	    lappend sel [expr $sel + 1]
+	}
+    }
+    eval "selOb $sel"
+    if { $ay(lb) == 0 } {
+	tree_sync $ay(tree)
+    } else {
+	olb_sync $ay(lb)
+    }
+    rV
+    plb_update
+
+ return;
+}
+# ncurve_split

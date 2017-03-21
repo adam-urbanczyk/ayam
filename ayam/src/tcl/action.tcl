@@ -40,6 +40,7 @@ trace variable ay(action) w actionEnd
 
 #actionBindRelease:
 # standard release binding for modeling actions:
+# normalize points or transformation attributes;
 # force notification (via ay(action)/actionEnd above);
 # redraw all views; update property GUI
 proc actionBindRelease { w {normalize 1} } {
@@ -1467,7 +1468,8 @@ proc actionEditNumP { w } {
 # actionEditNumP
 
 
-#
+#actionEditP:
+# move/edit/drag picked points
 proc actionEditP { w } {
     global ayprefs
 
@@ -1519,7 +1521,8 @@ proc actionEditP { w } {
 # actionEditP
 
 
-#
+#actionEditWP
+# change the weigth of the picked points
 proc actionEditWP { w } {
     global ayprefs
 
@@ -1530,7 +1533,7 @@ proc actionEditWP { w } {
 
     bind $w <ButtonPress-1> {
 	set ay(action) 1
-	undo save EditWPnt
+	undo save EditWeight
 	if { $ayprefs(FlashPoints) == 1 } {
 	    %W startpepac %x %y -flash
 	} else {
@@ -1570,7 +1573,8 @@ proc actionEditWP { w } {
 # actionEditWP
 
 
-#
+#actionResetWP:
+# reset the weights of the picked points to 1.0
 proc actionResetWP { w } {
     global ayprefs
 
@@ -1580,7 +1584,7 @@ proc actionResetWP { w } {
     actionClearB1 $w
 
     bind $w <ButtonPress-1> {
-	undo save ResetPntW
+	undo save ResetWeights
 	if { $ayprefs(FlashPoints) == 1 } {
 	    %W startpepac %x %y -flash
 	} else {
@@ -1619,9 +1623,10 @@ proc actionResetWP { w } {
 # actionResetWP
 
 
-#
+#actionResetAllWP:
+# reset the weights of all points to 1.0
 proc actionResetAllWP { w } {
-    undo save ResetAllW
+    undo save ResetAllWeights
     $w wrpac
     plb_update
     rV
@@ -1630,7 +1635,8 @@ proc actionResetAllWP { w } {
 # actionResetAllWP
 
 
-#
+#actionInsertP:
+# insert points from curves
 proc actionInsertP { w } {
     global ayprefs
 
@@ -1668,7 +1674,8 @@ proc actionInsertP { w } {
 # actionInsertP
 
 
-#
+#actionDeleteP:
+# delete points from curves
 proc actionDeleteP { w } {
     global ayprefs
 
@@ -1706,7 +1713,8 @@ proc actionDeleteP { w } {
 # actionDeleteP
 
 
-#
+#actionFindU:
+# find parametric value u on a NURBS curve
 proc actionFindU { w } {
 
     viewTitle $w "" "Find_U"
@@ -1736,7 +1744,8 @@ proc actionFindU { w } {
 # actionFindU
 
 
-#
+#actionFindUV:
+# find parametric values u and v on a NURBS surface
 proc actionFindUV { w } {
 
     viewTitle $w "" "Find_UV"
@@ -1766,7 +1775,8 @@ proc actionFindUV { w } {
 # actionFindUV
 
 
-#
+#actionSplitNC:
+# split NURBS curve at parametric value u
 proc actionSplitNC { w } {
 
     viewTitle $w "" "Split_Curve"
@@ -1788,9 +1798,7 @@ proc actionSplitNC { w } {
 	%W finduac -end %x %y
 	update
 	if { $ay_error == 0 } {
-	    undo save Split
-	    splitNC $u
-	    uCR; sL; rV
+	    ncurve_split $u
 	}
 	focus %W
     }
@@ -1871,7 +1879,8 @@ proc actionPick { w } {
 # actionPick
 
 
-#
+#actionSnapToGrid3D:
+# snap selected points to the grid (all dimensions, regardless of view type)
 proc actionSnapToGrid3D { w } {
     undo save SnapToGrid3D
     $w snapac
@@ -1881,7 +1890,9 @@ proc actionSnapToGrid3D { w } {
 # actionSnapToGrid3D
 
 
-#
+#actionSnapToGrid2D:
+# snap selected points to the grid (only in the input plane defined by the
+# current view type)
 proc actionSnapToGrid2D { w } {
     undo save SnapToGrid2D
     $w snapac 1
@@ -1891,7 +1902,8 @@ proc actionSnapToGrid2D { w } {
 # actionSnapToGrid2D
 
 
-#
+#actionSnapToMark:
+# snap selected points to the mark
 proc actionSnapToMark { w } {
     undo save SnapToMark
     $w snapmac 0
@@ -1901,7 +1913,8 @@ proc actionSnapToMark { w } {
 # actionSnapToMark
 
 
-#
+#actionSnapToMarkO:
+# snap selected objects to the mark
 proc actionSnapToMarkO { w } {
     undo save SnapToMarkO
     $w snapmac 1
@@ -1913,7 +1926,8 @@ proc actionSnapToMarkO { w } {
 # actionSnapToMarkO
 
 
-#
+#actionIncMultP:
+# increase multiplicity of selected points
 proc actionIncMultP { w } {
     undo save IncMultP
     $w multpac 0
@@ -1925,7 +1939,8 @@ proc actionIncMultP { w } {
 # actionIncMultP
 
 
-#
+#actionDecMultP:
+# decrease multiplicity of selected points
 proc actionDecMultP { w } {
     undo save DecMultP
     $w multpac 1
