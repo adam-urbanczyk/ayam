@@ -333,3 +333,24 @@ proc olb_select { } {
  return;
 }
 # olb_select
+
+
+# olb_sync:
+# synchronize listbox widget selection state with current selOb selection
+proc olb_sync { lb } {
+    global ay
+    getSel sel
+    if { [llength $sel] > 0 } {
+	$ay(olb) selection clear 0 end
+	foreach s $sel {
+	    if { $ay(CurrentLevel) != "root" } {
+		incr s
+	    }
+	    $lb selection set $s
+	}
+    } else {
+	cS
+    }
+ return;
+}
+# olb_sync
