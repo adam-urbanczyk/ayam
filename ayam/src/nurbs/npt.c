@@ -6912,7 +6912,7 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
  int i, j, k, numcu = 0, numcv = 0; /* numbers of parameter curves */
  int need_interpol = AY_FALSE;
  double *intersections = NULL; /* matrix of intersection points */
- double *unifiedU = NULL, *unifiedV = NULL;
+ double *unifiedU = NULL, *unifiedV = NULL, *controlv = NULL;
  int uUlen, uVlen/*, closeu = AY_FALSE, closev = AY_FALSE*/;
 
   if(!cu || !cv || !gordon)
@@ -7074,6 +7074,8 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
 		  free(intersections);
 		  ay_error(AY_ERROR, fname,
 			   "Unsupported number of u/v curves.");
+		  ay_error(AY_ERROR, fname,
+		   "Please specify the intersections by an additional NPatch.");
 		  return AY_ERROR;
 		  /*
 		    ay_status = ay_nct_intersectca(cu, cv, intersections);
@@ -7104,8 +7106,19 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
 
   if(need_interpol)
     {
-      ay_status = ay_ipt_interpolateu(interpatch, uorder, AY_KTCHORDAL);
-      ay_status = ay_ipt_interpolatev(interpatch, vorder, AY_KTCHORDAL);
+      if(numcv > 2)
+	ay_status = ay_ipt_interpolateu(interpatch, vorder, AY_KTCHORDAL);
+      if(numcu > 2)
+	ay_status = ay_ipt_interpolatev(interpatch, uorder, AY_KTCHORDAL);
+
+      /* just in case the interpolation delivers unhealthy weights... */
+      controlv = interpatch->controlv;
+      j = 3;
+      for(i = 0; i < interpatch->width*interpatch->height; i++)
+	{
+	  controlv[j] = 1.0;
+	  j += stride;
+	}
     }
 
   ay_status = ay_npt_skinv(cu, uorder, AY_KTCUSTOM, AY_TRUE, &skinu);
