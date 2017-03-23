@@ -7107,25 +7107,33 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
   if(need_interpol)
     {
       if(numcv > 2)
-	ay_status = ay_ipt_interpolateu(interpatch, vorder, AY_KTCHORDAL);
+	ay_status = ay_ipt_interpolateu(interpatch, uorder, AY_KTCHORDAL);
       if(numcu > 2)
-	ay_status = ay_ipt_interpolatev(interpatch, uorder, AY_KTCHORDAL);
+	ay_status = ay_ipt_interpolatev(interpatch, vorder, AY_KTCHORDAL);
 
       /* just in case the interpolation delivers unhealthy weights... */
       controlv = interpatch->controlv;
       j = 3;
       for(i = 0; i < interpatch->width*interpatch->height; i++)
 	{
-	  controlv[j] = 1.0;
+	  if(controlv[j] <= 0.0)
+	    controlv[j] = 1.0;
 	  j += stride;
 	}
+      /*
+      ay_object *tn, *tc;
+      ay_npt_createnpatchobject(&tn);
+      tn->refine = interpatch;
+      ay_object_copy(tn, &tc);
+      ay_object_link(tc);
+      */
     }
 
-  ay_status = ay_npt_skinv(cu, uorder, AY_KTCUSTOM, AY_TRUE, &skinu);
+  ay_status = ay_npt_skinv(cu, vorder, AY_KTCUSTOM, AY_TRUE, &skinu);
   if(!skinu)
     goto cleanup;
 
-  ay_status = ay_npt_skinu(cv, vorder, AY_KTCUSTOM, AY_TRUE, &skinv);
+  ay_status = ay_npt_skinu(cv, uorder, AY_KTCUSTOM, AY_TRUE, &skinv);
   if(!skinv)
     goto cleanup;
 
