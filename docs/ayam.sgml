@@ -9132,10 +9132,15 @@ Also note that this configuration is in fact equivalent to a Coons patch.
 </figure>
 <p>
 The curves may be of arbitrary length and order. It is e.g.~possible
-to use a curve of order 2 and length 6 with a second curve
+to use a first curve of order 2 and length 6 with a second curve
 of order 4 and length 4 and a third curve with order 3 and 5
-control points for the U parametric dimension. Note, however,
-that in the general case only non-rational curves can be used
+control points for the U parametric dimension.
+<p>
+Note that all intersection points of a curve with other curves have
+to have the same parametric value in each of the other curves.
+All curves are so called isoparametric curves.
+<p>
+Also note, that in the general case only non-rational curves can be used
 as parameter curves for a Gordon surface.
 If the parameter curves are rational, the weight information
 of the curves will simply be ignored.
@@ -9148,7 +9153,7 @@ respective end points.
 The Gordon object has the generating NURBS curves as child objects
 and watches their changes and adapts to them automagically.
 Separation of the two sets of curves has to be done using an
-empty level object. The first set of curves determines the U
+empty Level object. The first set of curves determines the U
 direction and the second set of curves the V direction of the
 Gordon surface. For the example surface in the image above, the
 child objects of the Gordon object would have to look like this
@@ -9173,7 +9178,7 @@ switching to lazy notification.
 <p>
 In order to ease the computationally intensive intersection
 detection for Ayam a third parameter object may be specified (separated
-from the two sets of parameter curves by a second empty level object).
+from the two sets of parameter curves by a second empty Level object).
 This third parameter object should be a NURBS patch object that describes
 all intersection points by its control points.
 If present, this intersection patch always takes precedence over the
@@ -13397,7 +13402,7 @@ the selection.
 <tag/Operation/ The tool creates a Swing object, moves
 the selected objects to it, and rotates the first curve to
 the YZ-plane and the second curve to the XZ-plane.
-If the respective curve is of type
+If the respective curve object is of type
 NCurve, ICurve, or ACurve, the control points will be modified
 and the rotation attributes will be reset, objects of other types will be
 rotated by their transformation attributes.
@@ -13449,7 +13454,7 @@ selected and the current level will also be changed.
 the selection.
 <tag/Operation/ The tool creates a Sweep object, moves
 the selected objects to it, and rotates the first curve object
-to the YZ-plane. If the cross section curve is of type
+to the YZ-plane. If this curve object is of type
 NCurve, ICurve, or ACurve, the control points will be modified
 and the rotation attributes will be reset, objects of other types will be
 rotated by their transformation attributes.
@@ -18623,9 +18628,9 @@ This sections contains the documentation of some helper scripts
 that are distributed with Ayam.
 <p>
 The helper scripts may be run via the context menu of the console, the
-Tcl <tt>"source"</tt> command, or the <tt>"Scripts"</tt> preference
-setting of Ayam on each start (the latter except for repairAyam.tcl and
-bgconvert.tcl).
+Tcl <tt>"source"</tt> command in the console, or the <tt>"Scripts"</tt>
+preference setting of Ayam on each start (the latter except for
+<tt/repairAyam.tcl/ and <tt/bgconvert.tcl/).
 
 <sect2>Repair Ayam<label id="repayam">
 <p>
