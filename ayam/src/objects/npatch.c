@@ -2224,6 +2224,16 @@ ay_npatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton, "BevelsChanged", -1);
+  to = Tcl_NewIntObj(0);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton, "CapsChanged", -1);
+  to = Tcl_NewIntObj(0);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
@@ -2240,7 +2250,6 @@ ay_npatch_readcb(FILE *fileptr, ay_object *o)
  int ay_status = AY_OK;
  ay_nurbpatch_object *npatch = NULL;
  int i, a;
- double normal[3];
 
   if(!fileptr || !o)
     { return AY_ENULL; }
