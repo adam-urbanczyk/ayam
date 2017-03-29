@@ -1513,7 +1513,7 @@ ay_nb_BasisFunsM(int i, double u, int p, double *U, double *N)
 
 /*
  * ay_nb_CurvePoint4D:
- *
+ * calculate point u on rational NURBS curve (n, p, U, Pw)
  */
 int
 ay_nb_CurvePoint4D(int n, int p, double *U, double *Pw, double u, double *C)
@@ -1550,7 +1550,7 @@ ay_nb_CurvePoint4D(int n, int p, double *U, double *Pw, double u, double *C)
 
 /*
  * ay_nb_CurvePoint4DM:
- *
+ * calculate point u on rational NURBS curve (n, p, U, Pw)
  * Memory management optimized variant, but C must be of size
  * 3+(p+1)*3
  *    ^N
@@ -1585,7 +1585,7 @@ ay_nb_CurvePoint4DM(int n, int p, double *U, double *Pw, double u, double *C)
 
 /*
  * ay_nb_CurvePoint3D:
- *
+ * calculate point u on the NURBS curve (n, p, U, P)
  */
 int
 ay_nb_CurvePoint3D(int n, int p, double *U, double *P, double u, double *C)
@@ -1619,10 +1619,9 @@ ay_nb_CurvePoint3D(int n, int p, double *U, double *P, double u, double *C)
  return AY_OK;
 } /* ay_nb_CurvePoint3D */
 
-
 /*
  * ay_nb_CurvePoint3DM:
- *
+ * calculate point u on the NURBS curve (n, p, U, P)
  * Memory management optimized variant, but C must be of size
  * 3+(p+1)*3!
  *    ^N
@@ -1654,7 +1653,7 @@ ay_nb_CurvePoint3DM(int n, int p, double *U, double *P, double u, double *C)
 
 /*
  * ay_nb_SurfacePoint4D:
- *
+ * calculate point u,v on the rational NURBS surface (n, m, p, q, U, V, Pw)
  */
 int
 ay_nb_SurfacePoint4D(int n, int m, int p, int q, double *U, double *V,
@@ -1725,7 +1724,7 @@ ay_nb_SurfacePoint4D(int n, int m, int p, int q, double *U, double *V,
 
 /*
  * ay_nb_SurfacePoint3D:
- *
+ * calculate point u,v on the NURBS surface (n, m, p, q, U, V, P)
  */
 int
 ay_nb_SurfacePoint3D(int n, int m, int p, int q, double *U, double *V,
@@ -1784,7 +1783,8 @@ ay_nb_SurfacePoint3D(int n, int m, int p, int q, double *U, double *V,
 
 /*
  * ay_nb_DersBasisFuns:
- *
+ * calculate NURBS basis functions and n derivatives for span i,
+ * parametric value u, degree p, knot vector U[] in ders[(n+1)*(p+1)]
  */
 void
 ay_nb_DersBasisFuns(int i, double u, int p, int n, double *U, double *ders)
@@ -1884,6 +1884,8 @@ ay_nb_DersBasisFuns(int i, double u, int p, int n, double *U, double *ders)
 
 /*
  * ay_nb_DersBasisFunsM:
+ * calculate NURBS basis functions and n derivatives for span i,
+ * parametric value u, degree p, knot vector U[] in ders
  *
  * Memory management optimized variant, but ders must be of size
  * (n+1)*(p+1)+((p+1)+(p+1)+(p+1*p+1)+2*(p+1))
@@ -1980,7 +1982,8 @@ ay_nb_DersBasisFunsM(int i, double u, int p, int n, double *U, double *ders)
 
 /*
  * ay_nb_FirstDer3D:
- *
+ * calculate the first derivative on the NURBS curve (n, p, U, P)
+ * at parametric value u in C1[3]
  */
 void
 ay_nb_FirstDer3D(int n, int p, double *U, double *P, double u,
@@ -2018,7 +2021,8 @@ ay_nb_FirstDer3D(int n, int p, double *U, double *P, double u,
 
 /*
  * ay_nb_SecondDer3D:
- *
+ * calculate the second derivative on the NURBS curve (n, p, U, P)
+ * at parametric value u in C2[3]
  */
 void
 ay_nb_SecondDer3D(int n, int p, double *U, double *P, double u,
@@ -2056,7 +2060,8 @@ ay_nb_SecondDer3D(int n, int p, double *U, double *P, double u,
 
 /*
  * ay_nb_FirstDer4D:
- *
+ * calculate the first derivative on the rational NURBS curve (n, p, U, Pw)
+ * at parametric value u in C1[3]
  */
 void
 ay_nb_FirstDer4D(int n, int p, double *U, double *Pw, double u,
@@ -2117,7 +2122,8 @@ ay_nb_FirstDer4D(int n, int p, double *U, double *Pw, double u,
 
 /*
  * ay_nb_SecondDer4D:
- *
+ * calculate the second derivative on the rational NURBS curve (n, p, U, Pw)
+ * at parametric value u in C2[3]
  */
 void
 ay_nb_SecondDer4D(int n, int p, double *U, double *Pw, double u,
@@ -2202,7 +2208,7 @@ ay_nb_SecondDer4D(int n, int p, double *U, double *Pw, double u,
 /*
  * ay_nb_FirstDerSurf4D:
  * compute the first derivatives of rational surface
- * (n, m, p, q, U[], V[], Pw[]) at position u,v in
+ * (n, m, p, q, U[], V[], Pw[]) at parametric values u,v in
  * C[12]: C[0] - point, C[3] - 1st der along u, C[6] - 1st der along v
  */
 void
@@ -2360,7 +2366,7 @@ ay_nb_FirstDerSurf4DMSize(int p, int q)
 /*
  * ay_nb_FirstDerSurf4DM:
  * compute the first derivatives of rational surface
- * (n, m, p, q, U[], V[], Pw[]) at position u,v in
+ * (n, m, p, q, U[], V[], Pw[]) at parametric values u,v in
  * C[12]: C[0] - point, C[3] - 1st der along u, C[6] - 1st der along v
  *
  *
@@ -2513,7 +2519,7 @@ ay_nb_FirstDerSurf4DM(int n, int m, int p, int q, double *U, double *V,
 /*
  * ay_nb_FirstDerSurf3D:
  * compute the first derivatives of non-rational surface
- * (n, m, p, q, U[], V[], P[]) at position u,v in
+ * (n, m, p, q, U[], V[], P[]) at parametric values u,v in
  * C[12]: C[0] - point, C[3] - 1st der along u, C[6] - 1st der along v
  */
 void
@@ -2601,7 +2607,7 @@ ay_nb_FirstDerSurf3DMSize(int p, int q)
 /*
  * ay_nb_FirstDerSurf3DM:
  * compute the first derivatives of non-rational surface
- * (n, m, p, q, U[], V[], P[]) at position u,v in
+ * (n, m, p, q, U[], V[], P[]) at parametric values u,v in
  * C[12]: C[0] - point, C[3] - 1st der along u, C[6] - 1st der along v
  *
  * Memory management optimized variant, but C must be of size
