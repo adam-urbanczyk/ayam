@@ -16,6 +16,8 @@
 
 static char *ay_pamesh_name = "PatchMesh";
 
+int ay_pamesh_notifycb(ay_object *o);
+
 /* functions: */
 
 /* ay_pamesh_createcb:
@@ -24,71 +26,512 @@ static char *ay_pamesh_name = "PatchMesh";
 int
 ay_pamesh_createcb(int argc, char *argv[], ay_object *o)
 {
- int width = 4, height = 4;
- int i = 0, j = 0, k = 0;
- double *cv = NULL, dx = 0.25;
- ay_pamesh_object *p;
+ int ay_status = AY_OK;
+ int tcl_status = TCL_OK;
+ char fname[] = "crtpamesh";
+ char option_handled = AY_FALSE;
+ int center = AY_FALSE, stride = 4, width = 4, height = 4;
+ int clu = 0, clv = 0, ustep = 3, vstep = 3;
+ int type = AY_PTBICUBIC, ubt = AY_BTBEZIER, vbt = AY_BTBEZIER;
+ int optnum = 0, i = 2, j = 0, k = 0;
+ int acvlen = 0, aubvlen = 0, avbvlen = 0;
+ char **acv = NULL, **abv = NULL;
+ double *cv = NULL, *ubv = NULL, *vbv = NULL;
+ double udx = 0.25, udy = 0.0, udz = 0.0;
+ double vdx = 0.0, vdy = 0.25, vdz = 0.0;
+ double ext = 0.0, s[3] = {0};
+ ay_pamesh_object *p = NULL;
 
   if(!o)
     return AY_ENULL;
 
   /* parse args */
-  while(i+1 < argc)
+  while(i < argc)
     {
-      if(!strcmp(argv[i], "-width"))
+      if(i+1 >= argc)
 	{
-	  Tcl_GetInt(ay_interp, argv[i+1], &width);
-	  /* bicubic case is default! */
-	  if(width <= 3) width = 4;
-	  i+=2;
+	  ay_error(AY_EOPT, fname, argv[i]);
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	}
+
+      tcl_status = TCL_OK;
+      option_handled = AY_FALSE;
+      optnum = i;
+      if(argv[i] && argv[i][0] != '\0')
+	{
+	  switch(argv[i][1])
+	    {
+	    case 'w':
+	      /* -width */
+	      tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &width);
+	      option_handled = AY_TRUE;
+	      break;
+	    case 'h':
+	      /* -height */
+	      tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &height);
+	      option_handled = AY_TRUE;
+	      break;
+	    case 'u':
+	      switch(argv[i][2])
+		{
+		case 'd':
+		  switch(argv[i][3])
+		    {
+		    case 'x':
+		      /* -udx */
+		      tcl_status = Tcl_GetDouble(ay_interp, argv[i+1], &udx);
+		      option_handled = AY_TRUE;
+		      break;
+		    case 'y':
+		      /* -udy */
+		      tcl_status = Tcl_GetDouble(ay_interp, argv[i+1], &udy);
+		      option_handled = AY_TRUE;
+		      break;
+		    case 'z':
+		      /* -udz */
+		      tcl_status = Tcl_GetDouble(ay_interp, argv[i+1], &udz);
+		      option_handled = AY_TRUE;
+		      break;
+		    default:
+		      break;
+		    } /* switch */
+		  break;
+		case 'b':
+		  switch(argv[i][3])
+		    {
+		    case 'a':
+		      /* -ubasis */
+		      if(Tcl_SplitList(ay_interp, argv[i+1], &aubvlen, &abv) ==
+			 TCL_OK)
+			{
+			  if(ubv)
+			    {
+			      free(ubv);
+			    }
+			  if(!(ubv = calloc(aubvlen, sizeof(double))))
+			    {
+			      Tcl_Free((char *) abv);
+			      ay_status = AY_EOMEM;
+			      goto cleanup;
+			    }
+			  for(j = 0; j < aubvlen; j++)
+			    {
+			      tcl_status = Tcl_GetDouble(ay_interp,
+							 abv[j], &ubv[j]);
+			      if(tcl_status != TCL_OK)
+				{
+				  break;
+				}
+			    } /* for */
+			  Tcl_Free((char *) abv);
+			}
+		      option_handled = AY_TRUE;
+		      break;
+		    case 't':
+		      /* -ubtype */
+		      tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &ubt);
+		      option_handled = AY_TRUE;
+		      break;
+		    case 'n':
+		      /* -ubn */
+		      if(ubv)
+			{
+			  free(ubv);
+			  ubv = NULL;
+			}
+		      tcl_status = ay_tcmd_convdlist(argv[i+1], &aubvlen, &ubv);
+		      option_handled = AY_TRUE;
+		      break;
+		    default:
+		      break;
+		    } /* switch */
+		  break;
+		case 's':
+		  /* -ustep */
+		  tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &ustep);
+		  option_handled = AY_TRUE;
+		  break;
+		default:
+		  break;
+		} /* switch */
+	      break;
+	    case 'v':
+	      switch(argv[i][2])
+		{
+		case 'd':
+		  switch(argv[i][3])
+		    {
+		    case 'x':
+		      /* -vdx */
+		      tcl_status = Tcl_GetDouble(ay_interp, argv[i+1], &vdx);
+		      option_handled = AY_TRUE;
+		      break;
+		    case 'y':
+		      /* -vdy */
+		      tcl_status = Tcl_GetDouble(ay_interp, argv[i+1], &vdy);
+		      option_handled = AY_TRUE;
+		      break;
+		    case 'z':
+		      /* -vdz */
+		      tcl_status = Tcl_GetDouble(ay_interp, argv[i+1], &vdz);
+		      option_handled = AY_TRUE;
+		      break;
+		    default:
+		      break;
+		    } /* switch */
+		  break;
+		case 'b':
+		  switch(argv[i][3])
+		    {
+		    case 'a':
+		      /* -vbasis */
+		      if(Tcl_SplitList(ay_interp, argv[i+1], &avbvlen, &abv) ==
+			 TCL_OK)
+			{
+			  if(vbv)
+			    {
+			      free(vbv);
+			    }
+			  if(!(vbv = calloc(avbvlen, sizeof(double))))
+			    {
+			      Tcl_Free((char *) abv);
+			      ay_status = AY_EOMEM;
+			      goto cleanup;
+			    }
+			  for(j = 0; j < avbvlen; j++)
+			    {
+			      tcl_status = Tcl_GetDouble(ay_interp,
+							 abv[j], &vbv[j]);
+			      if(tcl_status != TCL_OK)
+				{
+				  break;
+				}
+			    } /* for */
+			  Tcl_Free((char *) abv);
+			}
+		      option_handled = AY_TRUE;
+		      break;
+		    case 't':
+		      /* -vbtype */
+		      tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &vbt);
+		      option_handled = AY_TRUE;
+		      break;
+		    case 'n':
+		      /* -vbn */
+		      if(vbv)
+			{
+			  free(vbv);
+			  vbv = NULL;
+			}
+		      tcl_status = ay_tcmd_convdlist(argv[i+1], &avbvlen, &vbv);
+		      option_handled = AY_TRUE;
+		      break;
+		    default:
+		      break;
+		    } /* switch */
+		  break;
+		case 's':
+		  /* -vstep */
+		  tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &vstep);
+		  option_handled = AY_TRUE;
+		  break;
+		default:
+		  break;
+		} /* switch */
+	      break;
+	    case 't':
+	      tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &type);
+	      option_handled = AY_TRUE;
+	      break;
+	    case 'c':
+	      switch(argv[i][2])
+		{
+		case 'n':
+		  /* -cn */
+		  if(cv)
+		    {
+		      free(cv);
+		      cv = NULL;
+		    }
+		  tcl_status = ay_tcmd_convdlist(argv[i+1], &acvlen, &cv);
+		  option_handled = AY_TRUE;
+		  break;
+		case 'v':
+		  /* -cv */
+		  if(Tcl_SplitList(ay_interp, argv[i+1], &acvlen, &acv) ==
+		     TCL_OK)
+		    {
+		      if(cv)
+			{
+			  free(cv);
+			}
+		      if(!(cv = calloc(acvlen, sizeof(double))))
+			{
+			  Tcl_Free((char *) acv);
+			  ay_status = AY_EOMEM;
+			  goto cleanup;
+			}
+		      for(j = 0; j < acvlen; j++)
+			{
+			  tcl_status = Tcl_GetDouble(ay_interp,
+						     acv[j], &cv[j]);
+			  if(tcl_status != TCL_OK)
+			    {
+			      break;
+			    }
+			} /* for */
+		      Tcl_Free((char *) acv);
+		    }
+		  option_handled = AY_TRUE;
+		  break;
+		case 'e':
+		  /* -center */
+		  tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &center);
+		  option_handled = AY_TRUE;
+		  break;
+		case 'l':
+		  if(!strcmp(argv[i], "-closeu"))
+		    {
+		      /* -closeu */
+		      tcl_status = Tcl_GetBoolean(ay_interp, argv[i+1], &clu);
+		      option_handled = AY_TRUE;
+		    }
+		  if(!strcmp(argv[i], "-closev"))
+		    {
+		      /* -closev */
+		      tcl_status = Tcl_GetBoolean(ay_interp, argv[i+1], &clv);
+		      option_handled = AY_TRUE;
+		    }
+		  break;
+		default:
+		  break;
+		} /* switch */
+	      break;
+	    default:
+	      break;
+	    } /* switch */
+
+	  if(option_handled && (tcl_status != TCL_OK))
+	    {
+	      ay_error(AY_EOPT, fname, argv[i]);
+	      ay_status = AY_ERROR;
+	      goto cleanup;
+	    }
+
+	  i += 2;
 	}
       else
-      if(!strcmp(argv[i], "-height"))
 	{
-	  Tcl_GetInt(ay_interp, argv[i+1], &height);
-	  /* bicubic case is default! */
-	  if(height <= 3) height = 4;
-	  i+=2;
+	  i++;
+	} /* if */
+
+      if(!option_handled)
+	{
+	  ay_error(AY_EUOPT, fname, argv[optnum]);
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	}
+
+    } /* while */
+
+  if(type < 0 || type > 1)
+    type = AY_PTBICUBIC;
+
+  if(type == AY_PTBILINEAR)
+    {
+      if(width <= 1)
+	{
+	  width = 2;
+	}
+
+      if(height <= 1)
+	{
+	  height = 2;
+	}
+    }
+  else
+    {
+      if(width < 4)
+	{
+	  width = 4;
+	}
+      if(height < 4)
+	{
+	  height = 4;
+	}
+    }
+
+  if(ustep < 0 || ustep > 4)
+    ustep = 3;
+
+  if(vstep < 0 || vstep > 4)
+    vstep = 3;
+
+  if(cv)
+    {
+      /* check length of user provided control point array */
+      if(acvlen/stride < width*height)
+	{
+	  if(acvlen > 0)
+	    s[0] = cv[0];
+	  if(acvlen > 1)
+	    s[1] = cv[1];
+	  if(acvlen > 2)
+	    s[2] = cv[2];
+
+	  free(cv);
+	  cv = NULL;
+	  center = AY_FALSE;
+	}
+    }
+  else
+    {
+      if(!(cv = calloc(width*height*stride, sizeof(double))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+
+      if(center)
+	{
+	  if(fabs(udx) > AY_EPSILON)
+	    ext = (width-1)*udx;
+	  if(fabs(vdx) > AY_EPSILON)
+	    ext += (height-1)*vdx;
+	  s[0] = -(ext/2.0);
+	  ext = 0.0;
+	  if(fabs(udy) > AY_EPSILON)
+	    ext = (width-1)*udy;
+	  if(fabs(vdy) > AY_EPSILON)
+	    ext += (height-1)*vdy;
+	  s[1] = -(ext/2.0);
+	  ext = 0.0;
+	  if(fabs(udz) > AY_EPSILON)
+	    ext = (width-1)*udz;
+	  if(fabs(vdz) > AY_EPSILON)
+	    ext += (height-1)*vdz;
+	  s[2] = -(ext/2.0);
+	}
+
+      k = 0;
+      for(i = 0; i < width; i++)
+	{
+	  for(j = 0; j < height; j++)
+	    {
+	      cv[k]   = s[0] + (double)j*vdx;
+	      cv[k+1] = s[1] + (double)j*vdy;
+	      cv[k+2] = s[2] + (double)j*vdz;
+	      cv[k+3] = 1.0;
+	      k += stride;
+	    }
+	  s[0] += udx;
+	  s[1] += udy;
+	  s[2] += udz;
+	}
+    } /* if */
+
+  if(ubv)
+    {
+      if(0/*ay_pmt_checkbasis(aubvlen, ubv)*/)
+	{
+	  /* basis check failed,
+	     discard user delivered basis and
+	     switch back knot type to AY_BTBEZIER */
+	  free(ubv);
+	  ubv = NULL;
+	  if(ubt == AY_BTCUSTOM)
+	    {
+	      ubt = AY_BTBEZIER;
+	    }
 	}
       else
-	i++;
+	{
+	  /* basis check ok,
+	     since the user delivered an own basis he probably wants the
+	     knot type set to AY_BTCUSTOM in any case */
+	  ubt = AY_BTCUSTOM;
+	}
+    }
+
+  if(vbv)
+    {
+      if(0/*ay_pmt_checkbasis(avbvlen, vbv)*/)
+	{
+	  /* basis check failed,
+	     discard user delivered basis and
+	     switch back knot type to AY_BTBEZIER */
+	  free(vbv);
+	  vbv = NULL;
+	  if(vbt == AY_BTCUSTOM)
+	    {
+	      vbt = AY_BTBEZIER;
+	    }
+	}
+      else
+	{
+	  /* basis check ok,
+	     since the user delivered an own basis he probably wants the
+	     basis type set to AY_BTCUSTOM in any case */
+	  vbt = AY_BTCUSTOM;
+	}
+    }
+
+  if(ubt < 0 || ubt > 5 || (ubt == AY_BTCUSTOM && !ubv))
+    {
+      ubt = AY_BTBEZIER;
+    }
+
+  if(vbt < 0 || vbt > 5 || (vbt == AY_BTCUSTOM && !vbv))
+    {
+      vbt = AY_BTBEZIER;
     }
 
   if(!(p = calloc(1, sizeof(ay_pamesh_object))))
     {
-      return AY_EOMEM;
+      ay_status = AY_EOMEM;
+      goto cleanup;
     }
+
+  p->type = type;
 
   p->width = width;
   p->height = height;
 
-  p->type = AY_PTBICUBIC;
-  p->btype_u = AY_BTBEZIER;
-  p->btype_v = AY_BTBEZIER;
-
-  if(!(cv = malloc(width*height*4*sizeof(double))))
-    {
-      free(p);
-      return AY_EOMEM;
-    }
-
-  k = 0;
-  for(i = 0; i < width; i++)
-    {
-      for(j = 0; j < height; j++)
-	{
-	  cv[k]   = i*dx;
-	  cv[k+1] = j*dx;
-	  cv[k+2] = 0.0;
-	  cv[k+3] = 1.0;
-	  k += 4;
-	}
-    }
+  p->close_u = clu;
+  p->close_v = clv;
 
   p->controlv = cv;
-  o->refine = (void *)p;
 
- return AY_OK;
+  p->btype_u = ubt;
+  p->btype_v = vbt;
+
+  p->ubasis = ubv;
+  p->vbasis = vbv;
+  p->ustep = ustep;
+  p->vstep = vstep;
+
+  o->refine = p;
+
+  (void)ay_pamesh_notifycb(o);
+
+  /* prevent cleanup code from doing something harmful */
+  cv = NULL;
+  ubv = NULL;
+  vbv = NULL;
+
+cleanup:
+
+  if(cv)
+    free(cv);
+
+  if(ubv)
+    free(ubv);
+
+  if(vbv)
+    free(vbv);
+
+ return ay_status;
 } /* ay_pamesh_createcb */
 
 
