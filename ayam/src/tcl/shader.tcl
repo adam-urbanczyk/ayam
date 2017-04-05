@@ -248,7 +248,7 @@ proc shader_setNew { win type stype } {
 	}
 	return;
     }
-    # if
+    # if have no shader parser
 
     # request a new shader
 
@@ -387,37 +387,32 @@ proc shader_scanXML { file varname } {
     set parameters ""
     set done 0
     while { ! $done } {
+	set rl [gets $f]
 
-	    set rl [gets $f]
-
-	    if { [eof $f] } {
-		set done 1
-	    } else {
-		if { [string first "<shader " $rl] > -1 } {
-
-		    regexp -- {^.*<shader type="([^"]*)" name="([^"]*)"} $rl a b c
-
-		    lappend shader $c
-		    lappend shader $b
-
-		}
-
-		if { [string first "<argument" $rl] > -1 } {
-		    regexp -- {^.*<argument name="([^"]*)".*type="([^"]*)".*value="([^"]*)"} $rl a b c d
-#the following comment just helps emacsens font lock mode
-#"
-
-		    set parameter ""
-		    lappend parameter $b $c 0 $d
-		    lappend parameters $parameter
-
-		}
-
+	if { [eof $f] } {
+	    set done 1
+	} else {
+	    if { [string first "<shader " $rl] > -1 } {
+		regexp -- {^.*<shader type="([^"]*)" name="([^"]*)"} $rl a b c
+		lappend shader $c
+		lappend shader $b
 	    }
 
+	    if { [string first "<argument " $rl] > -1 } {
+		regexp -- {^.*<argument name="([^"]*)".*type="([^"]*)".*value="([^"]*)"} $rl a b c d
+#the following comment just helps emacsens font lock mode
+#"
+	        set parameter ""
+	        lappend parameter $b $c 0 $d
+	        lappend parameters $parameter
+	    }
+	    # if is argument
 	}
+        # if not eof
+    }
+    # while not done
 
-	lappend shader $parameters
+    lappend shader $parameters
 
  return;
 }
