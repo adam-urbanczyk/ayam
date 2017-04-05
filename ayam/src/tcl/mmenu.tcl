@@ -283,9 +283,10 @@ $m.su add command -label "BPatch" -command {
     crtOb BPatch; uCR; sL; notifyOb; rV;
 } -underline 0
 $m.su add command -label "PatchMesh" -command {
-    runTool {ay(pmwidth) ay(pmheight)} {"Width:" "Height:"}\
-	"crtOb PatchMesh -width %0 -height %1; uCR; sL; notifyOb; rV;"\
-	"Create PatchMesh"
+    runTool {ay(pmwidth) ay(pmheight) ay(npadda)}\
+	{"Width:" "Height:" "AddArgs:"}\
+	"crtOb PatchMesh -width %0 -height %1 %2; uCR; sL; notifyOb; rV;"\
+	"Create PatchMesh" {ayam-6.html sccrtpm}
 } -underline 0
 
 $m.su add separator
