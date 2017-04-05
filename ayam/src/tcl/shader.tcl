@@ -26,7 +26,7 @@
 
 # shader_scanAll:
 #
-proc shader_scanAll {} {
+proc shader_scanAll { } {
     global ay env ayprefs AYUSESLCARGS AYUSESLXARGS ay_error
 
     foreach i [list surface displacement imager light volume transformation] {
@@ -88,31 +88,31 @@ proc shader_scanAll {} {
     }
     # foreach
 
-    foreach s $allshaders {
+    foreach shader $allshaders {
 
 	# strip path from shader-file-name
-	set dummy [file tail "$s"]
+	set shdbase [file tail "$shader"]
 	# strip extension (.slc/.slx) from shader-file-name
-	set dummy [file rootname "$dummy"]
+	set shdbase [file rootname "$shdbase"]
 	# strip an eventually present .linux (DSO-shader architecture)
 	# from the shader-file-name?
 	if { $ayprefs(StripShaderArch) } {
-	    set dummy [file rootname "$dummy"]
+	    set shdbase [file rootname "$shdbase"]
 	}
 
 	set shaderarguments ""
 
 	set ay_error 0
 	if { $ay(sext) != "" } {
-	    shaderScan "$dummy" shaderarguments
+	    shaderScan "$shdbase" shaderarguments
 	    update
 	} else {
 	    if { $AYUSESLCARGS == 1 } {
-		shaderScanSLC "$dummy" shaderarguments
+		shaderScanSLC "$shdbase" shaderarguments
 	    }
 
 	    if { $AYUSESLXARGS == 1 } {
-		shaderScanSLX "$dummy" shaderarguments
+		shaderScanSLX "$shdbase" shaderarguments
 	    }
 	}
 	# if have sext
@@ -124,7 +124,7 @@ proc shader_scanAll {} {
 		set shadernamelistname ay(${shadertype}shaders)
 		eval set shadernamelist \$$shadernamelistname
 
-		if {[string first " $dummy " $shadernamelist ] == -1} {
+		if {[string first " $shdbase " $shadernamelist ] == -1} {
 		    lappend $shadernamelistname [lindex $shaderarguments 0]
 		}
 	    }
@@ -378,7 +378,7 @@ proc shader_scanXML { file varname } {
     upvar 1 $varname shader
 
     if {! [file readable $file] } {
-	ayError 10 shader_scanXML $fi
+	ayError 10 shader_scanXML $file
 	return;
     }
 
@@ -440,13 +440,13 @@ proc shader_setDefaultsXML { type } {
 
     set allshaders ""
     set filename ""
-    foreach s $temp {
+    foreach shader $temp {
 	# silently omit unreadable shaders
-	if {[file readable $s]} {
+	if {[file readable $shader]} {
 	    # strip path from shader-file-name
-	    set dummy [file tail $s]
-	    if { $ay_shader(Name) == [ file rootname $dummy ] } {
-		set filename $s
+	    set shdbase [file tail $shader]
+	    if { $ay_shader(Name) == [file rootname $shdbase] } {
+		set filename $shader
 		break;
 	    }
 	}
@@ -464,8 +464,7 @@ proc shader_setDefaultsXML { type } {
 
     if { $ay_error > 1 } {
 	ayError 2 shader_setDefXML "Oops, could not scan shader!"
-
-	break;
+	return;
     }
 
     shader_DbToArray $shaderarguments
