@@ -18799,7 +18799,7 @@ afterwards.
 Simply saving the scene using <tt>"File/Save"</tt> or <tt/&lt;Ctrl+s&gt;/
 should be avoided because views were possibly deleted.
 
-<sect2>Shader Parsing<label id="slxml">
+<sect2>Shader Parsing<label id="slxmltcl">
 <p>
 The external Tcl script <tt>"slxml.tcl"</tt> switches the shader parsing
 machinery of Ayam to recognize XML based meta information embedded in
@@ -18807,16 +18807,30 @@ shading language comments. This way, the shader database for the Material
 objects can be built up from shading language source files, instead of
 compiled shaders.<newline>
 The XML tags will not be parsed by a real XML parser, so that well
-formedness is not an issue. See also the following example shader source:
+formedness is not an issue. However, the attributes must be ordered
+in a certain way. To specify a shader, use:
+<tscreen><verb>
+<shader type="stype" name="shadername">
+</verb></tscreen>
+where <tt/stype/ is one of <tt/surface/, <tt/displacement/, <tt/volume/, <tt/light/, <tt/imager/, or <tt/transformation/.
+<p>
+To specify the shader parameters, use:
+<tscreen><verb>
+<argument name="argname" type="atype" value="val">
+</verb></tscreen>
+where <tt/atype/ is one of <tt/float/, <tt/string/, <tt/matrix/, <tt/color/, <tt/point/, <tt/normal/, or <tt/vector/ and <tt/val/ is the default value.
+<p>
+See also the following example shader source:
 <code>
 /* myshader.sl:
  *  Author: Randolf Schultz
  * <shader type="surface" name="myshader">
  * <argument name="Ka" type="float" value="0.5">
  * <argument name="Kd" type="float" value="0.9">
+ * <argument name="ic" type="color" value="0 1 0">
  */
 
-surface myshader(float Ka = 0.5, Kd = 0.9)
+surface myshader(float Ka = 0.5, Kd = 0.9; color ic = color (0, 1, 0);)
 {
   color mycolor;
 
@@ -24300,6 +24314,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="skit" name="Skin tool">
 </itemize>
 <item>sL: <ref id="scsl" name="scripting interface command">
+<item>slxml.tcl: <ref id="slxmltcl" name="example/helper script">
 <item>SMChangeShaders: <ref id="prefrib" name="preference setting">
 <item>SMethod:
 <itemize>
