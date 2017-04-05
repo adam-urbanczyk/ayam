@@ -6123,6 +6123,7 @@ Select objects never appear in RIB output.
 <p>
 RiInc objects may be used to include objects or whole scene parts into your
 scenes that, for some reason, are just available as a piece of RIB.
+They can also help to manage huge scenes.
 <p>
 The following table briefly lists some capabilities of the RiInc object.
 <p>
@@ -15171,6 +15172,120 @@ creates a centered patch with width 3, height 3, uorder 3, and vorder 3.
 <p>
 See also section <ref id="ipatchobj" name="IPatch Object">.
 
+<#if out=latex><x/newpage/<p></#if>
+<#if out=latex><x/phantomsection/</#if>
+
+  <item><bf/<tt/"PatchMesh"//: patch meshes accept the following
+arguments:<label id="sccrtpm">
+  <itemize>
+  <item><tt/"-type"/: type of the new patch mesh, must be one of
+0 &ndash; bilinear or 1 &ndash; bicubic, defaults to 1.
+
+  <item><tt/"-width"/: width of the new patch, the width defaults to 4.
+Valid values for bicubic patch meshes depend on closedness and step size
+in the U direction.
+  <item><tt/"-height"/: height of the new patch, the height defaults to 4.
+Valid values for bicubic patch meshes depend on closedness and step size
+in the V direction.
+
+  <item><tt/"-closeu"/: determines, whether the patch mesh is closed in
+U direction; must be either 0 &ndash; open (default) or 1 &ndash; closed.
+  <item><tt/"-closev"/: determines, whether the patch mesh is closed in
+V direction; must be either 0 &ndash; open (default) or 1 &ndash; closed.
+
+  <item><tt/"-ubt"/: the U basis type, must be one of
+0 &ndash; Bezier (default), 1 &ndash; B-Spline, 2 &ndash; Catmull-Rom,
+3 &ndash; Hermite, 4 &ndash; Power, 5 &ndash; Custom.
+  <item><tt/"-vbt"/: the V basis type, must be one of
+0 &ndash; Bezier (default), 1 &ndash; B-Spline, 2 &ndash; Catmull-Rom,
+3 &ndash; Hermite, 4 &ndash; Power, 5 &ndash; Custom.
+
+  <item><tt/"-ubasis"/: the U basis; must be 16 float values in
+column major order. If set, the U basis type will automatically set
+to Custom and the step size should be specified (if different from 3).
+
+  <item><tt/"-ubn"/: the U basis. The value of
+this option is a variable name (with optional array and namespace specifier).
+The value of this variable must be compatible to the <tt/"-ubasis"/ option
+above.
+
+  <item><tt/"-vbasis"/: the V basis; must be 16 float values in
+column major order. If set, the V basis type will automatically set
+to Custom and the step size should be specified (if different from 3).
+
+  <item><tt/"-vbn"/: the V basis. The value of
+this option is a variable name (with optional array and namespace specifier).
+The value of this variable must be compatible to the <tt/"-vbasis"/ option
+above.
+
+  <item><tt/"-ustep"/: the U basis step size; must be 1, 2, 3, or 4.
+Can be omitted for all non custom basis types.
+  <item><tt/"-vstep"/: the V basis step size; must be 1, 2, 3, or 4.
+Can be omitted for all non custom basis types.
+
+  <item><tt/"-cv"/: the control vector of the new patch mesh. The value of this
+option is a list of floating point numbers that describe the 3D
+rational coordinates of the control points.<newline>
+This list may also only specify one point, which is then taken as starting
+point and UDX/UDY/UDZ and VDX/VDY/VDZ (see below) are used to create the
+missing control points automatically.<newline>
+To specify a complete control vector, this list should have
+width&thinsp;&middot;&thinsp;height&thinsp;&middot;&thinsp;4 elements,
+e.g.~for a bilinear patch mesh of width 2 and height 2, specify 16 values:
+<tt/"-cv {0.0 0.0 0.0 1.0  1.0 0.0 0.0 1.0  2.0 0.0 0.0 1.0  2.0 1.0 0.0 1.0}"/.
+
+  <item><tt/"-cn"/: the control vector of the new patch mesh. The value of
+this option is a variable name (with optional array and namespace specifier).
+The value of this variable must be compatible to the <tt/"-cv"/ option
+above.
+
+  <item><tt/"-udx"/: the value of this option specifies the distance
+of automatically created control points in the x dimension between points
+in a row (U parametric dimension, along width), default is 0.25.
+
+  <item><tt/"-udy"/: the value of this option specifies the distance
+of automatically created control points in the y dimension between points
+in a row (U parametric dimension, along width), default is 0.0.
+
+  <item><tt/"-udz"/: the value of this option specifies the distance
+of automatically created control points in the z dimension between points
+in a row (U parametric dimension, along width), default is 0.0
+
+  <item><tt/"-vdx"/: the value of this option specifies the distance
+of automatically created control points in the x dimension between points
+in a column (V parametric dimension, along height), default is 0.0.
+
+  <item><tt/"-vdy"/: the value of this option specifies the distance
+of automatically created control points in the y dimension between points
+in a column (V parametric dimension, along height), default is 0.25.
+
+  <item><tt/"-vdz"/: the value of this option specifies the distance
+of automatically created control points in the z dimension between points
+in a column (V parametric dimension, along height), default is 0.0
+
+  <item><tt/"-center"/: If the value of the <tt/"-center"/ option is 1,
+the new patch will be centered. The default value is 0, no centering.
+This option is only in effect if no <tt/"-cv"/ option is specified.
+
+</itemize>
+
+Examples:
+<enum>
+<item><bf/<tt/"crtOb PatchMesh"//<newline>
+creates a flat bicubic patch mesh of width 4, height 4,
+Bezier basis, control points arranged in a
+equidistant grid in the XY plane from 0 0 0 to 0.75 0.75 0.
+<item><bf/<tt/"crtOb PatchMesh -vdy 0 -vdz 0.25"//<newline>
+creates the same patch mesh as above in the XZ plane (ground plane).
+<item><bf/<tt/"crtOb PatchMesh -udy 0.25"//<newline>
+creates a sheared version of the standard patch mesh in the XY plane.
+<item><bf/<tt/"crtOb PatchMesh -udy 0.25 -vdz 0.25"//<newline>
+creates a 3D sheared version of the standard patch mesh.
+<item><bf/<tt/"crtOb PatchMesh -type 0 -width 3 -height 3 -center 1 -udx 2 -vdy 2"//
+<newline>
+creates a large centered bilinear patch mesh of width 3, height 3.
+</enum>
+
 <#if out="latex"><x/newpage/</#if>
 
   <item><tt>"<bf>PolyMesh</bf>"</tt>: Polygonal meshes accept the following
@@ -18683,6 +18798,44 @@ afterwards.
 <p>
 Simply saving the scene using <tt>"File/Save"</tt> or <tt/&lt;Ctrl+s&gt;/
 should be avoided because views were possibly deleted.
+
+<sect2>Shader Parsing<label id="slxml">
+<p>
+The external Tcl script <tt>"slxml.tcl"</tt> switches the shader parsing
+machinery of Ayam to recognize XML based meta information embedded in
+shading language comments. This way, the shader database for the Material
+objects can be built up from shading language source files, instead of
+compiled shaders.<newline>
+The XML tags will not be parsed by a real XML parser, so that well
+formedness is not an issue. See also the following example shader source:
+<code>
+/* myshader.sl:
+ *  Author: Randolf Schultz
+ * <shader type="surface" name="myshader">
+ * <argument name="Ka" type="float" value="0.5">
+ * <argument name="Kd" type="float" value="0.9">
+ */
+
+surface myshader(float Ka = 0.5, Kd = 0.9)
+{
+  color mycolor;
+
+  ...
+
+  Ci = Cs*mycolor*(Ka*ambient()+Kd*diffuse(faceforward(normalize(N),I)));
+}
+</code>
+The following restrictions/caveats (in contrast to the normal shader parsing)
+apply:
+<itemize>
+<item>there can only be one shader per shader source file,
+<item>shader file name and shader name must match,
+<item>shaders for which there is no source code available are not supported,
+<item>there is no control over whether the meta data matches the actual
+shader signature,
+<item>there is no control over whether the compiled shader, that is used
+for rendering, matches the shader source code.
+</itemize>
 
 <sect2>Convert Everything to Polygons<label id="topolytcl">
 <p>
@@ -23336,7 +23489,8 @@ Index:
 <item><ref id="pmattr" name="PatchMesh attribute">,
 <item><ref id="extrattr" name="Extrude attribute">,
 <item><ref id="vat" name="View attribute">,
-<item><ref id="textattr" name="Text attribute">
+<item><ref id="textattr" name="Text attribute">,
+<item><ref id="riincp" name="RiInc attribute">
 </itemize>
 <item>Help:
 <itemize>
@@ -23500,7 +23654,8 @@ Index:
 <item><ref id="bxp" name="Box attribute">,
 <item><ref id="ncattr" name="NCurve attribute">,
 <item><ref id="acp" name="ACurve attribute">,
-<item><ref id="icp" name="ICurve attribute">
+<item><ref id="icp" name="ICurve attribute">,
+<item><ref id="riincp" name="RiInc attribute">
 </itemize>
 <item>Level:
 <itemize>
@@ -23982,6 +24137,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="rio" name="RenderMan interface options property">,
 <item><ref id="rioptdb" name="RiOption and RiAttributes Database">
 </itemize>
+<item>RiProc: <ref id="riprocobj" name="RiProc object">
 <item>RIStandard: <ref id="prefrib" name="preference setting">
 <item>RMax:
 <itemize>
@@ -24432,7 +24588,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="npattr" name="NPatch attribute">,
 <item><ref id="ipattr" name="IPatch attribute">,
 <item><ref id="pmattr" name="PatchMesh attribute">,
-<item><ref id="vat" name="View attribute">
+<item><ref id="vat" name="View attribute">,
+<item><ref id="riincp" name="RiInc attribute">
 </itemize>
 <item>withOb: <ref id="scwithob" name="scripting interface command">
 <item>wrib: <ref id="scwrib" name="scripting interface command">
