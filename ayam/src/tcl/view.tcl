@@ -219,14 +219,15 @@ proc viewRender { w type } {
     set togl $w.f3D.togl
 
     if { $ayprefs(ShadowMaps) < 1 } {
-	tmpGet $ayprefs(TmpDir) tmpfile .rib
-
-	if { $tcl_platform(platform) == "windows" } {
-	    # Windows sucks big time!
-	    regsub -all {\\} $tmpfile {/} tmpfile
-	}
-	set imagename [file rootname ${tmpfile}].tif
+	# no shadow maps
 	if { $type < 2 } {
+	    # render to display
+	    tmpGet $ayprefs(TmpDir) tmpfile .rib
+	    if { $tcl_platform(platform) == "windows" } {
+		# Windows sucks big time!
+		regsub -all {\\} $tmpfile {/} tmpfile
+	    }
+	    set imagename [file rootname ${tmpfile}].tif
 	    if { $ayprefs(RenderMode) == 0 } {
 		$togl wrib -file $tmpfile -image $imagename -temp
 	    } else {
@@ -234,18 +235,24 @@ proc viewRender { w type } {
 	    }
 	} else {
 	    # render to image file
-	    set ribname [io_getRIBName]
-	    set imagename [lindex $ribname 1]
-	    ayError 4 "viewRender" "Rendering to \"$imagename\"..."
-	    $togl wrib -file $tmpfile -image $imagename -temp -rtf
+	    set tmpfile [io_getRIBName]
+	    if { $tmpfile != "" } {
+		set imagename [io_getImageName $tmpfile]
+		if { $imagename != "" } {
+		    ayError 4 "viewRender" "Rendering to \"$imagename\"..."
+		    $togl wrib -file $tmpfile -image $imagename -temp -rtf
+		}
+	    }
 	}
-
 	lappend ay(tmpfiles) [list $tmpfile]
     } else {
-	set ribname [io_getRIBName]
-	set tmpfile [lindex $ribname 0]
-	set imagename [lindex $ribname 1]
+	# use shadow maps
+	set tmpfile [io_getRIBName]
+	if { $tmpfile == "" } { return; }
+	set imagename [io_getImageName $tmpfile]
+	if { $imagename == "" } { return; }
 	if { $type < 2 } {
+	    # render to display
 	    if { $ayprefs(RenderMode) == 0 } {
 		$togl wrib -file $tmpfile -image $imagename -temp
 	    } else {
