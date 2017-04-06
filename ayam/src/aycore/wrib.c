@@ -17,7 +17,7 @@
 
 /* prototypes of functions local to this module: */
 
-int ay_wrib_sm(char *file, char *image, int width, int height,
+int ay_wrib_sm(char *file, int width, int height,
 	       int selonly);
 
 void ay_wrib_getup(double *dir, double *up, double *roll);
@@ -1988,7 +1988,7 @@ cleanup:
  *
  */
 int
-ay_wrib_sm(char *file, char *image, int width, int height, int selonly)
+ay_wrib_sm(char *file, int width, int height, int selonly)
 {
  int ay_status = AY_OK;
  ay_object *o = ay_root;
@@ -2306,7 +2306,7 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp *interp,
       if(smonly)
 	{
 	  /* export for rendering shadow maps */
-	  ay_status = ay_wrib_sm(filename, imagename, width, height, selonly);
+	  ay_status = ay_wrib_sm(filename, width, height, selonly);
 	}
       else
 	{
