@@ -398,25 +398,26 @@ proc io_exportRIB { {expview "" } } {
 	    set name [lindex $ay(views) $selection]
 
 	    set ribname [io_getRIBName]
-	    set efilename [lindex $ribname 0]
-	    set imagename [lindex $ribname 1]
 
-	    if { $efilename != "" } {
+	    if { $ribname != "" } {
+
+		set imagename [io_getImageName $ribname]
+
 		set wh "exportRIB"
 		set ay_error ""
 
 		if { $imagename != "" } {
-		    $name.f3D.togl wrib -file $efilename -image $imagename
+		    $name.f3D.togl wrib -file $ribname -image $imagename
 		} else {
-		    .$name.f3D.togl wrib -file $efilename
+		    .$name.f3D.togl wrib -file $ribname
 		}
 
 		if { $ay_error < 2 } {
 		    ayError 4 $wh "Done exporting scene to:"
-		    ayError 4 $wh "$efilename"
+		    ayError 4 $wh "$ribname"
 		} else {
 		    ayError 2 $wh "There were errors exporting to:"
-		    ayError 2 $wh "$efilename"
+		    ayError 2 $wh "$ribname"
 		}
 	    }
 	    # if have export file name
@@ -864,16 +865,15 @@ proc io_saveEnv { } {
 
 
 # io_getRIBName:
-#  derive a RIB file name for export and image file name for rendering the RIB
+#  derive/request a RIB file name for export
 #
-proc io_getRIBName { } {
+proc io_getRIBName { {noimage 0} } {
     global ay ayprefs
 
     winAutoFocusOff
 
     set filename $ay(filename)
 
-    # first, create RIB file name
     if { $ayprefs(RIBFile) == "Ask" || $ayprefs(RIBFile) == "" } {
 	set filetypes {{"RIB" ".rib"} {"All Files" *}}
 	set ribname [tk_getSaveFile -filetypes $filetypes -parent .\
@@ -902,12 +902,27 @@ proc io_getRIBName { } {
     }
     # if
 
-    # second, create image file name
+    winAutoFocusOn
+
+ return $ribname
+}
+# io_getRIBName
+
+
+# io_getImageName:
+#  derive/request a image file name for rendering the RIB
+#
+proc io_getImageName { ribname } {
+    global ay ayprefs
+
+    winAutoFocusOff
+
+    set filename $ay(filename)
+
     if { $ayprefs(Image) == "Ask" } {
 	set filetypes {{"TIF" ".tif"} {"TIFF" ".tiff"} {"All Files" *}}
 	set imagename "[tk_getSaveFile -filetypes $filetypes -parent .\
 		-title "Render to file:"]"
-	if { $imagename == "" } { set ribname "" }
     } else {
 	if { $ayprefs(Image) == "RIB" } {
 	    set imagename [file rootname [file tail $ribname]].tif
@@ -915,13 +930,12 @@ proc io_getRIBName { } {
 	    set imagename $ayprefs(Image)
 	}
     }
-    # if
 
     winAutoFocusOn
 
- return [list $ribname $imagename]
+ return $imagename
 }
-# io_getRIBName
+# io_getImageName
 
 
 # io_exportRIBfC:
@@ -931,22 +945,22 @@ proc io_exportRIBfC { } {
     global ay ayprefs ay_error
 
     set ribname [io_getRIBName]
-    set efilename [lindex $ribname 0]
-    set imagename [lindex $ribname 1]
+
     set ay_error ""
     set wh "exportRIB"
-    if { $efilename != "" } {
+    if { $ribname != "" } {
+	set imagename [io_getImageName $ribname]
 	if { $imagename != "" } {
-	    wrib $efilename -image $imagename
+	    wrib $ribname -image $imagename
 	} else {
-	    wrib $efilename
+	    wrib $ribname
 	}
 	if { $ay_error < 2 } {
 	    ayError 4 $wh "Done exporting scene to:"
-	    ayError 4 $wh "$efilename"
+	    ayError 4 $wh "$ribname"
 	} else {
 	    ayError 2 $wh "There were errors exporting to:"
-	    ayError 2 $wh "$efilename"
+	    ayError 2 $wh "$ribname"
 	}
     }
     # if
@@ -989,58 +1003,38 @@ proc io_RenderSM { w all } {
     }
 
     set ribname [io_getRIBName]
-    set efilename [lindex $ribname 0]
-    set imagename [lindex $ribname 1]
     set wh "createSM"
     set ay_error ""
 
-    if { $efilename != ""} {
-	if { $imagename != "" } {
-	    if { $all == 1 } {
-		wrib $efilename -image $imagename -smonly
-	    } else {
-		wrib $efilename -image $imagename -smonly -selonly
-	    }
-	    if { $ay_error < 2 } {
-		ayError 4 $wh "Done exporting scene to:"
-		ayError 4 $wh "$efilename"
-		set render 1
-	    } else {
-		ayError 2 $wh "There were errors exporting to:"
-		ayError 2 $wh "$efilename"
-		set render 0
-	    }
+    if { $ribname != ""} {
+	if { $all == 1 } {
+	    wrib $ribname -smonly
 	} else {
-	    if { $all == 1 } {
-		wrib $efilename -image $imagename -smonly
-	    } else {
-		wrib $efilename -image $imagename -smonly -selonly
-	    }
-	    if { $ay_error < 2 } {
-		ayError 4 $wh "Done exporting scene to:"
-		ayError 4 $wh "$efilename"
-		set render 1
-	    } else {
-		ayError 2 $wh "There were errors exporting to:"
-		ayError 2 $wh "$efilename"
-		set render 0
-	    }
+	    wrib $ribname -smonly -selonly
 	}
-	# if
+	if { $ay_error < 2 } {
+	    ayError 4 $wh "Done exporting scene to:"
+	    ayError 4 $wh "$ribname"
+	    set render 1
+	} else {
+	    ayError 2 $wh "There were errors exporting to:"
+	    ayError 2 $wh "$ribname"
+	    set render 0
+	}
     }
-    # if
+    # if have ribname
 
     if { $render } {
 	ayError 4 "Create SM" "Now rendering shadow maps..."
 
 	if { $ayprefs(SMRenderUI) != 1} {
 	    set command "exec "
-	    regsub -all {%s} $ayprefs(SMRender) $efilename command2
+	    regsub -all {%s} $ayprefs(SMRender) $ribname command2
 	    append command $command2
 	    append command " &"
 	    eval [subst "$command"]
 	} else {
-	    regsub -all {%s} $ayprefs(SMRender) $efilename command
+	    regsub -all {%s} $ayprefs(SMRender) $ribname command
 	    runRenderer $w "$command" "$ayprefs(SMRenderPT)"
 	}
 	# if
@@ -1064,14 +1058,13 @@ proc io_exportRIBSO { } {
     global ay ayprefs ay_error
 
     set ribname [io_getRIBName]
-    set efilename [lindex $ribname 0]
     set ay_error ""
 
-    if { $efilename != "" } {
-	wrib $efilename -selonly
+    if { $ribname != "" } {
+	wrib $ribname -selonly
 	if { $ay_error < 2 } {
 	    ayError 4 "exportRIB" "Done exporting objects to:"
-	    ayError 4 "exportRIB" "$efilename"
+	    ayError 4 "exportRIB" "$ribname"
 	} else {
 	    ayError 2 "exportRIB" "Could not export RIB!"
 	}
