@@ -128,7 +128,7 @@ namespace eval ms {}
 
 # fill "en"-locale...
 ms_init en
-ms_set en ayprefse_Shaders "A list of paths where your compiled shaders reside."
+ms_set en ayprefse_Shaders "A list of paths where compiled shaders reside."
 ms_set en ayprefse_ScanShaders "Initiates rebuild of internal shader database."
 ms_set en ayprefse_Locale "Language to use for balloon help texts.\
 \nChanges will take effect after restart of Ayam!"
@@ -273,10 +273,10 @@ ms_set en ayprefse_RedirectTcl "Redirect all Tcl error messages to the\
 console?"
 ms_set en ayprefse_Logging "Log all messages to a file?"
 ms_set en ayprefse_ErrorLevel "Which messages should go to the console?\
-\nSilence - None\
-\nErrors - Only Errors\
-\nWarnings - Warnings and Errors\
-\nAll - Warnings, Errors, and Informative Messages"
+\nSilence - none\
+\nErrors - only error messages\
+\nWarnings - warnings and error messages\
+\nAll - warnings, error messages, and informative messages"
 ms_set en ayprefse_LogFile "Path and name of the file to log all messages to."
 ms_set en ayprefse_SaveAddsMRU "Add the name of saved scenes to the\
 \nMost-Recently-Used file menu entries?"
@@ -378,21 +378,20 @@ ms_set de ayprefse_CreateAtMark "Sollen neue Objekte an der Marke erzeugt\
 werden?"
 ms_set de ayprefse_DefaultAction "Modellier-Aktion, die beim Drücken der\
 \n<Esc>-Taste gestartet werden soll."
-ms_set de ayprefse_PickCycle "Mit weiteren Clicks durch Auswahlkandidaten\
+ms_set de ayprefse_PickCycle "Mit weiteren Klicks durch Auswahlkandidaten\
 wechseln?"
 ms_set de ayprefse_UndoLevels "Anzahl zurücknehmbarer Modellierschritte;\
 \n0 schaltet das Undo-System aus."
 
 # Drawing
-ms_set de ayprefse_Tolerance "Bestimmt die Darstellungsqualität von NURBS\
+ms_set de ayprefse_Tolerance "Darstellungsqualität von NURBS\
 Kurven und Flächen.\nKleinere Werte führen zu höherer Qualität aber\
-langsamerer Darstellung.\nObjekte\
-können diesen Wert lokal anpassen."
+langsamerer Darstellung.\nObjekte können diesen Wert lokal anpassen."
 ms_set de ayprefse_NPDisplayMode "Darstellungsmodus von Flächen.\
 \nFlächen können den Darstellungsmodus lokal anpassen."
 ms_set de ayprefse_NCDisplayMode "Darstellungsmodus von Kurven.\
 \nKurven können den Darstellungsmodus lokal anpassen."
-ms_set de ayprefse_ToleranceA "Bestimmt die Darstellungsqualität von NURBS\
+ms_set de ayprefse_ToleranceA "Darstellungsqualität von NURBS\
 Kurven und Flächen\nwährend Modellieraktionen."
 ms_set de ayprefse_NPDisplayModeA "Darstellungsmodus von Flächen\
 \nwährend Modellieraktionen."
@@ -483,7 +482,7 @@ ms_set de ayprefse_SMFileType "Typ der ShadowMaps.\
 \nvolz: Volumen ShadowMap (nur Gelato!)"
 ms_set de ayprefse_SMChangeShaders "Sollen Shadernamen angepasst werden\
 \nwenn ShadowMaps benutzt werden?"
-ms_set de ayprefse_AutoCloseUI "Soll das Render-Fenster geschlossen werden\
+ms_set de ayprefse_AutoCloseUI "Soll das Rendering-Fenster geschlossen werden\
 wenn der Renderer fertig ist?"
 
 # Misc
