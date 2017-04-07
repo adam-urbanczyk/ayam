@@ -643,12 +643,9 @@ accomplished easily using the <tt/&lt;Esc&gt;/ key.
 
 <sect3>Property Clipboard<label id="propclip">
 <p><#if out="latex">&nbsp;<newline></#if>
-A property may be copied and pasted to another object, see the
-<tt/"Edit"/ menu. You can also paste property values to different types
-of properties (e.g.~pasting parameters from a surface shader to the
-displacement shader, or pasting a radius value from a sphere to a disk)
-using <tt/"Paste to selected"/ in the
-<tt>"Special/Clipboard"</tt> sub-menu.
+With the help of the property clipboard arbitrary property data may be
+copied from one and then pasted to another object. See the
+<tt/"Edit"/ menu for access to this functionality.
 <p>
 Pasting a property to multiple selected objects does work too.
 This is a great way to apply e.g.~a parameterised surface shader to
@@ -692,9 +689,16 @@ hot key <tt/&lt;Ctrl+I&gt;/.
 <item>All done.
 </enum>
 <p>
-Special care must be taken when pasting incomplete properties to objects
-which do not have complete properties already. Do not paste an incomplete
-shader property to an object which does not already have the same shader.
+An even more advanced application of the property clipboard is to paste
+property values to different types of properties (e.g.~pasting parameters
+from a surface
+shader to a displacement shader, or pasting a radius value from a sphere
+to a disk). This can be done using <tt/"Paste to selected"/ in the
+<tt>"Special/Clipboard"</tt> sub-menu.<newline>
+However, special care must be taken when pasting incomplete properties to
+objects which do not have complete properties already. Do not paste an
+incomplete shader property to an object which does not already have the
+same shader.
 
 <#if out="latex"><x/newpage/</#if>
 
@@ -873,11 +877,11 @@ if the current scene was loaded from a file without Root object
 from the saved scene file as well.
 See section <ref id="savesf" name="Saving Scene Files">
 for a more detailed discussion.
-
+</itemize><itemize>
 <item><tt>"Import/"</tt>, since Ayam 1.13 this sub menu is initially
 empty. To gain access to the menu entries described here, the
 respective plugin must be loaded.
-
+<itemize>
 <item><tt>"Import/Apple 3DMF"</tt>, import a scene from the Apple
 3DMF format, see section <ref id="imp3dmf" name="3DMF (Apple) Import">
 for more information.
@@ -902,12 +906,13 @@ for more information.
 based X3D format published by the Web3D Consortium, see section
 <ref id="impx3d" name="X3D (Web3D) Import">
 for more information.
-
+</itemize>
+</itemize><itemize>
 <item><tt>"Export/"</tt>, since Ayam 1.13 this sub menu initially
 only contains the <tt>"RenderMan RIB"</tt> entry. To gain access
 to the other menu entries described here, the corresponding plugin
 must be loaded.
-
+<itemize>
 <item><tt>"Export/RenderMan RIB"</tt>, exports the current scene to a RIB
 file, asking which camera (which view) to use.
 
@@ -927,7 +932,8 @@ Wavefront OBJ file, see also section
 based X3D format published by the Web3D Consortium, see section
 <ref id="expx3d" name="X3D (Web3D) Export">
 for more information.
-
+</itemize>
+</itemize><itemize>
 <item><tt/"Load Plugin"/, loads a file containing a custom object or a plugin.
 Depending on the platform Ayam is running on, these are files with the
 file name extension <tt/".so"/ or <tt/".dll"/.
@@ -937,17 +943,17 @@ if the cause of the initial failure is eliminated. Just restart Ayam.
 
 See section <ref id="plugov" name="Plugins Overview"> for more
 information regarding Ayam plugins.
-
+</itemize><itemize>
 <item><tt/"Save Prefs"/, save the current preference settings
 to the ayamrc file after making a backup copy of this file (see section
 <ref id="ayamrc" name="Ayamrc File"> for more information about this file).
-
+</itemize><itemize>
 <item><tt/"1."/, <tt/"2."/, <tt/"3."/, <tt/"4."/, immediately replace the
 current scene with the one in the menu entry. The menu entries
 are updated and rotated upon successful loading and saving of a scene
 so that the first entry always contains the scene that was loaded
 (or saved) last.
-
+</itemize><itemize>
 <item><tt/"Exit!"/, remove all temporary files, save preferences (if
 the preference setting <tt>"Main/AutoSavePrefs"</tt> is turned on)
 and quit the application.
@@ -959,7 +965,8 @@ and quit the application.
 
 <label id="mmedit">
 The <tt/"Edit"/ menu contains object and property clipboard
-operations, undo actions, and lets you open the preferences editor:
+operations, selection and undo actions, hosts the object search,
+and lets you open the preferences editor:
 <itemize>
 <item><tt/"Copy"/, copies the currently selected object(s) into the
 clipboard.<newline>
@@ -994,16 +1001,18 @@ or for parent objects with referenced objects among their children.
 In case of failure, an error will be reported and the undeletable object(s)
 will be moved to the end of the current level.<newline>
 This operation cannot be undone!
-
+</itemize><itemize>
 <item><tt/"Select All"/, selects all objects in the current level
 (except for the Root object).
 
 <item><tt/"Select None"/, de-selects all currently selected objects.
-
+</itemize><itemize>
 <item><tt/"Copy Property"/, copies the currently selected property of the
 currently selected object to the property clipboard (the property
 clipboard is completely independent from the normal object clipboard).
-Marked parameters will be omitted!
+Marked parameters will be omitted!<newline>
+See also
+section <ref id="propclip" name="Property Clipboard"> for more information.
 
 <item><tt/"Copy Marked Prop"/, copies the currently marked parameters
 of the currently selected property of the
@@ -1015,13 +1024,13 @@ clipboard to the currently selected object(s). The data will get pasted
 to the property type saved by the last copy operation. It will not get
 pasted to the currently selected property; use
 <tt>"Special/Clipboard/Paste Property to selected"</tt> for that.
-
-<item><tt/"Undo"/, perform undo operation (see section
+</itemize><itemize>
+<item><tt/"Undo"/, perform the undo operation (see section
 <ref id="undos" name="The Undo System"> for more information).
 
-<item><tt/"Redo"/, perform redo operation (see section
+<item><tt/"Redo"/, perform the redo operation (see section
 <ref id="undos" name="The Undo System"> for more information).
-
+</itemize><itemize>
 <item><tt/"Material"/, searches for the material object currently
 associated with the selected object and selects it for editing.
 If the selected object has no material yet, a new material
@@ -1030,14 +1039,14 @@ material, the material object will be created, if successful,
 the material will be linked to <em>all</em> currently selected objects
 (even if they are already linked to other objects),
 see also section <ref id="materialobj" name="Material Object">.
-
+</itemize><itemize>
 <item><tt/"Master"/, searches for the master object of the
 currently selected instance object and selects it for editing,
 see also section <ref id="instanceobj" name="Instance Object">.
-
+</itemize><itemize>
 <item><tt/"Search"/, opens the object search dialog,
 see also section <ref id="objsearch" name="Object Search">.
-
+</itemize><itemize>
 <item><tt/"Preferences"/, opens the preferences dialog (see section
 <ref id="prefs" name="Preferences"> for more information).
 </itemize>
@@ -1083,10 +1092,10 @@ the <tt/"crtOb ACurve"/ command may be specified, as outlined in section
 A small dialog box will pop up, where the radius, start angle, and end
 angle of the new circle may be specified.
 See also section <ref id="ncircleobj" name="NCircle Object">.
-
+<p><p>
 For the other entries see section
 <ref id="cctools" name="Curve Creation Tools">.
-
+</itemize><itemize>
 <item><tt/"NURBPatch"/, create a new NURBS patch. A small dialog box will
 pop up, where the width and height of the new patch may be specified. See
 also section <ref id="npatchobj" name="NPatch Object">.
@@ -1109,21 +1118,25 @@ the <tt/"crtOb IPatch"/ command may be specified, as outlined in section
 also section <ref id="bpatchobj" name="BPatch Object">.
 
 <item><tt/"PatchMesh"/, create a new patch mesh. A small dialog box will
-pop up, where the width and height of the new patch may be specified.
+pop up, where the width and height of the new patch mesh may be specified.
 See also section <ref id="patchmeshobj" name="PatchMesh Object">.
-
+This dialog also contains a <tt/"AddArgs"/ entry
+field where additional command line arguments to
+the <tt/"crtOb PatchMesh"/ command may be specified, as outlined in section
+<ref id="sccrtpm" name="Creating Objects">.<footnote>Since 1.25.</footnote>
+<p><p>
 For the other entries see section
 <ref id="sctools" name="Surface Creation Tools">.
-
+</itemize><itemize>
 <item><tt/"Solid"/, create a new solid primitive object, for use in CSG.
 <tt/"Box"/, <tt/"Sphere"/, <tt/"Disk"/, <tt/"Cone"/, <tt/"Cylinder"/,
 <tt/"Torus"/, <tt/"Hyperboloid"/ or <tt/"Paraboloid"/ may be selected.
-
+</itemize><itemize>
 <item><tt/"Level"/, creates a new hierarchy object. <tt/"Level"/
 just groups objects, <tt/"Union"/, <tt/"Intersection"/,
 <tt/"Difference"/, and <tt/"Primitive"/ are CSG operations. See
 also section <ref id="levelobj" name="Level Object">.
-
+</itemize><itemize>
 <item><tt/"Light"/, create a new light source. See
 also section <ref id="lightobj" name="Light Object">.
 
@@ -1421,7 +1434,7 @@ and all views. In order to include geometric objects in the
 environment or to exclude the Root object and just save view
 objects use <tt>"File/Save"</tt> or <tt>"Special/Save Selected as"</tt>
 respectively.
-
+</itemize><itemize>
 <item><tt>"Clipboard/Paste (Move)"</tt>, moves objects from the clipboard
 back to the scene (clearing the clipboard). This is the only way to
 get referenced objects out of the clipboard.
@@ -1454,7 +1467,7 @@ properties will take place! This way it is possible to e.g.~copy
 a radius value from a sphere to a cylinder or to copy
 settings from a displacement shader to a surface shader (as long as the
 copied arguments of both shaders have the same names and types).
-
+</itemize><itemize>
 <item><tt>"Instances/Resolve all Instances"</tt>, converts all instance
 objects to copies of their respective master objects.
 If the menu entry is used, a small dialog opens
@@ -1505,7 +1518,7 @@ tags can be managed easily for all selected objects
 <item><tt>"Tags/Add Tag"</tt>, opens a dialog where a new
 tag can be added to the selected objects
 (see also section <ref id="tags" name="Tags">).
-
+</itemize><itemize>
 <item><tt>"RIB-Export/From Camera"</tt>, writes a complete RIB of
 the current scene with the camera transformations taken from the
 currently selected Camera object. The size of the rendered image will
@@ -1533,11 +1546,11 @@ See also section <ref id="shadowmaps" name="Using ShadowMaps">.
 <item><tt>"RIB-Export/Create All ShadowMaps"</tt>, creates all shadow maps
 for the current scene (regardless of selection).
 See also section <ref id="shadowmaps" name="Using ShadowMaps">.
-
+</itemize><itemize>
 <item><tt/"Enable Scripts"/ enables all disabled script tags and
 objects. Objects and tags in the object clipboard are not
 affected!
-
+</itemize><itemize>
 <item><tt>"Select Renderer"</tt> opens a dialog where the renderer
 for direct rendering from a view may be chosen.
 The changes will have effect on all preference settings that control
