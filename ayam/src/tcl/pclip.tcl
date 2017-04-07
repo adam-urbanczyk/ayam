@@ -59,7 +59,7 @@ proc pclip_copy { { mode 0 } } {
     set index [$lb curselection]
 
     if { $index == "" } {
-	puts stderr "pclip_copy: No property selected!"
+	ayError 2 "pclip_copy" "No property selected!"
 	return;
     }
 
@@ -135,17 +135,13 @@ proc pclip_paste { } {
 		}
 		if { $sproc != "" } { eval $sproc } else { setProp }
 	    } else {
-
-	   puts stderr "pclip_paste: Unable to paste property: \"$pclip_prop\""
-	   puts stderr "to objects of type: \"$type\"!"
-
+		ayError 2 "pclip_paste"\
+    "Unable to paste property: \"$pclip_prop\" to objects of type: \"$type\"!"
 	    }
-
 	}
-
 	set ay(pasteProp) 0
     } else {
-	puts stderr "pclip_paste: Property clipboard is empty!"
+	ayError 2 "pclip_paste" "Property clipboard is empty!"
     }
  return;
 }
@@ -170,8 +166,7 @@ proc pclip_pastetosel { } {
 	set c [tk_messageBox -title $t -type okcancel -icon warning\
 		-message $m]
 
-     if { $c == "cancel" } { return; }
-
+	if { $c == "cancel" } { return; }
     }
 
     if { $pclip_prop != "" } {
@@ -225,11 +220,11 @@ proc pclip_pastetosel { } {
 	    # the property GUI and update the property GUI
 	    plb_update
 	} else {
-	    puts stderr "pclip_pastetosel: No Property selected!"
+	   ayError 2 "pclip_pastetosel" "No Property selected!"
 	}
 	set ay(pasteProp) 0
     } else {
-	puts stderr "pclip_pastetosel: Property clipboard is empty!"
+	ayError 2 "pclip_pastetosel" "Property clipboard is empty!"
     }
 }
 # pclip_pastetosel
