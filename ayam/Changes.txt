@@ -1,5 +1,5 @@
-[24. Mar 2017] CVS-Head:
-========================
+[8. Apr 2017] CVS-Head:
+=======================
 Bug Fixes:
 o entering non number data to tesselation parameter entries (SF 554)
 o chordal/centripetal knots for periodic curves/surfaces are wrong (SF 555)
@@ -10,6 +10,10 @@ o complex Gordon surfaces are wrong (SF 559)
 Modelling:
 o the set mark action now supports drag selection of multiple points,
   setting the mark to their bounding box center
+
+Scripts/Scripting Interface:
+o added script "slxml.tcl" to parse XML meta data embedded in shading
+  language comments
 
 
 [24. Jan 2017] Ayam 1.24:
