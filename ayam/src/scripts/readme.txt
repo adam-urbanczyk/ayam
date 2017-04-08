@@ -1,4 +1,4 @@
-[readme.txt - 2. Oct 2016]
+[readme.txt - 8. Apr 2017]
 
 This directory contains a collection of various scripts for Ayam.
 
@@ -70,6 +70,8 @@ setglobal.tcl - demonstrates how to set global variables not reachable
 oldnames.tcl - add aliases to make scripts written before Ayam 1.16 work,
  also comprehensively lists which commands actually have been renamed
  (from 1.15 to 1.16)
+
+slxml.tcl - parse XML tags embedded in shading language comments
 
 
 Script Object Scripts
