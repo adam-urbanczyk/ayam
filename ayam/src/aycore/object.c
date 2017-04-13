@@ -1419,7 +1419,7 @@ ay_object_find(ay_object *o, ay_object *h)
 	{
 	  if(h->down)
 	    {
-	      found = ay_object_find(h->down, o);
+	      found = ay_object_find(o, h->down);
 	      if(found)
 		return AY_TRUE;
 	    } /* if */
