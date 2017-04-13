@@ -132,8 +132,8 @@ proc cvview_update { } {
     # arrow
     set x [expr {$CVView(wi)*$m+$r}]
     set y [expr {$jm+$r-$m}]
-    $ca create line [expr $x-7] [expr $y-7] $x $y -tags l
-    $ca create line [expr $x+8] [expr $y-8] $x $y -tags l
+    $ca create line [expr $x-7] [expr $y-7] $x $y -width 2 -tags l
+    $ca create line [expr $x+7] [expr $y-7] $x $y -cap round -width 2 -tags l
 
     $ca bind o <Enter> cvview_showvalues
     $ca bind o <Leave> "destroy $ay(pca).$CVView(w).ca.balloon"
