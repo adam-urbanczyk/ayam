@@ -14,8 +14,12 @@
 
 /* trafo.c - functions for handling of linear transformations */
 
-/* ay_trafo_apply3:
- *  apply transformations in transformation matrix m[16] to point c[3]
+/** ay_trafo_apply3:
+ * Apply the transformations encoded in a transformation matrix to
+ * a 3D point.
+ *
+ * \param[in,out] c point to transform [3]
+ * \param[in] m transformation matrix [16]
  */
 void
 ay_trafo_apply3(double *c, double *m)
@@ -32,9 +36,14 @@ ay_trafo_apply3(double *c, double *m)
 } /* ay_trafo_apply3 */
 
 
-/* ay_trafo_apply3v:
- *  apply transformations in transformation matrix m[16] to
- *  vector c[clen*stride] (stride >= 3)
+/** ay_trafo_apply3v:
+ * Apply the transformations encoded in a transformation matrix to an
+ * array of 3D points.
+ *
+ * \param[in,out] c array of points to transform [clen*stride]
+ * \param[in] clen number of points in \a c
+ * \param[in] stride distance between two points in \a c (stride >= 3)
+ * \param[in] m transformation matrix [16]
  */
 void
 ay_trafo_apply3v(double *c, unsigned int clen, unsigned int stride, double *m)
@@ -57,8 +66,12 @@ ay_trafo_apply3v(double *c, unsigned int clen, unsigned int stride, double *m)
 } /* ay_trafo_apply3v */
 
 
-/* ay_trafo_apply4:
- *  apply transformations in transformation matrix m[16] to point c[4]
+/** ay_trafo_apply4:
+ * Apply the transformations encoded in a transformation matrix to
+ * a 4D point.
+ *
+ * \param[in,out] c point to transform [4]
+ * \param[in] m transformation matrix [16]
  */
 void
 ay_trafo_apply4(double *c, double *m)
@@ -76,9 +89,14 @@ ay_trafo_apply4(double *c, double *m)
 } /* ay_trafo_apply4 */
 
 
-/* ay_trafo_apply4v:
- *  apply transformations in transformation matrix m[16] to
- *  vector c[clen*stride] (stride >= 4)
+/** ay_trafo_apply4v:
+ * Apply the transformations encoded in a transformation matrix to an
+ * array of 4D points.
+ *
+ * \param[in,out] c array of points to transform [clen*stride]
+ * \param[in] clen number of points in \a c
+ * \param[in] stride distance between two points in \a c (stride >= 4)
+ * \param[in] m transformation matrix [16]
  */
 void
 ay_trafo_apply4v(double *c, unsigned int clen, unsigned int stride, double *m)
@@ -353,9 +371,13 @@ ay_trafo_concatparent(ay_list_object *lo)
 } /* ay_trafo_concatparent */
 
 
-/* ay_trafo_delegate:
- *  delegate all transformations to child objects of object <o>,
- *  resetting its own transformations
+/** ay_trafo_delegate:
+ *  Delegate all transformations to child objects of object \a o,
+ *  resetting its own transformations.
+ *
+ * \param[in,out] o object to process
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_trafo_delegate(ay_object *o)
@@ -387,7 +409,7 @@ ay_trafo_delegate(ay_object *o)
     {
       if(child == ay_endlevel)
 	{
-	  return AY_OK;
+	  break;
 	}
 
       if((o->quat[0] != 0.0) || (o->quat[1] != 0.0) ||
@@ -1580,7 +1602,7 @@ ay_trafo_isidentitymatrix(double *m)
 
 
 /** ay_trafo_translatematrix:
- *  Add a translation to the transformation matrix \a m.
+ *  Add a translation component to the transformation matrix \a m.
  *
  * \param[in] x translation in x
  * \param[in] y translation in y
@@ -1601,7 +1623,7 @@ ay_trafo_translatematrix(double x, double y, double z, double *m)
 
 
 /** ay_trafo_scalematrix:
- *  Add a scale transformation to transformation matrix \a m.
+ *  Add a scale component to transformation matrix \a m.
  *
  * \param[in] x scale factor
  * \param[in] y scale factor
@@ -1622,7 +1644,7 @@ ay_trafo_scalematrix(double x, double y, double z, double *m)
 
 
 /** ay_trafo_rotatematrix:
- *  Add a rotation to the transformation matrix \a m;
+ *  Add a rotation component to the transformation matrix \a m;
  *  code taken from Mesa (Erich Boleyn (erich@uruk.org)).
  *
  * \param[in] angle rotation angle (in degrees)
@@ -1887,10 +1909,10 @@ double ay_trafo_round(double value, int digits)
 
 /** ay_trafo_getall:
  * Concatenates all parent transformations and object transformations
- * onto a given matrix.
+ * onto a given transformation matrix.
  *
  * \param[in] lo current level
- * \param[in] o object
+ * \param[in] o object to process
  * \param[in, out] tm pointer to transformation matrix (double[16]) to fill
  */
 void
