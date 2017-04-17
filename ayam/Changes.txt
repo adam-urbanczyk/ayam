@@ -1,4 +1,4 @@
-[8. Apr 2017] CVS-Head:
+[17. Apr 2017] CVS-Head:
 =======================
 Bug Fixes:
 o entering non number data to tesselation parameter entries (SF 554)
@@ -6,6 +6,9 @@ o chordal/centripetal knots for periodic curves/surfaces are wrong (SF 555)
 o repeated scaling can lead to scale factors of 0.0 (SF 556)
 o split curve action does not update the hierarchy (SF 558)
 o complex Gordon surfaces are wrong (SF 559)
+o crash when not setting an image file name upon rendering (SF 560)
+o withOb fails for objects in sub levels (SF 561)
+o delegTrafo command does not reset parent transformations (SF 562)
 
 Modelling:
 o the set mark action now supports drag selection of multiple points,
