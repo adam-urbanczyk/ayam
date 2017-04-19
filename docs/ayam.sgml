@@ -1816,7 +1816,7 @@ See also section <ref id="drawingmodes" name="Drawing Modes">.
 coordinate system from world space (<tt/"Global"/) to the
 space defined by the current parent object (<tt/"Local (Level)"/)
 or even the space defined by the currently selected object
-(<tt/"Local (Object)"/)
+(<tt/"Local (Object)"/).
 See also section <ref id="editlocal" name="Editing in Local Spaces">.
 
 <item><tt/"Draw Selection only"/, if this is enabled, just the
@@ -16337,7 +16337,8 @@ Potentially existing tags of the designated type will <em/not/ be
 changed.<newline>
 If the tag type is not registered, a corresponding warning message may be
 emitted. This warning can be inhibited using the hidden preference
-setting <tt/"WarnUnknownTag"/.
+setting <tt/"WarnUnknownTag"/ or by registering the tag type using
+the <tt/"registerTag"/ command (see below).
 <item>Examples:
 <enum>
 <item><bf><tt>"addTag NoExport """</tt></bf><newline>
@@ -22991,7 +22992,7 @@ Index:
 <item>ACurve: <ref id="acurveobj" name="ACurve object">
 <item>Action:
 <itemize>
-<item><ref id="iac" name="interactive actions">
+<item><ref id="iac" name="interactive actions">,
 <item><ref id="objsearch" name="object search option">
 </itemize>
 <item>Active: <ref id="scriptattr" name="Script attribute">
@@ -23054,7 +23055,7 @@ Index:
 <list>
 <item>B-Spline:
 <itemize>
-<item><ref id="ncurveattrprop" name="knot type">
+<item><ref id="ncurveattrprop" name="knot type">,
 <item><ref id="pmattr" name="PatchMesh basis type">
 </itemize>
 <item>Background: <ref id="prefdraw" name="preference setting">
@@ -23618,8 +23619,8 @@ Index:
 <item><ref id="ncattr" name="NCurve attribute">,
 <item><ref id="npattr" name="NPatch attribute">,
 <item><ref id="pmattr" name="PatchMesh attribute">
-<item>isSurface: <ref id="scissurface" name="scripting interface command">
 </itemize>
+<item>isSurface: <ref id="scissurface" name="scripting interface command">
 </list>
 
 <#if out="latex"><x/phantomsection/</#if>
@@ -24152,6 +24153,12 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="riatag" name="tag type">,
 <item><ref id="rioptdb" name="RiOption and RiAttributes Database">
 </itemize>
+<item>RIB export:
+<itemize>
+<item><ref id="prefrib" name="preferences">,
+<item><ref id="mmfile" name="main menu">,
+<item><ref id="vmview" name="view menu">
+</itemize>
 <item>RIB import: <ref id="imprib" name="RIB Import">
 <item>RIBFile: <ref id="prefrib" name="preference setting">
 <item>RiDisplay: <ref id="ridtag" name="tag type">
@@ -24605,7 +24612,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 </itemize>
 <item>Weight:
 <itemize>
-<item><ref id="editac" name="single point weight editing">
+<item><ref id="editac" name="single point weight editing">,
 <item><ref id="rats" name="rational style">
 </itemize>
 <item>WheelZoom: <ref id="hidprefs" name="hidden preference setting">
