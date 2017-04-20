@@ -14,6 +14,66 @@
 
 /* interpol.c - helpers for interpolation of various elements */
 
+/* ay_interpol_2DA4DIC:
+ *  interpolate between two 2D arrays of 4D points
+ *  with a interpolation control surface
+ *
+ */
+int
+ay_interpol_2DA4DIC(ay_nurbpatch_object *np, int w, int h,
+		    double *st, double *en, double *ta)
+{
+ int i, j, a = 0;
+ double p, V1[3], u, v, ulen, vlen;
+
+  if(!np || !st || !en || !ta)
+    return AY_ENULL;
+
+  ulen = fabs(np->uknotv[np->width] - np->uknotv[np->uorder-1]);
+  vlen = fabs(np->vknotv[np->height] - np->vknotv[np->vorder-1]);
+
+  for(i = 0; i < w; i++)
+    {
+      u = np->uknotv[np->uorder-1]+(double)i/w*ulen;
+
+      for(j = 0; j < h; j++)
+	{
+	  v = np->vknotv[np->vorder-1]+(double)j/h*vlen;
+
+	  ay_nb_SurfacePoint4D(np->width+1, np->height+1,
+			       np->uorder-1, np->vorder-1,
+			       np->uknotv, np->vknotv, np->controlv,
+			       u, v, V1);
+
+	  p = V1[1];
+	  V1[0] = en[a]   - st[a];
+	  V1[1] = en[a+1] - st[a+1];
+	  V1[2] = en[a+2] - st[a+2];
+	  if((fabs(V1[0]) > AY_EPSILON) ||
+	     (fabs(V1[1]) > AY_EPSILON) ||
+	     (fabs(V1[2]) > AY_EPSILON))
+	    {
+	      AY_V3SCAL(V1,p);
+	      V1[0] += st[a];
+	      V1[1] += st[a+1];
+	      V1[2] += st[a+2];
+	      memcpy(&(ta[a]), V1, 3*sizeof(double));
+	    }
+	  else
+	    {
+	      memcpy(&(ta[a]), &(st[a]), 3*sizeof(double));
+	    }
+	  /* interpolate weight */
+	  ta[a+3] = st[a+3]+(p*(en[a+3]-st[a+3]));
+
+	  a += 4;
+	} /* for */
+    } /* for */
+
+ return AY_OK;
+} /* ay_interpol_2DA4DIC */
+
+
 /* ay_interpol_1DA4DIC:
  *  interpolate between two 1D arrays of 4D points
  *  with a interpolation control curve
@@ -23,7 +83,7 @@ int
 ay_interpol_1DA4DIC(ay_nurbcurve_object *nc, int len, double *st, double *en,
 		    double *ta)
 {
- int i;
+ int i, a = 0;
  double p, V1[3], ulen;
 
   if(!nc || !st || !en || !ta)
@@ -31,31 +91,33 @@ ay_interpol_1DA4DIC(ay_nurbcurve_object *nc, int len, double *st, double *en,
 
   ulen = fabs(nc->knotv[nc->length] - nc->knotv[nc->order-1]);
 
-  for(i = 0; i < (len*4); i += 4)
+  for(i = 0; i < len; i++)
     {
       p = nc->knotv[nc->order-1]+(double)i/len*ulen;
       ay_nb_CurvePoint4D(nc->length+1, nc->order-1, nc->knotv, nc->controlv,
 			 p, V1);
       p = V1[1];
-      V1[0] = en[i]   - st[i];
-      V1[1] = en[i+1] - st[i+1];
-      V1[2] = en[i+2] - st[i+2];
+      V1[0] = en[a]   - st[a];
+      V1[1] = en[a+1] - st[a+1];
+      V1[2] = en[a+2] - st[a+2];
       if((fabs(V1[0]) > AY_EPSILON) ||
 	 (fabs(V1[1]) > AY_EPSILON) ||
 	 (fabs(V1[2]) > AY_EPSILON))
 	{
 	  AY_V3SCAL(V1,p);
-	  V1[0] += st[i];
-	  V1[1] += st[i+1];
-	  V1[2] += st[i+2];
-	  memcpy(&(ta[i]),V1,3*sizeof(double));
+	  V1[0] += st[a];
+	  V1[1] += st[a+1];
+	  V1[2] += st[a+2];
+	  memcpy(&(ta[a]), V1, 3*sizeof(double));
 	}
       else
 	{
-	  memcpy(&(ta[i]),&(st[i]),3*sizeof(double));
+	  memcpy(&(ta[a]), &(st[a]), 3*sizeof(double));
 	}
       /* interpolate weight */
-      ta[i+3] = st[i+3]+(p*(en[i+3]-st[i+3]));
+      ta[a+3] = st[a+3]+(p*(en[a+3]-st[a+3]));
+
+      a += 4;
     } /* for */
 
  return AY_OK;
@@ -374,16 +436,18 @@ ay_interpol_curvestcmd(ClientData clientData, Tcl_Interp *interp,
  * \param[in] r ratio of p1 and p2 (0.0 - 1.0)
  * \param[in] p1 first NURBS patch
  * \param[in] p2 second NURBS patch
+ * \param[in] ic interpolation control NURBS patch (may be NULL)
  * \param[in,out] ta where to store the resulting patch
  *
  * \returns AY_OK on success, error code otherwise
  */
 int
-ay_interpol_npatches(double r, ay_object *p1, ay_object *p2, ay_object **ta)
+ay_interpol_npatches(double r, ay_object *p1, ay_object *p2, ay_object *ic,
+		     ay_object **ta)
 {
  int ay_status = AY_OK;
  ay_object *newo = NULL;
- ay_nurbpatch_object *np1, *np2, *newnp = NULL;
+ ay_nurbpatch_object *np1, *np2, *npi = NULL, *newnp = NULL;
  double *newuknotv = NULL, *newvknotv = NULL, *newcontrolv = NULL;
  int stride = 4;
 
@@ -395,6 +459,11 @@ ay_interpol_npatches(double r, ay_object *p1, ay_object *p2, ay_object **ta)
 
   np1 = (ay_nurbpatch_object *)p1->refine;
   np2 = (ay_nurbpatch_object *)p2->refine;
+
+  if(ic)
+    {
+      npi = (ay_nurbpatch_object *)ic->refine;
+    }
 
   if((np1->width != np2->width)||(np1->height != np2->height))
     return AY_ERROR;
@@ -414,10 +483,14 @@ ay_interpol_npatches(double r, ay_object *p1, ay_object *p2, ay_object **ta)
     goto cleanup;
 
   newo->refine = newnp;
-
-  ay_status = ay_interpol_1DA4D(r, np1->width*np1->height,
-				np1->controlv, np2->controlv,
-				newcontrolv);
+  if(npi)
+    ay_status = ay_interpol_2DA4DIC(npi, np1->width, np1->height,
+				    np1->controlv, np2->controlv,
+				    newcontrolv);
+  else
+    ay_status = ay_interpol_1DA4D(r, np1->width*np1->height,
+				  np1->controlv, np2->controlv,
+				  newcontrolv);
   if(ay_status)
     goto cleanup;
 
@@ -560,7 +633,17 @@ ay_interpol_surfacestcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  ay_status = ay_interpol_npatches(r, sel->object, sel->next->object, &o);
+  if(sel->next && sel->next->next &&
+     sel->next->next->object->type == AY_IDNPATCH)
+    {
+      ay_status = ay_interpol_npatches(r, sel->object, sel->next->object,
+				      sel->next->next->object, &o);
+    }
+  else
+    {
+      ay_status = ay_interpol_npatches(r, sel->object, sel->next->object,
+				       NULL, &o);
+    }
 
   if(ay_status)
     {
