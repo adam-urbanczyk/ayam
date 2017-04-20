@@ -384,14 +384,19 @@ void ay_instt_init(Tcl_Interp *interp);
 
 /* interpol.c */
 
-/** interpolate between two arrays of homogenous 3D coordinates
+/** interpolate between two 2D arrays of homogenous 3D coordinates
  */
-int ay_interpol_1DA4D(double p, int len, double *st, double *en, double *ta);
+int ay_interpol_2DA4DIC(ay_nurbpatch_object *np, int w, int h,
+			double *st, double *en, double *ta);
 
 /** interpolate between two arrays of homogenous 3D coordinates
  */
 int ay_interpol_1DA4DIC(ay_nurbcurve_object *nc, int len, double *st,
 			double *en, double *ta);
+
+/** interpolate between two arrays of homogenous 3D coordinates
+ */
+int ay_interpol_1DA4D(double p, int len, double *st, double *en, double *ta);
 
 /** interpolate between two arrays of doubles
  */
@@ -415,7 +420,7 @@ int ay_interpol_curvestcmd(ClientData clientData, Tcl_Interp *interp,
 /** interpolate between two surfaces
  */
 int ay_interpol_npatches(double r, ay_object *p1, ay_object *p2,
-			ay_object **ta);
+			 ay_object *ic, ay_object **ta);
 
 /** Tcl command to interpolate between two surfaces
  */
