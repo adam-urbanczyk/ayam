@@ -1421,6 +1421,9 @@ ay_script_notifycb(ay_object *o)
 		    } /* if */
 		} /* if */
 
+	      if(down->next)
+		ay_next = nexto;
+
 	      down = down->next;
 	    } /* while */
 
