@@ -34,11 +34,11 @@ ay_interpol_2DA4DIC(ay_nurbpatch_object *np, int w, int h,
 
   for(i = 0; i < w; i++)
     {
-      u = np->uknotv[np->uorder-1]+(double)i/w*ulen;
+      u = np->uknotv[np->uorder-1]+(double)i/(w-1)*ulen;
 
       for(j = 0; j < h; j++)
 	{
-	  v = np->vknotv[np->vorder-1]+(double)j/h*vlen;
+	  v = np->vknotv[np->vorder-1]+(double)j/(h-1)*vlen;
 
 	  ay_nb_SurfacePoint4D(np->width-1, np->height-1,
 			       np->uorder-1, np->vorder-1,
@@ -93,7 +93,7 @@ ay_interpol_1DA4DIC(ay_nurbcurve_object *nc, int len, double *st, double *en,
 
   for(i = 0; i < len; i++)
     {
-      p = nc->knotv[nc->order-1]+(double)i/len*ulen;
+      p = nc->knotv[nc->order-1]+(double)i/(len-1)*ulen;
       ay_nb_CurvePoint4D(nc->length-1, nc->order-1, nc->knotv, nc->controlv,
 			 p, V1);
       p = V1[1];
