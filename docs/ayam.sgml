@@ -18399,18 +18399,24 @@ if { $ay_error > 1 } {
 <label id="scconvob">
 convOb:
 <itemize>
- <item>Synopsis: <tt>"convOb [-inplace | -check type]"</tt>
+ <item>Synopsis: <tt>"convOb [-inplace [type] | -check type]"</tt>
  <item>Background: Yes, Undo: depends (if -inplace: Yes), Safe: Yes
  <item>Description: This command calls the registered converter
 for the selected object(s).
 <p><p>
 If the option <tt>"-inplace"</tt> is
 used, the new object(s) will replace the old object(s).
+If, additionally, a target type is specified, the conversion
+will be repeated until the object is of given
+type (and no conversion is attempted if the object is already
+of the given type).<footnote>Since Ayam 1.25.</footnote>
 <p>
 If the option <tt>"-check"</tt> is given, the convOb command does not
 convert but check, whether a conversion to a given object type would be
 successful, the result of the check will be returned as 0 &ndash; no,
-or 1 &ndash; yes.
+or 1 &ndash; yes. Note, that only immediate, one step, conversions are
+checked, not multiple as carried out by in-place conversions with
+target type.
 </itemize>
 
 <p>
