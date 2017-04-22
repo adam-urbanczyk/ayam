@@ -88,6 +88,7 @@ ay_convert_objecttcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK, in_place = AY_FALSE, notify_parent = AY_FALSE;
  int check = AY_FALSE;
+ unsigned int ttype = 0;
  ay_list_object *sel = ay_selection;
  Tcl_HashEntry *entry = NULL;
  char *res, no[] = "0", yes[] = "1";
@@ -97,7 +98,16 @@ ay_convert_objecttcmd(ClientData clientData, Tcl_Interp *interp,
       if((argv[1][0] == '-') && (argv[1][1] == 'i'))
 	{
 	  in_place = AY_TRUE;
+	  if(argc > 2)
+	    {
+	      /* resolve target type */
+	      if((entry = Tcl_FindHashEntry(&ay_otypesht, argv[2])))
+		{
+		  ttype = (unsigned int) Tcl_GetHashValue(entry);
+		}
+	    }
 	}
+      else
       if((argv[1][0] == '-') && (argv[1][1] == 'c'))
 	{
 	  check = AY_TRUE;
@@ -137,11 +147,26 @@ ay_convert_objecttcmd(ClientData clientData, Tcl_Interp *interp,
       else
 	{
 	  /* convert */
-	  ay_status = ay_convert_object(sel->object, in_place);
-	  if(!ay_status)
+	  if(ttype != 0)
 	    {
-	      sel->object->modified = AY_TRUE;
-	      notify_parent = AY_TRUE;
+	      while(sel->object->type != ttype && !ay_status)
+		{
+		  ay_status = ay_convert_object(sel->object, in_place);
+		  if(!ay_status)
+		    {
+		      sel->object->modified = AY_TRUE;
+		      notify_parent = AY_TRUE;
+		    }
+		}
+	    }
+	  else
+	    {
+	      ay_status = ay_convert_object(sel->object, in_place);
+	      if(!ay_status)
+		{
+		  sel->object->modified = AY_TRUE;
+		  notify_parent = AY_TRUE;
+		}
 	    }
 	} /* if check or convert */
       sel = sel->next;
