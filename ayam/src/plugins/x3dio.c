@@ -7814,7 +7814,7 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
  int idxsize = 0;
  double *P, *U, *V, *fd1, *fd2, *Ct;
  double l, u, v, ud, fud, vd, fvd;
- double N[3] = {0}, fder[9] = {0};
+ double N[3] = {0}, fder[12] = {0};
  double offset = 0.005;
  scew_element *transform_element = NULL;
  scew_element *shape_element = NULL;
@@ -8150,7 +8150,7 @@ x3dio_writetrimwire(scew_element *element, ay_nurbpatch_object *np,
  int a, b, i, j, k, m, n, p, q;
  int idxsize = 0;
  double *P, *U, *V, *fd1, *fd2, *Ct = NULL;
- double l, N[3] = {0}, fder[9] = {0};
+ double l, N[3] = {0}, fder[12] = {0};
  double offset = 0.005;
  scew_element *shape_element = NULL;
  scew_element *line_element = NULL;
@@ -8285,7 +8285,7 @@ x3dio_writetrimmednpwire(scew_element *element, ay_object *o)
  int a, b, i, j, k, m, n, p, q, i0, ii, jj;
  int idxsize = 0;
  double *P, *U, *V, *fd1, *fd2, *Ct = NULL;
- double l, N[3] = {0}, fder[9] = {0};
+ double l, N[3] = {0}, fder[12] = {0};
  double qf, offset = 0.005;
  scew_element *transform_element = NULL;
  scew_element *shape_element = NULL;
