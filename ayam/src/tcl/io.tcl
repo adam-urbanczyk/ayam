@@ -498,6 +498,7 @@ proc io_lcAuto { name } {
     foreach path $paths {
 	set filename [file join $path $soname]
 	set sopath [file dirname $filename]
+
 	if { ("$sopath" != "") && [file exists $sopath] } {
 	    cd $sopath
 	    set success [catch {load $soname}]
@@ -985,6 +986,9 @@ proc io_RenderSM { w all } {
 		\nSelect \"Ok\" to enable them and continue.\
 		\nSelect \"Cancel\" to stop operation."
 
+	set t [ms info_sm1]
+	set m [ms info_sm2]
+
 	if { $ayprefs(FixDialogTitles) == 1 } {
 	    set m "$t\n\n$m"
 	}
@@ -1410,7 +1414,7 @@ proc io_exportScene { filename } {
 	    set export_cmd "${plugin}_export"
 
 	    # see if export command exists
-	    if { [llength [info commands $export_cmd]] > 0 } {
+	    if { [llength [info commands $export_cmd]] == 0 } {
 		# export command not available => attempt to load the plugin
 		io_lcAuto $plugin
 	    }
