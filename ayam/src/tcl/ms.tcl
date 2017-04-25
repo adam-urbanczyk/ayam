@@ -316,6 +316,15 @@ ms_set en info_sc2 "Select \"OK\" to lose all changes.\nSelect \"Cancel\" to sto
 ms_set en info_rs1 "Need restart!"
 ms_set en info_rs2 "Changes need a restart of Ayam to take effect!"
 
+ms_set en info_sm1 "Configuration problematic!"
+ms_set en info_sm2 "Manual ShadowMaps should be enabled!\
+		\nSelect \"OK\" to enable them and continue.\
+		\nSelect \"Cancel\" to stop operation."
+
+ms_set en info_warning "Warning!"
+ms_set en info_pc1 "This operation may destroy the current property.\n\
+    Proceed with caution."
+
 
 #
 # fill "de"-locale
@@ -430,7 +439,7 @@ ms_set de ayprefse_RIStandard "Sollen alle Attribute und Optionen,\ndie nicht\
 im RenderMan Standard vorkommen,\nbeim RIB-Export ausgelassen werden?"
 ms_set de ayprefse_WriteIdent "Sollen Identifikatoren, basierend auf den\
 Objektnamen,\nin die RIB-Datei geschrieben werden?"
-ms_set de ayprefse_ShadowMaps "Sollen ShadowMaps verwendet werden?"
+ms_set de ayprefse_ShadowMaps "Sollen Schattenkarten verwendet werden?"
 ms_set de ayprefse_ExcludeHidden "Sollen alle versteckten Objekte beim
 RIB-Export ausgelassen werden?"
 ms_set de ayprefse_RenderMode "Wie soll der Renderer zum Rendern auf den\
@@ -462,26 +471,26 @@ Rendering-Fortschritts durch den Renderer\
 \n\"%d\" ist die Position des prozentualen Fortschrittswertes,\
 \nder dann im Rendering-Fenster angezeigt wird."
 ms_set de ayprefse_SMRender "Name und Aufrufparameter des Renderers,\
-der für ShadowMaps verwendet werden soll.\n\"%s\" wird\
+der für Schattenkarten verwendet werden soll.\n\"%s\" wird\
 durch den Dateinamen des RIBs ersetzt."
-ms_set de ayprefse_SMRenderUI "Soll das Render-Fenster für ShadowMaps\
+ms_set de ayprefse_SMRenderUI "Soll das Render-Fenster für Schattenkarten\
 aktiviert werden?"
 ms_set de ayprefse_SMRenderPT "Beschreibung der Ausgabe des\
-Rendering-Fortschritts durch den ShadowMap-Renderer\
+Rendering-Fortschritts durch den Schattenkarten-Renderer\
 \n\"%d\" ist die Position des prozentualen Fortschrittswertes,\
 \nder dann im Rendering-Fenster angezeigt wird."
 
 ms_set de ayprefse_PPRender "Renderer, der für die permanente Vorschau\
 verwendet werden soll."
 
-ms_set de ayprefse_SMFileFormat "Dateiformat der ShadowMaps.\
+ms_set de ayprefse_SMFileFormat "Dateiformat der Schattenkarten.\
 \nRenderMan: zfile\nGelato: shadow"
-ms_set de ayprefse_SMFileType "Typ der ShadowMaps.\
-\nz: normale ShadowMap (RenderMan, Gelato)\
-\navgz: Woo ShadowMap (nur Gelato!)\
-\nvolz: Volumen ShadowMap (nur Gelato!)"
+ms_set de ayprefse_SMFileType "Typ der Schattenkarten.\
+\nz: normale Schattenkarten (RenderMan, Gelato)\
+\navgz: Woo Schattenkarten (nur Gelato!)\
+\nvolz: Volumen Schattenkarten (nur Gelato!)"
 ms_set de ayprefse_SMChangeShaders "Sollen Shadernamen angepasst werden\
-\nwenn ShadowMaps benutzt werden?"
+\nwenn Schattenkarten benutzt werden?"
 ms_set de ayprefse_AutoCloseUI "Soll das Rendering-Fenster geschlossen werden\
 wenn der Renderer fertig ist?"
 
@@ -550,6 +559,15 @@ if { $ay(ws) == "Win32" } {
 ms_set de info_rs1 "Neustart erforderlich!"
 ms_set de info_rs2 "Ayam muss neu gestartet werden,\num die Änderungen anzuwenden."
 
+ms_set de info_warning "Warnung!"
+ms_set de info_pc1 "Diese Operation kann die aktuelle Eigenschaft zerstören.\
+		\n\"OK\" - fortfahren,\
+		\n\"Cancel\" - Operation abbrechen."
+
+ms_set de info_sm1 "Konfiguration problematisch!"
+ms_set de info_sm2 "Manuelle Schattenkarten sollten eingeschaltet sein!\
+		\n\"OK\" - einschalten und fortfahren.\
+		\n\"Cancel\" - Operation abbrechen."
 
 
 #
@@ -756,3 +774,16 @@ if { $ay(ws) == "Win32" } {
 
 ms_set fr info_rs1 "Redémarrage nécessaire!"
 #ms_set fr info_rs2 "Changes need a restart of Ayam to take effect!"
+
+
+#ms_set fr info_warning "Attention!"
+#ms_set fr info_pc1 "Cette opération peut détruire la propriété actuelle.\
+#		\n\"OK\" - fortfahren,\
+#		\n\"Annuler\" - Operation abbrechen."
+
+#ms_set fr info_sm1 "Configuration problematic!"
+#ms_set fr info_sm2 "Manual ShadowMaps should be enabled!\
+#		\nSelect \"OK\" to enable them and continue.\
+#		\nSelect \"Cancel\" to stop operation."
+
+# EOF
