@@ -314,6 +314,8 @@ int x3dio_writexmltag(int numtargets, scew_element **targets, ay_tag *tag);
 /* export callback functions */
 int x3dio_writencurveobj(scew_element *element, ay_object *o);
 
+int x3dio_writencwire(scew_element *element, ay_object *o);
+
 int x3dio_writencconvertibleobj(scew_element *element, ay_object *o);
 
 int x3dio_writetrimcurve(scew_element *element, ay_object *o);
@@ -321,6 +323,8 @@ int x3dio_writetrimcurve(scew_element *element, ay_object *o);
 int x3dio_writetrimloop(scew_element *element, ay_object *o);
 
 int x3dio_writenpatchobj(scew_element *element, ay_object *o);
+
+int x3dio_writewiremat(scew_element *shape_element);
 
 int x3dio_writenpwire(scew_element *element, ay_object *o);
 
@@ -7415,6 +7419,16 @@ x3dio_writencurveobj(scew_element *element, ay_object *o)
   if(!element || !o || !o->refine)
     return AY_ENULL;
 
+  /* write this patch as wire frame? */
+  if(ay_tags_hastag(o, ay_aswire_tagtype))
+    {
+      /* yes */
+      return x3dio_writencwire(element, o);
+    } /* if wire */
+
+  if(!x3dio_writecurves)
+    return AY_OK;
+
   c = (ay_nurbcurve_object *)o->refine;
 
   /* write transform */
@@ -7433,6 +7447,74 @@ x3dio_writencurveobj(scew_element *element, ay_object *o)
 
  return ay_status;
 } /* x3dio_writencurveobj */
+
+
+/* x3dio_writencwire:
+ *
+ */
+int
+x3dio_writencwire(scew_element *element, ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_object *c;
+ ay_nurbcurve_object *nc;
+ char buf[64], *attr = NULL, *tmp;
+ int qf, a, idxsize, Ctlen;
+ double *Ct;
+ scew_element *transform_element = NULL;
+ scew_element *shape_element = NULL;
+ scew_element *line_element = NULL;
+ scew_element *coord_element = NULL;
+
+  if(!element || !o || !o->refine)
+    return AY_ENULL;
+
+  nc = (ay_nurbcurve_object *)o->refine;
+
+  qf = 4;
+
+  ay_status = ay_stess_CurvePoints3D(nc->length, nc->order-1,
+				     nc->knotv, nc->controlv, nc->is_rat, qf,
+				     &Ctlen, &Ct);
+  if(ay_status)
+    return AY_ERROR;
+
+  /* estimate memory needed to store the indices */
+  idxsize = sprintf(buf, " %d", Ctlen);
+  if(!(attr = malloc((idxsize*Ctlen+10)*sizeof(char))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  tmp = attr;
+  for(a = 0; a < Ctlen; a++)
+    {
+      tmp += sprintf(tmp, " %d", a);
+    } /* for */
+  tmp += sprintf(tmp, " -1");
+
+  /* write all the data */
+  x3dio_writetransform(element, o, &transform_element);
+
+  shape_element = scew_element_add(transform_element, "Shape");
+
+  x3dio_writewiremat(shape_element);
+
+  line_element = scew_element_add(shape_element, "IndexedLineSet");
+
+  scew_element_add_attr_pair(line_element, "coordIndex", attr);
+
+  coord_element = scew_element_add(line_element, "Coordinate");
+
+  x3dio_writedoublepoints(coord_element, "point", 3, Ctlen, 3, Ct);
+
+cleanup:
+
+  if(Ct)
+    free(Ct);
+
+  if(attr)
+    free(attr);
+
+ return ay_status;
+} /* x3dio_writencwire */
 
 
 /* x3dio_writencconvertibleobj:
