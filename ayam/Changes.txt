@@ -1,4 +1,4 @@
-[17. Apr 2017] CVS-Head:
+[29. Apr 2017] CVS-Head:
 =======================
 Bug Fixes:
 o entering non number data to tesselation parameter entries (SF 554)
@@ -9,14 +9,24 @@ o complex Gordon surfaces are wrong (SF 559)
 o crash when not setting an image file name upon rendering (SF 560)
 o withOb fails for objects in sub levels (SF 561)
 o delegTrafo command does not reset parent transformations (SF 562)
+o tweening curves with interpolation control curve (SF 563)
+o X3D export of surfaces with AsWire tag (SF 564)
 
 Modelling:
 o the set mark action now supports drag selection of multiple points,
   setting the mark to their bounding box center
+o tweening surfaces now supports an interpolation control surface
 
 Scripts/Scripting Interface:
 o added script "slxml.tcl" to parse XML meta data embedded in shading
   language comments
+o improved Script object working environment for modify scripts
+  (object creation appends to current level)
+o added Script object example script "dualsweep.tcl" that creates birailed
+  surfaces where the cross section is always perpendicular to both rails
+
+Import/Export:
+o X3D export of NURBS curves now supports the AsWire tag
 
 
 [24. Jan 2017] Ayam 1.24:
