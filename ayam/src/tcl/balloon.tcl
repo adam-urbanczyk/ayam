@@ -159,4 +159,18 @@ proc balloon_clear { w } {
 }
 # balloon_clear
 
+
+# balloon_disable:
+#  temporarily disable the balloons (bound to icon menu buttons to avoid
+#  clashes with menu interaction)
+proc balloon_disable { } {
+    global ay ayprefs
+    if { $ayprefs(showtt) == 1 } {
+	set ayprefs(showtt) 0
+	after 5000 "set ::ayprefs(showtt) 1;"
+    }
+ return;
+}
+# balloon_disable
+
 # EOF
