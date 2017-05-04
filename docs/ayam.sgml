@@ -16851,9 +16851,9 @@ isCompNC:
 are compatible (i.e.~defined on the same knot vector), otherwise it
 returns 0.
 <p><p>
-If the option <tt/"-l"/ is 0, only the orders of the curves
+If <tt/"level"/ is 0, only the orders of the curves
 are compared.<newline>
-If the option <tt/"-l"/ is 1, only the orders and lengths of the curves
+If <tt/"level"/ is 1, only the orders and lengths of the curves
 are compared.
 </itemize>
 
@@ -16870,8 +16870,8 @@ i.e.~of the same order and defined on the same knot vector.
 <p><p>
 If the option <tt/"-f"/ is present, there will be no prior compatibility check.
 <p>
-If the option <tt/"-l"/ is 0, only the orders will be adapted.<newline>
-If the option <tt/"-l"/ is 1, only the orders and lengths will be adapted.
+If <tt/"level"/ is 0, only the orders will be adapted.<newline>
+If <tt/"level"/ is 1, only the orders and lengths will be adapted.
 <p>
 See also section <ref id="makecompt" name="Make Compatible Tool">.
 </itemize>
@@ -17391,9 +17391,9 @@ are compatible (i.e.~defined on the same knot vector), otherwise it returns 0.
 If the option <tt/"-u"/ is given, only the U dimension will be checked.<newline>
 If the option <tt/"-v"/ is given, only the V dimension will be checked.
 <p>
-If the option <tt/"-l"/ is 0, only the orders of the surfaces
+If <tt/"level"/ is 0, only the orders of the surfaces
 are compared.<newline>
-If the option <tt/"-l"/ is 1, width/height and orders of the surfaces are
+If <tt/"level"/ is 1, width/height and orders of the surfaces are
 compared.
 </itemize>
 
@@ -17413,8 +17413,8 @@ If the option <tt/"-f"/ is present, there will be no prior compatibility check.
 If the option <tt/"-u"/ is given, only the U dimension will be adapted.<newline>
 If the option <tt/"-v"/ is given, only the V dimension will be adapted.
 <p>
-If the option <tt/"-l"/ is 0, only the orders will be adapted.<newline>
-If the option <tt/"-l"/ is 1, only the orders and lengths will be adapted.
+If <tt/"level"/ is 0, only the orders will be adapted.<newline>
+If <tt/"level"/ is 1, only the orders and lengths will be adapted.
 <p>
 See also section <ref id="makecompst" name="Make Compatible Tool">.
 </itemize>
@@ -19292,6 +19292,35 @@ These are the parameters of the triangular circle:
 An example scene file containing such an object is distributed with Ayam,
 see the file:<newline>
 <tt>"ayam/scn/scripts/tcircle.ay"</tt>.
+
+<#if out="latex"><x/newpage/</#if>
+
+<sect2>DualSweep<label id="dualsweeptcl">
+<p>
+<figure loc="ht">
+<eps file="pics/dualsweep.ps" height="5cm">
+<img src="pics/dualsweep.gif">
+<caption>DualSweep Example</caption>
+</figure>
+<p>
+The file <tt>"dualsweep.tcl"</tt> is a Script object script that creates
+a NURBS surface from three parameter curves similar to birailing but
+with cross section curves perpendicular to both rails,
+see also the above image.
+<p>
+The first curve is the so called <em/cross section/. This curve must be
+defined in the XY-plane. It is the leftmost open curve in the upper example
+image.<newline>
+The second curve is the first <em/rail/ curve. This curve should start in
+the starting point of the cross section curve. It is the lower closed curve
+in the upper example image.<newline>
+The third parameter curve is the second <em/rail/ curve. This curve should
+start in the end point of the cross section curve. It is the upper closed curve
+in the upper example image.
+<p>
+An example scene file containing such an object is distributed with Ayam,
+see the file:<newline>
+<tt>"ayam/scn/scripts/dualsweep.ay"</tt>.
 
 <#if out="latex"><x/newpage/</#if>
 
@@ -23313,6 +23342,7 @@ Index:
 <item>Docs: <ref id="prefgui" name="preference setting">
 <item>Double Size: <ref id="vmconf" name="view menu entry">
 <item>downOb: <ref id="scdownob" name="scripting interface command">
+<item>dualsweep.tcl: <ref id="dualsweeptcl" name="example/helper script">
 <item>DrawGrid, DrawLevel, DrawSel, DrawBG: <ref id="vat" name="View attribute">
 <item>Draw BGImage: <ref id="vmconf" name="view menu entry">
 <item>Draw Grid: <ref id="vmconf" name="view menu entry">
@@ -23973,6 +24003,7 @@ Index:
 <label id="indexq"><tt/&nbsp;&nbsp;<bf/Q//
 <list>
 <item>QuadAsBRep: <ref id="exp3dmopt" name="3DM (Rhino) export option">
+<item>Quadrics: <ref id="sphereobj" name="quadric primitives">
 <item>QRender, QRenderPT, QRenderUI:
 <ref id="prefrib" name="preference setting">
 <item>Quat: <ref id="trap" name="transformations property">
@@ -24204,6 +24235,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>rotPnts: <ref id="scrotpnts" name="scripting interface command">
 <item>Round, RoundToCap, RoundToNormal: <ref id="bevelp" name="Bevel type">
 <item>RP: <ref id="rptag" name="tag type">
+<item>RRIB: <ref id="imprib" name="RIB import plugin">
 <item>Ruled surface: <ref id="skinobj" name="Skin object">
 <item>RunProgram: <ref id="riprocp" name="RiProc attribute">
 <item>rV: <ref id="scrv" name="scripting interface command">
