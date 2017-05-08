@@ -156,8 +156,8 @@ proc pclip_pastetosel { } {
     global pclip_prop ayprefs ay
 
     if { $ayprefs(WarnPropPasteToSel) == 1 } {
-	set t "Warning!"
-	set m "This operation may destroy the current property. Proceed if you know what you are doing!"
+	set t [ms info_warning]
+	set m [ms info_pc1]
 
 	if { $ayprefs(FixDialogTitles) == 1 } {
 	    set m "$t\n\n$m"
