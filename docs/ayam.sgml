@@ -8696,6 +8696,9 @@ number of sections chosen.
 The Birail1 object watches the child objects and adapts to them
 automatically via the notification mechanism.
 <p>
+See also section <ref id="dualsweeptcl" name="DualSweep"> for a script
+object that creates a similar surface.
+<p>
 The following table briefly lists some capabilities of the Birail1 object.
 <p>
 <table loc="ht">
@@ -12625,11 +12628,14 @@ the second curve (the latter is using a ratio of 1&thinsp;-&thinsp;<em/r/).
 |-NCurve     ==>     |-NCurve
                      |-NCurve
 </verb></tscreen>
+If a third curve is selected, the parameter <em/r/ is ignored and this
+third curve defines the ratio of influence with its y coordinates.
+
 <tag/Notes/ The two curves must be of the same length and order.
 They need not be defined on the same knot vector, however.
 
-If a third curve is selected, the parameter <em/r/ is ignored and this
-third curve defines the ratio of influence with its y coordinates.
+The interpolation control curve does not need to be compatible with
+any of the original curves.
 
 If one of the curves knot vector types is <tt/"Custom"/ or the
 respective knot vector types are different, the resulting
@@ -13681,9 +13687,16 @@ the second patch (the latter is using a ratio of 1&thinsp;-&thinsp;<em/r/).
 |-NPatch     ==>     |-NPatch
                      |-NPatch
 </verb></tscreen>
+If a third surface is selected, the parameter <em/r/ is ignored and this
+third surface defines the ratio of influence with its y
+coordinates.<footnote>Since 1.25.</footnote>
+
 <tag/Notes/ The two patches must be of the same width, height,
 uorder, and vorder.
 They need not be defined on the same knot vectors, however.
+
+The interpolation control surface does not need to be compatible with
+any of the original patches.
 
 If one of the patches knot vector types is <tt/"Custom"/ or the
 respective knot vector types are different, the resulting
@@ -19309,7 +19322,7 @@ with cross section curves perpendicular to both rails,
 see also the above image.
 <p>
 The first curve is the so called <em/cross section/. This curve must be
-defined in the XY-plane. It is the leftmost open curve in the upper example
+defined in the YZ-plane. It is the leftmost open curve in the upper example
 image.<newline>
 The second curve is the first <em/rail/ curve. This curve should start in
 the starting point of the cross section curve. It is the lower closed curve
