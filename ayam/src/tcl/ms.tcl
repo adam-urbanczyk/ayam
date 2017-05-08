@@ -9,6 +9,21 @@
 
 # ms.tcl - msgcat "equivalent"
 
+# ms_fixcancel:
+#  for window systems where the info/warning dialogs disregard LC_LOCALE
+#  we replace the english button name with the localized variant
+proc ms_fixcancel {ar va} {
+    global ay ms::$ar
+    if { $ay(ws) == "Win32" } {
+	eval "set c \$ms::${ar}(cancel)"
+	eval "set s \$ms::${ar}($va)"
+	set ms::${ar}($va) [string map [list Cancel $c] $s]
+    }
+ return;
+}
+# ms_fixcancel
+
+
 # ms_create:
 # create a translation file from english blueprint
 proc ms_create { lang } {
@@ -547,14 +562,11 @@ Dreiecksnetzen."
 ms_set de objio_options_WriteCurves "Sollen NURBS Kurven exportiert werden?"
 
 # info dialogs
+ms_set de cancel "Abbrechen"
 ms_set de info_sc1 "Szene geändert!"
-if { $ay(ws) == "Win32" } {
-    ms_set de info_sc2 "\"OK\" - Änderungen verwerfen.\n\
-     \"Abbrechen\" - Operation abbrechen."
-} else {
-    ms_set de info_sc2 "\"OK\" - Änderungen verwerfen.\n\
-     \"Cancel\" - Operation abbrechen."
-}
+ms_set de info_sc2 "\"OK\" - Änderungen verwerfen.\n\
+    \"Cancel\" - Operation abbrechen."
+ms_fixcancel de info_sc1
 
 ms_set de info_rs1 "Neustart erforderlich!"
 ms_set de info_rs2 "Ayam muss neu gestartet werden,\num die Änderungen anzuwenden."
@@ -563,11 +575,13 @@ ms_set de info_warning "Warnung!"
 ms_set de info_pc1 "Diese Operation kann die aktuelle Eigenschaft zerstören.\
 		\n\"OK\" - fortfahren,\
 		\n\"Cancel\" - Operation abbrechen."
+ms_fixcancel de info_pc1
 
 ms_set de info_sm1 "Konfiguration problematisch!"
 ms_set de info_sm2 "Manuelle Schattenkarten sollten eingeschaltet sein!\
 		\n\"OK\" - einschalten und fortfahren.\
 		\n\"Cancel\" - Operation abbrechen."
+ms_fixcancel de info_sm2
 
 
 #
@@ -765,12 +779,10 @@ Mops?"
 #ms_set fr objio_options_WriteCurves "Write NURBS curves to exported file?"
 
 # info dialogs
+ms_set fr cancel "Annuler"
 ms_set fr info_sc1 "Changement scène!"
-if { $ay(ws) == "Win32" } {
-#ms_set fr info_sc2 "Select \"OK\" to lose all changes.\nSelect \"Annuler\" to stop operation."
-} else {
 #ms_set fr info_sc2 "Select \"OK\" to lose all changes.\nSelect \"Cancel\" to stop operation."
-}
+#ms_fixcancel fr info_sc2
 
 ms_set fr info_rs1 "Redémarrage nécessaire!"
 #ms_set fr info_rs2 "Changes need a restart of Ayam to take effect!"
@@ -779,11 +791,13 @@ ms_set fr info_rs1 "Redémarrage nécessaire!"
 #ms_set fr info_warning "Attention!"
 #ms_set fr info_pc1 "Cette opération peut détruire la propriété actuelle.\
 #		\n\"OK\" - fortfahren,\
-#		\n\"Annuler\" - Operation abbrechen."
+#		\n\"Cancel\" - Operation abbrechen."
+#ms_fixcancel fr info_pc1
 
 #ms_set fr info_sm1 "Configuration problematic!"
 #ms_set fr info_sm2 "Manual ShadowMaps should be enabled!\
 #		\nSelect \"OK\" to enable them and continue.\
 #		\nSelect \"Cancel\" to stop operation."
+#ms_fixcancel fr info_sm2
 
 # EOF
