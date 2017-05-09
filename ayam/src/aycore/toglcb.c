@@ -346,9 +346,12 @@ ay_toglcb_display(struct Togl *togl)
 	ay_draw_view(togl, /*draw_offset=*/AY_FALSE);
 
       /* XXXX is this really necessary? */
-      /*  glFlush();*/
+      /*glFlush();*/
 
       Togl_SwapBuffers(togl);
+
+      /* improve mouse input lag */
+      glFinish();
 
       if(view->action_state)
 	{
