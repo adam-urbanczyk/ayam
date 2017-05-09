@@ -292,7 +292,8 @@ if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
     menubutton $w.fMenu.a -image ay_Empty_img -menu $w.fMenu.a.m\
 	-padx 0 -pady 0 -borderwidth 0
     set m [menu $w.fMenu.a.m -tearoff 0]
-    bind $w.fMenu.a <ButtonPress-1> "+tk_menuSetFocus $w;balloon_disable"
+    bind $w.fMenu.a <ButtonPress-1>\
+	"+tk_menuSetFocus $w; catch \{destroy %W.balloon\}"
 } else {
     set m [menu $mb.ma -tearoff 0]
     $mb add cascade -label Action -menu $m
@@ -326,7 +327,8 @@ if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
     set lmk $ayviewshortcuts(Local2)
     balloon_set $w.fMenu.mm "change global/local mode\ncycle with <${lmk}>"
     set m [menu $w.fMenu.mm.m -tearoff 0]
-    bind $w.fMenu.mm <ButtonPress-1> "+tk_menuSetFocus $w;balloon_disable"
+    bind $w.fMenu.mm <ButtonPress-1>\
+	"+tk_menuSetFocus $w; catch \{destroy %W.balloon\}"
 } else {
     set m [menu $mb.mm -tearoff 0]
     $mb add cascade -label Global -menu $m
@@ -369,7 +371,8 @@ if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
     set dmd $ayviewshortcuts(DMDown)
     balloon_set $w.fMenu.dm "change drawing mode\ncycle with <${dmu}>/<${dmd}>"
     set m [menu $w.fMenu.dm.m -tearoff 0]
-    bind $w.fMenu.dm <ButtonPress-1> "+tk_menuSetFocus $w;balloon_disable"
+    bind $w.fMenu.dm <ButtonPress-1>\
+	"+tk_menuSetFocus $w; catch \{destroy %W.balloon\}"
     set ay(dmodem) fMenu.dm.m
 } else {
     set m [menu $mb.dm -tearoff 0]
@@ -420,7 +423,8 @@ if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
     if { [winfo toplevel $w] == $w } {
 	bind ayview <$aymainshortcuts(MenuMod)-g> "viewPostMenu %W.fMenu.g.m"
     }
-    bind $w.fMenu.g <ButtonPress-1> "+tk_menuSetFocus $w;balloon_disable"
+    bind $w.fMenu.g <ButtonPress-1>\
+	"+tk_menuSetFocus $w; catch \{destroy %W.balloon\}"
 } else {
     set m [menu $mb.mgrid -tearoff 0]
     $mb add cascade -label Grid -menu $m
