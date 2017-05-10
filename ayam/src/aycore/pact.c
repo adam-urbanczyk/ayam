@@ -475,6 +475,10 @@ ay_pact_flashpoint(int ignore_old, double *pnt, ay_object *o)
 
 #ifdef GL_VERSION_1_1
 
+  /* when called to clear old point, but there is no old point => just exit */
+  if(!ignore_old && !pnt && !o && !old_o)
+    return;
+
   if(old_o && pnt)
     {
       if((fabs(pnt[0] - old_pnt[0]) < AY_EPSILON) &&
