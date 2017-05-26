@@ -8831,7 +8831,7 @@ The object hierarchy of a Birail2 object, thus, looks like this:
 </verb></tscreen>
 <p>
 When the cross sections touch the rail curves in their respective starting
-points, the resulting surface will interpolate the rail curves.
+or end points, the resulting surface will interpolate the rail curves.
 The direction of the cross section curves will be parallel to the V
 parametric dimension (height) and the direction of the rail curves will be
 parallel to the U parametric dimension (width) of the resulting surface.
@@ -19335,8 +19335,8 @@ with cross section curves perpendicular to both rails,
 see also the above image.
 <p>
 The first curve is the so called <em/cross section/. This curve must be
-defined in the YZ-plane. It is the leftmost open curve in the upper example
-image.<newline>
+planar and defined in the YZ-plane. It is the leftmost open curve in the
+upper example image.<newline>
 The second curve is the first <em/rail/ curve. This curve should start in
 the starting point of the cross section curve. It is the lower closed curve
 in the upper example image.<newline>
@@ -19344,6 +19344,19 @@ The third parameter curve is the second <em/rail/ curve. This curve should
 start in the end point of the cross section curve. It is the upper closed curve
 in the upper example image.
 <p>
+For convenience, there is also a property GUI; one must add a <tt/"NP"/ tag
+of value <tt/"DualSweepAttr"/ to the Script object to see it.
+<p>
+These are the parameters of the DualSweep:
+<itemize>
+<item><tt/"Type"/ similar to the corresponding property of the Sweep object,
+this allows to set the type of the resulting surface (open, closed, or
+periodic).
+<item><tt/"Sections"/ number of sections to use, also works in similar
+fashion as for the Sweep object
+(see also <ref id="swp" name="SweepAttr Property">).
+</itemize>
+
 An example scene file containing such an object is distributed with Ayam,
 see the file:<newline>
 <tt>"ayam/scn/scripts/dualsweep.ay"</tt>.
