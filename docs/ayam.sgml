@@ -14565,12 +14565,24 @@ take effect as the data needs to be transferred to the C context
 using the <tt/"setPrefs"/ command.
 See also section <ref id="sciprefs" name="Managing Preferences">.
 
+<#if out="latex"><x/newpage/</#if>
+
 <sect2>The Global Property Management and Data Arrays<label id="ayproparr">
+<p>
+For every object type, a corresponding global variable exists,
+that contains the property names of this object type as a list.
+For example for the NCurve object type, this variable is named
+<tt/NCurve_props/ and the list looks like this:
+<tscreen><verb>
+{ Transformations Attributes Tags NCurveAttr }
+</verb></tscreen>
+Note that for some object types this variable only exists after an
+object type specific initialization procedure, derived from the
+type name, is called, e.g.~<tt/"init_Box"/.
 <p>
 For every property, a corresponding global arrays exists, where the
 property is managed. For the Transformations property, this array looks
 like this:
-<#if out="latex"><x/needspace 7/</#if>
 <code>
 Transformations {
   arr   transfPropData
@@ -14581,17 +14593,18 @@ Transformations {
 </code>
 The first entry, <tt/"arr"/, designates the name of the global property
 data array (thus, transformation data is stored in an array called
-<tt/"transfPropData"/).
+<tt/"transfPropData"/).<newline>
 The entries <tt/"sproc"/ and <tt/"gproc"/ designate the set-property and
 get-property callbacks (procedures or commands) respectively.
 If sproc or gproc are empty strings (<tt/""/), standard callbacks
 named <tt/"setProp"/ or <tt/"getProp"/ should be used to get
 or set the property values.
 But for the transformations property, the <tt/"setTrafo"/ and
-<tt/"getTrafo"/ commands should be used.
+<tt/"getTrafo"/ commands should be used.<newline>
 The last entry, <tt/"w"/, is the name of the main property GUI window.
-To get the full widget path of this window, the current value of
-ay(pca) needs to be prepended.
+To get the full, usable, widget path of this window, the current value of the
+array entry
+<tt/"ay(pca)"/ needs to be prepended.
 <p>
 Note that the global property data array only holds useful data when the
 respective property GUI is active, or when it has been filled explicitly
