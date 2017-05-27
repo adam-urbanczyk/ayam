@@ -18858,7 +18858,8 @@ in a certain way. To specify a shader, use:
 <tscreen><verb>
 <shader type="stype" name="shadername">
 </verb></tscreen>
-where <tt/stype/ is one of <tt/surface/, <tt/displacement/, <tt/volume/, <tt/light/, <tt/imager/, or <tt/transformation/.
+where <tt/stype/ is one of <tt/surface/, <tt/displacement/, <tt/volume/, <tt/light/, <tt/imager/, or <tt/transformation/ and <tt/shadername/ is the file name
+of the shader source file sans extensions.
 <p>
 To specify the shader parameters, use:
 <tscreen><verb>
@@ -22484,6 +22485,9 @@ since Ayam 1.11 all shader parsing plugins are Ayam version independent
 This allows to distribute updated shader parsing plugins without updating
 Ayam too and thus in a higher frequency.
 Furthermore, compiling a shader parsing plugin is now much easier.
+<p>
+For shader parsing without plugins, see also
+section <ref id="slxmltcl" name="Shader Parsing">.
 
 <sect1>Automatic Instancing<label id="ai">
 <p>
