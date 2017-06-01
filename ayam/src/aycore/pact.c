@@ -42,7 +42,6 @@ int ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
 int ay_pact_insertic(ay_icurve_object *curve, int *index,
 		     double objX, double objY, double objZ);
 
-
 int ay_pact_insertac(ay_acurve_object *curve, int *index,
 		     double objX, double objY, double objZ);
 
@@ -60,6 +59,7 @@ int ay_pact_notify(ay_object *o, int j, int k);
 int ay_pact_multincnc(ay_object *o);
 
 int ay_pact_multdecnc(ay_object *o);
+
 
 /* functions: */
 
@@ -463,7 +463,7 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
 /* ay_pact_flashpoint:
  *  flash single points if the mouse pointer hovers over them
  *  by drawing with XOR directly into the front buffer
- *  Note: This function needs atleast OpenGL V1.1 to work.
+ *  Note: This function needs at least OpenGL V1.1 to work.
  */
 void
 ay_pact_flashpoint(int ignore_old, double *pnt, ay_object *o)
@@ -937,13 +937,13 @@ ay_pact_pentcb(struct Togl *togl, int argc, char *argv[])
     {
       toa = Tcl_NewStringObj(n1, -1);
       ton = Tcl_NewStringObj(n1, -1);
-      Tcl_SetStringObj(ton,"local",-1);
+      Tcl_SetStringObj(ton, "local", -1);
       to = Tcl_ObjGetVar2(interp, toa, ton,
 			  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       Tcl_GetIntFromObj(interp, to, &local);
 
       /* get new coordinates from Tcl GUI */
-      Tcl_SetStringObj(ton,"x",-1);
+      Tcl_SetStringObj(ton, "x", -1);
       to = Tcl_ObjGetVar2(interp, toa, ton,
 			  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       str = Tcl_GetStringFromObj(to, NULL);
@@ -954,7 +954,7 @@ ay_pact_pentcb(struct Togl *togl, int argc, char *argv[])
 	  set_x = AY_TRUE;
 	}
 
-      Tcl_SetStringObj(ton,"y",-1);
+      Tcl_SetStringObj(ton, "y", -1);
       to = Tcl_ObjGetVar2(interp, toa, ton,
 			  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       str = Tcl_GetStringFromObj(to, NULL);
@@ -965,7 +965,7 @@ ay_pact_pentcb(struct Togl *togl, int argc, char *argv[])
 	  set_y = AY_TRUE;
 	}
 
-      Tcl_SetStringObj(ton,"z",-1);
+      Tcl_SetStringObj(ton, "z", -1);
       to = Tcl_ObjGetVar2(interp, toa, ton,
 			  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       str = Tcl_GetStringFromObj(to, NULL);
@@ -976,7 +976,7 @@ ay_pact_pentcb(struct Togl *togl, int argc, char *argv[])
 	  set_z = AY_TRUE;
 	}
 
-      Tcl_SetStringObj(ton,"w",-1);
+      Tcl_SetStringObj(ton, "w", -1);
       to = Tcl_ObjGetVar2(interp, toa, ton,
 			  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       str = Tcl_GetStringFromObj(to, NULL);
@@ -1070,7 +1070,7 @@ ay_pact_pentcb(struct Togl *togl, int argc, char *argv[])
 		{
 		  ay_notify_object(o);
 		}
-	    } /* if */
+	    } /* if have selp */
 	  sel = sel->next;
 	} /* while */
 
@@ -1733,7 +1733,7 @@ ay_pact_deletenc(ay_nurbcurve_object *curve, int *index,
 
   if(curve->length-1 < 2)
     {
-      ay_error(AY_ERROR, fname, "Need atleast two points.");
+      ay_error(AY_ERROR, fname, "Need at least two points.");
       return AY_ERROR;
     }
 
@@ -1858,7 +1858,7 @@ ay_pact_deleteic(ay_icurve_object *icurve, int *index,
 
   if(icurve->length-1 < 3)
     {
-      ay_error(AY_ERROR, fname, "Need atleast three points.");
+      ay_error(AY_ERROR, fname, "Need at least three points.");
       return AY_ERROR;
     }
 
@@ -1919,7 +1919,7 @@ ay_pact_deleteac(ay_acurve_object *acurve, int *index,
 
   if(acurve->length-1 < 3)
     {
-      ay_error(AY_ERROR, fname, "Need atleast three points.");
+      ay_error(AY_ERROR, fname, "Need at least three points.");
       return AY_ERROR;
     }
 

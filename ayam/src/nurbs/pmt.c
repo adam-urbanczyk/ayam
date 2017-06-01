@@ -87,7 +87,7 @@ int ay_pmt_tonpatchmulti(ay_object *o, ay_object **result);
  * \returns AY_OK (0) if mesh is valid
  *   else:
  *  -1: NULL pointer delivered
- *   1: too few control points (need atleast 4 by 4)
+ *   1: too few control points (need at least 4 by 4)
  *   2: stepsize too small
  *   3: u-basistype width mismatch
  *   4: v-basistype height mismatch

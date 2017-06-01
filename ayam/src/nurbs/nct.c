@@ -332,7 +332,7 @@ ay_nct_collapseselp(ay_object *o)
 
   if((!o->selp) || (count < 2))
     {
-      ay_error(AY_ERROR, fname, "Select (<t>ag) atleast two points first.");
+      ay_error(AY_ERROR, fname, "Select (<t>ag) at least two points first.");
       return AY_ERROR;
     }
 
@@ -486,6 +486,8 @@ ay_nct_explodemp(ay_object *o)
 
 /** ay_nct_resize:
  *  Change the number of control points of a NURBS curve.
+ *  Note that the knot vector of the curve is not adapted; this can
+ *  be done by computing a new knot vector via ay_knots_createnc().
  *
  * \param[in,out] curve NURBS curve object
  * \param[in] new_length new length of curve
@@ -586,13 +588,13 @@ ay_nct_resize(ay_nurbcurve_object *curve, int new_length)
 
 	  a += 4;
 	} /* for */
+
       memcpy(&ncontrolv[(new_length-1)*4],
 	     &(curve->controlv[(curve->length-1)*4]),
 	     4*sizeof(double));
 
       free(newpersec);
-
-    } /* if */
+    } /* if add points */
 
   free(curve->controlv);
   curve->controlv = ncontrolv;
@@ -5497,7 +5499,7 @@ ay_nct_intersect(ay_nurbcurve_object *cu, ay_nurbcurve_object *cv,
 
 	  if(overlap)
 	    {
-	      /* segments bu[i] and bv[j] overlap atleast in one
+	      /* segments bu[i] and bv[j] overlap at least in one
 		 dimension => calculate smallest distance */
 
 
@@ -6577,7 +6579,7 @@ ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!src || !src->next)
     {
-      ay_error(AY_ERROR, argv[0], "Please select atleast two NURBS curves.");
+      ay_error(AY_ERROR, argv[0], "Please select at least two NURBS curves.");
       goto cleanup;
     } /* if */
 

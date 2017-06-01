@@ -1414,7 +1414,7 @@ ay_clone_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      ay_status = ay_provide_object(o->down, type, NULL);
 	      if(ay_status == AY_OK)
 		return AY_OK;
-	      /* it is sufficient if we can provide atleast
+	      /* it is sufficient if we can provide at least
 		 one object of wanted type, thus we do not
 		 give up here immediately... */
 	    }
