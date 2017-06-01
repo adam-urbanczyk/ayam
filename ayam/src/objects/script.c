@@ -1362,7 +1362,7 @@ ay_script_notifycb(ay_object *o)
 	  sc->cm_objects = NULL;
 	}
 
-      /* Do we have atleast one child? */
+      /* Do we have at least one child? */
       if(o->down && o->down->next)
 	{ /* Yes */
 

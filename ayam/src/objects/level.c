@@ -327,7 +327,7 @@ ay_level_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   if(!result)
     {
-      /* can we deliver atleast one object of right type? */
+      /* can we deliver at least one object of right type? */
       d = o->down;
       while(d && d->next)
 	{

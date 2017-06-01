@@ -462,6 +462,8 @@ ay_npt_resizearrayw(double **controlvptr, int stride,
 /** ay_npt_resizew:
  *  change width of a NURBS patch
  *  does _not_ maintain multiple points
+ *  Also note that the respective knot vector of the surface is not adapted;
+ *  this can be done by computing a new knot vector via ay_knots_createnp().
  *
  * \param[in,out] np NURBS patch to process
  * \param[in] new_width new width
@@ -611,6 +613,8 @@ ay_npt_resizearrayh(double **controlvptr, int stride,
 /** ay_npt_resizeh:
  *  change height of a NURBS patch
  *  does _not_ maintain multiple points
+ *  Also note that the respective knot vector of the surface is not adapted;
+ *  this can be done by computing a new knot vector via ay_knots_createnp().
  *
  * \param[in,out] np NURBS patch to process
  * \param[in] new_height new height
@@ -1924,7 +1928,7 @@ ay_npt_breakintocurvestcmd(ClientData clientData, Tcl_Interp *interp,
  *  build a new patch from a number of (compatible) curves
  *
  * \param[in] curves a list of compatible NURBS curve objects;
- *  atleast two curves are required
+ *  at least two curves are required
  * \param[in] ncurves number of curves in \a curves, also the
  *  width of the new patch (if \a type is open)
  * \param[in] type desired surface type (AY_CTOPEN, AY_CTCLOSED,
@@ -8601,7 +8605,7 @@ ay_npt_istrimmed(ay_object *o, int mode)
       if(!o->down || (o->down && !o->down->next))
 	return AY_FALSE; /* no child or just one child (EndLevel) */
 
-      /* if we get here o has atleast one real child */
+      /* if we get here o has at least one real child */
       if(o->down->next->next)
 	return AY_TRUE; /* more than one real child -> non-trivially trimmed */
 
@@ -8639,7 +8643,7 @@ ay_npt_istrimmed(ay_object *o, int mode)
       if(!o->down || !o->down->next)
 	return AY_FALSE; /* no child or just one child (EndLevel) */
 
-      /* if we get here o has atleast one real child */
+      /* if we get here o has at least one real child */
       if(o->down->next->next)
 	return AY_FALSE;
 
@@ -9888,7 +9892,7 @@ ay_npt_collapseselp(ay_object *o)
 
   if((!o->selp) || (count < 2))
     {
-      ay_error(AY_ERROR, fname, "Select (<t>ag) atleast two points first.");
+      ay_error(AY_ERROR, fname, "Select (<t>ag) at least two points first.");
       return AY_ERROR;
     }
 
@@ -15164,7 +15168,7 @@ ay_npt_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!src || !src->next)
     {
-      ay_error(AY_ERROR, argv[0], "Please select atleast two NURBS patches.");
+      ay_error(AY_ERROR, argv[0], "Please select at least two NURBS patches.");
       goto cleanup;
     } /* if */
 
