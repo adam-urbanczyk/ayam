@@ -5403,8 +5403,16 @@ were created with BMRT 2.6 as renderer:
 
 <sect2>Material Object<label id="materialobj">
 <p>
+<figure loc="ht">
+<eps file="pics/materials.ps" height="5cm">
+<img src="pics/materials.gif">
+<caption>Material Examples (l: wood, m: ceramic, r: veined marble)</caption>
+</figure>
+<p>
 Material objects are used to attach RenderMan attributes and shaders to
-geometric objects.
+geometric objects. See also the image above that was rendered with
+BMRT2.6 and uses materials with the following shaders, which are
+distributed with the renderer: wood2, ceramic, veinedmarble.
 <p>
 As long as geometric objects are connected to a material object,
 this material object may not be deleted.
@@ -16381,7 +16389,7 @@ hasTag:
  <item>Synopsis: <tt/"hasTag type"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: This command returns <tt/"1"/ if the selected
-object has atleast one tag of the designated type. Otherwise <tt/"0"/
+object has at least one tag of the designated type. Otherwise <tt/"0"/
 is returned.
 </itemize>
 
@@ -21482,7 +21490,8 @@ The following parameters, additionally, control the X3D (Web3D) export:
 <item><tt/"ScaleFactor"/: allows to apply a scaling factor to all
 exported objects (this will be realized by an extra <tt/Transform/-node
 in the scene hierarchy);
-<item><tt>"WriteSelected"</tt>: exports only the currently selected object(s);
+<item><tt>"WriteSelected"</tt>: if enabled, only the currently selected
+object(s) will be exported;
 <item><tt>"ObeyNoExport"</tt>: toggles export of objects with <tt/"NoExport"/
 tags;
 <item><tt>"IgnoreHidden"</tt>: toggles export of hidden objects;
@@ -21510,8 +21519,9 @@ conjunction with the X3D export options <tt>"WriteSelected"</tt> or
 <tt>"IgnoreHidden"</tt>, incomplete/erroneous X3D files may
 result unless the
 <tt>"ResolveInstances"</tt> option is switched on;
-<item><tt>"TopLevelLayers"</tt>: arranges for all child objects of top level
-objects in the Ayam scene to be put in CADLayer nodes;
+<item><tt>"TopLevelLayers"</tt>: arranges for all top level
+objects in the Ayam scene to be exported as <tt/CADLayer/-nodes,
+instead of <tt/Transform/-nodes;
 <item><tt/"RationalStyle"/: determines how to write rational coordinates
 (see also section <ref id="rats" name="Rational Style">);
 <item><tt>"WriteX3dom"</tt>: toggles X3DOM-export mode. If this option is
