@@ -165,21 +165,22 @@ proc actionSetMark { w { nextaction "" } } {
 
     bind $w <Motion> ""
 
+    if { [string first ".view" $w] == 0 } {
+	set t [winfo toplevel $w]
+    } else {
+	set t [winfo parent [winfo parent $w]]
+    }
+
     # if nextaction is not empty, we are an intermediate
     # action, embedded into some other action, which we arrange
     # to re-start here (after setting the mark):
     if { $nextaction != "" } {
-
-	if { [string first ".view" $w] == 0 } {
-	    set t [winfo toplevel $w]
-	} else {
-	    set t [winfo parent [winfo parent $w]]
-	}
-
 	bind $w <ButtonPress-1> "+ $nextaction %W;"
 	# take over old mark
 	bind $t <Key-Return> "bind $t <Key-Return> \"\";\
                               $nextaction $t.f3D.togl;"
+    } else {
+	bind $t <Key-Return> ""
     }
     # if nextaction
 
@@ -1287,6 +1288,10 @@ proc editPointDialog { win } {
 	pack [frame $w.fl] -in $w -side top
 	pack [label $w.fl.l -text $t] -in $w.fl -side left -fill x -expand yes
     }
+
+    set m $ay(editmenu)
+    bind $w <[repctrl $aymainshortcuts(Undo)]> "$m invoke 12;break"
+    bind $w <[repctrl $aymainshortcuts(Redo)]> "$m invoke 13;break"
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
