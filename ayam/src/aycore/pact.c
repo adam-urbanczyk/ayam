@@ -1812,6 +1812,7 @@ ay_pact_deletenc(ay_nurbcurve_object *curve, int *index,
       ay_status = ay_knots_createnc(curve);
       if(ay_status)
 	{
+
 	  ay_error(ay_status, fname, "Error creating new knots.");
 	  goto cleanup;
 	}
@@ -1822,7 +1823,8 @@ ay_pact_deletenc(ay_nurbcurve_object *curve, int *index,
       ay_status = ay_nct_close(curve);
       if(ay_status)
 	{
-	  ay_error(ay_status, fname, "Cannot close this curve.");
+	  ay_error(ay_status, fname, "Can not close this curve.");
+	  ay_status = AY_EWARN;
 	}
     }
 
@@ -2009,14 +2011,21 @@ ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[])
 	  break;
 	}
 
-      if(ay_status)
+      if(ay_status > AY_EWARN)
 	{
 	  ay_error(ay_status, fname, "Error deleting point.");
 	}
       else
 	{
 	  notify_parent = AY_TRUE;
-	  ay_selp_rem(o, (unsigned int)index);
+	  if(ay_status == AY_EWARN)
+	    {
+	      ay_selp_clear(o);
+	    }
+	  else
+	    {
+	      ay_selp_rem(o, (unsigned int)index);
+	    }
 	  (void)ay_notify_object(o);
 	  o->modified = AY_TRUE;
 	} /* if */
@@ -2914,8 +2923,12 @@ ay_pact_multiptcb(struct Togl *togl, int argc, char *argv[])
 } /* ay_pact_multiptcb */
 
 
-/* ay_pact_multincnc:
+/** ay_pact_multincnc:
+ *  increase multiplicity of selected points of a NURBS curve
  *
+ * \param[in,out] o NURBS curve object to process
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_pact_multincnc(ay_object *o)
@@ -3074,8 +3087,12 @@ cleanup:
 } /* ay_pact_multincnc */
 
 
-/* ay_pact_multdecnc:
+/** ay_pact_multdecnc:
+ *  decrease multiplicity of selected points of a NURBS curve
  *
+ * \param[in,out] o NURBS curve object to process
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_pact_multdecnc(ay_object *o)
