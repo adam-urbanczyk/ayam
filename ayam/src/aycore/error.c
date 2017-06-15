@@ -17,7 +17,8 @@
 char *ay_error_igntype = "Ignoring object of unsupported type.";
 
 static char aye_gentxterr[] = "Error! ", aye_gentxtwarn[] = "Warning! ";
-static char aye_errcmd[] = "puts stderr {", aye_warncmd[] = "puts stdout {";
+static char aye_errcmd[] = "after idle {puts stderr {";
+static char aye_warncmd[] = "after idle {puts stdout {";
 static char aye_lmsg1[] = "Last message repeated ", aye_lmsg2[] = " times.";
 
 
@@ -118,7 +119,7 @@ ay_error(int code, const char *where, const char *what)
 	  len = sprintf(countstr, "%d", count);
 	  Tcl_DStringAppend(&dsl, countstr, len);
 	  Tcl_DStringAppend(&dsl, aye_lmsg2, -1);
-	  Tcl_DStringAppend(&dsl, "}", -1);
+	  Tcl_DStringAppend(&dsl, "} }", -1);
 	  Tcl_Eval(interp, Tcl_DStringValue(&dsl));
 
 	  if(ay_prefs.writelog)
@@ -216,7 +217,7 @@ ay_error(int code, const char *where, const char *what)
       Tcl_DStringAppend(&ds, ".", -1);
     }
 
-  Tcl_DStringAppend(&ds, "}", -1);
+  Tcl_DStringAppend(&ds, "} }", -1);
 
   if(last_message && !strcmp(last_message, Tcl_DStringValue(&ds)))
     {
@@ -238,7 +239,7 @@ ay_error(int code, const char *where, const char *what)
 	  len = sprintf(countstr, "%d", count);
 	  Tcl_DStringAppend(&dsl, countstr, len);
 	  Tcl_DStringAppend(&dsl, aye_lmsg2, -1);
-	  Tcl_DStringAppend(&dsl, "}", -1);
+	  Tcl_DStringAppend(&dsl, "} }", -1);
 	  if(((code == AY_EOUTPUT) && (ay_prefs.errorlevel > 2)) ||
 	     ((code == AY_EWARN) && (ay_prefs.errorlevel > 1)) ||
 	     ay_prefs.errorlevel > 0)
