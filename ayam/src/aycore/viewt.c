@@ -1315,8 +1315,12 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	case 'l':
 	  /*if(!strcmp(argv[i], "-local"))*/
 	    {
-	      view->local = argi;
-	      view->drawmark = AY_FALSE;
+	      if(argi != view->local)
+		{
+		  view->local = argi;
+		  /* disable mark when local state changes */
+		  view->drawmark = AY_FALSE;
+		}
 	    }
 	  break;
 	case 'm':
@@ -1945,13 +1949,13 @@ ay_viewt_fromcamtcb(struct Togl *togl, int argc, char *argv[])
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL,fname,NULL);
+      ay_error(AY_ENOSEL, fname, NULL);
       return TCL_OK;
     }
   o = sel->object;
   if(o->type != AY_IDCAMERA)
     {
-      ay_error(AY_ERROR,fname, "Please select a camera!");
+      ay_error(AY_ERROR, fname, "Please select a camera!");
       return TCL_OK;
     }
   c = (ay_camera_object *)o->refine;
@@ -1989,13 +1993,13 @@ ay_viewt_tocamtcb(struct Togl *togl, int argc, char *argv[])
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL,fname,NULL);
+      ay_error(AY_ENOSEL, fname, NULL);
       return TCL_OK;
     }
   o = sel->object;
   if(o->type != AY_IDCAMERA)
     {
-      ay_error(AY_ERROR,fname, "Please select a camera!");
+      ay_error(AY_ERROR, fname, "Please select a camera!");
       return TCL_OK;
     }
   c = (ay_camera_object *)o->refine;
