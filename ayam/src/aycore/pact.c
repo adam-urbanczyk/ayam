@@ -862,22 +862,22 @@ ay_pact_pentcb(struct Togl *togl, int argc, char *argv[])
 		  wcoords[3] = 1.0;
 		}
 
-	      Tcl_SetStringObj(ton,"lx",-1);
+	      Tcl_SetStringObj(ton, "lx", -1);
 	      to = Tcl_NewDoubleObj(wcoords[0]);
 	      Tcl_ObjSetVar2(interp, toa, ton, to,
 			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-	      Tcl_SetStringObj(ton,"ly",-1);
+	      Tcl_SetStringObj(ton, "ly", -1);
 	      to = Tcl_NewDoubleObj(wcoords[1]);
 	      Tcl_ObjSetVar2(interp, toa, ton, to,
 			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-	      Tcl_SetStringObj(ton,"lz",-1);
+	      Tcl_SetStringObj(ton, "lz", -1);
 	      to = Tcl_NewDoubleObj(wcoords[2]);
 	      Tcl_ObjSetVar2(interp, toa, ton, to,
 			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-	      Tcl_SetStringObj(ton,"lw",-1);
+	      Tcl_SetStringObj(ton, "lw", -1);
 	      if(pe.rational)
 		{
 		  to = Tcl_NewDoubleObj(coords[3]);
@@ -892,22 +892,22 @@ ay_pact_pentcb(struct Togl *togl, int argc, char *argv[])
 	      /* convert to world coordinates */
 	      ay_trafo_applyall(ay_currentlevel->next, o, wcoords);
 
-	      Tcl_SetStringObj(ton,"wx",-1);
+	      Tcl_SetStringObj(ton, "wx", -1);
 	      to = Tcl_NewDoubleObj(wcoords[0]);
 	      Tcl_ObjSetVar2(interp, toa, ton, to,
 			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-	      Tcl_SetStringObj(ton,"wy",-1);
+	      Tcl_SetStringObj(ton, "wy", -1);
 	      to = Tcl_NewDoubleObj(wcoords[1]);
 	      Tcl_ObjSetVar2(interp, toa, ton, to,
 			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-	      Tcl_SetStringObj(ton,"wz",-1);
+	      Tcl_SetStringObj(ton, "wz", -1);
 	      to = Tcl_NewDoubleObj(wcoords[2]);
 	      Tcl_ObjSetVar2(interp, toa, ton, to,
 			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-	      Tcl_SetStringObj(ton,"ww",-1);
+	      Tcl_SetStringObj(ton, "ww", -1);
 	      if(pe.rational)
 		{
 		  to = Tcl_NewDoubleObj(wcoords[3]);
@@ -919,7 +919,7 @@ ay_pact_pentcb(struct Togl *togl, int argc, char *argv[])
 	      Tcl_ObjSetVar2(interp, toa, ton, to,
 			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-	      Tcl_SetStringObj(ton,"valid",-1);
+	      Tcl_SetStringObj(ton, "valid", -1);
 	      to = Tcl_NewIntObj(1);
 	      Tcl_ObjSetVar2(interp, toa, ton, to,
 			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -1665,19 +1665,16 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
       switch(o->type)
 	{
 	case AY_IDNCURVE:
-	  ay_status = ay_pact_insertnc((ay_nurbcurve_object *)
-				       (o->refine), &index,
-				       objX, objY, objZ);
+	  ay_status = ay_pact_insertnc((ay_nurbcurve_object *)(o->refine),
+				       &index, objX, objY, objZ);
 	  break;
 	case AY_IDICURVE:
-	  ay_status = ay_pact_insertic((ay_icurve_object *)
-				       (o->refine), &index,
-				       objX, objY, objZ);
+	  ay_status = ay_pact_insertic((ay_icurve_object *)(o->refine),
+				       &index, objX, objY, objZ);
 	  break;
 	case AY_IDACURVE:
-	  ay_status = ay_pact_insertac((ay_acurve_object *)
-				       (o->refine), &index,
-				       objX, objY, objZ);
+	  ay_status = ay_pact_insertac((ay_acurve_object *)(o->refine),
+				       &index, objX, objY, objZ);
 	  break;
 	default:
 	  ay_error(AY_EWTYPE, fname, "NCurve, ICurve, or ACurve");
@@ -1991,19 +1988,16 @@ ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[])
       switch(o->type)
 	{
 	case AY_IDNCURVE:
-	  ay_status = ay_pact_deletenc((ay_nurbcurve_object *)
-				       (o->refine), &index,
-				       objX, objY, objZ);
+	  ay_status = ay_pact_deletenc((ay_nurbcurve_object *)(o->refine),
+				       &index, objX, objY, objZ);
 	  break;
 	case AY_IDICURVE:
-	  ay_status = ay_pact_deleteic((ay_icurve_object *)
-				       (o->refine), &index,
-				       objX, objY, objZ);
+	  ay_status = ay_pact_deleteic((ay_icurve_object *)(o->refine),
+				       &index, objX, objY, objZ);
 	  break;
 	case AY_IDACURVE:
-	  ay_status = ay_pact_deleteac((ay_acurve_object *)
-				       (o->refine), &index,
-				       objX, objY, objZ);
+	  ay_status = ay_pact_deleteac((ay_acurve_object *)(o->refine),
+				       &index, objX, objY, objZ);
 	  break;
 	default:
 	  ay_error(AY_EWTYPE, fname, "NCurve, ICurve, or ACurve");
