@@ -1,4 +1,4 @@
-[09. May 2017] CVS-Head:
+[24. Jun 2017] CVS-Head:
 =======================
 Bug Fixes:
 o entering non number data to tesselation parameter entries (SF 554)
@@ -16,11 +16,12 @@ Modelling:
 o the set mark action now supports drag selection of multiple points,
   setting the mark to their bounding box center
 o tweening surfaces now supports an interpolation control surface
-o improved mouse input lag
+o improved mouse input lag of interactive modelling actions
 
 GUI:
 o improved balloon interaction of view icon menus
 o improved focus management of view menu entries
+o added "Edit" to default action menu
 
 Scripts/Scripting Interface:
 o added script "slxml.tcl" to parse XML meta data embedded in shading
