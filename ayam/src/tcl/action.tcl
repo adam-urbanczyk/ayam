@@ -2014,11 +2014,16 @@ proc actionClear { w {only_clear 0} } {
 	viewTitle $w "" "None"
 	viewSetMAIcon $w ay_Empty_img ""
     } else {
-	actionPick $w
+	switch $ayprefs(DefaultAction) {
+	    1 { actionPick $w }
+	    2 {	actionEditP $w }
+	}
     }
 
     # do not draw points in none/pick action
-    $w setconf -drawh 0
+    if { $ayprefs(DefaultAction) < 2 } {
+	$w setconf -drawh 0
+    }
 
     # the following after scripts arrange for a short period
     # 0.1 - 1s after the first press of the <Esc> key, that a second
