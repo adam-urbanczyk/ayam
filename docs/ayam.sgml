@@ -33,10 +33,10 @@ code example of 6 lines text (needs another 2 for the upper/lower lines)
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>22. Jan 2017
+<date>18. Jun 2017
 
 <abstract>
-This is the documentation of Ayam 1.24 &ndash; a free 3D modelling environment
+This is the documentation of Ayam 1.25 &ndash; a free 3D modelling environment
 for the RenderMan interface.
 
 Please note, that this document is a reference manual,
@@ -3106,7 +3106,6 @@ values are:<newline>
 and finally<newline>
 <tt/"All"/ (default) all messages, even informative,
 should be written to the console.
-
 </itemize>
 
 The last sub-section contains miscellaneous user interface
@@ -3249,8 +3248,9 @@ unsurpassed flexibility in modelling using Ayam.
 To break an action, the <tt/&lt;Esc&gt;/ key may be used.
 <p>
 The default action for all views, which is also in effect after
-use of the <tt/&lt;Esc&gt;/ key, is <tt/"None"/ or <tt/"Pick"/
-(depending on the preference setting <tt>"Modelling/DefaultAction"</tt>).
+use of the <tt/&lt;Esc&gt;/ key, is <tt/"None"/, <tt/"Pick"/, or
+<tt/"Edit"/ (depending on the preference
+setting <tt>"Modelling/DefaultAction"</tt>).
 See section
 <ref id="objsel" name="Selecting Objects by Picking">
 for more information about picking objects.
@@ -4726,6 +4726,12 @@ section each).
 
 <sect2>Root Object<label id="rootobj">
 <p>
+<figure loc="ht">
+<eps file="pics/root.ps" height="3.5cm">
+<img src="pics/root.gif">
+<caption>Root Object</caption>
+</figure>
+<p>
 There is always exactly one Root object in the scene.
 This object is something special in that it can not be deleted
 or copied.
@@ -4847,8 +4853,6 @@ they may e.g.~be used to set a specific background color.
 Atmosphere shaders are volume shaders that
 may be used to implement global atmospheric
 optical effects like fog.
-
-<#if out="latex"><x/newpage/</#if>
 
 <sect3>RIB Export
 <p><#if out="latex">&nbsp;<newline></#if>
@@ -5411,7 +5415,7 @@ were created with BMRT 2.6 as renderer:
 <p>
 Material objects are used to attach RenderMan attributes and shaders to
 geometric objects. See also the image above that was rendered with
-BMRT2.6 and uses materials with the following shaders, which are
+BMRT 2.6 and uses materials with the following shaders, which are
 distributed with the renderer: wood2, ceramic, veinedmarble.
 <p>
 As long as geometric objects are connected to a material object,
@@ -5528,6 +5532,28 @@ to their attached materials, they will rather be exported in the order of
 their appearance in the level and thus each object with a material
 will also be prepended by a full material specification as described
 above.
+<p>
+Here is a complete example of a material description with the
+wood2 surface shader applied to a sphere:
+<tscreen><verb>
+...
+Color 0.862745 0.862745 0.862745
+Opacity 1 1 1
+Declare "Ka" "float"
+Declare "Kd" "float"
+Declare "Ks" "float"
+Declare "roughness" "float"
+Declare "ringscale" "float"
+Declare "txtscale" "float"
+Declare "lightwood" "color"
+Declare "darkwood" "color"
+Declare "grainy" "float"
+Surface "wood2" "Ka" [1] "Kd" [0.75] "Ks" [0.4] "roughness" [0.1]
+"ringscale" [15] "txtscale" [1] "lightwood" [0.686275 0.439216 0.247059]
+"darkwood" [0.34902 0.219608 0.0784314] "grainy" [1]
+Sphere 1 -1 1 360
+...
+</verb></tscreen>
 
 <#if out="latex"><x/newpage/</#if>
 
