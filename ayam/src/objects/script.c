@@ -1517,6 +1517,7 @@ resenv:
   /* report failed scripts to the user */
   if(result == TCL_ERROR)
     {
+      ay_error(AY_ERROR, fname, Tcl_GetStringResult(interp));
       i = interp->errorLine;
       sprintf(buf, "Script failed in line: %d", i);
       ay_error(AY_ERROR, fname, buf);
