@@ -1008,7 +1008,7 @@ cleanup:
 } /* ay_act_leastSquaresClosed */
 
 
-/** ay_ict_resize:
+/** ay_act_resize:
  * Resize an approximating curve.
  *
  * \param[in,out] curve approximating curve to process
