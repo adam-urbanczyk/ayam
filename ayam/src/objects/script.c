@@ -28,6 +28,8 @@ static char *ay_script_ul = "use:"; /* Use (Language) */
 
 /* prototypes of functions local to this module: */
 
+int ay_script_getsp(Tcl_Interp *interp, ay_script_object *sc);
+
 int ay_script_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe);
 
 int ay_script_notifycb(ay_object *o);
@@ -391,9 +393,9 @@ ay_script_getsp(Tcl_Interp *interp, ay_script_object *sc)
  int arrmembers = 0, i;
  Tcl_Obj *toa = NULL, *ton = NULL;
 
-  /* handle script parameters */
   if(sc->script)
     {
+      /* get arrayname from script */
       lineend = strchr(sc->script, '\n');
       if(lineend)
 	*lineend = '\0';
@@ -417,9 +419,9 @@ ay_script_getsp(Tcl_Interp *interp, ay_script_object *sc)
 	    (arrnameend[0] != ';'))
 	arrnameend++;
 
+      /* remove old saved parameters */
       if(sc->params)
 	{
-	  /* remove old saved parameters */
 	  for(i = 0; i < sc->paramslen; i++)
 	    {
 	      Tcl_DecrRefCount(sc->params[i]);
@@ -429,6 +431,7 @@ ay_script_getsp(Tcl_Interp *interp, ay_script_object *sc)
 	  sc->paramslen = 0;
 	}
 
+      /* get/save new parameters from the Tcl variables */
       toa = Tcl_NewStringObj(arrname, arrnameend - arrname);
       ton = Tcl_NewStringObj(ay_script_sp, -1);
 
@@ -436,7 +439,6 @@ ay_script_getsp(Tcl_Interp *interp, ay_script_object *sc)
 
       if(arrmemberlist)
 	{
-
 	  Tcl_ListObjLength(interp, arrmemberlist, &arrmembers);
 
 	  if(arrmembers > 0)
@@ -475,7 +477,7 @@ ay_script_getsp(Tcl_Interp *interp, ay_script_object *sc)
 
       Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
       Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
-    } /* if */
+    } /* if have script */
 
  return ay_status;
 } /* ay_script_getsp */
@@ -879,7 +881,7 @@ ay_script_writecb(FILE *fileptr, ay_object *o)
  Tcl_Obj *arrmemberlist = NULL, *arrmember;
  int arrmembers = 0, i, slen, tlen;
  unsigned int len = 0;
- Tcl_Obj *toa = NULL, *ton = NULL;
+ Tcl_Obj *toa = NULL, *ton = NULL, *to = NULL;
  Tcl_Interp *interp = NULL;
 
 #ifdef AYNOSAFEINTERP
@@ -942,7 +944,7 @@ ay_script_writecb(FILE *fileptr, ay_object *o)
       if(arrmemberlist)
 	Tcl_ListObjLength(interp, arrmemberlist, &arrmembers);
 
-      if(arrmembers > 0)
+      if((arrmembers > 0) && (arrmembers == sc->paramslen))
 	{
 	  fprintf(fileptr, "%d\n", arrmembers+1);
 	  fprintf(fileptr, "%s\n%s\n", ay_script_sp,
@@ -959,10 +961,12 @@ ay_script_writecb(FILE *fileptr, ay_object *o)
 		    {
 		      if(sc->params && sc->params[i])
 			memberval = Tcl_GetStringFromObj(sc->params[i], &tlen);
-		      else
-			memberval = NULL;
 		      if(memberval)
 			fprintf(fileptr, "%s\n%s\n", membername, memberval);
+		      /*
+			else
+			report error?
+		      */
 		    } /* if */
 		} /* if */
 	    } /* for */
