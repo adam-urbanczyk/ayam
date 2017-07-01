@@ -1007,19 +1007,23 @@ ay_object_gettypeornametcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
  char *typeorname = NULL;
- int silence = AY_FALSE;
+ int return_result = AY_FALSE, silence = AY_FALSE;
 
   /* check args */
   if(argc < 2)
     {
+      return_result = AY_TRUE;
+      /*
       ay_error(AY_EARGS, argv[0], "varname [silence]");
       return TCL_OK;
+      */
     }
 
   if((argc > 2) && (argv[2][0] == '1'))
     silence = AY_TRUE;
 
-  Tcl_SetVar(interp, argv[1], "", TCL_LEAVE_ERR_MSG);
+  if(!return_result)
+    Tcl_SetVar(interp, argv[1], "", TCL_LEAVE_ERR_MSG);
 
   if(!sel)
     {
@@ -1049,8 +1053,18 @@ ay_object_gettypeornametcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(typeorname)
 	{
-	  Tcl_SetVar(interp, argv[1], typeorname, TCL_APPEND_VALUE |
-		     TCL_LIST_ELEMENT);
+	  if(return_result)
+	    {
+	      if(ay_selection->next)
+		Tcl_AppendElement(interp, typeorname);
+	      else
+		Tcl_SetResult(interp, typeorname, TCL_VOLATILE);
+	    }
+	  else
+	    {
+	      Tcl_SetVar(interp, argv[1], typeorname, TCL_APPEND_VALUE |
+			 TCL_LIST_ELEMENT);
+	    }
 	}
       else
 	{
