@@ -1,4 +1,4 @@
-[24. Jun 2017] CVS-Head:
+[1. Jul 2017] CVS-Head:
 =======================
 Bug Fixes:
 o entering non number data to tesselation parameter entries (SF 554)
@@ -11,6 +11,7 @@ o withOb fails for objects in sub levels (SF 561)
 o delegTrafo command does not reset parent transformations (SF 562)
 o tweening curves with interpolation control curve (SF 563)
 o X3D export of surfaces with AsWire tag (SF 564)
+o saving of script objects with individual parameters (SF 565)
 
 Modelling:
 o the set mark action now supports drag selection of multiple points,
