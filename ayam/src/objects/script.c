@@ -881,7 +881,7 @@ ay_script_writecb(FILE *fileptr, ay_object *o)
  Tcl_Obj *arrmemberlist = NULL, *arrmember;
  int arrmembers = 0, i, slen, tlen;
  unsigned int len = 0;
- Tcl_Obj *toa = NULL, *ton = NULL, *to = NULL;
+ Tcl_Obj *toa = NULL, *ton = NULL;
  Tcl_Interp *interp = NULL;
 
 #ifdef AYNOSAFEINTERP
