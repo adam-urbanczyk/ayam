@@ -1,0 +1,195 @@
+Ayam
+1.24
+0
+35
+1
+0
+1
+1
+0
+1
+
+1
+NP
+DualSweepAttr
+1
+2
+1477
+# Ayam, save array: DualSweepAttrData
+# dualsweep.tcl: example script for Ayam Script object
+# this script wants Script Object Type "Modify"
+# it also has a property GUI, just add a tag "NP DualSweepAttr"
+# to the Script object to see it
+if { ![info exists ::DualSweepAttrData] } {
+    array set ::DualSweepAttrData {
+	Type 2
+	Sections 0
+	SP {Type Sections}
+    }
+}
+if { ![info exists ::DualSweepAttrGUI] } {
+    set w [addPropertyGUI DualSweepAttr "" ""]
+    addMenu $w DualSweepAttrData Type {Open Closed Periodic}
+    addParam $w DualSweepAttrData Sections
+}
+
+proc crtSweep { x y z } {
+    global transfPropData SweepAttrData DualSweepAttrData
+    copOb
+    crtOb Sweep
+    goDown -1
+    pasOb -move
+    selOb 0
+    getTrafo
+    set dx [expr -($transfPropData(Translate_X)+$x)]
+    set dy [expr -($transfPropData(Translate_Y)+$y)]
+    set dz [expr -($transfPropData(Translate_Z)+$z)]
+    movOb $dx $dy $dz
+    applyTrafo -all
+    goUp
+    selOb -1
+    getProp
+    set SweepAttrData(Type) $DualSweepAttrData(Type)
+    set SweepAttrData(Sections) $DualSweepAttrData(Sections)
+    #set SweepAttrData(Interpolate) 1
+    setProp
+    notifyOb
+    convOb -inplace
+}
+
+convOb -inplace NCurve
+withOb 0 { getPnt -e -r 0 x0 y0 z0; getPnt -e -r 1 x1 y1 z1; }
+selOb 0 1
+crtSweep $x0 $y0 $z0
+selOb 0 2
+crtSweep $x1 $y1 $z1
+selOb 3 4
+makeCompNP -u -l 1
+crtOb NPatch -width 2 -height 2 -cv { 0 0 0 1  1 1 0 1  0 0 1 1  1 1 1 1 }
+selOb 3 4 5
+tweenNP
+selOb 0 1 2 3 4 5
+delOb
+
+# dualsweep.tcl
+
+
+3
+SP
+Type Sections
+Type
+2
+Sections
+0
+0
+2
+0
+0
+0
+1
+0
+0
+
+0
+4
+4
+2
+5.55112e-17 -0.25 0.90625 1
+-3.88578e-16 0.25 1.25 1
+-3.88578e-16 0.75 1.25 1
+5.55112e-17 1 0.5 1
+0
+0
+0
+1
+0
+2
+0
+1
+0
+-0.25
+0
+-90
+0
+0
+-0.707107
+0
+0
+0.707107
+1
+1
+1
+0
+1
+0
+0
+
+0
+10
+4
+1
+-0.5 0.75 -4.64174e-07 1
+3.33067e-16 1 -8.29164e-08 1
+0.5 0.75 7.1808e-08 1
+0.5 -1.11022e-16 0 1
+0.5 -1 -3.09449e-07 1
+-0.5 -1 -1.11022e-16 1
+-0.5 -7.65917e-13 -1.2378e-06 1
+-0.5 0.75 -4.64174e-07 1
+3.33067e-16 1 -8.29164e-08 1
+0.5 0.75 7.1808e-08 1
+2
+0
+0
+1
+0
+2
+0
+1
+0
+0.75
+0
+-90
+0
+0
+-0.707107
+0
+0
+0.707107
+1
+1
+1
+0
+1
+0
+0
+
+0
+10
+4
+1
+-0.75 0.500002 -0.250001 1
+3.33067e-16 0.500005 -0.250002 1
+0.75 0.500004 -0.250002 1
+1.25 -1.54725e-07 -0.25 1
+0.75 -0.500004 -0.25 1
+-0.75 -0.500004 -0.250001 1
+-1.25 -1.54724e-07 -0.25 1
+-0.75 0.500002 -0.250001 1
+3.33067e-16 0.500005 -0.250002 1
+0.75 0.500004 -0.250002 1
+2
+0
+0
+1
+0
+3
+0
+0
+0
+1
+0
+0
+
+0
+0
