@@ -121,6 +121,7 @@ ay_error(int code, const char *where, const char *what)
 	  Tcl_DStringAppend(&dsl, aye_lmsg2, -1);
 	  Tcl_DStringAppend(&dsl, "} }", -1);
 	  Tcl_Eval(interp, Tcl_DStringValue(&dsl));
+	  Tcl_ResetResult(interp);
 
 	  if(ay_prefs.writelog)
 	    {
@@ -245,6 +246,7 @@ ay_error(int code, const char *where, const char *what)
 	     ay_prefs.errorlevel > 0)
 	    {
 	      Tcl_Eval(interp, Tcl_DStringValue(&dsl));
+	      Tcl_ResetResult(interp);
 	    }
 	  if(ay_prefs.writelog)
 	    {
@@ -261,6 +263,7 @@ ay_error(int code, const char *where, const char *what)
      ay_prefs.errorlevel > 0)
     {
       Tcl_Eval(interp, Tcl_DStringValue(&ds));
+      Tcl_ResetResult(interp);
     }
   if(ay_prefs.writelog)
     {
