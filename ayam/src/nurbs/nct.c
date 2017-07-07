@@ -8141,8 +8141,14 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbcurve_object *curve;
  ay_object *o, *po;
  double len;
- int apply_trafo = 0, i = 1;
+ int have_vname = AY_TRUE, apply_trafo = 0, i = 1;
  Tcl_Obj *to = NULL, *ton = NULL;
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, argv[0], NULL);
+      return TCL_OK;
+    }
 
   /* parse args */
   if(argc > 1)
@@ -8161,19 +8167,14 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
       */
     }
 
-  if(argc < i)
+  if(argc < i+1)
     {
-      ay_error(AY_EARGS, argv[0], "[-trafo] vname");
-      return TCL_OK;
+      have_vname = AY_FALSE;
     }
-
-  if(!sel)
+  else
     {
-      ay_error(AY_ENOSEL, argv[0], NULL);
-      return TCL_OK;
+      ton = Tcl_NewStringObj(argv[i], -1);
     }
-
-  ton = Tcl_NewStringObj(argv[i], -1);
 
   while(sel)
     {
@@ -8210,11 +8211,21 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      /* put result into Tcl context */
 	      to = Tcl_NewDoubleObj(len);
-	      Tcl_ObjSetVar2(interp, ton, NULL, to,
+	      if(have_vname)
+		{
+		  Tcl_ObjSetVar2(interp, ton, NULL, to,
 		    TCL_LEAVE_ERR_MSG | TCL_APPEND_VALUE | TCL_LIST_ELEMENT);
+		}
+	      else
+		{
+		  if(po->next || ay_selection->next)
+		    Tcl_AppendElement(interp, Tcl_GetStringFromObj(to, NULL));
+		  else
+		    Tcl_SetObjResult(interp, to);
+		}
 
 	      o = o->next;
-	    }
+	    } /* while */
 	}
       else
 	{
@@ -8239,9 +8250,19 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  /* put result into Tcl context */
 	  to = Tcl_NewDoubleObj(len);
-	  Tcl_ObjSetVar2(interp, ton, NULL, to,
+	  if(have_vname)
+	    {
+	      Tcl_ObjSetVar2(interp, ton, NULL, to,
 		    TCL_LEAVE_ERR_MSG | TCL_APPEND_VALUE | TCL_LIST_ELEMENT);
-	}
+	    }
+	  else
+	    {
+	      if(ay_selection->next)
+		Tcl_AppendElement(interp, Tcl_GetStringFromObj(to, NULL));
+	      else
+		Tcl_SetObjResult(interp, to);
+	    }
+	} /* if is ncurve */
 
       if(po)
 	{
@@ -8260,7 +8281,10 @@ cleanup:
       (void)ay_object_deletemulti(po, AY_TRUE);
     }
 
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  if(ton)
+    {
+      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+    }
 
  return TCL_OK;
 } /* ay_nct_estlentcmd */
