@@ -2312,7 +2312,7 @@ for example
 finds all objects that have children.
 
 See section
-<ref id="sccomm" name="Procedures and Commands"> for a listing of
+<ref id="scintob" name="Interrogating Objects"> for a listing of
 available commands.
 </descrip>
 
@@ -4873,19 +4873,20 @@ RiDisplay tags (see also section
 Every view window (see also section
 <ref id="viewwin" name="Anatomy of a View">)
 has a corresponding view object as a child object of the Root object.
-You can change camera settings, the type of the view,
-and other things related to the view using the properties of the view object.
+Using the properties of the view object, camera settings, the type of the
+view, and other things related to the view can be changed.
 Note that deleting the object that represents a view, will not
 close the view window. You will just lose a way to configure it.
 Please, do not mess with the objects in other ways (e.g.~copy them),
 you are asking for trouble otherwise!
 <p>
 Each view is associated with a virtual camera.
-The type of the view determines the Up-vector of that camera.
+The type of the view determines the default Up-vector of that camera.
 If the type is <tt/"Top"/ the Up-vector corresponds to the world
 Z-axis, else the world Y-axis.
-The type of the view, additionally, determines the so called input plane
-of the view. Interactive modelling actions in a view are limited to that
+The type of the view, additionally, determines the so called
+<em/input plane/ of the view. Interactive modelling actions in a view are
+limited to that
 input plane (unless the view is switched to local modelling;
 see also section
 <ref id="editlocal" name="Editing in Local Spaces">).<footnote>Since 1.4.</footnote>
@@ -6085,7 +6086,7 @@ need to be transferred to other systems when rendering shall occur
 there.
 <p>
 This behaviour can be changed using the RIB export preference setting
-<tt/"ResInstances"/: If <tt/"ResInstances"/ is enabled, all instances
+<tt/"ResInstances"/: If this option is enabled, all instances
 will be resolved temporarily to normal objects before being exported
 to RIB. The resulting RIB file will then be self contained but probably
 also much larger.
@@ -15661,15 +15662,21 @@ will never be moved.
 <p>
 <#if out="latex"><x/phantomsection/</#if>
 
+<sect2>Interrogating Objects<label id="scintob">
+<p>
+These commands help to inquire objects about various aspects.
+<p>
 <label id="scgettype">
 getType:
 <itemize>
- <item>Synopsis: <tt>"getType varname"</tt>
+ <item>Synopsis: <tt>"getType [varname]"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: This command writes the type of the
-selected object into the variable varname. The types are
-the well known strings that are displayed in the hierarchy list box
-if the objects are not named (NPatch, NCurve, Sphere, etc.).
+selected object into the variable designated by the varname argument.
+The types are the well known strings that are displayed in the hierarchy
+list box if the objects are not named (NPatch, NCurve, Sphere, etc.).
+If no varname is specified the command returns the respective result(s).
+<footnote>Since 1.25.</footnote>
 </itemize>
 
 <p>
@@ -15678,22 +15685,13 @@ if the objects are not named (NPatch, NCurve, Sphere, etc.).
 <label id="scgetname">
 getName:
 <itemize>
- <item>Synopsis: <tt>"getName varname"</tt>
+ <item>Synopsis: <tt>"getName [varname]"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: This command writes the name of the
-selected object into the variable varname.
-</itemize>
-
-<p>
-<#if out="latex"><x/phantomsection/</#if>
-
-<label id="scnameob">
-nameOb:
-<itemize>
- <item>Synopsis: <tt>"nameOb name"</tt>
- <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: This command sets the name of the
-selected object(s).
+selected object into the variable designated by the varname
+argument.
+If no varname is specified the command returns the respective result(s).
+<footnote>Since 1.25.</footnote>
 </itemize>
 
 <p>
@@ -16877,13 +16875,15 @@ See also section <ref id="ctrimt" name="Curve Trim Tool">.
 <label id="scestlennc">
 estlenNC &ndash; estimate length of NURBS curve:
 <itemize>
- <item>Synopsis: <tt/"estlenNC [-trafo] varname"/
+ <item>Synopsis: <tt/"estlenNC [-trafo] [varname]"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: estimate the length of the currently selected NURBS curve
 or NURBS curve providing object and put the result into the designated variable.
 If the optional parameter <tt/"-trafo"/ is given, the transformation
 attributes of the curve will be applied to the control points for the
 length estimation.
+If no varname is specified the command returns the respective result(s).
+<footnote>Since 1.25.</footnote>
 </itemize>
 
 <p>
@@ -17831,7 +17831,7 @@ to let all changes take effect.
 </itemize>
 
 
-<sect2>Custom Objects<label id="scicust">
+<sect2>Custom Objects&thinsp;/&thinsp;Plugins<label id="scicust">
 <p>
 This command manages custom objects (plugins):
 <p><label id="scio_lc"><label id="scloadPlugin">
@@ -18395,14 +18395,27 @@ Miscellaneous commands:
 <p>
 <#if out="latex"><x/phantomsection/</#if>
 
-<label id="sctmpget">
-tmpGet:
+<label id="scconvob">
+convOb:
 <itemize>
- <item>Synopsis: <tt>"tmpGet tmpdir varname [ext]"</tt>
- <item>Background: Yes, Undo: No, Safe: No
- <item>Description: This command calculates a name for a temporary
-file in tmpdir and puts the complete name (with the optionally present
-extension appended) into the variable designated by varname.
+ <item>Synopsis: <tt>"convOb [-inplace [type] | -check type]"</tt>
+ <item>Background: Yes, Undo: depends (if -inplace: Yes), Safe: Yes
+ <item>Description: This command calls the registered converter
+for the selected object(s).
+<p><p>
+If the option <tt>"-inplace"</tt> is
+used, the new object(s) will replace the old object(s).
+If, additionally, a target type is specified, the conversion
+will be repeated until the object is of given
+type (and no conversion is attempted if the object is already
+of the given type).<footnote>Since Ayam 1.25.</footnote>
+<p>
+If the option <tt>"-check"</tt> is given, the convOb command does not
+convert but check, whether a conversion to a given object type would be
+successful, the result of the check will be returned as 0 &ndash; no,
+or 1 &ndash; yes. Note, that only immediate, one step, conversions are
+checked, not multiple as carried out by in-place conversions with
+target type.
 </itemize>
 
 <p>
@@ -18454,33 +18467,6 @@ if { $ay_error > 1 } {
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
-
-<label id="scconvob">
-convOb:
-<itemize>
- <item>Synopsis: <tt>"convOb [-inplace [type] | -check type]"</tt>
- <item>Background: Yes, Undo: depends (if -inplace: Yes), Safe: Yes
- <item>Description: This command calls the registered converter
-for the selected object(s).
-<p><p>
-If the option <tt>"-inplace"</tt> is
-used, the new object(s) will replace the old object(s).
-If, additionally, a target type is specified, the conversion
-will be repeated until the object is of given
-type (and no conversion is attempted if the object is already
-of the given type).<footnote>Since Ayam 1.25.</footnote>
-<p>
-If the option <tt>"-check"</tt> is given, the convOb command does not
-convert but check, whether a conversion to a given object type would be
-successful, the result of the check will be returned as 0 &ndash; no,
-or 1 &ndash; yes. Note, that only immediate, one step, conversions are
-checked, not multiple as carried out by in-place conversions with
-target type.
-</itemize>
-
-<p>
-<#if out="latex"><x/phantomsection/</#if>
 <#if out="latex"><x/newpage/</#if>
 
 <label id="scnotifyob">
@@ -18512,6 +18498,31 @@ callbacks of the selected objects will be executed. No BNS or ANS tags
 will be considered, notification of parents will not be done, and the
 complete notification will also be omitted. Hence, in the safe interpreter,
 this command ignores all parameters.
+</itemize>
+
+<p>
+<#if out="latex"><x/phantomsection/</#if>
+
+<label id="scnameob">
+nameOb:
+<itemize>
+ <item>Synopsis: <tt>"nameOb name"</tt>
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: This command sets the name of the
+selected object(s).
+</itemize>
+
+<p>
+<#if out="latex"><x/phantomsection/</#if>
+
+<label id="sctmpget">
+tmpGet:
+<itemize>
+ <item>Synopsis: <tt>"tmpGet tmpdir varname [ext]"</tt>
+ <item>Background: Yes, Undo: No, Safe: No
+ <item>Description: This command calculates a name for a temporary
+file in tmpdir and puts the complete name (with the optionally present
+extension appended) into the variable designated by varname.
 </itemize>
 
 <p>
