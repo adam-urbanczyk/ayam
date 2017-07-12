@@ -2658,6 +2658,10 @@ proc aytest_var { type } {
 proc aytest_runTests { tests items } {
     global ayprefs
 
+    if { ($tests == {}) || ($items == {}) } {
+ 	return;
+    }
+
     . configure -cursor watch
     .testGUI configure -cursor watch
     if { [winfo exists .fl.con] == 1 } {
