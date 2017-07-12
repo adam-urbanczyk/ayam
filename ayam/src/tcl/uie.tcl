@@ -1460,8 +1460,11 @@ proc addInfo { w prop name } {
 # updateProgress:
 #
 #
-proc updateProgress { w val n1 n2 op } {
-    SetProgress $w $val
+proc updateProgress { w n1 n2 op } {
+    if { $n2 != "" } {
+	global $n1
+	eval "SetProgress $w \$${n1}(${n2})"
+    }
  return;
 }
 # updateProgress
@@ -1482,7 +1485,7 @@ proc addProgress { w prop name } {
 
     Progress $f.p
 
-    set tracecommand "updateProgress $f.p \$${prop}(${name})"
+    set tracecommand "updateProgress $f.p"
 
     trace variable ${prop}(${name}) w $tracecommand
 
