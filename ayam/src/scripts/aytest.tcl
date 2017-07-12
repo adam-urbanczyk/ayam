@@ -13,6 +13,8 @@
 array set aytestprefs {
     KeepObjects 0
     KeepFiles 0
+    MoreOptions 0
+    Progress 0
 }
 
 # aytest_handleLBS:
@@ -51,6 +53,17 @@ proc aytest_handleLBS { w } {
 }
 # aytest_handleLBS
 
+
+proc aytest_toggleProgress { } {
+    global aytestprefs
+    set w .testGUI.fp
+    if { $aytestprefs(MoreOptions) == 1 } {
+	addProgress $w aytestprefs Progress
+    } else {
+	catch {destroy $w.fProgress}
+    }
+ return;
+}
 
 # aytest_selectGUI:
 #  create the aytest user interface
@@ -101,6 +114,8 @@ proc aytest_selectGUI { } {
     set f [frame $w.fp]
     addCheck $f aytestprefs KeepObjects
     addCheck $f aytestprefs KeepFiles
+    addOptionToggle $f aytestprefs MoreOptions "Show Progress  "\
+	aytest_toggleProgress
 
     pack $w.fp -side top -fill x -expand no
     pack $w.fu.fl -side left -fill both -expand yes
@@ -2521,6 +2536,7 @@ proc forall {args} {
 #  test object variations
 #  ToDo: make final body command configurable
 proc aytest_var { type } {
+  global aytestprefs
 
   set i 1
   while {[info exists ::${type}_$i]} {
@@ -2572,6 +2588,19 @@ proc aytest_var { type } {
 		  lappend body $freevals
 		  append body " "
 	      }
+
+	      if { $aytestprefs(MoreOptions) } {
+		  set aytestprefs(Progress) 0.0
+		  update
+		  set countbody $body
+		  set ::tot 0
+		  append countbody "\{incr ::tot;\}"
+		  catch {eval $countbody}
+		  set ::cur 0
+		  set aytestprefs(Progress) 1.0
+		  update
+	      }
+
 	      set k 0
 	      set cmds ""
 	      if { [info exists ::${type}_${i}(valcmd)] } {
@@ -2595,6 +2624,13 @@ proc aytest_var { type } {
 	      if { [info exists ::${type}_${i}(valcmd)] } {
 		  append cmds " \};"
 	      }
+	      if { $aytestprefs(MoreOptions) } {
+       append cmds { incr ::cur; set newpro [expr $::cur*100.0/$::tot]; }
+       append cmds { global aytestprefs;
+	            if { $newpro > [expr $aytestprefs(Progress) + 0.1] } \
+			 { set aytestprefs(Progress) $newpro; update; } }
+	      }
+
 	      lappend body $cmds
 
 	      # call forall with test commands
@@ -2646,6 +2682,10 @@ proc aytest_var { type } {
       return;
   }
 
+  if { $aytestprefs(MoreOptions) } {
+      set aytestprefs(Progress) 100; update;
+  }
+
   set aytest_result 0
  return;
 }
@@ -2659,7 +2699,7 @@ proc aytest_runTests { tests items } {
     global ayprefs
 
     if { ($tests == {}) || ($items == {}) } {
- 	return;
+	return;
     }
 
     . configure -cursor watch
