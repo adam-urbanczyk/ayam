@@ -1219,6 +1219,8 @@ proc addMDir { w prop name } {
     bind $f.e <Key-Return> "$::ay(bok) invoke;break"
     catch {bind $f.e <Key-KP_Enter> "$::ay(bok) invoke;break"}
 
+    bind $f.e <Key> "+destroy $f.e.balloon;"
+
     bind $f.e <1> "+balloon_setsplit $f.e \[$f.e get\] 15"
     eval balloon_setsplit $f.e \$${prop}(${name}) 15
 
@@ -1301,6 +1303,8 @@ proc addMFile { w prop name } {
 
     bind $f.e <Key-Return> "$::ay(bok) invoke;break"
     catch {bind $f.e <Key-KP_Enter> "$::ay(bok) invoke;break"}
+
+    bind $f.e <Key> "+destroy $f.e.balloon;"
 
     bind $f.e <1> "+balloon_setsplit $f.e \[$f.e get\] 15"
     eval balloon_setsplit $f.e \$${prop}(${name}) 15
