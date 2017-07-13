@@ -1,5 +1,5 @@
-[1. Jul 2017] CVS-Head:
-=======================
+[13. Jul 2017] CVS-Head:
+========================
 Bug Fixes:
 o entering non number data to tesselation parameter entries (SF 554)
 o chordal/centripetal knots for periodic curves/surfaces are wrong (SF 555)
@@ -31,6 +31,9 @@ o improved Script object working environment for modify scripts
   (object creation appends to current level)
 o added Script object example script "dualsweep.tcl" that creates birailed
   surfaces where the cross section is always perpendicular to both rails
+o various object interrogation commands no longer require a varname
+  argument but return the result instead, those are: "getType", "getName",
+  "estlenNC"
 
 Import/Export:
 o X3D export of NURBS curves now supports the AsWire tag
