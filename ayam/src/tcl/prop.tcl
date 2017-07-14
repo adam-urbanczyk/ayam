@@ -185,6 +185,7 @@ upvar #0 pclip_clipboard clipboard
 	lappend clipboard(names) [lindex $tagsPropData(names) $i]
 	lappend clipboard(values) [lindex $tagsPropData(values) $i]
     }
+
     return;
 }
 # copyTagp
@@ -268,7 +269,10 @@ foreach tag $names {
     $m add command -label "Remove"\
 	-command "undo save RemTag;setTags -delete $i;plb_update"
 
-    bind $b <ButtonPress-$aymainshortcuts(CMButton)> "winOpenPopup $b"
+    bind $b <ButtonPress-$aymainshortcuts(CMButton)>\
+	"after idle \{$b conf -state active\}; bind $b.popup <Unmap>\
+         \"$b conf -state normal\"; winOpenPopup $b"
+
     bind $b <Key-F10> "winOpenPopup $b;break"
     bind $b <Key-space> "$b invoke;break"
 
