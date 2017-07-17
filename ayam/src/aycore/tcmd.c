@@ -379,9 +379,13 @@ ay_tcmd_getallpoints(Tcl_Interp *interp, char *fname, char *vn,
 
   ton = Tcl_NewStringObj(vn, -1);
 
-  if(apply_trafo == 2)
+  if(apply_trafo)
     {
       ay_trafo_identitymatrix(pm);
+    }
+
+  if(apply_trafo == 2)
+    {
       if(ay_currentlevel->object != ay_root)
 	{
 	  ay_trafo_getparent(ay_currentlevel->next, pm);
@@ -1504,7 +1508,7 @@ ay_tcmd_waitpidtcmd(ClientData clientData, Tcl_Interp *interp,
 #ifdef AYENABLEFEXIT
 /** ay_tcmd_fastexittcmd:
  *  this command exits the application (without trying to clean up properly);
- *  it seems that this is the only way to quit Ayam on Mac OS X (atleast
+ *  it seems that this is the only way to quit Ayam on Mac OS X (at least
  *  using Tcl/Tk8.2.2...)
  */
 int
