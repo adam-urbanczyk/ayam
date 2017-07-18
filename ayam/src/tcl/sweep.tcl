@@ -56,21 +56,60 @@ return;
 # sweep_rotcross:
 #  helper for Sweep creation; rotates the cross section to YZ plane
 proc sweep_rotcross { {goup 1} } {
+    global ayprefs
     goDown -1
     selOb 0
-    undo save ToPlane
-    getType type
-    if { ($type == "NCurve") || ($type == "ICurve") || ($type == "ACurve") } {
-	toYZC; resetRotate; normTrafos
-    } else {
-	global transfPropData
-	getTrafo
-	if { $transfPropData(Rotate_Y) == 0.0 } {
-	    rotOb 0 90 0
+    while { 1 } {
+	if { $ayprefs(RotateCrossSection) != 0 } {	
+	    getType type
+	    set stride 3
+	    if { ($type == "NCurve") } {
+		incr stride
+	    }
+	    getPnt -trafo -all pnts
+	    set j 0
+	    set isYZ true
+	    while { $j < [llength $pnts] } {
+		set x [lindex $pnts $j]
+		if { [expr {abs($x) > 10e-6}] } {
+		    set isYZ false
+		    break
+		}
+		incr j $stride
+	    }
+	    if { $ayprefs(RotateCrossSection) == 2 && $isYZ } {
+		break;
+	    }
+	    if { $ayprefs(RotateCrossSection) == 2 && !$isYZ } {
+		set t "Correct Cross Section?"
+		set m "Rotate cross section curve to YZ-plane?"
+		if { $ayprefs(FixDialogTitles) == 1 } {
+		    set m "$t\n\n$m"
+		}
+		set answer [tk_messageBox -title $t -type yesno -icon warning\
+				-message $m]
+		if { $answer == "no" } {
+		    break;
+		}
+	    }
+
+	    undo save ToPlane
+
+	    if { ($type == "NCurve") || ($type == "ICurve") ||
+		 ($type == "ACurve") } {
+		toYZC; resetRotate; normTrafos
+	    } else {
+		global transfPropData
+		getTrafo
+		if { $transfPropData(Rotate_Y) == 0.0 } {
+		    rotOb 0 90 0
+		}
+		notifyOb
+	    }
+	    rV
 	}
-	notifyOb
+	break;
     }
-    rV
     if { $goup } {
 	goUp; sL
     }

@@ -251,6 +251,7 @@ array set ayprefs {
  AutoCloseUI 1
  DisableFailedScripts 1
  CyclePerspective 0
+ RotateCrossSection 2
 
  Docs "http://ayam.sourceforge.net/docs/"
  Tags {
