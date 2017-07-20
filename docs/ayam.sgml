@@ -16878,10 +16878,13 @@ estlenNC &ndash; estimate length of NURBS curve:
  <item>Synopsis: <tt/"estlenNC [-trafo] [varname]"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: estimate the length of the currently selected NURBS curve
-or NURBS curve providing object and put the result into the designated variable.
+or NURBS curve providing object and put the result into the designated
+variable.<newline>
+If multiple curves are selected or provided, a list of results is
+created.<newline>
 If the optional parameter <tt/"-trafo"/ is given, the transformation
 attributes of the curve will be applied to the control points for the
-length estimation.
+length estimation.<newline>
 If no varname is specified the command returns the respective result(s).
 <footnote>Since 1.25.</footnote>
 </itemize>
@@ -18569,7 +18572,7 @@ typed values):
 [myproc]
 </code>
 where <tt/"myproc"/ is defined elsewhere (e.g.~in a Tcl script file
-loaded via the Scripts preference setting) as follows:
+loaded via the <tt/"Scripts"/ preference setting) as follows:
 <code>
 proc myproc { } {
   return [expr sin(45)];
@@ -22267,6 +22270,13 @@ tags, the default value is "N".
 <item><tt/"PVColorName"/, default name for vertex color PV
 tags, the default value is "Cs".
 
+<item><tt/"RotateCrossSection"/, controls whether the creation
+of sweeps should rotate the cross section to the YZ-plane.
+If set to 0, no rotation occurs, if set to 1, the rotation
+will be attempted without any checks, and if set to 2 (this is
+the default) the cross section is checked and a requester is
+raised offering to rotate the curve.
+
 <item><tt/"SafeAutoFocus"/ disables AutoFocus
 (see section <ref id="prefgui" name="GUI preference settings">)
 when certain dialog windows are open, so that they do not get
@@ -22359,10 +22369,12 @@ for the mouse wheel; the default value is 0.5.
 
 </itemize>
 
+<#if out="latex"><x/newpage/</#if>
+
 <sect2>RiOption and RiAttributes Database<label id="rioptdb">
 <p>
 With the ayamrc file, also the database of RiOptions and RiAttributes may
-be adapted to the target RenderMan rendering system.
+be adapted to the current target RenderMan rendering system.
 <p>
 Renderer specific options and attributes can then be added
 to the scenes using tags and the main menu entries
@@ -24019,6 +24031,7 @@ Index:
 <item><ref id="ipattr" name="IPatch attribute">,
 <item><ref id="gop" name="Gordon attribute">
 </itemize>
+<item>Outliner: <ref id="treeview" name="object tree view">
 </list>
 
 <#if out="latex"><x/phantomsection/</#if>
@@ -24315,6 +24328,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="swp" name="Sweep attribute">,
 <item><ref id="cloneattr" name="Clone attribute">
 </itemize>
+<item>RotateCrossSection: <ref id="hidprefs" name="hidden preference setting">
 <item>Rotation:
 <itemize>
 <item><ref id="trap" name="transformations property">,
