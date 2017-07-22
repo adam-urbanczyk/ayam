@@ -53,36 +53,39 @@ return;
 # init_Sweep
 
 
-# sweep_rotcross:
-#  helper for Sweep creation; rotates the cross section to YZ plane
-proc sweep_rotcross { {goup 1} } {
+# sweep_rotcurve:
+# helper for Sweep/Swing creation; rotates the selected curve to proper plane:
+# if plane is 0: to YZ-plane,
+# if plane is 1: to XZ-plane,
+# if plane is 2: to XY-plane,
+proc sweep_rotcurve { plane } {
     global ayprefs
-    goDown -1
-    selOb 0
     while { 1 } {
-	if { $ayprefs(RotateCrossSection) != 0 } {	
+	if { $ayprefs(RotateCrossSection) != 0 } {
 	    getType type
 	    set stride 3
 	    if { ($type == "NCurve") } {
 		incr stride
 	    }
 	    getPnt -trafo -all pnts
-	    set j 0
-	    set isYZ true
+	    set j $plane
+	    set isInPlane true
 	    while { $j < [llength $pnts] } {
-		set x [lindex $pnts $j]
-		if { [expr {abs($x) > 10e-6}] } {
-		    set isYZ false
+		set xyz [lindex $pnts $j]
+		if { [expr {abs($xyz) > 10e-6}] } {
+		    set isInPlane false
 		    break
 		}
 		incr j $stride
 	    }
-	    if { $ayprefs(RotateCrossSection) == 2 && $isYZ } {
+	    if { $ayprefs(RotateCrossSection) == 2 && $isInPlane } {
 		break;
 	    }
-	    if { $ayprefs(RotateCrossSection) == 2 && !$isYZ } {
-		set t "Correct Cross Section?"
-		set m "Rotate cross section curve to YZ-plane?"
+	    if { $ayprefs(RotateCrossSection) == 2 && !$isInPlane } {
+		#"Correct Curve?"
+		set t [ms info_rc1]
+		#"Rotate curve to correct plane?"
+		set m [ms info_rc2]
 		if { $ayprefs(FixDialogTitles) == 1 } {
 		    set m "$t\n\n$m"
 		}
@@ -97,7 +100,8 @@ proc sweep_rotcross { {goup 1} } {
 
 	    if { ($type == "NCurve") || ($type == "ICurve") ||
 		 ($type == "ACurve") } {
-		toYZC; resetRotate; normTrafos
+		switch $plane { 0 { toYZC } 1 { toXZC } 2 { toXYC } }
+		resetRotate; normTrafos
 	    } else {
 		global transfPropData
 		getTrafo
@@ -110,6 +114,17 @@ proc sweep_rotcross { {goup 1} } {
 	}
 	break;
     }
+  return;
+}
+# sweep_rotcurve
+
+
+# sweep_rotcross:
+# helper for Sweep creation
+proc sweep_rotcross { {goup 1} } {
+    goDown -1
+    selOb 0
+    sweep_rotcurve 0
     if { $goup } {
 	goUp; sL
     }

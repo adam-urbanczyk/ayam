@@ -50,30 +50,10 @@ return;
 proc swing_rotcross { } {
     global transfPropData
     goDown -1
-    selOb 0 1
-    undo save ToPlane
     selOb 0
-    getType type
-    if { ($type == "NCurve") || ($type == "ICurve") || ($type == "ACurve") } {
-	toYZC; resetRotate; normTrafos
-    } else {
-	getTrafo
-	if { $transfPropData(Rotate_Y) == 0.0 } {
-	    rotOb 0 90 0
-	}
-	notifyOb
-    }
+    sweep_rotcurve 0
     selOb 1
-    getType type
-    if { ($type == "NCurve") || ($type == "ICurve") || ($type == "ACurve") } {
-	toXZC; resetRotate; normTrafos
-    } else {
-	getTrafo
-	if { $transfPropData(Rotate_X) == 0.0 } {
-	    rotOb 90 0 0
-	}
-	notifyOb
-    }
+    sweep_rotcurve 1
     rV; goUp; sL
  return;
 }
