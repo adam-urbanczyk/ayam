@@ -124,6 +124,9 @@ proc ms { name } {
     # Do we have a balloon text in the current locale?
     if { ![info exists ms::$ayprefs(Locale)($name)] } {
 	# no, return english string
+	if { [string first info $name] == 0 } {
+	    return [subst "\$ms::en($name)"]
+	}
 	if { ![info exists ms::$ayprefs(Locale)(Missing)] } {
 	    return [subst "Translation missing!\n\$ms::en($name)"]
 	} else {
@@ -325,6 +328,7 @@ triangles."
 ms_set en objio_options_WriteCurves "Write NURBS curves to exported file?"
 
 # info dialogs
+ms_set en cancel "Cancel"
 ms_set en info_sc1 "Scene changed!"
 ms_set en info_sc2 "Select \"OK\" to lose all changes.\nSelect \"Cancel\" to stop operation."
 
@@ -340,6 +344,8 @@ ms_set en info_warning "Warning!"
 ms_set en info_pc1 "This operation may destroy the current property.\n\
     Proceed with caution."
 
+ms_set en info_rc1 "Correct Curve?"
+ms_set en info_rc2 "Rotate curve to correct plane?"
 
 #
 # fill "de"-locale
@@ -583,6 +589,9 @@ ms_set de info_sm2 "Manuelle Schattenkarten sollten eingeschaltet sein!\
 		\n\"Cancel\" - Operation abbrechen."
 ms_fixcancel de info_sm2
 
+ms_set de info_rc1 "Kurve korrigieren?"
+ms_set de info_rc2 "Kurve zur korrekten Ebene drehen?"
+
 
 #
 # fill "fr"-locale...
@@ -799,5 +808,8 @@ ms_set fr info_rs1 "Redémarrage nécessaire!"
 #		\nSelect \"OK\" to enable them and continue.\
 #		\nSelect \"Cancel\" to stop operation."
 #ms_fixcancel fr info_sm2
+
+#ms_set fr info_rc1 "Correct Curve?"
+#ms_set fr info_rc2 "Rotate curve to correct plane?"
 
 # EOF
