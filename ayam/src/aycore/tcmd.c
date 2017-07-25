@@ -1791,3 +1791,103 @@ ay_tcmd_menustatetcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_tcmd_menustatetcmd */
+
+
+/** ay_tcmd_getnormaltcmd:
+ *  get normal of selected objects
+ *  Implements the \a getNormal scripting interface command.
+ *  See also the corresponding section in the \ayd{scgetnormal}.
+ *
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_tcmd_getnormaltcmd(ClientData clientData, Tcl_Interp *interp,
+		      int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ ay_list_object *sel = ay_selection;
+ ay_object *o = NULL;
+ ay_nurbcurve_object *nc;
+ ay_icurve_object *ic;
+ ay_acurve_object *ac;
+ ay_pointedit pe = {0};
+ double *cv = NULL, *pnt, p[4], normal[3];
+ int clearcv = AY_FALSE, cvlen, stride = 3;
+ unsigned int i;
+ Tcl_Obj *to = NULL, *ton = NULL;
+
+  while(sel)
+    {
+      o = sel->object;
+
+      switch(o->type)
+	{
+	case AY_IDNCURVE:
+	  nc = (ay_nurbcurve_object*)o->refine;
+	  cv = nc->controlv;
+	  cvlen = nc->length;
+	  if(nc->type == AY_CTCLOSED)
+	    cvlen--;
+	  if(nc->type == AY_CTPERIODIC)
+	    cvlen -= (nc->order-1);
+	  stride = 4;
+	  break;
+	case AY_IDICURVE:
+	  ic = (ay_icurve_object*)o->refine;
+	  cv = ic->controlv;
+	  cvlen = ic->length;
+	  break;
+	case AY_IDACURVE:
+	  ac = (ay_acurve_object*)o->refine;
+	  cv = ac->controlv;
+	  cvlen = ac->length;
+	  break;
+	default:
+	  ay_status = ay_pact_getpoint(0, o, p, &pe);
+	  if(ay_status)
+	    return TCL_OK;
+	  cvlen = pe.num;
+	  if(!(cv = malloc(pe.num*3*sizeof(double))))
+	    return AY_EOMEM;
+	  pnt = cv;
+	  for(i = 0; i < pe.num; i++)
+	    {
+	      memcpy(pnt, pe.coords[i], 3*sizeof(double));
+	      pnt += 3;
+	    }
+	  clearcv = AY_TRUE;
+	  ay_pact_clearpointedit(&pe);
+	  break;
+	} /* switch */
+
+      if(cv)
+	{
+	  /* compute result */
+	  ay_geom_extractmeannormal(cv, cvlen, stride, NULL, normal);
+
+	  /* compile result */
+	  if(!ton)
+	    ton = Tcl_NewListObj(0, NULL);
+	  to = Tcl_NewDoubleObj(normal[0]);
+	  Tcl_ListObjAppendElement(interp, ton, to);
+	  to = Tcl_NewDoubleObj(normal[1]);
+	  Tcl_ListObjAppendElement(interp, ton, to);
+	  to = Tcl_NewDoubleObj(normal[2]);
+	  Tcl_ListObjAppendElement(interp, ton, to);
+	} /* if cv */
+
+      if(clearcv && cv)
+	{
+	  free(cv);
+	  cv = NULL;
+	}
+
+      sel = sel->next;
+    } /* while */
+
+  /* return result */
+  if(ton)
+    Tcl_SetObjResult(interp, ton);
+
+ return TCL_OK;
+} /* ay_tcmd_getnormaltcmd */
