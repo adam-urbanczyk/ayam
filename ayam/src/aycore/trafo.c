@@ -518,8 +518,14 @@ ay_trafo_delegatetcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_trafo_delegatetcmd */
 
 
-/* ay_trafo_applyall:
+/** ay_trafo_applyall:
+ * Apply the transformations from an object and all parent objects
+ * to a point.
+ * Transforms a point in world coordinates to object coordinates.
  *
+ * \param[in] lo current level, may be NULL
+ * \param[in] o object with transformations, may be NULL
+ * \param[in,out] p point to transform
  */
 void
 ay_trafo_applyall(ay_list_object *lo, ay_object *o, double *p)
@@ -547,8 +553,14 @@ ay_trafo_applyall(ay_list_object *lo, ay_object *o, double *p)
 } /* ay_trafo_applyall */
 
 
-/* ay_trafo_applyalli:
+/** ay_trafo_applyalli:
+ * Apply the inverse transformations from an object and all parent objects
+ * to a point.
+ * Transforms a point in object coordinates to world coordinates.
  *
+ * \param[in] lo current level, may be NULL
+ * \param[in] o object with transformations, may be NULL
+ * \param[in,out] p point to transform
  */
 void
 ay_trafo_applyalli(ay_list_object *lo, ay_object *o, double *p)
@@ -579,8 +591,11 @@ ay_trafo_applyalli(ay_list_object *lo, ay_object *o, double *p)
 } /* ay_trafo_applyalli */
 
 
-/* ay_trafo_copy:
+/** ay_trafo_copy:
+ * Copies the transformation attributes from one object to another.
  *
+ * \param[in] src object that carries the source transformation data
+ * \param[in,out] dst object that receives the transformation data
  */
 void
 ay_trafo_copy(ay_object *src, ay_object *dst)
@@ -609,8 +624,11 @@ ay_trafo_copy(ay_object *src, ay_object *dst)
 } /* ay_trafo_copy */
 
 
-/* ay_trafo_add:
+/** ay_trafo_add:
+ * Add transformations from one object to another.
  *
+ * \param[in] src object that carries the source transformation data
+ * \param[in,out] dst object that receives additional transformation data
  */
 void
 ay_trafo_add(ay_object *src, ay_object *dst)
@@ -1059,6 +1077,30 @@ ay_trafo_rotpntstcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_trafo_rotpntstcmd */
 
 
+/* ay_trafo_multvectmatrix:
+ *  multiply vector <v>[4] with matrix <m>[4*4] (do V.M),
+ *  put result into <v>
+ */
+void
+ay_trafo_multvectmatrix(double *v, double *m)
+{
+ double vt[4] = {0};
+ int i, j;
+
+  for(j = 0; j < 4; j++)
+    {
+      for(i = 0; i < 4; i++)
+	{
+	  vt[j] += m[j*4+i]*v[i];
+	}
+    }
+
+  memcpy(v, vt, 16*sizeof(double));
+
+ return;
+} /* ay_trafo_multvectmatrix */
+
+
 /* ay_trafo_multmatrix:
  *  multiply transformation matrices <m1> and <m2> (do M1.M2),
  *  put result into <m1>
@@ -1176,9 +1218,14 @@ ay_trafo_invmatrix(double *m, double *mi)
 } /* ay_trafo_invmatrix */
 
 
-/* ay_trafo_invgenmatrix:
- *  invert _generic_ matrix \a m, put result into <mi>;
- *  code borrowed from Mesa/SGI GLU
+/** ay_trafo_invgenmatrix:
+ * Invert _generic_ 4 by 4 matrix
+ *  (code borrowed from Mesa/SGI GLU).
+ *
+ * \param[in] m generic matrix (double[4*4])
+ * \param[in,out] mi where to store the inverse matrix (may be \a m)
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_trafo_invgenmatrix(double *m, double *mi)
@@ -1317,9 +1364,12 @@ ay_trafo_invgenmatrix(double *m, double *mi)
 } /* ay_trafo_invgenmatrix */
 
 
-/* ay_trafo_creatematrix:
- *  initialize transformation matrix \a m from transformation
- *  attributes of <o>
+/** ay_trafo_creatematrix:
+ *  Create a transformation matrix from the transformation
+ *  attributes of an object.
+ *
+ * \param[in] o object to process
+ * \param[in,out] m transformation matrix (double[4*4])
  */
 void
 ay_trafo_creatematrix(ay_object *o, double *m)
@@ -1372,10 +1422,15 @@ ay_trafo_creatematrix(ay_object *o, double *m)
 } /* ay_trafo_creatematrix */
 
 
-/* ay_trafo_decomposematrix:
- *  decompose transformation matrix \a m to transformation attributes of <o>;
- *  Note well: shear components are completely ignored;
- *  Matrix decomposition code borrowed from Graphics Gems II unmatrix.c.
+/** ay_trafo_decomposematrix:
+ * Decompose a transformation matrix to transformation attributes.
+ * Note well: shear components are completely ignored!
+ * Also note that the objects transformation attributes will be reset
+ * to identity, even if the matrix contains unusable data.
+ * Matrix decomposition code borrowed from Graphics Gems II unmatrix.c.
+ *
+ * \param[in] m transformation matrix (double[4*4]) to decompose
+ * \param[in,out] o object to process
  */
 void
 ay_trafo_decomposematrix(double *m, ay_object *o)
