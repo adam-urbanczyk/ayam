@@ -38,11 +38,17 @@ typedef struct bcurve_object_s
   double glu_sampling_tolerance; /**< drawing quality */
 } bcurve_object;
 
-
 #ifdef WIN32
   __declspec (dllexport)
 #endif /* WIN32 */
 int bcurve_Init(Tcl_Interp *interp);
+
+/* prototypes of functions local to this module: */
+int bcurve_tobasis(bcurve_object *bc, int btype, int bstep, double *basis);
+
+int bcurve_toncurvemulti(ay_object *o, ay_object **result);
+
+int bcurve_toncurve(ay_object *o, int btype, ay_object **result);
 
 
 /* Bezier */
@@ -80,7 +86,7 @@ bcurve_tobasis(bcurve_object *bc, int btype, int bstep, double *basis)
 {
  int convert = AY_FALSE, i, j, k, l, i1, i2;
  double *p1, *p2, *p3, *p4;
- double m[16], mi[16], mu[16], mut[16];
+ double mi[16], mu[16], mut[16];
  double v[4];
 
   if(!bc)
@@ -517,6 +523,8 @@ bcurve_createcb(int argc, char *argv[], ay_object *o)
   for(i = 0; i < bcurve->length; i++)
     {
       bcurve->controlv[a] = i*0.25;
+      bcurve->controlv[a+1] = 0;
+      bcurve->controlv[a+2] = 0;
       bcurve->controlv[a+3] = 1.0;
       a += 4;
     }
@@ -845,10 +853,14 @@ bcurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 int
 bcurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
+ int ay_status = AY_OK;
  char fname[] = "bcurve_setpropcb";
  char *n1 = "BCurveAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  bcurve_object *bcurve = NULL;
+ double dtemp, *basis;
+ int j, update = AY_FALSE, new_length, new_btype, new_step;
+ char *man[] = {"_0","_1","_2","_3","_4","_5","_6","_7","_8","_9","_10","_11","_12","_13","_14","_15"};
 
   if(!interp || !o)
     return AY_ENULL;
@@ -867,18 +879,86 @@ bcurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton, "Length", -1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &bcurve->length);
+  Tcl_GetIntFromObj(interp, to, &new_length);
 
-  if(bcurve->length < 4)
+  if(new_length != bcurve->length)
     {
-      ay_error(AY_ERROR, fname, "length must be >3");
-      bcurve->length = 4;
+      update = AY_TRUE;
     }
 
   Tcl_SetStringObj(ton, "BType", -1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &bcurve->btype);
+  Tcl_GetIntFromObj(interp, to, &new_btype);
 
+  if(new_btype == AY_BTCUSTOM)
+    {
+      update = AY_TRUE;
+      if(!bcurve->basis)
+	{
+	  if(!(bcurve->basis = calloc(16, sizeof(double))))
+	    {
+	      ay_error(AY_EOMEM, fname, NULL);
+	      goto cleanup;
+	    } /* if */
+	} /* if */
+
+      if(bcurve->btype == AY_BTCUSTOM)
+	{
+	  for(j = 0; j < 16; j++)
+	    {
+	      Tcl_SetStringObj(ton, "Basis", -1);
+	      Tcl_AppendStringsToObj(ton, man[j], NULL);
+	      to  = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
+				   TCL_GLOBAL_ONLY);
+	      Tcl_GetDoubleFromObj(interp, to, &dtemp);
+	      bcurve->basis[j] = dtemp;
+	    } /* for */
+	}
+      else
+	{
+	  /* switching from another basis to custom */
+	  basis = NULL;
+	  ay_pmt_getbasis(bcurve->btype, &basis);
+	  if(basis)
+	    {
+	      memcpy(bcurve->basis, basis, 16*sizeof(double));
+	    }
+	}
+
+      Tcl_SetStringObj(ton, "Step", -1);
+      to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
+			  TCL_GLOBAL_ONLY);
+      Tcl_GetIntFromObj(interp, to, &(new_step));
+      if(new_step <= 0 || new_step > 4)
+	bcurve->step = 1;
+      else
+	bcurve->step = new_step;
+    }
+  else
+    {
+      if(bcurve->basis)
+	free(bcurve->basis);
+      bcurve->basis = NULL;
+    } /* if */
+
+  /* resize patch */
+  if(new_length != bcurve->length && (new_length > 1))
+    {
+      if(o->selp)
+	{
+	  ay_selp_clear(o);
+	}
+
+      ay_status = ay_npt_resizearrayw(&(bcurve->controlv), 4, bcurve->length,
+				      1, new_length);
+
+      if(ay_status)
+	ay_error(AY_ERROR, fname, "Could not resize curve!");
+      else
+	bcurve->length = new_length;
+    } /* if */
+
+  bcurve->btype = new_btype;
 
   Tcl_SetStringObj(ton, "Tolerance", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -888,13 +968,17 @@ bcurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &(bcurve->display_mode));
 
+  if(update)
+    {
+      (void)ay_notify_object(o);
+
+      o->modified = AY_TRUE;
+      (void)ay_notify_parent();
+    }
+
+cleanup:
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
-
-  (void)ay_notify_object(o);
-
-  o->modified = AY_TRUE;
-  (void)ay_notify_parent();
 
  return AY_OK;
 } /* bcurve_setpropcb */
@@ -909,6 +993,8 @@ bcurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  char *n1="BCurveAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  bcurve_object *bcurve = NULL;
+ int j;
+ char *man[] = {"_0","_1","_2","_3","_4","_5","_6","_7","_8","_9","_10","_11","_12","_13","_14","_15"};
 
   if(!interp || !o)
     return AY_ENULL;
@@ -933,7 +1019,32 @@ bcurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_NewIntObj(bcurve->btype);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  if(bcurve->btype == AY_BTCUSTOM)
+    {
+      if(bcurve->basis)
+	{
+	  for(j = 0; j < 16; j++)
+	    {
+	      Tcl_SetStringObj(ton, "Basis", -1);
+	      Tcl_AppendStringsToObj(ton, man[j], NULL);
+	      to = Tcl_NewDoubleObj(bcurve->basis[j]);
+	      Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
+			     TCL_GLOBAL_ONLY);
+	    } /* for */
+	} /* if */
+      Tcl_SetStringObj(ton, "Step", -1);
+      to = Tcl_NewIntObj(bcurve->step);
+      Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
+		     TCL_GLOBAL_ONLY);
+    } /* if */
 
+  Tcl_SetStringObj(ton, "IsRat", -1);
+  if(bcurve->is_rat)
+    to = Tcl_NewStringObj("yes", -1);
+  else
+    to = Tcl_NewStringObj("no", -1);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton,"Tolerance",-1);
   to = Tcl_NewDoubleObj(bcurve->glu_sampling_tolerance);
