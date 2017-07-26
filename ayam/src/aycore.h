@@ -1708,6 +1708,10 @@ int ay_trafo_rotpntstcmd(ClientData clientData, Tcl_Interp *interp,
  */
 void ay_trafo_multmatrix(double *m1, double *m2);
 
+/** multiply vector with matrix
+ */
+void ay_trafo_multvectmatrix(double *v, double *m);
+
 /** invert transformation matrix
  */
 int ay_trafo_invmatrix(double *m, double *mi);
