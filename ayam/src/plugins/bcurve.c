@@ -50,6 +50,7 @@ int bcurve_toncurvemulti(ay_object *o, ay_object **result);
 
 int bcurve_toncurve(ay_object *o, int btype, ay_object **result);
 
+int bcurve_israt(bcurve_object *bc);
 
 /* Bezier */
 static double mb[16] = {-1, 3, -3, 1,  3, -6, 3, 0,  -3, 3, 0, 0,  1, 0, 0, 0};
@@ -485,6 +486,35 @@ cleanup:
 } /* bcurve_toncurve */
 
 
+/** bcurve_israt:
+ *  check whether any control point of BCurve \a bc
+ *  uses a weight value (!= 1.0)
+ *
+ * \param[in] bc BCurve to check
+ *
+ * \returns AY_TRUE if any weight is != 1.0, else returns AY_FALSE
+ */
+int
+bcurve_israt(bcurve_object *bc)
+{
+ int i;
+ double *p;
+
+  if(!bc)
+    return AY_FALSE;
+
+  p = &(bc->controlv[3]);
+  for(i = 0; i < bc->length; i++)
+    {
+      if((fabs(*p) < (1.0-AY_EPSILON)) || (fabs(*p) > (1.0+AY_EPSILON)))
+	return AY_TRUE;
+      p += 4;
+    } /* for */
+
+ return AY_FALSE;
+} /* bcurve_israt */
+
+
 /*
  ****
  ****
@@ -870,8 +900,8 @@ bcurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!bcurve)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  toa = Tcl_NewStringObj(n1, -1);
+  ton = Tcl_NewStringObj(n1, -1);
 
   Tcl_SetStringObj(ton, "Closed", -1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -1004,8 +1034,8 @@ bcurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!bcurve)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  toa = Tcl_NewStringObj(n1, -1);
+  ton = Tcl_NewStringObj(n1, -1);
 
   Tcl_SetStringObj(ton, "Closed", -1);
   to = Tcl_NewIntObj(bcurve->closed);
@@ -1046,12 +1076,12 @@ bcurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Tolerance",-1);
+  Tcl_SetStringObj(ton, "Tolerance", -1);
   to = Tcl_NewDoubleObj(bcurve->glu_sampling_tolerance);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"DisplayMode",-1);
+  Tcl_SetStringObj(ton, "DisplayMode", -1);
   to = Tcl_NewIntObj(bcurve->display_mode);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
@@ -1120,8 +1150,10 @@ bcurve_readcb(FILE *fileptr, ay_object *o)
       a += 4;
     }
 
-  fscanf(fileptr,"%lg\n",&(bcurve->glu_sampling_tolerance));
-  fscanf(fileptr,"%d\n",&(bcurve->display_mode));
+  fscanf(fileptr, "%lg\n", &(bcurve->glu_sampling_tolerance));
+  fscanf(fileptr, "%d\n", &(bcurve->display_mode));
+
+  bcurve->is_rat = bcurve_israt(bcurve);
 
   o->refine = bcurve;
 
