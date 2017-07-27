@@ -22,6 +22,7 @@ w     fBCurveAttr
 
 array set BCurveAttrData {
 BType 0
+Step 1
 DisplayMode 1
 }
 
