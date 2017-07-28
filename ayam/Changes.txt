@@ -1,4 +1,4 @@
-[13. Jul 2017] CVS-Head:
+[28. Jul 2017] CVS-Head:
 ========================
 Bug Fixes:
 o entering non number data to tesselation parameter entries (SF 554)
@@ -12,17 +12,23 @@ o delegTrafo command does not reset parent transformations (SF 562)
 o tweening curves with interpolation control curve (SF 563)
 o X3D export of surfaces with AsWire tag (SF 564)
 o saving of script objects with individual parameters (SF 565)
+o getPnt command delivers garbage for "-all -trafo" (SF 566)
 
 Modelling:
 o the set mark action now supports drag selection of multiple points,
   setting the mark to their bounding box center
 o tweening surfaces now supports an interpolation control surface
 o improved mouse input lag of interactive modelling actions
+o creation of Sweep objects now checks the cross section curve and raises
+  a requester before rotating the curve to the proper plane, this is
+  controlled by the new hidden preference option "RotateCrossSection"
 
 GUI:
 o improved balloon interaction of view icon menus
 o improved focus management of view menu entries
 o added "Edit" to default action menu
+o improved balloon handling in preferences dialog
+o improved tag context menu interaction
 
 Scripts/Scripting Interface:
 o added script "slxml.tcl" to parse XML meta data embedded in shading
@@ -34,6 +40,8 @@ o added Script object example script "dualsweep.tcl" that creates birailed
 o various object interrogation commands no longer require a varname
   argument but return the result instead, those are: "getType", "getName",
   "estlenNC"
+o added progress meter to "aytest.tcl" script
+o added command to inquire various normals ("getNormal")
 
 Import/Export:
 o X3D export of NURBS curves now supports the AsWire tag
