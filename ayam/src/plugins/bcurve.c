@@ -1108,13 +1108,13 @@ bcurve_readcb(FILE *fileptr, ay_object *o)
   if(!(bcurve = calloc(1, sizeof(bcurve_object))))
     { return AY_EOMEM; }
 
-  fscanf(fileptr,"%d\n",&bcurve->closed);
-  fscanf(fileptr,"%d\n",&bcurve->length);
-  fscanf(fileptr,"%d\n",&bcurve->btype);
+  fscanf(fileptr, "%d\n", &bcurve->closed);
+  fscanf(fileptr, "%d\n", &bcurve->length);
+  fscanf(fileptr, "%d\n", &bcurve->btype);
 
   if(bcurve->btype == AY_BTCUSTOM)
     {
-      fscanf(fileptr,"%d\n",&bcurve->step);
+      fscanf(fileptr, "%d\n", &bcurve->step);
       if(!(bcurve->basis = malloc(16*sizeof(double))))
 	{
 	  free(bcurve);
