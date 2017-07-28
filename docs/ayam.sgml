@@ -3800,7 +3800,7 @@ The keyboard shortcut to invoke the set mark action is <tt/&lt;a&gt;/.
 This action is also active as intermediate action for e.g.~rotate
 about, where the keyboard shortcuts <tt/&lt;r&gt;/
 and then <tt/&lt;a&gt;/ would be used in a sequence and after
-setting the mark, the rotate about action would take over.
+setting the mark, the rotate about action would take over again.
 <p>
 See also the table below.
 <table loc="ht">
@@ -3814,8 +3814,9 @@ Set Mark|<tt/&lt;a&gt;/|
 <caption>Set Mark Action</caption>
 </table>
 <p>
-A single click with the mouse sets the mark. If grids are active in
-the view, the mark will be snapped to the nearest grid coordinates.
+A single click with the left mouse button sets the mark. If grids are
+active in the view, the mark will be snapped to the nearest grid coordinates.
+<p>
 Note, that, using a single mouse click, only two dimensional mark
 coordinates can be specified. Therefore, in versions prior to 1.21, the
 third coordinate was always set to zero upon a click. This is no longer
@@ -3830,6 +3831,12 @@ The mark can also be set to a point of one of the selected objects. In this
 case, the mark coordinates are always immediately three
 dimensional.<footnote>Since 1.21.</footnote>
 <p>
+If the mouse is dragged instead of clicked, the mark is set to the
+bounding box center of all points in the drag
+rectangle.<footnote>Since 1.25.</footnote>
+
+<#if out="latex"><x/newpage/</#if>
+
 Additionally, when the set mark action is active, the following keyboard
 shortcuts are available:
 <list>
@@ -23630,6 +23637,7 @@ Index:
 <item><ref id="vat" name="View attribute">,
 <item><ref id="prefdraw" name="drawing preference setting">
 </itemize>
+<item>Group: <ref id="levelobj" name="Level object">
 </list>
 
 <#if out="latex"><x/phantomsection/</#if>
