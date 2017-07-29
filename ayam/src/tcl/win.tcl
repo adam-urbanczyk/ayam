@@ -303,7 +303,7 @@ proc winSetWMState { w state } {
 	    catch { wm state $w $state }
 	} else {
 	    # we can not exactly restore the state in pre 8.4, but we can
-	    # atleast try to restore the size and place for the zoomed state
+	    # at least try to restore the size and place for the zoomed state
 	    if { $state == "zoomed" } {
 		set maxsize [wm maxsize .]
 		set maxw [lindex $maxsize 0]
