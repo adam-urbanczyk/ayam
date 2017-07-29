@@ -1823,6 +1823,8 @@ proc actionPick { w } {
     viewTitle $w "" "Pick"
     viewSetMAIcon $w ay_Pick_img "Pick"
 
+    $w setconf -drawh 0
+
     bind $w <ButtonPress-1> {
 	set oldx %x
 	set oldy %y
@@ -2021,7 +2023,7 @@ proc actionClear { w {only_clear 0} } {
     }
 
     # do not draw points in none/pick action
-    if { $ayprefs(DefaultAction) < 2 } {
+    if { $only_clear || ($ayprefs(DefaultAction) < 2) } {
 	$w setconf -drawh 0
     }
 
