@@ -47,7 +47,7 @@ proc shaderScan { file varname } {
 		lappend shader $b
 	    }
 	    # if is shader
-	    if { [string first "<argument" $rl] > -1 } {
+	    if { [string first "<argument " $rl] > -1 } {
 		regexp -- {^.*<argument name="([^"]*)".*type="([^"]*)".*value="([^"]*)"} $rl a b c d
 #the following comment just helps emacsens font lock mode
 #"
