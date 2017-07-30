@@ -105,6 +105,7 @@ proc aytest_selectGUI { } {
     $lb insert end "Test 4 - Valid Tool Object Variations"
     $lb insert end "Test 5 - Modelling Tools"
     $lb insert end "Test 6 - All Solid Object Variations"
+    $lb insert end "Test 7 - Custom Objects"
 
     bind $lb <<ListboxSelect>> "aytest_handleLBS %W"
 
@@ -2402,6 +2403,118 @@ foreach type $types {
 # aytest_6
 
 
+#
+# Test 7 - Custom Objects
+#
+proc aytest_7 { types } {
+set ::types $types
+uplevel #0 {
+puts $log "Testing custom objects callbacks...\n"
+
+# these types do not support getPnt (when empty):
+set nopnttypes ""
+lappend nopnttypes MetaObj
+
+# these types do not support conversion (or flag errors upon conversion
+# attempts, when empty):
+set noconvtypes ""
+#lappend noconvtypes 
+
+set view1 ""
+if { [winfo exists .fv.fViews.fview1.f3D.togl] } {
+    set view1 .fv.fViews.fview1.f3D.togl
+}
+set view2 ""
+if { [winfo exists .fv.fViews.fview2.f3D.togl] } {
+    set view2 .fv.fViews.fview2.f3D.togl
+}
+
+puts -nonewline "Testing "
+foreach type $types {
+
+    puts -nonewline "${type}, "
+
+    loadPlugin ${type}
+
+    puts $log "Creating a $type ...\n"
+    crtOb $type
+    hSL
+
+    puts $log "Copying a $type ...\n"
+    copOb
+    pasOb
+    hSL
+
+    puts $log "Deleting a $type ...\n"
+    delOb
+    hSL
+
+    puts $log "Get properties of $type ...\n"
+    getProp
+
+    puts $log "Set properties of $type ...\n"
+    setProp
+
+    puts $log "Saving a $type ...\n"
+    saveScene $scratchfile 1
+
+    puts $log "Reading a $type ...\n"
+    insertScene $scratchfile
+    catch {file delete $scratchfile}
+
+    puts $log "Exporting a $type ...\n"
+    wrib $scratchfile -selonly
+    catch {file delete $scratchfile}
+
+    if { [winfo exists $view1] } {
+	puts $log "Drawing a $type ...\n"
+	$view1 mc
+	$view1 redraw
+    }
+
+    if { [winfo exists $view2] } {
+	puts $log "Shading a $type ...\n"
+	$view2 mc
+	$view2 redraw
+    }
+
+    if { [winfo exists $view1] } {
+	puts $log "Bounding box calculation of $type ...\n"
+	$view1 mc
+	$view1 zoomob
+    }
+
+    puts $log "Notifying a $type ...\n"
+    notifyOb
+
+    puts $log "Selecting points of $type ...\n"
+    selPnts -all
+    selPnts
+
+    if { [lsearch -exact $nopnttypes $type] == -1 } {
+	selPnts 0 2
+	selPnts
+    }
+
+    if { [lsearch -exact $noconvtypes $type] == -1 } {
+	puts $log "Converting a $type ...\n"
+	convOb
+	convOb -inplace
+    }
+
+    # missing tests: select points via action callback,
+    # draw points/handles, (comparison - AI?), export?
+
+    selOb
+    goTop
+}
+# foreach
+
+}
+}
+# aytest_7
+
+
 # aytest_varcmds:
 #  what to do with the object variants
 #
@@ -2824,6 +2937,11 @@ set aytest_5items $items
 set items {}
 lappend items Box Sphere Cylinder Cone Disk Hyperboloid Paraboloid Torus
 set aytest_6items $items
+
+# set up types to test in test #7
+set items {}
+lappend items MetaObj SfCurve SDNPatch BCurve
+set aytest_7items $items
 
 ###
 
