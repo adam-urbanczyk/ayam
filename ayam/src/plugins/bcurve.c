@@ -317,7 +317,7 @@ bcurve_toncurvemulti(ay_object *o, ay_object **result)
       for(ii = 0; ii < 4; ii++)
 	{
 	  /* wraparound? */
-	  if(b > (bc->length-1))
+	  if(b > (bc->length*4-1))
 	    b -= (bc->length*4);
 
 	  memcpy(&(tcv[a]), &(cv[b]), 4*sizeof(double));
