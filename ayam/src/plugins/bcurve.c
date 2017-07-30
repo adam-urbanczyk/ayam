@@ -359,7 +359,7 @@ cleanup:
 /** bcurve_toncurve:
  * Create a NURBS curve from a BCurve.
  * This function will not work properly or crash if the PatchMesh
- * fails the validity check using ay_pmt_valid() above!
+ * fails the validity check using bcurve_valid() below!
  * This function only handles curves of basis type AY_BTBSPLINE and
  * open curves of arbitrary basis type and length 4.
  * Other, "complex", curves are handled via bcurve_toncurvemulti()
@@ -513,6 +513,81 @@ bcurve_israt(bcurve_object *bc)
 
  return AY_FALSE;
 } /* bcurve_israt */
+
+
+/** bcurve_valid:
+ *  check patch mesh for validity
+ *
+ * \param[in] bcurve BCurve object to process
+ *
+ * \returns AY_OK (0) if curve is valid
+ *   else:
+ *  -1: NULL pointer delivered
+ *   1: too few control points (need at least 4)
+ *   2: stepsize too small
+ *   3: basistype length mismatch
+ *
+ */
+int
+bcurve_valid(bcurve_object *bcurve)
+{
+ int step = 0;
+
+  if(!bcurve)
+    return -1;
+
+  if(bcurve->length < 4)
+    {
+      return 1;
+    }
+
+  switch(bcurve->btype)
+    {
+    case AY_BTBEZIER:
+      step = 3;
+      break;
+    case AY_BTBSPLINE:
+      step = 1;
+      break;
+    case AY_BTCATMULLROM:
+      step = 1;
+      break;
+    case AY_BTHERMITE:
+      step = 2;
+      break;
+    case AY_BTPOWER:
+      step = 4;
+      break;
+    case AY_BTCUSTOM:
+      step = bcurve->step;
+      break;
+    default:
+      break;
+    } /* switch */
+
+  if(step <= 0 || step > 4)
+    {
+      return 2;
+    }
+
+  if(bcurve->closed)
+    { /* periodic patch */
+      if(fabs(fmod((double)bcurve->length-4+(4-step), step)) >
+	 AY_EPSILON)
+	{
+	  return 3;
+	}
+    }
+  else
+    { /* non periodic patch */
+      if(fabs(fmod((double)bcurve->length-4, step)) > AY_EPSILON)
+	{
+	  return 3;
+	}
+    }
+
+ return AY_OK;
+} /* bcurve_valid */
 
 
 /*
@@ -1253,6 +1328,11 @@ bcurve_notifycb(ay_object *o)
   if(bcurve->ncurve)
     ay_object_delete(bcurve->ncurve);
   bcurve->ncurve = NULL;
+
+  if(bcurve_valid(bcurve))
+    {
+      return AY_OK;
+    }
 
   /* create new NURBS curve */
   ay_status = bcurve_toncurve(o, AY_BTBSPLINE, &(bcurve->ncurve));
