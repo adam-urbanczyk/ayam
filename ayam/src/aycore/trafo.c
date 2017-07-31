@@ -1095,7 +1095,7 @@ ay_trafo_multvectmatrix(double *v, double *m)
 	}
     }
 
-  memcpy(v, vt, 16*sizeof(double));
+  memcpy(v, vt, 4*sizeof(double));
 
  return;
 } /* ay_trafo_multvectmatrix */
