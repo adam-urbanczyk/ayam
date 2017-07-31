@@ -47,7 +47,7 @@ proc bcurve_getAttr { } {
     set ay(bok) $ay(appb)
     addVSpace $w s1 2
 
-    addCheck $w BCurveAttrData Close
+    addCheck $w BCurveAttrData Closed
     addParam $w BCurveAttrData Length
     addInfo $w BCurveAttrData IsRat
 
