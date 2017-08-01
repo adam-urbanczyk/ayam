@@ -1269,11 +1269,28 @@ proc editPointDialogApply { w } {
 #editPointDialog:
 # helper for actionEditNumP below
 # open the numeric point edit dialog
-proc editPointDialog { win } {
+proc editPointDialog { win {dragsel 0} } {
     upvar #0 editPntArr array
-    global ay ayprefs aymainshortcuts tcl_platform AYWITHAQUA
+    global ay aymark ayprefs aymainshortcuts tcl_platform AYWITHAQUA
 
     set w .editPointDw
+
+    if { $dragsel == 1 } {
+	if { [winfo exists $w] } {
+	    return;
+	}
+	selPnts -get pnts
+	if { [llength $pnts] == 0 } {
+	    return;
+	}
+	$win setconf -cmark 1
+	set editPntArr(x) $aymark(x)
+	set editPntArr(y) $aymark(y)
+	set editPntArr(z) $aymark(z)
+	set editPntArr(w) 1
+	set editPntArr(valid) 1
+
+    }
 
     if { [winfo exists $w] } {
 	editPointDialogUpdate $w
@@ -1345,7 +1362,11 @@ proc editPointDialog { win } {
 	-in $w.f1 -side top -fill x -pady 0
 
     update
-    editPointDialogUpdate $w
+    if { $dragsel == 0 } {
+	editPointDialogUpdate $w
+    } else {
+	editPointDialogSet $w aymark
+    }
 
     set f [frame $w.f2]
     button $f.bok -text "Apply" -width 5 -pady $ay(pady)\
@@ -1436,6 +1457,7 @@ proc actionEditNumP { w } {
 	update
 	focus %W
 	after idle { %W startpepac %x %y -flash -ignoreold }
+	editPointDialog %W 1
     }
 
     bind $w <${ayviewshortcuts(TagMod)}-ButtonRelease-1> {
