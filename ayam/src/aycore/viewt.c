@@ -2640,6 +2640,13 @@ ay_viewt_markfromsel(struct Togl *togl)
 
   AY_APTRAN3(view->markworld, cog, mm);
 
+  if(ay_prefs.normalizemark)
+    {
+      for(i = 0; i < 3; i++)
+	view->markworld[i] = ay_trafo_round(view->markworld[i],
+					    ay_prefs.normalizedigits);
+    }
+
   view->drawmark = AY_TRUE;
 
   if(ay_prefs.globalmark)
