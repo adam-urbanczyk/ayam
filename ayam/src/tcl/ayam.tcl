@@ -237,6 +237,7 @@ array set ayprefs {
 
  NormalizeTrafos 1
  NormalizePoints 1
+ NormalizeMark 1
  NormalizeDigits 6
 
  ConvertTags "TP,TC,BP,CP"
