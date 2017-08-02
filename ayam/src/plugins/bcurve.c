@@ -980,7 +980,12 @@ bcurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton, "Closed", -1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &bcurve->closed);
+  Tcl_GetIntFromObj(interp, to, &new_closed);
+  if(new_closed != bcurve->closed)
+    {
+      update = AY_TRUE;
+      bcurve->closed = new_closed;
+    }
 
   Tcl_SetStringObj(ton, "Length", -1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -1060,7 +1065,10 @@ bcurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       if(ay_status)
 	ay_error(AY_ERROR, fname, "Could not resize curve!");
       else
-	bcurve->length = new_length;
+	{
+	  update = AY_TRUE;
+	  bcurve->length = new_length;
+	}
     } /* if */
 
   bcurve->btype = new_btype;
