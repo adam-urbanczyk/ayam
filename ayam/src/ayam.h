@@ -1404,6 +1404,7 @@ typedef struct ay_preferences_s
   int rationalpoints; /**< type of rational points (0 - euclidean,
 			 1 - homogeneous) */
   int normalizetrafos; /**< normalize (round) trafos? */
+  int normalizemark; /**< normalize (round) the mark? */
   int normalizedigits; /**< digits to preserve when normalizing (6 - 15) */
 
   /* RIB export prefs */

@@ -63,6 +63,10 @@ ay_prefs_gettcmd(ClientData clientData, Tcl_Interp *interp,
   to = Tcl_NewIntObj(ay_prefs.normalizetrafos);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton, "NormalizeMark", -1);
+  to = Tcl_NewIntObj(ay_prefs.normalizemark);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton, "NormalizeDigits", -1);
   to = Tcl_NewIntObj(ay_prefs.normalizedigits);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -593,6 +597,11 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 	to = Tcl_ObjGetVar2(interp, toa, ton,
 			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	Tcl_GetIntFromObj(interp, to, &ay_prefs.normalizetrafos);
+
+	Tcl_SetStringObj(ton, "NormalizeMark", 13);
+	to = Tcl_ObjGetVar2(interp, toa, ton,
+			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &ay_prefs.normalizemark);
 
 	Tcl_SetStringObj(ton, "NormalizeDigits", 15);
 	to = Tcl_ObjGetVar2(interp, toa, ton,

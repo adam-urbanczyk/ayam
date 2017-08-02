@@ -2662,7 +2662,7 @@ ay_viewt_markfromselp(struct Togl *togl, int mode)
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  ay_list_object *sel = NULL;
  ay_object *o = NULL;
- int height = Togl_Height(togl);
+ int i, height = Togl_Height(togl);
  double ttcog[3] = {0}, tcog[3] = {0}, cog[3] = {0};
  GLint vp[4];
  GLdouble mm[16], mp[16], winx, winy, winz;
@@ -2748,6 +2748,13 @@ ay_viewt_markfromselp(struct Togl *togl, int mode)
   view->marky = height-winy;
 
   AY_APTRAN3(view->markworld, cog, mm);
+
+  if(ay_prefs.normalizemark)
+    {
+      for(i = 0; i < 3; i++)
+	view->markworld[i] = ay_trafo_round(view->markworld[i],
+					    ay_prefs.normalizedigits);
+    }
 
   view->drawmark = AY_TRUE;
 
