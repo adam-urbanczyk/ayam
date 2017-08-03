@@ -964,7 +964,7 @@ bcurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  bcurve_object *bcurve = NULL;
  double dtemp, *basis;
- int j, update = AY_FALSE, new_length, new_btype, new_step;
+ int j, update = AY_FALSE, new_closed, new_length, new_btype, new_step;
  char *man[] = {"_0","_1","_2","_3","_4","_5","_6","_7","_8","_9","_10","_11","_12","_13","_14","_15"};
 
   if(!interp || !o)
