@@ -1872,7 +1872,80 @@ ay_trafo_normalize(ay_object *o, int digits)
  return;
 } /* ay_trafo_normalize */
 
+/** ay_trafo_normalizetcmd:
+ *  Normalize transformation attributes of selected objects,
+ *  the selected points, or a Tcl variable.
+ *
+ *  Implements the \a normTrafos scripting interface command.
+ *  Also implements the \a normPnts scripting interface command.
+ *  Also implements the \a normVar scripting interface command.
+ *  See also the corresponding section in the \ayd{scnormtrafo}.
+ *
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_trafo_normalizetcmd(ClientData clientData, Tcl_Interp *interp,
+		       int argc, char *argv[])
+{
+ ay_list_object *sel = ay_selection;
+ int i = 0, pnts = AY_FALSE, var = AY_FALSE;
+ double val;
+ Tcl_Obj *to, *ton;
 
+  if(argv[0][4] == 'P')
+    pnts = AY_TRUE;
+
+  if(argv[0][4] == 'V')
+    {
+      var = AY_TRUE;
+      if(argc < 2)
+	{
+	  ay_error(AY_EARGS, argv[0], "varname");
+	  return TCL_OK;
+	}
+    }
+  if(var)
+    {
+      while(i+1 < argc)
+	{
+	  i++;
+	  ton = Tcl_NewStringObj(argv[i], -1);
+	  to = Tcl_ObjGetVar2(interp, ton, NULL, TCL_LEAVE_ERR_MSG);
+	  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+	  if(to)
+	    {
+	      if(Tcl_GetDoubleFromObj(interp, to, &val) == TCL_ERROR)
+		continue;
+	      val = ay_trafo_round(val, ay_prefs.normalizedigits);
+	      Tcl_SetDoubleObj(to, val);
+	    }
+	} /* while */
+    }
+  else
+    {
+      if(!sel)
+	{
+	  ay_error(AY_ENOSEL, argv[0], NULL);
+	  return TCL_OK;
+	}
+
+      while(sel)
+	{
+	  if(pnts)
+	    {
+	      ay_selp_normalize(sel->object, ay_prefs.normalizedigits);
+	    }
+	  else
+	    {
+	      ay_trafo_normalize(sel->object, ay_prefs.normalizedigits);
+	    }
+	  sel = sel->next;
+	} /* while */
+    }
+
+ return TCL_OK;
+} /* ay_trafo_normalizetcmd */
+#if 0
 /** ay_trafo_normalizetcmd:
  *  Normalize transformation attributes or coordinates of selected points
  *  of the selected objects.
@@ -1914,7 +1987,7 @@ ay_trafo_normalizetcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_trafo_normalizetcmd */
-
+#endif
 
 /** ay_trafo_round:
  * Rounds double value to specified number of significant figures.

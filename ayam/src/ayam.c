@@ -999,6 +999,9 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "normPnts", ay_trafo_normalizetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "normVar", ay_trafo_normalizetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   /* oact.c */
   Togl_CreateCommand("moveoac", ay_oact_movetcb);
 
@@ -1709,6 +1712,9 @@ ay_safeinit(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "normPnts", ay_trafo_normalizetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "normVar", ay_trafo_normalizetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
 
