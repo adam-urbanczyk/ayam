@@ -9196,7 +9196,8 @@ of order 4 and length 4 and a third curve with order 3 and 5
 control points for the U parametric dimension.
 <p>
 Note that all intersection points of a curve with other curves have
-to have the same parametric value in each of the other curves.
+to have the same parametric value in each of the other curves in the
+same set/direction.
 All curves are so called isoparametric curves.
 <p>
 Also note, that in the general case only non-rational curves can be used
@@ -9864,7 +9865,7 @@ Multiple TC tags are also supported.<footnote>Since 1.24.</footnote>
 <figure loc="ht">
 <eps file="pics/extrnp.ps" height="5cm">
 <img src="pics/extrnp.gif">
-<caption>Extracted Surface (white) from Arbitrarily Shaped Surface (blue)</caption>
+<caption>Extracted Surface (white) from Progenitor Surface (blue)</caption>
 </figure>
 <p>
 The ExtrNP object extracts a NURBS patch from
@@ -16314,6 +16315,20 @@ significant digits specified via the hidden preference setting
 <tt/"NormalizeDigits"/ (by default 6).
 </itemize>
 
+<p>
+<#if out="latex"><x/phantomsection/</#if>
+
+<label id="scnormvar">
+normVar &ndash; normalize variable:
+<itemize>
+ <item>Synopsis: <tt/"normVar varname"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Normalize the value of the designated variable.
+The value will be rounded to the number of
+significant digits specified via the hidden preference setting
+<tt/"NormalizeDigits"/ (by default 6).
+</itemize>
+
 <#if out="latex"><x/newpage/</#if>
 
 <sect2>Manipulating Shaders<label id="scishaders">
@@ -22200,6 +22215,10 @@ The default value is 1 &ndash; yes, load the environment file on
 of the decimal point, the transformation attribute and control point
 normalizing process should leave intact (Default: 6).
 
+<item><tt/"NormalizeMark"/, controls whether the mark coordinates
+should be normalized, after set from the selected points center
+(Default: 1 &ndash; yes).
+
 <item><tt/"NormalizePoints"/, controls whether the selected points
 should be normalized, after interactive modelling actions
 (Default: 1 &ndash; yes).
@@ -23961,9 +23980,10 @@ Index:
 <item>NoExport: <ref id="noexporttag" name="tag type">
 <item>NormalEpsilon: <ref id="mmtools" name="optimize PolyMesh tool option">
 <item>NormalizedDomainDistance: <ref id="prefmisc" name="NURBS tesselation mode">
-<item>NormalizeDigits, NormalizePoints, NormalizeTrafos: <ref id="hidprefs" name="hidden preference setting">
+<item>NormalizeDigits, NormalizeMark, NormalizePoints, NormalizeTrafos: <ref id="hidprefs" name="hidden preference setting">
 <item>normPnts: <ref id="scnormpnts" name="scripting interface command">
 <item>normTrafos: <ref id="scnormtrafos" name="scripting interface command">
+<item>normVar: <ref id="scnormvar" name="scripting interface command">
 <item>notifyOb: <ref id="scnotifyob" name="scripting interface command">
 <item>NP: <ref id="nptag" name="tag type">
 <item>NPatch: <ref id="npatchobj" name="NPatch object">
