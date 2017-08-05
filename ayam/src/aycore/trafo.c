@@ -1904,6 +1904,7 @@ ay_trafo_normalizetcmd(ClientData clientData, Tcl_Interp *interp,
 	  return TCL_OK;
 	}
     }
+
   if(var)
     {
       while(i+1 < argc)
@@ -1945,49 +1946,7 @@ ay_trafo_normalizetcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_trafo_normalizetcmd */
-#if 0
-/** ay_trafo_normalizetcmd:
- *  Normalize transformation attributes or coordinates of selected points
- *  of the selected objects.
- *
- *  Implements the \a normTrafos scripting interface command.
- *  Also implements the \a normPnts scripting interface command.
- *  See also the corresponding section in the \ayd{scnormtrafo}.
- *
- *  \returns TCL_OK in any case.
- */
-int
-ay_trafo_normalizetcmd(ClientData clientData, Tcl_Interp *interp,
-		       int argc, char *argv[])
-{
- ay_list_object *sel = ay_selection;
- int pnts = AY_FALSE;
 
-  if(!sel)
-    {
-      ay_error(AY_ENOSEL, argv[0], NULL);
-      return TCL_OK;
-    }
-
-  if(argv[0][4] == 'P')
-    pnts = AY_TRUE;
-
-  while(sel)
-    {
-      if(pnts)
-	{
-	  ay_selp_normalize(sel->object, ay_prefs.normalizedigits);
-	}
-      else
-	{
-	  ay_trafo_normalize(sel->object, ay_prefs.normalizedigits);
-	}
-      sel = sel->next;
-    } /* while */
-
- return TCL_OK;
-} /* ay_trafo_normalizetcmd */
-#endif
 
 /** ay_trafo_round:
  * Rounds double value to specified number of significant figures.
