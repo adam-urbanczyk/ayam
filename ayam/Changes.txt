@@ -1,5 +1,5 @@
-[28. Jul 2017] CVS-Head:
-========================
+[5. Aug 2017] CVS-Head:
+=======================
 Bug Fixes:
 o entering non number data to tesselation parameter entries (SF 554)
 o chordal/centripetal knots for periodic curves/surfaces are wrong (SF 555)
@@ -22,6 +22,10 @@ o improved mouse input lag of interactive modelling actions
 o creation of Sweep objects now checks the cross section curve and raises
   a requester before rotating the curve to the proper plane, this is
   controlled by the new hidden preference option "RotateCrossSection"
+o added support for initial drag selection in numeric edit action; dragging
+  opens the numeric edit dialog and sets the mark and the edit entry fields
+  to the center of the selected points, thus making collapsing points
+  much easier/more intuitive
 
 GUI:
 o improved balloon interaction of view icon menus
@@ -29,6 +33,10 @@ o improved focus management of view menu entries
 o added "Edit" to default action menu
 o improved balloon handling in preferences dialog
 o improved tag context menu interaction
+
+Plugins:
+o added custom object/plugin "BCurve" to model with cubic curves that can
+  be characterized by a basis (Bezier, B-Spline, Catmull-Rom, Hermite...)
 
 Scripts/Scripting Interface:
 o added script "slxml.tcl" to parse XML meta data embedded in shading
@@ -42,6 +50,7 @@ o various object interrogation commands no longer require a varname
   "estlenNC"
 o added progress meter to "aytest.tcl" script
 o added command to inquire various normals ("getNormal")
+o added command to normalize Tcl variable values ("normVar")
 
 Import/Export:
 o X3D export of NURBS curves now supports the AsWire tag
