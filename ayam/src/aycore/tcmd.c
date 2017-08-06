@@ -1887,7 +1887,7 @@ ay_tcmd_getnormaltcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  len = AY_V3LEN(normal);
 	  if(len > AY_EPSILON)
-	    len = AY_V3SCAL(1.0/len);
+	    AY_V3SCAL(normal, 1.0/len);
 
 	  /* compile result */
 	  if(!ton)
