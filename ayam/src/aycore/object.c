@@ -934,10 +934,44 @@ ay_object_ishastcmd(ClientData clientData, Tcl_Interp *interp,
 	      break;
 	    case 'T':
 	      /* is hasTrafo */
-	      if(AY_ISTRAFO(o))
-		res = yes;
+	      if(argc > 1)
+		{
+		  if((argv[1][0] == '-') && (argv[1][1] == 'r'))
+		    {
+		      if((fabs(o->quat[0]) > AY_EPSILON) ||
+			 (fabs(o->quat[1]) > AY_EPSILON) ||
+			 (fabs(o->quat[2]) > AY_EPSILON) ||
+			 (fabs(1.0 - o->quat[3]) > AY_EPSILON))
+			res = yes;
+		      else
+			res = no;
+		    }
+		  if((argv[1][0] == '-') && (argv[1][1] == 's'))
+		    {
+		      if((fabs(1.0 - o->scalx) > AY_EPSILON) ||
+			 (fabs(1.0 - o->scaly) > AY_EPSILON) ||
+			 (fabs(1.0 - o->scalz) > AY_EPSILON))
+			res = yes;
+		      else
+			res = no;
+		    }
+		  if((argv[1][0] == '-') && (argv[1][1] == 't'))
+		    {
+		      if((fabs(o->movx) > AY_EPSILON) ||
+			 (fabs(o->movy) > AY_EPSILON) ||
+			 (fabs(o->movz) > AY_EPSILON))
+			res = yes;
+		      else
+			res = no;
+		    }
+		}
 	      else
-		res = no;
+		{
+		  if(AY_ISTRAFO(o))
+		    res = yes;
+		  else
+		    res = no;
+		}
 	      break;
 	    default:
 	      /* break the loop */
