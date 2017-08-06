@@ -1811,7 +1811,7 @@ ay_tcmd_getnormaltcmd(ClientData clientData, Tcl_Interp *interp,
  ay_icurve_object *ic;
  ay_acurve_object *ac;
  ay_pointedit pe = {0};
- double *cv = NULL, *pnt, p[4], normal[3], m[16];
+ double *cv = NULL, *pnt, p[4], normal[3], m[16], len;
  int trafo = AY_FALSE, clearcv = AY_FALSE, cvlen, stride = 3;
  unsigned int i;
  int j = 1;
@@ -1884,6 +1884,10 @@ ay_tcmd_getnormaltcmd(ClientData clientData, Tcl_Interp *interp,
 		  ay_trafo_apply3(normal, m);
 		}
 	    }
+
+	  len = AY_V3LEN(normal);
+	  if(len > AY_EPSILON)
+	    len = AY_V3SCAL(1.0/len);
 
 	  /* compile result */
 	  if(!ton)
