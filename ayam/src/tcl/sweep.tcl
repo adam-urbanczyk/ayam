@@ -89,7 +89,7 @@ proc sweep_rotcurve { plane } {
 		if { $ayprefs(FixDialogTitles) == 1 } {
 		    set m "$t\n\n$m"
 		}
-		set answer [tk_messageBox -title $t -type yesno -icon warning\
+		set answer [tk_messageBox -title $t -type yesno -icon question\
 				-message $m]
 		if { $answer == "no" } {
 		    break;
@@ -103,11 +103,26 @@ proc sweep_rotcurve { plane } {
 		switch $plane { 0 { toYZC } 1 { toXZC } 2 { toXYC } }
 		resetRotate; normTrafos
 	    } else {
-		global transfPropData
-		getTrafo
-		if { $transfPropData(Rotate_Y) == 0.0 } {
-		    rotOb 0 90 0
+		if { 1 } {
+		    if { [hasTrafo -r] } {
+			break;
+		    }
+		    switch $plane {
+			0 { rotOb 0 90 0 }
+			1 { rotOb 90 0 0 }
+		    }
+		} else {
+		    global transfPropData
+		    getTrafo
+		    set cn [getNormal -trafo]
+		    switch $plane {
+			0 { set tn { 1 0 0 } }
+			1 { set tn { 0 1 0 } }
+			2 { set tn { 0 0 1 } }
+		    }
+		    # compute new rotation attributes from cn and tn
 		}
+
 		notifyOb
 	    }
 	    rV
