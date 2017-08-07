@@ -4718,7 +4718,8 @@ Script|Any<f/<sup/+//|No|Any|No*@<hline>
 MetaObj|MetaComp<f/<sup/+//|Yes|PolyMesh|No@<hline>
 MetaComp|No|No|N/A|No@<hline>
 SDNPatch|No|Yes|PolyMesh|Yes@<hline>
-SfCurve|No|No|NCurve|No*<#if out="latex">@<hline></#if>
+SfCurve|No|No|NCurve|No*@<hline>
+BCurve|No|No|NCurve|Yes<#if out="latex">@<hline></#if>
 </tabular>
 <caption>Scripts and Plugins</caption>
 </table>
@@ -11011,7 +11012,7 @@ The following table briefly lists some capabilities of the BCurve object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-BCurve|No|No|NCurve|No*<#if out=latex>@<hline></#if>
+BCurve|No|No|NCurve|Yes<#if out=latex>@<hline></#if>
 </tabular>
 <caption>BCurve Object Capabilities</caption>
 </table>
@@ -22558,7 +22559,7 @@ aysdr, ayslb, ayslc, ayslo, ayslo3d, ayslx, ayso.
 See also section <ref id="spplugins" name="Shader Parsing Plugins">.
 
 <tag/custom objects/
-metaobj, sdnpatch, sfcurve, csphere.
+metaobj, sdnpatch, sfcurve, bcurve, csphere.
 
 See also section <ref id="customobj" name="Custom Objects">.
 
@@ -23299,6 +23300,7 @@ Index:
 <item>BakOnReplace: <ref id="prefmain" name="preference setting">
 <item>Balloon: <ref id="hidprefs" name="hidden preference setting">
 <item>Basis_U, Basis_V: <ref id="pmattr" name="PatchMesh attribute">
+<item>BCurve: <ref id="bcurveobj" name="BCurve object">
 <item>BeamDistrib: <ref id="lip" name="Light attribute">
 <item>Bevel:
 <itemize>
