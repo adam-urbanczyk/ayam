@@ -10989,6 +10989,72 @@ curve).
 
 <#if out="latex"><x/newpage/</#if>
 
+<sect2>BCurve (Basis Curve) Object<label id="bcurveobj">
+<p>
+The BCurve (basis curve) object creates a cubic parametric curve from a
+number of rational control points and a basis (which is a 4 by 4 matrix).
+The basis defines the interpretation of the control points, similar to the
+bicubic patch mesh primitive of the RenderMan interface, see also
+section <ref id="patchmeshobj" name="PatchMesh Object">).
+<p>
+<figure loc="!ht">
+<eps file="pics/bcurve.ps" height="5cm">
+<img src="pics/bcurve.gif">
+<caption>BCurves of Basis Types Bezier (ul), B-Spline (ur), Catmull-Rom (lu), and Hermite (lr)</caption>
+</figure>
+<p>
+See also the image above depicting simple example curves of some
+basis types.
+<p>
+The following table briefly lists some capabilities of the BCurve object.
+<p>
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+BCurve|No|No|NCurve|No*<#if out=latex>@<hline></#if>
+</tabular>
+<caption>BCurve Object Capabilities</caption>
+</table>
+
+<sect3>BCurveAttr Property<label id="bcurveattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The BCurve object provides the following parameters:
+<itemize>
+<item><tt/"Closed"/ determines whether the curve is closed.
+
+<item><tt/"Length"/ is the number of control points, valid values depend
+on the basis type/step below, see also the corresponding discussion in section
+<ref id="pmattr" name="PatchMeshAttr Property">.
+
+<item><tt/"BType"/ is the basis type. The following basis types are available:
+<tt/"Bezier"/, <tt/"B-Spline"/, <tt/"Catmull-Rom"/,
+<tt/"Hermite"/, <tt/"Power"/, and <tt/"Custom"/.
+
+<item><tt/"Basis"/ is the basis.
+
+<item><tt/"BStep"/ is the step size, this value must be 1, 2, 3, or 4.
+
+<item>See section <ref id="ncattr" name="NCurveAttr"> for a description
+of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
+</itemize>
+
+The entries <tt/"Basis"/ and <tt/"BStep"/ are only visible, if the
+basis type is <tt/"Custom"/.
+
+<#if out="latex"><x/newpage/</#if>
+
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
+The basis curve may be converted to an ordinary NURBS curve using the
+main menu entry <tt>"Tools/Convert"</tt>.
+
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
+BCurve objects never directly appear in RIB output (only indirectly as trim
+curve).
+
+<#if out="latex"><x/newpage/</#if>
+
 <sect2>Metaball Object<label id="metaobjobj"><label id="metacompobj">
 <p>
 <figure loc="ht">
@@ -15748,11 +15814,17 @@ If multiple objects are selected, a list is returned.
 <label id="schastrafo">
 hasTrafo &ndash; has transformations:
 <itemize>
- <item>Synopsis: <tt>"hasTrafo"</tt>
+ <item>Synopsis: <tt>"hasTrafo [-r|-s|-t]"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: This command returns 1 if the selected object
 has non-default transformation attributes, otherwise 0 is returned.
-If multiple objects are selected, a list is returned.
+If multiple objects are selected, a list is returned.<newline>
+If the <tt/"-r"/ flag is provided, the command only checks the rotation
+attributes.<newline>
+If the <tt/"-s"/ flag is provided, the command only checks the scale
+attributes.<newline>
+If the <tt/"-t"/ flag is provided, the command only checks the translation
+attributes.
 </itemize>
 
 <p>
