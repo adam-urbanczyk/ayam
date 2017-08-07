@@ -68,3 +68,12 @@ proc bcurve_getAttr { } {
  return;
 }
 # bcurve_getAttr
+
+
+# add menu entry to the "Create/Custom Object" sub-menu
+mmenu_addcustom BCurve "crtOb BCurve;uS;sL;rV"
+
+# tell the rest of Ayam (or other custom objects), that we are loaded
+lappend ay(co) BCurve
+
+# EOF
