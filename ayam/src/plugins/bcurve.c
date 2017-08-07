@@ -745,6 +745,43 @@ bcurve_drawcb(struct Togl *togl, ay_object *o)
 } /* bcurve_drawcb */
 
 
+/* bcurve_drawacb:
+ *  draw annotations (in an Ayam view window) callback function of bcurve object
+ */
+int
+bcurve_drawacb(struct Togl *togl, ay_object *o)
+{
+ bcurve_object *bcurve = NULL;
+ ay_nurbcurve_object *ncurve = NULL;
+ GLdouble *ver = NULL;
+
+  bcurve = (bcurve_object *) o->refine;
+
+  if(!bcurve)
+    return AY_ENULL;
+
+  /* draw orientation arrow */
+  if(0&&bcurve->ncurve)
+    {
+      ncurve = bcurve->ncurve->refine;
+      ver = ncurve->controlv;
+      ay_draw_arrow(togl, &(ver[ncurve->length*4-8]),
+		    &(ver[ncurve->length*4-4]));
+    }
+  else
+    {
+      ver = bcurve->controlv;
+      if(bcurve->closed)
+	ay_draw_arrow(togl, &(ver[bcurve->length*4-4]), &(ver[0]));
+      else
+	ay_draw_arrow(togl, &(ver[bcurve->length*4-8]),
+		      &(ver[bcurve->length*4-4]));
+    }
+
+ return AY_OK;
+} /* bcurve_drawacb */
+
+
 /* bcurve_drawhcb:
  *  draw handles callback function of bcurve object
  */
@@ -1494,6 +1531,8 @@ Bcurve_Init(Tcl_Interp *interp)
 				NULL, /* no RIB export */
 				bcurve_bbccb,
 				&bcurve_id);
+
+  ay_status += ay_draw_registerdacb(bcurve_drawacb, bcurve_id);
 
   ay_status += ay_notify_register(bcurve_notifycb, bcurve_id);
 
