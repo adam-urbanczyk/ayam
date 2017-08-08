@@ -15777,8 +15777,8 @@ hasChild:
 <itemize>
  <item>Synopsis: <tt>"hasChild"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
- <item>Description: This command returns 1 if the selected object
-has child objects, otherwise 0 is returned. If multiple objects are
+ <item>Description: This command returns <tt/1/ if the selected object
+has child objects, otherwise <tt/0/ is returned. If multiple objects are
 selected, a list is returned.
 </itemize>
 
@@ -15791,8 +15791,8 @@ hasMat &ndash; has material:
 <itemize>
  <item>Synopsis: <tt>"hasMat"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
- <item>Description: This command returns 1 if the selected object
-has a material assigned, otherwise 0 is returned. If multiple objects are
+ <item>Description: This command returns <tt/1/ if the selected object
+has a material assigned, otherwise <tt/0/ is returned. If multiple objects are
 selected, a list is returned.
 </itemize>
 
@@ -15817,8 +15817,8 @@ hasTrafo &ndash; has transformations:
 <itemize>
  <item>Synopsis: <tt>"hasTrafo [-r|-s|-t]"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
- <item>Description: This command returns 1 if the selected object
-has non-default transformation attributes, otherwise 0 is returned.
+ <item>Description: This command returns <tt/1/ if the selected object
+has non-default transformation attributes, otherwise <tt/0/ is returned.
 If multiple objects are selected, a list is returned.<newline>
 If the <tt/"-r"/ flag is provided, the command only checks the rotation
 attributes.<newline>
@@ -15836,9 +15836,9 @@ isCurve:
 <itemize>
  <item>Synopsis: <tt>"isCurve"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
- <item>Description: This command returns 1 if the selected object
+ <item>Description: This command returns <tt/1/ if the selected object
 is (or provides&thinsp;/&thinsp;converts to) a parametric curve, otherwise
-0 is returned.
+<tt/0/ is returned.
 If multiple objects are selected, a list is returned.
 </itemize>
 
@@ -15850,9 +15850,9 @@ isSurface:
 <itemize>
  <item>Synopsis: <tt>"isSurface"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
- <item>Description: This command returns 1 if the selected object
+ <item>Description: This command returns <tt/1/ if the selected object
 is (or provides&thinsp;/&thinsp;converts to) a parametric surface, otherwise
-0 is returned.
+<tt/0/ is returned.
 If multiple objects are selected, a list is returned.
 </itemize>
 
@@ -24173,7 +24173,12 @@ Index:
 <item>PickCycle: <ref id="prefmodel" name="preference setting">
 <item>PickEpsilon: <ref id="prefmodel" name="preference setting">
 <item>PickTolerance: <ref id="hidprefs" name="hidden preference setting">
-<item>Pivot: <ref id="rotaac" name="modelling action">
+<item>Pivot:
+<itemize>
+<item><ref id="markac" name="set mark action">,
+<item><ref id="rotaac" name="rotate about action">,
+<item><ref id="scalaac" name="scale about action">
+</itemize>
 <item>Plane: <ref id="mirrorattr" name="Mirror attribute">
 <item>Plot Curvature: <ref id="plotcurt" name="NCurve tool">
 <item>Point: <ref id="pdsl" name="light type">
