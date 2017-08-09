@@ -2430,7 +2430,6 @@ ay_viewt_markfromwin(struct Togl *togl, int argc, char *argv[])
 
 	  ay_pact_clearpointedit(&mpe);
 
-	  pe.rational = AY_FALSE;
 	  sel = sel->next;
 	} /* while sel */
 
@@ -2462,7 +2461,8 @@ ay_viewt_markfromwin(struct Togl *togl, int argc, char *argv[])
 	      break;
 	    }
 
-	  pe.rational = AY_FALSE;
+	  ay_pact_clearpointedit(&pe);
+
 	  sel = sel->next;
 	} /* while sel */
 
@@ -2479,7 +2479,7 @@ ay_viewt_markfromwin(struct Togl *togl, int argc, char *argv[])
 	  view->markworld[1] = t[1];
 	  view->markworld[2] = t[2];
 
-	  if(pe.rational && ay_prefs.rationalpoints)
+	  if((pe.type == AY_PTRAT) && ay_prefs.rationalpoints)
 	    {
 	      view->markworld[0] *= pe.coords[0][3];
 	      view->markworld[1] *= pe.coords[0][3];
@@ -2950,8 +2950,8 @@ ay_viewt_getrolledup(ay_view_object *view, double *u)
 } /* ay_viewt_getrolledup */
 
 
-/* ay_viewt_init:
- *  Initialize this module.
+/** ay_viewt_init:
+ *  Initialize the view tools module.
  *
  */
 void

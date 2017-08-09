@@ -401,9 +401,6 @@ ay_bpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
   if(min_dist == 0.0)
     min_dist = DBL_MAX;
 
-  if(pe)
-    pe->rational = AY_FALSE;
-
   switch(mode)
     {
     case 0:
@@ -549,7 +546,6 @@ ay_bpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 		default:
 		  break;
 		}
-	      pnt->rational = AY_FALSE;
 	      lastpnt = &(pnt->next);
 	      pnt = pnt->next;
 	    }

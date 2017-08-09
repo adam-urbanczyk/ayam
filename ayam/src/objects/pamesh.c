@@ -922,9 +922,6 @@ ay_pamesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
   if(min_dist == 0.0)
     min_dist = DBL_MAX;
 
-  if(pe)
-    pe->rational = AY_TRUE;
-
   switch(mode)
     {
     case 0:
@@ -1033,7 +1030,6 @@ ay_pamesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	  if(pnt->index < (unsigned int)(pamesh->width * pamesh->height))
 	    {
 	      pnt->point = &(pamesh->controlv[pnt->index*4]);
-	      pnt->rational = AY_TRUE;
 	      lastpnt = &(pnt->next);
 	      pnt = pnt->next;
 	    }

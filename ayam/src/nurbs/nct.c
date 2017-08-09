@@ -352,7 +352,7 @@ ay_nct_collapseselp(ay_object *o)
       new->points[i] = selp->point;
       new->indices[i] = selp->index;
       i++;
-      if(selp->rational)
+      if(selp->type == AY_PTRAT)
 	memcpy(selp->point, first, 4*sizeof(double));
       else
 	memcpy(selp->point, first, 3*sizeof(double));
@@ -7117,11 +7117,14 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
  * \param[in,out] curve NURBS curve to trim
  * \param[in] umin new minimum knot value
  * \param[in] umax new maximum knot value
+ * \param[in] relative if AY_TRUE, umin and umax are interpreted in
+ *  a relative way
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_nct_trim(ay_nurbcurve_object **curve, double umin, double umax)
+ay_nct_trim(ay_nurbcurve_object **curve, double umin, double umax
+	    /*, int relative*/)
 {
  int ay_status;
  ay_object t1 = {0}, *t2 = NULL;
@@ -7188,13 +7191,13 @@ ay_nct_trimtcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int tcl_status = TCL_OK, ay_status = AY_OK;
  double umin = 0.0, umax = 0.0;
- int notify_parent = AY_FALSE;
+ int notify_parent = AY_FALSE, relative = AY_FALSE;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
 
   if(argc < 3)
     {
-      ay_error(AY_EARGS, argv[0], "umin umax");
+      ay_error(AY_EARGS, argv[0], "umin umax [relative]");
       return TCL_OK;
     }
 
@@ -7213,6 +7216,12 @@ ay_nct_trimtcmd(ClientData clientData, Tcl_Interp *interp,
     {
       ay_error(AY_ERROR, argv[0], "Parameter umin must be smaller than umax.");
       return TCL_OK;
+    }
+
+  if(argc > 2)
+    {
+      tcl_status = Tcl_GetInt(interp, argv[3], &relative);
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);
     }
 
   while(sel)

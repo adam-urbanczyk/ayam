@@ -855,7 +855,7 @@ bcurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     min_dist = DBL_MAX;
 
   if(pe)
-    pe->rational = AY_TRUE;
+    pe->type = AY_PTRAT;
 
   switch(mode)
     {
@@ -969,7 +969,7 @@ bcurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	  if(pnt->index < (unsigned int)bcurve->length)
 	    {
 	      pnt->point = &(bcurve->controlv[pnt->index*4]);
-	      pnt->rational = AY_TRUE;
+	      pnt->type = AY_PTRAT;
 	      lastpnt = &(pnt->next);
 	      pnt = pnt->next;
 	    }

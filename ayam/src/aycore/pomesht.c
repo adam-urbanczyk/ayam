@@ -457,7 +457,7 @@ ay_pomesht_merge(int merge_pv_tags, ay_list_object *list, ay_object **result)
 
   if(i < 2)
     {
-      ay_error(AY_ERROR, fname, "Need atleast two PolyMesh objects to merge!");
+      ay_error(AY_ERROR, fname, "Need at least two PolyMesh objects to merge!");
       return AY_ERROR;
     }
 
@@ -3510,7 +3510,7 @@ crtlist:
 	    return AY_EOMEM;
 
 	  newp->next = NULL;
-	  newp->rational = AY_FALSE;
+	  newp->type = AY_PT3D;
 	  newp->readonly = AY_FALSE;
 	  newp->point = p->point;
 	  newp->index = p->index;
@@ -3525,7 +3525,7 @@ crtlist:
 	return AY_EOMEM;
 
       newp->next = NULL;
-      newp->rational = AY_FALSE;
+      newp->type = AY_PT3D;
       newp->readonly = AY_FALSE;
       newp->point = p->point;
       newp->index = p->index;

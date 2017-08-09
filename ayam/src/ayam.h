@@ -110,7 +110,7 @@
 typedef struct ay_point_s
 {
   struct ay_point_s *next; /**< next point */
-  char rational; /**< is this point rational? */
+  char type; /**< point type (AY_PT*) */
   char readonly;  /**< is this point read only/not editable? */
   double *point; /**< pointer to point data (in objects data structure!) */
   unsigned int index; /**< index of point (to restore point after undo) */
@@ -133,7 +133,7 @@ typedef struct ay_pointedit_s
   unsigned int num; /**< number of selected point */
   double **coords; /**< pointers to point data [num] */
   unsigned int *indices; /**< indices [num] */
-  char rational; /**< are these points rational? */
+  char type; /**< point type (AY_PT*) */
   char readonly; /**< are these points read only/not editable? */
 } ay_pointedit;
 
@@ -1970,6 +1970,13 @@ extern char *ay_error_igntype;
 #define AY_CATGORDON    4 /**< Gordon Cap */
 /*@}*/
 
+/** \name Point Types */
+/*@{*/
+#define AY_PT3D    0 /**< Normal 3D Point */
+#define AY_PTRAT   1 /**< Rational (4D) Point */
+#define AY_PTKNOT  2 /**< Knot Point */
+/*@}*/
+
 /** \name Drawing Modes */
 /*@{*/
 #define AY_DMWIRE       0
@@ -2105,11 +2112,11 @@ extern char *ay_error_igntype;
 
 /** \name Version Strings and Numbers */
 /*@{*/
-#define AY_VERSIONSTR "1.24"
+#define AY_VERSIONSTR "1.25pre"
 #define AY_VERSIONSTRMI "0"
 
 #define AY_VERSIONMA 1
-#define AY_VERSION   24
+#define AY_VERSION   25
 #define AY_VERSIONMI 0
 /*@}*/
 

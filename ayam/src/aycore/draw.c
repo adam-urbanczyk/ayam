@@ -338,7 +338,8 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 			    (GLdouble)o->scalz);
 		   point = o->selp;
 		   glBegin(GL_POINTS);
-		   if(point && point->rational && ay_prefs.rationalpoints)
+		   if(point && (point->type == AY_PTRAT) &&
+		      ay_prefs.rationalpoints)
 		     {
 		       while(point)
 			 {
@@ -1569,8 +1570,13 @@ ay_draw_registerdacb(ay_drawcb  *dacb, unsigned int type_id)
 } /* ay_draw_registerdacb */
 
 
-/* ay_draw_silhouettes:
- */
+/** ay_draw_silhouettes:
+  * Draw the silhouettes of some objects, that are delivered in a
+  * silhouette image as mostly transparent quad.
+  *
+  * \param[in] togl view to draw
+  * \param[in] silimg silhouette image, should be of views size
+  */
 void
 ay_draw_silhouettes(struct Togl *togl, unsigned char *silimg)
 {
@@ -1647,7 +1653,7 @@ ay_draw_silhouettes(struct Togl *togl, unsigned char *silimg)
 
 	    glTexCoord2f(1+ex, 0+ey);
 	    glVertex3i(w, 0, 0);
-	  }
+	  } /* for each pass */
       }
     else
       {
@@ -1662,7 +1668,7 @@ ay_draw_silhouettes(struct Togl *togl, unsigned char *silimg)
 
 	glTexCoord2i(1, 0);
 	glVertex3i(w, 0, 0);
-      }
+      } /* if antialias */
    glEnd();
   glPopMatrix();
   glMatrixMode(GL_PROJECTION);

@@ -1598,7 +1598,7 @@ resenv:
 		      sc->pnts = p1;
 
 		      ay_trafo_creatematrix(down, m);
-		      if(pe.rational)
+		      if(pe.type == AY_PTRAT)
 			{
 			  for(j = 0; j < pe.num; j++)
 			    {

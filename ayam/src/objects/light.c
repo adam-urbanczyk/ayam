@@ -485,9 +485,6 @@ ay_light_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
   if(min_dist == 0.0)
     min_dist = DBL_MAX;
 
-  if(pe)
-    pe->rational = AY_FALSE;
-
   if(light->type == AY_LITCUSTOM)
     {
       if(light->lshader)
@@ -675,7 +672,6 @@ ay_light_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 		default:
 		  break;
 		}
-	      pnt->rational = AY_FALSE;
 	      lastpnt = &(pnt->next);
 	      pnt = pnt->next;
 	    }
