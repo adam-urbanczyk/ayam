@@ -388,7 +388,6 @@ ay_camera_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	return AY_EOMEM;
       pe->indices[0] = 0;
       pe->indices[1] = 1;
-      pe->rational = AY_FALSE;
       pe->num = 2;
       break;
     case 1:
@@ -426,7 +425,6 @@ ay_camera_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
       pe->coords[0] = pecoord;
       pe->indices[0] = peindex;
-      pe->rational = AY_FALSE;
       pe->num = 1;
       break;
     case 2:
@@ -488,7 +486,6 @@ ay_camera_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       pe->coords = pecoords;
       pe->indices = peindices;
       pe->num = a;
-      pe->rational = AY_FALSE;
       break;
     case 3:
       pnt = o->selp;
@@ -508,7 +505,6 @@ ay_camera_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 		default:
 		  break;
 		}
-	      pnt->rational = AY_FALSE;
 	      lastpnt = &(pnt->next);
 	      pnt = pnt->next;
 	    }

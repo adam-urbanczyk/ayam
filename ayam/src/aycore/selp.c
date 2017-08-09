@@ -106,7 +106,7 @@ ay_selp_selall(ay_object *o)
 	{
 	  newp->index = 0;
 	}
-      newp->rational = pe.rational;
+      newp->type = pe.type;
       newp->readonly = pe.readonly;
     } /* for */
 
@@ -397,7 +397,7 @@ ay_selp_getcenter(ay_point *p, int mode, double *center)
       /* compute min-max-bbox center */
       while(pnt)
 	{
-	  if(pnt->rational && ay_prefs.rationalpoints)
+	  if((pnt->type == AY_PTRAT) && ay_prefs.rationalpoints)
 	    {
 	      e = h;
 	      h[0] = pnt->point[0]*pnt->point[3];
@@ -437,7 +437,7 @@ ay_selp_getcenter(ay_point *p, int mode, double *center)
       while(pnt)
 	{
 	  nump++;
-	  if(pnt->rational)
+	  if(pnt->type == AY_PTRAT)
 	    is_rat = AY_TRUE;
 	  pnt = pnt->next;
 	}
@@ -458,7 +458,7 @@ ay_selp_getcenter(ay_point *p, int mode, double *center)
 	  for(i = 0; i < nump; i++)
 	    {
 	      pnts[i] = &(hpnts[j]);
-	      if(pnt->rational)
+	      if(pnt->type == AY_PTRAT)
 		{
 		  hpnts[j]   = pnt->point[0]*pnt->point[3];
 		  hpnts[j+1] = pnt->point[1]*pnt->point[3];
@@ -964,7 +964,7 @@ ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
   if(pe)
     {
       if(stride == 4 && ay_prefs.rationalpoints)
-	pe->rational = AY_TRUE;
+	pe->type = AY_PTRAT;
 
       pe->readonly = readonly;
     }
@@ -1099,7 +1099,7 @@ ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
 	    {
 	      pnt->point = &(arr[pnt->index*stride]);
 	      if(stride == 4 && ay_prefs.rationalpoints)
-		pnt->rational = AY_TRUE;
+		pnt->type = AY_PTRAT;
 	      pnt->readonly = readonly;
 	      lastpnt = &(pnt->next);
 	      pnt = pnt->next;
@@ -1240,7 +1240,7 @@ ay_selp_normalize(ay_object *o, int digits)
       p++;
       *p = ay_trafo_round(*p, digits);
 
-      if(pnt->rational)
+      if(pnt->type == AY_PTRAT)
 	{
 	  p++;
 	  *p = ay_trafo_round(*p, digits);
@@ -1448,7 +1448,7 @@ ay_selp_managelist(ay_object *o, unsigned int *lenptr, double **pntsptr)
 		      p1 = &(pnts[a]);
 		      p2 = pe.coords[j];
 		      AY_APTRAN3(p1, p2, m);
-		      if(pe.rational)
+		      if(pe.type == AY_PTRAT)
 			{
 			  p1[3] = pe.coords[j][3];
 			}
@@ -1466,7 +1466,7 @@ ay_selp_managelist(ay_object *o, unsigned int *lenptr, double **pntsptr)
 		      p1 = &(pnts[a]);
 		      p2 = pe.coords[j];
 		      memcpy(p1, p2, 3*sizeof(double));
-		      if(pe.rational)
+		      if(pe.type == AY_PTRAT)
 			{
 			  p1[3] = pe.coords[j][3];
 			}

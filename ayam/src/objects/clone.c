@@ -1125,7 +1125,7 @@ ay_clone_notifycb(ay_object *o)
 		      for(i = 0; i < clone->numclones; i++)
 			{
 			  ay_trafo_creatematrix(tr, m);
-			  if(pe.rational)
+			  if(pe.type == AY_PTRAT)
 			    {
 			      clone->pntsrat = AY_TRUE;
 			      for(j = 0; j < pe.num; j++)
@@ -1181,7 +1181,7 @@ ay_clone_notifycb(ay_object *o)
 			    {
 			      clone->pnts = p1;
 			      ay_trafo_creatematrix(tr, m);
-			      if(pe.rational)
+			      if(pe.type == AY_PTRAT)
 				{
 				  clone->pntsrat = AY_TRUE;
 				  for(j = 0; j < pe.num; j++)
@@ -1206,7 +1206,7 @@ ay_clone_notifycb(ay_object *o)
 				} /* if */
 
 			      ay_trafo_creatematrix(down, m);
-			      if(pe.rational)
+			      if(pe.type == AY_PTRAT)
 				{
 				  for(j = 0; j < pe.num; j++)
 				    {

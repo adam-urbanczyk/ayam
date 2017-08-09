@@ -39,6 +39,7 @@ int ay_ncurve_drawglu(ay_view_object *view, ay_nurbcurve_object *ncurve);
 
 int ay_ncurve_drawch(ay_nurbcurve_object *ncurve);
 
+int ay_ncurve_drawkn(struct Togl *togl, ay_object *o);
 
 /* functions: */
 
@@ -756,6 +757,74 @@ ay_ncurve_drawch(ay_nurbcurve_object *ncurve)
 } /* ay_ncurve_drawch */
 
 
+/* ay_ncurve_drawkn:
+ *  internal helper function
+ *  draw the knots of the curve
+ */
+int
+ay_ncurve_drawkn(struct Togl *togl, ay_object *o)
+{
+ int a, i, nk;
+ double cv[3], w;
+ GLdouble mvm[16], pm[16], winx, winy, winz, s;
+ GLdouble p1x, p1y, p2x, p2y, alpha;
+ GLint vp[4];
+ ay_nurbcurve_object *ncurve = (ay_nurbcurve_object *)o->refine;
+
+  s = ay_prefs.handle_size*0.75;
+
+  glGetDoublev(GL_MODELVIEW_MATRIX, mvm);
+  glGetDoublev(GL_PROJECTION_MATRIX, pm);
+  glGetIntegerv(GL_VIEWPORT, vp);
+
+  glDisable(GL_DEPTH_TEST);
+
+  glMatrixMode(GL_PROJECTION);
+  glPushMatrix();
+   glLoadIdentity();
+   glOrtho(0, Togl_Width(togl), 0, Togl_Height(togl), -100.0, 100.0);
+
+   glMatrixMode(GL_MODELVIEW);
+   glPushMatrix();
+    glLoadIdentity();
+
+    a = 0;
+    glBegin(GL_QUADS);
+     for(i = ncurve->order-1; i < ncurve->length; i++)
+       {
+	 if(ncurve->is_rat)
+	   ay_nb_CurvePoint4D(ncurve->length-1, ncurve->order-1, ncurve->knotv,
+			      ncurve->controlv, ncurve->knotv[i], cv);
+	 else
+	   ay_nb_CurvePoint3D(ncurve->length-1, ncurve->order-1, ncurve->knotv,
+			      ncurve->controlv, ncurve->knotv[i], cv);
+
+	 if(GL_FALSE == gluProject((GLdouble)cv[0], (GLdouble)cv[1],
+				   (GLdouble)cv[2], mvm, pm, vp,
+				   &winx, &winy, &winz))
+	   {
+	     return AY_OK;
+	   }
+
+	 glVertex2d(winx-s, winy);
+	 glVertex2d(winx, winy+s);
+	 glVertex2d(winx+s, winy);
+	 glVertex2d(winx, winy-s);
+
+	 a += 4;
+       }
+    glEnd();
+   glPopMatrix();
+   glMatrixMode(GL_PROJECTION);
+  glPopMatrix();
+  glMatrixMode(GL_MODELVIEW);
+
+  glEnable(GL_DEPTH_TEST);
+
+ return AY_OK;
+} /* ay_ncurve_drawkn */
+
+
 /* ay_ncurve_drawcb:
  *  draw (display in an Ayam view window) callback function of ncurve object
  */
@@ -824,6 +893,7 @@ ay_ncurve_drawacb(struct Togl *togl, ay_object *o)
 {
  ay_nurbcurve_object *ncurve;
  double *a, *b;
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
 
   if(!o)
     return AY_ENULL;
@@ -847,7 +917,10 @@ ay_ncurve_drawacb(struct Togl *togl, ay_object *o)
     }
 
   ay_draw_arrow(togl, a, b);
-
+  /*
+  if(view->drawhandles == 2)
+    ay_ncurve_drawkn(togl, o);
+  */
  return AY_OK;
 } /* ay_ncurve_drawacb */
 
@@ -954,7 +1027,7 @@ ay_ncurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     min_dist = DBL_MAX;
 
   if(pe)
-    pe->rational = AY_TRUE;
+    pe->type = AY_PTRAT;
 
   switch(mode)
     {
@@ -1102,7 +1175,7 @@ ay_ncurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	  if(pnt->index < (unsigned int)ncurve->length)
 	    {
 	      pnt->point = &(ncurve->controlv[pnt->index*4]);
-	      pnt->rational = AY_TRUE;
+	      pnt->type = AY_PTRAT;
 	      lastpnt = &(pnt->next);
 	      pnt = pnt->next;
 	    }

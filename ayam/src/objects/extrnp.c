@@ -116,7 +116,10 @@ ay_extrnp_drawcb(struct Togl *togl, ay_object *o)
 
   if(!extrnp)
     return AY_ENULL;
-
+  /*
+  glEnable(GL_LINE_STIPPLE);
+  glLineStipple((GLint)3, (GLushort)0x5555);
+  */
   if(extrnp->npatch)
     ay_draw_object(togl, extrnp->npatch, AY_TRUE);
 
@@ -129,7 +132,9 @@ ay_extrnp_drawcb(struct Togl *togl, ay_object *o)
 	  b = b->next;
 	}
     }
-
+  /*
+  glDisable(GL_LINE_STIPPLE);
+  */
  return AY_OK;
 } /* ay_extrnp_drawcb */
 

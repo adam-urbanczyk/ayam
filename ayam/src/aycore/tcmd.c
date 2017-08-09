@@ -417,7 +417,7 @@ ay_tcmd_getallpoints(Tcl_Interp *interp, char *fname, char *vn,
 	  to = Tcl_NewDoubleObj(p[2]);
 	  Tcl_ObjSetVar2(interp, ton, NULL, to, flags);
 
-	  if(pe.rational)
+	  if(pe.type == AY_PTRAT)
 	    {
 	      to = Tcl_NewDoubleObj(pe.coords[i][3]);
 	      Tcl_ObjSetVar2(interp, ton, NULL, to, flags);
@@ -883,7 +883,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 		      goto cleanup;
 		    }
 		  p = selp->point;
-		  rational = selp->rational;
+		  rational = selp->type;
 		  free(selp);
 		  o->selp = old_selp;
 		  handled = AY_TRUE;
@@ -1125,7 +1125,7 @@ ay_tcmd_setallpoints(Tcl_Interp *interp, char *fname, char *vn,
       ay_pact_getpoint(0, o, p, &pe);
       if(pe.num && !pe.readonly)
 	{
-	  if(!pe.rational)
+	  if(!(pe.type == AY_PTRAT))
 	    {
 	      for(i = 0; i < pe.num; i++)
 		{
@@ -1360,7 +1360,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 		  goto cleanup;
 		}
 	      p = selp->point;
-	      rational = selp->rational;
+	      rational = selp->type;
 	      handled = AY_TRUE;
 	      i++;
 	    }

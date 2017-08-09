@@ -20,10 +20,10 @@
 static ay_pointedit pact_pe = {0};
 
 /* number of selected points per object */
-static int *pact_numcpo;
+static int *pact_numpo;
 
-/* rational state of selected points per object */
-static int *pact_ratcpo;
+/* type of selected points per object */
+static int *pact_typepo;
 
 /* objects that have selected points */
 static ay_object **pact_objects;
@@ -82,7 +82,7 @@ ay_pact_clearpointedit(ay_pointedit *pe)
   pe->indices = NULL;
 
   pe->num = 0;
-  pe->rational = AY_FALSE;
+  pe->type = AY_PT3D;
   pe->readonly = AY_FALSE;
 
  return;
@@ -263,7 +263,7 @@ ay_pact_selboundtcb(struct Togl *togl, int argc, char *argv[])
 	      newp->index = 0;
 	    }
 
-	  newp->rational = pe.rational;
+	  newp->type = pe.type;
 	  newp->readonly = pe.readonly;
 
 	  ay_status = ay_pomesht_selectbound(o->refine, o->selp);
@@ -445,7 +445,7 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
 		      newp->index = 0;
 		    }
 
-		  newp->rational = pe.rational;
+		  newp->type = pe.type;
 		  newp->readonly = pe.readonly;
 		} /* if */
 	    } /* for */
@@ -587,13 +587,13 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 
   Togl_MakeCurrent(togl);
 
-  if(pact_numcpo)
-    free(pact_numcpo);
-  pact_numcpo = NULL;
+  if(pact_numpo)
+    free(pact_numpo);
+  pact_numpo = NULL;
 
-  if(pact_ratcpo)
-    free(pact_ratcpo);
-  pact_ratcpo = NULL;
+  if(pact_typepo)
+    free(pact_typepo);
+  pact_typepo = NULL;
 
   if(pact_objects)
     free(pact_objects);
@@ -677,27 +677,27 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 	  penumber += pact_pe.num;
 
 	  /* ...remember number of picked points of current object */
-	  if(!(tmpi = realloc(pact_numcpo, (pact_objectslen+1)*
+	  if(!(tmpi = realloc(pact_numpo, (pact_objectslen+1)*
 			      sizeof(int))))
 	    {
 	      ay_status = AY_EOMEM; goto cleanup;
 	    }
 	  else
 	    {
-	      pact_numcpo = tmpi;
-	      pact_numcpo[pact_objectslen] = pact_pe.num;
+	      pact_numpo = tmpi;
+	      pact_numpo[pact_objectslen] = pact_pe.num;
 	    }
 
 	  /* ...remember rational state of current object */
-	  if(!(tmpi = realloc(pact_ratcpo, (pact_objectslen+1)*
+	  if(!(tmpi = realloc(pact_typepo, (pact_objectslen+1)*
 			      sizeof(int))))
 	    {
 	      ay_status = AY_EOMEM; goto cleanup;
 	    }
 	  else
 	    {
-	      pact_ratcpo = tmpi;
-	      pact_ratcpo[pact_objectslen] = pact_pe.rational;
+	      pact_typepo = tmpi;
+	      pact_typepo[pact_objectslen] = pact_pe.type;
 	    }
 
 	  /* ...remember pointer to current object */
@@ -734,18 +734,28 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
       else
 	o = NULL;
 
-      if(pecoords && *pact_ratcpo && ay_prefs.rationalpoints)
+      if(pecoords)
 	{
-	  w = pecoords[0][3];
-	  obj[0] = pecoords[0][0]*w;
-	  obj[1] = pecoords[0][1]*w;
-	  obj[2] = pecoords[0][2]*w;
-	  ay_pact_flashpoint(ignoreold, obj, o);
-	}
-      else
-	{
-	  ay_pact_flashpoint(ignoreold, pecoords?*pecoords:NULL, o);
-	}
+	  if(*pact_typepo == AY_PTKNOT)
+	    {
+	      /* flash knot */
+	    }
+	  else
+	    {
+	      if((*pact_typepo == AY_PTRAT) && ay_prefs.rationalpoints)
+		{
+		  w = pecoords[0][3];
+		  obj[0] = pecoords[0][0]*w;
+		  obj[1] = pecoords[0][1]*w;
+		  obj[2] = pecoords[0][2]*w;
+		  ay_pact_flashpoint(ignoreold, obj, o);
+		}
+	      else
+		{
+		  ay_pact_flashpoint(ignoreold, pecoords?*pecoords:NULL, o);
+		}
+	    } /* if */
+	} /* if */
     } /* if */
 
   /* prevent cleanup code from doing something harmful */
@@ -846,7 +856,7 @@ ay_pact_pentcb(struct Togl *togl, int argc, char *argv[])
 
 	      coords = pe.coords[0];
 
-	      if(pe.rational)
+	      if(pe.type == AY_PTRAT)
 		{
 		  memcpy(wcoords, coords, 4*sizeof(double));
 		  if(ay_prefs.rationalpoints)
@@ -878,7 +888,7 @@ ay_pact_pentcb(struct Togl *togl, int argc, char *argv[])
 			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
 	      Tcl_SetStringObj(ton, "lw", -1);
-	      if(pe.rational)
+	      if(pe.type == AY_PTRAT)
 		{
 		  to = Tcl_NewDoubleObj(coords[3]);
 		}
@@ -908,7 +918,7 @@ ay_pact_pentcb(struct Togl *togl, int argc, char *argv[])
 			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
 	      Tcl_SetStringObj(ton, "ww", -1);
-	      if(pe.rational)
+	      if(pe.type == AY_PTRAT)
 		{
 		  to = Tcl_NewDoubleObj(wcoords[3]);
 		}
@@ -1008,7 +1018,7 @@ ay_pact_pentcb(struct Togl *togl, int argc, char *argv[])
 		    {
 		      if(!selp->readonly)
 			{
-			  if(selp->rational)
+			  if(selp->type == AY_PTRAT)
 			    {
 			      memcpy(selp->point, tcoords, 4*sizeof(double));
 			      if(ay_prefs.rationalpoints)
@@ -1039,7 +1049,7 @@ ay_pact_pentcb(struct Togl *togl, int argc, char *argv[])
 			    selp->point[1] = tcoords[1];
 			  if(set_z)
 			    selp->point[2] = tcoords[2];
-			  if(selp->rational)
+			  if(selp->type == AY_PTRAT)
 			    {
 			      if(set_w)
 				selp->point[3] = tcoords[3];
@@ -2163,7 +2173,7 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 		      if(view->usegrid && (view->grid != 0.0) &&
 			 ay_prefs.edit_snaps_to_grid)
 			{
-			  for(i = 0; i < pact_numcpo[j]; i++)
+			  for(i = 0; i < pact_numpo[j]; i++)
 			    {
 			      coords = pact_pe.coords[k];
 			      if(!view->local)
@@ -2244,7 +2254,7 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 			     really changed by the snap to grid operation */
 			  if(o->modified)
 			    {
-			      ay_pact_notify(o, j, k-pact_numcpo[j]);
+			      ay_pact_notify(o, j, k-pact_numpo[j]);
 			      redraw = AY_TRUE;
 			    } /* if */
 			} /* if grid */
@@ -2287,7 +2297,7 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 
 	  if(pact_pe.coords)
 	    {
-	      for(i = 0; i < pact_numcpo[j]; i++)
+	      for(i = 0; i < pact_numpo[j]; i++)
 		{
 		  coords = pact_pe.coords[k];
 		  k++;
@@ -2300,7 +2310,7 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 		 (fabs(movY) > AY_EPSILON)||
 		 (fabs(movZ) > AY_EPSILON))
 		{
-		  ay_pact_notify(o, j, k-pact_numcpo[j]);
+		  ay_pact_notify(o, j, k-pact_numpo[j]);
 		  redraw = AY_TRUE;
 		} /* if */
 	    } /* if */
@@ -2313,7 +2323,7 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
   /* flash option given? */
   if(start && argc > 5)
     {
-      if(*pact_ratcpo && ay_prefs.rationalpoints && coords)
+      if(*pact_typepo && ay_prefs.rationalpoints && coords)
 	{
 	  w = pact_pe.coords[0][3];
 	  uccoords[0] = coords[0]*w;
@@ -2387,11 +2397,11 @@ ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
     {
       o = pact_objects[j];
 
-      for(i = 0; i < pact_numcpo[j]; i++)
+      for(i = 0; i < pact_numpo[j]; i++)
 	{
 	  coords = pact_pe.coords[k];
 	  k++;
-	  if(pact_ratcpo[j])
+	  if(pact_typepo[j])
 	    {
 	      new_weight = coords[3];
 	      if(dx > 0.0)
@@ -2410,7 +2420,7 @@ ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
 	    } /* if */
 	} /* for */
 
-      if(pact_ratcpo[j])
+      if(pact_typepo[j])
 	{
 	  o->modified = AY_TRUE;
 	  if((fabs(new_weight) < (1.0-AY_EPSILON)) ||
@@ -2434,7 +2444,7 @@ ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
 		  pm->is_rat = AY_TRUE;
 		}
 	    }
-	  ay_pact_notify(o, j, k-pact_numcpo[j]);
+	  ay_pact_notify(o, j, k-pact_numpo[j]);
 	  notifyparent = AY_TRUE;
 	} /* if */
     } /* for */
@@ -2481,9 +2491,9 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
       j = 0;
       for(k = 0; k < pact_objectslen; k++)
 	{
-	  if(pact_ratcpo[k])
+	  if(pact_typepo[k])
 	    {
-	      for(l = 0; l < pact_numcpo[k]; l++)
+	      for(l = 0; l < pact_numpo[k]; l++)
 		{
 		  coords = pact_pe.coords[j+l];
 		  coords[3] = 1.0;
@@ -2492,7 +2502,7 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
 	      ay_notify_object(pact_objects[k]);
 	      notify_parent = AY_TRUE;
 	    }
-	  j += pact_numcpo[k];
+	  j += pact_numpo[k];
 	} /* for */
     }
   else
@@ -2509,7 +2519,7 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
 	      ay_error(AY_ERROR, fname, NULL);
 	    }
 
-	  if(pe.coords && pe.rational && (!pe.readonly))
+	  if(pe.coords && pe.type && (!pe.readonly))
 	    {
 	      for(i = 0; i < pe.num; i++)
 		{
@@ -2766,7 +2776,7 @@ ay_pact_snaptomarkcb(struct Togl *togl, int argc, char *argv[])
 		       ay_trafo_apply3(pnt->point, mi);
 
 		       /* reset weight */
-		       if(pnt->rational)
+		       if(pnt->type == AY_PTRAT)
 			 {
 			   pnt->point[3] = 1.0;
 			 }
@@ -2822,7 +2832,7 @@ ay_pact_notify(ay_object *o, int j, int k)
   if(!o)
     return AY_ENULL;
 
-  if(pact_numcpo[j] == 1)
+  if(pact_numpo[j] == 1)
     {
       tmpselp.point = pact_pe.coords[k];
       tmpselp.index = pact_pe.indices[k];
