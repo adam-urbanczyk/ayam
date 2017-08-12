@@ -477,7 +477,10 @@ ay_pact_flashpoint(int ignore_old, double *pnt, ay_object *o)
 
   /* when called to clear old point, but there is no old point => just exit */
   if(!ignore_old && !pnt && !o && !old_o)
-    return;
+    {
+      /*printf("there is no old point to clear\n");*/
+      return;
+    }
 
   if(old_o && pnt)
     {
@@ -734,26 +737,24 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
       else
 	o = NULL;
 
-      if(pecoords)
+      if(pecoords && *pact_typepo == AY_PTKNOT)
 	{
-	  if(*pact_typepo == AY_PTKNOT)
+	  /* flash knot */
+	}
+      else
+	{
+	  /* flash ordinary point */
+	  if(pecoords && (*pact_typepo == AY_PTRAT) && ay_prefs.rationalpoints)
 	    {
-	      /* flash knot */
+	      w = pecoords[0][3];
+	      obj[0] = pecoords[0][0]*w;
+	      obj[1] = pecoords[0][1]*w;
+	      obj[2] = pecoords[0][2]*w;
+	      ay_pact_flashpoint(ignoreold, obj, o);
 	    }
 	  else
 	    {
-	      if((*pact_typepo == AY_PTRAT) && ay_prefs.rationalpoints)
-		{
-		  w = pecoords[0][3];
-		  obj[0] = pecoords[0][0]*w;
-		  obj[1] = pecoords[0][1]*w;
-		  obj[2] = pecoords[0][2]*w;
-		  ay_pact_flashpoint(ignoreold, obj, o);
-		}
-	      else
-		{
-		  ay_pact_flashpoint(ignoreold, pecoords?*pecoords:NULL, o);
-		}
+	      ay_pact_flashpoint(ignoreold, pecoords?*pecoords:NULL, o);
 	    } /* if */
 	} /* if */
     } /* if */
