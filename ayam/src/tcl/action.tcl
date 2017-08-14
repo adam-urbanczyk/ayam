@@ -1743,6 +1743,7 @@ proc actionDeleteP { w } {
 #actionFindU:
 # find parametric value u on a NURBS curve
 proc actionFindU { w } {
+    global ayprefs
 
     viewTitle $w "" "Find_U"
     viewSetMAIcon $w ay_FindU_img "Find_U"
@@ -1758,13 +1759,19 @@ proc actionFindU { w } {
 
     bind $w <Motion> ""
 
+    if { $ayprefs(FlashPoints) == 1 } {
+	bind $w <Motion> {
+	    %W startpepac %x %y -flash
+	}
+    }
+
     bind $w <ButtonRelease-1> {
 	%W finduac -end %x %y
 	%W redraw
 	focus %W
     }
 
-    $w setconf -drawh 0
+    $w setconf -drawh 2
 
  return;
 }

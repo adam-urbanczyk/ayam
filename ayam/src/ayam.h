@@ -444,6 +444,14 @@ typedef struct ay_stess_curve_s {
 } ay_stess_curve;
 
 
+/** a break point of a NURBS curve */
+typedef struct ay_break_point_s {
+  int index; /**< number of points in tesselation */
+  float point[3]; /**< cached tesselation [tesslen*3] */
+  int tessqf; /**< cached tesselation quality */
+} ay_break_point;
+
+
 /** NURBS curve object */
 typedef struct ay_nurbcurve_object_s
 {
@@ -453,7 +461,8 @@ typedef struct ay_nurbcurve_object_s
   int knot_type; /**< knot type (AY_KT*) */
   int is_rat; /**< is any weight != 1.0 */
   double *controlv; /**< control points [length * 4] */
-  double *knotv; /**< knot vector [length + order]*/
+  double *knotv; /**< knot vector [length + order] */
+  double *breakv; /**< break point vector */
 
   double glu_sampling_tolerance; /**< drawing quality */
   int display_mode; /**< drawing mode */

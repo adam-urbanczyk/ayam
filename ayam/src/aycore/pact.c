@@ -606,6 +606,11 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 
   ay_pact_clearpointedit(&pact_pe);
 
+  if(view->drawhandles == 2)
+    {
+      pact_pe.type = AY_PTKNOT;
+    }
+
   Tcl_GetDouble(interp, argv[2], &winX);
   Tcl_GetDouble(interp, argv[3], &winY);
   i = 4;
@@ -740,6 +745,7 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
       if(pecoords && *pact_typepo == AY_PTKNOT)
 	{
 	  /* flash knot */
+	  ay_pact_flashpoint(ignoreold, pecoords?*pecoords:NULL, o);
 	}
       else
 	{
