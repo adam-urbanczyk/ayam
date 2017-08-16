@@ -39,7 +39,10 @@ int ay_ncurve_drawglu(ay_view_object *view, ay_nurbcurve_object *ncurve);
 
 int ay_ncurve_drawch(ay_nurbcurve_object *ncurve);
 
-int ay_ncurve_drawkn(struct Togl *togl, ay_object *o);
+int ay_ncurve_computebreakpoints(ay_nurbcurve_object *ncurve);
+
+int ay_ncurve_drawbreakpoints(struct Togl *togl, ay_object *o);
+
 
 /* functions: */
 
@@ -820,37 +823,37 @@ ay_ncurve_computebreakpoints(ay_nurbcurve_object *ncurve)
 } /* ay_ncurve_computebreakpoints */
 
 
-/* ay_ncurve_drawkn:
+/* ay_ncurve_drawbreakpoints:
  *  internal helper function
- *  draw the knots of the curve
+ *  draw the break points (distinct knots) of the curve
  */
 int
-ay_ncurve_drawkn(struct Togl *togl, ay_object *o)
+ay_ncurve_drawbreakpoints(struct Togl *togl, ay_object *o)
 {
  ay_nurbcurve_object *ncurve = (ay_nurbcurve_object *)o->refine;
  double *cv, c[3], dx[3], dy[3];
  GLdouble mvm[16], pm[16], s;
  GLint vp[4];
 
-  s = ay_prefs.handle_size*0.75;
+  if(!ncurve->breakv)
+    ay_ncurve_computebreakpoints(ncurve);
+  if(ncurve->breakv)
+    {
+      cv = ncurve->breakv;
+      s = ay_prefs.handle_size*0.75;
 
-  glGetDoublev(GL_MODELVIEW_MATRIX, mvm);
-  glGetDoublev(GL_PROJECTION_MATRIX, pm);
-  glGetIntegerv(GL_VIEWPORT, vp);
+      glGetDoublev(GL_MODELVIEW_MATRIX, mvm);
+      glGetDoublev(GL_PROJECTION_MATRIX, pm);
+      glGetIntegerv(GL_VIEWPORT, vp);
 
-  gluProject(0, 0, 0, mvm, pm, vp,&c[0], &c[1], &c[2]);
+      gluProject(0, 0, 0, mvm, pm, vp, &c[0], &c[1], &c[2]);
 
-  gluUnProject(c[0]+s, c[1], c[2], mvm, pm, vp,
-	       &dx[0], &dx[1], &dx[2]);
-  gluUnProject(c[0], c[1]+s, c[2], mvm, pm, vp,
-	       &dy[0], &dy[1], &dy[2]);
+      gluUnProject(c[0]+s, c[1], c[2], mvm, pm, vp,
+		   &dx[0], &dx[1], &dx[2]);
+      gluUnProject(c[0], c[1]+s, c[2], mvm, pm, vp,
+		   &dy[0], &dy[1], &dy[2]);
 
-  glBegin(GL_QUADS);
-   if(!ncurve->breakv)
-     ay_ncurve_computebreakpoints(ncurve);
-   if(ncurve->breakv)
-     {
-       cv = ncurve->breakv;
+      glBegin(GL_QUADS);
        do
 	 {
 	   glVertex3d(cv[0]+dx[0], cv[1]+dx[1], cv[2]+dx[2]);
@@ -860,11 +863,11 @@ ay_ncurve_drawkn(struct Togl *togl, ay_object *o)
 	   cv += 4;
 	 }
        while(cv[3] <= ncurve->knotv[ncurve->length]);
-     }
-  glEnd();
+      glEnd();
+    } /* if */
 
  return AY_OK;
-} /* ay_ncurve_drawkn */
+} /* ay_ncurve_drawbreakpoints */
 
 
 /* ay_ncurve_drawcb:
@@ -999,7 +1002,7 @@ ay_ncurve_drawhcb(struct Togl *togl, ay_object *o)
 
   if(view->drawhandles == 2)
     {
-      ay_ncurve_drawkn(togl, o);
+      ay_ncurve_drawbreakpoints(togl, o);
       return AY_OK;
     }
 
@@ -1106,7 +1109,7 @@ ay_ncurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       /* selection based on a single point */
       if(pe->type == AY_PTKNOT)
 	{
-	  /* pick knot */
+	  /* pick breakpoint */
 	  if(ncurve->breakv)
 	    {
 	      min_dist *= 0.1;
@@ -1209,47 +1212,84 @@ ay_ncurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       break;
     case 2:
       /* selection based on planes */
-      pe->type = AY_PTRAT;
-      control = ncurve->controlv;
-      j = 0;
       a = 0;
-      if(ncurve->is_rat && ay_prefs.rationalpoints)
+      if(pe->type == AY_PTKNOT)
 	{
-	  c = h;
+	  /* pick breakpoint(s) */
+	  if(ncurve->breakv)
+	    {
+	      c = ncurve->breakv;
+	      i = ncurve->length;
+	      do
+		{
+		  /* test point c against the four planes in p */
+		  if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
+		     ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
+		     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
+		     ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
+		    {
+		      if(!(ctmp = realloc(pe->coords, (a+1)*sizeof(double *))))
+			return AY_EOMEM;
+		      pe->coords = ctmp;
+		      if(!(itmp = realloc(pe->indices,
+					  (a+1)*sizeof(unsigned int))))
+			return AY_EOMEM;
+		      pe->indices = itmp;
+
+		      pe->coords[a] = c;
+		      pe->indices[a] = i;
+		      a++;
+		    } /* if */
+
+		  c += 4;
+		}
+	      while(c[3] < ncurve->knotv[ncurve->length]);
+	    } /* if */
 	}
-      for(i = 0; i < ncurve->length; i++)
+      else
 	{
+	  /* pick ordinary point(s) */
+	  j = 0;
+	  pe->type = AY_PTRAT;
+	  control = ncurve->controlv;
+
 	  if(ncurve->is_rat && ay_prefs.rationalpoints)
 	    {
-	      h[0] = control[j]*control[j+3];
-	      h[1] = control[j+1]*control[j+3];
-	      h[2] = control[j+2]*control[j+3];
+	      c = h;
 	    }
-	  else
+	  for(i = 0; i < ncurve->length; i++)
 	    {
-	      c = &(control[j]);
-	    }
-	  /* test point c against the four planes in p */
-	  if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
-	     ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
-	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
-	     ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
-	    {
-	      if(!(ctmp = realloc(pe->coords, (a+1)*sizeof(double *))))
-		return AY_EOMEM;
-	      pe->coords = ctmp;
-	      if(!(itmp = realloc(pe->indices, (a+1)*sizeof(unsigned int))))
-		  return AY_EOMEM;
-	      pe->indices = itmp;
+	      if(ncurve->is_rat && ay_prefs.rationalpoints)
+		{
+		  h[0] = control[j]*control[j+3];
+		  h[1] = control[j+1]*control[j+3];
+		  h[2] = control[j+2]*control[j+3];
+		}
+	      else
+		{
+		  c = &(control[j]);
+		}
+	      /* test point c against the four planes in p */
+	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
+		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
+		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
+		 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
+		{
+		  if(!(ctmp = realloc(pe->coords, (a+1)*sizeof(double *))))
+		    return AY_EOMEM;
+		  pe->coords = ctmp;
+		  if(!(itmp = realloc(pe->indices, (a+1)*sizeof(unsigned int))))
+		    return AY_EOMEM;
+		  pe->indices = itmp;
 
-	      pe->coords[a] = &(control[j]);
-	      pe->indices[a] = i;
-	      a++;
-	    } /* if */
+		  pe->coords[a] = &(control[j]);
+		  pe->indices[a] = i;
+		  a++;
+		} /* if */
 
-	  j += 4;
-	} /* for */
-
+	      j += 4;
+	    } /* for */
+	} /* if knot or point */
       pe->num = a;
       break;
     case 3:
