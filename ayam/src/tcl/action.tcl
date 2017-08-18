@@ -2060,8 +2060,7 @@ proc actionClear { w {only_clear 0} } {
     # 0.1 - 1s after the first press of the <Esc> key, that a second
     # press of the <Esc> key also resets the mark and the focus
     after 100 "bind $t <$ayviewshortcuts(Break)>\
-               \"$t.f3D.togl setconf -drawh 0;\
-                 $t.f3D.togl setconf -mark n;\
+               \"$t.f3D.togl setconf -mark n;\
                  resetFocus\""
     # after 1s, the old binding is in effect
     after 1000 "bind $t <$ayviewshortcuts(Break)> \"actionClear $t.f3D.togl\""
