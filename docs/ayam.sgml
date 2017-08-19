@@ -33,7 +33,7 @@ code example of 6 lines text (needs another 2 for the upper/lower lines)
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>18. Jun 2017
+<date>19. Aug 2017
 
 <abstract>
 This is the documentation of Ayam 1.25 &ndash; a free 3D modelling environment
@@ -15432,7 +15432,7 @@ creates a sheared version of the standard patch mesh in the XY plane.
 creates a 3D sheared version of the standard patch mesh.
 <item><bf/<tt/"crtOb PatchMesh -type 0 -width 3 -height 3 -center 1 -udx 2 -vdy 2"//
 <newline>
-creates a large centered bilinear patch mesh of width 3, height 3.
+creates a large centered bilinear patch mesh of width 3 and height 3.
 </enum>
 
 <#if out="latex"><x/newpage/</#if>
@@ -15628,6 +15628,8 @@ See also section <ref id="levelobj" name="Level Object">.
 
  <item><tt>"<bf>Material</bf>"</tt>: Materials must be given an additional
 argument giving the name of the new material.
+<p>
+If a material with the chosen name already exists, no object will be created.
 <p><p>
 Example:
 <enum>
@@ -15804,8 +15806,8 @@ hasRefs &ndash; has references:
 <itemize>
  <item>Synopsis: <tt>"hasRefs"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
- <item>Description: This command returns 1 if the selected object
-has references (e.g.~it is a master), otherwise 0 is returned.
+ <item>Description: This command returns <tt/1/ if the selected object
+has references (e.g.~it is a master), otherwise <tt/0/ is returned.
 If multiple objects are selected, a list is returned.
 </itemize>
 
@@ -15883,9 +15885,11 @@ selOb &ndash; select object(s):
  <item>Synopsis: <tt/"selOb [index]"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Use this command to set or clear the current
-selection, index may be an ordered list of indices, a single index or empty.
-If no index is given, the current selection will be cleared.
-If the single index is -1, the last object will be selected.
+selection, <tt/index/ may be a single (zero based) index or an ordered list of
+indices.<newline>
+If no index is given, the current selection will be cleared.<newline>
+If the single index is -1, the last object in the current level will be
+selected.
  <item>Examples: <tt/"selOb"/ clears the current selection, <tt/"selOb 0"/
 selects the first object in the current level, <tt/"selOb 0 1"/ selects
 the first two objects in the current level.
@@ -16993,8 +16997,8 @@ reparamNC &ndash; reparameterise a NURBS curve:
  <item>Synopsis: <tt/"reparamNC type"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: reparameterise all selected NURBS curves to have
-chordal knots (type: 0), or centripetal knots (type: 1). The knot type
-of the curve will be changed to <tt/"Custom"/.
+chordal knots (type: <tt/0/), or centripetal knots (type: <tt/1/).
+The knot type of the curve will be changed to <tt/"Custom"/.
 </itemize>
 
 <p>
@@ -17005,13 +17009,13 @@ isCompNC:
 <itemize>
  <item>Synopsis: <tt>"isCompNC [-l level]"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
- <item>Description: This command returns 1 if the selected NURBS curves
+ <item>Description: This command returns <tt/1/ if the selected NURBS curves
 are compatible (i.e.~defined on the same knot vector), otherwise it
-returns 0.
+returns <tt/0/.
 <p><p>
-If <tt/"level"/ is 0, only the orders of the curves
+If <tt/"level"/ is <tt/0/, only the orders of the curves
 are compared.<newline>
-If <tt/"level"/ is 1, only the orders and lengths of the curves
+If <tt/"level"/ is <tt/1/, only the orders and lengths of the curves
 are compared.
 </itemize>
 
@@ -17028,8 +17032,8 @@ i.e.~of the same order and defined on the same knot vector.
 <p><p>
 If the option <tt/"-f"/ is present, there will be no prior compatibility check.
 <p>
-If <tt/"level"/ is 0, only the orders will be adapted.<newline>
-If <tt/"level"/ is 1, only the orders and lengths will be adapted.
+If <tt/"level"/ is <tt/0/, only the orders will be adapted.<newline>
+If <tt/"level"/ is <tt/1/, only the orders and lengths will be adapted.
 <p>
 See also section <ref id="makecompt" name="Make Compatible Tool">.
 </itemize>
@@ -17543,15 +17547,16 @@ isCompNP:
 <itemize>
  <item>Synopsis: <tt>"isCompNP [(-u|-v) | -l level]"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
- <item>Description: This command returns 1 if the selected NURBS surfaces
-are compatible (i.e.~defined on the same knot vector), otherwise it returns 0.
+ <item>Description: This command returns <tt/1/ if the selected NURBS surfaces
+are compatible (i.e.~defined on the same knot vector), otherwise it
+returns <tt/0/.
 <p><p>
 If the option <tt/"-u"/ is given, only the U dimension will be checked.<newline>
 If the option <tt/"-v"/ is given, only the V dimension will be checked.
 <p>
-If <tt/"level"/ is 0, only the orders of the surfaces
+If <tt/"level"/ is <tt/0/, only the orders of the surfaces
 are compared.<newline>
-If <tt/"level"/ is 1, width/height and orders of the surfaces are
+If <tt/"level"/ is <tt/1/, width/height and orders of the surfaces are
 compared.
 </itemize>
 
@@ -17571,8 +17576,8 @@ If the option <tt/"-f"/ is present, there will be no prior compatibility check.
 If the option <tt/"-u"/ is given, only the U dimension will be adapted.<newline>
 If the option <tt/"-v"/ is given, only the V dimension will be adapted.
 <p>
-If <tt/"level"/ is 0, only the orders will be adapted.<newline>
-If <tt/"level"/ is 1, only the orders and lengths will be adapted.
+If <tt/"level"/ is <tt/0/, only the orders will be adapted.<newline>
+If <tt/"level"/ is <tt/1/, only the orders and lengths will be adapted.
 <p>
 See also section <ref id="makecompst" name="Make Compatible Tool">.
 </itemize>
