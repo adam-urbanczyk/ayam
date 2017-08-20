@@ -2653,10 +2653,12 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
  double winXY[2] = {0}, worldXYZ[3] = {0};
  static int fvalid = AY_FALSE;
  static double fX = 0.0, fY = 0.0, fwX = 0.0, fwY = 0.0, fwZ = 0.0;
- double u = 0.0;
+ double obj[3] = {0};
+ double minlevelscale = 1.0, u = 0.0;
  Tcl_Obj *to = NULL, *ton = NULL;
  char cmd[] = "puts $u";
  ay_object *o, *pobject = NULL;
+ ay_pointedit pe = {0};
 
   if(argc > 2)
     {
@@ -2712,12 +2714,30 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
       Tcl_GetDouble(interp, argv[2], &(winXY[0]));
       Tcl_GetDouble(interp, argv[3], &(winXY[1]));
 
-      ay_status = ay_nct_findu(togl, o, winXY, worldXYZ, &u);
+      /* first try to pick a knot point */
+      minlevelscale = ay_pact_getminlevelscale();
+      ay_viewt_wintoobj(togl, o, winXY[0], winXY[1],
+			&(obj[0]), &(obj[1]), &(obj[2]));
+      pe.type = AY_PTKNOT;
+      ay_status = ay_pact_pickpoint(o, view, minlevelscale, obj, &pe);
 
-      if(ay_status)
+      if(pe.num)
 	{
-	  ay_error(AY_ERROR, fname, "Could not find point on curve.");
-	  goto cleanup;
+	  /* picking succeeded, get parametric value from knot */
+	  u = pe.coords[0][3];
+	  ay_viewt_wintoworld(togl, winXY[0], winXY[1],
+			      &(worldXYZ[0]), &(worldXYZ[1]), &(worldXYZ[2]));
+	}
+      else
+	{
+	  /* picking failed, calculate parametric value */
+	  ay_status = ay_nct_findu(togl, o, winXY, worldXYZ, &u);
+
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, fname, "Could not find point on curve.");
+	      goto cleanup;
+	    }
 	}
 
       fvalid = AY_TRUE;
