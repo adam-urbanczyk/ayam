@@ -2682,6 +2682,7 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 	      view->drawmark = AY_TRUE;
 
 	      ay_viewt_updatemark(togl, AY_FALSE);
+	      ay_viewt_printmark(view);
 	    }
 
 	  fvalid = AY_FALSE;
