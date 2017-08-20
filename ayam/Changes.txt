@@ -1,5 +1,5 @@
-[5. Aug 2017] CVS-Head:
-=======================
+[20. Aug 2017] CVS-Head:
+========================
 Bug Fixes:
 o entering non number data to tesselation parameter entries (SF 554)
 o chordal/centripetal knots for periodic curves/surfaces are wrong (SF 555)
@@ -26,6 +26,10 @@ o added support for initial drag selection in numeric edit action; dragging
   opens the numeric edit dialog and sets the mark and the edit entry fields
   to the center of the selected points, thus making collapsing points
   much easier/more intuitive
+o added hidden preference setting "NormalizeMark" that controls, whether
+  mark coordinates should be normalized
+o "find u" action for NURBS curves now displays and allows to pick the
+  break points (distinct knots) of the curve
 
 GUI:
 o improved balloon interaction of view icon menus
