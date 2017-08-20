@@ -1,4 +1,4 @@
-[readme.txt - 7. Mar 2017]
+[readme.txt - 20. Aug 2017]
 
 This directory contains a collection of various plugins for Ayam.
 
@@ -46,6 +46,7 @@ csphere - example custom object
 metaobj - model with implicit surfaces (meta balls)
 sdnpatch - model with Subdivision NURBS
 sfcurve - model with super formula curves
+bcurve - model with basis curves
 
 
 Scripting Language Plugins
