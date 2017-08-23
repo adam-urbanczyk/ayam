@@ -2565,8 +2565,8 @@ Multiple entries have to be separated by a colon (<tt/":"/) on Unix and by
 a semicolon (<tt/";"/) on Win32.<newline>
 If unsure about the correct syntax, just use the <tt/"Add"/ button.
 <p><p>
-See section <ref id="scripts" name="Helper Scripts"> for documentation
-on the scripts distributed with Ayam.
+See section <ref id="scripts" name="Distributed Helper Scripts"> for
+documentation on the scripts distributed with Ayam.
 
 <item><tt/"Plugins"/ is a list of directories that contain custom
 objects or plugins. Those directories will e.g.~be searched for
@@ -10527,7 +10527,8 @@ The binary and source distributions of Ayam contain several example
 scripts for Script objects in the <tt>"ayam/bin/scripts"</tt> and
 <tt>"ayam/src/scripts"</tt> directories, respectively. In addition,
 there are example scene files using Script objects in the
-<tt>"ayam/scn/scripts"</tt> directory.
+<tt>"ayam/scn/scripts"</tt> directory, see also
+section <ref id="scriptobjs" name="Distributed Script Objects">.
 <p>
 The following table briefly lists some capabilities of the Script object.
 <p>
@@ -10762,10 +10763,11 @@ they create/modify.
 
 <#if out="latex"><x/newpage/</#if>
 
-<sect3>Script Object Examples<label id="scriptobjex">
+<sect3>Parametric Line Example<label id="scriptobjex">
 <p><#if out="latex">&nbsp;<newline></#if>
-This section illustrates the development of a Script object for parametric
-lines, otherwise unavailable in Ayam.
+<p>
+This section illustrates the development of a
+Script object for parametric lines, otherwise unavailable in Ayam.
 <p>
 We start with a simple version, that first creates a NURBS curve object with
 two control points and then places the control points each at +/- half the
@@ -10844,8 +10846,13 @@ Script object, a <tt/"SP"/ entry needs to be added to the
 <p>
 The complete script is also available as example script file
 <tt>"scripts/crtlinegui.tcl"</tt> in the Ayam distribution.
+
+<#if out="latex"><x/newpage/</#if>
+
+<sect3>Hierarchy Building Example
+<p><#if out="latex">&nbsp;<newline></#if>
 <p>
-In addition, a second example demonstrates the scene traversal and
+This example script demonstrates the scene traversal and
 hierarchy building capabilities available to Script objects since
 Ayam 1.16.
 
@@ -18931,7 +18938,7 @@ pack $f.b1 $f.b2 -side left -fill x -expand yes
 
 <#if out="latex"><x/newpage/</#if>
 
-<sect1>Helper Scripts<label id="scripts">
+<sect1>Distributed Helper Scripts<label id="scripts">
 <p>
 This sections contains the documentation of some helper scripts
 that are distributed with Ayam.
@@ -19359,6 +19366,192 @@ by clicking on the circles.
 
 <#if out="latex"><x/newpage/</#if>
 
+<sect2>NURBS for X3DOM<label id="x3domnurbsjs">
+<p>
+<figure loc="ht">
+<eps file="pics/x3dom-nurbs-ex.ps" height="6cm">
+<img src="pics/x3dom-nurbs-ex.gif">
+<caption>X3dom NURBS Display</caption>
+</figure>
+<p>
+The <tt>"x3dom-nurbs"</tt> script implements the
+<tt>&lt;NurbsPatchSurface&gt;</tt> and <tt>&lt;NurbsTrimmedSurface&gt;</tt>
+X3D NURBS nodes for x3dom (see <tt>http://www.x3dom.org/</tt>) in
+JavaScript.<newline>
+After loading of the scene into the web browser, the NURBS surfaces
+from these nodes are tessellated into <tt>&lt;IndexedTriangleSet&gt;</tt>
+nodes.
+This allows to directly publish NURBS
+models on the web without prior conversion to a polygonal representation
+which is cumbersome, inflexible, and leads to higher bandwidth consumption.
+<p>
+The tessellator is based on idea and example code from
+A. J. Chung and A. J. Field: <em>"A Simple Recursive Tessellator for Adaptive Surface Triangulation"</em> in Journal of Graphics Tools Vol. 5, Iss. 3, 2000.
+<p>
+The implementation spans four script files:
+<itemize>
+<item><tt/x3dom-nurbs-nodes.js/ &ndash; interface of the tessellator to x3dom
+<item><tt/x3dom-nurbs-pool.js/ &ndash; worker management (current pool size is 3)
+<item><tt/x3dom-nurbs-worker.js/ &ndash; a worker
+<item><tt/x3dom-nurbs-tess.js/ &ndash; the tessellator
+</itemize>
+
+In order to use the tessellator just add the following to your XHTML file
+after inclusion of <tt>"x3dom.js"</tt>:
+<tscreen><verb>
+ <script type="text/javascript" src="x3dom-nurbs-pool.js"/>
+ <script type="text/javascript" src="x3dom-nurbs-nodes.js"/>
+</verb></tscreen>
+
+As the tessellator is fully automatic, no further adjustments are needed.
+
+Proper XHTML files can be created using the X3D export in x3dom-mode, see
+section <ref id="expx3dopt" name="X3D (Web3D) export options">.
+
+While the tessellator runs in the background an initial polygonal
+representation that is directly derived from the control polygon of
+the NURBS surface is shown. Additionally, a busy prompt is displayed,
+see also the image below.
+As the busy prompt is derived from the x3dom loading prompt, it may also
+be styled with the <tt>"x3dom-progress"</tt> style in <tt>"x3dom.css"</tt>.
+<figure loc="ht">
+<eps file="pics/x3dom-nurbs-busy.ps" height="6cm">
+<img src="pics/x3dom-nurbs-busy.gif">
+<caption>X3dom NURBS Busy Prompt</caption>
+</figure>
+
+The tessellation runs in so called webworkers, processes that run in
+parallel to the main browser thread, in order to not block user interaction
+and employ multi-core CPUs.
+The webworker pool is currently hard coded to only use three such
+webworkers at any given time. This value may be adapted easily in
+<tt>"x3dom-nurbs-pool.js"</tt> (e.g.~if your CPU has more cores).
+Note that each webworker will tessellate a single NURBS surface, i.e.~scenes
+with only one surface will not benefit from the parallelism.
+
+By default, the tessellator tries to create a tessellation that represents
+all important surface features in a way that a visual inspection from
+mid to close viewing distance does not reveal the nature of the underlying
+triangular representation. This may be too fine/slow for objects that are
+never viewed from close distance or too coarse for very detailed objects.
+
+Therefore, and in concordance with the respective suggestions of the X3D
+specification, the tessellation quality and speed may be adjusted using the
+<tt>"uTessellation"</tt> and <tt>"vTessellation"</tt> attributes of the
+<tt>&lt;NurbsPatchSurface&gt;</tt> or
+<tt>&lt;NurbsTrimmedSurface&gt;</tt> nodes as explained in the next sections.
+
+<#if out="latex"><x/newpage/</#if>
+
+<sect3>Oject Space Based Sampling
+<p><#if out="latex">&nbsp;<newline></#if>
+If no <tt>"uTessellation"</tt> attribute is specified, or its value
+is positive, the tessellator uses the so called <em>object space sampling</em>
+mode. In this mode the tessellator subdivides an initial set of triangles
+recursively until all edges of those triangles are shorter than a given
+threshold value (in object space). The threshold value is set automatically
+so that an object spanning one unit by one unit in object space is subdivided
+to about 15 by 15 by two triangles.
+The <tt>"uTessellation"</tt> attribute value is simply multiplied into
+this automatically determined threshold.
+
+Therefore <tt>"uTessellation"</tt> values larger than 1.0 lead to a coarser
+and faster tessellation, whereas values smaller than 1.0 lead to a
+finer and slower tessellation.
+
+Note that in this mode the value of the <tt>"vTessellation"</tt>
+attribute is <em>not</em> considered at all.
+
+Also note that in highly curved regions of the surface and at trim edges,
+even smaller triangles than determined by the edge length criterion may
+be created.
+
+<sect3>Parametric Space Based Sampling
+<p><#if out="latex">&nbsp;<newline></#if>
+If the <tt>"uTessellation"</tt> attribute value is negative, the
+tessellator switches to <em>parametric space sampling</em>.
+In this mode also the <tt>"vTessellation"</tt> attribute is considered.
+
+As in the object space sampling mode an automatic threshold value is
+computed, but here the extension of the object in parametric space
+(i.e.~the number of control points) is used. This actually results
+in two threshold values, one for each parametric dimension.
+The <tt>"uTessellation"</tt> and <tt>"vTessellation"</tt> attributes are
+multiplied into those thresholds.
+
+Therefore, values larger than -1.0 (in absolute value) lead
+to a coarser and faster tessellation in the respective dimension.
+Values smaller than -1.0 (in absolute
+value) lead to a finer and slower tessellation in the respective dimension.
+This means a value of -2.0 leads to roughly half as many triangles
+compared to the default and a value of -0.5 leads to twice as many
+triangles when compared to the default in the respective parametric
+dimension.
+
+As the edge length computation is simpler and no curvature analysis is
+taking place, the parametric space sampling is considerably faster than
+object space sampling.
+
+Note that at trim curve edges even smaller triangles than determined by
+the edge length criterion may be created.
+
+<#if out="latex"><x/newpage/</#if>
+
+<sect3>Additional Attributes
+<p><#if out="latex">&nbsp;<newline></#if>
+To aid in parameterisation of the <tt>"uTessellation"</tt> and
+<tt>"vTessellation"</tt> attributes, a <tt>"normalPerVertex"</tt> attribute
+can be added to the respective <tt>&lt;NurbsPatchSurface&gt;</tt> or
+<tt>&lt;NurbsTrimmedSurface&gt;</tt> node. This attribute will then also
+be set for the corresponding <tt>&lt;IndexedTriangleSet&gt;</tt> node
+that is created by the tessellator.
+If the value of this attribute is <tt/"false"/, x3dom will display
+this surface in a flat shaded style and the tesselated triangles will be
+visible allowing easier judgment and adjustment of the tesselation quality.
+
+<sect3>Restrictions and Implementation Deficiencies
+<p><#if out="latex">&nbsp;<newline></#if>
+Due to memoization of surface points, parametric values must not
+exceed:
+<#if out="latex">
+<eq>
+<fr><nu>1.7976931348623157<rf/&middot;/10<sup/308/</nu><de>10<rf/&middot;/10 <sup/10/</de></fr> = 1.7976931348623157<rf/&middot;/10<sup/297/
+</eq>
+</#if>
+<#if out="html">
+<eq>
+1,7976931348623157&middot;10<sup/308/ / 10&middot;10<sup/10/ = 1,7976931348623157&middot;10<sup/297/
+</eq>
+</#if>
+<#unless out="html|latex">
+1.7976931348623157*10E297.
+</#unless>
+
+Texture coordinates are always directly derived from the parametric values.
+
+Surface normals are not computed by the tessellator, but by x3dom.
+This can lead to normals that are off for very coarse tessellations
+but is much faster. Another benefit of this approach is, that normals
+in non-differentiable surface points (e.g.~the poles of the standard
+NURBS sphere) do not flip.
+
+There is <em/no/ support for the following nodes:
+<list>
+<item><tt>&lt;NurbsTextureCoordinate&gt;</tt>,
+<item><tt>&lt;NurbsSet&gt;</tt>,
+<item><tt>&lt;NurbsSweptSurface&gt;</tt>,
+<item><tt>&lt;NurbsSwungSurface&gt;</tt>,
+<item><tt>&lt;NurbsCurve&gt;</tt>, and all
+<item><tt>&lt;Nurbs*Interpolator&gt;</tt> nodes.
+</list>
+
+<#if out="latex"><x/newpage/</#if>
+
+<sect1>Distributed Script Objects<label id="scriptobjs">
+<p>
+These scripts implement Script objects, see also
+section <ref id="scriptobj" name="Script Object">.
+
 <sect2>Truncated Cone<label id="tconetcl">
 <p>
 <figure loc="ht">
@@ -19579,187 +19772,6 @@ explain the operations in more detail:
 </table>
 
 These abbreviated explanations were again taken from George W. Hart.
-
-<#if out="latex"><x/newpage/</#if>
-
-<sect2>NURBS for X3DOM<label id="x3domnurbsjs">
-<p>
-<figure loc="ht">
-<eps file="pics/x3dom-nurbs-ex.ps" height="6cm">
-<img src="pics/x3dom-nurbs-ex.gif">
-<caption>X3dom NURBS Display</caption>
-</figure>
-<p>
-The <tt>"x3dom-nurbs"</tt> script implements the
-<tt>&lt;NurbsPatchSurface&gt;</tt> and <tt>&lt;NurbsTrimmedSurface&gt;</tt>
-X3D NURBS nodes for x3dom (see <tt>http://www.x3dom.org/</tt>) in
-JavaScript.<newline>
-After loading of the scene into the web browser, the NURBS surfaces
-from these nodes are tessellated into <tt>&lt;IndexedTriangleSet&gt;</tt>
-nodes.
-This allows to directly publish NURBS
-models on the web without prior conversion to a polygonal representation
-which is cumbersome, inflexible, and leads to higher bandwidth consumption.
-<p>
-The tessellator is based on idea and example code from
-A. J. Chung and A. J. Field: <em>"A Simple Recursive Tessellator for Adaptive Surface Triangulation"</em> in Journal of Graphics Tools Vol. 5, Iss. 3, 2000.
-<p>
-The implementation spans four script files:
-<itemize>
-<item><tt/x3dom-nurbs-nodes.js/ &ndash; interface of the tessellator to x3dom
-<item><tt/x3dom-nurbs-pool.js/ &ndash; worker management (current pool size is 3)
-<item><tt/x3dom-nurbs-worker.js/ &ndash; a worker
-<item><tt/x3dom-nurbs-tess.js/ &ndash; the tessellator
-</itemize>
-
-In order to use the tessellator just add the following to your XHTML file
-after inclusion of <tt>"x3dom.js"</tt>:
-<tscreen><verb>
- <script type="text/javascript" src="x3dom-nurbs-pool.js"/>
- <script type="text/javascript" src="x3dom-nurbs-nodes.js"/>
-</verb></tscreen>
-
-As the tessellator is fully automatic, no further adjustments are needed.
-
-Proper XHTML files can be created using the X3D export in x3dom-mode, see
-section <ref id="expx3dopt" name="X3D (Web3D) export options">.
-
-While the tessellator runs in the background an initial polygonal
-representation that is directly derived from the control polygon of
-the NURBS surface is shown. Additionally, a busy prompt is displayed,
-see also the image below.
-As the busy prompt is derived from the x3dom loading prompt, it may also
-be styled with the <tt>"x3dom-progress"</tt> style in <tt>"x3dom.css"</tt>.
-<figure loc="ht">
-<eps file="pics/x3dom-nurbs-busy.ps" height="6cm">
-<img src="pics/x3dom-nurbs-busy.gif">
-<caption>X3dom NURBS Busy Prompt</caption>
-</figure>
-
-The tessellation runs in so called webworkers, processes that run in
-parallel to the main browser thread, in order to not block user interaction
-and employ multi-core CPUs.
-The webworker pool is currently hard coded to only use three such
-webworkers at any given time. This value may be adapted easily in
-<tt>"x3dom-nurbs-pool.js"</tt> (e.g.~if your CPU has more cores).
-Note that each webworker will tessellate a single NURBS surface, i.e.~scenes
-with only one surface will not benefit from the parallelism.
-
-By default, the tessellator tries to create a tessellation that represents
-all important surface features in a way that a visual inspection from
-mid to close viewing distance does not reveal the nature of the underlying
-triangular representation. This may be too fine/slow for objects that are
-never viewed from close distance or too coarse for very detailed objects.
-
-Therefore, and in concordance with the respective suggestions of the X3D
-specification, the tessellation quality and speed may be adjusted using the
-<tt>"uTessellation"</tt> and <tt>"vTessellation"</tt> attributes of the
-<tt>&lt;NurbsPatchSurface&gt;</tt> or
-<tt>&lt;NurbsTrimmedSurface&gt;</tt> nodes as explained in the next sections.
-
-<#if out="latex"><x/newpage/</#if>
-
-<sect3>Oject Space Based Sampling
-<p><#if out="latex">&nbsp;<newline></#if>
-If no <tt>"uTessellation"</tt> attribute is specified, or its value
-is positive, the tessellator uses the so called <em>object space sampling</em>
-mode. In this mode the tessellator subdivides an initial set of triangles
-recursively until all edges of those triangles are shorter than a given
-threshold value (in object space). The threshold value is set automatically
-so that an object spanning one unit by one unit in object space is subdivided
-to about 15 by 15 by two triangles.
-The <tt>"uTessellation"</tt> attribute value is simply multiplied into
-this automatically determined threshold.
-
-Therefore <tt>"uTessellation"</tt> values larger than 1.0 lead to a coarser
-and faster tessellation, whereas values smaller than 1.0 lead to a
-finer and slower tessellation.
-
-Note that in this mode the value of the <tt>"vTessellation"</tt>
-attribute is <em>not</em> considered at all.
-
-Also note that in highly curved regions of the surface and at trim edges,
-even smaller triangles than determined by the edge length criterion may
-be created.
-
-<sect3>Parametric Space Based Sampling
-<p><#if out="latex">&nbsp;<newline></#if>
-If the <tt>"uTessellation"</tt> attribute value is negative, the
-tessellator switches to <em>parametric space sampling</em>.
-In this mode also the <tt>"vTessellation"</tt> attribute is considered.
-
-As in the object space sampling mode an automatic threshold value is
-computed, but here the extension of the object in parametric space
-(i.e.~the number of control points) is used. This actually results
-in two threshold values, one for each parametric dimension.
-The <tt>"uTessellation"</tt> and <tt>"vTessellation"</tt> attributes are
-multiplied into those thresholds.
-
-Therefore, values larger than -1.0 (in absolute value) lead
-to a coarser and faster tessellation in the respective dimension.
-Values smaller than -1.0 (in absolute
-value) lead to a finer and slower tessellation in the respective dimension.
-This means a value of -2.0 leads to roughly half as many triangles
-compared to the default and a value of -0.5 leads to twice as many
-triangles when compared to the default in the respective parametric
-dimension.
-
-As the edge length computation is simpler and no curvature analysis is
-taking place, the parametric space sampling is considerably faster than
-object space sampling.
-
-Note that at trim curve edges even smaller triangles than determined by
-the edge length criterion may be created.
-
-<#if out="latex"><x/newpage/</#if>
-
-<sect3>Additional Attributes
-<p><#if out="latex">&nbsp;<newline></#if>
-To aid in parameterisation of the <tt>"uTessellation"</tt> and
-<tt>"vTessellation"</tt> attributes, a <tt>"normalPerVertex"</tt> attribute
-can be added to the respective <tt>&lt;NurbsPatchSurface&gt;</tt> or
-<tt>&lt;NurbsTrimmedSurface&gt;</tt> node. This attribute will then also
-be set for the corresponding <tt>&lt;IndexedTriangleSet&gt;</tt> node
-that is created by the tessellator.
-If the value of this attribute is <tt/"false"/, x3dom will display
-this surface in a flat shaded style and the tesselated triangles will be
-visible allowing easier judgment and adjustment of the tesselation quality.
-
-<sect3>Restrictions and Implementation Deficiencies
-<p><#if out="latex">&nbsp;<newline></#if>
-Due to memoization of surface points, parametric values must not
-exceed:
-<#if out="latex">
-<eq>
-<fr><nu>1.7976931348623157<rf/&middot;/10<sup/308/</nu><de>10<rf/&middot;/10 <sup/10/</de></fr> = 1.7976931348623157<rf/&middot;/10<sup/297/
-</eq>
-</#if>
-<#if out="html">
-<eq>
-1,7976931348623157&middot;10<sup/308/ / 10&middot;10<sup/10/ = 1,7976931348623157&middot;10<sup/297/
-</eq>
-</#if>
-<#unless out="html|latex">
-1.7976931348623157*10E297.
-</#unless>
-
-Texture coordinates are always directly derived from the parametric values.
-
-Surface normals are not computed by the tessellator, but by x3dom.
-This can lead to normals that are off for very coarse tessellations
-but is much faster. Another benefit of this approach is, that normals
-in non-differentiable surface points (e.g.~the poles of the standard
-NURBS sphere) do not flip.
-
-There is <em/no/ support for the following nodes:
-<list>
-<item><tt>&lt;NurbsTextureCoordinate&gt;</tt>,
-<item><tt>&lt;NurbsSet&gt;</tt>,
-<item><tt>&lt;NurbsSweptSurface&gt;</tt>,
-<item><tt>&lt;NurbsSwungSurface&gt;</tt>,
-<item><tt>&lt;NurbsCurve&gt;</tt>, and all
-<item><tt>&lt;Nurbs*Interpolator&gt;</tt> nodes.
-</list>
 
 <#if out="latex"><x/newpage/</#if>
 
@@ -24507,7 +24519,11 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="script" name="scripting interface">,
 <item><ref id="scriptobj" name="Script object">
 </itemize>
-<item>Scripts: <ref id="prefgui" name="preference setting">
+<item>Scripts:
+<itemize>
+<item><ref id="prefgui" name="preference setting">,
+<item><ref id="scripts" name="distributed helper scripts">
+</itemize>
 <item>SDLen: <ref id="icp" name="ICurve attribute">
 <item>SDMesh: <ref id="sdmeshobj" name="SDMesh object">
 <item>SDNPatch: <ref id="sdnpatchobj" name="SDNPatch object">
