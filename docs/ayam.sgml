@@ -10479,6 +10479,23 @@ Script objects may also use arbitrary, plugin provided,
 scripting languages, like JavaScript, provided by the
 <tt/"jsinterp"/ plugin (see also:
 <ref id="jsinterp" name="JavaScript Scripting Interface">).<footnote>Since 1.18.</footnote>
+<p>
+The binary and source distributions of Ayam contain several example
+scripts for Script objects in the <tt>"ayam/bin/scripts"</tt> and
+<tt>"ayam/src/scripts"</tt> directories, respectively. In addition,
+there are example scene files using Script objects in the
+<tt>"ayam/scn/scripts"</tt> directory, see also
+section <ref id="scriptobjs" name="Distributed Script Objects">.
+<p>
+The following table briefly lists some capabilities of the Script object.
+<p>
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Script|Any<f/<sup/+//|No|Any<f/<sup/+//|No*<#if out="latex">@<hline></#if>
+</tabular>
+<caption>Script Object Capabilities</caption>
+</table>
 
 <sect3>Script Object Usage
 <p><#if out="latex">&nbsp;<newline></#if>
@@ -10522,23 +10539,6 @@ When a script is running, the current level is the child level of the
 respective Script object. Furthermore, the object clipboard is saved
 for running the script and re-established after the script finished,
 and the <tt>"CreateAtMark"</tt> option is disabled.
-<p>
-The binary and source distributions of Ayam contain several example
-scripts for Script objects in the <tt>"ayam/bin/scripts"</tt> and
-<tt>"ayam/src/scripts"</tt> directories, respectively. In addition,
-there are example scene files using Script objects in the
-<tt>"ayam/scn/scripts"</tt> directory, see also
-section <ref id="scriptobjs" name="Distributed Script Objects">.
-<p>
-The following table briefly lists some capabilities of the Script object.
-<p>
-<table loc="ht">
-<tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Script|Any<f/<sup/+//|No|Any<f/<sup/+//|No*<#if out="latex">@<hline></#if>
-</tabular>
-<caption>Script Object Capabilities</caption>
-</table>
 
 <#if out="latex"><x/newpage/</#if>
 
