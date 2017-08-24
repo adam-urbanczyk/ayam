@@ -7148,14 +7148,11 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
  * \param[in,out] curve NURBS curve to trim
  * \param[in] umin new minimum knot value
  * \param[in] umax new maximum knot value
- * \param[in] relative if AY_TRUE, umin and umax are interpreted in
- *  a relative way
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_nct_trim(ay_nurbcurve_object **curve, double umin, double umax
-	    /*, int relative*/)
+ay_nct_trim(ay_nurbcurve_object **curve, double umin, double umax)
 {
  int ay_status;
  ay_object t1 = {0}, *t2 = NULL;
@@ -7222,14 +7219,24 @@ ay_nct_trimtcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int tcl_status = TCL_OK, ay_status = AY_OK;
  double umin = 0.0, umax = 0.0;
- int notify_parent = AY_FALSE, relative = AY_FALSE;
+ int notify_parent = AY_FALSE, argi = 1, relative = AY_FALSE;
  ay_list_object *sel = ay_selection;
+ ay_nurbcurve_object *nc;
  ay_object *o = NULL;
 
   if(argc < 3)
     {
-      ay_error(AY_EARGS, argv[0], "umin umax [relative]");
+      ay_error(AY_EARGS, argv[0], "[-relative] umin umax");
       return TCL_OK;
+    }
+
+  if(argc > 3)
+    {
+      if(argv[1][0] == '-' && argv[1][1] == 'r')
+	{
+	  relative = AY_TRUE;
+	  argi++;
+	}
     }
 
   if(!sel)
@@ -7238,21 +7245,15 @@ ay_nct_trimtcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  tcl_status = Tcl_GetDouble(interp, argv[1], &umin);
+  tcl_status = Tcl_GetDouble(interp, argv[argi], &umin);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
-  tcl_status = Tcl_GetDouble(interp, argv[2], &umax);
+  tcl_status = Tcl_GetDouble(interp, argv[argi+1], &umax);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
 
   if(umax <= umin)
     {
       ay_error(AY_ERROR, argv[0], "Parameter umin must be smaller than umax.");
       return TCL_OK;
-    }
-
-  if(argc > 3)
-    {
-      tcl_status = Tcl_GetInt(interp, argv[3], &relative);
-      AY_CHTCLERRRET(tcl_status, argv[0], interp);
     }
 
   while(sel)
@@ -7264,6 +7265,29 @@ ay_nct_trimtcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
+	  nc = (ay_nurbcurve_object *)o->refine;
+
+	  if(relative)
+	    {
+	      if(umin == 0.0)
+		umin = nc->knotv[nc->order-1];
+	      else
+		if(umin == 1.0)
+		  umin = nc->knotv[nc->length];
+		else
+		  umin = nc->knotv[nc->order-1] + (nc->knotv[nc->length] -
+					 nc->knotv[nc->order-1]) * umin;
+
+	      if(umax == 0.0)
+		umax = nc->knotv[nc->order-1];
+	      else
+		if(umax == 1.0)
+		  umax = nc->knotv[nc->length];
+		else
+		  umax = nc->knotv[nc->order-1] + (nc->knotv[nc->length] -
+					 nc->knotv[nc->order-1]) * umax;
+	    }
+
 	  ay_status = ay_nct_trim((ay_nurbcurve_object**)(void*)&(o->refine),
 				  umin, umax);
 
