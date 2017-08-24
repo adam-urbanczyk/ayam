@@ -2649,7 +2649,7 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
  char fname[] = "findU_cb";
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  Tcl_Interp *interp = Togl_Interp(togl);
- int height = Togl_Height(togl);
+ int i, height = Togl_Height(togl);
  double winXY[2] = {0}, worldXYZ[3] = {0};
  static int fvalid = AY_FALSE;
  static double fX = 0.0, fY = 0.0, fwX = 0.0, fwY = 0.0, fwZ = 0.0;
@@ -2680,6 +2680,16 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 	      view->markworld[1] = fwY;
 	      view->markworld[2] = fwZ;
 	      view->drawmark = AY_TRUE;
+
+	      if(ay_prefs.normalizemark)
+		{
+		  for(i = 0; i < 3; i++)
+		    {
+		      view->markworld[i] = ay_trafo_round(view->markworld[i],
+						     ay_prefs.normalizedigits);
+
+		    }
+		}
 
 	      ay_viewt_updatemark(togl, AY_FALSE);
 	      ay_viewt_printmark(view);
@@ -7239,7 +7249,7 @@ ay_nct_trimtcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  if(argc > 2)
+  if(argc > 3)
     {
       tcl_status = Tcl_GetInt(interp, argv[3], &relative);
       AY_CHTCLERRRET(tcl_status, argv[0], interp);
