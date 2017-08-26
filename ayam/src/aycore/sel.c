@@ -170,16 +170,24 @@ ay_sel_selobtcmd(ClientData clientData, Tcl_Interp *interp,
 cleanup:
   newsel = ay_selection;
 
-  /* do we need a complete redraw ? */
-  ay_draw_needredraw(oldsel, newsel, &need_redraw);
-
-  if(need_redraw)
+  /* never redraw in script object scripts or in notify tag scripts */
+  if(interp != ay_safeinterp)
     {
-      Tcl_SetVar(interp, vname, yes, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      /* do we need a complete redraw ? */
+      ay_draw_needredraw(oldsel, newsel, &need_redraw);
+
+      if(need_redraw)
+	{
+	  Tcl_SetVar(interp, vname, yes, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	}
+      else
+	{
+	  Tcl_SetVar(interp, vname, no, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	}
     }
   else
     {
-      Tcl_SetVar(interp, vname, no, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      need_redraw = AY_FALSE;
     }
 
   /* now, free old selection */
