@@ -16967,11 +16967,15 @@ See also section <ref id="toxyt" name="To XY Tool">.
 <label id="sctrimnc">
 trimNC &ndash; trim NURBS curve
 <itemize>
- <item>Synopsis: <tt/"trimNC umin umax"/
+ <item>Synopsis: <tt/"trimNC [-relative] umin umax"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: trims the selected NURBS curve to the designated
 parametric range (umin-umax), modifying the original selected curve.
 <p><p>
+If the optional argument <tt/"-relative"/ is specified, the parametric
+values are interpreted in a relative way and must consequently be in
+the range &lsqb;0,1&rsqb;.
+<p>
 See also section <ref id="ctrimt" name="Curve Trim Tool">.
 </itemize>
 
@@ -17735,7 +17739,7 @@ surface is delivered in varx, vary, and varz.
 <p>
 If the optional argument <tt/"-relative"/ is specified, the parametric
 value for NURBS curve or surface evaluation is interpreted in a relative
-way and must consequently be in the range 0.0 - 1.0.
+way and must consequently be in the range &lsqb;0,1&rsqb;.
 <p>
 If the alternative argument <tt/"-vn"/ is given, the coordinate values
 will be appended to the list variable specified by <tt/"varname"/.
@@ -19702,6 +19706,24 @@ fashion as for the Sweep object
 An example scene file containing such an object is distributed with Ayam,
 see the file:<newline>
 <tt>"ayam/scn/scripts/dualsweep.ay"</tt>.
+
+<#if out="latex"><x/newpage/</#if>
+
+<sect2>Translational Surface<label id="tsurftcl">
+<p>
+<figure loc="ht">
+<eps file="pics/tsurf.ps" height="4cm">
+<img src="pics/tsurf.gif">
+<caption>Translational Surface Example</caption>
+</figure>
+<p>
+The script <tt>"tsurf.tcl"</tt> creates a translational surface from two
+parameter curves, see also the above image.
+<p>
+Rational parameter curves are currently not supported.
+<p>
+As the surface is completely defined by the parameter curves, there are
+no additional parameters and there is, consequently, also no property GUI.
 
 <#if out="latex"><x/newpage/</#if>
 
@@ -24768,6 +24790,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>TP: <ref id="tptag" name="tag type">
 <item>Transformations: <ref id="trap" name="transformations property">
 <item>Translation: <ref id="trap" name="transformations property">
+<item>translational surface: <ref id="tsurftcl" name="example/helper script">
 <item>Tree View: <ref id="treeview" name="Tree View">
 <item>Trim:
 <itemize>
@@ -24780,6 +24803,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>TrimRect: <ref id="trrt" name="TrimRect tool">
 <item>TrueDisp: <ref id="attrs" name="RenderMan/BMRT attribute">
 <item>truncated cone: <ref id="tconetcl" name="example/helper script">
+<item>tsurf.tcl: <ref id="tsurftcl" name="example/helper script">
 <item>Tween:
 <itemize>
 <item><ref id="tweennct" name="NCurve tool">,
