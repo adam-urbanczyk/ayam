@@ -1,4 +1,4 @@
-[20. Aug 2017] CVS-Head:
+[27. Aug 2017] CVS-Head:
 ========================
 Bug Fixes:
 o entering non number data to tesselation parameter entries (SF 554)
@@ -55,6 +55,9 @@ o various object interrogation commands no longer require a varname
 o added progress meter to "aytest.tcl" script
 o added command to inquire various normals ("getNormal")
 o added command to normalize Tcl variable values ("normVar")
+o added "-relative" option to "trimNC" command
+o added Script object example script "tsurf.tcl" that creates a
+  translational surface from two parameter curves
 
 Import/Export:
 o X3D export of NURBS curves now supports the AsWire tag
