@@ -2673,7 +2673,7 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 	{
 
 	  /* draw cross */
-	  if(fvalid && (argc < 4))
+	  if(fvalid && (argc < 6))
 	    {
 	      view->markx = fX;
 	      view->marky = height-fY;
