@@ -2649,7 +2649,7 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
  char fname[] = "findU_cb";
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  Tcl_Interp *interp = Togl_Interp(togl);
- int i, height = Togl_Height(togl);
+ int i, silence = AY_FALSE, height = Togl_Height(togl);
  double winXY[2] = {0}, worldXYZ[3] = {0};
  static int fvalid = AY_FALSE;
  static double fX = 0.0, fY = 0.0, fwX = 0.0, fwY = 0.0, fwZ = 0.0;
@@ -2671,8 +2671,9 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 	}
       if(!strcmp(argv[2], "-end"))
 	{
+
 	  /* draw cross */
-	  if(fvalid)
+	  if(fvalid && (argc < 4))
 	    {
 	      view->markx = fX;
 	      view->marky = height-fY;
@@ -2706,6 +2707,9 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 
   if(ay_selection)
     {
+      if(argc > 4)
+	silence = AY_TRUE;
+
       if(ay_selection->object->type != AY_IDNCURVE)
 	{
 	  ay_status = ay_provide_object(ay_selection->object,
@@ -2761,7 +2765,8 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
       ton = Tcl_NewStringObj("u", -1);
       to = Tcl_NewDoubleObj(u);
       Tcl_ObjSetVar2(interp, ton, NULL, to, TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
-      Tcl_Eval(interp, cmd);
+      if(!silence)
+	Tcl_Eval(interp, cmd);
       Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
     }
   else

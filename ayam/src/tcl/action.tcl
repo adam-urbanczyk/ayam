@@ -1812,6 +1812,7 @@ proc actionFindUV { w } {
 #actionSplitNC:
 # split NURBS curve at parametric value u
 proc actionSplitNC { w } {
+    global ayprefs
 
     viewTitle $w "" "Split_Curve"
     viewSetMAIcon $w ay_Split_img "Split_Curve"
@@ -1821,15 +1822,21 @@ proc actionSplitNC { w } {
     bind $w <ButtonPress-1> {
 	set ay_error 0
 	%W mc
-	%W finduac %x %y
+	%W finduac %x %y -silence
     }
 
     bind $w <B1-Motion> ""
 
     bind $w <Motion> ""
 
+    if { $ayprefs(FlashPoints) == 1 } {
+	bind $w <Motion> {
+	    %W startpepac %x %y -flash
+	}
+    }
+
     bind $w <ButtonRelease-1> {
-	%W finduac -end %x %y
+	%W finduac -end %x %y -nomark
 	update
 	if { $ay_error == 0 } {
 	    ncurve_split $u
@@ -1837,7 +1844,7 @@ proc actionSplitNC { w } {
 	focus %W
     }
 
-    $w setconf -drawh 0
+    $w setconf -drawh 2
 
  return;
 }
