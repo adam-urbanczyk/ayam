@@ -4253,8 +4253,6 @@ Delete Points|<tt/&lt;d&gt;/|
 <caption>Insert/Delete Points Actions</caption>
 </table>
 
-<#if out="latex"><x/newpage/</#if>
-
 <sect1>Manipulating the Multiplicity of Points<label id="multac">
 <p>
 <figure loc="ht">
@@ -4286,13 +4284,21 @@ applied multiple times.
 Both actions can be invoked anytime without breaking other
 actions.
 
+<#if out="latex"><x/newpage/</#if>
+
 <sect1>Finding Points on Curves<label id="finduac">
+<p>
+<figure loc="ht">
+<eps file="pics/breakp.ps" height="3.5cm">
+<img src="pics/breakp.gif">
+<caption>Breakpoint Display in Find Point on Curve Action</caption>
+</figure>
 <p>
 The modelling action <tt/"FindU"/ (shortcut: <tt/&lt;u&gt;/)
 may be applied to NURBS curves (objects of type NCurve or
 objects that provide NCurve objects) only.
 This action may be used to get the corresponding parametric
-value <em/u/ from a point on a curve. For every picked point
+value <em/u/ from an arbitrary point on a curve. For every picked point
 the appropriate value for <em/u/ is calculated, stored
 in the global variable <tt/u/, and additionally written to the console.
 The mark is set to the position of the picked point (see section
@@ -4300,6 +4306,15 @@ The mark is set to the position of the picked point (see section
 for more information about the mark).
 Remember to exactly pick a point on the curve or nearby, otherwise
 the calculation may fail.
+<p>
+This action can also be used to get the curve coordinates
+from a distinct value (breakpoint) from the knot
+vector.<footnote>Since 1.25.</footnote>
+Those points are displayed as rhombuses and can simply be picked, see also
+the image above. If a breakpoint is picked, its parametric
+value is put into the global variable <tt/u/ and the mark is set to
+the corresponding, three dimensional, point on the curve.
+<p>
 See also the table below.
 <p>
 <table loc="ht">
@@ -4354,6 +4369,10 @@ the calculation of the parametric value for the split will fail.
 The selected curve will be changed by this action, and
 a new curve will be created. It is currently not possible to undo
 the changes of a split!
+<p>
+This action also displays the distinct values (breakpoints) from the knot
+vector and allows to pick them just like the
+<tt/"FindU"/ action.<footnote>Since 1.25.</footnote>
 
 <sect1>Selecting/Tagging Boundary Points<label id="selbac">
 <p>
@@ -8563,6 +8582,9 @@ the <tt/&lt;PgDwn&gt;/ keyboard shortcut while the view has the input focus.)
 Section <ref id="scexsweep" name="Easy Sweep"> has an example
 script that automates creation and parameterisation of
 a suitable cross section curve.
+<p>
+Translational surfaces are a similar creation algorithm,
+see also section <ref id="tsurftcl" name="Translational Surface">.
 <p>
 The following table briefly lists some capabilities of the Sweep object.
 <p>
