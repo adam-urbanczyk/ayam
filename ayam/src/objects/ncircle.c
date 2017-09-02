@@ -260,6 +260,7 @@ ay_ncircle_drawhcb(struct Togl *togl, ay_object *o)
  double *pnts;
  ay_ncircle_object *ncircle;
  ay_nurbcurve_object *curve;
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
 
   if(!o)
     return AY_ENULL;
@@ -271,6 +272,12 @@ ay_ncircle_drawhcb(struct Togl *togl, ay_object *o)
 
   if(ncircle->ncurve)
     {
+
+      if(view->drawhandles == 2)
+	{
+	  ay_nct_drawbreakpoints(togl, ncircle->ncurve);
+	  return AY_OK;
+	}
       /* get NURBS curve */
       curve = (ay_nurbcurve_object *)ncircle->ncurve->refine;
       pnts = curve->controlv;
@@ -316,6 +323,7 @@ ay_ncircle_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
  ay_nurbcurve_object *curve = NULL;
  ay_ncircle_object *ncircle = NULL;
+ int ay_status, rp = ay_prefs.rationalpoints;
 
   if(!o)
     return AY_ENULL;
@@ -325,11 +333,19 @@ ay_ncircle_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
   if(ncircle->ncurve)
     {
       curve = (ay_nurbcurve_object *)ncircle->ncurve->refine;
-      return ay_selp_getpnts(mode, o, p, pe, 1, curve->length, 4,
-			     curve->controlv);
+      if(pe && pe->type == AY_PTKNOT && curve->breakv)
+	{
+	  ay_prefs.rationalpoints = 0;
+	  ay_status = ay_selp_getpnts(mode, o, p, pe, 1, (int)curve->breakv[0],
+				      4, &(curve->breakv[1]));
+	  ay_prefs.rationalpoints = rp;
+	}
+      else
+	return ay_selp_getpnts(mode, o, p, pe, 1, curve->length, 4,
+			       curve->controlv);
     }
 
- return AY_ERROR;
+ return ay_status;
 } /* ay_ncircle_getpntcb */
 
 
