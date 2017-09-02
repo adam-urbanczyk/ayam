@@ -1761,7 +1761,7 @@ proc actionFindU { w } {
 
     if { $ayprefs(FlashPoints) == 1 } {
 	bind $w <Motion> {
-	    %W startpepac %x %y -flash
+	    %W startpepac %x %y -readonly -flash
 	}
     }
 

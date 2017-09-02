@@ -948,6 +948,14 @@ int ay_nct_rotatetominmeandist(int cvlen, int cvstride,
  */
 int ay_nct_getcvtangents(ay_nurbcurve_object *nc, double **result);
 
+/** Compute all distinct knots and their curve positions.
+ */
+int ay_nct_computebreakpoints(ay_nurbcurve_object *ncurve);
+
+/** Draw distinct knots as rhombuses.
+ */
+void ay_nct_drawbreakpoints(struct Togl *togl, ay_object *o);
+
 
 /* npt.c */
 

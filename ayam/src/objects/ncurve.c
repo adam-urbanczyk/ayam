@@ -39,10 +39,6 @@ int ay_ncurve_drawglu(ay_view_object *view, ay_nurbcurve_object *ncurve);
 
 int ay_ncurve_drawch(ay_nurbcurve_object *ncurve);
 
-int ay_ncurve_computebreakpoints(ay_nurbcurve_object *ncurve);
-
-int ay_ncurve_drawbreakpoints(struct Togl *togl, ay_object *o);
-
 
 /* functions: */
 
@@ -439,6 +435,9 @@ ay_ncurve_deletecb(void *c)
   if(ncurve->stess[1].tessv)
     free(ncurve->stess[1].tessv);
 
+  if(ncurve->breakv)
+    free(ncurve->breakv);
+
   free(ncurve);
 
  return AY_OK;
@@ -761,115 +760,6 @@ ay_ncurve_drawch(ay_nurbcurve_object *ncurve)
 } /* ay_ncurve_drawch */
 
 
-/* ay_ncurve_computebreakpoints:
- *  internal helper function
- *  compute the break points (distinct knots) of the curve
- */
-int
-ay_ncurve_computebreakpoints(ay_nurbcurve_object *ncurve)
-{
- int i, usememopt = AY_FALSE;
- double *p, u, lastu;
-
-  if(ncurve->order < 6)
-    usememopt = AY_TRUE;
-
-  if(ncurve->breakv)
-    free(ncurve->breakv);
-
-  if(usememopt)
-    {
-      if(!(ncurve->breakv = malloc(((ncurve->length + ncurve->order) * 4 +
-				    ncurve->order * 3) * sizeof(double))))
-	return AY_EOMEM;
-    }
-  else
-    {
-      if(!(ncurve->breakv = malloc(((ncurve->length + ncurve->order) * 4 *
-				    sizeof(double)))))
-	return AY_EOMEM;
-    }
-
-  p = ncurve->breakv;
-  lastu = ncurve->knotv[ncurve->order-1]-1.0;
-  for(i = ncurve->order-1; i <= ncurve->length; i++)
-    {
-      u = ncurve->knotv[i];
-      if(fabs(u - lastu) > AY_EPSILON)
-	{
-	  lastu = u;
-	  if(usememopt)
-	    if(ncurve->is_rat)
-	      ay_nb_CurvePoint4DM(ncurve->length-1, ncurve->order-1,
-				 ncurve->knotv, ncurve->controlv, u, p);
-	    else
-	      ay_nb_CurvePoint3DM(ncurve->length-1, ncurve->order-1,
-				 ncurve->knotv, ncurve->controlv, u, p);
-	  else
-	    if(ncurve->is_rat)
-	      ay_nb_CurvePoint4D(ncurve->length-1, ncurve->order-1,
-				 ncurve->knotv, ncurve->controlv, u, p);
-	    else
-	      ay_nb_CurvePoint3D(ncurve->length-1, ncurve->order-1,
-				 ncurve->knotv, ncurve->controlv, u, p);
-	  p[3] = u;
-	  p += 4;
-	} /* if u is distinct */
-    } /* for all knots */
-
-  p[3] = ncurve->knotv[ncurve->length]+1;
-
- return AY_OK;
-} /* ay_ncurve_computebreakpoints */
-
-
-/* ay_ncurve_drawbreakpoints:
- *  internal helper function
- *  draw the break points (distinct knots) of the curve
- */
-int
-ay_ncurve_drawbreakpoints(struct Togl *togl, ay_object *o)
-{
- ay_nurbcurve_object *ncurve = (ay_nurbcurve_object *)o->refine;
- double *cv, c[3], dx[3], dy[3];
- GLdouble mvm[16], pm[16], s;
- GLint vp[4];
-
-  if(!ncurve->breakv)
-    ay_ncurve_computebreakpoints(ncurve);
-  if(ncurve->breakv)
-    {
-      cv = ncurve->breakv;
-      s = ay_prefs.handle_size*0.75;
-
-      glGetDoublev(GL_MODELVIEW_MATRIX, mvm);
-      glGetDoublev(GL_PROJECTION_MATRIX, pm);
-      glGetIntegerv(GL_VIEWPORT, vp);
-
-      gluProject(0, 0, 0, mvm, pm, vp, &c[0], &c[1], &c[2]);
-
-      gluUnProject(c[0]+s, c[1], c[2], mvm, pm, vp,
-		   &dx[0], &dx[1], &dx[2]);
-      gluUnProject(c[0], c[1]+s, c[2], mvm, pm, vp,
-		   &dy[0], &dy[1], &dy[2]);
-
-      glBegin(GL_QUADS);
-       do
-	 {
-	   glVertex3d(cv[0]+dx[0], cv[1]+dx[1], cv[2]+dx[2]);
-	   glVertex3d(cv[0]+dy[0], cv[1]+dy[1], cv[2]+dy[2]);
-	   glVertex3d(cv[0]-dx[0], cv[1]-dx[1], cv[2]-dx[2]);
-	   glVertex3d(cv[0]-dy[0], cv[1]-dy[1], cv[2]-dy[2]);
-	   cv += 4;
-	 }
-       while(cv[3] <= ncurve->knotv[ncurve->length]);
-      glEnd();
-    } /* if */
-
- return AY_OK;
-} /* ay_ncurve_drawbreakpoints */
-
-
 /* ay_ncurve_drawcb:
  *  draw (display in an Ayam view window) callback function of ncurve object
  */
@@ -950,7 +840,7 @@ ay_ncurve_drawacb(struct Togl *togl, ay_object *o)
 
   if((view->drawhandles == 2) && ncurve->breakv)
     {
-      b = ncurve->breakv;
+      b = &(ncurve->breakv[1]);
       do
 	b += 4;
       while(b[3] <= ncurve->knotv[ncurve->length]);
@@ -1002,7 +892,7 @@ ay_ncurve_drawhcb(struct Togl *togl, ay_object *o)
 
   if(view->drawhandles == 2)
     {
-      ay_ncurve_drawbreakpoints(togl, o);
+      ay_nct_drawbreakpoints(togl, o);
       return AY_OK;
     }
 
@@ -1113,7 +1003,7 @@ ay_ncurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	  if(ncurve->breakv)
 	    {
 	      min_dist *= 0.1;
-	      c = ncurve->breakv;
+	      c = &(ncurve->breakv[1]);
 	      i = ncurve->length;
 	      do
 		{
@@ -1218,7 +1108,7 @@ ay_ncurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	  /* pick breakpoint(s) */
 	  if(ncurve->breakv)
 	    {
-	      c = ncurve->breakv;
+	      c = &(ncurve->breakv[1]);
 	      i = ncurve->length;
 	      do
 		{
@@ -1239,8 +1129,9 @@ ay_ncurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 		      pe->coords[a] = c;
 		      pe->indices[a] = i;
 		      a++;
-		    } /* if */
+		    } /* if c is in p */
 
+		  i++;
 		  c += 4;
 		}
 	      while(c[3] < ncurve->knotv[ncurve->length]);
@@ -1285,7 +1176,7 @@ ay_ncurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 		  pe->coords[a] = &(control[j]);
 		  pe->indices[a] = i;
 		  a++;
-		} /* if */
+		} /* if c is in p */
 
 	      j += 4;
 	    } /* for */
@@ -1298,6 +1189,7 @@ ay_ncurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       lastpnt = &o->selp;
       while(pnt)
 	{
+	  /* for now, discard all selected knots */
 	  if(pnt->index < (unsigned int)ncurve->length)
 	    {
 	      pnt->point = &(ncurve->controlv[pnt->index*4]);
