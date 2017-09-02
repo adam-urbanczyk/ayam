@@ -2722,6 +2722,7 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 	      ay_error(AY_EWTYPE, fname, ay_nct_ncname);
 	      return TCL_OK;
 	    }
+	  (void)ay_nct_computebreakpoints(pobject->refine);
 	  o = pobject;
 	}
       else
@@ -2736,6 +2737,7 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
       minlevelscale = ay_pact_getminlevelscale();
       ay_viewt_wintoobj(togl, o, winXY[0], winXY[1],
 			&(obj[0]), &(obj[1]), &(obj[2]));
+
       pe.type = AY_PTKNOT;
       ay_status = ay_pact_pickpoint(o, view, minlevelscale, obj, &pe);
 
