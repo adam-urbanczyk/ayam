@@ -323,7 +323,7 @@ ay_ncircle_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
  ay_nurbcurve_object *curve = NULL;
  ay_ncircle_object *ncircle = NULL;
- int ay_status, rp = ay_prefs.rationalpoints;
+ int ay_status = AY_ERROR, rp = ay_prefs.rationalpoints;
 
   if(!o)
     return AY_ENULL;
