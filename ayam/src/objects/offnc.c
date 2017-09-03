@@ -182,6 +182,7 @@ ay_offnc_drawhcb(struct Togl *togl, ay_object *o)
  ay_object *c;
  ay_offnc_object *offnc;
  ay_nurbcurve_object *nc;
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
 
   if(!o)
     return AY_ENULL;
@@ -193,49 +194,55 @@ ay_offnc_drawhcb(struct Togl *togl, ay_object *o)
 
   if(offnc->ncurve)
     {
-      /* get NURBS curve */
-      nc = (ay_nurbcurve_object *)offnc->ncurve->refine;
-      pnts = nc->controlv;
+      /* read only points => switch to blue */
+      glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+		(GLfloat)ay_prefs.obb);
 
-      glPushMatrix();
-       c = offnc->ncurve;
-       glTranslated((GLdouble)c->movx, (GLdouble)c->movy,
-		    (GLdouble)c->movz);
-       ay_quat_torotmatrix(c->quat, m);
-       glMultMatrixd((GLdouble*)m);
-       glScaled((GLdouble)c->scalx, (GLdouble)c->scaly,
-		(GLdouble)c->scalz);
+      if(view->drawhandles == 2)
+	{
+	  ay_nct_drawbreakpoints(togl, offnc->ncurve);
+	}
+      else
+	{
+	  /* get NURBS curve */
+	  nc = (ay_nurbcurve_object *)offnc->ncurve->refine;
+	  pnts = nc->controlv;
 
-       /* draw read only points */
-       glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
-		 (GLfloat)ay_prefs.obb);
+	  glPushMatrix();
+	  c = offnc->ncurve;
+	  glTranslated((GLdouble)c->movx, (GLdouble)c->movy,
+		       (GLdouble)c->movz);
+	  ay_quat_torotmatrix(c->quat, m);
+	  glMultMatrixd((GLdouble*)m);
+	  glScaled((GLdouble)c->scalx, (GLdouble)c->scaly,
+		   (GLdouble)c->scalz);
 
-       glBegin(GL_POINTS);
-         if(ay_prefs.rationalpoints)
-	   {
-	     for(i = 0; i < nc->length; i++)
-	       {
-		 glVertex3d((GLdouble)pnts[0]*pnts[3],
-			    (GLdouble)pnts[1]*pnts[3],
-			    (GLdouble)pnts[2]*pnts[3]);
-		 pnts += 4;
-	       }
-	   }
-	 else
-	   {
-	     for(i = 0; i < nc->length; i++)
-	       {
-		 glVertex3dv((GLdouble *)pnts);
-		 pnts += 4;
-	       }
-	   }
-	glEnd();
-
+	  glBegin(GL_POINTS);
+	   if(ay_prefs.rationalpoints)
+	     {
+	       for(i = 0; i < nc->length; i++)
+		 {
+		   glVertex3d((GLdouble)pnts[0]*pnts[3],
+			      (GLdouble)pnts[1]*pnts[3],
+			      (GLdouble)pnts[2]*pnts[3]);
+		   pnts += 4;
+		 }
+	     }
+	   else
+	     {
+	       for(i = 0; i < nc->length; i++)
+		 {
+		   glVertex3dv((GLdouble *)pnts);
+		   pnts += 4;
+		 }
+	     }
+	  glEnd();
+	}
        glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
 		 (GLfloat)ay_prefs.seb);
 
       glPopMatrix();
-    }
+    } /* if have ncurve */
 
  return AY_OK;
 } /* ay_offnc_drawhcb */
@@ -249,6 +256,7 @@ ay_offnc_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
  ay_nurbcurve_object *curve = NULL;
  ay_offnc_object *offnc = NULL;
+ int ay_status = AY_ERROR, rp = ay_prefs.rationalpoints;
 
   if(!o)
     return AY_ENULL;
@@ -261,11 +269,20 @@ ay_offnc_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
   if(offnc->ncurve)
     {
       curve = (ay_nurbcurve_object *)offnc->ncurve->refine;
-      return ay_selp_getpnts(mode, o, p, pe, 1, curve->length, 4,
-			     curve->controlv);
+      if(pe && pe->type == AY_PTKNOT && curve->breakv)
+	{
+	  ay_prefs.rationalpoints = 0;
+	  ay_status = ay_selp_getpnts(mode, o, p, pe, 1, (int)curve->breakv[0],
+				      4, &(curve->breakv[1]));
+	  pe->type = AY_PTKNOT;
+	  ay_prefs.rationalpoints = rp;
+	}
+      else
+	return ay_selp_getpnts(mode, o, p, pe, 1, curve->length, 4,
+			       curve->controlv);
     }
 
- return AY_ERROR;
+ return ay_status;
 } /* ay_offnc_getpntcb */
 
 
