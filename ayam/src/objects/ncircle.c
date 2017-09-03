@@ -272,44 +272,44 @@ ay_ncircle_drawhcb(struct Togl *togl, ay_object *o)
 
   if(ncircle->ncurve)
     {
+      /* read only points => switch to blue */
+      glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+		(GLfloat)ay_prefs.obb);
 
       if(view->drawhandles == 2)
 	{
 	  ay_nct_drawbreakpoints(togl, ncircle->ncurve);
-	  return AY_OK;
 	}
-      /* get NURBS curve */
-      curve = (ay_nurbcurve_object *)ncircle->ncurve->refine;
-      pnts = curve->controlv;
+      else
+	{
+	  /* get NURBS curve */
+	  curve = (ay_nurbcurve_object *)ncircle->ncurve->refine;
+	  pnts = curve->controlv;
 
-      /* draw read only points */
-      glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
-		(GLfloat)ay_prefs.obb);
-
-      glBegin(GL_POINTS);
-       if(ay_prefs.rationalpoints)
-	 {
-	   for(i = 0; i < curve->length; i++)
+	  glBegin(GL_POINTS);
+	   if(ay_prefs.rationalpoints)
 	     {
-	       glVertex3d((GLdouble)pnts[0]*pnts[3],
-			  (GLdouble)pnts[1]*pnts[3],
-			  (GLdouble)pnts[2]*pnts[3]);
-	       pnts += 4;
+	       for(i = 0; i < curve->length; i++)
+		 {
+		   glVertex3d((GLdouble)pnts[0]*pnts[3],
+			      (GLdouble)pnts[1]*pnts[3],
+			      (GLdouble)pnts[2]*pnts[3]);
+		   pnts += 4;
+		 }
 	     }
-	 }
-       else
-	 {
-	   for(i = 0; i < curve->length; i++)
+	   else
 	     {
-	       glVertex3dv((GLdouble *)pnts);
-	       pnts += 4;
+	       for(i = 0; i < curve->length; i++)
+		 {
+		   glVertex3dv((GLdouble *)pnts);
+		   pnts += 4;
+		 }
 	     }
-	 }
-      glEnd();
-
+	  glEnd();
+	}
       glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
 		(GLfloat)ay_prefs.seb);
-    } /* if */
+    } /* if have ncurve */
 
  return AY_OK;
 } /* ay_ncircle_drawhcb */
@@ -338,6 +338,7 @@ ay_ncircle_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	  ay_prefs.rationalpoints = 0;
 	  ay_status = ay_selp_getpnts(mode, o, p, pe, 1, (int)curve->breakv[0],
 				      4, &(curve->breakv[1]));
+	  pe->type = AY_PTKNOT;
 	  ay_prefs.rationalpoints = rp;
 	}
       else
