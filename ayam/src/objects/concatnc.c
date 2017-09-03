@@ -168,9 +168,10 @@ int
 ay_concatnc_drawhcb(struct Togl *togl, ay_object *o)
 {
  int i = 0, a = 0;
+ double *pnts = NULL;
  ay_concatnc_object *concatnc = NULL;
  ay_nurbcurve_object *nc = NULL;
- double *pnts = NULL;
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
 
   if(!o)
     return AY_ENULL;
@@ -182,39 +183,44 @@ ay_concatnc_drawhcb(struct Togl *togl, ay_object *o)
 
   if(concatnc->ncurve)
     {
-      /* get NURBS curve */
-      nc = (ay_nurbcurve_object *)concatnc->ncurve->refine;
-
-      pnts = nc->controlv;
-
-      /* draw read only points */
+      /* read only points => switch to blue */
       glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
 		(GLfloat)ay_prefs.obb);
 
-      glBegin(GL_POINTS);
-       if(ay_prefs.rationalpoints)
-	 {
-	   for(i = 0; i < nc->length; i++)
-	     {
-	       glVertex3d((GLdouble)pnts[0]*pnts[3],
-			  (GLdouble)pnts[1]*pnts[3],
-			  (GLdouble)pnts[2]*pnts[3]);
-	       pnts += 4;
-	     }
-	 }
-       else
-	 {
-	   for(i = 0; i < nc->length; i++)
-	     {
-	       glVertex3dv((GLdouble *)&pnts[a]);
-	       a += 4;
-	     }
-	 }
-      glEnd();
+      if(view->drawhandles == 2)
+	{
+	  ay_nct_drawbreakpoints(togl, concatnc->ncurve);
+	}
+      else
+	{
+	  /* get NURBS curve */
+	  nc = (ay_nurbcurve_object *)concatnc->ncurve->refine;
 
+	  pnts = nc->controlv;
+	  glBegin(GL_POINTS);
+	   if(ay_prefs.rationalpoints)
+	     {
+	       for(i = 0; i < nc->length; i++)
+		 {
+		   glVertex3d((GLdouble)pnts[0]*pnts[3],
+			      (GLdouble)pnts[1]*pnts[3],
+			      (GLdouble)pnts[2]*pnts[3]);
+		   pnts += 4;
+		 }
+	     }
+	   else
+	     {
+	       for(i = 0; i < nc->length; i++)
+		 {
+		   glVertex3dv((GLdouble *)&pnts[a]);
+		   a += 4;
+		 }
+	     }
+	  glEnd();
+	}
       glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
 		(GLfloat)ay_prefs.seb);
-    } /* if */
+    } /* if have ncurve */
 
  return AY_OK;
 } /* ay_concatnc_drawhcb */
@@ -228,6 +234,7 @@ ay_concatnc_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
  ay_nurbcurve_object *curve = NULL;
  ay_concatnc_object *concatnc = NULL;
+ int ay_status = AY_ERROR, rp = ay_prefs.rationalpoints;
 
   if(!o)
     return AY_ENULL;
@@ -240,11 +247,20 @@ ay_concatnc_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
   if(concatnc->ncurve)
     {
       curve = (ay_nurbcurve_object *)concatnc->ncurve->refine;
-      return ay_selp_getpnts(mode, o, p, pe, 1, curve->length, 4,
-			     curve->controlv);
+      if(pe && pe->type == AY_PTKNOT && curve->breakv)
+	{
+	  ay_prefs.rationalpoints = 0;
+	  ay_status = ay_selp_getpnts(mode, o, p, pe, 1, (int)curve->breakv[0],
+				      4, &(curve->breakv[1]));
+	  pe->type = AY_PTKNOT;
+	  ay_prefs.rationalpoints = rp;
+	}
+      else
+	return ay_selp_getpnts(mode, o, p, pe, 1, curve->length, 4,
+			       curve->controlv);
     }
 
- return AY_ERROR;
+ return ay_status;
 } /* ay_concatnc_getpntcb */
 
 
