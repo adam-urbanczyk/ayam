@@ -216,8 +216,8 @@ sfcurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
   if(sfcurve->ncurve)
     {
       ncurve = (ay_nurbcurve_object*)sfcurve->ncurve->refine;
-      return ay_selp_getpnts(mode, o, p, pe, 1,
-		       ncurve->length, 4, ncurve->controlv);
+      return ay_selp_getpnts(mode, o, p, pe, 1, ncurve->length, 4,
+			     ay_prefs.rationalpoints, ncurve->controlv);
     }
   else
     {
