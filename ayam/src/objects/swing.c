@@ -209,7 +209,7 @@ ay_swing_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     {
       patch = (ay_nurbpatch_object *)swing->npatch->refine;
       return ay_selp_getpnts(mode, o, p, pe, 1, patch->width*patch->height, 4,
-			     patch->controlv);
+			     ay_prefs.rationalpoints, patch->controlv);
     }
 
  return AY_ERROR;

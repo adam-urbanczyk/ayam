@@ -944,7 +944,7 @@ ay_selp_ins(ay_object *o, unsigned int index, int addtoselp)
  */
 int
 ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
-		int readonly, int arrlen, int stride, double *arr)
+		int readonly, int arrlen, int stride, int ishom, double *arr)
 {
  ay_point *pnt = NULL, **lastpnt = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
@@ -963,7 +963,7 @@ ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
 
   if(pe)
     {
-      if(stride == 4 && ay_prefs.rationalpoints)
+      if(stride == 4 && ishom)
 	pe->type = AY_PTRAT;
 
       pe->readonly = readonly;
@@ -992,7 +992,7 @@ ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
       /* selection based on a single point */
       for(i = 0; i < arrlen; i++)
 	{
-	  if(stride == 4 && ay_prefs.rationalpoints)
+	  if(stride == 4 && ishom)
 	    {
 	      dist = AY_VLEN((p[0] - arr[j]*arr[j+3]),
 			     (p[1] - arr[j+1]*arr[j+3]),
@@ -1036,7 +1036,7 @@ ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
       a = 0;
       for(i = 0; i < arrlen; i++)
 	{
-	  if(stride == 4 && ay_prefs.rationalpoints)
+	  if(stride == 4 && ishom)
 	    {
 	      c = h;
 	      h[0] = arr[j]*arr[j+3];
@@ -1098,7 +1098,7 @@ ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
 	  if(pnt->index < (unsigned int)arrlen)
 	    {
 	      pnt->point = &(arr[pnt->index*stride]);
-	      if(stride == 4 && ay_prefs.rationalpoints)
+	      if(stride == 4 && ishom)
 		pnt->type = AY_PTRAT;
 	      pnt->readonly = readonly;
 	      lastpnt = &(pnt->next);

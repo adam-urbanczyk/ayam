@@ -374,7 +374,8 @@ ay_script_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     }
 
   if(sc->pnts)
-    return ay_selp_getpnts(mode, o, p, pe, 1, sc->pntslen, 4, sc->pnts);
+    return ay_selp_getpnts(mode, o, p, pe, 1, sc->pntslen, 4,
+			   ay_prefs.rationalpoints, sc->pnts);
 
  return AY_OK;
 } /* ay_script_getpntcb */

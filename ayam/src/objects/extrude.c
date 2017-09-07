@@ -251,13 +251,13 @@ ay_extrude_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	    }
 
 	  return ay_selp_getpnts(mode, o, p, pe, 1, extrude->pntslen, 4,
-				 extrude->pnts);
+				 ay_prefs.rationalpoints, extrude->pnts);
 	}
       else
 	{
 	  patch = (ay_nurbpatch_object *)extrude->npatch->refine;
 	  return ay_selp_getpnts(mode, o, p, pe, 1, patch->width*patch->height,
-				 4, patch->controlv);
+				 4, ay_prefs.rationalpoints, patch->controlv);
 	}
     }
 

@@ -270,7 +270,8 @@ ay_clone_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       ay_clone_notifycb(o);
     }
 
- return ay_selp_getpnts(mode, o, p, pe, 1, clone->pntslen, 4, clone->pnts);
+ return ay_selp_getpnts(mode, o, p, pe, 1, clone->pntslen, 4,
+			ay_prefs.rationalpoints, clone->pnts);
 } /* ay_clone_getpntcb */
 
 

@@ -230,9 +230,9 @@ ay_extrnc_drawhcb(struct Togl *togl, ay_object *o)
 int
 ay_extrnc_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
+ int ay_status = AY_ERROR;
  ay_nurbcurve_object *curve = NULL;
  ay_extrnc_object *extrnc = NULL;
- int ay_status = AY_ERROR, rp = ay_prefs.rationalpoints;
 
   if(!o)
     return AY_ENULL;
@@ -247,15 +247,13 @@ ay_extrnc_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       curve = (ay_nurbcurve_object *)extrnc->ncurve->refine;
       if(pe && pe->type == AY_PTKNOT && curve->breakv)
 	{
-	  ay_prefs.rationalpoints = 0;
 	  ay_status = ay_selp_getpnts(mode, o, p, pe, 1, (int)curve->breakv[0],
-				      4, &(curve->breakv[1]));
+				      4, AY_FALSE, &(curve->breakv[1]));
 	  pe->type = AY_PTKNOT;
-	  ay_prefs.rationalpoints = rp;
 	}
       else
 	return ay_selp_getpnts(mode, o, p, pe, 1, curve->length, 4,
-			       curve->controlv);
+			       ay_prefs.rationalpoints, curve->controlv);
     }
 
  return ay_status;

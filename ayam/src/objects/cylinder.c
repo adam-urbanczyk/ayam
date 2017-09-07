@@ -430,7 +430,8 @@ ay_cylinder_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       (void)ay_cylinder_notifycb(o);
     }
 
- return ay_selp_getpnts(mode, o, p, pe, 1, AY_PCYLINDER, 3, cylinder->pnts);
+ return ay_selp_getpnts(mode, o, p, pe, 1, AY_PCYLINDER, 3, AY_FALSE,
+			cylinder->pnts);
 } /* ay_cylinder_getpntcb */
 
 
