@@ -261,7 +261,8 @@ ay_text_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       ay_text_notifycb(o);
     }
 
- return ay_selp_getpnts(mode, o, p, pe, 1, text->pntslen, 4, text->pnts);
+ return ay_selp_getpnts(mode, o, p, pe, 1, text->pntslen, 4,
+			ay_prefs.rationalpoints, text->pnts);
 } /* ay_text_getpntcb */
 
 
@@ -690,7 +691,6 @@ ay_text_notifycb(ay_object *o)
  Tcl_UniChar *uc;
  int i;
  double xoffset = 0.0, yoffset = 0.0;
-
 
   if(!o)
     return AY_ENULL;

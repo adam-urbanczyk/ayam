@@ -418,7 +418,7 @@ ay_hyperb_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       ay_hyperboloid_notifycb(o);
     }
 
- return ay_selp_getpnts(mode, o, p, pe, 1, AY_PHYPERB, 3, h->pnts);
+ return ay_selp_getpnts(mode, o, p, pe, 1, AY_PHYPERB, 3, AY_FALSE, h->pnts);
 } /* ay_hyperb_getpntcb */
 
 

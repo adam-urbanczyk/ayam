@@ -280,7 +280,7 @@ ay_box_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       (void)ay_box_notifycb(o);
     }
 
- return ay_selp_getpnts(mode, o, p, pe, 1, 8, 3, box->pnts);
+ return ay_selp_getpnts(mode, o, p, pe, 1, 8, 3, AY_FALSE, box->pnts);
 } /* ay_box_getpntcb */
 
 

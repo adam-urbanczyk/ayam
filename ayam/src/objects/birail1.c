@@ -211,6 +211,7 @@ ay_birail1_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     {
       patch = (ay_nurbpatch_object *)birail1->npatch->refine;
       return ay_selp_getpnts(mode, o, p, pe, 1, patch->width*patch->height, 4,
+			     ay_prefs.rationalpoints,
 			     patch->controlv);
     }
 

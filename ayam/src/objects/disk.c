@@ -278,7 +278,7 @@ ay_disk_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       (void)ay_disk_notifycb(o);
     }
 
- return ay_selp_getpnts(mode, o, p, pe, 1, AY_PDISK, 3, disk->pnts);
+ return ay_selp_getpnts(mode, o, p, pe, 1, AY_PDISK, 3, AY_FALSE, disk->pnts);
 } /* ay_disk_getpntcb */
 
 

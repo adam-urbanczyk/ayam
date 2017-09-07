@@ -385,7 +385,7 @@ ay_cone_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       (void)ay_cone_notifycb(o);
     }
 
- return ay_selp_getpnts(mode, o, p, pe, 1, AY_PCONE, 3, cone->pnts);
+ return ay_selp_getpnts(mode, o, p, pe, 1, AY_PCONE, 3, AY_FALSE, cone->pnts);
 } /* ay_cone_getpntcb */
 
 

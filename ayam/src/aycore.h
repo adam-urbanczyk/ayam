@@ -1283,7 +1283,8 @@ int ay_selp_ins(ay_object *o, unsigned int index, int addtoselp);
 /** getpnts callback helper
  */
 int ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
-		    int readonly, int arrlen, int stride, double *arr);
+		    int readonly, int arrlen, int stride, int ishom,
+		    double *arr);
 
 /** properly select multiple points of a NURBS curve
  */

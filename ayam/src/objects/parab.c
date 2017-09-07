@@ -427,7 +427,7 @@ ay_parab_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       ay_paraboloid_notifycb(o);
     }
 
- return ay_selp_getpnts(mode, o, p, pe, 1, AY_PPARAB, 3, parab->pnts);
+ return ay_selp_getpnts(mode, o, p, pe, 1, AY_PPARAB, 3, AY_FALSE, parab->pnts);
 } /* ay_parab_getpntcb */
 
 

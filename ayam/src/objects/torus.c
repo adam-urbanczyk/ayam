@@ -411,7 +411,7 @@ ay_torus_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       (void)ay_torus_notifycb(o);
     }
 
- return ay_selp_getpnts(mode, o, p, pe, 1, AY_PTORUS, 3, torus->pnts);
+ return ay_selp_getpnts(mode, o, p, pe, 1, AY_PTORUS, 3, AY_FALSE, torus->pnts);
 } /* ay_torus_getpntcb */
 
 
