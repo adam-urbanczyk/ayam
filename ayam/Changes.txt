@@ -1,5 +1,5 @@
-[27. Aug 2017] CVS-Head:
-========================
+[8. Sep 2017] CVS-Head:
+=======================
 Bug Fixes:
 o entering non number data to tesselation parameter entries (SF 554)
 o chordal/centripetal knots for periodic curves/surfaces are wrong (SF 555)
@@ -13,6 +13,7 @@ o tweening curves with interpolation control curve (SF 563)
 o X3D export of surfaces with AsWire tag (SF 564)
 o saving of script objects with individual parameters (SF 565)
 o getPnt command delivers garbage for "-all -trafo" (SF 566)
+o editing in aligned local views fails for children of Script objects (SF 567)
 
 Modelling:
 o the set mark action now supports drag selection of multiple points,
@@ -28,8 +29,10 @@ o added support for initial drag selection in numeric edit action; dragging
   much easier/more intuitive
 o added hidden preference setting "NormalizeMark" that controls, whether
   mark coordinates should be normalized
-o "find u" action for NURBS curves now displays and allows to pick the
-  break points (distinct knots) of the curve
+o the "find u" and "split" actions for NURBS curves now display and allow
+  to pick the break points (distinct knots) of the curve
+o added immediate interactive placing of newly inserted curve points (enabled
+  by holding down the <Control> key in the insert point action)
 
 GUI:
 o improved balloon interaction of view icon menus
