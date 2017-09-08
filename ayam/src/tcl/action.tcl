@@ -1662,8 +1662,38 @@ proc actionResetAllWP { w } {
 # actionResetAllWP
 
 
+#actionInsertAndEdit:
+# insert points into curves and immediately edit them
+proc actionInsertAndEdit { w x y } {
+    global ayprefs
+    undo save InsPnt
+    $w mc
+    $w insertpac $x $y -edit
+    selPnts -get index
+    if { [llength $index] > 0 } {
+	$w redraw
+	$w setconf -pnts 1
+	$w moveoac -start $x $y
+	bind $w <B1-Motion> "$w moveoac -winxy %x %y; setProp -1"
+	bind $w <ButtonRelease-1>\
+	    "+bind %W <B1-Motion> \"\"; selPnts; %W redraw"
+	if { $ayprefs(FixFlashPoints) == 1 } {
+	    bind $w <ButtonRelease-1> "+\
+          %W startpepac %x %y -flash -ignoreold;\
+          %W startpepac %x %y -flash -ignoreold"
+	} else {
+	    bind $w <ButtonRelease-1> "+\
+          %W startpepac %x %y -flash -ignoreold;"
+	}
+	# XXXX bind <Control-Release> to selPnts to allow continuous editing?
+    }
+ return;
+}
+# actionInsertAndEdit
+
+
 #actionInsertP:
-# insert points from curves
+# insert points into curves
 proc actionInsertP { w } {
     global ayprefs
 
@@ -1676,6 +1706,10 @@ proc actionInsertP { w } {
 	undo save InsPnt
 	%W mc
 	%W insertpac %x %y
+    }
+
+    bind $w <Control-ButtonPress-1> {
+	actionInsertAndEdit %W %x %y
     }
 
     bind $w <B1-Motion> ""

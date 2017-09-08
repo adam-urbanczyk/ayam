@@ -703,6 +703,9 @@ ay_acurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!acurve)
     return AY_ENULL;
 
+  if(argc > 1)
+    return AY_OK;
+
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
