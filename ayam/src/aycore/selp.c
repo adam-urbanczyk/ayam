@@ -848,8 +848,14 @@ cleanup:
 } /* ay_selp_seltcmd */
 
 
-/* ay_selp_rem:
+/** ay_selp_rem:
+ * helper for interactive curve point removal action,
+ * updates the list of selected points
  *
+ * \param[in,out] o curve object to process
+ * \param[in] index designates the removed point
+ * 
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_selp_rem(ay_object *o, unsigned int index)
@@ -893,8 +899,15 @@ ay_selp_rem(ay_object *o, unsigned int index)
 } /* ay_selp_rem */
 
 
-/* ay_selp_ins:
+/** ay_selp_ins:
+ * helper for interactive curve point insertion action,
+ * updates the list of selected points
  *
+ * \param[in,out] o curve object to process
+ * \param[in] index designates the point after which the new point is inserted
+ * \param[in] addtoselp add new point to list of selected points?
+ * 
+ * \returns AY_OK on success, error code otherwise. 
  */
 int
 ay_selp_ins(ay_object *o, unsigned int index, int addtoselp)
@@ -1121,11 +1134,13 @@ ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
 } /* ay_selp_getpnts */
 
 
-/* ay_selp_selectmpnc:
- *  properly select all points of multiple points of a NURBS curve
- *  if select_all is true all points of all multiple points
- *  will be selected
- *  if select_all is false only multiple points where there is already
+/** ay_selp_selectmpnc:
+ * properly select all points of multiple points of a NURBS curve
+ * 
+ * \param[in,out] o NURBS curve object to process
+ * \param[in] select_all if AY_TRUE, all points of all multiple points
+ *   will be selected;
+ *  if AY_FALSE, only multiple points where there is already
  *   a single point of it selected will be considered
  */
 void
@@ -1266,8 +1281,9 @@ ay_selp_collapsetcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
  int ay_status = AY_OK;
- ay_list_object *sel = ay_selection;
  int notify_parent = AY_FALSE;
+ char fmsg[] = "Collapse operation failed.";
+ ay_list_object *sel = ay_selection;
 
   if(!sel)
     {
@@ -1284,7 +1300,7 @@ ay_selp_collapsetcmd(ClientData clientData, Tcl_Interp *interp,
 	    ay_status = ay_nct_collapseselp(sel->object);
 	    if(ay_status)
 	      {
-		ay_error(ay_status, argv[0], "Collapse operation failed.");
+		ay_error(ay_status, argv[0], fmsg);
 	      }
 
 	    if(sel->object->selp)
@@ -1303,7 +1319,7 @@ ay_selp_collapsetcmd(ClientData clientData, Tcl_Interp *interp,
 	    ay_status = ay_npt_collapseselp(sel->object);
 	    if(ay_status)
 	      {
-		ay_error(ay_status, argv[0], "Collapse operation failed.");
+		ay_error(ay_status, argv[0], fmsg);
 	      }
 
 	    if(sel->object->selp)
@@ -1344,8 +1360,9 @@ ay_selp_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
  int ay_status = AY_OK;
- ay_list_object *sel = ay_selection;
  int notify_parent = AY_FALSE;
+ char fmsg[] = "Explode operation failed.";
+ ay_list_object *sel = ay_selection;
 
   if(!sel)
     {
@@ -1362,7 +1379,7 @@ ay_selp_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 	    ay_status = ay_nct_explodemp(sel->object);
 	    if(ay_status)
 	      {
-		ay_error(ay_status, argv[0], "Explode operation failed.");
+		ay_error(ay_status, argv[0], fmsg);
 	      }
 
  	    if(sel->object->selp)
@@ -1380,7 +1397,7 @@ ay_selp_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 	    ay_status = ay_npt_explodemp(sel->object);
 	    if(ay_status)
 	      {
-		ay_error(ay_status, argv[0], "Explode operation failed.");
+		ay_error(ay_status, argv[0], fmsg);
 	      }
 
  	    if(sel->object->selp)
@@ -1394,7 +1411,6 @@ ay_selp_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 	default:
 	  {
 	    ay_error(AY_EWARN, argv[0], ay_error_igntype);
-	    return TCL_OK;
 	  }
 	  break;
 	} /* switch */
