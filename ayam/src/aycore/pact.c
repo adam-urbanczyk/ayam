@@ -37,13 +37,13 @@ void ay_pact_findpoint(int len, int stride, double *cv,
 		       double objX, double objY, double objZ, int *index);
 
 int ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
-		     double objX, double objY, double objZ);
+		     double objX, double objY, double objZ, int edit);
 
 int ay_pact_insertic(ay_icurve_object *curve, int *index,
-		     double objX, double objY, double objZ);
+		     double objX, double objY, double objZ, int edit);
 
 int ay_pact_insertac(ay_acurve_object *curve, int *index,
-		     double objX, double objY, double objZ);
+		     double objX, double objY, double objZ, int edit);
 
 int ay_pact_deletenc(ay_nurbcurve_object *curve, int *index,
 		     double objX, double objY, double objZ);
@@ -1156,7 +1156,7 @@ ay_pact_findpoint(int len, int stride, double *cv,
  */
 int
 ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
-		 double objX, double objY, double objZ)
+		 double objX, double objY, double objZ, int edit)
 {
  int ay_status = AY_OK;
  char fname[] = "insert_pointnc";
@@ -1305,6 +1305,12 @@ ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
       ay_error(AY_ERROR, fname, "Cannot insert point here.");
       return AY_ERROR;
     }
+  else
+    {
+      if(edit)
+	memcpy(&(newcontrolv[(*index+1)*4]), &(oldcontrolv[*index*4]),
+	       4*sizeof(double));
+    }
 
   free(curve->controlv);
   curve->controlv = newcontrolv;
@@ -1396,7 +1402,7 @@ ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
  */
 int
 ay_pact_insertic(ay_icurve_object *icurve, int *index,
-		 double objX, double objY, double objZ)
+		 double objX, double objY, double objZ, int edit)
 {
  int ay_status = AY_OK;
  char fname[] = "insert_pointic";
@@ -1432,6 +1438,7 @@ ay_pact_insertic(ay_icurve_object *icurve, int *index,
     }
   else
     {
+      /* closed curve */
       if(*index == icurve->length-1)
 	{
 	  icurve->length++;
@@ -1443,15 +1450,22 @@ ay_pact_insertic(ay_icurve_object *icurve, int *index,
 	  memcpy(newcontrolv, oldcontrolv,
 		 (icurve->length-1)*3*sizeof(double));
 	  j = (icurve->length-1)*3;
-	  i = (icurve->length-2)*3;
-	  newcontrolv[j] = oldcontrolv[i] +
-	    ((oldcontrolv[0] - oldcontrolv[i])/2.0);
+	  if(edit)
+	    {
+	      memcpy(&(newcontrolv[j]), &(oldcontrolv[j-3]), 3*sizeof(double));
+	    }
+	  else
+	    {
+	      i = (icurve->length-2)*3;
+	      newcontrolv[j] = oldcontrolv[i] +
+		((oldcontrolv[0] - oldcontrolv[i])/2.0);
 
-	  newcontrolv[j+1] = oldcontrolv[i+1] +
-	    ((oldcontrolv[1] - oldcontrolv[i+1])/2.0);
+	      newcontrolv[j+1] = oldcontrolv[i+1] +
+		((oldcontrolv[1] - oldcontrolv[i+1])/2.0);
 
-	  newcontrolv[j+2] = oldcontrolv[i+2] +
-	    ((oldcontrolv[2] - oldcontrolv[i+2])/2.0);
+	      newcontrolv[j+2] = oldcontrolv[i+2] +
+		((oldcontrolv[2] - oldcontrolv[i+2])/2.0);
+	    }
 
 	  free(icurve->controlv);
 	  icurve->controlv = newcontrolv;
@@ -1512,6 +1526,12 @@ ay_pact_insertic(ay_icurve_object *icurve, int *index,
       ay_error(AY_ERROR, fname, "Cannot insert point here.");
       return AY_ERROR;
     }
+  else
+    {
+      if(edit)
+	memcpy(&(newcontrolv[(*index+1)*3]), &(oldcontrolv[*index*3]),
+	       3*sizeof(double));
+    }
 
   free(icurve->controlv);
   icurve->controlv = newcontrolv;
@@ -1525,7 +1545,7 @@ ay_pact_insertic(ay_icurve_object *icurve, int *index,
  */
 int
 ay_pact_insertac(ay_acurve_object *acurve, int *index,
-		 double objX, double objY, double objZ)
+		 double objX, double objY, double objZ, int edit)
 {
  int ay_status = AY_OK;
  char fname[] = "insert_pointac";
@@ -1561,6 +1581,7 @@ ay_pact_insertac(ay_acurve_object *acurve, int *index,
     }
   else
     {
+      /* closed curve */
       if(*index == acurve->length-1)
 	{
 	  acurve->length++;
@@ -1572,16 +1593,22 @@ ay_pact_insertac(ay_acurve_object *acurve, int *index,
 	  memcpy(newcontrolv, oldcontrolv,
 		 (acurve->length-1)*3*sizeof(double));
 	  j = (acurve->length-1)*3;
-	  i = (acurve->length-2)*3;
-	  newcontrolv[j] = oldcontrolv[i] +
-	    ((oldcontrolv[0] - oldcontrolv[i])/2.0);
+	  if(edit)
+	    {
+	      memcpy(&(newcontrolv[j]), &(newcontrolv[j-3]), 3*sizeof(double));
+	    }
+	  else
+	    {
+	      i = (acurve->length-2)*3;
+	      newcontrolv[j] = oldcontrolv[i] +
+		((oldcontrolv[0] - oldcontrolv[i])/2.0);
 
-	  newcontrolv[j+1] = oldcontrolv[i+1] +
-	    ((oldcontrolv[1] - oldcontrolv[i+1])/2.0);
+	      newcontrolv[j+1] = oldcontrolv[i+1] +
+		((oldcontrolv[1] - oldcontrolv[i+1])/2.0);
 
-	  newcontrolv[j+2] = oldcontrolv[i+2] +
-	    ((oldcontrolv[2] - oldcontrolv[i+2])/2.0);
-
+	      newcontrolv[j+2] = oldcontrolv[i+2] +
+		((oldcontrolv[2] - oldcontrolv[i+2])/2.0);
+	    }
 	  free(acurve->controlv);
 	  acurve->controlv = newcontrolv;
 	  return ay_status; /* XXXX early exit */
@@ -1641,6 +1668,12 @@ ay_pact_insertac(ay_acurve_object *acurve, int *index,
       ay_error(AY_ERROR, fname, "Cannot insert point here.");
       return AY_ERROR;
     }
+  else
+    {
+      if(edit)
+	memcpy(&(newcontrolv[(*index+1)*3]), &(oldcontrolv[*index*3]),
+	       3*sizeof(double));
+    }
 
   free(acurve->controlv);
   acurve->controlv = newcontrolv;
@@ -1659,7 +1692,8 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
  char fname[] = "insert_point";
  Tcl_Interp *interp = Togl_Interp(togl);
  double winX = 0.0, winY = 0.0, objX = 0.0, objY = 0.0, objZ = 0.0;
- int index, notify_parent = AY_FALSE;
+ int index, notify_parent = AY_FALSE, edit = AY_FALSE;
+ unsigned int uindex;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
 
@@ -1671,6 +1705,11 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
   Tcl_GetDouble(interp, argv[2], &winX);
   Tcl_GetDouble(interp, argv[3], &winY);
 
+  if(argc > 4)
+    {
+      edit = AY_TRUE;
+    }
+
   while(sel)
     {
       o = sel->object;
@@ -1679,19 +1718,21 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
 			winX, winY,
 			&objX, &objY, &objZ);
 
+      index = -1;
+
       switch(o->type)
 	{
 	case AY_IDNCURVE:
 	  ay_status = ay_pact_insertnc((ay_nurbcurve_object *)(o->refine),
-				       &index, objX, objY, objZ);
+				       &index, objX, objY, objZ, edit);
 	  break;
 	case AY_IDICURVE:
 	  ay_status = ay_pact_insertic((ay_icurve_object *)(o->refine),
-				       &index, objX, objY, objZ);
+				       &index, objX, objY, objZ, edit);
 	  break;
 	case AY_IDACURVE:
 	  ay_status = ay_pact_insertac((ay_acurve_object *)(o->refine),
-				       &index, objX, objY, objZ);
+				       &index, objX, objY, objZ, edit);
 	  break;
 	default:
 	  ay_error(AY_EWTYPE, fname, "NCurve, ICurve, or ACurve");
@@ -1699,18 +1740,29 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
 	  break;
 	}
 
-      if(ay_status)
+      if(index != -1)
 	{
-	  ay_error(ay_status, fname, "Error inserting point.");
-	}
-      else
-	{
-	  notify_parent = AY_TRUE;
-	  ay_selp_ins(o, (unsigned int)index);
-	  (void)ay_notify_object(o);
-	  o->modified = AY_TRUE;
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, fname, "Error inserting point.");
+	    }
+	  else
+	    {
+	      notify_parent = AY_TRUE;
+	      if(edit)
+		{
+		  (void)ay_selp_clear(o);
+		  uindex = index+1;
+		  (void)ay_selp_sel(o, 1, &uindex);
+		}
+	      else
+		{
+		  (void)ay_selp_ins(o, (unsigned int)index);
+		}
+	      (void)ay_notify_object(o);
+	      o->modified = AY_TRUE;
+	    } /* if */
 	} /* if */
-
       sel = sel->next;
     } /* while */
 

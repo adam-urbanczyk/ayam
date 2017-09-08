@@ -885,7 +885,7 @@ ay_ncurve_drawhcb(struct Togl *togl, ay_object *o)
   if(!o)
     return AY_ENULL;
 
-  ncurve = (ay_nurbcurve_object *) o->refine;
+  ncurve = (ay_nurbcurve_object *)o->refine;
 
   if(!ncurve)
     return AY_ENULL;
@@ -1237,6 +1237,12 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   if(!ncurve)
     return AY_ENULL;
+
+  if(argc > 1)
+    {
+      ay_nct_recreatemp(ncurve);
+      return AY_OK;
+    }
 
   /* get new values from Tcl */
   to = Tcl_ObjGetVar2(interp, arrobj, lengthobj,
