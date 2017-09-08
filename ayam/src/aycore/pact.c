@@ -1706,7 +1706,7 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
       else
 	{
 	  notify_parent = AY_TRUE;
-	  ay_selp_ins(o, (unsigned int)index, AY_FALSE);
+	  ay_selp_ins(o, (unsigned int)index);
 	  (void)ay_notify_object(o);
 	  o->modified = AY_TRUE;
 	} /* if */

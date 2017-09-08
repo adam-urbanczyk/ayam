@@ -905,30 +905,17 @@ ay_selp_rem(ay_object *o, unsigned int index)
  *
  * \param[in,out] o curve object to process
  * \param[in] index designates the point after which the new point is inserted
- * \param[in] addtoselp add new point to list of selected points?
  * 
  * \returns AY_OK on success, error code otherwise. 
  */
 int
-ay_selp_ins(ay_object *o, unsigned int index, int addtoselp)
+ay_selp_ins(ay_object *o, unsigned int index)
 {
  int ay_status = AY_OK;
  ay_point *p = NULL, *newp = NULL;
 
   if(!o)
     return AY_ENULL;
-
-  /* add point with matching index */
-  if(addtoselp)
-    {
-      if(!(newp = calloc(1, sizeof(ay_point))))
-	{
-	  return AY_EOMEM;
-	}
-      newp->next = o->selp;
-      o->selp = newp;
-      newp->index = index;
-    }
 
   /* readjust indices of old points */
   if(newp)
