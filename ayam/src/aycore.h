@@ -1278,7 +1278,7 @@ int ay_selp_rem(ay_object *o, unsigned int index);
 
 /** repair selected points indizes after point insertion
  */
-int ay_selp_ins(ay_object *o, unsigned int index, int addtoselp);
+int ay_selp_ins(ay_object *o, unsigned int index);
 
 /** getpnts callback helper
  */
