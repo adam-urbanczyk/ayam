@@ -4164,7 +4164,7 @@ current view (W is cleared).
 <sect1>Snapping Points to the Grid<label id="snapac">
 <p>
 <figure loc="ht">
-<eps file="pics/snapgrpnt.ps" height="5cm">
+<eps file="pics/snapgrpnt.ps" height="4cm">
 <img src="pics/snapgrpnt.gif">
 <caption>Snapping Points to the Grid</caption>
 </figure>
@@ -4314,7 +4314,7 @@ actions.
 <sect1>Finding Points on Curves<label id="finduac">
 <p>
 <figure loc="ht">
-<eps file="pics/breakp.ps" height="3.5cm">
+<eps file="pics/breakp.ps" height="4cm">
 <img src="pics/breakp.gif">
 <caption>Breakpoint Display in Find Point on Curve Action</caption>
 </figure>
@@ -4382,7 +4382,15 @@ Find UV|<tt/&lt;U&gt;/|
 <caption>Find Point on Surface Action</caption>
 </table>
 
+<#if out="latex"><x/newpage/</#if>
+
 <sect1>Interactively Splitting Curves<label id="splitncac">
+<p>
+<figure loc="ht">
+<eps file="pics/splitac.ps" height="4cm">
+<img src="pics/splitac.gif">
+<caption>Interactive Curve Splitting</caption>
+</figure>
 <p>
 The modelling action <tt/"Split Curve"/ (shortcut <tt/&lt;&verbar;&gt;/)
 may be applied to NURBS curves (objects of type NCurve) only.
@@ -4398,14 +4406,35 @@ the changes of a split!
 This action also displays the distinct values (breakpoints) from the knot
 vector and allows to pick them just like the
 <tt/"FindU"/ action.<footnote>Since 1.25.</footnote>
+See also the table below.
+<p>
+<table loc="ht">
+<tabular ca="|c|c|c|"><hline>
+<bf/Name/|<bf/Shortcut/|<bf/Icon/@<hline>
+Split|<tt/&lt;&verbar;&gt;/|
+<#if out="latex"><x>inlinegfx pics/splitncac.png 0.7cm </x></#if>
+<#if out="html"><img src="pics/splitncac.gif"></#if>
+<#if out="latex">@<hline></#if>
+</tabular>
+<caption>Split Curve Action</caption>
+</table>
+
+<#if out="latex"><x/newpage/</#if>
 
 <sect1>Selecting/Tagging Boundary Points<label id="selbac">
+<p>
+<figure loc="ht">
+<eps file="pics/selbound.ps" height="5cm">
+<img src="pics/selbound.gif">
+<caption>Selecting Boundary Points</caption>
+</figure>
 <p>
 The modelling action <tt/"Select Boundary Points"/ (shortcut <tt/&lt;B&gt;/)
 may be applied to PolyMesh objects only.<newline>
 This action can be used to select all control points of a PolyMesh
 boundary after picking a point on that
 boundary.<footnote>Since 1.23.</footnote>
+See also the image above.<newline>
 Note that the PolyMesh object must be optimized for best results.
 See also the table below.
 <p>
