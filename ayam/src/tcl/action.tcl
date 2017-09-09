@@ -2038,6 +2038,7 @@ proc actionClearB1 { w } {
     bind $w <B1-Motion> ""
     bind $w <ButtonPress-1> ""
     bind $w <ButtonRelease-1> ""
+    bind $w <Control-ButtonPress-1> ""
     bind $w <${ayviewshortcuts(PickMod)}-ButtonRelease-1> ""
     bind $w <${ayviewshortcuts(TagMod)}-ButtonRelease-1> ""
 
