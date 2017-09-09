@@ -3997,7 +3997,7 @@ image below).
 <figure loc="ht">
 <eps file="pics/handles.ps" height="5cm">
 <img src="pics/handles.gif">
-<caption>Objects With Read Only (left) and With Editable Points (right)</caption>
+<caption>Objects With Editable Only (left) and With Readonly Points (right)</caption>
 </figure>
 <p>
 In contrast to e.g.~the move action, all point edit actions require the
@@ -4229,6 +4229,13 @@ the shape of the curve. It is also possible to insert control
 points into certain types of NURBS curves without changing
 their shape using knot insertion; see also the insert knot tool section
 <ref id="insknt" name="Insert Knot Tool">.
+<p>
+If the <tt/&lt;Ctrl&gt;/-key is held down while clicking on a point,
+the new point can interactively be placed on a freely chosen
+position.<footnote>Since 1.25.</footnote>
+This is done by initially giving the new point the coordinates of the
+clicked point, selecting the new point (while also de-selecting all
+other points), and then, temporarily, enabling the move point action.
 <p>
 The modelling action <tt/"Delete Point"/ (shortcut: <tt/&lt;d&gt;/)
 may be applied to NURBS, interpolating, and approximating curves
