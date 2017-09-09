@@ -3997,7 +3997,7 @@ image below).
 <figure loc="ht">
 <eps file="pics/handles.ps" height="5cm">
 <img src="pics/handles.gif">
-<caption>Objects With Editable Only (left) and With Readonly Points (right)</caption>
+<caption>Objects With Editable (left) and With Readonly Points (right)</caption>
 </figure>
 <p>
 In contrast to e.g.~the move action, all point edit actions require the
@@ -4194,6 +4194,7 @@ This action can be used without affecting other active actions.
 <p>
 The snap points to mark action moves all selected points to
 the current mark.<footnote>Since 1.18.</footnote>
+See also the image above.
 <p>
 This action is initiated using the shortcut <tt/&lt;M&gt;/.
 All selected editable points of the selected objects are snapped to
@@ -4201,12 +4202,18 @@ the current mark coordinates (see section
 <ref id="markac" name="Setting the Mark">
 for more information about the mark) immediately.
 This action can be used without affecting other active actions.
-See also the image above.
 
 <sect1>Snapping Objects to the Mark<label id="snapomac">
 <p>
+<figure loc="ht">
+<eps file="pics/snapmrkobj.ps" height="4cm">
+<img src="pics/snapmrkobj.gif">
+<caption>Snapping Objects to the Mark</caption>
+</figure>
+<p>
 The snap objects to mark action moves all selected objects to
 the current mark.<footnote>Since 1.18.</footnote>
+See also the image above.
 <p>
 This action is initiated using the shortcut <tt/&lt;K&gt;/.
 All selected objects are snapped to the current
@@ -4263,8 +4270,8 @@ Delete Points|<tt/&lt;d&gt;/|
 <sect1>Manipulating the Multiplicity of Points<label id="multac">
 <p>
 <figure loc="ht">
-<eps file="pics/edmult.ps" height="7cm">
-<img src="pics/edmult.gif">
+<eps file="pics/incmult.ps" height="4cm">
+<img src="pics/incmult.gif">
 <caption>Successively Increasing the Multiplicity of Selected Points</caption>
 </figure>
 <p>
