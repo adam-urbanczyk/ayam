@@ -4187,7 +4187,7 @@ This action can be used without affecting other active actions.
 <sect1>Snapping Points to the Mark<label id="snapmac">
 <p>
 <figure loc="ht">
-<eps file="pics/snapmrkpnt.ps" height="3cm">
+<eps file="pics/snapmrkpnt.ps" height="4cm">
 <img src="pics/snapmrkpnt.gif">
 <caption>Snapping Points to the Mark</caption>
 </figure>
@@ -4224,7 +4224,15 @@ an easy way to move objects over long distances or to just put
 an object "here".
 This action can be used without affecting other active actions.
 
+<#if out="latex"><x/newpage/</#if>
+
 <sect1>Inserting or Deleting Points<label id="insdelac">
+<p>
+<figure loc="ht">
+<eps file="pics/inspnt.ps" height="5cm">
+<img src="pics/inspnt.gif">
+<caption>Inserting Points</caption>
+</figure>
 <p>
 The modelling action <tt/"Insert Point"/ (shortcut: <tt/&lt;i&gt;/)
 may be applied to NURBS, interpolating, and approximating curves
@@ -4232,7 +4240,8 @@ may be applied to NURBS, interpolating, and approximating curves
 A new control point will be inserted in the curve right
 after the picked point. The new point will be inserted in the
 middle between the selected point and the next point, changing
-the shape of the curve. It is also possible to insert control
+the shape of the curve. See also the image above.<newline>
+It is also possible to insert control
 points into certain types of NURBS curves without changing
 their shape using knot insertion; see also the insert knot tool section
 <ref id="insknt" name="Insert Knot Tool">.
@@ -4267,10 +4276,12 @@ Delete Points|<tt/&lt;d&gt;/|
 <caption>Insert/Delete Points Actions</caption>
 </table>
 
+<#if out="latex"><x/newpage/</#if>
+
 <sect1>Manipulating the Multiplicity of Points<label id="multac">
 <p>
 <figure loc="ht">
-<eps file="pics/incmult.ps" height="4cm">
+<eps file="pics/incmult.ps" height="5cm">
 <img src="pics/incmult.gif">
 <caption>Successively Increasing the Multiplicity of Selected Points</caption>
 </figure>
