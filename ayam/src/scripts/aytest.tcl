@@ -15,6 +15,7 @@ array set aytestprefs {
     KeepFiles 0
     MoreOptions 0
     Progress 0
+    Breadth 0
 }
 
 # aytest_handleLBS:
@@ -660,7 +661,7 @@ puts -nonewline "\n"
 # aytest_crtnvars:
 # helper to create variation arrays
 # (also in use by modelling tools test)
-proc aytest_crtnvars { } {
+proc aytest_crtnvars { { breadth 0 } } {
 global NCurve_1 NCurve_2 NCurve_3 NCurve_4 NCurve_5 NCurve_6 ICurve_1 ACurve_1
 global NPatch_1 NPatch_2 NPatch_3 NPatch_4 NPatch_5 NPatch_6 NPatch_7
 global IPatch_1 PatchMesh_1
@@ -668,8 +669,16 @@ global IPatch_1 PatchMesh_1
 # lengths/widths/heights to test
 set lengthvals { 2 3 4 5 6 7 8 9 10 100 }
 
+if { $breadth } {
+    set lengthvals { 2 3 4 5 }
+}
+
 # orders to test
 set ordervals { 2 3 4 5 6 7 8 9 10 }
+
+if { $breadth } {
+    set ordervals $lengthvals
+}
 
 # knot types to test
 #  (deliberately omitting: 0 - Bezier, and 3 - Custom)
@@ -2169,7 +2178,7 @@ array set PatchMesh_1 {
 set PatchMesh_1(Width) $lengths
 set PatchMesh_1(Height) $lengths
 
-aytest_crtnvars
+aytest_crtnvars $aytestprefs(Breadth)
 
 # test modelling tools
 puts $log "Testing modelling tools ...\n"
@@ -2418,7 +2427,7 @@ lappend nopnttypes MetaObj
 # these types do not support conversion (or flag errors upon conversion
 # attempts, when empty):
 set noconvtypes ""
-#lappend noconvtypes 
+#lappend noconvtypes
 
 set view1 ""
 if { [winfo exists .fv.fViews.fview1.f3D.togl] } {
@@ -2809,7 +2818,7 @@ proc aytest_var { type } {
 #  actually run all tests selected in the GUI
 #
 proc aytest_runTests { tests items } {
-    global ayprefs
+    global ayprefs aytestprefs
 
     if { ($tests == {}) || ($items == {}) } {
 	return;
@@ -2829,8 +2838,12 @@ proc aytest_runTests { tests items } {
     incr test
 
     if { [lindex $items 0] == 0 } {
+	# All Items
+	set aytestprefs(Breadth) 1
 	eval set items \$::aytest_${test}items
     } else {
+	# Selected Items
+	set aytestprefs(Breadth) 0
 	eval set allitems \$::aytest_${test}items
 	foreach item $items {
 	    incr item -1
