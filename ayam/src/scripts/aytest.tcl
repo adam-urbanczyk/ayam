@@ -92,7 +92,7 @@ proc aytest_selectGUI { } {
     set ay(bok) $w.fl.bok
 
     # test management widgets
-    set f [frame $w.fu.fl]
+    set f [frame $w.fu.fl -relief sunken -border 1]
 
     # listbox for test selection
     addText $f e0 "Select Test:"
@@ -122,7 +122,7 @@ proc aytest_selectGUI { } {
     pack $w.fp -side top -fill x -expand no
     pack $w.fu.fl -side left -fill both -expand yes
 
-    set f [frame $w.fu.fr]
+    set f [frame $w.fu.fr -relief sunken -border 1]
 
     # listbox for test item selection
     addText $f e0 "Select Item:"
