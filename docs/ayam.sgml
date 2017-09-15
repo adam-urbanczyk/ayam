@@ -3997,7 +3997,7 @@ image below).
 <figure loc="ht">
 <eps file="pics/handles.ps" height="5cm">
 <img src="pics/handles.gif">
-<caption>Objects With Editable (left) and With Readonly Points (right)</caption>
+<caption>Objects With Editable (left) and With Read-only Points (right)</caption>
 </figure>
 <p>
 In contrast to e.g.~the move action, all point edit actions require the
@@ -4406,6 +4406,7 @@ the changes of a split!
 This action also displays the distinct values (breakpoints) from the knot
 vector and allows to pick them just like the
 <tt/"FindU"/ action.<footnote>Since 1.25.</footnote>
+Grids are not utilised by this action.
 See also the table below.
 <p>
 <table loc="ht">
@@ -4668,6 +4669,8 @@ Material|No|N/A|N/A|No<#if out="latex">@<hline></#if>
 </tabular>
 <caption>Scene Organization</caption>
 </table>
+For complete documentation, see
+section <ref id="orgobjs" name="Scene Organization Objects">.
 
 <sect2>CSG&thinsp;/&thinsp;Solid Primitives
 <p>
@@ -4687,6 +4690,8 @@ Hyperboloid|No|Yes|NPatch<f/<sup/+//|No*<#if out="latex">@<hline></#if>
 </tabular>
 <caption>CSG&thinsp;/&thinsp;Solid Primitives</caption>
 </table>
+For complete documentation, see
+section <ref id="solids" name="CSG&thinsp;/&thinsp;Solid Primitives">.
 
 <sect2>Freeform Curves
 <p>
@@ -4703,6 +4708,8 @@ NCircle|No|No|NCurve|No*<#if out="latex">@<hline></#if>
 </tabular>
 <caption>Freeform Curves</caption>
 </table>
+For complete documentation, see
+section <ref id="curves" name="Freeform Curve Objects">.
 
 <sect2>Freeform Surfaces
 <p>
@@ -4718,6 +4725,8 @@ PatchMesh|No|Yes|NPatch|Yes<#if out="latex">@<hline></#if>
 </tabular>
 <caption>Freeform Surfaces</caption>
 </table>
+For complete documentation, see
+section <ref id="surfaces" name="Freeform Surface Objects">.
 
 <sect2>Curve Tool Objects
 <p>
@@ -4732,6 +4741,8 @@ OffsetNC|NCurve|No|NCurve|No*<#if out="latex">@<hline></#if>
 </tabular>
 <caption>Curve Tool Objects</caption>
 </table>
+For complete documentation, see
+section <ref id="ctobjs" name="Curve Tool Objects">.
 
 <#if out="latex"><x/newpage/</#if>
 
@@ -4760,6 +4771,8 @@ OffsetNP|NPatch|Yes|NPatch|No*<#if out="latex">@<hline></#if>
 </tabular>
 <caption>Surface Tool Objects</caption>
 </table>
+For complete documentation, see
+section <ref id="stobjs" name="Surface Tool Objects">.
 
 <sect2>Polygonal and Subdivision Objects
 <p>
@@ -4775,6 +4788,8 @@ SDMesh|No|Yes|PolyMesh|Yes<#if out="latex">@<hline></#if>
 </tabular>
 <caption>Polygonal and Subdivision Objects</caption>
 </table>
+For complete documentation, see
+section <ref id="polys" name="Polygonal and Subdivision Objects">.
 
 <#if out="latex"><x/newpage/</#if>
 
@@ -4796,10 +4811,12 @@ BCurve|No|No|NCurve|Yes<#if out="latex">@<hline></#if>
 </tabular>
 <caption>Scripts and Plugins</caption>
 </table>
+For complete documentation, see
+section <ref id="scobjs" name="Scripts and Plugins">.
 
 <#if out="latex"><x/newpage/</#if>
 
-<sect1>Scene Organization Objects
+<sect1>Scene Organization Objects<label id="orgobjs">
 <p>
 These objects help to organize/structure the scene; view, camera, light, and
 material objects are also listed here (even though deserving an own
@@ -7305,7 +7322,7 @@ curve).
 
 <#if out="latex"><x/newpage/</#if>
 
-<sect1>Curve Tool Objects
+<sect1>Curve Tool Objects<label id="ctobjs">
 <p>
 These objects modify existing curves or create new curves.
 
@@ -8162,7 +8179,7 @@ Multiple TC tags are also supported.<footnote>Since 1.24.</footnote>
 
 <#if out="latex"><x/newpage/</#if>
 
-<sect1>Surface Tool Objects
+<sect1>Surface Tool Objects<label id="stobjs">
 <p>
 These objects create freeform surfaces from curves or other surfaces.
 
@@ -10351,7 +10368,7 @@ PV tags are currently not supported.
 
 <#if out="latex"><x/newpage/</#if>
 
-<sect1>Polygonal and Subdivision Objects
+<sect1>Polygonal and Subdivision Objects<label id="polys">
 <p>
 These objects complement the Ayam feature set and allow
 objects modelled in the polygonal or subdivision modelling
@@ -10524,7 +10541,7 @@ PV tags are supported.
 
 <#if out="latex"><x/newpage/</#if>
 
-<sect1>Script and Custom Objects
+<sect1>Script and Custom Objects<label id="scobjs">
 <p>
 These objects create/modify arbitrary other objects from
 scripts or define entirely new object types via the custom object plugin
