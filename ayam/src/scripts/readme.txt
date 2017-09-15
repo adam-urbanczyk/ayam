@@ -1,4 +1,4 @@
-[readme.txt - 8. Apr 2017]
+[readme.txt - 15. Sep 2017]
 
 This directory contains a collection of various scripts for Ayam.
 
@@ -94,5 +94,6 @@ polyhedron.js - create polyhedrons from Conway notation
 tcone.tcl - truncated cone primitive with GUI (type: Create)
 cbox.tcl - cylindrical box primitive (type: Create)
 tcircle.tcl - NURBS circle with triangular base primitive (type: Create)
+tsurf.tcl - translational surface from two curves (type: Modify)
 tweenc.tcl - tween incompatible curves of arbitrary type (type: Modify)
 tweencgui.tcl - as above with GUI for the tween parameter (type: Modify)
