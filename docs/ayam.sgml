@@ -3538,6 +3538,205 @@ or not can be adjusted (see <tt/"PickTolerance"/ in
 <ref id="hidprefs" name="Hidden Preference Settings">).
 </itemize>
 
+<sect1>Selecting/Tagging Points<label id="selac">
+<p>
+The modelling action <tt/"Select Points"/ (shortcut: <tt/&lt;t&gt;/;
+for <bf>t</bf>&thinsp;ag points) may be applied to objects that support
+single point editing or read only points.
+<p>
+To select or de-select a point it can directly be clicked upon
+or a rectangular region can be dragged with the mouse around the
+points in question.
+<p>
+Only points within a certain distance from the mouse pointer
+click position will be considered picked (see preference option
+<tt>"Modelling/PickEpsilon"</tt>).
+Points that would be picked will flash in a different color when
+the mouse pointer moves over them (this is also controlled by the
+preference option <tt>"Modelling/FlashPoints"</tt>).
+<p>
+Selected points will be drawn in dark red when the select points
+modelling action or a modelling action that would modify the selected
+points is active (see the following image).
+<p>
+<figure loc="ht">
+<eps file="pics/selpnts.ps" height="4cm">
+<img src="pics/selpnts.gif">
+<caption>Object With Selected Points (red)</caption>
+</figure>
+<p>
+The selected editable points may be modified subsequently using the
+modelling actions Move, Rotate, and Scale as discussed above when the
+view is switched to point transformations using the shortcut <tt/&lt;p&gt;/.
+See also the table below.
+<p>
+<table loc="ht">
+<tabular ca="|c|c|c|"><hline>
+<bf/Name/|<bf/Shortcut/|<bf/Icon/@<hline>
+Tag Points|<tt/&lt;t&gt;/|
+<#if out="latex"><x>inlinegfx pics/tagac.png 0.7cm </x></#if>
+<#if out="html"><img src="pics/tagac.gif"></#if>
+<#if out="latex">@<hline></#if>
+</tabular>
+<caption>Tag Action</caption>
+</table>
+<p>
+After the pick (the selection of a point), the picked point
+will be added to the list of selected points for the selected object.
+If the selected point is already in that list it will be removed from
+the list instead, the picked point will be deselected.
+<p>
+All points can be selected easily using the keyboard shortcut <tt/&lt;A&gt;/.
+<p>
+The list of selected points will not be deleted from the object until
+an explicit deselection is performed using the keyboard shortcut
+<tt/&lt;N&gt;/ or if certain modelling tools are used.
+<p>
+The point selection can also be inverted using the keyboard shortcut
+<tt/&lt;I&gt;/.
+<p>
+All three shortcuts above can be used anytime without interfering
+with any other active modelling actions.
+<p>
+Note that the list of selected points is not copied, if the object
+is copied using the clipboard. The selection is also not saved to
+Ayam scene files. But selected points survive
+undo/redo.<footnote>Since 1.16.</footnote>
+<p>
+Furthermore, the selection action itself is not an operation
+recorded in the undo buffer, thus cannot directly be undone.
+<p>
+The point selection also does not interfere with single point modelling
+actions:
+It is perfectly legal to select some points, move them using
+the move action, then switch to single point editing, edit
+some other or even one of the selected points, switch back
+to the selection action, add other points to the selection or delete
+some points from the selection, switch to rotate, rotate the selected
+points and so on.
+<p>
+A bigger number of points may be added to the selection using a
+click and drag operation. All points that are inside the rectangular
+region defined by the click and drag will be added to the selection.
+In fact, this approach is the only way to safely add points to the
+selection that occlude each other. Clicking always only adds/removes
+single points.
+<p>
+Holding down the <tt/&lt;Ctrl&gt;/-key while
+dragging the mouse removes all selected points within the rectangular
+region defined by the drag from the
+selection.<footnote>Since 1.16.1.</footnote>
+<p>
+The exact behaviour of picking multiple points of a NURBS curve or surface
+depends on the attribute <tt/"CreateMP"/:<newline>
+If <tt/"CreateMP"/ is enabled, picking a multiple point will always
+select all points that make up the multiple point.<newline>
+If <tt/"CreateMP"/ is disabled, picking a multiple point will only
+select the first of the points that make up the multiple point
+(but drag selection can be used to select all points nevertheless).
+
+<#if out="latex"><x/newpage/</#if>
+
+<sect1>Setting the Mark<label id="markac">
+<p>
+<figure loc="ht">
+<eps file="pics/mark.ps" height="6.5cm">
+<img src="pics/mark.gif">
+<caption>Front View With Mark Set At 1,-1,0</caption>
+</figure>
+<p>
+This action may be invoked to mark a point in space for perusal
+of other modelling actions that e.g.~rotate or scale about a point.
+<p>
+The keyboard shortcut to invoke the set mark action is <tt/&lt;a&gt;/.
+This action is also active as intermediate action for e.g.~rotate
+about, where the keyboard shortcuts <tt/&lt;r&gt;/
+and then <tt/&lt;a&gt;/ would be used in a sequence and after
+setting the mark, the rotate about action would take over again.
+<p>
+See also the table below.
+<table loc="ht">
+<tabular ca="|c|c|c|"><hline>
+<bf/Name/|<bf/Shortcut/|<bf/Icon/@<hline>
+Set Mark|<tt/&lt;a&gt;/|
+<#if out="latex"><x>inlinegfx pics/markac.png 0.7cm </x></#if>
+<#if out="html"><img src="pics/markac.gif"></#if>
+<#if out="latex">@<hline></#if>
+</tabular>
+<caption>Set Mark Action</caption>
+</table>
+<p>
+A single click with the left mouse button sets the mark. If grids are
+active in the view, the mark will be snapped to the nearest grid coordinates.
+<p>
+Note, that, using a single mouse click, only two dimensional mark
+coordinates can be specified. Therefore, in versions prior to 1.21, the
+third coordinate was always set to zero upon a click. This is no longer
+the case. If the preference option <tt>"Modelling/GlobalMark"</tt> is
+enabled, the third coordinate is <em/not/ reset anymore. This way all
+three coordinates of the mark can be defined by clicking two times in
+appropriate views, e.g.~first in a
+front view for the x and y coordinates and then in a side view for the
+missing z coordinate.
+<p>
+The mark can also be set to a point of one of the selected objects. In this
+case, the mark coordinates are always immediately three
+dimensional.<footnote>Since 1.21.</footnote>
+<p>
+If the mouse is dragged instead of clicked, the mark is set to the
+bounding box center of all points in the drag
+rectangle.<footnote>Since 1.25.</footnote>
+
+<#if out="latex"><x/newpage/</#if>
+
+Additionally, when the set mark action is active, the following keyboard
+shortcuts are available:
+<list>
+<item><tt/&lt;Return&gt;/ accept the current mark (useful, if one
+first rotates about a point then decides to also scale about
+the same point: <tt/&lt;ra&gt;/, drag mouse, <tt/&lt;sa&gt;/,
+<tt/&lt;Return&gt;/, drag mouse &hellip;),
+<item><tt/&lt;c&gt;/ set the mark to the center of gravity of all
+currently selected objects coordinate systems,
+<item><tt/&lt;C&gt;/ set the mark to the center of gravity of all
+currently selected points.
+<item><tt/&lt;b&gt;/ set the mark to the center of the bounding
+box of all currently selected points.
+The image below demonstrates the difference between the
+center of the bounding box and the center of gravity.
+</list>
+The marked point will be shown as a little red cross in the view window
+(see also the image below).
+<p>
+<figure loc="ht">
+<eps file="pics/bbxvscog.ps" height="4cm">
+<img src="pics/bbxvscog.gif">
+<caption>Bounding Box Center Mark (left) and Center of Gravity Mark (right)</caption>
+</figure>
+<p>
+The mark may also directly be manipulated using the corresponding view object
+property (see also section <ref id="vat" name="ViewAttrib Property">).
+<p>
+Since Ayam 1.21, the mark may also be set without activating the
+set mark action and without interfering with other modelling actions
+by double clicking with the rightmost mouse button.
+<p>
+Another way of setting the mark is via the <tt/"FindU"/ special action
+for curves
+(see also section <ref id="finduac" name="Finding Points on Curves">)
+or the <tt/"FindUV"/ special action for surfaces
+(see also section <ref id="finduvac" name="Finding Points on Surfaces">)
+.
+<p>
+The mark can also be used to remember an important point in space
+and get back to it later using the pan to mark action
+(keyboard shortcut <tt/&lt;.&gt;/).
+<p>
+The current mark can be cleared by pressing <tt/&lt;D&gt;/ anytime.
+<p>
+Finally, remember that certain operations like e.g.~changing the view
+type will also clear the mark.
+
 <#if out="latex"><x/newpage/</#if>
 
 <sect1>Moving Objects or Selected Points<label id="moveac">
@@ -3785,204 +3984,6 @@ See also the section
 for a script, that modifies the scale actions to scale
 about the current selections center automatically.
 
-<sect1>Setting the Mark<label id="markac">
-<p>
-<figure loc="ht">
-<eps file="pics/mark.ps" height="6.5cm">
-<img src="pics/mark.gif">
-<caption>Front View With Mark Set At 1,-1,0</caption>
-</figure>
-<p>
-This action may be invoked to mark a point in space for perusal
-of other modelling actions that e.g.~rotate or scale about a point.
-<p>
-The keyboard shortcut to invoke the set mark action is <tt/&lt;a&gt;/.
-This action is also active as intermediate action for e.g.~rotate
-about, where the keyboard shortcuts <tt/&lt;r&gt;/
-and then <tt/&lt;a&gt;/ would be used in a sequence and after
-setting the mark, the rotate about action would take over again.
-<p>
-See also the table below.
-<table loc="ht">
-<tabular ca="|c|c|c|"><hline>
-<bf/Name/|<bf/Shortcut/|<bf/Icon/@<hline>
-Set Mark|<tt/&lt;a&gt;/|
-<#if out="latex"><x>inlinegfx pics/markac.png 0.7cm </x></#if>
-<#if out="html"><img src="pics/markac.gif"></#if>
-<#if out="latex">@<hline></#if>
-</tabular>
-<caption>Set Mark Action</caption>
-</table>
-<p>
-A single click with the left mouse button sets the mark. If grids are
-active in the view, the mark will be snapped to the nearest grid coordinates.
-<p>
-Note, that, using a single mouse click, only two dimensional mark
-coordinates can be specified. Therefore, in versions prior to 1.21, the
-third coordinate was always set to zero upon a click. This is no longer
-the case. If the preference option <tt>"Modelling/GlobalMark"</tt> is
-enabled, the third coordinate is <em/not/ reset anymore. This way all
-three coordinates of the mark can be defined by clicking two times in
-appropriate views, e.g.~first in a
-front view for the x and y coordinates and then in a side view for the
-missing z coordinate.
-<p>
-The mark can also be set to a point of one of the selected objects. In this
-case, the mark coordinates are always immediately three
-dimensional.<footnote>Since 1.21.</footnote>
-<p>
-If the mouse is dragged instead of clicked, the mark is set to the
-bounding box center of all points in the drag
-rectangle.<footnote>Since 1.25.</footnote>
-
-<#if out="latex"><x/newpage/</#if>
-
-Additionally, when the set mark action is active, the following keyboard
-shortcuts are available:
-<list>
-<item><tt/&lt;Return&gt;/ accept the current mark (useful, if one
-first rotates about a point then decides to also scale about
-the same point: <tt/&lt;ra&gt;/, drag mouse, <tt/&lt;sa&gt;/,
-<tt/&lt;Return&gt;/, drag mouse &hellip;),
-<item><tt/&lt;c&gt;/ set the mark to the center of gravity of all
-currently selected objects coordinate systems,
-<item><tt/&lt;C&gt;/ set the mark to the center of gravity of all
-currently selected points.
-<item><tt/&lt;b&gt;/ set the mark to the center of the bounding
-box of all currently selected points.
-The image below demonstrates the difference between the
-center of the bounding box and the center of gravity.
-</list>
-The marked point will be shown as a little red cross in the view window
-(see also the image below).
-<p>
-<figure loc="ht">
-<eps file="pics/bbxvscog.ps" height="4cm">
-<img src="pics/bbxvscog.gif">
-<caption>Bounding Box Center Mark (left) and Center of Gravity Mark (right)</caption>
-</figure>
-<p>
-The mark may also directly be manipulated using the corresponding view object
-property (see also section <ref id="vat" name="ViewAttrib Property">).
-<p>
-Since Ayam 1.21, the mark may also be set without activating the
-set mark action and without interfering with other modelling actions
-by double clicking with the rightmost mouse button.
-<p>
-Another way of setting the mark is via the <tt/"FindU"/ special action
-for curves
-(see also section <ref id="finduac" name="Finding Points on Curves">)
-or the <tt/"FindUV"/ special action for surfaces
-(see also section <ref id="finduvac" name="Finding Points on Surfaces">)
-.
-<p>
-The mark can also be used to remember an important point in space
-and get back to it later using the pan to mark action
-(keyboard shortcut <tt/&lt;.&gt;/).
-<p>
-The current mark can be cleared by pressing <tt/&lt;D&gt;/ anytime.
-<p>
-Finally, remember that certain operations like e.g.~changing the view
-type will also clear the mark.
-
-
-<sect1>Selecting/Tagging Points<label id="selac">
-<p>
-The modelling action <tt/"Select Points"/ (shortcut: <tt/&lt;t&gt;/;
-for <bf>t</bf>&thinsp;ag points) may be applied to objects that support
-single point editing or read only points.
-<p>
-To select or de-select a point it can directly be clicked upon
-or a rectangular region can be dragged with the mouse around the
-points in question.
-<p>
-Only points within a certain distance from the mouse pointer
-click position will be considered picked (see preference option
-<tt>"Modelling/PickEpsilon"</tt>).
-Points that would be picked will flash in a different color when
-the mouse pointer moves over them (this is also controlled by the
-preference option <tt>"Modelling/FlashPoints"</tt>).
-<p>
-Selected points will be drawn in dark red when the select points
-modelling action or a modelling action that would modify the selected
-points is active (see the following image).
-<p>
-<figure loc="ht">
-<eps file="pics/selpnts.ps" height="4cm">
-<img src="pics/selpnts.gif">
-<caption>Object With Selected Points (red)</caption>
-</figure>
-<p>
-The selected editable points may be modified subsequently using the
-modelling actions Move, Rotate, and Scale as discussed above when the
-view is switched to point transformations using the shortcut <tt/&lt;p&gt;/.
-See also the table below.
-<p>
-<table loc="ht">
-<tabular ca="|c|c|c|"><hline>
-<bf/Name/|<bf/Shortcut/|<bf/Icon/@<hline>
-Tag Points|<tt/&lt;t&gt;/|
-<#if out="latex"><x>inlinegfx pics/tagac.png 0.7cm </x></#if>
-<#if out="html"><img src="pics/tagac.gif"></#if>
-<#if out="latex">@<hline></#if>
-</tabular>
-<caption>Tag Action</caption>
-</table>
-<p>
-After the pick (the selection of a point), the picked point
-will be added to the list of selected points for the selected object.
-If the selected point is already in that list it will be removed from
-the list instead, the picked point will be deselected.
-<p>
-All points can be selected easily using the keyboard shortcut <tt/&lt;A&gt;/.
-<p>
-The list of selected points will not be deleted from the object until
-an explicit deselection is performed using the keyboard shortcut
-<tt/&lt;N&gt;/ or if certain modelling tools are used.
-<p>
-The point selection can also be inverted using the keyboard shortcut
-<tt/&lt;I&gt;/.
-<p>
-All three shortcuts above can be used anytime without interfering
-with any other active modelling actions.
-<p>
-Note that the list of selected points is not copied, if the object
-is copied using the clipboard. The selection is also not saved to
-Ayam scene files. But selected points survive
-undo/redo.<footnote>Since 1.16.</footnote>
-<p>
-Furthermore, the selection action itself is not an operation
-recorded in the undo buffer, thus cannot directly be undone.
-<p>
-The point selection also does not interfere with single point modelling
-actions:
-It is perfectly legal to select some points, move them using
-the move action, then switch to single point editing, edit
-some other or even one of the selected points, switch back
-to the selection action, add other points to the selection or delete
-some points from the selection, switch to rotate, rotate the selected
-points and so on.
-<p>
-A bigger number of points may be added to the selection using a
-click and drag operation. All points that are inside the rectangular
-region defined by the click and drag will be added to the selection.
-In fact, this approach is the only way to safely add points to the
-selection that occlude each other. Clicking always only adds/removes
-single points.
-<p>
-Holding down the <tt/&lt;Ctrl&gt;/-key while
-dragging the mouse removes all selected points within the rectangular
-region defined by the drag from the
-selection.<footnote>Since 1.16.1.</footnote>
-<p>
-The exact behaviour of picking multiple points of a NURBS curve or surface
-depends on the attribute <tt/"CreateMP"/:<newline>
-If <tt/"CreateMP"/ is enabled, picking a multiple point will always
-select all points that make up the multiple point.<newline>
-If <tt/"CreateMP"/ is disabled, picking a multiple point will only
-select the first of the points that make up the multiple point
-(but drag selection can be used to select all points nevertheless).
-
 <sect1>Editing Points<label id="editac">
 <p>
 To edit the points of an object four actions (<tt/"Edit"/,
@@ -4061,6 +4062,7 @@ MacOSX Aqua.
 <item>The modelling action <tt/"Edit Weights"/ (shortcut: <tt/&lt;w&gt;/)
 changes the w coordinate of a single point by dragging the mouse left
 or right.
+<p> <p>
 
 <item>The modelling action <tt/"Reset Weights"/ (shortcut: <tt/&lt;W&gt;/)
 resets the w coordinate of the picked point to 1.0.
@@ -4183,6 +4185,8 @@ To snap all three coordinate values to the grid use <tt/&lt;G&gt;/.
 Note that the snapping also occurs, if the view has the preference
 option <tt/"Use Grid"/ turned off.
 This action can be used without affecting other active actions.
+
+<#if out="latex"><x/newpage/</#if>
 
 <sect1>Snapping Points to the Mark<label id="snapmac">
 <p>
