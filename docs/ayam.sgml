@@ -2492,6 +2492,7 @@ The value will have no effect until Ayam is restarted!
 one main window with internal views and toolbox or use the old
 floating windows style GUI. The new single window GUI mode is enabled
 by default.
+<p> <p>
 
 <item><tt/"AutoResize"/ toggles, whether the main window
 should be resized horizontally according to the property GUI whenever
@@ -2525,6 +2526,7 @@ This option is not available on the Win32 platform and on MacOSX Aqua.
 <item><tt/"AutoSavePrefs"/, if this is switched on, Ayam will write
 the preferences settings to the ayamrc file when the program quits.
 See also section <ref id="ayamrc" name="Ayamrc File">.
+<p> <p>
 
 <item><tt/"BakOnReplace"/, controls whether Ayam will make
 a backup copy of each scene file loaded via the main menu entry
@@ -2532,10 +2534,12 @@ a backup copy of each scene file loaded via the main menu entry
 The backup file will be placed right next to the loaded file
 and get an additional file name extension according to the hidden
 preference setting <tt/"BackupExt"/.
+<p> <p>
 
 <item><tt/"AddExtensions"/, this option may be used to let Ayam
 automatically add file name extensions to saved files (if they
 do not have already a proper extension).
+<p> <p>
 
 <item><tt/"EnvFile"/ specifies the working environment scene file.
 This file typically contains some view objects to create a standard
@@ -2545,6 +2549,7 @@ preference option <tt/"LoadEnv"/ is switched off) and upon each clearing
 of the scene using <tt>"File/New"</tt> (unless the hidden preference option
 <tt/"NewLoadsEnv"/ is switched off).
 See also section <ref id="hidprefs" name="Hidden Preference Settings">.
+<p> <p>
 
 <item><tt/"Scripts"/ is a list of Tcl script files that will
 be executed on startup. The scripts do <em>not</em>
@@ -2592,6 +2597,7 @@ information regarding Ayam plugins.
 
 <item><tt/"Docs"/ is an URL that points to the documentation in
 HTML format.
+<p> <p>
 
 <item><tt/"TmpDir"/ is the directory, where temporary RIB files are
 created, e.g.~when rendering directly from view windows.
@@ -2625,6 +2631,7 @@ value is 0.05.
 <item><tt/"HandleSize"/ controls the drawing size of editable points. Note,
 that there is no check, whether the size value is supported by the
 OpenGL implementation used.
+<p> <p>
 
 <item><tt/"LazyNotify"/ determines whether notification shall
 occur on all mouse movements or just on release of the mouse button,
@@ -2654,15 +2661,18 @@ released).
 </itemize>
 Note that complete notify also updates objects that implicitly depend on
 updated objects via instances.
+<p> <p>
 
 <item><tt/"EditSnaps"/ determines, whether points
 should be snapped to the grid when a grid is defined and
 in use for the single point modelling actions.
+<p> <p>
 
 <item><tt/"Snap3D"/ controls whether points that are snapped to
 grid coordinates (in single point editing actions and when grids are active)
 should be influenced in all three dimensions, or just the two dimensions
 determined by the type of the view.
+<p> <p>
 
 <item><tt/"FlashPoints"/ controls flashing of editable points in
 the single point modelling actions when they would be modified by
@@ -2701,14 +2711,17 @@ mark (on, default<footnote>Since 1.21.</footnote>).
 Note that enabling this preference setting will not
 immediately lead to a global mark set in all windows, one rather
 needs to set a new mark that will then become global.
+<p> <p>
 
 <item><tt/"CreateAtMark"/ controls whether or not new objects
 are to be created at the current mark position
 (default: yes).<footnote>Since 1.21.</footnote>
+<p> <p>
 
 <item><tt/"DefaultAction"/ determines the modelling action
 that will be active after a press of the <tt/&lt;Esc&gt;/ key
 in a view window.
+<p> <p>
 
 <item><tt/"PickCycle"/ exchanges the object pick candidates dialog with
 a cycling mechanism:<footnote>Since 1.23.</footnote> when multiple
@@ -2718,6 +2731,7 @@ same position selects the next object in the list of candidates.
 See also section
 <ref id="objsel" name="Selecting Objects by Picking">
 for more information about picking objects.
+<p> <p>
 
 <item><tt/"UndoLevels"/ determines the number of modelling steps
 that should be saved in the undo buffer.
@@ -2839,6 +2853,7 @@ In contrast to the <tt/"NCDisplayMode"/ setting above, objects can
 uses the color defined by the material of an object for
 rendering. If disabled, the color defined by the <tt/"Shade"/ option
 (below) will be used instead. 
+<p> <p>
 
 <item><tt/"Background"/, <tt/"Object"/, <tt/"Selection"/, <tt/"Grid"/,
 <tt/"Tag"/, <tt/"Shade"/, and <tt/"Light"/ set the colors that
@@ -2902,12 +2917,14 @@ RIB files that will be set up to render to the display.
 
 <item><tt/"ResInstances"/, if this is enabled all instance
 objects are resolved (temporarily) before being written to the RIB file.
+<p> <p>
 
 <item><tt/"CheckLights"/, if this is enabled Ayam will
 check the current scene for lights before RIB export. If no lights or
 no lights that are actually switched on are to be found in
 the scene, a distant headlight will be added to the scene
 automatically for RIB export.
+<p> <p>
 
 <item><tt/"DefaultMat"/ determines a default material setting
 that should be written in the top level of the RIB, so that it
@@ -2920,15 +2937,18 @@ The setting <tt/"default"/ looks for a material object named
 <tt/"default"/ and writes it's complete shaders and attributes,
 if it does not find such a material it falls back to <tt/"matte"/.
 The setting <tt/"none"/ does not write any default material setting.
+<p> <p>
 
 <item><tt/"RIStandard"/ determines whether Ayam
 should omit all non standard RenderMan interface options and
 attributes on RIB export.
+<p> <p>
 
 <item><tt/"WriteIdent"/ determines, whether Ayam should
 write special RiAttributes
 (<tt>RiAttribute "identifier" &lsqb;"name"&rsqb;</tt>)
 with the names of the objects to the RIB to aid in RIB file debugging.
+<p> <p>
 
 <item><tt/"ShadowMaps"/ determines, whether shadow maps should
 be used, when writing light sources. It is not sufficient
@@ -2941,30 +2961,38 @@ if it is set to <tt/"Manual"/, the shadow maps will be rendered on
 user request only (e.g.~using the view menu entry:
 <tt>"View/Create All ShadowMaps"</tt>). <tt/"Manual"/ should be used,
 when rendering directly from view windows with shadow maps.
+<p> <p>
 
 <item><tt/"ExcludeHidden"/ causes hidden objects not to be
 exported to RIB files.
+<p> <p>
 
 <item><tt/"RenderMode"/ allows to switch between two different methods
 of forcing a renderer to render to the screen (via a RiDisplay statement
 in the exported RIB, necessary for e.g.~PRMan and RDC;
 or via a command line argument, e.g.~<tt>-d</tt> for rendrib from BMRT).
+<p> <p>
 
 <item><tt/"AutoCloseUI"/ controls whether the Rendering GUI dialog
 window should be closed automatically when the renderer signals
 that the rendering finished.
+<p> <p>
 
 <item><tt/"QRender"/ determines the command that should be executed
 upon quick rendering a view, <tt>%s</tt> denotes the name of the RIB file.
+<p> <p>
 
 <item><tt/"QRenderUI"/, enables the Rendering GUI for quick rendering,
 see discussion of <tt/"RenderUI"/ below.
+<p> <p>
 
 <item><tt/"QRenderPT"/, progress template for quick rendering,
 see discussion of <tt/"RenderPT"/ below.
+<p> <p>
 
 <item><tt/"Render"/ determines the command that should be executed
 upon normal rendering of a view, <tt>%s</tt> denotes the name of the RIB file.
+<p> <p>
 
 <item><tt/"RenderUI"/ enables the renderer user interface (Rendering GUI),
 which consists of a simple progress bar, a label that displays the
@@ -2980,6 +3008,7 @@ those programs in your path, do not enable the RenderUI option.
 On the Win32 platform you may also use an internal kill command
 <tt>"w32kill"</tt> that has been introduced in Ayam 1.4.
 See also section <ref id="hidprefs" name="Hidden Preference Settings">.
+<p> <p>
 
 <item><tt/"RenderPT"/ is a string that contains a progress output
 template used by Ayam to determine the current percentage of completion
@@ -3028,38 +3057,48 @@ regexp -- {(\[0-9\]+)%(\[ |*\]+)$} string dummy percent
 This regexp command eats away all pipe symbols, asterisks, and spaces
 <em/backwards/, starting from the last character and including the percent
 sign, which comes right behind the sought after percentage number.
+<p> <p>
 
 <item><tt/"FRender"/, renderer command to use for direct rendering to image
 files (via view menu entry <tt/"Render to File"/).
+<p> <p>
 
 <item><tt/"FRenderUI"/, enables the Rendering GUI for the direct rendering
 to image files, see discussion of <tt/"RenderUI"/ above.
+<p> <p>
 
 <item><tt/"FRenderPT"/, progress template for the direct rendering to
 image files, see discussion of <tt/"RenderPT"/ above.
+<p> <p>
 
 <item><tt/"SMRender"/, renderer command to use for the rendering of shadow maps
 (e.g.~view menu entry <tt>"View/Create All ShadowMaps"</tt>),
 see also section <ref id="shadowmaps" name="Using ShadowMaps">.
 <tt>%s</tt> denotes the name of the RIB file.
+<p> <p>
 
 <item><tt/"SMRenderUI"/, enables the Rendering GUI for the rendering
 of shadow maps, see discussion of <tt/"RenderUI"/ above.
+<p> <p>
 
 <item><tt/"SMRenderPT"/, progress template for the rendering
 of shadow maps, see discussion of <tt/"RenderPT"/ above.
+<p> <p>
 
 <item><tt/"SMFileFormat"/, designates the file format of the shadow maps,
 use <tt/"zfile"/ for RenderMan and <tt/"shadow"/ for Gelato.
+<p> <p>
 
 <item><tt/"SMFileType"/, type of shadow maps to be created, currently
 available types are <tt/"z"/ &ndash; normal shadow maps (for RenderMan
 renderers and Gelato), <tt/"avgz"/ &ndash; Woo shadow maps (for Gelato only!),
 and <tt/"volz"/ &ndash; volume shadow maps (for Gelato only!).
+<p> <p>
 
 <item><tt/"SMChangeShaders"/, toggles, whether Ayam should automatically
 prepend a "shader" to light shader names for lights that use shadow maps
 upon RIB export. Not changing the shader names is necessary for Gelato.
+<p> <p>
 
 <item><tt/"PPRender"/ is the name of the renderer to use for the
 permanent preview feature (see also section <ref id="vm" name="View Menu">).
@@ -3089,13 +3128,16 @@ rather than be handled by Tcls sometimes annoying error
 handling dialog box. However, this dialog box with the built in
 stack trace can also become very handy, while writing and debugging
 Tcl scripts.
+<p> <p>
 
 <item><tt/"Logging"/ determines, whether error messages should
 be written to the file specified by the <tt/"LogFile"/ option.
 If this is enabled, you should clear the log manually from time
 to time, as Ayam will always append to <tt/"LogFile"/.
+<p> <p>
 
 <item><tt/"LogFile"/; see above.
+<p> <p>
 
 <item><tt/"ErrorLevel"/, this option controls how many messages
 should be written to the Ayam console. Available
@@ -3114,6 +3156,7 @@ related preferences:
 <item><tt/"SaveAddsMRU"/; if this is switched on, saving to a file
 will add that file to the most recently used files list in the
 main menu for quick access.
+<p> <p>
 
 <item><tt/"TclPrecision"/; this is the precision Tcl handles floating
 point number to string conversions with. You may want to decrease this
@@ -3145,6 +3188,7 @@ is set.
 For more geometry saving related information, see also sections
 <ref id="savemaingeomtag" name="SaveMainGeom"> and
 <ref id="savepanelayouttag" name="SavePaneLayout">.
+<p> <p>
 
 <item><tt/"SMethod"/; is the sampling method used by the NURBS tesselation
 facility that converts NURBS surfaces to PolyMesh objects.
@@ -3154,6 +3198,7 @@ Six sampling methods are available:
 <item><tt/"ParametricError"/
 ensures that the distance between the tesselated surface and the original
 surface is no point bigger than the value specified by <tt/"SParamU"/.
+<p> <p>
 
 <item>The sampling method <tt/"PathLength"/ ensures that no edge of a
 polygon generated by the tesselation is longer than the value specified
