@@ -19881,6 +19881,14 @@ see the file:<newline>
 <p>
 The script <tt>"tsurf.tcl"</tt> creates a translational surface from two
 parameter curves, see also the above image.
+The control points of the translational surface are created by copying
+the control points of the first curve <it/n/ times, where
+<it/n/ is the number of control points of the second curve, while also
+offsetting the points according to the offset of the <it/nth/ control point to
+the first control point of the second curve.
+<p>
+The curves do not need to touch in any point, but if they start
+in the same point, the translational surface will interpolate both curves.
 <p>
 Rational parameter curves are currently not supported.
 <p>
