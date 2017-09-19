@@ -428,17 +428,18 @@ proc shortcut_view { w } {
     $m entryconfigure 0 -accelerator [remkpkr $ayviewshortcuts(QRender)]
     bind $w <[repctrl $ayviewshortcuts(Render)]> "$m invoke 1;break"
     $m entryconfigure 1 -accelerator [remkpkr $ayviewshortcuts(Render)]
-    bind $w <[repctrl $ayviewshortcuts(Redraw)]> "$m invoke 3;break"
-    $m entryconfigure 3 -accelerator [remkpkr $ayviewshortcuts(Redraw)]
 
-    bind $w <[repctrl $aymainshortcuts(ExportRIB)]> "$m invoke 4;break"
-    $m entryconfigure 4 -accelerator [remkpkr $aymainshortcuts(ExportRIB)]
+    bind $w <[repctrl $aymainshortcuts(ExportRIB)]> "$m invoke 3;break"
+    $m entryconfigure 3 -accelerator [remkpkr $aymainshortcuts(ExportRIB)]
     if { [string first ".view" $w] == 0 } {
 	global AYENABLEPPREV
 	if { $AYENABLEPPREV == 1 } { set tmp 12 } else { set tmp 9 }
 	bind $w <[repctrl $ayviewshortcuts(Close)]> "$m invoke $tmp"
 	$m entryconfigure $tmp -accelerator [remkpkr $ayviewshortcuts(Close)]
     }
+
+    bind $w <[repctrl $ayviewshortcuts(Redraw)]> "$m invoke 5;break"
+    $m entryconfigure 5 -accelerator [remkpkr $ayviewshortcuts(Redraw)]
 
     if { ([winfo toplevel $w] == $w) || $ayprefs(BindInternalViews) } {
 	set m $typem
