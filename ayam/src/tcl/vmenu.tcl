@@ -51,6 +51,11 @@ $m add command -label "Render" -command "viewRender $w 0;\
 $m add command -label "Render To File" -command "viewRender $w 2;\
 	\$ay(currentView) mc"
 
+$m add command -label "Export RIB" -command "\
+    io_exportRIB $w"
+
+$m add separator
+
 $m add command -label "Redraw" -command "\
 	global ay;\
 	$w.f3D.togl mc;\
@@ -58,8 +63,13 @@ $m add command -label "Redraw" -command "\
 	$w.f3D.togl redraw;\
 	\$ay(currentView) mc"
 
-$m add command -label "Export RIB" -command "\
-    io_exportRIB $w"
+$m add command -label "Reset" -command "\
+	global ay;\
+	$w.f3D.togl mc;\
+	viewSetType $w \$ay(cVType) 0;\
+	$w.f3D.togl setconf -cp 0.0 0.0;\
+	$w.f3D.togl render"
+
 
 global AYENABLEPPREV
 if { $AYENABLEPPREV == 1 } {
