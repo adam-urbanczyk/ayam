@@ -1691,6 +1691,8 @@ The current modelling action, modelling mode, drawing mode and
 grid size are also displayed as a set of icons on the right hand
 side of the view menu bar.
 
+<#if out="latex"><x/newpage/</#if>
+
 <sect1>View Menu<label id="vm">
 <p>
 This section discusses the view menu bar.
@@ -1737,12 +1739,15 @@ window size instead.
 Also note that the environment variable <tt/SHADERS/ will be adapted
 to the preference setting <tt/Shaders/ for rendering.
 
-<item><tt/"Redraw"/: forces the OpenGL-widget to be drawn, this is
-particularly useful if automatic redrawing of the view has been disabled.
-
 <item><tt/"Export RIB"/ exports the scene to a RIB file. This does exactly the
 same as the main menu entry <tt>"File/Export/RenderMan RIB"</tt>, except that
 the current view will already be selected in the dialog box.
+
+<item><tt/"Redraw"/: forces the OpenGL-widget to be drawn, this is
+particularly useful if automatic redrawing of the view has been disabled.
+
+<item><tt/"Reset"/: restores the camera settings of the view to those
+natural to the current view type.
 
 <item><tt/"Open PPrev"/, <tt/"Close PPrev"/: those menu entries are just
 available, if the compile time option <tt/AYENABLEPPREV/ has been set.
@@ -1886,6 +1891,8 @@ based menus in the view window menu bar:
 <p>
 The <tt/"Action"/ icon menu hosts basic selection
 actions.<footnote>Since 1.24.</footnote>
+The menu button of this menu always conveys the currently active
+interactive modelling action.
 See also the image below:
 <p>
 <figure loc="ht">
@@ -1893,6 +1900,17 @@ See also the image below:
 <img src="pics/amenu.gif">
 <caption>Action Icon Menu</caption>
 </figure>
+<p>
+The selection actions are:
+<itemize>
+<item>Pick, see
+section <ref id="objsel" name="Selecting Objects by Picking">,
+<item>Tag, see
+section <ref id="selac" name="Selecting/Tagging Points">,
+<item>Mark, see
+section <ref id="markac" name="Setting the Mark">,
+<item>None, disables all actions.
+</itemize>
 <p>
 The <tt/"Modelling Mode"/ icon menu may be used to quickly change the current
 modelling mode (global or local, see also section
@@ -22803,7 +22821,7 @@ object (see section <ref id="sdmeshobj" name="SDMesh Object">).
 <sect1>Shader Parsing Plugins<label id="spplugins">
 <p>
 The following plugins are provided to allow
-parsing of shaders:<footnote>Since 1.3.</footnote>
+parsing of compiled shaders:<footnote>Since 1.3.</footnote>
 <tt/"ayslb"/ for Air, <tt/"ayslx"/ for Aqsis,
 <tt/"ayso"/ for RDC, <tt/"ayslo"/ for PRMan, <tt/"ayslo3d"/ for 3Delight,
 <tt/"aysdr"/ for Pixie<footnote>Since 1.6.</footnote>
@@ -24568,7 +24586,11 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="imprib" name="RIB import option">,
 <item><ref id="impwav" name="Wavefront OBJ import option">
 </itemize>
-<item>Reset: <ref id="propgui" name="reset property GUI">
+<item>Reset:
+<itemize>
+<item><ref id="propgui" name="reset property GUI">
+<item><ref id="vmview" name="view menu entry">
+</itemize>
 <item>ResetDM, ResetST: <ref id="impmops" name="Mops import option">
 <item>Reset Preferences: <ref id="mmspecial" name="main menu entry">
 <item>Reset Weights: <ref id="editac" name="reset weights action">
