@@ -1891,9 +1891,8 @@ based menus in the view window menu bar:
 <p>
 The <tt/"Action"/ icon menu hosts basic selection
 actions.<footnote>Since 1.24.</footnote>
-The menu button of this menu always conveys the currently active
-interactive modelling action.
-See also the image below:
+The menu button of this menu also always conveys the currently active
+modelling action. See also the image below:
 <p>
 <figure loc="ht">
 <eps file="pics/amenu.ps" height="5cm">
@@ -1912,18 +1911,21 @@ section <ref id="markac" name="Setting the Mark">,
 <item>None, disables all actions.
 </itemize>
 <p>
+
+<#if out="latex"><x/newpage/</#if>
+
 The <tt/"Modelling Mode"/ icon menu may be used to quickly change the current
 modelling mode (global or local, see also section
 <ref id="editlocal" name="Editing in Local Spaces">). Apart from a
-different icon, the local modes will display a L or O in the lower
-right corner of the icon.
+different icon, the local modes will display a <bf/<tt/L// or <bf/<tt/O//
+in the lower right corner of the icon.<newline>
 The icon, additionally, conveys whether objects or points would be
 modified by a modelling action: for points, a red dot will be present
-in the upper right corner of the icon.
+in the upper right corner of the icon.<newline>
 Furthermore, the type of the view will be displayed in the upper left
-corner of the icon as letter F, S, T, or P for front, side, top, or
-perspective views, respectively. Views of type trim get no designating
-letter in the icon.
+corner of the icon as letter <bf/<tt/F//, <bf/<tt/S//, <bf/<tt/T//, or
+<bf/<tt/P// for front, side, top, or perspective views, respectively.
+Views of type trim get no designating letter in the icon.
 See also the image below:
 <p>
 <figure loc="ht">
@@ -1967,6 +1969,8 @@ See also the image below:
 <img src="pics/grmenu.gif">
 <caption>Grid Icon Menu</caption>
 </figure>
+
+<#if out="latex"><x/newpage/</#if>
 
 <sect1>View Window Shortcuts and Actions<label id="vwsc">
 <p>
