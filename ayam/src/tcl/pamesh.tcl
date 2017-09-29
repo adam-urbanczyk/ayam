@@ -43,6 +43,48 @@ for {set i 0} {$i < 16} {incr i} {
 }
 # init_PatchMesh
 
+# pamesh_updateWH:
+# helper to increase/decrease a width/height value in step amounts
+# never decreases below 4
+proc pamesh_updateWH { w prop name btype op } {
+    global $prop
+
+    set f $w.f${name}
+
+    set oldval [$f.e get]
+
+    set step 3
+    switch $btype {
+	1 { set step 1 }
+	2 { set step 1 }
+	3 { set step 2 }
+	4 { set step 4 }
+	5 {
+	    if { $name == "Width" } {
+		set step $prop(Step_U)
+	    } else {
+		set step $prop(Step_V)
+	    }
+	}
+    }
+
+    switch $op {
+	"p" {
+	    set newval [expr $oldval + $step]
+	}
+	"m" {
+	    set newval [expr $oldval - $step]
+	    if { $newval < 4 } {
+		set newval 4
+	    }
+	}
+    }
+
+    set ${prop}(${name}) $newval
+
+ return;
+}
+# pamesh_updateWH
 
 # pamesh_getAttr:
 #  get Attributes from C context and build new PropertyGUI
@@ -86,6 +128,13 @@ proc pamesh_getAttr { } {
     addParam $w PatchMeshAttrData Tolerance
     addMenu $w PatchMeshAttrData DisplayMode $ay(npdisplaymodes)
 
+    # advanced bindings
+    if { $PatchMeshAttrData(Type) == 1 } {
+    bind $w.fWidth.b1 <Control-ButtonPress-1> "pamesh_updateWH $w PatchMeshAttrData Width \$PatchMeshAttrData(BType_U) m;break"
+    bind $w.fWidth.b2 <Control-ButtonPress-1> "pamesh_updateWH $w PatchMeshAttrData Width \$PatchMeshAttrData(BType_U) p;break"
+    bind $w.fHeight.b1 <Control-ButtonPress-1> "pamesh_updateWH $w PatchMeshAttrData Height \$PatchMeshAttrData(BType_V) m;break"
+    bind $w.fHeight.b2 <Control-ButtonPress-1> "pamesh_updateWH $w PatchMeshAttrData Height \$PatchMeshAttrData(BType_V) p;break"
+    }
     # add UI to property canvas
     plb_setwin $w $oldfocus
 
