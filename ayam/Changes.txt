@@ -1,5 +1,5 @@
-[8. Sep 2017] CVS-Head:
-=======================
+[29. Sep 2017] CVS-Head:
+========================
 Bug Fixes:
 o entering non number data to tesselation parameter entries (SF 554)
 o chordal/centripetal knots for periodic curves/surfaces are wrong (SF 555)
@@ -40,6 +40,8 @@ o improved focus management of view menu entries
 o added "Edit" to default action menu
 o improved balloon handling in preferences dialog
 o improved tag context menu interaction
+o arrow buttons of Width/Height entry fields in PatchMesh property GUI now
+  add/subtract the current step size when the <Control> key is held down
 
 Plugins:
 o added custom object/plugin "BCurve" to model with cubic curves that can
