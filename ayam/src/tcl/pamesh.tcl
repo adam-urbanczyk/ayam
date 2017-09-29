@@ -46,13 +46,14 @@ for {set i 0} {$i < 16} {incr i} {
 # pamesh_updateWH:
 # helper to increase/decrease a width/height value in step amounts
 # never decreases below 4
-proc pamesh_updateWH { w prop name btype op } {
+proc pamesh_updateWHL { w prop name btype op } {
     global $prop
 
     set f $w.f${name}
 
     set oldval [$f.e get]
 
+    # need to derive the step from the type, as getProp is lazy
     set step 3
     switch $btype {
 	1 { set step 1 }
@@ -60,10 +61,14 @@ proc pamesh_updateWH { w prop name btype op } {
 	3 { set step 2 }
 	4 { set step 4 }
 	5 {
-	    if { $name == "Width" } {
-		set step $prop(Step_U)
+	    if { $name == "Length" } {
+		set step $prop(Step)
 	    } else {
-		set step $prop(Step_V)
+		if { $name == "Width" } {
+		    set step $prop(Step_U)
+		} else {
+		    set step $prop(Step_V)
+		}
 	    }
 	}
     }
@@ -84,7 +89,7 @@ proc pamesh_updateWH { w prop name btype op } {
 
  return;
 }
-# pamesh_updateWH
+# pamesh_updateWHL
 
 # pamesh_getAttr:
 #  get Attributes from C context and build new PropertyGUI
@@ -128,12 +133,12 @@ proc pamesh_getAttr { } {
     addParam $w PatchMeshAttrData Tolerance
     addMenu $w PatchMeshAttrData DisplayMode $ay(npdisplaymodes)
 
-    # advanced bindings
+    # advanced bindings for Width/Height manipulation
     if { $PatchMeshAttrData(Type) == 1 } {
-    bind $w.fWidth.b1 <Control-ButtonPress-1> "pamesh_updateWH $w PatchMeshAttrData Width \$PatchMeshAttrData(BType_U) m;break"
-    bind $w.fWidth.b2 <Control-ButtonPress-1> "pamesh_updateWH $w PatchMeshAttrData Width \$PatchMeshAttrData(BType_U) p;break"
-    bind $w.fHeight.b1 <Control-ButtonPress-1> "pamesh_updateWH $w PatchMeshAttrData Height \$PatchMeshAttrData(BType_V) m;break"
-    bind $w.fHeight.b2 <Control-ButtonPress-1> "pamesh_updateWH $w PatchMeshAttrData Height \$PatchMeshAttrData(BType_V) p;break"
+    bind $w.fWidth.b1 <Control-ButtonPress-1> "pamesh_updateWHL $w PatchMeshAttrData Width \$PatchMeshAttrData(BType_U) m;break"
+    bind $w.fWidth.b2 <Control-ButtonPress-1> "pamesh_updateWHL $w PatchMeshAttrData Width \$PatchMeshAttrData(BType_U) p;break"
+    bind $w.fHeight.b1 <Control-ButtonPress-1> "pamesh_updateWHL $w PatchMeshAttrData Height \$PatchMeshAttrData(BType_V) m;break"
+    bind $w.fHeight.b2 <Control-ButtonPress-1> "pamesh_updateWHL $w PatchMeshAttrData Height \$PatchMeshAttrData(BType_V) p;break"
     }
     # add UI to property canvas
     plb_setwin $w $oldfocus
