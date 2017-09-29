@@ -4587,10 +4587,10 @@ Note how inadequate the grid spacing would be to edit the trajectory curve
 <p>
 The view has been switched to level-local using a single press of the
 <tt/&lt;l&gt;/ key (see the modelling mode icon, it is displaying a
-L in the lower right corner. The view is now aligned to the 30 degree
-rotated space of the Sweep object (note the Root object coordinate
-system, it is tilted). The grid is also rotated (with respect to the
-root coordinate system) but now much more useful for editing the
+<bf/<tt/L// in the lower right corner. The view is now aligned to
+the 30 degree rotated space of the Sweep object (note the Root object
+coordinate system, it is tilted). The grid is also rotated (with respect
+to the root coordinate system) but now much more useful for editing the
 trajectory, in fact it is perfectly aligned to the trajectory.
 <p>
 &raquo;&thinsp;Press <tt/&lt;l&gt;/ again.
@@ -4603,7 +4603,7 @@ trajectory, in fact it is perfectly aligned to the trajectory.
 <p>
 Now the view is object-local and aligned to the first of the selected
 objects (the cross section curve); look at the modelling mode icon,
-it is now displaying a O in the lower right corner. As the selected
+it is now displaying a <bf/<tt/O// in the lower right corner. As the selected
 cross section curve was rotated by 90 degrees around the Y-axis, the
 front view now displays a circle. Note again the orientation
 of the Root object coordinate system. The cross section curve can now
@@ -8200,7 +8200,11 @@ basis type <tt/"Bezier"/ (with step size 3) valid values are: 4, 7,
 Closing the surface complicates the matter a bit further. A valid
 width for a closed bicubic patch mesh of basis type <tt/"Bezier"/ is e.g.~6;
 it is actually still 7, but the last point is equal to the first and
-will be omitted.
+will be omitted.<newline>
+The arrow buttons of the dimension entry fields add/subtract the current
+step size of the patch to/from the respective value when the
+<tt>&lt;Control&gt;</tt> key is held down.<footnote>Since 1.25.</footnote>
+
 <item><tt/"Close_U"/ and <tt/"Close_V"/ determine, whether the patch
 mesh should be closed in U and V direction respectively.
 <item><tt/"IsRat"/ informs, whether the patch mesh
@@ -11184,7 +11188,8 @@ curve).
 <sect2>BCurve (Basis Curve) Object<label id="bcurveobj">
 <p>
 The BCurve (basis curve) object creates a cubic parametric curve from a
-number of rational control points and a basis (which is a 4 by 4 matrix).
+number of rational control points and a basis (which is a 4 by 4
+matrix).<footnote>Since 1.25.</footnote>
 The basis defines the interpretation of the control points, similar to the
 bicubic patch mesh primitive of the RenderMan interface, see also
 section <ref id="patchmeshobj" name="PatchMesh Object">).
@@ -11216,7 +11221,11 @@ The BCurve object provides the following parameters:
 
 <item><tt/"Length"/ is the number of control points, valid values depend
 on the basis type/step below, see also the corresponding discussion in section
-<ref id="pmattr" name="PatchMeshAttr Property">.
+<ref id="pmattr" name="PatchMeshAttr Property">.<newline>
+The arrow buttons of this entry field add/subtract the current
+step size of the curve to/from the respective value when the
+<tt>&lt;Control&gt;</tt> key is held down.
+
 
 <item><tt/"BType"/ is the basis type. The following basis types are available:
 <tt/"Bezier"/, <tt/"B-Spline"/, <tt/"Catmull-Rom"/,
@@ -15523,10 +15532,12 @@ arguments:<label id="sccrtpm">
 
   <item><tt/"-width"/: width of the new patch, the width defaults to 4.
 Valid values for bicubic patch meshes depend on closedness and step size
-in the U direction.
+in the U direction. See also the discussion in
+section <ref id="pmattr" name="PatchMeshAttr Property">.
   <item><tt/"-height"/: height of the new patch, the height defaults to 4.
 Valid values for bicubic patch meshes depend on closedness and step size
-in the V direction.
+in the V direction. See also the discussion in
+section <ref id="pmattr" name="PatchMeshAttr Property">.
 
   <item><tt/"-closeu"/: determines, whether the patch mesh is closed in
 U direction; must be either 0 &ndash; open (default) or 1 &ndash; closed.
@@ -19916,6 +19927,10 @@ Rational parameter curves are currently not supported.
 <p>
 As the surface is completely defined by the parameter curves, there are
 no additional parameters and there is, consequently, also no property GUI.
+<p>
+An example scene file containing such an object is distributed with Ayam,
+see the file:<newline>
+<tt>"ayam/scn/scripts/tsurf.ay"</tt>.
 
 <#if out="latex"><x/newpage/</#if>
 
@@ -24592,7 +24607,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 </itemize>
 <item>Reset:
 <itemize>
-<item><ref id="propgui" name="reset property GUI">
+<item><ref id="propgui" name="reset property GUI">,
 <item><ref id="vmview" name="view menu entry">
 </itemize>
 <item>ResetDM, ResetST: <ref id="impmops" name="Mops import option">
