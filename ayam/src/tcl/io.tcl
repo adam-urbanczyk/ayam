@@ -534,8 +534,10 @@ proc io_loadCustom { } {
     set idir ""
 
     if { ( $ayprefs(Plugins) != "" ) && ( $ayprefs(Plugins) != "plugins" ) } {
-	if { [file exists "$ayprefs(Plugins)"] } {
-	    set idir "$ayprefs(Plugins)"
+	set paths [split "$ayprefs(Plugins)" $ay(separator)]
+	set dir [lindex $paths 0]
+	if { [file exists $dir] } {
+	    set idir $dir
 	}
     } else {
 	set pl [file join [file dirname [info nameofexecutable]] plugins]
