@@ -543,7 +543,7 @@ AYINC = -I. -IMF3D -Icontrib $(TOGLINC) $(TCLINC) $(TKINC) $(BMRTINC) $(GLINC) $
 
 all: wrappedayam
 
-plugins: csphere.so sfcurve.so mfio.so metaobj.so mopsi.so
+plugins: csphere.so sfcurve.so bcurve.so mfio.so metaobj.so mopsi.so
 
 wrapMain.o: wrapMain.c
 	$(CC) -c $(CFLAGS) wrapMain.c -I$(WRAPDIR) -I$(WRAPDIR)/libz $(TCLINC) $(TKINC)
@@ -767,6 +767,8 @@ install:
 	-$(INSTALL) plugins/loadluainterp.tcl $(LIBDIR)
 	-$(INSTALL) plugins/sfcurve.so $(LIBDIR)
 	-$(INSTALL) plugins/loadsfcurve.tcl $(LIBDIR)
+	-$(INSTALL) plugins/bcurve.so $(LIBDIR)
+	-$(INSTALL) plugins/loadbcurve.tcl $(LIBDIR)
 	-$(INSTALL) plugins/printps.so $(LIBDIR)
 	-$(INSTALL) Makefile $(BINDIR)
 	$(MKDIR) $(DOCDIR)

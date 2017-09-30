@@ -651,7 +651,16 @@ In order to compile the plugin, type:
 Load it via menu entry "File/Load Plugin".
 
 
-3.15 Installing/Uninstalling Ayam
+3.15 Basis Curve Plugin
+------------------------------
+
+In order to compile the plugin, type:
+>make bcurve.so
+
+Load it via menu entry "File/Load Plugin".
+
+
+3.16 Installing/Uninstalling Ayam
 ---------------------------------
 
 Use
@@ -688,7 +697,7 @@ to make clean but not remove the objects that never change,
 like Apples mf3d code and Affines sribw code.
 
 
-3.16 Creating an application bundle on Mac OS X
+3.17 Creating an application bundle on Mac OS X
 -----------------------------------------------
 
 Since Ayam 1.9, the Ayam source distribution contains a skeleton
