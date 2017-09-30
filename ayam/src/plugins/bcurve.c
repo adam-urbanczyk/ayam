@@ -358,7 +358,7 @@ cleanup:
 
 /** bcurve_toncurve:
  * Create a NURBS curve from a BCurve.
- * This function will not work properly or crash if the PatchMesh
+ * This function will not work properly or crash if the curve
  * fails the validity check using bcurve_valid() below!
  * This function only handles curves of basis type AY_BTBSPLINE and
  * open curves of arbitrary basis type and length 4.
@@ -516,7 +516,7 @@ bcurve_israt(bcurve_object *bc)
 
 
 /** bcurve_valid:
- *  check patch mesh for validity
+ *  check basis curve for validity
  *
  * \param[in] bcurve BCurve object to process
  *
@@ -571,7 +571,7 @@ bcurve_valid(bcurve_object *bcurve)
     }
 
   if(bcurve->closed)
-    { /* periodic patch */
+    { /* periodic curve */
       if(fabs(fmod((double)bcurve->length-4+(4-step), step)) >
 	 AY_EPSILON)
 	{
@@ -579,7 +579,7 @@ bcurve_valid(bcurve_object *bcurve)
 	}
     }
   else
-    { /* non periodic patch */
+    { /* non periodic curve */
       if(fabs(fmod((double)bcurve->length-4, step)) > AY_EPSILON)
 	{
 	  return 3;
@@ -1088,7 +1088,7 @@ bcurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       bcurve->basis = NULL;
     } /* if */
 
-  /* resize patch */
+  /* resize curve */
   if(new_length != bcurve->length && (new_length > 1))
     {
       if(o->selp)
