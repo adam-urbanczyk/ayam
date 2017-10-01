@@ -11220,7 +11220,8 @@ The BCurve object provides the following parameters:
 <item><tt/"Closed"/ determines whether the curve is closed.
 
 <item><tt/"Length"/ is the number of control points, valid values depend
-on the basis type/step below, see also the corresponding discussion in section
+on the basis type&thinsp;/&thinsp;step below, see also the corresponding
+discussion in section
 <ref id="pmattr" name="PatchMeshAttr Property">.<newline>
 The arrow buttons of this entry field add/subtract the current
 step size of the curve to/from the respective value when the
@@ -23538,13 +23539,15 @@ Index:
 <item>B-Spline:
 <itemize>
 <item><ref id="ncurveattrprop" name="knot type">,
-<item><ref id="pmattr" name="PatchMesh basis type">
+<item><ref id="pmattr" name="PatchMesh basis type">,
+<item><ref id="bcurveattrprop" name="BCurve basis type">
 </itemize>
 <item>Background: <ref id="prefdraw" name="preference setting">
 <item>Background Image: <ref id="vat" name="View attribute">
 <item>BackupExt: <ref id="hidprefs" name="hidden preference setting">
 <item>BakOnReplace: <ref id="prefmain" name="preference setting">
 <item>Balloon: <ref id="hidprefs" name="hidden preference setting">
+<item>Basis: <ref id="bcurveattrprop" name="BCurve attribute">
 <item>Basis_U, Basis_V: <ref id="pmattr" name="PatchMesh attribute">
 <item>BCurve: <ref id="bcurveobj" name="BCurve object">
 <item>BeamDistrib: <ref id="lip" name="Light attribute">
@@ -23560,7 +23563,8 @@ Index:
 <item>Bezier:
 <itemize>
 <item><ref id="ncurveattrprop" name="knot type">,
-<item><ref id="pmattr" name="PatchMesh basis type">
+<item><ref id="pmattr" name="PatchMesh basis type">,
+<item><ref id="bcurveattrprop" name="BCurve basis type">
 </itemize>
 <item>bgconvert.tcl: <ref id="bgconverttcl" name="example/helper script">
 <item>BGImage: <ref id="vat" name="View attribute">
@@ -23608,7 +23612,11 @@ Index:
 <item>CastShadows: <ref id="riattrs" name="RenderMan/BMRT attribute">
 <item>Cat: <ref id="hidprefs" name="hidden preference setting">
 <item>Catmull-Clark: <ref id="sdmattr" name="SDMesh subdivision scheme">
-<item>Catmull-Rom: <ref id="pmattr" name="PatchMesh basis type">
+<item>Catmull-Rom:
+<itemize>
+<item><ref id="pmattr" name="PatchMesh basis type">,
+<item><ref id="bcurveattrprop" name="BCurve basis type">
+</itemize>
 <item>cbox.tcl: <ref id="cboxtcl" name="example/helper script">
 <item>Chamfer: <ref id="bevelobj" name="Bevel object">
 <item>CheckLights: <ref id="prefrib" name="preference setting">
@@ -23738,7 +23746,8 @@ Index:
 <itemize>
 <item><ref id="mmcustom" name="custom menu">,
 <item><ref id="cul" name="light type">,
-<item><ref id="pmattr" name="PatchMesh basis type">
+<item><ref id="pmattr" name="PatchMesh basis type">,
+<item><ref id="bcurveattrprop" name="BCurve basis type">
 </itemize>
 <item>Custom Object: <ref id="customobj" name="object type">
 <item>Cut: <ref id="mmedit" name="main menu entry">
@@ -24012,7 +24021,11 @@ Index:
 </itemize>
 <item>Help on object: <ref id="mmhelp" name="main menu entry">
 <item>Help on property: <ref id="mmhelp" name="main menu entry">
-<item>Hermite: <ref id="pmattr" name="PatchMesh basis type">
+<item>Hermite:
+<itemize>
+<item><ref id="pmattr" name="PatchMesh basis type">,
+<item><ref id="bcurveattrprop" name="BCurve basis type">
+</itemize>
 <item>Hidden Preferences: <ref id="hidprefs" name="hidden preference settings">
 <item>HiddenWire:<ref id="vmconf" name="view menu entry">
 <item>Hide:
@@ -24432,7 +24445,11 @@ Index:
 <item>PolyMesh: <ref id="polymeshobj" name="PolyMesh object">
 <item>PolyMesh tools: <ref id="polymeshtools" name="PolyMesh tools">
 <item>PolyOffset: <ref id="hidprefs" name="hidden preference setting">
-<item>Power: <ref id="pmattr" name="PatchMesh basis type">
+<item>Power:
+<itemize>
+<item><ref id="pmattr" name="PatchMesh basis type">,
+<item><ref id="bcurveattrprop" name="BCurve basis type">
+</itemize>
 <item>PPRender: <ref id="prefrib" name="preference setting">
 <item>Preferences:
 <itemize>
@@ -24882,6 +24899,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>StartBevel: <ref id="extrattr" name="Extrude attribute">
 <item>StartCap: <ref id="extrattr" name="Extrude attribute">
 <item>StdDisplay: <ref id="rio" name="RenderMan interface option">
+<item>Step: <ref id="bcurveattrprop" name="BCurve attribute">
 <item>Step_U, Step_V: <ref id="pmattr" name="PatchMesh attribute">
 <item>StepSize: <ref id="moattr" name="MetaObj attributes">
 <item>STESS: <ref id="prefdraw" name="preference setting">
