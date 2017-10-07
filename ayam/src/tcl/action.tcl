@@ -1551,7 +1551,7 @@ proc actionEditP { w } {
 #actionEditWP
 # change the weigth of the picked points
 proc actionEditWP { w } {
-    global ayprefs
+    global ayprefs ay
 
     viewTitle $w "" "Edit_Weights"
     viewSetMAIcon $w ay_EditW_img "Edit_Weights"
@@ -1567,6 +1567,11 @@ proc actionEditWP { w } {
 	    %W startpepac %x %y
 	}
 	%W wepac -start %x
+    }
+
+    bind $w <Control-B1-Motion> {
+	%W wepac -winx %x 0
+	%W render
     }
 
     bind $w <B1-Motion> {
@@ -1593,7 +1598,7 @@ proc actionEditWP { w } {
 	}
     }
 
-    $w setconf -drawh 1
+    $w setconf -drawh 3
 
  return;
 }
@@ -1643,7 +1648,7 @@ proc actionResetWP { w } {
 	}
     }
 
-    $w setconf -drawh 1
+    $w setconf -drawh 3
 
  return;
 }
