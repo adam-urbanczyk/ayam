@@ -869,6 +869,78 @@ ay_ncurve_drawacb(struct Togl *togl, ay_object *o)
 } /* ay_ncurve_drawacb */
 
 
+/* ay_ncurve_drawweights:
+ *  draw handles (in an Ayam view window) callback function of ncurve object
+ */
+void
+ay_ncurve_drawweights(ay_nurbcurve_object *ncurve)
+{
+ int i;
+ double w, *pnts;
+ double point_size = ay_prefs.handle_size;
+ ay_mpoint *mp;
+
+  pnts = ncurve->controlv;
+
+  /* draw normal points */
+  glBegin(GL_POINTS);
+   if(ncurve->is_rat && ay_prefs.rationalpoints)
+     {
+       for(i = 0; i < ncurve->length; i++)
+	 {
+	   w = pnts[3];
+	   ay_nct_colorfromweight(w);
+	   glVertex3d((GLdouble)(pnts[0]*w),
+		      (GLdouble)(pnts[1]*w),
+		      (GLdouble)(pnts[2]*w));
+	   pnts += 4;
+	 }
+     }
+   else
+     {
+       for(i = 0; i < ncurve->length; i++)
+	 {
+	   ay_nct_colorfromweight(pnts[3]);
+	   glVertex3dv((GLdouble *)pnts);
+	   pnts += 4;
+	 }
+     }
+  glEnd();
+
+  /* draw multiple points */
+  if(ncurve->mpoints)
+    {
+      glPointSize((GLfloat)(point_size*1.4));
+      glBegin(GL_POINTS);
+       mp = ncurve->mpoints;
+       while(mp)
+	 {
+	   if(ncurve->is_rat && ay_prefs.rationalpoints)
+	     {
+	       pnts = mp->points[0];
+	       w = pnts[3];
+	       ay_nct_colorfromweight(w);
+	       glVertex3d((GLdouble)pnts[0]*w,
+			  (GLdouble)pnts[1]*w,
+			  (GLdouble)pnts[2]*w);
+	     }
+	   else
+	     {
+	       ay_nct_colorfromweight((mp->points[0])[3]);
+	       glVertex3dv((GLdouble *)(mp->points[0]));
+	     }
+	   mp = mp->next;
+	 }
+      glEnd();
+      glPointSize((GLfloat)point_size);
+    }
+
+  glColor3ub(255,255,255);
+
+ return;
+} /* ay_ncurve_drawweights */
+
+
 /* ay_ncurve_drawhcb:
  *  draw handles (in an Ayam view window) callback function of ncurve object
  */
@@ -893,6 +965,12 @@ ay_ncurve_drawhcb(struct Togl *togl, ay_object *o)
   if(view->drawhandles == 2)
     {
       ay_nct_drawbreakpoints(togl, o);
+      return AY_OK;
+    }
+
+  if(view->drawhandles == 3)
+    {
+      ay_ncurve_drawweights(ncurve);
       return AY_OK;
     }
 

@@ -2119,6 +2119,10 @@ extern char *ay_error_igntype;
 	  Tcl_ResetResult(interp);\
 	  goto cleanup;}
 
+/** compute maximum of two numbers */
+#define AY_MAX(a,b) ((a) > (b) ? (a) : (b))
+
+
 /** \name Version Strings and Numbers */
 /*@{*/
 #define AY_VERSIONSTR "1.25pre"
