@@ -9362,7 +9362,7 @@ ay_nct_computebreakpoints(ay_nurbcurve_object *ncurve)
 
   /* set size slot */
   ncurve->breakv[0] = (p - &(ncurve->breakv[1]))/4;
-
+  /*printf("bps: %d\n",(int)ncurve->breakv[0]);*/
  return AY_OK;
 } /* ay_nct_computebreakpoints */
 
@@ -9414,6 +9414,71 @@ ay_nct_drawbreakpoints(struct Togl *togl, ay_object *o)
 
  return;
 } /* ay_nct_drawbreakpoints */
+
+
+/** ay_nct_colorfromwweight:
+ * Set the current OpenGL color from a weight value.
+ *
+ * \param w weight value
+ */
+void
+ay_nct_colorfromweight(double w)
+{
+ float rgb[3] = {1.0f,1.0f,1.0f};
+
+  if(w == 1.0)
+    {
+      glColor3fv(rgb);
+      return;
+    }
+
+  if(fabs(w) < AY_EPSILON || (w != w))
+    {
+      /* zero and NaN weights => black */
+      glColor3ub(0,0,0);
+    }
+  else
+    {
+      if(fabs(w) > 1.0)
+	{
+	  if(fabs(w) > 1.1)
+	    {
+	      /* attracting weight => pure red */
+	      rgb[0] = AY_MAX(0.25f, (3.0f-w)*0.75f);
+	      rgb[1] = 0.0f;
+	    }
+	  else
+	    {
+	      /* small attracting weight (1.0-1.1) */
+	      rgb[1] = 0.25f+(1.1-w)*7.5f;
+	    }
+	  rgb[2] = rgb[1];
+	}
+      else
+	{
+	  if(fabs(w) < 0.9)
+	    {
+	      /* repelling weight => pure blue */
+	      rgb[2] = AY_MAX(0.25f, w+0.1);
+	      rgb[0] = 0.0f;
+	    }
+	  else
+	    {
+	      /* small repelling weight (0.9-1.0) */
+	      rgb[0] = 0.25f+(w-0.9)*7.5f;
+	    }
+	  rgb[1] = rgb[0];
+	}
+      if(w < 0.0)
+	{
+	  rgb[1] = 1.0f;
+	}
+
+      glColor3fv(rgb);
+    }
+
+ return;
+} /* ay_nct_colorfromweight */
 
 
 #if 0

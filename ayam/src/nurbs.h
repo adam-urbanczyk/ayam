@@ -956,6 +956,10 @@ int ay_nct_computebreakpoints(ay_nurbcurve_object *ncurve);
  */
 void ay_nct_drawbreakpoints(struct Togl *togl, ay_object *o);
 
+/** Set the current OpenGL color from a weight value.
+ */
+void ay_nct_colorfromweight(double w);
+
 
 /* npt.c */
 
