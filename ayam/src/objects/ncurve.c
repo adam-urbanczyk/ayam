@@ -39,6 +39,8 @@ int ay_ncurve_drawglu(ay_view_object *view, ay_nurbcurve_object *ncurve);
 
 int ay_ncurve_drawch(ay_nurbcurve_object *ncurve);
 
+void ay_ncurve_drawweights(ay_nurbcurve_object *ncurve);
+
 
 /* functions: */
 
@@ -870,7 +872,8 @@ ay_ncurve_drawacb(struct Togl *togl, ay_object *o)
 
 
 /* ay_ncurve_drawweights:
- *  draw handles (in an Ayam view window) callback function of ncurve object
+ * helper for ay_ncurve_drawhcb() below,
+ * draw colored handles based on their weight values
  */
 void
 ay_ncurve_drawweights(ay_nurbcurve_object *ncurve)
