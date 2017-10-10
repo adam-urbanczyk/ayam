@@ -18,6 +18,8 @@ static char *ay_pamesh_name = "PatchMesh";
 
 int ay_pamesh_notifycb(ay_object *o);
 
+void ay_pamesh_drawweights(ay_pamesh_object *pamesh);
+
 /* functions: */
 
 /* ay_pamesh_createcb:
@@ -850,6 +852,49 @@ ay_pamesh_drawacb(struct Togl *togl, ay_object *o)
 } /* ay_pamesh_drawacb */
 
 
+/* ay_pamesh_drawweights:
+ * helper for ay_pamesh_drawhcb() below,
+ * draw colored handles based on their weight values
+ */
+void
+ay_pamesh_drawweights(ay_pamesh_object *pamesh)
+{
+ int i;
+ double w, *pnts;
+
+  pnts = pamesh->controlv;
+
+  /* draw normal points */
+  glBegin(GL_POINTS);
+   if(pamesh->is_rat && ay_prefs.rationalpoints)
+     {
+       for(i = 0; i < pamesh->width*pamesh->height; i++)
+	 {
+	   w = pnts[3];
+	   ay_nct_colorfromweight(w);
+	   glVertex3d((GLdouble)(pnts[0]*w),
+		      (GLdouble)(pnts[1]*w),
+		      (GLdouble)(pnts[2]*w));
+	   pnts += 4;
+	 }
+     }
+   else
+     {
+       for(i = 0; i < pamesh->width*pamesh->height; i++)
+	 {
+	   ay_nct_colorfromweight(pnts[3]);
+	   glVertex3dv((GLdouble *)pnts);
+	   pnts += 4;
+	 }
+     }
+  glEnd();
+
+  glColor3ub(255,255,255);
+
+ return;
+} /* ay_pamesh_drawweights */
+
+
 /* ay_pamesh_drawhcb:
  *  draw handles (in an Ayam view window) callback function of pamesh object
  */
@@ -857,6 +902,7 @@ int
 ay_pamesh_drawhcb(struct Togl *togl, ay_object *o)
 {
  ay_pamesh_object *pm;
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  double *pnts;
  int width, height, i;
 
@@ -867,6 +913,12 @@ ay_pamesh_drawhcb(struct Togl *togl, ay_object *o)
 
   if(!pm)
     return AY_ENULL;
+
+  if(view->drawhandles == 3)
+    {
+      ay_pamesh_drawweights(pm);
+      return AY_OK;
+    }
 
   width = pm->width;
   height = pm->height;
@@ -922,6 +974,9 @@ ay_pamesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
   if(min_dist == 0.0)
     min_dist = DBL_MAX;
 
+  if(pe)
+    pe->type = AY_PTRAT;
+
   switch(mode)
     {
     case 0:
@@ -937,7 +992,6 @@ ay_pamesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	}
 
       pe->num = pamesh->width * pamesh->height;
-
       break;
     case 1:
       /* selection based on a single point? */
@@ -1019,7 +1073,6 @@ ay_pamesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	} /* for */
 
       pe->num = a;
-
       break;
     case 3:
       /* rebuild from o->selp */
