@@ -26,6 +26,8 @@ int ay_npatch_drawglu(ay_view_object *view, ay_object *o);
 
 int ay_npatch_drawch(ay_nurbpatch_object *npatch);
 
+void ay_npatch_drawweights(ay_nurbpatch_object *npatch);
+
 int ay_npatch_shadestess(ay_view_object *view, ay_object *o);
 
 int ay_npatch_shadeglu(ay_view_object *view, ay_object *o);
@@ -1471,6 +1473,79 @@ ay_npatch_drawacb(struct Togl *togl, ay_object *o)
 } /* ay_npatch_drawacb */
 
 
+/* ay_npatch_drawweights:
+ * helper for ay_npatch_drawhcb() below,
+ * draw colored handles based on their weight values
+ */
+void
+ay_npatch_drawweights(ay_nurbpatch_object *npatch)
+{
+ int i;
+ double w, *pnts;
+ double point_size = ay_prefs.handle_size;
+ ay_mpoint *mp;
+
+  pnts = npatch->controlv;
+
+  /* draw normal points */
+  glBegin(GL_POINTS);
+   if(npatch->is_rat && ay_prefs.rationalpoints)
+     {
+       for(i = 0; i < npatch->width*npatch->height; i++)
+	 {
+	   w = pnts[3];
+	   ay_nct_colorfromweight(w);
+	   glVertex3d((GLdouble)(pnts[0]*w),
+		      (GLdouble)(pnts[1]*w),
+		      (GLdouble)(pnts[2]*w));
+	   pnts += 4;
+	 }
+     }
+   else
+     {
+       for(i = 0; i < npatch->width*npatch->height; i++)
+	 {
+	   ay_nct_colorfromweight(pnts[3]);
+	   glVertex3dv((GLdouble *)pnts);
+	   pnts += 4;
+	 }
+     }
+  glEnd();
+
+  /* draw multiple points */
+  if(npatch->mpoints)
+    {
+      glPointSize((GLfloat)(point_size*1.4));
+      glBegin(GL_POINTS);
+       mp = npatch->mpoints;
+       while(mp)
+	 {
+	   if(npatch->is_rat && ay_prefs.rationalpoints)
+	     {
+	       pnts = mp->points[0];
+	       w = pnts[3];
+	       ay_nct_colorfromweight(w);
+	       glVertex3d((GLdouble)pnts[0]*w,
+			  (GLdouble)pnts[1]*w,
+			  (GLdouble)pnts[2]*w);
+	     }
+	   else
+	     {
+	       ay_nct_colorfromweight((mp->points[0])[3]);
+	       glVertex3dv((GLdouble *)(mp->points[0]));
+	     }
+	   mp = mp->next;
+	 }
+      glEnd();
+      glPointSize((GLfloat)point_size);
+    }
+
+  glColor3ub(255,255,255);
+
+ return;
+} /* ay_npatch_drawweights */
+
+
 /* ay_npatch_drawhcb:
  *  draw handles (in an Ayam view window) callback function of npatch object
  */
@@ -1482,6 +1557,7 @@ ay_npatch_drawhcb(struct Togl *togl, ay_object *o)
  double point_size = ay_prefs.handle_size;
  ay_mpoint *mp;
  ay_nurbpatch_object *npatch;
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
 
   if(!o)
     return AY_ENULL;
@@ -1490,6 +1566,12 @@ ay_npatch_drawhcb(struct Togl *togl, ay_object *o)
 
   if(!npatch)
     return AY_ENULL;
+
+  if(view->drawhandles == 3)
+    {
+      ay_npatch_drawweights(npatch);
+      return AY_OK;
+    }
 
   pnts = npatch->controlv;
 
