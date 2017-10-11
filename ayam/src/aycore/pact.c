@@ -2418,9 +2418,10 @@ ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
  char fname[] = "weight_edit";
  Tcl_Interp *interp = Togl_Interp(togl);
  ay_view_object *view = Togl_GetClientData(togl);
- double g = 0.1, dx, winx = 0.0, new_weight = 0.0, *coords;
- static double oldwinx = 0.0;
- int i = 0, j, k = 0, notifyparent = AY_FALSE, absolute = AY_TRUE;
+ double g = 0.1, dx = 0.0, winx = 0.0, new_weight = 0.0, *coords;
+ static double oldwinx = 0.0, olddx = 0.0;
+ static int absolute = AY_TRUE;
+ int i = 0, j, k = 0, notifyparent = AY_FALSE;
  ay_object *o = NULL;
  ay_nurbcurve_object *nc = NULL;
  ay_nurbpatch_object *np = NULL;
@@ -2435,14 +2436,16 @@ ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
       if(!strcmp(argv[2], "-winx"))
 	{
 	  Tcl_GetDouble(interp, argv[3], &winx);
-	  if(argc > 4)
-	    Tcl_GetInt(interp, argv[4], &absolute);
 	}
       else
 	if(!strcmp(argv[2], "-start"))
 	  {
 	    Tcl_GetDouble(interp, argv[3], &winx);
 	    oldwinx = winx;
+	    if(argc > 4)
+	      Tcl_GetInt(interp, argv[4], &absolute);
+	    else
+	      absolute = AY_TRUE;
 	  }
     }
   else
@@ -2454,31 +2457,58 @@ ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
   if(!ay_selection)
     return TCL_OK;
 
-  dx = floor((winx-oldwinx)/10.0)*10.0;
-
   if(view->usegrid && (view->grid != 0.0))
     {
       g *= view->grid;
     }
 
-  if(fabs(dx*g) < AY_EPSILON)
+  if(absolute)
     {
-      dx = 1.0;
-    }
-  else
-    {
-      new_weight = dx;
-      if(dx > 0.0)
+      /* absolute mode */
+      dx = floor((winx-oldwinx)/10.0)*10.0;
+
+      if(fabs(dx*g) < AY_EPSILON)
 	{
-	  dx = 1.0+(dx*(g/10.0));
+	  /* always reset the weight to 1.0 when starting */
+	  dx = 1.0;
 	}
       else
 	{
-	  dx = 1.0-(-dx/(10.0/g));
+	  new_weight = dx;
+	  if(dx > 0.0)
+	    {
+	      dx = 1.0+(dx*(g/10.0));
+	    }
+	  else
+	    {
+	      dx = 1.0-(-dx/(10.0/g));
+	    }
+	  /* clamp result to small non zero value (AY_EPSILON) */
+	  if(fabs(dx) < AY_EPSILON)
+	    dx = AY_EPSILON;
 	}
-      /* clamp result to small non zero value (AY_EPSILON) */
-      if(fabs(dx) < AY_EPSILON)
-	dx = AY_EPSILON;
+    }
+  else
+    {
+      /* relative mode */
+      dx = floor((winx-oldwinx)/10.0);
+      if(dx > olddx)
+	{
+	  olddx = dx;
+	  dx = g;
+	}
+      else
+	{
+	  if(dx < olddx)
+	    {
+	      olddx = dx;
+	      dx = -g;
+	    }
+	  else
+	    {
+	      dx = 0.0;
+	    }
+	}
     }
 
   for(j = 0; j < pact_objectslen; j++)
@@ -2492,14 +2522,22 @@ ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
 	  if(pact_typepo[j])
 	    {
 	      new_weight = coords[3];
+
 	      if(absolute)
 		{
 		  new_weight = dx;
 		}
 	      else
 		{
-		  new_weight += dx;
+		  if(fabs(dx) > AY_EPSILON)
+		    {
+		      new_weight += dx;
+
+		      if(fabs(new_weight) < AY_EPSILON)
+			new_weight = AY_EPSILON;
+		    }
 		}
+
 	      coords[3] = new_weight;
 	    }
 	  else
@@ -2541,9 +2579,6 @@ ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
 	  notifyparent = AY_TRUE;
 	} /* if */
     } /* for */
-
-  if(!absolute)
-    oldwinx = winx;
 
   if(!ay_prefs.lazynotify && notifyparent)
     {
