@@ -1569,9 +1569,15 @@ proc actionEditWP { w } {
 	%W wepac -start %x
     }
 
-    bind $w <Control-B1-Motion> {
-	%W wepac -winx %x 0
-	%W render
+    bind $w <Control-ButtonPress-1> {
+	set ay(action) 1
+	undo save EditWeight
+	if { $ayprefs(FlashPoints) == 1 } {
+	    %W startpepac %x %y -flash
+	} else {
+	    %W startpepac %x %y
+	}
+	%W wepac -start %x 0
     }
 
     bind $w <B1-Motion> {
