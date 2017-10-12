@@ -4053,10 +4053,9 @@ about the current selections center automatically.
 
 <sect1>Editing Points<label id="editac">
 <p>
-To edit the points of an object four actions (<tt/"Edit"/,
-<tt/"Edit Weights"/, <tt/"Reset Weights"/, and <tt/"Numeric Point Edit"/)
-are available.
-All those actions may be applied to objects that support single point
+To edit the points of an object two actions (<tt/"Edit"/ and
+<tt/"Numeric Point Edit"/) are available.
+Those actions may be applied to objects that support single point
 editing only.
 Such objects usually draw their selectable points using small white
 rectangular handles when a modelling action is active (see also the
@@ -4086,30 +4085,20 @@ Edit|<tt/&lt;e&gt;/|
 <#if out="latex"><x>inlinegfx pics/editac.png 0.7cm </x></#if>
 <#if out="html"><img src="pics/editac.gif"></#if>
 @<hline>
-Edit Weights|<tt/&lt;w&gt;/|
-<#if out="latex"><x>inlinegfx pics/editwac.png 0.7cm </x></#if>
-<#if out="html"><img src="pics/editwac.gif"></#if>
-@<hline>
-Reset Weights|<tt/&lt;W&gt;/|
-<#if out="latex"><x>inlinegfx pics/resetwac.png 0.7cm </x></#if>
-<#if out="html"><img src="pics/resetwac.gif"></#if>
-@<hline>
 Numeric Edit|<tt/&lt;E&gt;/|
 <#if out="latex"><x>inlinegfx pics/editdac.png 0.7cm </x></#if>
 <#if out="html"><img src="pics/editdac.gif"></#if>
 <#if out="latex">@<hline></#if>
 </tabular>
-<caption>Edit Actions Overview</caption>
+<caption>Edit Points Overview</caption>
 </table>
 
-<itemize>
-<item>The modelling action <tt/"Edit"/ (shortcut: <tt/&lt;e&gt;/)
+The modelling action <tt/"Edit"/ (shortcut: <tt/&lt;e&gt;/)
 works much like the move action, but it moves single points instead of
 objects. Since Ayam 1.18 it is possible
 to edit points of multiple selected objects (in former versions
 only points from the first selected object were considered).
 <p>
-
 If a multiple point is edited, this action modifies all single
 points that make up the multiple point, i.e.~you can not move
 single points apart from a multiple point using the point
@@ -4126,19 +4115,9 @@ the new position of the point (so that the user does not lose
 track of it). Warping the mouse pointer currently does not work on
 MacOSX Aqua.
 
-<item>The modelling action <tt/"Edit Weights"/ (shortcut: <tt/&lt;w&gt;/)
-changes the w coordinate of a single point by dragging the mouse left
-or right.
-<p> <p>
+<#if out="latex"><x/newpage/</#if>
 
-<item>The modelling action <tt/"Reset Weights"/ (shortcut: <tt/&lt;W&gt;/)
-resets the w coordinate of the picked point to 1.0.
-
-<p>
-The weights may be reset for all points
-using the shortcut: <tt/&lt;Ctrl-W&gt;/.
-
-<item>The modelling action <tt/"Numeric Point Edit"/ (shortcut:
+The modelling action <tt/"Numeric Point Edit"/ (shortcut:
 <tt/&lt;E&gt;/)
 starts an intermediate point selection action and upon a click
 with the mouse opens a small window where the coordinates of the
@@ -4228,7 +4207,66 @@ The entries in this menu allow to:
 <item> <tt/"Fetch Mark"/, set all entries to the mark coordinates of the
 current view (W is cleared).
 </itemize>
-</itemize>
+
+<sect1>Editing Weights<label id="editwac">
+<p>
+To edit the weights of an object two actions (<tt/"Edit Weights"/ and
+<tt/"Reset Weights"/) are available.
+Those actions may be applied to objects that support single point
+editing and support rational coordinates only. Those are
+objects of type NCurve, NPatch, and PatchMesh.
+<p>
+In the NURBS context, weights are mainly used to construct perfect
+circles, circular arcs, and spheres. However, they also present
+another way of influencing the curves or surfaces shape in relation
+to the control point with the weight: Weights smaller than 1.0 repell
+the curve or surface from the control point, whereas weights larger
+than 1.0 attract the curve or surface to the control point. See
+also the following image:
+<p>
+<figure loc="ht">
+<eps file="pics/weights.ps" height="5cm">
+<img src="pics/weights.gif">
+<caption>Weights Example (Blue: w=0.5, Red: w=2.0)</caption>
+</figure>
+The modelling action <tt/"Edit Weights"/ (shortcut: <tt/&lt;w&gt;/)
+allows to change the w coordinate of a single point by dragging the
+mouse left or right. The initial click always resets the weight to 1.0.
+For every 10 pixels the mouse is dragged, a value of 0.1 will be
+added to or removed from the weight respectively.
+If a grid is active, the 0.1 will be multiplied by the grid value
+so that a grid of 0.5 will add/remove weight in terms of 0.05
+increments/decrements.
+<p>
+The modelling action <tt/"Reset Weights"/ (shortcut: <tt/&lt;W&gt;/)
+resets the w coordinate of the picked point to 1.0.
+<p>
+In both actions the current weight of a control point is visualized
+by color: repelling weights (w<1.0) are drawn in tones of blue that
+get darker as the weight approaches 0.0 and attracting weights (w>1.0) are
+drawn in tones of red that get darker as the weight approaches 3.0.
+Control points with zero or invalid weights are drawn in black.
+Control points with negative weights are drawn in green.
+<p>
+The weights may also be reset for all points using the
+keyboard shortcut: <tt/&lt;Ctrl-W&gt;/.
+<p>
+For an overview of the weight edit actions see also the table below.
+<p>
+<table loc="ht">
+<tabular ca="|c|c|c|"><hline>
+<bf/Name/|<bf/Shortcut/|<bf/Icon/@<hline>
+Edit Weights|<tt/&lt;w&gt;/|
+<#if out="latex"><x>inlinegfx pics/editwac.png 0.7cm </x></#if>
+<#if out="html"><img src="pics/editwac.gif"></#if>
+@<hline>
+Reset Weights|<tt/&lt;W&gt;/|
+<#if out="latex"><x>inlinegfx pics/resetwac.png 0.7cm </x></#if>
+<#if out="html"><img src="pics/resetwac.gif"></#if>
+<#if out="latex">@<hline></#if>
+</tabular>
+<caption>Edit Weights Overview</caption>
+</table>
 
 <sect1>Snapping Points to the Grid<label id="snapac">
 <p>
@@ -13123,6 +13161,8 @@ successive refinement of a simple NURBS curve. Note that the shape
 of the curve does not change, but the position of
 certain control points does.
 
+The curve type of periodic curves will not be preserved.
+
 The point selection will be removed from the processed objects.
 
 See also the documentation of the corresponding
@@ -13319,9 +13359,10 @@ inserted one time at <em/u/&thinsp;=&thinsp;0.5)</caption>
 the selection and requests two additional values, a parametric value <it/u/
 and an integer value <it/i/.
 
-<tag/Operation/ The specified knot value <it/u/ will be inserted <it/i/
+<tag/Operation/ A knot with the specified value <it/u/ will be inserted <it/i/
 times into the knot vector of the selected curves, without changing the
 shape of the curve(s).
+
 
 <tag/Notes/ The knot type of the curves will be changed to <tt/"Custom"/.
 
@@ -14247,10 +14288,10 @@ inserted one time at <em/t/&thinsp;=&thinsp;0.5)</caption>
 </figure>
 <descrip>
 <tag/Arguments/ The insert knot surface tool takes a number of NURBS
-patches from
-the selection and requests two additional values, a parametric value <em/t/
+patches from the selection and requests two additional values, a
+parametric value <em/t/
 and an integer value <em/i/.
-<tag/Operation/ The specified knot (<em/t/) will be inserted <em/i/
+<tag/Operation/ A knot with the specified value <em/t/ will be inserted <em/i/
 times into the knot vector of the selected patches, without changing their
 shape.
 <tag/Notes/ The knot type of the patch will be changed to <tt/"Custom"/.
@@ -23745,6 +23786,7 @@ Index:
 <item>Custom:
 <itemize>
 <item><ref id="mmcustom" name="custom menu">,
+<item><ref id="ncattr" name="knot type">
 <item><ref id="cul" name="light type">,
 <item><ref id="pmattr" name="PatchMesh basis type">,
 <item><ref id="bcurveattrprop" name="BCurve basis type">
@@ -23824,7 +23866,7 @@ Index:
 <list>
 <item>Edit:
 <itemize>
-<item><ref id="editac" name="edit points action">,
+<item><ref id="editac" name="edit points actions">,
 <item><ref id="mmedit" name="edit menu">
 </itemize>
 <item>Edit Local:
@@ -24629,7 +24671,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 </itemize>
 <item>ResetDM, ResetST: <ref id="impmops" name="Mops import option">
 <item>Reset Preferences: <ref id="mmspecial" name="main menu entry">
-<item>Reset Weights: <ref id="editac" name="reset weights action">
+<item>Reset Weights: <ref id="editwac" name="reset weights action">
 <item>ResInstances: <ref id="prefrib" name="preference setting">
 <item>Resolve all Instances: <ref id="mmspecial" name="main menu entry">
 <item>ResolveInstances: <ref id="expx3dopt" name="X3D (Web3D) export option">
@@ -25135,7 +25177,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 </itemize>
 <item>Weight:
 <itemize>
-<item><ref id="editac" name="single point weight editing">,
+<item><ref id="editwac" name="single point weight editing">,
 <item><ref id="rats" name="rational style">
 </itemize>
 <item>WheelZoom: <ref id="hidprefs" name="hidden preference setting">
