@@ -33,7 +33,7 @@ code example of 6 lines text (needs another 2 for the upper/lower lines)
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>16. Sep 2017
+<date>15. Oct 2017
 
 <abstract>
 This is the documentation of Ayam 1.25 &ndash; a free 3D modelling environment
@@ -4210,12 +4210,6 @@ current view (W is cleared).
 
 <sect1>Editing Weights<label id="editwac">
 <p>
-To edit the weights of an object two actions (<tt/"Edit Weights"/ and
-<tt/"Reset Weights"/) are available.
-Those actions may be applied to objects that support single point
-editing and support rational coordinates only. Those are
-objects of type NCurve, NPatch, and PatchMesh.
-<p>
 In the NURBS context, weights are mainly used to construct perfect
 circles, circular arcs, and spheres. However, they also present
 another way of influencing the curves or surfaces shape in relation
@@ -4229,6 +4223,13 @@ also the following image:
 <img src="pics/weights.gif">
 <caption>Weights Example (Blue: w=0.5, Red: w=2.0)</caption>
 </figure>
+<p>
+To edit the weights of an object two actions (<tt/"Edit Weights"/ and
+<tt/"Reset Weights"/) are available.
+Those actions may be applied to objects that support single point
+editing and support rational coordinates only. Those are
+objects of type NCurve, NPatch, and PatchMesh.
+<p>
 The modelling action <tt/"Edit Weights"/ (shortcut: <tt/&lt;w&gt;/)
 allows to change the w coordinate of a single point by dragging the
 mouse left or right. The initial click always resets the weight to 1.0.
@@ -4236,7 +4237,10 @@ For every 10 pixels the mouse is dragged, a value of 0.1 will be
 added to or removed from the weight respectively.
 If a grid is active, the 0.1 will be multiplied by the grid value
 so that a grid of 0.5 will add/remove weight in terms of 0.05
-increments/decrements.
+increments/decrements.<newline>
+When the <tt>&lt;Control&gt;</tt> key is held down while picking the
+control point to edit, the weight will not be
+reset.<footnote>Since Ayam 1.25.</footnote>
 <p>
 The modelling action <tt/"Reset Weights"/ (shortcut: <tt/&lt;W&gt;/)
 resets the w coordinate of the picked point to 1.0.
@@ -4247,9 +4251,14 @@ get darker as the weight approaches 0.0 and attracting weights (w>1.0) are
 drawn in tones of red that get darker as the weight approaches 3.0.
 Control points with zero or invalid weights are drawn in black.
 Control points with negative weights are drawn in green.
+Control points with no weight (w=1.0) stay white.
 <p>
 The weights may also be reset for all points using the
 keyboard shortcut: <tt/&lt;Ctrl-W&gt;/.
+<p>
+Also note that, if the preference option <tt/"RationalPoints"/
+is set to <em/homogeneous/, changing the weight of a control point
+also changes its (displayed) position.
 <p>
 For an overview of the weight edit actions see also the table below.
 <p>
