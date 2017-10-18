@@ -1797,10 +1797,13 @@ proc actionFindU { w } {
 
     bind $w <ButtonPress-1> {
 	%W mc
-	%W finduac %x %y
+	set oldx %x
+	set oldy %y
     }
 
-    bind $w <B1-Motion> ""
+    bind $w <B1-Motion> {
+	%W setconf -rect $oldx $oldy %x %y 1
+    }
 
     bind $w <Motion> ""
 
@@ -1811,6 +1814,12 @@ proc actionFindU { w } {
     }
 
     bind $w <ButtonRelease-1> {
+	if { ($oldx != %x) || ($oldy != %y) } {
+	    %W finduac %x %y $oldx $oldy
+	} else {
+	    %W finduac %x %y
+	}
+	%W setconf -rect $oldx $oldy %x %y 0
 	%W finduac -end %x %y
 	%W redraw
 	focus %W

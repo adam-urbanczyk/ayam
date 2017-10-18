@@ -2652,16 +2652,17 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
  char fname[] = "findU_cb";
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  Tcl_Interp *interp = Togl_Interp(togl);
- int i, silence = AY_FALSE, height = Togl_Height(togl);
- double winXY[2] = {0}, worldXYZ[3] = {0};
+ int i, drag = AY_FALSE, silence = AY_FALSE, height = Togl_Height(togl);
+ double winXY[4] = {0}, worldXYZ[3] = {0}, dt;
  static int fvalid = AY_FALSE;
  static double fX = 0.0, fY = 0.0, fwX = 0.0, fwY = 0.0, fwZ = 0.0;
- double obj[3] = {0};
+ double obj[24] = {0}, pl[16] = {0};
  double minlevelscale = 1.0, u = 0.0;
  Tcl_Obj *to = NULL, *ton = NULL;
  char cmd[] = "puts $u";
  ay_object *o, *pobject = NULL;
  ay_pointedit pe = {0};
+ ay_nurbcurve_object *nc;
 
   if(argc > 2)
     {
@@ -2674,7 +2675,6 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 	}
       if(!strcmp(argv[2], "-end"))
 	{
-
 	  /* draw cross */
 	  if(fvalid && (argc < 6))
 	    {
@@ -2691,7 +2691,6 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 		    {
 		      view->markworld[i] = ay_trafo_round(view->markworld[i],
 						     ay_prefs.normalizedigits);
-
 		    }
 		}
 
@@ -2733,20 +2732,96 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
       Tcl_GetDouble(interp, argv[2], &(winXY[0]));
       Tcl_GetDouble(interp, argv[3], &(winXY[1]));
 
-      /* first try to pick a knot point */
-      minlevelscale = ay_pact_getminlevelscale();
-      ay_viewt_wintoobj(togl, o, winXY[0], winXY[1],
-			&(obj[0]), &(obj[1]), &(obj[2]));
+      if(argc > 4)
+	{
+	  drag = AY_TRUE;
+	  Tcl_GetDouble(interp, argv[4], &(winXY[2]));
+	  Tcl_GetDouble(interp, argv[5], &(winXY[3]));
 
-      pe.type = AY_PTKNOT;
-      ay_status = ay_pact_pickpoint(o, view, minlevelscale, obj, &pe);
+	  if(argc > 6)
+	    silence = AY_TRUE;
+	  else
+	    silence = AY_FALSE;
+	}
+
+      /* first try to pick a knot point */
+      if(!drag)
+	{
+	  minlevelscale = ay_pact_getminlevelscale();
+	  ay_viewt_wintoobj(togl, o, winXY[0], winXY[1],
+			    &(obj[0]), &(obj[1]), &(obj[2]));
+
+	  pe.type = AY_PTKNOT;
+	  ay_status = ay_pact_pickpoint(o, view, minlevelscale, obj, &pe);
+	}
+      else
+	{
+	  /* drag selection */
+	  if(winXY[2] < winXY[0])
+	    {
+	      dt = winXY[2];
+	      winXY[2] = winXY[0];
+	      winXY[0] = dt;
+	    }
+
+	  if(winXY[3] < winXY[1])
+	    {
+	      dt = winXY[3];
+	      winXY[3] = winXY[1];
+	      winXY[1] = dt;
+	    }
+
+	  ay_viewt_winrecttoobj(togl, o, winXY[0], winXY[1],
+				winXY[2], winXY[3], obj);
+
+	  /* create plane equation coefficients */
+	  ay_geom_pointstoplane(obj[0], obj[1], obj[2],
+				 obj[3], obj[4], obj[5],
+				 obj[12], obj[13], obj[14],
+				 &(pl[0]), &(pl[1]), &(pl[2]), &(pl[3]));
+
+	  ay_geom_pointstoplane(obj[3], obj[4], obj[5],
+				 obj[9], obj[10], obj[11],
+				 obj[15], obj[16], obj[17],
+				 &(pl[4]), &(pl[5]), &(pl[6]), &(pl[7]));
+
+	  ay_geom_pointstoplane(obj[6], obj[7], obj[8],
+				 obj[18], obj[19], obj[20],
+				 obj[9], obj[10], obj[11],
+				 &(pl[8]), &(pl[9]), &(pl[10]), &(pl[11]));
+
+	  ay_geom_pointstoplane(obj[0], obj[1], obj[2],
+				 obj[12], obj[13], obj[14],
+				 obj[6], obj[7], obj[8],
+				 &(pl[12]), &(pl[13]), &(pl[14]), &(pl[15]));
+
+	  pe.type = AY_PTKNOT;
+	  ay_status = ay_pact_getpoint(2, o, pl, &pe);
+	}
 
       if(pe.num)
 	{
 	  /* picking succeeded, get parametric value from knot */
 	  u = pe.coords[0][3];
-	  ay_viewt_wintoworld(togl, winXY[0], winXY[1],
+
+	  if(!drag)
+	    {
+	      ay_viewt_wintoworld(togl, winXY[0], winXY[1],
 			      &(worldXYZ[0]), &(worldXYZ[1]), &(worldXYZ[2]));
+	    }
+	  else
+	    {
+	      memcpy(worldXYZ, pe.coords[0], 3*sizeof(double));
+	      ay_viewt_worldtowin(togl, worldXYZ, winXY);
+	    }
+	  nc = (ay_nurbcurve_object*) o->refine;
+	  i = 0;
+	  while((nc->knotv[i] < u) && (i < nc->length+nc->order))
+	    i++;
+	  ton = Tcl_NewStringObj("ui", -1);
+	  to = Tcl_NewIntObj(i);
+	  Tcl_ObjSetVar2(interp, ton, NULL, to,
+			 TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
 	}
       else
 	{
@@ -9419,7 +9494,7 @@ ay_nct_drawbreakpoints(struct Togl *togl, ay_object *o)
 /** ay_nct_colorfromwweight:
  * Set the current OpenGL color from a weight value.
  *
- * \param w weight value
+ * \param[in] w weight value
  */
 void
 ay_nct_colorfromweight(double w)
