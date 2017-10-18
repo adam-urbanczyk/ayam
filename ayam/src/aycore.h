@@ -1926,6 +1926,10 @@ void ay_viewt_warpmouse(struct Togl *togl, double *coord, ay_object *o,
  */
 void ay_viewt_getrolledup(ay_view_object *view, double *u);
 
+/** project point from world to window space
+ */
+void ay_viewt_worldtowin(struct Togl *togl, double *world, double *win);
+
 /** initialize view tools module
  */
 void ay_viewt_init();

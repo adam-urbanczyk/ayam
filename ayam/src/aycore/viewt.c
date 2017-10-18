@@ -2950,6 +2950,42 @@ ay_viewt_getrolledup(ay_view_object *view, double *u)
 } /* ay_viewt_getrolledup */
 
 
+/** ay_viewt_worldtowin:
+ * Project world coordinates to window coordinates.
+ *
+ * \param[in] togl view
+ * \param[in] world input world coordinates (double[3])
+ * \param[in,out] win where to store the result (double[2])
+ */
+void
+ay_viewt_worldtowin(struct Togl *togl, double *world, double *win)
+{
+ double winx, winy, dummy, mm[16], pm[16];
+ int height = Togl_Height(togl);
+ GLint vp[4], gl_status = GL_TRUE;
+
+  glGetIntegerv(GL_VIEWPORT, vp);
+
+  glGetDoublev(GL_PROJECTION_MATRIX, pm);
+
+  ay_trafo_identitymatrix(mm);
+
+  gl_status = gluProject(world[0], world[1], world[2],
+			 mm, pm, vp,
+			 &winx, &winy, &dummy);
+
+  if(gl_status == GL_FALSE)
+    {
+      return;
+    }
+
+  win[0] = winx;
+  win[1] = winy;
+
+ return;
+} /* ay_viewt_worldtowin */
+
+
 /** ay_viewt_init:
  *  Initialize the view tools module.
  *
