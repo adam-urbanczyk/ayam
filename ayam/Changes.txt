@@ -1,4 +1,4 @@
-[29. Sep 2017] CVS-Head:
+[20. Oct 2017] CVS-Head:
 ========================
 Bug Fixes:
 o entering non number data to tesselation parameter entries (SF 554)
@@ -31,8 +31,13 @@ o added hidden preference setting "NormalizeMark" that controls, whether
   mark coordinates should be normalized
 o the "find u" and "split" actions for NURBS curves now display and allow
   to pick the break points (distinct knots) of the curve
+o the "find u" and "split" actions for NURBS curves now allow drag selection
+  of break points (distinct knots)
 o added immediate interactive placing of newly inserted curve points (enabled
   by holding down the <Control> key in the insert point action)
+o rational coordinates are now color coded when weight editing/reset
+  actions are active
+o improved usability of interactive weight editing
 
 GUI:
 o improved balloon interaction of view icon menus
