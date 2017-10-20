@@ -2732,7 +2732,7 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
       Tcl_GetDouble(interp, argv[2], &(winXY[0]));
       Tcl_GetDouble(interp, argv[3], &(winXY[1]));
 
-      if(argc > 4)
+      if(argc > 5)
 	{
 	  drag = AY_TRUE;
 	  Tcl_GetDouble(interp, argv[4], &(winXY[2]));
