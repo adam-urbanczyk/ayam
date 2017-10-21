@@ -4221,7 +4221,7 @@ also the following image:
 <figure loc="ht">
 <eps file="pics/weights.ps" height="5cm">
 <img src="pics/weights.gif">
-<caption>Weights Example (Blue: w=0.5, Red: w=2.0)</caption>
+<caption>Weights Example (Blue: w&thinsp;=&thinsp;0.5, Red: w&thinsp;=&thinsp;2.0)</caption>
 </figure>
 <p>
 To edit the weights of an object two actions (<tt/"Edit Weights"/ and
@@ -4246,12 +4246,14 @@ The modelling action <tt/"Reset Weights"/ (shortcut: <tt/&lt;W&gt;/)
 resets the w coordinate of the picked point to 1.0.
 <p>
 In both actions the current weight of a control point is visualized
-by color: repelling weights (w<1.0) are drawn in tones of blue that
-get darker as the weight approaches 0.0 and attracting weights (w>1.0) are
+by color: repelling weights (w&thinsp;<&thinsp;1.0) are drawn in
+tones of blue that
+get darker as the weight approaches 0.0 and attracting weights
+(w&thinsp;>&thinsp;1.0) are
 drawn in tones of red that get darker as the weight approaches 3.0.
 Control points with zero or invalid weights are drawn in black.
 Control points with negative weights are drawn in green.
-Control points with no weight (w=1.0) stay white.
+Control points with no weight (w&thinsp;=&thinsp;1.0) stay white.
 <p>
 The weights may also be reset for all points using the
 keyboard shortcut: <tt/&lt;Ctrl-W&gt;/.
@@ -4456,7 +4458,8 @@ vector.<footnote>Since 1.25.</footnote>
 Those points are displayed as rhombuses and can simply be picked, see also
 the image above. If a breakpoint is picked, its parametric
 value is put into the global variable <tt/u/ and the mark is set to
-the corresponding, three dimensional, point on the curve.
+the corresponding, three dimensional, point on the curve. Drag
+selection of breakpoints is also possible.
 <p>
 See also the table below.
 <p>
@@ -5117,13 +5120,12 @@ Please, do not mess with the objects in other ways (e.g.~copy them),
 you are asking for trouble otherwise!
 <p>
 Each view is associated with a virtual camera.
-The type of the view determines the default Up-vector of that camera.
-If the type is <tt/"Top"/ the Up-vector corresponds to the world
+The type of the view determines the default up-vector of that camera.
+If the type is <tt/"Top"/ the up-vector corresponds to the world
 Z-axis, else the world Y-axis.
 The type of the view, additionally, determines the so called
 <em/input plane/ of the view. Interactive modelling actions in a view are
-limited to that
-input plane (unless the view is switched to local modelling;
+limited to that input plane (unless the view is switched to local modelling;
 see also section
 <ref id="editlocal" name="Editing in Local Spaces">).<footnote>Since 1.4.</footnote>
 <p>
@@ -5161,20 +5163,20 @@ This section describes all elements of the <tt/"Camera"/ property:
 <item><tt/"From"/ is the point where the camera (that is attached
 to the view) is situated.
 <item><tt/"To"/ is the point the camera is looking to.
-<item><tt/"Up"/ is the up vector of the camera.
+<item><tt/"Up"/ is the up-vector of the camera.
 <item><tt/"Near"/ defines the near clipping plane. A value of 0.0
 means a default value (that depends on the type of the view) should
-be used. Near should always be positive for perspective views, and
-smaller than far.
+be used. Otherwise, near should always be positive for perspective views,
+and smaller than far.
 <item><tt/"Far"/ defines the far clipping plane. A value of 0.0
 means a default value (that depends on the type of the view) should
-be used. Far should always be bigger than near.
+be used. Otherwise, far should always be bigger than near.
 <item><tt/"Roll"/ defines an angle by which the camera is rotated
 around the axis that is defined by the points from and to.
 <item><tt/"Zoom"/ is a zoom factor.
 </itemize>
 
-Note that the up vector is <em/not/ checked for erroneous values
+Note that the up-vector is <em/not/ checked for erroneous values
 (e.g.~pointing in the direction of from-to) when applying the changes
 of the <tt/"Camera"/ property.
 
@@ -23637,6 +23639,7 @@ Index:
 <item>BPatch: <ref id="bpatchobj" name="BPatch object">
 <item>Break: <ref id="breaknpt" name="NPatch tool">
 <item>breakNP: <ref id="scbreaknp" name="scripting interface command">
+<item>Breakpoint: <ref id="finduac" name="breakpoint display">
 <item>BType_U, BType_V: <ref id="pmattr" name="PatchMesh attribute">
 <item>Build: <ref id="buildnpt" name="NCurve tool">
 <item>buildNP: <ref id="scbuildnp" name="scripting interface command">
@@ -25135,7 +25138,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>upOb: <ref id="scupob" name="scripting interface command">
 <item>UpperBevel: <ref id="textattr" name="Text attribute">
 <item>UpperCap: <ref id="textattr" name="Text attribute">
-<item>Up Vector: <ref id="camp" name="camera property">
+<item>up-vector: <ref id="camp" name="camera property">
 <item>uS: <ref id="scus" name="scripting interface command">
 <item>useaqsisapp.tcl: <ref id="useaqsisapptcl" name="example/helper script">
 <item>UseGrid:
