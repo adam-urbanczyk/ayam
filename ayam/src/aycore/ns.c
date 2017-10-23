@@ -162,6 +162,7 @@ ay_ns_execute(ay_object *o, ay_tag *tag)
 
   if(result == TCL_ERROR)
     {
+      ay_error(AY_ERROR, fname, Tcl_GetStringResult(interp));
       if(ay_prefs.disablefailedscripts)
 	{
 	  ay_error(AY_ERROR, fname, "Script failed and disabled!");
