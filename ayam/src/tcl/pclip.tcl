@@ -131,7 +131,13 @@ proc pclip_paste { } {
 		if { $gproc != "" } { eval $gproc } else { getProp }
 		set avnames [array names pclip_clipboard]
 		foreach j $avnames {
-		    eval [subst "set $arr\(\$j\) {\$pclip_clipboard\(\$j\)}"]
+		    eval "set newval \$pclip_clipboard\($j\)"
+		    if { [string is integer $newval ] } {
+			eval [subst "set $arr\(\$j\) $newval"]
+		    } else {
+			eval [subst "set $arr\(\$j\) \"\""]
+			eval [subst "lappend $arr\(\$j\) \{\$newval\}"]
+		    }
 		}
 		if { $sproc != "" } { eval $sproc } else { setProp }
 	    } else {
