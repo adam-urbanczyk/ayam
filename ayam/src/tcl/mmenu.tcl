@@ -1149,7 +1149,7 @@ $m add command -label "Help on property" -command {
 	    set index [$lb curselection]
 
 	    if { $index == "" } {
-		ayError 2 "Help on property:" "No property selected!"
+		ayError 2 "Help on property" "No property selected!"
 		return;
 	    }
 
