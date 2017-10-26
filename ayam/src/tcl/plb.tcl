@@ -13,7 +13,7 @@
 #
 #
 proc plb_open { w } {
-global ay ayprefs
+global ay ayprefs aymainshortcuts
 
 label $w.la -text "Properties:" -padx 0 -pady 0
 pack $w.la -in $w -side top -fill x -expand no
@@ -266,6 +266,9 @@ $f.ca create window 5 0 -anchor nw -window $ay(pw)
 set width [expr [winfo reqwidth $ay(pw)] + 10]
 $ay(pca) configure -width $width
 $f.ca create line 0 0 2 0 -fill [$f.ca cget -background]
+
+bind $f.ca <ButtonPress-$aymainshortcuts(CMButton)> "tk_popup $m %X %Y"
+bind $f.ca.w <ButtonPress-$aymainshortcuts(CMButton)> "tk_popup $m %X %Y"
 
 # mouse-wheel bindings
 bind . <ButtonPress-4> {
@@ -596,8 +599,8 @@ proc plb_focus { {w ""} } {
 
 
 # plb_showprop:
-#
-#
+# this is bound to the numeric keypad and shows the property with
+# the designated index (prop)
 proc plb_showprop { prop } {
     global ay
 
@@ -828,6 +831,10 @@ proc plb_bindtab { } {
 }
 # plb_bindtab
 
+
+# plb_setscrollregion:
+# helper procedure that runs after a property realized its GUI
+# components and adjusts the scroll region accordingly
 proc plb_setscrollregion { } {
     global ay
     set ay(bbox) [$ay(pca) bbox all]
@@ -835,3 +842,4 @@ proc plb_setscrollregion { } {
     $ay(pca) configure -scrollregion $ay(bbox)
  return;
 }
+# plb_setscrollregion
