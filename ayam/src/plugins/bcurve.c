@@ -52,6 +52,8 @@ int bcurve_toncurve(ay_object *o, int btype, ay_object **result);
 
 int bcurve_israt(bcurve_object *bc);
 
+void bcurve_drawweights(bcurve_object *bcurve);
+
 /* Bezier */
 static double mb[16] = {-1, 3, -3, 1,  3, -6, 3, 0,  -3, 3, 0, 0,  1, 0, 0, 0};
 /* Hermite (RenderMan flavour) */
@@ -782,6 +784,49 @@ bcurve_drawacb(struct Togl *togl, ay_object *o)
 } /* bcurve_drawacb */
 
 
+/* bcurve_drawweights:
+ * helper for bcurve_drawhcb() below,
+ * draw colored handles based on their weight values
+ */
+void
+bcurve_drawweights(bcurve_object *bcurve)
+{
+ int i;
+ double w, *pnts;
+
+  pnts = bcurve->controlv;
+
+  /* draw normal points */
+  glBegin(GL_POINTS);
+   if(bcurve->is_rat && ay_prefs.rationalpoints)
+     {
+       for(i = 0; i < bcurve->length; i++)
+	 {
+	   w = pnts[3];
+	   ay_nct_colorfromweight(w);
+	   glVertex3d((GLdouble)(pnts[0]*w),
+		      (GLdouble)(pnts[1]*w),
+		      (GLdouble)(pnts[2]*w));
+	   pnts += 4;
+	 }
+     }
+   else
+     {
+       for(i = 0; i < bcurve->length; i++)
+	 {
+	   ay_nct_colorfromweight(pnts[3]);
+	   glVertex3dv((GLdouble *)pnts);
+	   pnts += 4;
+	 }
+     }
+  glEnd();
+
+  glColor3ub(255,255,255);
+
+ return;
+} /* bcurve_drawweights */
+
+
 /* bcurve_drawhcb:
  *  draw handles callback function of bcurve object
  */
@@ -791,6 +836,7 @@ bcurve_drawhcb(struct Togl *togl, ay_object *o)
  bcurve_object *bcurve = NULL;
  double w, *cv = NULL;
  int i;
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
 
   if(!o)
     return AY_ENULL;
@@ -799,6 +845,12 @@ bcurve_drawhcb(struct Togl *togl, ay_object *o)
 
   if(!bcurve)
     return AY_ENULL;
+
+  if(view->drawhandles == 3)
+    {
+      bcurve_drawweights(bcurve);
+      return AY_OK;
+    }
 
   cv = bcurve->controlv;
 
