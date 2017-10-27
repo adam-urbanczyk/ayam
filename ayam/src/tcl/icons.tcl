@@ -706,6 +706,10 @@ image create photo ay_Cap_img -format GIF -data $imgdata
 image create photo ay_Empty_img -width 25 -height 25
 ay_Empty_img blank
 
+image create photo ay_EmptyG_img -width 25 -height 25
+ay_EmptyG_img put gray -to 0 0 24 24
+
+
 # Pick
 set imgdata {\
 R0lGODlhGQAZAKEDAAAAALy8vPj8+P///yH5BAEKAAMALAAAAAAZABkAAAI4
