@@ -299,7 +299,7 @@ $m add command -label "Align to Object" -command "\
 
 # Modelling Action Menu
 if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
-    menubutton $w.fMenu.a -image ay_Empty_img -menu $w.fMenu.a.m\
+    menubutton $w.fMenu.a -image ay_EmptyG_img -menu $w.fMenu.a.m\
 	-padx 0 -pady 0 -borderwidth 0
     set m [menu $w.fMenu.a.m -tearoff 0]
     bind $w.fMenu.a <ButtonPress-1>\
@@ -318,7 +318,7 @@ $m add command -image ay_Tag_img -hidemargin 1\
 $m add command -image ay_Mark_img -hidemargin 1\
     -command "actionSetMark $w.f3D.togl"
 
-$m add command -image ay_Empty_img -hidemargin 1\
+$m add command -image ay_EmptyG_img -hidemargin 1\
     -command "actionClear $w.f3D.togl 1"
 
 if { $AYWITHAQUA } {

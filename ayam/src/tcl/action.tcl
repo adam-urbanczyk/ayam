@@ -2114,7 +2114,7 @@ proc actionClear { w {only_clear 0} } {
 
     if { $only_clear || ($ayprefs(DefaultAction) == 0) } {
 	viewTitle $w "" "None"
-	viewSetMAIcon $w ay_Empty_img ""
+	viewSetMAIcon $w ay_EmptyG_img ""
     } else {
 	switch $ayprefs(DefaultAction) {
 	    1 { actionPick $w }
