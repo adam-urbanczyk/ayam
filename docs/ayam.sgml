@@ -9697,6 +9697,7 @@ Bevel object.
  </itemize>
 
 See also the following image for a comparison of some bevel types.
+<p>
 <figure loc="ht">
 <eps file="pics/btypes.ps" height="4.5cm">
 <img src="pics/btypes.gif">
@@ -12500,7 +12501,7 @@ of the object changed (see also section
 <ref id="toolobj" name="The Modelling Concept Tool-Objects">).
 When the script runs, the respective object with the BNS tag will already
 be selected. Current level and selection will be restored when the
-script finishes, neither need to be done by the script.
+script finishes, i.e.~neither needs to be done by the script.
 <p>
 <bf/Example/
 <p>
@@ -12510,19 +12511,29 @@ puts "notify callback about to fire"</verb></tscreen>
 <p>
 A more useful example (that is also available as example scene
 <tt>"ayam/scn/scripts/bnstag.ay"</tt>):
-<tscreen><verb>BNS
-getProp;set ::RevolveAttrData(Sections) &hellip;
-&hellip; \[expr int(\$::RevolveAttrData(ThetaMax)/10)\];setProp</verb></tscreen>
+<tscreen><verb>
+BNS
+getProp;
+set ::RevolveAttrData(Sections) [expr int($::RevolveAttrData(ThetaMax)/10)];
+setProp
+</verb></tscreen>
 This tag computes the number of sections from the ThetaMax value
 of a Revolve object. Whenever the ThetaMax is changed, the number
 of sections adapt, so that each section always spans the same angle.
-The backslash characters are only necessary when entering the
-script in the add/edit tag dialog. They merely avoid that the dialog
-evaluates the <tt/expr/ command. The function call <tt/int()/ is
-needed because the C code for the <tt/setProp/ command of the
-RevolveAttr property only looks for integer data in the variable
-<tt/Sections/ and without <tt/int()/ the variable would contain
-incompatible floating point data.
+The function call <tt/int()/ is needed because the C code for the
+<tt/setProp/ command of the RevolveAttr property only looks for integer
+data in the variable <tt/Sections/ and without <tt/int()/ the variable
+would contain incompatible floating point data.
+<p>
+A second similar example would be:
+<tscreen><verb>BNS
+getProp;
+set ::ACurveAttrData(ALength) [expr int($::ACurveAttrData(Length)/2)];
+setProp</verb></tscreen>
+This tag automatically derives a good value for the <tt/ALength/ parameter
+of a ACurve object from the number of data points to approximate. When this
+tag is added to a ACurve object, the interactive insert/delete point actions
+can be used more freely.
 <p>
 Here is another shorter example; the BNS tag
 <tscreen><verb>BNS
@@ -12572,7 +12583,7 @@ of the object changed (see also section
 <ref id="toolobj" name="The Modelling Concept Tool-Objects">).
 When the script runs, the respective object with the ANS tag will already
 be selected. Current level and selection will be restored when the
-script finishes, neither need to be done by the script.
+script finishes, i.e.~neither needs to be done by the script.
 <p>
 <bf/Example/
 <p>
