@@ -668,20 +668,20 @@ menu $m.npt.in -tearoff 0
 
 $m.npt.in add command -label "Interpolate U" -command {
     runTool ay(interpou) {"Order:"}\
-	"undo save InterpUNP; interpuNP %0; plb_update; rV"\
+	"undo save InterpUNP; interpuNP -o %0; plb_update; rV"\
 	"Interpolate Surface U" interpnpt
 }
 
 $m.npt.in add command -label "Interpolate V" -command {
     runTool ay(interpov) {"Order:"}\
-	"undo save InterpVNP; interpvNP %0; plb_update; rV"\
+	"undo save InterpVNP; interpvNP -o %0; plb_update; rV"\
 	"Interpolate Surface V" interpnpt
 }
 
 $m.npt.in add command -label "Interpolate Both" -command {
     runTool [list ay(interpou) ay(interpov)]\
 	[list "Order U:" "Order V:"]\
-	"undo save InterpUVNP; interpuNP %0; interpvNP %1; plb_update; rV"\
+      "undo save InterpUVNP; interpuNP -o %0; interpvNP -o %1; plb_update; rV"\
 	"Interpolate Surface" interpnpt
 }
 
