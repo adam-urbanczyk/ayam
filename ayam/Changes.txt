@@ -1,4 +1,4 @@
-[20. Oct 2017] CVS-Head:
+[31. Oct 2017] CVS-Head:
 ========================
 Bug Fixes:
 o entering non number data to tesselation parameter entries (SF 554)
@@ -14,6 +14,8 @@ o X3D export of surfaces with AsWire tag (SF 564)
 o saving of script objects with individual parameters (SF 565)
 o getPnt command delivers garbage for "-all -trafo" (SF 566)
 o editing in aligned local views fails for children of Script objects (SF 567)
+o pasting complex tags via property clipboard fails (SF 568)
+o surface interpolation tool does not use the order parameter(s) (SF 569)
 
 Modelling:
 o the set mark action now supports drag selection of multiple points,
