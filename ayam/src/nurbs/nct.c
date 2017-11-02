@@ -2659,7 +2659,7 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
  double obj[24] = {0}, pl[16] = {0};
  double minlevelscale = 1.0, u = 0.0;
  Tcl_Obj *to = NULL, *ton = NULL;
- char cmd[] = "puts $u";
+ char cmd[] = "puts \"u: $u\"";
  ay_object *o, *pobject = NULL;
  ay_pointedit pe = {0};
  ay_nurbcurve_object *nc;
@@ -2797,23 +2797,16 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 
 	  pe.type = AY_PTKNOT;
 	  ay_status = ay_pact_getpoint(2, o, pl, &pe);
-	}
+	} /* if drag */
 
       if(pe.num)
 	{
-	  /* picking succeeded, get parametric value from knot */
+	  /* knot picking succeeded, get parametric value from knot */
 	  u = pe.coords[0][3];
 
-	  if(!drag)
-	    {
-	      ay_viewt_wintoworld(togl, winXY[0], winXY[1],
-			      &(worldXYZ[0]), &(worldXYZ[1]), &(worldXYZ[2]));
-	    }
-	  else
-	    {
-	      memcpy(worldXYZ, pe.coords[0], 3*sizeof(double));
-	      ay_viewt_worldtowin(togl, worldXYZ, winXY);
-	    }
+	  memcpy(worldXYZ, pe.coords[0], 3*sizeof(double));
+	  ay_viewt_worldtowin(togl, worldXYZ, winXY);
+
 	  nc = (ay_nurbcurve_object*) o->refine;
 	  i = 0;
 	  while((nc->knotv[i] < u) && (i < nc->length+nc->order))
@@ -2825,7 +2818,7 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 	}
       else
 	{
-	  /* picking failed, calculate parametric value */
+	  /* knot picking failed, calculate parametric value */
 	  ay_status = ay_nct_findu(togl, o, winXY, worldXYZ, &u);
 
 	  if(ay_status)
@@ -2833,7 +2826,7 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 	      ay_error(AY_ERROR, fname, "Could not find point on curve.");
 	      goto cleanup;
 	    }
-	}
+	} /* if pick succeeded */
 
       fvalid = AY_TRUE;
       fX = winXY[0];
