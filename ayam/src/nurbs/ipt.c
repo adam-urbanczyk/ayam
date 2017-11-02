@@ -251,6 +251,12 @@ ay_ipt_interpolateu(ay_nurbpatch_object *np, int order, int ktype)
   pu = order-1;
   num = np->height;
 
+  if(order > K)
+    {
+      ay_error(AY_ERROR, fname, "Interpolation order too high for this patch.");
+      return AY_ERROR;
+    }
+
   if(!(uk = calloc(K, sizeof(double))))
     return AY_EOMEM;
 
@@ -951,6 +957,12 @@ ay_ipt_interpolatev(ay_nurbpatch_object *np, int order, int ktype)
   Pw = np->controlv;
   pv = np->vorder-1;
   num = np->width;
+
+  if(order > N)
+    {
+      ay_error(AY_ERROR, fname, "Interpolation order too high for this patch.");
+      return AY_ERROR;
+    }
 
   if(!(vk = calloc(N, sizeof(double))))
     return AY_EOMEM;
