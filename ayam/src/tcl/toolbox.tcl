@@ -130,7 +130,7 @@ proc toolbox_open { {w .tbw} } {
 	##################
 
 	if { $i == "points" } {
-	    lappend ay(toolbuttons) bed bedw bedd sel
+	    lappend ay(toolbuttons) bed bedw bedn bsel
 
 	    button $f.bed -image ay_Edit_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionEditP
@@ -143,20 +143,27 @@ proc toolbox_open { {w .tbw} } {
 		toolbox_startaction actionEditWP
 	    }
 	    balloon_set $f.bedw\
-		"edit weights <[remkpkr $ayviewshortcuts(WeightE)]>"
-
+		"edit weights <[remkpkr $ayviewshortcuts(WeightE)]>\n<Shift>: reset weights <[remkpkr $ayviewshortcuts(WeightR)]>"
+	    bind $f.bedw <Shift-ButtonPress-1> {
+		global  ay
+		%W configure -relief sunken
+		toolbox_startaction actionResetWP
+		rV
+		after 100 "%W configure -relief raised"
+		break;
+	    }
 	    ######
-	    button $f.bedd -image ay_EditN_img -padx 0 -pady 0 -command {
+	    button $f.bedn -image ay_EditN_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionEditNumP
 	    }
 
-	    balloon_set $f.bedd\
+	    balloon_set $f.bedn\
 	  "edit points numeric <[remkpkr $ayviewshortcuts(EditN)]>"
 	    ######
-	    button $f.sel -image ay_Tag_img -padx 0 -pady 0 -command {
+	    button $f.bsel -image ay_Tag_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionTagP
 	    }
-	    bind $f.sel <Shift-ButtonPress-1> {
+	    bind $f.bsel <Shift-ButtonPress-1> {
 		global  ay
 		%W configure -relief sunken
 		selPnts;
@@ -164,9 +171,7 @@ proc toolbox_open { {w .tbw} } {
 		after 100 "%W configure -relief raised"
 		break;
 	    }
-	    balloon_set $f.sel "select (tag) points <[remkpkr $ayviewshortcuts(Select)]>\n<Shift>: deselect points <[remkpkr $ayviewshortcuts(DeSelect)]>"
-
-
+	    balloon_set $f.bsel "select (tag) points <[remkpkr $ayviewshortcuts(Select)]>\n<Shift>: deselect points <[remkpkr $ayviewshortcuts(DeSelect)]>"
 	}
 
 	##################
