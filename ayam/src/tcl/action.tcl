@@ -1628,6 +1628,13 @@ proc actionResetWP { w } {
 	} else {
 	    %W startpepac %x %y
 	}
+	%W mc
+	set oldx %x
+	set oldy %y
+    }
+
+    bind $w <B1-Motion> {
+	%W setconf -rect $oldx $oldy %x %y 1
     }
 
     if { $ayprefs(FlashPoints) == 1 } {
@@ -1637,7 +1644,12 @@ proc actionResetWP { w } {
     }
 
     bind $w <ButtonRelease-1> {
-	%W wrpac -selected
+	%W setconf -rect $oldx $oldy %x %y 0
+	if { ($oldx != %x) || ($oldy != %y) } {
+	    %W wrpac -rect %x %y $oldx $oldy
+	} else {
+	    %W wrpac -selected
+	}
 	rV
 	plb_update
 	focus %W

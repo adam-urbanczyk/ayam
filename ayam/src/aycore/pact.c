@@ -2457,6 +2457,7 @@ ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
   if(!ay_selection)
     return TCL_OK;
 
+  /* calculate amount of change */
   if(view->usegrid && (view->grid != 0.0))
     {
       g *= view->grid;
@@ -2492,6 +2493,7 @@ ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
     {
       /* relative mode */
       dx = floor((winx-oldwinx)/10.0);
+
       if(dx > olddx)
 	{
 	  olddx = dx;
@@ -2509,8 +2511,9 @@ ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
 	      dx = 0.0;
 	    }
 	}
-    }
+    } /* if absolute or relative */
 
+  /* apply change to selected point(s) */
   for(j = 0; j < pact_objectslen; j++)
     {
       o = pact_objects[j];
@@ -2596,8 +2599,11 @@ int
 ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
 {
  int ay_status = AY_OK;
+ Tcl_Interp *interp = Togl_Interp(togl);
  char fname[] = "reset_weights";
  double p[3], *coords;
+ double winXY[4] = {0}, dt;
+ double obj[24] = {0}, pl[16] = {0};
  unsigned int i, j;
  int k, l;
  int notify_parent = AY_FALSE;
@@ -2607,32 +2613,103 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
  ay_nurbpatch_object *np = NULL;
  ay_pamesh_object *pm = NULL;
  ay_pointedit pe = {0};
- int reset_selected = AY_FALSE;
+ int reset_selected = AY_FALSE, dragselect = AY_FALSE;
 
-  if(argc == 3)
+  if(argc >= 3)
     {
       if(!strcmp(argv[2], "-selected"))
 	reset_selected = AY_TRUE;
+      if(!strcmp(argv[2], "-rect"))
+	{
+	  reset_selected = AY_TRUE;
+	  dragselect = AY_TRUE;
+	}
     }
 
   if(reset_selected)
     {
-      j = 0;
-      for(k = 0; k < pact_objectslen; k++)
+      if(dragselect)
 	{
-	  if(pact_typepo[k])
+	  Tcl_GetDouble(interp, argv[3], &(winXY[0]));
+	  Tcl_GetDouble(interp, argv[4], &(winXY[1]));
+	  Tcl_GetDouble(interp, argv[5], &(winXY[2]));
+	  Tcl_GetDouble(interp, argv[6], &(winXY[3]));
+
+	  if(winXY[2] < winXY[0])
 	    {
-	      for(l = 0; l < pact_numpo[k]; l++)
-		{
-		  coords = pact_pe.coords[j+l];
-		  coords[3] = 1.0;
-		}
-	      pact_objects[k]->modified = AY_TRUE;
-	      ay_notify_object(pact_objects[k]);
-	      notify_parent = AY_TRUE;
+	      dt = winXY[2];
+	      winXY[2] = winXY[0];
+	      winXY[0] = dt;
 	    }
-	  j += pact_numpo[k];
-	} /* for */
+
+	  if(winXY[3] < winXY[1])
+	    {
+	      dt = winXY[3];
+	      winXY[3] = winXY[1];
+	      winXY[1] = dt;
+	    }
+
+	  while(sel)
+	    {
+	      o = sel->object;
+
+	      ay_viewt_winrecttoobj(togl, o, winXY[0], winXY[1],
+				    winXY[2], winXY[3], obj);
+
+	      /* create plane equation coefficients */
+	      ay_geom_pointstoplane(obj[0], obj[1], obj[2],
+				    obj[3], obj[4], obj[5],
+				    obj[12], obj[13], obj[14],
+				    &(pl[0]), &(pl[1]), &(pl[2]), &(pl[3]));
+
+	      ay_geom_pointstoplane(obj[3], obj[4], obj[5],
+				    obj[9], obj[10], obj[11],
+				    obj[15], obj[16], obj[17],
+				    &(pl[4]), &(pl[5]), &(pl[6]), &(pl[7]));
+
+	      ay_geom_pointstoplane(obj[6], obj[7], obj[8],
+				    obj[18], obj[19], obj[20],
+				    obj[9], obj[10], obj[11],
+				    &(pl[8]), &(pl[9]), &(pl[10]), &(pl[11]));
+
+	      ay_geom_pointstoplane(obj[0], obj[1], obj[2],
+				    obj[12], obj[13], obj[14],
+				    obj[6], obj[7], obj[8],
+				    &(pl[12]), &(pl[13]), &(pl[14]), &(pl[15]));
+
+	      ay_status = ay_pact_getpoint(2, o, pl, &pe);
+
+	      for(i = 0; i < pe.num; i++)
+		{
+		  if(pe.type == AY_PTRAT)
+		    {
+		      pe.coords[i][3] = 1.0;
+		      notify_parent = AY_TRUE;
+		    }
+		}
+
+	      sel = sel->next;
+	    } /* while */
+	}
+      else
+	{
+	  j = 0;
+	  for(k = 0; k < pact_objectslen; k++)
+	    {
+	      if(pact_typepo[k])
+		{
+		  for(l = 0; l < pact_numpo[k]; l++)
+		    {
+		      coords = pact_pe.coords[j+l];
+		      coords[3] = 1.0;
+		    }
+		  pact_objects[k]->modified = AY_TRUE;
+		  ay_notify_object(pact_objects[k]);
+		  notify_parent = AY_TRUE;
+		}
+	      j += pact_numpo[k];
+	    } /* for */
+	} /* if dragselect */
     }
   else
     {
