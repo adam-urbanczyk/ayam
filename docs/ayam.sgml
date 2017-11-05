@@ -4243,7 +4243,9 @@ control point to edit, the weight will not be
 reset.<footnote>Since Ayam 1.25.</footnote>
 <p>
 The modelling action <tt/"Reset Weights"/ (shortcut: <tt/&lt;W&gt;/)
-resets the w coordinate of the picked point to 1.0.
+resets the w coordinate of the picked point to 1.0. Drag
+selection of points to reset is also
+possible.<footnote>Since Ayam 1.25.</footnote>
 <p>
 In both actions the current weight of a control point is visualized
 by color: repelling weights (w&thinsp;<&thinsp;1.0) are drawn in
@@ -10974,18 +10976,20 @@ in the script.
 Script objects convert to the objects they create/modify
 using the main menu entry <tt>"Tools/Convert"</tt>.
 
-When converting in place, some special rules are in effect:<newline>
-if there is just one created/modified object, its tags
+When converting in place, some special rules are in effect:
+<enum>
+<item>If there is just one created/modified object, its tags
 are appended to the tags of the Script object and its material
-setting only takes precedence if there is actually a material set.<newline>
-If there are multiple created/modified objects, the
+setting only takes precedence if there is actually a material set.
+<item>If there are multiple created/modified objects, the
 Script object is transformed into a Level object, keeping its tags
 and material settings.
-The created/modified objects will become children of the new
-Level object (with tags and material properties unchanged).<newline>
-The current children of the Script object will be removed prior
+<item>The created/modified objects will become children of the new
+Level object (with tags and material properties unchanged).
+<item>The current children of the Script object will be removed prior
 to conversion. If this fails (e.g.~due to references), they may end
 up in the object clipboard.
+</enum>
 
 When the script created a master object and instances of this master, normal
 conversion will <em/not/ be able to duplicate this relationship
@@ -20777,7 +20781,7 @@ CSG|Yes|No|No|No|No|No<#if out="latex">@<hline></#if>
 <quote><#if out="latex">&thinsp;<newline></#if>
 <f><sup>a</sup></f>&thinsp;: will be converted to NURBS<newline>
 <f><sup>b</sup></f>&thinsp;: will be converted to PolyMeshes<newline>
-<f><sup>c</sup></f>&thinsp;: 3D trimcurves exported as PolyLines<newline>
+<f><sup>c</sup></f>&thinsp;: 3D trim curves exported as PolyLines<newline>
 <f><sup>d</sup></f>&thinsp;: some quadrics are converted to NURBS (refer to plugin documentation)<newline>
 <f><sup>e</sup></f>&thinsp;: some parametrics are converted to NURBS (refer to plugin documentation)<newline>
 </quote>
