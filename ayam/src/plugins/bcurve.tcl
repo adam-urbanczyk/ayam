@@ -64,7 +64,7 @@ proc bcurve_getAttr { } {
 
     # advanced bindings for Length manipulation
     bind $w.fLength.b1 <Control-ButtonPress-1> "pamesh_updateWHL $w BCurveAttrData Length \$BCurveAttrData(BType) m;break"
-    bind $w.fLength.b2 <Control-ButtonPress-1> "pamesh_updateWH $w BCurveAttrData Length \$BCurveAttrData(BType) p;break"
+    bind $w.fLength.b2 <Control-ButtonPress-1> "pamesh_updateWHL $w BCurveAttrData Length \$BCurveAttrData(BType) p;break"
 
     # add UI to property canvas
     plb_setwin $w $oldfocus
