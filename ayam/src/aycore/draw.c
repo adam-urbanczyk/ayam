@@ -338,27 +338,26 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 			    (GLdouble)o->scalz);
 		   point = o->selp;
 		   glBegin(GL_POINTS);
-		   if(point && (point->type == AY_PTRAT) &&
-		      ay_prefs.rationalpoints)
-		     {
-		       while(point)
-			 {
+		    while(point)
+		      {
+			if(point->type < AY_PTKNOT)
+			  {
+			    if(point->type == AY_PTRAT &&
+			       ay_prefs.rationalpoints)
 			  glVertex3d((GLdouble)point->point[0]*point->point[3],
 				     (GLdouble)point->point[1]*point->point[3],
 				     (GLdouble)point->point[2]*point->point[3]);
-			  point = point->next;
-			 }
-		     }
-		   else
-		     {
-		       while(point)
-			 {
-			   glVertex3d((GLdouble)point->point[0],
-				      (GLdouble)point->point[1],
-				      (GLdouble)point->point[2]);
-			   point = point->next;
-			 }
-		     }
+			    else
+			      glVertex3d((GLdouble)point->point[0],
+					 (GLdouble)point->point[1],
+					 (GLdouble)point->point[2]);
+			  }
+			/*
+			  else
+			  draw break points?
+			*/
+			point = point->next;
+		      } /* while */
 		   glEnd();
 		  glPopMatrix();
 		}
@@ -517,7 +516,6 @@ ay_draw_annos(struct Togl *togl, int draw_offset)
 	{
 	  glPopMatrix();
 	}
-
     } /* if drawhandles */
 
   /* draw marked point in space */
@@ -1559,7 +1557,7 @@ ay_draw_mark(struct Togl *togl)
  *  objects of type type_id
  */
 int
-ay_draw_registerdacb(ay_drawcb  *dacb, unsigned int type_id)
+ay_draw_registerdacb(ay_drawcb *dacb, unsigned int type_id)
 {
  int ay_status = AY_OK;
 
@@ -1571,12 +1569,12 @@ ay_draw_registerdacb(ay_drawcb  *dacb, unsigned int type_id)
 
 
 /** ay_draw_silhouettes:
-  * Draw the silhouettes of some objects, that are delivered in a
-  * silhouette image as mostly transparent quad.
-  *
-  * \param[in] togl view to draw
-  * \param[in] silimg silhouette image, should be of views size
-  */
+ * Draw the silhouettes of some objects, that are delivered in a
+ * silhouette image as mostly transparent quad.
+ *
+ * \param[in] togl view to draw
+ * \param[in] silimg silhouette image, should be of views size
+ */
 void
 ay_draw_silhouettes(struct Togl *togl, unsigned char *silimg)
 {
