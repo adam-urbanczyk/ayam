@@ -8448,7 +8448,7 @@ x3dio_writetrimmednpwire(scew_element *element, ay_object *o)
 		glEnd();
 	      */
 	    }
-	} /* if line has atleast two points */
+	} /* if line has at least two points */
     } /* for all u lines */
 
   /* write iso-v lines */
@@ -8507,7 +8507,7 @@ x3dio_writetrimmednpwire(scew_element *element, ay_object *o)
 		glEnd();
 	      */
 	    }
-	} /* if line has atleast two points */
+	} /* if line has at least two points */
     } /* for all v lines */
 
   /* write trim curves */

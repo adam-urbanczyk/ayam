@@ -2887,7 +2887,7 @@ idr_getpartsfromimpreg(idr_picpart **partlist, struct Togl *togl,
   if(found)
     {
       /*
-	Yes, we actually have atleast one picture part to
+	Yes, we actually have at least one picture part to
 	render. We need to fake importance tags for all
 	toplevel objects in order to render them all.
       */
@@ -2997,7 +2997,7 @@ idr_getpartsfrom3dimpreg(idr_picpart **partlist, struct Togl *togl,
   if(partlist)
     {
       /*
-	Yes, we actually have atleast one picture part to
+	Yes, we actually have at least one picture part to
 	render. We need to fake importance tags for all
 	toplevel objects in order to render them all.
       */
