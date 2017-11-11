@@ -75,7 +75,7 @@ static double msi[16];
 
 
 /** bcurve_tobasis:
- * Convert BCurve to a different matrix.
+ * Convert BCurve to a different basis.
  *
  * \param[in,out] bc BCurve to process (must be open and of length 4)
  * \param[in] btype target basis type
@@ -395,6 +395,8 @@ bcurve_toncurve(ay_object *o, int btype, ay_object **result)
   if((bcurve->btype != AY_BTBSPLINE) && (bcurve->length > 4 || bcurve->closed))
     return bcurve_toncurvemulti(o, result);
 
+  cv = bcurve->controlv;
+
   if(bcurve->btype != btype)
     {
       (void)ay_object_copy(o, &c);
@@ -462,6 +464,8 @@ bcurve_toncurve(ay_object *o, int btype, ay_object **result)
 
   ay_status = ay_nct_create(4, l, kt, cv, NULL,
 			    (ay_nurbcurve_object **)(void*)&(newo->refine));
+
+  cv = bcurve->controlv;
 
   if(ay_status)
     {
@@ -1543,6 +1547,147 @@ bcurve_providecb(ay_object *o, unsigned int type, ay_object **result)
 } /* bcurve_providecb */
 
 
+/** bcurve_tobasistcmd:
+ *  Convert selected BCurve objects to a different basis.
+ *
+ *  Implements the \a toBasisBC scripting interface command.
+ *
+ *  \returns TCL_OK in any case.
+ */
+int
+bcurve_tobasistcmd(ClientData clientData, Tcl_Interp *interp,
+		   int argc, char *argv[])
+{
+ int ay_status, tcl_status;
+ ay_list_object *sel = ay_selection;
+ bcurve_object *bc;
+ char **basisv = NULL;
+ int i = 1, j = 0, basisc = 0, btype = AY_BTBSPLINE;
+ int have_step = AY_FALSE, step = 0;
+ double *basis = NULL;
+
+  if(argc > 2)
+    {
+      /* parse args */
+      while(i+1 < argc)
+	{
+	  if(!strcmp(argv[i], "-s"))
+	    {
+	      have_step = AY_TRUE;
+	      tcl_status = Tcl_GetInt(interp, argv[i+1], &step);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	      if(step < 1 || step > 4)
+		{
+		  ay_error(AY_ERROR, argv[0], "Illegal step size.");
+		  goto cleanup;
+		}
+	    }
+
+	  if(!strcmp(argv[i], "-t"))
+	    {
+	      tcl_status = Tcl_GetInt(interp, argv[i+1], &btype);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	      if(btype < 0 || btype > AY_BTCUSTOM)
+		{
+		  ay_error(AY_ERROR, argv[0], "Illegal basis matrix type.");
+		  goto cleanup;
+		}
+	    }
+
+	  if(!strcmp(argv[i], "-b"))
+	    {
+	      btype = AY_BTCUSTOM;
+	      Tcl_SplitList(interp, argv[i+1], &basisc, &basisv);
+	      if(basisc == 16)
+		{
+		  if(!(basis = malloc(16*sizeof(double))))
+		    {
+		      ay_error(AY_EOMEM, argv[0], NULL);
+		      goto cleanup;
+		    }
+		  for(j = 0; j < 16; j++)
+		    {
+		      tcl_status = Tcl_GetDouble(interp, basisv[j], &basis[j]);
+		      AY_CHTCLERRGOT(tcl_status, argv[0], interp);
+		    } /* for */
+		}
+	      else
+		{
+		  ay_error(AY_ERROR, argv[0], "Basis must be 16 floats.");
+		  goto cleanup;
+		}
+
+	      Tcl_Free((char *) basisv);
+	      basisv = NULL;
+	    }
+
+	  i += 2;
+	} /* while */
+    } /* if */
+
+  if(!have_step)
+    {
+      switch(btype)
+	{
+	case AY_BTBEZIER:
+	  step = 3;
+	  break;
+	case AY_BTBSPLINE:
+	  step = 1;
+	  break;
+	case AY_BTHERMITE:
+	  step = 2;
+	  break;
+	case AY_BTCATMULLROM:
+	  step = 1;
+	  break;
+	case AY_BTPOWER:
+	  step = 4;
+	  break;
+	default:
+	  /* AY_BTCUSTOM */
+	  ay_error(AY_ERROR, argv[0], "No step specified.");
+	  goto cleanup;
+	}
+    }
+
+  while(sel)
+    {
+      if(sel->object->type == bcurve_id)
+	{
+	  bc = (bcurve_object*)sel->object->refine;
+	  ay_status = bcurve_tobasis(bc, btype, step, basis);
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, argv[0], "Conversion failed.");
+	      break;
+	    }
+	  sel->object->modified = AY_TRUE;
+	}
+      if(sel->object->modified)
+	{
+	  if(sel->object->selp)
+	    ay_selp_clear(sel->object);
+	  (void)ay_notify_object(sel->object);
+	}
+
+      sel = sel->next;
+    } /* while */
+
+  (void)ay_notify_parent();
+
+cleanup:
+
+  if(basis)
+    free(basis);
+
+  if(basisv)
+    free(basisv);
+
+ return TCL_OK;
+} /* bcurve_tobasistcmd */
+
+
 /* Bcurve_Init:
  * initializes the bcurve module/plugin by registering a new
  * object type (bcurve) and loading the accompanying Tcl script file.
@@ -1618,6 +1763,9 @@ Bcurve_Init(Tcl_Interp *interp)
 
   /* invert B-Spline basis matrix */
   (void)ay_trafo_invgenmatrix(ms, msi);
+
+  Tcl_CreateCommand(interp, "toBasisBC", bcurve_tobasistcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
  return TCL_OK;
 } /* Bcurve_Init */
