@@ -91,7 +91,7 @@ ay_toglcb_create(struct Togl *togl)
 
   if(ay_prefs.globalmark)
     {
-      /* set the mark (if there is atleast one other view) */
+      /* set the mark (if there is at least one other view) */
       d = ay_root->down;
       while(d->next)
 	{
@@ -355,6 +355,7 @@ ay_toglcb_display(struct Togl *togl)
 
       if(view->action_state)
 	{
+	  /* in action => restore draw/display parameters */
 	  ay_prefs.np_display_mode = npdm;
 	  ay_prefs.nc_display_mode = ncdm;
 	  ay_prefs.glu_sampling_tolerance = tol;
