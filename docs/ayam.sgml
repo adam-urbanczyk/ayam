@@ -33,7 +33,7 @@ code example of 6 lines text (needs another 2 for the upper/lower lines)
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>15. Oct 2017
+<date>12. Nov 2017
 
 <abstract>
 This is the documentation of Ayam 1.25 &ndash; a free 3D modelling environment
@@ -4372,8 +4372,8 @@ If the <tt/&lt;Ctrl&gt;/-key is held down while clicking on a point,
 the new point can interactively be placed on a freely chosen
 position.<footnote>Since 1.25.</footnote>
 This is done by initially giving the new point the coordinates of the
-clicked point, selecting the new point (while also de-selecting all
-other points), and then, temporarily, enabling the move point action.
+clicked point, from there, the new point can be dragged to the
+final position.
 <p>
 The modelling action <tt/"Delete Point"/ (shortcut: <tt/&lt;d&gt;/)
 may be applied to NURBS, interpolating, and approximating curves
@@ -22454,6 +22454,9 @@ value is <tt>""</tt> (empty string).
 <item><tt/"ALFileTypes"/, <tt/"ALPlugins"/ two lists that describe
 file name extensions and corresponding plugins that import and export
 files of the type designated by the file name extensions.
+The default values of these options are<newline>
+&nbsp;&nbsp;<tt/&lcub; ".rib" ".3dm" ".obj" ".3dmf" ".mop" ".dxf" ".x3d" &rcub;/<newline> and <newline>
+&nbsp;&nbsp;<tt/&lcub; "rrib" "onio" "objio" "mfio" "mopsi" "dxfio" "x3dio" &rcub;/
 
 <item><tt/"AllowWarp"/: controls whether the mouse pointer should be
 moved to the new position of points snapped to the grid while editing
@@ -22632,10 +22635,8 @@ views from the hierarchy and the third view) is e.g.~a bit larger
 so that the main menu may not be obscured easily (the corresponding
 value is 5.0). The default value for the console (20.0) leads to a
 small margin, so that the console may be shrunk to 2 or even 1 lines
-of text. The default values are
-<tscreen><tt>
-{20.0 5.0 10.0 10.0 10.0}
-</tt></tscreen>
+of text. The default values are<newline>
+&nbsp;&nbsp;<tt/&lcub; 20.0 5.0 10.0 10.0 10.0 &rcub;/
 
 <item><tt/"PickTolerance"/: the tolerance used to determine whether an object
 should be picked or not (default: 5); this setting determines the size
@@ -22647,8 +22648,9 @@ control the offsetting of shaded surfaces in the shade and draw
 drawing mode (so that the curves always appear on top of the surfaces).
 Default values are 1.0, 1.0.
 
-<item><tt/"Prompt"/: controls the prompt for the Ayam console. If
-set to an empty string, a default of
+<item><tt/"Prompt"/: controls the prompt for the Ayam console.
+See also section <ref id="cons" name="The Console">. If this
+option is set to an empty string, a default of
 <tscreen><tt>
 \[Undo:$ay(undoo)/Redo:$ay(redoo)\]\[Repeat:$ay(repo)\].../[file tail [pwd]]&gt;
 </tt></tscreen>
@@ -22658,10 +22660,9 @@ the current directory of Ayam like this:
 <tscreen><tt>
 [Undo:None/Redo:None][Repeat:None].../scn&gt;
 </tt></tscreen>
-.
 
 <p>
-If this would be set to <tt/"[pwd]&gt;"/ the prompt would display
+If this option would be set to <tt/"[pwd]&gt;"/ the prompt would display
 the full path name of the current directory instead.
 <p>
 To display the value of an arbitrary Tcl variable in the prompt
@@ -22672,7 +22673,6 @@ and may e.g.~be established using a small script like this:
 <tscreen><tt>
 trace variable &lt;vname&gt; ayam_updateprompt
 </tt></tscreen>
-.
 
 <item><tt/"PVTexCoordName"/, default name for texture coordinate PV
 tags, the default value is "st".
@@ -22735,19 +22735,26 @@ just simple entry widgets. Default 0, use standard UI elements.
 shaders when scanning for shaders. Default 1 &ndash; yes.
 <footnote>Since 1.22.</footnote>
 
-<item><tt/"SwapMB"/, <tt/"SwapMBSC"/ allow to swap mouse buttons 2 and 3
-on MacOSX/Aqua (not X11!) for specified mouse bindings (<tt/"SwapMBSC"/),
-because on MacOSX/Aqua, traditionally, the naming of the
-middle and rightmost mouse button is reversed compared to X11/Win32.
+<item><tt/"SwapMB"/, allows to swap mouse buttons 2 and 3
+on MacOSX/Aqua (not X11!) for the mouse bindings specified in
+<tt/"SwapMBSC"/ below, because on MacOSX/Aqua, traditionally, the
+naming of the middle and rightmost mouse button is reversed compared to
+X11/Win32.
 This option is enabled by default on MacOSX/Aqua and allows to use
 the same set of mouse bindings (the same ayamrc file) for X11 and
 Aqua without sacrificing user experience. The middle mouse button,
 by default, zooms the view, and the right one moves the view.
 
+<item><tt/"SwapMBSC"/ contains the mouse bindings to be swapped,
+when <tt/"SwapMB"/ above is activated.
+The default value of this option is<newline>
+&nbsp;&nbsp;<tt/&lcub; "ayviewshortcuts(MoveVButton)" "ayviewshortcuts(ZoomVButton)" &rcub;/
+
 <item><tt/"toolBoxList"/: a list of sections or groups of buttons
 describing the appearance of the toolbox window (default, using all
 available sections: <tt>{trafo trafo2 solids misco nurbs toolobjs points
 nctools1 nctools2 camera misc}</tt>).
+See also section <ref id="toolb" name="The Toolbox Window">.
 
 <item><tt>"ToolBoxShrink"</tt>, controls whether the toolbox window
 should shrink wrap around its contents after a resize operation.
@@ -22773,7 +22780,7 @@ requester? (default: 1 &ndash; yes)
 <item><tt/"WarnUnknownTag"/ controls the warning messages for
 unknown tag types (default: 1 &ndash; yes).
 
-<item><tt/"Wait"/: set this to <tt/"waitPid"/ to enable the work around
+<item><tt/"Wait"/: set this to <tt/"waitPid"/ to enable a work around
 for zombie processes created by the Rendering GUI.
 This is e.g.~necessary for the Linux platform.
 
