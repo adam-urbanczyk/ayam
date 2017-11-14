@@ -597,10 +597,6 @@ ay_selp_centertcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	}
 
-      /* recover point selection */
-      ay_selp_clear(o);
-      o->selp = oldpointsel;
-
       if(ay_status)
 	{
 	  ay_error(ay_status, argv[0], "Could not center.");
@@ -610,6 +606,10 @@ ay_selp_centertcmd(ClientData clientData, Tcl_Interp *interp,
 	  o->modified = AY_TRUE;
 	  ay_notify_object(o);
 	}
+
+      /* recover point selection */
+      ay_selp_clear(o);
+      o->selp = oldpointsel;
 
       sel = sel->next;
     } /* while */
