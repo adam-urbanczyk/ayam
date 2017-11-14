@@ -867,10 +867,10 @@ $sm add command -label "Explode Points" -command {explMP; rV; set ay(sc) 1}\
 $sm add separator
 
 $sm add command -label "Apply Trafo To All Points"\
-    -command "undo save ApplyTrafo; applyTrafo; plb_update; notifyOb; rV" \
+    -command "undo save ApplyTrafo; applyTrafo; plb_update; rV" \
     -underline 0
 $sm add command -label "Apply Trafo To Selected Points"\
-    -command "undo save ApplyTrafo; applyTrafo -sel; plb_update; notifyOb; rV" \
+    -command "undo save ApplyTrafo; applyTrafo -sel; plb_update; rV" \
     -underline 1
 $sm add command -label "Center All Points (3D)"\
     -command "undo save CenterPnts; centerPnts; plb_update; rV" \

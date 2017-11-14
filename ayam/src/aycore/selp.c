@@ -132,7 +132,7 @@ ay_selp_applytrafotcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
  ay_point *bak = NULL, *p = NULL;
- int all = AY_TRUE;
+ int all = AY_TRUE, notify_parent = AY_FALSE;
  double m[16];
 
   if(argc > 2)
@@ -180,6 +180,8 @@ ay_selp_applytrafotcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  /* clear trafo */
 	  ay_trafo_defaults(o);
+	  (void)ay_notify_object(o);
+	  notify_parent = AY_TRUE;
 	}
 
       /* restore old selected points */
@@ -190,6 +192,9 @@ ay_selp_applytrafotcmd(ClientData clientData, Tcl_Interp *interp,
 	}
 
     } /* while */
+
+  if(notify_parent)
+    ay_notify_parent();
 
  return TCL_OK;
 } /* ay_selp_applytrafotcmd */
@@ -854,7 +859,7 @@ cleanup:
  *
  * \param[in,out] o curve object to process
  * \param[in] index designates the removed point
- * 
+ *
  * \returns AY_OK on success, error code otherwise.
  */
 int
@@ -905,8 +910,8 @@ ay_selp_rem(ay_object *o, unsigned int index)
  *
  * \param[in,out] o curve object to process
  * \param[in] index designates the point after which the new point is inserted
- * 
- * \returns AY_OK on success, error code otherwise. 
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_selp_ins(ay_object *o, unsigned int index)
@@ -1123,7 +1128,7 @@ ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
 
 /** ay_selp_selectmpnc:
  * properly select all points of multiple points of a NURBS curve
- * 
+ *
  * \param[in,out] o NURBS curve object to process
  * \param[in] select_all if AY_TRUE, all points of all multiple points
  *   will be selected;
