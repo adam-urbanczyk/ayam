@@ -652,6 +652,7 @@ set oldy 0
 
 # application state; miscellaneous global values
 array set ay {
+ bca ""
  pady 3
  failsafe 0
  showsplash 1

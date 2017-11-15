@@ -49,6 +49,20 @@ proc uie_fixEntry { w } {
 # uie_fixEntry
 
 
+proc uie_getEscCmd { w } {
+    global ay
+
+    if { [winfo toplevel $w] == "." } {
+	if { ! [winfo exists $ay(bok)] } {
+	    set ay(bok) $ay(appb)
+	}
+	return "resetFocus;break"
+    } else {
+	return "after idle {$ay(bca) invoke}"
+    }
+}
+
+
 # uie_setLabelWidth:
 #
 #
@@ -192,12 +206,7 @@ proc addParamB { w prop name help {def {}} } {
 proc addParam { w prop name {def {}} } {
     global $prop ay ayprefs
 
-    if { [winfo toplevel $w] == "." } {
-	set escapecmd "resetFocus;break"
-    } else {
-	set escapecmd "after idle {$ay(bca) invoke}"
-    }
-
+    set escapecmd [uie_getEscCmd $w]
     set bw 1
 
     regsub -all $ay(fixvname) $name "_" fname
@@ -344,12 +353,7 @@ proc addMatrixB { w prop name help } {
 proc addMatrix { w prop name } {
     global $prop ay ayprefs
 
-    if { [winfo toplevel $w] == "." } {
-	set escapecmd "resetFocus;break"
-    } else {
-	set escapecmd "after idle {$ay(bca) invoke}"
-    }
-
+    set escapecmd [uie_getEscCmd $w]
     set bw 1
 
     set f [frame $w.f${name} -relief sunken -bd $bw]
@@ -493,12 +497,7 @@ proc addColorB { w prop name help {def {}} } {
 proc addColor { w prop name {def {}} } {
     global $prop ay ayprefs aymainshortcuts
 
-    if { [winfo toplevel $w] == "." } {
-	set escapecmd "resetFocus;break"
-    } else {
-	set escapecmd "after idle {$ay(bca) invoke}"
-    }
-
+    set escapecmd [uie_getEscCmd $w]
     set bw 1
 
     # first, we create a label on its own line
@@ -649,14 +648,8 @@ proc addCheckB { w prop name help {onoffvals ""} } {
 proc addCheck { w prop name {onoffvals ""} } {
     global $prop ay ayprefs aymainshortcuts
 
-    if { [winfo toplevel $w] == "." } {
-	set escapecmd "resetFocus;break"
-    } else {
-	set escapecmd "after idle {$ay(bca) invoke}"
-    }
-
+    set escapecmd [uie_getEscCmd $w]
     set bw 1
-    set ws ""
 
     regsub -all $ay(fixvname) $name "_" fname
     set f [frame $w.f${fname} -relief sunken -bd $bw]
@@ -765,12 +758,7 @@ proc addMenuB { w prop name help elist } {
 proc addMenu { w prop name elist } {
     global $prop ay ayprefs aymainshortcuts
 
-    if { [winfo toplevel $w] == "." } {
-	set escapecmd "resetFocus;break"
-    } else {
-	set escapecmd "after idle {$ay(bca) invoke}"
-    }
-
+    set escapecmd [uie_getEscCmd $w]
     set bw 1
 
     regsub -all $ay(fixvname) $name "_" fname
@@ -860,13 +848,10 @@ proc addStringB { w prop name help {def {}} } {
 proc addString { w prop name {def {}} } {
     global $prop ay ayprefs
 
-    if { [winfo toplevel $w] == "." } {
-	set escapecmd "resetFocus;break"
-    } else {
-	set escapecmd "after idle {$ay(bca) invoke}"
-	if { $ay(ws) == "Win32" } {
-	    append escapecmd ";break"
-	}
+    set escapecmd [uie_getEscCmd $w]
+
+    if { $ay(ws) == "Win32" } {
+	append escapecmd ";break"
     }
 
     set bw 1
@@ -1083,12 +1068,7 @@ proc addFileB { w prop name help {def {}} } {
 proc addFile { w prop name {def {}} } {
     global $prop ay ayprefs
 
-    if { [winfo toplevel $w] == "." } {
-	set escapecmd "resetFocus;break"
-    } else {
-	set escapecmd "after idle {$ay(bca) invoke}"
-    }
-
+    set escapecmd [uie_getEscCmd $w]
     set bw 1
 
     set f [frame $w.f${name} -relief sunken -bd $bw]
@@ -1194,12 +1174,7 @@ proc addMDirB { w prop name help } {
 proc addMDir { w prop name } {
     global $prop ay ayprefs
 
-    if { [winfo toplevel $w] == "." } {
-	set escapecmd "resetFocus;break"
-    } else {
-	set escapecmd "after idle {$ay(bca) invoke}"
-    }
-
+    set escapecmd [uie_getEscCmd $w]
     set bw 1
 
     set f [frame $w.f${name} -relief sunken -bd $bw]
@@ -1279,12 +1254,7 @@ proc addMFileB { w prop name help } {
 proc addMFile { w prop name } {
     global $prop ay ayprefs
 
-    if { [winfo toplevel $w] == "." } {
-	set escapecmd "resetFocus;break"
-    } else {
-	set escapecmd "after idle {$ay(bca) invoke}"
-    }
-
+    set escapecmd [uie_getEscCmd $w]
     set bw 1
 
     set f [frame $w.f${name} -relief sunken -bd $bw]
@@ -1366,12 +1336,7 @@ proc addCommandB { w name text command help } {
 proc addCommand { w name text command } {
     global ay ayprefs aymainshortcuts
 
-    if { [winfo toplevel $w] == "." } {
-	set escapecmd "resetFocus;break"
-    } else {
-	set escapecmd "after idle {$ay(bca) invoke}"
-    }
-
+    set escapecmd [uie_getEscCmd $w]
     set bw 1
 
     set f [frame $w.f${name} -relief sunken -bd $bw]
