@@ -341,8 +341,8 @@ ms_set en info_sm2 "Manual ShadowMaps should be enabled!\
 		\nSelect \"Cancel\" to stop operation."
 
 ms_set en info_warning "Warning!"
-ms_set en info_pc1 "This operation may destroy the current property.\n\
-    Proceed with caution."
+ms_set en info_pc1 "This operation may destroy the current property.\
+    \nProceed with caution."
 
 ms_set en info_rc1 "Correct Curve?"
 ms_set en info_rc2 "Rotate curve to correct plane?"
@@ -570,8 +570,8 @@ ms_set de objio_options_WriteCurves "Sollen NURBS Kurven exportiert werden?"
 # info dialogs
 ms_set de cancel "Abbrechen"
 ms_set de info_sc1 "Szene geändert!"
-ms_set de info_sc2 "\"OK\" - Änderungen verwerfen.\n\
-    \"Cancel\" - Operation abbrechen."
+ms_set de info_sc2 "\"OK\" - Änderungen verwerfen.\
+    \n\"Cancel\" - Operation abbrechen."
 ms_fixcancel de info_sc1
 
 ms_set de info_rs1 "Neustart erforderlich!"
@@ -579,14 +579,14 @@ ms_set de info_rs2 "Ayam muss neu gestartet werden,\num die Änderungen anzuwende
 
 ms_set de info_warning "Warnung!"
 ms_set de info_pc1 "Diese Operation kann die aktuelle Eigenschaft zerstören.\
-		\n\"OK\" - fortfahren,\
-		\n\"Cancel\" - Operation abbrechen."
+    \n\"OK\" - fortfahren,\
+    \n\"Cancel\" - Operation abbrechen."
 ms_fixcancel de info_pc1
 
 ms_set de info_sm1 "Konfiguration problematisch!"
 ms_set de info_sm2 "Manuelle Schattenkarten sollten eingeschaltet sein!\
-		\n\"OK\" - einschalten und fortfahren.\
-		\n\"Cancel\" - Operation abbrechen."
+    \n\"OK\" - einschalten und fortfahren.\
+    \n\"Cancel\" - Operation abbrechen."
 ms_fixcancel de info_sm2
 
 ms_set de info_rc1 "Kurve korrigieren?"
