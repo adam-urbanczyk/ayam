@@ -7,7 +7,7 @@
 #
 # See the file License for details.
 
-# User Interface Elements for Property GUIs, Preferences, Tool Dialogs,
+# User Interface Elements (UIE) for Property GUIs, Preferences, Tool Dialogs,
 # and Import/Export Dialogs
 
 # uie_callhelp:
@@ -29,10 +29,9 @@ proc uie_callhelp { w } {
 }
 # uie_callhelp
 
-
 # uie_fixEntry:
-#
-#
+#  helper for entry field based elements, fix tab bindings,
+#  add help binding
 proc uie_fixEntry { w } {
     global tcl_version tcl_platform aymainshortcuts
 
@@ -48,7 +47,9 @@ proc uie_fixEntry { w } {
 }
 # uie_fixEntry
 
-
+# uie_getEscCmd:
+#  helper to get correct escape command, also checks and fixes
+#  the current ok button for <Enter>/<Return>
 proc uie_getEscCmd { w } {
     global ay
 
@@ -61,7 +62,7 @@ proc uie_getEscCmd { w } {
 	return "after idle {$ay(bca) invoke}"
     }
 }
-
+# uie_getEscCmd
 
 # uie_setLabelWidth:
 #
@@ -79,10 +80,9 @@ proc uie_setLabelWidth { w width } {
 }
 # uie_setLabelWidth
 
-
-#
-#
-#
+# updateParam:
+# helper for addParam below;
+# realize changes made by the "<"/">" buttons
 proc updateParam { w prop name op } {
     global $prop
 
@@ -187,9 +187,7 @@ proc updateParam { w prop name op } {
 }
 # updateParam
 
-#
-#
-#
+# addParam with balloon help
 proc addParamB { w prop name help {def {}} } {
 
     addParam $w $prop $name $def
@@ -200,9 +198,8 @@ proc addParamB { w prop name help {def {}} } {
 }
 # addParamB
 
-#
-#
-#
+# addParam:
+#  add UIE for manipulation of a single numeric parameter
 proc addParam { w prop name {def {}} } {
     global $prop ay ayprefs
 
@@ -318,9 +315,8 @@ proc addParam { w prop name {def {}} } {
 }
 # addParam
 
-#
-#
-#
+# addParamPair:
+#  add a pair of Param UIEs with one name
 proc addParamPair { w prop name {def {}} } {
     set fdef {}
     set sdef {}
@@ -334,9 +330,7 @@ proc addParamPair { w prop name {def {}} } {
 }
 # addParamPair
 
-#
-#
-#
+# addMatrix with balloon help
 proc addMatrixB { w prop name help } {
 
     addMatrix $w $prop $name
@@ -347,9 +341,8 @@ proc addMatrixB { w prop name help } {
 }
 # addMatrixB
 
-#
-#
-#
+# addMatrix:
+#  add a UIE for the manipulation of a 4*4 matrix
 proc addMatrix { w prop name } {
     global $prop ay ayprefs
 
@@ -478,9 +471,7 @@ proc updateColorFromE { w prop name button } {
 }
 # proc updateColorFromE
 
-#
-#
-#
+# addColor with balloon help
 proc addColorB { w prop name help {def {}} } {
 
     addColor $w $prop $name $def
@@ -491,9 +482,8 @@ proc addColorB { w prop name help {def {}} } {
 }
 # addColorB
 
-#
-#
-#
+# addColor:
+#  add UIE for a color parameter
 proc addColor { w prop name {def {}} } {
     global $prop ay ayprefs aymainshortcuts
 
@@ -629,9 +619,7 @@ proc addColor { w prop name {def {}} } {
 }
 # addColor
 
-#
-#
-#
+# addCheck with balloon help
 proc addCheckB { w prop name help {onoffvals ""} } {
 
     addCheck $w $prop $name $onoffvals
@@ -642,9 +630,8 @@ proc addCheckB { w prop name help {onoffvals ""} } {
 }
 # addCheckB
 
-#
-#
-#
+# addCheck:
+#  add UIE for a boolean parameter
 proc addCheck { w prop name {onoffvals ""} } {
     global $prop ay ayprefs aymainshortcuts
 
@@ -739,9 +726,7 @@ proc updateMenu { m name1 name2 op } {
 }
 # updateMenu
 
-#
-#
-#
+# addMenu with balloon help
 proc addMenuB { w prop name help elist } {
 
     addMenu $w $prop $name $elist
@@ -752,9 +737,8 @@ proc addMenuB { w prop name help elist } {
 }
 # addMenuB
 
-#
-#
-#
+# addMenu:
+#  add UIE for a choice parameter realized as drop-down menu
 proc addMenu { w prop name elist } {
     global $prop ay ayprefs aymainshortcuts
 
@@ -829,9 +813,7 @@ proc addMenu { w prop name elist } {
 }
 # addMenu
 
-#
-#
-#
+# addString with balloon help
 proc addStringB { w prop name help {def {}} } {
 
     addString $w $prop $name $def
@@ -842,9 +824,8 @@ proc addStringB { w prop name help {def {}} } {
 }
 # addStringB
 
-#
-#
-#
+# addString:
+#  add UIE for a string parameter
 proc addString { w prop name {def {}} } {
     global $prop ay ayprefs
 
@@ -932,9 +913,7 @@ proc entryViewEnd { w } {
 }
 # entryViewEnd
 
-#
-#
-#
+# addFileT with balloon help
 proc addFileTB { w prop name ftypes help {def {}} } {
 
     addFileT $w $prop $name $ftypes $def
@@ -945,9 +924,8 @@ proc addFileTB { w prop name ftypes help {def {}} } {
 }
 # addFileTB
 
-#
-#
-#
+# addFileT:
+#  add UIE for a file name with specified file type
 proc addFileT { w prop name ftypes {def {}} } {
 
     addFile $w $prop $name $def
@@ -976,9 +954,8 @@ proc addFileT { w prop name ftypes {def {}} } {
 }
 # addFileT
 
-#
-#
-#
+# addSFileT:
+#  add UIE for a file name for saving with specified file type
 proc addSFileT { w prop name ftypes {def {}} } {
 
     addFile $w $prop $name $def
@@ -1007,9 +984,8 @@ proc addSFileT { w prop name ftypes {def {}} } {
 }
 # addSFileT
 
-#
-#
-#
+# addSFile:
+#  add UIE for a file name for saving
 proc addSFile { w prop name {def {}} } {
 
     addFile $w $prop $name $def
@@ -1036,9 +1012,7 @@ proc addSFile { w prop name {def {}} } {
 }
 # addSFile
 
-#
-#
-#
+# addSFile with balloon help
 proc addSFileB { w prop name help {def {}} } {
 
     addSFile $w $prop $name $def
@@ -1049,9 +1023,7 @@ proc addSFileB { w prop name help {def {}} } {
 }
 # addSFileB
 
-#
-#
-#
+# addFile with balloon help
 proc addFileB { w prop name help {def {}} } {
 
     addFile $w $prop $name $def
@@ -1062,9 +1034,8 @@ proc addFileB { w prop name help {def {}} } {
 }
 # addFileB
 
-#
-#
-#
+# addFile:
+#  add UIE for a file name
 proc addFile { w prop name {def {}} } {
     global $prop ay ayprefs
 
@@ -1155,9 +1126,7 @@ proc addFile { w prop name {def {}} } {
 }
 # addFile
 
-#
-#
-#
+# addMDir with balloon help
 proc addMDirB { w prop name help } {
 
     addMDir $w $prop $name
@@ -1168,9 +1137,8 @@ proc addMDirB { w prop name help } {
 }
 # addMDirB
 
-#
-#
-#
+# addMDir:
+#  add UIE for a list of directory names
 proc addMDir { w prop name } {
     global $prop ay ayprefs
 
@@ -1235,9 +1203,7 @@ proc addMDir { w prop name } {
 }
 # addMDir
 
-#
-#
-#
+# addMFile with balloon help
 proc addMFileB { w prop name help } {
 
     addMFile $w $prop $name
@@ -1248,9 +1214,8 @@ proc addMFileB { w prop name help } {
 }
 # addMFileB
 
-#
-#
-#
+# addMFile:
+#  add a UIE for a list of file names
 proc addMFile { w prop name } {
     global $prop ay ayprefs
 
@@ -1317,9 +1282,7 @@ proc addMFile { w prop name } {
 }
 # addMFile
 
-#
-#
-#
+# addCommand with balloon help
 proc addCommandB { w name text command help } {
 
     addCommand $w $name $text $command
@@ -1330,9 +1293,8 @@ proc addCommandB { w name text command help } {
 }
 # addCommandB
 
-#
-#
-#
+# addCommand:
+#  add UIE to let the user start an action
 proc addCommand { w name text command } {
     global ay ayprefs aymainshortcuts
 
@@ -1359,9 +1321,8 @@ proc addCommand { w name text command } {
 }
 # addCommand
 
-#
-#
-#
+# addText:
+#  add UIE to display static text (e.g. group/section names)
 proc addText { w name text } {
 
     set f [frame $w.f${name}]
@@ -1399,8 +1360,8 @@ proc updateInfoBalloon { f name1 name2 op } {
 }
 # updateInfoBalloon
 
-#
-#
+# addInfo:
+#  add UIE to convey dynamic textual information with a label
 #
 proc addInfo { w prop name } {
     set bw 1
@@ -1427,8 +1388,7 @@ proc addInfo { w prop name } {
 # addInfo
 
 # updateProgress:
-#
-#
+# helper for addProgress below
 proc updateProgress { w n1 n2 op } {
     if { $n2 != "" } {
 	global $n1
@@ -1439,8 +1399,7 @@ proc updateProgress { w n1 n2 op } {
 # updateProgress
 
 # addProgress:
-#
-#
+#  add UIE to convey arbitrary operation progress
 proc addProgress { w prop name } {
     global $prop
 
@@ -1469,7 +1428,7 @@ proc addProgress { w prop name } {
 # addProgress
 
 # addVSpace
-#  add vertical space elementto improve property GUI layouts
+#  add vertical space element to improve property GUI layouts
 #  that do not start with labels
 proc addVSpace { w name h } {
     set f [frame $w.f${name}]
@@ -1482,7 +1441,6 @@ proc addVSpace { w name h } {
 
 # addPropertyGUI:
 #  create frame and global property management array
-#
 proc addPropertyGUI { name {sproc ""} {gproc ""} } {
     global ay $name
 
@@ -1503,7 +1461,7 @@ proc addPropertyGUI { name {sproc ""} {gproc ""} } {
 }
 # addPropertyGUI
 
-# updateOption:
+# updateOptionToggle:
 # helper for addOptionToggle below;
 # toggles the button image and calls the user specified toggling command
 proc updateOptionToggle { w prop name cmd } {
@@ -1523,8 +1481,7 @@ proc updateOptionToggle { w prop name cmd } {
 # updateOptionToggle
 
 # addOptionToggle:
-#
-#
+#  add UIE to show/hide additional UIEs
 proc addOptionToggle { w prop name txt cmd } {
     global $prop ay ayprefs
     set bw 1
