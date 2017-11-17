@@ -2953,15 +2953,13 @@ ay_viewt_getrolledup(ay_view_object *view, double *u)
 /** ay_viewt_worldtowin:
  * Project world coordinates to window coordinates.
  *
- * \param[in] togl view
  * \param[in] world input world coordinates (double[3])
  * \param[in,out] win where to store the result (double[2])
  */
 void
-ay_viewt_worldtowin(struct Togl *togl, double *world, double *win)
+ay_viewt_worldtowin(double *world, double *win)
 {
  double winx, winy, dummy, mm[16], pm[16];
- int height = Togl_Height(togl);
  GLint vp[4], gl_status = GL_TRUE;
 
   glGetIntegerv(GL_VIEWPORT, vp);
