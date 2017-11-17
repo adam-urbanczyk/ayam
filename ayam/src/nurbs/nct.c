@@ -2805,7 +2805,7 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 	  u = pe.coords[0][3];
 
 	  memcpy(worldXYZ, pe.coords[0], 3*sizeof(double));
-	  ay_viewt_worldtowin(togl, worldXYZ, winXY);
+	  ay_viewt_worldtowin(worldXYZ, winXY);
 
 	  nc = (ay_nurbcurve_object*) o->refine;
 	  i = 0;
