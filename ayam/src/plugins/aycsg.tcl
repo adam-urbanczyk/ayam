@@ -94,8 +94,8 @@ foreach view $ay(views) {
 
 uplevel #0 {
     array set aycsg_options {
-	Algorithm 0
-	DCSampling 0
+	Algorithm 1
+	DCSampling 1
 	OffscreenType 0
 	Optimization 0
 	CalcBBS 0
@@ -216,7 +216,7 @@ proc aycsgPreferences { } {
 
 # add aycsg-preferences dialog to custom menu
 set m $ay(cm)
-$m add command -label "AyCSG Preferences" -command aycsgPreferences 
+$m add command -label "AyCSG Preferences" -command aycsgPreferences
 
 # we always need an open view (OpenGL context) upon startup for the
 # GLEW initialization, if there is none, we open it here
