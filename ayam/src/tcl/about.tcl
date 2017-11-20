@@ -45,7 +45,7 @@ All Rights Reserved
 See the file License for details.
 
 For additional information new versions etc. see:
-http://www.ayam3d.org/
+http://ayam.sourceforge.net/
 
 http://www.marsrakete.de/~randi/ayam/
 
@@ -62,7 +62,7 @@ $w.ftext.text tag configure httag1 -relief raised -borderwidth 1
 $w.ftext.text tag configure httag2 -relief raised -borderwidth 1
 $w.ftext.text tag configure httag3 -relief raised -borderwidth 1
 $w.ftext.text tag bind httag1 <ButtonPress-1> {
-    browser_urlOpen "http://www.ayam3d.org/"}
+    browser_urlOpen "http://ayam.sourceforge.net/"}
 $w.ftext.text tag bind httag2 <ButtonPress-1> {
     browser_urlOpen "http://www.marsrakete.de/~randi/ayam/"}
 $w.ftext.text insert end \

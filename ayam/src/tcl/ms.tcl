@@ -36,7 +36,7 @@ proc ms_create { lang } {
     puts $newfile "# Emacs, this is -*- Mode: Tcl -*-\n"
     puts $newfile "# This is a translation file for Ayam, a free"
     puts $newfile "# 3D modeling environment for the RenderMan interface."
-    puts $newfile "# See: http://www.ayam3d.org/\n"
+    puts $newfile "# See: http://ayam.sourceforge.net/\n"
     puts $newfile "# Edit, if you wish, but keep in mind:"
     puts $newfile "# _This file is parsed by Tcl!_\n"
 
