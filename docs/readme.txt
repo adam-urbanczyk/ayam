@@ -94,4 +94,4 @@ o Now enter into a normal shell:
   >pdflatex myrefcard.tex
 
 -- 
-http://www.ayam3d.org/   Reconstruct the World!
+http://ayam.sourceforge.net/   Reconstruct the World!
