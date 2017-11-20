@@ -2125,7 +2125,7 @@ extern char *ay_error_igntype;
 
 /** \name Version Strings and Numbers */
 /*@{*/
-#define AY_VERSIONSTR "1.25pre"
+#define AY_VERSIONSTR "1.25"
 #define AY_VERSIONSTRMI "0"
 
 #define AY_VERSIONMA 1
@@ -2151,9 +2151,9 @@ extern char *ay_error_igntype;
  *  available in the source code.
  *
  *  Other places of interest:
- *  - Official Ayam home page: http://www.ayam3d.org/
+ *  - Official Ayam home page: http://ayam.sourceforge.net/
  *  - WebCVS: http://ayam.cvs.sourceforge.net/viewvc/ayam/ayam/
- *  - Official user level documentation: http://www.ayam3d.org/docs/
+ *  - Official user level documentation: http://ayam.sourceforge.net/docs/
  *
  */
 
