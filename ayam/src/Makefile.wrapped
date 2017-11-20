@@ -397,6 +397,8 @@ CSPHEREOBJS = plugins/csphere.o
 
 SFCURVEOBJS = plugins/sfcurve.o
 
+BCURVEOBJS = plugins/bcurve.o
+
 IDROBJS = plugins/idr.o
 
 METAOBJS = contrib/meta/metaobj.o \
@@ -587,6 +589,9 @@ csphere.so: $(CSPHEREOBJS)
 
 sfcurve.so: $(SFCURVEOBJS)
 	$(CC) $(SHLFLAGS) $(SFCURVEOBJS) -o plugins/sfcurve.so
+
+bcurve.so: $(BCURVEOBJS)
+	$(CC) $(SHLFLAGS) $(BCURVEOBJS) -o plugins/bcurve.so
 
 idr.so: $(IDROBJS)
 	$(CC) $(SHLFLAGS) $(IDROBJS) -o plugins/idr.so $(TIFFLIB)
