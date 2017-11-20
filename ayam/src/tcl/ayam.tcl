@@ -307,10 +307,10 @@ on its name, then press <Ctrl+Shift+i> (Copy Marked Prop).}
 {Drag geometric objects into a view to zoom the view to them.}
 {Drag light objects into a view to look through the light.}
 {Menu keyboard shortcuts do not work? Press <Esc> first!}
-{Check http://www.ayam3d.org/ for the latest hotfix!}
+{Check http://ayam.sourceforge.net/ for the latest hotfix!}
 {Hold down <Shift> while clicking in property GUIs for instant apply.}
 {Ayam is stuck in Tcl errors? Run the script "repairAyam.tcl".}
-{There is a FAQ on http://www.ayam3d.org/faq.html!}
+{There is a FAQ on http://ayam.sourceforge.net/faq.html!}
 {Tree updates slowly? Always work in sub-levels!}
 {The <Return> key in property GUIs now does an instant apply.}
 {Tired of the splash screen? Set the environment variable AYNOSPLASH.}

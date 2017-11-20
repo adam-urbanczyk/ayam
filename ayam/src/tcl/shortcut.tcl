@@ -1235,7 +1235,7 @@ proc shortcut_callcshelp { base tag } {
 # shortcut_addcshelp:
 #  add context sensitive help binding to window <w>
 #  base: html file, e.g. ayam-5.html, tag: html tag, e.g. tesst
-#  => http://www.ayam3d.org/docs/ayam-5.html#tesst
+#  => http://ayam.sourceforge.net/docs/ayam-5.html#tesst
 proc shortcut_addcshelp { w base tag } {
     global aymainshortcuts
     bind $w <[repctrl $aymainshortcuts(Help)]> "shortcut_callcshelp $base $tag"
