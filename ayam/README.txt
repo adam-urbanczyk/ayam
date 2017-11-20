@@ -54,10 +54,10 @@ o ayam.pdf       - the Ayam documentation in PDF format
 
 For more up to date information, new versions etc. please see the
 Ayam home page:
-http://www.ayam3d.org/
+http://ayam.sourceforge.net/
 
 or the mirror at:
 http://www.marsrakete.de/~randi/ayam/ayam.html
 
 -- 
-http://www.ayam3d.org/    Reconstruct the World!
+http://ayam.sourceforge.net/    Reconstruct the World!
