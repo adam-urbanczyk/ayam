@@ -1606,11 +1606,7 @@ the URL to display is taken from the <tt/"Docs"/ preference setting.
 
 <item><tt/"Help on object"/, opens a web browser and displays
 documentation about the currently selected type of object,
-the URL to display is derived from the <tt/"Docs"/ preference setting,
-this feature will not work with frame redirects
-e.g.~<tt>"http://www.ayam3d.org/"</tt>; use
-<tt>"http://ayam.sourceforge.net/docs/"</tt> or a <tt>"file:"</tt>-URL
-as base URL in the <tt/"Docs"/ preference setting instead!
+the URL to display is derived from the <tt/"Docs"/ preference setting.
 
 <item><tt/"Help on property"/, opens a web browser and displays
 documentation about the currently selected property, the URL
@@ -23371,10 +23367,10 @@ WWW resources related to Ayam:
 <itemize>
 <item>If you are reading this document from a local file system,
 maybe an updated version is available from the internet:
-<tt>http://www.ayam3d.org/docs/ayam.html</tt>
+<tt>http://ayam.sourceforge.net/docs/ayam.html</tt>
 <item>Ayam Tutorial #1:
-<tt>http://www.ayam3d.org/tut1/tutorial1.html</tt>
-<item>The Ayam FAQ: <tt>http://www.ayam3d.org/faq.html</tt>
+<tt>http://ayam.sourceforge.net/tut1/tutorial1.html</tt>
+<item>The Ayam FAQ: <tt>http://ayam.sourceforge.net/faq.html</tt>
 </itemize>
 
 WWW resources related to RenderMan:
