@@ -6,14 +6,14 @@ Setup instructions for Ayam on UNIX (e.g. Linux/IRIX/MacOSX)
 These instructions contain just general information that may be
 outdated; additional (more specific and current) information can be
 obtained from the download page of the Ayam project, see:
-http://www.ayam3d.org/download.html
+http://ayam.sourceforge.net/download.html
 or the "File Release Notes" document on the SourceForge download page
 of the Ayam project, see:
 http://sourceforge.net/project/showfiles.php?group_id=28460
 
 In addition, there are frequently asked questions that may be of
 some help, if something does not work as advertised:
-http://www.ayam3d.org/faq.html
+http://ayam.sourceforge.net/faq.html
 .
 
 Before you start modelling with Ayam, you should set it up
@@ -229,4 +229,4 @@ download "Tutorial #1" and do it.
 End of setup instructions.
 
 -- 
-http://www.ayam3d.org/    Reconstruct the World!
+http://ayam.sourceforge.net/    Reconstruct the World!

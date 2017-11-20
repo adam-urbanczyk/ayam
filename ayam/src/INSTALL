@@ -129,7 +129,7 @@ two steps:
 >make
 
 If you got errors while compiling, maybe the Ayam FAQ helps, see:
-http://www.ayam3d.org/faq.html
+http://ayam.sourceforge.net/faq.html
 
 Now ayamsh should be compiled and ready for a test run.
 - try it:
@@ -292,7 +292,7 @@ You have all required software and installed/compiled it successfully?
 >make
 
 If you got errors while compiling, maybe the Ayam FAQ helps, see:
-http://www.ayam3d.org/faq.html
+http://ayam.sourceforge.net/faq.html
 
 Now Ayam should be compiled and ready for a test run.
 - try it:
@@ -358,7 +358,7 @@ Before compiling any plugins, the Makefile must be set up properly
 for the compilation of Ayam.
 
 If you get errors while compiling plugins, maybe the Ayam FAQ helps, see:
-http://www.ayam3d.org/faq.html
+http://ayam.sourceforge.net/faq.html
 
 
 3.1 MF3D Import/Export Plugin
@@ -786,5 +786,5 @@ AYNOSAFEINTERP - let scripts of Script objects and NS tags run in the main
 
 End of Compilation Instructions,
 -- 
-http://www.ayam3d.org/    Reconstruct the World!
+http://ayam.sourceforge.net/    Reconstruct the World!
 
