@@ -1215,6 +1215,8 @@ ay_npt_drawtrimcurves(ay_object *o, unsigned int refine_trims)
 
 /** ay_npt_drawrohandles:
  *  draw read only handles helper
+ *
+ * \param[in] patch NURBS patch object to draw
  */
 void
 ay_npt_drawrohandles(ay_nurbpatch_object *patch)
@@ -4360,6 +4362,9 @@ ay_npt_sweepperiodic(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
   T0[1] = 0.0;
   T0[2] = 0.0;
 
+  ay_nb_FirstDer4D(tr->length-1, tr->order-1, tr->knotv,
+		   trcv, tr->knotv[tr->order-1], T1);
+
   len = AY_V3LEN(T1);
   AY_V3SCAL(T1,(1.0/len));
 
@@ -7110,6 +7115,13 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
 
   if(need_interpol)
     {
+      /*
+      if(interpatch->uorder < uorder)
+	ay_status = ay_npt_elevateu(interpatch, uorder, AY_FALSE);
+      if(interpatch->vorder < vorder)
+	ay_status = ay_npt_elevatev(interpatch, vorder, AY_FALSE);
+      */
+
       if(numcv > 2)
 	ay_status = ay_ipt_interpolateu(interpatch, uorder, AY_KTCHORDAL);
       if(numcu > 2)
