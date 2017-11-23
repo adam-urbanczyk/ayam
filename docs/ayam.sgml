@@ -23098,7 +23098,7 @@ The depth complexity of a primitive can be stored in a <tt/"DC"/ tag.
 A torus would e.g.~get a tag named <tt/"DC"/ with the value <tt/"2"/.
 If no <tt/"DC"/ tag is present for a primitive, a default value for
 the depth complexity of <tt/"1"/ will be used.
-If you fail to correctly specify the depth complexity, rendering
+If the depth complexity is not specified correctly, rendering
 errors, like missing parts of surfaces, will occur.
 <p>
 Note that the correct operation of AyCSG not only depends on the
@@ -23154,6 +23154,9 @@ SCS algorithm. Note again that the SCS algorithm only works correctly
 for convex primitives. The <tt/"Automatic"/ setting chooses one
 of the algorithms based on whether concave primitives (depth complexity
 &gt; 1) are present or not.
+As this decision is made based on the depth complexity from DC tags,
+the only valid setting for the <tt/"DCSampling"/ preference below is then
+DCSampling.
 
 <item><tt/"DCSampling"/ determines a depth complexity sampling
 strategy. Quoting from the OpenCSG documentation, the following options
@@ -23206,10 +23209,33 @@ might work better for you.
 calculated and used for speed up (not working at the moment).
 </itemize>
 
+The following table shows an overview of the available options their
+restrictions and implied requirements.
+<table loc="!ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Algorithm/|<bf/DCSampling/|<bf/Concave Primitives/|<bf/DC Tags needed/|<bf/Requirements/@<hline>
+Goldfeather|OcclusionQuery|Yes|No|occlusion query extension@<hline>
+Goldfeather|DCSampling|Yes|No|stencil buffer@<hline>
+Goldfeather|NoDCSampling|Yes|Yes|None@<hline>
+Automatic|NoDCSampling|Yes|Yes|None@<hline>
+SCS|NoDCSampling|No|No|None@<hline>
+SCS|OcclusionQuery|No|No|None@<hline>
+SCS|DCSampling|No|No|stencil buffer<#if out=latex>@<hline></#if>
+</tabular>
+<caption>AyCSG Options Overview</caption>
+</table>
+
+The default settings are to use the Goldfeather algorithm with
+occlusion queries, as this combination supports complex CSG hierarchies
+with good hardware support and requires no exotic view argument
+modifications and also no DC tags.<footnote>Since 1.25.</footnote>
+
 See also:
 <it>Kirsch F. and Doellner J.: "Rendering Techniques for Hardware-Accelerated
 Image-Based CSG", in: Skala V. (ed.): Journal of WSCG'04, 221-228,
 ISSN 1213-6972</it>
+
+<#if out="latex"><x/newpage/</#if>
 
 <sect1>Increasing Drawing Speed<label id="incds">
 <p>
