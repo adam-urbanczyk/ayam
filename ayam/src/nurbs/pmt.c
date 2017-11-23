@@ -385,7 +385,7 @@ ay_pmt_israt(ay_pamesh_object *pm)
 
 
 /** ay_pmt_tobasis:
- * Convert PatchMesh to a different matrix.
+ * Convert PatchMesh to a different basis.
  *
  * \param[in,out] pm PatchMesh to process (must be open and of w/h 4)
  * \param[in] btype target basis type
