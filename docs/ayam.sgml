@@ -23156,7 +23156,7 @@ of the algorithms based on whether concave primitives (depth complexity
 &gt; 1) are present or not.
 As this decision is made based on the depth complexity from DC tags,
 the only valid setting for the <tt/"DCSampling"/ preference below is then
-DCSampling.
+<tt/"NoDCSampling"/.
 
 <item><tt/"DCSampling"/ determines a depth complexity sampling
 strategy. Quoting from the OpenCSG documentation, the following options
@@ -23226,9 +23226,9 @@ SCS|DCSampling|No|No|stencil buffer<#if out=latex>@<hline></#if>
 </table>
 
 The default settings are to use the Goldfeather algorithm with
-occlusion queries, as this combination supports complex CSG hierarchies
-with good hardware support and requires no exotic view argument
-modifications and also no DC tags.<footnote>Since 1.25.</footnote>
+occlusion queries, as this combination allows complex CSG hierarchies,
+has widespread hardware support, requires no exotic view argument
+modifications, and also no DC tags.<footnote>Since 1.25.</footnote>
 
 See also:
 <it>Kirsch F. and Doellner J.: "Rendering Techniques for Hardware-Accelerated
