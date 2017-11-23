@@ -232,3 +232,6 @@ if { $ay(views) == "" } {
     }
 }
 # if
+
+# realize preference settings
+aycsgSetOpt

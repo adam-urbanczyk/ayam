@@ -1787,6 +1787,9 @@ Aycsg_Init(Tcl_Interp *interp)
   ay_ppoh_init(interp);
 #endif
 
+  Tcl_CreateCommand(interp, "aycsgSetOpt", aycsg_setopttcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   // source aycsg.tcl, it contains Tcl-code for new key bindings etc.
   if((Tcl_EvalFile(interp, "aycsg.tcl")) != TCL_OK)
      {
@@ -1807,9 +1810,6 @@ Aycsg_Init(Tcl_Interp *interp)
   // create new commands for all views (Togl widgets)
   Togl_CreateCommand("rendercsg", aycsg_rendertcb);
   Togl_CreateCommand("togglecsg", aycsg_toggletcb);
-
-  Tcl_CreateCommand(interp, "aycsgSetOpt", aycsg_setopttcmd,
-		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   // reconnect potentially present DC tags
   ay_tags_reconnect(ay_root, aycsg_dc_tagtype, "DC");
