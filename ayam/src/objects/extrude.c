@@ -744,6 +744,18 @@ ay_extrude_notifycb(ay_object *o)
 				(patch->width-1)*4*patch->height]),
 			     4*curve->length*sizeof(double));
 		      z = curve->controlv[2];
+
+		      if(curve->knot_type >= AY_KTCUSTOM)
+			{
+			  (void)ay_nct_getorientation((ay_nurbcurve_object *)
+						   c->refine, 4, 1, 0, &angle);
+			  if(angle < 0)
+			    {
+			      (void)ay_knots_revert(curve->knotv,
+						   curve->length+curve->order);
+			    }
+			}
+
 		      ay_trafo_copy(endb, trim);
 		      ay_nct_applytrafo(trim);
 		    } /* if */
@@ -910,6 +922,18 @@ ay_extrude_notifycb(ay_object *o)
 					(patch->width-1)*4*patch->height]),
 			     4*curve->length*sizeof(double));
 		      z = -curve->controlv[2];
+
+		      if(curve->knot_type >= AY_KTCUSTOM)
+			{
+			  (void)ay_nct_getorientation((ay_nurbcurve_object *)
+						   c->refine, 4, 1, 0, &angle);
+			  if(angle > 0)
+			    {
+			      (void)ay_knots_revert(curve->knotv,
+						   curve->length+curve->order);
+			    }
+			}
+
 		      ay_trafo_copy(startb, trim);
 		      ay_nct_applytrafo(trim);
 		    } /* if */
@@ -949,7 +973,9 @@ ay_extrude_notifycb(ay_object *o)
 					      curve, 4, 1, 0, &angle);
 
 		  if(angle < 0.0)
-		    (void)ay_nct_revert(trim->refine);
+		    {
+		      (void)ay_nct_revert(trim->refine);
+		    }
 
 		  trim->scalx /= fabs(lmaxx-lminx);
 		  trim->scaly /= fabs(lmaxy-lminy);
