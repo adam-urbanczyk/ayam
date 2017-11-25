@@ -1138,6 +1138,8 @@ int
 ay_extrude_convertcb(ay_object *o, int in_place)
 {
  ay_extrude_object *e = NULL;
+ int ret, caps[4] = {0};
+ ay_tag *oldtags, *newtags, *deltag;
 
   if(!o)
     return AY_ENULL;
@@ -1147,7 +1149,28 @@ ay_extrude_convertcb(ay_object *o, int in_place)
   if(!e)
     return AY_ENULL;
 
- return ay_convert_nptoolobj(o, e->npatch, e->caps_and_bevels, in_place);
+  oldtags = o->tags;
+
+  if(e->has_upper_cap)
+    caps[3] = 1;
+
+  if(e->has_lower_cap)
+    caps[2] = 1;
+
+  ay_capt_createtags(o, caps);
+  newtags = o->tags;
+
+  ret = ay_convert_nptoolobj(o, e->npatch, e->caps_and_bevels, in_place);
+
+  o->tags = oldtags;
+  while(newtags != oldtags)
+    {
+      deltag = newtags;
+      newtags = newtags->next;
+      ay_tags_free(deltag);
+    }
+
+ return ret;
 } /* ay_extrude_convertcb */
 
 
