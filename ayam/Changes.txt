@@ -1,4 +1,4 @@
-[31. Oct 2017] CVS-Head:
+[25. Nov 2017] CVS-Head:
 ========================
 Bug Fixes:
 o entering non number data to tesselation parameter entries (SF 554)
@@ -16,6 +16,11 @@ o getPnt command delivers garbage for "-all -trafo" (SF 566)
 o editing in aligned local views fails for children of Script objects (SF 567)
 o pasting complex tags via property clipboard fails (SF 568)
 o surface interpolation tool does not use the order parameter(s) (SF 569)
+o applyTrafo command does not update the SDNPatch properly (SF 570)
+o keyboard bindings in custom object property GUIs (SF 571)
+o periodic sweep for first trajectory points forming a (-1,0,0) vector (SF 572)
+o bevels on periodic curves with chordal knots (SF 573)
+o caps of extrusion objects for curves with multiple knots (SF 574)
 
 Modelling:
 o the set mark action now supports drag selection of multiple points,
