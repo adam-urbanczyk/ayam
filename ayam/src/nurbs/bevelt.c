@@ -818,21 +818,16 @@ ay_bevelt_createc(double radius, ay_object *o1, ay_object *o2,
   if(!(controlv = calloc(bcurve->length*curve->length*stride, sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
-  /* copy custom knots */
-  if(bcurve->knot_type == AY_KTCUSTOM)
-    {
-      if(!(uknotv = malloc((bcurve->length+bcurve->order) * sizeof(double))))
-	{ ay_status = AY_EOMEM; goto cleanup; }
-      memcpy(uknotv, bcurve->knotv,
-	     (bcurve->length+bcurve->order)*sizeof(double));
-    }
-  if(curve->knot_type == AY_KTCUSTOM)
-    {
-      if(!(vknotv = malloc((curve->length+curve->order) * sizeof(double))))
-	{ ay_status = AY_EOMEM; goto cleanup; }
-      memcpy(vknotv, curve->knotv,
-	     (curve->length+curve->order)*sizeof(double));
-    }
+  /* copy knots */
+  if(!(uknotv = malloc((bcurve->length+bcurve->order) * sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  memcpy(uknotv, bcurve->knotv,
+	 (bcurve->length+bcurve->order)*sizeof(double));
+
+  if(!(vknotv = malloc((curve->length+curve->order) * sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  memcpy(vknotv, curve->knotv,
+	 (curve->length+curve->order)*sizeof(double));
 
   /* fill controlv */
   /* first loop */
