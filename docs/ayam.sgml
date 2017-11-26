@@ -11978,10 +11978,13 @@ and one defining the value of the tag.
 <p>
 Tags may be manipulated via the tags property GUI (see
 section <ref id="tagsprop" name="Tags Property">)
-or the scripting interface.
+or the scripting interface
+(see section <ref id="scitags" name="Manipulating Tags">).
+In addition, there is a corresponding sub menu in the main menu
+(see section <ref id="mmtags" name="Tags Menu">).
 <p>
-The following two tables contains a compact list of tag names and short
-explanations, for all tag types that are
+The following two tables contain a compact list of tag names and short
+explanations for all tag types that are
 known in Ayam and in all accompanying extensions (plugins);
 tag types marked with an asterisk (*) are for internal use only.
 
@@ -16716,7 +16719,8 @@ array pointed to by <tt/varname/.
 
 <sect2>Manipulating Tags<label id="scitags">
 <p>
-These commands may be used to modify the tags of an object:
+These commands may be used to modify the tags of an object
+(see also section <ref id="tags" name="Tags">):
 <p>
 <#if out="latex"><x/phantomsection/</#if>
 
