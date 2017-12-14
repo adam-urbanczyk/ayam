@@ -1,0 +1,8 @@
+syntax: glob
+*.o
+*~
+*.so
+*.a
+.#*
+docs/html/*
+docs/*.pdf
