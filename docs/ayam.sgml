@@ -1878,7 +1878,8 @@ level and selected objects.
 
 <item><tt/"Align to Object"/, align the view to the coordinate
 system of the currently selected object or to the parent
-object of the current level if no object is currently selected.
+object of the current level if no object is currently selected
+(see also section <ref id="editlocal" name="Editing in Local Spaces">).
 
 </itemize>
 
@@ -2766,24 +2767,25 @@ For more information, see also the section
 The preferences in the <tt/"Drawing"/ section let you specify
 how objects are being drawn:
 <itemize>
-<item><tt/"Tolerance"/ is in fact GLU sampling tolerance, used to
-control the quality of the sampling when rendering a NURBS curve
-or NURBS patch using GLU.
-Smaller tolerance settings lead to higher quality. Useful values
-range from 1 to 100.
+<item><tt/"Tolerance"/ controls the display quality of NURBS curves
+and surfaces. Smaller tolerance settings lead to higher quality but also
+slower display. Useful values range from 1 to 100.<newline>
+In the GLU drawing/shading modes this value is directly used as
+GLU sampling tolerance value.<newline>
+The STESS drawing/shading modes derive a quality/sampling factor from
+this setting, that leads to a sampling quality that is roughly equivalent
+to the corresponding GLU mode for a standard viewing distance.
+<p><p>
+Using the keyboard shortcuts <tt>&lt;F2&gt;</tt> and <tt>&lt;F3&gt;</tt>
+the tolerance may also be set easily.
+<p>
 This setting has no effect for objects that override it
 using a local tolerance setting different from 0.
-<p><p>
-STESS derives a quality/sampling factor from this setting, that leads
-to comparable sampling quality for a standard viewing distance.
-<p>
-Using the keyboard shortcuts <tt>&lt;F2&gt;</tt> and <tt>&lt;F3&gt;</tt>
-the GLU tolerance may also be set easily.
 
 <item><tt/"NPDisplayMode"/ sets the display mode for NURBS patches.
-Either the control hull (or control polygon) is drawn (ControlHull), or
+Either the control hull (or control polygon) is drawn (<tt/"ControlHull"/), or
 just the outlines of the polygons created by the tesselation
-(OutlinePoly), or just the outlines of the patch (OutlinePatch).
+(<tt/"OutlinePoly"/), or just the outlines of the patch (<tt/"OutlinePatch"/).
 The latter are available in GLU and STESS variants.
 <p><p>
 The GLU variants tesselate the surface according to the current
@@ -4324,7 +4326,7 @@ This action can be used without affecting other active actions.
 <sect1>Snapping Objects to the Mark<label id="snapomac">
 <p>
 <figure loc="ht">
-<eps file="pics/snapmrkobj.ps" height="4cm">
+<eps file="pics/snapmrkobj.ps" height="4.5cm">
 <img src="pics/snapmrkobj.gif">
 <caption>Snapping Objects to the Mark</caption>
 </figure>
@@ -10866,7 +10868,17 @@ is a standard Tcl text widget that allows to directly edit the code.
 It is also possible to edit the code in an external editor and
 copy it to the Script object using the operating system clipboard
 and the <tt/"Paste (Replace)"/ context menu entry of the text widget.
-If the first line of the script is a comment like
+</itemize>
+
+<sect3>Script Parameters and Property GUIs
+<p><#if out="latex">&nbsp;<newline></#if>
+If the script has a property GUI it is important to save the property
+data array between multiple copies of a Script object (to make
+them truly unique and not operating on the same set of parameters)
+and to scene files.
+<p>
+This can be accomplished using a comment in the first line of the script.
+If it looks like this:
 <code>
 # Ayam, save array: &lt;arrayname&gt;
 </code>
@@ -10879,7 +10891,9 @@ Note also, that <tt/"SP"/ must <em/never/ contain <tt/"SP"/. All copies
 of a Script object must share the same set of individual vs.~shared
 parameters. If Script objects need to store differing/individual
 amounts of parameter data, lists can be used as individual parameters.
-<p><p>
+
+<sect3>Scripts in Foreign Languages
+<p><#if out="latex">&nbsp;<newline></#if>
 Script objects may also use arbitrary, plugin provided,
 scripting languages.<footnote>Since 1.18.</footnote>
 To switch to a different language, the first line
@@ -10895,8 +10909,6 @@ can be used in conjunction like this:
 <code>
 /* Ayam, use: JavaScript, save array: MyArr */
 </code>
-
-</itemize>
 
 <sect3>Safe Interpreter<label id="safeinterp">
 <p><#if out="latex">&nbsp;<newline></#if>
@@ -18557,7 +18569,7 @@ The <tt/"paramname"/ parameter is the name of the parameter.
 <p>
 The optional <tt/"onoffvalues"/ parameter is a list of two values that will
 be used when setting the corresponding variable when the check-button is
-enabled or disabled.
+enabled or disabled. The default values are 0 and 1.
 <item>Example:
 <bf><tt>"addCheck $w MyPropertyData MyBool"</tt></bf>
 </itemize>
@@ -18638,7 +18650,7 @@ before this procedure is called.
 addFile:
 <itemize>
  <item>Synopsis: <tt>"addFile window arrayname paramname [defaults]"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes, Type: Procedure
+ <item>Background: Yes, Undo: No, Safe: No, Type: Procedure
  <item>Description: This procedure adds a property GUI element for a
 file name.
 <p><p>
@@ -18729,7 +18741,7 @@ value is to be displayed.
 addProgress:
 <itemize>
  <item>Synopsis: <tt>"addProgress window arrayname paramname"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes, Type: Procedure
+ <item>Background: Yes, Undo: No, Safe: No, Type: Procedure
  <item>Description: This procedure adds a property GUI element to
 display progress information.
 <p><p>
@@ -20001,6 +20013,36 @@ see the file:<newline>
 <tt>"ayam/scn/scripts/tsurf.ay"</tt>.
 
 <#if out="latex"><x/newpage/</#if>
+
+<sect2>Extrusion along Normal<label id="extrudentcl">
+<p>
+<figure loc="ht">
+<eps file="pics/extruden.ps" height="4cm">
+<img src="pics/extruden.gif">
+<caption>Extrusion along Normal Example</caption>
+</figure>
+<p>
+The script <tt>"extruden.tcl"</tt> extrudes a NURBS curve along
+its normal, see also the above image.
+<p>
+Internally, the script creates a Skin from two curves, therefore, arbitrarily
+oriented and non-planar curves are supported.
+<p>
+This script must be used in a Script object of type <tt/"Modify"/.
+For convenience, there is also a property GUI; one must add a <tt/"NP"/ tag
+of value <tt/"ExtrudeNAttr"/ to the Script object to see it.
+<p>
+These are the parameters of the extrusion:
+<itemize>
+<item><tt/"Height"/ is the amount of displacement of the second curve
+along the normal, default is 1.0.
+</itemize>
+
+An example scene file containing such an object is distributed with Ayam,
+see the file:<newline>
+<tt>"ayam/scn/scripts/extruden.ay"</tt>.
+
+<#if out=latex><x/newpage/</#if>
 
 <sect2>Create Polyhedrons from Conway Notations<label id="polyhedronjs">
 <p>
@@ -23993,6 +24035,7 @@ Index:
 <item><ref id="extrudeobj" name="Extrude object">,
 <item><ref id="extt" name="Extrude tool">
 </itemize>
+<item>extruden.tcl: <ref id="extrudentcl" name="example/helper script">
 </list>
 
 <#if out="latex"><x/phantomsection/</#if>
