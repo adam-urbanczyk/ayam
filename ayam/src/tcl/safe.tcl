@@ -49,6 +49,8 @@ proc safe_init { interp } {
     interp alias $interp addInfo {} addInfo
     interp alias $interp addInfoB {} addInfoB
 
+    interp alias $interp addVSpace {} addVSpace
+
     # tree
     interp alias $interp treeSelect {} treeSelect
 
