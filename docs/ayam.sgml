@@ -14920,16 +14920,17 @@ may be useful for scripts.
 
 <sect2>Global Variables
 <p>
-<itemize>
-<item> The <tt/"ay_error"/ variable holds the current error state.
+The global variable <tt/"ay_error"/ holds the current error state.
 See also section <ref id="scierr" name="Reporting Errors">.
-<item> The variable <tt/"i"/ is used by all <tt/"forAll"/
+
+The global variable <tt/"i"/ is used by all <tt/"forAll"/
 command variants. See also section
 <ref id="scifall" name="Applying Commands to a Number of Objects">.
-<item> The variable <tt/"aymark"/ is an array that contains the current
-mark coordinates.
-<footnote>Since 1.21.</footnote>
-</itemize>
+
+The global variables <tt/"u"/ and <tt/"v"/ are set by the
+find u/uv actions. See also sections
+<ref id="finduac" name="Finding Points on Curves"> and
+<ref id="finduvac" name="Finding Points on Surfaces">.
 
 <sect2>The Global Array ay<label id="ayarray">
 <p>
@@ -14954,9 +14955,17 @@ take effect as the data needs to be transferred to the C context
 using the <tt/"setPrefs"/ command.
 See also section <ref id="sciprefs" name="Managing Preferences">.
 
+<sect2>The Global Array aymark<label id="aymark">
+<p>
+The global array <tt/"aymark"/ holds the current mark position.
+<footnote>Since 1.21.</footnote>
+It is updated whenever the mark is set using e.g.~the
+set mark action (see section <ref id="markac" name="Setting the Mark">).
+Manual changes to this array have no effect on the mark.
+
 <#if out="latex"><x/newpage/</#if>
 
-<sect2>The Global Property Management and Data Arrays<label id="ayproparr">
+<sect2>Property Management and Data Arrays<label id="ayproparr">
 <p>
 For every object type, a corresponding global variable exists,
 that contains the property names of this object type as a list.
@@ -15066,6 +15075,8 @@ browser (similar to the <tt/"Help on Object"/ feature):
 the designated Ayam scripting interface command.
  <item>Example: <tt/"help help"/ displays the help of the help command.
 </itemize>
+
+<#if out="latex"><x/newpage/</#if>
 
 <sect2>Managing Objects
 <p><label id="sccrtob"><label id="crtob">
@@ -19892,9 +19903,9 @@ of value <tt/"CBoxAttr"/ to the Script object to see it.
 <p>
 These are the parameters of the cylindrical box:
 <itemize>
-<item><tt/"Width"/ extension of the box along the X-axis.
-<item><tt/"Depth"/ extension of the box along the Z-axis.
-<item><tt/"Height"/ extension of the box along the Y-axis.
+<item><tt/"Width"/ extension of the box along the X-axis, default is 1.0.
+<item><tt/"Depth"/ extension of the box along the Z-axis, default is 1.0.
+<item><tt/"Height"/ extension of the box along the Y-axis, default is 1.0.
 </itemize>
 
 In contrast to the standard Box object, the cylindrical box converts
@@ -19933,7 +19944,7 @@ of value <tt/"TCircleAttr"/ to the Script object to see it.
 <p>
 These are the parameters of the triangular circle:
 <itemize>
-<item><tt/"Radius"/ radius of the circle.
+<item><tt/"Radius"/ radius of the circle, default is 1.0.
 </itemize>
 
 An example scene file containing such an object is distributed with Ayam,
@@ -19976,6 +19987,8 @@ periodic).
 <item><tt/"Sections"/ number of sections to use, also works in similar
 fashion as for the Sweep object
 (see also <ref id="swp" name="SweepAttr Property">).
+The default value is 0, i.e.~the number of sections are determined
+from the parameter curves dimensions.
 </itemize>
 
 An example scene file containing such an object is distributed with Ayam,
