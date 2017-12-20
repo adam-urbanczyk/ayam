@@ -14969,16 +14969,21 @@ Manual changes to this array have no effect on the mark.
 <p>
 For every object type, a corresponding global variable exists,
 that contains the property names of this object type as a list.
+The variable name is just the object type name followed
+by <tt/_props/ (for properties).
 For example for the NCurve object type, this variable is named
-<tt/NCurve_props/ and the list looks like this:
+<tt/"NCurve_props"/ and the list it contains looks like this:
 <tscreen><verb>
 { Transformations Attributes Tags NCurveAttr }
 </verb></tscreen>
-Note that for some object types this variable only exists after an
-object type specific initialization procedure, derived from the
-type name, is called, e.g.~<tt/"init_Box"/.
 <p>
-For every property, a corresponding global arrays exists, where the
+This list is consulted each time a single object is selected in the tree
+view or object list widget and its content is used to populate the properties
+listbox widget. See also section <ref id="propgui" name="Properties">.
+Note that the list can be further manipulated
+by <tt/"NP"/ and <tt/"RP"/ tags of the selected object.
+<p>
+For every property, a corresponding global array exists, where the
 property is managed. For the Transformations property, this array looks
 like this:
 <code>
@@ -14991,23 +14996,44 @@ Transformations {
 </code>
 The first entry, <tt/"arr"/, designates the name of the global property
 data array (thus, transformation data is stored in an array called
-<tt/"transfPropData"/).<newline>
-The entries <tt/"sproc"/ and <tt/"gproc"/ designate the set-property and
-get-property callbacks (procedures or commands) respectively.
-If sproc or gproc are empty strings (<tt/""/), standard callbacks
-named <tt/"setProp"/ or <tt/"getProp"/ should be used to get
-or set the property values.
-But for the transformations property, the <tt/"setTrafo"/ and
-<tt/"getTrafo"/ commands should be used.<newline>
-The last entry, <tt/"w"/, is the name of the main property GUI window.
-To get the full, usable, widget path of this window, the current value of the
-array entry
-<tt/"ay(pca)"/ needs to be prepended.
-<p>
-Note that the global property data array only holds useful data when the
-respective property GUI is active, or when it has been filled explicitly
+<tt/"transfPropData"/).
+This array only holds useful data when it has been filled explicitly
 by the so called get-property callback.
 <p>
+The entries <tt/"sproc"/ and <tt/"gproc"/ designate the set-property and
+get-property callbacks (procedures or commands).
+Those are called, when the <tt/"Apply"/ button is used or the
+property is selected in the properties listbox respectively.
+If sproc or gproc are empty strings (<tt/""/), standard callbacks
+named <tt/"setProp"/ or <tt/"getProp"/ will/should be used to get
+or set the property values.
+But for the Transformations property, the <tt/"setTrafo"/ and
+<tt/"getTrafo"/ commands should be used.
+The flexibility gained by individual sproc/gproc procedures is used to
+sanitize user input, run additional GUI update code or realize dynamic
+property GUIs.
+<p>
+The last entry, <tt/"w"/, is the name of the main property GUI window.
+To get the full, usable, widget path of this window, the current value of the
+array entry <tt/"ay(pca)"/ needs to be prepended:
+<tt>$ay(pca).$Transformations(w)</tt>.
+<p>
+Note that for many object types the property variable and the
+object type specific property management arrays only exist after an
+object type specific initialization procedure, derived from the
+type name, is called, e.g.~<tt/"init_Box"/.
+Those types are:
+ACurve, Bevel, Birail1, Birail2, Box, BPatch, Cap, ConcatNC, ConcatNP,
+Cone, Cylinder, Disk, ExtrNC, ExtrNP, Hyperboloid, ICurve, IPatch,
+NCircle, OffsetNC, OffsetNP, PatchMesh, Paraboloid, Revolve, RiInc,
+RiProc, Script, SDMesh, Select, Sphere, Sweep, Swing, Torus, and Trim.
+<p>
+Since Ayam 1.16, the global property management array may be created
+easily using the new scripting interface command <tt/"addPropertyGUI"/.
+See also section <ref id="scipgui" name="Property GUI Management">.
+
+<#if out="latex"><x/newpage/</#if>
+
 The following global arrays and callbacks to get or set the data
 exist:
 <p>
@@ -15017,22 +15043,34 @@ exist:
 Transformations|transfPropData|getTrafo|setTrafo@<hline>
 Attributes|attrPropData|getAttr|setAttrp@<hline>
 Material|matPropData|getMat|setMat@<hline>
-Tags|tagsPropData|getTagsp|setTagsp<#if out="latex">@<hline></#if>
+Tags|tagsPropData|getTagsp|setTagsp@<hline>
+MaterialAttr|MaterialAttrData|""|setMaterialAttrp@<hline>
+Surface|ay&lowbar;shader|shader&lowbar;getSurf|shader&lowbar;setSurf@<hline>
+Displacement|ay&lowbar;shader|shader&lowbar;getDisp|shader&lowbar;setDisp@<hline>
+Interior|ay&lowbar;shader|shader&lowbar;getInt|shader&lowbar;setInt@<hline>
+Exterior|ay&lowbar;shader|shader&lowbar;getExt|shader&lowbar;setExt@<hline>
+Light|ay&lowbar;shader|light&lowbar;getShader|light&lowbar;setShader@<hline>
+LightAttr|LightAttrData|light&lowbar;getAttr|""@<hline>
+ViewAttrib|ViewAttribData|""|setViewAttr@<hline>
+Camera|CameraData|""|setCameraAttr@<hline>
+NCurveAttr|NCurveAttrData|""|""@<hline>
+NPatchAttr|NPatchAttrData|""|""@<hline>
+ICurveAttr|ICurveAttrData|""|""@<hline>
+NCircleAttr|NCircleAttrData|""|""<#if out="latex">@<hline></#if>
 </tabular>
 <caption>Property Arrays and Callbacks</caption>
 </table>
 <p>
-Note that this list is pretty much incomplete, however such information
-can always be inferred using commands like <tt/"parray Tags"/ in the Ayam
-console.
-<p>
+Note that this list is pretty much incomplete, however the information
+can always be inferred easily using the <tt/"parray"/ command in the Ayam
+console:
+<tscreen>
+&raquo;&thinsp;parray NCurveAttr
+</tscreen>
 See also section
 <ref id="sciprop" name="Manipulating Properties">
 for more information on how to edit property values from the
 scripting interface.
-<p>
-Since Ayam 1.16, the global property management array may be created
-easily using the new scripting interface command <tt/"addPropertyGUI"/.
 
 <#if out="latex"><x/newpage/</#if>
 
@@ -18811,7 +18849,7 @@ type (and no conversion is attempted if the object is already
 of the given type).<footnote>Since Ayam 1.25.</footnote>
 <p>
 If the option <tt>"-check"</tt> is given, the convOb command does not
-convert but check, whether a conversion to a given object type would be
+convert but checks, whether a conversion to a given object type would be
 successful, the result of the check will be returned as 0 &ndash; no,
 or 1 &ndash; yes. Note, that only immediate, one step, conversions are
 checked, not multiple as carried out by in-place conversions with
@@ -19927,8 +19965,7 @@ see the file:<newline>
 </figure>
 <p>
 The file <tt>"tcircle.tcl"</tt> is a Script object script that creates
-NURBS circles with a triangular base,
-see also the above image.
+NURBS circles with a triangular base, see also the above image.
 <p>
 In contrast to the standard nine point NURBS circle with rectangular base,
 the triangular circle consists of just seven control points.
