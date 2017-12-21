@@ -4941,12 +4941,13 @@ Ayam:
 <table loc="!ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Spiral|No|No|NCurve|No*@<hline>
+Helix|No|No|NCurve|No*@<hline>
 TCone|No|No|Hyperboloid|No*@<hline>
 CBox|No|No|NPatch|No*@<hline>
 TCircle|No|No|NCurve|No*@<hline>
 DualSweep|NCurve*|No|NPatch|No*@<hline>
 TSurf|NCurve*|No|NPatch|No*@<hline>
+ExtrudeN|NCurve|No|NPatch|No*@<hline>
 Polyhedron|No|No|PolyMesh|No*<#if out="latex">@<hline></#if>
 </tabular>
 <caption>Distributed Script Object Scripts</caption>
@@ -10695,8 +10696,8 @@ mechanism.
 <sect2>Script Object<label id="scriptobj">
 <p>
 <figure loc="ht">
-<eps file="pics/script.ps" height="5cm">
-<img src="pics/script.gif">
+<eps file="pics/helix.ps" height="5cm">
+<img src="pics/helix.gif">
 <caption>Script Object Example</caption>
 </figure>
 <p>
@@ -10711,7 +10712,7 @@ the Tcl scripting interface of Ayam
 See also the image above, depicting a simple example script object
 that creates a NURBS curve and puts the control points of the curve
 in a circle in the XY-plane while continuously offsetting in Z so
-that a spiral forms. This example is also distributed with Ayam.
+that a helix forms. This example is also distributed with Ayam.
 <p>
 Script objects may also use arbitrary, plugin provided,
 scripting languages, like JavaScript, provided by the
@@ -19987,6 +19988,38 @@ These are the parameters of the triangular circle:
 An example scene file containing such an object is distributed with Ayam,
 see the file:<newline>
 <tt>"ayam/scn/scripts/tcircle.ay"</tt>.
+
+<#if out=latex><x/newpage/</#if>
+
+<sect2>Helix<label id="helixtcl">
+<p>
+<figure loc="ht">
+<eps file="pics/helix.ps" height="4cm">
+<img src="pics/helix.gif">
+<caption>Helix Example</caption>
+</figure>
+<p>
+The script <tt>"helix.tcl"</tt> creates a NURBS curve that forms a helix,
+see also the above image.
+<p>
+This script must be used in a Script object of type <tt/"Create"/.
+There is also a property GUI provided; one must
+add a <tt/"NP"/ tag of value <tt/"HelixAttr"/ to the Script object to see it.
+<p>
+These are the parameters of the helix:
+<itemize>
+<item><tt/"Length"/ is the number of control points in the curve,
+default is 30.
+<item><tt/"Radius"/ is the radius of the helix, default is 2.0.
+<item><tt/"Angle"/ is the offset angle of from one point to the next, default
+is 45.0.
+<item><tt/"DZ"/ is the offset along z from one point to the next, default is
+0.25.
+</itemize>
+
+An example scene file containing such an object is distributed with Ayam,
+see the file:<newline>
+<tt>"ayam/scn/scripts/helix.ay"</tt>.
 
 <#if out="latex"><x/newpage/</#if>
 
