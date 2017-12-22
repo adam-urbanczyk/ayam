@@ -20020,6 +20020,37 @@ is 45.0.
 An example scene file containing such an object is distributed with Ayam,
 see the file:<newline>
 <tt>"ayam/scn/scripts/helix.ay"</tt>.
+<#if out=latex><x/newpage/</#if>
+
+<sect2>Spiral<label id="spiraltcl">
+<p>
+<figure loc="ht">
+<eps file="pics/spiral.ps" height="4cm">
+<img src="pics/spiral.gif">
+<caption>Spiral Example</caption>
+</figure>
+<p>
+The script <tt>"spiral.tcl"</tt> creates a NURBS curve that forms a spiral,
+see also the above image.
+<p>
+This script must be used in a Script object of type <tt/"Create"/.
+There is also a property GUI provided; one must
+add a <tt/"NP"/ tag of value <tt/"SpiralAttr"/ to the Script object to see it.
+<p>
+These are the parameters of the spiral:
+<itemize>
+<item><tt/"Length"/ is the number of control points in the curve,
+default is 30.
+<item><tt/"Angle"/ is the offset angle of from one point to the next, default
+is 45.0.
+<item><tt/"RMin"/ is the start radius value, default is 0.1.
+<item><tt/"RDiff"/ is the radius difference from one point to the next,
+default is 0.1.
+</itemize>
+
+An example scene file containing such an object is distributed with Ayam,
+see the file:<newline>
+<tt>"ayam/scn/scripts/spiral.ay"</tt>.
 
 <#if out="latex"><x/newpage/</#if>
 
