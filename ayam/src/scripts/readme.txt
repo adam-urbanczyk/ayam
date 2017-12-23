@@ -87,12 +87,11 @@ bendcur.tcl - bend a curve according to the shape of a second curve
 conscir.tcl - create a circular B-Spline whose control points are
  confined to a radial configuration (type: Run)
 crtlinegui.tcl - create line, with GUI (type: Create)
-crtspiral.tcl - create spirals (type: Create)
-crtspiralgui.tcl - create spirals with GUI (type: Create)
 extruden.tcl - create extrusion along normal curve (type: Modify)
 helix.tcl - create helix NURBS curve (type: Create)
 polyhedron.js - create polyhedrons from Conway notation
                 (needs jsinterp plugin!) (type: Create)
+spiral.tcl - create spiral NURBS curve (type: Create)
 tcone.tcl - truncated cone primitive with GUI (type: Create)
 cbox.tcl - cylindrical box primitive (type: Create)
 tcircle.tcl - NURBS circle with triangular base primitive (type: Create)
