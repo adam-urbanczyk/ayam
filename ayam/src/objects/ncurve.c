@@ -1215,7 +1215,7 @@ ay_ncurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 		  i++;
 		  c += 4;
 		}
-	      while(c[3] < ncurve->knotv[ncurve->length]);
+	      while(c[3] <= ncurve->knotv[ncurve->length]);
 	    } /* if */
 	}
       else
