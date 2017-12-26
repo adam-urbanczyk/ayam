@@ -4259,7 +4259,7 @@ ay_rrib_readtag(char *tagtype, char *tagname, char *name,
  ay_tag *n = NULL, *ot;
  Tcl_DString ds;
  RIB_HASHHND ht = NULL;
- PRIB_HASHATOM  p = NULL;
+ PRIB_HASHATOM p = NULL;
  char fname[] = "ay_rrib_readtag";
  RtInt *intpair;
  RtFloat *fltpair;
@@ -5977,6 +5977,8 @@ ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
 
   if(rib)
     {
+      ((PRIB_INSTANCE) rib)->options |= kRIB_OPTION_EXPAND_INLINE;
+
       grib = (PRIB_INSTANCE)rib;
       ogrib = grib;
 
