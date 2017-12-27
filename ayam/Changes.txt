@@ -1,5 +1,5 @@
-[25. Nov 2017] CVS-Head:
-========================
+[26. Dec 2017] Tip:
+===================
 Bug Fixes:
 o entering non number data to tesselation parameter entries (SF 554)
 o chordal/centripetal knots for periodic curves/surfaces are wrong (SF 555)
@@ -7,7 +7,7 @@ o repeated scaling can lead to scale factors of 0.0 (SF 556)
 o split curve action does not update the hierarchy (SF 558)
 o complex Gordon surfaces are wrong (SF 559)
 o crash when not setting an image file name upon rendering (SF 560)
-o withOb fails for objects in sub levels (SF 561)
+o withOb command fails for objects in sub levels (SF 561)
 o delegTrafo command does not reset parent transformations (SF 562)
 o tweening curves with interpolation control curve (SF 563)
 o X3D export of surfaces with AsWire tag (SF 564)
@@ -44,7 +44,8 @@ o added immediate interactive placing of newly inserted curve points (enabled
   by holding down the <Control> key in the insert point action)
 o rational coordinates are now color coded when weight editing/reset
   actions are active
-o improved usability of interactive weight editing
+o improved usability of interactive weight editing by translating the mouse
+  movements in a more predictable and reversible fashion
 
 GUI:
 o improved balloon interaction of view icon menus
@@ -75,9 +76,12 @@ o added command to normalize Tcl variable values ("normVar")
 o added "-relative" option to "trimNC" command
 o added Script object example script "tsurf.tcl" that creates a
   translational surface from two parameter curves
+o resolved spiral Script object confusion by renaming to helix and
+  adding a real spiral Script object
 
 Import/Export:
 o X3D export of NURBS curves now supports the AsWire tag
+o RIB import now supports inline declarations
 
 
 [24. Jan 2017] Ayam 1.24:
