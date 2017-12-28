@@ -318,6 +318,10 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 	      glDepthFunc(GL_LEQUAL);
 	    }
 
+	  /* temporarily disable drawing of selected points in find_u
+	     action */
+	  if(view->drawhandles != 2)
+	    {
 	  /* set color for selected points */
 	  glColor3f((GLfloat)ay_prefs.tpr, (GLfloat)ay_prefs.tpg,
 		    (GLfloat)ay_prefs.tpb);
@@ -363,6 +367,8 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 		}
 	      sel = sel->next;
 	    } /* while */
+
+	    } /* if */
 
 	  /* set color for selected objects */
 	  glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
