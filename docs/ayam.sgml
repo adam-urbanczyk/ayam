@@ -2540,7 +2540,7 @@ fails to correctly remember the geometry of the main window between
 two invocations or if the main window jumps downward when properties
 are selected.
 <p><p>
-This option is not available on the Win32 platform and on MacOSX Aqua.
+This option is not available on the Win32 platform and on Mac OS X Aqua.
 
 <item><tt/"AutoSavePrefs"/, if this is switched on, Ayam will write
 the preferences settings to the ayamrc file when the program quits.
@@ -4111,7 +4111,7 @@ option <tt>"Modelling/Snap3D"</tt>.
 Moreover, while snapping a point, the mouse pointer will warp to
 the new position of the point (so that the user does not lose
 track of it). Warping the mouse pointer currently does not work on
-MacOSX Aqua.
+Mac OS X Aqua.
 
 <#if out="latex"><x/newpage/</#if>
 
@@ -16750,12 +16750,12 @@ shaderSet:
 <itemize>
  <item>Synopsis: <tt/"shaderSet shadertype [varname]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Set the shader of type shadertype for the selected
+ <item>Description: Set the shader of type <tt/shadertype/ for the selected
 object. Type may be one of <tt/"surface"/, <tt/"displacement"/,
 <tt/"light"/, <tt/"imager"/, <tt/"atmosphere"/, <tt/"exterior"/
-or <tt/"interior"/. If varname is not given, the shader in question
+or <tt/"interior"/. If <tt/varname/ is not given, the shader in question
 is deleted from the object instead.
-Otherwise, varname points to an associative array that contains
+Otherwise, <tt/varname/ points to an associative array that contains
 the data (arguments) of the shader. Example content may be created
 with the <tt/"shaderGet"/ command below. The data is <em>not</em> checked
 against the internal shader database for correctness or completeness.
@@ -16877,19 +16877,19 @@ getTags:
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Get all tags from
 the currently selected object and put them as lists into two
-variables named tvname for the tag types and vvname for the tag
+variables named <tt/tvname/ for the tag types and <tt/vvname/ for the tag
 values.
 </itemize>
 
 <label id="scsettags">
 setTags:
 <itemize>
- <item>Synopsis: <tt/"setTags tags"/
+ <item>Synopsis: <tt/"setTags tagslist"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Clear all tags from the currently selected objects
-and set new tags. The tag types are taken from the list elements
-with even index numbers
-and the tag value-strings from the list elements with odd index numbers.
+and set all new tags from the list <tt/tagslist/. The tag types are
+taken from the list elements with even index numbers and the tag
+value-strings from the list elements with odd index numbers.
 <item>Examples:
 <enum>
 <item><bf><tt>"setTags &lcub;RP Transformations RP Attributes&rcub;"</tt></bf><newline>
@@ -16904,7 +16904,7 @@ tags.
 <label id="scgettag">
 getTag:
 <itemize>
- <item>Synopsis: <tt/"getTag tagname vname"/
+ <item>Synopsis: <tt/"getTag type vname"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Get the value of a specific tag from
 the currently selected object and put it into the designated variable.
@@ -19493,8 +19493,8 @@ if no points are actually selected, it is just the mouse click that
 counts.
 <p>
 Selecting all points via the keyboard shortcut <tt/&lt;A&gt;/
-will switch to point modelling and de-selecting all points via
-<tt/&lt;N&gt;/ will switch to object
+will additionally switch to point modelling and de-selecting all points via
+<tt/&lt;N&gt;/ will additionally switch to object
 modelling.<footnote>Since 1.21.</footnote>
 <p>
 It is also still possible to switch back to object modelling anytime
@@ -22840,11 +22840,12 @@ tags, the default value is "N".
 tags, the default value is "Cs".
 
 <item><tt/"RotateCrossSection"/, controls whether the creation
-of sweeps should rotate the cross section to the YZ-plane.
+of sweeps should rotate the cross section curve to the YZ-plane.
 If set to 0, no rotation occurs, if set to 1, the rotation
 will be attempted without any checks, and if set to 2 (this is
 the default) the cross section is checked and a requester is
-raised offering to rotate the curve.
+raised offering to rotate the curve only if it is not already
+in the proper plane.
 
 <item><tt/"SafeAutoFocus"/ disables AutoFocus
 (see section <ref id="prefgui" name="GUI preference settings">)
@@ -22892,11 +22893,11 @@ shaders when scanning for shaders. Default 1 &ndash; yes.
 <footnote>Since 1.22.</footnote>
 
 <item><tt/"SwapMB"/, allows to swap mouse buttons 2 and 3
-on MacOSX/Aqua (not X11!) for the mouse bindings specified in
-<tt/"SwapMBSC"/ below, because on MacOSX/Aqua, traditionally, the
+on Mac OS X Aqua (not X11!) for the mouse bindings specified in
+<tt/"SwapMBSC"/ below, because on Mac OS X Aqua, traditionally, the
 naming of the middle and rightmost mouse button is reversed compared to
 X11/Win32.
-This option is enabled by default on MacOSX/Aqua and allows to use
+This option is enabled by default on Mac OS X Aqua and allows to use
 the same set of mouse bindings (the same ayamrc file) for X11 and
 Aqua without sacrificing user experience. The middle mouse button,
 by default, zooms the view, and the right one moves the view.
@@ -22924,9 +22925,9 @@ gets iconified. Not used in single window GUI mode.
 The default value is 1 &ndash; yes.
 
 <item><tt/"UseInternalFD"/ switches to an internal file dialog for loading
-of plugins. This option is only used on MacOSX/Aqua (not X11!), because
+of plugins. This option is only used on Mac OS X Aqua (not X11!), because
 there the normal file dialog will not enter application bundle directory
-structures. This option is enabled by default on MacOSX/Aqua and not
+structures. This option is enabled by default on Mac OS X Aqua and not
 used on any other platform.
 
 <item><tt/"WarnPropPasteToSel"/: should
@@ -23428,8 +23429,8 @@ If there are many objects, it is also advisable to switch the object
 selection widget from tree view mode to list box mode (menu:
 <tt>"Special/Toggle TreeView"</tt>).
 <p>
-Modelling without views does not work on Apple MacOSX (Aqua) if
-GLU functionality is involved (as every GLU functionality on MacOSX
+Modelling without views does not work on Apple Mac OS X Aqua if
+GLU functionality is involved (as every GLU functionality on Mac OS X
 needs a GL context). GLU is needed for the PolyMesh and NURBS
 tesselation.
 
@@ -24124,7 +24125,11 @@ Index:
 <item><ref id="impx3d" name="X3D Export">
 </itemize>
 <item>Export RIB: <ref id="mmfile" name="main menu entry">
-<item>Expression: <ref id="mcattr" name="MetaComp attribute">
+<item>Expression:
+<itemize>
+<item><ref id="objsearch" name="object search attribute">
+<item><ref id="mcattr" name="MetaComp attribute">
+</itemize>
 <item>extendNC: <ref id="scextendnc" name="scripting interface command">
 <item>Extend: <ref id="extendt" name="extend curve tool">
 <item>Exterior: <ref id="matshader" name="shader property">
@@ -24175,6 +24180,7 @@ Index:
 </itemize>
 <item>FilterFunc: <ref id="rio" name="RenderMan interface option">
 <item>FilterWidth: <ref id="rio" name="RenderMan interface option">
+<item>Find:  <ref id="objsearch" name="object search">
 <item>FindU: <ref id="finduac" name="modelling action">
 <item>FindUV: <ref id="finduvac" name="modelling action">
 <item>FixDialogTitles: <ref id="hidprefs" name="hidden preference setting">
@@ -24273,6 +24279,7 @@ Index:
 <item><ref id="textattr" name="Text attribute">,
 <item><ref id="riincp" name="RiInc attribute">
 </itemize>
+<item>helix.tcl: <ref id="helixtcl" name="example/helper script">
 <item>Help:
 <itemize>
 <item><ref id="mmhelp" name="main menu entry">,
@@ -25142,6 +25149,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="sphereobj" name="Sphere object">,
 <item><ref id="nspt" name="NURBS sphere tool">
 </itemize>
+<item>spiral.tcl: <ref id="spiraltcl" name="example/helper script">
 <item>Split:
 <itemize>
 <item><ref id="splitt" name="NCurve tool">,
