@@ -643,7 +643,7 @@ ay_tags_gettcmd(ClientData clientData, Tcl_Interp *interp,
   if(argc < 3)
     {
       if(get_single)
-	ay_error(AY_EARGS, argv[0], "tagname vname");
+	ay_error(AY_EARGS, argv[0], "type vname");
       else
 	ay_error(AY_EARGS, argv[0], "vname1 vname2");
       return TCL_OK;
@@ -734,7 +734,7 @@ ay_tags_hastcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc < 2)
     {
-      ay_error(AY_EARGS, argv[0], "name");
+      ay_error(AY_EARGS, argv[0], "type");
       return TCL_OK;
     }
 
@@ -1376,7 +1376,7 @@ ay_tags_registertcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc < 2)
     {
-      ay_error(AY_EARGS, argv[0], "tag-type");
+      ay_error(AY_EARGS, argv[0], "type");
       return TCL_OK;
     }
 
