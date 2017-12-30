@@ -16221,9 +16221,15 @@ indices.<newline>
 If no index is given, the current selection will be cleared.<newline>
 If the single index is -1, the last object in the current level will be
 selected.
- <item>Examples: <tt/"selOb"/ clears the current selection, <tt/"selOb 0"/
-selects the first object in the current level, <tt/"selOb 0 1"/ selects
-the first two objects in the current level.
+ <item>Examples:
+<enum>
+<item><bf/<tt/"selOb"//<newline>
+clears the current selection,
+<item><bf/<tt/"selOb 0"//<newline>
+selects the first object in the current level, and
+<item><bf/<tt/"selOb 0 1"//<newline>
+selects the first two objects in the current level.
+</enum>
 </itemize>
 
 <p>
@@ -16310,8 +16316,10 @@ of a multiple point (of NCurve and NPatch objects) via this command
 only selects this single point.
  <item>Examples: Given that a single NCurve object is selected,
 <enum>
- <item><tt/"selPnts -all"/ selects all points of the curve, and
- <item><tt/"selPnts 0 2"/ selects the first and third point of the curve.
+ <item><bf/<tt/"selPnts -all"//<newline>
+selects all points of the curve, and
+ <item><bf/<tt/"selPnts 0 2"//<newline>
+selects the first and third point of the curve.
 </enum>
 </itemize>
 
@@ -16995,10 +17003,11 @@ See also section <ref id="extendt" name="Extend Tool">.
 <label id="scelevatenc">
 elevateNC &ndash; elevate NURBS curve:
 <itemize>
- <item>Synopsis: <tt/"elevateNC n"/
+ <item>Synopsis: <tt/"elevateNC [n]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Elevate the order of the selected NURBS curves
-without changing the shape of the curves by n.
+without changing the shape of the curves by <tt/n/.
+If the parameter <tt/n/ is omitted, a default value of 1 is used.
 The knot type of the elevated curves will be changed to <tt/"Custom"/.
 <p><p>
 See also section <ref id="elevt" name="Elevate Tool">.
@@ -17104,10 +17113,10 @@ See also section <ref id="refit" name="Refine Tool">.
 <label id="screfineknnc">
 refineknNC &ndash; refine knots of NURBS curve:
 <itemize>
- <item>Synopsis: <tt/"refineknNC {u1 u2 un}"/
+ <item>Synopsis: <tt/"refineknNC [{u1 u2 un}]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Refine the knot vector of the selected NURBS curve
-without changing the shape of the curve with n new knots {u1 u2 un}.
+without changing the shape of the curve with n new knots <tt/{u1 u2 un}/.
 If no list of new knots is given, a new knot is inserted into each interval
 in the old knot vector.
 <p><p>
@@ -17596,7 +17605,7 @@ refineuNP &ndash; refine NURBS surface in U direction:
  <item>Synopsis: <tt/"refineuNP [{u1 u2 un}]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Refine the selected NURBS surfaces in u direction
-with n new knots {u1 u2 un} without changing their shape.
+with n new knots <tt/{u1 u2 un}/ without changing their shape.
 If no list of new knots is given, a new knot is inserted into each interval
 in the old knot vector.
 The u knot type of the refined surfaces may be changed to <tt/"Custom"/.
@@ -17613,7 +17622,7 @@ refinevNP &ndash; refine NURBS surface in V direction:
  <item>Synopsis: <tt/"refinevNP [{v1 v2 vn}]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Refine the selected NURBS surfaces in v direction
-with n new knots {v1 v2 vn} without changing their shape.
+with n new knots <tt/{v1 v2 vn}/ without changing their shape.
 If no list of new knots is given, a new knot is inserted into each interval
 in the old knot vector.
 The v knot type of the refined surfaces may be changed to <tt/"Custom"/.
@@ -17629,10 +17638,11 @@ See also section <ref id="refinest" name="Refine Knots Surface Tool">.
 <label id="scelevateunp">
 elevateuNP &ndash; elevate NURBS surface in U direction:
 <itemize>
- <item>Synopsis: <tt/"elevateuNP n"/
+ <item>Synopsis: <tt/"elevateuNP [n]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Elevate the u order of the selected NURBS surfaces
-without changing the shape of the surfaces by n.
+without changing the shape of the surfaces by <tt/n/.
+If the parameter <tt/n/ is omitted, a default value of 1 is used.
 The u knot type of the elevated surfaces will be changed to <tt/"Custom"/.
 <p><p>
 See also section <ref id="elevuvt" name="Elevate Surface Tool">.
@@ -17644,10 +17654,11 @@ See also section <ref id="elevuvt" name="Elevate Surface Tool">.
 <label id="scelevatevnp">
 elevatevNP &ndash; elevate NURBS surface in V direction:
 <itemize>
- <item>Synopsis: <tt/"elevatevNP n"/
+ <item>Synopsis: <tt/"elevatevNP [n]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Elevate the v order of the selected NURBS surfaces
-without changing the shape of the surfaces by n.
+without changing the shape of the surfaces by <tt/n/.
+If the parameter <tt/n/ is omitted, a default value of 1 is used.
 The v knot type of the elevated surfaces will be changed to <tt/"Custom"/.
 <p><p>
 See also section <ref id="elevuvt" name="Elevate Surface Tool">.
@@ -18283,6 +18294,7 @@ If <tt/name/ is a complete
 filename and the designated file exists, it will be loaded directly.
 Otherwise, the file to load will be searched for in the list of configured
 plugin directories (see <tt/"Plugins"/ preference setting).
+<p><p>
 Note that it is currently not possible to unload a custom object or plugin
 from Ayam.
 </itemize>
@@ -23125,21 +23137,32 @@ Furthermore, compiling a shader parsing plugin is now much easier.
 For shader parsing without plugins, see also
 section <ref id="slxmltcl" name="Shader Parsing">.
 
+<#if out="latex"><x/newpage/</#if>
+
 <sect1>Automatic Instancing<label id="ai">
 <p>
-Automatic Instancing is available via the main menu entry:
-<tt>"Special/Instances/Automatic Instancing"</tt>.
+<figure loc="ht">
+<eps file="pics/ai.ps" height="2.5cm">
+<img src="pics/ai.gif">
+<caption>Automatic Instancing Dialog</caption>
+</figure>
+<p>
+<em/Automatic Instancing/ is available via the main menu
+entry: <tt>"Special/Instances/Automatic Instancing"</tt>.
+When this menu entry is selected a small parameter dialog will
+appear, see also the image above.
+<p>
 Automatic Instancing creates instances from all instantiable
-objects, using a simple algorithm that recursively compares
-objects. The comparison of materials and tags may be turned off in the
-small dialog that pops up after selection of the menu entry
-<tt>"Special/Instances/Automatic Instancing"</tt>.
-Here, also the scope of the automatic instantiation can be set to
+objects using a simple algorithm that recursively compares
+objects. Two objects are considered to be instantiable when all
+their attributes, except for the transformation attributes, are the same.
+The comparison of materials and tags may be turned off.
+Also the scope of the automatic instantiation can be set to
 the selected objects, the current level, or all objects
 in the scene (regardless of current level and selection).
 <footnote>Since 1.21.</footnote>
 <p>
-The algorithm is able to create instances of grouping objects
+The instancing algorithm is able to create instances of grouping objects
 too (objects with child objects, e.g.~levels or tool-objects
 like revolve).
 However, in order for two grouping objects to be instantiated
@@ -23369,6 +23392,8 @@ might work better for you.
 <item><tt/"CalcBBS"/ determines whether bounding boxes should be
 calculated and used for speed up (not working at the moment).
 </itemize>
+
+<#if out="latex"><x/newpage/</#if>
 
 The following table shows an overview of the available options their
 restrictions and implied requirements.
