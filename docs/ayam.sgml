@@ -18380,8 +18380,11 @@ withOb &ndash; execute a command on certain selected object(s):
  <item>Description: Use this command to execute command on a
 single object (designated by the zero based index) from a multiple selection
 without changing the selection state of any objects.
- <item>Example: <tt>"withOb 2 {movOb 0 1 0}"</tt> moves the third
-object from multiple selected objects. All objects stay selected.
+ <item>Example:
+<enum>
+<item><bf/<tt>"withOb 2 {movOb 0 1 0}"</tt>/<newline>
+moves the third object from multiple selected objects. All objects stay selected.
+</enum>
 </itemize>
 
 
@@ -22666,7 +22669,7 @@ point of the click. This option is enabled by default.
 These tags will be copied verbatim to converted and provided
 objects. If any of <tt/"BP"/ or <tt/"CP"/ are in this list,
 the conversion of tool objects with caps or bevels to NPatch objects
-does not generate multiple objects in a Level but just one object
+does not generate multiple objects in a Level object but just one object
 with all caps and bevels<footnote>Since 1.24.</footnote>.
 Default value: <tt/"TP,TC,BP,CP"/.
 
@@ -23579,16 +23582,39 @@ WWW resources related to Ayam:
 <itemize>
 <item>If you are reading this document from a local file system,
 maybe an updated version is available from the internet:
+<#if out="html">
+<url url="http://ayam.sourceforge.net/docs/ayam.html">
+</#if>
+<#unless out="html">
 <tt>http://ayam.sourceforge.net/docs/ayam.html</tt>
+</#unless>
+
 <item>Ayam Tutorial #1:
+<#if out="html">
+<url url="http://ayam.sourceforge.net/tut1/tutorial1.html">
+</#if>
+<#unless out="html">
 <tt>http://ayam.sourceforge.net/tut1/tutorial1.html</tt>
-<item>The Ayam FAQ: <tt>http://ayam.sourceforge.net/faq.html</tt>
+</#unless>
+
+<item>The Ayam FAQ:
+<#if out="html">
+<url url="http://ayam.sourceforge.net/faq.html">
+</#if>
+<#unless out="html">
+<#if out="latex">
+<tt>http://ayam.sourceforge.net/faq.html</tt>
+</#unless>
 </itemize>
 
 WWW resources related to RenderMan:
 <itemize>
-<item>The RenderMan Repository: <tt>http://www.renderman.org/</tt>
-<item>The RenderMan Academy: <tt>http://www.rendermanacademy.com/</tt>
+<item>The RenderMan Repository: <tt>http://www.renderman.org/</tt><newline>
+The original resource is now unfortunately offline, try your luck with the
+<htmlurl url="https://web.archive.org/web/20111212202636/http://www.renderman.org:80/" name="Internet Archive copy from 12. Dec 2011">.
+<item>The RenderMan Academy: <tt>http://www.rendermanacademy.com/</tt><newline>
+The original resource is now unfortunately offline, try your luck with the
+<htmlurl url="https://web.archive.org/web/20071219192035/http://www.rendermanacademy.com:80/" name="Internet Archive copy from 19. Dec 2007">.
 </itemize>
 
 <sect1>Acknowledgements
@@ -24850,7 +24876,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="materialobj" name="Material object">
 </itemize>
 <item>Reference: <ref id="referencing" name="instance type">
-<item>References: <ref id="secref" name="literature">
+<item>References: <ref id="secref" name="literature and WWW references">
 <item>Refine:
 <itemize>
 <item><ref id="refit" name="curve tool">,
@@ -25325,6 +25351,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>TrueDisp: <ref id="attrs" name="RenderMan/BMRT attribute">
 <item>truncated cone: <ref id="tconetcl" name="example/helper script">
 <item>tsurf.tcl: <ref id="tsurftcl" name="example/helper script">
+<item>Tutorial: <ref id="secref" name="Tutorial WWW reference">
 <item>Tween:
 <itemize>
 <item><ref id="tweennct" name="NCurve tool">,
