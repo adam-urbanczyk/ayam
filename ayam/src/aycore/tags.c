@@ -474,7 +474,7 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 	      if(!(new = calloc(1, sizeof(ay_tag))))
 		{
 		  ay_error(AY_EOMEM, argv[0], NULL);
-		  return TCL_OK;
+		  goto cleanup;
 		}
 	      /* we first try to resolve the tag type */
 	      if(!(entry = Tcl_FindHashEntry(&ay_tagtypesht, argv[index])))
@@ -491,7 +491,7 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 		{
 		  free(new);
 		  ay_error(AY_EOMEM, argv[0], NULL);
-		  return TCL_OK;
+		  goto cleanup;
 		}
 	      strcpy(new->name, argv[index]);
 
@@ -500,7 +500,7 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 		  free(new->name);
 		  free(new);
 		  ay_error(AY_EOMEM, argv[0], NULL);
-		  return TCL_OK;
+		  goto cleanup;
 		}
 	      strcpy(new->val, argv[index+1]);
 
@@ -512,6 +512,10 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 
       sel = sel->next;
     } /* while */
+
+cleanup:
+  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
+  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
  return TCL_OK;
 } /* ay_tags_settcmd */

@@ -56,6 +56,8 @@ ay_tcmd_convdlist(char *vname, int *dllen, double **dl)
   listPtr = Tcl_ObjGetVar2(ay_interp, vnamePtr, NULL, TCL_LEAVE_ERR_MSG |
 			   TCL_PARSE_PART1);
 
+  Tcl_IncrRefCount(vnamePtr);Tcl_DecrRefCount(vnamePtr);
+
   if(!listPtr)
     {
       return TCL_ERROR;
