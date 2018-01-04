@@ -454,6 +454,7 @@ ay_clevel_gettcmd(ClientData clientData, Tcl_Interp *interp,
       toa = Tcl_NewStringObj(argv[2], -1);
       to = Tcl_NewIntObj(count);
       Tcl_ObjSetVar2(interp, toa, NULL, to, TCL_LEAVE_ERR_MSG);
+      Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
 
       return TCL_OK;
     }

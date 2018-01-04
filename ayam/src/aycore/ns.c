@@ -61,6 +61,7 @@ ay_ns_restrictall(ClientData clientData,
       Tcl_ObjSetVar2(ay_safeinterp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
 		     TCL_GLOBAL_ONLY);
 #endif
+      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
       return TK_DISCARD_EVENT;
     }
 #else
@@ -68,19 +69,18 @@ ay_ns_restrictall(ClientData clientData,
     {
       if(key_event->state & (ControlMask|ShiftMask))
 	{
-
 	  XLookupString(key_event, tmpstr, 128, &ks, &status);
 	  if(ks == 0x43)
 	    {
 	      ton = Tcl_NewStringObj("cancelled", -1);
 	      to = Tcl_NewIntObj(1);
-
 	      Tcl_ObjSetVar2(ay_interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
 			     TCL_GLOBAL_ONLY);
 #ifndef AYNOSAFEINTERP
 	      Tcl_ObjSetVar2(ay_safeinterp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
 			     TCL_GLOBAL_ONLY);
 #endif
+	      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 	      return TK_DISCARD_EVENT;
 	    }
 	  else
