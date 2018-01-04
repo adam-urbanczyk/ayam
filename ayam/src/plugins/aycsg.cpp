@@ -1682,7 +1682,6 @@ aycsg_setopttcmd(ClientData clientData, Tcl_Interp *interp,
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &aycsg_calcbbs);
 
-
   Tcl_SetStringObj(ton, "OffscreenType", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &opencsg_offscreen);
@@ -1737,6 +1736,9 @@ aycsg_setopttcmd(ClientData clientData, Tcl_Interp *interp,
   OpenCSG::setOption(OpenCSG::DepthComplexitySetting, depthalgo);
   OpenCSG::setOption(OpenCSG::OffscreenSetting, offscreen);
   OpenCSG::setOption(OpenCSG::DepthBoundsOptimization, opti);
+
+  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
+  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
  return TCL_OK;
 } // aycsg_setopttcmd
