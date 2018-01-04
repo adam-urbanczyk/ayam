@@ -246,6 +246,8 @@ ay_sel_getseltcmd(ClientData clientData, Tcl_Interp *interp,
       o = o->next;
     } /* while */
 
+  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
+
  return TCL_OK;
 } /* ay_sel_getseltcmd */
 
