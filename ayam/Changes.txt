@@ -1,5 +1,5 @@
-[26. Dec 2017] Tip:
-===================
+[5. Jan 2018] Tip:
+==================
 Bug Fixes:
 o entering non number data to tesselation parameter entries (SF 554)
 o chordal/centripetal knots for periodic curves/surfaces are wrong (SF 555)
@@ -21,6 +21,8 @@ o keyboard bindings in custom object property GUIs (SF 571)
 o periodic sweep for first trajectory points forming a (-1,0,0) vector (SF 572)
 o bevels on periodic curves with chordal knots (SF 573)
 o caps of extrusion objects for curves with multiple knots (SF 574)
+o moving objects in the current level does not set scene change
+  indicator (SF 575)
 
 Modelling:
 o the set mark action now supports drag selection of multiple points,
