@@ -857,7 +857,7 @@ proc selMUD { up } {
     break;
     }
     if { $notify } {
-	notifyOb;rV
+	notifyOb; rV; set ay(sc) 1
     }
     set ay(selmudlock) 0
  return;
