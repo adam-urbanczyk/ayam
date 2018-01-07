@@ -1608,14 +1608,22 @@ proc viewZoom { w d } {
 
  return;
 }
+# viewZoom
 
 
 ##############################
 # setMark:
-proc setMark { px {y 0} {z 0} } {
+proc setMark { {px ""} {y 0} {z 0} } {
  global ay
 
     if { $ay(views) == "" } {
+	return;
+    }
+
+    set w [lindex $ay(views) 0]
+
+    if { $px == "" } {
+	${w}.f3D.togl setconf -mark n
 	return;
     }
 
@@ -1626,7 +1634,7 @@ proc setMark { px {y 0} {z 0} } {
     } else {
 	set x $px
     }
-    set w [lindex $ay(views) 0]
+
     ${w}.f3D.togl setconf -smark $x $y $z
 
  return;
