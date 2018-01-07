@@ -18921,6 +18921,71 @@ if { $ay_error > 1 } {
 <#if out="latex"><x/phantomsection/</#if>
 <#if out="latex"><x/newpage/</#if>
 
+<label id="scruntool">
+runTool:
+<itemize>
+ <item>Synopsis: <tt>"runTool vars labels commands title [add]"</tt>
+ <item>Background: Yes, Undo: No, Safe: No, Type: Procedure
+ <item>Description: This procedure opens a dialog window to request
+a set of parameter values, specified via <tt/vars/ and <tt/labels/,
+and if the dialog is closed via the <tt/"Ok"/-button, runs the specified
+commands.
+<p><p>
+<tt/"vars"/ is a list of variable names, array names are allowed. If the
+specified variables already exist, their current values will be used
+to infer a parameter type for presenting a type specific GUI component
+to the user. The type detection uses the <tt/string is/ facility of Tcl.
+If the current value is of type integer and there is a second variable
+(named like the original variable with the appendix <tt/_l/), a menu
+component will be used and the menu choices will be taken from the
+second variable.
+<p>
+<tt/"labels"/ is a list of label strings for the parameters.
+<p>
+<tt/"commands"/ is the code that calls the tool and runs additional
+GUI updating. If the code contains strings like <tt/%0/, those will
+be replaced by the corresponding parameter value requested before
+the code runs.
+<p>
+<tt/"title"/ is the title string of the dialog window. It can be used
+to convey the tool name or description to the user.
+
+ <item>Examples:<#if out=html><p><p></#if>
+<enum>
+<item>&nbsp;
+<#if out=html><p><p><code></#if><#unless out=html><verb></#unless>
+runTool {x} {"X:"} {moveOb %0 0 0;plb_update;rV} "MoveX"
+<#if out=html></code></#if><#unless out=html></verb></#unless>
+opens a dialog to request a single parameter and moves the selected objec(s)
+along the x-axis by the specified amount.
+<item>&nbsp;
+<#if out=html><p><code></#if><#unless out=html><verb></#unless>
+runTool {x y} {"X:" "Y:"} {moveOb %0 %1 0;plb_update;rV} "MoveXY"
+<#if out=html></code></#if><#unless out=html></verb></#unless>
+opens a dialog to request two parameters and moves the selected objec(s)
+along the x-axis and the y-axis by the specified amounts.
+<item>&nbsp;
+<#if out=html><p><p><code></#if>
+<#unless out=html><verb></#unless>set l 0
+set l_l {"Start" "End" "Both"}
+runTool {l} {"Side:"} {
+ switch %0 {
+  0 {clampNC -s}
+  1 {clampNC -e}
+  2 {clampNC}
+ }
+ plb_update;rV
+} "Clamp"
+<#if out=html></code></#if><#unless out=html></verb></#unless>
+opens a dialog with a menu GUI component and clamps the selected
+NURBS curve(s) on the choosen side(s).
+</enum>
+</itemize>
+
+<p>
+<#if out="latex"><x/phantomsection/</#if>
+<#if out="latex"><x/newpage/</#if>
+
 <label id="scnotifyob">
 notifyOb:
 <itemize>
@@ -18972,7 +19037,8 @@ setMark:
 <itemize>
  <item>Synopsis: <tt>"setMark x y z"</tt>
  <item>Background: Yes, Undo: No, Safe: No, Type: Procedure
- <item>Description: This procedure sets the global mark.
+ <item>Description: This procedure sets the global mark to the specified
+coordinates.
 <p><p>
 This procedure only works, if there is at least one view.
 
