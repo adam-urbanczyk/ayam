@@ -381,25 +381,25 @@ ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
     {
     case SLX_TYPE_SURFACE:
       Tcl_DStringAppend(&ds, " surface ", -1);
-     break;
-   case SLX_TYPE_DISPLACEMENT:
+      break;
+    case SLX_TYPE_DISPLACEMENT:
       Tcl_DStringAppend(&ds, " displacement ", -1);
-     break;
-   case SLX_TYPE_LIGHT:
+      break;
+    case SLX_TYPE_LIGHT:
       Tcl_DStringAppend(&ds, " light ", -1);
-     break;
-   case SLX_TYPE_VOLUME:
-     Tcl_DStringAppend(&ds, " volume ", -1);
-     break;
-   case SLX_TYPE_IMAGER:
-     Tcl_DStringAppend(&ds, " imager ", -1);
-     break;
-   case SLX_TYPE_TRANSFORMATION:
-     Tcl_DStringAppend(&ds, " transformation ", -1);
-     break;
-   default:
-     break;
-   }
+      break;
+    case SLX_TYPE_VOLUME:
+      Tcl_DStringAppend(&ds, " volume ", -1);
+      break;
+    case SLX_TYPE_IMAGER:
+      Tcl_DStringAppend(&ds, " imager ", -1);
+      break;
+    case SLX_TYPE_TRANSFORMATION:
+      Tcl_DStringAppend(&ds, " transformation ", -1);
+      break;
+    default:
+      break;
+    }
 
   /* get arguments of shader */
   numargs = SLX_GetNArgs();
@@ -714,13 +714,13 @@ ay_shader_wrib(ay_shader *shader, int type, RtLightHandle *light_handle)
 	      RiDeclare(sarg->name,"matrix");
 	      values[count] = (void*)(&(sarg->val.matrix));
 	      break;
-	    }
+	    } /* switch sarg->type */
 
 	  tokens[count] = sarg->name;
 
 	  count++;
 	  sarg = sarg->next;
-	}
+	} /* while sarg */
 
       switch(type)
 	{
@@ -731,12 +731,11 @@ ay_shader_wrib(ay_shader *shader, int type, RtLightHandle *light_handle)
 	  RiDisplacementV(shader->name,count,tokens,values);
 	  break;
 	case AY_STLIGHT:
-	  *light_handle = RiLightSourceV(shader->name,count,
-					   tokens,values);
+	  *light_handle = RiLightSourceV(shader->name,count,tokens,values);
 	  break;
 	case AY_STAREALIGHT:
-	  *light_handle = RiAreaLightSourceV(shader->name,count,
-					       tokens,values);
+	  *light_handle = RiAreaLightSourceV(shader->name,count,tokens,values);
+	  break;
 	case AY_STINTERIOR:
 	  RiInteriorV(shader->name,count,tokens,values);
 	  break;
@@ -757,7 +756,7 @@ ay_shader_wrib(ay_shader *shader, int type, RtLightHandle *light_handle)
 	default:
 	  ay_error(AY_ERROR, fname, "Skipping shader of unknown type.");
 	  break;
-	}
+	} /* switch type */
 
       if(tokens)
 	free(tokens);
@@ -765,8 +764,7 @@ ay_shader_wrib(ay_shader *shader, int type, RtLightHandle *light_handle)
       if(values)
 	free(values);
       values = NULL;
-
-    } /* if */
+    } /* if have shader name */
 
  return ay_status;
 } /* ay_shader_wrib */
@@ -923,7 +921,6 @@ ay_shader_gettcmd(ClientData clientData, Tcl_Interp *interp,
       /*      break;*/
     } /* switch */
 
-
   n1 = argv[2];
 
   Tcl_SetVar2(interp,n1,"Name","",TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -933,7 +930,6 @@ ay_shader_gettcmd(ClientData clientData, Tcl_Interp *interp,
 
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
-
 
   arg = shader->arg;
   sname = shader->name;
@@ -981,7 +977,6 @@ ay_shader_gettcmd(ClientData clientData, Tcl_Interp *interp,
 	  to = Tcl_NewIntObj(itemp);
 	  Tcl_ObjSetVar2(interp,toa,ton,to, TCL_LEAVE_ERR_MSG |
 			 TCL_GLOBAL_ONLY);
-
 	  break;
 
 	case AY_SAPOINT:
@@ -1080,6 +1075,7 @@ ay_shader_gettcmd(ClientData clientData, Tcl_Interp *interp,
 			     TCL_GLOBAL_ONLY);
 	    } /* for */
 	  break;
+
 	default:
 	  Tcl_SetVar2(interp,n1,"ArgTypes", "eimer", TCL_LEAVE_ERR_MSG |
 		      TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT);
@@ -1114,7 +1110,7 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp *interp,
  char *n1=NULL;
  int sargnc = 0, sargtc = 0, i, j, shadertype = 0, argtype = 0;
  double dtemp = 0.0;
- char **sargnv, **sargtv;
+ char **sargnv = NULL, **sargtv = NULL;
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  char *man[] = {"_0","_1","_2","_3","_4","_5","_6","_7","_8","_9","_10","_11","_12","_13","_14","_15"};
 
@@ -1252,7 +1248,6 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     } /* switch */
 
-
   if(!shader)
     return TCL_OK;
 
@@ -1266,8 +1261,8 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp *interp,
 
   /* prepare Tcl Objects */
   n1 = argv[2];
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  toa = Tcl_NewStringObj(n1, -1);
+  ton = Tcl_NewStringObj(n1, -1);
 
   /* get shadername */
   result = Tcl_GetVar2(interp, n1, "Name",
@@ -1276,24 +1271,20 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp *interp,
   /* user specified no new shader -> bail out! */
   if(!strcmp("", result))
     {
-      return TCL_OK;
+      goto cleanup;
     }
 
   /* create shader-struct */
   if(!(newshader = calloc(1, sizeof(ay_shader))))
     {
-      Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
       ay_error(AY_EOMEM, argv[0], NULL);
-      return TCL_OK;
+      goto cleanup;
     }
   if(!(newshader->name = calloc(strlen(result)+1, sizeof(char))))
     {
       free(newshader);
-      Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
       ay_error(AY_EOMEM, argv[0], NULL);
-      return TCL_OK;
+      goto cleanup;
     }
 
   strcpy(newshader->name, result);
@@ -1338,13 +1329,8 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp *interp,
       if(!(newarg = calloc(1, sizeof(ay_shader_arg))))
 	{
 	  ay_shader_free(newshader);
-	  Tcl_Free((char *) sargnv);
-	  Tcl_Free((char *) sargtv);
-	  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-	  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
-
 	  ay_error(AY_EOMEM, argv[0], NULL);
-	  return TCL_OK;
+	  goto cleanup;
 	}
       *argnext = newarg;
       argnext = &(newarg->next);
@@ -1354,13 +1340,8 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp *interp,
       if(!(newarg->name = calloc(strlen(sargnv[i])+1, sizeof(char))))
 	{
 	  ay_shader_free(newshader);
-	  Tcl_Free((char *) sargnv);
-	  Tcl_Free((char *) sargtv);
-	  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-	  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
-
 	  ay_error(AY_EOMEM, argv[0], NULL);
-	  return TCL_OK;
+	  goto cleanup;
 	}
       strcpy(newarg->name, sargnv[i]);
 
@@ -1393,8 +1374,8 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(dtemp < 0) dtemp = 0.0;
 	  if(dtemp > 255) dtemp = 255.0;
 	  newarg->val.color[2]=(float)(dtemp/255.0);
-
 	  break;
+
 	case AY_SAPOINT:
 	case AY_SAVECTOR:
 	case AY_SANORMAL:
@@ -1419,6 +1400,7 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp *interp,
 	  Tcl_GetDoubleFromObj(interp, to, &dtemp);
 	  newarg->val.point[2] = (float)dtemp;
 	  break;
+
 	case AY_SASCALAR:
 	  Tcl_SetStringObj(ton,sargnv[i],-1);
 	  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
@@ -1426,19 +1408,19 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp *interp,
 	  Tcl_GetDoubleFromObj(interp, to, &dtemp);
 	  newarg->val.scalar = (float)dtemp;
 	  break;
+
 	case AY_SASTRING:
 	  result = Tcl_GetVar2(interp, n1, sargnv[i], TCL_LEAVE_ERR_MSG |
 			       TCL_GLOBAL_ONLY);
 	  if(!(newarg->val.string = calloc(strlen(result)+1, sizeof(char))))
 	  {
 	    ay_shader_free(newshader);
-	    Tcl_Free((char *) sargnv);
-	    Tcl_Free((char *) sargtv);
 	    ay_error(AY_EOMEM, argv[0], NULL);
-	    return TCL_OK;
+	    goto cleanup;
 	  }
 	  strcpy(newarg->val.string, result);
 	  break;
+
 	case AY_SAMATRIX:
 	  for(j = 0; j < 16; j++)
 	    {
@@ -1450,17 +1432,20 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp *interp,
 	      newarg->val.matrix[j] = (float)dtemp;
 	    } /* for */
 	  break;
-
+	default:
+	  break;
 	} /* switch */
-
     } /* for */
 
   /* add shader to object */
   *shader = newshader;
 
   /* clean up */
-  Tcl_Free((char *) sargnv);
-  Tcl_Free((char *) sargtv);
+cleanup:
+  if(sargnv)
+    Tcl_Free((char *) sargnv);
+  if(sargtv)
+    Tcl_Free((char *) sargtv);
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
