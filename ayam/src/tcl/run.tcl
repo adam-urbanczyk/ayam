@@ -25,7 +25,7 @@
 # advargs: link to documentation (html page and anchor, or just anchor)
 #
 # example:
-# runTool splitCurveu {"Split at u:"} "splitCurve %0"
+# runTool splitCurveu {"Split at u:"} "splitCurve %0" "Split"
 proc runTool { argvars argstrings command title {advargs ""} } {
     global ay ayprefs aymainshortcuts
 
@@ -57,12 +57,11 @@ proc runTool { argvars argstrings command title {advargs ""} } {
 	    global $j
 	} else {
 	    set isarray 0
-	    global $i
 	}
 
 	# check variable
-	if { ![info exists $i] } {
-	    set $i 0
+	if { ![info exists ::$i] } {
+	    set ::$i 0
 	}
 
 	# create GUI
@@ -80,7 +79,7 @@ proc runTool { argvars argstrings command title {advargs ""} } {
 	    uie_fixEntry $f2.e
 
 	    # fill current value of $i into the entry
-	    eval "set vali \$$i"
+	    eval "set vali \$::$i"
 	    if { $vali != "" } {
 		$f2.e insert 0 $vali
 	    }
@@ -111,7 +110,7 @@ proc runTool { argvars argstrings command title {advargs ""} } {
 	    set nam [string range $nami 0 end-1]
 	    regsub -all "\[^\[:alnum:\]\]" $nam "_" nami
 
-	    eval "set vali \$$i"
+	    eval "set vali \$::$i"
 	    set ToolParams($nami) $vali
 	    while { 1 } {
 		if { $vali != "" } {
