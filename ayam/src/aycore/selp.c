@@ -692,7 +692,7 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
  ay_point *p;
- Tcl_Obj *toa, *to;
+ Tcl_Obj *toa = NULL, *to;
 
   if(!sel)
     {
@@ -845,6 +845,11 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
     } /* while */
 
 cleanup:
+
+  if(toa)
+    {
+      Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
+    }
 
   if(indices)
     free(indices);
