@@ -871,8 +871,13 @@ proc addString { w prop name {def {}} } {
 
 	set m [menu $mb.m -tearoff 0]
 	foreach val $def {
-	    $m add command -label $val\
+	    if { $val == "..." } {
+		$m add command -label $val\
+	    -command "global $prop; $e delete 0 end; focus -force $e"
+	    } else {
+		$m add command -label $val\
 	      -command "global $prop; $e delete 0 end; $e insert end \{$val\};"
+	    }
 	}
 
 	if { ! $ay(iapplydisable) } {
