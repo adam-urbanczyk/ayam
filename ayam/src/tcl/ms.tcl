@@ -244,28 +244,28 @@ create a RIB that automatically renders ShadowMaps all the time.\
 ms_set en ayprefse_ExcludeHidden "Omit hidden objects on RIB export?"
 ms_set en ayprefse_RenderMode "How should the renderer be forced to render\
 to the screen?"
-ms_set en ayprefse_QRender "Name and parameters of the renderer to use for\
+ms_set en ayprefse_QRender "Command and parameters of the renderer to use for\
 quick render previews.\n\"%s\" will be replaced by the filename\
 of the RIB."
 ms_set en ayprefse_QRenderUI "Enable user interface for quick rendering."
 ms_set en ayprefse_QRenderPT "A template that helps to pick the progress\
 from the output of the renderer.\n\"%d\" denotes the position of\
 the progress number in the output."
-ms_set en ayprefse_Render "Name and parameters of the renderer to use for\
+ms_set en ayprefse_Render "Command and parameters of the renderer to use for\
 render previews.\n\"%s\" will be replaced by the filename\
 of the RIB."
 ms_set en ayprefse_RenderUI "Enable user interface for rendering."
 ms_set en ayprefse_RenderPT "A template that helps to pick the progress\
 from the output of the renderer.\n\"%d\" denotes the position of\
 the progress number in the output."
-ms_set en ayprefse_FRender "Name and parameters of the renderer to use for\
+ms_set en ayprefse_FRender "Command and parameters of the renderer to use for\
 rendering to a file.\n\"%s\" will be replaced by the filename\
 of the RIB."
 ms_set en ayprefse_FRenderUI "Enable user interface for rendering to a file."
 ms_set en ayprefse_FRenderPT "A template that helps to pick the progress\
 from the output of the renderer.\n\"%d\" denotes the position of\
 the progress number in the output."
-ms_set en ayprefse_SMRender "Name and parameters of the renderer to use for\
+ms_set en ayprefse_SMRender "Command and parameters of the renderer to use for\
 shadow maps.\n\"%s\" will be replaced by the filename\
 of the RIB."
 ms_set en ayprefse_SMRenderUI "Enable user interface for shadow map rendering."
@@ -465,7 +465,7 @@ ms_set de ayprefse_ExcludeHidden "Sollen alle versteckten Objekte beim
 RIB-Export ausgelassen werden?"
 ms_set de ayprefse_RenderMode "Wie soll der Renderer zum Rendern auf den\
 Bildschirm gezwungen werden?"
-ms_set de ayprefse_QRender "Name und Aufrufparameter des Renderers,\
+ms_set de ayprefse_QRender "Kommando und Aufrufparameter des Renderers,\
 der für\n schnelle Vorschaubilder verwendet werden soll.\n\"%s\" wird\
 durch den Dateinamen des RIBs ersetzt."
 ms_set de ayprefse_QRenderUI "Soll das Render-Fenster für die schnelle Vorschau
@@ -474,7 +474,7 @@ ms_set de ayprefse_QRenderPT "Beschreibung der Ausgabe des\
 Rendering-Fortschritts durch den Renderer\
 \n\"%d\" ist die Position des prozentualen Fortschrittswertes,\
 \nder dann im Rendering-Fenster angezeigt wird."
-ms_set de ayprefse_Render "Name und Aufrufparameter des Renderers,\
+ms_set de ayprefse_Render "Kommando und Aufrufparameter des Renderers,\
 der für die Vorschau verwendet werden soll.\n\"%s\" wird\
 durch den Dateinamen des RIBs ersetzt."
 ms_set de ayprefse_RenderUI "Soll das Render-Fenster für die Vorschau\
@@ -483,7 +483,7 @@ ms_set de ayprefse_RenderPT "Beschreibung der Ausgabe des\
 Rendering-Fortschritts durch den Renderer\
 \n\"%d\" ist die Position des prozentualen Fortschrittswertes,\
 \nder dann im Rendering-Fenster angezeigt wird."
-ms_set de ayprefse_FRender "Name und Aufrufparameter des Renderers,\
+ms_set de ayprefse_FRender "Kommando und Aufrufparameter des Renderers,\
 der zum Rendern in eine Datei verwendet werden soll.\n\"%s\" wird\
 durch den Dateinamen des RIBs ersetzt."
 ms_set de ayprefse_FRenderUI "Soll das Render-Fenster aktiviert werden?"
@@ -491,7 +491,7 @@ ms_set de ayprefse_FRenderPT "Beschreibung der Ausgabe des\
 Rendering-Fortschritts durch den Renderer\
 \n\"%d\" ist die Position des prozentualen Fortschrittswertes,\
 \nder dann im Rendering-Fenster angezeigt wird."
-ms_set de ayprefse_SMRender "Name und Aufrufparameter des Renderers,\
+ms_set de ayprefse_SMRender "Kommando und Aufrufparameter des Renderers,\
 der für Schattenkarten verwendet werden soll.\n\"%s\" wird\
 durch den Dateinamen des RIBs ersetzt."
 ms_set de ayprefse_SMRenderUI "Soll das Render-Fenster für Schattenkarten\
@@ -701,7 +701,7 @@ seulement\n(Menu: View/Create ShadowMaps)"
 ms_set fr ayprefse_ExcludeHidden "Omettre les objets cachés à l'exportation\
 RIB?"
 ms_set fr ayprefse_RenderMode "Mode de rendu à l'écran?"
-ms_set fr ayprefse_QRender "Nom et paramètres du moteur de rendu à utiliser\
+ms_set fr ayprefse_QRender "Commandement et paramètres du moteur de rendu à utiliser\
 pour les rendus d'aperçu rapides\n\"%s\" sera remplacé par le nom\
 du fichier du RIB."
 ms_set fr ayprefse_QRenderUI "Activer l'interface utilisateur lors le\
@@ -709,21 +709,21 @@ rendu rapide."
 ms_set fr ayprefse_QRenderPT "Modèle pour la progression à partir de la\
 sortie du moteur de rendu.\n\"%d\" montre la position du numéro\
 de progression dans la sortie."
-ms_set fr ayprefse_Render "Nom et paramètres du moteur de rendu à utiliser\
+ms_set fr ayprefse_Render "Commandement et paramètres du moteur de rendu à utiliser\
 pour les rendus d'aperçu.\n\"%s\" sera remplacé par le nom du fichier du\
 RIB."
 ms_set fr ayprefse_RenderUI "Activer l'interface utilisateur lors le rendu."
 ms_set fr ayprefse_RenderPT "Modèle pour la progression à partir de la\
 sortie du moteur de rendu.\n\"%d\" montre la position du numéro de\
 progression dans la sortie."
-#ms_set fr ayprefse_FRender "Name and parameters of the renderer to use for\
+#ms_set fr ayprefse_FRender "Command and parameters of the renderer to use for\
 #rendering to a file.\n\"%s\" will be replaced by the filename\
 #of the RIB."
 #ms_set en ayprefse_FRenderUI "Enable user interface for rendering to a file."
 #ms_set fr ayprefse_FRenderPT "A template that helps to pick the progress\
 #from the output of the renderer.\n\"%d\" denotes the position of\
 #the progress number in the output."
-ms_set fr ayprefse_SMRender "Nom et paramètres du moteur de rendu à utiliser\
+ms_set fr ayprefse_SMRender "Commandement et paramètres du moteur de rendu à utiliser\
 pour les shadow maps.\n\"%s\" sera remplacé par le nom du fichier du\
 RIB."
 ms_set fr ayprefse_SMRenderUI "Activer l'interface utilisateur lors le\
