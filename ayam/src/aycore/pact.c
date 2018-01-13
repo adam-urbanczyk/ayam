@@ -2677,7 +2677,7 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
 				    obj[6], obj[7], obj[8],
 				    &(pl[12]), &(pl[13]), &(pl[14]), &(pl[15]));
 
-	      ay_status = ay_pact_getpoint(2, o, pl, &pe);
+	      (void)ay_pact_getpoint(2, o, pl, &pe);
 
 	      for(i = 0; i < pe.num; i++)
 		{
