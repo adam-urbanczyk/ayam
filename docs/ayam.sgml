@@ -33,7 +33,7 @@ code example of 6 lines text (needs another 2 for the upper/lower lines)
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>12. Nov 2017
+<date>8. Jan 2018
 
 <abstract>
 This is the documentation of Ayam 1.25 &ndash; a free 3D modelling environment
@@ -1710,39 +1710,57 @@ Here are all entries of the <tt/"View"/ menu:
 <itemize>
 <item><tt/"Quick Render"/: the scene is exported to a RIB file using the
 camera settings of the current view; then the <tt/"QRender"/ command
-(see the preferences) will be called. Note that the RIB export
-will not use the RiOption settings for image size but the current
-window size instead.
+will be called.
+See also section <ref id="prefrib" name="RIB-Export Preferences">.
+As the renderer will be executed in the background, Ayam will remain
+responsive and it is also possible to run multiple renderers in
+parallel.
+<p><p>
+Note that the RIB export will <em/not/ use the <tt/RiOption/ settings for image
+size from the Root object but the current view window size instead.
 Also note that the environment variable <tt/SHADERS/ will be adapted
-to the preference setting <tt/Shaders/ for rendering.
+to the current value of the preference setting <tt/Shaders/ for rendering.
 
 <item><tt/"Render"/: the scene is exported to a RIB file using the
 camera settings of the current view; then the <tt/"Render"/ command
-(see the preferences) will be called. Note that the RIB export
-will not use the RiOption settings for image size but the current
-window size instead.
+will be called.
+See also section <ref id="prefrib" name="RIB-Export Preferences">.
+As the renderer will be executed in the background, Ayam will remain
+responsive and it is also possible to run multiple renderers in
+parallel.
+<p><p>
+Note that the RIB export will <em/not/ use the <tt/RiOption/ settings for image
+size from the Root object but the current view window size instead.
 Also note that the environment variable <tt/SHADERS/ will be adapted
-to the preference setting <tt/Shaders/ for rendering.
+to the current value of the preference setting <tt/Shaders/ for rendering.
 
 <item><tt/"Render to File"/: the scene is exported to a RIB file using the
-camera settings of the current view and with a RiDisplay statement that
-results in an image file to be produced; then the <tt/"FRender"/ command
-(see the preferences) will be called. The image file name will be derived
-from the scene file name. Note that the RIB export
-will not use the RiOption settings for image size but the current
-window size instead.
+camera settings of the current view and with a <tt/RiDisplay/ statement that
+results in an image file to be produced when rendered; then
+the <tt/"FRender"/ command will be called.
+See also section <ref id="prefrib" name="RIB-Export Preferences">.
+As the renderer will be executed in the background, Ayam will remain
+responsive and it is also possible to run multiple renderers in
+parallel.
+<p><p>
+The image file name will be derived from the scene file name. Note that
+the RIB export will <em/not/ use the <tt/RiOption/ settings for image size
+from the Root object but the current view window size instead.
 Also note that the environment variable <tt/SHADERS/ will be adapted
-to the preference setting <tt/Shaders/ for rendering.
+to the current value of preference setting <tt/Shaders/ for rendering.
 
 <item><tt/"Export RIB"/ exports the scene to a RIB file. This does exactly the
 same as the main menu entry <tt>"File/Export/RenderMan RIB"</tt>, except that
 the current view will already be selected in the dialog box.
+<p> <p>
 
-<item><tt/"Redraw"/: forces the OpenGL-widget to be drawn, this is
+<item><tt/"Redraw"/: forces the view window to be drawn, this is
 particularly useful if automatic redrawing of the view has been disabled.
+<p> <p>
 
 <item><tt/"Reset"/: restores the camera settings of the view to those
 natural to the current view type.
+<p> <p>
 
 <item><tt/"Open PPrev"/, <tt/"Close PPrev"/: those menu entries are just
 available, if the compile time option <tt/AYENABLEPPREV/ has been set.
@@ -1757,14 +1775,28 @@ for each different setting.
 As the RIB client library usually is not able to handle multiple open
 RIB streams simultaneously, RIB-Export and direct rendering from view
 windows are not available until the permanent preview window is closed.
+<p> <p>
 
-<item><tt>"Create ShadowMap"</tt>: creates the shadow maps
-for the currently selected light source.
+<item><tt/"Create All ShadowMaps"/: for each light in the scene,
+the light is selected, then the shadow map will be created
+in the same way as with the menu entry <tt>"Create ShadowMap"</tt>
+below (i.e.~this creates all shadow maps for the
+current scene regardless of selection).
 See also section <ref id="shadowmaps" name="Using ShadowMaps">.
+<p> <p>
 
-<item><tt/"Create All ShadowMaps"/: creates all shadow maps for the
-current scene (regardless of selection).
-See also section <ref id="shadowmaps" name="Using ShadowMaps">.
+<item><tt>"Create ShadowMap"</tt>: 
+the scene is exported to a RIB file using the currently selected
+light source for the camera settings and with a <tt/RiDisplay/ statement
+that results in a shadow map to be produced when rendered; then
+the <tt/"SMRender"/ command will be called.
+See also sections <ref id="prefrib" name="RIB-Export Preferences">
+and <ref id="shadowmaps" name="Using ShadowMaps">.
+<p><p>
+Note that before doing anything, Ayam will check whether shadow maps
+are enabled in the RIB export preferences and offer to adapt the
+preference setting accordingly. This must be done because <em/only then/
+exported RIBs for image rendering will actually use the shadow maps.
 
 <item><tt/"Close"/: the View window will be removed. This entry is not
 available for the internal views of Ayam in single window GUI mode.
@@ -1942,9 +1974,11 @@ See also the image below:
 <p>
 See section <ref id="drawingmodes" name="Drawing Modes"> for a discussion
 of the different drawing modes. 
-<p>
-The <tt/"Grid"/ icon menu may be used to quickly change the current grid
-size:
+
+<#if out="latex"><x/newpage/</#if>
+
+Finally, the <tt/"Grid"/ icon menu may be used to quickly change the
+current grid size:
 <p>
 On the right hand side in the view menu bar there is a little icon
 that displays the current grid size. You may click on the icon to
@@ -2998,7 +3032,9 @@ that the rendering finished.
 <p> <p>
 
 <item><tt/"QRender"/ determines the command that should be executed
-upon quick rendering a view, <tt>%s</tt> denotes the name of the RIB file.
+upon quick rendering a view using the view menu <tt>"View/Quick Render"</tt>
+or the keyboard shortcut <tt>Ctrl+r</tt>. The placeholder <tt>%s</tt>
+denotes the name of the RIB file.
 <p> <p>
 
 <item><tt/"QRenderUI"/, enables the Rendering GUI for quick rendering,
@@ -3010,7 +3046,9 @@ see discussion of <tt/"RenderPT"/ below.
 <p> <p>
 
 <item><tt/"Render"/ determines the command that should be executed
-upon normal rendering of a view, <tt>%s</tt> denotes the name of the RIB file.
+upon normal rendering of a view using the view menu <tt>"View/Render"</tt>
+or the keyboard shortcut <tt>Ctrl+R</tt>. The placeholder <tt>%s</tt>
+denotes the name of the RIB file.
 <p> <p>
 
 <item><tt/"RenderUI"/ enables the renderer user interface (Rendering GUI),
@@ -3079,7 +3117,8 @@ sign, which comes right behind the sought after percentage number.
 <p> <p>
 
 <item><tt/"FRender"/, renderer command to use for direct rendering to image
-files (via view menu entry <tt/"Render to File"/).
+files (via view menu entry <tt/"Render to File"/). The placeholder <tt>%s</tt>
+denotes the name of the RIB file.
 <p> <p>
 
 <item><tt/"FRenderUI"/, enables the Rendering GUI for the direct rendering
@@ -3093,7 +3132,7 @@ image files, see discussion of <tt/"RenderPT"/ above.
 <item><tt/"SMRender"/, renderer command to use for the rendering of shadow maps
 (e.g.~view menu entry <tt>"View/Create All ShadowMaps"</tt>),
 see also section <ref id="shadowmaps" name="Using ShadowMaps">.
-<tt>%s</tt> denotes the name of the RIB file.
+The placeholder <tt>%s</tt> denotes the name of the RIB file.
 <p> <p>
 
 <item><tt/"SMRenderUI"/, enables the Rendering GUI for the rendering
@@ -16765,6 +16804,8 @@ Otherwise, <tt/varname/ points to an associative array that contains
 the data (arguments) of the shader. Example content may be created
 with the <tt/"shaderGet"/ command below. The data is <em>not</em> checked
 against the internal shader database for correctness or completeness.
+This command fails, if the selected object does not support a shader
+of given type.
 </itemize>
 
 <p>
@@ -18611,6 +18652,8 @@ The <tt/"paramname"/ parameter is the name of the parameter.
 The <tt/"defaults"/ parameter is a list
 of default values. Those values will be presented to the user as an
 additional drop down menu on the right side of the interface element.
+If the list contains an entry <tt/"..."/, selecting this entry will
+clear the string entry field and move the input focus to the field.
 <item>Example:
 <bf><tt>"addString $w MyPropertyData MyString {"a" "b" "abc"}"</tt></bf>
 </itemize>
@@ -18793,7 +18836,14 @@ The <tt/"arrayname"/ parameter is the name of the corresponding
 data array of the property.
 <p>
 The <tt/"paramname"/ parameter is the name of the parameter whose
-value is to be displayed.
+value is to be displayed. Whenever the value of this variable changes,
+the corresponding label will be updated automatically.
+<p>
+If a second variable named like <tt/"paramname"/ but with an additional
+trailing <tt/"Ball"/ exists, its value will be displayed as balloon help
+text, when the mouse pointer hovers over the label. This way longer or
+more complex information can be presented.
+
 <item>Example:
 <bf><tt>"addInfo $w MyPropertyData NumGeneratedElems"</tt></bf>
 </itemize>
@@ -18858,16 +18908,16 @@ for the selected object(s).
 If the option <tt>"-inplace"</tt> is
 used, the new object(s) will replace the old object(s).
 If, additionally, a target type is specified, the conversion
-will be repeated until the object is of given
+will be repeated until the object is of the requested
 type (and no conversion is attempted if the object is already
-of the given type).<footnote>Since Ayam 1.25.</footnote>
+of the requested type).<footnote>Since Ayam 1.25.</footnote>
 <p>
 If the option <tt>"-check"</tt> is given, the convOb command does not
 convert but checks, whether a conversion to a given object type would be
 successful, the result of the check will be returned as 0 &ndash; no,
 or 1 &ndash; yes. Note, that only immediate, one step, conversions are
-checked, not multiple as carried out by in-place conversions with
-target type.
+checked, not multi step conversion as carried out by in-place conversions
+with target type.
 </itemize>
 
 <p>
@@ -18924,7 +18974,7 @@ if { $ay_error > 1 } {
 <label id="scruntool">
 runTool:
 <itemize>
- <item>Synopsis: <tt>"runTool vars labels commands title [add]"</tt>
+ <item>Synopsis: <tt>"runTool vars labels commands title [doc]"</tt>
  <item>Background: Yes, Undo: No, Safe: No, Type: Procedure
  <item>Description: This procedure opens a dialog window to request
 a set of parameter values, specified via <tt/vars/ and <tt/labels/,
@@ -18949,6 +18999,10 @@ the code runs.
 <p>
 <tt/"title"/ is the title string of the dialog window. It can be used
 to convey the tool name or description to the user.
+<p>
+<tt/"doc"/ is an optional argument that contains a documentation URL
+for the tool. This URL will be opened when the <tt/&lt;F1&gt;/-key is
+pressed in the dialog.
 
  <item>Examples:<#if out=html><p><p></#if>
 <enum>
@@ -18957,13 +19011,13 @@ to convey the tool name or description to the user.
 runTool {x} {"X:"} {moveOb %0 0 0;plb_update;rV} "MoveX"
 <#if out=html></code></#if><#unless out=html></verb></#unless>
 opens a dialog to request a single parameter and moves the selected objec(s)
-along the x-axis by the specified amount.
+along the X-axis by the specified amount.
 <item>&nbsp;
 <#if out=html><p><code></#if><#unless out=html><verb></#unless>
 runTool {x y} {"X:" "Y:"} {moveOb %0 %1 0;plb_update;rV} "MoveXY"
 <#if out=html></code></#if><#unless out=html></verb></#unless>
 opens a dialog to request two parameters and moves the selected objec(s)
-along the x-axis and the y-axis by the specified amounts.
+along the X-axis and the Y-axis by the specified amounts.
 <item>&nbsp;
 <#if out=html><p><p><code></#if>
 <#unless out=html><verb></#unless>set l 0
@@ -25113,6 +25167,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>RRIB: <ref id="imprib" name="RIB import plugin">
 <item>Ruled surface: <ref id="skinobj" name="Skin object">
 <item>RunProgram: <ref id="riprocp" name="RiProc attribute">
+<item>runTool: <ref id="scruntool" name="scripting interface command">
 <item>rV: <ref id="scrv" name="scripting interface command">
 </list>
 
