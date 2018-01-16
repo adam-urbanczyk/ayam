@@ -1,5 +1,5 @@
-[5. Jan 2018] Tip:
-==================
+[16. Jan 2018] Tip:
+===================
 Bug Fixes:
 o entering non number data to tesselation parameter entries (SF 554)
 o chordal/centripetal knots for periodic curves/surfaces are wrong (SF 555)
@@ -23,6 +23,7 @@ o bevels on periodic curves with chordal knots (SF 573)
 o caps of extrusion objects for curves with multiple knots (SF 574)
 o moving objects in the current level does not set scene change
   indicator (SF 575)
+o tesselation fails in "TrianglesAndQuads" mode (SF 577)
 
 Modelling:
 o the set mark action now supports drag selection of multiple points,
@@ -52,11 +53,14 @@ o improved usability of interactive weight editing by translating the mouse
 GUI:
 o improved balloon interaction of view icon menus
 o improved focus management of view menu entries
-o added "Edit" to default action menu
+o added "Edit" to default action icon menu in the view menu bar
 o improved balloon handling in preferences dialog
 o improved tag context menu interaction
 o arrow buttons of Width/Height entry fields in PatchMesh property GUI now
   add/subtract the current step size when the <Control> key is held down
+o added a "..." entry to the example strings of the RIB-Export/Renderer
+  preferences to make it more clear that those are free text and not
+  limited to the provided examples
 
 Plugins:
 o added custom object/plugin "BCurve" to model with cubic curves that can
