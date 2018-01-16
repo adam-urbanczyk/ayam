@@ -2465,6 +2465,7 @@ ay_tess_tristomixedpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
     } /* if has_vc */
 
   *result = new;
+  ay_status = AY_OK;
 
   /* prevent cleanup code from doing something harmful */
   new = NULL;
