@@ -4559,11 +4559,11 @@ ay_rrib_readpvs(int n, RtToken tokens[], RtPointer parms[],
 		 Tcl_DStringAppend(&ds, ",i", -1);
 		 ints = (RtInt *)(parms[i]);
 		 numitems = csizes[i];
-		 sprintf(valbuf,",%d", numitems);
+		 sprintf(valbuf, ",%d", numitems);
 		 Tcl_DStringAppend(&ds, valbuf, -1);
 		 for(j = 0; j < numitems; j++)
 		   {
-		     sprintf(valbuf,",%d", (int)(ints[j]));
+		     sprintf(valbuf, ",%d", (int)(ints[j]));
 		     Tcl_DStringAppend(&ds, valbuf, -1);
 		   }
 		 break;
@@ -4571,11 +4571,11 @@ ay_rrib_readpvs(int n, RtToken tokens[], RtPointer parms[],
 		 Tcl_DStringAppend(&ds, ",f", -1);
 		 floats = (RtFloat *)(parms[i]);
 		 numitems = csizes[i];
-		 sprintf(valbuf,",%d", numitems);
+		 sprintf(valbuf, ",%d", numitems);
 		 Tcl_DStringAppend(&ds, valbuf, -1);
 		 for(j = 0; j < numitems; j++)
 		   {
-		     sprintf(valbuf,",%f", (float)(floats[j]));
+		     sprintf(valbuf, ",%f", (float)(floats[j]));
 		     Tcl_DStringAppend(&ds, valbuf, -1);
 		   }
 		 break;
@@ -4583,12 +4583,12 @@ ay_rrib_readpvs(int n, RtToken tokens[], RtPointer parms[],
 		 Tcl_DStringAppend(&ds, ",g", -1);
 		 floats = (RtFloat *)(parms[i]);
 		 numitems = csizes[i];
-		 sprintf(valbuf,",%d", numitems);
+		 sprintf(valbuf, ",%d", numitems);
 		 Tcl_DStringAppend(&ds, valbuf, -1);
 		 k = 0;
 		 for(j = 0; j < numitems; j++)
 		   {
-		     sprintf(valbuf,",%f,%f", (float)(floats[k]),
+		     sprintf(valbuf, ",%f,%f", (float)(floats[k]),
 			     (float)(floats[k+1]));
 		     Tcl_DStringAppend(&ds, valbuf, -1);
 		     k += 2;
@@ -4598,7 +4598,7 @@ ay_rrib_readpvs(int n, RtToken tokens[], RtPointer parms[],
 		 Tcl_DStringAppend(&ds, ",s", -1);
 		 strings = (RtString *)(parms[i]);
 		 numitems = csizes[i];
-		 sprintf(valbuf,",%d", numitems);
+		 sprintf(valbuf, ",%d", numitems);
 		 Tcl_DStringAppend(&ds, valbuf, -1);
 		 for(j = 0; j < numitems; j++)
 		   {
@@ -4610,12 +4610,12 @@ ay_rrib_readpvs(int n, RtToken tokens[], RtPointer parms[],
 		 Tcl_DStringAppend(&ds, ",c", -1);
 		 colors = (RtColor *)(parms[i]);
 		 numitems = csizes[i];
-		 sprintf(valbuf,",%d", numitems);
+		 sprintf(valbuf, ",%d", numitems);
 		 Tcl_DStringAppend(&ds, valbuf, -1);
 		 for(j = 0; j < numitems; j++)
 		   {
 		     col = &(colors[j]);
-		     sprintf(valbuf,",%f,%f,%f",(float)((*col)[0]),
+		     sprintf(valbuf, ",%f,%f,%f", (float)((*col)[0]),
 			     (float)((*col)[1]),
 			     (float)((*col)[2]));
 		     Tcl_DStringAppend(&ds, valbuf, -1);
@@ -4638,12 +4638,12 @@ ay_rrib_readpvs(int n, RtToken tokens[], RtPointer parms[],
 		   }
 		 points = (RtPoint *)(parms[i]);
 		 numitems = csizes[i];
-		 sprintf(valbuf,",%d", numitems);
+		 sprintf(valbuf, ",%d", numitems);
 		 Tcl_DStringAppend(&ds, valbuf, -1);
 		 for(j = 0; j < numitems; j++)
 		   {
 		     pnt = &(points[j]);
-		     sprintf(valbuf,",%f,%f,%f",(float)((*pnt)[0]),
+		     sprintf(valbuf, ",%f,%f,%f", (float)((*pnt)[0]),
 			     (float)((*pnt)[1]),
 			     (float)((*pnt)[2]));
 		     Tcl_DStringAppend(&ds, valbuf, -1);
@@ -5845,11 +5845,11 @@ ay_rrib_printerror(RIB_HANDLE rib, int code, int severity, PRIB_ERROR error)
   s = RibGetErrorMsg(code);
   if(s && strlen(s) < 200)
     {
-      sprintf(buf,"code: %d (%s)", code, s);
+      sprintf(buf, "code: %d (%s)", code, s);
     }
   else
     {
-      sprintf(buf,"code: %d (no description available)", code);
+      sprintf(buf, "code: %d (no description available)", code);
     }
 
   switch(severity)
@@ -5903,7 +5903,7 @@ ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
   if(!(fileptr = fopen(filename, "rb")))
     return AY_EOPENFILE;
   rrib_totallines = 0;
-  while((c=fgetc(fileptr)) != EOF)
+  while((c = fgetc(fileptr)) != EOF)
     {
       if(c == '\n')
 	rrib_totallines++;
