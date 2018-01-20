@@ -649,11 +649,25 @@ ay_icurve_drawhcb(struct Togl *togl, ay_object *o)
  int i;
  double *pnts;
  ay_icurve_object *icurve;
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
 
   icurve = (ay_icurve_object *) o->refine;
 
   if(!icurve)
     return AY_ENULL;
+
+  if(view->drawhandles == 2)
+    {
+      if(icurve->ncurve)
+	{
+	  glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+		    (GLfloat)ay_prefs.obb);
+	  ay_nct_drawbreakpoints(togl, icurve->ncurve);
+	  glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+		    (GLfloat)ay_prefs.seb);
+	}
+      return AY_OK;
+    }
 
   pnts = icurve->controlv;
 
