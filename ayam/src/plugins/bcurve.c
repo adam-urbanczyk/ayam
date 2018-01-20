@@ -856,6 +856,19 @@ bcurve_drawhcb(struct Togl *togl, ay_object *o)
       return AY_OK;
     }
 
+  if(view->drawhandles == 2)
+    {
+      if(bcurve->ncurve)
+	{
+	  glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+		    (GLfloat)ay_prefs.obb);
+	  ay_nct_drawbreakpoints(togl, bcurve->ncurve);
+	  glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+		    (GLfloat)ay_prefs.seb);
+	}
+      return AY_OK;
+    }
+
   cv = bcurve->controlv;
 
   /* draw normal points */
