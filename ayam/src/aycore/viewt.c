@@ -108,7 +108,7 @@ ay_viewt_setupprojection(struct Togl *togl)
       glOrtho(-aspect*view->zoom, aspect*view->zoom,
 	      -1.0*view->zoom, 1.0*view->zoom,
 	      nearp, farp);
-    } /* if */
+    } /* if perspective or orthogonal */
 
   if(view->roll != 0.0)
     glRotated(view->roll, 0.0, 0.0, 1.0);
@@ -134,12 +134,14 @@ ay_viewt_setupprojection(struct Togl *togl)
 	 light_posf[2] = (GLfloat)(view->farp*2);
        glLightfv(GL_LIGHT0, GL_POSITION, light_posf);
      }
+   else
    if(view->type == AY_VTSIDE)
      {
        if(view->farp > 1000.0)
 	 light_poss[0] = (GLfloat)(view->farp*2);
        glLightfv(GL_LIGHT0, GL_POSITION, light_poss);
      }
+   else
    if(view->type == AY_VTTOP)
      {
        if(view->farp > 1000.0)
@@ -548,7 +550,7 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
 	      if(!set_far)
 		view->nearp = 0.1;
 	    }
-	} /* if */
+	} /* if ortho or persp */
 
       if(zoom_to_all)
 	{
@@ -652,7 +654,7 @@ ay_viewt_align(struct Togl *togl, int argc, char *argv[])
   ay_toglcb_display(togl);
 
   view->full_notify = AY_FALSE;
-  ay_viewt_uprop(view, AY_TRUE);
+  ay_viewt_uprop(view, /*notify=*/AY_TRUE);
 
   view->drawmark = AY_FALSE;
 
@@ -661,7 +663,10 @@ ay_viewt_align(struct Togl *togl, int argc, char *argv[])
 
 
 /* ay_viewt_alignlocal:
- *
+ *  align all local views (after the object selection changed)
+ *  XXXX Todo: This is maybe more expensive than needed (makecur) and
+ *  calls for additional user level customization (does he want
+ *  to also zoom to the object(s) all the time?).
  */
 void
 ay_viewt_alignlocal(void)
@@ -899,7 +904,6 @@ ay_viewt_changetype(ay_view_object *view, int newtype)
 	      view->zoom /= 12.0;
 	    }
 	} /* if */
-
     } /* if */
 
   view->type = newtype;
@@ -915,7 +919,7 @@ ay_viewt_changetype(ay_view_object *view, int newtype)
 
 
 /* ay_viewt_reshapetcb:
- *
+ * provide script level access to the Togl reshape callback
  */
 int
 ay_viewt_reshapetcb(struct Togl *togl, int argc, char *argv[])
@@ -1791,18 +1795,15 @@ ay_viewt_updatemark(struct Togl *togl, int local)
     case AY_VTFRONT:
     case AY_VTTRIM:
       gl_status = gluProject(view->markworld[0], view->markworld[1], 0,
-			     mm, pm, vp,
-		 &view->markx, &view->marky, &dummy);
+			     mm, pm, vp, &view->markx, &view->marky, &dummy);
       break;
     case AY_VTSIDE:
       gl_status = gluProject(0, view->markworld[1], view->markworld[2],
-			     mm, pm, vp,
-		 &view->markx, &view->marky, &dummy);
+			     mm, pm, vp, &view->markx, &view->marky, &dummy);
       break;
     case AY_VTTOP:
       gl_status = gluProject(view->markworld[0], 0, view->markworld[2],
-			     mm, pm, vp,
-		 &view->markx, &view->marky, &dummy);
+			     mm, pm, vp, &view->markx, &view->marky, &dummy);
       break;
     case AY_VTPERSP:
       gl_status = gluProject(view->markworld[0],
@@ -1858,8 +1859,7 @@ ay_viewt_printmark(ay_view_object *view)
   if(view->drawmark)
     {
       sprintf(mbuf, "%lg, %lg, %lg.",
-	      view->markworld[0], view->markworld[1],
-	      view->markworld[2]);
+	      view->markworld[0], view->markworld[1], view->markworld[2]);
 
       if(ay_prefs.globalmark)
 	{
@@ -2168,7 +2168,7 @@ ay_viewt_griddify(struct Togl *togl, double *winx, double *winy)
 
 	  ghx = gridx/2.0;
 	  ghy = gridy/2.0;
-	} /* if */
+	} /* if local or global */
 
       /* from grid reference, grid size and current window coordinates
 	 compute new window coordinates, that are snapped to the grid;
@@ -2209,7 +2209,7 @@ ay_viewt_griddify(struct Togl *togl, double *winx, double *winy)
 	  else
 	    *winy -= gdy;
 	} /* if */
-    } /* if */
+    } /* if have grid */
 
  return AY_OK;
 } /* ay_viewt_griddify */
