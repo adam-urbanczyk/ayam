@@ -1538,13 +1538,26 @@ about mis-structured RIBs).<newline>
 The main use of this feature is to aid in the creation RIBs that may be easily
 included in other RIBs using e.g.~the ReadArchive directive.
 
-<item><tt>"RIB-Export/Create ShadowMap"</tt>, creates the shadow maps
-from the currently selected light source.
+<item><tt>"RIB-Export/Create All ShadowMaps"</tt>, for each light in the scene,
+the light is selected, then the shadow map will be created
+in the same way as with the menu entry <tt>"Create ShadowMap"</tt>
+below (i.e.~this creates all shadow maps for the
+current scene regardless of selection).
 See also section <ref id="shadowmaps" name="Using ShadowMaps">.
 
-<item><tt>"RIB-Export/Create All ShadowMaps"</tt>, creates all shadow maps
-for the current scene (regardless of selection).
-See also section <ref id="shadowmaps" name="Using ShadowMaps">.
+<item><tt>"RIB-Export/Create ShadowMap"</tt>,
+the scene is exported to a RIB file using the currently selected
+light source for the camera settings and with a <tt/RiDisplay/ statement
+that results in a shadow map to be produced when rendered; then
+the <tt/"SMRender"/ command will be called.
+See also sections <ref id="prefrib" name="RIB-Export Preferences">
+and <ref id="shadowmaps" name="Using ShadowMaps">.
+<p><p>
+Note that before doing anything, Ayam will check whether shadow maps
+are enabled in the RIB export preferences and offer to adapt the
+preference setting accordingly. This must be done because <em/only then/
+exported RIBs for image rendering will actually use the shadow maps.
+
 </itemize><itemize>
 <item><tt/"Enable Scripts"/ enables all disabled script tags and
 objects. Objects and tags in the object clipboard are not
@@ -1949,7 +1962,8 @@ different icon, the local modes will display a <bf/<tt/L// or <bf/<tt/O//
 in the lower right corner of the icon.<newline>
 The icon, additionally, conveys whether objects or points would be
 modified by a modelling action: for points, a red dot will be present
-in the upper right corner of the icon.<newline>
+in the upper right corner of the icon (see also section
+<ref id="objorpnt" name="Transforming Objects or Selected Points">).<newline>
 Furthermore, the type of the view will be displayed in the upper left
 corner of the icon as letter <bf/<tt/F//, <bf/<tt/S//, <bf/<tt/T//, or
 <bf/<tt/P// for front, side, top, or perspective views, respectively.
@@ -2313,7 +2327,7 @@ starts respectively.
 
 Finally, <tt/"InvertMatch"/ reverts the search logic: if enabled, the
 search finds all objects for whose the search expression delivers a
-negative results.
+negative result.
 
 <sect2>Search Expressions
 <p>
@@ -17404,6 +17418,7 @@ are compared.
 </itemize>
 
 <p>
+<#if out="latex"><x/newpage/</#if>
 <#if out="latex"><x/phantomsection/</#if>
 
 <label id="scmakecompnc">
