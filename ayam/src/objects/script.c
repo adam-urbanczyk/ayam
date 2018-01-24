@@ -496,7 +496,7 @@ ay_script_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_script_object *sc = NULL;
  char *string;
- int stringlen, newscript = AY_FALSE;
+ int newtype, stringlen, newscript = AY_FALSE;
 
   if(!interp || !o)
     return AY_ENULL;
@@ -515,7 +515,14 @@ ay_script_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton, "Type", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &(sc->type));
+  Tcl_GetIntFromObj(interp, to, &newtype);
+
+  if((sc->type != newtype) && (newtype == 1) && o->down && o->down->next)
+    {
+      ay_error(AY_ERROR, fname, "Child objects prevent type change!");
+      newtype = sc->type;
+    }
+  sc->type = newtype;
 
   switch(sc->type)
     {
