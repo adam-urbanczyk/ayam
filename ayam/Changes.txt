@@ -1,5 +1,5 @@
-[16. Jan 2018] Tip:
-===================
+[25. Jan 2018] Ayam 1.25:
+=========================
 Bug Fixes:
 o entering non number data to tesselation parameter entries (SF 554)
 o chordal/centripetal knots for periodic curves/surfaces are wrong (SF 555)
@@ -24,6 +24,7 @@ o caps of extrusion objects for curves with multiple knots (SF 574)
 o moving objects in the current level does not set scene change
   indicator (SF 575)
 o tesselation fails in "TrianglesAndQuads" mode (SF 577)
+o crash after changing script object type to "Create" (SF 578)
 
 Modelling:
 o the set mark action now supports drag selection of multiple points,
