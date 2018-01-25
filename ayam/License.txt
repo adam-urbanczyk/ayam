@@ -1,4 +1,4 @@
-This software is copyrighted (c) 1998-2017 by
+This software is copyrighted (c) 1998-2018 by
 Randolf Schultz (randolf.schultz@gmail.com).
 All rights reserved.
 
