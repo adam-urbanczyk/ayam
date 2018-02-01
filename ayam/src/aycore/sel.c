@@ -68,10 +68,18 @@ ay_sel_add(ay_object *o, int set_selflag)
 } /* ay_sel_add */
 
 
-/* ay_sel_selobtcmd:
- *  set the selection (selOb command)
- *  I: argv[] contains a sorted and split list of object indices
- *  in the current level
+/** ay_sel_selobtcmd:
+ * Set a new selection or clear the selection.
+ * Implements the \a selOb scripting interface command.
+ * See also the corresponding section in the \ayd{scselob}.
+ *
+ * \param clientData[in] unused
+ * \param interp[in] current Tcl interpreter
+ * \param argc[in] number of arguments
+ * \param argv[in] sorted and split list of object indices
+ *  in the current level or nothing to just clear the selection
+ *
+ * \returns TCL_OK in any case.
  */
 int
 ay_sel_selobtcmd(ClientData clientData, Tcl_Interp *interp,
@@ -222,31 +230,59 @@ ay_sel_getseltcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
  int i = 0;
+ int return_result = AY_FALSE;
  ay_object *o = ay_currentlevel->object;
- Tcl_Obj *to = NULL, *toa = NULL;
+ Tcl_Obj *to = NULL, *toa = NULL, *tol = NULL;
 
-  /* check args */
-  if(argc < 1)
+  if(argc < 2)
     {
-      ay_error(AY_EARGS, argv[0], "varname");
-      return TCL_OK;
+      return_result = AY_TRUE;
     }
 
-  toa = Tcl_NewStringObj(argv[1], -1);
+  if(!return_result)
+    {
+      /* always clear result variable */
+      Tcl_SetVar(interp, argv[1], "", TCL_LEAVE_ERR_MSG);
+      toa = Tcl_NewStringObj(argv[1], -1);
+    }
 
   while(o)
     {
       if(o->selected)
 	{
 	  to = Tcl_NewIntObj(i);
-	  Tcl_ObjSetVar2(interp, toa, NULL, to, TCL_APPEND_VALUE |
-			 TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
-	}
+	  if(!return_result)
+	    {
+	      Tcl_ObjSetVar2(interp, toa, NULL, to, TCL_APPEND_VALUE |
+			     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
+	    }
+	  else
+	    {
+	      if(ay_selection->next)
+		{
+		  if(!tol)
+		    tol = Tcl_NewListObj(0, NULL);
+		  Tcl_ListObjAppendElement(interp, tol, to);
+		}
+	      else
+		{
+		  Tcl_SetObjResult(interp, to);
+		}
+	    }
+	} /* if selected */
       i++;
       o = o->next;
     } /* while */
 
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
+  if(return_result && tol)
+    {
+      Tcl_SetObjResult(interp, tol);
+    }
+
+  if(toa)
+    {
+      Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
+    }
 
  return TCL_OK;
 } /* ay_sel_getseltcmd */
