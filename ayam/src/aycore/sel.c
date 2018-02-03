@@ -219,16 +219,19 @@ cleanup:
 
 
 /** ay_sel_getseltcmd:
- *  Get the current selection.
+ * Get the current selection as ordered list of zero based indices
+ * of selected object in the current level.
  *
- *  Implements the \a getSel scripting interface command.
+ * Implements the \a getSel scripting interface command.
+ * See also the corresponding section in the \ayd{scgetsel}.
  *
- *  \returns TCL_OK in any case.
+ * \returns TCL_OK in any case.
  */
 int
 ay_sel_getseltcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
+ int tcl_status;
  int i = 0;
  int return_result = AY_FALSE;
  ay_object *o = ay_currentlevel->object;
@@ -261,8 +264,14 @@ ay_sel_getseltcmd(ClientData clientData, Tcl_Interp *interp,
 	      if(ay_selection->next)
 		{
 		  if(!tol)
-		    tol = Tcl_NewListObj(0, NULL);
-		  Tcl_ListObjAppendElement(interp, tol, to);
+		    {
+		      tol = Tcl_NewListObj(0, NULL);
+		    }
+		  tcl_status = Tcl_ListObjAppendElement(interp, tol, to);
+		  if(tcl_status == TCL_ERROR)
+		    {
+		      goto cleanup;
+		    }
 		}
 	      else
 		{
@@ -279,6 +288,7 @@ ay_sel_getseltcmd(ClientData clientData, Tcl_Interp *interp,
       Tcl_SetObjResult(interp, tol);
     }
 
+cleanup:
   if(toa)
     {
       Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
@@ -288,10 +298,14 @@ ay_sel_getseltcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_sel_getseltcmd */
 
 
-/* ay_sel_hsltcmd:
- *  hidden select last; allow selection of the last object(s) in the current
- *  level without any feedback in the GUI and without redraw
- *  I: argv[1] may contain the number of objects to select, defaults to 1
+/** ay_sel_hsltcmd:
+ * Select the last object(s) in the current level, without any feedback
+ * in the GUI and without redraw.
+ *
+ * Implements the \a hSL scripting interface command.
+ * See also the corresponding section in the \ayd{schsl}.
+ *
+ * \returns TCL_OK in any case.
  */
 int
 ay_sel_hsltcmd(ClientData clientData, Tcl_Interp *interp,
