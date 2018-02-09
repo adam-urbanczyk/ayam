@@ -1,4 +1,4 @@
-INSTALL [31. Jan 2016]
+INSTALL [8. Feb 2018]
 
 Compilation Instructions for Ayam
 ---------------------------------
@@ -68,6 +68,7 @@ version of Ayam:
 - Togl ( togl.h, togl.c )
   For most systems a working Togl is already included in the Ayam
   source distribution, see subdir togl. No download necessary!
+  ( See also Note 3. )
 - TIFF ( tiffio.h, libtiff.so )
   http://www.libtiff.org/
 - The Affine Toolkit
@@ -99,6 +100,9 @@ sources in order to compile Ayam!
 Note 2:
 If OpenGL 1.1 is not available to you, Ayam can still be compiled if your
 OpenGL is supporting the polygon offset extension (e.g. on IRIX 6.2).
+
+Note 3:
+Compilation for Mac OS X Aqua requires Togl 1.7.
 
 
 1.2 Step 2 - Compiling
@@ -384,7 +388,7 @@ You need the full Affine distribution
 ( download it from http://www.affine.com/ )!
 
 Compile libribrdr.a, libribhash.a and libribnop.a.
-This is done using 
+This is done using
 >cd affine
 
 >make setup<your platform>
@@ -785,6 +789,6 @@ AYNOSAFEINTERP - let scripts of Script objects and NS tags run in the main
 
 
 End of Compilation Instructions,
--- 
+--
 http://ayam.sourceforge.net/    Reconstruct the World!
 
