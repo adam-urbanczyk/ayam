@@ -4993,6 +4993,7 @@ Ayam:
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 Helix|No|No|NCurve|No*@<hline>
+Spiral|No|No|NCurve|No*@<hline>
 TCone|No|No|Hyperboloid|No*@<hline>
 CBox|No|No|NPatch|No*@<hline>
 TCircle|No|No|NCurve|No*@<hline>
@@ -11306,7 +11307,7 @@ number of rational control points and a basis (which is a 4 by 4
 matrix).<footnote>Since 1.25.</footnote>
 The basis defines the interpretation of the control points, similar to the
 bicubic patch mesh primitive of the RenderMan interface, see also
-section <ref id="patchmeshobj" name="PatchMesh Object">).
+section <ref id="patchmeshobj" name="PatchMesh Object">.
 <p>
 <figure loc="!ht">
 <eps file="pics/bcurve.ps" height="5cm">
@@ -16570,6 +16571,7 @@ goDown:
 <tt/index/ is 0 and the current level is inside some object
 the parent level will be entered instead. If <tt/index/ is -1, the last
 object of the current level will be entered.
+ <item>Notes: The object selection is <em/not/ synchronized.
  <item>Example: <bf/<tt/"crtOb Level; goDown -1; crtOb Sphere"//
 creates a simple Level, enters it, and creates a Sphere as child of
 this level.
@@ -16584,6 +16586,7 @@ goUp:
  <item>Synopsis: <tt/"goUp"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Go one level up in the object hierarchy.
+ <item>Notes: The object selection is <em/not/ synchronized.
 </itemize>
 
 <p>
@@ -16595,10 +16598,11 @@ goTop:
  <item>Synopsis: <tt/"goTop"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Go to the top level of the object hierarchy.
+ <item>Notes: The object selection is <em/not/ synchronized.
 </itemize>
 
+<#if out="latex"><x/newpage/</#if>
 <p>
-
 The following commands move objects around in the hierarchy:
 
 <#if out="latex"><x/phantomsection/</#if>
@@ -16613,6 +16617,9 @@ upOb &ndash; shuffle object(s) backward in the current level:
 are supported.
 If the first of the selected objects is the first in the current level,
 nothing will be changed, i.e.~either all selected objects move, or none.
+<p>
+The moved objects stay selected, i.e.~this command can be used
+multiple times in a row.
 </itemize>
 
 <p>
@@ -16628,6 +16635,9 @@ downOb &ndash; shuffle object(s) forward in the current level:
 are supported.
 If the last of the selected objects is the last in the current level,
 nothing will be changed, i.e.~either all selected objects move, or none.
+<p>
+The moved objects stay selected, i.e.~this command can be used
+multiple times in a row.
 </itemize>
 
 <#if out="latex"><x/newpage/</#if>
@@ -16744,7 +16754,7 @@ applyTrafo &ndash; apply transformations:
 <itemize>
  <item>Synopsis: <tt/"applyTrafo [-sel]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: applies the transformations encoded in the
+ <item>Description: Applies the transformations encoded in the
 transformation attributes of the selected objects to their points.
 Either all points (default) or just the selected ones (if the option
 <tt/"-sel"/ is given) are modified.
@@ -22778,11 +22788,12 @@ The default values of these options are<newline>
 
 <item><tt/"AllowWarp"/: controls whether the mouse pointer should be
 moved to the new position of points snapped to the grid while editing
-(default: 1 &ndash; yes).
+(valid values: 0, 1; default: 1 &ndash; yes).
 
 <item><tt/"AskScriptDisable"/ controls the warning dialog that
 appears if scenes with Script objects or tags are loaded. The default
 value is 1 &ndash; yes, warn about Script objects and tags.
+Valid values are 0 and 1.
 
 <item><tt/"AUCommands"/, commands that will be run in the console
 when <tt/&lt;Shift+Return&gt;/ is used instead of <tt/&lt;Return&gt;/.
@@ -22804,13 +22815,14 @@ a pipe (used by the Rendering GUI) (default: <tt>"cat"</tt>)
 automatically replaced by <tt>"cat.exe"</tt> on Win32).
 
 <item><tt/"ConsoleTakeFocus"/: can be used to exclude the console
-from focus traversal via <tt/&lt;Tab&gt;/ when set to 0, the default
-value is 1.
+from focus traversal via <tt/&lt;Tab&gt;/ when set to 0. The default
+value is 1. Valid values are 0 and 1.
 
 <item><tt/"ConsoleCursorEnd"/, if switched
 on, the first click into the console will move the cursor to the input
 prompt, ready for command input, instead of moving the cursor to the
 point of the click. This option is enabled by default.
+Valid values are 0 and 1.
 
 <item><tt/"ConvertTags"/, a comma separated list of tag names.
 These tags will be copied verbatim to converted and provided
@@ -22825,14 +22837,17 @@ polygons prior to display with OpenGL. This can improve the visual
 quality of shaded surfaces at their edges. Note however, that culling
 back faces can also disrupt the CSG preview
 using AyCSG. Default value: 0 &ndash; no.
+Valid values are 0 and 1.
 
 <item><tt/"CycleHiddenWire"/, determines whether the slow <tt/"HiddenWire"/
 drawing mode is included in the list of modes that are cycled by keyboard
 (via <tt>"Ctrl+PageUp"/"Ctrl+PageDown"</tt>), default: 0 &ndash; no.
+Valid values are 0 and 1.
 
 <item><tt/"CyclePerspective"/, determines whether the <tt/"Perspective"/
 view type is included in the list of types that are cycled by keyboard
 (via <tt>"PageUp"/"PageDown"</tt>), default: 0 &ndash; no.
+Valid values are 0 and 1.
 
 <item><tt/"DailyTips"/: a list of strings that appear as tips
 on startup in the console (default: large).
@@ -22840,15 +22855,18 @@ on startup in the console (default: large).
 <item><tt/"DisableFailedScripts"/: specifies whether scripts in
 Script objects or BNS/ANS tags should be disabled when they
 fail (default: 1 &ndash; yes).
+Valid values are 0 and 1.
 
 <item><tt/"EFlush"/: time in ms between two flushes of the error message
 buffer (default: 2000 - 2s).
 
 <item><tt/"FDShowHidden"/: controls whether the standard file dialog on
 Unix shows hidden files (default 1 &ndash; yes).
+Valid values are 0 and 1.
 
 <item><tt/"FDShowHiddenBtn"/: controls whether the standard file dialog on
 Unix shows an extra button that toggles display of hidden files (default 0).
+Valid values are 0 and 1.
 
 <item><tt/"FixDialogTitles"/, this option prepends the title of a message box
 that is normally displayed in the window frame of the message box to the
@@ -22856,10 +22874,13 @@ message in the box. This may be necessary because on some systems the title
 string might be displayed in an unreadable font or not at all.
 On Mac OS X Aqua (not X11!) this option is enabled by default.
 On all other systems this option is disabled by default.
+Valid values are 0 and 1.
 
 <item><tt/"FixImageButtons"/, enables a workaround for buttons
-(e.g.~in the toolbox) that stay depressed when used. This option is disabled
+(e.g.~in the toolbox) that stay depressed when used.
+Valid values are 0 and 1. This option is disabled
 by default on all platforms.
+
 
 <item><tt/"FixX11Menu"/ enables a workaround for non-sticky menus
 on X11 (displaced menus do not stay open). This option is enabled
@@ -22895,10 +22916,11 @@ value is supported by the OpenGL implementation used.
 
 <item><tt/"ListTypes"/ determines, whether the type of an
 object should be displayed in braces in the tree view or listbox.
-The default value is 1 &ndash; yes, list the types.
+Valid values are 0 and 1. The default value is 1 &ndash; yes, list the types.
 
 <item><tt/"LoadEnv"/, controls whether the environment scene
 file should be read on each application start.
+Valid values are 0 and 1.
 The default value is 0 &ndash; no file will be read.
 Saving an environment scene file
 via the menu entry <tt>"Special/Save Environment"</tt> or
@@ -22908,7 +22930,8 @@ setting a value different from an empty string (<tt>""</tt>) to the
 <item><tt/"MarkHidden"/ determines, whether hidden objects
 should be marked (using a preceding exclamation mark)
 in the tree view or object listbox.
-The default value is 1 &ndash; yes, mark hidden objects.
+Valid values are 0 and 1. The default value is 1 &ndash; yes, mark hidden
+objects.
 
 <item><tt/"MaxTagLen"/: the maximum number of characters to be displayed
 in the buttons in the Tag Property GUI (default: 30).
@@ -22916,24 +22939,24 @@ in the buttons in the Tag Property GUI (default: 30).
 <item><tt/"NewLoadsEnv"/, if this is switched on, Ayam will read
 the scene file specified by <tt/"EnvFile"/ also when the scene is
 cleared using the main menu entry <tt>"File/New"</tt>.
-The default value is 1 &ndash; yes, load the environment file on
-<tt>"File/New"</tt>.
+Valid values are 0 and 1. The default value is 1 &ndash; yes, load the
+environment file on <tt>"File/New"</tt>.
 
 <item><tt/"NormalizeDigits"/, determines the number of digits to the right
 of the decimal point, the transformation attribute and control point
-normalizing process should leave intact (Default: 6).
+normalizing process should leave intact (default: 6).
 
 <item><tt/"NormalizeMark"/, controls whether the mark coordinates
 should be normalized, after set from the selected points center
-(Default: 1 &ndash; yes).
+(valid values: 0, 1; default: 1 &ndash; yes).
 
 <item><tt/"NormalizePoints"/, controls whether the selected points
 should be normalized, after interactive modelling actions
-(Default: 1 &ndash; yes).
+(valid values: 0, 1; default: 1 &ndash; yes).
 
 <item><tt/"NormalizeTrafos"/, controls whether the transformation
 attributes should be normalized, after interactive modelling actions
-(Default: 1 &ndash; yes).
+(valid values: 0, 1; default: 1 &ndash; yes).
 
 <item><tt/"PanDist"/: the distance about which panning in views by
 keyboard occurs; positive values are absolute in pixels, negative values are
@@ -23005,9 +23028,9 @@ tags, the default value is "Cs".
 of sweeps should rotate the cross section curve to the YZ-plane.
 If set to 0, no rotation occurs, if set to 1, the rotation
 will be attempted without any checks, and if set to 2 (this is
-the default) the cross section is checked and a requester is
-raised offering to rotate the curve only if it is not already
-in the proper plane.
+the default<footnote>Since 1.25.</footnote>) the cross section
+is checked and a requester is raised offering to rotate the curve
+only if it is not already in the proper plane.
 
 <item><tt/"SafeAutoFocus"/ disables AutoFocus
 (see section <ref id="prefgui" name="GUI preference settings">)
@@ -23015,7 +23038,7 @@ when certain dialog windows are open, so that they do not get
 shuffled under other windows by accidental mouse movements on systems
 where the window manager does only auto raise in conjunction with
 auto focus.
-This option is enabled by default on Win32.
+Valid values are 0 and 1. This option is enabled by default on Win32.
 
 <item><tt/"SDMode"/, silhouette detection mode for the hidden wire
 drawing mode, 0 &ndash; off, 1 &ndash; z-buffer, 2 &ndash; color,
@@ -23024,7 +23047,8 @@ drawing mode, 0 &ndash; off, 1 &ndash; z-buffer, 2 &ndash; color,
 
 <item><tt/"SelectLast"/ determines whether clicks into the tree
 widget (but not on any node) should select the last object of the current
-level. Default 1 &ndash; yes.
+level.
+Valid values are 0 and 1. Default 1 &ndash; yes.
 <footnote>Since 1.22.</footnote>
 
 <item><tt/"SelLineWidth"/, line width used for drawing the lines of
@@ -23046,12 +23070,14 @@ this).
 
 <item><tt/"SimpleToolGUI"/ controls whether the standard UI elements
 (as known from the property GUIs) should be used in tool dialogs or
-just simple entry widgets. Default 0, use standard UI elements.
+just simple entry widgets.
+Valid values are 0 and 1. Default 0, use standard UI elements.
 <footnote>Since 1.22.</footnote>
 
 <item><tt/"StripShaderArch"/ determines whether a second extension
 (the architecture) should be stripped from the file names of compiled
-shaders when scanning for shaders. Default 1 &ndash; yes.
+shaders when scanning for shaders.
+Valid values are 0 and 1. Default 1 &ndash; yes.
 <footnote>Since 1.22.</footnote>
 
 <item><tt/"SwapMB"/, allows to swap mouse buttons 2 and 3
@@ -23063,6 +23089,7 @@ This option is enabled by default on Mac OS X Aqua and allows to use
 the same set of mouse bindings (the same ayamrc file) for X11 and
 Aqua without sacrificing user experience. The middle mouse button,
 by default, zooms the view, and the right one moves the view.
+Valid values are 0 and 1.
 
 <item><tt/"SwapMBSC"/ contains the mouse bindings to be swapped,
 when <tt/"SwapMB"/ above is activated.
@@ -23077,34 +23104,38 @@ See also section <ref id="toolb" name="The Toolbox Window">.
 
 <item><tt>"ToolBoxShrink"</tt>, controls whether the toolbox window
 should shrink wrap around its contents after a resize operation.
-This option is not used in single window GUI mode. Default is 1 &ndash; yes.
+This option is not used in single window GUI mode.
+Valid values are 0 and 1. Default is 1 &ndash; yes.
 
 <item><tt>"ToolBoxTrans"</tt>, decides if the toolbox window should
 be made transient. It will then, depending on the window manager or its
 configuration, get a different or no decoration, no icon (or no entry in the
 task bar on Win32), and will always be iconified when the main window
 gets iconified. Not used in single window GUI mode.
-The default value is 1 &ndash; yes.
+Valid values are 0 and 1. The default value is 1 &ndash; yes.
 
 <item><tt/"UseInternalFD"/ switches to an internal file dialog for loading
 of plugins. This option is only used on Mac OS X Aqua (not X11!), because
 there the normal file dialog will not enter application bundle directory
 structures. This option is enabled by default on Mac OS X Aqua and not
-used on any other platform.
+used on any other platform. (valid values: 0, 1; default: 0 &ndash; no)
 
 <item><tt/"WarnPropPasteToSel"/: should
 <tt>"Special/Clipboard/Paste Property to Selected"</tt> raise a warning
-requester? (default: 1 &ndash; yes)
+requester? (valid values: 0, 1; default: 1 &ndash; yes)
 
 <item><tt/"WarnUnknownTag"/ controls the warning messages for
-unknown tag types (default: 1 &ndash; yes).
+unknown tag types (valid values: 0, 1; default: 1 &ndash; yes).
 
 <item><tt/"Wait"/: set this to <tt/"waitPid"/ to enable a work around
 for zombie processes created by the Rendering GUI.
 This is e.g.~necessary for the Linux platform.
 
 <item><tt/"WheelZoom"/, a float value that controls the zoom factor
-for the mouse wheel; the default value is 0.5.
+for view windows when either the mouse wheel is used or the
+<tt/&lt;+&gt;//<tt/&lt;-&gt;/ keys; the default value is 0.5.
+A value of 0.75 leads to more fine grained zoom control but slower zooming
+and a value of 0.25 to coarse but fast zooming.
 
 </itemize>
 
