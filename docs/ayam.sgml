@@ -22802,6 +22802,13 @@ The default value is <tt>"uS;rV;"</tt>, leading to a complete
 update of the object hierarchy, the property GUI and all view
 windows.
 
+<item><tt/"AvoidPwlCurve"/, determines whether NURBS drawing and
+tesselation avoid the use of the GLU <tt/"PwlCurve"/-function to specify
+polygonal trim curves. This function uses less memory and is faster than
+the alternative but can lead to a tesselation that is clearly too coarse
+for the desired tesselation quality
+(valid values: 0, 1; default: 1 &ndash; yes).
+
 <item><tt/"BackupExt"/: is the file name extension to be used for backup
 files. Default values are <tt>"&tilde;"</tt> for Unix and
 <tt>".bak"</tt> for Win32.
@@ -24002,6 +24009,7 @@ Index:
 <item><ref id="attrs" name="attributes property">,
 <item><ref id="riattrs" name="RenderMan/BMRT attributes property">
 </itemize>
+<item>Attribute: <ref id="riatag" name="RiAttribute tag type">
 <item>AUCommands: <ref id="hidprefs" name="hidden preference setting">
 <item>AutoCAD DXF:
 <itemize>
@@ -24014,7 +24022,7 @@ Index:
 <item>Automatic Redraw: <ref id="vmconf" name="view menu entry">
 <item>AutoResize: <ref id="prefgui" name="preference setting">
 <item>AutoSavePrefs: <ref id="prefgui" name="preference setting">
-<item>Attribute: <ref id="riatag" name="RiAttribute tag type">
+<item>AvoidPwlCurve: <ref id="hidprefs" name="hidden preference setting">
 <item>ayamrc: <ref id="ayamrc" name="Ayamrc File">
 <item>ayError: <ref id="scayerror" name="scripting interface command">
 </list>
