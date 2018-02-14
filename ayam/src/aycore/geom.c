@@ -32,7 +32,7 @@ ay_geom_intersectlines3D(double *p1, double *t1,
  double vw = 0.0, vw2 = 0.0;
 
   if(!p1 || !t1 || !p2 || !t2 || !p)
-   return 0;
+    return 0;
 
   AY_V3CROSS(px, t1, t2)
   AY_V3CROSS(v, px, t1)
@@ -66,7 +66,7 @@ ay_geom_intersectlines2D(double *p1, double *t1,
  double ua, /*ub,*/ den, nomua, nomub;
 
   if(!p1 || !t1 || !p2 || !t2 || !p)
-   return 0;
+    return 0;
 
   den = t2[1]*t1[0] - t2[0]*t1[1];
 
@@ -126,7 +126,7 @@ ay_geom_normalfrom3pnts(double *p1, double *p2, double *p3, double *n)
  double v1[3], v2[3], len;
 
   if(!p1 || !p2 || !p3 || !n)
-   return;
+    return;
 
   AY_V3SUB(v2, p1, p2)
   AY_V3SUB(v1, p3, p2)
@@ -158,7 +158,7 @@ ay_geom_anglefrom3pnts(double *p1, double *p2, double *p3, double *n)
  double V1[3], V2[3], VC[3], angle, len, dir;
 
   if(!p1 || !p2 || !p3)
-   return 0.0;
+    return 0.0;
 
   AY_V3SUB(V1, p1, p2);
   len = AY_V3LEN(V1);
@@ -395,11 +395,11 @@ ay_geom_extractmeannormal(double *cv, int cvlen, int cvstride,
 
 /** ay_geom_scalecog:
  *  scale a number of points around their center of gravity
- * 
+ *
  * \param scale scale factor
- * \param cv points
+ * \param cv points to scale
  * \param len number of points
- * \param stride size of a point
+ * \param stride memory distance between two points
  */
 void
 ay_geom_scalecog(double scale, double *cv, int len, int stride)
