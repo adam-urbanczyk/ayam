@@ -462,6 +462,8 @@ ay_interpol_npatches(double r, ay_object *p1, ay_object *p2, ay_object *ic,
 
   if(ic)
     {
+      if(ic->type != AY_IDNPATCH)
+	return AY_EARGS;
       npi = (ay_nurbpatch_object *)ic->refine;
     }
 
@@ -599,6 +601,7 @@ cleanup:
 
 
 /** ay_interpol_surfacestcmd:
+ * Interpolate/tween surfaces.
  *
  *  Implements the \a tweenNP scripting interface command.
  *  See also the corresponding section in the \ayd{sctweennp}.
