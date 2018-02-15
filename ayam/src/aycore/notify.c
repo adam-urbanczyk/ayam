@@ -740,13 +740,12 @@ ay_notify_objectsafetcmd(ClientData clientData, Tcl_Interp *interp,
 /* ay_notify_init:
  *  initialize notification module
  */
-int
+void
 ay_notify_init(Tcl_Interp *interp)
 {
- int ay_status = AY_OK;
 
   /* register NC tag type */
   (void)ay_tags_register(ay_nc_tagname, &ay_nc_tagtype);
 
- return ay_status;
+ return;
 } /* ay_notify_init */

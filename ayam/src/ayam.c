@@ -355,8 +355,7 @@ ay_init(Tcl_Interp *interp)
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
   /* initialize notification module */
-  if((ay_status = ay_notify_init(interp)))
-    { ay_error(ay_status, fname, NULL); return AY_ERROR; }
+  ay_notify_init(interp);
 
   /* fill tables (init object types) */
   if((ay_status = ay_root_init(interp)))

@@ -466,7 +466,7 @@ void ay_notify_block(int scope, int block);
 
 /** initialize notification module
  */
-int ay_notify_init(Tcl_Interp *interp);
+void ay_notify_init(Tcl_Interp *interp);
 
 /** Tcl command to enforce notification of selected objects (safe interp).
  */
@@ -1572,7 +1572,7 @@ int ay_tcmd_getnormaltcmd(ClientData clientData, Tcl_Interp *interp,
 
 /** initialize tesselation GUI module
  */
-int ay_tgui_init(Tcl_Interp *interp);
+void ay_tgui_init(Tcl_Interp *interp);
 
 
 /* tmp.c */

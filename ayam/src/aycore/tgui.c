@@ -607,10 +607,9 @@ ay_tgui_tcmd(ClientData clientData, Tcl_Interp *interp,
 /* ay_tgui_init:
  *  initialize tgui module
  */
-int
+void
 ay_tgui_init(Tcl_Interp *interp)
 {
- int ay_status = AY_OK;
 
   /* register some C-functions as Tcl-Commands */
   Tcl_CreateCommand(interp, "tguiCmd",
@@ -620,5 +619,5 @@ ay_tgui_init(Tcl_Interp *interp)
   /* register TP tag type */
   (void)ay_tags_register(ay_tp_tagname, &ay_tp_tagtype);
 
- return ay_status;
+ return;
 } /* ay_tgui_init */
