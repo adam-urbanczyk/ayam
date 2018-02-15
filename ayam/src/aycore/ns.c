@@ -163,13 +163,19 @@ ay_ns_execute(ay_object *o, ay_tag *tag)
   if(result == TCL_ERROR)
     {
       ay_error(AY_ERROR, fname, Tcl_GetStringResult(interp));
+      ay_status = AY_OK;
       if(ay_prefs.disablefailedscripts)
 	{
-	  ay_error(AY_ERROR, fname, "Script failed and disabled!");
-	  ay_ns_disable(tag);
+	  ay_status = ay_ns_disable(tag);
+	}
+      if(ay_status)
+	{
+	  ay_error(AY_ERROR, fname, "Script failed!");
 	}
       else
-	ay_error(AY_ERROR, fname, "Script failed!");
+	{
+	  ay_error(AY_ERROR, fname, "Script failed and disabled!");
+	}
     }
 
 cleanup:
@@ -288,11 +294,11 @@ ay_ns_init(Tcl_Interp *interp)
 {
 
   /* register NS tag types */
-  ay_tags_register(ay_bns_tagname, &ay_bns_tagtype);
-  ay_tags_register(ay_ans_tagname, &ay_ans_tagtype);
+  (void)ay_tags_register(ay_bns_tagname, &ay_bns_tagtype);
+  (void)ay_tags_register(ay_ans_tagname, &ay_ans_tagtype);
 
-  ay_tags_register(ay_dbns_tagname, &ay_dbns_tagtype);
-  ay_tags_register(ay_dans_tagname, &ay_dans_tagtype);
+  (void)ay_tags_register(ay_dbns_tagname, &ay_dbns_tagtype);
+  (void)ay_tags_register(ay_dans_tagname, &ay_dans_tagtype);
 
  return;
 } /* ay_ns_init */
