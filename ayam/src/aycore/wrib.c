@@ -2670,13 +2670,13 @@ ay_wrib_init(Tcl_Interp *interp)
 {
 
   /* register RiDisplay tag type */
-  ay_tags_register(ay_ridisp_tagname, &ay_ridisp_tagtype);
+  (void)ay_tags_register(ay_ridisp_tagname, &ay_ridisp_tagtype);
 
   /* register RiHider tag type */
-  ay_tags_register(ay_rihider_tagname, &ay_rihider_tagtype);
+  (void)ay_tags_register(ay_rihider_tagname, &ay_rihider_tagtype);
 
   /* register NoExport tag type */
-  ay_tags_register(ay_noexport_tagname, &ay_noexport_tagtype);
+  (void)ay_tags_register(ay_noexport_tagname, &ay_noexport_tagtype);
 
  return;
 } /* ay_wrib_init */
