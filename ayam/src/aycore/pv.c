@@ -1371,7 +1371,7 @@ ay_pv_init(Tcl_Interp *interp)
 {
 
   /* register PV tag type */
-  ay_tags_register(ay_pv_tagname, &ay_pv_tagtype);
+  (void)ay_tags_register(ay_pv_tagname, &ay_pv_tagtype);
 
  return;
 } /* ay_pv_init */
