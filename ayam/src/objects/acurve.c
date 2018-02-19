@@ -16,7 +16,11 @@
 
 static char *ay_acurve_name = "ACurve";
 
+
+/* prototypes of functions local to this module: */
+
 int ay_acurve_notifycb(ay_object *o);
+
 
 /* functions: */
 

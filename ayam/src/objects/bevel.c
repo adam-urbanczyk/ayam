@@ -16,7 +16,11 @@
 
 static char *ay_bevel_name = "Bevel";
 
+
+/* prototypes of functions local to this module: */
+
 int ay_bevel_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe);
+
 
 /* functions: */
 

@@ -16,7 +16,11 @@
 
 static char *ay_skin_name = "Skin";
 
+
+/* prototypes of functions local to this module: */
+
 int ay_skin_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe);
+
 
 /* functions: */
 

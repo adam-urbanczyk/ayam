@@ -16,6 +16,9 @@
 
 static char *ay_offnp_name = "OffsetNP";
 
+
+/* prototypes of functions local to this module: */
+
 int ay_offnp_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe);
 
 /* functions: */

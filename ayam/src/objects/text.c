@@ -17,9 +17,13 @@
 
 static char *ay_text_name = "Text";
 
+
+/* prototypes of functions local to this module: */
+
 int ay_text_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe);
 
 int ay_text_notifycb(ay_object *o);
+
 
 /* functions: */
 

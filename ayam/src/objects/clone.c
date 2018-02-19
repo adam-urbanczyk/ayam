@@ -19,9 +19,12 @@ static char *ay_clone_name = "Clone";
 static char *ay_mirror_name = "Mirror";
 
 
+/* prototypes of functions local to this module: */
+
 int ay_clone_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe);
 
 int ay_clone_notifycb(ay_object *o);
+
 
 /* functions: */
 

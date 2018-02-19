@@ -16,7 +16,11 @@
 
 static char *ay_extrnc_name = "ExtrNC";
 
+
+/* prototypes of functions local to this module: */
+
 int ay_extrnc_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe);
+
 
 /* functions: */
 

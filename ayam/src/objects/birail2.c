@@ -16,7 +16,11 @@
 
 static char *ay_birail2_name = "Birail2";
 
+
+/* prototypes of functions local to this module: */
+
 int ay_birail2_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe);
+
 
 /* functions: */
 

@@ -16,7 +16,11 @@
 
 static char *ay_icurve_name = "ICurve";
 
+
+/* prototypes of functions local to this module: */
+
 int ay_icurve_notifycb(ay_object *o);
+
 
 /* functions: */
 

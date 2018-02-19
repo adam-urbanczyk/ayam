@@ -16,7 +16,13 @@
 
 static char *ay_concatnc_name = "ConcatNC";
 
+
+/* prototypes of functions local to this module: */
+
 int ay_concatnc_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe);
+
+
+/* functions: */
 
 /* ay_concatnc_createcb:
  *  create callback function of concatnc object
