@@ -444,14 +444,6 @@ typedef struct ay_stess_curve_s {
 } ay_stess_curve;
 
 
-/** a break point of a NURBS curve */
-typedef struct ay_break_point_s {
-  int index; /**< number of points in tesselation */
-  float point[3]; /**< cached tesselation [tesslen*3] */
-  int tessqf; /**< cached tesselation quality */
-} ay_break_point;
-
-
 /** NURBS curve object */
 typedef struct ay_nurbcurve_object_s
 {
