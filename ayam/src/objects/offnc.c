@@ -16,7 +16,11 @@
 
 static char *ay_offnc_name = "OffsetNC";
 
+
+/* prototypes of functions local to this module: */
+
 int ay_offnc_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe);
+
 
 /* functions: */
 
@@ -571,7 +575,7 @@ ay_offnc_notifycb(ay_object *o)
   /* link new object to offnc object */
   offnc->ncurve = newo;
 
-  /* copy transformation attributes over to offnp object
+  /* copy transformation attributes over to offnc object
      (the offset curve is always at the same place as
      the surface) */
   ay_trafo_copy(ncurve, o);

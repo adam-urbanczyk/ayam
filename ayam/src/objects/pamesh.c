@@ -16,9 +16,13 @@
 
 static char *ay_pamesh_name = "PatchMesh";
 
+
+/* prototypes of functions local to this module: */
+
 int ay_pamesh_notifycb(ay_object *o);
 
 void ay_pamesh_drawweights(ay_pamesh_object *pamesh);
+
 
 /* functions: */
 

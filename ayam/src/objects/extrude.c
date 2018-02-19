@@ -16,9 +16,13 @@
 
 static char *ay_extrude_name = "Extrude";
 
+
+/* prototypes of functions local to this module: */
+
 int ay_extrude_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe);
 
 int ay_extrude_notifycb(ay_object *o);
+
 
 /* functions: */
 

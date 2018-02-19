@@ -16,7 +16,11 @@
 
 static char *ay_sweep_name = "Sweep";
 
+
+/* prototypes of functions local to this module: */
+
 int ay_sweep_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe);
+
 
 /* functions: */
 

@@ -16,7 +16,11 @@
 
 static char *ay_gordon_name = "Gordon";
 
+
+/* prototypes of functions local to this module: */
+
 int ay_gordon_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe);
+
 
 /* functions: */
 

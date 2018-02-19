@@ -16,7 +16,11 @@
 
 static char *ay_cap_name = "Cap";
 
+
+/* prototypes of functions local to this module: */
+
 int ay_cap_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe);
+
 
 /* functions: */
 
