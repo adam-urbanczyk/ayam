@@ -3326,7 +3326,6 @@ int
 sdnpatch_writecb(FILE *fileptr, ay_object *o)
 {
  sdnpatch_object *sdnpatch = NULL;
- Mesh *mesh = NULL;
  MeshFlattener *meshFlattener = NULL;
  FlatMeshHandler *handler = NULL;
 
@@ -4351,8 +4350,8 @@ sdnpatch_convnptcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
- ay_object *o = NULL, *p = NULL, *newo = NULL;
- int i = 0;
+ ay_object *o = NULL, *p = NULL, *cp = NULL, *newo = NULL;
+ int i = 0, is_copy = AY_FALSE;
 
   /* parse args */
   if(argc > 2)
@@ -4392,21 +4391,31 @@ sdnpatch_convnptcmd(ClientData clientData, Tcl_Interp *interp,
       if(o->type != AY_IDNPATCH)
 	{
 	  ay_status = ay_provide_object(o, AY_IDNPATCH, &p);
+	  is_copy = AY_TRUE;
 	}
       else
 	{
-	  ay_status = ay_object_copy(o, &p);
-	} // if
+	  p = o;
+	}
 
       if(p)
 	{
-	  ay_status = sdnpatch_convnp(0, p, &newo);
-	  if(newo)
+	  cp = p;
+	  while(cp)
 	    {
-	      ay_object_link(newo);
+	      newo = NULL;
+	      ay_status = sdnpatch_convnp(0, cp, &newo);
+	      if(newo)
+		{
+		  ay_object_link(newo);
+		}
+	      if(!is_copy)
+		break;
+	      cp = cp->next;
 	    }
 
-	  ay_object_deletemulti(p, AY_FALSE);
+	  if(is_copy)
+	    ay_object_deletemulti(p, AY_FALSE);
 	}
 
       sel = sel->next;
@@ -4508,11 +4517,13 @@ sdnpatch_convpo(int mode, ay_object *p, ay_object **result)
 
   /* add eight corner vertices */
   if(p->selp)
-  for(i = 0; i < 8; i++)
     {
-      meshBuilder->addVertex(0.0, 0.0, 0.0, 1.0, k);
-      ci[i] = k;
-      k++;
+      for(i = 0; i < 8; i++)
+	{
+	  meshBuilder->addVertex(0.0, 0.0, 0.0, 1.0, k);
+	  ci[i] = k;
+	  k++;
+	}
     }
 
   meshBuilder->finishVertices();
@@ -4625,7 +4636,7 @@ sdnpatch_convpotcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
- ay_object *o = NULL, *p = NULL, *newo = NULL;
+ ay_object *o = NULL, *p = NULL, *cp = NULL, *newo = NULL;
  int is_copy = AY_FALSE, i = 0;
 
   /* parse args */
@@ -4671,14 +4682,21 @@ sdnpatch_convpotcmd(ClientData clientData, Tcl_Interp *interp,
       else
 	{
 	  p = o;
-	} // if
+	}
 
       if(p)
 	{
-	  ay_status = sdnpatch_convpo(0, p, &newo);
-	  if(newo)
+	  cp = p;
+	  while(cp)
 	    {
-	      ay_object_link(newo);
+	      ay_status = sdnpatch_convpo(0, cp, &newo);
+	      if(newo)
+		{
+		  ay_object_link(newo);
+		}
+	      if(!is_copy)
+		break;
+	      cp = cp->next;
 	    }
 
 	  if(is_copy)
