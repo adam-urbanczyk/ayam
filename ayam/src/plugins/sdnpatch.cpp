@@ -95,9 +95,7 @@ int sdnpatch_getcontrolvertices(sdnpatch_object *sdnpatch);
  */
 class Revertor : public FlatMeshHandler
 {
-
 public:
-
   Revertor(sdnpatch_object *sdnpatch);
   ~Revertor();
   void addVertex(VertexPrecision x,
@@ -122,7 +120,6 @@ public:
   Mesh *m_newMesh;
 
 private:
-
   MeshBuilder *m_meshBuilder;
   sdnpatch_object *m_sdnpatch;
   unsigned int m_id;
@@ -142,7 +139,7 @@ Revertor::Revertor(sdnpatch_object *sdnpatch)
 Revertor::~Revertor()
 {
   MeshBuilder::dispose(m_meshBuilder);
-} /* FaceConnector::~FaceConnector */
+} /* Revertor::~Revertor */
 
 
 void
@@ -250,9 +247,7 @@ Revertor::finishKnotIntervals(void)
  */
 class PatchMerger : public FlatMeshHandler
 {
-
 public:
-
   PatchMerger(void);
 
   void addPatch(void);
@@ -277,7 +272,6 @@ public:
   Mesh *buildMesh(unsigned int degree);
 
 private:
-
   unsigned int m_offset;
   unsigned int m_dummyoffset;
   unsigned int m_id;
@@ -624,9 +618,7 @@ PatchMerger::buildMesh(unsigned int degree)
  */
 class AyWriter : public FlatMeshHandler
 {
-
 public:
-
   AyWriter(FILE *filep);
 
   void addVertex(VertexPrecision x,
@@ -647,7 +639,6 @@ public:
   void finishKnotIntervals(void);
 
 private:
-
   FILE *m_fp;
 
   unsigned int m_numVertices;
@@ -812,9 +803,7 @@ AyWriter::finishKnotIntervals(void)
  */
 class AyConvertor
 {
-
 public:
-
   AyConvertor(MeshFlattener *flattener);
 
   void vertexcb(VertexPrecision x,
@@ -829,7 +818,6 @@ public:
   void convert(ay_pomesh_object *pomesh);
 
 private:
-
   MeshFlattener *m_flattener;
   unsigned int m_numVertices;
   unsigned int m_numFaces;
@@ -980,7 +968,6 @@ public:
   vector<unsigned int> m_newSelection;
 
 private:
-
   sdnpatch_object *m_sdnpatch;
   ay_point *m_pnts;
 
@@ -1376,7 +1363,6 @@ public:
   Mesh *m_newMesh;
 
 private:
-
   sdnpatch_object *m_sdnpatch;
   ay_point *m_pnts;
 
@@ -1601,7 +1587,6 @@ public:
   bool m_error;
 
 private:
-
   sdnpatch_object *m_sdnpatch;
   ay_point *m_pnts;
 
@@ -2139,17 +2124,11 @@ public:
   bool m_error;
 
 private:
-
-
   sdnpatch_object *m_sdnpatch;
   ay_point *m_pnts;
-
   MeshBuilder *m_meshBuilder;
-
   vector<unsigned int> m_faceVerts;
-
   vector<unsigned int> m_newVertexIDs;
-
   unsigned int m_face1VertsNum;
   vector<unsigned int> m_face1Verts;
   bool m_connected;
@@ -2481,20 +2460,15 @@ public:
   void closeFace(void);
 
 private:
-
   sdnpatch_object *m_sdnpatch;
   ay_point *m_pnts;
   MeshFlattener *m_meshFlattener;
-
   unsigned int m_vertNum;
   unsigned int m_faceNum;
   unsigned int m_faceVertNum;
-
   KnotPrecision m_interval;
-
   vector<unsigned int> m_newVertexIDs;
   vector<KnotInterval *> *m_selectedKnots;
-
 };
 
 
@@ -5287,7 +5261,7 @@ sdnpatch_editknottcmd(ClientData clientData, Tcl_Interp *interp,
       break;
     default:
       break;
-    }
+    } /* switch mode */
 
   o->modified = AY_TRUE;
   ay_notify_object(o);
