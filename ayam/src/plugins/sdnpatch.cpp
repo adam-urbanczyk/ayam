@@ -3163,12 +3163,12 @@ sdnpatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!sdnpatch)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  toa = Tcl_NewStringObj(n1, -1);
+  ton = Tcl_NewStringObj(n1, -1);
 
-  Tcl_SetStringObj(ton,"Degree",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &itemp);
+  Tcl_SetStringObj(ton, "Degree", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &itemp);
 
   if(itemp != 3 && itemp != 5 && itemp != 7)
     {
@@ -3176,19 +3176,27 @@ sdnpatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     }
   else
     {
+      Mesh *nm = new Mesh(itemp);
+      MeshBuilder *mb = MeshBuilder::create(*nm);
+      MeshFlattener *mf = MeshFlattener::create(*(sdnpatch->controlMesh));
+      mf->flatten(*mb);
+      MeshFlattener::dispose(mf);
+      MeshBuilder::dispose(mb);
+      delete sdnpatch->controlMesh;
+      sdnpatch->controlMesh = nm;
       sdnpatch->subdivDegree = itemp;
     }
 
-  Tcl_SetStringObj(ton,"Level",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetStringObj(ton, "Level", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &itemp);
   if(itemp >= 0)
     {
       sdnpatch->subdivLevel = itemp;
     }
+
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
-
 
   (void)ay_notify_object(o);
 
@@ -3205,7 +3213,7 @@ sdnpatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 sdnpatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1="SDNPatchAttrData";
+ char *n1 = "SDNPatchAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  sdnpatch_object *sdnpatch = NULL;
 
@@ -3217,16 +3225,16 @@ sdnpatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!sdnpatch)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  toa = Tcl_NewStringObj(n1, -1);
+  ton = Tcl_NewStringObj(n1, -1);
 
-  Tcl_SetStringObj(ton,"Degree",-1);
+  Tcl_SetStringObj(ton, "Degree", -1);
   to = Tcl_NewIntObj(sdnpatch->subdivDegree);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Level",-1);
+  Tcl_SetStringObj(ton, "Level", -1);
   to = Tcl_NewIntObj(sdnpatch->subdivLevel);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
 
   Tcl_SetStringObj(ton, "NPolys", -1);
@@ -3341,7 +3349,6 @@ sdnpatch_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%d\n", sdnpatch->subdivLevel);
 
   /* write the control mesh using the AyWriter MeshFlattener handler */
-  mesh = sdnpatch->controlMesh;
   meshFlattener = MeshFlattener::create(*(sdnpatch->controlMesh));
   handler = new AyWriter(fileptr);
   meshFlattener->flatten(*handler);
