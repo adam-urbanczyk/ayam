@@ -509,50 +509,50 @@ ay_init(Tcl_Interp *interp)
   /* initialize Tesselation GUI module */
   ay_tgui_init(interp);
 
-  /* register SaveMainGeom tag type */
-  ay_tags_register(ay_savegeom_tagname, &ay_savegeom_tagtype);
-
-  /* register SavePaneLayout tag type */
-  ay_tags_register(ay_savelayout_tagname, &ay_savelayout_tagtype);
-
-  /* register NP (NewProperty) tag type */
-  ay_tags_register(ay_np_tagname, &ay_np_tagtype);
-
-  /* register RP (RemoveProperty) tag type */
-  ay_tags_register(ay_rp_tagname, &ay_rp_tagtype);
-
   /* initialize NURBS knots module */
   ay_knots_init(interp);
 
   /* initialize the patch mesh tools module */
   ay_pmt_init();
 
+  /* register SaveMainGeom tag type */
+  (void)ay_tags_register(ay_savegeom_tagname, &ay_savegeom_tagtype);
+
+  /* register SavePaneLayout tag type */
+  (void)ay_tags_register(ay_savelayout_tagname, &ay_savelayout_tagtype);
+
+  /* register NP (NewProperty) tag type */
+  (void)ay_tags_register(ay_np_tagname, &ay_np_tagtype);
+
+  /* register RP (RemoveProperty) tag type */
+  (void)ay_tags_register(ay_rp_tagname, &ay_rp_tagtype);
+
   /* register BP (Bevel Parameters) tag type */
-  ay_tags_register(ay_bp_tagname, &ay_bp_tagtype);
+  (void)ay_tags_register(ay_bp_tagname, &ay_bp_tagtype);
 
   /* register CP (Cap Parameters) tag type */
-  ay_tags_register(ay_cp_tagname, &ay_cp_tagtype);
+  (void)ay_tags_register(ay_cp_tagname, &ay_cp_tagtype);
 
   /* register HC (Has Child) tag type */
-  ay_tags_register(ay_hc_tagname, &ay_hc_tagtype);
+  (void)ay_tags_register(ay_hc_tagname, &ay_hc_tagtype);
 
   /* register NO (Notify Object) tag type */
-  ay_tags_register(ay_no_tagname, &ay_no_tagtype);
+  (void)ay_tags_register(ay_no_tagname, &ay_no_tagtype);
 
   /* register NM (Notify Master) tag type */
-  ay_tags_register(ay_nm_tagname, &ay_nm_tagtype);
+  (void)ay_tags_register(ay_nm_tagname, &ay_nm_tagtype);
 
   /* register NT (Normals&Tangents) tag type */
-  ay_tags_register(ay_nt_tagname, &ay_nt_tagtype);
+  (void)ay_tags_register(ay_nt_tagname, &ay_nt_tagtype);
 
   /* register AsWire tag type */
-  ay_tags_register(ay_aswire_tagname, &ay_aswire_tagtype);
+  (void)ay_tags_register(ay_aswire_tagname, &ay_aswire_tagtype);
 
   /* register MN tag type */
-  ay_tags_register(ay_mn_tagname, &ay_mn_tagtype);
+  (void)ay_tags_register(ay_mn_tagname, &ay_mn_tagtype);
 
   /* register MP tag type */
-  ay_tags_register(ay_mp_tagname, &ay_mp_tagtype);
+  (void)ay_tags_register(ay_mp_tagname, &ay_mp_tagtype);
 
   /* create root object */
   if((ay_status = ay_object_create(AY_IDROOT, &ay_root)))
