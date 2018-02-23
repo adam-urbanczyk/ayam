@@ -930,6 +930,10 @@ int ay_pomesht_selectbound(ay_pomesh_object *po, ay_point *selp);
  */
 int ay_pomesht_applytrafo(ay_object *o);
 
+/** See if there are only ngons in the mesh.
+ */
+int ay_pomesht_hasonlyngons(ay_pomesh_object *po, unsigned int n);
+
 
 /* prefs.c */
 

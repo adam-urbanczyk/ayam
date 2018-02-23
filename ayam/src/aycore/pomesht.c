@@ -3606,3 +3606,38 @@ ay_pomesht_applytrafo(ay_object *o)
  return AY_OK;
 } /* ay_pomesht_applytrafo */
 
+
+/** ay_pomesht_hasonlyngons:
+ * See if there are only ngons in the mesh.
+ *
+ * \param[in] po PoMesh object to process
+ * \param[in] n number of polygon corners
+ *
+ * \returns AY_TRUE if there are only ngons and no holes in the mesh,
+ *          AY_FALSE else.
+ */
+int
+ay_pomesht_hasonlyngons(ay_pomesh_object *po, unsigned int n)
+{
+ unsigned int i, j, l = 0, m = 0;
+
+  if(!po || n < 3)
+    return AY_FALSE;
+
+  for(i = 0; i < po->npolys; i++)
+    {
+      if(po->nloops[i] > 1)
+	return AY_FALSE;
+      for(j = 0; j < po->nloops[l]; j++)
+	{
+	  if(po->nverts[m] != n)
+	    {
+	      return AY_FALSE;
+	    }
+	  m++;
+	}
+      l++;
+    }
+
+ return AY_TRUE;
+} /* ay_pomesht_hasonlyngons */
