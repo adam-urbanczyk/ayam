@@ -4762,7 +4762,7 @@ sdnpatch_impplytcmd(ClientData clientData, Tcl_Interp *interp,
   if(!(o = (ay_object*)calloc(1, sizeof(ay_object))))
     {
       ay_error(AY_EOMEM, argv[0], NULL);
-      return TCL_OK;
+      goto cleanup;
     }
 
   ay_object_defaults(o);
@@ -4770,9 +4770,8 @@ sdnpatch_impplytcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!(sdnpatch = (sdnpatch_object*)calloc(1, sizeof(sdnpatch_object))))
     {
-      free(o);
       ay_error(AY_EOMEM, argv[0], NULL);
-      return TCL_OK;
+      goto cleanup;
     }
 
   sdnpatch->controlMesh = controlMesh;
@@ -4783,10 +4782,8 @@ sdnpatch_impplytcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(ay_status)
     {
-      free(sdnpatch);
-      free(o);
       ay_error(ay_status, argv[0], NULL);
-      return TCL_OK;
+      goto cleanup;
     }
 
   o->refine = sdnpatch;
@@ -4798,11 +4795,34 @@ sdnpatch_impplytcmd(ClientData clientData, Tcl_Interp *interp,
 
   ay_notify_parent();
 
+  ay_error(AY_EOUTPUT, argv[0], "Done importing PLY from:");
+  ay_error(AY_EOUTPUT, argv[0], argv[1]);
+
+  /* prevent cleanup code from doing something harmful */
+  o = NULL;
+  sdnpatch = NULL;
+  controlMesh = NULL;
+
+cleanup:
+
+  if(controlMesh)
+    {
+      controlMesh->clear();
+      delete controlMesh;
+    }
+
   delete plyReader;
   MeshBuilder::dispose(meshBuilder);
 
-  ay_error(AY_EOUTPUT, argv[0], "Done importing PLY from:");
-  ay_error(AY_EOUTPUT, argv[0], argv[1]);
+  if(o)
+    {
+      free(o);
+    }
+
+  if(sdnpatch)
+    {     
+      free(sdnpatch);
+    }
 
  return TCL_OK;
 } /* sdnpatch_impplytcmd */
