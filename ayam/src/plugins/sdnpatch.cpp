@@ -24,7 +24,7 @@ using namespace snurbs;
 static char sdnpatch_version_ma[] = AY_VERSIONSTR;
 static char sdnpatch_version_mi[] = AY_VERSIONSTRMI;
 
-static char *sdnpatch_name = "SDNPatch";
+static char *sdnpatch_name = (char *)"SDNPatch";
 
 static unsigned int sdnpatch_id;
 
@@ -2600,7 +2600,7 @@ sdnpatch_createcb(int argc, char *argv[], ay_object *o)
  int tmpi, optnum = 0, i = 2, j = 0;
  unsigned int k = 0;
  unsigned int *faces = NULL, *edges = NULL;
- int faceslen = 0, edgeslen = 0;
+ int faceslen = 0;
  double *verts = NULL, *knots = NULL;
  int vertslen = 0, knotslen = 0;
  sdnpatch_object *sdnpatch = NULL;
@@ -2700,7 +2700,7 @@ sdnpatch_createcb(int argc, char *argv[], ay_object *o)
 		      edges[j+1] = tmpi;
 		      k += 2;
 		    } /* for */
-		  edgeslen = (avlen/3)*2;
+		  //edgeslen = (avlen/3)*2;
 		  k = 2;
 		  for(j = 0; j < avlen/3; j++)
 		    {
@@ -2896,7 +2896,7 @@ sdnpatch_createcb(int argc, char *argv[], ay_object *o)
 
   o->refine = sdnpatch;
 
-  ay_notify_object(o);
+  (void)ay_notify_object(o);
 
 cleanup:
 
@@ -3150,7 +3150,7 @@ int
 sdnpatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  char fname[] = "sdnpatch_setpropcb";
- char *n1 = "SDNPatchAttrData";
+ char *n1 = (char *)"SDNPatchAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  sdnpatch_object *sdnpatch = NULL;
  int itemp = 0;
@@ -3213,7 +3213,7 @@ sdnpatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 sdnpatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1 = "SDNPatchAttrData";
+ char *n1 = (char *)"SDNPatchAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  sdnpatch_object *sdnpatch = NULL;
 
@@ -4632,7 +4632,7 @@ sdnpatch_convpo(int mode, ay_object *p, ay_object **result)
   sdnpatch_getcontrolvertices(sdnpatch);
 
   newo->modified = AY_TRUE;
-  ay_notify_object(newo);
+  (void)ay_notify_object(newo);
 
   /* return result */
   *result = newo;
@@ -4979,7 +4979,7 @@ sdnpatch_extrudefacetcmd(ClientData clientData, Tcl_Interp *interp,
   ay_pact_getpoint(3, o, NULL, NULL);
 
   o->modified = AY_TRUE;
-  ay_notify_object(o);
+  (void)ay_notify_object(o);
 
   ay_notify_parent();
 
@@ -5040,7 +5040,7 @@ sdnpatch_removefacetcmd(ClientData clientData, Tcl_Interp *interp,
       ay_selp_clear(o);
 
       o->modified = AY_TRUE;
-      ay_notify_object(o);
+      (void)ay_notify_object(o);
 
       ay_notify_parent();
     }
@@ -5113,7 +5113,7 @@ sdnpatch_mergefacetcmd(ClientData clientData, Tcl_Interp *interp,
   ay_selp_clear(o);
 
   o->modified = AY_TRUE;
-  ay_notify_object(o);
+  (void)ay_notify_object(o);
 
   ay_notify_parent();
 
@@ -5183,7 +5183,7 @@ sdnpatch_connectfacetcmd(ClientData clientData, Tcl_Interp *interp,
   ay_selp_clear(o);
 
   o->modified = AY_TRUE;
-  ay_notify_object(o);
+  (void)ay_notify_object(o);
 
   ay_notify_parent();
 
@@ -5329,7 +5329,7 @@ sdnpatch_editknottcmd(ClientData clientData, Tcl_Interp *interp,
     } /* switch mode */
 
   o->modified = AY_TRUE;
-  ay_notify_object(o);
+  (void)ay_notify_object(o);
 
   ay_notify_parent();
 
@@ -5381,7 +5381,7 @@ sdnpatch_reverttcmd(ClientData clientData, Tcl_Interp *interp,
       ay_selp_clear(o);
 
       o->modified = AY_TRUE;
-      ay_notify_object(o);
+      (void)ay_notify_object(o);
 
       ay_notify_parent();
     }
@@ -5535,7 +5535,7 @@ sdnpatch_mergepatchtcmd(ClientData clientData, Tcl_Interp *interp,
       ay_object_link(o);
 
       o->modified = AY_TRUE;
-      ay_notify_object(o);
+      (void)ay_notify_object(o);
 
       ay_notify_parent();
       newMesh = NULL;
