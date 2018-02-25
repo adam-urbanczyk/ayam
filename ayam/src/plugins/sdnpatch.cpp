@@ -4234,7 +4234,7 @@ sdnpatch_convnp(int mode, ay_object *p, ay_object **result)
  ay_object *newo = NULL;
  ay_nurbpatch_object *np = NULL;
  sdnpatch_object *sdnpatch = NULL;
- double *cv = NULL, ulen = 0.0, vlen = 0.0;
+ double *cv = NULL/*, ulen = 0.0, vlen = 0.0*/;
  unsigned int i = 0, endi = 0, j = 0, endj = 0, k = 0, a = 0;
  int is_closed_u = AY_FALSE, is_closed_v = AY_FALSE;
 
@@ -4339,7 +4339,7 @@ sdnpatch_convnp(int mode, ay_object *p, ay_object **result)
   sdnpatch_getcontrolvertices(sdnpatch);
 
   newo->modified = AY_TRUE;
-  ay_notify_object(newo);
+  (void)ay_notify_object(newo);
 
   /* return result */
   *result = newo;
@@ -4415,6 +4415,10 @@ sdnpatch_convnptcmd(ClientData clientData, Tcl_Interp *interp,
 	      if(newo)
 		{
 		  ay_object_link(newo);
+		}
+	      else
+		{
+		  ay_error(ay_status, argv[0], "conversion failed");
 		}
 	      if(!is_copy)
 		break;
@@ -4704,6 +4708,10 @@ sdnpatch_convpotcmd(ClientData clientData, Tcl_Interp *interp,
 		{
 		  ay_object_link(newo);
 		}
+	      else
+		{
+		  ay_error(ay_status, argv[0], "conversion failed");
+		}
 	      if(!is_copy)
 		break;
 	      cp = cp->next;
@@ -4820,7 +4828,7 @@ cleanup:
     }
 
   if(sdnpatch)
-    {     
+    {
       free(sdnpatch);
     }
 
