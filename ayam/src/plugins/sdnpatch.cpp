@@ -4770,6 +4770,7 @@ sdnpatch_impplytcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!(sdnpatch = (sdnpatch_object*)calloc(1, sizeof(sdnpatch_object))))
     {
+      free(o);
       ay_error(AY_EOMEM, argv[0], NULL);
       return TCL_OK;
     }
@@ -4780,10 +4781,18 @@ sdnpatch_impplytcmd(ClientData clientData, Tcl_Interp *interp,
 
   ay_status = sdnpatch_getcontrolvertices(sdnpatch);
 
+  if(ay_status)
+    {
+      free(sdnpatch);
+      free(o);
+      ay_error(ay_status, argv[0], NULL);
+      return TCL_OK;
+    }
+
   o->refine = sdnpatch;
 
   o->modified = AY_TRUE;
-  ay_notify_object(o);
+  (void)ay_notify_object(o);
 
   ay_object_link(o);
 
