@@ -4473,6 +4473,9 @@ sdnpatch_convpo(int mode, ay_object *p, ay_object **result)
 
   po = (ay_pomesh_object *)p->refine;
 
+  if(!ay_pomesht_hasonlyngons(po, 4))
+    return AY_ERROR;
+
   if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
     {
       return AY_EOMEM;
