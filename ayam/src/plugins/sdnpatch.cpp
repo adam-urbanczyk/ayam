@@ -3051,7 +3051,7 @@ sdnpatch_quadcb(GLdouble x, GLdouble y, GLdouble z, GLdouble w)
 {
  static int calls = 0;
 
-  glVertex3d(x, y, z);
+  glVertex4d(x, y, z, w);
 
   if(calls == 3)
     {
