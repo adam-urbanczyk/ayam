@@ -3169,22 +3169,28 @@ sdnpatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_SetStringObj(ton, "Degree", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &itemp);
+  if(itemp != sdnpatch->subdivDegree)
+    {
+      if(itemp != 3 && itemp != 5 && itemp != 7)
+	{
+	  ay_error(AY_ERROR, fname, "Unsupported degree, must be 3, 5, or 7!");
+	}
+      else
+	{
+	  Mesh *nm = new Mesh(itemp);
+	  MeshBuilder *mb = MeshBuilder::create(*nm);
+	  MeshFlattener *mf = MeshFlattener::create(*(sdnpatch->controlMesh));
+	  mf->flatten(*mb);
+	  MeshFlattener::dispose(mf);
+	  MeshBuilder::dispose(mb);
+	  delete sdnpatch->controlMesh;
 
-  if(itemp != 3 && itemp != 5 && itemp != 7)
-    {
-      ay_error(AY_ERROR, fname, "Unsupported degree, must be 3, 5, or 7!");
-    }
-  else
-    {
-      Mesh *nm = new Mesh(itemp);
-      MeshBuilder *mb = MeshBuilder::create(*nm);
-      MeshFlattener *mf = MeshFlattener::create(*(sdnpatch->controlMesh));
-      mf->flatten(*mb);
-      MeshFlattener::dispose(mf);
-      MeshBuilder::dispose(mb);
-      delete sdnpatch->controlMesh;
-      sdnpatch->controlMesh = nm;
-      sdnpatch->subdivDegree = itemp;
+	  ay_selp_clear(o);
+	  sdnpatch_getcontrolvertices(sdnpatch);
+
+	  sdnpatch->controlMesh = nm;
+	  sdnpatch->subdivDegree = itemp;
+	}
     }
 
   Tcl_SetStringObj(ton, "Level", -1);
@@ -3379,7 +3385,7 @@ sdnpatch_wribcb(char *file, ay_object *o)
 
   ay_wrib_object(file, c);
 
-  ay_object_deletemulti(c, AY_FALSE);
+  (void)ay_object_deletemulti(c, AY_FALSE);
 
  return AY_OK;
 } /* sdnpatch_wribcb */
@@ -4426,8 +4432,8 @@ sdnpatch_convnptcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 
 	  if(is_copy)
-	    ay_object_deletemulti(p, AY_FALSE);
-	}
+	    (void)ay_object_deletemulti(p, AY_FALSE);
+	} // if have patch
 
       sel = sel->next;
     } // while
@@ -4718,8 +4724,8 @@ sdnpatch_convpotcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 
 	  if(is_copy)
-	    ay_object_deletemulti(p, AY_FALSE);
-	}
+	    (void)ay_object_deletemulti(p, AY_FALSE);
+	} // if have polymesh
 
       sel = sel->next;
     } // while
@@ -5230,7 +5236,6 @@ sdnpatch_editknottcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	  if(!strcmp(argv[i], "-r"))
 	    {
-
 	      mode = 2; // reset
 	      i--;
 	    }
@@ -5271,6 +5276,7 @@ sdnpatch_editknottcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!o->selp)
     {
+      ay_error(AY_ERROR, argv[0], "no points selected");
       return TCL_OK;
     }
 
@@ -5475,7 +5481,7 @@ sdnpatch_mergepatchtcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(degree != sdnpatch->subdivDegree)
 	    {
 	      if(c)
-		ay_object_deletemulti(c, AY_FALSE);
+		(void)ay_object_deletemulti(c, AY_FALSE);
 	      sel = sel->next;
 	      continue;
 	    }
@@ -5494,12 +5500,12 @@ sdnpatch_mergepatchtcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  ay_error(AY_ERROR, argv[0], NULL);
 	  if(c)
-	    ay_object_deletemulti(c, AY_FALSE);
+	    (void)ay_object_deletemulti(c, AY_FALSE);
 	  goto cleanup;
 	}
 
       if(c)
-	ay_object_deletemulti(c, AY_FALSE);
+	(void)ay_object_deletemulti(c, AY_FALSE);
 
       sel = sel->next;
     } /* while */
