@@ -39,6 +39,7 @@ typedef struct sdnpatch_object_s
   GLuint controlFaceList;
   */
   Mesh *subdivMesh;
+  unsigned char subdivMeshLevel;
   /*
   GLuint subdivObject;
   */
@@ -3076,6 +3077,7 @@ sdnpatch_shadecb(struct Togl *togl, ay_object *o)
 {
  sdnpatch_object *sdnpatch = NULL;
  MeshFlattener *meshFlattener = NULL;
+ ay_point *oselp = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -3084,6 +3086,14 @@ sdnpatch_shadecb(struct Togl *togl, ay_object *o)
 
   if(!sdnpatch)
     return AY_ENULL;
+
+  if(sdnpatch->subdivMeshLevel < sdnpatch->subdivLevel)
+    {
+      oselp = o->selp;
+      o->selp = NULL;
+      (void)sdnpatch_notifycb(o);
+      o->selp = oselp;
+    }
 
   if(sdnpatch->subdivMesh)
     meshFlattener = MeshFlattener::create(*(sdnpatch->subdivMesh));
@@ -3533,6 +3543,8 @@ sdnpatch_notifycb(ay_object *o)
       sdnpatch->subdivMesh->subdivide();
       currentLevel++;
     }
+
+  sdnpatch->subdivMeshLevel = currentLevel;
 
  return AY_OK;
 } /* sdnpatch_notifycb */
