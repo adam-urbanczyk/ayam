@@ -4188,11 +4188,11 @@ sdnpatch_addfacescuv(MeshBuilder *meshBuilder,
  unsigned int i, j, a, b;
 
   a = 0;
-  b = height-1;
+  b = height;
 
-  for(i = 0; i < width-2; i++)
+  for(i = 0; i < width-1; i++)
     {
-      for(j = 0; j < height-2; j++)
+      for(j = 0; j < height-1; j++)
 	{
 	  meshBuilder->startFace(4);
 	   meshBuilder->addToFace(a);
@@ -4207,8 +4207,8 @@ sdnpatch_addfacescuv(MeshBuilder *meshBuilder,
 
       meshBuilder->startFace(4);
        meshBuilder->addToFace(a);
-       meshBuilder->addToFace(a-(height-2));
-       meshBuilder->addToFace(b-(height-2));
+       meshBuilder->addToFace(a-(height-1));
+       meshBuilder->addToFace(b-(height-1));
        meshBuilder->addToFace(b);
       meshBuilder->closeFace();
 
@@ -4217,7 +4217,7 @@ sdnpatch_addfacescuv(MeshBuilder *meshBuilder,
     } // for
 
   b = 0;
-  for(j = 0; j < height-2; j++)
+  for(j = 0; j < height-1; j++)
     {
       meshBuilder->startFace(4);
        meshBuilder->addToFace(a);
@@ -4232,7 +4232,7 @@ sdnpatch_addfacescuv(MeshBuilder *meshBuilder,
 
   meshBuilder->startFace(4);
    meshBuilder->addToFace(a);
-   meshBuilder->addToFace(a-(height-2));
+   meshBuilder->addToFace(a-(height-1));
    meshBuilder->addToFace(0);
    meshBuilder->addToFace(b);
   meshBuilder->closeFace();
@@ -4264,10 +4264,10 @@ sdnpatch_convnp(int mode, ay_object *p, ay_object **result)
 
   np = (ay_nurbpatch_object *)p->refine;
 
-  if(np->utype == AY_CTCLOSED)
+  if(np->utype == AY_CTCLOSED || np->utype == AY_CTPERIODIC)
     is_closed_u = AY_TRUE;
 
-  if(np->vtype == AY_CTCLOSED)
+  if(np->vtype == AY_CTCLOSED || np->vtype == AY_CTPERIODIC)
     is_closed_v = AY_TRUE;
 
   if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
@@ -4295,8 +4295,40 @@ sdnpatch_convnp(int mode, ay_object *p, ay_object **result)
 
   MeshBuilder *meshBuilder = MeshBuilder::create(*(sdnpatch->controlMesh));
 
-  endi = (is_closed_u?np->width-1:np->width);
-  endj = (is_closed_v?np->height-1:np->height);
+  switch(np->utype)
+    {
+    case AY_CTOPEN:
+      endi = np->width;
+      break;
+    case AY_CTCLOSED:
+      is_closed_u = AY_TRUE;
+      endi = np->width-1;
+      break;
+    case AY_CTPERIODIC:
+      is_closed_u = AY_TRUE;
+      endi = np->width-(np->uorder-1);
+      break;
+    default:
+      break;
+    }
+
+  switch(np->vtype)
+    {
+    case AY_CTOPEN:
+      endj = np->height;
+      break;
+    case AY_CTCLOSED:
+      is_closed_v = AY_TRUE;
+      endj = np->height-1;
+      break;
+    case AY_CTPERIODIC:
+      is_closed_v = AY_TRUE;
+      endj = np->height-(np->vorder-1);
+      break;
+    default:
+      break;
+    }
+
   cv = np->controlv;
   for(i = 0; i < endi; i++)
     {
@@ -4314,42 +4346,51 @@ sdnpatch_convnp(int mode, ay_object *p, ay_object **result)
     {
       if(is_closed_v)
 	{
-	  sdnpatch_addfacescuv(meshBuilder, np->width, np->height);
+	  sdnpatch_addfacescuv(meshBuilder, endi, endj);
 	}
       else
 	{
-	  sdnpatch_addfacescu(meshBuilder, np->width, np->height);
+	  sdnpatch_addfacescu(meshBuilder, endi, endj);
 	}
     }
   else
     {
       if(is_closed_v)
 	{
-	  sdnpatch_addfacescv(meshBuilder, np->width, np->height);
+	  sdnpatch_addfacescv(meshBuilder, endi, endj);
 	}
       else
 	{
-	  sdnpatch_addfaces(meshBuilder, np->width, np->height);
+	  sdnpatch_addfaces(meshBuilder, endi, endj);
 	}
     }
 
   meshBuilder->finishFaces();
-
-  /*
-  ulen = np->uknotv[np->width+np->uorder]-np->uknotv[1];
-  for(j = 0; j < np->width; j++)
+#if 0
+  if(!is_closed_u && !is_closed_v)
     {
-      meshBuilder->addKnotInterval(j, j+1,
-				   (np->uknotv[i-1]-np->uknotv[i])/ulen);
-    }
-  k = 0;
-  for(j = 0; j < np->height; j++)
-    {
-      meshBuilder->addKnotInterval(k, k+np->width,
-				   (np->vknotv[i-1]-np->vknotv[i])/vlen);
-    }
-  */
+      ulen = np->uknotv[np->width+np->uorder-1] - np->uknotv[1];
+      i = 0;
+      k = np->uorder;
+      for(j = 0; j < np->width-1; j++)
+	{
+	  printf("%d %d\n",i, i + np->height);
+	  meshBuilder->addKnotInterval(i, i + np->height,
+				   (np->uknotv[k] - np->uknotv[k-1]) / ulen);
+	  i += np->height;
+	  k++;
+	}
 
+      k = np->vorder;
+      vlen = np->vknotv[np->height+np->vorder-1] - np->vknotv[1];
+      for(j = 0; j < np->height-1; j++)
+	{
+	  meshBuilder->addKnotInterval(j, j+1,
+				   (np->vknotv[k] - np->vknotv[k-1]) / vlen);
+	  k++;
+	}
+    }
+#endif
   meshBuilder->finishKnotIntervals();
 
   MeshBuilder::dispose(meshBuilder);
