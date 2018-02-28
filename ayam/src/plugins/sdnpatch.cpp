@@ -3995,7 +3995,7 @@ sdnpatch_addfacescu(MeshBuilder *meshBuilder,
   a = 0;
   b = height;
 
-  for(i = 0; i < width-2; i++)
+  for(i = 0; i < width-1; i++)
     {
       for(j = 0; j < height-1; j++)
 	{
@@ -4031,9 +4031,9 @@ sdnpatch_addfacescu(MeshBuilder *meshBuilder,
   /* dummy faces */
   /* upper side */
   a = 0;
-  d = (width-1)*height;
+  d = width*height;
 
-  for(i = 0; i < width-2; i++)
+  for(i = 0; i < width-1; i++)
     {
       meshBuilder->startFace(4);
       meshBuilder->addToFace(d);
@@ -4049,13 +4049,13 @@ sdnpatch_addfacescu(MeshBuilder *meshBuilder,
   meshBuilder->addToFace(d);
   meshBuilder->addToFace(a);
   meshBuilder->addToFace(0);
-  meshBuilder->addToFace((width-1)*height);
+  meshBuilder->addToFace(width*height);
   meshBuilder->closeFace();
   d++;
 
   /* lower side */
   a = height-1;
-  for(i = 0; i < width-2; i++)
+  for(i = 0; i < width-1; i++)
     {
       meshBuilder->startFace(4);
       meshBuilder->addToFace(a);
@@ -4069,7 +4069,7 @@ sdnpatch_addfacescu(MeshBuilder *meshBuilder,
   meshBuilder->startFace(4);
   meshBuilder->addToFace(a);
   meshBuilder->addToFace(d);
-  meshBuilder->addToFace(d-(width-2));
+  meshBuilder->addToFace(d-(width-1));
   meshBuilder->addToFace(height-1);
   meshBuilder->closeFace();
 
@@ -4099,11 +4099,11 @@ sdnpatch_addfacescv(MeshBuilder *meshBuilder,
  unsigned int i, j, a, b, d;
 
   a = 0;
-  b = height-1;
+  b = height;
 
   for(i = 0; i < width-1; i++)
     {
-      for(j = 0; j < height-2; j++)
+      for(j = 0; j < height-1; j++)
 	{
 	  meshBuilder->startFace(4);
 	  meshBuilder->addToFace(a);
@@ -4118,8 +4118,8 @@ sdnpatch_addfacescv(MeshBuilder *meshBuilder,
 
       meshBuilder->startFace(4);
       meshBuilder->addToFace(a);
-      meshBuilder->addToFace(a-(height-2));
-      meshBuilder->addToFace(b-(height-2));
+      meshBuilder->addToFace(a-(height-1));
+      meshBuilder->addToFace(b-(height-1));
       meshBuilder->addToFace(b);
       meshBuilder->closeFace();
 
@@ -4130,9 +4130,9 @@ sdnpatch_addfacescv(MeshBuilder *meshBuilder,
   /* dummy faces */
 
   /* left side */
-  d = width*(height-1);
+  d = width*height;
   a = 0;
-  for(j = 0; j < height-2; j++)
+  for(j = 0; j < height-1; j++)
     {
       meshBuilder->startFace(4);
       meshBuilder->addToFace(d);
@@ -4146,15 +4146,15 @@ sdnpatch_addfacescv(MeshBuilder *meshBuilder,
 
   meshBuilder->startFace(4);
   meshBuilder->addToFace(d);
-  meshBuilder->addToFace(d-(height-2));
-  meshBuilder->addToFace(a-(height-2));
+  meshBuilder->addToFace(d-(height-1));
+  meshBuilder->addToFace(a-(height-1));
   meshBuilder->addToFace(a);
   meshBuilder->closeFace();
 
   /* right side */
-  a = (width-1)*(height-1);
+  a = (width-1)*height;
   d++;
-  for(j = 0; j < height-2; j++)
+  for(j = 0; j < height-1; j++)
     {
       meshBuilder->startFace(4);
       meshBuilder->addToFace(a);
@@ -4168,8 +4168,8 @@ sdnpatch_addfacescv(MeshBuilder *meshBuilder,
 
   meshBuilder->startFace(4);
   meshBuilder->addToFace(a);
-  meshBuilder->addToFace(a-(height-2));
-  meshBuilder->addToFace(d-(height-2));
+  meshBuilder->addToFace(a-(height-1));
+  meshBuilder->addToFace(d-(height-1));
   meshBuilder->addToFace(d);
   meshBuilder->closeFace();
 
@@ -4263,12 +4263,6 @@ sdnpatch_convnp(int mode, ay_object *p, ay_object **result)
     return AY_ERROR;
 
   np = (ay_nurbpatch_object *)p->refine;
-
-  if(np->utype == AY_CTCLOSED || np->utype == AY_CTPERIODIC)
-    is_closed_u = AY_TRUE;
-
-  if(np->vtype == AY_CTCLOSED || np->vtype == AY_CTPERIODIC)
-    is_closed_v = AY_TRUE;
 
   if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
     {
