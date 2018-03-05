@@ -3142,10 +3142,24 @@ sdnpatch_drawhcb(struct Togl *togl, ay_object *o)
   vertices = sdnpatch->controlVertices;
 
   glBegin(GL_POINTS);
-   for(i = 0; i < vertices->size(); i++)
+   if(/*sdnpatch->is_rat && */ay_prefs.rationalpoints)
      {
-       glVertex3dv(&(sdnpatch->controlCoords[a]));
-       a += 4;
+       double *cv = sdnpatch->controlCoords;
+       for(i = 0; i < vertices->size(); i++)
+	 {
+	   glVertex3d((GLdouble)(cv[0] * cv[3]),
+		      (GLdouble)(cv[1] * cv[3]),
+		      (GLdouble)(cv[2] * cv[3]));
+	   cv += 4;
+	 }
+     }
+   else
+     {
+       for(i = 0; i < vertices->size(); i++)
+	 {
+	   glVertex3dv(&(sdnpatch->controlCoords[a]));
+	   a += 4;
+	 }
      }
   glEnd();
 
@@ -4756,6 +4770,7 @@ sdnpatch_convpotcmd(ClientData clientData, Tcl_Interp *interp,
 	  cp = p;
 	  while(cp)
 	    {
+	      newo = NULL;
 	      ay_status = sdnpatch_convpo(0, cp, &newo);
 	      if(newo)
 		{
