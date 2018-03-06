@@ -27,6 +27,7 @@ set w [frame $ay(pca).$SDNPatchAttr(w)]
 
 addParam $w SDNPatchAttrData Degree
 addParam $w SDNPatchAttrData Level
+addInfo $w SDNPatchAttrData IsRat
 addText $w SDNPatchAttrData "Subdivision:"
 addInfo $w SDNPatchAttrData NPolys
 
