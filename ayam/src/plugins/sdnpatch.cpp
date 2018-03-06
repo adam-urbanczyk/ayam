@@ -45,7 +45,7 @@ typedef struct sdnpatch_object_s
   */
   vector<Vertex*> *controlVertices;
   double *controlCoords;
-
+  int is_rat;
 } sdnpatch_object;
 
 /* prototypes of functions local to this module: */
@@ -86,6 +86,8 @@ int sdnpatch_mergepatchtcmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
 
 int sdnpatch_getcontrolvertices(sdnpatch_object *sdnpatch);
+
+int sdnpatch_israt(sdnpatch_object *sdnpatch);
 
 /* assorted helper classes: */
 
@@ -2895,6 +2897,8 @@ sdnpatch_createcb(int argc, char *argv[], ay_object *o)
   */
   sdnpatch_getcontrolvertices(sdnpatch);
 
+  sdnpatch->is_rat = sdnpatch_israt(sdnpatch);
+
   o->refine = sdnpatch;
 
   (void)ay_notify_object(o);
@@ -3142,7 +3146,7 @@ sdnpatch_drawhcb(struct Togl *togl, ay_object *o)
   vertices = sdnpatch->controlVertices;
 
   glBegin(GL_POINTS);
-   if(/*sdnpatch->is_rat && */ay_prefs.rationalpoints)
+   if(sdnpatch->is_rat && ay_prefs.rationalpoints)
      {
        double *cv = sdnpatch->controlCoords;
        for(i = 0; i < vertices->size(); i++)
@@ -3351,6 +3355,8 @@ sdnpatch_readcb(FILE *fileptr, ay_object *o)
 
   sdnpatch_getcontrolvertices(sdnpatch);
 
+  sdnpatch->is_rat = sdnpatch_israt(sdnpatch);
+
   o->refine = sdnpatch;
 
  return AY_OK;
@@ -3519,6 +3525,10 @@ sdnpatch_notifycb(ay_object *o)
 	  v->setY(pnt->point[1]);
 	  v->setZ(pnt->point[2]);
 	  v->setW(pnt->point[3]);
+
+	  if((fabs(pnt->point[3]) < (1.0-AY_EPSILON)) ||
+	     (fabs(pnt->point[3]) > (1.0+AY_EPSILON)))
+	    sdnpatch->is_rat = AY_TRUE;
 
 	  pnt = pnt->next;
 	}
@@ -4862,6 +4872,8 @@ sdnpatch_impplytcmd(ClientData clientData, Tcl_Interp *interp,
       goto cleanup;
     }
 
+  sdnpatch->is_rat = sdnpatch_israt(sdnpatch);
+
   o->refine = sdnpatch;
 
   o->modified = AY_TRUE;
@@ -5701,6 +5713,39 @@ sdnpatch_getcontrolvertices(sdnpatch_object *sdnpatch)
 
  return AY_OK;
 } /* sdnpatch_getcontrolvertices */
+
+
+/** sdnpatch_israt:
+ *  check whether any control point of a Subdivision NURBS patch
+ *  uses a weight value (!= 1.0)
+ *
+ * \param[in] sdnpatch SDNPatch to check
+ *
+ * \returns AY_TRUE if any weight is != 1.0, else returns AY_FALSE
+ */
+int
+sdnpatch_israt(sdnpatch_object *sdnpatch)
+{
+ unsigned int i;
+ double *p;
+
+  if(!sdnpatch)
+    return AY_FALSE;
+
+  if(sdnpatch->controlVertices && sdnpatch->controlCoords)
+    {
+      p = &(sdnpatch->controlCoords[3]);
+      for(i = 0; i < sdnpatch->controlVertices->size(); i++)
+	{
+	  if((fabs(*p) < (1.0-AY_EPSILON)) || (fabs(*p) > (1.0+AY_EPSILON)))
+	    return AY_TRUE;
+	  p += 4;
+	} /* for */
+    } /* if */
+
+ return AY_FALSE;
+} /* sdnpatch_israt */
+
 
 extern "C" {
 
