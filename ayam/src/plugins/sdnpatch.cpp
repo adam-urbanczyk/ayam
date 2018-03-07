@@ -3125,12 +3125,54 @@ sdnpatch_shadecb(struct Togl *togl, ay_object *o)
 } /* sdnpatch_shadecb */
 
 
+/* sdnpatch_drawweights:
+ * helper for sdnpatch_drawhcb() below,
+ * draw colored handles based on their weight values
+ */
+void
+sdnpatch_drawweights(sdnpatch_object *sdnpatch)
+{
+ unsigned int i;
+ double w, *pnts;
+
+  pnts = sdnpatch->controlCoords;
+
+  /* draw normal points */
+  glBegin(GL_POINTS);
+   if(sdnpatch->is_rat && ay_prefs.rationalpoints)
+     {
+       for(i = 0; i < sdnpatch->controlVertices->size(); i++)
+	 {
+	   w = pnts[3];
+	   ay_nct_colorfromweight(w);
+	   glVertex3d((GLdouble)(pnts[0]*w),
+		      (GLdouble)(pnts[1]*w),
+		      (GLdouble)(pnts[2]*w));
+	   pnts += 4;
+	 }
+     }
+   else
+     {
+       for(i = 0; i < sdnpatch->controlVertices->size(); i++)
+	 {
+	   ay_nct_colorfromweight(pnts[3]);
+	   glVertex3dv((GLdouble *)pnts);
+	   pnts += 4;
+	 }
+     }
+  glEnd();
+
+ return;
+} /* sdnpatch_drawweights */
+
+
 /* sdnpatch_drawhcb:
  *  draw handles (in an Ayam view window) callback function of sdnpatch object
  */
 int
 sdnpatch_drawhcb(struct Togl *togl, ay_object *o)
 {
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  sdnpatch_object *sdnpatch = NULL;
  std::vector<Vertex*> *vertices = NULL;
  unsigned int i = 0, a = 0;
@@ -3142,6 +3184,12 @@ sdnpatch_drawhcb(struct Togl *togl, ay_object *o)
 
   if(!sdnpatch)
     return AY_ENULL;
+
+  if(view->drawhandles == 3)
+    {
+      sdnpatch_drawweights(sdnpatch);
+      return AY_OK;
+    }
 
   vertices = sdnpatch->controlVertices;
 
