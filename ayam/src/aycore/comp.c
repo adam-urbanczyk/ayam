@@ -1573,6 +1573,9 @@ ay_comp_trim(ay_object *o1, ay_object *o2)
   if((s1->patchnum != s2->patchnum))
     return AY_FALSE;
 
+  if((s1->scalemode != s2->scalemode))
+    return AY_FALSE;
+
  return AY_TRUE;
 } /* ay_comp_trim */
 
