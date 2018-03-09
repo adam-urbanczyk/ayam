@@ -1936,20 +1936,34 @@ ay_safeinit(Tcl_Interp *interp)
 } /* ay_safeinit */
 
 
-/** check Ayam compile vs. run-time version (for plugins)
+/** ay_checkversion:
+ * Compare plugin compilation and Ayam runtime versions.
+ * Reports incompatibility to the user via ay_error().
+ *
+ * If this function returns AY_ERROR, plugin loading should be
+ * aborted immediately as crashes will likely occur should the
+ * plugin attempt to use the (incompatible/changed) Ayam API.
+ *
+ * \param[in] fname place parameter for ay_error()
+ * \param[in] version_ma major Ayam version the plugin was compiled with
+ * \param[in] version_mi minor Ayam version the plugin was compiled with
+ *
+ * \returns AY_OK if the plugin version is compatible,
+ *          AY_ERROR if the plugin version is not compatible,
+ *          AY_ENULL if any parameter is NULL
  */
 int
-ay_checkversion(char *fname, char *pv_ma, char *pv_mi)
+ay_checkversion(char *fname, char *version_ma, char *version_mi)
 {
  int ay_status = AY_OK;
  char errmsg[] = "Plugin has been compiled for a different Ayam version!";
  char bailmsg[] = "It is unsafe to continue! Bailing out...";
  char contmsg[] = "However, it is probably safe to continue...";
 
-  if(!fname || !pv_ma || !pv_mi)
-    return AY_ERROR;
+  if(!fname || !version_ma || !version_mi)
+    return AY_ENULL;
 
-  if(strcmp(ay_version_ma, pv_ma))
+  if(strcmp(ay_version_ma, version_ma))
     {
       ay_error(AY_ERROR, fname, errmsg);
       ay_error(AY_ERROR, fname, bailmsg);
@@ -1957,7 +1971,7 @@ ay_checkversion(char *fname, char *pv_ma, char *pv_mi)
     }
   else
     {
-      if(strcmp(ay_version_mi, pv_mi))
+      if(strcmp(ay_version_mi, version_mi))
 	{
 	  ay_error(AY_EWARN, fname, errmsg);
 	  ay_error(AY_EWARN, fname, contmsg);
