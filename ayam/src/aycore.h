@@ -2089,9 +2089,9 @@ int ay_write_scenetcmd(ClientData clientData, Tcl_Interp *interp,
 
 /* ayam.c */
 
-/** check Ayam compile vs. run-time version (for plugins)
+/** compare plugin compilation and Ayam runtime versions
  */
-int ay_checkversion(char *fname, char *pv_ma, char *pv_mi);
+int ay_checkversion(char *fname, char *version_ma, char *version_mi);
 
 /*! \file aycore.h \brief Ayam Core API */
 
