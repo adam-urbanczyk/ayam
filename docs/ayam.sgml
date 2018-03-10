@@ -33,7 +33,7 @@ code example of 6 lines text (needs another 2 for the upper/lower lines)
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>25. Jan 2018
+<date>10. Mar 2018
 
 <abstract>
 This is the documentation of Ayam 1.25 &ndash; a free 3D modelling environment
@@ -207,25 +207,22 @@ for most accurate results.
 
 <sect2>Rational Style<label id="rats">
 <p>
-NURBS curves and surfaces support rational coordinate values by
-allowing a fourth value (the weight) to be specified for each
-control point.
-In Ayam versions prior to 1.19 those weights were always multiplied
+Ayam stores rational coordinates in <em/euclidean/ rational style,
+i.e.~the weight of a control point is not pre-multiplied with the
+coordinates (this will be done internally when handing the coordinates
+over for drawing or export purposes).
+<p>
+In Ayam versions prior to 1.19 the weights were always multiplied
 with the coordinate values (i.e.~<em/homogeneous/ rational coordinates)
 to allow faster drawing with OpenGL/GLU, which expects rational
 coordinate values to be delivered this way.
 But a negative side effect of this approach was that modification
 of coordinates or weights for modelling purposes was unnecessarily
 complicated.<newline>
-Therefore, since Ayam 1.19, rational coordinates are now <em/euclidean/
-rational, the weight is not pre-multiplied with the coordinates anymore
-(this will be done internally when handing the coordinates over for
-drawing or export purposes).<newline>
 Ayam can still display the coordinates in both styles, controlled by
 the preference option <tt/"RationalPoints"/ (see also section
 <ref id="prefmodel" name="Modelling Preferences">), but internally
-the coordinates are kept in euclidean rational style.
-<p>
+the coordinates are kept in euclidean rational style.<newline>
 Scene files from older versions of Ayam are converted automatically to the
 new rational style when read by Ayam 1.19 and above, but loading of
 scene files written by Ayam 1.19 and above into older versions of
@@ -11341,7 +11338,6 @@ discussion in section
 The arrow buttons of this entry field add/subtract the current
 step size of the curve to/from the respective value when the
 <tt>&lt;Control&gt;</tt> key is held down.
-
 
 <item><tt/"BType"/ is the basis type. The following basis types are available:
 <tt/"Bezier"/, <tt/"B-Spline"/, <tt/"Catmull-Rom"/,
@@ -24007,9 +24003,9 @@ Index:
 <item>Attributes:
 <itemize>
 <item><ref id="attrs" name="attributes property">,
-<item><ref id="riattrs" name="RenderMan/BMRT attributes property">
+<item><ref id="riattrs" name="RenderMan/BMRT attributes property">,
+<item><ref id="riatag" name="RiAttribute tag type">
 </itemize>
-<item>Attribute: <ref id="riatag" name="RiAttribute tag type">
 <item>AUCommands: <ref id="hidprefs" name="hidden preference setting">
 <item>AutoCAD DXF:
 <itemize>
@@ -24084,6 +24080,8 @@ Index:
 <item>Break: <ref id="breaknpt" name="NPatch tool">
 <item>breakNP: <ref id="scbreaknp" name="scripting interface command">
 <item>Breakpoint: <ref id="finduac" name="breakpoint display">
+<item>BStep: <ref id="bcurveattrprop" name="BCurve attribute">
+<item>BType: <ref id="bcurveattrprop" name="BCurve attribute">
 <item>BType_U, BType_V: <ref id="pmattr" name="PatchMesh attribute">
 <item>Build: <ref id="buildnpt" name="NCurve tool">
 <item>buildNP: <ref id="scbuildnp" name="scripting interface command">
@@ -24155,7 +24153,8 @@ Index:
 <item><ref id="pap" name="Paraboloid attribute">,
 <item><ref id="hyp" name="Hyperboloid attribute">,
 <item><ref id="ncattr" name="NCurve attribute">,
-<item><ref id="concatncp" name="ConcatNC attribute">
+<item><ref id="concatncp" name="ConcatNC attribute">,
+<item><ref id="bcurveattrprop" name="BCurve attribute">
 </itemize>
 <item>Closed B-Spline: <ref id="cbspt" name="closed B-Spline tool">
 <item>Close_U, Close_V:
@@ -24686,7 +24685,8 @@ Index:
 <item><ref id="ncattr" name="NCurve attribute">,
 <item><ref id="acp" name="ACurve attribute">,
 <item><ref id="icp" name="ICurve attribute">,
-<item><ref id="riincp" name="RiInc attribute">
+<item><ref id="riincp" name="RiInc attribute">,
+<item><ref id="bcurveattrprop" name="BCurve attribute">
 </itemize>
 <item>Level:
 <itemize>
