@@ -3,10 +3,13 @@
 Bug Fixes:
 o fix shading of rational SDNPatch surfaces
 
+GUI:
+o improved initial layout process of dialog windows
+
 Plugins:
 o added support for periodic patches to NPatch to SDNPatch conversion
 o SDNPatch drawing now obeys the RationalStyle preference setting
-
+o SDNPatch drawing now also colors rational control points in weight editing
 
 
 [25. Jan 2018] Ayam 1.25:
