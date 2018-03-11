@@ -88,6 +88,8 @@ proc winRestoreOrCenter { w t {c "."} } {
 	winCenter $w $c
     }
 
+    wm deiconify $w
+
  return;
 }
 # winRestoreOrCenter
@@ -434,6 +436,10 @@ proc winMakeFloat { w } {
 ##############################
 # winDialog:
 #  create a dialog window
+#  the window will immediately be withdrawn so that population, initial
+#  layout, and movement to final position on screen do not distract the user;
+#  after population of the dialog any of winRestoreOrCenter, winCenter, or
+#  winToMouse will then deiconify the window again
 proc winDialog { w t } {
  global ay ayprefs
 
@@ -446,6 +452,8 @@ proc winDialog { w t } {
     } else {
 	wm transient $w .
     }
+
+    wm withdraw $w
 
  return;
 }
