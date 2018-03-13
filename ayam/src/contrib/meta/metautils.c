@@ -23,7 +23,7 @@
 #include "meta.h"
 #include "ayam.h"
 
-#define pos(p) (w->mgrid[p.x * w->aktcubes * w->aktcubes + p.y * w->aktcubes + p.z])
+#define POS(p) (w->mgrid[p.x * w->aktcubes * w->aktcubes + p.y * w->aktcubes + p.z])
 
 static unsigned int component_id;
 
@@ -51,7 +51,6 @@ meta_calcall(double x1, double y1, double z1, meta_world *w)
      tof = Tcl_NewStringObj("f", -1);
    }
 
-
   effect = 0;
   dist = 0;
 
@@ -59,26 +58,20 @@ meta_calcall(double x1, double y1, double z1, meta_world *w)
 
   while(o->next != NULL)
     {
-
       if(o->type == component_id)
 	{
-
 	  tmp = (meta_blob *) o->refine;
 	  radius = tmp->r * tmp->r;
 
-	  /* rotate and scale the Object */
+	  /* rotate and scale */
+	  x = (tmp->rm[0] * x1 + tmp->rm[4] * y1 + tmp->rm[8] * z1 +
+	       tmp->rm[12] * 1.0);
+	  y = (tmp->rm[1] * x1 + tmp->rm[5] * y1 + tmp->rm[9] * z1 +
+	       tmp->rm[13] * 1.0);
+	  z = (tmp->rm[2] * x1 + tmp->rm[6] * y1 + tmp->rm[10] * z1 +
+	       tmp->rm[14] * 1.0);
 
-	  x =
-	    (tmp->rm[0] * x1 + tmp->rm[4] * y1 + tmp->rm[8] * z1 +
-	     tmp->rm[12] * 1.0);
-	  y =
-	    (tmp->rm[1] * x1 + tmp->rm[5] * y1 + tmp->rm[9] * z1 +
-	     tmp->rm[13] * 1.0);
-	  z =
-	    (tmp->rm[2] * x1 + tmp->rm[6] * y1 + tmp->rm[10] * z1 +
-	     tmp->rm[14] * 1.0);
-
-	  if (!((tmp->formula == META_BALL)&&(w->version==1)))
+	  if (!((tmp->formula == META_BALL) && (w->version == 1)))
 	    {
 	      x *= tmp->scalex;
 	      y *= tmp->scaley;
@@ -87,14 +80,12 @@ meta_calcall(double x1, double y1, double z1, meta_world *w)
 
 
 	  /* the normal metaball */
-
 	  if (tmp->formula == META_BALL)
 	    {
 	      if(w->version == 1)
 		dist = META_DIST(x, y, z, tmp->cp.x, tmp->cp.y, tmp->cp.z);
 	      else
 		dist = META_DIST2(x, y, z, tmp->cp.x, tmp->cp.y, tmp->cp.z);
-
 
 	      if (dist <= radius)
 		{
@@ -111,10 +102,10 @@ meta_calcall(double x1, double y1, double z1, meta_world *w)
 		      effect += tmpeffect;
 		    }
 		}
-	    }
+	    } /* if ball */
 
 
-	  /* a Cube */
+	  /* a cube */
 	  if (tmp->formula == META_CUBE)
 	    {
 
@@ -132,13 +123,12 @@ meta_calcall(double x1, double y1, double z1, meta_world *w)
 		{
 		  effect += tmpeffect;
 		}
-	    }
+	    } /* if cube */
 
 
-	  /* a Torus */
+	  /* a torus */
 	  if (tmp->formula == META_TORUS)
 	    {
-
 	      if (tmp->rot)
 		{
 		  tmpeffect = META_SQ(META_SQ(x - tmp->cp.x) +
@@ -168,9 +158,9 @@ meta_calcall(double x1, double y1, double z1, meta_world *w)
 		  effect += 1 / (tmpeffect < 0.00001 ? 0.00001 : tmpeffect) *
 		    0.006;
 		}
-	    }
+	    } /* if torus */
 
-          /* create a heart */
+          /* a heart */
 	  if (tmp->formula == META_HEART)
 	    {
 
@@ -189,7 +179,7 @@ meta_calcall(double x1, double y1, double z1, meta_world *w)
 		  effect += 1 / (tmpeffect < 0.00001 ? 0.00001 : tmpeffect) *
 		    0.002;
 		}
-	    }
+	    } /* if heart */
 
 
 	  /* a custom formula */
@@ -229,12 +219,12 @@ meta_calcall(double x1, double y1, double z1, meta_world *w)
 		{
 		  effect += 1 / (tmpeffect < 0.00001 ? 0.00001 : tmpeffect);
 		}
-	    } /* if */
-	} /* if */
+	    } /* if custom */
+	} /* if is meta component */
       o = o->next;
     } /* while */
 
-  return effect;
+ return effect;
 } /* meta_calcall */
 
 
@@ -270,7 +260,7 @@ meta_getstart (meta_blob * b, meta_intxyz * p, meta_world * w)
     p->z = (w->aktcubes - 1);
 
  return;
-}
+} /* meta_getstart */
 
 int
 meta_initcubestack (meta_world * w)
@@ -280,7 +270,7 @@ meta_initcubestack (meta_world * w)
     {
       w->stackpos = 0;
       w->maxstack = 2000;
-      return META_OK;
+      return AY_OK;
     }
   else
     {
@@ -294,31 +284,35 @@ meta_freecubestack (meta_world * w)
   if (w->stack)
     free (w->stack);
 
-  return META_OK;
-}
+ return AY_OK;
+} /* meta_freecubestack */
 
 void
 meta_pushcube (meta_gridcell * cube, meta_world * w)
 {
   if (w->stackpos == w->maxstack)
     {
-      w->stack = realloc (w->stack, sizeof (meta_gridcell) * (w->maxstack + 1000));
+      w->stack = realloc (w->stack, sizeof (meta_gridcell) *
+			  (w->maxstack + 1000));
       w->maxstack += 1000;
     }
 
   w->stack[w->stackpos] = *cube;
   w->stackpos++;
 
-}
+ return;
+} /* meta_pushcube */
+
 
 meta_gridcell
 meta_popcube (meta_world * w)
 {
 
   w->stackpos--;
-  return (w->stack[w->stackpos]);
 
-}
+ return (w->stack[w->stackpos]);
+} /* meta_popcube */
+
 
 void
 meta_initstartcube (meta_world * w, meta_gridcell * cube, meta_intxyz * p)
@@ -367,16 +361,18 @@ meta_initstartcube (meta_world * w, meta_gridcell * cube, meta_intxyz * p)
   cube->val[7] = meta_calcall (cube->p[7].x, cube->p[7].y, cube->p[7].z, w);
 
 #undef length
-}
+
+ return;
+} /* meta_initstartcube */
 
 
 void
 meta_addneighbors (meta_gridcell * cube, meta_world * w)
 {
-  int edgecode;
-  int square;
-  int pos;
-  meta_gridcell tmpcube;
+ int edgecode;
+ int square;
+ int pos;
+ meta_gridcell tmpcube;
 
 #define act w->aktcubes
 
@@ -402,8 +398,6 @@ meta_addneighbors (meta_gridcell * cube, meta_world * w)
 	}
     }
 
-
-
   /* check right */
   if ((edgecode & 1) || (edgecode & 1 << 9) || (edgecode & 1 << 5)
       || (edgecode & 1 << 10))
@@ -418,12 +412,9 @@ meta_addneighbors (meta_gridcell * cube, meta_world * w)
 	      meta_moveright (&tmpcube, w);
 	      meta_pushcube (&tmpcube, w);
 	      w->mgrid[pos] = w->lastmark;
-
 	    }
 	}
-
     }
-
 
   /* check front */
   if ((edgecode & 1 << 2) || (edgecode & 1 << 6) || (edgecode & 1 << 10)
@@ -439,13 +430,9 @@ meta_addneighbors (meta_gridcell * cube, meta_world * w)
 	      meta_movefront (&tmpcube, w);
 	      meta_pushcube (&tmpcube, w);
 	      w->mgrid[pos] = w->lastmark;
-
 	    }
 	}
-
-
     }
-
 
   /* check left */
   if ((edgecode & 1 << 3) || (edgecode & 1 << 7) || (edgecode & 1 << 8)
@@ -462,13 +449,9 @@ meta_addneighbors (meta_gridcell * cube, meta_world * w)
 	      meta_moveleft (&tmpcube, w);
 	      meta_pushcube (&tmpcube, w);
 	      w->mgrid[pos] = w->lastmark;
-
 	    }
-
 	}
-
     }
-
 
   /* check up */
   if ((edgecode & 1 << 4) || (edgecode & 1 << 5) || (edgecode & 1 << 6)
@@ -484,10 +467,8 @@ meta_addneighbors (meta_gridcell * cube, meta_world * w)
 	      meta_moveup (&tmpcube, w);
 	      meta_pushcube (&tmpcube, w);
 	      w->mgrid[pos] = w->lastmark;
-
 	    }
 	}
-
     }
 
   /* check down */
@@ -504,26 +485,20 @@ meta_addneighbors (meta_gridcell * cube, meta_world * w)
 	      meta_movedown (&tmpcube, w);
 	      meta_pushcube (&tmpcube, w);
 	      w->mgrid[pos] = w->lastmark;
-
 	    }
 	}
-
-
     }
 
-
 #undef act
-}
+
+ return;
+} /* meta_addneighbors */
 
 
 int
 meta_searchcube (meta_gridcell * cube, meta_intxyz * p, meta_world * w)
 {
-  int code;
-  meta_intxyz pb;
-
-
-  pb = *p;
+ int code;
 
   code = 0;
 
@@ -533,14 +508,13 @@ meta_searchcube (meta_gridcell * cube, meta_intxyz * p, meta_world * w)
       if (p->y < w->aktcubes - 1)
 	{
 	  p->y++;
-	  meta_moveup (cube, w);	/* move one position up */
+	  /* move one position up */
+	  meta_moveup (cube, w);
 
 	  code = meta_polygonise (w, cube, w->isolevel);
 	}
       else
 	break;
-
-
     }
   while (code == 0);
 
@@ -552,7 +526,8 @@ meta_searchcube (meta_gridcell * cube, meta_intxyz * p, meta_world * w)
 	  if (p->y > 0)
 	    {
 	      p->y--;
-	      meta_movedown (cube, w);	/* move one position up */
+	      /* move one position down */
+	      meta_movedown (cube, w);
 
 	      code = meta_polygonise (w, cube, w->isolevel);
 	    }
@@ -560,7 +535,6 @@ meta_searchcube (meta_gridcell * cube, meta_intxyz * p, meta_world * w)
 	    break;
 	}
       while (code == 0);
-
     }
 
   /* search left */
@@ -571,7 +545,8 @@ meta_searchcube (meta_gridcell * cube, meta_intxyz * p, meta_world * w)
 	  if (p->x > 0)
 	    {
 	      p->x--;
-	      meta_moveleft (cube, w);	/* move one position up */
+	      /* move one position left */
+	      meta_moveleft (cube, w);
 
 	      code = meta_polygonise (w, cube, w->isolevel);
 	    }
@@ -579,7 +554,6 @@ meta_searchcube (meta_gridcell * cube, meta_intxyz * p, meta_world * w)
 	    break;
 	}
       while (code == 0);
-
     }
 
   /* search right */
@@ -590,7 +564,8 @@ meta_searchcube (meta_gridcell * cube, meta_intxyz * p, meta_world * w)
 	  if (p->x < w->aktcubes - 1)
 	    {
 	      p->x++;
-	      meta_moveright (cube, w);	/* move one position up */
+	      /* move one position up */
+	      meta_moveright (cube, w);
 
 	      code = meta_polygonise (w, cube, w->isolevel);
 	    }
@@ -598,9 +573,7 @@ meta_searchcube (meta_gridcell * cube, meta_intxyz * p, meta_world * w)
 	    break;
 	}
       while (code == 0);
-
     }
-
 
   /* search front */
   if (code == 0)
@@ -610,7 +583,8 @@ meta_searchcube (meta_gridcell * cube, meta_intxyz * p, meta_world * w)
 	  if (p->z < w->aktcubes - 1)
 	    {
 	      p->z++;
-	      meta_movefront (cube, w);	/* move one position to the front */
+	      /* move one position to the front */
+	      meta_movefront (cube, w);
 
 	      code = meta_polygonise (w, cube, w->isolevel);
 	    }
@@ -618,7 +592,6 @@ meta_searchcube (meta_gridcell * cube, meta_intxyz * p, meta_world * w)
 	    break;
 	}
       while (code == 0);
-
     }
 
   /* search back */
@@ -629,7 +602,8 @@ meta_searchcube (meta_gridcell * cube, meta_intxyz * p, meta_world * w)
 	  if (p->z > 0)
 	    {
 	      p->z--;
-	      meta_moveback (cube, w);	/* move one position to the front */
+	      /* move one position to the back */
+	      meta_moveback (cube, w);
 
 	      code = meta_polygonise (w, cube, w->isolevel);
 	    }
@@ -637,12 +611,10 @@ meta_searchcube (meta_gridcell * cube, meta_intxyz * p, meta_world * w)
 	    break;
 	}
       while (code == 0);
-
     }
 
-  return (code);
-
-}
+ return (code);
+} /* meta_searchcube */
 
 
 int
@@ -650,11 +622,9 @@ meta_calceffect (meta_world * w)
 {
  meta_blob *b;
  meta_intxyz p;
- int code, n;
+ int code;
  ay_object *o;
  meta_gridcell cube;
-
-  n = 0;
 
   o = w->o;
 
@@ -672,20 +642,18 @@ meta_calceffect (meta_world * w)
 
   while (o->next != NULL)
     {
-      n++;
-
       if(o->type == component_id)
 	{
 	  b = (meta_blob *) o->refine;
 
-	  /* get startcube for ball */
+	  /* get startcube for component */
 	  meta_getstart (b, &p, w);
 
     	  /* fill first cube with values */
 	  meta_initstartcube (w, &cube, &p);
 
 	  /* mark that cube is visited */
-	  pos (p) = w->lastmark;
+	  POS (p) = w->lastmark;
 
 	  code = meta_polygonise (w, &cube, w->isolevel);
 
@@ -693,7 +661,7 @@ meta_calceffect (meta_world * w)
 	  code = meta_searchcube (&cube, &p, w);
 
 	  /* component already calculated ? */
-	  if (pos (p) == w->lastmark)
+	  if (POS (p) == w->lastmark)
 	    {
 	      o = o->next;
 	      /* test next component */
@@ -716,13 +684,11 @@ meta_calceffect (meta_world * w)
 	      if (w->currentnumpoly+150 >= (w->maxpoly))
 	    	{
 		  if (! (w->vertex = realloc (w->vertex,
-				sizeof (double) * 3 * 3 * (w->maxpoly + 10000 +
-							   20))))
+			 sizeof (double) * 3 * 3 * (w->maxpoly + 10000 + 20))))
 		    return AY_EOMEM;
 
 		  if (! (w->nvertex = realloc (w->nvertex,
-				sizeof (double) * 3 * 3 * (w->maxpoly + 10000 +
-							   20))))
+			 sizeof (double) * 3 * 3 * (w->maxpoly + 10000 + 20))))
 		    return AY_EOMEM;
 
 		  w->maxpoly += 10000;
@@ -731,7 +697,7 @@ meta_calceffect (meta_world * w)
 	      code = meta_polygonise (w, &cube, w->isolevel);
 
 	      /* mark that cube is visited */
-	      pos (cube.pos) = w->lastmark;
+	      POS (cube.pos) = w->lastmark;
 
 	      if ((code != 0) || (code == 300))
 		{
@@ -744,32 +710,30 @@ meta_calceffect (meta_world * w)
     } /* while */
 
  return AY_OK;
-}
+} /* meta_calceffect */
+
 
 void
 meta_getnormal (meta_world * w, meta_xyz * p, meta_xyz * normal)
 {
-  double xn, yn, zn, old, scale;
-  double f, d;
+ double xn, yn, zn, old, scale;
+ double d;
 
   d = (w->edgelength / 500);  /**w->scale;*/
 
-  f = meta_calcall (p->x, p->y, p->z, w);
-
-
-
-     xn = (meta_calcall(p->x+d, p->y, p->z,w) - meta_calcall(p->x-d, p->y, p->z,w))/(2*d);
-     yn = (meta_calcall(p->x, p->y+d, p->z,w) - meta_calcall(p->x, p->y-d, p->z,w))/(2*d);
-     zn = (meta_calcall(p->x, p->y, p->z+d,w) - meta_calcall(p->x, p->y, p->z-d,w))/(2*d);
-
-
-
+  xn = (meta_calcall(p->x+d, p->y, p->z,w) -
+	meta_calcall(p->x-d, p->y, p->z,w))/(2*d);
+  yn = (meta_calcall(p->x, p->y+d, p->z,w) -
+	meta_calcall(p->x, p->y-d, p->z,w))/(2*d);
+  zn = (meta_calcall(p->x, p->y, p->z+d,w) -
+	meta_calcall(p->x, p->y, p->z-d,w))/(2*d);
 
 /*
   xn = (meta_calcall (p->x + d, p->y, p->z, w) - f) / d;
   yn = (meta_calcall (p->x, p->y + d, p->z, w) - f) / d;
   zn = (meta_calcall (p->x, p->y, p->z + d, w) - f) / d;
 */
+
   old = sqrt (META_SQ (xn) + META_SQ (yn) + META_SQ (zn));
 
   if (old != 0.0)
@@ -786,7 +750,8 @@ meta_getnormal (meta_world * w, meta_xyz * p, meta_xyz * normal)
       normal->z = zn;
     }
 
-}
+ return;
+} /* meta_getnormal */
 
 
 void
@@ -795,6 +760,6 @@ metautils_init(unsigned int cid)
 
   component_id = cid;
 
-  return;
+ return;
 } /* metautils_init */
 
