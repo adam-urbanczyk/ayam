@@ -648,11 +648,11 @@ meta_searchcube (meta_gridcell * cube, meta_intxyz * p, meta_world * w)
 int
 meta_calceffect (meta_world * w)
 {
-  meta_blob *b;
-  meta_intxyz p;
-  int code, n;
-  ay_object *o;
-  meta_gridcell cube;
+ meta_blob *b;
+ meta_intxyz p;
+ int code, n;
+ ay_object *o;
+ meta_gridcell cube;
 
   n = 0;
 
@@ -660,7 +660,6 @@ meta_calceffect (meta_world * w)
 
   w->lastmark++;
   w->stackpos = 0;
-
 
 #if META_USEVERTEXARRAY
   /* Reset Hash */
@@ -675,80 +674,76 @@ meta_calceffect (meta_world * w)
     {
       n++;
 
-	if(o->type == component_id)
+      if(o->type == component_id)
 	{
-     	 b = (meta_blob *) o->refine;
+	  b = (meta_blob *) o->refine;
 
-     	 meta_getstart (b, &p, w);	/* get startcube for ball */
+	  /* get startcube for ball */
+	  meta_getstart (b, &p, w);
 
     	  /* fill first cube with values */
-	      meta_initstartcube (w, &cube, &p);
+	  meta_initstartcube (w, &cube, &p);
 
-	      pos (p) = w->lastmark;	/* mark that cube is visited */
+	  /* mark that cube is visited */
+	  pos (p) = w->lastmark;
 
-	      /* search for the first cube */
+	  code = meta_polygonise (w, &cube, w->isolevel);
 
-	      code = meta_searchcube (&cube, &p, w);
+	  /* search for the first cube */
+	  code = meta_searchcube (&cube, &p, w);
 
+	  /* component already calculated ? */
+	  if (pos (p) == w->lastmark)
+	    {
+	      o = o->next;
+	      /* test next component */
+	      continue;
+	    }
 
-	      if (pos (p) == w->lastmark)	/* ball already calculated ? */
-		{
-		  o = o->next;
-	 	 continue;		/* test next ball */
-		}
+	  /* mark position of the cube */
+	  cube.pos = p;
 
-     	 cube.pos = p;		/* mark position of the cube */
+	  /* addneighbors cubes to stack */
+	  meta_addneighbors (&cube, w);
 
-	      meta_addneighbors (&cube, w);	/* addneighbors cubes to stack */
+	  while (w->stackpos > 0)
+	    {
+	      /* get next cubepos */
+	      w->stackpos--;
 
-		 while (w->stackpos > 0)
-		{
-		  /* get next cubepos */
-		  w->stackpos--;
+	      cube = w->stack[w->stackpos];
 
-	 	 cube = w->stack[w->stackpos];
-
-
-	  	if (w->currentnumpoly+150 >= (w->maxpoly))
+	      if (w->currentnumpoly+150 >= (w->maxpoly))
 	    	{
+		  if (! (w->vertex = realloc (w->vertex,
+				sizeof (double) * 3 * 3 * (w->maxpoly + 10000 +
+							   20))))
+		    return AY_EOMEM;
 
-	     	 if (!
-			  (w->vertex =
-			   realloc (w->vertex,
-				    sizeof (double) * 3 * 3 * (w->maxpoly + 10000 +
-							       20))))
-			return AY_EOMEM;
+		  if (! (w->nvertex = realloc (w->nvertex,
+				sizeof (double) * 3 * 3 * (w->maxpoly + 10000 +
+							   20))))
+		    return AY_EOMEM;
 
-		      if (!
-			  (w->nvertex =
-			   realloc (w->nvertex,
-			   	 sizeof (double) * 3 * 3 * (w->maxpoly + 10000 +
-							       20))))
-			return AY_EOMEM;
-
-	     	 w->maxpoly += 10000;
-
-		}
-		  code = meta_polygonise (w, &cube, w->isolevel);
-
-
-		  pos (cube.pos) = w->lastmark;	/* mark that cube is visited */
-
-		  if ((code != 0) || (code == 300))
-		    meta_addneighbors (&cube, w);	/* add neighbors cubes to stack */
-
+		  w->maxpoly += 10000;
 		}
 
+	      code = meta_polygonise (w, &cube, w->isolevel);
 
-	}
+	      /* mark that cube is visited */
+	      pos (cube.pos) = w->lastmark;
 
-
+	      if ((code != 0) || (code == 300))
+		{
+		  /* add neighbors cubes to stack */
+		  meta_addneighbors (&cube, w);
+		}
+	    } /* while stack */
+	} /* if is meta component */
       o = o->next;
+    } /* while */
 
-    }
-
-  return META_OK;
-
+ return AY_OK;
 }
 
 void
