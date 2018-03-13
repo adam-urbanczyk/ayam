@@ -517,6 +517,11 @@ metaobj_setpropcb (Tcl_Interp * interp, int argc, char *argv[], ay_object * o)
   to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj (interp, to, &w->flatness);
 
+  if (w->flatness > 0.99f)
+    {
+      w->flatness = 0.99;
+    }
+
   Tcl_SetStringObj (ton, "Epsilon", -1);
   to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj (interp, to, &w->epsilon);
@@ -586,11 +591,6 @@ metaobj_getpropcb (Tcl_Interp * interp, int argc, char *argv[], ay_object * o)
   Tcl_SetStringObj (ton, "Flatness", -1);
   to = Tcl_NewDoubleObj (w->flatness);
   Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  if (w->flatness > 0.99f)
-    {
-      w->flatness = 0.99;
-    }
 
   Tcl_SetStringObj (ton, "Epsilon", -1);
   to = Tcl_NewDoubleObj (w->epsilon);
