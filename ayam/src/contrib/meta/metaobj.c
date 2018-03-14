@@ -322,6 +322,9 @@ metaobj_drawcb (struct Togl *togl, ay_object * o)
       double u;
       u = w->unisize/2;
 
+      glEnable(GL_LINE_STIPPLE);
+      glLineStipple((GLint)3, (GLushort)0x5555);
+
       glBegin (GL_LINE_STRIP);
        glVertex3d (-u, +u, +u);
        glVertex3d (+u, +u, +u);
@@ -343,6 +346,8 @@ metaobj_drawcb (struct Togl *togl, ay_object * o)
        glVertex3d (-u, +u, -u);
        glVertex3d (-u, -u, -u);
       glEnd();
+
+      glDisable(GL_LINE_STIPPLE);
 
       glBegin (GL_POINTS);
        glVertex3d (+u, +u, +u);
@@ -387,7 +392,6 @@ metaobj_drawcb (struct Togl *togl, ay_object * o)
 
 #endif
 
-
  return AY_OK;
 } /* metaobj_drawcb */
 
@@ -422,6 +426,7 @@ metaobj_shadecb (struct Togl *togl, ay_object *o)
   glBegin(GL_TRIANGLES);
   if(view->altdispcb)
     {
+      /* flip normals for AyCSG */
       for(i = 0; i < w->currentnumpoly; i++)
 	{
 	  memcpy(n, nptr, 3*sizeof(double));
@@ -450,14 +455,12 @@ metaobj_shadecb (struct Togl *togl, ay_object *o)
 	  nptr += 6;
 	  glVertex3dv ((GLdouble *) vptr);
 	  vptr += 6;
-
 	} /* for */
     }
   else
     {
       for (i = 0; i < w->currentnumpoly; i++)
 	{
-
 	  glNormal3dv ((GLdouble *) nptr);
 	  nptr += 3;
 	  glVertex3dv ((GLdouble *) vptr);
@@ -470,7 +473,6 @@ metaobj_shadecb (struct Togl *togl, ay_object *o)
 	  nptr += 3;
 	  glVertex3dv ((GLdouble *) vptr);
 	  vptr += 3;
-
 	} /* for */
     } /* if */
 
@@ -1173,7 +1175,6 @@ int
 metacomp_setpropcb (Tcl_Interp * interp, int argc, char *argv[],
 		    ay_object * o)
 {
- int ay_status = AY_OK;
  char *n1 = "MetaCompAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  meta_blob *b = NULL;
@@ -1265,7 +1266,7 @@ metacomp_setpropcb (Tcl_Interp * interp, int argc, char *argv[],
 
   o->modified = AY_TRUE;
 
-  ay_status = ay_notify_parent();
+  (void)ay_notify_parent();
 
  return AY_OK;
 } /* metacomp_setpropcb */
