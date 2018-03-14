@@ -41,12 +41,8 @@
 #define META_DIST(x1, y1, z1, x2, y2, z2) (tmp->scalex*META_SQ(x1 - x2) + tmp->scaley*META_SQ(y1 - y2) + tmp->scalez*META_SQ(z1-z2))
 #define META_DIST2(x1, y1, z1, x2, y2, z2) (META_SQ(x1 - x2) + META_SQ(y1 - y2) + META_SQ(z1-z2))
 
-#define META_OK  0
-#define META_ERROR  1
 
 #define META_BALL	0
-/*#define META2	1*/
-/*#define META3	2*/
 #define META_TORUS	1
 #define META_CUBE	2
 #define META_HEART	3
