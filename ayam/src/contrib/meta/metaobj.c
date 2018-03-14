@@ -363,7 +363,8 @@ metaobj_drawcb (struct Togl *togl, ay_object * o)
 
 
 #if !META_USEVERTEXARRAY
-
+  if(0)
+  {
   glBegin (GL_LINES);
 
   for (i = 0; i < w->currentnumpoly; i++)
@@ -389,7 +390,20 @@ metaobj_drawcb (struct Togl *togl, ay_object * o)
     }
 
   glEnd ();
+  } else {
 
+  for (i = 0; i < w->currentnumpoly; i++)
+    {
+      glBegin (GL_LINE_LOOP);
+
+       glVertex3dv (vptr);
+       glVertex3dv (vptr+3);
+       glVertex3dv (vptr+6);
+       vptr += 9;
+
+      glEnd ();
+    }
+  }
 #endif
 
  return AY_OK;
