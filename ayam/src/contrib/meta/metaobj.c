@@ -1403,8 +1403,8 @@ metacomp_getpntcb (int mode, ay_object * o, double *p, ay_pointedit *pe)
 int
 metacomp_readcb (FILE * fileptr, ay_object * o)
 {
+ int ay_status = AY_OK;
  meta_blob *b;
- int read;
  char *expr = NULL;
 
   if (!fileptr || !o)
@@ -1432,8 +1432,15 @@ metacomp_readcb (FILE * fileptr, ay_object * o)
       fscanf (fileptr, "%d\n", &b->ex);
       fscanf (fileptr, "%d\n", &b->ey);
       fscanf (fileptr, "%d", &b->ez);
-      read = fgetc(fileptr);
-      ay_read_string(fileptr, &expr);
+      (void)fgetc(fileptr);
+
+      ay_status = ay_read_string(fileptr, &expr);
+      if (ay_status)
+	{
+	  free(b);
+	  return ay_status;
+	}
+
       if (expr && strlen(expr))
 	{
 	  b->expression = Tcl_NewStringObj(expr,-1);
