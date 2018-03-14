@@ -143,7 +143,6 @@ typedef struct meta_world_s
   double isolevel;
   int id;
   ay_object *o;
-  double *Vertex3d;
 
   double *vertex;
   double *nvertex;
