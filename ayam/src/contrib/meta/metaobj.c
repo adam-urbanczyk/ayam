@@ -930,7 +930,7 @@ metaobj_providecb(ay_object *o, unsigned int type, ay_object **result)
  ay_object *new = NULL;
  ay_pomesh_object *po = NULL;
  meta_world *mw = NULL;
- int i,p,ii,j;
+ int i, p, ii, j;
  int ay_status = AY_OK;
 
   if(!o)
@@ -947,81 +947,80 @@ metaobj_providecb(ay_object *o, unsigned int type, ay_object **result)
   mw = (meta_world *) o->refine;
 
   if (type == AY_IDPOMESH)
-     {
+    {
+      if (!(new = calloc(1, sizeof(ay_object))))
+	return AY_EOMEM;
 
-       if (!(new = calloc(1, sizeof(ay_object))))
-	 return AY_EOMEM;
+      new->type = AY_IDPOMESH;
+      ay_object_defaults (new);
 
-       new->type = AY_IDPOMESH;
-       ay_object_defaults (new);
+      p = mw->currentnumpoly;
 
-       p = mw->currentnumpoly;
+      if (!(po = (ay_pomesh_object *) calloc(1, sizeof(ay_pomesh_object))))
+	return AY_EOMEM;
 
-       if (!(po = (ay_pomesh_object *) calloc(1, sizeof(ay_pomesh_object))))
-	 return AY_EOMEM;
+      po->npolys = p;
+      po->nloops = (unsigned int *)calloc(1,sizeof(unsigned int)*p);
+      po->nverts = (unsigned int *)calloc(1,sizeof(unsigned int)*p);
+      po->verts = (unsigned int *)calloc(1,sizeof(unsigned int)*p*3);
+      po->ncontrols = p*3;
+      po->controlv = (double *)calloc(1,po->ncontrols*6*sizeof(double));
+      po->has_normals = AY_TRUE;
 
-       po->npolys = p;
-       po->nloops = (unsigned int *)calloc(1,sizeof(unsigned int)*p);
-       po->nverts = (unsigned int *)calloc(1,sizeof(unsigned int)*p);
-       po->verts = (unsigned int *)calloc(1,sizeof(unsigned int)*p*3);
-       po->ncontrols = p*3;
-       po->controlv = (double *)calloc(1,po->ncontrols*6*sizeof(double));
-       po->has_normals = AY_TRUE;
+      if (!(po->nloops && po->verts && po->controlv))
+	{
+	  if (po->nloops)
+	    free(po->nloops);
 
-       if (!(po->nloops && po->verts && po->controlv))
-	 {
-	   if (po->nloops)
-	     free(po->nloops);
+	  if (po->nverts)
+	    free(po->nverts);
 
-	   if (po->nverts)
-	     free(po->nverts);
+	  if (po->controlv)
+	    free(po->controlv);
 
-	   if (po->controlv)
-	     free(po->controlv);
+	  return AY_EOMEM;
+	}
 
-	   return AY_EOMEM;
-	 }
+      for (i = 0; i < p; i++)
+	{
+	  po->nloops[i] = 1;
+	  po->nverts[i] = 3;
+	  ii = i*3;
+	  po->verts[ii] = ii;
+	  po->verts[ii+1] = ii+1;
+	  po->verts[ii+2] = ii+2;
+	  j = ii*6;
+	  ii *= 3;
+	  po->controlv[j] = mw->vertex[ii];
+	  po->controlv[j+1] = mw->vertex[ii+1];
+	  po->controlv[j+2] = mw->vertex[ii+2];
 
-       for (i = 0; i<p; i++)
-	 {
-	   po->nloops[i] = 1;
-	   po->nverts[i] = 3;
-	   ii = i*3;
-	   po->verts[ii] = ii;
-	   po->verts[ii+1] = ii+1;
-	   po->verts[ii+2] = ii+2;
-	   j = ii*6;
-	   ii *= 3;
-	   po->controlv[j] = mw->vertex[ii];
-	   po->controlv[j+1] = mw->vertex[ii+1];
-	   po->controlv[j+2] = mw->vertex[ii+2];
+	  po->controlv[j+3] = mw->nvertex[ii];
+	  po->controlv[j+4] = mw->nvertex[ii+1];
+	  po->controlv[j+5] = mw->nvertex[ii+2];
 
-	   po->controlv[j+3] = mw->nvertex[ii];
-	   po->controlv[j+4] = mw->nvertex[ii+1];
-	   po->controlv[j+5] = mw->nvertex[ii+2];
+	  po->controlv[j+6] = mw->vertex[ii+3];
+	  po->controlv[j+7] = mw->vertex[ii+4];
+	  po->controlv[j+8] = mw->vertex[ii+5];
 
-	   po->controlv[j+6] = mw->vertex[ii+3];
-	   po->controlv[j+7] = mw->vertex[ii+4];
-	   po->controlv[j+8] = mw->vertex[ii+5];
+	  po->controlv[j+9] = mw->nvertex[ii+3];
+	  po->controlv[j+10] = mw->nvertex[ii+4];
+	  po->controlv[j+11] = mw->nvertex[ii+5];
 
-	   po->controlv[j+9] = mw->nvertex[ii+3];
-	   po->controlv[j+10] = mw->nvertex[ii+4];
-	   po->controlv[j+11] = mw->nvertex[ii+5];
+	  po->controlv[j+12] = mw->vertex[ii+6];
+	  po->controlv[j+13] = mw->vertex[ii+7];
+	  po->controlv[j+14] = mw->vertex[ii+8];
 
-	   po->controlv[j+12] = mw->vertex[ii+6];
-	   po->controlv[j+13] = mw->vertex[ii+7];
-	   po->controlv[j+14] = mw->vertex[ii+8];
+	  po->controlv[j+15] = mw->nvertex[ii+6];
+	  po->controlv[j+16] = mw->nvertex[ii+7];
+	  po->controlv[j+17] = mw->nvertex[ii+8];
+	} /* for */
 
-	   po->controlv[j+15] = mw->nvertex[ii+6];
-	   po->controlv[j+16] = mw->nvertex[ii+7];
-	   po->controlv[j+17] = mw->nvertex[ii+8];
-	 } /* for */
+      new->refine = po;
+      ay_trafo_copy(o, new);
 
-       new->refine = po;
-       ay_trafo_copy(o, new);
-
-       *result = new;
-     } /* if */
+      *result = new;
+    } /* if */
 
  return ay_status;
 } /* metaobj_providecb */
@@ -1563,7 +1562,7 @@ Metaobj_Init (Tcl_Interp * interp)
     }
 
   /* source metacomp.tcl, it contains the Tcl-code to build
-     the metaobj-Attributes Property GUI */
+     the metacomp-Attributes Property GUI */
   if ((Tcl_EvalFile (interp, "metacomp.tcl")) != TCL_OK)
     {
       ay_error (AY_ERROR, fname,
