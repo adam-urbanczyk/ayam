@@ -79,9 +79,6 @@ metaobj_createcb (int argc, char *argv[], ay_object * o)
        (short *) calloc (1, sizeof (short) * META_MAXCUBE * META_MAXCUBE *
 			 META_MAXCUBE)))
     {
-      if (w->Vertex3d)
-	free(w->Vertex3d);
-
       if (w)
 	free(w);
 
@@ -100,9 +97,6 @@ metaobj_createcb (int argc, char *argv[], ay_object * o)
 						(w->tablesize/10-1) +
 						(w->tablesize/100-1)))))
     {
-      if (w->Vertex3d)
-	free(w->Vertex3d);
-
       if (w)
 	free(w);
 
@@ -248,7 +242,6 @@ metaobj_copycb (void *src, void **dst)
 			sizeof (short) * w->aktcubes * w->aktcubes *
 			w->aktcubes)))
     {
-      free(w->Vertex3d);
       free(w);
       return AY_EOMEM;
     }
@@ -262,9 +255,6 @@ metaobj_copycb (void *src, void **dst)
 						(w->tablesize/10-1) +
 						(w->tablesize/100-1)))))
     {
-      if (w->Vertex3d)
-	free(w->Vertex3d);
-
       if (w)
 	free(w);
 
