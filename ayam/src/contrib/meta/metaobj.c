@@ -606,6 +606,10 @@ metaobj_getpropcb (Tcl_Interp * interp, int argc, char *argv[], ay_object * o)
   to = Tcl_NewDoubleObj (w->step);
   Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj (ton, "Triangles", -1);
+  to = Tcl_NewIntObj (w->currentnumpoly);
+  Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
   Tcl_IncrRefCount (toa);
   Tcl_DecrRefCount (toa);
   Tcl_IncrRefCount (ton);
