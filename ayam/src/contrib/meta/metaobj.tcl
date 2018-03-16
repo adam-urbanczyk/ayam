@@ -26,7 +26,6 @@ proc metaobj_getAttr { } {
     addParam $w MetaObjAttrData NumSamples {20 40 60 80 120 140 160 180 200}
     addParam $w MetaObjAttrData IsoLevel {0.1 0.6 1.0}
     addCheck $w MetaObjAttrData "ShowWorld"
-    #addCheck $w MetaObjAttrData Adaptive
     addMenu $w MetaObjAttrData Adaptive {Never Always Automatic}
 
     if {$MetaObjAttrData(Adaptive) != 0} {
@@ -34,6 +33,9 @@ proc metaobj_getAttr { } {
 	addParam $w MetaObjAttrData Epsilon 0.0001
 	addParam $w MetaObjAttrData StepSize 0.0001
     }
+
+    addText $w MetaObjAttrData "Result:"
+    addInfo $w MetaObjAttrData Triangles
 
     $ay(pca) itemconfigure 1 -window $w
     plb_resize
@@ -52,24 +54,6 @@ array set MetaObjAttrData {
     Formula  0
     Adaptive 0
 }
-
-# create MetaObjAttr-UI
-set w [frame $ay(pca).$MetaObjAttr(w)]
-
-addParam $w MetaObjAttrData NumSamples {20 40 60 80 120 140 160 180 200}
-addParam $w MetaObjAttrData IsoLevel 0.6
-addCheck $w MetaObjAttrData "ShowWorld"
-#addCheck $w MetaObjAttrData Adaptive
-addMenu $w MetaObjAttrData Adaptive {Never Always Automatic}
-
-##if {$MetaObjAttrData(Adaptive) == 1} {
-#addParam $w MetaObjAttrData Flatness 0.9
-#addParam $w MetaObjAttrData Epsilon 0.0001
-#addParam $w MetaObjAttrData Step 0.0001
-#}
-
-global meta_mouseup
-set meta_mouseup 1
 
 # add menu entry to Create/Custom sub-menu
 mmenu_addcustom MetaObj "crtOb MetaObj;uS;sL;rV"
