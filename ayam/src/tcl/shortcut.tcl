@@ -433,7 +433,7 @@ proc shortcut_view { w } {
     $m entryconfigure 3 -accelerator [remkpkr $aymainshortcuts(ExportRIB)]
     if { [string first ".view" $w] == 0 } {
 	global AYENABLEPPREV
-	if { $AYENABLEPPREV == 1 } { set tmp 12 } else { set tmp 9 }
+	if { $AYENABLEPPREV == 1 } { set tmp 14 } else { set tmp 11 }
 	bind $w <[repctrl $ayviewshortcuts(Close)]> "$m invoke $tmp"
 	$m entryconfigure $tmp -accelerator [remkpkr $ayviewshortcuts(Close)]
     }
