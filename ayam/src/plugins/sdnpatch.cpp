@@ -5328,6 +5328,39 @@ cleanup:
 } /* sdnpatch_connectfacetcmd */
 
 
+/** sdnpatch_resetallknots:
+ * Sets all knot values of a Subdivision NURBS patch to 1.0.
+ * 
+ * \param[in,out] sdnpatch Subdivision NURBS patch to process
+ */
+void
+sdnpatch_resetallknots(sdnpatch_object *sdnpatch)
+{
+ Mesh *mesh = NULL;
+ KnotInterval *knot = NULL;
+
+  if(!sdnpatch)
+    return;
+
+  mesh = sdnpatch->controlMesh;
+  /* if mesh->isprimal()... */
+  Mesh::PatchIterator end(mesh->endPatches());
+  for(Mesh::PatchIterator iter = mesh->beginPatches(); iter != end; ++iter)
+    {
+      PrimalPatchTreeLeaf *leaf = static_cast<PrimalPatchTreeLeaf *>(*iter);
+
+      knot = leaf->getKnotInterval(PatchTree::HORIZONTAL);
+      if(knot)
+	knot->setInterval(1.0);
+      knot = leaf->getKnotInterval(PatchTree::VERTICAL);
+      if(knot)
+	knot->setInterval(1.0);
+    }
+
+ return;
+} /* sdnpatch_resetallknots */
+
+
 /* sdnpatch_editknottcmd:
  *  Tcl command to edit knots
  */
@@ -5335,8 +5368,6 @@ int
 sdnpatch_editknottcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[])
 {
-  //int ay_status = AY_OK;
- ay_point *oldselp = NULL;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  sdnpatch_object *sdnpatch = NULL;
@@ -5347,6 +5378,22 @@ sdnpatch_editknottcmd(ClientData clientData, Tcl_Interp *interp,
  KnotPrecision interval = 1.0;
  static vector<KnotInterval *> selectedKnots;
  vector<KnotInterval *>::iterator ki;
+
+  /* check selection */
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, argv[0], NULL);
+      return TCL_OK;
+    }
+
+  o = sel->object;
+
+  if(o->type != sdnpatch_id)
+    {
+      return TCL_OK;
+    }
+
+  sdnpatch = (sdnpatch_object*)o->refine;
 
   /* parse args */
   if(argc > 1)
@@ -5363,11 +5410,6 @@ sdnpatch_editknottcmd(ClientData clientData, Tcl_Interp *interp,
 	      selectedKnots.clear();
 	      i--;
 	    }
-	  if(!strcmp(argv[i], "-r"))
-	    {
-	      mode = 2; // reset
-	      i--;
-	    }
 	  if(!strcmp(argv[i], "-i"))
 	    {
 	      mode = 1; // set new interval
@@ -5376,40 +5418,21 @@ sdnpatch_editknottcmd(ClientData clientData, Tcl_Interp *interp,
 		  sscanf(argv[i+1], "%g", &interval);
 		}
 	    }
+	  if(!strcmp(argv[i], "-r"))
+	    {
+	      // reset
+	      sdnpatch_resetallknots(sdnpatch);
+	      return TCL_OK;
+	    }
 	  i += 2;
 	} // while
     } // if
-
-  /* check selection */
-  if(!sel)
-    {
-      ay_error(AY_ENOSEL, argv[0], NULL);
-      return TCL_OK;
-    }
-
-  o = sel->object;
-
-  if(o->type != sdnpatch_id)
-    {
-      return TCL_OK;
-    }
-
-  // in reset mode, save original point selection
-  // and select all points instead
-  if(mode == 2)
-    {
-      oldselp = o->selp;
-      o->selp = NULL;
-      ay_selp_selall(o);
-    }
 
   if(!o->selp)
     {
       ay_error(AY_ERROR, argv[0], "no points selected");
       return TCL_OK;
     }
-
-  sdnpatch = (sdnpatch_object*)o->refine;
 
   MeshFlattener *meshFlattener =
     MeshFlattener::create(*(sdnpatch->controlMesh));
@@ -5448,16 +5471,6 @@ sdnpatch_editknottcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  (*ki)->setInterval(interval);
 	}
-      break;
-    case 2:
-      // reset all
-      for(ki = selectedKnots.begin(); ki != selectedKnots.end(); ki++)
-	{
-	  (*ki)->setInterval(1.0);
-	}
-      // establish saved point selection
-      ay_selp_clear(o);
-      o->selp = oldselp;
       break;
     default:
       break;
