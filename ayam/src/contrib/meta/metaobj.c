@@ -25,6 +25,7 @@
 
 
 /* prototypes of functions local to this module: */
+
 int metaobj_notifycb (ay_object *o);
 
 int metaobj_deletecb (void *c);
@@ -136,8 +137,6 @@ metaobj_createcb (int argc, char *argv[], ay_object * o)
   w->flatness = 0.9;
   w->epsilon = 0.001;
   w->step = 0.001;
-
-  meta_calceffect (w);
 
  return AY_OK;
 } /* metaobj_createcb */
@@ -616,21 +615,18 @@ metaobj_readcb (FILE * fileptr, ay_object * o)
 
   w->maxpoly = 10000;
 
-  if (!
-      (w->vertex =
+  if (!(w->vertex =
        (double *) calloc (1, sizeof (double) * 3 * 3 * (10000 + 20))))
     {
-      if (w)
-	free(w);
+      free(w);
       return AY_ERROR;
     }
 
-  if (!
-      (w->nvertex =
+  if (!(w->nvertex =
        (double *) calloc (1, sizeof (double) * 3 * 3 * (10000 + 20))))
     {
-      if (w)
-	free(w);
+      free(w->vertex);
+      free(w);
       return AY_ERROR;
     }
 
@@ -638,29 +634,20 @@ metaobj_readcb (FILE * fileptr, ay_object * o)
 
   w->tablesize = 40000;
 
-  if (!
-      (w->vindex =
+  if (!(w->vindex =
        (GLuint *) calloc (1, sizeof (GLuint) * ((w->tablesize-1) +
 						(w->tablesize/10-1) +
 						(w->tablesize/100-1)))))
     {
-      if (w->Vertex3d)
-	free(w->Vertex3d);
-
-      if (w)
-	free(w);
-
-      if (w->mgrid)
-	free(w->mgrid);
-
-      ay_error (AY_EOMEM, NULL, NULL);
+      free(w->nvertex);
+      free(w->vertex);
+      free(w);
       return AY_ERROR;
     }
 
-   (w->vhash =
-       (int *) calloc (1, sizeof (int) * ((w->tablesize-1) +
-					  (w->tablesize/10-1) +
-					  (w->tablesize/100-1))));
+  w->vhash = (int *) calloc (1, sizeof (int) * ((w->tablesize-1) +
+						(w->tablesize/10-1) +
+						(w->tablesize/100-1)));
 
 #endif
 
