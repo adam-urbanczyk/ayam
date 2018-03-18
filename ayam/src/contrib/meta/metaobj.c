@@ -138,6 +138,8 @@ metaobj_createcb (int argc, char *argv[], ay_object * o)
   w->epsilon = 0.001;
   w->step = 0.001;
 
+  (void)metaobj_notifycb(o);
+
  return AY_OK;
 } /* metaobj_createcb */
 
