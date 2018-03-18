@@ -19,20 +19,31 @@
 #include "ayam.h"
 #include "meta.h"
 
+#define META_VERSION 3
+
 /* metaobj.c - metaobj custom object */
+
+
+/* prototypes of functions local to this module: */
+int metaobj_notifycb (ay_object *o);
+
+int metaobj_deletecb (void *c);
+
+#ifdef WIN32
+  __declspec (dllexport)
+#endif /* WIN32 */
+int Metacomp_Init (Tcl_Interp *interp);
+
+
+/* global variables: */
 
 static char *metaobj_name = "MetaObj";
 static unsigned int metaobj_id;
 static char *metacomp_name = "MetaComp";
 static unsigned int metacomp_id;
 
-#ifdef WIN32
-  __declspec (dllexport)
-#endif /* WIN32 */
-int Metacomp_Init (Tcl_Interp *interp);
-int metaobj_notifycb (ay_object *o);
 
-#define META_VERSION 3
+/* functions: */
 
 int
 metaobj_createcb (int argc, char *argv[], ay_object * o)
@@ -66,15 +77,6 @@ metaobj_createcb (int argc, char *argv[], ay_object * o)
     }
 
   w->aktcubes = META_MAXCUBE;	/* erstmal maximale anzahl */
-
-  if (!(w->mgrid = (short *) calloc (1,
-	     sizeof (short) * META_MAXCUBE * META_MAXCUBE * META_MAXCUBE)))
-    {
-      free(w->nvertex);
-      free(w->vertex);
-      free(w);
-      return AY_EOMEM;
-    }
 
 #if META_USEVERTEXARRAY
 
@@ -192,6 +194,8 @@ metaobj_copycb (void *src, void **dst)
 
   memcpy (w, src, sizeof (meta_world));
 
+  w->mgrid = NULL;
+
   if (!(w->vertex = (double *) calloc (1,
                               sizeof (double) * 3 * 3 * (w->maxpoly + 20))))
     {
@@ -212,16 +216,6 @@ metaobj_copycb (void *src, void **dst)
 
   memcpy (w->nvertex, wsrc->nvertex,
 	  sizeof (double) * 3 * 3 * (w->maxpoly + 20));
-
-
-  if (!(w->mgrid = (short *) calloc (1,
-		  sizeof (short) * w->aktcubes * w->aktcubes * w->aktcubes)))
-    {
-      free(w->nvertex);
-      free(w->vertex);
-      free(w);
-      return AY_EOMEM;
-    }
 
 #if META_USEVERTEXARRAY
 
@@ -520,10 +514,7 @@ metaobj_setpropcb (Tcl_Interp * interp, int argc, char *argv[], ay_object * o)
 
   if (w->mgrid)
     free(w->mgrid);
-
-  if (!(w->mgrid = (short *) calloc (1, sizeof (short) *
-				     w->aktcubes * w->aktcubes * w->aktcubes)))
-    return AY_EOMEM;
+  w->mgrid = NULL;
 
   metaobj_notifycb (o);
 
@@ -641,18 +632,6 @@ metaobj_readcb (FILE * fileptr, ay_object * o)
       if (w)
 	free(w);
       return AY_ERROR;
-    }
-
-  if (!
-      (w->mgrid =
-       (short *) calloc (1,
-			sizeof (short) * w->aktcubes * w->aktcubes *
-			w->aktcubes)))
-    {
-      free(w->vertex);
-      free(w->nvertex);
-      free(w);
-      return AY_EOMEM;
     }
 
 #if META_USEVERTEXARRAY
@@ -898,7 +877,22 @@ metaobj_notifycb (ay_object *o)
 	}
     }
 
+  if(!w->mgrid)
+    {
+      if (!(w->mgrid = (short *) calloc (1,
+		   sizeof (short) * w->aktcubes * w->aktcubes * w->aktcubes)))
+	{
+	  return AY_EOMEM;
+	}
+    }
+
   meta_calceffect (w);
+
+  if(w->aktcubes > 200)
+    {
+      free(w->mgrid);
+      w->mgrid = NULL;
+    }
 
  return AY_OK;
 } /* metaobj_notifycb */
