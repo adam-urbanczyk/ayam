@@ -50,61 +50,46 @@ metaobj_createcb (int argc, char *argv[], ay_object * o)
 
   w->maxpoly = META_MAXPOLY;
 
-  if (!
-      (w->vertex =
-       (double *) calloc (1, sizeof (double) * 3 * 3 * (w->maxpoly + 20))))
+  if (!(w->vertex = (double *) calloc (1,
+			      sizeof (double) * 3 * 3 * (w->maxpoly + 20))))
     {
-      if (w)
-	free(w);
-
-      ay_error (AY_EOMEM, fname, NULL);
-      return AY_ERROR;
+      free(w);
+      return AY_EOMEM;
     }
 
-  if (!
-      (w->nvertex =
-       (double *) calloc (1, sizeof (double) * 3 * 3 * (w->maxpoly + 20))))
+  if (!(w->nvertex = (double *) calloc (1,
+			      sizeof (double) * 3 * 3 * (w->maxpoly + 20))))
     {
-      if (w)
-	free(w);
-
-      ay_error (AY_EOMEM, fname, NULL);
-      return AY_ERROR;
+      free(w->vertex);
+      free(w);
+      return AY_EOMEM;
     }
 
   w->aktcubes = META_MAXCUBE;	/* erstmal maximale anzahl */
 
-  if (!
-      (w->mgrid =
-       (short *) calloc (1, sizeof (short) * META_MAXCUBE * META_MAXCUBE *
-			 META_MAXCUBE)))
+  if (!(w->mgrid = (short *) calloc (1,
+	     sizeof (short) * META_MAXCUBE * META_MAXCUBE * META_MAXCUBE)))
     {
-      if (w)
-	free(w);
-
-      ay_error (AY_EOMEM, fname, NULL);
-      return AY_ERROR;
+      free(w->nvertex);
+      free(w->vertex);
+      free(w);
+      return AY_EOMEM;
     }
-
 
 #if META_USEVERTEXARRAY
 
   w->tablesize = 40000;
 
-  if (!
-      (w->vindex =
+  if (!(w->vindex =
        (GLuint *) calloc (1, sizeof (GLuint) * ((w->tablesize-1) +
 						(w->tablesize/10-1) +
 						(w->tablesize/100-1)))))
     {
-      if (w)
-	free(w);
-
-      if (w->mgrid)
-	 free(w->mgrid);
-
-      ay_error (AY_EOMEM, fname, NULL);
-      return AY_ERROR;
+      free(w->mgrid);
+      free(w->nvertex);
+      free(w->vertex);
+      free(w);
+      return AY_EOMEM;
     }
 
    (w->vhash =
@@ -128,12 +113,11 @@ metaobj_createcb (int argc, char *argv[], ay_object * o)
   w->edgelength = w->unisize / (double) w->aktcubes;
 
   /* Init first Metacomp */
-
   ay_status = ay_object_create (metacomp_id, &first_child);
 
   if(ay_status)
     {
-      /*XXXX memory leak */
+      (void)metaobj_deletecb(w);
       return AY_ERROR;
     }
 
@@ -178,15 +162,15 @@ metaobj_deletecb (void *c)
 
   meta_freecubestack (w);
 
-  if (w)
-    free(w);
-
 #if META_USEVERTEXARRAY
   if ( w->vindex)
     free(w->vindex);
   if (w->vhash)
     free(w->vhash);
 #endif
+
+  if (w)
+    free(w);
 
  return AY_OK;
 } /* metaobj_deletecb */
@@ -208,67 +192,53 @@ metaobj_copycb (void *src, void **dst)
 
   memcpy (w, src, sizeof (meta_world));
 
-  if (!
-      (w->vertex =
-       (double *) calloc (1, sizeof (double) * 3 * 3 * (w->maxpoly + 20))))
-    {
-      if (w)
-	free(w);
-
-      return AY_ERROR;
-    }
-
-  memcpy (w->vertex, wsrc->vertex,
-	  sizeof (double) * 3 * 3 * (w->maxpoly + 20));
-
-  if (!
-      (w->nvertex =
-       (double *) calloc (1, sizeof (double) * 3 * 3 * (w->maxpoly + 20))))
-    {
-      if (w)
-	free(w);
-
-      return AY_ERROR;
-    }
-
-
-  memcpy (w->nvertex, wsrc->nvertex,
-	  sizeof (double) * 3 * 3 * (w->maxpoly + 20));
-
-
-  if (!
-      (w->mgrid =
-       (short *) calloc (1,
-			sizeof (short) * w->aktcubes * w->aktcubes *
-			w->aktcubes)))
+  if (!(w->vertex = (double *) calloc (1,
+                              sizeof (double) * 3 * 3 * (w->maxpoly + 20))))
     {
       free(w);
       return AY_EOMEM;
     }
 
+  memcpy (w->vertex, wsrc->vertex,
+	  sizeof (double) * 3 * 3 * (w->maxpoly + 20));
+
+  if (!(w->nvertex = (double *) calloc (1,
+			     sizeof (double) * 3 * 3 * (w->maxpoly + 20))))
+    {
+      free(w->vertex);
+      free(w);
+      return AY_EOMEM;
+    }
+
+  memcpy (w->nvertex, wsrc->nvertex,
+	  sizeof (double) * 3 * 3 * (w->maxpoly + 20));
+
+
+  if (!(w->mgrid = (short *) calloc (1,
+		  sizeof (short) * w->aktcubes * w->aktcubes * w->aktcubes)))
+    {
+      free(w->nvertex);
+      free(w->vertex);
+      free(w);
+      return AY_EOMEM;
+    }
 
 #if META_USEVERTEXARRAY
 
-  if (!
-      (w->vindex =
-       (GLuint *) calloc (1, sizeof (GLuint) * ((w->tablesize-1) +
-						(w->tablesize/10-1) +
-						(w->tablesize/100-1)))))
+  if (!(w->vindex = (GLuint *) calloc (1,
+		  sizeof (GLuint) * ((w->tablesize-1) + (w->tablesize/10-1) +
+			                              (w->tablesize/100-1)))))
     {
-      if (w)
-	free(w);
-
-      if (w->mgrid)
-	 free(w->mgrid);
-
-      ay_error (AY_EOMEM, NULL, NULL);
-      return AY_ERROR;
+      free(w->mgrid);
+      free(w->nvertex);
+      free(w->vertex);
+      free(w);
+      return AY_EOMEM;
     }
 
-   (w->vhash =
-       (int *) calloc (1, sizeof (int) * ((w->tablesize-1) +
+   w->vhash = (int *) calloc (1, sizeof (int) * ((w->tablesize-1) +
 					  (w->tablesize/10-1) +
-					  (w->tablesize/100-1))));
+					  (w->tablesize/100-1)));
 
 #endif
 
