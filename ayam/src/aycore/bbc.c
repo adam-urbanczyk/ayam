@@ -32,28 +32,21 @@ ay_bbc_get(ay_object *o, double *bbox)
  double xmin = DBL_MAX, xmax = -DBL_MAX, ymin = DBL_MAX;
  double ymax = -DBL_MAX, zmin = DBL_MAX, zmax = -DBL_MAX;
  double bbt[24] = {0};
- int i, a, flags = AY_FALSE;
+ int i, a, flags = 0;
  ay_voidfp *arr = NULL;
  ay_bbccb *cb = NULL;
- double m[16] = {0}, mr[16];
- int have_child_bb = AY_FALSE;
+ double m[16] = {0};
+ int have_child_bb = AY_FALSE, have_trafo = AY_FALSE;
 
   if(!o || !bbox)
     return AY_ENULL;
 
   /* get transformations */
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-   glLoadIdentity();
-
-   glTranslated(o->movx, o->movy, o->movz);
-
-   ay_quat_torotmatrix(o->quat, mr);
-   glMultMatrixd(mr);
-
-   glScaled(o->scalx, o->scaly, o->scalz);
-   glGetDoublev(GL_MODELVIEW_MATRIX, (GLdouble *)m);
-  glPopMatrix();
+  if(AY_ISTRAFO(o))
+    {
+      ay_trafo_creatematrix(o, m);
+      have_trafo = AY_TRUE;
+    }
 
   /* get bounding boxes of children */
   if(o->down)
@@ -65,7 +58,7 @@ ay_bbc_get(ay_object *o, double *bbox)
 	  if(!ay_status)
 	    {
 	      /* apply transformations */
-	      if(o->inherit_trafos)
+	      if(o->inherit_trafos && have_trafo)
 		{
 		  ay_trafo_apply3v(bbt, 8, 3, m);
 		}
@@ -130,7 +123,7 @@ ay_bbc_get(ay_object *o, double *bbox)
     { /* bounding box of object o is not marked invalid/non-existent */
       /* thus, merge bounding box of object o with child(ren) bounding box */
 
-      if(flags != 3)
+      if(flags != 3 && have_trafo)
 	{
 	  /* apply transformations */
 	  ay_trafo_apply3v(bbt, 8, 3, m);
@@ -415,7 +408,7 @@ ay_bbc_gettcmd(ClientData clientData, Tcl_Interp *interp,
 	} /* for */
 
       sel = sel->next;
-    }
+    } /* while sel */
 
   res = Tcl_NewListObj(0, NULL);
   if(res)
