@@ -11545,9 +11545,9 @@ PV tags are currently not supported.
 <p>
 The SDNPatch custom object is available since Ayam 1.16 and
 allows to model with Subdivision NURBS, which extend the traditional
-subdivision schemes with knot values (see also the image above,
-where in the middle mesh a knot value has been set in the left hand
-side of the mesh).
+subdivision scheme with knot values and rational coordinates. See also
+the image above, where in the middle mesh a knot value has been set in
+the left hand side of the mesh.
 The SDNPatch plugin is based on libsnurbs by Tom Cashman.
 <p>
 There are some special modelling actions for Subdivision NURBS
@@ -13779,8 +13779,8 @@ These tools create parametric surface objects.
 <p>
 <#if out="latex">
 <table loc="ht">
-<tabular ca="cc">
-<x>inlinegfx pics/nsphere-w.png 4cm </x>|
+<tabular ca="ccc">
+<x>inlinegfx pics/nsphere-w.png 4cm </x>||
 <x>inlinegfx pics/nsphere-s.png 4cm </x>
 </tabular>
 <caption>NURB Sphere (l: Control Polygon, r: Shaded Surface)</caption>
@@ -13806,8 +13806,8 @@ the image above).
 <p>
 <#if out="latex">
 <table loc="ht">
-<tabular ca="cc">
-<x>inlinegfx pics/nsphere2-w.png 4cm </x>|
+<tabular ca="ccc">
+<x>inlinegfx pics/nsphere2-w.png 4cm </x>||
 <x>inlinegfx pics/nsphere2-s.png 4cm </x>
 </tabular>
 <caption>Cobb NURB Sphere (l: Control Polygon, r: Shaded Surface)</caption>
@@ -14732,6 +14732,23 @@ a correct example tag looks like this:
 The option <tt>"RefineTrims"</tt> controls how many times the trim
 curves are to be refined before tesselation for improved tesselation
 fidelity along trim edges.<footnote>Since 1.21.</footnote>
+See also the images below.
+<#if out="latex">
+<table loc="ht">
+<tabular ca="ccc">
+<x>inlinegfx pics/reftrims0.png 4cm </x>||
+<x>inlinegfx pics/reftrims2.png 4cm </x>
+</tabular>
+<caption>RefineTrims Example (left: 0, right: 2)</caption>
+</table>
+</#if>
+<#if out="html">
+<figure loc="ht">
+<img src="pics/reftrims0.gif">&emsp;
+<img src="pics/reftrims2.gif">
+<caption>RefineTrims Example (left: 0, right: 2)</caption>
+</figure>
+</#if>
 <p>
 The option <tt>"Primitives"</tt> allows to keep the quads created
 by the tesselation (mode <tt>"TrianglesAndQuads"</tt>) or
@@ -14779,8 +14796,6 @@ The PolyMesh objects created by this tool will <em/not/ be optimized.
 
 The tesselation facility is based on the GLU (V1.3+) NURBS tesselator.
 </descrip>
-
-<#if out="latex"><x/newpage/</#if>
 
 <sect3>Sampling Methods and Parameters
 <p><#if out="latex">&nbsp;<newline></#if>
@@ -19031,13 +19046,13 @@ pressed in the dialog.
 <#if out=html><p><p><code></#if><#unless out=html><verb></#unless>
 runTool {x} {"X:"} {moveOb %0 0 0;plb_update;rV} "MoveX"
 <#if out=html></code></#if><#unless out=html></verb></#unless>
-opens a dialog to request a single parameter and moves the selected objec(s)
+opens a dialog to request a single parameter and moves the selected object(s)
 along the X-axis by the specified amount.
 <item>&nbsp;
 <#if out=html><p><code></#if><#unless out=html><verb></#unless>
 runTool {x y} {"X:" "Y:"} {moveOb %0 %1 0;plb_update;rV} "MoveXY"
 <#if out=html></code></#if><#unless out=html></verb></#unless>
-opens a dialog to request two parameters and moves the selected objec(s)
+opens a dialog to request two parameters and moves the selected object(s)
 along the X-axis and the Y-axis by the specified amounts.
 <item>&nbsp;
 <#if out=html><p><p><code></#if>
