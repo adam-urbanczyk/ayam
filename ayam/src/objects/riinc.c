@@ -41,6 +41,8 @@ ay_riinc_createcb(int argc, char *argv[], ay_object *o)
   riinc->height = 1.0;
 
   o->refine = riinc;
+  o->parent = AY_TRUE;
+  o->hide_children = AY_TRUE;
 
  return AY_OK;
 } /* ay_riinc_createcb */
@@ -111,6 +113,7 @@ ay_riinc_copycb(void *src, void **dst)
 int
 ay_riinc_drawcb(struct Togl *togl, ay_object *o)
 {
+ ay_object *d;
  ay_riinc_object *riinc = NULL;
  GLdouble wh, hh, lh;
 
@@ -122,32 +125,48 @@ ay_riinc_drawcb(struct Togl *togl, ay_object *o)
   if(!riinc)
     return AY_ENULL;
 
-  wh = (GLdouble)(riinc->width  * 0.5);
-  lh = (GLdouble)(riinc->length * 0.5);
-  hh = (GLdouble)(riinc->height * 0.5);
+  glEnable(GL_LINE_STIPPLE);
+  glLineStipple((GLint)3, (GLushort)0x5555);
 
-  /* draw */
-  glBegin(GL_LINE_STRIP);
-   glVertex3d( wh, hh, lh);
-   glVertex3d( wh,-hh, lh);
-   glVertex3d(-wh,-hh, lh);
-   glVertex3d(-wh, hh, lh);
-   glVertex3d( wh, hh, lh);
-   glVertex3d( wh, hh,-lh);
-   glVertex3d( wh,-hh,-lh);
-   glVertex3d(-wh,-hh,-lh);
-   glVertex3d(-wh, hh,-lh);
-   glVertex3d( wh, hh,-lh);
-  glEnd();
+  if(o->down && o->down->next)
+    {
+      d = o->down;
+      while(d->next)
+	{
+	  ay_draw_object(togl, d, AY_FALSE);
+	  d = d->next;
+	}
+    }
+  else
+    {
+      wh = (GLdouble)(riinc->width  * 0.5);
+      lh = (GLdouble)(riinc->length * 0.5);
+      hh = (GLdouble)(riinc->height * 0.5);
 
-  glBegin(GL_LINES);
-   glVertex3d( wh,-hh, lh);
-   glVertex3d( wh,-hh,-lh);
-   glVertex3d(-wh,-hh, lh);
-   glVertex3d(-wh,-hh,-lh);
-   glVertex3d(-wh, hh, lh);
-   glVertex3d(-wh, hh,-lh);
-  glEnd();
+      /* draw */
+      glBegin(GL_LINE_STRIP);
+       glVertex3d( wh, hh, lh);
+       glVertex3d( wh,-hh, lh);
+       glVertex3d(-wh,-hh, lh);
+       glVertex3d(-wh, hh, lh);
+       glVertex3d( wh, hh, lh);
+       glVertex3d( wh, hh,-lh);
+       glVertex3d( wh,-hh,-lh);
+       glVertex3d(-wh,-hh,-lh);
+       glVertex3d(-wh, hh,-lh);
+       glVertex3d( wh, hh,-lh);
+      glEnd();
+
+      glBegin(GL_LINES);
+       glVertex3d( wh,-hh, lh);
+       glVertex3d( wh,-hh,-lh);
+       glVertex3d(-wh,-hh, lh);
+       glVertex3d(-wh,-hh,-lh);
+       glVertex3d(-wh, hh, lh);
+       glVertex3d(-wh, hh,-lh);
+      glEnd();
+    }
+  glDisable(GL_LINE_STIPPLE);
 
  return AY_OK;
 } /* ay_riinc_drawcb */
