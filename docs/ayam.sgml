@@ -4829,7 +4829,7 @@ Clone|Any<f/<sup/+//|No|Children<f/<sup/+//|No*@<hline>
 Mirror|Any<f/<sup/+//|No|Children<f/<sup/+//|No*@<hline>
 Instance|No|No|Master|No*@<hline>
 Select|Any<f/<sup/+//|No|N/A&thinsp;/&thinsp;Children<f/<sup/+//|No@<hline>
-RiInc|No|No|N/A|No@<hline>
+RiInc|Any|No|N/A|No@<hline>
 RiProc|No|No|N/A|No@<hline><hline>
 View|NPatch|No|N/A|Yes@<hline>
 Camera|No|No|N/A|Yes@<hline>
@@ -6458,15 +6458,30 @@ Select objects never appear in RIB output.
 <sect2>RiInc Object<label id="riincobj">
 <p>
 RiInc objects may be used to include objects or whole scene parts into your
-scenes that, for some reason, are just available as a piece of RIB.
-They can also help to manage huge scenes.
+scenes that are just available as a piece of RIB, a so called <em/archive/.
+They can therefore help to manage huge scenes that are too cumbersome
+to handle in total in Ayam.
+<p>
+RiInc objects draw a simple bounding box with stippled lines instead of the
+archive contents; those will only become part of the scene when it is
+exported to a RIB.
+If children are present, they will be drawn instead of the bounding box.
+This allows to better convey the actual shape of the objects in the included
+archive.<footnote>Since 1.26.</footnote>
+As the bounding box, also the children never appear in the RIB.
+<p>
+Note that Ayam can not check, wether the bounding box or children
+actually match the content of the included archive.
+<p>
+Also note that archives can be created easily using the main menu
+entry <tt>"Special/RIB-Export/Selected Objects"</tt>.
 <p>
 The following table briefly lists some capabilities of the RiInc object.
 <p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-RiInc|No|No|N/A|No<#if out="latex">@<hline></#if>
+RiInc|Any<footnote>Since 1.26.</footnote>|No|N/A|No<#if out="latex">@<hline></#if>
 </tabular>
 <caption>RiInc Object Capabilities</caption>
 </table>
@@ -6485,8 +6500,9 @@ the RIB.
 <p><#if out="latex">&nbsp;<newline></#if>
 RiInc objects export as single
 <tscreen><tt>
-ReadArchive
+ReadArchive &lt;filename&gt;
 </tt></tscreen>
+statement.
 
 <sect2>RiProc Object<label id="riprocobj">
 <p>
