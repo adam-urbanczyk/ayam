@@ -6457,6 +6457,11 @@ Select objects never appear in RIB output.
 
 <sect2>RiInc Object<label id="riincobj">
 <p>
+<figure loc="ht">
+<eps file="pics/riinc.ps" height="4cm">
+<img src="pics/riinc.gif">
+<caption>RiInc Example</caption>
+</figure>
 RiInc objects may be used to include objects or whole scene parts into your
 scenes that are just available as a piece of RIB, a so called <em/archive/.
 They can therefore help to manage huge scenes that are too cumbersome
@@ -6464,7 +6469,7 @@ to handle in total in Ayam.
 <p>
 RiInc objects draw a simple bounding box with stippled lines instead of the
 archive contents; those will only become part of the scene when it is
-exported to a RIB.
+exported to a RIB. See also the above image.
 If children are present, they will be drawn instead of the bounding box.
 This allows to better convey the actual shape of the objects in the included
 archive.<footnote>Since 1.26.</footnote>
@@ -6481,7 +6486,7 @@ The following table briefly lists some capabilities of the RiInc object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-RiInc|Any<footnote>Since 1.26.</footnote>|No|N/A|No<#if out="latex">@<hline></#if>
+RiInc|Any|No|N/A|No<#if out="latex">@<hline></#if>
 </tabular>
 <caption>RiInc Object Capabilities</caption>
 </table>
@@ -6490,7 +6495,8 @@ RiInc|Any<footnote>Since 1.26.</footnote>|No|N/A|No<#if out="latex">@<hline></#i
 <p><#if out="latex">&nbsp;<newline></#if>
 The following attributes control the inclusion process:
 <itemize>
-<item>Using <tt/"File"/ you specify the filename of the RIB to be included.
+<item>Using <tt/"File"/ you specify the filename of the RIB archive to be
+included.
 <item><tt/"Width"/, <tt/"Height"/, and <tt/"Length"/ specify
 the size of a box, that will be drawn as a geometric representation of
 the RIB.
