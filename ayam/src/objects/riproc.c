@@ -16,6 +16,11 @@
 
 static char *ay_riproc_name = "RiProc";
 
+/* functions: */
+
+/* ay_riproc_createcb:
+ *  create callback function of riproc object
+ */
 int
 ay_riproc_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -44,6 +49,9 @@ ay_riproc_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_riproc_createcb */
 
 
+/* ay_riproc_deletecb:
+ *  delete callback function of riproc object
+ */
 int
 ay_riproc_deletecb(void *c)
 {
@@ -66,6 +74,9 @@ ay_riproc_deletecb(void *c)
 } /* ay_riproc_deletecb */
 
 
+/* ay_riproc_copycb:
+ *  copy callback function of riproc object
+ */
 int
 ay_riproc_copycb(void *src, void **dst)
 {
@@ -115,6 +126,9 @@ ay_riproc_copycb(void *src, void **dst)
 } /* ay_riproc_copycb */
 
 
+/* ay_riproc_drawcb:
+ *  draw (display in an Ayam view window) callback function of riproc object
+ */
 int
 ay_riproc_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -171,6 +185,9 @@ ay_riproc_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_riproc_drawcb */
 
 
+/* ay_riproc_shadecb:
+ *  shade (display in an Ayam view window) callback function of riproc object
+ */
 int
 ay_riproc_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -188,7 +205,9 @@ ay_riproc_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_riproc_shadecb */
 
 
-/* Tcl -> C! */
+/* ay_riproc_setpropcb:
+ *  set property (from Tcl to C context) callback function of riproc object
+ */
 int
 ay_riproc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -270,7 +289,9 @@ ay_riproc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_riproc_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_riproc_getpropcb:
+ *  get property (from C to Tcl context) callback function of riproc object
+ */
 int
 ay_riproc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -329,6 +350,9 @@ ay_riproc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_riproc_getpropcb */
 
 
+/* ay_riproc_readcb:
+ *  read (from scene file) callback function of riproc object
+ */
 int
 ay_riproc_readcb(FILE *fileptr, ay_object *o)
 {
@@ -369,6 +393,9 @@ ay_riproc_readcb(FILE *fileptr, ay_object *o)
 } /* ay_riproc_readcb */
 
 
+/* ay_riproc_writecb:
+ *  write (to scene file) callback function of riproc object
+ */
 int
 ay_riproc_writecb(FILE *fileptr, ay_object *o)
 {
@@ -395,12 +422,21 @@ ay_riproc_writecb(FILE *fileptr, ay_object *o)
  return AY_OK;
 } /* ay_riproc_writecb */
 
+
+/* ay_free:
+ * helper for ay_riproc_wribcb) below.
+ *
+ */
 RtVoid
 ay_free(RtPointer data)
 {
   free(data);
 }
 
+
+/* ay_riproc_wribcb:
+ *  RIB export callback function of riproc object
+ */
 int
 ay_riproc_wribcb(char *file, ay_object *o)
 {
@@ -466,6 +502,9 @@ ay_riproc_wribcb(char *file, ay_object *o)
 } /* ay_riproc_wribcb */
 
 
+/* ay_riproc_bbccb:
+ *  bounding box calculation callback function of riproc object
+ */
 int
 ay_riproc_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -501,6 +540,9 @@ ay_riproc_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_riproc_bbccb */
 
 
+/* ay_riproc_init:
+ *  initialize the riproc object module
+ */
 int
 ay_riproc_init(Tcl_Interp *interp)
 {
