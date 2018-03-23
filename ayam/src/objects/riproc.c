@@ -142,6 +142,9 @@ ay_riproc_drawcb(struct Togl *togl, ay_object *o)
   if(!riproc)
     return AY_ENULL;
 
+  glEnable(GL_LINE_STIPPLE);
+  glLineStipple((GLint)3, (GLushort)0x5555);
+
   /* draw */
   glBegin(GL_LINE_STRIP);
    glVertex3d((GLdouble)riproc->maxx, (GLdouble)riproc->maxy,
@@ -180,6 +183,8 @@ ay_riproc_drawcb(struct Togl *togl, ay_object *o)
    glVertex3d((GLdouble)riproc->minx, (GLdouble)riproc->maxy,
 	      (GLdouble)riproc->minz);
   glEnd();
+
+  glDisable(GL_LINE_STIPPLE);
 
  return AY_OK;
 } /* ay_riproc_drawcb */
