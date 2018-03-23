@@ -237,7 +237,7 @@ ay_riproc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       riproc->file = NULL;
     }
 
-  toa = Tcl_NewStringObj(n1,-1);
+  toa = Tcl_NewStringObj(n1, -1);
 
   /* get file */
   result = Tcl_GetVar2(interp, n1, "File", TCL_LEAVE_ERR_MSG |
@@ -260,29 +260,29 @@ ay_riproc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   strcpy(riproc->data, result);
 
   /* get bounding box */
-  ton = Tcl_NewStringObj("MinX",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &riproc->minx);
+  ton = Tcl_NewStringObj("MinX", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &riproc->minx);
 
-  ton = Tcl_NewStringObj("MaxX",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &riproc->maxx);
+  ton = Tcl_NewStringObj("MaxX", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &riproc->maxx);
 
-  ton = Tcl_NewStringObj("MinY",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &riproc->miny);
+  ton = Tcl_NewStringObj("MinY", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &riproc->miny);
 
-  ton = Tcl_NewStringObj("MaxY",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &riproc->maxy);
+  ton = Tcl_NewStringObj("MaxY", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &riproc->maxy);
 
-  ton = Tcl_NewStringObj("MinZ",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &riproc->minz);
+  ton = Tcl_NewStringObj("MinZ", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &riproc->minz);
 
-  ton = Tcl_NewStringObj("MaxZ",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &riproc->maxz);
+  ton = Tcl_NewStringObj("MaxZ", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &riproc->maxz);
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
@@ -312,41 +312,41 @@ ay_riproc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!riproc)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
+  toa = Tcl_NewStringObj(n1, -1);
 
-  Tcl_SetVar2(interp,n1,"File","",TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2(interp, n1, "File", "", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   if(riproc->file)
-    Tcl_SetVar2(interp,n1,"File",riproc->file,TCL_LEAVE_ERR_MSG |
+    Tcl_SetVar2(interp, n1, "File", riproc->file, TCL_LEAVE_ERR_MSG |
 		TCL_GLOBAL_ONLY);
 
-  Tcl_SetVar2(interp,n1,"Data","",TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2(interp, n1, "Data", "", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   if(riproc->data)
-    Tcl_SetVar2(interp,n1,"Data",riproc->data,TCL_LEAVE_ERR_MSG |
+    Tcl_SetVar2(interp, n1, "Data", riproc->data,TCL_LEAVE_ERR_MSG |
 		TCL_GLOBAL_ONLY);
 
-  ton = Tcl_NewStringObj("MinX",-1);
+  ton = Tcl_NewStringObj("MinX", -1);
   to = Tcl_NewDoubleObj(riproc->minx);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  ton = Tcl_NewStringObj("MaxX",-1);
+  ton = Tcl_NewStringObj("MaxX", -1);
   to = Tcl_NewDoubleObj(riproc->maxx);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  ton = Tcl_NewStringObj("MinY",-1);
+  ton = Tcl_NewStringObj("MinY", -1);
   to = Tcl_NewDoubleObj(riproc->miny);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  ton = Tcl_NewStringObj("MaxY",-1);
+  ton = Tcl_NewStringObj("MaxY", -1);
   to = Tcl_NewDoubleObj(riproc->maxy);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  ton = Tcl_NewStringObj("MinZ",-1);
+  ton = Tcl_NewStringObj("MinZ", -1);
   to = Tcl_NewDoubleObj(riproc->minz);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  ton = Tcl_NewStringObj("MaxZ",-1);
+  ton = Tcl_NewStringObj("MaxZ", -1);
   to = Tcl_NewDoubleObj(riproc->maxz);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
@@ -370,12 +370,12 @@ ay_riproc_readcb(FILE *fileptr, ay_object *o)
   if(!(riproc = calloc(1, sizeof(ay_riproc_object))))
     { return AY_EOMEM; }
 
-  fscanf(fileptr,"%lg\n",&riproc->minx);
-  fscanf(fileptr,"%lg\n",&riproc->maxx);
-  fscanf(fileptr,"%lg\n",&riproc->miny);
-  fscanf(fileptr,"%lg\n",&riproc->maxy);
-  fscanf(fileptr,"%lg\n",&riproc->minz);
-  fscanf(fileptr,"%lg",&riproc->maxz);
+  fscanf(fileptr, "%lg\n", &riproc->minx);
+  fscanf(fileptr, "%lg\n", &riproc->maxx);
+  fscanf(fileptr, "%lg\n", &riproc->miny);
+  fscanf(fileptr, "%lg\n", &riproc->maxy);
+  fscanf(fileptr, "%lg\n", &riproc->minz);
+  fscanf(fileptr, "%lg", &riproc->maxz);
   (void)fgetc(fileptr);
 
   ay_status = ay_read_string(fileptr, &(riproc->file));
@@ -435,7 +435,8 @@ ay_riproc_writecb(FILE *fileptr, ay_object *o)
 RtVoid
 ay_free(RtPointer data)
 {
-  free(data);
+  if(data)
+    free(data);
 }
 
 
@@ -445,10 +446,9 @@ ay_free(RtPointer data)
 int
 ay_riproc_wribcb(char *file, ay_object *o)
 {
- char fname[] = "riproc_wribcb";
  ay_riproc_object *riproc = NULL;
  RtBound bound;
- RtString *data = NULL;
+ RtString data[2] = {0};
 
   if(!o)
     return AY_ENULL;
@@ -468,35 +468,17 @@ ay_riproc_wribcb(char *file, ay_object *o)
   switch(riproc->type)
     {
     case AY_PRTDREADA:
-      if(!(data = calloc(1, sizeof(RtString))))
-	{
-	  ay_error(AY_EOMEM, fname, NULL);
-	  return AY_ERROR;
-	}
-      *data = riproc->file;
-
+      data[0] = riproc->file;
       RiProcedural((RtPointer)data, bound, RiProcDelayedReadArchive, ay_free);
       break;
     case AY_PRTRUNPROG:
-      if(!(data = calloc(2, sizeof(RtString))))
-	{
-	  ay_error(AY_EOMEM, fname, NULL);
-	  return AY_ERROR;
-	}
       data[0] = riproc->file;
       data[1] = riproc->data;
-
       RiProcedural((RtPointer)data, bound, RiProcRunProgram, ay_free);
       break;
     case AY_PRTDYNLOAD:
-      if(!(data = calloc(2, sizeof(RtString))))
-	{
-	  ay_error(AY_EOMEM, fname, NULL);
-	  return AY_ERROR;
-	}
       data[0] = riproc->file;
       data[1] = riproc->data;
-
       RiProcedural((RtPointer)data, bound, RiProcDynamicLoad, ay_free);
       break;
     default:
