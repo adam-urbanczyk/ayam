@@ -265,8 +265,11 @@ ay_text_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       ay_text_notifycb(o);
     }
 
- return ay_selp_getpnts(mode, o, p, pe, 1, text->pntslen, 4,
-			ay_prefs.rationalpoints, text->pnts);
+  if(text->pntslen)
+    return ay_selp_getpnts(mode, o, p, pe, 1, text->pntslen, 4,
+			   ay_prefs.rationalpoints, text->pnts);
+  else
+    return AY_OK;
 } /* ay_text_getpntcb */
 
 
