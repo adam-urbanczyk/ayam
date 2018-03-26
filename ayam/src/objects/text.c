@@ -33,8 +33,97 @@ int ay_text_notifycb(ay_object *o);
 int
 ay_text_createcb(int argc, char *argv[], ay_object *o)
 {
- ay_text_object *text = NULL;
+ int ay_status = AY_OK;
+ int tcl_status = TCL_OK;
  char fname[] = "crttext";
+ char option_handled = AY_FALSE;
+ int optnum = 0, i = 2, j, k, numchars;
+ double height = 0.5;
+ char *font = NULL, *utfptr;
+ Tcl_UniChar *unistring = NULL, *uniptr;
+ ay_text_object *text = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  /* parse args */
+  while(i+1 < argc)
+    {
+      if(i+1 >= argc)
+	{
+	  ay_error(AY_EOPT, fname, argv[i]);
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	}
+
+      tcl_status = TCL_OK;
+      option_handled = AY_FALSE;
+      optnum = i;
+      if(argv[i] && argv[i][0] != '\0')
+	{
+	  switch(argv[i][1])
+	    {
+	    case 'f':
+	      /* -font */
+	      if(!(font = calloc(strlen(argv[i+1])+1, sizeof(char))))
+		{
+		  ay_error(AY_EOMEM, fname, NULL);
+		  ay_status = AY_ERROR;
+		  goto cleanup;
+		}
+	      strcpy(font, argv[i+1]);
+	      option_handled = AY_TRUE;
+	      break;
+	    case 'h':
+	      /* -height */
+	      tcl_status = Tcl_GetDouble(ay_interp, argv[i+1], &height);
+	      option_handled = AY_TRUE;
+	      break;
+	    case 't':
+	      /* -text */
+	      numchars = Tcl_NumUtfChars(argv[i+1], -1);
+	      if(!(unistring = calloc(numchars+1, sizeof(Tcl_UniChar))))
+		{
+		  ay_error(AY_EOMEM, fname, NULL);
+		  ay_status = AY_ERROR;
+		  goto cleanup;
+		}
+	      utfptr = argv[i+1];
+	      uniptr = unistring;
+	      for(j = 0; j < numchars; j++)
+		{
+		  k = Tcl_UtfToUniChar(utfptr, uniptr);
+		  utfptr += k;
+		  uniptr++;
+		}
+	      option_handled = AY_TRUE;
+	      break;
+	    default:
+	      break;
+	    } /* switch */
+
+	  if(option_handled && (tcl_status != TCL_OK))
+	    {
+	      ay_error(AY_EOPT, fname, argv[i]);
+	      ay_status = AY_ERROR;
+	      goto cleanup;
+	    }
+
+	  i += 2;
+	}
+      else
+	{
+	  i++;
+	} /* if */
+
+      if(!option_handled)
+	{
+	  ay_error(AY_EUOPT, fname, argv[optnum]);
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	}
+
+    } /* while */
 
   if(!(text = calloc(1, sizeof(ay_text_object))))
     {
@@ -42,11 +131,25 @@ ay_text_createcb(int argc, char *argv[], ay_object *o)
       return AY_ERROR;
     }
 
-  text->height = 0.5;
+  text->height = height;
+  text->fontname = font;
+  text->unistring = unistring;
 
   o->refine = text;
 
- return AY_OK;
+  /* prevent cleanup code from doing something harmful */
+  font = NULL;
+  unistring = NULL;
+
+cleanup:
+
+  if(font)
+    free(font);
+
+  if(unistring)
+    free(unistring);
+
+ return ay_status;
 } /* ay_text_createcb */
 
 
