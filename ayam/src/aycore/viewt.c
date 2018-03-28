@@ -2369,6 +2369,7 @@ ay_viewt_markfromwin(struct Togl *togl, int argc, char *argv[])
 
   if(argc > 2)
     {
+      /* have four arguments (a rectangle) */
       Tcl_GetDouble(interp, argv[2], &winX2);
       Tcl_GetDouble(interp, argv[3], &winY2);
 
@@ -2439,6 +2440,7 @@ ay_viewt_markfromwin(struct Togl *togl, int argc, char *argv[])
     }
   else
     {
+      /* have two arguments (a single point) */
       view->markx = winX1;
       view->marky = winY1;
 
@@ -2468,6 +2470,7 @@ ay_viewt_markfromwin(struct Togl *togl, int argc, char *argv[])
 
       if(pe.coords)
 	{
+	  /* have picked point */
 	  memcpy(t, pe.coords[0], 3*sizeof(double));
 
 	  /* to world */
@@ -2488,8 +2491,10 @@ ay_viewt_markfromwin(struct Togl *togl, int argc, char *argv[])
 	}
       else
 	{
+	  /* have no picked point */
 	  if(view->usegrid)
 	    ay_viewt_griddify(togl, &view->markx, &view->marky);
+
 	  ay_viewt_wintoworld(togl, view->markx, view->marky,
 			      &(t[0]),
 			      &(t[1]),
@@ -2520,8 +2525,15 @@ ay_viewt_markfromwin(struct Togl *togl, int argc, char *argv[])
 	      /* XXXX output proper error message */
 	      break;
 	    } /* switch */
-	} /* if */
-    } /* if */
+	} /* if have picked point */
+    } /* if 2 or 4 args */
+
+  if(ay_prefs.normalizemark)
+    {
+      for(i = 0; i < 3; i++)
+	view->markworld[i] = ay_trafo_round(view->markworld[i],
+					    ay_prefs.normalizedigits);
+    }
 
   view->drawmark = AY_TRUE;
 
