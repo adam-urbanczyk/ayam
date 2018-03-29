@@ -6214,9 +6214,14 @@ objects, each with different transformation attributes.
 
 <sect2>Instance Object<label id="instanceobj">
 <p>
+<figure loc="ht">
+<eps file="pics/instances.ps" height="5cm">
+<img src="pics/instances.gif">
+<caption>Instancing Example</caption>
+</figure>
 Instance objects help to save memory consumption in scenes with many
 similar or repeating objects or transport geometric data across the
-scene hierarchy.
+scene hierarchy. See also the image above.
 <p>
 The term instance is unfortunately misleading (and can be very confusing
 if you are accustomed to the terminology of object oriented programming),
@@ -6330,6 +6335,9 @@ scene
                  |
 --Instance  -----'
 </verb></tscreen>
+
+<#if out="latex"><x/newpage/</#if>
+
 the following scene hierarchy results:
 <tscreen><verb>
 --NCurve   <-----+-.
@@ -6347,8 +6355,6 @@ It is possible to move masters and instances through the scene hierarchy
 using drag and drop in the tree view or using the object clipboard with
 <tt>"Edit/Cut"</tt> and then <tt>"Special/Clipboard/Paste (Move)"</tt>
 however.
-
-<#if out="latex"><x/newpage/</#if>
 
 <sect3>Conversion Support
 <p><#if out="latex">&nbsp;<newline></#if>
@@ -6513,7 +6519,9 @@ statement.
 <sect2>RiProc Object<label id="riprocobj">
 <p>
 RiProc objects may be used to include procedural objects or external
-archives into your scenes.
+archives into your scenes. In contrast to archives included via a
+RiInc object, these archives will only be included when the specified
+bounding box is visible to the current camera.
 <p>
 The following table briefly lists some capabilities of the RiProc object.
 <p>
@@ -24944,7 +24952,7 @@ Index:
 <list>
 <item>P1, P2: <ref id="hyp" name="Hyperboloid attribute">
 <item>Pan<ref id="vwsc" name="view action">
-<item>Pan to Mark<ref id="markac" name="mark action">
+<item>Pan to Mark<ref id="vwsc" name="view action">
 <item>PanDist: <ref id="hidprefs" name="hidden preference setting">
 <item>PaneMargins: <ref id="hidprefs" name="hidden preference setting">
 <item>Paraboloid: <ref id="paraboloidobj" name="Paraboloid object">
