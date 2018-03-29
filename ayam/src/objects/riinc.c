@@ -219,7 +219,7 @@ ay_riinc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       riinc->file = NULL;
     }
 
-  toa = Tcl_NewStringObj(n1,-1);
+  toa = Tcl_NewStringObj(n1, -1);
 
   /* get filename */
   result = Tcl_GetVar2(interp, n1, "File", TCL_LEAVE_ERR_MSG |
@@ -233,17 +233,17 @@ ay_riinc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   strcpy(riinc->file, result);
 
 
-  ton = Tcl_NewStringObj("Width",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &riinc->width);
+  ton = Tcl_NewStringObj("Width", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &riinc->width);
 
-  Tcl_SetStringObj(ton,"Length",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &riinc->length);
+  Tcl_SetStringObj(ton, "Length", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &riinc->length);
 
-  Tcl_SetStringObj(ton,"Height",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &riinc->height);
+  Tcl_SetStringObj(ton, "Height", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &riinc->height);
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
@@ -273,24 +273,24 @@ ay_riinc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!riinc)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
+  toa = Tcl_NewStringObj(n1, -1);
 
-  Tcl_SetVar2(interp,n1,"File","",TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2(interp, n1, "File", "", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   if(riinc->file)
-    Tcl_SetVar2(interp,n1,"File",riinc->file,TCL_LEAVE_ERR_MSG |
+    Tcl_SetVar2(interp, n1, "File", riinc->file, TCL_LEAVE_ERR_MSG |
 		TCL_GLOBAL_ONLY);
 
-  ton = Tcl_NewStringObj("Width",-1);
+  ton = Tcl_NewStringObj("Width", -1);
   to = Tcl_NewDoubleObj(riinc->width);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Length",-1);
+  Tcl_SetStringObj(ton, "Length", -1);
   to = Tcl_NewDoubleObj(riinc->length);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Height",-1);
+  Tcl_SetStringObj(ton, "Height", -1);
   to = Tcl_NewDoubleObj(riinc->height);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
@@ -314,9 +314,9 @@ ay_riinc_readcb(FILE *fileptr, ay_object *o)
   if(!(riinc = calloc(1, sizeof(ay_riinc_object))))
     { return AY_EOMEM; }
 
-  fscanf(fileptr,"%lg\n",&riinc->width);
-  fscanf(fileptr,"%lg\n",&riinc->length);
-  fscanf(fileptr,"%lg",&riinc->height);
+  fscanf(fileptr, "%lg\n", &riinc->width);
+  fscanf(fileptr, "%lg\n", &riinc->length);
+  fscanf(fileptr, "%lg", &riinc->height);
   (void)fgetc(fileptr);
 
   ay_status = ay_read_string(fileptr, &(riinc->file));
