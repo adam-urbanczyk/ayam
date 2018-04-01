@@ -6520,8 +6520,8 @@ statement.
 <p>
 RiProc objects may be used to include procedural objects or external
 archives into your scenes. In contrast to archives included via a
-RiInc object, these archives will only be included when the specified
-bounding box is visible to the current camera.
+RiInc object, these archives will only be included by the RenderMan
+renderer when the specified bounding box is visible to the current camera.
 <p>
 The following table briefly lists some capabilities of the RiProc object.
 <p>
@@ -6554,8 +6554,9 @@ the procedural will create or the archive contains.
 <p><#if out="latex">&nbsp;<newline></#if>
 RiProc objects export as single
 <tscreen><tt>
-RiProcedural(...);
+RiProcedural
 </tt></tscreen>
+statement.
 
 <#if out="latex"><x/newpage/</#if>
 <sect1>CSG&thinsp;/&thinsp;Solid Primitives<label id="solids">
@@ -14652,8 +14653,15 @@ See also the documentation of the corresponding
 scripting interface command <ref id="scextrnp" name="extrNP">.
 </descrip>
 
+<#if out="latex"><x/newpage/</#if>
+
 <sect2>Break into Curves Tool<label id="breaknpt">
 <p>
+<figure loc="ht">
+<eps file="pics/breakcurv.ps" height="4cm">
+<img src="pics/breakcurv.gif">
+<caption>Break into Curves Example</caption>
+</figure>
 <descrip>
 <tag/Arguments/ The break into curves tool takes all NURBS patches from
 the selection and requests a direction parameter.
@@ -14663,6 +14671,7 @@ the transformations of the NPatch objects will be applied to the
 control points and the NCurve objects will be created with default
 transformation attributes, otherwise the NCurve objects will get the
 transformation attributes of the respective NPatch.
+See also the image above.
 <tscreen><verb>
 |-NPatch             |-NPatch
                      |-NCurve
@@ -14675,8 +14684,15 @@ See also the documentation of the corresponding
 scripting interface command <ref id="scbreaknp" name="breakNP">.
 </descrip>
 
+<#if out="latex"><x/newpage/</#if>
+
 <sect2>Build from Curves Tool<label id="buildnpt">
 <p>
+<figure loc="ht">
+<eps file="pics/buildsurf.ps" height="4cm">
+<img src="pics/buildsurf.gif">
+<caption>Build from Curves Example</caption>
+</figure>
 <descrip>
 <tag/Arguments/ The build from curves tool takes a number of NURBS
 curves from the selection.
@@ -14690,6 +14706,8 @@ for numbers of two to four and four for bigger numbers of used curves.
 The knot type in U direction (Knot-Type_U) will always be NURB.
 Other parameters (Order_V, Knot-Type_V, Knots_V) are taken from
 the first curve.
+See also the image above; note, that the extraneous control point
+of the upper curve and the knot vector of the curve below are ignored.
 <tscreen><verb>
 |-NCurve               |-NCurve
 |-NCurve               |-NCurve
@@ -14702,6 +14720,8 @@ the first curve.
 See also the documentation of the corresponding
 scripting interface command <ref id="scbuildnp" name="buildNP">.
 </descrip>
+
+<#if out="latex"><x/newpage/</#if>
 
 <sect2>Tesselation Tool<label id="tesst">
 <p>
