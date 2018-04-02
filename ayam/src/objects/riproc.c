@@ -44,6 +44,8 @@ ay_riproc_createcb(int argc, char *argv[], ay_object *o)
   riproc->maxz = 1.0;
 
   o->refine = riproc;
+  o->parent = AY_TRUE;
+  o->hide_children = AY_TRUE;
 
  return AY_OK;
 } /* ay_riproc_createcb */
@@ -133,6 +135,7 @@ int
 ay_riproc_drawcb(struct Togl *togl, ay_object *o)
 {
  ay_riproc_object *riproc = NULL;
+ ay_object *d;
 
   if(!o)
     return AY_ENULL;
@@ -145,44 +148,56 @@ ay_riproc_drawcb(struct Togl *togl, ay_object *o)
   glEnable(GL_LINE_STIPPLE);
   glLineStipple((GLint)3, (GLushort)0x5555);
 
-  /* draw */
-  glBegin(GL_LINE_STRIP);
-   glVertex3d((GLdouble)riproc->maxx, (GLdouble)riproc->maxy,
-	      (GLdouble)riproc->maxz);
-   glVertex3d((GLdouble)riproc->maxx,(GLdouble)riproc->miny,
-	      (GLdouble)riproc->maxz);
-   glVertex3d((GLdouble)riproc->minx,(GLdouble)riproc->miny,
-	      (GLdouble)riproc->maxz);
-   glVertex3d((GLdouble)riproc->minx, (GLdouble)riproc->maxy,
-	      (GLdouble)riproc->maxz);
-   glVertex3d((GLdouble)riproc->maxx, (GLdouble)riproc->maxy,
-	      (GLdouble)riproc->maxz);
-   glVertex3d((GLdouble)riproc->maxx, (GLdouble)riproc->maxy,
-	      (GLdouble)riproc->minz);
-   glVertex3d((GLdouble)riproc->maxx,(GLdouble)riproc->miny,
-	      (GLdouble)riproc->minz);
-   glVertex3d((GLdouble)riproc->minx,(GLdouble)riproc->miny,
-	      (GLdouble)riproc->minz);
-   glVertex3d((GLdouble)riproc->minx, (GLdouble)riproc->maxy,
-	      (GLdouble)riproc->minz);
-   glVertex3d((GLdouble)riproc->maxx, (GLdouble)riproc->maxy,
-	      (GLdouble)riproc->minz);
-  glEnd();
+  if(o->down && o->down->next)
+    {
+      d = o->down;
+      while(d->next)
+	{
+	  ay_draw_object(togl, d, AY_FALSE);
+	  d = d->next;
+	}
+    }
+  else
+    {
+      /* draw */
+      glBegin(GL_LINE_STRIP);
+       glVertex3d((GLdouble)riproc->maxx, (GLdouble)riproc->maxy,
+		  (GLdouble)riproc->maxz);
+       glVertex3d((GLdouble)riproc->maxx,(GLdouble)riproc->miny,
+		  (GLdouble)riproc->maxz);
+       glVertex3d((GLdouble)riproc->minx,(GLdouble)riproc->miny,
+		  (GLdouble)riproc->maxz);
+       glVertex3d((GLdouble)riproc->minx, (GLdouble)riproc->maxy,
+		  (GLdouble)riproc->maxz);
+       glVertex3d((GLdouble)riproc->maxx, (GLdouble)riproc->maxy,
+		  (GLdouble)riproc->maxz);
+       glVertex3d((GLdouble)riproc->maxx, (GLdouble)riproc->maxy,
+		  (GLdouble)riproc->minz);
+       glVertex3d((GLdouble)riproc->maxx,(GLdouble)riproc->miny,
+		  (GLdouble)riproc->minz);
+       glVertex3d((GLdouble)riproc->minx,(GLdouble)riproc->miny,
+		  (GLdouble)riproc->minz);
+       glVertex3d((GLdouble)riproc->minx, (GLdouble)riproc->maxy,
+		  (GLdouble)riproc->minz);
+       glVertex3d((GLdouble)riproc->maxx, (GLdouble)riproc->maxy,
+		  (GLdouble)riproc->minz);
+      glEnd();
 
-  glBegin(GL_LINES);
-   glVertex3d((GLdouble)riproc->maxx,(GLdouble)riproc->miny,
-	      (GLdouble)riproc->maxz);
-   glVertex3d((GLdouble)riproc->maxx,(GLdouble)riproc->miny,
-	      (GLdouble)riproc->minz);
-   glVertex3d((GLdouble)riproc->minx,(GLdouble)riproc->miny,
-	      (GLdouble)riproc->maxz);
-   glVertex3d((GLdouble)riproc->minx,(GLdouble)riproc->miny,
-	      (GLdouble)riproc->minz);
-   glVertex3d((GLdouble)riproc->minx, (GLdouble)riproc->maxy,
-	      (GLdouble)riproc->maxz);
-   glVertex3d((GLdouble)riproc->minx, (GLdouble)riproc->maxy,
-	      (GLdouble)riproc->minz);
-  glEnd();
+      glBegin(GL_LINES);
+       glVertex3d((GLdouble)riproc->maxx,(GLdouble)riproc->miny,
+		  (GLdouble)riproc->maxz);
+       glVertex3d((GLdouble)riproc->maxx,(GLdouble)riproc->miny,
+		  (GLdouble)riproc->minz);
+       glVertex3d((GLdouble)riproc->minx,(GLdouble)riproc->miny,
+		  (GLdouble)riproc->maxz);
+       glVertex3d((GLdouble)riproc->minx,(GLdouble)riproc->miny,
+		  (GLdouble)riproc->minz);
+       glVertex3d((GLdouble)riproc->minx, (GLdouble)riproc->maxy,
+		  (GLdouble)riproc->maxz);
+       glVertex3d((GLdouble)riproc->minx, (GLdouble)riproc->maxy,
+		  (GLdouble)riproc->minz);
+      glEnd();
+    }
 
   glDisable(GL_LINE_STIPPLE);
 
@@ -321,7 +336,7 @@ ay_riproc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetVar2(interp, n1, "Data", "", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   if(riproc->data)
-    Tcl_SetVar2(interp, n1, "Data", riproc->data,TCL_LEAVE_ERR_MSG |
+    Tcl_SetVar2(interp, n1, "Data", riproc->data, TCL_LEAVE_ERR_MSG |
 		TCL_GLOBAL_ONLY);
 
   ton = Tcl_NewStringObj("MinX", -1);
