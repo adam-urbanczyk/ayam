@@ -1376,7 +1376,10 @@ proc addInfo { w prop name } {
     if {[string length ${name}] > 12} {
 	balloon_set $f.l1 ${name}
     }
-    label $f.l2 -textvariable ${prop}(${name})
+
+    entry $f.e
+    label $f.l2 -textvariable ${prop}(${name}) -font [$f.e cget -font]
+    destroy $f.e
 
     pack $f.l1 -in $f -side left -fill x -expand no
     pack $f.l2 -in $f -side left -fill x -expand yes
