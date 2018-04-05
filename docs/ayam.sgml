@@ -6485,7 +6485,8 @@ Note that Ayam can not check, wether the bounding box or children
 actually match the content of the included archive.
 <p>
 Also note that archives can be created easily using the main menu
-entry <tt>"Special/RIB-Export/Selected Objects"</tt>.
+entry<newline>
+<tt>"Special/RIB-Export/Selected Objects"</tt>.
 <p>
 The following table briefly lists some capabilities of the RiInc object.
 <p>
@@ -14658,7 +14659,7 @@ scripting interface command <ref id="scextrnp" name="extrNP">.
 <sect2>Break into Curves Tool<label id="breaknpt">
 <p>
 <figure loc="ht">
-<eps file="pics/breakcurv.ps" height="4cm">
+<eps file="pics/breakcurv.ps" height="4.5cm">
 <img src="pics/breakcurv.gif">
 <caption>Break into Curves Example</caption>
 </figure>
@@ -14689,7 +14690,7 @@ scripting interface command <ref id="scbreaknp" name="breakNP">.
 <sect2>Build from Curves Tool<label id="buildnpt">
 <p>
 <figure loc="ht">
-<eps file="pics/buildsurf.ps" height="4cm">
+<eps file="pics/buildsurf.ps" height="4.5cm">
 <img src="pics/buildsurf.gif">
 <caption>Build from Curves Example</caption>
 </figure>
@@ -14698,14 +14699,15 @@ scripting interface command <ref id="scbreaknp" name="breakNP">.
 curves from the selection.
 <tag/Operation/ The selected NURBS curves will be parsed, all curves
 that are of equal length or longer than the first selected curve
-will be used to form a new NURBS patch of the following dimensions:
-Width: length of the first selected curve,
-Height: number of used curves.
+will be used to form a new NURBS patch of the following
+dimensions:<newline>
+Width: number of used curves,
+Height: length of the first selected curve.
 The order in U direction (Order_U) will be equal to the number of used curves
 for numbers of two to four and four for bigger numbers of used curves.
 The knot type in U direction (Knot-Type_U) will always be NURB.
 Other parameters (Order_V, Knot-Type_V, Knots_V) are taken from
-the first curve.
+the first curve.<newline>
 See also the image above; note, that the extraneous control point
 of the upper curve and the knot vector of the curve below are ignored.
 <tscreen><verb>
@@ -14777,7 +14779,6 @@ Note that the PV tags must be named as defined by the hidden preference
 option <tt/"PVNormalName"/. By default this is set to <tt/"N"/, so that
 a correct example tag looks like this:
 <tscreen><verb>PV N,varying,n,4,0,0,1,0,0,1,1,1,0,0,0,1</verb></tscreen>
-.
 <p>
 The option <tt>"RefineTrims"</tt> controls how many times the trim
 curves are to be refined before tesselation for improved tesselation
@@ -14786,8 +14787,8 @@ See also the images below.
 <#if out="latex">
 <table loc="ht">
 <tabular ca="ccc">
-<x>inlinegfx pics/reftrims0.png 4cm </x>||
-<x>inlinegfx pics/reftrims2.png 4cm </x>
+<x>inlinegfx pics/reftrims0.png 4.5cm </x>||
+<x>inlinegfx pics/reftrims2.png 4.5cm </x>
 </tabular>
 <caption>RefineTrims Example (left: 0, right: 2)</caption>
 </table>
