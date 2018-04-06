@@ -34,6 +34,7 @@ addParam $w SDMeshAttrData Level
 addCheck $w SDMeshAttrData DrawSub
 addInfo $w SDMeshAttrData NFaces
 addInfo $w SDMeshAttrData NControls
+addInfo $w SDMeshAttrData NTags
 
 return;
 }

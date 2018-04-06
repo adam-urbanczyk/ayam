@@ -729,15 +729,15 @@ ay_sdmesh_drawcb(struct Togl *togl, ay_object *o)
       for(i = 0; i < sdmesh->nfaces; i++)
 	{
 	  glBegin(GL_LINE_LOOP);
-	  for(k = 0; k < sdmesh->nverts[m]; k++)
-	    {
-	      a = sdmesh->verts[n++];
-	      glVertex3dv((GLdouble*)(&(sdmesh->controlv[a * 3])));
-	    }
+	   for(k = 0; k < sdmesh->nverts[m]; k++)
+	     {
+	       a = sdmesh->verts[n++];
+	       glVertex3dv((GLdouble*)(&(sdmesh->controlv[a * 3])));
+	     }
 	  glEnd();
 	  m++;
 	} /* for */
-    }
+    } /* if */
 
  return AY_OK;
 } /* ay_sdmesh_drawcb */
@@ -1038,6 +1038,11 @@ ay_sdmesh_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton, "NTags", -1);
+  to = Tcl_NewIntObj((int)sdmesh->ntags);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton, "DrawSub", -1);
   to = Tcl_NewIntObj(sdmesh->drawsub);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
@@ -1140,8 +1145,8 @@ ay_sdmesh_readcb(FILE *fileptr, ay_object *o)
   if(ay_read_version > 13)
     {
       /* since 1.16 */
-      fscanf(fileptr,"%u\n",&sdmesh->level);
-      fscanf(fileptr,"%c\n",&sdmesh->drawsub);
+      fscanf(fileptr, "%u\n", &sdmesh->level);
+      fscanf(fileptr, "%c\n", &sdmesh->drawsub);
     }
 
   o->refine = sdmesh;
