@@ -20393,7 +20393,10 @@ see the file:<newline>
 </figure>
 <p>
 The script <tt>"extruden.tcl"</tt> extrudes a NURBS curve along
-its normal, see also the above image.
+its normal, see also the above image.<newline>
+If the curve object has a MN tag, it will take precedence
+over the normal computation via <tt/"getNormal"/. This is faster and
+also allows to create sheared extrusions.<footnote>Since 1.26.</footnote>
 <p>
 Internally, the script creates a Skin from two curves, therefore, arbitrarily
 oriented and non-planar curves are supported.
