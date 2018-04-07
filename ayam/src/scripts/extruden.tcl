@@ -17,7 +17,12 @@ if { ![info exists ::ExtrudeNAttrGUI] } {
 
 convOb -i NCurve
 applyTrafo -all
-set n [getNormal]
+if { [hasTag MN] } {
+    getTag MN n
+    set n [string map {"," " "} $n]
+} else {
+    set n [getNormal]
+}
 set h $ExtrudeNAttrData(Height)
 if { $h != 1 } {
     set n [list [expr [lindex $n 0] * $h] [expr [lindex $n 1] * $h]\
