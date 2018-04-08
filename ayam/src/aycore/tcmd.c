@@ -1814,7 +1814,7 @@ ay_tcmd_getnormaltcmd(ClientData clientData, Tcl_Interp *interp,
  ay_acurve_object *ac;
  ay_pointedit pe = {0};
  double *cv = NULL, *pnt, p[4], normal[3], m[16], len;
- int trafo = AY_FALSE, clearcv = AY_FALSE, cvlen, stride = 3;
+ int applytrafo = AY_FALSE, clearcv = AY_FALSE, cvlen, stride = 3;
  unsigned int i;
  int j = 1;
  Tcl_Obj *to = NULL, *ton = NULL;
@@ -1824,7 +1824,7 @@ ay_tcmd_getnormaltcmd(ClientData clientData, Tcl_Interp *interp,
       if(argv[j][0] == '-' && argv[j][1] == 't')
 	{
 	  /* -trafo */
-	  trafo = AY_TRUE;
+	  applytrafo = AY_TRUE;
 	}
       j++;
     }
@@ -1878,11 +1878,12 @@ ay_tcmd_getnormaltcmd(ClientData clientData, Tcl_Interp *interp,
 	  /* compute result */
 	  ay_geom_extractmeannormal(cv, cvlen, stride, NULL, normal);
 
-	  if(trafo)
+	  if(applytrafo)
 	    {
-	      if(AY_ISTRAFO(o))
+	      if(AY_ISTRAFO(o)/*AY_ISROT(o)*/)
 		{
-		  ay_trafo_creatematrix(o, m);
+		  /* ay_trafo_creatematrix(o, m); */
+		  ay_quat_torotmatrix(o->quat, m);
 		  ay_trafo_apply3(normal, m);
 		}
 	    }
