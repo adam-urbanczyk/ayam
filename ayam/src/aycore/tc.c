@@ -20,7 +20,7 @@
 int
 ay_tc_wrib(ay_object *o)
 {
- char fname[] = "ay_tc_wrib";
+ char fname[] = "tc_wrib";
  int count;
  ay_tag *tag = NULL;
  RtFloat s1, s2, s3, s4, t1, t2, t3, t4;
@@ -38,13 +38,14 @@ ay_tc_wrib(ay_object *o)
 			 &s1, &t1, &s2, &t2, &s3, &t3, &s4, &t4);
 	  if(count != 8)
 	    {
-	      ay_error(AY_ERROR, fname, "Malformed TC tag encountered.");
+	      ay_error(AY_ERROR, fname,
+		       "Malformed TC tag (need 8 comma separated floats).");
 	      ay_error_reportobject(AY_ERROR, fname, o);
 	      return AY_ERROR;
 	    }
 	  RiTextureCoordinates(s1, t1, s2, t2, s3, t3, s4, t4);
 	  return AY_OK;
-	} /* if(tagtype== */
+	} /* if is tc_tag */
 
       tag = tag->next;
     } /* while */
