@@ -319,9 +319,15 @@ ay_tcmd_getvertcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_tcmd_getvertcmd */
 
 
-/* ay_tcmd_getbppntfromindex:
+/** ay_tcmd_getbppntfromindex:
  *  get bilinear patch coordinate address from index
+ *  (performing bounds checking and reporting errors via ay_error())
  *
+ * \param[in] patch bilinear patch to process
+ * \param[in] index point index (0-3)
+ * \param[in,out] p where to store the coordinate address
+ *
+ * \return AY_OK on success, error code otherwise
  */
 int
 ay_tcmd_getbppntfromindex(ay_bpatch_object *patch, int index,
@@ -430,8 +436,6 @@ ay_tcmd_getallpoints(Tcl_Interp *interp, char *fname, char *vn,
 
       sel = sel->next;
     } /* while */
-
-  ay_notify_parent();
 
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
