@@ -73,10 +73,10 @@ ay_sel_add(ay_object *o, int set_selflag)
  * Implements the \a selOb scripting interface command.
  * See also the corresponding section in the \ayd{scselob}.
  *
- * \param clientData[in] unused
- * \param interp[in] current Tcl interpreter
- * \param argc[in] number of arguments
- * \param argv[in] sorted and split list of object indices
+ * \param[in] clientData unused
+ * \param[in] interp current Tcl interpreter
+ * \param[in] argc number of arguments
+ * \param[in] argv sorted and split list of object indices
  *  in the current level or nothing to just clear the selection
  *
  * \returns TCL_OK in any case.
