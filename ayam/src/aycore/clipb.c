@@ -590,8 +590,8 @@ ay_clipb_hmovtcmd(ClientData clientData, Tcl_Interp *interp,
  * to the clipboard. The objects must be properly unlinked.
  * The objects will be prepended to the clipboard.
  *
- * \param o objects to move
- * \param fname if not null use this as place to report this to the user
+ * \param[in] o objects to move
+ * \param[in] fname if not null use this as place to report this to the user
  */
 void
 ay_clipb_prepend(ay_object *o, char *fname)

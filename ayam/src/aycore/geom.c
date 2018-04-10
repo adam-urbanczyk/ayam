@@ -396,10 +396,10 @@ ay_geom_extractmeannormal(double *cv, int cvlen, int cvstride,
 /** ay_geom_scalecog:
  *  scale a number of points around their center of gravity
  *
- * \param scale scale factor
- * \param cv points to scale
- * \param len number of points
- * \param stride memory distance between two points
+ * \param[in] scale scale factor
+ * \param[in,out] cv points to scale
+ * \param[in] len number of points
+ * \param[in] stride memory distance between two points
  */
 void
 ay_geom_scalecog(double scale, double *cv, int len, int stride)

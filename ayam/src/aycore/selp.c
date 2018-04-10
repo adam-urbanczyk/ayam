@@ -1425,9 +1425,9 @@ ay_selp_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 /** ay_selp_managelist:
  * Compile array of points from a list of objects.
  *
- * \param o list of objects
- * \param lenptr where to store the compiled number of points
- * \param pntsptr where to store the compiled points
+ * \param[in] o list of objects
+ * \param[in,out] lenptr where to store the compiled number of points
+ * \param[in,out] pntsptr where to store the compiled points
  */
 void
 ay_selp_managelist(ay_object *o, unsigned int *lenptr, double **pntsptr)
