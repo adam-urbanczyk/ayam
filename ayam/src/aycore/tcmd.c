@@ -102,6 +102,7 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
  int ay_status = AY_OK;
+ int notify_parent = AY_FALSE;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_acurve_object *acurve = NULL;
@@ -126,6 +127,7 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      ay_notify_object(o);
 	      o->modified = AY_TRUE;
+	      notify_parent = AY_TRUE;
 	    }
 	  break;
 	case AY_IDICURVE:
@@ -140,6 +142,7 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      ay_notify_object(o);
 	      o->modified = AY_TRUE;
+	      notify_parent = AY_TRUE;
 	    }
 	  break;
 	case AY_IDNCURVE:
@@ -154,6 +157,7 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      ay_notify_object(o);
 	      o->modified = AY_TRUE;
+	      notify_parent = AY_TRUE;
 	    }
 	  break;
 	default:
@@ -164,7 +168,8 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  ay_notify_parent();
+  if(notify_parent)
+    ay_notify_parent();
 
  return TCL_OK;
 } /* ay_tcmd_reverttcmd */
@@ -1088,6 +1093,7 @@ ay_tcmd_setallpoints(Tcl_Interp *interp, char *fname, char *vn,
 		     int from_world)
 {
  int tcl_status = TCL_OK;
+ int notify_parent = AY_FALSE;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_pointedit pe = {0};
@@ -1161,6 +1167,7 @@ ay_tcmd_setallpoints(Tcl_Interp *interp, char *fname, char *vn,
 
 	  ay_notify_object(o);
 	  o->modified = AY_TRUE;
+	  notify_parent = AY_TRUE;
 	} /* if */
 
       ay_pact_clearpointedit(&pe);
@@ -1168,7 +1175,8 @@ ay_tcmd_setallpoints(Tcl_Interp *interp, char *fname, char *vn,
       sel = sel->next;
     } /* while */
 
-  ay_notify_parent();
+  if(notify_parent)
+    ay_notify_parent();
 
   if(v)
     {
@@ -1197,7 +1205,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
  double dtemp = 0.0;
  int remargc = argc, indexu = 0, indexv = 0, i = 1, rational = AY_FALSE;
  int from_world = AY_FALSE, clear_selp = AY_FALSE, handled = AY_FALSE;
- int from_var = AY_FALSE, vlen = 0;
+ int from_var = AY_FALSE, vlen = 0, notify_parent = AY_FALSE;
  double *p = NULL, *v = NULL;
  ay_voidfp *arr = NULL;
  ay_getpntcb *cb = NULL;
@@ -1441,6 +1449,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  ay_notify_object(o);
 	  o->modified = AY_TRUE;
+	  notify_parent = AY_TRUE;
 
 	  if(clear_selp)
 	    {
@@ -1453,7 +1462,8 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  ay_notify_parent();
+  if(notify_parent)
+    ay_notify_parent();
 
 cleanup:
 
