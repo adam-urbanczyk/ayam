@@ -742,6 +742,7 @@ proc plb_addremprop { {rem 0} } {
 	    # for
 	}
 	# forAll
+	set anchor rptag
     } else {
 	# add operation, compile list of
 	# candidates for addition
@@ -761,6 +762,7 @@ proc plb_addremprop { {rem 0} } {
 	    # for
 	}
 	# forAll
+	set anchor nptag
     }
     # if
 
@@ -797,6 +799,9 @@ proc plb_addremprop { {rem 0} } {
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
     bind $w <Key-Return> "$f.bok invoke"
     catch { bind $w <Key-KP_Enter> "$f.bok invoke" }
+
+    # establish "Help"-binding
+    shortcut_addcshelp $w ayam-4.html $anchor
 
     winRestoreOrCenter $w $title
 

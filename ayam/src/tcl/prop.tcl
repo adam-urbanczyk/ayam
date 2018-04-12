@@ -528,6 +528,9 @@ pack $f -in $w -side top -fill x
 bind $w <Escape> "$f.bca invoke"
 wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
+# establish "Help"-binding
+shortcut_addcshelp $w ayam-4.html tagsprop
+
 set t "Add Tag"
 winRestoreOrCenter $w $t
 grab $w
