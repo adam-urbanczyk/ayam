@@ -553,7 +553,7 @@ ay_selp_centertcmd(ClientData clientData, Tcl_Interp *interp,
  ay_point *oldpointsel = NULL;
  ay_object *o = NULL;
  double center[3] = {0};
- int dim = 0, mode = 0;
+ int dim = 0, mode = 0, notify_parent = AY_FALSE;
 
   if(!strcmp(argv[0], "centerNC"))
     {
@@ -603,8 +603,9 @@ ay_selp_centertcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  o->modified = AY_TRUE;
 	  ay_notify_object(o);
+	  o->modified = AY_TRUE;
+	  notify_parent = AY_TRUE;
 	}
 
       /* recover point selection */
@@ -614,7 +615,8 @@ ay_selp_centertcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  ay_notify_parent();
+  if(notify_parent)
+    ay_notify_parent();
 
  return TCL_OK;
 } /* ay_selp_centertcmd */
@@ -1299,16 +1301,18 @@ ay_selp_collapsetcmd(ClientData clientData, Tcl_Interp *interp,
 	      {
 		ay_error(ay_status, argv[0], fmsg);
 	      }
-
-	    if(sel->object->selp)
+	    else
 	      {
-		ay_selp_clear(sel->object);
-	      }
-	    sel->object->modified = AY_TRUE;
+		if(sel->object->selp)
+		  {
+		    ay_selp_clear(sel->object);
+		  }
 
-	    /* re-create tesselation of curve */
-	    (void)ay_notify_object(sel->object);
-	    notify_parent = AY_TRUE;
+		/* re-create tesselation of curve */
+		(void)ay_notify_object(sel->object);
+		sel->object->modified = AY_TRUE;
+		notify_parent = AY_TRUE;
+	      }
 	  }
 	  break;
 	case AY_IDNPATCH:
@@ -1318,13 +1322,18 @@ ay_selp_collapsetcmd(ClientData clientData, Tcl_Interp *interp,
 	      {
 		ay_error(ay_status, argv[0], fmsg);
 	      }
-
-	    if(sel->object->selp)
+	    else
 	      {
-		ay_selp_clear(sel->object);
+		if(sel->object->selp)
+		  {
+		    ay_selp_clear(sel->object);
+		  }
+
+		/* re-create tesselation of curve */
+		(void)ay_notify_object(sel->object);
+		sel->object->modified = AY_TRUE;
+		notify_parent = AY_TRUE;
 	      }
-	    sel->object->modified = AY_TRUE;
-	    notify_parent = AY_TRUE;
 	  }
 	  break;
 	default:
@@ -1378,15 +1387,17 @@ ay_selp_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 	      {
 		ay_error(ay_status, argv[0], fmsg);
 	      }
-
- 	    if(sel->object->selp)
+	    else
 	      {
-		ay_selp_clear(sel->object);
+		if(sel->object->selp)
+		  {
+		    ay_selp_clear(sel->object);
+		  }
+		/* re-create tesselation of curve */
+		(void)ay_notify_object(sel->object);
+		sel->object->modified = AY_TRUE;
+		notify_parent = AY_TRUE;
 	      }
-	    sel->object->modified = AY_TRUE;
-	    /* re-create tesselation of curve */
-	    (void)ay_notify_object(sel->object);
-	    notify_parent = AY_TRUE;
 	  }
 	  break;
 	case AY_IDNPATCH:
@@ -1396,13 +1407,17 @@ ay_selp_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 	      {
 		ay_error(ay_status, argv[0], fmsg);
 	      }
-
- 	    if(sel->object->selp)
+	    else
 	      {
-		ay_selp_clear(sel->object);
+		if(sel->object->selp)
+		  {
+		    ay_selp_clear(sel->object);
+		  }
+		/* re-create tesselation of patch */
+		(void)ay_notify_object(sel->object);
+		sel->object->modified = AY_TRUE;
+		notify_parent = AY_TRUE;
 	      }
-	    sel->object->modified = AY_TRUE;
-	    notify_parent = AY_TRUE;
 	  }
 	  break;
 	default:
