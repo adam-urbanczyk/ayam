@@ -2144,9 +2144,8 @@ extern char *ay_error_igntype;
  *
  *  Other places of interest:
  *  - Official Ayam home page: http://ayam.sourceforge.net/
- *  - WebCVS: http://ayam.cvs.sourceforge.net/viewvc/ayam/ayam/
+ *  - Mercurial Repository: https://sourceforge.net/p/ayam/mercurial/ci/default/tree/
  *  - Official user level documentation: http://ayam.sourceforge.net/docs/
- *
  */
 
 #ifdef __cplusplus
