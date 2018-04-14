@@ -1,17 +1,30 @@
-[3. Mar 2018] Tip:
-==================
+[14. Apr 2018] Tip:
+===================
 Bug Fixes:
+o fix window close shortcut in external views
 o fix shading of rational SDNPatch surfaces
+o fix resetting the knots of SDNPatch surfaces not changing virtual knots
 o fix MetaObj result missing the triangles from the first cube
+o setting the mark via double click does not normalize the mark
+
+Modelling:
+o RiInc/RiProc objects now draw the bounding box with dashed lines
+o RiInc/RiProc objects now allow children to convey the archive/procedural
+  objects shape
 
 GUI:
 o improved initial layout process of dialog windows
+o SDMesh objects now display the number of tags
 
 Plugins:
 o added support for periodic patches to NPatch to SDNPatch conversion
 o SDNPatch drawing now obeys the RationalStyle preference setting
 o SDNPatch drawing now also colors rational control points in weight editing
 o MetaObj world is now drawn with dashed lines
+o MetaObj now displays the number of generated triangles
+
+Scripts/Scripting Interface:
+o extruden.tcl script now also uses MN tags
 
 
 [25. Jan 2018] Ayam 1.25:
