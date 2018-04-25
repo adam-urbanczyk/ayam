@@ -1,0 +1,414 @@
+Ayam
+1.25
+0
+0
+1
+0
+1
+0
+1
+0
+
+0
+0
+2
+2
+0
+2
+2
+1
+1
+255
+0
+255
+0.5
+4
+64
+4
+0.01
+1
+0
+2
+
+
+
+10000
+40000
+0
+0
+0
+0
+1
+
+2
+2
+0
+7
+0
+0
+1
+1
+1
+1
+view1
+0
+648
+411
+0
+0
+0
+0
+1
+0
+0
+0
+0
+0
+0
+10
+0
+0
+0
+0
+1
+0
+0
+3
+523
+31
+0
+0
+0
+
+0
+0
+0
+0
+1
+0
+1
+0
+7
+0
+0
+1
+1
+1
+1
+view2
+0
+643
+411
+2
+0.25
+0
+0
+1
+1
+1
+2
+0
+0.0613893
+9.97093
+0.100672
+0.0613893
+-0.0290697
+0.100672
+0
+0
+-1
+0
+2.0904
+523
+31
+0
+0
+0
+
+0
+0
+0
+0
+1
+0
+1
+0
+7
+0
+0
+1
+1
+1
+1
+view3
+0
+457
+297
+3
+1
+0
+0
+1
+1
+0
+0
+0
+2.96352e-08
+8.60365
+12.2873
+0
+0
+0
+-1.14066e-09
+0.819152
+-0.573577
+0
+0.119209
+523
+31
+-35
+0
+0
+
+0
+0
+0
+0
+1
+0
+1
+0
+3
+0
+0
+0
+1
+0
+0
+
+0
+0
+0
+35
+1
+0
+1
+1
+0
+1
+
+0
+1
+2
+978
+# Ayam, save array: ExtrudeNAttrData
+# extruden.tcl: example script for an Ayam Script object;
+# this script wants Script object type "Modify" and extrudes a planar
+# curve along its normal; it also has a property GUI, just
+# add a tag "NP ExtrudeNAttr" to the Script object to see it
+if { ![info exists ::ExtrudeNAttrData] } {
+    array set ::ExtrudeNAttrData {
+	Height 1.0
+	SP {Height}
+    }
+}
+if { ![info exists ::ExtrudeNAttrGUI] } {
+    set w [addPropertyGUI ExtrudeNAttr "" ""]
+    addVSpace $w v1 5
+    addParam $w ExtrudeNAttrData Height
+}
+
+convOb -i NCurve
+applyTrafo -all
+if { [hasTag MN] } {
+    getTag MN n
+    set n [string map {"," " "} $n]
+} else {
+    set n [getNormal]
+}
+set h $ExtrudeNAttrData(Height)
+if { $h != 1 } {
+    set n [list [expr [lindex $n 0] * $h] [expr [lindex $n 1] * $h]\
+	       [expr [lindex $n 2] * $h] ]
+}
+copOb
+pasOb
+selOb 1
+movOb [lindex $n 0] [lindex $n 1] [lindex $n 2]
+selOb 0 1
+cutOb
+crtOb Skin
+goDown -1
+pasOb
+goUp
+selOb 0
+notifyOb
+
+
+2
+SP
+Height
+Height
+1.0
+0
+2
+0
+1
+-0.425
+0
+0
+0
+60
+0
+0
+-0.5
+0
+0.866025
+1
+1
+1
+0
+1
+0
+0
+
+0
+9
+4
+1
+0.5 -0.866025 0 1
+1 -1.11022e-16 0 1
+0.5 0.866025 0 1
+-0.5 0.866025 0 1
+-1 5.17923e-16 0 1
+-0.5 -0.866025 0 1
+0.5 -0.866025 0 1
+1 -9.72909e-16 0 1
+0.5 0.866025 0 1
+2
+0
+0
+1
+0
+3
+0
+0
+0
+1
+0
+0
+
+0
+0
+0
+35
+1
+0
+1
+1
+1
+1
+
+0
+1
+2
+978
+# Ayam, save array: ExtrudeNAttrData
+# extruden.tcl: example script for an Ayam Script object;
+# this script wants Script object type "Modify" and extrudes a planar
+# curve along its normal; it also has a property GUI, just
+# add a tag "NP ExtrudeNAttr" to the Script object to see it
+if { ![info exists ::ExtrudeNAttrData] } {
+    array set ::ExtrudeNAttrData {
+	Height 1.0
+	SP {Height}
+    }
+}
+if { ![info exists ::ExtrudeNAttrGUI] } {
+    set w [addPropertyGUI ExtrudeNAttr "" ""]
+    addVSpace $w v1 5
+    addParam $w ExtrudeNAttrData Height
+}
+
+convOb -i NCurve
+applyTrafo -all
+if { [hasTag MN] } {
+    getTag MN n
+    set n [string map {"," " "} $n]
+} else {
+    set n [getNormal]
+}
+set h $ExtrudeNAttrData(Height)
+if { $h != 1 } {
+    set n [list [expr [lindex $n 0] * $h] [expr [lindex $n 1] * $h]\
+	       [expr [lindex $n 2] * $h] ]
+}
+copOb
+pasOb
+selOb 1
+movOb [lindex $n 0] [lindex $n 1] [lindex $n 2]
+selOb 0 1
+cutOb
+crtOb Skin
+goDown -1
+pasOb
+goUp
+selOb 0
+notifyOb
+
+
+2
+SP
+Height
+Height
+1.0
+0
+2
+0
+1
+0
+0
+0
+0
+-45
+0
+0
+-0.382683
+0
+0.92388
+1
+1
+1
+0
+1
+0
+0
+
+0
+9
+4
+1
+0.5 -0.866025 0 1
+1 -1.11022e-16 -0.5 1
+0.5 0.866025 0 1
+-0.5 0.866025 0 1
+-1 5.17923e-16 0 1
+-0.5 -0.866025 0 1
+0.5 -0.866025 0 1
+1 -9.72909e-16 -0.5 1
+0.5 0.866025 0 1
+2
+0
+0
+1
+0
+3
+0
+0
+0
+1
+0
+0
+
+0
+0
