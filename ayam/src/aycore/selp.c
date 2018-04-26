@@ -759,15 +759,32 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      return TCL_OK;
 	    }
+	  /* -has */
+	  if(argv[1][1] == 'h' && argv[1][2] == 'a')
+	    {
+	      to = Tcl_NewIntObj(0);
+	      o = sel->object;
+	      while(o)
+		{
+		  if(o->selp)
+		    {
+		      to = Tcl_NewIntObj(1);
+		      break;
+		    }
+		  o = o->next;
+		}
+	      Tcl_SetObjResult(interp, to);
+	      return TCL_OK;
+	    }
 	  /* -help */
-	  if(argv[1][1] == 'h')
+	  if(argv[1][1] == 'h' && argv[1][2] == 'e')
 	    {
 	      ay_error(AY_EARGS, argv[0],
-		       "[-all | -none | -get vname | ind1 ind2 ... indn]");
+	  "[-all | -none | -get vname | -count vname | ind1 ind2 ... indn]");
 	      goto cleanup;
 	    }
-	}
-    }
+	} /* if arg is option */
+    } /* if have args */
 
   /* parse list of indices */
   if(!count && !select_none && !select_all)
