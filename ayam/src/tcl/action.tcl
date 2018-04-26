@@ -1289,7 +1289,6 @@ proc editPointDialog { win {dragsel 0} } {
 	set editPntArr(z) $aymark(z)
 	set editPntArr(w) 1
 	set editPntArr(valid) 1
-
     }
 
     if { [winfo exists $w] } {
@@ -1489,6 +1488,14 @@ proc actionEditNumP { w } {
     }
 
     $w setconf -drawh 1
+
+    if { [selPnts -have] } {
+	global editPntArr
+	set editPntArr(window) $w
+        $w penpac -start 0 0
+	editPointDialog $w 1
+    }
+
 
  return;
 }
