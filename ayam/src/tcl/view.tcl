@@ -1267,7 +1267,7 @@ proc viewSetMAIcon { w image balloon } {
 	set conf "$w.$m configure"
 	eval "$conf -image $image"
 	if { $balloon != "" } {
-	    eval [subst "balloon_set $w.$m $balloon"]
+	    eval [subst "balloon_set $w.$m \"$balloon\""]
 	} else {
 	    eval [subst "balloon_clear $w.$m"]
 	}
