@@ -138,8 +138,7 @@ proc actionSetMark { w { nextaction "" } } {
     global ayprefs
 
     viewTitle $w "" "Mark Point"
-
-    viewSetMAIcon $w ay_Mark_img "Mark_Point"
+    viewSetMAIcon $w ay_Mark_img "Mark Point"
 
     if { $nextaction == "" } {
 	actionClearB1 $w
@@ -218,8 +217,8 @@ proc actionSetMark { w { nextaction "" } } {
 #
 proc actionRotView { w } {
 
-    viewTitle $w "" "Rotate_View"
-    viewSetMAIcon $w ay_RotV_img "Rotate_View"
+    viewTitle $w "" "Rotate View"
+    viewSetMAIcon $w ay_RotV_img "Rotate View"
 
     actionClearB1 $w
 
@@ -253,8 +252,8 @@ proc actionRotView { w } {
 #
 proc actionMoveView { w } {
 
-    viewTitle $w "" "Move_View"
-    viewSetMAIcon $w ay_MoveV_img "Move_View"
+    viewTitle $w "" "Move View"
+    viewSetMAIcon $w ay_MoveV_img "Move View"
 
     actionClearB1 $w
 
@@ -285,8 +284,8 @@ proc actionMoveView { w } {
 #
 proc actionZoomView { w } {
 
-    viewTitle $w "" "Zoom_View"
-    viewSetMAIcon $w ay_ZoomV_img "Zoom_View"
+    viewTitle $w "" "Zoom View"
+    viewSetMAIcon $w ay_ZoomV_img "Zoom View"
 
     actionClearB1 $w
 
@@ -315,8 +314,8 @@ proc actionZoomView { w } {
 #
 proc actionMoveZView { w } {
 
-    viewTitle $w "" "MoveZ_View"
-    viewSetMAIcon $w ay_MoveVZ_img "MoveZ_View"
+    viewTitle $w "" "MoveZ View"
+    viewSetMAIcon $w ay_MoveVZ_img "MoveZ View"
 
     actionClearB1 $w
 
@@ -1010,8 +1009,8 @@ proc actionStr2DAOb { w } {
 proc actionTagP { w } {
     global ayprefs ayviewshortcuts
 
-    viewTitle $w "" "Select_Points"
-    viewSetMAIcon $w ay_Tag_img "Select_Points"
+    viewTitle $w "" "Select Points"
+    viewSetMAIcon $w ay_Tag_img "Select Points"
 
     if { $ayprefs(TagResetTagged) == 1 } {
 	selPnts; rV
@@ -1098,8 +1097,8 @@ proc actionDelTagP { w } {
 proc actionTagB { w } {
     global ayprefs ayviewshortcuts
 
-    viewTitle $w "" "Select_Bounds"
-    viewSetMAIcon $w ay_TagB_img "Select_Bounds"
+    viewTitle $w "" "Select Bounds"
+    viewSetMAIcon $w ay_TagB_img "Select Bounds"
 
     if { $ayprefs(TagResetTagged) == 1 } {
 	selPnts; rV
@@ -1169,10 +1168,30 @@ proc editPointDialogClear { w } {
     foreach e {x y z w} {$w.f1.f$e.e delete 0 end}
 }
 
-proc editPointDialogSet { w arr } {
-    global $arr
-    editPointDialogClear $w
-    foreach e {x y z w} {eval $w.f1.f$e.e insert 0 \$${arr}($e)}
+proc editPointDialogSet { ww arr } {
+
+    if { $arr == "first" || $arr == "last" } {
+	selPnts -get pnts
+	if { [llength $pnts] > 0 } {
+	    set pnts [lsort $pnts]
+	    if { $arr == "first" } {
+		getPnt [lindex $pnts 0] x y z w
+	    } else {
+		set l [llength $pnts]
+		if { $l > 1 } {
+		    incr l -1
+		}
+		getPnt [lindex $pnts $l] x y z w
+	    }
+	    editPointDialogClear $ww
+	    foreach e {x y z w} {eval $ww.f1.f$e.e insert 0 \$$e}
+	}
+    } else {
+	global $arr
+	editPointDialogClear $ww
+	foreach e {x y z w} {eval $ww.f1.f$e.e insert 0 \$${arr}($e)}
+    }
+ return;
 }
 
 #editPointDialogUpdate:
@@ -1384,6 +1403,8 @@ proc editPointDialog { win {dragsel 0} } {
     $m add command -label "Clear" -command "editPointDialogClear $w"
     $m add command -label "Reset" -command "editPointDialogUpdate $w"
     $m add command -label "Fetch Mark" -command "editPointDialogSet $w aymark"
+    $m add command -label "Fetch First" -command "editPointDialogSet $w first"
+    $m add command -label "Fetch Last" -command "editPointDialogSet $w last"
 
     # auto raise window, when obscured
     bind $w <Visibility> {
@@ -1425,8 +1446,8 @@ proc editPointDialog { win {dragsel 0} } {
 proc actionEditNumP { w } {
     global ayprefs ayviewshortcuts
 
-    viewTitle $w "" "Edit_Points_Num"
-    viewSetMAIcon $w ay_EditN_img "Edit_Points_Num"
+    viewTitle $w "" "Numeric Edit"
+    viewSetMAIcon $w ay_EditN_img "Numeric Edit"
 
     actionClearB1 $w
 
@@ -1507,8 +1528,8 @@ proc actionEditNumP { w } {
 proc actionEditP { w } {
     global ayprefs
 
-    viewTitle $w "" "Edit_Points"
-    viewSetMAIcon $w ay_Edit_img "Edit_Points"
+    viewTitle $w "" "Edit Points"
+    viewSetMAIcon $w ay_Edit_img "Edit Points"
 
     actionClearB1 $w
 
@@ -1560,8 +1581,8 @@ proc actionEditP { w } {
 proc actionEditWP { w } {
     global ayprefs ay
 
-    viewTitle $w "" "Edit_Weights"
-    viewSetMAIcon $w ay_EditW_img "Edit_Weights"
+    viewTitle $w "" "Edit Weights"
+    viewSetMAIcon $w ay_EditW_img "Edit Weights"
 
     actionClearB1 $w
 
@@ -1623,8 +1644,8 @@ proc actionEditWP { w } {
 proc actionResetWP { w } {
     global ayprefs
 
-    viewTitle $w "" "Reset_Weights"
-    viewSetMAIcon $w ay_ResetW_img "Reset_Weights"
+    viewTitle $w "" "Reset Weights"
+    viewSetMAIcon $w ay_ResetW_img "Reset Weights"
 
     actionClearB1 $w
 
@@ -1727,8 +1748,8 @@ proc actionInsertAndEdit { w x y } {
 proc actionInsertP { w } {
     global ayprefs
 
-    viewTitle $w "" "Insert_Points"
-    viewSetMAIcon $w ay_Insert_img "Insert_Points"
+    viewTitle $w "" "Insert Points"
+    viewSetMAIcon $w ay_Insert_img "Insert Points"
 
     actionClearB1 $w
 
@@ -1770,8 +1791,8 @@ proc actionInsertP { w } {
 proc actionDeleteP { w } {
     global ayprefs
 
-    viewTitle $w "" "Delete_Points"
-    viewSetMAIcon $w ay_Delete_img "Delete_Points"
+    viewTitle $w "" "Delete Points"
+    viewSetMAIcon $w ay_Delete_img "Delete Points"
 
     actionClearB1 $w
 
@@ -1809,8 +1830,8 @@ proc actionDeleteP { w } {
 proc actionFindU { w } {
     global ayprefs
 
-    viewTitle $w "" "Find_U"
-    viewSetMAIcon $w ay_FindU_img "Find_U"
+    viewTitle $w "" "Find U"
+    viewSetMAIcon $w ay_FindU_img "Find U"
 
     actionClearB1 $w
 
@@ -1855,8 +1876,8 @@ proc actionFindU { w } {
 # find parametric values u and v on a NURBS surface
 proc actionFindUV { w } {
 
-    viewTitle $w "" "Find_UV"
-    viewSetMAIcon $w ay_FindUV_img "Find_UV"
+    viewTitle $w "" "Find UV"
+    viewSetMAIcon $w ay_FindUV_img "Find UV"
 
     actionClearB1 $w
 
@@ -1887,8 +1908,8 @@ proc actionFindUV { w } {
 proc actionSplitNC { w } {
     global ayprefs
 
-    viewTitle $w "" "Split_Curve"
-    viewSetMAIcon $w ay_Split_img "Split_Curve"
+    viewTitle $w "" "Split Curve"
+    viewSetMAIcon $w ay_Split_img "Split Curve"
 
     actionClearB1 $w
 
@@ -1938,8 +1959,8 @@ proc actionSplitNC { w } {
 proc actionPick { w } {
     global ayprefs ayviewshortcuts
 
-    viewTitle $w "" "Pick"
-    viewSetMAIcon $w ay_Pick_img "Pick"
+    viewTitle $w "" "Pick Objects"
+    viewSetMAIcon $w ay_Pick_img "Pick Objects"
 
     $w setconf -drawh 0
 
