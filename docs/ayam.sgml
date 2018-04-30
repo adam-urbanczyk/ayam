@@ -4150,9 +4150,9 @@ to edit points of multiple selected objects (in former versions
 only points from the first selected object were considered).
 <p>
 If a multiple point is edited, this action modifies all single
-points that make up the multiple point, i.e.~you can not move
-single points apart from a multiple point using the point
-edit action. Temporarily disable the <tt/"CreateMP"/ property or
+points that make up the multiple point, i.e.~it is not possible to
+move single points apart from a multiple point using this action.
+Temporarily disable the <tt/"CreateMP"/ property or
 explode the multiple point to do that.
 <p>
 If the preference option <tt>"Modelling/EditSnaps"</tt> is enabled,
@@ -4173,6 +4173,8 @@ starts an intermediate point selection action and upon a click
 with the mouse opens a small window where the coordinates of the
 selected editable point(s) may be changed directly by entering
 new coordinate values on the keyboard (see image below).
+If there are already selected points, the dialog window will
+be opened immediately.<footnote>Since 1.26.</footnote>
 <p>
 <figure loc="ht">
 <eps file="pics/numpnted.ps" height="4.5cm">
@@ -20045,7 +20047,7 @@ is positive, the tessellator uses the so called <em>object space sampling</em>
 mode. In this mode the tessellator subdivides an initial set of triangles
 recursively until all edges of those triangles are shorter than a given
 threshold value (in object space). The threshold value is set automatically
-so that an object spanning one unit by one unit in object space is subdivided
+so that an object extending one unit by one unit in object space is subdivided
 to about 15 by 15 by two triangles.
 The <tt>"uTessellation"</tt> attribute value is simply multiplied into
 this automatically determined threshold.
@@ -20268,7 +20270,8 @@ see the file:<newline>
 The script <tt>"helix.tcl"</tt> creates a NURBS curve that forms a helix,
 see also the above image.
 <p>
-This script must be used in a Script object of type <tt/"Create"/.
+This script must be used in a Script object of type <tt/"Create"/
+(see section <ref id="scriptobj" name="Script Object">).
 There is also a property GUI provided; one must
 add a <tt/"NP"/ tag of value <tt/"HelixAttr"/ to the Script object to see it.
 <p>
@@ -20299,7 +20302,8 @@ see the file:<newline>
 The script <tt>"spiral.tcl"</tt> creates a NURBS curve that forms a spiral,
 see also the above image.
 <p>
-This script must be used in a Script object of type <tt/"Create"/.
+This script must be used in a Script object of type <tt/"Create"/
+(see section <ref id="scriptobj" name="Script Object">).
 There is also a property GUI provided; one must
 add a <tt/"NP"/ tag of value <tt/"SpiralAttr"/ to the Script object to see it.
 <p>
@@ -20343,6 +20347,8 @@ The third parameter curve is the second <em/rail/ curve. This curve should
 start in the end point of the cross section curve. It is the upper closed curve
 in the upper example image.
 <p>
+This script must be used in a Script object of type <tt/"Modify"/
+(see section <ref id="scriptobj" name="Script Object">).
 For convenience, there is also a property GUI; one must add a <tt/"NP"/ tag
 of value <tt/"DualSweepAttr"/ to the Script object to see it.
 <p>
@@ -20385,6 +20391,8 @@ in the same point, the translational surface will interpolate both curves.
 <p>
 Rational parameter curves are currently not supported.
 <p>
+This script must be used in a Script object of type <tt/"Modify"/
+(see section <ref id="scriptobj" name="Script Object">).
 As the surface is completely defined by the parameter curves, there are
 no additional parameters and there is, consequently, also no property GUI.
 <p>
@@ -20411,7 +20419,8 @@ also allows to create sheared extrusions.<footnote>Since 1.26.</footnote>
 Internally, the script creates a Skin from two curves, therefore, arbitrarily
 oriented and non-planar curves are supported.
 <p>
-This script must be used in a Script object of type <tt/"Modify"/.
+This script must be used in a Script object of type <tt/"Modify"/
+(see section <ref id="scriptobj" name="Script Object">).
 For convenience, there is also a property GUI; one must add a <tt/"NP"/ tag
 of value <tt/"ExtrudeNAttr"/ to the Script object to see it.
 <p>
@@ -24931,6 +24940,7 @@ Index:
 <item>NPDisplayMode: <ref id="prefdraw" name="preference setting">
 <item>NPDisplayModeA: <ref id="prefdraw" name="preference setting">
 <item>NumClones: <ref id="cloneattr" name="Clone attribute">
+<item>Numeric Edit: <ref id="editac" name="modelling action">
 <item>NumSamples: <ref id="moattr" name="MetaObj attribute">
 <item>NURB: <ref id="ncurveattrprop" name="knot type">
 <item>NURBCircle: <ref id="ncirct" name="NURBS circle tool">
