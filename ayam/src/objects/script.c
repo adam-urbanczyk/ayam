@@ -1143,6 +1143,9 @@ ay_script_notifycb(ay_object *o)
  ay_script_object *sc = NULL, *dsc = NULL;
  ay_pointedit pe = {0};
  ay_voidfp *arr = NULL;
+ ay_tag *tag, *newtag;
+ ay_bparam obparams = {0}, cmbparams = {0};
+ ay_cparam ocparams = {0}, cmcparams = {0};
  int i = 0;
  int old_rdmode = 0, old_createatmark = 0;
  ClientData old_restrictcd;
@@ -1359,8 +1362,7 @@ ay_script_notifycb(ay_object *o)
 	} /* while */
 
       ay_selection = old_sel;
-
-    } /* if */
+    } /* if type is create */
 
   if(sc->type == 2)
     {
@@ -1483,7 +1485,67 @@ ay_script_notifycb(ay_object *o)
 	  sc->cm_objects = o->down;
 	  o->down = ccm_objects;
 	} /* if */
-    } /* if */
+    } /* if type is modify */
+
+  if(sc->type > 0 && sc->cm_objects && o->tags)
+    {
+      /* get bevel and cap parameters */
+      ay_bevelt_parsetags(o->tags, &obparams);
+      ay_capt_parsetags(o->tags, &ocparams);
+
+      if(ocparams.has_caps || obparams.has_bevels)
+	{
+	  down = sc->cm_objects;
+	  while(down)
+	    {
+	      if(down->tags)
+		{
+		  ay_bevelt_parsetags(down->tags, &cmbparams);
+		  ay_capt_parsetags(down->tags, &cmcparams);
+		}
+
+	      /* create/add caps */
+	      if(ocparams.has_caps && !cmcparams.has_caps)
+		{
+		  tag = o->tags;
+		  while(tag)
+		    {
+		      if(tag->type == ay_cp_tagtype)
+			{
+			  ay_status = ay_tags_copy(tag, &newtag);
+			  if(ay_status)
+			    break;
+			  newtag->next = down->tags;
+			  down->tags = newtag;
+			}
+		      tag = tag->next;
+		    }
+		}
+
+	      /* create/add bevels */
+	      if(obparams.has_bevels && !cmbparams.has_bevels)
+		{
+		  tag = o->tags;
+		  while(tag)
+		    {
+		      if(tag->type == ay_bp_tagtype)
+			{
+			  ay_status = ay_tags_copy(tag, &newtag);
+			  if(ay_status)
+			    break;
+			  newtag->next = down->tags;
+			  down->tags = newtag;
+			}
+		      tag = tag->next;
+		    }
+		}
+
+	      ay_notify_object(down);
+
+	      down = down->next;
+	    } /* while */
+	} /* if script has cap/bevel tags */
+    } /* if have right script type, objects, and tags*/
 
   Tk_RestrictEvents(NULL, NULL, &old_restrictcd);
 
