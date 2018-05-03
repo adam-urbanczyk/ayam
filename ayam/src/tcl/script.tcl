@@ -29,6 +29,9 @@ array set ScriptAttrData {
  Active 0
  Type 0
  Script ""
+ BoundaryNames { "U0" "U1" "V0" "V1" }
+ BevelsChanged 0
+ CapsChanged 0
 }
 # array ScriptAttrData
 
