@@ -1498,6 +1498,9 @@ ay_script_notifycb(ay_object *o)
 	  down = sc->cm_objects;
 	  while(down)
 	    {
+	      memset(&cmbparams, 0, sizeof(ay_bparam));
+	      memset(&cmcparams, 0, sizeof(ay_cparam));
+
 	      if(down->tags)
 		{
 		  ay_bevelt_parsetags(down->tags, &cmbparams);
