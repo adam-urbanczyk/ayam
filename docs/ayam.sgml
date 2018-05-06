@@ -10823,6 +10823,8 @@ Script|Any<f/<sup/+//|No|Any<f/<sup/+//|No*<#if out="latex">@<hline></#if>
 <caption>Script Object Capabilities</caption>
 </table>
 
+<#if out="latex"><x/newpage/</#if>
+
 <sect3>Script Object Usage
 <p><#if out="latex">&nbsp;<newline></#if>
 The script of a Script object will be run each time the script is
@@ -10877,10 +10879,16 @@ additional controlling parameters.
 
 <item><tt/"Type"/ is the type of the Script object.
 Three types of Script objects are currently available:
+<#if out="html"><verb>
+
+</verb></#if>
  <itemize>
  <item><tt/"Run"/, the script will be run and no special action will
 take place.
 
+<#if out="html"><verb>
+
+</verb></#if>
  <item><tt/"Create"/, the script will be run and will create and
 parameterise new objects. After running the script, the newly
 created object(s) will automatically be moved into the internal data
@@ -11125,7 +11133,8 @@ This section illustrates the development of a
 Script object for parametric lines, otherwise unavailable in Ayam.
 <p>
 We start with a simple version, that first creates a NURBS curve object with
-two control points and then places the control points each at +/- half the
+two control points and then places the control points each at &plus;/&minus;
+half the
 desired line length on the X-axis. Just copy the following code to the
 Script property of a Script object of type <tt/"Create"/, and activate it.
 <code>
