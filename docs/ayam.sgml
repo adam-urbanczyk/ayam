@@ -11087,12 +11087,29 @@ to conversion. If this fails (e.g.~due to references), they may end
 up in the object clipboard.
 </enum>
 
-When the script created a master object and instances of this master, normal
+If the script created a master object and instances of this master, normal
 conversion will <em/not/ be able to duplicate this relationship
 (due to the copy semantics of instance objects, see also section
 <ref id="instclip" name="Instances and the Object Clipboard">).
 To get around this, just copy the Script object and then use
 in place conversion on the copy.
+
+<sect3>Caps and Bevels
+<p><#if out="latex">&nbsp;<newline></#if>
+Script objects of type <tt/"Create"/ and <tt/"Modify"/ support the standard
+caps as lined out in section
+<ref id="capsprop" name="Caps Property">
+and the standard bevels as lined out in section
+<ref id="bevelsprop" name="Bevels Property">.<footnote>Since 1.26.</footnote>
+<p>
+The boundary names are <tt/U0/, <tt/U1/, <tt/V0/, and <tt/V1/.
+<p>
+By default, the corresponding properties are not available. To make
+them visible, <tt/NP/ tags need to be added to the Script object.
+<p>
+The caps and bevels from the Script object will be added to all
+created/modified objects that do not possess own caps and bevels already
+and that support caps and bevels.
 
 <sect3>RIB Export
 <p><#if out="latex">&nbsp;<newline></#if>
