@@ -10964,7 +10964,14 @@ is a standard Tcl text widget that allows to directly edit the code.
 It is also possible to edit the code in an external editor and
 copy it to the Script object using the operating system clipboard
 and the <tt/"Paste (Replace)"/ context menu entry of the text widget.
+In contrast to the other property GUI elements, the text widget has
+a resize handle in the lower left corner, see also the image below.
 </itemize>
+<figure loc="ht">
+<eps file="pics/scriptpg.ps" height="4cm">
+<img src="pics/scriptpg.gif">
+<caption>Script Property GUI with Context Menu and Resize Handle</caption>
+</figure>
 
 <sect3>Script Parameters and Property GUIs
 <p><#if out="latex">&nbsp;<newline></#if>
@@ -11074,6 +11081,8 @@ transformations).
 However, if the objects created by the script have editable points,
 this problem can be avoided by using the <tt/"applyTrafo"/ command
 in the script.
+
+<#if out="latex"><x/newpage/</#if>
 
 <sect3>Conversion Support
 <p><#if out="latex">&nbsp;<newline></#if>
