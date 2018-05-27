@@ -13300,6 +13300,8 @@ See also the documentation of the corresponding
 scripting interface command <ref id="screfinec" name="refineC">.
 </descrip>
 
+<#if out="latex"><x/newpage/</#if>
+
 <sect2>Refine Knots Tool<label id="refknit">
 <p>
 <figure loc="ht">
@@ -13313,9 +13315,11 @@ the selection.
 <tag/Operation/ The knot vectors of the selected NURBS curves will be
 refined by inserting a knot in the middle of each inner knot interval
 without changing the shape of the curve.
-<tag/Notes/ Because a new knot is inserted in the middle of
-each interval, knot vectors of type NURB and B-Spline will
-not change in type. See the image above for an example of a
+<tag/Notes/ Because new knots are inserted into inner intervals only,
+the clamping state of the knot vectors does not change.
+Furthermore, knot vectors of type <tt/"NURB"/ will not change in type,
+other knot vectors will be changed to type <tt/"Custom"/.
+See the image above for an example of a
 successive refinement of a simple NURBS curve. Note that the shape
 of the curve does not change, but the position of
 certain control points does.
@@ -13329,6 +13333,8 @@ scripting interface command <ref id="screfineknnc" name="refineknNC">
 and the related tool for
 surfaces <ref id="refinest" name="Refine Knots Surface Tool">.
 </descrip>
+
+<#if out="latex"><x/newpage/</#if>
 
 <sect2>Refine Knots With Tool<label id="refknwit">
 <p>
@@ -13493,7 +13499,7 @@ be changed to type <tt/"Custom"/.
 <tag/Notes/
 Unclamping is <em/not/ an exact reversal of clamping (and vice versa).
 
-However, as the unclamp operation only works on completely clamped curves,
+Furthermore, as the unclamp operation only works on completely clamped curves,
 the unclamp tool may need to clamp the curve first.
 
 The point selection will be removed from the processed objects if
@@ -14298,14 +14304,17 @@ scripting interface command <ref id="scswapuvs" name="swapuvS">.
 <caption>Successive Application of Refine Knots Surface (U) Tool</caption>
 </figure>
 <descrip>
-<tag/Arguments/ The refine knots surface with tool takes a number of NURBS
+<tag/Arguments/ The refine knots surface tool takes a number of NURBS
 patches from the selection.
 <tag/Operation/ The respective knot vectors of the selected NURBS patches
-will be refined without changing the shape of the patches. New control
+will be refined by inserting a knot in the middle of each inner knot interval
+without changing the shape of the patches. New control
 points will be added and the position of old control points may be
 changed in the progress (see also the image above).
-<tag/Notes/ The respective knot type of the patch may
-be changed to <tt/"Custom"/.
+<tag/Notes/ Because new knots are inserted into inner intervals only,
+the clamping state of the knot vectors does not change.
+Furthermore, knot vectors of type <tt/"NURB"/ will not change in type,
+other knot vectors will be changed to type <tt/"Custom"/.
 
 The point selection will be removed from the original object(s).
 
@@ -14421,7 +14430,7 @@ be changed to type <tt/"Custom"/.
 <tag/Notes/
 Unclamping is <em/not/ an exact reversal of clamping (and vice versa).
 
-However, as the unclamp operation only works on completely clamped surfaces,
+Furthermore, as the unclamp operation only works on completely clamped surfaces,
 the unclamp tool may need to clamp the surface first.
 
 There are also tools available that unclamp a patch in U or
