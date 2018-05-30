@@ -1790,6 +1790,9 @@ ay_viewt_updatemark(struct Togl *togl, int local)
 
   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 
+  /* do we really want 2D mark display in ortho views?
+     maybe add an option Allow2DMarks? */
+#if 0
   switch(view->type)
     {
     case AY_VTFRONT:
@@ -1806,16 +1809,21 @@ ay_viewt_updatemark(struct Togl *togl, int local)
 			     mm, pm, vp, &view->markx, &view->marky, &dummy);
       break;
     case AY_VTPERSP:
+#endif
+
       gl_status = gluProject(view->markworld[0],
 			     view->markworld[1],
 			     view->markworld[2],
 			     mm, pm, vp,
 			     &view->markx, &view->marky, &dummy);
+
+#if 0
       break;
     default:
       view->drawmark = AY_FALSE;
       break;
     }
+#endif
 
   if(gl_status == GL_FALSE)
     {
