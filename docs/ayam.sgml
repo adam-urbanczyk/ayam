@@ -7949,8 +7949,8 @@ These objects enable direct manipulation of freeform surfaces.
 The NPatch object allows to model NURBS surfaces in a direct way, e.g.~by
 modifying control points (see also the image above). Note that using
 NPatch objects should be seen as last resort, only to be used when the
-flexibility of all the NURBS surface creating tool objects is not high
-enough to achieve a certain shape.
+flexibility of all the NURBS surface creating tool objects is not
+sufficient to achieve a certain shape.
 <p>
 Like NCurve objects, NPatch objects mark their last control point with
 a small arrow. Note that the arrow points in the V direction (height).
@@ -8604,10 +8604,9 @@ all other bevel supporting tool objects. The old options <tt/"LowerBevel"/,
 longer available. They were replaced with new dynamic tag creating
 bevel property GUI sections that are accessible through the new
 command entries <tt/"Add Start Bevel!"/ and <tt/"Add End Bevel!"/
-respectively. If one of those entries is used, a corresponding
-bevel parameter tag
-is created and more options will be made available in the property
-GUI to adjust the bevel parameters or remove the tag again.
+respectively. If one of those entries is used, a corresponding bevel
+parameter tag is created and more options will be made available in the
+property GUI to adjust the bevel parameters or remove the tag again.
 A more thorough discussion of those options is available in
 section <ref id="bevelp" name="BevelAttr Property">.
 <p>
@@ -12088,10 +12087,9 @@ Note that in multiline mode, the <tt>&lt;Enter&gt;</tt>,
 The tag value widget also has a context menu, allowing text to be
 fetched from the system clipboard or files.
 
-<#if out="latex"><x/newpage/</#if>
 <p>
 <figure loc="ht">
-<eps file="pics/addmodtag.ps" height="2.5cm">
+<eps file="pics/addmodtag.ps" height="2.2cm">
 <img src="pics/addmodtag.gif">
 <caption>Add&thinsp;/&thinsp;Edit Tag Dialog</caption>
 </figure>
@@ -12763,7 +12761,9 @@ i.e.~they must not create or delete objects or use the object clipboard.
 The tag types <tt/"UMM"/ (u min max) and <tt/"VMM"/ (v min max) may
 be used to store additional parametric domain trimming values to
 NURBS curve and NURBS patch objects. Note that the GLU NURBS display
-modes do not honor those tags, but the RIB export does.
+modes do not honor those tags, but some export plugins do (RIB,
+Wavefront OBJ, 3DM (Rhino)).
+Those tags will also be created by RIB import or Wavefront OBJ import.
 <p>
 <bf/Example/
 <p>
@@ -13526,7 +13526,7 @@ and an integer value <it/i/.
 
 <tag/Operation/ A knot with the specified value <it/u/ will be inserted <it/i/
 times into the knot vector of the selected curves, without changing the
-shape of the curve(s).
+shape of the curves.
 
 
 <tag/Notes/ The knot type of the curves will be changed to <tt/"Custom"/.
@@ -13722,10 +13722,10 @@ scripting interface command <ref id="scshiftc" name="shiftC">.
 <tag/Arguments/ The To XY tool takes a number of
 NCurve, ACurve, or ICurve objects from the selection. The curves should be
 planar. Curves that form a single straight line are not supported.
-<tag/Operation/ The control points of the curve(s) will be rotated,
+<tag/Operation/ The control points of the curves will be rotated,
 so that they are in the XY-plane of the respective object space defined by
-the curve object(s). Additionally, the rotation attributes of
-the curve object(s) will be changed so that the curve does not
+the curve objects. Additionally, the rotation attributes of
+the curve objects will be changed so that the curve does not
 change its orientation with regard to other objects or the world space.
 The scale attributes will be reset to 1.0.
 <p>
@@ -14286,7 +14286,7 @@ be swapped (width, height, and all other dimension related parameters
 will be exchanged) without altering the shape of the patches.
 
 <tag/Notes/
-The point selection will be removed from the original object(s).
+The point selection will be removed from the original objects.
 
 PV tags will not be modified.
 
@@ -14316,7 +14316,7 @@ the clamping state of the knot vectors does not change.
 Furthermore, knot vectors of type <tt/"NURB"/ will not change in type,
 other knot vectors will be changed to type <tt/"Custom"/.
 
-The point selection will be removed from the original object(s).
+The point selection will be removed from the original objects.
 
 There are also tools available that refine only the U or
 V knots.
@@ -14343,7 +14343,7 @@ be reported and the respective patch is not changed.
 <tag/Notes/ The respective knot type of the patch may
 be changed to <tt/"Custom"/.
 
-The point selection will be removed from the original object(s).
+The point selection will be removed from the original objects.
 
 There are also tools available that refine only the U or
 V knots.
@@ -14399,7 +14399,7 @@ points in the respective direction afterwards (unless the weights of those
 points are not 1.0).
 The knot types of the patches will be changed to type <tt/"Custom"/.
 
-The point selection will be removed from the original object(s).
+The point selection will be removed from the original objects.
 
 There are also tools available that clamp a patch in U or
 V direction only.
@@ -14436,7 +14436,7 @@ the unclamp tool may need to clamp the surface first.
 There are also tools available that unclamp a patch in U or
 V direction only.
 
-The point selection will be removed from the original object(s) if
+The point selection will be removed from the original objects if
 the surface needs to be clamped for unclamping.
 
 See also the documentation of the corresponding scripting interface commands
@@ -14466,7 +14466,7 @@ shape.
 
 This tool does not change the geometry of the patches.
 
-The point selection will be removed from the original object(s).
+The point selection will be removed from the original objects.
 
 See also the documentation of the corresponding scripting interface commands
 <ref id="scinsknunp" name="insknuNP"> and
@@ -14506,7 +14506,7 @@ knots will be removed.
 If <em/tol/ is <tt/"Inf"/ (infinity) the specified knot will be removed
 regardless of potential surface changes.
 
-The point selection will be removed from the original object(s).
+The point selection will be removed from the original objects.
 
 See also the documentation of the corresponding scripting interface commands
 <ref id="scremknunp" name="remknuNP">, and
@@ -14537,14 +14537,14 @@ knot insertion.
 |-NPatch     ==>     |-NPatch
                      |-NPatch
 </verb></tscreen>
-<tag/Notes/ The original patch object(s) will be modified.
+<tag/Notes/ The original NURBS patch object(s) will be modified.
 
 The new surface(s) will be inserted
 into the level right after the respective surface(s) to split unless
 the append option is set.
 <footnote>Since 1.24.</footnote>
 
-The point selection will be removed from the original object(s).
+The point selection will be removed from the original objects.
 
 Eventually present trim curves will <em/not/ be honored properly.
 
@@ -14571,7 +14571,7 @@ all original control points with the desired interpolation order <em/o/.
 See also the image above.
 
 <tag/Notes/
-The point selection will be removed from the original object(s).
+The point selection will be removed from the original objects.
 
 See also the documentation of the corresponding scripting interface commands
 <ref id="scinterpunp" name="interpuNP"> and
