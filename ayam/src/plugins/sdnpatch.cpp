@@ -3482,68 +3482,17 @@ sdnpatch_wribcb(char *file, ay_object *o)
 int
 sdnpatch_bbccb(ay_object *o, double *bbox, int *flags)
 {
- double xmin, xmax, ymin, ymax, zmin, zmax;
  sdnpatch_object *sdnpatch = NULL;
- std::vector<Vertex*> *vertices = NULL;
- std::vector<Vertex*>::iterator it;
- Vertex *v;
 
   if(!o || !bbox)
     return AY_ENULL;
 
   sdnpatch = (sdnpatch_object *)o->refine;
 
-  if(!sdnpatch || !sdnpatch->controlVertices)
+  if(!sdnpatch || !sdnpatch->controlVertices || !sdnpatch->controlCoords)
     return AY_ENULL;
 
-  vertices = sdnpatch->controlVertices;
-  it = (*vertices).begin();
-  v = *it;
-  xmin = v->getX();
-  xmax = xmin;
-  ymin = v->getY();
-  ymax = ymin;
-  zmin = v->getZ();
-  zmax = zmin;
-  it++;
-  for(; it != (*vertices).end(); it++)
-    {
-      v = *it;
-      if(v->getX() < xmin)
-	xmin = v->getX();
-      if(v->getX() > xmax)
-	xmax = v->getX();
-
-      if(v->getY() < ymin)
-	ymin = v->getY();
-      if(v->getY() > ymax)
-	ymax = v->getY();
-
-      if(v->getZ() < zmin)
-	zmin = v->getZ();
-      if(v->getZ() > zmax)
-	zmax = v->getZ();
-    } // for
-
-  /* P1 */
-  bbox[0] = xmin; bbox[1] = ymax; bbox[2] = zmax;
-  /* P2 */
-  bbox[3] = xmin; bbox[4] = ymax; bbox[5] = zmin;
-  /* P3 */
-  bbox[6] = xmax; bbox[7] = ymax; bbox[8] = zmin;
-  /* P4 */
-  bbox[9] = xmax; bbox[10] = ymax; bbox[11] = zmax;
-
-  /* P5 */
-  bbox[12] = xmin; bbox[13] = ymin; bbox[14] = zmax;
-  /* P6 */
-  bbox[15] = xmin; bbox[16] = ymin; bbox[17] = zmin;
-  /* P7 */
-  bbox[18] = xmax; bbox[19] = ymin; bbox[20] = zmin;
-  /* P8 */
-  bbox[21] = xmax; bbox[22] = ymin; bbox[23] = zmax;
-
- return AY_OK;
+ return ay_bbc_fromarr(sdnpatch->controlCoords, sdnpatch->controlVertices->size(), 4, bbox);
 } /* sdnpatch_bbccb */
 
 
@@ -5330,7 +5279,7 @@ cleanup:
 
 /** sdnpatch_resetallknots:
  * Sets all knot values of a Subdivision NURBS patch to 1.0.
- * 
+ *
  * \param[in,out] sdnpatch Subdivision NURBS patch to process
  */
 void
@@ -5706,6 +5655,27 @@ cleanup:
 /* sdnpatch_getcontrolvertices:
  *  get adress and content of all control vertices
  *  (for selection and editing)
+ * This function needs the following method in
+ * libsnurbs/mesh.cpp:
+ *
+ * -snip-
+std::vector<Vertex*> *Mesh::getVertexPointers(void)
+{
+    UniquePrimalVertexLister list(patches.begin(), patches.end());
+    std::vector<Vertex *> *vec = new std::vector<Vertex *>;
+    vec->reserve(list.size());
+    for (std::set<Vertex *>::iterator it = list.begin();
+	 it != list.end(); ++it)
+      {
+	if((*it)->isReal())
+	  {
+	    vec->push_back(*it);
+	  }
+      }
+    return vec;
+}
+ * -snap-
+ *
  */
 int
 sdnpatch_getcontrolvertices(sdnpatch_object *sdnpatch)
@@ -5713,7 +5683,7 @@ sdnpatch_getcontrolvertices(sdnpatch_object *sdnpatch)
  std::vector<Vertex*>::iterator it;
  std::vector<Vertex*> *tmp = NULL;
  Vertex *v;
- unsigned int a = 0, maxID = 0;
+ unsigned int a = 0, numReal = 0;
 
   if(!sdnpatch || !sdnpatch->controlMesh)
     return AY_ENULL;
@@ -5738,25 +5708,24 @@ sdnpatch_getcontrolvertices(sdnpatch_object *sdnpatch)
 	  it != tmp->end();
 	  it++)
 	{
-	  if(maxID < (*it)->getID())
-	    maxID = (*it)->getID();
+	  if((*it)->isReal())
+	    numReal++;
 	}
 
       sdnpatch->controlVertices = new std::vector<Vertex *>;
-      sdnpatch->controlVertices->resize(maxID>tmp->size()?maxID:tmp->size());
+      sdnpatch->controlVertices->resize(numReal);
 
       // correct order for our own ID scheme
       for(it = tmp->begin();
 	  it != tmp->end();
 	  it++)
 	{
-	  // XXXX ID might be larger than tmp->size() due to
-	  // culled/non-real vertices!
-	  (*sdnpatch->controlVertices)[(*it)->getID()] = *it;
+	  if((*it)->isReal())
+	    (*sdnpatch->controlVertices)[(*it)->getID()] = *it;
 	}
 
       if(!(sdnpatch->controlCoords = (double*)calloc(
-		sdnpatch->controlVertices->size(), 4*sizeof(double))))
+						numReal, 4*sizeof(double))))
 	{
 	  return AY_EOMEM;
 	}
@@ -5767,14 +5736,14 @@ sdnpatch_getcontrolvertices(sdnpatch_object *sdnpatch)
 	  it++)
 	{
 	  v = *it;
-	  if(v)
+	  if(v && v->isReal())
 	    {
 	      sdnpatch->controlCoords[a]   = v->getX();
 	      sdnpatch->controlCoords[a+1] = v->getY();
 	      sdnpatch->controlCoords[a+2] = v->getZ();
 	      sdnpatch->controlCoords[a+3] = v->getW();
+	      a += 4;
 	    }
-	  a += 4;
 	}
       delete tmp;
     } // if
