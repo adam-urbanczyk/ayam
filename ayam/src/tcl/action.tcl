@@ -2170,9 +2170,7 @@ proc actionClear { w {only_clear 0} } {
     # the following after scripts arrange for a short period
     # 0.1 - 1s after the first press of the <Esc> key, that a second
     # press of the <Esc> key also resets the mark and the focus
-    after 100 "bind $t <$ayviewshortcuts(Break)>\
-               \"$t.f3D.togl setconf -mark n;\
-                 resetFocus\""
+    after 100 "bind $t <$ayviewshortcuts(Break)> \"_doubleEsc $t\""
     # after 1s, the old binding is in effect
     after 1000 "bind $t <$ayviewshortcuts(Break)> \"actionClear $t.f3D.togl\""
 
@@ -2182,3 +2180,15 @@ proc actionClear { w {only_clear 0} } {
  return;
 }
 # actionClear
+
+# _doubleEsc:
+# internal helper, bound to <Esc-Esc>
+# clears the mark and resets the focus
+proc _doubleEsc { t } {
+    global ayprefs
+    $t.f3D.togl setconf -mark n
+    puts "Mark cleared."
+    resetFocus
+ return;
+}
+# _doubleEsc
