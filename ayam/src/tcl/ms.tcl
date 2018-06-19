@@ -347,6 +347,9 @@ ms_set en info_pc1 "This operation may destroy the current property.\
 ms_set en info_rc1 "Correct Curve?"
 ms_set en info_rc2 "Rotate curve to correct plane?"
 
+ms_set en info_rp1 "Reset Preferences?"
+ms_set en info_rp2 "Ready to remove file:\n\"$ay(ayamrc)\"?"
+
 #
 # fill "de"-locale
 ms_init de
@@ -592,6 +595,8 @@ ms_fixcancel de info_sm2
 ms_set de info_rc1 "Kurve korrigieren?"
 ms_set de info_rc2 "Kurve zur korrekten Ebene drehen?"
 
+ms_set de info_rp1 "Voreinstellungen zurücksetzen?"
+ms_set de info_rp2 "Bereit zum Löschen der Datei:\n\"$ay(ayamrc)\"?"
 
 #
 # fill "fr"-locale...
@@ -811,5 +816,8 @@ ms_set fr info_rs1 "Redémarrage nécessaire!"
 
 #ms_set fr info_rc1 "Correct Curve?"
 #ms_set fr info_rc2 "Rotate curve to correct plane?"
+
+ms_set fr info_rp1 "Réinitialiser préférences?"
+ms_set fr info_rp2 "Prêt pour supprimier le fichier:\n\"$ay(ayamrc)\"?"
 
 # EOF
