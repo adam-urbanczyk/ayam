@@ -762,8 +762,8 @@ proc prefs_reset {} {
 
     # only do something when preferences file really exists
     if { [file exists $ay(ayamrc)] } {
-	set t "Reset Preferences?"
-	set m "Ready to remove file:\n\"$ay(ayamrc)\"?"
+	set t [subst [ms info_rp1]]
+	set m [subst [ms info_rp2]]
 
 	if { $ayprefs(FixDialogTitles) == 1 } {
 	    set m "$t\n\n$m"
