@@ -696,12 +696,6 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
  ay_point *p;
  Tcl_Obj *toa = NULL, *to;
 
-  if(!sel)
-    {
-      ay_error(AY_ENOSEL, argv[0], NULL);
-      return TCL_OK;
-    }
-
   /* parse args */
   if(argc == 1)
     {
@@ -742,20 +736,23 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      Tcl_SetVar(interp, argv[2], "", TCL_LEAVE_ERR_MSG);
 
-	      o = sel->object;
-	      p = o->selp;
-	      while(p)
+	      if(sel)
 		{
-		  if(p->index < (unsigned int)INT_MAX)
-		    to = Tcl_NewIntObj(p->index);
-		  else
-		    to = Tcl_NewWideIntObj((Tcl_WideInt)p->index);
-		  Tcl_ObjSetVar2(interp, toa, NULL, to, TCL_APPEND_VALUE |
-				 TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
-		  p = p->next;
-		}
+		  o = sel->object;
+		  p = o->selp;
+		  while(p)
+		    {
+		      if(p->index < (unsigned int)INT_MAX)
+			to = Tcl_NewIntObj(p->index);
+		      else
+			to = Tcl_NewWideIntObj((Tcl_WideInt)p->index);
+		      Tcl_ObjSetVar2(interp, toa, NULL, to, TCL_APPEND_VALUE |
+				     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
+		      p = p->next;
+		    }
 
-	      Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
+		  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
+		} /* if sel */
 
 	      return TCL_OK;
 	    }
@@ -763,16 +760,20 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(argv[1][1] == 'h' && argv[1][2] == 'a')
 	    {
 	      to = Tcl_NewIntObj(0);
-	      o = sel->object;
-	      while(o)
+
+	      if(sel)
 		{
-		  if(o->selp)
+		  o = sel->object;
+		  while(o)
 		    {
-		      to = Tcl_NewIntObj(1);
-		      break;
+		      if(o->selp)
+			{
+			  to = Tcl_NewIntObj(1);
+			  break;
+			}
+		      o = o->next;
 		    }
-		  o = o->next;
-		}
+		} /* if sel */
 	      Tcl_SetObjResult(interp, to);
 	      return TCL_OK;
 	    }
@@ -780,11 +781,17 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(argv[1][1] == 'h' && argv[1][2] == 'e')
 	    {
 	      ay_error(AY_EARGS, argv[0],
-	  "[-all | -none | -get vname | -count vname | ind1 ind2 ... indn]");
+   "[-all | -none | -get vname | -have | -count vname | ind1 ind2 ... indn]");
 	      goto cleanup;
 	    }
 	} /* if arg is option */
     } /* if have args */
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, argv[0], NULL);
+      return TCL_OK;
+    }
 
   /* parse list of indices */
   if(!count && !select_none && !select_all)
