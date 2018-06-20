@@ -743,9 +743,10 @@ proc prefs_warnNeedRestart { warn } {
 		set p ".prefsw"
 	    }
 
-	    set answer\
-       [tk_messageBox -parent $p -title $t -type ok -icon warning -message $m]
+	    set answer [tk_messageBox -parent $p -title $t -type ok
+			-icon warning -message $m]
 	}
+	# if
     }
     # if
 
@@ -768,21 +769,22 @@ proc prefs_reset {} {
 	if { $ayprefs(FixDialogTitles) == 1 } {
 	    set m "$t\n\n$m"
 	}
-	set answer [tk_messageBox -title $t -type okcancel -icon warning\
-			-message $m]
+
+	set answer [tk_messageBox -title $t -type okcancel -icon warning
+		    -message $m]
 
 	if { $answer == "ok" } {
-	    if [catch {file delete $ay(ayamrc)} errmsg ] {
+	    if [catch {file delete $ay(ayamrc)} errmsg] {
 		ayError 1 prefs_reset $errmsg
 	    } else {
 		set ayprefs(AutoSavePrefs) 0
-		set m "Preferences file removed!\nPlease restart Ayam now."
+		set m [ms info_rp3]
 		tk_messageBox -title "Info" -type ok -icon info -message $m
 	    }
 	}
-	# if
+	# if answer ok
     }
-    # if
+    # if have ayamrc
 
  return;
 }
