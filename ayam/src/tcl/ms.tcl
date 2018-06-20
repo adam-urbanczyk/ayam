@@ -349,6 +349,7 @@ ms_set en info_rc2 "Rotate curve to correct plane?"
 
 ms_set en info_rp1 "Reset Preferences?"
 ms_set en info_rp2 "Ready to remove file:\n\"$ay(ayamrc)\"?"
+ms_set en info_rp3 "Preferences file removed!\nPlease restart Ayam now."
 
 #
 # fill "de"-locale
@@ -597,6 +598,7 @@ ms_set de info_rc2 "Kurve zur korrekten Ebene drehen?"
 
 ms_set de info_rp1 "Voreinstellungen zurücksetzen?"
 ms_set de info_rp2 "Bereit zum Löschen der Datei:\n\"$ay(ayamrc)\"?"
+ms_set de info_rp3 "Die Voreinstellungen wurden gelöscht!\nBitte neu starten."
 
 #
 # fill "fr"-locale...
@@ -819,5 +821,6 @@ ms_set fr info_rs1 "Redémarrage nécessaire!"
 
 ms_set fr info_rp1 "Réinitialiser préférences?"
 ms_set fr info_rp2 "Prêt pour supprimier le fichier:\n\"$ay(ayamrc)\"?"
+#ms_set fr info_rp3 "Preferences file removed!\nPlease restart Ayam now."
 
 # EOF
