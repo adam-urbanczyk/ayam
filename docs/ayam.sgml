@@ -16469,6 +16469,8 @@ Note: prior to Ayam 1.18 this command used to be available in the
 safe interpreter. This is no longer the case, use <tt/"sL"/ instead.
 </itemize>
 
+<#if out="latex"><x/newpage/</#if>
+
 <sect2>Selecting Points
 <p>
 This command manipulates the point selection.
@@ -16478,18 +16480,24 @@ This command manipulates the point selection.
 <label id="scselpnts">
 selPnts &ndash; select points:
 <itemize>
- <item>Synopsis: <tt/"selPnts [(-count | -get) vname | -all | index1 index2 ...]"/
+ <item>Synopsis: <tt/"selPnts [(-count | -get) [vname] | -has | -all | -none | index1 index2 ...]"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description:
  <itemize>
   <item>If called without arguments, this command deselects all points.
   <item>If the argument is <tt/"-count"/, this command puts the number
 of all currently selected points into the variable specified by the
-<tt/"vname"/ argument.
+<tt/"vname"/ argument. If no variable name is provided, the number is
+returned.<footnote>Since 1.26.</footnote>
   <item>If the argument is <tt/"-get"/, this command puts the indices
 of all currently selected points into the variable specified by the
-<tt/"vname"/ argument.
+<tt/"vname"/ argument. If no variable name is provided, the indices are
+returned.<footnote>Since 1.26.</footnote>
+  <item>If the argument is <tt/"-has"/, this command returns <tt/"1"/
+if atleast one of the selected objects has selected points. Otherwise <tt/"0"/
+is returned.<footnote>Since 1.26.</footnote>
   <item>If the argument is <tt/"-all"/, this command selects all points.
+  <item>If the argument is <tt/"-none"/, this command de-selects all points.
   <item>If the argument contains an index, the corresponding point(s) will
 be added to the selection; already selected points will not be deselected.
 The index is zero-based and always one dimensional (even
@@ -19081,7 +19089,7 @@ If the option <tt>"-check"</tt> is given, the convOb command does not
 convert but checks, whether a conversion to a given object type would be
 successful, the result of the check will be returned as 0 &ndash; no,
 or 1 &ndash; yes. Note, that only immediate, one step, conversions are
-checked, not multi step conversion as carried out by in-place conversions
+checked, not multi step conversions as carried out by in-place conversions
 with target type.
 </itemize>
 
