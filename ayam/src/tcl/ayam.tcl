@@ -1291,7 +1291,7 @@ proc cS { } {
 
 
 # rV - redraw all Views (except the one given via w)
-proc rV { {w ""} } {
+proc rV { {w ""} {f 0} } {
     global ay
 
     set tmp $ay(currentView)
@@ -1305,7 +1305,11 @@ proc rV { {w ""} } {
 		}
 		$view mc
 		$view reshape
-		$view render
+		if $f {
+		    $view redraw
+		} else {
+		    $view render
+		}
 	    }
 	}
     }

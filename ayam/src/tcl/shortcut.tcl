@@ -53,18 +53,18 @@ proc shortcut_fkeys { w } {
  global aymainshortcuts
 
     bind $w <[repctrl $aymainshortcuts(SwLazyNotify)]>\
-            { prefs_toggleLazyNotification }
+     { prefs_toggleLazyNotification }
     bind $w <[repctrl $aymainshortcuts(SwNURBSWire)]>\
-	    { prefs_toggleSurfaceWire }
+     { prefs_toggleSurfaceWire }
     bind $w <[repctrl $aymainshortcuts(SetSTP)]>\
-	    { prefs_setSamplingTolerance 1 }
+     { prefs_setSamplingTolerance 1 }
     bind $w <[repctrl $aymainshortcuts(SetSTL)]>\
-	    { prefs_setSamplingTolerance 0 }
+     { prefs_setSamplingTolerance 0 }
     bind $w <[repctrl $aymainshortcuts(Update)]>\
-            {
-		ayError 4 $aymainshortcuts(Update) "Update!"
-		notifyOb -all; uS 1 1; rV;
-	    }
+     {
+	 ayError 4 $aymainshortcuts(Update) "Update!"
+	 notifyOb -all; uS 1 1; rV "" 1;
+     }
 
  return;
 }
