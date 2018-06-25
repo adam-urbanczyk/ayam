@@ -1,4 +1,4 @@
-[29. Apr 2018] Tip:
+[24. Jun 2018] Tip:
 ===================
 Bug Fixes:
 o fix window close shortcut in external views
@@ -11,12 +11,14 @@ Modelling:
 o RiInc/RiProc objects now draw the bounding box with dashed lines
 o RiInc/RiProc objects now allow children to convey the archive/procedural
   objects shape
+o Script objects now support caps and bevels
 
 GUI:
 o improved initial layout process of dialog windows
 o SDMesh objects now display the number of tags
 o the numeric point edit dialogs now opens immediately if there are
   selected points when the action is started (shortcut <E>)
+o update via F5 now also redraws views without automatic redraw
 
 Plugins:
 o added support for periodic patches to NPatch to SDNPatch conversion
