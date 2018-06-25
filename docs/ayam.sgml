@@ -1637,6 +1637,8 @@ and trademark information.
 for various user interface elements (including the toolbox buttons).
 </itemize>
 
+<#if out="latex"><x/newpage/</#if>
+
 <sect1>Main Window Keyboard Shortcuts<label id="mwsc">
 <p>
 An important group of shortcuts is available on the function
@@ -1650,7 +1652,9 @@ adjustment of the NURBS drawing/shading quality.<newline>
 <tt>&lt;F4&gt;</tt> toggles between display of NURBS control cage and
 true curves&thinsp;/&thinsp;surface outlines.<newline>
 <tt>&lt;F5&gt;</tt> rebuilds the object tree and issues a complete
-notification. It is therefore helpful to update the complete
+notification, then all views (even those with disabled
+AutoDraw<footnote>Since 1.26.</footnote>)
+will be drawn. It is therefore helpful to update the complete
 GUI after changes made to the scene using the scripting interface
 in the console.<newline>
 <tt>&lt;F6&gt;</tt> toggles lazy notification.
@@ -1682,6 +1686,8 @@ selection widget and thus enable the main window keyboard shortcuts.
 All these shortcuts can be adapted using the <tt>"ayamrc"</tt> file
 (see section <ref id="ayamrc" name="Ayamrc File">).
 
+<#if out="latex"><x/newpage/</#if>
+
 <sect1>Anatomy of a View<label id="viewwin">
 <p>
 <figure loc="ht">
@@ -1699,8 +1705,6 @@ action of the view.
 The current modelling action, modelling mode, drawing mode and
 grid size are also displayed as a set of icons on the right hand
 side of the view menu bar.
-
-<#if out="latex"><x/newpage/</#if>
 
 <sect1>View Menu<label id="vm">
 <p>
@@ -1816,6 +1820,8 @@ exported RIBs for image rendering will actually use the shadow maps.
 available for the internal views of Ayam in single window GUI mode.
 </itemize>
 
+<#if out="latex"><x/newpage/</#if>
+
 <#if out="latex"><x/phantomsection/</#if>
 
 <label id="vmtype">
@@ -1925,7 +1931,6 @@ level and selected objects.
 system of the currently selected object or to the parent
 object of the current level if no object is currently selected
 (see also section <ref id="editlocal" name="Editing in Local Spaces">).
-
 </itemize>
 
 Apart from the text based menus documented above, there are also some icon
