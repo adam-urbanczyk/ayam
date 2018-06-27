@@ -4945,9 +4945,9 @@ Bevel|NCurve<f/<sup/+//|Yes|NPatch|No*@<hline>
 Cap|NCurve<f/<sup/+//|Yes|NPatch|No*@<hline>
 Text|No|Yes|NPatch<f/<sup/+//|No*@<hline>
 Trim|NPatch&thinsp;/&thinsp;NCurve<f/<sup/+///&thinsp;Level<f/<sup/+//|Yes|NPatch|No*@<hline>
-ConcatNP|NPatch<f/<sup/&lowast;///&thinsp;NCurve<f/<sup/&lowast;//|Yes|NPatch|No*@<hline>
-ExtrNP|NPatch|Yes|NPatch|No*@<hline>
-OffsetNP|NPatch|Yes|NPatch|No*<#if out="latex">@<hline></#if>
+ConcatNP|NPatch<f/<sup/&lowast;///&thinsp;NCurve<f/<sup/&lowast;//|Yes|NPatch<f/<sup/+//|No*@<hline>
+ExtrNP|NPatch|Yes|NPatch<f/<sup/+//|No*@<hline>
+OffsetNP|NPatch|Yes|NPatch<f/<sup/+//|No*<#if out="latex">@<hline></#if>
 </tabular>
 <caption>Surface Tool Objects</caption>
 </table>
@@ -5531,8 +5531,8 @@ Do not render directly from a view window to the display when the
 Your renderer may not write image files when the command line option
 to render directly to the display (-d for rendrib, or -fb for Aqsis) is
 in use. Consequently, this may also inhibit writing of the shadow maps,
-so that the resulting image will look wrong, or the renderer will render
-the shadow map to the display and simply stop.
+so that the resulting image will look wrong, or the renderer will only
+render the shadow map to the display and then simply stop.
 <p>
 <bf>Manual Creation of ShadowMaps</bf>
 <p>
@@ -5615,7 +5615,7 @@ Here is a short example for a scene using a shadow map:
 <item>Create two boxes.
 <item>Open the <tt/"Transformations"/ property of the second box.
 <item>Translate it by X: 0.0, Y: -1.0, Z: 0.0.
-<item>Scale it by X: 4.0, Y:1.0, Z:4.0.
+<item>Scale it by X: 4.0, Y: 1.0, Z: 4.0.
 <item>Create a light source.
 <item>Open the <tt/"LightAttr"/ property.
 <item>Change the type to <tt/"Spot"/. Press <tt/"Apply"/.
@@ -10051,7 +10051,7 @@ The following table briefly lists some capabilities of the ConcatNP object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-ConcatNP|NPatch<f/<sup/&lowast;///&thinsp;NCurve<f/<sup/&lowast;//|Yes|NPatch|No*<#if out="latex">@<hline></#if>
+ConcatNP|NPatch<f/<sup/&lowast;///&thinsp;NCurve<f/<sup/&lowast;//|Yes|NPatch<f/<sup/+//|No*<#if out="latex">@<hline></#if>
 </tabular>
 <caption>ConcatNP Object Capabilities</caption>
 </table>
@@ -10233,7 +10233,7 @@ The following table briefly lists some capabilities of the ExtrNP object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-ExtrNP|NPatch|Yes|NPatch|No*<#if out="latex">@<hline></#if>
+ExtrNP|NPatch|Yes|NPatch<f/<sup/+//|No*<#if out="latex">@<hline></#if>
 </tabular>
 <caption>ExtrNP Object Capabilities</caption>
 </table>
@@ -10341,7 +10341,7 @@ The following table briefly lists some capabilities of the OffsetNP object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-OffsetNP|NPatch|Yes|NPatch|No*<#if out="latex">@<hline></#if>
+OffsetNP|NPatch|Yes|NPatch<f/<sup/+//|No*<#if out="latex">@<hline></#if>
 </tabular>
 <caption>OffsetNP Object Capabilities</caption>
 </table>
