@@ -691,10 +691,11 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  unsigned int i = 1, indiceslen = 0, *indices = NULL;
  int count = AY_FALSE, select_all = AY_FALSE, select_none = AY_FALSE;
+ int return_result = AY_FALSE;
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
  ay_point *p;
- Tcl_Obj *toa = NULL, *to;
+ Tcl_Obj *toa = NULL, *to = NULL, *tor = NULL;
 
   /* parse args */
   if(argc == 1)
@@ -715,13 +716,16 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      if(argc != 3)
 		{
-		  ay_error(AY_EARGS, argv[0], "-count varname");
-		  return TCL_OK;
+		  return_result = AY_TRUE;
+		  tor = Tcl_NewListObj(0, NULL);
 		}
-	      toa = Tcl_NewStringObj(argv[2], -1);
-	      Tcl_SetVar(interp, argv[2], "", TCL_LEAVE_ERR_MSG);
+	      else
+		{
+		  toa = Tcl_NewStringObj(argv[2], -1);
+		  Tcl_SetVar(interp, argv[2], "", TCL_LEAVE_ERR_MSG);
+		}
 	      count = AY_TRUE;
-	    }
+	    } /* if -count */
 	  /* -none */
 	  if(argv[1][1] == 'n')
 	    {
@@ -731,10 +735,15 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(argv[1][1] == 'g')
 	    {
 	      if(argc != 3)
-		return TCL_OK;
-	      toa = Tcl_NewStringObj(argv[2], -1);
-
-	      Tcl_SetVar(interp, argv[2], "", TCL_LEAVE_ERR_MSG);
+		{
+		  return_result = AY_TRUE;
+		  tor = Tcl_NewListObj(0, NULL);
+		}
+	      else
+		{
+		  toa = Tcl_NewStringObj(argv[2], -1);
+		  Tcl_SetVar(interp, argv[2], "", TCL_LEAVE_ERR_MSG);
+		}
 
 	      if(sel)
 		{
@@ -746,16 +755,27 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
 			to = Tcl_NewIntObj(p->index);
 		      else
 			to = Tcl_NewWideIntObj((Tcl_WideInt)p->index);
-		      Tcl_ObjSetVar2(interp, toa, NULL, to, TCL_APPEND_VALUE |
-				     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
+
+		      if(return_result)
+			Tcl_ListObjAppendElement(interp, tor, to);
+		      else
+			Tcl_ObjSetVar2(interp, toa, NULL, to, TCL_APPEND_VALUE |
+				       TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
 		      p = p->next;
 		    }
-
-		  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
+		  if(toa)
+		    {
+		      Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
+		    }
 		} /* if sel */
 
+	      if(return_result)
+		{
+		  Tcl_SetObjResult(interp, tor);
+		}
+
 	      return TCL_OK;
-	    }
+	    } /* if -get */
 	  /* -has */
 	  if(argv[1][1] == 'h' && argv[1][2] == 'a')
 	    {
@@ -774,9 +794,11 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
 		      o = o->next;
 		    }
 		} /* if sel */
+
 	      Tcl_SetObjResult(interp, to);
+
 	      return TCL_OK;
-	    }
+	    } /* if -has */
 	  /* -help */
 	  if(argv[1][1] == 'h' && argv[1][2] == 'e')
 	    {
@@ -790,7 +812,7 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
   if(!sel)
     {
       ay_error(AY_ENOSEL, argv[0], NULL);
-      return TCL_OK;
+      goto cleanup;
     }
 
   /* parse list of indices */
@@ -830,8 +852,13 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
 	    to = Tcl_NewIntObj(i);
 	  else
 	    to = Tcl_NewWideIntObj((Tcl_WideInt)i);
-	  Tcl_ObjSetVar2(interp, toa, NULL, to, TCL_APPEND_VALUE |
-			 TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
+
+	  if(return_result)
+	    Tcl_ListObjAppendElement(interp, tor, to);
+	  else
+	    Tcl_ObjSetVar2(interp, toa, NULL, to, TCL_APPEND_VALUE |
+			   TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
+
 	  sel = sel->next;
 	  continue;
 	}
@@ -879,6 +906,11 @@ cleanup:
 
   if(indices)
     free(indices);
+
+  if(tor)
+    {
+      Tcl_SetObjResult(interp, tor);
+    }
 
  return TCL_OK;
 } /* ay_selp_seltcmd */
