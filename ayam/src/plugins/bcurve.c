@@ -14,16 +14,10 @@
 
 /* bcurve.c - basis curve custom object (bicubic patchmesh curve equivalent) */
 
-char bcurve_version_ma[] = AY_VERSIONSTR;
-char bcurve_version_mi[] = AY_VERSIONSTRMI;
-
-static char *bcurve_name = "BCurve";
-
-static unsigned int bcurve_id;
-
+/** BCurve object type */
 typedef struct bcurve_object_s
 {
-  int is_rat;
+  int is_rat; /**< is the curve rational? */
   int closed; /**< is the curve closed? */
   int length; /**< number of control points (> 4) */
   int btype; /* basis type (AY_BT*) */
@@ -38,21 +32,14 @@ typedef struct bcurve_object_s
   double glu_sampling_tolerance; /**< drawing quality */
 } bcurve_object;
 
-#ifdef WIN32
-  __declspec (dllexport)
-#endif /* WIN32 */
-int bcurve_Init(Tcl_Interp *interp);
 
-/* prototypes of functions local to this module: */
-int bcurve_tobasis(bcurve_object *bc, int btype, int bstep, double *basis);
+/* global variables: */
+char bcurve_version_ma[] = AY_VERSIONSTR;
+char bcurve_version_mi[] = AY_VERSIONSTRMI;
 
-int bcurve_toncurvemulti(ay_object *o, ay_object **result);
+static char *bcurve_name = "BCurve";
 
-int bcurve_toncurve(ay_object *o, int btype, ay_object **result);
-
-int bcurve_israt(bcurve_object *bc);
-
-void bcurve_drawweights(bcurve_object *bcurve);
+static unsigned int bcurve_id;
 
 /* Bezier */
 static double mb[16] = {-1, 3, -3, 1,  3, -6, 3, 0,  -3, 3, 0, 0,  1, 0, 0, 0};
@@ -73,9 +60,27 @@ static double mbi[16];
 static double msi[16];
 
 
+/* prototypes of functions local to this module: */
+#ifdef WIN32
+  __declspec (dllexport)
+#endif /* WIN32 */
+int bcurve_Init(Tcl_Interp *interp);
+
+int bcurve_tobasis(bcurve_object *bc, int btype, int bstep, double *basis);
+
+int bcurve_toncurvemulti(ay_object *o, ay_object **result);
+
+int bcurve_toncurve(ay_object *o, int btype, ay_object **result);
+
+int bcurve_israt(bcurve_object *bc);
+
+void bcurve_drawweights(bcurve_object *bcurve);
+
+
+/* functions: */
 
 /** bcurve_tobasis:
- * Convert BCurve to a different basis.
+ * Convert a BCurve to a different basis.
  *
  * \param[in,out] bc BCurve to process (must be open and of length 4)
  * \param[in] btype target basis type
@@ -529,7 +534,7 @@ bcurve_israt(bcurve_object *bc)
  * \returns AY_OK (0) if curve is valid
  *   else:
  *  -1: NULL pointer delivered
- *   1: too few control points (need at least 4)
+ *   1: too few control points (need at least 4, unless periodic Bezier)
  *   2: stepsize too small
  *   3: basistype length mismatch
  *
@@ -542,7 +547,7 @@ bcurve_valid(bcurve_object *bcurve)
   if(!bcurve)
     return -1;
 
-  if(bcurve->length < 4)
+  if(bcurve->length < 3)
     {
       return 1;
     }
@@ -577,7 +582,8 @@ bcurve_valid(bcurve_object *bcurve)
     }
 
   if(bcurve->closed)
-    { /* periodic curve */
+    {
+      /* periodic curve */
       if(fabs(fmod((double)bcurve->length-4+(4-step), step)) >
 	 AY_EPSILON)
 	{
@@ -585,7 +591,12 @@ bcurve_valid(bcurve_object *bcurve)
 	}
     }
   else
-    { /* non periodic curve */
+    {
+      /* non periodic/open curve */
+      if(bcurve->length < 4)
+	{
+	  return 1;
+	}
       if(fabs(fmod((double)bcurve->length-4, step)) > AY_EPSILON)
 	{
 	  return 3;
@@ -1164,7 +1175,7 @@ bcurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     } /* if */
 
   /* resize curve */
-  if(new_length != bcurve->length && (new_length > 1))
+  if(new_length != bcurve->length && (new_length > 2))
     {
       if(o->selp)
 	{
