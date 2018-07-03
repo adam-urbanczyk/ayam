@@ -743,8 +743,8 @@ proc prefs_warnNeedRestart { warn } {
 		set p ".prefsw"
 	    }
 
-	    set answer [tk_messageBox -parent $p -title $t -type ok
-			-icon warning -message $m]
+	    set answer [tk_messageBox -parent $p -title $t -type ok\
+			    -icon warning -message $m]
 	}
 	# if
     }
