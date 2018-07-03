@@ -142,16 +142,11 @@ proc toolbox_open { {w .tbw} } {
 	    button $f.bedw -image ay_EditW_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionEditWP
 	    }
+	    toolbox_addshift1 $f.bedw "toolbox_startaction actionResetWP;rV;"
 	    balloon_set $f.bedw\
 		"edit weights <[remkpkr $ayviewshortcuts(WeightE)]>\n<Shift>: reset weights <[remkpkr $ayviewshortcuts(WeightR)]>"
-	    bind $f.bedw <Shift-ButtonPress-1> {
-		global  ay
-		%W configure -relief sunken
-		toolbox_startaction actionResetWP
-		rV
-		after 100 "%W configure -relief raised"
-		break;
-	    }
+
+
 	    ######
 	    button $f.bedn -image ay_EditN_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionEditNumP
@@ -163,14 +158,7 @@ proc toolbox_open { {w .tbw} } {
 	    button $f.bsel -image ay_Tag_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionTagP
 	    }
-	    bind $f.bsel <Shift-ButtonPress-1> {
-		global  ay
-		%W configure -relief sunken
-		selPnts;
-		rV
-		after 100 "%W configure -relief raised"
-		break;
-	    }
+	    toolbox_addshift1 $f.bsel "selPnts; rV;"
 	    balloon_set $f.bsel "select (tag) points <[remkpkr $ayviewshortcuts(Select)]>\n<Shift>: deselect points <[remkpkr $ayviewshortcuts(DeSelect)]>"
 	}
 
@@ -320,32 +308,16 @@ proc toolbox_open { {w .tbw} } {
 
 	    #####
 	    button $f.bconv -image ay_Convert_img -padx 0 -pady 0 -command {
-		global ay
-		set m $ay(toolsmenu)
-		$m invoke 16
+		$ay(toolsmenu) invoke 16
 	    }
-	    bind $f.bconv <Shift-ButtonPress-1> {
-		global  ay
-		%W configure -relief sunken
-		set m $ay(toolsmenu)
-		$m invoke 17
-		after 100 "%W configure -relief raised"
-		break;
-	    }
-	    balloon_set $f.bconv\
-		    "convert object\n<Shift>: in place"
+	    toolbox_addshift1 $f.bconv "\$ay(toolsmenu) invoke 17;"
+	    balloon_set $f.bconv "convert object\n<Shift>: in place"
 
 	    #####
 	    button $f.bnot -image ay_Notify_img -padx 0 -pady 0 -command {
 		notifyOb; rV
 	    }
-	    bind $f.bnot <Shift-ButtonPress-1> {
-		%W configure -relief sunken
-		notifyOb -all
-		rV
-		after 100 "%W configure -relief raised"
-		break;
-	    }
+	    toolbox_addshift1 $f.bnot "notifyOb -all; rV;"
 	    balloon_set $f.bnot\
 		    "force notification\n<Shift>: complete notification"
 	    #####
@@ -355,7 +327,6 @@ proc toolbox_open { {w .tbw} } {
 		$m invoke 12
 	    }
 	    balloon_set $f.bund "undo <[remkpkr $aymainshortcuts(Undo)]>"
-
 	}
 	##################
 
@@ -370,12 +341,7 @@ proc toolbox_open { {w .tbw} } {
 		after 100 "%W configure -relief raised"
 		break;
 	    }
-	    bind $f.blevel <Shift-ButtonPress-1> {
-		%W configure -relief sunken
-		level_crt Level 1
-		after 100 "%W configure -relief raised"
-		break;
-	    }
+	    toolbox_addshift1 $f.blevel "level_crt Level 1;"
 	    bind $f.blevel <Control-Shift-ButtonPress-1> {
 		%W configure -relief sunken
 		level_crt Level 1 1
@@ -439,14 +405,9 @@ proc toolbox_open { {w .tbw} } {
 	    button $f.bref -image ay_Refine_img -padx 0 -pady 0 -command {
 		undo save Refine; refineC; plb_update; rV
 	    }
+	    toolbox_addshift1 $f.bref\
+		"undo save Coarsen; coarsenNC; plb_update; rV;"
 	    balloon_set $f.bref "refine curve\n<Shift>: coarsen curve"
-	    bind $f.bref <Shift-ButtonPress-1> {
-		%W configure -relief sunken
-		undo save Coarsen; coarsenNC; plb_update; rV
-		after 100 "%W configure -relief raised"
-		break;
-	    }
-
 	}
 	##################
 
@@ -481,13 +442,8 @@ proc toolbox_open { {w .tbw} } {
 	    button $f.bclamp -image ay_Clamp_img -padx 0 -pady 0 -command {
 		undo save ClampNC; clampNC; plb_update; rV
 	    }
-	    bind $f.bclamp <Shift-ButtonPress-1> {
-		global  ay
-		%W configure -relief sunken
-		undo save UnclampNC; unclampNC; plb_update; rV
-		after 100 "%W configure -relief raised"
-		break;
-	    }
+	    toolbox_addshift1 $f.bclamp\
+		"undo save UnclampNC; unclampNC; plb_update; rV;"
 	    balloon_set $f.bclamp "clamp curve\n<Shift>: unclamp curve"
 
 	}
@@ -544,13 +500,8 @@ proc toolbox_open { {w .tbw} } {
 		crtClosedBS -s $ay(cbspsec) -o $ay(cbsporder)\
 		    -a $ay(cbsptmax) -r $ay(cbsprad); uCR; sL; rV;
 	    }
-	    bind $f.bnci <Shift-ButtonPress-1> {
-		global  ay
-		%W configure -relief sunken
-		crtOb NCircle; uCR; sL; notifyOb -parent; rV;
-		after 100 "%W configure -relief raised"
-		break;
-	    }
+	    toolbox_addshift1 $f.bnci\
+		"crtOb NCircle; uCR; sL; notifyOb -parent; rV;"
 	    bind $f.bnci <Control-ButtonPress-1> {
 		%W configure -relief sunken
 		crtClosedBS -s $ay(cbspsec) -o $ay(cbsporder)\
@@ -1021,3 +972,11 @@ proc toolbox_startaction { action { about 0 } } {
 }
 # toolbox_startaction
 
+
+proc toolbox_addshift1 {b c} {
+    set cmd "%W configure -relief sunken;"
+    append cmd $c
+    append cmd "after 100 \"%W configure -relief raised\";break;"
+    bind $b <Shift-ButtonPress-1> $cmd
+}
+# toolbox_addshift1
