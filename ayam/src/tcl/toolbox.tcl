@@ -421,13 +421,13 @@ proc toolbox_open { {w .tbw} } {
 	    button $f.bins -image ay_Insert_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionInsertP
 	    }
-	    balloon_set $f.bins "insert point \n<i>"
+	    balloon_set $f.bins "insert point <$ayviewshortcuts(InsertP)>"
 
 	    #####
 	    button $f.bdel -image ay_Delete_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionDeleteP
 	    }
-	    balloon_set $f.bdel "delete point \n<d>"
+	    balloon_set $f.bdel "delete point <$ayviewshortcuts(DeleteP)>"
 
 	    #####
 	    button $f.brev -image ay_Revert_img -padx 0 -pady 0 -command {
