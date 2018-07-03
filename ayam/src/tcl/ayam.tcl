@@ -1826,7 +1826,30 @@ if { $ayprefs(SingleWindow) } {
 
     destroy .fv
 }
-# if
+# if single or floating
+
+# apply gamma
+if { $ayprefs(IconGamma) != "" } {
+    set iconnames [image names]
+    foreach icon $iconnames {
+	if { [image type $icon] == "photo" } {
+	    $icon configure -gamma $ayprefs(IconGamma)
+	}
+    }
+    catch {unset iconnames icon}
+}
+
+# open the external toolbox window
+if { !$ayprefs(SingleWindow) } {
+    if { $ayprefs(showtb) == 1 } {
+	toolbox_open
+    }
+    # no way to reset all panes in floating windows mode
+    $ay(specialmenu) entryconfigure 11 -state disabled
+} else {
+    # no external toolbox for SingleWindow mode
+    $ay(specialmenu) entryconfigure 13 -state disabled
+}
 
 # run user defined startup Tcl scripts
 if { $ayprefs(Scripts) != "" } {
@@ -1901,29 +1924,6 @@ wm protocol . WM_DELETE_WINDOW {
     global ay
     set m $ay(filemenu)
     $m invoke 21
-}
-
-# apply gamma
-if { $ayprefs(IconGamma) != "" } {
-    set iconnames [image names]
-    foreach icon $iconnames {
-	if { [image type $icon] == "photo" } {
-	    $icon configure -gamma $ayprefs(IconGamma)
-	}
-    }
-    catch {unset iconnames icon}
-}
-
-# open the external toolbox window
-if { !$ayprefs(SingleWindow) } {
-    if { $ayprefs(showtb) == 1 } {
-	toolbox_open
-    }
-    # no way to reset all panes in floating windows mode
-    $ay(specialmenu) entryconfigure 11 -state disabled
-} else {
-    # no external toolbox for SingleWindow mode
-    $ay(specialmenu) entryconfigure 13 -state disabled
 }
 
 # re-establish old main window position and size
