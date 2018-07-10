@@ -15,8 +15,9 @@
 # o labels in sections (using hyperref phantomsection)
 # o inline graphics (icons in tables)
 # o improve itemize/enumerate environments line spread and paragraph distance
+# o allow minipage environments for text blocks in tables
 
-set procs { fixheight fixsection fixenddoc fixdocclass fixitemize fixenditemize fixenum fixlist insnewpage insneedspace insphantomsection insinlinegfx fixtoc fixhyperref fixpara }
+set procs { fixheight fixsection fixenddoc fixdocclass fixitemize fixenditemize fixenum fixlist insnewpage insneedspace insphantomsection insinlinegfx insmps insmpe fixtoc fixhyperref fixpara }
 
 proc fixheight { buf outfile } {
     global height
@@ -217,6 +218,25 @@ proc insinlinegfx { buf outfile } {
     return $found;
 }
 
+proc insmps { buf outfile } {
+    set found 0
+    if { [string first minipages $buf] > -1 } {
+	set out [string map {minipages "\\begin\{minipage\}\[b\]\{0.5\\textwidth\}"} $buf]
+	puts $outfile $out
+	set found 1
+    }
+    return $found;
+}
+
+proc insmpe { buf outfile } {
+    set found 0
+    if { [string first minipagee $buf] > -1 } {
+	set out [string map {minipagee "\\end\{minipage\}"} $buf]
+	puts $outfile $out
+	set found 1
+    }
+    return $found;
+}
 
 proc fixtoc { buf outfile } {
 
