@@ -285,14 +285,14 @@
 <root>			"<ROOT>"
 </root>			"</ROOT>"
 
-<ar>			"<AR>"
-</ar>			"</AR>"
+<ar>	+ 	"<TABLE ALIGN=\"CENTER\" BORDER=\"0\"><TR><TD>\n"	+
+</ar>	+	"</TD></TR></TABLE>\n"		+
 
-<arr>                   "<ARR>" 
-</arr>			
+<arr>		"</TD></TR><TR><TD>"		+
+</arr>
 
-<arc>                   "<ARC>"
-</arc>		
+<arc>		"</TD><TD>"
+</arc>
 
 <sup>			"<SUP>"
 </sup>			"</SUP>"
