@@ -1593,7 +1593,7 @@ of the available horizontal screen space and the object selection widget
 and property GUI are completely visible.
 
 <item><tt/"Toggle Toolbox"/ closes or opens the toolbox window
-(see <ref id="toolb" name="The Toolbox Window">). 
+(see <ref id="toolb" name="The Toolbox Window">).
 The state of the toolbox is also remembered in the saved
 preferences.<footnote>Since 1.3.</footnote><newline>
 This option is not available if Ayam is in single window GUI mode.
@@ -1803,7 +1803,7 @@ current scene regardless of selection).
 See also section <ref id="shadowmaps" name="Using ShadowMaps">.
 <p> <p>
 
-<item><tt>"Create ShadowMap"</tt>: 
+<item><tt>"Create ShadowMap"</tt>:
 the scene is exported to a RIB file using the currently selected
 light source for the camera settings and with a <tt/RiDisplay/ statement
 that results in a shadow map to be produced when rendered; then
@@ -1993,7 +1993,7 @@ See also the image below:
 </figure>
 <p>
 See section <ref id="drawingmodes" name="Drawing Modes"> for a discussion
-of the different drawing modes. 
+of the different drawing modes.
 
 <#if out="latex"><x/newpage/</#if>
 
@@ -2753,7 +2753,7 @@ Note that a change of this preference option only takes effect for
 the next invocation of the single point editing modelling action.
 <p><p>
 Also note, that there is a similar, albeit hidden, preference option
-that controls the flashing of picked objects (<tt/"FlashObjects"/), 
+that controls the flashing of picked objects (<tt/"FlashObjects"/),
 See also section <ref id="hidprefs" name="Hidden Preference Settings">.
 
 <item><tt/"RationalPoints"/ determines the display style of rational points.
@@ -2925,7 +2925,7 @@ In contrast to the <tt/"NCDisplayMode"/ setting above, objects can
 <item><tt/"UseMatColor"/ determines, whether the shaded representation
 uses the color defined by the material of an object for
 rendering. If disabled, the color defined by the <tt/"Shade"/ option
-(below) will be used instead. 
+(below) will be used instead.
 <p> <p>
 
 <item><tt/"Background"/, <tt/"Object"/, <tt/"Selection"/, <tt/"Grid"/,
@@ -4297,12 +4297,12 @@ so that a grid of 0.5 will add/remove weight in terms of 0.05
 increments/decrements.<newline>
 When the <tt>&lt;Control&gt;</tt> key is held down while picking the
 control point to edit, the weight will not be
-reset.<footnote>Since Ayam 1.25.</footnote>
+reset.<footnote>Since 1.25.</footnote>
 <p>
 The modelling action <tt/"Reset Weights"/ (shortcut: <tt/&lt;W&gt;/)
 resets the w coordinate of the picked point to 1.0. Drag
 selection of points to reset is also
-possible.<footnote>Since Ayam 1.25.</footnote>
+possible.<footnote>Since 1.25.</footnote>
 <p>
 In both actions the current weight of a control point is visualized
 by color: repelling weights (w&thinsp;<&thinsp;1.0) are drawn in
@@ -8361,7 +8361,7 @@ Those are <tt/"Step_U"//<tt/"Step_V"/ (the step size of the basis) and
 <tt/"Basis_U"//<tt/"Basis_V"/ the basis itself.<newline>
 When a basis type is changed to <tt/"Custom"/, the
 initial values of the basis matrix will be of those of
-the previous type.<footnote>Since Ayam 1.24.</footnote><newline>
+the previous type.<footnote>Since 1.24.</footnote><newline>
 Also note, that changing a basis type via the property GUI is not the
 same as converting a patch mesh via the <tt>tobasisPM</tt> command,
 see also section <ref id="sctobasispm" name="tobasisPM command">.<newline>
@@ -9394,7 +9394,7 @@ to lazy notification.
 <p>
 A Skin object will also use all the curves of a
 tool object, that provides multiple curves, e.g.~a Clone object
-in mirror mode.<footnote>Since Ayam 1.9.</footnote>
+in mirror mode.<footnote>Since 1.9.</footnote>
 <p>
 The direction of the parameter curves will be parallel to the V
 dimension (height) of the skinned surface. The number of the parameter
@@ -9444,7 +9444,7 @@ will be used. If the knot type is <tt/"Bezier"/ and the specified
 order (see above) does not exactly match the number of skinned curves,
 then the order will be silently adapted to the number of skinned curves.
 The knot type <tt/"Custom"/ creates a chord length parameterisation, even
-if interpolation is not enabled.<footnote>Since Ayam 1.7.</footnote>
+if interpolation is not enabled.<footnote>Since 1.7.</footnote>
 <p>
 See section <ref id="npattr" name="NPatchAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
@@ -10786,11 +10786,52 @@ mechanism.
 
 <sect2>Script Object<label id="scriptobj">
 <p>
+<#unless out="html">
+<table loc="ht">
+<tabular ca="cccc">
+
+<x/minipages/
+
+<verb>
+crtOb NCurve -l 30 -kt 1
+sL
+for {set i 0} {$i < 30} {incr i} {
+    set x [expr $i*cos($i*20.0)/10.0]
+    set y [expr $i*sin($i*20.0)/10.0]
+    setPnt $i $x $y 0 1
+}
+
+
+</verb>
+
+<x/minipagee/
+
+|||
+<x>inlinegfx pics/spiral.png 4cm </x>
+</tabular>
+<caption>Script Object Example: Tcl Code (l), Resulting Curve (r)</caption>
+</table>
+</#unless>
+
+<#if out="html">
 <figure loc="ht">
-<eps file="pics/helix.ps" height="5cm">
-<img src="pics/helix.gif">
-<caption>Script Object Example</caption>
+<dm><ar ca="ccc">
+<verb>
+
+
+crtOb NCurve -l 30 -kt 1
+sL
+for {set i 0} {$i < 30} {incr i} {
+    set x [expr $i*cos($i*20.0)/10.0]
+    set y [expr $i*sin($i*20.0)/10.0]
+    setPnt $i $x $y 0 1
+}
+</verb>|<verb>     </verb>|<img src="pics/spiral.gif">
+</ar>
+</dm>
+<caption>Script Object Example: Tcl Code (l), Resulting Curve (r)</caption>
 </figure>
+</#if>
 <p>
 Script objects are the most flexible object type of Ayam.
 They may be used to create new objects, modify existing objects,
@@ -10800,10 +10841,9 @@ that are embedded in the Script objects themselves.
 Those small embedded scripts may employ functionality from Tcl and
 the Tcl scripting interface of Ayam
 (see also section <ref id="script" name="Scripting Interface">).
-See also the image above, depicting a simple example script object
+See also the table above, depicting a simple example script object
 that creates a NURBS curve and puts the control points of the curve
-in a circle in the XY-plane while continuously offsetting in Z so
-that a helix forms. This example is also distributed with Ayam.
+in a spiral in the XY-plane. This example is also distributed with Ayam.
 <p>
 Script objects may also use arbitrary, plugin provided,
 scripting languages, like JavaScript, provided by the
@@ -11386,7 +11426,7 @@ section <ref id="patchmeshobj" name="PatchMesh Object">.
 <figure loc="!ht">
 <eps file="pics/bcurve.ps" height="5cm">
 <img src="pics/bcurve.gif">
-<caption>BCurves of Basis Types Bezier (ul), B-Spline (ur), Catmull-Rom (lu), and Hermite (lr)</caption>
+<caption>BCurves of Basis Types <em/Bezier/ (ul), <em/B-Spline/ (ur), <em/Catmull-Rom/ (lu), and <em/Hermite/ (lr)</caption>
 </figure>
 <p>
 See also the image above depicting simple example curves of some
@@ -11442,6 +11482,12 @@ main menu entry <tt>"Tools/Convert"</tt>.
 <p><#if out=latex>&nbsp;<newline></#if>
 BCurve objects never directly appear in RIB output (only indirectly as trim
 curve).
+
+<sect3>Scripting Interface
+<p><#if out=latex>&nbsp;<newline></#if>
+The BCurve object plugin defines a scripting interface command to convert
+BCurve objects to a different basis,
+see also section <ref id="sctobasisbc" name="tobasisBC">.
 
 <#if out="latex"><x/newpage/</#if>
 
@@ -12707,7 +12753,7 @@ Disabled notify script tags may be enabled after careful inspection
 by simply changing their type back to <tt/"BNS"/
 or by using the main menu entry <tt>"Special/Enable Scripts"</tt>.
 <p>
-If the script of a BNS tag fails, the tag will be disabled by 
+If the script of a BNS tag fails, the tag will be disabled by
 changing the type to DBNS.<footnote>Since 1.24.</footnote>
 <p>
 Also note that BNS tag scripts must not change the scene hierarchy,
@@ -12755,7 +12801,7 @@ Disabled notify script tags may be enabled after careful inspection
 by simply changing their type back to <tt/"ANS"/
 or by using the main menu entry <tt>"Special/Enable Scripts"</tt>.
 <p>
-If the script of a ANS tag fails, the tag will be disabled by 
+If the script of a ANS tag fails, the tag will be disabled by
 changing the type to DANS.<footnote>Since 1.24.</footnote>
 <p>
 Also note that ANS tag scripts must not change the scene hierarchy,
@@ -18186,6 +18232,39 @@ See also section <ref id="basist" name="Basis Tool">.
 converts the selected bicubic patch meshes to the Bezier basis.
 </itemize>
 
+<label id="sctobasisbc">
+tobasisBC &ndash; convert BCurve objects to a different
+basis:
+<itemize>
+ <item>Synopsis: <tt/"tobasisBC [-t type | -s step | -b basis]"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Converts all selected BCurve objects to a
+different basis.
+<p><p>
+The option <tt/"-t"/ controls the new basis type
+(0 &ndash; <tt/"Bezier"/, 1 &ndash; <tt/"B-Spline"/,
+2 &ndash; <tt/"Catmull-Rom"/, 3 &ndash; <tt/"Hermite"/,
+4 &ndash; <tt/"Power"/, 5 &ndash; <tt/"Custom"/),
+default is 1 (conversion to <tt/"B-Spline"/).
+<p>
+The option <tt/"-s"/ determines the new step size (1 to 4), it defaults
+to the natural step size of the target basis type and thus can be
+omitted safely, unless the target type is <tt/"Custom"/, in which case the step
+size <em/must/ be specified.
+<p>
+The option <tt/"-b"/ allows to convert to a custom basis and thus
+is a list of 16 floating point values specifying a 4 by 4 basis matrix
+in column major order. If <tt/"-b"/ is given, the target type defaults
+to <tt/"Custom"/ and the option <tt/"-t"/ can be omitted.
+<!--
+<p>
+See also section <ref id="basist" name="Basis Tool">.
+-->
+<item>Example:<newline>
+<bf><tt>"tobasisBC -t 0"</tt></bf><newline>
+converts the selected basis curves to the Bezier basis.
+</itemize>
+
 <p>
 <#if out="latex"><x/newpage/</#if>
 <#if out="latex"><x/phantomsection/</#if>
@@ -18567,7 +18646,7 @@ If the current property is de-selected first (using e.g.~the property
 context menu), it will run much faster.
 <p>
 Furthermore, the current selection is correctly
-maintained.<footnote>Since Ayam 1.9.</footnote>
+maintained.<footnote>Since 1.9.</footnote>
 
  <item>Deficiencies:
  <itemize>
@@ -18620,7 +18699,7 @@ replaceScene:
  <item>Background: Yes, Undo: No, Safe: No
  <item>Description: clears the current scene, then loads a new scene
 from the file designated by the <tt/"filename"/ parameter.
- <item>Notes: In contrast to using the main menu, 
+ <item>Notes: In contrast to using the main menu,
 further house keeping tasks detailed
 in section <ref id="opensf" name="Opening Scene Files">
 will <em/not/ be executed. In particular, this command
@@ -18638,7 +18717,7 @@ insertScene:
  <item>Background: Yes, Undo: No, Safe: No
  <item>Description: inserts a scene from the file designated by the
 <tt/"filename"/ parameter.
- <item>Notes: In contrast to using the main menu, 
+ <item>Notes: In contrast to using the main menu,
 some house keeping tasks detailed
 in section <ref id="insertsf" name="Inserting Scene Files">
 will <em/not/ be executed. In particular, this command
@@ -19088,7 +19167,7 @@ used, the new object(s) will replace the old object(s).
 If, additionally, a target type is specified, the conversion
 will be repeated until the object is of the requested
 type (and no conversion is attempted if the object is already
-of the requested type).<footnote>Since Ayam 1.25.</footnote>
+of the requested type).<footnote>Since 1.25.</footnote>
 <p>
 If the option <tt>"-check"</tt> is given, the convOb command does not
 convert but checks, whether a conversion to a given object type would be
@@ -22465,7 +22544,7 @@ instead of <tt/Transform/-nodes;
 <item><tt/"RationalStyle"/: determines how to write rational coordinates
 (see also section <ref id="rats" name="Rational Style">);
 <item><tt>"WriteX3dom"</tt>: toggles X3DOM-export mode. If this option is
-enabled, the X3D export will 
+enabled, the X3D export will
 <enum>
 <item>first read a XHTML template file from the export target directory
 (named <tt/"x3dom-template.xhtml"/),
