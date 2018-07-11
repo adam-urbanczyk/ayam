@@ -1,0 +1,1143 @@
+<!doctype linuxdoc system>
+
+<article>
+
+<title>Ayam SDK
+<author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
+<date>11. Jul 2018
+<abstract>
+This document describes how to write a custom object for Ayam.
+</abstract>
+
+<toc>
+
+<sect>Introduction
+<p>
+What is a custom object? A custom object is a piece of shared code
+that gets loaded at runtime into the core of Ayam to allow
+modeling with new types of geometric objects (a plug-in-system for object
+types).<p>
+You should take a look at (or print out) the files
+<tt>"plugins/csphere.c"</tt> and
+<tt>"plugins/csphere.tcl"</tt> from the src directory of the
+Ayam distribution.
+They contain a more or less documented example custom object that
+does nothing exciting, but implements a simple sphere.
+Additionally, they may serve as starting point for your
+own custom object. Just copy the files and rename all
+occurences of the string <tt/"csphere"/ to your
+own new name.<p>
+Take a look at the modules
+<tt/"extrude.c"/, and <tt/"icurve.c"/ in the objects
+sub directory of the sources. They implement objects
+too, but support some additional advanced functionality:
+notification (extrude), single point editing (icurve),
+conversion (extrude, icurve), and provide mechanism (icurve).
+
+<sect>Preparation
+<p>
+
+You decided to implement a new custom object?
+Fine, here is what to do first:
+<itemize>
+<item>Pick a short, pregnant, descriptive, non colliding name for your
+object type. To avoid clashes, I suggest to precede the name with the initials
+of the author (yours) as it is tradition with RenderMan shaders.
+<item>Copy <tt/"csphere.c"/ and <tt/"csphere.tcl"/ to <tt/"yourname.c"/
+and <tt/"yourname.tcl"/ respectively.
+<item>Rename all occurences of csphere in those files to yourname.
+<item>Edit the struct that holds the parameters of your object.
+This struct will be referred to later as the custom object.
+</itemize>
+
+Here is the corresponding code snippet from the csphere
+example:
+
+<code>
+#include "ayam.h"
+
+/* csphere.c - csphere custom object */
+
+static char *csphere_name = "CSphere";
+
+static unsigned int csphere_id;
+
+typedef struct csphere_object_s
+{
+  char closed;
+  char is_simple;
+  double radius;
+  double zmin, zmax;
+  double thetamax;
+} csphere_object;
+</code>
+
+Now you are ready to adapt the implementation of some functions
+as they are described in the next sections of the manual.
+
+<sect>Functions
+<p>
+
+A custom object implements a set of functions that are
+called from the Ayam core now and then.<p>
+Some functions are mandatory, some that would e.g. implement
+point editing support or notification are not.
+
+<sect1>Initialization (mandatory)
+<p>
+<code>
+int
+Yourname_Init(Tcl_Interp *interp)
+</code>
+
+Initialization of a custom object is done by a function named
+<tt>&dollar;yourname_Init(Tcl_Interp *interp)</tt>.
+Note, that <tt>&dollar;yourname</tt> is the filename of the shared object
+that gets loaded, and that the first character of the name has to be
+upcase, regardless of the case of the file name. It is a good
+idea to mimic the naming strategy of the csphere example.<p>
+
+The initialization is called once when the custom objects code
+gets loaded into Ayam.<p>
+
+What does the initialization do? First, it registers the
+custom object at the Ayam core by calling:<p>
+ay_otype_register().<p>
+
+<code>
+int ay_otype_register(char *name,
+		      ay_createcb  *crtcb,
+		      ay_deletecb  *delcb,
+		      ay_copycb    *copycb,
+		      ay_drawcb    *drawcb,
+		      ay_drawcb    *drawhcb,
+		      ay_drawcb    *shadecb,
+		      ay_propcb    *setpropcb,
+		      ay_propcb    *getpropcb,
+		      ay_getpntcb  *getpntcb,
+		      ay_readcb    *readcb,
+		      ay_writecb   *writecb,
+		      ay_wribcb    *wribcb,
+		      ay_bbccb     *bbccb,
+		      unsigned int *type_index);
+</code>
+
+If the registration fails, the function returns a nonzero value.
+You should really check this return value,
+and if it is nonzero call ay_error() with it and return TCL_ERROR.
+
+The parameters of the function ay_otype_register() are
+as follows:
+<itemize>
+<item>char *name: pointer to a global string, containing the custom
+object type name
+<item>some pointers to functions; the functions will be explained
+in the next sections
+<item>unsigned int *type_index: pointer to a global variable that holds
+an identifier for registered types (will be filled by
+ay_otype_register()), this identifier may be used for type checking
+and for registration of special functionality.
+</itemize>
+
+After the call to ay_otype_register(), callbacks for special
+functionality (notification, conversion, or provide mechanism)
+may be registered.<p>
+
+Furthermore, you may specify with a call to
+<tt>ay_matt_nomaterial();</tt> that your new object type
+shall not be associable with material objects, e.g.
+if it is just a geometric helper object that does
+not get exported to RIB.<p>
+
+Some new Tcl commands for additional functionality
+not covered by the provided standard and special callbacks
+may be registered now by calling
+Tcl_CreateCommand().<p>
+
+Finally, it is time to load some Tcl code from Tcl files into the
+interpreter. This code implements the property GUIs of the
+object type specific properties (do not worry, this is easy).<p>
+
+Csphere example:
+<code>
+/* note: this function _must_ be capitalized exactly this way
+ * regardless of filename (see: man n load)!
+ */
+int
+Csphere_Init(Tcl_Interp *interp)
+{
+ int ay_status = AY_OK;
+ char fname[] = "csphere_init";
+
+  ay_status = ay_otype_register(csphere_name,
+				csphere_createcb,
+				csphere_deletecb,
+				csphere_copycb,
+				csphere_drawcb,
+				NULL, /* no points to edit */
+				csphere_shadecb,
+				csphere_setpropcb,
+				csphere_getpropcb,
+				NULL, /* no picking */
+				csphere_readcb,
+				csphere_writecb,
+				csphere_wribcb,
+				csphere_bbccb,
+				&amp;csphere_id);
+
+  if(ay_status)
+    {
+      ay_error(AY_ERROR, fname, "Error registering custom object!");
+      return TCL_ERROR;
+    }
+
+  /* source csphere.tcl, it contains Tcl-code to build
+     the CSphere-Attributes Property GUI */
+  if((Tcl_EvalFile(interp, "csphere.tcl")) != TCL_OK)
+     {
+       ay_error(AY_ERROR, fname,
+		  "Error while sourcing \\\"csphere.tcl\\\"!");
+       return TCL_OK;
+     }
+
+  ay_error(AY_EOUTPUT, fname,
+	   "CustomObject \\\"CSphere\\\" successfully loaded.");
+
+ return TCL_OK;
+} /* Csphere_Init */
+</code>
+
+The following sections describe the functions that
+are parameters of ay_otype_register().
+
+<sect1>Create (mandatory)
+<p>
+<code>int yourname_createcb(int argc, char *argv[], ay_object *o);</code>
+
+In this callback you should allocate memory for your new object,
+and initialize it properly. Argc and argv are the command line of the
+<tt>crtOb yourname</tt> Tcl-command (invoked e.g. by
+the main menu entry <tt>Create/Custom Object/yourname</tt>,
+by Tcl scripts, or directly from the console).
+The user may deliver additional arguments
+to this command, which may be evaluated by this callback.
+
+Furthermore, in this callback you can adjust the
+attribute property of the newly created object,
+e.g. hiding it or its children initially.
+Just set the appropriate flags in the ayam_object pointed
+to by <tt>o</tt>. Look up the definition of <tt>ay_object</tt>,
+in <tt>ayam.h</tt> to see, what may be adapted.
+
+If you want your object be able to have child
+objects you should set the <tt>o->parent</tt> attribute to
+<tt>AY_TRUE</tt>. You may create first child objects in your
+create callback. But note, that each level in the
+scene hierarchy needs to be terminated properly
+with a so called EndLevel object. Such an object might
+be created easily using ay_object_crtendlevel();:
+<code>
+ ay_object *my_child = NULL;
+
+  /* create my_child here */
+  ...
+
+  /* link my_child */
+  o->down = my_child;
+  /* terminate level */
+  ay_object_crtendlevel(&amp;(my_child->next));
+</code>
+If you do not create child objects immediately,
+but set <tt>o->parent</tt> to true,
+Ayam will create the EndLevel object automatically for you.
+
+Csphere example:
+<code>
+int
+csphere_createcb(int argc, char *argv[], ay_object *o)
+{
+ csphere_object *csphere = NULL;
+ char fname[] = "crtcsphere";
+
+  if(!o)
+    return AY_ENULL;
+
+  if(!(csphere = calloc(1, sizeof(csphere_object))))
+    {
+      ay_error(AY_EOMEM, fname, NULL);
+      return AY_ERROR;
+    }
+
+  csphere->closed = AY_TRUE;
+  csphere->is_simple = AY_TRUE;
+  csphere->radius = 1.0;
+  csphere->zmin = -1.0;
+  csphere->zmax = 1.0;
+  csphere->thetamax = 360.0;
+
+  o->refine = csphere;
+
+ return AY_OK;
+} /* csphere_createcb */
+</code>
+
+<sect1>Delete (mandatory)
+<p>
+<code>int yourname_deletecb(void *c);</code>
+
+In this callback you should free all memory allocated
+for the custom object, the argument c points to one of your
+custom objects. No type check necessary.
+
+Csphere example:
+<code>
+int
+csphere_deletecb(void *c)
+{
+ csphere_object *csphere = NULL;
+
+  if(!c)
+    return AY_ENULL;
+
+  csphere = (csphere_object *)(c);
+
+  free(csphere);
+
+ return AY_OK;
+} /* csphere_deletecb */
+</code>
+
+<sect1>Copy (mandatory)
+<p>
+<code>int yourname_copycb(void *src, void **dst);</code>
+
+The copy callback is mandatory too, it is vital for
+clipboard and undo functionality.
+You should allocate a new object and copy the custom object
+pointed to by source to the new allocated memory, and finally
+return a pointer to the new memory in dst.
+The argument src points to one of your custom objects.
+No type check necessary.
+
+Csphere example:
+<code>
+int
+csphere_copycb(void *src, void **dst)
+{
+ csphere_object *csphere = NULL;
+
+  if(!src || !dst)
+    return AY_ENULL;
+
+  if(!(csphere = calloc(1, sizeof(csphere_object))))
+    return AY_EOMEM;
+
+  memcpy(csphere, src, sizeof(csphere_object));
+
+  *dst = (void *)csphere;
+
+ return AY_OK;
+} /* csphere_copycb */
+</code>
+
+<sect1>Draw
+<p>
+<code>int yourname_drawcb(struct Togl *togl,  ay_object *o);</code>
+
+In this callback you should draw your custom object.
+You do not get a pointer to your custom object as parameter,
+but a pointer to a Ayam object, which is a step higher
+in the object hierarchy!<p>
+This is, because you may freely decide whether to use the standard
+attributes stored with every Ayam object.
+These are for instance affine transformations.<p>
+See the example source for information on how to finally get to
+your custom object.
+
+Csphere example (extract):
+<code>
+int
+csphere_drawcb(struct Togl *togl, ay_object *o)
+{
+ csphere_object *csphere = NULL;
+
+...
+
+  if(!o)
+    return AY_ENULL;
+
+  csphere = (csphere_object *)o->refine;
+
+  if(!csphere)
+    return AY_ENULL;
+
+  radius = csphere->radius;
+
+...
+
+ return AY_OK;
+} /* csphere_drawcb */
+
+</code>
+
+<sect1>Shade
+<p>
+<code>int yourname_shadecb(struct Togl *togl,  ay_object *o);</code>
+
+This callback is basically the same as the draw callback,
+but the user expects to get a shaded represention of the
+object.
+
+<sect1>Drawh - Draw Handles
+<p>
+<code>int yourname_drawhcb(struct Togl *togl,  ay_object *o);</code>
+
+This callback is not mandatory, and needs just to be implemented
+if your object supports single point editing.
+If you want to do this, you should draw with <tt>glPoint()</tt>
+just the points of your object that may be modified by a single point
+editing action in this callback.
+
+<sect1>SetProp - Set Properties
+<p>
+<code>int yourname_setpropcb(Tcl_Interp *interp, int argc, char *argv[],
+ay_object *o);</code>
+
+Using this callback you copy data of your object
+type specific properties from the Tcl to the C context.
+Note the use of Tcl_IncrRefCount() and Tcl_DecrRefCount()
+to avoid memory leaks.
+
+Also note, that if your object is used as parameter
+object for a tool object you should inform the tool
+object (your parent) about changes now using:
+<code>
+ay_status = ay_notify_parent(void);
+</code>
+
+Csphere example:
+<code>
+/* Tcl -> C! */
+int
+csphere_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
+{
+ char *n1 = "CSphereAttrData";
+ Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ csphere_object *csphere = NULL;
+ int itemp = 0;
+
+  if(!o)
+    return AY_ENULL;
+
+  csphere = (csphere_object *)o->refine;
+
+  toa = Tcl_NewStringObj(n1,-1);
+  ton = Tcl_NewStringObj(n1,-1);
+
+  Tcl_SetStringObj(ton,"Closed",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &amp;itemp);
+  csphere->closed = (char)itemp;
+
+  Tcl_SetStringObj(ton,"Radius",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp,to, &amp;csphere->radius);
+
+  Tcl_SetStringObj(ton,"ZMin",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp,to, &amp;csphere->zmin);
+
+  Tcl_SetStringObj(ton,"ZMax",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp,to, &amp;csphere->zmax);
+
+  Tcl_SetStringObj(ton,"ThetaMax",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp,to, &amp;csphere->thetamax);
+
+  if((fabs(csphere->zmin) == csphere->radius) &amp;&amp;
+     (fabs(csphere->zmax) == csphere->radius) &amp;&amp;
+     (fabs(csphere->thetamax) == 360.0))
+    {
+      csphere->is_simple = AY_TRUE;
+    }
+  else
+    {
+      csphere->is_simple = AY_FALSE;
+    }
+
+  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
+  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+
+ return AY_OK;
+} /* csphere_setpropcb */
+</code>
+
+<sect1>GetProp - Get Properties
+<p>
+<code>int yourname_getpropcb(Tcl_Interp *interp, int argc, char *argv[],
+ay_object *o);</code>
+
+Using this callback you copy data of your object
+type specific properties from the C to the Tcl context.
+
+Csphere example:
+<code>
+/* C -> Tcl! */
+int
+csphere_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
+{
+ char *n1="CSphereAttrData";
+ Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ csphere_object *csphere = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  csphere = (csphere_object *)(o->refine);
+
+  toa = Tcl_NewStringObj(n1,-1);
+
+  ton = Tcl_NewStringObj(n1,-1);
+
+  Tcl_SetStringObj(ton,"Closed",-1);
+  to = Tcl_NewIntObj(csphere->closed);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"Radius",-1);
+  to = Tcl_NewDoubleObj(csphere->radius);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"ZMin",-1);
+  to = Tcl_NewDoubleObj(csphere->zmin);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"ZMax",-1);
+  to = Tcl_NewDoubleObj(csphere->zmax);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"ThetaMax",-1);
+  to = Tcl_NewDoubleObj(csphere->thetamax);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
+  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+
+ return AY_OK;
+} /* csphere_getpropcb */
+</code>
+
+<sect1>GetPoint, Single Point Editing
+<p>
+<code>int yourname_getpntcb(ay_object *o, double *p);</code>
+
+This callback enables all the single point editing
+facilities (including the selection mechanism for single points)
+for your object.<p>
+With this callback you get an object and a point in the
+local space of that object. You are asked to search
+through your internal structures for points
+of yours that match the coordinates given in <tt/"p"/.
+If there are such points you should build an array
+of pointers to your points as the following example does:
+
+<code>
+yourname_getpntcb(ay_object *o, double *p)
+{
+ double *control = NULL, min_distance = ay_prefs.pick_epsilon,
+         distance = 0.0;
+
+ /* first, we clear the old array */
+ if(ay_point_edit_coords) free(ay_point_edit_coords);
+ ay_point_edit_coords = NULL;
+
+ /* now we scan our points for the given coordinates*/
+ control = array_of_your_points;
+ for(i = 0; i < max_points; i++)
+    {
+     distance = AY_VLEN((objX - control[j]),
+			(objY - control[j+1]),
+			(objZ - control[j+2]));
+     if(distance < min_distance)
+	{
+	  pecoords = &amp;amp;(control[j]);
+	  min_distance = distance;
+	}
+
+      j += 3;
+    }
+
+  if(!pecoords)
+    return AY_OK;
+
+  /* are the points homogenous? */
+  ay_point_edit_coords_homogenous = AY_FALSE;
+
+  /* now we create the new array */
+  if(!(ay_point_edit_coords = calloc(1,sizeof(double*))))
+    return AY_OUTOFMEM;
+  /* and fill it */
+  ay_point_edit_coords_number = 1;
+  ay_point_edit_coords[0] = pecoords;
+
+ return AY_OK;
+} /* yourname_getpntcb */
+</code>
+
+The code above does just handle the selection of a single point,
+it is possible, however, to put an arbitrary number of points in the
+array at once! This is necessary for the special case
+of <tt>(p[0] == DBL_MIN) && (p[1] == DBL_MIN) && (p[2] == DBL_MIN)</tt>.
+If all elements of <tt/"p"/ are <tt/"DBL_MIN"/ you should put
+all editable points of the object into the array
+(the user wants to select all points).<p>
+
+The following global variables are in use: <tt/ay_point_edit_coords/
+(the adress of the array), <tt/ay_point_edit_coords_number/
+(an integer that tells Ayam, how many
+pointers are in <tt/ay_point_edit_coords/),
+ay_point_edit_coords_homogenous (a flag that tells Ayam, wether the
+points are homogenous or not; note, that there can only be points
+of one type in the array).<p>
+Also note, that the Ayam core will poke into the memory
+you pointed it to later. The core expects the
+points itself to be arrays of doubles:
+
+<code>
+double a_non_homogenous_point[3];
+double a_homogenous_point[4];
+</code>
+
+<sect1>Read (mandatory)
+<p>
+<code>int yourname_readcb(FILE *fileptr, ay_object *o);</code>
+
+This callback is for reading Ayam scene files.
+As you can see in the example source, simple
+fscanf() calls are currently in use.
+
+Csphere example:
+<code>
+int
+csphere_readcb(FILE *fileptr, ay_object *o)
+{
+ csphere_object *csphere = NULL;
+ int itemp = 0;
+
+  if(!o)
+    return AY_ENULL;
+
+  if(!(csphere = calloc(1, sizeof(csphere_object))))
+    { return AY_EOMEM; }
+
+  fscanf(fileptr,"%d\n",&amp;itemp);
+  csphere->closed = (char)itemp;
+  fscanf(fileptr,"%lg\n",&amp;csphere->radius);
+  fscanf(fileptr,"%lg\n",&amp;csphere->zmin);
+  fscanf(fileptr,"%lg\n",&amp;csphere->zmax);
+  fscanf(fileptr,"%lg\n",&amp;csphere->thetamax);
+
+  if((fabs(csphere->zmin) == csphere->radius) &amp;&amp;
+     (fabs(csphere->zmax) == csphere->radius) &amp;&amp;
+     (fabs(csphere->thetamax) == 360.0))
+    {
+      csphere->is_simple = AY_TRUE;
+    }
+  else
+    {
+      csphere->is_simple = AY_FALSE;
+    }
+
+  o->refine = csphere;
+
+ return AY_OK;
+} /* csphere_readcb */
+</code>
+
+<sect1>Write (mandatory)
+<p>
+<code>int yourname_writecb(FILE *fileptr, ay_object *o);</code>
+
+This callback is for writing Ayam scene files.
+As you can see in the example source, simple
+fprintf() calls are currently in use.
+Note, that you do not have to worry about
+your child objects, if there are any, they will
+be saved automagically.
+
+<code>
+int
+csphere_writecb(FILE *fileptr, ay_object *o)
+{
+ csphere_object *csphere = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  csphere = (csphere_object *)(o->refine);
+
+  fprintf(fileptr, "%d\n", csphere->closed);
+  fprintf(fileptr, "%g\n", csphere->radius);
+  fprintf(fileptr, "%g\n", csphere->zmin);
+  fprintf(fileptr, "%g\n", csphere->zmax);
+  fprintf(fileptr, "%g\n", csphere->thetamax);
+
+ return AY_OK;
+} /* csphere_writecb */
+</code>
+
+<sect1>Wrib - Write RIB
+<p>
+<code>int yourname_wribcb(char *file, ay_object *o);</code>
+
+This callback is for exporting your object to a RIB.
+Just use the appropriate Ri-calls.
+Just like the drawing callbacks you get a pointer to a
+Ayam object and not to your custom object.
+Csphere example:
+<code>
+int
+csphere_wribcb(char *file, ay_object *o)
+{
+ csphere_object *csphere = NULL;
+
+...
+
+  if(!o)
+   return AY_ENULL;
+
+  csphere = (csphere_object*)o->refine;
+
+
+  if(!csphere->closed)
+  {
+    RiSphere((RtFloat)csphere->radius,
+	     (RtFloat)csphere->zmin,
+	     (RtFloat)csphere->zmax,
+	     (RtFloat)csphere->thetamax,
+	     NULL);
+  }
+
+...
+
+ return AY_OK;
+} /* csphere_wribcb */
+</code>
+
+<sect1>BBC - Bounding Box Calculation
+<p>
+<code>int yourname_bbccb(ay_object *o, double *bbox, int *flags);</code>
+
+This callback is for the calculation of bounding boxes.
+<tt/"bbox"/ points to an array of 24 doubles (describing 8 points),
+the bounding box. You may put additional information into <tt/"flags"/
+to tell the core that you:
+<enum>
+<item> have a regular bounding box (leave flags at zero)
+<item> have a regular bounding box but the boxes of the
+children should be discarded (set flags to 1)
+<item> have no own bbox, but children have (set flags to 2)
+</enum>
+
+Csphere example:
+<code>
+int
+csphere_bbccb(ay_object *o, double *bbox, int *flags)
+{
+ double r = 0.0, zmi = 0.0, zma = 0.0;
+ csphere_object *csphere = NULL;
+
+  if(!o || !bbox)
+    return AY_ENULL;
+
+  csphere = (csphere_object *)o->refine;
+
+  r = csphere->radius;
+  zmi = csphere->zmin;
+  zma = csphere->zmax;
+
+  /* XXXX does not take into account ThetaMax! */
+
+  /* P1 */
+  bbox[0] = -r; bbox[1] = r; bbox[2] = zma;
+  /* P2 */
+  bbox[3] = -r; bbox[4] = -r; bbox[5] = zma;
+  /* P3 */
+  bbox[6] = r; bbox[7] = -r; bbox[8] = zma;
+  /* P4 */
+  bbox[9] = r; bbox[10] = r; bbox[11] = zma;
+
+  /* P5 */
+  bbox[12] = -r; bbox[13] = r; bbox[14] = zmi;
+  /* P6 */
+  bbox[15] = -r; bbox[16] = -r; bbox[17] = zmi;
+  /* P7 */
+  bbox[18] = r; bbox[19] = -r; bbox[20] = zmi;
+  /* P8 */
+  bbox[21] = r; bbox[22] = r; bbox[23] = zmi;
+
+ return AY_OK;
+} /* csphere_bbccb */
+</code>
+
+<sect1>Notification
+<p>
+<code>int yourname_notifycb(ay_object *o);</code>
+
+The notification callback is for custom objects
+that rely on other objects to be children of them (e.g. Revolve).<p>
+The notification callback is to inform you, that something below
+your custom object has changed, and you should
+probably adapt the custom object to the change. The Revolve object
+e.g. redoes the revolution.
+
+Notification callbacks have to be registered in
+the initialization function using:
+<code>
+int ay_notify_register(ay_notifycb *notcb, unsigned int type_id);
+</code>
+
+<sect1>Conversion
+<p>
+<code>
+int yourname_convertcb(ay_object *o);
+</code>
+
+Conversion callbacks are in use for objects that may be
+converted to objects of a different type, e.g. the interpolating
+curve object (ICurve) may be converted to a NURBCurve object,
+or the Revolve object may be converted to a NURBPatch object.<p>
+
+In the conversion callback a new object should be created
+from the object pointed to by <tt/"o"/. Furthermore,
+this object needs to be linked into the scene using:
+<tt/"ay_object_link()"/. See
+<tt>"icurve.c/ay_icurve_convertcb()"</tt> for an example.
+
+Conversion callbacks have to be registered in
+the initialization function using:
+<code>
+int ay_convert_register(ay_convertcb *convcb, unsigned int type_id);
+</code>
+
+<sect1>Provide
+<p>
+<code>
+int yourname_providecb(ay_object *o, unsigned int type,
+                       ay_object **result);
+</code>
+Provide callbacks are in use for objects that are able
+to provide objects from a different type.
+This is very much like the conversion (above) but the
+objects are not to be linked into the scene but
+used by e.g. a parent procedural object as parameter
+for its procedure.
+For instance, using the provide mechanism a Revolve object is able
+to revolve an interpolating curve. The argument <tt/"type"/ denotes
+the desired type of the new object and <tt/"result"/ should
+be filled with an object of the wanted type. See
+<tt>"icurve.c/ay_icurve_providecb()"</tt> for an example.
+
+Provide callbacks have to be registered in
+the initialization function using:
+<code>
+int ay_provide_register(ay_providecb *provcb, unsigned int type_id);
+</code>
+
+<sect1>Tree-Drop
+<p>
+<code>int yourname_dropcb(ay_object *o);</code>
+The tree-drop callback is for custom objects
+that want to get notified, when an object is dropped
+onto them in the tree view to invoke some special
+actions. This is e.g. used by the material objects that
+connect to all geometric objects dropped onto them, or by
+the view object which uses the camera settings from a
+camera object which is dropped onto the view object.<p>
+
+Tree-drop callbacks have to be registered in
+the initialization function using:
+<code>
+int ay_tree_registerdrop(ay_treedropcb *cb, unsigned int type_id)
+</code>
+
+<sect>Custom Objects from the Tcl Side of Life
+<p>
+Yes, custom objects need some Tcl code too.<p>
+Take a look at the file <tt/"csphere.tcl"/.<p>
+This code, first, fills two important variables: <tt/"CSphere_props"/
+and <tt/"CSphereAttr"/.
+
+<code>
+global ay CSphere_props CSphereAttr CSphereAttrData
+
+set CSphere_props { Transformations Attributes Material Tags CSphereAttr }
+
+array set CSphereAttr {
+arr   CSphereAttrData
+sproc ""
+gproc ""
+w     fCSphereAttr
+}
+</code>
+
+<tt/"CSphere_props"/ holds a list of all properties of the
+CSphere. There are well known standard properties
+<tt/"Transformations Attributes Material Tags"/ and a new
+special property <tt/"CSphereAttr"/.
+
+The handling of the standard properties is done entirely
+by the core. No need for further adjustments.
+
+The new special property <tt/"CSphereAttr"/, however, must be
+introduced to the core properly now.
+This is done by filling a global array named as the property,
+in our case the property, and the array, are named <tt/"CSphereAttr"/.
+
+The single elements denote:
+<enum>
+<item> arr: name of a global array, where this property holds its
+data
+<item> sproc: name of a procedure that transports the data
+from Tcl context to C context. If this is empty (<tt/sproc ""/)
+the core will use the internal mechanism and call the
+callback provided on registration of your object type.
+This is the point where you may jump into own property
+functionality, if you need to provide arguments to your
+own functions or do some other magic (call other commands etc.pp.).
+<item> gproc: name of a procedure that transports the data
+from C context to Tcl context. See discussion above.
+<item> w: name of the window of the property GUI
+</enum>
+
+Now the property GUI itself needs to be created:
+<code>
+array set CSphereAttrData {
+Closed 1
+Radius 1.0
+ZMin -1.0
+ZMax 1.0
+ThetaMax 1.0
+}
+
+# create CSphereAttr-UI
+set w [frame $ay(pca).$CSphereAttr(w)]
+
+addCheck $w CSphereAttrData Closed
+addParam $w CSphereAttrData Radius
+addParam $w CSphereAttrData ZMin
+addParam $w CSphereAttrData ZMax
+addParam $w CSphereAttrData ThetaMax
+</code>
+
+The code is really simple and creates a static GUI consisting of
+a checkbox and four entries for parameters. The different available
+GUI elements are discussed in the next sections.<p>
+
+Finally, we create an entry in the main menu, for
+easy creation of our new object type:
+<code>
+# add menu entry to the Create/Custom Object sub-menu
+mmenu_addcustom CSphere "crtOb CSphere; uS; sL; rV"
+
+# tell the rest of Ayam (or other custom objects), that we are loaded
+lappend ay(co) CSphere
+</code>
+
+<sect1>Property GUI Elements
+<p>
+A property GUI is usually organized in list form.
+The single list elements are mostly built by
+calling a single Tcl command of the Ayam core. All elements
+are implemented in the file <tt/"uie.tcl"/ (UIE - User Interface
+Elements).<p>
+
+The template for such a command (that creates a single
+line of a property GUI) is as follows:<p>
+<tt>add&lcub;type&rcub; w array name [default]</tt><p>
+
+<tt>type</tt> is the type of the entry. Predefined and heavily
+used by the rest of Ayam are: Text, Param, Menu, Check, Color,
+File, String and Command.
+Depending on the type, the actual parameters are a bit different
+but this is documented in detail later on...<p>
+
+<tt>w</tt> is the window the new entry should be created in.
+Just pass the name of the window of the property GUI.<p>
+
+<tt>array</tt> is the name of the (global) array where
+the parameters that should be edited are actually stored.<p>
+
+<tt>name</tt> is the name of the variable in the global
+array <tt>array</tt> that this entry should manipulate.
+In addition, this name is often used in a label to mark
+the entry. You should use descriptive and not too
+long variable names.<p>
+
+<tt>default</tt> is a list of default values.
+However, not all GUI elements support those!
+
+You are, of course, not tied to the aforementioned entries.
+The seashell custom object, for instance, implements an own type, an
+entry consisting of a slider, that is even able to issue
+apply operations while dragging the slider.
+
+The following sections document all core entry types.
+
+<sect2>Labels
+<p>
+<tt>addText w f text</tt><p>
+adds a line containing the text <tt>text</tt> to the property GUI.
+<tt>f</tt> is required to generate window names, use <tt>e1</tt>,
+<tt>e2</tt> etc.; <tt>f</tt> must be unique over all entries of a property
+GUI.<p>
+Example:
+<code>
+set w [frame $ay(pca).$CSphereAttr(w)]
+addText $w CSphereAttrData e1 "CSphere Attributes"
+</code>
+
+<sect2>Parameters
+<p>
+<tt>addParam w array name [default]</tt><p>
+creates the standard parameter manipulation entry consisting
+of a label, two buttons for quick parameter manipulation
+by doubling, dividing the value, and finally an entry for direct
+manipulation.<p>
+Example:
+<code>
+set w [frame $ay(pca).$CSphereAttr(w)]
+addParam $w CSphereAttrData Radius
+</code>
+
+<sect2>Menus
+<p>
+<tt>addMenu w array name list</tt><p>
+adds a menu button, that toggles between the elements
+of the list <tt>list</tt>. The variable <tt>name</tt>
+always contains the index of the selected entry. Note, that the
+variable name has to exist before the call to addMenu!<p>
+Example:
+<code>
+set CSphereAttrData(Type) 0
+set w [frame $ay(pca).$CSphereAttr(w)]
+addMenu $w CSphereAttrData Type [list Simple Enhanced]
+</code>
+
+<sect2>Checkbuttons
+<p>
+<tt>addCheck w array name</tt><p>
+adds a single check button to the GUI. The variable <tt>name</tt>
+will be set to either 0 or 1 according to the state of the check button.
+<code>
+set w [frame $ay(pca).$CSphereAttr(w)]
+addCheck $w CSphereAttrData Closed
+</code>
+
+<sect2>Color Selectors
+<p>
+<tt>addColor w array name [default]</tt><p>
+adds a color selection facility. The color values will be
+written to variables named <tt>{name}_R</tt>,
+<tt>{name}_G</tt>, and <tt>{name}_B</tt>.<p>
+Example:
+<code>
+set w [frame $ay(pca).$CSphereAttr(w)]
+addColor $w CSphereAttrData SphereCol
+</code>
+
+<sect2>File Selectors
+<p>
+<tt>addFile w array name</tt><p>
+adds a string entry and a small button, that starts
+the standard file requester, handy for strings
+that contain file names.<p>
+Example:
+<code>
+set w [frame $ay(pca).$CSphereAttr(w)]
+addFile $w CSphereAttrData FName
+</code>
+
+<sect2>String Entries
+<p>
+<tt>addString w array name [default]</tt><p>
+adds a simple string entry.<p>
+Example:
+<code>
+set w [frame $ay(pca).$CSphereAttr(w)]
+addString $w CSphereAttrData Name
+</code>
+
+<sect2>Buttons
+<p>
+<tt>addCommand w f text command</tt><p>
+adds a big button labelled with <tt>text</tt> that starts
+the command <tt>command</tt>.
+<tt>f</tt> is (similar to text entries) a name for a window,
+I suggest to name the windows <tt>c1</tt>, <tt>c2</tt> etc.;
+<tt>f</tt> must be unique over all entries of a property GUI.<p>
+Example:
+<code>
+set w [frame $ay(pca).$CSphereAttr(w)]
+addCommand $w c1 "PressMe!" "puts Hi"
+</code>
+
+<sect1>The Custom Menu
+<p>
+You may link additional functionality
+of your custom object to entries in the
+custom menu.<p>
+The following example code snippet shows how to do that:
+<code>
+# link proc fooproc to Custom menu
+# we need access to global array "ay"
+global ay
+# always create a cascaded sub-menu
+$ay(cm) add cascade -menu $ay(cm).foo -label "Foo"
+# create menu
+set m [menu $ay(cm).foo]
+# create menu entry
+$m add command -label "Foo(l)" -command fooproc
+</code>
+
+Note, that you should always create a new sub-menu using
+a cascade entry instead of creating entries directly
+in the custom menu.
+
+<sect>Compiling, Installing, Loading a Custom Object
+<p>
+
+The source code of an Ayam custom object needs to include <tt>ayam.h</tt>,
+<tt>ayam.h</tt> in turn includes Togl (OpenGL, Tcl/Tk, X11) and RI
+(RenderMan Interface) headers.
+When compiling your custom object, all you need to do is
+to make sure the compiler finds all those includes.
+See the Makefile of Ayam on how to collect all
+necessary information to build -I directives.
+The target <tt>csphere.so:</tt> should provide enough information
+on how to compile a custom object.
+
+Compile your source with the -c switch.
+Then use the right switch for your compiler (-shared ?) to make a
+shared object (.so) from the .o(s) and you should be ready to test
+(>cc -shared -o foo.so foo.o).
+
+Install the shared object along with the Tcl file containing
+the property GUI procedure and other stuff.
+
+To load a custom object use the appropriate menu entry in the File menu
+or the io_lc (load custom) command. Both methods will automatically
+change the working directory to the location of the shared object to allow
+it to find the accompanying Tcl script more easily. Do not use the
+<tt>load</tt> command of the Tcl core directly!
+
+If you want your custom object to be loaded automatically
+on startup of Ayam just create a small Tcl-script and load
+that on startup using the preference setting <tt>Prefs/Main/Scripts</tt>.
+Example:
+<code>
+# this script loads the mfio-plugin into Ayam
+io_lc /home/randi/ays/plugins/mfio.so
+return
+</code>
+</article>
