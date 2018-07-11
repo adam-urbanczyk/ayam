@@ -123,8 +123,7 @@ proc toolbox_open { {w .tbw} } {
 	    }
 	    balloon_set $f.bpar "create Paraboloid"
 	}
-
-	##################
+	# solids
 
 	if { $i == "points" } {
 	    lappend ay(toolbuttons) bed bedw bedn bsel
@@ -145,7 +144,6 @@ proc toolbox_open { {w .tbw} } {
 	    button $f.bedn -image ay_EditN_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionEditNumP
 	    }
-
 	    balloon_set $f.bedn\
 	      "edit points numeric <[remkpkr $ayviewshortcuts(EditN)]>"
 
@@ -155,8 +153,8 @@ proc toolbox_open { {w .tbw} } {
 	    toolbox_addshift1 $f.bsel "selPnts; rV;"
 	    balloon_set $f.bsel "select (tag) points <[remkpkr $ayviewshortcuts(Select)]>\n<Shift>: deselect points <[remkpkr $ayviewshortcuts(DeSelect)]>"
 	}
+	# points
 
-	##################
 	if { $i == "camera" } {
 	    lappend ay(toolbuttons) bv brot bmov bzom
 
@@ -183,9 +181,9 @@ proc toolbox_open { {w .tbw} } {
 	    }
 	    balloon_set $f.bzom\
 		"zoom view <[remkpkr $ayviewshortcuts(ZoomV)]>"
-
 	}
-	##################
+	# camera
+
 	if { $i == "trafo" } {
 	    lappend ay(toolbuttons) bmovo broto bscal bsc2d
 
@@ -214,7 +212,8 @@ proc toolbox_open { {w .tbw} } {
 		"scale 2D <[remkpkr $ayviewshortcuts(Scal2)]>"
 
 	}
-	##################
+	# trafo
+
 	if { $i == "trafo2" } {
 	    lappend ay(toolbuttons) bsc1dx bsc1dy bsc1dz bst2d
 
@@ -241,9 +240,8 @@ proc toolbox_open { {w .tbw} } {
 	    }
 	    balloon_set $f.bst2d\
 		"stretch <[remkpkr $ayviewshortcuts(Stretch)]>"
-
 	}
-	##################
+	# trafo2
 
 	if { $i == "trafo3" } {
 	    lappend ay(toolbuttons) brota bsc1dxa bsc1dya bsc1dza
@@ -275,7 +273,7 @@ proc toolbox_open { {w .tbw} } {
 	    balloon_set $f.bsc1dza\
 		"scale 1D Z about <[remkpkr $ayviewshortcuts(Scal2)][remkpkr $ayviewshortcuts(RestrictZ)][remkpkr $ayviewshortcuts(About)]>"
 	}
-	##################
+	# trafo3
 
 	if { $i == "misc" } {
 	    lappend ay(toolbuttons) bhide bconv bnot bund
@@ -307,7 +305,7 @@ proc toolbox_open { {w .tbw} } {
 	    }
 	    balloon_set $f.bund "undo <[remkpkr $aymainshortcuts(Undo)]>"
 	}
-	##################
+	# misc
 
 	if { $i == "misco" } {
 	    lappend ay(toolbuttons) blevel blight binst bmat
@@ -356,7 +354,7 @@ proc toolbox_open { {w .tbw} } {
 	    }
 	    balloon_set $f.bmat "create Material"
 	}
-	##################
+	# misco
 
 	if { $i == "nctools1" } {
 	    lappend ay(toolbuttons) bins bdel brev bref
@@ -382,7 +380,7 @@ proc toolbox_open { {w .tbw} } {
 		"undo save Coarsen; coarsenNC; plb_update; rV;"
 	    balloon_set $f.bref "refine curve\n<Shift>: coarsen curve"
 	}
-	##################
+	# nctools1
 
 	if { $i == "nctools2" } {
 	    lappend ay(toolbuttons) bfindu bspl bconc bclamp
@@ -416,7 +414,7 @@ proc toolbox_open { {w .tbw} } {
 		"undo save UnclampNC; unclampNC; plb_update; rV;"
 	    balloon_set $f.bclamp "clamp curve\n<Shift>: unclamp curve"
 	}
-	##################
+	# nctools2
 
 	if { $i == "nurbs" } {
 	    lappend ay(toolbuttons) bnc bic bnci bnp
@@ -514,7 +512,7 @@ proc toolbox_open { {w .tbw} } {
 	    }
 	    balloon_set $f.bnp "create NPatch\n<Ctrl>: keep selection"
 	}
-	##################
+	# nurbs
 
 	if { $i == "toolobjs" } {
 	    lappend ay(toolbuttons) brevo bex bswp bcap
@@ -567,7 +565,7 @@ proc toolbox_open { {w .tbw} } {
 		break;
 	    }
 	}
-	##################
+	# toolobjs
 
 	if { $i == "toolobjs2" } {
 	    lappend ay(toolbuttons) bbirail1 bbirail2 bgord bskin
@@ -615,7 +613,7 @@ proc toolbox_open { {w .tbw} } {
 		break;
 	    }
 	}
-	##################
+	# toolobjs2
 
 	if { $i == "nptools1" } {
 	    lappend ay(toolbuttons) bextrnc bswpuv brevu brevv
@@ -623,7 +621,7 @@ proc toolbox_open { {w .tbw} } {
 	    button $f.bextrnc -image ay_NPExtrNC_img -padx 0 -pady 0 -command {
 		level_crt ExtrNC "" -1;
 	    }
-	    balloon_set $f.bextrnc "extract NURBCurve\n<Ctrl>: no instance"
+	    balloon_set $f.bextrnc "extract NCurve\n<Ctrl>: no instance"
 	    bind $f.bextrnc <Control-ButtonPress-1> {
 		%W configure -relief sunken
 		level_crt ExtrNC "" 1
@@ -646,6 +644,7 @@ proc toolbox_open { {w .tbw} } {
 	    }
 	    balloon_set $f.brevv "revert V"
 	}
+	# nptools1
     }
     # foreach
 
