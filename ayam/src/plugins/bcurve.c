@@ -1793,7 +1793,7 @@ Bcurve_Init(Tcl_Interp *interp)
   /* invert B-Spline basis matrix */
   (void)ay_trafo_invgenmatrix(ms, msi);
 
-  Tcl_CreateCommand(interp, "toBasisBC", bcurve_tobasistcmd,
+  Tcl_CreateCommand(interp, "tobasisBC", bcurve_tobasistcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
  return TCL_OK;
