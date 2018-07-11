@@ -1,0 +1,1 @@
+s/<ref id="\(.*\)" name="\(.*\)">/<ref id="\1" name="\2"> (page <pageref id="\1">)/g
