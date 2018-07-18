@@ -10818,7 +10818,6 @@ for {set i 0} {$i < 30} {incr i} {
 <dm><ar ca="ccc">
 <verb>
 
-
 crtOb NCurve -l 30 -kt 1
 sL
 for {set i 0} {$i < 30} {incr i} {
@@ -12191,6 +12190,7 @@ MI|Material ID*@<hline>
 MN|Mean Normal@<hline>
 mn|master name*@<hline>
 MP|Mean Point@<hline>
+NC|Notify Count*@<hline>
 NM|Notify Master*@<hline>
 NO|Notify Object*@<hline>
 NoExport|Export Control@<hline>
@@ -12976,6 +12976,11 @@ the AyCSG plugin.
 <p>
 
 Internal tag used by the X3D import/export plugin.
+
+<item>NC Tag
+<p>
+
+Internal tag used by the notification mechanism.
 
 <item>NO/NM Tags<label id="nott"><label id="nmtt">
 <p>
