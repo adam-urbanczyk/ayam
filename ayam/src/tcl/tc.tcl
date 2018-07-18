@@ -382,14 +382,14 @@ proc tc_edit { } {
     set f [frame $w.fb1]
 
     # load menubutton
-    menubutton $f.mb1 -text "Load" -pady $ay(pady) -relief raised\
-	    -menu $f.mb1.m
+    menubutton $f.mb1 -text "Load      " -pady $ay(pady) -relief raised\
+	    -image ay_Triangle_img -compound right -menu $f.mb1.m
     set m [menu $f.mb1.m -tearoff 0 -postcommand {
 	bind .tcEditw <Enter> "" } ]
 
     # save menubutton
-    menubutton $f.mb2 -text "Save" -pady $ay(pady) -relief raised\
-	    -menu $f.mb2.m
+    menubutton $f.mb2 -text "Save      " -pady $ay(pady) -relief raised\
+	    -image ay_Triangle_img -compound right -menu $f.mb2.m
     set m [menu $f.mb2.m -tearoff 0 -postcommand {
 	bind .tcEditw <Enter> "" } ]
 
