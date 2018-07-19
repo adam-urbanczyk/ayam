@@ -14,6 +14,7 @@
 
 /* pact.c - single point related interactive actions */
 
+
 /* global variables for this module: */
 
 /* selected points and indices */
@@ -31,8 +32,15 @@ static ay_object **pact_objects;
 /* number of objects that have selected points */
 static int pact_objectslen;
 
+/** all registered insert callbacks */
+static ay_ftable ay_pact_insertcbt;
+
+/** all registered delete callbacks */
+static ay_ftable ay_pact_deletecbt;
+
 
 /* prototypes of functions local to this module: */
+
 void ay_pact_findpoint(int len, int stride, double *cv,
 		       double objX, double objY, double objZ, int *index);
 
@@ -42,16 +50,11 @@ int ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
 int ay_pact_insertic(ay_icurve_object *curve, int *index,
 		     double objX, double objY, double objZ, int edit);
 
-int ay_pact_insertac(ay_acurve_object *curve, int *index,
-		     double objX, double objY, double objZ, int edit);
 
 int ay_pact_deletenc(ay_nurbcurve_object *curve, int *index,
 		     double objX, double objY, double objZ);
 
 int ay_pact_deleteic(ay_icurve_object *icurve, int *index,
-		     double objX, double objY, double objZ);
-
-int ay_pact_deleteac(ay_acurve_object *acurve, int *index,
 		     double objX, double objY, double objZ);
 
 int ay_pact_notify(ay_object *o, int j, int k);
@@ -1696,6 +1699,8 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
  unsigned int uindex;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
+ ay_voidfp *arr = NULL;
+ ay_inspntcb *cb = NULL;
 
   if(!sel)
     {
@@ -1735,8 +1740,17 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
 				       &index, objX, objY, objZ, edit);
 	  break;
 	default:
-	  ay_error(AY_EWTYPE, fname, "NCurve, ICurve, or ACurve");
-	  ay_status = AY_ERROR;
+	  arr = ay_pact_insertcbt.arr;
+	  cb = (ay_inspntcb *)(arr[o->type]);
+	  if(cb)
+	    {
+	      ay_status = cb(o, &index, objX, objY, objZ, edit);
+	    }
+	  else
+	    {
+	      ay_error(AY_EWTYPE, fname, "NCurve, ICurve, or ACurve");
+	      ay_status = AY_ERROR;
+	    }
 	  break;
 	}
 
@@ -2037,6 +2051,8 @@ ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[])
  int index, notify_parent = AY_FALSE;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
+ ay_voidfp *arr = NULL;
+ ay_delpntcb *cb = NULL;
 
   if(!sel)
     {
@@ -2069,8 +2085,17 @@ ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[])
 				       &index, objX, objY, objZ);
 	  break;
 	default:
-	  ay_error(AY_EWTYPE, fname, "NCurve, ICurve, or ACurve");
-	  ay_status = AY_ERROR;
+	  arr = ay_pact_deletecbt.arr;
+	  cb = (ay_delpntcb *)(arr[o->type]);
+	  if(cb)
+	    {
+	      ay_status = cb(o, &index, objX, objY, objZ);
+	    }
+	  else
+	    {
+	      ay_error(AY_EWTYPE, fname, "NCurve, ICurve, or ACurve");
+	      ay_status = AY_ERROR;
+	    }
 	  break;
 	}
 
@@ -3462,4 +3487,65 @@ cleanup:
 
  return ay_status;
 } /* ay_pact_multdecnc */
+
+
+/** ay_pact_registerinsert:
+ *  register a point insert callback
+ *
+ * \param[in] inscb point insert callback
+ * \param[in] type_id object type for which to register the callback (AY_ID...)
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_pact_registerinsert(ay_inspntcb *inscb, unsigned int type_id)
+{
+ int ay_status = AY_OK;
+
+  /* register insert callback */
+  ay_status = ay_table_additem(&ay_pact_insertcbt, (ay_voidfp)inscb, type_id);
+
+ return ay_status;
+} /* ay_pact_registerinsert */
+
+
+/** ay_pact_registerdelete:
+ *  register a point delete callback
+ *
+ * \param[in] delcb point delete callback
+ * \param[in] type_id object type for which to register the callback (AY_ID...)
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_pact_registerdelete(ay_delpntcb *delcb, unsigned int type_id)
+{
+ int ay_status = AY_OK;
+
+  /* register delete callback */
+  ay_status = ay_table_additem(&ay_pact_deletecbt, (ay_voidfp)delcb, type_id);
+
+ return ay_status;
+} /* ay_pact_registerdelete */
+
+
+/** ay_pact_init:
+ *  initialize point action module
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_pact_init(Tcl_Interp *interp)
+{
+ int ay_status = AY_OK;
+ char fname[] = "pact_init";
+
+  if((ay_status = ay_table_init(&ay_pact_insertcbt)))
+    { ay_error(ay_status, fname, NULL); return AY_ERROR; }
+
+  if((ay_status = ay_table_init(&ay_pact_deletecbt)))
+    { ay_error(ay_status, fname, NULL); return AY_ERROR; }
+
+ return ay_status;
+} /* ay_pact_init */
 

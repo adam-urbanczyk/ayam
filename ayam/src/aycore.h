@@ -840,6 +840,17 @@ int ay_pact_snaptomarkcb(struct Togl *togl, int argc, char *argv[]);
  */
 int ay_pact_multiptcb(struct Togl *togl, int argc, char *argv[]);
 
+int ay_pact_insertac(ay_acurve_object *curve, int *index,
+		     double objX, double objY, double objZ, int edit);
+
+int ay_pact_deleteac(ay_acurve_object *acurve, int *index,
+		     double objX, double objY, double objZ);
+
+int ay_pact_registerinsert(ay_inspntcb *inscb, unsigned int type_id);
+
+int ay_pact_registerdelete(ay_delpntcb *delcb, unsigned int type_id);
+
+int ay_pact_init(Tcl_Interp *interp);
 
 /* pomesht.c */
 
