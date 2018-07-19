@@ -357,6 +357,10 @@ ay_init(Tcl_Interp *interp)
   /* initialize notification module */
   ay_notify_init(interp);
 
+  /* initialize pact module */
+  if((ay_status = ay_pact_init(interp)))
+    { ay_error(ay_status, fname, NULL); return AY_ERROR; }
+
   /* fill tables (init object types) */
   if((ay_status = ay_root_init(interp)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
