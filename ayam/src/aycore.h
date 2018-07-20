@@ -841,10 +841,10 @@ int ay_pact_snaptomarkcb(struct Togl *togl, int argc, char *argv[]);
 int ay_pact_multiptcb(struct Togl *togl, int argc, char *argv[]);
 
 int ay_pact_insertac(ay_acurve_object *curve, int *index,
-		     double objX, double objY, double objZ, int edit);
+		     double *objXYZ, int edit);
 
 int ay_pact_deleteac(ay_acurve_object *acurve, int *index,
-		     double objX, double objY, double objZ);
+		     double *objXYZ);
 
 int ay_pact_registerinsert(ay_inspntcb *inscb, unsigned int type_id);
 

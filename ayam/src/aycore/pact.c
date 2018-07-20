@@ -42,20 +42,19 @@ static ay_ftable ay_pact_deletecbt;
 /* prototypes of functions local to this module: */
 
 void ay_pact_findpoint(int len, int stride, double *cv,
-		       double objX, double objY, double objZ, int *index);
+		       double *objXYZ, int *index);
 
 int ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
-		     double objX, double objY, double objZ, int edit);
+		     double *objXYZ, int edit);
 
 int ay_pact_insertic(ay_icurve_object *curve, int *index,
-		     double objX, double objY, double objZ, int edit);
-
+		     double *objXYZ, int edit);
 
 int ay_pact_deletenc(ay_nurbcurve_object *curve, int *index,
-		     double objX, double objY, double objZ);
+		     double *objXYZ);
 
 int ay_pact_deleteic(ay_icurve_object *icurve, int *index,
-		     double objX, double objY, double objZ);
+		     double *objXYZ);
 
 int ay_pact_notify(ay_object *o, int j, int k);
 
@@ -1112,13 +1111,12 @@ cleanup:
  *  find point in cv array
  */
 void
-ay_pact_findpoint(int len, int stride, double *cv,
-		  double objX, double objY, double objZ, int *index)
+ay_pact_findpoint(int len, int stride, double *cv, double *objXYZ, int *index)
 {
  int i, a;
  double min_distance = ay_prefs.pick_epsilon, distance = 0.0;
 
-  if(!cv || !index)
+  if(!cv || !objXYZ || !index)
    return;
 
   if(min_distance == 0.0)
@@ -1127,18 +1125,18 @@ ay_pact_findpoint(int len, int stride, double *cv,
   a = 0;
   for(i = 0; i < len; i++)
     {
-      if((fabs(objX - cv[a])   < AY_EPSILON) &&
-	 (fabs(objY - cv[a+1]) < AY_EPSILON) &&
-	 (fabs(objZ - cv[a+2]) < AY_EPSILON))
+      if((fabs(objXYZ[0] - cv[a])   < AY_EPSILON) &&
+	 (fabs(objXYZ[1] - cv[a+1]) < AY_EPSILON) &&
+	 (fabs(objXYZ[2] - cv[a+2]) < AY_EPSILON))
 	{
 	  *index = i;
 	  break;
 	}
       else
 	{
-	  distance = AY_VLEN((objX - cv[a]),
-			     (objY - cv[a+1]),
-			     (objZ - cv[a+2]));
+	  distance = AY_VLEN((objXYZ[0] - cv[a]),
+			     (objXYZ[1] - cv[a+1]),
+			     (objXYZ[2] - cv[a+2]));
 
 	  if(distance < min_distance)
 	    {
@@ -1158,8 +1156,8 @@ ay_pact_findpoint(int len, int stride, double *cv,
  *  insert a point into a NURBS curve (NCurve)
  */
 int
-ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
-		 double objX, double objY, double objZ, int edit)
+ay_pact_insertnc(ay_nurbcurve_object *curve, int *index, double *objXYZ,
+		 int edit)
 {
  int ay_status = AY_OK;
  char fname[] = "insert_pointnc";
@@ -1167,12 +1165,11 @@ ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
  double *newcontrolv = NULL, *oldcontrolv = NULL, *newknotv = NULL;
  int inserted, section;
 
-  if(!curve || !index)
+  if(!curve || !index || !objXYZ)
     return AY_ENULL;
 
   *index = -1;
-  ay_pact_findpoint(curve->length, 4, curve->controlv, objX, objY, objZ,
-		    index);
+  ay_pact_findpoint(curve->length, 4, curve->controlv, objXYZ, index);
 
   /* no point picked? */
   if(*index == -1)
@@ -1404,8 +1401,8 @@ ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
  *  insert a point into an interpolating curve (ICurve)
  */
 int
-ay_pact_insertic(ay_icurve_object *icurve, int *index,
-		 double objX, double objY, double objZ, int edit)
+ay_pact_insertic(ay_icurve_object *icurve, int *index, double *objXYZ,
+		 int edit)
 {
  int ay_status = AY_OK;
  char fname[] = "insert_pointic";
@@ -1413,12 +1410,11 @@ ay_pact_insertic(ay_icurve_object *icurve, int *index,
  double *newcontrolv = NULL, *oldcontrolv = NULL;
  int inserted;
 
-  if(!icurve || !index)
+  if(!icurve || !index || !objXYZ)
     return AY_ENULL;
 
   *index = -1;
-  ay_pact_findpoint(icurve->length, 3, icurve->controlv, objX, objY, objZ,
-		    index);
+  ay_pact_findpoint(icurve->length, 3, icurve->controlv, objXYZ, index);
 
   /* no point picked? */
   if(*index == -1)
@@ -1547,8 +1543,7 @@ ay_pact_insertic(ay_icurve_object *icurve, int *index,
  *  insert a point into an approximating curve (ACurve)
  */
 int
-ay_pact_insertac(ay_acurve_object *acurve, int *index,
-		 double objX, double objY, double objZ, int edit)
+ay_pact_insertac(ay_acurve_object *acurve, int *index, double *objXYZ, int edit)
 {
  int ay_status = AY_OK;
  char fname[] = "insert_pointac";
@@ -1556,12 +1551,11 @@ ay_pact_insertac(ay_acurve_object *acurve, int *index,
  double *newcontrolv = NULL, *oldcontrolv = NULL;
  int inserted;
 
-  if(!acurve || !index)
+  if(!acurve || !index || !objXYZ)
     return AY_ENULL;
 
   *index = -1;
-  ay_pact_findpoint(acurve->length, 3, acurve->controlv, objX, objY, objZ,
-		    index);
+  ay_pact_findpoint(acurve->length, 3, acurve->controlv, objXYZ, index);
 
   /* no point picked? */
   if(*index == -1)
@@ -1694,7 +1688,7 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
  int ay_status = AY_OK;
  char fname[] = "insert_point";
  Tcl_Interp *interp = Togl_Interp(togl);
- double winX = 0.0, winY = 0.0, objX = 0.0, objY = 0.0, objZ = 0.0;
+ double winX = 0.0, winY = 0.0, objXYZ[3] = {0};
  int index, notify_parent = AY_FALSE, edit = AY_FALSE;
  unsigned int uindex;
  ay_list_object *sel = ay_selection;
@@ -1721,7 +1715,7 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
 
       ay_viewt_wintoobj(togl, o,
 			winX, winY,
-			&objX, &objY, &objZ);
+			&(objXYZ[0]), &(objXYZ[1]), &(objXYZ[2]));
 
       index = -1;
 
@@ -1729,22 +1723,22 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
 	{
 	case AY_IDNCURVE:
 	  ay_status = ay_pact_insertnc((ay_nurbcurve_object *)(o->refine),
-				       &index, objX, objY, objZ, edit);
+				       &index, objXYZ, edit);
 	  break;
 	case AY_IDICURVE:
 	  ay_status = ay_pact_insertic((ay_icurve_object *)(o->refine),
-				       &index, objX, objY, objZ, edit);
+				       &index, objXYZ, edit);
 	  break;
 	case AY_IDACURVE:
 	  ay_status = ay_pact_insertac((ay_acurve_object *)(o->refine),
-				       &index, objX, objY, objZ, edit);
+				       &index, objXYZ, edit);
 	  break;
 	default:
 	  arr = ay_pact_insertcbt.arr;
 	  cb = (ay_inspntcb *)(arr[o->type]);
 	  if(cb)
 	    {
-	      ay_status = cb(o, &index, objX, objY, objZ, edit);
+	      ay_status = cb(o, &index, objXYZ, edit);
 	    }
 	  else
 	    {
@@ -1791,20 +1785,18 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
  *  delete a point from a NURBS curve (NCurve)
  */
 int
-ay_pact_deletenc(ay_nurbcurve_object *curve, int *index,
-		 double objX, double objY, double objZ)
+ay_pact_deletenc(ay_nurbcurve_object *curve, int *index, double *objXYZ)
 {
  int ay_status = AY_OK;
  char fname[] = "delete_pointnc";
  int i = 0, j = 0, k = 0;
  double *newcontrolv = NULL, *newknotv = NULL;
 
-  if(!curve || !index)
+  if(!curve || !index || !objXYZ)
     return AY_ENULL;
 
   *index = -1;
-  ay_pact_findpoint(curve->length, 4, curve->controlv, objX, objY, objZ,
-		    index);
+  ay_pact_findpoint(curve->length, 4, curve->controlv, objXYZ, index);
 
   if(*index == -1)
     {
@@ -1919,19 +1911,17 @@ cleanup:
  *  delete a point from an interpolating curve (ICurve)
  */
 int
-ay_pact_deleteic(ay_icurve_object *icurve, int *index,
-		 double objX, double objY, double objZ)
+ay_pact_deleteic(ay_icurve_object *icurve, int *index, double *objXYZ)
 {
  char fname[] = "delete_pointic";
  int i = 0, j = 0, k = 0;
  double *newcontrolv = NULL;
 
-  if(!icurve || !index)
+  if(!icurve || !index || !objXYZ)
     return AY_ENULL;
 
   *index = -1;
-  ay_pact_findpoint(icurve->length, 3, icurve->controlv, objX, objY, objZ,
-		    index);
+  ay_pact_findpoint(icurve->length, 3, icurve->controlv, objXYZ, index);
 
   if(*index == -1)
     {
@@ -1959,10 +1949,7 @@ ay_pact_deleteic(ay_icurve_object *icurve, int *index,
     {
       if(i != *index)
 	{
-	  newcontrolv[k] = icurve->controlv[j];
-	  newcontrolv[k+1] = icurve->controlv[j+1];
-	  newcontrolv[k+2] = icurve->controlv[j+2];
-
+	  memcpy(&(newcontrolv[k]), &(icurve->controlv[j]), 3*sizeof(double));
 	  k += 3;
 	}
 
@@ -1980,8 +1967,7 @@ ay_pact_deleteic(ay_icurve_object *icurve, int *index,
  *  delete a point from an approximating curve (ACurve)
  */
 int
-ay_pact_deleteac(ay_acurve_object *acurve, int *index,
-		 double objX, double objY, double objZ)
+ay_pact_deleteac(ay_acurve_object *acurve, int *index, double *objXYZ)
 {
  char fname[] = "delete_pointac";
  int i = 0, j = 0, k = 0;
@@ -1991,8 +1977,7 @@ ay_pact_deleteac(ay_acurve_object *acurve, int *index,
     return AY_ENULL;
 
   *index = -1;
-  ay_pact_findpoint(acurve->length, 3, acurve->controlv, objX, objY, objZ,
-		    index);
+  ay_pact_findpoint(acurve->length, 3, acurve->controlv, objXYZ, index);
 
   if(*index == -1)
     {
@@ -2020,10 +2005,7 @@ ay_pact_deleteac(ay_acurve_object *acurve, int *index,
     {
       if(i != *index)
 	{
-	  newcontrolv[k] = acurve->controlv[j];
-	  newcontrolv[k+1] = acurve->controlv[j+1];
-	  newcontrolv[k+2] = acurve->controlv[j+2];
-
+	  memcpy(&(newcontrolv[k]), &(acurve->controlv[j]), 3*sizeof(double));
 	  k += 3;
 	}
 
@@ -2047,7 +2029,7 @@ ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[])
  int ay_status = AY_OK;
  char fname[] = "delete_point";
  Tcl_Interp *interp = Togl_Interp(togl);
- double winX = 0.0, winY = 0.0, objX = 0.0, objY = 0.0, objZ = 0.0;
+ double winX = 0.0, winY = 0.0, objXYZ[3] = {0};
  int index, notify_parent = AY_FALSE;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
@@ -2068,28 +2050,28 @@ ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[])
 
       ay_viewt_wintoobj(togl, o,
 			winX, winY,
-			&objX, &objY, &objZ);
+			&(objXYZ[0]), &(objXYZ[1]), &(objXYZ[2]));
 
       switch(o->type)
 	{
 	case AY_IDNCURVE:
 	  ay_status = ay_pact_deletenc((ay_nurbcurve_object *)(o->refine),
-				       &index, objX, objY, objZ);
+				       &index, objXYZ);
 	  break;
 	case AY_IDICURVE:
 	  ay_status = ay_pact_deleteic((ay_icurve_object *)(o->refine),
-				       &index, objX, objY, objZ);
+				       &index, objXYZ);
 	  break;
 	case AY_IDACURVE:
 	  ay_status = ay_pact_deleteac((ay_acurve_object *)(o->refine),
-				       &index, objX, objY, objZ);
+				       &index, objXYZ);
 	  break;
 	default:
 	  arr = ay_pact_deletecbt.arr;
 	  cb = (ay_delpntcb *)(arr[o->type]);
 	  if(cb)
 	    {
-	      ay_status = cb(o, &index, objX, objY, objZ);
+	      ay_status = cb(o, &index, objXYZ);
 	    }
 	  else
 	    {

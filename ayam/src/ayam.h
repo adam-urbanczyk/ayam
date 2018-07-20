@@ -1590,12 +1590,11 @@ typedef int (ay_providecb) (ay_object *o, unsigned int type,
 typedef int (ay_bbccb) (ay_object *o, double *bbox, int *flags);
 
 /** Insert point callback */
-typedef int (ay_inspntcb) (ay_object *o, int *index,
-			   double objX, double objY, double objZ, int edit);
+typedef int (ay_inspntcb) (ay_object *o, int *index, double *objXYZ, int edit);
 
 /** Delete pointcallback */
-typedef int (ay_delpntcb) (ay_object *o, int *index,
-			   double objX, double objY, double objZ);
+typedef int (ay_delpntcb) (ay_object *o, int *index, double *objXYZ);
+
 
 /* Globals */
 
