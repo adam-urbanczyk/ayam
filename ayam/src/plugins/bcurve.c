@@ -1717,6 +1717,89 @@ cleanup:
 } /* bcurve_tobasistcmd */
 
 
+/** bcurve_insertpntcb:
+ * Insert a new control point into a BCurve.
+ *
+ * \param o object to process
+ * \param index where to store the index of the inserted point
+ * \param objXYZ coordinates of point after which to insert
+ * \param edit interactive editing support
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+bcurve_insertpntcb(ay_object *o, int *index, double *objXYZ, int edit)
+{
+ int ay_status = AY_OK;
+ ay_nurbcurve_object nc = {0};
+ bcurve_object *bc = NULL;
+
+  if(!o || !index || !objXYZ)
+    return AY_ENULL;
+
+  if(o->type != bcurve_id)
+    return AY_ERROR;
+
+  bc = (bcurve_object *)o->refine;
+  nc.length = bc->length;
+  nc.controlv = bc->controlv;
+
+  ay_status = ay_pact_insertnc(&nc, index, objXYZ, edit);
+
+  if(!ay_status)
+    {
+      bc->length = nc.length;
+      bc->controlv = nc.controlv;
+    }
+
+  if(nc.knotv)
+    free(nc.knotv);
+
+ return ay_status;
+} /* bcurve_insertpntcb */
+
+
+/** bcurve_deletepntcb:
+ * Remove a control point from a BCurve.
+ *
+ * \param o object to process
+ * \param index where to store the index of the removed point
+ * \param objXYZ coordinates of point to delete
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+bcurve_deletepntcb(ay_object *o, int *index, double *objXYZ)
+{
+ int ay_status = AY_OK;
+ ay_nurbcurve_object nc = {0};
+ bcurve_object *bc = NULL;
+
+  if(!o || !index || !objXYZ)
+    return AY_ENULL;
+
+  if(o->type != bcurve_id)
+    return AY_ERROR;
+
+  bc = (bcurve_object *)o->refine;
+  nc.length = bc->length;
+  nc.controlv = bc->controlv;
+
+  ay_status = ay_pact_deletenc(&nc, index, objXYZ);
+
+  if(!ay_status)
+    {
+      bc->length = nc.length;
+      bc->controlv = nc.controlv;
+    }
+
+  if(nc.knotv)
+    free(nc.knotv);
+
+ return ay_status;
+} /* bcurve_deletepntcb */
+
+
 /* Bcurve_Init:
  * initializes the bcurve module/plugin by registering a new
  * object type (bcurve) and loading the accompanying Tcl script file.
@@ -1765,6 +1848,10 @@ Bcurve_Init(Tcl_Interp *interp)
   ay_status += ay_convert_register(bcurve_convertcb, bcurve_id);
 
   ay_status += ay_provide_register(bcurve_providecb, bcurve_id);
+
+  ay_status += ay_pact_registerinsert(bcurve_insertpntcb, bcurve_id);
+
+  ay_status += ay_pact_registerdelete(bcurve_deletepntcb, bcurve_id);
 
   if(ay_status)
     {
