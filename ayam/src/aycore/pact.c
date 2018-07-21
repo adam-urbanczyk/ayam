@@ -1205,16 +1205,16 @@ ay_pact_insertnc(ay_nurbcurve_object *curve, int *index, double *objXYZ,
 		{
 		  newcontrolv[(j+1)*4] = oldcontrolv[i*4] +
 		    ((oldcontrolv[(i+1)*4] - oldcontrolv[i*4])/2.0);
-
 		  newcontrolv[(j+1)*4+1] = oldcontrolv[i*4+1] +
 		    ((oldcontrolv[(i+1)*4+1] - oldcontrolv[i*4+1])/2.0);
-
 		  newcontrolv[(j+1)*4+2] = oldcontrolv[i*4+2] +
 		    ((oldcontrolv[(i+1)*4+2] - oldcontrolv[i*4+2])/2.0);
-
 		  newcontrolv[(j+1)*4+3] = oldcontrolv[i*4+3] +
 		    ((oldcontrolv[(i+1)*4+3] - oldcontrolv[i*4+3])/2.0);
-		  /* CHECK FOR 0!*/
+
+		  if(fabs(newcontrolv[(j+1)*4+3]) < AY_EPSILON)
+		    newcontrolv[(j+1)*4+3] = 1.0;
+
 		  j++;
 		  inserted = AY_TRUE;
 		}
@@ -1258,6 +1258,10 @@ ay_pact_insertnc(ay_nurbcurve_object *curve, int *index, double *objXYZ,
 		((curve->controlv[j+2]-curve->controlv[j+2-4])/2.0);
 	      newcontrolv[k+3] = curve->controlv[j+3]+
 		((curve->controlv[j+3]-curve->controlv[j+3-4])/2.0);
+
+	      if(fabs(newcontrolv[k+3]) < AY_EPSILON)
+		newcontrolv[k+3] = 1.0;
+
 	      inserted = AY_TRUE;
 	    }
 	  else
@@ -1273,15 +1277,15 @@ ay_pact_insertnc(ay_nurbcurve_object *curve, int *index, double *objXYZ,
 		    {
 		      newcontrolv[(j+1)*4] = oldcontrolv[i*4] +
 			((oldcontrolv[(i+1)*4] - oldcontrolv[i*4])/2.0);
-
 		      newcontrolv[(j+1)*4+1] = oldcontrolv[i*4+1] +
 			((oldcontrolv[(i+1)*4+1] - oldcontrolv[i*4+1])/2.0);
-
 		      newcontrolv[(j+1)*4+2] = oldcontrolv[i*4+2] +
 			((oldcontrolv[(i+1)*4+2] - oldcontrolv[i*4+2])/2.0);
-
 		      newcontrolv[(j+1)*4+3] = oldcontrolv[i*4+3] +
 			((oldcontrolv[(i+1)*4+3] - oldcontrolv[i*4+3])/2.0);
+
+		      if(fabs(newcontrolv[(j+1)*4+3]) < AY_EPSILON)
+			newcontrolv[(j+1)*4+3] = 1.0;
 
 		      j++;
 		      inserted = AY_TRUE;
