@@ -44,14 +44,8 @@ static ay_ftable ay_pact_deletecbt;
 void ay_pact_findpoint(int len, int stride, double *cv,
 		       double *objXYZ, int *index);
 
-int ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
-		     double *objXYZ, int edit);
-
 int ay_pact_insertic(ay_icurve_object *curve, int *index,
 		     double *objXYZ, int edit);
-
-int ay_pact_deletenc(ay_nurbcurve_object *curve, int *index,
-		     double *objXYZ);
 
 int ay_pact_deleteic(ay_icurve_object *icurve, int *index,
 		     double *objXYZ);
@@ -1220,7 +1214,7 @@ ay_pact_insertnc(ay_nurbcurve_object *curve, int *index, double *objXYZ,
 
 		  newcontrolv[(j+1)*4+3] = oldcontrolv[i*4+3] +
 		    ((oldcontrolv[(i+1)*4+3] - oldcontrolv[i*4+3])/2.0);
-
+		  /* CHECK FOR 0!*/
 		  j++;
 		  inserted = AY_TRUE;
 		}
@@ -1430,6 +1424,7 @@ ay_pact_insertic(ay_icurve_object *icurve, int *index, double *objXYZ,
 
   if(!icurve->type)
     {
+      /* open curve */
       if(*index == icurve->length-1)
 	{
 	  *index = *index - 1;
@@ -1856,6 +1851,7 @@ ay_pact_deletenc(ay_nurbcurve_object *curve, int *index, double *objXYZ)
       if(!(newknotv = calloc(curve->order+curve->length,
 			     sizeof(double))))
 	{
+	  ay_error(ay_status, fname, "Error creating new knots.");
 	  return AY_EOMEM;
 	}
 
@@ -1884,7 +1880,6 @@ ay_pact_deletenc(ay_nurbcurve_object *curve, int *index, double *objXYZ)
       ay_status = ay_knots_createnc(curve);
       if(ay_status)
 	{
-
 	  ay_error(ay_status, fname, "Error creating new knots.");
 	  goto cleanup;
 	}
