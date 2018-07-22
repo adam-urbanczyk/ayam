@@ -1,4 +1,4 @@
-[24. Jun 2018] Tip:
+[22. Jul 2018] Tip:
 ===================
 Bug Fixes:
 o fix window close shortcut in external views
@@ -12,13 +12,23 @@ o RiInc/RiProc objects now draw the bounding box with dashed lines
 o RiInc/RiProc objects now allow children to convey the archive/procedural
   objects shape
 o Script objects now support caps and bevels
+o Curve custom objects (i.e. BCurve) now support point insertion/deletion
+o improved robustness of point insertion wrt. weights
 
 GUI:
 o improved initial layout process of dialog windows
+o improved startup sequence order for scripts that want to manipulate
+  the toolbox in floating windows GUI mode
 o SDMesh objects now display the number of tags
 o the numeric point edit dialogs now opens immediately if there are
-  selected points when the action is started (shortcut <E>)
+  already selected points when the action is started (shortcut <E>)
 o update via F5 now also redraws views without automatic redraw
+o improved menu button designation in texture editor
+o clearing the mark is now reported to the console
+
+Scripts/Scripting Interface:
+o added "-have" option to selPnts
+o selPnts can now also return the results
 
 Plugins:
 o added support for periodic patches to NPatch to SDNPatch conversion
