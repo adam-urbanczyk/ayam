@@ -43,8 +43,8 @@ int Sdcurve_Init(Tcl_Interp *interp);
 /** sdcurve_toncurve:
  * Convert SDCurve to NURBS curve.
  *
- * \param sdcurve SDCurve to convert
- * \param newo where to store the new NURBS curve object
+ * \param[in,out] sdcurve SDCurve to convert
+ * \param[in,out] newo where to store the new NURBS curve object
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -1085,10 +1085,10 @@ sdcurve_providecb(ay_object *o, unsigned int type, ay_object **result)
 /** sdcurve_insertpntcb:
  * Insert a new control point into a SDCurve.
  *
- * \param o object to process
- * \param index where to store the index of the inserted point
- * \param objXYZ coordinates of point after which to insert
- * \param edit interactive editing support
+ * \param[in,out] o object to process
+ * \param[in,out] index where to store the index of the inserted point
+ * \param[in] objXYZ coordinates of point after which to insert
+ * \param[in] edit interactive editing support
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -1125,9 +1125,9 @@ sdcurve_insertpntcb(ay_object *o, int *index, double *objXYZ, int edit)
 /** sdcurve_deletepntcb:
  * Remove a control point from a SDCurve.
  *
- * \param o object to process
- * \param index where to store the index of the removed point
- * \param objXYZ coordinates of point to delete
+ * \param[in,out] o object to process
+ * \param[in,out] index where to store the index of the removed point
+ * \param[in] objXYZ coordinates of point to delete
  *
  * \returns AY_OK on success, error code otherwise.
  */
