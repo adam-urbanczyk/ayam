@@ -265,6 +265,7 @@ sdcurve_chaikino(sdcurve_object *sdcurve)
 	  b += d;
 	} /* for */
 
+      /* prepare next iteration */
       d /= 2;
       d2 /= 2;
       cur_length *= 2;
@@ -289,22 +290,130 @@ int
 sdcurve_cubicc(sdcurve_object *sdcurve)
 {
  int ay_status = AY_OK;
- int i, j, d, new_length, cur_length;
+ int i, j, d, d2, new_length, cur_length;
+ double *cv, *scv, *a, *b, *c, v[3];
+
+  if(!sdcurve)
+    return AY_ENULL;
+
+  d = 6;
+  d2 = 3;
+  cv = sdcurve->controlv;
+  cur_length = sdcurve->length;
+
+  for(i = 0; i < sdcurve->level; i++)
+    {
+      new_length = (cur_length+1)*2;
+
+      if(!(scv = malloc(3*new_length*sizeof(double))))
+	return AY_EOMEM;
+
+      /* spread original points */
+      a = cv;
+      b = scv;
+      for(j = 0; j < cur_length; j++)
+	{
+	  memcpy(b, a, 3*sizeof(double));
+	  a += 3;
+	  b += d;
+	} /* for */
+
+      memcpy(&(scv[new_length*3-6]), scv, 3*sizeof(double));
+      cur_length++;
+
+      /* subdivide */
+
+      /* first run: construct new vertices at each half original edge */
+      a = scv;
+      b = a+d;
+      c = a+d2;
+      for(j = 0; j < cur_length; j++)
+	{
+	  AY_V3SUB(v, b, a);
+	  AY_V3SCAL(v, 0.5);
+	  AY_V3ADD(v, v, a);
+	  memcpy(c, v, 3*sizeof(double));
+
+	  a += d;
+	  b += d;
+	  c += d;
+	} /* for */
+
+      /* second run: move old vertices to barycenters */
+      a = &(scv[d2]);
+      b = a + d2;
+      c = b + d2;
+      for(j = 1; j < cur_length; j++)
+	{
+	  v[0] = (a[0]+b[0]+c[0])*1.0/3.0;
+	  v[1] = (a[1]+b[1]+c[1])*1.0/3.0;
+	  v[2] = (a[2]+b[2]+c[2])*1.0/3.0;
+
+	  memcpy(b, v, 3*sizeof(double));
+
+	  a += d;
+	  b += d;
+	  c += d;
+	} /* for */
+
+      /* first point */
+      a = &(scv[(new_length*3)-d-d2]);
+      b = scv;
+      c = b + d2;
+      v[0] = (a[0]+b[0]+c[0])*1.0/3.0;
+      v[1] = (a[1]+b[1]+c[1])*1.0/3.0;
+      v[2] = (a[2]+b[2]+c[2])*1.0/3.0;
+      memcpy(b, v, 3*sizeof(double));
+
+      new_length -= 2;
+
+      if(cv != sdcurve->controlv)
+	free(cv);
+
+      cv = scv;
+      cur_length = new_length;
+    } /* for */
+
+  new_length = sdcurve->length;
+
+  for(i = 0; i < sdcurve->level; i++)
+    new_length *= 2;
+
+  sdcurve->scontrolvlen = new_length;
+  sdcurve->scontrolv = scv;
+
+ return ay_status;
+} /* sdcurve_cubicc */
+
+
+int
+sdcurve_cubico(sdcurve_object *sdcurve)
+{
+ int ay_status = AY_OK;
+ int i, j, d, d2, new_length, cur_length;
  double *scv, *a, *b, *c, v[3];
 
   if(!sdcurve)
     return AY_ENULL;
 
   new_length = sdcurve->length+1;
-
+  d = 6;
+  d2 = 3;
   for(i = 0; i < sdcurve->level; i++)
-    new_length *= 2;
+    {
+      new_length *= 2;
+      if(i > 0)
+	{
+	  d *= 2;
+	  d2 *= 2;
+	}
+    }
 
   if(!(scv = malloc(3*new_length*sizeof(double))))
     return AY_EOMEM;
 
   /* spread original points */
-  d = (sdcurve->level+1)*3;
+
   a = sdcurve->controlv;
   b = scv;
   for(i = 0; i < sdcurve->length; i++)
@@ -318,16 +427,16 @@ sdcurve_cubicc(sdcurve_object *sdcurve)
 
 
   /* subdivide */
-  cur_length = sdcurve->length;
+  cur_length = sdcurve->length+1;
   for(i = 0; i < sdcurve->level; i++)
     {
       /* first run: construct new vertices at each half original edge */
       a = scv;
       b = a+d;
-      c = a+(d/2);
+      c = a+d2;
       for(j = 0; j < cur_length; j++)
 	{
-	  AY_V3SUB(v, a, b);
+	  AY_V3SUB(v, b, a);
 	  AY_V3SCAL(v, 0.5);
 	  AY_V3ADD(v, v, a);
 	  memcpy(c, v, 3*sizeof(double));
@@ -338,11 +447,9 @@ sdcurve_cubicc(sdcurve_object *sdcurve)
 	} /* for */
 
       /* second run: move old vertices to barycenters */
-      d /= 2;
-
-      a = &(scv[d]);
-      b = a + d;
-      c = b + d;
+      a = &(scv[d2]);
+      b = a + d2;
+      c = b + d2;
       for(j = 1; j < cur_length; j++)
 	{
 	  v[0] = (a[0]+b[0]+c[0])*1.0/3.0;
@@ -368,6 +475,9 @@ sdcurve_cubicc(sdcurve_object *sdcurve)
       /* last point */
       memcpy(&(scv[cur_length]), v, 3*sizeof(double));
 
+      /* prepare next iteration */
+      d /= 2;
+      d2 /= 2;
       cur_length *= 2;
     } /* for */
 
@@ -380,7 +490,7 @@ sdcurve_cubicc(sdcurve_object *sdcurve)
   sdcurve->scontrolv = scv;
 
  return ay_status;
-} /* sdcurve_cubicc */
+} /* sdcurve_cubico */
 
 
 /* sdcurve_createcb:
@@ -992,8 +1102,12 @@ sdcurve_notifycb(ay_object *o)
 	    ay_status = sdcurve_chaikino(sdcurve);
 	}
       else
-	ay_status = sdcurve_cubicc(sdcurve);
-
+	{
+	  if(sdcurve->closed)
+	    ay_status = sdcurve_cubicc(sdcurve);
+	  else
+	    ay_status = sdcurve_cubico(sdcurve);
+	}
       if(ay_status)
 	goto cleanup;
 
