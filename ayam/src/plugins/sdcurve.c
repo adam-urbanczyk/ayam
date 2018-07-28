@@ -319,7 +319,6 @@ sdcurve_cubicc(sdcurve_object *sdcurve)
 	} /* for */
 
       memcpy(&(scv[new_length*3-6]), scv, 3*sizeof(double));
-      cur_length++;
 
       /* subdivide */
 
@@ -390,101 +389,73 @@ int
 sdcurve_cubico(sdcurve_object *sdcurve)
 {
  int ay_status = AY_OK;
- int i, j, d, d2, new_length, cur_length;
- double *scv, *a, *b, *c, v[3];
+ int i, j, new_length, cur_length;
+ double *cv, *scv, *a, *b, *c, *d, v[3];
 
   if(!sdcurve)
     return AY_ENULL;
 
-  new_length = sdcurve->length+1;
-  d = 6;
-  d2 = 3;
+  cv = sdcurve->controlv;
+  cur_length = sdcurve->length;
+
   for(i = 0; i < sdcurve->level; i++)
     {
-      new_length *= 2;
-      if(i > 0)
-	{
-	  d *= 2;
-	  d2 *= 2;
-	}
-    }
+      new_length = cur_length*2-3;
 
-  if(!(scv = malloc(3*new_length*sizeof(double))))
-    return AY_EOMEM;
+      if(!(scv = malloc(3*new_length*sizeof(double))))
+	return AY_EOMEM;
 
-  /* spread original points */
+      /* subdivide */
 
-  a = sdcurve->controlv;
-  b = scv;
-  for(i = 0; i < sdcurve->length; i++)
-    {
-      memcpy(b, a, 3*sizeof(double));
-      a += 3;
-      b += d;
-    } /* for */
-
-  memcpy(&(scv[new_length*3-3]), scv, 3*sizeof(double));
-
-
-  /* subdivide */
-  cur_length = sdcurve->length+1;
-  for(i = 0; i < sdcurve->level; i++)
-    {
       /* first run: construct new vertices at each half original edge */
-      a = scv;
-      b = a+d;
-      c = a+d2;
-      for(j = 0; j < cur_length; j++)
+      a = cv;
+      b = a+3;
+      c = scv;
+      for(j = 0; j < cur_length-1; j++)
 	{
 	  AY_V3SUB(v, b, a);
 	  AY_V3SCAL(v, 0.5);
 	  AY_V3ADD(v, v, a);
 	  memcpy(c, v, 3*sizeof(double));
 
-	  a += d;
-	  b += d;
-	  c += d;
+	  a += 3;
+	  b += 3;
+	  c += 6;
 	} /* for */
 
       /* second run: move old vertices to barycenters */
-      a = &(scv[d2]);
-      b = a + d2;
-      c = b + d2;
-      for(j = 1; j < cur_length; j++)
+      a = scv;
+      b = &(cv[3]);
+      c = a + 6;
+      d = a + 3;
+      for(j = 2; j < cur_length; j++)
 	{
 	  v[0] = (a[0]+b[0]+c[0])*1.0/3.0;
 	  v[1] = (a[1]+b[1]+c[1])*1.0/3.0;
 	  v[2] = (a[2]+b[2]+c[2])*1.0/3.0;
 
-	  memcpy(b, v, 3*sizeof(double));
+	  memcpy(d, v, 3*sizeof(double));
 
-	  a += d;
-	  b += d;
-	  c += d;
+	  a += 6;
+	  b += 3;
+	  c += 6;
+	  d += 6;
 	} /* for */
 
-      /* first point */
-      a = &(scv[cur_length-d]);
-      b = scv;
-      c = b + d;
-      v[0] = (a[0]+b[0]+c[0])*1.0/3.0;
-      v[1] = (a[1]+b[1]+c[1])*1.0/3.0;
-      v[2] = (a[2]+b[2]+c[2])*1.0/3.0;
-      memcpy(b, v, 3*sizeof(double));
+      if(cv != sdcurve->controlv)
+	free(cv);
 
-      /* last point */
-      memcpy(&(scv[cur_length]), v, 3*sizeof(double));
-
-      /* prepare next iteration */
-      d /= 2;
-      d2 /= 2;
-      cur_length *= 2;
+      cv = scv;
+      cur_length = new_length;
     } /* for */
 
   new_length = sdcurve->length;
 
   for(i = 0; i < sdcurve->level; i++)
-    new_length *= 2;
+    {
+      new_length *= 2;
+      new_length -= 3;
+    }
 
   sdcurve->scontrolvlen = new_length;
   sdcurve->scontrolv = scv;
