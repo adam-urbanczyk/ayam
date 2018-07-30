@@ -32,7 +32,6 @@ typedef struct sdcurve_object_s
 
   int scontrolvlen; /**< number of subdivided control points */
   double *scontrolv; /**< subdivided control points [scontrolvlen*3] */
-
 } sdcurve_object;
 
 #ifdef WIN32
@@ -521,6 +520,12 @@ sdcurve_deletecb(void *c)
 
   sdcurve = (sdcurve_object *)(c);
 
+  if(sdcurve->controlv)
+    free(sdcurve->controlv);
+
+  if(sdcurve->scontrolv)
+    free(sdcurve->scontrolv);
+
   free(sdcurve);
 
  return AY_OK;
@@ -828,8 +833,9 @@ sdcurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   ton = Tcl_NewStringObj(n1, -1);
 
   Tcl_SetStringObj(ton, "Closed", -1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &new_closed);
+
   if(new_closed != sdcurve->closed)
     {
       update = AY_TRUE;
@@ -837,7 +843,7 @@ sdcurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     }
 
   Tcl_SetStringObj(ton, "Length", -1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &new_length);
 
   if(new_length != sdcurve->length)
@@ -846,7 +852,7 @@ sdcurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     }
 
   Tcl_SetStringObj(ton, "Level", -1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &new_level);
 
   if(new_level != sdcurve->level)
@@ -856,7 +862,7 @@ sdcurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     }
 
   Tcl_SetStringObj(ton, "Type", -1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &new_type);
 
   if(new_type != sdcurve->type)
@@ -923,19 +929,19 @@ sdcurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton, "Closed", -1);
   to = Tcl_NewIntObj(sdcurve->closed);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton, "Length", -1);
   to = Tcl_NewIntObj(sdcurve->length);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton, "Level", -1);
   to = Tcl_NewIntObj(sdcurve->level);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton, "Type", -1);
   to = Tcl_NewIntObj(sdcurve->type);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
