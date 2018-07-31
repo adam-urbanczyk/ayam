@@ -11490,6 +11490,60 @@ see also section <ref id="sctobasisbc" name="tobasisBC">.
 
 <#if out="latex"><x/newpage/</#if>
 
+<sect2>SDCurve (Subdivision Curve) Object<label id="sdcurveobj">
+<p>
+The SDCurve (subdivision curve) object creates a curve from a
+number of non-rational control points.<footnote>Since 1.26.</footnote>
+Subdivision curves are similar to subdivision surfaces, but a polygon is
+subdivided instead of a polygonal mesh, see also section
+<ref id="sdmeshobj" name="SDMesh Object">.
+<p>
+<figure loc="!ht">
+<eps file="pics/sdcurves.ps" height="6cm">
+<img src="pics/sdcurves.gif">
+<caption>SDCurve Examples of Level 4 (Chaikin: u, Cubic: l)</caption>
+</figure>
+<p>
+See also the image above depicting four simple example curves.
+<p>
+The following table briefly lists some capabilities of the SDCurve object.
+<p>
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+SDCurve|No|No|NCurve|Yes<#if out=latex>@<hline></#if>
+</tabular>
+<caption>SDCurve Object Capabilities</caption>
+</table>
+
+<sect3>SDCurveAttr Property<label id="sdcurveattrprop">
+<p><#if out=latex>&nbsp;<newline></#if>
+The SDCurve object provides the following parameters:
+<itemize>
+<item><tt/"Closed"/ determines whether the curve is closed.
+
+<item><tt/"Length"/ is the number of control points.
+
+<item><tt/"Type"/ is the subdivision method to use, the currently
+implemented methods are <tt/"Chaikin"/ and <tt/"Cubic"/.
+
+<item><tt/"Level"/ determines the number of subdivisions to carry out.
+</itemize>
+
+<#if out="latex"><x/newpage/</#if>
+
+<sect3>Conversion Support
+<p><#if out=latex>&nbsp;<newline></#if>
+The subdivision curve may be converted to an ordinary NURBS curve of
+order 2 using the main menu entry <tt>"Tools/Convert"</tt>.
+
+<sect3>RIB Export
+<p><#if out=latex>&nbsp;<newline></#if>
+SDCurve objects never directly appear in RIB output (only indirectly as trim
+curve).
+
+<#if out="latex"><x/newpage/</#if>
+
 <sect2>Metaball Object<label id="metaobjobj"><label id="metacompobj">
 <p>
 <figure loc="ht">
@@ -25535,6 +25589,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="prefgui" name="preference setting">,
 <item><ref id="scripts" name="distributed helper scripts">
 </itemize>
+<item>SDCurve: <ref id="sdcurveobj" name="SDCurve object">
 <item>SDLen: <ref id="icp" name="ICurve attribute">
 <item>SDMesh: <ref id="sdmeshobj" name="SDMesh object">
 <item>SDNPatch: <ref id="sdnpatchobj" name="SDNPatch object">
