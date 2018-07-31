@@ -840,23 +840,38 @@ int ay_pact_snaptomarkcb(struct Togl *togl, int argc, char *argv[]);
  */
 int ay_pact_multiptcb(struct Togl *togl, int argc, char *argv[]);
 
+/** insert point into approximating curve
+ */
 int ay_pact_insertac(ay_acurve_object *curve, int *index,
 		     double *objXYZ, int edit);
 
+/** insert point into NURBS curve
+ */
 int ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
 		     double *objXYZ, int edit);
 
+/** delete point from approximating curve
+ */
 int ay_pact_deleteac(ay_acurve_object *acurve, int *index,
 		     double *objXYZ);
 
+/** delete point from NURBS curve
+ */
 int ay_pact_deletenc(ay_nurbcurve_object *curve, int *index,
 		     double *objXYZ);
 
+/** register insert point callback
+ */
 int ay_pact_registerinsert(ay_inspntcb *inscb, unsigned int type_id);
 
+/** register delete point callback
+ */
 int ay_pact_registerdelete(ay_delpntcb *delcb, unsigned int type_id);
 
+/** initialize point action module
+ */
 int ay_pact_init(Tcl_Interp *interp);
+
 
 /* pomesht.c */
 
@@ -1587,6 +1602,14 @@ int ay_tcmd_menustatetcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int ay_tcmd_getnormaltcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[]);
+
+/** register revert callback
+ */
+int ay_tcmd_registerrevert(ay_revertcb *revcb, unsigned int type_id);
+
+/** initialize tcmd module
+ */
+int ay_tcmd_init(Tcl_Interp *interp);
 
 
 /* tgui.c */
