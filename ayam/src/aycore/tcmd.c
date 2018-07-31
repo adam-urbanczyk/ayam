@@ -14,6 +14,12 @@
 
 /* tcmd.c - various simple Tcl commands and support functions */
 
+/* global variables for this module: */
+
+/** all registered revert callbacks */
+static ay_ftable ay_tcmd_revertcbt;
+
+
 /* prototypes of functions local to this module: */
 
 int ay_tcmd_setallpoints(Tcl_Interp *interp, char *fname, char *vn,
@@ -1932,3 +1938,42 @@ ay_tcmd_getnormaltcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_tcmd_getnormaltcmd */
+
+
+/** ay_tcmd_registerrevert:
+ *  register a revert callback
+ *
+ * \param[in] revcb revert callback
+ * \param[in] type_id object type for which to register the callback (AY_ID...)
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_tcmd_registerrevert(ay_revertcb *revcb, unsigned int type_id)
+{
+ int ay_status = AY_OK;
+
+  /* register callback */
+  ay_status = ay_table_additem(&ay_tcmd_revertcbt, (ay_voidfp)revcb, type_id);
+
+ return ay_status;
+} /* ay_tcmd_registerrevert */
+
+
+/** ay_tcmd_init:
+ *  initialize the tcmd module
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_tcmd_init(Tcl_Interp *interp)
+{
+ int ay_status = AY_OK;
+ char fname[] = "tcmd_init";
+
+  if((ay_status = ay_table_init(&ay_tcmd_revertcbt)))
+    { ay_error(ay_status, fname, NULL); return AY_ERROR; }
+
+ return ay_status;
+} /* ay_tcmd_init */
+
