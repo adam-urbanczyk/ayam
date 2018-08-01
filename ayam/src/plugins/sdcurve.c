@@ -1087,7 +1087,6 @@ sdcurve_notifycb(ay_object *o)
 	}
       if(ay_status)
 	goto cleanup;
-
     } /* if level */
 
 cleanup:
@@ -1251,6 +1250,32 @@ sdcurve_deletepntcb(ay_object *o, int *index, double *objXYZ)
  return ay_status;
 } /* sdcurve_deletepntcb */
 
+/** sdcurve_revertcb:
+ * Revert a SDCurve
+ *
+ * \param[in,out] o object to process
+ * \param[in] dim unused
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+sdcurve_revertcb(ay_object *o, int dim)
+{
+ sdcurve_object *sd = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  if(o->type != sdcurve_id)
+    return AY_ERROR;
+
+  sd = (sdcurve_object *)o->refine;
+
+  (void) ay_nct_revertarr(sd->controlv, sd->length, 3);
+
+ return AY_OK;
+} /* sdcurve_revertcb */
+
 
 /* Sdcurve_Init:
  * initializes the sdcurve module/plugin by registering a new
@@ -1304,6 +1329,8 @@ Sdcurve_Init(Tcl_Interp *interp)
   ay_status += ay_pact_registerinsert(sdcurve_insertpntcb, sdcurve_id);
 
   ay_status += ay_pact_registerdelete(sdcurve_deletepntcb, sdcurve_id);
+
+  ay_status += ay_tcmd_registerrevert(sdcurve_revertcb, sdcurve_id);
 
   if(ay_status)
     {

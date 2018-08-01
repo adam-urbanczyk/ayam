@@ -114,6 +114,8 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp *interp,
  ay_acurve_object *acurve = NULL;
  ay_icurve_object *icurve = NULL;
  ay_nurbcurve_object *ncurve = NULL;
+ ay_voidfp *arr = NULL;
+ ay_revertcb *cb = NULL;
 
   while(sel)
     {
@@ -167,7 +169,22 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	  break;
 	default:
-	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
+	  arr = ay_tcmd_revertcbt.arr;
+	  cb = (ay_revertcb *)(arr[o->type]);
+	  if(cb)
+	    {
+	      ay_status = cb(o, 0);
+	      if(!ay_status)
+		{
+		  ay_notify_object(o);
+		  o->modified = AY_TRUE;
+		  notify_parent = AY_TRUE;
+		}
+	    }
+	  else
+	    {
+	      ay_error(AY_EWARN, argv[0], ay_error_igntype);
+	    }
 	  break;
 	} /* switch */
 
