@@ -1800,6 +1800,33 @@ bcurve_deletepntcb(ay_object *o, int *index, double *objXYZ)
 } /* bcurve_deletepntcb */
 
 
+/** bcurve_revertcb:
+ * Revert a BCurve.
+ *
+ * \param[in,out] o object to process
+ * \param[in] dim unused
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+bcurve_revertcb(ay_object *o, int dim)
+{
+ bcurve_object *bc = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  if(o->type != bcurve_id)
+    return AY_ERROR;
+
+  bc = (bcurve_object *)o->refine;
+
+  (void) ay_nct_revertarr(bc->controlv, bc->length, 4);
+
+ return AY_OK;
+} /* bcurve_revertcb */
+
+
 /* Bcurve_Init:
  * initializes the bcurve module/plugin by registering a new
  * object type (bcurve) and loading the accompanying Tcl script file.
@@ -1852,6 +1879,8 @@ Bcurve_Init(Tcl_Interp *interp)
   ay_status += ay_pact_registerinsert(bcurve_insertpntcb, bcurve_id);
 
   ay_status += ay_pact_registerdelete(bcurve_deletepntcb, bcurve_id);
+
+  ay_status += ay_tcmd_registerrevert(bcurve_revertcb, bcurve_id);
 
   if(ay_status)
     {
