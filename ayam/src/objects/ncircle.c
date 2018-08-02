@@ -744,6 +744,36 @@ ay_ncircle_providecb(ay_object *o, unsigned int type, ay_object **result)
 } /* ay_ncircle_providecb */
 
 
+/** ay_ncircle_revertcb:
+ * Revert a NURBS Circle object.
+ *
+ * \param[in,out] o object to process
+ * \param[in] dim unused
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_ncircle_revertcb(ay_object *o, int dim)
+{
+ ay_ncircle_object *nc = NULL;
+ double t;
+
+  if(!o)
+    return AY_ENULL;
+
+  if(o->type != AY_IDNCIRCLE)
+    return AY_ERROR;
+
+  nc = (ay_ncircle_object *)o->refine;
+
+  t = nc->tmin;
+  nc->tmax = nc->tmin;
+  nc->tmin = t;
+
+ return AY_OK;
+} /* ay_ncircle_revertcb */
+
+
 /* ay_ncircle_init:
  *  initialize the ncircle object module
  */
@@ -776,6 +806,8 @@ ay_ncircle_init(Tcl_Interp *interp)
   ay_status += ay_convert_register(ay_ncircle_convertcb, AY_IDNCIRCLE);
 
   ay_status += ay_provide_register(ay_ncircle_providecb, AY_IDNCIRCLE);
+
+  ay_status += ay_tcmd_registerrevert(ay_ncircle_revertcb, AY_IDNCIRCLE);
 
   /* ncircles may not be associated with materials */
   ay_matt_nomaterial(AY_IDNCIRCLE);
