@@ -1720,7 +1720,7 @@ cleanup:
 /** bcurve_insertpntcb:
  * Insert a new control point into a BCurve.
  *
- * \param[in,out] o object to process
+ * \param[in,out] o curve object to process
  * \param[in,out] index where to store the index of the inserted point
  * \param[in] objXYZ coordinates of point after which to insert
  * \param[in] edit interactive editing support
@@ -1762,7 +1762,7 @@ bcurve_insertpntcb(ay_object *o, int *index, double *objXYZ, int edit)
 /** bcurve_deletepntcb:
  * Remove a control point from a BCurve.
  *
- * \param[in,out] o object to process
+ * \param[in,out] o curve object to process
  * \param[in,out] index where to store the index of the removed point
  * \param[in] objXYZ coordinates of point to delete
  *
@@ -1801,9 +1801,9 @@ bcurve_deletepntcb(ay_object *o, int *index, double *objXYZ)
 
 
 /** bcurve_revertcb:
- * Revert a BCurve.
+ * Change the direction of a BCurve.
  *
- * \param[in,out] o object to process
+ * \param[in,out] o curve object to process
  * \param[in] dim unused
  *
  * \returns AY_OK on success, error code otherwise.

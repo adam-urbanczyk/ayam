@@ -745,9 +745,9 @@ ay_ncircle_providecb(ay_object *o, unsigned int type, ay_object **result)
 
 
 /** ay_ncircle_revertcb:
- * Revert a NURBS Circle object.
+ * Change the direction of a NURBS Circle object.
  *
- * \param[in,out] o object to process
+ * \param[in,out] o circle object to process
  * \param[in] dim unused
  *
  * \returns AY_OK on success, error code otherwise.
