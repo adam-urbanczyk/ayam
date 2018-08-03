@@ -677,6 +677,36 @@ sfcurve_providecb(ay_object *o, unsigned int type, ay_object **result)
 } /* sfcurve_providecb */
 
 
+/** sfcurve_revertcb:
+ * Change the direction of a SfCurve object.
+ *
+ * \param[in,out] o curve object to process
+ * \param[in] dim unused
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+sfcurve_revertcb(ay_object *o, int dim)
+{
+ sfcurve_object *sfc = NULL;
+ double t;
+
+  if(!o)
+    return AY_ENULL;
+
+  if(o->type != AY_IDNCIRCLE)
+    return AY_ERROR;
+
+  sfc = (sfcurve_object *)o->refine;
+
+  t = sfc->tmin;
+  sfc->tmax = sfc->tmin;
+  sfc->tmin = t;
+
+ return AY_OK;
+} /* sfcurve_revertcb */
+
+
 /* Sfcurve_Init:
  * initializes the sfcurve module/plugin by registering a new
  * object type (SfCurve) and loading the accompanying Tcl script file.
@@ -723,6 +753,8 @@ Sfcurve_Init(Tcl_Interp *interp)
   ay_status += ay_convert_register(sfcurve_convertcb, sfcurve_id);
 
   ay_status += ay_provide_register(sfcurve_providecb, sfcurve_id);
+
+  ay_status += ay_tcmd_registerrevert(sfcurve_revertcb, sfcurve_id);
 
   if(ay_status)
     {
