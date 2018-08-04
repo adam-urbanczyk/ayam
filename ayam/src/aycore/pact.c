@@ -1741,7 +1741,7 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
 	    }
 	  else
 	    {
-	      ay_error(AY_EWTYPE, fname, "NCurve, ICurve, or ACurve");
+	      ay_error(AY_EWARN, fname, ay_error_igntype);
 	      ay_status = AY_ERROR;
 	    }
 	  break;
@@ -2074,7 +2074,7 @@ ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[])
 	    }
 	  else
 	    {
-	      ay_error(AY_EWTYPE, fname, "NCurve, ICurve, or ACurve");
+	      ay_error(AY_EWARN, fname, ay_error_igntype);
 	      ay_status = AY_ERROR;
 	    }
 	  break;
