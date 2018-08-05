@@ -22,6 +22,7 @@ w     fSDCurveAttr
 
 array set SDCurveAttrData {
 Type 0
+SLength "n/a"
 }
 
 # create SDCurveAttr-UI
@@ -33,7 +34,8 @@ addParam $w SDCurveAttrData Length
 set l [list Chaikin Cubic]
 addMenu $w SDCurveAttrData Type $l
 addParam $w SDCurveAttrData Level
-
+addText $w SDCurveAttrData "Subdivision:"
+addInfo $w SDCurveAttrData SLength
 
 # add menu entry to the "Create/Custom Object" sub-menu
 mmenu_addcustom SDCurve "crtOb SDCurve;uS;sL;rV"
