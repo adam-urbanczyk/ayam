@@ -1720,12 +1720,24 @@ ay_tcmd_getuint(char *str, unsigned int *uint)
   if(!str || !uint)
     return AY_ENULL;
 
+  p = str;
+  while(*p)
+    {
+      if(isdigit(*p))
+	break;
+      else
+	if(*p == '-')
+	  goto outputerror;
+      p++;
+    }
+
   errno = 0;
 
   ret = strtoul(str, &p, 0);
 
   if(p == str)
     {
+outputerror:
       ay_error(AY_ERROR, fname, "Expected unsigned integer value but got:");
       ay_error(AY_ERROR, fname, str);
       return AY_ERROR;
