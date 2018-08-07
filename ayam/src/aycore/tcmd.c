@@ -12,6 +12,8 @@
 
 #include "ayam.h"
 
+#include <ctype.h>
+
 /* tcmd.c - various simple Tcl commands and support functions */
 
 /* global variables for this module: */
@@ -1716,6 +1718,7 @@ ay_tcmd_getuint(char *str, unsigned int *uint)
 {
  unsigned long int ret;
  char fname[] = "getuint", *p;
+ Tcl_DString ds;
 
   if(!str || !uint)
     return AY_ENULL;
@@ -1738,8 +1741,10 @@ ay_tcmd_getuint(char *str, unsigned int *uint)
   if(p == str)
     {
 outputerror:
-      ay_error(AY_ERROR, fname, "Expected unsigned integer value but got:");
-      ay_error(AY_ERROR, fname, str);
+      Tcl_DStringInit(&ds);
+      Tcl_DStringAppend(&ds, "Expected unsigned integer value but got: ", -1);
+      Tcl_DStringAppend(&ds, str, -1);
+      ay_error(AY_ERROR, fname,  Tcl_DStringValue(&ds));
       return AY_ERROR;
     }
 
