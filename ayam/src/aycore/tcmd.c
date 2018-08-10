@@ -39,7 +39,7 @@ int ay_tcmd_getallpoints(Tcl_Interp *interp, char *fname, char *vn,
  * \param[in] vname name of a Tcl variable that contains the list of values
  *  to convert
  * \param[in,out] dllen where to store the length of the array
- * \param[in,out] dl where to sotre the array of doubles
+ * \param[in,out] dl where to store the array of doubles
  *
  * \returns TCL_OK upon successful completion, TCL_ERROR else.
  */
@@ -1915,7 +1915,11 @@ ay_tcmd_getnormaltcmd(ClientData clientData, Tcl_Interp *interp,
 	    return TCL_OK;
 	  cvlen = pe.num;
 	  if(!(cv = malloc(pe.num*3*sizeof(double))))
-	    return AY_EOMEM;
+	    {
+	      ay_error(AY_EOMEM, argv[0], NULL);
+	      ay_pact_clearpointedit(&pe);
+	      return TCL_OK;
+	    }
 	  pnt = cv;
 	  for(i = 0; i < pe.num; i++)
 	    {
@@ -1930,7 +1934,14 @@ ay_tcmd_getnormaltcmd(ClientData clientData, Tcl_Interp *interp,
       if(cv)
 	{
 	  /* compute result */
-	  ay_geom_extractmeannormal(cv, cvlen, stride, NULL, normal);
+	  ay_status = ay_geom_extractmeannormal(cv, cvlen, stride,
+						/**/NULL, normal);
+
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, argv[0], NULL);
+	      goto cleanup;
+	    }
 
 	  if(applytrafo)
 	    {
@@ -1957,6 +1968,7 @@ ay_tcmd_getnormaltcmd(ClientData clientData, Tcl_Interp *interp,
 	  Tcl_ListObjAppendElement(interp, ton, to);
 	} /* if cv */
 
+cleanup:
       if(clearcv && cv)
 	{
 	  free(cv);
