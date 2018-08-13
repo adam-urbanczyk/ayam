@@ -399,6 +399,8 @@ SFCURVEOBJS = plugins/sfcurve.o
 
 BCURVEOBJS = plugins/bcurve.o
 
+SDCURVEOBJS = plugins/sdcurve.o
+
 IDROBJS = plugins/idr.o
 
 METAOBJS = contrib/meta/metaobj.o \
@@ -545,7 +547,7 @@ AYINC = -I. -IMF3D -Icontrib $(TOGLINC) $(TCLINC) $(TKINC) $(BMRTINC) $(GLINC) $
 
 all: wrappedayam
 
-plugins: csphere.so sfcurve.so bcurve.so mfio.so metaobj.so mopsi.so
+plugins: csphere.so sfcurve.so bcurve.so sdcurve.so mfio.so metaobj.so mopsi.so
 
 wrapMain.o: wrapMain.c
 	$(CC) -c $(CFLAGS) wrapMain.c -I$(WRAPDIR) -I$(WRAPDIR)/libz $(TCLINC) $(TKINC)
@@ -592,6 +594,9 @@ sfcurve.so: $(SFCURVEOBJS)
 
 bcurve.so: $(BCURVEOBJS)
 	$(CC) $(SHLFLAGS) $(BCURVEOBJS) -o plugins/bcurve.so
+
+sdcurve.so: $(SDCURVEOBJS)
+	$(CC) $(SHLFLAGS) $(SDCURVEOBJS) -o plugins/sdcurve.so
 
 idr.so: $(IDROBJS)
 	$(CC) $(SHLFLAGS) $(IDROBJS) -o plugins/idr.so $(TIFFLIB)
@@ -774,6 +779,8 @@ install:
 	-$(INSTALL) plugins/loadsfcurve.tcl $(LIBDIR)
 	-$(INSTALL) plugins/bcurve.so $(LIBDIR)
 	-$(INSTALL) plugins/loadbcurve.tcl $(LIBDIR)
+	-$(INSTALL) plugins/sdcurve.so $(LIBDIR)
+	-$(INSTALL) plugins/loadsdcurve.tcl $(LIBDIR)
 	-$(INSTALL) plugins/printps.so $(LIBDIR)
 	-$(INSTALL) Makefile $(BINDIR)
 	$(MKDIR) $(DOCDIR)

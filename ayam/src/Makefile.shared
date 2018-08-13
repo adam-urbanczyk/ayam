@@ -521,6 +521,8 @@ SFCURVEOBJS = plugins/sfcurve.o
 
 BCURVEOBJS = plugins/bcurve.o
 
+SDCURVEOBJS = plugins/sdcurve.o
+
 IDROBJS = plugins/idr.o
 
 METAOBJS = contrib/meta/metaobj.o \
@@ -540,7 +542,7 @@ RRIBOBJS = plugins/rrib.o
 
 all: ayamsh
 
-plugins: csphere.so sfcurve.so bcurve.so mfio.so metaobj.so mopsi.so
+plugins: csphere.so sfcurve.so bcurve.so sdcurve.so mfio.so metaobj.so mopsi.so
 
 ayamsh: $(AYAMOBJS) $(TOGLOBJECT) $(AFFINEOBJS)
 	$(LD) $(AYAMOBJS) $(TOGLOBJECT) $(EXLDFLAGS) -o ayamsh $(TKLIB) $(TCLLIB) $(GLLIBS) $(X11LIBS) $(RIBOUTLIB) $(AQSISRI2RIB) $(SLCARGSLIB) $(AFFINEOBJS) $(AQSISOBJS) $(TIFFLIB) -lm $(DL)
@@ -591,6 +593,9 @@ sfcurve.so: $(SFCURVEOBJS)
 
 bcurve.so: $(BCURVEOBJS)
 	$(CC) $(SHLFLAGS) $(BCURVEOBJS) -o plugins/bcurve.so
+
+sdcurve.so: $(SDCURVEOBJS)
+	$(CC) $(SHLFLAGS) $(SDCURVEOBJS) -o plugins/sdcurve.so
 
 idr.so: $(IDROBJS)
 	$(CC) $(SHLFLAGS) $(IDROBJS) -o plugins/idr.so $(TIFFLIB)
@@ -781,6 +786,8 @@ install:
 	-$(INSTALL) plugins/loadsfcurve.tcl $(LIBDIR)
 	-$(INSTALL) plugins/bcurve.so $(LIBDIR)
 	-$(INSTALL) plugins/loadbcurve.tcl $(LIBDIR)
+	-$(INSTALL) plugins/sdcurve.so $(LIBDIR)
+	-$(INSTALL) plugins/loadsdcurve.tcl $(LIBDIR)
 	-$(INSTALL) plugins/printps.so $(LIBDIR)
 	-$(INSTALL) Makefile $(BINDIR)
 	$(MKDIR) $(DOCDIR)
