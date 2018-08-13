@@ -112,6 +112,8 @@ install:
 	-$(INSTALL) plugins/loadsfcurve.tcl $(LIBDIR)
 	-$(INSTALL) plugins/bcurve.so $(LIBDIR)
 	-$(INSTALL) plugins/loadbcurve.tcl $(LIBDIR)
+	-$(INSTALL) plugins/sdcurve.so $(LIBDIR)
+	-$(INSTALL) plugins/loadsdcurve.tcl $(LIBDIR)
 	-$(INSTALL) plugins/printps.so $(LIBDIR)
 	$(MKDIR) $(DOCDIR)
 	$(INSTALL) $(DOCFILES) $(DOCDIR)
