@@ -7,7 +7,7 @@
 #
 # See the file License for details.
 
-# metaobj.tcl - Metaobj objects Tcl code
+# metacomp.tcl - Metaobj objects Tcl code
 # Frank Pagels 2001
 
 global ay MetaComp_props MetaCompAttr MetaCompAttrData
@@ -21,7 +21,8 @@ proc metacomp_getAttr { } {
     set w [frame $ay(pca).$MetaCompAttr(w)]
     getProp
 
-    # create new UI
+    set ay(bok) $ay(appb)
+
     addMenu $w MetaCompAttrData Formula {MetaBalls Torus Cube Heart Custom}
     addCheck $w MetaCompAttrData Negative
 
@@ -63,6 +64,8 @@ proc metacomp_getAttr { } {
 
  return;
 }
+# metacomp_getAttr
+
 
 array set MetaCompAttr {
 arr   MetaCompAttrData
