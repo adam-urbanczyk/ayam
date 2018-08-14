@@ -2953,7 +2953,7 @@ set aytest_6items $items
 
 # set up types to test in test #7
 set items {}
-lappend items MetaObj SfCurve SDNPatch BCurve
+lappend items MetaObj SfCurve SDNPatch BCurve SDCurve
 set aytest_7items $items
 
 ###
