@@ -24,6 +24,7 @@ w     fSDNPatchAttr
 # create SDNPatchAttr-UI
 set w [frame $ay(pca).$SDNPatchAttr(w)]
 
+set ay(bok) $ay(appb)
 
 addParam $w SDNPatchAttrData Degree
 addParam $w SDNPatchAttrData Level
@@ -573,6 +574,6 @@ proc sdnpatch_crtcube { w h d dx dy dz } {
     sL
     rV
 
-return;
+ return;
 }
 # sdnpatch_crtcube

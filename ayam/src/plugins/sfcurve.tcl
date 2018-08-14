@@ -28,6 +28,8 @@ DisplayMode 0
 # create SfCurveAttr-UI
 set w [frame $ay(pca).$SfCurveAttr(w)]
 
+set ay(bok) $ay(appb)
+
 addParam $w SfCurveAttrData M
 addParam $w SfCurveAttrData N1
 addParam $w SfCurveAttrData N2

@@ -27,6 +27,9 @@ SLength "n/a"
 
 # create SDCurveAttr-UI
 set w [frame $ay(pca).$SDCurveAttr(w)]
+
+set ay(bok) $ay(appb)
+
 addVSpace $w s1 2
 
 addCheck $w SDCurveAttrData Closed
