@@ -1286,6 +1286,172 @@ sdcurve_revertcb(ay_object *o, int dim)
 } /* sdcurve_revertcb */
 
 
+/* sdcurve_convtcmd:
+ *  Tcl command to convert curve objects to SDCurve objects
+ */
+int
+sdcurve_convtcmd(ClientData clientData, Tcl_Interp *interp,
+		 int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ ay_list_object *sel = ay_selection;
+ ay_object *o = NULL, *newo = NULL;
+ sdcurve_object *sdcurve = NULL;
+ ay_nurbcurve_object *nc;
+ ay_icurve_object *ic;
+ ay_acurve_object *ac;
+ ay_pointedit pe = {0};
+ double *cv = NULL, *newcv = NULL, p[4], *pnt;
+ int /*applytrafo = AY_FALSE,*/ closed = AY_FALSE, a, b, i, cvlen, stride = 3;
+
+  /* parse args */
+  if(argc > 2)
+    {
+      while(i+1 < argc)
+	{
+	  if(!strcmp(argv[i], "-r"))
+	    {
+	      /*
+	      mode = 0;
+	      sscanf(argv[i+1], "%lg", &rmin);
+	      sscanf(argv[i+2], "%lg", &rmax);
+	      */
+	    }
+	  if(!strcmp(argv[i], "-d"))
+	    {
+	      /*
+	      mode = 1;
+	      sscanf(argv[i+1], "%lg", &mindist);
+	      */
+	    }
+	  i += 2;
+	} /* while */
+    } /* if */
+
+  /* check selection */
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, argv[0], NULL);
+      return TCL_OK;
+    }
+
+  while(sel)
+    {
+      o = sel->object;
+
+      switch(o->type)
+	{
+	case AY_IDNCURVE:
+	  nc = (ay_nurbcurve_object*)o->refine;
+	  cv = nc->controlv;
+	  cvlen = nc->length;
+	  if(nc->type == AY_CTCLOSED)
+	    {
+	      closed = AY_TRUE;
+	      cvlen--;
+	    }
+	  if(nc->type == AY_CTPERIODIC)
+	    {
+	      closed = AY_TRUE;
+	      cvlen -= (nc->order-1);
+	    }
+	  stride = 4;
+	  break;
+	case AY_IDICURVE:
+	  ic = (ay_icurve_object*)o->refine;
+	  cv = ic->controlv;
+	  cvlen = ic->length;
+	  break;
+	case AY_IDACURVE:
+	  ac = (ay_acurve_object*)o->refine;
+	  cv = ac->controlv;
+	  cvlen = ac->length;
+	  break;
+	default:
+	  break;
+	} /* switch */
+
+      if(cv)
+	{
+	  if(!(newcv = malloc(3 * cvlen * sizeof(double))))
+	    {
+	      ay_error(AY_EOMEM, argv[0], NULL);
+	      return TCL_OK;
+	    }
+
+	  if(stride == 3)
+	    {
+	      memcpy(newcv, cv, 3*cvlen*sizeof(double));
+	    }
+	  else
+	    {
+	      a = 0;
+	      b = 0;
+	      for(i = 0; i < cvlen; i++)
+		{
+		  memcpy(&(newcv[a]), &(cv[b]), 3*sizeof(double));
+		  a += 3;
+		  b += stride;
+		}
+	    }
+	}
+      else
+	{
+	  ay_status = ay_pact_getpoint(0, o, p, &pe);
+	  if(ay_status)
+	    return TCL_OK;
+	  cvlen = pe.num;
+	  if(!(newcv = malloc(3 * cvlen * sizeof(double))))
+	    {
+	      ay_error(AY_EOMEM, argv[0], NULL);
+	      return TCL_OK;
+	    }
+	  pnt = newcv;
+	  for(i = 0; i < cvlen; i++)
+	    {
+	      memcpy(pnt, pe.coords[i], 3*sizeof(double));
+	      pnt += 3;
+	    }
+	  ay_pact_clearpointedit(&pe);
+	} /* if cv */
+
+      if(newcv)
+	{
+	  if(!(newo = calloc(1, sizeof(ay_object))))
+	    {
+	      free(newcv);
+	      ay_error(AY_EOMEM, argv[0], NULL);
+	      return TCL_OK;
+	    }
+
+	  ay_object_defaults(newo);
+	  newo->type = sdcurve_id;
+
+	  if(!(sdcurve = calloc(1, sizeof(sdcurve_object))))
+	    {
+	      free(newcv);
+	      free(newo);
+	      ay_error(AY_EOMEM, argv[0], NULL);
+	      return TCL_OK;
+	    }
+
+	  sdcurve->length = cvlen;
+	  sdcurve->controlv = newcv;
+	  sdcurve->closed = closed;
+
+	  newo->refine = sdcurve;
+
+	  ay_object_link(newo);
+	} /* if newcv */
+
+      sel = sel->next;
+    } /* while */
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* sdcurve_convtcmd */
+
 /* Sdcurve_Init:
  * initializes the sdcurve module/plugin by registering a new
  * object type (sdcurve) and loading the accompanying Tcl script file.
@@ -1349,6 +1515,10 @@ Sdcurve_Init(Tcl_Interp *interp)
 
   /* sdcurve objects may not be associated with materials */
   ay_matt_nomaterial(sdcurve_id);
+
+  Tcl_CreateCommand(interp, "convertCurveToSDCurve",
+		    (Tcl_CmdProc*) sdcurve_convtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* source sdcurve.tcl, it contains Tcl-code to build
      the SDCurve-Attributes Property GUI */
