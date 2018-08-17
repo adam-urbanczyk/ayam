@@ -1361,11 +1361,16 @@ sdcurve_convtcmd(ClientData clientData, Tcl_Interp *interp,
 	  ic = (ay_icurve_object*)o->refine;
 	  cv = ic->controlv;
 	  cvlen = ic->length;
+	  if(ic->type == AY_CTCLOSED)
+	    {
+	      closed = AY_TRUE;
+	    }
 	  break;
 	case AY_IDACURVE:
 	  ac = (ay_acurve_object*)o->refine;
 	  cv = ac->controlv;
 	  cvlen = ac->length;
+	  closed = ac->closed;
 	  break;
 	default:
 	  break;
