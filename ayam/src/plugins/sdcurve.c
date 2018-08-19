@@ -1302,13 +1302,18 @@ sdcurve_convtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_acurve_object *ac;
  ay_pointedit pe = {0};
  double *cv = NULL, *newcv = NULL, p[4], *pnt;
- int /*applytrafo = AY_FALSE,*/ closed = AY_FALSE, a, b, i, cvlen, stride = 3;
+ double m[16];
+ int applytrafo = AY_FALSE, closed = AY_FALSE, a, b, i, cvlen, stride = 3;
 
   /* parse args */
   if(argc > 2)
     {
       while(i+1 < argc)
 	{
+	  if(!strcmp(argv[i], "-a"))
+	    {
+	      sscanf(argv[i+1], "%d", &applytrafo);
+	    }
 	  if(!strcmp(argv[i], "-r"))
 	    {
 	      /*
@@ -1446,6 +1451,24 @@ sdcurve_convtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  newo->refine = sdcurve;
 
+	  if(applytrafo)
+	    {
+	      if(AY_ISTRAFO(o))
+		{
+		  ay_trafo_creatematrix(o, m);
+		  pnt = sdcurve->controlv;
+		  for(i = 0; i < sdcurve->length; i++)
+		    {
+		      ay_trafo_apply3(pnt, m);
+		      pnt += 3;
+		    } /* for */
+		}
+	    }
+	  else
+	    {
+	      ay_trafo_copy(o, newo);
+	    }
+
 	  ay_object_link(newo);
 	} /* if newcv */
 
@@ -1456,6 +1479,7 @@ sdcurve_convtcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* sdcurve_convtcmd */
+
 
 /* Sdcurve_Init:
  * initializes the sdcurve module/plugin by registering a new
