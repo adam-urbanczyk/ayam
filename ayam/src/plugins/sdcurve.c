@@ -1308,6 +1308,7 @@ sdcurve_convtcmd(ClientData clientData, Tcl_Interp *interp,
   /* parse args */
   if(argc > 2)
     {
+      i = 1;
       while(i+1 < argc)
 	{
 	  if(!strcmp(argv[i], "-a"))
