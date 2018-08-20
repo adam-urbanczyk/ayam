@@ -7,7 +7,7 @@
 #
 # See the file License for details.
 
-# sdcurve.tcl - Sdcurve objects Tcl code
+# sdcurve.tcl - SDcurve objects Tcl code
 
 global ay SDCurve_props SDCurveAttr SDCurveAttrData
 
@@ -45,5 +45,86 @@ mmenu_addcustom SDCurve "crtOb SDCurve;uS;sL;rV"
 
 # tell the rest of Ayam (or other custom objects), that we are loaded
 lappend ay(co) SDCurve
+
+uplevel #0 { array set sdcurve_convopt {
+    filename ""
+    FileName "unnamed.ply"
+} }
+
+
+
+# sdcurve_conv:
+#  convert to SDCurve
+#
+proc sdcurve_conv { } {
+    global ay ay_error sdcurve_convopt aymainshortcuts
+
+    winAutoFocusOff
+
+    set sdcurve_convopt(oldfocus) [focus]
+
+    set ay_error ""
+
+    set w .sdc
+    set t "Convert To SDCurve"
+    winDialog $w $t
+
+    set f [frame $w.f1]
+    pack $f -in $w -side top -fill x
+
+    set ay(bca) .sdc.f2.bca
+    set ay(bok) .sdc.f2.bok
+
+    #addParam $f sdcurve_convopt ScaleFactor [list 0.01 0.1 1.0 10.0 100.0]
+    addCheck $f sdcurve_convopt ApplyTrafo
+
+    set f [frame $w.f2]
+    button $f.bok -text "Ok" -width 5 -command {
+	global sdcurve_convopt
+
+	convertCurveToSDCurve -a $sdcurve_convopt(ApplyTrafo)
+
+	grab release .sdc
+	restoreFocus $sdcurve_convopt(oldfocus)
+	destroy .sdc
+    }
+    # button
+
+    button $f.bca -text "Cancel" -width 5 -command "\
+		grab release .sdc;\
+		restoreFocus $sdcurve_convopt(oldfocus);\
+		destroy .sdc"
+
+    pack $f.bok $f.bca -in $f -side left -fill x -expand yes
+    pack $f -in $w -side bottom -fill x
+
+    # Esc-key && close via window decoration == Cancel button
+    bind $w <Escape> "$f.bca invoke"
+    wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
+
+    bind $w <Key-Return> "$::ay(bok) invoke;break"
+    catch {bind $w <Key-KP_Enter> "$::ay(bok) invoke;break"}
+
+    # context help
+    #shortcut_addcshelp $w ayam-7.html impply
+
+    winRestoreOrCenter $w $t
+    grab $w
+    focus $w.f2.bok
+    tkwait window $w
+
+    winAutoFocusOn
+
+    after idle viewMouseToCurrent
+
+ return;
+}
+# sdcurve_conv
+
+global ay
+$ay(cm) add cascade -menu $ay(cm).sdc -label "SDCurve"
+menu $ay(cm).sdc -tearoff 0
+set m $ay(cm).sdc
+$m add command -label "From Curve" -command {sdcurve_conv; uCR; rV;}
 
 # EOF
