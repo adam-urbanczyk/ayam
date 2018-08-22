@@ -2600,7 +2600,7 @@ sdnpatch_createcb(int argc, char *argv[], ay_object *o)
  char option_handled = AY_FALSE;
  char **av = NULL;
  int avlen = 0;
- int tmpi, optnum = 0, i = 2, j = 0;
+ int tmpi, optnum = 0, i = 2, j = 0, degree = 0;
  unsigned int k = 0;
  unsigned int *faces = NULL, *edges = NULL;
  int faceslen = 0;
@@ -2629,6 +2629,11 @@ sdnpatch_createcb(int argc, char *argv[], ay_object *o)
 	{
 	  switch(argv[i][1])
 	    {
+	    case 'd':
+	      /* -degree */
+	      tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &degree);
+	      option_handled = AY_TRUE;
+	      break;
 	    case 'f':
 	      /* -faces */
 	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) ==
@@ -2776,6 +2781,8 @@ sdnpatch_createcb(int argc, char *argv[], ay_object *o)
 
     } /* while */
 
+  if(degree != 3 && degree != 5 && degree != 7)
+    degree = 3;
 
   /* XXXX check args */
 
@@ -2787,7 +2794,7 @@ sdnpatch_createcb(int argc, char *argv[], ay_object *o)
       goto cleanup;
     }
 
-  sdnpatch->subdivDegree = 3;
+  sdnpatch->subdivDegree = degree;
   sdnpatch->subdivLevel = 0;
 
   sdnpatch->controlMesh = new Mesh(sdnpatch->subdivDegree);
