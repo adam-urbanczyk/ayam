@@ -949,9 +949,7 @@ ay_sdmesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 int
 ay_sdmesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- /*int ay_status = AY_OK;*/
  char *n1 = "SDMeshAttrData";
- /*char fname[] = "sdmesh_setpropcb";*/
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_sdmesh_object *sdmesh = NULL;
  int i;
@@ -1003,7 +1001,7 @@ ay_sdmesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_sdmesh_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1="SDMeshAttrData";
+ char *n1 = "SDMeshAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_sdmesh_object *sdmesh = NULL;
 
@@ -1405,7 +1403,7 @@ ay_sdmesh_wribcb(char *file, ay_object *o)
 	{
 	  floatargs[i] = (RtFloat)(sdmesh->floatargs[i]);
 	}
-    } /* if */
+    } /* if have tags */
 
   /* Do we have any primitive variables? */
   if(!(pvc = ay_pv_count(o)))
@@ -1538,7 +1536,6 @@ ay_sdmesh_bbccb(ay_object *o, double *bbox, int *flags)
 int
 ay_sdmesh_notifycb(ay_object *o)
 {
-  /* int ay_status = AY_OK;*/
  ay_sdmesh_object *sdmesh = NULL;
 
   if(!o)
