@@ -1286,8 +1286,12 @@ sdcurve_revertcb(ay_object *o, int dim)
 } /* sdcurve_revertcb */
 
 
-/* sdcurve_convtcmd:
+/** sdcurve_convtcmd:
  *  Tcl command to convert curve objects to SDCurve objects
+ *  Implements the \a sdcconvertC scripting interface command.
+ *  See also the corresponding section in the \ayd{scsdcconvc}.
+ *
+ *  \returns TCL_OK in any case.
  */
 int
 sdcurve_convtcmd(ClientData clientData, Tcl_Interp *interp,
@@ -1546,7 +1550,7 @@ Sdcurve_Init(Tcl_Interp *interp)
   /* sdcurve objects may not be associated with materials */
   ay_matt_nomaterial(sdcurve_id);
 
-  Tcl_CreateCommand(interp, "convertCurveToSDCurve",
+  Tcl_CreateCommand(interp, "sdcconvertC",
 		    (Tcl_CmdProc*) sdcurve_convtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
