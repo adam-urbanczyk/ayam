@@ -82,7 +82,7 @@ proc sdcurve_conv { } {
     button $f.bok -text "Ok" -width 5 -command {
 	global sdcurve_convopt
 
-	convertCurveToSDCurve -a $sdcurve_convopt(ApplyTrafo)
+	sdcconvertC -a $sdcurve_convopt(ApplyTrafo)
 
 	grab release .sdc
 	restoreFocus $sdcurve_convopt(oldfocus)
