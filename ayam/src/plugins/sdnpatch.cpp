@@ -2589,7 +2589,7 @@ KnotSelector::closeFace(void)
 
 /* sdnpatch_createcb:
  *  create callback function of sdnpatch object
- * crtOb SDNPatch -v {0 0 0 1  1 0 0 1  1 1 0 1   0 1 0 1} -f {4 0 1 2 3}
+ * crtOb SDNPatch -v {0 0 0 1  1 0 0 1  1 1 0 1  0 1 0 1  .5 .5 1 1} -f {4 3 2 1 0  4 0 1 4 4  4 1 2 4 4  4 2 3 4 4  4 3 0 4 4}
  */
 int
 sdnpatch_createcb(int argc, char *argv[], ay_object *o)
@@ -2600,7 +2600,7 @@ sdnpatch_createcb(int argc, char *argv[], ay_object *o)
  char option_handled = AY_FALSE;
  char **av = NULL;
  int avlen = 0;
- int tmpi, optnum = 0, i = 2, j = 0, degree = 0;
+ int tmpi, optnum = 0, i = 2, j = 0, degree = 0, level = 0;
  unsigned int k = 0;
  unsigned int *faces = NULL, *edges = NULL;
  int faceslen = 0;
@@ -2725,6 +2725,11 @@ sdnpatch_createcb(int argc, char *argv[], ay_object *o)
 		}
 	      option_handled = AY_TRUE;
 	      break;
+	    case 'l':
+	      /* -level */
+	      tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &level);
+	      option_handled = AY_TRUE;
+	      break;
 	    case 'v':
 	      /* -vertices */
 	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) ==
@@ -2795,7 +2800,7 @@ sdnpatch_createcb(int argc, char *argv[], ay_object *o)
     }
 
   sdnpatch->subdivDegree = degree;
-  sdnpatch->subdivLevel = 0;
+  sdnpatch->subdivLevel = level;
 
   sdnpatch->controlMesh = new Mesh(sdnpatch->subdivDegree);
   meshBuilder = MeshBuilder::create(*(sdnpatch->controlMesh));
