@@ -571,7 +571,6 @@ ay_nct_resize(ay_nurbcurve_object *curve, int new_length)
 		   (i > (curve->length-curve->order))))
 	      for(j = 1; j <= newpersec[i]; j++)
 		{
-
 		  v[0] = curve->controlv[a+4] - curve->controlv[a];
 		  v[1] = curve->controlv[a+4+1] - curve->controlv[a+1];
 		  v[2] = curve->controlv[a+4+2] - curve->controlv[a+2];
@@ -694,6 +693,8 @@ ay_nct_open(ay_nurbcurve_object *curve)
       gndcb = ay_nct_gndc;
       end = &(curve->controlv[(curve->length*4)-4]);
       gndcb(1, curve, end, &d);
+      if(!d)
+	return AY_ERROR;
       AY_V3SUB(v, d, end);
       AY_V3SCAL(v, 0.2);
       while(d != end)
@@ -706,6 +707,8 @@ ay_nct_open(ay_nurbcurve_object *curve)
       gndcb = ay_nct_gndp;
       end = &(curve->controlv[(curve->length*4)-4]);
       gndcb(0, curve, end, &d);
+      if(!d)
+	return AY_ERROR;
       f = end-stride;
       for(i = 0; i < curve->order-1; i++)
 	{
@@ -968,7 +971,7 @@ ay_nct_revertarr(double *cv, int cvlen, int stride)
 /** ay_nct_refinekn:
  *  Refine a NURBS curve by inserting knots at the right places,
  *  thus not changing the shape of the curve;
- *  if newknotv is NULL, a knot is inserted into every possible
+ *  if \a newknotv is NULL, a knot is inserted into every possible
  *  place in the knot vector (multiple knots will not be changed).
  *  The knot type may change in the process.
  *
@@ -1668,6 +1671,9 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
   if(!curve)
     return AY_ENULL;
 
+  if(curve->order < 3)
+    return AY_OK;
+
   if(side == 0)
     {
       if((curve->knot_type == AY_KTBSPLINE) ||
@@ -1876,6 +1882,9 @@ ay_nct_clampperiodic(ay_nurbcurve_object *curve)
   if(!curve)
     return AY_ENULL;
 
+  if(curve->order < 3)
+    return AY_OK;
+
   p = curve->order-1;
   np = curve->length;
   nq = np+(p*2);
@@ -2028,7 +2037,7 @@ ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /** ay_nct_elevate:
- *  elevate NURBS curve to new order
+ *  increase the order of a NURBS curve
  *
  * \param[in,out] curve NURBS curve object to elevate
  * \param[in] new_order new order
@@ -2159,7 +2168,7 @@ ay_nct_elevate(ay_nurbcurve_object *curve, int new_order)
 
 
 /** ay_nct_elevatetcmd:
- *  Elevate order of selected NURBS curves.
+ *  Increase the order of the selected NURBS curves.
  *  Implements the \a elevateNC scripting interface command.
  *  See also the corresponding section in the \ayd{scelevatenc}.
  *
@@ -4599,7 +4608,7 @@ ay_nct_concatobjs(ay_object *o, ay_object **result)
 /** ay_nct_concatmultiple:
  * Concatenate multiple NURBS curve objects to a single curve.
  * NURBS curve providing objects are not supported here!
- * Order, tolerance and display mode are taken from the first curve.
+ * Order, tolerance, and display mode are taken from the first curve.
  *
  * \param[in] closed determines whether to create a closed curve
  *  (0 - no, 1 - yes)
