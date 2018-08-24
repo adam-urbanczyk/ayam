@@ -1009,6 +1009,10 @@ ay_icurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	    {
 	      ay_error(AY_ERROR,fname,"Resize failed!");
 	    }
+	  else
+	    {
+	      (void)ay_icurve_getpntcb(3, o, NULL, NULL);
+	    }
 	}
       else
 	{
@@ -1053,11 +1057,10 @@ ay_icurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	}
     } /* if */
 
+  (void)ay_notify_object(o);
+
   o->modified = AY_TRUE;
-
-  ay_notify_object(o);
-
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return AY_OK;
 } /* ay_icurve_setpropcb */
