@@ -1364,17 +1364,17 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   /* resize curve */
   if(new_length != ncurve->length && (new_length > 1))
     {
-      if(o->selp)
-	{
-	  ay_selp_clear(o);
-	}
-
       ay_status = ay_nct_resize(ncurve, new_length);
 
       if(ay_status)
 	{
 	  ay_error(AY_ERROR, fname, "Could not resize curve!");
 	}
+      else
+	{
+	  (void)ay_ncurve_getpntcb(3, o, NULL, NULL);
+	}
+
       updateKnots = AY_TRUE;
       o->modified = AY_TRUE;
     }
@@ -1401,6 +1401,7 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		  free(ncurve->controlv);
 		  ncurve->controlv = ncontrolv;
 		  ncurve->length = new_length;
+		  (void)ay_ncurve_getpntcb(3, o, NULL, NULL);
 		}
 	    }
 	}

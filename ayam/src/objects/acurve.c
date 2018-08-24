@@ -763,6 +763,14 @@ ay_acurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       if(new_length > 2)
 	{
 	  ay_status = ay_act_resize(acurve, new_length);
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, fname, "Resize failed!");
+	    }
+	  else
+	    {
+	      (void)ay_acurve_getpntcb(3, o, NULL, NULL);
+	    }
 	}
       else
 	{
