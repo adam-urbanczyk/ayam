@@ -874,18 +874,15 @@ sdcurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   /* resize curve */
   if(new_length != sdcurve->length && (new_length > 1))
     {
-      if(o->selp)
-	{
-	  ay_selp_clear(o);
-	}
-
       ay_status = ay_npt_resizearrayw(&(sdcurve->controlv), 3, sdcurve->length,
 				      1, new_length);
-
       if(ay_status)
-	ay_error(AY_ERROR, fname, "Could not resize curve!");
+	{
+	  ay_error(AY_ERROR, fname, "Could not resize curve!");
+	}
       else
 	{
+	  (void)sdcurve_getpntcb(3, o, NULL, NULL);
 	  update = AY_TRUE;
 	  sdcurve->length = new_length;
 	}
