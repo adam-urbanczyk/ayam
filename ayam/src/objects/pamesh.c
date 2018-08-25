@@ -1319,36 +1319,36 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   /* resize patch */
   if(new_width != pamesh->width && (new_width > 1))
     {
-      if(o->selp)
-	{
-	  ay_selp_clear(o);
-	}
-
       ay_status = ay_npt_resizearrayw(&(pamesh->controlv), 4,
 				      pamesh->width, pamesh->height,
 				      new_width);
 
       if(ay_status)
-	ay_error(AY_ERROR, fname, "Could not resize patch!");
+	{
+	  ay_error(AY_ERROR, fname, "Could not resize patch!");
+	}
       else
-	pamesh->width = new_width;
+	{
+	  pamesh->width = new_width;
+	  ay_pamesh_getpntcb(3, o, NULL, NULL);
+	}
     } /* if */
 
   if(new_height != pamesh->height && (new_height > 1))
     {
-      if(o->selp)
-	{
-	  ay_selp_clear(o);
-	}
-
       ay_status = ay_npt_resizearrayh(&(pamesh->controlv), 4,
 				      pamesh->width, pamesh->height,
 				      new_height);
 
       if(ay_status)
-	ay_error(AY_ERROR, fname, "Could not resize patch!");
+	{
+	  ay_error(AY_ERROR, fname, "Could not resize patch!");
+	}
       else
-	pamesh->height = new_height;
+	{
+	  pamesh->height = new_height;
+	  ay_pamesh_getpntcb(3, o, NULL, NULL);
+	}
     } /* if */
 
   if(update)

@@ -1933,15 +1933,16 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   /* resize patch */
   if(new_width != npatch->width && (new_width > 1))
     {
-      if(o->selp)
-	{
-	  ay_selp_clear(o);
-	}
-
       ay_status = ay_npt_resizew(npatch, new_width);
 
       if(ay_status)
-       ay_error(AY_ERROR, fname, "Could not resize patch!");
+	{
+	  ay_error(AY_ERROR, fname, "Could not resize patch!");
+	}
+      else
+	{
+	  ay_npatch_getpntcb(3, o, NULL, NULL);
+	}
 
       updateKnots = AY_TRUE;
       o->modified = AY_TRUE;
@@ -1949,15 +1950,16 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   if(new_height != npatch->height && (new_height > 1))
     {
-      if(o->selp)
-	{
-	  ay_selp_clear(o);
-	}
-
       ay_status = ay_npt_resizeh(npatch, new_height);
 
       if(ay_status)
-       ay_error(AY_ERROR, fname, "Could not resize patch!");
+	{
+	  ay_error(AY_ERROR, fname, "Could not resize patch!");
+	}
+      else
+	{
+	  ay_npatch_getpntcb(3, o, NULL, NULL);
+	}
 
       updateKnots = AY_TRUE;
       o->modified = AY_TRUE;
@@ -2252,7 +2254,6 @@ ay_npatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_SetStringObj(ton, "Knots_U", -1);
   for(i = 0; i < npatch->width+npatch->uorder; i++)
     {
-
       to = Tcl_NewDoubleObj((npatch->uknotv)[i]);
 
       Tcl_ObjSetVar2(interp, toa, ton, to, TCL_APPEND_VALUE |
@@ -2265,7 +2266,6 @@ ay_npatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_SetStringObj(ton, "Knots_V", -1);
   for(i = 0; i < npatch->height+npatch->vorder; i++)
     {
-
       to = Tcl_NewDoubleObj((npatch->vknotv)[i]);
 
       Tcl_ObjSetVar2(interp, toa, ton, to, TCL_APPEND_VALUE |
