@@ -576,6 +576,15 @@ cleanup:
       ay_object_delete(ncurve);
     }
 
+  /* recover selected points */
+  if(o->selp)
+    {
+      if(sfcurve->ncurve)
+	sfcurve_getpntcb(3, o, NULL, NULL);
+      else
+	ay_selp_clear(o);
+    }
+
  return ay_status;
 } /* sfcurve_notifycb */
 

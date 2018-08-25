@@ -1177,18 +1177,15 @@ bcurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   /* resize curve */
   if(new_length != bcurve->length && (new_length > 2))
     {
-      if(o->selp)
-	{
-	  ay_selp_clear(o);
-	}
-
       ay_status = ay_npt_resizearrayw(&(bcurve->controlv), 4, bcurve->length,
 				      1, new_length);
-
       if(ay_status)
-	ay_error(AY_ERROR, fname, "Could not resize curve!");
+	{
+	  ay_error(AY_ERROR, fname, "Could not resize curve!");
+	}
       else
 	{
+	  (void)bcurve_getpntcb(3, o, NULL, NULL);
 	  update = AY_TRUE;
 	  bcurve->length = new_length;
 	}

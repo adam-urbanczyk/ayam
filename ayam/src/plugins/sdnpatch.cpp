@@ -3346,7 +3346,6 @@ sdnpatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
@@ -4525,7 +4524,7 @@ sdnpatch_convnptcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } // while
 
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return TCL_OK;
 } /* sdnpatch_convnptcmd */
@@ -4818,7 +4817,7 @@ sdnpatch_convpotcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } // while
 
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return TCL_OK;
 } /* sdnpatch_convpotcmd */
@@ -4891,13 +4890,12 @@ sdnpatch_impplytcmd(ClientData clientData, Tcl_Interp *interp,
   sdnpatch->is_rat = sdnpatch_israt(sdnpatch);
 
   o->refine = sdnpatch;
-
-  o->modified = AY_TRUE;
-  (void)ay_notify_object(o);
-
   ay_object_link(o);
 
-  ay_notify_parent();
+  (void)ay_notify_object(o);
+
+  o->modified = AY_TRUE;
+  (void)ay_notify_parent();
 
   ay_error(AY_EOUTPUT, argv[0], "Done importing PLY from:");
   ay_error(AY_EOUTPUT, argv[0], argv[1]);
@@ -5074,10 +5072,10 @@ sdnpatch_extrudefacetcmd(ClientData clientData, Tcl_Interp *interp,
 
   ay_pact_getpoint(3, o, NULL, NULL);
 
-  o->modified = AY_TRUE;
   (void)ay_notify_object(o);
 
-  ay_notify_parent();
+  o->modified = AY_TRUE;
+  (void)ay_notify_parent();
 
   /* clean up */
   delete handler;
@@ -5135,10 +5133,10 @@ sdnpatch_removefacetcmd(ClientData clientData, Tcl_Interp *interp,
 
       ay_selp_clear(o);
 
-      o->modified = AY_TRUE;
       (void)ay_notify_object(o);
 
-      ay_notify_parent();
+      o->modified = AY_TRUE;
+      (void)ay_notify_parent();
     }
   else
     {
@@ -5208,10 +5206,10 @@ sdnpatch_mergefacetcmd(ClientData clientData, Tcl_Interp *interp,
 
   ay_selp_clear(o);
 
-  o->modified = AY_TRUE;
   (void)ay_notify_object(o);
 
-  ay_notify_parent();
+  o->modified = AY_TRUE;
+  (void)ay_notify_parent();
 
 cleanup:
 
@@ -5278,10 +5276,10 @@ sdnpatch_connectfacetcmd(ClientData clientData, Tcl_Interp *interp,
 
   ay_selp_clear(o);
 
-  o->modified = AY_TRUE;
   (void)ay_notify_object(o);
 
-  ay_notify_parent();
+  o->modified = AY_TRUE;
+  (void)ay_notify_parent();
 
 cleanup:
 
@@ -5437,10 +5435,10 @@ sdnpatch_editknottcmd(ClientData clientData, Tcl_Interp *interp,
       break;
     } /* switch mode */
 
-  o->modified = AY_TRUE;
   (void)ay_notify_object(o);
 
-  ay_notify_parent();
+  o->modified = AY_TRUE;
+  (void)ay_notify_parent();
 
  return TCL_OK;
 } /* sdnpatch_editknottcmd */
@@ -5489,10 +5487,10 @@ sdnpatch_reverttcmd(ClientData clientData, Tcl_Interp *interp,
 
       ay_selp_clear(o);
 
-      o->modified = AY_TRUE;
       (void)ay_notify_object(o);
 
-      ay_notify_parent();
+      o->modified = AY_TRUE;
+      (void)ay_notify_parent();
     }
   else
     {
@@ -5643,10 +5641,10 @@ sdnpatch_mergepatchtcmd(ClientData clientData, Tcl_Interp *interp,
 
       ay_object_link(o);
 
-      o->modified = AY_TRUE;
       (void)ay_notify_object(o);
 
-      ay_notify_parent();
+      o->modified = AY_TRUE;
+      (void)ay_notify_parent();
       newMesh = NULL;
     }
   else
