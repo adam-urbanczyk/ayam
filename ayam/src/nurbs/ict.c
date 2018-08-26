@@ -1137,10 +1137,10 @@ ay_ict_dumb_interpolate(double iparam, int closed, int length,
 
 
 /** ay_ict_resize:
- * Resize an interpolating curve.
+ * Change the number of points to interpolate of an interpolating curve.
  *
  * \param[in,out] curve interpolating curve to process
- * \param[in] new_length desired new length
+ * \param[in] new_length desired new length (> 2, unchecked!)
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -1154,7 +1154,6 @@ ay_ict_resize(ay_icurve_object *curve, int new_length)
 
   if(new_length == curve->length)
     return ay_status;
-
 
   if(!(ncontrolv = calloc(3*new_length, sizeof(double))))
     return AY_EOMEM;
@@ -1245,7 +1244,7 @@ ay_ict_resize(ay_icurve_object *curve, int new_length)
 
 
 /** ay_ict_revert:
- * Revert an interpolating curve.
+ * Change the direction of an interpolating curve.
  *
  * \param[in,out] curve interpolating curve to process
  *
