@@ -1941,7 +1941,10 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	}
       else
 	{
-	  ay_npatch_getpntcb(3, o, NULL, NULL);
+	  if(o->selp)
+	    {
+	      (void)ay_npatch_getpntcb(3, o, NULL, NULL);
+	    }
 	}
 
       updateKnots = AY_TRUE;
@@ -1958,7 +1961,10 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	}
       else
 	{
-	  ay_npatch_getpntcb(3, o, NULL, NULL);
+	  if(o->selp)
+	    {
+	      (void)ay_npatch_getpntcb(3, o, NULL, NULL);
+	    }
 	}
 
       updateKnots = AY_TRUE;
@@ -2205,7 +2211,7 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_npatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1="NPatchAttrData";
+ char *n1 = "NPatchAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_nurbpatch_object *npatch = NULL;
  int i;

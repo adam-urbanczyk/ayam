@@ -957,45 +957,45 @@ ay_icurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(argc > 1)
     return AY_OK;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  toa = Tcl_NewStringObj(n1, -1);
+  ton = Tcl_NewStringObj(n1, -1);
 
-  Tcl_SetStringObj(ton,"Type",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(icurve->type));
+  Tcl_SetStringObj(ton, "Type", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(icurve->type));
 
-  Tcl_SetStringObj(ton,"Length",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &new_length);
+  Tcl_SetStringObj(ton, "Length", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &new_length);
 
   old_deriv = icurve->derivs;
-  Tcl_SetStringObj(ton,"Derivatives",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(icurve->derivs));
+  Tcl_SetStringObj(ton, "Derivatives", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(icurve->derivs));
 
-  Tcl_SetStringObj(ton,"Order",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &new_order);
+  Tcl_SetStringObj(ton, "Order", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &new_order);
 
-  Tcl_SetStringObj(ton,"SDLen",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &(icurve->sdlen));
+  Tcl_SetStringObj(ton, "SDLen", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(icurve->sdlen));
 
-  Tcl_SetStringObj(ton,"EDLen",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &(icurve->edlen));
+  Tcl_SetStringObj(ton, "EDLen", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(icurve->edlen));
 
-  Tcl_SetStringObj(ton,"ParamType",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(icurve->param_type));
+  Tcl_SetStringObj(ton, "ParamType", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(icurve->param_type));
 
-  Tcl_SetStringObj(ton,"Tolerance",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &(icurve->glu_sampling_tolerance));
+  Tcl_SetStringObj(ton, "Tolerance", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(icurve->glu_sampling_tolerance));
 
-  Tcl_SetStringObj(ton,"DisplayMode",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(icurve->display_mode));
+  Tcl_SetStringObj(ton, "DisplayMode", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(icurve->display_mode));
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
@@ -1007,16 +1007,19 @@ ay_icurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	  ay_status = ay_ict_resize(icurve, new_length);
 	  if(ay_status)
 	    {
-	      ay_error(AY_ERROR,fname,"Resize failed!");
+	      ay_error(AY_ERROR, fname, "Resize failed!");
 	    }
 	  else
 	    {
-	      (void)ay_icurve_getpntcb(3, o, NULL, NULL);
+	      if(o->selp)
+		{
+		  (void)ay_icurve_getpntcb(3, o, NULL, NULL);
+		}
 	    }
 	}
       else
 	{
-	  ay_error(AY_ERROR,fname,"Length must be > 2!");
+	  ay_error(AY_ERROR, fname, "Length must be > 2!");
 	}
     }
 
@@ -1025,7 +1028,7 @@ ay_icurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       if(new_order > 2)
 	icurve->order = new_order;
       else
-	ay_error(AY_ERROR,fname,"Order must be > 2!");
+	ay_error(AY_ERROR, fname, "Order must be > 2!");
     }
 
   /* when switching from auto to manual, create manual
@@ -1084,44 +1087,44 @@ ay_icurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!icurve)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  toa = Tcl_NewStringObj(n1, -1);
+  ton = Tcl_NewStringObj(n1, -1);
 
-  Tcl_SetStringObj(ton,"Type",-1);
+  Tcl_SetStringObj(ton, "Type", -1);
   to = Tcl_NewIntObj(icurve->type);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Length",-1);
+  Tcl_SetStringObj(ton, "Length", -1);
   to = Tcl_NewIntObj(icurve->length);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Derivatives",-1);
+  Tcl_SetStringObj(ton, "Derivatives", -1);
   to = Tcl_NewIntObj(icurve->derivs);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Order",-1);
+  Tcl_SetStringObj(ton, "Order", -1);
   to = Tcl_NewIntObj(icurve->order);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"SDLen",-1);
+  Tcl_SetStringObj(ton, "SDLen", -1);
   to = Tcl_NewDoubleObj(icurve->sdlen);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"EDLen",-1);
+  Tcl_SetStringObj(ton, "EDLen", -1);
   to = Tcl_NewDoubleObj(icurve->edlen);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"ParamType",-1);
+  Tcl_SetStringObj(ton, "ParamType", -1);
   to = Tcl_NewIntObj(icurve->param_type);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Tolerance",-1);
+  Tcl_SetStringObj(ton, "Tolerance", -1);
   to = Tcl_NewDoubleObj(icurve->glu_sampling_tolerance);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"DisplayMode",-1);
+  Tcl_SetStringObj(ton, "DisplayMode", -1);
   to = Tcl_NewIntObj(icurve->display_mode);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   ay_prop_getncinfo(interp, n1, icurve->ncurve);
 

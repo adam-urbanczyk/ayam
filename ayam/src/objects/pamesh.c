@@ -1330,7 +1330,10 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       else
 	{
 	  pamesh->width = new_width;
-	  ay_pamesh_getpntcb(3, o, NULL, NULL);
+	  if(o->selp)
+	    {
+	      (void)ay_pamesh_getpntcb(3, o, NULL, NULL);
+	    }
 	}
     } /* if */
 
@@ -1347,7 +1350,10 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       else
 	{
 	  pamesh->height = new_height;
-	  ay_pamesh_getpntcb(3, o, NULL, NULL);
+	  if(o->selp)
+	    {
+	      (void)ay_pamesh_getpntcb(3, o, NULL, NULL);
+	    }
 	}
     } /* if */
 

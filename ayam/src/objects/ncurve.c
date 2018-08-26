@@ -1372,7 +1372,10 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	}
       else
 	{
-	  (void)ay_ncurve_getpntcb(3, o, NULL, NULL);
+	  if(o->selp)
+	    {
+	      (void)ay_ncurve_getpntcb(3, o, NULL, NULL);
+	    }
 	}
 
       updateKnots = AY_TRUE;
@@ -1401,7 +1404,10 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		  free(ncurve->controlv);
 		  ncurve->controlv = ncontrolv;
 		  ncurve->length = new_length;
-		  (void)ay_ncurve_getpntcb(3, o, NULL, NULL);
+		  if(o->selp)
+		    {
+		      (void)ay_ncurve_getpntcb(3, o, NULL, NULL);
+		    }
 		}
 	    }
 	}

@@ -724,36 +724,36 @@ ay_acurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(argc > 1)
     return AY_OK;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  toa = Tcl_NewStringObj(n1, -1);
+  ton = Tcl_NewStringObj(n1, -1);
 
-  Tcl_SetStringObj(ton,"Length",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &new_length);
+  Tcl_SetStringObj(ton, "Length", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &new_length);
 
-  Tcl_SetStringObj(ton,"ALength",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &new_alength);
+  Tcl_SetStringObj(ton, "ALength", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &new_alength);
 
-  Tcl_SetStringObj(ton,"Closed",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(acurve->closed));
+  Tcl_SetStringObj(ton, "Closed", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(acurve->closed));
 
-  Tcl_SetStringObj(ton,"Symmetric",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(acurve->symmetric));
+  Tcl_SetStringObj(ton, "Symmetric", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(acurve->symmetric));
 
-  Tcl_SetStringObj(ton,"Order",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &new_order);
+  Tcl_SetStringObj(ton, "Order", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &new_order);
 
-  Tcl_SetStringObj(ton,"Tolerance",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &(acurve->glu_sampling_tolerance));
+  Tcl_SetStringObj(ton, "Tolerance", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(acurve->glu_sampling_tolerance));
 
-  Tcl_SetStringObj(ton,"DisplayMode",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(acurve->display_mode));
+  Tcl_SetStringObj(ton, "DisplayMode", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(acurve->display_mode));
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
@@ -769,7 +769,10 @@ ay_acurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	    }
 	  else
 	    {
-	      (void)ay_acurve_getpntcb(3, o, NULL, NULL);
+	      if(o->selp)
+		{
+		  (void)ay_acurve_getpntcb(3, o, NULL, NULL);
+		}
 	    }
 	}
       else
@@ -847,40 +850,40 @@ ay_acurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!acurve)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  toa = Tcl_NewStringObj(n1, -1);
+  ton = Tcl_NewStringObj(n1, -1);
 
-  Tcl_SetStringObj(ton,"Length",-1);
+  Tcl_SetStringObj(ton, "Length", -1);
   to = Tcl_NewIntObj(acurve->length);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"ALength",-1);
+  Tcl_SetStringObj(ton, "ALength", -1);
   to = Tcl_NewIntObj(acurve->alength);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Closed",-1);
+  Tcl_SetStringObj(ton, "Closed", -1);
   to = Tcl_NewIntObj(acurve->closed);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Symmetric",-1);
+  Tcl_SetStringObj(ton, "Symmetric", -1);
   to = Tcl_NewIntObj(acurve->symmetric);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Order",-1);
+  Tcl_SetStringObj(ton, "Order", -1);
   to = Tcl_NewIntObj(acurve->order);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Tolerance",-1);
+  Tcl_SetStringObj(ton, "Tolerance", -1);
   to = Tcl_NewDoubleObj(acurve->glu_sampling_tolerance);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"DisplayMode",-1);
+  Tcl_SetStringObj(ton, "DisplayMode", -1);
   to = Tcl_NewIntObj(acurve->display_mode);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
   ay_prop_getncinfo(interp, n1, acurve->ncurve);
@@ -907,14 +910,14 @@ ay_acurve_readcb(FILE *fileptr, ay_object *o)
   if(!(acurve = calloc(1, sizeof(ay_acurve_object))))
     { return AY_EOMEM; }
 
-  fscanf(fileptr,"%d\n",&acurve->length);
-  fscanf(fileptr,"%d\n",&acurve->alength);
-  fscanf(fileptr,"%d\n",&acurve->closed);
-  fscanf(fileptr,"%d\n",&acurve->symmetric);
-  fscanf(fileptr,"%d\n",&acurve->order);
+  fscanf(fileptr, "%d\n", &acurve->length);
+  fscanf(fileptr, "%d\n", &acurve->alength);
+  fscanf(fileptr, "%d\n", &acurve->closed);
+  fscanf(fileptr, "%d\n", &acurve->symmetric);
+  fscanf(fileptr, "%d\n", &acurve->order);
 
-  fscanf(fileptr,"%lg\n",&acurve->glu_sampling_tolerance);
-  fscanf(fileptr,"%d\n",&acurve->display_mode);
+  fscanf(fileptr, "%lg\n", &acurve->glu_sampling_tolerance);
+  fscanf(fileptr, "%d\n", &acurve->display_mode);
 
   if(!(acurve->controlv = calloc(acurve->length*3, sizeof(double))))
     { free(acurve); return AY_EOMEM; }
@@ -922,7 +925,7 @@ ay_acurve_readcb(FILE *fileptr, ay_object *o)
   a = 0;
   for(i = 0; i < acurve->length; i++)
     {
-      fscanf(fileptr,"%lg %lg %lg\n",
+      fscanf(fileptr, "%lg %lg %lg\n",
 	     &(acurve->controlv[a]),
 	     &(acurve->controlv[a+1]),
 	     &(acurve->controlv[a+2]));
