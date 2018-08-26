@@ -881,7 +881,7 @@ ay_nct_opentcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /** ay_nct_revert:
- *  revert a NURBS curve
+ *  Change the direction of a NURBS curve.
  *
  * \param[in,out] curve NURBS curve object to revert
  *

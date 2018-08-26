@@ -1009,10 +1009,10 @@ cleanup:
 
 
 /** ay_act_resize:
- * Resize an approximating curve.
+ * Change the number of points to approximate of an approximating curve.
  *
  * \param[in,out] curve approximating curve to process
- * \param[in] new_length desired new length
+ * \param[in] new_length desired new length (>2, unchecked!)
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -1115,7 +1115,7 @@ ay_act_resize(ay_acurve_object *curve, int new_length)
 
 
 /** ay_act_revert:
- * Revert an approximating curve.
+ * Change the direction of an approximating curve.
  *
  * \param[in,out] curve approximating curve to revert
  *
