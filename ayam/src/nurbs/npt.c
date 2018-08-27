@@ -3010,6 +3010,7 @@ ay_npt_copytrims(ay_object *o, double u1, double u2, char *uv,
 
 /** ay_npt_createtrimrect:
  * Create bounding rectangular trim curve.
+ * Does not check for potentially existing trim curves on the border!
  *
  * \param[in,out] o NURBS surface where the trim should be added
  *
@@ -6511,7 +6512,7 @@ ay_npt_getpntfromindex(ay_nurbpatch_object *patch, int indexu, int indexv,
 
 
 /** ay_npt_elevateu:
- *  Elevate the u order of a NURBS patch.
+ *  Increase the u order of a NURBS patch.
  *
  * \param[in,out] patch NURBS patch object to process
  * \param[in] t how many times shall the order be increased
@@ -6622,7 +6623,7 @@ ay_npt_elevateu(ay_nurbpatch_object *patch, int t, int is_clamped)
 
 
 /** ay_npt_elevatev:
- *  Elevate the v order of a NURBS patch.
+ *  Increase the v order of a NURBS patch.
  *
  * \param[in,out] patch NURBS patch object to process
  * \param[in] t how many times shall the order be increased
@@ -6742,7 +6743,7 @@ ay_npt_elevatev(ay_nurbpatch_object *patch, int t, int is_clamped)
 
 
 /** ay_npt_elevateuvtcmd:
- *  Elevate U/V order of selected NURBS patches.
+ *  Increase the U/V order of selected NURBS patches.
  *  Implements the \a elevateuNP and \a elevatevNP scripting
  *  interface commands.
  *  See also the corresponding section in the \ayd{scelevateunp}.
@@ -10105,6 +10106,9 @@ ay_npt_clampu(ay_nurbpatch_object *patch, int side)
   if(!patch)
     return AY_ENULL;
 
+  if(patch->uorder < 3)
+    return AY_OK;
+
   /* clamp start? */
   if(side == 0 || side == 1)
     {
@@ -10293,6 +10297,9 @@ ay_npt_clampv(ay_nurbpatch_object *patch, int side)
 
   if(!patch)
     return AY_ENULL;
+
+  if(patch->vorder < 3)
+    return AY_OK;
 
   /* clamp start? */
   if(side == 0 || side == 1)
