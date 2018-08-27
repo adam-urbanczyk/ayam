@@ -1807,26 +1807,26 @@ ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 				      ipatch->width, ipatch->height,
 				      new_width);
 
-      if(ipatch->sderiv_v)
-	{
-	  ay_status_s = ay_npt_resizearrayw(&(ipatch->sderiv_v), 3,
-					    ipatch->width, 1,
-					    new_width);
-	}
-
-      if(ipatch->ederiv_v)
-	{
-	  ay_status_e = ay_npt_resizearrayw(&(ipatch->ederiv_v), 3,
-					    ipatch->width, 1,
-					    new_width);
-	}
-
       if(ay_status)
 	{
 	  ay_error(AY_ERROR, fname, rszerr);
 	}
       else
 	{
+	  if(ipatch->sderiv_v)
+	    {
+	      ay_status_s = ay_npt_resizearrayw(&(ipatch->sderiv_v), 3,
+						ipatch->width, 1,
+						new_width);
+	    }
+
+	  if(ipatch->ederiv_v)
+	    {
+	      ay_status_e = ay_npt_resizearrayw(&(ipatch->ederiv_v), 3,
+						ipatch->width, 1,
+						new_width);
+	    }
+
 	  if(ay_status_s || ay_status_e)
 	    {
 	      ay_error(AY_ERROR, fname, rszerrd);
@@ -1853,26 +1853,26 @@ ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 				      ipatch->width, ipatch->height,
 				      new_height);
 
-      if(ipatch->sderiv_u)
-	{
-	  ay_status_s = ay_npt_resizearrayw(&(ipatch->sderiv_u), 3,
-					    ipatch->height, 1,
-					    new_height);
-	}
-
-      if(ipatch->ederiv_u)
-	{
-	  ay_status_e = ay_npt_resizearrayw(&(ipatch->ederiv_u), 3,
-					    ipatch->height, 1,
-					    new_height);
-	}
-
       if(ay_status)
 	{
 	  ay_error(AY_ERROR, fname, rszerr);
 	}
       else
 	{
+	  if(ipatch->sderiv_u)
+	    {
+	      ay_status_s = ay_npt_resizearrayw(&(ipatch->sderiv_u), 3,
+						ipatch->height, 1,
+						new_height);
+	    }
+
+	  if(ipatch->ederiv_u)
+	    {
+	      ay_status_e = ay_npt_resizearrayw(&(ipatch->ederiv_u), 3,
+						ipatch->height, 1,
+						new_height);
+	    }
+
 	  if(ay_status_s || ay_status_e)
 	    {
 	      ay_error(AY_ERROR, fname, rszerrd);
