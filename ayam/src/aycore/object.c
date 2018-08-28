@@ -1202,6 +1202,7 @@ ay_object_replace(ay_object *src, ay_object *dst)
   if(dst->name)
     {
       free(dst->name);
+      dst->name = NULL;
     }
 
   if(dst->selp)
@@ -1212,10 +1213,12 @@ ay_object_replace(ay_object *src, ay_object *dst)
   arr = ay_deletecbt.arr;
   dcb = (ay_deletecb*)(arr[dst->type]);
   if(dcb)
-    ay_status = dcb(dst->refine);
+    {
+      ay_status = dcb(dst->refine);
 
-  if(ay_status)
-    return ay_status;
+      if(ay_status)
+	return ay_status;
+    }
 
   memcpy(dst, src, sizeof(ay_object));
 
