@@ -415,7 +415,9 @@ ay_object_deletemulti(ay_object *o, int force)
 /** ay_object_deletetcmd:
  *  Delete selected objects.
  *  Implements the \a delOb scripting interface command.
+ *  Also implements the \a candeleteOb scripting interface command.
  *  See also the corresponding section in the \ayd{scdelob}.
+ *  See also the corresponding section in the \ayd{sccandeleteob}.
  *
  *  \returns TCL_OK in any case.
  */
@@ -431,6 +433,17 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
   if(!ay_selection)
     {
       ay_error(AY_ENOSEL, argv[0], NULL);
+      return TCL_OK;
+    }
+
+  if(argv[0][0] == 'c')
+    {
+      /* is candeleteOb */
+      if((ay_selection->object != ay_root) &&
+	 (ay_object_candeletelist(ay_selection, NULL) == AY_OK))
+	Tcl_SetResult(interp, "1", TCL_VOLATILE);
+      else
+	Tcl_SetResult(interp, "0", TCL_VOLATILE);
       return TCL_OK;
     }
 
@@ -882,6 +895,11 @@ ay_object_copymulti(ay_object *src, ay_object **dst)
 /** ay_object_ishastcmd:
  *  Check whether an object has certain properties (i.e. has child objects).
  *  Implements the \a hasChild scripting interface command.
+ *  Also implements the \a hasMat scripting interface command.
+ *  Also implements the \a hasRefs scripting interface command.
+ *  Also implements the \a hasTrafo scripting interface command.
+ *  Also implements the \a isCurve scripting interface command.
+ *  Also implements the \a isSurface scripting interface command.
  *  See also the corresponding section in the \ayd{schaschild}.
  *
  *  \returns 1 if selected object has a regular (other than
