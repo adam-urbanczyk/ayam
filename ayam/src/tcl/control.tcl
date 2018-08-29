@@ -1334,3 +1334,51 @@ HighlightColor #b40000
 nodes {}
 MoreOptions 0
 }
+
+# whatis:
+#  print information about named object
+#
+proc whatis { this } {
+
+    if { [lsearch [info procs] $this] != -1 } {
+	puts "$this is a procedure."
+    } elseif { [lsearch [info commands] $this] != -1 } {
+	puts "$this is a command."
+    }
+    if { 0 } {
+    if { [file exists $this] } {
+	if { [file isdirectory $this] } {
+	    puts "$this is a directory."
+	} else {
+	    puts "$this is a file."
+	}
+    }
+    }
+    if { [lsearch [info globals] $this] != -1 } {
+	if { [array exists ::$this] } {
+	    puts "$this is a global array."
+	} else {
+	    puts "$this is a global variable."
+	}
+    } elseif { [string first "::" $this] != -1 } {
+	if { [array exists $this] } {
+	    puts "$this is an array."
+	} elseif {[info exists $this] } {
+	    puts "$this is a variable."
+	}
+    }
+    if { [namespace exists $this] } {
+	puts "$this is a namespace."
+    }
+    if { [lsearch [image names] $this] != -1 } {
+	puts "$this is an image."
+    }
+    if { [string index $this 0] == "." } {
+	if { [winfo exists $this] == 1 } {
+	    puts "$this is a widget."
+	}
+    }
+
+ return;
+}
+# whatis
