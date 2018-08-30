@@ -1541,7 +1541,14 @@ ay_trafo_decomposematrix(double *m, ay_object *o)
     } /* if */
 
   /* now get rotation */
-  ry = asin(-v1[2]);
+  if(-v1[2] <= -1.0)
+    ry = -AY_HALFPI;
+  else
+    if(-v1[2] >= 1.0)
+      ry = AY_HALFPI;
+    else
+      ry = asin(-v1[2]);
+
   if(cos(ry) != 0)
     {
       rx = atan2(v2[2], v3[2]);
@@ -1957,7 +1964,8 @@ ay_trafo_normalizetcmd(ClientData clientData, Tcl_Interp *interp,
  *
  * \returns normalized value
 */
-double ay_trafo_round(double value, int digits)
+double
+ay_trafo_round(double value, int digits)
 {
  double a, b;
  long int i;
@@ -2000,7 +2008,7 @@ double ay_trafo_round(double value, int digits)
  *
  * \param[in] lo current level
  * \param[in] o object to process
- * \param[in, out] tm pointer to transformation matrix (double[16]) to fill
+ * \param[in,out] tm pointer to transformation matrix (double[16]) to fill
  */
 void
 ay_trafo_getall(ay_list_object *lo, ay_object *o, double *tm)

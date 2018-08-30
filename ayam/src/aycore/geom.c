@@ -170,7 +170,14 @@ ay_geom_anglefrom3pnts(double *p1, double *p2, double *p3, double *n)
   if(len > AY_EPSILON)
     AY_V3SCAL(V2, 1.0/len)
 
-  angle = acos(AY_V3DOT(V1, V2));
+  angle = AY_V3DOT(V1, V2);
+  if(angle <= -1.0)
+    angle = -AY_PI;
+  else
+    if(angle >= 1.0)
+      angle = 0.0;
+    else
+      angle = acos(angle);
 
   if(n)
     {
@@ -196,8 +203,8 @@ ay_geom_anglefrom3pnts(double *p1, double *p2, double *p3, double *n)
  * \param[in] cv coordinate array
  * \param[in] cvlen number of points in \a cv
  * \param[in] cvstride size of a point in \a cv (>=3, unchecked)
- * \param[in,out] tcv temporary array of size 3*cvlen (to avoid reallocation for
- *  repeated calls, only used for mode 1), may be NULL if mode is 0
+ * \param[in,out] tcv temporary array of size 3*cvlen (to avoid reallocation
+ *  for repeated calls, only used for mode 1), may be NULL if mode is 0
  * \param[in,out] result pointer where to store the center point ([3])
  *
  * \returns AY_OK on success, error code otherwise
