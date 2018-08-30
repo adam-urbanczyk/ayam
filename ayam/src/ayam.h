@@ -2028,10 +2028,14 @@ extern char *ay_error_igntype;
 /*@{*/
 #ifdef M_PI
  #define AY_PI M_PI
- #define AY_HALFPI (M_PI/2.0)
 #else
  #define AY_PI 3.1415926535897932384626433
- #define AY_HALFPI (3.1415926535897932384626433/2.0)
+#endif
+
+#ifdef M_PI_2
+ #define AY_HALFPI M_PI_2
+#else
+ #define AY_HALFPI (AY_PI/2.0)
 #endif
 
 #define AY_D2R(x) ((x)*AY_PI/180.0)
