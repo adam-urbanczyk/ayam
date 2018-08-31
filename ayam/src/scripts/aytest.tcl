@@ -2834,52 +2834,50 @@ proc aytest_runTests { tests items } {
 
     set ::aytest_result 0
 
-    set test [lindex $tests 0]
-    incr test
+    foreach test $tests {
+	incr test
 
-    if { [lindex $items 0] == 0 } {
-	# All Items
-	set aytestprefs(Breadth) 1
-	eval set items \$::aytest_${test}items
-    } else {
-	# Selected Items
-	set aytestprefs(Breadth) 0
-	eval set allitems \$::aytest_${test}items
-	foreach item $items {
-	    incr item -1
-	    lappend newitems [lindex $allitems $item]
-	}
-	if { [info exists newitems ] } {
-	    catch {set items $newitems}
+	set testitems ""
+	if { [lindex $items 0] == 0 } {
+	    # All Items
+	    set aytestprefs(Breadth) 1
+	    eval set testitems \$::aytest_${test}items
 	} else {
-	    set items ""
+	    # Selected Items
+	    set aytestprefs(Breadth) 0
+	    eval set allitems \$::aytest_${test}items
+	    foreach item $items {
+		incr item -1
+		lappend newitems [lindex $allitems $item]
+	    }
+	    if { [info exists newitems ] } {
+		catch {set testitems $newitems}
+	    } else {
+		set testitems ""
+	    }
 	}
-    }
 
-    if { [llength $items] } {
-	foreach test $tests {
-	    set ::scratchfile [file join $ayprefs(TmpDir) aytestscratchfile.ay]
-
-	    set ::logfile [file join $ayprefs(TmpDir) aytestlog]
-	    set ::log [open $::logfile a]
-
-	    newScene
-	    selOb
-
-	    incr test
-
-	    puts "Running test $test..."
-
-	    catch {aytest_$test $items}
-
-	    close $::log
-
-	    puts "\nFinished test $test..."
+	if { [llength $testitems] == 0 } {
+	    ayError 2 "Test Ayam" "No items selected/to test!"
+	    return;
 	}
-	# foreach
-    } else {
-	ayError 2 "Test Ayam" "No items selected!"
+	set ::scratchfile [file join $ayprefs(TmpDir) aytestscratchfile.ay]
+
+	set ::logfile [file join $ayprefs(TmpDir) aytestlog]
+	set ::log [open $::logfile a]
+
+	newScene
+	selOb
+
+	puts "Running test $test..."
+
+	catch {aytest_$test $testitems}
+
+	close $::log
+
+	puts "\nFinished test $test..."
     }
+    # foreach
 
     . configure -cursor {}
     if { [winfo exists .testGUI] } {
