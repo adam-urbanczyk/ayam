@@ -5186,7 +5186,14 @@ ay_nct_arrange(ay_object *o, ay_object *t, int rotate)
 	      len = AY_V3LEN(A);
 	      AY_V3SCAL(A,(1.0/len))
 
-	      angle = acos(AY_V3DOT(T0,T1));
+	      angle = AY_V3DOT(T0,T1);
+	      if(angle <= -1.0)
+		angle = -AY_PI;
+	      else
+		if(angle >= 1.0)
+		  angle = 1.0;
+		else
+		  angle = acos(angle);
 
 	      if(fabs(angle) > AY_EPSILON)
 		{
@@ -6251,7 +6258,7 @@ ay_nct_getplane(int cvlen, int cvstride, double *cv)
  *  XY, YZ, or XZ plane
  *  by detecting the current orientation, adding the relevant rotation
  *  information to the transformation attributes and rotating the control
- *  points of the planar curve to the XY plane
+ *  points of the planar curve to the desired plane
  *
  * \param[in] plane target plane (AY_XY, AY_YZ, AY_XZ)
  * \param[in] allow_flip if AY_TRUE also curves in the target plane with
@@ -6354,7 +6361,15 @@ ay_nct_toplane(int plane, int allow_flip, ay_object *c)
 	  len = AY_V3LEN(V2);
 	  AY_V3SCAL(V2, (1.0/len));
 
-	  angle = AY_R2D(acos(AY_V3DOT(V1,V2)));
+	  angle = AY_V3DOT(V1,V2);
+	  if(angle <= -1.0)
+	    angle = -180.0;
+	  else
+	    if(angle >= 1.0)
+	      angle = 0.0;
+	    else
+	      angle = AY_R2D(acos(angle));
+
 	  if(angle < AY_EPSILON)
 	    {
 	      /* V1 and V2 are parallel */
@@ -6395,7 +6410,14 @@ ay_nct_toplane(int plane, int allow_flip, ay_object *c)
       /* A is now perpendicular to the plane in which the curve
 	 is defined thus, we calculate angle and rotation axis (B)
 	 between A and Z (0,0,1) */
-      angle = AY_R2D(acos(AY_V3DOT(A, Z)));
+      angle = AY_V3DOT(A, Z);
+      if(angle <= -1.0)
+	angle = -180.0;
+      else
+	if(angle >= 1.0)
+	  angle = 0.0;
+	else
+	  angle = AY_R2D(acos(angle));
       if((fabs(angle) < AY_EPSILON))
 	{
 	  /* Nothing to do, as curve ist properly aligned with
@@ -6408,7 +6430,14 @@ ay_nct_toplane(int plane, int allow_flip, ay_object *c)
       /* A is now perpendicular to the plane in which the curve
 	 is defined thus, we calculate angle and rotation axis (B)
 	 between A and Y (0,1,0) */
-      angle = AY_R2D(acos(AY_V3DOT(A, Y)));
+      angle = AY_V3DOT(A, Y);
+      if(angle <= -1.0)
+	angle = -180.0;
+      else
+	if(angle >= 1.0)
+	  angle = 0.0;
+	else
+	  angle = AY_R2D(acos(angle));
       if((fabs(angle) < AY_EPSILON))
 	{
 	  /* Nothing to do, as curve ist properly aligned with
@@ -6421,7 +6450,14 @@ ay_nct_toplane(int plane, int allow_flip, ay_object *c)
       /* A is now perpendicular to the plane in which the curve
 	 is defined thus, we calculate angle and rotation axis (B)
 	 between A and X (1,0,0) */
-      angle = AY_R2D(acos(AY_V3DOT(A, X)));
+      angle = AY_V3DOT(A, X);
+      if(angle <= -1.0)
+	angle = -180.0;
+      else
+	if(angle >= 1.0)
+	  angle = 0.0;
+	else
+	  angle = AY_R2D(acos(angle));
       if((fabs(angle) < AY_EPSILON))
 	{
 	  /* Nothing to do, as curve ist properly aligned with
@@ -6430,10 +6466,9 @@ ay_nct_toplane(int plane, int allow_flip, ay_object *c)
 	}
       AY_V3CROSS(B, A, X);
       break;
-
     default:
       break;
-    }
+    } /* switch plane */
 
   len = AY_V3LEN(B);
   AY_V3SCAL(B, (1.0/len));
@@ -6442,7 +6477,20 @@ ay_nct_toplane(int plane, int allow_flip, ay_object *c)
     {
       if(allow_flip)
 	{
-	  ay_nct_revert(c->refine);
+	  switch(c->type)
+	    {
+	    case AY_IDNCURVE:
+	      ay_nct_revert(nc);
+	      break;
+	    case AY_IDICURVE:
+	      ay_ict_revert(ic);
+	      break;
+	    case AY_IDACURVE:
+	      ay_act_revert(ac);
+	      break;
+	    default:
+	      return AY_EWTYPE;
+	    } /* switch type */
 	}
       return AY_OK;
     }
@@ -6494,7 +6542,7 @@ ay_nct_toxytcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
- ay_object *src = NULL;
+ ay_object *o = NULL;
  int notify_parent = AY_FALSE;
  int plane = AY_XY;
 
@@ -6513,25 +6561,24 @@ ay_nct_toxytcmd(ClientData clientData, Tcl_Interp *interp,
 
   while(sel)
     {
-      src = sel->object;
-      if((src->type != AY_IDNCURVE) && (src->type != AY_IDACURVE) &&
-	 (src->type != AY_IDICURVE))
+      o = sel->object;
+      if((o->type != AY_IDNCURVE) && (o->type != AY_IDACURVE) &&
+	 (o->type != AY_IDICURVE))
 	{
 	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	}
       else
 	{
-	  ay_status = ay_nct_toplane(plane, /*allow_flip=*/AY_FALSE, src);
+	  ay_status = ay_nct_toplane(plane, /*allow_flip=*/AY_FALSE, o);
 	  if(ay_status)
 	    {
-	      ay_error(ay_status, argv[0],
-		       "Could not align object to plane.");
+	      ay_error(ay_status, argv[0], "Could not align object to plane.");
 	    }
 	  else
 	    {
 	      /* re-create tesselation of curve */
-	      (void)ay_notify_object(src);
-	      src->modified = AY_TRUE;
+	      (void)ay_notify_object(o);
+	      o->modified = AY_TRUE;
 	      notify_parent = AY_TRUE;
 	    } /* if */
 	} /* if */
