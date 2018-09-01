@@ -397,7 +397,14 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, double *mp,
 		   rnc->controlv[1]*rnc->controlv[1]);
 	  if(r > AY_EPSILON)
 	    {
-	      angle = AY_R2D(acos(rnc->controlv[0]/r));
+	      angle = rnc->controlv[0]/r;
+	      if(angle <= -1.0)
+		angle = -180.0;
+	      else
+		if(angle >= 1.0)
+		  angle = 0.0;
+		else
+		  angle = AY_R2D(acos(angle));
 	      if(rnc->controlv[1] < 0.0)
 		angle = 360.0 - angle;
 	    }
@@ -407,7 +414,14 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, double *mp,
 	  r = sqrt(circcv[0]*circcv[0]+circcv[1]*circcv[1]);
 	  if(r > AY_EPSILON)
 	    {
-	      anglem = AY_R2D(acos(circcv[0]/r));
+	      anglem = circcv[0]/r;
+	      if(anglem <= -1.0)
+		anglem = -180.0;
+	      else
+		if(anglem >= 1.0)
+		  anglem = 0.0;
+		else
+		  anglem = AY_R2D(acos(anglem));
 	      if(circcv[1] < 0.0)
 		anglem = 360.0 - anglem;
 	    }
@@ -445,7 +459,14 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, double *mp,
       if(ay_status)
 	goto cleanup;
 
-      angle = AY_R2D(acos(AY_V3DOT(n, z)));
+      angle = AY_V3DOT(n, z);
+      if(angle <= -1.0)
+	angle = -180.0;
+      else
+	if(angle >= 1.0)
+	  angle = 0.0;
+	else
+	  angle = AY_R2D(acos(angle));
 
       if((fabs(angle) > AY_EPSILON) /*&& (fabs(angle - 180.0) > AY_EPSILON)*/)
 	{
