@@ -1000,7 +1000,14 @@ ay_bevelt_createc3d(double radius, int revert, ay_object *o1, ay_object *o2,
 	      v2[1] = bcurve->controlv[c+1];
 	      if((fabs(v2[0]) > AY_EPSILON) || (fabs(v2[1]) > AY_EPSILON))
 		{
-		  angle = AY_R2D(acos(v2[0]/AY_V2LEN(v2)));
+		  angle = v2[0]/AY_V2LEN(v2);
+		  if(angle <= -1.0)
+		    angle = -180.0;
+		  else
+		    if(angle >= 1.0)
+		      angle = 0.0;
+		    else
+		      angle = AY_R2D(acos(angle));
 		  if(v2[1] < 0.0)
 		    angle = 360.0-angle;
 
