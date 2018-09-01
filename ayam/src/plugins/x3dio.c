@@ -3565,7 +3565,14 @@ x3dio_getquatfromvec(double *v, double *q)
 
 	  if(fabs(zylen) > AY_EPSILON)
 	    {
-	      x = acos(xylen/zylen);
+	      x = xylen/zylen;
+	      if(x <= -1.0)
+		x = -AY_PI;
+	      else
+		if(x >= 1.0)
+		  x = 0.0;
+		else
+		  x = acos(x);
 	    }
 	  else
 	    {
@@ -6941,7 +6948,13 @@ x3dio_writetransform(scew_element *element, ay_object *o,
 	      len = AY_V3LEN(axis);
 	      AY_V3SCAL(axis, 1.0/len);
 
-	      angle = -2.0 * acos(o->quat[3]);
+	      if(o->quat[3] <= -1.0)
+		angle = -2.0*AY_PI;
+	      else
+		if(o->quat[3] >= 1.0)
+		  angle = 0.0;
+		else
+		  angle = -2.0 * acos(o->quat[3]);
 
 	      sprintf(buffer, "%g %g %g %g", axis[0], axis[1], axis[2], angle);
 	      scew_element_add_attr_pair(*transform_element, "rotation",
