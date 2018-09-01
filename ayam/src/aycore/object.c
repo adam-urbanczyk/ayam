@@ -415,9 +415,9 @@ ay_object_deletemulti(ay_object *o, int force)
 /** ay_object_deletetcmd:
  *  Delete selected objects.
  *  Implements the \a delOb scripting interface command.
- *  Also implements the \a candeleteOb scripting interface command.
+ *  Also implements the \a candelOb scripting interface command.
  *  See also the corresponding section in the \ayd{scdelob}.
- *  See also the corresponding section in the \ayd{sccandeleteob}.
+ *  See also the corresponding section in the \ayd{sccandelob}.
  *
  *  \returns TCL_OK in any case.
  */
@@ -438,7 +438,7 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argv[0][0] == 'c')
     {
-      /* is candeleteOb */
+      /* is candelOb */
       if((ay_selection->object != ay_root) &&
 	 (ay_object_candeletelist(ay_selection, NULL) == AY_OK))
 	Tcl_SetResult(interp, "1", TCL_VOLATILE);
