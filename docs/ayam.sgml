@@ -16364,6 +16364,8 @@ or for parent objects with master objects among their children.
 In case of failure, an error will be reported and the undeletable object(s)
 will be moved to the end of the current level. The root object, however,
 will never be moved.
+
+See also the <ref id="sccandelob" name="candelOb scripting interface command">.
 </itemize>
 
 <p>
@@ -16439,6 +16441,19 @@ hasRefs &ndash; has references:
  <item>Description: This command returns <tt/1/ if the selected object
 has references (e.g.~it is a master), otherwise <tt/0/ is returned.
 If multiple objects are selected, a list is returned.
+</itemize>
+
+<p>
+<#if out="latex"><x/phantomsection/</#if>
+
+<label id="sccandelob">
+candelOb &ndash; delete object(s):
+<itemize>
+ <item>Synopsis: <tt/"candelOb"/
+ <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Description: This command returns <tt/1/ if the selected object(s)
+can be deleted without errors and without moving objects to the clipboard,
+otherwise <tt/0/ is returned.
 </itemize>
 
 <p>
@@ -19464,11 +19479,11 @@ extension appended) into the variable designated by varname.
 whatis:
 <itemize>
  <item>Synopsis: <tt>"whatis this"</tt>
- <item>Background: Yes, Undo: N/A, Safe: No
+ <item>Background: Yes, Undo: N/A, Safe: No, Type: Procedure
  <item>Description: Print information about the named object
 <tt/"this"/ in the Tcl scripting context to the console.
-It can be used to inquire about the existence of variables, widgets,
-or whether or not something is a command or a procedure.
+This procedure can be used to inquire about the existence of variables,
+widgets, or whether or not something is a command or a procedure.
 <item>Example:
 <bf><tt>"whatis ."</tt></bf>
 leads to the output:
@@ -24452,6 +24467,7 @@ Index:
 <item><ref id="cameraobj" name="Camera object">,
 <item><ref id="camp" name="view property">
 </itemize>
+<item>candelOb: <ref id="sccandelob" name="scripting interface command">
 <item>Cap:
 <itemize>
 <item><ref id="capobj" name="Cap object">,
