@@ -1,5 +1,5 @@
-[22. Jul 2018] Tip:
-===================
+[1. Sep 2018] Tip:
+==================
 Bug Fixes:
 o fix window close shortcut in external views
 o fix shading of rational SDNPatch surfaces
@@ -13,7 +13,11 @@ o RiInc/RiProc objects now allow children to convey the archive/procedural
   objects shape
 o Script objects now support caps and bevels
 o Curve custom objects (i.e. BCurve) now support point insertion/deletion
+o Curve custom objects (i.e. BCurve) now support reversal
+o NCircle objects now support reversal
 o improved robustness of point insertion wrt. weights
+o resizing curve/surface objects via the properties no longer unconditionally
+  removes the point selection
 
 GUI:
 o improved initial layout process of dialog windows
@@ -29,16 +33,18 @@ o clearing the mark is now reported to the console
 Scripts/Scripting Interface:
 o added "-have" option to selPnts
 o selPnts can now also return the results
+o added "candelOb" command to check whether objects can be deleted
+o added "whatis" command to inquire about Tcl objects in the console
+o added Script object example script "extruden.tcl" that extrudes
+  arbitrary curves about their mean or manually specified normal
 
 Plugins:
+o added custom object/plugin "SDCurve" to model with subdivision curves 
 o added support for periodic patches to NPatch to SDNPatch conversion
 o SDNPatch drawing now obeys the RationalStyle preference setting
 o SDNPatch drawing now also colors rational control points in weight editing
 o MetaObj world is now drawn with dashed lines
 o MetaObj now displays the number of generated triangles
-
-Scripts/Scripting Interface:
-o extruden.tcl script now also uses MN tags
 
 
 [25. Jan 2018] Ayam 1.25:
