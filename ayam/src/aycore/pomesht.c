@@ -1001,7 +1001,14 @@ ay_pomesht_addvertextohash(ay_pomesht_hash *phash, double normal_epsilon,
 		  V1[1] = chain->ny;
 		  V1[2] = chain->nz;
 		  V2 = &(point[3]);
-		  angle = AY_R2D(acos(AY_V3DOT(V1, V2)));
+		  angle = AY_V3DOT(V1, V2);
+		  if(angle <= -1.0)
+		    angle = -180.0;
+		  else
+		    if(angle >= 1.0)
+		      angle = 0.0;
+		    else
+		      angle = AY_R2D(acos(angle));
 		  if(angle <= normal_epsilon)
 		    {
 		      phash->index = chain->index;
@@ -2709,7 +2716,14 @@ ay_pomesht_vertanglesums(ay_pomesh_object *po, double **result)
 	      if(fabs(len) > AY_EPSILON)
 		AY_V3SCAL(V2,1.0/len);
 
-	      angle = AY_R2D(acos(AY_V3DOT(V1, V2)));
+	      angle = AY_V3DOT(V1, V2);
+	      if(angle <= -1.0)
+		angle = -180.0;
+	      else
+		if(angle >= 1.0)
+		  angle = 0.0;
+		else
+		  angle = AY_R2D(acos(angle));
 
 	      if(!(angle != angle))
 		angles[po->verts[n+k]] += angle;
@@ -2782,7 +2796,14 @@ ay_pomesht_updateoffset(double vertanglesum, double *vp,
     N[3] = l2;
 
   /* calculate angle and bisecting vector */
-  angle = AY_R2D(acos(AY_V3DOT(V1, V2)));
+  angle = AY_V3DOT(V1, V2);
+  if(angle <= -1.0)
+    angle = -180.0;
+  else
+    if(angle >= 1.0)
+      angle = 0.0;
+    else
+      angle = AY_R2D(acos(angle));
 
   AY_V3ADD(H, V1, V2);
 
