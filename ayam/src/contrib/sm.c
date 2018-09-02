@@ -81,9 +81,17 @@ ay_sm_aimz(double *direction)
     }
 
   yzlen = sqrt(direction[1]*direction[1] + xzlen*xzlen);
-  if(yzlen != 0.0)
+  if(fabs(yzlen) > AY_EPSILON)
     {
-      xrot = AY_R2D(acos(xzlen/yzlen));
+      /*xrot = (RtFloat)AY_R2D(acos(xzlen/yzlen));*/
+      xrot = xzlen/yzlen;
+      if(xrot <= -1.0)
+	xrot = -180.0;
+      else
+	if(xrot >= 1.0)
+	  xrot = 0.0;
+	else
+	  xrot = AY_R2D(acos(xrot));
     }
   else
     {
