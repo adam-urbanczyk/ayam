@@ -547,7 +547,7 @@ ay_trafo_applyall(ay_list_object *lo, ay_object *o, double *p)
       ay_trafo_multmatrix(tm, m);
       ay_trafo_scalematrix(o->scalx, o->scaly, o->scalz, tm);
     }
-  ay_trafo_apply3(p,tm);
+  ay_trafo_apply3(p, tm);
 
  return;
 } /* ay_trafo_applyall */
@@ -585,7 +585,7 @@ ay_trafo_applyalli(ay_list_object *lo, ay_object *o, double *p)
   if(lo && lo->object != ay_root)
     ay_trafo_getparentinv(lo, tm);
 
-  ay_trafo_apply3(p,tm);
+  ay_trafo_apply3(p, tm);
 
  return;
 } /* ay_trafo_applyalli */
@@ -788,8 +788,8 @@ ay_trafo_movpntstcmd(ClientData clientData, Tcl_Interp *interp,
 	      point = o->selp;
 	      while(point)
 		{
-		  AY_APTRAN3(tpoint,point->point,mm);
-		  memcpy(point->point,tpoint,3*sizeof(double));
+		  AY_APTRAN3(tpoint, point->point, mm);
+		  memcpy(point->point, tpoint, 3*sizeof(double));
 
 		  point = point->next;
 		}
@@ -1130,12 +1130,17 @@ ay_trafo_multmatrix(double *m1, double *m2)
 } /* ay_trafo_multmatrix */
 
 
-/* ay_trafo_invmatrix:
- *  invert _transformation_ matrix \a m, put result into <mi>;
- *  borrowed from Mesa3.2.1/matrix.c which in turn borrowed it
+/** ay_trafo_invmatrix:
+ *  invert _transformation_ matrix \a m, put result into \a mi
+ *  Code borrowed from Mesa3.2.1/matrix.c which in turn borrowed it
  *  from Graphics Gems II;
  *  with additional writes to allow working with completely
  *  uninitialized mi matrices
+ *
+ * \param[in] m transformation matrix (double[4*4])
+ * \param[in,out] mi where to store the inverse matrix (may be \a m)
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_trafo_invmatrix(double *m, double *mi)
@@ -1174,43 +1179,43 @@ ay_trafo_invmatrix(double *m, double *mi)
       return AY_ERROR;
 
    det = 1.0 / det;
-   AY_M44(mi,0,0) = (  (AY_M44(m,1,1)*AY_M44(m,2,2) -
-			AY_M44(m,2,1)*AY_M44(m,1,2) )*det);
-   AY_M44(mi,0,1) = (- (AY_M44(m,0,1)*AY_M44(m,2,2) -
-			AY_M44(m,2,1)*AY_M44(m,0,2) )*det);
-   AY_M44(mi,0,2) = (  (AY_M44(m,0,1)*AY_M44(m,1,2) -
-			AY_M44(m,1,1)*AY_M44(m,0,2) )*det);
+   AY_M44(mi,0,0) = ( (AY_M44(m,1,1)*AY_M44(m,2,2) -
+		       AY_M44(m,2,1)*AY_M44(m,1,2))*det);
+   AY_M44(mi,0,1) = (-(AY_M44(m,0,1)*AY_M44(m,2,2) -
+		       AY_M44(m,2,1)*AY_M44(m,0,2))*det);
+   AY_M44(mi,0,2) = ( (AY_M44(m,0,1)*AY_M44(m,1,2) -
+		       AY_M44(m,1,1)*AY_M44(m,0,2))*det);
 
    AY_M44(mi,0,3) = 0;
 
-   AY_M44(mi,1,0) = (- (AY_M44(m,1,0)*AY_M44(m,2,2) -
-			AY_M44(m,2,0)*AY_M44(m,1,2) )*det);
-   AY_M44(mi,1,1) = (  (AY_M44(m,0,0)*AY_M44(m,2,2) -
-			AY_M44(m,2,0)*AY_M44(m,0,2) )*det);
-   AY_M44(mi,1,2) = (- (AY_M44(m,0,0)*AY_M44(m,1,2) -
-			AY_M44(m,1,0)*AY_M44(m,0,2) )*det);
+   AY_M44(mi,1,0) = (-(AY_M44(m,1,0)*AY_M44(m,2,2) -
+		       AY_M44(m,2,0)*AY_M44(m,1,2))*det);
+   AY_M44(mi,1,1) = ( (AY_M44(m,0,0)*AY_M44(m,2,2) -
+		       AY_M44(m,2,0)*AY_M44(m,0,2))*det);
+   AY_M44(mi,1,2) = (-(AY_M44(m,0,0)*AY_M44(m,1,2) -
+		       AY_M44(m,1,0)*AY_M44(m,0,2))*det);
 
    AY_M44(mi,1,3) = 0;
 
-   AY_M44(mi,2,0) = (  (AY_M44(m,1,0)*AY_M44(m,2,1) -
-			AY_M44(m,2,0)*AY_M44(m,1,1) )*det);
-   AY_M44(mi,2,1) = (- (AY_M44(m,0,0)*AY_M44(m,2,1) -
-			AY_M44(m,2,0)*AY_M44(m,0,1) )*det);
-   AY_M44(mi,2,2) = (  (AY_M44(m,0,0)*AY_M44(m,1,1) -
-			AY_M44(m,1,0)*AY_M44(m,0,1) )*det);
+   AY_M44(mi,2,0) = ( (AY_M44(m,1,0)*AY_M44(m,2,1) -
+		       AY_M44(m,2,0)*AY_M44(m,1,1))*det);
+   AY_M44(mi,2,1) = (-(AY_M44(m,0,0)*AY_M44(m,2,1) -
+		       AY_M44(m,2,0)*AY_M44(m,0,1))*det);
+   AY_M44(mi,2,2) = ( (AY_M44(m,0,0)*AY_M44(m,1,1) -
+		       AY_M44(m,1,0)*AY_M44(m,0,1))*det);
 
    AY_M44(mi,2,3) = 0;
 
    /* Do the translation part */
    AY_M44(mi,0,3) = - (AY_M44(m,0,3) * AY_M44(mi,0,0) +
-		     AY_M44(m,1,3) * AY_M44(mi,0,1) +
-		     AY_M44(m,2,3) * AY_M44(mi,0,2) );
+		       AY_M44(m,1,3) * AY_M44(mi,0,1) +
+		       AY_M44(m,2,3) * AY_M44(mi,0,2));
    AY_M44(mi,1,3) = - (AY_M44(m,0,3) * AY_M44(mi,1,0) +
-		     AY_M44(m,1,3) * AY_M44(mi,1,1) +
-		     AY_M44(m,2,3) * AY_M44(mi,1,2) );
+		       AY_M44(m,1,3) * AY_M44(mi,1,1) +
+		       AY_M44(m,2,3) * AY_M44(mi,1,2));
    AY_M44(mi,2,3) = - (AY_M44(m,0,3) * AY_M44(mi,2,0) +
-		     AY_M44(m,1,3) * AY_M44(mi,2,1) +
-		     AY_M44(m,2,3) * AY_M44(mi,2,2) );
+		       AY_M44(m,1,3) * AY_M44(mi,2,1) +
+		       AY_M44(m,2,3) * AY_M44(mi,2,2));
 
    AY_M44(mi,3,3) = 1;
 
