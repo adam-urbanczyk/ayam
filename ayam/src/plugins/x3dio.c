@@ -9987,7 +9987,15 @@ x3dio_writeview(scew_element *element, ay_object *o)
 
 	  if(fabs(yzlen) > AY_EPSILON)
 	    {
-	      x = acos(xzlen/yzlen);
+	      /*x = acos(xzlen/yzlen);*/
+	      x = xzlen/yzlen;
+	      if(x <= -1.0)
+		x = -AY_PI;
+	      else
+		if(x >= 1.0)
+		  x = 0.0;
+		else
+		  x = acos(x);
 	    }
 	  else
 	    {
@@ -10033,7 +10041,15 @@ x3dio_writeview(scew_element *element, ay_object *o)
 		  quat[1] = 0.0;
 		  quat[2] = 0.0;
 		}
-	      quat[3] = 2 * acos(quat[3]);
+
+	      /*quat[3] = 2 * acos(quat[3]);*/
+	      if(quat[3] <= -1.0)
+		quat[3] = -2*AY_PI;
+	      else
+		if(quat[3] >= 1.0)
+		  quat[3] = 0.0;
+		else
+		  quat[3] = 2 * acos(quat[3]);
 
 	      x3dio_writedoublevecattrib(vp_element, "orientation", 4, quat);
 	    } /* if */
