@@ -106,6 +106,7 @@ static JSClass jsinterp_global_class = {
 static JSFunctionSpec jsinterp_global_functions[] = {
   {"crtOb", jsinterp_wraptcmdargs, 0, 0, 0},
   {"delOb", jsinterp_wraptcmd, 0, 0, 0},
+  {"candelOb", jsinterp_wraptcmd, 0, 0, 0},
   {"cutOb", jsinterp_wraptcmd, 0, 0, 0},
   {"copOb", jsinterp_wraptcmd, 0, 0, 0},
   {"pasOb", jsinterp_wraptcmd, 0, 0, 0},

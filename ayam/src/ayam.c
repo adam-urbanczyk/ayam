@@ -1561,6 +1561,9 @@ ay_safeinit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "delOb", ay_object_deletetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "candelOb", ay_object_deletetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   Tcl_CreateCommand(interp, "nameOb", ay_object_setnametcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
