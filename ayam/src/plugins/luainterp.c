@@ -85,6 +85,7 @@ static lua_State *L = NULL;
 static const struct luaL_Reg luainterplib [] = {
       {"crtOb", luainterp_wraptclcmd},
       {"delOb", luainterp_wraptclcmd},
+      {"candelOb", luainterp_wraptclcmd},
       {"cutOb", luainterp_wraptclcmd},
       {"copOb", luainterp_wraptclcmd},
       {"pasOb", luainterp_wraptclcmd},
