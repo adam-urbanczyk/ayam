@@ -1443,8 +1443,8 @@ ay_trafo_decomposematrix(double *m, ay_object *o)
  double v1[3], v2[3], v3[3], v4[3];
  double sx, sy, sz;
  double rx, ry, rz;
- int i;
  double axis[3], quat[4] = {0};
+ int i;
 
   if(!m || !o)
     return;

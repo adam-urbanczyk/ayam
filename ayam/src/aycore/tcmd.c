@@ -301,11 +301,16 @@ ay_tcmd_showtcmd(ClientData clientData, Tcl_Interp *interp,
     } /* if */
 
  return TCL_OK;
-} /* ay_tcmd_hidetcmd */
+} /* ay_tcmd_showtcmd */
 
 
-/* ay_tcmd_getvertcmd:
- *  get all version information from the current OpenGL/GLU and Ayam
+/** ay_tcmd_getvertcmd:
+ *  get all version information from the current OpenGL/GLU
+ *  and put it in the global array "ay"
+ *  Implements the \a getVersion scripting interface command.
+ *  See also the corresponding section in the \ayd{scgetversion}.
+ *
+ *  \returns TCL_OK in any case.
  */
 int
 ay_tcmd_getvertcmd(ClientData clientData, Tcl_Interp *interp,
@@ -2008,6 +2013,8 @@ ay_tcmd_registerrevert(ay_revertcb *revcb, unsigned int type_id)
 
 /** ay_tcmd_init:
  *  initialize the tcmd module
+ *
+ * \param[in] interp Tcl interpreter, currently unused
  *
  * \returns AY_OK on success, error code otherwise.
  */
