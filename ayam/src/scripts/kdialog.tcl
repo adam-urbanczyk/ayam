@@ -47,6 +47,9 @@ proc kdialog_run { cmd } {
 
 rename ::tk_getOpenFile ::kdialog_getOpenFile
 
+# ::tk_getOpenFile
+#  the new getOpenFile procedure using kdialog
+#
 proc ::tk_getOpenFile { args } {
     set opt ""
     set idir "."
@@ -91,8 +94,12 @@ proc ::tk_getOpenFile { args } {
 }
 # ::tk_getOpenFile
 
+
 rename ::tk_getSaveFile ::kdialog_getSaveFile
 
+# ::tk_getSaveFile
+#  the new getSaveFile procedure using kdialog
+#
 proc ::tk_getSaveFile { args } {
     set opt ""
     set idir "."
@@ -140,6 +147,9 @@ proc ::tk_getSaveFile { args } {
 
 rename ::tk_chooseDirectory ::kdialog_chooseDirectory
 
+# ::tk_chooseDirectory
+#  the new chooseDirectory procedure using kdialog
+#
 proc ::tk_chooseDirectory { args } {
     set opt ""
     set idir "."
