@@ -1363,8 +1363,11 @@ ay_pv_fixnumelems(char *buf, unsigned int numelems)
 } /* ay_pv_fixnumelems */
 
 
-/* ay_pv_init:
+/** ay_pv_init:
  *  initialize pv module by registering the PV tag type
+ *
+ * \param[in] interp Tcl interpreter, currently unused
+ *
  */
 void
 ay_pv_init(Tcl_Interp *interp)
