@@ -1616,6 +1616,7 @@ The <tt/"Help"/ menu:
 <itemize>
 <item><tt/"Help"/, opens a web browser and displays the documentation,
 the URL to display is taken from the <tt/"Docs"/ preference setting.
+See also section <ref id="prefmain" name="Main Preferences">.
 
 <item><tt/"Help on object"/, opens a web browser and displays
 documentation about the currently selected type of object,
@@ -16452,8 +16453,8 @@ candelOb &ndash; delete object(s):
  <item>Synopsis: <tt/"candelOb"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: This command returns <tt/1/ if the selected object(s)
-can be deleted without errors and without moving objects to the clipboard,
-otherwise <tt/0/ is returned.
+can be deleted without errors and without moving objects to the end of
+the current level, otherwise <tt/0/ is returned.
 </itemize>
 
 <p>
@@ -16503,6 +16504,7 @@ is (or provides&thinsp;/&thinsp;converts to) a parametric surface, otherwise
 If multiple objects are selected, a list is returned.
 </itemize>
 
+<#if out="latex"><x/newpage/</#if>
 <p>
 <#if out="latex"><x/phantomsection/</#if>
 
@@ -16513,10 +16515,11 @@ getBB &ndash; get the bounding box:
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: This command returns the axis parallel bounding box
 of the selected object(s) as a list of six double values (xmin, ymin, zmin,
-xmax, ymax, zmax).
+xmax, ymax, zmax). Note, that for multiple selected objects the union
+of all individual bounding boxes will be returned and <em/not/ the
+individual bounding boxes in a list.
 </itemize>
 
-<#if out="latex"><x/newpage/</#if>
 <p>
 <#if out="latex"><x/phantomsection/</#if>
 
@@ -16568,6 +16571,7 @@ selects the first two objects in the current level.
 </enum>
 </itemize>
 
+<#if out="latex"><x/newpage/</#if>
 <p>
 <#if out="latex"><x/phantomsection/</#if>
 
@@ -16591,8 +16595,6 @@ uCR
 # select new object
 sL
 </code>
-
-<#if out="latex"><x/newpage/</#if>
 
 In Script objects scripts the above example command sequence would leave out
 the <tt/"uCR"/ command, as access to the GUI is blocked anyway in this
@@ -16880,6 +16882,8 @@ creates a simple Level, enters it, and creates a Sphere as child of
 this level.
 </itemize>
 
+
+<#if out="latex"><x/newpage/</#if>
 <p>
 <#if out="latex"><x/phantomsection/</#if>
 
@@ -20122,13 +20126,18 @@ command (which iconifies the complete application).
 <p>
 The script <tt>"kdialog.tcl"</tt> switches all file dialogs of
 Ayam to use the kdialog application of the KDE project instead
-of the native Tk file dialog.
+of the native Tk file dialog.<newline>
+The script also adds a custom main menu entry to revert any
+changes.
+
 
 <sect2>Switch File Dialogs to Zenity<label id="zdialogtcl">
 <p>
 The script <tt>"zdialog.tcl"</tt> switches all file dialogs of
 Ayam to use the zenity application of the Gnome project instead
-of the native Tk file dialog.
+of the native Tk file dialog.<newline>
+The script also adds a custom main menu entry to revert any
+changes.
 
 <sect2>Use Aqsis from Application Directory<label id="useaqsisapptcl">
 <p>
