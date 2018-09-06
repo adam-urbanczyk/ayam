@@ -406,7 +406,7 @@ ay_geom_extractmeannormal(double *cv, int cvlen, int cvstride,
  * \param[in] scale scale factor
  * \param[in,out] cv points to scale
  * \param[in] len number of points
- * \param[in] stride memory distance between two points
+ * \param[in] stride memory distance between two points (>=3, unchecked)
  */
 void
 ay_geom_scalecog(double scale, double *cv, int len, int stride)

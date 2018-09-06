@@ -417,7 +417,10 @@ ay_prop_setattrtcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
   if(o->name)
-    { free(o->name); o->name = NULL; }
+    {
+      free(o->name);
+      o->name = NULL;
+    }
   if(stringlen > 0)
     {
       if(!(o->name = calloc(stringlen+1, sizeof(char))))
@@ -596,7 +599,7 @@ ay_prop_getnpinfo(Tcl_Interp *interp, char *n1, ay_object *o)
       to = Tcl_NewStringObj("n/a", -1);
     } /* if */
 
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
   /* set Balloon info text */
@@ -683,9 +686,9 @@ ay_prop_getnpinfo(Tcl_Interp *interp, char *n1, ay_object *o)
   else
     {
       to2 = Tcl_NewStringObj("n/a", -1);
-    } /* if */
+    } /* if o is NPatch */
 
-  Tcl_ObjSetVar2(interp,toa,ton,to2,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to2, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
@@ -727,7 +730,7 @@ ay_prop_getncinfo(Tcl_Interp *interp, char *n1, ay_object *o)
       to = Tcl_NewStringObj("n/a", -1);
     } /* if */
 
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
   /* set Balloon info text */
@@ -805,9 +808,9 @@ ay_prop_getncinfo(Tcl_Interp *interp, char *n1, ay_object *o)
   else
     {
       to2 = Tcl_NewStringObj("n/a", -1);
-    } /* if */
+    } /* if o is NCurve */
 
-  Tcl_ObjSetVar2(interp,toa,ton,to2,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to2, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
