@@ -398,10 +398,10 @@ proc addMatrix { w prop name } {
 }
 # addMatrix
 
-#
-#
-#
-proc updateColor { w prop name button } {
+#chooseColor:
+# helper for addColor below;
+# open a color chooser dialog
+proc chooseColor { w prop name button } {
     global $prop
 
     winAutoFocusOff
@@ -430,11 +430,11 @@ proc updateColor { w prop name button } {
 
  return;
 }
-# updateColor
+# chooseColor
 
-#
-#
-#
+# updateColorFromE:
+# helper for addColor below;
+# realize changes made in the color value entries
 proc updateColorFromE { w prop name button } {
     global $prop
 
@@ -532,18 +532,18 @@ proc addColor { w prop name {def {}} } {
 
     if { $ay(ws) == "Win32" } {
 	button $f.b1 -pady 1 -background $bcolor\
-		-command "updateColor $w $prop $name $f.b1"\
+		-command "chooseColor $w $prop $name $f.b1"\
 		-bd $bw -width 3
     } else {
 	if { $ay(ws) == "Aqua" } {
 	    label $f.l2 -background $bcolor -text "   "
 	    button $f.b1 -pady 1 -padx 6 -text Set\
-		-command "updateColor $w $prop $name $f.b1"\
+		-command "chooseColor $w $prop $name $f.b1"\
 		-bd $bw
 	} else {
 	    # X11
 	    button $f.b1 -pady 1 -background $bcolor\
-		-command "updateColor $w $prop $name $f.b1"\
+		-command "chooseColor $w $prop $name $f.b1"\
 		-bd $bw
 	}
     }
@@ -591,7 +591,7 @@ proc addColor { w prop name {def {}} } {
 		"after idle {$ay(bok) invoke}"
 	}
 	bind $f.b1 <${aymainshortcuts(IApplyMod)}-ButtonPress-1>\
-		"updateColor $w $prop $name $f.b1;\
+		"chooseColor $w $prop $name $f.b1;\
 		 after idle {$ay(bok) invoke};break;"
     }
 
@@ -716,9 +716,9 @@ proc addCheck { w prop name {onoffvals ""} } {
 }
 # addCheck
 
-#
-#
-#
+# updateMenu:
+# helper for addMenu below;
+# write trace procedure
 proc updateMenu { m name1 name2 op } {
     global ${name1}
     $m invoke [subst \$${name1}($name2)]
@@ -899,16 +899,16 @@ proc addString { w prop name {def {}} } {
 }
 # addString
 
-#
-#
-#
+# entryViewEnd:
+# helper for addFile* below;
+# scrolls the entry view to the end after a (long) path/filename has been set
 proc entryViewEnd { w } {
     $w icursor end;
     set c [$w index insert]
     set left [$w index @0]
     if {$left > $c} {
 	$w xview $c
-	return
+	return;
     }
     set x [winfo width $w]
     if {$c > [$w index @[winfo width $w]]} {
@@ -1341,9 +1341,7 @@ proc addText { w name text } {
 }
 # addText
 
-#
-#
-#
+# addInfo with balloon help
 proc addInfoB { w prop name help } {
 
     addInfo $w $prop $name
@@ -1354,9 +1352,9 @@ proc addInfoB { w prop name help } {
 }
 # addInfoB
 
-#
-#
-#
+# updateInfoBalloon:
+# helper for addInfo below;
+# write trace procedure
 proc updateInfoBalloon { f name1 name2 op } {
     global ${name1}
     set newtext [subst \$${name1}($name2)]
@@ -1396,7 +1394,8 @@ proc addInfo { w prop name } {
 # addInfo
 
 # updateProgress:
-# helper for addProgress below
+# helper for addProgress below;
+# write trace procedure
 proc updateProgress { w n1 n2 op } {
     if { $n2 != "" } {
 	global $n1
