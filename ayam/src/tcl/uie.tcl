@@ -211,10 +211,6 @@ proc addParam { w prop name {def {}} } {
 
     label $f.l -width 14 -text ${name}:
 
-    if {[string length ${name}] > 12} {
-	balloon_set $f.l ${name}
-    }
-
     bind $f.l <Double-ButtonPress-1> "pclip_toggleomit $f.l $fname"
 
     set e [entry $f.e -width 8 -textvariable ${prop}(${fname}) -bd $bw]
@@ -644,10 +640,6 @@ proc addCheck { w prop name {onoffvals ""} } {
     label $f.l -width 14 -text ${name}:
     bind $f.l <Double-ButtonPress-1> "pclip_toggleomit $f.l $fname"
 
-    if {[string length ${name}] > 12} {
-	balloon_set $f.l ${name}
-    }
-
     if { $ay(ws) == "Win32" } {
 	# damn windows
 	set ff [frame $f.fcb -highlightthickness 1]
@@ -751,10 +743,6 @@ proc addMenu { w prop name elist } {
     label $f.l -width 14 -text ${name}:
     bind $f.l <Double-ButtonPress-1> "pclip_toggleomit $f.l $fname"
 
-    if {[string length ${name}] > 12} {
-	balloon_set $f.l ${name}
-    }
-
     set l 0
     foreach i $elist {
 	if { [string length $i] > $l } {
@@ -841,10 +829,6 @@ proc addString { w prop name {def {}} } {
 
     label $f.l -width 14 -text ${name}:
     bind $f.l <Double-ButtonPress-1> "pclip_toggleomit $f.l $fname"
-
-    if {[string length ${name}] > 12} {
-	balloon_set $f.l ${name}
-    }
 
     set e [entry $f.e -textvariable ${prop}(${fname}) -width 15 -bd $bw]
     eval [subst "bindtags $f.e \{$f.e pge Entry all\}"]
@@ -1052,10 +1036,6 @@ proc addFile { w prop name {def {}} } {
     label $f.l -width 14 -text ${name}:
     bind $f.l <Double-ButtonPress-1> "pclip_toggleomit $f.l $name"
 
-    if {[string length ${name}] > 12} {
-	balloon_set $f.l ${name}
-    }
-
     set e [entry $f.e -textvariable ${prop}(${name}) -width 15 -bd $bw]
     eval [subst "bindtags $f.e \{$f.e pge Entry all\}"]
     bind $f.e <Key-Escape> $escapecmd
@@ -1155,10 +1135,6 @@ proc addMDir { w prop name } {
     label $f.l -width 14 -text ${name}:
     bind $f.l <Double-ButtonPress-1> "pclip_toggleomit $f.l $name"
 
-    if {[string length ${name}] > 12} {
-	balloon_set $f.l ${name}
-    }
-
     entry $f.e -textvariable ${prop}(${name}) -width 15 -bd $bw
     eval [subst "bindtags $f.e \{$f.e pge Entry all\}"]
     bind $f.e <Key-Escape> $escapecmd
@@ -1231,10 +1207,6 @@ proc addMFile { w prop name } {
 
     label $f.l -width 14 -text ${name}:
     bind $f.l <Double-ButtonPress-1> "pclip_toggleomit $f.l $name"
-
-    if {[string length ${name}] > 12} {
-	balloon_set $f.l ${name}
-    }
 
     entry $f.e -textvariable ${prop}(${name}) -width 15 -bd $bw
     eval [subst "bindtags $f.e \{$f.e pge Entry all\}"]
@@ -1371,9 +1343,6 @@ proc addInfo { w prop name } {
     set f [frame $w.f${name} -relief sunken -bd $bw]
 
     label $f.l1 -width 14 -text ${name}:
-    if {[string length ${name}] > 12} {
-	balloon_set $f.l1 ${name}
-    }
 
     entry $f.e
     label $f.l2 -textvariable ${prop}(${name}) -font [$f.e cget -font]
@@ -1414,9 +1383,6 @@ proc addProgress { w prop name } {
     set f [frame $w.f${name} -relief sunken -bd $bw]
 
     label $f.l1 -width 14 -text ${name}:
-    if {[string length ${name}] > 12} {
-	balloon_set $f.l1 ${name}
-    }
 
     Progress $f.p
 
