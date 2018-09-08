@@ -743,7 +743,7 @@ proc pushSel { } {
     set ay(cursel) ""
     getSel ay(cursel)
     lappend ay(selstack) {$ay(cursel)}
-    return;
+ return;
 }
 # pushSel
 
@@ -756,7 +756,7 @@ proc popSel { } {
     set ay(cursel) [lindex $ay(selstack) end]
     set ay(selstack) [lreplace $ay(selstack) end end]
     eval [subst "selOb $ay(cursel)"]
-    return;
+ return;
 }
 # popSel
 
@@ -986,6 +986,7 @@ proc searchOb { expression action {gui 0} } {
 	set ay(SelectedLevel) "root"
 	goTop
     }
+
     # clear selection (i.e. work on all objects regardless
     # of their current selection state)?
     if { $ObjectSearch(Scope) != 1 } {
@@ -1032,7 +1033,9 @@ proc searchOb { expression action {gui 0} } {
 			${ay(CurrentLevel)}:$ti
 		}
 		default {
-		    eval $ObjectSearch(Action)
+		    if { $ObjectSearch(Action) != "" } {
+			eval $ObjectSearch(Action)
+		    }
 		}
 	    }
 	    # switch
@@ -1094,7 +1097,7 @@ proc searchOb { expression action {gui 0} } {
 	plb_update
     }
 
-  return;
+ return;
 }
 # searchOb
 
@@ -1148,7 +1151,6 @@ proc toggleSearchOption { } {
 	addCheck $w ObjectSearch ClearClipboard
 	addCheck $w ObjectSearch InvertMatch
     } else {
-	catch {destroy $w.flHighlightColor}
 	catch {destroy $w.fHighlightColor}
 	catch {destroy $w.fClearHighlight}
 	catch {destroy $w.fClearClipboard}
@@ -1282,6 +1284,10 @@ proc objectsearch_open { } {
     set f [frame $w.fb]
 
     button $f.bok -text "Ok" -width 5 -command {
+	if { $ObjectSearch(Expression) == "" } {
+	    ayError 2 searchObjects "Expression may not be empty!"
+	    break;
+	}
 	set ObjectSearch(HighlightColor) [format "#%02x%02x%02x"\
 	  $ObjectSearch(HighlightColor_R) $ObjectSearch(HighlightColor_G)\
 	  $ObjectSearch(HighlightColor_B)]
