@@ -18683,6 +18683,7 @@ This is necessary after a change to the global Tcl array <tt/"ayprefs"/
 to let all changes take effect.
 </itemize>
 
+See also section <ref id="prefs" name="Preferences">
 
 <sect2>Custom Objects&thinsp;/&thinsp;Plugins<label id="scicust">
 <p>
@@ -18890,11 +18891,14 @@ object.
 <p>
 If the argument <tt/"-smonly"/ is provided, a RIB to render shadow maps
 will be created and the argument of <tt/"-image"/ will be ignored.
+See also section <ref id="shadowmaps" name="Using ShadowMaps">.
 <p>
 If the argument <tt/"-selonly"/ is used, only the selected (geometric)
 objects will be exported, which will result in a RIB file not
 suitable for rendering (no setup, camera transformation, or lights
 are in it) but for inclusion into other scenes via RiArchive.
+See also section <ref id="riincobj" name="RiInc Object">.
+<p>
 Likewise <tt/"-objonly"/ leads to a RIB file containing all objects in the
 scene but not suitable for rendering.
 <p>
@@ -19253,6 +19257,51 @@ The <tt/"height"/ parameter is the desired height in pixels.
 <bf><tt>"addVSpace $w v1 20"</tt></bf>
 </itemize>
 
+addOptionToggle:
+<itemize>
+ <item>Synopsis: <tt>"addOptionToggle window arrayname paramname text cmd"</tt>
+ <item>Background: Yes, Undo: No, Safe: Yes, Type: Procedure
+ <item>Description: This procedure adds a property GUI element that
+allows to toggle the visibility of other property GUI elements.
+<p><p>
+The <tt/"window"/ parameter should contain the window name as returned by
+<tt/"addPropertyGUI"/ above.
+<p>
+The <tt/"arrayname"/ parameter is the name of the property management
+array of the property.
+<p>
+The <tt/"paramname"/ parameter is the name of a variable that contains the
+current visibility state.
+<p>
+The <tt/"text"/ parameter is the text to display on the toggle widget,
+this is usually a string like <tt/"Advanced Options"/.
+<p>
+The <tt/"cmd"/ parameter is the name of a procedure that, based on the
+current visibility state, creates or destroys the other property GUI
+elements.
+
+<#if out="latex"><x/newpage/</#if>
+
+<item>Example:
+<code>
+proc toggleAdvanced { } {
+  global MyProp
+  set w [$MyProp(w)]
+  if { $MyProp(ShowAdvanced) } {
+    addCheck $w MyPropData AdvancedOption
+  } else {
+    catch {destroy $w.fAdvancedOption}
+  }
+}
+
+set w [addPropGUI MyProp]
+set MyProp(w) $w
+addCheck $w MyPropData CommonOption
+addOptionToggle $w MyProp ShowAdvanced "Advanced Options" \
+  toggleAdvanced
+</code>
+</itemize>
+
 
 <sect2>Miscellaneous<label id="scimisc">
 <p>
@@ -19433,6 +19482,8 @@ callbacks of the selected objects will be executed. No BNS or ANS tags
 will be considered, notification of parents will not be done, and the
 complete notification will also be omitted. Hence, in the safe interpreter,
 this command ignores all parameters.
+<p>
+See also section <ref id="toolobj" name="The Modelling Concept Tool-Objects">.
 </itemize>
 
 <p>
@@ -19453,13 +19504,14 @@ selected object(s).
 <label id="scsetmark">
 setMark:
 <itemize>
- <item>Synopsis: <tt>"setMark x y z"</tt>
+ <item>Synopsis: <tt>"setMark [x y z]"</tt>
  <item>Background: Yes, Undo: No, Safe: No, Type: Procedure
  <item>Description: This procedure sets the global mark to the specified
-coordinates.
+coordinates. If no arguments are provided, the global mark is cleared.
 <p><p>
 This procedure only works, if there is at least one view.
-
+<p>
+See also section <ref id="markac" name="Setting the Mark">.
 <item>Example:
 <bf><tt>"setMark 0 0 0"</tt></bf>
 </itemize>
