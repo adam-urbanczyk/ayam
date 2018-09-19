@@ -2467,6 +2467,9 @@ See also section
 <ref id="sccomm" name="Procedures and Commands"> for a listing of
 available commands.
 
+If the search action is empty, the objects will just be searched and
+a count of the matches will be reported.<footnote>Since 1.26.</footnote>
+
 The special action <tt/"Highlight"/ also collects the found node names
 in the global Tcl list <tt>"ObjectSearch(nodes)"</tt>.
 
@@ -18946,6 +18949,8 @@ preference option <tt/"ErrorLevel"/ see section
 <sect2>Property GUI Management<label id="scipgui">
 <p>
 These procedures help to manage property GUIs.
+See also
+section <ref id="ayproparr" name="Property Management and Data Arrays">.
 
 <label id="scaddpropertygui">
 addPropertyGUI:
@@ -19286,7 +19291,7 @@ elements.
 <code>
 proc toggleAdvanced { } {
   global MyProp
-  set w [$MyProp(w)]
+  set w $MyProp(w)
   if { $MyProp(ShowAdvanced) } {
     addCheck $w MyPropData AdvancedOption
   } else {
@@ -20174,7 +20179,7 @@ After running the script <tt>"zap.tcl"</tt>, there will be a new
 toolbox button, labeled <tt>"Zap!"</tt>, that simply runs the zap
 command (which iconifies the complete application).
 
-<sect2>Switch File Dialogs to Kdialog<label id="kdialogtcl">
+<sect2>Switch Dialogs to Kdialog<label id="kdialogtcl">
 <p>
 The script <tt>"kdialog.tcl"</tt> switches all file dialogs of
 Ayam to use the kdialog application of the KDE project instead
@@ -20183,13 +20188,24 @@ The script also adds a custom main menu entry to revert any
 changes.
 
 
-<sect2>Switch File Dialogs to Zenity<label id="zdialogtcl">
+<sect2>Switch Dialogs to Zenity<label id="zdialogtcl">
 <p>
 The script <tt>"zdialog.tcl"</tt> switches all file dialogs of
 Ayam to use the zenity application of the Gnome project instead
 of the native Tk file dialog.<newline>
 The script also adds a custom main menu entry to revert any
 changes.
+
+<sect2>Switch File Dialogs to Tcl<label id="intfdtcl">
+<p>
+The script <tt>"intfd.tcl"</tt> switches all file dialogs of
+Ayam to use the Tcl/Tk internal version instead
+of the native file dialogs provided by the operating system.
+<!--
+<newline>
+The script also adds a custom main menu entry to revert any
+changes.
+ -->
 
 <sect2>Use Aqsis from Application Directory<label id="useaqsisapptcl">
 <p>
@@ -25040,6 +25056,7 @@ Index:
 <item>Interpolation: <ref id="attrs" name="RenderMan/BMRT attribute">
 <item>InterpolCtrl: <ref id="birail2p" name="Birail2 attribute">
 <item>Intersection: <ref id="levelobj" name="Level object">
+<item>intfd.tcl: <ref id="intfdtcl" name="example/helper script">
 <item>InvertMatch: <ref id="objsearch" name="object search option">
 <item>Invert Selection: <ref id="mmpnts" name="main menu entry">
 <item>IPatch: <ref id="ipatchobj" name="IPatch object">
