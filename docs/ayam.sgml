@@ -17360,7 +17360,7 @@ See also section <ref id="unclat" name="Unclamp Tool">.
 <label id="scextendnc">
 extendNC &ndash; extend NURBS curve:
 <itemize>
- <item>Synopsis: <tt/"extendNC (x y z (w) | -vn varname | -m)"/
+ <item>Synopsis: <tt/"extendNC (x y z [w] | -vn varname | -m)"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Extend the selected NURBS curves to a given
 point or to the mark without changing the current shape of
@@ -17398,7 +17398,8 @@ insknNC &ndash; insert knot into NURBS curve:
  <item>Description: Insert a new knot at the position
 specified by <tt/u/ <tt/r/ times. The valid range for <tt/u/ is determined by
 the current knot vector U as follows: <tt/U[p] <= u <= U[n]/, where
-p is the degree (order-1) of the curve and n is the length of the curve.
+<tt/p/ is the degree (order-1) of the curve and <tt/n/ is the length of
+the curve.
 The knot type of the curves will always be changed to custom but
 the shape of the curves will not change.
 <p>
@@ -17886,10 +17887,11 @@ insknuNP &ndash; insert knot into NURBS patch:
  <item>Synopsis: <tt/"insknuNP u r"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Insert a new knot in U direction at the position
-specified by u, r times. u must be in the valid range of the corresponding
+specified by <tt/u/, <tt/r/ times. <tt/u/ must be in the valid range of
+the corresponding
 knot vector of the selected patches. The valid range is determined by
 the current knot vector U as follows: <tt/U[p] <= u <= U[n]/, where
-p is the degree (order-1) of the patch in U direction and n is the
+<tt/p/ is the degree (order-1) of the patch in U direction and <tt/n/ is the
 width of the patch.
 The u knot type of the patches will always be changed to <tt/"Custom"/ but
 the shape of the patches will not change.
@@ -17906,10 +17908,11 @@ insknvNP &ndash; insert knot into NURBS patch:
  <item>Synopsis: <tt/"insknvNP v r"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Insert a new knot in V direction at the position
-specified by v, r times. v must be in the valid range of the corresponding
+specified by <tt/v/, <tt/r/ times. <tt/v/ must be in the valid range of
+the corresponding
 knot vector of the selected patches. The valid range is determined by
 the current knot vector V as follows: <tt/V[p] <= v <= V[n]/, where
-p is the degree (order-1) of the patch in V direction and n is the
+<tt/p/ is the degree (order-1) of the patch in V direction and <tt/n/ is the
 height of the patch.
 The v knot type of the patches will always be changed to <tt/"Custom"/ but
 the shape of the patches will not change.
@@ -17926,8 +17929,8 @@ remknuNP &ndash; remove u knot from NURBS surface:
  <item>Synopsis: <tt/"remknuNP (u | -i ind) r [tol]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Remove a knot at the position
-specified by u (u must be in the valid range of the knot vector
-of the selected surface) r times from the surface. Since Ayam 1.20
+specified by <tt/u/ (<tt/u/ must be in the valid range of the knot vector
+of the selected surface) <tt/r/ times from the surface. Since Ayam 1.20
 the knot to remove may also be specified using its (zero based)
 index in the knot vector (i.e.~use <tt/"remknuNP -i 3 1"/ instead of
 <tt/"remknuNP 0.5 1"/ for the knot vector <tt/"0 0 0 0.5 1 1 1"/).
@@ -17952,8 +17955,8 @@ remknvNP &ndash; remove v knot from NURBS surface:
  <item>Synopsis: <tt/"remknvNP (v | -i ind) r [tol]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Remove a knot at the position
-specified by v (v must be in the valid range of the knot vector
-of the selected surface) r times from the surface. Since Ayam 1.20
+specified by <tt/v/ (<tt/v/ must be in the valid range of the knot vector
+of the selected surface) <tt/r/ times from the surface. Since Ayam 1.20
 the knot to remove may also be specified using its (zero based)
 index in the knot vector (i.e.~use <tt/"remknvNP -i 3 1"/ instead of
 <tt/"remknvNP 0.5 1"/ for the knot vector <tt/"0 0 0 0.5 1 1 1"/).
@@ -23678,7 +23681,7 @@ aysdr, ayslb, ayslc, ayslo, ayslo3d, ayslx, ayso.
 See also section <ref id="spplugins" name="Shader Parsing Plugins">.
 
 <tag/custom objects/
-metaobj, sdnpatch, sfcurve, bcurve, csphere.
+metaobj, sdnpatch, sfcurve, sdcurve, bcurve, csphere.
 
 See also section <ref id="customobj" name="Custom Objects">.
 
@@ -24440,7 +24443,12 @@ Index:
 <item>Apply: <ref id="propgui" name="apply property GUI">
 <item>Apply To All/Selected: <ref id="mmpnts" name="main menu entry">
 <item>applyTrafo: <ref id="scapplytrafo" name="scripting interface command">
-<item>Archives: <ref id="rio" name="RenderMan interface option">
+<item>Archives:
+<itemize>
+<item><ref id="rio" name="RenderMan interface option">,
+<item><ref id="riincobj" name="RiInc object">,
+<item><ref id="riprocobj" name="RiProc object">
+</itemize>
 <item>Area Light: <ref id="alob" name="creation of">
 <item>Array: <ref id="cloneobj" name="Clone object">
 <item>AskScriptDisable: <ref id="hidprefs" name="hidden preference setting">
@@ -25021,6 +25029,7 @@ Index:
 <item><ref id="impx3d" name="X3D Import">
 </itemize>
 <item>Importance Driven Rendering: <ref id="idr" name="IDR plugin">
+<item>Include: <ref id="riincobj" name="RiInc object">
 <item>Indices: <ref id="selectp" name="Select attribute">
 <item>Input Plane: <ref id="editlocal" name="Editing in Local Spaces">
 <item>Insert:
@@ -25415,6 +25424,7 @@ Index:
 <item><ref id="prefs" name="Preferences">,
 <item><ref id="hidprefs" name="hidden preference settings">
 </itemize>
+<item>Procedural Objects: <ref id="riprocobj" name="RiProc object">
 <item>Procedurals: <ref id="rio" name="RenderMan interface option">
 <item>Prompt: <ref id="hidprefs" name="hidden preference setting">
 <item>Properties: <ref id="propgui" name="main window component">
