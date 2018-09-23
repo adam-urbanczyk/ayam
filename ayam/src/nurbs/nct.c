@@ -7118,6 +7118,7 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
       tcl_status = Tcl_GetDouble(interp, argv[1], &u);
       AY_CHTCLERRRET(tcl_status, argv[0], interp);
     }
+
   i++;
   tcl_status = Tcl_GetInt(interp, argv[i], &r);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
@@ -7131,11 +7132,8 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc > 3+have_index)
     {
-      if((argv[i][0] != 'I') && (argv[i][0] != 'i'))
-	{
-	  tcl_status = Tcl_GetDouble(interp, argv[i], &tol);
-	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
-	}
+      tcl_status = Tcl_GetDouble(interp, argv[i], &tol);
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);	
     }
 
   while(sel)
@@ -7165,8 +7163,8 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 	     know the first of the possibly multiple knots (to correctly
 	     compute the current multiplicity) */
 	  i = 0;
-	  while((i<(curve->length+curve->order)) &&
-		    (fabs(curve->knotv[i]-u) > AY_EPSILON))
+	  while((i < (curve->length+curve->order)) &&
+		(fabs(curve->knotv[i]-u) > AY_EPSILON))
 	    {
 	      i++;
 	    }
