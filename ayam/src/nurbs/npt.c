@@ -13540,11 +13540,8 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc > 3+have_index)
     {
-      if((argv[i][0] != 'I') && (argv[i][0] != 'i'))
-	{
-	  tcl_status = Tcl_GetDouble(interp, argv[i], &tol);
-	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
-	}
+      tcl_status = Tcl_GetDouble(interp, argv[i], &tol);
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);
     }
 
   while(sel)
@@ -13570,7 +13567,7 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
 	     know the first of the possibly multiple knots (to correctly
 	     compute the current multiplicity) */
 	  i = 0;
-	  while((i<(patch->width+patch->uorder)) &&
+	  while((i < (patch->width+patch->uorder)) &&
 		(fabs(patch->uknotv[i]-u) > AY_EPSILON))
 	    {
 	      i++;
@@ -13763,11 +13760,8 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc > 3+have_index)
     {
-      if((argv[i][0] != 'I') && (argv[i][0] != 'i'))
-	{
-	  tcl_status = Tcl_GetDouble(interp, argv[i], &tol);
-	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
-	}
+      tcl_status = Tcl_GetDouble(interp, argv[i], &tol);
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);
     }
 
   while(sel)
@@ -13793,7 +13787,7 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 	     know the first of the possibly multiple knots (to correctly
 	     compute the current multiplicity) */
 	  i = 0;
-	  while((i<(patch->height+patch->vorder)) &&
+	  while((i < (patch->height+patch->vorder)) &&
 		(fabs(patch->vknotv[i]-v) > AY_EPSILON))
 	    {
 	      i++;
