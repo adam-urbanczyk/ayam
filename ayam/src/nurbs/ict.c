@@ -85,8 +85,8 @@ ay_ict_sanitize(int length, double *controlv,
  * \param[in] param_type parameterisation type (AY_KTCHORDAL, AY_KTCENTRI,
  *            or AY_KTUNIFORM)
  * \param[in] have_end_derivs should sderiv / ederiv be used?
- * \param[in] sderiv start derivative
- * \param[in] sderiv end derivative
+ * \param[in] sderiv start derivative (may be NULL if have_end_derivs is false)
+ * \param[in] ederiv end derivative (may be NULL if have_end_derivs is false)
  * \param[in] controlv vector of 3D data points [length*3]
  *
  * \param[in,out] c result (a NURBS curve)
@@ -108,7 +108,6 @@ ay_ict_interpolateC2C(int length, double sdlen, double edlen, int param_type,
  double *lengths = NULL, totallength = 0.0;
  double *scontrolv = NULL;
  ay_nurbcurve_object *new = NULL;
-
 
   ay_ict_sanitize(length, controlv, &slength, &scontrolv);
 
@@ -293,8 +292,8 @@ cleanup:
  * \param[in] param_type parameterisation type (AY_KTCHORDAL, AY_KTCENTRI,
  *            or AY_KTUNIFORM)
  * \param[in] have_end_derivs should sderiv / ederiv be used?
- * \param[in] sderiv start derivative
- * \param[in] sderiv end derivative
+ * \param[in] sderiv start derivative (may be NULL if have_end_derivs is false)
+ * \param[in] ederiv end derivative (may be NULL if have_end_derivs is false)
  * \param[in] controlv vector of 3D data points [length*3]
  *
  * \param[in,out] c result (a NURBS curve)
@@ -318,7 +317,6 @@ ay_ict_interpolateC2CClosed(int length, double sdlen, double edlen,
  double *lengths = NULL, totallength = 0.0;
  double *scontrolv = NULL;
  ay_nurbcurve_object *new = NULL;
-
 
   ay_ict_sanitize(length, controlv, &slength, &scontrolv);
 
@@ -509,8 +507,8 @@ cleanup:
  * \param[in] param_type parameterisation type (AY_KTCHORDAL, AY_KTCENTRI,
  *            or AY_KTUNIFORM)
  * \param[in] have_end_derivs should sderiv / ederiv be used?
- * \param[in] sderiv start derivative
- * \param[in] sderiv end derivative
+ * \param[in] sderiv start derivative (may be NULL if have_end_derivs is false)
+ * \param[in] ederiv end derivative (may be NULL if have_end_derivs is false)
  * \param[in] controlv vector of 3D data points [length*3]
  *
  * \param[in,out] c result (a NURBS curve)
@@ -531,7 +529,6 @@ ay_ict_interpolateG3D(int iorder, int length, double sdlen, double edlen,
  double *lengths = NULL, totallength = 0.0, *vk = NULL;
  double *scontrolv = NULL;
  ay_nurbcurve_object *new = NULL;
-
 
   ay_ict_sanitize(length, controlv, &slength, &scontrolv);
 
@@ -713,8 +710,8 @@ cleanup:
  * \param[in] param_type parameterisation type (AY_KTCHORDAL, AY_KTCENTRI,
  *            or AY_KTUNIFORM)
  * \param[in] have_end_derivs should sderiv / ederiv be used?
- * \param[in] sderiv start derivative
- * \param[in] sderiv end derivative
+ * \param[in] sderiv start derivative (may be NULL if have_end_derivs is false)
+ * \param[in] sderiv end derivative (may be NULL if have_end_derivs is false)
  * \param[in] controlv vector of 3D data points [length*3]
  *
  * \param[in,out] c result (a NURBS curve)
@@ -736,7 +733,6 @@ ay_ict_interpolateG3DClosed(int iorder, int length, double sdlen, double edlen,
  double v1[3], v2[3];
  double *scontrolv = NULL;
  ay_nurbcurve_object *new = NULL;
-
 
   ay_ict_sanitize(length, controlv, &slength, &scontrolv);
 
@@ -1164,7 +1160,7 @@ ay_ict_resize(ay_icurve_object *curve, int new_length)
       for(i = 0; i < new_length; i++)
 	{
 	  memcpy(&ncontrolv[a], &(curve->controlv[a]), 3*sizeof(double));
-	  a+=3;
+	  a += 3;
 	}
     }
   else
@@ -1198,7 +1194,7 @@ ay_ict_resize(ay_icurve_object *curve, int new_length)
       for(i = 0; i < (curve->length-1); i++)
 	{
 	  memcpy(&ncontrolv[b], &(curve->controlv[a]), 3*sizeof(double));
-	  b+=3;
+	  b += 3;
 
 	  if((cv[i*3] != cv[(i+1)*3]) ||
 	     (cv[i*3+1] != cv[(i+1)*3+1]) ||
@@ -1220,18 +1216,18 @@ ay_ict_resize(ay_icurve_object *curve, int new_length)
 		  ncontrolv[b+2] = curve->controlv[a+2] + v[2];
 		  ncontrolv[b+3] = 1.0;
 
-		  b+=3;
+		  b += 3;
 		} /* for */
 	    } /* if */
 
-	  a+=3;
+	  a += 3;
 	} /* for */
+
       memcpy(&ncontrolv[(new_length-1)*3],
 	     &(curve->controlv[(curve->length-1)*3]),
 	     3*sizeof(double));
 
       free(newpersec);
-
     } /* if */
 
   free(curve->controlv);
@@ -1277,8 +1273,8 @@ ay_ict_revert(ay_icurve_object *curve)
       curve->controlv[j+2] = curve->controlv[i+2];
       curve->controlv[i+2] = dtemp;
 
-      i+=3;
-      j-=3;
+      i += 3;
+      j -= 3;
     } /* while */
 
   /* revert derivatives */
