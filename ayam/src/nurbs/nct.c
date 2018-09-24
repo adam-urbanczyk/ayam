@@ -1108,7 +1108,7 @@ ay_nct_refinekn(ay_nurbcurve_object *curve, int maintain_ends,
 	ay_nct_recreatemp(curve);
     }
 
- return AY_OK;
+ return ay_status;
 } /* ay_nct_refinekn */
 
 
@@ -2356,6 +2356,11 @@ ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
 
   tcl_status = Tcl_GetDouble(interp, argv[1], &u);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
+  if(u != u)
+    {
+      ay_error(AY_ERROR, argv[0], "Parameter u is NaN!");
+      return TCL_OK;
+    }
 
   tcl_status = Tcl_GetInt(interp, argv[2], &r);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
@@ -3212,6 +3217,11 @@ ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
 
   tcl_status = Tcl_GetDouble(interp, argv[i], &u);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
+  if(u != u)
+    {
+      ay_error(AY_ERROR, argv[0], "Parameter u is NaN!");
+      return TCL_OK;
+    }
 
   while(sel)
     {
@@ -7117,6 +7127,11 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
     {
       tcl_status = Tcl_GetDouble(interp, argv[1], &u);
       AY_CHTCLERRRET(tcl_status, argv[0], interp);
+      if(u != u)
+	{
+	  ay_error(AY_ERROR, argv[0], "Parameter u is NaN!");
+	  return TCL_OK;
+	}
     }
 
   i++;
@@ -8925,6 +8940,8 @@ ay_nct_extendtcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      tcl_status = Tcl_GetDouble(interp, argv[i+1], &p[i]);
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	      if(i == 3)
+		break;
 	    } /* for */
 	}
     }
