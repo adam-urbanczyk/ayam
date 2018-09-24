@@ -7148,7 +7148,7 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
   if(argc > 3+have_index)
     {
       tcl_status = Tcl_GetDouble(interp, argv[i], &tol);
-      AY_CHTCLERRRET(tcl_status, argv[0], interp);	
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);
     }
 
   while(sel)
@@ -7394,8 +7394,18 @@ ay_nct_trimtcmd(ClientData clientData, Tcl_Interp *interp,
 
   tcl_status = Tcl_GetDouble(interp, argv[argi], &umin);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
+  if(umin != umin)
+    {
+      ay_error(AY_ERROR, argv[0], "Parameter umin is NaN!");
+      return TCL_OK;
+    }
   tcl_status = Tcl_GetDouble(interp, argv[argi+1], &umax);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
+  if(umax != umax)
+    {
+      ay_error(AY_ERROR, argv[0], "Parameter umax is NaN!");
+      return TCL_OK;
+    }
 
   if(umax <= umin)
     {
@@ -8172,10 +8182,10 @@ ay_nct_cmppntp(const void *p1, const void *p2)
 
 
 /** ay_nct_estlen:
- *  Estimate length of NURBS curve.
+ *  Estimate length of a NURBS curve.
  *
  * \param[in] nc NURBS curve object
- * \param[in,out] len estimated length
+ * \param[in,out] len where to store the estimated length
  *
  * \returns AY_OK on success, error code otherwise.
  */
