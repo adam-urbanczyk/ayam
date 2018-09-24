@@ -10940,6 +10940,11 @@ ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
 
   tcl_status = Tcl_GetDouble(interp, argv[1], &u);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
+  if(u != u)
+    {
+      ay_error(AY_ERROR, argv[0], "Parameter u is NaN!");
+      return TCL_OK;
+    }
 
   tcl_status = Tcl_GetInt(interp, argv[2], &r);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
@@ -11072,6 +11077,11 @@ ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
 
   tcl_status = Tcl_GetDouble(interp, argv[1], &v);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
+  if(v != v)
+    {
+      ay_error(AY_ERROR, argv[0], "Parameter v is NaN!");
+      return TCL_OK;
+    }
 
   tcl_status = Tcl_GetInt(interp, argv[2], &r);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
@@ -11571,6 +11581,11 @@ ay_npt_splituvtcmd(ClientData clientData, Tcl_Interp *interp,
 
   tcl_status = Tcl_GetDouble(interp, argv[i], &t);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
+  if(t != t)
+    {
+      ay_error(AY_ERROR, argv[0], "Parameter t is NaN!");
+      return TCL_OK;
+    }
 
   while(sel)
     {
@@ -13526,6 +13541,11 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
     {
       tcl_status = Tcl_GetDouble(interp, argv[1], &u);
       AY_CHTCLERRRET(tcl_status, argv[0], interp);
+      if(u != u)
+	{
+	  ay_error(AY_ERROR, argv[0], "Parameter u is NaN!");
+	  return TCL_OK;
+	}
     }
   i++;
   tcl_status = Tcl_GetInt(interp, argv[i], &r);
@@ -13745,6 +13765,11 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
     {
       tcl_status = Tcl_GetDouble(interp, argv[1], &v);
       AY_CHTCLERRRET(tcl_status, argv[0], interp);
+      if(v != v)
+	{
+	  ay_error(AY_ERROR, argv[0], "Parameter v is NaN!");
+	  return TCL_OK;
+	}
     }
 
   i++;
