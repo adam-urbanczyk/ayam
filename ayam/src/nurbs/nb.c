@@ -1136,7 +1136,7 @@ ay_nb_InsertKnotCurve3D(int np, int p, double *UP, double *P, double u,
 
 
 /*
- * ay_nb_RemoveKnotCurve4D: (NURBS++)
+ * ay_nb_RemoveKnotCurve4D: (NURBS++ with changes for unclamped knots)
  * remove knot r (with multiplicity s) num times from curve
  * (n, p, U, Pw) if new curve does not deviate <tol> distance from old
  * result: new controls Qw and knots Ubar (allocated outside!)
@@ -1154,9 +1154,18 @@ ay_nb_RemoveKnotCurve4D(int n, int p, double *U, double *Pw, double tol,
 
   m = p+n+2;
   ord = p+1;
+
   fout = (2*r-s-p)/2; /* first control point out */
-  last = r-s;
+  if(fout < 0)
+    fout = 0;
+
   first = r-p;
+  if(first < 0)
+    first = 0;
+
+  last = r-s;
+  if(last > n)
+    last = n;
 
   if(num < 1)
     return AY_ERROR;
@@ -1170,10 +1179,18 @@ ay_nb_RemoveKnotCurve4D(int n, int p, double *U, double *Pw, double tol,
     {
       off = first-1;
       /* temp[0] = Pw[off]; */
-      memcpy(&(temp[0]), &(Pw[off*4]), 4*sizeof(double));
+      if(off >= 0)
+	memcpy(&(temp[0]), &(Pw[off*4]), 4*sizeof(double));
+      else
+	memset(&(temp[0]), 0, 4*sizeof(double));
+
       /* temp[last+1-off] = Pw[last+1]; */
-      memcpy(&(temp[(last+1-off)*4]), &(Pw[(last+1)*4]),
-	     4*sizeof(double));
+      if(last < n)
+	memcpy(&(temp[(last+1-off)*4]), &(Pw[(last+1)*4]),
+	       4*sizeof(double));
+      else
+	memset(&(temp[(last+1-off)*4]), 0, 4*sizeof(double));
+
       i = first;
       j = last;
       ii = 1;
