@@ -7100,7 +7100,8 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
 
-  if(argc < 3)
+  if((argc < 3) ||
+     ((argv[1][0] == '-') && (argv[1][1] == 'i') && (argc < 4)))
     {
       ay_error(AY_EARGS, argv[0], "(u | -i ind) r [tol]");
       return TCL_OK;
@@ -7227,8 +7228,10 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 	    (void)ay_nct_euctohom(curve);
 
 	  /* remove the knot */
-	  ay_status = ay_nb_RemoveKnotCurve4D(curve->length-1, curve->order-1,
-					      curve->knotv, curve->controlv,
+	  ay_status = ay_nb_RemoveKnotCurve4D(curve->length-1,
+					      curve->order-1,
+					      curve->knotv,
+					      curve->controlv,
 					      tol, i, s, r,
 					      newknotv, newcontrolv);
 
