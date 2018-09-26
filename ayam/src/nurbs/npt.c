@@ -13513,7 +13513,8 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
  int have_index = AY_FALSE, i = 1, j = 0, r = 0, s = 0;
  int notify_parent = AY_FALSE;
 
-  if(argc < 3)
+  if((argc < 3) ||
+     ((argv[1][0] == '-') && (argv[1][1] == 'i') && (argc < 4)))
     {
       ay_error(AY_EARGS, argv[0], "(u | -i ind) r [tol]");
       return TCL_OK;
@@ -13547,6 +13548,7 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
 	  return TCL_OK;
 	}
     }
+
   i++;
   tcl_status = Tcl_GetInt(interp, argv[i], &r);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
@@ -13737,7 +13739,8 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
  int have_index = AY_FALSE, i = 1, j = 0, r = 0, s = 0;
  int notify_parent = AY_FALSE;
 
-  if(argc < 2)
+  if((argc < 3) ||
+     ((argv[1][0] == '-') && (argv[1][1] == 'i') && (argc < 4)))
     {
       ay_error(AY_EARGS, argv[0], "(v | -i ind) r [tol]");
       return TCL_OK;
