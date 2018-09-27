@@ -72,7 +72,7 @@ proc aytest_toggleProgress { } {
 #  create the aytest user interface
 #
 proc aytest_selectGUI { } {
-    global ay
+    global ay aytestprefs
 
     winAutoFocusOff
 
@@ -145,14 +145,17 @@ proc aytest_selectGUI { } {
     # ok/cancel buttons
     set f [frame $w.fl]
 
-    button $f.bok -text "Ok" -width 5 -command "\
+    button $f.brun -text "Run" -width 5 -command "\
    aytest_runTests \[$w.fu.fl.l1 curselection\] \[$w.fu.fr.l1 curselection\];"
 
-    button $f.bca -text "Cancel" -width 5 -command "\
-      set ::cancelled 1;focus .;destroy $w;"
+    button $f.bstop -text "Stop" -width 5 -command "set ::cancelled 1;"
 
-    pack $f.bok $f.bca -in $f -side left -fill x -expand yes
+    button $f.bclose -text "Close" -width 5 -command "focus .;destroy $w;"
+
+    pack $f.brun $f.bstop $f.bclose -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x
+
+    set aytestprefs(closebutton) $f.bclose
 
     # Esc-key && close via window decoration == Cancel button
     bind $w <Escape> "$f.bca invoke"
@@ -283,6 +286,10 @@ foreach type $types {
 
     selOb
     goTop
+
+    if { $::cancelled } {
+	break;
+    }
 }
 # foreach
 
@@ -1736,9 +1743,8 @@ uplevel #0 {
 
 set lengths {4 5 6}
 
-#    types { NCurve ICurve ACurve }
 array set Revert {
-    types { NCurve ICurve }
+    types { NCurve ICurve ACurve }
     command { revertC }
 }
 
@@ -2176,7 +2182,6 @@ aytest_crtnvars $aytestprefs(Breadth)
 # test modelling tools
 puts $log "Testing modelling tools ...\n"
 foreach tool $aytesttools {
-    global aytest_result
     puts $log "Testing $tool ...\n"
     puts -nonewline "${tool}, "
     update
@@ -2199,11 +2204,6 @@ foreach tool $aytesttools {
     # foreach type
 
     if { $::cancelled } {
-	set ::cancelled 0
-	return;
-    }
-    update
-    if { $aytest_result == 1 } {
 	break;
     }
 }
@@ -2387,21 +2387,15 @@ set Torus_1(PhiMax) $angles
 
 ###
 foreach type $types {
-    global aytest_result
     set aytestprefs(TestItem) "6 - ${type}"
     puts $log "Testing $type ...\n"
     puts "Testing $type ..."
     aytest_var $type
 
     if { $::cancelled } {
-	set ::cancelled 0
-	return;
-    }
-
-    update
-    if { $aytest_result == 1 } {
 	break;
     }
+
 }
 # foreach
 
@@ -2516,14 +2510,7 @@ foreach type $types {
     selOb
     goTop
 
-
     if { $::cancelled } {
-	set ::cancelled 0
-	return;
-    }
-
-    update
-    if { $aytest_result == 1 } {
 	break;
     }
 }
@@ -2768,8 +2755,15 @@ proc aytest_var { type } {
        append cmds { incr ::cur; set newpro [expr $::cur*100.0/$::tot]; }
        append cmds { global aytestprefs;
 	            if { $newpro > [expr $aytestprefs(Progress) + 0.1] } \
-			 { set aytestprefs(Progress) $newpro; update; } }
+			 {
+			     set aytestprefs(Progress) $newpro; update;
+			     if { $::cancelled } {
+				 return;
+			     }
+			 }
+                    }
 	      }
+	      # if moreoptions
 
 	      lappend body $cmds
 
@@ -2777,8 +2771,6 @@ proc aytest_var { type } {
 	      catch {eval $body}
 
 	      if { $::cancelled } {
-		  set ::cancelled 0
-		  set ::aytest_result 1
 		  return;
 	      }
 	      selOb 0
@@ -2817,8 +2809,6 @@ proc aytest_var { type } {
   # while
 
   if { $::cancelled } {
-      set ::cancelled 0
-      set ::aytest_result 1
       return;
   }
 
@@ -2826,7 +2816,6 @@ proc aytest_var { type } {
       set aytestprefs(Progress) 100; update;
   }
 
-  set aytest_result 0
  return;
 }
 # aytest_var
@@ -2844,6 +2833,8 @@ proc aytest_runTests { tests items } {
 
     set aytestprefs(TestItem) "n/a"
 
+    $aytestprefs(closebutton) conf -state disabled
+
     . configure -cursor watch
     .testGUI configure -cursor watch
     if { [winfo exists .fl.con] == 1 } {
@@ -2851,11 +2842,9 @@ proc aytest_runTests { tests items } {
 	set ::.fl.con(-prompt) ""
     }
     update
+    set ::cancelled 0
 
     foreach test $tests {
-	set ::cancelled 0
-	set ::aytest_result 0
-
 	incr test
 
 	set testitems ""
@@ -2896,7 +2885,7 @@ proc aytest_runTests { tests items } {
 
 	close $::log
 
-	if { $::cancelled || ($::aytest_result == 1) } {
+	if { $::cancelled } {
 	    set ::cancelled 0
 	    puts "\nCancelled test $test..."
 	    break;
@@ -2918,6 +2907,8 @@ proc aytest_runTests { tests items } {
 
     set aytestprefs(TestItem) "n/a"
     set aytestprefs(TestVariant) "n/a"
+
+    $aytestprefs(closebutton) conf -state normal
 
  return;
 }
