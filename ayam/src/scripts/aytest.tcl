@@ -16,6 +16,8 @@ array set aytestprefs {
     MoreOptions 0
     Progress 0
     Breadth 0
+    TestItem "n/a"
+    TestVariant "n/a"
 }
 
 # aytest_handleLBS:
@@ -116,6 +118,8 @@ proc aytest_selectGUI { } {
     set f [frame $w.fp]
     addCheck $f aytestprefs KeepObjects
     addCheck $f aytestprefs KeepFiles
+    addInfo $w aytestprefs TestItem
+    addInfo $w aytestprefs TestVariant
     addOptionToggle $f aytestprefs MoreOptions "Show Progress  "\
 	aytest_toggleProgress
 
@@ -205,7 +209,7 @@ if { [winfo exists .fv.fViews.fview2.f3D.togl] } {
 
 puts -nonewline "Testing "
 foreach type $types {
-
+    set aytestprefs(TestItem) "1 - ${type}"
     puts -nonewline "${type}, "
 
     puts $log "Creating a $type ...\n"
@@ -469,7 +473,6 @@ foreach valset $Cylinder_1(fixedvals) {
 # foreach
 
 
-
 #############
 # Cone
 #############
@@ -485,7 +488,6 @@ array set Cone_1 {
     fixedvals {1}
 }
 set Cone_1(ThetaMax) $angles
-
 
 
 #############
@@ -532,7 +534,6 @@ lappend Hyperboloid_1(fixedvals) { 0.5 0.0 0.0  1.0 0.0 0.0 }
 
 # frustum (cone without apex)
 lappend Hyperboloid_1(fixedvals) { 0.0 1.0 -0.5  0.0 0.5 0.5 }
-
 
 
 #############
@@ -642,6 +643,8 @@ lappend Torus_1(fixedvals) { 1.0 0.5 180.0 360.0 }
 
 #set types Sphere
 foreach type $types {
+    set aytestprefs(TestItem) "2 - ${type}"
+
     puts $log "Testing $type ...\n"
 
     puts -nonewline "${type}, "
@@ -1008,6 +1011,8 @@ aytest_crtnvars
 
 ###
 foreach type $types {
+    set aytestprefs(TestItem) "3 - ${type}"
+
     puts $log "Testing $type ...\n"
 
     puts -nonewline "${type}, "
@@ -1251,7 +1256,6 @@ lappend Extrude_3(fixedvals) { 10.0 }
 # XXXX TODO: add bevels, add holes
 
 
-
 # Sweep Variation #1
 array set Sweep_1 {
     precmd {
@@ -1306,9 +1310,6 @@ array set Sweep_3 {
 # XXXX TODO: add bevels
 
 
-
-
-
 # Birail1 Variation #1
 array set Birail1_1 {
     precmd {
@@ -1321,8 +1322,6 @@ array set Birail1_1 {
     fixedvars { dummy }
     fixedvals { {0} }
 }
-
-
 
 
 # Birail2 Variation #1
@@ -1340,8 +1339,6 @@ array set Birail2_1 {
 }
 
 
-
-
 # Gordon Variation #1
 array set Gordon_1 {
     precmd {
@@ -1353,7 +1350,6 @@ array set Gordon_1 {
     fixedvars { dummy }
     fixedvals { {0} }
 }
-
 
 
 # Skin Variation #1
@@ -1442,7 +1438,6 @@ lappend Skin_4(fixedvals) {0 5}
 lappend Skin_4(fixedvals) {0 4}
 lappend Skin_4(fixedvals) {0 3}
 
-
 # Skin Variation #5
 array set Skin_5 {
     precmd {
@@ -1489,8 +1484,6 @@ lappend Skin_5(fixedvals) { 0 }
 
 
 # XXXX TODO: add bevels
-
-
 
 
 # Cap Variation #1
@@ -1549,7 +1542,6 @@ lappend Bevel_1(fixedvals) { 0 }
 lappend Bevel_1(fixedvals) { 0 }
 
 
-
 # ExtrNC Variation #1
 array set ExtrNC_1 {
     precmd {
@@ -1586,7 +1578,6 @@ lappend ExtrNC_1(fixedvals) { 0 }
 lappend ExtrNC_1(fixedvals) { 0 }
 
 
-
 # ExtrNP Variation #1
 array set ExtrNP_1 {
     precmd {
@@ -1603,7 +1594,6 @@ array set ExtrNP_1 {
 lappend ExtrNP_1(fixedvals) { 0.1 0.9 0.1 0.9 }
 lappend ExtrNP_1(fixedvals) { 0.5 1.0 0.1 0.9 }
 lappend ExtrNP_1(fixedvals) { 0.5 1.0 0.5 1.0 }
-
 
 
 # OffsetNC Variation #1
@@ -1722,6 +1712,8 @@ array set Trim_1 {
 ###
 puts -nonewline "Testing "
 foreach type $types {
+    set aytestprefs(TestItem) "4 - ${type}"
+
     puts $log "Testing $type ...\n"
 
     puts -nonewline "${type}, "
@@ -1744,8 +1736,9 @@ uplevel #0 {
 
 set lengths {4 5 6}
 
+#    types { NCurve ICurve ACurve }
 array set Revert {
-    types { NCurve ICurve ACurve }
+    types { NCurve ICurve }
     command { revertC }
 }
 
@@ -2183,13 +2176,15 @@ aytest_crtnvars $aytestprefs(Breadth)
 # test modelling tools
 puts $log "Testing modelling tools ...\n"
 foreach tool $aytesttools {
+    global aytest_result
     puts $log "Testing $tool ...\n"
-
     puts -nonewline "${tool}, "
     update
     set cmd [subst "\$${tool}(command)"]
     set types [subst "\$${tool}(types)"]
     foreach type $types {
+	set aytestprefs(TestItem) "5 - ${tool} - ${type}"
+
 	if { [info exists ${tool}(precmd)] } {
 	    eval [subst "\$${tool}(precmd)"]
 	}
@@ -2200,14 +2195,17 @@ foreach tool $aytesttools {
 	}
 
 	aytest_var $type
-
-	if { $::cancelled } {
-	    set ::cancelled 0
-	    return;
-	}
-
     }
     # foreach type
+
+    if { $::cancelled } {
+	set ::cancelled 0
+	return;
+    }
+    update
+    if { $aytest_result == 1 } {
+	break;
+    }
 }
 # foreach tool
 puts -nonewline "\n"
@@ -2229,7 +2227,6 @@ puts $log "Testing all solid object variations (Errors expected!) ...\n"
 # XXXX add NaN, Inf?
 set angles {-360 -359 -271 -270 -269 -181 -180 -179 -91 -90 -89 -1 -0.1 -0 0 0.1 1 89 90 91 179 180 181 269 270 271 359 360}
 set floatvals {-1000 -100 -20 -2.5 -2 -1.5 -1.0 -0.9 -0.1 -0 0 0.1 0.9 1.0 1.5 2 2.5 20 100 1000}
-
 
 
 #############
@@ -2391,6 +2388,7 @@ set Torus_1(PhiMax) $angles
 ###
 foreach type $types {
     global aytest_result
+    set aytestprefs(TestItem) "6 - ${type}"
     puts $log "Testing $type ...\n"
     puts "Testing $type ..."
     aytest_var $type
@@ -2440,6 +2438,7 @@ if { [winfo exists .fv.fViews.fview2.f3D.togl] } {
 
 puts -nonewline "Testing "
 foreach type $types {
+    set aytestprefs(TestItem) "7 - ${type}"
 
     puts -nonewline "${type}, "
 
@@ -2516,6 +2515,17 @@ foreach type $types {
 
     selOb
     goTop
+
+
+    if { $::cancelled } {
+	set ::cancelled 0
+	return;
+    }
+
+    update
+    if { $aytest_result == 1 } {
+	break;
+    }
 }
 # foreach
 
@@ -2620,7 +2630,6 @@ hSL
 # aytest_varcmds
 
 
-
 # forall:
 # create cartesian product of a list of lists
 # and run a cmd for every resulting combination
@@ -2661,7 +2670,16 @@ proc aytest_var { type } {
   global aytestprefs
 
   set i 1
+  set totalvars 0
   while {[info exists ::${type}_$i]} {
+      incr totalvars
+      incr i
+  }
+
+  set i 1
+  while {[info exists ::${type}_$i]} {
+
+      set aytestprefs(TestVariant) "$i/$totalvars"
 
       # create a Level for each object type variation tested
       crtOb Level
@@ -2824,6 +2842,8 @@ proc aytest_runTests { tests items } {
 	return;
     }
 
+    set aytestprefs(TestItem) "n/a"
+
     . configure -cursor watch
     .testGUI configure -cursor watch
     if { [winfo exists .fl.con] == 1 } {
@@ -2832,9 +2852,10 @@ proc aytest_runTests { tests items } {
     }
     update
 
-    set ::aytest_result 0
-
     foreach test $tests {
+	set ::cancelled 0
+	set ::aytest_result 0
+
 	incr test
 
 	set testitems ""
@@ -2875,6 +2896,12 @@ proc aytest_runTests { tests items } {
 
 	close $::log
 
+	if { $::cancelled || ($::aytest_result == 1) } {
+	    set ::cancelled 0
+	    puts "\nCancelled test $test..."
+	    break;
+	}
+
 	puts "\nFinished test $test..."
     }
     # foreach
@@ -2888,6 +2915,9 @@ proc aytest_runTests { tests items } {
 	Console:prompt .fl.con
     }
     update
+
+    set aytestprefs(TestItem) "n/a"
+    set aytestprefs(TestVariant) "n/a"
 
  return;
 }
