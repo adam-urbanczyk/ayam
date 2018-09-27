@@ -657,6 +657,10 @@ foreach type $types {
     puts -nonewline "${type}, "
 
     aytest_var $type
+
+    if { $::cancelled } {
+	break;
+    }
 }
 # foreach
 puts -nonewline "\n"
@@ -1025,6 +1029,10 @@ foreach type $types {
     puts -nonewline "${type}, "
 
     aytest_var $type
+
+    if { $::cancelled } {
+	break;
+    }
 }
 # foreach
 puts -nonewline "\n"
@@ -1726,6 +1734,10 @@ foreach type $types {
     puts -nonewline "${type}, "
     update
     aytest_var $type
+
+    if { $::cancelled } {
+	break;
+    }
 }
 # foreach
 puts -nonewline "\n"
@@ -2395,7 +2407,6 @@ foreach type $types {
     if { $::cancelled } {
 	break;
     }
-
 }
 # foreach
 
