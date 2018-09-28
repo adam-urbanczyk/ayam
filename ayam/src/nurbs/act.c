@@ -1036,7 +1036,7 @@ ay_act_resize(ay_acurve_object *curve, int new_length)
       for(i = 0; i < new_length; i++)
 	{
 	  memcpy(&ncontrolv[a], &(curve->controlv[a]), stride*sizeof(double));
-	  a+=stride;
+	  a += stride;
 	}
     }
   else
@@ -1070,7 +1070,7 @@ ay_act_resize(ay_acurve_object *curve, int new_length)
       for(i = 0; i < (curve->length-1); i++)
 	{
 	  memcpy(&ncontrolv[b], &(curve->controlv[a]), stride*sizeof(double));
-	  b+=stride;
+	  b += stride;
 
 	  if((cv[i*stride] != cv[(i+1)*stride]) ||
 	     (cv[i*stride+1] != cv[(i+1)*stride+1]) ||
@@ -1092,12 +1092,13 @@ ay_act_resize(ay_acurve_object *curve, int new_length)
 		  ncontrolv[b+2] = curve->controlv[a+2] + v[2];
 		  ncontrolv[b+3] = 1.0;
 
-		  b+=stride;
+		  b += stride;
 		} /* for */
 	    } /* if */
 
-	  a+=stride;
+	  a += stride;
 	} /* for */
+
       memcpy(&ncontrolv[(new_length-1)*stride],
 	     &(curve->controlv[(curve->length-1)*stride]),
 	     stride*sizeof(double));
@@ -1147,8 +1148,8 @@ ay_act_revert(ay_acurve_object *curve)
       curve->controlv[j+2] = curve->controlv[i+2];
       curve->controlv[i+2] = dtemp;
 
-      i+=stride;
-      j-=stride;
+      i += stride;
+      j -= stride;
     } /* while */
 
  return AY_OK;
