@@ -161,6 +161,9 @@ proc aytest_selectGUI { } {
     bind $w <Escape> "$f.bclose invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bclose invoke"
 
+    # establish "Help"-binding
+    shortcut_addcshelp $w ayam-6.html aytesttcl
+
     # emergency exit
     bind $w <Control-KeyPress-C> {set cancelled 1;break}
 
