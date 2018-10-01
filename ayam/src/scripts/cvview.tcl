@@ -70,6 +70,18 @@ proc cvview_update { } {
 	    set CVView(he) 1
 	    set CVView(stride) 3
 	}
+	BCurve {
+	    global BCurveAttrData
+	    set CVView(wi) $BCurveAttrData(Length)
+	    set CVView(he) 1
+	    set CVView(stride) 3
+	}
+	SDCurve {
+	    global SDCurveAttrData
+	    set CVView(wi) $SDCurveAttrData(Length)
+	    set CVView(he) 1
+	    set CVView(stride) 3
+	}
 	default {
 	    # error message?
 	    return;
