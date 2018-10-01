@@ -90,8 +90,8 @@ proc aytest_selectGUI { } {
     set f [frame $w.fu]
     pack $f -in $w -side top -fill both -expand yes
 
-    set ay(bca) $w.fl.bca
-    set ay(bok) $w.fl.bok
+    set ay(bca) $w.fl.bclose
+    set ay(bok) $w.fl.bstart
 
     # test management widgets
     set f [frame $w.fu.fl -relief sunken -border 1]
@@ -158,8 +158,8 @@ proc aytest_selectGUI { } {
     set aytestprefs(closebutton) $f.bclose
 
     # Esc-key && close via window decoration == Cancel button
-    bind $w <Escape> "$f.bca invoke"
-    wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
+    bind $w <Escape> "$f.bclose invoke"
+    wm protocol $w WM_DELETE_WINDOW "$f.bclose invoke"
 
     # emergency exit
     bind $w <Control-KeyPress-C> {set cancelled 1;break}
