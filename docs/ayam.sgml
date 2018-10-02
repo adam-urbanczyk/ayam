@@ -17415,17 +17415,17 @@ remknNC &ndash; remove knot from NURBS curve:
  <item>Synopsis: <tt/"remknNC (u | -i ind) r [tol]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Remove a knot at the position
-specified by <em/u/ (u must be in the valid range of the knot vector
-of the selected curve) <em/r/ times from the curve. Since Ayam 1.20
+specified by <tt/u/ (u must be in the valid range of the knot vector
+of the selected curve) <tt/r/ times from the curve. Since Ayam 1.20
 the knot to remove may also be specified using its (zero based)
 index in the knot vector (i.e.~use <tt/"remknNC -i 3 1"/ instead of
 <tt/"remknNC 0.5 1"/ for the knot vector <tt/"0 0 0 0.5 1 1 1"/).
 <p><p>
 Note that the shape of the curve may be changed by this tool unless
-the parameter <em/tol/ is specified.
-If <em/tol/ is specified the new curve does not deviate
-from the original curve more than <em/tol/ in any point on the curve.
-If the knot can not be removed <em/r/ times due to the tolerance, an
+the parameter <tt/tol/ is specified.
+If <tt/tol/ is specified the new curve does not deviate
+from the original curve more than <tt/tol/ in any point on the curve.
+If the knot can not be removed <tt/r/ times due to the tolerance, an
 error is reported and the original curve is left unchanged.
 <p>
 This operation also fails, if the knot removal would lead to a curve
@@ -17534,12 +17534,12 @@ tweenNC &ndash; interpolate (tween) curves:
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Interpolate (tween) between the first two selected
 NURBS curves, creating a new curve that incorporates features from the
-selected curves. The parameter <em/r/ defines the
+selected curves. The parameter <tt/r/ defines the
 ratio of influence of the first and the second curve (the latter
-using <em>1-r</em>). This parameter defaults to 0.5.<newline>
+using <tt>1-r</tt>). This parameter defaults to 0.5.<newline>
 The first two curves must be of the same length and order. They need
 not be defined on the same knot vector, however.<newline>
-If a third curve is selected, the parameter <em/r/ is ignored and this
+If a third curve is selected, the parameter <tt/r/ is ignored and this
 third curve defines the ratio of influence with its y coordinates.
 <p><p>
 See also section <ref id="tweennct" name="Tween Curve Tool">.
@@ -17621,10 +17621,10 @@ splitNC &ndash; split NURBS curve
  <item>Synopsis: <tt/"splitNC [-a 0|1] u"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: splits the selected NURBS curves at the designated
-parametric value <em/u/ into two curves, creating one new curve and
+parametric value <tt/u/ into two curves, creating one new curve and
 <em>modifying the original</em> selected curve.
 <p>
-If the option <em/-a/ is set to 1 the new curve(s) will be appended
+If the option <tt/"-a"/ is set to 1 the new curve(s) will be appended
 to the current level. Otherwise the new curve(s) will be inserted
 into the level right after the respective curve(s) to split.
 <footnote>Since 1.24.</footnote>
@@ -18049,10 +18049,10 @@ splituNP &ndash; split NURBS patch:
  <item>Synopsis: <tt/"splituNP [-a 0|1] u"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Splits the selected NPatch objects into two patches
-at the parametric value <em/u/, creating one new NPatch object and
+at the parametric value <tt/u/, creating one new NPatch object and
 <em>modifying the original</em> selected NPatch object.<newline>
 <p>
-If the option <em/-a/ is set to 1 the new NPatch object(s) will be appended
+If the option <tt/"-a"/ is set to 1 the new NPatch object(s) will be appended
 to the current level. Otherwise the new NPatch object(s) will be inserted
 into the level right after the respective NPatch object(s) to split.
 This is the new default.<footnote>Since 1.24.</footnote>
@@ -18069,10 +18069,10 @@ splitvNP &ndash; split NURBS patch:
  <item>Synopsis: <tt/"splitvNP [-a 0|1] v"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Splits the selected NPatch objects into two patches
-at the parametric value <em/v/, creating one new NPatch object and
+at the parametric value <tt/v/, creating one new NPatch object and
 <em>modifying the original</em> selected NPatch object.<newline>
 <p>
-If the option <em/-a/ is set to 1 the new NPatch object(s) will be appended
+If the option <tt/"-a"/ is set to 1 the new NPatch object(s) will be appended
 to the current level. Otherwise the new NPatch object(s) will be inserted
 into the level right after the respective NPatch object(s) to split.
 This is the new default.<footnote>Since 1.24.</footnote>
@@ -18202,9 +18202,9 @@ tweenNP &ndash; interpolate (tween) surfaces:
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Interpolate (tween) between the first two selected
 NURBS patches, creating a new patch that incorporates features from the
-selected patches. The parameter <em/r/ defines the
+selected patches. The parameter <tt/r/ defines the
 ratio of influence of the first and the second patch (the latter
-using <em>1-r</em>). This parameter defaults to 0.5.<newline>
+using <tt>1-r</tt>). This parameter defaults to 0.5.<newline>
 The two patches must be of the same width, height, uorder, and vorder.
 They need not be defined on the same knot vectors, however.
 <p><p>
@@ -19865,11 +19865,17 @@ that are distributed with Ayam.
 The helper scripts may be run via the context menu of the console, the
 Tcl <tt>"source"</tt> command in the console, or the <tt>"Scripts"</tt>
 preference setting of Ayam on each start (the latter except for
-<tt/repairAyam.tcl/ and <tt/bgconvert.tcl/).
+the so called <em/external/ scripts
+<tt/"repairAyam.tcl"/, <tt/"bgconvert.tcl"/, and <tt/"aytest.tcl"/).
+<p>
+All other, <em/internal/ scripts may be combined arbitrarily except for
+<tt/"kdialog.tcl"/, <tt/"zdialog.tcl"/, and <tt/"intfd.tcl"/,
+which are mutually exclusive.
+
 
 <sect2>Repair Ayam<label id="repayam">
 <p>
-The external Tcl script <tt>"repairAyam.tcl"</tt>
+The <em/external/ Tcl script <tt>"repairAyam.tcl"</tt>
 may be used to repair the application state of Ayam,
 should it be stuck e.g.~in an endless loop of Tcl error
 messages.<footnote>Since 1.8.2.</footnote>
@@ -19919,9 +19925,50 @@ afterwards.
 Simply saving the scene using <tt>"File/Save"</tt> or <tt/&lt;Ctrl+s&gt;/
 should be avoided because views were possibly deleted.
 
+<sect2>Test Ayam<label id="aytesttcl">
+<p>
+The <em/external/ script <tt>"aytest.tcl"</tt> allows to test the
+Ayam implementation by creating objects with various combinations
+of parameters and executing modelling actions on them.
+
+
+<sect2>Use Ayam as Command Line Converter<label id="bgconverttcl">
+<p>
+The <em/external/ Tcl script <tt>"bgconvert.tcl"</tt>
+converts scene files from one 3D file format to another,
+with the help of Ayam which is running in the
+background.<footnote>Since 1.15.</footnote>
+<p>
+In the most simple form, bgconvert may be used from a Unix command line
+(or shell script) like this:
+<tscreen><tt>
+&raquo;&thinsp;bgconvert.tcl infile.x3d outfile.dxf
+</tt></tscreen>
+<p>
+The above command would load the X3D file <tt>"infile.x3d"</tt>
+into Ayam and export the scene as DXF file to <tt>"outfile.dxf"</tt>.
+<p>
+For a successful conversion Ayam has to run and the plugins required
+for the import and export processes need to be available and properly
+configured (check the <tt>"Plugins"</tt> preference setting).
+The plugins necessary for the conversion will be loaded automatically.
+<p>
+Import and export options may also be given like this:
+<tscreen><tt>
+&raquo;&thinsp;bgconvert.tcl "infile.rib -p 1" outfile.dxf
+</tt></tscreen>
+<p>
+In the example above the <tt>"-p 1"</tt> option switches on reading
+of partial RIB files.
+<p>
+Available options and their syntax may be inquired from the
+import and export plugin Tcl scripts (e.g.~<tt>"plugins/rrib.tcl"</tt>).
+
+<#if out="latex"><x/newpage/</#if>
+
 <sect2>Shader Parsing<label id="slxmltcl">
 <p>
-The external Tcl script <tt>"slxml.tcl"</tt> switches the shader parsing
+The Tcl script <tt>"slxml.tcl"</tt> switches the shader parsing
 machinery of Ayam to recognize XML based meta information embedded in
 shading language comments. This way, the shader database for the Material
 objects can be built up from shading language source files, instead of
@@ -19971,6 +20018,8 @@ shader signature,
 <item>there is no control over whether the compiled shader, that is used
 for rendering, matches the shader source code.
 </itemize>
+
+<#if out="latex"><x/newpage/</#if>
 
 <sect2>Convert Everything to Polygons<label id="topolytcl">
 <p>
@@ -20126,6 +20175,7 @@ There are also two corresponding entries in the custom menu.
 Note that the tags can be saved to scene files and also copied
 to different objects.
 
+
 <sect2>Revert Cursor Key Behavior<label id="rctcl">
 <p>
 The script <tt>"rc.tcl"</tt> (for <bf/r/evert <bf/c/ursor) may be
@@ -20139,37 +20189,6 @@ and panning in parallel views are swapped, e.g.~just pressing
 The shortcuts will be swapped again, when the view changes
 type to <tt/"Perspective"/.
 
-<sect2>Use Ayam as Command Line Converter<label id="bgconverttcl">
-<p>
-The external Tcl script <tt>"bgconvert.tcl"</tt>
-converts scene files from one 3D file format to another,
-with the help of Ayam which is running in the
-background.<footnote>Since 1.15.</footnote>
-<p>
-In the most simple form, bgconvert may be used from a Unix command line
-(or shell script) like this:
-<tscreen><tt>
-&raquo;&thinsp;bgconvert.tcl infile.x3d outfile.dxf
-</tt></tscreen>
-<p>
-The above command would load the X3D file <tt>"infile.x3d"</tt>
-into Ayam and export the scene as DXF file to <tt>"outfile.dxf"</tt>.
-<p>
-For a successful conversion Ayam has to run and the plugins required
-for the import and export processes need to be available and properly
-configured (check the <tt>"Plugins"</tt> preference setting).
-The plugins necessary for the conversion will be loaded automatically.
-<p>
-Import and export options may also be given like this:
-<tscreen><tt>
-&raquo;&thinsp;bgconvert.tcl "infile.rib -p 1" outfile.dxf
-</tt></tscreen>
-<p>
-In the example above the <tt>"-p 1"</tt> option switches on reading
-of partial RIB files.
-<p>
-Available options and their syntax may be inquired from the
-import and export plugin Tcl scripts (e.g.~<tt>"plugins/rrib.tcl"</tt>).
 
 <sect2>Access Core Functions from the Toolbox<label id="zaptcl">
 <p>
@@ -20181,6 +20200,7 @@ toolbox window.
 After running the script <tt>"zap.tcl"</tt>, there will be a new
 toolbox button, labeled <tt>"Zap!"</tt>, that simply runs the zap
 command (which iconifies the complete application).
+
 
 <sect2>Switch Dialogs to Kdialog<label id="kdialogtcl">
 <p>
@@ -20199,6 +20219,7 @@ of the native Tk file dialog.<newline>
 The script also adds a custom main menu entry to revert any
 changes.
 
+
 <sect2>Switch File Dialogs to Tcl<label id="intfdtcl">
 <p>
 The script <tt>"intfd.tcl"</tt> switches all file dialogs of
@@ -20209,6 +20230,7 @@ of the native file dialogs provided by the operating system.
 The script also adds a custom main menu entry to revert any
 changes.
  -->
+
 
 <sect2>Use Aqsis from Application Directory<label id="useaqsisapptcl">
 <p>
@@ -20224,6 +20246,7 @@ Note that the script does not change the <tt>"RIB-Export/Renderer"</tt>
 preferences, you still have to switch to Aqsis using the main menu
 <tt>"Special/Select Renderer"</tt> once.
 
+
 <sect2>Use Pixie from Library Directory<label id="usepixietcl">
 <p>
 The script <tt>"usepixie.tcl"</tt> sets up Ayam to use Pixie
@@ -20237,6 +20260,7 @@ be set up properly.
 Note that the script does not change the <tt>"RIB-Export/Renderer"</tt>
 preferences, you still have to switch to Pixie using the main menu
 <tt>"Special/Select Renderer"</tt> once.
+
 
 <sect2>Replace Icons<label id="myiconstcl">
 <p>
@@ -20254,6 +20278,7 @@ by the following scripting interface command (in the Ayam console):
 Action icon variants (e.g.~for the scale about actions) can also be created
 automatically by changing the <tt/"createVariants"/ variable in
 the script file.
+
 
 <sect2>Dynamic Tree<label id="dtreetcl">
 <p>
@@ -20273,6 +20298,7 @@ require tree updates. However, operations like opening or closing
 sub trees or even just scrolling in the tree will become a bit slower,
 as canvas items need to be created constantly.
 
+
 <sect2>Control Vertex View<label id="cvviewtcl">
 <p>
 <figure loc="ht">
@@ -20286,7 +20312,7 @@ view the control points of NURBS surface or curve objects as property,
 see also the image above.
 
 The script currently supports the following object types:
-NPatch, NCurve, IPatch, PatchMesh, ACurve, and ICurve.
+NPatch, NCurve, IPatch, PatchMesh, ACurve, ICurve, BCurve, and SDCurve.
 
 If the script is loaded, there is a new entry in the <tt>"Custom"</tt> menu
 that allows to add a new property to an individual surface or curve object.
@@ -24474,6 +24500,7 @@ Index:
 <item>AvoidPwlCurve: <ref id="hidprefs" name="hidden preference setting">
 <item>ayamrc: <ref id="ayamrc" name="Ayamrc File">
 <item>ayError: <ref id="scayerror" name="scripting interface command">
+<item>aytest.tcl: <ref id="aytesttcl" name="example/helper script">
 </list>
 
 <#if out="latex"><x/phantomsection/</#if>
