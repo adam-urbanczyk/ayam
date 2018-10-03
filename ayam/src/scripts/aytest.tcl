@@ -290,6 +290,8 @@ foreach type $types {
     selOb
     goTop
 
+    catch {viewCloseAll}
+
     if { $::cancelled } {
 	break;
     }
@@ -2524,6 +2526,8 @@ foreach type $types {
     selOb
     goTop
 
+    catch {viewCloseAll}
+
     if { $::cancelled } {
 	break;
     }
@@ -2625,6 +2629,8 @@ goUp
 hSL
 delOb
 hSL
+
+catch {viewCloseAll}
 
 }
 }
@@ -2892,6 +2898,8 @@ proc aytest_runTests { tests items } {
 
 	newScene
 	selOb
+
+	set aytestprefs(Progress) 0.0
 
 	puts "Running test $test..."
 
