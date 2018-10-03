@@ -3,7 +3,7 @@
 # shows a simple one object constraint that locks
 # the control points of a NCurve object in radial
 # configuration in the xy-plane
-set t "";catch [getType t];if {$t != "NCurve"} {return;}
+set t "";catch {getType t};if {$t != "NCurve"} {return;}
 getProp;
 set length $NCurveAttrData(Length)
 set angled [expr (2*3.141592654)/$length]

@@ -29,7 +29,7 @@ if { $ayprefs(SingleWindow) == 1 } {
 
     # set the focus ring color
     foreach w $widgets {
-	catch [$w conf -highlightcolor $focuscol]
+	catch {$w conf -highlightcolor $focuscol}
     }
 
 
