@@ -1169,7 +1169,6 @@ proc editPointDialogClear { w } {
 }
 
 proc editPointDialogSet { ww arr } {
-
     if { $arr == "first" || $arr == "last" } {
 	selPnts -get pnts
 	if { [llength $pnts] > 0 } {
@@ -1178,9 +1177,7 @@ proc editPointDialogSet { ww arr } {
 		getPnt [lindex $pnts 0] x y z w
 	    } else {
 		set l [llength $pnts]
-		if { $l > 1 } {
-		    incr l -1
-		}
+		incr l -1
 		getPnt [lindex $pnts $l] x y z w
 	    }
 	    editPointDialogClear $ww
