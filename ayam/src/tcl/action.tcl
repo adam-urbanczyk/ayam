@@ -1417,6 +1417,9 @@ proc editPointDialog { win {dragsel 0} } {
 	}
     }
 
+    # establish "Help"-binding
+    shortcut_addcshelp $w ayam-3.html numeditac
+
     # Esc-key && close via window decoration == Cancel button
     bind $w <Escape> "$w.f2.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$w.f2.bca invoke"
@@ -1516,7 +1519,6 @@ proc actionEditNumP { w } {
         $w penpac -start 0 0
 	editPointDialog $w 1
     }
-
 
  return;
 }
