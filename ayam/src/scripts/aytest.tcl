@@ -1820,6 +1820,62 @@ array set RemoveK {
     }
 }
 
+array set RemoveKS {
+    types { NCurve }
+    command {
+	getProp;
+	set kn [lindex $::NCurveAttrData(Knots) $::NCurveAttrData(Order)];
+	# set kn 1 => CRASH
+	remknNC $kn 1 0.0
+    }
+}
+
+array set RemoveKI {
+    types { NCurve }
+    command {
+	remknNC -i 0 1 Inf
+    }
+}
+
+array set RemoveKIS {
+    types { NCurve }
+    command {
+	remknNC -i 0 1 0.0
+    }
+}
+
+array set RemoveKI1 {
+    types { NCurve }
+    command {
+	remknNC -i 1 1 Inf
+    }
+}
+
+array set RemoveKI1S {
+    types { NCurve }
+    command {
+	remknNC -i 1 1 0.0
+    }
+}
+
+array set RemoveKIEnd {
+    types { NCurve }
+    command {
+	getProp;
+	set kn [expr $::NCurveAttrData(Length)+$::NCurveAttrData(Order)-1];
+	remknNC -i $kn 1 Inf
+    }
+}
+
+array set RemoveKIEndS {
+    types { NCurve }
+    command {
+	getProp;
+	set kn [expr $::NCurveAttrData(Length)+$::NCurveAttrData(Order)-1];
+	remknNC -i $kn 1 0.0
+    }
+}
+
 array set TrimNC {
     types { NCurve }
     command {
@@ -2106,12 +2162,26 @@ array set RemoveKUNP {
     }
 }
 
+array set RemoveKIUNP {
+    types { NPatch }
+    command {
+	remknuNP -i 0 1 Inf
+    }
+}
+
 array set RemoveKVNP {
     types { NPatch }
     command {
 	getProp;
 	set kn [lindex $::NPatchAttrData(Knots_V) $::NPatchAttrData(Order_V)];
 	remknvNP $kn 1 Inf
+    }
+}
+
+array set RemoveKIVNP {
+    types { NPatch }
+    command {
+	remknvNP -i 0 1 Inf
     }
 }
 
@@ -2971,7 +3041,9 @@ set aytest_4items $items
 # set up tools to test in test #5
 set items {}
 lappend items Revert RevertUS RevertVS SwapUVS Refine RefineUNP RefineVNP
-lappend items RefineK InsertK InsertK2 RemoveK CoarsenNC OpenC CloseC
+lappend items RefineK InsertK InsertK2 RemoveK RemoveKI RemoveKS RemoveKIS
+lappend items RemoveKI1 RemoveKI1S RemoveKIEnd RemoveKIEndS
+lappend items CoarsenNC OpenC CloseC
 lappend items ShiftC ShiftC2 ShiftCM ShiftCM2 ToXYC ToXZC ToYZC
 lappend items ElevateNC ElevateNC2 ElevateNC3 EstLenNC ExtendNC SplitNC
 lappend items TrimNC ClampNC ClampNCS ClampNCE
@@ -2983,7 +3055,8 @@ lappend items UnclampVNP UnclampVNPS UnclampVNPE
 lappend items ElevateUNP ElevateUNP2 ElevateUNP3
 lappend items ElevateVNP ElevateVNP2 ElevateVNP3
 lappend items InsertKUNP InsertK2UNP InsertKVNP InsertK2VNP
-lappend items RemoveKUNP RemoveKVNP SplitNPU SplitNPV CloseUNP CloseVNP
+lappend items RemoveKUNP RemoveKIUNP RemoveKVNP RemoveKIVNP
+lappend items SplitNPU SplitNPV CloseUNP CloseVNP
 
 set aytest_5items $items
 
