@@ -4175,7 +4175,7 @@ track of it). Warping the mouse pointer currently does not work on
 Mac OS X Aqua.
 
 <#if out="latex"><x/newpage/</#if>
-
+<label id="numeditac">
 The modelling action <tt/"Numeric Point Edit"/ (shortcut:
 <tt/&lt;E&gt;/)
 starts an intermediate point selection action and upon a click
@@ -19929,7 +19929,8 @@ should be avoided because views were possibly deleted.
 <p>
 The <em/external/ script <tt>"aytest.tcl"</tt> allows to test the
 Ayam implementation by creating objects with various combinations
-of parameters and executing modelling actions on them.
+of parameters and executing standard operations and modelling actions
+on them.
 
 
 <sect2>Use Ayam as Command Line Converter<label id="bgconverttcl">
