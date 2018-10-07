@@ -1164,8 +1164,8 @@ array set editPntArr {
 }
 # array
 
-proc editPointDialogClear { w } {
-    foreach e {x y z w} {$w.f1.f$e.e delete 0 end}
+proc editPointDialogClear { ww } {
+    foreach e {x y z w} {$ww.f1.f$e.e delete 0 end}
 }
 
 proc editPointDialogSet { ww arr } {
@@ -1181,12 +1181,55 @@ proc editPointDialogSet { ww arr } {
 		getPnt [lindex $pnts $l] x y z w
 	    }
 	    editPointDialogClear $ww
-	    foreach e {x y z w} {eval $ww.f1.f$e.e insert 0 \$$e}
+	    foreach e {x y z w} {
+		if { [info exists $e] } {
+		    eval $ww.f1.f$e.e insert 0 \$$e
+		}
+	    }
 	}
     } else {
 	global $arr
 	editPointDialogClear $ww
-	foreach e {x y z w} {eval $ww.f1.f$e.e insert 0 \$${arr}($e)}
+	foreach e {x y z w} {
+	    if { [info exists ${arr}($e)] } {
+		eval $ww.f1.f$e.e insert 0 \$${arr}($e)
+	    }
+	}
+    }
+ return;
+}
+
+proc editPointDialogUpdatePopup { ww } {
+    global aymark
+    set m $ww.popup
+    set l "Fetch Mark"
+    append l " ($aymark(x), $aymark(y), $aymark(z))"
+    $m entryconfigure 2 -label $l
+    selPnts -get pnts
+    if { [llength $pnts] > 0 } {
+	set pnts [lsort $pnts]
+	set len [llength $pnts]
+	incr len -1
+	foreach i {3 4} {
+	    if { $i == 3 } {
+		set l "Fetch First ("
+		getPnt [lindex $pnts 0] x y z w
+	    } else {
+		set l "Fetch Last ("
+		getPnt [lindex $pnts $len] x y z w
+	    }
+	    foreach e {x y z w} {
+		if { [info exists $e] } {
+		    eval append l \$$e
+		    if { $e != "w" } { append l ", " }
+		}
+	    }
+	    append l ")"
+	    $m entryconfigure $i -state active -label $l
+	}
+    } else {
+	$m entryconfigure 3 -state disabled -label "Fetch First"
+	$m entryconfigure 4 -state disabled -label "Fetch Last"
     }
  return;
 }
@@ -1426,7 +1469,9 @@ proc editPointDialog { win {dragsel 0} } {
 
     focus $f.bok
 
-    bind $w <ButtonPress-$aymainshortcuts(CMButton)> "winOpenPopup $w"
+    bind $w <ButtonPress-$aymainshortcuts(CMButton)> "\
+          editPointDialogUpdatePopup $w;\
+          winOpenPopup $w"
 
     if {  [string first ".view" $win] != 0 } {
 	# internal view
