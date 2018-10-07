@@ -1521,10 +1521,10 @@ tag can be added to the selected objects
 </itemize><itemize>
 <item><tt>"RIB-Export/From Camera"</tt>, writes a complete RIB of
 the current scene with the camera transformations taken from the
-currently selected Camera object. The size of the rendered image will
-be taken from the RiOptions of the Root object. If they are zero,
+currently selected Camera object. The dimensions of the rendered image will
+be taken from the RiOptions of the Root object. If those values are zero,
 default values of 400 pixels width and 300 pixels height will be used.
-The type of the projection written will be perspective.
+The type of the projection written will be <em/perspective/.
 Otherwise the RIB looks exactly the same as if exported via
 main menu <tt>"File/Export/RenderMan RIB"</tt>.
 
@@ -1536,8 +1536,9 @@ Note also that the created RIB, since it e.g.~lacks camera transformation
 and WorldBegin/End directives, may not be rendered directly by a
 RenderMan compliant renderer (unless the renderer is really forgiving
 about mis-structured RIBs).<newline>
-The main use of this feature is to aid in the creation RIBs that may be easily
-included in other RIBs using e.g.~the ReadArchive directive.
+The main use of this feature is to aid in the creation of RIBs that may be
+easily included in other RIBs using e.g.~the ReadArchive directive.
+See also section <ref id="riincobj" name="RiInc Object">.
 
 <item><tt>"RIB-Export/Create All ShadowMaps"</tt>, for each light in the scene,
 the light is selected, then the shadow map will be created
@@ -4176,6 +4177,7 @@ Mac OS X Aqua.
 
 <#if out="latex"><x/newpage/</#if>
 <label id="numeditac">
+
 The modelling action <tt/"Numeric Point Edit"/ (shortcut:
 <tt/&lt;E&gt;/)
 starts an intermediate point selection action and upon a click
@@ -4324,6 +4326,7 @@ keyboard shortcut: <tt/&lt;Ctrl-W&gt;/.
 Also note that, if the preference option <tt/"RationalPoints"/
 is set to <em/homogeneous/, changing the weight of a control point
 also changes its (displayed) position.
+See also section <ref id="prefmodel" name="Modelling Preferences">.
 <p>
 For an overview of the weight edit actions see also the table below.
 <p>
