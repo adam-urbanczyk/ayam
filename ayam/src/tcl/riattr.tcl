@@ -270,6 +270,9 @@ proc riattr_addp { } {
     bind $w <Key-Return> "$f.bok invoke"
     catch { bind $w <Key-KP_Enter> "$f.bok invoke" }
 
+    # establish "Help"-binding
+    shortcut_addcshelp $w ayam-2.html mmaddriattr
+
     winRestoreOrCenter $w $t
 
     grab $w
