@@ -1497,6 +1497,7 @@ by this action.<newline>
 The database of available RiOptions is controlled by the ayamrc
 file (see also section <ref id="ayamrc" name="Ayamrc File">).
 
+<label id="mmaddriattr">
 <item><tt>"Tags/Add RiAttribute"</tt>, pops up a small dialog box, where
 a RiAttribute may be selected, parameterised, and added as tag to the
 currently selected object(s) (see <ref id="riatag" name="RiAttribute Tag">)
@@ -4195,8 +4196,10 @@ be opened immediately.<footnote>Since 1.26.</footnote>
 <p>
 Nothing will be changed unless the <tt/"Return"/ key is pressed
 in a coordinate entry field or the <tt/"Apply"/ button is used.
-In contrast to the normal point selection action, clicking on new
-points, while the edit point dialog is open, deselects the old point(s),
+<p>
+In contrast to the normal point selection action, where further
+clicks add points to the selection, clicking on new points, while
+the edit point dialog is open, deselects the old point(s),
 selects the new point and loads its coordinate values into the
 entry fields. In case of multiple selected objects, the deselection
 is only performed on the object with a new selection.
@@ -4266,9 +4269,13 @@ The numeric point edit dialog also has a context menu.
 The entries in this menu allow to:
 <itemize>
 <item> <tt/"Clear"/ all entries,
-<item> <tt/"Reset"/ all entries to the last fetched values (undo edits), or
+<item> <tt/"Reset"/ all entries to the last fetched values (undo edits),
 <item> <tt/"Fetch Mark"/, set all entries to the mark coordinates of the
-current view (W is cleared).
+current view (W is cleared),
+<item> <tt/"Fetch First"/, set all entries to the first of the currently
+selected points, or
+<item> <tt/"Fetch Last"/, set all entries to the last of the currently
+selected points.
 </itemize>
 
 <sect1>Editing Weights<label id="editwac">
@@ -4344,6 +4351,8 @@ Reset Weights|<tt/&lt;W&gt;/|
 </tabular>
 <caption>Edit Weights Overview</caption>
 </table>
+
+<#if out="latex"><x/newpage/</#if>
 
 <sect1>Snapping Points to the Grid<label id="snapac">
 <p>
