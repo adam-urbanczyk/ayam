@@ -525,6 +525,9 @@ array set ayviewshortcuts {
     SnapGrid2D "g"
     SnapGrid3D "G"
 
+    SnapGrid2DO "f"
+    SnapGrid3DO "F"
+
     SnapMark "M"
     SnapMarkO "K"
     SetMark "Double-3"

@@ -2091,6 +2091,28 @@ proc actionSnapToGrid2D { w } {
 }
 # actionSnapToGrid2D
 
+#actionSnapToGrid3DO:
+# snap selected objects to the grid (all dimensions, regardless of view type)
+proc actionSnapToGrid3DO { w } {
+    undo save SnapToGrid3DO
+    $w snapac 2
+    rV
+ return;
+}
+# actionSnapToGrid3DO
+
+
+#actionSnapToGrid2DO:
+# snap selected objects to the grid (only in the input plane defined by the
+# current view type)
+proc actionSnapToGrid2DO { w } {
+    undo save SnapToGrid2DO
+    $w snapac 3
+    rV
+ return;
+}
+# actionSnapToGrid2DO
+
 
 #actionSnapToMark:
 # snap selected points to the mark
