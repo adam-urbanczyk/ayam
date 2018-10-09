@@ -555,6 +555,12 @@ proc shortcut_view { w } {
     bind $w <[repctrl $ayviewshortcuts(SnapGrid3D)]>\
 	"actionSnapToGrid3D $w.f3D.togl;break"
 
+    bind $w <[repctrl $ayviewshortcuts(SnapGrid2DO)]>\
+	"actionSnapToGrid2DO $w.f3D.togl;break"
+    bind $w <[repctrl $ayviewshortcuts(SnapGrid3DO)]>\
+	"actionSnapToGrid3DO $w.f3D.togl;break"
+
+
     bind $w <[repctrl $ayviewshortcuts(SnapMark)]>\
 	"actionSnapToMark $w.f3D.togl;break"
 

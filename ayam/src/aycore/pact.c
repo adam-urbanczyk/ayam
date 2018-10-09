@@ -2813,96 +2813,138 @@ ay_pact_snaptogridcb(struct Togl *togl, int argc, char *argv[])
   while(sel)
     {
       o = sel->object;
-
-      if(!o->selp)
+      if(mode > 1)
 	{
-	  ay_status = ay_pact_getpoint(0, o, p, &pe);
-
-	  if(ay_status || (!pe.coords) || pe.readonly)
+	  /* snap objects */
+	  if(mode == 2)
 	    {
-	      ay_error(AY_ERROR, fname, NULL);
+	      /* 3D */
+	      ay_pact_griddify(&(o->movx), view->grid);
+	      ay_pact_griddify(&(o->movy), view->grid);
+	      ay_pact_griddify(&(o->movz), view->grid);
 	    }
 	  else
 	    {
-	      for(i = 0; i < pe.num; i++)
+	      /* 2D */
+	      switch(view->type)
 		{
-		  coords = pe.coords[i];
-		  if(mode == 0)
-		    {
-		      ay_pact_griddify(&(coords[0]), view->grid);
-		      ay_pact_griddify(&(coords[1]), view->grid);
-		      ay_pact_griddify(&(coords[2]), view->grid);
-		    }
-		  else
-		    {
-		      switch(view->type)
-			{
-			case AY_VTFRONT:
-			case AY_VTTRIM:
-			  ay_pact_griddify(&(coords[0]), view->grid);
-			  ay_pact_griddify(&(coords[1]), view->grid);
-			  break;
-			case AY_VTSIDE:
-			  ay_pact_griddify(&(coords[1]), view->grid);
-			  ay_pact_griddify(&(coords[2]), view->grid);
-			  break;
-			case AY_VTTOP:
-			  ay_pact_griddify(&(coords[0]), view->grid);
-			  ay_pact_griddify(&(coords[2]), view->grid);
-			  break;
-			default:
-			  /* XXXX output proper error message */
-			  break;
-			} /* switch */
-		    } /* if */
-		} /* for */
-	    } /* if */
+		case AY_VTFRONT:
+		case AY_VTTRIM:
+		  ay_pact_griddify(&(o->movx), view->grid);
+		  ay_pact_griddify(&(o->movy), view->grid);
+		  break;
+		case AY_VTSIDE:
+		  ay_pact_griddify(&(o->movy), view->grid);
+		  ay_pact_griddify(&(o->movz), view->grid);
+		  break;
+		case AY_VTTOP:
+		  ay_pact_griddify(&(o->movx), view->grid);
+		  ay_pact_griddify(&(o->movz), view->grid);
+		  break;
+		default:
+		  /* XXXX output proper error message */
+		  break;
+		} /* switch */
+	    }
 
-	  ay_pact_clearpointedit(&pe);
+	  o->modified = AY_TRUE;
 	}
       else
 	{
-	  pnt = o->selp;
-	  while(pnt)
+	  if(!o->selp)
 	    {
-	      if(!pnt->readonly)
+	      ay_status = ay_pact_getpoint(0, o, p, &pe);
+
+	      if(ay_status || (!pe.coords) || pe.readonly)
 		{
-		  coords = pnt->point;
-		  if(mode == 0)
+		  ay_error(AY_ERROR, fname, NULL);
+		}
+	      else
+		{
+		  for(i = 0; i < pe.num; i++)
 		    {
-		      ay_pact_griddify(&(coords[0]), view->grid);
-		      ay_pact_griddify(&(coords[1]), view->grid);
-		      ay_pact_griddify(&(coords[2]), view->grid);
-		    }
-		  else
-		    {
-		      switch(view->type)
+		      coords = pe.coords[i];
+		      if(mode == 0)
 			{
-			case AY_VTFRONT:
-			case AY_VTTRIM:
+			  /* 3D */
 			  ay_pact_griddify(&(coords[0]), view->grid);
 			  ay_pact_griddify(&(coords[1]), view->grid);
-			  break;
-			case AY_VTSIDE:
-			  ay_pact_griddify(&(coords[1]), view->grid);
 			  ay_pact_griddify(&(coords[2]), view->grid);
-			  break;
-			case AY_VTTOP:
-			  ay_pact_griddify(&(coords[0]), view->grid);
-			  ay_pact_griddify(&(coords[2]), view->grid);
-			  break;
-			default:
-			  /* XXXX output proper error message */
-			  break;
-			} /* switch */
-		    } /* if */
-
-		  o->modified = AY_TRUE;
-
+			}
+		      else
+			{
+			  /* 2D */
+			  switch(view->type)
+			    {
+			    case AY_VTFRONT:
+			    case AY_VTTRIM:
+			      ay_pact_griddify(&(coords[0]), view->grid);
+			      ay_pact_griddify(&(coords[1]), view->grid);
+			      break;
+			    case AY_VTSIDE:
+			      ay_pact_griddify(&(coords[1]), view->grid);
+			      ay_pact_griddify(&(coords[2]), view->grid);
+			      break;
+			    case AY_VTTOP:
+			      ay_pact_griddify(&(coords[0]), view->grid);
+			      ay_pact_griddify(&(coords[2]), view->grid);
+			      break;
+			    default:
+			      /* XXXX output proper error message */
+			      break;
+			    } /* switch */
+			} /* if */
+		    } /* for */
 		} /* if */
-	      pnt = pnt->next;
-	    } /* while */
-	} /* if */
+
+	      ay_pact_clearpointedit(&pe);
+	    }
+	  else
+	    {
+	      pnt = o->selp;
+	      while(pnt)
+		{
+		  if(!pnt->readonly)
+		    {
+		      coords = pnt->point;
+		      if(mode == 0)
+			{
+			  /* 3D */
+			  ay_pact_griddify(&(coords[0]), view->grid);
+			  ay_pact_griddify(&(coords[1]), view->grid);
+			  ay_pact_griddify(&(coords[2]), view->grid);
+			}
+		      else
+			{
+			  /* 2D */
+			  switch(view->type)
+			    {
+			    case AY_VTFRONT:
+			    case AY_VTTRIM:
+			      ay_pact_griddify(&(coords[0]), view->grid);
+			      ay_pact_griddify(&(coords[1]), view->grid);
+			      break;
+			    case AY_VTSIDE:
+			      ay_pact_griddify(&(coords[1]), view->grid);
+			      ay_pact_griddify(&(coords[2]), view->grid);
+			      break;
+			    case AY_VTTOP:
+			      ay_pact_griddify(&(coords[0]), view->grid);
+			      ay_pact_griddify(&(coords[2]), view->grid);
+			      break;
+			    default:
+			      /* XXXX output proper error message */
+			      break;
+			    } /* switch */
+			} /* if */
+
+		      o->modified = AY_TRUE;
+
+		    } /* if */
+		  pnt = pnt->next;
+		} /* while */
+	    } /* if */
+	}
 
       if(o->modified)
 	{
