@@ -4377,6 +4377,26 @@ Note that the snapping also occurs, if the view has the preference
 option <tt/"Use Grid"/ turned off.
 This action can be used without affecting other active actions.
 
+<sect1>Snapping Objects to the Grid<label id="snapoac">
+<p>
+<figure loc="ht">
+<eps file="pics/snapgrobj.ps" height="3.75cm">
+<img src="pics/snapgrobj.gif">
+<caption>Snapping Objects to the Grid</caption>
+</figure>
+<p>
+There are two actions available for snapping objects to the current
+grid of a view.<footnote>Since 1.26.</footnote>
+<p>
+The actions are initiated using the shortcuts <tt/&lt;f&gt;/
+and <tt/&lt;F&gt;/.<newline>
+If <tt/&lt;f&gt;/ is used, the snapping only occurs in
+the modelling plane associated with the view (i.e.~in 2D).
+To snap all three coordinate values to the grid use <tt/&lt;F&gt;/.
+Note that the snapping also occurs, if the view has the preference
+option <tt/"Use Grid"/ turned off.
+This action can be used without affecting other active actions.
+
 <#if out="latex"><x/newpage/</#if>
 
 <sect1>Snapping Points to the Mark<label id="snapmac">
