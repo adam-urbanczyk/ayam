@@ -2832,7 +2832,8 @@ ay_npt_fillgaps(ay_object *o, int type, int fillet_type,
 
 
 /** ay_npt_fliptrim:
- * Flip a single trim curve.
+ * Mirror a single trim curve.
+ * Helper for ay_npt_fliptrims() below.
  *
  * \param[in] np NURBS surface the trim curve belongs to
  * \param[in,out] trim trim curve object
@@ -2893,7 +2894,8 @@ ay_npt_fliptrim(ay_nurbpatch_object *np, ay_object *trim, int mode)
 
 
 /** ay_npt_fliptrims:
- *  Flip the trim curves.
+ *  Mirror the trim curves horizontally or vertically about the
+ *  middle of the parametric space of the NURBS surface.
  *
  * \param[in] np NURBS surface the trims belong to
  * \param[in,out] trim trim curves to process
@@ -6830,7 +6832,7 @@ int
 ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
- /*int ay_status;*/
+ int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *np = NULL;
  ay_ipatch_object *ip = NULL;
@@ -6846,21 +6848,21 @@ ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
 	case AY_IDNPATCH:
 	  np = (ay_nurbpatch_object *)sel->object->refine;
 
-	  ay_npt_swapuv(np);
+	  ay_status = ay_npt_swapuv(np);
 
 	  sel->object->modified = AY_TRUE;
 	  break;
 	case AY_IDIPATCH:
 	  ip = (ay_ipatch_object *)sel->object->refine;
 
-	  ay_ipt_swapuv(ip);
+	  ay_status = ay_ipt_swapuv(ip);
 
 	  sel->object->modified = AY_TRUE;
 	  break;
 	case AY_IDPAMESH:
 	  pm = (ay_pamesh_object *)sel->object->refine;
 
-	  ay_pmt_swapuv(pm);
+	  ay_status = ay_pmt_swapuv(pm);
 
 	  sel->object->modified = AY_TRUE;
 	  break;
@@ -6875,19 +6877,28 @@ ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  memcpy(bp->p3, pt, 3*sizeof(double));
 
 	  sel->object->modified = AY_TRUE;
+	  ay_status = AY_OK;
 	  break;
 	default:
 	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
+	  ay_status = AY_ERROR;
 	  break;
 	} /* switch */
 
-      if(sel->object->modified)
+      if(!ay_status)
 	{
-	  if(sel->object->selp)
-	    ay_selp_clear(sel->object);
+	  if(sel->object->modified)
+	    {
+	      if(sel->object->selp)
+		ay_selp_clear(sel->object);
 
-	  (void)ay_notify_object(sel->object);
-	  notify_parent = AY_TRUE;
+	      (void)ay_notify_object(sel->object);
+	      notify_parent = AY_TRUE;
+	    }
+	}
+      else
+	{
+	  ay_error(AY_ERROR, argv[0], "Swap failed");
 	}
 
       sel = sel->next;
