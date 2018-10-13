@@ -115,7 +115,6 @@ ay_ipt_swapuv(ay_ipatch_object *ip)
  *
  * \param[in,out] ip IPatch object to revert
  *
- * \returns AY_OK on success, error code otherwise.
  */
 void
 ay_ipt_revertu(ay_ipatch_object *ip)
@@ -170,7 +169,6 @@ ay_ipt_revertu(ay_ipatch_object *ip)
  *
  * \param[in,out] ip IPatch object to revert
  *
- * \returns AY_OK on success, error code otherwise.
  */
 void
 ay_ipt_revertv(ay_ipatch_object *ip)
