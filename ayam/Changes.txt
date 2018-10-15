@@ -1,4 +1,4 @@
-[1. Sep 2018] Tip:
+[9. Oct 2018] Tip:
 ==================
 Bug Fixes:
 o fix window close shortcut in external views
@@ -6,6 +6,7 @@ o fix shading of rational SDNPatch surfaces
 o fix resetting the knots of SDNPatch surfaces not changing virtual knots
 o fix MetaObj result missing the triangles from the first cube
 o setting the mark via double click does not normalize the mark
+o fix memory access errors when removing knots
 
 Modelling:
 o RiInc/RiProc objects now draw the bounding box with dashed lines
@@ -18,6 +19,7 @@ o NCircle objects now support reversal
 o improved robustness of point insertion wrt. weights
 o resizing curve/surface objects via the properties no longer unconditionally
   removes the point selection
+o added modelling actions to snap objects to the grid (new shortcuts: <f>/<F>)
 
 GUI:
 o improved initial layout process of dialog windows
