@@ -369,10 +369,11 @@ cleanup:
 
 
 /** ay_interpol_curvestcmd:
- * Interpolate/tween curves.
+ *  Interpolate/tween curves.
  *
  *  Implements the \a tweenNC scripting interface command.
  *  See also the corresponding section in the \ayd{sctweennc}.
+ *
  *  \returns TCL_OK in any case.
  */
 int
@@ -389,6 +390,11 @@ ay_interpol_curvestcmd(ClientData clientData, Tcl_Interp *interp,
     {
       tcl_status = Tcl_GetDouble(interp, argv[1], &r);
       AY_CHTCLERRRET(tcl_status, argv[0], interp);
+      if(r != r)
+	{
+	  ay_error(AY_ERROR, argv[0], "Parameter r is NaN!");
+	  return TCL_OK;
+	}
     }
 
   if(!sel)
@@ -601,10 +607,11 @@ cleanup:
 
 
 /** ay_interpol_surfacestcmd:
- * Interpolate/tween surfaces.
+ *  Interpolate/tween surfaces.
  *
  *  Implements the \a tweenNP scripting interface command.
  *  See also the corresponding section in the \ayd{sctweennp}.
+ *
  *  \returns TCL_OK in any case.
  */
 int
@@ -621,6 +628,11 @@ ay_interpol_surfacestcmd(ClientData clientData, Tcl_Interp *interp,
     {
       tcl_status = Tcl_GetDouble(interp, argv[1], &r);
       AY_CHTCLERRRET(tcl_status, argv[0], interp);
+      if(r != r)
+	{
+	  ay_error(AY_ERROR, argv[0], "Parameter r is NaN!");
+	  return TCL_OK;
+	}
     }
 
   if(!sel)
