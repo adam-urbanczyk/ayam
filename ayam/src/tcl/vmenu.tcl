@@ -333,12 +333,15 @@ if { $AYWITHAQUA } {
 if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
     menubutton $w.fMenu.mm -image ay_MMGlob_img -menu $w.fMenu.mm.m\
 	    -padx 0 -pady 0 -borderwidth 0
-    global ayviewshortcuts
+    global ayviewshortcuts aymainshortcuts
     set lmk $ayviewshortcuts(Local2)
     balloon_set $w.fMenu.mm "change global/local mode\ncycle with <${lmk}>"
     set m [menu $w.fMenu.mm.m -tearoff 0]
     bind $w.fMenu.mm <ButtonPress-1>\
 	"+tk_menuSetFocus $w; catch \{destroy %W.balloon\}"
+
+    bind $w.fMenu.mm <ButtonPress-$aymainshortcuts(CMButton)>\
+	"viewToggleModellingScope %W 2"
 } else {
     set m [menu $mb.mm -tearoff 0]
     $mb add cascade -label Global -menu $m
@@ -469,6 +472,14 @@ if { $AYWITHAQUA } {
     $m entryconfigure 5 -image {} -label "No Grid"
 }
 
+if { 0 } {
+set f $w.fMenu
+if { $menubar } {
+    set f $w.menubar
+}
+bind $f <ButtonPress-$aymainshortcuts(CMButton)>\
+    "viewToggleModellingScope %W 1"
+}
 
 # Help menu (just for MacOSX/Aqua!)
 if { $AYWITHAQUA && (! ([winfo toplevel $w] != $w)) } {
