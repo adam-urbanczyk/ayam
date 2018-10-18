@@ -190,24 +190,28 @@ proc toolbox_open { {w .tbw} } {
 	    button $f.bmovo -image ay_Move_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionMoveOb
 	    }
+	    toolbox_addcmb $f.bmovo
 	    balloon_set $f.bmovo\
 		"move <[remkpkr $ayviewshortcuts(MoveO)]>"
 
 	    button $f.broto -image ay_Rotate_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionRotOb
 	    }
+	    toolbox_addcmb $f.broto
 	    balloon_set $f.broto\
 		"rotate <[remkpkr $ayviewshortcuts(RotO)]>"
 
 	    button $f.bscal -image ay_Scale3D_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionSc3DOb
 	    }
+	    toolbox_addcmb $f.bscal
 	    balloon_set $f.bscal\
 		"scale 3D <[remkpkr $ayviewshortcuts(Scal3)]>"
 
 	    button $f.bsc2d -image ay_Scale2D_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionSc2DOb
 	    }
+	    toolbox_addcmb $f.bsc2d
 	    balloon_set $f.bsc2d\
 		"scale 2D <[remkpkr $ayviewshortcuts(Scal2)]>"
 
@@ -217,27 +221,28 @@ proc toolbox_open { {w .tbw} } {
 	if { $i == "trafo2" } {
 	    lappend ay(toolbuttons) bsc1dx bsc1dy bsc1dz bst2d
 
-	    button $f.bsc1dx -image ay_Scale1DX_img -padx 0 -pady 0 -command {
-		toolbox_startaction actionSc1DXOb
-	    }
+	    button $f.bsc1dx -image ay_Scale1DX_img -padx 0 -pady 0\
+		-command { toolbox_startaction actionSc1DXOb }
+	    toolbox_addcmb $f.bsc1dx
 	    balloon_set $f.bsc1dx\
 		"scale x <[remkpkr $ayviewshortcuts(Scal2)][remkpkr $ayviewshortcuts(RestrictX)]>"
 
-	    button $f.bsc1dy -image ay_Scale1DY_img -padx 0 -pady 0 -command {
-		toolbox_startaction actionSc1DYOb
-	    }
+	    button $f.bsc1dy -image ay_Scale1DY_img -padx 0 -pady 0\
+		-command { toolbox_startaction actionSc1DYOb }
+	    toolbox_addcmb $f.bsc1dy
 	    balloon_set $f.bsc1dy\
 		"scale y <[remkpkr $ayviewshortcuts(Scal2)][remkpkr $ayviewshortcuts(RestrictY)]>"
 
-	    button $f.bsc1dz -image ay_Scale1DZ_img -padx 0 -pady 0 -command {
-		toolbox_startaction actionSc1DZOb
-	    }
+	    button $f.bsc1dz -image ay_Scale1DZ_img -padx 0 -pady 0\
+		-command { toolbox_startaction actionSc1DZOb }
+	    toolbox_addcmb $f.bsc1dz
 	    balloon_set $f.bsc1dz\
 		"scale z <[remkpkr $ayviewshortcuts(Scal2)][remkpkr $ayviewshortcuts(RestrictZ)]>"
 
 	    button $f.bst2d -image ay_Stretch2D_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionStr2DOb
 	    }
+	    toolbox_addcmb $f.bst2d
 	    balloon_set $f.bst2d\
 		"stretch <[remkpkr $ayviewshortcuts(Stretch)]>"
 	}
@@ -249,27 +254,25 @@ proc toolbox_open { {w .tbw} } {
 	    button $f.brota -image ay_RotateA_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionRotOb 1
 	    }
+	    toolbox_addcmb $f.brota
 	    balloon_set $f.brota\
 		"rotate about <[remkpkr $ayviewshortcuts(RotO)][remkpkr $ayviewshortcuts(About)]>"
 
 	    button $f.bsc1dxa -image ay_Scale1DXA_img -padx 0 -pady 0\
-             -command {
-		toolbox_startaction actionScale1DX 1
-	    }
+		-command { toolbox_startaction actionScale1DX 1 }
+	    toolbox_addcmb $f.bsc1dxa
 	    balloon_set $f.bsc1dxa\
 		"scale 1D X about <[remkpkr $ayviewshortcuts(Scal2)][remkpkr $ayviewshortcuts(RestrictX)][remkpkr $ayviewshortcuts(About)]>"
 
 	    button $f.bsc1dya -image ay_Scale1DYA_img -padx 0 -pady 0\
-             -command {
-		toolbox_startaction actionScale1DY 1
-	    }
+             -command { toolbox_startaction actionScale1DY 1 }
+	    toolbox_addcmb $f.bsc1dya
 	    balloon_set $f.bsc1dya\
 		"scale 1D Y about <[remkpkr $ayviewshortcuts(Scal2)][remkpkr $ayviewshortcuts(RestrictY)][remkpkr $ayviewshortcuts(About)]>"
 
 	    button $f.bsc1dza -image ay_Scale1DZA_img -padx 0 -pady 0\
-             -command {
-		toolbox_startaction actionScale1DZ 1
-	    }
+             -command { toolbox_startaction actionScale1DZ 1 }
+	    toolbox_addcmb $f.bsc1dza
 	    balloon_set $f.bsc1dza\
 		"scale 1D Z about <[remkpkr $ayviewshortcuts(Scal2)][remkpkr $ayviewshortcuts(RestrictZ)][remkpkr $ayviewshortcuts(About)]>"
 	}
@@ -937,3 +940,19 @@ proc toolbox_addshift1 {b c} {
     bind $b <Shift-ButtonPress-1> $cmd
 }
 # toolbox_addshift1
+
+
+# toolbox_addcmb:
+# helper procedure, bind the context menu button to a transformation action
+# toolbox button so that point transformations are also enabled
+proc toolbox_addcmb {b} {
+    global ay aymainshortcuts
+    set cmd "%W configure -relief sunken;\
+      foreach view \$ay(views) {\
+	viewSetPMode \$view 1\
+      }"
+    append cmd [$b cget -command]
+    append cmd "after 100 \"%W configure -relief raised\";break;"
+    bind $b <ButtonPress-$aymainshortcuts(CMButton)> $cmd
+}
+# toolbox_addcmb
