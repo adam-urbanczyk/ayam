@@ -1426,7 +1426,7 @@ proc viewCycleGrid { w cycle dir } {
 
 ##############################
 # viewSetPMode:
-#  toggle object/point transformation mode
+#  set object/point transformation mode / modelling scope
 proc viewSetPMode { w on } {
     global ay AYWITHAQUA
 
@@ -1444,7 +1444,6 @@ proc viewSetPMode { w on } {
 	$togl setconf -pnts 0
 	set ay(cVPnts) 0
 	set col \#bdbdbd
-
     }
 
     if { (! $AYWITHAQUA) || ([string first ".view" $w] != 0) } {
@@ -1677,6 +1676,34 @@ proc warpMouse { dx dy } {
  return;
 }
 # warpMouse
+
+
+##############################
+# viewToggleModellingScope:
+#  toggle modelling scope (transform objects or points)
+#  from the view menu (click on modelling mode menu button with Mouse-3)
+proc viewToggleModellingScope { w s } {
+    global ay
+
+    if { [string first ".view" $w] == 0 } {
+	set w [winfo toplevel $w]
+    } else {
+	while { $s > 0 } {
+	    set w [winfo parent $w]
+	    incr s -1
+	}
+    }
+
+    $w.f3D.togl mc
+    if { $ay(cVPnts) == 0 } {
+	viewSetPMode $w 1
+    } else {
+	viewSetPMode $w 0
+    }
+
+ return;
+}
+# viewToggleModellingScope
 
 
 # some code, that has to be executed in global context when this
