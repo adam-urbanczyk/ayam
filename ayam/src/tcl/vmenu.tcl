@@ -335,8 +335,7 @@ if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
 	    -padx 0 -pady 0 -borderwidth 0
     global ayviewshortcuts aymainshortcuts
     set lmk $ayviewshortcuts(Local2)
-    #"change global/local mode\ncycle with <${lmk}>"
-    balloon_set $w.fMenu.mm [subst [ms vmenu2]]
+    balloon_set $w.fMenu.mm [string map [list <lmk> <$lmk>] [ms vmenu2]]
     set m [menu $w.fMenu.mm.m -tearoff 0]
     bind $w.fMenu.mm <ButtonPress-1>\
 	"+tk_menuSetFocus $w; catch \{destroy %W.balloon\}"
@@ -383,8 +382,8 @@ if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
     global ayviewshortcuts
     set dmu $ayviewshortcuts(DMUp)
     set dmd $ayviewshortcuts(DMDown)
-    #"change drawing mode\ncycle with <${dmu}>/<${dmd}>"
-    balloon_set $w.fMenu.dm [subst [ms vmenu3]]
+    balloon_set $w.fMenu.dm [string map [list <dmu> <$dmu> <dmd> <$dmd>]\
+				 [ms vmenu3]]
     set m [menu $w.fMenu.dm.m -tearoff 0]
     bind $w.fMenu.dm <ButtonPress-1>\
 	"+tk_menuSetFocus $w; catch \{destroy %W.balloon\}"
@@ -433,8 +432,7 @@ if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
 	    -padx 0 -pady 0 -borderwidth 0
     set gu $ayviewshortcuts(GridCycleUp)
     set gd $ayviewshortcuts(GridCycleDown)
-    #"change gridsize\ncycle with <${gu}>/<${gd}>"
-    balloon_set $w.fMenu.g [subst [ms vmenu4]]
+    balloon_set $w.fMenu.g [string map [list <gu> <$gu> <gd> <$gd>] [ms vmenu4]]
     set m [menu $w.fMenu.g.m -tearoff 0]
     if { [winfo toplevel $w] == $w } {
 	bind ayview <$aymainshortcuts(MenuMod)-g> "viewPostMenu %W.fMenu.g.m"
