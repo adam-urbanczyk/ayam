@@ -351,6 +351,13 @@ ms_set en info_rp1 "Reset Preferences?"
 ms_set en info_rp2 "Ready to remove file:\n\"$ay(ayamrc)\"?"
 ms_set en info_rp3 "Preferences file removed!\nPlease restart Ayam now."
 
+# view menu
+ms_set en vmenu2 "change global/local mode\ncycle with <${lmk}>"
+ms_set en vmenu3 "change drawing mode\ncycle with <${dmu}>/<${dmd}>"
+ms_set en vmenu4 "change gridsize\ncycle with <${gu}>/<${gd}>"
+
+
+
 #
 # fill "de"-locale
 ms_init de
@@ -600,6 +607,12 @@ ms_set de info_rp1 "Voreinstellungen zurücksetzen?"
 ms_set de info_rp2 "Bereit zum Löschen der Datei:\n\"$ay(ayamrc)\"?"
 ms_set de info_rp3 "Die Voreinstellungen wurden gelöscht!\nBitte neu starten."
 
+# view menu
+ms_set de vmenu2 "Modellierraum ändern\nDurchwechseln mit <${lmk}>"
+ms_set de vmenu3 "Anzeigemodus ändern\nDurchwechseln mit <${dmu}>/<${dmd}>"
+ms_set de vmenu4 "Gitter ändern\nDurchwechseln mit <${gu}>/<${gd}>"
+
+
 #
 # fill "fr"-locale...
 ms_init fr
@@ -822,5 +835,11 @@ ms_set fr info_rs1 "Redémarrage nécessaire!"
 ms_set fr info_rp1 "Réinitialiser préférences?"
 ms_set fr info_rp2 "Prêt pour supprimier le fichier:\n\"$ay(ayamrc)\"?"
 #ms_set fr info_rp3 "Preferences file removed!\nPlease restart Ayam now."
+
+# view menu
+#ms_set en vmenu2 "change global/local mode\ncycle with <${lmk}>"
+#ms_set en vmenu3 "change drawing mode\ncycle with <${dmu}>/<${dmd}>"
+#ms_set en vmenu4 "change gridsize\ncycle with <${gu}>/<${gd}>"
+
 
 # EOF
