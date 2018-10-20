@@ -49,9 +49,9 @@ static Tcl_HashTable x3dio_write_ht;
 
 static Tcl_HashTable *x3dio_defs_ht = NULL;
 
-/* MN tags are used to temporarily store x3dio generated Master/DEF names */
-char *x3dio_mn_tagtype = NULL;
-char *x3dio_mn_tagname = "mn";
+/* mdn tags are used to temporarily store x3dio generated Master/DEF names */
+char *x3dio_mdn_tagtype = NULL;
+char *x3dio_mdn_tagname = "mdn";
 
 char *x3dio_xml_tagtype = NULL;
 char *x3dio_xml_tagname = "XML";
@@ -286,7 +286,7 @@ int x3dio_copypv(ay_tag *src, char **dst);
 void x3dio_writetransform(scew_element *element, ay_object *o,
 			  scew_element **transform_element);
 
-void x3dio_clearmntags(ay_object *o);
+void x3dio_clearmdntags(ay_object *o);
 
 int x3dio_writename(scew_element *element, ay_object *o, int trafo);
 
@@ -1675,7 +1675,8 @@ x3dio_readcone(scew_element *element)
 void
 x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
 {
- int ay_status;
+ int ay_status = AY_OK;
+ char fname[] = "x3dio_readnct";
  char *tcname = ay_prefs.texcoordname;
  char *nname = ay_prefs.normalname;
  char *cname = ay_prefs.colorname;
@@ -1702,7 +1703,11 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
   /* get data from element */
 
   /* get normals */
-  ay_status = x3dio_readnormals(element, &normallen, &normals);
+  if((ay_status = x3dio_readnormals(element, &normallen, &normals)))
+    {
+      ay_error(ay_status, fname, NULL);
+      goto cleanup;
+    }
   if(normallen > 0)
     {
       ay_status = x3dio_readindex(element, "normalIndex", AY_TRUE,
@@ -1713,7 +1718,11 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
     }
 
   /* get colors */
-  ay_status = x3dio_readcolors(element, &colorstride, &colorlen, &colors);
+  if((ay_status = x3dio_readcolors(element, &colorstride, &colorlen, &colors)))
+    {
+      ay_error(ay_status, fname, NULL);
+      goto cleanup;
+    }
   if(colorlen > 0)
     {
       ay_status = x3dio_readindex(element, "colorIndex", AY_TRUE,
@@ -1724,7 +1733,11 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
     }
 
   /* get texture coordinates */
-  ay_status = x3dio_readtexcoords(element, &texcoordlen, &texcoords);
+  if((ay_status = x3dio_readtexcoords(element, &texcoordlen, &texcoords)))
+    {
+      ay_error(ay_status, fname, NULL);
+      goto cleanup;
+    }
   if(texcoordlen > 0)
     {
       ay_status = x3dio_readindex(element, "texCoordIndex", AY_TRUE,
@@ -6976,11 +6989,11 @@ x3dio_writetransform(scew_element *element, ay_object *o,
 } /* x3dio_writetransform */
 
 
-/* x3dio_clearmntags:
+/* x3dio_clearmdntags:
  * _recursively_ clear all MN tags from <o> its siblings and children
  */
 void
-x3dio_clearmntags(ay_object *o)
+x3dio_clearmdntags(ay_object *o)
 {
  ay_tag *tag = NULL, **last = NULL;
 
@@ -6996,7 +7009,7 @@ x3dio_clearmntags(ay_object *o)
 	  tag = o->tags;
 	  while(tag)
 	    {
-	      if(tag->type == x3dio_mn_tagtype)
+	      if(tag->type == x3dio_mdn_tagtype)
 		{
 		  *last = tag->next;
 		  tag->name = NULL;
@@ -7012,13 +7025,13 @@ x3dio_clearmntags(ay_object *o)
 	} /* if */
 
       if(o->down)
-	x3dio_clearmntags(o->down);
+	x3dio_clearmdntags(o->down);
 
       o = o->next;
     } /* while */
 
  return;
-} /* x3dio_clearmntags */
+} /* x3dio_clearmdntags */
 
 
 /* x3dio_writename:
@@ -7113,7 +7126,7 @@ x3dio_writename(scew_element *element, ay_object *o, int trafo)
 	  memcpy(tag->val, o->name, len*sizeof(char));
 	}
 
-      tag->type = x3dio_mn_tagtype;
+      tag->type = x3dio_mdn_tagtype;
       tag->name = (char*)trafo;
 
       /* link tag to object o */
@@ -7432,7 +7445,7 @@ x3dio_writencurveobj(scew_element *element, ay_object *o)
   if(!element || !o || !o->refine)
     return AY_ENULL;
 
-  /* write this patch as wire frame? */
+  /* write this curve as wire frame? */
   if(ay_tags_hastag(o, ay_aswire_tagtype))
     {
       /* yes */
@@ -7469,11 +7482,10 @@ int
 x3dio_writencwire(scew_element *element, ay_object *o)
 {
  int ay_status = AY_OK;
- ay_object *c;
- ay_nurbcurve_object *nc;
  char buf[64], *attr = NULL, *tmp;
  int qf, a, idxsize, Ctlen;
  double *Ct;
+ ay_nurbcurve_object *nc;
  scew_element *transform_element = NULL;
  scew_element *shape_element = NULL;
  scew_element *line_element = NULL;
@@ -7908,7 +7920,7 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
  /* int *spanus, *spanvs, *fspanus, *fspanvs;*/
  int idxsize = 0;
  double *P, *U, *V, *fd1, *fd2, *Ct;
- double l, u, v, ud, fud, vd, fvd;
+ double l, u, v, /*ud, vd,*/ fud, fvd;
  double N[3] = {0}, fder[12] = {0};
  double offset = 0.005;
  scew_element *transform_element = NULL;
@@ -7953,9 +7965,11 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
     }
   fvlines = vlines*4;
 
+# if 0
   ud = (U[n] - U[p]) / (ulines - 1);
-  fud = (U[n] - U[p]) / (fulines - 1);
   vd = (V[m] - V[q]) / (vlines - 1);
+#endif
+  fud = (U[n] - U[p]) / (fulines - 1);
   fvd = (V[m] - V[q]) / (fvlines - 1);
 
   if(!(Ct = malloc((fulines>fvlines?fulines:fvlines)*3*2*sizeof(double))))
@@ -8241,6 +8255,7 @@ x3dio_writetrimwire(scew_element *element, ay_nurbpatch_object *np,
 		    ay_stess_uvp *p1, ay_stess_uvp *p2)
 {
  int ay_status = AY_OK;
+ char fname[] = "x3dio_writetrimwire";
  char buf[64], *attr = NULL, *tmp;
  int a, b, i, j, k, m, n, p, q;
  int idxsize = 0;
@@ -8349,6 +8364,11 @@ x3dio_writetrimwire(scew_element *element, ay_nurbpatch_object *np,
   x3dio_writedoublepoints(coord_element, "point", 3, b*2, 3, Ct);
 
 cleanup:
+
+  if(ay_status)
+    {
+      ay_error(ay_status, fname, NULL);
+    }
 
   if(Ct)
     free(Ct);
@@ -8843,7 +8863,7 @@ x3dio_writecloneobj(scew_element *element, ay_object *o)
 					    AY_FALSE);
 
 	      if((firstclone->refcount == 1) && firstclone->tags &&
-		 firstclone->tags->type == x3dio_mn_tagtype)
+		 firstclone->tags->type == x3dio_mdn_tagtype)
 		{
 		  firstclone->tags->next = down->tags;
 		  down->tags = firstclone->tags;
@@ -8919,7 +8939,7 @@ x3dio_writeinstanceobj(scew_element *element, ay_object *o)
     }
   else
     {
-      if(master->tags && (master->tags->type == x3dio_mn_tagtype))
+      if(master->tags && (master->tags->type == x3dio_mdn_tagtype))
 	{
 	  masterdef = master->tags->val;
 	}
@@ -11078,7 +11098,7 @@ x3dio_writescene(char *filename, int selected, int toplevellayers)
   Tcl_InitHashTable(x3dio_defs_ht, TCL_STRING_KEYS);
 
   /* clear potentially present MN tags from scene */
-  x3dio_clearmntags(ay_root);
+  x3dio_clearmdntags(ay_root);
 
   /* reset object number counter */
   (void)x3dio_writename(NULL, NULL, 0);
@@ -11298,7 +11318,7 @@ cleanup:
   Tcl_DeleteHashTable(x3dio_defs_ht);
 
   /* clear potentially present MN tags from scene */
-  x3dio_clearmntags(ay_root);
+  x3dio_clearmdntags(ay_root);
 
   if(x3dio_writex3dom)
     {
@@ -11430,7 +11450,7 @@ X_Init(Tcl_Interp *interp)
     }
 
   /* register MN tag type */
-  ay_status = ay_tags_register(x3dio_mn_tagname, &x3dio_mn_tagtype);
+  ay_status = ay_tags_register(x3dio_mdn_tagname, &x3dio_mdn_tagtype);
 
   if(ay_status)
     return TCL_ERROR;
