@@ -213,6 +213,8 @@ proc viewCycleDrawMode { w dir } {
 
 ##############################
 # viewRender:
+# export the current scene to a RIB (using the camera settings from a view)
+# and start a RenderMan renderer with the exported file
 proc viewRender { w type } {
     global env ayprefs ay tcl_platform
 
@@ -264,7 +266,7 @@ proc viewRender { w type } {
 	    $togl wrib -file $tmpfile -image $imagename -temp -rtf
 	}
     }
-    # if
+    # if shadow maps
 
     set renderui 0
     if { $type == 0 } {
@@ -304,7 +306,7 @@ proc viewRender { w type } {
 ##############################
 # viewUPos:
 # get the positions of all views
-# put them in the C context view_info
+# put them in the C context
 proc viewUPos { } {
  global ay ayprefs tcl_platform
 
@@ -330,7 +332,7 @@ proc viewUPos { } {
 	$w.f3D.togl setconf -ico $isicon -pos $x $y
 	$ay(currentView) mc
     }
-    # foreach
+    # foreach view
 
  return;
 }
@@ -386,7 +388,7 @@ proc viewTitle { w type action } {
 
 ##############################
 # viewSetFOV:
-#  set the Field Of View of a view
+#  open a dialog to set the Field Of View of a view
 proc viewSetFOV { view } {
  global ay ayprefs
 
@@ -460,6 +462,7 @@ proc viewSetFOV { view } {
 
 ##############################
 # viewSetGrid:
+# open a dialog to set a new arbitrary grid size
 proc viewSetGrid { view } {
  global ay ayprefs
 
@@ -1253,17 +1256,14 @@ proc viewSetMModeIcon { w mode } {
 
 ##############################
 # viewSetMAIcon:
-#  set modelling action icon
+#  set modelling action icon and balloon
 proc viewSetMAIcon { w image balloon } {
  global ay tcl_platform AYWITHAQUA
 
     # external views on Aqua do not display any such icon
     if { (! $AYWITHAQUA) || ([string first ".view" $w] != 0) } {
-
 	set m fMenu.a
-
 	set w [winfo parent [winfo parent $w]]
-
 	set conf "$w.$m configure"
 	eval "$conf -image $image"
 	eval [subst "balloon_clear $w.$m"]
