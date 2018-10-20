@@ -132,12 +132,7 @@ proc pclip_paste { } {
 		set avnames [array names pclip_clipboard]
 		foreach j $avnames {
 		    eval "set newval \$pclip_clipboard\($j\)"
-		    if { [string is integer $newval ] } {
-			eval [subst "set $arr\(\$j\) $newval"]
-		    } else {
-			eval [subst "set $arr\(\$j\) \"\""]
-			eval [subst "lappend $arr\(\$j\) \{\$newval\}"]
-		    }
+		    eval [subst "set $arr\(\$j\) \{\$newval\}"]
 		}
 		if { $sproc != "" } { eval $sproc } else { setProp }
 	    } else {
@@ -196,6 +191,7 @@ proc pclip_pastetosel { } {
 	set sel ""
 	set sel [$lb curselection]
 	if { $sel != "" } {
+	    set pclip_prop_orig $pclip_prop
 	    set pclip_prop [$lb get $sel ]
 	    global $pclip_prop
 
@@ -225,6 +221,8 @@ proc pclip_pastetosel { } {
 	    # immediately read them back for proper display in
 	    # the property GUI and update the property GUI
 	    plb_update
+
+	    set pclip_prop $pclip_prop_orig
 	} else {
 	   ayError 2 "pclip_pastetosel" "No Property selected!"
 	}
@@ -232,6 +230,8 @@ proc pclip_pastetosel { } {
     } else {
 	ayError 2 "pclip_pastetosel" "Property clipboard is empty!"
     }
+
+ return;
 }
 # pclip_pastetosel
 
