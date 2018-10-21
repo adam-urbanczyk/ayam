@@ -1972,7 +1972,10 @@ in the lower right corner of the icon.<newline>
 The icon, additionally, conveys whether objects or points would be
 modified by a modelling action: for points, a red dot will be present
 in the upper right corner of the icon (see also section
-<ref id="objorpnt" name="Transforming Objects or Selected Points">).<newline>
+<ref id="objorpnt" name="Transforming Objects or Selected Points">).
+The modelling scope may also be toggled directly by clicking on the
+menu button with the rightmost mouse
+button.<footnote>Since 1.26.</footnote><newline>
 Furthermore, the type of the view will be displayed in the upper left
 corner of the icon as letter <bf/<tt/F//, <bf/<tt/S//, <bf/<tt/T//, or
 <bf/<tt/P// for front, side, top, or perspective views, respectively.
@@ -2233,15 +2236,15 @@ compare it also to the complete image above.
 
 
 <#if out="latex"><x/newpage/</#if>
-<sect1>The Toolbox Window<label id="toolb">
+<sect1>The Toolbox<label id="toolb">
 <p>
 <figure loc="ht">
-<eps file="pics/tools.ps" height="8cm">
+<eps file="pics/tools.ps" height="3cm">
 <img src="pics/tools.gif">
 <caption>The Toolbox</caption>
 </figure>
 <p>
-The toolbox window displays some buttons that start interactive
+The toolbox displays some buttons that start interactive
 modelling actions, modelling tools, or create objects.
 The toolbox can be opened and closed using the main menu entry
 <tt>"Special/Toggle Toolbox"</tt> unless Ayam is in single window
@@ -2253,6 +2256,12 @@ actions for all open views. This is the case if Ayam is in single window
 GUI mode <em>and</em> AutoFocus is enabled or if Ayam is in multi window
 GUI mode. For more information about
 the actions see section <ref id="iac" name="Modelling Actions">.
+<p>
+Furthermore, the modelling scope may be immediately switched to
+<em/point/ when starting a transformation action using the rightmost mouse
+button.<footnote>Since 1.26.</footnote>
+See also
+section <ref id="objorpnt" name="Transforming Objects or Selected Points">.
 <p>
 When creating objects, holding down
 the <tt>&lt;Ctrl&gt;</tt> key while pressing the corresponding toolbox
@@ -3537,8 +3546,11 @@ below:
 <p>
 Note that those shortcuts just switch the current view, to modify all
 open views, just press <tt/o/ or <tt/p/ twice:
-<tt/&lt;oo&gt;/ and <tt/&lt;pp&gt;/.
-<footnote>Since 1.21.</footnote>
+<tt/&lt;oo&gt;/ and <tt/&lt;pp&gt;/.<footnote>Since 1.21.</footnote>
+<p>
+Also note that the modelling scope may also be toggled by clicking
+on the modelling mode icon with the rightmost mouse
+button.<footnote>Since 1.26.</footnote>
 <p>
 See also the section
 <ref id="apnttcl" name="Automatic Point Actions">
@@ -4357,7 +4369,7 @@ Reset Weights|<tt/&lt;W&gt;/|
 <sect1>Snapping Points to the Grid<label id="snapac">
 <p>
 <figure loc="ht">
-<eps file="pics/snapgrpnt.ps" height="4cm">
+<eps file="pics/snapgrpnt.ps" height="4.25cm">
 <img src="pics/snapgrpnt.gif">
 <caption>Snapping Points to the Grid</caption>
 </figure>
@@ -4421,7 +4433,7 @@ This action can be used without affecting other active actions.
 <sect1>Snapping Objects to the Mark<label id="snapomac">
 <p>
 <figure loc="ht">
-<eps file="pics/snapmrkobj.ps" height="4.5cm">
+<eps file="pics/snapmrkobj.ps" height="4.25cm">
 <img src="pics/snapmrkobj.gif">
 <caption>Snapping Objects to the Mark</caption>
 </figure>
@@ -13087,10 +13099,11 @@ This tag is used by the scene storage facility.
 Internal binary tag to store transformation matrices, used by
 the AyCSG plugin.
 
-<item>mn Tag
+<item>mdn Tag
 <p>
 
 Internal tag used by the X3D import/export plugin.
+Renamed from mn since Ayam 1.26.
 
 <item>NC Tag
 <p>
@@ -25657,6 +25670,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="vmview" name="view menu entry">
 </itemize>
 <item>ResetDM, ResetST: <ref id="impmops" name="Mops import option">
+<item>Reset Layout: <ref id="mmspecial" name="main menu entry">
 <item>Reset Preferences: <ref id="mmspecial" name="main menu entry">
 <item>Reset Weights: <ref id="editwac" name="reset weights action">
 <item>ResInstances: <ref id="prefrib" name="preference setting">
