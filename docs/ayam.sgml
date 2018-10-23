@@ -2239,7 +2239,7 @@ compare it also to the complete image above.
 <sect1>The Toolbox<label id="toolb">
 <p>
 <figure loc="ht">
-<eps file="pics/tools.ps" height="3cm">
+<eps file="pics/tools.ps" height="3.5cm">
 <img src="pics/tools.gif">
 <caption>The Toolbox</caption>
 </figure>
@@ -2301,7 +2301,7 @@ when the main window gets iconified.
 <sect1>Object Search<label id="objsearch">
 <p>
 <figure loc="ht">
-<eps file="pics/objsearch.ps" height="3.4cm">
+<eps file="pics/objsearch.ps" height="4cm">
 <img src="pics/objsearch.gif">
 <caption>Object Search Dialog</caption>
 </figure>
@@ -2436,7 +2436,7 @@ All found objects will be colored in the object tree, see also the
 following image.
 <p>
 <figure loc="ht">
-<eps file="pics/objsearchr.ps" height="6cm">
+<eps file="pics/objsearchr.ps" height="7cm">
 <img src="pics/objsearchr.gif">
 <caption>Object Search Result of Search String <tt/"clay"/</caption>
 </figure>
@@ -14480,6 +14480,8 @@ See also the documentation of the corresponding
 scripting interface command <ref id="scswapuvs" name="swapuvS">.
 </descrip>
 
+<#if out="latex"><x/newpage/</#if>
+
 <sect2>Refine Knots Surface Tool<label id="refinest">
 <p>
 <figure loc="ht">
@@ -14512,15 +14514,26 @@ and the related tool for
 curves <ref id="refknit" name="Refine Knots Tool">.
 </descrip>
 
+<#if out="latex"><x/newpage/</#if>
+
 <sect2>Refine Knots With Surface Tool<label id="refinewst">
 <p>
+<figure loc="ht">
+<eps file="pics/refknuwnp.ps" height="4cm">
+<img src="pics/refknuwnp.gif">
+<caption>Refine Knots With Surface (U) Tool (left: original surface, right: refined surface)</caption>
+</figure>
 <descrip>
 <tag/Arguments/ The refine knots with surface tool takes a number of NURBS
 patches from the selection and requests a vector of new knot values.
 <tag/Operation/ The respective knot vectors of the selected NURBS patches
 will be refined by inserting all knots from the specified vector at once.
 New control points will be added and the position of old control points
-may be changed in the progress.
+may be changed in the progress.<newline>
+See also the example above where a surface defined on the knot vector<newline>
+<tt>[0 0 0 0 0.5 1 1 1 1]</tt><newline>
+has been refined with the new knots <tt/0.2/ and <tt/0.7/ in U direction.
+
 The resulting knot vector must be valid, otherwise an error will
 be reported and the respective patch is not changed.
 
@@ -14538,6 +14551,8 @@ See also the documentation of the corresponding scripting interface commands
 and the related tool for
 curves <ref id="refknwit" name="Refine Knots With Tool">.
 </descrip>
+
+<#if out="latex"><x/newpage/</#if>
 
 <sect2>Elevate Surface Tool<label id="elevuvt">
 <p>
@@ -14562,6 +14577,8 @@ See also the documentation of the corresponding scripting interface commands
 and the related tool for
 curves <ref id="elevt" name="Elevate Tool">.
 </descrip>
+
+<#if out="latex"><x/newpage/</#if>
 
 <sect2>Clamp Surface Tool<label id="clanpt">
 <p>
@@ -14594,6 +14611,8 @@ See also the documentation of the corresponding scripting interface commands
 and the related tool for
 curves <ref id="clat" name="Clamp Tool">.
 </descrip>
+
+<#if out="latex"><x/newpage/</#if>
 
 <sect2>Unclamp Surface Tool<label id="unclanpt">
 <p>
@@ -14630,6 +14649,8 @@ and the related tool for
 curves <ref id="unclat" name="Unclamp Tool">.
 </descrip>
 
+<#if out="latex"><x/newpage/</#if>
+
 <sect2>Insert Knot Surface Tool<label id="insknnpt">
 <p>
 <figure loc="ht">
@@ -14658,6 +14679,8 @@ See also the documentation of the corresponding scripting interface commands
 and the related tool for
 curves <ref id="insknt" name="Insert Knot Tool">.
 </descrip>
+
+<#if out="latex"><x/newpage/</#if>
 
 <sect2>Remove Knot Surface Tool<label id="remknnpt">
 <p>
