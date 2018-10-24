@@ -14496,7 +14496,13 @@ patches from the selection.
 will be refined by inserting a knot in the middle of each inner knot interval
 without changing the shape of the patches. New control
 points will be added and the position of old control points may be
-changed in the progress (see also the image above).
+changed in the progress. See also the image above where a surface defined
+on the knot vector:<newline>
+<tt>[0 0 0 0 1 1 1 1]</tt><newline>
+is successively refined to the knot vectors:<newline>
+<tt>[0 0 0 0 0.5 1 1 1 1]</tt><newline>
+and then<newline>
+<tt>[0 0 0 0 0.25 0.5 0.75 1 1 1 1]</tt>.
 <tag/Notes/ Because new knots are inserted into inner intervals only,
 the clamping state of the knot vectors does not change.
 Furthermore, knot vectors of type <tt/"NURB"/ will not change in type,
@@ -14528,11 +14534,15 @@ curves <ref id="refknit" name="Refine Knots Tool">.
 patches from the selection and requests a vector of new knot values.
 <tag/Operation/ The respective knot vectors of the selected NURBS patches
 will be refined by inserting all knots from the specified vector at once.
+The shape of the patch will not be changed.
 New control points will be added and the position of old control points
 may be changed in the progress.<newline>
-See also the example above where a surface defined on the knot vector<newline>
+See also the example image above where a surface defined on the knot
+vector<newline>
 <tt>[0 0 0 0 0.5 1 1 1 1]</tt><newline>
-has been refined with the new knots <tt/0.2/ and <tt/0.7/ in U direction.
+has been refined with the new knots <tt/0.2/ and <tt/0.7/ in U direction
+to the new knot vector:<newline>
+<tt>[0 0 0 0 0.2 0.5 0.7 1 1 1 1]</tt>.
 
 The resulting knot vector must be valid, otherwise an error will
 be reported and the respective patch is not changed.
@@ -14556,15 +14566,25 @@ curves <ref id="refknwit" name="Refine Knots With Tool">.
 
 <sect2>Elevate Surface Tool<label id="elevuvt">
 <p>
+<figure loc="ht">
+<eps file="pics/elevunp.ps" height="4cm">
+<img src="pics/elevunp.gif">
+<caption>Elevate Surface Tool (left: original surface, right: elevated surface)</caption>
+</figure>
 <descrip>
 <tag/Arguments/ The elevate surface tool takes a number of NURBS patches
 from the selection and additionally requests two integer values.
 <tag/Operation/ The order of the selected NURBS patches will be raised
 by the specified integer values without changing the shape of the patches.
-<tag/Notes/ If the knot vector of the patch is not clamped, it
-will be clamped automatically. The knot type of the patch will
-be changed to <tt/"Custom"/. New control points will be added and the position
+New control points will be added and the position
 of old control points may be changed in the progress.
+See also the example image above where a surface of order 4 has been
+elevated to order 5 in U direction.
+
+<tag/Notes/ If the knot vector of the patch is not clamped, it
+will be clamped automatically.
+
+The knot type of the patch will be changed to <tt/"Custom"/.
 
 The point selection will be removed from the original objects.
 
