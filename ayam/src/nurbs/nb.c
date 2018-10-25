@@ -1232,7 +1232,7 @@ ay_nb_RemoveKnotCurve4D(int n, int p, double *U, double *Pw, double tol,
 	{
 	  ti = (ii-1)*4;
 	  tj = (jj+1)*4;
-	  if((ti >= 0) && (tj >= 0) && (ti < tl) && (tj < tl))
+	  if((ti >= 0) && (tj >= 0) && (ti < tl*4) && (tj < tl*4))
 	    {
 	      if((tol == 0.0) &&
 		 (fabs(temp[ti] - temp[tj]) <= AY_EPSILON/100) &&
@@ -1258,7 +1258,7 @@ ay_nb_RemoveKnotCurve4D(int n, int p, double *U, double *Pw, double tol,
 	  alfi = (u-U[i])/(U[i+ord+t]-U[i]);
 	  ti = (ii+t+1)*4;
 	  tj = (ii-1)*4;
-	  if((ti >= 0) && (tj >= 0) && (ti < tl) && (tj < tl))
+	  if((ti >= 0) && (tj >= 0) && (ti < tl*4) && (tj < tl*4))
 	    {
 	      if((tol == 0.0) &&
 		 (fabs(Pw[i*4]   - (alfi*temp[ti]+(1.0-alfi)*temp[tj])) <=
