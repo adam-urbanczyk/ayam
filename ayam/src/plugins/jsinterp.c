@@ -187,6 +187,7 @@ static JSFunctionSpec jsinterp_global_functions[] = {
   {"elevateNC", jsinterp_wraptcmdargs, 0, 0, 0},
   {"insknNC", jsinterp_wraptcmdargs, 0, 0, 0},
   {"remknNC", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"remsuknNC", jsinterp_wraptcmdargs, 0, 0, 0},
   /* collMP explMP ? */
   {"splitNC", jsinterp_wraptcmdargs, 0, 0, 0},
   {"concatNC", jsinterp_wraptcmdargs, 0, 0, 0},

@@ -167,6 +167,7 @@ static const struct luaL_Reg luainterplib [] = {
       {"elevateNC", luainterp_wraptclcmd},
       {"insknNC", luainterp_wraptclcmd},
       {"remknNC", luainterp_wraptclcmd},
+      {"remsuknNC", luainterp_wraptclcmd},
       /* collMP explMP ? */
       {"splitNC", luainterp_wraptclcmd},
       {"concatNC", luainterp_wraptclcmd},

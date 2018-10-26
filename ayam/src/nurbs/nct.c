@@ -7080,9 +7080,110 @@ ay_nct_coarsentcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_nct_coarsentcmd */
 
 
+/** ay_nct_removesuperfluousknots:
+ * Remove all knots from the curve that do not contribute to its shape.
+ *
+ * \param[in,out] nc NURBS curve object to process
+ * \param[in] tol tolerance value (0.0-Inf, unchecked)
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_nct_removesuperfluousknots(ay_nurbcurve_object *nc, double tol)
+{
+ int ay_status = AY_OK, was_rat = AY_FALSE, removed = AY_FALSE;
+ char fname[] = "nct_removesuperfluousknots";
+ int i, s;
+ double *newcontrolv = NULL, *newknotv = NULL;
+
+  do
+    {
+      removed = AY_FALSE;
+
+      for(i = nc->order; i < nc->length; i++)
+	{
+	  /* calculate knot multiplicity */
+	  s = 1;
+	  while(((i+s) < (nc->length+nc->order)) &&
+		(fabs(nc->knotv[i] - nc->knotv[i+s]) < AY_EPSILON))
+	    {
+	      s++;
+	    }
+
+	  /* we can (or should) not lower the nc order */
+	  if((nc->length - 1) < nc->order)
+	    {
+	      continue;
+	    }
+
+	  if(!newcontrolv)
+	    {
+	      if(!(newcontrolv = malloc(nc->length*4*sizeof(double))))
+		{
+		  ay_error(AY_EOMEM, fname, NULL);
+		  return AY_EOMEM;
+		}
+	    }
+	  if(!newknotv)
+	    {
+	      if(!(newknotv = malloc((nc->length+nc->order)*sizeof(double))))
+		{
+		  free(newcontrolv);
+		  ay_error(AY_EOMEM, fname, NULL);
+		  return AY_EOMEM;
+		}
+	    }
+
+	  if(nc->is_rat && !was_rat)
+	    {
+	      was_rat = AY_TRUE;
+	      (void)ay_nct_euctohom(nc);
+	    }
+	  /*printf("Trying to remove knot %d with mult %d\n",i,s);*/
+  	  /* try to remove the knot */
+	  ay_status = ay_nb_RemoveKnotCurve4D(nc->length-1, nc->order-1,
+					      nc->knotv, nc->controlv,
+					      tol, i, s, 1,
+					      newknotv, newcontrolv);
+
+	  if(ay_status)
+	    {
+	      continue;
+	    }
+	  else
+	    {
+	      removed = AY_TRUE;
+	      /* save results */
+	      nc->length--;
+	      memcpy(nc->controlv, newcontrolv, nc->length*4*sizeof(double));
+	      memcpy(nc->knotv, newknotv, nc->length+nc->order*sizeof(double));
+	      free(newcontrolv);
+	      newcontrolv = NULL;
+	      free(newknotv);
+	      newknotv = NULL;
+	      break;
+	    }
+	} /* for */
+    }
+  while(removed);
+
+  if(was_rat)
+    (void)ay_nct_homtoeuc(nc);
+
+  if(newcontrolv)
+    free(newcontrolv);
+
+  if(newknotv)
+    free(newknotv);
+
+ return AY_OK;
+} /* ay_nct_removesuperfluousknots */
+
+
 /** ay_nct_removekntcmd:
  *  Remove knot from selected NURBS curves.
  *  Implements the \a remknNC scripting interface command.
+ *  Also implements the \a remsuknNC scripting interface command.
  *  See also the corresponding section in the \ayd{scremknnc}.
  *
  *  \returns TCL_OK in any case.
@@ -7100,6 +7201,68 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
 
+  if(argv[0][3] == 's')
+    {
+      /* detected remsuknNC command */
+      if(!sel)
+	{
+	  ay_error(AY_ENOSEL, argv[0], NULL);
+	  return TCL_OK;
+	}
+
+      tol = 0.0;
+
+      if(argc > 1)
+	{
+	  tcl_status = Tcl_GetDouble(interp, argv[1], &tol);
+	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	  if(tol != tol)
+	    {
+	      ay_error(AY_ERROR, argv[0], "Parameter tol is NaN!");
+	      return TCL_OK;
+	    }
+	}
+
+      while(sel)
+	{
+	  o = sel->object;
+	  if(o->type != AY_IDNCURVE)
+	    {
+	      ay_error(AY_EWARN, argv[0], ay_error_igntype);
+	    }
+	  else
+	    {
+	      curve = (ay_nurbcurve_object *)o->refine;
+
+	      ay_status = ay_nct_removesuperfluousknots(curve, tol);
+
+	      if(ay_status)
+		{
+		  ay_error(AY_ERROR, argv[0], "Knot removal failed.");
+		  break;
+		}
+
+	      notify_parent = AY_TRUE;
+
+	      ay_nct_recreatemp(curve);
+
+	      /* remove all selected points */
+	      if(o->selp)
+		{
+		  ay_selp_clear(o);
+		}
+
+	      o->modified = AY_TRUE;
+
+	      /* re-create tesselation of curve */
+	      (void)ay_notify_object(sel->object);
+	    } /* if */
+
+	  sel = sel->next;
+	} /* while */
+      return TCL_OK;
+    } /* if remsuknNC command */
+
   if((argc < 3) ||
      ((argv[1][0] == '-') && (argv[1][1] == 'i') && (argc < 4)))
     {
@@ -7112,6 +7275,7 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
       ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
+
   if((argv[1][0] == '-') && (argv[1][1] == 'i'))
     {
       tcl_status = Tcl_GetInt(interp, argv[2], &j);
