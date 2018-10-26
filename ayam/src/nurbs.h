@@ -857,6 +857,10 @@ int ay_nct_coarsen(ay_nurbcurve_object *curve);
 int ay_nct_coarsentcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
+/** Remove all knots from the curve that do not contribute to its shape.
+ */
+int ay_nct_removesuperfluousknots(ay_nurbcurve_object *nc, double tol);
+
 /** Tcl command to remove a knot from selected NURBS curves.
  */
 int ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
