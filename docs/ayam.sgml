@@ -13498,17 +13498,21 @@ scripting interface command <ref id="screfinec" name="refineC">.
 the selection.
 <tag/Operation/ The knot vectors of the selected NURBS curves will be
 refined by inserting a knot in the middle of each inner knot interval
-without changing the shape of the curve.
+without changing the shape of the curve. New control
+points will be added and the position of old control points may be
+changed in the progress. See also the  image above where a curve defined
+on the knot vector:<newline>
+<tt>[0 0 0 0 1 1 1 1]</tt><newline>
+is successively refined to the knot vectors:<newline>
+<tt>[0 0 0 0 0.5 1 1 1 1]</tt><newline>
+and then<newline>
+<tt>[0 0 0 0 0.25 0.5 0.75 1 1 1 1]</tt>.
 <tag/Notes/ Because new knots are inserted into inner intervals only,
 the clamping state of the knot vectors does not change.
 Furthermore, knot vectors of type <tt/"NURB"/ will not change in type,
 other knot vectors will be changed to type <tt/"Custom"/.
-See the image above for an example of a
-successive refinement of a simple NURBS curve. Note that the shape
-of the curve does not change, but the position of
-certain control points does.
 
-The curve type of periodic curves will not be preserved.
+The curve type of periodic curves will <em/not/ be preserved.
 
 The point selection will be removed from the processed objects.
 
@@ -13586,9 +13590,11 @@ scripting interface command <ref id="sccoarsennc" name="coarsenNC">.
 the selection and additionally requests an integer value.
 <tag/Operation/ The order of the selected NURBS curves will be raised
 by the specified integer value without changing the shape of the curve.
+See also the example image above.
+
 <tag/Notes/ If the knot vector of the curve is not clamped, it
 will be clamped automatically. The knot type of the curve will
-be changed to custom. New control points will be added and the position
+be changed to <tt/"Custom"/. New control points will be added and the position
 of old control points may be changed in the progress.
 
 The point selection will be removed from the processed objects.
@@ -13680,6 +13686,14 @@ of the knot vectors. The shape of the curve will not change but the
 position of some control points will. The knot type of the curve can
 be changed to type <tt/"Custom"/.
 
+See also the image above where a NURBS curve of order 3 defined on the
+knot vector<newline>
+<tt/[/&thinsp;<tt/0 0 0 0.5 1 1 1/&thinsp;<tt/]/<newline>
+has been unclamped using the new knot vector:<newline>
+<tt/[/&thinsp;<tt/0 0.1333 0.3333 0.5 0.6667 0.8333 1/&thinsp;<tt/]/.
+<!--
+<f/[&thinsp;0&nbsp;&nbsp;0.13<ovl/3/&nbsp;&nbsp;0.3<ovl/3/&nbsp;&nbsp;0.5&nbsp;&nbsp;0.6<ovl/6/&nbsp;&nbsp;0.83<ovl/3/&nbsp;&nbsp;1&thinsp;]/.<newline>
+ -->
 <tag/Notes/
 Unclamping is <em/not/ an exact reversal of clamping (and vice versa).
 
@@ -13741,9 +13755,9 @@ be removed <it/r/ times from the knot vector of the selected curves if
 the shape of the resulting curve does not deviate more than <it/tol/
 from the original curve in any point. Since Ayam 1.20 the knot to remove
 may also be specified using its (zero based)
-index in the knot vector (for instance by entering <tt/"-i 3"/ instead of
-<tt/"0.5"/ for the knot vector
-<tt/"0 0 0 0.5 1 1 1"/).<newline>
+index in the knot vector; for instance by entering <tt/"-i 3"/ instead of
+<tt/"0.5"/ for the knot vector:<newline>
+<tt/[/&thinsp;<tt/0 0 0 0.5 1 1 1/&thinsp;<tt/]/.<newline>
 If the knot can not be removed <it/r/ times due to the tolerance given, an
 error is reported and the original curve is left unchanged.<newline>
 This operation also fails, if the knot removal would lead to a curve
@@ -17521,6 +17535,26 @@ of lower order.
 <p>
 See also section <ref id="remknt" name="Remove Knot Tool">.
 </itemize>
+<p>
+<#if out="latex"><x/phantomsection/</#if>
+
+<label id="scremsuknnc">
+remsuknNC &ndash; remove superfluous knots from NURBS curve:
+<itemize>
+ <item>Synopsis: <tt/"remsuknNC [tol]"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Remove all knots from the NURBS curve that do not
+contribute to its shape. This may lead to control point removal and
+changes, but the shape of the curve does not change unless a large
+tolerance value is specified via the <tt/tol/ parameter. The default value
+of this parameter is 0.0.
+<p><p>
+It is no error if no knots can be removed.
+<p>
+See also section <ref id="remknt" name="Remove Knot Tool">.
+</itemize>
+
+<#if out="latex"><x/newpage/</#if>
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
@@ -25676,6 +25710,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>remknuNP: <ref id="scremknunp" name="scripting interface command">
 <item>remknvNP: <ref id="scremknvnp" name="scripting interface command">
 <item>remsnPo: <ref id="scremsnPo" name="scripting interface command">
+<item>remsuknNC: <ref id="scremsuknnc" name="scripting interface command">
 <item>Remove Property: <ref id="mmtags" name="Tag management">
 <item>Remove Knot:
 <itemize>
