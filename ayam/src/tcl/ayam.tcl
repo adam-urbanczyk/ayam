@@ -702,6 +702,7 @@ array set ay {
  remknu 0.5
  remknr 1
  remtol Inf
+ remstol 0.0
  refinekn 0.5
  splitu 0.5
  splitappend false

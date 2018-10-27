@@ -508,11 +508,20 @@ $m.nct.kn add command -label "Remove Knot" -command {
     getType ay(typ) 1; if { $ay(typ) == "NCurve" } {
 	getProp; set ay(okn) $::NCurveAttrData(Knots);
     }
+    if { [info exists ::u] } {
+	set ay(remknu_l) $::u
+    }
     runTool [list ay(okn) ay(remknu) ay(remknr) ay(remtol)]\
 	[list "Old knots:" "Remove knot:" "Remove times:" "Tolerance:"]\
 	"undo save RemKn; remknNC %1 %2 %3; plb_update; rV"\
 	"Remove Knot" remknt
 } -underline 0
+
+$m.nct.kn add command -label "Remove Superfluous Knots" -command {
+    runTool ay(remstol) "Tolerance:"\
+	"undo save RemSuKn; remsuknNC %0; plb_update; rV"\
+	"Remove Superfluous Knots" remsuknt
+} -underline 2
 
 $m.nct.kn add command -label "Refine Knots" -command { undo save RefineKn;
     refineknNC; plb_update; rV } -underline 1
@@ -521,7 +530,7 @@ $m.nct.kn add command -label "Refine Knots with" -command {
     getType ay(typ) 1; if { $ay(typ) == "NCurve" } {
 	getProp; set ay(okn) $::NCurveAttrData(Knots); ncurve_getrknots;
     }
-    runTool [list ay(okn) ay(refinekn)] {"Old Knots:" "New Knots:"}\
+    runTool [list ay(okn) ay(refinekn)] {"Old knots:" "New knots:"}\
 	"undo save RefineKn; refineknNC \{%1\}; plb_update; rV"\
         "Refine Knots" refknit
 } -underline 2
@@ -730,7 +739,7 @@ $m.npt.kn add command -label "Refine Knots U with" -command {
     getType ay(typ) 1; if { $ay(typ) == "NPatch" } {
 	getProp; set ay(okn) $::NPatchAttrData(Knots_U); npatch_getrknotsu;
     }
-    runTool [list ay(okn) ay(refineknu)] {"Old Knots:" "New Knots:"}\
+    runTool [list ay(okn) ay(refineknu)] {"Old knots:" "New knots:"}\
 	"undo save RefineKnUNP; refineuNP \{%1\}; plb_update; rV"\
         "Refine Knots U" refinest
 }
@@ -743,7 +752,7 @@ $m.npt.kn add command -label "Refine Knots V with" -command {
     getType ay(typ) 1; if { $ay(typ) == "NPatch" } {
 	getProp; set ay(okn) $::NPatchAttrData(Knots_V); npatch_getrknotsv;
     }
-    runTool [list ay(okn) ay(refineknv)] {"Old Knots:" "New Knots:"}\
+    runTool [list ay(okn) ay(refineknv)] {"Old knots:" "New knots:"}\
 	"undo save RefineKnVNP; refinevNP \{%1\}; plb_update; rV"\
         "Refine Knots V" refinest
 }
