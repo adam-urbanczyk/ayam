@@ -68,6 +68,9 @@ proc sweep_rotcurve { plane } {
 		incr stride
 	    }
 	    getPnt -trafo -all pnts
+	    if { ! [info exists pnts] } {
+		return;
+	    }
 	    set j $plane
 	    set isInPlane true
 	    while { $j < [llength $pnts] } {
