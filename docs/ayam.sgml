@@ -13776,6 +13776,37 @@ and the related tool for
 surfaces <ref id="remknnpt" name="Remove Knot Surface Tool">.
 </descrip>
 
+<sect2>Remove Superfluous Knots Tool<label id="remsuknt">
+<p>
+<!--
+<figure loc="ht">
+<eps file="pics/remkn.ps" height="4cm">
+<img src="pics/remkn.gif">
+<caption>Remove Knot Tool (left: original curve, right: the knot
+at <em/t/&thinsp;=&thinsp;0.5 has been removed one time)</caption>
+</figure>
+ -->
+<descrip>
+<tag/Arguments/ The remove superfluous knots tool takes a number of NURBS
+curves from the selection and requests a tolerance value <it/tol/.
+
+<tag/Operation/ All knots that do not contribute to the shape of the
+curve will be removed from the knot vector of the selected curves if
+the shape of the resulting curve does not deviate more than <it/tol/
+from the original curve in any point.
+<p>
+It is no error if no knots can be removed.
+<tag/Notes/ 
+The point selection will be removed from the processed objects.
+
+See also the documentation of the corresponding
+scripting interface command <ref id="scremsuknnc" name="remsuknNC">.
+<!--
+and the related tool for
+surfaces <ref id="remsuknnpt" name="Remove Superfluous Knots Surface Tool">.
+ -->
+</descrip>
+
 <sect2>Concat Tool<label id="conct">
 <p>
 <descrip>
@@ -17551,7 +17582,7 @@ of this parameter is 0.0.
 <p><p>
 It is no error if no knots can be removed.
 <p>
-See also section <ref id="remknt" name="Remove Knot Tool">.
+See also section <ref id="remsuknt" name="Remove Superfluous Knots Tool">.
 </itemize>
 
 <#if out="latex"><x/newpage/</#if>
