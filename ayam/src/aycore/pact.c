@@ -718,6 +718,12 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 
 	  pact_objectslen++;
 	} /* if pick ok */
+      else
+	{
+	  /* failed picks are of no concern, better avoid clogging
+	     the error log */
+	  ay_status = AY_OK;
+	}
 
       ay_pact_clearpointedit(&pact_pe);
 
