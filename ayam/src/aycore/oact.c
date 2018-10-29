@@ -63,6 +63,7 @@ ay_oact_parseargs(struct Togl *togl, int argc, char *argv[], char *fname,
 
 	      Tcl_GetDouble(interp, argv[3], winx);
 	      Tcl_GetDouble(interp, argv[4], winy);
+
 	      if(view->usegrid)
 		{
 		  ay_viewt_griddify(togl, winx, winy);
@@ -77,7 +78,7 @@ ay_oact_parseargs(struct Togl *togl, int argc, char *argv[], char *fname,
     {
       ay_error(AY_EARGS, fname,
 		 "\\[-start $winx $winy|-winxy $winx $winy\\]");
-      return TCL_OK;
+      return AY_ERROR;
     }
 
  return AY_OK;
