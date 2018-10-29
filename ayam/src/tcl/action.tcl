@@ -1315,7 +1315,7 @@ proc editPointDialogApply { w } {
 	$array(window) penpac -apply
 	rV
 	plb_update
-	after idle "focus $focusWin"
+	after idle "catch \{focus $focusWin\}"
     } else {
 	ayError 2 "editPointApply" "Lost window to apply changes to!"
     }
@@ -1411,8 +1411,12 @@ proc editPointDialog { win {dragsel 0} } {
 	pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
 	pack $f -in $w.f1 -side top -fill x
 
-	bind $f.e <Key-Return> "editPointDialogApply $w;break"
-	catch {bind $f.e <Key-KP_Enter> "editPointDialogApply $w;break"}
+	bind $f.e <Key-Return> "editPointDialogApply $w; break"
+	bind $f.e <Shift-Key-Return>\
+	    "editPointDialogApply $w; $w.f2.bca invoke; break"
+	catch {bind $f.e <Key-KP_Enter> "editPointDialogApply $w; break"}
+	catch {bind $f.e <Shift-Key-KP_Enter>\
+		   "editPointDialogApply $w; $w.f2.bca invoke; break"}
     }
 
     # separating space
@@ -1464,8 +1468,12 @@ proc editPointDialog { win {dragsel 0} } {
     bind $w <Escape> "$w.f2.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$w.f2.bca invoke"
 
-    bind $w <Key-Return> "editPointDialogApply $w;break"
-    catch {bind $w <Key-KP_Enter> "editPointDialogApply $w;break"}
+    bind $w <Key-Return> "editPointDialogApply $w; break"
+    bind $w <Shift-Key-Return>\
+	"editPointDialogApply $w; $w.f2.bca invoke; break"
+    catch {bind $w <Key-KP_Enter> "editPointDialogApply $w; break"}
+    catch {bind $w <Shift-Key-KP_Enter>\
+	       "editPointDialogApply $w; $w.f2.bca invoke; break"}
 
     focus $f.bok
 
