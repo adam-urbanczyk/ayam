@@ -249,8 +249,7 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 		int argc, char *argv[])
 {
  int tcl_status = TCL_OK;
- char args[] =
-   "[type value]|-index index type value|-delete index";
+ char args[] = "[type value]|-index index type value|-delete index";
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_tag *t = NULL, *new = NULL, **next = NULL;
@@ -405,7 +404,10 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
   toa = Tcl_NewStringObj("ay", -1);
   ton = Tcl_NewStringObj("pasteProp", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &pasteProp);
+  if(to)
+    {
+      Tcl_GetIntFromObj(interp, to, &pasteProp);
+    }
 
   while(sel)
     {
