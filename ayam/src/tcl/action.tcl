@@ -1325,6 +1325,27 @@ proc editPointDialogApply { w } {
 # editPointDialogApply
 
 
+#editPointDialogBind:
+# helper for editPointDialog
+# establish misc keyboard bindings
+proc editPointDialogBind { w } {
+
+    set ww .editPointDw
+
+    bind $w <Key-Return> "editPointDialogApply $ww; break"
+    bind $w <Shift-Key-Return>\
+	"editPointDialogApply $ww; $ww.f2.bca invoke; break"
+    catch {bind $w <Key-KP_Enter> "editPointDialogApply $ww; break"}
+    catch {bind $w <Shift-Key-KP_Enter>\
+	       "editPointDialogApply $ww; $ww.f2.bca invoke; break"}
+
+    bind $w <Shift-Delete> "editPointDialogClear $ww"
+
+ return;
+}
+# editPointDialogBind
+
+
 #editPointDialog:
 # helper for actionEditNumP below
 # open the numeric point edit dialog
@@ -1411,12 +1432,7 @@ proc editPointDialog { win {dragsel 0} } {
 	pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
 	pack $f -in $w.f1 -side top -fill x
 
-	bind $f.e <Key-Return> "editPointDialogApply $w; break"
-	bind $f.e <Shift-Key-Return>\
-	    "editPointDialogApply $w; $w.f2.bca invoke; break"
-	catch {bind $f.e <Key-KP_Enter> "editPointDialogApply $w; break"}
-	catch {bind $f.e <Shift-Key-KP_Enter>\
-		   "editPointDialogApply $w; $w.f2.bca invoke; break"}
+	editPointDialogBind $f.e
     }
 
     # separating space
@@ -1444,7 +1460,8 @@ proc editPointDialog { win {dragsel 0} } {
 
     # create popup
     set m [menu $w.popup -tearoff 0]
-    $m add command -label "Clear" -command "editPointDialogClear $w"
+    $m add command -label "Clear <Shift-Delete>"\
+	-command "editPointDialogClear $w"
     $m add command -label "Reset" -command "editPointDialogUpdate $w"
     $m add command -label "Fetch Mark" -command "editPointDialogSet $w aymark"
     $m add command -label "Fetch First" -command "editPointDialogSet $w first"
@@ -1468,12 +1485,12 @@ proc editPointDialog { win {dragsel 0} } {
     bind $w <Escape> "$w.f2.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$w.f2.bca invoke"
 
-    bind $w <Key-Return> "editPointDialogApply $w; break"
-    bind $w <Shift-Key-Return>\
-	"editPointDialogApply $w; $w.f2.bca invoke; break"
-    catch {bind $w <Key-KP_Enter> "editPointDialogApply $w; break"}
-    catch {bind $w <Shift-Key-KP_Enter>\
-	       "editPointDialogApply $w; $w.f2.bca invoke; break"}
+    # establish misc keyboard bindings
+    editPointDialogBind $w
+
+    foreach e {x y z w} {
+	bind $w <$e> "focus $w.f1.f$e.e"
+    }
 
     focus $f.bok
 
