@@ -4290,6 +4290,17 @@ selected points, or
 selected points.
 </itemize>
 
+The following keyboard shortcuts are in effect for the
+numeric edit dialog:
+<itemize>
+<item> <tt/&lt;x&gt;/, <tt/&lt;y&gt;/, <tt/&lt;z&gt;/, <tt/&lt;w&gt;/, move
+the focus to the respective entry.
+<item> <tt/&lt;Return&gt;/&thinsp;/&thinsp;<tt/&lt;Enter&gt;/, apply all changes.
+<item> <tt/&lt;Shift-Return&gt;/&thinsp;/&thinsp;<tt/&lt;Shift-Enter&gt;/, apply all changes and close the dialog.
+<item> <tt/&lt;Shift-Delete&gt;/, clear all entries.
+<item> <tt/&lt;Esc&gt;/ close the dialog.
+</itemize>
+
 <sect1>Editing Weights<label id="editwac">
 <p>
 In the NURBS context, weights are mainly used to construct perfect
