@@ -4295,8 +4295,10 @@ numeric edit dialog:
 <itemize>
 <item> <tt/&lt;x&gt;/, <tt/&lt;y&gt;/, <tt/&lt;z&gt;/, <tt/&lt;w&gt;/, move
 the focus to the respective entry.
-<item> <tt/&lt;Return&gt;/&thinsp;/&thinsp;<tt/&lt;Enter&gt;/, apply all changes.
-<item> <tt/&lt;Shift-Return&gt;/&thinsp;/&thinsp;<tt/&lt;Shift-Enter&gt;/, apply all changes and close the dialog.
+<item> <tt/&lt;Return&gt;/&thinsp;/&thinsp;<tt/&lt;Enter&gt;/, apply
+all changes.
+<item> <tt/&lt;Shift-Return&gt;/&thinsp;/&thinsp;<tt/&lt;Shift-Enter&gt;/,
+apply all changes and close the dialog.
 <item> <tt/&lt;Shift-Delete&gt;/, clear all entries.
 <item> <tt/&lt;Esc&gt;/ close the dialog.
 </itemize>
@@ -7612,6 +7614,19 @@ main menu entry <tt>"Tools/Convert"</tt>.
 <p><#if out="latex">&nbsp;<newline></#if>
 NCircle objects never directly appear in RIB output (only indirectly as trim
 curve).
+
+<sect2>More Curve Types
+<p>
+More basic curve types are available via plugins and scripts, those are:
+<itemize>
+<item>Basis Curve: <ref id="bcurveobj" name="BCurve object">,
+<item>Subdivison Curve: <ref id="sdcurveobj" name="SDCurve object">,
+<item>Superformula Curve: <ref id="sfcurveobj" name="SFCurve object">,
+<item>NURBS circle with triangular
+base: <ref id="tcircletcl" name="TCircle script object">,
+<item>Helix Curve: <ref id="helixtcl" name="Helix script object">, and
+<item>Spiral Curve: <ref id="spiraltcl" name="Spiral script object">.
+</itemize>
 
 <#if out="latex"><x/newpage/</#if>
 
