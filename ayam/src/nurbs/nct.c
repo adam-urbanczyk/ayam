@@ -757,9 +757,6 @@ ay_nct_opentcmd(ClientData clientData, Tcl_Interp *interp,
       switch(sel->object->type)
 	{
 	case AY_IDNCURVE:
-	  if(sel->object->selp)
-	    ay_selp_clear(sel->object);
-
 	  nc = (ay_nurbcurve_object *)sel->object->refine;
 	  if(close)
 	    {
@@ -767,8 +764,9 @@ ay_nct_opentcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_status = ay_nct_close(nc);
 	    }
 	  else
-	    ay_status = ay_nct_open(nc);
-
+	    {
+	      ay_status = ay_nct_open(nc);
+	    }
 	  if(ay_status)
 	    {
 	      if(close)
@@ -776,14 +774,19 @@ ay_nct_opentcmd(ClientData clientData, Tcl_Interp *interp,
 	      else
 		ay_error(AY_ERROR, argv[0], "Error opening object.");
 	    }
+	  else
+	    {
+	      if(sel->object->selp)
+		ay_selp_clear(sel->object);
 
-	  ay_nct_recreatemp(nc);
+	      ay_nct_recreatemp(nc);
 
-	  sel->object->modified = AY_TRUE;
+	      sel->object->modified = AY_TRUE;
 
-	  /* re-create tesselation of curve */
-	  (void)ay_notify_object(sel->object);
-	  notify_parent = AY_TRUE;
+	      /* re-create tesselation of curve */
+	      (void)ay_notify_object(sel->object);
+	      notify_parent = AY_TRUE;
+	    }
 	  break;
 	case AY_IDICURVE:
 	  ic = (ay_icurve_object *)sel->object->refine;
@@ -794,7 +797,7 @@ ay_nct_opentcmd(ClientData clientData, Tcl_Interp *interp,
 		  ic->type = AY_CTCLOSED;
 		  sel->object->modified = AY_TRUE;
 
-		  /* re-create tesselation of curve */
+		  /* re-run interpolation */
 		  (void)ay_notify_object(sel->object);
 		  notify_parent = AY_TRUE;
 		}
@@ -806,7 +809,7 @@ ay_nct_opentcmd(ClientData clientData, Tcl_Interp *interp,
 		  ic->type = AY_CTOPEN;
 		  sel->object->modified = AY_TRUE;
 
-		  /* re-create tesselation of curve */
+		  /* re-run interpolation */
 		  (void)ay_notify_object(sel->object);
 		  notify_parent = AY_TRUE;
 		}
@@ -821,7 +824,7 @@ ay_nct_opentcmd(ClientData clientData, Tcl_Interp *interp,
 		  ac->closed = AY_TRUE;
 		  sel->object->modified = AY_TRUE;
 
-		  /* re-create tesselation of curve */
+		  /* re-run approximation */
 		  (void)ay_notify_object(sel->object);
 		  notify_parent = AY_TRUE;
 		}
@@ -833,7 +836,7 @@ ay_nct_opentcmd(ClientData clientData, Tcl_Interp *interp,
 		  ac->closed = AY_FALSE;
 		  sel->object->modified = AY_TRUE;
 
-		  /* re-create tesselation of curve */
+		  /* re-run approximation */
 		  (void)ay_notify_object(sel->object);
 		  notify_parent = AY_TRUE;
 		}
@@ -848,7 +851,7 @@ ay_nct_opentcmd(ClientData clientData, Tcl_Interp *interp,
 		  cc->closed = AY_TRUE;
 		  sel->object->modified = AY_TRUE;
 
-		  /* re-create tesselation of curve */
+		  /* re-run concatenation */
 		  (void)ay_notify_object(sel->object);
 		  notify_parent = AY_TRUE;
 		}
@@ -860,7 +863,7 @@ ay_nct_opentcmd(ClientData clientData, Tcl_Interp *interp,
 		  cc->closed = AY_FALSE;
 		  sel->object->modified = AY_TRUE;
 
-		  /* re-create tesselation of curve */
+		  /* re-run concatenation */
 		  (void)ay_notify_object(sel->object);
 		  notify_parent = AY_TRUE;
 		}
@@ -870,6 +873,10 @@ ay_nct_opentcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	  break;
 	} /* switch */
+
+      if(ay_status)
+	break;
+
       sel = sel->next;
     } /* while */
 
