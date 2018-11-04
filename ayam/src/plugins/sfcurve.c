@@ -703,7 +703,7 @@ sfcurve_revertcb(ay_object *o, int dim)
   if(!o)
     return AY_ENULL;
 
-  if(o->type != AY_IDNCIRCLE)
+  if(o->type != sfcurve_id)
     return AY_ERROR;
 
   sfc = (sfcurve_object *)o->refine;
