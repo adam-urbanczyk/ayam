@@ -609,11 +609,6 @@ int ay_nct_close(ay_nurbcurve_object *curve);
  */
 int ay_nct_open(ay_nurbcurve_object *curve);
 
-/** Open a NURBS curve.
- */
-int ay_nct_opentcmd(ClientData clientData, Tcl_Interp *interp,
-		    int argc, char *argv[]);
-
 /** Revert array.
  */
 int ay_nct_revertarr(double *cv, int cvlen, int stride);

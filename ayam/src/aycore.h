@@ -1607,6 +1607,20 @@ int ay_tcmd_getnormaltcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int ay_tcmd_registerrevert(ay_revertcb *revcb, unsigned int type_id);
 
+/** register open callback
+ */
+int ay_tcmd_registeropen(ay_genericcb *cb, unsigned int type_id);
+
+/** register close callback
+ */
+int ay_tcmd_registerclose(ay_genericcb *cb, unsigned int type_id);
+
+/** Tcl command to open/close a curve
+ */
+int ay_tcmd_opentcmd(ClientData clientData, Tcl_Interp *interp,
+		     int argc, char *argv[]);
+
+
 /** initialize tcmd module
  */
 int ay_tcmd_init(Tcl_Interp *interp);
