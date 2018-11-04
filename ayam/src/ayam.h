@@ -1598,6 +1598,9 @@ typedef int (ay_delpntcb) (ay_object *o, int *index, double *objXYZ);
 /** Revert callback */
 typedef int (ay_revertcb) (ay_object *o, int dim);
 
+/** Generic callback */
+typedef int (ay_genericcb) (ay_object *o);
+
 
 /* Globals */
 

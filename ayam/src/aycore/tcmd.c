@@ -21,6 +21,12 @@
 /** all registered revert callbacks */
 static ay_ftable ay_tcmd_revertcbt;
 
+/** all registered open callbacks */
+static ay_ftable ay_tcmd_opencbt;
+
+/** all registered close callbacks */
+static ay_ftable ay_tcmd_closecbt;
+
 
 /* prototypes of functions local to this module: */
 
@@ -1991,6 +1997,184 @@ cleanup:
 } /* ay_tcmd_getnormaltcmd */
 
 
+/** ay_tcmd_opentcmd:
+ *  Open a closed curve.
+ *  Implements the \a openC scripting interface command.
+ *  Also implements the \a closeC scripting interface command.
+ *  See also the corresponding section in the \ayd{scopenc}.
+ *
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_tcmd_opentcmd(ClientData clientData, Tcl_Interp *interp,
+		int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ int close = AY_FALSE, notify_parent = AY_FALSE;
+ ay_list_object *sel = ay_selection;
+ ay_nurbcurve_object *nc = NULL;
+ ay_icurve_object *ic = NULL;
+ ay_acurve_object *ac = NULL;
+ ay_concatnc_object *cc = NULL;
+ ay_voidfp *arr = NULL;
+ ay_genericcb *cb = NULL;
+
+  if(argv[0][0] == 'c')
+    close = AY_TRUE;
+
+  while(sel)
+    {
+      switch(sel->object->type)
+	{
+	case AY_IDNCURVE:
+	  nc = (ay_nurbcurve_object *)sel->object->refine;
+	  if(close)
+	    {
+	      nc->type = AY_CTCLOSED;
+	      ay_status = ay_nct_close(nc);
+	    }
+	  else
+	    {
+	      ay_status = ay_nct_open(nc);
+	    }
+	  if(ay_status)
+	    {
+	      if(close)
+		ay_error(AY_ERROR, argv[0], "Error closing object.");
+	      else
+		ay_error(AY_ERROR, argv[0], "Error opening object.");
+	    }
+	  else
+	    {
+	      if(sel->object->selp)
+		ay_selp_clear(sel->object);
+
+	      ay_nct_recreatemp(nc);
+
+	      sel->object->modified = AY_TRUE;
+
+	      /* re-create tesselation of curve */
+	      (void)ay_notify_object(sel->object);
+	      notify_parent = AY_TRUE;
+	    }
+	  break;
+	case AY_IDICURVE:
+	  ic = (ay_icurve_object *)sel->object->refine;
+	  if(close)
+	    {
+	      if(ic->type == AY_CTOPEN)
+		{
+		  ic->type = AY_CTCLOSED;
+		  sel->object->modified = AY_TRUE;
+
+		  /* re-run interpolation */
+		  (void)ay_notify_object(sel->object);
+		  notify_parent = AY_TRUE;
+		}
+	    }
+	  else
+	    {
+	      if(ic->type == AY_CTCLOSED)
+		{
+		  ic->type = AY_CTOPEN;
+		  sel->object->modified = AY_TRUE;
+
+		  /* re-run interpolation */
+		  (void)ay_notify_object(sel->object);
+		  notify_parent = AY_TRUE;
+		}
+	    }
+	  break;
+	case AY_IDACURVE:
+	  ac = (ay_acurve_object *)sel->object->refine;
+	  if(close)
+	    {
+	      if(!ac->closed)
+		{
+		  ac->closed = AY_TRUE;
+		  sel->object->modified = AY_TRUE;
+
+		  /* re-run approximation */
+		  (void)ay_notify_object(sel->object);
+		  notify_parent = AY_TRUE;
+		}
+	    }
+	  else
+	    {
+	      if(ac->closed)
+		{
+		  ac->closed = AY_FALSE;
+		  sel->object->modified = AY_TRUE;
+
+		  /* re-run approximation */
+		  (void)ay_notify_object(sel->object);
+		  notify_parent = AY_TRUE;
+		}
+	    }
+	  break;
+	case AY_IDCONCATNC:
+	  cc = (ay_concatnc_object *)sel->object->refine;
+	  if(close)
+	    {
+	      if(!cc->closed)
+		{
+		  cc->closed = AY_TRUE;
+		  sel->object->modified = AY_TRUE;
+
+		  /* re-run concatenation */
+		  (void)ay_notify_object(sel->object);
+		  notify_parent = AY_TRUE;
+		}
+	    }
+	  else
+	    {
+	      if(cc->closed)
+		{
+		  cc->closed = AY_FALSE;
+		  sel->object->modified = AY_TRUE;
+
+		  /* re-run concatenation */
+		  (void)ay_notify_object(sel->object);
+		  notify_parent = AY_TRUE;
+		}
+	    }
+	  break;
+	default:
+	  if(close)
+	    arr = ay_tcmd_closecbt.arr;
+	  else
+	    arr = ay_tcmd_opencbt.arr;
+	  cb = (ay_genericcb *)(arr[sel->object->type]);
+	  if(cb)
+	    {
+	      ay_status = cb(sel->object);
+	      if(!ay_status)
+		{
+		  ay_notify_object(sel->object);
+		  sel->object->modified = AY_TRUE;
+		  notify_parent = AY_TRUE;
+		}
+	    }
+	  else
+	    {
+	      ay_error(AY_EWARN, argv[0], ay_error_igntype);
+	    }
+	  break;
+	} /* switch */
+
+      if(ay_status)
+	break;
+
+      sel = sel->next;
+    } /* while */
+
+  if(notify_parent)
+    (void)ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_tcmd_opentcmd */
+
+
 /** ay_tcmd_registerrevert:
  *  register a revert callback
  *
@@ -2011,6 +2195,46 @@ ay_tcmd_registerrevert(ay_revertcb *revcb, unsigned int type_id)
 } /* ay_tcmd_registerrevert */
 
 
+/** ay_tcmd_registeropen:
+ *  register a open callback
+ *
+ * \param[in] cb open callback
+ * \param[in] type_id object type for which to register the callback (AY_ID...)
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_tcmd_registeropen(ay_genericcb *cb, unsigned int type_id)
+{
+ int ay_status = AY_OK;
+
+  /* register callback */
+  ay_status = ay_table_additem(&ay_tcmd_opencbt, (ay_voidfp)cb, type_id);
+
+ return ay_status;
+} /* ay_tcmd_registeropen */
+
+
+/** ay_tcmd_registerclose:
+ *  register a close callback
+ *
+ * \param[in] cb close callback
+ * \param[in] type_id object type for which to register the callback (AY_ID...)
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_tcmd_registerclose(ay_genericcb *cb, unsigned int type_id)
+{
+ int ay_status = AY_OK;
+
+  /* register callback */
+  ay_status = ay_table_additem(&ay_tcmd_closecbt, (ay_voidfp)cb, type_id);
+
+ return ay_status;
+} /* ay_tcmd_registerclose */
+
+
 /** ay_tcmd_init:
  *  initialize the tcmd module
  *
@@ -2025,6 +2249,12 @@ ay_tcmd_init(Tcl_Interp *interp)
  char fname[] = "tcmd_init";
 
   if((ay_status = ay_table_init(&ay_tcmd_revertcbt)))
+    { ay_error(ay_status, fname, NULL); return AY_ERROR; }
+
+  if((ay_status = ay_table_init(&ay_tcmd_opencbt)))
+    { ay_error(ay_status, fname, NULL); return AY_ERROR; }
+
+  if((ay_status = ay_table_init(&ay_tcmd_closecbt)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
  return ay_status;
