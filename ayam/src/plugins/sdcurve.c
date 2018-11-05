@@ -1283,6 +1283,58 @@ sdcurve_revertcb(ay_object *o, int dim)
 } /* sdcurve_revertcb */
 
 
+/** sdcurve_opencb:
+ * Open a SDCurve.
+ *
+ * \param[in,out] o curve object to process
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+sdcurve_opencb(ay_object *o)
+{
+ sdcurve_object *sd = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  if(o->type != sdcurve_id)
+    return AY_ERROR;
+
+  sd = (sdcurve_object *)o->refine;
+
+  sd->closed = AY_FALSE;
+
+ return AY_OK;
+} /* sdcurve_opencb */
+
+
+/** sdcurve_closecb:
+ * Close a SDCurve.
+ *
+ * \param[in,out] o curve object to process
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+sdcurve_closecb(ay_object *o)
+{
+ sdcurve_object *sd = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  if(o->type != sdcurve_id)
+    return AY_ERROR;
+
+  sd = (sdcurve_object *)o->refine;
+
+  sd->closed = AY_TRUE;
+
+ return AY_OK;
+} /* sdcurve_closecb */
+
+
 /** sdcurve_convtcmd:
  *  Tcl command to convert curve objects to SDCurve objects
  *  Implements the \a sdcconvertC scripting interface command.
@@ -1538,6 +1590,10 @@ Sdcurve_Init(Tcl_Interp *interp)
 
   ay_status += ay_tcmd_registerrevert(sdcurve_revertcb, sdcurve_id);
 
+  ay_status += ay_tcmd_registeropen(sdcurve_opencb, sdcurve_id);
+
+  ay_status += ay_tcmd_registerclose(sdcurve_closecb, sdcurve_id);
+
   if(ay_status)
     {
       ay_error(AY_ERROR, fname, "Error registering custom object!");
@@ -1561,7 +1617,7 @@ Sdcurve_Init(Tcl_Interp *interp)
      }
 
   ay_error(AY_EOUTPUT, fname,
-	   "Custom object \"sdcurve\" successfully loaded.");
+	   "Custom object \"SDCurve\" successfully loaded.");
 
  return TCL_OK;
 } /* Sdcurve_Init */

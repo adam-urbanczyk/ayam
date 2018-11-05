@@ -1824,6 +1824,58 @@ bcurve_revertcb(ay_object *o, int dim)
 } /* bcurve_revertcb */
 
 
+/** bcurve_opencb:
+ * Open a BCurve.
+ *
+ * \param[in,out] o curve object to process
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+bcurve_opencb(ay_object *o)
+{
+ bcurve_object *bc = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  if(o->type != bcurve_id)
+    return AY_ERROR;
+
+  bc = (bcurve_object *)o->refine;
+
+  bc->closed = AY_FALSE;
+
+ return AY_OK;
+} /* bcurve_opencb */
+
+
+/** bcurve_closecb:
+ * Close a BCurve.
+ *
+ * \param[in,out] o curve object to process
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+bcurve_closecb(ay_object *o)
+{
+ bcurve_object *bc = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  if(o->type != bcurve_id)
+    return AY_ERROR;
+
+  bc = (bcurve_object *)o->refine;
+
+  bc->closed = AY_TRUE;
+
+ return AY_OK;
+} /* bcurve_closecb */
+
+
 /* Bcurve_Init:
  * initializes the bcurve module/plugin by registering a new
  * object type (bcurve) and loading the accompanying Tcl script file.
@@ -1879,6 +1931,10 @@ Bcurve_Init(Tcl_Interp *interp)
 
   ay_status += ay_tcmd_registerrevert(bcurve_revertcb, bcurve_id);
 
+  ay_status += ay_tcmd_registeropen(bcurve_opencb, bcurve_id);
+
+  ay_status += ay_tcmd_registerclose(bcurve_closecb, bcurve_id);
+
   if(ay_status)
     {
       ay_error(AY_ERROR, fname, "Error registering custom object!");
@@ -1898,7 +1954,7 @@ Bcurve_Init(Tcl_Interp *interp)
      }
 
   ay_error(AY_EOUTPUT, fname,
-	   "Custom object \"bcurve\" successfully loaded.");
+	   "Custom object \"BCurve\" successfully loaded.");
 
   /* invert Bezier basis matrix */
   (void)ay_trafo_invgenmatrix(mb, mbi);
