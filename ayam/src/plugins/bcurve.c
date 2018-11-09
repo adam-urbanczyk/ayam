@@ -1797,16 +1797,16 @@ bcurve_deletepntcb(ay_object *o, int *index, double *objXYZ)
 } /* bcurve_deletepntcb */
 
 
-/** bcurve_revertcb:
- * Change the direction of a BCurve.
+/** bcurve_genericopcb:
+ * Execute generic operation (AY_OP*) on BCurve.
  *
  * \param[in,out] o curve object to process
- * \param[in] dim unused
+ * \param[in] op operation designation
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-bcurve_revertcb(ay_object *o, int dim)
+bcurve_genericopcb(ay_object *o, int op)
 {
  bcurve_object *bc = NULL;
 
@@ -1818,62 +1818,23 @@ bcurve_revertcb(ay_object *o, int dim)
 
   bc = (bcurve_object *)o->refine;
 
-  (void) ay_nct_revertarr(bc->controlv, bc->length, 4);
+  switch(op)
+    {
+    case AY_OPREVERT:
+      (void) ay_nct_revertarr(bc->controlv, bc->length, 4);
+      break;
+    case AY_OPOPEN:
+      bc->closed = AY_FALSE;
+      break;
+    case AY_OPCLOSE:
+      bc->closed = AY_TRUE;
+      break;
+    default:
+      break;
+    }
 
  return AY_OK;
-} /* bcurve_revertcb */
-
-
-/** bcurve_opencb:
- * Open a BCurve.
- *
- * \param[in,out] o curve object to process
- *
- * \returns AY_OK on success, error code otherwise.
- */
-int
-bcurve_opencb(ay_object *o)
-{
- bcurve_object *bc = NULL;
-
-  if(!o)
-    return AY_ENULL;
-
-  if(o->type != bcurve_id)
-    return AY_ERROR;
-
-  bc = (bcurve_object *)o->refine;
-
-  bc->closed = AY_FALSE;
-
- return AY_OK;
-} /* bcurve_opencb */
-
-
-/** bcurve_closecb:
- * Close a BCurve.
- *
- * \param[in,out] o curve object to process
- *
- * \returns AY_OK on success, error code otherwise.
- */
-int
-bcurve_closecb(ay_object *o)
-{
- bcurve_object *bc = NULL;
-
-  if(!o)
-    return AY_ENULL;
-
-  if(o->type != bcurve_id)
-    return AY_ERROR;
-
-  bc = (bcurve_object *)o->refine;
-
-  bc->closed = AY_TRUE;
-
- return AY_OK;
-} /* bcurve_closecb */
+} /* bcurve_genericopcb */
 
 
 /* Bcurve_Init:
@@ -1929,11 +1890,11 @@ Bcurve_Init(Tcl_Interp *interp)
 
   ay_status += ay_pact_registerdelete(bcurve_deletepntcb, bcurve_id);
 
-  ay_status += ay_tcmd_registerrevert(bcurve_revertcb, bcurve_id);
+  ay_status += ay_tcmd_registerrevert(bcurve_genericopcb, bcurve_id);
 
-  ay_status += ay_tcmd_registeropen(bcurve_opencb, bcurve_id);
+  ay_status += ay_tcmd_registeropen(bcurve_genericopcb, bcurve_id);
 
-  ay_status += ay_tcmd_registerclose(bcurve_closecb, bcurve_id);
+  ay_status += ay_tcmd_registerclose(bcurve_genericopcb, bcurve_id);
 
   if(ay_status)
     {

@@ -1595,11 +1595,8 @@ typedef int (ay_inspntcb) (ay_object *o, int *index, double *objXYZ, int edit);
 /** Delete point callback */
 typedef int (ay_delpntcb) (ay_object *o, int *index, double *objXYZ);
 
-/** Revert callback */
-typedef int (ay_revertcb) (ay_object *o, int dim);
-
-/** Generic callback */
-typedef int (ay_genericcb) (ay_object *o);
+/** Generic operation callback */
+typedef int (ay_genericcb) (ay_object *o, int op);
 
 
 /* Globals */
@@ -2015,6 +2012,15 @@ extern char *ay_error_igntype;
 #define AY_XY  0
 #define AY_YZ  1
 #define AY_XZ  2
+/*@}*/
+
+/** \name Generic Operations */
+/*@{*/
+#define AY_OPREVERT  0
+#define AY_OPOPEN    1
+#define AY_OPCLOSE   2
+#define AY_OPREFINE  3
+#define AY_OPCOARSEN 4
 /*@}*/
 
 /** \name Transformation Element Selector */

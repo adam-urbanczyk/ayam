@@ -1605,7 +1605,7 @@ int ay_tcmd_getnormaltcmd(ClientData clientData, Tcl_Interp *interp,
 
 /** register revert callback
  */
-int ay_tcmd_registerrevert(ay_revertcb *revcb, unsigned int type_id);
+int ay_tcmd_registerrevert(ay_genericcb *cb, unsigned int type_id);
 
 /** register open callback
  */

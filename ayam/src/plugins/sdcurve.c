@@ -1256,16 +1256,16 @@ sdcurve_deletepntcb(ay_object *o, int *index, double *objXYZ)
 } /* sdcurve_deletepntcb */
 
 
-/** sdcurve_revertcb:
- * Change the direction of a SDCurve.
+/** sdcurve_genericopcb:
+ * Execute generic operation (AY_OP*) on SDCurve.
  *
  * \param[in,out] o curve object to process
- * \param[in] dim unused
+ * \param[in] op operation designation
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-sdcurve_revertcb(ay_object *o, int dim)
+sdcurve_genericopcb(ay_object *o, int op)
 {
  sdcurve_object *sd = NULL;
 
@@ -1277,62 +1277,23 @@ sdcurve_revertcb(ay_object *o, int dim)
 
   sd = (sdcurve_object *)o->refine;
 
-  (void) ay_nct_revertarr(sd->controlv, sd->length, 3);
+  switch(op)
+    {
+    case AY_OPREVERT:
+      (void) ay_nct_revertarr(sd->controlv, sd->length, 3);
+      break;
+    case AY_OPOPEN:
+      sd->closed = AY_FALSE;
+      break;
+    case AY_OPCLOSE:
+      sd->closed = AY_TRUE;
+      break;
+    default:
+      break;
+    }
 
  return AY_OK;
-} /* sdcurve_revertcb */
-
-
-/** sdcurve_opencb:
- * Open a SDCurve.
- *
- * \param[in,out] o curve object to process
- *
- * \returns AY_OK on success, error code otherwise.
- */
-int
-sdcurve_opencb(ay_object *o)
-{
- sdcurve_object *sd = NULL;
-
-  if(!o)
-    return AY_ENULL;
-
-  if(o->type != sdcurve_id)
-    return AY_ERROR;
-
-  sd = (sdcurve_object *)o->refine;
-
-  sd->closed = AY_FALSE;
-
- return AY_OK;
-} /* sdcurve_opencb */
-
-
-/** sdcurve_closecb:
- * Close a SDCurve.
- *
- * \param[in,out] o curve object to process
- *
- * \returns AY_OK on success, error code otherwise.
- */
-int
-sdcurve_closecb(ay_object *o)
-{
- sdcurve_object *sd = NULL;
-
-  if(!o)
-    return AY_ENULL;
-
-  if(o->type != sdcurve_id)
-    return AY_ERROR;
-
-  sd = (sdcurve_object *)o->refine;
-
-  sd->closed = AY_TRUE;
-
- return AY_OK;
-} /* sdcurve_closecb */
+} /* sdcurve_genericopcb */
 
 
 /** sdcurve_convtcmd:
@@ -1588,11 +1549,11 @@ Sdcurve_Init(Tcl_Interp *interp)
 
   ay_status += ay_pact_registerdelete(sdcurve_deletepntcb, sdcurve_id);
 
-  ay_status += ay_tcmd_registerrevert(sdcurve_revertcb, sdcurve_id);
+  ay_status += ay_tcmd_registerrevert(sdcurve_genericopcb, sdcurve_id);
 
-  ay_status += ay_tcmd_registeropen(sdcurve_opencb, sdcurve_id);
+  ay_status += ay_tcmd_registeropen(sdcurve_genericopcb, sdcurve_id);
 
-  ay_status += ay_tcmd_registerclose(sdcurve_closecb, sdcurve_id);
+  ay_status += ay_tcmd_registerclose(sdcurve_genericopcb, sdcurve_id);
 
   if(ay_status)
     {
