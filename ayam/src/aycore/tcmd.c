@@ -123,7 +123,7 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp *interp,
  ay_icurve_object *icurve = NULL;
  ay_nurbcurve_object *ncurve = NULL;
  ay_voidfp *arr = NULL;
- ay_revertcb *cb = NULL;
+ ay_genericcb *cb = NULL;
 
   while(sel)
     {
@@ -178,10 +178,10 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp *interp,
 	  break;
 	default:
 	  arr = ay_tcmd_revertcbt.arr;
-	  cb = (ay_revertcb *)(arr[o->type]);
+	  cb = (ay_genericcb *)(arr[o->type]);
 	  if(cb)
 	    {
-	      ay_status = cb(o, 0);
+	      ay_status = cb(o, AY_OPREVERT);
 	      if(!ay_status)
 		{
 		  ay_notify_object(o);
@@ -2147,7 +2147,10 @@ ay_tcmd_opentcmd(ClientData clientData, Tcl_Interp *interp,
 	  cb = (ay_genericcb *)(arr[sel->object->type]);
 	  if(cb)
 	    {
-	      ay_status = cb(sel->object);
+	      if(close)
+		ay_status = cb(sel->object, AY_OPCLOSE);
+	      else
+		ay_status = cb(sel->object, AY_OPOPEN);
 	      if(!ay_status)
 		{
 		  ay_notify_object(sel->object);
@@ -2178,18 +2181,18 @@ ay_tcmd_opentcmd(ClientData clientData, Tcl_Interp *interp,
 /** ay_tcmd_registerrevert:
  *  register a revert callback
  *
- * \param[in] revcb revert callback
+ * \param[in] cb revert callback
  * \param[in] type_id object type for which to register the callback (AY_ID...)
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_tcmd_registerrevert(ay_revertcb *revcb, unsigned int type_id)
+ay_tcmd_registerrevert(ay_genericcb *cb, unsigned int type_id)
 {
  int ay_status = AY_OK;
 
   /* register callback */
-  ay_status = ay_table_additem(&ay_tcmd_revertcbt, (ay_voidfp)revcb, type_id);
+  ay_status = ay_table_additem(&ay_tcmd_revertcbt, (ay_voidfp)cb, type_id);
 
  return ay_status;
 } /* ay_tcmd_registerrevert */
