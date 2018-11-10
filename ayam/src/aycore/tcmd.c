@@ -27,6 +27,12 @@ static ay_ftable ay_tcmd_opencbt;
 /** all registered close callbacks */
 static ay_ftable ay_tcmd_closecbt;
 
+/** all registered refine callbacks */
+static ay_ftable ay_tcmd_refinecbt;
+
+/** all registered coarsen callbacks */
+static ay_ftable ay_tcmd_coarsencbt;
+
 
 /* prototypes of functions local to this module: */
 
@@ -2178,6 +2184,156 @@ ay_tcmd_opentcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_tcmd_opentcmd */
 
 
+/** ay_tcmd_refinetcmd:
+ *  Refine/coarsen selected curves.
+ *  Implements the \a refineC scripting interface command.
+ *  Also implements the \a coarsenC scripting interface command.
+ *  See also the corresponding section in the \ayd{screfinec}.
+ *
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_tcmd_refinetcmd(ClientData clientData, Tcl_Interp *interp,
+		   int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ ay_list_object *sel = ay_selection;
+ ay_object *o;
+ ay_nurbcurve_object *nc;
+ ay_icurve_object *ic;
+ ay_acurve_object *ac;
+ int coarsen = AY_FALSE, Qwlen;
+ int notify_parent = AY_FALSE;
+ double *Qw;
+ ay_voidfp *arr = NULL;
+ ay_genericcb *cb = NULL;
+
+  /* distinguish between
+     refineC and coarsenC */
+  if(argv[0][0] == 'c')
+    coarsen = AY_TRUE;
+
+  while(sel)
+    {
+      o = sel->object;
+      o->modified = AY_FALSE;
+
+      switch(o->type)
+	{
+	case AY_IDNCURVE:
+	  nc = (ay_nurbcurve_object *)o->refine;
+	  if(coarsen)
+	    ay_status = ay_nct_coarsen(nc);
+	  else
+	    ay_status = ay_nct_refinecv(nc, o->selp);
+	  if(ay_status)
+	    {
+	      goto cleanup;
+	    }
+	  else
+	    {
+	      o->modified = AY_TRUE;
+	    }
+	  break;
+	case AY_IDICURVE:
+	  ic = (ay_icurve_object*)o->refine;
+	  Qw = NULL;
+	  ay_status = ay_nct_refinearray(ic->controlv, ic->length, 3,
+					 o->selp, &Qw, &Qwlen);
+	  if(!ay_status && Qw)
+	    {
+	      free(ic->controlv);
+	      ic->controlv = Qw;
+	      ic->length = Qwlen;
+	      o->modified = AY_TRUE;
+	    }
+	  else
+	    {
+	      goto cleanup;
+	    }
+	  break;
+	case AY_IDACURVE:
+	  ac = (ay_acurve_object*)o->refine;
+	  Qw = NULL;
+	  ay_status = ay_nct_refinearray(ac->controlv, ac->length, 3,
+					 o->selp, &Qw, &Qwlen);
+	  if(!ay_status && Qw)
+	    {
+	      free(ac->controlv);
+	      ac->controlv = Qw;
+	      ac->length = Qwlen;
+	      o->modified = AY_TRUE;
+	    }
+	  else
+	    {
+	      goto cleanup;
+	    }
+	  break;
+	default:
+	  if(coarsen)
+	    arr = ay_tcmd_coarsencbt.arr;
+	  else
+	    arr = ay_tcmd_refinecbt.arr;
+	  cb = (ay_genericcb *)(arr[o->type]);
+	  if(cb)
+	    {
+	      if(coarsen)
+		ay_status = cb(o, AY_OPCOARSEN);
+	      else
+		ay_status = cb(o, AY_OPREFINE);
+	      if(!ay_status)
+		{
+		  ay_notify_object(o);
+		  o->modified = AY_TRUE;
+		  notify_parent = AY_TRUE;
+		}
+	    }
+	  else
+	    {
+	      ay_error(AY_EWARN, argv[0], ay_error_igntype);
+	    }
+	  break;
+	} /* switch */
+
+      if(o->modified)
+	{
+	  if(o->selp)
+	    {
+	      if(!o->selp->next)
+		{
+		  ay_selp_clear(o);
+		}
+	      else
+		{
+		  ay_status = ay_pact_getpoint(3, o, NULL, NULL);
+		}
+	    } /* if selp */
+	  (void)ay_notify_object(o);
+	  notify_parent = AY_TRUE;
+	} /* if modified */
+
+      sel = sel->next;
+    } /* while */
+
+cleanup:
+
+  if(ay_status)
+    {
+      if(coarsen)
+	ay_error(AY_ERROR, argv[0], "Coarsen operation failed.");
+      else
+	ay_error(AY_ERROR, argv[0], "Refine operation failed.");
+    }
+
+  if(notify_parent)
+    {
+      (void)ay_notify_parent();
+    }
+
+ return TCL_OK;
+} /* ay_tcmd_refinetcmd */
+
+
 /** ay_tcmd_registerrevert:
  *  register a revert callback
  *
@@ -2238,6 +2394,46 @@ ay_tcmd_registerclose(ay_genericcb *cb, unsigned int type_id)
 } /* ay_tcmd_registerclose */
 
 
+/** ay_tcmd_registerrefine:
+ *  register a refine callback
+ *
+ * \param[in] cb refine callback
+ * \param[in] type_id object type for which to register the callback (AY_ID...)
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_tcmd_registerrefine(ay_genericcb *cb, unsigned int type_id)
+{
+ int ay_status = AY_OK;
+
+  /* register callback */
+  ay_status = ay_table_additem(&ay_tcmd_refinecbt, (ay_voidfp)cb, type_id);
+
+ return ay_status;
+} /* ay_tcmd_registerrefine */
+
+
+/** ay_tcmd_registercoarsen:
+ *  register a coarsen callback
+ *
+ * \param[in] cb coarsen callback
+ * \param[in] type_id object type for which to register the callback (AY_ID...)
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_tcmd_registercoarsen(ay_genericcb *cb, unsigned int type_id)
+{
+ int ay_status = AY_OK;
+
+  /* register callback */
+  ay_status = ay_table_additem(&ay_tcmd_coarsencbt, (ay_voidfp)cb, type_id);
+
+ return ay_status;
+} /* ay_tcmd_registercoarsen */
+
+
 /** ay_tcmd_init:
  *  initialize the tcmd module
  *
@@ -2258,6 +2454,12 @@ ay_tcmd_init(Tcl_Interp *interp)
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
   if((ay_status = ay_table_init(&ay_tcmd_closecbt)))
+    { ay_error(ay_status, fname, NULL); return AY_ERROR; }
+
+  if((ay_status = ay_table_init(&ay_tcmd_refinecbt)))
+    { ay_error(ay_status, fname, NULL); return AY_ERROR; }
+
+  if((ay_status = ay_table_init(&ay_tcmd_coarsencbt)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
  return ay_status;
