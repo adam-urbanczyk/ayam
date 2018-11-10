@@ -2197,16 +2197,16 @@ ay_tcmd_refinetcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
  int ay_status = AY_OK;
+ ay_voidfp *arr = NULL;
+ ay_genericcb *cb = NULL;
  ay_list_object *sel = ay_selection;
  ay_object *o;
  ay_nurbcurve_object *nc;
  ay_icurve_object *ic;
  ay_acurve_object *ac;
- int coarsen = AY_FALSE, Qwlen;
- int notify_parent = AY_FALSE;
  double *Qw;
- ay_voidfp *arr = NULL;
- ay_genericcb *cb = NULL;
+ int notify_parent = AY_FALSE, coarsen = AY_FALSE, Qwlen;
+
 
   /* distinguish between
      refineC and coarsenC */
@@ -2286,6 +2286,10 @@ ay_tcmd_refinetcmd(ClientData clientData, Tcl_Interp *interp,
 		  ay_notify_object(o);
 		  o->modified = AY_TRUE;
 		  notify_parent = AY_TRUE;
+		}
+	      else
+		{
+		  goto cleanup;
 		}
 	    }
 	  else
