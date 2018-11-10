@@ -22,9 +22,6 @@ typedef void (ay_nct_gndcb) (char dir, ay_nurbcurve_object *nc,
 			     double *p, double **dp);
 
 /* prototypes of functions local to this module: */
-int ay_nct_refinearray(double *Pw, int len, int stride, ay_point *selp,
-		       double **Qw, int *Qwlen);
-
 int ay_nct_offsetsection(ay_object *o, double offset,
 			 ay_nurbcurve_object **nc);
 
@@ -1321,35 +1318,25 @@ ay_nct_refinecv(ay_nurbcurve_object *curve, ay_point *selp)
 } /* ay_nct_refinecv */
 
 
-/** ay_nct_refinetcmd:
- *  Refine selected NURBS curves.
- *  Implements the \a refineC scripting interface command.
- *  Also implements the \a refineknNC scripting interface command.
- *  See also the corresponding section in the \ayd{screfinec}.
+/** ay_nct_refinekntcmd:
+ *  Refine the knots of selected NURBS curves.
+ *  Implements the \a refineknNC scripting interface command.
+ *  See also the corresponding section in the \ayd{screfineknnc}.
  *
  *  \returns TCL_OK in any case.
  */
 int
-ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
-		  int argc, char *argv[])
+ay_nct_refinekntcmd(ClientData clientData, Tcl_Interp *interp,
+		    int argc, char *argv[])
 {
  int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_nurbcurve_object *curve = NULL;
- ay_icurve_object *ic;
- ay_acurve_object *ac;
- int refine_cv = AY_TRUE, maintain_ends = AY_FALSE, aknotc = 0, i, Qwlen;
+ int maintain_ends = AY_FALSE, aknotc = 0, i;
  int notify_parent = AY_FALSE;
- double *X = NULL, *Qw;
+ double *X = NULL;
  char **aknotv = NULL;
-
-  /* distinguish between
-     refineC and
-     refineknNC
-     012345^    */
-  if(argv[0][6] == 'k')
-    refine_cv = AY_FALSE;
 
   if(argc > 1)
     {
@@ -1388,10 +1375,7 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
       if(o->type == AY_IDNCURVE)
 	{
 	  curve = (ay_nurbcurve_object *)o->refine;
-	  if(refine_cv)
-	    ay_status = ay_nct_refinecv(curve, o->selp);
-	  else
-	    ay_status = ay_nct_refinekn(curve, maintain_ends, X, aknotc);
+	  ay_status = ay_nct_refinekn(curve, maintain_ends, X, aknotc);
 	  if(ay_status)
 	    {
 	      goto cleanup;
@@ -1403,70 +1387,14 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  if(refine_cv && (o->type == AY_IDICURVE))
-	    {
-	      ic = (ay_icurve_object*)o->refine;
-	      Qw = NULL;
-	      ay_status = ay_nct_refinearray(ic->controlv, ic->length, 3,
-					     o->selp, &Qw, &Qwlen);
-	      if(!ay_status && Qw)
-		{
-		  free(ic->controlv);
-		  ic->controlv = Qw;
-		  ic->length = Qwlen;
-		  o->modified = AY_TRUE;
-		}
-	      else
-		{
-		  goto cleanup;
-		}
-	    }
-	  else
-	    {
-	      if(refine_cv && (o->type == AY_IDACURVE))
-		{
-		  ac = (ay_acurve_object*)o->refine;
-		  Qw = NULL;
-		  ay_status = ay_nct_refinearray(ac->controlv, ac->length, 3,
-						 o->selp, &Qw, &Qwlen);
-		  if(!ay_status && Qw)
-		    {
-		      free(ac->controlv);
-		      ac->controlv = Qw;
-		      ac->length = Qwlen;
-		      o->modified = AY_TRUE;
-		    }
-		  else
-		    {
-		      goto cleanup;
-		    }
-		}
-	      else
-		{
-		  ay_error(AY_EWARN, argv[0], ay_error_igntype);
-		}
-	    }
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	} /* if */
 
       if(o->modified)
 	{
 	  if(o->selp)
 	    {
-	      if(refine_cv)
-		{
-		  if(!o->selp->next)
-		    {
-		      ay_selp_clear(o);
-		    }
-		  else
-		    {
-		      ay_status = ay_pact_getpoint(3, o, NULL, NULL);
-		    }
-		}
-	      else
-		{
-		  ay_selp_clear(o);
-		} /* if refine_cv */
+	      ay_selp_clear(o);
 	    } /* if selp */
 	  (void)ay_notify_object(o);
 	  notify_parent = AY_TRUE;
@@ -1479,7 +1407,7 @@ cleanup:
 
   if(ay_status)
     {
-      ay_error(AY_ERROR, argv[0], "Refine operation failed.");
+      ay_error(AY_ERROR, argv[0], "Refine knots operation failed.");
     }
 
   if(notify_parent)
@@ -1498,7 +1426,7 @@ cleanup:
     }
 
  return TCL_OK;
-} /* ay_nct_refinetcmd */
+} /* ay_nct_refinekntcmd */
 
 
 /** ay_nct_clamp:

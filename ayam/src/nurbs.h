@@ -609,6 +609,11 @@ int ay_nct_close(ay_nurbcurve_object *curve);
  */
 int ay_nct_open(ay_nurbcurve_object *curve);
 
+/** Refine a 1D control point array.
+ */
+int ay_nct_refinearray(double *Pw, int len, int stride, ay_point *selp,
+		       double **Qw, int *Qwlen);
+
 /** Revert array.
  */
 int ay_nct_revertarr(double *cv, int cvlen, int stride);
@@ -627,10 +632,10 @@ int ay_nct_refinekn(ay_nurbcurve_object *curve, int maintain_ends,
 int ay_nct_refinecv(ay_nurbcurve_object *curve, ay_point *selp);
 
 
-/** Tcl command to refine selected NURBS curves.
+/** Tcl command to refine the knots of selected NURBS curves.
  */
-int ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
-		      int argc, char *argv[]);
+int ay_nct_refinekntcmd(ClientData clientData, Tcl_Interp *interp,
+			int argc, char *argv[]);
 
 /** Clamp periodic NURBS curve on both ends.
  */

@@ -1615,11 +1615,23 @@ int ay_tcmd_registeropen(ay_genericcb *cb, unsigned int type_id);
  */
 int ay_tcmd_registerclose(ay_genericcb *cb, unsigned int type_id);
 
+/** register refine callback
+ */
+int ay_tcmd_registerrefine(ay_genericcb *cb, unsigned int type_id);
+
+/** register coarsen callback
+ */
+int ay_tcmd_registercoarsen(ay_genericcb *cb, unsigned int type_id);
+
 /** Tcl command to open/close a curve
  */
 int ay_tcmd_opentcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[]);
 
+/** Tcl command to refine/coarsen a curve
+ */
+int ay_tcmd_refinetcmd(ClientData clientData, Tcl_Interp *interp,
+		       int argc, char *argv[]);
 
 /** initialize tcmd module
  */
