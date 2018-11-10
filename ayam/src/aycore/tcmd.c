@@ -2334,104 +2334,43 @@ cleanup:
 } /* ay_tcmd_refinetcmd */
 
 
-/** ay_tcmd_registerrevert:
- *  register a revert callback
+/** ay_tcmd_registergeneric:
+ *  register a generic operation callback
  *
- * \param[in] cb revert callback
+ * \param[in] op operation designation (AY_OP*)
+ * \param[in] cb generic operation callback
  * \param[in] type_id object type for which to register the callback (AY_ID...)
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_tcmd_registerrevert(ay_genericcb *cb, unsigned int type_id)
+ay_tcmd_registergeneric(int op, ay_genericcb *cb, unsigned int type_id)
 {
  int ay_status = AY_OK;
 
-  /* register callback */
-  ay_status = ay_table_additem(&ay_tcmd_revertcbt, (ay_voidfp)cb, type_id);
+ switch(op)
+   {
+   case AY_OPREVERT:
+     ay_status = ay_table_additem(&ay_tcmd_revertcbt, (ay_voidfp)cb, type_id);
+     break;
+   case AY_OPOPEN:
+     ay_status = ay_table_additem(&ay_tcmd_opencbt, (ay_voidfp)cb, type_id);
+     break;
+   case AY_OPCLOSE:
+     ay_status = ay_table_additem(&ay_tcmd_closecbt, (ay_voidfp)cb, type_id);
+     break;
+   case AY_OPREFINE:
+     ay_status = ay_table_additem(&ay_tcmd_refinecbt, (ay_voidfp)cb, type_id);
+     break;
+   case AY_OPCOARSEN:
+     ay_status = ay_table_additem(&ay_tcmd_coarsencbt, (ay_voidfp)cb, type_id);
+     break;
+   default:
+     break;
+   }
 
  return ay_status;
-} /* ay_tcmd_registerrevert */
-
-
-/** ay_tcmd_registeropen:
- *  register a open callback
- *
- * \param[in] cb open callback
- * \param[in] type_id object type for which to register the callback (AY_ID...)
- *
- * \returns AY_OK on success, error code otherwise.
- */
-int
-ay_tcmd_registeropen(ay_genericcb *cb, unsigned int type_id)
-{
- int ay_status = AY_OK;
-
-  /* register callback */
-  ay_status = ay_table_additem(&ay_tcmd_opencbt, (ay_voidfp)cb, type_id);
-
- return ay_status;
-} /* ay_tcmd_registeropen */
-
-
-/** ay_tcmd_registerclose:
- *  register a close callback
- *
- * \param[in] cb close callback
- * \param[in] type_id object type for which to register the callback (AY_ID...)
- *
- * \returns AY_OK on success, error code otherwise.
- */
-int
-ay_tcmd_registerclose(ay_genericcb *cb, unsigned int type_id)
-{
- int ay_status = AY_OK;
-
-  /* register callback */
-  ay_status = ay_table_additem(&ay_tcmd_closecbt, (ay_voidfp)cb, type_id);
-
- return ay_status;
-} /* ay_tcmd_registerclose */
-
-
-/** ay_tcmd_registerrefine:
- *  register a refine callback
- *
- * \param[in] cb refine callback
- * \param[in] type_id object type for which to register the callback (AY_ID...)
- *
- * \returns AY_OK on success, error code otherwise.
- */
-int
-ay_tcmd_registerrefine(ay_genericcb *cb, unsigned int type_id)
-{
- int ay_status = AY_OK;
-
-  /* register callback */
-  ay_status = ay_table_additem(&ay_tcmd_refinecbt, (ay_voidfp)cb, type_id);
-
- return ay_status;
-} /* ay_tcmd_registerrefine */
-
-
-/** ay_tcmd_registercoarsen:
- *  register a coarsen callback
- *
- * \param[in] cb coarsen callback
- * \param[in] type_id object type for which to register the callback (AY_ID...)
- *
- * \returns AY_OK on success, error code otherwise.
- */
-int
-ay_tcmd_registercoarsen(ay_genericcb *cb, unsigned int type_id)
-{
- int ay_status = AY_OK;
-
-  /* register callback */
-  ay_status = ay_table_additem(&ay_tcmd_coarsencbt, (ay_voidfp)cb, type_id);
-
- return ay_status;
-} /* ay_tcmd_registercoarsen */
+} /* ay_tcmd_registergeneric */
 
 
 /** ay_tcmd_init:

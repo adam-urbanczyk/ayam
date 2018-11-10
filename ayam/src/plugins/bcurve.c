@@ -1849,6 +1849,7 @@ Bcurve_Init(Tcl_Interp *interp)
 {
  int ay_status = AY_OK;
  char fname[] = "bcurve_init";
+ int i, ops[3] = {AY_OPREVERT, AY_OPOPEN, AY_OPCLOSE};
 
 #ifdef WIN32
   if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
@@ -1890,11 +1891,11 @@ Bcurve_Init(Tcl_Interp *interp)
 
   ay_status += ay_pact_registerdelete(bcurve_deletepntcb, bcurve_id);
 
-  ay_status += ay_tcmd_registerrevert(bcurve_genericopcb, bcurve_id);
-
-  ay_status += ay_tcmd_registeropen(bcurve_genericopcb, bcurve_id);
-
-  ay_status += ay_tcmd_registerclose(bcurve_genericopcb, bcurve_id);
+  for(i = 0; i < 3; i++)
+    {
+      ay_status += ay_tcmd_registergeneric(ops[i], bcurve_genericopcb,
+					   bcurve_id);
+    }
 
   if(ay_status)
     {
