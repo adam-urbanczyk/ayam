@@ -748,12 +748,12 @@ ay_ncircle_providecb(ay_object *o, unsigned int type, ay_object **result)
  * Change the direction of a NURBS Circle object.
  *
  * \param[in,out] o circle object to process
- * \param[in] dim unused
+ * \param[in] op operation designation
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_ncircle_revertcb(ay_object *o, int dim)
+ay_ncircle_revertcb(ay_object *o, int op)
 {
  ay_ncircle_object *nc = NULL;
  double t;
@@ -762,6 +762,9 @@ ay_ncircle_revertcb(ay_object *o, int dim)
     return AY_ENULL;
 
   if(o->type != AY_IDNCIRCLE)
+    return AY_ERROR;
+
+  if(op != AY_OPREVERT)
     return AY_ERROR;
 
   nc = (ay_ncircle_object *)o->refine;
@@ -807,7 +810,8 @@ ay_ncircle_init(Tcl_Interp *interp)
 
   ay_status += ay_provide_register(ay_ncircle_providecb, AY_IDNCIRCLE);
 
-  ay_status += ay_tcmd_registerrevert(ay_ncircle_revertcb, AY_IDNCIRCLE);
+  ay_status += ay_tcmd_registergeneric(AY_OPREVERT, ay_ncircle_revertcb,
+				       AY_IDNCIRCLE);
 
   /* ncircles may not be associated with materials */
   ay_matt_nomaterial(AY_IDNCIRCLE);

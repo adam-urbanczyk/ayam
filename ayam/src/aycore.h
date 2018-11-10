@@ -1603,26 +1603,6 @@ int ay_tcmd_menustatetcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_tcmd_getnormaltcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[]);
 
-/** register revert callback
- */
-int ay_tcmd_registerrevert(ay_genericcb *cb, unsigned int type_id);
-
-/** register open callback
- */
-int ay_tcmd_registeropen(ay_genericcb *cb, unsigned int type_id);
-
-/** register close callback
- */
-int ay_tcmd_registerclose(ay_genericcb *cb, unsigned int type_id);
-
-/** register refine callback
- */
-int ay_tcmd_registerrefine(ay_genericcb *cb, unsigned int type_id);
-
-/** register coarsen callback
- */
-int ay_tcmd_registercoarsen(ay_genericcb *cb, unsigned int type_id);
-
 /** Tcl command to open/close a curve
  */
 int ay_tcmd_opentcmd(ClientData clientData, Tcl_Interp *interp,
@@ -1632,6 +1612,10 @@ int ay_tcmd_opentcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int ay_tcmd_refinetcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
+
+/** register generic operation callback
+ */
+int ay_tcmd_registergeneric(int op, ay_genericcb *cb, unsigned int type_id);
 
 /** initialize tcmd module
  */
