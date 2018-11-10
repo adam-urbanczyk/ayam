@@ -690,12 +690,12 @@ sfcurve_providecb(ay_object *o, unsigned int type, ay_object **result)
  * Change the direction of a SfCurve object.
  *
  * \param[in,out] o curve object to process
- * \param[in] dim unused
+ * \param[in] op operation designation
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-sfcurve_revertcb(ay_object *o, int dim)
+sfcurve_revertcb(ay_object *o, int op)
 {
  sfcurve_object *sfc = NULL;
  double t;
@@ -704,6 +704,9 @@ sfcurve_revertcb(ay_object *o, int dim)
     return AY_ENULL;
 
   if(o->type != sfcurve_id)
+    return AY_ERROR;
+
+  if(op != AY_OPREVERT)
     return AY_ERROR;
 
   sfc = (sfcurve_object *)o->refine;
@@ -763,7 +766,8 @@ Sfcurve_Init(Tcl_Interp *interp)
 
   ay_status += ay_provide_register(sfcurve_providecb, sfcurve_id);
 
-  ay_status += ay_tcmd_registerrevert(sfcurve_revertcb, sfcurve_id);
+  ay_status += ay_tcmd_registergeneric(AY_OPREVERT, sfcurve_revertcb,
+				       sfcurve_id);
 
   if(ay_status)
     {
