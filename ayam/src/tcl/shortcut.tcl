@@ -937,7 +937,18 @@ proc shortcut_viewactions { w } {
 	plb_update; rV
 	focus %W
     }
-
+    bind $w <$ayviewshortcuts(RefineC)> {
+	undo save RefineC
+	refineC
+	plb_update; rV
+	focus %W
+    }
+    bind $w <$ayviewshortcuts(CoarsenC)> {
+	undo save CoarsenC
+	coarsenC
+	plb_update; rV
+	focus %W
+    }
     bind $w <$ayviewshortcuts(Pick)> "actionPick $w.f3D.togl"
 
     bind $w.f3D.togl <[repctrl $ayviewshortcuts(SetMark)]>\
