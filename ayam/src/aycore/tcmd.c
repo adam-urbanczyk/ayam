@@ -2045,10 +2045,7 @@ ay_tcmd_opentcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	  if(ay_status)
 	    {
-	      if(close)
-		ay_error(AY_ERROR, argv[0], "Error closing object.");
-	      else
-		ay_error(AY_ERROR, argv[0], "Error opening object.");
+	      goto cleanup;
 	    }
 	  else
 	    {
@@ -2163,6 +2160,10 @@ ay_tcmd_opentcmd(ClientData clientData, Tcl_Interp *interp,
 		  sel->object->modified = AY_TRUE;
 		  notify_parent = AY_TRUE;
 		}
+	      else
+		{
+		  goto cleanup;
+		}
 	    }
 	  else
 	    {
@@ -2179,6 +2180,16 @@ ay_tcmd_opentcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(notify_parent)
     (void)ay_notify_parent();
+
+cleanup:
+
+  if(ay_status)
+    {
+      if(close)
+	ay_error(AY_ERROR, argv[0], "Error closing object.");
+      else
+	ay_error(AY_ERROR, argv[0], "Error opening object.");
+    }
 
  return TCL_OK;
 } /* ay_tcmd_opentcmd */
