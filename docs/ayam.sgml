@@ -23636,6 +23636,11 @@ small margin, so that the console may be shrunk to 2 or even 1 lines
 of text. The default values are<newline>
 &nbsp;&nbsp;<tt/&lcub; 20.0 5.0 10.0 10.0 10.0 &rcub;/
 
+<item><tt/"PickCycleMax"/: the maximum number of objects for pick
+cycling. If there are more candidates for a click, the object selection
+listbox will take over. The default value is 5.
+<footnote>Since 1.26.</footnote>
+
 <item><tt/"PickTolerance"/: the tolerance used to determine whether an object
 should be picked or not (default: 5); this setting determines the size
 of a rectangular area around the picked point in pixels, all objects that
@@ -25604,6 +25609,7 @@ Index:
 <item>PhiMin, PhiMax: <ref id="top" name="Torus attribute">
 <item>Pick: <ref id="objsel" name="selecting objects by picking">
 <item>PickCycle: <ref id="prefmodel" name="preference setting">
+<item>PickCycleMax: <ref id="hidprefs" name="hidden preference setting">
 <item>PickEpsilon: <ref id="prefmodel" name="preference setting">
 <item>PickTolerance: <ref id="hidprefs" name="hidden preference setting">
 <item>Pivot:
