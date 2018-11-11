@@ -336,14 +336,15 @@ proc singleObjSel { node } {
 
 	# If the user has picked several objects then reconsider...
 	if {[llength $ay(LastSelection)] > 1} {
-	    if { $ayprefs(PickCycle) == 0 } {
+	    if { ($ayprefs(PickCycle) == 0) ||
+		 ([llength $ay(LastSelection)] > $ayprefs(PickCycleMax)) } {
 		# ask
 		set rArray(result) ""
 		reconsider $ay(LastSelection)
 		if { $rArray(result) != "" } {
 		    set Selection $rArray(result)
 		} else {
-		    return
+		    return;
 		}
 	    } else {
 		# cycle
