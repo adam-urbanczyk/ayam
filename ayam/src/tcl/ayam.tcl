@@ -248,6 +248,7 @@ array set ayprefs {
  SimpleToolGUI 0
  SelectLast 1
  PickCycle 0
+ PickCycleMax 5
  CullFaces 0
  AutoCloseUI 1
  DisableFailedScripts 1
