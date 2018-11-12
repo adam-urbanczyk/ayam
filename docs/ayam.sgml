@@ -20566,7 +20566,7 @@ parallel to the main browser thread, in order to not block user interaction
 and employ multi-core CPUs.
 The webworker pool is currently hard coded to only use three such
 webworkers at any given time. This value may be adapted easily in
-<tt>"x3dom-nurbs-pool.js"</tt> (e.g.~if your CPU has more cores).
+<tt>"x3dom-nurbs-pool.js"</tt> (e.g.~if your average target CPU has more cores).
 Note that each webworker will tessellate a single NURBS surface, i.e.~scenes
 with only one surface will not benefit from the parallelism.
 
@@ -23458,14 +23458,20 @@ polygonal trim curves. This function uses less memory and is faster than
 the alternative but can lead to a tesselation that is clearly too coarse
 for the desired tesselation quality
 (valid values: 0, 1; default: 1 &ndash; yes).
-
+</itemize>
+<#if out="latex"><x/phantomsection/<p></#if>
+<label id="hidprefsb">
+<itemize>
 <item><tt/"BackupExt"/: is the file name extension to be used for backup
 files. Default values are <tt>"&tilde;"</tt> for Unix and
 <tt>".bak"</tt> for Win32.
 
 <item><tt/"Balloon"/: time in ms until the tooltip window appears
 (default: 1500 - 1.5s).
-
+</itemize>
+<#if out="latex"><x/phantomsection/<p></#if>
+<label id="hidprefsc">
+<itemize>
 <item><tt/"Cat"/: name of a program that can read from and write to
 a pipe (used by the Rendering GUI) (default: <tt>"cat"</tt>)
 (a setting of <tt>"cat"</tt> will be
@@ -23505,7 +23511,10 @@ Valid values are 0 and 1.
 view type is included in the list of types that are cycled by keyboard
 (via <tt>"PageUp"/"PageDown"</tt>), default: 0 &ndash; no.
 Valid values are 0 and 1.
-
+</itemize>
+<#if out="latex"><x/phantomsection/<p></#if>
+<label id="hidprefsd">
+<itemize>
 <item><tt/"DailyTips"/: a list of strings that appear as tips
 on startup in the console (default: large).
 
@@ -23513,10 +23522,16 @@ on startup in the console (default: large).
 Script objects or BNS/ANS tags should be disabled when they
 fail (default: 1 &ndash; yes).
 Valid values are 0 and 1.
-
+</itemize>
+<#if out="latex"><x/phantomsection/<p></#if>
+<label id="hidprefse">
+<itemize>
 <item><tt/"EFlush"/: time in ms between two flushes of the error message
 buffer (default: 2000 - 2s).
-
+</itemize>
+<#if out="latex"><x/phantomsection/<p></#if>
+<label id="hidprefsf">
+<itemize>
 <item><tt/"FDShowHidden"/: controls whether the standard file dialog on
 Unix shows hidden files (default 1 &ndash; yes).
 Valid values are 0 and 1.
@@ -23538,7 +23553,6 @@ Valid values are 0 and 1.
 Valid values are 0 and 1. This option is disabled
 by default on all platforms.
 
-
 <item><tt/"FixX11Menu"/ enables a workaround for non-sticky menus
 on X11 (displaced menus do not stay open). This option is enabled
 by default and not used on the Win32 and Aqua platforms.
@@ -23548,12 +23562,18 @@ picking. When enabled, this option needs a considerable amount of resources
 due to constant picking operations while the mouse pointer travels over the
 view window and also leads to a lot of visual noise. Therefore it
 is disabled by default.
-
+</itemize>
+<#if out="latex"><x/phantomsection/<p></#if>
+<label id="hidprefsi">
+<itemize>
 <item><tt/"IconGamma"/: this setting may be used to adapt the contrast
 of all icons (in view menu and the toolbox) to your display gamma. If you
 are on a SGI it is recommended to set this to about "0.7". The default
 value <tt>""</tt> (empty string) leads to no changes of any icon images.
-
+</itemize>
+<#if out="latex"><x/phantomsection/<p></#if>
+<label id="hidprefsk">
+<itemize>
 <item><tt/"KeepNTmpFiles"/: how many
 incarnations of the scene in RIB form (which actually may be split
 in more than one file due to e.g.~instances) created when directly
@@ -23565,7 +23585,10 @@ a process id as argument (used by the Rendering GUI)
 automatically replaced by <tt>"kill.exe"</tt> on Win32)
 On the Win32 platform you may also use an internal kill command
 <tt>"w32kill"</tt> that has been introduced in Ayam 1.4.
-
+</itemize>
+<#if out="latex"><x/phantomsection/<p></#if>
+<label id="hidprefsl">
+<itemize>
 <item><tt/"LineWidth"/, line width used for drawing the lines of
 unselected objects (blue lines in standard color configuration).
 The default value is 1.0. Ayam is not checking, whether the specified
@@ -23583,7 +23606,10 @@ Saving an environment scene file
 via the menu entry <tt>"Special/Save Environment"</tt> or
 setting a value different from an empty string (<tt>""</tt>) to the
 <tt/"EnvFile"/ preference setting will set this option to 1 automatically.
-
+</itemize>
+<#if out="latex"><x/phantomsection/<p></#if>
+<label id="hidprefsm">
+<itemize>
 <item><tt/"MarkHidden"/ determines, whether hidden objects
 should be marked (using a preceding exclamation mark)
 in the tree view or object listbox.
@@ -23592,7 +23618,10 @@ objects.
 
 <item><tt/"MaxTagLen"/: the maximum number of characters to be displayed
 in the buttons in the Tag Property GUI (default: 30).
-
+</itemize>
+<#if out="latex"><x/phantomsection/<p></#if>
+<label id="hidprefsn">
+<itemize>
 <item><tt/"NewLoadsEnv"/, if this is switched on, Ayam will read
 the scene file specified by <tt/"EnvFile"/ also when the scene is
 cleared using the main menu entry <tt>"File/New"</tt>.
@@ -23604,17 +23633,21 @@ of the decimal point, the transformation attribute and control point
 normalizing process should leave intact (default: 6).
 
 <item><tt/"NormalizeMark"/, controls whether the mark coordinates
-should be normalized, after set from the selected points center
+should be normalized after setting the mark from the center of
+selected points
 (valid values: 0, 1; default: 1 &ndash; yes).
 
-<item><tt/"NormalizePoints"/, controls whether the selected points
-should be normalized, after interactive modelling actions
+<item><tt/"NormalizePoints"/, controls whether points modified
+by interactive modelling actions should be normalized
 (valid values: 0, 1; default: 1 &ndash; yes).
 
 <item><tt/"NormalizeTrafos"/, controls whether the transformation
-attributes should be normalized, after interactive modelling actions
+attributes should be normalized after interactive modelling actions
 (valid values: 0, 1; default: 1 &ndash; yes).
-
+</itemize>
+<#if out="latex"><x/phantomsection/<p></#if>
+<label id="hidprefsp">
+<itemize>
 <item><tt/"PanDist"/: the distance about which panning in views by
 keyboard occurs; positive values are absolute in pixels, negative values are
 relative to the current window dimension; a value of -10 means a
@@ -23637,8 +23670,9 @@ of text. The default values are<newline>
 &nbsp;&nbsp;<tt/&lcub; 20.0 5.0 10.0 10.0 10.0 &rcub;/
 
 <item><tt/"PickCycleMax"/: the maximum number of objects for pick
-cycling. If there are more candidates for a click, the object selection
-listbox will take over. The default value is 5.
+cycling. If <tt/"PickCycle"/ is enabled and there are more candidates
+for a selection than specified by this option, the object selection listbox
+will take over regardless. The default value is 5.
 <footnote>Since 1.26.</footnote>
 
 <item><tt/"PickTolerance"/: the tolerance used to determine whether an object
@@ -23685,7 +23719,10 @@ tags, the default value is "N".
 
 <item><tt/"PVColorName"/, default name for vertex color PV
 tags, the default value is "Cs".
-
+</itemize>
+<#if out="latex"><x/phantomsection/<p></#if>
+<label id="hidprefsr">
+<itemize>
 <item><tt/"RotateCrossSection"/, controls whether the creation
 of sweeps should rotate the cross section curve to the YZ-plane.
 If set to 0, no rotation occurs, if set to 1, the rotation
@@ -23693,7 +23730,10 @@ will be attempted without any checks, and if set to 2 (this is
 the default<footnote>Since 1.25.</footnote>) the cross section
 is checked and a requester is raised offering to rotate the curve
 only if it is not already in the proper plane.
-
+</itemize>
+<#if out="latex"><x/phantomsection/<p></#if>
+<label id="hidprefss">
+<itemize>
 <item><tt/"SafeAutoFocus"/ disables AutoFocus
 (see section <ref id="prefgui" name="GUI preference settings">)
 when certain dialog windows are open, so that they do not get
@@ -23757,7 +23797,10 @@ Valid values are 0 and 1.
 when <tt/"SwapMB"/ above is activated.
 The default value of this option is<newline>
 &nbsp;&nbsp;<tt/&lcub; "ayviewshortcuts(MoveVButton)" "ayviewshortcuts(ZoomVButton)" &rcub;/
-
+</itemize>
+<#if out="latex"><x/phantomsection/<p></#if>
+<label id="hidprefst">
+<itemize>
 <item><tt/"toolBoxList"/: a list of sections or groups of buttons
 describing the appearance of the toolbox window (default, using all
 available sections: <tt>{trafo trafo2 solids misco nurbs toolobjs points
@@ -23775,13 +23818,19 @@ configuration, get a different or no decoration, no icon (or no entry in the
 task bar on Win32), and will always be iconified when the main window
 gets iconified. Not used in single window GUI mode.
 Valid values are 0 and 1. The default value is 1 &ndash; yes.
-
+</itemize>
+<#if out="latex"><x/phantomsection/<p></#if>
+<label id="hidprefsu">
+<itemize>
 <item><tt/"UseInternalFD"/ switches to an internal file dialog for loading
 of plugins. This option is only used on Mac OS X Aqua (not X11!), because
 there the normal file dialog will not enter application bundle directory
 structures. This option is enabled by default on Mac OS X Aqua and not
 used on any other platform. (valid values: 0, 1; default: 0 &ndash; no)
-
+</itemize>
+<#if out="latex"><x/phantomsection/<p></#if>
+<label id="hidprefsw">
+<itemize>
 <item><tt/"WarnPropPasteToSel"/: should
 <tt>"Special/Clipboard/Paste Property to Selected"</tt> raise a warning
 requester? (valid values: 0, 1; default: 1 &ndash; yes)
@@ -24702,9 +24751,9 @@ Index:
 <item>Backdrop: <ref id="imager" name="shader property">
 <item>Background: <ref id="prefdraw" name="preference setting">
 <item>Background Image: <ref id="vat" name="View attribute">
-<item>BackupExt: <ref id="hidprefs" name="hidden preference setting">
+<item>BackupExt: <ref id="hidprefsb" name="hidden preference setting">
 <item>BakOnReplace: <ref id="prefmain" name="preference setting">
-<item>Balloon: <ref id="hidprefs" name="hidden preference setting">
+<item>Balloon: <ref id="hidprefsb" name="hidden preference setting">
 <item>Basis: <ref id="bcurveattrprop" name="BCurve attribute">
 <item>Basis_U, Basis_V: <ref id="pmattr" name="PatchMesh attribute">
 <item>BCurve: <ref id="bcurveobj" name="BCurve object">
@@ -24772,7 +24821,7 @@ Index:
 <item><ref id="capsprop" name="Caps property">
 </itemize>
 <item>CastShadows: <ref id="riattrs" name="RenderMan/BMRT attribute">
-<item>Cat: <ref id="hidprefs" name="hidden preference setting">
+<item>Cat: <ref id="hidprefsc" name="hidden preference setting">
 <item>Catmull-Clark: <ref id="sdmattr" name="SDMesh subdivision scheme">
 <item>Catmull-Rom:
 <itemize>
@@ -24854,8 +24903,8 @@ Index:
 <item>ConeAngle, ConeDAngle: <ref id="lip" name="Light attribute">
 <item>Connect: <ref id="mmtools" name="Connect PolyMesh tool">
 <item>Console: <ref id="cons" name="main window component">
-<item>ConsoleCursorEnd: <ref id="hidprefs" name="hidden preference setting">
-<item>ConsoleTakeFocus: <ref id="hidprefs" name="hidden preference setting">
+<item>ConsoleCursorEnd: <ref id="hidprefsc" name="hidden preference setting">
+<item>ConsoleTakeFocus: <ref id="hidprefsc" name="hidden preference setting">
 <item>Context Menu:
 <itemize>
 <item><ref id="treecontm" name="object tree context menu">,
@@ -24867,7 +24916,7 @@ Index:
 <item><ref id="nmpmenu" name="Numeric point edit context menu">
 </itemize>
 <item>Convert: <ref id="mmtools" name="main menu entry">
-<item>ConvertTags: <ref id="hidprefs" name="hidden preference setting">
+<item>ConvertTags: <ref id="hidprefsc" name="hidden preference setting">
 <item>convOb: <ref id="scconvob" name="scripting interface command">
 <item>Coons Patch: <ref id="gordonobj" name="Gordon object">
 <item>copOb: <ref id="sccopob" name="scripting interface command">
@@ -24903,7 +24952,7 @@ Index:
 <item><ref id="levelobj" name="Level object">,
 <item><ref id="aycsg" name="AyCSG CSG preview plugin">
 </itemize>
-<item>CullFaces: <ref id="hidprefs" name="hidden preference setting">
+<item>CullFaces: <ref id="hidprefsc" name="hidden preference setting">
 <item>Curvature: <ref id="plotcurt" name="NCurve tool">
 <item>Curves: <ref id="curves" name="curve primitives">
 <item>Custom:
@@ -24919,8 +24968,8 @@ Index:
 <item>Cut (Add): <ref id="mmspecial" name="main menu entry">
 <item>cutOb: <ref id="sccutob" name="scripting interface command">
 <item>cvview.tcl: <ref id="cvviewtcl" name="example/helper script">
-<item>CycleHiddenWire: <ref id="hidprefs" name="hidden preference setting">
-<item>CyclePerspective: <ref id="hidprefs" name="hidden preference setting">
+<item>CycleHiddenWire: <ref id="hidprefsc" name="hidden preference setting">
+<item>CyclePerspective: <ref id="hidprefsc" name="hidden preference setting">
 <item>Cylinder: <ref id="cylinderobj" name="Cylinder object">
 </list>
 
@@ -24950,7 +24999,7 @@ Index:
 <item>Derivatives_U, Derivatives_V: <ref id="ipattr" name="IPatch attribute">
 <item>Difference: <ref id="levelobj" name="Level object">
 <item>Direct Editing: <ref id="editac" name="edit points">
-<item>DisableFailedScripts: <ref id="hidprefs" name="hidden preference setting">
+<item>DisableFailedScripts: <ref id="hidprefsd" name="hidden preference setting">
 <item>Disk: <ref id="diskobj" name="Disk object">
 <item>Displacement: <ref id="matshader" name="shader property">
 <item>Display: <ref id="ridtag" name="RiDisplay tag type">
@@ -25000,7 +25049,7 @@ Index:
 <item>Edit TexCoords: <ref id="mmtags" name="Tag management">
 <item>EditSnaps: <ref id="prefmodel" name="preference setting">
 <item>EDLen: <ref id="icp" name="ICurve attribute">
-<item>EFlush: <ref id="hidprefs" name="hidden preference setting">
+<item>EFlush: <ref id="hidprefse" name="hidden preference setting">
 <item>Elevate:
 <itemize>
 <item><ref id="elevt" name="NCurve tool">,
@@ -25072,7 +25121,7 @@ Index:
 <item>Face normals: <ref id="polymeshtools" name="PolyMesh tool">
 <item>FAQ: <ref id="secref" name="Ayam FAQ WWW reference">
 <item>Far: <ref id="camp" name="camera property">
-<item>FDShowHidden, FDShowHiddenBtn: <ref id="hidprefs" name="hidden preference setting">
+<item>FDShowHidden, FDShowHiddenBtn: <ref id="hidprefsf" name="hidden preference setting">
 <item>File:
 <itemize>
 <item><ref id="mmfile" name="file menu">,
@@ -25089,10 +25138,10 @@ Index:
 <item>Find:  <ref id="objsearch" name="object search">
 <item>FindU: <ref id="finduac" name="modelling action">
 <item>FindUV: <ref id="finduvac" name="modelling action">
-<item>FixDialogTitles: <ref id="hidprefs" name="hidden preference setting">
-<item>FixImageButtons: <ref id="hidprefs" name="hidden preference setting">
-<item>FixX11Menu: <ref id="hidprefs" name="hidden preference setting">
-<item>FlashObjects: <ref id="hidprefs" name="hidden preference setting">
+<item>FixDialogTitles: <ref id="hidprefsf" name="hidden preference setting">
+<item>FixImageButtons: <ref id="hidprefsf" name="hidden preference setting">
+<item>FixX11Menu: <ref id="hidprefsf" name="hidden preference setting">
+<item>FlashObjects: <ref id="hidprefsf" name="hidden preference setting">
 <item>FlashPoints: <ref id="prefmodel" name="preference setting">
 <item>Flatness: <ref id="moattr" name="MetaObj attributes">
 <item>Flip Loops&thinsp;/&thinsp;Smooth Normals: <ref id="mmtools" name="polymesh tool">
@@ -25223,7 +25272,7 @@ Index:
 &nbsp;<newline>&nbsp;
 <label id="indexi"><tt/&nbsp;&nbsp;<bf/I//
 <list>
-<item>IconGamma: <ref id="hidprefs" name="hidden preference setting">
+<item>IconGamma: <ref id="hidprefsi" name="hidden preference setting">
 <item>ICurve: <ref id="icurveobj" name="ICurve object">
 <item>IDR: <ref id="idr" name="IDR plugin">
 <item>IgnoreHidden: <ref id="exp3dmopt" name="3DM (Rhino) export option">
@@ -25320,7 +25369,7 @@ Index:
 <item><ref id="olbsc" name="object list shortcuts">
 </itemize>
 
-<item>Kill: <ref id="hidprefs" name="hidden preference setting">
+<item>Kill: <ref id="hidprefsk" name="hidden preference setting">
 <item>Knots: <ref id="ncattr" name="NCurve attribute">
 <item>Knot-Type:
 <itemize>
@@ -25375,10 +25424,10 @@ Index:
 <item>LightAttr: <ref id="lip" name="property">
 <item>LightShader: <ref id="lightobj" name="light">
 <item>Linear: <ref id="bevelp" name="Bevel type">
-<item>LineWidth: <ref id="hidprefs" name="hidden preference setting">
-<item>ListTypes: <ref id="hidprefs" name="hidden preference setting">
+<item>LineWidth: <ref id="hidprefsl" name="hidden preference setting">
+<item>ListTypes: <ref id="hidprefsl" name="hidden preference setting">
 <item>List View: <ref id="listbox" name="List View">
-<item>LoadEnv: <ref id="hidprefs" name="hidden preference settings">
+<item>LoadEnv: <ref id="hidprefsl" name="hidden preference settings">
 <item>Load Plugin: <ref id="mmfile" name="main menu entry">
 <item>Local:
 <itemize>
@@ -25413,7 +25462,7 @@ Index:
 <item><ref id="vat" name="View attribute">,
 <item><ref id="markac" name="modelling action">
 </itemize>
-<item>MarkHidden: <ref id="hidprefs" name="hidden preference settings">
+<item>MarkHidden: <ref id="hidprefsm" name="hidden preference settings">
 <item>Master: <ref id="mmedit" name="edit menu entry">
 <item>Material:
 <itemize>
@@ -25426,7 +25475,7 @@ Index:
 <item><ref id="matprop" name="material property attribute">
 </itemize>
 <item>MaxRayLevel: <ref id="rio" name="RenderMan interface option">
-<item>MaxTagLen: <ref id="hidprefs" name="hidden preference settings">
+<item>MaxTagLen: <ref id="hidprefsm" name="hidden preference settings">
 <item>MaxX, MaxY, MaxZ: <ref id="riprocp" name="RiProc attribute">
 <item>Menu:
 <itemize>
@@ -25486,12 +25535,12 @@ Index:
 <item>Negative: <ref id="mcattr" name="MetaComp attribute">
 <item>Network Surface: <ref id="gordonobj" name="Gordon object">
 <item>New: <ref id="mmfile" name="main menu entry">
-<item>NewLoadsEnv: <ref id="hidprefs" name="hidden preference settings">
+<item>NewLoadsEnv: <ref id="hidprefsn" name="hidden preference settings">
 <item>newScene: <ref id="scnewscene" name="scripting interface command">
 <item>NoExport: <ref id="noexporttag" name="tag type">
 <item>NormalEpsilon: <ref id="mmtools" name="optimize PolyMesh tool option">
 <item>NormalizedDomainDistance: <ref id="prefmisc" name="NURBS tesselation mode">
-<item>NormalizeDigits, NormalizeMark, NormalizePoints, NormalizeTrafos: <ref id="hidprefs" name="hidden preference setting">
+<item>NormalizeDigits, NormalizeMark, NormalizePoints, NormalizeTrafos: <ref id="hidprefsn" name="hidden preference setting">
 <item>normPnts: <ref id="scnormpnts" name="scripting interface command">
 <item>normTrafos: <ref id="scnormtrafos" name="scripting interface command">
 <item>normVar: <ref id="scnormvar" name="scripting interface command">
@@ -25582,8 +25631,8 @@ Index:
 <item>P1, P2: <ref id="hyp" name="Hyperboloid attribute">
 <item>Pan<ref id="vwsc" name="view action">
 <item>Pan to Mark<ref id="vwsc" name="view action">
-<item>PanDist: <ref id="hidprefs" name="hidden preference setting">
-<item>PaneMargins: <ref id="hidprefs" name="hidden preference setting">
+<item>PanDist: <ref id="hidprefsp" name="hidden preference setting">
+<item>PaneMargins: <ref id="hidprefsp" name="hidden preference setting">
 <item>Paraboloid: <ref id="paraboloidobj" name="Paraboloid object">
 <item>Parameter: <ref id="extrncp" name="ExtrNC attribute">
 <item>Parameter Object: <ref id="toolobj" name="modelling concept">
@@ -25609,9 +25658,9 @@ Index:
 <item>PhiMin, PhiMax: <ref id="top" name="Torus attribute">
 <item>Pick: <ref id="objsel" name="selecting objects by picking">
 <item>PickCycle: <ref id="prefmodel" name="preference setting">
-<item>PickCycleMax: <ref id="hidprefs" name="hidden preference setting">
+<item>PickCycleMax: <ref id="hidprefsp" name="hidden preference setting">
 <item>PickEpsilon: <ref id="prefmodel" name="preference setting">
-<item>PickTolerance: <ref id="hidprefs" name="hidden preference setting">
+<item>PickTolerance: <ref id="hidprefsp" name="hidden preference setting">
 <item>Pivot:
 <itemize>
 <item><ref id="markac" name="set mark action">,
@@ -25625,7 +25674,7 @@ Index:
 <item>polyhedron.js: <ref id="polyhedronjs" name="example/helper script">
 <item>PolyMesh: <ref id="polymeshobj" name="PolyMesh object">
 <item>PolyMesh tools: <ref id="polymeshtools" name="PolyMesh tools">
-<item>PolyOffset: <ref id="hidprefs" name="hidden preference setting">
+<item>PolyOffset: <ref id="hidprefsp" name="hidden preference setting">
 <item>Power:
 <itemize>
 <item><ref id="pmattr" name="PatchMesh basis type">,
@@ -25639,7 +25688,7 @@ Index:
 </itemize>
 <item>Procedural Objects: <ref id="riprocobj" name="RiProc object">
 <item>Procedurals: <ref id="rio" name="RenderMan interface option">
-<item>Prompt: <ref id="hidprefs" name="hidden preference setting">
+<item>Prompt: <ref id="hidprefsp" name="hidden preference setting">
 <item>Properties: <ref id="propgui" name="main window component">
 <item>Property Clipboard: <ref id="propclip" name="property clipboard">
 <item>Primitive: <ref id="levelobj" name="Level object">
@@ -25647,9 +25696,9 @@ Index:
 <item>Primitives: <ref id="tesst" name="tesselation option">
 <item>PRManSpec: <ref id="rio" name="RenderMan interface option">
 <item>PV: <ref id="pvtag" name="tag type">
-<item>PVColorName: <ref id="hidprefs" name="hidden preference setting">
-<item>PVNormalName: <ref id="hidprefs" name="hidden preference setting">
-<item>PVTexCoordName: <ref id="hidprefs" name="hidden preference setting">
+<item>PVColorName: <ref id="hidprefsp" name="hidden preference setting">
+<item>PVNormalName: <ref id="hidprefsp" name="hidden preference setting">
+<item>PVTexCoordName: <ref id="hidprefsp" name="hidden preference setting">
 </list>
 
 <#if out="latex"><x/phantomsection/</#if>
@@ -25886,7 +25935,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="swp" name="Sweep attribute">,
 <item><ref id="cloneattr" name="Clone attribute">
 </itemize>
-<item>RotateCrossSection: <ref id="hidprefs" name="hidden preference setting">
+<item>RotateCrossSection: <ref id="hidprefsr" name="hidden preference setting">
 <item>Rotation:
 <itemize>
 <item><ref id="trap" name="transformations property">,
@@ -25909,7 +25958,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 &nbsp;<newline>&nbsp;
 <label id="indexs"><tt/&nbsp;&nbsp;<bf/S//
 <list>
-<item>SafeAutoFocus: <ref id="hidprefs" name="hidden preference setting">
+<item>SafeAutoFocus: <ref id="hidprefss" name="hidden preference setting">
 <item>Samples: <ref id="lip" name="Light attribute">
 <item>Samples_X: <ref id="rio" name="RenderMan interface option">
 <item>Samples_Y: <ref id="rio" name="RenderMan interface option">
@@ -25984,11 +26033,11 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Select Renderer: <ref id="mmtags" name="main menu entry">
 <item>Selected Objects: <ref id="mmspecial" name="main menu entry">
 <item>Selection: <ref id="prefdraw" name="preference setting">
-<item>SelectLast: <ref id="hidprefs" name="hidden preference setting">
-<item>SelLineWidth: <ref id="hidprefs" name="hidden preference setting">
+<item>SelectLast: <ref id="hidprefss" name="hidden preference setting">
+<item>SelLineWidth: <ref id="hidprefss" name="hidden preference setting">
 <item>selOb: <ref id="scselob" name="scripting interface command">
 <item>selPnts: <ref id="scselpnts" name="scripting interface command">
-<item>SelXOR_R, SelXOR_G, SelXOR_B: <ref id="hidprefs" name="hidden preference setting">
+<item>SelXOR_R, SelXOR_G, SelXOR_B: <ref id="hidprefss" name="hidden preference setting">
 <item>Set BGImage: <ref id="vmconf" name="view menu entry">
 <item>Set Gridsize: <ref id="vmconf" name="view menu entry">
 <item>Set FOV: <ref id="vmconf" name="view menu entry">
@@ -26026,7 +26075,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Shadows: <ref id="lip" name="Light attribute">
 <item>Shift: <ref id="shiftclc" name="curve tool">
 <item>shiftC: <ref id="scshiftc" name="scripting interface command">
-<item>ShiftTab: <ref id="hidprefs" name="hidden preference setting">
+<item>ShiftTab: <ref id="hidprefsr" name="hidden preference setting">
 <item>Show: <ref id="mmtools" name="main menu entry">
 <item>Show All: <ref id="mmtools" name="main menu entry">
 <item>Show Shortcuts: <ref id="mmhelp" name="main menu entry">
@@ -26037,7 +26086,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="vmtype" name="view menu entry">,
 <item><ref id="extrncp" name="ExtrNC attribute">
 </itemize>
-<item>SimpleToolGUI: <ref id="hidprefs" name="hidden preference setting">
+<item>SimpleToolGUI: <ref id="hidprefss" name="hidden preference setting">
 <item>SingleWindow: <ref id="prefmain" name="preference setting">
 <item>Skin:
 <itemize>
@@ -26097,13 +26146,13 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>STESS: <ref id="prefdraw" name="preference setting">
 <item>Stretch: <ref id="scalac" name="modelling action">
 <item>String: <ref id="textattr" name="Text attribute">
-<item>StripShaderArch: <ref id="hidprefs" name="hidden preference setting">
+<item>StripShaderArch: <ref id="hidprefss" name="hidden preference setting">
 <item>Subdivision Curve: <ref id="sdcurveobj" name="SDCurve object">
 <item>Subdivision Mesh: <ref id="sdmeshobj" name="SDMesh object">
 <item>Superformula Curve: <ref id="sfcurveobj" name="SfCurve object">
 <item>Surface: <ref id="matshader" name="shader property">
 <item>Surfaces: <ref id="surfaces" name="surface primitives">
-<item>SwapMB: <ref id="hidprefs" name="hidden preference setting">
+<item>SwapMB: <ref id="hidprefss" name="hidden preference setting">
 <item>Swap UV: <ref id="swapuvt" name="surface tool">
 <item>swapuvS <ref id="scswapuvs" name="scripting interface command">
 <item>Sweep:
@@ -26194,9 +26243,9 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>tonpatch.tcl: <ref id="tonpatchtcl" name="example/helper script">
 <item>Tool Objects: <ref id="toolobj" name="modelling concept">
 <item>Toolbox: <ref id="toolb" name="toolbox window">
-<item>toolBoxList: <ref id="hidprefs" name="hidden preference setting">
-<item>ToolBoxShrink: <ref id="hidprefs" name="hidden preference setting">
-<item>ToolBoxTrans: <ref id="hidprefs" name="hidden preference setting">
+<item>toolBoxList: <ref id="hidprefst" name="hidden preference setting">
+<item>ToolBoxShrink: <ref id="hidprefst" name="hidden preference setting">
+<item>ToolBoxTrans: <ref id="hidprefst" name="hidden preference setting">
 <item>Tools: <ref id="mmtools" name="tools menu">
 <item>Top: <ref id="vmtype" name="view menu entry">
 <item>TopLevelLayers:
@@ -26287,7 +26336,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="vat" name="View attribute">,
 <item><ref id="vmconf" name="view menu entry">
 </itemize>
-<item>UseInternalFD: <ref id="hidprefs" name="hidden preference setting">
+<item>UseInternalFD: <ref id="hidprefsu" name="hidden preference setting">
 <item>UseMatColor: <ref id="prefdraw" name="preference setting">
 <item>UseTexCoords: <ref id="tesst" name="tesselation option">
 <item>UseVertColors: <ref id="tesst" name="tesselation option">
@@ -26318,9 +26367,9 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 &nbsp;<newline>&nbsp;
 <label id="indexw"><tt/&nbsp;&nbsp;<bf/W//
 <list>
-<item>Wait: <ref id="hidprefs" name="hidden preference setting">
-<item>WarnPropPasteToSel: <ref id="hidprefs" name="hidden preference setting">
-<item>WarnUnknownTag: <ref id="hidprefs" name="hidden preference setting">
+<item>Wait: <ref id="hidprefsw" name="hidden preference setting">
+<item>WarnPropPasteToSel: <ref id="hidprefsw" name="hidden preference setting">
+<item>WarnUnknownTag: <ref id="hidprefsw" name="hidden preference setting">
 <item>WatchCorners: <ref id="gop" name="Gordon attribute">
 <item>Watertight Tesselation: <ref id="mmtools" name="Connect PolyMesh tool">
 <item>Wavefront OBJ:
@@ -26334,7 +26383,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="rats" name="rational style">
 </itemize>
 <item>whatis <ref id="scwhatis" name="scripting interface command">
-<item>WheelZoom: <ref id="hidprefs" name="hidden preference setting">
+<item>WheelZoom: <ref id="hidprefsw" name="hidden preference setting">
 <item>Width:
 <itemize>
 <item><ref id="rio" name="RenderMan interface option">,
