@@ -1385,7 +1385,7 @@ will not be removed, using the undo system.
 Potentially present <tt/"TP"/ and <tt/"TC"/ tags will be preserved.
 This can be configured via the
 hidden preference setting <tt/"ConvertTags"/,
-see section <ref id="hidprefs" name="Hidden Preference Settings"> for
+see section <ref id="hidprefsc" name="Hidden Preference Settings"> for
 more information.
 
 <item><tt/"Convert (In Place)"/, starts the convert action as
@@ -2276,7 +2276,7 @@ The toolbox window may be configured by the user using the
 hidden preference setting <tt/"toolBoxList"/ in the ayamrc file.
 Using this setting you may select from certain groups of buttons
 and change the order in which they appear in the toolbox window.
-See section <ref id="hidprefs" name="Hidden Preference Settings"> for
+See section <ref id="hidprefst" name="Hidden Preference Settings"> for
 more information.
 <p>
 The toolbox is also open for extension by scripts, see section
@@ -2635,7 +2635,7 @@ upon each start of Ayam (unless the hidden
 preference option <tt/"LoadEnv"/ is switched off) and upon each clearing
 of the scene using <tt>"File/New"</tt> (unless the hidden preference option
 <tt/"NewLoadsEnv"/ is switched off).
-See also section <ref id="hidprefs" name="Hidden Preference Settings">.
+See also section <ref id="hidprefsn" name="Hidden Preference Settings">.
 <p> <p>
 
 <item><tt/"Scripts"/ is a list of Tcl script files that will
@@ -2693,7 +2693,7 @@ created, e.g.~when rendering directly from view windows.
 The preference settings <tt/"ListTypes"/, <tt/"MarkHidden"/,
 <tt/"LoadEnv"/, and <tt/"NewLoadsEnv"/ are hidden preference
 settings since Ayam 1.14, see section
-<ref id="hidprefs" name="Hidden Preference Settings">.
+<ref id="hidprefsl" name="Hidden Preference Settings">.
 
 <#if out="latex"><x/newpage/</#if>
 <sect2>Modelling Preferences<label id="prefmodel"><label id="prefmodeling">
@@ -2769,7 +2769,7 @@ the next invocation of the single point editing modelling action.
 <p><p>
 Also note, that there is a similar, albeit hidden, preference option
 that controls the flashing of picked objects (<tt/"FlashObjects"/),
-See also section <ref id="hidprefs" name="Hidden Preference Settings">.
+See also section <ref id="hidprefsf" name="Hidden Preference Settings">.
 
 <item><tt/"RationalPoints"/ determines the display style of rational points.
 <footnote>Since 1.22.</footnote>
@@ -3099,7 +3099,7 @@ should be available on every Unix platform). If you do not have
 those programs in your path, do not enable the RenderUI option.
 On the Win32 platform you may also use an internal kill command
 <tt>"w32kill"</tt> that has been introduced in Ayam 1.4.
-See also section <ref id="hidprefs" name="Hidden Preference Settings">.
+See also section <ref id="hidprefsc" name="Hidden Preference Settings">.
 <p> <p>
 
 <item><tt/"RenderPT"/ is a string that contains a progress output
@@ -3262,7 +3262,7 @@ result in a good balance between precision and readability.
 <p><p>
 Related hidden preference options are <tt/"NormalizeDigits"/,
 <tt/"NormalizePoints"/, and <tt/"NormalizeTrafos"/, see also
-section <ref id="hidprefs" name="Hidden Preference Settings">.
+section <ref id="hidprefsn" name="Hidden Preference Settings">.
 
 <item><tt/"SaveDialogGeom"/ controls whether the geometry of various dialog
 windows should be remembered by Ayam, the settings available are<newline>
@@ -3675,7 +3675,7 @@ a better view of the temporarily selected object.
 
 <item>The tolerance used to determine whether an object should be picked
 or not can be adjusted (see <tt/"PickTolerance"/ in
-<ref id="hidprefs" name="Hidden Preference Settings">).
+<ref id="hidprefsp" name="Hidden Preference Settings">).
 </itemize>
 
 <sect1>Selecting/Tagging Points<label id="selac">
@@ -24046,7 +24046,8 @@ appear, see also the image above.
 <p>
 Automatic Instancing creates instances from all instantiable
 objects using a simple algorithm that recursively compares
-objects. Two objects are considered to be instantiable when all
+objects (see also section <ref id="instanceobj" name="Instance object">).
+Two objects are considered to be instantiable when all
 their attributes, except for the transformation attributes, are the same.
 The comparison of materials and tags may be turned off.
 Also the scope of the automatic instantiation can be set to
@@ -24508,6 +24509,8 @@ The original resource is now unfortunately offline, try your luck with the
 <htmlurl url="https://web.archive.org/web/20071219192035/http://www.rendermanacademy.com:80/" name="Internet Archive copy from 19. Dec 2007">.
 </itemize>
 
+<#if out="latex"><x/newpage/</#if>
+
 <sect1>Acknowledgements
 <p>
 First of all, I would like to express a big "Thank you!"
@@ -24545,6 +24548,10 @@ providing a lot of good music
 Interface
 </itemize>
 
+<#if out="latex"><x/newpage/</#if>
+
+<sect1>Trademarks
+<p>
 OpenGL (R) is a registered trademark of Silicon Graphics, Inc.
 
 The RenderMan (R) Interface Procedures and Protocol are:
