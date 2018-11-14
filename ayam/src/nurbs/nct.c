@@ -6798,6 +6798,97 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
 } /* ay_nct_coarsen */
 
 
+/** ay_nct_coarsenarray:
+ *  Helper to coarsen an 1D array of control points.
+ *
+ * \param[in] Pw array to coarsen
+ * \param[in] len number of elements in Pw
+ * \param[in] stride size of an element in Pw
+ * \param[in] selp region to be coarsened, may be NULL
+ * \param[in,out] Qw new coarsened array
+ * \param[in,out] Qwlen length of new array
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_nct_coarsenarray(double *Pw, int len, int stride, ay_point *selp,
+		    double **Qw, int *Qwlen)
+{
+ char fname[] = "coarsenarray";
+ double *Q;
+ int count;
+ int i, j, start = 0, end = len;
+ ay_point *endpnt = NULL;
+
+  if(!Qw)
+    return AY_ENULL;
+
+  if(selp)
+    {
+      start = len;
+      end = 0;
+      while(selp)
+	{
+	  if(start > (int)selp->index)
+	    start = selp->index;
+	  if(end < (int)selp->index)
+	    {
+	      end = selp->index;
+	      endpnt = selp;
+	    }
+
+	  selp = selp->next;
+	}
+    }
+
+  if(end >= len)
+    end = len-1;
+
+  count = (end-start)/2;
+
+  if(count > 0)
+    {
+      /* allocate new control vector */
+      if(!(Q = malloc((len - count)*stride*sizeof(double))))
+	{
+	  ay_error(AY_EOMEM, fname, NULL);
+	  return AY_ERROR;
+	}
+
+      /* copy first points */
+      if(start > 0)
+	memcpy(Q, Pw, start*stride*sizeof(double));
+
+      /* copy old & create new points */
+      i = start;
+      j = start;
+      while(i < end)
+	{
+	  memcpy(&(Q[j*stride]), &(Pw[i*stride]), stride*sizeof(double));
+
+	  i += 2;
+	  j++;
+	} /* while */
+
+      /* copy last point(s) */
+      memcpy(&(Q[j*stride]),
+	     &(Pw[end*stride]),
+	     (len-end)*stride*sizeof(double));
+
+      if(endpnt)
+	{
+	  endpnt->index += count;
+	}
+
+      /* return result */
+      *Qw = Q;
+      *Qwlen = len - count;
+    } /* if count */
+
+ return AY_OK;
+} /* ay_nct_coarsenarray */
+
+
 /** ay_nct_coarsentcmd:
  *  Coarsen selected NURBS curves.
  *  Implements the \a coarsenNC scripting interface command.

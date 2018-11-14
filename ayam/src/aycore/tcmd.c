@@ -2249,8 +2249,12 @@ ay_tcmd_refinetcmd(ClientData clientData, Tcl_Interp *interp,
 	case AY_IDICURVE:
 	  ic = (ay_icurve_object*)o->refine;
 	  Qw = NULL;
-	  ay_status = ay_nct_refinearray(ic->controlv, ic->length, 3,
-					 o->selp, &Qw, &Qwlen);
+	  if(coarsen)
+	    ay_status = ay_nct_coarsenarray(ic->controlv, ic->length, 3,
+					    o->selp, &Qw, &Qwlen);
+	  else
+	    ay_status = ay_nct_refinearray(ic->controlv, ic->length, 3,
+					   o->selp, &Qw, &Qwlen);
 	  if(!ay_status && Qw)
 	    {
 	      free(ic->controlv);
@@ -2266,8 +2270,12 @@ ay_tcmd_refinetcmd(ClientData clientData, Tcl_Interp *interp,
 	case AY_IDACURVE:
 	  ac = (ay_acurve_object*)o->refine;
 	  Qw = NULL;
-	  ay_status = ay_nct_refinearray(ac->controlv, ac->length, 3,
-					 o->selp, &Qw, &Qwlen);
+	  if(coarsen)
+	    ay_status = ay_nct_coarsenarray(ac->controlv, ac->length, 3,
+					    o->selp, &Qw, &Qwlen);
+	  else
+	    ay_status = ay_nct_refinearray(ac->controlv, ac->length, 3,
+					   o->selp, &Qw, &Qwlen);
 	  if(!ay_status && Qw)
 	    {
 	      free(ac->controlv);
