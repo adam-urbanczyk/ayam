@@ -852,6 +852,11 @@ int ay_nct_israt(ay_nurbcurve_object *curve);
  */
 int ay_nct_coarsen(ay_nurbcurve_object *curve);
 
+/** Coarsen a 1D control point vector.
+ */
+int ay_nct_coarsenarray(double *Pw, int len, int stride, ay_point *selp,
+			double **Qw, int *Qwlen);
+
 /** Tcl command to coarsen selected NURBS curves.
  */
 int ay_nct_coarsentcmd(ClientData clientData, Tcl_Interp *interp,

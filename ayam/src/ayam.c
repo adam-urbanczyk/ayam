@@ -1165,6 +1165,9 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "refineC", ay_tcmd_refinetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "coarsenC", ay_tcmd_refinetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   Tcl_CreateCommand(interp, "refineknNC", ay_nct_refinekntcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
@@ -1762,6 +1765,9 @@ ay_safeinit(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "refineC", ay_tcmd_refinetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "coarsenC", ay_tcmd_refinetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "refineknNC", ay_nct_refinekntcmd,
