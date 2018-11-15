@@ -4565,10 +4565,11 @@ objects that provide NCurve objects) only.
 This action may be used to get the corresponding parametric
 value <em/u/ from an arbitrary point on a curve. For every picked point
 the appropriate value for <em/u/ is calculated, stored
-in the global variable <tt/u/, and additionally written to the console.
-The mark is set to the position of the picked point (see section
-<ref id="markac" name="Setting the Mark">
-for more information about the mark).
+in the global variable <tt/"u"/, and additionally written to the console.
+The mark is set to the coordinates of the point on the curve that
+results from evaluating the curve at the parametric value <em/u/.
+See also section <ref id="markac" name="Setting the Mark">
+for more information about the mark.
 Remember to exactly pick a point on the curve or nearby, otherwise
 the calculation may fail.
 <p>
@@ -4602,11 +4603,12 @@ objects that provide NPatch objects) only.
 This action may be used to get the corresponding parametric
 values <em/u/ and <em/v/ from a point on a surface. For every picked
 point the appropriate values for <em/u/ and <em/v/ are calculated,
-stored in the global variables <tt/u/ and <tt/v/, and additionally
+stored in the global variables <tt/"u"/ and <tt/"v"/, and additionally
 written to the console.
-The mark is set to the position of the picked point (see section
-<ref id="markac" name="Setting the Mark">
-for more information about the mark).
+The mark is set to the coordinates of the point on the surface that
+results from evaluating the surface at the parametric values <em/u/ and <em/v/.
+See section <ref id="markac" name="Setting the Mark">
+for more information about the mark.
 Remember to exactly pick a point on the surface or nearby, otherwise
 the calculation may fail. As the icon suggests, this action works best
 in the shaded drawing mode.
@@ -4725,7 +4727,7 @@ views). Since Ayam 1.18, the view is automatically aligned to the
 selected object or current level when cycling through the
 global/local modes.
 Manually aligning a view may still be necessary after certain changes to
-the the camera of the view e.g.~by the rotate view action.
+the camera of the view e.g.~by the rotate view action.
 Note that realigning is also always possible by cycling the modelling
 mode three times using <tt/&lt;l&gt;/.
 But let us get back to our local view.
@@ -13506,6 +13508,9 @@ and the last selected point are refined, see also the image below.
 The point selection will be adapted so that the refine tool can be
 applied multiple times.
 <tag/Notes/
+The refine tool can be conveniently invoked from view windows
+using the keyboard shortcut <tt/&lt;#&gt;/.
+<p>
 See also the documentation of the corresponding
 scripting interface command <ref id="screfinec" name="refineC">.
 </descrip>
@@ -13582,25 +13587,32 @@ surfaces <ref id="refinewst" name="Refine Knots With Surface Tool">.
 <caption>Successive Application of Coarsen Tool</caption>
 </figure>
 <descrip>
-<tag/Arguments/ The coarsen tool takes a number of NURBS curves from
-the selection.
+<tag/Arguments/ The coarsen tool takes all NCurve,
+ICurve, and ACurve objects from the selection.
+<footnote>ICurve and ACurve since 1.26.</footnote>
 <tag/Operation/ Every second control point in the control vectors of
-the selected NURBS curves will be deleted. If the new length of the
+the selected curves will be deleted. If the new length of the
 curve would be smaller than the current order, the coarsen tool
 will not change anything.
-<tag/Notes/ For periodic curves the coarsen tool will not remove
+<tag/Notes/ For periodic NURBS curves the coarsen tool will not remove
 control points from the first (last) <em/p/ intervals (where <em/p/
 is the degree of the curve).
 
+If there are selected points, only the intervals between the first
+and the last selected point are affected.
+
 For closed curves, the coarsen tool will not remove the last point.
 
-The coarsen tool will also remove knot values from curves with
+The coarsen tool will also remove knot values from NURBS curves with
 custom knot vectors.
 
 The point selection will be removed from the processed objects.
 
+The coarsen tool can be conveniently invoked from view windows
+using the keyboard shortcut <tt/&lt;Shift-#&gt;/.
+
 See also the documentation of the corresponding
-scripting interface command <ref id="sccoarsennc" name="coarsenNC">.
+scripting interface command <ref id="sccoarsenc" name="coarsenC">.
 </descrip>
 
 <sect2>Elevate Tool<label id="elevt">
@@ -13832,6 +13844,8 @@ and the related tool for
 surfaces <ref id="remsuknnpt" name="Remove Superfluous Knots Surface Tool">.
  -->
 </descrip>
+
+<#if out="latex"><x/newpage/</#if>
 
 <sect2>Concat Tool<label id="conct">
 <p>
@@ -17662,6 +17676,24 @@ See also section <ref id="refit" name="Refine Tool">.
 <p>
 <#if out="latex"><x/phantomsection/</#if>
 
+<label id="sccoarsenc">
+coarsenC &ndash; coarsen curve:
+<itemize>
+ <item>Synopsis: <tt/"coarsenNC"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Remove every second control point from the
+selected NCurve, ICurve, and ACurve objects. If a curve has selected
+points, only the interval between the first and the
+last of the selected points is affected. For periodic NURBS
+curves, the last <em/p/ intervals are not affected (where <em/p/
+is the degree of the curve).
+<p><p>
+See also section <ref id="coart" name="Coarsen Tool">.
+</itemize>
+
+<p>
+<#if out="latex"><x/phantomsection/</#if>
+
 <label id="screfineknnc">
 refineknNC &ndash; refine knots of NURBS curve:
 <itemize>
@@ -17673,20 +17705,6 @@ If no list of new knots is given, a new knot is inserted into each interval
 in the old knot vector.
 <p><p>
 See also section <ref id="refknit" name="Refine Knots Tool">.
-</itemize>
-
-<p>
-<#if out="latex"><x/phantomsection/</#if>
-
-<label id="sccoarsennc">
-coarsenNC &ndash; coarsen NURBS curve:
-<itemize>
- <item>Synopsis: <tt/"coarsenNC"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Remove every second control point from the
-selected NURBS curves.
-<p><p>
-See also section <ref id="coart" name="Coarsen Tool">.
 </itemize>
 
 <p>
@@ -24887,7 +24905,7 @@ Index:
 <item><ref id="ipattr" name="IPatch attribute">
 </itemize>
 <item>Coarsen: <ref id="coart" name="coarsen tool">
-<item>CoarsenNC: <ref id="sccoarsennc" name="scripting interface command">
+<item>CoarsenC: <ref id="sccoarsenc" name="scripting interface command">
 <item>Cobb NURBS Sphere: <ref id="nsp2t" name="create surface tool">
 <item>Collapse:
 <itemize>
