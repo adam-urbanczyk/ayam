@@ -461,7 +461,7 @@ $m.nct add command -label "Refine" -command { undo save Refine;
 # ^^^^^^^^^^^ => F
 
 
-$m.nct add command -label "Coarsen" -command { undo save Coarsen; coarsenNC;
+$m.nct add command -label "Coarsen" -command { undo save Coarsen; coarsenC;
                                               plb_update; rV } \
  -underline 2
 # ^^^^^^^^^^^ => A
