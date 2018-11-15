@@ -380,7 +380,7 @@ proc toolbox_open { {w .tbw} } {
 		undo save Refine; refineC; plb_update; rV
 	    }
 	    toolbox_addshift1 $f.bref\
-		"undo save Coarsen; coarsenNC; plb_update; rV;"
+		"undo save Coarsen; coarsenC; plb_update; rV;"
 	    balloon_set $f.bref "refine curve\n<Shift>: coarsen curve"
 	}
 	# nctools1
