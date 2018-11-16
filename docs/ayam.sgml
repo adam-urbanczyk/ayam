@@ -17679,7 +17679,7 @@ See also section <ref id="refit" name="Refine Tool">.
 <label id="sccoarsenc">
 coarsenC &ndash; coarsen curve:
 <itemize>
- <item>Synopsis: <tt/"coarsenNC"/
+ <item>Synopsis: <tt/"coarsenC"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Remove every second control point from the
 selected NCurve, ICurve, and ACurve objects. If a curve has selected
@@ -17687,6 +17687,10 @@ points, only the interval between the first and the
 last of the selected points is affected. For periodic NURBS
 curves, the last <em/p/ intervals are not affected (where <em/p/
 is the degree of the curve).
+<p>
+Prior to Ayam 1.26 this command was named <tt>"coarsenNC"</tt>,
+the old name is still available for compatibility but its
+use is deprecated.
 <p><p>
 See also section <ref id="coart" name="Coarsen Tool">.
 </itemize>
