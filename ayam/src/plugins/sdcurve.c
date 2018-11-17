@@ -1292,8 +1292,12 @@ sdcurve_genericopcb(ay_object *o, int op)
       break;
     case AY_OPREFINE:
       Qw = NULL;
-      ay_status = ay_nct_refinearray(sd->controlv, sd->length, 3,
-				     o->selp, &Qw, &Qwlen);
+      if(op == AY_OPREFINE)
+	ay_status = ay_nct_refinearray(sd->controlv, sd->length, 3,
+				       o->selp, &Qw, &Qwlen);
+      else
+	ay_status = ay_nct_coarsenarray(sd->controlv, sd->length, 3,
+					o->selp, &Qw, &Qwlen);
       if(!ay_status && Qw)
 	{
 	  free(sd->controlv);
@@ -1304,7 +1308,7 @@ sdcurve_genericopcb(ay_object *o, int op)
       break;
     default:
       break;
-    }
+    } /* switch op */
 
  return ay_status;
 } /* sdcurve_genericopcb */
@@ -1522,7 +1526,8 @@ Sdcurve_Init(Tcl_Interp *interp)
 {
  int ay_status = AY_OK;
  char fname[] = "sdcurve_init";
- int i, ops[4] = {AY_OPREVERT, AY_OPOPEN, AY_OPCLOSE, AY_OPREFINE};
+ int i, ops[5] = {AY_OPREVERT, AY_OPOPEN, AY_OPCLOSE,
+		  AY_OPREFINE, AY_OPCOARSEN};
 
 #ifdef WIN32
   if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
@@ -1564,7 +1569,7 @@ Sdcurve_Init(Tcl_Interp *interp)
 
   ay_status += ay_pact_registerdelete(sdcurve_deletepntcb, sdcurve_id);
 
-  for(i = 0; i < 4; i++)
+  for(i = 0; i < 5; i++)
     {
       ay_status += ay_tcmd_registergeneric(ops[i], sdcurve_genericopcb,
 					   sdcurve_id);
