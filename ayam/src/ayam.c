@@ -1171,7 +1171,8 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "refineknNC", ay_nct_refinekntcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "coarsenNC", ay_nct_coarsentcmd,
+  /* provided for scripting interface backwards compatibility */
+  Tcl_CreateCommand(interp, "coarsenNC", ay_tcmd_refinetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "clampNC", ay_nct_clamptcmd,
@@ -1773,7 +1774,8 @@ ay_safeinit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "refineknNC", ay_nct_refinekntcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "coarsenNC", ay_nct_coarsentcmd,
+  /* provided for scripting interface backwards compatibility */
+  Tcl_CreateCommand(interp, "coarsenNC", ay_tcmd_refinetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "clampNC", ay_nct_clamptcmd,

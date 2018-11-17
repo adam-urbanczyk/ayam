@@ -6889,68 +6889,6 @@ ay_nct_coarsenarray(double *Pw, int len, int stride, ay_point *selp,
 } /* ay_nct_coarsenarray */
 
 
-/** ay_nct_coarsentcmd:
- *  Coarsen selected NURBS curves.
- *  Implements the \a coarsenNC scripting interface command.
- *  See also the corresponding section in the \ayd{sccoarsennc}.
- *
- *  \returns TCL_OK in any case.
- */
-int
-ay_nct_coarsentcmd(ClientData clientData, Tcl_Interp *interp,
-		   int argc, char *argv[])
-{
- int ay_status = AY_OK;
- ay_list_object *sel = ay_selection;
- ay_object *o = NULL;
- int notify_parent = AY_FALSE;
-
-  if(!sel)
-    {
-      ay_error(AY_ENOSEL, argv[0], NULL);
-      return TCL_OK;
-    }
-
-  while(sel)
-    {
-      o = sel->object;
-      if(o->type != AY_IDNCURVE)
-	{
-	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
-	}
-      else
-	{
-	  ay_status = ay_nct_coarsen((ay_nurbcurve_object*)o->refine);
-
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, argv[0], "Could not coarsen object.");
-	      break;
-	    }
-
-	  /* remove all selected points */
-	  if(o->selp)
-	    {
-	      ay_selp_clear(o);
-	    }
-
-	  o->modified = AY_TRUE;
-
-	  /* re-create tesselation of curve */
-	  (void)ay_notify_object(sel->object);
-	  notify_parent = AY_TRUE;
-	} /* if */
-
-      sel = sel->next;
-    } /* while */
-
-  if(notify_parent)
-    (void)ay_notify_parent();
-
- return TCL_OK;
-} /* ay_nct_coarsentcmd */
-
-
 /** ay_nct_removesuperfluousknots:
  * Remove all knots from the curve that do not contribute to its shape.
  *
