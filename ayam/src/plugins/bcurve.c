@@ -1852,7 +1852,7 @@ bcurve_genericopcb(ay_object *o, int op)
       break;
     } /* switch op */
 
- return AY_OK;
+ return ay_status;
 } /* bcurve_genericopcb */
 
 
