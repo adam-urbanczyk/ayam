@@ -1785,6 +1785,11 @@ array set Refine {
     command { refineC }
 }
 
+array set Coarsen {
+    types { NCurve ICurve ACurve }
+    command { coarsenC }
+}
+
 array set RefineUNP {
     types { NPatch }
     command { refineuNP }
@@ -1929,17 +1934,12 @@ array set SplitNPV {
     }
 }
 
-array set CoarsenNC {
-    types { NCurve }
-    command { coarsenNC }
-}
-
-array set OpenC {
+array set Open {
     types { NCurve ICurve ACurve }
     command { openC }
 }
 
-array set CloseC {
+array set Close {
     types { NCurve ICurve ACurve }
     command { closeC }
 }
@@ -3040,14 +3040,14 @@ set aytest_4items $items
 
 # set up tools to test in test #5
 set items {}
-lappend items Revert RevertUS RevertVS SwapUVS Refine RefineUNP RefineVNP
+lappend items Revert Open Close Refine Coarsen
 lappend items RefineK InsertK InsertK2 RemoveK RemoveKI RemoveKS RemoveKIS
 lappend items RemoveKI1 RemoveKI1S RemoveKIEnd RemoveKIEndS
-lappend items CoarsenNC OpenC CloseC
 lappend items ShiftC ShiftC2 ShiftCM ShiftCM2 ToXYC ToXZC ToYZC
 lappend items ElevateNC ElevateNC2 ElevateNC3 EstLenNC ExtendNC SplitNC
 lappend items TrimNC ClampNC ClampNCS ClampNCE
 lappend items UnclampNC UnclampNCS UnclampNCE
+lappend items RevertUS RevertVS SwapUVS RefineUNP RefineVNP
 lappend items ClampUNP ClampUNPS ClampUNPE
 lappend items ClampVNP ClampVNPS ClampVNPE
 lappend items UnclampUNP UnclampUNPS UnclampUNPE
