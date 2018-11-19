@@ -2195,9 +2195,11 @@ array set CloseVNP {
     command { closevNP }
 }
 
+# instead of using the full pallette of possible derivative lengths
+# of ICurve_1, we content ourselves with 0.1/1.0 variations here
 set trimic {set ICurve_1(SDLen) {0.1 1.0}; set ICurve_1(EDLen) {0.1 1.0};}
 
-foreach tool { Revert Refine OpenC CloseC ToXYC ToXZC ToYZC } {
+foreach tool { Revert Refine Coarsen OpenC CloseC ToXYC ToXZC ToYZC } {
     set ${tool}(precmd) $trimic
 }
 
