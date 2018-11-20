@@ -1761,7 +1761,7 @@ uplevel #0 {
 set lengths {4 5 6}
 
 array set Revert {
-    types { NCurve ICurve ACurve }
+    types { NCurve ICurve ACurve NCircle }
     command { revertC }
 }
 
@@ -1935,12 +1935,12 @@ array set SplitNPV {
 }
 
 array set Open {
-    types { NCurve ICurve ACurve }
+    types { NCurve ICurve ACurve ConcatNC }
     command { openC }
 }
 
 array set Close {
-    types { NCurve ICurve ACurve }
+    types { NCurve ICurve ACurve ConcatNC }
     command { closeC }
 }
 
@@ -2199,7 +2199,7 @@ array set CloseVNP {
 # of ICurve_1, we content ourselves with 0.1/1.0 variations here
 set trimic {set ICurve_1(SDLen) {0.1 1.0}; set ICurve_1(EDLen) {0.1 1.0};}
 
-foreach tool { Revert Refine Coarsen OpenC CloseC ToXYC ToXZC ToYZC } {
+foreach tool { Revert Refine Coarsen Open Close ToXYC ToXZC ToYZC } {
     set ${tool}(precmd) $trimic
 }
 
