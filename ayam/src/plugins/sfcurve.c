@@ -686,8 +686,8 @@ sfcurve_providecb(ay_object *o, unsigned int type, ay_object **result)
 } /* sfcurve_providecb */
 
 
-/** sfcurve_revertcb:
- * Change the direction of a SfCurve object.
+/** sfcurve_genericopcb:
+ * Execute generic operation (AY_OP*) on SfCurve.
  *
  * \param[in,out] o curve object to process
  * \param[in] op operation designation
@@ -695,9 +695,10 @@ sfcurve_providecb(ay_object *o, unsigned int type, ay_object **result)
  * \returns AY_OK on success, error code otherwise.
  */
 int
-sfcurve_revertcb(ay_object *o, int op)
+sfcurve_genericopcb(ay_object *o, int op)
 {
- sfcurve_object *sfc = NULL;
+ int ay_status = AY_OK;
+ sfcurve_object *sf = NULL;
  double t;
 
   if(!o)
@@ -706,17 +707,29 @@ sfcurve_revertcb(ay_object *o, int op)
   if(o->type != sfcurve_id)
     return AY_ERROR;
 
-  if(op != AY_OPREVERT)
-    return AY_ERROR;
+  sf = (sfcurve_object *)o->refine;
 
-  sfc = (sfcurve_object *)o->refine;
+  switch(op)
+    {
+    case AY_OPREVERT:
+      t = sf->tmin;
+      sf->tmax = sf->tmin;
+      sf->tmin = t;
+      break;
+    case AY_OPREFINE:
+      sf->sections *= 2;
+      break;
+    case AY_OPCOARSEN:
+      sf->sections /= 2;
+      if(sf->sections < 2)
+	sf->sections = 2;
+      break;
+    default:
+      break;
+    } /* switch op */
 
-  t = sfc->tmin;
-  sfc->tmax = sfc->tmin;
-  sfc->tmin = t;
-
- return AY_OK;
-} /* sfcurve_revertcb */
+ return ay_status;
+} /* sfcurve_genericopcb */
 
 
 /* Sfcurve_Init:
@@ -731,6 +744,7 @@ Sfcurve_Init(Tcl_Interp *interp)
 {
  int ay_status = AY_OK;
  char fname[] = "sfcurve_init";
+ int i, ops[3] = {AY_OPREVERT, AY_OPREFINE, AY_OPCOARSEN};
 
 #ifdef WIN32
   if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
@@ -766,8 +780,11 @@ Sfcurve_Init(Tcl_Interp *interp)
 
   ay_status += ay_provide_register(sfcurve_providecb, sfcurve_id);
 
-  ay_status += ay_tcmd_registergeneric(AY_OPREVERT, sfcurve_revertcb,
-				       sfcurve_id);
+  for(i = 0; i < 3; i++)
+    {
+      ay_status += ay_tcmd_registergeneric(ops[i], sfcurve_genericopcb,
+					   sfcurve_id);
+    }
 
   if(ay_status)
     {
