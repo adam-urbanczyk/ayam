@@ -1291,6 +1291,7 @@ sdcurve_genericopcb(ay_object *o, int op)
       sd->closed = AY_TRUE;
       break;
     case AY_OPREFINE:
+    case AY_OPCOARSEN:
       Qw = NULL;
       if(op == AY_OPREFINE)
 	ay_status = ay_nct_refinearray(sd->controlv, sd->length, 3,
