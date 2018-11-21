@@ -238,28 +238,28 @@ ay_revolve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!revolve)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  toa = Tcl_NewStringObj(n1, -1);
+  ton = Tcl_NewStringObj(n1, -1);
 
-  Tcl_SetStringObj(ton,"ThetaMax",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &(revolve->thetamax));
+  Tcl_SetStringObj(ton, "ThetaMax", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(revolve->thetamax));
 
-  Tcl_SetStringObj(ton,"Sections",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(revolve->sections));
+  Tcl_SetStringObj(ton, "Sections", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(revolve->sections));
 
-  Tcl_SetStringObj(ton,"Order",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(revolve->order));
+  Tcl_SetStringObj(ton, "Order", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(revolve->order));
 
-  Tcl_SetStringObj(ton,"DisplayMode",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(revolve->display_mode));
+  Tcl_SetStringObj(ton, "DisplayMode", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(revolve->display_mode));
 
-  Tcl_SetStringObj(ton,"Tolerance",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &(revolve->glu_sampling_tolerance));
+  Tcl_SetStringObj(ton, "Tolerance", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(revolve->glu_sampling_tolerance));
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
@@ -291,29 +291,29 @@ ay_revolve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!revolve)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  toa = Tcl_NewStringObj(n1, -1);
+  ton = Tcl_NewStringObj(n1, -1);
 
-  Tcl_SetStringObj(ton,"ThetaMax",-1);
+  Tcl_SetStringObj(ton, "ThetaMax", -1);
   to = Tcl_NewDoubleObj(revolve->thetamax);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Sections",-1);
+  Tcl_SetStringObj(ton, "Sections", -1);
   to = Tcl_NewIntObj(revolve->sections);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Order",-1);
+  Tcl_SetStringObj(ton, "Order", -1);
   to = Tcl_NewIntObj(revolve->order);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"DisplayMode",-1);
+  Tcl_SetStringObj(ton, "DisplayMode", -1);
   to = Tcl_NewIntObj(revolve->display_mode);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Tolerance",-1);
+  Tcl_SetStringObj(ton, "Tolerance", -1);
   to = Tcl_NewDoubleObj(revolve->glu_sampling_tolerance);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
   ay_prop_getnpinfo(interp, n1, revolve->npatch);
@@ -340,19 +340,19 @@ ay_revolve_readcb(FILE *fileptr, ay_object *o)
   if(!(revolve = calloc(1, sizeof(ay_revolve_object))))
     { return AY_EOMEM; }
 
-  fscanf(fileptr,"%lg\n",&revolve->thetamax);
-  fscanf(fileptr,"%d\n",&caps[0]);
-  fscanf(fileptr,"%d\n",&caps[1]);
-  fscanf(fileptr,"%d\n",&caps[2]);
-  fscanf(fileptr,"%d\n",&caps[3]);
-  fscanf(fileptr,"%d\n",&revolve->display_mode);
-  fscanf(fileptr,"%lg\n",&revolve->glu_sampling_tolerance);
+  fscanf(fileptr, "%lg\n", &revolve->thetamax);
+  fscanf(fileptr, "%d\n", &caps[0]);
+  fscanf(fileptr, "%d\n", &caps[1]);
+  fscanf(fileptr, "%d\n", &caps[2]);
+  fscanf(fileptr, "%d\n", &caps[3]);
+  fscanf(fileptr, "%d\n", &revolve->display_mode);
+  fscanf(fileptr, "%lg\n", &revolve->glu_sampling_tolerance);
 
   if(ay_read_version >= 7)
     {
       /* since 1.8 */
-      fscanf(fileptr,"%d\n",&revolve->sections);
-      fscanf(fileptr,"%d\n",&revolve->order);
+      fscanf(fileptr, "%d\n", &revolve->sections);
+      fscanf(fileptr, "%d\n", &revolve->order);
     }
 
   if(ay_read_version < 16)
