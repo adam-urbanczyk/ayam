@@ -242,29 +242,29 @@ ay_skin_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!skin)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  toa = Tcl_NewStringObj(n1, -1);
+  ton = Tcl_NewStringObj(n1, -1);
 
-  Tcl_SetStringObj(ton,"Interpolate",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(skin->interpolate));
+  Tcl_SetStringObj(ton, "Interpolate", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(skin->interpolate));
 
-  Tcl_SetStringObj(ton,"Order_U",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(skin->uorder));
+  Tcl_SetStringObj(ton, "Order_U", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(skin->uorder));
 
-  Tcl_SetStringObj(ton,"Knot-Type_U",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(skin->uknot_type));
+  Tcl_SetStringObj(ton, "Knot-Type_U", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(skin->uknot_type));
 
 
-  Tcl_SetStringObj(ton,"DisplayMode",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(skin->display_mode));
+  Tcl_SetStringObj(ton, "DisplayMode", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(skin->display_mode));
 
-  Tcl_SetStringObj(ton,"Tolerance",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &(skin->glu_sampling_tolerance));
+  Tcl_SetStringObj(ton, "Tolerance", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(skin->glu_sampling_tolerance));
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
@@ -296,33 +296,33 @@ ay_skin_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!skin)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  toa = Tcl_NewStringObj(n1, -1);
+  ton = Tcl_NewStringObj(n1, -1);
 
-  Tcl_SetStringObj(ton,"Interpolate",-1);
+  Tcl_SetStringObj(ton, "Interpolate", -1);
   to = Tcl_NewIntObj(skin->interpolate);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Order_U",-1);
+  Tcl_SetStringObj(ton, "Order_U", -1);
   to = Tcl_NewIntObj(skin->uorder);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Knot-Type_U",-1);
+  Tcl_SetStringObj(ton, "Knot-Type_U", -1);
   to = Tcl_NewIntObj(skin->uknot_type);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
 
-  Tcl_SetStringObj(ton,"DisplayMode",-1);
+  Tcl_SetStringObj(ton, "DisplayMode", -1);
   to = Tcl_NewIntObj(skin->display_mode);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Tolerance",-1);
+  Tcl_SetStringObj(ton, "Tolerance", -1);
   to = Tcl_NewDoubleObj(skin->glu_sampling_tolerance);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
   ay_prop_getnpinfo(interp, n1, skin->npatch);
@@ -349,13 +349,13 @@ ay_skin_readcb(FILE *fileptr, ay_object *o)
   if(!(skin = calloc(1, sizeof(ay_skin_object))))
     { return AY_EOMEM; }
 
-  fscanf(fileptr,"%d\n",&skin->interpolate);
-  fscanf(fileptr,"%d\n",&skin->uorder);
-  fscanf(fileptr,"%d\n",&skin->uknot_type);
-  fscanf(fileptr,"%d\n",&caps[0]);
-  fscanf(fileptr,"%d\n",&caps[1]);
-  fscanf(fileptr,"%d\n",&skin->display_mode);
-  fscanf(fileptr,"%lg\n",&skin->glu_sampling_tolerance);
+  fscanf(fileptr, "%d\n", &skin->interpolate);
+  fscanf(fileptr, "%d\n", &skin->uorder);
+  fscanf(fileptr, "%d\n", &skin->uknot_type);
+  fscanf(fileptr, "%d\n", &caps[0]);
+  fscanf(fileptr, "%d\n", &caps[1]);
+  fscanf(fileptr, "%d\n", &skin->display_mode);
+  fscanf(fileptr, "%lg\n", &skin->glu_sampling_tolerance);
 
   if(ay_read_version < 16)
     {
