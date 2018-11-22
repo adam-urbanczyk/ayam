@@ -1,5 +1,5 @@
-[9. Oct 2018] Tip:
-==================
+[22. Nov 2018] Tip:
+===================
 Bug Fixes:
 o fix window close shortcut in external views
 o fix shading of rational SDNPatch surfaces
@@ -20,6 +20,20 @@ o improved robustness of point insertion wrt. weights
 o resizing curve/surface objects via the properties no longer unconditionally
   removes the point selection
 o added modelling actions to snap objects to the grid (new shortcuts: <f>/<F>)
+o starting modelling actions via the context menu button (usually the
+  rightmost one) now starts the action in point mode
+o likewise, a right click on the modelling mode icon of a view now toggles
+  the modelling action scope
+o added tool to remove all superfluous knots from a NURBS curve
+o added keyboard shortcuts to numeric point edit dialog, focus management:
+  <x>, <y>, <z>, <w>, clear all entries: <Shift-Delete>, apply changes and
+  close the dialog: <Shift-Return>/<Shift-Enter>
+o added hidden preference settin "PickCycleMax" to inhibit pick cycling
+  for large amounts of picking candidates
+o add keyboard shortcuts to call refine/coarsen tools from view windows:
+  <#>/<Shift-#>
+o open/close/refine/coarsen tools now support all (even plugin defined)
+  curve object types (e.g. BCurve)
 
 GUI:
 o improved initial layout process of dialog windows
@@ -39,6 +53,9 @@ o added "candelOb" command to check whether objects can be deleted
 o added "whatis" command to inquire about Tcl objects in the console
 o added Script object example script "extruden.tcl" that extrudes
   arbitrary curves about their mean or manually specified normal
+o renamed "coarsenNC" command to "coarsenC"
+o many scripting interface commands now check their parameters more
+  rigorously for NaN values
 
 Plugins:
 o added custom object/plugin "SDCurve" to model with subdivision curves 
