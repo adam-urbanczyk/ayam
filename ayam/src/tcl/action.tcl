@@ -1791,6 +1791,7 @@ proc actionInsertAndEdit { w x y } {
     $w insertpac $x $y -edit
     selPnts -get index
     if { [llength $index] > 0 } {
+	getProp
 	$w redraw
 	$w setconf -pnts 1
 	$w moveoac -start $x $y
