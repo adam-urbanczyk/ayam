@@ -11478,10 +11478,13 @@ Curves with sharp features may need high values of about 100.
 of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
 </itemize>
 
-<sect3>Conversion Support
+<sect3>Operation Support
 <p><#if out="latex">&nbsp;<newline></#if>
 The superformula curve may be converted to an ordinary NURBS curve using the
 main menu entry <tt>"Tools/Convert"</tt>.
+
+Furthermore, the superformula curve fully supports the revert, refine, and
+coarsen operations.<footnote>Since 1.26.</footnote>
 
 <sect3>RIB Export
 <p><#if out="latex">&nbsp;<newline></#if>
@@ -11498,6 +11501,8 @@ matrix).<footnote>Since 1.25.</footnote>
 The basis defines the interpretation of the control points, similar to the
 bicubic patch mesh primitive of the RenderMan interface, see also
 section <ref id="patchmeshobj" name="PatchMesh Object">.
+The BCurve therefore represents a range of parametric curves
+like B-Spline, Bezier, Catmull-Rom, and Hermite splines.
 <p>
 <figure loc="!ht">
 <eps file="pics/bcurve.ps" height="5cm">
@@ -11549,10 +11554,13 @@ basis type is <tt/"Custom"/.
 
 <#if out="latex"><x/newpage/</#if>
 
-<sect3>Conversion Support
+<sect3>Operation Support
 <p><#if out=latex>&nbsp;<newline></#if>
 The basis curve may be converted to an ordinary NURBS curve using the
 main menu entry <tt>"Tools/Convert"</tt>.
+
+Furthermore, the basis curve fully supports the revert, open, close, refine,
+and coarsen operations.<footnote>Since 1.26.</footnote>
 
 <sect3>RIB Export
 <p><#if out=latex>&nbsp;<newline></#if>
@@ -11620,7 +11628,7 @@ subdivision algorithm.
 
 <#if out="latex"><x/newpage/</#if>
 
-<sect3>Conversion Support
+<sect3>Operation Support
 <p><#if out=latex>&nbsp;<newline></#if>
 The subdivision curve may be converted to an ordinary NURBS curve of
 order 2 using the main menu entry <tt>"Tools/Convert"</tt>.
@@ -11630,6 +11638,9 @@ the provided conversion tool that is accessible via the main menu entry
 <tt>"Custom/SDCurve/From Curve"</tt>. This tool supports NCurve, ICurve,
 and ACurve objects directly, all other curve objects need just to provide
 their points to be supported.
+
+Furthermore, the subdivision curve fully supports the revert, open,
+close, refine, and coarsen operations.
 
 <sect3>RIB Export
 <p><#if out=latex>&nbsp;<newline></#if>
@@ -12143,6 +12154,9 @@ you have to use <tt/"Set new shader."/ instead.
 From version 1.3 on, Ayam also supports shader parsing plugins to allow
 parsing of shaders compiled with different shader compilers, see also
 section <ref id="spplugins" name="Shader Parsing Plugins">.
+<p>
+Finally, since version 1.25, there is a script that parses shader source
+code, see also section <ref id="slxmltcl" name="Shader Parsing">.
 <p>
 <bf>Working with Shaders</bf><label id="workshd">
 <p>
@@ -13509,7 +13523,7 @@ The point selection will be adapted so that the refine tool can be
 applied multiple times.
 <tag/Notes/
 The refine tool can be conveniently invoked from view windows
-using the keyboard shortcut <tt/&lt;#&gt;/.
+using the keyboard shortcut <tt/&lt;#&gt;/.<footnote>Since 1.26.</footnote>
 <p>
 See also the documentation of the corresponding
 scripting interface command <ref id="screfinec" name="refineC">.
@@ -13608,8 +13622,8 @@ custom knot vectors.
 
 The point selection will be removed from the processed objects.
 
-The coarsen tool can be conveniently invoked from view windows
-using the keyboard shortcut <tt/&lt;Shift-#&gt;/.
+The coarsen tool can be conveniently invoked from view windows using the
+keyboard shortcut <tt/&lt;Shift-#&gt;/.<footnote>Since 1.26.</footnote>
 
 See also the documentation of the corresponding
 scripting interface command <ref id="sccoarsenc" name="coarsenC">.
@@ -13899,8 +13913,7 @@ get a custom knot vector.
 
 The new curve(s) will be inserted
 into the level right after the respective curve(s) to split unless
-the append option is set.
-<footnote>Since 1.24.</footnote>
+the append option is set.<footnote>Since 1.24.</footnote>
 
 The point selection will be removed from the original curves.
 
@@ -17687,7 +17700,7 @@ points, only the interval between the first and the
 last of the selected points is affected. For periodic NURBS
 curves, the last <em/p/ intervals are not affected (where <em/p/
 is the degree of the curve).
-<p>
+<item>Notes:
 Prior to Ayam 1.26 this command was named <tt>"coarsenNC"</tt>,
 the old name is still available for compatibility but its
 use is deprecated.
@@ -20172,23 +20185,26 @@ import and export plugin Tcl scripts (e.g.~<tt>"plugins/rrib.tcl"</tt>).
 <p>
 The Tcl script <tt>"slxml.tcl"</tt> switches the shader parsing
 machinery of Ayam to recognize XML based meta information embedded in
-shading language comments. This way, the shader database for the Material
+shading language comments.<footnote>Since 1.25.</footnote>
+This way, the shader database for the Material
 objects can be built up from shading language source files, instead of
 compiled shaders.<newline>
 The XML tags will not be parsed by a real XML parser, so that well
 formedness is not an issue. However, the attributes must be ordered
 in a certain way. To specify a shader, use:
 <tscreen><verb>
-<shader type="stype" name="shadername">
+<shader type="stype" name="sname">
 </verb></tscreen>
-where <tt/stype/ is one of <tt/surface/, <tt/displacement/, <tt/volume/, <tt/light/, <tt/imager/, or <tt/transformation/ and <tt/shadername/ is the file name
-of the shader source file sans extensions.
+where <tt/stype/ is one of <tt/surface/, <tt/displacement/, <tt/volume/, <tt/light/, <tt/imager/, or <tt/transformation/ and <tt/sname/ is the shader name
+that must also match the file name of the shader source file sans extensions.
 <p>
-To specify the shader parameters, use:
+To specify a shader parameter, use a line like:
 <tscreen><verb>
-<argument name="argname" type="atype" value="val">
+<argument name="argname" type="argtype" value="argval">
 </verb></tscreen>
-where <tt/atype/ is one of <tt/float/, <tt/string/, <tt/matrix/, <tt/color/, <tt/point/, <tt/normal/, or <tt/vector/ and <tt/val/ is the default value.
+where <tt/argname/ is the name of the parameter, <tt/argtype/ is one of
+<tt/float/, <tt/string/, <tt/matrix/, <tt/color/, <tt/point/, <tt/normal/,
+or <tt/vector/ and <tt/argval/ is the default value.
 <p>
 See also the following example shader source:
 <code>
@@ -20199,7 +20215,6 @@ See also the following example shader source:
  * <argument name="Kd" type="float" value="0.9">
  * <argument name="ic" type="color" value="0 1 0">
  */
-
 surface myshader(float Ka = 0.5, Kd = 0.9; color ic = color (0, 1, 0);)
 {
   color mycolor;
@@ -20214,7 +20229,9 @@ apply:
 <itemize>
 <item>there can only be one shader per shader source file,
 <item>shader file name and shader name must match,
-<item>shaders for which there is no source code available are not supported,
+<item>shaders for which there is no source code available are not supported
+(unless the parameter information is known, in which case a shader source
+file with matching comment can be faked),
 <item>there is no control over whether the meta data matches the actual
 shader signature,
 <item>there is no control over whether the compiled shader, that is used
