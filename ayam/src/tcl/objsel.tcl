@@ -180,23 +180,33 @@ proc reconsider { Selection } {
     pack $f -in $w -side bottom -fill x
 
     bind $rArray(lb) <<ListboxSelect>> {
-	# Get the node selected by the user
-	set node [lindex $rArray(selection) [$rArray(lb) curselection]]
-	# Go to the corresponding level
-	goLevObjSel $node
-
-	# Get the selected item
-	set object [split $node :]
-	set item [lindex $object end]
-
-	# Put the item in the selection then update the views
 	selOb
-	selOb $item
+	set i [$rArray(lb) curselection]
+	if { $i != "" } {
+	    # Get the node selected by the user
+	    set node [lindex $rArray(selection) $i]
+	    # Go to the corresponding level
+	    goLevObjSel $node
+
+	    # Get the selected item
+	    set object [split $node :]
+	    set item [lindex $object end]
+
+	    # Put the item in the selection then update the views
+	    selOb $item
+	}
 	after idle {rV}
     }
     bind $rArray(lb) <Double-1> {
 	after 200 {.reconsider.f2.bok invoke}
     }
+    bind $rArray(lb) <Home>\
+	"%W see 0 ;%W selection clear 0 end; %W selection set 0;\
+         %W activate 0; event generate %W <<ListboxSelect>>;break"
+    bind $rArray(lb) <End>\
+	"%W see end; %W selection clear 0 end; %W selection set end;\
+         %W activate end; event generate %W <<ListboxSelect>>; break"
+
     # Get the default node (i.e. the first in the list)
     set node [lindex $Selection 0]
     # Go to the corresponding level
