@@ -1043,7 +1043,7 @@ bcurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     case 3:
       /* rebuild from o->selp */
       pnt = o->selp;
-      lastpnt = &o->selp;
+      lastpnt = &(o->selp);
       while(pnt)
 	{
 	  if(pnt->index < (unsigned int)bcurve->length)
