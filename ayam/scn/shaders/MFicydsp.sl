@@ -13,6 +13,9 @@
  * between N and the down vector is smaller than 90
  * to ensure the upper parts of a primitive don't get displaced
  *
+ * <shader type="displacement" name="MFicydsp">
+ * <argument name="icicle_length" type="float" value="0.1">
+ * <argument name="icicle_freq" type="float" value="6.0">
  */
 
 #include "./rmannotes.sl"

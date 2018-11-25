@@ -7,11 +7,17 @@
  * firstcol,seccol: colors of the stripes  
  * Nu: Number of stripes 
  *
+ * <shader type="surface" name="RSstripessrf">
+ * <argument name="Ka" type="float" value="1">
+ * <argument name="Kd" type="float" value="1">
+ * <argument name="firstcol" type="color" value="1 0 0">
+ * <argument name="seccol" type="color" value="1 1 0">
+ * <argument name="Nu" type="float" value="10.0">
  */
 
 surface
-RSstripessrf( float Ka=1, Kd=1;
-	color firstcol = color (1,0,0), seccol=color (1,1,0);
+RSstripessrf( float Ka = 1, Kd = 1;
+	color firstcol = color (1,0,0), seccol = color (1,1,0);
 	float Nu = 10.0)
 {
   color mycolor;

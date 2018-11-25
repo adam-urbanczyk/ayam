@@ -9,6 +9,14 @@
  * Split the icy.sl into a surface and a displacement
  * shader, because BMRT does no displacements in surface
  * shaders...
+ *
+ * <shader type="surface" name="MFicysrf">
+ * <argument name="icicle_length" type="float" value="0.1">
+ * <argument name="icicle_freq" type="float" value="6.0">
+ * <argument name="Ka" type="float" value="0.3">
+ * <argument name="Kd" type="float" value="0.7">
+ * <argument name="Ks" type="float" value="0.9">
+ * <argument name="roughness" type="float" value="0.9">
  */
 
 
