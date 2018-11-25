@@ -483,6 +483,7 @@ sdcurve_createcb(int argc, char *argv[], ay_object *o)
     }
 
   sdcurve->length = 4;
+  sdcurve->level = 2;
 
   if(!(sdcurve->controlv = malloc(3 * sdcurve->length * sizeof(double))))
     {
@@ -783,7 +784,7 @@ sdcurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     case 3:
       /* rebuild from o->selp */
       pnt = o->selp;
-      lastpnt = &o->selp;
+      lastpnt = &(o->selp);
       while(pnt)
 	{
 	  if(pnt->index < (unsigned int)sdcurve->length)
@@ -1073,7 +1074,7 @@ sdcurve_notifycb(ay_object *o)
     free(sdcurve->scontrolv);
   sdcurve->scontrolv = NULL;
 
-  if(sdcurve->level > 0)
+  if(sdcurve->level > 0/* && sdcurve->level < 10*/)
     {
       /* create new subdivision */
       if(!sdcurve->type)
