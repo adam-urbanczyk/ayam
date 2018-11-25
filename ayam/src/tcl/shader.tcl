@@ -89,7 +89,6 @@ proc shader_scanAll { } {
     # foreach
 
     foreach shader $allshaders {
-
 	# strip path from shader-file-name
 	set shdbase [file tail "$shader"]
 	# strip extension (.slc/.slx) from shader-file-name
@@ -110,7 +109,6 @@ proc shader_scanAll { } {
 	    if { $AYUSESLCARGS == 1 } {
 		shaderScanSLC "$shdbase" shaderarguments
 	    }
-
 	    if { $AYUSESLXARGS == 1 } {
 		shaderScanSLX "$shdbase" shaderarguments
 	    }
@@ -118,7 +116,6 @@ proc shader_scanAll { } {
 	# if have sext
 
 	if { $ay_error < 2 } {
-
 	    set shadertype [lindex $shaderarguments 1]
 	    if { $shadertype != "" } {
 		set shadernamelistname ay(${shadertype}shaders)
@@ -330,6 +327,13 @@ proc shader_setNew { win type stype } {
     bind $w <Key-Return> "$f.bok invoke"
     catch { bind $w <Key-KP_Enter> "$f.bok invoke" }
 
+    bind $w.f1.lb <Home>\
+	"%W see 0 ;%W selection clear 0 end; %W selection set 0;\
+         %W activate 0; event generate %W <<ListboxSelect>>;break"
+    bind $w.f1.lb <End>\
+	"%W see end; %W selection clear 0 end; %W selection set end;\
+         %W activate end; event generate %W <<ListboxSelect>>; break"
+
     winRestoreOrCenter $w $t
     grab $w
     focus $w.f1.lb
@@ -350,7 +354,6 @@ proc shader_setNew { win type stype } {
 	if { $AYUSESLCARGS == 1 } {
 	    shaderScanSLC $shadername shaderarguments
 	}
-
 	if { $AYUSESLXARGS == 1 } {
 	    shaderScanSLX $shadername shaderarguments
 	}
