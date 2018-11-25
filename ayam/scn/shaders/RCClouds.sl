@@ -1,6 +1,11 @@
 /* Listing 13.1  An example shader */
 
-/* clouds(): a surface shader for a cloudy surface */
+/* clouds(): a surface shader for a cloudy surface
+ *
+ * <shader type="surface" name="RCClouds">
+ * <argument name="Ka" type="float" value="0.2">
+ * <argument name="Kd" type="float" value="0.8">
+ */
 surface 
 RCClouds( 
       float    Kd=.8, 
