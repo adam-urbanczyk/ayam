@@ -630,6 +630,7 @@ ay_tags_addtcmd(ClientData clientData, Tcl_Interp *interp,
 /** ay_tags_gettcmd:
  *  return all tags of the (first) selected object
  *  Implements the \a getTags scripting interface command.
+ *  Also implements the \a getTag scripting interface command.
  *  See also the corresponding section in the \ayd{scgettags}.
  *
  *  \returns TCL_OK in any case.
@@ -641,18 +642,31 @@ ay_tags_gettcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_tag *tag = NULL;
- int get_single = AY_FALSE;
+ int get_single = AY_FALSE, have_vname = AY_FALSE;
 
   if(argv[0][6] != 's')
     get_single = AY_TRUE;
 
-  if(argc < 3)
+  if(get_single)
     {
-      if(get_single)
-	ay_error(AY_EARGS, argv[0], "type vname");
-      else
-	ay_error(AY_EARGS, argv[0], "vname1 vname2");
-      return TCL_OK;
+      if(argc < 2)
+	{
+	  ay_error(AY_EARGS, argv[0], "type [vname]");
+	  return TCL_OK;
+	}
+
+      if(argc > 2)
+	{
+	  have_vname = AY_TRUE;
+	}
+    }
+  else
+    {
+      if(argc < 3)
+	{
+	  ay_error(AY_EARGS, argv[0], "vname1 vname2");
+	  return TCL_OK;
+	}
     }
 
   if(!sel)
@@ -663,7 +677,8 @@ ay_tags_gettcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!get_single)
     Tcl_SetVar(interp, argv[1], "", TCL_LEAVE_ERR_MSG);
-  Tcl_SetVar(interp, argv[2], "", TCL_LEAVE_ERR_MSG);
+  if(!get_single || have_vname)
+    Tcl_SetVar(interp, argv[2], "", TCL_LEAVE_ERR_MSG);
 
   o = sel->object;
   tag = o->tags;
@@ -675,8 +690,11 @@ ay_tags_gettcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      if(!strcmp(argv[1], tag->name))
 		{
-		  Tcl_SetVar(interp, argv[2], tag->val, TCL_APPEND_VALUE |
-			     TCL_LEAVE_ERR_MSG);
+		  if(have_vname)
+		    Tcl_SetVar(interp, argv[2], tag->val, TCL_APPEND_VALUE |
+			       TCL_LEAVE_ERR_MSG);
+		  else
+		    Tcl_SetResult(interp, tag->val, TCL_VOLATILE);
 		  break;
 		}
 	    }
