@@ -17470,12 +17470,13 @@ tags.
 <label id="scgettag">
 getTag:
 <itemize>
- <item>Synopsis: <tt/"getTag type vname"/
+ <item>Synopsis: <tt/"getTag type [vname]"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Get the value of a specific tag from
 the currently selected object and put it into the designated variable.
 If there is no tag of the specified type, the variable will be set
 to <tt/""/.
+If no variable name is provided, the value of the tag is returned.
 </itemize>
 
 <#if out="latex"><x/phantomsection/</#if>
@@ -17684,8 +17685,6 @@ is the degree of the curve).
 See also section <ref id="refit" name="Refine Tool">.
 </itemize>
 
-<#if out="latex"><x/newpage/</#if>
-
 <p>
 <#if out="latex"><x/phantomsection/</#if>
 
@@ -17723,6 +17722,8 @@ in the old knot vector.
 <p><p>
 See also section <ref id="refknit" name="Refine Knots Tool">.
 </itemize>
+
+<#if out="latex"><x/newpage/</#if>
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
