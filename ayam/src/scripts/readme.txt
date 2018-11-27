@@ -1,4 +1,4 @@
-[readme.txt - 21. Dec 2017]
+[readme.txt - 27. Nov 2018]
 
 This directory contains a collection of various scripts for Ayam.
 
@@ -87,6 +87,7 @@ bendcur.tcl - bend a curve according to the shape of a second curve
 conscir.tcl - create a circular B-Spline whose control points are
  confined to a radial configuration (type: Run)
 crtlinegui.tcl - create line, with GUI (type: Create)
+dualsweep.tcl - create Birail with perpendicular cross section (type: Modify)
 extruden.tcl - create extrusion along normal curve (type: Modify)
 helix.tcl - create helix NURBS curve (type: Create)
 polyhedron.js - create polyhedrons from Conway notation
