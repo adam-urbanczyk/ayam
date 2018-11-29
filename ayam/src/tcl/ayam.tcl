@@ -856,6 +856,9 @@ if { $tcl_platform(platform) == "windows" } {
     set ayviewshortcuts(ZoomI) "plus"
     set ayviewshortcuts(ZoomO) "minus"
 
+    # Win32 does not know the apostrophe keysym
+    set ayviewshortcuts(CoarsenC) "quoteright"
+
     # we use this "emptyimg" for checkbuttons
     image create photo emptyimg
     emptyimg blank
