@@ -23,12 +23,12 @@ o added modelling actions to snap objects to the grid (new shortcuts: <f>/<F>)
 o starting modelling actions via the context menu button (usually the
   rightmost one) now starts the action in point mode
 o likewise, a right click on the modelling mode icon of a view now toggles
-  the modelling action scope
+  the modelling action scope (object/point)
 o added tool to remove all superfluous knots from a NURBS curve
 o added keyboard shortcuts to numeric point edit dialog, focus management:
   <x>, <y>, <z>, <w>, clear all entries: <Shift-Delete>, apply changes and
   close the dialog: <Shift-Return>/<Shift-Enter>
-o added hidden preference settin "PickCycleMax" to inhibit pick cycling
+o added hidden preference setting "PickCycleMax" to inhibit pick cycling
   for large amounts of picking candidates
 o add keyboard shortcuts to call refine/coarsen tools from view windows:
   <#>/<Shift-#>
@@ -42,13 +42,13 @@ o improved startup sequence order for scripts that want to manipulate
 o SDMesh objects now display the number of tags
 o the numeric point edit dialogs now opens immediately if there are
   already selected points when the action is started (shortcut <E>)
-o update via F5 now also redraws views without automatic redraw
+o update via <F5> now also redraws views without automatic redraw
 o improved menu button designation in texture editor
 o clearing the mark is now reported to the console
 
 Scripts/Scripting Interface:
-o added "-have" option to selPnts
-o selPnts can now also return the results
+o added "-have" option to "selPnts" command
+o "selPnts" and "getTag" commands can now also return the results
 o added "candelOb" command to check whether objects can be deleted
 o added "whatis" command to inquire about Tcl objects in the console
 o added Script object example script "extruden.tcl" that extrudes
