@@ -189,10 +189,13 @@ trace add variable ::ay(aboutShowsExt) write "writeproc $w"
 $w.ftext.text tag add "tag3" end-19lines end
 
 $w.ftext.text tag configure tag3 -justify center
+
 # Disabling the text widget (unfortunately) prohibits selection
 # on Win32 so we have to live with the user being able to _modify_
 # the contents of the text widget:
-#$w.ftext.text configure -state disabled
+if { $tcl_platform(platform) != "windows" } {
+    $w.ftext.text configure -state disabled
+}
 
 bind $w <Next> "$w.ftext.text yview scroll 1 pages"
 bind $w <Prior> "$w.ftext.text yview scroll -1 pages"
@@ -208,7 +211,6 @@ button $w.fbutton.bcl -text "CopyClipboard" -pady $ay(pady)\
 	clipboard clear
 	catch {clipboard append [.aboutw.ftext.text get 17.0 "end - 36 lines"] }
     }
-
 
 button $w.fbutton.bca -text "Close" -pady $ay(pady)\
     -command "destroy $w"
