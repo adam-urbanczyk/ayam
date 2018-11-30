@@ -198,10 +198,10 @@ bind $w <Next> "$w.ftext.text yview scroll 1 pages"
 bind $w <Prior> "$w.ftext.text yview scroll -1 pages"
 
 bind $w.ftext.text <ButtonPress-4>\
-"$w.ftext.text yview scroll -1 pages; break"
+"$w.ftext.text yview scroll -4 units; break"
 
 bind $w.ftext.text <ButtonPress-5>\
-"$w.ftext.text yview scroll 1 pages; break"
+"$w.ftext.text yview scroll 4 units; break"
 
 button $w.fbutton.bcl -text "CopyClipboard" -pady $ay(pady)\
     -command {
