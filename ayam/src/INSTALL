@@ -1,4 +1,4 @@
-INSTALL [8. Feb 2018]
+INSTALL [1. Dec 2018]
 
 Compilation Instructions for Ayam
 ---------------------------------
@@ -656,7 +656,7 @@ Load it via menu entry "File/Load Plugin".
 
 
 3.15 Basis Curve Plugin
-------------------------------
+-----------------------
 
 In order to compile the plugin, type:
 >make bcurve.so
@@ -664,7 +664,16 @@ In order to compile the plugin, type:
 Load it via menu entry "File/Load Plugin".
 
 
-3.16 Installing/Uninstalling Ayam
+3.16 Subdivision Curve Plugin
+-----------------------------
+
+In order to compile the plugin, type:
+>make sdcurve.so
+
+Load it via menu entry "File/Load Plugin".
+
+
+3.17 Installing/Uninstalling Ayam
 ---------------------------------
 
 Use
