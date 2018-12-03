@@ -33,7 +33,7 @@ set b [expr { 2.0/3.0 } ]
 set kv [list 0.0 0.0 0.0 $a $a $b $b 1.0 1.0 1.0]
 
 crtOb NCurve -length 7 -order 3 -cn cv -kn kv
-hSL
+sL
 scalOb $TCircleAttrData(Radius) $TCircleAttrData(Radius) 1.0
 
 # tcircle.tcl
