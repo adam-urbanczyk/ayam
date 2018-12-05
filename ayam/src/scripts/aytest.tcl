@@ -109,6 +109,7 @@ proc aytest_selectGUI { } {
     $lb insert end "Test 5 - Modelling Tools"
     $lb insert end "Test 6 - All Solid Object Variations"
     $lb insert end "Test 7 - Custom Objects"
+    $lb insert end "Test 8 - Script Objects"
 
     bind $lb <<ListboxSelect>> "aytest_handleLBS %W"
 
@@ -2610,6 +2611,138 @@ foreach type $types {
 }
 # aytest_7
 
+#
+# Test 8 - Script Objects
+#
+proc aytest_8 { types } {
+set ::types $types
+uplevel #0 {
+puts $log "Testing script objects implementation and callbacks...\n"
+
+array set extruden_1 {
+    precmd {
+	goDown -1;
+	switch $l {
+	    0 { crtClosedBS -s 4; }
+	    1 { crtOb NCircle; }
+	};
+	notifyOb;
+	goUp;
+	hSL
+    }
+    arr ExtrudeNAttrData
+    fixedvars {Height}
+}
+
+lappend extruden_1(fixedvals) { 1.0 }
+lappend extruden_1(fixedvals) { 1.0 }
+
+# these types do not support getPnt (when empty):
+set nopnttypes ""
+#lappend nopnttypes
+
+# these types do not support conversion (or flag errors upon conversion
+# attempts, when empty):
+set noconvtypes ""
+#lappend noconvtypes
+
+set view1 ""
+if { [winfo exists .fv.fViews.fview1.f3D.togl] } {
+    set view1 .fv.fViews.fview1.f3D.togl
+}
+set view2 ""
+if { [winfo exists .fv.fViews.fview2.f3D.togl] } {
+    set view2 .fv.fViews.fview2.f3D.togl
+}
+
+puts -nonewline "Testing "
+foreach type $types {
+    puts -nonewline "${type}, "
+    set aytestprefs(TestItem) "8 - ${type}"
+
+    crtOb Script
+    hSL
+
+    getProp
+    catch [set scfile [open scripts/${type}.tcl r]]
+    if { $scfile != "" } {
+	set script [read $scfile]
+    }
+    set ScriptAttrData(Script) $script
+    set ScriptAttrData(Type) [lindex $aytest_8types \
+			      [lsearch $aytest_8items $type]]
+    setProp
+
+    # create children
+    if { [info exists ${type}_1(precmd)] } {
+	set l 0
+	eval [set ${type}_1(precmd)]
+    }
+
+    # activate the script
+    getProp
+    set ScriptAttrData(Active) 1
+    setProp
+
+    # now test the callbacks
+
+    puts $log "Save...\n"
+    saveScene $scratchfile 1
+
+    puts $log "Read...\n"
+    insertScene $scratchfile
+    catch {file delete $scratchfile}
+
+    puts $log "Export...\n"
+    wrib $scratchfile -selonly
+    catch {file delete $scratchfile}
+
+    if { [winfo exists $view1] } {
+	puts $log "Get BB...\n"
+	$view1 mc
+	$view1 zoomob
+	puts $log "Draw...\n"
+	$view1 mc
+	$view1 redraw
+    }
+
+    if { [winfo exists $view2] } {
+	$view2 mc
+	$view2 zoomob
+	puts $log "Shade...\n"
+	$view2 mc
+	$view2 redraw
+    }
+
+    puts $log "Notify...\n"
+    notifyOb
+
+    puts $log "Select Pnts...\n"
+    selPnts -all
+    selPnts
+    selPnts 0 2
+    selPnts
+
+    puts $log "Convert...\n"
+    convOb
+    convOb -inplace
+
+    # cleanup
+    if { ! $::aytestprefs(KeepObjects) } {
+	delOb
+    }
+
+    if { $::cancelled } {
+	break;
+    }
+    incr i
+}
+# foreach
+
+}
+}
+# aytest_8
+
 
 # aytest_varcmds:
 #  what to do with the object variants
@@ -3071,6 +3204,14 @@ set aytest_6items $items
 set items {}
 lappend items MetaObj SfCurve SDNPatch BCurve SDCurve
 set aytest_7items $items
+
+# set up types to test in test #8
+set items {}
+set types {}
+lappend items cbox tcircle tcone spiral helix extruden
+lappend types 1 1 1 1 1 2
+set aytest_8items $items
+set aytest_8types $types
 
 ###
 
