@@ -2621,21 +2621,57 @@ puts $log "Testing script objects implementation and callbacks...\n"
 
 array set extruden_1 {
     precmd {
-	goDown -1;
+	goDown -1
 	switch $l {
 	    0 { crtClosedBS -s 4; }
 	    1 { crtOb NCircle; }
-	};
-	notifyOb;
-	goUp;
+	}
+	notifyOb
+	goUp
 	hSL
     }
-    arr ExtrudeNAttrData
-    fixedvars {Height}
 }
 
-lappend extruden_1(fixedvals) { 1.0 }
-lappend extruden_1(fixedvals) { 1.0 }
+array set tsurf_1 {
+    precmd {
+	goDown -1
+	crtOb NCurve
+	crtOb NCurve
+	hSL
+	rotOb 0 0 45
+	goUp
+	hSL
+    }
+}
+
+array set dualsweep_1 {
+    precmd {
+	goDown -1
+	crtOb NCurve -length 3 -cv {0 0 1 1  0 0.5 0.5 1  0 1 1 1}
+	crtClosedBS -s 4
+	hSL
+	rotOb 0 90 90
+	copOb
+	pasOb -move
+	hSL
+	movOb 0 1 0
+	goUp
+	hSL
+    }
+}
+
+array set dualsweep_2 {
+    precmd {
+	goDown -1
+	crtClosedBS -s 4
+	crtClosedBS -s 4
+	hSL
+	movOb 0 0 1
+	crtOb NCurve -length 3 -cv {1 0 0 1  2 0 0.5 1  1 0 1 1}
+	goUp
+	hSL
+    }
+}
 
 # these types do not support getPnt (when empty):
 set nopnttypes ""
@@ -3208,8 +3244,8 @@ set aytest_7items $items
 # set up types to test in test #8
 set items {}
 set types {}
-lappend items cbox tcircle tcone spiral helix extruden
-lappend types 1 1 1 1 1 2
+lappend items cbox tcircle tcone spiral helix extruden tsurf dualsweep
+lappend types 1 1 1 1 1 2 2 2
 set aytest_8items $items
 set aytest_8types $types
 
