@@ -856,8 +856,7 @@ if { $tcl_platform(platform) == "windows" } {
     set ayviewshortcuts(ZoomI) "plus"
     set ayviewshortcuts(ZoomO) "minus"
 
-    # Win32 does not know the asciicircum and apostrophe keysyms
-    set ayviewshortcuts(View1) "Multi_key"
+    # Win32 also does not know the apostrophe keysym
     set ayviewshortcuts(CoarsenC) "quoteright"
 
     # we use this "emptyimg" for checkbuttons
@@ -975,6 +974,8 @@ if { $tcl_platform(platform) == "windows" } {
 	set ayviewshortcuts(OSRight) "M1-Key-6"
 
 	set ayviewshortcuts(Reset) "M1-Key-5"
+
+	set ayviewshortcuts(CoarsenC) "quoteright"
 
 	if { $ayprefs(SwapMB) } {
 	    if { $aymainshortcuts(CMButton) == 2 } {
