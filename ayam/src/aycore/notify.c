@@ -36,9 +36,14 @@ static int ay_notify_blockobject = 0;
 
 /* functions: */
 
-/* ay_notify_register:
- *  register the notification callback notcb for
- *  objects of type type_id
+/** ay_notify_register:
+ * register the notification callback \a notcb for
+ * objects of type \a type_id
+ *
+ * \param[in] notcb notification callback
+ * \param[in] type_id object type for which to register the callback (AY_ID...)
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_notify_register(ay_notifycb *notcb, unsigned int type_id)
@@ -52,9 +57,14 @@ ay_notify_register(ay_notifycb *notcb, unsigned int type_id)
 } /* ay_notify_register */
 
 
-/* ay_notify_parent:
- *  call notification callbacks of all parent objects
- *  relative to current level
+/** ay_notify_parent:
+ * call notification callbacks and process BNS/ANS tags of all parent
+ * objects relative to the current level
+ *
+ * This function can also initiate a complete notification if requested
+ * by preferences (CompleteNotify == 1 == always).
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_notify_parent(void)
@@ -102,7 +112,7 @@ ay_notify_parent(void)
 	    }
 	} /* if */
       return ay_status;
-    } /* if */
+    } /* if completenotify */
 
   while(lev)
     {
@@ -123,7 +133,9 @@ ay_notify_parent(void)
 	  while(tag)
 	    {
 	      if(tag->type == ay_bns_tagtype)
-		ay_ns_execute(o, tag);
+		{
+		  ay_ns_execute(o, tag);
+		}
 	      tag = tag->next;
 	    }
 
@@ -155,7 +167,9 @@ ay_notify_parent(void)
 	  while(tag)
 	    {
 	      if(tag->type == ay_ans_tagtype)
-		ay_ns_execute(o, tag);
+		{
+		  ay_ns_execute(o, tag);
+		}
 	      tag = tag->next;
 	    }
 	} /* if */
@@ -171,8 +185,14 @@ ay_notify_parent(void)
 } /* ay_notify_parent */
 
 
-/* ay_notify_object:
- *  call notification callback of object o
+/** ay_notify_object:
+ * Carry out the notification of object \a o.
+ * This includes starting the notification of all children and
+ * processing of BNS/ANS tags.
+ *
+ * \param[in] o object to notify
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_notify_object(ay_object *o)
@@ -200,12 +220,14 @@ ay_notify_object(ay_object *o)
 	}
     }
 
-  /* search for and execute all BNS (before notify) tag(s) */
+  /* search for and execute all BNS (before notify) tag */
   tag = o->tags;
   while(tag)
     {
       if(tag->type == ay_bns_tagtype)
-	ay_ns_execute(o, tag);
+	{
+	  ay_ns_execute(o, tag);
+	}
       tag = tag->next;
     }
 
@@ -232,12 +254,14 @@ ay_notify_object(ay_object *o)
       tag = tag->next;
     }
 
-  /* search for and execute all ANS (after notify) tag(s) */
+  /* search for and execute all ANS (after notify) tag */
   tag = o->tags;
   while(tag)
     {
       if(tag->type == ay_ans_tagtype)
-	ay_ns_execute(o, tag);
+	{
+	  ay_ns_execute(o, tag);
+	}
       tag = tag->next;
     }
 
@@ -245,8 +269,16 @@ ay_notify_object(ay_object *o)
 } /* ay_notify_object */
 
 
-/* ay_notify_parentof:
- *  call notification callback of parents of object o
+/** ay_notify_parentof
+ * Search for the object \a o in the scene while simultaneously creating
+ * a list of parent objects and if the object is found, call
+ * ay_notify_parent() i.e. notify all parents of \a o regardless of the
+ * current level. The current level is then restored.
+ * 
+ * \param[in] o object whose parents are to be notified
+ * \param[in] silent if AY_TRUE no errors are reported to the user
+ * 
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_notify_parentof(ay_object *o, int silent)
@@ -288,12 +320,14 @@ ay_notify_parentof(ay_object *o, int silent)
       if(!silent)
 	{
 	  ay_error(AY_ERROR, fname, "object not found in scene");
-	} /* if */
+	}
       goto cleanup;
-    } /* if */
+    }
 
   if(ay_currentlevel && ay_currentlevel->next && ay_currentlevel->next->object)
-    ay_currentlevel->next->object->modified = AY_TRUE;
+    {
+      ay_currentlevel->next->object->modified = AY_TRUE;
+    }
 
   ay_status = ay_notify_parent();
 
@@ -377,8 +411,8 @@ ay_notify_objecttcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_error(AY_EWARN, argv[0], "Unrecognized argument.");
 	      break;
 	    } /* switch */
-	} /* if */
-    } /* if */
+	} /* if arg is option */
+    } /* if have args */
 
   ay_notify_blockobject = AY_FALSE;
   ay_notify_blockparent = AY_FALSE;
@@ -399,28 +433,26 @@ ay_notify_objecttcmd(ClientData clientData, Tcl_Interp *interp,
 		  if(o->modified)
 		    {
 		      ay_status = ay_notify_object(o);
-
 		      if(ay_status)
 			{
 			  ay_error(AY_ERROR, argv[0], NULL);
-			} /* if */
+			}
 
 		      o->modified = AY_FALSE;
 
 		      notify_parent = AY_TRUE;
-		    }
+		    } /* if modified */
 		}
 	      else
 		{
 		  ay_status = ay_notify_object(o);
-
 		  if(ay_status)
 		    {
 		      ay_error(AY_ERROR, argv[0], NULL);
-		    } /* if */
+		    }
 
 		  notify_parent = AY_TRUE;
-		}
+		} /* if notify_modified */
 	      o = o->next;
 	    } /* while */
 
@@ -438,11 +470,10 @@ ay_notify_objecttcmd(ClientData clientData, Tcl_Interp *interp,
 		  if(sel->object->modified)
 		    {
 		      ay_status = ay_notify_object(sel->object);
-
 		      if(ay_status)
 			{
 			  ay_error(AY_ERROR, argv[0], NULL);
-			} /* if */
+			}
 
 		      if(ay_prefs.completenotify)
 			{
@@ -450,24 +481,23 @@ ay_notify_objecttcmd(ClientData clientData, Tcl_Interp *interp,
 			  if(ay_status)
 			    {
 			      ay_error(AY_ERROR, argv[0], NULL);
-			    } /* if */
+			    }
 			}
 		      else
 			{
 			  notify_parent = AY_TRUE;
-			} /* if */
+			} /* if completenotify */
 
 		      sel->object->modified = AY_FALSE;
-		    } /* if */
+		    } /* if sel->object->modified */
 		}
 	      else
 		{
 		  ay_status = ay_notify_object(sel->object);
-
 		  if(ay_status)
 		    {
 		      ay_error(AY_ERROR, argv[0], NULL);
-		    } /* if */
+		    }
 
 		  if(ay_prefs.completenotify)
 		    {
@@ -475,13 +505,13 @@ ay_notify_objecttcmd(ClientData clientData, Tcl_Interp *interp,
 		      if(ay_status)
 			{
 			  ay_error(AY_ERROR, argv[0], NULL);
-			} /* if */
+			}
 		    }
 		  else
 		    {
 		      notify_parent = AY_TRUE;
-		    } /* if */
-		} /* if */
+		    } /* if completenotify */
+		} /* if notify_modified */
 
 	      sel = sel->next;
 	    } /* while */
@@ -561,8 +591,8 @@ ay_notify_findparents(ay_object *o, ay_object *r, ay_list_object **parents)
 	      newt->is_intern = AY_TRUE;
 	      o->tags = newt;
 	    } /* if */
-	} /* if */
-    } /* if */
+	} /* if found */
+    } /* if have children */
 
  return found;
 } /* ay_notify_findparents */
@@ -663,8 +693,8 @@ ay_notify_complete(ay_object *r)
 		  o->tags = tag->next;
 		  free(tag);
 		}
-	    }
-	}
+	    } /* if */
+	} /* if */
       t = s->next;
       free(s);
       s = t;
@@ -676,8 +706,12 @@ ay_notify_complete(ay_object *r)
 } /* ay_notify_complete */
 
 
-/* ay_notify_block:
+/** ay_notify_block:
+ * Manage blocking of automatic notifications.
  *
+ * \param[in] scope 0 - manage object notifications,
+ *                  1 - manage parent notifications
+ * \param[in] block 0 - remove block, 1 - establish block
  */
 void
 ay_notify_block(int scope, int block)
