@@ -17,7 +17,6 @@
 
 /* global variables for this module: */
 
-
 /*
   NC tags are used to store a counter value per candidate
   parent object that has to be notified. The counter is
@@ -33,6 +32,7 @@ static char *ay_nc_tagname = "NC";
 static int ay_notify_blockparent = 0;
 
 static int ay_notify_blockobject = 0;
+
 
 /* functions: */
 
@@ -274,10 +274,10 @@ ay_notify_object(ay_object *o)
  * a list of parent objects and if the object is found, call
  * ay_notify_parent() i.e. notify all parents of \a o regardless of the
  * current level. The current level is then restored.
- * 
+ *
  * \param[in] o object whose parents are to be notified
  * \param[in] silent if AY_TRUE no errors are reported to the user
- * 
+ *
  * \returns AY_OK on success, error code otherwise.
  */
 int
@@ -527,8 +527,17 @@ ay_notify_objecttcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_notify_objecttcmd */
 
 
-/* ay_notify_findparents:
+/** ay_notify_findparents:
+ * _Recursively_ collect all parents of object \a r _and its instances_
+ * in \a parents.
+ * The return value is only used for controlling the recursion, it
+ * can be safely disregarded by the caller.
  *
+ * \param[in] o current level to process
+ * \param[in] r target object
+ * \param[in,out] parents where the list of parents is constructed
+ *
+ * \returns AY_TRUE if r was found, AY_FALSE else and in error case
  */
 int
 ay_notify_findparents(ay_object *o, ay_object *r, ay_list_object **parents)
@@ -598,8 +607,16 @@ ay_notify_findparents(ay_object *o, ay_object *r, ay_list_object **parents)
 } /* ay_notify_findparents */
 
 
-/* ay_notify_complete:
+/** ay_notify_complete:
+ * Start a complete notification for object \a r.
+ * The complete notification updates all objects in the scene that depend
+ * on object \a r regardless of whether they are parents of \a r or not.
+ * Such dependencies are created by instances.
+ * The complete notification is efficient, i.e. no object is updated twice.
  *
+ * \param[in] r object for which to start the notification
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_notify_complete(ay_object *r)
@@ -628,7 +645,7 @@ ay_notify_complete(ay_object *r)
 
   while(o)
     {
-      ay_notify_findparents(o, r, &l);
+      (void)ay_notify_findparents(o, r, &l);
       o = o->next;
     } /* while */
 
@@ -645,7 +662,7 @@ ay_notify_complete(ay_object *r)
 	      o = ay_root->next;
 	      while(o)
 		{
-		  ay_notify_findparents(o, s->object, &l);
+		  (void)ay_notify_findparents(o, s->object, &l);
 		  o = o->next;
 		} /* while */
 	    } /* if */
@@ -686,7 +703,7 @@ ay_notify_complete(ay_object *r)
 	  o->tags->val = (char*)o->tags->val - 1;
 	  if(o->tags->val == 0)
 	    {
-	      ay_notify_object(o);
+	      (void)ay_notify_object(o);
 	      if(o->tags && (o->tags->type == ay_nc_tagtype))
 		{
 		  tag = o->tags;
@@ -756,13 +773,12 @@ ay_notify_objectsafetcmd(ClientData clientData, Tcl_Interp *interp,
 
       /* call the notification callback */
       if(cb)
-	ay_status = cb(o);
-      else
-	ay_status = AY_OK;
-
-      if(ay_status)
 	{
-	  ay_error(AY_ERROR, argv[0], "notify callback failed");
+	  ay_status = cb(o);
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, argv[0], "notify callback failed");
+	    }
 	}
       sel = sel->next;
     }
@@ -771,8 +787,11 @@ ay_notify_objectsafetcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_notify_objectsafetcmd */
 
 
-/* ay_notify_init:
- *  initialize notification module
+/** ay_notify_init:
+ * Initialize the notification module by registering the NC tag type.
+ *
+ * \param[in] interp Tcl interpreter, currently unused
+ *
  */
 void
 ay_notify_init(Tcl_Interp *interp)
