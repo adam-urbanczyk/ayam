@@ -16476,14 +16476,13 @@ See also section <ref id="instanceobj" name="Instance Object">.
 <tt/"crtOb Sphere; uS; rV"/.
 </itemize>
 
-
+<#if out="html"><f/<inf/<newline>//</#if>
 There are some helper commands, that create certain often used
 curves:
-<p>
-<#if out="latex"><x/phantomsection/</#if>
 
-<label id="sccrtncircle">
-crtNCircle &ndash; create NURBS circle:
+<#if out="latex"><p><x/phantomsection/</#if>
+
+crtNCircle &ndash; create NURBS circle:<label id="sccrtncircle">
 <itemize>
  <item>Synopsis: <tt/"crtNCircle [-r radius] [-a arc]"/
  <item>Background: Yes, Undo: No, Safe: Yes
@@ -16495,9 +16494,10 @@ the arc to 360.0. The arc option supports negative values.
 <p>
 See also section <ref id="ncirct" name="NURB Circle Tool">.
 </itemize>
+
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="sccrtclosedbs">
 crtClosedBS &ndash; create closed (circular) B-Spline:
 <itemize>
@@ -16510,9 +16510,10 @@ radius (defaults to 1.0). The curve always starts on the positive X-axis.
 <p>
 See also section <ref id="cbspt" name="Circular B-Spline Tool">.
 </itemize>
+
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="sccrtnrect">
 crtNRect &ndash; create a rectangular NURBS curve:
 <itemize>
@@ -16524,7 +16525,7 @@ of twice the given width and height in the XY-plane.
 
 <p>
 <#if out="latex"><x/newpage/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="sccrttrimrect">
 crtTrimRect &ndash; create a rectangular bounding trim curve:
 <itemize>
@@ -16540,7 +16541,7 @@ See also section <ref id="trrt" name="TrimRect Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scdelob">
 delOb &ndash; delete object(s):
 <itemize>
@@ -16557,12 +16558,11 @@ will never be moved.
 
 See also the <ref id="sccandelob" name="candelOb scripting interface command">.
 </itemize>
-
 <p>
-<#if out="latex"><x/phantomsection/</#if>
 
 <sect2>Interrogating Objects<label id="scintob">
 <p>
+<#if out="latex"><x/phantomsection/</#if>
 These commands help to inquire objects about various aspects.
 <p>
 <label id="scgettype">
@@ -16580,7 +16580,7 @@ If no varname is specified the command returns the respective result(s).
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scgetname">
 getName:
 <itemize>
@@ -16595,7 +16595,7 @@ If no varname is specified the command returns the respective result(s).
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="schaschild">
 hasChild:
 <itemize>
@@ -16609,7 +16609,7 @@ selected, a list is returned.
 <#if out="latex"><x/newpage/</#if>
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="schasmat">
 hasMat &ndash; has material:
 <itemize>
@@ -16622,7 +16622,7 @@ selected, a list is returned.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="schasrefs">
 hasRefs &ndash; has references:
 <itemize>
@@ -16635,7 +16635,7 @@ If multiple objects are selected, a list is returned.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="sccandelob">
 candelOb &ndash; delete object(s):
 <itemize>
@@ -16648,7 +16648,7 @@ the current level, otherwise <tt/0/ is returned.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="schastrafo">
 hasTrafo &ndash; has transformations:
 <itemize>
@@ -16667,7 +16667,7 @@ attributes.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="sciscurve">
 isCurve:
 <itemize>
@@ -16681,7 +16681,7 @@ If multiple objects are selected, a list is returned.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scissurface">
 isSurface:
 <itemize>
@@ -16696,7 +16696,7 @@ If multiple objects are selected, a list is returned.
 <#if out="latex"><x/newpage/</#if>
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scgetbb">
 getBB &ndash; get the bounding box:
 <itemize>
@@ -16711,7 +16711,7 @@ individual bounding boxes in a list.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scgetnormal">
 getNormal &ndash; get the normal of a curve:
 <itemize>
@@ -16763,7 +16763,7 @@ selects the first two objects in the current level.
 <#if out="latex"><x/newpage/</#if>
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scsl">
 sL &ndash; select last object:
 <itemize>
@@ -16802,7 +16802,7 @@ object creation) will possibly lead to the wrong objects being selected.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="schsl">
 hSL &ndash; hidden select last object:
 <itemize>
@@ -16902,7 +16902,7 @@ See also section
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scsetproperty">
 setProperty &ndash; set single property value
 <itemize>
@@ -16956,9 +16956,10 @@ before this operation.
 If the append option is set, this operation only fails if there is
 not enough memory.
 </itemize>
+
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="sccutob">
 cutOb &ndash; cut object(s):
 <itemize>
@@ -16971,9 +16972,10 @@ before this operation.
  <item>Notes: May fail if the clipboard contains referenced objects.
 If the append option is set, this operation never fails.
 </itemize>
+
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scpasob"><label id="sccmovob"><label id="scpasmovob">
 pasOb &ndash; paste object(s):
 <itemize>
@@ -16990,9 +16992,10 @@ the clipboard is empty and no reference counters will be changed.
  <item>Notes: This operation may fail if the result would be an illegal
 instance configuration (i.e.~recursive references).
 </itemize>
+
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="screpob">
 repOb &ndash; replace clipboard content with selected object(s):
 <itemize>
@@ -17005,9 +17008,10 @@ or single object is replaced.
  <item>Notes: This operation may fail if the result would be an illegal
 instance configuration (i.e.~recursive references).
 </itemize>
+
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scclearclip">
 clearClip &ndash; clear object clipboard:
 <itemize>
@@ -17018,6 +17022,7 @@ clearClip &ndash; clear object clipboard:
 </itemize>
 <p>
 
+<#if out="html"><f/<inf/<newline>//</#if>
 The following procedures operate the property clipboard,
 which is totally independent from the object clipboard.
 <p>
@@ -17040,7 +17045,7 @@ by adding the respective property element names to the global array
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scpclip_paste"><label id="scpasteprop">
 pasteProp &ndash; paste a property
 <itemize>
@@ -17075,7 +17080,7 @@ this level.
 <#if out="latex"><x/newpage/</#if>
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scgoup">
 goUp:
 <itemize>
@@ -17087,7 +17092,7 @@ goUp:
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scgotop">
 goTop:
 <itemize>
@@ -17097,13 +17102,13 @@ goTop:
  <item>Notes: The object selection is <em/not/ synchronized.
 </itemize>
 
-<p>
+
+<#if out="html"><f/<inf/<newline>//</#if>
 The following commands move objects around in the hierarchy:
 
-<#if out="latex"><x/phantomsection/</#if>
+<#if out="latex"><p><x/phantomsection/</#if>
 
-<label id="scupob">
-upOb &ndash; shuffle object(s) backward in the current level:
+upOb &ndash; shuffle object(s) backward in the current level:<label id="scupob">
 <itemize>
  <item>Synopsis: <tt/"upOb"/
  <item>Background: Yes, Undo: No, Safe: Yes
@@ -17119,7 +17124,7 @@ multiple times in a row.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scdownob">
 downOb &ndash; shuffle object(s) forward in the current level:
 <itemize>
@@ -17155,7 +17160,7 @@ objects X-axis, by <tt/dy/ in direction of the objects Y-axis, and by
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scrotob">
 rotOb &ndash; rotate objects:
 <itemize>
@@ -17168,7 +17173,7 @@ objects X-axis, then by <tt/dy/ degrees around objects Y-axis, and finally by
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scscalob">
 scalOb &ndash; scale objects:
 <itemize>
@@ -17184,7 +17189,7 @@ be changed to 1.0 silently.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scmovsel"><label id="scmovpnts">
 movPnts &ndash; move selected points:
 <itemize>
@@ -17197,7 +17202,7 @@ objects X-axis, by <tt/dy/ in direction of the objects Y-axis, and by
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scrotsel"><label id="scrotpnts">
 rotPnts &ndash; rotate selected points:
 <itemize>
@@ -17210,7 +17215,7 @@ by <tt/dz/ degrees around the objects Z-axis. Note the order of the rotations.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scscalsel"><label id="scscalpnts">
 scalPnts &ndash; scale selected points:
 <itemize>
@@ -17226,7 +17231,7 @@ be changed to 1.0 silently.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scdelegtrafo">
 delegTrafo &ndash; delegate transformations:
 <itemize>
@@ -17243,7 +17248,7 @@ parent and child transformation is a shear transformation).
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scapplytrafo">
 applyTrafo &ndash; apply transformations:
 <itemize>
@@ -17261,7 +17266,7 @@ of this object will be reset to the default values.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scnormtrafos">
 normTrafos &ndash; normalize transformation values:
 <itemize>
@@ -17275,7 +17280,7 @@ significant digits specified via the hidden preference setting
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scnormpnts">
 normPnts &ndash; normalize points:
 <itemize>
@@ -17289,7 +17294,7 @@ significant digits specified via the hidden preference setting
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scnormvar">
 normVar &ndash; normalize variable:
 <itemize>
@@ -17329,7 +17334,7 @@ of given type.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scshaderget">
 shaderGet:
 <itemize>
@@ -17376,11 +17381,9 @@ sets or adds a <tt/"RP"/ (remove property) tag to the selected objects
 that hides the Transformations property GUI.
 </enum>
 </itemize>
-<!--
-<#if out="html"><x/<div style="height: 0.7em">&nbsp;</div>/</#if>
- -->
-<label id="scaddtag">
-addTag:
+
+<#if out="html"><f/<inf/<newline>//</#if>
+addTag:<label id="scaddtag">
 <itemize>
  <item>Synopsis: <tt/"addTag type value"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -17404,6 +17407,7 @@ that hides the Transformations property GUI.
 </enum>
 </itemize>
 
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="schastag">
 hasTag:
 <itemize>
@@ -17417,7 +17421,7 @@ is returned.
 <p>
 <#if out="latex"><x/newpage/</#if>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scdeltags">
 delTags:
 <itemize>
@@ -17436,6 +17440,7 @@ removes all <tt>"RP"</tt> tags from the selected objects.
 </enum>
 </itemize>
 
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scgettags">
 getTags:
 <itemize>
@@ -17466,7 +17471,7 @@ tags.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scgettag">
 getTag:
 <itemize>
@@ -17480,7 +17485,7 @@ If no variable name is provided, the value of the tag is returned.
 </itemize>
 
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scregistertag">
 registerTag:
 <itemize>
@@ -17524,7 +17529,7 @@ See also section <ref id="clat" name="Clamp Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scunclampnc">
 unclampNC &ndash; unclamp NURBS curve:
 <itemize>
@@ -17543,7 +17548,7 @@ See also section <ref id="unclat" name="Unclamp Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scextendnc">
 extendNC &ndash; extend NURBS curve:
 <itemize>
@@ -17558,7 +17563,7 @@ See also section <ref id="extendt" name="Extend Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scelevatenc">
 elevateNC &ndash; elevate NURBS curve:
 <itemize>
@@ -17576,7 +17581,7 @@ See also section <ref id="elevt" name="Elevate Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scinsknnc">
 insknNC &ndash; insert knot into NURBS curve:
 <itemize>
@@ -17595,7 +17600,7 @@ See also section <ref id="insknt" name="Insert Knot Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scremknnc">
 remknNC &ndash; remove knot from NURBS curve:
 <itemize>
@@ -17620,9 +17625,10 @@ of lower order.
 <p>
 See also section <ref id="remknt" name="Remove Knot Tool">.
 </itemize>
+
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scremsuknnc">
 remsuknNC &ndash; remove superfluous knots from NURBS curve:
 <itemize>
@@ -17643,7 +17649,7 @@ See also section <ref id="remsuknt" name="Remove Superfluous Knots Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scopenc">
 openC &ndash; open curve:
 <itemize>
@@ -17656,7 +17662,7 @@ See also section <ref id="openct" name="Open Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scclosec">
 closeC &ndash; close curve:
 <itemize>
@@ -17669,7 +17675,7 @@ See also section <ref id="closect" name="Close Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="screfinenc"><label id="screfinec">
 refineC &ndash; refine curve:
 <itemize>
@@ -17687,7 +17693,7 @@ See also section <ref id="refit" name="Refine Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="sccoarsenc">
 coarsenC &ndash; coarsen curve:
 <itemize>
@@ -17709,7 +17715,7 @@ See also section <ref id="coart" name="Coarsen Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="screfineknnc">
 refineknNC &ndash; refine knots of NURBS curve:
 <itemize>
@@ -17727,7 +17733,7 @@ See also section <ref id="refknit" name="Refine Knots Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="screvert"><label id="screvertc">
 revertC &ndash; revert curves:
 <itemize>
@@ -17741,7 +17747,7 @@ See also section <ref id="revertt" name="Revert Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="sctweennc">
 tweenNC &ndash; interpolate (tween) curves:
 <itemize>
@@ -17762,7 +17768,7 @@ See also section <ref id="tweennct" name="Tween Curve Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="screvertu"><label id="screvertus">
 revertuS &ndash; revert surfaces:
 <itemize>
@@ -17776,7 +17782,7 @@ See also section <ref id="revertut" name="Revert U Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="screvertv"><label id="screvertvs">
 revertvS &ndash; revert surfaces:
 <itemize>
@@ -17790,7 +17796,7 @@ See also section <ref id="revertvt" name="Revert V Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scswapuvs">
 swapuvS &ndash; swap dimensions of surfaces:
 <itemize>
@@ -17805,7 +17811,7 @@ See also section <ref id="swapuvt" name="Swap UV Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="screscaleknnc">
 rescaleknNC &ndash; rescale knots of NURBS curves:
 <itemize>
@@ -17829,7 +17835,7 @@ See also section <ref id="resckrt" name="Rescale Knots to Range Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scsplitnc">
 splitNC &ndash; split NURBS curve
 <itemize>
@@ -17849,7 +17855,7 @@ See also section <ref id="splitt" name="Split Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scshiftc">
 shiftC &ndash; shift control points of a (closed) curve:
 <itemize>
@@ -17870,7 +17876,7 @@ See also section <ref id="shiftclc" name="Shift Closed Curve Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="sctoxyc"><label id="sctoxync">
 toXYC &ndash; move curve to XY-plane
 <itemize>
@@ -17885,7 +17891,7 @@ See also section <ref id="toxyt" name="To XY Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="sctrimnc">
 trimNC &ndash; trim NURBS curve
 <itemize>
@@ -17903,7 +17909,7 @@ See also section <ref id="ctrimt" name="Curve Trim Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scestlennc">
 estlenNC &ndash; estimate length of NURBS curve:
 <itemize>
@@ -17923,7 +17929,7 @@ If no varname is specified the command returns the respective result(s).
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="screparamnc">
 reparamNC &ndash; reparameterise a NURBS curve:
 <itemize>
@@ -17936,7 +17942,7 @@ The knot type of the curve will be changed to <tt/"Custom"/.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="sciscompnc">
 isCompNC:
 <itemize>
@@ -17955,7 +17961,7 @@ are compared.
 <p>
 <#if out="latex"><x/newpage/</#if>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scmakecompnc">
 makeCompNC &ndash; make NURBS curves compatible
 <itemize>
@@ -17974,7 +17980,7 @@ See also section <ref id="makecompt" name="Make Compatible Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scclampnpu"><label id="scclampunp">
 clampuNP &ndash; clamp NURBS patch in U direction:
 <itemize>
@@ -18000,7 +18006,7 @@ See also section <ref id="clanpt" name="Clamp Surface Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scclampnpv"><label id="scclampvnp">
 clampvNP &ndash; clamp NURBS patch in V direction:
 <itemize>
@@ -18026,7 +18032,7 @@ See also section <ref id="clanpt" name="Clamp Surface Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scunclampunp">
 unclampuNP &ndash; unclamp NURBS patch in U direction:
 <itemize>
@@ -18047,7 +18053,7 @@ See also section <ref id="unclanpt" name="Unclamp Surface Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scunclampvnp">
 unclampvNP &ndash; unclamp NURBS patch in V direction:
 <itemize>
@@ -18066,7 +18072,7 @@ See also section <ref id="unclanpt" name="Unclamp Surface Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="screscaleknnp">
 rescaleknNP &ndash; rescale knots of NURBS patches:
 <itemize>
@@ -18095,7 +18101,7 @@ of the selected NURBS patch objects to the new range (0.2, 0.3).
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scinsknnpu"><label id="scinsknunp">
 insknuNP &ndash; insert knot into NURBS patch:
 <itemize>
@@ -18116,7 +18122,7 @@ See also section <ref id="insknnpt" name="Insert Knot Surface Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scinsknnpv"><label id="scinsknvnp">
 insknvNP &ndash; insert knot into NURBS patch:
 <itemize>
@@ -18137,7 +18143,7 @@ See also section <ref id="insknnpt" name="Insert Knot Surface Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scremknunp">
 remknuNP &ndash; remove u knot from NURBS surface:
 <itemize>
@@ -18163,7 +18169,7 @@ See also section <ref id="remknnpt" name="Remove Knot Surface Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scremknvnp">
 remknvNP &ndash; remove v knot from NURBS surface:
 <itemize>
@@ -18189,7 +18195,7 @@ See also section <ref id="remknnpt" name="Remove Knot Surface Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="screfineunp">
 refineuNP &ndash; refine NURBS surface in U direction:
 <itemize>
@@ -18206,7 +18212,7 @@ See also section <ref id="refinest" name="Refine Knots Surface Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="screfinevnp">
 refinevNP &ndash; refine NURBS surface in V direction:
 <itemize>
@@ -18225,7 +18231,7 @@ See also section <ref id="refinest" name="Refine Knots Surface Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scelevateunp">
 elevateuNP &ndash; elevate NURBS surface in U direction:
 <itemize>
@@ -18241,7 +18247,7 @@ See also section <ref id="elevuvt" name="Elevate Surface Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scelevatevnp">
 elevatevNP &ndash; elevate NURBS surface in V direction:
 <itemize>
@@ -18257,7 +18263,7 @@ See also section <ref id="elevuvt" name="Elevate Surface Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scsplitnpu"><label id="scsplitunp">
 splituNP &ndash; split NURBS patch:
 <itemize>
@@ -18277,7 +18283,7 @@ See also section <ref id="splitnpt" name="Split Surface Tools">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scsplitnpv"><label id="scsplitvnp">
 splitvNP &ndash; split NURBS patch:
 <itemize>
@@ -18297,7 +18303,7 @@ See also section <ref id="splitnpt" name="Split Surface Tools">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scextrnp">
 extrNP &ndash; extract NURBS patch:
 <itemize>
@@ -18314,7 +18320,7 @@ See also section <ref id="extrnpt" name="Extract Patch Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scinterpunp">
 interpuNP &ndash; interpolate NURBS surface in U direction:
 <itemize>
@@ -18348,7 +18354,7 @@ See also section <ref id="interpnpt" name="Interpolate Surface Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scinterpvnp">
 interpvNP &ndash; interpolate NURBS surface in V direction:
 <itemize>
@@ -18384,7 +18390,7 @@ See also section <ref id="interpnpt" name="Interpolate Surface Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scconcats">
 concatS &ndash; concatenate surfaces:
 <itemize>
@@ -18409,7 +18415,7 @@ for more information on these options.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="sctweennp">
 tweenNP &ndash; interpolate (tween) surfaces:
 <itemize>
@@ -18428,7 +18434,7 @@ See also section <ref id="tweennpt" name="Tween Surfaces Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scbreaknp">
 breakNP &ndash; break NURBS patch into curves:
 <itemize>
@@ -18449,7 +18455,7 @@ See also section <ref id="breaknpt" name="Break into Curves Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scbuildnp">
 buildNP &ndash; build NURBS patch from curves:
 <itemize>
@@ -18479,7 +18485,7 @@ See also section <ref id="buildnpt" name="Build from Curves Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="sciscompnp">
 isCompNP:
 <itemize>
@@ -18500,7 +18506,7 @@ compared.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scmakecompnp">
 makeCompNP &ndash; make NURBS surfaces compatible
 <itemize>
@@ -18524,7 +18530,7 @@ See also section <ref id="makecompst" name="Make Compatible Tool">.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="sctobasispm">
 tobasisPM &ndash; convert PatchMesh to a different
 basis:
@@ -18560,6 +18566,7 @@ See also section <ref id="basist" name="Basis Tool">.
 converts the selected bicubic patch meshes to the Bezier basis.
 </itemize>
 
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="sctobasisbc">
 tobasisBC &ndash; convert BCurve objects to a different
 basis:
@@ -18617,7 +18624,7 @@ The generated normals will be stored in a PV tag.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scgensnPo">
 gensnPo &ndash; generate smooth normals:
 <itemize>
@@ -18638,7 +18645,7 @@ normals will be generated using the same algorithm as implemented in the
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scremsnPo">
 remsnPo &ndash; remove smooth normals:
 <itemize>
@@ -18650,7 +18657,7 @@ PolyMesh object(s).
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scflipPo">
 flipPo &ndash; flip normals or loops:
 <itemize>
@@ -18724,7 +18731,7 @@ coordinate values to the variables <tt/"x y z"/.
 <p>
 <#if out="latex"><x/newpage/</#if>
 <#if out="latex"><p><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 setPnt &ndash; set point(s):<label id="scsetpnt">
 <itemize>
  <item>Synopsis:
@@ -18795,7 +18802,7 @@ iconified views and views where automatic redraw has been turned off.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scus">
 uS &ndash; update select:
 <itemize>
@@ -18831,7 +18838,7 @@ the command <tt/"uCL cl"/ may be used instead of <tt/"uS"/.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scucl">
 uCL &ndash; update current level:
 <itemize>
@@ -18845,7 +18852,7 @@ operation mode, and "cs" just clears the selection.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scucr">
 uCR &ndash; update current level after create:
 <itemize>
@@ -18858,7 +18865,7 @@ the current level. See also the discussion of <tt/"uS"/ above.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scplb_update">
 plb_update &ndash; property listbox update:
 <itemize>
@@ -18895,6 +18902,7 @@ getPrefs &ndash; get preferences data:
 
 
 <p><label id="scsetprefs">
+<#if out="html"><f/<inf/<newline>//</#if>
 setPrefs &ndash; set preferences data:
 <itemize>
  <item>Synopsis: <tt/"setPrefs"/
@@ -18996,7 +19004,7 @@ may just modify existing objects.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scwithob">
 withOb &ndash; execute a command on certain selected object(s):
 <itemize>
@@ -19038,7 +19046,7 @@ the most recently used list. Furthermore, automatic import is not working.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scinsertscene">
 insertScene:
 <itemize>
@@ -19055,7 +19063,7 @@ does <em/not/ modify the scene changed state.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scsavescene">
 saveScene:
 <itemize>
@@ -19075,7 +19083,7 @@ saving of window geometries are not working.
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scnewscene">
 newScene:
 <itemize>
@@ -19196,6 +19204,8 @@ section <ref id="scriptobjex" name="Script Object Examples">.
 <bf><tt>"set w [addPropertyGUI MyProperty]"</tt></bf>
 </itemize>
 
+<#if out="html"><f/<inf/<newline>//</#if>
+
 The following procedures add user interface elements to the
 property GUIs created by <tt/"addPropertyGUI"/.
 
@@ -19224,7 +19234,7 @@ additional drop down menu on the right side of the interface element.
 <p>
 <#if out="latex"><x/newpage/</#if>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 addString:
 <itemize>
  <item>Synopsis: <tt>"addString window arrayname paramname [defaults]"</tt>
@@ -19249,6 +19259,7 @@ clear the string entry field and move the input focus to the field.
 <bf><tt>"addString $w MyPropertyData MyString {"a" "b" "abc"}"</tt></bf>
 </itemize>
 
+<#if out="html"><f/<inf/<newline>//</#if>
 addCheck:
 <itemize>
  <item>Synopsis: <tt>"addCheck window arrayname paramname [onoffvalues]"</tt>
@@ -19271,6 +19282,7 @@ enabled or disabled. The default values are 0 and 1.
 <bf><tt>"addCheck $w MyPropertyData MyBool"</tt></bf>
 </itemize>
 
+<#if out="html"><f/<inf/<newline>//</#if>
 addColor:
 <itemize>
  <item>Synopsis: <tt>"addColor window arrayname paramname [defaults]"</tt>
@@ -19296,7 +19308,7 @@ additional drop down menu on the right side of the interface element.
 <p>
 <#if out="latex"><x/newpage/</#if>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 addMatrix:
 <itemize>
  <item>Synopsis: <tt>"addMatrix window arrayname paramname"</tt>
@@ -19317,6 +19329,7 @@ The individual matrix value variable names will be formed by appending a
 <bf><tt>"addMatrix $w MyPropertyData MyMatrix"</tt></bf>
 </itemize>
 
+<#if out="html"><f/<inf/<newline>//</#if>
 addMenu:
 <itemize>
  <item>Synopsis: <tt>"addMenu window arrayname paramname choices"</tt>
@@ -19344,6 +19357,7 @@ before this procedure is called.
 <bf><tt>"addMenu $w MyPropertyData MyMenu {Choice1 Choice2}"</tt></bf>
 </itemize>
 
+<#if out="html"><f/<inf/<newline>//</#if>
 addFile:
 <itemize>
  <item>Synopsis: <tt>"addFile window arrayname paramname [defaults]"</tt>
@@ -19371,7 +19385,7 @@ meant to be used for saving: <tt>"addSFile"</tt>
 <p>
 <#if out="latex"><x/newpage/</#if>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 addCommand:
 <itemize>
  <item>Synopsis: <tt>"addCommand window name text command"</tt>
@@ -19393,7 +19407,7 @@ button is pushed.
 <bf><tt>"addCommand $w b1 PushMe {puts pushed}"</tt></bf>
 </itemize>
 
-
+<#if out="html"><f/<inf/<newline>//</#if>
 addText:
 <itemize>
  <item>Synopsis: <tt>"addText window name text"</tt>
@@ -19412,7 +19426,7 @@ The <tt/"text"/ parameter is the string to be displayed.
 <bf><tt>"addText $w t1 "Angular Parameters:""</tt></bf>
 </itemize>
 
-
+<#if out="html"><f/<inf/<newline>//</#if>
 addInfo:
 <itemize>
  <item>Synopsis: <tt>"addInfo window arrayname paramname"</tt>
@@ -19441,7 +19455,7 @@ more complex information can be presented.
 
 <#if out="latex"><x/newpage/</#if>
 <#if out="latex"><x/phantomsection/</#if>
-
+<#if out="html"><f/<inf/<newline>//</#if>
 addProgress:
 <itemize>
  <item>Synopsis: <tt>"addProgress window arrayname paramname"</tt>
@@ -19462,6 +19476,7 @@ the progress is stored in percent.
 </itemize>
 
 
+<#if out="html"><f/<inf/<newline>//</#if>
 addVSpace:
 <itemize>
  <item>Synopsis: <tt>"addVSpace window name height"</tt>
@@ -19480,6 +19495,7 @@ The <tt/"height"/ parameter is the desired height in pixels.
 <bf><tt>"addVSpace $w v1 20"</tt></bf>
 </itemize>
 
+<#if out="html"><f/<inf/<newline>//</#if>
 addOptionToggle:
 <itemize>
  <item>Synopsis: <tt>"addOptionToggle window arrayname paramname text cmd"</tt>
@@ -19539,7 +19555,7 @@ convOb:
  <item>Synopsis: <tt>"convOb [-inplace [type] | -check type]"</tt>
  <item>Background: Yes, Undo: depends (if -inplace: Yes), Safe: Yes
  <item>Description: This command calls the registered converter
-for the selected object(s).
+for the selected objects which usually creates new objects of a different type.
 <p><p>
 If the option <tt>"-inplace"</tt> is
 used, the new object(s) will replace the old object(s).
@@ -19556,12 +19572,9 @@ checked, not multi step conversions as carried out by in-place conversions
 with target type.
 </itemize>
 
-<p>
-<#if out="latex"><x/newpage/</#if>
-<#if out="latex"><x/phantomsection/</#if>
-
-<label id="scundo">
-undo:
+<#if out="latex"><x/newpage/<p><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
+undo:<label id="scundo">
 <itemize>
  <item>Synopsis: <tt>"undo [redo | save opname [0|1] | clear | rewind]"</tt>
  <item>Background: Yes, Undo: Yes, Safe: No
@@ -19603,12 +19616,9 @@ if { $ay_error > 1 } {
 <item>Notes: See also section <ref id="undos" name="The Undo System">.
 </itemize>
 
-<p>
-<#if out="latex"><x/phantomsection/</#if>
-<#if out="latex"><x/newpage/</#if>
-
-<label id="scruntool">
-runTool:
+<#if out="latex"><x/newpage/<p><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
+runTool:<label id="scruntool">
 <itemize>
  <item>Synopsis: <tt>"runTool vars labels commands title [doc]"</tt>
  <item>Background: Yes, Undo: No, Safe: No, Type: Procedure
@@ -19672,12 +19682,9 @@ NURBS curve(s) on the choosen side(s).
 </enum>
 </itemize>
 
-<p>
-<#if out="latex"><x/phantomsection/</#if>
-<#if out="latex"><x/newpage/</#if>
-
-<label id="scnotifyob">
-notifyOb:
+<#if out="latex"><x/newpage/<p><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
+notifyOb:<label id="scnotifyob">
 <itemize>
  <item>Synopsis: <tt>"notifyOb [-all | -modified | -parent]"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes<f><sup>&lowast;</sup></f>
@@ -19709,11 +19716,9 @@ this command ignores all parameters.
 See also section <ref id="toolobj" name="The Modelling Concept Tool-Objects">.
 </itemize>
 
-<p>
-<#if out="latex"><x/phantomsection/</#if>
-
-<label id="scnameob">
-nameOb:
+<#if out="latex"><p><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
+nameOb:<label id="scnameob">
 <itemize>
  <item>Synopsis: <tt>"nameOb name"</tt>
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -19721,11 +19726,9 @@ nameOb:
 selected object(s).
 </itemize>
 
-<p>
-<#if out="latex"><x/phantomsection/</#if>
-
-<label id="scsetmark">
-setMark:
+<#if out="latex"><p><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
+setMark:<label id="scsetmark">
 <itemize>
  <item>Synopsis: <tt>"setMark [x y z]"</tt>
  <item>Background: Yes, Undo: No, Safe: No, Type: Procedure
@@ -19739,8 +19742,9 @@ See also section <ref id="markac" name="Setting the Mark">.
 <bf><tt>"setMark 0 0 0"</tt></bf>
 </itemize>
 
-<label id="sctmpget">
-tmpGet:
+<#if out="latex"><p><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
+tmpGet:<label id="sctmpget">
 <itemize>
  <item>Synopsis: <tt>"tmpGet tmpdir varname [ext]"</tt>
  <item>Background: Yes, Undo: No, Safe: No
@@ -19749,13 +19753,9 @@ file in tmpdir and puts the complete name (with the optionally present
 extension appended) into the variable designated by varname.
 </itemize>
 
-<#if out="latex"><x/newpage/</#if>
-
-<p>
-<#if out="latex"><x/phantomsection/</#if>
-
-<label id="scwhatis">
-whatis:
+<#if out="latex"><x/newpage/<p><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
+whatis:<label id="scwhatis">
 <itemize>
  <item>Synopsis: <tt>"whatis this"</tt>
  <item>Background: Yes, Undo: N/A, Safe: No, Type: Procedure
@@ -19772,8 +19772,9 @@ leads to the output:
 </verb></tscreen>
 </itemize>
 
-<label id="scaddtoproc">
-addToProc:
+<#if out="latex"><p><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
+addToProc:<label id="scaddtoproc">
 <itemize>
  <item>Synopsis: <tt>"addToProc procedure addition"</tt>
  <item>Background: Yes, Undo: No, Safe: No, Type: Procedure
