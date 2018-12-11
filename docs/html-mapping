@@ -300,11 +300,11 @@
 <inf>			"<SUB>"
 </inf>			"</SUB>"
 
-<unl>			"<UNL>"
-</unl>			"</UNL>"
+<unl>			"<font style=\"text-decoration: underline;\">"
+</unl>			"</font>"
 
-<ovl>			"<OVL>"
-</ovl>			"</OVL>"
+<ovl>			"<font style=\"text-decoration: overline;\">"
+</ovl>			"</font>"
 
 <rf>			"<RF>"
 </rf>			"</RF>"
