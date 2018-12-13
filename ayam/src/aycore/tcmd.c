@@ -128,6 +128,7 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp *interp,
  ay_acurve_object *acurve = NULL;
  ay_icurve_object *icurve = NULL;
  ay_nurbcurve_object *ncurve = NULL;
+ ay_concatnc_object *cc = NULL;
  ay_voidfp *arr = NULL;
  ay_genericcb *cb = NULL;
 
@@ -181,6 +182,13 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp *interp,
 	      o->modified = AY_TRUE;
 	      notify_parent = AY_TRUE;
 	    }
+	  break;
+	case AY_IDCONCATNC:
+	  cc = (ay_concatnc_object *)o->refine;
+	  cc->revert = !cc->revert;
+	  ay_notify_object(o);
+	  o->modified = AY_TRUE;
+	  notify_parent = AY_TRUE;
 	  break;
 	default:
 	  arr = ay_tcmd_revertcbt.arr;
@@ -2217,7 +2225,6 @@ ay_tcmd_refinetcmd(ClientData clientData, Tcl_Interp *interp,
  ay_acurve_object *ac;
  double *Qw;
  int notify_parent = AY_FALSE, coarsen = AY_FALSE, Qwlen;
-
 
   /* distinguish between
      refineC and coarsenC */
