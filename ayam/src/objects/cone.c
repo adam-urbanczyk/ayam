@@ -993,7 +993,7 @@ ay_cone_convertcb(ay_object *o, int in_place)
 	{ free(new->refine); free(new); return ay_status; }
 
       t = new->down;
-      while(t->next)
+      while(t && t->next)
 	{
 	  t = t->next;
 	}
