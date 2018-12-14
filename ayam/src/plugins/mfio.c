@@ -713,15 +713,16 @@ ay_mfio_readpolygon(MF3DVoidObjPtr object)
   pomesh->npolys = 1;
 
   if(!(pomesh->nloops = calloc(1, sizeof(unsigned int))))
-    return AY_EOMEM;
+    { free(pomesh); return AY_EOMEM; }
   pomesh->nloops[0] = 1;
 
   if(!(pomesh->nverts = calloc(1, sizeof(unsigned int))))
-    return AY_EOMEM;
+    { free(pomesh->nloops); free(pomesh); return AY_EOMEM; }
   pomesh->nverts[0] = o->nVertices;
 
   if(!(pomesh->verts = calloc(o->nVertices, sizeof(unsigned int))))
-    return AY_EOMEM;
+    { free(pomesh->nverts); free(pomesh->nloops);
+      free(pomesh); return AY_EOMEM; }
 
   for(i = 0; i < o->nVertices; i++)
     {
@@ -729,7 +730,8 @@ ay_mfio_readpolygon(MF3DVoidObjPtr object)
     } /* for */
 
   if(!(pomesh->controlv = calloc(o->nVertices * 3, sizeof(double))))
-    return AY_EOMEM;
+    { free(pomesh->verts); free(pomesh->nverts); free(pomesh->nloops);
+      free(pomesh); return AY_EOMEM; }
 
   a = 0;
   for(i = 0; i < o->nVertices; i++)
@@ -817,7 +819,8 @@ ay_mfio_readtriangle(MF3DVoidObjPtr object)
   pomesh->controlv[8] = (double)(o->vertex3.z);
 
   if(!(newo = calloc(1, sizeof(ay_object))))
-    { free(pomesh); return AY_EOMEM; }
+    { free(pomesh->controlv); free(pomesh->verts); free(pomesh->nverts);
+      free(pomesh->nloops); free(pomesh); return AY_EOMEM; }
 
   ay_object_defaults(newo);
   newo->type = AY_IDPOMESH;
