@@ -13247,6 +13247,8 @@ points unless the order is 2 (see the right curve in the image above,
 which was created with an arc value of 180.0, 10 sections, and order 4).
 </descrip>
 
+<#if out="latex"><x/newpage/</#if>
+
 <sect2>NURBCircle Tool<label id="ncirct">
 <p>
 <figure loc="ht">
@@ -13407,7 +13409,10 @@ by these tools.
 </figure>
 <descrip>
 <tag/Arguments/ The revert tool takes all NCurve,
-ICurve, and ACurve objects from the selection.
+ICurve, ACurve, NCircle, and ConcatNC objects from the selection.
+In addition, plugin defined curve object types can support the
+revert operation.<footnote>Since 1.26.</footnote>
+
 <tag/Operation/ The direction of the selected curves will be
 reversed. This tool also reverts the relative knot distances
 of NURBS curves
@@ -13448,6 +13453,9 @@ surfaces <ref id="revertut" name="Revert U Surface Tool"> and
 <descrip>
 <tag/Arguments/ The open tool takes all NCurve,
 ICurve, ACurve, and ConcatNC objects from the selection.
+In addition, plugin defined curve object types can support the
+open operation.<footnote>Since 1.26.</footnote>
+
 <tag/Operation/ The curves will be opened.
 For closed NCurve objects, the last point will be moved away from
 the first (multiple end points will be managed correctly),
@@ -13466,15 +13474,26 @@ See also the documentation of the corresponding
 scripting interface command <ref id="scopenc" name="openC">.
 </descrip>
 
+<#if out="latex"><x/newpage/</#if>
+
 <sect2>Close Tool<label id="closect">
 <p>
+<figure loc="ht">
+<eps file="pics/closec.ps" height="4cm">
+<img src="pics/closec.gif">
+<caption>Close Tool (l: Open Curve, r: Closed Curve)</caption>
+</figure>
 <descrip>
 <tag/Arguments/ The close tool takes all NCurve,
 ICurve, ACurve, and ConcatNC objects from the selection.
+In addition, plugin defined curve object types can support the
+close operation.<footnote>Since 1.26.</footnote>
+
 <tag/Operation/ The curves will be closed.
 For NCurve objects the last point will be made identical to
 the first, however, this does not guarantee a closed curve
-shape unless the knot vector is clamped.
+shape unless the knot vector is clamped,
+see also the image above.
 
 For ACurve, ICurve, and ConcatNC objects the <tt/"Closed"/ attribute
 will be set and no control points will be modified.
@@ -13485,6 +13504,8 @@ using the keyboard shortcut <tt/&lt;)&gt;/.
 See also the documentation of the corresponding
 scripting interface command <ref id="scclosec" name="closeC">.
 </descrip>
+
+<#if out="latex"><x/newpage/</#if>
 
 <sect2>Refine Tool<label id="refit">
 <p>
@@ -13497,6 +13518,9 @@ scripting interface command <ref id="scclosec" name="closeC">.
 <tag/Arguments/ The refine tool takes all NCurve,
 ICurve, and ACurve objects from the selection.
 <footnote>ICurve and ACurve since 1.21.</footnote>
+In addition, plugin defined curve object types can support the
+refine operation.<footnote>Since 1.26.</footnote>
+
 <tag/Operation/ The selected curves will be refined by inserting
 a control point in the middle of each control point interval, changing
 the shape of the curve. The original control points will not be changed.
@@ -13593,6 +13617,8 @@ and the related tool for
 surfaces <ref id="refinewst" name="Refine Knots With Surface Tool">.
 </descrip>
 
+<#if out="latex"><x/newpage/</#if>
+
 <sect2>Coarsen Tool<label id="coart">
 <p>
 <figure loc="ht">
@@ -13604,6 +13630,9 @@ surfaces <ref id="refinewst" name="Refine Knots With Surface Tool">.
 <tag/Arguments/ The coarsen tool takes all NCurve,
 ICurve, and ACurve objects from the selection.
 <footnote>ICurve and ACurve since 1.26.</footnote>
+In addition, plugin defined curve object types can support the
+coarsen operation.<footnote>Since 1.26.</footnote>
+
 <tag/Operation/ Every second control point in the control vectors of
 the selected curves will be deleted. If the new length of the
 curve would be smaller than the current order, the coarsen tool
@@ -13628,6 +13657,8 @@ keyboard shortcut <tt/&lt;Shift-#&gt;/.<footnote>Since 1.26.</footnote>
 See also the documentation of the corresponding
 scripting interface command <ref id="sccoarsenc" name="coarsenC">.
 </descrip>
+
+<#if out="latex"><x/newpage/</#if>
 
 <sect2>Elevate Tool<label id="elevt">
 <p>
@@ -13656,6 +13687,8 @@ scripting interface command <ref id="scelevatenc" name="elevateNC">
 and the related tool for
 surfaces <ref id="elevuvt" name="Elevate Surface Tool">.
 </descrip>
+
+<#if out="latex"><x/newpage/</#if>
 
 <sect2>Extend Tool<label id="extendt">
 <p>
@@ -13687,6 +13720,8 @@ The point selection will be removed from the processed objects.
 See also the documentation of the corresponding
 scripting interface command <ref id="scextendnc" name="extendNC">.
 </descrip>
+
+<#if out="latex"><x/newpage/</#if>
 
 <sect2>Clamp Tool<label id="clat">
 <p>
@@ -13720,6 +13755,8 @@ scripting interface command <ref id="scclampnc" name="clampNC">
 and the related tool for
 surfaces <ref id="clanpt" name="Clamp Surface Tool">.
 </descrip>
+
+<#if out="latex"><x/newpage/</#if>
 
 <sect2>Unclamp Tool<label id="unclat">
 <p>
@@ -13761,6 +13798,8 @@ and the related tool for
 surfaces <ref id="unclanpt" name="Unclamp Surface Tool">.
 </descrip>
 
+<#if out="latex"><x/newpage/</#if>
+
 <sect2>Insert Knot Tool<label id="insknt">
 <p>
 <figure loc="ht">
@@ -13778,7 +13817,6 @@ and an integer value <it/i/.
 times into the knot vector of the selected curves, without changing the
 shape of the curves.
 
-
 <tag/Notes/ The knot type of the curves will be changed to <tt/"Custom"/.
 
 The point selection will be removed from the processed objects.
@@ -13788,6 +13826,8 @@ scripting interface command <ref id="scinsknnc" name="insknNC">
 and the related tool for
 surfaces <ref id="insknnpt" name="Insert Knot Surface Tool">.
 </descrip>
+
+<#if out="latex"><x/newpage/</#if>
 
 <sect2>Remove Knot Tool<label id="remknt">
 <p>
@@ -13827,6 +13867,8 @@ scripting interface command <ref id="scremknnc" name="remknNC">
 and the related tool for
 surfaces <ref id="remknnpt" name="Remove Knot Surface Tool">.
 </descrip>
+
+<#if out="latex"><x/newpage/</#if>
 
 <sect2>Remove Superfluous Knots Tool<label id="remsuknt">
 <p>
@@ -13889,6 +13931,8 @@ scripting interface command <ref id="scconcatnc" name="concatNC">.
 -->
 </descrip>
 
+<#if out="latex"><x/newpage/</#if>
+
 <sect2>Split Tool<label id="splitt">
 <p>
 <figure loc="ht">
@@ -13923,6 +13967,8 @@ and the related tool for
 surfaces <ref id="splitnpt" name="Split Surface Tool">.
 </descrip>
 
+<#if out="latex"><x/newpage/</#if>
+
 <sect2>Curve Trim Tool<label id="ctrimt">
 <p>
 <figure loc="ht">
@@ -13946,6 +13992,8 @@ See also the documentation of the corresponding
 scripting interface command <ref id="sctrimnc" name="trimNC">.
 </descrip>
 
+<#if out="latex"><x/newpage/</#if>
+
 <sect2>Plot Curvature Tool<label id="plotcurt">
 <p>
 <figure loc="ht">
@@ -13963,6 +14011,8 @@ NURBS curves. The curvature plots will have a length defined by the
 number of data points and will be scaled to the specified width
 and by the specified height value. See also the image above.
 </descrip>
+
+<#if out="latex"><x/newpage/</#if>
 
 <sect2>Shift Closed Curve Tool<label id="shiftclc">
 <p>
@@ -13993,6 +14043,8 @@ See also the documentation of the corresponding
 scripting interface command <ref id="scshiftc" name="shiftC">.
 </descrip>
 
+<#if out="latex"><x/newpage/</#if>
+
 <sect2>To XY Tool<label id="toxyt">
 <p>
 <figure loc="ht">
@@ -14021,6 +14073,8 @@ current transformation attributes to the control points of the curves.
 See also the documentation of the corresponding
 scripting interface command <ref id="sctoxyc" name="toXYC">.
 </descrip>
+
+<#if out="latex"><x/newpage/</#if>
 
 <sect2>Make Compatible Tool<label id="makecompt">
 <p>
@@ -14051,6 +14105,8 @@ scripting interface command <ref id="scmakecompnc" name="makeCompNC">
 and the related tool for
 surfaces <ref id="makecompst" name="Make Compatible Tool">.
 </descrip>
+
+<#if out="latex"><x/newpage/</#if>
 
 <sect2>Rescale Knots to Range Tool<label id="resckrt">
 <p>
@@ -14896,6 +14952,8 @@ all original control points with the desired interpolation order <em/o/.
 See also the image above.
 
 <tag/Notes/
+The weight information of the original patches will be ignored.
+
 The point selection will be removed from the original objects.
 
 See also the documentation of the corresponding scripting interface commands
@@ -16558,7 +16616,7 @@ will never be moved.
 
 See also the <ref id="sccandelob" name="candelOb scripting interface command">.
 </itemize>
-<p>
+
 
 <sect2>Interrogating Objects<label id="scintob">
 <p>
@@ -16571,10 +16629,10 @@ getType:
  <item>Synopsis: <tt>"getType [varname]"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: This command writes the type of the
-selected object into the variable designated by the varname argument.
+selected object into the variable designated by the <tt/varname/ argument.
 The types are the well known strings that are displayed in the hierarchy
 list box if the objects are not named (NPatch, NCurve, Sphere, etc.).
-If no varname is specified the command returns the respective result(s).
+If no variable name is specified the command returns the respective result(s).
 <footnote>Since 1.25.</footnote>
 </itemize>
 
@@ -16587,10 +16645,12 @@ getName:
  <item>Synopsis: <tt>"getName [varname]"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: This command writes the name of the
-selected object into the variable designated by the varname
+selected object into the variable designated by the <tt/varname/
 argument.
-If no varname is specified the command returns the respective result(s).
+If no variable name is specified the command returns the respective result(s).
 <footnote>Since 1.25.</footnote>
+<newline>
+See also section <ref id="scnameob" name="nameOb scripting interface command">.
 </itemize>
 
 <p>
@@ -17347,7 +17407,6 @@ or <tt/"interior"/. The shader data will be written to an associative
 array pointed to by <tt/varname/.
 </itemize>
 
-<p>
 <#if out="latex"><x/newpage/</#if>
 
 <sect2>Manipulating Tags<label id="scitags">
@@ -17494,7 +17553,6 @@ registerTag:
  <item>Description: This command registers the designated tag type.
 </itemize>
 
-<p>
 <#if out="latex"><x/newpage/</#if>
 
 <sect2>Manipulating NURBS Curves and Surfaces<label id="scinurbs">
@@ -17878,11 +17936,11 @@ See also section <ref id="shiftclc" name="Shift Closed Curve Tool">.
 <#if out="latex"><x/phantomsection/</#if>
 <#if out="html"><f/<inf/<newline>//</#if>
 <label id="sctoxyc"><label id="sctoxync">
-toXYC &ndash; move curve to XY-plane
+toXYC &ndash; rotate curve to XY-plane
 <itemize>
  <item>Synopsis: <tt/"toXYC"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: moves the control points of the selected NCurve,
+ <item>Description: rotates the control points of the selected planar NCurve,
 ACurve, and ICurve objects to their respective XY-plane, modifying
 the transformation attributes accordingly.
 <p><p>
@@ -17923,7 +17981,7 @@ created.<newline>
 If the optional parameter <tt/"-trafo"/ is given, the transformation
 attributes of the curve will be applied to the control points for the
 length estimation.<newline>
-If no varname is specified the command returns the respective result(s).
+If no variable name is specified the command returns the respective result(s).
 <footnote>Since 1.25.</footnote>
 </itemize>
 
@@ -18600,7 +18658,6 @@ See also section <ref id="basist" name="Basis Tool">.
 converts the selected basis curves to the Bezier basis.
 </itemize>
 
-<p>
 <#if out="latex"><x/newpage/</#if>
 <#if out="latex"><x/phantomsection/</#if>
 
@@ -18669,7 +18726,6 @@ loops will be flipped. If the parameter is 1, only the normals are
 reversed. If the parameter is 2, only the loops are reversed.
 </itemize>
 
-<p>
 <#if out="latex"><x/newpage/</#if>
 <#if out="latex"><x/phantomsection/</#if>
 
@@ -19723,7 +19779,9 @@ nameOb:<label id="scnameob">
  <item>Synopsis: <tt>"nameOb name"</tt>
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: This command sets the name of the
-selected object(s).
+selected object(s).<newline>
+See also
+section <ref id="scgetname" name="getName scripting interface command">.
 </itemize>
 
 <#if out="latex"><p><x/phantomsection/</#if>
@@ -19750,7 +19808,7 @@ tmpGet:<label id="sctmpget">
  <item>Background: Yes, Undo: No, Safe: No
  <item>Description: This command calculates a name for a temporary
 file in tmpdir and puts the complete name (with the optionally present
-extension appended) into the variable designated by varname.
+extension appended) into the variable designated by <tt/varname/.
 </itemize>
 
 <#if out="latex"><x/newpage/<p><x/phantomsection/</#if>
@@ -20088,7 +20146,6 @@ All other, <em/internal/ scripts may be combined arbitrarily except for
 <tt/"kdialog.tcl"/, <tt/"zdialog.tcl"/, and <tt/"intfd.tcl"/,
 which are mutually exclusive.
 
-
 <sect2>Repair Ayam<label id="repayam">
 <p>
 The <em/external/ Tcl script <tt>"repairAyam.tcl"</tt>
@@ -20147,7 +20204,6 @@ The <em/external/ script <tt>"aytest.tcl"</tt> allows to test the
 Ayam implementation by creating objects with various combinations
 of parameters and executing standard operations and modelling actions
 on them.
-
 
 <sect2>Use Ayam as Command Line Converter<label id="bgconverttcl">
 <p>
@@ -20396,7 +20452,6 @@ There are also two corresponding entries in the custom menu.
 Note that the tags can be saved to scene files and also copied
 to different objects.
 
-
 <sect2>Revert Cursor Key Behavior<label id="rctcl">
 <p>
 The script <tt>"rc.tcl"</tt> (for <bf/r/evert <bf/c/ursor) may be
@@ -20410,7 +20465,6 @@ and panning in parallel views are swapped, e.g.~just pressing
 The shortcuts will be swapped again, when the view changes
 type to <tt/"Perspective"/.
 
-
 <sect2>Access Core Functions from the Toolbox<label id="zaptcl">
 <p>
 The script <tt>"zap.tcl"</tt> demonstrates, how arbitrary core
@@ -20422,7 +20476,6 @@ After running the script <tt>"zap.tcl"</tt>, there will be a new
 toolbox button, labeled <tt>"Zap!"</tt>, that simply runs the zap
 command (which iconifies the complete application).
 
-
 <sect2>Switch Dialogs to Kdialog<label id="kdialogtcl">
 <p>
 The script <tt>"kdialog.tcl"</tt> switches all file dialogs of
@@ -20431,7 +20484,6 @@ of the native Tk file dialog.<newline>
 The script also adds a custom main menu entry to revert any
 changes.
 
-
 <sect2>Switch Dialogs to Zenity<label id="zdialogtcl">
 <p>
 The script <tt>"zdialog.tcl"</tt> switches all file dialogs of
@@ -20439,7 +20491,6 @@ Ayam to use the zenity application of the Gnome project instead
 of the native Tk file dialog.<newline>
 The script also adds a custom main menu entry to revert any
 changes.
-
 
 <sect2>Switch File Dialogs to Tcl<label id="intfdtcl">
 <p>
@@ -20451,7 +20502,6 @@ of the native file dialogs provided by the operating system.
 The script also adds a custom main menu entry to revert any
 changes.
  -->
-
 
 <sect2>Use Aqsis from Application Directory<label id="useaqsisapptcl">
 <p>
@@ -20467,7 +20517,6 @@ Note that the script does not change the <tt>"RIB-Export/Renderer"</tt>
 preferences, you still have to switch to Aqsis using the main menu
 <tt>"Special/Select Renderer"</tt> once.
 
-
 <sect2>Use Pixie from Library Directory<label id="usepixietcl">
 <p>
 The script <tt>"usepixie.tcl"</tt> sets up Ayam to use Pixie
@@ -20481,7 +20530,6 @@ be set up properly.
 Note that the script does not change the <tt>"RIB-Export/Renderer"</tt>
 preferences, you still have to switch to Pixie using the main menu
 <tt>"Special/Select Renderer"</tt> once.
-
 
 <sect2>Replace Icons<label id="myiconstcl">
 <p>
@@ -20500,7 +20548,6 @@ Action icon variants (e.g.~for the scale about actions) can also be created
 automatically by changing the <tt/"createVariants"/ variable in
 the script file.
 
-
 <sect2>Dynamic Tree<label id="dtreetcl">
 <p>
 The script <tt>"dtree.tcl"</tt> (dynamic/fast tree) replaces some of
@@ -20518,7 +20565,6 @@ with many objects in long lists becomes much faster for operations that
 require tree updates. However, operations like opening or closing
 sub trees or even just scrolling in the tree will become a bit slower,
 as canvas items need to be created constantly.
-
 
 <sect2>Control Vertex View<label id="cvviewtcl">
 <p>
@@ -20802,7 +20848,8 @@ These are the parameters of the cylindrical box:
 
 In contrast to the standard Box object, the cylindrical box converts
 to a single NURBS patch. However, this patch has poles and, consequently,
-shading artefacts may appear on the top and down side.
+shading artefacts may appear on the top and down side. Texturing this
+object is also challenging.
 
 An example scene file containing such an object is distributed with Ayam,
 see the file:<newline>
@@ -22032,7 +22079,7 @@ dxfio plugin must be loaded using the menu entry
 <p>
 Note that the entire DXF file is read into memory before any geometry is
 created.
-<p>
+
 <sect2>DXF Entity Support
 <p>
 The DXF import plugin supports reading of the following DXF entities:
@@ -22641,7 +22688,6 @@ child objects. The object hierarchy:
 </verb></tscreen>
 for instance, leads to two objects in the Rhino file
 named <tt>"Arm/MySphere"</tt> and <tt>"Arm/MyCylinder"</tt>.
-<p>
 
 <sect2>3DM Export Options<label id="exp3dmopt">
 <p>
@@ -22701,7 +22747,7 @@ Start importing from a Web3D X3D file using the menu entry
 (if this menu entry is not available, the
 x3dio plugin must be loaded using the menu entry
 <tt>"File/Load Plugin"</tt> first).
-<p>
+
 <sect2>X3D Element Support
 <p>
 The import functionality of the x3dio plugin currently covers
@@ -26001,13 +26047,14 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>rV: <ref id="scrv" name="scripting interface command">
 </list>
 
-<#if out="latex"><x/phantomsection/</#if>
+<#if out="latex"><x/newpage/</#if>
 <p>
 &nbsp;<newline>&nbsp;
-<label id="indexs"><tt/&nbsp;&nbsp;<bf/S//
+<tt/&nbsp;&nbsp;<bf/S//
 <list>
+<#if out="latex"><x/phantomsection/</#if>
 <item>SafeAutoFocus: <ref id="hidprefss" name="hidden preference setting">
-<item>Samples: <ref id="lip" name="Light attribute">
+<item>Samples: <ref id="lip" name="Light attribute"><label id="indexs">
 <item>Samples_X: <ref id="rio" name="RenderMan interface option">
 <item>Samples_Y: <ref id="rio" name="RenderMan interface option">
 <item>Save: <ref id="mmfile" name="main menu entry">
