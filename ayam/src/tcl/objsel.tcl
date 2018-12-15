@@ -202,7 +202,7 @@ proc reconsider { Selection } {
     }
     bind $rArray(lb) <Home>\
 	"%W see 0 ;%W selection clear 0 end; %W selection set 0;\
-         %W activate 0; event generate %W <<ListboxSelect>>;break"
+         %W activate 0; event generate %W <<ListboxSelect>>; break"
     bind $rArray(lb) <End>\
 	"%W see end; %W selection clear 0 end; %W selection set end;\
          %W activate end; event generate %W <<ListboxSelect>>; break"
