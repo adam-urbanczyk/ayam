@@ -1488,8 +1488,11 @@ proc editPointDialog { win {dragsel 0} } {
     # establish misc keyboard bindings
     editPointDialogBind $w
 
-    foreach e {x y z w} {
-	bind $w <$e> "focus $w.f1.f$e.e"
+    foreach e {x y z w}	{
+	bind $w <$e> "\
+          if \{ \"\[winfo parent %W\]\" != \"$w.f1\" \} \{\
+            focus $w.f1.f$e.e;\
+	  \}"
     }
 
     focus $f.bok
