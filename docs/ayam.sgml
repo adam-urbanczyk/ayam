@@ -1979,7 +1979,7 @@ button.<footnote>Since 1.26.</footnote><newline>
 Furthermore, the type of the view will be displayed in the upper left
 corner of the icon as letter <bf/<tt/F//, <bf/<tt/S//, <bf/<tt/T//, or
 <bf/<tt/P// for front, side, top, or perspective views, respectively.
-Views of type trim get no designating letter in the icon.
+Views of type <tt/Trim/ get no designating letter in the icon.
 See also the image below:
 <p>
 <figure loc="ht">
@@ -13296,7 +13296,6 @@ the radius of the circle determines the thickness.
 piecewise linear, planar, centered NURBS curve of
 rectangular shape and twice the specified width and height
 in the XY-plane (see also the image above).
-
 <tag/Notes/
 The created curve will be marked as closed and the generation
 of multiple points will be enabled, so that point edit actions know that
@@ -13366,7 +13365,6 @@ the second curve (the latter is using a ratio of 1&thinsp;-&thinsp;<em/r/).
 </verb></tscreen>
 If a third curve is selected, the parameter <em/r/ is ignored and this
 third curve defines the ratio of influence with its y coordinates.
-
 <tag/Notes/ The two curves must be of the same length and order.
 They need not be defined on the same knot vector, however.
 
@@ -13412,7 +13410,6 @@ by these tools.
 ICurve, ACurve, NCircle, and ConcatNC objects from the selection.
 In addition, plugin defined curve object types can support the
 revert operation.<footnote>Since 1.26.</footnote>
-
 <tag/Operation/ The direction of the selected curves will be
 reversed. This tool also reverts the relative knot distances
 of NURBS curves
@@ -13455,7 +13452,6 @@ surfaces <ref id="revertut" name="Revert U Surface Tool"> and
 ICurve, ACurve, and ConcatNC objects from the selection.
 In addition, plugin defined curve object types can support the
 open operation.<footnote>Since 1.26.</footnote>
-
 <tag/Operation/ The curves will be opened.
 For closed NCurve objects, the last point will be moved away from
 the first (multiple end points will be managed correctly),
@@ -13488,7 +13484,6 @@ scripting interface command <ref id="scopenc" name="openC">.
 ICurve, ACurve, and ConcatNC objects from the selection.
 In addition, plugin defined curve object types can support the
 close operation.<footnote>Since 1.26.</footnote>
-
 <tag/Operation/ The curves will be closed.
 For NCurve objects the last point will be made identical to
 the first, however, this does not guarantee a closed curve
@@ -13520,7 +13515,6 @@ ICurve, and ACurve objects from the selection.
 <footnote>ICurve and ACurve since 1.21.</footnote>
 In addition, plugin defined curve object types can support the
 refine operation.<footnote>Since 1.26.</footnote>
-
 <tag/Operation/ The selected curves will be refined by inserting
 a control point in the middle of each control point interval, changing
 the shape of the curve. The original control points will not be changed.
@@ -13604,7 +13598,6 @@ New control points will be added and the position of old control points
 may be changed in the progress.
 The resulting knot vector must be valid, otherwise an error will
 be reported and the respective curve is not changed.
-
 <tag/Notes/ Note that the shapes
 of the curves do not change, but the position of
 certain control points does.
@@ -13674,7 +13667,6 @@ the selection and additionally requests an integer value.
 <tag/Operation/ The order of the selected NURBS curves will be raised
 by the specified integer value without changing the shape of the curve.
 See also the example image above.
-
 <tag/Notes/ If the knot vector of the curve is not clamped, it
 will be clamped automatically. The knot type of the curve will
 be changed to <tt/"Custom"/. New control points will be added and the position
@@ -13708,7 +13700,6 @@ If the knot vector of a curve is not clamped at the end, it
 will be clamped automatically. The knot type of each curve will be
 changed to custom. A new control point will be added and the position
 of old control points may be changed in the progress.
-
 <tag/Notes/
 Due to the constraints that only one control point will be added
 to the curve and the current shape must be maintained, the new curve
@@ -13733,14 +13724,12 @@ scripting interface command <ref id="scextendnc" name="extendNC">.
 <descrip>
 <tag/Arguments/ The clamp tool takes a number of NURBS curves from
 the selection.
-
 <tag/Operation/ The knot vectors of the selected NURBS curves will be
 changed using knot insertion so that the first and the last knot
 have a multiplicity equal to the order of the curve,
 without changing the shape of the curve. The curve will
 interpolate the first and the last control point afterwards (unless
 the weights of those points are not 1.0).
-
 <tag/Notes/ The knot type of the curves will be changed to <tt/"Custom"/.
 
 The point selection will be removed from the processed objects.
@@ -13768,7 +13757,6 @@ surfaces <ref id="clanpt" name="Clamp Surface Tool">.
 <descrip>
 <tag/Arguments/ The unclamp tool takes a number of NURBS curves from
 the selection.
-
 <tag/Operation/ The knot vectors of the selected NURBS curves will be
 changed so that there are no multiple knots at the respective ends
 of the knot vectors. The shape of the curve will not change but the
@@ -13812,11 +13800,9 @@ inserted one time at <em/u/&thinsp;=&thinsp;0.5)</caption>
 <tag/Arguments/ The insert knot tool takes a number of NURBS curves from
 the selection and requests two additional values, a parametric value <it/u/
 and an integer value <it/i/.
-
 <tag/Operation/ A knot with the specified value <it/u/ will be inserted <it/i/
 times into the knot vector of the selected curves, without changing the
 shape of the curves.
-
 <tag/Notes/ The knot type of the curves will be changed to <tt/"Custom"/.
 
 The point selection will be removed from the processed objects.
@@ -13841,7 +13827,6 @@ at <em/t/&thinsp;=&thinsp;0.5 has been removed one time)</caption>
 <tag/Arguments/ The remove knot tool takes a number of NURBS curves from
 the selection and requests three additional values, a parametric value <it/t/,
 an integer value <it/r/, and a tolerance value <it/tol/.
-
 <tag/Operation/ The knot at the specified parametric value <it/t/ will
 be removed <it/r/ times from the knot vector of the selected curves if
 the shape of the resulting curve does not deviate more than <it/tol/
@@ -13883,7 +13868,6 @@ at <em/t/&thinsp;=&thinsp;0.5 has been removed one time)</caption>
 <descrip>
 <tag/Arguments/ The remove superfluous knots tool takes a number of NURBS
 curves from the selection and requests a tolerance value <it/tol/.
-
 <tag/Operation/ All knots that do not contribute to the shape of the
 curve will be removed from the knot vector of the selected curves if
 the shape of the resulting curve does not deviate more than <it/tol/
@@ -14035,7 +14019,6 @@ point will get the coordinates of the former last control point.
 This means, positive shifts occur in the direction of the curve.
 Note that for closed and periodic NURBS curves, the multiple points will
 be managed correctly.
-
 <tag/Notes/ Eventually selected points will still be selected after this
 operation. See also the image above.
 
@@ -14172,7 +14155,6 @@ on how to select (tag) control points).
 <tag/Operation/ The points forming the selected multiple points will
 be made to simple points again and may be edited separately.
 The shape of the curve/surface will not change.
-
 <tag/Notes/ The control points should immediately be edited (i.e.~moved
 apart) after exploding, to avoid that they automatically collapse to a
 multiple point again, as Ayam will re-create the multiple points on
@@ -14545,7 +14527,6 @@ the second patch (the latter is using a ratio of 1&thinsp;-&thinsp;<em/r/).
 If a third surface is selected, the parameter <em/r/ is ignored and this
 third surface defines the ratio of influence with its y
 coordinates.<footnote>Since 1.25.</footnote>
-
 <tag/Notes/ The two patches must be of the same width, height,
 uorder, and vorder.
 They need not be defined on the same knot vectors, however.
@@ -14622,7 +14603,6 @@ IPatch, BPatch, or PatchMesh objects from the selection.
 <tag/Operation/ The U and V dimension of the selected objects will
 be swapped (width, height, and all other dimension related parameters
 will be exchanged) without altering the shape of the patches.
-
 <tag/Notes/
 The point selection will be removed from the original objects.
 
@@ -14700,7 +14680,6 @@ to the new knot vector:<newline>
 
 The resulting knot vector must be valid, otherwise an error will
 be reported and the respective patch is not changed.
-
 <tag/Notes/ The respective knot type of the patch may
 be changed to <tt/"Custom"/.
 
@@ -14734,7 +14713,6 @@ New control points will be added and the position
 of old control points may be changed in the progress.
 See also the example image above where a surface of order 4 has been
 elevated to order 5 in U direction.
-
 <tag/Notes/ If the knot vector of the patch is not clamped, it
 will be clamped automatically.
 
@@ -14803,7 +14781,6 @@ changed so that there are no multiple knots at the respective ends
 of the knot vectors. The shape of the patches will not change but the
 position of some control points will. The knot types of the patches may
 be changed to type <tt/"Custom"/.
-
 <tag/Notes/
 Unclamping is <em/not/ an exact reversal of clamping (and vice versa).
 
@@ -14950,7 +14927,6 @@ patches from the selection and requests an additional parameter <em/o/.
 <tag/Operation/ The patches will be modified so that they interpolate
 all original control points with the desired interpolation order <em/o/.
 See also the image above.
-
 <tag/Notes/
 The weight information of the original patches will be ignored.
 
@@ -15261,7 +15237,6 @@ a PolyMesh (via a NURBS patch).
 <p>
 If <tt/"Cancel"/ is used, the dialog will be closed
 and all selected objects remain unchanged.
-
 <tag/Notes/ The tesselation tool will block most other parts of Ayam
 while it is running, i.e.~it is not possible to change the selection
 or run other tools. It is, however, allowed to adjust view parameters
@@ -17713,7 +17688,7 @@ openC &ndash; open curve:
 <itemize>
  <item>Synopsis: <tt/"openC"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Open a NCurve, ACurve, ICurve, or ConcatNC object.
+ <item>Description: Open the selected curve objects.
 <p><p>
 See also section <ref id="openct" name="Open Tool">.
 </itemize>
@@ -17726,7 +17701,7 @@ closeC &ndash; close curve:
 <itemize>
  <item>Synopsis: <tt/"closeC"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Close a NCurve, ACurve, ICurve, or ConcatNC object.
+ <item>Description: Close the selected curve objects.
 <p><p>
 See also section <ref id="closect" name="Close Tool">.
 </itemize>
@@ -17740,7 +17715,7 @@ refineC &ndash; refine curve:
  <item>Synopsis: <tt/"refineC"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Refine the control vector of the selected
-NCurve, ICurve, and ACurve objects, changing the shapes of the curves.
+curve objects, changing the shapes of the curves.
 If a curve has selected points, only the interval between the first and the
 last of the selected points is refined. For periodic NURBS
 curves, the last <em/p/ intervals are not refined (where <em/p/
@@ -17758,7 +17733,7 @@ coarsenC &ndash; coarsen curve:
  <item>Synopsis: <tt/"coarsenC"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Remove every second control point from the
-selected NCurve, ICurve, and ACurve objects. If a curve has selected
+selected curve objects. If a curve has selected
 points, only the interval between the first and the
 last of the selected points is affected. For periodic NURBS
 curves, the last <em/p/ intervals are not affected (where <em/p/
@@ -17797,8 +17772,7 @@ revertC &ndash; revert curves:
 <itemize>
  <item>Synopsis: <tt/"revertC"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Revert the direction of the selected NURBS,
-interpolating, and approximating curves.
+ <item>Description: Revert the direction of the selected curve objects.
 <p><p>
 See also section <ref id="revertt" name="Revert Tool">.
 </itemize>
