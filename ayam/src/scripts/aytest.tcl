@@ -1762,7 +1762,7 @@ uplevel #0 {
 set lengths {4 5 6}
 
 array set Revert {
-    types { NCurve ICurve ACurve NCircle }
+    types { NCurve ICurve ACurve NCircle ConcatNC }
     command { revertC }
 }
 
@@ -1819,8 +1819,8 @@ array set InsertK2 {
 array set RemoveK {
     types { NCurve }
     command {
-	getProp;
-	set kn [lindex $::NCurveAttrData(Knots) $::NCurveAttrData(Order)];
+	getProp
+	set kn [lindex $::NCurveAttrData(Knots) $::NCurveAttrData(Order)]
 	# set kn 1 => CRASH
 	remknNC $kn 1 Inf
     }
@@ -1829,8 +1829,8 @@ array set RemoveK {
 array set RemoveKS {
     types { NCurve }
     command {
-	getProp;
-	set kn [lindex $::NCurveAttrData(Knots) $::NCurveAttrData(Order)];
+	getProp
+	set kn [lindex $::NCurveAttrData(Knots) $::NCurveAttrData(Order)]
 	# set kn 1 => CRASH
 	remknNC $kn 1 0.0
     }
@@ -1867,8 +1867,8 @@ array set RemoveKI1S {
 array set RemoveKIEnd {
     types { NCurve }
     command {
-	getProp;
-	set kn [expr $::NCurveAttrData(Length)+$::NCurveAttrData(Order)-1];
+	getProp
+	set kn [expr $::NCurveAttrData(Length)+$::NCurveAttrData(Order)-1]
 	remknNC -i $kn 1 Inf
     }
 }
@@ -1876,8 +1876,8 @@ array set RemoveKIEnd {
 array set RemoveKIEndS {
     types { NCurve }
     command {
-	getProp;
-	set kn [expr $::NCurveAttrData(Length)+$::NCurveAttrData(Order)-1];
+	getProp
+	set kn [expr $::NCurveAttrData(Length)+$::NCurveAttrData(Order)-1]
 	remknNC -i $kn 1 0.0
     }
 }
@@ -1885,25 +1885,40 @@ array set RemoveKIEndS {
 array set TrimNC {
     types { NCurve }
     command {
-	getProp;
+	getProp
 	set index [expr $::NCurveAttrData(Order)-1]
-	set k1 [lindex $::NCurveAttrData(Knots) $index];
-	incr index;
-	set k2 [lindex $::NCurveAttrData(Knots) $index];
+	set k1 [lindex $::NCurveAttrData(Knots) $index]
+	incr index
+	set k2 [lindex $::NCurveAttrData(Knots) $index]
 	set kn1 [expr {$k1+($k2-$k1)*0.25}]
 	set kn2 [expr {$k1+($k2-$k1)*0.75}]
 	trimNC $kn1 $kn2
     }
 }
 
+array set TweenNC {
+    types { NCurve }
+    command {
+	set index [getSel]
+	copOb
+	pasOb -move
+	hSL
+	movOb 0.1 0.1 0.0
+	rotOb 0.0 0.0 30.0
+	selOb $index [expr {$index+1}]
+	tweenNC
+	selOb $index [expr {$index+1}] [expr {$index+2}]
+    }
+}
+
 array set SplitNC {
     types { NCurve }
     command {
-	getProp;
+	getProp
 	set index [expr $::NCurveAttrData(Order)-1]
-	set k1 [lindex $::NCurveAttrData(Knots) $index];
-	incr index;
-	set k2 [lindex $::NCurveAttrData(Knots) $index];
+	set k1 [lindex $::NCurveAttrData(Knots) $index]
+	incr index
+	set k2 [lindex $::NCurveAttrData(Knots) $index]
 	set kn [expr {$k1+($k2-$k1)*0.5}]
 	splitNC $kn; hSL; delOb; hSL
     }
@@ -1912,11 +1927,11 @@ array set SplitNC {
 array set SplitNPU {
     types { NPatch }
     command {
-	getProp;
+	getProp
 	set index [expr $::NPatchAttrData(Order_U)-1]
-	set k1 [lindex $::NPatchAttrData(Knots_U) $index];
-	incr index;
-	set k2 [lindex $::NPatchAttrData(Knots_U) $index];
+	set k1 [lindex $::NPatchAttrData(Knots_U) $index]
+	incr index
+	set k2 [lindex $::NPatchAttrData(Knots_U) $index]
 	set kn [expr {$k1+($k2-$k1)*0.5}]
 	splituNP $kn; hSL; delOb; hSL
     }
@@ -1925,11 +1940,11 @@ array set SplitNPU {
 array set SplitNPV {
     types { NPatch }
     command {
-	getProp;
+	getProp
 	set index [expr $::NPatchAttrData(Order_V)-1]
-	set k1 [lindex $::NPatchAttrData(Knots_V) $index];
-	incr index;
-	set k2 [lindex $::NPatchAttrData(Knots_V) $index];
+	set k1 [lindex $::NPatchAttrData(Knots_V) $index]
+	incr index
+	set k2 [lindex $::NPatchAttrData(Knots_V) $index]
 	set kn [expr {$k1+($k2-$k1)*0.5}]
 	splitvNP $kn; hSL; delOb; hSL
     }
@@ -2157,8 +2172,8 @@ array set InsertK2VNP {
 array set RemoveKUNP {
     types { NPatch }
     command {
-	getProp;
-	set kn [lindex $::NPatchAttrData(Knots_U) $::NPatchAttrData(Order_U)];
+	getProp
+	set kn [lindex $::NPatchAttrData(Knots_U) $::NPatchAttrData(Order_U)]
 	remknuNP $kn 1 Inf
     }
 }
@@ -2173,8 +2188,8 @@ array set RemoveKIUNP {
 array set RemoveKVNP {
     types { NPatch }
     command {
-	getProp;
-	set kn [lindex $::NPatchAttrData(Knots_V) $::NPatchAttrData(Order_V)];
+	getProp
+	set kn [lindex $::NPatchAttrData(Knots_V) $::NPatchAttrData(Order_V)]
 	remknvNP $kn 1 Inf
     }
 }
@@ -2660,6 +2675,7 @@ array set dualsweep_1 {
     }
 }
 
+# CRASH
 array set dualsweep_2 {
     precmd {
 	goDown -1
@@ -3216,8 +3232,10 @@ lappend items RefineK InsertK InsertK2 RemoveK RemoveKI RemoveKS RemoveKIS
 lappend items RemoveKI1 RemoveKI1S RemoveKIEnd RemoveKIEndS
 lappend items ShiftC ShiftC2 ShiftCM ShiftCM2 ToXYC ToXZC ToYZC
 lappend items ElevateNC ElevateNC2 ElevateNC3 EstLenNC ExtendNC SplitNC
-lappend items TrimNC ClampNC ClampNCS ClampNCE
+lappend items TrimNC TweenNC
+lappend items ClampNC ClampNCS ClampNCE
 lappend items UnclampNC UnclampNCS UnclampNCE
+
 lappend items RevertUS RevertVS SwapUVS RefineUNP RefineVNP
 lappend items ClampUNP ClampUNPS ClampUNPE
 lappend items ClampVNP ClampVNPS ClampVNPE
