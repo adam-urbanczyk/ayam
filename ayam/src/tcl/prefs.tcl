@@ -770,8 +770,8 @@ proc prefs_reset {} {
 	    set m "$t\n\n$m"
 	}
 
-	set answer [tk_messageBox -title $t -type okcancel -icon warning
-		    -message $m]
+	set answer [tk_messageBox -title $t -type okcancel -icon warning\
+			-message $m]
 
 	if { $answer == "ok" } {
 	    if [catch {file delete $ay(ayamrc)} errmsg] {
