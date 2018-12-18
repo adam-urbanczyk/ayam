@@ -22,7 +22,7 @@ proc zap { } {
     lappend windows .
 
     if { [winfo exists .prefsw] } { lappend windows .prefsw }
-    if { [winfo exists .tbw] } { 
+    if { [winfo exists .tbw] } {
 	if { [wm transient .tbw] == "" } {
 	    lappend windows .tbw
 	}
@@ -34,7 +34,7 @@ proc zap { } {
 	if { [winfo ismapped $w] } {
 
 	    bind $w <Map> unzap
-	    wm iconify $w 
+	    wm iconify $w
 	    lappend ay(zapped) $w
 	}
     }
@@ -44,12 +44,12 @@ proc zap { } {
 # zap
 
 #
-proc unzap { } { 
+proc unzap { } {
     global ay
     foreach w $ay(zapped) {
 	if { [winfo exists $w ] } {
 	    if { [string first iew $w] != -1 } { bind $w <Map> "" }
-	    wm deiconify $w 
+	    wm deiconify $w
 	}
     }
     set ay(zapped) ""
