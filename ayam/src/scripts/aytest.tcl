@@ -2211,6 +2211,22 @@ array set CloseVNP {
     command { closevNP }
 }
 
+array set TweenNP {
+    types { NPatch }
+    command {
+	set index [getSel]
+	copOb
+	pasOb -move
+	hSL
+	movOb 0.1 0.1 0.0
+	rotOb 0.0 0.0 30.0
+	selOb $index [expr {$index+1}]
+	tweenNP
+	selOb $index [expr {$index+1}] [expr {$index+2}]
+    }
+}
+
+
 # instead of using the full pallette of possible derivative lengths
 # of ICurve_1, we content ourselves with 0.1/1.0 variations here
 set trimic {set ICurve_1(SDLen) {0.1 1.0}; set ICurve_1(EDLen) {0.1 1.0};}
@@ -3235,7 +3251,6 @@ lappend items ElevateNC ElevateNC2 ElevateNC3 EstLenNC ExtendNC SplitNC
 lappend items TrimNC TweenNC
 lappend items ClampNC ClampNCS ClampNCE
 lappend items UnclampNC UnclampNCS UnclampNCE
-
 lappend items RevertUS RevertVS SwapUVS RefineUNP RefineVNP
 lappend items ClampUNP ClampUNPS ClampUNPE
 lappend items ClampVNP ClampVNPS ClampVNPE
@@ -3245,8 +3260,7 @@ lappend items ElevateUNP ElevateUNP2 ElevateUNP3
 lappend items ElevateVNP ElevateVNP2 ElevateVNP3
 lappend items InsertKUNP InsertK2UNP InsertKVNP InsertK2VNP
 lappend items RemoveKUNP RemoveKIUNP RemoveKVNP RemoveKIVNP
-lappend items SplitNPU SplitNPV CloseUNP CloseVNP
-
+lappend items SplitNPU SplitNPV CloseUNP CloseVNP TweenNP
 set aytest_5items $items
 
 # set up types to test in test #6
