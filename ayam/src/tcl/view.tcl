@@ -466,6 +466,8 @@ proc viewSetFOV { view } {
 proc viewSetGrid { view } {
  global ay ayprefs
 
+    $view mc
+
     winAutoFocusOff
 
     set w .setGrid
