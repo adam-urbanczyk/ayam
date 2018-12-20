@@ -952,7 +952,7 @@ ay_pomesht_destroyhash(ay_pomesht_hash *hash)
 } /* ay_pomesht_destroyhash */
 
 
-/* ay_pomesht_inithash:
+/* ay_pomesht_addvertextohash:
  *  helper for ay_pomesht_optimizecoords() below
  *  add point <point> to the hash table <phash>
  *  (if it is not present already)

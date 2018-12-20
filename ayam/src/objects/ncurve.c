@@ -1873,10 +1873,10 @@ ay_ncurve_convertcb(ay_object *o, int in_place)
   new->refine = ic;
 
   ic->length = nc->length;
-  if(nc->type== AY_CTCLOSED)
+  if(nc->type == AY_CTCLOSED)
     ic->length--;
   else
-    if(nc->type== AY_CTPERIODIC)
+    if(nc->type == AY_CTPERIODIC)
       ic->length -= (nc->order-1);
 
   if(ic->length < 2)
