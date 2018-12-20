@@ -652,7 +652,7 @@ ay_interpol_surfacestcmd(ClientData clientData, Tcl_Interp *interp,
      sel->next->next->object->type == AY_IDNPATCH)
     {
       ay_status = ay_interpol_npatches(r, sel->object, sel->next->object,
-				      sel->next->next->object, &o);
+				       sel->next->next->object, &o);
     }
   else
     {
