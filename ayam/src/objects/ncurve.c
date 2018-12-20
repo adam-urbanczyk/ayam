@@ -1873,12 +1873,24 @@ ay_ncurve_convertcb(ay_object *o, int in_place)
   new->refine = ic;
 
   ic->length = nc->length;
+  if(nc->type== AY_CTCLOSED)
+    ic->length--;
+  else
+    if(nc->type== AY_CTPERIODIC)
+      ic->length -= (nc->order-1);
+
+  if(ic->length < 2)
+    { free(new); free(ic); return AY_ERROR; }
+
   ic->type = nc->type>0?AY_TRUE:AY_FALSE;
   ic->glu_sampling_tolerance = nc->glu_sampling_tolerance;
   ic->display_mode = nc->display_mode;
   ic->sdlen = 1.0/8.0;
   ic->edlen = 1.0/8.0;
   ic->order = nc->order; /* XXXX ? */
+
+  if(ic->order < 3)
+    ic->order = 3;
 
   if(!(ic->controlv = calloc(1, ic->length*3*sizeof(double))))
     { free(new); free(ic); return AY_EOMEM; }
