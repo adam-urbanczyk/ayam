@@ -1874,16 +1874,16 @@ ay_tcmd_menustatetcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_tcmd_menustatetcmd */
 
 
-/** ay_tcmd_getnormaltcmd:
- *  get normal of selected objects
- *  Implements the \a getNormal scripting interface command.
- *  See also the corresponding section in the \ayd{scgetnormal}.
+/** ay_tcmd_getplanenormaltcmd:
+ *  Get plane normal of selected objects (e.g. of a planar curve).
+ *  Implements the \a getPlaneNormal scripting interface command.
+ *  See also the corresponding section in the \ayd{scgetplanenormal}.
  *
  *  \returns TCL_OK in any case.
  */
 int
-ay_tcmd_getnormaltcmd(ClientData clientData, Tcl_Interp *interp,
-		      int argc, char *argv[])
+ay_tcmd_getplanenormaltcmd(ClientData clientData, Tcl_Interp *interp,
+			   int argc, char *argv[])
 {
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
@@ -2008,7 +2008,7 @@ cleanup:
     Tcl_SetObjResult(interp, ton);
 
  return TCL_OK;
-} /* ay_tcmd_getnormaltcmd */
+} /* ay_tcmd_getplanenormaltcmd */
 
 
 /** ay_tcmd_opentcmd:

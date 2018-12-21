@@ -158,9 +158,10 @@ static const struct luaL_Reg luainterplib [] = {
       {"revertC", luainterp_wraptclcmd},
       {"openC", luainterp_wraptclcmd},
       {"closeC", luainterp_wraptclcmd},
-
       {"refineC", luainterp_wraptclcmd},
       {"coarsenC", luainterp_wraptclcmd},
+      {"getPlaneNormal", luainterp_wraptclcmd},
+
       {"refineknNC", luainterp_wraptclcmd},
       {"coarsenNC", luainterp_wraptclcmd},
       {"clampNC", luainterp_wraptclcmd},

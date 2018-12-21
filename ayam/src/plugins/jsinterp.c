@@ -180,6 +180,7 @@ static JSFunctionSpec jsinterp_global_functions[] = {
   {"closeC", jsinterp_wraptcmd, 0, 0, 0},
   {"refineC", jsinterp_wraptcmd, 0, 0, 0},
   {"coarsenC", jsinterp_wraptcmd, 0, 0, 0},
+  {"getPlaneNormal", jsinterp_wraptcmd, 0, 0, 0},
 
   {"refineknNC", jsinterp_wraptcmd, 0, 0, 0},
   {"coarsenNC", jsinterp_wraptcmd, 0, 0, 0},

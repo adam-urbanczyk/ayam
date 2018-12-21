@@ -1598,10 +1598,10 @@ int ay_tcmd_getuint(char *str, unsigned int *uint);
 int ay_tcmd_menustatetcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[]);
 
-/** Tcl command to get various normals
+/** Tcl command to get plane normal from e.g. a planar curve
  */
-int ay_tcmd_getnormaltcmd(ClientData clientData, Tcl_Interp *interp,
-			  int argc, char *argv[]);
+int ay_tcmd_getplanenormaltcmd(ClientData clientData, Tcl_Interp *interp,
+			       int argc, char *argv[]);
 
 /** Tcl command to open/close a curve
  */
