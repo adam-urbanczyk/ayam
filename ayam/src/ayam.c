@@ -973,7 +973,7 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "menuState", ay_tcmd_menustatetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "getNormal", ay_tcmd_getnormaltcmd,
+  Tcl_CreateCommand(interp, "getPlaneNormal", ay_tcmd_getplanenormaltcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
 
@@ -1703,7 +1703,7 @@ ay_safeinit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "withOb", ay_tcmd_withobtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "getNormal", ay_tcmd_getnormaltcmd,
+  Tcl_CreateCommand(interp, "getPlaneNormal", ay_tcmd_getplanenormaltcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* trafo.c */
