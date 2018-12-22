@@ -1205,8 +1205,17 @@ proc editPointDialogUpdatePopup { ww } {
     set l "Fetch Mark"
     append l " ($aymark(x), $aymark(y), $aymark(z))"
     $m entryconfigure 2 -label $l
+    set is 0
+    if { [getSel] != "" } {
+	foreach s [isSurface] {
+	    if { $s } {
+		set is 1
+		break;
+	    }
+	}
+    }
     selPnts -get pnts
-    if { [llength $pnts] > 0 } {
+    if { !$is && ([llength $pnts] > 0) } {
 	set pnts [lsort $pnts]
 	set len [llength $pnts]
 	incr len -1
