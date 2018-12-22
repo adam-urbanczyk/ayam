@@ -31,7 +31,7 @@
 proc tree_paintLevel { level } {
     global ay
     Tree::_draw_tree $ay(tree)
-    return;
+ return;
 }
 
 #tree_paintTree:
@@ -39,7 +39,7 @@ proc tree_paintLevel { level } {
 proc tree_paintTree { level } {
     global ay
     Tree::_draw_tree $ay(tree)
-    return;
+ return;
 }
 
 #tree_handleSelection:
@@ -63,10 +63,12 @@ proc tree_handleSelection { } {
 # open/close subtree in tree view
 proc tree_openSub { tree newstate node } {
     global ay
-    set ay(ts) 1;
+    set ay(ts) 1
+    set snodes [$tree selection get]
     $tree itemconfigure $node -open $newstate
-    if { [Widget::getoption $tree -redraw] } {
-	after idle "Tree::_draw_tree $tree"
+    if { [Widget::getoption $tree -redraw] || $snodes != "" } {
+	after idle "Tree::_draw_tree $tree;\
+	    $tree selection set $snodes"
     }
  return;
 }
