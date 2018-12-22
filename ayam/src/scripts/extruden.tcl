@@ -21,7 +21,7 @@ if { [hasTag MN] } {
     getTag MN n
     set n [string map {"," " "} $n]
 } else {
-    set n [getNormal]
+    set n [getPlaneNormal]
 }
 set h $ExtrudeNAttrData(Height)
 if { $h != 1 } {
