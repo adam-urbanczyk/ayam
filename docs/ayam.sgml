@@ -2208,10 +2208,14 @@ For best results, use it with anti-aliasing.
 <p>
 The silhouette detection is shading the scene a second
 time in a special multi-colored lighting setup. Then, edges are detected
-in the Z-buffer and color buffer data. If anti-aliasing is not enabled, the
+in the Z-buffer and color buffer data. The edge detection in the Z-buffer
+profits from tight-fitting clipping planes. A good clipping plane
+setup can be easily achieved by the <tt/"Zoom to Object"/ action (shortcut
+<tt/&lt;O&gt;/).<newline>
+If anti-aliasing is not enabled, the
 resulting edge map is processed by morphological thinning and removal
 of pixels in the direct vicinity of pixels already drawn, to get one
-pixel wide lines.
+pixel wide lines.<newline>
 Finally, the edge map is used as a largely transparent texture (except
 for the edges) on a full-screen quad, which is drawn as last object.
 In case of anti-aliasing, the quad will be drawn four times.
@@ -14542,6 +14546,8 @@ generated according to the type.
 
 The original NURBS patches will not be deleted by this tool.
 
+Trim curves are completely ignored by this tool.
+
 See also the documentation of the corresponding
 scripting interface command <ref id="sctweennp" name="tweenNP">
 and the related tool for
@@ -16747,18 +16753,19 @@ individual bounding boxes in a list.
 <p>
 <#if out="latex"><x/phantomsection/</#if>
 <#if out="html"><f/<inf/<newline>//</#if>
-<label id="scgetnormal">
-getNormal &ndash; get the normal of a curve:
+<label id="scgetplanenormal">
+getPlaneNormal &ndash; get the plane normal of an object:
 <itemize>
- <item>Synopsis: <tt>"getNormal [-t]"</tt>
+ <item>Synopsis: <tt>"getPlaneNormal [-t]"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
- <item>Description: This command returns the normal(s)
-of the selected curve object(s) as a list of three double values.<newline>
+ <item>Description: This command returns the plane normal(s)
+of the selected object(s) as a list of three double values.<newline>
 If the option <tt>"-t"</tt> is given, the normal will be transformed
 by the objects transformation attributes.
 <p><p>
 If the object is not planar, a mean normal will be computed.
-If the curve is a straight line or degenerate the returned vector
+If the normal can not be computed because e.g.~the selected curve is a
+straight line or degenerate the returned vector
 will be <f/0.0, 0.0, 0.0/.
 <p>
 This command supports arbitrary object types that just need to
@@ -21019,7 +21026,7 @@ see the file:<newline>
 The script <tt>"extruden.tcl"</tt> extrudes a NURBS curve along
 its normal, see also the above image.<newline>
 If the curve object has a MN tag, it will take precedence
-over the normal computation via <tt/"getNormal"/. This is faster and
+over the normal computation via <tt/"getPlaneNormal"/. This is faster and
 also allows to create sheared extrusions.<footnote>Since 1.26.</footnote>
 <p>
 Internally, the script creates a Skin from two curves, therefore, arbitrarily
@@ -25250,7 +25257,7 @@ Index:
 <item>gensnPo: <ref id="scgensnPo" name="scripting interface command">
 <item>getBB: <ref id="scgetbb" name="scripting interface command">
 <item>getName: <ref id="scgetname" name="scripting interface command">
-<item>getNormal: <ref id="scgetnormal" name="scripting interface command">
+<item>getPlaneNormal: <ref id="scgetplanenormal" name="scripting interface command">
 <item>getPnt: <ref id="scgetpnt" name="scripting interface command">
 <item>getPrefs: <ref id="scgetprefs" name="scripting interface command">
 <item>getProperty: <ref id="scgetproperty" name="scripting interface command">
