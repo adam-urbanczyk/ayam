@@ -1,12 +1,15 @@
-[22. Nov 2018] Tip:
+[23. Dec 2018] Tip:
 ===================
 Bug Fixes:
-o fix window close shortcut in external views
-o fix shading of rational SDNPatch surfaces
-o fix resetting the knots of SDNPatch surfaces not changing virtual knots
-o fix MetaObj result missing the triangles from the first cube
-o setting the mark via double click does not normalize the mark
-o fix memory access errors when removing knots
+o fix window close shortcut in external views (SF 579)
+o fix shading of rational SDNPatch surfaces (SF 580)
+o fix resetting the knots of SDNPatch surfaces not changing virtual
+  knots (SF 581)
+o fix MetaObj result missing the triangles from the first cube (SF 582)
+o setting the mark via double click does not normalize the mark (SF 583)
+o fix memory access errors when removing knots (SF 584)
+o fix selection management of dtree script when opening/closing sub
+  trees (SF 585)
 
 Modelling:
 o RiInc/RiProc objects now draw the bounding box with dashed lines
@@ -31,7 +34,7 @@ o added keyboard shortcuts to numeric point edit dialog, focus management:
 o added hidden preference setting "PickCycleMax" to inhibit pick cycling
   for large amounts of picking candidates
 o add keyboard shortcuts to call refine/coarsen tools from view windows:
-  <#>/<Shift-#>
+  <#>/<'>
 o open/close/refine/coarsen tools now support all (even plugin defined)
   curve object types (e.g. BCurve)
 
@@ -53,6 +56,7 @@ o added "candelOb" command to check whether objects can be deleted
 o added "whatis" command to inquire about Tcl objects in the console
 o added Script object example script "extruden.tcl" that extrudes
   arbitrary curves about their mean or manually specified normal
+o added "getPlaneNormal" command to compute the plane normal of an object
 o renamed "coarsenNC" command to "coarsenC"
 o many scripting interface commands now check their parameters more
   rigorously for NaN values
