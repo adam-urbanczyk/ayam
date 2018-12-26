@@ -6065,7 +6065,6 @@ ay_nct_toplane(int plane, int allow_flip, ay_object *c)
  ay_icurve_object *ic = NULL;
  ay_nurbcurve_object *nc = NULL;
  double *p, *tp1, *tp2, *tp3, V1[3], V2[3], A[3], B[3];
- double tcv[9];
  double X[3] = {1,0,0}, Y[3] = {0,1,0}, Z[3] = {0,0,1};
  double angle, len, m[16], quat[4], euler[3];
  double *cv = NULL;
@@ -6166,28 +6165,13 @@ ay_nct_toplane(int plane, int allow_flip, ay_object *c)
 	      have_good_points = AY_FALSE;
 	      tp2 += stride;
 	    }
-	} /* if */
+	} /* if have_good_points */
 
       num_tries++;
     } /* while */
 
   if(!have_good_points)
     return AY_ERROR;
-
-  /* apply scale matrix to triangle points */
-  ay_trafo_identitymatrix(m);
-  ay_trafo_scalematrix(c->scalx, c->scaly, c->scalz, m);
-
-  memcpy(tcv, tp1, 3*sizeof(double));
-  memcpy(&(tcv[3]), tp2, 3*sizeof(double));
-  memcpy(&(tcv[6]), tp2, 3*sizeof(double));
-
-  p = tcv;
-  for(i = 0; i < 3; i++)
-    {
-      ay_trafo_apply3(p, m);
-      p += 3;
-    } /* for */
 
   /* now we may calculate the orientation of the curve */
   AY_V3CROSS(A, V1, V2);
@@ -6260,9 +6244,6 @@ ay_nct_toplane(int plane, int allow_flip, ay_object *c)
       break;
     } /* switch plane */
 
-  len = AY_V3LEN(B);
-  AY_V3SCAL(B, (1.0/len));
-
   if(fabs(fabs(angle) - 180.0) < AY_EPSILON)
     {
       if(allow_flip)
@@ -6284,6 +6265,9 @@ ay_nct_toplane(int plane, int allow_flip, ay_object *c)
 	}
       return AY_OK;
     }
+
+  len = AY_V3LEN(B);
+  AY_V3SCAL(B, (1.0/len));
 
   /* calculate rotation matrix */
   ay_trafo_identitymatrix(m);
