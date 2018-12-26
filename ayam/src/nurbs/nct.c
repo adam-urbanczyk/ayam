@@ -6263,7 +6263,7 @@ ay_nct_toplane(int plane, int allow_flip, ay_object *c)
   len = AY_V3LEN(B);
   AY_V3SCAL(B, (1.0/len));
 
-  if(fabs(angle - 180.0) < AY_EPSILON)
+  if(fabs(fabs(angle) - 180.0) < AY_EPSILON)
     {
       if(allow_flip)
 	{
