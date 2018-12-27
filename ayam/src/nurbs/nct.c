@@ -269,8 +269,7 @@ ay_nct_recreatemp(ay_nurbcurve_object *c)
 	      c->mpoints = new;
 	      new = NULL;
 	    } /* if */
-
-	} /* if */
+	} /* if count */
 
       ta += stride;
     } /* for */
@@ -501,7 +500,7 @@ int
 ay_nct_resize(ay_nurbcurve_object *curve, int new_length)
 {
  int ay_status = AY_OK;
- char fname[] = "ncurve_resize";
+ char fname[] = "nct_resize";
  int a, b, i, j;
  int *newpersec = NULL, new = 0;
  double *ncontrolv = NULL, v[3] = {0}, t = 0.0, *cv = NULL;
@@ -569,23 +568,25 @@ ay_nct_resize(ay_nurbcurve_object *curve, int new_length)
 	    {
 	      if(!((curve->type == AY_CTPERIODIC) &&
 		   (i > (curve->length-curve->order))))
-	      for(j = 1; j <= newpersec[i]; j++)
 		{
-		  v[0] = curve->controlv[a+4] - curve->controlv[a];
-		  v[1] = curve->controlv[a+4+1] - curve->controlv[a+1];
-		  v[2] = curve->controlv[a+4+2] - curve->controlv[a+2];
+		  for(j = 1; j <= newpersec[i]; j++)
+		    {
+		      v[0] = curve->controlv[a+4] - curve->controlv[a];
+		      v[1] = curve->controlv[a+4+1] - curve->controlv[a+1];
+		      v[2] = curve->controlv[a+4+2] - curve->controlv[a+2];
 
-		  t = j/(newpersec[i]+1.0);
+		      t = j/(newpersec[i]+1.0);
 
-		  AY_V3SCAL(v,t);
+		      AY_V3SCAL(v,t);
 
-		  ncontrolv[b] = curve->controlv[a]+v[0];
-		  ncontrolv[b+1] = curve->controlv[a+1]+v[1];
-		  ncontrolv[b+2] = curve->controlv[a+2]+v[2];
-		  ncontrolv[b+3] = 1.0;
+		      ncontrolv[b] = curve->controlv[a]+v[0];
+		      ncontrolv[b+1] = curve->controlv[a+1]+v[1];
+		      ncontrolv[b+2] = curve->controlv[a+2]+v[2];
+		      ncontrolv[b+3] = 1.0;
 
-		  b += 4;
-		} /* for */
+		      b += 4;
+		    } /* for */
+		} /* if */
 	    } /* if */
 
 	  a += 4;
@@ -1365,7 +1366,7 @@ ay_nct_refinekntcmd(ClientData clientData, Tcl_Interp *interp,
 
       Tcl_Free((char *) aknotv);
       aknotv = NULL;
-    } /* if */
+    } /* if have args */
 
   while(sel)
     {
@@ -1388,7 +1389,7 @@ ay_nct_refinekntcmd(ClientData clientData, Tcl_Interp *interp,
       else
 	{
 	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
-	} /* if */
+	} /* if ncurve */
 
       if(o->modified)
 	{
@@ -3674,7 +3675,6 @@ cleanup:
 	}
 
       patch = NULL;
-
     } while(sel && create_trim);
 
   if(notify_parent)
@@ -4813,7 +4813,7 @@ ay_nct_fillgaps(int closed, int order, double tanlen, ay_object *curves)
  int ay_status = AY_OK;
 
   if(!curves)
-    return AY_ENULL;
+    { return AY_ENULL; }
 
   c = curves;
   while(c)
@@ -4826,7 +4826,7 @@ ay_nct_fillgaps(int closed, int order, double tanlen, ay_object *curves)
 				     (ay_nurbcurve_object *)c->next->refine,
 				     &fillet);
 	  if(ay_status)
-	    {return AY_ERROR;}
+	    { return AY_ERROR; }
 	  if(fillet)
 	    {
 	      fillet->next = c->next;
@@ -4846,7 +4846,7 @@ ay_nct_fillgaps(int closed, int order, double tanlen, ay_object *curves)
 				 (ay_nurbcurve_object *)curves->refine,
 				 &fillet);
       if(ay_status)
-	{return AY_ERROR;}
+	{ return AY_ERROR; }
       if(fillet)
 	{
 	  last->next = fillet;
@@ -5853,7 +5853,9 @@ ay_nct_shiftarr(int dir, int stride, int cvlen, double *cv)
 	return AY_EOMEM;
     }
   else
-    t = t4;
+    {
+      t = t4;
+    }
 
   if(dir)
     {
@@ -5861,8 +5863,7 @@ ay_nct_shiftarr(int dir, int stride, int cvlen, double *cv)
       a = 0;
       for(i = 0; i < cvlen-1; i++)
 	{
-	  memcpy(&(cv[a]), &(cv[a+stride]),
-		 stride * sizeof(double));
+	  memcpy(&(cv[a]), &(cv[a+stride]), stride * sizeof(double));
 	  a += stride;
 	}
       /* saved first becomes new last */
@@ -5871,12 +5872,10 @@ ay_nct_shiftarr(int dir, int stride, int cvlen, double *cv)
   else
     {
       memcpy(t, &(cv[(cvlen-1)*stride]), stride * sizeof(double));
-
       a = (cvlen-2)*stride;
       for(i = 0; i < cvlen-1; i++)
 	{
-	  memcpy(&(cv[a+stride]), &(cv[a]),
-		 stride * sizeof(double));
+	  memcpy(&(cv[a+stride]), &(cv[a]), stride * sizeof(double));
 	  a -= stride;
 	}
       /* saved last becomes new first */
@@ -8557,7 +8556,7 @@ ay_nct_reparamtcmd(ClientData clientData, Tcl_Interp *interp,
 	      break;
 	    default:
 	      break;
-	    } /* switch */
+	    } /* switch type */
 
 	  /* clean up */
 	  ay_nct_recreatemp(curve);
@@ -8566,7 +8565,7 @@ ay_nct_reparamtcmd(ClientData clientData, Tcl_Interp *interp,
 	  /* re-create tesselation of curve */
 	  (void)ay_notify_object(sel->object);
 	  notify_parent = AY_TRUE;
-	} /* if */
+	} /* if is ncurve */
 
       sel = sel->next;
     } /* while */
@@ -9109,17 +9108,17 @@ ay_nct_rotatetominmeandist(int cvlen, int cvstride, double *cva, double *cvb)
 
 	  angle += 1.0;
 	  ay_trafo_identitymatrix(rm);
-	  ay_trafo_translatematrix(m[0],m[1],m[2],rm);
+	  ay_trafo_translatematrix(m[0], m[1], m[2], rm);
 	  ay_trafo_rotatematrix(angle, n[0], n[1], n[2], rm);
-	  ay_trafo_translatematrix(-m[0],-m[1],-m[2],rm);
+	  ay_trafo_translatematrix(-m[0], -m[1], -m[2], rm);
 	  AY_APTRAN3(cvbt, cvb, rm);
 	}
 
       if(minangle != 0.0)
 	{
-	  ay_trafo_translatematrix(m[0],m[1],m[2],rm);
+	  ay_trafo_translatematrix(m[0], m[1], m[2], rm);
 	  ay_trafo_rotatematrix(minangle, n[0], n[1], n[2], rm);
-	  ay_trafo_translatematrix(-m[0],-m[1],-m[2],rm);
+	  ay_trafo_translatematrix(-m[0], -m[1], -m[2], rm);
 	  ay_trafo_apply3v(cvb, cvlen, cvstride, rm);
 	}
     }
@@ -9553,13 +9552,13 @@ ay_nct_colorfromweight(double w)
 	  if(fabs(w) > 1.1)
 	    {
 	      /* attracting weight => pure red */
-	      rgb[0] = AY_MAX(0.25f, (3.0f-w)*0.75f);
+	      rgb[0] = AY_MAX(0.25f, (3.0f-(float)w)*0.75f);
 	      rgb[1] = 0.0f;
 	    }
 	  else
 	    {
 	      /* small attracting weight (1.0-1.1) */
-	      rgb[1] = 0.25f+(1.1-w)*7.5f;
+	      rgb[1] = 0.25f+(1.1f-(float)w)*7.5f;
 	    }
 	  rgb[2] = rgb[1];
 	}
@@ -9568,13 +9567,13 @@ ay_nct_colorfromweight(double w)
 	  if(fabs(w) < 0.9)
 	    {
 	      /* repelling weight => pure blue */
-	      rgb[2] = AY_MAX(0.25f, w+0.1);
+	      rgb[2] = AY_MAX(0.25f, (float)w+0.1f);
 	      rgb[0] = 0.0f;
 	    }
 	  else
 	    {
 	      /* small repelling weight (0.9-1.0) */
-	      rgb[0] = 0.25f+(w-0.9)*7.5f;
+	      rgb[0] = 0.25f+((float)w-0.9f)*7.5f;
 	    }
 	  rgb[1] = rgb[0];
 	}
@@ -9584,7 +9583,7 @@ ay_nct_colorfromweight(double w)
 	}
 
       glColor3fv(rgb);
-    }
+    } /* weight is healthy */
 
  return;
 } /* ay_nct_colorfromweight */
