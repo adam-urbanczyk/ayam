@@ -273,13 +273,19 @@ bind $f.ca.w <ButtonPress-$aymainshortcuts(CMButton)> "tk_popup $m %X %Y"
 # mouse-wheel bindings
 bind . <ButtonPress-4> {
     global ay
-    $ay(pca) yview scroll -1 pages
+    set sh [winfo height [winfo parent $ay(pca)].s]
+    if { [$ay(pca) cget -height] > $sh } {
+	$ay(pca) yview scroll -1 pages
+    }
     break;
 }
 
 bind . <ButtonPress-5> {
     global ay
-    $ay(pca) yview scroll 1 pages
+    set sh [winfo height [winfo parent $ay(pca)].s]
+    if { [$ay(pca) cget -height] > $sh } {
+	$ay(pca) yview scroll 1 pages
+    }
     break;
 }
 
@@ -287,10 +293,13 @@ global tcl_platform AYWITHAQUA
 if { ($tcl_platform(platform) == "windows") } {
     bind . <MouseWheel> {
 	global ay
-	if { %D < 0.0 } {
-	    $ay(pca) yview scroll 1 pages
-	} else {
-	    $ay(pca) yview scroll -1 pages
+	set sh [winfo height [winfo parent $ay(pca)].s]
+	if { [$ay(pca) cget -height] > $sh } {
+	    if { %D < 0.0 } {
+		$ay(pca) yview scroll 1 pages
+	    } else {
+		$ay(pca) yview scroll -1 pages
+	    }
 	}
 	break;
     }
@@ -301,14 +310,17 @@ if { ($tcl_platform(platform) == "windows") } {
 	     ([winfo toplevel [focus]] == ".") &&
 	     ([string first "view" [focus]] == -1) } {
 	    global ay
-	    if { %D < 0.0 } {
-		$ay(pca) yview scroll 1 pages
-	    } else {
-		$ay(pca) yview scroll -1 pages
+	    set sh [winfo height [winfo parent $ay(pca)].s]
+	    if { [$ay(pca) cget -height] > $sh } {
+		if { %D < 0.0 } {
+		    $ay(pca) yview scroll 1 pages
+		} else {
+		    $ay(pca) yview scroll -1 pages
+		}
 	    }
 	    break;
 	}
-	# if
+	# if focus is probably on property canvas
     }
     # bind
 }
@@ -317,10 +329,13 @@ if { ($tcl_platform(platform) == "windows") } {
 if { $AYWITHAQUA } {
     bind . <MouseWheel> {
 	global ay
-	if { %D < 0.0 } {
-	    $ay(pca) yview scroll 3 units
-	} else {
-	    $ay(pca) yview scroll -3 units
+	set sh [winfo height [winfo parent $ay(pca)].s]
+	if { [$ay(pca) cget -height] > $sh } {
+	    if { %D < 0.0 } {
+		$ay(pca) yview scroll 3 units
+	    } else {
+		$ay(pca) yview scroll -3 units
+	    }
 	}
 	break;
     }
@@ -330,14 +345,17 @@ if { $AYWITHAQUA } {
 	if { ([focus] != "") && ([focus] != ".fl.con.console") &&
 	     ([winfo toplevel [focus]] == ".") } {
 	    global ay
-	    if { %D < 0.0 } {
-		$ay(pca) yview scroll 3 units
-	    } else {
-		$ay(pca) yview scroll -3 units
+	    set sh [winfo height [winfo parent $ay(pca)].s]
+	    if { [$ay(pca) cget -height] > $sh } {
+		if { %D < 0.0 } {
+		    $ay(pca) yview scroll 3 units
+		} else {
+		    $ay(pca) yview scroll -3 units
+		}
 	    }
 	    break;
 	}
-	# if
+	# if focus is probably on property canvas
     }
     # bind
 }
