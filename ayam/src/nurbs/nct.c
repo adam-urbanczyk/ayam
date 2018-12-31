@@ -3366,6 +3366,7 @@ int
 ay_nct_crtncircletcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[])
 {
+ int tcl_status = TCL_OK;
  int ay_status;
  double arc = 360.0;
  ay_object *o = NULL;
@@ -3379,12 +3380,19 @@ ay_nct_crtncircletcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  if(!strcmp(argv[i], "-r"))
 	    {
-	      sscanf(argv[i+1], "%lg", &radius);
+	      tcl_status = Tcl_GetDouble(interp, argv[i+1], &radius);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	      if(radius <= AY_EPSILON)
+		{
+		  ay_error(AY_ERROR, argv[0], "Parameter radius must be > 0.");
+		  return TCL_OK;
+		}
 	    }
 	  else
 	  if(!strcmp(argv[i], "-a"))
 	    {
-	      sscanf(argv[i+1], "%lg", &arc);
+	      tcl_status = Tcl_GetDouble(interp, argv[i+1], &arc);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	    }
 	  i += 2;
 	} /* while */
@@ -3894,6 +3902,9 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   curve = (ay_nurbcurve_object*)(o->refine);
+
+  (void)ay_nct_close(curve);
+
   curve->createmp = AY_TRUE;
   ay_nct_recreatemp(curve);
 
@@ -7902,7 +7913,7 @@ ay_nct_offsetsection(ay_object *o, double offset,
 	       */
 	      for(k = 0; k < p1len; k++)
 		{
-		  memcpy(&(newcv[k*stride]), p2s1, 2*sizeof(double));
+		  memcpy(&(newcv[k*stride]), p2s2, 2*sizeof(double));
 		}
 	    }
 	  else
@@ -7916,7 +7927,7 @@ ay_nct_offsetsection(ay_object *o, double offset,
 		    }
 		}
 	    } /* if */
-	} /* if */
+	} /* if periodic */
 
   if((p1len+p2len) < curve->length)
     {
