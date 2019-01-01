@@ -319,7 +319,7 @@ ay_shade_detectsil(struct Togl *togl, int selection)
  unsigned char color[4];
  GLfloat sx[9] = {-1,0,1,-2,0,2,-1,0,1}, sy[9]={-1,-2,-1,0,0,0,1,2,1};
  GLfloat *depthimg = NULL;
- int use_materialcolor;
+ int use_materialcolor = ay_prefs.use_materialcolor;
  unsigned char *silimg = NULL, *edges = NULL, *s, *t;
 
   if(selection && !sel)
@@ -380,7 +380,7 @@ ay_shade_detectsil(struct Togl *togl, int selection)
       glLightfv(GL_LIGHT4, GL_DIFFUSE, green);
       glLightfv(GL_LIGHT5, GL_POSITION, &(light_pos[2]));
       glLightfv(GL_LIGHT5, GL_DIFFUSE, blue);
-      use_materialcolor = ay_prefs.use_materialcolor;
+
       ay_prefs.use_materialcolor = AY_FALSE;
     }
 
