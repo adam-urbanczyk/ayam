@@ -604,10 +604,8 @@ ay_prop_getnpinfo(Tcl_Interp *interp, char *n1, ay_object *o)
 
   /* set Balloon info text */
   Tcl_SetStringObj(ton, "NPInfoBall", -1);
-  if(o && o->type == AY_IDNPATCH)
+  if(np)
     {
-      np = (ay_nurbpatch_object *)(o->refine);
-
       sprintf(buffer2/*, sizeof(buffer)*/,
 	      "Width: %d\nHeight: %d\nOrder_U: %d\nOrder_V: %d\n",
 	      np->width, np->height, np->uorder, np->vorder);
@@ -735,10 +733,8 @@ ay_prop_getncinfo(Tcl_Interp *interp, char *n1, ay_object *o)
 
   /* set Balloon info text */
   Tcl_SetStringObj(ton, "NCInfoBall", -1);
-  if(o && o->type == AY_IDNCURVE)
+  if(nc)
     {
-      nc = (ay_nurbcurve_object *)(o->refine);
-
       sprintf(buffer2/*, sizeof(buffer)*/,
 	      "Length: %d\nOrder: %d\n",
 	      nc->length, nc->order);
