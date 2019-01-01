@@ -63,26 +63,24 @@ ay_geom_intersectlines2D(double *p1, double *t1,
 			 double *p2, double *t2,
 			 double *p)
 {
- double ua, /*ub,*/ den, nomua, nomub;
+ double den, numa, ua/*, numb, ub */;
 
   if(!p1 || !t1 || !p2 || !t2 || !p)
     return 0;
 
   den = t2[1]*t1[0] - t2[0]*t1[1];
-
+  
   if(fabs(den) < AY_EPSILON)
     return 0;
 
-  nomua = (t2[0]*(p1[1]-p2[1]) - t2[1]*(p1[0]-p2[0]));
-  nomub = (t1[0]*(p1[1]-p2[1]) - t1[1]*(p1[0]-p2[0]));
+  numa = (t2[0]*(p1[1]-p2[1]) - t2[1]*(p1[0]-p2[0]));
+  /*numb = (t1[0]*(p1[1]-p2[1]) - t1[1]*(p1[0]-p2[0]));*/
 
-  if((fabs(den) < AY_EPSILON) &&
-     (fabs(nomua) < AY_EPSILON) &&
-     (fabs(nomub) < AY_EPSILON))
+  if((fabs(numa) < AY_EPSILON)/* && (fabs(numb) < AY_EPSILON)*/)
     return 0;
 
-  ua = nomua/den;
-  /*ub = nomub/den;*/
+  ua = numa/den;
+  /*ub = numb/den;*/
 
   p[0] = p1[0] + ua*t1[0];
   p[1] = p1[1] + ua*t1[1];
