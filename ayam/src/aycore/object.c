@@ -911,7 +911,7 @@ ay_object_ishastcmd(ClientData clientData, Tcl_Interp *interp,
 {
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
- char *res, no[] = "0", yes[] = "1";
+ char *res = NULL, no[] = "0", yes[] = "1";
 
   if(!sel)
     {
