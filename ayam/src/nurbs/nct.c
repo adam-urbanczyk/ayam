@@ -7727,7 +7727,7 @@ ay_nct_offsetsection(ay_object *o, double offset,
  int p1len, p2len, p3len = 0;
  double *p1, *p2, *p3, *pt, *po, p1s1[2], p2s1[2], p1s2[2], p2s2[2];
  double t1[2], t2[2], n[2];
- double *vn = NULL, vlen;
+ double vlen;
 
   /* sanity check */
   if(!o || !nc)
@@ -7841,7 +7841,7 @@ ay_nct_offsetsection(ay_object *o, double offset,
 	    /*
 	     * the intersection failed (e.g. due to collinear
 	     * segments) => we simply pick one of the inner
-	     * segment points
+	     * offset segment points
 	     */
 
 	    /* first point(s) of offset curves control polygon */
@@ -7872,7 +7872,7 @@ ay_nct_offsetsection(ay_object *o, double offset,
 		memcpy(&(newcv[j*stride]), newcv, 2*sizeof(double));
 		j--;
 	      }
-	  } /* if */
+	  } /* if has intersection */
       }
     else
       if(curve->type == AY_CTPERIODIC)
@@ -7909,7 +7909,7 @@ ay_nct_offsetsection(ay_object *o, double offset,
 	      /*
 	       * the intersection failed (e.g. due to collinear
 	       * segments) => we simply pick one of the inner
-	       * segment points
+	       * offset segment points
 	       */
 	      for(k = 0; k < p1len; k++)
 		{
@@ -7926,7 +7926,7 @@ ay_nct_offsetsection(ay_object *o, double offset,
 		      memcpy(&(newcv[k*stride]), newcv, 2*sizeof(double));
 		    }
 		}
-	    } /* if */
+	    } /* if has intersection */
 	} /* if periodic */
 
   if((p1len+p2len) < curve->length)
@@ -7972,7 +7972,7 @@ ay_nct_offsetsection(ay_object *o, double offset,
 	      /*
 	       * the intersection failed (e.g. due to collinear
 	       * segments) => we simply pick one of the inner
-	       * segment points
+	       * offset segment points
 	       */
 	      for(k = 0; k < p2len; k++)
 		{
@@ -7989,7 +7989,7 @@ ay_nct_offsetsection(ay_object *o, double offset,
 			     2*sizeof(double));
 		    }
 		}
-	    }
+	    } /* if has intersection */
 
 	  /* prepare next iteration */
 	  p2 = p3;
@@ -8064,9 +8064,6 @@ cleanup:
       if(newkv)
 	free(newkv);
     }
-
-  if(vn)
-    free(vn);
 
  return ay_status;
 } /* ay_nct_offsetsection */
