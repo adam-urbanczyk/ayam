@@ -1033,11 +1033,13 @@ ay_object_ishastcmd(ClientData clientData, Tcl_Interp *interp,
 	    } /* switch */
 	} /* if has or is */
 
-      if(ay_selection->next)
-	Tcl_AppendElement(interp, res);
-      else
-	Tcl_SetResult(interp, res, TCL_VOLATILE);
-
+      if(res)
+	{
+	  if(ay_selection->next)
+	    Tcl_AppendElement(interp, res);
+	  else
+	    Tcl_SetResult(interp, res, TCL_VOLATILE);
+	}
     } /* while sel */
 
  return TCL_OK;
