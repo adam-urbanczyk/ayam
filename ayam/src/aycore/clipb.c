@@ -368,10 +368,18 @@ ay_clipb_replacetcmd(ClientData clientData, Tcl_Interp *interp,
 	  clipend = clip;
 	  clip = clip->next;
 	} /* while */
+    }
+  else
+    {
+      while(clip)
+	{
+	  clipend = clip;
+	  clip = clip->next;
+	} /* while */
     } /* if */
 
   /* find pointer to first selected object */
-  if(ay_currentlevel->next->object)
+  if(ay_currentlevel && ay_currentlevel->next->object)
     {
       presel = &(ay_currentlevel->next->object->down);
     }
