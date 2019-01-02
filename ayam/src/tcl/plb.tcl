@@ -67,6 +67,7 @@ bind $f.li <<ListboxSelect>> {
     # make new property GUI visible in the canvas
     $ay(pca) itemconfigure 1 -window $ay(pca).$ww
     $ay(pca) configure -takefocus 1
+    $ay(pca) yview moveto 0
 
     # resize canvas
     set width [expr [winfo reqwidth $ay(pca).$ww] + 10]
@@ -255,13 +256,13 @@ set f $f.fca
 
 # create the canvas widget itself
 canvas $f.ca -yscrollcommand { global ay; $ay(pcas) set }\
- -highlightthickness 0
+    -highlightthickness 0
 set ay(pca) $f.ca
 # XXXX window for prop-guis, there should be a window for every
 # prop GUI, that is just being displayed if needed, by changing
 # the window as:
 # $f.ca itemconfigure 1 -window .ca.f1
-set ay(pw) [frame $f.ca.w -width 100 ]
+set ay(pw) [frame $f.ca.w -width 100]
 $f.ca create window 5 0 -anchor nw -window $ay(pw)
 set width [expr [winfo reqwidth $ay(pw)] + 10]
 $ay(pca) configure -width $width
@@ -269,6 +270,12 @@ $f.ca create line 0 0 2 0 -fill [$f.ca cget -background]
 
 bind $f.ca <ButtonPress-$aymainshortcuts(CMButton)> "tk_popup $m %X %Y"
 bind $f.ca.w <ButtonPress-$aymainshortcuts(CMButton)> "tk_popup $m %X %Y"
+
+bind $f.ca <Home> "%W yview moveto 0"
+bind $f.ca <End> "%W yview moveto 0"
+
+bind $f.ca <Prior> "%W yview scroll -1 pages"
+bind $f.ca <Next> "%W yview scroll 1 pages"
 
 # mouse-wheel bindings
 bind . <ButtonPress-4> {
@@ -324,7 +331,7 @@ if { ($tcl_platform(platform) == "windows") } {
     }
     # bind
 }
-# if
+# if w32
 
 if { $AYWITHAQUA } {
     bind . <MouseWheel> {
@@ -359,7 +366,7 @@ if { $AYWITHAQUA } {
     }
     # bind
 }
-# if
+# if aqua
 
 # focus management bindings
 bind $f.ca <1> "focus %W"
@@ -467,7 +474,7 @@ proc plb_update { } {
 	    # remove properties from RP tags
 	    set tn ""
 	    getTags tn tv
-	    if { ($tn != "") && ([ string first RP $tn ] != -1) } {
+	    if { ($tn != "") && ([string first RP $tn] != -1) } {
 		set i 0
 		foreach tag $tn {
 		    if { [lindex $tn $i] == "RP" } {
@@ -494,7 +501,7 @@ proc plb_update { } {
 	    }
 
 	    # also add properties from NP tags
-	    if { ($tn != "") && ([ string first NP $tn ] != -1) } {
+	    if { ($tn != "") && ([string first NP $tn] != -1) } {
 		set i 0
 		foreach tag $tn {
 		    if { [lindex $tn $i] == "NP" } {
@@ -543,7 +550,7 @@ proc plb_resize { } {
     global ayprefs ay
     if { $ayprefs(AutoResize) != 1 } { return; }
     update
-    set newwidth [expr [winfo width .fu.fMain.fHier] + [winfo reqwidth .fu.fMain.fProp] + [winfo reqwidth .fu.fMain.__h1] ]
+    set newwidth [expr [winfo width .fu.fMain.fHier] + [winfo reqwidth .fu.fMain.fProp] + [winfo reqwidth .fu.fMain.__h1]]
    set newheight [winfo height .]
 
     set ng ${newwidth}x${newheight}
@@ -559,7 +566,6 @@ proc plb_resize { } {
 	 ($ayprefs(TwmCompat) != 1) } {
 	set x [winfo rootx .]
 	set y [winfo rooty .]
-
 	append ng "+$x"
 	append ng "+$y"
     }
@@ -610,7 +616,7 @@ proc plb_focus { {w ""} } {
 	}
 	# if
     }
-    # if
+    # if w is valid
  return;
 }
 # plb_focus
@@ -624,7 +630,7 @@ proc plb_showprop { prop } {
 
     set l $ay(plb)
 
-    set len [$l size ]
+    set len [$l size]
 
     if { ($len < 1) || ($prop > $len) } {
 	return;
@@ -782,7 +788,7 @@ proc plb_addremprop { {rem 0} } {
 	# forAll
 	set anchor nptag
     }
-    # if
+    # if add or rem
 
     set props [lsort [array names AllProps]]
 
@@ -843,7 +849,6 @@ proc plb_bindtab { } {
     } else {
 	set w $ay(tree)
     }
-
     if { $ayprefs(SingleWindow) == 1 } {
 	bind $w <Key-Tab> "focus .fu.fMain.fview3;break"
     } else {
