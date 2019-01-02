@@ -1021,7 +1021,15 @@ scrollbar $w.ftext.sbar -takefocus 0 -command "$w.ftext.text yview"
 pack $w.ftext.sbar -in $w.ftext -side right -fill y
 pack $w.ftext.text -in $w.ftext -side left -fill both -expand yes
 
-# strip KeyRelease/KeyPress elements
+# strip KeyRelease/KeyPress elements, also map some inexplicable keysyms
+lappend mappings bar \|
+lappend mappings parenright \)
+lappend mappings parenleft \(
+lappend mappings asterisk \*
+lappend mappings slash \/
+lappend mappings numbersign \#
+lappend mappings apostrophe \'
+
 foreach elem [array names ayviewshortcuts] {
     eval set sc1 \$ayviewshortcuts(${elem})
     set sc2 ""
@@ -1045,21 +1053,27 @@ foreach elem [array names ayviewshortcuts] {
 	set sc2 $sc1
     }
 
+    set sc2 [string map $mappings $sc2]
+
     set svsc(${elem}) $sc2
 }
 # foreach
 
 $w.ftext.text insert end "Modelling Scope (View Windows):
+
  Objects (all views)  <$svsc(TransO)> (<$svsc(TransO)$svsc(TransO)>)
  Points (all views)   <$svsc(TransP)> (<$svsc(TransP)$svsc(TransP)>)
 
 Modelling Actions (View Windows):
+
  Move                 <$svsc(MoveO)>
   restrict X, Y, Z:   <$svsc(MoveO)$svsc(RestrictX)>, <$svsc(MoveO)$svsc(RestrictY)>, <$svsc(MoveO)$svsc(RestrictZ)>
 
  Rotate               <$svsc(RotO)>
-  about Mark, Center  <$svsc(RotO)$svsc(About)>, <$svsc(RotO)$svsc(CenterO)>
+  about Mark          <$svsc(RotO)$svsc(About)>
+  about Objs Center   <$svsc(RotO)$svsc(CenterO)>
   about Pnts Center   <$svsc(RotO)$svsc(CenterPB)>
+
  Scale (3D)           <$svsc(Scal3)>
  Scale (2D)           <$svsc(Scal2)>
  Stretch (2D)         <$svsc(Stretch)>
@@ -1067,24 +1081,24 @@ Modelling Actions (View Windows):
  Scale (1D,Y)         <$svsc(Scal2)$svsc(RestrictY)>
  Scale (1D,Z)         <$svsc(Scal2)$svsc(RestrictZ)>
  Scale 2D
-  about Mark, Center  <$svsc(Scal2)$svsc(About)>, <$svsc(Scal2)$svsc(CenterO)>
+  about Mark          <$svsc(Scal2)$svsc(About)>
+  about Objs Center   <$svsc(Scal2)$svsc(CenterO)>
   about Pnts Center   <$svsc(Scal2)$svsc(CenterPB)>
  Similar for other scale actions...
 
  Set Mark             <$svsc(About)>
-  accept old Mark      <Return>
-  set Objs Center      <$svsc(CenterO)>
-  set Pnts Center      <$svsc(CenterPB)>
+  to Objs Center      <$svsc(About)$svsc(CenterO)>
+  to Pnts Center      <$svsc(About)$svsc(CenterPB)>
 
  Edit Points Direct   <$svsc(Edit)>
  Edit Points Numeric  <$svsc(EditN)>
  Edit Weight          <$svsc(WeightE)>
  Reset Weights        <$svsc(WeightR)>
 
- Select Points        <$svsc(Select)>
  Insert Points        <$svsc(InsertP)>
  Delete Points        <$svsc(DeleteP)>
 
+ Select Points        <$svsc(Select)>
  Select All/No Points <$svsc(SelAllP)> / <$svsc(DeSelect)>
  Invert PointSel      <$svsc(InvSelP)>
  Collapse Selected    <$svsc(CollP)>
@@ -1095,9 +1109,14 @@ Modelling Actions (View Windows):
 
  FindU                <$svsc(FindU)>
  FindUV               <$svsc(FindUV)>
+
+ Open/Close           <$svsc(OpenC)> / <$svsc(CloseC)>
+ Refine/Coarsen       <$svsc(RefineC)> / <$svsc(CoarsenC)>
+
  Split Curve          <$svsc(SplitNC)>
 
 View Actions (View Windows):
+
  Move View            <$svsc(MoveV)>
  Move View
  (along Z)            <$svsc(MoveZV)>
@@ -1117,7 +1136,7 @@ View Actions (View Windows):
  ZoomViewAnytime      <Mouse-$svsc(ZoomVButton)>
 
  ZoomRegion           <$svsc(ZoomRModKey)+Mouse-1>
- ZoomToObject         <$svsc(ZoomTO)> / <$svsc(ZoomTO2)>
+ ZoomToObject         <$svsc(ZoomTO2)> / <$svsc(ZoomTO)>
  ZoomToAll            <$svsc(ZoomAll)>
 
  Cycle View Type      <$svsc(TypeUp)> / <$svsc(TypeDown)>
@@ -1126,12 +1145,14 @@ View Actions (View Windows):
                         <$svsc(DMDown)>
 
 Management (View Windows):
+
  Break Action         <$svsc(Break)>
  Pick Objects         <$svsc(Pick)>
  Hide Objects         <$svsc(Hide)>
  Show Objects         <$svsc(Show)>
 
 Function Keys (View Windows):
+
  Adjust NURBS Sampling Rate  <${aymainshortcuts(SetSTL)}> / <${aymainshortcuts(SetSTP)}>
  Toggle Wire/NURBS           <${aymainshortcuts(SwNURBSWire)}>
  Toggle Lazy Notification    <${aymainshortcuts(SwLazyNotify)}>
@@ -1155,7 +1176,7 @@ bind $w.ftext.text <ButtonPress-5>\
 set filler "                                                        "
 set i 0
 set on 0
-while { $i < 85 } {
+while { $i < [expr int([$w.ftext.text index end-1c]) -4] } {
     set line [$w.ftext.text get ${i}.0 ${i}.end]
     if { [string length $line] > 0 } {
 	if { $on } {
