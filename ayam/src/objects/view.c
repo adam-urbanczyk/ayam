@@ -616,7 +616,7 @@ ay_view_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
  ay_point *pnt = NULL, **lastpnt = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
  double *pecoord = NULL, **pecoords = NULL, **pecoordstmp, *c;
- int a, peindex = 0;
+ int i, a = 0, peindex = 0;
  unsigned int *peindices = NULL, *itmp;
 
   if(!o || ((mode != 3) && (!p || !pe)))
@@ -684,57 +684,42 @@ ay_view_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       break;
     case 2:
       /* selection based on planes */
-      c = view->from;
-      a = 0;
-      /* test point c against the four planes in p */
-      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
-	 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
-	 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
-	 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
+      for(i = 0; i < 2; i++)
 	{
-	  if(!(pecoordstmp = realloc(pecoords, (a+1)*sizeof(double *))))
-	    return AY_EOMEM;
-
-	  pecoords = pecoordstmp;
-	  pecoords[a] = c;
-
-	  if(!(itmp = realloc(peindices, (a+1)*sizeof(unsigned int))))
-	    { free(pecoords); return AY_EOMEM; }
-	  peindices = itmp;
-	  peindices[a] = 0;
-	  a++;
-	} /* if */
-
-      c = view->to;
-      /* test point c against the four planes in p */
-      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
-	 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
-	 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
-	 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
-	{
-	  if(!(pecoordstmp = realloc(pecoords, (a+1)*sizeof(double *))))
+	  if(i == 1)
+	    c = view->to;
+	  else
+	    c = view->from;
+	  /* test point c against the four planes in p */
+	  if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
+	     ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
+	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
+	     ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 	    {
-	      if(pecoords)
-		free(pecoords);
-	      if(peindices)
-		free(peindices);
-	      return AY_EOMEM;
-	    }
-	  pecoords = pecoordstmp;
-	  pecoords[a] = c;
+	      if(!(pecoordstmp = realloc(pecoords, (a+1)*sizeof(double *))))
+		{
+		  if(pecoords)
+		    free(pecoords);
+		  if(peindices)
+		    free(peindices);
+		  return AY_EOMEM;
+		}
+	      pecoords = pecoordstmp;
+	      pecoords[a] = c;
 
-	  if(!(itmp = realloc(peindices, (a+1)*sizeof(unsigned int))))
-	    {
-	      if(pecoords)
-		free(pecoords);
-	      if(peindices)
-		free(peindices);
-	      return AY_EOMEM;
-	    }
-	  peindices = itmp;
-	  peindices[a] = 0;
-	  a++;
-	} /* if */
+	      if(!(itmp = realloc(peindices, (a+1)*sizeof(unsigned int))))
+		{
+		  if(pecoords)
+		    free(pecoords);
+		  if(peindices)
+		    free(peindices);
+		  return AY_EOMEM;
+		}
+	      peindices = itmp;
+	      peindices[a] = i;
+	      a++;
+	    } /* if */
+	} /* for */
 
       if(!pecoords)
 	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
