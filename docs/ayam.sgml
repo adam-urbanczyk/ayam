@@ -6298,15 +6298,23 @@ objects, each with different transformation attributes.
 <img src="pics/instances.gif">
 <caption>Instancing Example</caption>
 </figure>
-Instance objects help to save memory consumption in scenes with many
-similar or repeating objects or transport geometric data across the
-scene hierarchy. See also the image above.
+Instance objects are transformed lightweight copies of single or
+groups of objects
+and can therefore help to save memory consumption in scenes with many
+similar or repeating objects. See also the image above, where there is
+only one set of patches stored for the three elephants.
+The amount of saved space can be very high, depending heavily on the
+actual scene and at what levels in the hierarchy instances are used.
+If there are no similar objects in the scene, however, instancing
+can hardly be utilised. Similar means "the same except for
+the transformation property" in this context.
 <p>
 The term instance is unfortunately misleading (and can be very confusing
 if you are accustomed to the terminology of object oriented programming),
 but it is the term that seems to be used and understood by most
-computer graphic artists. A better term would be link, as an instance
-object has the same basic properties as a link in a Unix file system.
+computer graphic artists for this mechanism. A better term would be <em/link/,
+as an instance object has the same basic properties as a link in a Unix
+file system.
 A link is just a pointer to an original file, the same goes for
 an instance object: it is just a pointer to an original object (here
 also called master object).
@@ -6314,19 +6322,13 @@ A link can be placed anywhere on the file system,
 an instance object can be placed anywhere in the scene hierarchy, and
 additionally, it can be transformed.
 <p>
-Normally, the sole purpose of instance objects is to save space,
-in memory and on the disk. But in the tool object context, instances
-also serve as a means to transport geometric data across the scene
+While the original purpose of instances is to save memory, in the tool
+object context instances also serve as a means to transport geometric
+data across the scene
 hierarchy to make tool objects depend on each other (see also section
 <ref id="toolobj" name="The Modelling Concept Tool-Objects">).
 Note that in the tool object context, instance objects are the only
 objects, that are subject to a second round of provision.
-<p>
-The amount of saved space can be very high, depending heavily on the
-actual scene and at what levels in the hierarchy instances are used.
-If there are no similar objects in the scene, however, instancing
-can hardly be utilised. Similar means "the same except for
-the transformation property" in this context.
 <p>
 Some simple rules for instancing:
 
@@ -6345,6 +6347,8 @@ which is not supported by Ayam).
 the scene as long as there are instances of that object in the scene or
 in the object clipboard.
 </itemize>
+
+<#if out="latex"><x/newpage/</#if>
 
 If deleting of an object fails, and the error message
 complains about the reference counter not being zero, then
@@ -6430,10 +6434,10 @@ the following scene hierarchy results:
 The new instance still points to the original master and <em>not</em>
 to the copy of the master.
 <p>
-It is possible to move masters and instances through the scene hierarchy
-using drag and drop in the tree view or using the object clipboard with
-<tt>"Edit/Cut"</tt> and then <tt>"Special/Clipboard/Paste (Move)"</tt>
-however.
+Nevertheless, it is possible to move complete sets of masters and their
+instances through the scene hierarchy using drag and drop in the tree view or
+using the object clipboard with
+<tt>"Edit/Cut"</tt> and then <tt>"Special/Clipboard/Paste (Move)"</tt>.
 
 <sect3>Conversion Support
 <p><#if out="latex">&nbsp;<newline></#if>
