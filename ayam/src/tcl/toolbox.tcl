@@ -950,9 +950,9 @@ proc toolbox_addcmb {b} {
     set cmd "%W configure -relief sunken;\
       foreach view \$ay(views) {\
 	viewSetPMode \$view 1\
-      }"
+      };"
     append cmd [$b cget -command]
-    append cmd "after 100 \"%W configure -relief raised\";break;"
+    append cmd ";after 100 \"%W configure -relief raised\";break;"
     bind $b <ButtonPress-$aymainshortcuts(CMButton)> $cmd
 }
 # toolbox_addcmb
