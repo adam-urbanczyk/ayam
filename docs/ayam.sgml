@@ -3285,8 +3285,10 @@ is set.
 For more geometry saving related information, see also sections
 <ref id="savemaingeomtag" name="SaveMainGeom"> and
 <ref id="savepanelayouttag" name="SavePaneLayout">.
-<p> <p>
 <#if out="latex"><x/newpage/</#if>
+<p>
+<#if out="latex"><x/phantomsection/</#if>
+<p><label id="smethod">
 <item><tt/"SMethod"/; is the sampling method used by the NURBS tesselation
 facility that converts NURBS surfaces to PolyMesh objects.
 
@@ -3554,6 +3556,7 @@ open views, just press <tt/o/ or <tt/p/ twice:
 <p>
 Also note that the modelling scope may also be toggled by clicking
 on the modelling mode icon with the rightmost mouse
+button or by starting the action using this mouse
 button.<footnote>Since 1.26.</footnote>
 <p>
 See also the section
@@ -6087,6 +6090,187 @@ RiTransformEnd();
 
 <#if out="latex"><x/newpage/</#if>
 
+<sect2>Instance Object<label id="instanceobj">
+<p>
+<figure loc="ht">
+<eps file="pics/instances.ps" height="5cm">
+<img src="pics/instances.gif">
+<caption>Instancing Example</caption>
+</figure>
+Instance objects are transformed lightweight copies of single or
+groups of objects
+and can therefore help to save memory consumption in scenes with many
+similar or repeating objects. See also the image above, where there is
+only one set of patches stored for the three elephants.
+The amount of saved space can be very high, depending heavily on the
+actual scene and at what levels in the hierarchy instances are used.
+If there are no similar objects in the scene, however, instancing
+can hardly be utilised. Similar means "the same except for
+the transformation property" in this context.
+<p>
+The term instance is unfortunately misleading (and can be very confusing
+if you are accustomed to the terminology of object oriented programming),
+but it is the term that seems to be used and understood by most
+computer graphic artists for this mechanism. A better term would be <em/link/,
+as an instance object has the same basic properties as a link in a Unix
+file system.
+A link is just a pointer to an original file, the same goes for
+an instance object: it is just a pointer to an original object (here
+also called master object).
+A link can be placed anywhere on the file system,
+an instance object can be placed anywhere in the scene hierarchy, and
+additionally, it can be transformed.
+<p>
+While the original purpose of instances is to save memory, in the tool
+object context instances also serve as a means to transport geometric
+data across the scene
+hierarchy to make tool objects depend on each other (see also section
+<ref id="toolobj" name="The Modelling Concept Tool-Objects">).
+Note that in the tool object context, instance objects are the only
+objects, that are subject to a second round of provision.
+<p>
+Some simple rules for instancing:
+
+<itemize>
+<item>No instances may be created of objects of the following types:
+Root, View, Instance, Material, Light. Do not try to fool
+Ayam and create instances of levels that contain aforementioned
+types of objects, things will go awry!
+<item>It is allowed, however, to put some instances
+into a level object and create instances of this level
+(this is sometimes called <em/hierarchical instancing/).
+<item>But instances of a level may not be put into the very same
+level or one of its children (this would be <em/recursive instancing/,
+which is not supported by Ayam).
+<item>The original/master object may not be deleted from
+the scene as long as there are instances of that object in the scene or
+in the object clipboard.
+</itemize>
+
+<#if out="latex"><x/newpage/</#if>
+
+If deleting of an object fails, and the error message
+complains about the reference counter not being zero, then
+the last rule was about to be violated. Clean the clipboard using
+the menu <tt>"Special/Clipboard/Paste (Move)"</tt> and delete
+or resolve all references first.
+<p>
+Ayam can also create instances for complete scenes automatically
+(see section <ref id="ai" name="Automatic Instancing">).
+<p>
+To easily find the master object of an instance, just select the
+instance, then use the main menu entry: <tt>"Edit/Master"</tt>.
+<!--
+To find out, where in the scene instances of a master object
+exist, select the master object and use the main menu entry
+<tt>"Edit/Master"</tt>.
+-->
+<p>
+The following table briefly lists some capabilities of the Instance object.
+<p>
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Instance|No|No|Master|No*<#if out="latex">@<hline></#if>
+</tabular>
+<caption>Instance Object Capabilities</caption>
+</table>
+
+<sect3>Instances without Transformations (References)<label id="referencing">
+<p><#if out="latex">&nbsp;<newline></#if>
+Instance objects support the <tt>"RP"</tt> tag type
+in a special way:
+if the <tt>"Transformations"</tt> property is removed using a
+<tt>"RP"</tt> tag, the instance does not provide objects with
+an own set of transformation attributes (to ease hierarchy building
+with e.g.~<tt>"ExtrNC"</tt>/<tt>"ExtrNP"</tt> objects, where only
+pointers to already existing objects are required and where it is
+expected, that the instance reflects the master exactly, including
+its transformation attributes).<footnote>Since 1.16.</footnote>
+<p>
+The extract curve/surface tools automatically add such a tag to the
+instances they create.
+<p>
+To create such a tag manually, select the Instance object and enter
+into the Ayam console:
+<tscreen><tt>
+&raquo;&thinsp;addTag RP Transformations
+</tt></tscreen>
+<p>
+This special case of an instance is sometimes also called <em/reference/.
+
+<sect3>Instances and the Object Clipboard<label id="instclip">
+<p><#if out="latex">&nbsp;<newline></#if>
+This section contains additional information on instances and
+what happens to them when copied and pasted using the object
+clipboard.
+<p>
+All copies of instance objects, that are created by the object clipboard,
+always point to the same original master object.
+Therefore, it is not possible to copy a master object and some instances
+of it, so that the new instances point to the newly created master.
+<p>
+For example, when the following two objects are copied and pasted back to the
+scene
+<tscreen><verb>
+--NCurve   <-----.
+                 |
+--Instance  -----'
+</verb></tscreen>
+
+<#if out="latex"><x/newpage/</#if>
+
+the following scene hierarchy results:
+<tscreen><verb>
+--NCurve   <-----+-.
+                 | |
+--Instance  -----' |
+                   | !
+--NCurve           |
+                   |
+--Instance  -------'
+</verb></tscreen>
+The new instance still points to the original master and <em>not</em>
+to the copy of the master.
+<p>
+Nevertheless, it is possible to move complete sets of masters and their
+instances through the scene hierarchy using drag and drop in the tree view or
+using the object clipboard with
+<tt>"Edit/Cut"</tt> and then <tt>"Special/Clipboard/Paste (Move)"</tt>.
+
+<sect3>Conversion Support
+<p><#if out="latex">&nbsp;<newline></#if>
+An Instance object may be converted to an ordinary object using the
+main menu entry <tt>"Tools/Convert"</tt>.
+This process is also called resolving the instance.
+<p>
+To resolve all instance objects in a scene
+to normal objects, also the main menu entry:
+<tt>"Special/Instances/Resolve all Instances"</tt> can be used.
+
+<sect3>RIB Export
+<p><#if out="latex">&nbsp;<newline></#if>
+The RIB export of instances does <em>not</em> use the RiInstance facility
+of the RenderMan interface, but rather the more flexible ReadArchive
+mechanism.
+<p>
+This means, every master object in the scene will be written
+in a separate archive (RIB file) on disk, and every instance will
+cause that archive file to be read when rendering the RIB file.
+The resulting RIB file is not self contained: multiple files
+need to be transferred to other systems when rendering shall occur
+there.
+<p>
+This behaviour can be changed using the RIB export preference setting
+<tt/"ResInstances"/: If this option is enabled, all instances
+will be resolved temporarily to normal objects before being exported
+to RIB. The resulting RIB file will then be self contained but probably
+also much larger.
+<!--
+add info about file names
+-->
+<#if out="latex"><x/newpage/</#if>
+
 <sect2>Clone Object<label id="cloneobj">
 <p>
 <figure loc="ht">
@@ -6289,187 +6473,6 @@ objects and the mirrored counterparts (the latter in reverse order).
 Mirror objects appear in RIB output as a number of real
 objects, each with different transformation attributes.
 
-<#if out="latex"><x/newpage/</#if>
-
-<sect2>Instance Object<label id="instanceobj">
-<p>
-<figure loc="ht">
-<eps file="pics/instances.ps" height="5cm">
-<img src="pics/instances.gif">
-<caption>Instancing Example</caption>
-</figure>
-Instance objects are transformed lightweight copies of single or
-groups of objects
-and can therefore help to save memory consumption in scenes with many
-similar or repeating objects. See also the image above, where there is
-only one set of patches stored for the three elephants.
-The amount of saved space can be very high, depending heavily on the
-actual scene and at what levels in the hierarchy instances are used.
-If there are no similar objects in the scene, however, instancing
-can hardly be utilised. Similar means "the same except for
-the transformation property" in this context.
-<p>
-The term instance is unfortunately misleading (and can be very confusing
-if you are accustomed to the terminology of object oriented programming),
-but it is the term that seems to be used and understood by most
-computer graphic artists for this mechanism. A better term would be <em/link/,
-as an instance object has the same basic properties as a link in a Unix
-file system.
-A link is just a pointer to an original file, the same goes for
-an instance object: it is just a pointer to an original object (here
-also called master object).
-A link can be placed anywhere on the file system,
-an instance object can be placed anywhere in the scene hierarchy, and
-additionally, it can be transformed.
-<p>
-While the original purpose of instances is to save memory, in the tool
-object context instances also serve as a means to transport geometric
-data across the scene
-hierarchy to make tool objects depend on each other (see also section
-<ref id="toolobj" name="The Modelling Concept Tool-Objects">).
-Note that in the tool object context, instance objects are the only
-objects, that are subject to a second round of provision.
-<p>
-Some simple rules for instancing:
-
-<itemize>
-<item>No instances may be created of objects of the following types:
-Root, View, Instance, Material, Light. Do not try to fool
-Ayam and create instances of levels that contain aforementioned
-types of objects, things will go awry!
-<item>It is allowed, however, to put some instances
-into a level object and create instances of this level
-(this is sometimes called <em/hierarchical instancing/).
-<item>But instances of a level may not be put into the very same
-level or one of its children (this would be <em/recursive instancing/,
-which is not supported by Ayam).
-<item>The original/master object may not be deleted from
-the scene as long as there are instances of that object in the scene or
-in the object clipboard.
-</itemize>
-
-<#if out="latex"><x/newpage/</#if>
-
-If deleting of an object fails, and the error message
-complains about the reference counter not being zero, then
-the last rule was about to be violated. Clean the clipboard using
-the menu <tt>"Special/Clipboard/Paste (Move)"</tt> and delete
-or resolve all references first.
-<p>
-Ayam can also create instances for complete scenes automatically
-(see section <ref id="ai" name="Automatic Instancing">).
-<p>
-To easily find the master object of an instance, just select the
-instance, then use the main menu entry: <tt>"Edit/Master"</tt>.
-<!--
-To find out, where in the scene instances of a master object
-exist, select the master object and use the main menu entry
-<tt>"Edit/Master"</tt>.
--->
-<p>
-The following table briefly lists some capabilities of the Instance object.
-<p>
-<table loc="ht">
-<tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Instance|No|No|Master|No*<#if out="latex">@<hline></#if>
-</tabular>
-<caption>Instance Object Capabilities</caption>
-</table>
-
-<sect3>Instances without Transformations (References)<label id="referencing">
-<p><#if out="latex">&nbsp;<newline></#if>
-Instance objects support the <tt>"RP"</tt> tag type
-in a special way:
-if the <tt>"Transformations"</tt> property is removed using a
-<tt>"RP"</tt> tag, the instance does not provide objects with
-an own set of transformation attributes (to ease hierarchy building
-with e.g.~<tt>"ExtrNC"</tt>/<tt>"ExtrNP"</tt> objects, where only
-pointers to already existing objects are required and where it is
-expected, that the instance reflects the master exactly, including
-its transformation attributes).<footnote>Since 1.16.</footnote>
-<p>
-The extract curve/surface tools automatically add such a tag to the
-instances they create.
-<p>
-To create such a tag manually, select the Instance object and enter
-into the Ayam console:
-<tscreen><tt>
-&raquo;&thinsp;addTag RP Transformations
-</tt></tscreen>
-<p>
-This special case of an instance is sometimes also called <em/reference/.
-
-<sect3>Instances and the Object Clipboard<label id="instclip">
-<p><#if out="latex">&nbsp;<newline></#if>
-This section contains additional information on instances and
-what happens to them when copied and pasted using the object
-clipboard.
-<p>
-All copies of instance objects, that are created by the object clipboard,
-always point to the same original master object.
-Therefore, it is not possible to copy a master object and some instances
-of it, so that the new instances point to the newly created master.
-<p>
-For example, when the following two objects are copied and pasted back to the
-scene
-<tscreen><verb>
---NCurve   <-----.
-                 |
---Instance  -----'
-</verb></tscreen>
-
-<#if out="latex"><x/newpage/</#if>
-
-the following scene hierarchy results:
-<tscreen><verb>
---NCurve   <-----+-.
-                 | |
---Instance  -----' |
-                   | !
---NCurve           |
-                   |
---Instance  -------'
-</verb></tscreen>
-The new instance still points to the original master and <em>not</em>
-to the copy of the master.
-<p>
-Nevertheless, it is possible to move complete sets of masters and their
-instances through the scene hierarchy using drag and drop in the tree view or
-using the object clipboard with
-<tt>"Edit/Cut"</tt> and then <tt>"Special/Clipboard/Paste (Move)"</tt>.
-
-<sect3>Conversion Support
-<p><#if out="latex">&nbsp;<newline></#if>
-An Instance object may be converted to an ordinary object using the
-main menu entry <tt>"Tools/Convert"</tt>.
-This process is also called resolving the instance.
-<p>
-To resolve all instance objects in a scene
-to normal objects, also the main menu entry:
-<tt>"Special/Instances/Resolve all Instances"</tt> can be used.
-
-<sect3>RIB Export
-<p><#if out="latex">&nbsp;<newline></#if>
-The RIB export of instances does <em>not</em> use the RiInstance facility
-of the RenderMan interface, but rather the more flexible ReadArchive
-mechanism.
-<p>
-This means, every master object in the scene will be written
-in a separate archive (RIB file) on disk, and every instance will
-cause that archive file to be read when rendering the RIB file.
-The resulting RIB file is not self contained: multiple files
-need to be transferred to other systems when rendering shall occur
-there.
-<p>
-This behaviour can be changed using the RIB export preference setting
-<tt/"ResInstances"/: If this option is enabled, all instances
-will be resolved temporarily to normal objects before being exported
-to RIB. The resulting RIB file will then be self contained but probably
-also much larger.
-<!--
-add info about file names
--->
 <#if out="latex"><x/newpage/</#if>
 
 <sect2>Select Object<label id="selectobj">
@@ -24758,7 +24761,7 @@ Index:
 </itemize>
 <item>Active: <ref id="scriptattr" name="Script attribute">
 <item>Adaptive: <ref id="moattr" name="MetaObj attributes">
-<item>AdaptiveDomainDistance, AdaptiveKnotDistance: <ref id="prefmisc" name="NURBS tesselation mode">
+<item>AdaptiveDomainDistance, AdaptiveKnotDistance: <ref id="smethod" name="NURBS tesselation mode">
 <item>Add RiOption, RiAttribute, Property, Tag:
 <ref id="mmtags" name="Tag management">
 <item>Add Tag: <ref id="mmtags" name="Tag management">
@@ -25618,7 +25621,7 @@ Index:
 <item>newScene: <ref id="scnewscene" name="scripting interface command">
 <item>NoExport: <ref id="noexporttag" name="tag type">
 <item>NormalEpsilon: <ref id="mmtools" name="optimize PolyMesh tool option">
-<item>NormalizedDomainDistance: <ref id="prefmisc" name="NURBS tesselation mode">
+<item>NormalizedDomainDistance: <ref id="smethod" name="NURBS tesselation mode">
 <item>NormalizeDigits, NormalizeMark, NormalizePoints, NormalizeTrafos: <ref id="hidprefsn" name="hidden preference setting">
 <item>normPnts: <ref id="scnormpnts" name="scripting interface command">
 <item>normTrafos: <ref id="scnormtrafos" name="scripting interface command">
@@ -25715,7 +25718,7 @@ Index:
 <item>Paraboloid: <ref id="paraboloidobj" name="Paraboloid object">
 <item>Parameter: <ref id="extrncp" name="ExtrNC attribute">
 <item>Parameter Object: <ref id="toolobj" name="modelling concept">
-<item>ParametricError: <ref id="prefmisc" name="NURBS tesselation mode">
+<item>ParametricError: <ref id="smethod" name="NURBS tesselation mode">
 <item>ParamType: <ref id="icp" name="ICurve attribute">
 <item>pasOb: <ref id="scpasob" name="scripting interface command">
 <item>Paste: <ref id="mmedit" name="main menu entry">
@@ -25732,7 +25735,7 @@ Index:
 <item><ref id="trimp" name="Trim attribute">
 </itemize>
 <item>PatchSamples: <ref id="rio" name="RenderMan interface option">
-<item>PathLength: <ref id="prefmisc" name="NURBS tesselation mode">
+<item>PathLength: <ref id="smethod" name="NURBS tesselation mode">
 <item>Perspective: <ref id="vmtype" name="view menu entry">
 <item>PhiMin, PhiMax: <ref id="top" name="Torus attribute">
 <item>Pick: <ref id="objsel" name="selecting objects by picking">
@@ -26179,7 +26182,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>SMethod:
 <itemize>
 <item><ref id="tesst" name="tesselation tool parameter">,
-<item><ref id="prefmisc" name="preference setting">
+<item><ref id="smethod" name="preference setting">
 </itemize>
 <item>SMFileFormat: <ref id="prefrib" name="preference setting">
 <item>SMFileType: <ref id="prefrib" name="preference setting">
@@ -26195,7 +26198,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>SParamU, SParamV:
 <itemize>
 <item><ref id="tesst" name="tesselation tool parameter">,
-<item><ref id="prefmisc" name="preference setting">
+<item><ref id="smethod" name="preference setting">
 </itemize>
 <item>Special: <ref id="mmspecial" name="special menu">
 <item>Sphere:
