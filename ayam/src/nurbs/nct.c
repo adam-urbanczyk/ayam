@@ -3368,8 +3368,8 @@ ay_nct_crtncircletcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int tcl_status = TCL_OK;
  int ay_status;
- double arc = 360.0;
  ay_object *o = NULL;
+ double arc = 360.0;
  double radius = 1.0;
  int i = 1;
 
@@ -3382,7 +3382,7 @@ ay_nct_crtncircletcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      tcl_status = Tcl_GetDouble(interp, argv[i+1], &radius);
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
-	      if(radius <= AY_EPSILON)
+	      if(radius <= AY_EPSILON || radius != radius)
 		{
 		  ay_error(AY_ERROR, argv[0], "Parameter radius must be > 0.");
 		  return TCL_OK;
@@ -3393,6 +3393,11 @@ ay_nct_crtncircletcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      tcl_status = Tcl_GetDouble(interp, argv[i+1], &arc);
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	      if(fabs(arc) <= AY_EPSILON || arc != arc)
+		{
+		  ay_error(AY_ERROR, argv[0], "Parameter arc must be != 0.");
+		  return TCL_OK;
+		}
 	    }
 	  i += 2;
 	} /* while */
@@ -3496,11 +3501,23 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 		{
 		  tcl_status = Tcl_GetDouble(interp, argv[i+1], &width);
 		  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+		  if(fabs(width) <= AY_EPSILON || width != width)
+		    {
+		      ay_error(AY_ERROR, argv[0],
+			       "Parameter width must be != 0.");
+		      return TCL_OK;
+		    }
 		}
 	      if((argv[i][0] == '-') && (argv[i][1] == 'h'))
 		{
 		  tcl_status = Tcl_GetDouble(interp, argv[i+1], &height);
 		  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+		  if(fabs(height) <= AY_EPSILON || height != height)
+		    {
+		      ay_error(AY_ERROR, argv[0],
+			       "Parameter height must be != 0.");
+		      return TCL_OK;
+		    }
 		}
 	      i += 2;
 	    } /* while */
@@ -3844,41 +3861,58 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
       i = 1;
       while(i+1 < argc)
 	{
-	  if((argv[i][0] == '-') && (argv[i][1] == 'a'))
+	  if(argv[i][0] == '-')
 	    {
-	      tcl_status = Tcl_GetDouble(interp, argv[i+1], &arc);
-	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
-	    }
-	  else
-	    if((argv[i][0] == '-') && (argv[i][1] == 'r'))
-	      {
-		tcl_status = Tcl_GetDouble(interp, argv[i+1], &radius);
-		AY_CHTCLERRRET(tcl_status, argv[0], interp);
-	      }
-	    else
-	      if((argv[i][0] == '-') && (argv[i][1] == 's'))
+	      switch(argv[i][1])
 		{
+		case 'a':
+		  tcl_status = Tcl_GetDouble(interp, argv[i+1], &arc);
+		  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+		  if(fabs(arc) <= AY_EPSILON || arc != arc)
+		    {
+		      ay_error(AY_ERROR, argv[0],
+			       "Parameter arc must be != 0.");
+		      return TCL_OK;
+		    }
+		  break;
+		case 'r':
+		  tcl_status = Tcl_GetDouble(interp, argv[i+1], &radius);
+		  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+		  if(radius <= AY_EPSILON || radius != radius)
+		    {
+		      ay_error(AY_ERROR, argv[0],
+			       "Parameter radius must be > 0.");
+		      return TCL_OK;
+		    }
+		  break;
+		case 's':
 		  tcl_status = Tcl_GetInt(interp, argv[i+1], &sections);
 		  AY_CHTCLERRRET(tcl_status, argv[0], interp);
-		}
-	      else
-		if((argv[i][0] == '-') && (argv[i][1] == 'o'))
-		  {
-		    tcl_status = Tcl_GetInt(interp, argv[i+1], &order);
-		    AY_CHTCLERRRET(tcl_status, argv[0], interp);
-		  }
-	  i += 2;
-	}
-    }
-
-  if(sections < 1)
-    {
-      ay_error(AY_ERROR, argv[0], "Parameter sections must be >= 1.");
-      return TCL_OK;
-    }
-
-  if(order < 2)
-    order = 4;
+		  if(sections < 1)
+		    {
+		      ay_error(AY_ERROR, argv[0],
+			       "Parameter sections must be >= 1.");
+		      return TCL_OK;
+		    }
+		  break;
+		case 'o':
+		  tcl_status = Tcl_GetInt(interp, argv[i+1], &order);
+		  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+		  if(sections < 2)
+		    {
+		      ay_error(AY_ERROR, argv[0],
+			       "Parameter order must be >= 2.");
+		      return TCL_OK;
+		    }
+		  break;
+		default:
+		  break;
+		} /* switch */
+	      i++;
+	    } /* if is opt */
+	  i++;
+	} /* while */
+    } /* if have args */
 
   /* create object */
   if(!(o = calloc(1, sizeof(ay_object))))
