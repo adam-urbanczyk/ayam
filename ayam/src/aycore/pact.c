@@ -2901,7 +2901,7 @@ ay_pact_snaptogridcb(struct Togl *togl, int argc, char *argv[])
 			    } /* switch */
 			} /* if */
 		    } /* for */
-		} /* if */
+		} /* if have pnts */
 
 	      ay_pact_clearpointedit(&pe);
 	    }
@@ -2949,8 +2949,8 @@ ay_pact_snaptogridcb(struct Togl *togl, int argc, char *argv[])
 		    } /* if */
 		  pnt = pnt->next;
 		} /* while */
-	    } /* if */
-	}
+	    } /* if have selp */
+	} /* if snap objs or pnts */
 
       if(o->modified)
 	{
@@ -3012,6 +3012,7 @@ ay_pact_snaptomarkcb(struct Togl *togl, int argc, char *argv[])
 
        if(mode == 0)
 	 {
+	   /* snap points */
 	   if(o->selp)
 	     {
 	       glPushMatrix();
@@ -3059,6 +3060,7 @@ ay_pact_snaptomarkcb(struct Togl *togl, int argc, char *argv[])
 	 }
        else
 	 {
+	   /* snap objects */
 	   p[0] = view->markworld[0];
 	   p[1] = view->markworld[1];
 	   p[2] = view->markworld[2];
