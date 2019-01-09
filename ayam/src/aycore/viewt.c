@@ -1368,7 +1368,6 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 			  ay_error(AY_EOMEM, fname, NULL);
 			  return TCL_OK;
 			}
-
 		      strcpy(o->name, argv[i+1]);
 		    } /* if */
 		  o = o->next;
@@ -1380,16 +1379,25 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	    {
 	      if(view->drawmark)
 		{
-		  tclargv[2] = arg2;
-		  tclargv[3] = arg3;
-		  tclargv[4] = arg3;
-		  ay_vact_movetcb(togl, 5, tclargv);
-		  tclargv[2] = arg4;
-		  sprintf(buf1, "%g", width/2.0-view->markx);
-		  tclargv[3] = buf1;
-		  sprintf(buf2, "%g", height/2.0-view->marky);
-		  tclargv[4] = buf2;
-		  ay_vact_movetcb(togl, 5, tclargv);
+		  if(view->type != AY_VTPERSP)
+		    {
+		      tclargv[2] = arg2;
+		      tclargv[3] = arg3;
+		      tclargv[4] = arg3;
+		      ay_vact_movetcb(togl, 5, tclargv);
+		      tclargv[2] = arg4;
+		      sprintf(buf1, "%g", width/2.0-view->markx);
+		      tclargv[3] = buf1;
+		      sprintf(buf2, "%g", height/2.0-view->marky);
+		      tclargv[4] = buf2;
+		      ay_vact_movetcb(togl, 5, tclargv);
+		    }
+		  else
+		    {
+		      AY_V3SUB(t, view->to, view->markworld);
+		      AY_V3SUB(view->to, view->to, t);
+		      AY_V3SUB(view->from, view->from, t);
+		    }
 		  need_updatemark = AY_TRUE;
 		}
 	    }
