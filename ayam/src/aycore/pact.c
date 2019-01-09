@@ -1592,8 +1592,7 @@ ay_pact_insertac(ay_acurve_object *acurve, int *index, double *objXYZ, int edit)
 	      acurve->length--;
 	      return AY_EOMEM;
 	    }
-	  memcpy(newcontrolv, oldcontrolv,
-		 (acurve->length-1)*3*sizeof(double));
+	  memcpy(newcontrolv, oldcontrolv, (acurve->length-1)*3*sizeof(double));
 	  j = (acurve->length-1)*3;
 	  if(edit)
 	    {
@@ -2592,7 +2591,7 @@ ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
 	  o->modified = AY_TRUE;
 	  ay_pact_notify(o, j, k-pact_numpo[j]);
 	  notifyparent = AY_TRUE;
-	} /* if */
+	} /* if israt */
     } /* for */
 
   if(!ay_prefs.lazynotify && notifyparent)
@@ -2771,7 +2770,7 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
 
 	  sel = sel->next;
 	} /* while */
-    } /* if */
+    } /* if sel/all */
 
   if(notify_parent)
     {
@@ -2950,7 +2949,7 @@ ay_pact_snaptogridcb(struct Togl *togl, int argc, char *argv[])
 		  pnt = pnt->next;
 		} /* while */
 	    } /* if have selp */
-	} /* if snap objs or pnts */
+	} /* if snap objs/pnts */
 
       if(o->modified)
 	{
@@ -3056,7 +3055,7 @@ ay_pact_snaptomarkcb(struct Togl *togl, int argc, char *argv[])
 	   else
 	     {
 	       /* XXXX output error message? */
-	     } /* if */
+	     } /* if have selp */
 	 }
        else
 	 {
@@ -3069,7 +3068,7 @@ ay_pact_snaptomarkcb(struct Togl *togl, int argc, char *argv[])
 	   o->movy = p[1];
 	   o->movz = p[2];
 	   notify_parent = AY_TRUE;
-	 }
+	 } /* if snap pnts/objs */
 
        sel = sel->next;
      } /* while */
@@ -3178,7 +3177,7 @@ ay_pact_multiptcb(struct Togl *togl, int argc, char *argv[])
 	      (void)ay_notify_object(o);
 	      o->modified = AY_TRUE;
 	    } /* if */
-	} /* if */
+	} /* if selp */
       sel = sel->next;
     } /* while */
 
