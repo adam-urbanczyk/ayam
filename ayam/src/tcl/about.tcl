@@ -15,6 +15,10 @@
 proc aboutInsert { w } {
 global ay tcl_version tk_version tcl_patchLevel tk_patchLevel tcl_platform
 
+if { $tcl_platform(platform) != "windows" } {
+    $w.ftext.text configure -state normal
+}
+
 if { $ay(views) != "" } {
     getVersion
 } else {
@@ -38,7 +42,7 @@ $w.ftext.text insert end \
 Ayam, a free 3D Tcl/Tk/OpenGL/RenderMan modeler
 
 Ayam is
-Copyright (c) 1998-2018 by Randolf Schultz
+Copyright (c) 1998-2019 by Randolf Schultz
 (randolf.schultz@gmail.com)
 All Rights Reserved
 
@@ -85,7 +89,9 @@ Vendor:   $ay(gl_ven)
 Show Extensions: "
 
 set ay(aboutCBIndex) [$w.ftext.text index end]
+if { ! [winfo exists $w.ftext.text.extb] } {
 checkbutton $w.ftext.text.extb -variable ay(aboutShowsExt) -pady 0
+}
 if { $ay(ws) == "Win32" } {
     $w.ftext.text.extb conf -bg [$w.ftext.text cget -bg]
 }
@@ -147,9 +153,12 @@ Copyright (c) 1988-1997 Sam Leffler
 Copyright (c) 1991-1997 Silicon Graphics, Inc.
 "
 
-
+if { $tcl_platform(platform) != "windows" } {
+     $w.ftext.text configure -state disabled
 }
 
+}
+# aboutInsert
 
 # aboutAyam:
 #  open the about window
