@@ -318,9 +318,9 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 	      glDepthFunc(GL_LEQUAL);
 	    }
 
-	  /* temporarily disable drawing of selected points in find_u
-	     action */
-	  if(view->drawhandles != 2)
+	  /* temporarily disable drawing of selected points in 
+	     "edit weight" and "find u" actions */
+	  if(view->drawhandles < 2)
 	    {
 	  /* set color for selected points */
 	  glColor3f((GLfloat)ay_prefs.tpr, (GLfloat)ay_prefs.tpg,
