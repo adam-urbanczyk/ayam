@@ -1,5 +1,5 @@
-[23. Dec 2018] Tip:
-===================
+[2. Jan 2019] Tip:
+==================
 Bug Fixes:
 o fix window close shortcut in external views (SF 579)
 o fix shading of rational SDNPatch surfaces (SF 580)
@@ -10,6 +10,7 @@ o setting the mark via double click does not normalize the mark (SF 583)
 o fix memory access errors when removing knots (SF 584)
 o fix selection management of dtree script when opening/closing sub
   trees (SF 585)
+o fix offset of periodic curve with collinear sections (SF 586)
 
 Modelling:
 o RiInc/RiProc objects now draw the bounding box with dashed lines
