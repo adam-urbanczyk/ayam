@@ -125,7 +125,6 @@ bind $f.li <<ListboxSelect>> {
 	    catch {bind $w <ISO_Left_Tab> "focus $ay(tree);break"}
 	}
     }
-    # if
 
     after idle plb_setscrollregion
 }

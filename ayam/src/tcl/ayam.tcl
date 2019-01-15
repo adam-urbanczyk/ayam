@@ -797,18 +797,20 @@ array set ay {
 }
 # array ay
 
+# the mark
 array set aymark {
  x 0
  y 0
  z 0
  w 1
 }
+# array aymark
 
 # miscellaneous dialog data
 array set aydd {
     Name ""
 }
-#array aydd
+# array aydd
 
 # (re)set global variable that holds the error number
 set ay_error 0
@@ -889,6 +891,7 @@ if { $tcl_platform(platform) == "windows" } {
     set ayviewshortcuts(View1) "Multi_key"
 
     catch {unset sc scdir}
+    # End Win32
 } else {
     # UNIX specific settings:
     set ayprefs(Plugins) "[file dirname [info nameofexecutable]]/plugins"
@@ -896,12 +899,10 @@ if { $tcl_platform(platform) == "windows" } {
 
     set ayprefs(ShiftTab) "<ISO_Left_Tab>"
 
-    #
     set ws ""
     catch {set ws [tk windowingsystem]}
     if {$ws == "aqua" } {
 	# Aqua specific settings:
-
 	set ay(ws) "Aqua"
 
 	set ay(ayamrc) "~/Library/Preferences/.ayamrc"
@@ -988,6 +989,7 @@ if { $tcl_platform(platform) == "windows" } {
 
 	# Aqua always sends Shift-Tab
 	set ayprefs(ShiftTab) "<Shift-Tab>"
+	# End Aqua
     } else {
 	# X11 specific settings:
 	# improve dialog box appearance
@@ -995,19 +997,21 @@ if { $tcl_platform(platform) == "windows" } {
 	    option add *Dialog.msg.font {variable}
 	}
 	option add *Dialog.msg.wrapLength 6i
+	# End X11
     }
     # if
 
     catch {unset ws}
+    # End UNIX
 }
 # if
 
-
+# address some MacOS/X11 specifics
 if { ($ay(ws) != "Aqua") && ($tcl_platform(os) == "Darwin") } {
     # image buttons need fixing
     set ayprefs(FixImageButtons) 1
 
-    # X11 on Darwin only produces KP_0 - KP_9
+    # X11 on Darwin only produces KP_0 - KP_9 (ignores NumLock)
     set aymainshortcuts(SProp00) "KP_0"
     set aymainshortcuts(SProp11) "KP_1"
     set aymainshortcuts(SProp22) "KP_2"
@@ -1019,18 +1023,16 @@ if { ($ay(ws) != "Aqua") && ($tcl_platform(os) == "Darwin") } {
     set aymainshortcuts(SProp88) "KP_8"
     set aymainshortcuts(SProp99) "KP_9"
 
-    # X11 on Darwin sends Shift-Tab for Shift-Tab
-    set ayprefs(ShiftTab) "<Shift-Tab>"
-
-    #
     set ayviewshortcuts(OSUp) "Ctrl-KP_8"
     set ayviewshortcuts(OSDown) "Ctrl-KP_2"
     set ayviewshortcuts(OSSUp) "Ctrl-Shift-KP_8"
     set ayviewshortcuts(OSSDown) "Ctrl-Shift-KP_2"
     set ayviewshortcuts(OSLeft) "Ctrl-KP_4"
     set ayviewshortcuts(OSRight) "Ctrl-KP_6"
-
     set ayviewshortcuts(Reset) "Ctrl-KP_5"
+
+    # X11 on Darwin sends Shift-Tab for Shift-Tab
+    set ayprefs(ShiftTab) "<Shift-Tab>"
 }
 
 # fix Shift-Tab binding
@@ -1052,8 +1054,9 @@ if { [llength [info commands winfo]] != 0 } {
     catch {unset visuals}
 }
 
-# if envvar AYAMRC is set, use it
+# infer ayamrc from environment
 if { [string length [array names env AYAMRC]] != 0 } {
+    # envvar AYAMRC is set, use it
     set ay(ayamrc) "$env(AYAMRC)"
 } else {
     if { $tcl_platform(platform) == "windows" } {
@@ -1325,6 +1328,7 @@ proc rV { {w ""} {f 0} } {
 	    }
 	}
     }
+    # if have views
 
     if { $tmp != "" } {
 	$tmp mc
@@ -1492,8 +1496,7 @@ if { $AYWRAPPED == 1 } {
     }
     lappend auto_path $bwdir
     ayam_loadscript tree
-
-    unset scdir bwdir
+    catch {unset scdir bwdir}
 }
 
 # load script for object listbox (olb)
@@ -1534,8 +1537,8 @@ pack .fl.con -in .fl -expand 1 -fill both
 bindtags .fl.con.console {.fl.con.console Console PostConsole .fl.con}
 
 bind .fl.con.console <Shift-Return> {
-    event generate .fl.con.console <<Console_Eval>>;
-    after idle { global ayprefs; eval $ayprefs(AUCommands) };
+    event generate .fl.con.console <<Console_Eval>>
+    after idle { global ayprefs; eval $ayprefs(AUCommands) }
     break;
 }
 
@@ -1824,7 +1827,6 @@ if { $ayprefs(SingleWindow) } {
 
     # in singlewindow gui mode, the hierarchy should display the focus ring
     .fu.fMain.fHier configure -highlightthickness 1
-
 } else {
     # in floating gui mode, fu.fMenu is the first, so temporarily remove
     # .fu.fMain from the packer
@@ -1901,7 +1903,7 @@ if { $ayprefs(Scripts) != "" } {
     # foreach
     catch {unset scripts script paths}
 }
-# if
+# if have scripts
 
 # scan for shaders
 shader_scanAll
@@ -1920,12 +1922,12 @@ bind . <Escape> {
 
 # additional key binding(s) for the console
 bind .fl.con.console <$aymainshortcuts(SwCon)> {
-    focus [tk_focusPrev .fl.con];
+    focus [tk_focusPrev .fl.con]
     break;
 }
 if { "$ayprefs(ShiftTab)" != "<$aymainshortcuts(SwCon)>" } {
     bind .fl.con.console $ayprefs(ShiftTab) {
-	focus [tk_focusPrev .fl.con];
+	focus [tk_focusPrev .fl.con]
 	break;
     }
 }
@@ -2193,24 +2195,23 @@ if { $ayprefs(FixX11Menu) } {
 # if
 
 # allow customized keyboard menu traversal
-
 if { $tcl_version > 8.3 } {
     bind all <${aymainshortcuts(MenuMod)}-Key> {
-	::tk::TraverseToMenu %W %A;
-	[winfo toplevel %W] configure -cursor {};
-	%W configure -cursor {};
+	::tk::TraverseToMenu %W %A
+	[winfo toplevel %W] configure -cursor {}
+	%W configure -cursor {}
 	if { [winfo exists %W.f3D.togl] } {
-	    %W.f3D.togl configure -cursor {};
+	    %W.f3D.togl configure -cursor {}
 	}
 	update idletasks
 	break;
     }
     bind all <Alt-Key> {
-	::tk::TraverseToMenu %W %A;
-	[winfo toplevel %W] configure -cursor {};
-	%W configure -cursor {};
+	::tk::TraverseToMenu %W %A
+	[winfo toplevel %W] configure -cursor {}
+	%W configure -cursor {}
 	if { [winfo exists %W.f3D.togl] } {
-	    %W.f3D.togl configure -cursor {};
+	    %W.f3D.togl configure -cursor {}
 	}
 	update idletasks
 	break;
