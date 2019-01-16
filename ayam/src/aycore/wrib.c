@@ -92,8 +92,8 @@ else
 void
 ay_wrib_aimz(RtPoint direction)
 {
- RtFloat xzlen = (RtFloat)0.0, yzlen = (RtFloat)0.0, xrot = (RtFloat)0.0,
-   yrot = (RtFloat)0.0;
+ RtFloat xzlen = (RtFloat)0.0f, yzlen = (RtFloat)0.0f;
+ RtFloat xrot = (RtFloat)0.0f, yrot = (RtFloat)0.0f;
  RtFloat tmp;
 
   if((direction[0] == 0.0) && (direction[1] == 0.0) && (direction[2] == 0.0))
@@ -101,60 +101,60 @@ ay_wrib_aimz(RtPoint direction)
 
   xzlen = (RtFloat)(sqrt(direction[0]*direction[0] +
 			 direction[2]*direction[2]));
-  if(xzlen == 0.0)
+  if(xzlen == 0.0f)
     {
-      yrot = (direction[1] < 0.0) ? (RtFloat)180.0 : (RtFloat)0.0;
+      yrot = (direction[1] < 0.0f) ? (RtFloat)180.0f : (RtFloat)0.0f;
     }
   else
     {
       tmp = direction[2]/xzlen;
 
-      if((tmp>1.0)||(tmp<-1.0))
-	{
-	  fprintf(stderr,"gotcha!\n");
-	  fprintf(stderr,"%g %g\n",direction[0],direction[2]);
-	}
-      yrot = (RtFloat)AY_R2D(acos((fabs(tmp)<=1.0?tmp:(tmp<-1.0?-1.0:1.0))));
+      if(tmp <= -1.0f)
+	yrot = (RtFloat)(-180.0f);
+      else
+	if(tmp >= 1.0f)
+	  yrot = (RtFloat)0.0f;
+	else
+	  yrot = (RtFloat)AY_R2D(acos(tmp));
     }
 
   yzlen = (RtFloat)(sqrt(direction[1]*direction[1] + xzlen*xzlen));
   if(fabs(yzlen) > AY_EPSILON)
     {
-      /*xrot = (RtFloat)AY_R2D(acos(xzlen/yzlen));*/
       xrot = xzlen/yzlen;
-      if(xrot <= -1.0)
-	xrot = -180.0;
+      if(xrot <= -1.0f)
+	xrot = (RtFloat)(-180.0f);
       else
-	if(xrot >= 1.0)
-	  xrot = 0.0;
+	if(xrot >= 1.0f)
+	  xrot = (RtFloat)0.0f;
 	else
-	  xrot = AY_R2D(acos(xrot));
+	  xrot = (RtFloat)AY_R2D(acos(xrot));
     }
   else
     {
-      xrot = (RtFloat)0;
+      xrot = (RtFloat)0.0f;
     }
 
-  if(direction[1] > 0.0)
+  if(direction[1] > 0.0f)
     {
       if(fabs(xrot) > AY_EPSILON)
-	RiRotate(xrot, (RtFloat)1.0, (RtFloat)0.0, (RtFloat)0.0);
+	RiRotate(xrot, (RtFloat)1.0f, (RtFloat)0.0f, (RtFloat)0.0f);
     }
   else
     {
       if(fabs(xrot) > AY_EPSILON)
-	RiRotate(-xrot, (RtFloat)1.0, (RtFloat)0.0, (RtFloat)0.0);
+	RiRotate(-xrot, (RtFloat)1.0f, (RtFloat)0.0f, (RtFloat)0.0f);
     }
 
-  if(direction[0] < 0.0)
+  if(direction[0] < 0.0f)
     {
       if(fabs(yrot) > AY_EPSILON)
-	RiRotate(yrot, (RtFloat)0.0, (RtFloat)1.0, (RtFloat)0.0);
+	RiRotate(yrot, (RtFloat)0.0f, (RtFloat)1.0f, (RtFloat)0.0f);
     }
   else
     {
       if(fabs(yrot) > AY_EPSILON)
-	RiRotate(-yrot, (RtFloat)0.0, (RtFloat)1.0, (RtFloat)0.0);
+	RiRotate(-yrot, (RtFloat)0.0f, (RtFloat)1.0f, (RtFloat)0.0f);
     }
 
  return;
@@ -169,18 +169,18 @@ ay_wrib_placecamera(RtPoint position, RtPoint direction, double roll)
 {
   /* XXXX RiIdentity(); */
   if(fabs(roll) > AY_EPSILON)
-    RiRotate((RtFloat)-roll, (RtFloat)0.0, (RtFloat)0.0, (RtFloat)1.0);
+    RiRotate((RtFloat)-roll, (RtFloat)0.0f, (RtFloat)0.0f, (RtFloat)1.0f);
 
   ay_wrib_aimz(direction);
 
   if((fabs(position[0]) > AY_EPSILON) || (fabs(position[1]) > AY_EPSILON) ||
      (fabs(position[2]) > AY_EPSILON))
     RiTranslate((fabs(position[0]) > AY_EPSILON) ? -position[0] :
-		(RtFloat) 0.0,
+		(RtFloat) 0.0f,
 		(fabs(position[1]) > AY_EPSILON) ? -position[1] :
-		(RtFloat) 0.0,
+		(RtFloat) 0.0f,
 		(fabs(position[2]) > AY_EPSILON) ? -position[2] :
-		(RtFloat) 0.0);
+		(RtFloat) 0.0f);
 
  return;
 } /* ay_wrib_placecamera */
@@ -448,13 +448,13 @@ ay_wrib_trafos(ay_object *o)
        ay_quat_toeuler(o->quat, euler);
        if(fabs(euler[2]) > AY_EPSILON)
 	 RiRotate((RtFloat)AY_R2D(-euler[2]),
-		  (RtFloat)1.0, (RtFloat)0.0, (RtFloat)0.0);
+		  (RtFloat)1.0f, (RtFloat)0.0f, (RtFloat)0.0f);
        if(fabs(euler[1]) > AY_EPSILON)
 	 RiRotate((RtFloat)AY_R2D(-euler[1]),
-		  (RtFloat)0.0, (RtFloat)1.0, (RtFloat)0.0);
+		  (RtFloat)0.0f, (RtFloat)1.0f, (RtFloat)0.0f);
        if(fabs(euler[0]) > AY_EPSILON)
 	 RiRotate((RtFloat)AY_R2D(-euler[0]),
-		  (RtFloat)0.0, (RtFloat)0.0, (RtFloat)1.0);
+		  (RtFloat)0.0f, (RtFloat)0.0f, (RtFloat)1.0f);
      }
 
   if(o->scalx != 1.0 || o->scaly != 1.0 || o->scalz != 1.0)
