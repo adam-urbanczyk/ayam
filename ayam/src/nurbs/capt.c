@@ -372,6 +372,7 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, double *mp,
 		  ay_trafo_rotatematrix(angle, 0.0, 0.0, 1.0, rm);
 		}
 	      ay_trafo_apply3(p, rm);
+
 	      p += stride;
 	      q1 = q2;
 	      q2 += stride;
@@ -436,6 +437,7 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, double *mp,
 	  for(i = 0; i < nc->length; i++)
 	    {
 	      ay_trafo_apply3(&(circcv[a]), rm);
+
 	      a += stride;
 	    }
 	} /* if */
@@ -460,26 +462,26 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, double *mp,
 	goto cleanup;
 
       angle = AY_V3DOT(n, z);
-      if(angle <= -1.0)
-	angle = -180.0;
-      else
-	if(angle >= 1.0)
-	  angle = 0.0;
-	else
+
+      if(angle > -1.0 && angle < 1.0)
+	{
 	  angle = AY_R2D(acos(angle));
 
-      if((fabs(angle) > AY_EPSILON) /*&& (fabs(angle - 180.0) > AY_EPSILON)*/)
-	{
-	  AY_V3CROSS(rotaxis, n, z);
-	  r = AY_V3LEN(rotaxis);
-	  AY_V3SCAL(rotaxis, (1.0/r));
-	  ay_trafo_rotatematrix(-angle, rotaxis[0], rotaxis[1], rotaxis[2], rm);
+	  if(fabs(angle) > AY_EPSILON)
+	    {
+	      AY_V3CROSS(rotaxis, n, z);
+	      r = AY_V3LEN(rotaxis);
+	      AY_V3SCAL(rotaxis, (1.0/r));
+	      ay_trafo_rotatematrix(-angle,
+				    rotaxis[0], rotaxis[1], rotaxis[2], rm);
+	    }
 	}
 
       a = 0;
       for(i = 0; i < nc->length; i++)
 	{
 	  ay_trafo_apply3(&(circcv[a]), rm);
+
 	  a += stride;
 	}
 
