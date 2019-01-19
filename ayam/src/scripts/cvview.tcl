@@ -83,8 +83,23 @@ proc cvview_update { } {
 	    set CVView(stride) 3
 	}
 	default {
-	    # error message?
-	    return;
+	    set arr [getType]AttrData
+	    global $arr
+	    if { [info exists ${arr}(NPInfo)] } {
+		eval "set info \$${arr}(NPInfo)"
+		scan $info "%d x %d" CVView(wi) CVView(he)
+		set CVView(stride) 4
+	    } else {
+		if { [info exists ${arr}(NCInfo)] } {
+		    eval "set info \$${arr}(NCInfo)"
+		    scan $info "%d" CVView(wi)
+		    set CVView(he) 1
+		    set CVView(stride) 4
+		} else {
+		    # error message?
+		    return;
+		}
+	    }
 	}
     }
 
