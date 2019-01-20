@@ -375,8 +375,7 @@ ay_npt_resizearrayw(double **controlvptr, int stride,
       a = 0; b = 0;
       for(i = 0; i < new_width; i++)
 	{
-	  memcpy(&(ncontrolv[b]), &(controlv[a]),
-		 height*stride*sizeof(double));
+	  memcpy(&(ncontrolv[b]), &(controlv[a]), height*stride*sizeof(double));
 
 	  a += (height*stride);
 	  b += (height*stride);
@@ -567,8 +566,7 @@ ay_npt_resizearrayh(double **controlvptr, int stride,
 	{
 	  for(i = 0; i < (height-1); i++)
 	    {
-	      memcpy(&ncontrolv[b], &(controlv[a]),
-		     stride*sizeof(double));
+	      memcpy(&ncontrolv[b], &(controlv[a]), stride * sizeof(double));
 	      b += stride;
 
 	      for(j = 1; j <= newpersec[i]; j++)
@@ -9936,11 +9934,13 @@ ay_npt_collapseselp(ay_object *o)
       new->points[i] = selp->point;
       new->indices[i] = selp->index;
       i++;
-      if(selp->type == AY_PTRAT)
-	memcpy(selp->point, first, 4*sizeof(double));
-      else
-	memcpy(selp->point, first, 3*sizeof(double));
-
+      if(selp->point != first)
+	{
+	  if(selp->type == AY_PTRAT)
+	    memcpy(selp->point, first, 4*sizeof(double));
+	  else
+	    memcpy(selp->point, first, 3*sizeof(double));
+	}
       selp = selp->next;
     } /* while */
   new->multiplicity = count;
