@@ -354,11 +354,13 @@ ay_nct_collapseselp(ay_object *o)
       new->points[i] = selp->point;
       new->indices[i] = selp->index;
       i++;
-      if(selp->type == AY_PTRAT)
-	memcpy(selp->point, first, 4*sizeof(double));
-      else
-	memcpy(selp->point, first, 3*sizeof(double));
-
+      if(selp->point != first)
+	{
+	  if(selp->type == AY_PTRAT)
+	    memcpy(selp->point, first, 4*sizeof(double));
+	  else
+	    memcpy(selp->point, first, 3*sizeof(double));
+	}
       selp = selp->next;
     } /* while */
   new->multiplicity = count;
