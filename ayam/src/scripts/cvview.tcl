@@ -8,7 +8,7 @@
 #
 # See the file License for details.
 
-# cvview.tcl - display NURBS patch points as property
+# cvview.tcl - display control vertices / points as property
 
 array set CVView {
     arr CVView
@@ -30,7 +30,7 @@ proc cvview_update { } {
     # create UI
     catch {destroy $ay(pca).$CVView(w)}
     set w [frame $ay(pca).$CVView(w)]
-
+puts hier2
     getProp
     getType t
     switch $t {
@@ -83,7 +83,10 @@ proc cvview_update { } {
 	    set CVView(stride) 3
 	}
 	default {
-	    set arr [getType]AttrData
+	    # for objects that provide NPatch/NCurve objects _and_ have
+	    # a NPInfo/NCInfo field in their property we can infer the
+	    # width/height from this info fields
+	    set arr ${t}AttrData
 	    global $arr
 	    if { [info exists ${arr}(NPInfo)] } {
 		eval "set info \$${arr}(NPInfo)"
@@ -96,12 +99,13 @@ proc cvview_update { } {
 		    set CVView(he) 1
 		    set CVView(stride) 4
 		} else {
-		    # error message?
+		    # issue error message?
 		    return;
 		}
 	    }
 	}
     }
+    # switch
 
     getPnt -all CVView(pnts)
     selPnts -get CVView(spnts)
@@ -118,7 +122,7 @@ proc cvview_update { } {
 	    -takefocus 0
     }
 
-    # vertival scrolling realized via property canvas...
+    # vertical scrolling realized via property canvas...
     set canvash [expr $CVView(he)*$m + 20 ]
 
     set ca [canvas $w.ca -width $canvasw -height $canvash]
@@ -182,14 +186,14 @@ proc cvview_update { } {
 
 
 # cvview_showvalues:
-#  get coordinates of NPatch control point that the mouse currently entered
-#  and display them in a balloon/tool tip window
+#  get coordinates of the control point that the mouse currently entered
+#  and display them in a balloon / tool tip window
 proc cvview_showvalues { } {
     global ay CVView
+
     set ca $ay(pca).$CVView(w).ca
     set s [lindex [$ca gettags current] 1]
     scan $s "%d,%d" x y
-
     set li [expr ($x*$CVView(he)+$y)*$CVView(stride)]
     incr x
     incr y
@@ -205,7 +209,7 @@ proc cvview_showvalues { } {
     } else {
 	set txt "$x,$y: ($pntx, $pnty, $pntz)"
     }
-    # create a balloon window with txt at the mouse position
+    # create a balloon window at the mouse position
     set wx [expr [winfo pointerx $ca] + 10]
     set wy [expr [winfo pointery $ca] + 10]
     set top $ca.balloon
@@ -231,6 +235,7 @@ proc cvview_showvalues { } {
 #
 proc cvview_toggleselect { } {
     global ay CVView
+
     set ca $ay(pca).$CVView(w).ca
     set s [lindex [$ca gettags current] 1]
     scan $s "%d,%d" x y
