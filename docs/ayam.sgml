@@ -33,7 +33,7 @@ code example of 6 lines text (needs another 2 for the upper/lower lines)
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>30. Nov 2018
+<date>26. Jan 2019
 
 <abstract>
 This is the documentation of Ayam 1.26 &ndash; a free 3D modelling environment
@@ -20568,6 +20568,9 @@ see also the image above.
 
 The script currently supports the following object types:
 NPatch, NCurve, IPatch, PatchMesh, ACurve, ICurve, BCurve, and SDCurve.
+In addition also objects that provide NPatch/NCurve objects
+and show a NPInfo/NCInfo entry in their parameter property
+are supported.<footnote>Since 1.26.</footnote>
 
 If the script is loaded, there is a new entry in the <tt>"Custom"</tt> menu
 that allows to add a new property to an individual surface or curve object.
