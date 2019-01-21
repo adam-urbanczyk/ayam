@@ -20,7 +20,7 @@ array set CVView {
 }
 
 # cvview_update:
-#
+# get property procedure of CVView property
 #
 proc cvview_update { } {
     global ay CVView
@@ -30,7 +30,7 @@ proc cvview_update { } {
     # create UI
     catch {destroy $ay(pca).$CVView(w)}
     set w [frame $ay(pca).$CVView(w)]
-puts hier2
+
     getProp
     getType t
     switch $t {
@@ -144,28 +144,31 @@ puts hier2
 		-tags [list o "$i,$j"] -fill $color
 	    incr j; incr jm $m
 	}
-	# vertical lines
+	# add vertical lines
 	$ca create line [expr {$im+$r}] [expr {$r+$m}]\
 	    [expr {$im+$r}] [expr {$CVView(he)*$m+$r}] -tags l
-	# width labels
+	# add width labels
 	$ca create text [expr $im+$r] $r2 -text [expr $i+1]
 	incr i; incr im $m
     }
-    # horizontal lines
+
+    # add horizontal lines
     set j 0; set jm $m
     while { $j < $CVView(he) } {
 	$ca create line [expr {$r+$m}] [expr {$jm+$r}]\
 	    [expr {$CVView(wi)*$m+$r}] [expr {$jm+$r}] -tags l
-	# height labels
+	# add height labels
 	$ca create text $r2 [expr $jm+$r] -text [expr $j+1]
 	incr j; incr jm $m
     }
-    # arrow
+
+    # add an arrow
     set x [expr {$CVView(wi)*$m+$r}]
     set y [expr {$jm+$r-$m}]
     $ca create line [expr $x-7] [expr $y-7] $x $y -width 2 -tags l
     $ca create line [expr $x+7] [expr $y-7] $x $y -cap round -width 2 -tags l
 
+    # establish balloon binding
     $ca bind o <Enter> cvview_showvalues
     $ca bind o <Leave> "destroy $ay(pca).$CVView(w).ca.balloon"
 
