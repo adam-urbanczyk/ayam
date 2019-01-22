@@ -772,7 +772,7 @@ ay_tags_hastcmd(ClientData clientData, Tcl_Interp *interp,
   tag = o->tags;
   while(tag)
     {
-      if(!strcmp(tag->name, argv[1]))
+      if(tag->name && !strcmp(tag->name, argv[1]))
 	{
 	  Tcl_SetResult(interp, "1", TCL_VOLATILE);
 	  return TCL_OK;
