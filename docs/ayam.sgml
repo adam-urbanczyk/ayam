@@ -19790,6 +19790,20 @@ See also section <ref id="markac" name="Setting the Mark">.
 
 <#if out="latex"><p><x/phantomsection/</#if>
 <#if out="html"><f/<inf/<newline>//</#if>
+getMark:<label id="scgetmark">
+<itemize>
+ <item>Synopsis: <tt>"getMark"</tt>
+ <item>Background: Yes, Undo: No, Safe: No, Type: Procedure
+ <item>Description: This procedure returns the current global mark
+as a list of three floating point values.
+<p><p>
+This procedure only returns meaningful data, if there is at least one view.
+<p>
+See also section <ref id="markac" name="Setting the Mark">.
+</itemize>
+
+<#if out="latex"><x/newpage/<p><p><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
 tmpGet:<label id="sctmpget">
 <itemize>
  <item>Synopsis: <tt>"tmpGet tmpdir varname [ext]"</tt>
@@ -19799,7 +19813,7 @@ file in tmpdir and puts the complete name (with the optionally present
 extension appended) into the variable designated by <tt/varname/.
 </itemize>
 
-<#if out="latex"><x/newpage/<p><x/phantomsection/</#if>
+<#if out="latex"><x/phantomsection/</#if>
 <#if out="html"><f/<inf/<newline>//</#if>
 whatis:<label id="scwhatis">
 <itemize>
@@ -25266,6 +25280,7 @@ Index:
 <item>genfnPo: <ref id="scgenfnPo" name="scripting interface command">
 <item>gensnPo: <ref id="scgensnPo" name="scripting interface command">
 <item>getBB: <ref id="scgetbb" name="scripting interface command">
+<item>getMark: <ref id="scgetmark" name="scripting interface command">
 <item>getName: <ref id="scgetname" name="scripting interface command">
 <item>getPlaneNormal: <ref id="scgetplanenormal" name="scripting interface command">
 <item>getPnt: <ref id="scgetpnt" name="scripting interface command">
