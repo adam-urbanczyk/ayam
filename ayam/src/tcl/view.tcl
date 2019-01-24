@@ -1643,6 +1643,15 @@ proc setMark { {px ""} {y 0} {z 0} } {
 
 
 ##############################
+# getMark:
+proc getMark { } {
+ global aymark
+ return [list $aymark(x) $aymark(y) $aymark(z)]
+}
+# getMark
+
+
+##############################
 # warpMouse:
 # warp mouse pointer to new position
 proc warpMouse { dx dy } {
