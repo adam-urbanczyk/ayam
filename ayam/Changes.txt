@@ -1,5 +1,5 @@
-[2. Jan 2019] Tip:
-==================
+[26. Jan 2019] Ayam 1.26:
+=========================
 Bug Fixes:
 o fix window close shortcut in external views (SF 579)
 o fix shading of rational SDNPatch surfaces (SF 580)
@@ -38,6 +38,8 @@ o add keyboard shortcuts to call refine/coarsen tools from view windows:
   <#>/<'>
 o open/close/refine/coarsen tools now support all (even plugin defined)
   curve object types (e.g. BCurve)
+o weight display takes now precedence over display of selected points in
+  the weight editing action
 
 GUI:
 o improved initial layout process of dialog windows
@@ -58,6 +60,7 @@ o added "whatis" command to inquire about Tcl objects in the console
 o added Script object example script "extruden.tcl" that extrudes
   arbitrary curves about their mean or manually specified normal
 o added "getPlaneNormal" command to compute the plane normal of an object
+o added "setMark"/"getMark" commands to manipulate the mark from scripts
 o renamed "coarsenNC" command to "coarsenC"
 o many scripting interface commands now check their parameters more
   rigorously for NaN values
