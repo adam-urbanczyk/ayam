@@ -1,1 +1,0 @@
-s/file=pics\/\(.*\).ps/file=pics\/\1.png/g
