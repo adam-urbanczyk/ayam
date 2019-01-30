@@ -33,7 +33,7 @@ code example of 6 lines text (needs another 2 for the upper/lower lines)
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>26. Jan 2019
+<date>28. Jan 2019
 
 <abstract>
 This is the documentation of Ayam 1.26 &ndash; a free 3D modelling environment
@@ -16300,6 +16300,9 @@ creates a 3D sheared version of the standard patch mesh.
 <newline>
 creates a large centered bilinear patch mesh of width 3 and height 3.
 </enum>
+
+<p>
+See also section <ref id="patchmeshobj" name="PatchMesh Object">.
 
 <#if out="latex"><x/newpage/</#if>
 
