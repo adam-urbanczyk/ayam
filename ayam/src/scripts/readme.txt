@@ -1,4 +1,4 @@
-[readme.txt - 27. Nov 2018]
+[readme.txt - 1. Feb 2019]
 
 This directory contains a collection of various scripts for Ayam.
 
@@ -59,7 +59,7 @@ apnt.tcl - automatically invoke the point modelling mode after each point
 rc.tcl - revert cursor key bindings for parallel (modelling) views
 ssp.tcl - save point selection to tags
 cvview.tcl - show control points in a property
-
+link.tcl - manually control linking of object hierarchy and views
 
 Misc:
 aytest.tcl - test Ayam
