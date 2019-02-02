@@ -96,7 +96,7 @@ if { 0 } {
     checkbutton $cb -variable ay(couple) -command link_toggle\
 	-image ay_Link_img\
 	-ind false -selectcolor "" -rel flat\
-	-overrel raised -offrel flat
+	-overrel raised -offrel flat -borderwidth 1
 }
 
 balloon_set $cb "Link Hierarchy with Views"
@@ -107,8 +107,22 @@ if { $ay(ws) == "Aqua" } {
     if { $ay(ws) == "Win32" } {
 	place $cb -in .fu.fMain.fHier -anchor ne -relx 1.0 -y 0 -height 17
     } else {
-	place $cb -in .fu.fMain.fHier -anchor ne -relx 1.0 -y 0
+	# X11
+	place $cb -in .fu.fMain.fHier -anchor ne -relx 1.0 -y 0\
+	    -height 17 -width 17
     }
+}
+
+
+addToProc shortcut_fkeys {
+    bind $w <[repctrl $aymainshortcuts(Update)]>\
+     {
+	 ayError 4 $aymainshortcuts(Update) "Update!"
+	 set ay(coupleorig) $ay(couple)
+	 set ay(couple) 1
+	 notifyOb -all; uS 1 1; rV "" 1;
+	 set ay(couple) $ay(coupleorig)
+     }
 }
 
 catch { bind . $link_hotkey link_togglekbd }
