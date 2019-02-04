@@ -495,6 +495,8 @@ array set ayviewshortcuts {
     RefineC "numbersign"
     CoarsenC "apostrophe"
 
+    RevertC "exclam"
+
     MoveV "v"
     MoveZV "V"
     RotV "R"
