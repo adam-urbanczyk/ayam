@@ -949,6 +949,12 @@ proc shortcut_viewactions { w } {
 	plb_update; rV
 	focus %W
     }
+    bind $w <$ayviewshortcuts(RevertC)> {
+	undo save RevertC
+	revertC
+	plb_update; rV
+	focus %W
+    }
     bind $w <$ayviewshortcuts(Pick)> "actionPick $w.f3D.togl"
 
     bind $w.f3D.togl <[repctrl $ayviewshortcuts(SetMark)]>\
@@ -1025,10 +1031,15 @@ pack $w.ftext.text -in $w.ftext -side left -fill both -expand yes
 lappend mappings bar \|
 lappend mappings parenright \)
 lappend mappings parenleft \(
+lappend mappings plus \+
+lappend mappings minus \-
 lappend mappings asterisk \*
 lappend mappings slash \/
 lappend mappings numbersign \#
 lappend mappings apostrophe \'
+#lappend mappings quoteright \´
+lappend mappings period \.
+lappend mappings exclam \!
 
 foreach elem [array names ayviewshortcuts] {
     eval set sc1 \$ayviewshortcuts(${elem})
