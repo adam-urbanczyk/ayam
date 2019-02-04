@@ -33,7 +33,7 @@ code example of 6 lines text (needs another 2 for the upper/lower lines)
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>28. Jan 2019
+<date>4. Feb 2019
 
 <abstract>
 This is the documentation of Ayam 1.26 &ndash; a free 3D modelling environment
@@ -19779,11 +19779,15 @@ section <ref id="scgetname" name="getName scripting interface command">.
 <#if out="html"><f/<inf/<newline>//</#if>
 setMark:<label id="scsetmark">
 <itemize>
- <item>Synopsis: <tt>"setMark [x y z]"</tt>
+ <item>Synopsis: <tt>"setMark [x y z | l]"</tt>
  <item>Background: Yes, Undo: No, Safe: No, Type: Procedure
  <item>Description: This procedure sets the global mark to the specified
-coordinates. If no arguments are provided, the global mark is cleared.
+coordinates.<newline>
+If there is only one argument, it is expected to be a list
+of three floating point values.
 <p><p>
+If no arguments are provided, the global mark is cleared.
+<p>
 This procedure only works, if there is at least one view.
 <p>
 See also section <ref id="markac" name="Setting the Mark">.
@@ -26056,7 +26060,6 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>rV: <ref id="scrv" name="scripting interface command">
 </list>
 
-<#if out="latex"><x/newpage/</#if>
 <p>
 &nbsp;<newline>&nbsp;
 <tt/&nbsp;&nbsp;<bf/S//
