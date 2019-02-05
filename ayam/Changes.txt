@@ -1,3 +1,14 @@
+[5. Feb 2019] Tip:
+==================
+
+Modelling:
+o add keyboard shortcut to call the revert tool from view windows: <!>
+
+Scripts/Scripting Interface:
+o added script "link.tcl" to manually control updates of object hierarchy
+  and views
+
+
 [26. Jan 2019] Ayam 1.26:
 =========================
 Bug Fixes:
