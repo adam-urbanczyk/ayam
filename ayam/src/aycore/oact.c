@@ -323,7 +323,7 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
 int
 ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ int ay_status = AY_OK, tcl_status = TCL_OK;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  static double oldwinx = 0.0, oldwiny = 0.0;
  double height = Togl_Height(togl);
@@ -341,20 +341,33 @@ ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
  ay_object *o = NULL;
  ay_point *point = NULL;
  char fname[] = "rotate_act";
+ int have_angle = AY_FALSE;
 
   /* parse args */
-  ay_status = ay_oact_parseargs(togl, argc, argv, fname,
-				&winx, &winy, &oldwinx, &oldwiny);
-
-  if(ay_status)
+  if(argc == 4 && argv[2][0] == '-' && argv[2][1] == 'a')
     {
-      return TCL_OK;
+      tcl_status = Tcl_GetDouble(ay_interp, argv[3], &angle);
+      AY_CHTCLERRRET(tcl_status, argv[0], ay_interp);
+      if(angle != angle || fabs(angle) < AY_EPSILON)
+	return TCL_OK;
+      have_angle = AY_TRUE;
     }
 
-  /* bail out, as long as we stay in the same grid cell */
-  if((oldwinx == winx) && (oldwiny == winy))
+  if(!have_angle)
     {
-      return TCL_OK;
+      ay_status = ay_oact_parseargs(togl, argc, argv, fname,
+				    &winx, &winy, &oldwinx, &oldwiny);
+
+      if(ay_status)
+	{
+	  return TCL_OK;
+	}
+
+      /* bail out, as long as we stay in the same grid cell */
+      if((oldwinx == winx) && (oldwiny == winy))
+	{
+	  return TCL_OK;
+	}
     }
 
   glGetIntegerv(GL_VIEWPORT, vp);
@@ -376,34 +389,37 @@ ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
       ay_trafo_translatematrix(o->movx, o->movy, o->movz, mm);
       ay_trafo_scalematrix(o->scalx, o->scaly, o->scalz, mm);
 
-      if(GL_FALSE == gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz))
+      if(!have_angle)
 	{
-	  return TCL_OK;
+	  if(GL_FALSE == gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz))
+	    {
+	      return TCL_OK;
+	    }
+
+	  owiny = height-owiny;
+
+	  v1[0] = oldwinx-owinx;
+	  v1[1] = oldwiny-owiny;
+	  /* bail out, if we get too near the origin */
+	  if((fabs(v1[0]) < AY_EPSILON) && (fabs(v1[1]) < AY_EPSILON))
+	    continue;
+
+	  alpha = AY_R2D(acos(v1[0]/AY_V2LEN(v1)));
+	  if(v1[1] < 0.0)
+	    alpha = 360.0 - alpha;
+
+	  v2[0] = winx-owinx;
+	  v2[1] = winy-owiny;
+	  /* bail out, if we get too near the origin */
+	  if((fabs(v2[0]) < AY_EPSILON) && (fabs(v2[1]) < AY_EPSILON))
+	    continue;
+
+	  beta = AY_R2D(acos(v2[0]/AY_V2LEN(v2)));
+	  if(v2[1] < 0.0)
+	    beta = 360.0 - beta;
+
+	  angle = beta - alpha;
 	}
-
-      owiny = height-owiny;
-
-      v1[0] = oldwinx-owinx;
-      v1[1] = oldwiny-owiny;
-      /* bail out, if we get too near the origin */
-      if((fabs(v1[0]) < AY_EPSILON) && (fabs(v1[1]) < AY_EPSILON))
-	continue;
-
-      alpha = AY_R2D(acos(v1[0]/AY_V2LEN(v1)));
-      if(v1[1] < 0.0)
-	alpha = 360.0 - alpha;
-
-      v2[0] = winx-owinx;
-      v2[1] = winy-owiny;
-      /* bail out, if we get too near the origin */
-      if((fabs(v2[0]) < AY_EPSILON) && (fabs(v2[1]) < AY_EPSILON))
-	continue;
-
-      beta = AY_R2D(acos(v2[0]/AY_V2LEN(v2)));
-      if(v2[1] < 0.0)
-	beta = 360.0 - beta;
-
-      angle = beta - alpha;
 
       if(view->transform_points)
 	{
