@@ -401,6 +401,52 @@ proc actionMoveOb { w } {
 }
 # actionMoveOb
 
+# actionGetParamFromKbd:
+# request a parameter from the user via a temporary entry widget that
+# appears in the lower right corner of the view when one of the ParamKeys
+# is pressed. Number keys are immediately re-routed to the entry.
+proc actionGetParamFromKbd { w var txt cmd key } {
+    global ay
+    if { [string first ".view" $w] == 0 } {
+	catch {destroy $w.param}
+	set f [frame $w.param]
+    } else {
+	catch {destroy .param}
+	set f [frame .param]
+    }
+    pack [label $f.l -text $txt ] -side left
+    pack [entry $f.e -textvariable $var] -side left
+    bind $f.e <Key-Escape> "destroy $f; focus $w;break;"
+    bind $f.e <Key-Return> "$cmd \$$var;break;"
+    bind $f.e <Key-KP_Enter> "$cmd \$$var;break;"
+    place $f -in $w -anchor se -relx 1.0 -rely 1.0 -x -1 -y -1
+    if { [string length $key] == 1 } {
+	$f.e delete 0 end
+	$f.e insert 0 $key
+    } else {
+	$f.e select range 0 end
+    }
+    bindtags $f.e [list $f.e Entry]
+    focus $f.e
+ return;
+}
+# actionGetParamFromKbd
+
+proc actionBindParamKbd { w var txt cmd } {
+    global ayviewshortcuts
+    foreach key $ayviewshortcuts(ParamKeys) {
+	bind $w <Key-$key> "actionGetParamFromKbd $w $var {$txt} {$cmd} %K"
+    }
+ return;
+}
+
+proc actionClearParamKbd { w } {
+    global ayviewshortcuts
+    foreach key $ayviewshortcuts(ParamKeys) {
+	bind $w <Key-$key> ""
+    }
+ return;
+}
 
 #
 proc actionRotOb { w } {
@@ -443,6 +489,8 @@ proc actionRotOb { w } {
 	}"
 
     actionBindCenter $w actionRotObA
+
+    actionBindParamKbd $t ay(angle) "Angle: " "$w rotoac -angle "
 
  return;
 }
@@ -2204,7 +2252,7 @@ proc actionDecMultP { w } {
 
 #actionClearB1:
 # helper procedure to clear all bindings to mouse button 1;
-# all modeling actions call this before adding their bindings
+# all modeling actions call this before setting their bindings
 proc actionClearB1 { w } {
     global ayviewshortcuts
 
@@ -2221,15 +2269,13 @@ proc actionClearB1 { w } {
 
 
 #actionClearKbd:
-# helper procedure to clear all left over keyboard bindings;
-# all modeling actions call this before adding their bindings
+# helper procedure to clear all left over keyboard bindings
 proc actionClearKbd { w } {
     global ayviewshortcuts
 
     bind $w $ayviewshortcuts(CenterO) ""
     bind $w $ayviewshortcuts(CenterPC) ""
     bind $w $ayviewshortcuts(CenterPB) ""
-
     bind $w <Key-Return> ""
 
  return;
@@ -2253,6 +2299,8 @@ proc actionClear { w {only_clear 0} } {
 	set t [winfo toplevel $w]
 	bind $w <ButtonPress-1> ""
     }
+
+    actionClearParamKbd $t
 
     bind $w <Motion> ""
 
