@@ -417,7 +417,7 @@ void
 x3dio_poptrafo(void)
 {
  x3dio_trafostate *nextstate = NULL;
- char fname[] = "x3dio_poptrafos";
+ char fname[] = "x3dio_poptrafo";
 
   if(!x3dio_ctrafos)
     {
@@ -1269,11 +1269,12 @@ x3dio_readnormals(scew_element *element, unsigned int *len, double **res)
 
 
 /* x3dio_readcolors:
- *  look through all children of <element> for a "Color" element and
- *  read the colors therein into <len> and <res>
+ *  look through all children of <element> for a "Color" or "ColorRGBA"
+ *  element and read the colors therein into <stride>, <len>, and <res>
  */
 int
-x3dio_readcolors(scew_element *element, int *stride, unsigned int *len, float **res)
+x3dio_readcolors(scew_element *element,
+		 int *stride, unsigned int *len, float **res)
 {
  int ay_status = AY_OK;
  scew_element *child = NULL;
@@ -2615,9 +2616,6 @@ x3dio_readindexedlineset(scew_element *element)
 
   if(coordilen > 0)
     {
-
-      /* get colors */
-
       /* count curves */
       for(i = 0; i < coordilen; i++)
 	{
@@ -2674,7 +2672,7 @@ x3dio_readindexedlineset(scew_element *element)
 	  j++;
 	} /* for */
 
-    } /* if */
+    } /* if coordilen */
 
 cleanup:
   if(coords)
@@ -2722,9 +2720,6 @@ x3dio_readlineset(scew_element *element)
 
   if(vertexcountslen > 0)
     {
-
-      /* get colors */
-
       /* XXXX check, whether sum of vertexcounts == coordlen? */
 
       /* create curves */
@@ -6990,7 +6985,7 @@ x3dio_writetransform(scew_element *element, ay_object *o,
 
 
 /* x3dio_clearmdntags:
- * _recursively_ clear all MN tags from <o> its siblings and children
+ * _recursively_ clear all "mdn" tags from <o> its siblings and children
  */
 void
 x3dio_clearmdntags(ay_object *o)
@@ -11097,7 +11092,7 @@ x3dio_writescene(char *filename, int selected, int toplevellayers)
     return AY_EOMEM;
   Tcl_InitHashTable(x3dio_defs_ht, TCL_STRING_KEYS);
 
-  /* clear potentially present MN tags from scene */
+  /* clear potentially present "mdn" tags from scene */
   x3dio_clearmdntags(ay_root);
 
   /* reset object number counter */
@@ -11317,7 +11312,7 @@ cleanup:
 
   Tcl_DeleteHashTable(x3dio_defs_ht);
 
-  /* clear potentially present MN tags from scene */
+  /* clear potentially present "mdn" tags from scene */
   x3dio_clearmdntags(ay_root);
 
   if(x3dio_writex3dom)
@@ -11449,7 +11444,7 @@ X_Init(Tcl_Interp *interp)
       return TCL_ERROR;
     }
 
-  /* register MN tag type */
+  /* register mdn tag type */
   ay_status = ay_tags_register(x3dio_mdn_tagname, &x3dio_mdn_tagtype);
 
   if(ay_status)
