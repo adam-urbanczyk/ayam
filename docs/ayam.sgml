@@ -4315,7 +4315,7 @@ apply all changes and close the dialog.
 In the NURBS context, weights are mainly used to construct perfect
 circles, circular arcs, and spheres. However, they also present
 another way of influencing the curves or surfaces shape in relation
-to the control point with the weight: Weights smaller than 1.0 repell
+to the control point with the weight: Weights smaller than 1.0 repel
 the curve or surface from the control point, whereas weights larger
 than 1.0 attract the curve or surface to the control point. See
 also the following image:
@@ -19725,7 +19725,7 @@ runTool {l} {"Side:"} {
 } "Clamp"
 <#if out=html></code></#if><#unless out=html></verb></#unless>
 opens a dialog with a menu GUI component and clamps the selected
-NURBS curve(s) on the choosen side(s).
+NURBS curve(s) on the chosen side(s).
 </enum>
 </itemize>
 
@@ -22872,9 +22872,8 @@ Disk2D|Disk&thinsp;/&thinsp;Hyperboloid|&ensp;|&ensp;@<hline>
 <em/NURBS:/|&ensp;|&ensp;|&ensp;@<hline>
 NurbsCurve|NCurve|&ensp;|&ensp;@<hline>
 NurbsCurve2D|NCurve|&ensp;|&ensp;@<hline>
-NurbsSurface|NPatch|&ensp;|&ensp;@<hline>
-NurbsPatchsurface|NPatch|&ensp;|&ensp;@<hline>
-TrimmedNurbsPatchsurface|NPatch|&ensp;|&ensp;@<hline>
+NurbsPatchSurface|NPatch|&ensp;|&ensp;@<hline>
+NurbsTrimmedSurface|NPatch|&ensp;|&ensp;@<hline>
 NurbsSweptSurface|Sweep|&ensp;|&ensp;@<hline>
 NurbsSwungSurface|Swing|&ensp;|&ensp;<#if out="latex">@<hline></#if>
 </tabular>
