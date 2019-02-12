@@ -10150,8 +10150,9 @@ x3dio_writelight(scew_element *element, ay_object *o)
  scew_element *light_element = NULL;
  double dir[3] = {0}, col[3] = {0};
  double from[3] = {0}, to[3] = {0};
- double coneAngle = 0.0, beamWidth = 0.0;
+ double coneAngle = 0.0, beamWidth = 0.0, intensity = 0.0;
  int has_from = AY_FALSE, has_to = AY_FALSE, has_angle = AY_FALSE;
+ int has_intensity = AY_FALSE, has_color = AY_FALSE;
 
   if(!element || !o)
     return AY_ENULL;
@@ -10215,8 +10216,22 @@ x3dio_writelight(scew_element *element, ay_object *o)
 		  has_to = AY_TRUE;
 		  coneAngle = sarg->val.scalar;
 		}
+	      if((!ay_comp_strcase(sarg->name, "intensity")) &&
+		 (sarg->type == AY_SASCALAR))
+		{
+		  intensity = sarg->val.scalar;
+		  has_intensity = AY_TRUE;
+		}
+	      if((!ay_comp_strcase(sarg->name, "lightcolor")) &&
+		 (sarg->type == AY_SACOLOR))
+		{
+		  col[0] = sarg->val.color[0];
+		  col[1] = sarg->val.color[1];
+		  col[2] = sarg->val.color[2];
+		  has_color = AY_TRUE;
+		}
 	      sarg = sarg->next;
-	    } /* while */
+	    } /* while sarg */
 
 	  if(has_from && has_to && has_angle)
 	    {
@@ -10256,7 +10271,20 @@ x3dio_writelight(scew_element *element, ay_object *o)
 		    } /* if */
 		} /* if */
 	    } /* if */
-	} /* if */
+
+	  if(light_element)
+	    {
+	      if(has_intensity)
+		{
+		  x3dio_writedoubleattrib(light_element, "intensity",
+					  &intensity);
+		}
+	      if(has_color)
+		{
+		  x3dio_writedoublevecattrib(light_element, "color", 3, col);
+		}
+	    }
+	} /* if have shader */
       break;
     default:
       break;
@@ -10265,14 +10293,18 @@ x3dio_writelight(scew_element *element, ay_object *o)
   /* add some standard parameters */
   if(light_element)
     {
-      /* intensity */
-      x3dio_writedoubleattrib(light_element, "intensity", &light->intensity);
+      if(light->type != AY_LITCUSTOM)
+	{
+	  /* intensity */
+	  x3dio_writedoubleattrib(light_element, "intensity",
+				  &light->intensity);
 
-      /* color */
-      col[0] = light->colr/255.0;
-      col[1] = light->colg/255.0;
-      col[2] = light->colb/255.0;
-      x3dio_writedoublevecattrib(light_element, "color", 3, col);
+	  /* color */
+	  col[0] = light->colr/255.0;
+	  col[1] = light->colg/255.0;
+	  col[2] = light->colb/255.0;
+	  x3dio_writedoublevecattrib(light_element, "color", 3, col);
+	}
 
       /* local/global state */
       if(light->local)
