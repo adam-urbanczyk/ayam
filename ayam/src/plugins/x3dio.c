@@ -112,8 +112,6 @@ unsigned int x3dio_inuse = 0;
 /* pointer to last read object */
 ay_object *x3dio_lrobject = NULL;
 
-char *x3dio_contfieldstr = "containerField";
-
 /* prototypes of functions local to this module: */
 
 /* low-level import support functions */
@@ -7377,7 +7375,7 @@ x3dio_writencurve(scew_element *element, int dim, ay_nurbcurve_object *c)
  scew_element *coord_element = NULL;
  char buf[64];
 
-  if(!c)
+  if(!element || !c)
     return AY_ENULL;
 
   if(c->order == 2)
@@ -7491,7 +7489,7 @@ x3dio_writencwire(scew_element *element, ay_object *o)
  scew_element *line_element = NULL;
  scew_element *coord_element = NULL;
 
-  if(!element || !o || !o->refine)
+  if(!element || !o)
     return AY_ENULL;
 
   nc = (ay_nurbcurve_object *)o->refine;
@@ -7555,7 +7553,7 @@ x3dio_writencconvertibleobj(scew_element *element, ay_object *o)
   if(!x3dio_writecurves)
     return AY_OK;
 
-  if(!o)
+  if(!element || !o)
     return AY_ENULL;
 
   ay_status = ay_provide_object(o, AY_IDNCURVE, &c);
@@ -7609,7 +7607,7 @@ x3dio_writetrimcurve(scew_element *element, ay_object *o)
  double m[16] = {0};
  scew_element *curve_element = NULL;
 
-  if(!element || !o || !o->refine)
+  if(!element || !o)
     return AY_ENULL;
 
   if(o->type != AY_IDNCURVE)
@@ -7661,7 +7659,7 @@ x3dio_writetrimcurve(scew_element *element, ay_object *o)
   x3dio_writedoublepoints(curve_element, "controlPoint", 2,
 			  nc->length, 4, nc->controlv);
 
-  scew_element_add_attr_pair(curve_element, x3dio_contfieldstr,
+  scew_element_add_attr_pair(curve_element, "containerField",
 			     "children");
 
 cleanup:
@@ -7684,7 +7682,7 @@ x3dio_writetrimloop(scew_element *element, ay_object *o)
  int ay_status = AY_OK;
  ay_object *down = NULL;
 
-  if(!element || !o || !o->refine)
+  if(!element || !o)
     return AY_ENULL;
 
   if(o->down && o->down->next)
@@ -7725,7 +7723,7 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
  scew_element *contour_element = NULL;
  scew_element *targets[1] = {0};
 
-  if(!element || !o || !o->refine)
+  if(!element || !o)
     return AY_ENULL;
 
   /* write this patch as wire frame? */
@@ -7817,7 +7815,7 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
   coord_element = scew_element_add(patch_element, "Coordinate");
   x3dio_writedoublepoints(coord_element, "point", 3, np->width*np->height,
 			  copystride, v);
-  scew_element_add_attr_pair(coord_element, x3dio_contfieldstr, "controlPoint");
+  scew_element_add_attr_pair(coord_element, "containerField", "controlPoint");
 
   /* write texture coordinates */
   if(have_texcoords)
@@ -7833,7 +7831,7 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
       while(down->next)
 	{
 	  contour_element = scew_element_add(patch_element, "Contour2D");
-	  scew_element_add_attr_pair(contour_element, x3dio_contfieldstr,
+	  scew_element_add_attr_pair(contour_element, "containerField",
 				     "trimmingContour");
 
 	  if(down->type == AY_IDLEVEL)
@@ -7928,7 +7926,7 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
  scew_element *line_element = NULL;
  scew_element *coord_element = NULL;
 
-  if(!element || !o || !o->refine)
+  if(!element || !o)
     return AY_ENULL;
 
   np = (ay_nurbpatch_object *)o->refine;
@@ -8412,7 +8410,7 @@ x3dio_writetrimmednpwire(scew_element *element, ay_object *o)
  double **tcs = NULL;
  ay_stess_uvp *uvpptr, *p1, *p2;
 
-  if(!element || !o || !o->refine)
+  if(!element || !o)
     return AY_ENULL;
 
   np = (ay_nurbpatch_object *)o->refine;
@@ -8700,8 +8698,8 @@ x3dio_writenpconvertibleobj(scew_element *element, ay_object *o)
  ay_object *c = NULL, *t;
  scew_element *transform_element = NULL;
 
-  if(!o)
-   return AY_ENULL;
+  if(!element || !o)
+    return AY_ENULL;
 
   ay_status = ay_provide_object(o, AY_IDNPATCH, &c);
   if(ay_status || !c)
@@ -8752,7 +8750,7 @@ x3dio_writelevelobj(scew_element *element, ay_object *o)
  scew_element *transform_element = NULL;
  scew_element *ot_element = NULL;
 
-  if(!element || !o || !o->refine)
+  if(!element || !o)
     return AY_ENULL;
 
   if(o == ay_endlevel)
@@ -8806,8 +8804,8 @@ x3dio_writecloneobj(scew_element *element, ay_object *o)
  scew_element *transform_element = NULL;
  scew_element *ot_element = NULL;
 
-  if(!element || !o || !o->refine)
-   return AY_ENULL;
+  if(!element || !o)
+    return AY_ENULL;
 
   cl = (ay_clone_object *)o->refine;
 
@@ -8920,8 +8918,8 @@ x3dio_writeinstanceobj(scew_element *element, ay_object *o)
  scew_element *transform_element = NULL, *itransform_element = NULL;
  scew_element *shape_element = NULL;
 
-  if(!element || !o || !o->refine)
-   return AY_ENULL;
+  if(!element || !o)
+    return AY_ENULL;
 
   master = (ay_object *)o->refine;
 
@@ -8990,8 +8988,8 @@ x3dio_writescriptobj(scew_element *element, ay_object *o)
  ay_object *cmo = NULL;
  ay_script_object *sc = NULL;
 
-  if(!element || !o || !o->refine)
-   return AY_ENULL;
+  if(!element || !o)
+    return AY_ENULL;
 
   sc = (ay_script_object *)o->refine;
 
@@ -9022,8 +9020,8 @@ x3dio_writeboxobj(scew_element *element, ay_object *o)
  scew_element *box_element = NULL;
  double v[3] = {0};
 
-  if(!element || !o || !o->refine)
-   return AY_ENULL;
+  if(!element || !o)
+    return AY_ENULL;
 
   box = (ay_box_object *)o->refine;
 
@@ -9069,7 +9067,7 @@ x3dio_writesphereobj(scew_element *element, ay_object *o)
  scew_element *sphere_element = NULL;
  char buffer[256];
 
-  if(!element || !o || !o->refine)
+  if(!element || !o)
     return AY_ENULL;
 
   sphere = (ay_sphere_object *)o->refine;
@@ -9131,7 +9129,7 @@ x3dio_writecylinderobj(scew_element *element, ay_object *o)
  scew_element *cylinder_element = NULL;
  char buffer[256];
 
-  if(!element || !o || !o->refine)
+  if(!element || !o)
     return AY_ENULL;
 
   cylinder = (ay_cylinder_object *)o->refine;
@@ -9207,7 +9205,7 @@ x3dio_writeconeobj(scew_element *element, ay_object *o)
  scew_element *cone_element = NULL;
  char buffer[256];
 
-  if(!element || !o || !o->refine)
+  if(!element || !o)
     return AY_ENULL;
 
   cone = (ay_cone_object *)o->refine;
@@ -9352,7 +9350,7 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
  size_t buflen = 0, totalbuflen = 0;
 
   if(!element || !o)
-   return AY_ENULL;
+    return AY_ENULL;
 
   if(ay_tags_hastag(o, ay_aswire_tagtype))
     return x3dio_writepomeshwire(element, o);
@@ -9710,7 +9708,7 @@ x3dio_writepomeshwire(scew_element *element, ay_object *o)
  double *fn = NULL, *weighted_normals = NULL, *offset_cv = NULL;
 
   if(!element || !o)
-   return AY_ENULL;
+    return AY_ENULL;
 
   po = (ay_pomesh_object *)o->refine;
 
