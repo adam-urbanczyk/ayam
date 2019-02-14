@@ -968,7 +968,8 @@ x3dio_readindex(scew_element *element, char *attrname,
 
 
 /* x3dio_readboolvec:
- *  read a vector of boolean values
+ *  read a vector of boolean values (e.g. for the visible attribute of a
+ *  CADLayer)
  */
 int
 x3dio_readboolvec(scew_element *element, char *attrname,
@@ -1066,7 +1067,8 @@ x3dio_readboolvec(scew_element *element, char *attrname,
 
 
 /* x3dio_processuse:
- *
+ * this function !replaces! the content of <element> with the respective DEF
+ * (the element must have a USE attribute that points to the DEF)
  */
 int
 x3dio_processuse(scew_element **element)
@@ -1398,11 +1400,6 @@ x3dio_linkobject(scew_element *element, unsigned int type, void *sobj)
 
   /* link the object to the scene */
   ay_object_link(new);
-
-  if(type == AY_IDPAMESH)
-    {
-      (void)ay_notify_object(new);
-    }
 
   x3dio_lrobject = new;
 
@@ -3516,6 +3513,11 @@ x3dio_readelevationgrid(scew_element *element)
 
   /* copy object to the Ayam scene */
   ay_status = x3dio_linkobject(element, AY_IDPAMESH, (void*)&pamesh);
+
+  if(x3dio_lrobject)
+    {
+      (void)ay_notify_object(x3dio_lrobject);
+    }
 
 cleanup:
 
@@ -5731,18 +5733,19 @@ x3dio_readinline(scew_element *element)
 	  if(!scew_parser_load_file(parser, filename))
 	    {
 	      errcode = scew_error_code();
-	      sprintf(errstr, "Unable to load file (error #%d: %s)\n",
-		      errcode,
-		      scew_error_string(errcode));
+	      snprintf(errstr, 255, "Unable to load file (error #%d: %s)\n",
+		       errcode,
+		       scew_error_string(errcode));
 	      ay_error(AY_ERROR, fname, errstr);
 	      if(errcode == scew_error_expat)
 		{
 		  expat_code = scew_error_expat_code(parser);
-		  sprintf(errstr, "Expat error #%d (line %d, column %d): %s\n",
-			  expat_code,
-			  scew_error_expat_line(parser),
-			  scew_error_expat_column(parser),
-			  scew_error_expat_string(expat_code));
+		  snprintf(errstr, 255,
+			   "Expat error #%d (line %d, column %d): %s\n",
+			   expat_code,
+			   scew_error_expat_line(parser),
+			   scew_error_expat_column(parser),
+			   scew_error_expat_string(expat_code));
 		  ay_error(AY_ERROR, fname, errstr);
 		}
 	      ay_status = AY_ERROR;
@@ -6777,18 +6780,19 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
   if(!scew_parser_load_file(parser, argv[1]))
     {
       errcode = scew_error_code();
-      sprintf(errstr, "Unable to load file (error #%d: %s)\n",
-	      errcode,
-	      scew_error_string(errcode));
+      snprintf(errstr, 255, "Unable to load file (error #%d: %s)\n",
+	       errcode,
+	       scew_error_string(errcode));
       ay_error(AY_ERROR, argv[0], errstr);
       if(errcode == scew_error_expat)
         {
 	  expat_code = scew_error_expat_code(parser);
-	  sprintf(errstr, "Expat error #%d (line %d, column %d): %s\n",
-		  expat_code,
-		  scew_error_expat_line(parser),
-		  scew_error_expat_column(parser),
-		  scew_error_expat_string(expat_code));
+	  snprintf(errstr, 255,
+		   "Expat error #%d (line %d, column %d): %s\n",
+		   expat_code,
+		   scew_error_expat_line(parser),
+		   scew_error_expat_column(parser),
+		   scew_error_expat_string(expat_code));
 	  ay_error(AY_ERROR, argv[0], errstr);
         }
       goto cleanup;
@@ -7017,11 +7021,12 @@ x3dio_clearmdntags(ay_object *o)
 		  tag = tag->next;
 		} /* if */
 	    } /* while */
-	} /* if */
+	} /* if have tags */
 
       if(o->down)
-	x3dio_clearmdntags(o->down);
-
+	{
+	  x3dio_clearmdntags(o->down);
+	}
       o = o->next;
     } /* while */
 
@@ -7102,7 +7107,7 @@ x3dio_writename(scew_element *element, ay_object *o, int trafo)
 
   if(!x3dio_resolveinstances && o->refcount)
     {
-      /*  add a MN (MasterName) tag */
+      /*  add a "mdn" tag */
       if(!(tag = calloc(1, sizeof(ay_tag))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
 
