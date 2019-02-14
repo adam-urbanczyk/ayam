@@ -843,7 +843,7 @@ objio_writencconvertible(FILE *fileptr, ay_object *o, double *m)
     return AY_OK;
 
   if(!o)
-   return AY_ENULL;
+    return AY_ENULL;
 
   ay_status = ay_provide_object(o, AY_IDNCURVE, &c);
   if(!c)
@@ -880,7 +880,7 @@ objio_writenpconvertible(FILE *fileptr, ay_object *o, double *m)
  ay_object *p = NULL, *t;
 
   if(!o)
-   return AY_ENULL;
+    return AY_ENULL;
 
   ay_status = ay_provide_object(o, AY_IDNPATCH, &p);
   if(!p)
@@ -918,7 +918,7 @@ objio_writebox(FILE *fileptr, ay_object *o, double *m)
  int i;
 
   if(!o)
-   return AY_ENULL;
+    return AY_ENULL;
 
   box = (ay_box_object *)o->refine;
 
@@ -1001,7 +1001,7 @@ objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
  ay_tag *tag;
 
   if(!o)
-   return AY_ENULL;
+    return AY_ENULL;
 
   po = (ay_pomesh_object *)o->refine;
 
@@ -1246,7 +1246,7 @@ objio_writeclone(FILE *fileptr, ay_object *o, double *m)
  ay_object *clone;
 
   if(!o)
-   return AY_ENULL;
+    return AY_ENULL;
 
   cl = (ay_clone_object *)o->refine;
 
@@ -1291,8 +1291,8 @@ objio_writeinstance(FILE *fileptr, ay_object *o, double *m)
  int ay_status = AY_OK;
  ay_object *orig, tmp = {0};
 
-  if(!o || !o->refine)
-   return AY_ENULL;
+  if(!o)
+    return AY_ENULL;
 
   orig = (ay_object *)o->refine;
 
@@ -1315,8 +1315,8 @@ objio_writescript(FILE *fileptr, ay_object *o, double *m)
  ay_object *cmo = NULL;
  ay_script_object *sc = NULL;
 
-  if(!o || !o->refine)
-   return AY_ENULL;
+  if(!o)
+    return AY_ENULL;
 
   sc = (ay_script_object *)o->refine;
 
