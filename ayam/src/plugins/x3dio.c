@@ -490,12 +490,12 @@ x3dio_readbool(scew_element *element, char *attrname, int *res)
       else
 	{
 	  return AY_ERROR;
-	} /* if */
+	} /* if str */
     }
   else
     {
       return AY_EWARN;
-    } /* if */
+    } /* if attr */
 
  return AY_OK;
 } /* x3dio_readbool */
@@ -576,12 +576,12 @@ x3dio_readintvec(scew_element *element, char *attrname,
       else
 	{
 	  return AY_ERROR;
-	} /* if */
+	} /* if str */
     }
   else
     {
       return AY_EWARN;
-    } /* if */
+    } /* if attr */
 
  return AY_OK;
 } /* x3dio_readintvec */
@@ -610,12 +610,12 @@ x3dio_readfloat(scew_element *element, char *attrname, float *res)
       else
 	{
 	  return AY_ERROR;
-	} /* if */
+	} /* if str */
     }
   else
     {
       return AY_EWARN;
-    } /* if */
+    } /* if attr */
 
  return AY_OK;
 } /* x3dio_readfloat */
@@ -662,12 +662,12 @@ x3dio_readfloatvec(scew_element *element, char *attrname,
       else
 	{
 	  return AY_ERROR;
-	} /* if */
+	} /* if str */
     }
   else
     {
       return AY_EWARN;
-    } /* if */
+    } /* if attr */
 
  return AY_OK;
 } /* x3dio_readfloatvec */
@@ -759,12 +759,12 @@ x3dio_readfloatpoints(scew_element *element, char *attrname,
       else
 	{
 	  return AY_ERROR;
-	} /* if */
+	} /* if str */
     }
   else
     {
       return AY_EWARN;
-    } /* if */
+    } /* if attr */
 
  return AY_OK;
 } /* x3dio_readfloatpoints */
@@ -856,12 +856,12 @@ x3dio_readdoublepoints(scew_element *element, char *attrname,
       else
 	{
 	  return AY_ERROR;
-	} /* if */
+	} /* if str */
     }
   else
     {
       return AY_EWARN;
-    } /* if */
+    } /* if attr */
 
  return AY_OK;
 } /* x3dio_readdoublepoints */
@@ -954,12 +954,12 @@ x3dio_readindex(scew_element *element, char *attrname,
       else
 	{
 	  return AY_ERROR;
-	} /* if */
+	} /* if str */
     }
   else
     {
       return AY_EWARN;
-    } /* if */
+    } /* if attr */
 
  return AY_OK;
 } /* x3dio_readindex */
@@ -1053,12 +1053,12 @@ x3dio_readboolvec(scew_element *element, char *attrname,
       else
 	{
 	  return AY_ERROR;
-	} /* if */
+	} /* if str */
     }
   else
     {
       return AY_EWARN;
-    } /* if */
+    } /* if attr */
 
  return AY_OK;
 } /* x3dio_readboolvec */
@@ -1159,7 +1159,7 @@ x3dio_readcoords(scew_element *element, unsigned int *len, double **res)
 		free(cv);
 	    } /* if */
 	  return AY_OK; /* XXXX early exit! */
-	}
+	} /* if Coordinate */
       if(!strcmp(element_name, "CoordinateDouble"))
 	{
 	  /* process USE attribute */
@@ -1172,7 +1172,7 @@ x3dio_readcoords(scew_element *element, unsigned int *len, double **res)
 	  ay_status = x3dio_readdoublepoints(child, "point", 3, len, res);
 
 	  return ay_status; /* XXXX early exit! */
-	}
+	} /* if CoordinateDouble */
     } /* while */
 
  return AY_OK;
@@ -1261,7 +1261,7 @@ x3dio_readnormals(scew_element *element, unsigned int *len, double **res)
 		free(cv);
 	    } /* if */
 	  return AY_OK; /* XXXX early exit! */
-	} /* if */
+	} /* if Normal */
     } /* while */
 
  return AY_OK;
@@ -1360,8 +1360,8 @@ x3dio_readname(scew_element *element, const XML_Char *attn, ay_object *obj)
 		  c++;
 		} /* while */
 	    } /* if */
-	} /* if */
-    } /* if */
+	} /* if str */
+    } /* if attr */
 
  return ay_status;
 } /* x3dio_readname */
@@ -1376,7 +1376,7 @@ x3dio_linkobject(scew_element *element, unsigned int type, void *sobj)
  int ay_status = AY_OK;
  ay_object obj = {0}, *new = NULL;
 
-  if(!sobj)
+  if(!element || !sobj)
     return AY_ENULL;
 
   ay_object_defaults(&obj);
@@ -2200,11 +2200,11 @@ x3dio_readindexedtriangleset(scew_element *element)
       for(i = 0; i < pomesh.npolys; i++)
 	{
 	  pomesh.nverts[i] = 3;
-	} /* for */
+	}
       for(i = 0; i < totalverts; i++)
 	{
 	  pomesh.verts[i] = coordi[i];
-	} /* for */
+	}
 
       /* copy coordinate values and normals */
       pomesh.ncontrols = coordlen;
@@ -2293,11 +2293,11 @@ x3dio_readindexedquadset(scew_element *element)
       for(i = 0; i < pomesh.npolys; i++)
 	{
 	  pomesh.nverts[i] = 4;
-	} /* for */
+	}
       for(i = 0; i < totalverts; i++)
 	{
 	  pomesh.verts[i] = coordi[i];
-	} /* for */
+	}
 
       /* copy coordinate values and normals */
       pomesh.ncontrols = coordlen;
@@ -2399,7 +2399,7 @@ x3dio_readindexedtrianglestripset(scew_element *element)
       for(i = 0; i < pomesh.npolys; i++)
 	{
 	  pomesh.nverts[i] = 3;
-	} /* for */
+	}
       k = 0;
       for(i = 0; i < pomesh.npolys-1; i++)
 	{
@@ -2521,7 +2521,7 @@ x3dio_readindexedtrianglefanset(scew_element *element)
       for(i = 0; i < pomesh.npolys; i++)
 	{
 	  pomesh.nverts[i] = 3;
-	} /* for */
+	}
       j = 0; k = 0;
       for(i = 0; i < pomesh.npolys-1; i++)
 	{
@@ -2847,7 +2847,7 @@ x3dio_readtrianglefanset(scew_element *element)
       for(i = 0; i < pomesh.npolys; i++)
 	{
 	  pomesh.nverts[i] = 3;
-	} /* for */
+	}
       k = 0; l = 0;
       for(i = 0; i < fancountslen; i++)
 	{
@@ -3030,7 +3030,7 @@ x3dio_readtrianglestripset(scew_element *element)
       for(i = 0; i < pomesh.npolys; i++)
 	{
 	  pomesh.nverts[i] = 3;
-	} /* for */
+	}
       k = 0; l = 0;
       for(i = 0; i < stripcountslen; i++)
 	{
@@ -3199,11 +3199,11 @@ x3dio_readtriangleset(scew_element *element)
   for(i = 0; i < pomesh.npolys; i++)
     {
       pomesh.nverts[i] = 3;
-    } /* for */
+    }
   for(i = 0; i < totalverts; i++)
     {
       pomesh.verts[i] = i;
-    } /* for */
+    }
 
   /* copy coordinate values and normals */
   pomesh.ncontrols = coordlen;
@@ -3512,7 +3512,7 @@ x3dio_readelevationgrid(scew_element *element)
   /* copy object to the Ayam scene */
   ay_status = x3dio_linkobject(element, AY_IDPAMESH, (void*)&pamesh);
 
-  if(x3dio_lrobject)
+  if((ay_status == AY_OK) && x3dio_lrobject)
     {
       (void)ay_notify_object(x3dio_lrobject);
     }
@@ -4310,8 +4310,10 @@ x3dio_readcircle2d(scew_element *element)
   /* copy object to the Ayam scene */
   ay_status = x3dio_linkobject(element, AY_IDNCIRCLE, (void*)&ncircle);
 
-  if(ay_status == AY_OK)
-    ay_notify_object(x3dio_lrobject);
+  if((ay_status == AY_OK) && x3dio_lrobject)
+    {
+      (void)ay_notify_object(x3dio_lrobject);
+    }
 
  return ay_status;
 } /* x3dio_readcircle2d */
@@ -4354,8 +4356,10 @@ x3dio_readarc2d(scew_element *element)
   /* copy object to the Ayam scene */
   ay_status = x3dio_linkobject(element, AY_IDNCIRCLE, (void*)&ncircle);
 
-  if(ay_status == AY_OK)
-    ay_notify_object(x3dio_lrobject);
+  if((ay_status == AY_OK) && x3dio_lrobject)
+    {
+      (void)ay_notify_object(x3dio_lrobject);
+    }
 
  return ay_status;
 } /* x3dio_readarc2d */
@@ -4566,7 +4570,7 @@ x3dio_readpolyline2d(scew_element *element, int contour)
 
       /* copy object to the Ayam scene */
       ay_status = x3dio_linkobject(element, AY_IDNCURVE, (void*)&nc);
-    } /* if */
+    } /* if len */
 
 cleanup:
 
@@ -4698,7 +4702,8 @@ x3dio_readnurbscurve(scew_element *element, unsigned int dim)
 		  nc.controlv[i*stride+3] = 1.0;
 		}
 	    } /* for */
-	} /* if */
+	} /* if double */
+
       if(has_knots)
 	{
 	  nc.knot_type = ay_knots_classify(nc.order, knots, nc.length+nc.order,
@@ -4718,7 +4723,7 @@ x3dio_readnurbscurve(scew_element *element, unsigned int dim)
 
       /* copy object to the Ayam scene */
       ay_status = x3dio_linkobject(element, AY_IDNCURVE, (void*)&nc);
-    } /* if */
+    } /* if len */
 
 cleanup:
 
@@ -5061,7 +5066,7 @@ x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
 				 np.vknotv[np.height+np.vorder-1]);
 		}
 
-	    } /* if */
+	    } /* if rescaleknots */
 
 	  ay_next = old_aynext;
 	}
@@ -5192,7 +5197,7 @@ x3dio_readnurbssweptsurface(scew_element *element)
   ay_next = old_aynext;
   ay_object_link(o);
 
-  ay_notify_object(o);
+  (void)ay_notify_object(o);
 
   ay_status = x3dio_readname(element, "DEF", o);
 
@@ -5288,7 +5293,7 @@ x3dio_readnurbsswungsurface(scew_element *element)
   ay_next = old_aynext;
   ay_object_link(o);
 
-  ay_notify_object(o);
+  (void)ay_notify_object(o);
 
   ay_status = x3dio_readname(element, "DEF", o);
 
@@ -5502,7 +5507,7 @@ x3dio_readviewpoint(scew_element *element)
       v->zoom = fabs(tan((double)fov/2.0));
 
       /* notify also includes reshape() and additionally loads the BGImage */
-      ay_notify_object(last);
+      (void)ay_notify_object(last);
 
       /* set window title */
       sprintf(command,
@@ -11059,8 +11064,8 @@ x3dio_writeobject(scew_element *element, ay_object *o, int count)
 
       if(i != -1)
 	{
-	  sprintf(err, "Cannot export objects of type: %s.",
-		  ay_object_gettypename(o->type));
+	  snprintf(err, 255, "Cannot export objects of type: %s.",
+		   ay_object_gettypename(o->type));
 	  ay_error(AY_EWARN, fname, err);
 	}
     } /* if */
