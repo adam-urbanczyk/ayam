@@ -7515,7 +7515,7 @@ x3dio_writencwire(scew_element *element, ay_object *o)
   for(a = 0; a < Ctlen; a++)
     {
       tmp += sprintf(tmp, " %d", a);
-    } /* for */
+    }
   tmp += sprintf(tmp, " -1");
 
   /* write all the data */
@@ -8072,12 +8072,12 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
   for(a = 0; a < fvlines; a++)
     {
       tmp += sprintf(tmp, " %d", a);
-    } /* for */
+    }
   tmp += sprintf(tmp, " -1");
   for(a = fvlines; a < fvlines*2; a++)
     {
       tmp += sprintf(tmp, " %d", a);
-    } /* for */
+    }
   memcpy(tmp, " -1", 4*sizeof(char));
 
   u = U[p];
@@ -8154,12 +8154,12 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
   for(a = 0; a < fulines; a++)
     {
       tmp += sprintf(tmp, " %d", a);
-    } /* for */
+    }
   tmp += sprintf(tmp, " -1");
   for(a = fulines; a < fulines*2; a++)
     {
       tmp += sprintf(tmp, " %d", a);
-    } /* for */
+    }
   memcpy(tmp, " -1", 4*sizeof(char));
 
   v = V[q];
@@ -9865,8 +9865,7 @@ x3dio_writepomeshwire(scew_element *element, ay_object *o)
 	  a += 6;
 	  b += 6;
 	} /* for */
-
-    } /* if */
+    } /* if has normals */
 
   /* write transform */
   x3dio_writetransform(element, o, &transform_element);
@@ -10358,6 +10357,13 @@ x3dio_writematerial(scew_element *shape_element, ay_object *o)
       sprintf(buf, "%g %g %g",
 	      o->mat->colr/255.0, o->mat->colg/255.0, o->mat->colb/255.0);
       scew_element_add_attr_pair(material_element, "diffuseColor", buf);
+
+      if(o->mat->opr != 255 || o->mat->opg != 255 || o->mat->opb != 255)
+	{
+	  sprintf(buf, "%g", (o->mat->opr/255.0 + o->mat->opg/255.0 +
+			      o->mat->opb/255.0) / 3.0);
+	  scew_element_add_attr_pair(material_element, "transparency", buf);
+	}
     }
   else
     {
@@ -10365,7 +10371,9 @@ x3dio_writematerial(scew_element *shape_element, ay_object *o)
     }
 
   if(o->mat)
-    tag = o->mat->objptr->tags;
+    {
+      tag = o->mat->objptr->tags;
+    }
 
   targets[0] = appearance_element;
   targets[1] = material_element;
