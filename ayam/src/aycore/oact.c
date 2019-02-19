@@ -528,7 +528,7 @@ ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
 int
 ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ int ay_status = AY_OK, tcl_status = TCL_OK;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  static double oldwinx = 0.0, oldwiny = 0.0;
  double winx = 0.0, winy = 0.0;
@@ -546,14 +546,16 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
  ay_object *o = NULL;
  ay_point *point = NULL;
  char fname[] = "rotateA_act";
+ int have_angle = AY_FALSE;
 
   /* parse args */
-  ay_status = ay_oact_parseargs(togl, argc, argv, fname,
-				&winx, &winy, &oldwinx, &oldwiny);
-
-  if(ay_status)
+  if(argc == 4 && argv[2][0] == '-' && argv[2][1] == 'a')
     {
-      return TCL_OK;
+      tcl_status = Tcl_GetDouble(ay_interp, argv[3], &angle);
+      AY_CHTCLERRRET(tcl_status, argv[0], ay_interp);
+      if(angle != angle || fabs(angle) < AY_EPSILON)
+	return TCL_OK;
+      have_angle = AY_TRUE;
     }
 
   if(!view->drawmark)
@@ -565,41 +567,52 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
       return TCL_OK;
     }
 
-  /* bail out, as long as we stay in the same grid cell */
-  if((oldwinx == winx) && (oldwiny == winy))
+  if(!have_angle)
     {
-      return TCL_OK;
-    }
+      ay_status = ay_oact_parseargs(togl, argc, argv, fname,
+				    &winx, &winy, &oldwinx, &oldwiny);
 
-  /* calculate rotation angle from window coordinates
-     of picked points (old/start and current from drag)
-     and point to rotate about */
-  ax = view->markx;
-  ay = view->marky;
+      if(ay_status)
+	{
+	  return TCL_OK;
+	}
 
-  v1[0] = oldwinx - ax;
-  v1[1] = oldwiny - ay;
-  /* bail out, if we get too near the mark */
-  if((fabs(v1[0]) < AY_EPSILON) && (fabs(v1[1]) < AY_EPSILON))
-    {
-      return TCL_OK;
-    }
-  alpha = AY_R2D(acos(v1[0]/AY_V2LEN(v1)));
-  if(v1[1] < 0.0)
-    alpha = 360.0 - alpha;
+      /* bail out, as long as we stay in the same grid cell */
+      if((oldwinx == winx) && (oldwiny == winy))
+	{
+	  return TCL_OK;
+	}
 
-  v2[0] = winx - ax;
-  v2[1] = winy - ay;
-  /* bail out, if we get too near the mark */
-  if((fabs(v2[0]) < AY_EPSILON) && (fabs(v2[1]) < AY_EPSILON))
-    {
-      return TCL_OK;
-    }
-  beta = AY_R2D(acos(v2[0]/AY_V2LEN(v2)));
-  if(v2[1] < 0.0)
-    beta = 360.0 - beta;
+      /* calculate rotation angle from window coordinates
+	 of picked points (old/start and current from drag)
+	 and point to rotate about */
+      ax = view->markx;
+      ay = view->marky;
 
-  angle = beta - alpha;
+      v1[0] = oldwinx - ax;
+      v1[1] = oldwiny - ay;
+      /* bail out, if we get too near the mark */
+      if((fabs(v1[0]) < AY_EPSILON) && (fabs(v1[1]) < AY_EPSILON))
+	{
+	  return TCL_OK;
+	}
+      alpha = AY_R2D(acos(v1[0]/AY_V2LEN(v1)));
+      if(v1[1] < 0.0)
+	alpha = 360.0 - alpha;
+
+      v2[0] = winx - ax;
+      v2[1] = winy - ay;
+      /* bail out, if we get too near the mark */
+      if((fabs(v2[0]) < AY_EPSILON) && (fabs(v2[1]) < AY_EPSILON))
+	{
+	  return TCL_OK;
+	}
+      beta = AY_R2D(acos(v2[0]/AY_V2LEN(v2)));
+      if(v2[1] < 0.0)
+	beta = 360.0 - beta;
+
+      angle = beta - alpha;
+    } /* if !have_angle */
 
   /* rotate the selected object(s)/selected points */
   while(sel && sel->object)
