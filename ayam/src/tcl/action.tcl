@@ -174,9 +174,10 @@ proc actionSetMark { w { nextaction "" } } {
     # action, embedded into some other action, which we arrange
     # to re-start here (after setting the mark):
     if { $nextaction != "" } {
-	bind $w <ButtonPress-1> "+ $nextaction %W;"
+	bind $w <ButtonRelease-1> "+ $nextaction %W;"
 	# take over old mark
-	bind $t <Key-Return> "bind $t <Key-Return> \"\";\
+	set ob [bind $t <Key-Return>]
+	bind $t <Key-Return> "bind $t <Key-Return> \{$ob\};\
                               $nextaction $t.f3D.togl;"
     } else {
 	bind $t <Key-Return> ""
@@ -528,6 +529,8 @@ proc actionRotObA { w } {
 	set t [winfo parent [winfo parent $w]]
     }
     bind $t $ayviewshortcuts(About) "actionSetMark $w actionRotObA"
+
+    actionBindParamKbd $t ay(angle) "Angle: " "$w rotoaac -angle "
 
  return;
 }
