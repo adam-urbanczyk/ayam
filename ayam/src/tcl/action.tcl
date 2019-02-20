@@ -579,6 +579,8 @@ proc actionSc1DXOb { w } {
 
     actionBindCenter $w actionSc1DXAOb
 
+    actionBindParamKbd $t ay(angle) "Scale: " "$w sc1dxoac -scale "
+
  return;
 }
 # actionSc1DXOb
@@ -664,6 +666,8 @@ proc actionSc1DYOb { w } {
 
     actionBindCenter $w actionSc1DYAOb
 
+    actionBindParamKbd $t ay(angle) "Scale: " "$w sc1dyoac -scale "
+
  return;
 }
 # actionSc1DYOb
@@ -748,6 +752,8 @@ proc actionSc1DZOb { w } {
 	}"
 
     actionBindCenter $w actionSc1DZAOb
+
+    actionBindParamKbd $t ay(angle) "Scale: " "$w sc1dzoac -scale "
 
  return;
 }
