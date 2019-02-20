@@ -843,6 +843,8 @@ proc actionSc2DOb { w } {
 
     actionBindCenter $w actionSc2DAOb
 
+    actionBindParamKbd $t ay(scale) "Scale: " "$w sc2doac -scale "
+
  return;
 }
 # actionSc2DOb
@@ -879,7 +881,10 @@ proc actionSc2DAOb { w } {
     } else {
 	set t [winfo parent [winfo parent $w]]
     }
+
     bind $t $ayviewshortcuts(About) "actionSetMark $w actionSc2DAOb"
+
+    actionBindParamKbd $t ay(scale) "Scale: " "$w sc2daoac -scale "
 
  return;
 }
