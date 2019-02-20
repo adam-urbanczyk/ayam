@@ -1502,7 +1502,7 @@ ay_oact_sc2Dcb(struct Togl *togl, int argc, char *argv[])
 int
 ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ int ay_status = AY_OK, tcl_status = TCL_OK;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  double height = Togl_Height(togl);
  static double oldwinx = 0.0, oldwiny = 0.0;
@@ -1514,20 +1514,33 @@ ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[])
  ay_object *o = NULL;
  ay_point *point = NULL;
  char fname[] = "scale3D_act";
+ int have_scale = AY_FALSE;
 
   /* parse args */
-  ay_status = ay_oact_parseargs(togl, argc, argv, fname,
-				&winx, &winy, &oldwinx, &oldwiny);
-
-  if(ay_status)
+  if(argc == 4 && argv[2][0] == '-' && argv[2][1] == 's')
     {
-      return TCL_OK;
+      tcl_status = Tcl_GetDouble(ay_interp, argv[3], &dscal);
+      AY_CHTCLERRRET(tcl_status, argv[0], ay_interp);
+      if(dscal != dscal || fabs(dscal) < AY_EPSILON)
+	return TCL_OK;
+      have_scale = AY_TRUE;
     }
 
-  /* bail out, as long as we stay in the same grid cell */
-  if((oldwinx == winx) && (oldwiny == winy))
+  if(!have_scale)
     {
-      return TCL_OK;
+      ay_status = ay_oact_parseargs(togl, argc, argv, fname,
+				    &winx, &winy, &oldwinx, &oldwiny);
+
+      if(ay_status)
+	{
+	  return TCL_OK;
+	}
+
+      /* bail out, as long as we stay in the same grid cell */
+      if((oldwinx == winx) && (oldwiny == winy))
+	{
+	  return TCL_OK;
+	}
     }
 
   glGetIntegerv(GL_VIEWPORT, vp);
@@ -1540,36 +1553,38 @@ ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[])
 
       /* so that we may use continue; */
       sel = sel->next;
-
-      ay_trafo_identitymatrix(mm);
-      ay_trafo_getall(ay_currentlevel, o, mm);
-
-      if(GL_FALSE == gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz))
+      if(!have_scale)
 	{
-	  return TCL_OK;
+	  ay_trafo_identitymatrix(mm);
+	  ay_trafo_getall(ay_currentlevel, o, mm);
+
+	  if(GL_FALSE == gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz))
+	    {
+	      return TCL_OK;
+	    }
+
+	  owiny = height - owiny;
+
+	  v1[0] = (oldwinx-owinx);
+	  v1[1] = (oldwiny-owiny);
+	  /* bail out, if we get too near the origin */
+	  if((fabs(v1[0])<AY_EPSILON)&&(fabs(v1[1])<AY_EPSILON))
+	    continue;
+
+	  v2[0] = (winx-owinx);
+	  v2[1] = (winy-owiny);
+	  /* bail out, if we get too near the origin */
+	  if((fabs(v2[0])<AY_EPSILON)&&(fabs(v2[1])<AY_EPSILON))
+	    continue;
+
+	  t1 = AY_V2LEN(v1);
+	  t2 = AY_V2LEN(v2);
+
+	  if(fabs(t2) > AY_EPSILON && fabs(t1) > AY_EPSILON)
+	    dscal = t2/t1;
+	  else
+	    dscal = 1.0;
 	}
-
-      owiny = height - owiny;
-
-      v1[0] = (oldwinx-owinx);
-      v1[1] = (oldwiny-owiny);
-      /* bail out, if we get too near the origin */
-      if((fabs(v1[0])<AY_EPSILON)&&(fabs(v1[1])<AY_EPSILON))
-	continue;
-
-      v2[0] = (winx-owinx);
-      v2[1] = (winy-owiny);
-      /* bail out, if we get too near the origin */
-      if((fabs(v2[0])<AY_EPSILON)&&(fabs(v2[1])<AY_EPSILON))
-	continue;
-
-      t1 = AY_V2LEN(v1);
-      t2 = AY_V2LEN(v2);
-
-      if(fabs(t2) > AY_EPSILON && fabs(t1) > AY_EPSILON)
-	dscal = t2/t1;
-      else
-	dscal = 1.0;
 
       if(view->transform_points)
 	{
@@ -2572,7 +2587,7 @@ ay_oact_str2DAcb(struct Togl *togl, int argc, char *argv[])
 int
 ay_oact_sc3DAcb(struct Togl *togl, int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ int ay_status = AY_OK, tcl_status = TCL_OK;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  static double oldwinx = 0.0, oldwiny = 0.0;
  double ax = 0.0, ay = 0.0;
@@ -2583,14 +2598,16 @@ ay_oact_sc3DAcb(struct Togl *togl, int argc, char *argv[])
  ay_object *o = NULL;
  ay_point *point = NULL;
  char fname[] = "scale3DA_act";
+ int have_scale = AY_FALSE;
 
   /* parse args */
-  ay_status = ay_oact_parseargs(togl, argc, argv, fname,
-				&winx, &winy, &oldwinx, &oldwiny);
-
-  if(ay_status)
+  if(argc == 4 && argv[2][0] == '-' && argv[2][1] == 's')
     {
-      return TCL_OK;
+      tcl_status = Tcl_GetDouble(ay_interp, argv[3], &dscal);
+      AY_CHTCLERRRET(tcl_status, argv[0], ay_interp);
+      if(dscal != dscal || fabs(dscal) < AY_EPSILON)
+	return TCL_OK;
+      have_scale = AY_TRUE;
     }
 
   if(!view->drawmark)
@@ -2602,38 +2619,49 @@ ay_oact_sc3DAcb(struct Togl *togl, int argc, char *argv[])
       return TCL_OK;
     }
 
-  /* bail out, as long as we stay in the same grid cell */
-  if((oldwinx == winx) && (oldwiny == winy))
+  if(!have_scale)
     {
-      return TCL_OK;
+      ay_status = ay_oact_parseargs(togl, argc, argv, fname,
+				    &winx, &winy, &oldwinx, &oldwiny);
+
+      if(ay_status)
+	{
+	  return TCL_OK;
+	}
+
+      /* bail out, as long as we stay in the same grid cell */
+      if((oldwinx == winx) && (oldwiny == winy))
+	{
+	  return TCL_OK;
+	}
+
+      ax = view->markx;
+      ay = view->marky;
+
+      /* calculate scale factor from the relative lengths
+	 of the vectors (oldpickedpoint-mark) and (pickedpoint-mark) */
+      v1[0] = (oldwinx-ax);
+      v1[1] = (oldwiny-ay);
+
+      /* bail out, if we get too near the mark */
+      if((fabs(v1[0]) < AY_EPSILON) && (fabs(v1[1]) < AY_EPSILON))
+	return TCL_OK;
+
+      v2[0] = (winx-ax);
+      v2[1] = (winy-ay);
+
+      /* bail out, if we get too near the mark */
+      if((fabs(v2[0]) < AY_EPSILON) && (fabs(v2[1]) < AY_EPSILON))
+	return TCL_OK;
+
+      t1 = AY_V2LEN(v1);
+      t2 = AY_V2LEN(v2);
+
+      if(fabs(t2) > AY_EPSILON && fabs(t1) > AY_EPSILON)
+	dscal = t2/t1;
+      else
+	dscal = 1.0;
     }
-
-  ax = view->markx;
-  ay = view->marky;
-
-  /* calculate scale factor from the relative lengths
-     of the vectors (oldpickedpoint-mark) and (pickedpoint-mark) */
-  v1[0] = (oldwinx-ax);
-  v1[1] = (oldwiny-ay);
-
-  /* bail out, if we get too near the mark */
-  if((fabs(v1[0]) < AY_EPSILON) && (fabs(v1[1]) < AY_EPSILON))
-    return TCL_OK;
-
-  v2[0] = (winx-ax);
-  v2[1] = (winy-ay);
-
-  /* bail out, if we get too near the mark */
-  if((fabs(v2[0]) < AY_EPSILON) && (fabs(v2[1]) < AY_EPSILON))
-    return TCL_OK;
-
-  t1 = AY_V2LEN(v1);
-  t2 = AY_V2LEN(v2);
-
-  if(fabs(t2) > AY_EPSILON && fabs(t1) > AY_EPSILON)
-    dscal = t2/t1;
-  else
-    dscal = 1.0;
 
   /* transform mark from world to current level space */
   ay_trafo_identitymatrix(mm);
