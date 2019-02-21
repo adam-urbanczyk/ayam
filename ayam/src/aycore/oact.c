@@ -91,7 +91,7 @@ ay_oact_parseargs(struct Togl *togl, int argc, char *argv[], char *fname,
 int
 ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ int ay_status = AY_OK, tcl_status = TCL_OK;
  char fname[] = "move_act";
  Tcl_Interp *interp = Togl_Interp(togl);
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
@@ -107,141 +107,169 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
  double v1[3] = {0}, v2[3] = {0};
  double quat[4] = {0};
  double mm[16], m[16];
+ int have_dxyz = AY_FALSE;
 
   /* parse args */
-  ay_status = ay_oact_parseargs(togl, argc, argv, fname,
-				&winx, &winy, &oldwinx, &oldwiny);
-
-  if(ay_status)
+  if(argc == 4 && argv[2][0] == '-' && argv[2][1] == 'd')
     {
-      return TCL_OK;
+      tcl_status = Tcl_GetDouble(ay_interp, argv[3], &dx);
+      AY_CHTCLERRRET(tcl_status, argv[0], ay_interp);
+      if(dx != dx || fabs(dx) < AY_EPSILON)
+	return TCL_OK;
+
+      rest = 1;
+      if(argv[2][2] == 'y')
+	{
+	  dy = dx;
+	  dx = 0.0;
+	  rest = 2;
+	}
+      if(argv[2][2] == 'z')
+	{
+	  dz = dx;
+	  dx = 0.0;
+	  rest = 3;
+	}
+
+      have_dxyz = AY_TRUE;
     }
 
-  /* if first argument is -start ... */
-  if((argc >= 4) && argv[2][0] && (argv[2][1] == 's'))
+  if(!have_dxyz)
     {
-      /* if we have the restrict argument ... */
-      if(argc > 5)
+      ay_status = ay_oact_parseargs(togl, argc, argv, fname,
+				    &winx, &winy, &oldwinx, &oldwiny);
+
+      if(ay_status)
 	{
-	  /* get restrict axis */
-	  Tcl_GetInt(interp, argv[5], &rest);
+	  return TCL_OK;
+	}
+
+      /* if first argument is -start ... */
+      if((argc >= 4) && argv[2][0] && (argv[2][1] == 's'))
+	{
+	  /* if we have the restrict argument ... */
+	  if(argc > 5)
+	    {
+	      /* get restrict axis */
+	      Tcl_GetInt(interp, argv[5], &rest);
+	    }
+	  else
+	    {
+	      rest = 0;
+	    }
+	}
+
+      /* bail out, as long as we stay in the same grid cell */
+      if((oldwinx == winx) && (oldwiny == winy))
+	{
+	  return TCL_OK;
+	}
+
+      /* get real direction of current level coordinate system */
+      ay_trafo_identitymatrix(m);
+      if(!view->local)
+	{
+	  if(ay_currentlevel->object != ay_root)
+	    {
+	      ay_trafo_getsomeparentinv(ay_currentlevel->next,
+					AY_SCA | AY_ROT, m);
+	    }
 	}
       else
 	{
-	  rest = 0;
-	}
-    }
+	  if(ay_currentlevel->object != ay_root)
+	    {
+	      ay_trafo_getsomeparentinv(ay_currentlevel->next, AY_SCA, m);
+	    }
+	} /* if */
 
-  /* bail out, as long as we stay in the same grid cell */
-  if((oldwinx == winx) && (oldwiny == winy))
-    {
-      return TCL_OK;
-    }
+      /* calc dx, dy, dz */
+      dx = -(oldwinx - winx) * view->conv_x;
+      dy = (oldwiny - winy) * view->conv_y;
 
-  /* get real direction of current level coordinate system */
-  ay_trafo_identitymatrix(m);
-  if(!view->local)
-    {
-      if(ay_currentlevel->object != ay_root)
+      /* modify dx/dy/dz according to view type */
+      switch(view->type)
 	{
-	  ay_trafo_getsomeparentinv(ay_currentlevel->next,
-				    AY_SCA | AY_ROT, m);
-	}
-    }
-  else
-    {
-      if(ay_currentlevel->object != ay_root)
-	{
-	  ay_trafo_getsomeparentinv(ay_currentlevel->next, AY_SCA, m);
-	}
-    } /* if */
-
-  /* calc dx, dy, dz */
-  dx = -(oldwinx - winx) * view->conv_x;
-  dy = (oldwiny - winy) * view->conv_y;
-
-  /* modify dx/dy/dz according to view type */
-  switch(view->type)
-    {
-    case AY_VTFRONT:
-    case AY_VTTRIM:
-      /* restrict to X? */
-      if(rest == 1)
-	{
-	  dy = 0.0;
-	}
-      /* restrict to Y? */
-      if(rest == 2)
-	{
-	  dx = 0.0;
-	}
-      /* restrict to Z? */
-      if(rest == 3)
-	{
-	  dx = 0.0;
-	  dy = 0.0;
-	}
-      v2[0] = dx;
-      v2[1] = dy;
-      v2[2] = 0.0;
-      AY_APTRAN3(v1, v2, m)
-      dx = v1[0];
-      dy = v1[1];
-      dz = v1[2];
-      break;
-    case AY_VTSIDE:
-      /* restrict to Z? */
-      if(rest == 3)
-	{
-	  dy = 0.0;
-	}
-      /* restrict to Y? */
-      if(rest == 2)
-	{
-	  dx = 0.0;
-	}
-      /* restrict to X? */
-      if(rest == 1)
-	{
-	  dx = 0.0;
-	  dy = 0.0;
-	}
-      v2[0] = 0.0;
-      v2[1] = dy;
-      v2[2] = -dx;
-      AY_APTRAN3(v1, v2, m)
-      dx = v1[0];
-      dy = v1[1];
-      dz = v1[2];
-      break;
-    case AY_VTTOP:
-      /* restrict to X? */
-      if(rest == 1)
-	{
-	  dy = 0.0;
-	}
-      /* restrict to Z? */
-      if(rest == 3)
-	{
-	  dx = 0.0;
-	}
-      /* restrict to Y? */
-      if(rest == 2)
-	{
-	  dx = 0.0;
-	  dy = 0.0;
-	}
-      v2[0] = dx;
-      v2[1] = 0.0;
-      v2[2] = -dy;
-      AY_APTRAN3(v1, v2, m)
-      dx = v1[0];
-      dy = v1[1];
-      dz = v1[2];
-      break;
-    default:
-      break;
-    } /* switch */
+	case AY_VTFRONT:
+	case AY_VTTRIM:
+	  /* restrict to X? */
+	  if(rest == 1)
+	    {
+	      dy = 0.0;
+	    }
+	  /* restrict to Y? */
+	  if(rest == 2)
+	    {
+	      dx = 0.0;
+	    }
+	  /* restrict to Z? */
+	  if(rest == 3)
+	    {
+	      dx = 0.0;
+	      dy = 0.0;
+	    }
+	  v2[0] = dx;
+	  v2[1] = dy;
+	  v2[2] = 0.0;
+	  AY_APTRAN3(v1, v2, m)
+	    dx = v1[0];
+	  dy = v1[1];
+	  dz = v1[2];
+	  break;
+	case AY_VTSIDE:
+	  /* restrict to Z? */
+	  if(rest == 3)
+	    {
+	      dy = 0.0;
+	    }
+	  /* restrict to Y? */
+	  if(rest == 2)
+	    {
+	      dx = 0.0;
+	    }
+	  /* restrict to X? */
+	  if(rest == 1)
+	    {
+	      dx = 0.0;
+	      dy = 0.0;
+	    }
+	  v2[0] = 0.0;
+	  v2[1] = dy;
+	  v2[2] = -dx;
+	  AY_APTRAN3(v1, v2, m)
+	    dx = v1[0];
+	  dy = v1[1];
+	  dz = v1[2];
+	  break;
+	case AY_VTTOP:
+	  /* restrict to X? */
+	  if(rest == 1)
+	    {
+	      dy = 0.0;
+	    }
+	  /* restrict to Z? */
+	  if(rest == 3)
+	    {
+	      dx = 0.0;
+	    }
+	  /* restrict to Y? */
+	  if(rest == 2)
+	    {
+	      dx = 0.0;
+	      dy = 0.0;
+	    }
+	  v2[0] = dx;
+	  v2[1] = 0.0;
+	  v2[2] = -dy;
+	  AY_APTRAN3(v1, v2, m)
+	    dx = v1[0];
+	  dy = v1[1];
+	  dz = v1[2];
+	  break;
+	default:
+	  break;
+	} /* switch */
+    } /* if !have_dxyz */
 
   /* move the objects / selected points */
   if((fabs(dx) > AY_EPSILON) ||
@@ -308,7 +336,7 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
 	}
 
       ay_toglcb_display(togl);
-    } /* if */
+    } /* if dx/dy/dz */
 
   oldwinx = winx;
   oldwiny = winy;
