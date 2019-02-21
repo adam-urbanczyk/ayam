@@ -386,17 +386,20 @@ proc actionMoveOb { w } {
     # allow restriction: x only
     bind $t $ayviewshortcuts(RestrictX) "\
 	set ay(restrict) 1;\
-	viewSetMAIcon $t.f3D.togl ay_MoveX_img \"MoveX\";"
+	viewSetMAIcon $t.f3D.togl ay_MoveX_img \"MoveX\";\
+        actionBindParamKbd $t ay(dx) \"DX: \" \"$w moveoac -dx \""
 
     # allow restriction: y only
     bind $t $ayviewshortcuts(RestrictY) "\
 	set ay(restrict) 2;\
-	viewSetMAIcon $t.f3D.togl ay_MoveY_img \"MoveY\";"
+	viewSetMAIcon $t.f3D.togl ay_MoveY_img \"MoveY\";\
+        actionBindParamKbd $t ay(dy) \"DY: \" \"$w moveoac -dy \""
 
     # allow restriction: z only
     bind $t $ayviewshortcuts(RestrictZ) "\
 	set ay(restrict) 3;\
-	viewSetMAIcon $t.f3D.togl ay_MoveZ_img \"MoveZ\";"
+	viewSetMAIcon $t.f3D.togl ay_MoveZ_img \"MoveZ\";\
+        actionBindParamKbd $t ay(dz) \"DZ: \" \"$w moveoac -dz \""
 
  return;
 }
