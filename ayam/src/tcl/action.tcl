@@ -617,7 +617,10 @@ proc actionSc1DXAOb { w } {
     } else {
 	set t [winfo parent [winfo parent $w]]
     }
+
     bind $t $ayviewshortcuts(About) "actionSetMark $w actionSc1DXAOb"
+
+    actionBindParamKbd $t ay(angle) "Scale: " "$w sc1dxaoac -scale "
 
  return;
 }
@@ -704,7 +707,10 @@ proc actionSc1DYAOb { w } {
     } else {
 	set t [winfo parent [winfo parent $w]]
     }
+
     bind $t $ayviewshortcuts(About) "actionSetMark $w actionSc1DYAOb"
+
+    actionBindParamKbd $t ay(angle) "Scale: " "$w sc1dyaoac -scale "
 
  return;
 }
@@ -792,6 +798,8 @@ proc actionSc1DZAOb { w } {
 	set t [winfo parent [winfo parent $w]]
     }
     bind $t $ayviewshortcuts(About) "actionSetMark $w actionSc1DZAOb"
+
+    actionBindParamKbd $t ay(angle) "Scale: " "$w sc1dzaoac -scale "
 
  return;
 }
