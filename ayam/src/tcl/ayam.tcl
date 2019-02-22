@@ -35,6 +35,7 @@ array set ayprefs {
  CreateAtMark 1
  Snap3D 0
  AllowWarp 1
+ KeepParamGUI 0
 
  Tolerance 30.0
  NPDisplayMode 2
