@@ -1,8 +1,13 @@
-[5. Feb 2019] Tip:
-==================
+[22. Feb 2019] Tip:
+===================
 
 Modelling:
-o add keyboard shortcut to call the revert tool from view windows: <!>
+o added keyboard shortcut to call the revert tool from view windows: <!>
+
+GUI:
+o added intermediate quick parameter GUIs to all modelling actions that
+  require one parameter, they appear when a number key or <Return> is
+  pressed
 
 Scripts/Scripting Interface:
 o added script "link.tcl" to manually control updates of object hierarchy
@@ -45,7 +50,7 @@ o added keyboard shortcuts to numeric point edit dialog, focus management:
   close the dialog: <Shift-Return>/<Shift-Enter>
 o added hidden preference setting "PickCycleMax" to inhibit pick cycling
   for large amounts of picking candidates
-o add keyboard shortcuts to call refine/coarsen tools from view windows:
+o added keyboard shortcuts to call refine/coarsen tools from view windows:
   <#>/<'>
 o open/close/refine/coarsen tools now support all (even plugin defined)
   curve object types (e.g. BCurve)
