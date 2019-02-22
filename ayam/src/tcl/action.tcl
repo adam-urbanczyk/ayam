@@ -410,7 +410,7 @@ proc actionMoveOb { w } {
 # appears in the lower right corner of the view when one of the ParamKeys
 # is pressed. Number keys are immediately re-routed to the entry.
 proc actionGetParamFromKbd { w var txt cmd key } {
-    global ay
+    global ay ayprefs
     if { [string first ".view" $w] == 0 } {
 	catch {destroy $w.param}
 	set f [frame $w.param]
@@ -420,9 +420,16 @@ proc actionGetParamFromKbd { w var txt cmd key } {
     }
     pack [label $f.l -text $txt ] -side left
     pack [entry $f.e -textvariable $var] -side left
-    bind $f.e <Key-Escape> "destroy $f; focus $w;break;"
-    bind $f.e <Key-Return> "$cmd \$$var;break;"
-    bind $f.e <Key-KP_Enter> "$cmd \$$var;break;"
+    bind $f.e <Key-Escape> "destroy $f;focus $w;break;"
+    if { $ayprefs(KeepParamGUI) } {
+	bind $f.e <Key-Return> "$cmd \$$var;break;"
+	bind $f.e <Shift-Key-Return> "$cmd \$$var;destroy $f;focus $w;break;"
+    } else {
+	bind $f.e <Key-Return> "$cmd \$$var;destroy $f;focus $w;break;"
+	bind $f.e <Shift-Key-Return> "$cmd \$$var;break;"
+    }
+    bind $f.e <Key-KP_Enter> [bind $f.e <Key-Return>]
+    bind $f.e <Shift-Key-KP_Enter> [bind $f.e <Shift-Key-Return>]
     place $f -in $w -anchor se -relx 1.0 -rely 1.0 -x -1 -y -1
     if { [string length $key] == 1 } {
 	$f.e delete 0 end
