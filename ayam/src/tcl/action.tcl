@@ -387,19 +387,19 @@ proc actionMoveOb { w } {
     bind $t $ayviewshortcuts(RestrictX) "\
 	set ay(restrict) 1;\
 	viewSetMAIcon $t.f3D.togl ay_MoveX_img \"MoveX\";\
- actionBindParamKbd $t ay(dx) \"DX: \" \"undo save MoveXObj; $w moveoac -dx \""
+ actionBindParamKbd $t ay(dx) \" DX: \" \"undo save MoveXObj; $w moveoac -dx \""
 
     # allow restriction: y only
     bind $t $ayviewshortcuts(RestrictY) "\
 	set ay(restrict) 2;\
 	viewSetMAIcon $t.f3D.togl ay_MoveY_img \"MoveY\";\
- actionBindParamKbd $t ay(dy) \"DY: \" \"undo save MoveYObj; $w moveoac -dy \""
+ actionBindParamKbd $t ay(dy) \" DY: \" \"undo save MoveYObj; $w moveoac -dy \""
 
     # allow restriction: z only
     bind $t $ayviewshortcuts(RestrictZ) "\
 	set ay(restrict) 3;\
 	viewSetMAIcon $t.f3D.togl ay_MoveZ_img \"MoveZ\";\
- actionBindParamKbd $t ay(dz) \"DZ: \" \"undo save MoveZObj; $w moveoac -dz \""
+ actionBindParamKbd $t ay(dz) \" DZ: \" \"undo save MoveZObj; $w moveoac -dz \""
 
  return;
 }
@@ -501,7 +501,7 @@ proc actionRotOb { w } {
 
     actionBindCenter $w actionRotObA
 
-    actionBindParamKbd $t ay(angle) "Angle: "\
+    actionBindParamKbd $t ay(angle) " Angle: "\
 	"undo save RotObj; $w rotoac -angle "
 
  return;
@@ -541,7 +541,7 @@ proc actionRotObA { w } {
     }
     bind $t $ayviewshortcuts(About) "actionSetMark $w actionRotObA"
 
-    actionBindParamKbd $t ay(angle) "Angle: "\
+    actionBindParamKbd $t ay(angle) " Angle: "\
 	"undo save RotObjA; $w rotoaac -angle "
 
  return;
@@ -591,7 +591,7 @@ proc actionSc1DXOb { w } {
 
     actionBindCenter $w actionSc1DXAOb
 
-    actionBindParamKbd $t ay(angle) "Scale: "\
+    actionBindParamKbd $t ay(angle) " Scale: "\
 	"undo save Sc1DXObj; $w sc1dxoac -scale "
 
  return;
@@ -633,7 +633,7 @@ proc actionSc1DXAOb { w } {
 
     bind $t $ayviewshortcuts(About) "actionSetMark $w actionSc1DXAOb"
 
-    actionBindParamKbd $t ay(angle) "Scale: "\
+    actionBindParamKbd $t ay(angle) " Scale: "\
 	"undo save Sc1DXAObj; $w sc1dxaoac -scale "
 
  return;
@@ -683,7 +683,7 @@ proc actionSc1DYOb { w } {
 
     actionBindCenter $w actionSc1DYAOb
 
-    actionBindParamKbd $t ay(angle) "Scale: "\
+    actionBindParamKbd $t ay(angle) " Scale: "\
 	"undo save Sc1DYObj; $w sc1dyoac -scale "
 
  return;
@@ -725,7 +725,7 @@ proc actionSc1DYAOb { w } {
 
     bind $t $ayviewshortcuts(About) "actionSetMark $w actionSc1DYAOb"
 
-    actionBindParamKbd $t ay(angle) "Scale: "\
+    actionBindParamKbd $t ay(angle) " Scale: "\
 	"undo save Sc1DYAObj; $w sc1dyaoac -scale "
 
  return;
@@ -775,7 +775,7 @@ proc actionSc1DZOb { w } {
 
     actionBindCenter $w actionSc1DZAOb
 
-    actionBindParamKbd $t ay(angle) "Scale: "\
+    actionBindParamKbd $t ay(angle) " Scale: "\
 	"undo save Sc1DZObj; $w sc1dzoac -scale "
 
  return;
@@ -816,7 +816,7 @@ proc actionSc1DZAOb { w } {
     }
     bind $t $ayviewshortcuts(About) "actionSetMark $w actionSc1DZAOb"
 
-    actionBindParamKbd $t ay(angle) "Scale: "\
+    actionBindParamKbd $t ay(angle) " Scale: "\
 	"undo save Sc1DZAObj; $w sc1dzaoac -scale "
 
  return;
@@ -875,7 +875,7 @@ proc actionSc2DOb { w } {
 
     actionBindCenter $w actionSc2DAOb
 
-    actionBindParamKbd $t ay(scale) "Scale: "\
+    actionBindParamKbd $t ay(scale) " Scale: "\
 	"undo save Sc2DObj; $w sc2doac -scale "
 
  return;
@@ -917,7 +917,7 @@ proc actionSc2DAOb { w } {
 
     bind $t $ayviewshortcuts(About) "actionSetMark $w actionSc2DAOb"
 
-    actionBindParamKbd $t ay(scale) "Scale: "\
+    actionBindParamKbd $t ay(scale) " Scale: "\
 	"undo save Sc2DAObj; $w sc2daoac -scale "
 
  return;
@@ -967,7 +967,7 @@ proc actionSc3DOb { w } {
 
     actionBindCenter $w actionSc3DAOb
 
-    actionBindParamKbd $t ay(scale) "Scale: "\
+    actionBindParamKbd $t ay(scale) " Scale: "\
 	"undo save Sc3DObj; $w sc3doac -scale "
 
  return;
@@ -1009,7 +1009,7 @@ proc actionSc3DAOb { w } {
 
     bind $t $ayviewshortcuts(About) "actionSetMark $w actionSc3DAOb"
 
-    actionBindParamKbd $t ay(scale) "Scale: "\
+    actionBindParamKbd $t ay(scale) " Scale: "\
 	"undo save Sc3DAObj; $w sc3daoac -scale "
 
  return;
