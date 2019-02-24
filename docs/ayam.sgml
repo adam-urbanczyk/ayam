@@ -33,7 +33,7 @@ code example of 6 lines text (needs another 2 for the upper/lower lines)
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>4. Feb 2019
+<date>24. Feb 2019
 
 <abstract>
 This is the documentation of Ayam 1.26 &ndash; a free 3D modelling environment
@@ -22788,7 +22788,7 @@ Disks with an inner radius > 0.0 are imported as flat Hyperboloids
 
 <item><bf/NURBS:/
 NurbsCurve, NurbsCurve2D, NurbsPatchsurface,
-TrimmedNurbsPatchsurface, Contour2D, ContourPolyline2D,
+NurbsTrimmedSurface, Contour2D, ContourPolyline2D,
 NurbsSweptSurface, NurbsSwungSurface, NurbsSet.
 <p><p>
 All NURBS elements are fully supported.
@@ -23676,6 +23676,11 @@ value <tt>""</tt> (empty string) leads to no changes of any icon images.
 incarnations of the scene in RIB form (which actually may be split
 in more than one file due to e.g.~instances) created when directly
 rendering from a view window should be kept on disk (default: 5)
+
+<item><tt/"KeepParamGUI:"/: determines wether the quick parameter
+GUIs should be kept open after a parameter has been entered or
+rather disappear immediately.
+The default value is 0 &ndash; the GUIs disappear immediately.
 
 <item><tt/"Kill"/: name of a program that kills other processes and accepts
 a process id as argument (used by the Rendering GUI)
@@ -25465,6 +25470,8 @@ Index:
 <label id="indexk"><tt/&nbsp;&nbsp;<bf/K//
 <list>
 <item>kdialog.tcl: <ref id="kdialogtcl" name="example/helper script">
+<item>KeepNTmpFiles: <ref id="hidprefsk" name="hidden preference setting">
+<item>KeepParamGUI: <ref id="hidprefsk" name="hidden preference setting">
 <item>Keyboard Shortcuts:
 <itemize>
 <item><ref id="mwsc" name="main window shortcuts">,
