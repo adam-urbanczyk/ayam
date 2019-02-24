@@ -113,7 +113,7 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
   if(argc == 4 && argv[2][0] == '-' && argv[2][1] == 'd')
     {
       tcl_status = Tcl_GetDouble(ay_interp, argv[3], &dx);
-      AY_CHTCLERRRET(tcl_status, argv[0], ay_interp);
+      AY_CHTCLERRRET(tcl_status, fname, ay_interp);
       if(dx != dx || fabs(dx) < AY_EPSILON)
 	{
 	  ay_error(AY_ERROR, fname, "Parameter is 0 or NaN!");
@@ -318,7 +318,7 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
 		  o->modified = AY_TRUE;
 		  ay_notify_object(o);
 		  notify_parent = AY_TRUE;
-		}
+		} /* if have selp */
 	    }
 	  else
 	    {
@@ -377,7 +377,7 @@ ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
   if(argc == 4 && argv[2][0] == '-' && argv[2][1] == 'a')
     {
       tcl_status = Tcl_GetDouble(ay_interp, argv[3], &angle);
-      AY_CHTCLERRRET(tcl_status, argv[0], ay_interp);
+      AY_CHTCLERRRET(tcl_status, fname, ay_interp);
       if(angle != angle || fabs(angle) < AY_EPSILON)
 	{
 	  ay_error(AY_ERROR, fname, "Parameter is 0 or NaN!");
@@ -491,7 +491,7 @@ ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
 
 	      o->modified = AY_TRUE;
 	      ay_notify_object(o);
-	    } /* if */
+	    } /* if have selp */
 	}
       else
 	{
@@ -585,7 +585,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
   if(argc == 4 && argv[2][0] == '-' && argv[2][1] == 'a')
     {
       tcl_status = Tcl_GetDouble(ay_interp, argv[3], &angle);
-      AY_CHTCLERRRET(tcl_status, argv[0], ay_interp);
+      AY_CHTCLERRRET(tcl_status, fname, ay_interp);
       if(angle != angle || fabs(angle) < AY_EPSILON)
 	{
 	  ay_error(AY_ERROR, fname, "Parameter is 0 or NaN!");
@@ -916,7 +916,7 @@ ay_oact_sc1DXcb(struct Togl *togl, int argc, char *argv[])
   if(argc == 4 && argv[2][0] == '-' && argv[2][1] == 's')
     {
       tcl_status = Tcl_GetDouble(ay_interp, argv[3], &dscalx);
-      AY_CHTCLERRRET(tcl_status, argv[0], ay_interp);
+      AY_CHTCLERRRET(tcl_status, fname, ay_interp);
       if(dscalx != dscalx || fabs(dscalx) < AY_EPSILON)
 	{
 	  ay_error(AY_ERROR, fname, "Parameter is 0 or NaN!");
@@ -1045,7 +1045,7 @@ ay_oact_sc1DXcb(struct Togl *togl, int argc, char *argv[])
 
 	      o->modified = AY_TRUE;
 	      ay_notify_object(o);
-	    } /* if */
+	    } /* if have selp */
 	}
       else
 	{
@@ -1093,7 +1093,7 @@ ay_oact_sc1DYcb(struct Togl *togl, int argc, char *argv[])
   if(argc == 4 && argv[2][0] == '-' && argv[2][1] == 's')
     {
       tcl_status = Tcl_GetDouble(ay_interp, argv[3], &dscaly);
-      AY_CHTCLERRRET(tcl_status, argv[0], ay_interp);
+      AY_CHTCLERRRET(tcl_status, fname, ay_interp);
       if(dscaly != dscaly || fabs(dscaly) < AY_EPSILON)
 	{
 	  ay_error(AY_ERROR, fname, "Parameter is 0 or NaN!");
@@ -1223,7 +1223,7 @@ ay_oact_sc1DYcb(struct Togl *togl, int argc, char *argv[])
 
 	      o->modified = AY_TRUE;
 	      ay_notify_object(o);
-	    } /* if */
+	    } /* if have selp */
 	}
       else
 	{
@@ -1271,7 +1271,7 @@ ay_oact_sc1DZcb(struct Togl *togl, int argc, char *argv[])
   if(argc == 4 && argv[2][0] == '-' && argv[2][1] == 's')
     {
       tcl_status = Tcl_GetDouble(ay_interp, argv[3], &dscalz);
-      AY_CHTCLERRRET(tcl_status, argv[0], ay_interp);
+      AY_CHTCLERRRET(tcl_status, fname, ay_interp);
       if(dscalz != dscalz || fabs(dscalz) < AY_EPSILON)
 	{
 	  ay_error(AY_ERROR, fname, "Parameter is 0 or NaN!");
@@ -1401,7 +1401,7 @@ ay_oact_sc1DZcb(struct Togl *togl, int argc, char *argv[])
 
 	      o->modified = AY_TRUE;
 	      ay_notify_object(o);
-	    } /* if */
+	    } /* if have selp */
 	}
       else
 	{
@@ -1448,7 +1448,7 @@ ay_oact_sc2Dcb(struct Togl *togl, int argc, char *argv[])
   if(argc == 4 && argv[2][0] == '-' && argv[2][1] == 's')
     {
       tcl_status = Tcl_GetDouble(ay_interp, argv[3], &dscal);
-      AY_CHTCLERRRET(tcl_status, argv[0], ay_interp);
+      AY_CHTCLERRRET(tcl_status, fname, ay_interp);
       if(dscal != dscal || fabs(dscal) < AY_EPSILON)
 	{
 	  ay_error(AY_ERROR, fname, "Parameter is 0 or NaN!");
@@ -1566,7 +1566,7 @@ ay_oact_sc2Dcb(struct Togl *togl, int argc, char *argv[])
 
 	      o->modified = AY_TRUE;
 	      ay_notify_object(o);
-	    } /* if */
+	    } /* if have selp */
 	}
       else
 	{
@@ -1630,7 +1630,7 @@ ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[])
   if(argc == 4 && argv[2][0] == '-' && argv[2][1] == 's')
     {
       tcl_status = Tcl_GetDouble(ay_interp, argv[3], &dscal);
-      AY_CHTCLERRRET(tcl_status, argv[0], ay_interp);
+      AY_CHTCLERRRET(tcl_status, fname, ay_interp);
       if(dscal != dscal || fabs(dscal) < AY_EPSILON)
 	{
 	  ay_error(AY_ERROR, fname, "Parameter is 0 or NaN!");
@@ -1735,7 +1735,7 @@ ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[])
 
 	      o->modified = AY_TRUE;
 	      ay_notify_object(o);
-	    } /* if */
+	    } /* if have selp */
 	}
       else
 	{
@@ -1831,7 +1831,7 @@ ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[])
   if(argc == 4 && argv[2][0] == '-' && argv[2][1] == 's')
     {
       tcl_status = Tcl_GetDouble(ay_interp, argv[3], &dscalx);
-      AY_CHTCLERRRET(tcl_status, argv[0], ay_interp);
+      AY_CHTCLERRRET(tcl_status, fname, ay_interp);
       if(dscalx != dscalx || fabs(dscalx) < AY_EPSILON)
 	{
 	  ay_error(AY_ERROR, fname, "Parameter is 0 or NaN!");
@@ -2061,7 +2061,7 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
   if(argc == 4 && argv[2][0] == '-' && argv[2][1] == 's')
     {
       tcl_status = Tcl_GetDouble(ay_interp, argv[3], &dscaly);
-      AY_CHTCLERRRET(tcl_status, argv[0], ay_interp);
+      AY_CHTCLERRRET(tcl_status, fname, ay_interp);
       if(dscaly != dscaly || fabs(dscaly) < AY_EPSILON)
 	{
 	  ay_error(AY_ERROR, fname, "Parameter is 0 or NaN!");
@@ -2291,7 +2291,7 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
   if(argc == 4 && argv[2][0] == '-' && argv[2][1] == 's')
     {
       tcl_status = Tcl_GetDouble(ay_interp, argv[3], &dscalz);
-      AY_CHTCLERRRET(tcl_status, argv[0], ay_interp);
+      AY_CHTCLERRRET(tcl_status, fname, ay_interp);
       if(dscalz != dscalz || fabs(dscalz) < AY_EPSILON)
 	{
 	  ay_error(AY_ERROR, fname, "Parameter is 0 or NaN!");
@@ -2516,7 +2516,7 @@ ay_oact_sc2DAcb(struct Togl *togl, int argc, char *argv[])
   if(argc == 4 && argv[2][0] == '-' && argv[2][1] == 's')
     {
       tcl_status = Tcl_GetDouble(ay_interp, argv[3], &dscal);
-      AY_CHTCLERRRET(tcl_status, argv[0], ay_interp);
+      AY_CHTCLERRRET(tcl_status, fname, ay_interp);
       if(dscal != dscal || fabs(dscal) < AY_EPSILON)
 	{
 	  ay_error(AY_ERROR, fname, "Parameter is 0 or NaN!");
@@ -2792,7 +2792,7 @@ ay_oact_sc3DAcb(struct Togl *togl, int argc, char *argv[])
   if(argc == 4 && argv[2][0] == '-' && argv[2][1] == 's')
     {
       tcl_status = Tcl_GetDouble(ay_interp, argv[3], &dscal);
-      AY_CHTCLERRRET(tcl_status, argv[0], ay_interp);
+      AY_CHTCLERRRET(tcl_status, fname, ay_interp);
       if(dscal != dscal || fabs(dscal) < AY_EPSILON)
 	{
 	  ay_error(AY_ERROR, fname, "Parameter is 0 or NaN!");
