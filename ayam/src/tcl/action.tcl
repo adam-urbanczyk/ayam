@@ -170,6 +170,9 @@ proc actionSetMark { w { nextaction "" } } {
 	set t [winfo parent [winfo parent $w]]
     }
 
+    # until we can set the mark via kbd
+    actionClearParamKbd $t
+
     # if nextaction is not empty, we are an intermediate
     # action, embedded into some other action, which we arrange
     # to re-start here (after setting the mark):
