@@ -739,12 +739,11 @@ ay_tree_dndtcmd(ClientData clientData, Tcl_Interp *interp,
       target = p;
       p = p->down;
       /* look for end of level */
-      while(p->next)
+      while(p && p->next)
 	{
 	  t = &(p->next);
 	  p = p->next;
 	}
-
     }
   else
     { /* move object between two others */
@@ -768,7 +767,7 @@ ay_tree_dndtcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 
 	  j = 1;
-	  while(p->next)
+	  while(p && p->next)
 	    {
 	      if(i == j)
 		{
