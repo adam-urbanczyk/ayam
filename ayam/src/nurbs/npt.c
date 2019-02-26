@@ -1512,6 +1512,8 @@ ay_npt_crtnspheretcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
+  o->down = ay_endlevel;
+
   ay_object_placemark(o);
 
   ay_status = ay_npt_crtnsphere(radius,
