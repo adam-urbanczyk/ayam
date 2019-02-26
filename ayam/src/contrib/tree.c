@@ -705,6 +705,12 @@ ay_tree_dndtcmd(ClientData clientData, Tcl_Interp *interp,
 
   p = ay_tree_getobject(argv[1]);
 
+  if(!p)
+    {
+      ay_error(AY_ERROR, argv[0], "Could not find object!");
+      return TCL_OK;
+    }
+
   Tcl_GetInt(interp, argv[2], &i);
 
   /* find place to move selected objects to */
