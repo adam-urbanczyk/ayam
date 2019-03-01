@@ -567,6 +567,7 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 /* ay_object_link:
  *  link single object <o> to scene structure;
  *  uses ay_next;
+ *  fixes down for parent objects with NULL as down;
  *  properly maintains ay_next and ay_currentlevel
  */
 void
@@ -580,6 +581,11 @@ ay_object_link(ay_object *o)
       *ay_next = o;
 
       ay_next = &(o->next);
+   }
+
+  if(o->parent && !o->down)
+    {
+      o->down = ay_endlevel;
     }
 
   /* just in case that we are linking the very first object to
