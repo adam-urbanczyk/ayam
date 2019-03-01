@@ -1599,6 +1599,8 @@ ay_npt_crtnsphere2tcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_quat_add(quat, new->quat, new->quat);
 	}
 
+      new->down = ay_endlevel;
+
       ay_object_link(new);
     } /* for */
 
@@ -2220,6 +2222,7 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
     }
   else
     {
+      patch->down = ay_endlevel;
       ay_object_link(patch);
     }
 
