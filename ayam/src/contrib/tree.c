@@ -709,14 +709,16 @@ ay_tree_dndtcmd(ClientData clientData, Tcl_Interp *interp,
 
   /* find place to move selected objects to */
   if(i == -1)
-    { /* drop to other object */
+    {
+      /* drop to other object */
+
       if(!p)
 	{
 	  ay_error(AY_ERROR, argv[0], "Could not find object!");
 	  return TCL_OK;
 	}
 
-      /* first check, if object has a drop callback registered */
+      /* check, if object has a drop callback registered */
       arr = ay_treedropcbt.arr;
       cb = (ay_treedropcb *)(arr[p->type]);
 
@@ -752,10 +754,16 @@ ay_tree_dndtcmd(ClientData clientData, Tcl_Interp *interp,
 	}
     }
   else
-    { /* move object between two others */
+    {
+      /* move object between two others */
       /* look for position to insert */
       if(i == 0)
 	{
+	  if(!p)
+	    {
+	      ay_error(AY_ERROR, argv[0], "Could not find object!");
+	      return TCL_OK;
+	    }
 	  t = &(p->down);
 	  target = p;
 	}
