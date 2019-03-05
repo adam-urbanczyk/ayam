@@ -1389,8 +1389,7 @@ ay_stess_SortIntersections(ay_stess_uvp *list, int u)
  *  tesselate NURBS patch <o> into lines in parametric direction u
  */
 int
-ay_stess_TessTrimmedNPU(ay_object *o, int qf,
-			int numtrims,
+ay_stess_TessTrimmedNPU(ay_object *o, int qf, int numtrims,
 			double **tcs, int *tcslens, int *tcsdirs,
 			double *resud, double *resvd,
 			int *reslen, ay_stess_uvp ***result)
@@ -1409,7 +1408,6 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 
   p = (ay_nurbpatch_object *)o->refine;
 
-  /* calc desired uv coords for patch tesselation */
   Cn = (p->width + 4) * qf;
   *reslen = Cn;
   Cm = (p->height + 4) * qf;
@@ -1432,7 +1430,6 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 
   first_loop_cw = !tcsdirs[0];
 
-  /* match desired uv coords of patch tesselation with trimloops */
   u = umin;
   p3[1] = vmin - AY_EPSILON;
   p4[1] = vmax + AY_EPSILON;
@@ -1443,13 +1440,12 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
       olduvp = NULL;
       trimuvp = NULL;
 
-      /* calc all intersections of all trimloops with current u */
-
       if(i == Cn-1)
 	u = umax;
       p3[0] = u;
       p4[0] = u;
 
+      /* calc all intersections of all trimloops with current u */
       for(k = 0; k < numtrims; k++)
 	{
 	  tt = tcs[k];
@@ -1499,8 +1495,8 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 			{
 			  if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
 			    {
-			      /* XXXX memory leak! */
-			      return AY_EOMEM;
+			      ay_status = AY_EOMEM;
+			      goto cleanup;
 			    }
 			  newuvp->type = 1;
 			  newuvp->dir = tcsdirs[k];
@@ -1542,8 +1538,8 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 		    {
 		      if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
 			{
-			  /* XXXX memory leak! */
-			  return AY_EOMEM;
+			  ay_status = AY_EOMEM;
+			  goto cleanup;
 			}
 		      /* type == 0 */
 		      newuvp->u = u;
@@ -1574,8 +1570,8 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 	    {
 	      if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
 		{
-		  /* XXXX memory leak! */
-		  return AY_EOMEM;
+		  ay_status = AY_EOMEM;
+		  goto cleanup;
 		}
 	      /* type == 0 */
 	      newuvp->u = u;
@@ -1589,20 +1585,24 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
       u += ud;
     } /* for */
 
-  *result = uvps;
-
   /* finally, calculate surfacepoints */
   if(p->is_rat)
     {
       if(!(ders = malloc(
-			 ay_nb_FirstDerSurf4DMSize(p->uorder-1, p->vorder-1)*sizeof(double))))
-	{ return AY_EOMEM; }
+	 ay_nb_FirstDerSurf4DMSize(p->uorder-1, p->vorder-1)*sizeof(double))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
     }
   else
     {
       if(!(ders = malloc(
-			 ay_nb_FirstDerSurf3DMSize(p->uorder-1, p->vorder-1)*sizeof(double))))
-	{ return AY_EOMEM; }
+	 ay_nb_FirstDerSurf3DMSize(p->uorder-1, p->vorder-1)*sizeof(double))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
     }
 
   fd1 = &(ders[3]);
@@ -1618,11 +1618,11 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 
 	  if(p->is_rat)
 	    ay_nb_FirstDerSurf4DM(p->width-1, p->height-1,
-				  p->uorder-1, p->vorder-1, p->uknotv, p->vknotv,
+			       p->uorder-1, p->vorder-1, p->uknotv, p->vknotv,
 				  p->controlv, uvpptr->u, uvpptr->v, ders);
 	  else
 	    ay_nb_FirstDerSurf3DM(p->width-1, p->height-1,
-				  p->uorder-1, p->vorder-1, p->uknotv, p->vknotv,
+			       p->uorder-1, p->vorder-1, p->uknotv, p->vknotv,
 				  p->controlv, uvpptr->u, uvpptr->v, ders);
 
 	  memcpy(uvpptr->C, ders, 3*sizeof(double));
@@ -1639,6 +1639,28 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 
   free(ders);
 
+  /* return result */
+  *result = uvps;
+
+  /* prevent cleanup code from doing something harmful */
+  uvps = NULL;
+
+cleanup:
+
+  if(uvps)
+    {
+      for(i = 0; i < Cn; i++)
+	{
+	  while(uvps[i])
+	    {
+	      uvpptr = uvps[i]->next;
+	      free(uvps[i]);
+	      uvps[i] = uvpptr;
+	    }
+	}
+      free(uvps);
+    }
+
  return ay_status;
 } /* ay_stess_TessTrimmedNPU */
 
@@ -1647,8 +1669,7 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
  *  tesselate NURBS patch <o> into lines in parametric direction v
  */
 int
-ay_stess_TessTrimmedNPV(ay_object *o, int qf,
-			int numtrims,
+ay_stess_TessTrimmedNPV(ay_object *o, int qf, int numtrims,
 			double **tcs, int *tcslens, int *tcsdirs,
 			int *reslen, ay_stess_uvp ***result)
 {
@@ -1666,7 +1687,6 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 
   p = (ay_nurbpatch_object *)o->refine;
 
-  /* calc desired uv coords for patch tesselation */
   Cn = (p->width + 4) * qf;
   Cm = (p->height + 4) * qf;
   *reslen = Cm;
@@ -1687,7 +1707,6 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 
   first_loop_cw = !tcsdirs[0];
 
-  /* match desired uv coords of patch tesselation with trimloops */
   v = vmin;
   p3[0] = umin - AY_EPSILON;
   p4[0] = umax + AY_EPSILON;
@@ -1697,13 +1716,13 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
       nextuvp = &trimuvp;
       olduvp = NULL;
       trimuvp = NULL;
-      /* calc all intersections of all trimloops with current v */
 
       if(i == Cm-1)
 	v = vmax;
       p3[1] = v;
       p4[1] = v;
 
+      /* calc all intersections of all trimloops with current v */
       for(k = 0; k < numtrims; k++)
 	{
 	  tt = tcs[k];
@@ -1748,8 +1767,8 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 			{
 			  if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
 			    {
-			      /* XXXX memory leak! */
-			      return AY_EOMEM;
+			      ay_status = AY_EOMEM;
+			      goto cleanup;
 			    }
 			  newuvp->type = 1;
 			  newuvp->dir = tcsdirs[k];
@@ -1792,10 +1811,9 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 		    {
 		      if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
 			{
-			  /* XXXX memory leak! */
-			  return AY_EOMEM;
+			  ay_status = AY_EOMEM;
+			  goto cleanup;
 			}
-		      /* type == 0 */
 		      newuvp->u = u;
 		      newuvp->v = v;
 		      *nextuvp = newuvp;
@@ -1824,10 +1842,9 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 	    {
 	      if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
 		{
-		  /* XXXX memory leak! */
-		  return AY_EOMEM;
+		  ay_status = AY_EOMEM;
+		  goto cleanup;
 		}
-	      /* type == 0 */
 	      newuvp->u = u;
 	      newuvp->v = v;
 	      *nextuvp = newuvp;
@@ -1839,20 +1856,24 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
       v += vd;
     } /* for */
 
-  *result = uvps;
-
   /* finally, calculate surfacepoints */
   if(p->is_rat)
     {
       if(!(ders = malloc(
-			 ay_nb_FirstDerSurf4DMSize(p->uorder-1, p->vorder-1)*sizeof(double))))
-	{ return AY_EOMEM; }
+	 ay_nb_FirstDerSurf4DMSize(p->uorder-1, p->vorder-1)*sizeof(double))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
     }
   else
     {
       if(!(ders = malloc(
-			 ay_nb_FirstDerSurf3DMSize(p->uorder-1, p->vorder-1)*sizeof(double))))
-	{ return AY_EOMEM; }
+	 ay_nb_FirstDerSurf3DMSize(p->uorder-1, p->vorder-1)*sizeof(double))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
     }
 
   fd1 = &(ders[3]);
@@ -1868,11 +1889,11 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 
 	  if(p->is_rat)
 	    ay_nb_FirstDerSurf4DM(p->width-1, p->height-1,
-				  p->uorder-1, p->vorder-1, p->uknotv, p->vknotv,
+			       p->uorder-1, p->vorder-1, p->uknotv, p->vknotv,
 				  p->controlv, uvpptr->u, uvpptr->v, ders);
 	  else
 	    ay_nb_FirstDerSurf3DM(p->width-1, p->height-1,
-				  p->uorder-1, p->vorder-1, p->uknotv, p->vknotv,
+			       p->uorder-1, p->vorder-1, p->uknotv, p->vknotv,
 				  p->controlv, uvpptr->u, uvpptr->v, ders);
 
 	  memcpy(uvpptr->C, ders, 3*sizeof(double));
@@ -1888,6 +1909,28 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
     } /* for */
 
   free(ders);
+
+  /* return result */
+  *result = uvps;
+
+  /* prevent cleanup code from doing something harmful */
+  uvps = NULL;
+
+cleanup:
+
+  if(uvps)
+    {
+      for(i = 0; i < Cm; i++)
+	{
+	  while(uvps[i])
+	    {
+	      uvpptr = uvps[i]->next;
+	      free(uvps[i]);
+	      uvps[i] = uvpptr;
+	    }
+	}
+      free(uvps);
+    }
 
  return ay_status;
 } /* ay_stess_TessTrimmedNPV */
