@@ -1,12 +1,14 @@
-[22. Feb 2019] Tip:
-===================
+[5. Mar 2019] Tip:
+==================
+Bug Fixes:
+o NURBSphere objects can not be trimmed (SF 587)
 
 Modelling:
 o added keyboard shortcut to call the revert tool from view windows: <!>
 
 GUI:
 o added intermediate quick parameter GUIs to all modelling actions that
-  require one parameter, they appear when a number key or <Return> is
+  require one parameter; the GUIs appear when a number key or <Return> is
   pressed
 
 Scripts/Scripting Interface:
