@@ -2074,7 +2074,7 @@ int ay_wrib_viewtcb(struct Togl *togl, int argc, char *argv[]);
 
 /** export RiDisplay tags to a RIB file
  */
-void ay_wrib_displaytags(void);
+void ay_wrib_displaytags(int have_ridisplay);
 
 /** export RiHider tags to a RIB file
  */
