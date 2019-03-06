@@ -932,12 +932,12 @@ ay_wrib_caporbevel(char *file, ay_object *o, ay_object *c, unsigned int ci)
  *  write display tags that are attached to the root object
  */
 void
-ay_wrib_displaytags(void)
+ay_wrib_displaytags(int have_ridisplay)
 {
  char fname[] = "wrib_displaytags";
  ay_object *root = NULL;
  ay_tag *tag = NULL;
- int i = 0, j = 0;
+ int i = 0, j = 0, k = 0;
  char *val = NULL, *name = NULL, *type = NULL, *mode = NULL;
  size_t len;
  RtToken dtype = RI_FILE, dmode = RI_RGBA;
@@ -971,10 +971,13 @@ ay_wrib_displaytags(void)
 
 	      i = 0;
 	      j = 0;
-	      if(val[0] != '+')
+	      if(have_ridisplay || k > 0)
 		{
-		  name[0] = '+';
-		  i++;
+		  if(val[0] != '+')
+		    {
+		      name[0] = '+';
+		      i++;
+		    }
 		}
 	      while(val[j] && val[j] != ',')
 		{
@@ -1062,7 +1065,10 @@ ay_wrib_displaytags(void)
 		  RiDisplay(name, dtype, dmode, RI_NULL);
 		}
 
-	      free(name); free(type); free(mode);
+	      free(name);
+	      free(type);
+	      free(mode);
+
 	      /* free plist */
 	      if(tokens)
 		{
@@ -1074,6 +1080,7 @@ ay_wrib_displaytags(void)
 		  free(values);
 		  values = NULL;
 		}
+	      k++;
 	    }
 	  else
 	    {
@@ -1702,6 +1709,7 @@ ay_wrib_scene(char *file, char *image, int temp, int rtf,
  RtPoint f,/* t,*/ d;
  RtFloat aspect = (RtFloat)1.0, swleft, swright, swtop, swbot;
  RtFloat fov = (RtFloat)90.0, rinearp, rifarp;
+ int have_ridisplay = AY_FALSE;
  char *objfile = NULL, *pos = NULL, fnum[30];
  size_t filenlen = 0;
 
@@ -1814,6 +1822,7 @@ ay_wrib_scene(char *file, char *image, int temp, int rtf,
      { /* frame buffer */
        /* XXXX use "dummy" to work around a bug in Aqsis libri2rib */
        RiDisplay(/*RI_NULL*/"dummy", RI_FRAMEBUFFER, RI_RGBA, RI_NULL);
+       have_ridisplay = AY_TRUE;
      }
    else
      { /* image file */
@@ -1822,11 +1831,12 @@ ay_wrib_scene(char *file, char *image, int temp, int rtf,
        if(riopt->use_std_display || temp || rtf)
 	 {
 	   RiDisplay(image, RI_FILE, RI_RGBA, RI_NULL);
+	   have_ridisplay = AY_TRUE;
 	 }
      } /* if */
 
    /* write additional RiDisplay statements from tags */
-   ay_wrib_displaytags();
+   ay_wrib_displaytags(have_ridisplay);
    /* write RiHider statements from tags */
    ay_wrib_hidertags();
 
