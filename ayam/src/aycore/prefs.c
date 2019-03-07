@@ -299,6 +299,10 @@ ay_prefs_gettcmd(ClientData clientData, Tcl_Interp *interp,
   to = Tcl_NewIntObj(ay_prefs.wutag);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton, "WarnPnts", -1);
+  to = Tcl_NewIntObj(ay_prefs.warnpnts);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton, "LineWidth", -1);
   to = Tcl_NewDoubleObj(ay_prefs.linewidth);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -875,6 +879,11 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 	Tcl_GetIntFromObj(interp, to, &ay_prefs.writeident);
 
 	Tcl_SetStringObj(ton, "WarnUnknownTag", 14);
+	to = Tcl_ObjGetVar2(interp, toa, ton,
+			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &ay_prefs.warnpnts);
+
+	Tcl_SetStringObj(ton, "WarnPnts", 8);
 	to = Tcl_ObjGetVar2(interp, toa, ton,
 			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	Tcl_GetIntFromObj(interp, to, &ay_prefs.wutag);

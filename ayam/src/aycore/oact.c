@@ -26,6 +26,8 @@ ay_oact_parseargs(struct Togl *togl, int argc, char *argv[], char *fname,
 {
  Tcl_Interp *interp = Togl_Interp(togl);
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
+ int have_selp = AY_FALSE;
+ ay_list_object *sel;
 
   if(view->type == AY_VTPERSP)
     {
@@ -61,6 +63,24 @@ ay_oact_parseargs(struct Togl *togl, int argc, char *argv[], char *fname,
 		  return AY_ERROR;
 		}
 
+	      if(ay_prefs.warnpnts && view->transform_points)
+		{
+		  sel = ay_selection;
+		  while(sel)
+		    {
+		      if(sel->object && sel->object->selp)
+			{
+			  have_selp = AY_TRUE;
+			  break;
+			}
+		      sel = sel->next;
+		    }
+		  if(!have_selp)
+		    {
+		      ay_error(AY_EWARN, fname, "No points selected!");
+		    }
+		}
+
 	      Tcl_GetDouble(interp, argv[3], winx);
 	      Tcl_GetDouble(interp, argv[4], winy);
 
@@ -71,8 +91,8 @@ ay_oact_parseargs(struct Togl *togl, int argc, char *argv[], char *fname,
 
 	      *owinx = *winx;
 	      *owiny = *winy;
-	    }
-	}
+	    } /* if */
+	} /* if */
     }
   else
     {
