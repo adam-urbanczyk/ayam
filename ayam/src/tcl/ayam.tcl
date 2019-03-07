@@ -178,6 +178,7 @@ array set ayprefs {
  AskScriptDisable 1
 
  WarnUnknownTag 1
+ WarnPnts 1
 
  FixDialogTitles 0
  FixX11Menu 1

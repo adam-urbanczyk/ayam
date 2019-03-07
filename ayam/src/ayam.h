@@ -1498,6 +1498,9 @@ typedef struct ay_preferences_s
   /** control warnings about unknown tag types */
   int wutag;
 
+  /** control warnings about missing point selection */
+  int warnpnts;
+
   double polyoffset0; /**< offset draw & shade */
   double polyoffset1; /**< parameter 2 for glPolygonOffset */
 
