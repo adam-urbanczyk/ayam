@@ -12666,7 +12666,8 @@ the exported scene with a RenderMan compliant renderer.
 RiHider tags have to be attached to the root object in order to be used.
 The syntax of a RiHider tag is quite similar to a RiAttribute tag:
 <tt/"&lt;type&gt;,&lt;parameterlist&gt;"/
-where <tt/"&lt;parameterlist&gt;"/ is a comma separated list
+where <tt/"&lt;type&gt;"/ is the name of an algorithm and
+<tt/"&lt;parameterlist&gt;"/ is a comma separated list
 of triplets consisting of name, type, and value of a parameter.
 <p>
 <bf/Example/
@@ -12685,11 +12686,13 @@ the exported scene with a RenderMan compliant renderer.
 RiDisplay tags have to be attached to the Root object in order to be used.
 The syntax of a RiDisplay tag is as follows:
 <tt/"&lt;name&gt;,&lt;type&gt;,&lt;mode&gt;,&lt;parameterlist&gt;"/,
-where name is e.g.~a file or device name, type specifies the
-destination of the image data (e.g.~screen or file), mode
-specifies which information should be stored or displayed
-(e.g.~color values: rgb, or depth values: z),
-and <tt/"&lt;parameterlist&gt;"/ is a comma separated list
+where<newline>
+<tt/"&lt;name&gt;"/ is a file or device name,<newline>
+<tt/"&lt;type&gt;"/ specifies the destination of the image data
+(e.g.~screen or file),<newline>
+<tt/"&lt;mode&gt;"/ specifies which information should be stored or displayed
+(e.g.~color values: rgb, or depth values: z), and<newline>
+<tt/"&lt;parameterlist&gt;"/ is a optionally present comma separated list
 of triplets consisting of name, type, and value of a parameter.
 <p>
 <bf/Example/
@@ -12702,7 +12705,8 @@ imagez.tif,file,z</verb></tscreen>
 <bf/Notes/
 <p>
 The name will be automatically changed to <tt/"+name"/ on RIB export
-if it does not already start with a plus.
+if it does not already start with a plus (except for the very first
+RiDisplay statement).
 
 <sect2>AsWire Tag<label id="aswiretag">
 <p>
