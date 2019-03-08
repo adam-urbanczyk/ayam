@@ -23935,9 +23935,14 @@ there the normal file dialog will not enter application bundle directory
 structures. This option is enabled by default on Mac OS X Aqua and not
 used on any other platform. (valid values: 0, 1; default: 0 &ndash; no)
 </itemize>
+<#if out="latex"><x/newpage/</#if>
+
 <#if out="latex"><x/phantomsection/<p></#if>
 <label id="hidprefsw">
 <itemize>
+<item><tt/"WarnPnts"/ controls the warning messages for missing
+selected points (valid values: 0, 1; default: 1 &ndash; yes).
+
 <item><tt/"WarnPropPasteToSel"/: should
 <tt>"Special/Clipboard/Paste Property to Selected"</tt> raise a warning
 requester? (valid values: 0, 1; default: 1 &ndash; yes)
@@ -26485,6 +26490,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <label id="indexw"><tt/&nbsp;&nbsp;<bf/W//
 <list>
 <item>Wait: <ref id="hidprefsw" name="hidden preference setting">
+<item>WarnPnts: <ref id="hidprefsw" name="hidden preference setting">
 <item>WarnPropPasteToSel: <ref id="hidprefsw" name="hidden preference setting">
 <item>WarnUnknownTag: <ref id="hidprefsw" name="hidden preference setting">
 <item>WatchCorners: <ref id="gop" name="Gordon attribute">
