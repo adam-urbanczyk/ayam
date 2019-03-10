@@ -49,6 +49,12 @@ int ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 			    double **tcs, int *tcslens, int *tcsdirs,
 			    int *reslen, ay_stess_uvp ***result);
 
+int ay_stess_AddBoundaryTrim(ay_object *o);
+
+
+/* local variables: */
+ay_object *ay_stess_boundarytrim = NULL;
+
 
 /* functions: */
 
@@ -1403,7 +1409,7 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf, int numtrims,
  double *fd1, *fd2, temp[3] = {0}, *ders = NULL;
  double umin, umax, vmin, vmax, ud, vd;
  int i, k, l, ind;
- int out = 0, first_loop_cw = AY_FALSE;
+ int out = 0;
  int Cm, Cn;
 
   p = (ay_nurbpatch_object *)o->refine;
@@ -1427,8 +1433,6 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf, int numtrims,
   vmax = V[p->height];
   vd = (vmax-vmin)/((Cm)-1);
   *resvd = vd;
-
-  first_loop_cw = !tcsdirs[0];
 
   u = umin;
   p3[1] = vmin - AY_EPSILON;
@@ -1511,7 +1515,6 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf, int numtrims,
 	    } /* for */
 	} /* for */
 
-      v = vmin;
       nextuvp = &(uvps[i]);
 
       if(trimuvp && trimuvp->next)
@@ -1519,16 +1522,15 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf, int numtrims,
 	  /* we had trimloop points */
 	  ay_stess_SortIntersections(trimuvp, AY_FALSE);
 
-	  if(trimuvp->v > vmin)
-	    {
-	      nexttrimuvp = trimuvp;
-	    }
-	  else
-	    {
-	      nexttrimuvp = trimuvp->next;
-	      free(trimuvp);
-	    }
-	  out = !first_loop_cw;
+	  *nextuvp = trimuvp;
+	  nextuvp = &(trimuvp->next);
+	  nexttrimuvp = trimuvp->next;
+
+	  v = vmin;
+	  while(v < trimuvp->v)
+	    v += vd;
+
+	  out = 0;
 
 	  while(nexttrimuvp)
 	    {
@@ -1563,24 +1565,6 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf, int numtrims,
 	  if(trimuvp)
 	    free(trimuvp);
 	} /* if have multiple intersections */
-
-      if(first_loop_cw)
-	{
-	  while(v < vmax+AY_EPSILON)
-	    {
-	      if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
-		{
-		  ay_status = AY_EOMEM;
-		  goto cleanup;
-		}
-	      /* type == 0 */
-	      newuvp->u = u;
-	      newuvp->v = v;
-	      *nextuvp = newuvp;
-	      nextuvp = &(newuvp->next);
-	      v += vd;
-	    } /* while */
-	} /* if */
 
       u += ud;
     } /* for */
@@ -1682,7 +1666,7 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf, int numtrims,
  double *fd1, *fd2, temp[3] = {0}, *ders = NULL;
  double umin, umax, vmin, vmax, ud, vd;
  int i, k, l, ind;
- int out = 0, first_loop_cw = AY_FALSE;
+ int out = 0;
  int Cm, Cn;
 
   p = (ay_nurbpatch_object *)o->refine;
@@ -1704,8 +1688,6 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf, int numtrims,
   vmin = V[p->vorder-1];
   vmax = V[p->height];
   vd = (vmax-vmin)/((Cm)-1);
-
-  first_loop_cw = !tcsdirs[0];
 
   v = vmin;
   p3[0] = umin - AY_EPSILON;
@@ -1792,16 +1774,15 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf, int numtrims,
 	  /* we had trimloop points */
 	  ay_stess_SortIntersections(trimuvp, AY_TRUE);
 
-	  if(trimuvp->u > umin)
-	    {
-	      nexttrimuvp = trimuvp;
-	    }
-	  else
-	    {
-	      nexttrimuvp = trimuvp->next;
-	      free(trimuvp);
-	    }
-	  out = !first_loop_cw;
+	  *nextuvp = trimuvp;
+	  nextuvp = &(trimuvp->next);
+	  nexttrimuvp = trimuvp->next;
+
+	  u = umin;
+	  while(u < trimuvp->u)
+	    u += ud;
+
+	  out = 0;
 
 	  while(nexttrimuvp)
 	    {
@@ -1835,23 +1816,6 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf, int numtrims,
 	  if(trimuvp)
 	    free(trimuvp);
 	} /* if have multiple intersections */
-
-      if(first_loop_cw)
-	{
-	  while(u < umax+AY_EPSILON)
-	    {
-	      if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
-		{
-		  ay_status = AY_EOMEM;
-		  goto cleanup;
-		}
-	      newuvp->u = u;
-	      newuvp->v = v;
-	      *nextuvp = newuvp;
-	      nextuvp = &(newuvp->next);
-	      u += ud;
-	    } /* while */
-	} /* if */
 
       v += vd;
     } /* for */
@@ -1942,7 +1906,7 @@ cleanup:
 void
 ay_stess_DrawTrimmedSurface(ay_stess_patch *stess)
 {
- int i, j, a, out = 1;
+ int i, j, a, out;
  ay_stess_uvp *uvpptr;
 
   if(!stess)
@@ -1954,15 +1918,7 @@ ay_stess_DrawTrimmedSurface(ay_stess_patch *stess)
       uvpptr = stess->ups[i];
       if(uvpptr && uvpptr->next)
 	{
-	  if(stess->ft_cw)
-	    {
-	      out = 0;
-	      glBegin(GL_LINE_STRIP);
-	    }
-	  else
-	    {
-	      out = 1;
-	    }
+	  out = 1;
 
 	  while(uvpptr)
 	    {
@@ -1984,10 +1940,6 @@ ay_stess_DrawTrimmedSurface(ay_stess_patch *stess)
 	      else
 		{
 		  glVertex3dv((GLdouble*)(uvpptr->C));
-		  /*
-		    printf("%lg %lg %lg\n",
-		    uvpptr->C[0],uvpptr->C[1],uvpptr->C[2]);
-		  */
 		} /* if trim point */
 
 	      uvpptr = uvpptr->next;
@@ -2001,22 +1953,13 @@ ay_stess_DrawTrimmedSurface(ay_stess_patch *stess)
     } /* for all u lines */
 
   /* draw iso-v lines */
-  out = 1;
   for(i = 0; i < stess->vpslen; i++)
     {
       uvpptr = stess->vps[i];
 
       if(uvpptr && uvpptr->next)
 	{
-	  if(stess->ft_cw)
-	    {
-	      out = 0;
-	      glBegin(GL_LINE_STRIP);
-	    }
-	  else
-	    {
-	      out = 1;
-	    }
+	  out = 1;
 
 	  while(uvpptr)
 	    {
@@ -2392,7 +2335,7 @@ ay_stess_ShadeTrimmedSurface(ay_stess_patch *stess)
 		      glEnd();
 		    }
 		  instrip = AY_TRUE;
-		}
+		} /* if */
 
 	      v1 = v1->next;
 	      v2 = v2->next;
@@ -2423,9 +2366,9 @@ ay_stess_ShadeTrimmedSurface(ay_stess_patch *stess)
 			   glVertex3dv((GLdouble*)(v2->next->C));
 			  glEnd();
 			}
-		    }
-		}
-	    } /* have complete cell */
+		    } /* if instrip */
+		} /* if */
+	    } /* if have complete cell */
 
 	  /* forward to next candidate cell */
 	  while((v1 && v1->type != 0) ||
@@ -2464,6 +2407,67 @@ ay_stess_ShadeTrimmedSurface(ay_stess_patch *stess)
 } /* ay_stess_ShadeTrimmedSurface */
 
 
+/** ay_stess_AddBoundaryTrim:
+ * Add a extra boundary trim curve if there is no enclosing trim
+ * and the trim curve direction of the first given trim curve leads
+ * to a hole in the surface.
+ * This way TessTrimmedNPU()/TessTrimmedNPV() can rely on the fact
+ * that the first trim always designates the start of the surface.
+ *
+ * \param[in,out] o NURBS patch to process
+ *
+ * \return AY_TRUE if the boundary trim was added
+ */
+int
+ay_stess_AddBoundaryTrim(ay_object *o)
+{
+ ay_nurbpatch_object *np = NULL;
+ ay_nurbcurve_object *nc = NULL;
+ double umin, umax, vmin, vmax, *cv, a;
+ int is_bound;
+
+  np = (ay_nurbpatch_object *)o->refine;
+
+  umin = np->uknotv[np->uorder-1];
+  umax = np->uknotv[np->width];
+  vmin = np->vknotv[np->vorder-1];
+  vmax = np->vknotv[np->height];
+
+  ay_npt_isboundcurve(o->down, umin, umax, vmin, vmax, &is_bound);
+
+  if(!is_bound)
+    {
+      a = 0.0;
+      nc = (ay_nurbcurve_object *)o->down->refine;
+      ay_nct_getorientation(nc, 4, 0, 0, &a);
+      if(a < 0.0)
+	{
+	  ay_stess_boundarytrim->next = o->down;
+	  o->down = ay_stess_boundarytrim;
+	  nc = (ay_nurbcurve_object *)o->down->refine;
+	  cv = nc->controlv;
+	  cv[0] = umin;
+	  cv[1] = vmin;
+
+	  cv[4] = umax;
+	  cv[5] = vmin;
+
+	  cv[8] = umax;
+	  cv[9] = vmax;
+
+	  cv[12] = umin;
+	  cv[13] = vmax;
+
+	  cv[16] = umin;
+	  cv[17] = vmin;
+	  return AY_TRUE;
+	}
+    }
+
+ return AY_FALSE;
+} /* ay_stess_AddBoundaryTrim */
+
+
 /* ay_stess_TessTrimmedNP:
  *
  */
@@ -2473,11 +2477,13 @@ ay_stess_TessTrimmedNP(ay_object *o, int qf, ay_stess_patch *stess)
  int ay_status = AY_OK;
  ay_nurbpatch_object *np = NULL;
  double **tcs = NULL; /**< tesselated trim curves [tcslen][tcslens[i]] */
- int i, *tcsdirs = NULL; /**< directions of trim curves [tcslen] */
+ int b, i, *tcsdirs = NULL; /**< directions of trim curves [tcslen] */
 
   np = (ay_nurbpatch_object *)o->refine;
 
   ay_stess_destroy(stess);
+
+  b = ay_stess_AddBoundaryTrim(o);
 
   ay_status = ay_stess_TessTrimCurves(o, qf,
 				      &(stess->tcslen), &tcs,
@@ -2533,6 +2539,11 @@ cleanup:
   if(np)
     {
       ay_stess_destroy(stess);
+    }
+
+  if(b)
+    {
+      o->down = o->down->next;
     }
 
   if(ay_status)
@@ -2722,6 +2733,7 @@ ay_stess_TessNP(ay_object *o, int qf, ay_stess_patch *stess)
  int ay_status = AY_ERROR;
  char fname[] = "stess_TessNP";
  ay_nurbpatch_object *npatch;
+ ay_object *p;
 
   if(!o)
     return AY_ENULL;
@@ -2730,6 +2742,18 @@ ay_stess_TessNP(ay_object *o, int qf, ay_stess_patch *stess)
 
   if(!npatch)
     return AY_ENULL;
+
+  if(!ay_stess_boundarytrim)
+    {
+      p = calloc(1, sizeof(ay_object));
+      ay_status = ay_nct_create(2, 5, AY_KTNURB, NULL, NULL,
+				(ay_nurbcurve_object **)&(p->refine));
+      if(ay_status)
+	return ay_status;
+      ay_object_defaults(p);
+      p->type = AY_IDNCURVE;
+      ay_stess_boundarytrim = p;
+    }
 
   if(ay_npt_istrimmed(o, 0))
     {
