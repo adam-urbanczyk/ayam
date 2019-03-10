@@ -38,14 +38,11 @@ int ay_stess_MergeVVectors(ay_stess_uvp *a, ay_stess_uvp *b);
 
 void ay_stess_SortIntersections(ay_stess_uvp *list, int u);
 
-int ay_stess_TessTrimmedNPU(ay_object *o, int qf,
-			    int numtrims,
+int ay_stess_TessTrimmedNPU(ay_object *o, int qf, int numtrims,
 			    double **tcs, int *tcslens, int *tcsdirs,
-			    double *resud, double *resvd,
 			    int *reslen, ay_stess_uvp ***result);
 
-int ay_stess_TessTrimmedNPV(ay_object *o, int qf,
-			    int numtrims,
+int ay_stess_TessTrimmedNPV(ay_object *o, int qf, int numtrims,
 			    double **tcs, int *tcslens, int *tcsdirs,
 			    int *reslen, ay_stess_uvp ***result);
 
@@ -1397,7 +1394,6 @@ ay_stess_SortIntersections(ay_stess_uvp *list, int u)
 int
 ay_stess_TessTrimmedNPU(ay_object *o, int qf, int numtrims,
 			double **tcs, int *tcslens, int *tcsdirs,
-			double *resud, double *resvd,
 			int *reslen, ay_stess_uvp ***result)
 {
  int ay_status = AY_OK;
@@ -1426,13 +1422,11 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf, int numtrims,
   umin = U[p->uorder-1];
   umax = U[p->width];
   ud = (umax-umin)/((Cn)-1);
-  *resud = ud;
 
   V = p->vknotv;
   vmin = V[p->vorder-1];
   vmax = V[p->height];
   vd = (vmax-vmin)/((Cm)-1);
-  *resvd = vd;
 
   u = umin;
   p3[1] = vmin - AY_EPSILON;
@@ -1475,10 +1469,6 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf, int numtrims,
 #endif
 		      continue;
 		    }
-		  /*
-		    printf("testing section %d (%lg %lg -> %lg %lg)\n",l,
-		    tt[ind],tt[ind+1],tt[ind+2],tt[ind+3]);
-		  */
 		  ipoint[0] = 0.0;
 		  ipoint[1] = 0.0;
 
@@ -1486,10 +1476,6 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf, int numtrims,
 						&(tt[ind+2]),
 						p3, p4, ipoint)))
 		    {
-		      /*
-			printf("%d intersects at %lg %lg\n",l,
-			ipoint[0],ipoint[1]);
-		      */
 		      /* u-line intersects with trimcurve */
 		      /* => add new point (but avoid consecutive
 			 equal points; those appear if a loop touches
@@ -1543,7 +1529,6 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf, int numtrims,
 			  ay_status = AY_EOMEM;
 			  goto cleanup;
 			}
-		      /* type == 0 */
 		      newuvp->u = u;
 		      newuvp->v = v;
 		      *nextuvp = newuvp;
@@ -1725,10 +1710,7 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf, int numtrims,
 		  if((fabs(tt[ind+1] - v) < AY_EPSILON) &&
 		     (fabs(tt[ind+2+1] - v) < AY_EPSILON))
 		    continue;
-		  /*
-		    printf("testing section %d (%lg %lg -> %lg %lg)\n",l,
-		    tt[ind],tt[ind+1],tt[ind+2],tt[ind+3]);
-		  */
+
 		  ipoint[0] = 0.0;
 		  ipoint[1] = 0.0;
 
@@ -1736,10 +1718,6 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf, int numtrims,
 						&(tt[ind+2]),
 						p3, p4, ipoint)))
 		    {
-		      /*
-			printf("%d intersects at %lg %lg\n",l,
-			ipoint[0],ipoint[1]);
-		      */
 		      /* v-line intersects with trimcurve */
 		      /* => add new point (but avoid consecutive
 			 equal points; those appear if a loop touches
@@ -2494,7 +2472,6 @@ ay_stess_TessTrimmedNP(ay_object *o, int qf, ay_stess_patch *stess)
 
   ay_status = ay_stess_TessTrimmedNPU(o, qf, stess->tcslen, tcs,
 				      stess->tcslens, tcsdirs,
-				      &(stess->ud), &(stess->vd),
 				      &(stess->upslen), &(stess->ups));
 
   if(ay_status)

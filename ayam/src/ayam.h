@@ -504,9 +504,6 @@ typedef struct ay_stess_patch_s {
 
   struct ay_pomesh_object_s *pomesh;  /**< tesselated planar trimmed patch */
   double normal[3]; /**< normal of tesselated planar mesh */
-
-  double ud; /**< distance */
-  double vd; /**< distance */
 } ay_stess_patch;
 
 
