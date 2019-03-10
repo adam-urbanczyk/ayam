@@ -2753,6 +2753,7 @@ ay_stess_TessNP(ay_object *o, int qf, ay_stess_patch *stess)
       ay_object_defaults(p);
       p->type = AY_IDNCURVE;
       ay_stess_boundarytrim = p;
+      ay_status = AY_ERROR;
     }
 
   if(ay_npt_istrimmed(o, 0))
