@@ -167,7 +167,7 @@ addString $w matPropData Materialname
 # Tags property
 
 # copyTagp:
-# manage context menu entries ( Copy, Copy (Add) )
+# manage context menu entries ( Copy (Replace), Copy (Add) )
 proc copyTagp { i {add 0} } {
 global tagsPropData pclip_prop
 upvar #0 pclip_clipboard clipboard
@@ -235,8 +235,7 @@ pack $f -in $w -side top -fill x
 
 set i 0
 foreach tag $names {
-    $m add command -label "Tag#$i ($tag)" -command\
-	"undo save RemTag;setTags -delete $i;plb_update"
+    $m add command -label "Tag#$i ($tag)" -command "_deleteTag $i"
     incr i
 }
 
@@ -266,8 +265,7 @@ foreach tag $names {
     $m add command -label "Copy (Replace)" -command "copyTagp $i"
     $m add command -label "Copy (Add)" -command "copyTagp $i 1"
     $m add separator
-    $m add command -label "Remove"\
-	-command "undo save RemTag;setTags -delete $i;plb_update"
+    $m add command -label "Remove" -command "_deleteTag $i"
 
     bind $b <ButtonPress-$aymainshortcuts(CMButton)>\
 	"after idle \{$b conf -state active\}; bind $b.popup <Unmap>\
@@ -284,6 +282,20 @@ foreach tag $names {
 }
 # getTagsp
 
+
+proc _deleteTag { i } {
+global ay
+    undo save RemTag
+    set oldfocus [focus]
+    setTags -delete $i;
+    getTagsp;
+    if { [winfo exists $oldfocus] } {
+	focus $oldfocus
+    } else {
+	focus $ay(pca)
+    }
+ return;
+}
 
 # setTagsp:
 #
