@@ -266,10 +266,15 @@ foreach tag $names {
     $m add command -label "Copy (Add)" -command "copyTagp $i 1"
     $m add separator
     $m add command -label "Remove" -command "_deleteTag $i"
-
-    bind $b <ButtonPress-$aymainshortcuts(CMButton)>\
-	"after idle \{$b conf -state active\}; bind $b.popup <Unmap>\
-         \"$b conf -state normal\"; winOpenPopup $b"
+    if { $ay(ws) == "Win32" } {
+	bind $b <ButtonPress-$aymainshortcuts(CMButton)>\
+	    "after idle \{focus $b\}; bind $b.popup <Unmap>\
+             \"$b conf -state normal\"; winOpenPopup $b"
+    } else {
+	bind $b <ButtonPress-$aymainshortcuts(CMButton)>\
+	    "after idle \{$b conf -state active\}; bind $b.popup <Unmap>\
+             \"$b conf -state normal\"; winOpenPopup $b"
+    }
 
     bind $b <Key-F10> "winOpenPopup $b;break"
     bind $b <Key-space> "$b invoke;break"
