@@ -1151,6 +1151,7 @@ proc toggleSearchOption { } {
 	addCheck $w ObjectSearch ClearClipboard
 	addCheck $w ObjectSearch InvertMatch
     } else {
+	catch {destroy $w.flHighlightColor}
 	catch {destroy $w.fHighlightColor}
 	catch {destroy $w.fClearHighlight}
 	catch {destroy $w.fClearClipboard}
@@ -1388,3 +1389,5 @@ proc whatis { this } {
  return;
 }
 # whatis
+
+# EOF
