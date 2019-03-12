@@ -28,6 +28,7 @@ image create photo ay_SSP_img -format GIF -data $imgdata
 # ssp_save:
 #  save selected points to SP tag
 proc ssp_save { } {
+    set fw [focus]
     forAll {
 	selPnts -get pnts
 	if { $pnts != "" } {
@@ -37,6 +38,7 @@ proc ssp_save { } {
 	    addTag SP $pnts
 	}
     }
+    restoreFocus $fw
  return;
 }
 # ssp_save
@@ -45,12 +47,14 @@ proc ssp_save { } {
 # ssp_restore:
 #  restore selected points from SP tag
 proc ssp_restore { } {
+    set fw [focus]
     forAll {
 	getTag SP pnts
 	if { $pnts != "" } {
 	    eval selPnts $pnts
 	}
     }
+    restoreFocus $fw
  return;
 }
 # ssp_restore
