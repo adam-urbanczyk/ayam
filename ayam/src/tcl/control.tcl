@@ -1023,6 +1023,9 @@ proc searchOb { expression action {gui 0} } {
 		    lappend ObjectSearch(nodes)\
 			${ay(CurrentLevel)}:$ti
 		}
+		"Count" {
+		    # do nothing
+		}
 		"Copy" {
 		    copOb -add
 		}
@@ -1277,7 +1280,7 @@ proc objectsearch_open { } {
     # complete dialog GUI
     addString $w.f1 ObjectSearch Expression $expressions
     addString $w.f1 ObjectSearch Action\
-	{Highlight Collect Copy Delete "\[myProc\]"}
+	{Highlight Count Collect Copy Delete "\[myProc\]"}
     addMenu $w.f1 ObjectSearch Scope {All Selection Level Collection}
     addOptionToggle $w.f1 ObjectSearch MoreOptions \
 	"Advanced Options  " toggleSearchOption
