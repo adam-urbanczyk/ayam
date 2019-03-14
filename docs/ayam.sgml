@@ -793,7 +793,7 @@ console or in a property GUI element (i.e.~a data entry field).
 Hit <tt>&lt;Esc&gt;</tt> to set the focus to the object selection
 widget and thus enable the main menu keyboard shortcuts.
 <p>
-These keyboard shortcuts may be adapted using the <tt>"ayamrc"</tt> file
+These keyboard shortcuts may be adapted using the <em/ayamrc/ file
 (see section <ref id="ayamrc" name="Ayamrc File">).
 <p>
 Another way of navigating the menu is via the <tt/&lt;Alt&gt;/ or
@@ -945,7 +945,7 @@ See section <ref id="plugov" name="Plugins Overview"> for more
 information regarding Ayam plugins.
 </itemize><itemize>
 <item><tt/"Save Prefs"/, save the current preference settings
-to the ayamrc file after making a backup copy of this file (see section
+to the <em/ayamrc/ file after making a backup copy of this file (see section
 <ref id="ayamrc" name="Ayamrc File"> for more information about this file).
 </itemize><itemize>
 <item><tt/"1."/, <tt/"2."/, <tt/"3."/, <tt/"4."/, immediately replace the
@@ -1494,7 +1494,7 @@ object
 (see <ref id="riotag" name="RiOption Tag">). The Root object does
 not have to be selected and the current selection will not be changed
 by this action.<newline>
-The database of available RiOptions is controlled by the ayamrc
+The database of available RiOptions is controlled by the <em/ayamrc/
 file (see also section <ref id="ayamrc" name="Ayamrc File">).
 
 <label id="mmaddriattr">
@@ -1502,7 +1502,7 @@ file (see also section <ref id="ayamrc" name="Ayamrc File">).
 a RiAttribute may be selected, parameterised, and added as tag to the
 currently selected object(s) (see <ref id="riatag" name="RiAttribute Tag">)
 .<newline>
-The database of available RiAttributes is controlled by the ayamrc
+The database of available RiAttributes is controlled by the <em/ayamrc/
 file (see also section <ref id="ayamrc" name="Ayamrc File">).
 
 <item><tt>"Tags/Edit TexCoords"</tt>, opens the texture coordinates editor.
@@ -1583,11 +1583,11 @@ and <tt>"Main/Plugins"</tt> preference settings have to be set correctly
 built in shader parser or the currently loaded shader parsing plugin
 (see also section <ref id="spplugins" name="Shader Parsing Plugins">).
 
-<item><tt>"Reset Preferences"</tt> removes the current ayamrc file,
+<item><tt>"Reset Preferences"</tt> removes the current <em/ayamrc/ file,
 where the preferences are saved; after a restart of Ayam, all
 preferences will be reset to factory defaults. See also
 section <ref id="ayamrc" name="Ayamrc File"> for more information
-about the ayamrc file.
+about the <em/ayamrc/ file.
 
 <item><tt>"Reset Layout"</tt> resets the pane layout in single window
 GUI mode so that the upper internal views get an approximately even share
@@ -1686,7 +1686,7 @@ console or in a property GUI element (i.e.~a data entry field).
 In doubt, hit <tt>&lt;Esc&gt;</tt> first to set the focus to the object
 selection widget and thus enable the main window keyboard shortcuts.
 <p>
-All these shortcuts can be adapted using the <tt>"ayamrc"</tt> file
+All these shortcuts can be adapted using the <em/ayamrc/ file
 (see section <ref id="ayamrc" name="Ayamrc File">).
 
 <#if out="latex"><x/newpage/</#if>
@@ -1717,7 +1717,7 @@ Note that many menu entries
 have keyboard shortcuts that are displayed in each entry.
 But those shortcuts only work if the view window
 has the keyboard input focus.
-The shortcuts are adaptable using the <tt>"ayamrc"</tt> file
+The shortcuts are adaptable using the <em/ayamrc/ file
 (see section <ref id="ayamrc" name="Ayamrc File">).
 <p>
 Another way of navigating the menu is via the <tt/"Menu"/ or
@@ -2036,7 +2036,7 @@ menu shortcuts) are discussed in this section.
 Note that the view keyboard shortcuts only work if the view window
 has the keyboard input focus.
 <p>
-These shortcuts can be adapted using the <tt>"ayamrc"</tt> file
+These shortcuts can be adapted using the <em/ayamrc/ file
 (see section <ref id="ayamrc" name="Ayamrc File">).
 <p>
 Keyboard shortcuts directly modifying the camera, that is associated
@@ -2277,7 +2277,7 @@ Several other tool buttons also change their behaviour with modifier
 keys, check the tooltips.
 <p>
 The toolbox window may be configured by the user using the
-hidden preference setting <tt/"toolBoxList"/ in the ayamrc file.
+hidden preference setting <tt/"toolBoxList"/ in the <em/ayamrc/ file.
 Using this setting you may select from certain groups of buttons
 and change the order in which they appear in the toolbox window.
 See section <ref id="hidprefst" name="Hidden Preference Settings"> for
@@ -2448,6 +2448,9 @@ following image.
 Highlighted objects stay highlighted until the tree view is updated
 completely (e.g.~via the keyboard shortcut <tt>&lt;F5&gt;</tt>) or partially
 (for instance after drag and drop or object clipboard operations).
+<tag/Count/
+The objects matching the search expression will be counted and the
+result output to the console.
 <tag/Collect/
 The node names of the found objects
 will be collected in the Tcl list <tt>"ObjectSearch(nodes)"</tt>.
@@ -2467,7 +2470,7 @@ e.g.<newline>
 <tt>addTag NoExport ""</tt><newline>
 can also be specified as action.
 However, as the object search is based on the <tt/"forAll"/ scripting
-interface command, certain restrictions apply:<newline>
+interface command, certain restrictions apply:
 <itemize>
 <item>The action must not change the scene hierarchy, i.e.~no objects must be
 deleted, cut, or created in the command&thinsp;/&thinsp;procedure call.
@@ -2615,7 +2618,7 @@ are selected.
 This option is not available on the Win32 platform and on Mac OS X Aqua.
 
 <item><tt/"AutoSavePrefs"/, if this is switched on, Ayam will write
-the preferences settings to the ayamrc file when the program quits.
+the preferences settings to the <em/ayamrc/ file when the program quits.
 See also section <ref id="ayamrc" name="Ayamrc File">.
 <p> <p>
 
@@ -12454,7 +12457,7 @@ The <tt/"RiAttribute"/ tag handles just a single parameter at once.
 Also note that <tt/"RiAttribute"/ tags may be created much more easily
 using the menu entry <tt>"Special/Tags/Add RiAttribute"</tt>.
 The database of RiAttributes for this GUI may be extended
-by editing the ayamrc file, see section
+by editing the <em/ayamrc/ file, see section
 <ref id="ayamrc" name="Ayamrc File">.
 
 <sect2>RiOption Tag<label id="riotag">
@@ -12483,7 +12486,7 @@ RiOption tags may be created easily using the menu entry
 Tags created with this GUI will always be added to the <tt/"Root"/ object.
 It does not have to be selected when the GUI is used.
 Furthermore, the database of RiOptions for this GUI may be extended
-by editing the ayamrc file, see section
+by editing the <em/ayamrc/ file, see section
 <ref id="ayamrc" name="Ayamrc File">.
 
 <sect2>TC (Texture Coordinates) Tag<label id="tctag">
@@ -15484,7 +15487,7 @@ More documentation to come.
 <sect2>The Global Array ayprefs<label id="ayprefs">
 <p>
 The global array <tt/"ayprefs"/ holds preferences data.
-The <em>complete</em> array is saved in the <tt/"ayamrc"/ file upon exit,
+The <em>complete</em> array is saved in the <em/ayamrc/ file upon exit,
 so be careful when adding new elements to this array.
 See also section <ref id="ayamrc" name="Ayamrc File">.
 Use <tt/"parray ayprefs"/ in the console to see what is there.
@@ -23409,7 +23412,7 @@ and the scene changed state will be set to "unchanged",
 <sect1>Ayamrc File<label id="ayamrc">
 <p>
 To customize Ayam beyond the capabilities of the preferences dialog,
-the ayamrc file may be used.
+the <em/ayamrc/ file may be used.
 This file is either pointed to by the environment
 variable <tt>AYAMRC</tt> or is determined as following:
 <itemize>
@@ -23426,10 +23429,10 @@ denotes the home directory of the current user.
 denotes the home directory of the current user.
 </itemize>
 
-The ayamrc file is read on each start of Ayam and saved again on exit
+The <em/ayamrc/ file is read on each start of Ayam and saved again on exit
 (if the preference setting <tt>"Main/AutoSavePrefs"</tt> is enabled).
 <p>
-The ayamrc file contains:
+The <em/ayamrc/ file contains:
 <enum>
 <item>preference settings (including some hidden settings that require
 just occasional tweaking and are not reachable using the GUI preference
@@ -23443,20 +23446,20 @@ setting <tt/"SaveDialogGeom"/ is set accordingly),
 
 You may edit the file with any text editor (while Ayam is <em>not</em>
 running), but keep in mind, that the file will be parsed by Tcl.
-Should you, for some reason, destroy your ayamrc file so that Ayam does
+Should you, for some reason, destroy your <em/ayamrc/ file so that Ayam does
 not start correctly anymore you can always start Ayam
 with the command line option <tt>"-failsafe"</tt>.
 When the application is left the next time, or the main menu entry
-<tt>"File/Save Prefs"</tt> is invoked, a correct ayamrc file will be
+<tt>"File/Save Prefs"</tt> is invoked, a correct <em/ayamrc/ file will be
 created again.
 All preference settings will be reset to factory defaults and all your
-edits of the ayamrc file will be lost, however.
+edits of the <em/ayamrc/ file will be lost, however.
 <p>
-Another way to reset the ayamrc file is to simply delete the file manually
+Another way to reset the <em/ayamrc/ file is to simply delete the file manually
 or using the main menu entry <tt>"Special/Reset Preferences"</tt>.
 <p>
 To reset single elements to factory defaults, just remove the corresponding
-lines from the ayamrc file.
+lines from the <em/ayamrc/ file.
 <p>
 Finally, resetting single preference settings without a text editor is
 also possible with the help of the scripting interface by manipulating
@@ -23472,7 +23475,7 @@ be restarted.
 <sect2>Changing Keyboard Shortcuts
 <p>
 You may adapt the keyboard shortcuts used in the GUI to your special
-needs using the ayamrc file. Note that if you do that, the GUI (the menu
+needs using the <em/ayamrc/ file. Note that if you do that, the GUI (the menu
 entries and the <tt>"Show Shortcuts"</tt> window) will adapt to your
 changes but certainly neither this documentation, nor the reference card
 (unless recreated using the script <tt/"refcard.tcl"/), nor the tutorials.
@@ -23501,11 +23504,11 @@ set aymainshortcuts(Prefs) {Ctrl-p}
 </code>
 sets the keyboard shortcut for opening of the preferences editor
 to <tt/&lt;Ctrl+p&gt;/.
-See the ayamrc file itself for a complete listing of available shortcuts.
+See the <em/ayamrc/ file itself for a complete listing of available shortcuts.
 
 <sect2>Hidden Preference Settings<label id="hidprefs">
 <p>
-The ayamrc file currently contains the following adjustable hidden
+The <em/ayamrc/ file currently contains the following adjustable hidden
 preference settings:
 <itemize>
 
@@ -23893,9 +23896,9 @@ Valid values are 0 and 1. Default 1 &ndash; yes.
 on Mac OS X Aqua (not X11!) for the mouse bindings specified in
 <tt/"SwapMBSC"/ below, because on Mac OS X Aqua, traditionally, the
 naming of the middle and rightmost mouse button is reversed compared to
-X11/Win32.
+X11/Win32.<newline>
 This option is enabled by default on Mac OS X Aqua and allows to use
-the same set of mouse bindings (the same ayamrc file) for X11 and
+the same set of mouse bindings (the same <em/ayamrc/ file) for X11 and
 Aqua without sacrificing user experience. The middle mouse button,
 by default, zooms the view, and the right one moves the view.
 Valid values are 0 and 1.
@@ -23941,7 +23944,8 @@ used on any other platform. (valid values: 0, 1; default: 0 &ndash; no)
 <label id="hidprefsw">
 <itemize>
 <item><tt/"WarnPnts"/ controls the warning messages for missing
-selected points (valid values: 0, 1; default: 1 &ndash; yes).
+selected points (valid values: 0, 1;
+default: 1 &ndash; yes).<footnote>Since 1.27.</footnote>
 
 <item><tt/"WarnPropPasteToSel"/: should
 <tt>"Special/Clipboard/Paste Property to Selected"</tt> raise a warning
@@ -23966,7 +23970,7 @@ and a value of 0.25 to coarse but fast zooming.
 
 <sect2>RiOption and RiAttributes Database<label id="rioptdb">
 <p>
-With the ayamrc file, also the database of RiOptions and RiAttributes may
+With the <em/ayamrc/ file, also the database of RiOptions and RiAttributes may
 be adapted to the current target RenderMan rendering system.
 <p>
 Renderer specific options and attributes can then be added
@@ -24021,12 +24025,12 @@ values in curly braces, such as <tt>{1.0 1.0 1.0}</tt>.
 <p>
 This section documents the environment variables used by Ayam.
 <itemize>
-<item><tt>"AYAMRC"</tt>: designates the full filename of the ayamrc file.
-<item><tt>"HOME"</tt>: path to the ayamrc file (used on Win32 if
+<item><tt>"AYAMRC"</tt>: designates the full filename of the <em/ayamrc/ file.
+<item><tt>"HOME"</tt>: path to the <em/ayamrc/ file (used on Win32 if
 <tt>"AYAMRC"</tt> is not set).
-<item><tt>"TEMP"</tt>: path to the ayamrc file (used on Win32 if
+<item><tt>"TEMP"</tt>: path to the <em/ayamrc/ file (used on Win32 if
 <tt>"AYAMRC"</tt> and <tt>"HOME"</tt> are not set); also initial value of the
-<tt>"TmpDir"</tt> preference setting (used on Win32 if no ayamrc file exists,
+<tt>"TmpDir"</tt> preference setting (used on Win32 if no <em/ayamrc/ file exists,
 that specifies <tt>"TmpDir"</tt>).
 <item><tt>"AYNOSPLASH"</tt>: if this variable is set to 1, the splash
 screen will not be shown.
@@ -24035,7 +24039,7 @@ display the documentation URL).
 <item><tt>"NETSCAPE"</tt>: (if <tt>"BROWSER"</tt> does not exist) filename
 of the Netscape WWW browser (used to display the documentation URL).
 <item><tt>"SHADERS"</tt>: initial value of <tt>"Shaders"</tt> preference
-setting (used if no ayamrc file exists).
+setting (used if no <em/ayamrc/ file exists).
 </itemize>
 
 <#if out="latex"><x/newpage/</#if>
