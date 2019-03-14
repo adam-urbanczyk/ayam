@@ -1,19 +1,29 @@
-[5. Mar 2019] Tip:
-==================
+[13. Mar 2019] Tip:
+===================
 Bug Fixes:
 o NURBSphere objects can not be trimmed (SF 587)
+o repeated toggling of advanced search options (SF 588)
 
 Modelling:
 o added keyboard shortcut to call the revert tool from view windows: <!>
+o add warning message when a transformation action is started in points
+  mode and there are no selected points
+o tesselation of trimmed NURBS using STESS is much faster now
 
 GUI:
 o added intermediate quick parameter GUIs to all modelling actions that
   require one parameter; the GUIs appear when a number key or <Return> is
   pressed
+o improved focus handling of tag removal and visual designation of the
+  selected tag on Win32 by/in the tag property gui context menu
 
 Scripts/Scripting Interface:
 o added script "link.tcl" to manually control updates of object hierarchy
   and views
+
+Import/Export:
+o RIB export of RiDisplay tags now omits the leading "+" from the first
+  exported display statement
 
 
 [26. Jan 2019] Ayam 1.26:
