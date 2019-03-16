@@ -3166,7 +3166,7 @@ ay_npatch_convertcb(ay_object *o, int in_place)
 
       /* terminate the level */
       c = new->down;
-      while(c->next)
+      while(c && c->next)
 	c = c->next;
       c->next = ay_endlevel;
     }

@@ -419,7 +419,7 @@ ay_select_providecb(ay_object *o, unsigned int type, ay_object **result)
     {
       /* check, whether we can provide at least one object
 	 of the wanted type */
-      while(down->next)
+      while(down && down->next)
 	{
 	  ay_status = ay_provide_object(down, type, NULL);
 	  if(ay_status == AY_OK)
