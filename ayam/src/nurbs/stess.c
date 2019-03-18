@@ -2726,7 +2726,7 @@ ay_stess_TessNP(ay_object *o, int qf, ay_stess_patch *stess)
       ay_status = ay_nct_create(2, 5, AY_KTNURB, NULL, NULL,
 				(ay_nurbcurve_object **)&(p->refine));
       if(ay_status)
-	return ay_status;
+	{ free(p); return ay_status; }
       ay_object_defaults(p);
       p->type = AY_IDNCURVE;
       ay_stess_boundarytrim = p;
