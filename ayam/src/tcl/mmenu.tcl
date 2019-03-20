@@ -138,8 +138,12 @@ $m add command -label "Paste" -command {
     pasOb; uCR; sL $ay(ucrcount); notifyOb -parent; rV; set ay(sc) 1
 } -underline 0
 $m add command -label "Delete" -command {
-    delOb; cS; notifyOb -parent; set ay(ul) $ay(CurrentLevel); uS;
-    rV; set ay(sc) 1
+    if { [candelOb] } {
+	delOb; cS; notifyOb -parent;
+	set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1
+    } else {
+	ayError 2 "Delete" "Can not delete these objects."
+    }
 } -underline 0
 $m add separator
 $m add command -label "Select All" -command {
