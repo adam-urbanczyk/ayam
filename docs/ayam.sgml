@@ -479,6 +479,9 @@ The rightmost mouse button opens a small context menu:
 <item><tt>"Switch to Tree"</tt> removes the listbox and replaces it
 with the tree view (see above).
 
+<item><tt>"Deselect Object"</tt> deselects the currently selected
+object(s).
+
 <item><tt>"Copy Object", "Cut Object", "Paste Object", "Delete Object"</tt>
 are standard clipboard operations as documented in
 section <ref id="mmedit" name="Main Menu">.
@@ -571,8 +574,8 @@ Also the keyboard may be used to select properties:
 just press one of the <tt/&lt;0&gt;-&lt;9&gt;/ keys (most comfortably
 using the numeric keypad). <tt/&lt;0&gt;/ always selects the last and
 often the only object type specific property, whereas <tt/&lt;1&gt;/
-selects the first property, which often contains the standard
-transformations.<footnote>Since 1.8</footnote>
+selects the first property, which contains the linear transformations in
+most cases.<footnote>Since 1.8</footnote>
 <p>
 <#if out="latex"><x/phantomsection/</#if>
 <p><label id="plbcontm">
@@ -15440,7 +15443,7 @@ command: <ref id="scundo" name="Undo">).
 <p>
 From scripts it may be necessary to check whether an error occurred
 during the execution of a command. All commands return
-TCL_OK in <em>any</em> case, so checking their return value avails
+<tt/TCL_OK/ in <em>any</em> case, so checking their return value avails
 to nothing, but they set the global Tcl variable <tt>"ay_error"</tt>
 to a value higher than 1 if an error occurred. You need to set
 ay_error to zero before and check it after the operation in question
@@ -15500,7 +15503,7 @@ See also section <ref id="sciprefs" name="Managing Preferences">.
 
 <sect2>The Global Array aymark<label id="aymark">
 <p>
-The global array <tt/"aymark"/ holds the current mark position.
+The global array <tt/"aymark"/ holds a copy of the current mark position.
 <footnote>Since 1.21.</footnote>
 It is updated whenever the mark is set using e.g.~the
 set mark action (see section <ref id="markac" name="Setting the Mark">).
@@ -20690,7 +20693,7 @@ specification, the tessellation quality and speed may be adjusted using the
 
 <#if out="latex"><x/newpage/</#if>
 
-<sect3>Oject Space Based Sampling
+<sect3>Object Space Based Sampling
 <p><#if out="latex">&nbsp;<newline></#if>
 If no <tt>"uTessellation"</tt> attribute is specified, or its value
 is positive, the tessellator uses the so called <em>object space sampling</em>
