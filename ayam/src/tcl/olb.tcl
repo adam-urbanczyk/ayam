@@ -173,7 +173,8 @@ button $f.bup -text "Up" -padx 0 -pady 0 -command {
     cS
     goUp
     olb_update
-    if { [info exists ay(lastdown)] && ([llength $ay(lastdown)] > 0) } {
+    if { [info exists ay(lastdown)] && ([llength $ay(lastdown)] > 0) &&
+	 ([lindex $ay(lastdown) end] != "") } {
 	set lb $ay(olb)
 	$lb selection set [lindex $ay(lastdown) end]
 	set ay(lastdown) [lreplace $ay(lastdown) end end]
