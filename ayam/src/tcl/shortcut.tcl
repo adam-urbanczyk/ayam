@@ -27,6 +27,14 @@ proc remkpkr { string } {
 }
 # remkpkr
 
+# _makevis:
+#  helper to make shortcut
+proc _makevis { string } {
+    set string [remkpkr $string]
+    set string [string map [shortcut_getmappings] $string]
+    return $string
+}
+# _makevis
 
 # shortcut_swapmb:
 #  swap mouse button numbers from Win32/X11 style to Aqua style
@@ -1028,18 +1036,7 @@ pack $w.ftext.sbar -in $w.ftext -side right -fill y
 pack $w.ftext.text -in $w.ftext -side left -fill both -expand yes
 
 # strip KeyRelease/KeyPress elements, also map some inexplicable keysyms
-lappend mappings bar \|
-lappend mappings parenright \)
-lappend mappings parenleft \(
-lappend mappings plus \+
-lappend mappings minus \-
-lappend mappings asterisk \*
-lappend mappings slash \/
-lappend mappings numbersign \#
-lappend mappings apostrophe \'
-#lappend mappings quoteright \´
-lappend mappings period \.
-lappend mappings exclam \!
+set mappings shortcut_getmappings
 
 foreach elem [array names ayviewshortcuts] {
     eval set sc1 \$ayviewshortcuts(${elem})
@@ -1318,3 +1315,22 @@ proc shortcut_addviewbinding { k b } {
  return;
 }
 # shortcut_addviewbinding
+
+
+proc shortcut_getmappings { } {
+    lappend mappings bar \|
+    lappend mappings parenright \)
+    lappend mappings parenleft \(
+    lappend mappings plus \+
+    lappend mappings minus \-
+    lappend mappings asterisk \*
+    lappend mappings slash \/
+    lappend mappings numbersign \#
+    lappend mappings apostrophe \'
+    #lappend mappings quoteright \´
+    lappend mappings period \.
+    lappend mappings exclam \!
+
+ return $mappings;
+}
+# shortcut_getmappings
