@@ -374,14 +374,16 @@ proc toolbox_open { {w .tbw} } {
 	    button $f.brev -image ay_Revert_img -padx 0 -pady 0 -command {
 		undo save Revert; revertC; plb_update; rV
 	    }
-	    balloon_set $f.brev "revert curve"
+	    balloon_set $f.brev\
+		"revert curve <[_makevis $ayviewshortcuts(RevertC)]>"
 
 	    button $f.bref -image ay_Refine_img -padx 0 -pady 0 -command {
 		undo save Refine; refineC; plb_update; rV
 	    }
 	    toolbox_addshift1 $f.bref\
 		"undo save Coarsen; coarsenC; plb_update; rV;"
-	    balloon_set $f.bref "refine curve\n<Shift>: coarsen curve"
+	    balloon_set $f.bref\
+		"refine curve <[_makevis $ayviewshortcuts(RefineC)]>\n<Shift>: coarsen curve <[_makevis $ayviewshortcuts(CoarsenC)]>"
 	}
 	# nctools1
 
@@ -397,7 +399,7 @@ proc toolbox_open { {w .tbw} } {
 		toolbox_startaction actionSplitNC
 	    }
 	    balloon_set $f.bspl\
-		"split curve <[remkpkr $ayviewshortcuts(SplitNC)]>"
+		"split curve <[_makevis $ayviewshortcuts(SplitNC)]>"
 
 	    button $f.bconc -image ay_Concat_img -padx 0 -pady 0 -command {
 		level_crt ConcatNC
