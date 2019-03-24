@@ -2354,6 +2354,8 @@ proc actionClear { w {only_clear 0} } {
 
     actionClearParamKbd $t
 
+    shortcut_view $t
+
     bind $w <Motion> ""
 
     if { $only_clear || ($ayprefs(DefaultAction) == 0) } {
