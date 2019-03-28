@@ -498,6 +498,8 @@ array set ayviewshortcuts {
     CoarsenC "apostrophe"
 
     RevertC "exclam"
+    ShiftFC "less"
+    ShiftBC "greater"
 
     MoveV "v"
     MoveZV "V"

@@ -963,6 +963,18 @@ proc shortcut_viewactions { w } {
 	plb_update; rV
 	focus %W
     }
+    bind $w <$ayviewshortcuts(ShiftFC)> {
+	undo save ShiftFC
+	shiftC 1
+	plb_update; rV
+	focus %W
+    }
+    bind $w <$ayviewshortcuts(ShiftBC)> {
+	undo save ShiftBC
+	shiftC -1
+	plb_update; rV
+	focus %W
+    }
     bind $w <$ayviewshortcuts(Pick)> "actionPick $w.f3D.togl"
 
     bind $w.f3D.togl <[repctrl $ayviewshortcuts(SetMark)]>\
