@@ -1048,7 +1048,7 @@ pack $w.ftext.sbar -in $w.ftext -side right -fill y
 pack $w.ftext.text -in $w.ftext -side left -fill both -expand yes
 
 # strip KeyRelease/KeyPress elements, also map some inexplicable keysyms
-set mappings shortcut_getmappings
+set mappings [shortcut_getmappings]
 
 foreach elem [array names ayviewshortcuts] {
     eval set sc1 \$ayviewshortcuts(${elem})
@@ -1342,6 +1342,8 @@ proc shortcut_getmappings { } {
     #lappend mappings quoteright \´
     lappend mappings period \.
     lappend mappings exclam \!
+    lappend mappings less \<
+    lappend mappings greater \>
 
  return $mappings;
 }
