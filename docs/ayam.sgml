@@ -3930,6 +3930,10 @@ Move Z|<tt/&lt;mz&gt;/|
 <caption>Move Actions Overview</caption>
 </table>
 
+See also the documentation of the corresponding
+scripting interface commands <ref id="scmovob" name="movOb"> and
+<ref id="scmovpnts" name="movPnts">.
+
 <sect1>Rotating Objects or Selected Points<label id="rotac">
 <p>
 Using the modelling action <tt/"Rotate"/ (shortcut: <tt/&lt;r&gt;/)
@@ -3956,6 +3960,10 @@ Rotate|<tt/&lt;r&gt;/|
 </tabular>
 <caption>Rotate Action</caption>
 </table>
+
+See also the documentation of the corresponding
+scripting interface commands <ref id="scrotob" name="rotOb"> and
+<ref id="scrotpnts" name="rotPnts">.
 
 <sect1>Rotating Objects or Selected Points about a Point<label id="rotaac">
 <p>
@@ -4064,6 +4072,10 @@ Stretch 2D|<tt/&lt;T&gt;/|
 </tabular>
 <caption>Scaling Actions Overview</caption>
 </table>
+
+See also the documentation of the corresponding
+scripting interface commands <ref id="scscalob" name="scalOb"> and
+<ref id="scscalpnts" name="scalPnts">.
 
 <sect1>Scaling Objects or Selected Points about a Point<label id="scalaac">
 <p>
@@ -4652,7 +4664,8 @@ The modelling action <tt/"Split Curve"/ (shortcut <tt/&lt;&verbar;&gt;/)
 may be applied to NURBS curves (objects of type NCurve) only.
 Using this action a NURBS curve may be split into two new curves
 at a point on the curve that is specified by picking a point
-on the curve.<newline>
+on the curve; see also the corresponding NURBS curve tool
+<ref id="splitt" name="Split Tool">.<newline>
 Remember to exactly pick a point on the curve or nearby otherwise
 the calculation of the parametric value for the split will fail.
 The selected curve will be changed by this action, and
@@ -4691,6 +4704,8 @@ may be applied to PolyMesh objects only.<newline>
 This action can be used to select all control points of a PolyMesh
 boundary after picking a point on that
 boundary.<footnote>Since 1.23.</footnote>
+Selected boundaries are needed for the <tt/"Connect"/ polymesh tool,
+see also <ref id="polymeshtools" name="PolyMesh">.
 See also the image above.<newline>
 Note that the PolyMesh object must be optimized for best results.
 See also the table below.
