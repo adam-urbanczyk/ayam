@@ -5843,8 +5843,6 @@ x3dio_readtransform(scew_element *element)
  int ay_status = AY_OK;
  scew_element *child = NULL;
  ay_object *o = NULL, **old_aynext = NULL;
- const char *element_name = NULL;
- int need_level = AY_FALSE;
  float scale[3] = {1.0f, 1.0f, 1.0f};
  float center[3] = {0.0f, 0.0f, 0.0f};
  float translation[3] = {0.0f, 0.0f, 0.0f};
@@ -5896,41 +5894,30 @@ x3dio_readtransform(scew_element *element)
   ay_trafo_translatematrix(-center[0], -center[1], -center[2],
 			   x3dio_ctrafos->m);
 
-  /* check children, if there are other transform elements,
-     we need to create a level object with the current trafos */
-  while((child = scew_element_next(element, child)) != NULL)
+  if(!(o = calloc(1, sizeof(ay_object))))
     {
-      element_name = scew_element_name(child);
-      if(!strcmp(element_name, "Transform"))
-	{
-	  need_level = AY_TRUE;
-	  break;
-	}
-    } /* while */
+      return AY_EOMEM;
+    }
 
-  if(need_level)
+  if(!(o->refine = calloc(1, sizeof(ay_level_object))))
     {
-      if(!(o = calloc(1, sizeof(ay_object))))
-	{
-	  return AY_EOMEM;
-	}
+      free(o); return AY_EOMEM;
+    }
 
-      if(!(o->refine = calloc(1, sizeof(ay_level_object))))
-	{
-	  free(o); return AY_EOMEM;
-	}
+  ay_object_defaults(o);
 
-      ay_object_defaults(o);
+  o->type = AY_IDLEVEL;
+  o->parent = AY_TRUE;
 
-      o->type = AY_IDLEVEL;
-      o->parent = AY_TRUE;
-
-      /* set transformation attributes */
+  /* set transformation attributes */
+  if(!ay_trafo_isidentitymatrix(x3dio_ctrafos->m))
+    {
       ay_trafo_decomposematrix(x3dio_ctrafos->m, o);
+      ay_trafo_identitymatrix(x3dio_ctrafos->m);
+    }
 
-      old_aynext = ay_next;
-      ay_next = &(o->down);
-    } /* if */
+  old_aynext = ay_next;
+  ay_next = &(o->down);
 
   /* read children */
   child = NULL;
@@ -5942,13 +5929,24 @@ x3dio_readtransform(scew_element *element)
     }
 
   /* properly close level */
-  if(need_level)
+  *ay_next = ay_endlevel;
+  ay_next = old_aynext;
+
+  /* see if we really need the intermediate level object */
+  if(o->down && o->down->next &&
+     ((o->down->next != ay_endlevel) ||
+      (AY_ISTRAFO(o))))
     {
-      *ay_next = ay_endlevel;
-      ay_next = old_aynext;
       ay_object_link(o);
       /* read shape name from DEF */
       ay_status = x3dio_readname(element, "DEF", o);
+    }
+  else
+    {
+      if(o->down && o->down != ay_endlevel)
+	ay_object_link(o->down);
+      o->down = NULL;
+      ay_object_delete(o);
     }
 
   /* pop transformation stack */
