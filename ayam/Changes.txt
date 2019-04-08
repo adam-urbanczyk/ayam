@@ -1,8 +1,9 @@
-[13. Mar 2019] Tip:
-===================
+[8. Apr 2019] Tip:
+==================
 Bug Fixes:
 o NURBSphere objects can not be trimmed (SF 587)
 o repeated toggling of advanced search options (SF 588)
+o X3D import of cone misses transformation attributes (SF 589)
 
 Modelling:
 o added keyboard shortcut to call the revert tool from view windows: <!>
