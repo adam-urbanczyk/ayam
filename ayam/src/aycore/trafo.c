@@ -709,6 +709,7 @@ ay_trafo_movobtcmd(ClientData clientData, Tcl_Interp *interp,
  double dx = 0, dy = 0, dz = 0;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
+ int notify_parent = AY_FALSE;
 
   if(argc != 4)
     {
@@ -731,11 +732,13 @@ ay_trafo_movobtcmd(ClientData clientData, Tcl_Interp *interp,
       o->movy += dy;
       o->movz += dz;
       o->modified = AY_TRUE;
+      notify_parent = AY_TRUE;
 
       sel = sel->next;
     }
 
-  ay_notify_parent();
+  if(notify_parent)
+    ay_notify_parent();
 
  return TCL_OK;
 } /* ay_trafo_movobtcmd */
@@ -824,6 +827,7 @@ ay_trafo_scalobtcmd(ClientData clientData, Tcl_Interp *interp,
  double dx = 0, dy = 0, dz = 0;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
+ int notify_parent = AY_FALSE;
 
   if(argc != 4)
     {
@@ -853,11 +857,13 @@ ay_trafo_scalobtcmd(ClientData clientData, Tcl_Interp *interp,
       o->scaly *= dy;
       o->scalz *= dz;
       o->modified = AY_TRUE;
+      notify_parent = AY_TRUE;
 
       sel = sel->next;
     }
 
-  ay_notify_parent();
+  if(notify_parent)
+    ay_notify_parent();
 
  return TCL_OK;
 } /* ay_trafo_scalobtcmd */
@@ -957,6 +963,7 @@ ay_trafo_rotobtcmd(ClientData clientData, Tcl_Interp *interp,
  double yaxis[3]={0.0,1.0,0.0};
  double zaxis[3]={0.0,0.0,1.0};
  double quat[4];
+ int notify_parent = AY_FALSE;
 
   if(argc != 4)
     {
@@ -994,11 +1001,13 @@ ay_trafo_rotobtcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_quat_add(quat, o->quat, o->quat);
 	}
       o->modified = AY_TRUE;
+      notify_parent = AY_TRUE;
 
       sel = sel->next;
     } /* while */
 
-  ay_notify_parent();
+  if(notify_parent)
+    ay_notify_parent();
 
  return TCL_OK;
 } /* ay_trafo_rotobtcmd */
@@ -1385,8 +1394,8 @@ ay_trafo_creatematrix(ay_object *o, double *m)
     return;
 
   memset(m, 0, 16*sizeof(double));
-  m[0] = 1.0;
-  m[5] = 1.0;
+  m[0]  = 1.0;
+  m[5]  = 1.0;
   m[10] = 1.0;
   m[12] = o->movx;
   m[13] = o->movy;
@@ -1410,14 +1419,14 @@ ay_trafo_creatematrix(ay_object *o, double *m)
   mr[15] = 1.0;
   ay_trafo_multmatrix(m, mr);
 
-  m[0] *= o->scalx;
-  m[1] *= o->scalx;
-  m[2] *= o->scalx;
-  m[3] *= o->scalx;
-  m[4] *= o->scaly;
-  m[5] *= o->scaly;
-  m[6] *= o->scaly;
-  m[7] *= o->scaly;
+  m[0]  *= o->scalx;
+  m[1]  *= o->scalx;
+  m[2]  *= o->scalx;
+  m[3]  *= o->scalx;
+  m[4]  *= o->scaly;
+  m[5]  *= o->scaly;
+  m[6]  *= o->scaly;
+  m[7]  *= o->scaly;
   m[8]  *= o->scalz;
   m[9]  *= o->scalz;
   m[10] *= o->scalz;
@@ -1726,107 +1735,108 @@ ay_trafo_rotatematrix(double angle, double x, double y, double z, double *m)
  double t[16], mag, s, c;
  double xx, yy, zz, xy, yz, zx, xs, ys, zs, one_c;
 
-   s = sin(AY_D2R(angle));
-   c = cos(AY_D2R(angle));
+  s = sin(AY_D2R(angle));
+  c = cos(AY_D2R(angle));
 
-   mag = sqrt( x*x + y*y + z*z );
+  mag = sqrt( x*x + y*y + z*z );
 
-   if (mag /*== 0.0*/ < AY_EPSILON) {
+  if(mag /*== 0.0*/ < AY_EPSILON)
+    {
       /* do nothing */
-     return;
-   }
+      return;
+    }
 
-   x /= mag;
-   y /= mag;
-   z /= mag;
+  x /= mag;
+  y /= mag;
+  z /= mag;
 
-   /*
-    *  Arbitrary axis rotation matrix.
-    *
-    *  This is composed of 5 matrices, Rz, Ry, T, Ry', Rz', multiplied
-    *  like so: Rz * Ry * T * Ry' * Rz'. T is the final rotation
-    *  (which is about the X-axis), and the two composite transforms
-    *  Ry' * Rz' and Rz * Ry are (respectively) the rotations necessary
-    *  from the arbitrary axis to the X-axis then back. They are
-    *  all elementary rotations.
-    *
-    *  Rz' is a rotation about the Z-axis, to bring the axis vector
-    *  into the x-z plane. Then Ry' is applied, rotating about the
-    *  Y-axis to bring the axis vector parallel with the X-axis. The
-    *  rotation about the X-axis is then performed. Ry and Rz are
-    *  simply the respective inverse transforms to bring the arbitrary
-    *  axis back to it's original orientation. The first transforms
-    *  Rz' and Ry' are considered inverses, since the data from the
-    *  arbitrary axis gives you info on how to get to it, not how
-    *  to get away from it, and an inverse must be applied.
-    *
-    *
-    *  The basic calculation used is to recognize that the arbitrary
-    *  axis vector (x, y, z), since it is of unit length, actually
-    *  represents the sines and cosines of the angles to rotate the
-    *  X-axis to the same orientation, with theta being the angle about
-    *  Z and phi the angle about Y (in the order described above)
-    *  as follows:
-    *
-    *  cos ( theta ) = x / sqrt ( 1 - z^2 )
-    *  sin ( theta ) = y / sqrt ( 1 - z^2 )
-    *
-    *  cos ( phi ) = sqrt ( 1 - z^2 )
-    *  sin ( phi ) = z
-    *
-    *  Note that cos ( phi ) can further be inserted to the above
-    *  formulas:
-    *
-    *  cos ( theta ) = x / cos ( phi )
-    *  sin ( theta ) = y / sin ( phi )
-    *
-    *
-    *  ...etc.  Because of those relations and the standard trigonometric
-    *  relations, it is possible to reduce the transforms down to what
-    *  is used below. It may be that any primary axis chosen will give the
-    *  same results (modulo a sign convention) using this method.
-    *
-    *  Particularly nice is to notice that all divisions that might
-    *  have caused trouble when parallel to certain planes or
-    *  axis go away with care paid to reducing the expressions.
-    *  After checking, it does perform correctly under all cases, since
-    *  in all the cases of division where the denominator would have
-    *  been zero, the numerator would have been zero as well, giving
-    *  the expected result.
-    */
+  /*
+   *  Arbitrary axis rotation matrix.
+   *
+   *  This is composed of 5 matrices, Rz, Ry, T, Ry', Rz', multiplied
+   *  like so: Rz * Ry * T * Ry' * Rz'. T is the final rotation
+   *  (which is about the X-axis), and the two composite transforms
+   *  Ry' * Rz' and Rz * Ry are (respectively) the rotations necessary
+   *  from the arbitrary axis to the X-axis then back. They are
+   *  all elementary rotations.
+   *
+   *  Rz' is a rotation about the Z-axis, to bring the axis vector
+   *  into the x-z plane. Then Ry' is applied, rotating about the
+   *  Y-axis to bring the axis vector parallel with the X-axis. The
+   *  rotation about the X-axis is then performed. Ry and Rz are
+   *  simply the respective inverse transforms to bring the arbitrary
+   *  axis back to it's original orientation. The first transforms
+   *  Rz' and Ry' are considered inverses, since the data from the
+   *  arbitrary axis gives you info on how to get to it, not how
+   *  to get away from it, and an inverse must be applied.
+   *
+   *
+   *  The basic calculation used is to recognize that the arbitrary
+   *  axis vector (x, y, z), since it is of unit length, actually
+   *  represents the sines and cosines of the angles to rotate the
+   *  X-axis to the same orientation, with theta being the angle about
+   *  Z and phi the angle about Y (in the order described above)
+   *  as follows:
+   *
+   *  cos ( theta ) = x / sqrt ( 1 - z^2 )
+   *  sin ( theta ) = y / sqrt ( 1 - z^2 )
+   *
+   *  cos ( phi ) = sqrt ( 1 - z^2 )
+   *  sin ( phi ) = z
+   *
+   *  Note that cos ( phi ) can further be inserted to the above
+   *  formulas:
+   *
+   *  cos ( theta ) = x / cos ( phi )
+   *  sin ( theta ) = y / sin ( phi )
+   *
+   *
+   *  ...etc.  Because of those relations and the standard trigonometric
+   *  relations, it is possible to reduce the transforms down to what
+   *  is used below. It may be that any primary axis chosen will give the
+   *  same results (modulo a sign convention) using this method.
+   *
+   *  Particularly nice is to notice that all divisions that might
+   *  have caused trouble when parallel to certain planes or
+   *  axis go away with care paid to reducing the expressions.
+   *  After checking, it does perform correctly under all cases, since
+   *  in all the cases of division where the denominator would have
+   *  been zero, the numerator would have been zero as well, giving
+   *  the expected result.
+   */
 
-   xx = x * x;
-   yy = y * y;
-   zz = z * z;
-   xy = x * y;
-   yz = y * z;
-   zx = z * x;
-   xs = x * s;
-   ys = y * s;
-   zs = z * s;
-   one_c = 1.0 - c;
+  xx = x * x;
+  yy = y * y;
+  zz = z * z;
+  xy = x * y;
+  yz = y * z;
+  zx = z * x;
+  xs = x * s;
+  ys = y * s;
+  zs = z * s;
+  one_c = 1.0 - c;
 
-   AY_M44(t,0,0) = (one_c * xx) + c;
-   AY_M44(t,0,1) = (one_c * xy) - zs;
-   AY_M44(t,0,2) = (one_c * zx) + ys;
-   AY_M44(t,0,3) = 0.0;
+  AY_M44(t,0,0) = (one_c * xx) + c;
+  AY_M44(t,0,1) = (one_c * xy) - zs;
+  AY_M44(t,0,2) = (one_c * zx) + ys;
+  AY_M44(t,0,3) = 0.0;
 
-   AY_M44(t,1,0) = (one_c * xy) + zs;
-   AY_M44(t,1,1) = (one_c * yy) + c;
-   AY_M44(t,1,2) = (one_c * yz) - xs;
-   AY_M44(t,1,3) = 0.0;
+  AY_M44(t,1,0) = (one_c * xy) + zs;
+  AY_M44(t,1,1) = (one_c * yy) + c;
+  AY_M44(t,1,2) = (one_c * yz) - xs;
+  AY_M44(t,1,3) = 0.0;
 
-   AY_M44(t,2,0) = (one_c * zx) - ys;
-   AY_M44(t,2,1) = (one_c * yz) + xs;
-   AY_M44(t,2,2) = (one_c * zz) + c;
-   AY_M44(t,2,3) = 0.0;
+  AY_M44(t,2,0) = (one_c * zx) - ys;
+  AY_M44(t,2,1) = (one_c * yz) + xs;
+  AY_M44(t,2,2) = (one_c * zz) + c;
+  AY_M44(t,2,3) = 0.0;
 
-   AY_M44(t,3,0) = 0.0;
-   AY_M44(t,3,1) = 0.0;
-   AY_M44(t,3,2) = 0.0;
-   AY_M44(t,3,3) = 1.0;
+  AY_M44(t,3,0) = 0.0;
+  AY_M44(t,3,1) = 0.0;
+  AY_M44(t,3,2) = 0.0;
+  AY_M44(t,3,3) = 1.0;
 
-   ay_trafo_multmatrix(m, t);
+  ay_trafo_multmatrix(m, t);
 
  return;
 } /* ay_trafo_rotatematrix */
@@ -1883,6 +1893,7 @@ ay_trafo_normalize(ay_object *o, int digits)
 
  return;
 } /* ay_trafo_normalize */
+
 
 /** ay_trafo_normalizetcmd:
  *  Normalize transformation attributes of selected objects,
@@ -1954,7 +1965,7 @@ ay_trafo_normalizetcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	  sel = sel->next;
 	} /* while */
-    }
+    } /* if var */
 
  return TCL_OK;
 } /* ay_trafo_normalizetcmd */
@@ -1965,10 +1976,11 @@ ay_trafo_normalizetcmd(ClientData clientData, Tcl_Interp *interp,
  * Always rounds away from zero, so -2.6 to 1 sig fig will become -3.0.
  *
  * \param[in] value double to normalize
- * \param[in] digits number of digits (should be in the range 1 - 15)
+ * \param[in] digits number of significant figures to keep
+ *            (should be in the range 1 - 15)
  *
  * \returns normalized value
-*/
+ */
 double
 ay_trafo_round(double value, int digits)
 {
