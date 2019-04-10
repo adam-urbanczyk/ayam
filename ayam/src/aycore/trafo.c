@@ -724,6 +724,13 @@ ay_trafo_movobtcmd(ClientData clientData, Tcl_Interp *interp,
   tcl_status = Tcl_GetDouble(interp, argv[3], &dz);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
 
+  if(dx != dx)
+    dx = 0.0;
+  if(dy != dy)
+    dy = 0.0;
+  if(dz != dz)
+    dz = 0.0;
+
   while(sel)
     {
       o = sel->object;
@@ -776,6 +783,13 @@ ay_trafo_movpntstcmd(ClientData clientData, Tcl_Interp *interp,
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
   tcl_status = Tcl_GetDouble(interp, argv[3], &dz);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
+
+  if(dx != dx)
+    dx = 0.0;
+  if(dy != dy)
+    dy = 0.0;
+  if(dz != dz)
+    dz = 0.0;
 
   ay_trafo_identitymatrix(mm);
   ay_trafo_translatematrix(dx, dy, dz, mm);
@@ -842,11 +856,14 @@ ay_trafo_scalobtcmd(ClientData clientData, Tcl_Interp *interp,
   tcl_status = Tcl_GetDouble(interp, argv[3], &dz);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
 
-  if(dx == 0.0)
+
+  if((dx != dx) || (fabs(dx) < AY_EPSILON))
     dx = 1.0;
-  if(dy == 0.0)
+
+  if((dy != dy) || (fabs(dy) < AY_EPSILON))
     dy = 1.0;
-  if(dz == 0.0)
+
+  if((dz != dz) || (fabs(dz) < AY_EPSILON))
     dz = 1.0;
 
   while(sel)
@@ -902,11 +919,13 @@ ay_trafo_scalpntstcmd(ClientData clientData, Tcl_Interp *interp,
   tcl_status = Tcl_GetDouble(interp, argv[3], &dz);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
 
-  if(dx == 0.0)
+  if((dx != dx) || (fabs(dx) < AY_EPSILON))
     dx = 1.0;
-  if(dy == 0.0)
+
+  if((dy != dy) || (fabs(dy) < AY_EPSILON))
     dy = 1.0;
-  if(dz == 0.0)
+
+  if((dz != dz) || (fabs(dz) < AY_EPSILON))
     dz = 1.0;
 
   ay_trafo_identitymatrix(mm);
@@ -982,21 +1001,23 @@ ay_trafo_rotobtcmd(ClientData clientData, Tcl_Interp *interp,
     {
       o = sel->object;
 
-      o->rotx += dx;
-      if(dx != 0.0)
+      if((dx == dx) && (fabs(dx) > AY_EPSILON))
 	{
+	  o->rotx += dx;
 	  ay_quat_axistoquat(xaxis, dx*AY_PI/180.0, quat);
 	  ay_quat_add(quat, o->quat, o->quat);
 	}
-      o->roty += dy;
-      if(dy != 0.0)
+
+      if((dy == dy) && (fabs(dy) > AY_EPSILON))
 	{
+	  o->roty += dy;
 	  ay_quat_axistoquat(yaxis, dy*AY_PI/180.0, quat);
 	  ay_quat_add(quat, o->quat, o->quat);
 	}
-      o->rotz += dz;
-      if(dz != 0.0)
+
+      if((dz == dz) && (fabs(dz) > AY_EPSILON))
 	{
+	  o->rotz += dz;
 	  ay_quat_axistoquat(zaxis, dz*AY_PI/180.0, quat);
 	  ay_quat_add(quat, o->quat, o->quat);
 	}
@@ -1047,11 +1068,11 @@ ay_trafo_rotpntstcmd(ClientData clientData, Tcl_Interp *interp,
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
 
   ay_trafo_identitymatrix(mm);
-  if(dx != 0.0)
+  if((dx == dx) && (fabs(dx) > AY_EPSILON))
     ay_trafo_rotatematrix(dx, 1.0, 0.0, 0.0, mm);
-  if(dy != 0.0)
+  if((dy == dy) && (fabs(dy) > AY_EPSILON))
     ay_trafo_rotatematrix(dy, 0.0, 1.0, 0.0, mm);
-  if(dz != 0.0)
+  if((dz == dz) && (fabs(dz) > AY_EPSILON))
     ay_trafo_rotatematrix(dz, 0.0, 0.0, 1.0, mm);
 
   while(sel)
