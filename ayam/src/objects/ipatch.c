@@ -789,7 +789,7 @@ ay_ipatch_drawcp(ay_ipatch_object *ipatch)
 	     } /* for */
 	  glEnd();
 	} /* for */
-    } /* if */
+    } /* if closev */
 
   if(ipatch->close_u)
     {
@@ -820,7 +820,7 @@ ay_ipatch_drawcp(ay_ipatch_object *ipatch)
 	     } /* for */
 	  glEnd();
 	} /* for */
-    } /* if */
+    } /* if closeu */
 
  return;
 } /* ay_ipatch_drawcp */
@@ -879,7 +879,7 @@ ay_ipatch_drawders(ay_ipatch_object *ipatch)
 	     }
 	  glEnd();
 	} /* if */
-    } /* if */
+    } /* if uderivs */
 
   if(ipatch->derivs_v > 1)
     {
@@ -917,7 +917,7 @@ ay_ipatch_drawders(ay_ipatch_object *ipatch)
 	     }
 	  glEnd();
 	} /* if */
-    } /* if */
+    } /* if vderivs */
 
  return;
 } /* ay_ipatch_drawders */
@@ -1022,7 +1022,7 @@ ay_ipatch_shadecb(struct Togl *togl, ay_object *o)
 
 
 /* ay_ipatch_drawacb:
- *  draw handles (in an Ayam view window) callback function of ipatch object
+ *  draw annotations (in an Ayam view window) callback function of ipatch object
  */
 int
 ay_ipatch_drawacb(struct Togl *togl, ay_object *o)
@@ -1045,7 +1045,7 @@ ay_ipatch_drawacb(struct Togl *togl, ay_object *o)
 
   ver = ipatch->controlv;
 
-  /* draw arrow */
+  /* draw direction arrow */
   ay_draw_arrow(togl, &(ver[width*height*3-6]), &(ver[width*height*3-3]));
 
  return AY_OK;
@@ -2113,7 +2113,7 @@ ay_ipatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  ay_prop_getnpinfo(interp, n1, ipatch->npatch);
+  (void)ay_prop_getnpinfo(interp, n1, ipatch->npatch);
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
