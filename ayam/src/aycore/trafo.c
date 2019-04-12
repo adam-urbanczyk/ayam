@@ -975,6 +975,7 @@ ay_trafo_rotobtcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
  int tcl_status = TCL_OK;
+ char args[] = "(%dx %dy %dz | -a %ax %ay %az %a)";
  double dx = 0, dy = 0, dz = 0;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
@@ -982,44 +983,78 @@ ay_trafo_rotobtcmd(ClientData clientData, Tcl_Interp *interp,
  double yaxis[3]={0.0,1.0,0.0};
  double zaxis[3]={0.0,0.0,1.0};
  double quat[4];
- int notify_parent = AY_FALSE;
+ int i = 0, have_axis = AY_FALSE, notify_parent = AY_FALSE;
 
-  if(argc != 4)
+  if(argc < 2)
     {
-      ay_error(AY_EARGS, argv[0], "%dx %dy %dz");
+      ay_error(AY_EARGS, argv[0], args);
       return TCL_OK;
     }
 
-  tcl_status = Tcl_GetDouble(interp, argv[1], &dx);
+  if(argv[1][0] == '-' && argv[1][1] == 'a')
+    {
+      if(argc < 5)
+	{
+	  ay_error(AY_EARGS, argv[0], args);
+	  return TCL_OK;
+	}
+      have_axis = AY_TRUE;
+      i++;
+    }
+
+  tcl_status = Tcl_GetDouble(interp, argv[i+1], &dx);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
-  tcl_status = Tcl_GetDouble(interp, argv[2], &dy);
+  tcl_status = Tcl_GetDouble(interp, argv[i+2], &dy);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
-  tcl_status = Tcl_GetDouble(interp, argv[3], &dz);
+  tcl_status = Tcl_GetDouble(interp, argv[i+3], &dz);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
+
+  if(have_axis)
+    {
+      xaxis[0] = dx;
+      xaxis[1] = dy;
+      xaxis[2] = dz;
+
+      tcl_status = Tcl_GetDouble(interp, argv[i+4], &dx);
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+      if((dx != dx) && (fabs(dx) < AY_EPSILON))
+	return TCL_OK;
+    }
 
   while(sel)
     {
       o = sel->object;
-
-      if((dx == dx) && (fabs(dx) > AY_EPSILON))
+      if(have_axis)
 	{
-	  o->rotx += dx;
 	  ay_quat_axistoquat(xaxis, dx*AY_PI/180.0, quat);
 	  ay_quat_add(quat, o->quat, o->quat);
+	  ay_quat_toeuler(o->quat, yaxis);
+	  o->rotx = AY_R2D(yaxis[0]);
+	  o->roty = AY_R2D(yaxis[1]);
+	  o->rotz = AY_R2D(yaxis[2]);
 	}
-
-      if((dy == dy) && (fabs(dy) > AY_EPSILON))
+      else
 	{
-	  o->roty += dy;
-	  ay_quat_axistoquat(yaxis, dy*AY_PI/180.0, quat);
-	  ay_quat_add(quat, o->quat, o->quat);
-	}
+	  if((dx == dx) && (fabs(dx) > AY_EPSILON))
+	    {
+	      o->rotx += dx;
+	      ay_quat_axistoquat(xaxis, dx*AY_PI/180.0, quat);
+	      ay_quat_add(quat, o->quat, o->quat);
+	    }
 
-      if((dz == dz) && (fabs(dz) > AY_EPSILON))
-	{
-	  o->rotz += dz;
-	  ay_quat_axistoquat(zaxis, dz*AY_PI/180.0, quat);
-	  ay_quat_add(quat, o->quat, o->quat);
+	  if((dy == dy) && (fabs(dy) > AY_EPSILON))
+	    {
+	      o->roty += dy;
+	      ay_quat_axistoquat(yaxis, dy*AY_PI/180.0, quat);
+	      ay_quat_add(quat, o->quat, o->quat);
+	    }
+
+	  if((dz == dz) && (fabs(dz) > AY_EPSILON))
+	    {
+	      o->rotz += dz;
+	      ay_quat_axistoquat(zaxis, dz*AY_PI/180.0, quat);
+	      ay_quat_add(quat, o->quat, o->quat);
+	    }
 	}
       o->modified = AY_TRUE;
       notify_parent = AY_TRUE;
