@@ -964,7 +964,7 @@ ay_trafo_scalpntstcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /** ay_trafo_rotobtcmd:
- *  Rotate selected objects.
+ *  Rotate selected objects/points.
  *  Implements the \a rotOb scripting interface command.
  *  Also implements the \a rotPnts scripting interface command.
  *  See also the corresponding section in the \ayd{scrotob}.
@@ -1035,16 +1035,16 @@ ay_trafo_rottcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(have_axis)
 	{
-	  ay_trafo_rotatematrix(dx, xaxis[0], xaxis[1], xaxis[2], mm);
+	  ay_trafo_rotatematrix(-dx, xaxis[0], xaxis[1], xaxis[2], mm);
 	}
       else
 	{
 	  if((dx == dx) && (fabs(dx) > AY_EPSILON))
-	    ay_trafo_rotatematrix(dx, 1.0, 0.0, 0.0, mm);
+	    ay_trafo_rotatematrix(-dx, 1.0, 0.0, 0.0, mm);
 	  if((dy == dy) && (fabs(dy) > AY_EPSILON))
-	    ay_trafo_rotatematrix(dy, 0.0, 1.0, 0.0, mm);
+	    ay_trafo_rotatematrix(-dy, 0.0, 1.0, 0.0, mm);
 	  if((dz == dz) && (fabs(dz) > AY_EPSILON))
-	    ay_trafo_rotatematrix(dz, 0.0, 0.0, 1.0, mm);
+	    ay_trafo_rotatematrix(-dz, 0.0, 0.0, 1.0, mm);
 	}
 
       if(ay_trafo_isidentitymatrix(mm))
