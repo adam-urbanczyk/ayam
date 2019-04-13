@@ -966,22 +966,25 @@ ay_trafo_scalpntstcmd(ClientData clientData, Tcl_Interp *interp,
 /** ay_trafo_rotobtcmd:
  *  Rotate selected objects.
  *  Implements the \a rotOb scripting interface command.
+ *  Also implements the \a rotPnts scripting interface command.
  *  See also the corresponding section in the \ayd{scrotob}.
  *
  *  \returns TCL_OK in any case.
  */
 int
-ay_trafo_rotobtcmd(ClientData clientData, Tcl_Interp *interp,
-		   int argc, char *argv[])
+ay_trafo_rottcmd(ClientData clientData, Tcl_Interp *interp,
+		 int argc, char *argv[])
 {
  int tcl_status = TCL_OK;
  char args[] = "(%dx %dy %dz | -a %ax %ay %az %a)";
- double dx = 0, dy = 0, dz = 0;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- double xaxis[3]={1.0,0.0,0.0};
- double yaxis[3]={0.0,1.0,0.0};
- double zaxis[3]={0.0,0.0,1.0};
+ ay_point *point = NULL;
+ double dx = 0, dy = 0, dz = 0;
+ double mm[16], tpoint[4] = {0};
+ double xaxis[3] = {1.0,0.0,0.0};
+ double yaxis[3] = {0.0,1.0,0.0};
+ double zaxis[3] = {0.0,0.0,1.0};
  double quat[4];
  int i = 0, have_axis = AY_FALSE, notify_parent = AY_FALSE;
 
@@ -1017,129 +1020,114 @@ ay_trafo_rotobtcmd(ClientData clientData, Tcl_Interp *interp,
 
       tcl_status = Tcl_GetDouble(interp, argv[i+4], &dx);
       AY_CHTCLERRRET(tcl_status, argv[0], interp);
-      if((dx != dx) && (fabs(dx) < AY_EPSILON))
-	return TCL_OK;
+      if((dx != dx) || (fabs(dx) < AY_EPSILON) ||
+	 (dx > DBL_MAX) || (dx < -DBL_MAX))
+	{
+	  ay_error(AY_ERROR, argv[0], "Angle parameter is unusable!");
+	  return TCL_OK;
+	}
     }
 
-  while(sel)
+  if(argv[0][3] == 'P')
     {
-      o = sel->object;
+      /* transform points */
+      ay_trafo_identitymatrix(mm);
+
       if(have_axis)
 	{
-	  ay_quat_axistoquat(xaxis, dx*AY_PI/180.0, quat);
-	  ay_quat_add(quat, o->quat, o->quat);
-	  ay_quat_toeuler(o->quat, yaxis);
-	  o->rotx = AY_R2D(yaxis[0]);
-	  o->roty = AY_R2D(yaxis[1]);
-	  o->rotz = AY_R2D(yaxis[2]);
+	  ay_trafo_rotatematrix(dx, xaxis[0], xaxis[1], xaxis[2], mm);
 	}
       else
 	{
 	  if((dx == dx) && (fabs(dx) > AY_EPSILON))
+	    ay_trafo_rotatematrix(dx, 1.0, 0.0, 0.0, mm);
+	  if((dy == dy) && (fabs(dy) > AY_EPSILON))
+	    ay_trafo_rotatematrix(dy, 0.0, 1.0, 0.0, mm);
+	  if((dz == dz) && (fabs(dz) > AY_EPSILON))
+	    ay_trafo_rotatematrix(dz, 0.0, 0.0, 1.0, mm);
+	}
+
+      if(ay_trafo_isidentitymatrix(mm))
+	{
+	  //ay_error(AY_ERROR, argv[0], "!");
+	  return TCL_OK;
+	}
+
+      while(sel)
+	{
+	  o = sel->object;
+
+	  if(o->selp)
 	    {
-	      o->rotx += dx;
+	      if(!o->selp->readonly)
+		{
+		  point = o->selp;
+		  while(point)
+		    {
+		      AY_APTRAN3(tpoint, point->point, mm);
+		      memcpy(point->point, tpoint, 3*sizeof(double));
+
+		      point = point->next;
+		    }
+		  ay_notify_object(o);
+		  o->modified = AY_TRUE;
+		  notify_parent = AY_TRUE;
+		} /* if */
+	    } /* if selp */
+
+	  sel = sel->next;
+	} /* while */
+    }
+  else
+    {
+      /* transform objects */
+      while(sel)
+	{
+	  o = sel->object;
+	  if(have_axis)
+	    {
 	      ay_quat_axistoquat(xaxis, dx*AY_PI/180.0, quat);
 	      ay_quat_add(quat, o->quat, o->quat);
+	      ay_quat_toeuler(o->quat, yaxis);
+	      o->rotx = AY_R2D(yaxis[0]);
+	      o->roty = AY_R2D(yaxis[1]);
+	      o->rotz = AY_R2D(yaxis[2]);
 	    }
-
-	  if((dy == dy) && (fabs(dy) > AY_EPSILON))
+	  else
 	    {
-	      o->roty += dy;
-	      ay_quat_axistoquat(yaxis, dy*AY_PI/180.0, quat);
-	      ay_quat_add(quat, o->quat, o->quat);
-	    }
+	      if((dx == dx) && (fabs(dx) > AY_EPSILON))
+		{
+		  o->rotx += dx;
+		  ay_quat_axistoquat(xaxis, dx*AY_PI/180.0, quat);
+		  ay_quat_add(quat, o->quat, o->quat);
+		}
 
-	  if((dz == dz) && (fabs(dz) > AY_EPSILON))
-	    {
-	      o->rotz += dz;
-	      ay_quat_axistoquat(zaxis, dz*AY_PI/180.0, quat);
-	      ay_quat_add(quat, o->quat, o->quat);
-	    }
-	}
-      o->modified = AY_TRUE;
-      notify_parent = AY_TRUE;
+	      if((dy == dy) && (fabs(dy) > AY_EPSILON))
+		{
+		  o->roty += dy;
+		  ay_quat_axistoquat(yaxis, dy*AY_PI/180.0, quat);
+		  ay_quat_add(quat, o->quat, o->quat);
+		}
 
-      sel = sel->next;
-    } /* while */
+	      if((dz == dz) && (fabs(dz) > AY_EPSILON))
+		{
+		  o->rotz += dz;
+		  ay_quat_axistoquat(zaxis, dz*AY_PI/180.0, quat);
+		  ay_quat_add(quat, o->quat, o->quat);
+		}
+	    } /* if have_axis */
+	  o->modified = AY_TRUE;
+	  notify_parent = AY_TRUE;
+
+	  sel = sel->next;
+	} /* while */
+    } /* if points or objects */
 
   if(notify_parent)
     ay_notify_parent();
 
  return TCL_OK;
 } /* ay_trafo_rotobtcmd */
-
-
-/** ay_trafo_rotpntstcmd:
- *  Rotate selected points.
- *  Implements the \a rotPnts scripting interface command.
- *  See also the corresponding section in the \ayd{scrotpnts}.
- *
- *  \returns TCL_OK in any case.
- */
-int
-ay_trafo_rotpntstcmd(ClientData clientData, Tcl_Interp *interp,
-		     int argc, char *argv[])
-{
- int tcl_status = TCL_OK;
- double dx = 0, dy = 0, dz = 0;
- ay_list_object *sel = ay_selection;
- ay_object *o = NULL;
- ay_point *point = NULL;
- double mm[16];
- double tpoint[4] = {0};
- int notify_parent = AY_FALSE;
-
-  if(argc != 4)
-    {
-      ay_error(AY_EARGS, argv[0], "%dx %dy %dz");
-      return TCL_OK;
-    }
-
-  tcl_status = Tcl_GetDouble(interp, argv[1], &dx);
-  AY_CHTCLERRRET(tcl_status, argv[0], interp);
-  tcl_status = Tcl_GetDouble(interp, argv[2], &dy);
-  AY_CHTCLERRRET(tcl_status, argv[0], interp);
-  tcl_status = Tcl_GetDouble(interp, argv[3], &dz);
-  AY_CHTCLERRRET(tcl_status, argv[0], interp);
-
-  ay_trafo_identitymatrix(mm);
-  if((dx == dx) && (fabs(dx) > AY_EPSILON))
-    ay_trafo_rotatematrix(dx, 1.0, 0.0, 0.0, mm);
-  if((dy == dy) && (fabs(dy) > AY_EPSILON))
-    ay_trafo_rotatematrix(dy, 0.0, 1.0, 0.0, mm);
-  if((dz == dz) && (fabs(dz) > AY_EPSILON))
-    ay_trafo_rotatematrix(dz, 0.0, 0.0, 1.0, mm);
-
-  while(sel)
-    {
-      o = sel->object;
-
-      if(o->selp)
-	{
-	  if(!o->selp->readonly)
-	    {
-	      point = o->selp;
-	      while(point)
-		{
-		  AY_APTRAN3(tpoint, point->point, mm);
-		  memcpy(point->point, tpoint, 3*sizeof(double));
-
-		  point = point->next;
-		}
-	      ay_notify_object(o);
-	      o->modified = AY_TRUE;
-	      notify_parent = AY_TRUE;
-	    } /* if */
-	} /* if */
-
-      sel = sel->next;
-    } /* while */
-
-  if(notify_parent)
-    ay_notify_parent();
-
- return TCL_OK;
-} /* ay_trafo_rotpntstcmd */
 
 
 /* ay_trafo_multvectmatrix:
