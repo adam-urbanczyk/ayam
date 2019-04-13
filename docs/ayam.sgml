@@ -17241,11 +17241,21 @@ objects X-axis, by <tt/dy/ in direction of the objects Y-axis, and by
 <label id="scrotob">
 rotOb &ndash; rotate objects:
 <itemize>
- <item>Synopsis: <tt/"rotOb dx dy dz"/
+ <item>Synopsis: <tt/"rotOb (dx dy dz | -a ax ay az a)"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Rotate the selected object(s) by <tt/dx/ degrees around the
 objects X-axis, then by <tt/dy/ degrees around objects Y-axis, and finally by
-<tt/dz/ degrees around the objects Z-axis. Note the order of the rotations.
+<tt/dz/ degrees around the objects Z-axis. Note the order of the
+rotations.<newline>
+If the parameters start with an <tt/-a/, they denote an rotation
+axis followed by the angle in degrees.<footnote>Since 1.27.</footnote>
+<item>Examples:
+<enum>
+<item><bf><tt>"rotOb 0 0 45"</tt></bf><newline>
+rotates the selected objects 45&deg; about the Z-axis.
+<item><bf><tt>"rotOb -a 1 1 0 45"</tt></bf><newline>
+rotates the selected objects 45&deg; about the axis <tt>"1 1 0"</tt>.
+</enum>
 </itemize>
 
 <p>
@@ -17277,17 +17287,29 @@ objects X-axis, by <tt/dy/ in direction of the objects Y-axis, and by
 <tt/dz/ in direction of the objects Z-axis.
 </itemize>
 
+<#if out="latex"><x/newpage/</#if>
+
 <p>
 <#if out="latex"><x/phantomsection/</#if>
 <#if out="html"><f/<inf/<newline>//</#if>
 <label id="scrotsel"><label id="scrotpnts">
 rotPnts &ndash; rotate selected points:
 <itemize>
- <item>Synopsis: <tt/"rotPnts dx dy dz"/
+ <item>Synopsis: <tt/"rotPnts (dx dy dz | -a ax ay az a)"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Rotate the selected points by <tt/dx/ degrees around the
 objects X-axis, then by <tt/dy/ degrees around objects Y-axis, and finally
-by <tt/dz/ degrees around the objects Z-axis. Note the order of the rotations.
+by <tt/dz/ degrees around the objects Z-axis. Note the order of the
+rotations.<newline>
+If the parameters start with an <tt/-a/, they denote an rotation
+axis followed by the angle in degrees.<footnote>Since 1.27.</footnote>
+<item>Examples:
+<enum>
+<item><bf><tt>"rotPnts 0 0 45"</tt></bf><newline>
+rotates the selected points 45&deg; about the Z-axis.
+<item><bf><tt>"rotPnts -a 1 1 0 45"</tt></bf><newline>
+rotates the selected points 45&deg; about the axis <tt>"1 1 0"</tt>.
+</enum>
 </itemize>
 
 <p>
@@ -17340,6 +17362,8 @@ are readonly.
 Additionally, if any points of an object are modified, the transformations
 of this object will be reset to the default values.
 </itemize>
+
+<#if out="latex"><x/newpage/</#if>
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
