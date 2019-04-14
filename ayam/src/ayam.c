@@ -991,10 +991,10 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "movPnts", ay_trafo_movpntstcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "scalOb", ay_trafo_scalobtcmd,
+  Tcl_CreateCommand(interp, "scalOb", ay_trafo_scaltcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "scalPnts", ay_trafo_scalpntstcmd,
+  Tcl_CreateCommand(interp, "scalPnts", ay_trafo_scaltcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "rotOb", ay_trafo_rottcmd,
@@ -1716,10 +1716,10 @@ ay_safeinit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "movPnts", ay_trafo_movpntstcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "scalOb", ay_trafo_scalobtcmd,
+  Tcl_CreateCommand(interp, "scalOb", ay_trafo_scaltcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "scalPnts", ay_trafo_scalpntstcmd,
+  Tcl_CreateCommand(interp, "scalPnts", ay_trafo_scaltcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "rotOb", ay_trafo_rottcmd,
