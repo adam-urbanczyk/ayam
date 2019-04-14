@@ -826,84 +826,24 @@ ay_trafo_movpntstcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_trafo_movpntstcmd */
 
 
-/** ay_trafo_scalobtcmd:
- *  Scale selected objects.
+/** ay_trafo_scaltcmd:
+ *  Scale the selected objects/points.
  *  Implements the \a scalOb scripting interface command.
+ *  Also implements the \a scalPnts scripting interface command.
  *  See also the corresponding section in the \ayd{scscalob}.
  *
  *  \returns TCL_OK in any case.
  */
 int
-ay_trafo_scalobtcmd(ClientData clientData, Tcl_Interp *interp,
-		    int argc, char *argv[])
+ay_trafo_scaltcmd(ClientData clientData, Tcl_Interp *interp,
+		  int argc, char *argv[])
 {
  int tcl_status = TCL_OK;
- double dx = 0, dy = 0, dz = 0;
- ay_list_object *sel = ay_selection;
- ay_object *o = NULL;
- int notify_parent = AY_FALSE;
-
-  if(argc != 4)
-    {
-      ay_error(AY_EARGS, argv[0], "%dx %dy %dz");
-      return TCL_OK;
-    }
-
-  tcl_status = Tcl_GetDouble(interp, argv[1], &dx);
-  AY_CHTCLERRRET(tcl_status, argv[0], interp);
-  tcl_status = Tcl_GetDouble(interp, argv[2], &dy);
-  AY_CHTCLERRRET(tcl_status, argv[0], interp);
-  tcl_status = Tcl_GetDouble(interp, argv[3], &dz);
-  AY_CHTCLERRRET(tcl_status, argv[0], interp);
-
-
-  if((dx != dx) || (fabs(dx) < AY_EPSILON))
-    dx = 1.0;
-
-  if((dy != dy) || (fabs(dy) < AY_EPSILON))
-    dy = 1.0;
-
-  if((dz != dz) || (fabs(dz) < AY_EPSILON))
-    dz = 1.0;
-
-  while(sel)
-    {
-      o = sel->object;
-
-      o->scalx *= dx;
-      o->scaly *= dy;
-      o->scalz *= dz;
-      o->modified = AY_TRUE;
-      notify_parent = AY_TRUE;
-
-      sel = sel->next;
-    }
-
-  if(notify_parent)
-    ay_notify_parent();
-
- return TCL_OK;
-} /* ay_trafo_scalobtcmd */
-
-
-/** ay_trafo_scalpntstcmd:
- *  Scale selected points.
- *  Implements the \a scalPnts scripting interface command.
- *  See also the corresponding section in the \ayd{scscalpnts}.
- *
- *  \returns TCL_OK in any case.
- */
-int
-ay_trafo_scalpntstcmd(ClientData clientData, Tcl_Interp *interp,
-		      int argc, char *argv[])
-{
- int tcl_status = TCL_OK;
+ double mm[16], tpoint[4] = {0};
  double dx = 0, dy = 0, dz = 0;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_point *point = NULL;
- double mm[16];
- double tpoint[4] = {0};
  int notify_parent = AY_FALSE;
 
   if(argc != 4)
@@ -919,6 +859,7 @@ ay_trafo_scalpntstcmd(ClientData clientData, Tcl_Interp *interp,
   tcl_status = Tcl_GetDouble(interp, argv[3], &dz);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
 
+
   if((dx != dx) || (fabs(dx) < AY_EPSILON))
     dx = 1.0;
 
@@ -928,42 +869,62 @@ ay_trafo_scalpntstcmd(ClientData clientData, Tcl_Interp *interp,
   if((dz != dz) || (fabs(dz) < AY_EPSILON))
     dz = 1.0;
 
-  ay_trafo_identitymatrix(mm);
-  ay_trafo_scalematrix(dx, dy, dz, mm);
-
-  while(sel)
+  if(argv[0][4] == 'P')
     {
-      o = sel->object;
+      /* transform points */
+      ay_trafo_identitymatrix(mm);
+      ay_trafo_scalematrix(dx, dy, dz, mm);
 
-      if(o->selp)
+      while(sel)
 	{
-	  if(!o->selp->readonly)
+	  o = sel->object;
+
+	  if(o->selp)
 	    {
-	      point = o->selp;
-	      while(point)
+	      if(!o->selp->readonly)
 		{
-		  AY_APTRAN3(tpoint, point->point, mm);
-		  memcpy(point->point, tpoint, 3*sizeof(double));
+		  point = o->selp;
+		  while(point)
+		    {
+		      AY_APTRAN3(tpoint, point->point, mm);
+		      memcpy(point->point, tpoint, 3*sizeof(double));
 
-		  point = point->next;
-		}
-	      ay_notify_object(o);
-	      o->modified = AY_TRUE;
-	      notify_parent = AY_TRUE;
-	    } /* if */
-	} /* if */
+		      point = point->next;
+		    }
+		  ay_notify_object(o);
+		  o->modified = AY_TRUE;
+		  notify_parent = AY_TRUE;
+		} /* if */
+	    } /* if selp */
 
-      sel = sel->next;
-    } /* while */
+	  sel = sel->next;
+	} /* while */
+    }
+  else
+    {
+      /* transform objects */
+      while(sel)
+	{
+	  o = sel->object;
+
+	  o->scalx *= dx;
+	  o->scaly *= dy;
+	  o->scalz *= dz;
+	  o->modified = AY_TRUE;
+	  notify_parent = AY_TRUE;
+
+	  sel = sel->next;
+	}
+    } /* if points or objects */
 
   if(notify_parent)
     ay_notify_parent();
 
  return TCL_OK;
-} /* ay_trafo_scalpntstcmd */
+} /* ay_trafo_scaltcmd */
 
 
-/** ay_trafo_rotobtcmd:
+/** ay_trafo_rottcmd:
  *  Rotate selected objects/points.
  *  Implements the \a rotOb scripting interface command.
  *  Also implements the \a rotPnts scripting interface command.
@@ -1127,7 +1088,7 @@ ay_trafo_rottcmd(ClientData clientData, Tcl_Interp *interp,
     ay_notify_parent();
 
  return TCL_OK;
-} /* ay_trafo_rotobtcmd */
+} /* ay_trafo_rottcmd */
 
 
 /* ay_trafo_multvectmatrix:
