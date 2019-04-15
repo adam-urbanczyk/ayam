@@ -694,73 +694,17 @@ ay_trafo_defaults(ay_object *o)
 } /* ay_trafo_defaults */
 
 
-/** ay_trafo_movobtcmd:
- *  Translate selected objects.
+/** ay_trafo_movtcmd:
+ *  Translate selected objects/points.
  *  Implements the \a movOb scripting interface command.
+ *  Also implements the \a movPnts scripting interface command.
  *  See also the corresponding section in the \ayd{scmovob}.
  *
  *  \returns TCL_OK in any case.
  */
 int
-ay_trafo_movobtcmd(ClientData clientData, Tcl_Interp *interp,
-		   int argc, char *argv[])
-{
- int tcl_status = TCL_OK;
- double dx = 0, dy = 0, dz = 0;
- ay_list_object *sel = ay_selection;
- ay_object *o = NULL;
- int notify_parent = AY_FALSE;
-
-  if(argc != 4)
-    {
-      ay_error(AY_EARGS, argv[0], "%dx %dy %dz");
-      return TCL_OK;
-    }
-
-  tcl_status = Tcl_GetDouble(interp, argv[1], &dx);
-  AY_CHTCLERRRET(tcl_status, argv[0], interp);
-  tcl_status = Tcl_GetDouble(interp, argv[2], &dy);
-  AY_CHTCLERRRET(tcl_status, argv[0], interp);
-  tcl_status = Tcl_GetDouble(interp, argv[3], &dz);
-  AY_CHTCLERRRET(tcl_status, argv[0], interp);
-
-  if(dx != dx)
-    dx = 0.0;
-  if(dy != dy)
-    dy = 0.0;
-  if(dz != dz)
-    dz = 0.0;
-
-  while(sel)
-    {
-      o = sel->object;
-
-      o->movx += dx;
-      o->movy += dy;
-      o->movz += dz;
-      o->modified = AY_TRUE;
-      notify_parent = AY_TRUE;
-
-      sel = sel->next;
-    }
-
-  if(notify_parent)
-    ay_notify_parent();
-
- return TCL_OK;
-} /* ay_trafo_movobtcmd */
-
-
-/** ay_trafo_movpntstcmd:
- *  Translate selected points.
- *  Implements the \a movPnts scripting interface command.
- *  See also the corresponding section in the \ayd{scmovpnts}.
- *
- *  \returns TCL_OK in any case.
- */
-int
-ay_trafo_movpntstcmd(ClientData clientData, Tcl_Interp *interp,
-		     int argc, char *argv[])
+ay_trafo_movtcmd(ClientData clientData, Tcl_Interp *interp,
+		 int argc, char *argv[])
 {
  int tcl_status = TCL_OK;
  double dx = 0, dy = 0, dz = 0;
@@ -791,39 +735,60 @@ ay_trafo_movpntstcmd(ClientData clientData, Tcl_Interp *interp,
   if(dz != dz)
     dz = 0.0;
 
-  ay_trafo_identitymatrix(mm);
-  ay_trafo_translatematrix(dx, dy, dz, mm);
-
-  while(sel)
+  if(argv[0][3] == 'P')
     {
-      o = sel->object;
+      /* transform points */
 
-      if(o->selp)
+      ay_trafo_identitymatrix(mm);
+      ay_trafo_translatematrix(dx, dy, dz, mm);
+
+      while(sel)
 	{
-	  if(!o->selp->readonly)
+	  o = sel->object;
+
+	  if(o->selp)
 	    {
-	      point = o->selp;
-	      while(point)
+	      if(!o->selp->readonly)
 		{
-		  AY_APTRAN3(tpoint, point->point, mm);
-		  memcpy(point->point, tpoint, 3*sizeof(double));
+		  point = o->selp;
+		  while(point)
+		    {
+		      AY_APTRAN3(tpoint, point->point, mm);
+		      memcpy(point->point, tpoint, 3*sizeof(double));
 
-		  point = point->next;
-		}
-	      ay_notify_object(o);
-	      o->modified = AY_TRUE;
-	      notify_parent = AY_TRUE;
+		      point = point->next;
+		    }
+		  ay_notify_object(o);
+		  o->modified = AY_TRUE;
+		  notify_parent = AY_TRUE;
+		} /* if */
 	    } /* if */
-	} /* if */
 
-      sel = sel->next;
+	  sel = sel->next;
+	}
+    }
+  else
+    {
+      /* transform objects */
+      while(sel)
+	{
+	  o = sel->object;
+
+	  o->movx += dx;
+	  o->movy += dy;
+	  o->movz += dz;
+	  o->modified = AY_TRUE;
+	  notify_parent = AY_TRUE;
+
+	  sel = sel->next;
+	}
     }
 
   if(notify_parent)
     ay_notify_parent();
 
  return TCL_OK;
-} /* ay_trafo_movpntstcmd */
+} /* ay_trafo_movtcmd */
 
 
 /** ay_trafo_scaltcmd:
