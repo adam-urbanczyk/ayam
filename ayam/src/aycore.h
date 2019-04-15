@@ -1729,15 +1729,10 @@ void ay_trafo_add(ay_object *src, ay_object *dst);
  */
 void ay_trafo_defaults(ay_object *o);
 
-/** Tcl command to move an object
+/** Tcl command to move an object or the selected points.
  */
-int ay_trafo_movobtcmd(ClientData clientData, Tcl_Interp *interp,
-		       int argc, char *argv[]);
-
-/** Tcl command to move the selected points of an object
- */
-int ay_trafo_movpntstcmd(ClientData clientData, Tcl_Interp *interp,
-			int argc, char *argv[]);
+int ay_trafo_movtcmd(ClientData clientData, Tcl_Interp *interp,
+		     int argc, char *argv[]);
 
 /** Tcl command to scale an object or the selected points
  */
