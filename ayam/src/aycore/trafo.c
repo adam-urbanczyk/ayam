@@ -738,7 +738,6 @@ ay_trafo_movtcmd(ClientData clientData, Tcl_Interp *interp,
   if(argv[0][3] == 'P')
     {
       /* transform points */
-
       ay_trafo_identitymatrix(mm);
       ay_trafo_translatematrix(dx, dy, dz, mm);
 
@@ -765,7 +764,7 @@ ay_trafo_movtcmd(ClientData clientData, Tcl_Interp *interp,
 	    } /* if */
 
 	  sel = sel->next;
-	}
+	} /* while */
     }
   else
     {
@@ -782,7 +781,7 @@ ay_trafo_movtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  sel = sel->next;
 	}
-    }
+    } /* if points or objects */
 
   if(notify_parent)
     ay_notify_parent();
@@ -1056,9 +1055,12 @@ ay_trafo_rottcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_trafo_rottcmd */
 
 
-/* ay_trafo_multvectmatrix:
- *  multiply vector <v>[4] with matrix <m>[4*4] (do V.M),
- *  put result into <v>
+/** ay_trafo_multvectmatrix:
+ * multiply vector with matrix (do V.M),
+ * puts the result into \a v
+ *
+ * \param[in,out] v vector of four doubles
+ * \param[in] m matrix to use (double[4*4])
  */
 void
 ay_trafo_multvectmatrix(double *v, double *m)
@@ -1080,9 +1082,12 @@ ay_trafo_multvectmatrix(double *v, double *m)
 } /* ay_trafo_multvectmatrix */
 
 
-/* ay_trafo_multmatrix:
- *  multiply transformation matrices <m1> and <m2> (do M1.M2),
- *  put result into <m1>
+/** ay_trafo_multmatrix:
+ * multiply two transformation matrices (do M1.M2),
+ * puts the result into \a m1
+ *
+ * \param[in,out] m1 first matrix (double[4*4])
+ * \param[in] m2 second matrix (double[4*4])
  */
 void
 ay_trafo_multmatrix(double *m1, double *m2)
