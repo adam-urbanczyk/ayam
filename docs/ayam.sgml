@@ -16808,7 +16808,7 @@ provide their points.
 </itemize>
 
 
-<sect2>Manipulating the Selection<label id="selob">
+<sect2>Manipulating the Selection<label id="sciselob">
 <p>
 These commands are probably the most important ones, because many other
 scripting interface commands operate on selected objects only:
@@ -16893,7 +16893,7 @@ safe interpreter. This is no longer the case, use <tt/"sL"/ instead.
 
 <#if out="latex"><x/newpage/</#if>
 
-<sect2>Selecting Points
+<sect2>Selecting Points<label id="sciselpnts">
 <p>
 This command manipulates the point selection.
 <p>
@@ -17252,9 +17252,10 @@ axis followed by the angle in degrees.<footnote>Since 1.27.</footnote>
 <item>Examples:
 <enum>
 <item><bf><tt>"rotOb 0 0 45"</tt></bf><newline>
-rotates the selected objects 45&deg; about the Z-axis.
+rotates the selected objects by an angle of 45&deg; about the Z-axis.
 <item><bf><tt>"rotOb -a 1 1 0 45"</tt></bf><newline>
-rotates the selected objects 45&deg; about the axis <tt>"1 1 0"</tt>.
+rotates the selected objects by an angle of  45&deg; about the
+axis <tt>"1 1 0"</tt>.
 </enum>
 </itemize>
 
@@ -17306,9 +17307,10 @@ axis followed by the angle in degrees.<footnote>Since 1.27.</footnote>
 <item>Examples:
 <enum>
 <item><bf><tt>"rotPnts 0 0 45"</tt></bf><newline>
-rotates the selected points 45&deg; about the Z-axis.
+rotates the selected points by an angle of 45&deg; about the Z-axis.
 <item><bf><tt>"rotPnts -a 1 1 0 45"</tt></bf><newline>
-rotates the selected points 45&deg; about the axis <tt>"1 1 0"</tt>.
+rotates the selected points by an angle of 45&deg; about the
+axis <tt>"1 1 0"</tt>.
 </enum>
 </itemize>
 
@@ -19192,7 +19194,7 @@ or modify the scene changed state.
 </itemize>
 
 
-<sect2>RIB Export<label id="scribex">
+<sect2>RIB Export<label id="sciribex">
 <p>
 This command allows to export the current scene to a RenderMan
 Interface Bytestream (RIB):
@@ -21446,14 +21448,14 @@ the Sphere object always match its radius.
 First, a link from the original Sphere object property data array
 <tt/"SphereAttrData"/ is established, so that when <tt/"getProp()"/
 (a converted Tcl Ayam command) is called, also the JavaScript
-object <tt/"SphereAttrData"/ is filled with meaningful data.
-The next line (the if) is a safety measure that prevents the script from
-failing if the child object of the Script object is not a Sphere
-object.
+object <tt/"SphereAttrData"/ is filled with meaningful data.<newline>
+The next line (the <tt/if/) is a safety measure that prevents the script
+from failing if the child object of the Script object is not a Sphere
+object.<newline>
 Now the radius value is transferred back to Tcl directly into
 the property data array to the ZMin and ZMax entries respectively
-with the help of <tt/"tclset()"/.
-Finally the modified property is transferred back to the Sphere object
+with the help of <tt/"tclset()"/.<newline>
+Finally, the modified property is transferred back to the Sphere object
 again with a converted Tcl Ayam command <tt/"setProp()"/.
 
 <#if out="latex"><x/newpage/</#if>
@@ -21754,14 +21756,14 @@ the Sphere object always match its radius.
 First, a link from the original Sphere object property data array
 <tt/"SphereAttrData"/ is established, so that when <tt/"getProp()"/
 (a converted Tcl Ayam command) is called, also the Lua
-object <tt/"SphereAttrData"/ is filled with meaningful data.
-The next line (the if) is a safety measure that prevents the script from
-failing if the child object of the Script object is not a Sphere
-object.
+object <tt/"SphereAttrData"/ is filled with meaningful data.<newline>
+The next line (the <tt/if/) is a safety measure that prevents the script
+from failing if the child object of the Script object is not a Sphere
+object.<newline>
 Now the radius value is transferred back to Tcl directly into
 the property data array to the ZMin and ZMax entries respectively
-with the help of <tt/"tclset"/.
-Finally the modified property is transferred back to the Sphere object
+with the help of <tt/"tclset"/.<newline>
+Finally, the modified property is transferred back to the Sphere object
 again with a converted Tcl Ayam command <tt/"setProp()"/.
 
 <#if out="latex"><x/newpage/</#if>
@@ -25838,10 +25840,14 @@ Index:
 <item>Plane: <ref id="mirrorattr" name="Mirror attribute">
 <item>Plot Curvature: <ref id="plotcurt" name="NCurve tool">
 <item>Point: <ref id="pdsl" name="light type">
+<item>Points: <ref id="scipoints" name="scripting interface commands">
 <item>Point Size: <ref id="prefmodel" name="see preference setting HandleSize">
 <item>polyhedron.js: <ref id="polyhedronjs" name="example/helper script">
-<item>PolyMesh: <ref id="polymeshobj" name="PolyMesh object">
-<item>PolyMesh tools: <ref id="polymeshtools" name="PolyMesh tools">
+<item>PolyMesh:<itemize>
+<item><ref id="polymeshobj" name="PolyMesh object">,
+<item><ref id="polymeshtools" name="PolyMesh tools">,
+<item><ref id="scipomesh" name="scripting interface commands">
+</itemize>
 <item>PolyOffset: <ref id="hidprefsp" name="hidden preference setting">
 <item>Power:
 <itemize>
@@ -25852,13 +25858,15 @@ Index:
 <item>Preferences:
 <itemize>
 <item><ref id="prefs" name="Preferences">,
-<item><ref id="hidprefs" name="hidden preference settings">
+<item><ref id="hidprefs" name="hidden preference settings">,
+<item><ref id="sciprefs" name="scripting interface commands">
 </itemize>
 <item>Procedural Objects: <ref id="riprocobj" name="RiProc object">
 <item>Procedurals: <ref id="rio" name="RenderMan interface option">
 <item>Prompt: <ref id="hidprefsp" name="hidden preference setting">
 <item>Properties: <ref id="propgui" name="main window component">
 <item>Property Clipboard: <ref id="propclip" name="property clipboard">
+<item>Property GUI: <ref id="scipgui" name="scripting interface commands">
 <item>Primitive: <ref id="levelobj" name="Level object">
 <item>Primitive Variable: <ref id="pvtag" name="tag type">
 <item>Primitives: <ref id="tesst" name="tesselation option">
@@ -25943,7 +25951,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Redo:
 <itemize>
 <item><ref id="undos" name="The Undo System">,
-<item><ref id="mmedit" name="main menu entry">
+<item><ref id="mmedit" name="main menu entry">,
+<item><ref id="scundo" name="scripting interface command">
 </itemize>
 <item>Redraw:
 <itemize>
@@ -26072,7 +26081,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <itemize>
 <item><ref id="prefrib" name="preferences">,
 <item><ref id="mmfile" name="main menu">,
-<item><ref id="vmview" name="view menu">
+<item><ref id="vmview" name="view menu">,
+<item><ref id="sciribex" name="scripting interface commands">
 </itemize>
 <item>RIB import: <ref id="imprib" name="RIB Import">
 <item>RIBFile: <ref id="prefrib" name="preference setting">
@@ -26188,12 +26198,17 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="birail1p" name="Birail1 attribute">,
 <item><ref id="birail2p" name="Birail2 attribute">
 </itemize>
-<item>Select:
+<item>Select: <ref id="selectobj" name="Select object">
+<item>Select (Objects):
 <itemize>
-<item><ref id="selectobj" name="Select object">,
 <item><ref id="obj" name="select objects with the tree/listbox">,
 <item><ref id="objsel" name="select objects action">,
-<item><ref id="selac" name="select points action">
+<item><ref id="sciselob" name="select objects scripting interface commands">
+</itemize>
+<item>Select (Points):
+<itemize>
+<item><ref id="selac" name="select points action">,
+<item><ref id="sciselpnts" name="select points scripting interface commands">
 </itemize>
 <item>Select All: <ref id="mmedit" name="main menu entry">
 <item>Select All Points: <ref id="mmpnts" name="main menu entry">
@@ -26427,7 +26442,11 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>To XY: <ref id="toxyt" name="To XY tool">
 <item>toXYC: <ref id="sctoxyc" name="scripting interface command">
 <item>TP: <ref id="tptag" name="tag type">
-<item>Transformations: <ref id="trap" name="transformations property">
+<item>Transformations:
+<itemize>
+<item><ref id="trap" name="transformations property">,
+<item><ref id="scitrafo" name="scripting interface commands">
+</itemize>
 <item>Translation: <ref id="trap" name="transformations property">
 <item>translational surface: <ref id="tsurftcl" name="example/helper script">
 <item>Tree View: <ref id="treeview" name="Tree View">
