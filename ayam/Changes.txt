@@ -21,6 +21,7 @@ o improved focus handling of tag removal and visual designation of the
 Scripts/Scripting Interface:
 o added script "link.tcl" to manually control updates of object hierarchy
   and views
+o added axis/angle parameter support to rotOb/rotPnts commands
 
 Import/Export:
 o RIB export of RiDisplay tags now omits the leading "+" from the first
