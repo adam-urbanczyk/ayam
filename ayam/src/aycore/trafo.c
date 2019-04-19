@@ -757,11 +757,11 @@ ay_trafo_movtcmd(ClientData clientData, Tcl_Interp *interp,
 
 		      point = point->next;
 		    }
-		  ay_notify_object(o);
+		  (void)ay_notify_object(o);
 		  o->modified = AY_TRUE;
 		  notify_parent = AY_TRUE;
 		} /* if */
-	    } /* if */
+	    } /* if selp */
 
 	  sel = sel->next;
 	} /* while */
@@ -784,7 +784,7 @@ ay_trafo_movtcmd(ClientData clientData, Tcl_Interp *interp,
     } /* if points or objects */
 
   if(notify_parent)
-    ay_notify_parent();
+    (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_trafo_movtcmd */
@@ -855,7 +855,7 @@ ay_trafo_scaltcmd(ClientData clientData, Tcl_Interp *interp,
 
 		      point = point->next;
 		    }
-		  ay_notify_object(o);
+		  (void)ay_notify_object(o);
 		  o->modified = AY_TRUE;
 		  notify_parent = AY_TRUE;
 		} /* if */
@@ -882,7 +882,7 @@ ay_trafo_scaltcmd(ClientData clientData, Tcl_Interp *interp,
     } /* if points or objects */
 
   if(notify_parent)
-    ay_notify_parent();
+    (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_trafo_scaltcmd */
@@ -974,7 +974,7 @@ ay_trafo_rottcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(ay_trafo_isidentitymatrix(mm))
 	{
-	  //ay_error(AY_ERROR, argv[0], "!");
+	  /* ay_error(AY_ERROR, argv[0], "!"); */
 	  return TCL_OK;
 	}
 
@@ -994,7 +994,7 @@ ay_trafo_rottcmd(ClientData clientData, Tcl_Interp *interp,
 
 		      point = point->next;
 		    }
-		  ay_notify_object(o);
+		  (void)ay_notify_object(o);
 		  o->modified = AY_TRUE;
 		  notify_parent = AY_TRUE;
 		} /* if */
@@ -1049,7 +1049,7 @@ ay_trafo_rottcmd(ClientData clientData, Tcl_Interp *interp,
     } /* if points or objects */
 
   if(notify_parent)
-    ay_notify_parent();
+    (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_trafo_rottcmd */
