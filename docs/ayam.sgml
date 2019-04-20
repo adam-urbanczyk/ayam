@@ -814,6 +814,8 @@ The <tt/"File"/ menu deals with standard file operations:
 <item><tt/"New"/, clears the current scene (deletes all objects) and reloads
 the working environment.<newline>
 This operation cannot be undone!
+<p><#if out="latex"><p></#if>
+The standard keyboard shortcut for this operation is <tt/&lt;Ctrl+N&gt;/.
 
 <item><tt/"Open"/, clears the current scene and closes all views,
 then loads a new scene from disk.
@@ -825,6 +827,8 @@ will be read. A backup copy of the file will be made before loading
 See section <ref id="opensf" name="Opening Scene Files">
 for a more detailed discussion.<newline>
 This operation cannot be undone!
+<p>
+The standard keyboard shortcut for this operation is <tt/&lt;Ctrl+o&gt;/.
 <p>
 Also files supported by any of the import plugins
 may be imported using this route.<footnote>Since 1.13.</footnote><newline>
@@ -850,13 +854,14 @@ See section <ref id="insertsf" name="Inserting Scene Files">
 for a more detailed discussion.<newline>
 This operation cannot be undone!
 <p>
+The standard keyboard shortcut for this operation is <tt/&lt;Ctrl+i&gt;/.
+<p>
 Also files supported by any of the import plugins
 may be imported using this route. See above
 (<tt/"Open"/).<footnote>Since 1.13.</footnote>
 
 <item><tt/"Save as"/, saves the current scene to a file
 asking for a new file name.
-
 <p>
 All objects in the scene will be saved to the scene file, but
 if the current scene was loaded from a file without Root object
@@ -865,6 +870,8 @@ from the saved scene file as well.
 See section <ref id="savesf" name="Saving Scene Files">
 for a more detailed discussion.
 <p>
+The standard keyboard shortcut for this operation is <tt/&lt;Ctrl+S&gt;/.
+<p>
 Also files supported by any of the export plugins
 may be exported using this route. Just pick a file name with the
 desired extension (see above, <tt/"Open"/).<footnote>Since 1.13.</footnote>
@@ -872,7 +879,6 @@ desired extension (see above, <tt/"Open"/).<footnote>Since 1.13.</footnote>
 <item><tt/"Save"/, saves the scene to a file. If the scene has not been
 saved before (the scene file name is "unnamed") Ayam will ask for a file
 name first.
-
 <p>
 All objects in the scene will be saved to the scene file, but
 if the current scene was loaded from a file without Root object
@@ -880,6 +886,8 @@ if the current scene was loaded from a file without Root object
 from the saved scene file as well.
 See section <ref id="savesf" name="Saving Scene Files">
 for a more detailed discussion.
+<p>
+The standard keyboard shortcut for this operation is <tt/&lt;Ctrl+s&gt;/.
 </itemize><itemize>
 <item><tt>"Import/"</tt>, since Ayam 1.13 this sub menu is initially
 empty. To gain access to the menu entries described here, the
@@ -918,6 +926,7 @@ must be loaded.
 <itemize>
 <item><tt>"Export/RenderMan RIB"</tt>, exports the current scene to a RIB
 file, asking which camera (which view) to use.
+The standard keyboard shortcut for this operation is <tt/&lt;Ctrl+E&gt;/.
 
 <item><tt>"Export/Apple 3DMF"</tt>, export a scene to the Apple
 3DMF format, see section <ref id="exp3dmf" name="3DMF (Apple) Export">
@@ -956,10 +965,15 @@ current scene with the one in the menu entry. The menu entries
 are updated and rotated upon successful loading and saving of a scene
 so that the first entry always contains the scene that was loaded
 (or saved) last.
+<p><#if out="latex"><p></#if>
+The standard keyboard shortcuts for this operation are <tt/&lt;Ctrl+1&gt;/
+to <tt/&lt;Ctrl+4&gt;/.
 </itemize><itemize>
 <item><tt/"Exit!"/, remove all temporary files, save preferences (if
 the preference setting <tt>"Main/AutoSavePrefs"</tt> is turned on)
 and quit the application.
+<p><#if out="latex"><p></#if>
+The standard keyboard shortcut for this operation is <tt/&lt;Ctrl+q&gt;/.
 </itemize>
 
 <#if out="latex"><x/newpage/</#if>
@@ -975,18 +989,23 @@ and lets you open the preferences editor:
 clipboard.<newline>
 This is a deep copy, reference counters of master or material objects
 may be increased and there are special rules for instances, see also
-section <ref id="instclip" name="Instances and the Object Clipboard">.
-
+section <ref id="instclip" name="Instances and the Object Clipboard">.<newline>
 This operation cannot be undone!
+<p><#if out="latex"><p></#if>
+The standard keyboard shortcut for this operation is <tt/&lt;Ctrl+c&gt;/.
 
 <item><tt/"Cut"/, moves the currently selected object(s) into the
 clipboard.<newline>
 This operation cannot be undone!
+<p><#if out="latex"><p></#if>
+The standard keyboard shortcut for this operation is <tt/&lt;Ctrl+x&gt;/.
 
 <item><tt/"Paste"/, copies the object(s) from the clipboard to the current
 level of the scene.<newline>
 This operation cannot be undone!
 <p><p>
+The standard keyboard shortcut for this operation is <tt/&lt;Ctrl+v&gt;/.
+<p>
 Note that the content of the clipboard remains intact
 after this operation, this means that the operation can be used multiple times.
 Objects can be moved out of the clipboard (clearing it) using the menu entry
@@ -1007,13 +1026,21 @@ This operation cannot be undone!
 </itemize><itemize>
 <item><tt/"Select All"/, selects all objects in the current level
 (except for the Root object).
+<p><#if out="latex"><p></#if>
+The standard keyboard shortcut for this operation is <tt/&lt;Ctrl+a&gt;/.
 
 <item><tt/"Select None"/, de-selects all currently selected objects.
+<p><#if out="latex"><p></#if>
+The standard keyboard shortcut for this operation is <tt/&lt;Ctrl+n&gt;/.
+
 </itemize><itemize>
 <item><tt/"Copy Property"/, copies the currently selected property of the
 currently selected object to the property clipboard (the property
 clipboard is completely independent from the normal object clipboard).
-Marked parameters will be omitted!<newline>
+Marked parameters will be omitted!
+<p><#if out="latex"><p></#if>
+The standard keyboard shortcut for this operation is <tt/&lt;Ctrl+C&gt;/.
+<p>
 See also
 section <ref id="propclip" name="Property Clipboard"> for more information.
 
@@ -1021,18 +1048,28 @@ section <ref id="propclip" name="Property Clipboard"> for more information.
 of the currently selected property of the
 currently selected object to the property clipboard (the property
 clipboard is completely independent from the normal object clipboard).
+<p><#if out="latex"><p></#if>
+The standard keyboard shortcut for this operation is <tt/&lt;Ctrl+I&gt;/.
 
 <item><tt/"Paste Property"/, copies all property data from the property
 clipboard to the currently selected object(s). The data will get pasted
 to the property type saved by the last copy operation. It will not get
 pasted to the currently selected property; use
 <tt>"Special/Clipboard/Paste Property to selected"</tt> for that.
+<p><#if out="latex"><p></#if>
+The standard keyboard shortcut for this operation is <tt/&lt;Ctrl+V&gt;/.
+
 </itemize><itemize>
 <item><tt/"Undo"/, perform the undo operation (see section
 <ref id="undos" name="The Undo System"> for more information).
+<p><#if out="latex"><p></#if>
+The standard keyboard shortcut for this operation is <tt/&lt;Ctrl+z&gt;/.
 
 <item><tt/"Redo"/, perform the redo operation (see section
 <ref id="undos" name="The Undo System"> for more information).
+<p><#if out="latex"><p></#if>
+The standard keyboard shortcut for this operation is <tt/&lt;Ctrl+y&gt;/.
+
 </itemize><itemize>
 <item><tt/"Material"/, searches for the material object currently
 associated with the selected object and selects it for editing.
@@ -1042,16 +1079,28 @@ material, the material object will be created, if successful,
 the material will be linked to <em>all</em> currently selected objects
 (even if they are already linked to other objects),
 see also section <ref id="materialobj" name="Material Object">.
+<p><#if out="latex"><p></#if>
+The standard keyboard shortcut for this operation is <tt/&lt;Ctrl+m&gt;/.
+
 </itemize><itemize>
 <item><tt/"Master"/, searches for the master object of the
 currently selected instance object and selects it for editing,
 see also section <ref id="instanceobj" name="Instance Object">.
+<p><#if out="latex"><p></#if>
+The standard keyboard shortcut for this operation is <tt/&lt;Ctrl+M&gt;/.
+
 </itemize><itemize>
 <item><tt/"Search"/, opens the object search dialog,
 see also section <ref id="objsearch" name="Object Search">.
+<p><#if out="latex"><p></#if>
+The standard keyboard shortcut for this operation is <tt/&lt;Ctrl+f&gt;/.
+
 </itemize><itemize>
 <item><tt/"Preferences"/, opens the preferences dialog (see section
 <ref id="prefs" name="Preferences"> for more information).
+<p><#if out="latex"><p></#if>
+The standard keyboard shortcut for this operation is <tt/&lt;Ctrl+p&gt;/.
+
 </itemize>
 
 <#if out="latex"><x/newpage/</#if>
