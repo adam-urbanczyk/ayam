@@ -1671,6 +1671,8 @@ The <tt/"Help"/ menu:
 <item><tt/"Help"/, opens a web browser and displays the documentation,
 the URL to display is taken from the <tt/"Docs"/ preference setting.
 See also section <ref id="prefmain" name="Main Preferences">.
+<p><#if out="latex"><p></#if>
+The standard keyboard shortcut for this operation is <tt/&lt;F1&gt;/.
 
 <item><tt/"Help on object"/, opens a web browser and displays
 documentation about the currently selected type of object,
@@ -3842,7 +3844,7 @@ select the first of the points that make up the multiple point
 <sect1>Setting the Mark<label id="markac">
 <p>
 <figure loc="ht">
-<eps file="pics/mark.ps" height="6.5cm">
+<eps file="pics/mark.ps" height="7cm">
 <img src="pics/mark.gif">
 <caption>Front View With Mark Set At 1,-1,0</caption>
 </figure>
@@ -3938,6 +3940,31 @@ The current mark can be cleared by pressing <tt/&lt;D&gt;/ anytime.
 <p>
 Finally, remember that certain operations like e.g.~changing the view
 type will also clear the mark.
+
+<#if out="latex"><x/newpage/</#if>
+
+<sect1>Intermediate Parameter GUIs<label id="ipgui">
+<p>
+<figure loc="ht">
+<eps file="pics/ipgui.ps" height="7cm">
+<img src="pics/ipgui.gif">
+<caption>Intermediate Parameter GUI Example</caption>
+</figure>
+Several interactive modelling actions support intermediate parameter GUIs.
+Those are simple entry fields that appear in the lower right corner of the
+view window when e.g.~a
+number key is pressed while the action is active and allow to parameterize
+the action in quick and exact fashion. See also the image above, where
+the intermediate parameter GUI for the Rotate action is shown.<newline>
+The parameter value can be committed using the <tt/&lt;Enter&gt;/ or
+<tt/&lt;Return&gt;/ key.
+<p>
+The parameter GUI can be used multiple times/kept open when
+the <tt/&lt;Shift&gt;/ key is
+held down when pressing <tt/&lt;Enter&gt;/ or
+<tt/&lt;Return&gt;/.
+<p>
+Currently only actions that require one parameter are supported.
 
 <#if out="latex"><x/newpage/</#if>
 
@@ -20943,8 +20970,9 @@ see the file:<newline>
 <caption>Box with Cylindrical Topology</caption>
 </figure>
 <p>
-The file <tt>"cbox.tcl"</tt> is a Script object script that creates
-box objects with a cylindrical topology, see also the above image.
+The file <tt>"cbox.tcl"</tt> is a Script object script that creates a NURBS
+surface in the form of a box with a cylindrical topology, see also the
+image above.
 <p>
 This script must be used in a Script object of type <tt/"Create"/
 (see section <ref id="scriptobj" name="Script Object">).
