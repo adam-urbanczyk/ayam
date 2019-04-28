@@ -15,10 +15,12 @@
 /* sel.c - functions for the selection */
 
 
-/* ay_sel_free:
- *  frees the entire list of selected objects;
- *  additionally clears the selected flag from
- *  previously selected objects, if clear_selflag is AY_TRUE
+/** ay_sel_free:
+ * Frees the entire list of selected objects;
+ * additionally the selected flag can be cleared from
+ * all previously selected objects.
+ *
+ * \param[in] clear_selflag if AY_TRUE, clears the selected flag
  */
 void
 ay_sel_free(int clear_selflag)
@@ -29,7 +31,9 @@ ay_sel_free(int clear_selflag)
     {
       seln = sel->next;
       if(clear_selflag)
-	sel->object->selected = AY_FALSE;
+	{
+	  sel->object->selected = AY_FALSE;
+	}
       free(sel);
       sel = seln;
     }
@@ -40,9 +44,15 @@ ay_sel_free(int clear_selflag)
 } /* ay_sel_free */
 
 
-/* ay_sel_add:
- *  add object o to the list of selected objects;
- *  additionally marks object o as selected
+/** ay_sel_add:
+ * Add object \a o to the list of selected objects;
+ * additionally the object can be marked as selected.
+ * There is no check, whether \a o is already selected.
+ *
+ * \param[in,out] o the object to add to the selection
+ * \param[in] set_selflag if AY_TRUE, the object will be marked as selected
+ *
+ * \returns AY_OK on success, error code otherwise
  */
 int
 ay_sel_add(ay_object *o, int set_selflag)
@@ -51,16 +61,24 @@ ay_sel_add(ay_object *o, int set_selflag)
  static ay_list_object *last_sel = NULL;
 
   if(!(new_sel = calloc(1, sizeof(ay_list_object))))
-    return AY_EOMEM;
+    {
+      return AY_EOMEM;
+    }
 
   new_sel->object = o;
   if(set_selflag)
-    o->selected = AY_TRUE;
+    {
+      o->selected = AY_TRUE;
+    }
 
   if(ay_selection && last_sel)
-    last_sel->next = new_sel;
+    {
+      last_sel->next = new_sel;
+    }
   else
-    ay_selection = new_sel;
+    {
+      ay_selection = new_sel;
+    }
 
   last_sel = new_sel;
 
@@ -72,12 +90,6 @@ ay_sel_add(ay_object *o, int set_selflag)
  * Set a new selection or clear the selection.
  * Implements the \a selOb scripting interface command.
  * See also the corresponding section in the \ayd{scselob}.
- *
- * \param[in] clientData unused
- * \param[in] interp current Tcl interpreter
- * \param[in] argc number of arguments
- * \param[in] argv sorted and split list of object indices
- *  in the current level or nothing to just clear the selection
  *
  * \returns TCL_OK in any case.
  */
@@ -140,8 +152,12 @@ ay_sel_selobtcmd(ClientData clientData, Tcl_Interp *interp,
 	}
 
       if(lbmode && (o == ay_root))
-	if(o->next)
-	  o = o->next;
+	{
+	  if(o->next)
+	    {
+	      o = o->next;
+	    }
+	}
 
       /* iterate through arguments and select appropriate objects */
       for(i = start; i < argc; i++)
@@ -153,10 +169,14 @@ ay_sel_selobtcmd(ClientData clientData, Tcl_Interp *interp,
 	      j++;
 
 	      if(o)
-		o = o->next;
+		{
+		  o = o->next;
+		}
 
 	      if(!o)
-		goto cleanup;
+		{
+		  goto cleanup;
+		}
 
 	      /* no reset of o for next iteration, because we believe
 		 that the arguments are sorted! */
@@ -173,7 +193,7 @@ ay_sel_selobtcmd(ClientData clientData, Tcl_Interp *interp,
 		}
 	    } /* if */
 	} /* for */
-    } /* if */
+    } /* if have args */
 
 cleanup:
   newsel = ay_selection;
@@ -277,7 +297,7 @@ ay_sel_getseltcmd(ClientData clientData, Tcl_Interp *interp,
 		{
 		  Tcl_SetObjResult(interp, to);
 		}
-	    }
+	    } /* if */
 	} /* if selected */
       i++;
       o = o->next;
@@ -331,9 +351,13 @@ ay_sel_hsltcmd(ClientData clientData, Tcl_Interp *interp,
     } /* if */
 
   if(cl)
-    l = cl->object;
+    {
+      l = cl->object;
+    }
   else
-    return TCL_OK;
+    {
+      return TCL_OK;
+    }
 
   if(num == 1)
     {
@@ -341,13 +365,13 @@ ay_sel_hsltcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  o = l;
 	  l = l->next;
-	} /* while */
+	}
 
       if(o)
 	{
 	  ay_sel_free(AY_FALSE);
 	  ay_sel_add(o, AY_TRUE);
-	} /* while */
+	}
     }
   else
     {
@@ -359,7 +383,7 @@ ay_sel_hsltcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  tnum++;
 	  l = l->next;
-	} /* while */
+	}
       tnum -= num;
       l = ay_currentlevel->object;
       while(l && l->next)
@@ -377,21 +401,27 @@ ay_sel_hsltcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_sel_hsltcmd */
 
 
-/* ay_sel_clearselflag:
- *  helper to _recursively_ clear the selected
- *  flag from object hierarchy pointed to by <o>
+/** ay_sel_clearselflag:
+ * helper to _recursively_ clear the selected
+ * flag from the object hierarchy pointed to by \a o
+ * 
+ * \param o object hierarchy to process
  */
 void
 ay_sel_clearselflag(ay_object *o)
 {
 
   if(!o)
-    return;
+    {
+      return;
+    }
 
   while(o)
     {
       if(o->down)
-	ay_sel_clearselflag(o->down);
+	{
+	  ay_sel_clearselflag(o->down);
+	}
       o->selected = AY_FALSE;
       o = o->next;
     }
@@ -424,9 +454,11 @@ ay_sel_clean()
 	  free(sel);
 	}
       else
-	selp = &(sel->next);
+	{
+	  selp = &(sel->next);
+	}
       sel = seln;
-    }
+    } /* while */
 
  return;
 } /* ay_sel_clean */
