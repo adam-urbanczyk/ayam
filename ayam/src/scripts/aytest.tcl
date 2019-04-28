@@ -16,6 +16,7 @@ array set aytestprefs {
     MoreOptions 0
     Progress 0
     Breadth 0
+    Status "Select Item"
     TestItem "n/a"
     TestVariant "n/a"
 }
@@ -121,6 +122,8 @@ proc aytest_selectGUI { } {
     addCheck $f aytestprefs KeepFiles
     addInfo $w aytestprefs TestItem
     addInfo $w aytestprefs TestVariant
+    addInfo $w aytestprefs Status
+
     addOptionToggle $f aytestprefs MoreOptions "Show Progress  "\
 	aytest_toggleProgress
 
@@ -149,7 +152,7 @@ proc aytest_selectGUI { } {
     button $f.brun -text "Run" -width 5 -command "\
    aytest_runTests \[$w.fu.fl.l1 curselection\] \[$w.fu.fr.l1 curselection\];"
 
-    button $f.bstop -text "Stop" -width 5 -command "set ::cancelled 1;"
+    button $f.bstop -text "Stop" -width 5 -command "set ::cancelled 1"
 
     button $f.bclose -text "Close" -width 5 -command "focus .;destroy $w;"
 
@@ -3125,6 +3128,7 @@ proc aytest_runTests { tests items } {
     }
 
     set aytestprefs(TestItem) "n/a"
+    set aytestprefs(Status) "Running"
 
     $aytestprefs(closebutton) conf -state disabled
 
@@ -3162,6 +3166,7 @@ proc aytest_runTests { tests items } {
 
 	if { [llength $testitems] == 0 } {
 	    ayError 2 "Test Ayam" "No items selected/to test!"
+	    set aytestprefs(Status) "Select Items"
 	    return;
 	}
 	set ::scratchfile [file join $ayprefs(TmpDir) aytestscratchfile.ay]
@@ -3182,6 +3187,7 @@ proc aytest_runTests { tests items } {
 
 	if { $::cancelled } {
 	    set ::cancelled 0
+	    set aytestprefs(Status) "Cancelled"
 	    puts "\nCancelled test $test..."
 	    break;
 	}
@@ -3202,6 +3208,9 @@ proc aytest_runTests { tests items } {
 
     set aytestprefs(TestItem) "n/a"
     set aytestprefs(TestVariant) "n/a"
+    if { $aytestprefs(Status) != "Cancelled" } {
+	set aytestprefs(Status) "Finished"
+    }
 
     $aytestprefs(closebutton) conf -state normal
 
