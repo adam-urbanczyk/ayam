@@ -69,6 +69,7 @@ proc aytest_toggleProgress { } {
  return;
 }
 
+
 # aytest_selectGUI:
 #  create the aytest user interface
 #
@@ -3058,6 +3059,10 @@ proc aytest_var { type } {
 			     }
 			 }
                     }
+	      } else {
+		  append cmds {
+		      update; if { $::cancelled } {return;}
+		  }
 	      }
 	      # if moreoptions
 
