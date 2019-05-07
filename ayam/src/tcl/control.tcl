@@ -891,6 +891,10 @@ proc searchOb { expression action {gui 0} } {
     if { $ObjectSearch(ClearClipboard) } {
 	clearClip
     }
+    if { $ObjectSearch(ClearProperty) } {
+	$ay(plb) selection clear 0 end
+	plb_update
+    }
 
     # compile expression
     if { ([string first "\$" $ObjectSearch(Expression)] == 0) ||
@@ -1044,14 +1048,14 @@ proc searchOb { expression action {gui 0} } {
 	    # switch
 	}
 	# if
-	if { $::cancelled } {
+	if { $ObjectSearch(Cancel) } {
 	    ayError 4 searchOb "Cancelled."
 	    return -1;
 	}
     }
     # forAll
 
-    if { !$::cancelled } {
+    if { !$ObjectSearch(Cancel) } {
 	if { $gui != 0 } {
 	    ayError 4 searchOb "Done. Found $ObjectSearch(numfound) objects."
 	}
@@ -1060,7 +1064,7 @@ proc searchOb { expression action {gui 0} } {
 	    ayError 4 searchOb "Nodes collected in ObjectSearch(nodes)."
 	}
     } else {
-	set ::cancelled 0
+	set ObjectSearch(Cancel) 0
 	set l 0
     }
 
@@ -1161,12 +1165,14 @@ proc toggleSearchOption { } {
 	addColor $w ObjectSearch HighlightColor
 	addCheck $w ObjectSearch ClearHighlight
 	addCheck $w ObjectSearch ClearClipboard
+	addCheck $w ObjectSearch ClearProperty
 	addCheck $w ObjectSearch InvertMatch
     } else {
 	catch {destroy $w.flHighlightColor}
 	catch {destroy $w.fHighlightColor}
 	catch {destroy $w.fClearHighlight}
 	catch {destroy $w.fClearClipboard}
+	catch {destroy $w.fClearProperty}
 	catch {destroy $w.fInvertMatch}
     }
  return;
@@ -1199,6 +1205,8 @@ proc objectsearch_open { } {
 
     set ay(bca) $w.fb.bca
     set ay(bok) $w.fb.bok
+
+    set ObjectSearch(Cancel) 0
 
     if { $ayprefs(FixDialogTitles) == 1 } {
 	addText $f ObjectSearch $t
@@ -1314,7 +1322,7 @@ proc objectsearch_open { } {
     # ok
 
     button $f.bca -text "Cancel" -width 5 -command "\
-      set ::cancelled 1;\
+      set ::ObjectSearch(Cancel) 1;\
       set ::ObjectSearch(MoreOptions) 0;\
       toggleSearchOption; update idletasks;\
       grab release $w;\
@@ -1343,9 +1351,11 @@ proc objectsearch_open { } {
 # objectsearch_open
 
 array set ObjectSearch {
+Cancel 0
 Scope All
 ClearHighlight 1
 ClearClipboard 0
+ClearProperty 1
 InvertMatch 0
 HighlightColor_R 180
 HighlightColor_G 0
