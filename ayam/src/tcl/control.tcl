@@ -1044,17 +1044,26 @@ proc searchOb { expression action {gui 0} } {
 	    # switch
 	}
 	# if
+	if { $::cancelled } {
+	    ayError 4 searchOb "Cancelled."
+	    return -1;
+	}
     }
     # forAll
 
-    if { $gui != 0 } {
-	ayError 4 searchOb "Done. Found $ObjectSearch(numfound) objects."
+    if { !$::cancelled } {
+	if { $gui != 0 } {
+	    ayError 4 searchOb "Done. Found $ObjectSearch(numfound) objects."
+	}
+	set l [llength $ObjectSearch(nodes)]
+	if { $gui != 0 && $ObjectSearch(Action) == "Collect" } {
+	    ayError 4 searchOb "Nodes collected in ObjectSearch(nodes)."
+	}
+    } else {
+	set ::cancelled 0
+	set l 0
     }
 
-    set l [llength $ObjectSearch(nodes)]
-    if { $gui != 0 && $ObjectSearch(Action) == "Collect" } {
-	ayError 4 searchOb "Nodes collected in ObjectSearch(nodes)."
-    }
     if { $ObjectSearch(Action) == "Delete" && $l > 0 } {
 	# arrange for nodes in a level to be in reverse order
 	# so that we may delete nodes one by one without changing
@@ -1305,6 +1314,7 @@ proc objectsearch_open { } {
     # ok
 
     button $f.bca -text "Cancel" -width 5 -command "\
+      set ::cancelled 1;\
       set ::ObjectSearch(MoreOptions) 0;\
       toggleSearchOption; update idletasks;\
       grab release $w;\
