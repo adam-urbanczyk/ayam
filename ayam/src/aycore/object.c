@@ -564,11 +564,13 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_object_deletetcmd */
 
 
-/* ay_object_link:
- *  link single object <o> to scene structure;
- *  uses ay_next;
- *  fixes down for parent objects with NULL as down;
- *  properly maintains ay_next and ay_currentlevel
+/** ay_object_link:
+ *  link single object \a o to scene structure;
+ *  uses \a ay_next;
+ *  fixes o->down for parent objects with NULL as down;
+ *  properly maintains \a ay_next and \a ay_currentlevel
+ *
+ * \param[in,out] o object to link
  */
 void
 ay_object_link(ay_object *o)
@@ -601,10 +603,12 @@ ay_object_link(ay_object *o)
 } /* ay_object_link */
 
 
-/* ay_object_unlink:
+/** ay_object_unlink:
  *  unlink object \a o from scene, without deleting it!
  *  \a o must be in the current level;
- *  properly maintains ay_next and ay_currentlevel
+ *  properly maintains \a ay_next and \a ay_currentlevel
+ *
+ * \param[in] o object to unlink
  */
 void
 ay_object_unlink(ay_object *o)
@@ -1407,9 +1411,9 @@ ay_object_candeletelist(ay_list_object *l, ay_object *o)
  * hierarchy.
  *
  * \param[in] o object to search for
- * \param[in] h hierarchy where to search for o (usually ay_root)
+ * \param[in] h hierarchy where to search for \a o (usually ay_root)
  * \param[in,out] totallen helper variable, should be initialized with 0
- * \param[in,out] found indicates wether o was found in h
+ * \param[in,out] found indicates wether \a o was found in \a h
  * \param[in,out] result where to store the result
  *
  * \returns AY_OK on success, error code otherwise
@@ -1478,7 +1482,7 @@ ay_object_getpathname(ay_object *o, ay_object *h, size_t *totallen, int *found,
  *  for object \a o.
  *
  * \param[in] o object to search for
- * \param[in] h hierarchy where to search for o (usually ay_root)
+ * \param[in] h hierarchy where to search for \a o (usually ay_root)
  *
  * \returns AY_TRUE if the object was found, AY_FALSE else
  */
