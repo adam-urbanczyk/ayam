@@ -5928,7 +5928,7 @@ x3dio_readtransform(scew_element *element)
 	break;
     }
 
-  /* properly close level */
+  /* properly terminate children level */
   *ay_next = ay_endlevel;
   ay_next = old_aynext;
 
@@ -5937,12 +5937,16 @@ x3dio_readtransform(scew_element *element)
      ((o->down->next != ay_endlevel) ||
       (AY_ISTRAFO(o))))
     {
+      /* there are multiple children or this Transform element
+	 actually carries a transformation => we need the level */
       ay_object_link(o);
       /* read shape name from DEF */
       ay_status = x3dio_readname(element, "DEF", o);
     }
   else
     {
+      /* there is just one child and this Transform element is
+	 not transformed => we can eschew the level */
       if(o->down && o->down != ay_endlevel)
 	ay_object_link(o->down);
       o->down = NULL;
