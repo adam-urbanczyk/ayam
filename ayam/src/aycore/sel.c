@@ -404,7 +404,7 @@ ay_sel_hsltcmd(ClientData clientData, Tcl_Interp *interp,
 /** ay_sel_clearselflag:
  * helper to _recursively_ clear the selected
  * flag from the object hierarchy pointed to by \a o
- * 
+ *
  * \param o object hierarchy to process
  */
 void
@@ -431,7 +431,8 @@ ay_sel_clearselflag(ay_object *o)
 
 
 /** ay_sel_clean:
- *  clean selection from removed objects
+ *  remove all objects from the selection that can not be reached
+ *  via \a ay_root (are removed or cut to the clipboard)
  */
 void
 ay_sel_clean()
