@@ -242,7 +242,7 @@ ay_npt_createnpatchobject(ay_object **result)
 
 
 /** ay_npt_resetdisplay:
- *   reset the display attributes of a NURBS patch
+ *  reset the display attributes of a NURBS patch
  *
  * \param[in,out] o NURBS patch object to reset
  */
@@ -6520,8 +6520,9 @@ ay_npt_getpntfromindex(ay_nurbpatch_object *patch, int indexu, int indexv,
  *  Increase the u order of a NURBS patch.
  *
  * \param[in,out] patch NURBS patch object to process
- * \param[in] t how many times shall the order be increased
- * \param[in] is_clamped if AY_TRUE, the patch will not be clamped
+ * \param[in] t how many times shall the order be increased (>0, unchecked)
+ * \param[in] is_clamped if AY_TRUE, the patch will be passed to
+ *  the elevation unchanged (no clamp will be attempted)
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -6532,6 +6533,9 @@ ay_npt_elevateu(ay_nurbpatch_object *patch, int t, int is_clamped)
  double *Uh = NULL, *Qw = NULL, *realQw = NULL, *realUh = NULL;
  int clamp_me = AY_FALSE, nw = 0;
  char fname[] = "npt_elevateu";
+
+  if(!patch)
+    return AY_ENULL;
 
   if(!is_clamped)
     {
@@ -6574,6 +6578,7 @@ ay_npt_elevateu(ay_nurbpatch_object *patch, int t, int is_clamped)
       ay_error(AY_EOMEM, fname, NULL);
       return AY_EOMEM;
     }
+
   if(!(Qw = calloc((patch->width + patch->width*t) * patch->height * 4,
 		   sizeof(double))))
     {
@@ -6631,8 +6636,9 @@ ay_npt_elevateu(ay_nurbpatch_object *patch, int t, int is_clamped)
  *  Increase the v order of a NURBS patch.
  *
  * \param[in,out] patch NURBS patch object to process
- * \param[in] t how many times shall the order be increased
- * \param[in] is_clamped if AY_TRUE, the patch will not be clamped
+ * \param[in] t how many times shall the order be increased (>0, unchecked)
+ * \param[in] is_clamped if AY_TRUE, the patch will be passed to
+ *  the elevation unchanged (no clamp will be attempted)
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -6643,6 +6649,9 @@ ay_npt_elevatev(ay_nurbpatch_object *patch, int t, int is_clamped)
  double *Vh = NULL, *Qw = NULL, *realQw = NULL, *realVh = NULL;
  int i, clamp_me = AY_FALSE, nh = 0, ind1, ind2;
  char fname[] = "npt_elevatev";
+
+  if(!patch)
+    return AY_ENULL;
 
   if(!is_clamped)
     {
@@ -6685,6 +6694,7 @@ ay_npt_elevatev(ay_nurbpatch_object *patch, int t, int is_clamped)
       ay_error(AY_EOMEM, fname, NULL);
       return AY_EOMEM;
     }
+
   if(!(Qw = calloc((patch->height + patch->height*t) * patch->width * 4,
 		   sizeof(double))))
     {
@@ -7648,7 +7658,7 @@ ay_npt_gordonwc(ay_object *g)
  * \param[in] o NURBS patch object to process
  * \param[in] apply_trafo this parameter controls whether transformation
  *  attributes of \a o should be applied to the control points of the curve
- * \param[in,out] result pointer where to store the resulting curve
+ * \param[in,out] result pointer where to store the extracted curve
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -7811,7 +7821,7 @@ cleanup:
  *            1 - normals, 2 - normals and tangents)
  * \param[in,out] pvnt pointer where to store the extracted normals/tangents,
  *            may be NULL, if \a extractnt is 0
- * \param[in,out] result pointer where to store the resulting curve
+ * \param[in,out] result pointer where to store the extracted curve
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -7984,7 +7994,7 @@ cleanup:
  *  in PV tags?; 0 - no, 1 - normals, 2 - normals and tangents
  * \param[in] pvnt pointer where to store the normals/tangents, may be
  *  NULL, if \a extractnt is 0
- * \param[in,out] result pointer where to store the resulting curve
+ * \param[in,out] result pointer where to store the extracted curve
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -9623,7 +9633,7 @@ ay_npt_isclosedv(ay_nurbpatch_object *np)
  *  set the utype and vtype (closedness) attributes according to
  *  the actual configuration of a NURBS patch
  *
- *  \param[in, out] np NURBS patch to process
+ *  \param[in,out] np NURBS patch to process
  *  \param[in] dir direction to check: 0 - both, 1 - only U, 2 - only V
  */
 void
@@ -9749,8 +9759,10 @@ ay_npt_setuvtypes(ay_nurbpatch_object *np, int dir)
 } /* ay_npt_setuvtypes */
 
 
-/* ay_npt_clearmp:
- *  delete all mpoints from patch <np>
+/** ay_npt_clearmp:
+ *  delete all mpoints from a NURBS patch object
+ *
+ *  \param[in,out] np NURBS patch to process
  */
 void
 ay_npt_clearmp(ay_nurbpatch_object *np)
@@ -9779,9 +9791,11 @@ ay_npt_clearmp(ay_nurbpatch_object *np)
 } /* ay_npt_clearmp */
 
 
-/* ay_npt_recreatemp:
- *  recreate mpoints from identical controlpoints for
- *  patch <np>
+/** ay_npt_recreatemp:
+ *  recreate mpoints from identical controlpoints for a
+ *  NURBS patch object
+ *
+ *  \param[in,out] np NURBS patch to process
  */
 void
 ay_npt_recreatemp(ay_nurbpatch_object *np)
@@ -9883,8 +9897,12 @@ cleanup:
 } /* ay_npt_recreatemp */
 
 
-/* ay_npt_collapseselp:
- *  collapse selected points
+/** ay_npt_collapseselp:
+ * collapse selected points
+ *
+ * \param[in,out] o NURBS patch object to process
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_collapseselp(ay_object *o)
@@ -9991,8 +10009,12 @@ ay_npt_collapseselp(ay_object *o)
 } /* ay_npt_collapseselp */
 
 
-/* ay_npt_explodemp:
- *  explode selected mpoints
+/** ay_npt_explodemp:
+ * explode selected mpoints
+ *
+ * \param[in,out] o NURBS patch object to process
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_explodemp(ay_object *o)
@@ -10544,7 +10566,6 @@ ay_npt_clampuvtcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(o->type == AY_IDNPATCH)
 	{
-
 	  np = (ay_nurbpatch_object *)o->refine;
 
 	  if(clampv)
@@ -15286,6 +15307,42 @@ cleanup:
 
  return TCL_OK;
 } /* ay_npt_makecomptcmd */
+
+
+/** ay_npt_isdegen:
+ *  Check patch for degeneracy (all points equal).
+ *
+ *  Deliberately not checking the weights, as patches with
+ *  equal coordinates but different weights also collapse
+ *  to a point.
+ *
+ * \param[in] patch NURBS surface object to process
+ *
+ * \returns AY_TRUE if patch is degenerate, AY_FALSE else.
+ */
+int
+ay_npt_isdegen(ay_nurbpatch_object *patch)
+{
+ int i, stride = 4;
+ double *p1, *p2;
+
+  if(!patch)
+    return AY_FALSE;
+
+  p1 = patch->controlv;
+  p2 = p1+stride;
+
+  for(i = 0; i < patch->width*patch->height-1; i++)
+    {
+      if(!AY_V3COMP(p1, p2))
+	return AY_FALSE;
+      p1 += stride;
+      p2 += stride;
+    } /* for */
+
+ return AY_TRUE;
+} /* ay_npt_isdegen */
+
 
 
 /* templates */

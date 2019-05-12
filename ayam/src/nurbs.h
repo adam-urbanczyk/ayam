@@ -1452,6 +1452,10 @@ int ay_npt_makecompatible(ay_object *patches, int side, int level);
 int ay_npt_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[]);
 
+/** Check surface for degeneracy.
+ */
+int ay_npt_isdegen(ay_nurbpatch_object *patch);
+
 
 /* pmt.c */
 
