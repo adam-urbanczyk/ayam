@@ -13253,7 +13253,7 @@ cleanup:
  * \param[in] width width of cv
  * \param[in] height height of cv
  * \param[in] stride stride in cv
- * \param[in,out] avlens resulting average distances [width-1];
+ * \param[in,out] avlens resulting average distances [width];
  *  avlens[0] is the average distance of column0 to column1,
  *  avlens[1] the average distance of column1 to column2...
  *
@@ -13271,14 +13271,14 @@ ay_npt_avglensu(double *cv, int width, int height, int stride,
       return AY_ENULL;
     }
 
-  if(!(lens = malloc((width-1)*sizeof(double))))
+  if(!(lens = malloc(width*sizeof(double))))
     {
       return AY_EOMEM;
     }
 
   /* compute average partial lengths */
   a = 0;
-  b = height;
+  b = stride;
   for(i = 0; i < width-1; i++)
     {
       lens[i] = 0.0;
@@ -13290,7 +13290,7 @@ ay_npt_avglensu(double *cv, int width, int height, int stride,
 	    {
 	      lens[i] += AY_VLEN((cv[b] - cv[a]),
 				 (cv[b+1] - cv[a+1]),
-				 (cv[b+2] - cv[a+2]))/width;
+				 (cv[b+2] - cv[a+2]))/height;
 	    }
 	  a += stride;
 	  b += stride;
@@ -13311,7 +13311,7 @@ ay_npt_avglensu(double *cv, int width, int height, int stride,
  * \param[in] width width of cv
  * \param[in] height height of cv
  * \param[in] stride stride in cv
- * \param[in,out] avlens resulting average distances [height-1];
+ * \param[in,out] avlens resulting average distances [height];
  *  avlens[0] is the average distance of row0 to row1,
  *  avlens[1] the average distance of row1 to row2...
  *
@@ -13329,18 +13329,18 @@ ay_npt_avglensv(double *cv, int width, int height, int stride,
       return AY_ENULL;
     }
 
-  if(!(lens = malloc((height-1)*sizeof(double))))
+  if(!(lens = malloc(height*sizeof(double))))
     {
       return AY_EOMEM;
     }
 
   /* compute average partial lengths */
-  for(i = 0; i < height-1; i++)
+  for(i = 0; i < height; i++)
     {
       lens[i] = 0.0;
       a = i*stride;
-      b = a+stride;
-      for(j = 0; j < width; j++)
+      b = a+height*stride;
+      for(j = 0; j < width-1; j++)
 	{
 	  if((fabs(cv[b] - cv[a]) > AY_EPSILON) ||
 	     (fabs(cv[b+1] - cv[a+1]) > AY_EPSILON) ||
@@ -13348,9 +13348,8 @@ ay_npt_avglensv(double *cv, int width, int height, int stride,
 	    {
 	      lens[i] += AY_VLEN((cv[b] - cv[a]),
 				 (cv[b+1] - cv[a+1]),
-				 (cv[b+2] - cv[a+2]))/height;
+				 (cv[b+2] - cv[a+2]))/width;
 	    }
-
 	  a += (height*stride);
 	  b += (height*stride);
 	} /* for */
@@ -15323,8 +15322,8 @@ cleanup:
 int
 ay_npt_isdegen(ay_nurbpatch_object *patch)
 {
- int i, stride = 4;
- double *p1, *p2;
+ int i, stride = 4, isdegen = AY_TRUE;
+ double *p1, *p2, *avls = NULL;
 
   if(!patch)
     return AY_FALSE;
@@ -15335,12 +15334,54 @@ ay_npt_isdegen(ay_nurbpatch_object *patch)
   for(i = 0; i < patch->width*patch->height-1; i++)
     {
       if(!AY_V3COMP(p1, p2))
-	return AY_FALSE;
+	{
+	  isdegen = AY_FALSE;
+	  break;
+	}
       p1 += stride;
       p2 += stride;
     } /* for */
 
- return AY_TRUE;
+  if(!isdegen)
+    {
+      (void)ay_npt_avglensu(patch->controlv, patch->width, patch->height, 4,
+			    &avls);
+      if(avls)
+	{
+	  isdegen = AY_TRUE;
+	  for(i = 0; i < patch->width; i++)
+	    {
+	      if(fabs(avls[i]) > AY_EPSILON)
+		{
+		  isdegen = AY_FALSE;
+		  break;
+		}
+	    }
+	  free(avls);
+	}
+
+      if(!isdegen)
+	{
+	  avls = NULL;
+	  (void)ay_npt_avglensv(patch->controlv, patch->width, patch->height, 4,
+				&avls);
+	  if(avls)
+	    {
+	      isdegen = AY_TRUE;
+	      for(i = 0; i < patch->height; i++)
+		{
+		  if(fabs(avls[i]) > AY_EPSILON)
+		    {
+		      isdegen = AY_FALSE;
+		      break;
+		    }
+		}
+	      free(avls);
+	    }
+	}
+    }
+
+ return isdegen;
 } /* ay_npt_isdegen */
 
 
