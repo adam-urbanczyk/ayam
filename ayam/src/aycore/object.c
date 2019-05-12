@@ -910,6 +910,7 @@ ay_object_copymulti(ay_object *src, ay_object **dst)
  *  Also implements the \a hasTrafo scripting interface command.
  *  Also implements the \a isCurve scripting interface command.
  *  Also implements the \a isSurface scripting interface command.
+ *  Also implements the \a isDegen scripting interface command.
  *  See also the corresponding section in the \ayd{schaschild}.
  *
  *  \returns 1 if selected object has a regular (other than
@@ -920,6 +921,8 @@ ay_object_ishastcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
  ay_object *o = NULL;
+ ay_nurbcurve_object *nc;
+ ay_nurbpatch_object *np;
  ay_list_object *sel = ay_selection;
  char *res = NULL, no[] = "0", yes[] = "1";
 
@@ -1019,6 +1022,26 @@ ay_object_ishastcmd(ClientData clientData, Tcl_Interp *interp,
 	      else
 		{
 		  if(ay_provide_object(o, AY_IDNCURVE, NULL) == AY_OK)
+		    res = yes;
+		  else
+		    res = no;
+		}
+	      break;
+	    case 'D':
+	      /* is isDegen */
+	      if(o->type == AY_IDNCURVE)
+		{
+		  nc = (ay_nurbcurve_object*)o->refine;
+		  if(ay_nct_isdegen(nc))
+		    res = yes;
+		  else
+		    res = no;
+		}
+	      else
+	      if(o->type == AY_IDNPATCH)
+		{
+		  np = (ay_nurbpatch_object*)o->refine;
+		  if(ay_npt_isdegen(np))
 		    res = yes;
 		  else
 		    res = no;
