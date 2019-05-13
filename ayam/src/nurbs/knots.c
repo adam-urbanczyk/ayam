@@ -145,7 +145,7 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
       memset(U, 0, uknot_count*sizeof(double));
       for(j = 1; j < width-deg; j++)
 	{
-	  index = j + (uorder - 1);
+	  index = j + deg;
 	  U[index] = 0.0;
 	  for(i = j; i < j + deg; i++)
 	    {
@@ -256,7 +256,7 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
       memset(V, 0, vknot_count*sizeof(double));
       for(j = 1; j < height-deg; j++)
 	{
-	  index = j + (vorder - 1);
+	  index = j + deg;
 	  V[index] = 0.0;
 	  for(i = j; i < j + deg; i++)
 	    {
@@ -1357,12 +1357,12 @@ ay_knots_chordparamnp(int dir, double *Q, int width, int height, int stride,
   /* compute partial lengths */
   if(dir)
     {
-      (void)ay_npt_avglensv(Q, width, height, stride, &lens);
+      (void)ay_npt_avglensu(Q, width, height, stride, &lens);
       Ulen = height;
     }
   else
     {
-      (void)ay_npt_avglensu(Q, width, height, stride, &lens);
+      (void)ay_npt_avglensv(Q, width, height, stride, &lens);
       Ulen = width;
     }
 
@@ -1436,12 +1436,12 @@ ay_knots_centriparamnp(int dir, double *Q, int width, int height, int stride,
 
   if(dir)
     {
-      (void)ay_npt_avglensv(Q, width, height, stride, &lens);
+      (void)ay_npt_avglensu(Q, width, height, stride, &lens);
       Ulen = height;
     }
   else
     {
-      (void)ay_npt_avglensu(Q, width, height, stride, &lens);
+      (void)ay_npt_avglensv(Q, width, height, stride, &lens);
       Ulen = width;
     }
 

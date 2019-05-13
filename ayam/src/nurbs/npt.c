@@ -13253,7 +13253,7 @@ cleanup:
  * \param[in] width width of cv
  * \param[in] height height of cv
  * \param[in] stride stride in cv
- * \param[in,out] avlens resulting average distances [width];
+ * \param[in,out] avlens resulting average distances [height];
  *  avlens[0] is the average distance of column0 to column1,
  *  avlens[1] the average distance of column1 to column2...
  *
@@ -13261,64 +13261,6 @@ cleanup:
  */
 int
 ay_npt_avglensu(double *cv, int width, int height, int stride,
-		double **avlens)
-{
- double *lens;
- int i, j, a, b;
-
-  if(!cv || !avlens)
-    {
-      return AY_ENULL;
-    }
-
-  if(!(lens = malloc(width*sizeof(double))))
-    {
-      return AY_EOMEM;
-    }
-
-  /* compute average partial lengths */
-  a = 0;
-  b = stride;
-  for(i = 0; i < width-1; i++)
-    {
-      lens[i] = 0.0;
-      for(j = 0; j < height; j++)
-	{
-	  if((fabs(cv[b] - cv[a]) > AY_EPSILON) ||
-	     (fabs(cv[b+1] - cv[a+1]) > AY_EPSILON) ||
-	     (fabs(cv[b+2] - cv[a+2]) > AY_EPSILON))
-	    {
-	      lens[i] += AY_VLEN((cv[b] - cv[a]),
-				 (cv[b+1] - cv[a+1]),
-				 (cv[b+2] - cv[a+2]))/height;
-	    }
-	  a += stride;
-	  b += stride;
-	} /* for */
-    } /* for */
-
-  /* return result */
-  *avlens = lens;
-
- return AY_OK;
-} /* ay_npt_avglensu */
-
-
-/** ay_npt_avglensv:
- *  Compute average control point distances in V direction.
- *
- * \param[in] cv control points [width*height*stride]
- * \param[in] width width of cv
- * \param[in] height height of cv
- * \param[in] stride stride in cv
- * \param[in,out] avlens resulting average distances [height];
- *  avlens[0] is the average distance of row0 to row1,
- *  avlens[1] the average distance of row1 to row2...
- *
- * \returns AY_OK on success, error code otherwise.
- */
-int
-ay_npt_avglensv(double *cv, int width, int height, int stride,
 		double **avlens)
 {
  double *lens;
@@ -13348,10 +13290,68 @@ ay_npt_avglensv(double *cv, int width, int height, int stride,
 	    {
 	      lens[i] += AY_VLEN((cv[b] - cv[a]),
 				 (cv[b+1] - cv[a+1]),
-				 (cv[b+2] - cv[a+2]))/width;
+				 (cv[b+2] - cv[a+2]))/(width-1.0);
 	    }
 	  a += (height*stride);
 	  b += (height*stride);
+	} /* for */
+    } /* for */
+
+  /* return result */
+  *avlens = lens;
+
+ return AY_OK;
+} /* ay_npt_avglensu */
+
+
+/** ay_npt_avglensv:
+ *  Compute average control point distances in V direction.
+ *
+ * \param[in] cv control points [width*height*stride]
+ * \param[in] width width of cv
+ * \param[in] height height of cv
+ * \param[in] stride stride in cv
+ * \param[in,out] avlens resulting average distances [width];
+ *  avlens[0] is the average distance of row0 to row1,
+ *  avlens[1] the average distance of row1 to row2...
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_npt_avglensv(double *cv, int width, int height, int stride,
+		double **avlens)
+{
+ double *lens;
+ int i, j, a, b;
+
+  if(!cv || !avlens)
+    {
+      return AY_ENULL;
+    }
+
+  if(!(lens = malloc(width*sizeof(double))))
+    {
+      return AY_EOMEM;
+    }
+
+  /* compute average partial lengths */
+  a = 0;
+  b = stride;
+  for(i = 0; i < width; i++)
+    {
+      lens[i] = 0.0;
+      for(j = 0; j < height-1; j++)
+	{
+	  if((fabs(cv[b] - cv[a]) > AY_EPSILON) ||
+	     (fabs(cv[b+1] - cv[a+1]) > AY_EPSILON) ||
+	     (fabs(cv[b+2] - cv[a+2]) > AY_EPSILON))
+	    {
+	      lens[i] += AY_VLEN((cv[b] - cv[a]),
+				 (cv[b+1] - cv[a+1]),
+				 (cv[b+2] - cv[a+2]))/(height-1.0);
+	    }
+	  a += stride;
+	  b += stride;
 	} /* for */
     } /* for */
 
@@ -15349,7 +15349,7 @@ ay_npt_isdegen(ay_nurbpatch_object *patch)
       if(avls)
 	{
 	  isdegen = AY_TRUE;
-	  for(i = 0; i < patch->width; i++)
+	  for(i = 0; i < patch->height; i++)
 	    {
 	      if(fabs(avls[i]) > AY_EPSILON)
 		{
@@ -15368,7 +15368,7 @@ ay_npt_isdegen(ay_nurbpatch_object *patch)
 	  if(avls)
 	    {
 	      isdegen = AY_TRUE;
-	      for(i = 0; i < patch->height; i++)
+	      for(i = 0; i < patch->width; i++)
 		{
 		  if(fabs(avls[i]) > AY_EPSILON)
 		    {
