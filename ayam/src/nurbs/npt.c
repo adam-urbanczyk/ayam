@@ -13253,7 +13253,7 @@ cleanup:
  * \param[in] width width of cv
  * \param[in] height height of cv
  * \param[in] stride stride in cv
- * \param[in,out] avlens resulting average distances [height];
+ * \param[in,out] avlens resulting average distances [width-1];
  *  avlens[0] is the average distance of column0 to column1,
  *  avlens[1] the average distance of column1 to column2...
  *
@@ -13271,18 +13271,18 @@ ay_npt_avglensu(double *cv, int width, int height, int stride,
       return AY_ENULL;
     }
 
-  if(!(lens = malloc(height*sizeof(double))))
+  if(!(lens = malloc((width-1)*sizeof(double))))
     {
       return AY_EOMEM;
     }
 
   /* compute average partial lengths */
-  for(i = 0; i < height; i++)
+  a = 0;
+  b = height;
+  for(i = 0; i < width-1; i++)
     {
       lens[i] = 0.0;
-      a = i*stride;
-      b = a+height*stride;
-      for(j = 0; j < width-1; j++)
+      for(j = 0; j < height; j++)
 	{
 	  if((fabs(cv[b] - cv[a]) > AY_EPSILON) ||
 	     (fabs(cv[b+1] - cv[a+1]) > AY_EPSILON) ||
@@ -13292,8 +13292,8 @@ ay_npt_avglensu(double *cv, int width, int height, int stride,
 				 (cv[b+1] - cv[a+1]),
 				 (cv[b+2] - cv[a+2]))/(width-1.0);
 	    }
-	  a += (height*stride);
-	  b += (height*stride);
+	  a += stride;
+	  b += stride;
 	} /* for */
     } /* for */
 
@@ -13311,7 +13311,7 @@ ay_npt_avglensu(double *cv, int width, int height, int stride,
  * \param[in] width width of cv
  * \param[in] height height of cv
  * \param[in] stride stride in cv
- * \param[in,out] avlens resulting average distances [width];
+ * \param[in,out] avlens resulting average distances [height-1];
  *  avlens[0] is the average distance of row0 to row1,
  *  avlens[1] the average distance of row1 to row2...
  *
@@ -13329,18 +13329,18 @@ ay_npt_avglensv(double *cv, int width, int height, int stride,
       return AY_ENULL;
     }
 
-  if(!(lens = malloc(width*sizeof(double))))
+  if(!(lens = malloc((height-1)*sizeof(double))))
     {
       return AY_EOMEM;
     }
 
   /* compute average partial lengths */
-  a = 0;
-  b = stride;
-  for(i = 0; i < width; i++)
+  for(i = 0; i < height-1; i++)
     {
       lens[i] = 0.0;
-      for(j = 0; j < height-1; j++)
+      a = i*stride;
+      b = a+stride;
+      for(j = 0; j < width; j++)
 	{
 	  if((fabs(cv[b] - cv[a]) > AY_EPSILON) ||
 	     (fabs(cv[b+1] - cv[a+1]) > AY_EPSILON) ||
@@ -13350,8 +13350,9 @@ ay_npt_avglensv(double *cv, int width, int height, int stride,
 				 (cv[b+1] - cv[a+1]),
 				 (cv[b+2] - cv[a+2]))/(height-1.0);
 	    }
-	  a += stride;
-	  b += stride;
+
+	  a += (height*stride);
+	  b += (height*stride);
 	} /* for */
     } /* for */
 
@@ -15309,21 +15310,21 @@ cleanup:
 
 
 /** ay_npt_isdegen:
- *  Check patch for degeneracy (all points equal).
+ *  Check patch for degeneracy (all points equal or line shape).
  *
  *  Deliberately not checking the weights, as patches with
  *  equal coordinates but different weights also collapse
  *  to a point.
  *
- * \param[in] patch NURBS surface object to process
+ * \param[in] patch NURBS surface object to check
  *
  * \returns AY_TRUE if patch is degenerate, AY_FALSE else.
  */
 int
 ay_npt_isdegen(ay_nurbpatch_object *patch)
 {
- int i, stride = 4, isdegen = AY_TRUE;
- double *p1, *p2, *avls = NULL;
+ int i, j, stride = 4, isdegen = AY_TRUE;
+ double *p1, *p2, len;
 
   if(!patch)
     return AY_FALSE;
@@ -15344,42 +15345,61 @@ ay_npt_isdegen(ay_nurbpatch_object *patch)
 
   if(!isdegen)
     {
-      (void)ay_npt_avglensu(patch->controlv, patch->width, patch->height, 4,
-			    &avls);
-      if(avls)
+      isdegen = AY_TRUE;
+      for(j = 0; j < patch->height; j++)
+	{
+	  p1 = &(patch->controlv[j*stride]);
+	  p2 = p1+(patch->height*stride);
+	  len = 0.0;
+	  for(i = 0; i < patch->width-1; i++)
+	    {
+	      if((fabs(p2[0] - p1[0]) > AY_EPSILON) ||
+		 (fabs(p2[1] - p1[1]) > AY_EPSILON) ||
+		 (fabs(p2[2] - p1[2]) > AY_EPSILON))
+		{
+		  len += AY_VLEN((p2[0] - p1[0]),
+				 (p2[1] - p1[1]),
+				 (p2[2] - p1[2])) / (patch->width-1.0);
+		}
+	      p1 += (patch->height*stride);
+	      p2 += (patch->height*stride);
+	    } /* for */
+	  if(len > AY_EPSILON)
+	    {
+	      isdegen = AY_FALSE;
+	      break;
+	    }
+	} /* for */
+
+      if(!isdegen)
 	{
 	  isdegen = AY_TRUE;
-	  for(i = 0; i < patch->height; i++)
+	  for(i = 0; i < patch->width; i++)
 	    {
-	      if(fabs(avls[i]) > AY_EPSILON)
+	      p1 = &(patch->controlv[i*patch->height*stride]);
+	      p2 = p1+stride;
+	      len = 0.0;
+	      for(j = 0; j < patch->height-1; j++)
+		{
+		  if((fabs(p2[0] - p1[0]) > AY_EPSILON) ||
+		     (fabs(p2[1] - p1[1]) > AY_EPSILON) ||
+		     (fabs(p2[2] - p1[2]) > AY_EPSILON))
+		    {
+		      len += AY_VLEN((p2[0] - p1[0]),
+				     (p2[1] - p1[1]),
+				     (p2[2] - p1[2])) / (patch->height-1.0);
+		    }
+		  p1 += stride;
+		  p2 += stride;
+		} /* for */
+	      if(len > AY_EPSILON)
 		{
 		  isdegen = AY_FALSE;
 		  break;
 		}
-	    }
-	  free(avls);
-	}
-
-      if(!isdegen)
-	{
-	  avls = NULL;
-	  (void)ay_npt_avglensv(patch->controlv, patch->width, patch->height, 4,
-				&avls);
-	  if(avls)
-	    {
-	      isdegen = AY_TRUE;
-	      for(i = 0; i < patch->width; i++)
-		{
-		  if(fabs(avls[i]) > AY_EPSILON)
-		    {
-		      isdegen = AY_FALSE;
-		      break;
-		    }
-		}
-	      free(avls);
-	    }
-	}
-    }
+	    } /* for */
+	} /* if !isdegen */
+    } /* if !isdegen */
 
  return isdegen;
 } /* ay_npt_isdegen */

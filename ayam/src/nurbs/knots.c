@@ -1357,13 +1357,13 @@ ay_knots_chordparamnp(int dir, double *Q, int width, int height, int stride,
   /* compute partial lengths */
   if(dir)
     {
-      (void)ay_npt_avglensu(Q, width, height, stride, &lens);
-      Ulen = height;
+      (void)ay_npt_avglensv(Q, width, height, stride, &lens);
+      Ulen = height-1;
     }
   else
     {
-      (void)ay_npt_avglensv(Q, width, height, stride, &lens);
-      Ulen = width;
+      (void)ay_npt_avglensu(Q, width, height, stride, &lens);
+      Ulen = width-1;
     }
 
   if(!lens)
@@ -1436,13 +1436,13 @@ ay_knots_centriparamnp(int dir, double *Q, int width, int height, int stride,
 
   if(dir)
     {
-      (void)ay_npt_avglensu(Q, width, height, stride, &lens);
-      Ulen = height;
+      (void)ay_npt_avglensv(Q, width, height, stride, &lens);
+      Ulen = height-1;
     }
   else
     {
-      (void)ay_npt_avglensv(Q, width, height, stride, &lens);
-      Ulen = width;
+      (void)ay_npt_avglensu(Q, width, height, stride, &lens);
+      Ulen = width-1;
     }
 
   if(!lens)
