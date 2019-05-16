@@ -3950,19 +3950,20 @@ type will also clear the mark.
 <img src="pics/ipgui.gif">
 <caption>Intermediate Parameter GUI Example</caption>
 </figure>
-Several interactive modelling actions support intermediate parameter GUIs.
+Several interactive modelling actions support intermediate parameter
+GUIs.<footnote>Since 1.27.</footnote>
 Those are simple entry fields that appear in the lower right corner of the
 view window when e.g.~a
 number key is pressed while the action is active and allow to parameterize
 the action in quick and exact fashion. See also the image above, where
-the intermediate parameter GUI for the Rotate action is shown.<newline>
+the intermediate parameter GUI for the Rotate action is shown.
+<p>
 The parameter value can be committed using the <tt/&lt;Enter&gt;/ or
 <tt/&lt;Return&gt;/ key.
 <p>
-The parameter GUI can be used multiple times/kept open when
-the <tt/&lt;Shift&gt;/ key is
-held down when pressing <tt/&lt;Enter&gt;/ or
-<tt/&lt;Return&gt;/.
+The parameter GUI can also be used multiple times&thinsp;/&thinsp;kept open
+when the <tt/&lt;Shift&gt;/ key is held down while committing the
+parameter value.
 <p>
 Currently only actions that require one parameter are supported.
 
@@ -16883,6 +16884,20 @@ This command supports arbitrary object types that just need to
 provide their points.
 </itemize>
 
+<p>
+<#if out="latex"><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
+<label id="scisdegen">
+isDegen:
+<itemize>
+ <item>Synopsis: <tt>"isDegen"</tt>
+ <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Description: This command returns <tt/1/ if the selected object
+is a degenerated parametric curve (point shape) or surface (point or line
+shape), otherwise <tt/0/ is returned.
+If multiple objects are selected, a list is returned.
+</itemize>
+
 
 <sect2>Manipulating the Selection<label id="sciselob">
 <p>
@@ -25578,6 +25593,7 @@ Index:
 <item>isCompNC: <ref id="sciscompnc" name="scripting interface command">
 <item>isCompNP: <ref id="sciscompnp" name="scripting interface command">
 <item>isCurve: <ref id="sciscurve" name="scripting interface command">
+<item>isDegen: <ref id="scisdegen" name="scripting interface command">
 <item>IsLocal: <ref id="lip" name="Light attribute">
 <item>IsoLevel: <ref id="moattr" name="MetaObj attribute">
 <item>IsOn: <ref id="lip" name="Light attribute">
