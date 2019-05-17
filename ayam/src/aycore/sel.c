@@ -60,6 +60,11 @@ ay_sel_add(ay_object *o, int set_selflag)
  ay_list_object *new_sel = NULL;
  static ay_list_object *last_sel = NULL;
 
+  if(o == ay_endlevel)
+    {
+      return AY_ERROR;
+    }
+
   if(!(new_sel = calloc(1, sizeof(ay_list_object))))
     {
       return AY_EOMEM;
@@ -405,7 +410,7 @@ ay_sel_hsltcmd(ClientData clientData, Tcl_Interp *interp,
  * helper to _recursively_ clear the selected
  * flag from the object hierarchy pointed to by \a o
  *
- * \param o object hierarchy to process
+ * \param[in,out] o object hierarchy to process
  */
 void
 ay_sel_clearselflag(ay_object *o)
