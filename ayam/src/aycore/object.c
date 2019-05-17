@@ -14,56 +14,15 @@
 
 /* object.c - general object management */
 
-/* ay_object_defaults:
- *  reset object attributes of ay_object <o> to safe default settings
- */
-void
-ay_object_defaults(ay_object *o)
-{
-  if(!o)
-    return;
 
-  o->quat[3] = 1.0;
-
-  o->scalx = 1.0;
-  o->scaly = 1.0;
-  o->scalz = 1.0;
-
-  o->inherit_trafos = AY_TRUE;
-
- return;
-} /* ay_object_defaults */
-
-
-/* ay_object_placemark:
- *  move object to the mark
- */
-void
-ay_object_placemark(ay_object *o)
-{
- ay_list_object tsel = {0}, *osel;
-
-  if(!o)
-    return;
-
-  /* move object to the mark? */
-  if(ay_prefs.createatmark && ay_currentview && ay_currentview->drawmark)
-    {
-      /* fake single object selection for snaptomarkcb() */
-      osel = ay_selection;
-      tsel.object = o;
-      ay_selection = &tsel;
-
-      ay_pact_snaptomarkcb(ay_currentview->togl, -1, NULL);
-      ay_selection = osel;
-    }
-
- return;
-} /* ay_object_placemark */
-
-
-/* ay_object_create:
- *  create an object by calling the object type specific create callback
+/** ay_object_create:
+ * Allocate a new #ay_object structure, fill it with vital default values,
+ * and call the type specific create callback without parameters.
+ *
+ * \param[in] index designates the type of object to create (AY_ID*)
+ * \param[in,out] o where to store the address of the new object
+ *
+ * \returns AY_OK on success, error code else.
  */
 int
 ay_object_create(unsigned int index, ay_object **o)
@@ -103,9 +62,16 @@ ay_object_create(unsigned int index, ay_object **o)
 } /* ay_object_create */
 
 
-/* ay_object_createargs:
- *  create an object by calling the object type specific create callback
- *  with user provided arguments
+/** ay_object_createargs:
+ * Allocate a new #ay_object structure, fill it with vital default values,
+ * and call the type specific create callback with user provided parameters.
+ *
+ * \param[in] index designates the type of object to create (AY_ID*)
+ * \param[in] argc number of parameters (>= 0)
+ * \param[in] argv array of parameters [argc] (may be NULL if \a argc is 0)
+ * \param[in,out] o where to store the address of the new object
+ *
+ * \returns AY_OK on success, error code else.
  */
 int
 ay_object_createargs(unsigned int index, int argc, char **argv, ay_object **o)
@@ -230,10 +196,14 @@ ay_object_createtcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_object_createtcmd */
 
 
-/* ay_object_delete:
+/** ay_object_delete:
  *  _recursively_ delete the children of an object and then the object;
  *  fails if there are objects/children with refcount > 0;
  *  does not unlink the object!
+ *
+ * \param[in,out] o the object to be deleted
+ *
+ * \returns AY_OK on success, error code otherwise
  */
 int
 ay_object_delete(ay_object *o)
@@ -272,7 +242,7 @@ ay_object_delete(ay_object *o)
 	      return ay_status;
 	    } /* if */
 	} /* while */
-    } /* if */
+    } /* if have children */
 
   if(o->refine)
     {
@@ -305,7 +275,7 @@ ay_object_delete(ay_object *o)
 	{
 	  tag = tag->next;
 	}
-    } /* while */
+    } /* while tag */
 
   /* delete tags */
   if(o->tags)
@@ -333,7 +303,7 @@ ay_object_delete(ay_object *o)
 } /* ay_object_delete */
 
 
-/* ay_object_deletemulti:
+/** ay_object_deletemulti:
  *  delete multiple objects connected via their ->next fields
  *
  *  If the \a force argument is AY_FALSE (0) and the hierarchy contains
@@ -367,6 +337,11 @@ ay_object_delete(ay_object *o)
  *
  *  It is safe to call this function with hierarchies that have no
  *  endlevel-terminator(s).
+ *
+ * \param[in,out] o the object(s) to be deleted
+ * \param[in] force how to handle undeletable objects, see above (0, 1, 2)
+ *
+ * \returns AY_OK on success, error code otherwise
  */
 int
 ay_object_deletemulti(ay_object *o, int force)
@@ -406,7 +381,7 @@ ay_object_deletemulti(ay_object *o, int force)
 	  return ay_status;
 	}
       d = next;
-    }
+    } /* while */
 
  return AY_OK;
 } /* ay_object_deletemulti */
@@ -659,9 +634,63 @@ ay_object_unlink(ay_object *o)
 } /* ay_object_unlink */
 
 
-/* ay_object_gettypename:
+/** ay_object_defaults:
+ *  reset object attributes of an object to safe default settings
+ *
+ * \param[in,out] o object to process
+ */
+void
+ay_object_defaults(ay_object *o)
+{
+  if(!o)
+    return;
+
+  o->quat[3] = 1.0;
+
+  o->scalx = 1.0;
+  o->scaly = 1.0;
+  o->scalz = 1.0;
+
+  o->inherit_trafos = AY_TRUE;
+
+ return;
+} /* ay_object_defaults */
+
+
+/** ay_object_placemark:
+ *  move an object to the mark (global mark or that of the current view)
+ *
+ * \param[in,out] o object to process
+ */
+void
+ay_object_placemark(ay_object *o)
+{
+ ay_list_object tsel = {0}, *osel;
+
+  if(!o)
+    return;
+
+  /* move object to the mark? */
+  if(ay_prefs.createatmark && ay_currentview && ay_currentview->drawmark)
+    {
+      /* fake single object selection for snaptomarkcb() */
+      osel = ay_selection;
+      tsel.object = o;
+      ay_selection = &tsel;
+
+      ay_pact_snaptomarkcb(ay_currentview->togl, -1, NULL);
+      ay_selection = osel;
+    }
+
+ return;
+} /* ay_object_placemark */
+
+
+/** ay_object_gettypename:
  *  return type name that has been registered for
  *  object type index
+ *
+ * \param[in] index object type to lookup (AY_ID*)
  */
 char *
 ay_object_gettypename(unsigned int index)
@@ -679,9 +708,11 @@ ay_object_gettypename(unsigned int index)
 } /* ay_object_gettypename */
 
 
-/* ay_object_getname:
+/** ay_object_getname:
  *  return object name or (if object is unnamed) name that has
  *  been registered for the object type
+ *
+ * \param[in] o object to inquire
  */
 char *
 ay_object_getname(ay_object *o)
@@ -752,7 +783,7 @@ ay_object_setnametcmd(ClientData clientData, Tcl_Interp *interp,
 	}
 
       strcpy(o->name, argv[1]);
-    } /* if */
+    } /* if o */
 
  return TCL_OK;
 } /* ay_object_setnametcmd */
@@ -1526,7 +1557,7 @@ ay_object_find(ay_object *o, ay_object *h)
 	      found = ay_object_find(o, h->down);
 	      if(found)
 		return AY_TRUE;
-	    } /* if */
+	    }
 	}
       else
 	{
