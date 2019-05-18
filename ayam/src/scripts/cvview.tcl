@@ -17,6 +17,8 @@ array set CVView {
     w fCVView
     wi 0
     he 0
+    ClickAction 0
+    Coordinates "n/a"
 }
 
 # cvview_update:
@@ -30,6 +32,11 @@ proc cvview_update { } {
     # create UI
     catch {destroy $ay(pca).$CVView(w)}
     set w [frame $ay(pca).$CVView(w)]
+
+    if { $CVView(ClickAction) } {
+	addInfo $w CVView Coordinates
+	addVSpace $w s1 2
+    }
 
     getProp
     getType t
@@ -85,7 +92,7 @@ proc cvview_update { } {
 	default {
 	    # for objects that provide NPatch/NCurve objects _and_ have
 	    # a NPInfo/NCInfo field in their property we can infer the
-	    # width/height from this info fields
+	    # width/height from these info fields
 	    set arr ${t}AttrData
 	    global $arr
 	    if { [info exists ${arr}(NPInfo)] } {
@@ -107,6 +114,7 @@ proc cvview_update { } {
     }
     # switch
 
+    set CVView(pnts) ""
     getPnt -all CVView(pnts)
     selPnts -get CVView(spnts)
 
@@ -114,7 +122,7 @@ proc cvview_update { } {
     set m 20;
     set canvasw 200
     if { [expr $CVView(wi)*$m] > 200 } {
-	set canvasw [expr [winfo width $ay(pca)] - 20 ]
+	set canvasw [expr [winfo width $ay(pca)] - 20]
 	# prepare a horizontal scrollbar
 	# if { [expr $CVView(wi)*$m] > $canvasw } {}
 	scrollbar $w.scx -orient horizontal\
@@ -123,10 +131,10 @@ proc cvview_update { } {
     }
 
     # vertical scrolling realized via property canvas...
-    set canvash [expr $CVView(he)*$m + 20 ]
+    set canvash [expr $CVView(he)*$m + 20]
 
     set ca [canvas $w.ca -width $canvasw -height $canvash]
-    pack $ca
+    pack $ca -side top -anchor nw
 
     # fill canvas
     set r [expr 0.25*$m];
@@ -137,8 +145,10 @@ proc cvview_update { } {
 	set j 0; set jm $m;
 	while { $j < $CVView(he) } {
 	    set color black
-	    if { [lsearch $CVView(spnts) [expr $i*$CVView(he)+$j]] != -1 } {
-		set color red
+	    if { !$CVView(ClickAction) } {
+		if { [lsearch $CVView(spnts) [expr $i*$CVView(he)+$j]] != -1 } {
+		    set color red
+		}
 	    }
 	    $ca create oval $im $jm [expr {$im+$r2}] [expr {$jm+$r2}]\
 		-tags [list o "$i,$j"] -fill $color
@@ -168,15 +178,18 @@ proc cvview_update { } {
     $ca create line [expr $x-7] [expr $y-7] $x $y -width 2 -tags l
     $ca create line [expr $x+7] [expr $y-7] $x $y -cap round -width 2 -tags l
 
-    # establish balloon binding
-    $ca bind o <Enter> cvview_showvalues
-    $ca bind o <Leave> "destroy $ay(pca).$CVView(w).ca.balloon"
-
+    # establish balloon binding?
+    if { $CVView(ClickAction) } {
+	set CVView(Coordinates) "n/a"
+    } else {
+	$ca bind o <Enter> cvview_showvalues
+	$ca bind o <Leave> "destroy $ay(pca).$CVView(w).ca.balloon"
+    }
     $ca lower l
     $ca bind o <1> cvview_toggleselect
 
-    if {  [winfo exists $w.scx] } {
-	pack $w.scx -side bottom -fill x
+    if { [winfo exists $w.scx] } {
+	pack $w.scx -side top -anchor nw -fill x -expand yes
 	$ca configure -xscrollcommand "$w.scx set"
 	$ca configure -scrollregion [$ca bbox all]
     }
@@ -212,22 +225,25 @@ proc cvview_showvalues { } {
     } else {
 	set txt "$x,$y: ($pntx, $pnty, $pntz)"
     }
-    # create a balloon window at the mouse position
-    set wx [expr [winfo pointerx $ca] + 10]
-    set wy [expr [winfo pointery $ca] + 10]
-    set top $ca.balloon
-    catch {destroy $top}
-    toplevel $top -bd 1 -bg black
-    if { $ay(ws) == "Aqua" } {
-	::tk::unsupported::MacWindowStyle style $top help noActivates
+    if { $CVView(ClickAction) } {
+	set CVView(Coordinates) $txt
     } else {
-	wm overrideredirect $top 1
-    }
-    pack [message $top.txt -width 100c -fg black -bg lightyellow -text $txt]
-    wm geometry $top \
+	# create a balloon window at the mouse position
+	set wx [expr [winfo pointerx $ca] + 10]
+	set wy [expr [winfo pointery $ca] + 10]
+	set top $ca.balloon
+	catch {destroy $top}
+	toplevel $top -bd 1 -bg black
+	if { $ay(ws) == "Aqua" } {
+	    ::tk::unsupported::MacWindowStyle style $top help noActivates
+	} else {
+	    wm overrideredirect $top 1
+	}
+	pack [message $top.txt -width 100c -fg black -bg lightyellow -text $txt]
+	wm geometry $top \
 	    [winfo reqwidth $top.txt]x[winfo reqheight $top.txt]+$wx+$wy
-    raise $top
-
+	raise $top
+    }
  return;
 }
 # cvview_showvalues
@@ -248,16 +264,26 @@ proc cvview_toggleselect { } {
     if { $pos != -1 } {
 	set CVView(spnts) [lreplace $CVView(spnts) $pos $pos]
 	# pnt is selected => deselect
-	selPnts
-	eval "selPnts $CVView(spnts)"
 	$ca itemconfigure current -fill black
+	if { $CVView(ClickAction) } {
+	    $ca dtag selected
+	    cvview_showvalues
+	} else {
+	    selPnts
+	    eval "selPnts $CVView(spnts)"
+	}
     } else {
 	# pnt is not selected => select
-	selPnts $li
+	if { $CVView(ClickAction) } {
+	    $ca itemconfigure selected -fill black
+	    $ca addtag selected withtag current
+	    cvview_showvalues
+	} else {
+	    selPnts $li
+	    selPnts -get CVView(spnts)
+	}
 	$ca itemconfigure current -fill red
-	selPnts -get CVView(spnts)
     }
-
  return;
 }
 # cvview_toggleselect
