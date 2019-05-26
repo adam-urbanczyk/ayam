@@ -14,7 +14,17 @@
 
 /* prop.c - functions for handling of general properties */
 
-/* C -> Tcl! */
+/** ay_prop_gettcmd:
+ *  Get the object type specific property data from the C context
+ *  and put it into the respective data array in the Tcl context.
+ *
+ *  C -> Tcl!
+ *
+ *  Implements the \a getProp scripting interface command.
+ *  See also the corresponding section in the \ayd{scgetprop}.
+ *
+ *  \returns TCL_OK in any case.
+ */
 int
 ay_prop_gettcmd(ClientData clientData, Tcl_Interp *interp,
 		int argc, char *argv[])
@@ -49,7 +59,17 @@ ay_prop_gettcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_prop_gettcmd */
 
 
-/* Tcl -> C! */
+/** ay_prop_settcmd:
+ *  Set the object type specific property data from the Tcl context
+ *  to the C context.
+ *
+ *  Tcl -> C!
+ *
+ *  Implements the \a setProp scripting interface command.
+ *  See also the corresponding section in the \ayd{scsetprop}.
+ *
+ *  \returns TCL_OK in any case.
+ */
 int
 ay_prop_settcmd(ClientData clientData, Tcl_Interp *interp,
 		int argc, char *argv[])
@@ -68,14 +88,17 @@ ay_prop_settcmd(ClientData clientData, Tcl_Interp *interp,
 
   o = sel->object;
 
-  /* get callback from table */
   arr = ay_setpropcbt.arr;
   cb = (ay_propcb *)(arr[o->type]);
   if(cb)
-    ay_status = cb(interp, argc, argv, o);
+    {
+      ay_status = cb(interp, argc, argv, o);
+    }
 
   if(ay_status)
-    ay_error(AY_ERROR, argv[0], "setprop callback failed...");
+    {
+      ay_error(AY_ERROR, argv[0], "setprop callback failed...");
+    }
 
  return TCL_OK;
 } /* ay_prop_settcmd */
