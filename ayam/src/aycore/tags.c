@@ -1229,15 +1229,14 @@ ay_tags_addnonm(ay_object *o, ay_object *m)
  *
  * \returns AY_OK on success, error code otherwise.
  */
-int
+void
 ay_tags_remnonm(ay_object *o, ay_object *m)
 {
- int ay_status = AY_OK;
  ay_tag *tag, **lasttag;
  int found = AY_FALSE;
 
   if(!o || !m)
-    return AY_ENULL;
+    return;
 
   /* look for and remove the NO tag */
   tag = m->tags;
@@ -1277,9 +1276,9 @@ ay_tags_remnonm(ay_object *o, ay_object *m)
 	  lasttag = &(tag->next);
 	  tag = tag->next;
 	} /* while */
-    } /* if */
+    } /* if found */
 
- return ay_status;
+ return;
 } /* ay_tags_remnonm */
 
 

@@ -1490,7 +1490,7 @@ int ay_tags_addnonm(ay_object *o, ay_object *m);
 
 /** remove NO/NM tags
  */
-int ay_tags_remnonm(ay_object *o, ay_object *m);
+void ay_tags_remnonm(ay_object *o, ay_object *m);
 
 /** copy selected tags
  */

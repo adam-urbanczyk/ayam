@@ -346,7 +346,7 @@ ay_instance_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	{
 	  /* if we get here, the point selection has been removed
 	     => also clear the NO/MN tags */
-	  ay_status = ay_tags_remnonm(o, (ay_object*)o->refine);
+	  ay_tags_remnonm(o, (ay_object*)o->refine);
 	}
     } /* if */
 
