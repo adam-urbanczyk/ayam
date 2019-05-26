@@ -217,14 +217,21 @@ ay_object_delete(ay_object *o)
  ay_tag *tag = NULL;
 
   if(!o)
-    return AY_ENULL;
+    {
+      return AY_ENULL;
+    }
 
+  /* never delete objects with a reference count > 0 */
   if(o->refcount > 0)
-    return AY_EREF;
+    {
+      return AY_EREF;
+    }
 
   /* never delete the one and only end level object */
   if(o == ay_endlevel)
-    return AY_OK;
+    {
+      return AY_OK;
+    }
 
   /* delete children first */
   if(o->down && (o->down != ay_endlevel))
@@ -279,7 +286,9 @@ ay_object_delete(ay_object *o)
 
   /* delete tags */
   if(o->tags)
-    ay_tags_delall(o);
+    {
+      ay_tags_delall(o);
+    }
 
   /* remove reference to material */
   if(o->mat)
@@ -416,9 +425,13 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
       /* is candelOb */
       if((ay_selection->object != ay_root) &&
 	 (ay_object_candeletelist(ay_selection, NULL) == AY_OK))
-	Tcl_SetResult(interp, "1", TCL_VOLATILE);
+	{
+	  Tcl_SetResult(interp, "1", TCL_VOLATILE);
+	}
       else
-	Tcl_SetResult(interp, "0", TCL_VOLATILE);
+	{
+	  Tcl_SetResult(interp, "0", TCL_VOLATILE);
+	}
       return TCL_OK;
     }
 
@@ -491,10 +504,10 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(ay_status)
 	    {
 	      /* could not delete the object, probably due to
-		 reference counter not zero; add the object
+		 its reference counter being not zero; add the object
 		 to the try_again list and continue deleting
 		 objects in the hope that the user selected _all_
-		 instances and we can delete the master anyway
+		 instances and we can delete this object anyway
 		 in a second attempt */
 	      if(!(*next_try_again = calloc(1, sizeof(ay_list_object))))
 		{
@@ -510,9 +523,8 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 		}
 	      (*next_try_again)->object = o;
 	      next_try_again = &((*next_try_again)->next);
-	    } /* if */
-
-	} /* if */
+	    } /* if delete failed */
+	} /* if is ay_root */
       sel = sel->next;
     } /* while */
 
@@ -571,7 +583,9 @@ ay_object_link(ay_object *o)
   if(ay_currentlevel && ay_currentlevel->object != ay_root)
     {
       if(ay_currentlevel->next && ay_currentlevel->next->object)
-	ay_clevel_set(ay_currentlevel->next->object->down);
+	{
+	  ay_clevel_set(ay_currentlevel->next->object->down);
+	}
     }
 
  return;
@@ -611,7 +625,9 @@ ay_object_unlink(ay_object *o)
       p1 = clevelobj;
       p2 = p1;
       if(p1)
-	p1 = p1->next;
+	{
+	  p1 = p1->next;
+	}
       done = AY_FALSE;
       while(p1 && !done)
 	{
@@ -643,7 +659,9 @@ void
 ay_object_defaults(ay_object *o)
 {
   if(!o)
-    return;
+    {
+      return;
+    }
 
   o->quat[3] = 1.0;
 
@@ -668,7 +686,9 @@ ay_object_placemark(ay_object *o)
  ay_list_object tsel = {0}, *osel;
 
   if(!o)
-    return;
+    {
+      return;
+    }
 
   /* move object to the mark? */
   if(ay_prefs.createatmark && ay_currentview && ay_currentview->drawmark)
@@ -807,7 +827,9 @@ ay_object_copy(ay_object *src, ay_object **dst)
  unsigned int *refcountptr;
 
   if(!src || !dst)
-    return AY_ENULL;
+    {
+      return AY_ENULL;
+    }
 
   /* silently avoid to really copy the endlevel terminator object;
      instead, just copy the reference */
