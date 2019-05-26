@@ -769,8 +769,7 @@ ay_clevel_cltcmd(ClientData clientData, Tcl_Interp *interp,
 	      lc++;
 	    }
 	} /* while */
-
-    } /* if */
+    } /* if arg is - */
 
  return TCL_OK;
 } /* ay_clevel_cltcmd */
