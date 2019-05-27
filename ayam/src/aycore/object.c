@@ -651,7 +651,8 @@ ay_object_unlink(ay_object *o)
 
 
 /** ay_object_defaults:
- *  reset object attributes of an object to safe default settings
+ *  set object attributes of a freshly allocated object to safe
+ *  default settings
  *
  * \param[in,out] o object to process
  */
@@ -708,9 +709,12 @@ ay_object_placemark(ay_object *o)
 
 /** ay_object_gettypename:
  *  return type name that has been registered for
- *  object type index
+ *  a given object type
+ *  
  *
  * \param[in] index object type to lookup (AY_ID*)
+ *
+ * \returns object type name or \a NULL
  */
 char *
 ay_object_gettypename(unsigned int index)
@@ -730,9 +734,11 @@ ay_object_gettypename(unsigned int index)
 
 /** ay_object_getname:
  *  return object name or (if object is unnamed) name that has
- *  been registered for the object type
+ *  been registered for the type of the object
  *
  * \param[in] o object to inquire
+ *
+ * \returns object name, object type name or \a NULL
  */
 char *
 ay_object_getname(ay_object *o)
@@ -745,9 +751,13 @@ ay_object_getname(ay_object *o)
     }
 
   if(o->name)
-    name = o->name;
+    {
+      name = o->name;
+    }
   else
-    name = ay_object_gettypename(o->type);
+    {
+      name = ay_object_gettypename(o->type);
+    }
 
  return name;
 } /* ay_object_getname */
@@ -782,7 +792,9 @@ ay_object_setnametcmd(ClientData clientData, Tcl_Interp *interp,
   o = sel->object;
 
   if((o == ay_root) || (o->type == AY_IDVIEW) || (o->type == AY_IDMATERIAL))
-    return TCL_OK;
+    {
+      return TCL_OK;
+    }
 
   if(o)
     {
@@ -841,7 +853,9 @@ ay_object_copy(ay_object *src, ay_object **dst)
 
   /* copy generic object */
   if(!(new = malloc(sizeof(ay_object))))
-    return AY_EOMEM;
+    {
+      return AY_EOMEM;
+    }
 
   memcpy(new, src, sizeof(ay_object));
   /* danger! links point to original hierarchy */
@@ -858,7 +872,9 @@ ay_object_copy(ay_object *src, ay_object **dst)
   arr = ay_copycbt.arr;
   cb = (ay_copycb*)(arr[src->type]);
   if(cb)
-    ay_status = cb(src->refine, &(new->refine));
+    {
+      ay_status = cb(src->refine, &(new->refine));
+    }
 
   if(ay_status)
     {
@@ -935,7 +951,9 @@ ay_object_copymulti(ay_object *src, ay_object **dst)
  int ay_status = AY_OK;
 
   if(!src || !dst)
-    return AY_ENULL;
+    {
+      return AY_ENULL;
+    }
 
   while(src)
     {
@@ -964,6 +982,7 @@ ay_object_copymulti(ay_object *src, ay_object **dst)
  *  Also implements the \a isCurve scripting interface command.
  *  Also implements the \a isSurface scripting interface command.
  *  Also implements the \a isDegen scripting interface command.
+ *  Also implements the \a isParent scripting interface command.
  *  See also the corresponding section in the \ayd{schaschild}.
  *
  *  \returns 1 if selected object has a regular (other than
@@ -1099,6 +1118,13 @@ ay_object_ishastcmd(ClientData clientData, Tcl_Interp *interp,
 		  else
 		    res = no;
 		}
+	      break;
+	    case 'P':
+	      /* is isParent */
+	      if(o->parent)
+		res = yes;
+	      else
+		res = no;
 	      break;
 	    case 'S':
 	      /* is isSurface */
