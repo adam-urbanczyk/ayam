@@ -718,9 +718,16 @@ proc viewPostMenu { m } {
 # viewBindMenus:
 #  bind the menus of an internal view window
 proc viewBindMenus { w } {
-    global aymainshortcuts
+    global aymainshortcuts tcl_platform
+
     # arrange for our bindings to override the all-tag bindings
     bindtags $w [list $w all Frame]
+
+    # fix <Alt-F4> firing the binding for <F4>
+    if { $tcl_platform(platform) == "windows" } {
+	bind $w <Alt-F4> [bind all <Alt-F4>]
+    }
+
     # bind View-menu
     bind $w <$aymainshortcuts(MenuMod)-v> "viewPostMenu %W.fMenu.v.m;break"
     $w.fMenu.v conf -underline 0
