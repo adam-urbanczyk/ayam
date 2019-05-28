@@ -564,7 +564,7 @@ int ay_oact_sc3DAcb(struct Togl *togl, int argc, char *argv[]);
 
 /* object.c */
 
-/** reset attributes of object o to defaults
+/** set attributes of freshly allocated object o to defaults
  */
 void ay_object_defaults(ay_object *o);
 
