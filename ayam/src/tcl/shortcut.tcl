@@ -58,7 +58,14 @@ proc shortcut_swapmb { } {
 # shortcut_fkeys:
 #  Setup Function-Key-Bindings for window w
 proc shortcut_fkeys { w } {
- global aymainshortcuts
+ global aymainshortcuts tcl_platform
+
+    # fix <Alt-F4> firing the binding for <F4>
+    if { $tcl_platform(platform) == "windows" } {
+	bindtags $w [linsert [bindtags $w] 0 altf4]
+	bind altf4 <Alt-F4> [bind all <Alt-F4>]
+	bind $w <Alt-F4> [bind all <Alt-F4>]
+    }
 
     bind $w <[repctrl $aymainshortcuts(SwLazyNotify)]>\
      { prefs_toggleLazyNotification }
