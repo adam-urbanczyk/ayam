@@ -234,32 +234,32 @@ ay_object_delete(ay_object *o)
     }
 
   /* delete children first */
-  if(o->down && (o->down != ay_endlevel))
+  while(o->down && (o->down != ay_endlevel))
     {
-      while(o->down)
+      d = o->down;
+      /* unlink the first child and try to delete it */
+      o->down = d->next;
+      ay_status = ay_object_delete(d);
+      if(ay_status)
 	{
-	  d = o->down;
-	  /* unlink the first child and try to delete it */
-	  o->down = d->next;
-	  ay_status = ay_object_delete(d);
-	  if(ay_status)
-	    {
-	      /* delete failed, re-link the child */
-	      o->down = d;
-	      return ay_status;
-	    } /* if */
-	} /* while */
-    } /* if have children */
+	  /* delete failed, re-link the child */
+	  o->down = d;
+	  return ay_status;
+	} /* if */
+    } /* while have children */
 
   if(o->refine)
     {
       arr = ay_deletecbt.arr;
       cb = (ay_deletecb *)(arr[o->type]);
       if(cb)
-	ay_status = cb(o->refine);
-
-      if(ay_status)
-	return ay_status;
+	{
+	  ay_status = cb(o->refine);
+	  if(ay_status)
+	    {
+	      return ay_status;
+	    }
+	}
     }
 
   /* delete selected points */
@@ -359,7 +359,9 @@ ay_object_deletemulti(ay_object *o, int force)
  ay_object *next = NULL, *d = NULL;
 
   if(!o)
-    return AY_ENULL;
+    {
+      return AY_ENULL;
+    }
 
   d = o;
 
@@ -710,7 +712,6 @@ ay_object_placemark(ay_object *o)
 /** ay_object_gettypename:
  *  return type name that has been registered for
  *  a given object type
- *  
  *
  * \param[in] index object type to lookup (AY_ID*)
  *
@@ -1600,7 +1601,7 @@ ay_object_find(ay_object *o, ay_object *h)
     {
       if(h != o)
 	{
-	  if(h->down)
+	  if(h->down && (h->down != ay_endlevel))
 	    {
 	      found = ay_object_find(o, h->down);
 	      if(found)
