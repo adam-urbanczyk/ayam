@@ -104,7 +104,17 @@ ay_prop_settcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_prop_settcmd */
 
 
-/* C -> Tcl! */
+/** ay_prop_gettrafotcmd:
+ *  Get the transformation property data from the C context
+ *  and put it into the respective data array in the Tcl context.
+ *
+ *  C -> Tcl!
+ *
+ *  Implements the \a getTrafo scripting interface command.
+ *  See also the corresponding section in the \ayd{scgettrafo}.
+ *
+ *  \returns TCL_OK in any case.
+ */
 int
 ay_prop_gettrafotcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
@@ -189,7 +199,17 @@ ay_prop_gettrafotcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_prop_gettrafotcmd */
 
 
-/* Tcl -> C! */
+/** ay_prop_settrafotcmd:
+ *  Set the transformation property data from the Tcl context
+ *  to the C context.
+ *
+ *  Tcl -> C!
+ *
+ *  Implements the \a setTrafo scripting interface command.
+ *  See also the corresponding section in the \ayd{scsettrafo}.
+ *
+ *  \returns TCL_OK in any case.
+ */
 int
 ay_prop_settrafotcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
@@ -368,7 +388,17 @@ ay_prop_settrafotcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_prop_settrafotcmd */
 
 
-/* C -> Tcl! */
+/** ay_prop_getattrtcmd:
+ *  Get the attributes property data from the C context
+ *  and put it into the respective data array in the Tcl context.
+ *
+ *  C -> Tcl!
+ *
+ *  Implements the \a getAttr scripting interface command.
+ *  See also the corresponding section in the \ayd{scgetattr}.
+ *
+ *  \returns TCL_OK in any case.
+ */
 int
 ay_prop_getattrtcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
@@ -410,7 +440,17 @@ ay_prop_getattrtcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_prop_getattrtcmd */
 
 
-/* Tcl -> C! */
+/** ay_prop_setattrtcmd:
+ *  Set the attributes property data from the Tcl context
+ *  to the C context.
+ *
+ *  Tcl -> C!
+ *
+ *  Implements the \a setAttr scripting interface command.
+ *  See also the corresponding section in the \ayd{scsetattr}.
+ *
+ *  \returns TCL_OK in any case.
+ */
 int
 ay_prop_setattrtcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
@@ -471,7 +511,17 @@ ay_prop_setattrtcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_prop_setattrtcmd */
 
 
-/* C -> Tcl! */
+/** ay_prop_getmattcmd:
+ *  Get the material property data from the C context
+ *  and put it into the respective data array in the Tcl context.
+ *
+ *  C -> Tcl!
+ *
+ *  Implements the \a getMat scripting interface command.
+ *  See also the corresponding section in the \ayd{scgetmat}.
+ *
+ *  \returns TCL_OK in any case.
+ */
 int
 ay_prop_getmattcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
@@ -518,7 +568,17 @@ ay_prop_getmattcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_prop_getmattcmd */
 
 
-/* Tcl -> C! */
+/** ay_prop_setmattcmd:
+ *  Set the material property data from the Tcl context
+ *  to the C context.
+ *
+ *  Tcl -> C!
+ *
+ *  Implements the \a setMat scripting interface command.
+ *  See also the corresponding section in the \ayd{scsetmat}.
+ *
+ *  \returns TCL_OK in any case.
+ */
 int
 ay_prop_setmattcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
