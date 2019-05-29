@@ -136,9 +136,10 @@ proc prefs_open {} {
     set ay(bok) .prefsw.f3.bap
 
     # PrefsGUIs
+
     # Main
-    set fw [$nb insert end Main -text Main\
-	    -raisecmd "prefs_rsnb $nb Main"]
+    set fw [$nb insert end Main -text Main -raisecmd "prefs_rsnb $nb Main"]
+
     addText $fw e0 "Shaders:"
     addMDirB $fw ayprefse Shaders [ms ayprefse_Shaders]
     addCommandB $fw c1 "Scan Shaders" {
@@ -186,6 +187,7 @@ proc prefs_open {} {
     # Modeling
     set fw [$nb insert end Modeling -text Modeling\
 	    -raisecmd "prefs_rsnb $nb Modeling"]
+
     addParamB $fw ayprefse PickEpsilon [ms ayprefse_PickEpsilon]\
 	{ 0.01 0.05 0.1 0.2 }
     addParamB $fw ayprefse HandleSize [ms ayprefse_HandleSize] { 4 5 6 8 }
@@ -239,6 +241,7 @@ proc prefs_open {} {
     # RIB Export
     set fw [$nb insert end RIB-Export -text RIB-Export\
 	    -raisecmd "prefs_rsnb $nb RIB-Export"]
+
     addFileB $fw ayprefse RIBFile [ms ayprefse_RIBFile]\
 	    [list Scenefile Scene Ask]
     addFileB $fw ayprefse Image [ms ayprefse_Image] [list RIB Ask]
@@ -290,9 +293,9 @@ proc prefs_open {} {
     if { $AYENABLEPPREV == 1 } {
 	addStringB $fw ayprefse PPRender [ms ayprefse_PPRender] [list "rgl"]
     }
+
     # Misc
-    set fw [$nb insert end Misc -text Misc\
-	    -raisecmd "prefs_rsnb $nb Misc"]
+    set fw [$nb insert end Misc -text Misc -raisecmd "prefs_rsnb $nb Misc"]
 
     addText $fw e0 "Errors:"
     addCheckB $fw ayprefse RedirectTcl [ms ayprefse_RedirectTcl]
@@ -336,7 +339,6 @@ proc prefs_open {} {
 	# copy array ayprefse to ayprefs
 	set avnames [array names ayprefs]
 	foreach j $avnames {
-
 	    set ayprefs($j) $ayprefse($j)
 	    # unset removes all traces
 	    unset ayprefse($j)
@@ -397,7 +399,6 @@ proc prefs_open {} {
     pack $f.bok $f.bap $f.bdef $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x -expand no
 
-    #
     bind $w <Enter> {
 	global ayprefs
 	if { $ayprefs(AutoFocus) == 1 } {
@@ -490,6 +491,18 @@ proc prefs_save { } {
 
     # get main window geometry
     set ayprefs(mainGeom) [winGetGeom .]
+
+    # do not store geometry if window mode changed in this session
+    if { $ayprefs(SingleWindow) } {
+	if { $ayprefs(LastWindowMode) != "Single" } {
+	    set ayprefs(mainGeom) ""
+	}
+    } else {
+	if { $ayprefs(LastWindowMode) != "Floating" } {
+	    set ayprefs(mainGeom) ""
+	}
+    }
+
     # get main window state
     set ayprefs(mainState) [wm state .]
 
@@ -512,13 +525,11 @@ proc prefs_save { } {
 
     # get pane configuration
     if { $ayprefs(SavePanes) == 1 } {
-
 	# save config for single window GUI mode only
 	if { [winfo exists .__h2] } {
 	    set ayprefs(PaneConfig) ""
 	    set ayprefs(PaneConfig) [winGetPaneLayout]
 	}
-
     }
 
     # remember from which window system we write this ayamrc
@@ -542,10 +553,7 @@ proc prefs_save { } {
     }
 
     # now write the hotkeys/shortcuts
-
-    shortcut_swapmb
-
-    puts $newfile "# Hotkeys:"
+    puts $newfile "\n# Hotkeys:"
 
     # hotkeys for main window
     puts $newfile "# main window:"
@@ -565,7 +573,7 @@ proc prefs_save { } {
 
     # dialog window geometries
     if { $ayprefs(SaveDialogGeom) > 1 } {
-	puts $newfile "# dialog geometry:"
+	puts $newfile "\n# dialog geometry:"
 	foreach key [array names aygeom ] {
 	    eval [subst "set val {{\$aygeom($key)}}"]
 	    puts $newfile "set aygeom($key) $val"
@@ -574,14 +582,14 @@ proc prefs_save { } {
 
     # now write RiOption and RiAttribute tag database
     # RiOptions
-    puts $newfile "# RiOptions:"
+    puts $newfile "\n# RiOptions:"
     foreach key [array names riopt ] {
 	eval [subst "set val {{\$riopt($key)}}"]
 	puts $newfile "set riopt($key) $val"
     }
 
     # RiAttributes
-    puts $newfile "# RiAttributes:"
+    puts $newfile "\n# RiAttributes:"
     foreach key [array names riattr ] {
 	eval [subst "set val {{\$riattr($key)}}"]
 	puts $newfile "set riattr($key) $val"
