@@ -141,7 +141,7 @@ proc riattr_addp { } {
 				after 100 {
 				    global riattrval
 
-		set def [lindex $riattrval(def_Point) $riattrval(DPoint) ]
+		set def [lindex $riattrval(def_Point) $riattrval(DPoint)]
 				set riattrval(Point_X) [lindex $def 0]
 				set riattrval(Point_Y) [lindex $def 1]
 				set riattrval(Point_Z) [lindex $def 2]

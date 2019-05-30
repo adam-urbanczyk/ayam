@@ -282,9 +282,9 @@ proc prefs_open {} {
 	    [list "R90000 %d" "Done computing %d" "%d"]
 
     addStringB $fw ayprefse SMFileFormat [ms ayprefse_SMFileFormat]\
-	    [list "zfile" "shadow" ]
+	    [list "zfile" "shadow"]
     addStringB $fw ayprefse SMFileType [ms ayprefse_SMFileType]\
-	    [list "z" "avgz" "volshadow" ]
+	    [list "z" "avgz" "volshadow"]
     addCheckB $fw ayprefse SMChangeShaders [ms ayprefse_SMChangeShaders]
 
     uie_setLabelWidth $fw 16
@@ -472,8 +472,8 @@ proc prefs_save { } {
 
     set ayrc $ay(ayamrc)
 
-    if { [file exists $ayrc ] } {
-	if { ! [file writable $ayrc ] } {
+    if { [file exists $ayrc] } {
+	if { ! [file writable $ayrc] } {
 	    ayError 1 "prefs_save" "\"$ayrc\" is not writable! No preferences saved!"
 	    return;
 	}
@@ -546,7 +546,7 @@ proc prefs_save { } {
     puts $newfile "# Preferences:"
 
     # write preferences
-    set names [lsort [array names ayprefs ]]
+    set names [lsort [array names ayprefs]]
     foreach pref $names {
 	eval [subst "set val {{\$ayprefs($pref)}}"]
 	puts $newfile "set ayprefs($pref) $val"
@@ -557,7 +557,7 @@ proc prefs_save { } {
 
     # hotkeys for main window
     puts $newfile "# main window:"
-    set keys [lsort [array names aymainshortcuts ]]
+    set keys [lsort [array names aymainshortcuts]]
     foreach key $keys {
 	eval [subst "set val {{\$aymainshortcuts($key)}}"]
 	puts $newfile "set aymainshortcuts($key) $val"
@@ -565,7 +565,7 @@ proc prefs_save { } {
 
     # hotkeys for view windows
     puts $newfile "# view windows:"
-    set keys [lsort [array names ayviewshortcuts ]]
+    set keys [lsort [array names ayviewshortcuts]]
     foreach key $keys {
 	eval [subst "set val {{\$ayviewshortcuts($key)}}"]
 	puts $newfile "set ayviewshortcuts($key) $val"
@@ -574,7 +574,7 @@ proc prefs_save { } {
     # dialog window geometries
     if { $ayprefs(SaveDialogGeom) > 1 } {
 	puts $newfile "\n# dialog geometry:"
-	foreach key [array names aygeom ] {
+	foreach key [array names aygeom] {
 	    eval [subst "set val {{\$aygeom($key)}}"]
 	    puts $newfile "set aygeom($key) $val"
 	}
@@ -583,14 +583,14 @@ proc prefs_save { } {
     # now write RiOption and RiAttribute tag database
     # RiOptions
     puts $newfile "\n# RiOptions:"
-    foreach key [array names riopt ] {
+    foreach key [array names riopt] {
 	eval [subst "set val {{\$riopt($key)}}"]
 	puts $newfile "set riopt($key) $val"
     }
 
     # RiAttributes
     puts $newfile "\n# RiAttributes:"
-    foreach key [array names riattr ] {
+    foreach key [array names riattr] {
 	eval [subst "set val {{\$riattr($key)}}"]
 	puts $newfile "set riattr($key) $val"
     }

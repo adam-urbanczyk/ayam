@@ -385,13 +385,13 @@ proc tc_edit { } {
     menubutton $f.mb1 -text "Load" -pady $ay(pady) -relief raised\
 	    -indicatoron 1 -menu $f.mb1.m
     set m [menu $f.mb1.m -tearoff 0 -postcommand {
-	bind .tcEditw <Enter> "" } ]
+	bind .tcEditw <Enter> "" }]
 
     # save menubutton
     menubutton $f.mb2 -text "Save" -pady $ay(pady) -relief raised\
 	    -indicatoron 1 -menu $f.mb2.m
     set m [menu $f.mb2.m -tearoff 0 -postcommand {
-	bind .tcEditw <Enter> "" } ]
+	bind .tcEditw <Enter> "" }]
 
     tc_updateMenu
 

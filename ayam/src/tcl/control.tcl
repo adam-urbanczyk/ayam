@@ -1045,9 +1045,9 @@ proc searchOb { expression action {gui 0} } {
 		    }
 		}
 	    }
-	    # switch
+	    # switch action
 	}
-	# if
+	# if have match
 	if { $ObjectSearch(Cancel) } {
 	    ayError 4 searchOb "Cancelled."
 	    return -1;

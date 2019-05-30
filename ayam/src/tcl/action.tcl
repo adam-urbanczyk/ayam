@@ -421,7 +421,7 @@ proc actionGetParamFromKbd { w var txt cmd key } {
 	catch {destroy .param}
 	set f [frame .param]
     }
-    pack [label $f.l -text $txt ] -side left
+    pack [label $f.l -text $txt] -side left
     pack [entry $f.e -textvariable $var] -side left
     bind $f.e <Key-Escape> "destroy $f;focus $w;break;"
     if { $ayprefs(KeepParamGUI) } {
@@ -2392,6 +2392,7 @@ proc actionClear { w {only_clear 0} } {
 # clears the mark and resets the focus
 proc _doubleEsc { t } {
     $t.f3D.togl setconf -mark n
+    #ayError 4 "<Esc-Esc>" "Mark cleared."
     puts "Mark cleared."
     resetFocus
  return;

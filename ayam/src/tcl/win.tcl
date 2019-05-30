@@ -213,7 +213,7 @@ proc winIconWindow { w img } {
 
     if { ! [winfo exists .icon] } {
 	toplevel .icon
-	pack [label .icon.l -image $img ]
+	pack [label .icon.l -image $img]
     }
 
     wm iconwindow $w .icon

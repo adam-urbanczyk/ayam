@@ -19,12 +19,12 @@ proc splash_open { } {
 	close $f
 	image create photo ayam-splash -format GIF -data $idata
     } else {
-	set oldcd [ pwd ]
-	set scdir [ info script ]
+	set oldcd [pwd]
+	set scdir [info script]
 	if { $scdir != "" } {
-	    cd [ file dirname $scdir ] }
-	if  { ! [file exists $ay(aysplash) ] } {
-	    if  { ! [file exists "ayam-splash.gif" ] } {
+	    cd [file dirname $scdir] }
+	if  { ! [file exists $ay(aysplash)] } {
+	    if  { ! [file exists "ayam-splash.gif"] } {
 		puts stderr "Could not find splash image: \"$ay(aysplash)\"!"
 		cd $oldcd
 		return;

@@ -27,11 +27,11 @@ proc icurve_getAttr { } {
 
     # create ICurveAttr-UI
     addVSpace $w s1 2
-    addMenu $w ICurveAttrData Type [list "Open" "Closed" ]
+    addMenu $w ICurveAttrData Type [list "Open" "Closed"]
     addParam $w ICurveAttrData Length
     addParam $w ICurveAttrData Order
     addMenu $w ICurveAttrData ParamType\
-	[list "Chordal" "Centripetal" "Uniform" ]
+	[list "Chordal" "Centripetal" "Uniform"]
     addMenu $w ICurveAttrData Derivatives [list "Automatic" "Manual"]
     if { $ICurveAttrData(Derivatives) == 0 } {
 	    addParam $w ICurveAttrData SDLen

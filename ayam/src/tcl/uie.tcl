@@ -1352,7 +1352,7 @@ proc addInfo { w prop name } {
     pack $f.l2 -in $f -side left -fill x -expand yes
     pack $f -in $w -side top -fill x
     global $prop
-    if { [ info exists "${prop}(${name}Ball)" ] } {
+    if { [info exists "${prop}(${name}Ball)"] } {
 	global $prop
 	set balltext [subst \$${prop}(${name}Ball)]
 	balloon_set $f.l2 "$balltext"

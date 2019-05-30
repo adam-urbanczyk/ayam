@@ -141,7 +141,7 @@ proc riopt_addp { } {
 				after 100 {
 				    global rioptval
 
-		set def [lindex $rioptval(def_Point) $rioptval(DPoint) ]
+		set def [lindex $rioptval(def_Point) $rioptval(DPoint)]
 				set rioptval(Point_X) [lindex $def 0]
 				set rioptval(Point_Y) [lindex $def 1]
 				set rioptval(Point_Z) [lindex $def 2]
