@@ -8634,8 +8634,8 @@ cleanup:
     may be NULL
  * \param[in,out] is_planar pointer where to store the result (AY_TRUE if the
  *  curve is planar, AY_FALSE, else);
- *  in case of an error and for straight/linear curves, is_planar will
- *  _not_ be changed
+ *  in case of an error and for straight/linear/degenerate curves,
+ *  is_planar will _not_ be changed
  */
 void
 ay_nct_isplanar(ay_object *c, int allow_flip, ay_object **cp, int *is_planar)
@@ -8643,8 +8643,8 @@ ay_nct_isplanar(ay_object *c, int allow_flip, ay_object **cp, int *is_planar)
  int ay_status;
  ay_object *tmp = NULL;
  ay_nurbcurve_object *nc;
- ay_icurve_object *ic = NULL;
- ay_acurve_object *ac = NULL;
+ ay_icurve_object *ic;
+ ay_acurve_object *ac;
  double *cv;
  int i, len, stride = 4;
 
@@ -8657,6 +8657,8 @@ ay_nct_isplanar(ay_object *c, int allow_flip, ay_object **cp, int *is_planar)
     return;
 
   ay_status = ay_nct_toplane(AY_XY, allow_flip, tmp);
+
+  /* if ay_nct_toplane() failed, maybe it is a linear/degenerate curve... */
 
   if(!ay_status)
     {
@@ -8683,7 +8685,7 @@ ay_nct_isplanar(ay_object *c, int allow_flip, ay_object **cp, int *is_planar)
 	default:
 	  break;
 	} /* switch */
-      
+
       for(i = 0; i < len-1; i++)
 	{
 	  if(fabs(cv[i*stride+2]-cv[(i+1)*stride+2]) > AY_EPSILON*2)
@@ -8692,9 +8694,7 @@ ay_nct_isplanar(ay_object *c, int allow_flip, ay_object **cp, int *is_planar)
 	      break;
 	    }
 	}
-    } /* if */
-
-  /* if ay_nct_toxy() failed, maybe it is a linear curve... */
+    } /* if toplane() succeeded */
 
   if(cp)
     *cp = tmp;
