@@ -800,8 +800,10 @@ ay_object_setnametcmd(ClientData clientData, Tcl_Interp *interp,
   if(o)
     {
       if(o->name)
-	free(o->name);
-      o->name = NULL;
+	{
+	  free(o->name);
+	  o->name = NULL;
+	}
 
       /* clear the current name if argument is "" */
       if(strlen(argv[1]) == 0)
@@ -863,7 +865,9 @@ ay_object_copy(ay_object *src, ay_object **dst)
 
   new->next = NULL;
   if(src->down != ay_endlevel)
-    new->down = NULL;
+    {
+      new->down = NULL;
+    }
   new->selp = NULL;
   new->tags = NULL;
 
@@ -875,13 +879,13 @@ ay_object_copy(ay_object *src, ay_object **dst)
   if(cb)
     {
       ay_status = cb(src->refine, &(new->refine));
-    }
 
-  if(ay_status)
-    {
-      ay_error(AY_ERROR, fname, "copy callback failed");
-      free(new);
-      return AY_ERROR;
+      if(ay_status)
+	{
+	  ay_error(AY_ERROR, fname, "copy callback failed");
+	  free(new);
+	  return AY_ERROR;
+	}
     }
 
   /* copy name */
@@ -903,7 +907,9 @@ ay_object_copy(ay_object *src, ay_object **dst)
     {
       ay_error(AY_ERROR, fname, "copy tags failed");
       if(new->name)
-	free(new->name);
+	{
+	  free(new->name);
+	}
       free(new);
       return AY_ERROR;
     }
@@ -983,6 +989,7 @@ ay_object_copymulti(ay_object *src, ay_object **dst)
  *  Also implements the \a isCurve scripting interface command.
  *  Also implements the \a isSurface scripting interface command.
  *  Also implements the \a isDegen scripting interface command.
+ *  Also implements the \a isPlanar scripting interface command.
  *  Also implements the \a isParent scripting interface command.
  *  See also the corresponding section in the \ayd{schaschild}.
  *
@@ -997,6 +1004,7 @@ ay_object_ishastcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbcurve_object *nc;
  ay_nurbpatch_object *np;
  ay_list_object *sel = ay_selection;
+ int planar = 0;
  char *res = NULL, no[] = "0", yes[] = "1";
 
   if(!sel)
@@ -1121,11 +1129,38 @@ ay_object_ishastcmd(ClientData clientData, Tcl_Interp *interp,
 		}
 	      break;
 	    case 'P':
-	      /* is isParent */
-	      if(o->parent)
-		res = yes;
+	      if(argv[0][3] == 'a')
+		{
+		  /* is isParent */
+		  if(o->parent)
+		    res = yes;
+		  else
+		    res = no;
+		  break;
+		}
 	      else
-		res = no;
+		{
+		  /* is isPlanar */
+		  if((o->type == AY_IDNCURVE) ||
+		     (o->type == AY_IDICURVE) ||
+		     (o->type == AY_IDACURVE))
+		    {
+		      ay_nct_isplanar(o, AY_FALSE, NULL, &planar);
+		      if(planar)
+			res = yes;
+		      else
+			res = no;
+		    }
+		  else
+		    if(o->type == AY_IDNPATCH)
+		      {
+			np = (ay_nurbpatch_object*)o->refine;
+			if(ay_npt_isplanar(np, NULL))
+			  res = yes;
+			else
+			  res = no;
+		      }
+		}
 	      break;
 	    case 'S':
 	      /* is isSurface */
@@ -1187,10 +1222,14 @@ ay_object_gettypeornametcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   if((argc > 2) && (argv[2][0] == '1'))
-    silence = AY_TRUE;
+    {
+      silence = AY_TRUE;
+    }
 
   if(!return_result)
-    Tcl_SetVar(interp, argv[1], "", TCL_LEAVE_ERR_MSG);
+    {
+      Tcl_SetVar(interp, argv[1], "", TCL_LEAVE_ERR_MSG);
+    }
 
   if(!sel)
     {
