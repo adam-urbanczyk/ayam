@@ -26,7 +26,7 @@ if { [hasTag MN] } {
 set h $ExtrudeNAttrData(Height)
 if { $h != 1 } {
     set n [list [expr [lindex $n 0] * $h] [expr [lindex $n 1] * $h]\
-	       [expr [lindex $n 2] * $h] ]
+	       [expr [lindex $n 2] * $h]]
 }
 copOb
 pasOb

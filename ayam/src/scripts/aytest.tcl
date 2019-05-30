@@ -396,7 +396,7 @@ set Sphere_2(ThetaMax) $angles
 # take all valsets from Sphere_1 but adapt the radius
 foreach valset $Sphere_1(fixedvals) {
     set val {}
-    lappend val [expr [lindex $valset 0] * 2.0 ]
+    lappend val [expr [lindex $valset 0] * 2.0]
     lappend val [lindex $valset 1]
     lappend val [lindex $valset 2]
     lappend Sphere_2(fixedvals) $val
@@ -417,7 +417,7 @@ set Sphere_3(ThetaMax) $angles
 # take all valsets from Sphere_1 but adapt the radius
 foreach valset $Sphere_1(fixedvals) {
     set val {}
-    lappend val [expr [lindex $valset 0] * 0.5 ]
+    lappend val [expr [lindex $valset 0] * 0.5]
     lappend val [lindex $valset 1]
     lappend val [lindex $valset 2]
     lappend Sphere_3(fixedvals) $val
@@ -462,7 +462,7 @@ set Cylinder_2(ThetaMax) $angles
 # take all valsets from Cylinder_1 but adapt the radius
 foreach valset $Cylinder_1(fixedvals) {
     set val {}
-    lappend val [expr [lindex $valset 0] * 0.5 ]
+    lappend val [expr [lindex $valset 0] * 0.5]
     lappend val [lindex $valset 1]
     lappend val [lindex $valset 2]
     lappend Cylinder_2(fixedvals) $val
@@ -482,7 +482,7 @@ set Cylinder_3(ThetaMax) $angles
 # take all valsets from Cylinder_1 but adapt the radius
 foreach valset $Cylinder_1(fixedvals) {
     set val {}
-    lappend val [expr [lindex $valset 0] * 2.0 ]
+    lappend val [expr [lindex $valset 0] * 2.0]
     lappend val [lindex $valset 1]
     lappend val [lindex $valset 2]
     lappend Cylinder_3(fixedvals) $val
@@ -599,7 +599,7 @@ set Paraboloid_2(ThetaMax) $angles
 # take all valsets from Paraboloid_1 but adapt RMax
 foreach valset $Paraboloid_1(fixedvals) {
     set val {}
-    lappend val [expr [lindex $valset 0] * 0.5 ]
+    lappend val [expr [lindex $valset 0] * 0.5]
     lappend val [lindex $valset 1]
     lappend val [lindex $valset 2]
     lappend Paraboloid_2(fixedvals) $val
@@ -619,7 +619,7 @@ set Paraboloid_3(ThetaMax) $angles
 # take all valsets from Paraboloid_1 but adapt RMax
 foreach valset $Paraboloid_1(fixedvals) {
     set val {}
-    lappend val [expr [lindex $valset 0] * 2.0 ]
+    lappend val [expr [lindex $valset 0] * 2.0]
     lappend val [lindex $valset 1]
     lappend val [lindex $valset 2]
     lappend Paraboloid_3(fixedvals) $val
@@ -3162,7 +3162,7 @@ proc aytest_runTests { tests items } {
 		incr item -1
 		lappend newitems [lindex $allitems $item]
 	    }
-	    if { [info exists newitems ] } {
+	    if { [info exists newitems] } {
 		catch {set testitems $newitems}
 	    } else {
 		set testitems ""

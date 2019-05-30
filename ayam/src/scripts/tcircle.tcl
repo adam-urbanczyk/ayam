@@ -15,8 +15,8 @@ if { ![info exists ::TCircleAttrGUI] } {
 }
 
 set pi 3.141592653589793238462643383
-set a [expr { cos(30.0*$pi/180.0) } ]
-set b [expr { $a*2.0 } ]
+set a [expr { cos(30.0*$pi/180.0) }]
+set b [expr { $a*2.0 }]
 
 set cv ""
 lappend cv $a 0.5 0.0 1.0
@@ -27,8 +27,8 @@ lappend cv 0.0 -1.0 0.0 1.0
 lappend cv $b -1.0 0.0 0.5
 lappend cv $a 0.5 0.0 1.0
 
-set a [expr { 1.0/3.0 } ]
-set b [expr { 2.0/3.0 } ]
+set a [expr { 1.0/3.0 }]
+set b [expr { 2.0/3.0 }]
 
 set kv [list 0.0 0.0 0.0 $a $a $b $b 1.0 1.0 1.0]
 
