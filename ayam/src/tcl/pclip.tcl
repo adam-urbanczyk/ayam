@@ -27,7 +27,7 @@ proc pclip_toggleomit { label varnames } {
     global pclip_omit pclip_omit_label
     set oldlabel [$label cget -text]
 
-    if { [string first "!" $oldlabel ] == -1 } {
+    if { [string first "!" $oldlabel] == -1 } {
 	set name "!$oldlabel"
 	$label configure -text $name
 	set pclip_omit_label($label) ""
@@ -118,7 +118,7 @@ proc pclip_paste { } {
 	    }
 	    eval [subst "set list \{\$${type}_props\}"]
 
-	    set index [lsearch -exact $list $pclip_prop ]
+	    set index [lsearch -exact $list $pclip_prop]
 	    if { $index >= 0 } {
 		global $pclip_prop
 		eval [subst "set arr \$${pclip_prop}(arr)"]
@@ -186,13 +186,13 @@ proc pclip_pastetosel { } {
 	}
 	eval [subst "set list \{\$${type}_props\}"]
 
-	set index [lsearch -exact $list $pclip_prop ]
+	set index [lsearch -exact $list $pclip_prop]
 	set lb $ay(plb)
 	set sel ""
 	set sel [$lb curselection]
 	if { $sel != "" } {
 	    set pclip_prop_orig $pclip_prop
-	    set pclip_prop [$lb get $sel ]
+	    set pclip_prop [$lb get $sel]
 	    global $pclip_prop
 
 	    # get name of property array

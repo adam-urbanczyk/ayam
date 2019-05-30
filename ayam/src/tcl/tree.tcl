@@ -520,7 +520,7 @@ proc tree_drop { tree from droppos currentoperation datatype data } {
 	    # create object via objectbar
 	    set ay(droplock) 1
 	    set newnode ""
-	    set i [string first "img" $data ]
+	    set i [string first "img" $data]
 	    set otype [string range $data 0 [expr $i-1]]
 	    puts $otype
 	    crtOb $otype
@@ -790,7 +790,7 @@ set tree [Tree $sw.tree -width $width -height 15\
 	-dropenabled true \
 	-droptypes {TREE_NODE {copy {}} IMAGE { copy {}} } \
 	-dropovermode pn\
-	-dropcmd "tree_drop" ]
+	-dropcmd "tree_drop"]
 # XXXX was:
 #	-droptypes {TREE_NODE {copy {}} IMAGE { copy {}} }
 

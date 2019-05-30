@@ -682,7 +682,7 @@ global ay curtypes ay_error
 	    # also get properties from NP tags
 	    set tn ""
 	    getTags tn tv
-	    if { ($tn != "") && ([ string first NP $tn ] != -1) } {
+	    if { ($tn != "") && ([string first NP $tn] != -1) } {
 		set i 0
 		foreach tag $tn {
 		    if { [lindex $tn $i] == "NP" } {

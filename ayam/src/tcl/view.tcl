@@ -873,8 +873,8 @@ proc viewBind { w } {
 # remove all keyboard and mouse bindings from view window w
 proc viewUnBind { w } {
 
-    foreach v [ bind $w ] { bind $w $v "" }
-    foreach v [ bind $w.f3D.togl ] { bind $w.f3D.togl $v "" }
+    foreach v [bind $w] { bind $w $v "" }
+    foreach v [bind $w.f3D.togl] { bind $w.f3D.togl $v "" }
     update
     $w configure -cursor watch
     $w.f3D.togl configure -cursor watch
@@ -1799,7 +1799,7 @@ addCheck $w ViewAttribData UseGrid
 
 addText $w e4 "Space:"
 addMenu $w ViewAttribData ModellingMode\
-    [list "Global" "Local (Level)" "Local (Object)" ]
+    [list "Global" "Local (Level)" "Local (Object)"]
 
 
 addText $w e5 "Background:"

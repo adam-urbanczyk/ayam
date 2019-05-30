@@ -410,7 +410,7 @@ proc plb_update { } {
 
     # protect against double updates
     if { $ay(plblock) == 1 } {
-	return
+	return;
     } else {
 	set ay(plblock) 1
     }
@@ -668,7 +668,7 @@ proc plb_setwin { w {fw ""} } {
     global ay
 
     if { ![winfo exists $w] } {
-	return
+	return;
     }
 
     # set new window

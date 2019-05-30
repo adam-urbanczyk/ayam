@@ -68,7 +68,7 @@ proc runTool { argvars argstrings command title {advargs ""} } {
 	if { $ayprefs(SimpleToolGUI) } {
 	    set f2 [frame $f.f$index]
 
-	    label $f2.l -text [lindex $argstrings $index ] -width 14
+	    label $f2.l -text [lindex $argstrings $index] -width 14
 	    entry $f2.e -width 14
 	    eval [subst "bindtags $f2.e \{$f2.e Entry all\}"]
 	    bind $f2.e <Key-Escape> ".rtw.f2.bca invoke;break"
@@ -118,7 +118,7 @@ proc runTool { argvars argstrings command title {advargs ""} } {
 			set l ""
 			set il $i
 			if { $isarray } {
-			    set il [ string map {")" "_l)"} $il ]
+			    set il [string map {")" "_l)"} $il]
 			} else {
 			    append il _l
 			}
@@ -210,7 +210,7 @@ proc updateRenderProgress { num percent } {
     global ay ayprefs
     update
 
-    if { [catch { set str [string index [.render${num}.f2.la cget -text] 0] } ]
+    if { [catch { set str [string index [.render${num}.f2.la cget -text] 0] }]
 	 != 0 } {
 	return;
     }
@@ -269,7 +269,7 @@ proc runGetOutput { iserr num cmd template channel } {
         set xx [gets $channel]
 	set percent 0
 	if { $template != "" } {
-	    if { [ string first "regexp" $template ] == 0 } {
+	    if { [string first "regexp" $template] == 0 } {
 		regsub "string" $template "{$xx}" template2
 		eval $template2
 	    } else {

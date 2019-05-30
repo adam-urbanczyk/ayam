@@ -121,7 +121,7 @@ proc shader_scanAll { } {
 		set shadernamelistname ay(${shadertype}shaders)
 		eval set shadernamelist \$$shadernamelistname
 
-		if {[string first " $shdbase " $shadernamelist ] == -1} {
+		if {[string first " $shdbase " $shadernamelist] == -1} {
 		    lappend $shadernamelistname [lindex $shaderarguments 0]
 		}
 	    }
@@ -284,7 +284,7 @@ proc shader_setNew { win type stype } {
 	set fc [string tolower [string index $shader 0]]
 	global ${fc}list
 	lappend ${fc}list $i
-	if { [ llength ${fc}list ] == 1 } {
+	if { [llength ${fc}list] == 1 } {
 	    bind $w <KeyPress-${fc}> "shader_cycSel $f.lb $fc ${fc}list"
 	}
 	incr i

@@ -47,7 +47,7 @@ proc zap { } {
 proc unzap { } {
     global ay
     foreach w $ay(zapped) {
-	if { [winfo exists $w ] } {
+	if { [winfo exists $w] } {
 	    if { [string first iew $w] != -1 } { bind $w <Map> "" }
 	    wm deiconify $w
 	}

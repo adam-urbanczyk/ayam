@@ -31,9 +31,9 @@ if { $AYWRAPPED == 1 } { set wrappedorshared "wrapped" } else {
 }
 
 if { $tcl_version >= 8.1 } {
-    set platform [string toupper $tcl_platform(platform) 0 0 ]
+    set platform [string toupper $tcl_platform(platform) 0 0]
 } else {
-    set platform [string toupper $tcl_platform(platform) ]
+    set platform [string toupper $tcl_platform(platform)]
 }
 
 $w.ftext.text delete 0.0 end
