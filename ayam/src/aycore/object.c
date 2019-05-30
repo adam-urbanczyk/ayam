@@ -1000,7 +1000,7 @@ int
 ay_object_ishastcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
- ay_object *o = NULL;
+ ay_object *o = NULL, *p = NULL;
  ay_nurbcurve_object *nc;
  ay_nurbpatch_object *np;
  ay_list_object *sel = ay_selection;
@@ -1119,14 +1119,41 @@ ay_object_ishastcmd(ClientData clientData, Tcl_Interp *interp,
 		    res = no;
 		}
 	      else
-	      if(o->type == AY_IDNPATCH)
-		{
-		  np = (ay_nurbpatch_object*)o->refine;
-		  if(ay_npt_isdegen(np))
-		    res = yes;
-		  else
-		    res = no;
-		}
+		if(o->type == AY_IDNPATCH)
+		  {
+		    np = (ay_nurbpatch_object*)o->refine;
+		    if(ay_npt_isdegen(np))
+		      res = yes;
+		    else
+		      res = no;
+		  }
+		else
+		  {
+		    p = NULL;
+		    (void)ay_provide_object(o, AY_IDNCURVE, &p);
+		    if(p)
+		      {
+			nc = (ay_nurbcurve_object*)p->refine;
+			if(ay_nct_isdegen(nc))
+			  res = yes;
+			else
+			  res = no;
+			ay_object_deletemulti(p, AY_TRUE);
+		      }
+		    else
+		      {
+			(void)ay_provide_object(o, AY_IDNPATCH, &p);
+			if(p)
+			  {
+			    np = (ay_nurbpatch_object*)p->refine;
+			    if(ay_npt_isdegen(np))
+			      res = yes;
+			    else
+			      res = no;
+			    ay_object_deletemulti(p, AY_TRUE);
+			  }
+		      }
+		  } /* if not NCurve or NPatch */
 	      break;
 	    case 'P':
 	      if(argv[0][3] == 'a')
@@ -1160,7 +1187,35 @@ ay_object_ishastcmd(ClientData clientData, Tcl_Interp *interp,
 			else
 			  res = no;
 		      }
-		}
+		    else
+		      {
+			p = NULL;
+			(void)ay_provide_object(o, AY_IDNCURVE, &p);
+			if(p)
+			  {
+			    ay_nct_isplanar(p, AY_FALSE, NULL, &planar);
+			    if(planar)
+			      res = yes;
+			    else
+			      res = no;
+			    ay_object_deletemulti(p, AY_TRUE);
+			  }
+			else
+			  {
+			    (void)ay_provide_object(o, AY_IDNPATCH, &p);
+			    if(p)
+			      {
+				np = (ay_nurbpatch_object*)p->refine;
+				ay_npt_isplanar(np, NULL);
+				if(planar)
+				  res = yes;
+				else
+				  res = no;
+				ay_object_deletemulti(p, AY_TRUE);
+			      }
+			  }
+		      } /* if not NCurve or NPatch */
+		} /* if isPlanar */
 	      break;
 	    case 'S':
 	      /* is isSurface */
