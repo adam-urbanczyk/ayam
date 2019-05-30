@@ -161,7 +161,7 @@ ay_nct_destroy(ay_nurbcurve_object *curve)
 
 
 /** ay_nct_clearmp:
- *  delete all mpoints from curve
+ * delete all mpoints from curve
  *
  * \param[in,out] curve NURBS curve object
  */
@@ -193,7 +193,7 @@ ay_nct_clearmp(ay_nurbcurve_object *curve)
 
 
 /** ay_nct_recreatemp:
- *  recreate mpoints of curve from identical control points
+ * recreate mpoints of curve from identical control points
  *
  * \param[in,out] curve NURBS curve object
  */
@@ -295,7 +295,7 @@ cleanup:
 
 
 /** ay_nct_collapseselp:
- *  collapse selected points of NURBS curve
+ * collapse selected points of NURBS curve
  *
  * \param[in,out] o NURBS curve object
  *
@@ -408,7 +408,7 @@ ay_nct_collapseselp(ay_object *o)
 
 
 /** ay_nct_explodemp:
- *  explode selected mpoints of NURBS curve
+ * explode selected mpoints of NURBS curve
  *
  * \param[in,out] o NURBS curve object
  *
@@ -8628,7 +8628,7 @@ cleanup:
  *  the curve to the XY-plane and testing if any
  *  Z-coordinates are different (to each other).
  *
- * \param[in] c NURBS curve to check
+ * \param[in] c NURBS curve/ICurve/ACurve to check
  * \param[in] allow_flip allow curve reversal
  * \param[in,out] cp pointer where to store the curve rotated to XY,
     may be NULL
@@ -8643,8 +8643,10 @@ ay_nct_isplanar(ay_object *c, int allow_flip, ay_object **cp, int *is_planar)
  int ay_status;
  ay_object *tmp = NULL;
  ay_nurbcurve_object *nc;
+ ay_icurve_object *ic = NULL;
+ ay_acurve_object *ac = NULL;
  double *cv;
- int i, stride = 4;
+ int i, len, stride = 4;
 
   if(!c || !is_planar)
     return;
@@ -8659,10 +8661,30 @@ ay_nct_isplanar(ay_object *c, int allow_flip, ay_object **cp, int *is_planar)
   if(!ay_status)
     {
       *is_planar = AY_TRUE;
-
-      nc = (ay_nurbcurve_object *)tmp->refine;
-      cv = nc->controlv;
-      for(i = 0; i < nc->length-1; i++)
+      switch(tmp->type)
+	{
+	case AY_IDNCURVE:
+	  nc = (ay_nurbcurve_object *)tmp->refine;
+	  cv = nc->controlv;
+	  len = nc->length;
+	  break;
+	case AY_IDICURVE:
+	  ic = (ay_icurve_object *)tmp->refine;
+	  cv = ic->controlv;
+	  stride = 3;
+	  len = ic->length;
+	  break;
+	case AY_IDACURVE:
+	  ac = (ay_acurve_object *)tmp->refine;
+	  cv = ac->controlv;
+	  stride = 3;
+	  len = ac->length;
+	  break;
+	default:
+	  break;
+	} /* switch */
+      
+      for(i = 0; i < len-1; i++)
 	{
 	  if(fabs(cv[i*stride+2]-cv[(i+1)*stride+2]) > AY_EPSILON*2)
 	    {
