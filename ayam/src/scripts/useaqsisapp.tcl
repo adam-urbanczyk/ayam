@@ -21,7 +21,7 @@
 # (the rest of the script will adapt):
 set env(AQSIS_HOME) /Applications
 
-if { ! [file exists "$env(AQSIS_HOME)/Aqsis.app" ] } {
+if { ! [file exists "$env(AQSIS_HOME)/Aqsis.app"] } {
     tk_messageBox -type ok -title Error -icon error -message "Aqsis.app not found in $env(AQSIS_HOME)!"
     return;
 }

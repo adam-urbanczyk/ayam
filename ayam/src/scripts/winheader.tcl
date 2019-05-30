@@ -20,8 +20,8 @@ set modules [list aycore.h contrib.h nurbs.h objects.h]
 # export headers (for Ayam)
 
 # mangle ayam.h
-set infile [ open ayam.h r ]
-set outfile [ open [file join "exp" ayam.h] w ]
+set infile [open ayam.h r]
+set outfile [open [file join "exp" ayam.h] w]
 while { ![eof $infile] } {
     gets $infile in
     if { ![string compare -length 6 $in "extern"] } {
@@ -37,8 +37,8 @@ close $outfile
 
 # mangle module headers
 foreach module $modules {
-    set infile [ open $module r ]
-    set outfile [ open [file join "exp" $module] w ]
+    set infile [open $module r]
+    set outfile [open [file join "exp" $module] w]
     while { ![eof $infile] } {
 	gets $infile in
 	set first [string index $in 0]
@@ -57,8 +57,8 @@ foreach module $modules {
 # import headers (for plugins)
 
 # mangle ayam.h
-set infile [ open ayam.h r ]
-set outfile [ open [file join "imp" ayam.h] w ]
+set infile [open ayam.h r]
+set outfile [open [file join "imp" ayam.h] w]
 while { ![eof $infile] } {
     gets $infile in
     if { ![string compare -length 6 $in "extern"] } {
@@ -74,8 +74,8 @@ close $outfile
 
 # mangle module headers
 foreach module $modules {
-    set infile [ open $module r ]
-    set outfile [ open [file join "imp" $module] w ]
+    set infile [open $module r]
+    set outfile [open [file join "imp" $module] w]
     while { ![eof $infile] } {
 	gets $infile in
 	set first [string index $in 0]

@@ -21,7 +21,7 @@
 # (the rest of the script will adapt):
 set env(PIXIEHOME) /Library/pixie
 
-if { ! [file exists "$env(PIXIEHOME)" ] } {
+if { ! [file exists "$env(PIXIEHOME)"] } {
     tk_messageBox -type ok -title Error -icon error -message "Pixie not found
 in $env(PIXIEHOME)!"
     return;
