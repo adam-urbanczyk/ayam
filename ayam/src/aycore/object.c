@@ -1172,6 +1172,7 @@ ay_object_ishastcmd(ClientData clientData, Tcl_Interp *interp,
 		     (o->type == AY_IDICURVE) ||
 		     (o->type == AY_IDACURVE))
 		    {
+		      planar = 0;
 		      ay_nct_isplanar(o, AY_FALSE, NULL, &planar);
 		      if(planar)
 			res = yes;
@@ -1193,6 +1194,7 @@ ay_object_ishastcmd(ClientData clientData, Tcl_Interp *interp,
 			(void)ay_provide_object(o, AY_IDNCURVE, &p);
 			if(p)
 			  {
+			    planar = 0;
 			    ay_nct_isplanar(p, AY_FALSE, NULL, &planar);
 			    if(planar)
 			      res = yes;
@@ -1206,8 +1208,7 @@ ay_object_ishastcmd(ClientData clientData, Tcl_Interp *interp,
 			    if(p)
 			      {
 				np = (ay_nurbpatch_object*)p->refine;
-				ay_npt_isplanar(np, NULL);
-				if(planar)
+				if(ay_npt_isplanar(np, NULL))
 				  res = yes;
 				else
 				  res = no;
