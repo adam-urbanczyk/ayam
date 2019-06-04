@@ -172,7 +172,8 @@ ms_set en ayprefse_TmpDir "A path where temporary files are to be saved."
 
 ms_set en ayprefse_PickEpsilon "Maximum allowed distance from picked point\
 to editable point."
-ms_set en ayprefse_HandleSize "Size of the handles of editable points."
+ms_set en ayprefse_HandleSize "Size of the handles of editable points in\
+pixels."
 ms_set en ayprefse_PickCycle "Cycle through pick candidates by further clicks?"
 ms_set en ayprefse_LazyNotify "Notify parent objects about changes just on\
 mouse up?"
@@ -352,6 +353,7 @@ ms_set en info_rp2 "Ready to remove file:\n\"$ay(ayamrc)\"?"
 ms_set en info_rp3 "Preferences file removed!\nPlease restart Ayam now."
 
 # view menu
+#ms_set en vmenu1 "current modelling action"
 ms_set en vmenu2 "change global/local mode\ncycle with <lmk>"
 ms_set en vmenu3 "change drawing mode\ncycle with <dmu>/<dmd>"
 ms_set en vmenu4 "change gridsize\ncycle with <gu>/<gd>"
@@ -402,7 +404,7 @@ ms_set de ayprefse_TmpDir "Verzeichnis für temporäre Dateien."
 # Modeling
 ms_set de ayprefse_PickEpsilon "Größte erlaubte Entfernung zwischen\
 \nausgewähltem und editierbaren Punkt."
-ms_set de ayprefse_HandleSize "Größe der editierbaren Punkte."
+ms_set de ayprefse_HandleSize "Größe der editierbaren Punkte in Pixeln."
 ms_set de ayprefse_LazyNotify "Sollen Elternobjekte über Änderungen an den\
 \nKindobjekten nur am Ende einer Modellieraktion\nbenachrichtigt werden?"
 ms_set de ayprefse_CompleteNotify "Wann sollen alle Objekte über Änderungen\
@@ -418,7 +420,7 @@ ms_set de ayprefse_GlobalMark "Soll es nur eine globale Marke geben?"
 ms_set de ayprefse_CreateAtMark "Sollen neue Objekte an der Marke erzeugt\
 werden?"
 ms_set de ayprefse_DefaultAction "Modellier-Aktion, die beim Drücken der\
-\n<Esc>-Taste gestartet werden soll."
+\n<Esc>-Taste gestartet wird."
 ms_set de ayprefse_PickCycle "Mit weiteren Klicks durch Auswahlkandidaten\
 wechseln?"
 ms_set de ayprefse_UndoLevels "Anzahl zurücknehmbarer Modellierschritte;\
@@ -605,9 +607,10 @@ ms_set de info_rc2 "Kurve zur korrekten Ebene drehen?"
 
 ms_set de info_rp1 "Voreinstellungen zurücksetzen?"
 ms_set de info_rp2 "Bereit zum Löschen der Datei:\n\"$ay(ayamrc)\"?"
-ms_set de info_rp3 "Die Voreinstellungen wurden gelöscht!\nBitte neu starten."
+ms_set de info_rp3 "Die Voreinstellungen wurden gelöscht!\nBitte Ayam neu starten."
 
 # view menu
+#ms_set de vmenu1 "Aktuelle Modellieraktion"
 ms_set de vmenu2 "Modellierraum ändern\nDurchwechseln mit <lmk>"
 ms_set de vmenu3 "Anzeigemodus ändern\nDurchwechseln mit <dmu>/<dmd>"
 ms_set de vmenu4 "Gitter ändern\nDurchwechseln mit <gu>/<gd>"
@@ -650,7 +653,7 @@ temporaire."
 
 ms_set fr ayprefse_PickEpsilon "Distance maximale autorisée du point\
 sélectionné vers le point éditable."
-ms_set fr ayprefse_HandleSize "Taille des pognées des points éditables."
+ms_set fr ayprefse_HandleSize "Taille des pognées des points éditables en pixels."
 ms_set fr ayprefse_LazyNotify "Notifier les objets parent à propos des\
 changement simplement au survol de souris?"
 #ms_set fr ayprefse_CompleteNotify "When shall a complete notification be\
@@ -693,7 +696,7 @@ les vue ombrées?"
 ms_set fr ayprefse_Background "Couleur de fond."
 ms_set fr ayprefse_Object "Couleur pour les objets non sélectionnés."
 ms_set fr ayprefse_Selection "Couleur pour les objets sélectionnés."
-ms_set fr ayprefse_Grid "Couleur pour les grilles"
+ms_set fr ayprefse_Grid "Couleur pour les grilles."
 ms_set fr ayprefse_Tag "Couleur pour les points (é)sélectionnés."
 ms_set fr ayprefse_Shade "Couleur pour les vues ombrées lorsque que\
 UseMatColor\nn'est as activé ou que l'objet n'a pas de matériau\
@@ -837,9 +840,10 @@ ms_set fr info_rp2 "Prêt pour supprimier le fichier:\n\"$ay(ayamrc)\"?"
 #ms_set fr info_rp3 "Preferences file removed!\nPlease restart Ayam now."
 
 # view menu
-#ms_set en vmenu2 "change global/local mode\ncycle with <lmk>"
-#ms_set en vmenu3 "change drawing mode\ncycle with <dmu>/<dmd>"
-#ms_set en vmenu4 "change gridsize\ncycle with <gu>/<gd>"
+#ms_set fr vmenu1 "current modelling action"
+#ms_set fr vmenu2 "change global/local mode\ncycle with <lmk>"
+#ms_set fr vmenu3 "change drawing mode\ncycle with <dmu>/<dmd>"
+#ms_set fr vmenu4 "change gridsize\ncycle with <gu>/<gd>"
 
 
 # EOF
