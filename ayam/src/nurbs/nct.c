@@ -2980,7 +2980,7 @@ ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  if(argv[1][0] == '-' && argv[1][1] == 'a')
+  if(argc > 1 && argv[1][0] == '-' && argv[1][1] == 'a')
     {
       if(argc > 2)
 	{
