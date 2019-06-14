@@ -25,6 +25,7 @@ Type 0
 # create PolyMeshAttr-UI
 set w [frame $ay(pca).$PolyMeshAttr(w)]
 
+addVSpace $w s1 2
 addInfo $w PolyMeshAttrData NPolys
 addInfo $w PolyMeshAttrData NControls
 addInfo $w PolyMeshAttrData HasNormals
