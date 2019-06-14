@@ -32,6 +32,7 @@ Data ""
 
 # create RiProcAttr-UI
 set w [frame $ay(pca).$RiProcAttr(w)]
+addVSpace $w s1 2
 addMenu $w RiProcAttrData Type {DelayedReadArchive RunProgram DynamicLoad}
 addFile $w RiProcAttrData File
 addString $w RiProcAttrData Data
