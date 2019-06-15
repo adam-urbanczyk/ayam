@@ -1433,7 +1433,10 @@ cleanup:
 
 
 /** ay_nct_clamp:
- *  clamp NURBS curve, it is safe to call this with half clamped curves
+ * Change knots and control points of a NURBS curve so that the curve
+ * interpolates its respective end control points without changing the
+ * current curve shape.
+ * It is safe to call this with half clamped curves.
  *
  * \param[in,out] curve NURBS curve object to clamp
  * \param[in] side side to clamp:
@@ -1648,8 +1651,9 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
 
 
 /** ay_nct_clampperiodic:
- *  fast clamp for curves with periodic knot vectors (e.g. AY_KTBSPLINE),
- *  always clamps both ends
+ * This variant of #ay_nct_clamp() above is a fast complete clamp for
+ * curves with periodic knot vectors (e.g. AY_KTBSPLINE),
+ * always clamps both ends
  *
  * \param[in,out] curve NURBS curve object to clamp
  *
@@ -1727,7 +1731,9 @@ ay_nct_clampperiodic(ay_nurbcurve_object *curve)
 
 
 /** ay_nct_clamptcmd:
- *  Clamp selected NURBS curves.
+ *  Clamp selected NURBS curves, i.e. change their knots and control points
+ *  so that they interpolate their respective end control points without
+ *  changing the current curve shapes.
  *  Implements the \a clampNC scripting interface command.
  *  See also the corresponding section in the \ayd{scclampnc}.
  *
@@ -2774,7 +2780,7 @@ cleanup:
  *
  * \param[in,out] src curve object to split
  * \param[in] u parametric value at which to split
- * \param[out] result where to store the second curve
+ * \param[in,out] result where to store the second curve
  *
  * \returns AY_OK on success, error code otherwise.
  */
