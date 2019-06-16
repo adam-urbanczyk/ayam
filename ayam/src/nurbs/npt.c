@@ -10129,9 +10129,19 @@ ay_npt_getbeveltags(ay_object *o, int place,
 } /* ay_npt_getbeveltags */
 
 
-/* ay_npt_clampu:
- *  clamp NURBS patch, it is safe to call this with half clamped patches
- *  side: 0 - clamp both ends, 1 - clamp only start, 2 - clamp only end
+/** ay_npt_clampu:
+ * Change knots and control points of a NURBS surface so that the surface
+ * interpolates its respective end control points in U direction without
+ * changing the current surface shape.
+ * it is safe to call this with half clamped patches
+ *
+ * \param[in,out] patch NURBS patch object to clamp
+ * \param[in] side side to clamp:
+ *       0 - clamp both sides,
+ *       1 - clamp only start,
+ *       2 - clamp only end
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_clampu(ay_nurbpatch_object *patch, int side)
@@ -10321,9 +10331,19 @@ ay_npt_clampu(ay_nurbpatch_object *patch, int side)
 } /* ay_npt_clampu */
 
 
-/* ay_npt_clampv:
- *  clamp NURBS patch, it is safe to call this with half clamped patches
- *  side: 0 - clamp both ends, 1 - clamp only start, 2 - clamp only end
+/** ay_npt_clampv:
+ * Change knots and control points of a NURBS surface so that the surface
+ * interpolates its respective end control points in V direction without
+ * changing the current surface shape.
+ * It is safe to call this with half clamped patches.
+ *
+ * \param[in,out] patch NURBS patch object to clamp
+ * \param[in] side side to clamp:
+ *       0 - clamp both sides,
+ *       1 - clamp only start,
+ *       2 - clamp only end
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_clampv(ay_nurbpatch_object *patch, int side)
@@ -13446,7 +13466,7 @@ ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	  i += 2;
 	} /* while */
-    } /* if */
+    } /* if have args */
 
   /* check selection */
   if(!sel)
@@ -14743,6 +14763,7 @@ ay_npt_iscomptcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   sel = ay_selection;
+  i = 0;
   while(sel)
     {
       o = sel->object;
