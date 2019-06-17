@@ -2321,6 +2321,8 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp *interp,
     }
   else
     {
+      ay_current_primlevel = 0;
+
       if(smonly)
 	{
 	  /* export for rendering shadow maps */
