@@ -870,7 +870,7 @@ proc io_saveEnv { } {
 # io_getRIBName:
 #  derive/request a RIB file name for export
 #
-proc io_getRIBName { {noimage 0} } {
+proc io_getRIBName { } {
     global ay ayprefs
 
     winAutoFocusOff
@@ -1063,17 +1063,31 @@ proc io_RenderSM { w all } {
 proc io_exportRIBSO { } {
     global ay ayprefs ay_error
 
-    set ribname [io_getRIBName]
-    set ay_error ""
-
-    if { $ribname != "" } {
-	wrib $ribname -selonly
-	if { $ay_error < 2 } {
-	    ayError 4 "exportRIB" "Done exporting objects to:"
-	    ayError 4 "exportRIB" "$ribname"
-	} else {
-	    ayError 2 "exportRIB" "Could not export RIB!"
+    set sel [getSel]
+    if { $sel != "" } {
+	set objname ""
+	if { [llength $sel] == 1 } {
+	    getName objname 1
+	    if { $objname != "" } {
+		append objname ".rib"
+	    }
 	}
+	set filetypes {{"RIB" ".rib"} {"All Files" *}}
+	set ribname [tk_getSaveFile -filetypes $filetypes -parent .\
+			 -initialfile $objname -title "Export to file:"]
+	set ay_error ""
+
+	if { $ribname != "" } {
+	    wrib $ribname -selonly
+	    if { $ay_error < 2 } {
+		ayError 4 "exportRIB" "Done exporting objects to:"
+		ayError 4 "exportRIB" "$ribname"
+	    } else {
+		ayError 2 "exportRIB" "Could not export RIB!"
+	    }
+	}
+    } else {
+	ayError 20 "RIB Export" ""
     }
     # if
 
