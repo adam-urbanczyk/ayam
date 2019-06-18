@@ -742,11 +742,20 @@ ay_nct_open(ay_nurbcurve_object *curve)
 int
 ay_nct_revert(ay_nurbcurve_object *curve)
 {
+ int ay_status = AY_OK;
  int i, j;
  double dtemp;
 
   if(!curve)
     return AY_ENULL;
+
+  /* revert knots */
+  if(curve->knot_type >= AY_KTCUSTOM)
+    {
+      ay_status = ay_knots_revert(curve->knotv, curve->length+curve->order);
+      if(ay_status)
+	return ay_status;
+    } /* if */
 
   /* revert control */
   j = (curve->length - 1)*4;
@@ -773,13 +782,7 @@ ay_nct_revert(ay_nurbcurve_object *curve)
       j -= 4;
     } /* while */
 
-  /* revert knots */
-  if(curve->knot_type >= AY_KTCUSTOM)
-    {
-      (void)ay_knots_revert(curve->knotv, curve->length+curve->order);
-    } /* if */
-
- return AY_OK;
+ return ay_status;
 } /* ay_nct_revert */
 
 
