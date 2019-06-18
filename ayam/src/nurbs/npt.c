@@ -750,6 +750,15 @@ ay_npt_revertu(ay_nurbpatch_object *np)
  int i, j, ii, jj, stride = 4;
  double t[4];
 
+  /* revert knots */
+  if(np->uknot_type >= AY_KTCUSTOM)
+    {
+      ay_status = ay_knots_revert(np->uknotv, np->width+np->uorder);
+      if(ay_status)
+	return ay_status;
+    } /* if */
+
+  /* revert control points */
   for(i = 0; i < np->height; i++)
     {
       for(j = 0; j < np->width/2; j++)
@@ -762,12 +771,6 @@ ay_npt_revertu(ay_nurbpatch_object *np)
 	  memcpy(&(np->controlv[jj]), t, stride*sizeof(double));
 	} /* for */
     } /* for */
-
-  /* revert knots */
-  if(np->uknot_type >= AY_KTCUSTOM)
-    {
-      ay_status = ay_knots_revert(np->uknotv, np->width+np->uorder);
-    } /* if */
 
   /* since we do not create new multiple points
      we only need to re-create them if there were
@@ -879,6 +882,15 @@ ay_npt_revertv(ay_nurbpatch_object *np)
  int i, j, ii, jj, stride = 4;
  double t[4];
 
+  /* revert knots */
+  if(np->vknot_type >= AY_KTCUSTOM)
+    {
+      ay_status = ay_knots_revert(np->vknotv, np->height+np->vorder);
+      if(ay_status)
+	return ay_status;
+    } /* if */
+
+  /* revert control points */
   for(i = 0; i < np->width; i++)
     {
       ii = i*np->height*stride;
@@ -893,12 +905,6 @@ ay_npt_revertv(ay_nurbpatch_object *np)
 	  jj -= stride;
 	} /* for */
     } /* for */
-
-  /* revert knots */
-  if(np->vknot_type >= AY_KTCUSTOM)
-    {
-      ay_status = ay_knots_revert(np->vknotv, np->height+np->vorder);
-    } /* if */
 
   /* since we do not create new multiple points
      we only need to re-create them if there were
@@ -1252,7 +1258,7 @@ ay_npt_drawrohandles(ay_nurbpatch_object *patch)
 
       glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
 		(GLfloat)ay_prefs.seb);
-    }
+    } /* if */
 
  return;
 } /* ay_npt_drawrohandles */
@@ -14035,7 +14041,6 @@ ay_npt_refineu(ay_nurbpatch_object *patch, double *newknotv, int newknotvlen)
 
       /* fill X (contains just the new u values) */
       j = 0;
-
       for(i = patch->uorder-1; i < patch->width; i++)
 	{
 	  if(knotv[i] != knotv[i+1])
@@ -14072,7 +14077,9 @@ ay_npt_refineu(ay_nurbpatch_object *patch, double *newknotv, int newknotvlen)
     }
 
   if(patch->is_rat)
-    (void)ay_npt_euctohom(patch);
+    {
+      (void)ay_npt_euctohom(patch);
+    }
 
   /* fill Ubar & Qw */
   ay_nb_RefineKnotVectSurfU(patch->is_rat, patch->width-1, patch->height-1,
@@ -14103,7 +14110,9 @@ ay_npt_refineu(ay_nurbpatch_object *patch, double *newknotv, int newknotvlen)
     }
 
   if(patch->is_rat)
-    (void)ay_npt_homtoeuc(patch);
+    {
+      (void)ay_npt_homtoeuc(patch);
+    }
 
   if(!ay_status)
     {
@@ -14168,9 +14177,8 @@ ay_npt_refinev(ay_nurbpatch_object *patch, double *newknotv, int newknotvlen)
 	  return AY_ERROR;
 	}
 
-      /* fill X (contains just the new u values) */
+      /* fill X (contains just the new v values) */
       j = 0;
-
       for(i = patch->vorder-1; i < patch->height; i++)
 	{
 	  if(knotv[i] != knotv[i+1])
@@ -14207,7 +14215,9 @@ ay_npt_refinev(ay_nurbpatch_object *patch, double *newknotv, int newknotvlen)
     }
 
   if(patch->is_rat)
-    (void)ay_npt_euctohom(patch);
+    {
+      (void)ay_npt_euctohom(patch);
+    }
 
   /* fill Vbar & Qw */
   ay_nb_RefineKnotVectSurfV(patch->is_rat, patch->width-1, patch->height-1,
@@ -14238,7 +14248,9 @@ ay_npt_refinev(ay_nurbpatch_object *patch, double *newknotv, int newknotvlen)
     }
 
   if(patch->is_rat)
-    (void)ay_npt_homtoeuc(patch);
+    {
+      (void)ay_npt_homtoeuc(patch);
+    }
 
   if(!ay_status)
     {
