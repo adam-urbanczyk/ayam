@@ -1,5 +1,5 @@
-[29. May 2019] Tip:
-==================
+[18. Jun 2019] Tip:
+===================
 Bug Fixes:
 o NURBSphere objects can not be trimmed (SF 587)
 o repeated toggling of advanced search options (SF 588)
@@ -24,7 +24,8 @@ o added script "link.tcl" to manually control updates of object hierarchy
   and views
 o added axis/angle parameter support to "rotOb"/"rotPnts" commands
 o added "isDegen" command to check NURBS curves/surfaces for degeneracy
-o added "isParent" command
+o added "isPlanar" command to check NURBS curves/surfaces for planarity
+o added "isParent" command to check objects for potential parenthood
 
 Import/Export:
 o RIB export of RiDisplay tags now omits the leading "+" from the first
