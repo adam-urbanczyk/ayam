@@ -6660,7 +6660,7 @@ to handle in total in Ayam.
 RiInc objects draw a simple bounding box with stippled lines instead of the
 archive contents; those will only become part of the scene when it is
 exported to a RIB. See also the above image.
-If children are present, they will be drawn instead of the bounding box.
+If a RiInc object has children, they will be drawn instead of the bounding box.
 This allows to better convey the actual shape of the objects in the included
 archive.<footnote>Since 1.26.</footnote>
 As the bounding box, also the children never appear in the RIB.
@@ -6686,11 +6686,11 @@ RiInc|Any|No|N/A|No<#if out="latex">@<hline></#if>
 <p><#if out="latex">&nbsp;<newline></#if>
 The following attributes control the inclusion process:
 <itemize>
-<item>Using <tt/"File"/ you specify the filename of the RIB archive to be
-included.
-<item><tt/"Width"/, <tt/"Height"/, and <tt/"Length"/ specify
+<item>Using <tt/"File"/ the filename of the RIB archive to be
+included is specified.
+<item><tt/"Width"/, <tt/"Height"/, and <tt/"Length"/ determine
 the size of a box, that will be drawn as a geometric representation of
-the RIB.
+the RIB archive (if no children are present).
 </itemize>
 
 <sect3>RIB Export
@@ -12689,7 +12689,7 @@ while modeling.
 The tag type <tt/"PV"/ can be used to attach arbitrary data
 to geometric primitives and even sub-primitives.
 With the help of primitive variables texture coordinates can be attached
-to a NURBS patch primitive or attach distinct
+to the vertices of a NURBS patch primitive or distinct
 colors to the faces or even to single vertices of a polygonal mesh.
 In the latter case, the data is properly interpolated by the RenderMan
 renderer before it is handed over to the surface shader.
@@ -22503,14 +22503,15 @@ objects:
 objects (e.g.~ICurve, ConcatNC, ExtrNC),
 <item>NPatch (with trim curves) and objects that may be converted
 to NPatch objects (e.g.~BPatch, PatchMesh, Revolve, Sweep, Extrude, Skin,
-Cap, Gordon, Birail1, Birail2, Text); since Ayam 1.8.3 also Quadrics
-will be automatically converted to NURBS surfaces and exported,
+Cap, Gordon, Birail1, Birail2, Text),
+<item>Quadrics will be automatically converted to NURBS
+surfaces,<footnote>Since 1.8.3.</footnote>
 <item>PolyMesh and objects that may be converted to PolyMesh objects
 (MetaObj), faces with holes are not supported by the Wavefront OBJ
 format and will be tesselated to triangles for export automatically,
-<item>Box,
-<item>Instance, Clone; both will be resolved to normal objects for export
-as Wavefront OBJ does not support referenced geometry.
+<item>Box (as six polygonal faces),
+<item>Instance, Clone, Mirror; those will be resolved to normal objects
+for export as Wavefront OBJ does not support referenced geometry.
 </itemize>
 Since the Wavefront OBJ format does not support separate transformation
 attributes, all transformation attributes will be used to transform the
