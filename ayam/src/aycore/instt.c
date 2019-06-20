@@ -910,7 +910,7 @@ ay_instt_getmastertcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- int found = AY_FALSE;
+ int return_result = AY_FALSE, found = AY_FALSE;
  char *buf = NULL, *node = NULL;
 
   if(!sel)
@@ -921,8 +921,7 @@ ay_instt_getmastertcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc < 2)
     {
-      ay_error(AY_EARGS, argv[0], "varname");
-      return TCL_OK;
+      return_result = AY_TRUE;
     }
 
   o = sel->object;
@@ -942,7 +941,14 @@ ay_instt_getmastertcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  Tcl_SetVar(interp, argv[1], node, TCL_LEAVE_ERR_MSG);
+  if(return_result)
+    {
+      Tcl_SetResult(interp, node, TCL_VOLATILE);
+    }
+  else
+    {
+      Tcl_SetVar(interp, argv[1], node, TCL_LEAVE_ERR_MSG);
+    }
 
   if(buf)
     free(buf);
