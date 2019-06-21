@@ -141,7 +141,10 @@ proc prefs_open {} {
     set fw [$nb insert end Main -text Main -raisecmd "prefs_rsnb $nb Main"]
 
     addText $fw e0 "Shaders:"
-    addMDirB $fw ayprefse Shaders [ms ayprefse_Shaders]
+    set s [string map [list <sep> $ay(separator)] [ms info_separator]]
+    set h [ms ayprefse_Shaders]
+    append h $s
+    addMDirB $fw ayprefse Shaders $h
     addCommandB $fw c1 "Scan Shaders" {
 	set ayprefs(Shaders) $ayprefse(Shaders)
 	update
@@ -166,8 +169,12 @@ proc prefs_open {} {
     #addCheckB $fw ayprefse LoadEnv [ms ayprefse_LoadEnv]
     #addCheckB $fw ayprefse NewLoadsEnv [ms ayprefse_NewLoadsEnv]
     addFileB $fw ayprefse EnvFile [ms ayprefse_EnvFile]
-    addMFileB $fw ayprefse Scripts [ms ayprefse_Scripts]
-    addMDirB $fw ayprefse Plugins [ms ayprefse_Plugins]
+    set h [ms ayprefse_Scripts]
+    append h $s
+    addMFileB $fw ayprefse Scripts $h
+    set h [ms ayprefse_Plugins]
+    append h $s
+    addMDirB $fw ayprefse Plugins $h
 
     set docdefs {"http://ayam.sourceforge.net/docs/"}
     global AYWITHAQUA

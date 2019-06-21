@@ -352,6 +352,8 @@ ms_set en info_rp1 "Reset Preferences?"
 ms_set en info_rp2 "Ready to remove file:\n\"$ay(ayamrc)\"?"
 ms_set en info_rp3 "Preferences file removed!\nPlease restart Ayam now."
 
+ms_set en info_separator "\nSeparate multiple entries by ´<sep>´."
+
 # view menu
 #ms_set en vmenu1 "current modelling action"
 ms_set en vmenu2 "change global/local mode\ncycle with <lmk>"
@@ -609,6 +611,8 @@ ms_set de info_rp1 "Voreinstellungen zurücksetzen?"
 ms_set de info_rp2 "Bereit zum Löschen der Datei:\n\"$ay(ayamrc)\"?"
 ms_set de info_rp3 "Die Voreinstellungen wurden gelöscht!\nBitte Ayam neu starten."
 
+ms_set de info_separator "\nMehrere Einträge durch ´<sep>´ trennen."
+
 # view menu
 #ms_set de vmenu1 "Aktuelle Modellieraktion"
 ms_set de vmenu2 "Modellierraum ändern\nDurchwechseln mit <lmk>"
@@ -838,6 +842,8 @@ ms_set fr info_rs1 "Redémarrage nécessaire!"
 ms_set fr info_rp1 "Réinitialiser préférences?"
 ms_set fr info_rp2 "Prêt pour supprimier le fichier:\n\"$ay(ayamrc)\"?"
 #ms_set fr info_rp3 "Preferences file removed!\nPlease restart Ayam now."
+
+ms_set fr info_separator "\nSéparez les entrées par '<sep>'."
 
 # view menu
 #ms_set fr vmenu1 "current modelling action"
