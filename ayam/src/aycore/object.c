@@ -1138,7 +1138,7 @@ ay_object_ishastcmd(ClientData clientData, Tcl_Interp *interp,
 			  res = yes;
 			else
 			  res = no;
-			ay_object_deletemulti(p, AY_TRUE);
+			ay_object_deletemulti(p, AY_FALSE);
 		      }
 		    else
 		      {
@@ -1150,7 +1150,7 @@ ay_object_ishastcmd(ClientData clientData, Tcl_Interp *interp,
 			      res = yes;
 			    else
 			      res = no;
-			    ay_object_deletemulti(p, AY_TRUE);
+			    ay_object_deletemulti(p, AY_FALSE);
 			  }
 		      }
 		  } /* if not NCurve or NPatch */
@@ -1200,7 +1200,7 @@ ay_object_ishastcmd(ClientData clientData, Tcl_Interp *interp,
 			      res = yes;
 			    else
 			      res = no;
-			    ay_object_deletemulti(p, AY_TRUE);
+			    ay_object_deletemulti(p, AY_FALSE);
 			  }
 			else
 			  {
@@ -1212,7 +1212,7 @@ ay_object_ishastcmd(ClientData clientData, Tcl_Interp *interp,
 				  res = yes;
 				else
 				  res = no;
-				ay_object_deletemulti(p, AY_TRUE);
+				ay_object_deletemulti(p, AY_FALSE);
 			      }
 			  }
 		      } /* if not NCurve or NPatch */
