@@ -7487,7 +7487,7 @@ ay_npt_gordonwcgetends(ay_object *o,
       *se = ppe;
       break;
     default:
-      ay_provide_object(o, AY_IDNCURVE, &p);
+      (void)ay_provide_object(o, AY_IDNCURVE, &p);
       if(p)
         {
           nc = (ay_nurbcurve_object *)p->refine;
@@ -8492,13 +8492,14 @@ ay_npt_isboundcurve(ay_object *o, double b1, double b2, double b3, double b4,
 
   if(o->type != AY_IDNCURVE)
     {
-      ay_status = ay_provide_object(o, AY_IDNCURVE, &c);
+      (void)ay_provide_object(o, AY_IDNCURVE, &c);
       if(c)
 	{
 	  ncurve = (ay_nurbcurve_object *)c->refine;
 	}
       else
 	{
+	  ay_status = AY_ERROR;
 	  goto cleanup;
 	}
     }
@@ -11918,7 +11919,7 @@ ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
       o = sel->object;
       if(o->type != AY_IDNPATCH)
 	{
-	  ay_status = ay_provide_object(o, AY_IDNPATCH, &pobject);
+	  (void)ay_provide_object(o, AY_IDNPATCH, &pobject);
 
 	  if(!pobject)
 	    {
@@ -11945,7 +11946,7 @@ ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
 	    } /* if */
 
 	  ay_object_link(new);
-	}
+	} /* if */
 
       if(pobject)
 	{
@@ -13214,8 +13215,8 @@ ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[])
     {
       if(ay_selection->object->type != AY_IDNPATCH)
 	{
-	  ay_status = ay_provide_object(ay_selection->object,
-					AY_IDNPATCH, &pobject);
+	  (void)ay_provide_object(ay_selection->object,
+				  AY_IDNPATCH, &pobject);
 	  if(!pobject)
 	    {
 	      ay_error(AY_EWTYPE, fname, ay_npt_npname);
@@ -13498,7 +13499,7 @@ ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  if(ay_provide_object(o, AY_IDNPATCH, NULL) == AY_OK)
 	    {
-	      ay_provide_object(o, AY_IDNPATCH, next);
+	      (void)ay_provide_object(o, AY_IDNPATCH, next);
 	      while(*next)
 		{
 		  next = &((*next)->next);
@@ -13515,7 +13516,7 @@ ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
 		}
 	      else
 		{
-		  ay_provide_object(o, AY_IDNCURVE, next);
+		  (void)ay_provide_object(o, AY_IDNCURVE, next);
 		  while(*next)
 		    {
 		      next = &((*next)->next);
