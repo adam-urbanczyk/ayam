@@ -3563,7 +3563,7 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      if(!patch && sel)
 		{
-		  ay_status = ay_provide_object(sel->object, AY_IDNPATCH, &p);
+		  (void)ay_provide_object(sel->object, AY_IDNPATCH, &p);
 		  if(p)
 		    {
 		      is_provided = AY_TRUE;
