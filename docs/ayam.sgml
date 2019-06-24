@@ -26260,11 +26260,12 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 
 <p>
 &nbsp;<newline>&nbsp;
-<tt/&nbsp;&nbsp;<bf/S//
+<#unless out="latex"><label id="indexs"></#unless><tt/&nbsp;&nbsp;<bf/S//
 <list>
 <#if out="latex"><x/phantomsection/</#if>
 <item>SafeAutoFocus: <ref id="hidprefss" name="hidden preference setting">
-<item>Samples: <ref id="lip" name="Light attribute"><label id="indexs">
+<item>Samples: <ref id="lip" name="Light attribute">
+<#if out="latex"><label id="indexs"></#if>
 <item>Samples_X: <ref id="rio" name="RenderMan interface option">
 <item>Samples_Y: <ref id="rio" name="RenderMan interface option">
 <item>Save: <ref id="mmfile" name="main menu entry">
@@ -26459,6 +26460,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>StripShaderArch: <ref id="hidprefss" name="hidden preference setting">
 <item>Subdivision Curve: <ref id="sdcurveobj" name="SDCurve object">
 <item>Subdivision Mesh: <ref id="sdmeshobj" name="SDMesh object">
+<item>Subdivision NURBS: <ref id="sdnpatchobj" name="SDNPatch object">
 <item>Superformula Curve: <ref id="sfcurveobj" name="SfCurve object">
 <item>Surface: <ref id="matshader" name="shader property">
 <item>Surfaces: <ref id="surfaces" name="surface primitives">
