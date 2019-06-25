@@ -2688,10 +2688,10 @@ cleanup:
 
 
 /** ay_npt_fillgaps:
- *  fill all the gaps between the patches in \a o
- *  with another NURBS patch; the fillets will be inserted right into
- *  the list of objects provided, the fillets will be marked as selected
- *  so that the caller can tell them apart from the original patches
+ *  create fillets for all the gaps between the patches in \a o;
+ *  the fillets will be inserted right into the list of objects provided,
+ *  the fillets will be marked as selected so that the caller can tell them
+ *  apart from the original patches
  *
  * \param[in,out] o a number of NURBS patch objects (NURBS curves can
  *  be mixed in), the resulting fillets will be inserted in this list
@@ -14000,7 +14000,7 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
  *
  * \param[in,out] patch NURBS surface object to refine
  * \param[in] newknotv vector of new knot values (may be NULL)
- * \param[in] newknotvlen length of vector
+ * \param[in] newknotvlen length of vector \a newknotv
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -14018,7 +14018,7 @@ ay_npt_refineu(ay_nurbpatch_object *patch, double *newknotv, int newknotvlen)
   knotv = patch->uknotv;
   if(newknotv)
     {
-      if(newknotvlen == 0)
+      if(newknotvlen <= 0)
 	return AY_ERROR;
 
       X = newknotv;
@@ -14138,7 +14138,7 @@ ay_npt_refineu(ay_nurbpatch_object *patch, double *newknotv, int newknotvlen)
  *
  * \param[in,out] patch NURBS surface object to refine
  * \param[in] newknotv vector of new knot values (may be NULL)
- * \param[in] newknotvlen length of vector
+ * \param[in] newknotvlen length of vector \a newknotv
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -14156,7 +14156,7 @@ ay_npt_refinev(ay_nurbpatch_object *patch, double *newknotv, int newknotvlen)
   knotv = patch->vknotv;
   if(newknotv)
     {
-      if(newknotvlen == 0)
+      if(newknotvlen <= 0)
 	return AY_ERROR;
 
       X = newknotv;

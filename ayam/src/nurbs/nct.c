@@ -852,7 +852,7 @@ ay_nct_refinekn(ay_nurbcurve_object *curve, int maintain_ends,
   if(newknotv)
     {
       /* use provided new knots */
-      if(newknotvlen == 0)
+      if(newknotvlen <= 0)
 	return AY_ERROR;
 
       X = newknotv;
