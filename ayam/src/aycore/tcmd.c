@@ -1887,7 +1887,7 @@ ay_tcmd_getplanenormaltcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
- ay_object *o = NULL;
+ ay_object *o = NULL, *po = NULL;
  ay_nurbcurve_object *nc;
  ay_icurve_object *ic;
  ay_acurve_object *ac;
@@ -1895,7 +1895,7 @@ ay_tcmd_getplanenormaltcmd(ClientData clientData, Tcl_Interp *interp,
  double *cv = NULL, *pnt, p[4], normal[3], m[16], len;
  int applytrafo = AY_FALSE, clearcv = AY_FALSE, cvlen, stride = 3;
  unsigned int i;
- int j = 1;
+ int j = 1, isCurve = AY_FALSE;
  Tcl_Obj *to = NULL, *ton = NULL;
 
   while(j < argc)
@@ -1911,56 +1911,95 @@ ay_tcmd_getplanenormaltcmd(ClientData clientData, Tcl_Interp *interp,
   while(sel)
     {
       o = sel->object;
+      isCurve = AY_FALSE;
 
-      switch(o->type)
+      if((o->type == AY_IDNCURVE) ||
+	 (ay_provide_object(o, AY_IDNCURVE, NULL) == AY_OK))
 	{
-	case AY_IDNCURVE:
-	  nc = (ay_nurbcurve_object*)o->refine;
-	  cv = nc->controlv;
-	  cvlen = nc->length;
-	  if(nc->type == AY_CTCLOSED)
-	    cvlen--;
-	  if(nc->type == AY_CTPERIODIC)
-	    cvlen -= (nc->order-1);
-	  stride = 4;
-	  break;
-	case AY_IDICURVE:
-	  ic = (ay_icurve_object*)o->refine;
-	  cv = ic->controlv;
-	  cvlen = ic->length;
-	  break;
-	case AY_IDACURVE:
-	  ac = (ay_acurve_object*)o->refine;
-	  cv = ac->controlv;
-	  cvlen = ac->length;
-	  break;
-	default:
-	  ay_status = ay_pact_getpoint(0, o, p, &pe);
-	  if(ay_status)
-	    return TCL_OK;
-	  cvlen = pe.num;
-	  if(!(cv = malloc(pe.num*3*sizeof(double))))
+	  isCurve = AY_TRUE;
+	  switch(o->type)
 	    {
-	      ay_error(AY_EOMEM, argv[0], NULL);
+	    case AY_IDNCURVE:
+	      nc = (ay_nurbcurve_object*)o->refine;
+	      cv = nc->controlv;
+	      cvlen = nc->length;
+	      if(nc->type == AY_CTCLOSED)
+		cvlen--;
+	      if(nc->type == AY_CTPERIODIC)
+		cvlen -= (nc->order-1);
+	      stride = 4;
+	      break;
+	    case AY_IDICURVE:
+	      ic = (ay_icurve_object*)o->refine;
+	      cv = ic->controlv;
+	      cvlen = ic->length;
+	      break;
+	    case AY_IDACURVE:
+	      ac = (ay_acurve_object*)o->refine;
+	      cv = ac->controlv;
+	      cvlen = ac->length;
+	      break;
+	    default:
+	      ay_status = ay_pact_getpoint(0, o, p, &pe);
+	      if(ay_status)
+		return TCL_OK;
+	      cvlen = pe.num;
+	      if(!(cv = malloc(pe.num*3*sizeof(double))))
+		{
+		  ay_error(AY_EOMEM, argv[0], NULL);
+		  ay_pact_clearpointedit(&pe);
+		  return TCL_OK;
+		}
+	      pnt = cv;
+	      for(i = 0; i < pe.num; i++)
+		{
+		  memcpy(pnt, pe.coords[i], 3*sizeof(double));
+		  pnt += 3;
+		}
+	      clearcv = AY_TRUE;
 	      ay_pact_clearpointedit(&pe);
-	      return TCL_OK;
-	    }
-	  pnt = cv;
-	  for(i = 0; i < pe.num; i++)
+	      break;
+	    } /* switch */
+	}
+      else
+	{
+	  if(o->type == AY_IDNPATCH)
 	    {
-	      memcpy(pnt, pe.coords[i], 3*sizeof(double));
-	      pnt += 3;
+	      po = o;
 	    }
-	  clearcv = AY_TRUE;
-	  ay_pact_clearpointedit(&pe);
-	  break;
-	} /* switch */
+	  else
+	    {
+	      if((ay_provide_object(o, AY_IDNPATCH, NULL) == AY_OK))
+		{
+		  po = NULL;
+		  ay_provide_object(o, AY_IDNPATCH, &po);
+		}
+	    }
+	}
 
-      if(cv)
+      if((isCurve && cv) || po)
 	{
 	  /* compute result */
-	  ay_status = ay_geom_extractmeannormal(cv, cvlen, stride,
-						/**/NULL, normal);
+	  if(isCurve)
+	    {
+	      ay_status = ay_geom_extractmeannormal(cv, cvlen, stride,
+						    /*center=*/NULL, normal);
+	    }
+	  else
+	    {
+	      if(po && (po->type == AY_IDNPATCH))
+		{
+		  if((ay_npt_isplanar((ay_nurbpatch_object*)po->refine,
+				      normal)) != AY_TRUE)
+		    {
+		      ay_status = AY_ERROR;
+		    }
+		  if(po != o)
+		    {
+		      (void)ay_object_deletemulti(po, AY_FALSE);
+		    }
+		}
+	    } /* if curve or surface */
 
 	  if(ay_status)
 	    {
@@ -1991,7 +2030,7 @@ ay_tcmd_getplanenormaltcmd(ClientData clientData, Tcl_Interp *interp,
 	  Tcl_ListObjAppendElement(interp, ton, to);
 	  to = Tcl_NewDoubleObj(normal[2]);
 	  Tcl_ListObjAppendElement(interp, ton, to);
-	} /* if cv */
+	} /* if have cv or po */
 
 cleanup:
       if(clearcv && cv)
