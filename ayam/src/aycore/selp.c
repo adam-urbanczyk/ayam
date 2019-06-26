@@ -142,7 +142,9 @@ ay_selp_applytrafotcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   if((argc > 1) && !strcmp(argv[1], "-sel"))
-    all = AY_FALSE;
+    {
+      all = AY_FALSE;
+    }
 
   while(sel)
     {
@@ -190,11 +192,12 @@ ay_selp_applytrafotcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_selp_clear(o);
 	  o->selp = bak;
 	}
-
     } /* while */
 
   if(notify_parent)
-    ay_notify_parent();
+    {
+      (void)ay_notify_parent();
+    }
 
  return TCL_OK;
 } /* ay_selp_applytrafotcmd */
@@ -616,7 +619,9 @@ ay_selp_centertcmd(ClientData clientData, Tcl_Interp *interp,
     } /* while */
 
   if(notify_parent)
-    ay_notify_parent();
+    {
+      (void)ay_notify_parent();
+    }
 
  return TCL_OK;
 } /* ay_selp_centertcmd */
@@ -1023,6 +1028,7 @@ ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
 
   if(!o || !arr)
     return AY_ENULL;
+
   if((mode != 3) && (!p || !pe))
     return AY_ENULL;
 
@@ -1043,6 +1049,7 @@ ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
       /* select all points */
       if(!(pe->coords = malloc(arrlen * sizeof(double*))))
 	return AY_EOMEM;
+
       if(!(pe->indices = malloc(arrlen * sizeof(unsigned int))))
 	return AY_EOMEM;
 
@@ -1403,7 +1410,9 @@ ay_selp_collapsetcmd(ClientData clientData, Tcl_Interp *interp,
     } /* while */
 
   if(notify_parent)
-    (void)ay_notify_parent();
+    {
+      (void)ay_notify_parent();
+    }
 
  return TCL_OK;
 } /* ay_selp_collapsetcmd */
@@ -1487,7 +1496,9 @@ ay_selp_explodetcmd(ClientData clientData, Tcl_Interp *interp,
     } /* while */
 
   if(notify_parent)
-    (void)ay_notify_parent();
+    {
+      (void)ay_notify_parent();
+    }
 
  return TCL_OK;
 } /* ay_selp_explodetcmd */
