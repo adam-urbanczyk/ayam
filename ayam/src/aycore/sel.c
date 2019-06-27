@@ -374,14 +374,14 @@ ay_sel_hsltcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(o)
 	{
-	  ay_sel_free(AY_FALSE);
-	  ay_sel_add(o, AY_TRUE);
+	  ay_sel_free(/*clear_selflag=*/AY_TRUE);
+	  ay_sel_add(o, /*set_selflag=*/AY_TRUE);
 	}
     }
   else
     {
       tnum = 0;
-      ay_sel_free(AY_FALSE);
+      ay_sel_free(/*clear_selflag=*/AY_TRUE);
 
       l = ay_currentlevel->object;
       while(l && l->next)
@@ -396,7 +396,7 @@ ay_sel_hsltcmd(ClientData clientData, Tcl_Interp *interp,
 	  tnum--;
 	  if(tnum <= 0)
 	    {
-	      ay_sel_add(l, AY_TRUE);
+	      ay_sel_add(l, /*set_selflag=*/AY_TRUE);
 	    }
 	  l = l->next;
 	} /* while */
