@@ -11944,8 +11944,8 @@ There are some special modelling actions for Subdivision NURBS
 defined (see below) and there are PLY import/export facilities.
 Furthermore, there are two conversion operations that convert
 NURBS patch and PolyMesh objects to SDNPatch objects.
-Thus, SDMesh objects may be converted in two steps to SDNPatch
-objects, first to a PolyMesh then to the SDNPatch.
+Thus, also SDMesh objects may be converted to SDNPatch
+objects in two steps: first to a PolyMesh then to the SDNPatch.
 <p>
 Please note that the plugin is still in experimental state,
 there is limited error checking and crashes may occur, if
@@ -21475,18 +21475,19 @@ tclset("a", a);<newline>
 tclset("b", b);
 </tt></tscreen>
 sets the Tcl variable <tt>"a"</tt> to the floating point value 3.3,
-and <tt>"b"</tt> to a list of integer values<newline>
-<tt>{ 1 3 5 }</tt>.
-Note that the variable names may also point to Tcl array elements:
+and <tt>"b"</tt> to a list of integer values
+<tt>{ 1 3 5 }</tt>.<newline>
+Note that the variable names may also point to Tcl array elements,
+for instance
 <tscreen><tt>
 tclset("SphereAttrData(Radius)", 1.2);
 </tt></tscreen>
-or contain namespace specifiers
+sets the <tt/Radius/ element in the <tt/SphereAttrData/ array;
+or contain namespace specifiers, for example
 <tscreen><tt>
 tclset("::MyNameSpace::Radius", 1.2);
 </tt></tscreen>
-.
-
+sets the <tt/Radius/ variable in the <tt/MyNameSpace/ namespace.
 <#if out="latex"><x/newpage/</#if>
 
 <sect2>Data Conversion
@@ -21668,7 +21669,7 @@ provided the first line of the script is a comment that instructs Ayam to
 use the Lua interpreter:
 <tscreen><tt>
 <f/--/ Ayam, use: Lua<newline>
-a = 0;<newline>
+a = 0<newline>
 ...
 </tt></tscreen>
 Note that the Lua scripting context inherits the limitations
@@ -21676,13 +21677,13 @@ of the calling Tcl context.
 For example, when running in a Script object,
 the following code fails:
 <tscreen>
-<tt>tcleval("<bf>exit</bf>");</tt>
+<tt>tcleval("<bf>exit</bf>")</tt>
 </tscreen>
 because the Tcl command <tt/"exit"/ is not available in the safe interpreter.
 The command will not fail, when the calling context is the main Tcl
 interpreter; one can e.g.~type into the Ayam console:
 <tscreen>
-<tt>&raquo;&thinsp;<bf>luaEval {</bf>tcleval("<bf>exit</bf>");<bf/}/</tt>
+<tt>&raquo;&thinsp;<bf>luaEval {</bf>tcleval("<bf>exit</bf>")<bf/}/</tt>
 </tscreen>
 and Ayam quits (see also section:
 <ref id="safeinterp" name="Safe Interpreter">).
@@ -21704,11 +21705,11 @@ set of global functions, named as the corresponding Tcl commands.
 For instance, Ayam objects can be created in Lua using a function call
 like this:
 <tscreen><tt>
-crtOb("NCircle");
+crtOb("NCircle")
 </tt></tscreen>
 or, with additional arguments:
 <tscreen><tt>
-crtOb("NCircle", "-radius", 3.0);
+crtOb("NCircle", "-radius", 3.0)
 </tt></tscreen>
 In general, all commands available in the safe Ayam Tcl interpreter are also
 available as function (refer to section
@@ -21725,9 +21726,9 @@ in the next paragraph.
 This Lua function allows to evaluate arbitrary
 Tcl scripts, delivered as string argument:
 <tscreen><tt>
-a = 42;<newline>
-a = tcleval("<bf>puts </bf>" ..&ensp;a ..&ensp;"<bf>; return 5;</bf>");<newline>
-tcleval("<bf>puts </bf>" ..&ensp;a);<newline>
+a = 42<newline>
+a = tcleval("<bf>puts </bf>" ..&ensp;a ..&ensp;"<bf>; return 5;</bf>")<newline>
+tcleval("<bf>puts </bf>" ..&ensp;a)<newline>
 <f/--/ expected output:&ensp;42 5
 </tt></tscreen>
 The <tt>"tcleval()"</tt> function provides access to all the
@@ -21747,9 +21748,9 @@ The <tt>"tclvar()"</tt> function creates a write trace on the Tcl
 variable, so that changes on the Tcl side are always automatically
 reflected on the Lua side:
 <tscreen><tt>
-tclvar("a");<newline>
-tcleval("<bf>set a 42</bf>");<newline>
-tcleval("<bf>puts </bf>" ..&ensp;a);<newline>
+tclvar("a")<newline>
+tcleval("<bf>set a 42</bf>")<newline>
+tcleval("<bf>puts </bf>" ..&ensp;a)<newline>
 <f/--/ expected output:&ensp;42
 </tt></tscreen>
 Mind that the corresponding variable on the Lua side does
@@ -21779,23 +21780,25 @@ allows to efficiently set Tcl variables from the Lua context
 avoiding conversion to string data and back.
 For example:
 <tscreen><tt>
-a = 3.3;<newline>
-b = {1, 3, 5};<newline>
-tclset("a", a);<newline>
-tclset("b", b);
+a = 3.3<newline>
+b = {1, 3, 5}<newline>
+tclset("a", a)<newline>
+tclset("b", b)
 </tt></tscreen>
 sets the Tcl variable <tt>"a"</tt> to the floating point value 3.3,
-and <tt>"b"</tt> to a list of integer values<newline>
-<tt>{ 1 3 5 }</tt>.
-Note that the variable names may also point to Tcl array elements:
+and <tt>"b"</tt> to a list of integer values
+<tt>{ 1 3 5 }</tt>.<newline>
+Note that the variable names may also point to Tcl array elements,
+for instance
 <tscreen><tt>
-tclset("SphereAttrData(Radius)", 1.2);
+tclset("SphereAttrData(Radius)", 1.2)
 </tt></tscreen>
-or contain namespace specifiers
+sets the <tt/Radius/ element in the <tt/SphereAttrData/ array;
+or contain namespace specifiers, for example
 <tscreen><tt>
-tclset("::MyNameSpace::Radius", 1.2);
+tclset("::MyNameSpace::Radius", 1.2)
 </tt></tscreen>
-.
+sets the <tt/Radius/ variable in the <tt/MyNameSpace/ namespace.
 
 <#if out="latex"><x/newpage/</#if>
 
@@ -21850,7 +21853,7 @@ Array ({0, 1, 2})|List ({0 1 2})<#if out="latex">@<hline></#if>
 The transport/conversion of table entries (to e.g.~associative array
 elements) can be arranged manually like this:
 <tscreen><tt>
-a.b = 3.14;<newline>
+a.b = 3.14<newline>
 tclset("a(b)", a.b)
 </tt></tscreen>
 
