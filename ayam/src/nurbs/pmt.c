@@ -1174,7 +1174,8 @@ cleanup:
 
 
 /** ay_pmt_getbasis:
- * Get basis matrix.
+ * Return a pointer to a specific basis matrix which is cached
+ * in plugin memory.
  *
  * \param[in] btype desired basis type (AY_BT*)
  * \param[in,out] result where to store the pointer to the matrix
