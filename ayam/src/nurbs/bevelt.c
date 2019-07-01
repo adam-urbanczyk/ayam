@@ -821,13 +821,11 @@ ay_bevelt_createc(double radius, ay_object *o1, ay_object *o2,
   /* copy knots */
   if(!(uknotv = malloc((bcurve->length+bcurve->order) * sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
-  memcpy(uknotv, bcurve->knotv,
-	 (bcurve->length+bcurve->order)*sizeof(double));
+  memcpy(uknotv, bcurve->knotv, (bcurve->length+bcurve->order)*sizeof(double));
 
   if(!(vknotv = malloc((curve->length+curve->order) * sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
-  memcpy(vknotv, curve->knotv,
-	 (curve->length+curve->order)*sizeof(double));
+  memcpy(vknotv, curve->knotv, (curve->length+curve->order)*sizeof(double));
 
   /* fill controlv */
   /* first loop */
