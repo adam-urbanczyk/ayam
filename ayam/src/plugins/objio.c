@@ -312,8 +312,8 @@ objio_writencurve(FILE *fileptr, ay_object *o, double *m)
 
   fprintf(fileptr, "deg %d\n", nc->order-1);
 
-  ay_knots_getuminmax(o, nc->order, nc->length+nc->order, nc->knotv,
-		      &umin, &umax);
+  (void)ay_knots_getuminmax(o, nc->order, nc->length+nc->order, nc->knotv,
+			    &umin, &umax);
 
   fprintf(fileptr, "curv %g %g", umin, umax);
 
@@ -537,8 +537,8 @@ objio_writetrimids(FILE *fileptr, ay_object *o)
 	  else
 	    hole = AY_FALSE;
 
-	  ay_knots_getuminmax(o, nc->order, nc->length+nc->order, nc->knotv,
-			      &umin, &umax);
+	  (void)ay_knots_getuminmax(o, nc->order, nc->length+nc->order,
+				    nc->knotv, &umin, &umax);
 
 	  if(hole)
 	    fprintf(fileptr, "hole %g %g -%d\n", umin, umax, tc);
@@ -569,9 +569,10 @@ objio_writetrimids(FILE *fileptr, ay_object *o)
 		      if(down->type == AY_IDNCURVE)
 			{
 			  nc = (ay_nurbcurve_object *)down->refine;
-			  ay_knots_getuminmax(down, nc->order,
-					      nc->length+nc->order, nc->knotv,
-					      &umin, &umax);
+			  (void)ay_knots_getuminmax(down, nc->order,
+						    nc->length+nc->order,
+						    nc->knotv,
+						    &umin, &umax);
 			  fprintf(fileptr, " %g %g -%d", umin, umax, tc);
 			  tc--;
 			}
@@ -583,10 +584,10 @@ objio_writetrimids(FILE *fileptr, ay_object *o)
 			  while(pnc)
 			    {
 			      nc = (ay_nurbcurve_object *)pnc->refine;
-			      ay_knots_getuminmax(pnc, nc->order,
-						  nc->length+nc->order,
-						  nc->knotv,
-						  &umin, &umax);
+			      (void)ay_knots_getuminmax(pnc, nc->order,
+							nc->length+nc->order,
+							nc->knotv,
+							&umin, &umax);
 			      fprintf(fileptr, " %g %g -%d", umin, umax, tc);
 			      tc--;
 			      pnc = pnc->next;
@@ -615,9 +616,9 @@ objio_writetrimids(FILE *fileptr, ay_object *o)
 	      else
 		fprintf(fileptr, "trim ");
 
-	      ay_knots_getuminmax(pnc, nc->order, nc->length+nc->order,
-				  nc->knotv,
-				  &umin, &umax);
+	      (void)ay_knots_getuminmax(pnc, nc->order, nc->length+nc->order,
+					nc->knotv,
+					&umin, &umax);
 
 	      fprintf(fileptr, " %g %g -%d\n", umin, umax, tc);
 	      tc--;
@@ -735,10 +736,10 @@ objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
 
   fprintf(fileptr, "deg %d %d\n", np->uorder-1, np->vorder-1);
 
-  ay_knots_getuminmax(o, np->uorder, np->width+np->uorder, np->uknotv,
-		      &umin, &umax);
-  ay_knots_getvminmax(o, np->vorder, np->height+np->vorder, np->vknotv,
-		      &vmin, &vmax);
+  (void)ay_knots_getuminmax(o, np->uorder, np->width+np->uorder, np->uknotv,
+			    &umin, &umax);
+  (void)ay_knots_getvminmax(o, np->vorder, np->height+np->vorder, np->vknotv,
+			    &vmin, &vmax);
 
   fprintf(fileptr, "surf %g %g %g %g", umin, umax, vmin, vmax);
 
