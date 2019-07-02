@@ -129,6 +129,10 @@ static JSFunctionSpec jsinterp_global_functions[] = {
   {"hasTrafo", jsinterp_wraptcmdargs, 0, 0, 0},
   {"isCurve", jsinterp_wraptcmdargs, 0, 0, 0},
   {"isSurface", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"isClosed", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"isDegen", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"isPlanar", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"isParent", jsinterp_wraptcmdargs, 0, 0, 0},
 
   {"mergePo", jsinterp_wraptcmd, 0, 0, 0},
   {"optiPo", jsinterp_wraptcmd, 0, 0, 0},
