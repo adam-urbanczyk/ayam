@@ -638,14 +638,12 @@ ay_nb_DegreeElevateCurve4D(int stride, int n, int p, double *U, double *Pw,
 		  if(stride >3)
 		    bpts[ki+3] = alfs[k-s]*bpts[ki+3] +
 		                  (1.0-alfs[k-s])*bpts[ki2+3];
-
 		}
 
 	      /* Nextbpts[save] = bpts[p]; */
 	      memcpy(&(Nextbpts[save*stride]), &(bpts[p*stride]),
 		     stride*sizeof(double));
-	    }
-
+	    } /* for */
 	} /* End of insert knot */
 
       /* Degree elevate Bezier */
@@ -699,6 +697,7 @@ ay_nb_DegreeElevateCurve4D(int stride, int n, int p, double *U, double *Pw,
 		      if(stride > 3)
 			Qw[ki+3] = alf*Qw[ki+3] + (1.0-alf)*Qw[ki2+3];
 		    } /* if */
+
 		  if(j >= lbz)
 		    {
 		      if((j-tr) <= (kind-ph+oldr))
@@ -717,7 +716,6 @@ ay_nb_DegreeElevateCurve4D(int stride, int n, int p, double *U, double *Pw,
 			  if(stride > 3)
 			    ebpts[ki+3] = gam*ebpts[ki+3] +
 			                   (1.0-gam)*ebpts[ki2+3];
-
 			}
 		      else
 			{
@@ -735,16 +733,14 @@ ay_nb_DegreeElevateCurve4D(int stride, int n, int p, double *U, double *Pw,
 			    ebpts[ki+3] = bet*ebpts[ki+3] +
 			                   (1.0-bet)*ebpts[ki2+3];
 			} /* if */
-
-		    }
+		    } /* if */
 		  i++;
 		  j--;
 		  kj--;
-		}
+		} /* while */
 	      first--;
 	      last++;
-	    }
-
+	    } /* for */
 	} /* End of removing knot, u = U[a] */
 
       if(a != p) /* load the knot ua */
@@ -786,8 +782,8 @@ ay_nb_DegreeElevateCurve4D(int stride, int n, int p, double *U, double *Pw,
 	    {
 	      Uh[kind+i] = ub;
 	    }
-	}
-    } /* while(b<m) */
+	} /* if */
+    } /* while b<m */
 
   *nh = mh-ph/*-1*/;
 
@@ -1250,8 +1246,8 @@ ay_nb_RemoveKnotCurve4D(int n, int p, double *U, double *Pw, double tol,
 		    {
 		      remflag = 1;
 		    }
-		}
-	    }
+		} /* if */
+	    } /* if */
 	}
       else
 	{
@@ -1280,8 +1276,8 @@ ay_nb_RemoveKnotCurve4D(int n, int p, double *U, double *Pw, double tol,
 		    {
 		      remflag = 1;
 		    }
-		}
-	    }
+		} /* if */
+	    } /* if */
 	} /* if */
 
       if(remflag == 0)
@@ -1774,10 +1770,8 @@ ay_nb_SurfacePoint3D(int n, int m, int p, int q, double *U, double *V,
   ay_status = ay_nb_BasisFuns(spanv, v, q, V, Nv);
   if(ay_status)
     { free(Nu); free(Nv); return ay_status; }
+
   memset(C, 0, 3*sizeof(double));
-  C[0] = 0.0;
-  C[1] = 0.0;
-  C[2] = 0.0;
 
   indu = spanu - p;
   for(l = 0; l <= q; l++)
@@ -3828,8 +3822,8 @@ cleanup:
  */
 int
 ay_nb_RefineKnotVectSurfU(int is_rat, int w, int h, int p, double *U,
-			    double *Pw, double *X, int r,
-			    double *Ubar, double *Qw)
+			  double *Pw, double *X, int r,
+			  double *Ubar, double *Qw)
 {
  int ay_status = AY_OK;
  double alpha;
@@ -4138,7 +4132,7 @@ ay_nb_DecomposeCurve(int stride, int n, int p, double *U, double *Pw,
 		  Qwnb[i1+2] = alpha*Qwnb[i1+2] + (1.0-alpha)*Qwnb[i2+2];
 		  if(stride > 3)
 		    Qwnb[i1+3] = alpha*Qwnb[i1+3] + (1.0-alpha)*Qwnb[i2+3];
-		}
+		} /* for */
 	      if(b < m) /* control point of next segment */
 		{
 		  /*Qw[nb+1][save] = Qw[nb][p];*/
@@ -4147,7 +4141,7 @@ ay_nb_DecomposeCurve(int stride, int n, int p, double *U, double *Pw,
 		  memcpy(&(Qwnb1[i1]), &(Qwnb[i2]), stride*sizeof(double));
 		}
 	    } /* for */
-	}
+	} /* if */
 
       /* Bezier segment completed */
       *nb = *nb+1;
@@ -4165,7 +4159,7 @@ ay_nb_DecomposeCurve(int stride, int n, int p, double *U, double *Pw,
 	    }
 	  a = b;
 	  b = b+1;
-	}
+	} /* if */
     } /* while */
 
   free(alphas);
@@ -4297,7 +4291,7 @@ ay_nb_InsertKnotSurfU(int stride, int w, int h, int p, double *UP, double *Pw,
 	      Qw[i1+2] /= Qw[i1+3];
 	    } /* for */
 	} /* for */
-    } /* for */
+    } /* for row */
 
 cleanup:
 
@@ -4435,7 +4429,7 @@ ay_nb_InsertKnotSurfV(int stride, int w, int h, int q, double *VP, double *Pw,
 	      Qw[i1+2] /= Qw[i1+3];
 	    } /* for */
 	} /* for */
-    } /* for */
+    } /* for col */
 
 cleanup:
 
@@ -4602,7 +4596,7 @@ ay_nb_UnclampSurfaceU(int israt, int w, int h, int p, int s,
 	  Pw[a+2] *= Pw[a+3];
 	  a += stride;
 	}
-   }
+    }
 
   /* process start */
   if((s == 0) || (s == 1))
@@ -4698,7 +4692,7 @@ ay_nb_UnclampSurfaceV(int israt, int w, int h, int q, int s,
 	  Pw[a+2] *= Pw[a+3];
 	  a += stride;
 	}
-   }
+    }
 
   /* process start */
   if((s == 0) || (s == 1))
