@@ -1097,15 +1097,30 @@ ay_object_ishastcmd(ClientData clientData, Tcl_Interp *interp,
 	  switch(argv[0][2])
 	    {
 	    case 'C':
-	      /* is isCurve */
-	      if(o->type == AY_IDNCURVE)
-		res = yes;
-	      else
+	      if(argv[0][3] == 'u')
 		{
-		  if(ay_provide_object(o, AY_IDNCURVE, NULL) == AY_OK)
+		  /* is isCurve */
+		  if(o->type == AY_IDNCURVE)
 		    res = yes;
 		  else
-		    res = no;
+		    {
+		      if(ay_provide_object(o, AY_IDNCURVE, NULL) == AY_OK)
+			res = yes;
+		      else
+			res = no;
+		    }
+		}
+	      else
+		{
+		  /* is isClosed */
+		  if(o->type == AY_IDNCURVE)
+		    {
+		      nc = (ay_nurbcurve_object*)o->refine;
+		      if(ay_nct_isclosed(nc))
+			res = yes;
+		      else
+			res = no;
+		    }
 		}
 	      break;
 	    case 'D':
