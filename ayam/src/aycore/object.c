@@ -14,6 +14,14 @@
 
 /* object.c - general object management */
 
+/* prototypes of functions local to this module: */
+
+int ay_object_isclosed(ay_object *o, int argc, char *argv[]);
+
+int ay_object_isplanar(ay_object *o);
+
+int ay_object_isdegen(ay_object *o);
+
 
 /** ay_object_create:
  * Allocate a new #ay_object structure, fill it with vital default values,
@@ -980,6 +988,195 @@ ay_object_copymulti(ay_object *src, ay_object **dst)
 } /* ay_object_copymulti */
 
 
+/** ay_object_isclosed:
+ * Helper for ay_object_ishastcmd() below. Check object for closedness.
+ *
+ * \param[in] o object to check
+ * \param[in] argc number of parameters in \a argv
+ * \param[in] argv parameters
+ *
+ * \returns AY_TRUE if object is a closed parametric curve or surface;
+ *          AY_FALSE else
+ */
+int
+ay_object_isclosed(ay_object *o, int argc, char *argv[])
+{
+ ay_object *p;
+ ay_nurbcurve_object *nc;
+ ay_nurbpatch_object *np;
+ int closed = AY_FALSE;
+
+  if(o->type == AY_IDNCURVE)
+    {
+      nc = (ay_nurbcurve_object*)o->refine;
+      if(ay_nct_isclosed(nc))
+	closed = AY_TRUE;
+    }
+  else
+    {
+      if(o->type == AY_IDNPATCH)
+	{
+	  np = (ay_nurbpatch_object*)o->refine;
+	  if(argc > 1 && argv[1][0] == '-' && argv[1][1] == 'v')
+	    {
+	      if(ay_npt_isclosedv(np))
+		closed = AY_TRUE;
+	    }
+	  else
+	    {
+	      if(ay_npt_isclosedu(np))
+		closed = AY_TRUE;
+	    }
+	}
+      else
+	{
+	  p = NULL;
+	  (void)ay_provide_object(o, AY_IDNCURVE, &p);
+	  if(p)
+	    {
+	      nc = (ay_nurbcurve_object*)p->refine;
+	      if(ay_nct_isclosed(nc))
+		closed = AY_TRUE;
+	      ay_object_deletemulti(p, AY_FALSE);
+	    }
+	  else
+	    {
+	      (void)ay_provide_object(o, AY_IDNPATCH, &p);
+	      if(p)
+		{
+		  np = (ay_nurbpatch_object*)p->refine;
+		  if(argc > 1 && argv[1][0] == '-' && argv[1][1] == 'v')
+		    {
+		      if(ay_npt_isclosedv(np))
+			closed = AY_TRUE;
+		    }
+		  else
+		    {
+		      if(ay_npt_isclosedu(np))
+			closed = AY_TRUE;
+		    }
+		  ay_object_deletemulti(p, AY_FALSE);
+		}
+	    }
+	} /* if not NPatch */
+    } /* if not NCurve */
+
+ return closed;
+} /* ay_object_isclosed */
+
+
+/** ay_object_isplanar:
+ * Helper for ay_object_ishastcmd() below. Check object for planarity.
+ *
+ * \param[in] o object to check
+ *
+ * \returns AY_TRUE if object is a planar parametric curve or surface;
+ *          AY_FALSE else
+ */
+int
+ay_object_isplanar(ay_object *o)
+{
+ ay_object *p;
+ ay_nurbpatch_object *np;
+ int planar = AY_FALSE;
+
+  /* is isPlanar */
+  if((o->type == AY_IDNCURVE) ||
+     (o->type == AY_IDICURVE) ||
+     (o->type == AY_IDACURVE))
+    {
+      ay_nct_isplanar(o, AY_FALSE, NULL, &planar);
+    }
+  else
+    if(o->type == AY_IDNPATCH)
+      {
+	np = (ay_nurbpatch_object*)o->refine;
+	if(ay_npt_isplanar(np, NULL))
+	  planar = AY_TRUE;
+      }
+    else
+      {
+	p = NULL;
+	(void)ay_provide_object(o, AY_IDNCURVE, &p);
+	if(p)
+	  {
+	    ay_nct_isplanar(p, AY_FALSE, NULL, &planar);
+	    ay_object_deletemulti(p, AY_FALSE);
+	  }
+	else
+	  {
+	    (void)ay_provide_object(o, AY_IDNPATCH, &p);
+	    if(p)
+	      {
+		np = (ay_nurbpatch_object*)p->refine;
+		if(ay_npt_isplanar(np, NULL))
+		  planar = AY_TRUE;
+		ay_object_deletemulti(p, AY_FALSE);
+	      }
+	  }
+      } /* if not NCurve or NPatch */
+
+ return planar;
+} /* ay_object_isplanar */
+
+
+/** ay_object_isdegen:
+ * Helper for ay_object_ishastcmd() below. Check object for degeneracy.
+ *
+ * \param[in] o object to check
+ *
+ * \returns AY_TRUE if object is a degenerate parametric curve or surface;
+ *          AY_FALSE else
+ */
+int
+ay_object_isdegen(ay_object *o)
+{
+ ay_object *p;
+ ay_nurbcurve_object *nc;
+ ay_nurbpatch_object *np;
+ int deg = AY_FALSE;
+
+  if(o->type == AY_IDNCURVE)
+    {
+      nc = (ay_nurbcurve_object*)o->refine;
+      if(ay_nct_isdegen(nc))
+	deg = AY_TRUE;
+    }
+  else
+    if(o->type == AY_IDNPATCH)
+      {
+	np = (ay_nurbpatch_object*)o->refine;
+	if(ay_npt_isdegen(np))
+	  deg = AY_TRUE;
+      }
+    else
+      {
+	p = NULL;
+	(void)ay_provide_object(o, AY_IDNCURVE, &p);
+	if(p)
+	  {
+	    nc = (ay_nurbcurve_object*)p->refine;
+	    if(ay_nct_isdegen(nc))
+	      deg = AY_TRUE;
+	    ay_object_deletemulti(p, AY_FALSE);
+	  }
+	else
+	  {
+	    (void)ay_provide_object(o, AY_IDNPATCH, &p);
+	    if(p)
+	      {
+		np = (ay_nurbpatch_object*)p->refine;
+		if(ay_npt_isdegen(np))
+		  deg = AY_TRUE;
+		ay_object_deletemulti(p, AY_FALSE);
+	      }
+	  }
+      } /* if not NCurve or NPatch */
+
+ return deg;
+} /* ay_object_isdegen */
+
+
 /** ay_object_ishastcmd:
  *  Check whether an object has certain properties (i.e. has child objects).
  *  Implements the \a hasChild scripting interface command.
@@ -1000,11 +1197,8 @@ int
 ay_object_ishastcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
- ay_object *o = NULL, *p = NULL;
- ay_nurbcurve_object *nc;
- ay_nurbpatch_object *np;
+ ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
- int planar = 0;
  char *res = NULL, no[] = "0", yes[] = "1";
 
   if(!sel)
@@ -1113,62 +1307,18 @@ ay_object_ishastcmd(ClientData clientData, Tcl_Interp *interp,
 	      else
 		{
 		  /* is isClosed */
-		  if(o->type == AY_IDNCURVE)
-		    {
-		      nc = (ay_nurbcurve_object*)o->refine;
-		      if(ay_nct_isclosed(nc))
-			res = yes;
-		      else
-			res = no;
-		    }
-		}
-	      break;
-	    case 'D':
-	      /* is isDegen */
-	      if(o->type == AY_IDNCURVE)
-		{
-		  nc = (ay_nurbcurve_object*)o->refine;
-		  if(ay_nct_isdegen(nc))
+		  if(ay_object_isclosed(o, argc, argv))
 		    res = yes;
 		  else
 		    res = no;
 		}
+	      break;
+	    case 'D':
+	      /* is isDegen */
+	      if(ay_object_isdegen(o))
+		res = yes;
 	      else
-		if(o->type == AY_IDNPATCH)
-		  {
-		    np = (ay_nurbpatch_object*)o->refine;
-		    if(ay_npt_isdegen(np))
-		      res = yes;
-		    else
-		      res = no;
-		  }
-		else
-		  {
-		    p = NULL;
-		    (void)ay_provide_object(o, AY_IDNCURVE, &p);
-		    if(p)
-		      {
-			nc = (ay_nurbcurve_object*)p->refine;
-			if(ay_nct_isdegen(nc))
-			  res = yes;
-			else
-			  res = no;
-			ay_object_deletemulti(p, AY_FALSE);
-		      }
-		    else
-		      {
-			(void)ay_provide_object(o, AY_IDNPATCH, &p);
-			if(p)
-			  {
-			    np = (ay_nurbpatch_object*)p->refine;
-			    if(ay_npt_isdegen(np))
-			      res = yes;
-			    else
-			      res = no;
-			    ay_object_deletemulti(p, AY_FALSE);
-			  }
-		      }
-		  } /* if not NCurve or NPatch */
+		res = no;
 	      break;
 	    case 'P':
 	      if(argv[0][3] == 'a')
@@ -1183,54 +1333,10 @@ ay_object_ishastcmd(ClientData clientData, Tcl_Interp *interp,
 	      else
 		{
 		  /* is isPlanar */
-		  if((o->type == AY_IDNCURVE) ||
-		     (o->type == AY_IDICURVE) ||
-		     (o->type == AY_IDACURVE))
-		    {
-		      planar = 0;
-		      ay_nct_isplanar(o, AY_FALSE, NULL, &planar);
-		      if(planar)
-			res = yes;
-		      else
-			res = no;
-		    }
+		  if(ay_object_isplanar(o))
+		    res = yes;
 		  else
-		    if(o->type == AY_IDNPATCH)
-		      {
-			np = (ay_nurbpatch_object*)o->refine;
-			if(ay_npt_isplanar(np, NULL))
-			  res = yes;
-			else
-			  res = no;
-		      }
-		    else
-		      {
-			p = NULL;
-			(void)ay_provide_object(o, AY_IDNCURVE, &p);
-			if(p)
-			  {
-			    planar = 0;
-			    ay_nct_isplanar(p, AY_FALSE, NULL, &planar);
-			    if(planar)
-			      res = yes;
-			    else
-			      res = no;
-			    ay_object_deletemulti(p, AY_FALSE);
-			  }
-			else
-			  {
-			    (void)ay_provide_object(o, AY_IDNPATCH, &p);
-			    if(p)
-			      {
-				np = (ay_nurbpatch_object*)p->refine;
-				if(ay_npt_isplanar(np, NULL))
-				  res = yes;
-				else
-				  res = no;
-				ay_object_deletemulti(p, AY_FALSE);
-			      }
-			  }
-		      } /* if not NCurve or NPatch */
+		    res = no;
 		} /* if isPlanar */
 	      break;
 	    case 'S':
