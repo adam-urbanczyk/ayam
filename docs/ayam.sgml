@@ -14417,17 +14417,17 @@ corresponding icon in the toolbox will keep the parameter curve
 selected and the current level will also be changed.
 </descrip>
 
-<sect2>Sweep Tool<label id="swpt">
+<sect2>Sweep Tool<label id="sweept">
 <p>
 <descrip>
 <tag/Arguments/ The sweep tool takes the selected objects from
 the selection.
 <tag/Operation/ The tool creates a Sweep object, moves
-the selected objects to it, and rotates the first curve object
-to the YZ-plane. If this curve object is of type
-NCurve, ICurve, or ACurve, the control points will be modified
-and the rotation attributes will be reset, objects of other types will be
-rotated by their transformation attributes.
+the selected objects to it, and offers to rotate the first curve object
+to the YZ-plane (if it is not already defined in this plane). If this
+curve object is of type NCurve, ICurve, or ACurve, the control points will
+be modified and the rotation attributes will be reset, objects of other
+types will be rotated by their transformation attributes.
 <footnote>Since 1.24.</footnote>
 The rotation will be recorded in the undo buffer.
 <tscreen><verb>
@@ -14444,8 +14444,6 @@ original clipboard contents are lost when this tool finishes.
 Holding down the <tt/&lt;Ctrl&gt;/ key while clicking on the
 corresponding icon in the toolbox will keep the parameter curve
 selected and the current level will also be changed.
-
-This tool can also be invoked using the
 </descrip>
 
 <sect2>Bevel Tool<label id="bevt">
@@ -16887,6 +16885,27 @@ provide their points.
 <p>
 <#if out="latex"><x/phantomsection/</#if>
 <#if out="html"><f/<inf/<newline>//</#if>
+<label id="scisclosed">
+isClosed:
+<itemize>
+ <item>Synopsis: <tt>"isClosed [-u|-v]"</tt>
+ <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Description: This command returns <tt/1/ if the selected object
+is a closed parametric curve or surface,
+otherwise <tt/0/ is returned.<footnote>Since 1.27.</footnote>
+<p>
+The optional parameter <tt/"-u"//<tt/"-v"/ determines which dimension
+of a surface to check.
+<p>
+If multiple objects are selected, a list is returned.
+<p><p>
+This command supports arbitrary object types that just need to
+provide NURBS curves or surfaces.
+</itemize>
+
+<p>
+<#if out="latex"><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scisplanar">
 isPlanar &ndash; check for planarity:
 <itemize>
@@ -16917,6 +16936,8 @@ If multiple objects are selected, a list is returned.
 This command supports arbitrary object types that just need to
 provide NURBS curves or surfaces.
 </itemize>
+
+<#if out="latex"><x/newpage/</#if>
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
@@ -21357,7 +21378,7 @@ Furthermore, Script object scripts may also be implemented in JavaScript,
 provided the first line of the script is a comment that instructs Ayam to
 use the JavaScript interpreter:
 <tscreen><tt>
-/* Ayam, use: JavaScript */<newline>
+/<f/*/ Ayam, use: JavaScript <f/*//<newline>
 var a = 0;<newline>
 ...
 </tt></tscreen>
@@ -21417,7 +21438,7 @@ Tcl scripts, delivered as string argument:
 var a = 42;<newline>
 a = tcleval("<bf>puts </bf>" + a + "<bf>; return 5;</bf>");<newline>
 tcleval("<bf>puts </bf>" + a);<newline>
-/* expected output: 42 5 */
+/<f/*/ expected output: 42 5 <f/*//
 </tt></tscreen>
 The <tt>"tcleval()"</tt> function provides access to all the
 functionality of Ayam that is just available as a Tcl procedure.
@@ -21440,7 +21461,7 @@ reflected on the JavaScript side:
 tclvar("a");<newline>
 tcleval("<bf>set a 42</bf>");<newline>
 tcleval("<bf>puts </bf>" + a);<newline>
-/* expected output: 42 */
+/<f/*/ expected output: 42 <f/*//
 </tt></tscreen>
 Mind that the corresponding variable on the JavaScript side does
 <em>not</em> exist until the first write operation on the Tcl variable
@@ -24011,6 +24032,8 @@ will be attempted without any checks, and if set to 2 (this is
 the default<footnote>Since 1.25.</footnote>) the cross section
 is checked and a requester is raised offering to rotate the curve
 only if it is not already in the proper plane.
+<p><p>
+See also section <ref id="sweept" name="Sweep Tool">.
 </itemize>
 <#if out="latex"><x/phantomsection/<p></#if>
 <label id="hidprefss">
@@ -24108,6 +24131,9 @@ of plugins. This option is only used on Mac OS X Aqua (not X11!), because
 there the normal file dialog will not enter application bundle directory
 structures. This option is enabled by default on Mac OS X Aqua and not
 used on any other platform. (valid values: 0, 1; default: 0 &ndash; no)
+<p><p>
+See also the documentation of a related helper
+script <ref id="intfdtcl" name="Switch File Dialogs to Tcl">.
 </itemize>
 <#if out="latex"><x/newpage/</#if>
 
@@ -25625,6 +25651,7 @@ Index:
 <item>InvertMatch: <ref id="objsearch" name="object search option">
 <item>Invert Selection: <ref id="mmpnts" name="main menu entry">
 <item>IPatch: <ref id="ipatchobj" name="IPatch object">
+<item>isClosed: <ref id="scisclosed" name="scripting interface command">
 <item>isCompNC: <ref id="sciscompnc" name="scripting interface command">
 <item>isCompNP: <ref id="sciscompnp" name="scripting interface command">
 <item>isCurve: <ref id="sciscurve" name="scripting interface command">
@@ -26473,7 +26500,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Sweep:
 <itemize>
 <item><ref id="sweepobj" name="Sweep object">,
-<item><ref id="swpt" name="Sweep tool">
+<item><ref id="sweept" name="Sweep tool">
 </itemize>
 <item>Swing:
 <itemize>
