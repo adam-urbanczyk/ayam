@@ -489,7 +489,7 @@ ay_nb_DegreeElevateCurve4D(int stride, int n, int p, double *U, double *Pw,
  int i, j, k, mpi, maxit, kind, cind, r, oldr, a, b, mh, mul;
  int s, save, first, last, tr, bi, bi2, lbz, rbz;
  double *bezalfs = NULL, *bpts = NULL, *ebpts = NULL;
- double *Nextbpts = NULL, *alfs = NULL, *bin = NULL;
+ double *nextbpts = NULL, *alfs = NULL, *bin = NULL;
  double ua, ub, numer, den, alf, bet, gam, inv;
 
   /* convert rational coordinates from euclidean to homogeneous style */
@@ -519,7 +519,7 @@ ay_nb_DegreeElevateCurve4D(int stride, int n, int p, double *U, double *Pw,
   if(!(ebpts = calloc((p+t+1)*stride, sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
-  if(!(Nextbpts = calloc((p-1)*stride, sizeof(double))))
+  if(!(nextbpts = calloc((p-1)*stride, sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
   if(!(alfs = calloc((p-1), sizeof(double))))
@@ -640,8 +640,8 @@ ay_nb_DegreeElevateCurve4D(int stride, int n, int p, double *U, double *Pw,
 		                  (1.0-alfs[k-s])*bpts[ki2+3];
 		}
 
-	      /* Nextbpts[save] = bpts[p]; */
-	      memcpy(&(Nextbpts[save*stride]), &(bpts[p*stride]),
+	      /* nextbpts[save] = bpts[p]; */
+	      memcpy(&(nextbpts[save*stride]), &(bpts[p*stride]),
 		     stride*sizeof(double));
 	    } /* for */
 	} /* End of insert knot */
@@ -762,8 +762,8 @@ ay_nb_DegreeElevateCurve4D(int stride, int n, int p, double *U, double *Pw,
 	{ /* set up for next pass thru loop */
 	  for(j = 0; j < r; j++)
 	    {
-	      /* bpts[j] = Nextbpts[j]; */
-	      memcpy(&(bpts[j*stride]), &(Nextbpts[j*stride]),
+	      /* bpts[j] = nextbpts[j]; */
+	      memcpy(&(bpts[j*stride]), &(nextbpts[j*stride]),
 		     stride*sizeof(double));
 	    }
 	  for(j = r; j <= p; j++)
@@ -795,8 +795,8 @@ cleanup:
     free(bpts);
   if(ebpts)
     free(ebpts);
-  if(Nextbpts)
-    free(Nextbpts);
+  if(nextbpts)
+    free(nextbpts);
   if(alfs)
     free(alfs);
   if(bin)
@@ -1609,6 +1609,7 @@ ay_nb_CurvePoint4DM(int n, int p, double *U, double *Pw, double u, double *C)
 /*
  * ay_nb_CurvePoint3D:
  * calculate point u on the NURBS curve (n, p, U, P)
+ * result in C[3]
  */
 int
 ay_nb_CurvePoint3D(int n, int p, double *U, double *P, double u, double *C)
@@ -1629,6 +1630,7 @@ ay_nb_CurvePoint3D(int n, int p, double *U, double *P, double u, double *C)
   C[0] = 0.0;
   C[1] = 0.0;
   C[2] = 0.0;
+
   for(j = 0; j <= p; j++)
     {
       k = (span-p+j)*4;
@@ -1662,6 +1664,7 @@ ay_nb_CurvePoint3DM(int n, int p, double *U, double *P, double u, double *C)
   C[0] = 0.0;
   C[1] = 0.0;
   C[2] = 0.0;
+
   for(j = 0; j <= p; j++)
     {
       k = (span-p+j)*4;
@@ -1677,6 +1680,7 @@ ay_nb_CurvePoint3DM(int n, int p, double *U, double *P, double u, double *C)
 /*
  * ay_nb_SurfacePoint4D:
  * calculate point u,v on the rational NURBS surface (n, m, p, q, U, V, Pw)
+ * result in C[3]
  */
 int
 ay_nb_SurfacePoint4D(int n, int m, int p, int q, double *U, double *V,
@@ -1748,6 +1752,7 @@ ay_nb_SurfacePoint4D(int n, int m, int p, int q, double *U, double *V,
 /*
  * ay_nb_SurfacePoint3D:
  * calculate point u,v on the NURBS surface (n, m, p, q, U, V, P)
+ * result in C[3]
  */
 int
 ay_nb_SurfacePoint3D(int n, int m, int p, int q, double *U, double *V,
@@ -2089,7 +2094,7 @@ ay_nb_FirstDer4D(int n, int p, double *U, double *Pw, double u,
 		 double *C1)
 {
  int span = 0, j, k;
- double *nders = NULL, C0[3], wder0 = 0.0, wder1 = 0.0;
+ double *nders = NULL, C0[3] = {0}, wder0 = 0.0, wder1 = 0.0;
 
   if(!(nders = calloc(2 * (p+1), sizeof(double))))
     return;
@@ -2097,10 +2102,6 @@ ay_nb_FirstDer4D(int n, int p, double *U, double *Pw, double u,
   span = ay_nb_FindSpan(n, p, u, U);
 
   ay_nb_DersBasisFuns(span, u, p, 1, U, nders);
-
-  C0[0] = 0.0;
-  C0[1] = 0.0;
-  C0[2] = 0.0;
 
   C1[0] = 0.0;
   C1[1] = 0.0;
@@ -2151,7 +2152,8 @@ ay_nb_SecondDer4D(int n, int p, double *U, double *Pw, double u,
 		  double *C2)
 {
  int span = 0, j, k;
- double *nders = NULL, wder0 = 0.0, wder1 = 0.0, wder2 = 0.0, C0[3], C1[3];
+ double *nders = NULL, wder0 = 0.0, wder1 = 0.0, wder2 = 0.0;
+ double C0[3] = {0}, C1[3] = {0};
 
   if(!(nders = calloc(3 * (p+1), sizeof(double))))
     return;
@@ -2159,14 +2161,6 @@ ay_nb_SecondDer4D(int n, int p, double *U, double *Pw, double u,
   span = ay_nb_FindSpan(n, p, u, U);
 
   ay_nb_DersBasisFuns(span, u, p, 2, U, nders);
-
-  C0[0] = 0.0;
-  C0[1] = 0.0;
-  C0[2] = 0.0;
-
-  C1[0] = 0.0;
-  C1[1] = 0.0;
-  C1[2] = 0.0;
 
   C2[0] = 0.0;
   C2[1] = 0.0;
@@ -2389,7 +2383,6 @@ ay_nb_FirstDerSurf4DMSize(int p, int q)
  * compute the first derivatives of rational surface
  * (n, m, p, q, U[], V[], Pw[]) at parametric values u,v in
  * C[12]: C[0] - point, C[3] - 1st der along u, C[6] - 1st der along v
- *
  *
  * Memory management optimized variant, but C must be of size
  * (12 + (2*(p+1)+((p+1)+(p+1)+(p+1*p+1)+2*(p+1))) +
@@ -3293,7 +3286,7 @@ ay_nb_DegreeElevateSurfU4D(int stride, int w, int h, int p, double *U,
 		      } /* if */
 		  } /* if */
 		++i; --j; --kj;
-	      } /* while(j-i>tr */
+	      } /* while j-i>tr */
 	    --first; ++last;
 	  } /* for */
       } /* if(oldr>1 */
@@ -3346,7 +3339,7 @@ ay_nb_DegreeElevateSurfU4D(int stride, int w, int h, int p, double *U,
 	for(i = 0; i <= ph; i++)
 	  Uh[kind+i] = ub;
       } /* if */
-    } /* while(b<m */
+    } /* while b<m */
 
   *nw = mh-ph;
 
@@ -3706,7 +3699,7 @@ ay_nb_DegreeElevateSurfV4D(int stride, int w, int h, int p, double *V,
 		      } /* if */
 		  } /* if */
 		++i; --j; --kj;
-	      } /* while(j-i>tr */
+	      } /* while j-i>tr */
 	    --first; ++last;
 	  } /* for */
       } /* if(oldr>1 */
@@ -3762,7 +3755,7 @@ ay_nb_DegreeElevateSurfV4D(int stride, int w, int h, int p, double *V,
 	for(i = 0; i <= ph; i++)
 	  Vh[kind+i] = vb;
       } /* if */
-    } /* while(b<m */
+    } /* while b<m */
 
   *nh = mh-ph;
 
