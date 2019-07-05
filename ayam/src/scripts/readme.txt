@@ -16,7 +16,7 @@ inside Ayam.
 
 bgconvert.tcl - use Ayam as background 3D file format converter
 
-ayrepair.tcl - repair the Ayam application state (emergency use only!)
+repairAyam.tcl - repair the Ayam application state (emergency use only!)
 
 winheader.tcl - helper to create header files from the original sources
  (for compilation on MS Windows)
