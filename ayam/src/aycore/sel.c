@@ -105,9 +105,10 @@ ay_sel_selobtcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  int lbmode = AY_FALSE;
  ay_list_object *oldsel, *newsel, *t;
- ay_object *o = ay_currentlevel->object;
- int i = 0, j = 0, argvi = 0, start = 1, need_redraw = AY_TRUE;
- char vname[] = "ay(need_redraw)", yes[] = "1", no[] = "0";
+ ay_object *o = ay_currentlevel->object, *e;
+ int i = 0, j = 0, firstarg = 1, start, end, need_redraw = AY_TRUE;
+ char vname[] = "ay(need_redraw)", yes[] = "1", no[] = "0", *endptr;
+ long int argvi = 0;
 
   /* clear selected flags from currently selected objects */
   t = ay_selection;
@@ -143,11 +144,11 @@ ay_sel_selobtcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(argc < 3)
 	    goto cleanup;
 	  lbmode = AY_TRUE;
-	  start++;
+	  firstarg++;
 	  j++;
 	}
 
-      if(lbmode && (atoi(argv[start]) == 0))
+      if(lbmode && (atoi(argv[firstarg]) == 0))
 	{
 	  if(o == ay_root)
 	    {
@@ -158,7 +159,7 @@ ay_sel_selobtcmd(ClientData clientData, Tcl_Interp *interp,
 		  return TCL_OK;
 		}
 	    }
-	  start++;
+	  firstarg++;
 	}
 
       if(lbmode && (o == ay_root))
@@ -170,11 +171,53 @@ ay_sel_selobtcmd(ClientData clientData, Tcl_Interp *interp,
 	}
 
       /* iterate through arguments and select appropriate objects */
-      for(i = start; i < argc; i++)
+      for(i = firstarg; i < argc; i++)
 	{
-	  argvi = atoi(argv[i]);
+	  /*argvi = atoi(argv[i]);*/
 
-	  while(j != argvi)
+	  if(argv[i][0] == 'e')
+	    {
+	      e = o;
+	      start = j;
+	      while(e && e->next)
+		{
+		  start++;
+		  e = e->next;
+		}
+	      start--;
+	      end = start;
+	    }
+	  else
+	    {
+	      argvi = strtol(argv[i], &endptr, 10);
+
+	      if(argv[i] == endptr)
+		{
+		  ay_error(AY_ERROR, argv[0], "could not parse index");
+		  goto error;
+		}
+
+	      start = (int)argvi;
+	      end = start;
+
+	      if(*endptr != '\0')
+		{
+		  endptr++;
+		  if(*endptr == 'e')
+		    end = -1;
+		  else
+		    {
+		      end = atoi(endptr);
+		      if(end < start)
+			{
+			  ay_error(AY_ERROR, argv[0], "could not parse range");
+			  goto error;
+			}
+		    }
+		} /* if */
+	    } /* if index is e */
+
+	  while(j != start)
 	    {
 	      j++;
 
@@ -193,20 +236,40 @@ ay_sel_selobtcmd(ClientData clientData, Tcl_Interp *interp,
 	    } /* while */
 
 	  /* found a selected object -> add to the list */
-	  if(o && o->next)
+	  if(start == end)
 	    {
-	      ay_status = ay_sel_add(o, AY_TRUE);
-	      if(ay_status)
+	      /* select single object */
+	      if(o && o->next)
 		{
-		  while(oldsel)
+		  ay_status = ay_sel_add(o, AY_TRUE);
+		  if(ay_status)
 		    {
-		      t = oldsel;
-		      oldsel = t->next;
-		      free(t);
+		      ay_error(ay_status, argv[0], NULL);
+		      goto error;
 		    }
-		  ay_error(ay_status, argv[0], NULL);
-		  return TCL_OK;
-		}
+		} /* if */
+	    }
+	  else
+	    {
+	      /* select range of objects */
+	      while(o && o->next)
+		{
+		  ay_status = ay_sel_add(o, AY_TRUE);
+		  if(ay_status)
+		    {
+		      ay_error(ay_status, argv[0], NULL);
+		      goto error;
+		    }
+
+		  o = o->next;
+
+		  if(end != -1)
+		    {
+		      end--;
+		      if(end < start)
+			break;
+		    }
+		} /* while */
 	    } /* if */
 	} /* for */
     } /* if have args */
@@ -234,6 +297,7 @@ cleanup:
       need_redraw = AY_FALSE;
     }
 
+error:
   /* now, free old selection */
   ay_selection = oldsel;
   while(ay_selection)
