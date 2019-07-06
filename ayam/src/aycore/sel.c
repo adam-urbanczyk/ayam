@@ -133,7 +133,7 @@ ay_sel_selobtcmd(ClientData clientData, Tcl_Interp *interp,
   /* establish new selection from arguments */
   if(argc > 1)
     {
-      /* is -clear */
+      /* is -clear? */
       if(argv[1][0] == '-' && argv[1][1] == 'c')
 	goto cleanup;
 
@@ -198,6 +198,12 @@ ay_sel_selobtcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_status = ay_sel_add(o, AY_TRUE);
 	      if(ay_status)
 		{
+		  while(oldsel)
+		    {
+		      t = oldsel;
+		      oldsel = t->next;
+		      free(t);
+		    }
 		  ay_error(ay_status, argv[0], NULL);
 		  return TCL_OK;
 		}
