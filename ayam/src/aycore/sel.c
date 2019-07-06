@@ -119,7 +119,8 @@ ay_sel_selobtcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc > 1)
     {
-      if(argv[1][0] == '-' && argv[1][1] == '1')
+      if((argv[1][0] == '-' && argv[1][1] == '1') ||
+	 (argv[1][0] == '-' && argv[1][1] == 'e'))
 	{
 	  return ay_sel_hsltcmd(clientData, interp, 1, argv);
 	}
@@ -132,6 +133,10 @@ ay_sel_selobtcmd(ClientData clientData, Tcl_Interp *interp,
   /* establish new selection from arguments */
   if(argc > 1)
     {
+      /* is -clear */
+      if(argv[1][0] == '-' && argv[1][1] == 'c')
+	goto cleanup;
+
       /* work with listbox indices? */
       if(!strcmp(argv[1], "-lb"))
 	{
