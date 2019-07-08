@@ -1080,7 +1080,6 @@ ay_object_isplanar(ay_object *o)
  ay_nurbpatch_object *np;
  int planar = AY_FALSE;
 
-  /* is isPlanar */
   if((o->type == AY_IDNCURVE) ||
      (o->type == AY_IDICURVE) ||
      (o->type == AY_IDACURVE))
@@ -1337,7 +1336,7 @@ ay_object_ishastcmd(ClientData clientData, Tcl_Interp *interp,
 		    res = yes;
 		  else
 		    res = no;
-		} /* if isPlanar */
+		} /* if */
 	      break;
 	    case 'S':
 	      /* is isSurface */
