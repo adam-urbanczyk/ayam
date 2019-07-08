@@ -193,14 +193,14 @@ ay_sel_selobtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      if(argv[i] == endptr)
 		{
-		  ay_error(AY_ERROR, argv[0], "could not parse index");
+		  ay_error(AY_ERROR, argv[0], "invalid index");
 		  goto error;
 		}
 
 	      start = (int)argvi;
 	      end = start;
 
-	      if(*endptr != '\0')
+	      if(*endptr != '\0' && *endptr == '-')
 		{
 		  endptr++;
 		  if(*endptr == 'e')
@@ -210,7 +210,7 @@ ay_sel_selobtcmd(ClientData clientData, Tcl_Interp *interp,
 		      end = atoi(endptr);
 		      if(end < start)
 			{
-			  ay_error(AY_ERROR, argv[0], "could not parse range");
+			  ay_error(AY_ERROR, argv[0], "invalid range");
 			  goto error;
 			}
 		    }
@@ -235,42 +235,25 @@ ay_sel_selobtcmd(ClientData clientData, Tcl_Interp *interp,
 		 that the arguments are sorted! */
 	    } /* while */
 
-	  /* found a selected object -> add to the list */
-	  if(start == end)
+	  /* add object(s) to the selection */
+	  while(o && o->next)
 	    {
-	      /* select single object */
-	      if(o && o->next)
+	      ay_status = ay_sel_add(o, AY_TRUE);
+	      if(ay_status)
 		{
-		  ay_status = ay_sel_add(o, AY_TRUE);
-		  if(ay_status)
-		    {
-		      ay_error(ay_status, argv[0], NULL);
-		      goto error;
-		    }
-		} /* if */
-	    }
-	  else
-	    {
-	      /* select range of objects */
-	      while(o && o->next)
+		  ay_error(ay_status, argv[0], NULL);
+		  goto error;
+		}
+
+	      o = o->next;
+
+	      if(end != -1)
 		{
-		  ay_status = ay_sel_add(o, AY_TRUE);
-		  if(ay_status)
-		    {
-		      ay_error(ay_status, argv[0], NULL);
-		      goto error;
-		    }
-
-		  o = o->next;
-
-		  if(end != -1)
-		    {
-		      end--;
-		      if(end < start)
-			break;
-		    }
-		} /* while */
-	    } /* if */
+		  end--;
+		  if(end < start)
+		    break;
+		}
+	    } /* while */
 	} /* for */
     } /* if have args */
 
