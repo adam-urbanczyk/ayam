@@ -4075,8 +4075,9 @@ Rotate_Y, or Rotate_Z
 properties of the selected objects, but also the Translate_X,
 Translate_Y, or Translate_Z properties.
 <p>
-To avoid degenerated coordinates due to roundoff errors
-it is highly suggested to use grids with this action.
+To avoid degenerated coordinates due to roundoff errors it is highly
+suggested to use a grid or the intermediate parameter GUI
+with this action.
 <p>
 See also the section
 <ref id="aactcl" name="Automatic About Center Actions">
@@ -4218,8 +4219,9 @@ a point can be selected and the mark set to it (shortcut <tt/&lt;C&gt;/).
 See section <ref id="markac" name="Setting the Mark"> for other means
 of setting a three dimensional mark.
 <p>
-To avoid degenerated coordinates due to roundoff errors
-it is highly suggested to use grids with this action.
+To avoid degenerated coordinates due to roundoff errors it is highly
+suggested to use a grid or the intermediate parameter GUI
+with this action.
 <p>
 See also the section
 <ref id="aactcl" name="Automatic About Center Actions">
@@ -14380,8 +14382,8 @@ rotated by their transformation attributes.
 The rotation will be recorded in the undo buffer.
 <tscreen><verb>
 |-Cross_section(NCurve)         +-Swing
-|-Trajectory(NCurve)      ==>   |-Cross_section(NCurve)
-                                \-Trajectory(NCurve)
+|-Trajectory(NCurve)      ==>    |-Cross_section(NCurve)
+                                 \-Trajectory(NCurve)
 </verb></tscreen>
 <tag/Notes/ See section <ref id="swingobj" name="Swing Object">
 for more information regarding the Swing object.
@@ -14403,8 +14405,8 @@ the selection.
 the selected objects to it.
 <tscreen><verb>
 |-Outline(NCurve)       +-Extrude
-|-Hole(NCurve)     ==>  |-Outline(NCurve)
-                        \-Hole(NCurve)
+|-Hole(NCurve)     ==>   |-Outline(NCurve)
+                         \-Hole(NCurve)
 </verb></tscreen>
 <tag/Notes/ See section <ref id="extrudeobj" name="Extrude Object">
 for more information regarding the Extrude object.
@@ -14432,8 +14434,8 @@ types will be rotated by their transformation attributes.
 The rotation will be recorded in the undo buffer.
 <tscreen><verb>
 |-Cross_section(NCurve)         +-Sweep
-|-Trajectory(NCurve)     ==>    |-Cross_section(NCurve)
-                                \-Trajectory(NCurve)
+|-Trajectory(NCurve)     ==>     |-Cross_section(NCurve)
+                                 \-Trajectory(NCurve)
 </verb></tscreen>
 <tag/Notes/ See section <ref id="sweepobj" name="Sweep Object">
 for more information regarding the Sweep object.
@@ -14477,8 +14479,8 @@ the selection.
 the selected objects to it.
 <tscreen><verb>
 |-Outline(NCurve)         +-Cap
-|-Hole(NCurve)      ==>   |-Outline(NCurve)
-                          \-Hole(NCurve)
+|-Hole(NCurve)      ==>    |-Outline(NCurve)
+                           \-Hole(NCurve)
 </verb></tscreen>
 <tag/Notes/ See section <ref id="capobj" name="Cap Object">
 for more information regarding the Cap object.
@@ -14500,9 +14502,9 @@ the selection.
 the selected objects to it.
 <tscreen><verb>
 |-Cross_section(NCurve)      +-Birail1
-|-Rail1(NCurve)         ==>  |-Cross_section(NCurve)
-|-Rail2(NCurve)              |-Rail1(NCurve)
-                             \-Rail2(NCurve)
+|-Rail1(NCurve)         ==>   |-Cross_section(NCurve)
+|-Rail2(NCurve)               |-Rail1(NCurve)
+                              \-Rail2(NCurve)
 </verb></tscreen>
 <tag/Notes/ See section <ref id="birail1obj" name="Birail1 Object">
 for more information regarding the Birail1 object.
@@ -14524,10 +14526,10 @@ the selection.
 the selected objects to it.
 <tscreen><verb>
 |-Cross_section1(NCurve)       +-Birail2
-|-Rail1(NCurve)                |-Cross_section1(NCurve)
-|-Rail2(NCurve)           ==>  |-Rail1(NCurve)
-|-Cross_section2(NCurve)       |-Rail2(NCurve)
-                               \-Cross_section2(NCurve
+|-Rail1(NCurve)                 |-Cross_section1(NCurve)
+|-Rail2(NCurve)           ==>   |-Rail1(NCurve)
+|-Cross_section2(NCurve)        |-Rail2(NCurve)
+                                \-Cross_section2(NCurve
 </verb></tscreen>
 <tag/Notes/ See section <ref id="birail2obj" name="Birail2 Object">
 for more information regarding the Birail2 object.
@@ -16955,7 +16957,7 @@ If multiple objects are selected, a list is returned.
 
 <#if out="latex"><x/newpage/</#if>
 
-<sect2>Manipulating the Selection<label id="sciselob">
+<sect2>Selecting Objects<label id="sciselob">
 <p>
 These commands are probably the most important ones, because many other
 scripting interface commands operate on selected objects only:
@@ -16965,24 +16967,32 @@ scripting interface commands operate on selected objects only:
 <label id="scselob">
 selOb &ndash; select object(s):
 <itemize>
- <item>Synopsis: <tt/"selOb [index]"/
+ <item>Synopsis: <tt/"selOb ([-end | -clear] | [index] | [first-last])"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Use this command to set or clear the current
-selection, <tt/index/ may be a single (zero based) index or an ordered list of
-indices.<newline>
-If no index is given, the current selection will be cleared.<newline>
-If the single index is -1, the last object in the current level will be
-selected.
+selection, <tt/index/ may be a single (zero based) index, an ordered list of
+indices or a range.<newline>
+If no index is given or the <tt/"-clear"/ option is specified, the current
+selection will be cleared.<newline>
+If the single index is -1 or the <tt/"-end"/ option is specified, the last
+object in the current level will be selected.
  <item>Examples:
 <enum>
 <item><bf/<tt/"selOb"//<newline>
 clears the current selection,
 <item><bf/<tt/"selOb 0"//<newline>
-selects the first object in the current level, and
+selects the first object in the current level,
 <item><bf/<tt/"selOb 0 1"//<newline>
-selects the first two objects in the current level.
+selects the first two objects in the current level, and
+<item><bf/<tt/"selOb 0 3-8"//<newline>
+selects the first and the fourth up to the ninth objects in the current
+level, and
+<item><bf/<tt/"selOb 1-end"//<newline>
+selects all objects in the current level except for the first.
 </enum>
 </itemize>
+
+<#if out="latex"><x/newpage/</#if>
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
@@ -17035,6 +17045,8 @@ but do not update the GUI.
 Note: prior to Ayam 1.18 this command used to be available in the
 safe interpreter. This is no longer the case, use <tt/"sL"/ instead.
 </itemize>
+
+<#if out="latex"><x/newpage/</#if>
 
 <sect2>Selecting Points<label id="sciselpnts">
 <p>
