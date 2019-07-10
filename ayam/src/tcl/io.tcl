@@ -1067,7 +1067,7 @@ proc io_exportRIBSO { } {
     if { $sel != "" } {
 	set objname ""
 	if { [llength $sel] == 1 } {
-	    getName objname 1
+	    getName -s objname
 	    if { $objname != "" } {
 		append objname ".rib"
 	    }
