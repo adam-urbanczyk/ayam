@@ -4011,6 +4011,8 @@ See also the documentation of the corresponding
 scripting interface commands <ref id="scmovob" name="movOb"> and
 <ref id="scmovpnts" name="movPnts">.
 
+<#if out="latex"><x/newpage/</#if>
+
 <sect1>Rotating Objects or Selected Points<label id="rotac">
 <p>
 Using the modelling action <tt/"Rotate"/ (shortcut: <tt/&lt;r&gt;/)
@@ -4084,6 +4086,8 @@ See also the section
 for a script, that modifies the rotate action to rotate
 about the current selections center automatically.
 
+<#if out="latex"><x/newpage/</#if>
+
 <sect1>Scaling Objects or Selected Points<label id="scalac">
 <p>
 There are several different actions available to interactively scale
@@ -4154,6 +4158,8 @@ Stretch 2D|<tt/&lt;T&gt;/|
 See also the documentation of the corresponding
 scripting interface commands <ref id="scscalob" name="scalOb"> and
 <ref id="scscalpnts" name="scalPnts">.
+
+<#if out="latex"><x/newpage/</#if>
 
 <sect1>Scaling Objects or Selected Points about a Point<label id="scalaac">
 <p>
@@ -4227,6 +4233,8 @@ See also the section
 <ref id="aactcl" name="Automatic About Center Actions">
 for a script, that modifies the scale actions to scale
 about the current selections center automatically.
+
+<#if out="latex"><x/newpage/</#if>
 
 <sect1>Editing Points<label id="editac">
 <p>
@@ -16727,6 +16735,7 @@ The types are the well known strings that are displayed in the hierarchy
 list box if the objects are not named (NPatch, NCurve, Sphere, etc.).
 If no variable name is specified the command returns the respective result(s).
 <footnote>Since 1.25.</footnote>
+If multiple objects are selected, a list is returned.
 </itemize>
 
 <p>
@@ -16735,13 +16744,15 @@ If no variable name is specified the command returns the respective result(s).
 <label id="scgetname">
 getName:
 <itemize>
- <item>Synopsis: <tt>"getName [varname]"</tt>
+ <item>Synopsis: <tt>"getName [-s] [varname]"</tt>
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: This command writes the name of the
 selected object into the variable designated by the <tt/varname/
-argument.
+argument. If the object has no name, a warning message will be
+emitted (unless the option <tt/"-s"/ is given.
 If no variable name is specified the command returns the respective result(s).
 <footnote>Since 1.25.</footnote>
+If multiple objects are selected, a list is returned.
 <newline>
 See also section <ref id="scnameob" name="nameOb scripting interface command">.
 </itemize>
@@ -16954,8 +16965,6 @@ is a potential parent, otherwise <tt/0/ is
 returned.<footnote>Since 1.27.</footnote>
 If multiple objects are selected, a list is returned.
 </itemize>
-
-<#if out="latex"><x/newpage/</#if>
 
 <sect2>Selecting Objects<label id="sciselob">
 <p>
