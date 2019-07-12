@@ -576,12 +576,28 @@ addCommand $w c1 "Remove all Tags" {delTags all;plb_update}
 
 # getProperty:
 #
-#
-proc getProperty { property varName {report 0} } {
-upvar $varName vname
+# transfer changes to args handling to safe_getProperty
+proc getProperty { property args } {
 global ay ay_error
 
-    set vname ""
+    set report true
+    set return_result true
+    set obey_rptags true
+
+    foreach arg $args {
+	if { $arg == "-s" } {
+	    set report false
+	} else {
+	    if { $arg == "-i" } {
+		set obey_rptags false
+	    } else {
+		set return_result false
+		upvar $arg result
+	    }
+	}
+    }
+
+    set result ""
 
     # decode arrayname from property argument
     set arrayname [string range $property 0 \
@@ -593,8 +609,14 @@ global ay ay_error
 
     getType types
     if { $types == "" } {
-	ayError 2 "getProperty" "Could not get type of object."
-	return;
+	if { $report } {
+	    ayError 2 "getProperty" "Could not get type of object."
+	}
+	if { $return_result } {
+	    return $result;
+	} else {
+	    return 0;
+	}
     }
     set obj 0
     foreach type $types {
@@ -607,13 +629,27 @@ global ay ay_error
 	    eval [subst "set props {\$${type}_props}"]
 
 	    # also get properties from NP tags
-	    set tn ""
-	    getTags tn tv
-	    if { ($tn != "") && ([ string first NP $tn ] != -1) } {
+	    if { [hasTag "NP"] } {
+		set tn ""
+		getTags tn tv
 		set i 0
 		foreach tag $tn {
-		    if { [lindex $tn $i] == "NP" } {
+		    if { $tag == "NP" } {
 			lappend props [lindex $tv $i]
+		    }
+		    incr i
+		}
+		# foreach
+	    }
+	    # if
+
+	    if { $obey_rptags && [hasTag "RP"] } {
+		set tn ""
+		getTags tn tv
+		set i 0
+		foreach tag $tn {
+		    if { $tag == "RP" } {
+			lremove props [lindex $tv $i]
 		    }
 		    incr i
 		}
@@ -628,7 +664,11 @@ global ay ay_error
 		if { $report } {
 		    ayError 2 "getProperty" "Could not find property: $arrayname."
 		}
-		return 0;
+		if { $return_result } {
+		    return $result;
+		} else {
+		    return 0;
+		}
 	    }
 
 	    # get property data
@@ -641,11 +681,16 @@ global ay ay_error
 	    eval [subst "set arr \$${arrayname}(arr)"]
 	    global $arr
 	    set pvarname ${arr}($propname)
-	    eval [subst "lappend vname \{\$$pvarname\}"]
+	    eval [subst "lappend result \{\$$pvarname\}"]
 	}
 	incr obj
     }
- return 1;
+
+    if { $return_result } {
+	return $result;
+    } else {
+	return 1;
+    }
 }
 # getProperty
 

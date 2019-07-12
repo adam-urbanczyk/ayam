@@ -166,11 +166,18 @@ proc save_addCommand { w name text command } {
 #  XXXX add mechanism to prevent even attempts of
 #  accessing env, ay, ayprefs arrays (even if getProperty
 #  already checks presence of requested property)?
-proc safe_getProperty { property varName } {
+proc safe_getProperty { property args } {
 
-    getProperty $property val
+    set varname [lindex $args 0]
+    foreach arg $args {
+	if { ($arg == "-s") || ($arg == "-i") } {
+	    append newargs $arg
+	}
+    }
 
-    aySafeInterp eval set $varName $val
+    getProperty $property val newargs
+
+    aySafeInterp eval set $varname $val
 
  return;
 }
