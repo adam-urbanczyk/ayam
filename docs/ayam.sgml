@@ -16749,7 +16749,7 @@ getName:
  <item>Description: This command writes the name of the
 selected object into the variable designated by the <tt/varname/
 argument. If the object has no name, a warning message will be
-emitted (unless the option <tt/"-s"/ is given.
+emitted (unless the option <tt/"-s"/ is given).
 If no variable name is specified the command returns the respective result(s).
 <footnote>Since 1.25.</footnote>
 If multiple objects are selected, a list is returned.
@@ -17114,19 +17114,31 @@ scripting interface:<footnote>Since 1.9.</footnote>
 <label id="scgetproperty">
 getProperty &ndash; get single property value
 <itemize>
- <item>Synopsis: <tt/"getProperty propname(elemname) varname"/
+ <item>Synopsis: <tt/"getProperty propname(elemname) [varname] [-s|-i]"/
  <item>Background: Yes, Undo: No, Safe: Yes, Type: Procedure
  <item>Description: This procedure gets a single property element
 named <tt/elemname/ from the property named <tt/propname/ of the currently
 selected object and writes the result into the variable named <tt/varname/.
 Multiple selected objects are supported and lead to a list of values
 produced in the output variable.<footnote>Since 1.21.</footnote>
+<p><p>
+If the <tt/"varname"/ is omitted, the procedure will return the fetched
+value(s), otherwise the returned value will be <tt/"1"/ for successful
+operations and <tt/"0"/ else.<footnote>Since 1.27.</footnote>
+<p>
+If the <tt/"-s"/ option is specified, no errors will be
+reported.<footnote>Since 1.27.</footnote>
+<p>
+If the <tt/"-i"/ option is specified, <tt/"RP"/ tags will be
+ignored.<footnote>Since 1.27.</footnote>
  <item>Notes: This procedure runs more slowly than calling the appropriate
 get-procedure and accessing the data array that is associated with the
 property in question directly, especially if multiple values are to be
 fetched.<newline>
 However, the name of the data array and the appropriate procedure
 are inferred automatically and errors are caught and reported.
+Furthermore, potential object type initialization and <tt/"NP"//<tt/"RP"/
+tags are also handled transparently.<newline>
 See below for more information regarding direct access of property values.
  <item>Example: Given that a single Sphere object is selected, its
 radius may be retrieved in the variable <tt/"r"/ easily using the command
@@ -17140,6 +17152,8 @@ set r $::SphereAttrData(Radius)
 See also section
 <ref id="ayproparr" name="Global Property Management and Data Arrays">.
 </itemize>
+
+<#if out="latex"><x/newpage/</#if>
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
@@ -17317,8 +17331,6 @@ creates a simple Level, enters it, and creates a Sphere as child of
 this level.
 </itemize>
 
-
-<#if out="latex"><x/newpage/</#if>
 <p>
 <#if out="latex"><x/phantomsection/</#if>
 <#if out="html"><f/<inf/<newline>//</#if>
