@@ -929,7 +929,7 @@ proc searchOb { expression action {gui 0} } {
 		    if { [lsearch -exact $mappings $prop] == -1 } {
 			append cx "getProperty "
 			append cx $prop
-			append cx " val$vi 0; "
+			append cx " val$vi -s; "
 			lappend mappings $prop
 			lappend mappings "val$vi"
 			incr vi
