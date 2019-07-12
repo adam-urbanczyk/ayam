@@ -169,13 +169,14 @@ proc save_addCommand { w name text command } {
 proc safe_getProperty { property args } {
 
     set varname [lindex $args 0]
+    set newargs ""
     foreach arg $args {
 	if { ($arg == "-s") || ($arg == "-i") } {
 	    append newargs $arg
 	}
     }
 
-    getProperty $property val newargs
+    eval [subst "getProperty $property val $newargs"]
 
     aySafeInterp eval set $varname $val
 
