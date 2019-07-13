@@ -41,7 +41,7 @@ proc safe_init { interp } {
     interp alias $interp addString {} addString
     interp alias $interp addStringB {} addStringB
 
-    interp alias $interp addCommand {} save_addCommand
+    interp alias $interp addCommand {} safe_addCommand
     interp alias $interp addCommandB {} addCommandB
 
     interp alias $interp addText {} addText
@@ -50,6 +50,8 @@ proc safe_init { interp } {
     interp alias $interp addInfoB {} addInfoB
 
     interp alias $interp addVSpace {} addVSpace
+
+    interp alias $interp addOptionToggle {} addOptionToggle
 
     # tree
     interp alias $interp treeSelect {} treeSelect
@@ -146,17 +148,17 @@ proc safe_addPropertyGUI { name {sproc ""} {gproc ""} } {
 # safe_addPropertyGUI
 
 
-# save_addCommand:
+# safe_addCommand:
 #  safe version of addCommand; makes sure, the command runs in
 #  the safe interpreter
-proc save_addCommand { w name text command } {
+proc safe_addCommand { w name text command } {
     set newcmd "aySafeInterp eval { "
     append newcmd $command
     append newcmd " }"
     addCommand $w $name $text $newcmd
  return;
 }
-# save_addCommand
+# safe_addCommand
 
 
 # safe_getProperty:
@@ -170,15 +172,22 @@ proc safe_getProperty { property args } {
 
     set varname [lindex $args 0]
     set newargs ""
+    set returnresult true
     foreach arg $args {
 	if { ($arg == "-s") || ($arg == "-i") } {
 	    append newargs $arg
+	} else {
+	    set returnresult false
 	}
     }
 
-    eval [subst "getProperty $property val $newargs"]
+    eval [subst "getProperty $property res $newargs"]
 
-    aySafeInterp eval set $varname $val
+    if { $returnresult } {
+	return $res
+    } else {
+	aySafeInterp eval set $varname $res
+    }
 
  return;
 }
