@@ -245,14 +245,15 @@ ay_sel_selobtcmd(ClientData clientData, Tcl_Interp *interp,
 		  goto error;
 		}
 
-	      o = o->next;
-
 	      if(end != -1)
 		{
 		  end--;
 		  if(end < start)
 		    break;
 		}
+
+	      j++;
+	      o = o->next;
 	    } /* while */
 	} /* for */
     } /* if have args */
