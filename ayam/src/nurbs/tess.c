@@ -130,8 +130,6 @@ int ay_tess_tristopomesh(ay_tess_tri *tris,
 			 int has_vn, int has_vc, int has_tc,
 			 char *myst, char *myvc, ay_object **result);
 
-void ay_tess_setautonormal(double *v1, double *v2, double *v3);
-
 
 /* functions */
 
@@ -2767,6 +2765,12 @@ cleanup:
  *  mycs - name of PV tag used for the vertex colors
  *  use_vn - use vertex normals delivered by a PV tag
  *  myn - name of PV tag used for the vertex normals
+ *  refine_trims - how many times shall the trim curves be refined
+ *  primitives - what primitives to emit:
+ *   0: Triangles
+ *   1: Triangles&Quads
+ *   2: Quads
+ *  quad_eps: maximum deviation of triangle normals to be combined to a quad
  *  pm - resulting PolyMesh object
  */
 int
@@ -3316,7 +3320,6 @@ ay_tess_npatchtcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
  int ay_status;
- char fname[] = "tess_npatch";
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL, *new = NULL;
  double sparamu = ay_prefs.sparamu, sparamv = ay_prefs.sparamv;
@@ -3408,7 +3411,7 @@ ay_tess_npatchtcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  Tcl_GetDouble(interp, argv[9], &quad_eps);
 	}
-    } /* if */
+    } /* if have args */
 
   while(sel)
     {
@@ -3431,52 +3434,20 @@ ay_tess_npatchtcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	  else
 	    {
-	      ay_error(AY_ERROR, fname, "Could not tesselate object!");
+	      ay_error(AY_ERROR, argv[0], "Could not tesselate object!");
 	      return TCL_OK;
-	    } /* if */
+	    }
 	}
       else
 	{
-	  ay_error(AY_EWTYPE, fname, "NPatch");
-	} /* if */
+	  ay_error(AY_EWTYPE, argv[0], "NPatch");
+	} /* if is NPatch */
 
       sel = sel->next;
     } /* while */
 
  return TCL_OK;
 } /* ay_tess_npatchtcmd */
-
-
-/* ay_tess_setautonormal:
- *
- */
-void
-ay_tess_setautonormal(double *v1, double *v2, double *v3)
-{
- double t1[3], t2[3];
- GLdouble n[3];
-
-  AY_V3SUB(t1, v1, v2)
-  AY_V3SUB(t2, v1, v3)
-  AY_V3CROSS(n, t1, t2)
-
-  /* the next fragment should be unneeded, because we enable
-     GL_NORMALIZE in ay_toglcb_create */
-
-  /*
-  AY_V3NORM(n)
-
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-   glLoadIdentity();
-  */
-   glNormal3dv(n);
-  /*
-  glPopMatrix();
-  */
-
- return;
-} /* ay_tess_setautonormal */
 
 
 /* ay_tess_pomeshf:
