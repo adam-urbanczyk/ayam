@@ -1060,7 +1060,7 @@ ay_pomesht_addvertextohash(ay_pomesht_hash *phash, double normal_epsilon,
  *
  * \param[in,out] pomesh PolyMesh object to optimize
  * \param[in] normal_epsilon a positive angle in degrees that is used
- *  to decide wether two coordinates are eligible for optimization;
+ *  to decide whether two coordinates are eligible for optimization;
  *  set to 0.0 to only optimize vertices with identical normals,
  *  set to DBL_MAX to totally ignore the normals
  * \param[in] selp vertices to process (may be NULL, to indicate that all
