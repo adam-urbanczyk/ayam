@@ -1056,8 +1056,8 @@ ay_tess_tristoquad(double **t1, double **t2, double quad_eps, int *q)
 		  have_point1 = AY_TRUE;
 		}
 	    }
-	}
-    }
+	} /* for */
+    } /* for */
 
   if(!(have_point1 && have_point2))
     return AY_ERROR;
@@ -1124,7 +1124,7 @@ ay_tess_tristoquad(double **t1, double **t2, double quad_eps, int *q)
     {
       /* split along edge into two quads */
       q[0] = -1;
-    }
+    } /* if */
 
  return AY_OK;
 } /* ay_tess_tristoquad */
@@ -3573,7 +3573,8 @@ cleanup:
 
 /* ay_tess_pomesh:
  *  tesselate the PolyMesh <pomesh> into triangles, removes doubly
- *  used vertices if <optimize> is AY_TRUE,
+ *  used vertices if <optimize> is AY_TRUE, if <normal> is not NULL it
+ *  provides a normal that will be set to the tesselator via gluTessNormal(),
  *  returns new PolyMesh in <trpomesh>
  */
 int
@@ -3581,7 +3582,7 @@ ay_tess_pomesh(ay_pomesh_object *pomesh, int optimize, double *normal,
 	       ay_pomesh_object **trpomesh)
 {
 #ifndef GLU_VERSION_1_2
- char fname[] = "tess_pomeshf";
+ char fname[] = "tess_pomesh";
  ay_error(AY_ERROR, fname, "This function is just available on GLU V1.2+ !");
  return AY_ERROR;
 #else
