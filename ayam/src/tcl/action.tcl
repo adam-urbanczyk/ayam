@@ -1459,7 +1459,8 @@ proc editPointDialogBind { w } {
 # helper for actionEditNumP below
 # open the numeric point edit dialog
 proc editPointDialog { win {dragsel 0} } {
-    upvar #0 editPntArr array
+    #upvar #0 editPntArr array
+    global editPntArr
     global ay aymark ayprefs aymainshortcuts tcl_platform AYWITHAQUA
 
     set w .editPointDw
@@ -1477,6 +1478,14 @@ proc editPointDialog { win {dragsel 0} } {
 	set editPntArr(y) $aymark(y)
 	set editPntArr(z) $aymark(z)
 	set editPntArr(w) 1
+
+	if { [llength $pnts] == 1 } {
+	    getPnt [lindex $pnts 0] -vn pnt
+	    if { [llength $pnt] == 4 } {
+		set editPntArr(w) [lindex $pnt 3]
+	    }
+	}
+
 	set editPntArr(valid) 1
     }
 
@@ -1552,7 +1561,7 @@ proc editPointDialog { win {dragsel 0} } {
     if { $dragsel == 0 } {
 	editPointDialogUpdate $w
     } else {
-	editPointDialogSet $w aymark
+	editPointDialogSet $w editPntArr
     }
 
     set f [frame $w.f2]
@@ -1610,7 +1619,7 @@ proc editPointDialog { win {dragsel 0} } {
           editPointDialogUpdatePopup $w;\
           winOpenPopup $w"
 
-    if {  [string first ".view" $win] != 0 } {
+    if { [string first ".view" $win] != 0 } {
 	# internal view
 	winRestoreOrCenter $w $t
     } else {
