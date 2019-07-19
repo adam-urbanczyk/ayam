@@ -2617,7 +2617,7 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
  double obj[24] = {0}, pl[16] = {0};
  unsigned int i, j;
  int k, l;
- int notify_parent = AY_FALSE;
+ int notify_object = AY_FALSE, notify_parent = AY_FALSE;
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
  ay_nurbcurve_object *nc = NULL;
@@ -2663,6 +2663,7 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
 	  while(sel)
 	    {
 	      o = sel->object;
+	      notify_object = AY_FALSE;
 
 	      ay_viewt_winrecttoobj(togl, o, winXY[0], winXY[1],
 				    winXY[2], winXY[3], obj);
@@ -2695,9 +2696,13 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
 		  if(pe.type == AY_PTRAT)
 		    {
 		      pe.coords[i][3] = 1.0;
+		      notify_object = AY_TRUE;
 		      notify_parent = AY_TRUE;
 		    }
 		}
+
+	      if(notify_object)
+		(void)ay_notify_object(sel->object);
 
 	      sel = sel->next;
 	    } /* while */
@@ -2715,7 +2720,7 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
 		      coords[3] = 1.0;
 		    }
 		  pact_objects[k]->modified = AY_TRUE;
-		  ay_notify_object(pact_objects[k]);
+		  (void)ay_notify_object(pact_objects[k]);
 		  notify_parent = AY_TRUE;
 		}
 	      j += pact_numpo[k];
@@ -2762,7 +2767,7 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
 		  pm = (ay_pamesh_object *)o->refine;
 		  pm->is_rat = AY_FALSE;
 		}
-	      ay_notify_object(o);
+	      (void)ay_notify_object(o);
 	      notify_parent = AY_TRUE;
 	    } /* if */
 
