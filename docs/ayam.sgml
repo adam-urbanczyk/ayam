@@ -18189,7 +18189,7 @@ See also section <ref id="ctrimt" name="Curve Trim Tool">.
 <label id="scestlennc">
 estlenNC &ndash; estimate length of NURBS curve:
 <itemize>
- <item>Synopsis: <tt/"estlenNC [-trafo] [varname]"/
+ <item>Synopsis: <tt/"estlenNC [-trafo | -refine n] [varname]"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: estimate the length of the currently selected NURBS curve
 or NURBS curve providing object and put the result into the designated
@@ -18199,6 +18199,9 @@ created.<newline>
 If the optional parameter <tt/"-trafo"/ is given, the transformation
 attributes of the curve will be applied to the control points for the
 length estimation.<newline>
+If the optional parameter <tt/"-refine"/ is given, the curve will be
+refined <tt/n/ times prior to the length estimation which increases
+the accuracy of the estimation.<footnote>Since 1.27.</footnote><newline>
 If no variable name is specified the command returns the respective result(s).
 <footnote>Since 1.25.</footnote>
 </itemize>
