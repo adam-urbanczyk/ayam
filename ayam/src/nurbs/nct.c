@@ -8369,12 +8369,12 @@ int
 ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ int ay_status = AY_OK, tcl_status = TCL_OK;
  ay_list_object *sel = ay_selection;
  ay_nurbcurve_object *curve;
  ay_object *o, *po;
  double len;
- int have_vname = AY_TRUE, apply_trafo = 0, i = 1;
+ int have_vname = AY_TRUE, apply_trafo = 0, i = 1, r = 0;
  Tcl_Obj *to = NULL, *ton = NULL;
 
   if(!sel)
@@ -8384,21 +8384,39 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   /* parse args */
-  if(argc > 1)
+  while(i < argc)
     {
-      if(!strcmp(argv[1], "-trafo"))
+      if((argv[i][0] == '-') && (argv[i][1] == 't'))
 	{
 	  apply_trafo = 1;
 	  i++;
 	}
-      /*
-      if(!strcmp(argv[2], "-world"))
+      if((argv[i][0] == '-') && (argv[i][1] == 'r'))
 	{
+	  /* -refine */
+	  if(argc < i+1)
+	    {
+	      ay_error(AY_EARGS, argv[0], "[-t | -r n] [vname]");
+	      return TCL_OK;
+	    }
+	  tcl_status = Tcl_GetInt(interp, argv[i+1], &r);
+	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	  if(r < 0)
+	    r = 0;
+	  if(r > 5)
+	    r = 5;
+	  i += 2;
+	} /* if have -refine */
+#if 0      
+      if((argv[i][0] == '-') && (argv[i][1] == 'w'))
+	{
+	  /* -world */
 	  apply_trafo = 2;
 	  i++;
 	}
-      */
-    }
+#endif
+      i++;
+    } /* while */
 
   if(argc < i+1)
     {
@@ -8435,6 +8453,17 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
 		  ay_nct_applytrafo(o);
 		}
 	      curve = (ay_nurbcurve_object *)o->refine;
+
+	      while(r)
+		{
+		  ay_status = ay_nct_refinekn(curve, AY_FALSE, NULL, 0);
+		  if(ay_status)
+		    {
+		      ay_error(AY_ERROR, argv[0], "refine failed");
+		      goto cleanup;
+		    }
+		  r--;
+		} /* while refine */
 
 	      /* get length */
 	      ay_status = ay_nct_estlen(curve, &len);
@@ -8474,6 +8503,28 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_nct_applytrafo(po);
 	      curve = (ay_nurbcurve_object *)po->refine;
 	    }
+
+	  if(r > 0)
+	    {
+	      if(!po)
+		{
+		  ay_status = ay_object_copy(o, &po);
+
+		  if(ay_status || !po)
+		    goto cleanup;
+		  curve = (ay_nurbcurve_object *)po->refine;
+		}
+	      while(r)
+		{
+		  ay_status = ay_nct_refinekn(curve, AY_FALSE, NULL, 0);
+		  if(ay_status)
+		    {
+		      ay_error(AY_ERROR, argv[0], "refine failed");
+		      goto cleanup;
+		    }
+		  r--;
+		}
+	    } /* if refine */
 
 	  /* get length */
 	  ay_status = ay_nct_estlen(curve, &len);
