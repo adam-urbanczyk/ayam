@@ -8278,6 +8278,8 @@ ay_nct_estlen(ay_nurbcurve_object *nc, double *len)
 
       ay_status = ay_nb_DecomposeCurve(stride, nc->length-1, nc->order-1,
 				       nc->knotv, nc->controlv, &nb, &Qw);
+      if(ay_status)
+	goto cleanup;
     }
   else
     {
@@ -8374,7 +8376,7 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbcurve_object *curve;
  ay_object *o, *po;
  double len;
- int have_vname = AY_TRUE, apply_trafo = 0, i = 1, r = 0;
+ int have_vname = AY_FALSE, apply_trafo = 0, i = 1, r = 0;
  Tcl_Obj *to = NULL, *ton = NULL;
 
   if(!sel)
@@ -8389,43 +8391,41 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
       if((argv[i][0] == '-') && (argv[i][1] == 't'))
 	{
 	  apply_trafo = 1;
-	  i++;
 	}
-      if((argv[i][0] == '-') && (argv[i][1] == 'r'))
-	{
-	  /* -refine */
-	  if(argc < i+1)
-	    {
-	      ay_error(AY_EARGS, argv[0], "[-t | -r n] [vname]");
-	      return TCL_OK;
-	    }
-	  tcl_status = Tcl_GetInt(interp, argv[i+1], &r);
-	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
-	  if(r < 0)
-	    r = 0;
-	  if(r > 5)
-	    r = 5;
-	  i += 2;
-	} /* if have -refine */
-#if 0      
-      if((argv[i][0] == '-') && (argv[i][1] == 'w'))
-	{
-	  /* -world */
-	  apply_trafo = 2;
-	  i++;
-	}
+      else
+	if((argv[i][0] == '-') && (argv[i][1] == 'r'))
+	  {
+	    /* -refine */
+	    if(argc < i+1)
+	      {
+		ay_error(AY_EARGS, argv[0], "[-t | -r n] [vname]");
+		return TCL_OK;
+	      }
+	    tcl_status = Tcl_GetInt(interp, argv[i+1], &r);
+	    AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	    if(r < 0)
+	      r = 0;
+	    if(r > 5)
+	      r = 5;
+	    i++;
+	  } /* if have -refine */
+	else
+	  {
+	    ton = Tcl_NewStringObj(argv[i], -1);
+	    have_vname = AY_TRUE;
+	  }
+
+#if 0
+      else
+	if((argv[i][0] == '-') && (argv[i][1] == 'w'))
+	  {
+	    /* -world */
+	    apply_trafo = 2;
+	    i++;
+	  }
 #endif
       i++;
     } /* while */
-
-  if(argc < i+1)
-    {
-      have_vname = AY_FALSE;
-    }
-  else
-    {
-      ton = Tcl_NewStringObj(argv[i], -1);
-    }
 
   while(sel)
     {
@@ -8459,7 +8459,7 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
 		  ay_status = ay_nct_refinekn(curve, AY_FALSE, NULL, 0);
 		  if(ay_status)
 		    {
-		      ay_error(AY_ERROR, argv[0], "refine failed");
+		      ay_error(AY_ERROR, argv[0], "Refine failed.");
 		      goto cleanup;
 		    }
 		  r--;
@@ -8496,10 +8496,8 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(apply_trafo)
 	    {
 	      ay_status = ay_object_copy(o, &po);
-
 	      if(ay_status || !po)
 		goto cleanup;
-
 	      ay_nct_applytrafo(po);
 	      curve = (ay_nurbcurve_object *)po->refine;
 	    }
@@ -8509,7 +8507,6 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
 	      if(!po)
 		{
 		  ay_status = ay_object_copy(o, &po);
-
 		  if(ay_status || !po)
 		    goto cleanup;
 		  curve = (ay_nurbcurve_object *)po->refine;
@@ -8519,7 +8516,7 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
 		  ay_status = ay_nct_refinekn(curve, AY_FALSE, NULL, 0);
 		  if(ay_status)
 		    {
-		      ay_error(AY_ERROR, argv[0], "refine failed");
+		      ay_error(AY_ERROR, argv[0], "Refine failed.");
 		      goto cleanup;
 		    }
 		  r--;
