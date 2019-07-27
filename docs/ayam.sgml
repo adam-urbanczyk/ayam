@@ -13819,6 +13819,7 @@ the selection and additionally requests a point in space.
 specified point in space without changing the already existing
 shape of the curves.
 <p>
+The knot vector of the curves will be rescaled to the range [0,&thinsp;1].
 If the knot vector of a curve is not clamped at the end, it
 will be clamped automatically. The knot type of each curve will be
 changed to custom. A new control point will be added and the position
@@ -16987,7 +16988,7 @@ If the single index is -1 or the <tt/"-end"/ option is specified, the last
 object in the current level will be selected.
  <item>Examples:
 <enum>
-<item><bf/<tt/"selOb"//<newline>
+<item><bf/<tt/"selOb"//<f/<sup/&nbsp;//<newline>
 clears the current selection,
 <item><bf/<tt/"selOb 0"//<newline>
 selects the first object in the current level,
@@ -17095,7 +17096,7 @@ of a multiple point (of NCurve and NPatch objects) via this command
 only selects this single point.
  <item>Examples: Given that a single NCurve object is selected,
 <enum>
- <item><bf/<tt/"selPnts -all"//<newline>
+ <item><bf/<tt/"selPnts -all"//<f/<sup/&nbsp;//<newline>
 selects all points of the curve, and
  <item><bf/<tt/"selPnts 0 2"//<newline>
 selects the first and third point of the curve.
@@ -17427,7 +17428,7 @@ If the parameters start with an <tt/-a/, they denote an rotation
 axis followed by the angle in degrees.<footnote>Since 1.27.</footnote>
 <item>Examples:
 <enum>
-<item><bf><tt>"rotOb 0 0 45"</tt></bf><newline>
+<item><bf><tt>"rotOb 0 0 45"</tt></bf><f/<sup/&nbsp;//<newline>
 rotates the selected objects by an angle of 45&deg; about the Z-axis.
 <item><bf><tt>"rotOb -a 1 1 0 45"</tt></bf><newline>
 rotates the selected objects by an angle of  45&deg; about the
@@ -17482,7 +17483,7 @@ If the parameters start with an <tt/-a/, they denote an rotation
 axis followed by the angle in degrees.<footnote>Since 1.27.</footnote>
 <item>Examples:
 <enum>
-<item><bf><tt>"rotPnts 0 0 45"</tt></bf><newline>
+<item><bf><tt>"rotPnts 0 0 45"</tt></bf><f/<sup/&nbsp;//<newline>
 rotates the selected points by an angle of 45&deg; about the Z-axis.
 <item><bf><tt>"rotPnts -a 1 1 0 45"</tt></bf><newline>
 rotates the selected points by an angle of 45&deg; about the
@@ -17652,7 +17653,7 @@ emitted. This warning can be inhibited using the hidden preference
 setting <tt/"WarnUnknownTag"/.
 <item>Examples:
 <enum>
-<item><bf><tt>"setTag NoExport """</tt></bf><newline>
+<item><bf><tt>"setTag NoExport """</tt></bf><f/<sup/&nbsp;//<newline>
 sets or adds a <tt/"NoExport"/ tag to the selected objects.
 <item><bf><tt>"setTag RP Transformations"</tt></bf><newline>
 sets or adds a <tt/"RP"/ (remove property) tag to the selected objects
@@ -17677,7 +17678,7 @@ setting <tt/"WarnUnknownTag"/ or by registering the tag type using
 the <tt/"registerTag"/ command (see below).
 <item>Examples:
 <enum>
-<item><bf><tt>"addTag NoExport """</tt></bf><newline>
+<item><bf><tt>"addTag NoExport """</tt></bf><f/<sup/&nbsp;//<newline>
 adds a <tt/"NoExport"/ tag to the selected objects.
 <item><bf><tt>"addTag RP Transformations"</tt></bf><newline>
 adds a <tt/"RP"/ (remove property) tag to the selected objects
@@ -17711,7 +17712,7 @@ If the type parameter is omitted or <tt/"all"/, <em/all/ tags are
 deleted from the currently selected objects.
 <item>Examples:
 <enum>
-<item><bf><tt>"delTags"</tt></bf><newline>
+<item><bf><tt>"delTags"</tt></bf><f/<sup/&nbsp;//<newline>
 removes all tags from the selected objects.
 <item><bf><tt>"delTags RP"</tt></bf><newline>
 removes all <tt>"RP"</tt> tags from the selected objects.
@@ -17741,7 +17742,8 @@ taken from the list elements with even index numbers and the tag
 value-strings from the list elements with odd index numbers.
 <item>Examples:
 <enum>
-<item><bf><tt>"setTags &lcub;RP Transformations RP Attributes&rcub;"</tt></bf><newline>
+<item><bf><tt>"setTags &lcub;RP Transformations RP Attributes&rcub;"</tt>
+</bf><f/<sup/&nbsp;//<newline>
 replaces all tags from the selected objects with two <tt>"RP"</tt>
 tags.
 </enum>
@@ -18085,6 +18087,8 @@ exchanging width and height, without altering the shape of the surfaces.
 See also section <ref id="swapuvt" name="Swap UV Tool">.
 </itemize>
 
+<#if out="latex"><x/newpage/</#if>
+
 <p>
 <#if out="latex"><x/phantomsection/</#if>
 <#if out="html"><f/<inf/<newline>//</#if>
@@ -18094,11 +18098,11 @@ rescaleknNC &ndash; rescale knots of NURBS curves:
  <item>Synopsis: <tt/"rescaleknNC [-r rmin rmax | -d mindist]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Rescale the knot vector(s) of the selected NURBS curve(s)
-to the range <tt>[0.0, 1.0]</tt> (if no argument is present) or to the range
-<tt>[rmin, rmax]</tt> if the <tt/"-r"/ argument is given or to the minimum
-distance mindist if the <tt/"-d"/ argument is used. Scaling to a minimum
-distance ensures that all knots (except for multiple knots) have a distance
-bigger than mindist afterwards.
+to the range &lsqb;0.0,&thinsp;1.0&rsqb; (if no argument is present) or to the
+range &lsqb;<tt/rmin/,&thinsp;<tt/rmax/&rsqb; if the <tt/"-r"/ argument is
+given or to the minimum distance <tt/mindist/ if the <tt/"-d"/ argument is used.
+Scaling to a minimum distance ensures that all knots (except for multiple
+knots) have a distance bigger than <tt/mindist/ afterwards.
 <p><p>
 Since Ayam 1.20 the knot type of the curve does
 not have to be <tt/"Custom"/ anymore. Furthermore, rescaling the knots
@@ -18178,7 +18182,7 @@ parametric range (umin-umax), modifying the original selected curve.
 <p><p>
 If the optional argument <tt/"-relative"/ is specified, the parametric
 values are interpreted in a relative way and must consequently be in
-the range &lsqb;0,1&rsqb;.
+the range &lsqb;0,&thinsp;1&rsqb;.
 <p>
 See also section <ref id="ctrimt" name="Curve Trim Tool">.
 </itemize>
@@ -18358,24 +18362,31 @@ rescaleknNP &ndash; rescale knots of NURBS patches:
  <item>Synopsis: <tt/"rescaleknNP [-r[u|v] rmin rmax | -d[u|v] mindist]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Rescale the knot vector(s) of the selected NURBS patch(es)
-to the range <tt>[0.0, 1.0]</tt> (if no argument is present) or to the range
-<tt>[rmin, rmax]</tt> if the <tt/"-r"/ argument is given or to the minimum
-distance mindist if the <tt/"-d"/ argument is used. The <tt/"-ru"/, <tt/"-rv"/,
-<tt/"-du"/, and <tt/"-dv"/ variants scale only the designated dimension.
+to the range &lsqb;0.0,&thinsp;1.0&rsqb; (if no argument is present) or to the
+range &lsqb;<tt/rmin/,&thinsp;<tt/rmax/&rsqb; if the <tt/"-r"/ argument is
+given or to the minimum distance <tt/mindist/ if the <tt/"-d"/ argument is
+used.
 Scaling to a minimum distance ensures that all knots (except for multiple
-knots) have a distance bigger than mindist afterwards. Trim curves, if
-present, will also be scaled to match the new range.
+knots) have a distance bigger than <tt/mindist/ afterwards.
+<p><p>
+The <tt/"-ru"/, <tt/"-rv"/, <tt/"-du"/, and <tt/"-dv"/ variants scale only
+the designated dimension.
+<p>
+Trim curves, if present, will also be scaled to match the new range.
+<p>
 Since Ayam 1.20 the knot type of the curve does
 not have to be <tt/"Custom"/ anymore. Furthermore, rescaling the knots
 does not change the knot type.
+<p>
 This operation does not change the shape of the patch.
-<p><p>
+<p>
 See also sections
 <ref id="resckrnpt" name="Rescale Knots to Range Surface Tool">
 and
 <ref id="resckmnpt" name="Rescale Knots to Mindist Surface Tool">.
  <item>Example: <tt/"rescaleknNP -ru 0.2 0.3"/ scales the u knot vector
-of the selected NURBS patch objects to the new range (0.2, 0.3).
+of the selected NURBS patch objects to the new range
+&lsqb;0.2,&thinsp;0.3&rsqb;.
 </itemize>
 
 <p>
@@ -18398,6 +18409,8 @@ the shape of the patches will not change.
 <p><p>
 See also section <ref id="insknnpt" name="Insert Knot Surface Tool">.
 </itemize>
+
+<#if out="latex"><x/newpage/</#if>
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
@@ -18505,8 +18518,6 @@ The v knot type of the refined surfaces may be changed to <tt/"Custom"/.
 <p><p>
 See also section <ref id="refinest" name="Refine Knots Surface Tool">.
 </itemize>
-
-<#if out="latex"><x/newpage/</#if>
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
@@ -18994,9 +19005,9 @@ specified by <tt/"varname"/.
 
 <item>Notes: In Ayam versions prior to 1.20, only global variables
 were written, this is no longer the case.
-<item>Examples:
+<item>Examples:<f/<inf/&nbsp;//
 <enum>
-<item><bf/<tt/"getPnt 1 x y z w"//<newline>
+<item><bf/<tt/"getPnt 1 x y z w"//<f/<sup/&nbsp;//<newline>
 gets the coordinate values of the second point of the selected NURBS
 curve and writes the values to the variables <tt/"x y z w"/.
 <item><bf/<tt/"getPnt -eval 0.5 x y z"//<newline>
@@ -19046,7 +19057,7 @@ as there are no double-string-double conversions involved.
 
  <item>Examples:
 <enum>
-<item><bf/<tt/"setPnt 1 0.0 0.2 0.3 1.0"//<newline>
+<item><bf/<tt/"setPnt 1 0.0 0.2 0.3 1.0"//<f/<sup/&nbsp;//<newline>
 sets the coordinate values of the second point of the selected NURBS
 curve object to <tt/"0.0 0.2 0.3 1.0"/.
 <item><bf/<tt/"setPnt -world 0 0 0 0"//<newline>
@@ -19292,7 +19303,7 @@ single object (designated by the zero based index) from a multiple selection
 without changing the selection state of any objects.
  <item>Example:
 <enum>
-<item><bf/<tt>"withOb 2 {movOb 0 1 0}"</tt>/<newline>
+<item><bf/<tt>"withOb 2 {movOb 0 1 0}"</tt>/<f/<sup/&nbsp;//<newline>
 moves the third object from multiple selected objects. All objects stay selected.
 </enum>
 </itemize>
