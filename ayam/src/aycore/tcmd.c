@@ -776,7 +776,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
       j++;
     } /* while */
 
-  if(argv[i][0] == '-' && argv[i][1] == 'a')
+  if((i < argc) && (argv[i][0] == '-') && (argv[i][1] == 'a'))
     {
       /* -all */
       i = 0;
@@ -791,7 +791,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	return ay_tcmd_getallpoints(interp, argv[0], argv[argc-1], i);
     }
 
-  if(argv[argc-2][0] == '-' && argv[argc-2][1] == 'v')
+  if((argc2 > 0) && (argv[argc-2][0] == '-') && (argv[argc-2][1] == 'v'))
     {
       /* -vn */
       if(argc2 < 2)
@@ -800,6 +800,14 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  goto cleanup;
 	}
       vn = AY_TRUE;
+    }
+
+  /* check for presence of atleast one index/parameter for _all_
+     supported object types */
+  if(i >= argc)
+    {
+      ay_error(AY_EARGS, argv[0], fargs);
+      goto cleanup;
     }
 
   j = 0;
@@ -837,6 +845,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	    } /* if */
 	  j = i+1;
 	  break;
+
 	case AY_IDACURVE:
 	  if(!vn && (argc2 < 5))
 	    {
@@ -851,6 +860,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  rational = AY_FALSE;
 	  j = i+1;
 	  break;
+
 	case AY_IDICURVE:
 	  if(!vn && (argc2 < 5))
 	    {
@@ -865,10 +875,17 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  rational = AY_FALSE;
 	  j = i+1;
 	  break;
+
 	case AY_IDNPATCH:
 	  if(!vn && (argc2+eval < 7))
 	    {
 	      return_result = AY_TRUE;
+	    }
+	  if(i+1 >= argc)
+	    {
+	      /* XXXX rewrite 1D index to indexu/indexv pair? */
+	      ay_error(AY_EARGS, argv[0], fargs);
+	      goto cleanup;
 	    }
 	  if(!eval)
 	    {
@@ -895,10 +912,17 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	    } /* if */
 	  j = i+2;
 	  break;
+
 	case AY_IDIPATCH:
 	  if(!vn && (argc2 < 6))
 	    {
 	      return_result = AY_TRUE;
+	    }
+	  if(i+1 >= argc)
+	    {
+	      /* XXXX rewrite 1D index to indexu/indexv pair? */
+	      ay_error(AY_EARGS, argv[0], fargs);
+	      goto cleanup;
 	    }
 	  if(eval)
 	    goto eval_provided_surface;
@@ -911,6 +935,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  rational = AY_FALSE;
 	  j = i+2;
 	  break;
+
 	case AY_IDBPATCH:
 	  if(!vn && (argc2+eval < 5))
 	    {
@@ -925,10 +950,17 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  rational = AY_FALSE;
 	  j = i+1;
 	  break;
+
 	case AY_IDPAMESH:
 	  if(!vn && (argc2+eval < 7))
 	    {
 	      return_result = AY_TRUE;
+	    }
+	  if(i+1 >= argc)
+	    {
+	      /* XXXX rewrite 1D index to indexu/indexv pair? */
+	      ay_error(AY_EARGS, argv[0], fargs);
+	      goto cleanup;
 	    }
 	  if(eval)
 	    goto eval_provided_surface;
@@ -996,8 +1028,7 @@ eval_provided_curve:
 		    {
 		      if(!vn && (argc2+eval < 6))
 			{
-			  ay_error(AY_EARGS, argv[0], fargs);
-			  goto cleanup;
+			  return_result = AY_TRUE;
 			}
 		      if(!eval)
 			{
@@ -1033,6 +1064,10 @@ eval_provided_surface:
 		  if(po)
 		    {
 		      if(!vn && (argc2+eval < 7))
+			{
+			  return_result = AY_TRUE;
+			}
+		      if(i+1 >= argc)
 			{
 			  ay_error(AY_EARGS, argv[0], fargs);
 			  goto cleanup;
