@@ -438,9 +438,13 @@ ay_tcmd_getallpoints(Tcl_Interp *interp, char *fname, char *vn,
  double pm[16], m[16];
  int flags = TCL_APPEND_VALUE | TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG |
    TCL_PARSE_PART1;
- Tcl_Obj *to = NULL, *ton = NULL;
+ int return_result = AY_FALSE;
+ Tcl_Obj *to = NULL, *ton = NULL, *res = NULL;
 
-  ton = Tcl_NewStringObj(vn, -1);
+  if(vn)
+    ton = Tcl_NewStringObj(vn, -1);
+  else
+    return_result = AY_TRUE;
 
   if(apply_trafo)
     {
@@ -473,18 +477,42 @@ ay_tcmd_getallpoints(Tcl_Interp *interp, char *fname, char *vn,
 	  if(apply_trafo)
 	    ay_trafo_apply3(p, m);
 
-	  to = Tcl_NewDoubleObj(p[0]);
-	  Tcl_ObjSetVar2(interp, ton, NULL, to, flags);
-	  to = Tcl_NewDoubleObj(p[1]);
-	  Tcl_ObjSetVar2(interp, ton, NULL, to, flags);
-	  to = Tcl_NewDoubleObj(p[2]);
-	  Tcl_ObjSetVar2(interp, ton, NULL, to, flags);
-
-	  if(pe.type == AY_PTRAT)
+	  if(!return_result)
 	    {
-	      to = Tcl_NewDoubleObj(pe.coords[i][3]);
+	      /* store result in variable */
+	      to = Tcl_NewDoubleObj(p[0]);
 	      Tcl_ObjSetVar2(interp, ton, NULL, to, flags);
-	    } /* if */
+	      to = Tcl_NewDoubleObj(p[1]);
+	      Tcl_ObjSetVar2(interp, ton, NULL, to, flags);
+	      to = Tcl_NewDoubleObj(p[2]);
+	      Tcl_ObjSetVar2(interp, ton, NULL, to, flags);
+
+	      if(pe.type == AY_PTRAT)
+		{
+		  to = Tcl_NewDoubleObj(pe.coords[i][3]);
+		  Tcl_ObjSetVar2(interp, ton, NULL, to, flags);
+		} /* if */
+	    }
+	  else
+	    {
+	      if(!res)
+		res = Tcl_NewListObj(0, NULL);
+	      if(res)
+		{
+		  to = Tcl_NewDoubleObj(p[0]);
+		  Tcl_ListObjAppendElement(interp, res, to);
+		  to = Tcl_NewDoubleObj(p[1]);
+		  Tcl_ListObjAppendElement(interp, res, to);
+		  to = Tcl_NewDoubleObj(p[2]);
+		  Tcl_ListObjAppendElement(interp, res, to);
+
+		  if(pe.type == AY_PTRAT)
+		    {
+		      to = Tcl_NewDoubleObj(pe.coords[i][3]);
+		      Tcl_ListObjAppendElement(interp, res, to);
+		    }
+		}
+	    } /* if return_result */
 	} /* for */
 
       ay_pact_clearpointedit(&pe);
@@ -492,7 +520,15 @@ ay_tcmd_getallpoints(Tcl_Interp *interp, char *fname, char *vn,
       sel = sel->next;
     } /* while */
 
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  if(res)
+    {
+      Tcl_SetObjResult(interp, res);
+    }
+
+  if(ton)
+    {
+      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+    }
 
  return TCL_OK;
 } /* ay_tcmd_getallpoints */
@@ -749,7 +785,10 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
       else
 	if(apply_trafo)
 	  i = 1;
-      return ay_tcmd_getallpoints(interp, argv[0], argv[argc-1], i);
+      if(argc2 <= 2)
+	return ay_tcmd_getallpoints(interp, argv[0], NULL, i);
+      else
+	return ay_tcmd_getallpoints(interp, argv[0], argv[argc-1], i);
     }
 
   if(argv[argc-2][0] == '-' && argv[argc-2][1] == 'v')
