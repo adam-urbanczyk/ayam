@@ -635,7 +635,7 @@ ay_nb_DegreeElevateCurve4D(int stride, int n, int p, double *U, double *Pw,
 		  bpts[ki+2] = alfs[k-s]*bpts[ki+2] +
 		                (1.0-alfs[k-s])*bpts[ki2+2];
 
-		  if(stride >3)
+		  if(stride > 3)
 		    bpts[ki+3] = alfs[k-s]*bpts[ki+3] +
 		                  (1.0-alfs[k-s])*bpts[ki2+3];
 		}
@@ -1557,9 +1557,18 @@ ay_nb_CurvePoint4D(int n, int p, double *U, double *Pw, double u, double *C)
   for(j = 0; j <= p; j++)
     {
       k = (span-p+j)*4;
-      Cw[0] = Cw[0] + N[j]*Pw[k]*Pw[k+3];
-      Cw[1] = Cw[1] + N[j]*Pw[k+1]*Pw[k+3];
-      Cw[2] = Cw[2] + N[j]*Pw[k+2]*Pw[k+3];
+      if(fabs(Pw[k+3]) > AY_EPSILON)
+	{
+	  Cw[0] = Cw[0] + N[j]*Pw[k]*Pw[k+3];
+	  Cw[1] = Cw[1] + N[j]*Pw[k+1]*Pw[k+3];
+	  Cw[2] = Cw[2] + N[j]*Pw[k+2]*Pw[k+3];
+	}
+      else
+	{
+	  Cw[0] = Cw[0] + N[j]*Pw[k];
+	  Cw[1] = Cw[1] + N[j]*Pw[k+1];
+	  Cw[2] = Cw[2] + N[j]*Pw[k+2];
+	}
       Cw[3] = Cw[3] + N[j]*Pw[k+3];
     }
 
@@ -1593,9 +1602,19 @@ ay_nb_CurvePoint4DM(int n, int p, double *U, double *Pw, double u, double *C)
   for(j = 0; j <= p; j++)
     {
       k = (span-p+j)*4;
-      Cw[0] = Cw[0] + N[j]*Pw[k]*Pw[k+3];
-      Cw[1] = Cw[1] + N[j]*Pw[k+1]*Pw[k+3];
-      Cw[2] = Cw[2] + N[j]*Pw[k+2]*Pw[k+3];
+
+      if(fabs(Pw[k+3]) > AY_EPSILON)
+	{
+	  Cw[0] = Cw[0] + N[j]*Pw[k]*Pw[k+3];
+	  Cw[1] = Cw[1] + N[j]*Pw[k+1]*Pw[k+3];
+	  Cw[2] = Cw[2] + N[j]*Pw[k+2]*Pw[k+3];
+	}
+      else
+	{
+	  Cw[0] = Cw[0] + N[j]*Pw[k];
+	  Cw[1] = Cw[1] + N[j]*Pw[k+1];
+	  Cw[2] = Cw[2] + N[j]*Pw[k+2];
+	}
       Cw[3] = Cw[3] + N[j]*Pw[k+3];
     }
 
@@ -1718,10 +1737,18 @@ ay_nb_SurfacePoint4D(int n, int m, int p, int q, double *U, double *V,
 	{
 	  /* was: temp[l] = temp[l] + Nu[k]*Pw[indu+k][indv]; */
 	  i = (((indu+k)*(m+1))+indv)*4;
-
-	  temp[j+0] += Nu[k]*Pw[i]*Pw[i+3];
-	  temp[j+1] += Nu[k]*Pw[i+1]*Pw[i+3];
-	  temp[j+2] += Nu[k]*Pw[i+2]*Pw[i+3];
+	  if(fabs(Pw[i+3]) > AY_EPSILON)
+	    {
+	      temp[j+0] += Nu[k]*Pw[i]*Pw[i+3];
+	      temp[j+1] += Nu[k]*Pw[i+1]*Pw[i+3];
+	      temp[j+2] += Nu[k]*Pw[i+2]*Pw[i+3];
+	    }
+	  else
+	    {
+	      temp[j+0] += Nu[k]*Pw[i];
+	      temp[j+1] += Nu[k]*Pw[i+1];
+	      temp[j+2] += Nu[k]*Pw[i+2];
+	    }
 	  temp[j+3] += Nu[k]*Pw[i+3];
 	} /* for */
       j += 4;
@@ -2447,9 +2474,9 @@ ay_nb_FirstDerSurf4DM(int n, int m, int p, int q, double *U, double *V,
 	    {
 	      /* was: temp[s] = temp[s] + Nu[k][r]*P[uspan-p+r][vspan-q+s]; */
 	      i = (((uspan-p+r)*(m+1))+(vspan-q+s))*4;
-	      temp[s*4]   += Nu[(k*(p+1))+r]*Pw[i]*Pw[i+3];
-	      temp[s*4+1] += Nu[(k*(p+1))+r]*Pw[i+1]*Pw[i+3];
-	      temp[s*4+2] += Nu[(k*(p+1))+r]*Pw[i+2]*Pw[i+3];
+	      temp[s*4]   += Nu[(k*(p+1))+r]*Pw[i]/**Pw[i+3]*/;
+	      temp[s*4+1] += Nu[(k*(p+1))+r]*Pw[i+1]/**Pw[i+3]*/;
+	      temp[s*4+2] += Nu[(k*(p+1))+r]*Pw[i+2]/**Pw[i+3]*/;
 	      temp[s*4+3] += Nu[(k*(p+1))+r]*Pw[i+3];
 	    }
 	}
@@ -4755,3 +4782,327 @@ ay_nb_UnclampSurfaceV(int israt, int w, int h, int q, int s,
 
  return;
 } /* ay_nb_UnclampSurfaceV */
+
+
+/*
+ * ay_nb_DegreeReduceBezier:
+ * Reduce the degree of the Bezier curve: p, B[] one time
+ * result: new controls Br[p-1] (allocated outside!)
+ * error estimation to be done
+ */
+void
+ay_nb_DegreeReduceBezier(int p, double *B, double *Br, double *err)
+{
+ int r, rr, i, i1, i2;
+ double alf;
+
+  r = (p-1)/2;
+  rr = r;
+
+  if(p%2)
+    rr++;
+
+  memcpy(Br, B, 4*sizeof(double));
+  memcpy(&(Br[(p-1)*4]), &(B[p*4]), 4*sizeof(double));
+
+  for(i = 1; i <= rr; i++)
+    {
+      alf = i/(double)p;
+      i1 = i*4;
+      i2 = (i-1)*4;
+
+      Br[i1]   = (B[i1]   - alf*Br[i2])/(1.0-alf);
+      Br[i1+1] = (B[i1+1] - alf*Br[i2+1])/(1.0-alf);
+      Br[i1+2] = (B[i1+2] - alf*Br[i2+2])/(1.0-alf);
+      Br[i1+3] = (B[i1+3] - alf*Br[i2+3])/(1.0-alf);
+    }
+
+  for(i = p-2; i > r; i--)
+    {
+      alf = (i+1)/(double)p;
+      i1 = i*4;
+      i2 = (i+1)*4;
+
+      Br[i1]   = (B[i2]   - (1.0-alf)*Br[i2])/alf;
+      Br[i1+1] = (B[i2+1] - (1.0-alf)*Br[i2+1])/alf;
+      Br[i1+2] = (B[i2+2] - (1.0-alf)*Br[i2+2])/alf;
+      Br[i1+3] = (B[i2+3] - (1.0-alf)*Br[i2+3])/alf;
+    }
+
+  if(p%2)
+    {
+      /* p is odd */
+      i1 = r*4;
+      i2 = (r+1)*4;
+      alf = (r+1)/(double)p;
+
+      Br[i1]   = 0.5*Br[i1]   + 0.5*((B[i2]   - (1.0-alf)*Br[i2])/alf);
+      Br[i1+1] = 0.5*Br[i1+1] + 0.5*((B[i2+1] - (1.0-alf)*Br[i2+1])/alf);
+      Br[i1+2] = 0.5*Br[i1+2] + 0.5*((B[i2+2] - (1.0-alf)*Br[i2+2])/alf);
+      Br[i1+3] = 0.5*Br[i1+3] + 0.5*((B[i2+3] - (1.0-alf)*Br[i2+3])/alf);
+    }
+
+  /*
+   *err =
+   */
+
+ return;
+} /* ay_nb_DegreeReduceBezier */
+
+
+/*
+ * ay_nb_DegreeReduceCurve4D:
+ * Reduce the degree of curve: n, p, U[], Qw[]
+ * if new curve does not deviate <tol> distance from old
+ * nh: new length, Uh: new knots, Pw: new controls
+ * Uh[] and Pw[] should be sized appropriately before reduction
+ * and probably _resized_ according to nh after reduction!
+ */
+int
+ay_nb_DegreeReduceCurve4D(int n, int p, double *U, double *Qw, double tol,
+			  int *nh, double *Uh, double *Pw)
+{
+ int ay_status = AY_OK;
+ int ph, mh, mult, cind, kind, a, b, m, i, j, s, ii, oldr, r, lbz, save;
+ int first, last, k, kj, i1, i2, L, K, q;
+ double A[3], Br, numer, alfa, beta, delta, maxerr;
+ double *bpts, *rbpts, *nextbpts, *alphas, *e;
+
+  ph = p-1;
+  mh = ph;
+  m = n+p+1;
+  kind = ph+1;
+  r = -1;
+  a = p;
+  b = p+1;
+  cind = 1;
+  mult = p;
+
+  if(!(bpts = calloc((p+1)*4, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  if(!(rbpts = calloc(p*4, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  if(!(nextbpts = calloc((p-1)*4, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  if(!(alphas = calloc((p-1), sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  if(!(e = calloc(m, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  /*Pw[0] = Qw[0]*/
+  memcpy(Pw, Qw, 4*sizeof(double));
+
+  /* compute left end of knot vector */
+  for(i = 0; i <= ph; i++)
+    {
+      Uh[i] = U[0];
+    }
+
+  /* initialize first Bezier segment */
+  for(i = 0; i <= p; i++)
+    {
+      /*bpts[i] = Qw[i];*/
+      memcpy(&(bpts[i*4]), &(Qw[i*4]), 4*sizeof(double));
+    }
+
+  /* loop through the knot vector */
+  while(b < m)
+    {
+      /* first compute knot multiplicity */
+      i = b;
+      while(b < m && U[b] == U[b+1])
+	b++;
+      mult = b-i+1;
+      mh += mult-1;
+      oldr = r;
+      r = p-mult;
+      if(oldr > 0)
+	lbz = (oldr+2)/2;
+      else
+	lbz = 1;
+
+      /* insert knot U[b] r times */
+      if(r > 0)
+	{
+	  numer = U[b]-U[a];
+	  for(k = p; k > mult; k--)
+	    alphas[k-mult-1] = numer/(U[a+k]-U[a]);
+	  for(j = 1; j <= r; j++)
+	    {
+	      save = r-j;
+	      s = mult+j;
+	      for(k = p; k >= s; k--)
+		{
+		  /*bpts[k]=alphas[k-s]*bpts[k]+(1.0-alphas[k-s])*bpts[k-1]*/
+		  i1 = k*4;
+		  i2 = (k-1)*4;
+		  bpts[i1]   = alphas[k-s]*bpts[i1] +
+		                (1.0-alphas[k-s])*bpts[i2];
+		  bpts[i1+1] = alphas[k-s]*bpts[i1+1] +
+		                (1.0-alphas[k-s])*bpts[i2+1];
+		  bpts[i1+2] = alphas[k-s]*bpts[i1+2] +
+		                (1.0-alphas[k-s])*bpts[i2+2];
+		  bpts[i1+3] = alphas[k-s]*bpts[i1+3] +
+		                (1.0-alphas[k-s])*bpts[i2+3];
+		}
+	      /*nextbpts[save] = bpts[p];*/
+	      memcpy(&(nextbpts[save*4]), &(bpts[p*4]), 4*sizeof(double));
+	    }
+	} /* if r>0 */
+
+      /* degree reduce Bezier segment */
+      maxerr = 0.0;
+      ay_nb_DegreeReduceBezier(p, bpts, rbpts, &maxerr);
+      e[a] += maxerr;
+      if(e[a] > tol)
+	{
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	}
+
+      /* remove knot U[a] oldr times */
+      if(oldr > 0)
+	{
+	  first = kind;
+	  last = kind;	  
+	  for(k = 0; k < oldr; k++)
+	    {
+	      i = first;
+	      j = last;
+	      kj = j-kind;
+	      while(j-i > k)
+		{
+		  alfa = (U[a]-Uh[i-1])/(U[b]-Uh[i-1]);
+		  beta = (U[a]-Uh[j-k-1])/(U[b]-Uh[j-k-1]);
+
+		  /*Pw[i-1] = (Pw[j-1]-(1.0-alfa)*Pw[i-2])/alfa;*/
+		  i1 = (i-1)*4;		  
+		  i2 = (i-2)*4;
+		  Pw[i1]   = (Pw[i1]-(1.0-alfa)*Pw[i2])/alfa;
+		  Pw[i1+1] = (Pw[i1+1]-(1.0-alfa)*Pw[i2+1])/alfa;
+		  Pw[i1+2] = (Pw[i1+2]-(1.0-alfa)*Pw[i2+2])/alfa;
+		  Pw[i1+3] = (Pw[i1+3]-(1.0-alfa)*Pw[i2+3])/alfa;
+
+		  /*rbpts[kj] = (rbpts[kj]-beta*rbpts[kj+1])/(1.0-beta);*/
+		  i1 = kj*4;
+		  i2 = (kj+1)*4;
+		  rbpts[i1]   = (rbpts[i1]-beta*rbpts[i2])/(1.0-beta);
+		  rbpts[i1+1] = (rbpts[i1+1]-beta*rbpts[i2+1])/(1.0-beta);
+		  rbpts[i1+2] = (rbpts[i1+2]-beta*rbpts[i2+2])/(1.0-beta);
+		  rbpts[i1+3] = (rbpts[i1+3]-beta*rbpts[i2+3])/(1.0-beta);
+
+		  i++;
+		  j--;
+		  kj--;
+		} /* while */
+
+	      /* compute knot removal error bounds */
+	      if(j-i < k)
+		{
+		  i1 = (i-2)*4;
+		  i2 = (kj+1)*4;
+		  Br = AY_VLEN((Pw[i1]   - rbpts[i2]),
+			       (Pw[i1+1] - rbpts[i2+1]),
+			       (Pw[i1+2] - rbpts[i2+2]));
+		}
+	      else
+		{
+		  delta = (U[a]-Uh[i-1])/(U[b]-Uh[i-1]);
+		  /*A = delta*rbpts[kj+1]+(1.0-delta)*Pw[i-2];*/
+		  i1 = (kj+1)*4;
+		  i2 = (i-2)*4;
+		  A[0] = delta*rbpts[i1]+(1.0-delta)*Pw[i2];
+		  A[1] = delta*rbpts[i1+1]+(1.0-delta)*Pw[i2+1];
+		  A[2] = delta*rbpts[i1+2]+(1.0-delta)*Pw[i2+2];
+
+		  i1 = (i-1)*4;
+		  Br = AY_VLEN((Pw[i1]   - A[0]),
+			       (Pw[i1+1] - A[1]),
+			       (Pw[i1+2] - A[2]));
+		}
+
+	      /* update the error vector */
+	      K = a+oldr-k;
+	      q = (2*p-k+1)/2;
+	      L = K-q;
+	      for(ii = L; ii <= a; ii++)
+		{
+		  /* these knot spans were affected */
+		  e[ii] += Br;
+		  if(e[ii] > tol)
+		    {
+		      ay_status = AY_ERROR;
+		      goto cleanup;
+		    }
+		}
+	      first--;
+	      last++;
+	    } /* for */
+	  cind = i-1;
+	} /* if oldr>0 */
+
+      /* load knot vector and control points */
+      if(a != p)
+	{
+	  for(i = 0; i < ph-oldr; i++)
+	    {
+	      Uh[kind] = U[a];
+	      kind++;
+	    }
+	}
+      for(i = lbz; i <= ph; i++)
+	{
+	  /*Pw[cind] = rbpts[i];*/
+	  memcpy(&(Pw[cind*4]), &(rbpts[i*4]), 4*sizeof(double));
+	  cind++;
+	}
+      /* set up next pass through */
+      if(b < m)
+	{
+	  for(i = 0; i < r; i++)
+	    {
+	      /*bpts[i] = nextbpts[i];*/
+	      memcpy(&(bpts[i*4]), &(nextbpts[i*4]), 4*sizeof(double));
+	    }
+	  for(i = r; i <= p; i++)
+	    {
+	      /*bpts[i] = Qw[b-p+i];*/
+	      memcpy(&(bpts[i*4]), &(Qw[(b-p+i)*4]), 4*sizeof(double));
+	    }
+	  a = b;
+	  b++;
+	}
+      else
+	{
+	  for(i = 0; i <= ph; i++)
+	    {
+	      Uh[kind+i] = U[b];
+	    }
+	} /* if b<m */
+    } /* while b<m */
+
+  *nh = mh-ph-1;
+
+cleanup:
+
+  if(bpts)
+    free(bpts);
+
+  if(rbpts)
+    free(rbpts);
+
+  if(nextbpts)
+    free(nextbpts);
+
+  if(alphas)
+    free(alphas);
+
+  if(e)
+    free(e);
+
+ return ay_status;
+} /* ay_nb_DegreeReduceCurve4D */

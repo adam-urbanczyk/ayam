@@ -1960,8 +1960,9 @@ ay_nct_elevate(ay_nurbcurve_object *curve, int new_order)
 
 
 /** ay_nct_elevatetcmd:
- *  Increase the order of the selected NURBS curves.
+ *  Increase/decrease the order of the selected NURBS curves.
  *  Implements the \a elevateNC scripting interface command.
+ *  Also implements the \a reduceNC scripting interface command.
  *  See also the corresponding section in the \ayd{scelevatenc}.
  *
  *  \returns TCL_OK in any case.
@@ -1975,18 +1976,35 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbcurve_object *curve = NULL;
  int clamp_me;
  double *Uh = NULL, *Qw = NULL, *realQw = NULL, *realUh = NULL;
+ double tol = 0.0;
  int t = 1, nh = 0;
- int notify_parent = AY_FALSE;
+ int degree_reduce = AY_FALSE, notify_parent = AY_FALSE;
+
+
+  if(argv[0][0] == 'r')
+    degree_reduce = AY_TRUE;
 
   if(argc >= 2)
     {
-      tcl_status = Tcl_GetInt(interp, argv[1], &t);
-      AY_CHTCLERRRET(tcl_status, argv[0], interp);
-
-      if(t <= 0)
+      if(degree_reduce)
 	{
-	  ay_error(AY_ERROR, argv[0], "Argument must be > 0.");
-	  return TCL_OK;
+	  tcl_status = Tcl_GetDouble(interp, argv[1], &tol);
+	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	  if(tol < 0.0)
+	    {
+	      ay_error(AY_ERROR, argv[0], "Argument must be >= 0.");
+	      return TCL_OK;
+	    }
+	}
+      else
+	{
+	  tcl_status = Tcl_GetInt(interp, argv[1], &t);
+	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	  if(t <= 0)
+	    {
+	      ay_error(AY_ERROR, argv[0], "Argument must be > 0.");
+	      return TCL_OK;
+	    }
 	}
     }
 
@@ -2035,7 +2053,7 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 	  /* alloc new knotv & new controlv */
 	  if(!(Uh = malloc((curve->length + curve->length*t +
 			    curve->order + t) *
-			     sizeof(double))))
+			   sizeof(double))))
 	    {
 	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
@@ -2049,15 +2067,31 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 
 	  /* fill Uh & Qw */
-	  ay_status = ay_nb_DegreeElevateCurve4D(4, curve->length-1,
+	  if(degree_reduce)
+	    {
+	      ay_status = ay_nb_DegreeReduceCurve4D(curve->length-1,
+					    curve->order-1, curve->knotv,
+					    curve->controlv, tol, &nh, Uh, Qw);
+
+	      if(ay_status)
+		{
+		  ay_error(ay_status, argv[0], "Degree reduction failed.");
+		  free(Uh); free(Qw);
+		  return TCL_OK;
+		}
+	    }
+	  else
+	    {
+	      ay_status = ay_nb_DegreeElevateCurve4D(4, curve->length-1,
 					      curve->order-1, curve->knotv,
 					      curve->controlv, t, &nh, Uh, Qw);
 
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, argv[0], "Degree elevation failed.");
-	      free(Uh); free(Qw);
-	      return TCL_OK;
+	      if(ay_status)
+		{
+		  ay_error(ay_status, argv[0], "Degree elevation failed.");
+		  free(Uh); free(Qw);
+		  return TCL_OK;
+		}
 	    }
 
 	  if(!(realQw = realloc(Qw, nh * 4 * sizeof(double))))
@@ -2066,10 +2100,23 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 	      return TCL_OK;
 	    }
 
-	  if(!(realUh = realloc(Uh, (nh+curve->order+t)*sizeof(double))))
+	  if(degree_reduce)
 	    {
-	      free(Uh); free(realQw);
-	      return TCL_OK;
+	      if(!(realUh = realloc(Uh, (nh+curve->order-1)*sizeof(double))))
+		{
+		  free(Uh); free(realQw);
+		  return TCL_OK;
+		}
+	      curve->order--;
+	    }
+	  else
+	    {
+	      if(!(realUh = realloc(Uh, (nh+curve->order+t)*sizeof(double))))
+		{
+		  free(Uh); free(realQw);
+		  return TCL_OK;
+		}
+	      curve->order += t;
 	    }
 
 	  free(curve->knotv);
@@ -2079,8 +2126,6 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 	  curve->controlv = realQw;
 
 	  curve->knot_type = AY_KTCUSTOM;
-
-	  curve->order += t;
 
 	  curve->length = nh;
 
