@@ -569,6 +569,12 @@ void ay_nb_UnclampSurfaceU(int israt, int w, int h, int p, int s,
 void ay_nb_UnclampSurfaceV(int israt, int w, int h, int q, int s,
 			   double *V, double *Pw);
 
+/** Reduce degree of NURBS curve.
+ */
+int ay_nb_DegreeReduceCurve4D(int n, int p, double *U, double *Qw, double tol,
+			      int *nh, double *Uh, double *Pw);
+
+
 /* nct.c */
 
 /** Create NURBS curve object.
