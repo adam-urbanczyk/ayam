@@ -191,6 +191,7 @@ static JSFunctionSpec jsinterp_global_functions[] = {
   {"clampNC", jsinterp_wraptcmd, 0, 0, 0},
   {"unclampNC", jsinterp_wraptcmdargs, 0, 0, 0},
   {"elevateNC", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"reduceNC", jsinterp_wraptcmdargs, 0, 0, 0},
   {"insknNC", jsinterp_wraptcmdargs, 0, 0, 0},
   {"remknNC", jsinterp_wraptcmdargs, 0, 0, 0},
   {"remsuknNC", jsinterp_wraptcmdargs, 0, 0, 0},
