@@ -487,6 +487,13 @@ $m.nct add command -label "Elevate" -command {
 } -underline 1
 #  ^^^^^^^^^^^ => L
 
+$m.nct add command -label "Reduce" -command {
+    runTool ay(reduct) {"Tolerance:"}\
+	"undo save Reduce; reduceNC %0; plb_update; rV"\
+	"Reduce Curve" reducet
+} -underline 2
+#  ^^^^^^^^^^^ => E
+
 $m.nct add command -label "Extend" -command {
     runTool [list ay(extendx) ay(extendy) ay(extendz)] [list "X:" "Y:" "Z:"]\
 	"undo save Extend; extendNC %0 %1 %2; plb_update; rV"\

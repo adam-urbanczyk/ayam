@@ -708,6 +708,7 @@ array set ay {
  pmwidth 4
  pmheight 4
  elevd 1
+ reduct 0.0
  insknu 0.5
  insknr 1
  remknu 0.5
