@@ -4951,7 +4951,7 @@ ay_nb_DegreeReduceCurve4D(int n, int p, double *U, double *Qw, double tol,
 		}
 	      /*nextbpts[save] = bpts[p];*/
 	      memcpy(&(nextbpts[save*4]), &(bpts[p*4]), 4*sizeof(double));
-	    }
+	    } /* for */
 	} /* if r>0 */
 
       /* degree reduce Bezier segment */
@@ -4968,7 +4968,7 @@ ay_nb_DegreeReduceCurve4D(int n, int p, double *U, double *Qw, double tol,
       if(oldr > 0)
 	{
 	  first = kind;
-	  last = kind;	  
+	  last = kind;
 	  for(k = 0; k < oldr; k++)
 	    {
 	      i = first;
@@ -4980,7 +4980,7 @@ ay_nb_DegreeReduceCurve4D(int n, int p, double *U, double *Qw, double tol,
 		  beta = (U[a]-Uh[j-k-1])/(U[b]-Uh[j-k-1]);
 
 		  /*Pw[i-1] = (Pw[j-1]-(1.0-alfa)*Pw[i-2])/alfa;*/
-		  i1 = (i-1)*4;		  
+		  i1 = (i-1)*4;
 		  i2 = (i-2)*4;
 		  Pw[i1]   = (Pw[i1]-(1.0-alfa)*Pw[i2])/alfa;
 		  Pw[i1+1] = (Pw[i1+1]-(1.0-alfa)*Pw[i2+1])/alfa;
@@ -5085,7 +5085,7 @@ ay_nb_DegreeReduceCurve4D(int n, int p, double *U, double *Qw, double tol,
 	} /* if b<m */
     } /* while b<m */
 
-  *nh = mh-ph-1;
+  *nh = mh-ph;
 
 cleanup:
 
