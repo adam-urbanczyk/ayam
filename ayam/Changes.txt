@@ -1,10 +1,12 @@
-[18. Jul 2019] Tip:
-===================
+[5. Aug 2019] Tip:
+==================
 Bug Fixes:
 o NURBSphere objects can not be trimmed (SF 587)
 o repeated toggling of advanced search options (SF 588)
 o X3D import of cone misses transformation attributes (SF 589)
 o drawing of NURBS is toggled when Alt-F4 is used on windows (SF 590)
+o no visible change in weight reset after mouse drag (SF 591)
+o <Tab>/<Shift-Tab> insert tabs in numeric point edit on windows (SF 592)
 
 Modelling:
 o added keyboard shortcut to call the revert tool from view windows: <!>
@@ -13,6 +15,7 @@ o add warning message when a transformation action is started in points
 o tesselation of trimmed NURBS using STESS is much faster now
 o improved handling of weights for single drag selected rational points
   in numeric edit action
+o added tool to reduce the degree of a NURBS curve
 
 GUI:
 o added intermediate quick parameter GUIs to all modelling actions that
@@ -34,7 +37,8 @@ o added "isClosed" command to see whether or not NURBS curves/surfaces
 o added "-clear"/"-end" flags and range support to "selOb" command
 o added return result, "RP" tag support, and "-i"/"-s" flags to
   "getProperty" procedure
-
+o added "-refine" option to "estlenNC" command to improve the accuracy
+o added "reduceNC" command to reduce the degree of a NURBS curve
 
 Import/Export:
 o RIB export of RiDisplay tags now omits the leading "+" from the first
