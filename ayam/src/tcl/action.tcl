@@ -1438,6 +1438,7 @@ proc editPointDialogApply { w } {
 # helper for editPointDialog
 # establish misc keyboard bindings
 proc editPointDialogBind { w } {
+    global tcl_platform
 
     set ww .editPointDw
 
@@ -1449,6 +1450,10 @@ proc editPointDialogBind { w } {
 	       "editPointDialogApply $ww; $ww.f2.bca invoke; break"}
 
     bind $w <Shift-Delete> "editPointDialogClear $ww"
+    if { $tcl_platform(platform) == "windows" && $w != $ww } {
+	bind $w <Tab> "focus \[tk_focusNext $w\];break"
+	bind $w <Shift-Tab> "focus \[tk_focusPrev $w\];break"
+    }
 
  return;
 }
