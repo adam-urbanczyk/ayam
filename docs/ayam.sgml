@@ -11699,8 +11699,8 @@ see also section <ref id="sctobasisbc" name="tobasisBC">.
 The SDCurve (subdivision curve) object creates a curve from a
 number of non-rational control points.<footnote>Since 1.26.</footnote>
 Subdivision curves are similar to subdivision surfaces, but a polygon is
-subdivided instead of a polygonal mesh, see also section
-<ref id="sdmeshobj" name="SDMesh Object">.
+subdivided to a limit curve instead of a polygonal mesh to a limit surface,
+see also section <ref id="sdmeshobj" name="SDMesh Object">.
 <p>
 <figure loc="!ht">
 <eps file="pics/sdcurves.ps" height="6cm">
@@ -13801,6 +13801,40 @@ See also the documentation of the corresponding
 scripting interface command <ref id="scelevatenc" name="elevateNC">
 and the related tool for
 surfaces <ref id="elevuvt" name="Elevate Surface Tool">.
+</descrip>
+
+<#if out="latex"><x/newpage/</#if>
+
+<sect2>Reduce Tool<label id="reduct">
+<p>
+<!--
+<figure loc="ht">
+<eps file="pics/reduce.ps" height="4cm">
+<img src="pics/reduce.gif">
+<caption>Successive Application of Reduce Tool (Order 3 (left), 4 (middle),
+5 (right))</caption>
+</figure>
+-->
+<descrip>
+<tag/Arguments/ The reduce tool takes a number of NURBS curves from
+the selection and additionally requests a tolerance value.
+<tag/Operation/ The order of the selected NURBS curves will be decreased
+if the shape of the reduced curves does not deviate from the original
+curves by the given tolerance in any point.
+See also the example image above.
+<tag/Notes/ If the knot vector of the curve is not clamped, it
+will be clamped automatically. The knot type of the curve will
+be changed to <tt/"Custom"/. Control points will be removed and the position
+of old control points may be changed in the progress.
+
+The point selection will be removed from the processed objects.
+
+See also the documentation of the corresponding
+scripting interface command <ref id="screducenc" name="reduceNC">.
+<!--
+and the related tool for
+surfaces <ref id="elevuvt" name="Elevate Surface Tool">.
+-->
 </descrip>
 
 <#if out="latex"><x/newpage/</#if>
@@ -17844,11 +17878,11 @@ See also section <ref id="extendt" name="Extend Tool">.
 <#if out="latex"><x/phantomsection/</#if>
 <#if out="html"><f/<inf/<newline>//</#if>
 <label id="scelevatenc">
-elevateNC &ndash; elevate NURBS curve:
+elevateNC &ndash; increase order of NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"elevateNC [n]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Elevate the order of the selected NURBS curves
+ <item>Description: Increases the order of the selected NURBS curves
 without changing the shape of the curves by <tt/n/.
 If the parameter <tt/n/ is omitted, a default value of 1 is used.
 The knot type of the elevated curves will be changed to <tt/"Custom"/.
@@ -17857,6 +17891,24 @@ See also section <ref id="elevt" name="Elevate Tool">.
 </itemize>
 
 <#if out="latex"><x/newpage/</#if>
+
+<p>
+<#if out="latex"><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
+<label id="screducenc">
+reduceNC &ndash; decrease order of  NURBS curve:
+<itemize>
+ <item>Synopsis: <tt/"reduceNC [tol]"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Decrease the order of the selected NURBS curves
+if the shape of the reduced curves does not deviate from the
+original curves by <tt/tol/ in any point.
+If the parameter <tt/tol/ is omitted, a default value of 0.0 is used,
+i.e.~the order is only reduced if the curve does not change.
+The knot type of the reduced curves will be changed to <tt/"Custom"/.
+<p><p>
+See also section <ref id="reduct" name="Reduce Tool">.
+</itemize>
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
@@ -18969,16 +19021,17 @@ objects that support point editing.
 <label id="scgetpnt">
 getPnt &ndash; get point(s):
 <itemize>
- <item>Synopsis: <tt/"getPnt [-trafo | -world | -eval | -relative] (index | indexu indexv | u | u v (varx vary varz [varw] | -vn varname) | -all varname)"/
+ <item>Synopsis: <tt/"getPnt [-trafo | -world | -eval | -relative] (index | indexu indexv | u | u v ([varx vary varz [varw]] | -vn [varname]) | -all [varname])"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Get a control point of the currently selected object
-and write the coordinate values into the variables varx, vary, varz, and
-varw.
+and write the coordinate values into the variables <tt/varx/, <tt/vary/,
+<tt/varz/, and (if the object supports rational coordinates) <tt/varw/.
 <p><p>
 The index arguments needed depend on the type of the selected
 object, e.g.~reading the points of a NURBS curve requires just one
-index parameter (index), whereas reading the points of a NURBS
-patch requires two index parameters (indexu and indexv) to be specified.
+index parameter (<tt/index/), whereas reading the points of a NURBS
+patch requires two index parameters (<tt/indexu/ and <tt/indexv/) to be
+specified.
 <p>
 If the optional argument <tt/"-trafo"/ is given, the coordinates
 will additionally be transformed by the values given in the objects
@@ -18990,11 +19043,11 @@ will additionally be transformed to world space.
 If the optional argument <tt/"-eval"/ is specified, the <tt/"indexu"/
 and <tt/"indexv"/ values are interpreted as parametric values of a
 NURBS curve or surface and the corresponding point on the curve or
-surface is delivered in varx, vary, and varz.
+surface is delivered in <tt/varx/, <tt/vary/, and <tt/varz/.
 <p>
 If the optional argument <tt/"-relative"/ is specified, the parametric
 value for NURBS curve or surface evaluation is interpreted in a relative
-way and must consequently be in the range &lsqb;0,1&rsqb;.
+way and must consequently be in the range <f/&lsqb;0,1&rsqb;/.
 <p>
 If the alternative argument <tt/"-vn"/ is given, the coordinate values
 will be appended to the list variable specified by <tt/"varname"/.
@@ -19002,6 +19055,9 @@ will be appended to the list variable specified by <tt/"varname"/.
 If the alternative argument <tt/"-all"/ is used, all coordinate values
 of the selected objects will be appended to the list variable
 specified by <tt/"varname"/.
+<p>
+If any of the variable name arguments are omitted, the command returns the
+respective results.<footnote>Since 1.27.</footnote>
 
 <item>Notes: In Ayam versions prior to 1.20, only global variables
 were written, this is no longer the case.
@@ -26164,6 +26220,14 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="incds" name="speeding up">,
 <item><ref id="vat" name="View attribute">
 </itemize>
+<item>Reduce:
+<itemize>
+<item><ref id="reduct" name="NCurve tool">,
+<!--
+<item><ref id="elevuvt" name="NPatch tool">
+-->
+</itemize>
+<item>reduceNC: <ref id="screducenc" name="scripting interface command">
 <item>Refcount: <ref id="attrs" name="attribute">
 <item>Reference Counter:
 <itemize>
