@@ -733,7 +733,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
  int return_result = AY_FALSE, handled = AY_FALSE;
  double *p = NULL, *tp = NULL, tmp[4] = {0}, utmp[4] = {0};
  double m[16], u = 0.0, v = 0.0;
- char fargs[] = "[-trafo|-world|-eval|-relative] (index | indexu indexv | u | u v (varx vary varz [varw] | -vn varname)|-all varname)";
+ char fargs[] = "[-trafo|-world|-eval|-relative] (index | indexu indexv | u | u v ([varx vary varz [varw]] | -vn [varname]) | -all [varname])";
  Tcl_Obj *to = NULL, *ton = NULL, *res = NULL;
  int lflags = TCL_LEAVE_ERR_MSG | TCL_APPEND_VALUE | TCL_LIST_ELEMENT |
    TCL_PARSE_PART1;
@@ -2170,7 +2170,7 @@ cleanup:
 
 
 /** ay_tcmd_opentcmd:
- *  Open a closed curve.
+ *  Open/close the selected curve objects.
  *  Implements the \a openC scripting interface command.
  *  Also implements the \a closeC scripting interface command.
  *  See also the corresponding section in the \ayd{scopenc}.
@@ -2179,7 +2179,7 @@ cleanup:
  */
 int
 ay_tcmd_opentcmd(ClientData clientData, Tcl_Interp *interp,
-		int argc, char *argv[])
+		 int argc, char *argv[])
 {
  int ay_status = AY_OK;
  int close = AY_FALSE, notify_parent = AY_FALSE;
@@ -2536,26 +2536,26 @@ ay_tcmd_registergeneric(int op, ay_genericcb *cb, unsigned int type_id)
 {
  int ay_status = AY_OK;
 
- switch(op)
-   {
-   case AY_OPREVERT:
-     ay_status = ay_table_additem(&ay_tcmd_revertcbt, (ay_voidfp)cb, type_id);
-     break;
-   case AY_OPOPEN:
-     ay_status = ay_table_additem(&ay_tcmd_opencbt, (ay_voidfp)cb, type_id);
-     break;
-   case AY_OPCLOSE:
-     ay_status = ay_table_additem(&ay_tcmd_closecbt, (ay_voidfp)cb, type_id);
-     break;
-   case AY_OPREFINE:
-     ay_status = ay_table_additem(&ay_tcmd_refinecbt, (ay_voidfp)cb, type_id);
-     break;
-   case AY_OPCOARSEN:
-     ay_status = ay_table_additem(&ay_tcmd_coarsencbt, (ay_voidfp)cb, type_id);
-     break;
-   default:
-     break;
-   }
+  switch(op)
+    {
+    case AY_OPREVERT:
+      ay_status = ay_table_additem(&ay_tcmd_revertcbt, (ay_voidfp)cb, type_id);
+      break;
+    case AY_OPOPEN:
+      ay_status = ay_table_additem(&ay_tcmd_opencbt, (ay_voidfp)cb, type_id);
+      break;
+    case AY_OPCLOSE:
+      ay_status = ay_table_additem(&ay_tcmd_closecbt, (ay_voidfp)cb, type_id);
+      break;
+    case AY_OPREFINE:
+      ay_status = ay_table_additem(&ay_tcmd_refinecbt, (ay_voidfp)cb, type_id);
+      break;
+    case AY_OPCOARSEN:
+      ay_status = ay_table_additem(&ay_tcmd_coarsencbt, (ay_voidfp)cb, type_id);
+      break;
+    default:
+      break;
+    }
 
  return ay_status;
 } /* ay_tcmd_registergeneric */
