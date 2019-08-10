@@ -13628,6 +13628,16 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
     {
       tcl_status = Tcl_GetDouble(interp, argv[i], &tol);
       AY_CHTCLERRRET(tcl_status, argv[0], interp);
+      if(tol < 0.0)
+	{
+	  ay_error(AY_ERROR, argv[0], "Argument tol must be >= 0.");
+	  return TCL_OK;
+	}
+      if(tol != tol)
+	{
+	  ay_error(AY_ERROR, argv[0], "Argument tol is NaN.");
+	  return TCL_OK;
+	}
     }
 
   while(sel)
@@ -13854,6 +13864,16 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
     {
       tcl_status = Tcl_GetDouble(interp, argv[i], &tol);
       AY_CHTCLERRRET(tcl_status, argv[0], interp);
+      if(tol < 0.0)
+	{
+	  ay_error(AY_ERROR, argv[0], "Argument tol must be >= 0.");
+	  return TCL_OK;
+	}
+      if(tol != tol)
+	{
+	  ay_error(AY_ERROR, argv[0], "Argument tol is NaN.");
+	  return TCL_OK;
+	}
     }
 
   while(sel)
