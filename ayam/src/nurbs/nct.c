@@ -1461,7 +1461,20 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
     return AY_ENULL;
 
   if(curve->order < 3)
-    return AY_OK;
+    {
+      newknotv = curve->knotv;
+      if(side == 0 || side == 1)
+	{
+	  memcpy(&(newknotv[1]), &(newknotv[0]), sizeof(double));
+	}
+      if(side == 0 || side == 2)
+	{
+	  memcpy(&(newknotv[curve->length+curve->order-2]),
+		 &(newknotv[curve->length+curve->order-1]),
+		 sizeof(double));
+	}
+      return AY_OK;
+    }
 
   if(side == 0)
     {
@@ -1673,7 +1686,14 @@ ay_nct_clampperiodic(ay_nurbcurve_object *curve)
     return AY_ENULL;
 
   if(curve->order < 3)
-    return AY_OK;
+    {
+      newknotv = curve->knotv;
+      memcpy(&(newknotv[1]), &(newknotv[0]), sizeof(double));
+      memcpy(&(newknotv[curve->length+curve->order-2]),
+	     &(newknotv[curve->length+curve->order-1]),
+	     sizeof(double));
+      return AY_OK;
+    }
 
   p = curve->order-1;
   np = curve->length;
