@@ -502,7 +502,7 @@ ay_nb_DegreeElevateCurve4D(int stride, int n, int p, double *U, double *Pw,
       a += stride;
     }
 
-  *nh = n+1;
+  *nh = n + 1;
 
   m = n + p + 1;
 
@@ -590,7 +590,12 @@ ay_nb_DegreeElevateCurve4D(int stride, int n, int p, double *U, double *Pw,
   while(b < m)
     {
       i = b;
-      while((b < m) && (U[b] >= U[b+1])) /* was == */
+      /* NURBS++ states that only (U[b] >= U[b+1]) works, but
+	 a) we can not verify this and
+	 b) this leads to the inability to process low order (2) curves
+            correctly (the last Bezier segment is not computed);
+         so: (U[b] == U[b+1]) it is for now */
+      while((b < m) && (U[b] == U[b+1]))
 	b++;
 
       mul = b-i+1;
@@ -769,8 +774,15 @@ ay_nb_DegreeElevateCurve4D(int stride, int n, int p, double *U, double *Pw,
 	  for(j = r; j <= p; j++)
 	    {
 	      /* bpts[j] = Pw[b-p+j]; */
-	      memcpy(&(bpts[j*stride]), &(Pw[(b-p+j)*stride]),
-		     stride*sizeof(double));
+	      if(j >= 0)
+		{
+		  if((b-p+j) <= n)
+		    memcpy(&(bpts[j*stride]), &(Pw[(b-p+j)*stride]),
+			   stride*sizeof(double));
+		  else
+		    memcpy(&(bpts[j*stride]), &(Pw[n*stride]),
+			   stride*sizeof(double));
+		}
 	    }
 	  a = b;
 	  b++;
@@ -782,7 +794,7 @@ ay_nb_DegreeElevateCurve4D(int stride, int n, int p, double *U, double *Pw,
 	    {
 	      Uh[kind+i] = ub;
 	    }
-	} /* if */
+	} /* if b<m */
     } /* while b<m */
 
   *nh = mh-ph/*-1*/;
@@ -3154,7 +3166,12 @@ ay_nb_DegreeElevateSurfU4D(int stride, int w, int h, int p, double *U,
   while(b < m)
     {
       i = b;
-      while((b < m) && (U[b] >= U[b+1]))
+      /* NURBS++ states that only (U[b] >= U[b+1]) works, but
+	 a) we can not verify this and
+	 b) this leads to the inability to process low order (2) surfaces
+            correctly (the last Bezier segment is not computed);
+         so: (U[b] == U[b+1]) it is for now */
+      while((b < m) && (U[b] == U[b+1]))
 	b++;
       mul = b-i+1;
       mh += mul+t;
@@ -3562,7 +3579,12 @@ ay_nb_DegreeElevateSurfV4D(int stride, int w, int h, int p, double *V,
   while(b < m)
     {
       i = b;
-      while((b < m) && (V[b] >= V[b+1]))
+      /* NURBS++ states that only (V[b] >= V[b+1]) works, but
+	 a) we can not verify this and
+	 b) this leads to the inability to process low order (2) surfaces
+            correctly (the last Bezier segment is not computed);
+         so: (V[b] == V[b+1]) it is for now */
+      while((b < m) && (V[b] == V[b+1]))
 	b++;
       mul = b-i+1;
       mh += mul+t;
@@ -5071,7 +5093,13 @@ ay_nb_DegreeReduceCurve4D(int n, int p, double *U, double *Qw, double tol,
 	  for(i = r; i <= p; i++)
 	    {
 	      /*bpts[i] = Qw[b-p+i];*/
-	      memcpy(&(bpts[i*4]), &(Qw[(b-p+i)*4]), 4*sizeof(double));
+	      if(i >= 0)
+		{
+		  if((b-p+i) <= n)
+		    memcpy(&(bpts[i*4]), &(Qw[(b-p+i)*4]), 4*sizeof(double));
+		  else
+		    memcpy(&(bpts[i*4]), &(Qw[n*4]), 4*sizeof(double));
+		}
 	    }
 	  a = b;
 	  b++;
@@ -5085,7 +5113,7 @@ ay_nb_DegreeReduceCurve4D(int n, int p, double *U, double *Qw, double tol,
 	} /* if b<m */
     } /* while b<m */
 
-  *nh = mh-ph;
+  *nh = mh-ph/*-1*/;
 
 cleanup:
 
