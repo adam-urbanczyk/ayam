@@ -2028,6 +2028,11 @@ array set ElevateNC3 {
     command { elevateNC 3 }
 }
 
+array set ReduceNC {
+    types { NCurve }
+    command { elevateNC; reduceNC }
+}
+
 array set ExtendNC {
     types { NCurve }
     command { extendNC 10.0 20.0 30.0 }
@@ -3262,7 +3267,7 @@ lappend items RefineK InsertK InsertK2 RemoveK RemoveKI RemoveKS RemoveKIS
 lappend items RemoveKI1 RemoveKI1S RemoveKIEnd RemoveKIEndS
 lappend items ShiftC ShiftC2 ShiftCM ShiftCM2 ToXYC ToXZC ToYZC
 lappend items ElevateNC ElevateNC2 ElevateNC3 EstLenNC ExtendNC SplitNC
-lappend items TrimNC TweenNC
+lappend items ReduceNC TrimNC TweenNC
 lappend items ClampNC ClampNCS ClampNCE
 lappend items UnclampNC UnclampNCS UnclampNCE
 lappend items RevertUS RevertVS SwapUVS RefineUNP RefineVNP
