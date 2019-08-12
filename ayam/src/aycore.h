@@ -265,6 +265,10 @@ int ay_error_reportirange(char *fname, char *pname, int lb, int ub);
  */
 int ay_error_reportobject(int ecode, char *fname, ay_object *o);
 
+/** Format and print NaN error message.
+ */
+void ay_error_reportnan(char *fname, char *pname);
+
 /** Get the current GL error state and report it to the user.
  */
 int ay_error_printglerrortcmd(ClientData clientData, Tcl_Interp *interp,

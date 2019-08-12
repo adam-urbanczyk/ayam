@@ -413,6 +413,31 @@ ay_error_reportirange(char *fname, char *pname, int lb, int ub)
  return AY_ERANGE;
 } /* ay_error_reportirange */
 
+/* ay_error_reportnan:
+ *  format and output nan error
+ */
+void
+ay_error_reportnan(char *fname, char *pname)
+{
+ char *msg = NULL;
+
+  if(pname)
+    {
+      if((msg = malloc(32+(strlen(pname))*sizeof(char))))
+	sprintf(msg, "Parameter %s is NaN.", pname);
+    }
+
+  if(pname && msg)
+    {
+      ay_error(AY_ERROR, fname, msg);
+      free(msg);
+    }
+  else
+    ay_error(AY_ERROR, fname, "Parameter is NaN.");
+
+ return;
+} /* ay_error_reportnan */
+
 
 /* ay_error_reportobject:
  *  format and output object path name
