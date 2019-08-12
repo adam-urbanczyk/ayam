@@ -970,6 +970,16 @@ void ay_nct_drawbreakpoints(struct Togl *togl, ay_object *o);
  */
 void ay_nct_colorfromweight(double w);
 
+/** Extract sub curve.
+ */
+int ay_nct_extractnc(ay_object *src, double umin, double umax, int relative,
+		     ay_object **result);
+
+/** Tcl command to extract a sub curve from the selected NURBS curves.
+ */
+int ay_nct_extractnctcmd(ClientData clientData, Tcl_Interp *interp,
+			 int argc, char *argv[]);
+
 
 /* npt.c */
 
