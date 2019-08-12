@@ -9926,8 +9926,18 @@ ay_nct_extractnctcmd(ClientData clientData, Tcl_Interp *interp,
 
   tcl_status = Tcl_GetDouble(interp, argv[1], &umin);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
+  if(umin != umin)
+    {
+      ay_error_reportnan(argv[0], "umin");
+      return TCL_OK;
+    }
   tcl_status = Tcl_GetDouble(interp, argv[2], &umax);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
+  if(umax != umax)
+    {
+      ay_error_reportnan(argv[0], "umax");      
+      return TCL_OK;
+    }
 
   if(argc > 3)
     {
