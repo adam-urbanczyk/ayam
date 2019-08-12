@@ -9782,6 +9782,205 @@ ay_nct_colorfromweight(double w)
 } /* ay_nct_colorfromweight */
 
 
+/* ay_nct_extractnc:
+ *  extract subcurve from  <src>, returns patch in <result>;
+ */
+int
+ay_nct_extractnc(ay_object *src, double umin, double umax, int relative,
+		 ay_object **result)
+{
+ int ay_status = AY_OK;
+ ay_object *copy = NULL, *nc1 = NULL, *nc2 = NULL;
+ ay_nurbcurve_object *curve = NULL;
+ char fname[] = "nct_extractnc", split_errmsg[] = "Split failed.";
+ double uv, uvmin, uvmax;
+
+  if(!src || !result)
+    return AY_ENULL;
+
+  /* check parameters */
+  if((umin + AY_EPSILON) > umax)
+    {
+      ay_error(AY_ERROR, fname, "Parameter min must be smaller than max.");
+      return AY_ERROR;
+    }
+
+  if(src->type != AY_IDNCURVE)
+    {
+      ay_error(AY_EWTYPE, fname, ay_nct_ncname);
+      return AY_ERROR;
+    }
+  else
+    {
+      ay_status = ay_object_copy(src, &copy);
+      if(ay_status || !copy)
+	{
+	  return AY_ERROR;
+	}
+      curve = (ay_nurbcurve_object*)copy->refine;
+
+      if(relative)
+	{
+	  uvmin = curve->knotv[curve->order-1];
+	  uvmax = curve->knotv[curve->length];
+	  uv = uvmin + ((uvmax - uvmin) * umin);
+	  umin = uv;
+	  uv = uvmin + ((uvmax - uvmin) * umax);
+	  umax = uv;
+	}
+
+      /* check parameters */
+      if((umin < curve->knotv[curve->order-1]) ||
+	 (umax > curve->knotv[curve->length]))
+	{
+	  (void)ay_error_reportdrange(fname, "\"umin/umax\"",
+				      curve->knotv[curve->order-1],
+				      curve->knotv[curve->length]);
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	}
+
+      /* split off areas outside umin/umax */
+      /* note that this approach supports e.g. umin to be exactly knotv[0]
+	 and in this case does not execute the (unneeded) split */
+      if(umin > curve->knotv[0/*curve->uorder...?*/])
+	{
+	  ay_status = ay_nct_split(copy, umin, &nc1);
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, fname, split_errmsg);
+	      goto cleanup;
+	    }
+	  /* <nc1> is the sub curve we want
+	     => remove <copy>; then move <nc1> to <copy> */
+	  if(nc1)
+	    {
+	      nc2 = copy;
+	      copy = nc1;
+	      (void)ay_object_delete(nc2);
+	      nc1 = NULL;
+	      curve = (ay_nurbcurve_object*)copy->refine;
+	    }
+	}
+      if(umax < curve->knotv[curve->length])
+	{
+	  ay_status = ay_nct_split(copy, umax, &nc1);
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, fname, split_errmsg);
+	      goto cleanup;
+	    }
+	  /* <copy> is the sub curve we want
+	     => remove <nc1> */
+	  if(nc1)
+	    {
+	      (void)ay_object_delete(nc1);
+	      nc1 = NULL;
+	    }
+	}
+
+      /* return result */
+      *result = copy;
+      copy = NULL;
+    } /* if */
+
+cleanup:
+
+  if(copy)
+    {
+      ay_object_delete(copy);
+    }
+
+ return ay_status;
+} /* ay_nct_extractnc */
+
+
+/** ay_nct_extractnctcmd:
+ *  Extract a sub curve from the selected NURBS curves.
+ *  Implements the \a extrNC scripting interface command.
+ *  See also the corresponding section in the \ayd{scextrnc}.
+ *
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_nct_extractnctcmd(ClientData clientData, Tcl_Interp *interp,
+		     int argc, char *argv[])
+{
+ int tcl_status = TCL_OK, ay_status = AY_OK;
+ ay_list_object *sel = ay_selection;
+ ay_object *o, *new = NULL, *pobject = NULL;
+ double umin = 0.0, umax = 0.0;
+ int relative = AY_FALSE;
+
+  if(argc < 3)
+    {
+      ay_error(AY_EARGS, argv[0], "umin umax [relative]");
+      return TCL_OK;
+    }
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, argv[0], NULL);
+      return TCL_OK;
+    }
+
+  tcl_status = Tcl_GetDouble(interp, argv[1], &umin);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+  tcl_status = Tcl_GetDouble(interp, argv[2], &umax);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+
+  if(argc > 3)
+    {
+      tcl_status = Tcl_GetInt(interp, argv[3], &relative);
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+    }
+
+  while(sel)
+    {
+      o = sel->object;
+      if(o->type != AY_IDNCURVE)
+	{
+	  (void)ay_provide_object(o, AY_IDNCURVE, &pobject);
+
+	  if(!pobject)
+	    {
+	      ay_error(AY_EWARN, argv[0], ay_error_igntype);
+	      o = NULL;
+	    }
+	  else
+	    {
+	      o = pobject;
+	    } /* if */
+	} /* if */
+
+      if(o)
+	{
+	  new = NULL;
+
+	  ay_status = ay_nct_extractnc(o, umin, umax, relative, &new);
+
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, argv[0], NULL);
+	      return TCL_OK;
+	    } /* if */
+
+	  ay_object_link(new);
+	} /* if */
+
+      if(pobject)
+	{
+	  ay_object_deletemulti(pobject, AY_FALSE);
+	}
+
+      sel = sel->next;
+    } /* while */
+
+  (void)ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_nct_extractnctcmd */
+
 #if 0
 int
 ay_nct_expanddisc(double **p, int *plen)
