@@ -2000,7 +2000,6 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
  int t = 1, nh = 0;
  int degree_reduce = AY_FALSE, notify_parent = AY_FALSE;
 
-
   if(argv[0][0] == 'r')
     degree_reduce = AY_TRUE;
 
@@ -2017,7 +2016,7 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	  if(tol != tol)
 	    {
-	      ay_error(AY_ERROR, argv[0], "Argument tol is NaN.");
+	      ay_error_reportnan(argv[0], "tol");
 	      return TCL_OK;
 	    }
 	}
@@ -2220,7 +2219,7 @@ ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
   if(u != u)
     {
-      ay_error(AY_ERROR, argv[0], "Parameter u is NaN!");
+      ay_error_reportnan(argv[0], "u");
       return TCL_OK;
     }
 
@@ -3081,7 +3080,7 @@ ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
   if(u != u)
     {
-      ay_error(AY_ERROR, argv[0], "Parameter u is NaN!");
+      ay_error_reportnan(argv[0], "u");
       return TCL_OK;
     }
 
@@ -7136,7 +7135,7 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	  if(tol != tol)
 	    {
-	      ay_error(AY_ERROR, argv[0], "Parameter tol is NaN!");
+	      ay_error_reportnan(argv[0], "tol");
 	      return TCL_OK;
 	    }
 	}
@@ -7212,7 +7211,7 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
       AY_CHTCLERRRET(tcl_status, argv[0], interp);
       if(u != u)
 	{
-	  ay_error(AY_ERROR, argv[0], "Parameter u is NaN!");
+	  ay_error_reportnan(argv[0], "u");
 	  return TCL_OK;
 	}
     }
@@ -7481,14 +7480,14 @@ ay_nct_trimtcmd(ClientData clientData, Tcl_Interp *interp,
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
   if(umin != umin)
     {
-      ay_error(AY_ERROR, argv[0], "Parameter umin is NaN!");
+      ay_error_reportnan(argv[0], "umin");
       return TCL_OK;
     }
   tcl_status = Tcl_GetDouble(interp, argv[argi+1], &umax);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
   if(umax != umax)
     {
-      ay_error(AY_ERROR, argv[0], "Parameter umax is NaN!");
+      ay_error_reportnan(argv[0], "umax");
       return TCL_OK;
     }
 
@@ -9935,7 +9934,7 @@ ay_nct_extractnctcmd(ClientData clientData, Tcl_Interp *interp,
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
   if(umax != umax)
     {
-      ay_error_reportnan(argv[0], "umax");      
+      ay_error_reportnan(argv[0], "umax");
       return TCL_OK;
     }
 
