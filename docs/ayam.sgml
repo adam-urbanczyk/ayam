@@ -18195,13 +18195,33 @@ shiftC &ndash; shift control points of a (closed) curve:
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: shifts the control points of the selected
 NCurve, ACurve, and ICurve objects by an amount specified by the
-parameter i (which may be negative to revert the direction of the shifting).
-For a simple closed curve, shifting with i=1, the first control point will get
-the coordinates of the former last control point. This means, positive shifts
-occur in the direction of the curve. Note that for closed and periodic
-NURBS curves, the multiple points will be managed correctly.
+parameter <tt/i/ (which may be negative to revert the direction of the
+shifting). For a simple closed curve, shifting with <tt/i=1/, the first
+control point will get the coordinates of the former last control point.
+This means, positive shifts occur in the direction of the curve.
+Note that for closed and periodic NURBS curves, the multiple points will
+be managed correctly.
 <p><p>
 See also section <ref id="shiftclc" name="Shift Closed Curve Tool">.
+</itemize>
+
+<p>
+<#if out="latex"><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
+<label id="scextrnc">
+extrNC &ndash; extract NURBS curve:
+<itemize>
+ <item>Synopsis: <tt/"extrNC umin umax"/
+ <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Description: Extracts a sub-curve from the selected NCurve
+or NCurve providing objects. The extracted curve(s) will be appended
+as new object(s) to the current level of the scene. The sub-curve to be
+extracted is specified by the parametric values <tt/umin/ and <tt/umax/
+which have to be in the respective valid knot range.
+<!--
+<p><p>
+See also section <ref id="extrnpt" name="Extract Patch Tool">.
+-->
 </itemize>
 
 <#if out="latex"><x/newpage/</#if>
@@ -18652,10 +18672,11 @@ extrNP &ndash; extract NURBS patch:
  <item>Synopsis: <tt/"extrNP umin umax vmin vmax"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Extracts a sub-patch from the selected NPatch
-objects. The extracted patch will be appended as new object to the
-current level of the scene. The sub-patch to be extracted is specified
-by the parametric values umin, umax,
-vmin, and vmax which have to be in the respective valid knot range.
+or NPatch providing objects. The extracted patch(es) will be appended as
+new object(s) to the current level of the scene.
+The sub-patch to be extracted is specified by the parametric values
+<tt/umin/, <tt/umax/, <tt/vmin/, and <tt/vmax/ which have to be in the
+respective valid knot range.
 <p><p>
 See also section <ref id="extrnpt" name="Extract Patch Tool">.
 </itemize>
@@ -25407,7 +25428,13 @@ Index:
 <item>DCSampling: <ref id="aycsg" name="AyCSG plugin option">
 <item>DefaultAction: <ref id="prefmodel" name="preference setting">
 <item>DefaultMat: <ref id="prefrib" name="preference setting">
-<item>Degree: <ref id="sdnpattr" name="SDNPatch attribute">
+<item>Degree:
+<itemize>
+<item><ref id="sdnpattr" name="SDNPatch attribute">,
+<item>see also <ref id="indexord" name="Order">,
+<item>Elevation: see also <ref id="indexelev" name="Elevate">,
+<item>Reduction: see also <ref id="indexredu" name="Reduce">
+</itemize>
 <item>DelayedReadArchive: <ref id="riprocp" name="RiProc attribute">
 <item>delegTrafo: <ref id="scdelegtrafo" name="scripting interface command">
 <item>Delete:
@@ -25472,8 +25499,9 @@ Index:
 <item>Edit TexCoords: <ref id="mmtags" name="Tag management">
 <item>EditSnaps: <ref id="prefmodel" name="preference setting">
 <item>EDLen: <ref id="icp" name="ICurve attribute">
-<item>EFlush: <ref id="hidprefse" name="hidden preference setting">
-<item>Elevate:
+<#if out="latex"><x/phantomsection/</#if>
+<item>EFlush: <ref id="hidprefse" name="hidden preference setting"><label id="indexelev">
+<item>Elevate:<#if out="html"><label id="indexelev"></#if>
 <itemize>
 <item><ref id="elevt" name="NCurve tool">,
 <item><ref id="elevuvt" name="NPatch tool">
@@ -25519,7 +25547,8 @@ Index:
 <item>ExtrNC:
 <itemize>
 <item><ref id="extrncobj" name="ExtrNC object">,
-<item><ref id="extnct" name="ExtrNC tool">
+<item><ref id="extnct" name="ExtrNC tool">,
+<item><ref id="scextrnc" name="scripting interface command">
 </itemize>
 <item>ExtrNP:
 <itemize>
@@ -26028,8 +26057,9 @@ Index:
 <item>OptimizeNew: <ref id="mmtools" name="merge PolyMesh tool option">
 <item>OptimizePV: <ref id="mmtools" name="optimize PolyMesh tool option">
 <item>Optimize: <ref id="mmtools" name="merge PolyMesh tool option">
-<item>Option: <ref id="riotag" name="RiOption tag type">
-<item>Order:
+<#if out="latex"><x/phantomsection/</#if>
+<item>Option: <ref id="riotag" name="RiOption tag type"><label id="indexord">
+<item>Order:<#if out="html"><label id="indexord"></#if>
 <itemize>
 <item><ref id="ncattr" name="NCurve attribute">,
 <item><ref id="acp" name="ACurve attribute">,
@@ -26059,8 +26089,8 @@ Index:
 <label id="indexp"><tt/&nbsp;&nbsp;<bf/P//
 <list>
 <item>P1, P2: <ref id="hyp" name="Hyperboloid attribute">
-<item>Pan<ref id="vwsc" name="view action">
-<item>Pan to Mark<ref id="vwsc" name="view action">
+<item>Pan: <ref id="vwsc" name="view action">
+<item>Pan to Mark: <ref id="vwsc" name="view action">
 <item>PanDist: <ref id="hidprefsp" name="hidden preference setting">
 <item>PaneMargins: <ref id="hidprefsp" name="hidden preference setting">
 <item>Paraboloid: <ref id="paraboloidobj" name="Paraboloid object">
@@ -26103,7 +26133,8 @@ Index:
 <item>Points: <ref id="scipoints" name="scripting interface commands">
 <item>Point Size: <ref id="prefmodel" name="see preference setting HandleSize">
 <item>polyhedron.js: <ref id="polyhedronjs" name="example/helper script">
-<item>PolyMesh:<itemize>
+<item>PolyMesh:
+<itemize>
 <item><ref id="polymeshobj" name="PolyMesh object">,
 <item><ref id="polymeshtools" name="PolyMesh tools">,
 <item><ref id="scipomesh" name="scripting interface commands">
@@ -26146,7 +26177,7 @@ Index:
 <item>Quadrics: <ref id="sphereobj" name="quadric primitives">
 <item>QRender, QRenderPT, QRenderUI:
 <ref id="prefrib" name="preference setting">
-<item>Quat: <ref id="trap" name="transformations property">
+<item>Quaternion: <ref id="trap" name="transformations property">
 <item>QuickDraw 3D Metafile:
 <itemize>
 <item><ref id="imp3dmf" name="3DMF import">,
@@ -26218,11 +26249,13 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <itemize>
 <item><ref id="vm" name="view menu entry">,
 <item><ref id="incds" name="speeding up">,
-<item><ref id="vat" name="View attribute">
+<#if out="latex"><x/phantomsection/</#if>
+<item><ref id="vat" name="View attribute"><label id="indexredu">
 </itemize>
-<item>Reduce:
+
+<item>Reduce:<#if out="html"><label id="indexredu"></#if>
 <itemize>
-<item><ref id="reduct" name="NCurve tool">,
+<item><ref id="reduct" name="NCurve tool">
 <!--
 <item><ref id="elevuvt" name="NPatch tool">
 -->
@@ -26717,6 +26750,11 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="trap" name="transformations property">,
 <item><ref id="scitrafo" name="scripting interface commands">
 </itemize>
+<item>Translate:
+<itemize>
+<item><ref id="vwsc" name="view action">,
+<item><ref id="moveac" name="modelling action">
+</itemize>
 <item>Translation: <ref id="trap" name="transformations property">
 <item>translational surface: <ref id="tsurftcl" name="example/helper script">
 <item>Tree View: <ref id="treeview" name="Tree View">
@@ -26764,7 +26802,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <list>
 <item>uCL: <ref id="scucl" name="scripting interface command">
 <item>uCR: <ref id="scucr" name="scripting interface command">
-<item>UMax, UMin:<ref id="extrnpp" name="ExtrNP attribute">
+<item>UMax, UMin: <ref id="extrnpp" name="ExtrNP attribute">
 <item>UMM: <ref id="ummtag" name="tag type">
 <item>Unclamp:
 <itemize>
@@ -26815,7 +26853,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="viewwin" name="Anatomy of a View">
 </itemize>
 <item>ViewAttrib: <ref id="vat" name="property">
-<item>VMax, VMin:<ref id="extrnpp" name="ExtrNP attribute">
+<item>VMax, VMin: <ref id="extrnpp" name="ExtrNP attribute">
 <item>VMM: <ref id="ummtag" name="tag type">
 </list>
 
