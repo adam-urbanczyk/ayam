@@ -392,7 +392,7 @@ ay_interpol_curvestcmd(ClientData clientData, Tcl_Interp *interp,
       AY_CHTCLERRRET(tcl_status, argv[0], interp);
       if(r != r)
 	{
-	  ay_error(AY_ERROR, argv[0], "Parameter r is NaN!");
+	  ay_error_reportnan(argv[0], "r");
 	  return TCL_OK;
 	}
     }
@@ -630,7 +630,7 @@ ay_interpol_surfacestcmd(ClientData clientData, Tcl_Interp *interp,
       AY_CHTCLERRRET(tcl_status, argv[0], interp);
       if(r != r)
 	{
-	  ay_error(AY_ERROR, argv[0], "Parameter r is NaN!");
+	  ay_error_reportnan(argv[0], "r");
 	  return TCL_OK;
 	}
     }
