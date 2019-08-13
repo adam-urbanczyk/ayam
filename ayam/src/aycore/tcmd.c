@@ -555,7 +555,7 @@ ay_tcmd_evalcurve(char *fname, ay_nurbcurve_object *nc, double u, int relative,
 
   if(u != u)
     {
-      ay_error(AY_ERROR, fname, "Parameter u is NaN!");
+      ay_error_reportnan(fname, "u");
       return AY_ERROR;
     }
 
@@ -630,13 +630,13 @@ ay_tcmd_evalsurface(char *fname, ay_nurbpatch_object *np, double u, double v,
 
   if(u != u)
     {
-      ay_error(AY_ERROR, fname, "Parameter u is NaN!");
+      ay_error_reportnan(fname, "u");
       return AY_ERROR;
     }
 
   if(v != v)
     {
-      ay_error(AY_ERROR, fname, "Parameter v is NaN!");
+      ay_error_reportnan(fname, "v");
       return AY_ERROR;
     }
 
