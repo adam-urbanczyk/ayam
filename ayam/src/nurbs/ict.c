@@ -1331,3 +1331,188 @@ ay_ict_getpntfromindex(ay_icurve_object *curve, int index, double **p)
 
  return AY_OK;
 } /* ay_ict_getpntfromindex */
+
+
+/** ay_ict_interptcmd:
+ *  Interpolate the selected NURBS curves.
+ *  Implements the \a interpNC scripting interface command.
+ *  See also the corresponding section in the \ayd{interpnc}.
+ *
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_ict_interptcmd(ClientData clientData, Tcl_Interp *interp,
+		  int argc, char *argv[])
+{
+ int tcl_status = TCL_OK, ay_status = AY_OK;
+ int i = 1;
+ ay_object *o = NULL;
+ ay_nurbcurve_object *curve = NULL, *newcurve = NULL;
+ ay_list_object *sel = ay_selection;
+ int length, order = 4, ktype = AY_KTCHORDAL, closed = AY_FALSE;
+ double *controlv, sdlen = 0.0, edlen = 0.0;
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, argv[0], NULL);
+      return TCL_OK;
+    }
+
+  /* parse args */
+  while(i+1 < argc)
+    {
+      if(argv[i] && argv[i][0] != '\0')
+	{
+	  switch(argv[i][1])
+	    {
+	    case 'c':
+	      /* -closed */
+	      tcl_status = Tcl_GetInt(interp, argv[i+1], &closed);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	      break;
+	    case 'e':
+	      /* -edlen */
+	      tcl_status = Tcl_GetDouble(interp, argv[i+1], &edlen);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	      break;
+	    case 'o':
+	      /* -order */
+	      tcl_status = Tcl_GetInt(interp, argv[i+1], &order);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	      if(order <= 2)
+		{
+		  ay_error(AY_ERROR, argv[0], "Order must be > 2.");
+		  return TCL_OK;
+		}
+	      break;
+	    case 'k':
+	      /* -ktype */
+	      tcl_status = Tcl_GetInt(interp, argv[i+1], &ktype);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	      switch(ktype)
+		{
+		case 0:
+		  ktype = AY_KTCHORDAL;
+		  break;
+		case 1:
+		  ktype = AY_KTCENTRI;
+		  break;
+		case 2:
+		  ktype = AY_KTUNIFORM;
+		  break;
+		default:
+		  ktype = AY_KTCHORDAL;
+		  break;
+		} /* switch */
+	      break;
+	    case 's':
+	      /* -sdlen */
+	      tcl_status = Tcl_GetDouble(interp, argv[i+1], &sdlen);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	      break;
+	    default:
+	      break;
+	    } /* switch */
+	} /* if */
+      i += 2;
+    } /* while */
+
+  while(sel)
+    {
+      o = sel->object;
+      if(o->type == AY_IDNCURVE)
+	{
+	  curve = (ay_nurbcurve_object*)o->refine;
+	  length = curve->length;
+
+	  if(!(controlv = calloc(curve->length*3, sizeof(double))))
+	    {
+	      ay_error(AY_EOMEM, argv[0], NULL);
+	      return TCL_OK;
+	    }
+
+	  for(i = 0; i < curve->length; i++)
+	    {
+	      memcpy(&(controlv[i*3]), &(curve->controlv[i*4]),
+		     3*sizeof(double));
+	    }
+
+	  newcurve = NULL;
+	  if(order != 4)
+	    {
+	      if(closed)
+		{
+		  ay_status = ay_ict_interpolateG3DClosed(order, length,
+							  sdlen, edlen,
+							  AY_FALSE, ktype,
+							  controlv,
+							  NULL, NULL,
+							  &newcurve);
+		}
+	      else
+		{
+		  ay_status = ay_ict_interpolateG3D(order, length,
+						    sdlen, edlen,
+						    AY_FALSE, ktype,
+						    controlv,
+						    NULL, NULL,
+						    &newcurve);
+		} /* if closed */
+	    }
+	  else
+	    {
+	      if(closed)
+		{
+		  ay_status = ay_ict_interpolateC2CClosed(length,
+							  sdlen, edlen,
+							  ktype, AY_FALSE,
+							  NULL, NULL,
+							  controlv,
+							  &newcurve);
+		}
+	      else
+		{
+		  ay_status = ay_ict_interpolateC2C(length,
+						    sdlen, edlen,
+						    ktype, AY_FALSE,
+						    NULL, NULL,
+						    controlv,
+						    &newcurve);
+		} /* if closed */
+	    } /* if order */
+
+	  if(!ay_status && newcurve)
+	    {
+	      ay_nct_destroy(o->refine);
+	      o->refine = newcurve;
+
+	      /* remove all selected points */
+	      if(o->selp)
+		{
+		  ay_selp_clear(o);
+		}
+
+	      o->modified = AY_TRUE;
+
+	      /* re-create tesselation of patch */
+	      (void)ay_notify_object(o);
+	    }
+	  else
+	    {
+	      ay_error(AY_EWARN, argv[0], "Interpolation failed.");
+	    }
+
+	  free(controlv);
+
+	}
+      else
+	{
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
+	} /* if */
+      sel = sel->next;
+    } /* while */
+
+  (void)ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_ict_interptcmd */
