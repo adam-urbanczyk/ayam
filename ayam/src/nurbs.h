@@ -165,6 +165,10 @@ int ay_ict_revert(ay_icurve_object *curve);
  */
 int ay_ict_getpntfromindex(ay_icurve_object *curve, int index, double **p);
 
+/** Tcl command to interpolate selected NURBS curves.
+ */
+int ay_ict_interptcmd(ClientData clientData, Tcl_Interp *interp,
+		      int argc, char *argv[]);
 
 /* ipt.c */
 
@@ -217,7 +221,7 @@ int ay_ipt_interpolatevdc(ay_nurbpatch_object *np, int order, int ktype,
 			  int dmode, double sdlen, double edlen,
 			  double *sd, double *ed);
 
-/** Tcl command to interpolate selected surfaces.
+/** Tcl command to interpolate selected NURBS surfaces.
  */
 int ay_ipt_interpuvtcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
