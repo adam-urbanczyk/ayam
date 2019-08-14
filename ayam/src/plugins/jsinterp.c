@@ -219,6 +219,7 @@ static JSFunctionSpec jsinterp_global_functions[] = {
   {"reparamNC", jsinterp_wraptcmdargs, 0, 0, 0},
   {"extendNC", jsinterp_wraptcmdargs, 0, 0, 0},
   {"extrNC", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"interpNC", jsinterp_wraptcmdargs, 0, 0, 0},
 
   {"crtNSphere", jsinterp_wraptcmd, 0, 0, 0},
   {"crtNSphere2", jsinterp_wraptcmd, 0, 0, 0},
@@ -246,6 +247,8 @@ static JSFunctionSpec jsinterp_global_functions[] = {
   {"remknuNP", jsinterp_wraptcmdargs, 0, 0, 0},
   {"remknvNP", jsinterp_wraptcmdargs, 0, 0, 0},
   {"extrNP", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"interpuNP", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"interpvNP", jsinterp_wraptcmdargs, 0, 0, 0},
   {"concatS", jsinterp_wraptcmdargs, 0, 0, 0},
   {"tobasisPM", jsinterp_wraptcmdargs, 0, 0, 0},
   {"tweenNC", jsinterp_wraptcmdargs, 0, 0, 0},
