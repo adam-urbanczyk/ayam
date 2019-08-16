@@ -10787,7 +10787,7 @@ int
 ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_object *src = NULL;
  ay_nurbpatch_object *patch = NULL;
@@ -10815,8 +10815,20 @@ ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 		    {
 		      dim = 2;
 		    }
-		  sscanf(argv[i+1], "%lg", &rmin);
-		  sscanf(argv[i+2], "%lg", &rmax);
+		  tcl_status = Tcl_GetDouble(interp, argv[i+1], &rmin);
+		  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+		  if(rmin != rmin)
+		    {
+		      ay_error_reportnan(argv[0], "rmin");
+		      return TCL_OK;
+		    }
+		  tcl_status = Tcl_GetDouble(interp, argv[i+2], &rmax);
+		  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+		  if(rmax != rmax)
+		    {
+		      ay_error_reportnan(argv[0], "rmax");
+		      return TCL_OK;
+		    }
 		}
 	      else
 		{
@@ -10835,7 +10847,13 @@ ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 		{
 		  dim = 2;
 		}
-	      sscanf(argv[i+1], "%lg", &mindist);
+	      tcl_status = Tcl_GetDouble(interp, argv[i+1], &mindist);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	      if(mindist != mindist)
+		{
+		  ay_error_reportnan(argv[0], "mindist");
+		  return TCL_OK;
+		}
 	    } /* if */
 	  i += 2;
 	} /* while */
@@ -13444,6 +13462,11 @@ ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      tcl_status = Tcl_GetDouble(interp, argv[i+1], &ftlen);
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	      if(ftlen != ftlen)
+		{
+		  ay_error_reportnan(argv[0], "ftlen");
+		  return TCL_OK;
+		}
 	    }
 	  if(!strcmp(argv[i], "-ft"))
 	    {
@@ -13541,9 +13564,9 @@ ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
 		    {
 		      next = &((*next)->next);
 		    }
-		} /* if */
+		} /* if is NCurve */
 	    } /* if */
-	} /* if */
+	} /* if is NPatch */
 
       sel = sel->next;
     } /* while */
