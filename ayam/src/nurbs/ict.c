@@ -1374,6 +1374,11 @@ ay_ict_interptcmd(ClientData clientData, Tcl_Interp *interp,
 	      /* -edlen */
 	      tcl_status = Tcl_GetDouble(interp, argv[i+1], &edlen);
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	      if(edlen != edlen)
+		{
+		  ay_error_reportnan(argv[0], "edlen");
+		  return TCL_OK;
+		}
 	      break;
 	    case 'o':
 	      /* -order */
@@ -1409,6 +1414,11 @@ ay_ict_interptcmd(ClientData clientData, Tcl_Interp *interp,
 	      /* -sdlen */
 	      tcl_status = Tcl_GetDouble(interp, argv[i+1], &sdlen);
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	      if(sdlen != sdlen)
+		{
+		  ay_error_reportnan(argv[0], "sdlen");
+		  return TCL_OK;
+		}
 	      break;
 	    default:
 	      break;
@@ -1503,12 +1513,11 @@ ay_ict_interptcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 
 	  free(controlv);
-
 	}
       else
 	{
 	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
-	} /* if */
+	} /* if is NCurve */
       sel = sel->next;
     } /* while */
 
