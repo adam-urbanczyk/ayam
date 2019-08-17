@@ -3204,7 +3204,7 @@ ay_nct_concattcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   a = 0; b = 0;
-  for(i = 0;i < (nc1->length); i++)
+  for(i = 0; i < (nc1->length); i++)
     {
       newcontrolv[b] = controlv1[a];
       newcontrolv[b+1] = controlv1[a+1];
@@ -3254,6 +3254,154 @@ ay_nct_concattcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_nct_concattcmd */
+
+
+/** ay_nct_concatctcmd:
+ *  Concatenate selected curves.
+ *  Implements the \a concatC scripting interface command.
+ *  See also the corresponding section in the \ayd{scconcatc}.
+ *
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_nct_concatctcmd(ClientData clientData, Tcl_Interp *interp,
+		   int argc, char *argv[])
+{
+ int ay_status, tcl_status;
+ int i = 1, closed = AY_FALSE, fillets = AY_FALSE, knot_type = 0;
+ int order = 0;
+ double ftlen = 0.3;
+ ay_nurbcurve_object *nc;
+ ay_list_object *sel = ay_selection;
+ ay_object *o = NULL, *curves = NULL, **next = NULL;
+ ay_object *newo = NULL;
+
+  /* parse args */
+  if(argc > 2)
+    {
+      while(i+1 < argc)
+	{
+	  if(!strcmp(argv[i], "-c"))
+	    {
+	      tcl_status = Tcl_GetInt(interp, argv[i+1], &closed);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	    }
+
+	  if(!strcmp(argv[i], "-f"))
+	    {
+	      tcl_status = Tcl_GetInt(interp, argv[i+1], &fillets);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	    }
+	  if(!strcmp(argv[i], "-ft"))
+	    {
+	      tcl_status = Tcl_GetDouble(interp, argv[i+1], &ftlen);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	      if(ftlen < AY_EPSILON || ftlen != ftlen)
+		{
+		  ay_error(AY_ERROR, argv[0], "ftlen must be > 0.0");
+		  return TCL_OK;
+		}
+	    }
+	  /*
+	  if(!strcmp(argv[i], "-o"))
+	    {
+	      tcl_status = Tcl_GetInt(interp, argv[i+1], &order);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+
+	      if(type < 0)
+		{
+		  ay_error(AY_ERROR, argv[0],
+			   "Parameter <order> must be >= 0.");
+		  return TCL_OK;
+		}
+	    }
+	  */
+	  if(!strcmp(argv[i], "-k"))
+	    {
+	      tcl_status = Tcl_GetInt(interp, argv[i+1], &knot_type);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	    }
+
+	  i += 2;
+	} /* while */
+    } /* if have args */
+
+  /* check selection */
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, argv[0], NULL);
+      return TCL_OK;
+    }
+
+  /* collect curves */
+  next = &curves;
+  while(sel)
+    {
+      o = sel->object;
+
+      /* copy or provide */
+      if(o->type == AY_IDNCURVE)
+	{
+	  ay_status = ay_object_copy(o, next);
+	  if(ay_status)
+	    goto cleanup;
+	  ay_nct_applytrafo(*next);
+	  next = &((*next)->next);
+	}
+      else
+	{
+	  if(ay_provide_object(o, AY_IDNCURVE, NULL) == AY_OK)
+	    {
+	      (void)ay_provide_object(o, AY_IDNCURVE, next);
+	      while(*next)
+		{
+		  ay_nct_applytrafo(*next);
+		  next = &((*next)->next);
+		}
+	    } /* if */
+	} /* if is NCurve */
+
+      sel = sel->next;
+    } /* while */
+
+  /* gracefully exit, if there are no
+     (or not enough?) curves to concat */
+  if(!curves)
+    {
+      ay_error(AY_EWARN, argv[0], "Not enough curves to concat!");
+      return TCL_OK;
+    }
+
+  nc = (ay_nurbcurve_object*)curves->refine;
+  order = nc->order;
+
+  ay_status = ay_nct_fillgaps(closed, order, ftlen, curves);
+
+  if(ay_status)
+    {
+      ay_error(AY_ERROR, argv[0], "Failed to create fillets!");
+      goto cleanup;
+    }
+
+  ay_status = ay_nct_concatmultiple(closed, knot_type, fillets, curves, &newo);
+
+  if(ay_status)
+    {
+      ay_error(AY_ERROR, argv[0], "Failed to concat!");
+    }
+  else
+    {
+      ay_object_link(newo);
+    } /* if */
+
+  (void)ay_notify_parent();
+
+cleanup:
+  /* free list of temporary curves */
+  (void)ay_object_deletemulti(curves, AY_TRUE);
+
+ return TCL_OK;
+} /* ay_nct_concatctcmd */
 
 
 /** ay_nct_crtncircle
@@ -5151,7 +5299,7 @@ int
 ay_nct_rescaleknvtcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_object *src = NULL;
  ay_nurbcurve_object *curve = NULL;
@@ -5169,8 +5317,20 @@ ay_nct_rescaleknvtcmd(ClientData clientData, Tcl_Interp *interp,
 	      if(argc > i+2)
 		{
 		  mode = 0;
-		  sscanf(argv[i+1], "%lg", &rmin);
-		  sscanf(argv[i+2], "%lg", &rmax);
+		  tcl_status = Tcl_GetDouble(interp, argv[i+1], &rmin);
+		  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+		  if(rmin != rmin)
+		    {
+		      ay_error_reportnan(argv[0], "rmin");
+		      return TCL_OK;
+		    }
+		  tcl_status = Tcl_GetDouble(interp, argv[i+2], &rmax);
+		  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+		  if(rmax != rmax)
+		    {
+		      ay_error_reportnan(argv[0], "rmax");
+		      return TCL_OK;
+		    }
 		}
 	      else
 		{
@@ -5180,7 +5340,13 @@ ay_nct_rescaleknvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(!strcmp(argv[i], "-d"))
 	    {
 	      mode = 1;
-	      sscanf(argv[i+1], "%lg", &mindist);
+	      tcl_status = Tcl_GetDouble(interp, argv[i+1], &mindist);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	      if(mindist != mindist)
+		{
+		  ay_error_reportnan(argv[0], "mindist");
+		  return TCL_OK;
+		}
 	    }
 	  i += 2;
 	} /* while */
