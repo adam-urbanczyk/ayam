@@ -693,10 +693,10 @@ int ay_nct_split(ay_object *src, double u, ay_object **result);
 int ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[]);
 
-/** Tcl command to concatenate selected NURBS curves.
+/** Tcl command to concatenate selected curves.
  */
-int ay_nct_concattcmd(ClientData clientData, Tcl_Interp *interp,
-		      int argc, char *argv[]);
+int ay_nct_concatctcmd(ClientData clientData, Tcl_Interp *interp,
+		       int argc, char *argv[]);
 
 /** Create a NURBS circle.
  */

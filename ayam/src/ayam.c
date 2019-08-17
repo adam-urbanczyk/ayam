@@ -1216,7 +1216,11 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "splitNC", ay_nct_splittcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "concatNC", ay_nct_concattcmd,
+  /* provided for scripting interface backwards compatibility */
+  Tcl_CreateCommand(interp, "concatNC", ay_nct_concatctcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "concatC", ay_nct_concatctcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "crtNCircle", ay_nct_crtncircletcmd,
@@ -1838,7 +1842,11 @@ ay_safeinit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "splitNC", ay_nct_splittcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "concatNC", ay_nct_concattcmd,
+  /* provided for scripting interface backwards compatibility */
+  Tcl_CreateCommand(interp, "concatNC", ay_nct_concatctcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "concatC", ay_nct_concatctcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "crtNCircle", ay_nct_crtncircletcmd,
