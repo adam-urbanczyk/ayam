@@ -13890,8 +13890,6 @@ interpolate the first and the last control point afterwards (unless
 the weights of those points are not 1.0).
 <tag/Notes/ The knot type of the curves will be changed to <tt/"Custom"/.
 
-The point selection will be removed from the processed objects.
-
 In Ayam versions prior to 1.18 it was an error if the curve was already
 clamped at either side, this is no longer the case.
 Furthermore, curves with multiple knots in the end region(s) could not be
@@ -13934,9 +13932,6 @@ Unclamping is <em/not/ an exact reversal of clamping (and vice versa).
 
 Furthermore, as the unclamp operation only works on completely clamped curves,
 the unclamp tool may need to clamp the curve first.
-
-The point selection will be removed from the processed objects if
-the curve needs to be clamped before unclamping.
 
 See also the documentation of the corresponding
 scripting interface command <ref id="scunclampnc" name="unclampNC">
@@ -14032,7 +14027,7 @@ the shape of the resulting curve does not deviate more than <it/tol/
 from the original curve in any point.
 <p>
 It is no error if no knots can be removed.
-<tag/Notes/ 
+<tag/Notes/
 The point selection will be removed from the processed objects.
 
 See also the documentation of the corresponding
@@ -14910,8 +14905,6 @@ points in the respective direction afterwards (unless the weights of those
 points are not 1.0).
 The knot types of the patches will be changed to type <tt/"Custom"/.
 
-The point selection will be removed from the original objects.
-
 There are also tools available that clamp a patch in U or
 V direction only.
 
@@ -14947,9 +14940,6 @@ the unclamp tool may need to clamp the surface first.
 
 There are also tools available that unclamp a patch in U or
 V direction only.
-
-The point selection will be removed from the original objects if
-the surface needs to be clamped for unclamping.
 
 See also the documentation of the corresponding scripting interface commands
 <ref id="scunclampunp" name="unclampuNP"> and
@@ -15182,7 +15172,7 @@ These tools convert between parametric objects.
 <descrip>
 <tag/Arguments/ The extract curve tool takes the first of the selected
 objects from the selection.
-<tag/Operation/ The tool creates an instance the first of the selected
+<tag/Operation/ The tool creates an instance from the first of the selected
 objects then creates an ExtrNC object and moves the instance to it.
 <tscreen><verb>
 |-NPatch             |-NPatch
@@ -17810,7 +17800,198 @@ registerTag:
 
 <#if out="latex"><x/newpage/</#if>
 
-<sect2>Manipulating NURBS Curves and Surfaces<label id="scinurbs">
+<sect2>Manipulating Curves<label id="scicurves">
+<p>
+<#if out="latex"><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
+<label id="scopenc">
+openC &ndash; open curve:
+<itemize>
+ <item>Synopsis: <tt/"openC"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Open the selected curve objects.
+<p><p>
+See also section <ref id="openct" name="Open Tool">.
+</itemize>
+
+<p>
+<#if out="latex"><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
+<label id="scclosec">
+closeC &ndash; close curve:
+<itemize>
+ <item>Synopsis: <tt/"closeC"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Close the selected curve objects.
+<p><p>
+See also section <ref id="closect" name="Close Tool">.
+</itemize>
+
+<p>
+<#if out="latex"><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
+<label id="screfinenc"><label id="screfinec">
+refineC &ndash; refine curve:
+<itemize>
+ <item>Synopsis: <tt/"refineC"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Refine the control vector of the selected
+curve objects, changing the shapes of the curves.
+If a curve has selected points, only the interval between the first and the
+last of the selected points is refined. For periodic NURBS
+curves, the last <em/p/ intervals are not refined (where <em/p/
+is the degree of the curve).
+<p><p>
+See also section <ref id="refit" name="Refine Tool">.
+</itemize>
+
+<p>
+<#if out="latex"><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
+<label id="sccoarsenc">
+coarsenC &ndash; coarsen curve:
+<itemize>
+ <item>Synopsis: <tt/"coarsenC"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Remove every second control point from the
+selected curve objects. If a curve has selected
+points, only the interval between the first and the
+last of the selected points is affected. For periodic NURBS
+curves, the last <em/p/ intervals are not affected (where <em/p/
+is the degree of the curve).
+<item>Notes:
+Prior to Ayam 1.26 this command was named <tt>"coarsenNC"</tt>,
+the old name is still available for compatibility but its
+use is deprecated.
+<p><p>
+See also section <ref id="coart" name="Coarsen Tool">.
+</itemize>
+
+<p>
+<#if out="latex"><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
+<label id="screvert"><label id="screvertc">
+revertC &ndash; revert curves:
+<itemize>
+ <item>Synopsis: <tt/"revertC"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Revert the direction of the selected curve objects.
+<p><p>
+See also section <ref id="revertt" name="Revert Tool">.
+</itemize>
+
+<p>
+<#if out="latex"><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
+<label id="scshiftc">
+shiftC &ndash; shift control points of a (closed) curve:
+<itemize>
+ <item>Synopsis: <tt/"shiftC i"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: shifts the control points of the selected
+NCurve, ACurve, and ICurve objects by an amount specified by the
+parameter <tt/i/ (which may be negative to revert the direction of the
+shifting). For a simple closed curve, shifting with <tt/i=1/, the first
+control point will get the coordinates of the former last control point.
+This means, positive shifts occur in the direction of the curve.
+Note that for closed and periodic NURBS curves, the multiple points will
+be managed correctly.
+<p><p>
+See also section <ref id="shiftclc" name="Shift Closed Curve Tool">.
+</itemize>
+
+<p>
+<#if out="latex"><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
+<label id="sctoxyc"><label id="sctoxync">
+toXYC &ndash; rotate curve to XY-plane
+<itemize>
+ <item>Synopsis: <tt/"toXYC"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: rotates the control points of the selected planar NCurve,
+ACurve, and ICurve objects to their respective XY-plane, modifying
+the transformation attributes accordingly.
+<p><p>
+See also section <ref id="toxyt" name="To XY Tool">.
+</itemize>
+
+<#if out="latex"><x/newpage/</#if>
+
+<sect2>Manipulating Surfaces<label id="scisurf">
+<p>
+
+<p>
+<#if out="latex"><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
+<label id="screvertu"><label id="screvertus">
+revertuS &ndash; revert surfaces:
+<itemize>
+ <item>Synopsis: <tt/"revertuS"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Revert the direction of the selected surfaces in
+the u parametric dimension.
+<p><p>
+See also section <ref id="revertut" name="Revert U Tool">.
+</itemize>
+
+<p>
+<#if out="latex"><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
+<label id="screvertv"><label id="screvertvs">
+revertvS &ndash; revert surfaces:
+<itemize>
+ <item>Synopsis: <tt/"revertvS"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Revert the direction of the selected surfaces in
+the v parametric dimension.
+<p><p>
+See also section <ref id="revertvt" name="Revert V Tool">.
+</itemize>
+
+<p>
+<#if out="latex"><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
+<label id="scswapuvs">
+swapuvS &ndash; swap dimensions of surfaces:
+<itemize>
+ <item>Synopsis: <tt/"swapuvS"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Swap the dimensions of the selected surfaces
+(objects of type NPatch, IPatch, BPatch, and PatchMesh), thus
+exchanging width and height, without altering the shape of the surfaces.
+<p><p>
+See also section <ref id="swapuvt" name="Swap UV Tool">.
+</itemize>
+
+<p>
+<#if out="latex"><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
+<label id="scconcats">
+concatS &ndash; concatenate surfaces:
+<itemize>
+ <item>Synopsis: <tt/"concatS [-o order | -t type | -k knottype | -u uvselect]"/
+ <item>Background: Yes, Undo: No, Safe: No
+ <item>Description: Concatenate the selected surface objects into a
+single NURBS patch.
+<p><p>
+The option <tt/"-o"/ determines the desired order
+of the surface in U direction.
+<p>
+The option <tt/"-t"/ allows to set a surface type
+(0 &ndash; open, 1 &ndash; closed, 3 &ndash; periodic; default 0).
+<p>
+The option <tt/"-k"/ allows to set a knot type (default 1 &ndash; NURB).
+<p>
+Finally, the <tt/"-u"/ option allows to specify the uv-select-string.
+<p>
+See also section <ref id="concatnpp" name="ConcatNPAttr Property">
+for more information on these options.
+</itemize>
+
+
+<#if out="latex"><x/newpage/</#if>
+
+<sect2>Manipulating NURBS Curves<label id="scinurbs">
 <p>
 These are more specialized commands to change NURBS curve and surface
 properties:
@@ -17981,72 +18162,6 @@ See also section <ref id="remsuknt" name="Remove Superfluous Knots Tool">.
 <p>
 <#if out="latex"><x/phantomsection/</#if>
 <#if out="html"><f/<inf/<newline>//</#if>
-<label id="scopenc">
-openC &ndash; open curve:
-<itemize>
- <item>Synopsis: <tt/"openC"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Open the selected curve objects.
-<p><p>
-See also section <ref id="openct" name="Open Tool">.
-</itemize>
-
-<p>
-<#if out="latex"><x/phantomsection/</#if>
-<#if out="html"><f/<inf/<newline>//</#if>
-<label id="scclosec">
-closeC &ndash; close curve:
-<itemize>
- <item>Synopsis: <tt/"closeC"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Close the selected curve objects.
-<p><p>
-See also section <ref id="closect" name="Close Tool">.
-</itemize>
-
-<p>
-<#if out="latex"><x/phantomsection/</#if>
-<#if out="html"><f/<inf/<newline>//</#if>
-<label id="screfinenc"><label id="screfinec">
-refineC &ndash; refine curve:
-<itemize>
- <item>Synopsis: <tt/"refineC"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Refine the control vector of the selected
-curve objects, changing the shapes of the curves.
-If a curve has selected points, only the interval between the first and the
-last of the selected points is refined. For periodic NURBS
-curves, the last <em/p/ intervals are not refined (where <em/p/
-is the degree of the curve).
-<p><p>
-See also section <ref id="refit" name="Refine Tool">.
-</itemize>
-
-<p>
-<#if out="latex"><x/phantomsection/</#if>
-<#if out="html"><f/<inf/<newline>//</#if>
-<label id="sccoarsenc">
-coarsenC &ndash; coarsen curve:
-<itemize>
- <item>Synopsis: <tt/"coarsenC"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Remove every second control point from the
-selected curve objects. If a curve has selected
-points, only the interval between the first and the
-last of the selected points is affected. For periodic NURBS
-curves, the last <em/p/ intervals are not affected (where <em/p/
-is the degree of the curve).
-<item>Notes:
-Prior to Ayam 1.26 this command was named <tt>"coarsenNC"</tt>,
-the old name is still available for compatibility but its
-use is deprecated.
-<p><p>
-See also section <ref id="coart" name="Coarsen Tool">.
-</itemize>
-
-<p>
-<#if out="latex"><x/phantomsection/</#if>
-<#if out="html"><f/<inf/<newline>//</#if>
 <label id="screfineknnc">
 refineknNC &ndash; refine knots of NURBS curve:
 <itemize>
@@ -18058,21 +18173,6 @@ If no list of new knots is given, a new knot is inserted into each interval
 in the old knot vector.
 <p><p>
 See also section <ref id="refknit" name="Refine Knots Tool">.
-</itemize>
-
-<#if out="latex"><x/newpage/</#if>
-
-<p>
-<#if out="latex"><x/phantomsection/</#if>
-<#if out="html"><f/<inf/<newline>//</#if>
-<label id="screvert"><label id="screvertc">
-revertC &ndash; revert curves:
-<itemize>
- <item>Synopsis: <tt/"revertC"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Revert the direction of the selected curve objects.
-<p><p>
-See also section <ref id="revertt" name="Revert Tool">.
 </itemize>
 
 <p>
@@ -18095,51 +18195,6 @@ third curve defines the ratio of influence with its y coordinates.
 <p><p>
 See also section <ref id="tweennct" name="Tween Curve Tool">.
 </itemize>
-
-<p>
-<#if out="latex"><x/phantomsection/</#if>
-<#if out="html"><f/<inf/<newline>//</#if>
-<label id="screvertu"><label id="screvertus">
-revertuS &ndash; revert surfaces:
-<itemize>
- <item>Synopsis: <tt/"revertuS"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Revert the direction of the selected surfaces in
-the u parametric dimension.
-<p><p>
-See also section <ref id="revertut" name="Revert U Tool">.
-</itemize>
-
-<p>
-<#if out="latex"><x/phantomsection/</#if>
-<#if out="html"><f/<inf/<newline>//</#if>
-<label id="screvertv"><label id="screvertvs">
-revertvS &ndash; revert surfaces:
-<itemize>
- <item>Synopsis: <tt/"revertvS"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Revert the direction of the selected surfaces in
-the v parametric dimension.
-<p><p>
-See also section <ref id="revertvt" name="Revert V Tool">.
-</itemize>
-
-<p>
-<#if out="latex"><x/phantomsection/</#if>
-<#if out="html"><f/<inf/<newline>//</#if>
-<label id="scswapuvs">
-swapuvS &ndash; swap dimensions of surfaces:
-<itemize>
- <item>Synopsis: <tt/"swapuvS"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Swap the dimensions of the selected surfaces
-(objects of type NPatch, IPatch, BPatch, and PatchMesh), thus
-exchanging width and height, without altering the shape of the surfaces.
-<p><p>
-See also section <ref id="swapuvt" name="Swap UV Tool">.
-</itemize>
-
-<#if out="latex"><x/newpage/</#if>
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
@@ -18185,25 +18240,7 @@ into the level right after the respective curve(s) to split.
 See also section <ref id="splitt" name="Split Tool">.
 </itemize>
 
-<p>
-<#if out="latex"><x/phantomsection/</#if>
-<#if out="html"><f/<inf/<newline>//</#if>
-<label id="scshiftc">
-shiftC &ndash; shift control points of a (closed) curve:
-<itemize>
- <item>Synopsis: <tt/"shiftC i"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: shifts the control points of the selected
-NCurve, ACurve, and ICurve objects by an amount specified by the
-parameter <tt/i/ (which may be negative to revert the direction of the
-shifting). For a simple closed curve, shifting with <tt/i=1/, the first
-control point will get the coordinates of the former last control point.
-This means, positive shifts occur in the direction of the curve.
-Note that for closed and periodic NURBS curves, the multiple points will
-be managed correctly.
-<p><p>
-See also section <ref id="shiftclc" name="Shift Closed Curve Tool">.
-</itemize>
+<#if out="latex"><x/newpage/</#if>
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
@@ -18222,23 +18259,6 @@ which have to be in the respective valid knot range.
 <p><p>
 See also section <ref id="extrnpt" name="Extract Patch Tool">.
 -->
-</itemize>
-
-<#if out="latex"><x/newpage/</#if>
-
-<p>
-<#if out="latex"><x/phantomsection/</#if>
-<#if out="html"><f/<inf/<newline>//</#if>
-<label id="sctoxyc"><label id="sctoxync">
-toXYC &ndash; rotate curve to XY-plane
-<itemize>
- <item>Synopsis: <tt/"toXYC"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: rotates the control points of the selected planar NCurve,
-ACurve, and ICurve objects to their respective XY-plane, modifying
-the transformation attributes accordingly.
-<p><p>
-See also section <ref id="toxyt" name="To XY Tool">.
 </itemize>
 
 <p>
@@ -18314,7 +18334,7 @@ are compared.
 </itemize>
 
 <p>
-<#if out="latex"><x/newpage/</#if>
+
 <#if out="latex"><x/phantomsection/</#if>
 <#if out="html"><f/<inf/<newline>//</#if>
 <label id="scmakecompnc">
@@ -18333,6 +18353,45 @@ If <tt/"level"/ is <tt/1/, only the orders and lengths will be adapted.
 See also section <ref id="makecompt" name="Make Compatible Tool">.
 </itemize>
 
+<p>
+<#if out="latex"><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
+<label id="scinterpnc">
+interpNC &ndash; interpolate NURBS curve:
+<itemize>
+ <item>Synopsis: <tt/"interpNC [-order order | -ktype type | -closed (0|1) | -sdlen length | -edlen length]"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Interpolate the selected NURBS curves
+with desired order and parameterisation type.
+Order defaults to 4 and must be higher than 2.
+The parameterisation type must be one of 0 &ndash; Chordal,
+1 &ndash; Centripetal, or 2 &ndash; Uniform, default is Chordal.
+The interpolation can create a closed curve but this will also increase
+the length of the resulting NURBS curve (the default is to
+create an open curve).
+<p><p>
+Using the options <tt/"-sdlen"/ and <tt/"-edlen"/ (which both default
+to 0.0) the length of automatically created start/end derivatives
+can be adjusted. If any of these is not 0.0, a different interpolation
+algorithm will be used, which increases the length of the resulting NURBS
+curve.
+<p>
+The curve will interpolate all current control points after the
+interpolation and the position of certain control points will be
+changed in this process so that, after interpolation, the new control
+points will <em/not/ be interpolated by the curve. The curve will
+rather interpolate the <em/old/ control point positions.
+<p>
+The knot type of the interpolated curves will be changed to <tt/"Custom"/.
+<!--
+<p>
+See also section <ref id="interpnct" name="Interpolate Curve Tool">.
+-->
+</itemize>
+
+<#if out="latex"><x/newpage/</#if>
+
+<sect2>Manipulating NURBS Surfaces<label id="scinurbss">
 <p>
 <#if out="latex"><x/phantomsection/</#if>
 <#if out="html"><f/<inf/<newline>//</#if>
@@ -18708,7 +18767,7 @@ The surface will interpolate all current control points after the
 interpolation and the position of certain control points will be
 changed in this process so that, after interpolation, the new control
 points will <em/not/ be interpolated by the surface. The surface will
-interpolate the old control point positions.
+rather interpolate the <em/old/ control point positions.
 <p>
 The u knot type of the interpolated surfaces will be changed to <tt/"Custom"/.
 <p>
@@ -18742,7 +18801,7 @@ The surface will interpolate all current control points after the
 interpolation and the position of certain control points will be
 changed in this process so that, after interpolation, the new control
 points will <em/not/ be interpolated by the surface. The surface will
-interpolate the old control point positions.
+rather interpolate the <em/old/ control point positions.
 <p>
 The v knot type of the interpolated surfaces will be changed to <tt/"Custom"/.
 <p>
@@ -18750,31 +18809,6 @@ See also section <ref id="interpnpt" name="Interpolate Surface Tool">.
 </itemize>
 
 <#if out="latex"><x/newpage/</#if>
-
-<p>
-<#if out="latex"><x/phantomsection/</#if>
-<#if out="html"><f/<inf/<newline>//</#if>
-<label id="scconcats">
-concatS &ndash; concatenate surfaces:
-<itemize>
- <item>Synopsis: <tt/"concatS [-o order | -t type | -k knottype | -u uvselect]"/
- <item>Background: Yes, Undo: No, Safe: No
- <item>Description: Concatenate the selected surface objects into a
-single NURBS patch.
-<p><p>
-The option <tt/"-o"/ determines the desired order
-of the surface in U direction.
-<p>
-The option <tt/"-t"/ allows to set a surface type
-(0 &ndash; open, 1 &ndash; closed, 3 &ndash; periodic; default 0).
-<p>
-The option <tt/"-k"/ allows to set a knot type (default 1 &ndash; NURB).
-<p>
-Finally, the <tt/"-u"/ option allows to specify the uv-select-string.
-<p>
-See also section <ref id="concatnpp" name="ConcatNPAttr Property">
-for more information on these options.
-</itemize>
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
@@ -25141,6 +25175,7 @@ Index:
 <item><ref id="vmconf" name="view menu entry">,
 <item><ref id="vwsc" name="view action">
 </itemize>
+<item>Angle: <ref id="spiraltcl" name="Spiral attribute">
 <item>ANS: <ref id="anstag" name="tag type">
 <item>AntiAlias Lines: <ref id="vmconf" name="view menu entry">
 <item>apnt.tcl: <ref id="apnttcl" name="example/helper script">
@@ -25479,6 +25514,7 @@ Index:
 <item><ref id="expdxf" name="DXF export plugin">
 </itemize>
 <item>DynamicLoad: <ref id="riprocp" name="RiProc attribute">
+<item>DZ: <ref id="helixtcl" name="Helix attribute">
 </list>
 
 <#if out="latex"><x/phantomsection/</#if>
@@ -25866,7 +25902,9 @@ Index:
 <item><ref id="icp" name="ICurve attribute">,
 <item><ref id="riincp" name="RiInc attribute">,
 <item><ref id="bcurveattrprop" name="BCurve attribute">,
-<item><ref id="sdcurveattr" name="SDCurve attribute">
+<item><ref id="sdcurveattr" name="SDCurve attribute">,
+<item><ref id="helixtcl" name="Helix attribute">,
+<item><ref id="spiraltcl" name="Spiral attribute">
 </itemize>
 <item>Level:
 <itemize>
@@ -26065,7 +26103,8 @@ Index:
 <item><ref id="acp" name="ACurve attribute">,
 <item><ref id="icp" name="ICurve attribute">,
 <item><ref id="rep" name="Revolve attribute">,
-<item><ref id="concatnpp" name="ConcatNP attribute">
+<item><ref id="concatnpp" name="ConcatNP attribute">,
+<item><ref id="sfcurveattrprop" name="SfCurve attribute">
 </itemize>
 <item>Order_U:
 <itemize>
@@ -26115,7 +26154,7 @@ Index:
 <item>PatchSamples: <ref id="rio" name="RenderMan interface option">
 <item>PathLength: <ref id="smethod" name="NURBS tesselation mode">
 <item>Perspective: <ref id="vmtype" name="view menu entry">
-<item>PhiMin, PhiMax: <ref id="top" name="Torus attribute">
+<item>PhiMax, PhiMin: <ref id="top" name="Torus attribute">
 <item>Pick: <ref id="objsel" name="selecting objects by picking">
 <item>PickCycle: <ref id="prefmodel" name="preference setting">
 <item>PickCycleMax: <ref id="hidprefsp" name="hidden preference setting">
@@ -26199,7 +26238,9 @@ Index:
 <item><ref id="cyp" name="Cylinder attribute">,
 <item><ref id="ncircleattrprop" name="NCircle attribute">,
 <item><ref id="bevelattrprop" name="Bevel attribute">,
-<item><ref id="mcattr" name="MetaComp attribute">
+<item><ref id="mcattr" name="MetaComp attribute">,
+<item><ref id="helixtcl" name="Helix attribute">,
+<item><ref id="spiraltcl" name="Spiral attribute">
 </itemize>
 <item>RadSteps: <ref id="rio" name="RenderMan interface option">
 <item>RationalPoints: <ref id="prefmodel" name="preference setting">
@@ -26214,6 +26255,7 @@ Index:
 <item><ref id="expx3dopt" name="X3D export option">
 </itemize>
 <item>rc.tcl: <ref id="rctcl" name="example/helper script">
+<item>RDiff: <ref id="spiraltcl" name="Spiral attribute">
 <item>ReadCurves:
 <itemize>
 <item><ref id="impdxfopt" name="DXF import option">,
@@ -26321,8 +26363,15 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Replace: <ref id="mmspecial" name="main menu entry">
 <item>replaceScene: <ref id="screplacescene" name="scripting interface command">
 <item>repOb: <ref id="screpob" name="scripting interface command">
-<item>Rescale Knots to Mindist: <ref id="resckmt" name="NURBCurve tool">
-<item>Rescale Knots to Range: <ref id="resckrt" name="NURBCurve tool">
+<item>Rescale Knots to Mindist:
+<itemize>
+<item><ref id="resckmt" name="NURBCurve tool">,
+<item><ref id="resckmnpt" name="NURBPatch tool">
+</itemize>
+<item>Rescale Knots to Range:<itemize>
+<item><ref id="resckrt" name="NURBCurve tool">,
+<item><ref id="resckrnpt" name="NURBPatch tool">
+</itemize>
 <item>rescaleknNC: <ref id="screscaleknnc" name="scripting interface command">
 <item>rescaleknNP: <ref id="screscaleknnp" name="scripting interface command">
 <item>RescaleKnots:
@@ -26404,7 +26453,11 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="pap" name="Paraboloid attribute">,
 <item><ref id="tconetcl" name="Truncated cone attribute">
 </itemize>
-<item>RMin<ref id="tconetcl" name="Truncated cone attribute">
+<item>RMin:
+<itemize>
+<item><ref id="tconetcl" name="Truncated cone attribute">,
+<item><ref id="spiraltcl" name="Spiral attribute">
+</itemize>
 <item>Roll: <ref id="camp" name="Camera attribute">
 <item>Root: <ref id="rootobj" name="Root object">
 <item>Rotate:
@@ -26498,7 +26551,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="swp" name="Sweep attribute">,
 <item><ref id="rep" name="Revolve attribute">,
 <item><ref id="birail1p" name="Birail1 attribute">,
-<item><ref id="birail2p" name="Birail2 attribute">
+<item><ref id="birail2p" name="Birail2 attribute">,
+<item><ref id="sfcurveattrprop" name="SfCurve attribute">
 </itemize>
 <item>Select: <ref id="selectobj" name="Select object">
 <item>Select (Objects):
@@ -26688,6 +26742,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>tcone.tcl: <ref id="tconetcl" name="example/helper script">
 <item>Tesselate: <ref id="tesst" name="NPatch tool">
 <item>TessPoMesh <ref id="expwav" name="Wavefront OBJ export option">
+<item>Test Ayam: <ref id="aytesttcl" name="example/helper script">
 <item>Text: <ref id="textobj" name="Text object">
 <item>Textures: <ref id="rio" name="RenderMan interface option">
 <item>Texture Coordinates:
@@ -26708,7 +26763,11 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="tconetcl" name="Truncated cone attribute">
 </itemize>
 <item>Threshold: <ref id="moattr" name="MetaObj attributes">
-<item>TMin, TMax: <ref id="ncircleattrprop" name="NCircle attribute">
+<item>TMax, TMin:
+<itemize>
+<item><ref id="ncircleattrprop" name="NCircle attribute">,
+<item><ref id="sfcurveattrprop" name="SfCurve attribute">
+</itemize>
 <item>TmpDir: <ref id="prefgui" name="preference setting">
 <item>To:
 <itemize>
@@ -26941,7 +27000,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Zap Ayam: <ref id="mmspecial" name="main menu entry">
 <item>zap.tcl: <ref id="zaptcl" name="example/helper script">
 <item>zdialog.tcl: <ref id="zdialogtcl" name="example/helper script">
-<item>ZMin, ZMax:
+<item>ZMax, ZMin:
 <itemize>
 <item><ref id="spattr" name="Sphere attribute">,
 <item><ref id="dkp" name="Disk attribute">,
