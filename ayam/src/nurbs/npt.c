@@ -10636,10 +10636,10 @@ ay_npt_clampuvtcmd(ClientData clientData, Tcl_Interp *interp,
 						     AY_EPSILON);
 		}
 
-	      /* remove all selected points */
+	      /* update selected points pointers to controlv */
 	      if(o->selp)
 		{
-		  ay_selp_clear(o);
+		  (void)ay_pact_getpoint(3, o, NULL, NULL);
 		}
 
 	      ay_npt_recreatemp(np);
@@ -10648,6 +10648,7 @@ ay_npt_clampuvtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      /* re-create tesselation of patch */
 	      (void)ay_notify_object(o);
+
 	      notify_parent = AY_TRUE;
 	    } /* if */
 	}
@@ -14494,7 +14495,7 @@ ay_npt_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbpatch_object *patch;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- int free_selp = AY_FALSE;
+ int update_selp = AY_FALSE;
  int notify_parent = AY_FALSE;
 
   /* parse args */
@@ -14543,7 +14544,7 @@ ay_npt_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 		  ay_status = ay_npt_clampu(patch, side);
 		  if(ay_status)
 		    break;
-		  free_selp = AY_TRUE;
+		  update_selp = AY_TRUE;
 		}
 
 	      ay_nb_UnclampSurfaceU(patch->is_rat,
@@ -14565,7 +14566,7 @@ ay_npt_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 		  ay_status = ay_npt_clampv(patch, side);
 		  if(ay_status)
 		    break;
-		  free_selp = AY_TRUE;
+		  update_selp = AY_TRUE;
 		}
 
 	      ay_nb_UnclampSurfaceV(patch->is_rat,
@@ -14578,9 +14579,13 @@ ay_npt_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 						  AY_EPSILON);
 	    }
 
-	  if(free_selp)
+	  if(update_selp)
 	    {
-	      ay_selp_clear(o);
+	      /* update selected points pointers to controlv */
+	      if(o->selp)
+		{
+		  (void)ay_pact_getpoint(3, o, NULL, NULL);
+		}
 	    }
 
 	  /* clean up */

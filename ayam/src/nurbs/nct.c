@@ -1822,8 +1822,11 @@ ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
 	      /* update pointers to controlv */
 	      ay_nct_recreatemp(curve);
 
+	      /* update selected points pointers to controlv */
 	      if(sel->object->selp)
-		ay_selp_clear(sel->object);
+		{
+		  (void)ay_pact_getpoint(3, sel->object, NULL, NULL);
+		}
 
 	      sel->object->modified = AY_TRUE;
 
@@ -1831,7 +1834,7 @@ ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
 	      (void)ay_notify_object(sel->object);
 
 	      notify_parent = AY_TRUE;
-	    }
+	    } /* if */
 	}
       else
 	{
@@ -3270,7 +3273,7 @@ ay_nct_concatctcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status, tcl_status;
  int i = 1, closed = AY_FALSE, fillets = AY_FALSE, knot_type = 0;
  int order = 0;
- double ftlen = 0.3;
+ double flen = 0.3;
  ay_nurbcurve_object *nc;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL, *curves = NULL, **next = NULL;
@@ -3292,13 +3295,13 @@ ay_nct_concatctcmd(ClientData clientData, Tcl_Interp *interp,
 	      tcl_status = Tcl_GetInt(interp, argv[i+1], &fillets);
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	    }
-	  if(!strcmp(argv[i], "-ft"))
+	  if(!strcmp(argv[i], "-fl"))
 	    {
-	      tcl_status = Tcl_GetDouble(interp, argv[i+1], &ftlen);
+	      tcl_status = Tcl_GetDouble(interp, argv[i+1], &flen);
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
-	      if(ftlen < AY_EPSILON || ftlen != ftlen)
+	      if(flen < AY_EPSILON || flen != flen)
 		{
-		  ay_error(AY_ERROR, argv[0], "ftlen must be > 0.0");
+		  ay_error(AY_ERROR, argv[0], "flen must be > 0.0");
 		  return TCL_OK;
 		}
 	    }
@@ -3375,7 +3378,7 @@ ay_nct_concatctcmd(ClientData clientData, Tcl_Interp *interp,
   nc = (ay_nurbcurve_object*)curves->refine;
   order = nc->order;
 
-  ay_status = ay_nct_fillgaps(closed, order, ftlen, curves);
+  ay_status = ay_nct_fillgaps(closed, order, flen, curves);
 
   if(ay_status)
     {
@@ -3392,9 +3395,9 @@ ay_nct_concatctcmd(ClientData clientData, Tcl_Interp *interp,
   else
     {
       ay_object_link(newo);
-    } /* if */
 
-  (void)ay_notify_parent();
+      (void)ay_notify_parent();
+    }
 
 cleanup:
   /* free list of temporary curves */
@@ -9012,7 +9015,7 @@ ay_nct_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbcurve_object *curve;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- int free_selp = AY_FALSE;
+ int update_selp = AY_FALSE;
  int notify_parent = AY_FALSE;
 
   /* parse args */
@@ -9054,7 +9057,7 @@ ay_nct_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_status = ay_nct_clamp(curve, side);
 	      if(ay_status)
 		break;
-	      free_selp = AY_TRUE;
+	      update_selp = AY_TRUE;
 	    }
 
 	  ay_nb_UnclampCurve(curve->is_rat,
@@ -9068,9 +9071,13 @@ ay_nct_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  ay_nct_settype(curve);
 
-	  if(free_selp)
+	  if(update_selp)
 	    {
-	      ay_selp_clear(o);
+	      /* update selected points pointers to controlv */
+	      if(o->selp)
+		{
+		  (void)ay_pact_getpoint(3, o, NULL, NULL);
+		}
 	    }
 
 	  /* clean up */
