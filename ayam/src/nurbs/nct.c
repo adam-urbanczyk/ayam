@@ -8740,7 +8740,7 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
 	      curve = (ay_nurbcurve_object *)po->refine;
 	    }
 
-	  if(r > 0)
+	  if(r > 0 && curve->order > 2)
 	    {
 	      if(!po)
 		{
@@ -9321,9 +9321,7 @@ ay_nct_extendtcmd(ClientData clientData, Tcl_Interp *interp,
 	  /* clean up */
 	  if(o->selp)
 	    {
-	      ay_status = ay_pact_getpoint(3, o, NULL, NULL);
-	      if(ay_status)
-		ay_selp_clear(o);
+	      (void)ay_pact_getpoint(3, o, NULL, NULL);
 	    }
 
 	  ay_nct_recreatemp(curve);
@@ -9954,8 +9952,17 @@ ay_nct_colorfromweight(double w)
 } /* ay_nct_colorfromweight */
 
 
-/* ay_nct_extractnc:
- *  extract subcurve from  <src>, returns patch in <result>;
+/** ay_nct_extractnc:
+ * Extract a subcurve from a NURBS curve.
+ *
+ * \param[in] src curve to extract from
+ * \param[in] umin parametric value of first point of extracted curve
+ * \param[in] umax parametric value of last point of extracted curve
+ * \param[in] relative whether to interpret \a umin and \a umax in a relative
+ *            way
+ * \param[in,out] result where to return the resulting curve
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_extractnc(ay_object *src, double umin, double umax, int relative,
@@ -10054,7 +10061,7 @@ ay_nct_extractnc(ay_object *src, double umin, double umax, int relative,
       /* return result */
       *result = copy;
       copy = NULL;
-    } /* if */
+    } /* if is NCurve */
 
 cleanup:
 
@@ -10163,6 +10170,7 @@ ay_nct_extractnctcmd(ClientData clientData, Tcl_Interp *interp,
  return TCL_OK;
 } /* ay_nct_extractnctcmd */
 
+
 #if 0
 int
 ay_nct_expanddisc(double **p, int *plen)
@@ -10270,10 +10278,7 @@ ay_nct_xxxxtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(o->selp)
 	    {
-	      ay_status = ay_pact_getpoint(3, o, NULL, NULL);
-	      if(ay_status)
-		ay_selp_clear(o);
-	      ay_status = AY_OK;
+	      (void)ay_pact_getpoint(3, o, NULL, NULL);
 	    }
 	  /* or */
 	  ay_selp_clear(o);
