@@ -17802,8 +17802,8 @@ registerTag:
 
 <sect2>Manipulating Curves<label id="scicurves">
 <p>
-<#if out="latex"><x/phantomsection/</#if>
-<#if out="html"><f/<inf/<newline>//</#if>
+These commands operate on parametric curves:
+<p>
 <label id="scopenc">
 openC &ndash; open curve:
 <itemize>
@@ -17880,6 +17880,8 @@ revertC &ndash; revert curves:
 See also section <ref id="revertt" name="Revert Tool">.
 </itemize>
 
+<#if out="latex"><x/newpage/</#if>
+
 <p>
 <#if out="latex"><x/phantomsection/</#if>
 <#if out="html"><f/<inf/<newline>//</#if>
@@ -17915,14 +17917,38 @@ the transformation attributes accordingly.
 See also section <ref id="toxyt" name="To XY Tool">.
 </itemize>
 
+<p>
+<#if out="latex"><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
+<label id="scconcatc">
+concatC &ndash; concatenate curves:
+<itemize>
+ <item>Synopsis: <tt/"concatC [-c closed | -k knottype | -f fillets | -fl len]"/
+ <item>Background: Yes, Undo: No, Safe: No
+ <item>Description: Concatenate the selected curve objects into a
+single NURBS curve. The order of the new curve is taken from the first curve.
+<p><p>
+The option <tt/"-c"/ allows to create a closed curve
+(0 &ndash; open, 1 &ndash; closed; default 0).
+<p>
+The option <tt/"-k"/ allows to set a knot type (0 &ndash; NURB,
+1 &ndash; Custom; default 0 &ndash; NURB).
+<p>
+The option <tt/"-f"/ determines whether or not fillets should be created
+(0 &ndash; no, 1 &ndash; yes; default 0).
+<p>
+The option <tt/"-fl"/ allows to set the length of the fillets.
+<p>
+See also section <ref id="concatncp" name="ConcatNCAttr Property">
+for more information on these options.
+</itemize>
+
 <#if out="latex"><x/newpage/</#if>
 
 <sect2>Manipulating Surfaces<label id="scisurf">
 <p>
-
+These commands operate on parametric surfaces:
 <p>
-<#if out="latex"><x/phantomsection/</#if>
-<#if out="html"><f/<inf/<newline>//</#if>
 <label id="screvertu"><label id="screvertus">
 revertuS &ndash; revert surfaces:
 <itemize>
@@ -17988,13 +18014,11 @@ See also section <ref id="concatnpp" name="ConcatNPAttr Property">
 for more information on these options.
 </itemize>
 
-
 <#if out="latex"><x/newpage/</#if>
 
 <sect2>Manipulating NURBS Curves<label id="scinurbs">
 <p>
-These are more specialized commands to change NURBS curve and surface
-properties:
+These are more specialized commands to change NURBS curve properties:
 <p>
 <#if out="latex"><x/phantomsection/</#if>
 
@@ -18393,8 +18417,8 @@ See also section <ref id="interpnct" name="Interpolate Curve Tool">.
 
 <sect2>Manipulating NURBS Surfaces<label id="scinurbss">
 <p>
-<#if out="latex"><x/phantomsection/</#if>
-<#if out="html"><f/<inf/<newline>//</#if>
+These are more specialized commands to change NURBS surface properties:
+<p>
 <label id="scclampnpu"><label id="scclampunp">
 clampuNP &ndash; clamp NURBS patch in U direction:
 <itemize>
@@ -25375,6 +25399,7 @@ Index:
 <item>Compatible: <ref id="concatnpp" name="ConcatNP attribute">
 <item>CompleteNotify: <ref id="prefmodel" name="preference setting">
 <item>Concat: <ref id="conct" name="Concat tool">
+<item>concatC: <ref id="scconcatc" name="scripting interface command">
 <item>ConcatNC: <ref id="concatncobj" name="ConcatNC object">
 <item>ConcatNP: <ref id="concatnpobj" name="ConcatNP object">
 <item>concatS: <ref id="scconcats" name="scripting interface command">
