@@ -3286,13 +3286,17 @@ ay_nct_concatctcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  if(!strcmp(argv[i], "-c"))
 	    {
-	      tcl_status = Tcl_GetInt(interp, argv[i+1], &closed);
+	      tcl_status = Tcl_GetBoolean(interp, argv[i+1], &closed);
+	      if(tcl_status != TCL_OK)
+		tcl_status = Tcl_GetInt(interp, argv[i+1], &closed);
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	    }
 
 	  if(!strcmp(argv[i], "-f"))
 	    {
-	      tcl_status = Tcl_GetInt(interp, argv[i+1], &fillets);
+	      tcl_status = Tcl_GetBoolean(interp, argv[i+1], &fillets);
+	      if(tcl_status != TCL_OK)
+		tcl_status = Tcl_GetInt(interp, argv[i+1], &fillets);
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	    }
 	  if(!strcmp(argv[i], "-fl"))
@@ -3378,12 +3382,15 @@ ay_nct_concatctcmd(ClientData clientData, Tcl_Interp *interp,
   nc = (ay_nurbcurve_object*)curves->refine;
   order = nc->order;
 
-  ay_status = ay_nct_fillgaps(closed, order, flen, curves);
-
-  if(ay_status)
+  if(fillets)
     {
-      ay_error(AY_ERROR, argv[0], "Failed to create fillets!");
-      goto cleanup;
+      ay_status = ay_nct_fillgaps(closed, order, flen, curves);
+
+      if(ay_status)
+	{
+	  ay_error(AY_ERROR, argv[0], "Failed to create fillets!");
+	  goto cleanup;
+	}
     }
 
   ay_status = ay_nct_concatmultiple(closed, knot_type, fillets, curves, &newo);

@@ -442,8 +442,11 @@ $m.nct add command -label "Make Periodic" -command { undo save "Make Periodic";
  -underline 5
 # ^^^^^^^^^^^ => P
 
-$m.nct add command -label "Concat" -command { concatNC; uCR; rV } \
- -underline 2
+$m.nct add command -label "Concat" -command {
+    runTool {ay(concatc) ay(concatt) ay(concatf) ay(concatflen)}\
+    {"Close:" "Knot-Type:" "Fillets:" "FilletLength:"}\
+     "concatC -c %0 -k %1 -f %2 -fl %3; uCR; rV" "Concatenate Curves" concatt
+} -underline 2
 # ^^^^^^^^^^^ => N
 $m.nct add command -label "Split" -command {
     runTool {ay(splitu) ay(splitappend)} {"Split at:" "Append:"}\

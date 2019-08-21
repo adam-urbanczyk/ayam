@@ -718,6 +718,11 @@ array set ay {
  refinekn 0.5
  splitu 0.5
  splitappend false
+ concatc false
+ concatt 0
+ concatt_l {"NURB" "Custom"}
+ concatf false
+ concatflen 0.3
  trimumin 0.0
  trimumax 1.0
  ncircradius 1.0
