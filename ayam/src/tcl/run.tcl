@@ -108,7 +108,7 @@ proc runTool { argvars argstrings command title {advargs ""} } {
 		set naml $l
 	    }
 	    set nam [string range $nami 0 end-1]
-	    regsub -all "\[^\[:alnum:\]\]" $nam "_" nami
+	    regsub -all "\[^\[:alnum:\]^-\]" $nam "_" nami
 
 	    eval "set vali \$::$i"
 	    set ToolParams($nami) $vali
