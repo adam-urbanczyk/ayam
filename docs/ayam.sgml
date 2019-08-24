@@ -14040,29 +14040,28 @@ surfaces <ref id="remsuknnpt" name="Remove Superfluous Knots Surface Tool">.
 <sect2>Concat Tool<label id="conct">
 <p>
 <descrip>
-<tag/Arguments/ The concat tool takes two NURBS curves from
-the selection.
-<tag/Operation/ The selected NURBS curves will be concatenated
-and a new third curve will be created.
+<tag/Arguments/ The concat tool takes all NURBS curves and
+NURBS curve providing objects from the selection and requests
+parameters for closing, knot type, and fillet
+creation.<footnote>Since 1.27.</footnote>
+
+<tag/Operation/ The selected curves will be concatenated
+and a new NURBS curve will be created.
 <tscreen><verb>
 |-NCurve             |-NCurve
 |-NCurve     ==>     |-NCurve
                      |-NCurve
 </verb></tscreen>
-<tag/Notes/ If one of the curves has weights, the resulting curve
-will have weights too. If the knot type of the first curve
-is <tt/"Custom"/, it will be converted to <tt/"NURB"/, otherwise the
-knot type of the new curve will be that of the first selected curve.
-Due to those changes of the knot values, the resulting curve might
-differ from the original curves.
+
+<tag/Notes/ The order of the new curve is taken from the first curve.
+If one of the curves has weights, the resulting curve
+will have weights too.
 
 The original NURBS curves will not be deleted by this tool.
 
-See also section <ref id="concatncobj" name="ConcatNC Object">.
-<!--
-See also the documentation of the corresponding
-scripting interface command <ref id="scconcatnc" name="concatNC">.
--->
+See also section <ref id="concatncobj" name="ConcatNC Object"> and
+the documentation of the corresponding
+scripting interface command <ref id="scconcatc" name="concatC">.
 </descrip>
 
 <#if out="latex"><x/newpage/</#if>
