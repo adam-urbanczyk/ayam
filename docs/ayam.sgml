@@ -13807,14 +13807,11 @@ surfaces <ref id="elevuvt" name="Elevate Surface Tool">.
 
 <sect2>Reduce Tool<label id="reduct">
 <p>
-<!--
 <figure loc="ht">
 <eps file="pics/reduce.ps" height="4cm">
 <img src="pics/reduce.gif">
-<caption>Successive Application of Reduce Tool (Order 3 (left), 4 (middle),
-5 (right))</caption>
+<caption>Reduce Tool (Order 5 (left), 4 (right))</caption>
 </figure>
--->
 <descrip>
 <tag/Arguments/ The reduce tool takes a number of NURBS curves from
 the selection and additionally requests a tolerance value.
@@ -13833,7 +13830,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="screducenc" name="reduceNC">.
 <!--
 and the related tool for
-surfaces <ref id="elevuvt" name="Elevate Surface Tool">.
+surfaces <ref id="reduceuvt" name="Reduce Surface Tool">.
 -->
 </descrip>
 
