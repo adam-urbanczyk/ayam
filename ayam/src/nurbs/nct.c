@@ -1995,6 +1995,7 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
  int tcl_status = TCL_OK, ay_status = AY_OK;
+ ay_object *o;
  ay_list_object *sel = ay_selection;
  ay_nurbcurve_object *curve = NULL;
  int clamp_me;
@@ -2043,9 +2044,14 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 
   while(sel)
     {
-      if(sel->object->type == AY_IDNCURVE)
+      o = sel->object;
+      sel = sel->next;
+      if(o->type == AY_IDNCURVE)
 	{
-	  curve = (ay_nurbcurve_object *)sel->object->refine;
+	  curve = (ay_nurbcurve_object *)o->refine;
+
+	  if(degree_reduce && curve->order < 3)
+	    continue;
 
 	  /* clamp the curve? */
 	  clamp_me = AY_FALSE;
@@ -2161,23 +2167,21 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 	  realQw = NULL;
 	  realUh = NULL;
 
-	  if(sel->object->selp)
-	    ay_selp_clear(sel->object);
+	  if(o->selp)
+	    ay_selp_clear(o);
 
 	  /* update pointers to controlv */
 	  ay_nct_recreatemp(curve);
-	  sel->object->modified = AY_TRUE;
+	  o->modified = AY_TRUE;
 
 	  /* re-create tesselation of curve */
-	  (void)ay_notify_object(sel->object);
+	  (void)ay_notify_object(o);
 	  notify_parent = AY_TRUE;
 	}
       else
 	{
 	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	} /* if */
-
-      sel = sel->next;
     } /* while */
 
   if(notify_parent)
@@ -3291,7 +3295,6 @@ ay_nct_concatctcmd(ClientData clientData, Tcl_Interp *interp,
 		tcl_status = Tcl_GetInt(interp, argv[i+1], &closed);
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	    }
-
 	  if(!strcmp(argv[i], "-f"))
 	    {
 	      tcl_status = Tcl_GetBoolean(interp, argv[i+1], &fillets);
@@ -5080,8 +5083,8 @@ ay_nct_fillgap(int order, double tanlen,
  *  the fillets right in this list.
  *
  * \param[in] closed if AY_TRUE, attempt to create a fillet between
- *  the end of the last curve in \a curves and the start of the first
- *  curve in \curves
+ *  the end of the last curve and the start of the first curve in the
+ *  provided list of curves
  * \param[in] order desired order of the fillets
  * \param[in] tanlen length of tangents
  * \param[in,out] curves list of curves, the fillets will be mixed in
@@ -9967,7 +9970,7 @@ ay_nct_colorfromweight(double w)
  * \param[in] umax parametric value of last point of extracted curve
  * \param[in] relative whether to interpret \a umin and \a umax in a relative
  *            way
- * \param[in,out] result where to return the resulting curve
+ * \param[in,out] result where to store a pointer to the resulting curve
  *
  * \returns AY_OK on success, error code otherwise.
  */
