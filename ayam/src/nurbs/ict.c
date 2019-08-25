@@ -1367,7 +1367,9 @@ ay_ict_interptcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	    case 'c':
 	      /* -closed */
-	      tcl_status = Tcl_GetInt(interp, argv[i+1], &closed);
+	      tcl_status = Tcl_GetBoolean(interp, argv[i+1], &closed);
+	      if(tcl_status != TCL_OK)
+		tcl_status = Tcl_GetInt(interp, argv[i+1], &closed);
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	      break;
 	    case 'e':
