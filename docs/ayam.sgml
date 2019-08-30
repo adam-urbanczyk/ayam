@@ -13816,7 +13816,7 @@ surfaces <ref id="elevuvt" name="Elevate Surface Tool">.
 <tag/Arguments/ The reduce tool takes a number of NURBS curves from
 the selection and additionally requests a tolerance value.
 <tag/Operation/ The order of the selected NURBS curves will be decreased
-if the shape of the reduced curves does not deviate from the original
+by one if the shape of the reduced curves does not deviate from the original
 curves by the given tolerance in any point.
 See also the example image above.
 <tag/Notes/ If the knot vector of the curve is not clamped, it
@@ -13825,6 +13825,9 @@ be changed to <tt/"Custom"/. Control points will be removed and the position
 of old control points may be changed in the progress.
 
 The point selection will be removed from the processed objects.
+
+The ability to reduce a certain curve can be improved by increasing
+the multiplicity of internal knots first.
 
 See also the documentation of the corresponding
 scripting interface command <ref id="screducenc" name="reduceNC">.
@@ -18844,7 +18847,9 @@ selected patches. The parameter <tt/r/ defines the
 ratio of influence of the first and the second patch (the latter
 using <tt>1-r</tt>). This parameter defaults to 0.5.<newline>
 The two patches must be of the same width, height, uorder, and vorder.
-They need not be defined on the same knot vectors, however.
+They need not be defined on the same knot vectors, however.<newline>
+If a third surface is selected, the parameter <tt/r/ is ignored and this
+third surface defines the ratio of influence with its y coordinates.
 <p><p>
 See also section <ref id="tweennpt" name="Tween Surfaces Tool">.
 </itemize>
