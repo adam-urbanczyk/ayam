@@ -4815,19 +4815,15 @@ ay_nb_UnclampSurfaceV(int israt, int w, int h, int q, int s,
 void
 ay_nb_DegreeReduceBezier(int p, double *B, double *Br, double *err)
 {
- int r, rr, i, i1, i2;
+ int r, i, i1, i2;
  double alf;
 
   r = (p-1)/2;
-  rr = r;
-
-  if(p%2)
-    rr++;
 
   memcpy(Br, B, 4*sizeof(double));
   memcpy(&(Br[(p-1)*4]), &(B[p*4]), 4*sizeof(double));
 
-  for(i = 1; i <= rr; i++)
+  for(i = 1; i <= r; i++)
     {
       alf = i/(double)p;
       i1 = i*4;
