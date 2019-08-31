@@ -14185,11 +14185,7 @@ ay_npt_refineu(ay_nurbpatch_object *patch, double *newknotv, int newknotvlen)
 					    patch->uorder+patch->width,
 					    AY_EPSILON);
 
-      /* since we do not create new multiple points
-	 we only need to re-create them if there were
-	 already multiple points in the original patch */
-      if(patch->mpoints)
-	ay_npt_recreatemp(patch);
+      ay_npt_recreatemp(patch);
     }
 
  return ay_status;
@@ -14323,11 +14319,7 @@ ay_npt_refinev(ay_nurbpatch_object *patch, double *newknotv, int newknotvlen)
 					    patch->vorder+patch->height,
 					    AY_EPSILON);
 
-      /* since we do not create new multiple points
-	 we only need to re-create them if there were
-	 already multiple points in the original patch */
-      if(patch->mpoints)
-	ay_npt_recreatemp(patch);
+      ay_npt_recreatemp(patch);
     }
 
  return ay_status;

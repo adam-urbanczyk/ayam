@@ -956,11 +956,7 @@ ay_nct_refinekn(ay_nurbcurve_object *curve, int maintain_ends,
 					   curve->order+curve->length,
 					   AY_EPSILON);
 
-      /* since we do not create new multiple points
-	 we only need to re-create them if there were
-	 already multiple points in the original curve */
-      if(curve->mpoints)
-	ay_nct_recreatemp(curve);
+      ay_nct_recreatemp(curve);
     }
 
  return ay_status;
