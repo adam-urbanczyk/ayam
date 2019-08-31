@@ -1,4 +1,4 @@
-[18. Aug 2019] Tip:
+[31. Aug 2019] Tip:
 ===================
 Bug Fixes:
 o NURBSphere objects can not be trimmed (SF 587)
@@ -17,6 +17,7 @@ o improved handling of weights for single drag selected rational points
   in numeric edit action
 o added tool to reduce the order/degree of a NURBS curve
 o clamping/unclamping curves/surfaces no longer removes the point selection
+o improved handling of multiple points in knot refinement
 
 GUI:
 o added intermediate quick parameter GUIs to all modelling actions that
