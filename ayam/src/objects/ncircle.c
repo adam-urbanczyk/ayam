@@ -340,8 +340,12 @@ ay_ncircle_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	  pe->type = AY_PTKNOT;
 	}
       else
-	return ay_selp_getpnts(mode, o, p, pe, 1, curve->length, 4,
-			       ay_prefs.rationalpoints, curve->controlv);
+	{
+	  ay_status = ay_selp_getpnts(mode, o, p, pe, 1, curve->length, 4,
+				      ay_prefs.rationalpoints, curve->controlv);
+	  if(pe && !ay_prefs.rationalpoints)
+	    pe->type = AY_PTRAT;
+	}
     }
 
  return ay_status;

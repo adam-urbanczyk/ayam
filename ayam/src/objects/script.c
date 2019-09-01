@@ -357,6 +357,7 @@ ay_script_drawhcb(struct Togl *togl, ay_object *o)
 int
 ay_script_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
+ int ay_status = AY_OK;
  ay_script_object *sc = NULL;
 
   if(!o)
@@ -374,10 +375,14 @@ ay_script_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     }
 
   if(sc->pnts)
-    return ay_selp_getpnts(mode, o, p, pe, 1, sc->pntslen, 4,
-			   ay_prefs.rationalpoints, sc->pnts);
+    {
+      ay_status = ay_selp_getpnts(mode, o, p, pe, 1, sc->pntslen, 4,
+				  ay_prefs.rationalpoints, sc->pnts);
+      if(pe && sc->pntsrat && !ay_prefs.rationalpoints)
+	pe->type = AY_PTRAT;
+    }
 
- return AY_OK;
+ return ay_status;
 } /* ay_script_getpntcb */
 
 
