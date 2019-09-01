@@ -6816,9 +6816,7 @@ ay_npt_elevateuvtcmd(ClientData clientData, Tcl_Interp *interp,
 	      sel->object->modified = AY_TRUE;
 
 	      if(sel->object->selp)
-		{
-		  ay_selp_clear(sel->object);
-		}
+		ay_selp_clear(sel->object);
 
 	      /* re-create tesselation of patch */
 	      (void)ay_notify_object(sel->object);
@@ -11070,9 +11068,7 @@ ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  /* remove all selected points */
 	  if(src->selp)
-	    {
-	      ay_selp_clear(src);
-	    }
+	    ay_selp_clear(src);
 
 	  patch->width += r;
 
@@ -11207,9 +11203,7 @@ ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  /* remove all selected points */
 	  if(sel->object->selp)
-	    {
-	      ay_selp_clear(sel->object);
-	    }
+	    ay_selp_clear(sel->object);
 
 	  patch->height += r;
 
@@ -11676,9 +11670,7 @@ ay_npt_splituvtcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  /* remove all selected points */
 	  if(sel->object->selp)
-	    {
-	      ay_selp_clear(sel->object);
-	    }
+	    ay_selp_clear(sel->object);
 
 	  new = NULL;
 	  if(splitv)
@@ -13814,9 +13806,7 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  /* remove all selected points */
 	  if(o->selp)
-	    {
-	      ay_selp_clear(o);
-	    }
+	    ay_selp_clear(o);
 
 	  o->modified = AY_TRUE;
 
@@ -14034,9 +14024,7 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  /* remove all selected points */
 	  if(o->selp)
-	    {
-	      ay_selp_clear(o);
-	    }
+	    ay_selp_clear(o);
 
 	  o->modified = AY_TRUE;
 
@@ -14394,9 +14382,7 @@ ay_npt_refineuvtcmd(ClientData clientData, Tcl_Interp *interp,
 	      sel->object->modified = AY_TRUE;
 
 	      if(sel->object->selp)
-		{
-		  ay_selp_clear(sel->object);
-		}
+		ay_selp_clear(sel->object);
 
 	      /* re-create tesselation of patch */
 	      (void)ay_notify_object(sel->object);
@@ -15382,9 +15368,8 @@ ay_npt_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
 	  /* update pointers to controlv;
 	     re-create tesselation of the patch */
 	  if(o->selp)
-	    {
-	      ay_selp_clear(o);
-	    }
+	    ay_selp_clear(o);
+
 	  o->modified = AY_TRUE;
 	  (void)ay_notify_object(o);
 

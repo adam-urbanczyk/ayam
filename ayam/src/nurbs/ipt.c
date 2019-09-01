@@ -1717,9 +1717,7 @@ ay_ipt_interpuvtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      /* remove all selected points */
 	      if(o->selp)
-		{
-		  ay_selp_clear(o);
-		}
+		ay_selp_clear(o);
 
 	      o->modified = AY_TRUE;
 

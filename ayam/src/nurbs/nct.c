@@ -1395,9 +1395,8 @@ ay_nct_refinekntcmd(ClientData clientData, Tcl_Interp *interp,
       if(o->modified)
 	{
 	  if(o->selp)
-	    {
-	      ay_selp_clear(o);
-	    } /* if selp */
+	    ay_selp_clear(o);
+
 	  (void)ay_notify_object(o);
 	  notify_parent = AY_TRUE;
 	} /* if modified */
@@ -2306,9 +2305,7 @@ ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  /* remove all selected points */
 	  if(src->selp)
-	    {
-	      ay_selp_clear(src);
-	    }
+	    ay_selp_clear(src);
 
 	  src->modified = AY_TRUE;
 
@@ -3112,9 +3109,7 @@ ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  /* remove all selected points */
 	  if(sel->object->selp)
-	    {
-	      ay_selp_clear(sel->object);
-	    }
+	    ay_selp_clear(sel->object);
 
 	  sel->object->modified = AY_TRUE;
 
@@ -6859,9 +6854,8 @@ ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
 	  /* update pointers to controlv;
 	     re-create tesselation of the curve */
 	  if(o->selp)
-	    {
-	      ay_selp_clear(o);
-	    }
+	    ay_selp_clear(o);
+
 	  o->modified = AY_TRUE;
 	  (void)ay_notify_object(o);
 
@@ -7340,9 +7334,7 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      /* remove all selected points */
 	      if(o->selp)
-		{
-		  ay_selp_clear(o);
-		}
+		ay_selp_clear(o);
 
 	      o->modified = AY_TRUE;
 
@@ -7527,9 +7519,7 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  /* remove all selected points */
 	  if(o->selp)
-	    {
-	      ay_selp_clear(o);
-	    }
+	    ay_selp_clear(o);
 
 	  o->modified = AY_TRUE;
 
@@ -7717,9 +7707,7 @@ ay_nct_trimtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  /* remove all selected points */
 	  if(o->selp)
-	    {
-	      ay_selp_clear(o);
-	    }
+	    ay_selp_clear(o);
 
 	  o->modified = AY_TRUE;
 
