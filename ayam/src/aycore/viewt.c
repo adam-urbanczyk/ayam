@@ -1734,7 +1734,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 		  if(height != recth)
 		    view->zoom /= (height/recth);
 		}
-	      view->drawmark = AY_FALSE;
+	      need_updatemark = AY_TRUE;
 	    }
 	  break;
 	default:
