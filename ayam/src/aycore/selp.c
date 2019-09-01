@@ -1013,7 +1013,8 @@ ay_selp_ins(ay_object *o, unsigned int index)
 
 
 /* ay_selp_getpnts:
- *  getpnts callback helper
+ *  getpnts callback helper, many objects call into this function from
+ *  their getpnts callback to realize picking of points
  */
 int
 ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
@@ -1023,7 +1024,7 @@ ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
  double **pecoords = NULL, **pecoordstmp, *pecoord = NULL, *c;
  double h[3];
- int i = 0, j = 0, a = 0, found = AY_FALSE;
+ int i = 0, j = 0, a = 0;
  unsigned int *peindices = NULL, *peindicestmp, peindex = 0;
 
   if(!o || !arr)
@@ -1056,7 +1057,6 @@ ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
       for(i = 0; i < arrlen; i++)
 	{
 	  pe->coords[i] = &(arr[a]);
-
 	  pe->indices[i] = i;
 	  a += stride;
 	}
@@ -1092,18 +1092,15 @@ ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
       if(!pecoord)
 	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
 
-      if(!found)
-	{
-	  if(!(pe->coords = malloc(sizeof(double *))))
-	    return AY_EOMEM;
+      if(!(pe->coords = malloc(sizeof(double *))))
+	return AY_EOMEM;
 
-	  if(!(pe->indices = malloc(sizeof(unsigned int))))
-	    return AY_EOMEM;
+      if(!(pe->indices = malloc(sizeof(unsigned int))))
+	return AY_EOMEM;
 
-	  pe->coords[0] = pecoord;
-	  pe->indices[0] = peindex;
-	  pe->num = 1;
-	} /* if */
+      pe->coords[0] = pecoord;
+      pe->indices[0] = peindex;
+      pe->num = 1;
       break;
     case 2:
       /* selection based on planes */
