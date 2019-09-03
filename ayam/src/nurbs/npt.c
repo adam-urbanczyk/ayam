@@ -5795,13 +5795,13 @@ ay_npt_skinu(ay_object *curves, int order, int knot_type,
   i = AY_TRUE;
   ay_status = ay_nct_iscompatible(curves, /*level=*/2, &i);
   if(ay_status)
-    {goto cleanup;}
+    goto cleanup;
 
   if(!i)
     {
       ay_status = ay_nct_makecompatible(curves, /*level=*/2);
       if(ay_status)
-	{goto cleanup;}
+	goto cleanup;
     }
 
   o = curves;
@@ -5926,7 +5926,7 @@ ay_npt_skinu(ay_object *curves, int order, int knot_type,
 			    skc, U, V, skin);
 
   if(ay_status)
-    {goto cleanup;}
+    goto cleanup;
 
   /* prevent cleanup code from doing something harmful */
   U = NULL;
@@ -5974,13 +5974,13 @@ ay_npt_skinv(ay_object *curves, int order, int knot_type,
   i = AY_TRUE;
   ay_status = ay_nct_iscompatible(curves, /*level=*/2, &i);
   if(ay_status)
-    {goto cleanup;}
+    goto cleanup;
 
   if(!i)
     {
       ay_status = ay_nct_makecompatible(curves, /*level=*/2);
       if(ay_status)
-	{goto cleanup;}
+	goto cleanup;
     }
 
   o = curves;
@@ -6112,7 +6112,7 @@ ay_npt_skinv(ay_object *curves, int order, int knot_type,
 			    skc, U, V, skin);
 
   if(ay_status)
-    {goto cleanup;}
+    goto cleanup;
 
   /* prevent cleanup code from doing something harmful */
   U = NULL;
@@ -11792,9 +11792,10 @@ ay_npt_extractnp(ay_object *src, double umin, double umax,
 	}
 
       /* split off areas outside umin/umax/vmin/vmax */
-      /* note that this approach supports e.g. umin to be exactly uknotv[0]
+      /* note that this approach supports e.g. umin to be exactly
+	 uknotv[uorder-1]
 	 and in this case does not execute the (unneeded) split */
-      if(umin > patch->uknotv[0/*patch->uorder...?*/])
+      if(umin > patch->uknotv[patch->uorder-1])
 	{
 	  ay_status = ay_npt_splitu(copy, umin, &np1);
 	  if(ay_status)
@@ -11829,7 +11830,7 @@ ay_npt_extractnp(ay_object *src, double umin, double umax,
 	      np1 = NULL;
 	    }
 	}
-      if(vmin > patch->vknotv[0/*patch->vorder...?*/])
+      if(vmin > patch->vknotv[patch->vorder-1])
 	{
 	  ay_status = ay_npt_splitv(copy, vmin, &np1);
 	  if(ay_status)
@@ -11896,11 +11897,12 @@ ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *o, *new = NULL, *pobject = NULL;
  double umin = 0.0, umax = 0.0, vmin = 0.0, vmax = 0.0;
- int relative = AY_FALSE;
+ int i = 1, relative = AY_FALSE;
+ char fargs[] = "[-relative] umin umax vmin vmax";
 
   if(argc < 5)
     {
-      ay_error(AY_EARGS, argv[0], "umin umax vmin vmax [relative]");
+      ay_error(AY_EARGS, argv[0], fargs);
       return TCL_OK;
     }
 
@@ -11910,39 +11912,45 @@ ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  tcl_status = Tcl_GetDouble(interp, argv[1], &umin);
+  if(argv[i][0] == '-' && argv[i][1] == 'r')
+    {
+      relative = AY_TRUE;
+      i++;
+    }
+
+  if(i+3 >= argc)
+    {
+      ay_error(AY_EARGS, argv[0], fargs);
+      return TCL_OK;
+    }
+
+  tcl_status = Tcl_GetDouble(interp, argv[i], &umin);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
   if(umin != umin)
     {
       ay_error_reportnan(argv[0], "umin");
       return TCL_OK;
     }
-  tcl_status = Tcl_GetDouble(interp, argv[2], &umax);
+  tcl_status = Tcl_GetDouble(interp, argv[i+1], &umax);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
   if(umax != umax)
     {
       ay_error_reportnan(argv[0], "umax");
       return TCL_OK;
     }
-  tcl_status = Tcl_GetDouble(interp, argv[3], &vmin);
+  tcl_status = Tcl_GetDouble(interp, argv[i+2], &vmin);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
   if(vmin != vmin)
     {
       ay_error_reportnan(argv[0], "vmin");
       return TCL_OK;
     }
-  tcl_status = Tcl_GetDouble(interp, argv[4], &vmax);
+  tcl_status = Tcl_GetDouble(interp, argv[i+3], &vmax);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
   if(vmax != vmax)
     {
       ay_error_reportnan(argv[0], "vmax");
       return TCL_OK;
-    }
-
-  if(argc > 5)
-    {
-      tcl_status = Tcl_GetInt(interp, argv[5], &relative);
-      AY_CHTCLERRRET(tcl_status, argv[0], interp);
     }
 
   while(sel)
@@ -15299,7 +15307,7 @@ ay_npt_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
 	  i++;
 	}
       i++;
-    }
+    } /* while */
 
   /* make copies of all patches */
   nxt = &(src);

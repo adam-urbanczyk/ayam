@@ -10013,10 +10013,11 @@ ay_nct_extractnc(ay_object *src, double umin, double umax, int relative,
 	  goto cleanup;
 	}
 
-      /* split off areas outside umin/umax */
-      /* note that this approach supports e.g. umin to be exactly knotv[0]
+      /* split off intervals outside umin/umax */
+      /* note that this approach supports e.g. umin to be exactly
+	 knotv[curve->order-1]
 	 and in this case does not execute the (unneeded) split */
-      if(umin > curve->knotv[0/*curve->uorder...?*/])
+      if(umin > curve->knotv[curve->order-1])
 	{
 	  ay_status = ay_nct_split(copy, umin, &nc1);
 	  if(ay_status)
@@ -10083,11 +10084,12 @@ ay_nct_extractnctcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *o, *new = NULL, *pobject = NULL;
  double umin = 0.0, umax = 0.0;
- int relative = AY_FALSE;
+ int i = 1, relative = AY_FALSE;
+ char fargs[] = "[-relative] umin umax";
 
   if(argc < 3)
     {
-      ay_error(AY_EARGS, argv[0], "umin umax [relative]");
+      ay_error(AY_EARGS, argv[0], fargs);
       return TCL_OK;
     }
 
@@ -10097,25 +10099,31 @@ ay_nct_extractnctcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  tcl_status = Tcl_GetDouble(interp, argv[1], &umin);
+  if(argv[i][0] == '-' && argv[i][1] == 'r')
+    {
+      relative = AY_TRUE;
+      i++;
+    }
+
+  if(i+1 >= argc)
+    {
+      ay_error(AY_EARGS, argv[0], fargs);
+      return TCL_OK;
+    }
+
+  tcl_status = Tcl_GetDouble(interp, argv[i], &umin);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
   if(umin != umin)
     {
       ay_error_reportnan(argv[0], "umin");
       return TCL_OK;
     }
-  tcl_status = Tcl_GetDouble(interp, argv[2], &umax);
+  tcl_status = Tcl_GetDouble(interp, argv[i+1], &umax);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
   if(umax != umax)
     {
       ay_error_reportnan(argv[0], "umax");
       return TCL_OK;
-    }
-
-  if(argc > 3)
-    {
-      tcl_status = Tcl_GetInt(interp, argv[3], &relative);
-      AY_CHTCLERRRET(tcl_status, argv[0], interp);
     }
 
   while(sel)
