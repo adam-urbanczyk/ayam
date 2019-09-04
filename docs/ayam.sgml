@@ -18271,13 +18271,17 @@ See also section <ref id="splitt" name="Split Tool">.
 <label id="scextrnc">
 extrNC &ndash; extract NURBS curve:
 <itemize>
- <item>Synopsis: <tt/"extrNC umin umax"/
+ <item>Synopsis: <tt/"extrNC [-relative] umin umax"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Extracts a sub-curve from the selected NCurve
 or NCurve providing objects. The extracted curve(s) will be appended
 as new object(s) to the current level of the scene. The sub-curve to be
 extracted is specified by the parametric values <tt/umin/ and <tt/umax/
 which have to be in the respective valid knot range.
+<p><p>
+If the optional argument <tt/"-relative"/ is specified, the parametric
+values are interpreted in a relative
+way and must consequently be in the range <f/&lsqb;0,1&rsqb;/.
 <!--
 <p><p>
 See also section <ref id="extrnpt" name="Extract Patch Tool">.
@@ -18337,6 +18341,8 @@ reparamNC &ndash; reparameterise a NURBS curve:
 chordal knots (type: <tt/0/), or centripetal knots (type: <tt/1/).
 The knot type of the curve will be changed to <tt/"Custom"/.
 </itemize>
+
+<#if out="latex"><x/newpage/</#if>
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
@@ -18751,7 +18757,7 @@ See also section <ref id="splitnpt" name="Split Surface Tools">.
 <label id="scextrnp">
 extrNP &ndash; extract NURBS patch:
 <itemize>
- <item>Synopsis: <tt/"extrNP umin umax vmin vmax"/
+ <item>Synopsis: <tt/"extrNP [-relative]  umin umax vmin vmax"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Extracts a sub-patch from the selected NPatch
 or NPatch providing objects. The extracted patch(es) will be appended as
@@ -18760,6 +18766,10 @@ The sub-patch to be extracted is specified by the parametric values
 <tt/umin/, <tt/umax/, <tt/vmin/, and <tt/vmax/ which have to be in the
 respective valid knot range.
 <p><p>
+If the optional argument <tt/"-relative"/ is specified, the parametric
+values are interpreted in a relative
+way and must consequently be in the range <f/&lsqb;0,1&rsqb;/.
+<p>
 See also section <ref id="extrnpt" name="Extract Patch Tool">.
 </itemize>
 
@@ -18797,6 +18807,8 @@ The u knot type of the interpolated surfaces will be changed to <tt/"Custom"/.
 See also section <ref id="interpnpt" name="Interpolate Surface Tool">.
 </itemize>
 
+<#if out="latex"><x/newpage/</#if>
+
 <p>
 <#if out="latex"><x/phantomsection/</#if>
 <#if out="html"><f/<inf/<newline>//</#if>
@@ -18830,8 +18842,6 @@ The v knot type of the interpolated surfaces will be changed to <tt/"Custom"/.
 <p>
 See also section <ref id="interpnpt" name="Interpolate Surface Tool">.
 </itemize>
-
-<#if out="latex"><x/newpage/</#if>
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
@@ -18874,6 +18884,8 @@ the transformation attributes of the respective NPatch.
 <p>
 See also section <ref id="breaknpt" name="Break into Curves Tool">.
 </itemize>
+
+<#if out="latex"><x/newpage/</#if>
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
@@ -26638,6 +26650,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="shadowmaps" name="using shadowmaps">
 </itemize>
 <item>Shadows: <ref id="lip" name="Light attribute">
+<item>Sheared extrusion: <ref id="extrudentcl" name="example/helper script">
 <item>Shift: <ref id="shiftclc" name="curve tool">
 <item>shiftC: <ref id="scshiftc" name="scripting interface command">
 <item>ShiftTab: <ref id="hidprefsr" name="hidden preference setting">
