@@ -2486,9 +2486,9 @@ ay_nb_FirstDerSurf4DM(int n, int m, int p, int q, double *U, double *V,
 	    {
 	      /* was: temp[s] = temp[s] + Nu[k][r]*P[uspan-p+r][vspan-q+s]; */
 	      i = (((uspan-p+r)*(m+1))+(vspan-q+s))*4;
-	      temp[s*4]   += Nu[(k*(p+1))+r]*Pw[i]/**Pw[i+3]*/;
-	      temp[s*4+1] += Nu[(k*(p+1))+r]*Pw[i+1]/**Pw[i+3]*/;
-	      temp[s*4+2] += Nu[(k*(p+1))+r]*Pw[i+2]/**Pw[i+3]*/;
+	      temp[s*4]   += Nu[(k*(p+1))+r]*Pw[i]*Pw[i+3];
+	      temp[s*4+1] += Nu[(k*(p+1))+r]*Pw[i+1]*Pw[i+3];
+	      temp[s*4+2] += Nu[(k*(p+1))+r]*Pw[i+2]*Pw[i+3];
 	      temp[s*4+3] += Nu[(k*(p+1))+r]*Pw[i+3];
 	    }
 	}
