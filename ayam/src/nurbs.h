@@ -1412,6 +1412,15 @@ int ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
+/** Remove all knots from the surface that do not contribute to its shape.
+ */
+int ay_npt_removesuperfluousknots(ay_nurbpatch_object *np, double tol);
+
+/** Tcl command to remove superfluous knots from selected surfaces.
+ */
+int ay_npt_remsuknnptcmd(ClientData clientData, Tcl_Interp *interp,
+			 int argc, char *argv[]);
+
 /** Convert rational coordinates from euclidean to homogeneous style.
 */
 int ay_npt_euctohom(ay_nurbpatch_object *nc);
