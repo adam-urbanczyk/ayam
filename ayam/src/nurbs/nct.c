@@ -7242,7 +7242,8 @@ ay_nct_removesuperfluousknots(ay_nurbcurve_object *nc, double tol)
 	      /* save results */
 	      nc->length--;
 	      memcpy(nc->controlv, newcontrolv, nc->length*4*sizeof(double));
-	      memcpy(nc->knotv, newknotv, nc->length+nc->order*sizeof(double));
+	      memcpy(nc->knotv, newknotv,
+		     (nc->length+nc->order)*sizeof(double));
 	      free(newcontrolv);
 	      newcontrolv = NULL;
 	      free(newknotv);
@@ -7501,7 +7502,7 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 	  curve->length -= r;
 	  memcpy(curve->controlv, newcontrolv, curve->length*4*sizeof(double));
 	  memcpy(curve->knotv, newknotv,
-		 curve->length+curve->order*sizeof(double));
+		 (curve->length+curve->order)*sizeof(double));
 
 	  free(newcontrolv);
 	  newcontrolv = NULL;
