@@ -13709,7 +13709,6 @@ ay_npt_removesuperfluousknots(ay_nurbpatch_object *np, double tol)
 } /* ay_npt_removesuperfluousknots */
 
 
-
 /** ay_npt_remsuknnptcmd:
  *  Remove all superfluous knots from the selected NURBS patches.
  *  Implements the \a remsuknuNP scripting interface command.
@@ -13726,7 +13725,7 @@ ay_npt_remsuknnptcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL;
  ay_nurbpatch_object *patch = NULL;
  ay_list_object *sel = ay_selection;
- double tol;
+ double tol = 0.0;
  int is_u = AY_FALSE, notify_parent = AY_FALSE;
 
   /* remsuknuNP */
@@ -13734,17 +13733,20 @@ ay_npt_remsuknnptcmd(ClientData clientData, Tcl_Interp *interp,
   if(argv[0][7] == 'u')
     is_u = AY_TRUE;
 
-  tcl_status = Tcl_GetDouble(interp, argv[1], &tol);
-  AY_CHTCLERRRET(tcl_status, argv[0], interp);
-  if(tol < 0.0)
+  if(argc > 1)
     {
-      ay_error(AY_ERROR, argv[0], "Argument tol must be >= 0.");
-      return TCL_OK;
-    }
-  if(tol != tol)
-    {
-      ay_error_reportnan(argv[0], "tol");
-      return TCL_OK;
+      tcl_status = Tcl_GetDouble(interp, argv[1], &tol);
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+      if(tol < 0.0)
+	{
+	  ay_error(AY_ERROR, argv[0], "Argument tol must be >= 0.");
+	  return TCL_OK;
+	}
+      if(tol != tol)
+	{
+	  ay_error_reportnan(argv[0], "tol");
+	  return TCL_OK;
+	}
     }
 
   while(sel)
