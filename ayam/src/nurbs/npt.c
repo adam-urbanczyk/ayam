@@ -13602,6 +13602,212 @@ cleanup:
 } /* ay_npt_concatstcmd */
 
 
+/** ay_npt_removesuperfluousknots:
+ * Remove all knots (in v direction) from the surface that do not
+ * contribute to its shape.
+ *
+ * \param[in,out] np NURBS patch object to process
+ * \param[in] tol tolerance value (0.0-Inf, unchecked)
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_npt_removesuperfluousknots(ay_nurbpatch_object *np, double tol)
+{
+ int ay_status = AY_OK, was_rat = AY_FALSE, removed = AY_FALSE;
+ char fname[] = "npt_removesuperfluousknots";
+ int i, s;
+ double *newcontrolv = NULL, *newknotv = NULL;
+
+  do
+    {
+      removed = AY_FALSE;
+
+      for(i = np->vorder; i < np->height; i++)
+	{
+	  /* calculate knot multiplicity */
+	  s = 1;
+	  while(((i+s) < (np->height+np->vorder)) &&
+		(fabs(np->vknotv[i] - np->vknotv[i+s]) < AY_EPSILON))
+	    {
+	      s++;
+	    }
+
+	  /* we can (or should) not lower the surfaces v order */
+	  if((np->height - 1) < np->vorder)
+	    {
+	      continue;
+	    }
+
+	  if(!newcontrolv)
+	    {
+	      if(!(newcontrolv = malloc(np->width*np->height*4*
+					sizeof(double))))
+		{
+		  ay_error(AY_EOMEM, fname, NULL);
+		  return AY_ERROR;
+		}
+	    }
+
+	  if(!newknotv)
+	    {
+	      if(!(newknotv = malloc((np->height+np->vorder)*
+				     sizeof(double))))
+		{
+		  free(newcontrolv);
+		  ay_error(AY_EOMEM, fname, NULL);
+		  return AY_ERROR;
+		}
+	    }
+
+	  if(np->is_rat && !was_rat)
+	    {
+	      was_rat = AY_TRUE;
+	      (void)ay_npt_euctohom(np);
+	    }
+	  /*printf("Trying to remove knot %d with mult %d\n",i,s);*/
+  	  /* try to remove the knot */
+	  ay_status = ay_nb_RemoveKnotSurfV(np->width-1, np->height-1,
+					    np->vorder-1,
+					    np->vknotv, np->controlv,
+					    tol, i, s, 1,
+					    newknotv, newcontrolv);
+
+	  if(ay_status)
+	    {
+	      continue;
+	    }
+	  else
+	    {
+	      removed = AY_TRUE;
+	      /* save results */
+	      np->height--;
+	      memcpy(np->controlv, newcontrolv,
+		     np->width*np->height*4*sizeof(double));
+	      memcpy(np->vknotv, newknotv,
+		     (np->height+np->vorder)*sizeof(double));
+	      free(newcontrolv);
+	      newcontrolv = NULL;
+	      free(newknotv);
+	      newknotv = NULL;
+	      break;
+	    }
+	} /* for */
+    }
+  while(removed);
+
+  if(was_rat)
+    (void)ay_npt_homtoeuc(np);
+
+  if(newcontrolv)
+    free(newcontrolv);
+
+  if(newknotv)
+    free(newknotv);
+
+ return AY_OK;
+} /* ay_npt_removesuperfluousknots */
+
+
+
+/** ay_npt_remsuknnptcmd:
+ *  Remove all superfluous knots from the selected NURBS patches.
+ *  Implements the \a remsuknuNP scripting interface command.
+ *  Also implements the \a remsuknvNP scripting interface command.
+ *  See also the corresponding section in the \ayd{scremsuknunp}.
+ *
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_npt_remsuknnptcmd(ClientData clientData, Tcl_Interp *interp,
+		     int argc, char *argv[])
+{
+ int tcl_status = TCL_OK, ay_status = AY_OK;
+ ay_object *o = NULL;
+ ay_nurbpatch_object *patch = NULL;
+ ay_list_object *sel = ay_selection;
+ double tol;
+ int is_u = AY_FALSE, notify_parent = AY_FALSE;
+
+  /* remsuknuNP */
+  /* 01234567 */
+  if(argv[0][7] == 'u')
+    is_u = AY_TRUE;
+
+  tcl_status = Tcl_GetDouble(interp, argv[1], &tol);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+  if(tol < 0.0)
+    {
+      ay_error(AY_ERROR, argv[0], "Argument tol must be >= 0.");
+      return TCL_OK;
+    }
+  if(tol != tol)
+    {
+      ay_error_reportnan(argv[0], "tol");
+      return TCL_OK;
+    }
+
+  while(sel)
+    {
+      o = sel->object;
+      if(o->type == AY_IDNPATCH)
+	{
+	  patch = (ay_nurbpatch_object*)o->refine;
+
+	  if(is_u)
+	    {
+	      /* swap U/V, for there is no RemoveKnotSurfU() */
+	      ay_status = ay_npt_swapuv(patch);
+	      if(ay_status)
+		{
+		  ay_error(AY_ERROR, argv[0], "SwapUV failed.");
+		  return TCL_OK;
+		}
+	    }
+
+	  ay_status = ay_npt_removesuperfluousknots(patch, tol);
+
+	  if(is_u)
+	    {
+	      /* swap U/V, for there is no RemoveKnotSurfU() */
+	      ay_status = ay_npt_swapuv(patch);
+	      if(ay_status)
+		{
+		  ay_error(AY_ERROR, argv[0], "SwapUV failed.");
+		  return TCL_OK;
+		}
+	    }
+
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, argv[0], "Knot removal failed.");
+	      break;
+	    }
+
+	  /* remove all selected points */
+	  if(o->selp)
+	    ay_selp_clear(o);
+
+	  o->modified = AY_TRUE;
+
+	  /* re-create tesselation of patch */
+	  (void)ay_notify_object(o);
+	  notify_parent = AY_TRUE;
+	}
+      else
+	{
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
+	} /* if is NPatch */
+      sel = sel->next;
+    } /* while */
+
+  if(notify_parent)
+    (void)ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_npt_remsuknnptcmd */
+
+
 /** ay_npt_remknunptcmd:
  *  Remove a knot from the selected NURBS patches.
  *  Implements the \a remknuNP scripting interface command.
