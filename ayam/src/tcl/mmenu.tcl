@@ -745,6 +745,18 @@ $m.npt.kn add command -label "Remove Knot V" -command {
 	"Remove Knot V" remknnpt
 }
 
+$m.npt.kn add command -label "Remove Superfluous Knots U" -command {
+    runTool ay(remstol) "Tolerance:"\
+	"undo save RemSuKnU; remsuknuNP %0; plb_update; rV"\
+	"Remove Superfluous Knots U" remsuknuvt
+}
+
+$m.npt.kn add command -label "Remove Superfluous Knots V" -command {
+    runTool ay(remstol) "Tolerance:"\
+	"undo save RemSuKnV; remsuknvNP %0; plb_update; rV"\
+	"Remove Superfluous Knots V" remsuknuvt
+}
+
 $m.npt.kn add command -label "Refine Knots U" -command {
     undo save RefineUNP; refineuNP; plb_update; rV
 }
