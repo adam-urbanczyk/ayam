@@ -14031,11 +14031,9 @@ It is no error if no knots can be removed.
 The point selection will be removed from the processed objects.
 
 See also the documentation of the corresponding
-scripting interface command <ref id="scremsuknnc" name="remsuknNC">.
-<!--
-and the related tool for
-surfaces <ref id="remsuknnpt" name="Remove Superfluous Knots Surface Tool">.
- -->
+scripting interface command <ref id="scremsuknnc" name="remsuknNC">
+and the related tools for
+surfaces <ref id="remsuknuvt" name="Remove Superfluous Knots Surface Tools">.
 </descrip>
 
 <#if out="latex"><x/newpage/</#if>
@@ -15018,6 +15016,38 @@ See also the documentation of the corresponding scripting interface commands
 <ref id="scremknunp" name="remknvNP">
 and the related tool for
 curves <ref id="remknt" name="Remove Knot Tool">.
+</descrip>
+
+<#if out="latex"><x/newpage/</#if>
+
+<sect2>Remove Superfluous Knots Surface Tools<label id="remsuknuvt">
+<p>
+<!--
+<figure loc="ht">
+<eps file="pics/remkn.ps" height="4cm">
+<img src="pics/remkn.gif">
+<caption>Remove Knot Tool (left: original curve, right: the knot
+at <em/t/&thinsp;=&thinsp;0.5 has been removed one time)</caption>
+</figure>
+ -->
+<descrip>
+<tag/Arguments/ The remove superfluous knots tools take a number of NURBS
+surfaces from the selection and requests a tolerance value <it/tol/.
+<tag/Operation/ All knots that do not contribute to the shape of the
+surface will be removed from the knot vector of the selected surfaces if
+the shape of the resulting surface does not deviate more than <it/tol/
+from the original surface in any point.
+<p>
+It is no error if no knots can be removed.
+<tag/Notes/
+The point selection will be removed from the processed objects.
+
+See also the documentation of the corresponding
+scripting interface commands <ref id="scremsuknunp" name="remsuknuNP">
+and
+<ref id="scremsuknvnp" name="remsuknvNP">.
+See also the related tool for
+curves <ref id="remsuknt" name="Remove Superfluous Knots Tool">.
 </descrip>
 
 <#if out="latex"><x/newpage/</#if>
@@ -18643,6 +18673,48 @@ This operation also fails, if the knot removal would lead to a surface
 of lower order.
 <p>
 See also section <ref id="remknnpt" name="Remove Knot Surface Tool">.
+</itemize>
+
+<p>
+<#if out="latex"><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
+<label id="scremsuknunp">
+remsuknuNP &ndash; remove superfluous knots from NURBS surface:
+<itemize>
+ <item>Synopsis: <tt/"remsuknuNP [tol]"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Remove all knots from the NURBS surface that do not
+contribute to its shape (in u direction).
+This may lead to control point removal and
+changes, but the shape of the surface does not change unless a large
+tolerance value is specified via the <tt/tol/ parameter. The default value
+of this parameter is 0.0.
+<p><p>
+It is no error if no knots can be removed.
+<p>
+See also
+section <ref id="remsuknt" name="Remove Superfluous Knots Surface Tools">.
+</itemize>
+
+<p>
+<#if out="latex"><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
+<label id="scremsuknvnp">
+remsuknvNP &ndash; remove superfluous knots from NURBS surface:
+<itemize>
+ <item>Synopsis: <tt/"remsuknvNP [tol]"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Remove all knots from the NURBS surface that do not
+contribute to its shape (in v direction).
+This may lead to control point removal and
+changes, but the shape of the surface does not change unless a large
+tolerance value is specified via the <tt/tol/ parameter. The default value
+of this parameter is 0.0.
+<p><p>
+It is no error if no knots can be removed.
+<p>
+See also
+section <ref id="remsuknuvt" name="Remove Superfluous Knots Surface Tools">.
 </itemize>
 
 <p>
@@ -26381,6 +26453,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>remknvNP: <ref id="scremknvnp" name="scripting interface command">
 <item>remsnPo: <ref id="scremsnPo" name="scripting interface command">
 <item>remsuknNC: <ref id="scremsuknnc" name="scripting interface command">
+<item>remsuknuNP: <ref id="scremsuknunp" name="scripting interface command">
+<item>remsuknvNP: <ref id="scremsuknvnp" name="scripting interface command">
 <item>Remove Property: <ref id="mmtags" name="Tag management">
 <item>Remove Knot:
 <itemize>
