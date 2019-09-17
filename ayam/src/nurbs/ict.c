@@ -1349,6 +1349,7 @@ ay_ict_interptcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL;
  ay_nurbcurve_object *curve = NULL, *newcurve = NULL;
  ay_list_object *sel = ay_selection;
+ int have_closed = AY_FALSE;
  int length, order = 4, ktype = AY_KTCHORDAL, closed = AY_FALSE;
  double *controlv, sdlen = 0.0, edlen = 0.0;
 
@@ -1371,6 +1372,7 @@ ay_ict_interptcmd(ClientData clientData, Tcl_Interp *interp,
 	      if(tcl_status != TCL_OK)
 		tcl_status = Tcl_GetInt(interp, argv[i+1], &closed);
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	      have_closed = AY_TRUE;
 	      break;
 	    case 'e':
 	      /* -edlen */
@@ -1436,6 +1438,23 @@ ay_ict_interptcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  curve = (ay_nurbcurve_object*)o->refine;
 	  length = curve->length;
+
+	  if(!have_closed)
+	    closed = AY_FALSE;
+
+	  if(curve->type == AY_CTPERIODIC)
+	    {
+	      length -= (curve->order-1);
+	      if(!have_closed)
+		closed = AY_TRUE;
+	    }
+	  else
+	    if(curve->type == AY_CTCLOSED)
+	      {
+		length--;
+		if(!have_closed)
+		  closed = AY_TRUE;
+	      }
 
 	  if(!(controlv = calloc(curve->length*3, sizeof(double))))
 	    {
@@ -1504,7 +1523,7 @@ ay_ict_interptcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      o->modified = AY_TRUE;
 
-	      /* re-create tesselation of patch */
+	      /* re-create tesselation of curve */
 	      (void)ay_notify_object(o);
 	    }
 	  else
