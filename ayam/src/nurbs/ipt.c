@@ -1587,6 +1587,7 @@ ay_ipt_interpuvtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL;
  ay_nurbpatch_object *patch = NULL;
  ay_list_object *sel = ay_selection;
+ int have_closed = AY_FALSE;
  int interpolv = AY_FALSE, order = 4, ktype = AY_KTCHORDAL;
  int closed = AY_FALSE;
  double sdlen = 0.0, edlen = 0.0;
@@ -1613,6 +1614,7 @@ ay_ipt_interpuvtcmd(ClientData clientData, Tcl_Interp *interp,
 	      if(tcl_status != TCL_OK)
 		tcl_status = Tcl_GetInt(interp, argv[i+1], &closed);
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	      have_closed = AY_TRUE;
 	      break;
 	    case 'e':
 	      /* -edlen */
@@ -1677,6 +1679,38 @@ ay_ipt_interpuvtcmd(ClientData clientData, Tcl_Interp *interp,
       if(o->type == AY_IDNPATCH)
 	{
 	  patch = (ay_nurbpatch_object*)o->refine;
+
+	  if(!have_closed)
+	    closed = AY_FALSE;
+
+	  if(interpolv)
+	    {
+	      if(patch->vtype == AY_CTPERIODIC)
+		{
+		  if(!have_closed)
+		    closed = AY_TRUE;
+		}
+	      else
+		if(patch->vtype == AY_CTCLOSED)
+		  {
+		    if(!have_closed)
+		      closed = AY_TRUE;
+		  }
+	    }
+	  else
+	    {
+	      if(patch->utype == AY_CTPERIODIC)
+		{
+		  if(!have_closed)
+		    closed = AY_TRUE;
+		}
+	      else
+		if(patch->utype == AY_CTCLOSED)
+		  {
+		    if(!have_closed)
+		      closed = AY_TRUE;
+		  }
+	    }
 
 	  if(closed)
 	    {
