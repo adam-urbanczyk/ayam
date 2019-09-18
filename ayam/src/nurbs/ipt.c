@@ -1584,7 +1584,7 @@ ay_ipt_interpuvtcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int tcl_status = TCL_OK, ay_status = AY_OK;
  int i = 1;
- ay_object *o = NULL;
+ ay_object *o = NULL, *c = NULL;
  ay_nurbpatch_object *patch = NULL;
  ay_list_object *sel = ay_selection;
  int have_closed = AY_FALSE;
@@ -1680,6 +1680,22 @@ ay_ipt_interpuvtcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  patch = (ay_nurbpatch_object*)o->refine;
 
+	  ay_npt_setuvtypes(patch, 0);
+
+	  if((interpolv && ((patch->vtype == AY_CTPERIODIC) ||
+			    (patch->vtype == AY_CTCLOSED))) ||
+	     (!interpolv && ((patch->utype == AY_CTPERIODIC) ||
+			     (patch->utype == AY_CTCLOSED))))
+	    {
+	      ay_status = ay_object_copy(o, &c);
+	      if(ay_status || !c)
+		{
+		  ay_error(AY_ERROR, argv[0], "Error copying object.");
+		  return TCL_OK;
+		}
+	      patch = (ay_nurbpatch_object*)c->refine;
+	    }
+
 	  if(!have_closed)
 	    closed = AY_FALSE;
 
@@ -1689,12 +1705,14 @@ ay_ipt_interpuvtcmd(ClientData clientData, Tcl_Interp *interp,
 		{
 		  if(!have_closed)
 		    closed = AY_TRUE;
+		  (void)ay_npt_resizeh(patch, patch->height-(patch->vorder-1));
 		}
 	      else
 		if(patch->vtype == AY_CTCLOSED)
 		  {
 		    if(!have_closed)
 		      closed = AY_TRUE;
+		    (void)ay_npt_resizeh(patch, patch->height-1);
 		  }
 	    }
 	  else
@@ -1703,12 +1721,14 @@ ay_ipt_interpuvtcmd(ClientData clientData, Tcl_Interp *interp,
 		{
 		  if(!have_closed)
 		    closed = AY_TRUE;
+		  (void)ay_npt_resizew(patch, patch->width-(patch->uorder-1));
 		}
 	      else
 		if(patch->utype == AY_CTCLOSED)
 		  {
 		    if(!have_closed)
 		      closed = AY_TRUE;
+		    (void)ay_npt_resizew(patch, patch->width-1);
 		  }
 	    }
 
@@ -1744,6 +1764,15 @@ ay_ipt_interpuvtcmd(ClientData clientData, Tcl_Interp *interp,
 						  NULL, NULL);
 		}
 	    } /* if closed */
+
+	  if(c)
+	    {
+	      c->refine = o->refine;
+	      o->refine = patch;
+
+	      (void)ay_object_delete(c);
+	      c = NULL;
+	    }
 
 	  if(!ay_status)
 	    {
