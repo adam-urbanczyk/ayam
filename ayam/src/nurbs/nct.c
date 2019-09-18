@@ -623,6 +623,8 @@ ay_nct_resize(ay_nurbcurve_object *curve, int new_length)
  *  If closing fails because there are not enough control
  *  points in the curve, the curve type will be reset to "open".
  *
+ *  Does not maintain multiple points or calculate new knots!
+ *
  * \param[in,out] curve NURBS curve object to close
  *
  * \returns AY_OK on success, error code otherwise.
@@ -673,7 +675,11 @@ ay_nct_close(ay_nurbcurve_object *curve)
 
 
 /** ay_nct_open:
- *  open a (currently closed) NURBS curve
+ *  Move the last control point(s) of a currently closed or
+ *  periodic NURBS curve away from the first point(s), effectively
+ *  opening the curve.
+ *  Curves of type AY_CTOPEN will not be changed.
+ *  Does not maintain multiple points or calculate new knots!
  *
  * \param[in,out] curve NURBS curve object to open
  *
@@ -734,6 +740,8 @@ ay_nct_open(ay_nurbcurve_object *curve)
 
 /** ay_nct_revert:
  *  Change the direction of a NURBS curve.
+ *
+ *  Does not maintain multiple points!
  *
  * \param[in,out] curve NURBS curve object to revert
  *
@@ -2680,6 +2688,9 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 	  u = pe.coords[0][3];
 
 	  memcpy(worldXYZ, pe.coords[0], 3*sizeof(double));
+	  ay_trafo_identitymatrix(pl);
+	  ay_trafo_getall(ay_currentlevel, o, pl);
+	  ay_trafo_apply3(worldXYZ, pl);
 	  ay_viewt_worldtowin(worldXYZ, winXY);
 
 	  nc = (ay_nurbcurve_object*) o->refine;
