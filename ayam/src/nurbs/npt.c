@@ -9676,7 +9676,7 @@ ay_npt_setuvtypes(ay_nurbpatch_object *np, int dir)
 	    }
 	  else
 	    {
-	      is_closed = AY_FALSE;
+	      is_closed = AY_TRUE;
 	      for(i = 0; i < np->height; i++)
 		{
 		  s = &(np->controlv[i*stride]);
@@ -9730,8 +9730,8 @@ ay_npt_setuvtypes(ay_nurbpatch_object *np, int dir)
 	    }
 	  else
 	    {
-	      is_closed = AY_FALSE;
-	      for(i = 0; i < np->height; i++)
+	      is_closed = AY_TRUE;
+	      for(i = 0; i < np->width; i++)
 		{
 		  s = &(np->controlv[i*np->height*stride]);
 		  e = s+((np->height-1-(np->vorder-2))*stride);
