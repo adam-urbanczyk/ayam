@@ -18425,9 +18425,11 @@ with desired order and parameterisation type.
 Order defaults to 4 and must be higher than 2.
 The parameterisation type must be one of 0 &ndash; Chordal,
 1 &ndash; Centripetal, or 2 &ndash; Uniform, default is Chordal.
-The interpolation can create a closed curve but this will also increase
-the length of the resulting NURBS curve (the default is to
-create an open curve).
+The interpolation can create a closed curve if requested by the
+<tt/"-closed"/ parameter but this will also increase
+the length of the resulting NURBS curve. The default is to
+create an open curve for open input curves and a closed curve for
+closed or periodic input curves.
 <p><p>
 Using the options <tt/"-sdlen"/ and <tt/"-edlen"/ (which both default
 to 0.0) the length of automatically created start/end derivatives
@@ -18848,76 +18850,6 @@ See also section <ref id="extrnpt" name="Extract Patch Tool">.
 <p>
 <#if out="latex"><x/phantomsection/</#if>
 <#if out="html"><f/<inf/<newline>//</#if>
-<label id="scinterpunp">
-interpuNP &ndash; interpolate NURBS surface in U direction:
-<itemize>
- <item>Synopsis: <tt/"interpuNP [-order order | -ktype type | -closed (0|1) | -sdlen length | -edlen length]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Interpolate the selected NURBS surfaces
-in U direction with desired order and parameterisation type.
-Order defaults to 4 and must be higher than 2.
-The parameterisation type must be one of 0 &ndash; Chordal,
-1 &ndash; Centripetal, or 2 &ndash; Uniform, default is Chordal.
-The interpolation can create a closed surface but this will also increase
-the width of the resulting NURBS surface (the default is to
-create an open surface).
-<p><p>
-Using the options <tt/"-sdlen"/ and <tt/"-edlen"/ (which both default
-to 0.0) the length of automatically created start/end derivatives
-can be adjusted. If any of these is not 0.0, a different interpolation
-algorithm will be used, which increases the width of the resulting NURBS
-surface.
-<p>
-The surface will interpolate all current control points after the
-interpolation and the position of certain control points will be
-changed in this process so that, after interpolation, the new control
-points will <em/not/ be interpolated by the surface. The surface will
-rather interpolate the <em/old/ control point positions.
-<p>
-The u knot type of the interpolated surfaces will be changed to <tt/"Custom"/.
-<p>
-See also section <ref id="interpnpt" name="Interpolate Surface Tool">.
-</itemize>
-
-<#if out="latex"><x/newpage/</#if>
-
-<p>
-<#if out="latex"><x/phantomsection/</#if>
-<#if out="html"><f/<inf/<newline>//</#if>
-<label id="scinterpvnp">
-interpvNP &ndash; interpolate NURBS surface in V direction:
-<itemize>
- <item>Synopsis: <tt/"interpvNP [-order order | -ktype type | -closed (0|1) | -sdlen length | -edlen length]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Interpolate the selected NURBS surfaces
-in V direction with desired order and parameterisation type.
-Order defaults to 4 and must be higher than 2.
-The parameterisation type must be one of 0 &ndash; Chordal,
-1 &ndash; Centripetal, or 2 &ndash; Uniform, default is Chordal.
-The interpolation can create a closed surface but this will also increase
-the height of the resulting NURBS surface (the default is to
-create an open surface).
-<p><p>
-Using the options <tt/"-sdlen"/ and <tt/"-edlen"/ (which both default
-to 0.0) the length of automatically created start/end derivatives
-can be adjusted. If any of these is not 0.0, a different interpolation
-algorithm will be used, which increases the height of the resulting NURBS
-surface.
-<p>
-The surface will interpolate all current control points after the
-interpolation and the position of certain control points will be
-changed in this process so that, after interpolation, the new control
-points will <em/not/ be interpolated by the surface. The surface will
-rather interpolate the <em/old/ control point positions.
-<p>
-The v knot type of the interpolated surfaces will be changed to <tt/"Custom"/.
-<p>
-See also section <ref id="interpnpt" name="Interpolate Surface Tool">.
-</itemize>
-
-<p>
-<#if out="latex"><x/phantomsection/</#if>
-<#if out="html"><f/<inf/<newline>//</#if>
 <label id="sctweennp">
 tweenNP &ndash; interpolate (tween) surfaces:
 <itemize>
@@ -18939,6 +18871,83 @@ See also section <ref id="tweennpt" name="Tween Surfaces Tool">.
 <p>
 <#if out="latex"><x/phantomsection/</#if>
 <#if out="html"><f/<inf/<newline>//</#if>
+<label id="scinterpunp">
+interpuNP &ndash; interpolate NURBS surface in U direction:
+<itemize>
+ <item>Synopsis: <tt/"interpuNP [-order order | -ktype type | -closed (0|1) | -sdlen length | -edlen length]"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Interpolate the selected NURBS surfaces
+in U direction with desired order and parameterisation type.
+Order defaults to 4 and must be higher than 2.
+The parameterisation type must be one of 0 &ndash; Chordal,
+1 &ndash; Centripetal, or 2 &ndash; Uniform, default is Chordal.
+The interpolation can create a closed surface if requested by the
+<tt/"-closed"/ parameter but this will also increase
+the width of the resulting NURBS surface. The default is to
+create an open surface for open input surfaces and a closed surface
+for closed or periodic input surfaces.
+<p><p>
+Using the options <tt/"-sdlen"/ and <tt/"-edlen"/ (which both default
+to 0.0) the length of automatically created start/end derivatives
+can be adjusted. If any of these is not 0.0, a different interpolation
+algorithm will be used, which increases the width of the resulting NURBS
+surface.
+<p>
+The surface will interpolate all current control points after the
+interpolation and the position of certain control points will be
+changed in this process so that, after interpolation, the new control
+points will <em/not/ be interpolated by the surface. The surface will
+rather interpolate the <em/old/ control point positions.
+<p>
+The u knot type of the interpolated surfaces will be changed to <tt/"Custom"/.
+<p>
+If the <tt/"-closed"/ option is not present, the interpolated surface
+will be closed for closed and periodic surfaces.
+<p>
+See also section <ref id="interpnpt" name="Interpolate Surface Tool">.
+</itemize>
+
+<p>
+<#if out="latex"><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
+<label id="scinterpvnp">
+interpvNP &ndash; interpolate NURBS surface in V direction:
+<itemize>
+ <item>Synopsis: <tt/"interpvNP [-order order | -ktype type | -closed (0|1) | -sdlen length | -edlen length]"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Interpolate the selected NURBS surfaces
+in V direction with desired order and parameterisation type.
+Order defaults to 4 and must be higher than 2.
+The parameterisation type must be one of 0 &ndash; Chordal,
+1 &ndash; Centripetal, or 2 &ndash; Uniform, default is Chordal.
+The interpolation can create a closed surface if requested by the
+<tt/"-closed"/ parameter but this will also increase
+the height of the resulting NURBS surface. The default is to
+create an open surface for open input surfaces and a closed surface
+for closed or periodic input surfaces.
+<p><p>
+Using the options <tt/"-sdlen"/ and <tt/"-edlen"/ (which both default
+to 0.0) the length of automatically created start/end derivatives
+can be adjusted. If any of these is not 0.0, a different interpolation
+algorithm will be used, which increases the height of the resulting NURBS
+surface.
+<p>
+The surface will interpolate all current control points after the
+interpolation and the position of certain control points will be
+changed in this process so that, after interpolation, the new control
+points will <em/not/ be interpolated by the surface. The surface will
+rather interpolate the <em/old/ control point positions.
+<p>
+The v knot type of the interpolated surfaces will be changed to <tt/"Custom"/.
+<p>
+See also section <ref id="interpnpt" name="Interpolate Surface Tool">.
+</itemize>
+
+<#if out="latex"><x/newpage/</#if>
+
+<p>
+<#if out="latex"><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scbreaknp">
 breakNP &ndash; break NURBS patch into curves:
 <itemize>
@@ -18956,8 +18965,6 @@ the transformation attributes of the respective NPatch.
 <p>
 See also section <ref id="breaknpt" name="Break into Curves Tool">.
 </itemize>
-
-<#if out="latex"><x/newpage/</#if>
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
@@ -19031,8 +19038,6 @@ If <tt/"level"/ is <tt/1/, only the orders and lengths will be adapted.
 <p>
 See also section <ref id="makecompst" name="Make Compatible Tool">.
 </itemize>
-
-<#if out="latex"><x/newpage/</#if>
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
