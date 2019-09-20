@@ -686,7 +686,6 @@ $m.npt.el add command -label "Elevate Both" -command {
 	"Elevate Surface" elevuvt
 }
 
-
 $m.npt.el add command -label "Reduce U" -command {
     runTool ay(remstol) "Tolerance:"\
 	"undo save ReduceUNP; reduceuNP %0; plb_update; rV"\
@@ -695,7 +694,7 @@ $m.npt.el add command -label "Reduce U" -command {
 
 $m.npt.el add command -label "Reduce V" -command {
     runTool ay(remstol) "Tolerance:"\
-	"undo save ReduceVNP; reduce %0; plb_update; rV"\
+	"undo save ReduceVNP; reducevNP %0; plb_update; rV"\
 	"Reduce Surface V" reduceuvt
 }
 
@@ -704,8 +703,6 @@ $m.npt.el add command -label "Reduce Both" -command {
 	"undo save ReduceUVNP; reduceuNP %0; reducevNP %1; plb_update; rV"\
 	"Reduce Surface" reduceuvt
 }
-
-
 
 
 $m.npt add cascade -menu $m.npt.in -label "Interpolate" -underline 0
