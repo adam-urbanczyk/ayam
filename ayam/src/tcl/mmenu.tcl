@@ -664,7 +664,7 @@ $m.npt.cl add command -label "Unclamp Both" -command {
 }
 
 
-$m.npt add cascade -menu $m.npt.el -label "Elevate" -underline 0
+$m.npt add cascade -menu $m.npt.el -label "Elevate/Reduce" -underline 0
 menu $m.npt.el -tearoff 0
 
 $m.npt.el add command -label "Elevate U" -command {
@@ -685,6 +685,28 @@ $m.npt.el add command -label "Elevate Both" -command {
 	"undo save ElevateUVNP; elevateuNP %0; elevatevNP %1; plb_update; rV"\
 	"Elevate Surface" elevuvt
 }
+
+
+$m.npt.el add command -label "Reduce U" -command {
+    runTool ay(remstol) "Tolerance::"\
+	"undo save ReduceUNP; reduceuNP %0; plb_update; rV"\
+	"Reduce Surface U" reduceuvt
+}
+
+$m.npt.el add command -label "Reduce V" -command {
+    runTool ay(remstol) "Tolerance:"\
+	"undo save ReduceVNP; reduce %0; plb_update; rV"\
+	"Reduce Surface V" reduceuvt
+}
+
+$m.npt.el add command -label "Elevate Both" -command {
+    runTool ay(remstol) "Tolerance:"\
+	"undo save ReduceUVNP; reduceuNP %0; reducevNP %1; plb_update; rV"\
+	"Reduce Surface" reduceuvt
+}
+
+
+
 
 $m.npt add cascade -menu $m.npt.in -label "Interpolate" -underline 0
 menu $m.npt.in -tearoff 0
