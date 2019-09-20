@@ -578,6 +578,10 @@ void ay_nb_UnclampSurfaceV(int israt, int w, int h, int q, int s,
 int ay_nb_DegreeReduceCurve4D(int n, int p, double *U, double *Qw, double tol,
 			      int *nh, double *Uh, double *Pw);
 
+/** Reduce degree of NURBS surface.
+ */
+int ay_nb_DegreeReduceSurfV(int w, int h, int q, double *V, double *Pw,
+			    double tol,	int *nh, double *Vbar, double *Qw);
 
 /* nct.c */
 
@@ -1420,6 +1424,15 @@ int ay_npt_removesuperfluousknots(ay_nurbpatch_object *np, double tol);
  */
 int ay_npt_remsuknnptcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
+
+/** Reduce degree of the surface.
+ */
+int ay_npt_degreereduce(ay_nurbpatch_object *np, double tol);
+
+/** Tcl command to reduce the degree of selected surfaces.
+ */
+int ay_npt_degreereducetcmd(ClientData clientData, Tcl_Interp *interp,
+			    int argc, char *argv[]);
 
 /** Convert rational coordinates from euclidean to homogeneous style.
 */

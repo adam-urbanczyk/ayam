@@ -15700,6 +15700,236 @@ ay_npt_isdegen(ay_nurbpatch_object *patch)
 } /* ay_npt_isdegen */
 
 
+/** ay_npt_degreereduce:
+ * Decrease the v order of a NURBS patch.
+ *
+ * \param[in,out] np NURBS patch object to process
+ * \param[in] tol tolerance value (0.0-Inf, unchecked)
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_npt_degreereduce(ay_nurbpatch_object *np, double tol)
+{
+ int ay_status = AY_OK, was_rat = AY_FALSE;
+ char fname[] = "npt_degreereduce";
+ int clamp_me = AY_FALSE, tcvh, nh, i, a, b;
+ double *newcv = NULL, *newkv = NULL, *tcv = NULL, *tkv = NULL;
+
+  if(!np)
+    return AY_ENULL;
+
+  if(np->vorder < 3)
+    return AY_ERROR;
+
+  tcvh = np->height+np->height;
+  nh = tcvh-1;
+
+  if(!(tcv = malloc(np->width * tcvh * 4 * sizeof(double))))
+    {
+      ay_error(AY_EOMEM, fname, NULL);
+      return AY_ERROR;
+    }
+
+  if(!(tkv = malloc((nh + np->vorder + 1) * sizeof(double))))
+    {
+      free(tcv);
+      ay_error(AY_EOMEM, fname, NULL);
+      return AY_ERROR;
+    }
+
+  if(np->vknot_type == AY_KTBSPLINE)
+    {
+      clamp_me = AY_TRUE;
+    }
+  else
+    {
+      if(np->vknot_type == AY_KTCUSTOM)
+	{
+	  clamp_me = AY_TRUE;
+	}
+      else
+	{
+	  if(np->vknot_type > AY_KTCUSTOM &&
+	     np->vtype == AY_CTPERIODIC)
+	    {
+	      clamp_me = AY_TRUE;
+	    }
+	} /* if */
+    } /* if */
+
+  if(clamp_me)
+    {
+      ay_status = ay_npt_clampv(np, 0);
+      if(ay_status)
+	{
+	  ay_error(AY_ERROR, fname, "Clamp operation failed.");
+	  return AY_ERROR;
+	} /* if */
+    } /* if */
+
+  if(np->is_rat && !was_rat)
+    {
+      was_rat = AY_TRUE;
+      (void)ay_npt_euctohom(np);
+    }
+
+  ay_status = ay_nb_DegreeReduceSurfV(np->width-1, np->height-1,
+				      np->vorder-1,
+				      np->vknotv, np->controlv,
+				      tol, &nh,
+				      tkv, tcv);
+
+  if(!ay_status)
+    {
+      /* save results */
+      if(!(newcv = malloc(np->width * nh * 4 * sizeof(double))))
+	{
+	  ay_error(AY_EOMEM, fname, NULL);
+	  goto cleanup;
+	}
+      if(!(newkv = malloc((nh + np->vorder - 1) * sizeof(double))))
+	{
+	  free(newcv);
+	  ay_error(AY_EOMEM, fname, NULL);
+	  goto cleanup;
+	}
+      np->height = nh;
+      np->vorder--;
+
+      for(i = 0; i < np->width; i++)
+	{
+	  a = i*nh*4;
+	  b = i*tcvh*4;
+	  memcpy(&(newcv[a]), &(tcv[b]), nh*4*sizeof(double));
+	}
+      memcpy(newkv, tkv, (np->height+np->vorder)*sizeof(double));
+
+      free(np->controlv);
+      np->controlv = newcv;
+      free(np->vknotv);
+      np->vknotv = newkv;
+
+      free(tcv);
+      tcv = NULL;
+      free(tkv);
+      tkv = NULL;
+    }
+
+cleanup:
+  if(was_rat)
+    (void)ay_npt_homtoeuc(np);
+
+  if(tcv)
+    free(tcv);
+
+  if(tkv)
+    free(tkv);
+
+ return AY_OK;
+} /* ay_npt_degreereduce */
+
+
+/** ay_npt_degreereducetcmd:
+ *  Reduce the degree of the selected NURBS patch objects.
+ *  Implements the \a reduceuNP scripting interface command.
+ *  Also implements the \a reducevNP scripting interface command.
+ *  See also the corresponding section in the \ayd{screduceuunp}.
+ *
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_npt_degreereducetcmd(ClientData clientData, Tcl_Interp *interp,
+			int argc, char *argv[])
+{
+ int tcl_status = TCL_OK, ay_status = AY_OK;
+ ay_object *o = NULL;
+ ay_nurbpatch_object *patch = NULL;
+ ay_list_object *sel = ay_selection;
+ double tol = 0.0;
+ int is_u = AY_FALSE, notify_parent = AY_FALSE;
+
+  /* reduceuNP */
+  /* 0123456 */
+  if(argv[0][6] == 'u')
+    is_u = AY_TRUE;
+
+  if(argc > 1)
+    {
+      tcl_status = Tcl_GetDouble(interp, argv[1], &tol);
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+      if(tol < 0.0)
+	{
+	  ay_error(AY_ERROR, argv[0], "Argument tol must be >= 0.");
+	  return TCL_OK;
+	}
+      if(tol != tol)
+	{
+	  ay_error_reportnan(argv[0], "tol");
+	  return TCL_OK;
+	}
+    }
+
+  while(sel)
+    {
+      o = sel->object;
+      if(o->type == AY_IDNPATCH)
+	{
+	  patch = (ay_nurbpatch_object*)o->refine;
+
+	  if(is_u)
+	    {
+	      /* swap U/V, for there is no RemoveKnotSurfU() */
+	      ay_status = ay_npt_swapuv(patch);
+	      if(ay_status)
+		{
+		  ay_error(AY_ERROR, argv[0], "SwapUV failed.");
+		  return TCL_OK;
+		}
+	    }
+
+	  ay_status = ay_npt_degreereduce(patch, tol);
+
+	  if(is_u)
+	    {
+	      /* swap U/V, for there is no RemoveKnotSurfU() */
+	      ay_status = ay_npt_swapuv(patch);
+	      if(ay_status)
+		{
+		  ay_error(AY_ERROR, argv[0], "SwapUV failed.");
+		  return TCL_OK;
+		}
+	    }
+
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, argv[0], "Degree reduction failed.");
+	      break;
+	    }
+
+	  /* remove all selected points */
+	  if(o->selp)
+	    ay_selp_clear(o);
+
+	  o->modified = AY_TRUE;
+
+	  /* re-create tesselation of patch */
+	  (void)ay_notify_object(o);
+	  notify_parent = AY_TRUE;
+	}
+      else
+	{
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
+	} /* if is NPatch */
+      sel = sel->next;
+    } /* while */
+
+  if(notify_parent)
+    (void)ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_npt_degreereducetcmd */
+
 
 /* templates */
 #if 0
