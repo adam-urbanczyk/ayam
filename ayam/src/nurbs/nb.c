@@ -5130,3 +5130,41 @@ cleanup:
 
  return ay_status;
 } /* ay_nb_DegreeReduceCurve4D */
+
+
+/*
+ * ay_nb_DegreeReduceSurfV:
+ * lower order of surface (w, h, p, V, Pw) in v direction if new
+ * surface does not deviate <tol> distance from old
+ * result: new controls Qw and knots Vbar (both allocated outside!)
+ */
+int
+ay_nb_DegreeReduceSurfV(int w, int h, int q, double *V, double *Pw, double tol,
+			int *nh, double *Vbar, double *Qw)
+{
+ int ay_status = AY_OK;
+ int stride = 4, i, a, b, qh;
+
+  if(!V || !Pw || !nh || !Vbar || !Qw)
+    {
+      return AY_ENULL;
+    }
+
+  qh = *nh;
+
+  for(i = 0; i <= w; i++)
+    {
+      a = i*(h+1)*stride;
+      b = i*(qh+1)*stride;
+      memcpy(Vbar, V, (h+q+2)*sizeof(double));
+      ay_status = ay_nb_DegreeReduceCurve4D(h, q, Vbar, &(Pw[a]), tol,
+					    nh, Vbar, &(Qw[b]));
+
+      if(ay_status)
+	{
+	  break;
+	}
+    }
+
+ return ay_status;
+} /* ay_nb_DegreeReduceSurfV */

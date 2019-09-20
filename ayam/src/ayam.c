@@ -1304,6 +1304,12 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "elevatevNP", ay_npt_elevateuvtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "reduceuNP", ay_npt_degreereducetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "reducevNP", ay_npt_degreereducetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   Tcl_CreateCommand(interp, "refineuNP", ay_npt_refineuvtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
@@ -1933,6 +1939,12 @@ ay_safeinit(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "elevatevNP", ay_npt_elevateuvtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "reduceuNP", ay_npt_degreereducetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "reducevNP", ay_npt_degreereducetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "refineuNP", ay_npt_refineuvtcmd,
