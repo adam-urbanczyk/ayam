@@ -13831,10 +13831,9 @@ the multiplicity of internal knots first.
 
 See also the documentation of the corresponding
 scripting interface command <ref id="screducenc" name="reduceNC">.
-<!--
-and the related tool for
-surfaces <ref id="reduceuvt" name="Reduce Surface Tool">.
--->
+and the related tools for
+surfaces <ref id="reduceuvt" name="Reduce Surface Tools">.
+
 </descrip>
 
 <#if out="latex"><x/newpage/</#if>
@@ -14876,8 +14875,42 @@ V direction only.
 See also the documentation of the corresponding scripting interface commands
 <ref id="scelevateunp" name="elevateuNP"> and
 <ref id="scelevatevnp" name="elevatevNP">
-and the related tool for
+as well as the related tool for
 curves <ref id="elevt" name="Elevate Tool">.
+</descrip>
+
+<#if out="latex"><x/newpage/</#if>
+
+<sect2>Reduce Surface Tools<label id="reduceuvt">
+<p>
+<!--
+<figure loc="ht">
+<eps file="pics/reduce.ps" height="4cm">
+<img src="pics/reduce.gif">
+<caption>Reduce Tool (Order 5 (left), 4 (right))</caption>
+</figure>
+-->
+<descrip>
+<tag/Arguments/ The reduce surface tools take a number of NURBS surfaces from
+the selection and additionally request a tolerance value.
+<tag/Operation/ The order of the selected NURBS surfaces will be decreased
+by one if the shape of the reduced surfaces does not deviate from the original
+surfaces by the given tolerance in any point.
+See also the example image above.
+<tag/Notes/ If the respective knot vector of the surface is not clamped, it
+will be clamped automatically. The respective knot type of the surface will
+be changed to <tt/"Custom"/. Control points will be removed and the position
+of old control points may be changed in the progress.
+
+The point selection will be removed from the processed objects.
+
+The ability to reduce a certain surface can be improved by increasing
+the multiplicity of internal knots first.
+
+See also the documentation of the corresponding
+scripting interface commands <ref id="screduceunp" name="reduceuNP"> and
+<ref id="screducevnp" name="reducevNP"> as well as
+the related tool for curves <ref id="reduct" name="Reduce Tool">.
 </descrip>
 
 <#if out="latex"><x/newpage/</#if>
@@ -18788,6 +18821,42 @@ See also section <ref id="elevuvt" name="Elevate Surface Tool">.
 <p>
 <#if out="latex"><x/phantomsection/</#if>
 <#if out="html"><f/<inf/<newline>//</#if>
+<label id="screduceunp">
+reduceuNP &ndash; decrease order of  NURBS surface:
+<itemize>
+ <item>Synopsis: <tt/"reduceuNP [tol]"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Decrease the order of the selected NURBS surfaces
+in u direction if the shape of the reduced surfaces does not deviate from the
+original surfaces by <tt/tol/ in any point.
+If the parameter <tt/tol/ is omitted, a default value of 0.0 is used,
+i.e.~the order is only reduced if the surface does not change.
+The knot type of the reduced surfaces will be changed to <tt/"Custom"/.
+<p><p>
+See also section <ref id="reduceuvt" name="Reduce Surface Tools">.
+</itemize>
+
+<p>
+<#if out="latex"><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
+<label id="screducevnp">
+reducevNP &ndash; decrease order of  NURBS surface:
+<itemize>
+ <item>Synopsis: <tt/"reducevNP [tol]"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Decrease the order of the selected NURBS surfaces
+in v direction if the shape of the reduced surfaces does not deviate from the
+original surfaces by <tt/tol/ in any point.
+If the parameter <tt/tol/ is omitted, a default value of 0.0 is used,
+i.e.~the order is only reduced if the surface does not change.
+The knot type of the reduced surfaces will be changed to <tt/"Custom"/.
+<p><p>
+See also section <ref id="reduceuvt" name="Reduce Surface Tools">.
+</itemize>
+
+<p>
+<#if out="latex"><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
 <label id="scsplitnpu"><label id="scsplitunp">
 splituNP &ndash; split NURBS patch:
 <itemize>
@@ -18824,6 +18893,8 @@ This is the new default.<footnote>Since 1.24.</footnote>
 <p><p>
 See also section <ref id="splitnpt" name="Split Surface Tools">.
 </itemize>
+
+<#if out="latex"><x/newpage/</#if>
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
@@ -18867,6 +18938,8 @@ third surface defines the ratio of influence with its y coordinates.
 <p><p>
 See also section <ref id="tweennpt" name="Tween Surfaces Tool">.
 </itemize>
+
+<#if out="latex"><x/newpage/</#if>
 
 <p>
 <#if out="latex"><x/phantomsection/</#if>
@@ -25658,6 +25731,8 @@ Index:
 <item><ref id="elevuvt" name="NPatch tool">
 </itemize>
 <item>elevateNC: <ref id="scelevatenc" name="scripting interface command">
+<item>elevateuNP: <ref id="scelevateunp" name="scripting interface command">
+<item>elevatevNP: <ref id="scelevatevnp" name="scripting interface command">
 <item>EnableUndo: <ref id="vat" name="View attribute">
 <item>Enable Scripts: <ref id="mmspecial" name="main menu entry">
 <item>EndBevel: <ref id="extrattr" name="Extrude attribute">
@@ -25920,6 +25995,7 @@ Index:
 </itemize>
 <item>Intensity: <ref id="lip" name="Light attribute">
 <item>Interior: <ref id="matshader" name="shader property">
+<item>interpNC: <ref id="scinterpnc" name="scripting interface command">
 <item>Interpolate:
 <itemize>
 <item><ref id="swp" name="Sweep attribute">,
@@ -25929,6 +26005,8 @@ Index:
 <item>Interpolate Boundary: <ref id="sdmeshobj" name="subdivision mesh tag">
 <item>Interpolation: <ref id="attrs" name="RenderMan/BMRT attribute">
 <item>InterpolCtrl: <ref id="birail2p" name="Birail2 attribute">
+<item>interpuNP: <ref id="scinterpunp" name="scripting interface command">
+<item>interpvNP: <ref id="scinterpvnp" name="scripting interface command">
 <item>Intersection: <ref id="levelobj" name="Level object">
 <item>intfd.tcl: <ref id="intfdtcl" name="example/helper script">
 <item>InvertMatch: <ref id="objsearch" name="object search option">
@@ -26413,11 +26491,11 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Reduce:<#if out="html"><label id="indexredu"></#if>
 <itemize>
 <item><ref id="reduct" name="NCurve tool">
-<!--
-<item><ref id="elevuvt" name="NPatch tool">
--->
+<item><ref id="reduceuvt" name="NPatch tool">
 </itemize>
 <item>reduceNC: <ref id="screducenc" name="scripting interface command">
+<item>reduceuNP: <ref id="screduceunp" name="scripting interface command">
+<item>reducevNP: <ref id="screduceunp" name="scripting interface command">
 <item>Refcount: <ref id="attrs" name="attribute">
 <item>Reference Counter:
 <itemize>
