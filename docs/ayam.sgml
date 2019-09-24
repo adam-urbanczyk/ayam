@@ -14883,13 +14883,11 @@ curves <ref id="elevt" name="Elevate Tool">.
 
 <sect2>Reduce Surface Tools<label id="reduceuvt">
 <p>
-<!--
 <figure loc="ht">
-<eps file="pics/reduce.ps" height="4cm">
-<img src="pics/reduce.gif">
-<caption>Reduce Tool (Order 5 (left), 4 (right))</caption>
+<eps file="pics/reducenp.ps" height="4cm">
+<img src="pics/reducenp.gif">
+<caption>Reduce Tool (Order 4 (left), 3 (right))</caption>
 </figure>
--->
 <descrip>
 <tag/Arguments/ The reduce surface tools take a number of NURBS surfaces from
 the selection and additionally request a tolerance value.
