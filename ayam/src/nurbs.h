@@ -38,6 +38,10 @@ int ay_act_revert(ay_acurve_object *curve);
  */
 int ay_act_getpntfromindex(ay_acurve_object *curve, int index, double **p);
 
+/** Tcl command to approximate selected NURBS curves.
+ */
+int ay_act_approxtcmd(ClientData clientData, Tcl_Interp *interp,
+		      int argc, char *argv[]);
 
 /* bevelt.c */
 

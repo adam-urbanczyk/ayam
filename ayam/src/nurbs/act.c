@@ -1182,3 +1182,161 @@ ay_act_getpntfromindex(ay_acurve_object *curve, int index, double **p)
 
  return AY_OK;
 } /* ay_act_getpntfromindex */
+
+
+/** ay_act_approxtcmd:
+ *  Approximate the selected NURBS curves.
+ *  Implements the \a approxNC scripting interface command.
+ *  See also the corresponding section in the \ayd{approxnc}.
+ *
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_act_approxtcmd(ClientData clientData, Tcl_Interp *interp,
+		  int argc, char *argv[])
+{
+ int tcl_status = TCL_OK, ay_status = AY_OK;
+ int i = 1;
+ ay_object *o = NULL;
+ ay_nurbcurve_object *curve = NULL, *newcurve = NULL;
+ ay_list_object *sel = ay_selection;
+ int tlen, length, order = 4, closed = AY_FALSE, tesselate = 2;
+ double *tcv, *controlv, *knotv;
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, argv[0], NULL);
+      return TCL_OK;
+    }
+
+  /* parse args */
+  while(i+1 < argc)
+    {
+      if(argv[i] && argv[i][0] != '\0')
+	{
+	  switch(argv[i][1])
+	    {
+	    case 'c':
+	      /* -closed */
+	      tcl_status = Tcl_GetBoolean(interp, argv[i+1], &closed);
+	      if(tcl_status != TCL_OK)
+		tcl_status = Tcl_GetInt(interp, argv[i+1], &closed);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	      break;
+	    case 'l':
+	      /* -length */
+	      tcl_status = Tcl_GetInt(interp, argv[i+1], &length);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	      if(length <= 2)
+		{
+		  ay_error(AY_ERROR, argv[0], "Length must be > 2.");
+		  return TCL_OK;
+		}
+	      break;
+	    case 'o':
+	      /* -order */
+	      tcl_status = Tcl_GetInt(interp, argv[i+1], &order);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	      if(order <= 2)
+		{
+		  ay_error(AY_ERROR, argv[0], "Order must be > 2.");
+		  return TCL_OK;
+		}
+	      break;
+#if 0
+	    case 's':
+	      /* -symmetric */
+	      tcl_status = Tcl_GetBoolean(interp, argv[i+1], &symmetric);
+	      if(tcl_status != TCL_OK)
+		tcl_status = Tcl_GetInt(interp, argv[i+1], &symmetric);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	      break;
+#endif
+	    case 't':
+	      /* -tesselate */
+	      tcl_status = Tcl_GetInt(interp, argv[i+1], &tesselate);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	      if(length <= 2)
+		{
+		  ay_error(AY_ERROR, argv[0], "Tesselate must be > 2.");
+		  return TCL_OK;
+		}
+	      break;
+	    default:
+	      break;
+	    } /* switch */
+	} /* if */
+      i += 2;
+    } /* while */
+
+  while(sel)
+    {
+      o = sel->object;
+      if(o->type == AY_IDNCURVE)
+	{
+	  curve = (ay_nurbcurve_object*)o->refine;
+
+	  tcv = NULL;
+	  ay_status = ay_stess_CurvePoints3D(curve->length, curve->order-1,
+					     curve->knotv, curve->controlv,
+					     curve->is_rat, tesselate,
+					     &tlen, &tcv);
+	  if(!ay_status && tcv)
+	    {
+	      if(!closed)
+		{
+		  ay_status = ay_act_leastSquares(tcv, tlen,
+						  length,
+						  order-1,
+						  &knotv, &controlv);
+		}
+	      else
+		{
+		  ay_status = ay_act_leastSquaresClosed(tcv, tlen,
+							length+order-1,
+							order-1,
+							&knotv, &controlv);
+		}
+	    }
+
+	  if(!ay_status && knotv && controlv)
+	    {
+	      ay_status = ay_nct_create(order, length, AY_KTCUSTOM,
+					controlv, knotv, &newcurve);
+	    }
+
+
+	  if(!ay_status && newcurve)
+	    {
+	      ay_nct_destroy(o->refine);
+	      o->refine = newcurve;
+
+	      /* remove all selected points */
+	      if(o->selp)
+		ay_selp_clear(o);
+
+	      o->modified = AY_TRUE;
+
+	      /* re-create tesselation of curve */
+	      (void)ay_notify_object(o);
+	    }
+	  else
+	    {
+	      ay_error(AY_EWARN, argv[0], "Approximation failed.");
+	    }
+
+	  free(tcv);
+
+
+	}
+      else
+	{
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
+	} /* if is NCurve */
+      sel = sel->next;
+    } /* while */
+
+  (void)ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_act_approxtcmd */

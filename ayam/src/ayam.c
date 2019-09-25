@@ -1370,9 +1370,6 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "concatS", ay_npt_concatstcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "interpNC", ay_ict_interptcmd,
-		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-
   Tcl_CreateCommand(interp, "interpuNP", ay_ipt_interpuvtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
@@ -1392,6 +1389,16 @@ Tcl_AppInit(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Togl_CreateCommand("finduvac", ay_npt_finduvcb);
+
+
+  /* nurbs/act.c */
+  Tcl_CreateCommand(interp, "approxNC", ay_act_approxtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+
+  /* nurbs/ict.c */
+  Tcl_CreateCommand(interp, "interpNC", ay_ict_interptcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
 
   /* nurbs/pmt.c */
@@ -2007,9 +2014,6 @@ ay_safeinit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "remsuknvNP", ay_npt_remsuknnptcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "interpNC", ay_ict_interptcmd,
-		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-
   Tcl_CreateCommand(interp, "interpuNP", ay_ipt_interpuvtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
@@ -2026,6 +2030,14 @@ ay_safeinit(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "makeCompNP", ay_npt_makecomptcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  /* nurbs/ict.c */
+  Tcl_CreateCommand(interp, "interpNC", ay_ict_interptcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  /* nurbs/act.c */
+  Tcl_CreateCommand(interp, "approxNC", ay_act_approxtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
 
