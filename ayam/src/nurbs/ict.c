@@ -1336,7 +1336,7 @@ ay_ict_getpntfromindex(ay_icurve_object *curve, int index, double **p)
 /** ay_ict_interptcmd:
  *  Interpolate the selected NURBS curves.
  *  Implements the \a interpNC scripting interface command.
- *  See also the corresponding section in the \ayd{interpnc}.
+ *  See also the corresponding section in the \ayd{scinterpnc}.
  *
  *  \returns TCL_OK in any case.
  */

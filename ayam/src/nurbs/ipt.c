@@ -1574,7 +1574,7 @@ cleanup:
 /** ay_ipt_interpuvtcmd:
  *  Interpolate the selected NURBS patches along U/V.
  *  Implements the \a interpuNP and \a interpvNP scripting interface commands.
- *  See also the corresponding section in the \ayd{interpunp}.
+ *  See also the corresponding section in the \ayd{scinterpunp}.
  *
  *  \returns TCL_OK in any case.
  */
@@ -1679,8 +1679,6 @@ ay_ipt_interpuvtcmd(ClientData clientData, Tcl_Interp *interp,
       if(o->type == AY_IDNPATCH)
 	{
 	  patch = (ay_nurbpatch_object*)o->refine;
-
-	  ay_npt_setuvtypes(patch, 0);
 
 	  if((interpolv && ((patch->vtype == AY_CTPERIODIC) ||
 			    (patch->vtype == AY_CTCLOSED))) ||
