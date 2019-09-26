@@ -10138,7 +10138,7 @@ ay_npt_getbeveltags(ay_object *o, int place,
  * Change knots and control points of a NURBS surface so that the surface
  * interpolates its respective end control points in U direction without
  * changing the current surface shape.
- * it is safe to call this with half clamped patches
+ * It is safe to call this with half clamped patches.
  *
  * \param[in,out] patch NURBS patch object to clamp
  * \param[in] side side to clamp:
@@ -15809,11 +15809,6 @@ ay_npt_degreereduce(ay_nurbpatch_object *np, double tol)
       np->controlv = newcv;
       free(np->vknotv);
       np->vknotv = newkv;
-
-      free(tcv);
-      tcv = NULL;
-      free(tkv);
-      tkv = NULL;
     }
 
 cleanup:
@@ -15834,7 +15829,7 @@ cleanup:
  *  Reduce the degree of the selected NURBS patch objects.
  *  Implements the \a reduceuNP scripting interface command.
  *  Also implements the \a reducevNP scripting interface command.
- *  See also the corresponding section in the \ayd{screduceuunp}.
+ *  See also the corresponding section in the \ayd{screduceunp}.
  *
  *  \returns TCL_OK in any case.
  */
@@ -15879,7 +15874,7 @@ ay_npt_degreereducetcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(is_u)
 	    {
-	      /* swap U/V, for there is no RemoveKnotSurfU() */
+	      /* swap U/V, for there is no ay_nb_DegreeReduceSurfU() */
 	      ay_status = ay_npt_swapuv(patch);
 	      if(ay_status)
 		{
@@ -15892,7 +15887,7 @@ ay_npt_degreereducetcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(is_u)
 	    {
-	      /* swap U/V, for there is no RemoveKnotSurfU() */
+	      /* swap U/V, for there is no ay_nb_DegreeReduceSurfU() */
 	      ay_status = ay_npt_swapuv(patch);
 	      if(ay_status)
 		{
