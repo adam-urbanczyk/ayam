@@ -1187,7 +1187,7 @@ ay_act_getpntfromindex(ay_acurve_object *curve, int index, double **p)
 /** ay_act_approxtcmd:
  *  Approximate the selected NURBS curves.
  *  Implements the \a approxNC scripting interface command.
- *  See also the corresponding section in the \ayd{approxnc}.
+ *  See also the corresponding section in the \ayd{scapproxnc}.
  *
  *  \returns TCL_OK in any case.
  */
@@ -1200,6 +1200,7 @@ ay_act_approxtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL;
  ay_nurbcurve_object *curve = NULL, *newcurve = NULL;
  ay_list_object *sel = ay_selection;
+ int have_closed = AY_FALSE, have_order = AY_FALSE, have_length = AY_FALSE;
  int tlen, length, order = 4, closed = AY_FALSE, tesselate = 2;
  double *tcv, *controlv, *knotv;
 
@@ -1222,6 +1223,7 @@ ay_act_approxtcmd(ClientData clientData, Tcl_Interp *interp,
 	      if(tcl_status != TCL_OK)
 		tcl_status = Tcl_GetInt(interp, argv[i+1], &closed);
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	      have_closed = AY_TRUE;
 	      break;
 	    case 'l':
 	      /* -length */
@@ -1232,6 +1234,7 @@ ay_act_approxtcmd(ClientData clientData, Tcl_Interp *interp,
 		  ay_error(AY_ERROR, argv[0], "Length must be > 2.");
 		  return TCL_OK;
 		}
+	      have_length = AY_TRUE;
 	      break;
 	    case 'o':
 	      /* -order */
@@ -1242,6 +1245,7 @@ ay_act_approxtcmd(ClientData clientData, Tcl_Interp *interp,
 		  ay_error(AY_ERROR, argv[0], "Order must be > 2.");
 		  return TCL_OK;
 		}
+	      have_order = AY_TRUE;
 	      break;
 #if 0
 	    case 's':
@@ -1274,7 +1278,7 @@ ay_act_approxtcmd(ClientData clientData, Tcl_Interp *interp,
       o = sel->object;
       if(o->type == AY_IDNCURVE)
 	{
-	  curve = (ay_nurbcurve_object*)o->refine;
+	  curve = (ay_nurbcurve_object *)o->refine;
 
 	  tcv = NULL;
 	  ay_status = ay_stess_CurvePoints3D(curve->length, curve->order-1,
@@ -1283,6 +1287,20 @@ ay_act_approxtcmd(ClientData clientData, Tcl_Interp *interp,
 					     &tlen, &tcv);
 	  if(!ay_status && tcv)
 	    {
+	      if(!have_closed)
+		{
+		  closed = AY_FALSE;
+		  if((curve->type == AY_CTCLOSED) ||
+		      (curve->type == AY_CTPERIODIC))
+		    {
+		      closed = AY_TRUE;
+		    }
+		}
+	      if(!have_length)
+		length = curve->length;
+	      if(!have_order)
+		order = curve->order;
+
 	      if(!closed)
 		{
 		  ay_status = ay_act_leastSquares(tcv, tlen,
@@ -1305,7 +1323,6 @@ ay_act_approxtcmd(ClientData clientData, Tcl_Interp *interp,
 					controlv, knotv, &newcurve);
 	    }
 
-
 	  if(!ay_status && newcurve)
 	    {
 	      ay_nct_destroy(o->refine);
@@ -1326,8 +1343,6 @@ ay_act_approxtcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 
 	  free(tcv);
-
-
 	}
       else
 	{
