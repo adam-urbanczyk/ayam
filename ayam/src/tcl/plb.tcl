@@ -83,9 +83,11 @@ bind $f.li <<ListboxSelect>> {
 	unset pclip_omit
 	set labels [array names pclip_omit_label]
 	foreach label $labels {
-	    set oldname [$label cget -text]
-	    set name [string trimleft $oldname !]
-	    $label configure -text $name
+	    if { [winfo exists $label] } {
+		set oldname [$label cget -text]
+		set name [string trimleft $oldname !]
+		$label configure -text $name
+	    }
 	}
 	unset pclip_omit_label
 	array set pclip_omit { }
