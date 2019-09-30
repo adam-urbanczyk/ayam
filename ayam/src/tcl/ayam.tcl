@@ -808,6 +808,18 @@ array set ay {
  clevel_l {"Order" "Order&Length" "Full"}
  side 0
  side_l {"Both" "U" "V"}
+ interpo 4
+ interpc false
+ appro 3
+ apprl 4
+ apprc false
+ apprt 2
+ interpo 4
+ interpc false
+ interpsdl 0.125
+ interpedl 0.125
+ interpkt 0
+ interpkt_l {"Chordal" "Centripetal" "Uniform"}
 }
 # array ay
 
