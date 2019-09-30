@@ -1229,23 +1229,19 @@ ay_act_approxtcmd(ClientData clientData, Tcl_Interp *interp,
 	      /* -length */
 	      tcl_status = Tcl_GetInt(interp, argv[i+1], &length);
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
-	      if(length <= 2)
-		{
-		  ay_error(AY_ERROR, argv[0], "Length must be > 2.");
-		  return TCL_OK;
-		}
-	      have_length = AY_TRUE;
+	      if(length > 2)
+		have_length = AY_TRUE;
+	      else
+		have_length = AY_FALSE;
 	      break;
 	    case 'o':
 	      /* -order */
 	      tcl_status = Tcl_GetInt(interp, argv[i+1], &order);
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
-	      if(order <= 2)
-		{
-		  ay_error(AY_ERROR, argv[0], "Order must be > 2.");
-		  return TCL_OK;
-		}
-	      have_order = AY_TRUE;
+	      if(order > 1)
+		have_order = AY_TRUE;
+	      else
+		have_order = AY_FALSE;
 	      break;
 #if 0
 	    case 's':
@@ -1280,6 +1276,30 @@ ay_act_approxtcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  curve = (ay_nurbcurve_object *)o->refine;
 
+	  if(!have_length)
+	    length = curve->length;
+	  if(length <= 2)
+	    {
+	      ay_error(AY_ERROR, argv[0], "Length must be > 2.");
+	      break;
+	    }
+	  if(!have_order)
+	    order = curve->order;
+	  if(order < 2)
+	    {
+	      ay_error(AY_ERROR, argv[0], "Order must be >= 2.");
+	      break;
+	    }
+	  if(!have_closed)
+	    {
+	      closed = AY_FALSE;
+	      if((curve->type == AY_CTCLOSED) ||
+		 (curve->type == AY_CTPERIODIC))
+		{
+		  closed = AY_TRUE;
+		}
+	    }
+
 	  tcv = NULL;
 	  ay_status = ay_stess_CurvePoints3D(curve->length, curve->order-1,
 					     curve->knotv, curve->controlv,
@@ -1287,20 +1307,6 @@ ay_act_approxtcmd(ClientData clientData, Tcl_Interp *interp,
 					     &tlen, &tcv);
 	  if(!ay_status && tcv)
 	    {
-	      if(!have_closed)
-		{
-		  closed = AY_FALSE;
-		  if((curve->type == AY_CTCLOSED) ||
-		      (curve->type == AY_CTPERIODIC))
-		    {
-		      closed = AY_TRUE;
-		    }
-		}
-	      if(!have_length)
-		length = curve->length;
-	      if(!have_order)
-		order = curve->order;
-
 	      if(!closed)
 		{
 		  ay_status = ay_act_leastSquares(tcv, tlen,
