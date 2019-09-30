@@ -504,7 +504,19 @@ $m.nct add command -label "Extend" -command {
 } -underline 1
 #  ^^^^^^^^^^^ => X
 
+$m.nct add command -label "Interpolate" -command {
+    runTool [list ay(interpo) ay(interpc) ay(interpkt) ay(interpsdl) ay(interpedl)]\
+	[list "Order:" "Closed:" "Knot-Type:" "SDLen:" "EDLen:"]\
+      "undo save InterpNC; interpNC -o %0 -c %1 -k %2 -s %3 -e %4; plb_update; rV"\
+	"Interpolate Curve" interpnct
+}
 
+$m.nct add command -label "Approximate" -command {
+    runTool [list ay(appro) ay(apprl) ay(apprc) ay(apprt)]\
+	[list "Order:" "Length:" "Closed:" "TessParam:"]\
+      "undo save ApproxNC; approxNC -o %0 -l %1 -c %2 -t %3; plb_update; rV"\
+	"Approximate Curve" approxnct
+}
 $m.nct add cascade -menu $m.nct.kn -label "Knots" -underline 0
 menu $m.nct.kn -tearoff 0
 
