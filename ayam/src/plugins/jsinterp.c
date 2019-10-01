@@ -220,6 +220,7 @@ static JSFunctionSpec jsinterp_global_functions[] = {
   {"extendNC", jsinterp_wraptcmdargs, 0, 0, 0},
   {"extrNC", jsinterp_wraptcmdargs, 0, 0, 0},
   {"interpNC", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"approxNC", jsinterp_wraptcmdargs, 0, 0, 0},
 
   {"crtNSphere", jsinterp_wraptcmd, 0, 0, 0},
   {"crtNSphere2", jsinterp_wraptcmd, 0, 0, 0},
@@ -228,6 +229,8 @@ static JSFunctionSpec jsinterp_global_functions[] = {
   /* topoly? */
   {"elevateuNP", jsinterp_wraptcmdargs, 0, 0, 0},
   {"elevatevNP", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"reduceuNP", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"reducevNP", jsinterp_wraptcmdargs, 0, 0, 0},
   {"refineuNP", jsinterp_wraptcmdargs, 0, 0, 0},
   {"refinevNP", jsinterp_wraptcmdargs, 0, 0, 0},
   {"swapuvS", jsinterp_wraptcmd, 0, 0, 0},
@@ -246,6 +249,8 @@ static JSFunctionSpec jsinterp_global_functions[] = {
   {"splitvNP", jsinterp_wraptcmdargs, 0, 0, 0},
   {"remknuNP", jsinterp_wraptcmdargs, 0, 0, 0},
   {"remknvNP", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"remsuknuNP", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"remsuknvNP", jsinterp_wraptcmdargs, 0, 0, 0},
   {"extrNP", jsinterp_wraptcmdargs, 0, 0, 0},
   {"interpuNP", jsinterp_wraptcmdargs, 0, 0, 0},
   {"interpvNP", jsinterp_wraptcmdargs, 0, 0, 0},

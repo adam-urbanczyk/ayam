@@ -200,6 +200,7 @@ static const struct luaL_Reg luainterplib [] = {
       {"extendNC", luainterp_wraptclcmd},
       {"extrNC", luainterp_wraptclcmd},
       {"interpNC", luainterp_wraptclcmd},
+      {"approxNC", luainterp_wraptclcmd},
 
       {"crtNSphere", luainterp_wraptclcmd},
       {"crtNSphere2", luainterp_wraptclcmd},
@@ -208,6 +209,8 @@ static const struct luaL_Reg luainterplib [] = {
       /* topoly? */
       {"elevateuNP", luainterp_wraptclcmd},
       {"elevatevNP", luainterp_wraptclcmd},
+      {"reduceuNP", luainterp_wraptclcmd},
+      {"reducevNP", luainterp_wraptclcmd},
       {"refineuNP", luainterp_wraptclcmd},
       {"refinevNP", luainterp_wraptclcmd},
       {"swapuvS", luainterp_wraptclcmd},
@@ -226,6 +229,8 @@ static const struct luaL_Reg luainterplib [] = {
       {"splitvNP", luainterp_wraptclcmd},
       {"remknuNP", luainterp_wraptclcmd},
       {"remknvNP", luainterp_wraptclcmd},
+      {"remsuknuNP", luainterp_wraptclcmd},
+      {"remsuknvNP", luainterp_wraptclcmd},
       {"extrNP", luainterp_wraptclcmd},
       {"interpuNP", luainterp_wraptclcmd},
       {"interpvNP", luainterp_wraptclcmd},
