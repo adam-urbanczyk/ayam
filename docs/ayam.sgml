@@ -18166,7 +18166,7 @@ reduceNC &ndash; decrease order of  NURBS curve:
  <item>Synopsis: <tt/"reduceNC [tol]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Decrease the order of the selected NURBS curves
-if the shape of the reduced curves does not deviate from the
+by one if the shape of the reduced curves does not deviate from the
 original curves by <tt/tol/ in any point.
 If the parameter <tt/tol/ is omitted, a default value of 0.0 is used,
 i.e.~the order is only reduced if the curve does not change.
@@ -18478,6 +18478,41 @@ The knot type of the interpolated curves will be changed to <tt/"Custom"/.
 <!--
 <p>
 See also section <ref id="interpnct" name="Interpolate Curve Tool">.
+-->
+</itemize>
+
+<#if out="latex"><x/newpage/</#if>
+
+<p>
+<#if out="latex"><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
+<label id="scapproxnc">
+approxNC &ndash; approximate NURBS curve:
+<itemize>
+ <item>Synopsis: <tt/"approxNC [-order o | -length l | -closed (0|1) | -tesselate t]"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Approximate the selected NURBS curves
+with a new NURBS curve of desired order and length.
+<p><p>
+The order defaults to the order of the respective NURBS curve and must be
+at least 2. If a smaller value is supplied the command will silently
+fall back to the default.
+<p>
+The length defaults to the length of the respective NURBS curve and must be
+higher than 2. If a smaller value is supplied the command will silently
+fall back to the default.
+<p>
+If the <tt/"-closed"/ parameter is set to <tt/"1"/ a closed periodic curve
+will be created. By default, whether or not a closed curve shall be created
+will be derived from the type of the curve to be approximated.
+<p>
+The <tt/"-tesselate"/ parameter allows to specify a parameter for
+the tesselation of the curve to be approximated.
+<p>
+The knot type of the processed curves will be changed to <tt/"Custom"/.
+<!--
+<p>
+See also section <ref id="approxnct" name="Approximate Curve Tool">.
 -->
 </itemize>
 
@@ -18825,8 +18860,8 @@ reduceuNP &ndash; decrease order of  NURBS surface:
  <item>Synopsis: <tt/"reduceuNP [tol]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Decrease the order of the selected NURBS surfaces
-in u direction if the shape of the reduced surfaces does not deviate from the
-original surfaces by <tt/tol/ in any point.
+in u direction by one if the shape of the reduced surfaces does not
+deviate from the original surfaces by <tt/tol/ in any point.
 If the parameter <tt/tol/ is omitted, a default value of 0.0 is used,
 i.e.~the order is only reduced if the surface does not change.
 The knot type of the reduced surfaces will be changed to <tt/"Custom"/.
@@ -18843,8 +18878,8 @@ reducevNP &ndash; decrease order of  NURBS surface:
  <item>Synopsis: <tt/"reducevNP [tol]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Decrease the order of the selected NURBS surfaces
-in v direction if the shape of the reduced surfaces does not deviate from the
-original surfaces by <tt/tol/ in any point.
+in v direction by one if the shape of the reduced surfaces does not
+deviate from the original surfaces by <tt/tol/ in any point.
 If the parameter <tt/tol/ is omitted, a default value of 0.0 is used,
 i.e.~the order is only reduced if the surface does not change.
 The knot type of the reduced surfaces will be changed to <tt/"Custom"/.
@@ -25364,6 +25399,7 @@ Index:
 <item>ANS: <ref id="anstag" name="tag type">
 <item>AntiAlias Lines: <ref id="vmconf" name="view menu entry">
 <item>apnt.tcl: <ref id="apnttcl" name="example/helper script">
+<item>Approximating Curve: <ref id="acurveobj" name="ACurve object">
 <item>Apply: <ref id="propgui" name="apply property GUI">
 <item>Apply To All/Selected: <ref id="mmpnts" name="main menu entry">
 <item>applyTrafo: <ref id="scapplytrafo" name="scripting interface command">
