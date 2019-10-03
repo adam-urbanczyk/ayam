@@ -1350,7 +1350,7 @@ ay_ict_interptcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbcurve_object *curve = NULL, *newcurve = NULL;
  ay_list_object *sel = ay_selection;
  int have_closed = AY_FALSE;
- int length, order = 4, ktype = AY_KTCHORDAL, closed = AY_FALSE;
+ int length, order = 4, ptype = AY_KTCHORDAL, closed = AY_FALSE;
  double *controlv, sdlen = 0.0, edlen = 0.0;
 
   if(!sel)
@@ -1394,23 +1394,23 @@ ay_ict_interptcmd(ClientData clientData, Tcl_Interp *interp,
 		  return TCL_OK;
 		}
 	      break;
-	    case 'k':
-	      /* -ktype */
-	      tcl_status = Tcl_GetInt(interp, argv[i+1], &ktype);
+	    case 'p':
+	      /* -ptype */
+	      tcl_status = Tcl_GetInt(interp, argv[i+1], &ptype);
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
-	      switch(ktype)
+	      switch(ptype)
 		{
 		case 0:
-		  ktype = AY_KTCHORDAL;
+		  ptype = AY_KTCHORDAL;
 		  break;
 		case 1:
-		  ktype = AY_KTCENTRI;
+		  ptype = AY_KTCENTRI;
 		  break;
 		case 2:
-		  ktype = AY_KTUNIFORM;
+		  ptype = AY_KTUNIFORM;
 		  break;
 		default:
-		  ktype = AY_KTCHORDAL;
+		  ptype = AY_KTCHORDAL;
 		  break;
 		} /* switch */
 	      break;
@@ -1475,7 +1475,7 @@ ay_ict_interptcmd(ClientData clientData, Tcl_Interp *interp,
 		{
 		  ay_status = ay_ict_interpolateG3DClosed(order, length,
 							  sdlen, edlen,
-							  AY_FALSE, ktype,
+							  AY_FALSE, ptype,
 							  controlv,
 							  NULL, NULL,
 							  &newcurve);
@@ -1484,7 +1484,7 @@ ay_ict_interptcmd(ClientData clientData, Tcl_Interp *interp,
 		{
 		  ay_status = ay_ict_interpolateG3D(order, length,
 						    sdlen, edlen,
-						    AY_FALSE, ktype,
+						    AY_FALSE, ptype,
 						    controlv,
 						    NULL, NULL,
 						    &newcurve);
@@ -1496,7 +1496,7 @@ ay_ict_interptcmd(ClientData clientData, Tcl_Interp *interp,
 		{
 		  ay_status = ay_ict_interpolateC2CClosed(length,
 							  sdlen, edlen,
-							  ktype, AY_FALSE,
+							  ptype, AY_FALSE,
 							  NULL, NULL,
 							  controlv,
 							  &newcurve);
@@ -1505,7 +1505,7 @@ ay_ict_interptcmd(ClientData clientData, Tcl_Interp *interp,
 		{
 		  ay_status = ay_ict_interpolateC2C(length,
 						    sdlen, edlen,
-						    ktype, AY_FALSE,
+						    ptype, AY_FALSE,
 						    NULL, NULL,
 						    controlv,
 						    &newcurve);

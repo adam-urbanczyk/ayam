@@ -505,8 +505,8 @@ $m.nct add command -label "Extend" -command {
 #  ^^^^^^^^^^^ => X
 
 $m.nct add command -label "Interpolate" -command {
-    runTool [list ay(interpo) ay(interpc) ay(interpkt) ay(interpsdl) ay(interpedl)]\
-	[list "Order:" "Closed:" "Knot-Type:" "SDLen:" "EDLen:"]\
+    runTool [list ay(interpo) ay(interpc) ay(interppt) ay(interpsdl) ay(interpedl)]\
+	[list "Order:" "Closed:" "ParamType:" "SDLen:" "EDLen:"]\
       "undo save InterpNC; interpNC -o %0 -c %1 -k %2 -s %3 -e %4; plb_update; rV"\
 	"Interpolate Curve" interpnct
 }
