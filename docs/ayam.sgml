@@ -14156,9 +14156,12 @@ and by the specified height value. See also the image above.
 </figure>
 <descrip>
 <tag/Arguments/ The interpolate tool takes a number of NURBS
-curves from the selection and requests an additional parameter <em/o/.
+curves from the selection and requests five additional parameters.
 <tag/Operation/ The curves will be modified so that they interpolate
-all original control points with the desired interpolation order <em/o/.
+all original control points with the desired interpolation order,
+knot type and end derivatives.
+For a detailed description of the parameters see
+section <ref id="icp" name="ICurveAttr Property">.
 See also the image above.
 <tag/Notes/
 Eventually present weight information of the original curves will be ignored.
@@ -15167,7 +15170,9 @@ The point selection will be removed from the original objects.
 
 See also the documentation of the corresponding scripting interface commands
 <ref id="scinterpunp" name="interpuNP"> and
-<ref id="scinterpvnp" name="interpvNP">.
+<ref id="scinterpvnp" name="interpvNP">,
+as well as the related tool for
+curves <ref id="interpnct" name="Interpolate Tool">.
 </descrip>
 
 <#if out="latex"><x/newpage/</#if>
@@ -18474,7 +18479,7 @@ See also section <ref id="makecompt" name="Make Compatible Tool">.
 <label id="scinterpnc">
 interpNC &ndash; interpolate NURBS curve:
 <itemize>
- <item>Synopsis: <tt/"interpNC [-order order | -ktype type | -closed (0|1) | -sdlen length | -edlen length]"/
+ <item>Synopsis: <tt/"interpNC [-order order | -ptype type | -closed (0|1) | -sdlen length | -edlen length]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Interpolate the selected NURBS curves
 with desired order and parameterisation type.
