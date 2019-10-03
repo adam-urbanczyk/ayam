@@ -14147,6 +14147,31 @@ and by the specified height value. See also the image above.
 
 <#if out="latex"><x/newpage/</#if>
 
+<sect2>Interpolate Tool<label id="interpnct">
+<p>
+<figure loc="ht">
+<eps file="pics/interpnc.ps" height="5cm">
+<img src="pics/interpnc.gif">
+<caption>Interpolate Curve Tool (left-white: original curve, left-blue and right: interpolating curve)</caption>
+</figure>
+<descrip>
+<tag/Arguments/ The interpolate tool takes a number of NURBS
+curves from the selection and requests an additional parameter <em/o/.
+<tag/Operation/ The curves will be modified so that they interpolate
+all original control points with the desired interpolation order <em/o/.
+See also the image above.
+<tag/Notes/
+Eventually present weight information of the original curves will be ignored.
+
+The point selection will be removed from the original objects.
+
+See also the documentation of the corresponding scripting interface command
+<ref id="scinterpunp" name="interpNC"> and the related tool for
+surfaces <ref id="interpnpt" name="Interpolate Surface Tool">.
+</descrip>
+
+<#if out="latex"><x/newpage/</#if>
+
 <sect2>Shift Closed Curve Tool<label id="shiftclc">
 <p>
 <figure loc="ht">
@@ -15127,7 +15152,7 @@ curves <ref id="splitt" name="Split Tool">.
 <figure loc="ht">
 <eps file="pics/interpnp.ps" height="7cm">
 <img src="pics/interpnp.gif">
-<caption>Interpolate Surface Tool (left-white: original surface, left-blue and right: interpolated surface)</caption>
+<caption>Interpolate Surface Tool (left-white: original surface, left-blue and right: interpolating surface)</caption>
 </figure>
 <descrip>
 <tag/Arguments/ The interpolate surface tool takes a number of NURBS
@@ -15136,7 +15161,7 @@ patches from the selection and requests an additional parameter <em/o/.
 all original control points with the desired interpolation order <em/o/.
 See also the image above.
 <tag/Notes/
-The weight information of the original patches will be ignored.
+Eventually present weight information of the original patches will be ignored.
 
 The point selection will be removed from the original objects.
 
@@ -26034,6 +26059,7 @@ Index:
 <itemize>
 <item><ref id="swp" name="Sweep attribute">,
 <item><ref id="skp" name="Skin attribute">,
+<item><ref id="interpnct" name="NCurve tool">,
 <item><ref id="interpnpt" name="NPatch tool">
 </itemize>
 <item>Interpolate Boundary: <ref id="sdmeshobj" name="subdivision mesh tag">
