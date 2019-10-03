@@ -818,8 +818,8 @@ array set ay {
  interpc false
  interpsdl 0.125
  interpedl 0.125
- interpkt 0
- interpkt_l {"Chordal" "Centripetal" "Uniform"}
+ interppt 0
+ interppt_l {"Chordal" "Centripetal" "Uniform"}
 }
 # array ay
 
