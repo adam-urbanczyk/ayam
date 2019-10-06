@@ -1854,8 +1854,9 @@ ay_npt_breakintocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
- ay_object *src = NULL, *curves = NULL, *next = NULL;
- int i = 1, apply_trafo = AY_FALSE, u = 0;
+ ay_object *src = NULL, *curve = NULL, *curves = NULL, *next = NULL;
+ ay_object **prev = NULL, **last = NULL;
+ int i = 1, apply_trafo = AY_FALSE, replace = AY_FALSE, u = 0;
 
   if(!sel)
     {
@@ -1874,6 +1875,9 @@ ay_npt_breakintocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 		{
 		case 'a':
 		  apply_trafo = AY_TRUE;
+		  break;
+		case 'r':
+		  replace = AY_TRUE;
 		  break;
 		case 'u':
 		  u = 1;
@@ -1900,16 +1904,17 @@ ay_npt_breakintocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
+	  last = NULL;
 	  if(u)
 	    {
 	      ay_status = ay_npt_breakintocurvesu(src, apply_trafo,
-						  &curves, NULL);
+						  &curves, &last);
 	    }
 	  else
 	    {
 	      ay_status = ay_npt_breakintocurvesv(src, apply_trafo,
-						  &curves, NULL);
-	    } /* if */
+						  &curves, &last);
+	    }
 
 	  if(ay_status || !curves)
 	    {
@@ -1917,15 +1922,48 @@ ay_npt_breakintocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 	      break;
 	    }
 
-	  while(curves)
+	  curve = curves;
+	  while(curve)
 	    {
-	      next = curves->next;
+	      next = curve->next;
 	      if(!apply_trafo)
-		ay_trafo_copy(src, curves);
-	      ay_object_link(curves);
-	      curves = next;
+		ay_trafo_copy(src, curve);
+	      if(!replace)
+		{		  
+		  ay_object_link(curve);
+		}
+	      curve = next;
 	    }
-	} /* if */
+
+	  if(replace)
+	    {
+	      next = src->next;
+	      /*ay_object_replacemulti(src, curves, last);*/
+	      if(ay_currentlevel->object == src)
+		{
+		  /* src is first in current level */
+		  prev = &(ay_currentlevel->next->object->down);
+		}
+	      else
+		{
+		  /* src is somewhere in current level,
+		     go find the previous object */
+		  prev = &(ay_currentlevel->object->next);
+		  while(*prev != src)
+		    prev = &((*prev)->next);
+		}
+	      ay_status = ay_object_delete(src);
+	      if(ay_status)
+		{
+		  ay_error(AY_ERROR, argv[0],
+		   "Could not delete object, will move to clipboard instead.");
+		  src->next = ay_clipboard;
+		  ay_clipboard = src;
+		}
+	      *prev = curves;
+	      *last = next;
+	    } /* if replace */
+	} /* if is NPatch */
 
       sel = sel->next;
     } /* while */
