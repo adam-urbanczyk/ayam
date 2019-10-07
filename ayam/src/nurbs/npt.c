@@ -1853,7 +1853,7 @@ ay_npt_breakintocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 			   int argc, char *argv[])
 {
  int ay_status = AY_OK;
- ay_list_object *sel = ay_selection;
+ ay_list_object *sel = ay_selection, *oldsel;
  ay_object *src = NULL, *curve = NULL, *curves = NULL, *next = NULL;
  ay_object **prev = NULL, **last = NULL;
  int i = 1, apply_trafo = AY_FALSE, replace = AY_FALSE, u = 0;
@@ -1893,6 +1893,10 @@ ay_npt_breakintocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 	} /* while */
     } /* if */
 
+  oldsel = sel;
+  if(replace)
+    ay_selection = NULL;
+
   while(sel)
     {
       curves = NULL;
@@ -1929,8 +1933,12 @@ ay_npt_breakintocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 	      if(!apply_trafo)
 		ay_trafo_copy(src, curve);
 	      if(!replace)
-		{		  
+		{
 		  ay_object_link(curve);
+		}
+	      else
+		{
+		  ay_sel_add(curve, AY_TRUE);
 		}
 	      curve = next;
 	    }
@@ -1955,7 +1963,7 @@ ay_npt_breakintocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_status = ay_object_delete(src);
 	      if(ay_status)
 		{
-		  ay_error(AY_ERROR, argv[0],
+		  ay_error(AY_EWARN, argv[0],
 		   "Could not delete object, will move to clipboard instead.");
 		  src->next = ay_clipboard;
 		  ay_clipboard = src;
@@ -1967,6 +1975,22 @@ ay_npt_breakintocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 
       sel = sel->next;
     } /* while */
+
+  if(replace)
+    {
+      if(ay_selection)
+	{
+	  /* clear old selection and use new selection */
+	  sel = ay_selection;
+	  ay_selection = oldsel;
+	  ay_sel_free(AY_FALSE);
+	  ay_selection = sel;
+	}
+      else
+	{
+	  ay_selection = oldsel;
+	}
+    }
 
  return TCL_OK;
 } /* ay_npt_breakintocurvestcmd */
