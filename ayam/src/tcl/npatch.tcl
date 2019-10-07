@@ -86,6 +86,7 @@ proc npatch_break { } {
 
     addMenu $f npatchbrk_options Direction {"U" "V"}
     addCheck $f npatchbrk_options ApplyTrafo
+    addCheck $f npatchbrk_options ReplaceOriginal
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
@@ -94,12 +95,27 @@ proc npatch_break { } {
 	if { $npatchbrk_options(ApplyTrafo) == 1 } {
 	    append cmd " -a"
 	}
+	if { $npatchbrk_options(ReplaceOriginal) == 1 } {
+	    append cmd " -r"
+	}
 	if { $npatchbrk_options(Direction) == 1 } {
 	    append cmd " -v"
 	}
 	set ay_error ""
 	eval $cmd
-	uCR; rV; set ay(sc) 1
+	if { $npatchbrk_options(ReplaceOriginal) == 1 } {
+	    uS
+	    foreach sel [getSel] {
+		if { $ay(lb) == 0 } {
+		    $ay(tree) selection add $ay(CurrentLevel):$sel
+		} else {
+		    $ay(olb) selection set $sel
+		}
+	    }
+	} else {
+	    uCR
+	}
+	rV; set ay(sc) 1
 	if { $ay_error > 1 } {
 	    ayError 2 "Break" "There were errors while breaking!"
 	}
