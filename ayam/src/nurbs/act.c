@@ -1290,6 +1290,11 @@ ay_act_approxtcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_error(AY_ERROR, argv[0], "Order must be >= 2.");
 	      break;
 	    }
+	  if(length < order)
+	    {
+	      ay_error(AY_ERROR, argv[0], "Order must be <= length.");
+	      break;
+	    }
 	  if(!have_closed)
 	    {
 	      closed = AY_FALSE;
