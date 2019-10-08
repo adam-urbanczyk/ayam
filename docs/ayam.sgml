@@ -14159,7 +14159,7 @@ and by the specified height value. See also the image above.
 curves from the selection and requests five additional parameters.
 <tag/Operation/ The curves will be modified so that they interpolate
 all original control points with the desired interpolation order,
-knot type and end derivatives.
+parameterisation type and end derivatives.
 For a detailed description of the parameters see
 section <ref id="icp" name="ICurveAttr Property">.
 See also the image above.
@@ -14171,6 +14171,35 @@ The point selection will be removed from the original objects.
 See also the documentation of the corresponding scripting interface command
 <ref id="scinterpunp" name="interpNC"> and the related tool for
 surfaces <ref id="interpnpt" name="Interpolate Surface Tool">.
+</descrip>
+
+<#if out="latex"><x/newpage/</#if>
+
+<sect2>Approximate Tool<label id="approxnct">
+<p>
+<figure loc="ht">
+<eps file="pics/approxnc.ps" height="4.5cm">
+<img src="pics/approxnc.gif">
+<caption>Approximate Curve Tool (left: original curve, middle and right: approximating curve)</caption>
+</figure>
+<descrip>
+<tag/Arguments/ The approximate tool takes a number of NURBS
+curves from the selection and requests five additional parameters.
+<tag/Operation/ The curves will be modified so that they approximate
+the respective curve shape(s) with a new curve of desired approximation
+order and length.
+For a detailed description of the parameters see
+section <ref id="acurveattrprop" name="ACurveAttr Property">.
+See also the image above.
+<tag/Notes/
+The point selection will be removed from the original objects.
+
+See also the documentation of the corresponding scripting interface command
+<ref id="scapproxnc" name="approxNC">.
+<!--
+ and the related tool for
+surfaces <ref id="interpnpt" name="Interpolate Surface Tool">.
+-->
 </descrip>
 
 <#if out="latex"><x/newpage/</#if>
