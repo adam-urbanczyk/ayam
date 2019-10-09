@@ -1290,11 +1290,6 @@ ay_act_approxtcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_error(AY_ERROR, argv[0], "Order must be >= 2.");
 	      break;
 	    }
-	  if(length < order)
-	    {
-	      ay_error(AY_ERROR, argv[0], "Order must be <= length.");
-	      break;
-	    }
 	  if(!have_closed)
 	    {
 	      closed = AY_FALSE;
@@ -1302,7 +1297,14 @@ ay_act_approxtcmd(ClientData clientData, Tcl_Interp *interp,
 		 (curve->type == AY_CTPERIODIC))
 		{
 		  closed = AY_TRUE;
+		  length += (order-1);
 		}
+	    }
+
+	  if(length < order)
+	    {
+	      ay_error(AY_ERROR, argv[0], "Order must be <= length.");
+	      break;
 	    }
 
 	  tcv = NULL;
@@ -1322,7 +1324,7 @@ ay_act_approxtcmd(ClientData clientData, Tcl_Interp *interp,
 	      else
 		{
 		  ay_status = ay_act_leastSquaresClosed(tcv, tlen,
-							length+order-1,
+							length,
 							order-1,
 							&knotv, &controlv);
 		}
