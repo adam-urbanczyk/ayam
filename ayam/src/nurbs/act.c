@@ -1332,8 +1332,7 @@ ay_act_approxtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(!ay_status && knotv && controlv)
 	    {
-	      ay_status = ay_nct_create(order, closed?length+order-1:length,
-					AY_KTCUSTOM,
+	      ay_status = ay_nct_create(order, length, AY_KTCUSTOM,
 					controlv, knotv, &newcurve);
 	    }
 
