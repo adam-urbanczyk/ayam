@@ -14186,11 +14186,14 @@ surfaces <ref id="interpnpt" name="Interpolate Surface Tool">.
 <tag/Arguments/ The approximate tool takes a number of NURBS
 curves from the selection and requests five additional parameters.
 <tag/Operation/ The curves will be modified so that they approximate
-the respective curve shape(s) with a new curve of desired approximation
-order and length.
+their respective original curve shape(s) using a new NURBS curve
+with an adjustable number of new control points and order.
 For a detailed description of the parameters see
 section <ref id="acurveattrprop" name="ACurveAttr Property">.
-See also the image above.
+See also the image above where a curve with seven original control points
+of order four has been approximated by a curve with just three control
+points and order three (middle) and by a curve with seven control points
+and order three (left).
 <tag/Notes/
 The point selection will be removed from the original objects.
 
@@ -18534,10 +18537,8 @@ points will <em/not/ be interpolated by the curve. The curve will
 rather interpolate the <em/old/ control point positions.
 <p>
 The knot type of the interpolated curves will be changed to <tt/"Custom"/.
-<!--
 <p>
-See also section <ref id="interpnct" name="Interpolate Curve Tool">.
--->
+See also section <ref id="interpnct" name="Interpolate Tool">.
 </itemize>
 
 <#if out="latex"><x/newpage/</#if>
@@ -18569,10 +18570,8 @@ The <tt/"-tesselate"/ parameter allows to specify a parameter for
 the tesselation of the curve to be approximated.
 <p>
 The knot type of the processed curves will be changed to <tt/"Custom"/.
-<!--
 <p>
-See also section <ref id="approxnct" name="Approximate Curve Tool">.
--->
+See also section <ref id="approxnct" name="Approximate Tool">.
 </itemize>
 
 <#if out="latex"><x/newpage/</#if>
@@ -25458,7 +25457,12 @@ Index:
 <item>ANS: <ref id="anstag" name="tag type">
 <item>AntiAlias Lines: <ref id="vmconf" name="view menu entry">
 <item>apnt.tcl: <ref id="apnttcl" name="example/helper script">
-<item>Approximating Curve: <ref id="acurveobj" name="ACurve object">
+<item>Approximate:
+<itemize>
+<item><ref id="acurveobj" name="ACurve object">,
+<item><ref id="approxnct" name="curve tool">
+</itemize>
+<item>approxNC: <ref id="scapproxnc" name="scripting interface command">
 <item>Apply: <ref id="propgui" name="apply property GUI">
 <item>Apply To All/Selected: <ref id="mmpnts" name="main menu entry">
 <item>applyTrafo: <ref id="scapplytrafo" name="scripting interface command">
