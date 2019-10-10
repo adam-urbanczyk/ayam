@@ -1256,9 +1256,9 @@ ay_act_approxtcmd(ClientData clientData, Tcl_Interp *interp,
 	      /* -tesselate */
 	      tcl_status = Tcl_GetInt(interp, argv[i+1], &tesselate);
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
-	      if(length <= 2)
+	      if(tesselate < 1)
 		{
-		  ay_error(AY_ERROR, argv[0], "Tesselate must be > 2.");
+		  ay_error(AY_ERROR, argv[0], "Tesselate must be >= 1.");
 		  return TCL_OK;
 		}
 	      break;
