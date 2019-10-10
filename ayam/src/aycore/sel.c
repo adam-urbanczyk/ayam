@@ -108,7 +108,16 @@ ay_sel_selobtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = ay_currentlevel->object, *e;
  int i = 0, j = 0, firstarg = 1, start, end, need_redraw = AY_TRUE;
  char vname[] = "ay(need_redraw)", yes[] = "1", no[] = "0", *endptr;
+ char *nargv[2];
  long int argvi = 0;
+
+  /* is -get? */
+  if((argc > 1) && (argv[1][0] == '-') && (argv[1][1] == 'g'))
+    {
+      nargv[0] = argv[0];
+      nargv[1] = argv[2];
+      return ay_sel_getseltcmd(clientData, interp, argc-1, nargv);
+    }
 
   /* clear selected flags from currently selected objects */
   t = ay_selection;
