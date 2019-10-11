@@ -1,4 +1,4 @@
-[17. Sep 2019] Tip:
+[11. Oct 2019] Tip:
 ===================
 Bug Fixes:
 o NURBSphere objects can not be trimmed (SF 587)
@@ -15,7 +15,11 @@ o add warning message when a transformation action is started in points
 o tesselation of trimmed NURBS using STESS is much faster now
 o improved handling of weights for single drag selected rational points
   in numeric edit action
-o added tool to reduce the order/degree of a NURBS curve
+o added tools to reduce the order/degree of NURBS curves and surfaces
+o added tool to interpolate NURBS curves
+o added tool to approximate NURBS curves
+o the "break into curves" tool can now replace the original surface with
+  the curves
 o clamping/unclamping curves/surfaces no longer removes the point selection
 o improved handling of multiple points in knot refinement
 o fixed fetching of rational points from NCircle and Script objects
@@ -46,10 +50,15 @@ o added "-refine" option to "estlenNC" command to improve the accuracy
 o added "reduceNC" command to reduce the order/degree of a NURBS curve
 o added "extrNC" command to extract a sub curve of a NURBS curve
 o added "interpNC" command to interpolate NURBS curves
+o added "approxNC" command to approximate NURBS curves
 o added "concatC" command to concatenate NURBS curve providing objects
 o added "remsuknuNP"/"remsuknvNP" commands to remove superfluous knots
   from NURBS surfaces
+o added "reduceuNP"/"reducevNP" commands to reduce the order of
+  NURBS surfaces
 o aded "-relative" option to "extrNP" command
+o aded "-replace" option to "breakNP" command
+o added "-get" option to "selOb" command
 o improved handling of closed and periodic surfaces in interpolation tool
 
 Import/Export:
