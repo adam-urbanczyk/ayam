@@ -17123,11 +17123,13 @@ scripting interface commands operate on selected objects only:
 <label id="scselob">
 selOb &ndash; select object(s):
 <itemize>
- <item>Synopsis: <tt/"selOb ([-end | -clear] | [index] | [first-last])"/
+ <item>Synopsis: <tt/"selOb ([-get | -end | -clear] | [index] | [first-last])"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Use this command to set or clear the current
 selection, <tt/index/ may be a single (zero based) index, an ordered list of
 indices or a range.<newline>
+If the <tt/"-get"/ option is specified, the current
+selection will be returned just as the <tt/"getSel"/ command does.<newline>
 If no index is given or the <tt/"-clear"/ option is specified, the current
 selection will be cleared.<newline>
 If the single index is -1 or the <tt/"-end"/ option is specified, the last
@@ -19115,7 +19117,7 @@ See also section <ref id="interpnpt" name="Interpolate Surface Tool">.
 <label id="scbreaknp">
 breakNP &ndash; break NURBS patch into curves:
 <itemize>
- <item>Synopsis: <tt/"breakNP [-a | (-u | -v)]"/
+ <item>Synopsis: <tt/"breakNP [-r | -a | (-u | -v)]"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Breaks the selected NPatch objects into NURBS curves,
 along parametric dimension U or V (depending on whether the option
@@ -19126,6 +19128,10 @@ objects will be applied to the control points and the NCurve objects
 will be created with default transformation attributes, otherwise the
 control points will be copied verbatim and the NCurve objects will get
 the transformation attributes of the respective NPatch.
+<p>
+If the option <tt/"-r"/ is specified, the new curve objects will
+replace each NPatch object instead of being appended to the current
+level. They will also be selected immediately.<footnote>Since 1.27.</footnote>
 <p>
 See also section <ref id="breaknpt" name="Break into Curves Tool">.
 </itemize>
