@@ -1888,10 +1888,10 @@ ay_npt_breakintocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 		default:
 		  break;
 		}
-	    } /* if */
+	    } /* if is arg */
 	  i++;
 	} /* while */
-    } /* if */
+    } /* if have args */
 
   oldsel = sel;
   if(replace)
@@ -1938,7 +1938,7 @@ ay_npt_breakintocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 		}
 	      else
 		{
-		  ay_sel_add(curve, AY_TRUE);
+		  (void)ay_sel_add(curve, AY_TRUE);
 		}
 	      curve = next;
 	    }
@@ -1951,6 +1951,7 @@ ay_npt_breakintocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 		{
 		  /* src is first in current level */
 		  prev = &(ay_currentlevel->next->object->down);
+		  ay_currentlevel->object = curves;
 		}
 	      else
 		{
@@ -2197,11 +2198,12 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK, tcl_status = TCL_OK;
  ay_list_object *sel = NULL, *curves = NULL, *new = NULL, **next = NULL;
- ay_object *o = NULL, *patch = NULL;
+ ay_object *o = NULL, *patch = NULL, **prev;
  ay_nurbcurve_object *nc = NULL;
  int i = 1, length = 0, ncurves = 0;
  int order = 0, knots = AY_KTNURB, type = AY_CTOPEN;
- int apply_trafo = AY_TRUE;
+ int apply_trafo = AY_TRUE, replace = AY_FALSE;
+ char *dargv[2] = {"delOb", NULL};
 
   sel = ay_selection;
 
@@ -2232,6 +2234,9 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
 		  tcl_status = Tcl_GetInt(interp, argv[i+1], &knots);
 		  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 		  break;
+		case 'r':
+		  replace = AY_TRUE;
+		  break;
 		case 't':
 		  tcl_status = Tcl_GetInt(interp, argv[i+1], &type);
 		  AY_CHTCLERRRET(tcl_status, argv[0], interp);
@@ -2239,10 +2244,10 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
 		default:
 		  break;
 		} /* switch */
-	    } /* if */
+	    } /* if is arg */
 	  i += 2;
 	} /* while */
-    } /* if */
+    } /* if have args */
 
   /* parse selection */
   while(sel)
@@ -2277,7 +2282,7 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      ncurves++;
 	    } /* if */
-	} /* if */
+	} /* if is NCurve */
       sel = sel->next;
     } /* while */
 
@@ -2291,8 +2296,35 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
   else
     {
       patch->down = ay_endlevel;
-      ay_object_link(patch);
-    }
+      o = ay_selection->object;
+      if(replace)
+	{
+	  if(ay_currentlevel->object == o)
+	    {
+	      /* o is first in current level */
+	      prev = &(ay_currentlevel->next->object->down);
+	      ay_currentlevel->object = patch;
+	    }
+	  else
+	    {
+	      /* o is somewhere in current level,
+		 go find the previous object */
+	      prev = &(ay_currentlevel->object->next);
+	      while(*prev != o)
+		prev = &((*prev)->next);
+	    }
+	  *prev = patch;
+	  patch->next = o;
+
+	  (void)ay_object_deletetcmd(clientData, interp, 0, dargv);
+
+	  (void)ay_sel_add(patch, AY_TRUE);
+	}
+      else
+	{
+	  ay_object_link(patch);
+	} /* if replace */
+    } /* if */
 
 cleanup:
 
