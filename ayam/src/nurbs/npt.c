@@ -2236,6 +2236,7 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
 		  break;
 		case 'r':
 		  replace = AY_TRUE;
+		  i--;
 		  break;
 		case 't':
 		  tcl_status = Tcl_GetInt(interp, argv[i+1], &type);
