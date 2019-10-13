@@ -467,7 +467,6 @@ $m.nct add command -label "Refine" -command { undo save Refine;
  -underline 2
 # ^^^^^^^^^^^ => F
 
-
 $m.nct add command -label "Coarsen" -command { undo save Coarsen; coarsenC;
                                               plb_update; rV } \
  -underline 2
@@ -517,6 +516,7 @@ $m.nct add command -label "Approximate" -command {
       "undo save ApproxNC; approxNC -o %0 -l %1 -c %2 -t %3; plb_update; rV"\
 	"Approximate Curve" approxnct
 }
+
 $m.nct add cascade -menu $m.nct.kn -label "Knots" -underline 0
 menu $m.nct.kn -tearoff 0
 
@@ -872,9 +872,7 @@ $m.npt add command -label "Tween" -underline 1 -command {
 $m.npt add command -label "Tesselate" -command tgui_open -underline 0
 $m.npt add separator
 $m.npt add command -label "Break into Curves" -command npatch_break
-$m.npt add command -label "Build from Curves" -command {
-    buildNP; uCR; sL; rV; set ay(sc) 1
-}
+$m.npt add command -label "Build from Curves" -command npatch_build
 
 $m add separator
 
