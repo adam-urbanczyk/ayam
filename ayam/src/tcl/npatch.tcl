@@ -103,21 +103,22 @@ proc npatch_break { } {
 	}
 	set ay_error ""
 	eval $cmd
-	if { $npatchbrk_options(ReplaceOriginal) == 1 } {
-	    uS
-	    foreach sel [getSel] {
-		if { $ay(lb) == 0 } {
-		    $ay(tree) selection add $ay(CurrentLevel):$sel
-		} else {
-		    $ay(olb) selection set $sel
-		}
-	    }
-	} else {
-	    uCR
-	}
-	rV; set ay(sc) 1
 	if { $ay_error > 1 } {
 	    ayError 2 "Break" "There were errors while breaking!"
+	} else {
+	    if { $npatchbrk_options(ReplaceOriginal) == 1 } {
+		uS
+		foreach sel [getSel] {
+		    if { $ay(lb) == 0 } {
+			$ay(tree) selection add $ay(CurrentLevel):$sel
+		    } else {
+			$ay(olb) selection set $sel
+		    }
+		}
+	    } else {
+		uCR
+	    }
+	    rV; set ay(sc) 1
 	}
 
 	grab release .npatchbrk
@@ -152,8 +153,107 @@ proc npatch_break { } {
 }
 # npatch_break
 
+# npatch_build:
+#
+#
+proc npatch_build { } {
+    global ay ayprefs ay_error npatchbld_options
+
+    if { ! [info exists npatchbld_options] } {
+	set npatchbld_options(Order) 0
+    }
+
+    winAutoFocusOff
+
+    set npatchbld_options(oldfocus) [focus]
+
+    set w .npatchbld
+    set t "Build NPatch"
+    winDialog $w $t
+
+    set f [frame $w.f1]
+    pack $f -in $w -side top -fill x
+
+    set ay(bca) $w.f2.bca
+    set ay(bok) $w.f2.bok
+
+    if { $ayprefs(FixDialogTitles) == 1 } {
+	addText $f e1 $t
+    }
+
+    addParam $f npatchbld_options Order
+    addCheck $f npatchbld_options ApplyTrafo
+    addCheck $f npatchbld_options ReplaceOriginal
+
+    set f [frame $w.f2]
+    button $f.bok -text "Ok" -width 5 -command {
+	global ay_error npatchbld_options
+	set cmd "buildNP"
+	if { $npatchbld_options(Order) != 0 } {
+	    append cmd " -o $npatchbld_options(Order)"
+	}
+	if { $npatchbld_options(ApplyTrafo) == 1 } {
+	    append cmd " -a 1"
+	}
+	if { $npatchbld_options(ReplaceOriginal) == 1 } {
+	    append cmd " -r"
+	}
+
+	set ay_error ""
+	eval $cmd
+	if { $ay_error > 1 } {
+	    ayError 2 "Build" "There were errors while building!"
+	} else {
+	    if { $npatchbld_options(ReplaceOriginal) == 1 } {
+		uS
+		foreach sel [getSel] {
+		    if { $ay(lb) == 0 } {
+			$ay(tree) selection add $ay(CurrentLevel):$sel
+		    } else {
+			$ay(olb) selection set $sel
+		    }
+		}
+	    } else {
+		uCR
+	    }
+	    rV; set ay(sc) 1
+	}
+
+	grab release .npatchbld
+	restoreFocus $npatchbld_options(oldfocus)
+	destroy .npatchbld
+    }
+
+    button $f.bca -text "Cancel" -width 5 -command "\
+	    grab release .npatchbld;\
+	    restoreFocus $npatchbld_options(oldfocus);\
+	    destroy .npatchbld"
+
+    pack $f.bok $f.bca -in $f -side left -fill x -expand yes
+    pack $f -in $w -side bottom -fill x
+
+    # Esc-key && close via window decoration == Cancel button
+    bind $w <Escape> "$f.bca invoke"
+    wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
+
+    shortcut_addcshelp $w ayam-5.html buildnpt
+
+    winRestoreOrCenter $w $t
+    grab $w
+    focus $w.f2.bok
+    tkwait window $w
+
+    winAutoFocusOn
+
+    after idle viewMouseToCurrent
+
+ return;
+}
+# npatch_build
+
+
 # compute suggested new knots for refine knots with operation
-proc npatch_getrknotsu {} {
+proc npatch_getrknotsu { } {
     global ay NPatchAttrData
     set ay(refineknu) ""
     set ui [expr $NPatchAttrData(Order_U) - 1]
@@ -168,11 +268,13 @@ proc npatch_getrknotsu {} {
     if { [llength $ay(refineknu)] == 1 } {
 	lappend ay(refineknu) [lindex $ay(refineknu) 0]
     }
+ return;
 }
 # npatch_getrknotsu
 
+
 # compute suggested new knots for refine knots with operation
-proc npatch_getrknotsv {} {
+proc npatch_getrknotsv { } {
     global ay NPatchAttrData
     set ay(refineknv) ""
     set vi [expr $NPatchAttrData(Order_V) - 1]
@@ -187,6 +289,7 @@ proc npatch_getrknotsv {} {
     if { [llength $ay(refineknv)] == 1 } {
 	lappend ay(refineknv) [lindex $ay(refineknv) 0]
     }
+ return;
 }
 # npatch_getrknotsv
 
