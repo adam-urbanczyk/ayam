@@ -15344,14 +15344,18 @@ scripting interface command <ref id="scextrnp" name="extrNP">.
 </figure>
 <descrip>
 <tag/Arguments/ The break into curves tool takes all NURBS patches from
-the selection and requests a direction parameter.
+the selection and requests some parameters.
 <tag/Operation/ The selected NURBS patches will be broken into NURBS curves,
-along the given direction (U or V). If the option <tt/"ApplyTrafo"/ is set,
+along the given direction (U or V).<newline>
+If the option <tt/"ApplyTrafo"/ is set,
 the transformations of the NPatch objects will be applied to the
 control points and the NCurve objects will be created with default
 transformation attributes, otherwise the NCurve objects will get the
 transformation attributes of the respective NPatch.
-See also the image above.
+See also the image above.<newline>
+If the option <tt/"ReplaceOriginal"/ is enabled, the curves will
+replace each original NPatch object, however, by default new curve
+objects will be appended to the current level:
 <tscreen><verb>
 |-NPatch             |-NPatch
                      |-NCurve
@@ -15359,7 +15363,7 @@ See also the image above.
                      |-NCurve
                      |-NCurve
 </verb></tscreen>
-<tag/Notes/ The original NURBS patch objects are not deleted.
+<tag/Notes/
 See also the documentation of the corresponding
 scripting interface command <ref id="scbreaknp" name="breakNP">.
 </descrip>
@@ -15375,20 +15379,31 @@ scripting interface command <ref id="scbreaknp" name="breakNP">.
 </figure>
 <descrip>
 <tag/Arguments/ The build from curves tool takes a number of NURBS
-curves from the selection.
+curves from the selection and requests some parameters.
 <tag/Operation/ The selected NURBS curves will be parsed, all curves
 that are of equal length or longer than the first selected curve
 will be used to form a new NURBS patch of the following
 dimensions:<newline>
 Width: number of used curves,
 Height: length of the first selected curve.
-The order in U direction (Order_U) will be equal to the number of used curves
-for numbers of two to four and four for bigger numbers of used curves.
+If the supplied order is 0 (this is the default), the order of the
+new surface in U direction (Order_U) will be equal to the number of
+used curves for numbers of two to four and four for bigger numbers of
+used curves.<newline>
 The knot type in U direction (Knot-Type_U) will always be NURB.
 Other parameters (Order_V, Knot-Type_V, Knots_V) are taken from
 the first curve.<newline>
 See also the image above; note, that the extraneous control point
 of the upper curve and the knot vector of the curve below are ignored.
+<p>
+If the <tt/"ApplyTrafo"/ option is enabled the transformation
+attributes of the individual curve objects will be applied to
+the control points, otherwise they will simply be ignored.
+<p>
+If the <tt/"ReplaceOriginal"/ option is enabled, the new surface
+object will replace the first of the curves and the other curves
+will be removed. However, by default the new NPatch object will be
+appended to the current level:
 <tscreen><verb>
 |-NCurve               |-NCurve
 |-NCurve               |-NCurve
@@ -15396,8 +15411,7 @@ of the upper curve and the knot vector of the curve below are ignored.
 |-NCurve               |-NCurve
                        |-NPatch
 </verb></tscreen>
-<tag/Notes/ The original NURBS curve objects are not deleted.
-
+<tag/Notes/
 See also the documentation of the corresponding
 scripting interface command <ref id="scbuildnp" name="buildNP">.
 </descrip>
