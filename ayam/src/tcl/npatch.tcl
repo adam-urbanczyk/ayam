@@ -160,7 +160,8 @@ proc npatch_build { } {
     global ay ayprefs ay_error npatchbld_options
 
     if { ! [info exists npatchbld_options] } {
-	set npatchbld_options(Order) 0
+	set npatchbld_options(Order_U) 0
+	set npatchbld_options(Knot-Type_U) 2
 	set npatchbld_options(ApplyTrafo) 1
     }
 
@@ -182,7 +183,9 @@ proc npatch_build { } {
 	addText $f e1 $t
     }
 
-    addParam $f npatchbld_options Order
+    addParam $f npatchbld_options Order_U
+    addMenu $f npatchbld_options Knot-Type_U { Bezier B-Spline NURB\
+						  Chordal Centripetal }
     addCheck $f npatchbld_options ApplyTrafo
     addCheck $f npatchbld_options ReplaceOriginal
 
@@ -190,9 +193,14 @@ proc npatch_build { } {
     button $f.bok -text "Ok" -width 5 -command {
 	global ay_error npatchbld_options
 	set cmd "buildNP"
-	if { $npatchbld_options(Order) != 0 } {
-	    append cmd " -o $npatchbld_options(Order)"
+	if { $npatchbld_options(Order_U) != 0 } {
+	    append cmd " -o $npatchbld_options(Order_U)"
 	}
+	set kt $npatchbld_options(Knot-Type_U)
+	if { $kt > 2 } {
+	    incr kt
+	}
+	append cmd " -k $kt"
 	if { $npatchbld_options(ApplyTrafo) == 1 } {
 	    append cmd " -a 1"
 	}
