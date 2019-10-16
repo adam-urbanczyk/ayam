@@ -2203,6 +2203,7 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
  int i = 1, length = 0, ncurves = 0;
  int order = 0, knots = AY_KTNURB, type = AY_CTOPEN;
  int apply_trafo = AY_TRUE, replace = AY_FALSE;
+ int have_order = AY_FALSE;
  char *dargv[2] = {"delOb", NULL};
 
   sel = ay_selection;
@@ -2229,10 +2230,22 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
 		case 'o':
 		  tcl_status = Tcl_GetInt(interp, argv[i+1], &order);
 		  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+		  have_order = AY_TRUE;
 		  break;
 		case 'k':
 		  tcl_status = Tcl_GetInt(interp, argv[i+1], &knots);
 		  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+		  if(knots < 0 || knots > 5)
+		    {
+		      ay_error(AY_ERROR, argv[0], "Illegal knot type!");
+		      return TCL_OK;
+		    }
+		  if(knots == 3)
+		    {
+		      ay_error(AY_ERROR, argv[0],
+			       "Custom knots are not supported!");
+		      return TCL_OK;
+		    }
 		  break;
 		case 'r':
 		  replace = AY_TRUE;
@@ -2286,6 +2299,20 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
 	} /* if is NCurve */
       sel = sel->next;
     } /* while */
+
+  if(ncurves < 2)
+    {
+      ay_error(AY_ERROR, argv[0], "Need at least two curves!");
+      goto cleanup;
+    }
+
+  if(!have_order)
+    {
+      if(ncurves > 4)
+	order = 4;
+      else
+	order = ncurves;
+    }
 
   ay_status = ay_npt_buildfromcurves(curves, ncurves, type, order,
 				     knots, apply_trafo, &patch);
