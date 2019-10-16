@@ -161,6 +161,7 @@ proc npatch_build { } {
 
     if { ! [info exists npatchbld_options] } {
 	set npatchbld_options(Order) 0
+	set npatchbld_options(ApplyTrafo) 1
     }
 
     winAutoFocusOff
