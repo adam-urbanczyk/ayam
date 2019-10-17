@@ -5101,7 +5101,7 @@ ay_nct_fillgaps(int closed, int order, double tanlen, ay_object *curves)
  int ay_status = AY_OK;
 
   if(!curves)
-    { return AY_ENULL; }
+    return AY_ENULL;
 
   c = curves;
   while(c)

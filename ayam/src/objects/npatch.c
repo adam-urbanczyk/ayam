@@ -1124,7 +1124,7 @@ ay_npatch_shadech(ay_nurbpatch_object *npatch)
 
   if(!(stess->tessv = calloc(npatch->width*npatch->height*3,
 				     sizeof(double))))
-    { return AY_EOMEM; }
+    return AY_EOMEM;
 
   ay_npt_getcvnormals(npatch, stess->tessv);
   stess->tessw = -1;
@@ -2340,10 +2340,10 @@ ay_npatch_readcb(FILE *fileptr, ay_object *o)
  int i, a;
 
   if(!fileptr || !o)
-    { return AY_ENULL; }
+    return AY_ENULL;
 
   if(!(npatch = calloc(1, sizeof(ay_nurbpatch_object))))
-    { return AY_EOMEM; }
+    return AY_EOMEM;
 
   fscanf(fileptr, "%d\n", &npatch->width);
   fscanf(fileptr, "%d\n", &npatch->height);
@@ -3149,7 +3149,7 @@ ay_npatch_convertcb(ay_object *o, int in_place)
   if(npatch->caps_and_bevels)
     {
       if(!(new = calloc(1, sizeof(ay_object))))
-	{ return AY_EOMEM; }
+	return AY_EOMEM;
 
       ay_object_defaults(new);
       new->type = AY_IDLEVEL;
