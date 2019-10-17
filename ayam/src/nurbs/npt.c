@@ -2041,14 +2041,10 @@ ay_npt_buildfromcurves(ay_list_object *curves, int ncurves, int type,
  double m[16];
 
   if(!curves || !patch)
-    {
-      return AY_ENULL;
-    }
+    return AY_ENULL;
 
   if(ncurves < 2)
-    {
-      return AY_ERROR;
-    }
+    return AY_ERROR;
 
   /* parse curves */
   curve = curves;

@@ -1678,7 +1678,7 @@ ay_ncurve_readcb(FILE *fileptr, ay_object *o)
     return AY_ENULL;
 
   if(!(ncurve = calloc(1, sizeof(ay_nurbcurve_object))))
-    { return AY_EOMEM; }
+    return AY_EOMEM;
 
   fscanf(fileptr, "%d\n", &ncurve->length);
   fscanf(fileptr, "%d\n", &ncurve->order);
@@ -1853,7 +1853,7 @@ ay_ncurve_convertcb(ay_object *o, int in_place)
  ay_object *new = NULL;
 
   if(!o)
-    { return AY_ENULL; }
+    return AY_ENULL;
 
   nc = (ay_nurbcurve_object *) o->refine;
 
@@ -1861,7 +1861,7 @@ ay_ncurve_convertcb(ay_object *o, int in_place)
     return AY_ENULL;
 
   if(!(new = calloc(1, sizeof(ay_object))))
-    { return AY_EOMEM; }
+    return AY_EOMEM;
 
   ay_object_defaults(new);
   new->type = AY_IDICURVE;
