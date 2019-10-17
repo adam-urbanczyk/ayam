@@ -1671,7 +1671,7 @@ ay_npt_breakintocurvesu(ay_object *o, int apply_trafo,
 	  free(new);
 	  return AY_EOMEM;
 	}
-      memcpy(knotv, patch->vknotv, (size_t)(knots*sizeof(double)));
+      memcpy(knotv, patch->vknotv, knots*sizeof(double));
 
       if(!(controlv = malloc(stride*dstlen*sizeof(double))))
 	{
@@ -1679,7 +1679,7 @@ ay_npt_breakintocurvesu(ay_object *o, int apply_trafo,
 	  return AY_EOMEM;
 	}
       memcpy(controlv, &(patch->controlv[i*dstlen*stride]),
-	     (size_t)(stride*dstlen*sizeof(double)));
+	     stride*dstlen*sizeof(double));
 
       if(apply_trafo)
 	{
@@ -1781,7 +1781,7 @@ ay_npt_breakintocurvesv(ay_object *o, int apply_trafo,
 	  free(new);
 	  return AY_EOMEM;
 	}
-      memcpy(knotv, patch->uknotv, (size_t)(knots*sizeof(double)));
+      memcpy(knotv, patch->uknotv, knots*sizeof(double));
 
       if(!(controlv = malloc(stride*dstlen*sizeof(double))))
 	{
@@ -1792,7 +1792,7 @@ ay_npt_breakintocurvesv(ay_object *o, int apply_trafo,
       for(j = 0; j < dstlen; j++)
 	{
 	  memcpy(&(controlv[j*stride]), &(patch->controlv[a]),
-		 (size_t)(stride*sizeof(double)));
+		 stride*sizeof(double));
 	  a += patch->height*stride;
 	}
 
@@ -2089,7 +2089,7 @@ ay_npt_buildfromcurves(ay_list_object *curves, int ncurves, int type,
 	  return AY_EOMEM;
 	}
 
-      memcpy(newvknotv, nc->knotv, (size_t)(newvknots*sizeof(double)));
+      memcpy(newvknotv, nc->knotv, newvknots*sizeof(double));
     }
 
   /* create new patch */

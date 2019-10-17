@@ -30,7 +30,7 @@ ay_trafo_apply3(double *c, double *m)
   result[1] = m[1]*c[0] + m[5]*c[1] + m[9] *c[2] + m[13]*1.0;
   result[2] = m[2]*c[0] + m[6]*c[1] + m[10]*c[2] + m[14]*1.0;
 
-  memcpy(c, result, (size_t)(3*sizeof(double)));
+  memcpy(c, result, 3*sizeof(double));
 
  return;
 } /* ay_trafo_apply3 */
@@ -57,7 +57,7 @@ ay_trafo_apply3v(double *c, unsigned int clen, unsigned int stride, double *m)
       result[1] = m[1]*c[j] + m[5]*c[j+1] + m[9] *c[j+2] + m[13]*1.0;
       result[2] = m[2]*c[j] + m[6]*c[j+1] + m[10]*c[j+2] + m[14]*1.0;
 
-      memcpy(&(c[j]), result, (size_t)(3*sizeof(double)));
+      memcpy(&(c[j]), result, 3*sizeof(double));
 
       j += stride;
     }
@@ -83,7 +83,7 @@ ay_trafo_apply4(double *c, double *m)
   result[2] = m[2]*c[0] + m[6]*c[1] + m[10]*c[2] + m[14]*c[3];
   result[3] = m[3]*c[0] + m[7]*c[1] + m[11]*c[2] + m[15]*c[3];
 
-  memcpy(c, result, (size_t)(4*sizeof(double)));
+  memcpy(c, result, 4*sizeof(double));
 
  return;
 } /* ay_trafo_apply4 */
@@ -111,7 +111,7 @@ ay_trafo_apply4v(double *c, unsigned int clen, unsigned int stride, double *m)
       result[2] = m[2]*c[j] + m[6]*c[j+1] + m[10]*c[j+2] + m[14]*c[j+3];
       result[3] = m[3]*c[j] + m[7]*c[j+1] + m[11]*c[j+2] + m[15]*c[j+3];
 
-      memcpy(&(c[j]), result, (size_t)(4*sizeof(double)));
+      memcpy(&(c[j]), result, 4*sizeof(double));
 
       j += stride;
     }
