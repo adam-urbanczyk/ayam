@@ -19156,7 +19156,7 @@ See also section <ref id="breaknpt" name="Break into Curves Tool">.
 <label id="scbuildnp">
 buildNP &ndash; build NURBS patch from curves:
 <itemize>
- <item>Synopsis: <tt/"buildNP [-a (0|1) | -o order | -t type | -k knottype]"/
+ <item>Synopsis: <tt/"buildNP [-r|-a (0|1) | -o order | -t type | -k knottype]"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Builds a NURBS patch from the selected NURBS curves.
 The width of the new patch depends on the number of provided curves
@@ -19176,6 +19176,10 @@ The option <tt/"-k"/ allows to set a knot type (0 &ndash; Bezier,
 1 &ndash; B-Spline, 2 &ndash; NURB, 4 &ndash; Chordal,
 5 &ndash; Centripetal, default 2 &ndash; NURB). Custom knots
 are not supported.
+<p>
+If the option <tt/"-r"/ is present, the new NPatch objects will
+replace the first selected NCurve object instead of being appended to
+the current level, the other NCurve objects will be removed.
 <p>
 See also section <ref id="buildnpt" name="Build from Curves Tool">.
 </itemize>
@@ -25485,6 +25489,11 @@ Index:
 <item>approxNC: <ref id="scapproxnc" name="scripting interface command">
 <item>Apply: <ref id="propgui" name="apply property GUI">
 <item>Apply To All/Selected: <ref id="mmpnts" name="main menu entry">
+<item>ApplyTrafo:
+<itemize>
+<item><ref id="buildnpt" name="build NURBS patch tool option">,
+<item><ref id="breaknpt" name="break NURBS patch tool option">
+</itemize>
 <item>applyTrafo: <ref id="scapplytrafo" name="scripting interface command">
 <item>Archives:
 <itemize>
@@ -26674,6 +26683,11 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Repair Ayam: <ref id="repayam" name="Tcl helper script">
 <item>Reparameterise: <ref id="screparamnc" name="scripting interface command">
 <item>Replace: <ref id="mmspecial" name="main menu entry">
+<item>ReplaceOriginal:
+<itemize>
+<item><ref id="buildnpt" name="build NURBS patch tool option">,
+<item><ref id="breaknpt" name="break NURBS patch tool option">
+</itemize>
 <item>replaceScene: <ref id="screplacescene" name="scripting interface command">
 <item>repOb: <ref id="screpob" name="scripting interface command">
 <item>Rescale Knots to Mindist:
