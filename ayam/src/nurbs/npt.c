@@ -6944,7 +6944,7 @@ ay_npt_elevateuvtcmd(ClientData clientData, Tcl_Interp *interp,
       else
 	{
 	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
-	} /* if */
+	} /* if is NPatch */
 
       sel = sel->next;
     } /* while */
@@ -9946,7 +9946,6 @@ ay_npt_recreatemp(ay_nurbpatch_object *np)
   ta = np->controlv;
   for(i = 0; i < np->width*np->height; i++)
     {
-
       /* count identical points */
       count = 0;
       tb = ta;
@@ -13451,14 +13450,10 @@ ay_npt_avglensu(double *cv, int width, int height, int stride,
  int i, j, a, b;
 
   if(!cv || !avlens)
-    {
-      return AY_ENULL;
-    }
+    return AY_ENULL;
 
   if(!(lens = malloc((width-1)*sizeof(double))))
-    {
-      return AY_EOMEM;
-    }
+    return AY_EOMEM;
 
   /* compute average partial lengths */
   a = 0;
@@ -13509,14 +13504,10 @@ ay_npt_avglensv(double *cv, int width, int height, int stride,
  int i, j, a, b;
 
   if(!cv || !avlens)
-    {
-      return AY_ENULL;
-    }
+    return AY_ENULL;
 
   if(!(lens = malloc((height-1)*sizeof(double))))
-    {
-      return AY_EOMEM;
-    }
+    return AY_EOMEM;
 
   /* compute average partial lengths */
   for(i = 0; i < height-1; i++)
@@ -14686,6 +14677,11 @@ ay_npt_refineuvtcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  tcl_status = Tcl_GetDouble(interp, aknotv[i], &X[i]);
 	  AY_CHTCLERRGOT(tcl_status, argv[0], interp);
+	  if(X[i] != X[i])
+	    {
+	      ay_error(AY_ERROR, argv[0], "Knot is NaN!");
+	      goto cleanup;
+	    }
 	} /* for */
 
       Tcl_Free((char *) aknotv);

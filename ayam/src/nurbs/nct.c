@@ -1371,6 +1371,11 @@ ay_nct_refinekntcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  tcl_status = Tcl_GetDouble(interp, aknotv[i], &X[i]);
 	  AY_CHTCLERRGOT(tcl_status, argv[0], interp);
+	  if(X[i] != X[i])
+	    {
+	      ay_error(AY_ERROR, argv[0], "Knot is NaN!");
+	      goto cleanup;
+	    }
 	} /* for */
 
       Tcl_Free((char *) aknotv);
