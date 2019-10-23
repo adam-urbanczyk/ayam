@@ -7415,6 +7415,11 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
     {
       tcl_status = Tcl_GetDouble(interp, argv[i], &tol);
       AY_CHTCLERRRET(tcl_status, argv[0], interp);
+      if(tol != tol)
+	{
+	  ay_error_reportnan(argv[0], "tol");
+	  return TCL_OK;
+	}
     }
 
   while(sel)

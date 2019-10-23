@@ -1500,7 +1500,7 @@ ay_npt_crtnspheretcmd(ClientData clientData, Tcl_Interp *interp,
 	      tcl_status = Tcl_GetDouble(interp, argv[i+1], &radius);
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
 
-	      if(radius <= AY_EPSILON)
+	      if((radius <= AY_EPSILON) || (radius != radius))
 		{
 		  ay_error(AY_ERROR, argv[0], "Parameter radius must be > 0.");
 		  return TCL_OK;
