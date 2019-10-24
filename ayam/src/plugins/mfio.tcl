@@ -71,7 +71,7 @@ proc mfio_import { } {
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
-	global mfio_options
+	global mfio_options ayprefs
 
 	set mfio_options(filename) $mfio_options(FileName)
 	set oldcd [pwd]
@@ -84,7 +84,9 @@ proc mfio_import { } {
 	    -f $mfio_options(ScaleFactor)\
 	    -r  $mfio_options(RationalStyle)
 
-	cd $oldcd
+	if { ! $ayprefs(ImportSetsCD) } {
+	    cd $oldcd
+	}
 	goTop
 	selOb
 	set ay(CurrentLevel) "root"
@@ -190,7 +192,7 @@ proc mfio_export { } {
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
-	global mfio_options;
+	global mfio_options ayprefs
 
 	# append extension
 	set mfio_options(FileName) [io_appext $mfio_options(FileName) ".3dmf"]
@@ -205,7 +207,9 @@ proc mfio_export { } {
 	    -f $mfio_options(ScaleFactor)\
 	    -r $mfio_options(RationalStyle)\
 
-	cd $oldcd
+	if { ! $ayprefs(ExportSetsCD) } {
+	    cd $oldcd
+	}
 	update
 
 	if { $ay_error < 2 } {

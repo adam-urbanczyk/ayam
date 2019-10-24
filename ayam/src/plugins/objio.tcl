@@ -68,7 +68,7 @@ proc objio_export { } {
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
-	global objio_options ay_error
+	global objio_options ay_error ayprefs
 
 	# append extension
 	set objio_options(FileName) [io_appext $objio_options(FileName) ".obj"]
@@ -89,7 +89,9 @@ proc objio_export { } {
 	    -f $objio_options(ScaleFactor)\
 	    -r $objio_options(RationalStyle)
 
-	cd $oldcd
+	if { ! $ayprefs(ExportSetsCD) } {
+	    cd $oldcd
+	}
 
 	if { $ay_error < 2 } {
 	    ayError 4 "exportOBJ" "Done exporting to:"
@@ -181,7 +183,7 @@ proc objio_import { } {
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
-	global objio_options ay_error
+	global objio_options ay_error ayprefs
 
 	set objio_options(filename) $objio_options(FileName)
 	set oldcd [pwd]
@@ -208,7 +210,9 @@ proc objio_import { } {
 	    ayError 2 "importOBJ" "$objio_options(FileName)"
 	}
 
-	cd $oldcd
+	if { ! $ayprefs(ImportSetsCD) } {
+	    cd $oldcd
+	}
 
 	goTop
 	selOb

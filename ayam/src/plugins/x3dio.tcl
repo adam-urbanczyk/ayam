@@ -88,7 +88,7 @@ proc x3dio_import { } {
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
-	global x3dio_options
+	global x3dio_options ayprefs
 
 	set x3dio_options(filename) $x3dio_options(FileName)
 	set oldcd [pwd]
@@ -105,7 +105,10 @@ proc x3dio_import { } {
 	    -r $x3dio_options(RationalStyle)\
 	    -m $x3dio_options(MergeInlineDefs)
 
-	cd $oldcd
+	if { ! $ayprefs(ImportSetsCD) } {
+	    cd $oldcd
+	}
+
 	goTop
 	selOb
 	set ay(CurrentLevel) "root"
@@ -224,7 +227,7 @@ proc x3dio_export { } {
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
-	global x3dio_options;
+	global x3dio_options ayprefs
 
 	# append extension
 	if { $x3dio_options(WriteX3dom) == 0 } {
@@ -249,7 +252,10 @@ proc x3dio_export { } {
 	    -x $x3dio_options(WriteX3dom)\
 	    -r $x3dio_options(RationalStyle)
 
-	cd $oldcd
+	if { ! $ayprefs(ExportSetsCD) } {
+	    cd $oldcd
+	}
+
 	update
 
 	if { $ay_error < 2 } {
@@ -259,7 +265,6 @@ proc x3dio_export { } {
 	    ayError 2 "x3dio_export" "There were errors while exporting to:"
 	    ayError 2 "x3dio_export" "$x3dio_options(FileName)"
 	}
-	# if
 
 	grab release .x3dio
 	restoreFocus $x3dio_options(oldfocus)
