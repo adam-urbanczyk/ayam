@@ -299,6 +299,8 @@ ms_set en ayprefse_ErrorLevel "Which messages should go to the console?\
 ms_set en ayprefse_LogFile "Path and name of the file to log all messages to."
 ms_set en ayprefse_SaveAddsMRU "Add the name of saved scenes to the\
 \nMost-Recently-Used file menu entries?"
+ms_set en ayprefse_ImportSetsCD "Shall import set the current directory?"
+ms_set en ayprefse_ExportSetsCD "Shall export set the current directory?"
 ms_set en ayprefse_ToolBoxTrans "Make the toolbox window transient?"
 ms_set en ayprefse_ToolBoxShrink "Make the toolbox window shrink wrap around\
 its contents,\nwhen the user resizes it?"
@@ -544,6 +546,10 @@ angezeigt werden?\
 ms_set de ayprefse_LogFile "Pfad und Name der Logdatei."
 ms_set de ayprefse_SaveAddsMRU "Sollen die Namen abgespeicherter Szenen\
 den\nzuletzt-benutzte-Dateien-Einträgen im\nHauptmenü hinzugefügt werden?"
+ms_set de ayprefse_ImportSetsCD "Soll ein Import das aktuelle Verzeichnis\
+setzen?"
+ms_set de ayprefse_ExportSetsCD "Soll ein Export das aktuelle Verzeichnis\
+setzen?"
 ms_set de ayprefse_ToolBoxTrans "Soll das Werkzeugfenster als transient\
 markiert werden?"
 ms_set de ayprefse_ToolBoxShrink "Soll das Werkzeugfenster sich dem\
@@ -555,9 +561,9 @@ Gleitkommazahlen von Tcl.\nHohe Werte führen zu exakten aber schwer\
 editierbaren\nWerten in Eingabefeldern."
 ms_set de ayprefse_SaveDialogGeom "Geometrie von Dialogfenstern\
 für den nächsten Aufruf sichern?"
-ms_set de ayprefse_SMethod "Sampling-Methode, die für NURBS zu\nPolyMesh\
+ms_set de ayprefse_SMethod "Abtastmethode, die für NURBS zu\nPolyMesh\
 Umwandlungen benutzt wird."
-ms_set de ayprefse_SParam "Parameter der Sampling-Methode, die für NURBS\
+ms_set de ayprefse_SParam "Parameter der Abtastmethode, die für NURBS\
 zu\nPolyMesh Umwandlungen benutzt wird."
 
 
@@ -786,6 +792,10 @@ messages?"
 #\nAll - Warnings, Errors, and Informative Messages"
 ms_set fr ayprefse_SaveAddsMRU "Ajouter le nom des scène sauvegardées à\
 l'entrée de menu\nMost-Recently-Used files?"
+#ms_set fr ayprefse_ImportSetsCD "Shall import set the current directory?"
+#ms_set fr ayprefse_ExportSetsCD "Shall export set the current directory?"
+ms_set fr ayprefse_SaveAddsMRU "Ajouter le nom des scène sauvegardées à\
+l'entrée de menu\nMost-Recently-Used files?"
 ms_set fr ayprefse_ToolBoxTrans "Rendre la fenêtre Boîte-à-Outils transient?"
 ms_set fr ayprefse_ToolBoxShrink "Rendre la fenêtre Boîte-à-Outils ajustable\
 à son contenu,\nlorsque l'utilisateur en modifie la taille?"
@@ -826,8 +836,8 @@ ms_set fr info_rs1 "Redémarrage nécessaire!"
 
 #ms_set fr info_warning "Attention!"
 #ms_set fr info_pc1 "Cette opération peut détruire la propriété actuelle.\
-#		\n\"OK\" - fortfahren,\
-#		\n\"Cancel\" - Operation abbrechen."
+#		\n\"OK\" - continue,\
+#		\n\"Cancel\" - cancel operation."
 #ms_fixcancel fr info_pc1
 
 #ms_set fr info_sm1 "Configuration problematic!"
