@@ -68,7 +68,7 @@ proc dxfio_import { } {
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
-	global dxfio_options
+	global dxfio_options ayprefs
 
 	set dxfio_options(filename) $dxfio_options(FileName)
 	set oldcd [pwd]
@@ -80,7 +80,10 @@ proc dxfio_import { } {
 	    -r $dxfio_options(RescaleKnots)\
 	    -f $dxfio_options(ScaleFactor)
 
-	cd $oldcd
+	if { ! $ayprefs(ImportSetsCD) } {
+	    cd $oldcd
+	}
+
 	goTop
 	selOb
 	set ay(CurrentLevel) "root"
@@ -186,7 +189,7 @@ proc dxfio_export { } {
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
-	global dxfio_options;
+	global dxfio_options ayprefs
 
 	# append extension
 	set dxfio_options(FileName) [io_appext $dxfio_options(FileName) ".dxf"]
@@ -203,7 +206,9 @@ proc dxfio_export { } {
 	    -l $dxfio_options(TopLevelLayers)\
 	    -f $dxfio_options(ScaleFactor)
 
-	cd $oldcd
+	if { ! $ayprefs(ExportSetsCD) } {
+	    cd $oldcd
+	}
 	update
 
 	if { $ay_error < 2 } {

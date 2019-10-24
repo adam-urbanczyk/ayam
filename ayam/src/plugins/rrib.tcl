@@ -73,7 +73,7 @@ proc rrib_import { } {
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
-	global rrib_options
+	global rrib_options ayprefs
 
 	set rrib_options(filename) $rrib_options(FileName)
 	set oldcd [pwd]
@@ -93,7 +93,9 @@ proc rrib_import { } {
 	    -s $rrib_options(ScaleFactor)\
 	    -t $rrib_options(ReadSTrim);
 
-	cd $oldcd
+	if { ! $ayprefs(ImportSetsCD) } {
+	    cd $oldcd
+	}
 	goTop
 	selOb
 	set ay(CurrentLevel) "root"

@@ -74,7 +74,7 @@ proc onio_import { } {
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
-	global onio_options
+	global onio_options ayprefs
 
 	set onio_options(filename) $onio_options(FileName)
 	set oldcd [pwd]
@@ -88,7 +88,10 @@ proc onio_import { } {
 	    -r $onio_options(RescaleKnots)\
 	    -f $onio_options(ScaleFactor)
 
-	cd $oldcd
+	if { ! $ayprefs(ImportSetsCD) } {
+	    cd $oldcd
+	}
+
 	goTop
 	selOb
 	set ay(CurrentLevel) "root"
@@ -195,7 +198,7 @@ proc onio_export { } {
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
-	global onio_options;
+	global onio_options ayprefs
 
 	# append extension
 	set onio_options(FileName) [io_appext $onio_options(FileName) ".3dm"]
@@ -213,7 +216,10 @@ proc onio_export { } {
 	    -l $onio_options(TopLevelLayers)\
 	    -f $onio_options(ScaleFactor)
 
-	cd $oldcd
+	if { ! $ayprefs(ExportSetsCD) } {
+	    cd $oldcd
+	}
+
 	update
 
 	if { $ay_error < 2 } {
