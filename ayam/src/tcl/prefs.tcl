@@ -312,10 +312,14 @@ proc prefs_open {} {
 	    {Silence Errors Warnings All}
     addText $fw e2 "UI:"
     addCheckB $fw ayprefse SaveAddsMRU [ms ayprefse_SaveAddsMRU]
+    addCheckB $fw ayprefse ImportSetsCD [ms ayprefse_ImportSetsCD]
+    addCheckB $fw ayprefse ExportSetsCD [ms ayprefse_ExportSetsCD]
+
     if { $ayprefs(SingleWindow) == 0 } {
 	addCheckB $fw ayprefse ToolBoxTrans [ms ayprefse_ToolBoxTrans]
 	addCheckB $fw ayprefse ToolBoxShrink [ms ayprefse_ToolBoxShrink]
     }
+
     #addCheckB $fw ayprefse Transient [ms ayprefse_Transient]
     addParamB $fw ayprefse TclPrecision [ms ayprefse_TclPrecision]\
 	    { 4 5 6 12 17 }

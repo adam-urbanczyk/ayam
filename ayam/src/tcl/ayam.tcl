@@ -130,7 +130,8 @@ array set ayprefs {
 
  NewLoadsEnv 1
  SaveAddsMRU 1
-
+ ImportSetsCD 0
+ ExportSetsCD 0
  RedirectTcl 1
  Logging 0
  LogFile "/tmp/ay.log"
