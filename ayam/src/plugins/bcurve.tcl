@@ -42,25 +42,24 @@ proc bcurve_getAttr { } {
     # remove old, create new BCurveAttr-UI
     catch {destroy $ay(pca).$BCurveAttr(w)}
     set w [frame $ay(pca).$BCurveAttr(w)]
+    set a $BCurveAttr(arr)
     getProp
 
     set ay(bok) $ay(appb)
+
     addVSpace $w s1 2
-
-    addCheck $w BCurveAttrData Closed
-    addParam $w BCurveAttrData Length
-    addInfo $w BCurveAttrData IsRat
-
-    set l [list Bezier B-Spline CatmullRom Hermite Power Custom]
-    addMenu $w BCurveAttrData BType $l
+    addCheck $w $a Closed
+    addParam $w $a Length
+    addInfo $w $a IsRat
+    addMenu $w $a BType [list Bezier B-Spline CatmullRom Hermite Power Custom]
 
     if { $BCurveAttrData(BType) == 5 } {
-	addParam $w BCurveAttrData Step
-	addMatrix $w BCurveAttrData Basis
+	addParam $w $a Step
+	addMatrix $w $a Basis
     }
 
-    addParam $w BCurveAttrData Tolerance
-    addMenu $w BCurveAttrData DisplayMode $ay(ncdisplaymodes)
+    addParam $w $a Tolerance
+    addMenu $w $a DisplayMode $ay(ncdisplaymodes)
 
     # advanced bindings for Length manipulation
     bind $w.fLength.b1 <Control-ButtonPress-1> "pamesh_updateWHL $w BCurveAttrData Length \$BCurveAttrData(BType) m;break"
