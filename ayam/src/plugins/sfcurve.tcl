@@ -27,22 +27,22 @@ DisplayMode 0
 
 # create SfCurveAttr-UI
 set w [frame $ay(pca).$SfCurveAttr(w)]
-
+set a $SfCurveAttr(arr)
 set ay(bok) $ay(appb)
 
-addParam $w SfCurveAttrData M
-addParam $w SfCurveAttrData N1
-addParam $w SfCurveAttrData N2
-addParam $w SfCurveAttrData N3
-addParam $w SfCurveAttrData TMin
-addParam $w SfCurveAttrData TMax
-addParam $w SfCurveAttrData Sections
+addParam $w $a M
+addParam $w $a N1
+addParam $w $a N2
+addParam $w $a N3
+addParam $w $a TMin
+addParam $w $a TMax
+addParam $w $a Sections
 
-addParam $w SfCurveAttrData Order
-#addMenu $w SfCurveAttrData Knot-Type [list NURB Chordal Centripetal]
+addParam $w $a Order
+#addMenu $w $a Knot-Type [list NURB Chordal Centripetal]
 
-addParam $w SfCurveAttrData Tolerance
-addMenu $w SfCurveAttrData DisplayMode $ay(ncdisplaymodes)
+addParam $w $a Tolerance
+addMenu $w $a DisplayMode $ay(ncdisplaymodes)
 
 
 # add menu entry to the "Create/Custom Object" sub-menu
@@ -50,3 +50,5 @@ mmenu_addcustom SfCurve "crtOb SfCurve;uS;sL;rV"
 
 # tell the rest of Ayam (or other custom objects), that we are loaded
 lappend ay(co) SfCurve
+
+# EOF

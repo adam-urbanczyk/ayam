@@ -27,18 +27,17 @@ SLength "n/a"
 
 # create SDCurveAttr-UI
 set w [frame $ay(pca).$SDCurveAttr(w)]
+set a $SDCurveAttr(arr)
 
 set ay(bok) $ay(appb)
 
 addVSpace $w s1 2
-
-addCheck $w SDCurveAttrData Closed
-addParam $w SDCurveAttrData Length
-set l [list Chaikin Cubic]
-addMenu $w SDCurveAttrData Type $l
-addParam $w SDCurveAttrData Level
-addText $w SDCurveAttrData "Subdivision:"
-addInfo $w SDCurveAttrData SLength
+addCheck $w $a Closed
+addParam $w $a Length
+addMenu $w $a Type [list Chaikin Cubic]
+addParam $w $a Level
+addText $w $a "Subdivision:"
+addInfo $w $a SLength
 
 # add menu entry to the "Create/Custom Object" sub-menu
 mmenu_addcustom SDCurve "crtOb SDCurve;uS;sL;rV"
