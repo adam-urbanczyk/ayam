@@ -3516,7 +3516,8 @@ sdnpatch_notifycb(ay_object *o)
  sdnpatch_object *sdnpatch = NULL;
  ay_point *pnt = NULL;
  Vertex *v = NULL;
- int currentLevel = 0, targetLevel = 0;
+ std::vector<Vertex*> *vertices = NULL;
+ int i, currentLevel = 0, targetLevel = 0;
  char *in_action = NULL, arrname[] = "ay", varname[] = "action";
 
   if(!o)
@@ -3541,11 +3542,20 @@ sdnpatch_notifycb(ay_object *o)
 	  v->setZ(pnt->point[2]);
 	  v->setW(pnt->point[3]);
 
-	  if((fabs(pnt->point[3]) < (1.0-AY_EPSILON)) ||
-	     (fabs(pnt->point[3]) > (1.0+AY_EPSILON)))
-	    sdnpatch->is_rat = AY_TRUE;
-
 	  pnt = pnt->next;
+	}
+    }
+
+  vertices = sdnpatch->controlVertices;
+  sdnpatch->is_rat = AY_FALSE;
+  for(i = 0; i < vertices->size(); i++)
+    {
+      v = (*(sdnpatch->controlVertices))[i];
+      if((v->getW() < (1.0-AY_EPSILON)) ||
+	 (v->getW() > (1.0+AY_EPSILON)))
+	{
+	  sdnpatch->is_rat = AY_TRUE;
+	  break;
 	}
     }
 
