@@ -147,14 +147,17 @@ proc plyio_import { } {
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
-	global plyio_options
+	global plyio_options ayprefs
 
 	set plyio_options(filename) $plyio_options(FileName)
 	set oldcd [pwd]
 	cd [file dirname $plyio_options(FileName)]
 	sdnimpPly [file tail $plyio_options(FileName)]
 
-	cd $oldcd
+	if { ! $ayprefs(ImportSetsCD) } {
+	    cd $oldcd
+	}
+
 	goTop
 	selOb
 	set ay(CurrentLevel) "root"
@@ -178,7 +181,7 @@ proc plyio_import { } {
 	restoreFocus $plyio_options(oldfocus)
 	destroy .plyio
     }
-    # button
+    # ok button
 
     button $f.bca -text "Cancel" -width 5 -command "\
 		grab release .plyio;\
@@ -250,7 +253,7 @@ proc plyio_export { } {
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
-	global plyio_options;
+	global plyio_options ayprefs
 
 	# append extension
 	set plyio_options(FileName) [io_appext $plyio_options(FileName) ".ply"]
@@ -260,7 +263,9 @@ proc plyio_export { } {
 	cd [file dirname $plyio_options(FileName)]
 	sdnexpPly [file tail $plyio_options(FileName)]
 
-	cd $oldcd
+	if { ! $ayprefs(ExportSetsCD) } {
+	    cd $oldcd
+	}
 	update
 
 	if { $ay_error < 2 } {
@@ -270,13 +275,12 @@ proc plyio_export { } {
 	    ayError 2 "plyio_export" "There were errors while exporting to:"
 	    ayError 2 "plyio_export" "$plyio_options(FileName)"
 	}
-	# if
 
 	grab release .plyio
 	restoreFocus $plyio_options(oldfocus)
 	destroy .plyio
     }
-    # button
+    # ok button
 
     button $f.bca -text "Cancel" -width 5 -command "\
 		grab release .plyio;\
