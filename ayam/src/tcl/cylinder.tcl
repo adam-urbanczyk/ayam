@@ -9,37 +9,36 @@
 
 # cylinder.tcl - cylinder objects Tcl code
 
-set Cylinder 1
-
 proc init_Cylinder { } {
-global ay Cylinder_props CylinderAttr CylinderAttrData
+    global ay Cylinder_props CylinderAttr CylinderAttrData
 
-set Cylinder_props { Transformations Attributes Material Tags CylinderAttr }
+    set Cylinder_props { Transformations Attributes Material Tags CylinderAttr }
 
-array set CylinderAttr {
-arr   CylinderAttrData
-sproc ""
-gproc ""
-w     fCylinderAttr
-}
+    array set CylinderAttr {
+	arr   CylinderAttrData
+	sproc ""
+	gproc ""
+	w     fCylinderAttr
+    }
 
-# create CylinderAttr-UI
-set w [frame $ay(pca).$CylinderAttr(w)]
+    array set CylinderAttrData {
+	Closed 1
+	Radius 1.0
+	ZMin -1.0
+	ZMax 1.0
+	ThetaMax 1.0
+    }
 
-addCheck $w CylinderAttrData Closed
-addParam $w CylinderAttrData Radius
-addParam $w CylinderAttrData ZMin
-addParam $w CylinderAttrData ZMax
-addParam $w CylinderAttrData ThetaMax
+    # create CylinderAttr-UI
+    set w [frame $ay(pca).$CylinderAttr(w)]
+    set a $CylinderAttr(arr)
+    addVSpace $w s1 2
+    addCheck $w $a Closed
+    addParam $w $a Radius
+    addParam $w $a ZMin
+    addParam $w $a ZMax
+    addParam $w $a ThetaMax
 
-array set CylinderAttrData {
-Closed 1
-Radius 1.0
-ZMin -1.0
-ZMax 1.0
-ThetaMax 1.0
-}
-
-return;
+ return;
 }
 # init_Cylinder

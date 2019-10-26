@@ -9,40 +9,40 @@
 
 # acurve.tcl - approximating curves objects Tcl code
 
-set ACurve 1
-
 proc init_ACurve { } {
-global ay ACurve_props ACurveAttr ACurveAttrData
+    global ay ACurve_props ACurveAttr ACurveAttrData
 
-set ACurve_props { Transformations Attributes Tags ACurveAttr }
+    set ACurve_props { Transformations Attributes Tags ACurveAttr }
 
-array set ACurveAttr {
-arr   ACurveAttrData
-sproc ""
-gproc ""
-w     fACurveAttr
+    array set ACurveAttr {
+	arr   ACurveAttrData
+	sproc ""
+	gproc ""
+	w     fACurveAttr
+    }
 
-}
+    array set ACurveAttrData {
+	Mode 1
+	DisplayMode 0
+	NCInfoBall "N/A"
+    }
 
-array set ACurveAttrData {
-Mode 1
-DisplayMode 0
-NCInfoBall "N/A"
-}
-# create ACurveAttr-UI
-set w [frame $ay(pca).$ACurveAttr(w)]
-addVSpace $w s1 2
-addParam $w ACurveAttrData Length
-addParam $w ACurveAttrData ALength
-addCheck $w ACurveAttrData Closed
-addCheck $w ACurveAttrData Symmetric
-addParam $w ACurveAttrData Order
+    # create ACurveAttr-UI
+    set w [frame $ay(pca).$ACurveAttr(w)]
+    set a $ACurveAttr(arr)
+    addVSpace $w s1 2
+    addParam $w $a Length
+    addParam $w $a ALength
+    addCheck $w $a Closed
+    addCheck $w $a Symmetric
+    addParam $w $a Order
 
-addParam $w ACurveAttrData Tolerance
-addMenu $w ACurveAttrData DisplayMode $ay(ncdisplaymodes)
+    addParam $w $a Tolerance
+    addMenu $w $a DisplayMode $ay(ncdisplaymodes)
 
-addText $w ACurveAttrData "Created NURBS Curve:"
-addInfo $w ACurveAttrData NCInfo
+    addText $w $a "Created NURBS Curve:"
+    addInfo $w $a NCInfo
 
+ return;
 }
 # init_ACurve

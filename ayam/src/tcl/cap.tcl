@@ -9,38 +9,35 @@
 
 # cap.tcl - cap objects Tcl code
 
-set Cap 1
-
 proc init_Cap { } {
-global ay Cap_props CapAttr CapAttrData
+    global ay Cap_props CapAttr CapAttrData
 
-set Cap_props { Transformations Attributes Material Tags CapAttr }
+    set Cap_props { Transformations Attributes Material Tags CapAttr }
 
-array set CapAttr {
-arr   CapAttrData
-sproc ""
-gproc ""
-w     fCapAttr
+    array set CapAttr {
+	arr   CapAttrData
+	sproc ""
+	gproc ""
+	w     fCapAttr
+    }
 
-}
+    array set CapAttrData {
+	Type 1
+	DisplayMode 0
+	NPInfoBall "n/a"
+    }
+    # create CapAttr-UI
+    set w [frame $ay(pca).$CapAttr(w)]
+    set a $CapAttr(arr)
+    addMenu $w $a Type {Trim Gordon Simple Simple3D}
+    addParam $w $a Fraction
+    addParam $w $a Tolerance
+    addMenu $w $a DisplayMode $ay(npdisplaymodes)
 
-array set CapAttrData {
-Type 1
-DisplayMode 0
-NPInfoBall "n/a"
-}
-# create CapAttr-UI
-set w [frame $ay(pca).$CapAttr(w)]
+    addText $w $a "Created NURBS Patch:"
+    addInfo $w $a NPInfo
 
-addMenu $w CapAttrData Type {Trim Gordon Simple Simple3D}
-addParam $w CapAttrData Fraction
-addParam $w CapAttrData Tolerance
-addMenu $w CapAttrData DisplayMode $ay(npdisplaymodes)
-
-addText $w CapAttrData "Created NURBS Patch:"
-addInfo $w CapAttrData NPInfo
-
-return;
+ return;
 }
 # init_Cap
 
