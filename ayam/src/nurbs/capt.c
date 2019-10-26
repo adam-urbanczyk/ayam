@@ -1140,7 +1140,7 @@ ay_capt_createtags(ay_object *o, int *caps)
 
 	  if(!(new = calloc(1, sizeof(ay_tag))))
 	    return;
-	  if(!(new->name = calloc(3, sizeof(char))))
+	  if(!(new->name = malloc((strlen(ay_cp_tagname)+1)*sizeof(char))))
 	    { free(new); return; }
 	  strcpy(new->name, ay_cp_tagname);
 	  new->type = ay_cp_tagtype;
