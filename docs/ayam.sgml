@@ -3311,7 +3311,12 @@ related preferences:
 will add that file to the most recently used files list in the
 main menu for quick access.
 <p> <p>
-
+<item><tt/"ExportSetsCD"/: controls whether or not the current directory of
+Ayam should be set by an export operation.
+<p> <p>
+<item><tt/"ImportSetsCD"/: controls whether or not the current directory of
+Ayam should be set by an import operation.
+<p> <p>
 <item><tt/"TclPrecision"/; this is the precision Tcl handles floating
 point number to string conversions with. You may want to decrease this
 value to about 5 if any numbers in the entry fields are represented
@@ -25883,6 +25888,7 @@ Index:
 <item><ref id="impx3d" name="X3D Export">
 </itemize>
 <item>Export RIB: <ref id="mmfile" name="main menu entry">
+<item>ExportSetsCD: <ref id="prefmisc" name="preference setting">
 <item>Expression:
 <itemize>
 <item><ref id="objsearch" name="object search attribute">
@@ -26095,6 +26101,7 @@ Index:
 <item><ref id="impx3d" name="X3D Import">
 </itemize>
 <item>Importance Driven Rendering: <ref id="idr" name="IDR plugin">
+<item>ImportSetsCD: <ref id="prefmisc" name="preference setting">
 <item>Include: <ref id="riincobj" name="RiInc object">
 <item>Indices: <ref id="selectp" name="Select attribute">
 <item>Input Plane: <ref id="editlocal" name="Editing in Local Spaces">
