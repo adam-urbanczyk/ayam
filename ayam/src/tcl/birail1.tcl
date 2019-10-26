@@ -9,43 +9,43 @@
 
 # birail1.tcl - Birail1 objects Tcl code
 
-set Birail1 1
-
 proc init_Birail1 { } {
-global ay Birail1_props Birail1Attr Birail1AttrData
+    global ay Birail1_props Birail1Attr Birail1AttrData
 
-set Birail1_props { Transformations Attributes Material Tags Bevels Caps Birail1Attr }
+    set Birail1_props [list Transformations Attributes Material Tags Bevels\
+			   Caps	Birail1Attr]
 
-array set Birail1Attr {
-arr   Birail1AttrData
-sproc ""
-gproc ""
-w     fBirail1Attr
-}
+    array set Birail1Attr {
+	arr   Birail1AttrData
+	sproc ""
+	gproc ""
+	w     fBirail1Attr
+    }
 
-array set Birail1AttrData {
-Type 0
-DisplayMode 1
-NPInfoBall "n/a"
-BoundaryNames { "Start" "End" "Left" "Right" }
-BoundaryIDs { 2 3 0 1 }
-StartCap 0
-EndCap 0
-R1Cap 0
-R2Cap 0
-}
+    array set Birail1AttrData {
+	Type 0
+	DisplayMode 1
+	NPInfoBall "n/a"
+	BoundaryNames { "Start" "End" "Left" "Right" }
+	BoundaryIDs { 2 3 0 1 }
+	StartCap 0
+	EndCap 0
+	R1Cap 0
+	R2Cap 0
+    }
 
-set w [frame $ay(pca).$Birail1Attr(w)]
-addVSpace $w s1 2
-addMenu $w Birail1AttrData Type [list Open Closed Periodic]
-addParam $w Birail1AttrData Sections
+    set w [frame $ay(pca).$Birail1Attr(w)]
+    set a $Birail1Attr(arr)
+    addVSpace $w s1 2
+    addMenu $w $a Type [list Open Closed Periodic]
+    addParam $w $a Sections
 
-addParam $w Birail1AttrData Tolerance
-addMenu $w Birail1AttrData DisplayMode $ay(npdisplaymodes)
+    addParam $w $a Tolerance
+    addMenu $w $a DisplayMode $ay(npdisplaymodes)
 
-addText $w Birail1AttrData "Created NURBS Patch:"
-addInfo $w Birail1AttrData NPInfo
+    addText $w $a "Created NURBS Patch:"
+    addInfo $w $a NPInfo
 
-return;
+ return;
 }
 # init_Birail1

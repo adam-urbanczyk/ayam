@@ -223,30 +223,28 @@ proc bevel_see { i bn } {
  return;
 }
 
-set Bevel 1
-
 # init_Bevel:
 #
 #
 proc init_Bevel { } {
-global ay Bevel_props BevelAttr BevelAttrData
+    global ay Bevel_props BevelAttr BevelAttrData
 
-set Bevel_props { Transformations Attributes Material Tags Caps BevelAttr }
+    set Bevel_props { Transformations Attributes Material Tags Caps BevelAttr }
 
-array set BevelAttr {
-    arr   BevelAttrData
-    sproc bevel_setAttr
-    gproc bevel_getAttr
-    w     fBevelAttr
-}
+    array set BevelAttr {
+	arr   BevelAttrData
+	sproc bevel_setAttr
+	gproc bevel_getAttr
+	w     fBevelAttr
+    }
 
-array set BevelAttrData {
-    DisplayMode 1
-    BoundaryNames { "Start" "End" }
-    BoundaryIDs { 2 3 }
-}
+    array set BevelAttrData {
+	DisplayMode 1
+	BoundaryNames { "Start" "End" }
+	BoundaryIDs { 2 3 }
+    }
 
-return;
+ return;
 }
 # init_Bevel
 
@@ -310,10 +308,10 @@ proc bevel_setAttr { } {
 #
 
 array set Bevels {
-arr   BevelsData
-sproc bevel_setBevels
-gproc bevel_getBevels
-w     fBevels
+    arr   BevelsData
+    sproc bevel_setBevels
+    gproc bevel_getBevels
+    w     fBevels
 }
 
 proc bevel_getBevels { } {
