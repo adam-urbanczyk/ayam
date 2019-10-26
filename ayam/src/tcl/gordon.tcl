@@ -9,30 +9,41 @@
 
 # gordon.tcl - Gordon objects Tcl code
 
-set Gordon_props { Transformations Attributes Material Tags Bevels Caps GordonAttr }
+proc init_Gordon { } {
+    global ay Gordon_props GordonAttr GordonAttrData
 
-array set GordonAttr {
-    arr   GordonAttrData
-    sproc {setProp undo}
-    gproc ""
-    w     fGordonAttr
+    set Gordon_props [list Transformations Attributes Material Tags Bevels\
+			  Caps GordonAttr]
+
+    array set GordonAttr {
+	arr   GordonAttrData
+	sproc {setProp undo}
+	gproc ""
+	w     fGordonAttr
+    }
+
+    array set GordonAttrData {
+	DisplayMode 1
+	NPInfoBall "n/a"
+	BoundaryNames { "U0" "U1" "V0" "V1" }
+	BoundaryIDs { 0 1 2 3 }
+    }
+
+    set w [frame $ay(pca).$GordonAttr(w)]
+    set a $GordonAttr(arr)
+    addVSpace $w s1 2
+    addCheck $w $a WatchCorners
+    addParam $w $a Order_U
+    addParam $w $a Order_V
+
+    addParam $w $a Tolerance
+    addMenu $w $a DisplayMode $ay(npdisplaymodes)
+
+    addText $w $a "Created NURBS Patch:"
+    addInfo $w $a NPInfo
+
+    rename init_Gordon ""
+
+ return;
 }
-
-array set GordonAttrData {
-    DisplayMode 1
-    NPInfoBall "n/a"
-    BoundaryNames { "U0" "U1" "V0" "V1" }
-    BoundaryIDs { 0 1 2 3 }
-}
-
-set w [frame $ay(pca).$GordonAttr(w)]
-addVSpace $w s1 2
-addCheck $w GordonAttrData WatchCorners
-addParam $w GordonAttrData Order_U
-addParam $w GordonAttrData Order_V
-
-addParam $w GordonAttrData Tolerance
-addMenu $w GordonAttrData DisplayMode $ay(npdisplaymodes)
-
-addText $w GordonAttrData "Created NURBS Patch:"
-addInfo $w GordonAttrData NPInfo
+# init_Gordon

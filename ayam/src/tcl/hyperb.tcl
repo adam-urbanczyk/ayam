@@ -9,34 +9,34 @@
 
 # hyperboloid.tcl - hyperboloid objects Tcl code
 
-set Hyperboloid 1
-
 proc init_Hyperboloid { } {
-global ay Hyperboloid_props HyperboloidAttr HyperbAttrData
+    global ay Hyperboloid_props HyperboloidAttr HyperbAttrData
 
-set Hyperboloid_props { Transformations Attributes Material Tags HyperboloidAttr }
+    set Hyperboloid_props [list Transformations Attributes Material Tags\
+			       HyperboloidAttr]
 
-array set HyperboloidAttr {
-arr   HyperbAttrData
-sproc ""
-gproc ""
-w     fHyperboloidAttr
-}
+    array set HyperboloidAttr {
+	arr   HyperbAttrData
+	sproc ""
+	gproc ""
+	w     fHyperboloidAttr
+    }
 
-# create HyperboloidAttr-UI
-set w [frame $ay(pca).$HyperboloidAttr(w)]
-addVSpace $w s1 2
-addCheck $w HyperbAttrData Closed
-addParam $w HyperbAttrData ThetaMax
-addText $w e1 "Point 1:"
-addParam $w HyperbAttrData P1_X
-addParam $w HyperbAttrData P1_Y
-addParam $w HyperbAttrData P1_Z
-addText $w e2 "Point 2:"
-addParam $w HyperbAttrData P2_X
-addParam $w HyperbAttrData P2_Y
-addParam $w HyperbAttrData P2_Z
+    # create HyperboloidAttr-UI
+    set w [frame $ay(pca).$HyperboloidAttr(w)]
+    set a $HyperboloidAttr(arr)
+    addVSpace $w s1 2
+    addCheck $w $a Closed
+    addParam $w $a ThetaMax
+    addText $w e1 "Point 1:"
+    addParam $w $a P1_X
+    addParam $w $a P1_Y
+    addParam $w $a P1_Z
+    addText $w e2 "Point 2:"
+    addParam $w $a P2_X
+    addParam $w $a P2_Y
+    addParam $w $a P2_Z
 
-return;
+ return;
 }
 # init_Hyperboloid

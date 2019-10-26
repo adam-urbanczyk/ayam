@@ -9,8 +9,6 @@
 
 # icurve.tcl - interpolating curves objects Tcl code
 
-set ICurve 1
-
 # icurve_getAttr:
 #  get Attributes from C context and build new PropertyGUI
 #
@@ -26,23 +24,23 @@ proc icurve_getAttr { } {
     set ay(bok) $ay(appb)
 
     # create ICurveAttr-UI
+    set a $ICurveAttr(arr)
     addVSpace $w s1 2
-    addMenu $w ICurveAttrData Type [list "Open" "Closed"]
-    addParam $w ICurveAttrData Length
-    addParam $w ICurveAttrData Order
-    addMenu $w ICurveAttrData ParamType\
-	[list "Chordal" "Centripetal" "Uniform"]
-    addMenu $w ICurveAttrData Derivatives [list "Automatic" "Manual"]
+    addMenu $w $a Type [list "Open" "Closed"]
+    addParam $w $a Length
+    addParam $w $a Order
+    addMenu $w $a ParamType [list "Chordal" "Centripetal" "Uniform"]
+    addMenu $w $a Derivatives [list "Automatic" "Manual"]
     if { $ICurveAttrData(Derivatives) == 0 } {
-	    addParam $w ICurveAttrData SDLen
-	    addParam $w ICurveAttrData EDLen
-	}
+	addParam $w $a SDLen
+	addParam $w $a EDLen
+    }
 
-    addParam $w ICurveAttrData Tolerance
-    addMenu $w ICurveAttrData DisplayMode $ay(ncdisplaymodes)
+    addParam $w $a Tolerance
+    addMenu $w $a DisplayMode $ay(ncdisplaymodes)
 
-    addText $w ICurveAttrData "Created NURBS Curve:"
-    addInfo $w ICurveAttrData NCInfo
+    addText $w $a "Created NURBS Curve:"
+    addInfo $w $a NCInfo
 
     plb_setwin $w $oldfocus
 
@@ -51,7 +49,7 @@ proc icurve_getAttr { } {
 # icurve_getAttr
 
 proc init_ICurve { } {
-global ay ICurve_props ICurveAttr ICurveAttrData
+    global ay ICurve_props ICurveAttr ICurveAttrData
 
     set ICurve_props { Transformations Attributes Tags ICurveAttr }
 
@@ -70,5 +68,6 @@ global ay ICurve_props ICurveAttr ICurveAttrData
 	NCInfoBall "N/A"
     }
 
+ return;
 }
 # init_ICurve

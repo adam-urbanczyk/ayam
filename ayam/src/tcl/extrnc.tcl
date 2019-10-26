@@ -9,28 +9,26 @@
 
 # extrnc.tcl - ExtrNC objects Tcl code
 
-set ExtrNC 1
-
 proc init_ExtrNC { } {
-global ay ExtrNC_props ExtrNCAttr ExtrNCAttrData
+    global ay ExtrNC_props ExtrNCAttr ExtrNCAttrData
 
-set ExtrNC_props { Attributes Tags ExtrNCAttr }
+    set ExtrNC_props { Attributes Tags ExtrNCAttr }
 
-array set ExtrNCAttr {
-arr   ExtrNCAttrData
-sproc ""
-gproc extrnc_getAttr
-w     fExtrNCAttr
-}
+    array set ExtrNCAttr {
+	arr   ExtrNCAttrData
+	sproc ""
+	gproc extrnc_getAttr
+	w     fExtrNCAttr
+    }
 
-array set ExtrNCAttrData {
-Side 1
-DisplayMode 1
-NCInfoBall "N/A"
-Extract 0
-}
+    array set ExtrNCAttrData {
+	Side 1
+	DisplayMode 1
+	NCInfoBall "N/A"
+	Extract 0
+    }
 
-return;
+ return;
 }
 # init_ExtrNC
 
@@ -45,6 +43,7 @@ proc extrnc_getAttr { } {
 
     catch {destroy $ay(pca).$ExtrNCAttr(w)}
     set w [frame $ay(pca).$ExtrNCAttr(w)]
+    set a $ExtrNCAttr(arr)
 
     set ExtrNCAttrData(trims) ""
 
@@ -64,18 +63,18 @@ proc extrnc_getAttr { } {
 	}
 	incr cnt
     }
-    addMenu $w ExtrNCAttrData Side $sides
-    addParam $w ExtrNCAttrData Parameter
-    addCheck $w ExtrNCAttrData Relative
-    addParam $w ExtrNCAttrData PatchNum
-    addCheck $w ExtrNCAttrData Revert
-    addMenu $w ExtrNCAttrData Extract [list Nothing Normals "Normals&Tangents"]
+    addMenu $w $a Side $sides
+    addParam $w $a Parameter
+    addCheck $w $a Relative
+    addParam $w $a PatchNum
+    addCheck $w $a Revert
+    addMenu $w $a Extract [list Nothing Normals "Normals&Tangents"]
 
-    addParam $w ExtrNCAttrData Tolerance
-    addMenu $w ExtrNCAttrData DisplayMode $ay(ncdisplaymodes)
+    addParam $w $a Tolerance
+    addMenu $w $a DisplayMode $ay(ncdisplaymodes)
 
-    addText $w ExtrNCAttrData "Extracted NURBS Curve:"
-    addInfo $w ExtrNCAttrData NCInfo
+    addText $w $a "Extracted NURBS Curve:"
+    addInfo $w $a NCInfo
 
     plb_setwin $w $oldfocus
 
