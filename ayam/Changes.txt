@@ -1,4 +1,4 @@
-[11. Oct 2019] Tip:
+[26. Oct 2019] Tip:
 ===================
 Bug Fixes:
 o NURBSphere objects can not be trimmed (SF 587)
@@ -7,6 +7,7 @@ o X3D import of cone misses transformation attributes (SF 589)
 o drawing of NURBS is toggled when Alt-F4 is used on windows (SF 590)
 o no visible change in weight reset after mouse drag (SF 591)
 o <Tab>/<Shift-Tab> insert tabs in numeric point edit on windows (SF 592)
+o the IsRat attribute of SDNPatch objects is wrong (SF 593)
 
 Modelling:
 o added keyboard shortcut to call the revert tool from view windows: <!>
@@ -31,6 +32,8 @@ o added intermediate quick parameter GUIs to all modelling actions that
   pressed
 o improved focus handling of tag removal and visual designation of the
   selected tag on Win32 by/in the tag property gui context menu
+o added options to set the applications current directory by import or
+  export operations ("ImportSetsCD", "ExportSetsCD")
 
 Scripts/Scripting Interface:
 o added script "link.tcl" to manually control updates of object hierarchy
