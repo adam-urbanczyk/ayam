@@ -9,46 +9,46 @@
 
 # sweep.tcl - sweep objects Tcl code
 
-set Sweep 1
-
 proc init_Sweep { } {
-global ay Sweep_props SweepAttr SweepAttrData
+    global ay Sweep_props SweepAttr SweepAttrData
 
-set Sweep_props { Transformations Attributes Material Tags Bevels Caps SweepAttr }
+    set Sweep_props [list Transformations Attributes Material Tags Bevels Caps\
+			 SweepAttr]
 
-array set SweepAttr {
-arr   SweepAttrData
-sproc ""
-gproc ""
-w     fSweepAttr
-}
+    array set SweepAttr {
+	arr   SweepAttrData
+	sproc ""
+	gproc ""
+	w     fSweepAttr
+    }
 
-array set SweepAttrData {
-Type 0
-DisplayMode 1
-NPInfoBall "n/a"
-BoundaryNames { "Start" "End" "Left" "Right" }
-BoundaryIDs { 2 3 0 1 }
-StartCap 0
-EndCap 0
-LeftCap 0
-RightCap 0
-}
+    array set SweepAttrData {
+	Type 0
+	DisplayMode 1
+	NPInfoBall "n/a"
+	BoundaryNames { "Start" "End" "Left" "Right" }
+	BoundaryIDs { 2 3 0 1 }
+	StartCap 0
+	EndCap 0
+	LeftCap 0
+	RightCap 0
+    }
 
-set w [frame $ay(pca).$SweepAttr(w)]
-addVSpace $w s1 2
-addMenu $w SweepAttrData Type [list Open Closed Periodic]
-addCheck $w SweepAttrData Rotate
-addCheck $w SweepAttrData Interpolate
-addParam $w SweepAttrData Sections
+    set w [frame $ay(pca).$SweepAttr(w)]
+    set a $SweepAttr(arr)
+    addVSpace $w s1 2
+    addMenu $w $a Type [list Open Closed Periodic]
+    addCheck $w $a Rotate
+    addCheck $w $a Interpolate
+    addParam $w $a Sections
 
-addParam $w SweepAttrData Tolerance
-addMenu $w SweepAttrData DisplayMode $ay(npdisplaymodes)
+    addParam $w $a Tolerance
+    addMenu $w $a DisplayMode $ay(npdisplaymodes)
 
-addText $w SweepAttrData "Created NURBS Patch:"
-addInfo $w SweepAttrData NPInfo
+    addText $w $a "Created NURBS Patch:"
+    addInfo $w $a NPInfo
 
-return;
+ return;
 }
 # init_Sweep
 

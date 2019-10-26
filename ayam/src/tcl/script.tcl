@@ -9,8 +9,6 @@
 
 # script.tcl - script objects Tcl code
 
-set Script 1
-
 proc init_Script { } {
 global ay ayprefs Script_props ScriptAttr ScriptAttrData
 

@@ -9,35 +9,33 @@
 
 # torus.tcl - torus objects Tcl code
 
-set Torus 1
-
 proc init_Torus { } {
-global ay Torus_props  TorusAttr TorusAttrData
+    global ay Torus_props  TorusAttr TorusAttrData
 
-set Torus_props { Transformations Attributes Material Tags TorusAttr }
+    set Torus_props { Transformations Attributes Material Tags TorusAttr }
 
-array set TorusAttr {
-arr   TorusAttrData
-sproc ""
-gproc ""
-w     fTorusAttr
-}
+    array set TorusAttr {
+	arr   TorusAttrData
+	sproc ""
+	gproc ""
+	w     fTorusAttr
+    }
 
-# create TorusAttr-UI
-set w [frame $ay(pca).$TorusAttr(w)]
-addVSpace $w s1 2
-addCheck $w TorusAttrData Closed
-addParam $w TorusAttrData MajorRad
-addParam $w TorusAttrData MinorRad
-addParam $w TorusAttrData PhiMin
-addParam $w TorusAttrData PhiMax
-addParam $w TorusAttrData ThetaMax
+    array set TorusAttrData {
+	Closed 1
+    }
 
-array set TorusAttrData {
-Closed 1
+    # create TorusAttr-UI
+    set w [frame $ay(pca).$TorusAttr(w)]
+    set a $TorusAttr(arr)
+    addVSpace $w s1 2
+    addCheck $w $a Closed
+    addParam $w $a MajorRad
+    addParam $w $a MinorRad
+    addParam $w $a PhiMin
+    addParam $w $a PhiMax
+    addParam $w $a ThetaMax
 
-}
-
-return;
+ return;
 }
 # init_Torus

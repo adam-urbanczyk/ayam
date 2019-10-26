@@ -9,37 +9,36 @@
 
 # sphere.tcl - sphere objects Tcl code
 
-set Sphere 1
-
 proc init_Sphere { } {
-global ay Sphere_props SphereAttr SphereAttrData
+    global ay Sphere_props SphereAttr SphereAttrData
 
-set Sphere_props { Transformations Attributes Material Tags SphereAttr }
+    set Sphere_props { Transformations Attributes Material Tags SphereAttr }
 
-array set SphereAttr {
-arr   SphereAttrData
-sproc ""
-gproc ""
-w     fSphereAttr
-}
+    array set SphereAttr {
+	arr   SphereAttrData
+	sproc ""
+	gproc ""
+	w     fSphereAttr
+    }
 
-# create SphereAttr-UI
-set w [frame $ay(pca).$SphereAttr(w)]
-addVSpace $w s1 2
-addCheck $w SphereAttrData Closed
-addParam $w SphereAttrData Radius
-addParam $w SphereAttrData ZMin
-addParam $w SphereAttrData ZMax
-addParam $w SphereAttrData ThetaMax
+    array set SphereAttrData {
+	Closed 1
+	Radius 1.0
+	ZMin -1.0
+	ZMax 1.0
+	ThetaMax 1.0
+    }
 
-array set SphereAttrData {
-Closed 1
-Radius 1.0
-ZMin -1.0
-ZMax 1.0
-ThetaMax 1.0
-}
+    # create SphereAttr-UI
+    set w [frame $ay(pca).$SphereAttr(w)]
+    set a $SphereAttr(arr)
+    addVSpace $w s1 2
+    addCheck $w $a Closed
+    addParam $w $a Radius
+    addParam $w $a ZMin
+    addParam $w $a ZMax
+    addParam $w $a ThetaMax
 
-return;
+ return;
 }
 # init_Sphere

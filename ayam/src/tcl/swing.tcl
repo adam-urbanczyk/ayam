@@ -9,37 +9,35 @@
 
 # swing.tcl - Swing objects Tcl code
 
-set Swing 1
-
 proc init_Swing { } {
-global ay Swing_props SwingAttr SwingAttrData
+    global ay Swing_props SwingAttr SwingAttrData
 
-set Swing_props { Transformations Attributes Material Tags Bevels Caps SwingAttr }
+    set Swing_props [list Transformations Attributes Material Tags Bevels Caps\
+			 SwingAttr]
 
-array set SwingAttr {
-arr   SwingAttrData
-sproc ""
-gproc ""
-w     fSwingAttr
-}
+    array set SwingAttr {
+	arr   SwingAttrData
+	sproc ""
+	gproc ""
+	w     fSwingAttr
+    }
 
-array set SwingAttrData {
-DisplayMode 1
-NPInfoBall "n/a"
-BoundaryNames { "Start" "End" "Upper" "Lower" }
-BoundaryIDs { 2 3 0 1 }
-}
+    array set SwingAttrData {
+	DisplayMode 1
+	NPInfoBall "n/a"
+	BoundaryNames { "Start" "End" "Upper" "Lower" }
+	BoundaryIDs { 2 3 0 1 }
+    }
 
-# create SwingAttr-UI
-set w [frame $ay(pca).$SwingAttr(w)]
+    # create SwingAttr-UI
+    set w [frame $ay(pca).$SwingAttr(w)]
+    set a $SwingAttr(arr)
+    addParam $w $a Tolerance
+    addMenu $w $a DisplayMode $ay(npdisplaymodes)
+    addText $w $a "Created NURBS Patch:"
+    addInfo $w $a NPInfo
 
-addParam $w SwingAttrData Tolerance
-addMenu $w SwingAttrData DisplayMode $ay(npdisplaymodes)
-
-addText $w SwingAttrData "Created NURBS Patch:"
-addInfo $w SwingAttrData NPInfo
-
-return;
+ return;
 }
 # init_Swing
 

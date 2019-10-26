@@ -9,30 +9,30 @@
 
 # trim.tcl - Trim objects Tcl code
 
-set Trim 1
-
 proc init_Trim { } {
-global ay Trim_props TrimAttr TrimAttrData
+    global ay Trim_props TrimAttr TrimAttrData
 
-set Trim_props { Transformations Attributes Material Tags TrimAttr }
+    set Trim_props { Transformations Attributes Material Tags TrimAttr }
 
-array set TrimAttr {
-arr   TrimAttrData
-sproc ""
-gproc ""
-w     fTrimAttr
-}
+    array set TrimAttr {
+	arr   TrimAttrData
+	sproc ""
+	gproc ""
+	w     fTrimAttr
+    }
 
-array set TrimAttrData {
-PatchNum 0
-ScaleMode 0
-}
+    array set TrimAttrData {
+	PatchNum 0
+	ScaleMode 0
+    }
 
-# create TrimAttr-UI
-set w [frame $ay(pca).$TrimAttr(w)]
-addVSpace $w s1 2
-addParam $w TrimAttrData PatchNum
-addMenu $w TrimAttrData ScaleMode {Absolute Relative}
-return;
+    # create TrimAttr-UI
+    set w [frame $ay(pca).$TrimAttr(w)]
+    set a $TrimAttr(arr)
+    addVSpace $w s1 2
+    addParam $w $a PatchNum
+    addMenu $w $a ScaleMode {Absolute Relative}
+
+ return;
 }
 # init_Trim
