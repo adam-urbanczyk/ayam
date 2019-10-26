@@ -16,19 +16,20 @@ arr   PolyMeshAttrData
 sproc ""
 gproc ""
 w     fPolyMeshAttr
-
 }
 
 array set PolyMeshAttrData {
 Type 0
 }
+
 # create PolyMeshAttr-UI
 set w [frame $ay(pca).$PolyMeshAttr(w)]
-
+set a $PolyMeshAttr(arr)
 addVSpace $w s1 2
-addInfo $w PolyMeshAttrData NPolys
-addInfo $w PolyMeshAttrData NControls
-addInfo $w PolyMeshAttrData HasNormals
+addInfo $w $a NPolys
+addInfo $w $a NControls
+addInfo $w $a HasNormals
+
 
 uplevel #0 { array set pomeshmerge_options {
     RemoveMerged 0
@@ -167,15 +168,16 @@ proc pomesh_optimize { } {
     if { $ayprefs(FixDialogTitles) == 1 } {
 	addText $f e1 $t
     }
-    addCheck $f pomeshopt_options OptimizeCoords
-    addCheck $f pomeshopt_options OptimizePV
-    addParam $f pomeshopt_options NormalEpsilon { 0.0 1e-06 0.1 15.0 Inf }
-    addCheck $f pomeshopt_options SelectedPoints
+    set a pomeshopt_options
+    addCheck $f $a OptimizeCoords
+    addCheck $f $a OptimizePV
+    addParam $f $a NormalEpsilon { 0.0 1e-06 0.1 15.0 Inf }
+    addCheck $f $a SelectedPoints
     if { 0 } {
-    addOptionToggle $w pomeshopt_options MoreOptions \
+    addOptionToggle $w $a MoreOptions \
 	"Advanced Options" toggleOptimizeOptions
     }
-    #addCheck $f pomeshopt_options OptimizeFaces
+    #addCheck $f $a OptimizeFaces
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {

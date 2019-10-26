@@ -9,43 +9,41 @@
 
 # riproc.tcl - riproc (RiProcedural) objects Tcl code
 
-set RiProc 1
-
 proc init_RiProc { } {
-global ay RiProc_props RiProcAttr RiProcAttrData
+    global ay RiProc_props RiProcAttr RiProcAttrData
 
-set RiProc_props { Transformations Attributes Material Tags RiProcAttr }
+    set RiProc_props { Transformations Attributes Material Tags RiProcAttr }
 
-array set RiProcAttr {
-arr   RiProcAttrData
-sproc ""
-gproc ""
-w     fRiProcAttr
+    array set RiProcAttr {
+	arr   RiProcAttrData
+	sproc ""
+	gproc ""
+	w     fRiProcAttr
+    }
 
-}
+    array set RiProcAttrData {
+	Type 0
+	File ""
+	Data ""
+    }
 
-array set RiProcAttrData {
-Type 0
-File ""
-Data ""
-}
+    # create RiProcAttr-UI
+    set w [frame $ay(pca).$RiProcAttr(w)]
+    set a $RiProcAttr(arr)
+    addVSpace $w s1 2
+    addMenu $w $a Type {DelayedReadArchive RunProgram DynamicLoad}
+    addFile $w $a File
+    addString $w $a Data
+    addText $w e0 "Bounding Box:"
+    addParam $w $a MinX
+    addParam $w $a MaxX
 
-# create RiProcAttr-UI
-set w [frame $ay(pca).$RiProcAttr(w)]
-addVSpace $w s1 2
-addMenu $w RiProcAttrData Type {DelayedReadArchive RunProgram DynamicLoad}
-addFile $w RiProcAttrData File
-addString $w RiProcAttrData Data
-addText $w e0 "Bounding Box:"
-addParam $w RiProcAttrData MinX
-addParam $w RiProcAttrData MaxX
+    addParam $w $a MinY
+    addParam $w $a MaxY
 
-addParam $w RiProcAttrData MinY
-addParam $w RiProcAttrData MaxY
+    addParam $w $a MinZ
+    addParam $w $a MaxZ
 
-addParam $w RiProcAttrData MinZ
-addParam $w RiProcAttrData MaxZ
-
-return;
+ return;
 }
 # init_RiProc

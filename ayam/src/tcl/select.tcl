@@ -9,29 +9,28 @@
 
 # select.tcl - select objects Tcl code
 
-set Select 1
-
 proc init_Select { } {
-global ay Select_props SelectAttr SelectAttrData
+    global ay Select_props SelectAttr SelectAttrData
 
-set Select_props { Transformations Attributes Material Tags SelectAttr }
+    set Select_props { Transformations Attributes Material Tags SelectAttr }
 
-array set SelectAttr {
-arr   SelectAttrData
-sproc ""
-gproc ""
-w     fSelectAttr
-}
+    array set SelectAttr {
+	arr   SelectAttrData
+	sproc ""
+	gproc ""
+	w     fSelectAttr
+    }
 
-array set SelectAttrData {
-Indices 0
-}
+    array set SelectAttrData {
+	Indices 0
+    }
 
-# create SelectAttr-UI
-set w [frame $ay(pca).$SelectAttr(w)]
-addVSpace $w s1 2
-addString $w SelectAttrData Indices
+    # create SelectAttr-UI
+    set w [frame $ay(pca).$SelectAttr(w)]
+    set a $SelectAttr(arr)
+    addVSpace $w s1 2
+    addString $w $a Indices
 
-return;
+ return;
 }
 # init_Select

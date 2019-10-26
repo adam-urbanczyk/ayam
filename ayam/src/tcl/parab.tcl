@@ -9,37 +9,37 @@
 
 # sphere.tcl - sphere objects Tcl code
 
-set Paraboloid 1
-
 proc init_Paraboloid { } {
-global ay Paraboloid_props ParaboloidAttr ParabAttrData
+    global ay Paraboloid_props ParaboloidAttr ParabAttrData
 
-set Paraboloid_props { Transformations Attributes Material Tags ParaboloidAttr }
+    set Paraboloid_props [list Transformations Attributes Material Tags\
+			      ParaboloidAttr]
 
-array set ParaboloidAttr {
-arr   ParabAttrData
-sproc ""
-gproc ""
-w     fParaboloidAttr
-}
+    array set ParaboloidAttr {
+	arr   ParabAttrData
+	sproc ""
+	gproc ""
+	w     fParaboloidAttr
+    }
 
-# create ParaboloidAttr-UI
-set w [frame $ay(pca).$ParaboloidAttr(w)]
-addVSpace $w s1 2
-addCheck $w ParabAttrData Closed
-addParam $w ParabAttrData RMax
-addParam $w ParabAttrData ZMin
-addParam $w ParabAttrData ZMax
-addParam $w ParabAttrData ThetaMax
+    array set ParabAttrData {
+	Closed 1
+	Radius 1.0
+	ZMin -1.0
+	ZMax 1.0
+	ThetaMax 1.0
+    }
 
-array set ParabAttrData {
-Closed 1
-Radius 1.0
-ZMin -1.0
-ZMax 1.0
-ThetaMax 1.0
-}
+    # create ParaboloidAttr-UI
+    set w [frame $ay(pca).$ParaboloidAttr(w)]
+    set a $ParaboloidAttr(arr)
+    addVSpace $w s1 2
+    addCheck $w $a Closed
+    addParam $w $a RMax
+    addParam $w $a ZMin
+    addParam $w $a ZMax
+    addParam $w $a ThetaMax
 
-return;
+ return;
 }
 # init_Paraboloid

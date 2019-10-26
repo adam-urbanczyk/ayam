@@ -9,37 +9,35 @@
 
 # riinc.tcl - riinc (RIB-Include) objects Tcl code
 
-set RiInc 1
-
 proc init_RiInc { } {
-global ay RiInc_props RiIncAttr RiIncAttrData
+    global ay RiInc_props RiIncAttr RiIncAttrData
 
-set RiInc_props { Transformations Attributes Material Tags RiIncAttr }
+    set RiInc_props { Transformations Attributes Material Tags RiIncAttr }
 
-array set RiIncAttr {
-arr   RiIncAttrData
-sproc ""
-gproc ""
-w     fRiIncAttr
+    array set RiIncAttr {
+	arr   RiIncAttrData
+	sproc ""
+	gproc ""
+	w     fRiIncAttr
+    }
 
-}
+    array set RiIncAttrData {
+	File ""
+	Width 1.0
+	Length 1.0
+	Height 1.0
+    }
 
-# create RiIncAttr-UI
-set w [frame $ay(pca).$RiIncAttr(w)]
-addText $w e0 "Include:"
-addFile $w RiIncAttrData File
-addText $w e1 "Dimensions:"
-addParam $w RiIncAttrData Width
-addParam $w RiIncAttrData Length
-addParam $w RiIncAttrData Height
+    # create RiIncAttr-UI
+    set w [frame $ay(pca).$RiIncAttr(w)]
+    set a $RiIncAttr(arr)
+    addText $w e0 "Include:"
+    addFile $w $a File
+    addText $w e1 "Dimensions:"
+    addParam $w $a Width
+    addParam $w $a Length
+    addParam $w $a Height
 
-array set RiIncAttrData {
-File ""
-Width 1.0
-Length 1.0
-Height 1.0
-}
-
-return;
+ return;
 }
 # init_RiInc
