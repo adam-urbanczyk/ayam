@@ -45,12 +45,6 @@ mmenu_addcustom SDCurve "crtOb SDCurve;uS;sL;rV"
 # tell the rest of Ayam (or other custom objects), that we are loaded
 lappend ay(co) SDCurve
 
-uplevel #0 { array set sdcurve_convopt {
-    filename ""
-    FileName "unnamed.ply"
-} }
-
-
 
 # sdcurve_conv:
 #  convert to SDCurve
