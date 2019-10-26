@@ -31,36 +31,37 @@ proc extrude_getAttr { } {
     bevel_parseTags $tagnames $tagvalues $ExtrudeAttrData(BoundaryNames)
 
     set ay(bok) $ay(appb)
+    set a $ExtrudeAttr(arr)
 
     addVSpace $w s1 2
-    addParam $w ExtrudeAttrData Height
-    addCheck $w ExtrudeAttrData StartCap
-    addCheck $w ExtrudeAttrData EndCap
+    addParam $w $a Height
+    addCheck $w $a StartCap
+    addCheck $w $a EndCap
 
     if { $BevelTags(Bevel2) } {
 	addCommand $w c1 "Remove Start Bevel!"\
-	    "bevel_rem 2 ExtrudeAttrData \{$ExtrudeAttrData(BoundaryIDs)\}"
+	    "bevel_rem 2 $a \{$ExtrudeAttrData(BoundaryIDs)\}"
 	addMenu $w BevelTags StartType $ay(bevelmodes)
 	addParam $w BevelTags StartRadius
 	addCheck $w BevelTags StartRevert
     } else {
 	addCommand $w c1 "Add Start Bevel!"\
-	    "bevel_add 2 ExtrudeAttrData \{$ExtrudeAttrData(BoundaryIDs)\}"
+	    "bevel_add 2 $a \{$ExtrudeAttrData(BoundaryIDs)\}"
     }
 
     if { $BevelTags(Bevel3) } {
 	addCommand $w c2 "Remove End Bevel!"\
-	    "bevel_rem 3 ExtrudeAttrData \{$ExtrudeAttrData(BoundaryIDs)\}"
+	    "bevel_rem 3 $a \{$ExtrudeAttrData(BoundaryIDs)\}"
 	addMenu $w BevelTags EndType $ay(bevelmodes)
 	addParam $w BevelTags EndRadius
 	addCheck $w BevelTags EndRevert
     } else {
 	addCommand $w c2 "Add End Bevel!"\
-	    "bevel_add 3 ExtrudeAttrData \{$ExtrudeAttrData(BoundaryIDs)\}"
+	    "bevel_add 3 $a \{$ExtrudeAttrData(BoundaryIDs)\}"
     }
 
-    addParam $w ExtrudeAttrData Tolerance
-    addMenu $w ExtrudeAttrData DisplayMode $ay(npdisplaymodes)
+    addParam $w $a Tolerance
+    addMenu $w $a DisplayMode $ay(npdisplaymodes)
 
     # add UI to property canvas
     plb_setwin $w $oldfocus
