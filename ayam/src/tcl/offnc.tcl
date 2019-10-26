@@ -9,38 +9,38 @@
 
 # offnc.tcl - offset curves objects Tcl code
 
-set OffsetNC 1
-
 proc init_OffsetNC { } {
-global ay OffsetNC_props OffsetNCAttr OffsetNCAttrData
+    global ay OffsetNC_props OffsetNCAttr OffsetNCAttrData
 
-set OffsetNC_props { Attributes Tags OffsetNCAttr }
+    set OffsetNC_props { Attributes Tags OffsetNCAttr }
 
-array set OffsetNCAttr {
-arr   OffsetNCAttrData
-sproc ""
-gproc ""
-w     fOffsetNCAttr
-}
+    array set OffsetNCAttr {
+	arr   OffsetNCAttrData
+	sproc ""
+	gproc ""
+	w     fOffsetNCAttr
+    }
 
-array set OffsetNCAttrData {
-Mode 1
-DisplayMode 0
-NCInfoBall "N/A"
-}
-# create UI
-set w [frame $ay(pca).$OffsetNCAttr(w)]
-addVSpace $w s1 2
-addMenu $w OffsetNCAttrData Mode [list "Point" "Section" "Hybrid" "3DPVN"]
-addCheck $w OffsetNCAttrData Revert
-addParam $w OffsetNCAttrData Offset
+    array set OffsetNCAttrData {
+	Mode 1
+	DisplayMode 0
+	NCInfoBall "N/A"
+    }
 
-addParam $w OffsetNCAttrData Tolerance
-addMenu $w OffsetNCAttrData DisplayMode $ay(ncdisplaymodes)
+    # create UI
+    set w [frame $ay(pca).$OffsetNCAttr(w)]
+    set a $OffsetNCAttr(arr)
+    addVSpace $w s1 2
+    addMenu $w $a Mode [list "Point" "Section" "Hybrid" "3DPVN"]
+    addCheck $w $a Revert
+    addParam $w $a Offset
 
-addText $w OffsetNCAttrData "Created NURBS Curve:"
-addInfo $w OffsetNCAttrData NCInfo
+    addParam $w $a Tolerance
+    addMenu $w $a DisplayMode $ay(ncdisplaymodes)
 
-return;
+    addText $w $a "Created NURBS Curve:"
+    addInfo $w $a NCInfo
+
+ return;
 }
 # init_OffsetNC

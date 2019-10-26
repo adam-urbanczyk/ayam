@@ -9,8 +9,6 @@
 
 # ipatch.tcl - IPatch objects Tcl code
 
-set IPatch 1
-
 # ipatch_getAttr:
 #  get Attributes from C context and build new PropertyGUI
 #
@@ -21,48 +19,47 @@ proc ipatch_getAttr { } {
 
     catch {destroy $ay(pca).$IPatchAttr(w)}
     set w [frame $ay(pca).$IPatchAttr(w)]
+    set a $IPatchAttr(arr)
+
     getProp
 
     set ay(bok) $ay(appb)
 
     # create IPatchAttr-UI
     addVSpace $w s1 2
-    addParam $w IPatchAttrData Width
-    addParam $w IPatchAttrData Height
+    addParam $w $a Width
+    addParam $w $a Height
 
-    addParam $w IPatchAttrData Order_U
-    addParam $w IPatchAttrData Order_V
+    addParam $w $a Order_U
+    addParam $w $a Order_V
 
-    addCheck $w IPatchAttrData Close_U
-    addCheck $w IPatchAttrData Close_V
+    addCheck $w $a Close_U
+    addCheck $w $a Close_V
 
-    addMenu $w IPatchAttrData Knot-Type_U\
-	[list Chordal Centripetal Uniform]
-
-    addMenu $w IPatchAttrData Knot-Type_V\
-	[list Chordal Centripetal Uniform]
+    addMenu $w $a Knot-Type_U [list Chordal Centripetal Uniform]
+    addMenu $w $a Knot-Type_V [list Chordal Centripetal Uniform]
 
     if { $IPatchAttrData(Order_U) > 2 } {
-	addMenu $w IPatchAttrData Derivatives_U [list None Automatic Manual]
+	addMenu $w $a Derivatives_U [list None Automatic Manual]
 	if { $IPatchAttrData(Derivatives_U) == 1 } {
-	    addParam $w IPatchAttrData SDLen_U
-	    addParam $w IPatchAttrData EDLen_U
+	    addParam $w $a SDLen_U
+	    addParam $w $a EDLen_U
 	}
     }
 
     if { $IPatchAttrData(Order_V) > 2 } {
-	addMenu $w IPatchAttrData Derivatives_V [list None Automatic Manual]
+	addMenu $w $a Derivatives_V [list None Automatic Manual]
 	if { $IPatchAttrData(Derivatives_V) == 1 } {
-	    addParam $w IPatchAttrData SDLen_V
-	    addParam $w IPatchAttrData EDLen_V
+	    addParam $w $a SDLen_V
+	    addParam $w $a EDLen_V
 	}
     }
 
-    addParam $w IPatchAttrData Tolerance
-    addMenu $w IPatchAttrData DisplayMode $ay(npdisplaymodes)
+    addParam $w $a Tolerance
+    addMenu $w $a DisplayMode $ay(npdisplaymodes)
 
-    addText $w IPatchAttrData "Created NURBS Patch:"
-    addInfo $w IPatchAttrData NPInfo
+    addText $w $a "Created NURBS Patch:"
+    addInfo $w $a NPInfo
 
     plb_setwin $w $oldfocus
 
@@ -74,7 +71,8 @@ proc ipatch_getAttr { } {
 proc init_IPatch { } {
     global ay IPatch_props IPatchAttr IPatchAttrData
 
-    set IPatch_props { Transformations Attributes Material Tags Bevels Caps IPatchAttr }
+    set IPatch_props [list Transformations Attributes Material Tags Bevels\
+			  Caps IPatchAttr]
 
     array set IPatchAttr {
 	arr   IPatchAttrData

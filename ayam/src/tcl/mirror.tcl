@@ -9,22 +9,27 @@
 
 # mirror.tcl - mirror objects Tcl code
 
-set Mirror_props { Transformations Attributes Material Tags MirrorAttr }
+proc init_Mirror { } {
+    global ay Mirror_props MirrorAttr MirrorAttrData
 
-array set MirrorAttr {
-arr   MirrorAttrData
-sproc ""
-gproc ""
-w     fMirrorAttr
+    set Mirror_props { Transformations Attributes Material Tags MirrorAttr }
 
+    array set MirrorAttr {
+	arr   MirrorAttrData
+	sproc ""
+	gproc ""
+	w     fMirrorAttr
+    }
+
+    array set MirrorAttrData {
+	Plane 0
+    }
+
+    # create MirrorAttr-UI
+    set w [frame $ay(pca).$MirrorAttr(w)]
+    addVSpace $w s1 2
+    addMenu $w MirrorAttrData Plane [list "YZ-Plane" "XZ-Plane" "XY-Plane"]
+
+ return;
 }
-
-array set MirrorAttrData {
-    Plane 0
-}
-
-# create MirrorAttr-UI
-set w [frame $ay(pca).$MirrorAttr(w)]
-addVSpace $w s1 2
-addMenu $w MirrorAttrData Plane [list "YZ-Plane" "XZ-Plane"\
-				      "XY-Plane"]
+# init_Mirror

@@ -9,37 +9,37 @@
 
 # ncircle.tcl - NCircle objects Tcl code
 
-set NCircle 1
-
 proc init_NCircle { } {
-global ay NCircle_props NCircleAttr NCircleAttrData
+    global ay NCircle_props NCircleAttr NCircleAttrData
 
-set NCircle_props { Transformations Attributes Material Tags NCircleAttr }
+    set NCircle_props { Transformations Attributes Material Tags NCircleAttr }
 
-array set NCircleAttr {
-arr   NCircleAttrData
-sproc ""
-gproc ""
-w     fNCircleAttr
-}
+    array set NCircleAttr {
+	arr   NCircleAttrData
+	sproc ""
+	gproc ""
+	w     fNCircleAttr
+    }
 
-array set NCircleAttrData {
-DisplayMode 1
-NCInfoBall "N/A"
-}
+    array set NCircleAttrData {
+	DisplayMode 1
+	NCInfoBall "N/A"
+    }
 
-# create NCircleAttr-UI
-set w [frame $ay(pca).$NCircleAttr(w)]
-addVSpace $w s1 2
-addParam $w NCircleAttrData Radius
-addParam $w NCircleAttrData TMin
-addParam $w NCircleAttrData TMax
+    # create NCircleAttr-UI
+    set w [frame $ay(pca).$NCircleAttr(w)]
+    set a $NCircleAttr(arr)
+    addVSpace $w s1 2
+    addParam $w $a Radius
+    addParam $w $a TMin
+    addParam $w $a TMax
 
-addParam $w NCircleAttrData Tolerance
-addMenu $w NCircleAttrData DisplayMode $ay(ncdisplaymodes)
+    addParam $w $a Tolerance
+    addMenu $w $a DisplayMode $ay(ncdisplaymodes)
 
-addText $w NCircleAttrData "Created NURBS Curve:"
-addInfo $w NCircleAttrData NCInfo
+    addText $w $a "Created NURBS Curve:"
+    addInfo $w $a NCInfo
 
+ return;
 }
 # init_NCircle
