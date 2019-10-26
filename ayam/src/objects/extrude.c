@@ -1166,12 +1166,15 @@ ay_extrude_convertcb(ay_object *o, int in_place)
 
   ret = ay_convert_nptoolobj(o, e->npatch, e->caps_and_bevels, in_place);
 
-  o->tags = oldtags;
-  while(newtags != oldtags)
+  if(!in_place)
     {
-      deltag = newtags;
-      newtags = newtags->next;
-      ay_tags_free(deltag);
+      o->tags = oldtags;
+      while(newtags != oldtags)
+	{
+	  deltag = newtags;
+	  newtags = newtags->next;
+	  ay_tags_free(deltag);
+	}
     }
 
  return ret;
