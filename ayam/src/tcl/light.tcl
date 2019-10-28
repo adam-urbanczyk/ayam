@@ -27,38 +27,38 @@ proc light_getAttr { } {
     set ay(bok) $ay(appb)
 
     # create new UI
+    set a $LightAttr(arr)
     addVSpace $w s1 2
-    addMenu $w LightAttrData Type {Custom Point Distant Spot}
-    addCheck $w LightAttrData IsOn
-    addCheck $w LightAttrData IsLocal
-    addCheck $w LightAttrData Shadows
+    addMenu $w $a Type {Custom Point Distant Spot}
+    addCheck $w $a IsOn
+    addCheck $w $a IsLocal
+    addCheck $w $a Shadows
     if { $LightAttrData(Type) == 0 } {
-	addParam $w LightAttrData Samples
+	addParam $w $a Samples
     }
     if { $LightAttrData(Type) != 0 } {
-
-	addParam $w LightAttrData Intensity
-	addColor $w LightAttrData Color
+	addParam $w $a Intensity
+	addColor $w $a Color
     }
 
-    addCheck $w LightAttrData UseSM
-    addParam $w LightAttrData SMRes
+    addCheck $w $a UseSM
+    addParam $w $a SMRes
 
     if { $LightAttrData(Type) == 3 } {
-	addParam $w LightAttrData ConeAngle
-	addParam $w LightAttrData ConeDAngle
-	addParam $w LightAttrData BeamDistrib
+	addParam $w $a ConeAngle
+	addParam $w $a ConeDAngle
+	addParam $w $a BeamDistrib
     }
 
     if { $LightAttrData(Type) != 0 } {
-	addParam $w LightAttrData From_X
-	addParam $w LightAttrData From_Y
-	addParam $w LightAttrData From_Z
+	addParam $w $a From_X
+	addParam $w $a From_Y
+	addParam $w $a From_Z
     }
     if { $LightAttrData(Type) >= 2 } {
-	addParam $w LightAttrData To_X
-	addParam $w LightAttrData To_Y
-	addParam $w LightAttrData To_Z
+	addParam $w $a To_X
+	addParam $w $a To_Y
+	addParam $w $a To_Z
     }
 
     plb_setwin $w $oldfocus
@@ -69,11 +69,10 @@ proc light_getAttr { } {
 
 
 array set LightAttr {
-arr   LightAttrData
-sproc ""
-gproc light_getAttr
-w     fLightAttr
-
+    arr   LightAttrData
+    sproc ""
+    gproc light_getAttr
+    w     fLightAttr
 }
 
 array set LightAttrData {
@@ -101,9 +100,9 @@ proc light_setShader { } {
 # light_setShader
 
 array set LightShader {
-arr   ay_shader
-sproc light_setShader
-gproc light_getShader
-w     fLightShader
+    arr   ay_shader
+    sproc light_setShader
+    gproc light_getShader
+    w     fLightShader
 }
 
