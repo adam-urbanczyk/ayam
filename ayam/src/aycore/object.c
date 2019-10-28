@@ -1570,7 +1570,18 @@ ay_object_replace(ay_object *src, ay_object *dst)
 
   memcpy(dst, src, sizeof(ay_object));
 
-  dst->mat = oldmat;
+  if(oldmat)
+    {
+      if(ay_matt_mayhavematerial(src->type) && !src->mat)
+	{
+	  dst->mat = oldmat;
+	}
+      else
+	{
+	  (*(oldmat->refcountptr))--;
+	}
+    }
+
   dst->refcount = oldrefcount;
   dst->next = oldnext;
 
