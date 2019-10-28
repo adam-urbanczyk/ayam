@@ -301,7 +301,7 @@ array set MaterialAttrData {
 
 # create MaterialAttr-UI
 set w [frame $ay(pca).$MaterialAttr(w)]
-
+addVSpace $w s1 2
 addString $w MaterialAttrData Materialname
 addInfo $w MaterialAttrData RefCount
 addInfo $w MaterialAttrData Registered
