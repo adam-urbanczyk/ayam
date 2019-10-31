@@ -225,21 +225,15 @@ ay_object_delete(ay_object *o)
  ay_tag *tag = NULL;
 
   if(!o)
-    {
-      return AY_ENULL;
-    }
+    return AY_ENULL;
 
   /* never delete objects with a reference count > 0 */
   if(o->refcount > 0)
-    {
-      return AY_EREF;
-    }
+    return AY_EREF;
 
   /* never delete the one and only end level object */
   if(o == ay_endlevel)
-    {
-      return AY_OK;
-    }
+    return AY_OK;
 
   /* delete children first */
   while(o->down && (o->down != ay_endlevel))
@@ -367,9 +361,7 @@ ay_object_deletemulti(ay_object *o, int force)
  ay_object *next = NULL, *d = NULL;
 
   if(!o)
-    {
-      return AY_ENULL;
-    }
+    return AY_ENULL;
 
   d = o;
 
@@ -670,9 +662,7 @@ void
 ay_object_defaults(ay_object *o)
 {
   if(!o)
-    {
-      return;
-    }
+    return;
 
   o->quat[3] = 1.0;
 
@@ -697,9 +687,7 @@ ay_object_placemark(ay_object *o)
  ay_list_object tsel = {0}, *osel;
 
   if(!o)
-    {
-      return;
-    }
+    return;
 
   /* move object to the mark? */
   if(ay_prefs.createatmark && ay_currentview && ay_currentview->drawmark)
@@ -850,9 +838,7 @@ ay_object_copy(ay_object *src, ay_object **dst)
  unsigned int *refcountptr;
 
   if(!src || !dst)
-    {
-      return AY_ENULL;
-    }
+    return AY_ENULL;
 
   /* silently avoid to really copy the endlevel terminator object;
      instead, just copy the reference */
@@ -1468,15 +1454,24 @@ ay_object_gettypeornametcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_object_gettypeornametcmd */
 
 
-/* ay_object_crtendlevel:
+/** ay_object_crtendlevel:
+ * Stores a pointer to the end level object (ay_endlevel) in the designated
+ * struct slot (usually &(ay_object->next) or &(ay_object->down).
  *
+ * This function used to create an entirely new ay_object _and_
+ * ay_level_object, it is left here to provide API backwards compatibility
+ * only, as storing a pointer should not require a function call.
+ *
+ * \param[in] o where to store the pointer to the end level object
+ *
+ * \returns AY_OK on success, error code else.
  */
 int
 ay_object_crtendlevel(ay_object **o)
 {
   if(!o)
     return AY_ENULL;
- *o = ay_endlevel;
+  *o = ay_endlevel;
  return AY_OK;
 } /* ay_object_crtendlevel */
 
@@ -1523,6 +1518,7 @@ ay_object_replace(ay_object *src, ay_object *dst)
 	    }
 	  (void)ay_object_deletemulti(dst->down, AY_TRUE);
 	}
+      dst->down = ay_endlevel;
     }
 
   if(dst->tags)
