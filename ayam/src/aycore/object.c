@@ -1456,13 +1456,13 @@ ay_object_gettypeornametcmd(ClientData clientData, Tcl_Interp *interp,
 
 /** ay_object_crtendlevel:
  * Stores a pointer to the end level object (ay_endlevel) in the designated
- * struct slot (usually &(ay_object->next) or &(ay_object->down).
+ * struct slot, usually &(ay_object->next) or &(ay_object->down).
  *
  * This function used to create an entirely new ay_object _and_
  * ay_level_object, it is left here to provide API backwards compatibility
  * only, as storing a pointer should not require a function call.
  *
- * \param[in] o where to store the pointer to the end level object
+ * \param[in,out] o where to store the pointer to the end level object
  *
  * \returns AY_OK on success, error code else.
  */
@@ -1476,11 +1476,14 @@ ay_object_crtendlevel(ay_object **o)
 } /* ay_object_crtendlevel */
 
 
-/* ay_object_replace:
- *  replace object dst with the one pointed to by src;
- *  type specific contents of dst are lost afterwards;
+/** ay_object_replace:
+ *  Replace object \a dst with the one pointed to by \a src.
+ *  Type specific contents of dst are lost afterwards;
  *  object src should not be accessed via src afterwards
  *  because it is free()d here!
+
+ * \param[in] src source object
+ * \param[in,out] dst destination object
  */
 int
 ay_object_replace(ay_object *src, ay_object *dst)
@@ -1503,7 +1506,14 @@ ay_object_replace(ay_object *src, ay_object *dst)
 
   if(dst->down && dst->down->next)
     {
-      ay_status = ay_object_candelete(dst->down, dst->down);
+      d = dst->down;
+      while(d && d->next)
+	{
+	  ay_status = ay_object_candelete(dst->down, d);
+	  if(ay_status != AY_OK)
+	    break;
+	  d = d->next;
+	}
       if(ay_status != AY_OK)
 	{
 	  ay_clipb_prepend(dst->down, fname);
@@ -1516,7 +1526,7 @@ ay_object_replace(ay_object *src, ay_object *dst)
 	      ay_undo_clearobj(d);
 	      d = d->next;
 	    }
-	  (void)ay_object_deletemulti(dst->down, AY_TRUE);
+	  (void)ay_object_deletemulti(dst->down, /*force=*/AY_TRUE);
 	}
       dst->down = ay_endlevel;
     }
