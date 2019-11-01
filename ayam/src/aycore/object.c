@@ -1477,13 +1477,19 @@ ay_object_crtendlevel(ay_object **o)
 
 
 /** ay_object_replace:
- *  Replace object \a dst with the one pointed to by \a src.
- *  Type specific contents of dst are lost afterwards;
- *  object src should not be accessed via src afterwards
- *  because it is free()d here!
-
- * \param[in] src source object
+ * Overwrite object \a dst with the one pointed to by \a src.
+ * Type specific contents of \a dst are lost afterwards;
+ * object \a src should not be accessed via \a src after successful
+ * completion because it is free()d here!
+ *
+ * The children of \a dst will be deleted, if this can not be done
+ * due to references, they will be prepended to the object clipboard.
+ * This will be reported to the user!
+ *
+ * \param[in,out] src source object
  * \param[in,out] dst destination object
+ *
+ * \returns AY_OK on success, error code else.
  */
 int
 ay_object_replace(ay_object *src, ay_object *dst)
@@ -1506,14 +1512,8 @@ ay_object_replace(ay_object *src, ay_object *dst)
 
   if(dst->down && dst->down->next)
     {
-      d = dst->down;
-      while(d && d->next)
-	{
-	  ay_status = ay_object_candelete(dst->down, d);
-	  if(ay_status != AY_OK)
-	    break;
-	  d = d->next;
-	}
+      ay_status = ay_object_candelete(dst->down, dst->down);
+
       if(ay_status != AY_OK)
 	{
 	  ay_clipb_prepend(dst->down, fname);
@@ -1597,10 +1597,14 @@ ay_object_replace(ay_object *src, ay_object *dst)
 } /* ay_object_replace */
 
 
-/* ay_object_count:
- *  this function counts all objects pointed to by o (including all siblings
- *  and all children of o and its siblings) in a recursive manner
- *  The terminating endlevel objects are not included.
+/** ay_object_count:
+ * _Recursively_ counts all objects pointed to by \a o (including all
+ * siblings and all children of \a o and its siblings).
+ * The terminating endlevel objects must be present but are not included.
+ *
+ * \param[in] o an object in the scene hierarchy
+ *
+ * \returns the number of of objects besides and beneath \a o
  */
 unsigned int
 ay_object_count(ay_object *o)
@@ -1622,11 +1626,22 @@ ay_object_count(ay_object *o)
 } /* ay_object_count */
 
 
-/* ay_object_candelete:
- *  _recursively_ check, whether there are referenced/master objects
- *  in the hierarchy pointed to by <o> and whether any references/instances
- *  of those masters are _not_ in the hierarchy pointed to by <h>.
- *  If this is the case, <o> must not be deleted.
+/** ay_object_candelete:
+ * _Recursively_ check, whether there are referenced/master objects
+ * in the hierarchy pointed to by \a o and whether any references/instances
+ * of those masters are _not_ in the hierarchy pointed to by \a h.
+ * If this is the case, the objects pointed to by \a o must not be deleted.
+ *
+ * Note: this function checks multiple objects and should therefore
+ * rather be called ay_object_candeletemulti()
+ *
+ * Common usage is ay_object_candelete(o->down, o->down); to see whether
+ * the children of o are "self contained" and can consequently be deleted.
+ *
+ * \param[in] h an object in the scene hierarchy
+ * \param[in] o an object in the scene hierarchy
+ *
+ * \returns AY_OK if the objects pointed to by o can be deleted safely
  */
 int
 ay_object_candelete(ay_object *h, ay_object *o)
