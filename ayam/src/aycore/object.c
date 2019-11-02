@@ -1162,6 +1162,42 @@ ay_object_isdegen(ay_object *o)
 } /* ay_object_isdegen */
 
 
+/** ay_object_istrimmed:
+ * Helper for ay_object_ishastcmd() below. Check object for trims.
+ *
+ * \param[in] o object to check
+ * \param[in] argc number of parameters in \a argv
+ * \param[in] argv parameters
+ *
+ * \returns AY_TRUE if object is a non-trivially trimmed parametric surface;
+ *          AY_FALSE else
+ */
+int
+ay_object_istrimmed(ay_object *o, int argc, char *argv[])
+{
+ ay_object *p;
+ int trimmed = AY_FALSE;
+
+  if(o->type == AY_IDNPATCH)
+    {
+      if(ay_npt_istrimmed(o, 0))
+	trimmed = AY_TRUE;
+    }
+  else
+    {
+      (void)ay_provide_object(o, AY_IDNPATCH, &p);
+      if(p)
+	{
+	  if(ay_npt_istrimmed(p, 0))
+	    trimmed = AY_TRUE;
+	  ay_object_deletemulti(p, AY_FALSE);
+	}
+    } /* if not NPatch */
+
+ return trimmed;
+} /* ay_object_istrimmed */
+
+
 /** ay_object_ishastcmd:
  *  Check whether an object has certain properties (i.e. has child objects).
  *  Implements the \a hasChild scripting interface command.
@@ -1335,6 +1371,13 @@ ay_object_ishastcmd(ClientData clientData, Tcl_Interp *interp,
 		  else
 		    res = no;
 		}
+	      break;
+	    case 'T':
+	      /* is isTrimmed */
+	      if(ay_object_istrimmed(o, argc, argv))
+		res = yes;
+	      else
+		res = no;
 	      break;
 	    default:
 	      /* break the loop */
@@ -1678,13 +1721,18 @@ ay_object_candelete(ay_object *h, ay_object *o)
 } /* ay_object_candelete */
 
 
-/* ay_object_candeletelist:
- *  _recursively_ check, whether there are referenced/master objects
- *  in the list/hierarchy pointed to by <l> and whether any
- *  references/instances of those masters are _not_ in the hierarchy
- *  pointed to by <l>.
- *  If this is the case, <l> must not be deleted.
- *  For the initial invocation o must be NULL.
+/** ay_object_candeletelist:
+ * _Recursively_ check, whether there are referenced/master objects
+ * in the list/hierarchy pointed to by \a l and whether any
+ * references/instances of those masters are _not_ in the hierarchy
+ * pointed to by \a l.
+ * If this is the case, \a l must not be deleted.
+ * For the initial invocation \a o must be NULL.
+ *
+ * \param[in] l a list of objects in the scene hierarchy
+ * \param[in] o must be NULL
+ *
+ * \returns AY_OK if the objects pointed to by l can be deleted safely
  */
 int
 ay_object_candeletelist(ay_list_object *l, ay_object *o)
