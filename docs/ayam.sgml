@@ -12518,6 +12518,8 @@ XML|XML Data<#if out="latex">@<hline></#if>
 <caption>Tags Overview (2/2), * &ndash; internal</caption>
 </table>
 
+<#if out="latex"><x/newpage/</#if>
+
 <sect2>RiAttribute Tag<label id="riatag">
 <p>
 The tag type <tt/"RiAttribute"/ can be used to attach
@@ -12850,6 +12852,9 @@ the current geometry information. The scene reading code checks
 for the presence of a <tt/"SaveMainGeom"/ tag for the Root object
 after replacing a scene and re-establishes the geometries of
 main and toolbox window.
+<p>
+This tag is only filled with meaningful data and the geometry
+is only restored if Ayam is in multi window GUI mode.
 
 <sect2>SavePaneLayout Tag<label id="savepanelayouttag">
 <p>
@@ -12862,6 +12867,9 @@ the current geometry information. The scene reading code checks
 for the presence of a <tt/"SavePaneLayout"/ tag for the Root object
 after replacing a scene and re-establishes the geometries of the
 internal windows.
+<p>
+This tag is only filled with meaningful data and the pane layout
+is only restored if Ayam is in single window GUI mode.
 
 <sect2>TP (Tesselation Parameter) Tag<label id="tptag">
 <p>
@@ -17132,6 +17140,23 @@ returned.<footnote>Since 1.27.</footnote>
 If multiple objects are selected, a list is returned.
 </itemize>
 
+<p>
+<#if out="latex"><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
+<label id="scistrimmed">
+isTrimmed:
+<itemize>
+ <item>Synopsis: <tt>"isTrimmed"</tt>
+ <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Description: This command returns <tt/1/ if the selected object
+is a non trivially trimmed parametric surface, otherwise
+<tt/0/ is returned.<footnote>Since 1.27.</footnote>
+If multiple objects are selected, a list is returned.
+<p><p>
+This command supports arbitrary object types that just need to
+provide a NURBS surface.
+</itemize>
+
 <sect2>Selecting Objects<label id="sciselob">
 <p>
 These commands are probably the most important ones, because many other
@@ -17522,7 +17547,6 @@ goTop:
  <item>Description: Go to the top level of the object hierarchy.
  <item>Notes: The object selection is <em/not/ synchronized.
 </itemize>
-
 
 <#if out="html"><f/<inf/<newline>//</#if>
 The following commands move objects around in the hierarchy:
@@ -17979,7 +18003,8 @@ refineC &ndash; refine curve:
  <item>Synopsis: <tt/"refineC"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Refine the control vector of the selected
-curve objects, changing the shapes of the curves.
+curve objects by inserting a new control point into every control
+point interval, changing the shapes of the curves.
 If a curve has selected points, only the interval between the first and the
 last of the selected points is refined. For periodic NURBS
 curves, the last <em/p/ intervals are not refined (where <em/p/
@@ -26163,6 +26188,7 @@ Index:
 <item><ref id="pmattr" name="PatchMesh attribute">
 </itemize>
 <item>isSurface: <ref id="scissurface" name="scripting interface command">
+<item>isTrimmed: <ref id="scistrimmed" name="scripting interface command">
 </list>
 
 <#if out="latex"><x/phantomsection/</#if>
