@@ -9784,10 +9784,13 @@ ay_nct_gndp(char dir, ay_nurbcurve_object *nc, double *p,
 
 
 /** ay_nct_computebreakpoints:
- *  compute the break points (distinct knots) of the curve
- *  and their positions on the curve
+ * Calculate the 3D positions on the curve that correspond to all
+ * distinct knot values (the break points) and put these together
+ * with the respective knot values into a special array.
  *
  * \param[in,out] ncurve NURBS curve to process
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_computebreakpoints(ay_nurbcurve_object *ncurve)
@@ -9855,7 +9858,9 @@ ay_nct_computebreakpoints(ay_nurbcurve_object *ncurve)
 
 
 /** ay_nct_drawbreakpoints:
- *  draw the break points (distinct knots) of the curve
+ * draw the break points (distinct knots) of the curve;
+ * if there are no break points currently stored for the curve, they
+ * will be computed via ay_nct_computebreakpoints() above
  *
  * \param[in] togl Togl widget/view to draw into
  * \param[in,out] o NURBS curve object to draw
@@ -9870,6 +9875,7 @@ ay_nct_drawbreakpoints(struct Togl *togl, ay_object *o)
 
   if(!ncurve->breakv)
     (void)ay_nct_computebreakpoints(ncurve);
+
   if(ncurve->breakv)
     {
       cv = &((ncurve->breakv)[1]);

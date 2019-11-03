@@ -420,8 +420,8 @@ ay_sel_hsltcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  ay_error(AY_ERROR, argv[0], "argument should be >= 1");
 	  num = 1;
-	} /* if */
-    } /* if */
+	}
+    } /* if have args */
 
   if(cl)
     {
@@ -468,7 +468,7 @@ ay_sel_hsltcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	  l = l->next;
 	} /* while */
-    } /* if */
+    } /* if select one or many */
 
  return TCL_OK;
 } /* ay_sel_hsltcmd */

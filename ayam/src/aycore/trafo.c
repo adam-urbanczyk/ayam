@@ -823,7 +823,6 @@ ay_trafo_scaltcmd(ClientData clientData, Tcl_Interp *interp,
   tcl_status = Tcl_GetDouble(interp, argv[3], &dz);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
 
-
   if((dx != dx) || (fabs(dx) < AY_EPSILON))
     dx = 1.0;
 
