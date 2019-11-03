@@ -29,6 +29,7 @@ proc init_Cap { } {
     # create CapAttr-UI
     set w [frame $ay(pca).$CapAttr(w)]
     set a $CapAttr(arr)
+    addVSpace $w s1 2
     addMenu $w $a Type {Trim Gordon Simple Simple3D}
     addParam $w $a Fraction
     addParam $w $a Tolerance
@@ -41,15 +42,13 @@ proc init_Cap { } {
 }
 # init_Cap
 
-
 ##
 
-
 array set Caps {
-arr   CapsData
-sproc cap_setCaps
-gproc cap_getCaps
-w     fCaps
+    arr   CapsData
+    sproc cap_setCaps
+    gproc cap_getCaps
+    w     fCaps
 }
 
 proc cap_parseTags { tagnames tagvalues bnames {bids ""} } {
@@ -85,7 +84,6 @@ proc cap_parseTags { tagnames tagvalues bnames {bids ""} } {
 
 	    scan $tagvalue "%d,%d,%d,%lg" dummy CapTags(${bname}Type) \
 		CapTags(${bname}Integrate) CapTags(${bname}Fraction)
-
 	}
 	# if
     }
