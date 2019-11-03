@@ -3253,7 +3253,7 @@ ay_npt_createtrimrect(ay_object *o)
  * \param[in] ftlen fillet tangent length
  * \param[in] compatible if AY_TRUE, the patches and curves are considered
  *  compatible, and no clamping/elevating along V will take place
- * \param[in] uv controls which sides of the patches to connect
+ * \param[in] uv controls which sides of the patches to connect (may be NULL)
  * \param[in,out] result pointer where the resulting patch will be stored
  *
  * \returns AY_OK on success, error code otherwise.
@@ -3439,7 +3439,7 @@ ay_npt_concat(ay_object *o, int type, int order,
 	    } /* if */
 	  o = o->next;
 	} /* while */
-    } /* if */
+    } /* if custom knots */
 
   /* (possibly) revert the patches and break them to curves */
   o = patches;
@@ -3579,7 +3579,7 @@ ay_npt_concat(ay_object *o, int type, int order,
 		  k = np->vorder;
 		  for(l = k; l < np->height+np->vorder; l++)
 		    {
-		      newknotv[a] = np->vknotv[l]+lastu;
+		      newknotv[a] = np->vknotv[l] + lastu;
 		      a++;
 		    }
 		}
@@ -3588,7 +3588,7 @@ ay_npt_concat(ay_object *o, int type, int order,
 		  k = np->uorder;
 		  for(l = k; l < np->width+np->uorder; l++)
 		    {
-		      newknotv[a] = np->uknotv[l]+lastu;
+		      newknotv[a] = np->uknotv[l] + lastu;
 		      a++;
 		    }
 		}
@@ -3629,7 +3629,7 @@ ay_npt_concat(ay_object *o, int type, int order,
 	  np = (ay_nurbpatch_object *)new->refine;
 	  for(i = a; i < np->width+np->uorder; i++)
 	    {
-	      newknotv[i] = newknotv[a-1]+1;
+	      newknotv[i] = newknotv[a-1] + 1;
 	    }
 	}
 
@@ -3640,7 +3640,7 @@ ay_npt_concat(ay_object *o, int type, int order,
 	  if(ay_status)
 	    goto cleanup;
 	}
-    } /* if knot type custom*/
+    } /* if knot type custom */
 
   np = (ay_nurbpatch_object *)new->refine;
   np->is_rat = ay_npt_israt(np);
