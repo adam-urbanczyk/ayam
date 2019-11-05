@@ -605,6 +605,45 @@ ay_matt_clearshaders(ay_mat_object *material)
 } /* ay_matt_clearshaders */
 
 
+/** ay_matt_getregisteredtcmd:
+ *  Get the names of all registered materials.
+ *
+ *  Implements the \a getRegMats scripting interface command.
+ *  See also the corresponding section in the \ayd{scgetregmats}.
+ *
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_matt_getregisteredtcmd(ClientData clientData, Tcl_Interp *interp,
+			  int argc, char *argv[])
+{
+ Tcl_HashSearch search;
+ Tcl_HashEntry *entry;
+ Tcl_Obj *to, *tol;
+
+  tol = Tcl_NewListObj(0, NULL);
+
+  entry = Tcl_FirstHashEntry(&ay_matt_ptr_ht, &search);
+
+  if(!entry)
+    goto cleanup;
+
+  do
+    {
+      to = Tcl_NewStringObj(Tcl_GetHashKey(&ay_matt_ptr_ht, entry), -1);
+      Tcl_ListObjAppendElement(interp, tol, to);
+      entry = Tcl_NextHashEntry(&search);
+    }
+  while(entry);
+
+cleanup:
+
+  Tcl_SetObjResult(interp, tol);
+
+ return TCL_OK;
+} /* ay_matt_getregisteredtcmd */
+
+
 /* ay_matt_init:
  *  initialize matt module
  */
