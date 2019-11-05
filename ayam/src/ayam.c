@@ -793,6 +793,10 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "tweenNP", ay_interpol_surfacestcmd,
 		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  /* matt.c */
+  Tcl_CreateCommand(interp, "getRegMats", ay_matt_getregisteredtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   /* notify.c */
   /* provided for scripting interface backwards compatibility */
   Tcl_CreateCommand(interp, "forceNot", ay_notify_objecttcmd,

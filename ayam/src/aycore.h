@@ -768,6 +768,11 @@ int ay_matt_mayhavematerial(unsigned int type);
  */
 void ay_matt_clearshaders(ay_mat_object *material);
 
+/** Tcl command to get all registered material names.
+ */
+int ay_matt_getregisteredtcmd(ClientData clientData, Tcl_Interp *interp,
+			      int argc, char *argv[]);
+
 
 /* pact.c */
 
