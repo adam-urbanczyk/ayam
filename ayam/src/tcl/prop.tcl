@@ -138,30 +138,43 @@ addInfo $w attrPropData RefCount
 
 # Material property
 
+proc getMaterialp { } {
+    global ay Material matPropData
+
+    getMat
+
+    set ay(bok) $ay(appb)
+
+    # create Material-UI
+    catch {destroy $ay(pca).$Material(w)}
+    set w [frame $ay(pca).$Material(w)]
+    addVSpace $w s1 2
+    addCommand $w c1 "Clear Material!" {
+	undo save ClrMat
+	global matPropData; set matPropData(Materialname) ""
+	setMat
+	plb_update
+    }
+
+    addCommand $w c2 "Add/Edit Material!" {
+	global ay
+	set m $ay(editmenu)
+	$m invoke 15
+    }
+
+    addString $w matPropData Materialname [getRegMats]
+
+    plb_setwin $w ""
+
+ return;
+}
+
 array set Material {
-arr   matPropData
-sproc setMat
-gproc getMat
-w     fMatAttr
-
+    arr   matPropData
+    sproc setMat
+    gproc getMaterialp
+    w     fMatAttr
 }
-# create Material-UI
-set w [frame $ay(pca).$Material(w)]
-addVSpace $w s1 2
-addCommand $w c1 "Clear Material!" {
-    undo save ClrMat
-    global matPropData; set matPropData(Materialname) ""
-    setMat
-    plb_update
-}
-
-addCommand $w c2 "Add/Edit Material!" {
-    global ay
-    set m $ay(editmenu)
-    $m invoke 15
-}
-
-addString $w matPropData Materialname
 
 
 # Tags property
