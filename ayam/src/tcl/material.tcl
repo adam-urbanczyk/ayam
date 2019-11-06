@@ -20,10 +20,10 @@ proc setRiAttrp { } {
 }
 
 array set RiAttributes {
-arr   RiAttrData
-sproc setRiAttrp
-gproc ""
-w     fRiAttr
+    arr   RiAttrData
+    sproc setRiAttrp
+    gproc ""
+    w     fRiAttr
 }
 
 array set RiAttrData {
@@ -35,27 +35,28 @@ array set RiAttrData {
 
 # create RiAttributes-UI
 set w [frame $ay(pca).$RiAttributes(w)]
+set a $RiAttributes(arr)
 addVSpace $w s1 2
-addColor $w RiAttrData Color
-addColor $w RiAttrData Opacity
+addColor $w $a Color
+addColor $w $a Opacity
 
 addText $w e3 "Shading:"
-addParam $w RiAttrData ShadingRate
-addMenu $w RiAttrData Interpolation [list Constant Smooth]
-addMenu $w RiAttrData Sides [list DontSet 1 2]
+addParam $w $a ShadingRate
+addMenu $w $a Interpolation [list Constant Smooth]
+addMenu $w $a Sides [list DontSet 1 2]
 
 addText $w e4 "Displacement:"
-addMenu $w RiAttrData BoundCoord [list Object Shader Camera]
-addParam $w RiAttrData BoundVal
+addMenu $w $a BoundCoord [list Object Shader Camera]
+addParam $w $a BoundVal
 
 addText $w e5 "BMRT-Specific:"
-addCheck $w RiAttrData TrueDisp
-addMenu $w RiAttrData CastShadows [list Os None Opaque Shade]
+addCheck $w $a TrueDisp
+addMenu $w $a CastShadows [list Os None Opaque Shade]
 
 addText $w e6 "Visibility:"
-addCheck $w RiAttrData Camera
-addCheck $w RiAttrData Reflection
-addCheck $w RiAttrData Shadow
+addCheck $w $a Camera
+addCheck $w $a Reflection
+addCheck $w $a Shadow
 
 
 # material_createp:
