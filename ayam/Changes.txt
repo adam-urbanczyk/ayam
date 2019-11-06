@@ -1,5 +1,5 @@
-[26. Oct 2019] Tip:
-===================
+[6. Nov 2019] Tip:
+==================
 Bug Fixes:
 o NURBSphere objects can not be trimmed (SF 587)
 o repeated toggling of advanced search options (SF 588)
@@ -34,6 +34,8 @@ o improved focus handling of tag removal and visual designation of the
   selected tag on Win32 by/in the tag property gui context menu
 o added options to set the applications current directory by import or
   export operations ("ImportSetsCD", "ExportSetsCD")
+o improved Material property GUI now presenting available registered
+  materials in a drop down menu
 
 Scripts/Scripting Interface:
 o added script "link.tcl" to manually control updates of object hierarchy
@@ -41,6 +43,7 @@ o added script "link.tcl" to manually control updates of object hierarchy
 o added axis/angle parameter support to "rotOb"/"rotPnts" commands
 o added "isDegen" command to check NURBS curves/surfaces for degeneracy
 o added "isPlanar" command to check NURBS curves/surfaces for planarity
+o added "isTrimmed" command to check NURBS surfaces for real trim curves
 o added "isParent" command to check objects for potential parenthood
 o renamed "getNormal" command to "getPlaneNormal"
 o added "isClosed" command to see whether or not NURBS curves/surfaces
