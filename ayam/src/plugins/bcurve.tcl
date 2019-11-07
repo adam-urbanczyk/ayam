@@ -14,16 +14,16 @@ global ay BCurve_props BCurveAttr BCurveAttrData
 set BCurve_props { Transformations Attributes Tags BCurveAttr }
 
 array set BCurveAttr {
-arr   BCurveAttrData
-sproc ""
-gproc bcurve_getAttr
-w     fBCurveAttr
+    arr   BCurveAttrData
+    sproc ""
+    gproc bcurve_getAttr
+    w     fBCurveAttr
 }
 
 array set BCurveAttrData {
-BType 0
-Step 1
-DisplayMode 1
+    BType 0
+    Step 1
+    DisplayMode 1
 }
 
 for {set i 0} {$i < 16} {incr i} {
@@ -74,7 +74,7 @@ proc bcurve_getAttr { } {
 
 
 # add menu entry to the "Create/Custom Object" sub-menu
-mmenu_addcustom BCurve "crtOb BCurve;uS;sL;rV"
+mmenu_addcustom BCurve "crtOb BCurve;uCR;sL;rV"
 
 # tell the rest of Ayam (or other custom objects), that we are loaded
 lappend ay(co) BCurve
