@@ -12,10 +12,10 @@
 # Transformations property
 
 array set Transformations {
-arr   transfPropData
-sproc setTrafo
-gproc getTrafo
-w     fTrafoAttr
+    arr   transfPropData
+    sproc setTrafo
+    gproc getTrafo
+    w     fTrafoAttr
 }
 
 array set transfPropData {
@@ -120,11 +120,10 @@ proc setAttrp { } {
 }
 
 array set Attributes {
-arr   attrPropData
-sproc setAttrp
-gproc getAttr
-w     fAttrAttr
-
+    arr   attrPropData
+    sproc setAttrp
+    gproc getAttr
+    w     fAttrAttr
 }
 
 # create Attributes-UI
@@ -141,6 +140,8 @@ addInfo $w attrPropData RefCount
 proc getMaterialp { } {
     global ay Material matPropData
 
+    set oldfocus [focus]
+
     getMat
 
     set ay(bok) $ay(appb)
@@ -150,8 +151,9 @@ proc getMaterialp { } {
     set w [frame $ay(pca).$Material(w)]
     addVSpace $w s1 2
     addCommand $w c1 "Clear Material!" {
-	undo save ClrMat
-	global matPropData; set matPropData(Materialname) ""
+	undo save ClearMat
+	global matPropData
+	set matPropData(Materialname) ""
 	setMat
 	plb_update
     }
@@ -164,7 +166,7 @@ proc getMaterialp { } {
 
     addString $w matPropData Materialname [getRegMats]
 
-    plb_setwin $w ""
+    plb_setwin $w $oldfocus
 
  return;
 }
@@ -223,89 +225,93 @@ proc _remTags { {i -1} } {
 # getTagsp:
 #
 proc getTagsp { } {
-global ay ayprefs aymainshortcuts tagsPropData Tags tcl_platform
+    global ay ayprefs aymainshortcuts tagsPropData Tags tcl_platform
 
-getTags names values
-set tagsPropData(names) $names
-set tagsPropData(values) $values
+    set oldfocus [focus]
 
-set ay(bok) $ay(appb)
+    getTags names values
+    set tagsPropData(names) $names
+    set tagsPropData(values) $values
 
-# create Tags-UI
-catch {destroy $ay(pca).$Tags(w)}
-set w [frame $ay(pca).$Tags(w)]
-addVSpace $w s1 2
-addCommand $w c0 "Remove all Tags!" _remTags
+    set ay(bok) $ay(appb)
 
-set bw 1
-set f [frame $w.fDelete -relief sunken -bd $bw]
-menubutton $f.mb -text "Remove Tag!" -menu $f.mb.m -relief raised -bd $bw\
+    # create Tags-UI
+    catch {destroy $ay(pca).$Tags(w)}
+    set w [frame $ay(pca).$Tags(w)]
+    addVSpace $w s1 2
+    addCommand $w c0 "Remove all Tags!" _remTags
+
+    set bw 1
+    set f [frame $w.fDelete -relief sunken -bd $bw]
+    menubutton $f.mb -text "Remove Tag!" -menu $f.mb.m -relief raised -bd $bw\
 	-padx 0 -pady 1 -takefocus 1 -highlightthickness 1\
 	-indicatoron 1
-eval [subst "bindtags $f.mb \{$f.mb Menubutton all\}"]
-bind $f.mb <Key-Escape> "resetFocus;break"
-if { $tcl_platform(platform) == "windows" } {
-    $f.mb configure -pady 1
-}
-if { $ay(ws) == "Aqua" } {
-    pack conf $f.mb -ipady 0 -anchor n -expand 0
-}
+    eval [subst "bindtags $f.mb \{$f.mb Menubutton all\}"]
+    bind $f.mb <Key-Escape> "resetFocus;break"
+    if { $tcl_platform(platform) == "windows" } {
+	$f.mb configure -pady 1
+    }
+    if { $ay(ws) == "Aqua" } {
+	pack conf $f.mb -ipady 0 -anchor n -expand 0
+    }
 
-set m [menu $f.mb.m -tearoff 0]
-pack $f.mb -in $f -side left -fill x -expand yes -pady 0
-pack $f -in $w -side top -fill x
+    set m [menu $f.mb.m -tearoff 0]
+    pack $f.mb -in $f -side left -fill x -expand yes -pady 0
+    pack $f -in $w -side top -fill x
 
-set i 0
-foreach tag $names {
-    $m add command -label "Tag#$i ($tag)" -command "_remTags $i"
-    incr i
-}
+    set i 0
+    foreach tag $names {
+	$m add command -label "Tag#$i ($tag)" -command "_remTags $i"
+	incr i
+    }
 
-addCommand $w c2 "Add Tag!" {addTagp}
+    addCommand $w c2 "Add Tag!" {addTagp}
 
-set i 0
-foreach tag $names {
-    set val [lindex $values $i]
-    set ind [string first "\n" $val]
-    if { $ind > -1 } {
-	incr ind -1
-	if { $ind >= 0 } {
-	    set val [string range $val 0 $ind]
+    set i 0
+    foreach tag $names {
+	set val [lindex $values $i]
+	set ind [string first "\n" $val]
+	if { $ind > -1 } {
+	    incr ind -1
+	    if { $ind >= 0 } {
+		set val [string range $val 0 $ind]
+	    }
+	    set val "${val}..."
 	}
-	set val "${val}..."
-    }
-    set len [string length $val]
-    if { $len > $ayprefs(MaxTagLen) } {
-	set val [string range $val 0 $ayprefs(MaxTagLen)]
-	set val "${val}..."
-    }
-    set b $w.b$i
-    button $b -text "$tag: $val" -command "addTagp $i" -bd 1 -pady 0
-    pack $b -fill x -expand yes
+	set len [string length $val]
+	if { $len > $ayprefs(MaxTagLen) } {
+	    set val [string range $val 0 $ayprefs(MaxTagLen)]
+	    set val "${val}..."
+	}
+	set b $w.b$i
+	button $b -text "$tag: $val" -command "addTagp $i" -bd 1 -pady 0
+	pack $b -fill x -expand yes
 
-    set m [menu $b.popup -tearoff 0]
-    $m add command -label "Copy (Replace)" -command "copyTagp $i"
-    $m add command -label "Copy (Add)" -command "copyTagp $i 1"
-    $m add separator
-    $m add command -label "Remove" -command "_remTags $i"
-    if { $ay(ws) == "Win32" } {
-	bind $b <ButtonPress-$aymainshortcuts(CMButton)>\
-	    "after idle \{focus $b\}; bind $b.popup <Unmap>\
+	set m [menu $b.popup -tearoff 0]
+	$m add command -label "Copy (Replace)" -command "copyTagp $i"
+	$m add command -label "Copy (Add)" -command "copyTagp $i 1"
+	$m add separator
+	$m add command -label "Remove" -command "_remTags $i"
+	if { $ay(ws) == "Win32" } {
+	    bind $b <ButtonPress-$aymainshortcuts(CMButton)>\
+		"after idle \{focus $b\}; bind $b.popup <Unmap>\
              \"$b conf -state normal\"; winOpenPopup $b"
-    } else {
-	bind $b <ButtonPress-$aymainshortcuts(CMButton)>\
-	    "after idle \{$b conf -state active\}; bind $b.popup <Unmap>\
+	} else {
+	    bind $b <ButtonPress-$aymainshortcuts(CMButton)>\
+		"after idle \{$b conf -state active\}; bind $b.popup <Unmap>\
              \"$b conf -state normal\"; winOpenPopup $b"
+	}
+
+	bind $b <Key-F10> "winOpenPopup $b;break"
+	bind $b <Key-space> "$b invoke;break"
+
+	incr i
     }
+    # foreach tag
 
-    bind $b <Key-F10> "winOpenPopup $b;break"
-    bind $b <Key-space> "$b invoke;break"
+    plb_setwin $w $oldfocus
 
-    incr i
-}
-
-    plb_setwin $w ""
-
+ return;
 }
 # getTagsp
 
@@ -313,25 +319,27 @@ foreach tag $names {
 # setTagsp:
 #
 proc setTagsp { } {
-global ay tagsPropData Tags
+    global ay tagsPropData Tags
 
-set names $tagsPropData(names)
-set values $tagsPropData(values)
+    set names $tagsPropData(names)
+    set values $tagsPropData(values)
 
-set alltags ""
-set i 0
-foreach tag $names {
-    lappend alltags $tag
-    lappend alltags [lindex $values $i]
-    incr i
-}
+    set alltags ""
+    set i 0
+    foreach tag $names {
+	lappend alltags $tag
+	lappend alltags [lindex $values $i]
+	incr i
+    }
 
-if { [llength $alltags] > 0 } {
-    eval setTags $alltags
-}
+    if { [llength $alltags] > 0 } {
+	eval setTags $alltags
+    }
 
-notifyOb
-rV
+    notifyOb
+    rV
+
+ return;
 }
 # setTagsp
 
@@ -575,10 +583,10 @@ after idle "restoreFocus $focusWin"
 # addTagp
 
 array set Tags {
-arr   tagsPropData
-sproc setTagsp
-gproc getTagsp
-w     fTagsAttr
+    arr   tagsPropData
+    sproc setTagsp
+    gproc getTagsp
+    w     fTagsAttr
 }
 
 
@@ -591,7 +599,7 @@ addCommand $w c1 "Remove all Tags" {delTags all;plb_update}
 #
 # transfer changes to args handling to safe_getProperty
 proc getProperty { property args } {
-global ay ay_error
+    global ay ay_error
 
     set report true
     set return_result true
@@ -698,6 +706,7 @@ global ay ay_error
 	}
 	incr obj
     }
+    # foreach object
 
     if { $return_result } {
 	return $result;
@@ -712,7 +721,7 @@ global ay ay_error
 #
 #
 proc setProperty { property newValue } {
-global ay curtypes ay_error
+    global ay curtypes ay_error
 
     # decode arrayname from property argument
     set arrayname [string range $property 0 \
@@ -779,6 +788,8 @@ global ay curtypes ay_error
 	}
 	incr obj
     }
+    # foreach object
+
  return;
 }
 # setProperty
