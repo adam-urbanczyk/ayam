@@ -21,8 +21,8 @@ array set SfCurveAttr {
 }
 
 array set SfCurveAttrData {
-Knot-Type 1
-DisplayMode 0
+    Knot-Type 1
+    DisplayMode 0
 }
 
 # create SfCurveAttr-UI
@@ -46,7 +46,7 @@ addMenu $w $a DisplayMode $ay(ncdisplaymodes)
 
 
 # add menu entry to the "Create/Custom Object" sub-menu
-mmenu_addcustom SfCurve "crtOb SfCurve;uS;sL;rV"
+mmenu_addcustom SfCurve "crtOb SfCurve;uCR;sL;rV"
 
 # tell the rest of Ayam (or other custom objects), that we are loaded
 lappend ay(co) SfCurve

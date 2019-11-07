@@ -14,22 +14,22 @@ global ay SDCurve_props SDCurveAttr SDCurveAttrData
 set SDCurve_props { Transformations Attributes Tags SDCurveAttr }
 
 array set SDCurveAttr {
-arr   SDCurveAttrData
-sproc ""
-gproc ""
-w     fSDCurveAttr
+    arr   SDCurveAttrData
+    sproc ""
+    gproc ""
+    w     fSDCurveAttr
 }
 
 array set SDCurveAttrData {
-Type 0
-SLength "n/a"
+    Type 0
+    SLength "n/a"
 }
+
+set ay(bok) $ay(appb)
 
 # create SDCurveAttr-UI
 set w [frame $ay(pca).$SDCurveAttr(w)]
 set a $SDCurveAttr(arr)
-
-set ay(bok) $ay(appb)
 
 addVSpace $w s1 2
 addCheck $w $a Closed
@@ -40,7 +40,7 @@ addText $w $a "Subdivision:"
 addInfo $w $a SLength
 
 # add menu entry to the "Create/Custom Object" sub-menu
-mmenu_addcustom SDCurve "crtOb SDCurve;uS;sL;rV"
+mmenu_addcustom SDCurve "crtOb SDCurve;uCR;sL;rV"
 
 # tell the rest of Ayam (or other custom objects), that we are loaded
 lappend ay(co) SDCurve
@@ -55,8 +55,6 @@ proc sdcurve_conv { } {
     winAutoFocusOff
 
     set sdcurve_convopt(oldfocus) [focus]
-
-    set ay_error ""
 
     set w .sdc
     set t "Convert To SDCurve"
@@ -74,9 +72,7 @@ proc sdcurve_conv { } {
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
 	global sdcurve_convopt
-
 	sdcconvertC -a $sdcurve_convopt(ApplyTrafo)
-
 	grab release .sdc
 	restoreFocus $sdcurve_convopt(oldfocus)
 	destroy .sdc
