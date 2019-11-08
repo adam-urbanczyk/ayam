@@ -1329,7 +1329,7 @@ sdcurve_convtcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
- ay_object *o = NULL, *newo = NULL;
+ ay_object *o = NULL, *newo = NULL, *po = NULL;
  sdcurve_object *sdcurve = NULL;
  ay_nurbcurve_object *nc;
  ay_icurve_object *ic;
@@ -1413,6 +1413,24 @@ sdcurve_convtcmd(ClientData clientData, Tcl_Interp *interp,
 	  closed = ac->closed;
 	  break;
 	default:
+	  ay_status = ay_provide_object(o, AY_IDNCURVE, &po);
+	  if(!ay_status && po)
+	    {
+	      nc = (ay_nurbcurve_object *)po->refine;
+	      cv = nc->controlv;
+	      cvlen = nc->length;
+	      if(nc->type == AY_CTCLOSED)
+		{
+		  closed = AY_TRUE;
+		  cvlen--;
+		}
+	      if(nc->type == AY_CTPERIODIC)
+		{
+		  closed = AY_TRUE;
+		  cvlen -= (nc->order-1);
+		}
+	      stride = 4;
+	    }
 	  break;
 	} /* switch */
 
@@ -1506,6 +1524,11 @@ sdcurve_convtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  ay_object_link(newo);
 	} /* if newcv */
+
+      if(po)
+	{
+	  (void)ay_object_deletemulti(po, AY_TRUE);
+	}
 
       sel = sel->next;
     } /* while */
