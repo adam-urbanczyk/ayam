@@ -561,9 +561,9 @@ proc shortcut_view { w } {
 	"invPnts; rV;break"
 
     bind $w <[repctrl $ayviewshortcuts(CollP)]>\
-	"collMP; rV;break"
+	"undo save Collapse; collMP; rV; break"
     bind $w <[repctrl $ayviewshortcuts(ExplP)]>\
-	"explMP; rV;break"
+	"undo save Explode; explMP; rV; break"
 
     bind $w <[repctrl $ayviewshortcuts(SnapGrid2D)]>\
 	"actionSnapToGrid2D $w.f3D.togl;break"
