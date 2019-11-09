@@ -19,49 +19,51 @@ proc text_getAttr { } {
 
     set oldfocus [focus]
 
+    getProp
+
     # remove old, create new TextAttr-UI
     catch {destroy $ay(pca).$TextAttr(w)}
     set w [frame $ay(pca).$TextAttr(w)]
-    getProp
+    set a $TextAttr(arr)
+
+    set ay(bok) $ay(appb)
+    addVSpace $w s1 2
+    addFile $w $a FontName
+    addString $w $a String
+    addParam $w $a Height
+    addCheck $w $a Revert
+    addCheck $w $a UpperCap
+    addCheck $w $a LowerCap
 
     set tagnames ""
     set tagvalues ""
     getTags tagnames tagvalues
     bevel_parseTags $tagnames $tagvalues $TextAttrData(BoundaryNames)
 
-    set ay(bok) $ay(appb)
-    addVSpace $w s1 2
-    addFile $w TextAttrData FontName
-    addString $w TextAttrData String
-    addParam $w TextAttrData Height
-    addCheck $w TextAttrData Revert
-    addCheck $w TextAttrData UpperCap
-    addCheck $w TextAttrData LowerCap
-
     if { $BevelTags(Bevel2) } {
 	addCommand $w c1 "Remove Lower Bevel!"\
-	"bevel_rem 2 TextAttrData {$TextAttrData(BoundaryIDs)}"
+	"bevel_rem 2 $a {$TextAttrData(BoundaryIDs)}"
 	addMenu $w BevelTags LowerType $ay(bevelmodes)
 	addParam $w BevelTags LowerRadius
 	addCheck $w BevelTags LowerRevert
     } else {
 	addCommand $w c1 "Add Lower Bevel!"\
-	    "bevel_add 2 TextAttrData {$TextAttrData(BoundaryIDs)}"
+	    "bevel_add 2 $a {$TextAttrData(BoundaryIDs)}"
     }
 
     if { $BevelTags(Bevel3) } {
 	addCommand $w c2 "Remove Upper Bevel!"\
-	    "bevel_rem 3 TextAttrData {$TextAttrData(BoundaryIDs)}"
+	    "bevel_rem 3 $a {$TextAttrData(BoundaryIDs)}"
 	addMenu $w BevelTags UpperType $ay(bevelmodes)
 	addParam $w BevelTags UpperRadius
 	addCheck $w BevelTags UpperRevert
     } else {
 	addCommand $w c2 "Add Upper Bevel!"\
-	    "bevel_add 3 TextAttrData {$TextAttrData(BoundaryIDs)}"
+	    "bevel_add 3 $a {$TextAttrData(BoundaryIDs)}"
     }
 
-    addParam $w TextAttrData Tolerance
-    addMenu $w TextAttrData DisplayMode $ay(npdisplaymodes)
+    addParam $w $a Tolerance
+    addMenu $w $a DisplayMode $ay(npdisplaymodes)
 
     # add UI to property canvas
     plb_setwin $w $oldfocus
@@ -97,3 +99,5 @@ array set TextAttrData {
     BoundaryNames { "dummy" "dummy" "Lower" "Upper" }
     BoundaryIDs { 0 1 2 3 }
 }
+
+# EOF
