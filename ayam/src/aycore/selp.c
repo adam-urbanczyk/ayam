@@ -1343,6 +1343,8 @@ ay_selp_collapsetcmd(ClientData clientData, Tcl_Interp *interp,
  int notify_parent = AY_FALSE;
  char fmsg[] = "Collapse operation failed.";
  ay_list_object *sel = ay_selection;
+ ay_point *pnt;
+ double center[3] = {0};
 
   if(!sel)
     {
@@ -1389,7 +1391,7 @@ ay_selp_collapsetcmd(ClientData clientData, Tcl_Interp *interp,
 		    ay_selp_clear(sel->object);
 		  }
 
-		/* re-create tesselation of curve */
+		/* re-create tesselation of patch */
 		(void)ay_notify_object(sel->object);
 		sel->object->modified = AY_TRUE;
 		notify_parent = AY_TRUE;
@@ -1398,7 +1400,21 @@ ay_selp_collapsetcmd(ClientData clientData, Tcl_Interp *interp,
 	  break;
 	default:
 	  {
-	    ay_error(AY_EWARN, argv[0], ay_error_igntype);
+	    pnt = sel->object->selp;
+	    if(pnt && !pnt->readonly)
+	      {
+		ay_selp_getcenter(pnt, 0, center);
+		while(pnt)
+		  {
+		    memcpy(pnt->point, center, 3*sizeof(double));
+		    pnt = pnt->next;
+		  }
+		(void)ay_notify_object(sel->object);
+		sel->object->modified = AY_TRUE;
+		notify_parent = AY_TRUE;
+	      }
+	    else
+	      ay_error(AY_EWARN, argv[0], "No editable points found!");
 	  }
 	  break;
 	} /* switch */
