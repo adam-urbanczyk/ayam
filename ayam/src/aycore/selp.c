@@ -1446,13 +1446,21 @@ ay_selp_explodetcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  int notify_parent = AY_FALSE;
  char fmsg[] = "Explode operation failed.";
+ ay_object *o;
  ay_list_object *sel = ay_selection;
+ ay_point *opnt, *fpnt, *pnt, before = {0}, after = {0};
+ double v[3] = {0};
+ unsigned int i, n;
+ ay_voidfp *arr = NULL;
+ ay_getpntcb *cb = NULL;
 
   if(!sel)
     {
       ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
+
+  arr = ay_getpntcbt.arr;
 
   while(sel)
     {
@@ -1500,7 +1508,94 @@ ay_selp_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 	  break;
 	default:
 	  {
-	    ay_error(AY_EWARN, argv[0], ay_error_igntype);
+	    o = sel->object;
+	    pnt = o->selp;
+	    cb = (ay_getpntcb *)(arr[o->type]);
+	    if(pnt && !pnt->readonly && cb)
+	      {
+		fpnt = pnt;
+		n = 0;
+		before.index = pnt->index;
+		after.index = pnt->index;
+		while(pnt && AY_V3COMP(fpnt->point,pnt->point))
+		  {
+		    if(before.index > pnt->index)
+		     before.index = pnt->index;
+		    if(after.index < pnt->index)
+		      after.index = pnt->index;
+		    n++;
+		    pnt = pnt->next;
+		  }
+		if(n > 1)
+		  {
+		    opnt = o->selp;
+		    o->selp = NULL;
+		    after.index++;
+		    if(before.index > 0)
+		      {
+			before.index--;
+			before.next = &(after);
+			ay_selp_copy(&before, &(o->selp));
+		      }
+		    else
+		      {
+			ay_selp_copy(&after, &(o->selp));
+		      }
+		    ay_status = cb(3, o, NULL, NULL);
+		    pnt = opnt;
+		    if(o->selp)
+		      {
+			if(o->selp->next)
+			  {
+			    /* have two sections */
+			    AY_V3SUB(v, o->selp->point, pnt->point);
+			    for(i = 0; i < n/2; i++)
+			      {
+				pnt->point[0] += (v[0]/(double)n)*i;
+				pnt->point[1] += (v[1]/(double)n)*i;
+				pnt->point[2] += (v[2]/(double)n)*i;
+
+				pnt = pnt->next;
+			      }
+
+			    if(n%2)
+			      pnt = pnt->next;
+
+			    AY_V3SUB(v, o->selp->next->point, pnt->point);
+			    for(i = n/2+((n%2)?1:0); i < n; i++)
+			      {
+				pnt->point[0] += (v[0]/(double)n)*i;
+				pnt->point[1] += (v[1]/(double)n)*i;
+				pnt->point[2] += (v[2]/(double)n)*i;
+
+				pnt = pnt->next;
+			      }
+			  }
+			else
+			  {
+			    /* have just one section */
+			    AY_V3SUB(v, pnt->point, o->selp->point);
+			    for(i = 0; i < n; i++)
+			      {
+				pnt->point[0] += (v[0]/(double)n)*i;
+				pnt->point[1] += (v[1]/(double)n)*i;
+				pnt->point[2] += (v[2]/(double)n)*i;
+
+				pnt = pnt->next;
+			      }
+			  }
+			ay_selp_clear(o);
+		      }
+
+		    o->selp = opnt;
+		    (void)ay_notify_object(o);
+		    o->modified = AY_TRUE;
+		    notify_parent = AY_TRUE;
+		  }
+	      }
+	    else
+	      ay_error(AY_EWARN, argv[0], "No editable points found!");
+
 	  }
 	  break;
 	} /* switch */
