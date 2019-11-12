@@ -1449,7 +1449,7 @@ ay_selp_explodetcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o;
  ay_list_object *sel = ay_selection;
  ay_point *opnt, *fpnt, *pnt, before = {0}, after = {0};
- double v[3] = {0};
+ double v[3] = {0}, vlen;
  unsigned int i, n;
  ay_voidfp *arr = NULL;
  ay_getpntcb *cb = NULL;
@@ -1585,6 +1585,37 @@ ay_selp_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 			      }
 			  }
 			ay_selp_clear(o);
+		      }
+		    else
+		      {
+			/* have no section */
+			vlen = AY_V3LEN(pnt->point);
+			if(vlen < AY_EPSILON || vlen != vlen)
+			  {
+			    v[0] = 0.1;
+			    for(i = 0; i < n; i++)
+			      {
+				pnt->point[0] = (v[0]/(double)n)*i;
+				/*
+				  pnt->point[1] = (v[1]/(double)n)*i;
+				  pnt->point[2] = (v[2]/(double)n)*i;
+				*/
+				pnt = pnt->next;
+			      }
+			  }
+			else
+			  {
+			    v[0] = vlen*0.1;
+			    for(i = 0; i < n; i++)
+			      {
+				pnt->point[0] += (v[0]/(double)n)*i;
+				/*
+				  pnt->point[1] += (v[1]/(double)n)*i;
+				  pnt->point[2] += (v[2]/(double)n)*i;
+				*/
+				pnt = pnt->next;
+			      }
+			  }
 		      }
 
 		    o->selp = opnt;
