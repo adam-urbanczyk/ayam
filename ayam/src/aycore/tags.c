@@ -774,8 +774,19 @@ ay_tags_hastcmd(ClientData clientData, Tcl_Interp *interp,
     {
       if(tag->name && !strcmp(tag->name, argv[1]))
 	{
-	  Tcl_SetResult(interp, "1", TCL_VOLATILE);
-	  return TCL_OK;
+	  if(argc > 2 && !tag->is_binary)
+	    {
+	      if(tag->val && Tcl_StringMatch(tag->val, argv[2]))
+		{
+		  Tcl_SetResult(interp, "1", TCL_VOLATILE);
+		  return TCL_OK;
+		}
+	    }
+	  else
+	    {
+	      Tcl_SetResult(interp, "1", TCL_VOLATILE);
+	      return TCL_OK;
+	    }
 	}
       tag = tag->next;
     }
