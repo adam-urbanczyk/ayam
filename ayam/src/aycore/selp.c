@@ -1450,7 +1450,7 @@ ay_selp_explodetcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_point *opnt, *fpnt, *pnt, before = {0}, after = {0};
  double v[3] = {0}, vlen;
- unsigned int i, n;
+ unsigned int i, j, n;
  ay_voidfp *arr = NULL;
  ay_getpntcb *cb = NULL;
 
@@ -1464,52 +1464,30 @@ ay_selp_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 
   while(sel)
     {
-      switch(sel->object->type)
+      o = sel->object;
+      if(o->selp)
 	{
-	case AY_IDNCURVE:
-	  {
-	    ay_status = ay_nct_explodemp(sel->object);
-	    if(ay_status)
-	      {
-		ay_error(ay_status, argv[0], fmsg);
-	      }
-	    else
-	      {
-		if(sel->object->selp)
-		  {
-		    ay_selp_clear(sel->object);
-		  }
-		/* re-create tesselation of curve */
-		(void)ay_notify_object(sel->object);
-		sel->object->modified = AY_TRUE;
-		notify_parent = AY_TRUE;
-	      }
-	  }
-	  break;
-	case AY_IDNPATCH:
-	  {
-	    ay_status = ay_npt_explodemp(sel->object);
-	    if(ay_status)
-	      {
-		ay_error(ay_status, argv[0], fmsg);
-	      }
-	    else
-	      {
-		if(sel->object->selp)
-		  {
-		    ay_selp_clear(sel->object);
-		  }
-		/* re-create tesselation of patch */
-		(void)ay_notify_object(sel->object);
-		sel->object->modified = AY_TRUE;
-		notify_parent = AY_TRUE;
-	      }
-	  }
-	  break;
-	default:
-	  {
-	    o = sel->object;
-	    pnt = o->selp;
+	  pnt = o->selp;
+	  switch(o->type)
+	    {
+	    case AY_IDNCURVE:
+	      ay_status = ay_nct_explodemp(o);
+	      if(ay_status)
+		{
+		  ay_error(ay_status, argv[0], fmsg);
+		}
+	      break;
+	    case AY_IDNPATCH:
+	      ay_status = ay_npt_explodemp(o);
+	      if(ay_status)
+		{
+		  ay_error(ay_status, argv[0], fmsg);
+		}
+	      break;
+	    default:
+	      break;
+	    } /* switch */
+
 	    cb = (ay_getpntcb *)(arr[o->type]);
 	    if(pnt && !pnt->readonly && cb)
 	      {
@@ -1549,12 +1527,13 @@ ay_selp_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 			  {
 			    /* have two sections */
 			    AY_V3SUB(v, o->selp->point, pnt->point);
+			    j = 1;
 			    for(i = 0; i < n/2; i++)
 			      {
-				pnt->point[0] += (v[0]/(double)n)*i;
-				pnt->point[1] += (v[1]/(double)n)*i;
-				pnt->point[2] += (v[2]/(double)n)*i;
-
+				pnt->point[0] += (v[0]/(double)n)*j;
+				pnt->point[1] += (v[1]/(double)n)*j;
+				pnt->point[2] += (v[2]/(double)n)*j;
+				j++;
 				pnt = pnt->next;
 			      }
 
@@ -1562,12 +1541,13 @@ ay_selp_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 			      pnt = pnt->next;
 
 			    AY_V3SUB(v, o->selp->next->point, pnt->point);
+			    j = 1;
 			    for(i = n/2+((n%2)?1:0); i < n; i++)
 			      {
-				pnt->point[0] += (v[0]/(double)n)*i;
-				pnt->point[1] += (v[1]/(double)n)*i;
-				pnt->point[2] += (v[2]/(double)n)*i;
-
+				pnt->point[0] += (v[0]/(double)n)*j;
+				pnt->point[1] += (v[1]/(double)n)*j;
+				pnt->point[2] += (v[2]/(double)n)*j;
+				j++;
 				pnt = pnt->next;
 			      }
 			  }
@@ -1575,12 +1555,13 @@ ay_selp_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 			  {
 			    /* have just one section */
 			    AY_V3SUB(v, pnt->point, o->selp->point);
+			    j = 1;
 			    for(i = 0; i < n; i++)
 			      {
-				pnt->point[0] += (v[0]/(double)n)*i;
-				pnt->point[1] += (v[1]/(double)n)*i;
-				pnt->point[2] += (v[2]/(double)n)*i;
-
+				pnt->point[0] += (v[0]/(double)n)*j;
+				pnt->point[1] += (v[1]/(double)n)*j;
+				pnt->point[2] += (v[2]/(double)n)*j;
+				j++;
 				pnt = pnt->next;
 			      }
 			  }
@@ -1626,10 +1607,7 @@ ay_selp_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 	      }
 	    else
 	      ay_error(AY_EWARN, argv[0], "No editable points found!");
-
-	  }
-	  break;
-	} /* switch */
+	} /* if pnt */
 
       sel = sel->next;
     } /* while */
