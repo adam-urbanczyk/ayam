@@ -758,7 +758,7 @@ ay_tags_hastcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc < 2)
     {
-      ay_error(AY_EARGS, argv[0], "type");
+      ay_error(AY_EARGS, argv[0], "type [value]");
       return TCL_OK;
     }
 
