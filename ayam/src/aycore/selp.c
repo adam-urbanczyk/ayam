@@ -1343,6 +1343,7 @@ ay_selp_collapsetcmd(ClientData clientData, Tcl_Interp *interp,
  int notify_parent = AY_FALSE;
  char fmsg[] = "Collapse operation failed.";
  ay_list_object *sel = ay_selection;
+ ay_object *o;
  ay_point *pnt;
  double center[3] = {0};
 
@@ -1354,71 +1355,48 @@ ay_selp_collapsetcmd(ClientData clientData, Tcl_Interp *interp,
 
   while(sel)
     {
-      switch(sel->object->type)
+      o = sel->object;
+      if(o->selp)
 	{
-	case AY_IDNCURVE:
-	  {
-	    ay_status = ay_nct_collapseselp(sel->object);
-	    if(ay_status)
-	      {
-		ay_error(ay_status, argv[0], fmsg);
-	      }
-	    else
-	      {
-		if(sel->object->selp)
-		  {
-		    ay_selp_clear(sel->object);
-		  }
+	  pnt = o->selp;
+	  if(!pnt->readonly)
+	    {
+	      ay_selp_getcenter(pnt, 0, center);
+	      while(pnt)
+		{
+		  memcpy(pnt->point, center, 3*sizeof(double));
+		  pnt = pnt->next;
+		}
 
-		/* re-create tesselation of curve */
-		(void)ay_notify_object(sel->object);
-		sel->object->modified = AY_TRUE;
-		notify_parent = AY_TRUE;
-	      }
-	  }
-	  break;
-	case AY_IDNPATCH:
-	  {
-	    ay_status = ay_npt_collapseselp(sel->object);
-	    if(ay_status)
-	      {
-		ay_error(ay_status, argv[0], fmsg);
-	      }
-	    else
-	      {
-		if(sel->object->selp)
+	      switch(o->type)
+		{
+		case AY_IDNCURVE:
 		  {
-		    ay_selp_clear(sel->object);
+		    ay_status = ay_nct_collapseselp(o);
+		    if(ay_status)
+		      {
+			ay_error(ay_status, argv[0], fmsg);
+		      }
 		  }
-
-		/* re-create tesselation of patch */
-		(void)ay_notify_object(sel->object);
-		sel->object->modified = AY_TRUE;
-		notify_parent = AY_TRUE;
-	      }
-	  }
-	  break;
-	default:
-	  {
-	    pnt = sel->object->selp;
-	    if(pnt && !pnt->readonly)
-	      {
-		ay_selp_getcenter(pnt, 0, center);
-		while(pnt)
+		  break;
+		case AY_IDNPATCH:
 		  {
-		    memcpy(pnt->point, center, 3*sizeof(double));
-		    pnt = pnt->next;
+		    ay_status = ay_npt_collapseselp(o);
+		    if(ay_status)
+		      {
+			ay_error(ay_status, argv[0], fmsg);
+		      }
 		  }
-		(void)ay_notify_object(sel->object);
-		sel->object->modified = AY_TRUE;
-		notify_parent = AY_TRUE;
-	      }
-	    else
-	      ay_error(AY_EWARN, argv[0], "No editable points found!");
-	  }
-	  break;
-	} /* switch */
+		  break;
+		default:
+		  break;
+		} /* switch */
 
+	      (void)ay_notify_object(o);
+	      sel->object->modified = AY_TRUE;
+	      notify_parent = AY_TRUE;
+	    } /* if have editable points */
+	} /* if have selected points */
       sel = sel->next;
     } /* while */
 
