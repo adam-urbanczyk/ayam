@@ -10203,8 +10203,7 @@ ay_npt_explodemp(ay_object *o)
 
   if(err)
     {
-      ay_error(AY_ERROR, fname, "Select (<t>ag) some multiple points first.");
-      ay_status = AY_ERROR;
+      ay_status = AY_EWARN;
     }
 
  return ay_status;
