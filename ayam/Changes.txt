@@ -1,5 +1,5 @@
-[6. Nov 2019] Tip:
-==================
+[17. Nov 2019] Tip:
+===================
 Bug Fixes:
 o NURBSphere objects can not be trimmed (SF 587)
 o repeated toggling of advanced search options (SF 588)
@@ -25,6 +25,8 @@ o clamping/unclamping curves/surfaces no longer removes the point selection
 o improved handling of multiple points in knot refinement
 o fixed fetching of rational points from NCircle and Script objects
 o the drag zoom view action now keeps the mark intact
+o the collapse/explode tools now work with arbitrary object types and
+  change the point positions
 
 GUI:
 o added intermediate quick parameter GUIs to all modelling actions that
@@ -66,6 +68,7 @@ o aded "-relative" option to "extrNP" command
 o aded "-replace" option to "breakNP" command
 o added "-get" option to "selOb" command
 o improved handling of closed and periodic surfaces in interpolation tool
+o added value matching to "hasTag" command
 
 Import/Export:
 o RIB export of RiDisplay tags now omits the leading "+" from the first
