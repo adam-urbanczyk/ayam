@@ -1472,14 +1472,14 @@ ay_selp_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	    case AY_IDNCURVE:
 	      ay_status = ay_nct_explodemp(o);
-	      if(ay_status)
+	      if(ay_status >= AY_ERROR)
 		{
 		  ay_error(ay_status, argv[0], fmsg);
 		}
 	      break;
 	    case AY_IDNPATCH:
 	      ay_status = ay_npt_explodemp(o);
-	      if(ay_status)
+	      if(ay_status >= AY_ERROR)
 		{
 		  ay_error(ay_status, argv[0], fmsg);
 		}
