@@ -98,8 +98,8 @@ proc npatch_break { } {
 	if { $npatchbrk_options(ReplaceOriginal) == 1 } {
 	    append cmd " -r"
 	}
-	if { $npatchbrk_options(Direction) == 1 } {
-	    append cmd " -v"
+	if { $npatchbrk_options(Direction) == 0 } {
+	    append cmd " -u"
 	}
 	set ay_error ""
 	eval $cmd
