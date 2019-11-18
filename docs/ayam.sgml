@@ -14352,43 +14352,42 @@ and the related tool for
 surfaces <ref id="resckmnpt" name="Rescale Knots to Mindist Surface Tool">.
 </descrip>
 
+<#if out="latex"><x/newpage/</#if>
+
 <sect2>Collapse Points Tool<label id="collt">
 <p>
 <descrip>
-<tag/Arguments/ The collapse tool expects a selected NURBS curve
-or NURBS patch and a number of selected (tagged) control points
+<tag/Arguments/ The collapse tool expects a number of selected objects
+with selected (tagged) control points
 (see section <ref id="selac" name="Selecting Points"> for information
 on how to select (tag) control points).
 <tag/Operation/ The selected control points will be made a
 single multiple point, all points will get the coordinate values
-of the last tagged point.
-This means that the shape of the curve/surface can change.
-
-The point selection will be removed from the original objects.
+of the respective center point.
+This means that the shape of the processed curve/surface can change.
+<tag/Notes/
+This command used to only create multiple points for NURBS curve/surface
+objects and clear the point selection.
+<p><p>
+In view windows this tool is bound to the <tt/&lt;q&gt;/ key.
 </descrip>
 
 <sect2>Explode Points Tool<label id="explt">
 <p>
 <descrip>
-<tag/Arguments/ The explode tool expects a selected NURBS curve
-or NURBS patch and a number of selected (tagged) multiple points
+<tag/Arguments/ The explode tool expects some objects with
+a number of selected (tagged) multiple points
 (see section <ref id="selac" name="Selecting Points"> for information
 on how to select (tag) control points).
 <tag/Operation/ The points forming the selected multiple points will
-be made to simple points again and may be edited separately.
-The shape of the curve/surface will not change.
-<tag/Notes/ The control points should immediately be edited (i.e.~moved
-apart) after exploding, to avoid that they automatically collapse to a
-multiple point again, as Ayam will re-create the multiple points on
-several occasions like reading of a scene, inserting/deleting points,
-or applying the NCurveAttr/NPatchAttr property if all single control
-points of the multiple point(s) still have identical coordinate values
-(and the <tt/"CreateMP"/ attribute of the curve or patch object is activated).
-
-The point selection will be removed from the original objects.
-
-To explode all multiple points of a curve/surface at once, disable
-the <tt/"CreateMP"/ attribute.
+be moved away from each other.
+The shapes of the processed objects will change.
+<tag/Notes/
+This command used to only remove already existing multiple points
+of NURBS curves/surfaces that were created by the <tt/"CreateMP"/ option
+or the collapse tool above before.
+<p><p>
+In view windows this tool is bound to the <tt/&lt;Q&gt;/ key.
 </descrip>
 
 <#if out="latex"><x/newpage/</#if>
@@ -17881,11 +17880,15 @@ that hides the Transformations property GUI.
 <label id="schastag">
 hasTag:
 <itemize>
- <item>Synopsis: <tt/"hasTag type"/
+ <item>Synopsis: <tt/"hasTag type [value]"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: This command returns <tt/"1"/ if the selected
 object has at least one tag of the designated type. Otherwise <tt/"0"/
 is returned.
+<p><p>
+If a value is provided, this string is matched against the potential
+tag value, it may also contain any of <tt>*?[]</tt> for more complex
+forms of matching.
 </itemize>
 
 <p>
@@ -24366,10 +24369,12 @@ incarnations of the scene in RIB form (which actually may be split
 in more than one file due to e.g.~instances) created when directly
 rendering from a view window should be kept on disk (default: 5)
 
-<item><tt/"KeepParamGUI:"/: determines wether the quick parameter
+<item><tt/"KeepParamGUI"/: determines wether the intermediate parameter
 GUIs should be kept open after a parameter has been entered or
 rather disappear immediately.
 The default value is 0 &ndash; the GUIs disappear immediately.
+See also
+section <ref id="ipgui" name="Intermediate Parameter GUIs">.
 
 <item><tt/"Kill"/: name of a program that kills other processes and accepts
 a process id as argument (used by the Rendering GUI)
