@@ -479,7 +479,7 @@ ay_nct_explodemp(ay_object *o)
     } /* while */
 
   if(err)
-    {      
+    {
       ay_status = AY_EWARN;
     }
 
@@ -8491,33 +8491,49 @@ ay_nct_estlen(ay_nurbcurve_object *nc, double *len)
       return ay_status;
     } /* if */
 
-  if(!ay_knots_isclamped(/*side=*/0, nc->order, nc->knotv,
-			 nc->length+nc->order, AY_EPSILON))
-    {
-      oldU = nc->knotv;
-      oldQw = nc->controlv;
+  j = ay_knots_isclamped(/*side=*/0, nc->order, nc->knotv,
+			 nc->length+nc->order, AY_EPSILON);
 
-      if(!(nc->knotv = malloc((nc->length+nc->order)*sizeof(double))))
-	{
-	  nc->knotv = oldU;
-	  return AY_EOMEM;
-	}
+  if(!j || nc->is_rat)
+    {
+      oldQw = nc->controlv;
 
       if(!(nc->controlv = malloc(nc->length*stride*sizeof(double))))
 	{
-	  free(nc->knotv);
-	  nc->knotv = oldU;
 	  nc->controlv = oldQw;
 	  return AY_EOMEM;
 	}
 
-      memcpy(nc->knotv, oldU, (nc->length+nc->order)*sizeof(double));
       memcpy(nc->controlv, oldQw, nc->length*stride*sizeof(double));
 
-      ay_status = ay_nct_clamp(nc, /*side=*/0);
-      if(ay_status)
-	goto cleanup;
-    }
+      if(nc->is_rat)
+	{
+	  a = 0;
+	  for(i = 0; i < nc->length; i++)
+	    {
+	      Qw[a] *= Qw[a+3];
+	      a += stride;
+	    }
+	} /* if is rat */
+
+      if(!j)
+	{
+	  oldU = nc->knotv;
+
+	  if(!(nc->knotv = malloc((nc->length+nc->order)*sizeof(double))))
+	    {
+	      nc->knotv = oldU;
+	      free(nc->controlv);
+	      nc->controlv = oldQw;
+	      return AY_EOMEM;
+	    }
+	  memcpy(nc->knotv, oldU, (nc->length+nc->order)*sizeof(double));
+
+	  ay_status = ay_nct_clamp(nc, /*side=*/0);
+	  if(ay_status)
+	    goto cleanup;
+	}
+    } /* if */
 
   if(nc->length != nc->order)
     {
