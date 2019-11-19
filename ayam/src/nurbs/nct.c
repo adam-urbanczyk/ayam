@@ -8508,10 +8508,13 @@ ay_nct_estlen(ay_nurbcurve_object *nc, double *len)
 
       if(nc->is_rat)
 	{
+	  Qw = nc->controlv;
 	  a = 0;
 	  for(i = 0; i < nc->length; i++)
 	    {
-	      Qw[a] *= Qw[a+3];
+	      Qw[a]   *= Qw[a+3];
+	      Qw[a+1] *= Qw[a+3];
+	      Qw[a+2] *= Qw[a+3];
 	      a += stride;
 	    }
 	} /* if is rat */
