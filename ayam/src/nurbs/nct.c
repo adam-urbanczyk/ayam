@@ -6919,8 +6919,13 @@ ay_nct_israt(ay_nurbcurve_object *curve)
 
 /** ay_nct_coarsen:
  *  Reduces the resolution of a NURBS curve.
+ *  If a selected region is defined, it should be cleaned via
+ *  ay_selp_reducetominmax() beforehand, because this function
+ *  will set the index of the second selected point to the new
+ *  matching end index of the region.
  *
- * \param[in,out] curve NURBS curve object to be coarsened
+ * \param[in,out] curve NURBS curve object to be processed
+ * \param[in,out] selp region of the curve to process, may be NULL
  *
  * \returns AY_OK on success, error code otherwise.
  */
