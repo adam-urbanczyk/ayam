@@ -868,7 +868,7 @@ int ay_nct_israt(ay_nurbcurve_object *curve);
 
 /** Coarsen NURBS curve.
  */
-int ay_nct_coarsen(ay_nurbcurve_object *curve);
+int ay_nct_coarsen(ay_nurbcurve_object *curve, ay_point *selp);
 
 /** Coarsen a 1D control point vector.
  */

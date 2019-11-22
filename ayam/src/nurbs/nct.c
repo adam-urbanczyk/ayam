@@ -6925,15 +6925,60 @@ ay_nct_israt(ay_nurbcurve_object *curve)
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_nct_coarsen(ay_nurbcurve_object *curve)
+ay_nct_coarsen(ay_nurbcurve_object *curve, ay_point *selp)
 {
  int ay_status = AY_OK;
  char fname[] = "nct_coarsen";
+ ay_point pmin = {0}, pmax = {0}, *tselp = NULL;
  double *newcontrolv = NULL, *newknotv = NULL;
- int stride = 4, i, a, b, newlength, p, t;
+ int newlength, p, t, smin, smax;
 
   if(!curve)
     return AY_ENULL;
+
+  switch(curve->type)
+    {
+    case AY_CTPERIODIC:
+      if(curve->length <= ((curve->order-1)*2))
+	{
+	  return AY_OK;
+	}
+      break;
+    case AY_CTCLOSED:
+      if(curve->length <= curve->order+1)
+	{
+	  return AY_OK;
+	}
+      break;
+    default:
+      if(curve->length <= curve->order)
+	{
+	  return AY_OK;
+	}
+      break;
+    }
+
+  smin = curve->length;
+  smax = 0;
+
+  tselp = selp;
+  while(tselp)
+    {
+      if(smin > (int)tselp->index)
+	smin = tselp->index;
+
+      if(smax < (int)tselp->index)
+	smax = tselp->index;
+
+      tselp = tselp->next;
+    }
+
+  if(smin > smax)
+    {
+      t = smin;
+      smin = smax;
+      smax = t;
+    }
 
   if(curve->type == AY_CTPERIODIC)
     {
@@ -6941,11 +6986,77 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
        * we keep the p multiple points at the ends
        * and remove points just from the other sections
        */
-
-      /* no control points to remove? */
       p = curve->order-1;
-      if((curve->length - p*2) < 2)
-	return AY_OK;
+
+      if(smin < (p-1))
+	smin = p-1;
+      if(smax > curve->length - p)
+	smax = curve->length - p;
+    }
+
+  if((smax - smin) < 2)
+    {
+      /* ay_error(AY_EWARN, fname, "No range."); */
+      return AY_OK;
+    }
+
+  pmin.index = smin;
+  pmin.next = &(pmax);
+  pmax.index = smax;
+
+  ay_status = ay_nct_coarsenarray(curve->controlv, curve->length, 4,
+				  &pmin, &newcontrolv, &newlength);
+
+  if(selp && selp->next)
+    {
+      selp->next->index = pmax.index;
+    }
+
+  /* coarsen (custom-) knots */
+  if(curve->knot_type == AY_KTCUSTOM)
+    {
+      ay_status = ay_knots_coarsen(curve->order,
+				   curve->length+curve->order,
+				   curve->knotv, curve->length-newlength,
+				   &newknotv);
+      if(ay_status)
+	{
+	  ay_error(AY_ERROR, fname, "Could not coarsen knots.");
+	  return ay_status;
+	}
+    }
+
+  free(curve->controlv);
+  curve->controlv = newcontrolv;
+  curve->length = newlength;
+
+  if(!newknotv)
+    {
+      free(curve->knotv);
+      curve->knotv = NULL;
+
+      ay_status = ay_knots_createnc(curve);
+      if(ay_status)
+	ay_error(AY_ERROR, fname, "Could not create knots.");
+    }
+  else
+    {
+      free(curve->knotv);
+      curve->knotv = newknotv;
+    }
+
+  if(curve->type == AY_CTCLOSED)
+    {
+      ay_status = ay_nct_close(curve);
+      if(ay_status)
+	ay_error(AY_ERROR, fname, "Could not close curve.");
+    }
+
+  ay_nct_recreatemp(curve);
+
+#if 0
+  /****************/
+  /****************/
 
       /* calc number of points to remove */
       t = (curve->length-(p*2))/2+(curve->length-(p*2)) % 2;
@@ -6954,18 +7065,6 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
       if((newlength == curve->length) || (newlength - t < curve->order))
 	return AY_OK;
 
-      /* coarsen (custom-) knots */
-      if(curve->knot_type == AY_KTCUSTOM)
-	{
-	  ay_status = ay_knots_coarsen(curve->order,
-				       curve->length+curve->order,
-				       curve->knotv, t, &newknotv);
-	  if(ay_status)
-	    {
-	      ay_error(AY_ERROR, fname, "Could not coarsen knots.");
-	      return ay_status;
-	    }
-	}
 
       /* coarsen control points */
       if(!(newcontrolv = malloc(newlength*stride*sizeof(double))))
@@ -7004,11 +7103,11 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
       /* open and closed curves */
 
       /* calc number of points to remove */
-      if(fmod(curve->length,2.0) == 0.0)
-	t = (curve->length-2)/2;
-      else
-	t = (curve->length-2)/2+1;
-
+      t = (smax-smin-2)/2;
+      /*
+      if((smax-smin)%2)
+	t++;
+      */
       newlength = curve->length-t;
 
       /* no control points to remove? */
@@ -7036,12 +7135,13 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
 	  return AY_EOMEM;
 	}
 
-      /* copy first point */
-      memcpy(newcontrolv, curve->controlv, stride*sizeof(double));
+      /* copy first point(s) */
+      if(smin)
+	memcpy(newcontrolv, curve->controlv, smin*stride*sizeof(double));
 
       /* copy middle points omitting every second */
-      a = stride;
-      b = a+stride;
+      a = smin*stride;
+      b = a;
       for(i = 0; i < t; i++)
 	{
 	  memcpy(&(newcontrolv[a]), &(curve->controlv[b]),
@@ -7050,11 +7150,13 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
 	  b += 2*stride;
 	}
 
-      /* copy last point */
+      /* copy last point(s) */
+      /*
       a = (newlength-1)*stride;
       b = (curve->length-1)*stride;
+      */
       memcpy(&(newcontrolv[a]), &(curve->controlv[b]),
-	     stride*sizeof(double));
+	     (curve->length-smax)*stride*sizeof(double));
 
       curve->length = newlength;
     } /* if */
@@ -7085,7 +7187,7 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
     }
 
   ay_nct_recreatemp(curve);
-
+#endif
  return ay_status;
 } /* ay_nct_coarsen */
 
@@ -7096,7 +7198,7 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
  * \param[in] Pw array to coarsen
  * \param[in] len number of elements in Pw
  * \param[in] stride size of an element in Pw
- * \param[in] selp region to be coarsened, may be NULL
+ * \param[in,out] selp region to be coarsened, may be NULL
  * \param[in,out] Qw new coarsened array
  * \param[in,out] Qwlen length of new array
  *
@@ -7163,13 +7265,12 @@ ay_nct_coarsenarray(double *Pw, int len, int stride, ay_point *selp,
 	} /* while */
 
       /* copy last point(s) */
-      memcpy(&(Q[j*stride]),
-	     &(Pw[end*stride]),
+      memcpy(&(Q[j*stride]), &(Pw[end*stride]),
 	     (len-end)*stride*sizeof(double));
 
       if(endpnt)
 	{
-	  endpnt->index += count;
+	  endpnt->index -= count;
 	}
 
       /* return result */

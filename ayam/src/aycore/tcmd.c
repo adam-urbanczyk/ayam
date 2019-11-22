@@ -2394,12 +2394,17 @@ ay_tcmd_refinetcmd(ClientData clientData, Tcl_Interp *interp,
       o = sel->object;
       o->modified = AY_FALSE;
 
+      if(o->selp && o->selp->next)
+	{
+	  (void)ay_selp_reducetominmax(o);
+	}
+
       switch(o->type)
 	{
 	case AY_IDNCURVE:
 	  nc = (ay_nurbcurve_object *)o->refine;
 	  if(coarsen)
-	    ay_status = ay_nct_coarsen(nc);
+	    ay_status = ay_nct_coarsen(nc, o->selp);
 	  else
 	    ay_status = ay_nct_refinecv(nc, o->selp);
 	  if(ay_status)

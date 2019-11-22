@@ -1689,3 +1689,61 @@ ay_selp_managelist(ay_object *o, unsigned int *lenptr, double **pntsptr)
 
  return;
 } /* ay_selp_managelist */
+
+
+/** ay_selp_reducetominmax:
+ * Change the point selection so that only the two points with the minimum
+ * and maximum index remain selected.
+ *
+ * \param[in,out] o object to process
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_selp_reducetominmax(ay_object *o)
+{
+ unsigned int min = UINT_MAX, max = 0;
+ ay_point *selp, *pmin, *pmax;
+ ay_point *next = NULL, *p = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  selp = o->selp;
+
+  if(!selp || !selp->next)
+    return AY_OK;
+
+  while(selp)
+    {
+      if(min > selp->index)
+	{
+	  min = selp->index;
+	  pmin = selp;
+	}
+      if(max < selp->index)
+	{
+	  max = selp->index;
+	  pmax = selp;
+	}
+      selp = selp->next;
+    }
+
+  if(min == max)
+    return AY_OK;
+
+  p = o->selp;
+  while(p)
+    {
+      next = p->next;
+      if(p != pmin && p != pmax)
+	free(p);
+      p = next;
+    }
+
+  o->selp = pmin;
+  pmin->next = pmax;
+  pmax->next = NULL;
+
+ return AY_OK;
+} /* ay_selp_reducetominmax */
