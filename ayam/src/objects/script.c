@@ -609,7 +609,7 @@ ay_script_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_script_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1="ScriptAttrData", *empty = "";
+ char *n1 = "ScriptAttrData", *empty = "";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_script_object *sc = NULL;
  char *arrname = NULL;
@@ -696,6 +696,19 @@ ay_script_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	    } /* for */
 	} /* if */
     } /* if have params and script */
+
+  if(sc->type && sc->cm_objects)
+    {
+      if(sc->cm_objects->type == AY_IDNCURVE)
+	{
+	  ay_prop_getncinfo(interp, n1, sc->cm_objects);
+	}
+      else
+      if(sc->cm_objects->type == AY_IDNPATCH)
+	{
+	  ay_prop_getnpinfo(interp, n1, sc->cm_objects);
+	}
+    }
 
 cleanup:
 
@@ -1655,6 +1668,7 @@ resenv:
 	{
 	  down = sc->cm_objects;
 	  sc->pntslen = 0;
+	  sc->pntsrat = AY_FALSE;
 	  /* iterate over all cm_objects and transform/copy
 	     their points according to the respective trafos
 	     into a big points vector (built up dynamically
@@ -1665,7 +1679,6 @@ resenv:
 
 	      if(!ay_status && pe.num)
 		{
-
 		  sc->pntslen += pe.num;
 
 		  p1 = realloc(sc->pnts,
@@ -1678,6 +1691,7 @@ resenv:
 		      ay_trafo_creatematrix(down, m);
 		      if(pe.type == AY_PTRAT)
 			{
+			  sc->pntsrat = AY_TRUE;
 			  for(j = 0; j < pe.num; j++)
 			    {
 			      p1 = &(sc->pnts[a]);
