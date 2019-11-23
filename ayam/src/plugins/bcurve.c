@@ -1835,10 +1835,10 @@ bcurve_genericopcb(ay_object *o, int op)
     case AY_OPCOARSEN:
       Qw = NULL;
       if(op == AY_OPREFINE)
-	ay_status = ay_nct_refinearray(bc->controlv, bc->length, 3,
+	ay_status = ay_nct_refinearray(bc->controlv, bc->length, 4,
 				       o->selp, &Qw, &Qwlen);
       else
-	ay_status = ay_nct_coarsenarray(bc->controlv, bc->length, 3,
+	ay_status = ay_nct_coarsenarray(bc->controlv, bc->length, 4,
 					o->selp, &Qw, &Qwlen);
       if(!ay_status && Qw)
 	{
