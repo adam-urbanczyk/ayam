@@ -6919,6 +6919,7 @@ ay_nct_israt(ay_nurbcurve_object *curve)
 
 /** ay_nct_coarsen:
  *  Reduces the resolution of a NURBS curve.
+ *  Periodic curves will be handled properly.
  *  If a selected region is defined, it should be cleaned via
  *  ay_selp_reducetominmax() beforehand, because this function
  *  will set the index of the second selected point to the new
@@ -7012,6 +7013,12 @@ ay_nct_coarsen(ay_nurbcurve_object *curve, ay_point *selp)
   ay_status = ay_nct_coarsenarray(curve->controlv, curve->length, 4,
 				  &pmin, &newcontrolv, &newlength);
 
+  if(ay_status)
+    {
+      ay_error(AY_ERROR, fname, "Coarsen failed.");
+      return ay_status;
+    }
+
   if(selp && selp->next)
     {
       selp->next->index = pmax.index;
@@ -7059,140 +7066,6 @@ ay_nct_coarsen(ay_nurbcurve_object *curve, ay_point *selp)
 
   ay_nct_recreatemp(curve);
 
-#if 0
-  /****************/
-  /****************/
-
-      /* calc number of points to remove */
-      t = (curve->length-(p*2))/2+(curve->length-(p*2)) % 2;
-      newlength = curve->length-t;
-
-      if((newlength == curve->length) || (newlength - t < curve->order))
-	return AY_OK;
-
-
-      /* coarsen control points */
-      if(!(newcontrolv = malloc(newlength*stride*sizeof(double))))
-	{
-	  if(newknotv)
-	    free(newknotv);
-	  return AY_EOMEM;
-	}
-
-      /* copy first p points */
-      memcpy(&(newcontrolv[0]), &(curve->controlv[0]),
-	     p*stride*sizeof(double));
-
-      /* copy middle points omitting every second */
-      a = p*stride;
-      /* omit first point after the p'th */
-      b = a+stride;
-      for(i = 0; i < t; i++)
-	{
-	  memcpy(&(newcontrolv[a]), &(curve->controlv[b]),
-		 stride*sizeof(double));
-	  a += stride;
-	  b += 2*stride;
-	}
-
-      /* copy last p points */
-      a = (newlength-p)*stride;
-      b = (curve->length-p)*stride;
-      memcpy(&(newcontrolv[a]), &(curve->controlv[b]),
-	     p*stride*sizeof(double));
-
-      curve->length = newlength;
-    }
-  else
-    {
-      /* open and closed curves */
-
-      /* calc number of points to remove */
-      t = (smax-smin-2)/2;
-      /*
-      if((smax-smin)%2)
-	t++;
-      */
-      newlength = curve->length-t;
-
-      /* no control points to remove? */
-      if(newlength == curve->length || newlength < curve->order)
-	return AY_OK;
-
-      /* coarsen (custom-) knots */
-      if(curve->knot_type == AY_KTCUSTOM)
-	{
-	  ay_status = ay_knots_coarsen(curve->order,
-				       curve->length+curve->order,
-				       curve->knotv, t, &newknotv);
-	  if(ay_status)
-	    {
-	      ay_error(AY_ERROR, fname, "Could not coarsen knots.");
-	      return ay_status;
-	    }
-	}
-
-      /* coarsen control points */
-      if(!(newcontrolv = malloc(newlength*stride*sizeof(double))))
-	{
-	  if(newknotv)
-	    free(newknotv);
-	  return AY_EOMEM;
-	}
-
-      /* copy first point(s) */
-      if(smin)
-	memcpy(newcontrolv, curve->controlv, smin*stride*sizeof(double));
-
-      /* copy middle points omitting every second */
-      a = smin*stride;
-      b = a;
-      for(i = 0; i < t; i++)
-	{
-	  memcpy(&(newcontrolv[a]), &(curve->controlv[b]),
-		 stride*sizeof(double));
-	  a += stride;
-	  b += 2*stride;
-	}
-
-      /* copy last point(s) */
-      /*
-      a = (newlength-1)*stride;
-      b = (curve->length-1)*stride;
-      */
-      memcpy(&(newcontrolv[a]), &(curve->controlv[b]),
-	     (curve->length-smax)*stride*sizeof(double));
-
-      curve->length = newlength;
-    } /* if */
-
-  free(curve->controlv);
-  curve->controlv = newcontrolv;
-
-  if(!newknotv)
-    {
-      free(curve->knotv);
-      curve->knotv = NULL;
-
-      ay_status = ay_knots_createnc(curve);
-      if(ay_status)
-	ay_error(AY_ERROR, fname, "Could not create knots.");
-    }
-  else
-    {
-      free(curve->knotv);
-      curve->knotv = newknotv;
-    }
-
-  if(curve->type == AY_CTCLOSED)
-    {
-      ay_status = ay_nct_close(curve);
-      if(ay_status)
-	ay_error(AY_ERROR, fname, "Could not close curve.");
-    }
-
-  ay_nct_recreatemp(curve);
-#endif
  return ay_status;
 } /* ay_nct_coarsen */
 
