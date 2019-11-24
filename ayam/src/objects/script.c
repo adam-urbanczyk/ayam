@@ -611,6 +611,7 @@ ay_script_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  char *n1 = "ScriptAttrData", *empty = "";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ ay_object *po;
  ay_script_object *sc = NULL;
  char *arrname = NULL;
  char *lineend = NULL, *arrnameend = NULL;
@@ -699,16 +700,31 @@ ay_script_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   if(sc->type && sc->cm_objects)
     {
-      if(sc->cm_objects->type == AY_IDNCURVE)
+      switch(sc->cm_objects->type)
 	{
+	case AY_IDNCURVE:
 	  ay_prop_getncinfo(interp, n1, sc->cm_objects);
-	}
-      else
-      if(sc->cm_objects->type == AY_IDNPATCH)
-	{
+	  break;
+	case AY_IDNPATCH:
 	  ay_prop_getnpinfo(interp, n1, sc->cm_objects);
-	}
-    }
+	  break;
+	default:
+	  if(ay_provide_object(sc->cm_objects, AY_IDNCURVE, NULL))
+	    {
+	      ay_provide_object(sc->cm_objects, AY_IDNCURVE, &po);
+	      ay_prop_getncinfo(interp, n1, po);
+	      ay_object_deletemulti(po, AY_FALSE);
+	    }
+	  else
+	  if(ay_provide_object(sc->cm_objects, AY_IDNPATCH, NULL))
+	    {
+	      ay_provide_object(sc->cm_objects, AY_IDNPATCH, &po);
+	      ay_prop_getncinfo(interp, n1, po);
+	      ay_object_deletemulti(po, AY_FALSE);
+	    }
+	  break;
+	} /* switch */
+    } /* if have created/modified objects */
 
 cleanup:
 
