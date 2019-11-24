@@ -330,7 +330,7 @@ ay_extrude_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_extrude_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1="ExtrudeAttrData";
+ char *n1 = "ExtrudeAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_extrude_object *extrude = NULL;
 
@@ -368,6 +368,8 @@ ay_extrude_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_NewDoubleObj(extrude->glu_sampling_tolerance);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
+
+  ay_prop_getnpinfo(interp, n1, extrude->npatch);
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
