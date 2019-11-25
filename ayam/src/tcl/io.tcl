@@ -92,11 +92,7 @@ proc io_replaceScene { {newfilename ""} } {
 
 	# change working directory
 	if { [file exists $filename] } {
-	    set dirname [file dirname $filename]
-	    cd $dirname
-	    set .fl.con(-prompt) {[file tail [pwd]]>}
-	    .fl.con delete end-1lines end
-	    Console:prompt .fl.con "\n"
+	    cd [file dirname $filename]
 	}
 
 	set wh "replaceScene"
@@ -149,7 +145,7 @@ proc io_replaceScene { {newfilename ""} } {
 #  insert a scene
 #
 proc io_insertScene { {ifilename ""} } {
-    global ay ayprefs
+    global ay ayprefs ay_error
 
     winAutoFocusOff
 
@@ -192,7 +188,6 @@ proc io_insertScene { {ifilename ""} } {
 	cS; plb_update
 	set ay(askedscriptdisable) 0
 	update
-	global ay ay_error
 	set ay_error ""
 
 	# see, if this is an Ayam scene file
@@ -205,21 +200,26 @@ proc io_insertScene { {ifilename ""} } {
 
 	foreach view $ay(views) { viewUnBind $view }
 	update
+
 	set wh "insertScene"
 
-	insertScene $ifilename
+	set res [insertScene $ifilename]
+
 	if { $ay_error < 2 } {
 	    ayError 4 $wh "Done inserting objects from: $ifilename"
 	} else {
 	    ayError 2 $wh "Failed to insert objects from: $ifilename"
 	}
-
-	goTop
-	selOb
-	set ay(CurrentLevel) "root"
-	set ay(SelectedLevel) "root"
-	update
-	uS
+	if { $res == 1 } {
+	    goTop
+	    selOb
+	    set ay(CurrentLevel) "root"
+	    set ay(SelectedLevel) "root"
+	    update
+	    uS
+	} else {
+	    uCR
+	}
 	rV
 	io_mruAdd $filename
 	set ay(sc) 1
@@ -645,14 +645,8 @@ proc io_mruLoad { index } {
 
 	# change working directory
 	if { [file exists $filename] } {
-	    set dirname [file dirname $filename]
-	    cd $dirname
-
+	    cd [file dirname $filename]
 	    set filename [file tail $filename]
-
-	    set .fl.con(-prompt) {[file tail [pwd]]>}
-	    .fl.con delete end-1lines end
-	    Console:prompt .fl.con "\n"
 	}
 
 	set wh "replaceScene"
