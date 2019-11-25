@@ -787,8 +787,9 @@ ay_read_scene(Tcl_Interp *interp, char *filename, int insert)
  int ay_status = AY_OK;
  FILE *fileptr = NULL;
  char *fname = "read_scene";
- ay_object *o = NULL;
  int old_save_rv = ay_prefs.save_rootviews;
+ ay_object *o = NULL;
+ Tcl_Obj *to = NULL;
 
   if(!insert)
     {
@@ -872,6 +873,8 @@ ay_read_scene(Tcl_Interp *interp, char *filename, int insert)
   /* inserting files does not change the save_rootviews state */
   if(insert)
     {
+      to = Tcl_NewIntObj(ay_prefs.save_rootviews);
+      Tcl_SetObjResult(interp, to);
       ay_prefs.save_rootviews = old_save_rv;
     }
 
