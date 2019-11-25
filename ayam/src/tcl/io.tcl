@@ -45,19 +45,21 @@ proc io_replaceScene { {newfilename ""} } {
 	    {"Supported Files" {$ayprefs(ALFileTypes)}}
 	    {"All Files" *}}]
 
+	set t "Select file to load:"
+
 	if { $ay(ws) != "Aqua" } {
 	    set newfilename [tk_getOpenFile -filetypes $types -parent .\
 				 -initialfile [file tail $filename]\
 				 -initialdir $dirname\
-				 -title "Select file to load:"]
+				 -title $t]
 	} else {
 	    if { [file exists [file tail $filename]] } {
 		set newfilename [tk_getOpenFile -filetypes $types -parent .\
 				     -initialfile [file tail $filename]\
-				     -title "Select file to load:"]
+				     -title $t]
 	    } else {
 		set newfilename [tk_getOpenFile -filetypes $types -parent .\
-				     -title "Select file to load:"]
+				     -title $t]
 	    }
 	}
     }
@@ -106,8 +108,7 @@ proc io_replaceScene { {newfilename ""} } {
 	    set windowfilename [file tail [file rootname $filename]]
 	    wm title . "Ayam - Main - $windowfilename : --"
 	    set ay(filename) $filename
-	    ayError 4 $wh "Done reading scene from:"
-	    ayError 4 $wh "$filename"
+	    ayError 4 $wh "Done reading scene from: $filename"
 
 	    # restore main window geometry from tag
 	    io_readMainGeom
@@ -115,8 +116,7 @@ proc io_replaceScene { {newfilename ""} } {
 	} else {
 	    wm title . "Ayam - Main - : --"
 	    set ay(filename) ""
-	    ayError 2 $wh "There were errors while loading:"
-	    ayError 2 $wh "$filename"
+	    ayError 2 $wh "Failed reading scene from: $filename"
 	}
 
 	goTop
@@ -168,19 +168,21 @@ proc io_insertScene { {ifilename ""} } {
 	    {"Supported Files" {$ayprefs(ALFileTypes)}}
 	    {"All Files" *}}]
 
+	set t "Select file to load:"
+
 	if { $ay(ws) != "Aqua" } {
 	    set ifilename [tk_getOpenFile -filetypes $types -parent .\
 			       -initialfile [file tail $filename]\
 			       -initialdir $dirname\
-			       -title "Select file to load:"]
+			       -title $t]
 	} else {
 	    if { [file exists [file tail $filename]] } {
 		set ifilename [tk_getOpenFile -filetypes $types -parent .\
 				   -initialfile [file tail $filename]\
-				   -title "Select file to load:"]
+				   -title $t]
 	    } else {
 		set ifilename [tk_getOpenFile -filetypes $types -parent .\
-				   -title "Select file to load:"]
+				   -title $t]
 	    }
 	}
     }
@@ -207,11 +209,9 @@ proc io_insertScene { {ifilename ""} } {
 
 	insertScene $ifilename
 	if { $ay_error < 2 } {
-	    ayError 4 $wh "Done inserting objects from:"
-	    ayError 4 $wh "$ifilename"
+	    ayError 4 $wh "Done inserting objects from: $ifilename"
 	} else {
-	    ayError 2 $wh "There were errors inserting objects from:"
-	    ayError 2 $wh "$ifilename"
+	    ayError 2 $wh "Failed to insert objects from: $ifilename"
 	}
 
 	goTop
@@ -302,13 +302,11 @@ proc io_saveScene { ask selected } {
 	    set windowfilename [file tail [file rootname $filename]]
 	    wm title . "Ayam - Main - $windowfilename : --"
 	    set ay(filename) $filename
-	    ayError 4 $wh "Done saving scene to:"
-	    ayError 4 $wh "$filename"
+	    ayError 4 $wh "Done saving scene to: $filename"
 	    io_mruAdd $filename
 	    set ay(sc) 0
 	} else {
-	    ayError 2 $wh "There were errors while saving to:"
-	    ayError 2 $wh "$filename"
+	    ayError 2 $wh "Failed saving scene to: $filename"
 	}
     }
     # if have filename
@@ -668,15 +666,13 @@ proc io_mruLoad { index } {
 	    set windowfilename [file tail [file rootname $filename]]
 	    wm title . "Ayam - Main - $windowfilename : --"
 	    set ay(filename) $filename
-	    ayError 4 $wh "Done reading scene from:"
-	    ayError 4 $wh "$filename"
+	    ayError 4 $wh "Done reading scene from: $filename"
 	    # restore main window geometry from tag
 	    io_readMainGeom
 	} else {
 	    wm title . "Ayam - Main - : --"
 	    set ay(filename) ""
-	    ayError 2 $wh "There were errors while loading:"
-	    ayError 2 $wh "$filename"
+	    ayError 2 $wh "Failed reading scene from: $filename"
 	}
 
 	goTop
@@ -1154,7 +1150,7 @@ proc io_saveMainGeom { } {
 
 # io_readMainGeom:
 #  update geometry of main and toolbox window with data from potentially
-#  present SaveMainGeom tag
+#  present "SaveMainGeom" tag
 #  in SingleWindow GUI mode, do the same for the pane configuration with
 #  data from a potentially present "SavePaneLayout" tag
 proc io_readMainGeom { } {
