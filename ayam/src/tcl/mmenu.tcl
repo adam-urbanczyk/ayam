@@ -138,7 +138,7 @@ $m add command -label "Paste" -command {
     pasOb; uCR; sL $ay(ucrcount); notifyOb -parent; rV; set ay(sc) 1
 } -underline 0
 $m add command -label "Delete" -command {
-    if { [candelOb] } {
+    if { [candelOb] == 1 } {
 	delOb; cS; notifyOb -parent;
 	set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1
     } else {
