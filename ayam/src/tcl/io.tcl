@@ -411,11 +411,9 @@ proc io_exportRIB { {expview "" } } {
 		}
 
 		if { $ay_error < 2 } {
-		    ayError 4 $wh "Done exporting scene to:"
-		    ayError 4 $wh "$ribname"
+		    ayError 4 $wh "Done exporting scene to: $ribname"
 		} else {
-		    ayError 2 $wh "There were errors exporting to:"
-		    ayError 2 $wh "$ribname"
+		    ayError 2 $wh "Failed exporting scene to: $ribname"
 		}
 	    }
 	    # if have export file name
@@ -808,8 +806,7 @@ proc io_saveEnv { } {
 
 	 if { $ay_error < 2 } {
 
-	     ayError 4 $wh "Done writing environment to:"
-	     ayError 4 $wh "$savefilename"
+	     ayError 4 $wh "Done writing environment to: $savefilename"
 
 	     if { $ayprefs(EnvFile) != $savefilename } {
 
@@ -841,8 +838,7 @@ proc io_saveEnv { } {
 		 set ayprefse(LoadEnv) 1
 	     }
 	 } else {
-	     ayError 2 $wh "There were errors while writing:"
-	     ayError 2 $wh "$savefilename"
+	     ayError 2 $wh "Failed writing environment to: $savefilename"
 	 }
 	 # reset scene changed status to old value
 	 set ay(sc) $temp
@@ -955,11 +951,9 @@ proc io_exportRIBfC { } {
 	    wrib $ribname
 	}
 	if { $ay_error < 2 } {
-	    ayError 4 $wh "Done exporting scene to:"
-	    ayError 4 $wh "$ribname"
+	    ayError 4 $wh "Done exporting scene to: $ribname"
 	} else {
-	    ayError 2 $wh "There were errors exporting to:"
-	    ayError 2 $wh "$ribname"
+	    ayError 2 $wh "Failed exporting scene to: $ribname"
 	}
     }
     # if
@@ -1015,19 +1009,17 @@ proc io_RenderSM { w all } {
 	    wrib $ribname -smonly -selonly
 	}
 	if { $ay_error < 2 } {
-	    ayError 4 $wh "Done exporting scene to:"
-	    ayError 4 $wh "$ribname"
+	    ayError 4 $wh "Done exporting scene to: $ribname"
 	    set render 1
 	} else {
-	    ayError 2 $wh "There were errors exporting to:"
-	    ayError 2 $wh "$ribname"
+	    ayError 2 $wh "Failed exporting scene to: $ribname"
 	    set render 0
 	}
     }
     # if have ribname
 
     if { $render } {
-	ayError 4 "Create SM" "Now rendering shadow maps..."
+	ayError 4 $wh "Now rendering shadow maps..."
 
 	if { $ayprefs(SMRenderUI) != 1} {
 	    set command "exec "
@@ -1041,7 +1033,7 @@ proc io_RenderSM { w all } {
 	}
 	# if
 
-	ayError 4 "Create SM" "Done rendering shadow maps!"
+	ayError 4 $wh "Done rendering shadow maps!"
     }
     # if
 
@@ -1076,10 +1068,9 @@ proc io_exportRIBSO { } {
 	if { $ribname != "" } {
 	    wrib $ribname -selonly
 	    if { $ay_error < 2 } {
-		ayError 4 "exportRIB" "Done exporting objects to:"
-		ayError 4 "exportRIB" "$ribname"
+		ayError 4 "exportRIB" "Done exporting objects to: $ribname"
 	    } else {
-		ayError 2 "exportRIB" "Could not export RIB!"
+		ayError 2 "exportRIB" "Failed exporting objects to: $ribname"
 	    }
 	}
     } else {
