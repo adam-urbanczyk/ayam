@@ -6919,7 +6919,8 @@ ay_nct_israt(ay_nurbcurve_object *curve)
 
 /** ay_nct_coarsen:
  *  Reduces the resolution of a NURBS curve.
- *  Periodic curves will be handled properly.
+ *  Periodic and closed curves will be handled properly.
+ *
  *  If a selected region is defined, it should be cleaned via
  *  ay_selp_reducetominmax() beforehand, because this function
  *  will set the index of the second selected point to the new
@@ -6942,26 +6943,19 @@ ay_nct_coarsen(ay_nurbcurve_object *curve, ay_point *selp)
   if(!curve)
     return AY_ENULL;
 
-  switch(curve->type)
+  if(curve->type == AY_CTPERIODIC)
     {
-    case AY_CTPERIODIC:
       if(curve->length <= ((curve->order-1)*2))
 	{
 	  return AY_OK;
 	}
-      break;
-    case AY_CTCLOSED:
-      if(curve->length <= curve->order+1)
-	{
-	  return AY_OK;
-	}
-      break;
-    default:
+    }
+  else
+    {
       if(curve->length <= curve->order)
 	{
 	  return AY_OK;
 	}
-      break;
     }
 
   smin = curve->length;
