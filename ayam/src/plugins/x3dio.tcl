@@ -90,8 +90,13 @@ proc x3dio_import { } {
     button $f.bok -text "Ok" -width 5 -command {
 	global x3dio_options ayprefs
 
+	if { ! [file readable $x3dio_options(FileName)] } {
+	    ayError 10 x3dio_import $x3dio_options(FileName)
+	    return;
+	}
+
 	set x3dio_options(filename) $x3dio_options(FileName)
-	set oldcd [pwd]
+	set x3dio_options(oldcd) [pwd]
 	cd [file dirname $x3dio_options(FileName)]
 
 	x3dioRead [file tail $x3dio_options(FileName)]\
@@ -106,7 +111,7 @@ proc x3dio_import { } {
 	    -m $x3dio_options(MergeInlineDefs)
 
 	if { ! $ayprefs(ImportSetsCD) } {
-	    cd $oldcd
+	    cd $x3dio_options(oldcd)
 	}
 
 	goTop
@@ -121,12 +126,12 @@ proc x3dio_import { } {
 	set ay(sc) 1
 
 	if { $ay_error < 2 } {
-	    ayError 4 "x3dio_import" "Done importing:"
-	    ayError 4 "x3dio_import" "$x3dio_options(FileName)"
+	    ayError 4 "x3dio_import" \
+		"Done importing from: $x3dio_options(FileName)"
 	} else {
 	    if { $ay_error != 15 } {
-		ayError 2 "x3dio_import" "There were errors while importing:"
-		ayError 2 "x3dio_import" "$x3dio_options(FileName)"
+		ayError 2 "x3dio_import" \
+		    "Failed importing from: $x3dio_options(FileName)"
 	    }
 	}
 
@@ -134,7 +139,7 @@ proc x3dio_import { } {
 	restoreFocus $x3dio_options(oldfocus)
 	destroy .x3dio
     }
-    # button
+    # ok button
 
     button $f.bca -text "Cancel" -width 5 -command "\
                 set ::x3dio_options(Cancel) 1;\
@@ -238,7 +243,7 @@ proc x3dio_export { } {
 		[io_appext $x3dio_options(FileName) ".xhtml"]
 	}
 	set x3dio_options(filename) $x3dio_options(FileName)
-	set oldcd [pwd]
+	set x3dio_options(oldcd) [pwd]
 	cd [file dirname $x3dio_options(FileName)]
 
 	x3dioWrite [file tail $x3dio_options(FileName)]\
@@ -253,24 +258,24 @@ proc x3dio_export { } {
 	    -r $x3dio_options(RationalStyle)
 
 	if { ! $ayprefs(ExportSetsCD) } {
-	    cd $oldcd
+	    cd $x3dio_options(oldcd)
 	}
 
 	update
 
 	if { $ay_error < 2 } {
-	    ayError 4 "x3dio_export" "Done exporting to:"
-	    ayError 4 "x3dio_export" "$x3dio_options(FileName)"
+	    ayError 4 "x3dio_export" \
+		"Done exporting to: $x3dio_options(FileName)"
 	} else {
-	    ayError 2 "x3dio_export" "There were errors while exporting to:"
-	    ayError 2 "x3dio_export" "$x3dio_options(FileName)"
+	    ayError 2 "x3dio_export" \
+		"Failed exporting to: $x3dio_options(FileName)"
 	}
 
 	grab release .x3dio
 	restoreFocus $x3dio_options(oldfocus)
 	destroy .x3dio
     }
-    # button
+    # ok button
 
     button $f.bca -text "Cancel" -width 5 -command "\
                 set ::x3dio_options(Cancel) 1;\
