@@ -108,7 +108,6 @@ proc io_replaceScene { {newfilename ""} } {
 
 	    # restore main window geometry from tag
 	    io_readMainGeom
-
 	} else {
 	    wm title . "Ayam - Main - : --"
 	    set ay(filename) ""
@@ -401,7 +400,6 @@ proc io_exportRIB { {expview "" } } {
 
 		set imagename [io_getImageName $ribname]
 
-		set wh "exportRIB"
 		set ay_error ""
 
 		if { $imagename != "" } {
@@ -411,9 +409,9 @@ proc io_exportRIB { {expview "" } } {
 		}
 
 		if { $ay_error < 2 } {
-		    ayError 4 $wh "Done exporting scene to: $ribname"
+		    ayError 4 "exportRIB" "Done exporting scene to: $ribname"
 		} else {
-		    ayError 2 $wh "Failed exporting scene to: $ribname"
+		    ayError 2 "exportRIB" "Failed exporting scene to: $ribname"
 		}
 	    }
 	    # if have export file name
@@ -1068,7 +1066,7 @@ proc io_exportRIBSO { } {
 	    }
 	}
     } else {
-	ayError 20 "RIB Export" ""
+	ayError 20 "exportRIB" ""
     }
     # if
 
@@ -1221,8 +1219,7 @@ proc ::tk::mac::OpenDocument { args } {
 		    set ay(filename) $filename
 		    set windowfilename [file tail [file rootname $filename]]
 		    wm title . "Ayam - Main - $windowfilename : --"
-		    ayError 4 $wh "Done reading scene from:"
-		    ayError 4 $wh "$filename"
+		    ayError 4 $wh "Done reading scene from: $filename"
 		    if { [file exists $filename] } {
 			set dirname [file dirname $filename]
 			cd $dirname
@@ -1230,8 +1227,7 @@ proc ::tk::mac::OpenDocument { args } {
 		    }
 		    io_mruAdd $filename
 		} else {
-		    ayError 2 $wh "There were errors while loading:"
-		    ayError 2 $wh "$filename"
+		    ayError 2 $wh "Failed reading scene from: $filename"
 		}
 		set j 1
 	    } else {
@@ -1239,11 +1235,9 @@ proc ::tk::mac::OpenDocument { args } {
 
 		insertScene $filename
 		if { $ay_error < 2 } {
-		    ayError 4 $wh "Done inserting objects from:"
-		    ayError 4 $wh "$filename"
+		    ayError 4 $wh "Done inserting objects from: $filename"
 		} else {
-		    ayError 2 $wh "There were errors inserting objects from:"
-		    ayError 2 $wh "$filename"
+		    ayError 2 $wh "Failed to insert objects from: $filename"
 		}
 	    }
 	    # if
@@ -1251,6 +1245,7 @@ proc ::tk::mac::OpenDocument { args } {
 	} else {
 	    # extension is not .ay
 	    if { [file extension $filename] != "" } {
+		grab release .fu
 		# try to import the file
 		io_importScene $filename
 		return;
