@@ -908,7 +908,7 @@ proc searchOb { expression action {gui 0} } {
 	while { [string first "\$" $rem] != -1 } {
 	    if { [string first "\$name" $rem] == 0 } {
 		# object name comparison
-		append cx "getName name 1;"
+		append cx "getName -s name;"
 	    } elseif { [string first "\$type" $rem] == 0 } {
 		# object type comparison
 		append cx "getType type;"
@@ -1127,7 +1127,7 @@ proc matchOb { pattern } {
 	return true;
     }
 
-    getName name 1
+    getName -s name
     if { [string match -nocase $pattern $name] } {
 	return true;
     }
