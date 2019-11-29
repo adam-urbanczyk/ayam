@@ -316,7 +316,6 @@ metaobj_drawcb (struct Togl *togl, ay_object * o)
       glEnd();
     } /* if */
 
-
 #if !META_USEVERTEXARRAY
   if(0)
   {
@@ -804,6 +803,7 @@ metaobj_bbccb (ay_object *o, double *bbox, int *flags)
 int
 metaobj_notifycb (ay_object *o)
 {
+ int ay_status = AY_OK;
  meta_world *w;
  meta_blob *b;
  ay_object *down;
@@ -875,7 +875,7 @@ metaobj_notifycb (ay_object *o)
 	}
     }
 
-  meta_calceffect (w);
+  ay_status = meta_calceffect (w);
 
   if(w->aktcubes > 200)
     {
@@ -883,7 +883,7 @@ metaobj_notifycb (ay_object *o)
       w->mgrid = NULL;
     }
 
- return AY_OK;
+ return ay_status;
 } /* metaobj_notifycb */
 
 
