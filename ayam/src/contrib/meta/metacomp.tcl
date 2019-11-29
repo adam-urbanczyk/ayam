@@ -17,7 +17,9 @@ set MetaComp_props { Transformations Attributes Tags MetaCompAttr }
 proc metacomp_setAttr { } {
     global ay MetaCompAttr MetaCompAttrData
     set t $ay(pca).$MetaCompAttr(w).tScript
-    set MetaCompAttrData(Expression) [$t get 1.0 end]
+    if { [winfo exists $t] } {
+	set MetaCompAttrData(Expression) [$t get 1.0 end]
+    }
     setProp
  return;
 }
@@ -150,6 +152,7 @@ array set MetaCompAttr {
 
 array set MetaCompAttrData {
     Formula  0
+    Expression ""
     Expressions {
 	    { RoundCube "expr {pow($x,4)+pow($y,4)+pow($z,4)}" }
 	    { OpenCylinder "expr {sqrt(pow($y,2)+pow($z,2))}" }
