@@ -22,6 +22,8 @@ int ay_object_isplanar(ay_object *o);
 
 int ay_object_isdegen(ay_object *o);
 
+int ay_object_istrimmed(ay_object *o, int argc, char *argv[]);
+
 
 /** ay_object_create:
  * Allocate a new #ay_object structure, fill it with vital default values,
@@ -1209,6 +1211,7 @@ ay_object_istrimmed(ay_object *o, int argc, char *argv[])
  *  Also implements the \a isDegen scripting interface command.
  *  Also implements the \a isPlanar scripting interface command.
  *  Also implements the \a isParent scripting interface command.
+ *  Also implements the \a isTrimmed scripting interface command.
  *  See also the corresponding section in the \ayd{schaschild}.
  *
  *  \returns 1 if selected object has a regular (other than
@@ -1499,10 +1502,10 @@ ay_object_gettypeornametcmd(ClientData clientData, Tcl_Interp *interp,
 
 /** ay_object_crtendlevel:
  * Stores a pointer to the end level object (ay_endlevel) in the designated
- * struct slot, usually &(ay_object->next) or &(ay_object->down).
+ * struct slot, usually o.next or o.down, where o is of type ay_object.
  *
  * This function used to create an entirely new ay_object _and_
- * ay_level_object, it is left here to provide API backwards compatibility
+ * ay_level_object. It is left here to provide API backwards compatibility
  * only, as storing a pointer should not require a function call.
  *
  * \param[in,out] o where to store the pointer to the end level object
