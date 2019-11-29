@@ -119,7 +119,7 @@ proc rrib_import { } {
 	restoreFocus $rrib_options(oldfocus)
 	destroy .ribI
     }
-    # button
+    # ok button
 
     button $f.bca -text "Cancel" -width 5 -command "\
 		grab release .ribI;\
