@@ -70,8 +70,13 @@ proc dxfio_import { } {
     button $f.bok -text "Ok" -width 5 -command {
 	global dxfio_options ayprefs
 
+	if { ! [file readable $dxfio_options(FileName)] } {
+	    ayError 10 dxfio_import $dxfio_options(FileName)
+	    return;
+	}
+
 	set dxfio_options(filename) $dxfio_options(FileName)
-	set oldcd [pwd]
+	set dxfio_options(oldcd) [pwd]
 	cd [file dirname $dxfio_options(FileName)]
 
 	dxfioRead [file tail $dxfio_options(FileName)]\
@@ -81,7 +86,7 @@ proc dxfio_import { } {
 	    -f $dxfio_options(ScaleFactor)
 
 	if { ! $ayprefs(ImportSetsCD) } {
-	    cd $oldcd
+	    cd $dxfio_options(oldcd)
 	}
 
 	goTop
@@ -96,18 +101,18 @@ proc dxfio_import { } {
 	set ay(sc) 1
 
 	if { $ay_error < 2 } {
-	    ayError 4 "dxfio_import" "Done importing:"
-	    ayError 4 "dxfio_import" "$dxfio_options(FileName)"
+	    ayError 4 "dxfio_import" \
+		"Done importing from: $dxfio_options(FileName)"
 	} else {
-	    ayError 2 "dxfio_import" "There were errors while importing:"
-	    ayError 2 "dxfio_import" "$dxfio_options(FileName)"
+	    ayError 2 "dxfio_import" \
+		"Failed importing from: $dxfio_options(FileName)"
 	}
 
 	grab release .dxfio
 	restoreFocus $dxfio_options(oldfocus)
 	destroy .dxfio
     }
-    # button
+    # ok button
 
     button $f.bca -text "Cancel" -width 5 -command "\
                 set ::dxfio_options(Cancel) 1;\
@@ -195,7 +200,7 @@ proc dxfio_export { } {
 	set dxfio_options(FileName) [io_appext $dxfio_options(FileName) ".dxf"]
 
 	set dxfio_options(filename) $dxfio_options(FileName)
-	set oldcd [pwd]
+	set dxfio_options(oldcd) [pwd]
 	cd [file dirname $dxfio_options(FileName)]
 
 	dxfioWrite [file tail $dxfio_options(FileName)]\
@@ -207,24 +212,23 @@ proc dxfio_export { } {
 	    -f $dxfio_options(ScaleFactor)
 
 	if { ! $ayprefs(ExportSetsCD) } {
-	    cd $oldcd
+	    cd $dxfio_options(oldcd)
 	}
 	update
 
 	if { $ay_error < 2 } {
-	    ayError 4 "dxfio_export" "Done exporting to:"
-	    ayError 4 "dxfio_export" "$dxfio_options(FileName)"
+	    ayError 4 "dxfio_export" \
+		"Done exporting to: $dxfio_options(FileName)"
 	} else {
-	    ayError 2 "dxfio_export" "There were errors while exporting to:"
-	    ayError 2 "dxfio_export" "$dxfio_options(FileName)"
+	    ayError 2 "dxfio_export" \
+		"Failed exporting to: $dxfio_options(FileName)"
 	}
-	# if
 
 	grab release .dxfio
 	restoreFocus $dxfio_options(oldfocus)
 	destroy .dxfio
     }
-    # button
+    # ok button
 
     button $f.bca -text "Cancel" -width 5 -command "\
                 set ::dxfio_options(Cancel) 1;\

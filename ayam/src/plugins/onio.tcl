@@ -76,8 +76,13 @@ proc onio_import { } {
     button $f.bok -text "Ok" -width 5 -command {
 	global onio_options ayprefs
 
+	if { ! [file readable $onio_options(FileName)] } {
+	    ayError 10 onio_import $onio_options(FileName)
+	    return;
+	}
+
 	set onio_options(filename) $onio_options(FileName)
-	set oldcd [pwd]
+	set onio_options(oldcd) [pwd]
 	cd [file dirname $onio_options(FileName)]
 
 	onioRead [file tail $onio_options(FileName)]\
@@ -89,7 +94,7 @@ proc onio_import { } {
 	    -f $onio_options(ScaleFactor)
 
 	if { ! $ayprefs(ImportSetsCD) } {
-	    cd $oldcd
+	    cd $onio_options(oldcd)
 	}
 
 	goTop
@@ -104,18 +109,18 @@ proc onio_import { } {
 	set ay(sc) 1
 
 	if { $ay_error < 2 } {
-	    ayError 4 "onio_import" "Done importing:"
-	    ayError 4 "onio_import" "$onio_options(FileName)"
+	    ayError 4 "onio_import" \
+		"Done importing from: $onio_options(FileName)"
 	} else {
-	    ayError 2 "onio_import" "There were errors while importing:"
-	    ayError 2 "onio_import" "$onio_options(FileName)"
+	    ayError 2 "onio_import" \
+		"Failed importing from: $onio_options(FileName)"
 	}
 
 	grab release .onio
 	restoreFocus $onio_options(oldfocus)
 	destroy .onio
     }
-    # button
+    # ok button
 
     button $f.bca -text "Cancel" -width 5 -command "\
 		grab release .onio;\
@@ -204,7 +209,7 @@ proc onio_export { } {
 	set onio_options(FileName) [io_appext $onio_options(FileName) ".3dm"]
 
 	set onio_options(filename) $onio_options(FileName)
-	set oldcd [pwd]
+	set onio_options(oldcd) [pwd]
 	cd [file dirname $onio_options(FileName)]
 
 	onioWrite [file tail $onio_options(FileName)]\
@@ -217,25 +222,24 @@ proc onio_export { } {
 	    -f $onio_options(ScaleFactor)
 
 	if { ! $ayprefs(ExportSetsCD) } {
-	    cd $oldcd
+	    cd $onio_options(oldcd)
 	}
 
 	update
 
 	if { $ay_error < 2 } {
-	    ayError 4 "onio_export" "Done exporting to:"
-	    ayError 4 "onio_export" "$onio_options(FileName)"
+	    ayError 4 "onio_export" \
+		"Done exporting to: $onio_options(FileName)"
 	} else {
-	    ayError 2 "onio_export" "There were errors while exporting to:"
-	    ayError 2 "onio_export" "$onio_options(FileName)"
+	    ayError 2 "onio_export" \
+		"Failed exporting to:  $onio_options(FileName)"
 	}
-	# if
 
 	grab release .onio
 	restoreFocus $onio_options(oldfocus)
 	destroy .onio
     }
-    # button
+    # ok button
 
     button $f.bca -text "Cancel" -width 5 -command "\
 		grab release .onio;\

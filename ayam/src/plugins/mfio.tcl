@@ -73,8 +73,13 @@ proc mfio_import { } {
     button $f.bok -text "Ok" -width 5 -command {
 	global mfio_options ayprefs
 
+	if { ! [file readable $mfio_options(FileName)] } {
+	    ayError 10 mfio_import $mfio_options(FileName)
+	    return;
+	}
+
 	set mfio_options(filename) $mfio_options(FileName)
-	set oldcd [pwd]
+	set mfio_options(oldcd) [pwd]
 	cd [file dirname $mfio_options(FileName)]
 	mfioRead [file tail $mfio_options(FileName)]\
 	    -c $mfio_options(ReadCurves)\
@@ -85,7 +90,7 @@ proc mfio_import { } {
 	    -r  $mfio_options(RationalStyle)
 
 	if { ! $ayprefs(ImportSetsCD) } {
-	    cd $oldcd
+	    cd $mfio_options(oldcd)
 	}
 	goTop
 	selOb
@@ -99,18 +104,18 @@ proc mfio_import { } {
 	set ay(sc) 1
 
 	if { $ay_error < 2 } {
-	    ayError 4 "mfio_import" "Done importing:"
-	    ayError 4 "mfio_import" "$mfio_options(FileName)"
+	    ayError 4 "mfio_import" \
+		"Done importing from: $mfio_options(FileName)"
 	} else {
-	    ayError 2 "mfio_import" "There were errors while importing:"
-	    ayError 2 "mfio_import" "$mfio_options(FileName)"
+	    ayError 2 "mfio_import" \
+		"Failed importing from: $mfio_options(FileName)"
 	}
 
 	grab release .mfio
 	restoreFocus $mfio_options(oldfocus)
 	destroy .mfio
     }
-    # button
+    # ok button
 
     button $f.bca -text "Cancel" -width 5 -command "\
 		grab release .mfio;\
@@ -198,7 +203,7 @@ proc mfio_export { } {
 	set mfio_options(FileName) [io_appext $mfio_options(FileName) ".3dmf"]
 
 	set mfio_options(filename) $mfio_options(FileName)
-	set oldcd [pwd]
+	set mfio_options(oldcd) [pwd]
 	cd [file dirname $mfio_options(FileName)]
 	mfioWrite [file tail $mfio_options(FileName)]\
 	    -c $mfio_options(WriteCurves)\
@@ -208,24 +213,23 @@ proc mfio_export { } {
 	    -r $mfio_options(RationalStyle)\
 
 	if { ! $ayprefs(ExportSetsCD) } {
-	    cd $oldcd
+	    cd $mfio_options(oldcd)
 	}
 	update
 
 	if { $ay_error < 2 } {
-	    ayError 4 "mfio_export" "Done exporting to:"
-	    ayError 4 "mfio_export" "$mfio_options(FileName)"
+	    ayError 4 "mfio_export" \
+		"Done exporting to: $mfio_options(FileName)"
 	} else {
-	    ayError 2 "mfio_export" "There were errors while exporting to:"
-	    ayError 2 "mfio_export" "$mfio_options(FileName)"
+	    ayError 2 "mfio_export" \
+		"Failed exporting to: $mfio_options(FileName)"
 	}
-	# if
 
 	grab release .mfio
 	restoreFocus $mfio_options(oldfocus)
 	destroy .mfio
     }
-    # button
+    # ok button
 
     button $f.bca -text "Cancel" -width 5 -command "\
 		grab release .mfio;\

@@ -74,15 +74,13 @@ proc objio_export { } {
 	set objio_options(FileName) [io_appext $objio_options(FileName) ".obj"]
 
 	set objio_options(filename) $objio_options(FileName)
-	set oldcd [pwd]
+	set objio_options(oldcd) [pwd]
 	cd [file dirname $objio_options(FileName)]
-
-	set filename [file tail $objio_options(FileName)]
 
 	set objio_options(Cancel) 0
 	update
 
-	objioWrite $filename\
+	objioWrite [file tail $objio_options(FileName)]\
 	    -s $objio_options(WriteSelected)\
 	    -p $objio_options(TessPoMesh)\
 	    -c $objio_options(WriteCurves)\
@@ -90,22 +88,22 @@ proc objio_export { } {
 	    -r $objio_options(RationalStyle)
 
 	if { ! $ayprefs(ExportSetsCD) } {
-	    cd $oldcd
+	    cd $objio_options(oldcd)
 	}
 
 	if { $ay_error < 2 } {
-	    ayError 4 "exportOBJ" "Done exporting to:"
-	    ayError 4 "exportOBJ" "$objio_options(FileName)"
+	    ayError 4 "exportOBJ" \
+		"Done exporting to: $objio_options(FileName)"
 	} else {
-	    ayError 2 "exportOBJ" "There were errors while exporting to:"
-	    ayError 2 "exportOBJ" "$objio_options(FileName)"
+	    ayError 2 "exportOBJ" \
+		"Failed exporting to: $objio_options(FileName)"
 	}
 
 	grab release .objE
 	restoreFocus $objio_options(oldfocus)
 	destroy .objE
     }
-    # button
+    # ok button
 
     button $f.bca -text "Cancel" -width 5 -command "\
 		global objio_options;\
@@ -185,8 +183,13 @@ proc objio_import { } {
     button $f.bok -text "Ok" -width 5 -command {
 	global objio_options ay_error ayprefs
 
+	if { ! [file readable $objio_options(FileName)] } {
+	    ayError 10 objio_import $objio_options(FileName)
+	    return;
+	}
+
 	set objio_options(filename) $objio_options(FileName)
-	set oldcd [pwd]
+	set objio_options(oldcd) [pwd]
 	cd [file dirname $objio_options(FileName)]
 
 	set objio_options(Cancel) 0
@@ -202,16 +205,15 @@ proc objio_import { } {
 	    -r $objio_options(RationalStyle)
 
 	if { $ay_error < 2 } {
-	    ayError 4 "importOBJ" "Done importing scene from:"
-	    ayError 4 "importOBJ" "$objio_options(FileName)"
+	    ayError 4 "importOBJ" \
+		"Done importing from: $objio_options(FileName)"
 	} else {
-	    ayError 2 "importOBJ"\
-		    "There were errors while importing scene from:"
-	    ayError 2 "importOBJ" "$objio_options(FileName)"
+	    ayError 2 "importOBJ" \
+		"Failed importing from: $objio_options(FileName)"
 	}
 
 	if { ! $ayprefs(ImportSetsCD) } {
-	    cd $oldcd
+	    cd $objio_options(oldcd)
 	}
 
 	goTop
@@ -229,7 +231,7 @@ proc objio_import { } {
 	restoreFocus $objio_options(oldfocus)
 	destroy .objI
     }
-    # button
+    # ok button
 
     button $f.bca -text "Cancel" -width 5 -command "\
                 global objio_options;\
