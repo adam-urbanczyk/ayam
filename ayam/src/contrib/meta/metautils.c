@@ -34,22 +34,37 @@ meta_calcall(double x1, double y1, double z1, meta_world *w)
  double effect, dist, radius, tmpeffect;
  meta_blob *tmp;
  ay_object *o;
+#if 0
+ ay_nurbcurve_object *nc;
+ int i, j;
+ double *cv, v[3];
+#endif
  double x, y, z;
  Tcl_Obj *to = NULL;
  Tcl_Interp *interp = ay_safeinterp;
- static Tcl_Obj *tox = NULL, *toy = NULL, *toz = NULL, *tof = NULL;
+ static Tcl_Obj *tox = NULL, *toy = NULL, *toz = NULL;
 
 #ifdef AYNOSAFEINTERP
- interp = ay_interp;
+  interp = ay_interp;
 #endif
 
- if(!tox)
-   {
-     tox = Tcl_NewStringObj("x", -1);
-     toy = Tcl_NewStringObj("y", -1);
-     toz = Tcl_NewStringObj("z", -1);
-     tof = Tcl_NewStringObj("f", -1);
-   }
+  if(!tox)
+    {
+      tox = Tcl_ObjSetVar2(interp, Tcl_NewStringObj("x", 1), NULL,
+			   Tcl_NewDoubleObj(0.0),
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);;
+      Tcl_IncrRefCount(tox);
+
+      toy = Tcl_ObjSetVar2(interp, Tcl_NewStringObj("y", 1), NULL,
+			   Tcl_NewDoubleObj(0.0),
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);;
+      Tcl_IncrRefCount(toy);
+
+      toz = Tcl_ObjSetVar2(interp, Tcl_NewStringObj("z", 1), NULL,
+			   Tcl_NewDoubleObj(0.0),
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);;
+      Tcl_IncrRefCount(toz);
+    }
 
   effect = 0;
   dist = 0;
@@ -160,6 +175,7 @@ meta_calcall(double x1, double y1, double z1, meta_world *w)
 		}
 	    } /* if torus */
 
+
           /* a heart */
 	  if (tmp->formula == META_HEART)
 	    {
@@ -185,31 +201,18 @@ meta_calcall(double x1, double y1, double z1, meta_world *w)
 	  /* a custom formula */
 	  if (tmp->formula == META_CUSTOM)
 	    {
-
-	      to = Tcl_NewDoubleObj(x - tmp->cp.x);
-	      Tcl_ObjSetVar2(interp, tox, NULL, to, TCL_LEAVE_ERR_MSG |
-			     TCL_GLOBAL_ONLY);
-
-	      to = Tcl_NewDoubleObj(y - tmp->cp.y);
-	      Tcl_ObjSetVar2(interp, toy, NULL, to, TCL_LEAVE_ERR_MSG |
-			     TCL_GLOBAL_ONLY);
-
-	      to = Tcl_NewDoubleObj(z - tmp->cp.z);
-	      Tcl_ObjSetVar2(interp, toz, NULL, to, TCL_LEAVE_ERR_MSG |
-			     TCL_GLOBAL_ONLY);
-
-	      to = Tcl_NewDoubleObj(0.0);
-	      Tcl_ObjSetVar2(interp, tof, NULL, to, TCL_LEAVE_ERR_MSG |
-			     TCL_GLOBAL_ONLY);
+	      tox->internalRep.doubleValue = x - tmp->cp.x;
+	      toy->internalRep.doubleValue = y - tmp->cp.y;
+	      toz->internalRep.doubleValue = z - tmp->cp.z;
 
 	      if(tmp->expression)
 		{
 		  Tcl_GlobalEvalObj(interp, tmp->expression);
 		}
 
-	      to = Tcl_ObjGetVar2(interp, tof, NULL, TCL_LEAVE_ERR_MSG |
-				  TCL_GLOBAL_ONLY);
-	      Tcl_GetDoubleFromObj(interp, to, &tmpeffect);
+	      to = Tcl_GetObjResult(interp);
+
+	      tmpeffect = to->internalRep.doubleValue;
 
 	      if(tmp->negativ)
 		{
@@ -221,6 +224,39 @@ meta_calcall(double x1, double y1, double z1, meta_world *w)
 		}
 	    } /* if custom */
 	} /* if is meta component */
+#if 0
+      if(o->type == AY_IDNCURVE)
+	{
+	  nc = (ay_nurbcurve_object *)o->refine;
+	  cv = nc->controlv;
+	  j = 0;
+	  tmpeffect = 0;
+	  y = 2000;
+	  for(i = 0; i < nc->length; i++)
+	    {
+	      v[0] = x1-cv[0];
+	      v[1] = y1-cv[1];
+	      v[2] = z1-cv[2];
+	      x = AY_V3LEN(v);
+	      if(x > 0.0 && x < 1)
+		{
+		  if(y > x)
+		    y = x;
+		  j++;
+		}
+	      cv += 4;
+	    }
+
+
+	  tmpeffect += 1.0/y;
+
+	  /*
+	  if(j > 0)
+	    tmpeffect /= j;
+	  */
+	  effect += tmpeffect;
+	}
+#endif
       o = o->next;
     } /* while */
 
@@ -625,6 +661,7 @@ meta_calceffect (meta_world * w)
  int code;
  ay_object *o;
  meta_gridcell cube;
+ double *t;
 
   o = w->o;
 
@@ -683,13 +720,25 @@ meta_calceffect (meta_world * w)
 
 	      if (w->currentnumpoly+150 >= (w->maxpoly))
 	    	{
-		  if (! (w->vertex = realloc (w->vertex,
+		  if (! (t = realloc (w->vertex,
 			 sizeof (double) * 3 * 3 * (w->maxpoly + 10000 + 20))))
-		    return AY_EOMEM;
+		    {
+		      return AY_EOMEM;
+		    }
+		  else
+		    {
+		      w->vertex = t;
+		    }
 
-		  if (! (w->nvertex = realloc (w->nvertex,
+		  if (! (t = realloc (w->nvertex,
 			 sizeof (double) * 3 * 3 * (w->maxpoly + 10000 + 20))))
-		    return AY_EOMEM;
+		    {
+		      return AY_EOMEM;
+		    }
+		  else
+		    {
+		      w->nvertex = t;
+		    }
 
 		  w->maxpoly += 10000;
 		}
