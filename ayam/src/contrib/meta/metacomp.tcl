@@ -34,6 +34,7 @@ proc metacomp_getAttr { } {
     set ay(bok) $ay(appb)
     set f $MetaCompAttr(arr)
 
+    addVSpace $w s1 2
     addMenu $w $f Formula {MetaBalls Torus Cube Heart Custom}
     addCheck $w $f Negative
 
@@ -60,8 +61,8 @@ proc metacomp_getAttr { } {
     if { $MetaCompAttrData(Formula) == 4 } {
 	addText $w t1 "Expression:"
 
-	pack [text $w.tScript -undo 1 -width 40 -height 6]
 	set t $w.tScript
+	pack [text $t -undo 1 -width 40 -height 6]
 	if { $ay(ws) == "Aqua" } {
 	    $t conf -relief sunken -bd 2
 	}
@@ -80,6 +81,7 @@ proc metacomp_getAttr { } {
 	if { $MetaCompAttrData(Expression) != "" } {
 	    $t delete "end - 1 chars"
 	}
+
 	# create popup menu
 	set m [menu $t.popup -tearoff 0]
 	$m add command -label "Clear All" -command "$t delete 1.0 end"
