@@ -14,6 +14,7 @@
 #  transfer preference settings to C-context
 proc prefs_set {} {
     global env ay ayprefs tcl_precision
+
     set tcl_precision $ayprefs(TclPrecision)
     set env(SHADERS) [shader_unglobShaderPaths $ayprefs(Shaders)]
     setPrefs
@@ -77,12 +78,13 @@ proc prefs_rsnb { nb page } {
 # prefs_open:
 #  open the preferences editor
 proc prefs_open {} {
-    global ay ayprefs ayprefse tcl_platform aymainshortcuts
+    global ay ayprefs ayprefse ayprefss tcl_platform aymainshortcuts
 
-    # copy array ayprefs to ayprefse (we operate on this second array)
-    set avnames [array names ayprefs]
-    foreach j $avnames {
-	set ayprefse($j) $ayprefs($j)
+    # copy array ayprefs to ayprefse (we operate on this array)
+    # and to ayprefss (for potential reversal operation)
+    foreach avn [array names ayprefs] {
+	set ayprefse($avn) $ayprefs($avn)
+	set ayprefss($avn) $ayprefs($avn)
     }
 
     winAutoFocusOff
@@ -117,11 +119,7 @@ proc prefs_open {} {
     # bind to close button of window decoration
     wm protocol $w WM_DELETE_WINDOW {
 	global ay ayprefs ayprefse
-	set avnames [array names ayprefs]
-	foreach j $avnames {
-	    # unset removes all traces
-	    unset ayprefse($j)
-	}
+	prefs_unset
 	restoreFocus $ay(prefsFocus)
 	destroy .prefsw
 	winAutoFocusOn
@@ -341,67 +339,35 @@ proc prefs_open {} {
     # controlling buttons
     set f [frame $w.f3]
     button $f.bok -text "Ok" -width 8 -command {
-	global ay ayprefs ayprefse
-
+	global ay
 	prefs_warnNeedRestart 0
-
-	winAutoFocusOn
-
-	# copy array ayprefse to ayprefs
-	set avnames [array names ayprefs]
-	foreach j $avnames {
-	    set ayprefs($j) $ayprefse($j)
-	    # unset removes all traces
-	    unset ayprefse($j)
-	}
+	prefs_commit
+	prefs_unset
 	prefs_set
 	rV
 	restoreFocus $ay(prefsFocus)
 	destroy .prefsw
-
 	prefs_warnNeedRestart 1
+	winAutoFocusOn
     }
 
     button $f.bap -text "Apply" -width 8 -command {
-	global ay ayprefs ayprefse
-
 	prefs_warnNeedRestart 0
-
-	# copy array ayprefse to ayprefs
-	set avnames [array names ayprefs]
-	foreach j $avnames {
-	    set ayprefs($j) $ayprefse($j)
-	}
-
+	prefs_commit
 	prefs_warnNeedRestart 1
-
 	prefs_set
 	rV
     }
 
     button $f.bdef -text "Revert" -width 8 -command {
-	global ay ayprefse ayprefsdefaults
-	set avnames [array names ayprefsdefaults]
-	foreach j $avnames {
-	    set ayprefse($j) $ayprefsdefaults($j)
-	}
-	# update color entries
-	update
-	set w .prefsw.f2.nb.fDrawing
-	foreach c {Background Object Selection Grid Tag Shade Light} {
-	    updateColorFromE $w ayprefse $c $w.f${c}.b1
-	}
+	prefs_revert
 	prefs_set
 	rV
     }
 
     button $f.bca -text "Cancel" -width 8 -command {
-	global ay ayprefs ayprefse
-	set avnames [array names ayprefs]
-	foreach j $avnames {
-	    # unset removes all traces
-	    unset ayprefse($j)
-	}
+	global ay
+	prefs_unset
 	restoreFocus $ay(prefsFocus)
 	destroy .prefsw
 	winAutoFocusOn
@@ -431,19 +397,7 @@ proc prefs_open {} {
 
     # establish "Help"-binding
     global aymainshortcuts
-    bind $w <[repctrl $aymainshortcuts(Help)]> {
-	global ay ayprefs
-	set tag pref[string tolower $ay(prefssection)]
-	if { [string first "file://" $ayprefs(Docs)] != -1 } {
-	    set lslash [string last "/" $ayprefs(Docs)]
-	    set url [string range\
-			 $ayprefs(Docs) 0 $lslash]/ayam-2.html\#$tag
-	    browser_urlOpen $url
-	} else {
-	    browser_urlOpen $ayprefs(Docs)ayam-2.html\#$tag
-	}
-    }
-    # bind
+    bind $w <[repctrl $aymainshortcuts(Help)]> prefs_help
 
     # establish "Zap"-binding
     bind $w <[repctrl $aymainshortcuts(Zap)]> zap
@@ -845,3 +799,61 @@ proc prefs_nextpage { nb dir } {
 }
 # prefs_nextpage
 
+
+# prefs_help:
+#  call browser with help for current help section
+proc prefs_help { } {
+    global ay ayprefs
+
+    set tag pref[string tolower $ay(prefssection)]
+    if { [string first "file://" $ayprefs(Docs)] != -1 } {
+	set lslash [string last "/" $ayprefs(Docs)]
+	set url [string range $ayprefs(Docs) 0 $lslash]/ayam-2.html\#$tag
+	browser_urlOpen $url
+    } else {
+	browser_urlOpen $ayprefs(Docs)/ayam-2.html\#$tag
+    }
+ return;
+}
+# prefs_help
+
+
+# prefs_unset:
+#  helper to remove all traces by calling unset on all entries in ayprefse
+proc prefs_unset { } {
+    global ayprefs ayprefse
+    foreach avn [array names ayprefs] {
+	unset ayprefse($avn)
+    }
+ return;
+}
+# prefs_unset
+
+
+# prefs_commit:
+#  helper to commit changes (copy array ayprefse to ayprefs)
+proc prefs_commit { } {
+    global ayprefs ayprefse
+    foreach avn [array names ayprefs] {
+	set ayprefs($avn) $ayprefse($avn)
+    }
+ return;
+}
+# prefs_commit
+
+# prefs_revert:
+#  helper to undo all current changes
+proc prefs_revert { } {
+    global ay ayprefse ayprefss
+    foreach avn [array names ayprefss] {
+	set ayprefse($avn) $ayprefss($avn)
+    }
+    # update color entries
+    update
+    set w .prefsw.f2.nb.fDrawing
+    foreach c {Background Object Selection Grid Tag Shade Light} {
+	updateColorFromE $w ayprefse $c $w.f${c}.b1
+    }
+ return;
+}
+# prefs_revert

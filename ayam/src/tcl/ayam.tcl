@@ -2163,14 +2163,6 @@ if { [info exists tk_mac_OpenDocuments] } {
     eval [subst "::tk::mac::OpenDocument $tk_mac_OpenDocuments"]
 }
 
-# save preference settings for use with the "Def."-Button in the
-# preferences dialog
-set prefnames [array names ayprefs]
-foreach name $prefnames {
-    set ayprefsdefaults($name) $ayprefs($name)
-}
-catch {unset prefnames name}
-
 # build most recently used files menu entries
 io_mruUMenu
 
