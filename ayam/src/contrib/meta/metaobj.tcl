@@ -23,6 +23,7 @@ proc metaobj_getAttr { } {
 
     set ay(bok) $ay(appb)
 
+    addVSpace $w s1 2
     addParam $w MetaObjAttrData NumSamples {20 40 60 80 120 140 160 180 200}
     addParam $w MetaObjAttrData IsoLevel {0.1 0.6 1.0}
     addCheck $w MetaObjAttrData "ShowWorld"
@@ -40,6 +41,7 @@ proc metaobj_getAttr { } {
     $ay(pca) itemconfigure 1 -window $w
     plb_resize
 
+ return;
 }
 # metaobj_getAttr
 
@@ -51,7 +53,6 @@ array set MetaObjAttr {
 }
 
 array set MetaObjAttrData {
-    Formula  0
     Adaptive 0
 }
 
