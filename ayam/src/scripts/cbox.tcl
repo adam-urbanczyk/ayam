@@ -13,6 +13,7 @@ if { ![info exists ::CBoxAttrData] } {
 }
 if { ![info exists ::CBoxAttrGUI] } {
     set w [addPropertyGUI CBoxAttr "" ""]
+    addVSpace $w s1 2
     addParam $w CBoxAttrData Width
     addParam $w CBoxAttrData Depth
     addParam $w CBoxAttrData Height
