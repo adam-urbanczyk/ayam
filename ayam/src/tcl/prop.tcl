@@ -389,6 +389,29 @@ proc _pasteToText { t } {
 # _pasteToText
 
 
+# _loadToText
+# load a text file to the designated text widget
+proc _loadToText { t {types ""} } {
+
+    lappend types  {"All files" *}
+    set newfilename [tk_getOpenFile -filetypes $types -parent .\
+			 -title "Select file to load:"]
+    if { $newfilename != "" } {
+	set tfile [open $newfilename r]
+	if { $tfile != "" } {
+	    set nt [read $tfile]
+	    if { $nt != "" } {
+		$t delete 1.0 end
+		$t insert end $nt
+	    }
+	}
+    }
+
+ return;
+}
+# _loadToText
+
+
 # _toggleMultiline
 # toggle tag add/edit dialogs multiline feature
 proc _toggleMultiline { t } {
@@ -507,21 +530,8 @@ pack $f -in $w -side top -fill both -expand yes
 set m [menu $f.t.popup -tearoff 0]
 $m add command -label "Clear" -command "$f.t delete 1.0 end"
 $m add command -label "Paste (Replace)" -command "_pasteToText $f.t"
+$m add command -label "Load from file" -command "_loadToText $f.t"
 
-$m add command -label "Load from file" -command {
-    set newfilename [tk_getOpenFile -parent .\
-		-title "Select file to load:"]
-    if { $newfilename != "" } {
-	set scfile [open $newfilename r]
-	if { $scfile != "" } {
-	    set nt [read $scfile]
-	    if { $nt != "" } {
-		.addTag.fm.t delete 1.0 end
-		.addTag.fm.t insert end $nt
-	    }
-	}
-    }
-}
 $m add separator
 $m add command -label "Toggle Multiline   <$ayviewshortcuts(RotMod)-Down> / <$ayviewshortcuts(RotMod)-Up>" -command "_toggleMultiline $f.t"
 

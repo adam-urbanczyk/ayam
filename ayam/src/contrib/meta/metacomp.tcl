@@ -84,32 +84,11 @@ proc metacomp_getAttr { } {
 	set m [menu $t.popup -tearoff 0]
 	$m add command -label "Clear All" -command "$t delete 1.0 end"
 	$m add command -label "Paste (Replace)" -command "_pasteToText $t"
-
-	$m add command -label "Load from file" -command {
-	    global ay ScriptAttr
-	    set types {{"Script Files" {".tcl" ".js" ".lua"}} {"All files" *}}
-	    set newfilename ""
-	    set newfilename [tk_getOpenFile -filetypes $types -parent .\
-				 -title "Select file to load:"]
-	    if { $newfilename != "" } {
-		set scfile ""
-		set scfile [open $newfilename r]
-		if { $scfile != "" } {
-		    set nt [read $scfile]
-		    if { $nt != "" } {
-			$ay(pca).${ScriptAttr(w)}.tScript delete 1.0 end
-			$ay(pca).${ScriptAttr(w)}.tScript insert end $nt
-		    }
-		}
-	    }
-	}
+	$m add command -label "Load from file" -command "_loadToText $t"
 	$m add separator
-	set i 0
 	foreach expression $MetaCompAttrData(Expressions) {
 	    $m add command -label [lindex $expression 0] -command \
 	      "$t delete 1.0 end; $t insert end \{[lindex $expression 1]\}"
-
-	    incr i
 	}
 
 	# bind popup menu
