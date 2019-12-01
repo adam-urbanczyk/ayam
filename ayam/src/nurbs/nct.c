@@ -6946,16 +6946,12 @@ ay_nct_coarsen(ay_nurbcurve_object *curve, ay_point *selp)
   if(curve->type == AY_CTPERIODIC)
     {
       if(curve->length <= ((curve->order-1)*2))
-	{
-	  return AY_OK;
-	}
+	return AY_OK;
     }
   else
     {
       if(curve->length <= curve->order)
-	{
-	  return AY_OK;
-	}
+	return AY_OK;
     }
 
   smin = curve->length;
@@ -7027,6 +7023,7 @@ ay_nct_coarsen(ay_nurbcurve_object *curve, ay_point *selp)
 				   &newknotv);
       if(ay_status)
 	{
+	  free(newcontrolv);
 	  ay_error(AY_ERROR, fname, "Could not coarsen knots.");
 	  return ay_status;
 	}
