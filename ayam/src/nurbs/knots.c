@@ -1232,7 +1232,7 @@ ay_knots_chordparam(double *Q, int Qlen, int stride, double **U)
     {
       t += lens[j]/totallen;
       vk[i] = t;
-
+      /*printf("%d: %lg (diff %lg)\n",i,vk[i],vk[i]-vk[i-1]);*/
       j++;
     }
   vk[Qlen-1] = 1.0;
@@ -1842,7 +1842,7 @@ ay_knots_insert(unsigned int index, int order, int length, double **U)
  * \param[in] nc NURBS curve to check
  * \param[in] eps maximum allowed distance for the match
  * \param[in,out] u pointer to knot value to check, but also pointer where
- *  to store the matching knots address (will only be written to in case
+ *  to store the matching knots value (will only be written to in case
  *  of a match)
  *
  */
