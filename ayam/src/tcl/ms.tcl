@@ -163,7 +163,8 @@ ms_set en ayprefse_AddExtensions "Automatically add file name extensions?"
 ms_set en ayprefse_BakOnReplace "Make backup copies of loaded scene files?"
 ms_set en ayprefse_LoadEnv "Load environment on startup?"
 ms_set en ayprefse_NewLoadsEnv "Load environment on File/New?"
-ms_set en ayprefse_EnvFile "Path and name of the environment."
+ms_set en ayprefse_EnvFile "Path and name of the environment\
+\n(created by menu \"Special/Save Environment\")."
 ms_set en ayprefse_Scripts "A list of Tcls scripts to be executed on startup.\
 \nChanges will take effect after restart of Ayam!"
 ms_set en ayprefse_Plugins "A list of paths where plugins reside."
@@ -396,7 +397,8 @@ ms_set de ayprefse_LoadEnv "Soll die Arbeitsumgebung beim Start geladen\
 werden?"
 ms_set de ayprefse_NewLoadsEnv "Soll die Arbeitsumgebung beim Erstellen\
 einer neuen Szene neu geladen werden?"
-ms_set de ayprefse_EnvFile "Vollständiger Dateiname der Arbeitsumgebung."
+ms_set de ayprefse_EnvFile "Vollständiger Dateiname der Arbeitsumgebung\
+\n(erzeugt via Menü \"Special/Save Environment\")."
 ms_set de ayprefse_Scripts "Eine Liste von Skripten, die beim Starten\
 ausgeführt werden sollen.\
 \nÄnderungen werden erst nach Neustart von Ayam wirksam!"
@@ -653,7 +655,8 @@ ms_set fr ayprefse_AutoSavePrefs "Sauvegarder les paramètres en quittant?"
 ms_set fr ayprefse_LoadEnv "Charger l'environnement au démarrage?"
 ms_set fr ayprefse_NewLoadsEnv "Charger l'environnement lors de\
 l'ouverture/la création d'un fichier?"
-ms_set fr ayprefse_EnvFile "Chemin et nom de l'environnement."
+ms_set fr ayprefse_EnvFile "Chemin et nom de l'environnement\
+\n(créé par menu \"Special/Save Environment\")."
 ms_set fr ayprefse_Scripts "Liste de scripts TCL à exécuter au démarrage.\
 \nLe changement prendra effet après le redémarrage d'Ayam!"
 ms_set fr ayprefse_Plugins "Liste de chemins où se trouvent les plugins."
