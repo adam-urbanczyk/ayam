@@ -1,5 +1,5 @@
-[17. Nov 2019] Tip:
-===================
+[1. Dec 2019] Tip:
+==================
 Bug Fixes:
 o NURBSphere objects can not be trimmed (SF 587)
 o repeated toggling of advanced search options (SF 588)
@@ -27,6 +27,7 @@ o fixed fetching of rational points from NCircle and Script objects
 o the drag zoom view action now keeps the mark intact
 o the collapse/explode tools now work with arbitrary object types and
   change the point positions
+o coarsen operation on NURBS curves now supports a selected region
 
 GUI:
 o added intermediate quick parameter GUIs to all modelling actions that
@@ -38,6 +39,9 @@ o added options to set the applications current directory by import or
   export operations ("ImportSetsCD", "ExportSetsCD")
 o improved Material property GUI now presenting available registered
   materials in a drop down menu
+o "Revert" in preferences editor now resets to state before the editor
+  opened (and not to state after program startup)
+o inserting scenes now keeps the current level in the tree view
 
 Scripts/Scripting Interface:
 o added script "link.tcl" to manually control updates of object hierarchy
@@ -74,6 +78,10 @@ Import/Export:
 o RIB export of RiDisplay tags now omits the leading "+" from the first
   exported display statement
 o imp initial filename for RIBs containing just the selected objects
+
+Plugins:
+o MetaObj custom components are now much faster and their UI element is
+  now a resizable multiline text widget (like that from the Script object)
 
 
 [26. Jan 2019] Ayam 1.26:
