@@ -9,7 +9,7 @@
 
 # browser.tcl - invoke a HTML browser (code taken from "The Tcl'ers Wiki")
 
-proc browser_findExecutable {progname varname} {
+proc findExecutable {progname varname} {
     upvar 1 $varname result
     set progs [auto_execok $progname]
     if {[llength $progs]} {
@@ -17,9 +17,9 @@ proc browser_findExecutable {progname varname} {
     }
  return [llength $progs]
 }
-# browser_findExecutable
+# findExecutable
 
-proc browser_urlOpen {url} {
+proc openUrl {url} {
     global env tcl_platform
 
     ayError 4 "Help" "Launching browser, please wait..."
@@ -40,17 +40,17 @@ proc browser_urlOpen {url} {
 		 ([auto_execok $env(BROWSER)] == "") } {
 		set browser ""
 		expr {
-		    [browser_findExecutable $mozilla browser] ||
-		    [browser_findExecutable firefox browser] ||
-		    [browser_findExecutable chromium browser] ||
-		    [browser_findExecutable chromium-browser browser] ||
-		    [browser_findExecutable epiphany browser] ||
-		    [browser_findExecutable mozilla browser] ||
-		    [browser_findExecutable galeon browser] ||
-		    [browser_findExecutable konqueror browser] ||
-		    [browser_findExecutable links browser] ||
-		    [browser_findExecutable lynx browser] ||
-		    [browser_findExecutable iexplorer browser]
+		    [findExecutable $mozilla browser] ||
+		    [findExecutable firefox browser] ||
+		    [findExecutable chromium browser] ||
+		    [findExecutable chromium-browser browser] ||
+		    [findExecutable epiphany browser] ||
+		    [findExecutable mozilla browser] ||
+		    [findExecutable galeon browser] ||
+		    [findExecutable konqueror browser] ||
+		    [findExecutable links browser] ||
+		    [findExecutable lynx browser] ||
+		    [findExecutable iexplorer browser]
 		}
 	    } else {
 		set browser $env(BROWSER)
@@ -104,7 +104,7 @@ proc browser_urlOpen {url} {
 
  return;
 }
-# browser_urlOpen
+# openUrl
 
 
 proc concatUrls {u1 u2} {
@@ -114,8 +114,7 @@ proc concatUrls {u1 u2} {
     }
 
     set ul1 [string tolower ${u1}]
-    if { ([string first ".html" ${ul1} end-5] != -1) ||
-	 ([string first ".htm" ${ul1} end-4] != -1) } {
+    if { [string match "*.html" ${ul1}] || [string match "*.htm" ${ul1}] } {
 	# u1 ends with .html/.htm
 	return [string range ${u1} 0 [string last "/" ${u1}]]${u2}
     }
@@ -135,7 +134,7 @@ proc help { {command ""} } {
 
     set lcommand [string tolower $command]
 
-    browser_urlOpen [concatUrls ${ayprefs(Docs)} ayam-6.html\#sc${lcommand}]
+    openUrl [concatUrls ${ayprefs(Docs)} ayam-6.html\#sc${lcommand}]
 
  return;
 }

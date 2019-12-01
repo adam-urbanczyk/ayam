@@ -1175,7 +1175,7 @@ set ay(helpmenu) $m
 $m add command -label "Help" -command {
     after idle {
 	global ayprefs
-	browser_urlOpen $ayprefs(Docs)
+	openUrl $ayprefs(Docs)
     }
 } -underline 0
 
@@ -1191,8 +1191,7 @@ $m add command -label "Help on object" -command {
 	    }
 	    getType type
 	    set type [string tolower $type]
-	    browser_urlOpen \
-		[concatUrls ${ayprefs(Docs)} ayam-4.html\#${type}obj]
+	    openUrl [concatUrls ${ayprefs(Docs)} ayam-4.html\#${type}obj]
 	}
     }
 } -underline 8
@@ -1219,8 +1218,7 @@ $m add command -label "Help on property" -command {
 
 	    set type [$lb get $index]
 	    set type [string tolower $type]
-	    browser_urlOpen \
-		[concatUrls ${ayprefs(Docs)} ayam-4.html\#${type}prop]
+	    openUrl [concatUrls ${ayprefs(Docs)} ayam-4.html\#${type}prop]
 	}
     }
 } -underline 8

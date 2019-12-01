@@ -486,39 +486,9 @@ bind $f <ButtonPress-$aymainshortcuts(CMButton)>\
 if { $AYWITHAQUA && (! ([winfo toplevel $w] != $w)) } {
     set m [menu $mb.help -tearoff 0]
     $mb add cascade -label "Help" -menu $m
-    $m add command -label "Help" -command {
-	after idle {
-	    global ayprefs
-	    browser_urlOpen $ayprefs(Docs)
-	}
-    }
-
-    $m add command -label "Help on object" -command {
-	after idle { catch {
-	    global ayprefs
-	    set selected ""
-	    getSel selected
-	    if { $selected == "" } {
-		ayError 2 "Help on object" "Please select an object!"
-		return;
-	    }
-	    getType type
-	    set type [string tolower $type]
-	    if { [string first "file://" $ayprefs(Docs)] != -1 } {
-		set lslash [string last "/" $ayprefs(Docs)]
-		set url [string range \
-			     $ayprefs(Docs) 0 $lslash]/ayam-4.html\#${type}obj
-		browser_urlOpen $url
-	    } else {
-		browser_urlOpen $ayprefs(Docs)ayam-4.html\#${type}obj
-	    }
-	}
-	# catch
-	}
-	# after
-    }
-    # -command
-
+    $m add command -label "Help" -command "\$ay(helpmenu) invoke 0"
+    $m add command -label "Help on object" \
+	-command "\$ay(helpmenu) invoke 1"\
     $m add command -label "Show Shortcuts" -command "shortcut_show"
     $m add command -label "About" -command "aboutAyam"
     $m add checkbutton -label "Show Tooltips" -variable ayprefs(showtt)

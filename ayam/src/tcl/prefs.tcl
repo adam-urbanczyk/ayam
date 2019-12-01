@@ -166,7 +166,7 @@ proc prefs_open {} {
     addCheckB $fw ayprefse AddExtensions [ms ayprefse_AddExtensions]
     #addCheckB $fw ayprefse LoadEnv [ms ayprefse_LoadEnv]
     #addCheckB $fw ayprefse NewLoadsEnv [ms ayprefse_NewLoadsEnv]
-    addFileB $fw ayprefse EnvFile [ms ayprefse_EnvFile]
+    addFileTB $fw ayprefse EnvFile {{"Ayam Scene" ".ay"}} [ms ayprefse_EnvFile]
     set h [ms ayprefse_Scripts]
     append h $s
     addMFileB $fw ayprefse Scripts $h
@@ -333,7 +333,6 @@ proc prefs_open {} {
 
     # end of PrefsGUIs
 
-    # select last selected preference section
     pack $nb -fill both -expand yes
 
     # controlling buttons
@@ -397,7 +396,10 @@ proc prefs_open {} {
 
     # establish "Help"-binding
     global aymainshortcuts
-    bind $w <[repctrl $aymainshortcuts(Help)]> prefs_help
+    bind $w <[repctrl $aymainshortcuts(Help)]> {
+      browser_urlOpen [concatUrls \
+	 ${ayprefs(Docs)} ayam-2.html\#pref[string tolower $ay(prefssection)]]
+    }
 
     # establish "Zap"-binding
     bind $w <[repctrl $aymainshortcuts(Zap)]> zap
@@ -800,24 +802,6 @@ proc prefs_nextpage { nb dir } {
 # prefs_nextpage
 
 
-# prefs_help:
-#  call browser with help for current help section
-proc prefs_help { } {
-    global ay ayprefs
-
-    set tag pref[string tolower $ay(prefssection)]
-    if { [string first "file://" $ayprefs(Docs)] != -1 } {
-	set lslash [string last "/" $ayprefs(Docs)]
-	set url [string range $ayprefs(Docs) 0 $lslash]/ayam-2.html\#$tag
-	browser_urlOpen $url
-    } else {
-	browser_urlOpen $ayprefs(Docs)/ayam-2.html\#$tag
-    }
- return;
-}
-# prefs_help
-
-
 # prefs_unset:
 #  helper to remove all traces by calling unset on all entries in ayprefse
 proc prefs_unset { } {
@@ -840,6 +824,7 @@ proc prefs_commit { } {
  return;
 }
 # prefs_commit
+
 
 # prefs_revert:
 #  helper to undo all current changes
