@@ -185,8 +185,7 @@ $m add command -label "Remove Property" -command "plb_addremprop 1"
 $m add separator
 $m add command -label "Help on Property" -command {
     global ay
-    set hm $ay(helpmenu)
-    $hm invoke 2
+    $ay(helpmenu) invoke 2
 }
 
 if { $ay(ws) == "Aqua" && $ayprefs(SwapMB) } {

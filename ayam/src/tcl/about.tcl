@@ -66,9 +66,9 @@ $w.ftext.text tag configure httag1 -relief raised -borderwidth 1
 $w.ftext.text tag configure httag2 -relief raised -borderwidth 1
 $w.ftext.text tag configure httag3 -relief raised -borderwidth 1
 $w.ftext.text tag bind httag1 <ButtonPress-1> {
-    browser_urlOpen "http://ayam.sourceforge.net/"}
+    openUrl "http://ayam.sourceforge.net/"}
 $w.ftext.text tag bind httag2 <ButtonPress-1> {
-    browser_urlOpen "http://www.marsrakete.de/~randi/ayam/"}
+    openUrl "http://www.marsrakete.de/~randi/ayam/"}
 $w.ftext.text insert end \
 "
 Ayam: $ay(ay_version) ($wrappedorshared) on: $platform/$tcl_platform(os)($tcl_platform(osVersion))
@@ -90,7 +90,7 @@ Show Extensions: "
 
 set ay(aboutCBIndex) [$w.ftext.text index end]
 if { ! [winfo exists $w.ftext.text.extb] } {
-checkbutton $w.ftext.text.extb -variable ay(aboutShowsExt) -pady 0
+    checkbutton $w.ftext.text.extb -variable ay(aboutShowsExt) -pady 0
 }
 if { $ay(ws) == "Win32" } {
     $w.ftext.text.extb conf -bg [$w.ftext.text cget -bg]
