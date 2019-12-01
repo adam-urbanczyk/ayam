@@ -2153,22 +2153,24 @@ proc actionSplitNC { w } {
 #actionPick:
 # establish object picking bindings
 proc actionPick { w } {
-    global ayprefs ayviewshortcuts
+    global ay ayprefs ayviewshortcuts
 
     viewTitle $w "" "Pick Objects"
     viewSetMAIcon $w ay_Pick_img "Pick Objects"
 
     $w setconf -drawh 0
+    set ay(b1d) 0
 
     bind $w <ButtonPress-1> {
 	set oldx %x
 	set oldy %y
+	set ay(b1d) 1
     }
 
     bind $w <ButtonRelease-1> {
 	%W setconf -rect $oldx $oldy %x %y 0
 
-	if { [winfo exists .reconsider] == 0 } {
+	if { $ay(b1d) && [winfo exists .reconsider] == 0 } {
 	    if { ($oldx == %x) || ($oldy == %y) } {
 		%W processObjSel node %x %y
 		singleObjSel $node
@@ -2176,8 +2178,8 @@ proc actionPick { w } {
 		%W processObjSel node $oldx $oldy %x %y
 		multipleObjSel $node
 	    }
+	    set ay(b1d) 0
 	}
-
 	focus %W
     }
     # bind
@@ -2185,7 +2187,7 @@ proc actionPick { w } {
     bind $w <${ayviewshortcuts(PickMod)}-ButtonRelease-1> {
 	%W setconf -rect $oldx $oldy %x %y 0
 
-	if { [winfo exists .reconsider] == 0} {
+	if { $ay(b1d) && [winfo exists .reconsider] == 0} {
 	    if { ($oldx == %x) || ($oldy == %y) } {
 		%W processObjSel node %x %y
 		addObjSel $node
@@ -2193,6 +2195,7 @@ proc actionPick { w } {
 		%W processObjSel node $oldx $oldy %x %y
 		addMultipleObjSel $node
 	    }
+	    set ay(b1d) 0
 	}
 
 	focus %W
