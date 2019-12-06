@@ -1382,8 +1382,8 @@ proc tipoftheDay { } {
 # tipoftheDay
 
 
-# ayam_loadscript - load a script
-proc ayam_loadscript { file } {
+# _loadScript - load a script file from wrapped executable or file system
+proc _loadScript { file } {
     global AYWRAPPED
     if { $AYWRAPPED == 1 } {
 	if { [string first BWidgets $file ] < 0 } {
@@ -1401,7 +1401,7 @@ proc ayam_loadscript { file } {
 
  return;
 }
-# ayam_loadscript
+# _loadScript
 
 
 # Ayam Startup Sequence:
@@ -1447,11 +1447,11 @@ if { [info exists env(AYNOSPLASH)] } {
 }
 
 # load localization resources
-ayam_loadscript ms
+_loadScript ms
 
 # show splash screen
-ayam_loadscript win
-ayam_loadscript splash
+_loadScript win
+_loadScript splash
 if { $ay(showsplash) == 1 } {
     splash_open
     bind . <1> {
@@ -1489,31 +1489,31 @@ pack .fu -in . -side top
 frame .fu.fMain
 update
 
-ayam_loadscript balloon
+_loadScript balloon
 
 # initialize io procedures
-ayam_loadscript io
+_loadScript io
 
 # load the main menu script
-ayam_loadscript mmenu
+_loadScript mmenu
 
 frame .fu.fMain.fHier
 
 # create the tree widget
 if { $AYWRAPPED == 1 } {
     set env(BWIDGET_LIBRARY) "."
-    ayam_loadscript bwlangrc
-    ayam_loadscript BWidgets/init
-    ayam_loadscript BWidgets/widget
-    ayam_loadscript BWidgets/utils
-    ayam_loadscript BWidgets/scrollw
-    ayam_loadscript BWidgets/dragsite
-    ayam_loadscript BWidgets/dropsite
-    ayam_loadscript BWidgets/tree
-    ayam_loadscript BWidgets/dynhelp
-    ayam_loadscript BWidgets/arrow
-    ayam_loadscript BWidgets/notebook
-    ayam_loadscript tree
+    _loadScript bwlangrc
+    _loadScript BWidgets/init
+    _loadScript BWidgets/widget
+    _loadScript BWidgets/utils
+    _loadScript BWidgets/scrollw
+    _loadScript BWidgets/dragsite
+    _loadScript BWidgets/dropsite
+    _loadScript BWidgets/tree
+    _loadScript BWidgets/dynhelp
+    _loadScript BWidgets/arrow
+    _loadScript BWidgets/notebook
+    _loadScript tree
 } else {
     set scdir [file dirname [info script]]
     if { [file pathtype $scdir] == "relative" } {
@@ -1522,12 +1522,12 @@ if { $AYWRAPPED == 1 } {
 	set bwdir ${scdir}/BWidget-1.2.1
     }
     lappend auto_path $bwdir
-    ayam_loadscript tree
+    _loadScript tree
     catch {unset scdir bwdir}
 }
 
 # load script for object listbox (olb)
-ayam_loadscript olb
+_loadScript olb
 
 tree_open .fu.fMain.fHier
 update
@@ -1552,8 +1552,8 @@ pack .fu.fMain.fHier -in .fu.fMain -side left -expand no
 frame .fl
 
 # create console
-ayam_loadscript widget
-ayam_loadscript console
+_loadScript widget
+_loadScript console
 
 pack .fl -in . -side bottom -fill both
 frame .fl.dummy
@@ -1584,7 +1584,7 @@ if { $tcl_platform(platform) == "windows" } {
     wm deiconify .
     update
 }
-ayam_loadscript pane
+_loadScript pane
 
 pane .fv .fu .fl -orient vertical -margin [list \
        [lindex $ayprefs(PaneMargins) 1] [lindex $ayprefs(PaneMargins) 0]]
@@ -1600,7 +1600,7 @@ if { [winfo exists .fl.con] == 1 } {
 }
 
 # create property listbox (plb) and property GUI (property canvas)
-ayam_loadscript plb
+_loadScript plb
 
 frame .fu.fMain.fProp
 pack .fu.fMain.fProp -in .fu.fMain -side left -expand yes -fill both
@@ -1612,80 +1612,80 @@ pane .fu.fMain.fHier .fu.fMain.fProp -margins [list \
    [lindex $ayprefs(PaneMargins) 3]]
 
 # load "some" external scripts
-ayam_loadscript run
-ayam_loadscript uie
-ayam_loadscript shortcut
-ayam_loadscript icons
-ayam_loadscript prop
-ayam_loadscript acurve
-ayam_loadscript bevel
-ayam_loadscript birail1
-ayam_loadscript birail2
-ayam_loadscript box
-ayam_loadscript bpatch
-ayam_loadscript camera
-ayam_loadscript cap
-ayam_loadscript clone
-ayam_loadscript cone
-ayam_loadscript concatnc
-ayam_loadscript concatnp
-ayam_loadscript cylinder
-ayam_loadscript disk
-ayam_loadscript extrnc
-ayam_loadscript extrnp
-ayam_loadscript extrude
-ayam_loadscript gordon
-ayam_loadscript hyperb
-ayam_loadscript icurve
-ayam_loadscript instance
-ayam_loadscript ipatch
-ayam_loadscript level
-ayam_loadscript light
-ayam_loadscript material
-ayam_loadscript mirror
-ayam_loadscript ncircle
-ayam_loadscript ncurve
-ayam_loadscript npatch
-ayam_loadscript offnc
-ayam_loadscript offnp
-ayam_loadscript pamesh
-ayam_loadscript pomesh
-ayam_loadscript parab
-ayam_loadscript riinc
-ayam_loadscript riproc
-ayam_loadscript revolve
-ayam_loadscript root
-ayam_loadscript script
-ayam_loadscript sdmesh
-ayam_loadscript select
-ayam_loadscript sphere
-ayam_loadscript skin
-ayam_loadscript sweep
-ayam_loadscript swing
-ayam_loadscript text
-ayam_loadscript torus
-ayam_loadscript trim
-ayam_loadscript pclip
-ayam_loadscript control
-ayam_loadscript tmp
-ayam_loadscript render
-ayam_loadscript action
-ayam_loadscript vmenu
-ayam_loadscript view
-ayam_loadscript shader
-ayam_loadscript riattr
-ayam_loadscript riopt
-ayam_loadscript prefs
-ayam_loadscript zap
-ayam_loadscript toolbox
-ayam_loadscript about
-ayam_loadscript browser
-ayam_loadscript ai
-ayam_loadscript prog
-ayam_loadscript objsel
-ayam_loadscript tc
-ayam_loadscript tgui
-ayam_loadscript safe
+_loadScript run
+_loadScript uie
+_loadScript shortcut
+_loadScript icons
+_loadScript prop
+_loadScript acurve
+_loadScript bevel
+_loadScript birail1
+_loadScript birail2
+_loadScript box
+_loadScript bpatch
+_loadScript camera
+_loadScript cap
+_loadScript clone
+_loadScript cone
+_loadScript concatnc
+_loadScript concatnp
+_loadScript cylinder
+_loadScript disk
+_loadScript extrnc
+_loadScript extrnp
+_loadScript extrude
+_loadScript gordon
+_loadScript hyperb
+_loadScript icurve
+_loadScript instance
+_loadScript ipatch
+_loadScript level
+_loadScript light
+_loadScript material
+_loadScript mirror
+_loadScript ncircle
+_loadScript ncurve
+_loadScript npatch
+_loadScript offnc
+_loadScript offnp
+_loadScript pamesh
+_loadScript pomesh
+_loadScript parab
+_loadScript riinc
+_loadScript riproc
+_loadScript revolve
+_loadScript root
+_loadScript script
+_loadScript sdmesh
+_loadScript select
+_loadScript sphere
+_loadScript skin
+_loadScript sweep
+_loadScript swing
+_loadScript text
+_loadScript torus
+_loadScript trim
+_loadScript pclip
+_loadScript control
+_loadScript tmp
+_loadScript render
+_loadScript action
+_loadScript vmenu
+_loadScript view
+_loadScript shader
+_loadScript riattr
+_loadScript riopt
+_loadScript prefs
+_loadScript zap
+_loadScript toolbox
+_loadScript about
+_loadScript browser
+_loadScript ai
+_loadScript prog
+_loadScript objsel
+_loadScript tc
+_loadScript tgui
+_loadScript safe
 
 # initialize the safe interpreter
 if { $::AYNOSAFEINTERP == 0 } {
@@ -2114,14 +2114,13 @@ while { $i < $argc } {
 		    set absfilename [file join [pwd] $filename]
 		}
 	    }
-
+	    set wh "replaceScene"
 	    replaceScene $filename
 	    if { $ay_error < 2 } {
 		set ay(filename) $filename
 		set windowfilename [file tail [file rootname $filename]]
 		wm title . "Ayam - Main - $windowfilename : --"
-		ayError 4 "replaceScene" "Done reading scene from:"
-		ayError 4 "replaceScene" "$filename"
+		ayError 4 $wh "Done reading scene from: $filename"
 		if { [file exists $filename] } {
 		    set dirname [file dirname $filename]
 		    cd $dirname
@@ -2129,20 +2128,18 @@ while { $i < $argc } {
 		}
 		io_mruAdd $absfilename
 	    } else {
-		ayError 2 "replaceScene" "There were errors while loading:"
-		ayError 2 "replaceScene" "$filename"
+		ayError 2 $wh "Failed reading scene from: $filename"
 	    }
 	    set j 1
 	} else {
 	    set ay_error ""
 	    cd $cdir
+	    set wh "insertScene"
 	    insertScene $filename
 	    if { $ay_error < 2 } {
-		ayError 4 "insertScene" "Done inserting scene from:"
-		ayError 4 "insertScene" "$filename"
+		ayError 4 $wh "Done inserting objects from: $filename"
 	    } else {
-		ayError 2 "insertScene" "There were errors while loading:"
-		ayError 2 "insertScene" "$filename"
+		ayError 2 $wh "Failed to insert objects from: $filename"
 	    }
 	    # if
 	}
@@ -2151,7 +2148,7 @@ while { $i < $argc } {
     }
     # if
     incr i
-    catch {unset arg}
+    catch {unset arg wh}
 }
 # while
 grab release .fu
