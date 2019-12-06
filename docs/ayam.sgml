@@ -2564,8 +2564,9 @@ apply all changes,
 
 <item><tt/"Apply"/ to apply the changes, but leave the editor open,
 
-<item><tt/"Revert"/ to reset to the settings that have been loaded on
-program startup (these are not the factory defaults, to get back to
+<item><tt/"Revert"/ to reset everything to the state before the
+preference editor opened<footnote>Since 1.27.</footnote>
+(these are not the factory defaults, to get back to
 the factory defaults, restart Ayam with the command line option
 <tt/"-failsafe"/ or use the main menu entry
 <tt>"Special/Reset Preferences"</tt>),
@@ -13770,15 +13771,16 @@ will not change anything.
 control points from the first (last) <em/p/ intervals (where <em/p/
 is the degree of the curve).
 
-If there are selected points, only the intervals between the first
-and the last selected point are affected.
-
 For closed curves, the coarsen tool will not remove the last point.
 
 The coarsen tool will also remove knot values from NURBS curves with
 custom knot vectors.
 
-The point selection will be removed from the processed objects.
+If there are selected points, only the intervals between the first
+and the last selected point are affected.
+
+The point selection will be modified so that the tool may be applied
+multiple times.<footnote>Since 1.27.</footnote>
 
 The coarsen tool can be conveniently invoked from view windows using the
 keyboard shortcut <tt/&lt;Shift-#&gt;/.<footnote>Since 1.26.</footnote>
