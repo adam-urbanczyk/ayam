@@ -887,11 +887,14 @@ proc viewUnBind { w } {
 ##############################
 # viewCloseAll:
 proc viewCloseAll { } {
-  global ay
+    global ay
 
-  foreach view $ay(views) {
-      viewClose $view
-  }
+    # must copy the list because viewClose will modify ay(views)
+    set views $ay(views)
+
+    foreach view $views {
+	viewClose $view
+    }
 
  return;
 }
@@ -930,7 +933,7 @@ proc viewClose { w } {
     catch {$ay(currentView) mc}
 
     # finally delete the window
-    destroy ${w}.f3D.togl
+    #destroy ${w}.f3D.togl
     destroy $w
 
     # clear undo buffer
