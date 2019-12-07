@@ -1094,7 +1094,8 @@ ay_torus_convertcb(ay_object *o, int in_place)
 	{
 	  t = t->next;
 	}
-      t->next = ay_endlevel;
+      if(t)
+	t->next = ay_endlevel;
     }
   else
     {
