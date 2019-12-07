@@ -1922,10 +1922,11 @@ if { $ayprefs(Scripts) != "" } {
 		}
 	    }
 	    cd $origwd
-
 	    catch {unset origwd path nscript}
 	}
 	# if
+	update
+	ayError 3
     }
     # foreach
     catch {unset scripts script paths}
