@@ -104,7 +104,7 @@ ay_sel_selobtcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  int lbmode = AY_FALSE;
- ay_list_object *oldsel, *newsel, *t;
+ ay_list_object *oldsel, *newsel = NULL, *t;
  ay_object *o = ay_currentlevel->object, *e;
  int i = 0, j = 0, firstarg = 1, start, end, need_redraw = AY_TRUE;
  char vname[] = "ay(need_redraw)", yes[] = "1", no[] = "0", *endptr;
