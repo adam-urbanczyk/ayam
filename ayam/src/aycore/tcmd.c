@@ -2031,6 +2031,7 @@ ay_tcmd_getplanenormaltcmd(ClientData clientData, Tcl_Interp *interp,
     {
       o = sel->object;
       isCurve = AY_FALSE;
+      po = NULL;
 
       if((o->type == AY_IDNCURVE) ||
 	 (ay_provide_object(o, AY_IDNCURVE, NULL) == AY_OK))
@@ -2089,14 +2090,13 @@ ay_tcmd_getplanenormaltcmd(ClientData clientData, Tcl_Interp *interp,
 	  else
 	    {
 	      if((ay_provide_object(o, AY_IDNPATCH, NULL) == AY_OK))
-		{
-		  po = NULL;
+		{		  
 		  ay_provide_object(o, AY_IDNPATCH, &po);
 		}
 	    }
 	}
 
-      if((isCurve && cv) || po)
+      if((isCurve && cv) || (po && (po->type == AY_IDNPATCH)))
 	{
 	  /* compute result */
 	  if(isCurve)
