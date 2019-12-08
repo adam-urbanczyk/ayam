@@ -15877,7 +15877,7 @@ ay_npt_degreereduce(ay_nurbpatch_object *np, double tol)
       if(ay_status)
 	{
 	  ay_error(AY_ERROR, fname, "Clamp operation failed.");
-	  return AY_ERROR;
+	  goto cleanup;
 	} /* if */
     } /* if */
 
