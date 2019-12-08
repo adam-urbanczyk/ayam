@@ -6890,7 +6890,8 @@ cleanup:
 
 
 /** ay_nct_israt:
- *  Check whether curve is rational.
+ *  Check whether any control point of a NURBS curve
+ *  uses a weight value (!= 1.0).
  *
  * \param[in] curve NURBS curve to check
  *
@@ -8284,15 +8285,15 @@ ay_nct_offsetsection(ay_object *o, double offset,
     {
       for(j = 0; j < curve->length; j++)
 	{
-	  newcv[j*stride+2] = curve->controlv[j*stride+2];
-	  newcv[j*stride+3] = curve->controlv[j*stride+3];
+	  newcv[j*stride+2] = po[j*stride+2];
+	  newcv[j*stride+3] = po[j*stride+3];
 	}
     }
   else
     {
       for(j = 0; j < curve->length; j++)
 	{
-	  newcv[j*stride+2] = curve->controlv[j*stride+2];
+	  newcv[j*stride+2] = po[j*stride+2];
 	  newcv[j*stride+3] = 1.0;
 	}
     } /* if */
@@ -8677,11 +8678,7 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
       if(o->type != AY_IDNCURVE)
 	{
 	  ay_status = ay_provide_object(sel->object, AY_IDNCURVE, &po);
-	  if(!ay_status && po)
-	    {
-	      curve = (ay_nurbcurve_object *)po->refine;
-	    }
-	  else
+	  if(ay_status || !po)
 	    {
 	      ay_error(AY_ERROR, argv[0], "Provide failed.");
 	      goto cleanup;
