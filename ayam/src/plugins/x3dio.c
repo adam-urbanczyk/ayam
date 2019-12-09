@@ -6785,7 +6785,7 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
   if(!scew_parser_load_file(parser, argv[1]))
     {
       errcode = scew_error_code();
-      snprintf(errstr, 255, "Unable to load file (error #%d: %s)\n",
+      snprintf(errstr, 255, "Unable to load file (error #%d: %s).",
 	       errcode,
 	       scew_error_string(errcode));
       ay_error(AY_ERROR, argv[0], errstr);
@@ -6793,7 +6793,7 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
         {
 	  expat_code = scew_error_expat_code(parser);
 	  snprintf(errstr, 255,
-		   "Expat error #%d (line %d, column %d): %s\n",
+		   "Expat error #%d (line %d, column %d): %s.",
 		   expat_code,
 		   scew_error_expat_line(parser),
 		   scew_error_expat_column(parser),
@@ -11178,14 +11178,14 @@ x3dio_writescene(char *filename, int selected, int toplevellayers)
       if(!scew_parser_load_file(parser, x3dio_x3domtemplate))
 	{
 	  errcode = scew_error_code();
-	  snprintf(buf, 255, "Unable to load file (error #%d: %s)\n",
+	  snprintf(buf, 255, "Unable to load file (error #%d: %s).",
 		  errcode,
 		  scew_error_string(errcode));
 	  ay_error(AY_ERROR, fname, buf);
 	  if(errcode == scew_error_expat)
 	    {
 	      expat_code = scew_error_expat_code(parser);
-	      snprintf(buf, 255, "Expat error #%d (line %d, column %d): %s\n",
+	      snprintf(buf, 255, "Expat error #%d (line %d, column %d): %s.",
 		      expat_code,
 		      scew_error_expat_line(parser),
 		      scew_error_expat_column(parser),
