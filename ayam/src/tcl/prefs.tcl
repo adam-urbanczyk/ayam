@@ -567,7 +567,7 @@ proc prefs_save { } {
 
     close $newfile
     update
-    ayError 4 "prefs_save" "Done saving preferences to $ayrc."
+    ayError 4 "prefs_save" "Done saving preferences to \"$ayrc\"."
 
     update
 
