@@ -105,10 +105,10 @@ proc mfio_import { } {
 
 	if { $ay_error < 2 } {
 	    ayError 4 "mfio_import" \
-		"Done importing from: $mfio_options(FileName)"
+		"Done importing from: \"$mfio_options(FileName)\"."
 	} else {
 	    ayError 2 "mfio_import" \
-		"Failed importing from: $mfio_options(FileName)"
+		"Failed importing from: \"$mfio_options(FileName)\"."
 	}
 
 	grab release .mfio
@@ -219,10 +219,10 @@ proc mfio_export { } {
 
 	if { $ay_error < 2 } {
 	    ayError 4 "mfio_export" \
-		"Done exporting to: $mfio_options(FileName)"
+		"Done exporting to: \"$mfio_options(FileName)\"."
 	} else {
 	    ayError 2 "mfio_export" \
-		"Failed exporting to: $mfio_options(FileName)"
+		"Failed exporting to: \"$mfio_options(FileName)\"."
 	}
 
 	grab release .mfio

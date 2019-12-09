@@ -102,10 +102,10 @@ proc dxfio_import { } {
 
 	if { $ay_error < 2 } {
 	    ayError 4 "dxfio_import" \
-		"Done importing from: $dxfio_options(FileName)"
+		"Done importing from: \"$dxfio_options(FileName)\"."
 	} else {
 	    ayError 2 "dxfio_import" \
-		"Failed importing from: $dxfio_options(FileName)"
+		"Failed importing from: \"$dxfio_options(FileName)\"."
 	}
 
 	grab release .dxfio
@@ -218,10 +218,10 @@ proc dxfio_export { } {
 
 	if { $ay_error < 2 } {
 	    ayError 4 "dxfio_export" \
-		"Done exporting to: $dxfio_options(FileName)"
+		"Done exporting to: \"$dxfio_options(FileName)\"."
 	} else {
 	    ayError 2 "dxfio_export" \
-		"Failed exporting to: $dxfio_options(FileName)"
+		"Failed exporting to: \"$dxfio_options(FileName)\"."
 	}
 
 	grab release .dxfio
