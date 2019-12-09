@@ -104,14 +104,14 @@ proc io_replaceScene { {newfilename ""} } {
 	    set windowfilename [file tail [file rootname $filename]]
 	    wm title . "Ayam - Main - $windowfilename : --"
 	    set ay(filename) $filename
-	    ayError 4 $wh "Done reading scene from: $filename"
+	    ayError 4 $wh "Done reading scene from: \"$filename\"."
 
 	    # restore main window geometry from tag
 	    io_readMainGeom
 	} else {
 	    wm title . "Ayam - Main - : --"
 	    set ay(filename) ""
-	    ayError 2 $wh "Failed reading scene from: $filename"
+	    ayError 2 $wh "Failed reading scene from: \"$filename\"."
 	}
 
 	goTop
@@ -205,9 +205,9 @@ proc io_insertScene { {ifilename ""} } {
 	set res [insertScene $ifilename]
 
 	if { $ay_error < 2 } {
-	    ayError 4 $wh "Done inserting objects from: $ifilename"
+	    ayError 4 $wh "Done inserting objects from: \"$ifilename\"."
 	} else {
-	    ayError 2 $wh "Failed to insert objects from: $ifilename"
+	    ayError 2 $wh "Failed to insert objects from: \"$ifilename\"."
 	}
 	if { $res == 1 } {
 	    goTop
@@ -301,11 +301,11 @@ proc io_saveScene { ask selected } {
 	    set windowfilename [file tail [file rootname $filename]]
 	    wm title . "Ayam - Main - $windowfilename : --"
 	    set ay(filename) $filename
-	    ayError 4 $wh "Done saving scene to: $filename"
+	    ayError 4 $wh "Done saving scene to: \"$filename\"."
 	    io_mruAdd $filename
 	    set ay(sc) 0
 	} else {
-	    ayError 2 $wh "Failed saving scene to: $filename"
+	    ayError 2 $wh "Failed saving scene to: \"$filename\"."
 	}
     }
     # if have filename
@@ -409,9 +409,11 @@ proc io_exportRIB { {expview "" } } {
 		}
 
 		if { $ay_error < 2 } {
-		    ayError 4 "exportRIB" "Done exporting scene to: $ribname"
+		    ayError 4 "exportRIB" \
+			"Done exporting scene to: \"$ribname\"."
 		} else {
-		    ayError 2 "exportRIB" "Failed exporting scene to: $ribname"
+		    ayError 2 "exportRIB" \
+			"Failed exporting scene to: \"$ribname\"."
 		}
 	    }
 	    # if have export file name
@@ -656,13 +658,13 @@ proc io_mruLoad { index } {
 	    set windowfilename [file tail [file rootname $filename]]
 	    wm title . "Ayam - Main - $windowfilename : --"
 	    set ay(filename) $filename
-	    ayError 4 $wh "Done reading scene from: $filename"
+	    ayError 4 $wh "Done reading scene from: \"$filename\"."
 	    # restore main window geometry from tag
 	    io_readMainGeom
 	} else {
 	    wm title . "Ayam - Main - : --"
 	    set ay(filename) ""
-	    ayError 2 $wh "Failed reading scene from: $filename"
+	    ayError 2 $wh "Failed reading scene from: \"$filename\"."
 	}
 
 	goTop
@@ -798,7 +800,7 @@ proc io_saveEnv { } {
 
 	 if { $ay_error < 2 } {
 
-	     ayError 4 $wh "Done writing environment to: $savefilename"
+	     ayError 4 $wh "Done writing environment to: \"$savefilename\"."
 
 	     if { $ayprefs(EnvFile) != $savefilename } {
 
@@ -830,7 +832,7 @@ proc io_saveEnv { } {
 		 set ayprefse(LoadEnv) 1
 	     }
 	 } else {
-	     ayError 2 $wh "Failed writing environment to: $savefilename"
+	     ayError 2 $wh "Failed writing environment to: \"$savefilename\"."
 	 }
 	 # reset scene changed status to old value
 	 set ay(sc) $temp
@@ -838,7 +840,7 @@ proc io_saveEnv { } {
 	 uCL cs
 	 rV
      } else {
-	 ayError 2 "saveEnv" "Can not write to ${savefilename}!"
+	 ayError 2 "saveEnv" "Can not write to \"${savefilename}\"."
      }
      # if
  }
@@ -943,9 +945,9 @@ proc io_exportRIBfC { } {
 	    wrib $ribname
 	}
 	if { $ay_error < 2 } {
-	    ayError 4 $wh "Done exporting scene to: $ribname"
+	    ayError 4 $wh "Done exporting scene to: \"$ribname\"."
 	} else {
-	    ayError 2 $wh "Failed exporting scene to: $ribname"
+	    ayError 2 $wh "Failed exporting scene to: \"$ribname\"."
 	}
     }
     # if
@@ -1001,10 +1003,10 @@ proc io_RenderSM { w all } {
 	    wrib $ribname -smonly -selonly
 	}
 	if { $ay_error < 2 } {
-	    ayError 4 $wh "Done exporting scene to: $ribname"
+	    ayError 4 $wh "Done exporting scene to: \"$ribname\"."
 	    set render 1
 	} else {
-	    ayError 2 $wh "Failed exporting scene to: $ribname"
+	    ayError 2 $wh "Failed exporting scene to: \"$ribname\"."
 	    set render 0
 	}
     }
@@ -1060,9 +1062,11 @@ proc io_exportRIBSO { } {
 	if { $ribname != "" } {
 	    wrib $ribname -selonly
 	    if { $ay_error < 2 } {
-		ayError 4 "exportRIB" "Done exporting objects to: $ribname"
+		ayError 4 "exportRIB" \
+		    "Done exporting objects to: \"$ribname\"."
 	    } else {
-		ayError 2 "exportRIB" "Failed exporting objects to: $ribname"
+		ayError 2 "exportRIB" \
+		    "Failed exporting objects to: \"$ribname\"."
 	    }
 	}
     } else {
@@ -1219,7 +1223,7 @@ proc ::tk::mac::OpenDocument { args } {
 		    set ay(filename) $filename
 		    set windowfilename [file tail [file rootname $filename]]
 		    wm title . "Ayam - Main - $windowfilename : --"
-		    ayError 4 $wh "Done reading scene from: $filename"
+		    ayError 4 $wh "Done reading scene from: \"$filename\"."
 		    if { [file exists $filename] } {
 			set dirname [file dirname $filename]
 			cd $dirname
@@ -1227,7 +1231,7 @@ proc ::tk::mac::OpenDocument { args } {
 		    }
 		    io_mruAdd $filename
 		} else {
-		    ayError 2 $wh "Failed reading scene from: $filename"
+		    ayError 2 $wh "Failed reading scene from: \"$filename\"."
 		}
 		set j 1
 	    } else {
@@ -1235,9 +1239,11 @@ proc ::tk::mac::OpenDocument { args } {
 
 		insertScene $filename
 		if { $ay_error < 2 } {
-		    ayError 4 $wh "Done inserting objects from: $filename"
+		    ayError 4 $wh \
+			"Done inserting objects from: \"$filename\"."
 		} else {
-		    ayError 2 $wh "Failed to insert objects from: $filename"
+		    ayError 2 $wh \
+			"Failed to insert objects from: \"$filename\"."
 		}
 	    }
 	    # if
@@ -1360,7 +1366,7 @@ proc io_importScene { filename } {
 		# now, call the import procedure/command
 		$import_cmd
 	    } else {
-		ayError 2 "io_importScene" "Failed to load plugin: $plugin"
+		ayError 2 "io_importScene" "Failed to load plugin: \"$plugin\"."
 	    }
 	}
 	# if extension matches
@@ -1423,7 +1429,8 @@ proc io_exportScene { filename } {
 		# now, call the export procedure
 		$export_cmd
 	    } else {
-		ayError 2 "io_exportScene" "Failed to load plugin: $plugin"
+		ayError 2 "io_exportScene" \
+		    "Failed to load plugin: \"$plugin\"."
 	    }
 	}
 	# if extension matches

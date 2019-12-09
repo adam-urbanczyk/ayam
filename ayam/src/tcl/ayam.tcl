@@ -2043,7 +2043,7 @@ if { ($ayprefs(EnvFile) != "") && ($ayprefs(LoadEnv) == 1) &&
     }
 
     if { !$have_scenefile_argument && ![info exists tk_mac_OpenDocuments] } {
-	puts stdout "Loading environment from $ayprefs(EnvFile)..."
+	puts stdout "Loading environment from \"$ayprefs(EnvFile)\"..."
 	set filename [file nativename $ayprefs(EnvFile)]
 	if { $tcl_platform(platform) == "windows" } {
 	    regsub -all {\\} $filename {/} filename
@@ -2121,7 +2121,7 @@ while { $i < $argc } {
 		set ay(filename) $filename
 		set windowfilename [file tail [file rootname $filename]]
 		wm title . "Ayam - Main - $windowfilename : --"
-		ayError 4 $wh "Done reading scene from: $filename"
+		ayError 4 $wh "Done reading scene from: \"$filename\"."
 		if { [file exists $filename] } {
 		    set dirname [file dirname $filename]
 		    cd $dirname
@@ -2129,7 +2129,7 @@ while { $i < $argc } {
 		}
 		io_mruAdd $absfilename
 	    } else {
-		ayError 2 $wh "Failed reading scene from: $filename"
+		ayError 2 $wh "Failed reading scene from: \"$filename\"."
 	    }
 	    set j 1
 	} else {
@@ -2138,9 +2138,9 @@ while { $i < $argc } {
 	    set wh "insertScene"
 	    insertScene $filename
 	    if { $ay_error < 2 } {
-		ayError 4 $wh "Done inserting objects from: $filename"
+		ayError 4 $wh "Done inserting objects from: \"$filename\"."
 	    } else {
-		ayError 2 $wh "Failed to insert objects from: $filename"
+		ayError 2 $wh "Failed to insert objects from: \"$filename\"."
 	    }
 	    # if
 	}
