@@ -62,12 +62,9 @@ proc mopsi_import { } {
 	mopsiRead $filename
 
 	if { $ay_error < 2 } {
-	    ayError 4 "importMops" "Done importing the Mops scene from:"
-	    ayError 4 "importMops" "$filename"
+	    ayError 4 "importMops" "Done importing from: \"$filename\"."
 	} else {
-	    ayError 2 "importMops"\
-		"There were errors while importing the Mops scene from:"
-	    ayError 2 "importMops" "$filename"
+	    ayError 2 "importMops" "Failed importing from: \"$filename\"."
 	}
 
 	goTop

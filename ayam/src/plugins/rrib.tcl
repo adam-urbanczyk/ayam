@@ -108,11 +108,11 @@ proc rrib_import { } {
 	set ay(sc) 1
 
 	if { $ay_error < 2 } {
-	    ayError 4 "rrib_import" "Done importing:"
-	    ayError 4 "rrib_import" "$rrib_options(FileName)"
+	    ayError 4 "rrib_import" \
+		"Done importing from: \"$rrib_options(FileName)\"."
 	} else {
-	    ayError 2 "rrib_import" "There were errors while importing:"
-	    ayError 2 "rrib_import" "$rrib_options(FileName)"
+	    ayError 2 "rrib_import" \
+		"Failed importing from: \"$rrib_options(FileName)\"."
 	}
 
 	grab release .ribI

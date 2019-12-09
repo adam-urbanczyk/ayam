@@ -127,11 +127,11 @@ proc x3dio_import { } {
 
 	if { $ay_error < 2 } {
 	    ayError 4 "x3dio_import" \
-		"Done importing from: $x3dio_options(FileName)"
+		"Done importing from: \"$x3dio_options(FileName)\"."
 	} else {
 	    if { $ay_error != 15 } {
 		ayError 2 "x3dio_import" \
-		    "Failed importing from: $x3dio_options(FileName)"
+		    "Failed importing from: \"$x3dio_options(FileName)\"."
 	    }
 	}
 
@@ -265,10 +265,10 @@ proc x3dio_export { } {
 
 	if { $ay_error < 2 } {
 	    ayError 4 "x3dio_export" \
-		"Done exporting to: $x3dio_options(FileName)"
+		"Done exporting to: \"$x3dio_options(FileName)\"."
 	} else {
 	    ayError 2 "x3dio_export" \
-		"Failed exporting to: $x3dio_options(FileName)"
+		"Failed exporting to: \"$x3dio_options(FileName)\"."
 	}
 
 	grab release .x3dio

@@ -110,10 +110,10 @@ proc onio_import { } {
 
 	if { $ay_error < 2 } {
 	    ayError 4 "onio_import" \
-		"Done importing from: $onio_options(FileName)"
+		"Done importing from: \"$onio_options(FileName)\"."
 	} else {
 	    ayError 2 "onio_import" \
-		"Failed importing from: $onio_options(FileName)"
+		"Failed importing from: \"$onio_options(FileName)\"."
 	}
 
 	grab release .onio
@@ -229,10 +229,10 @@ proc onio_export { } {
 
 	if { $ay_error < 2 } {
 	    ayError 4 "onio_export" \
-		"Done exporting to: $onio_options(FileName)"
+		"Done exporting to: \"$onio_options(FileName)\"."
 	} else {
 	    ayError 2 "onio_export" \
-		"Failed exporting to:  $onio_options(FileName)"
+		"Failed exporting to: \"$onio_options(FileName)\"."
 	}
 
 	grab release .onio

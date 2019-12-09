@@ -93,10 +93,10 @@ proc objio_export { } {
 
 	if { $ay_error < 2 } {
 	    ayError 4 "exportOBJ" \
-		"Done exporting to: $objio_options(FileName)"
+		"Done exporting to: \"$objio_options(FileName)\"."
 	} else {
 	    ayError 2 "exportOBJ" \
-		"Failed exporting to: $objio_options(FileName)"
+		"Failed exporting to: \"$objio_options(FileName)\"."
 	}
 
 	grab release .objE
@@ -206,10 +206,10 @@ proc objio_import { } {
 
 	if { $ay_error < 2 } {
 	    ayError 4 "importOBJ" \
-		"Done importing from: $objio_options(FileName)"
+		"Done importing from: \"$objio_options(FileName)\"."
 	} else {
 	    ayError 2 "importOBJ" \
-		"Failed importing from: $objio_options(FileName)"
+		"Failed importing from: \"$objio_options(FileName)\"."
 	}
 
 	if { ! $ayprefs(ImportSetsCD) } {
