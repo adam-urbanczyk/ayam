@@ -211,7 +211,8 @@ proc material_edit { } {
 
 	    getProp
 
-	    if { $MaterialAttrData(Materialname) == $mat } {
+	    if { ($MaterialAttrData(Materialname) == $mat) &&
+		 ($MaterialAttrData(Registered) == "Yes.") } {
 		set matlevel $ay(CurrentLevel)
 		getSel matobject
 		return -1;
