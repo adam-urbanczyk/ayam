@@ -51,8 +51,9 @@ ay_matt_registermaterial(char *name, ay_mat_object *mat)
 
   if(Tcl_FindHashEntry(ht, name))
     {
+      /* name already registered */
       mat->registered = AY_FALSE;
-      return AY_ERROR; /* name already registered */
+      return AY_ERROR;
     }
   else
     {
@@ -80,7 +81,8 @@ ay_matt_deregister(char *name)
 
   if(!(entry = Tcl_FindHashEntry(ht, name)))
     {
-      return AY_ERROR; /* name is not registered */
+      /* name is not registered */
+      return AY_ERROR;
     }
   else
     {
@@ -105,7 +107,8 @@ ay_matt_getmaterial(char *name, ay_mat_object **material)
 
   if(!(entry = Tcl_FindHashEntry(ht, name)))
     {
-      return AY_ERROR; /* name is not registered */
+      /* name is not registered */
+      return AY_ERROR;
     }
   else
     {
@@ -188,7 +191,7 @@ ay_matt_removerefs(ay_object *o, ay_mat_object *material)
 	}
 
       o = o->next;
-    }
+    } /* while */
 
  return;
 } /* ay_matt_removerefs */
@@ -223,7 +226,7 @@ ay_matt_removecliprefs(ay_object *o)
 	}
 
       o = o->next;
-    }
+    } /* while */
 
  return;
 } /* ay_matt_removecliprefs */
@@ -309,7 +312,7 @@ ay_matt_creatematerialids(ay_object *o)
     {
       if(o->mat)
 	{
-	  mat =  o->mat;
+	  mat = o->mat;
 
 	  if(!(tname = calloc(3, sizeof(char))))
 	    return AY_EOMEM;
@@ -328,13 +331,15 @@ ay_matt_creatematerialids(ay_object *o)
 	  newtag->type = ay_matt_mitagtype;
 	  newtag->next = o->tags;
 	  o->tags = newtag;
-	}
+	} /* if */
 
       if(o->down && o->down->next)
-	ay_status = ay_matt_creatematerialids(o->down);
+	{
+	  ay_status = ay_matt_creatematerialids(o->down);
 
-      if(ay_status)
-	return ay_status;
+	  if(ay_status)
+	    return ay_status;
+	}
 
       o = o->next;
     } /* while */
@@ -375,14 +380,15 @@ ay_matt_clearmaterialids(ay_object *o)
 		  tag = tag->next;
 		} /* if */
 	    } /* while */
-
 	} /* if */
 
       if(o->down && o->down->next)
-	ay_status = ay_matt_clearmaterialids(o->down);
+	{
+	  ay_status = ay_matt_clearmaterialids(o->down);
 
-      if(ay_status)
-	return ay_status;
+	  if(ay_status)
+	    return ay_status;
+	}
 
       o = o->next;
     } /* while */
@@ -499,7 +505,6 @@ ay_matt_wrib(char *file, ay_mat_object *m)
 
 	  RiDeclare((RtToken)"visibility", "integer");
 	  RiAttribute("render", "visibility", (RtPointer)&itemp, RI_NULL);
-
 	} /* if */
     } /* if !ristandard */
 
