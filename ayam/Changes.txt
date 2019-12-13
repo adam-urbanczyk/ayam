@@ -1,5 +1,5 @@
-[1. Dec 2019] Tip:
-==================
+[13. Dec 2019] Tip:
+===================
 Bug Fixes:
 o NURBSphere objects can not be trimmed (SF 587)
 o repeated toggling of advanced search options (SF 588)
@@ -8,6 +8,7 @@ o drawing of NURBS is toggled when Alt-F4 is used on windows (SF 590)
 o no visible change in weight reset after mouse drag (SF 591)
 o <Tab>/<Shift-Tab> insert tabs in numeric point edit on windows (SF 592)
 o the IsRat attribute of SDNPatch objects is wrong (SF 593)
+o fix Edit/Material selecting unregistered material objects (SF 594)
 
 Modelling:
 o added keyboard shortcut to call the revert tool from view windows: <!>
