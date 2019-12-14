@@ -388,6 +388,7 @@ typedef struct ay_mat_object_s {
 
 } ay_mat_object;
 
+
 /** RenderMan interface options */
 typedef struct ay_riopt_s
 {
@@ -1958,10 +1959,10 @@ extern char *ay_error_igntype;
 
 /** \name Subdivision Tag Types */
 /*@{*/
-#define AY_SDTHOLE    0
-#define AY_SDTCORNER  1
-#define AY_SDTCREASE  2
-#define AY_SDTIB      3
+#define AY_SDTHOLE    0 /**< Hole */
+#define AY_SDTCORNER  1 /**< Corner */
+#define AY_SDTCREASE  2 /**< Crease */
+#define AY_SDTIB      3 /**< Interpolate Boundary */
 /*@}*/
 
 /** \name Procedural Object Types */
@@ -1976,7 +1977,7 @@ extern char *ay_error_igntype;
 #define AY_CATNONE      0 /**< No Cap */
 #define AY_CATTRIM      1 /**< Trim Cap */
 #define AY_CATSIMPLE    2 /**< Simple Cap */
-#define AY_CATSIMPLEINT 3 /**< Simple Cap Integrated*/
+#define AY_CATSIMPLEINT 3 /**< Simple Cap Integrated */
 #define AY_CATGORDON    4 /**< Gordon Cap */
 /*@}*/
 
@@ -2139,11 +2140,11 @@ extern char *ay_error_igntype;
 
 /** \name Version Strings and Numbers */
 /*@{*/
-#define AY_VERSIONSTR "1.26"
+#define AY_VERSIONSTR "1.27"
 #define AY_VERSIONSTRMI "0"
 
 #define AY_VERSIONMA 1
-#define AY_VERSION   26
+#define AY_VERSION   27
 #define AY_VERSIONMI 0
 /*@}*/
 
