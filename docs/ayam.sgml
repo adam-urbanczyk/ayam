@@ -33,10 +33,10 @@ code example of 6 lines text (needs another 2 for the upper/lower lines)
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>24. Feb 2019
+<date>14. Dec 2019
 
 <abstract>
-This is the documentation of Ayam 1.26 &ndash; a free 3D modelling environment
+This is the documentation of Ayam 1.27 &ndash; a free 3D modelling environment
 for the RenderMan interface.
 
 Please note, that this document is a reference manual,
@@ -3461,7 +3461,9 @@ See section
 <ref id="objsel" name="Selecting Objects by Picking">
 for more information about picking objects.
 <p>
-Note that the modelling actions are not available in perspective views.
+Note that modelling actions that are directly modifying transformations
+or points are not available in perspective views, but selection actions
+and also the numeric point editing action do work fine.
 <p>
 If an action is in effect for a view, the views title will be changed
 appropriately.
@@ -7562,6 +7564,9 @@ since Ayam 1.16. <tt/"Closed"/ was replaced by <tt/"Type"/, <tt/"IParam"/
 by <tt/"SDLen"/ and <tt/"EDLen"/, and the <tt/"Mode"/ is now determined
 automatically from the desired order.
 
+See also the related tool to create interpolating NURBS curves:
+<ref id="interpnct" name="Interpolate Tool">.
+
 <sect3>Conversion Support
 <p><#if out="latex">&nbsp;<newline></#if>
 The interpolating curve may be converted to an ordinary NURBS curve using the
@@ -7665,6 +7670,9 @@ of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
 <item>Finally, a <tt/"NCInfo"/ field informs about the actual configuration
 of the created NURBS curve.
 </itemize>
+
+See also the related tool to create approximating NURBS curves:
+<ref id="approxnct" name="Approximate Tool">.
 
 <sect3>Conversion Support
 <p><#if out="latex">&nbsp;<newline></#if>
@@ -8429,6 +8437,9 @@ outlines of the patch (<tt/"OutlinePatch"/). The default setting
 <item>Finally, a <tt/"NPInfo"/ field informs about the actual configuration
 of the created NURBS patch.
 </itemize>
+
+See also the related tool to create interpolating NURBS curves:
+<ref id="interpnpt" name="Interpolate Surface Tool">.
 
 <sect3>Caps and Bevels
 <p><#if out="latex">&nbsp;<newline></#if>
