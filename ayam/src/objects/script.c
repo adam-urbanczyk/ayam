@@ -711,16 +711,24 @@ ay_script_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	default:
 	  if(ay_provide_object(sc->cm_objects, AY_IDNCURVE, NULL))
 	    {
+	      po = NULL;
 	      ay_provide_object(sc->cm_objects, AY_IDNCURVE, &po);
-	      ay_prop_getncinfo(interp, n1, po);
-	      ay_object_deletemulti(po, AY_FALSE);
+	      if(po)
+		{
+		  ay_prop_getncinfo(interp, n1, po);
+		  ay_object_deletemulti(po, AY_FALSE);
+		}
 	    }
 	  else
 	  if(ay_provide_object(sc->cm_objects, AY_IDNPATCH, NULL))
 	    {
+	      po = NULL;
 	      ay_provide_object(sc->cm_objects, AY_IDNPATCH, &po);
-	      ay_prop_getncinfo(interp, n1, po);
-	      ay_object_deletemulti(po, AY_FALSE);
+	      if(po)
+		{
+		  ay_prop_getncinfo(interp, n1, po);
+		  ay_object_deletemulti(po, AY_FALSE);
+		}
 	    }
 	  break;
 	} /* switch */
