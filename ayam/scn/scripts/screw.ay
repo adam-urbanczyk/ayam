@@ -1,5 +1,5 @@
 Ayam
-1.24
+1.27
 0
 23
 1
@@ -21,7 +21,7 @@ Ayam
 35
 0
 0
-1
+0
 1
 0
 1
@@ -31,7 +31,7 @@ NP
 SpiralAttr
 1
 1
-1168
+1190
 # Ayam, save array: SpiralAttrData
 # crtspiralgui.tcl: example script for Ayam Script object
 # this script wants Script Object Type "Create" and creates
@@ -49,6 +49,7 @@ if { ![info exists ::SpiralAttrData] } {
 }
 if { ![info exists ::SpiralAttrGUI] } {
     set w [addPropertyGUI SpiralAttr "" ""]
+    addVSpace $w s1 2
     addParam $w SpiralAttrData Length
     addParam $w SpiralAttrData AngleD
     addParam $w SpiralAttrData Radius
@@ -93,7 +94,7 @@ ZDiff
 35
 0
 0
-1
+0
 1
 0
 1
@@ -103,7 +104,7 @@ NP
 SpiralAttr
 1
 1
-1168
+1190
 # Ayam, save array: SpiralAttrData
 # crtspiralgui.tcl: example script for Ayam Script object
 # this script wants Script Object Type "Create" and creates
@@ -121,6 +122,7 @@ if { ![info exists ::SpiralAttrData] } {
 }
 if { ![info exists ::SpiralAttrGUI] } {
     set w [addPropertyGUI SpiralAttr "" ""]
+    addVSpace $w s1 2
     addParam $w SpiralAttrData Length
     addParam $w SpiralAttrData AngleD
     addParam $w SpiralAttrData Radius

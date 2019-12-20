@@ -1,5 +1,5 @@
 Ayam
-1.24
+1.27
 0
 35
 0
@@ -14,7 +14,7 @@ NP
 CBoxAttr
 1
 1
-1397
+1419
 # Ayam, save array: CBoxAttrData
 # cbox.tcl: example script for an Ayam Script object;
 # this script wants Script object type "Create" and creates
@@ -30,6 +30,7 @@ if { ![info exists ::CBoxAttrData] } {
 }
 if { ![info exists ::CBoxAttrGUI] } {
     set w [addPropertyGUI CBoxAttr "" ""]
+    addVSpace $w s1 2
     addParam $w CBoxAttrData Width
     addParam $w CBoxAttrData Length
     addParam $w CBoxAttrData Height
