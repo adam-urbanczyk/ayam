@@ -1,10 +1,10 @@
 Ayam
-1.24
+1.27
 0
 35
 0
 0
-1
+0
 1
 0
 1
@@ -14,7 +14,7 @@ NP
 TCircleAttr
 1
 1
-1052
+1074
 # Ayam, save array: TCircleAttrData
 # tcircle.tcl: example script for an Ayam Script object;
 # this script wants Script object type "Create" and creates
@@ -28,6 +28,7 @@ if { ![info exists ::TCircleAttrData] } {
 }
 if { ![info exists ::TCircleAttrGUI] } {
     set w [addPropertyGUI TCircleAttr "" ""]
+    addVSpace $w s1 2
     addParam $w TCircleAttrData Radius
 }
 
