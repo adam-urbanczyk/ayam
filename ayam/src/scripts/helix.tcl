@@ -15,6 +15,7 @@ if { ![info exists ::HelixAttrData] } {
 if { ![info exists ::HelixAttrGUI] } {
     set w [addPropertyGUI HelixAttr "" ""]
     set a HelixAttrData
+    addVSpace $w s1 2
     addParam $w $a Length
     addParam $w $a Radius
     addParam $w $a Angle
