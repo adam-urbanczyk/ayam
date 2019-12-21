@@ -11,6 +11,7 @@ if { ![info exists ::TCircleAttrData] } {
 }
 if { ![info exists ::TCircleAttrGUI] } {
     set w [addPropertyGUI TCircleAttr "" ""]
+    addVSpace $w s1 2
     addParam $w TCircleAttrData Radius
 }
 
