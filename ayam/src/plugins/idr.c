@@ -99,10 +99,10 @@ double idr_get_dist(double *p1, double *p2);
 
 int idr_get_center(ay_object *o, double *center);
 
-int idr_propagate_parent(ay_object *from, double threshhold);
+void idr_propagate_parent(ay_object *from, double threshhold);
 
-int idr_propagate_dist(double *p1, ay_object *from, ay_object *cur,
-		       double threshhold);
+void idr_propagate_dist(double *p1, ay_object *from, ay_object *cur,
+			double threshhold);
 
 int idr_propagate_disttcmd(ClientData clientData, Tcl_Interp *interp,
 			   int argc, char *argv[]);
@@ -111,7 +111,7 @@ int idr_save_selected(void);
 
 int idr_assign_impsel(void);
 
-int idr_clear_changed(ay_object *o);
+void idr_clear_changed(ay_object *o);
 
 int idr_assign_impchanged(void);
 
@@ -120,7 +120,7 @@ int idr_3dreg_topart(ay_object *o, ay_view_object *view,
 
 int idr_assign_importance(int mode, ay_view_object *view);
 
-int idr_clear_importance(ay_object *o);
+void idr_clear_importance(ay_object *o);
 
 int idr_copy_importance(ay_object *o, char *from_type);
 
@@ -286,7 +286,7 @@ idr_get_center(ay_object *o, double *center)
 /* idr_propagate_parent:
  *
  */
-int
+void
 idr_propagate_parent(ay_object *from, double threshhold)
 {
  ay_list_object *clevel = NULL;
@@ -327,19 +327,18 @@ idr_propagate_parent(ay_object *from, double threshhold)
       threshhold -= 1.0;
     } /* while */
 
- return AY_OK;
+ return;
 } /* idr_propagate_parent */
 
 
 /* idr_propagate_dist:
  *
  */
-int
+void
 idr_propagate_dist(double *p1, ay_object *from, ay_object *cur,
 		   double threshhold)
 {
  ay_object *o = NULL;
- int ay_status = AY_OK;
  GLdouble mm[16];
  double p2[3];
  ay_tag *next = NULL;
@@ -355,7 +354,7 @@ idr_propagate_dist(double *p1, ay_object *from, ay_object *cur,
 	   {
 	     ay_clevel_add(o);
 	     ay_clevel_add(o->down);
-	     ay_status = idr_propagate_dist(p1, from, o->down, threshhold);
+	     idr_propagate_dist(p1, from, o->down, threshhold);
 	     ay_clevel_del();
 	     ay_clevel_del();
 	   }
@@ -400,7 +399,7 @@ idr_propagate_dist(double *p1, ay_object *from, ay_object *cur,
      o = o->next;
    }
 
- return AY_OK;
+ return;
 } /* idr_propagate_dist */
 
 
@@ -412,7 +411,6 @@ idr_propagate_disttcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[])
 {
  ay_object *o = NULL, *from = NULL;
- int ay_status = AY_OK;
  ay_list_object *oldclevel = ay_currentlevel;
  ay_list_object *sel = ay_selection;
  char fname[] = "idr_propagate_disttcmd";
@@ -443,7 +441,7 @@ idr_propagate_disttcmd(ClientData clientData, Tcl_Interp *interp,
   /* propagate to parent(s)? */
   if(mode == 1)
     {
-      ay_status = idr_propagate_parent(from, threshhold);
+      idr_propagate_parent(from, threshhold);
       return TCL_OK;
     }
 
@@ -475,7 +473,7 @@ idr_propagate_disttcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      ay_clevel_add(o);
 	      ay_clevel_add(o->down);
-	      ay_status = idr_propagate_dist(p, from, o->down, threshhold);
+	      idr_propagate_dist(p, from, o->down, threshhold);
 	      ay_clevel_del();
 	      ay_clevel_del();
 	    }
@@ -693,10 +691,9 @@ idr_assign_impsel(void)
 /* idr_clear_changed:
  *  clear internal (changed) importance tags from scene below o
  */
-int
+void
 idr_clear_changed(ay_object *o)
 {
- int ay_status = AY_OK;
  ay_object *down = NULL;
  ay_tag *t = NULL, **tprev = NULL;
 
@@ -707,7 +704,7 @@ idr_clear_changed(ay_object *o)
 	 down = o->down;
 	 while(down->next)
 	   {
-	     ay_status = idr_clear_changed(down);
+	     idr_clear_changed(down);
 	     down = down->next;
 	   }
        }
@@ -741,7 +738,7 @@ idr_clear_changed(ay_object *o)
 
    } /* if */
 
- return AY_OK;
+ return;
 } /* idr_clear_changed */
 
 
@@ -993,7 +990,7 @@ idr_assign_importance(int mode, ay_view_object *view)
      o = ay_root;
      while(o->next)
        {
-	 ay_status = idr_clear_importance(o);
+	 idr_clear_importance(o);
 	 o = o->next;
        }
      /* now copy importance from IDR tags to IIDR tags */
@@ -1010,7 +1007,7 @@ idr_assign_importance(int mode, ay_view_object *view)
      o = ay_root;
      while(o/*->next*/)
        {
-	 ay_status = idr_clear_importance(o);
+	 idr_clear_importance(o);
 	 o = o->next;
        }
      /* now assign importance based on selection */
@@ -1025,7 +1022,7 @@ idr_assign_importance(int mode, ay_view_object *view)
      o = ay_root;
      while(o->next)
        {
-	 ay_status = idr_clear_importance(o);
+	 idr_clear_importance(o);
 	 o = o->next;
        }
      /* now copy importance from CIDR tags to IIDR tags */
@@ -1041,7 +1038,7 @@ idr_assign_importance(int mode, ay_view_object *view)
       o = ay_root;
       while(o->next)
 	{
-	  ay_status = idr_clear_changed(o);
+	  idr_clear_changed(o);
 	  o = o->next;
 	}
       /* and clipboard: */
@@ -1050,7 +1047,7 @@ idr_assign_importance(int mode, ay_view_object *view)
 	{
 	  while(o->next)
 	    {
-	      ay_status = idr_clear_changed(o);
+	      idr_clear_changed(o);
 	      o = o->next;
 	    }
 	}
@@ -1066,7 +1063,7 @@ idr_assign_importance(int mode, ay_view_object *view)
      o = ay_root;
      while(o->next)
        {
-	 ay_status = idr_clear_importance(o);
+	 idr_clear_importance(o);
 	 o = o->next;
        }
      break;
@@ -1076,7 +1073,7 @@ idr_assign_importance(int mode, ay_view_object *view)
      o = ay_root;
      while(o->next)
        {
-	 ay_status = idr_clear_importance(o);
+	 idr_clear_importance(o);
 	 o = o->next;
        }
 
@@ -1092,10 +1089,9 @@ idr_assign_importance(int mode, ay_view_object *view)
 /* idr_clear_importance:
  *  clear internal importance tags from scene below o
  */
-int
+void
 idr_clear_importance(ay_object *o)
 {
- int ay_status = AY_OK;
  ay_object *down = NULL;
  ay_tag *t = NULL, **tprev = NULL;
 
@@ -1106,7 +1102,7 @@ idr_clear_importance(ay_object *o)
 	 down = o->down;
 	 while(down->next)
 	   {
-	     ay_status = idr_clear_importance(down);
+	     idr_clear_importance(down);
 	     down = down->next;
 	   }
        }
@@ -1140,7 +1136,7 @@ idr_clear_importance(ay_object *o)
 
    } /* if */
 
- return AY_OK;
+ return;
 } /* idr_clear_importance */
 
 
@@ -1787,7 +1783,8 @@ idr_wrib_object(ay_object *o, char *file, int mode)
  *  left, bottom, right, top: region of the full image to be rendered
  */
 int
-idr_wrib_scene(char *file, char *image, double importance, int exclude,
+idr_wrib_scene(char *file, char *image,
+	       double importance, int exclude,
 	       /*int halfsr,*/
 	       double *from,
 	       double *to,
@@ -1798,11 +1795,14 @@ idr_wrib_scene(char *file, char *image, double importance, int exclude,
 {
  int ay_status = AY_OK;
  ay_object *o = ay_root;
+ ay_root_object *root = NULL;
+ ay_riopt *riopt = NULL;
  RtPoint f, d;
  RtFloat aspect = 1.0, swleft, swright, swtop, swbot;
  double fakt;
  /* RtFloat bias0 = 0.5, bias1 = 0.5;*/
  RtFloat fov = (RtFloat)90.0, rinearp, rifarp;
+ int have_ridisplay = AY_FALSE;
  char *objfile = NULL, *pos = NULL;
  int filelen = 0;
 
@@ -1869,14 +1869,27 @@ idr_wrib_scene(char *file, char *image, double importance, int exclude,
       ay_prefs.wrib_sm = AY_FALSE;
     } /* if */
 
-  /* render to image file or to frame buffer? */
-  if(!image)
-    RiDisplay(RI_NULL, RI_FRAMEBUFFER, RI_RGBA, RI_NULL);
-  else
-    RiDisplay(image, RI_FILE, RI_RGBA, RI_NULL);
+   /* render to frame buffer or to image file? */
+   if(!image)
+     { /* frame buffer */
+       /* XXXX use "dummy" to work around a bug in Aqsis libri2rib */
+       RiDisplay(/*RI_NULL*/"dummy", RI_FRAMEBUFFER, RI_RGBA, RI_NULL);
+       have_ridisplay = AY_TRUE;
+     }
+   else
+     { /* image file */
+       root = (ay_root_object*)(ay_root->refine);
+       riopt = root->riopt;
+       if(riopt->use_std_display/* || temp || rtf*/)
+	 {
+	   RiDisplay(image, RI_FILE, RI_RGBA, RI_NULL);
+	   have_ridisplay = AY_TRUE;
+	 }
+     } /* if */
 
-  /* write additional RiDisplay statements from tags */
-  ay_wrib_displaytags();
+   /* write additional RiDisplay statements from tags */
+   ay_wrib_displaytags(have_ridisplay);
+
   /* write RiHider statements from tags */
   ay_wrib_hidertags();
   /* write imager shader */
@@ -2895,7 +2908,7 @@ idr_getpartsfromimpreg(idr_picpart **partlist, struct Togl *togl,
       o = ay_root;
       while(o->next)
 	{
-	  ay_status = idr_clear_importance(o);
+	  idr_clear_importance(o);
 	  o = o->next;
 	}
       /* now create/fake importance tags */
@@ -3005,7 +3018,7 @@ idr_getpartsfrom3dimpreg(idr_picpart **partlist, struct Togl *togl,
       o = ay_root;
       while(o->next)
 	{
-	  ay_status = idr_clear_importance(o);
+	  idr_clear_importance(o);
 	  o = o->next;
 	}
       /* now create/fake importance tags */
