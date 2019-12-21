@@ -16,6 +16,7 @@ if { ![info exists ::TConeAttrData] } {
 }
 if { ![info exists ::TConeAttrGUI] } {
     set w [addPropertyGUI TConeAttr "" ""]
+    addVSpace $w s1 2
     addCheck $w TConeAttrData Closed
     addParam $w TConeAttrData ThetaMax
     addParam $w TConeAttrData RMin

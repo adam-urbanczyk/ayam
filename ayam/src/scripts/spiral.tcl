@@ -14,6 +14,7 @@ if { ![info exists ::SpiralAttrData] } {
 }
 if { ![info exists ::SpiralAttrGUI] } {
     set w [addPropertyGUI SpiralAttr "" ""]
+    addVSpace $w s1 2
     addParam $w SpiralAttrData Length
     addParam $w SpiralAttrData Angle
     addParam $w SpiralAttrData RMin
