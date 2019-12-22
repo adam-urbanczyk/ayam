@@ -29,7 +29,7 @@ array set SfCurveAttrData {
 set w [frame $ay(pca).$SfCurveAttr(w)]
 set a $SfCurveAttr(arr)
 set ay(bok) $ay(appb)
-
+addVSpace $w s1 2
 addParam $w $a M
 addParam $w $a N1
 addParam $w $a N2
