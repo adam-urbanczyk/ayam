@@ -1590,7 +1590,7 @@ ay_sdmesh_convertcb(ay_object *o, int in_place)
 				  (ay_pomesh_object**)(void*)&(new->refine));
 
   /* second, link new object(s), or replace old object with it/them */
-  if(new && new->refine)
+  if(!ay_status && new->refine)
     {
       if(!in_place)
 	{
@@ -1599,8 +1599,12 @@ ay_sdmesh_convertcb(ay_object *o, int in_place)
       else
 	{
 	  ay_object_replace(new, o);
-	} /* if */
-    } /* if */
+	}
+    }
+  else
+    {
+      free(new);
+    }
 
  return ay_status;
 } /* ay_sdmesh_convertcb */
