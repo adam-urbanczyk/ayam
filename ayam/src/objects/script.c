@@ -1933,7 +1933,7 @@ ay_script_convertcb(ay_object *o, int in_place)
 } /* ay_script_convertcb */
 
 
-/** ay_script_providecb:
+/** ay_script_checkconversion:
  *  helper for ay_script_convertcb() above
  *  _recursively_ check, whether or not we can copy out the objects
  *  from \a o to the scene (currently only checks, if there are
@@ -2002,7 +2002,7 @@ ay_script_providecb(ay_object *o, unsigned int type, ay_object **result)
 			{
 			  return AY_OK;
 			}
-		      /* it is sufficient if we can provide atleast
+		      /* it is sufficient if we can provide at least
 			 one object of wanted type, thus we do not
 			 give up here immediately... */
 		    }
