@@ -220,6 +220,7 @@ ay_extrnc_drawhcb(struct Togl *togl, ay_object *o)
 	     }
 	  glEnd();
 	}
+
       glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
 		(GLfloat)ay_prefs.seb);
     } /* if have ncurve */
