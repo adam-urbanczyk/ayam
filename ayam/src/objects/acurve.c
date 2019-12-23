@@ -455,11 +455,11 @@ ay_acurve_drawcb(struct Togl *togl, ay_object *o)
     {
       a = 0;
       glBegin(GL_LINE_STRIP);
-      for(i = 0; i < acurve->length; i++)
-	{
-	  glVertex3dv((GLdouble *)&(acurve->controlv[a]));
-	  a += 3;
-	}
+       for(i = 0; i < acurve->length; i++)
+	 {
+	   glVertex3dv((GLdouble *)&(acurve->controlv[a]));
+	   a += 3;
+	 }
       glEnd();
     } /* if */
 

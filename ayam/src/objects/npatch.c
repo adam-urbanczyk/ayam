@@ -1124,7 +1124,9 @@ ay_npatch_shadech(ay_nurbpatch_object *npatch)
 
   if(!(stess->tessv = calloc(npatch->width*npatch->height*3,
 				     sizeof(double))))
-    return AY_EOMEM;
+    {
+      return AY_EOMEM;
+    }
 
   ay_npt_getcvnormals(npatch, stess->tessv);
   stess->tessw = -1;
@@ -1154,21 +1156,21 @@ ay_npatch_shadech(ay_nurbpatch_object *npatch)
 	      c = i*npatch->height*3;
 	      d = c+(npatch->height*3);
 	      glBegin(GL_QUAD_STRIP);
-	      for(j = 0; j < npatch->height; j++)
-		{
-		  glNormal3dv(&(stess->tessv[c]));
-		  glVertex3f(fcv[a]/fcv[a+3],
-			     fcv[a+1]/fcv[a+3],
-			     fcv[a+2]/fcv[a+3]);
-		  glNormal3dv(&(stess->tessv[d]));
-		  glVertex3f(fcv[b]/fcv[b+3],
-			     fcv[b+1]/fcv[b+3],
-			     fcv[b+2]/fcv[b+3]);
-		  a += 4;
-		  b += 4;
-		  c += 3;
-		  d += 3;
-		} /* for */
+	       for(j = 0; j < npatch->height; j++)
+		 {
+		   glNormal3dv(&(stess->tessv[c]));
+		   glVertex3f(fcv[a]/fcv[a+3],
+			      fcv[a+1]/fcv[a+3],
+			      fcv[a+2]/fcv[a+3]);
+		   glNormal3dv(&(stess->tessv[d]));
+		   glVertex3f(fcv[b]/fcv[b+3],
+			      fcv[b+1]/fcv[b+3],
+			      fcv[b+2]/fcv[b+3]);
+		   a += 4;
+		   b += 4;
+		   c += 3;
+		   d += 3;
+		 } /* for */
 	      glEnd();
 	    } /* for */
 	}
@@ -1182,17 +1184,17 @@ ay_npatch_shadech(ay_nurbpatch_object *npatch)
 	      c = i*npatch->height*3;
 	      d = c+(npatch->height*3);
 	      glBegin(GL_QUAD_STRIP);
-	      for(j = 0; j < npatch->height; j++)
-		{
-		  glNormal3dv(&(stess->tessv[c]));
-		  glVertex3fv(&(fcv[a]));
-		  glNormal3dv(&(stess->tessv[d]));
-		  glVertex3fv(&(fcv[b]));
-		  a += 4;
-		  b += 4;
-		  c += 3;
-		  d += 3;
-		} /* for */
+	       for(j = 0; j < npatch->height; j++)
+		 {
+		   glNormal3dv(&(stess->tessv[c]));
+		   glVertex3fv(&(fcv[a]));
+		   glNormal3dv(&(stess->tessv[d]));
+		   glVertex3fv(&(fcv[b]));
+		   a += 4;
+		   b += 4;
+		   c += 3;
+		   d += 3;
+		 } /* for */
 	      glEnd();
 	    } /* for */
 	}
@@ -1206,7 +1208,7 @@ ay_npatch_shadech(ay_nurbpatch_object *npatch)
 	  c = i*npatch->height*3;
 	  d = c+(npatch->height*3);
 	  glBegin(GL_QUAD_STRIP);
-	  for(j = 0; j < npatch->height; j++)
+	   for(j = 0; j < npatch->height; j++)
 	    {
 	      glNormal3dv(&(stess->tessv[c]));
 	      glVertex3dv(&(npatch->controlv[a]));
