@@ -213,39 +213,39 @@ ay_offnc_drawhcb(struct Togl *togl, ay_object *o)
 	  pnts = nc->controlv;
 
 	  glPushMatrix();
-	  c = offnc->ncurve;
-	  glTranslated((GLdouble)c->movx, (GLdouble)c->movy,
-		       (GLdouble)c->movz);
-	  ay_quat_torotmatrix(c->quat, m);
-	  glMultMatrixd((GLdouble*)m);
-	  glScaled((GLdouble)c->scalx, (GLdouble)c->scaly,
-		   (GLdouble)c->scalz);
+	   c = offnc->ncurve;
+	   glTranslated((GLdouble)c->movx, (GLdouble)c->movy,
+			(GLdouble)c->movz);
+	   ay_quat_torotmatrix(c->quat, m);
+	   glMultMatrixd((GLdouble*)m);
+	   glScaled((GLdouble)c->scalx, (GLdouble)c->scaly,
+		    (GLdouble)c->scalz);
 
-	  glBegin(GL_POINTS);
-	   if(ay_prefs.rationalpoints)
-	     {
-	       for(i = 0; i < nc->length; i++)
-		 {
-		   glVertex3d((GLdouble)pnts[0]*pnts[3],
-			      (GLdouble)pnts[1]*pnts[3],
-			      (GLdouble)pnts[2]*pnts[3]);
-		   pnts += 4;
-		 }
-	     }
-	   else
-	     {
-	       for(i = 0; i < nc->length; i++)
-		 {
-		   glVertex3dv((GLdouble *)pnts);
-		   pnts += 4;
-		 }
-	     }
-	  glEnd();
-	}
+	   glBegin(GL_POINTS);
+	    if(ay_prefs.rationalpoints)
+	      {
+		for(i = 0; i < nc->length; i++)
+		  {
+		    glVertex3d((GLdouble)pnts[0]*pnts[3],
+			       (GLdouble)pnts[1]*pnts[3],
+			       (GLdouble)pnts[2]*pnts[3]);
+		    pnts += 4;
+		  }
+	      }
+	    else
+	      {
+		for(i = 0; i < nc->length; i++)
+		  {
+		    glVertex3dv((GLdouble *)pnts);
+		    pnts += 4;
+		  }
+	      }
+	   glEnd();
+	  glPopMatrix();
+	} /* if draw breakpoints */
+
        glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
 		 (GLfloat)ay_prefs.seb);
-
-      glPopMatrix();
     } /* if have ncurve */
 
  return AY_OK;
