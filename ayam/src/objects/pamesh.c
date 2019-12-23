@@ -683,13 +683,13 @@ ay_pamesh_drawcpcb(struct Togl *togl, ay_object *o)
       for(i = 0; i < width; i++)
 	{
 	  glBegin(uprim);
-	  for(j = 0; j < height; j++)
-	    {
-	      glVertex3d((GLdouble )(cv[a]*cv[a+3]),
-			 (GLdouble )(cv[a+1]*cv[a+3]),
-			 (GLdouble )(cv[a+2]*cv[a+3]));
-	      a += 4;
-	    } /* for */
+	   for(j = 0; j < height; j++)
+	     {
+	       glVertex3d((GLdouble )(cv[a]*cv[a+3]),
+			  (GLdouble )(cv[a+1]*cv[a+3]),
+			  (GLdouble )(cv[a+2]*cv[a+3]));
+	       a += 4;
+	     } /* for */
 	  glEnd();
 	} /* for */
 
@@ -697,13 +697,13 @@ ay_pamesh_drawcpcb(struct Togl *togl, ay_object *o)
 	{
 	  a = j * 4;
 	  glBegin(vprim);
-	  for(i = 0; i < width; i++)
-	    {
-	      glVertex3d((GLdouble )(cv[a]*cv[a+3]),
-			 (GLdouble )(cv[a+1]*cv[a+3]),
-			 (GLdouble )(cv[a+2]*cv[a+3]));
-	      a += (4 * height);
-	    } /* for */
+	   for(i = 0; i < width; i++)
+	     {
+	       glVertex3d((GLdouble )(cv[a]*cv[a+3]),
+			  (GLdouble )(cv[a+1]*cv[a+3]),
+			  (GLdouble )(cv[a+2]*cv[a+3]));
+	       a += (4 * height);
+	     } /* for */
 	  glEnd();
 	} /* for */
      }
@@ -712,11 +712,11 @@ ay_pamesh_drawcpcb(struct Togl *togl, ay_object *o)
        for(i = 0; i < width; i++)
 	 {
 	   glBegin(uprim);
-	   for(j = 0; j < height; j++)
-	     {
-	       glVertex3dv((GLdouble *)&cv[a]);
-	       a += 4;
-	     } /* for */
+	    for(j = 0; j < height; j++)
+	      {
+		glVertex3dv((GLdouble *)&cv[a]);
+		a += 4;
+	      } /* for */
 	   glEnd();
 	 } /* for */
 
@@ -725,11 +725,11 @@ ay_pamesh_drawcpcb(struct Togl *togl, ay_object *o)
 	 {
 	   a = j * 4;
 	   glBegin(vprim);
-	   for(i = 0; i < width; i++)
-	     {
-	       glVertex3dv((GLdouble *)&cv[a]);
-	       a += (4 * height);
-	     } /* for */
+	    for(i = 0; i < width; i++)
+	      {
+		glVertex3dv((GLdouble *)&cv[a]);
+		a += (4 * height);
+	      } /* for */
 	   glEnd();
 	 } /* for */
      } /* if homogeneous */
@@ -932,7 +932,7 @@ ay_pamesh_drawhcb(struct Togl *togl, ay_object *o)
   glBegin(GL_POINTS);
    if(pm->is_rat && ay_prefs.rationalpoints)
      {
-       for(i = 0; i < (pm->width * pm->height); i++)
+       for(i = 0; i < pm->width * pm->height; i++)
 	 {
 	   glVertex3d((GLdouble)pnts[0]*pnts[3],
 		      (GLdouble)pnts[1]*pnts[3],
@@ -942,7 +942,7 @@ ay_pamesh_drawhcb(struct Togl *togl, ay_object *o)
      }
    else
      {
-       for(i = 0; i < (width*height); i++)
+       for(i = 0; i < width * height; i++)
 	 {
 	   glVertex3dv((GLdouble *)pnts);
 	   pnts += 4;
@@ -989,7 +989,7 @@ ay_pamesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 			       sizeof(double*))))
 	return AY_EOMEM;
 
-      for(i = 0; i < (pamesh->width*pamesh->height); i++)
+      for(i = 0; i < pamesh->width * pamesh->height; i++)
 	{
 	  pe->coords[i] = &(pamesh->controlv[a]);
 	  a += 4;
@@ -1001,7 +1001,7 @@ ay_pamesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       /* selection based on a single point? */
       control = pamesh->controlv;
 
-      for(i = 0; i < (pamesh->width * pamesh->height); i++)
+      for(i = 0; i < pamesh->width * pamesh->height; i++)
 	{
 	  if(pamesh->is_rat && ay_prefs.rationalpoints)
 	    {
@@ -1567,7 +1567,7 @@ ay_pamesh_readcb(FILE *fileptr, ay_object *o)
     }
 
   a = 0;
-  for(i = 0; i < pamesh->width*pamesh->height; i++)
+  for(i = 0; i < pamesh->width * pamesh->height; i++)
     {
       fscanf(fileptr, "%lg %lg %lg %lg\n", &(pamesh->controlv[a]),
 	     &(pamesh->controlv[a+1]),
@@ -1643,7 +1643,7 @@ ay_pamesh_writecb(FILE *fileptr, ay_object *o)
     }
 
   a = 0;
-  for(i = 0; i < pamesh->width*pamesh->height; i++)
+  for(i = 0; i < pamesh->width * pamesh->height; i++)
     {
       fprintf(fileptr,"%g %g %g %g\n", pamesh->controlv[a],
 	      pamesh->controlv[a+1],

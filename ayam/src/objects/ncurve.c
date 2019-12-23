@@ -586,11 +586,11 @@ ay_ncurve_drawstess(ay_view_object *view, ay_nurbcurve_object *ncurve)
   if(tesslen)
     {
       glBegin(GL_LINE_STRIP);
-      for(i = 0; i < tesslen; i++)
-	{
-	  glVertex3dv(&(tessv[a]));
-	  a += tstride;
-	}
+       for(i = 0; i < tesslen; i++)
+	 {
+	   glVertex3dv(&(tessv[a]));
+	   a += tstride;
+	 }
       glEnd();
     } /* if */
 
@@ -1690,14 +1690,14 @@ ay_ncurve_readcb(FILE *fileptr, ay_object *o)
 	   calloc((ncurve->length + ncurve->order), sizeof(double))))
 	{ free(ncurve); return AY_EOMEM; }
 
-      for(i = 0; i<(ncurve->length + ncurve->order); i++)
+      for(i = 0; i < ncurve->length + ncurve->order; i++)
 	fscanf(fileptr, "%lg\n", &(ncurve->knotv[i]));
     }
 
   if(!(ncurve->controlv = calloc(ncurve->length*4, sizeof(double))))
     {
       if(ncurve->knotv)
-	{free(ncurve->knotv);}
+	{ free(ncurve->knotv); }
       free(ncurve);
       return AY_EOMEM;
     }
@@ -1782,7 +1782,7 @@ ay_ncurve_writecb(FILE *fileptr, ay_object *o)
 
   if(ncurve->knot_type == AY_KTCUSTOM)
     {
-      for(i = 0; i < (ncurve->length+ncurve->order); i++)
+      for(i = 0; i < ncurve->length + ncurve->order; i++)
 	fprintf(fileptr, "%g\n", ncurve->knotv[i]);
     }
 
