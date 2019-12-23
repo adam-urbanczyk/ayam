@@ -1416,7 +1416,7 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       updateKnots = AY_TRUE;
       order_modified = AY_TRUE;
       o->modified = AY_TRUE;
-    }
+    } /* if change order */
 
   /* change knot type */
   if((new_knot_type != ncurve->knot_type) || (updateKnots))
@@ -1445,7 +1445,12 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   /* create new knot vectors */
   if((updateKnots) && (ncurve->knot_type != AY_KTCUSTOM))
-    ay_status = ay_knots_createnc(ncurve);
+    {
+      ay_status = ay_knots_createnc(ncurve);
+
+      if(ay_status)
+	ay_error(AY_ERROR, fname, "Error creating new knots!");
+    }
 
   /* decompose knot-list (create custom knot sequence) */
   if((ncurve->knot_type == AY_KTCUSTOM) && knots_modified)
@@ -1502,7 +1507,6 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
 	  if(ay_status)
 	    ay_error(AY_ERROR, fname, "Error creating new knots!");
-
 	} /* if */
 
       /* XXXX compare old and new knots before setting this flag */
@@ -1514,10 +1518,6 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
      order_modified)
     {
       /* close it */
-      if(o->selp)
-	{
-	  ay_selp_clear(o);
-	}
       o->modified = AY_TRUE;
       ncurve->type = new_type;
       ay_status = ay_nct_close(ncurve);
@@ -1527,6 +1527,10 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	}
       else
 	{
+	  if(o->selp)
+	    {
+	      (void)ay_ncurve_getpntcb(3, o, NULL, NULL);
+	    }
 	  if(ncurve->type == AY_CTPERIODIC)
 	    {
 	      if((ncurve->knot_type == AY_KTNURB) ||
@@ -1552,8 +1556,8 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		    ay_error(ay_status, fname, "Error creating new knots!");
 		} /* if */
 	    } /* if */
-	} /* if */
-    } /* if */
+	} /* if closed */
+    } /* if need to close */
 
   /* open curve? */
   if((new_type == AY_CTOPEN) && (ncurve->type != AY_CTOPEN))
@@ -1572,7 +1576,7 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	  ncurve->mpoints = mp;
 	} /* while */
       updateMPs = AY_FALSE;
-    } /* if */
+    } /* if need to open */
 
   /*  if(ncurve->mpoints)*/
   if(updateMPs)
