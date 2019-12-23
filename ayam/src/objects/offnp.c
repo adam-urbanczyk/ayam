@@ -252,30 +252,30 @@ ay_offnp_drawhcb(struct Togl *togl, ay_object *o)
 		 (GLfloat)ay_prefs.obb);
 
        glBegin(GL_POINTS);
-         if(ay_prefs.rationalpoints)
-	   {
-	     for(i = 0; i < np->width*np->height; i++)
-	       {
-		 glVertex3d((GLdouble)pnts[0]*pnts[3],
-			    (GLdouble)pnts[1]*pnts[3],
-			    (GLdouble)pnts[2]*pnts[3]);
-		 pnts += 4;
-	       }
-	   }
-	 else
-	   {
-	     for(i = 0; i < np->width*np->height; i++)
-	       {
-		 glVertex3dv((GLdouble *)pnts);
-		 pnts += 4;
-	       }
-	   }
-	glEnd();
+        if(ay_prefs.rationalpoints)
+	  {
+	    for(i = 0; i < np->width*np->height; i++)
+	      {
+		glVertex3d((GLdouble)pnts[0]*pnts[3],
+			   (GLdouble)pnts[1]*pnts[3],
+			   (GLdouble)pnts[2]*pnts[3]);
+		pnts += 4;
+	      }
+	  }
+	else
+	  {
+	    for(i = 0; i < np->width*np->height; i++)
+	      {
+		glVertex3dv((GLdouble *)pnts);
+		pnts += 4;
+	      }
+	  }
+       glEnd();
 
-	glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
-		  (GLfloat)ay_prefs.seb);
+       glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+		 (GLfloat)ay_prefs.seb);
       glPopMatrix();
-    }
+    } /* if have npatch */
 
  return AY_OK;
 } /* ay_offnp_drawhcb */
@@ -329,24 +329,24 @@ ay_offnp_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!offnp)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  toa = Tcl_NewStringObj(n1, -1);
+  ton = Tcl_NewStringObj(n1, -1);
 
-  Tcl_SetStringObj(ton,"Mode",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(offnp->mode));
+  Tcl_SetStringObj(ton, "Mode", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(offnp->mode));
 
-  Tcl_SetStringObj(ton,"Offset",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &(offnp->offset));
+  Tcl_SetStringObj(ton, "Offset", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(offnp->offset));
 
-  Tcl_SetStringObj(ton,"DisplayMode",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(offnp->display_mode));
+  Tcl_SetStringObj(ton, "DisplayMode", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(offnp->display_mode));
 
-  Tcl_SetStringObj(ton,"Tolerance",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &(offnp->glu_sampling_tolerance));
+  Tcl_SetStringObj(ton, "Tolerance", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(offnp->glu_sampling_tolerance));
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
@@ -366,7 +366,7 @@ ay_offnp_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_offnp_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1="OffsetNPAttrData";
+ char *n1 = "OffsetNPAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_offnp_object *offnp = NULL;
 
@@ -378,27 +378,27 @@ ay_offnp_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!offnp)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  toa = Tcl_NewStringObj(n1, -1);
+  ton = Tcl_NewStringObj(n1, -1);
 
-  Tcl_SetStringObj(ton,"Mode",-1);
+  Tcl_SetStringObj(ton, "Mode", -1);
   to = Tcl_NewIntObj(offnp->mode);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Offset",-1);
+  Tcl_SetStringObj(ton, "Offset", -1);
   to = Tcl_NewDoubleObj(offnp->offset);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"DisplayMode",-1);
+  Tcl_SetStringObj(ton, "DisplayMode", -1);
   to = Tcl_NewIntObj(offnp->display_mode);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Tolerance",-1);
+  Tcl_SetStringObj(ton, "Tolerance", -1);
   to = Tcl_NewDoubleObj(offnp->glu_sampling_tolerance);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
   ay_prop_getnpinfo(interp, n1, offnp->npatch);

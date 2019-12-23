@@ -223,7 +223,8 @@ ay_concatnc_drawhcb(struct Togl *togl, ay_object *o)
 		 }
 	     }
 	  glEnd();
-	}
+	} /* if draw breakpoints */
+
       glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
 		(GLfloat)ay_prefs.seb);
     } /* if have ncurve */
@@ -288,28 +289,28 @@ ay_concatnc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!concatnc)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  toa = Tcl_NewStringObj(n1, -1);
+  ton = Tcl_NewStringObj(n1, -1);
 
-  Tcl_SetStringObj(ton,"Closed",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(concatnc->closed));
+  Tcl_SetStringObj(ton, "Closed", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(concatnc->closed));
 
-  Tcl_SetStringObj(ton,"FillGaps",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(concatnc->fillgaps));
+  Tcl_SetStringObj(ton, "FillGaps", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(concatnc->fillgaps));
 
-  Tcl_SetStringObj(ton,"Revert",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(concatnc->revert));
+  Tcl_SetStringObj(ton, "Revert", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(concatnc->revert));
 
-  Tcl_SetStringObj(ton,"Knot-Type",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(concatnc->knot_type));
+  Tcl_SetStringObj(ton, "Knot-Type", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(concatnc->knot_type));
 
-  Tcl_SetStringObj(ton,"FTLength",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &(concatnc->ftlength));
+  Tcl_SetStringObj(ton, "FTLength", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(concatnc->ftlength));
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
@@ -329,7 +330,7 @@ ay_concatnc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_concatnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1="ConcatNCAttrData";
+ char *n1 = "ConcatNCAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_concatnc_object *concatnc = NULL;
 
@@ -341,32 +342,32 @@ ay_concatnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!concatnc)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  toa = Tcl_NewStringObj(n1, -1);
+  ton = Tcl_NewStringObj(n1, -1);
 
-  Tcl_SetStringObj(ton,"Closed",-1);
+  Tcl_SetStringObj(ton, "Closed", -1);
   to = Tcl_NewIntObj(concatnc->closed);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"FillGaps",-1);
+  Tcl_SetStringObj(ton, "FillGaps", -1);
   to = Tcl_NewIntObj(concatnc->fillgaps);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Revert",-1);
+  Tcl_SetStringObj(ton, "Revert", -1);
   to = Tcl_NewIntObj(concatnc->revert);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Knot-Type",-1);
+  Tcl_SetStringObj(ton, "Knot-Type", -1);
   to = Tcl_NewIntObj(concatnc->knot_type);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"FTLength",-1);
+  Tcl_SetStringObj(ton, "FTLength", -1);
   to = Tcl_NewDoubleObj(concatnc->ftlength);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
   ay_prop_getncinfo(interp, n1, concatnc->ncurve);

@@ -104,7 +104,6 @@ ay_ncircle_createcb(int argc, char *argv[], ay_object *o)
 	  ay_status = AY_ERROR;
 	  goto cleanup;
 	}
-
     } /* while */
 
   if(!(ncircle = calloc(1, sizeof(ay_ncircle_object))))
@@ -413,7 +412,7 @@ ay_ncircle_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_ncircle_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1="NCircleAttrData";
+ char *n1 = "NCircleAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_ncircle_object *ncircle = NULL;
 
@@ -469,8 +468,8 @@ ay_ncircle_readcb(FILE *fileptr, ay_object *o)
 {
  ay_ncircle_object *ncircle = NULL;
 
- if(!fileptr || !o)
-   return AY_ENULL;
+  if(!fileptr || !o)
+    return AY_ENULL;
 
   if(!(ncircle = calloc(1, sizeof(ay_ncircle_object))))
     { return AY_EOMEM; }

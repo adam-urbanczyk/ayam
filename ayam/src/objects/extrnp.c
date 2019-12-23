@@ -280,40 +280,40 @@ ay_extrnp_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!extrnp)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  toa = Tcl_NewStringObj(n1, -1);
+  ton = Tcl_NewStringObj(n1, -1);
 
-  Tcl_SetStringObj(ton,"UMin",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &(extrnp->umin));
+  Tcl_SetStringObj(ton, "UMin", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(extrnp->umin));
 
-  Tcl_SetStringObj(ton,"UMax",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &(extrnp->umax));
+  Tcl_SetStringObj(ton, "UMax", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(extrnp->umax));
 
-  Tcl_SetStringObj(ton,"VMin",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &(extrnp->vmin));
+  Tcl_SetStringObj(ton, "VMin", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(extrnp->vmin));
 
-  Tcl_SetStringObj(ton,"VMax",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &(extrnp->vmax));
+  Tcl_SetStringObj(ton, "VMax", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(extrnp->vmax));
 
-  Tcl_SetStringObj(ton,"PatchNum",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(extrnp->pnum));
+  Tcl_SetStringObj(ton, "PatchNum", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(extrnp->pnum));
 
-  Tcl_SetStringObj(ton,"Relative",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(extrnp->relative));
+  Tcl_SetStringObj(ton, "Relative", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(extrnp->relative));
 
-  Tcl_SetStringObj(ton,"DisplayMode",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(extrnp->display_mode));
+  Tcl_SetStringObj(ton, "DisplayMode", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(extrnp->display_mode));
 
-  Tcl_SetStringObj(ton,"Tolerance",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &(extrnp->glu_sampling_tolerance));
+  Tcl_SetStringObj(ton, "Tolerance", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(extrnp->glu_sampling_tolerance));
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
@@ -333,7 +333,7 @@ ay_extrnp_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_extrnp_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1="ExtrNPAttrData";
+ char *n1 = "ExtrNPAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_extrnp_object *extrnp = NULL;
 
@@ -345,47 +345,47 @@ ay_extrnp_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!extrnp)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  toa = Tcl_NewStringObj(n1, -1);
+  ton = Tcl_NewStringObj(n1, -1);
 
-  Tcl_SetStringObj(ton,"UMin",-1);
+  Tcl_SetStringObj(ton, "UMin", -1);
   to = Tcl_NewDoubleObj(extrnp->umin);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"UMax",-1);
+  Tcl_SetStringObj(ton, "UMax", -1);
   to = Tcl_NewDoubleObj(extrnp->umax);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"VMin",-1);
+  Tcl_SetStringObj(ton, "VMin", -1);
   to = Tcl_NewDoubleObj(extrnp->vmin);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"VMax",-1);
+  Tcl_SetStringObj(ton, "VMax", -1);
   to = Tcl_NewDoubleObj(extrnp->vmax);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Relative",-1);
+  Tcl_SetStringObj(ton, "Relative", -1);
   to = Tcl_NewIntObj(extrnp->relative);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"PatchNum",-1);
+  Tcl_SetStringObj(ton, "PatchNum", -1);
   to = Tcl_NewIntObj(extrnp->pnum);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"DisplayMode",-1);
+  Tcl_SetStringObj(ton, "DisplayMode", -1);
   to = Tcl_NewIntObj(extrnp->display_mode);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Tolerance",-1);
+  Tcl_SetStringObj(ton, "Tolerance", -1);
   to = Tcl_NewDoubleObj(extrnp->glu_sampling_tolerance);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
   ay_prop_getnpinfo(interp, n1, extrnp->npatch);
