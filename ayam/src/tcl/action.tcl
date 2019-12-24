@@ -2197,7 +2197,6 @@ proc actionPick { w } {
 	    }
 	    set ay(b1d) 0
 	}
-
 	focus %W
     }
     # bind
@@ -2230,6 +2229,8 @@ proc actionSnapToGrid3D { w } {
     undo save SnapToGrid3D
     $w snapac
     rV
+    plb_update
+    after idle "focus $w"
  return;
 }
 # actionSnapToGrid3D
@@ -2242,6 +2243,8 @@ proc actionSnapToGrid2D { w } {
     undo save SnapToGrid2D
     $w snapac 1
     rV
+    plb_update
+    after idle "focus $w"
  return;
 }
 # actionSnapToGrid2D
@@ -2252,6 +2255,8 @@ proc actionSnapToGrid3DO { w } {
     undo save SnapToGrid3DO
     $w snapac 2
     rV
+    plb_update
+    after idle "focus $w"
  return;
 }
 # actionSnapToGrid3DO
@@ -2264,6 +2269,8 @@ proc actionSnapToGrid2DO { w } {
     undo save SnapToGrid2DO
     $w snapac 3
     rV
+    plb_update
+    after idle "focus $w"
  return;
 }
 # actionSnapToGrid2DO
@@ -2275,6 +2282,8 @@ proc actionSnapToMark { w } {
     undo save SnapToMark
     $w snapmac 0
     rV
+    plb_update
+    after idle "focus $w"
  return;
 }
 # actionSnapToMark
