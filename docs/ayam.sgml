@@ -11837,6 +11837,8 @@ the meta world, evaluates this function on a regular three-dimensional
 grid and creates a polygonal representation for a specific function
 value (the so called threshold value).
 
+<#if out="latex"><x/newpage/</#if>
+
 <sect3>MetaObjAttr Property<label id="moattr"><label id="metaobjattrprop">
 <p><#if out="latex">&nbsp;<newline></#if>
 The following attributes control the creation of the implicit surface:
@@ -11925,16 +11927,21 @@ own custom formula for a meta component. The expression may call any
 Tcl commands to calculate a field value from the current grid position,
 which is given in the global variables <tt>"x"</tt>, <tt>"y"</tt>, and
 <tt>"z"</tt>.
-The expression has to return the field value in the global variable
-<tt>"f"</tt>.
+The expression simply has to return the calculated field
+value.<footnote>Since 1.27.</footnote>
+
 Here is an example for a custom expression:
 <code>
-set f [expr {pow($x,4)+pow($y,4)+pow($z,4)}]
+expr {pow($x,4)+pow($y,4)+pow($z,4)}
 </code>
 Note that those expressions are called many times
 and since they are programmed in Tcl, this can be quite slow.
 You should use any tricks (like the curly braces
-in the expr-statement above) to speed up the expression.
+in the expr-statement above) to speed up the expression.<newline>
+Also note that in former versions of Ayam, the global variable
+<tt>"f"</tt> had to be set to return the field value. This is no longer
+the case, but old expression code that ends with
+<tt>set f [expr ...]</tt> is still valid.
 </itemize>
 
 <sect3>Conversion Support
@@ -17285,7 +17292,7 @@ of all currently selected points into the variable specified by the
 <tt/"vname"/ argument. If no variable name is provided, the indices are
 returned.<footnote>Since 1.26.</footnote>
   <item>If the argument is <tt/"-has"/, this command returns <tt/"1"/
-if atleast one of the selected objects has selected points. Otherwise <tt/"0"/
+if at least one of the selected objects has selected points. Otherwise <tt/"0"/
 is returned.<footnote>Since 1.26.</footnote>
   <item>If the argument is <tt/"-all"/, this command selects all points.
   <item>If the argument is <tt/"-none"/, this command de-selects all points.
@@ -23037,7 +23044,7 @@ Cap, Gordon, Birail1, Birail2, Text),
 <item>Quadrics will be automatically converted to NURBS
 surfaces,<footnote>Since 1.8.3.</footnote>
 <item>PolyMesh and objects that may be converted to PolyMesh objects
-(MetaObj), faces with holes are not supported by the Wavefront OBJ
+(e.g.~MetaObj), faces with holes are not supported by the Wavefront OBJ
 format and will be tesselated to triangles for export automatically,
 <item>Box (as six polygonal faces),
 <item>Instance, Clone, Mirror; those will be resolved to normal objects
