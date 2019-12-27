@@ -2158,6 +2158,16 @@ array set ElevateVNP3 {
     command { elevatevNP 3 }
 }
 
+array set ReduceUNP {
+    types { NPatch }
+    command { elevateuNP; reduceuNP }
+}
+
+array set ReduceVNP {
+    types { NPatch }
+    command { elevatevNP; reducevNP }
+}
+
 array set InsertKUNP {
     types { NPatch }
     command { insknuNP 0.5 1 }
@@ -3277,6 +3287,7 @@ lappend items UnclampUNP UnclampUNPS UnclampUNPE
 lappend items UnclampVNP UnclampVNPS UnclampVNPE
 lappend items ElevateUNP ElevateUNP2 ElevateUNP3
 lappend items ElevateVNP ElevateVNP2 ElevateVNP3
+lappend items ReduceUNP ReduceVNP
 lappend items InsertKUNP InsertK2UNP InsertKVNP InsertK2VNP
 lappend items RemoveKUNP RemoveKIUNP RemoveKVNP RemoveKIVNP
 lappend items SplitNPU SplitNPV CloseUNP CloseVNP TweenNP
