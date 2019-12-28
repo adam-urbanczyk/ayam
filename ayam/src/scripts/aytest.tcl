@@ -706,6 +706,7 @@ if { $breadth } {
 
 # knot types to test
 #  (deliberately omitting: 0 - Bezier, and 3 - Custom)
+#  these will be handled by variations below
 set ktvals { 1 2 4 5 }
 
 # also some harmless float values
@@ -1886,6 +1887,20 @@ array set RemoveKIEndS {
     }
 }
 
+array set RemoveSuK {
+    types { NCurve }
+    command {
+	set kn 0.5
+	while { 1 } {
+	    set ::ay_error 0
+	    insknNC $kn 1
+	    if { $::ay_error == 0 } break;
+	    incr kn 0.1
+	}
+	remsuknNC
+    }
+}
+
 array set TrimNC {
     types { NCurve }
     command {
@@ -2220,6 +2235,34 @@ array set RemoveKIVNP {
     }
 }
 
+array set RemoveSuKUNP {
+    types { NPatch }
+    command {
+	set kn 0.5
+	while { 1 } {
+	    set ::ay_error 0
+	    insknuNP $kn 1
+	    if { $::ay_error == 0 } break;
+	    incr kn 0.1
+	}
+	remsuknuNP
+    }
+}
+
+array set RemoveSuKVNP {
+    types { NPatch }
+    command {
+	set kn 0.5
+	while { 1 } {
+	    set ::ay_error 0
+	    insknvNP $kn 1
+	    if { $::ay_error == 0 } break;
+	    incr kn 0.1
+	}
+	remsuknvNP
+    }
+}
+
 array set CloseUNP {
     types { NPatch }
     command { closeuNP }
@@ -2246,7 +2289,7 @@ array set TweenNP {
 }
 
 
-# instead of using the full pallette of possible derivative lengths
+# instead of using the full palette of possible derivative lengths
 # of ICurve_1, we content ourselves with 0.1/1.0 variations here
 set trimic {set ICurve_1(SDLen) {0.1 1.0}; set ICurve_1(EDLen) {0.1 1.0};}
 
@@ -3063,6 +3106,7 @@ proc aytest_var { type } {
 	      if { [info exists ::${type}_${i}(valcmd)] } {
 		  append cmds " \};"
 	      }
+
 	      if { $aytestprefs(MoreOptions) } {
        append cmds { incr ::cur; set newpro [expr $::cur*100.0/$::tot]; }
        append cmds { global aytestprefs;
@@ -3274,7 +3318,7 @@ set aytest_4items $items
 set items {}
 lappend items Revert Open Close Refine Coarsen
 lappend items RefineK InsertK InsertK2 RemoveK RemoveKI RemoveKS RemoveKIS
-lappend items RemoveKI1 RemoveKI1S RemoveKIEnd RemoveKIEndS
+lappend items RemoveKI1 RemoveKI1S RemoveKIEnd RemoveKIEndS RemoveSuK
 lappend items ShiftC ShiftC2 ShiftCM ShiftCM2 ToXYC ToXZC ToYZC
 lappend items ElevateNC ElevateNC2 ElevateNC3 EstLenNC ExtendNC SplitNC
 lappend items ReduceNC TrimNC TweenNC
@@ -3290,6 +3334,7 @@ lappend items ElevateVNP ElevateVNP2 ElevateVNP3
 lappend items ReduceUNP ReduceVNP
 lappend items InsertKUNP InsertK2UNP InsertKVNP InsertK2VNP
 lappend items RemoveKUNP RemoveKIUNP RemoveKVNP RemoveKIVNP
+lappend items RemoveSuKUNP RemoveSuKVNP
 lappend items SplitNPU SplitNPV CloseUNP CloseVNP TweenNP
 set aytest_5items $items
 
