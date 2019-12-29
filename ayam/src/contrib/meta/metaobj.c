@@ -920,14 +920,17 @@ metaobj_providecb(ay_object *o, unsigned int type, ay_object **result)
       p = mw->currentnumpoly;
 
       if (!(po = (ay_pomesh_object *) calloc(1, sizeof(ay_pomesh_object))))
-	return AY_EOMEM;
+	{
+	  free(new);
+	  return AY_EOMEM;
+	}
 
       po->npolys = p;
-      po->nloops = (unsigned int *)calloc(1,sizeof(unsigned int)*p);
-      po->nverts = (unsigned int *)calloc(1,sizeof(unsigned int)*p);
-      po->verts = (unsigned int *)calloc(1,sizeof(unsigned int)*p*3);
+      po->nloops = (unsigned int *) calloc(1, sizeof(unsigned int)*p);
+      po->nverts = (unsigned int *) calloc(1, sizeof(unsigned int)*p);
+      po->verts = (unsigned int *) calloc(1, sizeof(unsigned int)*p*3);
       po->ncontrols = p*3;
-      po->controlv = (double *)calloc(1,po->ncontrols*6*sizeof(double));
+      po->controlv = (double *) calloc(1, po->ncontrols*6*sizeof(double));
       po->has_normals = AY_TRUE;
 
       if (!(po->nloops && po->verts && po->controlv))
@@ -940,6 +943,9 @@ metaobj_providecb(ay_object *o, unsigned int type, ay_object **result)
 
 	  if (po->controlv)
 	    free(po->controlv);
+
+	  free(po);
+	  free(new);
 
 	  return AY_EOMEM;
 	}
@@ -1409,6 +1415,12 @@ metacomp_readcb (FILE * fileptr, ay_object * o)
 	  free(expr);
 	}
     }
+  else
+    {
+      b->ex = 8;
+      b->ey = 8;
+      b->ez = 8;
+    }
 
   o->refine = b;
 
@@ -1466,8 +1478,6 @@ Metaobj_Init (Tcl_Interp * interp)
 {
  int ay_status = AY_OK;
  char fname[] = "metaobj_init";
- char success_cmd[] =
-   "puts stdout \"Custom object \\\"MetaObj\\\" successfully loaded.\"\n";
 
 #ifdef WIN32
   if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
@@ -1508,7 +1518,7 @@ Metaobj_Init (Tcl_Interp * interp)
 				 NULL,	/* metacomp_bbccb, */
 				 &metacomp_id);
 
-  ay_status += ay_notify_register (metaobj_notifycb, metaobj_id);
+  ay_status += ay_notify_register(metaobj_notifycb, metaobj_id);
 
   ay_status += ay_convert_register(metaobj_convertcb, metaobj_id);
 
@@ -1539,7 +1549,8 @@ Metaobj_Init (Tcl_Interp * interp)
       return TCL_OK;
     }
 
-  Tcl_Eval (interp, success_cmd);
+  ay_error(AY_EOUTPUT, fname,
+	   "Custom object \"MetaObj\" successfully loaded.");
 
  return TCL_OK;
 } /* Metaobj_Init */
