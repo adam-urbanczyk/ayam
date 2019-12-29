@@ -1554,13 +1554,13 @@ objio_writescene(char *filename, int selected)
 	  /* user cancelled export? */
 	  if(ay_status == AY_EDONOTLINK)
 	    ay_status = AY_OK;
-	  fclose(fileptr);
-	  return;
+	  goto cleanup;
 	}
 
       o = o->next;
     } /* while */
 
+cleanup:
   if(ferror(fileptr))
     {
       ay_error(AY_ERROR, fname, strerror(errno));
