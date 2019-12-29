@@ -1930,6 +1930,19 @@ array set TweenNC {
     }
 }
 
+array set InterpNC {
+    types { NCurve }
+    command { interpNC }
+}
+
+array set ApproxNC {
+    types { NCurve }
+    command {
+	getProp;
+	if { $::NCurveAttrData(Length) > 2 } { approxNC }
+    }
+}
+
 array set SplitNC {
     types { NCurve }
     command {
@@ -3321,7 +3334,7 @@ lappend items RefineK InsertK InsertK2 RemoveK RemoveKI RemoveKS RemoveKIS
 lappend items RemoveKI1 RemoveKI1S RemoveKIEnd RemoveKIEndS RemoveSuK
 lappend items ShiftC ShiftC2 ShiftCM ShiftCM2 ToXYC ToXZC ToYZC
 lappend items ElevateNC ElevateNC2 ElevateNC3 EstLenNC ExtendNC SplitNC
-lappend items ReduceNC TrimNC TweenNC
+lappend items ReduceNC TrimNC TweenNC InterpNC ApproxNC
 lappend items ClampNC ClampNCS ClampNCE
 lappend items UnclampNC UnclampNCS UnclampNCE
 lappend items RevertUS RevertVS SwapUVS RefineUNP RefineVNP
