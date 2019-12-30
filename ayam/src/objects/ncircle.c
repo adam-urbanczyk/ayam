@@ -772,7 +772,7 @@ ay_ncircle_revertcb(ay_object *o, int op)
 
   nc = (ay_ncircle_object *)o->refine;
 
-  t = nc->tmin;
+  t = nc->tmax;
   nc->tmax = nc->tmin;
   nc->tmin = t;
 
