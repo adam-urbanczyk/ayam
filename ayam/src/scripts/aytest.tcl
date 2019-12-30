@@ -19,6 +19,7 @@ array set aytestprefs {
     Status "Select Item"
     TestItem "n/a"
     TestVariant "n/a"
+    DebugCreate 0
 }
 
 # aytest_handleLBS:
@@ -688,7 +689,7 @@ puts -nonewline "\n"
 proc aytest_crtnvars { { breadth 0 } } {
 global NCurve_1 NCurve_2 NCurve_3 NCurve_4 NCurve_5 NCurve_6 ICurve_1 ACurve_1
 global NPatch_1 NPatch_2 NPatch_3 NPatch_4 NPatch_5 NPatch_6 NPatch_7
-global IPatch_1 PatchMesh_1
+global IPatch_1 PatchMesh_1 NCircle_1
 
 # lengths/widths/heights to test
 set lengthvals { 2 3 4 5 6 7 8 9 10 100 }
@@ -1020,6 +1021,26 @@ set PatchMesh_2(BType_V) {0 1 2 3 4}
 set PatchMesh_2(valcmd) {
     [aytest_checkpml $::PatchMeshAttrData(Width) $::PatchMeshAttrData(BType_U) $::PatchMeshAttrData(Close_U) $::PatchMeshAttrData(Height) $::PatchMeshAttrData(BType_V) $::PatchMeshAttrData(Close_V)]
 }
+
+
+#############
+# NCircle
+#############
+
+# NCircle Variation #1
+array set NCircle_1 {
+    arr NCircleAttrData
+    freevars {TMin TMax}
+    fixedvars { dummy }
+    fixedvals { {0} }
+}
+set angles {-360 -359 -271 -270 -269 -181 -180 -179 -91 -90 -89 -1 1 89 90 91 179 180 181 269 270 271 359 360}
+set NCircle_1(TMin) $angles
+set NCircle_1(TMax) $angles
+set NCircle_1(valcmd) {
+    [expr {$::NCircleAttrData(TMin) != $::NCircleAttrData(TMax)}]
+}
+
 }
 # aytest_crtnvars
 
@@ -1768,7 +1789,7 @@ set lengths {4 5 6}
 
 array set Revert {
     types { NCurve ICurve ACurve NCircle ConcatNC }
-    command { revertC }
+    command { revertC; }
 }
 
 array set RevertUS {
@@ -1953,6 +1974,14 @@ array set SplitNC {
 	set k2 [lindex $::NCurveAttrData(Knots) $index]
 	set kn [expr {$k1+($k2-$k1)*0.5}]
 	splitNC $kn; hSL; delOb; hSL
+    }
+}
+
+array set ExtractNC {
+    types { NCurve }
+    command {
+	getProp
+	extrNC -relative 0.1 0.9; hSL; delOb; hSL
     }
 }
 
@@ -2309,69 +2338,6 @@ set trimic {set ICurve_1(SDLen) {0.1 1.0}; set ICurve_1(EDLen) {0.1 1.0};}
 foreach tool { Revert Refine Coarsen Open Close ToXYC ToXZC ToYZC } {
     set ${tool}(precmd) $trimic
 }
-
-#
-#
-#
-
-array set NCurve_1 {
-    arr NCurveAttrData
-    freevars {Length}
-    fixedvars {dummy}
-    fixedvals { {0} }
-}
-set NCurve_1(Length) $lengths
-
-array set ICurve_1 {
-    arr ICurveAttrData
-    freevars {Length}
-    fixedvars {dummy}
-    fixedvals { {0} }
-}
-set ICurve_1(Length) $lengths
-
-array set ACurve_1 {
-    arr ACurveAttrData
-    freevars {Length}
-    fixedvars {dummy}
-    fixedvals { {0} }
-}
-set ACurve_1(Length) $lengths
-
-array set BPatch_1 {
-    arr BPatchAttrData
-    freevars {P1_X}
-    fixedvars {dummy}
-    fixedvals { {0} }
-}
-set BPatch_1(P1_X) {-0.5 -0.5}
-
-array set NPatch_1 {
-    arr NPatchAttrData
-    freevars {Width Height}
-    fixedvars {dummy}
-    fixedvals { {0} }
-}
-set NPatch_1(Width) $lengths
-set NPatch_1(Height) $lengths
-
-array set IPatch_1 {
-    arr IPatchAttrData
-    freevars {Width Height}
-    fixedvars {dummy}
-    fixedvals { {0} }
-}
-set IPatch_1(Width) $lengths
-set IPatch_1(Height) $lengths
-
-array set PatchMesh_1 {
-    arr PatchMeshAttrData
-    freevars {Width Height}
-    fixedvars {dummy}
-    fixedvals { {0} }
-}
-set PatchMesh_1(Width) $lengths
-set PatchMesh_1(Height) $lengths
 
 aytest_crtnvars $aytestprefs(Breadth)
 
@@ -3103,13 +3069,24 @@ proc aytest_var { type } {
 		  eval append cmds \$::${type}_${i}(valcmd)
 		  append cmds "\} \{ "
 	      }
-
-	      append cmds {\
-		  selOb 0;copOb;pasOb;hSL;
-		  setProp;
-		  movOb $k $l $i;
-		  incr k 2;\
+	      if { $aytestprefs(DebugCreate) } {
+		  append cmds {\
+		      selOb 0;copOb;pasOb;hSL;
+		      set ay_error 0
+		      setProp;
+		      if { $ay_error != 0 } { parray \$::${type}_${i}(arr) }
+		      movOb $k $l $i;
+		      incr k 2;\
+		  }
+	      } else {
+		  append cmds {\
+		      selOb 0;copOb;pasOb;hSL;
+		      setProp;
+		      movOb $k $l $i;
+		      incr k 2;\
+		  }
 	      }
+
 	      if { [info exists ::${type}_${i}(tstcmd)] } {
 		  eval append cmds \$::${type}_${i}(tstcmd)
 	      }
@@ -3317,7 +3294,7 @@ set aytest_2items $items
 
 # set up types to test in test #3
 set items {}
-lappend items NCurve ICurve ACurve NPatch IPatch PatchMesh
+lappend items NCurve ICurve ACurve NPatch IPatch PatchMesh NCircle
 set aytest_3items $items
 
 # set up types to test in test #4
@@ -3333,8 +3310,8 @@ lappend items Revert Open Close Refine Coarsen
 lappend items RefineK InsertK InsertK2 RemoveK RemoveKI RemoveKS RemoveKIS
 lappend items RemoveKI1 RemoveKI1S RemoveKIEnd RemoveKIEndS RemoveSuK
 lappend items ShiftC ShiftC2 ShiftCM ShiftCM2 ToXYC ToXZC ToYZC
-lappend items ElevateNC ElevateNC2 ElevateNC3 EstLenNC ExtendNC SplitNC
-lappend items ReduceNC TrimNC TweenNC InterpNC ApproxNC
+lappend items ElevateNC ElevateNC2 ElevateNC3 ReduceNC EstLenNC ExtendNC
+lappend items SplitNC ExtractNC TrimNC TweenNC InterpNC ApproxNC
 lappend items ClampNC ClampNCS ClampNCE
 lappend items UnclampNC UnclampNCS UnclampNCE
 lappend items RevertUS RevertVS SwapUVS RefineUNP RefineVNP
