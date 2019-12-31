@@ -1140,7 +1140,7 @@ Modelling Actions (View Windows):
  Open/Close           <$svsc(OpenC)> / <$svsc(CloseC)>
  Refine/Coarsen       <$svsc(RefineC)> / <$svsc(CoarsenC)>
 
- Split Curve          <$svsc(SplitNC)>
+ Revert/Split Curve   <$svsc(RevertC)> / <$svsc(SplitNC)>
 
 View Actions (View Windows):
 
