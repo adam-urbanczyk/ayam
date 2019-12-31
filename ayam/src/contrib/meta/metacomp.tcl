@@ -27,6 +27,13 @@ proc metacomp_setAttr { } {
 proc metacomp_getAttr { } {
     global ay MetaCompAttr MetaCompAttrData
 
+    set sw 40
+    set sh 6
+    if { [winfo exists $ay(pca).$MetaCompAttr(w).tScript] } {
+	set sw [$ay(pca).$MetaCompAttr(w).tScript cget -width]
+	set sh [$ay(pca).$MetaCompAttr(w).tScript cget -height]
+    }
+
     catch {destroy $ay(pca).$MetaCompAttr(w)}
     set w [frame $ay(pca).$MetaCompAttr(w)]
     getProp
@@ -62,7 +69,7 @@ proc metacomp_getAttr { } {
 	addText $w t1 "Expression:"
 
 	set t $w.tScript
-	pack [text $t -undo 1 -width 40 -height 6]
+	pack [text $t -undo 1 -width $sw -height $sh]
 	if { $ay(ws) == "Aqua" } {
 	    $t conf -relief sunken -bd 2
 	}
@@ -142,7 +149,7 @@ array set MetaCompAttrData {
 # { set r 1.0;set f [expr {sqrt(pow($y,2)+pow($z,2))}];if {$x < -$r} {set f [expr {sqrt(pow(($x+$r),2)+pow($y,2)+pow($z,2))}]}; if {$x > $r} {set f [expr {sqrt(pow(($x-$r),2)+pow($y,2)+pow($z,2))}]} } }
 
 # add menu entry to Create/Custom sub-menu
-mmenu_addcustom MetaComp "crtOb MetaComp;uS;sL;rV"
+mmenu_addcustom MetaComp "crtOb MetaComp;uS;sL;notifyOb;rV"
 
 # tell the rest of Ayam (or other custom objects), that we are loaded
 lappend ay(co) MetaComp
