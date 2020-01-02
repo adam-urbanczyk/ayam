@@ -1,5 +1,5 @@
-[13. Dec 2019] Tip:
-===================
+[2. Jan 2020] Tip:
+==================
 Bug Fixes:
 o NURBSphere objects can not be trimmed (SF 587)
 o repeated toggling of advanced search options (SF 588)
@@ -17,6 +17,8 @@ o add warning message when a transformation action is started in points
 o tesselation of trimmed NURBS using STESS is much faster now
 o improved handling of weights for single drag selected rational points
   in numeric edit action
+o improved handling of closed and periodic surfaces in surface
+  interpolation tool
 o added tools to reduce the order/degree of NURBS curves and surfaces
 o added tool to interpolate NURBS curves
 o added tool to approximate NURBS curves
@@ -28,7 +30,7 @@ o fixed fetching of rational points from NCircle and Script objects
 o the drag zoom view action now keeps the mark intact
 o the collapse/explode tools now work with arbitrary object types and
   change the point positions
-o coarsen operation on NURBS curves now supports a selected region
+o the coarsen operation on NURBS curves now supports a selected region
 
 GUI:
 o added intermediate quick parameter GUIs to all modelling actions that
@@ -43,6 +45,7 @@ o improved Material property GUI now presenting available registered
 o "Revert" in preferences editor now resets to state before the editor
   opened (and not to state after program startup)
 o inserting scenes now keeps the current level in the tree view
+o the zoom to all action now obeys the draw selection only view flag
 
 Scripts/Scripting Interface:
 o added script "link.tcl" to manually control updates of object hierarchy
@@ -72,7 +75,6 @@ o added "reduceuNP"/"reducevNP" commands to reduce the order of
 o aded "-relative" option to "extrNP" command
 o aded "-replace" option to "breakNP" command
 o added "-get" option to "selOb" command
-o improved handling of closed and periodic surfaces in interpolation tool
 o added value matching to "hasTag" command
 
 Import/Export:
