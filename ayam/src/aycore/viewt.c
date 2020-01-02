@@ -380,17 +380,20 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
 
   if((argc > 2) && !strcmp(argv[2], "-all"))
     {
-      ay_selection = NULL;
-      o = ay_root->next;
-      while(o && o->next)
+      if(!view->drawsel)
 	{
-	  ay_sel_add(o, AY_FALSE);
-	  o = o->next;
-	}
+	  ay_selection = NULL;
+	  o = ay_root->next;
+	  while(o && o->next)
+	    {
+	      ay_sel_add(o, AY_FALSE);
+	      o = o->next;
+	    }
 
-      zoom_to_all = AY_TRUE;
-      restore_selection = AY_TRUE;
-   }
+	  zoom_to_all = AY_TRUE;
+	  restore_selection = AY_TRUE;
+	}
+    }
 
   if(ay_selection)
     {
