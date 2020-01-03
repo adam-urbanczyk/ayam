@@ -383,7 +383,11 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
       if(!view->drawsel)
 	{
 	  ay_selection = NULL;
-	  o = ay_root->next;
+	  if(view->drawlevel)
+	    o = ay_currentlevel->object;
+	  else
+	    o = ay_root->next;
+
 	  while(o && o->next)
 	    {
 	      ay_sel_add(o, AY_FALSE);
