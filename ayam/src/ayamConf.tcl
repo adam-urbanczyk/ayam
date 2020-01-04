@@ -49,7 +49,8 @@ proc create_makefile {} {
 
     global bmrtpath aqsispath
 
-    global cflags prefix tiffpath tclpath tkpath localtcl localtk useaqua aqsis0719 aqsis090 bmrt25 preview
+    global cflags prefix tiffpath tclpath tkpath localtcl localtk localtiff
+    global useaqua aqsis0719 aqsis090 bmrt25 preview
 
     global tcl_version tk_version
 
@@ -61,12 +62,12 @@ proc create_makefile {} {
     if {$ribval == $def_ribval} {
 	set err_str "$err_str - No RIB-Writer selected.\n"
 	set err 1
-    } 
+    }
 
     if {$shaderval == $def_shaderval} {
 	set err_str "$err_str - No Shader-Parser selected.\n"
 	set err 1
-    } 
+    }
 
     if {$osval == $def_osval} {
 	set err_str "$err_str - No OS selected.\n"
@@ -101,19 +102,26 @@ proc create_makefile {} {
 	set err_str "$err_str - Tk-Path doesn't exist or is invalid!\n"
 	set err 1
     }
-    if { ![file exists $tiffpath] } {
-	set err_str "$err_str - \"$tiffpath\" doesn't exist!\n"
-	set err 1
+
+    if { !$localtiff } {
+	if { ![file exists $tiffpath] } {
+	    set err_str "$err_str - \"$tiffpath\" doesn't exist!\n"
+	    set err 1
+	} else {
+	    if { ![file exists "$tiffpath/include/tiffio.h"] } {
+		set err_str\
+		    "$err_str - \"$tiffpath/include/tiffio.h\" doesn't exist!\n"
+		set err 1
+	    }
+	    if { ((![file exists "$tiffpath/lib/libtiff.so"]) &&
+		  (![file exists "$tiffpath/lib/libtiff.a"])) } {
+		set err_str\
+		    "$err_str - \"$tiffpath/lib/libtiff.so\" doesn't exist!\n"
+		set err 1
+	    }
+	}
     } else {
-	if { ![file exists "$tiffpath/include/tiffio.h"] } {
-	    set err_str "$err_str - \"$tiffpath/include/tiffio.h\" doesn't exist!\n"
-	    set err 1
-	}
-	if { ((![file exists "$tiffpath/lib/libtiff.so"]) &&
-	      (![file exists "$tiffpath/lib/libtiff.a"])) } {
-	    set err_str "$err_str - \"$tiffpath/lib/libtiff.so\" doesn't exist!\n"
-	    set err 1
-	}
+	set tiffpath $tkpath
     }
 
     if {([regexp "BMRT"  $ribval] || [regexp "BMRT"  $shaderval]) && ![file exists $bmrtpath]} {
@@ -239,7 +247,7 @@ proc create_makefile {} {
     if {$osval == "IRIX"} {
 	set LDSWDYNAMIC "-dynamic"
     } elseif { [regexp "Mac" $osval] } {
-	set LDSWDYNAMIC "" 
+	set LDSWDYNAMIC ""
     } else {
 	set LDSWDYNAMIC "-Wl,-Bdynamic"
     }
@@ -248,7 +256,7 @@ proc create_makefile {} {
     if {$osval == "IRIX"} {
 	set LDSWSTATIC "-static"
     } elseif { [regexp "Mac" $osval] } {
-	set LDSWSTATIC "" 
+	set LDSWSTATIC ""
     } else {
 	set LDSWSTATIC "-Wl,-Bstatic"
     }
@@ -287,6 +295,7 @@ proc create_makefile {} {
     }
 
     # TIFFLIB
+
     set TIFFLIB "-L$tiffpath/lib -ltiff"
     set TIFFINC "-I$tiffpath/include"
 
@@ -405,7 +414,7 @@ proc create_makefile {} {
 		# Let's rock!
 		#
 
-	puts $dst "CFLAGS=$CFLAGS"
+		puts $dst "CFLAGS=$CFLAGS"
 		puts $dst "LD=$LD"
 		puts $dst "PREFIX=$PREFIX"
 		puts $dst "BINDIR=$PREFIX/bin"
@@ -497,12 +506,12 @@ foreach i $strs {
 
     entry .s.str.[lindex $i 0]Entry -textvariable [lindex $i 0]  -state [lindex $i 4]
     grid .s.str.[lindex $i 0]Entry -row $j -column 1 -sticky "w"
-    
+
     if {[lindex $i 3] && $tcl_version >= 8.3} {
 	button .s.str.[lindex $i 0]Req -text "Browse" -command "dirDialog . .s.str.[lindex $i 0]Entry" -state [lindex $i 4]
 	grid .s.str.[lindex $i 0]Req -row $j -column 2 -sticky "w"
     }
-   
+
     incr j
 }
 
@@ -574,6 +583,7 @@ foreach i $o {
 lappend check [list useaqua "Use Aqua" 0 disabled]
 lappend check [list localtcl "Use installed Tcl-library" 1 normal]
 lappend check [list localtk "Use installed Tk-library" 1 normal]
+lappend check [list localtiff "Use installed TIFF-library" 1 normal]
 lappend check [list bmrt25 "BMRT < 2.5" 0 disabled]
 lappend check [list aqsis0719 "Aqsis < 0.7.19" 0 disabled]
 lappend check [list aqsis090 "Aqsis > 0.9.0" 0 disabled]
