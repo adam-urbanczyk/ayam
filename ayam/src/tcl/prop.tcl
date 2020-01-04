@@ -19,6 +19,11 @@ array set Transformations {
 }
 
 array set transfPropData {
+    Quat0 0.0
+    Quat1 0.0
+    Quat2 0.0
+    Quat3 0.0
+    Quaternion ""
     QuaternionBall "n/a"
 }
 
