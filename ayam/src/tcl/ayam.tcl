@@ -821,6 +821,7 @@ array set ay {
  interpedl 0.125
  interppt 0
  interppt_l {"Chordal" "Centripetal" "Uniform"}
+ prop ""
 }
 # array ay
 
@@ -1743,7 +1744,11 @@ if { $ayprefs(NPDisplayMode) != 0 || $ayprefs(NCDisplayMode) != 0 } {
 # ayam_updateprompt - print a first prompt after configuration change
 proc ayam_updateprompt { n1 n2 op } {
     .fl.con delete end-1lines end
-    Console:prompt .fl.con "\n"
+    if { $::tcl_version < "8.5" } {
+	Console:prompt .fl.con "\n"
+    } else {
+	Console:prompt .fl.con
+    }
 }
 # ayam_updateprompt
 
