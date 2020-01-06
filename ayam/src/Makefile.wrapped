@@ -842,6 +842,12 @@ filetype:
 	-xdg-mime default ayam.desktop application/ayam
 	-xdg-icon-resource install --novendor --context mimetypes --size 32 $(BINDIR)/ayam_icon_32.png application-ayam
 
+tags:
+	etags ayam.h aycore/*.c nurbs/*.c
+
+doxydocs:
+	doxygen ayam.doxy
+
 .SUFFIXES: .so .o .cpp
 
 .PHONY: mf3d

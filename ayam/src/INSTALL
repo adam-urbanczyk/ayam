@@ -1,4 +1,4 @@
-INSTALL [1. Dec 2018]
+INSTALL [6. Jan 2020]
 
 Compilation Instructions for Ayam
 ---------------------------------
@@ -673,44 +673,33 @@ In order to compile the plugin, type:
 Load it via menu entry "File/Load Plugin".
 
 
-3.17 Installing/Uninstalling Ayam
----------------------------------
+3.17 Build Management
+---------------------
+
+This section explains additional Makefile targets that help in
+compiling/developing.
 
 Use
->make install
-to install Ayam into the system.
-
-By default, Ayam will install into /usr/local/ayam.
-It will create some sub-directories there, namely:
-/usr/local/ayam/bin for the executable,
-/usr/local/ayam/lib for the plugins and accompanying Tcl files, and
-/usr/local/ayam/doc for the documentation.
-
-You may want to add "/usr/local/ayam/bin" to your PATH environment variable.
-Be sure to also add "." or "/usr/local/ayam/lib" to your LD_LIBRARY_PATH
-environment variable, otherwise Ayam might not be able to load the plugins.
-
-The installation procedure will also install the current Makefile,
-that may be used to uninstall Ayam again, e.g. using:
->make -f /usr/local/ayam/lib/Makefile uninstall
-
-To check what installing/uninstalling will do to your system use
->make -n install
-or
->make -n -f /usr/local/ayam/lib/Makefile uninstall
-first.
-
-Use
->make clean
+> make clean
 to remove all objects; this step is necessary if you switch build types
 ( shared <-> wrapped )!
 
->make mostlyclean
+> make mostlyclean
 to make clean but not remove the objects that never change,
 like Apples mf3d code and Affines sribw code.
 
+Use
+> make tags
+to create a etags file named TAGS in the current directory containing
+the symbols of the Ayam API.
 
-3.17 Creating an application bundle on Mac OS X
+Use
+> make doxydocs
+to create the Doxygen API documentation in the directory doxydocs.
+
+
+
+3.18 Creating an application bundle on Mac OS X
 -----------------------------------------------
 
 Since Ayam 1.9, the Ayam source distribution contains a skeleton
