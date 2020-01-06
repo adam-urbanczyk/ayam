@@ -120,8 +120,6 @@ proc create_makefile {} {
 		set err 1
 	    }
 	}
-    } else {
-	set tiffpath $tkpath
     }
 
     if {([regexp "BMRT"  $ribval] || [regexp "BMRT"  $shaderval]) && ![file exists $bmrtpath]} {
@@ -295,9 +293,13 @@ proc create_makefile {} {
     }
 
     # TIFFLIB
-
-    set TIFFLIB "-L$tiffpath/lib -ltiff"
-    set TIFFINC "-I$tiffpath/include"
+    if { $localtiff } {
+	set TIFFLIB "-ltiff"
+	set TIFFINC ""
+    } else {
+	set TIFFLIB "-L$tiffpath/lib -ltiff"
+	set TIFFINC "-I$tiffpath/include"
+    }
 
     # OpenGL and Aqua specific Tcl/Tk
     if { $useaqua } {
