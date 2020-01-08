@@ -1660,6 +1660,11 @@ proc getMark { } {
 }
 # getMark
 
+##############################
+# clearMark:
+proc clearMark { } {
+ setMark
+}
 
 ##############################
 # warpMouse:
@@ -1772,11 +1777,17 @@ sproc setViewAttr
 gproc ""
 w     fViewAttr
 }
-
+array set CameraData {
+ Rot_X 0.0
+ Rot_Y 0.0
+ Rot_Z 0.0
+}
 array set ViewAttribData {
  Type 0
  DrawingMode 0
  ModellingMode 0
+ TransformPoints 0
+ togl ""
 }
 
 set w [frame $ay(pca).$ViewAttrib(w)]
@@ -1803,7 +1814,6 @@ addCheck $w ViewAttribData UseGrid
 addText $w e4 "Space:"
 addMenu $w ViewAttribData ModellingMode\
     [list "Global" "Local (Level)" "Local (Object)"]
-
 
 addText $w e5 "Background:"
 addCheck $w ViewAttribData DrawBG

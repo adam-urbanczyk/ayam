@@ -23,7 +23,6 @@ proc extrude_getAttr { } {
     # remove old, create new ExtrudeAttr-UI
     catch {destroy $ay(pca).$ExtrudeAttr(w)}
     set w [frame $ay(pca).$ExtrudeAttr(w)]
-    getProp
 
     set tagnames ""
     set tagvalues ""
@@ -62,6 +61,8 @@ proc extrude_getAttr { } {
 
     addParam $w $a Tolerance
     addMenu $w $a DisplayMode $ay(npdisplaymodes)
+
+    getProp
 
     # add UI to property canvas
     plb_setwin $w $oldfocus

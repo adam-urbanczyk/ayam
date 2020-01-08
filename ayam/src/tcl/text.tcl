@@ -19,8 +19,6 @@ proc text_getAttr { } {
 
     set oldfocus [focus]
 
-    getProp
-
     # remove old, create new TextAttr-UI
     catch {destroy $ay(pca).$TextAttr(w)}
     set w [frame $ay(pca).$TextAttr(w)]
@@ -64,6 +62,8 @@ proc text_getAttr { } {
 
     addParam $w $a Tolerance
     addMenu $w $a DisplayMode $ay(npdisplaymodes)
+
+    getProp
 
     # add UI to property canvas
     plb_setwin $w $oldfocus

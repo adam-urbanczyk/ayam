@@ -23,6 +23,10 @@ proc init_Clone { } {
 
     array set CloneAttrData {
 	NumClones 1
+	Quat0 0.0
+	Quat1 0.0
+	Quat2 0.0
+	Quat3 0.0
 	Quaternion "\[0, 0, 0, 1\]"
 	QuaternionBall "n/a"
     }

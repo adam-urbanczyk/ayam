@@ -21,8 +21,6 @@ proc ipatch_getAttr { } {
     set w [frame $ay(pca).$IPatchAttr(w)]
     set a $IPatchAttr(arr)
 
-    getProp
-
     set ay(bok) $ay(appb)
 
     # create IPatchAttr-UI
@@ -60,6 +58,8 @@ proc ipatch_getAttr { } {
 
     addText $w $a "Created NURBS Patch:"
     addInfo $w $a NPInfo
+
+    getProp
 
     plb_setwin $w $oldfocus
 
