@@ -121,8 +121,7 @@ ay_prop_gettrafotcmd(ClientData clientData, Tcl_Interp *interp,
 {
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- char *n1 = "transfPropData", *quatstr = NULL;
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "transfPropData", *quatstr = NULL;
 
   if(!sel)
     {
@@ -135,63 +134,45 @@ ay_prop_gettrafotcmd(ClientData clientData, Tcl_Interp *interp,
 
   o = sel->object;
 
-  toa = Tcl_NewStringObj(n1, -1);
-  ton = Tcl_NewStringObj("Translate_X", -1);
-  to = Tcl_NewDoubleObj(o->movx);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "Translate_Y", -1);
-  to = Tcl_NewDoubleObj(o->movy);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "Translate_Z", -1);
-  to = Tcl_NewDoubleObj(o->movz);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Translate_X", Tcl_NewDoubleObj(o->movx),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Translate_Y", Tcl_NewDoubleObj(o->movy),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Translate_Z", Tcl_NewDoubleObj(o->movz),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Quat0", -1);
-  to = Tcl_NewDoubleObj(o->quat[0]);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "Quat1", -1);
-  to = Tcl_NewDoubleObj(o->quat[1]);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "Quat2", -1);
-  to = Tcl_NewDoubleObj(o->quat[2]);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "Quat3", -1);
-  to = Tcl_NewDoubleObj(o->quat[3]);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Quat0", Tcl_NewDoubleObj(o->quat[0]),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Quat1", Tcl_NewDoubleObj(o->quat[1]),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Quat2", Tcl_NewDoubleObj(o->quat[2]),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Quat3", Tcl_NewDoubleObj(o->quat[3]),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Quaternion", -1);
   sprintf(quatstr, "[%.2lg, %.2lg, %.2lg, %.2lg]",
 	  o->quat[0], o->quat[1], o->quat[2], o->quat[3]);
-  to = Tcl_NewStringObj(quatstr, -1);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Quaternion", Tcl_NewStringObj(quatstr, -1),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
   sprintf(quatstr, "[%lg, %lg, %lg, %lg]",
 	  o->quat[0], o->quat[1], o->quat[2], o->quat[3]);
-  to = Tcl_NewStringObj(quatstr, -1);
-  Tcl_SetStringObj(ton, "QuaternionBall", -1);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "QuaternionBall", Tcl_NewStringObj(quatstr, -1),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Rotate_X", -1);
-  to = Tcl_NewDoubleObj(o->rotx);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "Rotate_Y", -1);
-  to = Tcl_NewDoubleObj(o->roty);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "Rotate_Z", -1);
-  to = Tcl_NewDoubleObj(o->rotz);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Rotate_X", Tcl_NewDoubleObj(o->rotx),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Rotate_Y", Tcl_NewDoubleObj(o->roty),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Rotate_Z", Tcl_NewDoubleObj(o->rotz),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Scale_X", -1);
-  to = Tcl_NewDoubleObj(o->scalx);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "Scale_Y", -1);
-  to = Tcl_NewDoubleObj(o->scaly);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "Scale_Z", -1);
-  to = Tcl_NewDoubleObj(o->scalz);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  Tcl_SetVar2Ex(interp, arr, "Scale_X", Tcl_NewDoubleObj(o->scalx),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Scale_Y", Tcl_NewDoubleObj(o->scaly),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Scale_Z", Tcl_NewDoubleObj(o->scalz),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   free(quatstr);
 
@@ -216,8 +197,8 @@ ay_prop_settrafotcmd(ClientData clientData, Tcl_Interp *interp,
 {
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- char *n1 = "transfPropData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "transfPropData";
+ Tcl_Obj *to = NULL;
  double dtemp;
  double xaxis[3] = {1.0,0.0,0.0};
  double yaxis[3] = {0.0,1.0,0.0};
@@ -233,14 +214,12 @@ ay_prop_settrafotcmd(ClientData clientData, Tcl_Interp *interp,
 
   o = sel->object;
 
-  toa = Tcl_NewStringObj("ay", -1);
-  ton = Tcl_NewStringObj("pasteProp", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, "ay", "pasteProp",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &pasteProp);
 
-  Tcl_SetStringObj(toa, n1, -1);
-  Tcl_SetStringObj(ton, "Translate_X", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Translate_X",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &dtemp);
   if(dtemp != o->movx)
     {
@@ -248,8 +227,8 @@ ay_prop_settrafotcmd(ClientData clientData, Tcl_Interp *interp,
       notify_parent = AY_TRUE;
     }
 
-  Tcl_SetStringObj(ton, "Translate_Y", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Translate_Y",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &dtemp);
   if(dtemp != o->movy)
     {
@@ -257,8 +236,8 @@ ay_prop_settrafotcmd(ClientData clientData, Tcl_Interp *interp,
       notify_parent = AY_TRUE;
     }
 
-  Tcl_SetStringObj(ton, "Translate_Z", -1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Translate_Z",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp,to, &dtemp);
   if(dtemp != o->movz)
     {
@@ -266,32 +245,32 @@ ay_prop_settrafotcmd(ClientData clientData, Tcl_Interp *interp,
       notify_parent = AY_TRUE;
     }
 
-  Tcl_SetStringObj(ton, "Quat0", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Quat0",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &dtemp);
   if(dtemp != o->quat[0])
     {
       o->quat[0] = dtemp;
       notify_parent = AY_TRUE;
     }
-  Tcl_SetStringObj(ton, "Quat1", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Quat1",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &dtemp);
   if(dtemp != o->quat[1])
     {
       o->quat[1] = dtemp;
       notify_parent = AY_TRUE;
     }
-  Tcl_SetStringObj(ton, "Quat2", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Quat2",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &dtemp);
   if(dtemp != o->quat[2])
     {
       o->quat[2] = dtemp;
       notify_parent = AY_TRUE;
     }
-  Tcl_SetStringObj(ton, "Quat3", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Quat3",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &dtemp);
   if(dtemp != o->quat[3])
     {
@@ -299,8 +278,8 @@ ay_prop_settrafotcmd(ClientData clientData, Tcl_Interp *interp,
       notify_parent = AY_TRUE;
     }
 
-  Tcl_SetStringObj(ton, "Rotate_X", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Rotate_X",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &dtemp);
   if(o->rotx != dtemp)
     {
@@ -313,8 +292,8 @@ ay_prop_settrafotcmd(ClientData clientData, Tcl_Interp *interp,
       notify_parent = AY_TRUE;
       o->rotx = dtemp;
     }
-  Tcl_SetStringObj(ton, "Rotate_Y", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Rotate_Y",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &dtemp);
   if(o->roty != dtemp)
     {
@@ -327,8 +306,8 @@ ay_prop_settrafotcmd(ClientData clientData, Tcl_Interp *interp,
       notify_parent = AY_TRUE;
       o->roty = dtemp;
     }
-  Tcl_SetStringObj(ton, "Rotate_Z", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Rotate_Z",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &dtemp);
   if(o->rotz != dtemp)
     {
@@ -350,33 +329,30 @@ ay_prop_settrafotcmd(ClientData clientData, Tcl_Interp *interp,
       o->quat[3] = 1.0;
     }
 
-  Tcl_SetStringObj(ton, "Scale_X", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Scale_X",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &dtemp);
   if(dtemp != 0.0)
     {
       o->scalx = dtemp;
       notify_parent = AY_TRUE;
     }
-  Tcl_SetStringObj(ton, "Scale_Y", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Scale_Y",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &dtemp);
   if(dtemp != 0.0)
     {
       o->scaly = dtemp;
       notify_parent = AY_TRUE;
     }
-  Tcl_SetStringObj(ton, "Scale_Z", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Scale_Z",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &dtemp);
   if(dtemp != 0.0)
     {
       o->scalz = dtemp;
       notify_parent = AY_TRUE;
     }
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
   if(notify_parent)
     {
@@ -405,8 +381,7 @@ ay_prop_getattrtcmd(ClientData clientData, Tcl_Interp *interp,
 {
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- char *n1 = "attrPropData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "attrPropData";
 
   if(!sel)
     {
@@ -416,25 +391,17 @@ ay_prop_getattrtcmd(ClientData clientData, Tcl_Interp *interp,
 
   o = sel->object;
 
-  toa = Tcl_NewStringObj(n1, -1);
-  ton = Tcl_NewStringObj("Objectname", -1);
-  to = Tcl_NewStringObj(o->name, -1);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Objectname", Tcl_NewStringObj(o->name, -1),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Hide", -1);
-  to = Tcl_NewIntObj(o->hide);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Hide", Tcl_NewIntObj(o->hide),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "HideChildren", -1);
-  to = Tcl_NewIntObj(o->hide_children);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "HideChildren", Tcl_NewIntObj(o->hide_children),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "RefCount", -1);
-  to = Tcl_NewIntObj(o->refcount);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  Tcl_SetVar2Ex(interp, arr, "HideChildren", Tcl_NewIntObj(o->refcount),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
  return TCL_OK;
 } /* ay_prop_getattrtcmd */
@@ -457,8 +424,8 @@ ay_prop_setattrtcmd(ClientData clientData, Tcl_Interp *interp,
 {
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- char *n1 = "attrPropData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "attrPropData";
+ Tcl_Obj *to = NULL;
  char *string = NULL;
  int stringlen;
 
@@ -470,9 +437,8 @@ ay_prop_setattrtcmd(ClientData clientData, Tcl_Interp *interp,
 
   o = sel->object;
 
-  toa = Tcl_NewStringObj(n1, -1);
-  ton = Tcl_NewStringObj("Objectname", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Objectname",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   string = Tcl_GetStringFromObj(to, &stringlen);
   if(!string)
     {
@@ -494,16 +460,13 @@ ay_prop_setattrtcmd(ClientData clientData, Tcl_Interp *interp,
       strcpy(o->name, string);
     }
 
-  Tcl_SetStringObj(ton, "Hide", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Hide",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &o->hide);
 
-  Tcl_SetStringObj(ton, "HideChildren", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "HideChildren",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &o->hide_children);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
   ay_notify_parent();
 
@@ -528,8 +491,7 @@ ay_prop_getmattcmd(ClientData clientData, Tcl_Interp *interp,
 {
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- char *n1 = "matPropData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "matPropData";
  ay_mat_object *material = NULL;
  char *matname = NULL;
 
@@ -541,12 +503,9 @@ ay_prop_getmattcmd(ClientData clientData, Tcl_Interp *interp,
 
   o = sel->object;
 
-  toa = Tcl_NewStringObj(n1, -1);
-  ton = Tcl_NewStringObj("Materialname", -1);
   /* clear variable */
-  to = Tcl_NewStringObj("", -1);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Materialname", Tcl_NewStringObj("", -1),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   material = o->mat;
 
@@ -555,14 +514,11 @@ ay_prop_getmattcmd(ClientData clientData, Tcl_Interp *interp,
       if(material->nameptr)
 	{
 	  matname = *(material->nameptr);
-	  to = Tcl_NewStringObj(matname, -1);
-	  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-			 TCL_GLOBAL_ONLY);
+	  Tcl_SetVar2Ex(interp, arr, "Materialname",
+			Tcl_NewStringObj(matname, -1),
+			TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	}
     }
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
  return TCL_OK;
 } /* ay_prop_getmattcmd */
@@ -586,8 +542,8 @@ ay_prop_setmattcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL, *m = NULL;
- char *n1 = "matPropData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "matPropData";
+ Tcl_Obj *to = NULL;
  char *string = NULL;
  int stringlen;
  ay_mat_object *material = NULL;
@@ -600,9 +556,8 @@ ay_prop_setmattcmd(ClientData clientData, Tcl_Interp *interp,
 
   o = sel->object;
 
-  toa = Tcl_NewStringObj(n1, -1);
-  ton = Tcl_NewStringObj("Materialname", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Materialname",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   string = Tcl_GetStringFromObj(to, &stringlen);
   if(!string)
     {
@@ -640,9 +595,6 @@ ay_prop_setmattcmd(ClientData clientData, Tcl_Interp *interp,
 	}
     }
 
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
-
   ay_notify_parent();
 
  return TCL_OK;
@@ -653,19 +605,16 @@ ay_prop_setmattcmd(ClientData clientData, Tcl_Interp *interp,
  *  compile info string for NPInfo property field
  */
 int
-ay_prop_getnpinfo(Tcl_Interp *interp, char *n1, ay_object *o)
+ay_prop_getnpinfo(Tcl_Interp *interp, char *arr, ay_object *o)
 {
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL, *to2 = NULL;
+ Tcl_Obj *to = NULL, *tob = NULL;
  char buffer[128], buffer2[128], buffer3[64], buffer4[64];
  char buffer5[64];
  ay_nurbpatch_object *np = NULL;
+ Tcl_DString ds;
 
-  if(!interp || !n1)
+  if(!interp || !arr)
     return AY_ENULL;
-
-  toa = Tcl_NewStringObj(n1, -1);
-
-  ton = Tcl_NewStringObj("NPInfo", -1);
 
   if(o && o->type == AY_IDNPATCH)
     {
@@ -682,18 +631,19 @@ ay_prop_getnpinfo(Tcl_Interp *interp, char *n1, ay_object *o)
       to = Tcl_NewStringObj("n/a", -1);
     } /* if */
 
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "NPInfo", to,
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   /* set Balloon info text */
-  Tcl_SetStringObj(ton, "NPInfoBall", -1);
   if(np)
     {
+      Tcl_DStringInit(&ds);
+
       sprintf(buffer2/*, sizeof(buffer)*/,
 	      "Width: %d\nHeight: %d\nOrder_U: %d\nOrder_V: %d\n",
 	      np->width, np->height, np->uorder, np->vorder);
 
-      to2 = Tcl_NewStringObj(buffer2, -1);
+      Tcl_DStringAppend(&ds, buffer2, -1);
 
       sprintf(buffer3/*, sizeof(buffer)*/, "Knot-Type_U: ");
       switch(np->uknot_type)
@@ -721,7 +671,7 @@ ay_prop_getnpinfo(Tcl_Interp *interp, char *n1, ay_object *o)
 	  break;
 	}
 
-      Tcl_AppendToObj(to2, buffer3, -1);
+      Tcl_DStringAppend(&ds, buffer3, -1);
 
       sprintf(buffer4/*, sizeof(buffer)*/, "Knot-Type_V: ");
       switch(np->vknot_type)
@@ -749,7 +699,7 @@ ay_prop_getnpinfo(Tcl_Interp *interp, char *n1, ay_object *o)
 	  break;
 	}
 
-      Tcl_AppendToObj(to2, buffer4, -1);
+      Tcl_DStringAppend(&ds, buffer4, -1);
 
       sprintf(buffer5/*, sizeof(buffer)*/, "Is_Rational: ");
 
@@ -762,18 +712,19 @@ ay_prop_getnpinfo(Tcl_Interp *interp, char *n1, ay_object *o)
 	  sprintf(&(buffer5[13])/*, sizeof(buffer)*/, "No");
 	}
 
-      Tcl_AppendToObj(to2, buffer5, -1);
+      Tcl_DStringAppend(&ds, buffer5, -1);
+
+      tob = Tcl_NewStringObj(Tcl_DStringValue(&ds), -1);
+
+      Tcl_DStringFree(&ds);
     }
   else
     {
-      to2 = Tcl_NewStringObj("n/a", -1);
+      tob = Tcl_NewStringObj("n/a", -1);
     } /* if o is NPatch */
 
-  Tcl_ObjSetVar2(interp, toa, ton, to2, TCL_LEAVE_ERR_MSG |
+  Tcl_SetVar2Ex(interp, arr, "NPInfoBall", tob, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
  return AY_OK;
 } /* ay_prop_getnpinfo */
@@ -783,19 +734,16 @@ ay_prop_getnpinfo(Tcl_Interp *interp, char *n1, ay_object *o)
  *  compile info string for NCInfo property field
  */
 int
-ay_prop_getncinfo(Tcl_Interp *interp, char *n1, ay_object *o)
+ay_prop_getncinfo(Tcl_Interp *interp, char *arr, ay_object *o)
 {
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL, *to2 = NULL;
+ Tcl_Obj *to = NULL, *tob = NULL;
  char buffer[256], buffer2[128], buffer3[64], buffer4[64];
  char buffer5[64];
  ay_nurbcurve_object *nc = NULL;
+ Tcl_DString ds;
 
-  if(!interp || !n1)
+  if(!interp || !arr)
     return AY_ENULL;
-
-  toa = Tcl_NewStringObj(n1, -1);
-
-  ton = Tcl_NewStringObj("NCInfo", -1);
 
   if(o && o->type == AY_IDNCURVE)
     {
@@ -811,18 +759,19 @@ ay_prop_getncinfo(Tcl_Interp *interp, char *n1, ay_object *o)
       to = Tcl_NewStringObj("n/a", -1);
     } /* if */
 
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
+  Tcl_SetVar2Ex(interp, arr, "NCInfo", to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
   /* set Balloon info text */
-  Tcl_SetStringObj(ton, "NCInfoBall", -1);
   if(nc)
     {
+      Tcl_DStringInit(&ds);
+
       sprintf(buffer2/*, sizeof(buffer)*/,
 	      "Length: %d\nOrder: %d\n",
 	      nc->length, nc->order);
 
-      to2 = Tcl_NewStringObj(buffer2, -1);
+      Tcl_DStringAppend(&ds, buffer2, -1);
 
       sprintf(buffer3/*, sizeof(buffer)*/, "Knot-Type: ");
       switch(nc->knot_type)
@@ -850,7 +799,7 @@ ay_prop_getncinfo(Tcl_Interp *interp, char *n1, ay_object *o)
 	  break;
 	}
 
-      Tcl_AppendToObj(to2, buffer3, -1);
+      Tcl_DStringAppend(&ds, buffer3, -1);
 
       sprintf(buffer4/*, sizeof(buffer)*/, "Is_Rational: ");
 
@@ -863,7 +812,7 @@ ay_prop_getncinfo(Tcl_Interp *interp, char *n1, ay_object *o)
 	  sprintf(&(buffer4[13])/*, sizeof(buffer)*/, "No\n");
 	}
 
-      Tcl_AppendToObj(to2, buffer4, -1);
+      Tcl_DStringAppend(&ds, buffer4, -1);
 
       sprintf(buffer5/*, sizeof(buffer)*/, "Type: ");
 
@@ -882,18 +831,19 @@ ay_prop_getncinfo(Tcl_Interp *interp, char *n1, ay_object *o)
 	  break;
 	} /* switch */
 
-      Tcl_AppendToObj(to2, buffer5, -1);
+      Tcl_DStringAppend(&ds, buffer5, -1);
+
+      tob = Tcl_NewStringObj(Tcl_DStringValue(&ds), -1);
+
+      Tcl_DStringFree(&ds);
     }
   else
     {
-      to2 = Tcl_NewStringObj("n/a", -1);
+      tob = Tcl_NewStringObj("n/a", -1);
     } /* if o is NCurve */
 
-  Tcl_ObjSetVar2(interp, toa, ton, to2, TCL_LEAVE_ERR_MSG |
+  Tcl_SetVar2Ex(interp, arr, "NCInfoBall", tob, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
  return AY_OK;
 } /* ay_prop_getncinfo */
