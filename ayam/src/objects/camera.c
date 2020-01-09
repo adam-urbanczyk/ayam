@@ -203,9 +203,13 @@ int
 ay_camera_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  ay_camera_object *camera = NULL;
- char *n1 = "CameraData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "CameraData";
+ int i = 0;
+ Tcl_Obj *tco = NULL;
  char fname[] = "camera_setpropcb";
+ char *fr[3] = {"From_X","From_Y","From_Z"};
+ char *to[3] = {"To_X","To_Y","To_Z"};
+ char *up[3] = {"Up_X","Up_Y","Up_Z"};
 
   if(!o)
     return AY_ENULL;
@@ -215,51 +219,42 @@ ay_camera_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!camera)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1, -1);
-  ton = Tcl_NewStringObj("From_X",-1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &camera->from[0]);
-  Tcl_SetStringObj(ton, "From_Y", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &camera->from[1]);
-  Tcl_SetStringObj(ton, "From_Z", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &camera->from[2]);
+  for(i = 0; i < 3; i++)
+    {
+      tco = Tcl_GetVar2Ex(interp, arr, fr[i],
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_GetDoubleFromObj(interp, tco, &(camera->from[i]));
+    }
 
-  Tcl_SetStringObj(ton, "To_X", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &camera->to[0]);
-  Tcl_SetStringObj(ton, "To_Y", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &camera->to[1]);
-  Tcl_SetStringObj(ton, "To_Z", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &camera->to[2]);
+  for(i = 0; i < 3; i++)
+    {
+      tco = Tcl_GetVar2Ex(interp, arr, to[i],
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_GetDoubleFromObj(interp, tco, &(camera->to[i]));
+    }
 
-  Tcl_SetStringObj(ton, "Up_X", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &camera->up[0]);
-  Tcl_SetStringObj(ton, "Up_Y", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &camera->up[1]);
-  Tcl_SetStringObj(ton, "Up_Z", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &camera->up[2]);
+  for(i = 0; i < 3; i++)
+    {
+      tco = Tcl_GetVar2Ex(interp, arr, up[i],
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_GetDoubleFromObj(interp, tco, &(camera->up[i]));
+    }
 
-  Tcl_SetStringObj(ton, "Near", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &camera->nearp);
-  Tcl_SetStringObj(ton, "Far", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &camera->farp);
+  tco = Tcl_GetVar2Ex(interp, arr, "Near",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, tco, &camera->nearp);
 
-  Tcl_SetStringObj(ton, "Zoom", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &camera->zoom);
+  tco = Tcl_GetVar2Ex(interp, arr, "Far",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, tco, &camera->farp);
 
-  Tcl_SetStringObj(ton, "Roll", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &camera->roll);
+  tco = Tcl_GetVar2Ex(interp, arr, "Zoom",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, tco, &camera->zoom);
+
+  tco = Tcl_GetVar2Ex(interp, arr, "Roll",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, tco, &camera->roll);
 
   /* check clipping planes */
   if(camera->nearp < 0.0)
@@ -274,9 +269,6 @@ ay_camera_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       ay_error(AY_EWARN, fname, "Near should be smaller than far!");
     }
 
-  Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
-
  return AY_OK;
 } /* ay_camera_setpropcb */
 
@@ -290,8 +282,11 @@ int
 ay_camera_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  ay_camera_object *camera = NULL;
- char *n1 = "CameraData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "CameraData";
+ int i = 0;
+ char *fr[3] = {"From_X","From_Y","From_Z"};
+ char *to[3] = {"To_X","To_Y","To_Z"};
+ char *up[3] = {"Up_X","Up_Y","Up_Z"};
 
   if(!o)
     return AY_ENULL;
@@ -301,55 +296,36 @@ ay_camera_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!camera)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1, -1);
+  for(i = 0; i < 3; i++)
+    Tcl_SetVar2Ex(interp, arr, fr[i],
+		  Tcl_NewDoubleObj(camera->from[i]),
+		  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  ton = Tcl_NewStringObj("From_X", -1);
-  to = Tcl_NewDoubleObj(camera->from[0]);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "From_Y", -1);
-  to = Tcl_NewDoubleObj(camera->from[1]);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "From_Z", -1);
-  to = Tcl_NewDoubleObj(camera->from[2]);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  for(i = 0; i < 3; i++)
+    Tcl_SetVar2Ex(interp, arr, to[i],
+		  Tcl_NewDoubleObj(camera->to[i]),
+		  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "To_X", -1);
-  to = Tcl_NewDoubleObj(camera->to[0]);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "To_Y", -1);
-  to = Tcl_NewDoubleObj(camera->to[1]);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "To_Z", -1);
-  to = Tcl_NewDoubleObj(camera->to[2]);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  for(i = 0; i < 3; i++)
+    Tcl_SetVar2Ex(interp, arr, up[i],
+		  Tcl_NewDoubleObj(camera->up[i]),
+		  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Up_X", -1);
-  to = Tcl_NewDoubleObj(camera->up[0]);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "Up_Y", -1);
-  to = Tcl_NewDoubleObj(camera->up[1]);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "Up_Z", -1);
-  to = Tcl_NewDoubleObj(camera->up[2]);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Near",
+		Tcl_NewDoubleObj(camera->nearp),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Near", -1);
-  to = Tcl_NewDoubleObj(camera->nearp);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "Far", -1);
-  to = Tcl_NewDoubleObj(camera->farp);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Far",
+		Tcl_NewDoubleObj(camera->farp),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Roll", -1);
-  to = Tcl_NewDoubleObj(camera->roll);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Zoom",
+		Tcl_NewDoubleObj(camera->zoom),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Zoom", -1);
-  to = Tcl_NewDoubleObj(camera->zoom);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
+  Tcl_SetVar2Ex(interp, arr, "Roll",
+		Tcl_NewDoubleObj(camera->roll),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
  return AY_OK;
 } /* ay_camera_getpropcb */

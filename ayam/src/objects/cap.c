@@ -203,9 +203,9 @@ int
 ay_cap_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  /*int ay_status = AY_OK;*/
- char *n1 = "CapAttrData";
+ char *arr = "CapAttrData";
  /* char fname[] = "cap_setpropcb";*/
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ Tcl_Obj *to = NULL;
  ay_cap_object *cap = NULL;
 
   if(!interp || !o)
@@ -216,27 +216,21 @@ ay_cap_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!cap)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  to = Tcl_GetVar2Ex(interp, arr, "Type",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(cap->type));
 
-  Tcl_SetStringObj(ton,"Type",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(cap->type));
+  to = Tcl_GetVar2Ex(interp, arr, "Fraction",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(cap->fraction));
 
-  Tcl_SetStringObj(ton,"Fraction",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &(cap->fraction));
+  to = Tcl_GetVar2Ex(interp, arr, "Tolerance",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(cap->glu_sampling_tolerance));
 
-  Tcl_SetStringObj(ton,"Tolerance",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &(cap->glu_sampling_tolerance));
-
-  Tcl_SetStringObj(ton,"DisplayMode",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(cap->display_mode));
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  to = Tcl_GetVar2Ex(interp, arr, "DisplayMode",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(cap->display_mode));
 
   if(cap->npatch)
     {
@@ -261,8 +255,7 @@ ay_cap_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_cap_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1="CapAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "CapAttrData";
  ay_cap_object *cap = NULL;
 
   if(!interp || !o)
@@ -273,33 +266,23 @@ ay_cap_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!cap)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  Tcl_SetVar2Ex(interp, arr, "Type",
+		Tcl_NewIntObj(cap->type),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Type",-1);
-  to = Tcl_NewIntObj(cap->type);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Fraction",
+		Tcl_NewDoubleObj(cap->fraction),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Fraction",-1);
-  to = Tcl_NewDoubleObj(cap->fraction);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Tolerance",
+		Tcl_NewDoubleObj(cap->glu_sampling_tolerance),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Tolerance",-1);
-  to = Tcl_NewDoubleObj(cap->glu_sampling_tolerance);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "DisplayMode",
+		Tcl_NewIntObj(cap->display_mode),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"DisplayMode",-1);
-  to = Tcl_NewIntObj(cap->display_mode);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  ay_prop_getnpinfo(interp, n1, cap->npatch);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  ay_prop_getnpinfo(interp, arr, cap->npatch);
 
  return AY_OK;
 } /* ay_cap_getpropcb */

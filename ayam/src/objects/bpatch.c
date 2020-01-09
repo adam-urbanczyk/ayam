@@ -572,9 +572,14 @@ int
 ay_bpatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  /*int ay_status = AY_OK;*/
- char *n1 = "BPatchAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "BPatchAttrData";
+ int i = 0;
+ Tcl_Obj *to = NULL;
  ay_bpatch_object *bpatch;
+ char *p1[3] = {"P1_X","P1_Y","P1_Z"};
+ char *p2[3] = {"P2_X","P2_Y","P2_Z"};
+ char *p3[3] = {"P3_X","P3_Y","P3_Z"};
+ char *p4[3] = {"P4_X","P4_Y","P4_Z"};
 
   if(!interp || !o)
     return AY_ENULL;
@@ -584,61 +589,33 @@ ay_bpatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!bpatch)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
+  for(i = 0; i < 3; i++)
+    {
+      to = Tcl_GetVar2Ex(interp, arr, p1[i],
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_GetDoubleFromObj(interp, to, &(bpatch->p1[i]));
+    }
 
-  ton = Tcl_NewStringObj("P1_X",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &bpatch->p1[0]);
+  for(i = 0; i < 3; i++)
+    {
+      to = Tcl_GetVar2Ex(interp, arr, p2[i],
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_GetDoubleFromObj(interp, to, &(bpatch->p2[i]));
+    }
 
-  Tcl_SetStringObj(ton,"P1_Y",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &bpatch->p1[1]);
+  for(i = 0; i < 3; i++)
+    {
+      to = Tcl_GetVar2Ex(interp, arr, p3[i],
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_GetDoubleFromObj(interp, to, &(bpatch->p3[i]));
+    }
 
-  Tcl_SetStringObj(ton,"P1_Z",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &bpatch->p1[2]);
-
-
-  Tcl_SetStringObj(ton,"P2_X",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &bpatch->p2[0]);
-
-  Tcl_SetStringObj(ton,"P2_Y",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &bpatch->p2[1]);
-
-  Tcl_SetStringObj(ton,"P2_Z",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &bpatch->p2[2]);
-
-
-  Tcl_SetStringObj(ton,"P3_X",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &bpatch->p3[0]);
-
-  Tcl_SetStringObj(ton,"P3_Y",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &bpatch->p3[1]);
-
-  Tcl_SetStringObj(ton,"P3_Z",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &bpatch->p3[2]);
-
-
-  Tcl_SetStringObj(ton,"P4_X",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &bpatch->p4[0]);
-
-  Tcl_SetStringObj(ton,"P4_Y",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &bpatch->p4[1]);
-
-  Tcl_SetStringObj(ton,"P4_Z",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &bpatch->p4[2]);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  for(i = 0; i < 3; i++)
+    {
+      to = Tcl_GetVar2Ex(interp, arr, p4[i],
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_GetDoubleFromObj(interp, to, &(bpatch->p4[i]));
+    }
 
   o->modified = AY_TRUE;
   ay_notify_parent();
@@ -653,9 +630,13 @@ ay_bpatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_bpatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1="BPatchAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "BPatchAttrData";
+ int i = 0;
  ay_bpatch_object *bpatch;
+ char *p1[3] = {"P1_X","P1_Y","P1_Z"};
+ char *p2[3] = {"P2_X","P2_Y","P2_Z"};
+ char *p3[3] = {"P3_X","P3_Y","P3_Z"};
+ char *p4[3] = {"P4_X","P4_Y","P4_Z"};
 
   if(!interp || !o)
     return AY_ENULL;
@@ -665,62 +646,25 @@ ay_bpatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!bpatch)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
+  for(i = 0; i < 3; i++)
+    Tcl_SetVar2Ex(interp, arr, p1[i],
+		  Tcl_NewDoubleObj(bpatch->p1[i]),
+		  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  ton = Tcl_NewStringObj("P1_X",-1);
-  to = Tcl_NewDoubleObj(bpatch->p1[0]);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  for(i = 0; i < 3; i++)
+    Tcl_SetVar2Ex(interp, arr, p2[i],
+		  Tcl_NewDoubleObj(bpatch->p2[i]),
+		  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"P1_Y",-1);
-  to = Tcl_NewDoubleObj(bpatch->p1[1]);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  for(i = 0; i < 3; i++)
+    Tcl_SetVar2Ex(interp, arr, p3[i],
+		  Tcl_NewDoubleObj(bpatch->p3[i]),
+		  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"P1_Z",-1);
-  to = Tcl_NewDoubleObj(bpatch->p1[2]);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-
-  Tcl_SetStringObj(ton,"P2_X",-1);
-  to = Tcl_NewDoubleObj(bpatch->p2[0]);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"P2_Y",-1);
-  to = Tcl_NewDoubleObj(bpatch->p2[1]);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"P2_Z",-1);
-  to = Tcl_NewDoubleObj(bpatch->p2[2]);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-
-  Tcl_SetStringObj(ton,"P3_X",-1);
-  to = Tcl_NewDoubleObj(bpatch->p3[0]);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"P3_Y",-1);
-  to = Tcl_NewDoubleObj(bpatch->p3[1]);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"P3_Z",-1);
-  to = Tcl_NewDoubleObj(bpatch->p3[2]);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-
-  Tcl_SetStringObj(ton,"P4_X",-1);
-  to = Tcl_NewDoubleObj(bpatch->p4[0]);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"P4_Y",-1);
-  to = Tcl_NewDoubleObj(bpatch->p4[1]);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"P4_Z",-1);
-  to = Tcl_NewDoubleObj(bpatch->p4[2]);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  for(i = 0; i < 3; i++)
+    Tcl_SetVar2Ex(interp, arr, p4[i],
+		  Tcl_NewDoubleObj(bpatch->p4[i]),
+		  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
  return AY_OK;
 } /* ay_bpatch_getpropcb */

@@ -233,9 +233,9 @@ int
 ay_bevel_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  /*int ay_status = AY_OK;*/
- char *n1 = "BevelAttrData";
+ char *arr = "BevelAttrData";
  /* char fname[] = "bevel_setpropcb";*/
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ Tcl_Obj *to = NULL;
  ay_bevel_object *bevel = NULL;
 
   if(!interp || !o)
@@ -246,19 +246,13 @@ ay_bevel_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!bevel)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  to = Tcl_GetVar2Ex(interp, arr, "Tolerance",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(bevel->glu_sampling_tolerance));
 
-  Tcl_SetStringObj(ton,"DisplayMode",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(bevel->display_mode));
-
-  Tcl_SetStringObj(ton,"Tolerance",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &(bevel->glu_sampling_tolerance));
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  to = Tcl_GetVar2Ex(interp, arr, "DisplayMode",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(bevel->display_mode));
 
   (void)ay_notify_object(o);
 
@@ -276,7 +270,7 @@ ay_bevel_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_bevel_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1="BevelAttrData";
+ char *arr = "BevelAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_bevel_object *bevel = NULL;
 
@@ -288,21 +282,13 @@ ay_bevel_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!bevel)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  Tcl_SetVar2Ex(interp, arr, "Tolerance",
+		Tcl_NewDoubleObj(bevel->glu_sampling_tolerance),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"DisplayMode",-1);
-  to = Tcl_NewIntObj(bevel->display_mode);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"Tolerance",-1);
-  to = Tcl_NewDoubleObj(bevel->glu_sampling_tolerance);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  Tcl_SetVar2Ex(interp, arr, "DisplayMode",
+		Tcl_NewIntObj(bevel->display_mode),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
  return AY_OK;
 } /* ay_bevel_getpropcb */
