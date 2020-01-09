@@ -291,8 +291,8 @@ int
 ay_box_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  /*int ay_status = AY_OK;*/
- char *n1 = "BoxAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "BoxAttrData";
+ Tcl_Obj *to = NULL;
  ay_box_object *box;
 
   if(!interp || !o)
@@ -303,22 +303,17 @@ ay_box_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!box)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
+  to = Tcl_GetVar2Ex(interp, arr, "Width",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &box->width);
 
-  ton = Tcl_NewStringObj("Width",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &box->width);
+  to = Tcl_GetVar2Ex(interp, arr, "Length",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &box->length);
 
-  Tcl_SetStringObj(ton,"Length",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &box->length);
-
-  Tcl_SetStringObj(ton,"Height",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &box->height);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  to = Tcl_GetVar2Ex(interp, arr, "Height",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &box->height);
 
   (void)ay_box_notifycb(o);
   o->modified = AY_TRUE;
@@ -334,8 +329,7 @@ ay_box_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_box_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1="BoxAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "BoxAttrData";
  ay_box_object *box;
 
   if(!interp || !o)
@@ -346,22 +340,14 @@ ay_box_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!box)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
+  Tcl_SetVar2Ex(interp, arr, "Width", Tcl_NewDoubleObj(box->width),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  ton = Tcl_NewStringObj("Width",-1);
-  to = Tcl_NewDoubleObj(box->width);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Length", Tcl_NewDoubleObj(box->length),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Length",-1);
-  to = Tcl_NewDoubleObj(box->length);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"Height",-1);
-  to = Tcl_NewDoubleObj(box->height);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  Tcl_SetVar2Ex(interp, arr, "Height", Tcl_NewDoubleObj(box->height),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
  return AY_OK;
 } /* ay_box_getpropcb */

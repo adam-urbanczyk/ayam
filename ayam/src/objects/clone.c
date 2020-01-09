@@ -288,11 +288,11 @@ int
 ay_clone_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  /*int ay_status = AY_OK;*/
- char *n1 = "CloneAttrData";
- char *n2 = "MirrorAttrData";
+ char *arc = "CloneAttrData";
+ char *arm = "MirrorAttrData";
  /*char fname[] = "clone_setpropcb";*/
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- int itemp;
+ int i, itemp;
  double dtemp;
  double xaxis[3] = {1.0,0.0,0.0};
  double yaxis[3] = {0.0,1.0,0.0};
@@ -300,6 +300,7 @@ ay_clone_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  double quat[4], drot;
  ay_clone_object *clone = NULL;
  int pasteProp = AY_FALSE;
+ char *q[4] = {"Quat0","Quat1","Quat2","Quat3"};
 
   if(!interp || !o)
     return AY_ENULL;
@@ -311,72 +312,46 @@ ay_clone_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   if(o->type == AY_IDMIRROR)
     {
-      toa = Tcl_NewStringObj(n2,-1);
-      ton = Tcl_NewStringObj(n2,-1);
-
-      Tcl_SetStringObj(ton,"Plane",-1);
-      to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG |
-			  TCL_GLOBAL_ONLY);
-      Tcl_GetIntFromObj(interp,to, &(itemp));
+      to = Tcl_GetVar2Ex(interp, arm, "Plane",
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_GetIntFromObj(interp, to, &(itemp));
       clone->mirror = itemp+1;
     }
   else
     {
-      toa = Tcl_NewStringObj(n1,-1);
-      ton = Tcl_NewStringObj(n1,-1);
-
-      Tcl_SetStringObj(ton,"NumClones",-1);
-      to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG |
-			  TCL_GLOBAL_ONLY);
-      Tcl_GetIntFromObj(interp,to, &(clone->numclones));
+      to = Tcl_GetVar2Ex(interp, arc, "NumClones",
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_GetIntFromObj(interp, to, &(clone->numclones));
 
       if(clone->numclones < 0)
 	clone->numclones = 0;
 
-      Tcl_SetStringObj(ton,"Rotate",-1);
-      to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG |
-			  TCL_GLOBAL_ONLY);
-      Tcl_GetIntFromObj(interp,to, &(clone->rotate));
+      to = Tcl_GetVar2Ex(interp, arc, "Rotate",
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_GetIntFromObj(interp, to, &(clone->rotate));
 
-      Tcl_SetStringObj(toa, n1, -1);
-      Tcl_SetStringObj(ton, "Translate_X", -1);
-      to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-			  TCL_GLOBAL_ONLY);
+      to = Tcl_GetVar2Ex(interp, arc, "Translate_X",
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       Tcl_GetDoubleFromObj(interp, to, &(clone->movx));
-      Tcl_SetStringObj(ton, "Translate_Y", -1);
-      to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-			  TCL_GLOBAL_ONLY);
+
+      to = Tcl_GetVar2Ex(interp, arc, "Translate_Y",
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       Tcl_GetDoubleFromObj(interp, to, &(clone->movy));
-      Tcl_SetStringObj(ton, "Translate_Z", -1);
-      to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG |
-			  TCL_GLOBAL_ONLY);
-      Tcl_GetDoubleFromObj(interp,to, &(clone->movz));
 
-      Tcl_SetStringObj(ton, "Quat0", -1);
-      to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-			  TCL_GLOBAL_ONLY);
-      Tcl_GetDoubleFromObj(interp, to, &dtemp);
-      clone->quat[0] = dtemp;
-      Tcl_SetStringObj(ton, "Quat1", -1);
-      to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-			  TCL_GLOBAL_ONLY);
-      Tcl_GetDoubleFromObj(interp, to, &dtemp);
-      clone->quat[1] = dtemp;
-      Tcl_SetStringObj(ton, "Quat2", -1);
-      to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-			  TCL_GLOBAL_ONLY);
-      Tcl_GetDoubleFromObj(interp, to, &dtemp);
-      clone->quat[2] = dtemp;
-      Tcl_SetStringObj(ton, "Quat3", -1);
-      to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-			  TCL_GLOBAL_ONLY);
-      Tcl_GetDoubleFromObj(interp, to, &dtemp);
-      clone->quat[3] = dtemp;
+      to = Tcl_GetVar2Ex(interp, arc, "Translate_Z",
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_GetDoubleFromObj(interp, to, &(clone->movz));
 
-      Tcl_SetStringObj(ton, "Rotate_X", -1);
-      to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-			  TCL_GLOBAL_ONLY);
-      Tcl_GetDoubleFromObj(interp, to, &dtemp);
+      for(i = 0; i < 4; i++)
+	{
+	  to = Tcl_GetVar2Ex(interp, arc, q[i],
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	  Tcl_GetDoubleFromObj(interp, to, &(clone->quat[i]));
+	}
+
+      to = Tcl_GetVar2Ex(interp, arc, "Rotate_X",
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_GetDoubleFromObj(interp, to, &(dtemp));
       if(clone->rotx != dtemp)
 	{
 	  if(!pasteProp)
@@ -387,10 +362,10 @@ ay_clone_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	    }
 	  clone->rotx = dtemp;
 	}
-      Tcl_SetStringObj(ton, "Rotate_Y", -1);
-      to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-			  TCL_GLOBAL_ONLY);
-      Tcl_GetDoubleFromObj(interp, to, &dtemp);
+
+      to = Tcl_GetVar2Ex(interp, arc, "Rotate_Y",
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_GetDoubleFromObj(interp, to, &(dtemp));
       if(clone->roty != dtemp)
 	{
 	  if(!pasteProp)
@@ -401,10 +376,9 @@ ay_clone_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	    }
 	  clone->roty = dtemp;
 	}
-      Tcl_SetStringObj(ton, "Rotate_Z", -1);
-      to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-			  TCL_GLOBAL_ONLY);
-      Tcl_GetDoubleFromObj(interp, to, &dtemp);
+      to = Tcl_GetVar2Ex(interp, arc, "Rotate_Z",
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_GetDoubleFromObj(interp, to, &(dtemp));
       if(clone->rotz != dtemp)
 	{
 	  if(!pasteProp)
@@ -424,29 +398,25 @@ ay_clone_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	  clone->quat[3] = 1.0;
 	}
 
-      Tcl_SetStringObj(ton, "Scale_X", -1);
-      to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-			  TCL_GLOBAL_ONLY);
-      Tcl_GetDoubleFromObj(interp, to, &dtemp);
+      to = Tcl_GetVar2Ex(interp, arc, "Scale_X",
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_GetDoubleFromObj(interp, to, &(dtemp));
       if(dtemp != 0.0)
 	clone->scalx = dtemp;
-      Tcl_SetStringObj(ton, "Scale_Y", -1);
-      to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-			  TCL_GLOBAL_ONLY);
-      Tcl_GetDoubleFromObj(interp, to, &dtemp);
+
+      to = Tcl_GetVar2Ex(interp, arc, "Scale_Y",
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_GetDoubleFromObj(interp, to, &(dtemp));
       if(dtemp != 0.0)
 	clone->scaly = dtemp;
-      Tcl_SetStringObj(ton, "Scale_Z", -1);
-      to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-			  TCL_GLOBAL_ONLY);
-      Tcl_GetDoubleFromObj(interp, to, &dtemp);
+
+      to = Tcl_GetVar2Ex(interp, arc, "Scale_Z",
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_GetDoubleFromObj(interp, to, &(dtemp));
       if(dtemp != 0.0)
 	clone->scalz = dtemp;
 
-    } /* if */
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+    } /* if mirror or clone */
 
   ay_notify_object(o);
 
@@ -463,10 +433,11 @@ ay_clone_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_clone_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1 = "CloneAttrData", *quatstr = NULL;
- char *n2 = "MirrorAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arc = "CloneAttrData", *quatstr = NULL;
+ char *arm = "MirrorAttrData";
+ int i = 0;
  ay_clone_object *clone = NULL;
+ char *q[4] = {"Quat0","Quat1","Quat2","Quat3"};
 
   if(!interp || !o)
     return AY_ENULL;
@@ -478,106 +449,77 @@ ay_clone_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   if(o->type == AY_IDMIRROR)
     {
-      toa = Tcl_NewStringObj(n2,-1);
-      ton = Tcl_NewStringObj(n2,-1);
-
-      Tcl_SetStringObj(ton,"Plane",-1);
-      to = Tcl_NewIntObj(clone->mirror - 1);
-      Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		     TCL_GLOBAL_ONLY);
+      Tcl_SetVar2Ex(interp, arm, "Plane",
+		    Tcl_NewIntObj(clone->mirror-1),
+		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
     }
   else
     {
-      toa = Tcl_NewStringObj(n1,-1);
-      ton = Tcl_NewStringObj(n1,-1);
-
       if(!(quatstr = calloc(TCL_DOUBLE_SPACE*4+10, sizeof(char))))
 	return TCL_OK;
 
-      Tcl_SetStringObj(ton,"NumClones",-1);
-      to = Tcl_NewIntObj(clone->numclones);
-      Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		     TCL_GLOBAL_ONLY);
+      Tcl_SetVar2Ex(interp, arc, "NumClones",
+		    Tcl_NewIntObj(clone->numclones),
+		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-      Tcl_SetStringObj(ton,"Rotate",-1);
-      to = Tcl_NewIntObj(clone->rotate);
-      Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		     TCL_GLOBAL_ONLY);
+      Tcl_SetVar2Ex(interp, arc, "Rotate",
+		    Tcl_NewIntObj(clone->rotate),
+		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-      Tcl_SetStringObj(ton,"Translate_X", -1);
-      to = Tcl_NewDoubleObj(clone->movx);
-      Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		     TCL_GLOBAL_ONLY);
-      Tcl_SetStringObj(ton, "Translate_Y", -1);
-      to = Tcl_NewDoubleObj(clone->movy);
-      Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		     TCL_GLOBAL_ONLY);
-      Tcl_SetStringObj(ton, "Translate_Z", -1);
-      to = Tcl_NewDoubleObj(clone->movz);
-      Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		     TCL_GLOBAL_ONLY);
+      Tcl_SetVar2Ex(interp, arc, "Translate_X",
+		  Tcl_NewDoubleObj(clone->movx),
+		  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-      Tcl_SetStringObj(ton, "Quat0", -1);
-      to = Tcl_NewDoubleObj(clone->quat[0]);
-      Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		     TCL_GLOBAL_ONLY);
-      Tcl_SetStringObj(ton, "Quat1", -1);
-      to = Tcl_NewDoubleObj(clone->quat[1]);
-      Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		     TCL_GLOBAL_ONLY);
-      Tcl_SetStringObj(ton, "Quat2", -1);
-      to = Tcl_NewDoubleObj(clone->quat[2]);
-      Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		     TCL_GLOBAL_ONLY);
-      Tcl_SetStringObj(ton, "Quat3", -1);
-      to = Tcl_NewDoubleObj(clone->quat[3]);
-      Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		     TCL_GLOBAL_ONLY);
+      Tcl_SetVar2Ex(interp, arc, "Translate_Y",
+		  Tcl_NewDoubleObj(clone->movy),
+		  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-      Tcl_SetStringObj(ton, "Quaternion", -1);
+      Tcl_SetVar2Ex(interp, arc, "Translate_Z",
+		  Tcl_NewDoubleObj(clone->movz),
+		  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+      for(i = 0; i < 4; i++)
+	Tcl_SetVar2Ex(interp, arc, q[i],
+		      Tcl_NewDoubleObj(clone->quat[i]),
+		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
       sprintf(quatstr, "[%.2lg, %.2lg, %.2lg, %.2lg]",
 	      clone->quat[0], clone->quat[1], clone->quat[2], clone->quat[3]);
-      to = Tcl_NewStringObj(quatstr, -1);
-      Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		     TCL_GLOBAL_ONLY);
+      Tcl_SetVar2Ex(interp, arc, "Quaternion", Tcl_NewStringObj(quatstr, -1),
+		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
       sprintf(quatstr, "[%lg, %lg, %lg, %lg]",
 	      clone->quat[0], clone->quat[1], clone->quat[2], clone->quat[3]);
-      to = Tcl_NewStringObj(quatstr, -1);
-      Tcl_SetStringObj(ton, "QuaternionBall", -1);
-      Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		     TCL_GLOBAL_ONLY);
+      Tcl_SetVar2Ex(interp, arc, "QuaternionBall",
+		    Tcl_NewStringObj(quatstr, -1),
+		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-      Tcl_SetStringObj(ton, "Rotate_X", -1);
-      to = Tcl_NewDoubleObj(clone->rotx);
-      Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		     TCL_GLOBAL_ONLY);
-      Tcl_SetStringObj(ton, "Rotate_Y", -1);
-      to = Tcl_NewDoubleObj(clone->roty);
-      Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		     TCL_GLOBAL_ONLY);
-      Tcl_SetStringObj(ton, "Rotate_Z", -1);
-      to = Tcl_NewDoubleObj(clone->rotz);
-      Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		     TCL_GLOBAL_ONLY);
+      Tcl_SetVar2Ex(interp, arc, "Rotate_X",
+		  Tcl_NewDoubleObj(clone->rotx),
+		  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-      Tcl_SetStringObj(ton, "Scale_X", -1);
-      to = Tcl_NewDoubleObj(clone->scalx);
-      Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		     TCL_GLOBAL_ONLY);
-      Tcl_SetStringObj(ton, "Scale_Y", -1);
-      to = Tcl_NewDoubleObj(clone->scaly);
-      Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		     TCL_GLOBAL_ONLY);
-      Tcl_SetStringObj(ton, "Scale_Z", -1);
-      to = Tcl_NewDoubleObj(clone->scalz);
-      Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		     TCL_GLOBAL_ONLY);
+      Tcl_SetVar2Ex(interp, arc, "Rotate_Y",
+		  Tcl_NewDoubleObj(clone->roty),
+		  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+      Tcl_SetVar2Ex(interp, arc, "Rotate_Z",
+		  Tcl_NewDoubleObj(clone->rotz),
+		  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+      Tcl_SetVar2Ex(interp, arc, "Scale_X",
+		  Tcl_NewDoubleObj(clone->scalx),
+		  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+      Tcl_SetVar2Ex(interp, arc, "Scale_Y",
+		  Tcl_NewDoubleObj(clone->scaly),
+		  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+      Tcl_SetVar2Ex(interp, arc, "Scale_Z",
+		  Tcl_NewDoubleObj(clone->scalz),
+		  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
       free(quatstr);
     } /* if */
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
  return AY_OK;
 } /* ay_clone_getpropcb */

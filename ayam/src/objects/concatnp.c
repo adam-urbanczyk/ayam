@@ -274,9 +274,9 @@ int
 ay_concatnp_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  /*int ay_status = AY_OK;*/
- char *n1 = "ConcatNPAttrData";
+ char *arr = "ConcatNPAttrData";
  char fname[] = "concatnp_setpropcb";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ Tcl_Obj *to = NULL;
  ay_concatnp_object *concatnp = NULL;
  char *string = NULL;
  int stringlen, newknottype = 0;
@@ -289,24 +289,21 @@ ay_concatnp_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!concatnp)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1, -1);
-  ton = Tcl_NewStringObj(n1, -1);
-
-  Tcl_SetStringObj(ton, "Type", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Type",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &(concatnp->type));
-
-  Tcl_SetStringObj(ton, "Order", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Order",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &(concatnp->order));
 
-  Tcl_SetStringObj(ton, "Revert", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Revert",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &(concatnp->revert));
 
-  Tcl_SetStringObj(ton, "Knot-Type", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Knot-Type",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &(newknottype));
+
   newknottype++;
   if(newknottype < AY_KTCUSTOM)
     concatnp->knot_type = newknottype;
@@ -316,20 +313,20 @@ ay_concatnp_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(newknottype == 5)
     concatnp->knot_type = AY_KTCUSTOM;
 
-  Tcl_SetStringObj(ton, "FillGaps", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "FillGaps",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &(concatnp->fillgaps));
 
-  Tcl_SetStringObj(ton, "FTLength", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "FTLength",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &(concatnp->ftlength));
 
-  Tcl_SetStringObj(ton, "Compatible", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Compatible",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &(concatnp->compat));
 
-  Tcl_SetStringObj(ton, "UVSelect", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "UVSelect",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   string = Tcl_GetStringFromObj(to, &stringlen);
   if(!string)
     {
@@ -355,9 +352,6 @@ ay_concatnp_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
 cleanup:
 
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
-
   (void)ay_notify_object(o);
 
   o->modified = AY_TRUE;
@@ -373,9 +367,9 @@ cleanup:
 int
 ay_concatnp_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1 = "ConcatNPAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "ConcatNPAttrData";
  ay_concatnp_object *concatnp = NULL;
+ Tcl_Obj *to = NULL;
 
   if(!interp || !o)
     return AY_ENULL;
@@ -385,25 +379,18 @@ ay_concatnp_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!concatnp)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1, -1);
-  ton = Tcl_NewStringObj(n1, -1);
+  Tcl_SetVar2Ex(interp, arr, "Type",
+		Tcl_NewIntObj(concatnp->type),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Type", -1);
-  to = Tcl_NewIntObj(concatnp->type);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Order",
+		Tcl_NewIntObj(concatnp->order),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Order", -1);
-  to = Tcl_NewIntObj(concatnp->order);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Revert",
+		Tcl_NewIntObj(concatnp->revert),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Revert", -1);
-  to = Tcl_NewIntObj(concatnp->revert);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton, "Knot-Type", -1);
   if(concatnp->knot_type < AY_KTCUSTOM)
     to = Tcl_NewIntObj(concatnp->knot_type-1);
   else
@@ -412,32 +399,26 @@ ay_concatnp_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     else
       to = Tcl_NewIntObj(concatnp->knot_type-2);
 
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Knot-Type", to,
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "FillGaps", -1);
-  to = Tcl_NewIntObj(concatnp->fillgaps);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "FillGaps",
+		Tcl_NewIntObj(concatnp->fillgaps),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "FTLength", -1);
-  to = Tcl_NewDoubleObj(concatnp->ftlength);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "FTLength",
+		Tcl_NewDoubleObj(concatnp->ftlength),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  ton = Tcl_NewStringObj("UVSelect", -1);
-  to = Tcl_NewStringObj(concatnp->uv_select, -1);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "UVSelect",
+		Tcl_NewStringObj(concatnp->uv_select, -1),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Compatible", -1);
-  to = Tcl_NewIntObj(concatnp->compat);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Compatible",
+		Tcl_NewIntObj(concatnp->compat),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  ay_prop_getnpinfo(interp, n1, concatnp->npatch);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  ay_prop_getnpinfo(interp, arr, concatnp->npatch);
 
  return AY_OK;
 } /* ay_concatnp_getpropcb */
