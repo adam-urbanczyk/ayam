@@ -154,8 +154,8 @@ ay_level_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 int
 ay_level_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1 = "LevelAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "LevelAttrData";
+ Tcl_Obj *to = NULL;
  ay_level_object *level = NULL;
 
   if(!interp || !o)
@@ -166,14 +166,11 @@ ay_level_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!level)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1, -1);
-  ton = Tcl_NewStringObj("Type", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &level->type);
-  level->type++;
+  to = Tcl_GetVar2Ex(interp, arr, "Type",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(level->type));
 
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  level->type++;
 
  return AY_OK;
 } /* ay_level_setpropcb */
@@ -185,10 +182,8 @@ ay_level_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_level_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1="LevelAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "LevelAttrData";
  ay_level_object *level = NULL;
- int itmp = 0;
 
   if(!interp || !o)
     return AY_ENULL;
@@ -198,14 +193,9 @@ ay_level_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!level)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1, -1);
-  ton = Tcl_NewStringObj("Type", -1);
-  itmp = level->type-1;
-  to = Tcl_NewIntObj(itmp);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  Tcl_SetVar2Ex(interp, arr, "Type",
+		Tcl_NewIntObj(level->type-1),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
  return AY_OK;
 } /* ay_level_getpropcb */
@@ -385,7 +375,7 @@ ay_level_providecb(ay_object *o, unsigned int type, ay_object **result)
 		  ay_trafo_creatematrix(t, m2);
 		  ay_trafo_multmatrix(m3, m2);
 		  ay_trafo_decomposematrix(m3, t);
-		
+
 		  last = &(t->next);
 		  t = t->next;
 		} /* while */

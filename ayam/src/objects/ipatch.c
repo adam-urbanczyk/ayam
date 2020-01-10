@@ -1640,11 +1640,11 @@ int
 ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  int ay_status = AY_OK, ay_status_s = AY_OK, ay_status_e = AY_OK;
- char *n1 = "IPatchAttrData";
+ char *arr = "IPatchAttrData";
  char fname[] = "ipatch_setpropcb";
  char rszerr[] = "Could not resize the patch.";
  char rszerrd[] = "Could not resize the derivative(s).";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ Tcl_Obj *to = NULL;
  ay_ipatch_object *ipatch = NULL;
  int new_ktype_u, new_close_u, new_order_u, new_width;
  int new_ktype_v, new_close_v, new_order_v, new_height;
@@ -1658,63 +1658,56 @@ ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!ipatch)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1, -1);
-  ton = Tcl_NewStringObj(n1, -1);
+  to = Tcl_GetVar2Ex(interp, arr, "Width",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(new_width));
+  to = Tcl_GetVar2Ex(interp, arr, "Height",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(new_height));
 
-  Tcl_SetStringObj(ton, "Width", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &new_width);
+  to = Tcl_GetVar2Ex(interp, arr, "Close_U",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(new_close_u));
+  to = Tcl_GetVar2Ex(interp, arr, "Close_V",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(new_close_v));
 
-  Tcl_SetStringObj(ton, "Height", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &new_height);
+  to = Tcl_GetVar2Ex(interp, arr, "Order_U",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(new_order_u));
+  to = Tcl_GetVar2Ex(interp, arr, "Order_V",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(new_order_v));
 
-  Tcl_SetStringObj(ton, "Close_U", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &new_close_u);
+  to = Tcl_GetVar2Ex(interp, arr, "Knot-Type_U",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(new_ktype_u));
+  to = Tcl_GetVar2Ex(interp, arr, "Knot-Type_V",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(new_ktype_v));
 
-  Tcl_SetStringObj(ton, "Close_V", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &new_close_v);
+  to = Tcl_GetVar2Ex(interp, arr, "Derivatives_U",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(ipatch->derivs_u));
 
-  Tcl_SetStringObj(ton, "Order_U", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &new_order_u);
-
-  Tcl_SetStringObj(ton, "Order_V", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &new_order_v);
-
-  Tcl_SetStringObj(ton, "Knot-Type_U", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &new_ktype_u);
-
-  Tcl_SetStringObj(ton, "Knot-Type_V", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &new_ktype_v);
-
-  Tcl_SetStringObj(ton, "Derivatives_U", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &ipatch->derivs_u);
-
-  Tcl_SetStringObj(ton, "SDLen_U", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "SDLen_U",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &(ipatch->sdlen_u));
 
-  Tcl_SetStringObj(ton, "EDLen_U", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "EDLen_U",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &(ipatch->edlen_u));
 
-  Tcl_SetStringObj(ton, "Derivatives_V", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &ipatch->derivs_v);
+  to = Tcl_GetVar2Ex(interp, arr, "Derivatives_V",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(ipatch->derivs_v));
 
-  Tcl_SetStringObj(ton, "SDLen_V", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "SDLen_V",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &(ipatch->sdlen_v));
 
-  Tcl_SetStringObj(ton, "EDLen_V", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "EDLen_V",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &(ipatch->edlen_v));
 
   if((new_order_u != ipatch->order_u)||
@@ -1760,38 +1753,36 @@ ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   ipatch->close_u = new_close_u;
   ipatch->close_v = new_close_v;
 
-  Tcl_SetStringObj(ton, "Tolerance", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Tolerance",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &(ipatch->glu_sampling_tolerance));
 
-  Tcl_SetStringObj(ton, "DisplayMode", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "DisplayMode",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &(ipatch->display_mode));
 
-  Tcl_SetStringObj(ton, "BevelsChanged", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "BevelsChanged",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &i);
   if(i)
     {
       update = AY_TRUE;
-
-      to = Tcl_NewIntObj(0);
-      Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_SetVar2Ex(interp, arr, "BevelsChanged",
+		    Tcl_NewIntObj(0),
+		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
     }
 
-  Tcl_SetStringObj(ton, "CapsChanged", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  to = Tcl_GetVar2Ex(interp, arr, "CapsChanged",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &i);
   if(i)
     {
       update = AY_TRUE;
-
-      to = Tcl_NewIntObj(0);
-      Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_SetVar2Ex(interp, arr, "CapsChanged",
+		    Tcl_NewIntObj(0),
+		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
     }
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
   /* apply changed values to patch */
 
@@ -1997,9 +1988,9 @@ ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_ipatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1 = "IPatchAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "IPatchAttrData";
  ay_ipatch_object *ipatch = NULL;
+ Tcl_Obj *to = NULL;
 
   if(!interp || !o)
     return AY_ENULL;
@@ -2009,40 +2000,30 @@ ay_ipatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!ipatch)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1, -1);
-  ton = Tcl_NewStringObj(n1, -1);
+  Tcl_SetVar2Ex(interp, arr, "Width",
+		Tcl_NewIntObj(ipatch->width),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Width", -1);
-  to = Tcl_NewIntObj(ipatch->width);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Height",
+		Tcl_NewIntObj(ipatch->height),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Height", -1);
-  to = Tcl_NewIntObj(ipatch->height);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Close_U",
+		Tcl_NewIntObj(ipatch->close_u),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Close_U", -1);
-  to = Tcl_NewIntObj(ipatch->close_u);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Close_V",
+		Tcl_NewIntObj(ipatch->close_v),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Close_V", -1);
-  to = Tcl_NewIntObj(ipatch->close_v);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Order_U",
+		Tcl_NewIntObj(ipatch->order_u),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Order_U", -1);
-  to = Tcl_NewIntObj(ipatch->order_u);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Order_V",
+		Tcl_NewIntObj(ipatch->order_v),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Order_V", -1);
-  to = Tcl_NewIntObj(ipatch->order_v);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton, "Knot-Type_U", -1);
   if(ipatch->ktype_u == AY_KTCHORDAL)
     to = Tcl_NewIntObj(0);
   else
@@ -2050,9 +2031,9 @@ ay_ipatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       to = Tcl_NewIntObj(1);
     else
       to = Tcl_NewIntObj(2);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "Knot-Type_V", -1);
+  Tcl_SetVar2Ex(interp, arr, "Knot-Type_U", to,
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
   if(ipatch->ktype_v == AY_KTCHORDAL)
     to = Tcl_NewIntObj(0);
   else
@@ -2060,63 +2041,50 @@ ay_ipatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       to = Tcl_NewIntObj(1);
     else
       to = Tcl_NewIntObj(2);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Knot-Type_V", to,
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Derivatives_U", -1);
-  to = Tcl_NewIntObj(ipatch->derivs_u);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Derivatives_U",
+		Tcl_NewIntObj(ipatch->derivs_u),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "SDLen_U", -1);
-  to = Tcl_NewDoubleObj(ipatch->sdlen_u);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "SDLen_U",
+		Tcl_NewDoubleObj(ipatch->sdlen_u),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "EDLen_U", -1);
-  to = Tcl_NewDoubleObj(ipatch->edlen_u);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "EDLen_U",
+		Tcl_NewDoubleObj(ipatch->edlen_u),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Derivatives_V", -1);
-  to = Tcl_NewIntObj(ipatch->derivs_v);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Derivatives_V",
+		Tcl_NewIntObj(ipatch->derivs_v),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "SDLen_V", -1);
-  to = Tcl_NewDoubleObj(ipatch->sdlen_v);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "SDLen_V",
+		Tcl_NewDoubleObj(ipatch->sdlen_v),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "EDLen_V", -1);
-  to = Tcl_NewDoubleObj(ipatch->edlen_v);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "EDLen_V",
+		Tcl_NewDoubleObj(ipatch->edlen_v),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Tolerance", -1);
-  to = Tcl_NewDoubleObj(ipatch->glu_sampling_tolerance);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Tolerance",
+		Tcl_NewDoubleObj(ipatch->glu_sampling_tolerance),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "DisplayMode", -1);
-  to = Tcl_NewIntObj(ipatch->display_mode);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "DisplayMode",
+		Tcl_NewIntObj(ipatch->display_mode),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "BevelsChanged", -1);
-  to = Tcl_NewIntObj(0);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "BevelsChanged",
+		Tcl_NewIntObj(0),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "CapsChanged", -1);
-  to = Tcl_NewIntObj(0);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "CapsChanged",
+		Tcl_NewIntObj(0),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  (void)ay_prop_getnpinfo(interp, n1, ipatch->npatch);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  (void)ay_prop_getnpinfo(interp, arr, ipatch->npatch);
 
  return AY_OK;
 } /* ay_ipatch_getpropcb */
