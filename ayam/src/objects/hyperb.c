@@ -429,10 +429,12 @@ int
 ay_hyperb_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  /*int ay_status = AY_OK;*/
- char *n1 = "HyperbAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "HyperbAttrData";
+ Tcl_Obj *to = NULL;
  ay_hyperboloid_object *hyperb = NULL;
- int itemp;
+ int i, itemp;
+ char *p1[3] = {"P1_X","P1_Y","P1_Z"};
+ char *p2[3] = {"P1_X","P1_Y","P1_Z"};
 
   if(!interp || !o)
     return AY_ENULL;
@@ -442,47 +444,29 @@ ay_hyperb_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!hyperb)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
-
-  Tcl_SetStringObj(ton,"Closed",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &itemp);
+  hyperb->closed = (char)itemp;
+  to = Tcl_GetVar2Ex(interp, arr, "Closed",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(itemp));
   hyperb->closed = (char)itemp;
 
-  Tcl_SetStringObj(ton,"P1_X",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &hyperb->p1[0]);
+  for(i = 0; i < 3; i++)
+    {
+      to = Tcl_GetVar2Ex(interp, arr, p1[i],
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_GetDoubleFromObj(interp, to, &(hyperb->p1[i]));
+    }
 
-  Tcl_SetStringObj(ton,"P1_Y",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &hyperb->p1[1]);
+  for(i = 0; i < 3; i++)
+    {
+      to = Tcl_GetVar2Ex(interp, arr, p2[i],
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_GetDoubleFromObj(interp, to, &(hyperb->p2[i]));
+    }
 
-  Tcl_SetStringObj(ton,"P1_Z",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &hyperb->p1[2]);
-
-
-  Tcl_SetStringObj(ton,"P2_X",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &hyperb->p2[0]);
-
-  Tcl_SetStringObj(ton,"P2_Y",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &hyperb->p2[1]);
-
-  Tcl_SetStringObj(ton,"P2_Z",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &hyperb->p2[2]);
-
-
-  Tcl_SetStringObj(ton,"ThetaMax",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &hyperb->thetamax);
-
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  to = Tcl_GetVar2Ex(interp, arr, "ThetaMax",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(hyperb->thetamax));
 
   o->modified = AY_TRUE;
   ay_hyperboloid_notifycb(o);
@@ -498,9 +482,11 @@ ay_hyperb_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_hyperb_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1="HyperbAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "HyperbAttrData";
  ay_hyperboloid_object *hyperb = NULL;
+ char *p1[3] = {"P1_X","P1_Y","P1_Z"};
+ char *p2[3] = {"P1_X","P1_Y","P1_Z"};
+ int i;
 
   if(!interp || !o)
     return AY_ENULL;
@@ -510,47 +496,24 @@ ay_hyperb_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!hyperb)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  Tcl_SetVar2Ex(interp, arr, "Closed",
+		Tcl_NewIntObj(hyperb->closed),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Closed",-1);
-  to = Tcl_NewIntObj(hyperb->closed);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  for(i = 0; i < 3; i++)
+    Tcl_SetVar2Ex(interp, arr, p1[i],
+		  Tcl_NewDoubleObj(hyperb->p1[i]),
+		  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-
-  Tcl_SetStringObj(ton,"P1_X",-1);
-  to = Tcl_NewDoubleObj(hyperb->p1[0]);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"P1_Y",-1);
-  to = Tcl_NewDoubleObj(hyperb->p1[1]);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"P1_Z",-1);
-  to = Tcl_NewDoubleObj(hyperb->p1[2]);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  for(i = 0; i < 3; i++)
+    Tcl_SetVar2Ex(interp, arr, p2[i],
+		  Tcl_NewDoubleObj(hyperb->p2[i]),
+		  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
 
-  Tcl_SetStringObj(ton,"P2_X",-1);
-  to = Tcl_NewDoubleObj(hyperb->p2[0]);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"P2_Y",-1);
-  to = Tcl_NewDoubleObj(hyperb->p2[1]);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"P2_Z",-1);
-  to = Tcl_NewDoubleObj(hyperb->p2[2]);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-
-  Tcl_SetStringObj(ton,"ThetaMax",-1);
-  to = Tcl_NewDoubleObj(hyperb->thetamax);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  Tcl_SetVar2Ex(interp, arr, "ThetaMax",
+		Tcl_NewDoubleObj(hyperb->thetamax),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
  return AY_OK;
 } /* ay_hyperb_getpropcb */

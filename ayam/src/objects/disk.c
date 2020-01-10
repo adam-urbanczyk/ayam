@@ -289,8 +289,8 @@ int
 ay_disk_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  /*int ay_status = AY_OK;*/
- char *n1 = "DiskAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "DiskAttrData";
+ Tcl_Obj *to = NULL;
  ay_disk_object *disk;
 
   if(!interp || !o)
@@ -301,21 +301,17 @@ ay_disk_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!disk)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  to = Tcl_GetVar2Ex(interp, arr, "Radius",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(disk->radius));
 
+  to = Tcl_GetVar2Ex(interp, arr, "Height",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(disk->height));
 
-  Tcl_SetStringObj(ton,"Radius",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &disk->radius);
-
-  Tcl_SetStringObj(ton,"Height",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &disk->height);
-
-  Tcl_SetStringObj(ton,"ThetaMax",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &disk->thetamax);
+  to = Tcl_GetVar2Ex(interp, arr, "ThetaMax",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(disk->thetamax));
 
   if(fabs(disk->thetamax) == 360.0)
     {
@@ -325,9 +321,6 @@ ay_disk_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     {
       disk->is_simple = AY_FALSE;
     }
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
   o->modified = AY_TRUE;
 
@@ -345,8 +338,7 @@ ay_disk_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_disk_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1="DiskAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "DiskAttrData";
  ay_disk_object *disk;
 
   if(!interp || !o)
@@ -357,24 +349,17 @@ ay_disk_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!disk)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
+  Tcl_SetVar2Ex(interp, arr, "Radius",
+		Tcl_NewDoubleObj(disk->radius),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  ton = Tcl_NewStringObj(n1,-1);
+  Tcl_SetVar2Ex(interp, arr, "Height",
+		Tcl_NewDoubleObj(disk->height),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Radius",-1);
-  to = Tcl_NewDoubleObj(disk->radius);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"Height",-1);
-  to = Tcl_NewDoubleObj(disk->height);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"ThetaMax",-1);
-  to = Tcl_NewDoubleObj(disk->thetamax);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  Tcl_SetVar2Ex(interp, arr, "ThetaMax",
+		Tcl_NewDoubleObj(disk->thetamax),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
  return AY_OK;
 } /* ay_disk_getpropcb */

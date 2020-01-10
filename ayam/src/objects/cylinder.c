@@ -442,8 +442,8 @@ int
 ay_cylinder_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  /*int ay_status = AY_OK;*/
- char *n1 = "CylinderAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "CylinderAttrData";
+ Tcl_Obj *to = NULL;
  ay_cylinder_object *cylinder;
  int itemp = 0;
 
@@ -455,29 +455,26 @@ ay_cylinder_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!cylinder)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  to = Tcl_GetVar2Ex(interp, arr, "Closed",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(itemp));
+  cylinder->closed = itemp;
 
-  Tcl_SetStringObj(ton,"Closed",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &itemp);
-  cylinder->closed = (char)itemp;
+  to = Tcl_GetVar2Ex(interp, arr, "Radius",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(cylinder->radius));
 
-  Tcl_SetStringObj(ton,"Radius",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &cylinder->radius);
+  to = Tcl_GetVar2Ex(interp, arr, "ZMin",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(cylinder->zmin));
 
-  Tcl_SetStringObj(ton,"ZMin",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &cylinder->zmin);
+  to = Tcl_GetVar2Ex(interp, arr, "ZMax",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(cylinder->zmax));
 
-  Tcl_SetStringObj(ton,"ZMax",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &cylinder->zmax);
-
-  Tcl_SetStringObj(ton,"ThetaMax",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &cylinder->thetamax);
+  to = Tcl_GetVar2Ex(interp, arr, "ThetaMax",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(cylinder->thetamax));
 
   if(fabs(cylinder->thetamax) == 360.0)
     {
@@ -487,9 +484,6 @@ ay_cylinder_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     {
       cylinder->is_simple = AY_FALSE;
     }
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
   (void)ay_cylinder_notifycb(o);
   o->modified = AY_TRUE;
@@ -505,8 +499,7 @@ ay_cylinder_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_cylinder_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1="CylinderAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "CylinderAttrData";
  ay_cylinder_object *cylinder;
 
   if(!interp || !o)
@@ -517,31 +510,25 @@ ay_cylinder_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!cylinder)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  Tcl_SetVar2Ex(interp, arr, "Closed",
+		Tcl_NewIntObj(cylinder->closed),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Closed",-1);
-  to = Tcl_NewIntObj(cylinder->closed);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Radius",
+		Tcl_NewDoubleObj(cylinder->radius),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Radius",-1);
-  to = Tcl_NewDoubleObj(cylinder->radius);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "ZMin",
+		Tcl_NewDoubleObj(cylinder->zmin),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"ZMin",-1);
-  to = Tcl_NewDoubleObj(cylinder->zmin);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "ZMax",
+		Tcl_NewDoubleObj(cylinder->zmax),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"ZMax",-1);
-  to = Tcl_NewDoubleObj(cylinder->zmax);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"ThetaMax",-1);
-  to = Tcl_NewDoubleObj(cylinder->thetamax);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  Tcl_SetVar2Ex(interp, arr, "ThetaMax",
+		Tcl_NewDoubleObj(cylinder->thetamax),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
  return AY_OK;
 } /* ay_cylinder_getpropcb */
