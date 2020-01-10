@@ -434,7 +434,7 @@ ay_hyperb_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  ay_hyperboloid_object *hyperb = NULL;
  int i, itemp;
  char *p1[3] = {"P1_X","P1_Y","P1_Z"};
- char *p2[3] = {"P1_X","P1_Y","P1_Z"};
+ char *p2[3] = {"P2_X","P2_Y","P2_Z"};
 
   if(!interp || !o)
     return AY_ENULL;
