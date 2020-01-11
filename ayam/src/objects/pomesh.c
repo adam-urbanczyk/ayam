@@ -886,9 +886,9 @@ int
 ay_pomesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  /*int ay_status = AY_OK;*/
- char *n1 = "PolyMeshAttrData";
+ char *arr = "PolyMeshAttrData";
  /*char fname[] = "pomesh_setpropcb";*/
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ Tcl_Obj *to = NULL;
  ay_pomesh_object *pomesh = NULL;
  int new_type;
 
@@ -900,17 +900,11 @@ ay_pomesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!pomesh)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1, -1);
-  ton = Tcl_NewStringObj(n1, -1);
-
-  Tcl_SetStringObj(ton, "Type", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &new_type);
+  to = Tcl_GetVar2Ex(interp, arr, "Type",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(new_type));
 
   pomesh->type = new_type;
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
   o->modified = AY_TRUE;
   ay_notify_parent();
@@ -925,8 +919,7 @@ ay_pomesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_pomesh_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1="PolyMeshAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "PolyMeshAttrData";
  ay_pomesh_object *pomesh = NULL;
 
   if(!interp || !o)
@@ -937,31 +930,21 @@ ay_pomesh_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!pomesh)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1, -1);
-  ton = Tcl_NewStringObj(n1, -1);
+  Tcl_SetVar2Ex(interp, arr, "Type",
+		Tcl_NewIntObj(pomesh->type),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Type", -1);
-  to = Tcl_NewIntObj(pomesh->type);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "NPolys",
+		Tcl_NewIntObj(pomesh->npolys),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "NPolys", -1);
-  to = Tcl_NewIntObj((int)pomesh->npolys);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "NControls",
+		Tcl_NewIntObj(pomesh->ncontrols),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "NControls", -1);
-  to = Tcl_NewIntObj((int)pomesh->ncontrols);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton, "HasNormals", -1);
-  to = Tcl_NewIntObj((int)pomesh->has_normals);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  Tcl_SetVar2Ex(interp, arr, "HasNormals",
+		Tcl_NewIntObj(pomesh->has_normals),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
  return AY_OK;
 } /* ay_pomesh_getpropcb */

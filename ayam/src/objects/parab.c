@@ -438,9 +438,9 @@ int
 ay_parab_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  /*int ay_status = AY_OK;*/
- char *n1 = "ParabAttrData";
+ char *arr = "ParabAttrData";
  char fname[] = "parab_setprop";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ Tcl_Obj *to = NULL;
  ay_paraboloid_object *parab = NULL;
  int itemp = 0;
  double dtemp = 0.0;
@@ -453,21 +453,18 @@ ay_parab_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!parab)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
-
-  Tcl_SetStringObj(ton,"Closed",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &itemp);
+  to = Tcl_GetVar2Ex(interp, arr, "Closed",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(itemp));
   parab->closed = (char)itemp;
 
-  Tcl_SetStringObj(ton,"RMax",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &parab->rmax);
+  to = Tcl_GetVar2Ex(interp, arr, "RMax",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(parab->rmax));
 
-  Tcl_SetStringObj(ton,"ZMin",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &dtemp);
+  to = Tcl_GetVar2Ex(interp, arr, "ZMin",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &dtemp);
   if(dtemp >= 0.0)
     {
       parab->zmin = dtemp;
@@ -476,10 +473,9 @@ ay_parab_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     {
       ay_error(AY_ERROR, fname, "ZMin must be >= 0.0!");
     }
-
-  Tcl_SetStringObj(ton,"ZMax",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &dtemp);
+  to = Tcl_GetVar2Ex(interp, arr, "ZMax",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &dtemp);
   if(dtemp >= 0.0)
     {
       parab->zmax = dtemp;
@@ -488,12 +484,9 @@ ay_parab_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     {
       ay_error(AY_ERROR, fname, "ZMax must be >= 0.0!");
     }
-  Tcl_SetStringObj(ton,"ThetaMax",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &parab->thetamax);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  to = Tcl_GetVar2Ex(interp, arr, "ThetaMax",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(parab->thetamax));
 
   o->modified = AY_TRUE;
   ay_paraboloid_notifycb(o);
@@ -509,8 +502,7 @@ ay_parab_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_parab_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1="ParabAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "ParabAttrData";
  ay_paraboloid_object *parab = NULL;
 
   if(!interp || !o)
@@ -521,31 +513,25 @@ ay_parab_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!parab)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  Tcl_SetVar2Ex(interp, arr, "Closed",
+		Tcl_NewIntObj(parab->closed),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Closed",-1);
-  to = Tcl_NewIntObj(parab->closed);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "RMax",
+		Tcl_NewDoubleObj(parab->rmax),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"RMax",-1);
-  to = Tcl_NewDoubleObj(parab->rmax);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "ZMin",
+		Tcl_NewDoubleObj(parab->zmin),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"ZMin",-1);
-  to = Tcl_NewDoubleObj(parab->zmin);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "ZMax",
+		Tcl_NewDoubleObj(parab->zmax),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"ZMax",-1);
-  to = Tcl_NewDoubleObj(parab->zmax);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"ThetaMax",-1);
-  to = Tcl_NewDoubleObj(parab->thetamax);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  Tcl_SetVar2Ex(interp, arr, "ThetaMax",
+		Tcl_NewDoubleObj(parab->thetamax),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
  return AY_OK;
 } /* ay_parab_getpropcb */

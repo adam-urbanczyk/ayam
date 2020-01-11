@@ -254,8 +254,8 @@ int
 ay_material_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  /*int ay_status = AY_OK;*/
- char *n1 = "RiAttrData", *n2 = "MaterialAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *ara = "RiAttrData", *arm = "MaterialAttrData";
+ Tcl_Obj *to = NULL;
  ay_mat_object *material = NULL, *regmaterial = NULL;
  int newname_status = AY_OK;
  char *newname = NULL, *oldname = NULL, *string = NULL;
@@ -270,80 +270,77 @@ ay_material_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!material)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-
   /* color */
-  ton = Tcl_NewStringObj("Color_R",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &material->colr);
-  Tcl_SetStringObj(ton,"Color_G",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &material->colg);
-  Tcl_SetStringObj(ton,"Color_B",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &material->colb);
+  to = Tcl_GetVar2Ex(interp, ara, "Color_R",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(material->colr));
+  to = Tcl_GetVar2Ex(interp, ara, "Color_G",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(material->colg));
+  to = Tcl_GetVar2Ex(interp, ara, "Color_B",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(material->colb));
 
   /* opacity */
-  Tcl_SetStringObj(ton,"Opacity_R",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &material->opr);
-  Tcl_SetStringObj(ton,"Opacity_G",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &material->opg);
-  Tcl_SetStringObj(ton,"Opacity_B",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &material->opb);
+  to = Tcl_GetVar2Ex(interp, ara, "Opacity_R",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(material->opr));
+  to = Tcl_GetVar2Ex(interp, ara, "Opacity_G",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(material->opg));
+  to = Tcl_GetVar2Ex(interp, ara, "Opacity_B",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(material->opb));
 
   /* shading */
-  Tcl_SetStringObj(ton,"ShadingRate",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &material->shading_rate);
+  to = Tcl_GetVar2Ex(interp, ara, "ShadingRate",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(material->shading_rate));
 
-  Tcl_SetStringObj(ton,"Interpolation",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &material->shading_interpolation);
+  to = Tcl_GetVar2Ex(interp, ara, "Interpolation",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(material->shading_interpolation));
 
-  Tcl_SetStringObj(ton,"Sides",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &material->sides);
+  to = Tcl_GetVar2Ex(interp, ara, "Sides",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(material->sides));
 
   /* displacement */
-  Tcl_SetStringObj(ton,"TrueDisp",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &material->true_displacement);
 
-  Tcl_SetStringObj(ton,"BoundCoord",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &material->dbound);
+  to = Tcl_GetVar2Ex(interp, ara, "TrueDisp",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(material->true_displacement));
 
-  Tcl_SetStringObj(ton,"BoundVal",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &material->dbound_val);
+  to = Tcl_GetVar2Ex(interp, ara, "BoundCoord",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(material->dbound));
+
+  to = Tcl_GetVar2Ex(interp, ara, "BoundVal",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(material->dbound_val));
 
   /* shadows */
-  Tcl_SetStringObj(ton,"CastShadows",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, ara, "CastShadows",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &(material->cast_shadows));
 
   /* visibility */
-  Tcl_SetStringObj(ton,"Camera",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, ara, "Camera",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &(material->camera));
 
-  Tcl_SetStringObj(ton,"Reflection",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, ara, "Reflection",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &(material->reflection));
 
-  Tcl_SetStringObj(ton,"Shadow",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, ara, "Shadow",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &(material->shadow));
 
   /* get new name */
-  Tcl_SetStringObj(toa, n2, -1);
-  Tcl_SetStringObj(ton,"Materialname",-1);
   oldname = o->name;
-
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arm, "Materialname",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   string = Tcl_GetStringFromObj(to, &stringlen);
   if(!string)
     {
@@ -403,9 +400,6 @@ ay_material_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	} /* if */
     } /* if */
 
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
-
  return AY_OK;
 } /* ay_material_setpropcb */
 
@@ -416,9 +410,9 @@ ay_material_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_material_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1 = "RiAttrData", *n2 = "MaterialAttrData";
+ char *ara = "RiAttrData", *arm = "MaterialAttrData";
  int ay_status = AY_OK;
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ Tcl_Obj *to = NULL;
  ay_mat_object *material = NULL, *mat = NULL;
  char *name = NULL;
 
@@ -430,73 +424,71 @@ ay_material_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!material)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-
   /* color */
-  ton = Tcl_NewStringObj("Color_R",-1);
-  to = Tcl_NewIntObj(material->colr);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton,"Color_G",-1);
-  to = Tcl_NewIntObj(material->colg);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton,"Color_B",-1);
-  to = Tcl_NewIntObj(material->colb);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, ara, "Color_R",
+		Tcl_NewIntObj(material->colr),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, ara, "Color_G",
+		Tcl_NewIntObj(material->colg),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, ara, "Color_B",
+		Tcl_NewIntObj(material->colb),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   /* opacity */
-  Tcl_SetStringObj(ton,"Opacity_R",-1);
-  to = Tcl_NewIntObj(material->opr);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton,"Opacity_G",-1);
-  to = Tcl_NewIntObj(material->opg);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton,"Opacity_B",-1);
-  to = Tcl_NewIntObj(material->opb);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, ara, "Opacity_R",
+		Tcl_NewIntObj(material->opr),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, ara, "Opacity_G",
+		Tcl_NewIntObj(material->opg),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, ara, "Opacity_B",
+		Tcl_NewIntObj(material->opb),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   /* shading */
-  Tcl_SetStringObj(ton,"ShadingRate",-1);
-  to = Tcl_NewDoubleObj(material->shading_rate);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, ara, "ShadingRate",
+		Tcl_NewDoubleObj(material->shading_rate),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Interpolation",-1);
-  to = Tcl_NewIntObj(material->shading_interpolation);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, ara, "Interpolation",
+		Tcl_NewIntObj(material->shading_interpolation),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Sides",-1);
-  to = Tcl_NewIntObj(material->sides);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, ara, "Sides",
+		Tcl_NewIntObj(material->sides),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   /* displacement */
-  Tcl_SetStringObj(ton,"TrueDisp",-1);
-  to = Tcl_NewIntObj(material->true_displacement);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, ara, "TrueDisp",
+		Tcl_NewIntObj(material->true_displacement),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"BoundCoord",-1);
-  to = Tcl_NewIntObj(material->dbound);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, ara, "BoundCoord",
+		Tcl_NewIntObj(material->dbound),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"BoundVal",-1);
-  to = Tcl_NewDoubleObj(material->dbound_val);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, ara, "BoundVal",
+		Tcl_NewDoubleObj(material->dbound_val),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   /* shadows */
-  Tcl_SetStringObj(ton,"CastShadows",-1);
-  to = Tcl_NewIntObj(material->cast_shadows);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, ara, "CastShadows",
+		Tcl_NewIntObj(material->cast_shadows),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   /* visibility */
-  Tcl_SetStringObj(ton,"Camera",-1);
-  to = Tcl_NewIntObj(material->camera);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, ara, "Camera",
+		Tcl_NewIntObj(material->camera),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Reflection",-1);
-  to = Tcl_NewIntObj(material->reflection);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, ara, "Reflection",
+		Tcl_NewIntObj(material->reflection),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Shadow",-1);
-  to = Tcl_NewIntObj(material->shadow);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, ara, "Shadow",
+		Tcl_NewIntObj(material->shadow),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   /* repair nameptr if it has not been set, after e.g.
      a clipboard operation */
@@ -520,12 +512,10 @@ ay_material_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       material->objptr = o;
     }
 
-  Tcl_SetStringObj(toa,n2,-1);
-  Tcl_SetStringObj(ton,"RefCount",-1);
-  to = Tcl_NewIntObj(o->refcount);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arm, "RefCount",
+		Tcl_NewIntObj(o->refcount),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Registered",-1);
   ay_status = ay_matt_getmaterial(o->name, &mat);
   if(!ay_status && (mat == material))
     {
@@ -535,15 +525,13 @@ ay_material_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     {
       to = Tcl_NewStringObj("No, please rename!", -1);
     }
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arm, "Registered", to,
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   name = *material->nameptr;
-  Tcl_SetStringObj(ton,"Materialname",-1);
-  to = Tcl_NewStringObj(name, -1);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  Tcl_SetVar2Ex(interp, arm, "Materialname",
+		Tcl_NewStringObj(name, -1),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
  return AY_OK;
 } /* ay_material_getpropcb */
