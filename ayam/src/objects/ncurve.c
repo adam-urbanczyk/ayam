@@ -2014,16 +2014,37 @@ ay_ncurve_init(Tcl_Interp *interp)
   ay_matt_nomaterial(AY_IDNCURVE);
 
   arrobj = Tcl_NewStringObj("NCurveAttrData",-1);
+  Tcl_IncrRefCount(arrobj);
+
   typeobj = Tcl_NewStringObj("Type",-1);
+  Tcl_IncrRefCount(typeobj);
+
   lengthobj = Tcl_NewStringObj("Length",-1);
+  Tcl_IncrRefCount(lengthobj);
+
   orderobj = Tcl_NewStringObj("Order",-1);
+  Tcl_IncrRefCount(orderobj);
+
   creatempobj = Tcl_NewStringObj("CreateMP",-1);
+  Tcl_IncrRefCount(creatempobj);
+
   knottypeobj = Tcl_NewStringObj("Knot-Type",-1);
+  Tcl_IncrRefCount(knottypeobj);
+
   knotsobj = Tcl_NewStringObj("Knots",-1);
+  Tcl_IncrRefCount(knotsobj);
+
   tolobj = Tcl_NewStringObj("Tolerance",-1);
+  Tcl_IncrRefCount(tolobj);
+
   dmobj = Tcl_NewStringObj("DisplayMode",-1);
+  Tcl_IncrRefCount(dmobj);
+
   knotsmodobj = Tcl_NewStringObj("Knots-Modified",-1);
+  Tcl_IncrRefCount(knotsmodobj);
+
   isratobj = Tcl_NewStringObj("IsRat",-1);
+  Tcl_IncrRefCount(isratobj);
 
  return ay_status;
 } /* ay_ncurve_init */

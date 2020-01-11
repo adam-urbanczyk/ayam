@@ -296,9 +296,9 @@ int
 ay_offnc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  /*int ay_status = AY_OK;*/
- char *n1 = "OffsetNCAttrData";
+ char *arr = "OffsetNCAttrData";
  /* char fname[] = "offnc_setpropcb";*/
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ Tcl_Obj *to = NULL;
  ay_offnc_object *offnc = NULL;
 
   if(!interp || !o)
@@ -309,31 +309,25 @@ ay_offnc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!offnc)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  to = Tcl_GetVar2Ex(interp, arr, "Mode",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(offnc->mode));
 
-  Tcl_SetStringObj(ton,"Mode",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(offnc->mode));
+  to = Tcl_GetVar2Ex(interp, arr, "Revert",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(offnc->revert));
 
-  Tcl_SetStringObj(ton,"Revert",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(offnc->revert));
+  to = Tcl_GetVar2Ex(interp, arr, "Offset",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(offnc->offset));
 
-  Tcl_SetStringObj(ton,"Offset",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &(offnc->offset));
+  to = Tcl_GetVar2Ex(interp, arr, "Tolerance",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(offnc->glu_sampling_tolerance));
 
-  Tcl_SetStringObj(ton,"DisplayMode",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(offnc->display_mode));
-
-  Tcl_SetStringObj(ton,"Tolerance",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &(offnc->glu_sampling_tolerance));
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  to = Tcl_GetVar2Ex(interp, arr, "DisplayMode",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(offnc->display_mode));
 
   (void)ay_notify_object(o);
 
@@ -350,8 +344,7 @@ ay_offnc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_offnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1="OffsetNCAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "OffsetNCAttrData";
  ay_offnc_object *offnc = NULL;
 
   if(!interp || !o)
@@ -362,38 +355,27 @@ ay_offnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!offnc)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  Tcl_SetVar2Ex(interp, arr, "Mode",
+		Tcl_NewIntObj(offnc->mode),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Mode",-1);
-  to = Tcl_NewIntObj(offnc->mode);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Revert",
+		Tcl_NewIntObj(offnc->revert),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Revert",-1);
-  to = Tcl_NewIntObj(offnc->revert);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Offset",
+		Tcl_NewDoubleObj(offnc->offset),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Offset",-1);
-  to = Tcl_NewDoubleObj(offnc->offset);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Tolerance",
+		Tcl_NewDoubleObj(offnc->glu_sampling_tolerance),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"DisplayMode",-1);
-  to = Tcl_NewIntObj(offnc->display_mode);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "DisplayMode",
+		Tcl_NewIntObj(offnc->display_mode),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Tolerance",-1);
-  to = Tcl_NewDoubleObj(offnc->glu_sampling_tolerance);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  ay_prop_getncinfo(interp, n1, offnc->ncurve);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  ay_prop_getncinfo(interp, arr, offnc->ncurve);
 
  return AY_OK;
 } /* ay_offnc_getpropcb */
