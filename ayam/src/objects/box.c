@@ -367,9 +367,9 @@ ay_box_readcb(FILE *fileptr, ay_object *o)
   if(!(box = calloc(1, sizeof(ay_box_object))))
     { return AY_EOMEM; }
 
-  fscanf(fileptr,"%lg\n",&box->width);
-  fscanf(fileptr,"%lg\n",&box->length);
-  fscanf(fileptr,"%lg\n",&box->height);
+  fscanf(fileptr, "%lg\n", &box->width);
+  fscanf(fileptr, "%lg\n", &box->length);
+  fscanf(fileptr, "%lg\n", &box->height);
 
   o->refine = box;
 

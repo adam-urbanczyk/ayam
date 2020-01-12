@@ -549,12 +549,12 @@ ay_cylinder_readcb(FILE *fileptr, ay_object *o)
   if(!(cylinder = calloc(1, sizeof(ay_cylinder_object))))
     { return AY_EOMEM; }
 
-  fscanf(fileptr,"%d\n",&itemp);
+  fscanf(fileptr, "%d\n", &itemp);
   cylinder->closed = (char)itemp;
-  fscanf(fileptr,"%lg\n",&cylinder->radius);
-  fscanf(fileptr,"%lg\n",&cylinder->zmin);
-  fscanf(fileptr,"%lg\n",&cylinder->zmax);
-  fscanf(fileptr,"%lg\n",&cylinder->thetamax);
+  fscanf(fileptr, "%lg\n", &cylinder->radius);
+  fscanf(fileptr, "%lg\n", &cylinder->zmin);
+  fscanf(fileptr, "%lg\n", &cylinder->zmax);
+  fscanf(fileptr, "%lg\n", &cylinder->thetamax);
 
   if(fabs(cylinder->thetamax) == 360.0)
     {

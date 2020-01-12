@@ -534,14 +534,14 @@ ay_hyperb_readcb(FILE *fileptr, ay_object *o)
   if(!(hyperb = calloc(1, sizeof(ay_hyperboloid_object))))
     { return AY_EOMEM; }
 
-  fscanf(fileptr,"%d\n",&itemp);
+  fscanf(fileptr, "%d\n", &itemp);
   hyperb->closed = (char)itemp;
 
-  fscanf(fileptr,"%lg %lg %lg\n", &hyperb->p1[0], &hyperb->p1[1],
+  fscanf(fileptr, "%lg %lg %lg\n", &hyperb->p1[0], &hyperb->p1[1],
 	 &hyperb->p1[2]);
-  fscanf(fileptr,"%lg %lg %lg\n", &hyperb->p2[0], &hyperb->p2[1],
+  fscanf(fileptr, "%lg %lg %lg\n", &hyperb->p2[0], &hyperb->p2[1],
 	 &hyperb->p2[2]);
-  fscanf(fileptr,"%lg\n",&hyperb->thetamax);
+  fscanf(fileptr, "%lg\n", &hyperb->thetamax);
 
   o->refine = hyperb;
 
