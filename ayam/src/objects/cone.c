@@ -495,11 +495,11 @@ ay_cone_readcb(FILE *fileptr, ay_object *o)
   if(!(cone = calloc(1, sizeof(ay_cone_object))))
     { return AY_EOMEM; }
 
-  fscanf(fileptr,"%d\n",&itemp);
+  fscanf(fileptr, "%d\n", &itemp);
   cone->closed = (char)itemp;
-  fscanf(fileptr,"%lg\n",&cone->radius);
-  fscanf(fileptr,"%lg\n",&cone->height);
-  fscanf(fileptr,"%lg\n",&cone->thetamax);
+  fscanf(fileptr, "%lg\n", &cone->radius);
+  fscanf(fileptr, "%lg\n", &cone->height);
+  fscanf(fileptr, "%lg\n", &cone->thetamax);
 
   if(fabs(cone->thetamax) == 360.0)
     {

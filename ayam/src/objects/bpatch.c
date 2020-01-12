@@ -684,10 +684,10 @@ ay_bpatch_readcb(FILE *fileptr, ay_object *o)
   if(!(bp = calloc(1, sizeof(ay_bpatch_object))))
     { return AY_EOMEM; }
 
-  fscanf(fileptr,"%lg %lg %lg\n", &bp->p1[0], &bp->p1[1], &bp->p1[2]);
-  fscanf(fileptr,"%lg %lg %lg\n", &bp->p2[0], &bp->p2[1], &bp->p2[2]);
-  fscanf(fileptr,"%lg %lg %lg\n", &bp->p3[0], &bp->p3[1], &bp->p3[2]);
-  fscanf(fileptr,"%lg %lg %lg\n", &bp->p4[0], &bp->p4[1], &bp->p4[2]);
+  fscanf(fileptr, "%lg %lg %lg\n", &bp->p1[0], &bp->p1[1], &bp->p1[2]);
+  fscanf(fileptr, "%lg %lg %lg\n", &bp->p2[0], &bp->p2[1], &bp->p2[2]);
+  fscanf(fileptr, "%lg %lg %lg\n", &bp->p3[0], &bp->p3[1], &bp->p3[2]);
+  fscanf(fileptr, "%lg %lg %lg\n", &bp->p4[0], &bp->p4[1], &bp->p4[2]);
 
   o->refine = bp;
 

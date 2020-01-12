@@ -379,9 +379,9 @@ ay_disk_readcb(FILE *fileptr, ay_object *o)
   if(!(disk = calloc(1, sizeof(ay_disk_object))))
     { return AY_EOMEM; }
 
-  fscanf(fileptr,"%lg\n",&disk->radius);
-  fscanf(fileptr,"%lg\n",&disk->height);
-  fscanf(fileptr,"%lg\n",&disk->thetamax);
+  fscanf(fileptr, "%lg\n", &disk->radius);
+  fscanf(fileptr, "%lg\n", &disk->height);
+  fscanf(fileptr, "%lg\n", &disk->thetamax);
 
   if(fabs(disk->thetamax) == 360.0)
     {
