@@ -178,9 +178,9 @@ int
 ay_trim_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  /*int ay_status = AY_OK;*/
- char *n1 = "TrimAttrData";
+ char *arr = "TrimAttrData";
  /* char fname[] = "trim_setpropcb";*/
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ Tcl_Obj *to = NULL;
  ay_trim_object *trim = NULL;
 
   if(!interp || !o)
@@ -191,19 +191,13 @@ ay_trim_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!trim)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
-
-  Tcl_SetStringObj(ton,"PatchNum",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "PatchNum",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &(trim->patchnum));
 
-  Tcl_SetStringObj(ton,"ScaleMode",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "ScaleMode",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &(trim->scalemode));
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
   ay_notify_object(o);
 
@@ -221,8 +215,7 @@ ay_trim_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_trim_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1="TrimAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "TrimAttrData";
  ay_trim_object *trim = NULL;
 
   if(!interp || !o)
@@ -233,23 +226,15 @@ ay_trim_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!trim)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  Tcl_SetVar2Ex(interp, arr, "PatchNum",
+		Tcl_NewIntObj(trim->patchnum),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"PatchNum",-1);
-  to = Tcl_NewIntObj(trim->patchnum);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "ScaleMode",
+		Tcl_NewIntObj(trim->scalemode),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"ScaleMode",-1);
-  to = Tcl_NewIntObj(trim->scalemode);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  ay_prop_getnpinfo(interp, n1, trim->npatch);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  ay_prop_getnpinfo(interp, arr, trim->npatch);
 
  return AY_OK;
 } /* ay_trim_getpropcb */

@@ -230,9 +230,9 @@ int
 ay_sweep_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  /*int ay_status = AY_OK;*/
- char *n1 = "SweepAttrData";
+ char *arr = "SweepAttrData";
  /* char fname[] = "sweep_setpropcb";*/
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ Tcl_Obj *to = NULL;
  ay_sweep_object *sweep = NULL;
 
   if(!interp || !o)
@@ -243,35 +243,29 @@ ay_sweep_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!sweep)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1, -1);
-  ton = Tcl_NewStringObj(n1, -1);
-
-  Tcl_SetStringObj(ton, "Rotate", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Rotate",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &(sweep->rotate));
 
-  Tcl_SetStringObj(ton, "Interpolate", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Interpolate",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &(sweep->interpolate));
 
-  Tcl_SetStringObj(ton, "Type", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Type",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &(sweep->close));
 
-  Tcl_SetStringObj(ton, "Sections", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Sections",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &(sweep->sections));
 
-  Tcl_SetStringObj(ton, "DisplayMode", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &(sweep->display_mode));
-
-  Tcl_SetStringObj(ton, "Tolerance", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Tolerance",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &(sweep->glu_sampling_tolerance));
 
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  to = Tcl_GetVar2Ex(interp, arr, "DisplayMode",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(sweep->display_mode));
 
   ay_notify_object(o);
 
@@ -288,8 +282,7 @@ ay_sweep_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_sweep_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1="SweepAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "SweepAttrData";
  ay_sweep_object *sweep = NULL;
 
   if(!interp || !o)
@@ -300,43 +293,31 @@ ay_sweep_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!sweep)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1, -1);
-  ton = Tcl_NewStringObj(n1, -1);
+  Tcl_SetVar2Ex(interp, arr, "Rotate",
+		Tcl_NewIntObj(sweep->rotate),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Rotate", -1);
-  to = Tcl_NewIntObj(sweep->rotate);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Interpolate",
+		Tcl_NewIntObj(sweep->interpolate),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Interpolate", -1);
-  to = Tcl_NewIntObj(sweep->interpolate);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Type",
+		Tcl_NewIntObj(sweep->close),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Type", -1);
-  to = Tcl_NewIntObj(sweep->close);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Sections",
+		Tcl_NewIntObj(sweep->sections),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Sections", -1);
-  to = Tcl_NewIntObj(sweep->sections);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Tolerance",
+		Tcl_NewDoubleObj(sweep->glu_sampling_tolerance),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "DisplayMode", -1);
-  to = Tcl_NewIntObj(sweep->display_mode);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "DisplayMode",
+		Tcl_NewIntObj(sweep->display_mode),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Tolerance", -1);
-  to = Tcl_NewDoubleObj(sweep->glu_sampling_tolerance);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  ay_prop_getnpinfo(interp, n1, sweep->npatch);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  ay_prop_getnpinfo(interp, arr, sweep->npatch);
 
  return AY_OK;
 } /* ay_sweep_getpropcb */

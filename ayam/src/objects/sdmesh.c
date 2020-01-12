@@ -949,10 +949,10 @@ ay_sdmesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 int
 ay_sdmesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1 = "SDMeshAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "SDMeshAttrData";
+ Tcl_Obj *to = NULL;
  ay_sdmesh_object *sdmesh = NULL;
- int i;
+ int itemp;
 
   if(!interp || !o)
     return AY_ENULL;
@@ -962,29 +962,18 @@ ay_sdmesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!sdmesh)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1, -1);
-  ton = Tcl_NewStringObj(n1, -1);
+  to = Tcl_GetVar2Ex(interp, arr, "Scheme",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(sdmesh->scheme));
 
-  Tcl_SetStringObj(ton, "Scheme", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &i);
+  to = Tcl_GetVar2Ex(interp, arr, "Level",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(sdmesh->level));
 
-  sdmesh->scheme = i;
-
-  Tcl_SetStringObj(ton, "Level", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &i);
-
-  sdmesh->level = i;
-
-  Tcl_SetStringObj(ton, "DrawSub", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &i);
-
-  sdmesh->drawsub = i;
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  to = Tcl_GetVar2Ex(interp, arr, "DrawSub",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &itemp);
+  sdmesh->drawsub = (char)itemp;
 
   (void)ay_notify_object(o);
 
@@ -1001,8 +990,7 @@ ay_sdmesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_sdmesh_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1 = "SDMeshAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "SDMeshAttrData";
  ay_sdmesh_object *sdmesh = NULL;
 
   if(!interp || !o)
@@ -1013,41 +1001,29 @@ ay_sdmesh_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!sdmesh)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1, -1);
-  ton = Tcl_NewStringObj(n1, -1);
+  Tcl_SetVar2Ex(interp, arr, "Scheme",
+		Tcl_NewIntObj(sdmesh->scheme),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Scheme", -1);
-  to = Tcl_NewIntObj(sdmesh->scheme);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Level",
+		Tcl_NewIntObj(sdmesh->level),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Level", -1);
-  to = Tcl_NewIntObj(sdmesh->level);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "NFaces",
+		Tcl_NewIntObj(sdmesh->nfaces),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "NFaces", -1);
-  to = Tcl_NewIntObj((int)sdmesh->nfaces);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "NControls",
+		Tcl_NewIntObj(sdmesh->ncontrols),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "NControls", -1);
-  to = Tcl_NewIntObj((int)sdmesh->ncontrols);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "NTags",
+		Tcl_NewIntObj(sdmesh->ntags),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "NTags", -1);
-  to = Tcl_NewIntObj((int)sdmesh->ntags);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton, "DrawSub", -1);
-  to = Tcl_NewIntObj(sdmesh->drawsub);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  Tcl_SetVar2Ex(interp, arr, "DrawSub",
+		Tcl_NewIntObj(sdmesh->drawsub),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
  return AY_OK;
 } /* ay_sdmesh_getpropcb */

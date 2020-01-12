@@ -552,12 +552,12 @@ ay_parab_readcb(FILE *fileptr, ay_object *o)
   if(!(parab = calloc(1, sizeof(ay_paraboloid_object))))
     { return AY_EOMEM; }
 
-  fscanf(fileptr,"%d\n",&itemp);
+  fscanf(fileptr, "%d\n", &itemp);
   parab->closed = (char)itemp;
-  fscanf(fileptr,"%lg\n",&parab->rmax);
-  fscanf(fileptr,"%lg\n",&parab->zmin);
-  fscanf(fileptr,"%lg\n",&parab->zmax);
-  fscanf(fileptr,"%lg\n",&parab->thetamax);
+  fscanf(fileptr, "%lg\n", &parab->rmax);
+  fscanf(fileptr, "%lg\n", &parab->zmin);
+  fscanf(fileptr, "%lg\n", &parab->zmax);
+  fscanf(fileptr, "%lg\n", &parab->thetamax);
 
 
   o->refine = parab;

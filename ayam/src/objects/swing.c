@@ -223,9 +223,9 @@ int
 ay_swing_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  /*int ay_status = AY_OK;*/
- char *n1 = "SwingAttrData";
+ char *arr = "SwingAttrData";
  /* char fname[] = "swing_setpropcb";*/
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ Tcl_Obj *to = NULL;
  ay_swing_object *swing = NULL;
 
   if(!interp || !o)
@@ -236,19 +236,13 @@ ay_swing_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!swing)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  to = Tcl_GetVar2Ex(interp, arr, "Tolerance",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(swing->glu_sampling_tolerance));
 
-  Tcl_SetStringObj(ton,"DisplayMode",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(swing->display_mode));
-
-  Tcl_SetStringObj(ton,"Tolerance",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &(swing->glu_sampling_tolerance));
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  to = Tcl_GetVar2Ex(interp, arr, "DisplayMode",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(swing->display_mode));
 
   (void)ay_notify_object(o);
 
@@ -265,7 +259,7 @@ ay_swing_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_swing_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1="SwingAttrData";
+ char *arr = "SwingAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_swing_object *swing = NULL;
 
@@ -277,23 +271,15 @@ ay_swing_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!swing)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  to = Tcl_GetVar2Ex(interp, arr, "Tolerance",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(swing->glu_sampling_tolerance));
 
-  Tcl_SetStringObj(ton,"DisplayMode",-1);
-  to = Tcl_NewIntObj(swing->display_mode);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "DisplayMode",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(swing->display_mode));
 
-  Tcl_SetStringObj(ton,"Tolerance",-1);
-  to = Tcl_NewDoubleObj(swing->glu_sampling_tolerance);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  ay_prop_getnpinfo(interp, n1, swing->npatch);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  ay_prop_getnpinfo(interp, arr, swing->npatch);
 
  return AY_OK;
 } /* ay_swing_getpropcb */

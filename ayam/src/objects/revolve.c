@@ -225,9 +225,9 @@ int
 ay_revolve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  /*int ay_status = AY_OK;*/
- char *n1 = "RevolveAttrData";
+ char *arr = "RevolveAttrData";
  /* char fname[] = "revolve_setpropcb";*/
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ Tcl_Obj *to = NULL;
  ay_revolve_object *revolve = NULL;
 
   if(!interp || !o)
@@ -238,31 +238,25 @@ ay_revolve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!revolve)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1, -1);
-  ton = Tcl_NewStringObj(n1, -1);
-
-  Tcl_SetStringObj(ton, "ThetaMax", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "ThetaMax",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &(revolve->thetamax));
 
-  Tcl_SetStringObj(ton, "Sections", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Sections",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &(revolve->sections));
 
-  Tcl_SetStringObj(ton, "Order", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Order",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &(revolve->order));
 
-  Tcl_SetStringObj(ton, "DisplayMode", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &(revolve->display_mode));
-
-  Tcl_SetStringObj(ton, "Tolerance", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Tolerance",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &(revolve->glu_sampling_tolerance));
 
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  to = Tcl_GetVar2Ex(interp, arr, "DisplayMode",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(revolve->display_mode));
 
   (void)ay_notify_object(o);
 
@@ -279,8 +273,7 @@ ay_revolve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_revolve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1="RevolveAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "RevolveAttrData";
  ay_revolve_object *revolve = NULL;
 
   if(!interp || !o)
@@ -291,35 +284,27 @@ ay_revolve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!revolve)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1, -1);
-  ton = Tcl_NewStringObj(n1, -1);
+  Tcl_SetVar2Ex(interp, arr, "ThetaMax",
+		Tcl_NewDoubleObj(revolve->thetamax),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "ThetaMax", -1);
-  to = Tcl_NewDoubleObj(revolve->thetamax);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Sections",
+		Tcl_NewIntObj(revolve->sections),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Sections", -1);
-  to = Tcl_NewIntObj(revolve->sections);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Order",
+		Tcl_NewIntObj(revolve->order),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Order", -1);
-  to = Tcl_NewIntObj(revolve->order);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Tolerance",
+		Tcl_NewDoubleObj(revolve->glu_sampling_tolerance),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "DisplayMode", -1);
-  to = Tcl_NewIntObj(revolve->display_mode);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "DisplayMode",
+		Tcl_NewIntObj(revolve->display_mode),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Tolerance", -1);
-  to = Tcl_NewDoubleObj(revolve->glu_sampling_tolerance);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  ay_prop_getnpinfo(interp, n1, revolve->npatch);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  ay_prop_getnpinfo(interp, arr, revolve->npatch);
 
  return AY_OK;
 } /* ay_revolve_getpropcb */
