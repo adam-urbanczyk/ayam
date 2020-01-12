@@ -539,8 +539,8 @@ int
 ay_sphere_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  /*int ay_status = AY_OK;*/
- char *n1 = "SphereAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "SphereAttrData";
+ Tcl_Obj *to = NULL;
  ay_sphere_object *sphere;
  int itemp = 0;
 
@@ -552,29 +552,26 @@ ay_sphere_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!sphere)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
-
-  Tcl_SetStringObj(ton,"Closed",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &itemp);
+  to = Tcl_GetVar2Ex(interp, arr, "Closed",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(itemp));
   sphere->closed = (char)itemp;
 
-  Tcl_SetStringObj(ton,"Radius",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &sphere->radius);
+  to = Tcl_GetVar2Ex(interp, arr, "Radius",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(sphere->radius));
 
-  Tcl_SetStringObj(ton,"ZMin",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &sphere->zmin);
+  to = Tcl_GetVar2Ex(interp, arr, "ZMin",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(sphere->zmin));
 
-  Tcl_SetStringObj(ton,"ZMax",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &sphere->zmax);
+  to = Tcl_GetVar2Ex(interp, arr, "ZMax",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(sphere->zmax));
 
-  Tcl_SetStringObj(ton,"ThetaMax",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &sphere->thetamax);
+  to = Tcl_GetVar2Ex(interp, arr, "ThetaMax",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(sphere->thetamax));
 
   if((fabs(sphere->zmin) == sphere->radius) &&
      (fabs(sphere->zmax) == sphere->radius) &&
@@ -586,9 +583,6 @@ ay_sphere_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     {
       sphere->is_simple = AY_FALSE;
     }
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
   (void)ay_sphere_notifycb(o);
   o->modified = AY_TRUE;
@@ -604,8 +598,7 @@ ay_sphere_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_sphere_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1="SphereAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "SphereAttrData";
  ay_sphere_object *sphere;
 
   if(!o)
@@ -616,31 +609,25 @@ ay_sphere_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!sphere)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  Tcl_SetVar2Ex(interp, arr, "Closed",
+		Tcl_NewIntObj(sphere->closed),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Closed",-1);
-  to = Tcl_NewIntObj(sphere->closed);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Radius",
+		Tcl_NewDoubleObj(sphere->radius),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Radius",-1);
-  to = Tcl_NewDoubleObj(sphere->radius);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "ZMin",
+		Tcl_NewDoubleObj(sphere->zmin),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"ZMin",-1);
-  to = Tcl_NewDoubleObj(sphere->zmin);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "ZMax",
+		Tcl_NewDoubleObj(sphere->zmax),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"ZMax",-1);
-  to = Tcl_NewDoubleObj(sphere->zmax);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"ThetaMax",-1);
-  to = Tcl_NewDoubleObj(sphere->thetamax);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  Tcl_SetVar2Ex(interp, arr, "ThetaMax",
+		Tcl_NewDoubleObj(sphere->thetamax),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
  return AY_OK;
 } /* ay_sphere_getpropcb */
@@ -661,12 +648,12 @@ ay_sphere_readcb(FILE *fileptr, ay_object *o)
   if(!(sphere = calloc(1, sizeof(ay_sphere_object))))
     { return AY_EOMEM; }
 
-  fscanf(fileptr,"%d\n",&itemp);
+  fscanf(fileptr, "%d\n", &itemp);
   sphere->closed = (char)itemp;
-  fscanf(fileptr,"%lg\n",&sphere->radius);
-  fscanf(fileptr,"%lg\n",&sphere->zmin);
-  fscanf(fileptr,"%lg\n",&sphere->zmax);
-  fscanf(fileptr,"%lg\n",&sphere->thetamax);
+  fscanf(fileptr, "%lg\n", &sphere->radius);
+  fscanf(fileptr, "%lg\n", &sphere->zmin);
+  fscanf(fileptr, "%lg\n", &sphere->zmax);
+  fscanf(fileptr, "%lg\n", &sphere->thetamax);
 
   if((fabs(sphere->zmin) == sphere->radius) &&
      (fabs(sphere->zmax) == sphere->radius) &&

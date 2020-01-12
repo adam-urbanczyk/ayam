@@ -422,8 +422,8 @@ int
 ay_torus_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  /*int ay_status = AY_OK;*/
- char *n1 = "TorusAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "TorusAttrData";
+ Tcl_Obj *to = NULL;
  ay_torus_object *torus;
  int itemp = 0;
 
@@ -435,38 +435,33 @@ ay_torus_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!torus)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
-
-  Tcl_SetStringObj(ton,"Closed",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &itemp);
+  to = Tcl_GetVar2Ex(interp, arr, "Closed",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(itemp));
   torus->closed = (char)itemp;
 
-  Tcl_SetStringObj(ton,"MajorRad",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &torus->majorrad);
+  to = Tcl_GetVar2Ex(interp, arr, "MajorRad",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(torus->majorrad));
 
-  Tcl_SetStringObj(ton,"MinorRad",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &torus->minorrad);
+  to = Tcl_GetVar2Ex(interp, arr, "MinorRad",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(torus->minorrad));
 
-  Tcl_SetStringObj(ton,"PhiMin",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &torus->phimin);
+  to = Tcl_GetVar2Ex(interp, arr, "PhiMin",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(torus->phimin));
 
-  Tcl_SetStringObj(ton,"PhiMax",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &torus->phimax);
+  to = Tcl_GetVar2Ex(interp, arr, "PhiMax",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(torus->phimax));
 
-  Tcl_SetStringObj(ton,"ThetaMax",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &torus->thetamax);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  to = Tcl_GetVar2Ex(interp, arr, "ThetaMax",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(torus->thetamax));
 
   (void)ay_torus_notifycb(o);
+
   o->modified = AY_TRUE;
   (void)ay_notify_parent();
 
@@ -480,8 +475,7 @@ ay_torus_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_torus_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1="TorusAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "TorusAttrData";
  ay_torus_object *torus;
 
   if(!interp || !o)
@@ -492,35 +486,29 @@ ay_torus_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!torus)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  Tcl_SetVar2Ex(interp, arr, "Closed",
+		Tcl_NewIntObj(torus->closed),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Closed",-1);
-  to = Tcl_NewIntObj(torus->closed);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "MajorRad",
+		Tcl_NewDoubleObj(torus->majorrad),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"MajorRad",-1);
-  to = Tcl_NewDoubleObj(torus->majorrad);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "MinorRad",
+		Tcl_NewDoubleObj(torus->minorrad),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"MinorRad",-1);
-  to = Tcl_NewDoubleObj(torus->minorrad);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "PhiMin",
+		Tcl_NewDoubleObj(torus->phimin),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"PhiMin",-1);
-  to = Tcl_NewDoubleObj(torus->phimin);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "PhiMax",
+		Tcl_NewDoubleObj(torus->phimax),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"PhiMax",-1);
-  to = Tcl_NewDoubleObj(torus->phimax);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"ThetaMax",-1);
-  to = Tcl_NewDoubleObj(torus->thetamax);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  Tcl_SetVar2Ex(interp, arr, "ThetaMax",
+		Tcl_NewDoubleObj(torus->thetamax),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
  return AY_OK;
 } /* ay_torus_getpropcb */
@@ -541,13 +529,13 @@ ay_torus_readcb(FILE *fileptr, ay_object *o)
   if(!(torus = calloc(1, sizeof(ay_torus_object))))
     { return AY_EOMEM; }
 
-  fscanf(fileptr,"%d\n",&itemp);
+  fscanf(fileptr, "%d\n", &itemp);
   torus->closed = (char)itemp;
-  fscanf(fileptr,"%lg\n",&torus->majorrad);
-  fscanf(fileptr,"%lg\n",&torus->minorrad);
-  fscanf(fileptr,"%lg\n",&torus->phimin);
-  fscanf(fileptr,"%lg\n",&torus->phimax);
-  fscanf(fileptr,"%lg\n",&torus->thetamax);
+  fscanf(fileptr, "%lg\n", &torus->majorrad);
+  fscanf(fileptr, "%lg\n", &torus->minorrad);
+  fscanf(fileptr, "%lg\n", &torus->phimin);
+  fscanf(fileptr, "%lg\n", &torus->phimax);
+  fscanf(fileptr, "%lg\n", &torus->thetamax);
 
   o->refine = torus;
 

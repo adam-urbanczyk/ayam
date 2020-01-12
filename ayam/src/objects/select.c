@@ -169,8 +169,8 @@ ay_select_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  /*int ay_status = AY_OK;*/
  char fname[] = "setprop";
- char *n1 = "SelectAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "SelectAttrData";
+ Tcl_Obj *to = NULL;
  ay_select_object *select = NULL;
  char *string = NULL;
  int stringlen;
@@ -183,10 +183,8 @@ ay_select_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!select)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-
-  ton = Tcl_NewStringObj("Indices",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Indices",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   string = Tcl_GetStringFromObj(to, &stringlen);
   if(!string)
     {
@@ -218,9 +216,6 @@ ay_select_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
 cleanup:
 
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
-
   ay_notify_parent();
 
  return AY_OK;
@@ -233,8 +228,8 @@ cleanup:
 int
 ay_select_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1="SelectAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "SelectAttrData";
+ Tcl_Obj *to = NULL;
  ay_select_object *select = NULL;
 
   if(!o)
@@ -245,14 +240,13 @@ ay_select_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!select)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
+  if(!select->indices)
+    return AY_ENULL;
 
-  ton = Tcl_NewStringObj("Indices",-1);
-  to = Tcl_NewStringObj(select->indices,-1);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_NewStringObj(select->indices, -1);
 
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  Tcl_SetVar2Ex(interp, arr, "Scheme", to,
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
  return AY_OK;
 } /* ay_select_getpropcb */
