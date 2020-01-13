@@ -198,12 +198,16 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  int ay_status = AY_OK;
  ay_view_object *view = NULL;
- char *n1 = "CameraData", *n2 = "ViewAttribData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr, *arc = "CameraData", *arv = "ViewAttribData";
+ Tcl_Obj *tco = NULL;
  double oldmark[3];
- int itemp = 0, setmark = AY_FALSE, need_markupdate = AY_TRUE;
+ int i, itemp = 0, setmark = AY_FALSE, need_markupdate = AY_TRUE;
  char *result;
  char fname[] = "view_setpropcb";
+ char *fr[3] = {"From_X","From_Y","From_Z"};
+ char *to[3] = {"To_X","To_Y","To_Z"};
+ char *up[3] = {"Up_X","Up_Y","Up_Z"};
+ char *ma[3] = {"Mark_X","Mark_Y","Mark_Z"};
 
   if(!interp || !o)
     return AY_ENULL;
@@ -215,140 +219,122 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   memcpy(oldmark, view->markworld, 3*sizeof(double));
 
-  toa = Tcl_NewStringObj(n1, -1);
-  ton = Tcl_NewStringObj("From_X",-1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &view->from[0]);
-  Tcl_SetStringObj(ton, "From_Y", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &view->from[1]);
-  Tcl_SetStringObj(ton, "From_Z", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &view->from[2]);
+  /* fetch CameraData */
+  arr = arc;
+  for(i = 0; i < 3; i++)
+    {
+      tco = Tcl_GetVar2Ex(interp, arr, fr[i],
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_GetDoubleFromObj(interp, tco, &(view->from[i]));
 
-  Tcl_SetStringObj(ton, "To_X", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &view->to[0]);
-  Tcl_SetStringObj(ton, "To_Y", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &view->to[1]);
-  Tcl_SetStringObj(ton, "To_Z", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &view->to[2]);
+      tco = Tcl_GetVar2Ex(interp, arr, to[i],
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_GetDoubleFromObj(interp, tco, &(view->to[i]));
 
-  Tcl_SetStringObj(ton, "Up_X", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &view->up[0]);
-  Tcl_SetStringObj(ton, "Up_Y", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &view->up[1]);
-  Tcl_SetStringObj(ton, "Up_Z", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &view->up[2]);
+      tco = Tcl_GetVar2Ex(interp, arr, up[i],
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_GetDoubleFromObj(interp, tco, &(view->up[i]));
+    }
 
-  Tcl_SetStringObj(ton, "Near", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &view->nearp);
-  Tcl_SetStringObj(ton, "Far", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &view->farp);
+  tco = Tcl_GetVar2Ex(interp, arr, "Near",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, tco, &view->nearp);
 
-  Tcl_SetStringObj(ton, "Zoom", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &view->zoom);
+  tco = Tcl_GetVar2Ex(interp, arr, "Far",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, tco, &view->farp);
 
-  Tcl_SetStringObj(ton, "Roll", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &view->roll);
+  tco = Tcl_GetVar2Ex(interp, arr, "Zoom",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, tco, &view->zoom);
 
-  Tcl_SetStringObj(ton, "Rot_X", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &view->rotx);
-  Tcl_SetStringObj(ton, "Rot_Y", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &view->roty);
-  Tcl_SetStringObj(ton, "Rot_Z", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &view->rotz);
+  tco = Tcl_GetVar2Ex(interp, arr, "Roll",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, tco, &view->roll);
 
-  Tcl_SetStringObj(toa, n2, -1);
-  Tcl_SetStringObj(ton, "Type", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &itemp);
+  tco = Tcl_GetVar2Ex(interp, arr, "Rot_X",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, tco, &view->rotx);
+
+  tco = Tcl_GetVar2Ex(interp, arr, "Rot_Y",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, tco, &view->roty);
+
+  tco = Tcl_GetVar2Ex(interp, arr, "Rot_Z",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, tco, &view->rotz);
+
+
+  /* fetch ViewAttribData */
+  arr = arv;
+  tco = Tcl_GetVar2Ex(interp, arr, "Type",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, tco, &itemp);
   if(itemp != view->type)
     {
       ay_viewt_changetype(view, itemp);
     }
 
-  Tcl_SetStringObj(ton, "Redraw", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &view->redraw);
+  tco = Tcl_GetVar2Ex(interp, arr, "Redraw",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, tco, &view->redraw);
 
-  Tcl_SetStringObj(ton, "DrawingMode", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &view->drawmode);
+  tco = Tcl_GetVar2Ex(interp, arr, "DrawingMode",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, tco, &view->drawmode);
 
-  Tcl_SetStringObj(ton, "DrawSel", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &view->drawsel);
+  tco = Tcl_GetVar2Ex(interp, arr, "DrawSel",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, tco, &view->drawsel);
 
-  Tcl_SetStringObj(ton, "DrawLevel", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &view->drawlevel);
+  tco = Tcl_GetVar2Ex(interp, arr, "DrawLevel",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, tco, &view->drawlevel);
 
-  Tcl_SetStringObj(ton, "DrawObjectCS", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &view->drawobjectcs);
+  tco = Tcl_GetVar2Ex(interp, arr, "DrawObjectCS",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, tco, &view->drawobjectcs);
 
-  Tcl_SetStringObj(ton, "AALines", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &view->antialiaslines);
+  tco = Tcl_GetVar2Ex(interp, arr, "AALines",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, tco, &view->antialiaslines);
 
-  Tcl_SetStringObj(ton, "GridSize", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &view->grid);
+  tco = Tcl_GetVar2Ex(interp, arr, "GridSize",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, tco, &view->grid);
 
-  Tcl_SetStringObj(ton, "DrawGrid", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &view->drawgrid);
+  tco = Tcl_GetVar2Ex(interp, arr, "DrawGrid",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, tco, &view->drawgrid);
 
-  Tcl_SetStringObj(ton, "UseGrid", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &view->usegrid);
+  tco = Tcl_GetVar2Ex(interp, arr, "DrawGrid",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, tco, &view->usegrid);
 
-  Tcl_SetStringObj(ton, "ModellingMode", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &view->local);
+  tco = Tcl_GetVar2Ex(interp, arr, "ModellingMode",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, tco, &view->local);
 
-  Tcl_SetStringObj(ton, "TransformPoints", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &view->transform_points);
+  tco = Tcl_GetVar2Ex(interp, arr, "TransformPoints",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, tco, &view->transform_points);
 
-  Tcl_SetStringObj(ton, "EnableUndo", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &view->enable_undo);
+  tco = Tcl_GetVar2Ex(interp, arr, "EnableUndo",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, tco, &view->enable_undo);
 
-  Tcl_SetStringObj(ton, "SetMark", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &setmark);
+  tco = Tcl_GetVar2Ex(interp, arr, "SetMark",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, tco, &setmark);
 
   if(setmark)
     {
-      Tcl_SetStringObj(ton, "Mark_X", -1);
-      to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-			  TCL_GLOBAL_ONLY);
-      Tcl_GetDoubleFromObj(interp, to, &(view->markworld[0]));
-
-      Tcl_SetStringObj(ton, "Mark_Y", -1);
-      to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-			  TCL_GLOBAL_ONLY);
-      Tcl_GetDoubleFromObj(interp, to, &(view->markworld[1]));
-
-      Tcl_SetStringObj(ton, "Mark_Z", -1);
-      to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-			  TCL_GLOBAL_ONLY);
-      Tcl_GetDoubleFromObj(interp, to, &(view->markworld[2]));
-
+      for(i = 0; i < 3; i++)
+	{
+	  tco = Tcl_GetVar2Ex(interp, arr, ma[i],
+			      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	  Tcl_GetDoubleFromObj(interp, tco, &(view->markworld[i]));
+	}
       if(!AY_V3COMP(oldmark, view->markworld))
 	{
 	  need_markupdate = AY_TRUE;
@@ -356,11 +342,11 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       view->drawmark = AY_TRUE;
     }
 
-  Tcl_SetStringObj(ton, "DrawBG", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &view->drawbgimage);
+  tco = Tcl_GetVar2Ex(interp, arr, "DrawBG",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, tco, &(view->drawbgimage));
 
-  result = Tcl_GetVar2(interp, "ViewAttribData", "BGImage",
+  result = Tcl_GetVar2(interp, arr, "BGImage",
 		       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   if((result && !view->bgimage) ||
@@ -412,9 +398,6 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
 cleanup:
 
-  Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
-
  return ay_status;
 } /* ay_view_setpropcb */
 
@@ -429,10 +412,14 @@ ay_view_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  ay_view_object *view = NULL;
  struct Togl *togl = NULL;
- int width = 0, height = 0;
- char *n1 = "CameraData", *n2 = "ViewAttribData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ int i, width = 0, height = 0;
+ char *arr, *n1 = "CameraData", *n2 = "ViewAttribData";
+ Tcl_Obj *tco = NULL, *toa = NULL, *ton = NULL;
  Tk_Window win;
+ char *fr[3] = {"From_X","From_Y","From_Z"};
+ char *to[3] = {"To_X","To_Y","To_Z"};
+ char *up[3] = {"Up_X","Up_Y","Up_Z"};
+ char *ma[3] = {"Mark_X","Mark_Y","Mark_Z"};
 
   if(!interp || !o)
     return AY_ENULL;
@@ -447,160 +434,124 @@ ay_view_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   height = Togl_Height(togl);
   win = Togl_TkWin(togl);
 
-  toa = Tcl_NewStringObj(n1, -1);
-
   /* fill CameraData array */
-  ton = Tcl_NewStringObj("From_X", -1);
-  to = Tcl_NewDoubleObj(view->from[0]);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "From_Y", -1);
-  to = Tcl_NewDoubleObj(view->from[1]);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "From_Z", -1);
-  to = Tcl_NewDoubleObj(view->from[2]);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  arr = n1;
+  for(i = 0; i < 3; i++)
+    {
+      Tcl_SetVar2Ex(interp, arr, fr[i],
+		    Tcl_NewDoubleObj(view->from[i]),
+		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "To_X", -1);
-  to = Tcl_NewDoubleObj(view->to[0]);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "To_Y", -1);
-  to = Tcl_NewDoubleObj(view->to[1]);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "To_Z", -1);
-  to = Tcl_NewDoubleObj(view->to[2]);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_SetVar2Ex(interp, arr, to[i],
+		    Tcl_NewDoubleObj(view->to[i]),
+		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Up_X", -1);
-  to = Tcl_NewDoubleObj(view->up[0]);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "Up_Y", -1);
-  to = Tcl_NewDoubleObj(view->up[1]);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "Up_Z", -1);
-  to = Tcl_NewDoubleObj(view->up[2]);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_SetVar2Ex(interp, arr, up[i],
+		    Tcl_NewDoubleObj(view->up[i]),
+		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+    }
 
-  Tcl_SetStringObj(ton, "Near", -1);
-  to = Tcl_NewDoubleObj(view->nearp);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "Far", -1);
-  to = Tcl_NewDoubleObj(view->farp);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Roll", -1);
-  to = Tcl_NewDoubleObj(view->roll);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Near",
+		Tcl_NewDoubleObj(view->nearp),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Zoom", -1);
-  to = Tcl_NewDoubleObj(view->zoom);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Far",
+		Tcl_NewDoubleObj(view->farp),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Rot_X", -1);
-  to = Tcl_NewDoubleObj(view->rotx);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "Rot_Y", -1);
-  to = Tcl_NewDoubleObj(view->roty);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "Rot_Z", -1);
-  to = Tcl_NewDoubleObj(view->rotz);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Zoom",
+		Tcl_NewDoubleObj(view->zoom),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "togl", -1);
-  to = Tcl_NewStringObj(Tk_PathName(win), -1);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Roll",
+		Tcl_NewDoubleObj(view->roll),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetVar2Ex(interp, arr, "Rot_X",
+		Tcl_NewDoubleObj(view->rotx),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetVar2Ex(interp, arr, "Rot_Y",
+		Tcl_NewDoubleObj(view->roty),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetVar2Ex(interp, arr, "Rot_Z",
+		Tcl_NewDoubleObj(view->rotz),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetVar2Ex(interp, arr, "togl",
+		Tcl_NewStringObj(Tk_PathName(win), -1),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
 
   /* fill ViewAttribData array */
-  Tcl_SetStringObj(toa, n2, -1);
-  Tcl_SetStringObj(ton, "Type", -1);
-  to = Tcl_NewIntObj(view->type);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  arr = n2;
+  Tcl_SetVar2Ex(interp, arr, "Type",
+		Tcl_NewIntObj(view->type),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Width",
+		Tcl_NewIntObj(width),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Height",
+		Tcl_NewIntObj(height),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Redraw",
+		Tcl_NewIntObj(view->redraw),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "DrawingMode",
+		Tcl_NewIntObj(view->drawmode),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "DrawSel",
+		Tcl_NewIntObj(view->drawsel),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "DrawLevel",
+		Tcl_NewIntObj(view->drawlevel),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "DrawObjectCS",
+		Tcl_NewIntObj(view->drawobjectcs),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "AALines",
+		Tcl_NewIntObj(view->antialiaslines),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Width", -1);
-  to = Tcl_NewIntObj(width);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "GridSize",
+		Tcl_NewDoubleObj(view->grid),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "DrawGrid",
+		Tcl_NewIntObj(view->drawgrid),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "UseGrid",
+		Tcl_NewIntObj(view->usegrid),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "ModellingMode",
+		Tcl_NewIntObj(view->local),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "TransformPoints",
+		Tcl_NewIntObj(view->transform_points),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "EnableUndo",
+		Tcl_NewIntObj(view->enable_undo),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "DrawBG",
+		Tcl_NewIntObj(view->drawbgimage),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "BGImage",
+		Tcl_NewStringObj(view->bgimage, -1),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  for(i = 0; i < 3; i++)
+    {
+      Tcl_SetVar2Ex(interp, arr, ma[i],
+		    Tcl_NewDoubleObj(view->markworld[i]),
+		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+    }
+  Tcl_SetVar2Ex(interp, arr, "SetMark",
+		Tcl_NewIntObj(view->drawmark),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Height", -1);
-  to = Tcl_NewIntObj(height);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton, "Redraw", -1);
-  to = Tcl_NewIntObj(view->redraw);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton, "DrawingMode", -1);
-  to = Tcl_NewIntObj(view->drawmode);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton, "DrawSel", -1);
-  to = Tcl_NewIntObj(view->drawsel);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton, "DrawLevel", -1);
-  to = Tcl_NewIntObj(view->drawlevel);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton, "DrawObjectCS", -1);
-  to = Tcl_NewIntObj(view->drawobjectcs);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton, "AALines", -1);
-  to = Tcl_NewIntObj(view->antialiaslines);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton, "GridSize", -1);
-  to = Tcl_NewDoubleObj(view->grid);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton, "DrawGrid", -1);
-  to = Tcl_NewIntObj(view->drawgrid);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton, "UseGrid", -1);
-  to = Tcl_NewIntObj(view->usegrid);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton, "ModellingMode", -1);
-  to = Tcl_NewIntObj(view->local);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton, "TransformPoints", -1);
-  to = Tcl_NewIntObj(view->transform_points);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton, "EnableUndo", -1);
-  to = Tcl_NewIntObj(view->enable_undo);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton, "DrawBG", -1);
-  to = Tcl_NewIntObj(view->drawbgimage);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton, "BGImage", -1);
-  to = Tcl_NewStringObj(view->bgimage, -1);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton, "Mark_X", -1);
-  to = Tcl_NewDoubleObj(view->markworld[0]);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton, "Mark_Y", -1);
-  to = Tcl_NewDoubleObj(view->markworld[1]);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton, "Mark_Z", -1);
-  to = Tcl_NewDoubleObj(view->markworld[2]);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton, "SetMark", -1);
-  to = Tcl_NewIntObj(view->drawmark);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton, "togl", -1);
-  to = Tcl_NewStringObj(Tk_PathName(win), -1);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
+  Tcl_SetVar2Ex(interp, arr, "togl",
+		Tcl_NewStringObj(Tk_PathName(win), -1),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
  return AY_OK;
 } /* ay_view_getpropcb */
