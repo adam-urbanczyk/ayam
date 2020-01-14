@@ -291,7 +291,7 @@ ay_clone_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  char *arc = "CloneAttrData";
  char *arm = "MirrorAttrData";
  /*char fname[] = "clone_setpropcb";*/
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ Tcl_Obj *to = NULL;
  int i, itemp;
  double dtemp;
  double xaxis[3] = {1.0,0.0,0.0};
@@ -456,7 +456,7 @@ ay_clone_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   else
     {
       if(!(quatstr = calloc(TCL_DOUBLE_SPACE*4+10, sizeof(char))))
-	return TCL_OK;
+	return AY_EOMEM;
 
       Tcl_SetVar2Ex(interp, arc, "NumClones",
 		    Tcl_NewIntObj(clone->numclones),

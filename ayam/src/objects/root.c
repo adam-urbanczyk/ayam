@@ -209,8 +209,8 @@ int
 ay_root_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  char fname[] = "root_setpropcb";
- char *n1 = "RiOptData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "RiOptData";
+ Tcl_Obj *to = NULL;
  ay_root_object *root = NULL;
  ay_riopt *riopt = NULL;
  double dtemp = 0.0;
@@ -227,97 +227,105 @@ ay_root_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   riopt = root->riopt;
 
-  toa = Tcl_NewStringObj(n1, -1);
+  to = Tcl_GetVar2Ex(interp, arr, "Variance",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(riopt->Variance));
 
-  ton = Tcl_NewStringObj("Variance", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &dtemp);
-  riopt->Variance = dtemp;
-  Tcl_SetStringObj(ton, "Width", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &itemp);
-  riopt->width = itemp;
-  Tcl_SetStringObj(ton, "Height", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &itemp);
-  riopt->height = itemp;
-  Tcl_SetStringObj(ton, "Samples_X", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &dtemp);
-  riopt->Samples_X = dtemp;
-  Tcl_SetStringObj(ton, "Samples_Y", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &dtemp);
-  riopt->Samples_Y = dtemp;
-  Tcl_SetStringObj(ton, "FilterFunc", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &itemp);
+  to = Tcl_GetVar2Ex(interp, arr, "Width",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(riopt->width));
+
+  to = Tcl_GetVar2Ex(interp, arr, "Height",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(riopt->height));
+
+  to = Tcl_GetVar2Ex(interp, arr, "Samples_X",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(riopt->Samples_X));
+  to = Tcl_GetVar2Ex(interp, arr, "Samples_Y",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(riopt->Samples_Y));
+
+  to = Tcl_GetVar2Ex(interp, arr, "FilterFunc",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(itemp));
   riopt->FilterFunc = (char)itemp;
 
-  Tcl_SetStringObj(ton, "FilterWidth", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &dtemp);
-  riopt->FilterWidth = dtemp;
-  Tcl_SetStringObj(ton, "FilterHeight", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &dtemp);
-  riopt->FilterHeight = dtemp;
-  Tcl_SetStringObj(ton, "ExpGain", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &dtemp);
-  riopt->ExpGain = dtemp;
-  Tcl_SetStringObj(ton, "ExpGamma", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &dtemp);
-  riopt->ExpGamma = dtemp;
-  Tcl_SetStringObj(ton, "RGBA_ONE", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "FilterWidth",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(riopt->FilterWidth));
+
+  to = Tcl_GetVar2Ex(interp, arr, "FilterHeight",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(riopt->FilterHeight));
+
+  to = Tcl_GetVar2Ex(interp, arr, "ExpGain",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(riopt->ExpGain));
+
+  to = Tcl_GetVar2Ex(interp, arr, "ExpGamma",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(riopt->ExpGamma));
+
+  to = Tcl_GetVar2Ex(interp, arr, "RGBA_ONE",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &itemp);
   riopt->RGBA_ONE = itemp;
-  Tcl_SetStringObj(ton, "RGBA_MIN", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+
+  to = Tcl_GetVar2Ex(interp, arr, "RGBA_MIN",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &itemp);
   riopt->RGBA_MIN = itemp;
-  Tcl_SetStringObj(ton, "RGBA_MAX", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  to = Tcl_GetVar2Ex(interp, arr, "RGBA_MAX",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &itemp);
   riopt->RGBA_MAX = itemp;
-  Tcl_SetStringObj(ton, "RGBA_Dither", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+
+  to = Tcl_GetVar2Ex(interp, arr, "RGBA_Dither",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &dtemp);
   riopt->RGBA_Dither = dtemp;
 
-  Tcl_SetStringObj(ton, "MinSamples", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "MinSamples",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &itemp);
   riopt->MinSamples = itemp;
-  Tcl_SetStringObj(ton, "MaxSamples", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  to = Tcl_GetVar2Ex(interp, arr, "MaxSamples",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &itemp);
   riopt->MaxSamples = itemp;
-  Tcl_SetStringObj(ton, "MaxRayLevel", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  to = Tcl_GetVar2Ex(interp, arr, "MaxRayLevel",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &itemp);
   riopt->MaxRayLevel = itemp;
-  Tcl_SetStringObj(ton, "ShadowBias", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  to = Tcl_GetVar2Ex(interp, arr, "ShadowBias",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &dtemp);
   riopt->ShadowBias = dtemp;
-  Tcl_SetStringObj(ton, "PRManSpec", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  to = Tcl_GetVar2Ex(interp, arr, "PRManSpec",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &itemp);
   riopt->PRManSpec = itemp;
 
-  Tcl_SetStringObj(ton, "RadSteps", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  to = Tcl_GetVar2Ex(interp, arr, "RadSteps",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &itemp);
   riopt->RadSteps = itemp;
-  Tcl_SetStringObj(ton, "PatchSamples", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  to = Tcl_GetVar2Ex(interp, arr, "PatchSamples",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &itemp);
   riopt->PatchSamples = itemp;
 
-  result = Tcl_GetVar2(interp, n1, "Textures",
+  result = Tcl_GetVar2(interp, arr, "Textures",
 		       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   if(riopt->textures)
     {
@@ -332,7 +340,7 @@ ay_root_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     }
   strcpy(riopt->textures, result);
 
-  result = Tcl_GetVar2(interp, n1, "Shaders",
+  result = Tcl_GetVar2(interp, arr, "Shaders",
 		       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   if(riopt->shaders)
     {
@@ -347,7 +355,7 @@ ay_root_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     }
   strcpy(riopt->shaders, result);
 
-  result = Tcl_GetVar2(interp, n1, "Archives",
+  result = Tcl_GetVar2(interp, arr, "Archives",
 		       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   if(riopt->archives)
     {
@@ -362,7 +370,7 @@ ay_root_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     }
   strcpy(riopt->archives, result);
 
-  result = Tcl_GetVar2(interp, n1, "Procedurals",
+  result = Tcl_GetVar2(interp, arr, "Procedurals",
 		       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   if(riopt->procedurals)
     {
@@ -377,24 +385,20 @@ ay_root_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     }
   strcpy(riopt->procedurals, result);
 
-
-  Tcl_SetStringObj(ton, "TextureMem", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "TextureMem",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &itemp);
   riopt->texturemem = itemp;
 
-  Tcl_SetStringObj(ton, "GeomMem", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "GeomMem",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &itemp);
   riopt->geommem = itemp;
 
-  Tcl_SetStringObj(ton, "StdDisplay", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &itemp);
+  to = Tcl_GetVar2Ex(interp, arr, "StdDisplay",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &riopt->use_std_display);
   riopt->use_std_display = itemp;
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
  return AY_OK;
 } /* ay_root_setpropcb */
@@ -406,7 +410,7 @@ ay_root_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_root_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1="RiOptData";
+ char *arr = "RiOptData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_root_object *root = NULL;
  ay_riopt *riopt = NULL;
@@ -421,127 +425,105 @@ ay_root_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   riopt = root->riopt;
 
-  toa = Tcl_NewStringObj(n1, -1);
+  Tcl_SetVar2Ex(interp, arr, "Variance",
+		Tcl_NewDoubleObj(riopt->Variance),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Width",
+		Tcl_NewIntObj(riopt->width),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Height",
+		Tcl_NewIntObj(riopt->height),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Samples_X",
+		Tcl_NewDoubleObj(riopt->Samples_X),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Samples_Y",
+		Tcl_NewDoubleObj(riopt->Samples_Y),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  ton = Tcl_NewStringObj("Variance", -1);
-  to = Tcl_NewDoubleObj(riopt->Variance);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "Width", -1);
-  to = Tcl_NewIntObj(riopt->width);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "Height", -1);
-  to = Tcl_NewIntObj(riopt->height);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "Samples_X", -1);
-  to = Tcl_NewDoubleObj(riopt->Samples_X);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "Samples_Y", -1);
-  to = Tcl_NewDoubleObj(riopt->Samples_Y);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "FilterFunc", -1);
-  to = Tcl_NewIntObj(riopt->FilterFunc);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "FilterWidth", -1);
-  to = Tcl_NewDoubleObj(riopt->FilterWidth);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "FilterHeight", -1);
-  to = Tcl_NewDoubleObj(riopt->FilterHeight);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "ExpGain", -1);
-  to = Tcl_NewDoubleObj(riopt->ExpGain);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "ExpGamma", -1);
-  to = Tcl_NewDoubleObj(riopt->ExpGamma);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "RGBA_ONE", -1);
-  to = Tcl_NewIntObj((int)riopt->RGBA_ONE);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "RGBA_MIN", -1);
-  to = Tcl_NewIntObj((int)riopt->RGBA_MIN);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "RGBA_MAX", -1);
-  to = Tcl_NewIntObj((int)riopt->RGBA_MAX);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "RGBA_Dither", -1);
-  to = Tcl_NewDoubleObj(riopt->RGBA_Dither);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "FilterFunc",
+		Tcl_NewIntObj(riopt->FilterFunc),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "FilterWidth",
+		Tcl_NewDoubleObj(riopt->FilterWidth),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "FilterHeight",
+		Tcl_NewDoubleObj(riopt->FilterHeight),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "ExpGain",
+		Tcl_NewDoubleObj(riopt->ExpGain),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "ExpGamma",
+		Tcl_NewDoubleObj(riopt->ExpGamma),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "MinSamples", -1);
-  to = Tcl_NewIntObj(riopt->MinSamples);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "MaxSamples", -1);
-  to = Tcl_NewIntObj(riopt->MaxSamples);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "MaxRayLevel", -1);
-  to = Tcl_NewIntObj(riopt->MaxRayLevel);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "ShadowBias", -1);
-  to = Tcl_NewDoubleObj(riopt->ShadowBias);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "PRManSpec", -1);
-  to = Tcl_NewIntObj(riopt->PRManSpec);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "RadSteps", -1);
-  to = Tcl_NewIntObj(riopt->RadSteps);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "PatchSamples", -1);
-  to = Tcl_NewIntObj(riopt->PatchSamples);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "RGBA_ONE",
+		Tcl_NewIntObj(riopt->RGBA_ONE),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "RGBA_MIN",
+		Tcl_NewIntObj(riopt->RGBA_MIN),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "RGBA_MAX",
+		Tcl_NewIntObj(riopt->RGBA_MAX),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "RGBA_Dither",
+		Tcl_NewDoubleObj(riopt->RGBA_Dither),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Textures", -1);
-  to = Tcl_NewStringObj(riopt->textures, -1);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "Shaders", -1);
-  to = Tcl_NewStringObj(riopt->shaders, -1);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "Archives", -1);
-  to = Tcl_NewStringObj(riopt->archives, -1);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "Procedurals", -1);
-  to = Tcl_NewStringObj(riopt->procedurals, -1);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "MinSamples",
+		Tcl_NewIntObj(riopt->MinSamples),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "MaxSamples",
+		Tcl_NewIntObj(riopt->MaxSamples),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "TextureMem", -1);
-  to = Tcl_NewIntObj(riopt->texturemem);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "GeomMem", -1);
-  to = Tcl_NewIntObj(riopt->geommem);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "MaxRayLevel",
+		Tcl_NewIntObj(riopt->MaxRayLevel),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "StdDisplay", -1);
-  to = Tcl_NewIntObj(riopt->use_std_display);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "ShadowBias",
+		Tcl_NewDoubleObj(riopt->ShadowBias),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  Tcl_SetVar2Ex(interp, arr, "PRManSpec",
+		Tcl_NewIntObj(riopt->PRManSpec),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetVar2Ex(interp, arr, "RadSteps",
+		Tcl_NewIntObj(riopt->RadSteps),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetVar2Ex(interp, arr, "PatchSamples",
+		Tcl_NewIntObj(riopt->PatchSamples),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetVar2Ex(interp, arr, "Textures",
+		Tcl_NewStringObj(riopt->textures, -1),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetVar2Ex(interp, arr, "Shaders",
+		Tcl_NewStringObj(riopt->shaders, -1),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetVar2Ex(interp, arr, "Archives",
+		Tcl_NewStringObj(riopt->archives, -1),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetVar2Ex(interp, arr, "Procedurals",
+		Tcl_NewStringObj(riopt->procedurals, -1),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetVar2Ex(interp, arr, "TextureMem",
+		Tcl_NewIntObj(riopt->texturemem),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetVar2Ex(interp, arr, "GeomMem",
+		Tcl_NewIntObj(riopt->geommem),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetVar2Ex(interp, arr, "StdDisplay",
+		Tcl_NewIntObj(riopt->use_std_display),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
  return AY_OK;
 } /* ay_root_getpropcb */
