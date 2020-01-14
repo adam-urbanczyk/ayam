@@ -245,7 +245,7 @@ ay_select_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   to = Tcl_NewStringObj(select->indices, -1);
 
-  Tcl_SetVar2Ex(interp, arr, "Scheme", to,
+  Tcl_SetVar2Ex(interp, arr, "Indices", to,
 		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
  return AY_OK;

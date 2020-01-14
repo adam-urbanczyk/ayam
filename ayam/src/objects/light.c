@@ -804,7 +804,6 @@ int
 ay_light_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  char *arr = "LightAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_light_object *light = NULL;
  char *tfr[3] = {"From_X","From_Y","From_Z"};
  char *tto[3] = {"To_X","To_Y","To_Z"};
@@ -818,61 +817,61 @@ ay_light_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!light)
     return AY_ENULL;
 
-  to = Tcl_GetVar2Ex(interp, arr, "Type",
-		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &(light->type));
+  Tcl_SetVar2Ex(interp, arr, "Type",
+		Tcl_NewIntObj(light->type),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  to = Tcl_GetVar2Ex(interp, arr, "IsOn",
-		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &(light->on));
+  Tcl_SetVar2Ex(interp, arr, "IsOn",
+		Tcl_NewIntObj(light->on),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  to = Tcl_GetVar2Ex(interp, arr, "IsLocal",
-		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &(light->local));
+  Tcl_SetVar2Ex(interp, arr, "IsLocal",
+		Tcl_NewIntObj(light->local),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  to = Tcl_GetVar2Ex(interp, arr, "Shadows",
-		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &(light->shadows));
+  Tcl_SetVar2Ex(interp, arr, "Shadows",
+		Tcl_NewIntObj(light->shadows),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  to = Tcl_GetVar2Ex(interp, arr, "Samples",
-		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &(light->samples));
+  Tcl_SetVar2Ex(interp, arr, "Samples",
+		Tcl_NewIntObj(light->samples),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  to = Tcl_GetVar2Ex(interp, arr, "Color_R",
-		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &(light->colr));
+  Tcl_SetVar2Ex(interp, arr, "Color_R",
+		Tcl_NewIntObj(light->colr),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  to = Tcl_GetVar2Ex(interp, arr, "Color_G",
-		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &(light->colg));
+  Tcl_SetVar2Ex(interp, arr, "Color_G",
+		Tcl_NewIntObj(light->colg),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  to = Tcl_GetVar2Ex(interp, arr, "Color_B",
-		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &(light->colb));
+  Tcl_SetVar2Ex(interp, arr, "Color_B",
+		Tcl_NewIntObj(light->colb),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  to = Tcl_GetVar2Ex(interp, arr, "Intensity",
-		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &(light->intensity));
+  Tcl_SetVar2Ex(interp, arr, "Intensity",
+		Tcl_NewDoubleObj(light->intensity),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  to = Tcl_GetVar2Ex(interp, arr, "ConeAngle",
-		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &(light->cone_angle));
+  Tcl_SetVar2Ex(interp, arr, "ConeAngle",
+		Tcl_NewDoubleObj(light->cone_angle),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  to = Tcl_GetVar2Ex(interp, arr, "ConeDAngle",
-		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &(light->cone_delta_angle));
+  Tcl_SetVar2Ex(interp, arr, "ConeDAngle",
+		Tcl_NewDoubleObj(light->cone_delta_angle),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  to = Tcl_GetVar2Ex(interp, arr, "BeamDistrib",
-		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &(light->beam_distribution));
+  Tcl_SetVar2Ex(interp, arr, "BeamDistrib",
+		Tcl_NewDoubleObj(light->beam_distribution),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  to = Tcl_GetVar2Ex(interp, arr, "UseSM",
-		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &(light->use_sm));
+  Tcl_SetVar2Ex(interp, arr, "UseSM",
+		Tcl_NewIntObj(light->use_sm),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  to = Tcl_GetVar2Ex(interp, arr, "SMRes",
-		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &(light->sm_resolution));
+  Tcl_SetVar2Ex(interp, arr, "SMRes",
+		Tcl_NewIntObj(light->sm_resolution),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   for(i = 0; i < 3; i++)
     Tcl_SetVar2Ex(interp, arr, tfr[i],
