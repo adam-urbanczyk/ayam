@@ -21,9 +21,15 @@
  */
 
 static char *ay_script_name = "Script";
+static char *ay_script_array = "ScriptAttrData";
 static char *ay_script_sp = "SP"; /* Save (Individual) Parameters */
 static char *ay_script_sa = "array:"; /* Save Array */
 static char *ay_script_ul = "use:"; /* Use (Language) */
+
+static Tcl_Obj *arrobj = NULL;
+static Tcl_Obj *actobj = NULL;
+static Tcl_Obj *typeobj = NULL;
+static Tcl_Obj *scriptobj = NULL;
 
 
 /* prototypes of functions local to this module: */
@@ -496,9 +502,8 @@ int
 ay_script_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  /*int ay_status = AY_OK;*/
- char *n1 = "ScriptAttrData";
  char fname[] = "script_setpropcb";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ Tcl_Obj *to = NULL;
  ay_script_object *sc = NULL;
  char *string;
  int newtype, stringlen, newscript = AY_FALSE;
@@ -511,15 +516,12 @@ ay_script_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!sc)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1, -1);
-  ton = Tcl_NewStringObj(n1, -1);
-
-  Tcl_SetStringObj(ton, "Active", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_ObjGetVar2(interp, arrobj, actobj,
+		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &(sc->active));
 
-  Tcl_SetStringObj(ton, "Type", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_ObjGetVar2(interp, arrobj, typeobj,
+		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &newtype);
 
   if((sc->type != newtype) && (newtype == 1) && o->down && o->down->next)
@@ -549,8 +551,8 @@ ay_script_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       break;
     } /* switch */
 
-  Tcl_SetStringObj(ton, "Script", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_ObjGetVar2(interp, arrobj, scriptobj,
+		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   string = Tcl_GetStringFromObj(to, &stringlen);
   if(!string)
     {
@@ -596,9 +598,6 @@ ay_script_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(newscript)
     ay_script_getsp(interp, sc);
 
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
-
  return AY_OK;
 } /* ay_script_setpropcb */
 
@@ -609,7 +608,7 @@ ay_script_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_script_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1 = "ScriptAttrData", *empty = "";
+ char *empty = "";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_object *po;
  ay_script_object *sc = NULL;
@@ -626,25 +625,19 @@ ay_script_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!sc)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1, -1);
-  ton = Tcl_NewStringObj(n1, -1);
-
-  Tcl_SetStringObj(ton, "Active", -1);
   to = Tcl_NewIntObj(sc->active);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, arrobj, actobj, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Type", -1);
   to = Tcl_NewIntObj(sc->type);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, arrobj, typeobj, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Script", -1);
   if(sc->script)
     to = Tcl_NewStringObj(sc->script, -1);
   else
     to = Tcl_NewStringObj(empty, -1);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, arrobj, scriptobj, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
   /* handle script parameters */
@@ -676,8 +669,8 @@ ay_script_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	    (arrnameend[0] != ';'))
 	arrnameend++;
 
-      Tcl_SetStringObj(toa, arrname, arrnameend - arrname);
-      Tcl_SetStringObj(ton, ay_script_sp, -1);
+      toa = Tcl_NewStringObj(arrname, arrnameend - arrname);
+      ton = Tcl_NewStringObj(ay_script_sp, -1);
 
       arrmemberlist = Tcl_ObjGetVar2(interp, toa, ton, TCL_GLOBAL_ONLY);
 
@@ -696,6 +689,9 @@ ay_script_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		} /* if */
 	    } /* for */
 	} /* if */
+
+      Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
+      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
     } /* if have params and script */
 
   if(sc->type && sc->cm_objects)
@@ -703,10 +699,10 @@ ay_script_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       switch(sc->cm_objects->type)
 	{
 	case AY_IDNCURVE:
-	  ay_prop_getncinfo(interp, n1, sc->cm_objects);
+	  ay_prop_getncinfo(interp, ay_script_array, sc->cm_objects);
 	  break;
 	case AY_IDNPATCH:
-	  ay_prop_getnpinfo(interp, n1, sc->cm_objects);
+	  ay_prop_getnpinfo(interp, ay_script_array, sc->cm_objects);
 	  break;
 	default:
 	  if(ay_provide_object(sc->cm_objects, AY_IDNCURVE, NULL))
@@ -715,7 +711,7 @@ ay_script_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	      ay_provide_object(sc->cm_objects, AY_IDNCURVE, &po);
 	      if(po)
 		{
-		  ay_prop_getncinfo(interp, n1, po);
+		  ay_prop_getncinfo(interp, ay_script_array, po);
 		  ay_object_deletemulti(po, AY_FALSE);
 		}
 	    }
@@ -726,7 +722,7 @@ ay_script_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	      ay_provide_object(sc->cm_objects, AY_IDNPATCH, &po);
 	      if(po)
 		{
-		  ay_prop_getncinfo(interp, n1, po);
+		  ay_prop_getncinfo(interp, ay_script_array, po);
 		  ay_object_deletemulti(po, AY_FALSE);
 		}
 	    }
@@ -738,9 +734,6 @@ cleanup:
 
   if(lineend)
     *lineend = '\n';
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
  return AY_OK;
 } /* ay_script_getpropcb */
@@ -844,7 +837,6 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
 	      sc->paramslen = arrmembers-1;
 
 	      toa = Tcl_NewStringObj(arrname, arrnameend - arrname);
-	      ton = Tcl_NewStringObj("", -1);
 	      j = 0;
 	      for(i = 0; i < arrmembers; i++)
 		{
@@ -859,7 +851,7 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
 		  /* do not put the SP list into the object! */
 		  if(strcmp(membername, ay_script_sp) != 0)
 		    {
-		      Tcl_SetStringObj(ton, membername, -1);
+		      ton = Tcl_NewStringObj(membername, -1);
 		      sc->params[j] =
 			Tcl_DuplicateObj(Tcl_ObjGetVar2(interp, toa, ton,
 							TCL_GLOBAL_ONLY));
@@ -873,8 +865,14 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
 		  memberval = NULL;
 		} /* for */
 
-	      Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-	      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+	      Tcl_IncrRefCount(toa);
+	      Tcl_DecrRefCount(toa);
+
+	      if(ton)
+		{
+		  Tcl_IncrRefCount(ton);
+		  Tcl_DecrRefCount(ton);
+		}
 
 	      if(lineend)
 		*lineend = '\n';
@@ -2134,6 +2132,15 @@ ay_script_init(Tcl_Interp *interp)
 
   /* script objects may not be associated with materials */
   ay_matt_nomaterial(AY_IDSCRIPT);
+
+  arrobj = Tcl_NewStringObj(ay_script_array,-1);
+  Tcl_IncrRefCount(arrobj);
+  actobj = Tcl_NewStringObj("Active",-1);
+  Tcl_IncrRefCount(actobj);
+  typeobj = Tcl_NewStringObj("Type",-1);
+  Tcl_IncrRefCount(typeobj);
+  scriptobj = Tcl_NewStringObj("Script",-1);
+  Tcl_IncrRefCount(scriptobj);
 
  return ay_status;
 } /* ay_script_init */
