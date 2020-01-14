@@ -260,7 +260,7 @@ int
 ay_swing_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  char *arr = "SwingAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ Tcl_Obj *to = NULL;
  ay_swing_object *swing = NULL;
 
   if(!interp || !o)
@@ -271,13 +271,13 @@ ay_swing_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!swing)
     return AY_ENULL;
 
-  to = Tcl_GetVar2Ex(interp, arr, "Tolerance",
-		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &(swing->glu_sampling_tolerance));
+  Tcl_SetVar2Ex(interp, arr, "Tolerance",
+		Tcl_NewDoubleObj(swing->glu_sampling_tolerance),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  to = Tcl_GetVar2Ex(interp, arr, "DisplayMode",
-		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &(swing->display_mode));
+  Tcl_SetVar2Ex(interp, arr, "DisplayMode",
+		Tcl_NewIntObj(swing->display_mode),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   ay_prop_getnpinfo(interp, arr, swing->npatch);
 
