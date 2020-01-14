@@ -240,9 +240,6 @@ ay_select_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!select)
     return AY_ENULL;
 
-  if(!select->indices)
-    return AY_ENULL;
-
   to = Tcl_NewStringObj(select->indices, -1);
 
   Tcl_SetVar2Ex(interp, arr, "Indices", to,
