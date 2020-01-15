@@ -38,8 +38,12 @@ char bcurve_version_ma[] = AY_VERSIONSTR;
 char bcurve_version_mi[] = AY_VERSIONSTRMI;
 
 static char *bcurve_name = "BCurve";
+static char *bcurve_arr = "PatchMeshAttrData";
 
 static unsigned int bcurve_id;
+
+static Tcl_Obj *arrobj = NULL;
+static Tcl_Obj *bm[16] = {0};
 
 /* Bezier */
 static double mb[16] = {-1, 3, -3, 1,  3, -6, 3, 0,  -3, 3, 0, 0,  1, 0, 0, 0};
@@ -1077,12 +1081,11 @@ bcurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  int ay_status = AY_OK;
  char fname[] = "bcurve_setpropcb";
- char *n1 = "BCurveAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "BCurveAttrData";
+ Tcl_Obj *to = NULL;
  bcurve_object *bcurve = NULL;
  double dtemp, *basis;
  int j, update = AY_FALSE, new_closed, new_length, new_btype, new_step;
- char *man[] = {"_0","_1","_2","_3","_4","_5","_6","_7","_8","_9","_10","_11","_12","_13","_14","_15"};
 
   if(!interp || !o)
     return AY_ENULL;
@@ -1092,12 +1095,9 @@ bcurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!bcurve)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1, -1);
-  ton = Tcl_NewStringObj(n1, -1);
-
-  Tcl_SetStringObj(ton, "Closed", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &new_closed);
+  to = Tcl_GetVar2Ex(interp, arr, "Closed",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(new_closed));
 
   if(new_closed != bcurve->closed)
     {
@@ -1105,18 +1105,18 @@ bcurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       bcurve->closed = new_closed;
     }
 
-  Tcl_SetStringObj(ton, "Length", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &new_length);
+  to = Tcl_GetVar2Ex(interp, arr, "Length",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(new_length));
 
   if(new_length != bcurve->length)
     {
       update = AY_TRUE;
     }
 
-  Tcl_SetStringObj(ton, "BType", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &new_btype);
+  to = Tcl_GetVar2Ex(interp, arr, "BType",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(new_btype));
 
   if(new_btype != bcurve->btype)
     {
@@ -1139,10 +1139,8 @@ bcurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	{
 	  for(j = 0; j < 16; j++)
 	    {
-	      Tcl_SetStringObj(ton, "Basis", -1);
-	      Tcl_AppendStringsToObj(ton, man[j], NULL);
-	      to  = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-				   TCL_GLOBAL_ONLY);
+	      to = Tcl_ObjGetVar2(interp, arrobj, bm[j], TCL_LEAVE_ERR_MSG |
+				  TCL_GLOBAL_ONLY);
 	      Tcl_GetDoubleFromObj(interp, to, &dtemp);
 	      bcurve->basis[j] = dtemp;
 	    } /* for */
@@ -1158,9 +1156,8 @@ bcurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	    }
 	}
 
-      Tcl_SetStringObj(ton, "Step", -1);
-      to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-			  TCL_GLOBAL_ONLY);
+      to = Tcl_GetVar2Ex(interp, arr, "Step",
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       Tcl_GetIntFromObj(interp, to, &(new_step));
       if(new_step <= 0 || new_step > 4)
 	bcurve->step = 1;
@@ -1193,12 +1190,12 @@ bcurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   bcurve->btype = new_btype;
 
-  Tcl_SetStringObj(ton, "Tolerance", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Tolerance",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &(bcurve->glu_sampling_tolerance));
 
-  Tcl_SetStringObj(ton, "DisplayMode", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "DisplayMode",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &(bcurve->display_mode));
 
   if(update)
@@ -1210,8 +1207,6 @@ bcurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     }
 
 cleanup:
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
  return AY_OK;
 } /* bcurve_setpropcb */
@@ -1223,11 +1218,11 @@ cleanup:
 int
 bcurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1="BCurveAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "BCurveAttrData";
+ Tcl_Obj *to = NULL;
  bcurve_object *bcurve = NULL;
  int j;
- char *man[] = {"_0","_1","_2","_3","_4","_5","_6","_7","_8","_9","_10","_11","_12","_13","_14","_15"};
+
 
   if(!interp || !o)
     return AY_ENULL;
@@ -1237,20 +1232,17 @@ bcurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!bcurve)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1, -1);
-  ton = Tcl_NewStringObj(n1, -1);
+  Tcl_SetVar2Ex(interp, arr, "Closed",
+		Tcl_NewIntObj(bcurve->closed),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Closed", -1);
-  to = Tcl_NewIntObj(bcurve->closed);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Length",
+		Tcl_NewIntObj(bcurve->length),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Length", -1);
-  to = Tcl_NewIntObj(bcurve->length);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton, "BType", -1);
-  to = Tcl_NewIntObj(bcurve->btype);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "BType",
+		Tcl_NewIntObj(bcurve->btype),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   if(bcurve->btype == AY_BTCUSTOM)
     {
@@ -1258,36 +1250,32 @@ bcurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	{
 	  for(j = 0; j < 16; j++)
 	    {
-	      Tcl_SetStringObj(ton, "Basis", -1);
-	      Tcl_AppendStringsToObj(ton, man[j], NULL);
 	      to = Tcl_NewDoubleObj(bcurve->basis[j]);
-	      Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
+
+	      Tcl_ObjSetVar2(interp, arrobj, bm[j], to, TCL_LEAVE_ERR_MSG |
 			     TCL_GLOBAL_ONLY);
 	    } /* for */
 	} /* if */
-      Tcl_SetStringObj(ton, "Step", -1);
-      to = Tcl_NewIntObj(bcurve->step);
-      Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		     TCL_GLOBAL_ONLY);
+
+      Tcl_SetVar2Ex(interp, arr, "Step",
+		    Tcl_NewIntObj(bcurve->step),
+		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
     } /* if */
 
-  Tcl_SetStringObj(ton, "IsRat", -1);
   if(bcurve->is_rat)
     to = Tcl_NewStringObj("yes", -1);
   else
     to = Tcl_NewStringObj("no", -1);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "IsRat", to,
+		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Tolerance", -1);
-  to = Tcl_NewDoubleObj(bcurve->glu_sampling_tolerance);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Tolerance",
+		Tcl_NewDoubleObj(bcurve->glu_sampling_tolerance),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "DisplayMode", -1);
-  to = Tcl_NewIntObj(bcurve->display_mode);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  Tcl_SetVar2Ex(interp, arr, "DisplayMode",
+		Tcl_NewIntObj(bcurve->display_mode),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
  return AY_OK;
 } /* bcurve_getpropcb */
@@ -1868,6 +1856,7 @@ Bcurve_Init(Tcl_Interp *interp)
 {
  int ay_status = AY_OK;
  char fname[] = "bcurve_init";
+ char buf[32];
  int i, ops[5] = {AY_OPREVERT, AY_OPOPEN, AY_OPCLOSE,
 		  AY_OPREFINE, AY_OPCOARSEN};
 
@@ -1946,6 +1935,16 @@ Bcurve_Init(Tcl_Interp *interp)
 
   Tcl_CreateCommand(interp, "tobasisBC", bcurve_tobasistcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  arrobj = Tcl_NewStringObj(bcurve_arr, -1);
+  Tcl_IncrRefCount(arrobj);
+
+  for(i = 0; i < 16; i++)
+    {
+      sprintf(buf,"Basis_%d",i);
+      bm[i] = Tcl_NewStringObj(buf, -1);
+      Tcl_IncrRefCount(bm[i]);
+    }
 
  return TCL_OK;
 } /* Bcurve_Init */

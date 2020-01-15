@@ -234,8 +234,8 @@ int
 sfcurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  char fname[] = "sfcurve_setpropcb";
- char *n1 = "SfCurveAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "SfCurveAttrData";
+ Tcl_Obj *to = NULL;
  sfcurve_object *sfcurve = NULL;
 
   if(!interp || !o)
@@ -246,12 +246,9 @@ sfcurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!sfcurve)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1, -1);
-  ton = Tcl_NewStringObj(n1, -1);
-
-  Tcl_SetStringObj(ton, "Sections", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &sfcurve->sections);
+  to = Tcl_GetVar2Ex(interp, arr, "Sections",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(sfcurve->sections));
 
   if(sfcurve->sections < 2)
     {
@@ -259,33 +256,33 @@ sfcurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       sfcurve->sections = 2;
     }
 
-  Tcl_SetStringObj(ton, "Order", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &sfcurve->order);
+  to = Tcl_GetVar2Ex(interp, arr, "Order",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(sfcurve->order));
 
-  Tcl_SetStringObj(ton, "M", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &sfcurve->m);
+  to = Tcl_GetVar2Ex(interp, arr, "M",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(sfcurve->m));
 
-  Tcl_SetStringObj(ton, "N1", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &sfcurve->n1);
+  to = Tcl_GetVar2Ex(interp, arr, "N1",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(sfcurve->n1));
 
-  Tcl_SetStringObj(ton, "N2", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &sfcurve->n2);
+  to = Tcl_GetVar2Ex(interp, arr, "N2",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(sfcurve->n2));
 
-  Tcl_SetStringObj(ton, "N3", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &sfcurve->n3);
+  to = Tcl_GetVar2Ex(interp, arr, "N3",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(sfcurve->n3));
 
-  Tcl_SetStringObj(ton, "TMin", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &sfcurve->tmin);
+  to = Tcl_GetVar2Ex(interp, arr, "TMin",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(sfcurve->tmin));
 
-  Tcl_SetStringObj(ton, "TMax", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &sfcurve->tmax);
+  to = Tcl_GetVar2Ex(interp, arr, "TMax",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(sfcurve->tmax));
 
   if(fabs(sfcurve->tmax-sfcurve->tmin) < AY_EPSILON)
     {
@@ -294,16 +291,13 @@ sfcurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       sfcurve->tmax = 360.0;
     }
 
-  Tcl_SetStringObj(ton, "Tolerance", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Tolerance",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &(sfcurve->glu_sampling_tolerance));
 
-  Tcl_SetStringObj(ton, "DisplayMode", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "DisplayMode",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &(sfcurve->display_mode));
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
   (void)ay_notify_object(o);
 
@@ -320,8 +314,7 @@ sfcurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 sfcurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1="SfCurveAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "SfCurveAttrData";
  sfcurve_object *sfcurve = NULL;
 
   if(!interp || !o)
@@ -332,53 +325,45 @@ sfcurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!sfcurve)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1, -1);
-  ton = Tcl_NewStringObj(n1, -1);
+  Tcl_SetVar2Ex(interp, arr, "Sections",
+		Tcl_NewIntObj(sfcurve->sections),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Sections", -1);
-  to = Tcl_NewIntObj(sfcurve->sections);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Order",
+		Tcl_NewIntObj(sfcurve->order),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Order", -1);
-  to = Tcl_NewIntObj(sfcurve->order);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "M",
+		Tcl_NewDoubleObj(sfcurve->m),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "M", -1);
-  to = Tcl_NewDoubleObj(sfcurve->m);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "N1",
+		Tcl_NewDoubleObj(sfcurve->n1),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "N1", -1);
-  to = Tcl_NewDoubleObj(sfcurve->n1);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "N2",
+		Tcl_NewDoubleObj(sfcurve->n2),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "N2", -1);
-  to = Tcl_NewDoubleObj(sfcurve->n2);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "N3",
+		Tcl_NewDoubleObj(sfcurve->n3),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "N3", -1);
-  to = Tcl_NewDoubleObj(sfcurve->n3);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "TMin",
+		Tcl_NewDoubleObj(sfcurve->tmin),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "TMin", -1);
-  to = Tcl_NewDoubleObj(sfcurve->tmin);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "TMax",
+		Tcl_NewDoubleObj(sfcurve->tmax),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "TMax", -1);
-  to = Tcl_NewDoubleObj(sfcurve->tmax);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Tolerance",
+		Tcl_NewDoubleObj(sfcurve->glu_sampling_tolerance),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Tolerance", -1);
-  to = Tcl_NewDoubleObj(sfcurve->glu_sampling_tolerance);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton, "DisplayMode", -1);
-  to = Tcl_NewIntObj(sfcurve->display_mode);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  Tcl_SetVar2Ex(interp, arr, "DisplayMode",
+		Tcl_NewIntObj(sfcurve->display_mode),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
  return AY_OK;
 } /* sfcurve_getpropcb */

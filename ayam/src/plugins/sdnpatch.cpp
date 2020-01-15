@@ -3238,8 +3238,8 @@ int
 sdnpatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  char fname[] = "sdnpatch_setpropcb";
- char *n1 = (char *)"SDNPatchAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = (char *)"SDNPatchAttrData";
+ Tcl_Obj *to = NULL;
  sdnpatch_object *sdnpatch = NULL;
  int itemp = 0;
 
@@ -3251,12 +3251,10 @@ sdnpatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!sdnpatch)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1, -1);
-  ton = Tcl_NewStringObj(n1, -1);
+  to = Tcl_GetVar2Ex(interp, arr, "Degree",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(itemp));
 
-  Tcl_SetStringObj(ton, "Degree", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &itemp);
   if(itemp != sdnpatch->subdivDegree)
     {
       if(itemp != 3 && itemp != 5 && itemp != 7)
@@ -3281,16 +3279,14 @@ sdnpatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	}
     }
 
-  Tcl_SetStringObj(ton, "Level", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &itemp);
+  to = Tcl_GetVar2Ex(interp, arr, "Level",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(itemp));
+
   if(itemp >= 0)
     {
       sdnpatch->subdivLevel = itemp;
     }
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
   (void)ay_notify_object(o);
 
@@ -3307,9 +3303,9 @@ sdnpatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 sdnpatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1 = (char *)"SDNPatchAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = (char *)"SDNPatchAttrData";
  sdnpatch_object *sdnpatch = NULL;
+ Tcl_Obj *to = NULL;
 
   if(!interp || !o)
     return AY_ENULL;
@@ -3319,35 +3315,27 @@ sdnpatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!sdnpatch)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1, -1);
-  ton = Tcl_NewStringObj(n1, -1);
+  Tcl_SetVar2Ex(interp, arr, "Degree",
+		Tcl_NewIntObj(sdnpatch->subdivDegree),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Degree", -1);
-  to = Tcl_NewIntObj(sdnpatch->subdivDegree);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Level",
+		Tcl_NewIntObj(sdnpatch->subdivLevel),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Level", -1);
-  to = Tcl_NewIntObj(sdnpatch->subdivLevel);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton, "IsRat", -1);
   if(sdnpatch->is_rat)
     to = Tcl_NewStringObj("yes", -1);
   else
     to = Tcl_NewStringObj("no", -1);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "IsRat", to,
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "NPolys", -1);
   if(sdnpatch->subdivMesh)
     to = Tcl_NewIntObj(sdnpatch->subdivMesh->getNumFaces());
   else
     to = Tcl_NewIntObj(0);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  Tcl_SetVar2Ex(interp, arr, "NPolys", to,
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
  return AY_OK;
 } /* sdnpatch_getpropcb */
