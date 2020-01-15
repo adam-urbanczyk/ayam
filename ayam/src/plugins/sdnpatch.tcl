@@ -26,6 +26,7 @@ set w [frame $ay(pca).$SDNPatchAttr(w)]
 
 set ay(bok) $ay(appb)
 
+addVSpace $w s1 2
 addParam $w SDNPatchAttrData Degree
 addParam $w SDNPatchAttrData Level
 addInfo $w SDNPatchAttrData IsRat
