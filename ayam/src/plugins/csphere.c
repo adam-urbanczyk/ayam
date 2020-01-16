@@ -484,8 +484,8 @@ csphere_shadecb(struct Togl *togl, ay_object *o)
 int
 csphere_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1 = "CSphereAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "CSphereAttrData";
+ Tcl_Obj *to = NULL;
  csphere_object *csphere = NULL;
  int itemp = 0;
 
@@ -497,29 +497,26 @@ csphere_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!csphere)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
-
-  Tcl_SetStringObj(ton,"Closed",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &itemp);
+  to = Tcl_GetVar2Ex(interp, arr, "Closed",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &itemp);
   csphere->closed = (char)itemp;
 
-  Tcl_SetStringObj(ton,"Radius",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &csphere->radius);
+  to = Tcl_GetVar2Ex(interp, arr, "Radius",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &csphere->radius);
 
-  Tcl_SetStringObj(ton,"ZMin",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &csphere->zmin);
+  to = Tcl_GetVar2Ex(interp, arr, "ZMin",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &csphere->zmin);
 
-  Tcl_SetStringObj(ton,"ZMax",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &csphere->zmax);
+  to = Tcl_GetVar2Ex(interp, arr, "ZMax",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &csphere->zmax);
 
-  Tcl_SetStringObj(ton,"ThetaMax",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &csphere->thetamax);
+  to = Tcl_GetVar2Ex(interp, arr, "ThetaMax",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &csphere->thetamax);
 
   if((fabs(csphere->zmin) == csphere->radius) &&
      (fabs(csphere->zmax) == csphere->radius) &&
@@ -532,9 +529,6 @@ csphere_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       csphere->is_simple = AY_FALSE;
     }
 
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
-
  return AY_OK;
 } /* csphere_setpropcb */
 
@@ -545,8 +539,7 @@ csphere_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 csphere_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1="CSphereAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "CSphereAttrData";
  csphere_object *csphere = NULL;
 
   if(!o)
@@ -557,31 +550,25 @@ csphere_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!csphere)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  Tcl_SetVar2Ex(interp, arr, "Closed",
+		Tcl_NewIntObj(csphere->closed),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Closed",-1);
-  to = Tcl_NewIntObj(csphere->closed);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Radius",
+		Tcl_NewDoubleObj(csphere->radius),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Radius",-1);
-  to = Tcl_NewDoubleObj(csphere->radius);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "ZMin",
+		Tcl_NewDoubleObj(csphere->zmin),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"ZMin",-1);
-  to = Tcl_NewDoubleObj(csphere->zmin);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "ZMax",
+		Tcl_NewDoubleObj(csphere->zmax),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"ZMax",-1);
-  to = Tcl_NewDoubleObj(csphere->zmax);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"ThetaMax",-1);
-  to = Tcl_NewDoubleObj(csphere->thetamax);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  Tcl_SetVar2Ex(interp, arr, "ThetaMax",
+		Tcl_NewDoubleObj(csphere->thetamax),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
  return AY_OK;
 } /* csphere_getpropcb */
