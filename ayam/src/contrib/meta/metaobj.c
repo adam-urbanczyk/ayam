@@ -455,8 +455,8 @@ metaobj_shadecb (struct Togl *togl, ay_object *o)
 int
 metaobj_setpropcb (Tcl_Interp * interp, int argc, char *argv[], ay_object * o)
 {
- char *n1 = "MetaObjAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "MetaObjAttrData";
+ Tcl_Obj *to = NULL;
  meta_world *w = NULL;
 
   if (!o)
@@ -464,46 +464,39 @@ metaobj_setpropcb (Tcl_Interp * interp, int argc, char *argv[], ay_object * o)
 
   w = (meta_world *) o->refine;
 
-  toa = Tcl_NewStringObj (n1, -1);
-  ton = Tcl_NewStringObj (n1, -1);
 
-  Tcl_SetStringObj (ton, "NumSamples", -1);
-  to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj (interp, to, &w->aktcubes);
+  to = Tcl_GetVar2Ex(interp, arr, "NumSamples",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(w->aktcubes));
 
-  Tcl_SetStringObj (ton, "IsoLevel", -1);
-  to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj (interp, to, &w->isolevel);
+  to = Tcl_GetVar2Ex(interp, arr, "IsoLevel",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(w->isolevel));
 
-  Tcl_SetStringObj (ton, "ShowWorld", -1);
-  to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj (interp, to, &w->showworld);
+  to = Tcl_GetVar2Ex(interp, arr, "ShowWorld",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(w->showworld));
 
-  Tcl_SetStringObj (ton, "Adaptive", -1);
-  to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj (interp, to, &w->adapt);
+  to = Tcl_GetVar2Ex(interp, arr, "Adaptive",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(w->adapt));
 
-  Tcl_SetStringObj (ton, "Flatness", -1);
-  to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj (interp, to, &w->flatness);
+  to = Tcl_GetVar2Ex(interp, arr, "Flatness",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(w->flatness));
 
   if (w->flatness > 0.99f)
     {
       w->flatness = 0.99;
     }
 
-  Tcl_SetStringObj (ton, "Epsilon", -1);
-  to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj (interp, to, &w->epsilon);
+  to = Tcl_GetVar2Ex(interp, arr, "Epsilon",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(w->epsilon));
 
-  Tcl_SetStringObj (ton, "StepSize", -1);
-  to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj (interp, to, &w->step);
-
-  Tcl_IncrRefCount (toa);
-  Tcl_DecrRefCount (toa);
-  Tcl_IncrRefCount (ton);
-  Tcl_DecrRefCount (ton);
+  to = Tcl_GetVar2Ex(interp, arr, "StepSize",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(w->step));
 
   if (w->aktcubes < 5)
     {
@@ -526,8 +519,7 @@ metaobj_setpropcb (Tcl_Interp * interp, int argc, char *argv[], ay_object * o)
 int
 metaobj_getpropcb (Tcl_Interp * interp, int argc, char *argv[], ay_object * o)
 {
- char *n1 = "MetaObjAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "MetaObjAttrData";
  meta_world *w = NULL;
 
   if (!o)
@@ -535,46 +527,37 @@ metaobj_getpropcb (Tcl_Interp * interp, int argc, char *argv[], ay_object * o)
 
   w = (meta_world *) (o->refine);
 
-  toa = Tcl_NewStringObj (n1, -1);
+  Tcl_SetVar2Ex(interp, arr, "NumSamples",
+		Tcl_NewIntObj(w->aktcubes),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  ton = Tcl_NewStringObj (n1, -1);
+  Tcl_SetVar2Ex(interp, arr, "IsoLevel",
+		Tcl_NewDoubleObj(w->isolevel),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj (ton, "NumSamples", -1);
-  to = Tcl_NewIntObj (w->aktcubes);
-  Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "ShowWorld",
+		Tcl_NewIntObj(w->showworld),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj (ton, "IsoLevel", -1);
-  to = Tcl_NewDoubleObj (w->isolevel);
-  Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Adaptive",
+		Tcl_NewIntObj(w->adapt),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj (ton, "ShowWorld", -1);
-  to = Tcl_NewIntObj (w->showworld);
-  Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Flatness",
+		Tcl_NewDoubleObj(w->flatness),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj (ton, "Adaptive", -1);
-  to = Tcl_NewIntObj (w->adapt);
-  Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Epsilon",
+		Tcl_NewDoubleObj(w->epsilon),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj (ton, "Flatness", -1);
-  to = Tcl_NewDoubleObj (w->flatness);
-  Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "StepSize",
+		Tcl_NewDoubleObj(w->step),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj (ton, "Epsilon", -1);
-  to = Tcl_NewDoubleObj (w->epsilon);
-  Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj (ton, "StepSize", -1);
-  to = Tcl_NewDoubleObj (w->step);
-  Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj (ton, "Triangles", -1);
-  to = Tcl_NewIntObj (w->currentnumpoly);
-  Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_IncrRefCount (toa);
-  Tcl_DecrRefCount (toa);
-  Tcl_IncrRefCount (ton);
-  Tcl_DecrRefCount (ton);
+  Tcl_SetVar2Ex(interp, arr, "Triangles",
+		Tcl_NewIntObj(w->currentnumpoly),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
  return AY_OK;
 } /* metaobj_getpropcb */
@@ -738,17 +721,13 @@ metaobj_bbccb (ay_object *o, double *bbox, int *flags)
  int i, a, stride = 3;
 
   if(!o || !bbox || !flags)
-    {
-      return AY_ENULL;
-    }
+    return AY_ENULL;
 
   w = (meta_world *) o->refine;
 
   controlv = w->vertex;
   if(!controlv)
-    {
-      return AY_ERROR;
-    }
+    return AY_ERROR;
 
   xmin = controlv[0];
   xmax = xmin;
@@ -1072,9 +1051,7 @@ metacomp_deletecb (void *c)
  meta_blob *b;
 
   if (!c)
-    {
-      return AY_ENULL;
-    }
+    return AY_ENULL;
 
   b = (meta_blob *) (c);
 
@@ -1098,14 +1075,10 @@ metacomp_copycb (void *src, void **dst)
  meta_blob *b = NULL;
 
   if (!src || !dst)
-    {
-      return AY_ENULL;
-    }
+    return AY_ENULL;
 
   if (!(b = calloc (1, sizeof (meta_blob))))
-    {
-      return AY_EOMEM;
-    }
+    return AY_EOMEM;
 
   memcpy (b, src, sizeof (meta_blob));
 
@@ -1142,8 +1115,8 @@ int
 metacomp_setpropcb (Tcl_Interp * interp, int argc, char *argv[],
 		    ay_object * o)
 {
- char *n1 = "MetaCompAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "MetaCompAttrData";
+ Tcl_Obj *to = NULL;
  meta_blob *b = NULL;
 
   if (!o)
@@ -1154,44 +1127,41 @@ metacomp_setpropcb (Tcl_Interp * interp, int argc, char *argv[],
   if(!b)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj (n1, -1);
-  ton = Tcl_NewStringObj (n1, -1);
+  to = Tcl_GetVar2Ex(interp, arr, "Formula",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(b->formula));
 
-  Tcl_SetStringObj (ton, "Formula", -1);
-  to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj (interp, to, &b->formula);
+  to = Tcl_GetVar2Ex(interp, arr, "Radius",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(b->r));
 
-  Tcl_SetStringObj (ton, "Radius", -1);
-  to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj (interp, to, &b->r);
+  to = Tcl_GetVar2Ex(interp, arr, "Negative",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(b->negativ));
 
-  Tcl_SetStringObj (ton, "Negative", -1);
-  to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj (interp, to, &b->negativ);
+  to = Tcl_GetVar2Ex(interp, arr, "Rotate",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(b->rot));
 
-  Tcl_SetStringObj (ton, "Rotate", -1);
-  to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj (interp, to, &b->rot);
+  to = Tcl_GetVar2Ex(interp, arr, "Ri",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(b->Ri));
 
-  Tcl_SetStringObj (ton, "Ri", -1);
-  to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj (interp, to, &b->Ri);
+  to = Tcl_GetVar2Ex(interp, arr, "Ro",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(b->Ro));
 
-  Tcl_SetStringObj (ton, "Ro", -1);
-  to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj (interp, to, &b->Ro);
+  to = Tcl_GetVar2Ex(interp, arr, "EnergyCoeffA",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(b->a));
 
-  Tcl_SetStringObj (ton, "EnergyCoeffA", -1);
-  to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj (interp, to, &b->a);
+  to = Tcl_GetVar2Ex(interp, arr, "EnergyCoeffB",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(b->b));
 
-  Tcl_SetStringObj (ton, "EnergyCoeffB", -1);
-  to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj (interp, to, &b->b);
-
-  Tcl_SetStringObj (ton, "EnergyCoeffC", -1);
-  to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj (interp, to, &b->c);
+  to = Tcl_GetVar2Ex(interp, arr, "EnergyCoeffC",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(b->c));
 
 /*
   Tcl_SetStringObj (ton, "Strenght", -1);
@@ -1199,20 +1169,20 @@ metacomp_setpropcb (Tcl_Interp * interp, int argc, char *argv[],
   Tcl_GetDoubleFromObj (interp, to, &b->s);
 */
 
-  Tcl_SetStringObj (ton, "EdgeX", -1);
-  to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj (interp, to, &b->ex);
+  to = Tcl_GetVar2Ex(interp, arr, "EdgeX",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(b->ex));
 
-  Tcl_SetStringObj (ton, "EdgeY", -1);
-  to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj (interp, to, &b->ey);
+  to = Tcl_GetVar2Ex(interp, arr, "EdgeY",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(b->ey));
 
-  Tcl_SetStringObj (ton, "EdgeZ", -1);
-  to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj (interp, to, &b->ez);
+  to = Tcl_GetVar2Ex(interp, arr, "EdgeZ",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(b->ez));
 
-  Tcl_SetStringObj (ton, "Expression", -1);
-  to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Expression",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   if (b->expression)
     {
@@ -1225,11 +1195,6 @@ metacomp_setpropcb (Tcl_Interp * interp, int argc, char *argv[],
     {
       Tcl_IncrRefCount(b->expression);
     }
-
-  Tcl_IncrRefCount (toa);
-  Tcl_DecrRefCount (toa);
-  Tcl_IncrRefCount (ton);
-  Tcl_DecrRefCount (ton);
 
   o->modified = AY_TRUE;
 
@@ -1244,8 +1209,7 @@ int
 metacomp_getpropcb (Tcl_Interp * interp, int argc, char *argv[],
 		    ay_object * o)
 {
- char *n1 = "MetaCompAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "MetaCompAttrData";
  meta_blob *b = NULL;
 
   if (!o)
@@ -1256,40 +1220,41 @@ metacomp_getpropcb (Tcl_Interp * interp, int argc, char *argv[],
   if(!b)
     return AY_ENULL;
 
-  toa = Tcl_NewStringObj (n1, -1);
-  ton = Tcl_NewStringObj (n1, -1);
+  Tcl_SetVar2Ex(interp, arr, "Formula",
+		Tcl_NewIntObj(b->formula),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj (ton, "Radius", -1);
-  to = Tcl_NewDoubleObj (b->r);
-  Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Radius",
+		Tcl_NewDoubleObj(b->r),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj (ton, "Negative", -1);
-  to = Tcl_NewIntObj (b->negativ);
-  Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Negative",
+		Tcl_NewIntObj(b->negativ),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj (ton, "Rotate", -1);
-  to = Tcl_NewIntObj (b->rot);
-  Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Rotate",
+		Tcl_NewIntObj(b->rot),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj (ton, "Ri", -1);
-  to = Tcl_NewDoubleObj (b->Ri);
-  Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Ri",
+		Tcl_NewDoubleObj(b->Ri),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj (ton, "Ro", -1);
-  to = Tcl_NewDoubleObj (b->Ro);
-  Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Ro",
+		Tcl_NewDoubleObj(b->Ro),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj (ton, "EnergyCoeffA", -1);
-  to = Tcl_NewDoubleObj (b->a);
-  Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "EnergyCoeffA",
+		Tcl_NewDoubleObj(b->a),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj (ton, "EnergyCoeffB", -1);
-  to = Tcl_NewDoubleObj (b->b);
-  Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "EnergyCoeffB",
+		Tcl_NewDoubleObj(b->b),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj (ton, "EnergyCoeffC", -1);
-  to = Tcl_NewDoubleObj (b->c);
-  Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "EnergyCoeffC",
+		Tcl_NewDoubleObj(b->c),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
 /*
   Tcl_SetStringObj (ton, "Strenght", -1);
@@ -1297,33 +1262,23 @@ metacomp_getpropcb (Tcl_Interp * interp, int argc, char *argv[],
   Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 */
 
-  Tcl_SetStringObj (ton, "EdgeX", -1);
-  to = Tcl_NewIntObj (b->ex);
-  Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "EdgeX",
+		Tcl_NewIntObj(b->ex),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj (ton, "EdgeY", -1);
-  to = Tcl_NewIntObj (b->ey);
-  Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "EdgeY",
+		Tcl_NewIntObj(b->ey),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj (ton, "EdgeZ", -1);
-  to = Tcl_NewIntObj (b->ez);
-  Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj (ton, "Formula", -1);
-  to = Tcl_NewIntObj (b->formula);
-  Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "EdgeZ",
+		Tcl_NewIntObj(b->ez),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   if (b->expression)
     {
-      Tcl_SetStringObj (ton, "Expression", -1);
-      Tcl_ObjSetVar2 (interp, toa, ton,
-		      b->expression, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_SetVar2Ex(interp, arr, "Expression", b->expression,
+		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
     }
-
-  Tcl_IncrRefCount (toa);
-  Tcl_DecrRefCount (toa);
-  Tcl_IncrRefCount (ton);
-  Tcl_DecrRefCount (ton);
 
  return AY_OK;
 } /* metacomp_getpropcb */
@@ -1410,7 +1365,7 @@ metacomp_readcb (FILE * fileptr, ay_object * o)
 
       if (expr && strlen(expr))
 	{
-	  b->expression = Tcl_NewStringObj(expr,-1);
+	  b->expression = Tcl_NewStringObj(expr, -1);
 	  Tcl_IncrRefCount(b->expression);
 	  free(expr);
 	}
