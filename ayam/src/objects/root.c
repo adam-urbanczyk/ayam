@@ -272,7 +272,6 @@ ay_root_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_GetIntFromObj(interp, to, &itemp);
   riopt->RGBA_ONE = itemp;
 
-
   to = Tcl_GetVar2Ex(interp, arr, "RGBA_MIN",
 		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &itemp);
@@ -282,7 +281,6 @@ ay_root_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &itemp);
   riopt->RGBA_MAX = itemp;
-
 
   to = Tcl_GetVar2Ex(interp, arr, "RGBA_Dither",
 		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -313,7 +311,6 @@ ay_root_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &itemp);
   riopt->PRManSpec = itemp;
-
 
   to = Tcl_GetVar2Ex(interp, arr, "RadSteps",
 		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -458,16 +455,16 @@ ay_root_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetVar2Ex(interp, arr, "RGBA_ONE",
-		Tcl_NewIntObj(riopt->RGBA_ONE),
+		Tcl_NewIntObj((int)riopt->RGBA_ONE),
 		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_SetVar2Ex(interp, arr, "RGBA_MIN",
-		Tcl_NewIntObj(riopt->RGBA_MIN),
+		Tcl_NewIntObj((int)riopt->RGBA_MIN),
 		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_SetVar2Ex(interp, arr, "RGBA_MAX",
-		Tcl_NewIntObj(riopt->RGBA_MAX),
+		Tcl_NewIntObj((int)riopt->RGBA_MAX),
 		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_SetVar2Ex(interp, arr, "RGBA_Dither",
-		Tcl_NewDoubleObj(riopt->RGBA_Dither),
+		Tcl_NewDoubleObj((int)riopt->RGBA_Dither),
 		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetVar2Ex(interp, arr, "MinSamples",
