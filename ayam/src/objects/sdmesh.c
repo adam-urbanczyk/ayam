@@ -968,7 +968,8 @@ ay_sdmesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   to = Tcl_GetVar2Ex(interp, arr, "Level",
 		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &(sdmesh->level));
+  Tcl_GetIntFromObj(interp, to, &(itemp));
+  sdmesh->level = (int)itemp;
 
   to = Tcl_GetVar2Ex(interp, arr, "DrawSub",
 		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);

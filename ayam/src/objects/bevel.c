@@ -271,7 +271,6 @@ int
 ay_bevel_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  char *arr = "BevelAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_bevel_object *bevel = NULL;
 
   if(!interp || !o)
