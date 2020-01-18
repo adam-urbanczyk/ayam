@@ -414,7 +414,6 @@ ay_view_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  struct Togl *togl = NULL;
  int i, width = 0, height = 0;
  char *arr, *n1 = "CameraData", *n2 = "ViewAttribData";
- Tcl_Obj *tco = NULL, *toa = NULL, *ton = NULL;
  Tk_Window win;
  char *fr[3] = {"From_X","From_Y","From_Z"};
  char *to[3] = {"To_X","To_Y","To_Z"};

@@ -3444,6 +3444,9 @@ ay_npatch_init(Tcl_Interp *interp)
   knotsuobj = Tcl_NewStringObj("Knots_U",-1);
   Tcl_IncrRefCount(knotsuobj);
 
+  knotsvobj = Tcl_NewStringObj("Knots_V",-1);
+  Tcl_IncrRefCount(knotsvobj);
+
   tolobj = Tcl_NewStringObj("Tolerance",-1);
   Tcl_IncrRefCount(tolobj);
 

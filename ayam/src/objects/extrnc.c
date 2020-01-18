@@ -333,7 +333,6 @@ int
 ay_extrnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  char *arr = "ExtrNCAttrData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_object *trim = NULL, *npatch = NULL, *pobject = NULL;
  ay_extrnc_object *extrnc = NULL;
  int pnum;

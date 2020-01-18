@@ -408,7 +408,6 @@ int
 ay_root_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  char *arr = "RiOptData";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_root_object *root = NULL;
  ay_riopt *riopt = NULL;
 
