@@ -925,11 +925,11 @@ sdcurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetVar2Ex(interp, arr, "Level",
-		Tcl_NewIntObj(sdcurve->length),
+		Tcl_NewIntObj(sdcurve->level),
 		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetVar2Ex(interp, arr, "Type",
-		Tcl_NewIntObj(sdcurve->length),
+		Tcl_NewIntObj(sdcurve->type),
 		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   if(sdcurve->scontrolv)
