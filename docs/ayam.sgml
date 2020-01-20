@@ -33,7 +33,7 @@ code example of 6 lines text (needs another 2 for the upper/lower lines)
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>14. Dec 2019
+<date>27. Jan 2020
 
 <abstract>
 This is the documentation of Ayam 1.27 &ndash; a free 3D modelling environment
@@ -14042,14 +14042,11 @@ surfaces <ref id="remknnpt" name="Remove Knot Surface Tool">.
 
 <sect2>Remove Superfluous Knots Tool<label id="remsuknt">
 <p>
-<!--
 <figure loc="ht">
-<eps file="pics/remkn.ps" height="4cm">
-<img src="pics/remkn.gif">
-<caption>Remove Knot Tool (left: original curve, right: the knot
-at <em/t/&thinsp;=&thinsp;0.5 has been removed one time)</caption>
+<eps file="pics/remsuknnc.ps" height="6cm">
+<img src="pics/remsuknnc.gif">
+<caption>Remove Superfluous Knots Tool (left: original curve, right: superfluous knots have been removed)</caption>
 </figure>
- -->
 <descrip>
 <tag/Arguments/ The remove superfluous knots tool takes a number of NURBS
 curves from the selection and requests a tolerance value <it/tol/.
@@ -14059,6 +14056,16 @@ the shape of the resulting curve does not deviate more than <it/tol/
 from the original curve in any point.
 <p>
 It is no error if no knots can be removed.
+<p>
+See also the example image above where a curve created by the concatenation
+algorithm with knot type <tt/"Custom"/ has been cleaned up.
+The original curve of order three with 28 control points is defined on the knot
+vector:<newline>
+<f>[&thinsp;0&thinsp;0&thinsp;0&ensp;1&thinsp;1&thinsp;1&ensp;1.5&ensp;2&thinsp;2&thinsp;2&ensp;3&thinsp;3&thinsp;3&ensp;3.5&ensp;4&thinsp;4&thinsp;4&ensp;5&thinsp;5&thinsp;5&ensp;5.5 6&thinsp;6&thinsp;6&ensp;7&thinsp;7&thinsp;7&ensp;7.5&ensp;8&thinsp;8&thinsp;8&thinsp;]</f>.<newline>
+The processed curve has 21 control points and is defined on the knot
+vector:<newline>
+<f>[&thinsp;0&thinsp;0&thinsp;0&ensp;1&thinsp;1&ensp;1.5&ensp;2&thinsp;2&ensp;3&thinsp;3&ensp;3.5&ensp;4&thinsp;4&ensp;5&thinsp;5&ensp;5.5&ensp;6&thinsp;6&ensp;7&thinsp;7&ensp;7.5&ensp;8&thinsp;8&thinsp;8&thinsp;]</f>.
+
 <tag/Notes/
 The point selection will be removed from the processed objects.
 
