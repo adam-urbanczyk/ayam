@@ -684,9 +684,15 @@ Use
 to remove all objects; this step is necessary if you switch build types
 ( shared <-> wrapped )!
 
+and
+
 > make mostlyclean
 to make clean but not remove the objects that never change,
 like Apples mf3d code and Affines sribw code.
+
+Use
+> make rewrap
+to wrap the executable again after a change to the Ayam Tcl code base.
 
 Use
 > make tags
