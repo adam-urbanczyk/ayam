@@ -260,7 +260,6 @@ int
 ay_swing_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  char *arr = "SwingAttrData";
- Tcl_Obj *to = NULL;
  ay_swing_object *swing = NULL;
 
   if(!interp || !o)
