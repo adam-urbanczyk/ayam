@@ -1741,9 +1741,12 @@ ay_selp_reducetominmax(ay_object *o)
       p = next;
     }
 
-  o->selp = pmin;
-  pmin->next = pmax;
-  pmax->next = NULL;
+  if(pmin && pmax)
+    {
+      o->selp = pmin;
+      pmin->next = pmax;
+      pmax->next = NULL;
+    }
 
  return AY_OK;
 } /* ay_selp_reducetominmax */

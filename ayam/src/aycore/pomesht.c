@@ -1125,7 +1125,7 @@ ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, double normal_epsilon,
 
   /* if the user requested to honour normals but we have no normals
      we have to set normal_epsilon to DBL_MAX */
-  if(!normal_epsilon != DBL_MAX && !pomesh->has_normals)
+  if((normal_epsilon != DBL_MAX) && !pomesh->has_normals)
     normal_epsilon = DBL_MAX;
 
   for(i = 0; i < total_verts; i++)
@@ -1240,7 +1240,7 @@ ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_pomesh_object *pomesh;
  unsigned int *ois = NULL, oislen = 0;
- unsigned int oldnumcvs;
+ unsigned int oldnumcvs = 0;
  char buf[256];
 
   while(i+1 < argc)
@@ -1379,7 +1379,12 @@ ay_pomesht_tosdmesh(ay_pomesh_object *pomesh, ay_sdmesh_object **sdmesh)
 
   if(!pomesh || !sdmesh)
     return AY_ENULL;
-
+#if 0
+  if(ay_pomesht_hasholes(pomesh))
+    {
+      return AY_ERROR;
+    }
+#endif
   if(!(nsdmesh = calloc(1, sizeof(ay_sdmesh_object))))
     { ay_status = AY_EOMEM; goto cleanup; }
 

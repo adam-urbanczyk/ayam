@@ -8876,7 +8876,7 @@ ay_npt_istrimmed(ay_object *o, int mode)
 int
 ay_npt_closeu(ay_nurbpatch_object *np, int mode)
 {
- double *controlv, *start, *end, mean[3];
+ double *controlv, *start, *end, mean[4];
  int stride = 4, lstride;
  int i, j;
 
@@ -8908,6 +8908,7 @@ ay_npt_closeu(ay_nurbpatch_object *np, int mode)
 	  mean[0] = start[0]+((end[0]-start[0])/2.0);
 	  mean[1] = start[1]+((end[1]-start[1])/2.0);
 	  mean[2] = start[2]+((end[2]-start[2])/2.0);
+	  mean[3] = start[3]+((end[3]-start[3])/2.0);
 
 	  memcpy(start, mean, stride*sizeof(double));
 	  memcpy(end, mean, stride*sizeof(double));
