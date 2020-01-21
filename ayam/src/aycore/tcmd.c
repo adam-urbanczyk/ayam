@@ -73,8 +73,7 @@ ay_tcmd_convdlist(char *vname, int *dllen, double **dl)
       return TCL_ERROR;
     }
 
-  listPtr = Tcl_ObjGetVar2(ay_interp, vnamePtr, NULL, TCL_LEAVE_ERR_MSG |
-			   TCL_PARSE_PART1);
+  listPtr = Tcl_ObjGetVar2(ay_interp, vnamePtr, NULL, TCL_LEAVE_ERR_MSG);
 
   Tcl_IncrRefCount(vnamePtr);Tcl_DecrRefCount(vnamePtr);
 
@@ -436,14 +435,11 @@ ay_tcmd_getallpoints(Tcl_Interp *interp, char *fname, char *vn,
  unsigned int i = 0;
  double p[4] = {0};
  double pm[16], m[16];
- int flags = TCL_APPEND_VALUE | TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG |
-   TCL_PARSE_PART1;
+ int flags = TCL_APPEND_VALUE | TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG;
  int return_result = AY_FALSE;
- Tcl_Obj *to = NULL, *ton = NULL, *res = NULL;
+ Tcl_Obj *to = NULL, *res = NULL;
 
-  if(vn)
-    ton = Tcl_NewStringObj(vn, -1);
-  else
+  if(!vn)
     return_result = AY_TRUE;
 
   if(apply_trafo)
@@ -481,16 +477,16 @@ ay_tcmd_getallpoints(Tcl_Interp *interp, char *fname, char *vn,
 	    {
 	      /* store result in variable */
 	      to = Tcl_NewDoubleObj(p[0]);
-	      Tcl_ObjSetVar2(interp, ton, NULL, to, flags);
+	      Tcl_SetVar2Ex(interp, vn, NULL, to, flags);
 	      to = Tcl_NewDoubleObj(p[1]);
-	      Tcl_ObjSetVar2(interp, ton, NULL, to, flags);
+	      Tcl_SetVar2Ex(interp, vn, NULL, to, flags);
 	      to = Tcl_NewDoubleObj(p[2]);
-	      Tcl_ObjSetVar2(interp, ton, NULL, to, flags);
+	      Tcl_SetVar2Ex(interp, vn, NULL, to, flags);
 
 	      if(pe.type == AY_PTRAT)
 		{
 		  to = Tcl_NewDoubleObj(pe.coords[i][3]);
-		  Tcl_ObjSetVar2(interp, ton, NULL, to, flags);
+		  Tcl_SetVar2Ex(interp, vn, NULL, to, flags);
 		} /* if */
 	    }
 	  else
@@ -523,11 +519,6 @@ ay_tcmd_getallpoints(Tcl_Interp *interp, char *fname, char *vn,
   if(res)
     {
       Tcl_SetObjResult(interp, res);
-    }
-
-  if(ton)
-    {
-      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
     }
 
  return TCL_OK;
@@ -734,9 +725,8 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
  double *p = NULL, *tp = NULL, tmp[4] = {0}, utmp[4] = {0};
  double m[16], u = 0.0, v = 0.0;
  char fargs[] = "[-trafo|-world|-eval|-relative] (index | indexu indexv | u | u v ([varx vary varz [varw]] | -vn [varname]) | -all [varname])";
- Tcl_Obj *to = NULL, *ton = NULL, *res = NULL;
- int lflags = TCL_LEAVE_ERR_MSG | TCL_APPEND_VALUE | TCL_LIST_ELEMENT |
-   TCL_PARSE_PART1;
+ Tcl_Obj *to = NULL, *res = NULL;
+ int lflags = TCL_LEAVE_ERR_MSG | TCL_APPEND_VALUE | TCL_LIST_ELEMENT;
  ay_voidfp *arr = NULL;
  ay_getpntcb *cb = NULL;
 
@@ -1167,44 +1157,39 @@ eval_provided_surface:
 	      if(vn)
 		{
 		  /* -vn */
-		  ton = Tcl_NewStringObj(argv[argc-1], -1);
 		  to = Tcl_NewDoubleObj(tp[0]);
-		  Tcl_ObjSetVar2(interp, ton, NULL, to, lflags);
+		  Tcl_SetVar2Ex(interp, argv[argc-1], NULL, to, lflags);
 		  to = Tcl_NewDoubleObj(tp[1]);
-		  Tcl_ObjSetVar2(interp, ton, NULL, to, lflags);
+		  Tcl_SetVar2Ex(interp, argv[argc-1], NULL, to, lflags);
 		  to = Tcl_NewDoubleObj(tp[2]);
-		  Tcl_ObjSetVar2(interp, ton, NULL, to, lflags);
+		  Tcl_SetVar2Ex(interp, argv[argc-1], NULL, to, lflags);
 		  if(rational)
 		    {
 		      to = Tcl_NewDoubleObj(tp[3]);
-		      Tcl_ObjSetVar2(interp, ton, NULL, to, lflags);
+		      Tcl_SetVar2Ex(interp, argv[argc-1], NULL, to, lflags);
 		    }
 		}
 	      else
 		{
-		  ton = Tcl_NewStringObj(argv[j], -1);
 		  to = Tcl_NewDoubleObj(tp[0]);
-		  Tcl_ObjSetVar2(interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
-				 TCL_PARSE_PART1);
+		  Tcl_SetVar2Ex(interp, argv[j], NULL, to,
+				TCL_LEAVE_ERR_MSG);
 
-		  Tcl_SetStringObj(ton, argv[j+1], -1);
 		  to = Tcl_NewDoubleObj(tp[1]);
-		  Tcl_ObjSetVar2(interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
-				 TCL_PARSE_PART1);
+		  Tcl_SetVar2Ex(interp, argv[j+1], NULL, to,
+				TCL_LEAVE_ERR_MSG);
 
-		  Tcl_SetStringObj(ton, argv[j+2], -1);
 		  to = Tcl_NewDoubleObj(tp[2]);
-		  Tcl_ObjSetVar2(interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
-				 TCL_PARSE_PART1);
+		  Tcl_SetVar2Ex(interp, argv[j+2], NULL, to,
+				TCL_LEAVE_ERR_MSG);
+
 		  if(rational)
 		    {
-		      Tcl_SetStringObj(ton, argv[j+3], -1);
 		      to = Tcl_NewDoubleObj(tp[3]);
-		      Tcl_ObjSetVar2(interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
-				     TCL_PARSE_PART1);
+		      Tcl_SetVar2Ex(interp, argv[j+3], NULL, to,
+				    TCL_LEAVE_ERR_MSG);
 		    }
 		} /* if */
-	      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 	    }
 	  else
 	    {
@@ -2015,7 +2000,7 @@ ay_tcmd_getplanenormaltcmd(ClientData clientData, Tcl_Interp *interp,
  int applytrafo = AY_FALSE, clearcv = AY_FALSE, cvlen, stride = 3;
  unsigned int i;
  int j = 1, isCurve = AY_FALSE;
- Tcl_Obj *to = NULL, *ton = NULL;
+ Tcl_Obj *to = NULL, *res = NULL;
 
   while(j < argc)
     {
@@ -2141,14 +2126,14 @@ ay_tcmd_getplanenormaltcmd(ClientData clientData, Tcl_Interp *interp,
 	    AY_V3SCAL(normal, 1.0/len);
 
 	  /* compile result */
-	  if(!ton)
-	    ton = Tcl_NewListObj(0, NULL);
+	  if(!res)
+	    res = Tcl_NewListObj(0, NULL);
 	  to = Tcl_NewDoubleObj(normal[0]);
-	  Tcl_ListObjAppendElement(interp, ton, to);
+	  Tcl_ListObjAppendElement(interp, res, to);
 	  to = Tcl_NewDoubleObj(normal[1]);
-	  Tcl_ListObjAppendElement(interp, ton, to);
+	  Tcl_ListObjAppendElement(interp, res, to);
 	  to = Tcl_NewDoubleObj(normal[2]);
-	  Tcl_ListObjAppendElement(interp, ton, to);
+	  Tcl_ListObjAppendElement(interp, res, to);
 	} /* if have cv or po */
 
 cleanup:
@@ -2162,8 +2147,8 @@ cleanup:
     } /* while */
 
   /* return result */
-  if(ton)
-    Tcl_SetObjResult(interp, ton);
+  if(res)
+    Tcl_SetObjResult(interp, res);
 
  return TCL_OK;
 } /* ay_tcmd_getplanenormaltcmd */
