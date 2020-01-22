@@ -1078,7 +1078,6 @@ ay_act_resize(ay_acurve_object *curve, int new_length)
 	    {
 	      for(j = 1; j <= newpersec[i]; j++)
 		{
-
 		  v[0] = curve->controlv[a+stride]   - curve->controlv[a];
 		  v[1] = curve->controlv[a+stride+1] - curve->controlv[a+1];
 		  v[2] = curve->controlv[a+stride+2] - curve->controlv[a+2];
@@ -1308,6 +1307,8 @@ ay_act_approxtcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 
 	  tcv = NULL;
+	  knotv = NULL;
+	  controlv = NULL;
 	  ay_status = ay_stess_CurvePoints3D(curve->length, curve->order-1,
 					     curve->knotv, curve->controlv,
 					     curve->is_rat, tesselate,
