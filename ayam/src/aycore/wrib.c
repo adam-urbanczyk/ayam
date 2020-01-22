@@ -1935,13 +1935,17 @@ ay_wrib_scene(char *file, char *image, int temp, int rtf,
 
     /* write atmosphere shader */
     ay_status = ay_wrib_rootsh(AY_FALSE);
-    if(ay_status)
-      return ay_status;
+      {
+	RiEnd();
+	goto cleanup;
+      }
 
     /* write default material */
     ay_status = ay_wrib_defmat(file);
-    if(ay_status)
-      return ay_status;
+      {
+	RiEnd();
+	goto cleanup;
+      }
 
     /* write objects */
     if(!ay_prefs.use_sm)

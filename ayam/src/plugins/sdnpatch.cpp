@@ -5552,16 +5552,19 @@ sdnpatch_mergepatchtcmd(ClientData clientData, Tcl_Interp *interp,
 	      sdnpatch_getcontrolvertices(sdnpatch);
 
 	      vertices = sdnpatch->controlVertices;
-	      a = 0;
-	      for(i = 0; i < vertices->size(); i++)
+	      if(vertices)
 		{
-		  ay_trafo_apply4(&(sdnpatch->controlCoords[a]), m);
-		  v = (*(sdnpatch->controlVertices))[i];
-		  v->setX(sdnpatch->controlCoords[a]);
-		  v->setY(sdnpatch->controlCoords[a+1]);
-		  v->setZ(sdnpatch->controlCoords[a+2]);
-		  v->setW(sdnpatch->controlCoords[a+3]);
-		  a += 4;
+		  a = 0;
+		  for(i = 0; i < vertices->size(); i++)
+		    {
+		      ay_trafo_apply4(&(sdnpatch->controlCoords[a]), m);
+		      v = (*(sdnpatch->controlVertices))[i];
+		      v->setX(sdnpatch->controlCoords[a]);
+		      v->setY(sdnpatch->controlCoords[a+1]);
+		      v->setZ(sdnpatch->controlCoords[a+2]);
+		      v->setW(sdnpatch->controlCoords[a+3]);
+		      a += 4;
+		    }
 		}
 	    }
 	}

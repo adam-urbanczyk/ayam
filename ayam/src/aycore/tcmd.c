@@ -1435,7 +1435,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	case AY_IDNCURVE:
 	  remargc--;
 	  tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
-	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	  AY_CHTCLERRGOT(tcl_status, argv[0], interp);
 	  ay_nct_getpntfromindex((ay_nurbcurve_object*)(o->refine),
 				 indexu, &p);
 	  rational = AY_TRUE;
@@ -1444,7 +1444,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	case AY_IDACURVE:
 	  remargc--;
 	  tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
-	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	  AY_CHTCLERRGOT(tcl_status, argv[0], interp);
 	  ay_act_getpntfromindex((ay_acurve_object*)(o->refine),
 				 indexu, &p);
 	  i++;
@@ -1452,7 +1452,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	case AY_IDICURVE:
 	  remargc--;
 	  tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
-	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	  AY_CHTCLERRGOT(tcl_status, argv[0], interp);
 	  ay_ict_getpntfromindex((ay_icurve_object*)(o->refine),
 				 indexu, &p);
 	  i++;
@@ -1460,9 +1460,9 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	case AY_IDNPATCH:
 	  remargc -= 2;
 	  tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
-	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	  AY_CHTCLERRGOT(tcl_status, argv[0], interp);
 	  tcl_status = Tcl_GetInt(interp, argv[i+1], &indexv);
-	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	  AY_CHTCLERRGOT(tcl_status, argv[0], interp);
 	  ay_npt_getpntfromindex((ay_nurbpatch_object*)(o->refine),
 				 indexu, indexv, &p);
 	  rational = AY_TRUE;
@@ -1471,9 +1471,9 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	case AY_IDIPATCH:
 	  remargc -= 2;
 	  tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
-	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	  AY_CHTCLERRGOT(tcl_status, argv[0], interp);
 	  tcl_status = Tcl_GetInt(interp, argv[i+1], &indexv);
-	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	  AY_CHTCLERRGOT(tcl_status, argv[0], interp);
 	  ay_ipt_getpntfromindex((ay_ipatch_object*)(o->refine),
 				 indexu, indexv, &p);
 	  i += 2;
@@ -1481,7 +1481,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	case AY_IDBPATCH:
 	  remargc--;
 	  tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
-	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	  AY_CHTCLERRGOT(tcl_status, argv[0], interp);
 	  ay_tcmd_getbppntfromindex((ay_bpatch_object*)(o->refine),
 				    indexu, &p);
 	  i++;
@@ -1489,9 +1489,9 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	case AY_IDPAMESH:
 	  remargc -= 2;
 	  tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
-	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	  AY_CHTCLERRGOT(tcl_status, argv[0], interp);
 	  tcl_status = Tcl_GetInt(interp, argv[i+1], &indexv);
-	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	  AY_CHTCLERRGOT(tcl_status, argv[0], interp);
 	  ay_pmt_getpntfromindex((ay_pamesh_object*)(o->refine),
 				 indexu, indexv, &p);
 	  rational = AY_TRUE;

@@ -1963,7 +1963,8 @@ ay_tess_tristoquadpomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
   /* create index structures */
   if(!(po->nloops = malloc(numquads*sizeof(unsigned int))))
     {
-      return AY_EOMEM;
+      ay_status = AY_EOMEM;
+      goto cleanup;
     }
   for(i = 0; i < numquads; i++)
     {
@@ -3231,7 +3232,7 @@ ay_tess_npatch(ay_object *o,
       break;
     }
 
-  if(ay_status)
+  if(ay_status || !new)
     goto cleanup;
 
   ay_pomesht_fliploops((ay_pomesh_object*)new->refine);
