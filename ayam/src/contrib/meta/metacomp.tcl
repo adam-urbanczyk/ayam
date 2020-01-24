@@ -25,7 +25,7 @@ proc metacomp_setAttr { } {
 }
 
 proc metacomp_getAttr { } {
-    global ay MetaCompAttr MetaCompAttrData
+    global ay ayprefs MetaCompAttr MetaCompAttrData
 
     set sw 40
     set sh 6
