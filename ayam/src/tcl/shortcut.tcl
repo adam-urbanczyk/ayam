@@ -1349,7 +1349,7 @@ proc shortcut_getmappings { } {
     lappend mappings slash \/
     lappend mappings numbersign \#
     lappend mappings apostrophe \'
-    #lappend mappings quoteright \´
+    lappend mappings quoteright \'
     lappend mappings period \.
     lappend mappings exclam \!
     lappend mappings less \<
