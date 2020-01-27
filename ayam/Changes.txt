@@ -1,5 +1,5 @@
-[2. Jan 2020] Tip:
-==================
+[27. Jan 2020] Ayam 1.27:
+=========================
 Bug Fixes:
 o NURBSphere objects can not be trimmed (SF 587)
 o repeated toggling of advanced search options (SF 588)
