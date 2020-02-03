@@ -394,7 +394,7 @@ ay_root_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   to = Tcl_GetVar2Ex(interp, arr, "StdDisplay",
 		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &riopt->use_std_display);
+  Tcl_GetIntFromObj(interp, to, &itemp);
   riopt->use_std_display = itemp;
 
  return AY_OK;
