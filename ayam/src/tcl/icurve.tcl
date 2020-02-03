@@ -20,6 +20,8 @@ proc icurve_getAttr { } {
     catch {destroy $ay(pca).$ICurveAttr(w)}
     set w [frame $ay(pca).$ICurveAttr(w)]
 
+    getProp
+
     set ay(bok) $ay(appb)
 
     # create ICurveAttr-UI
@@ -40,8 +42,6 @@ proc icurve_getAttr { } {
 
     addText $w $a "Created NURBS Curve:"
     addInfo $w $a NCInfo
-
-    getProp
 
     plb_setwin $w $oldfocus
 

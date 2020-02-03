@@ -47,6 +47,8 @@ proc extrnc_getAttr { } {
 
     set ExtrNCAttrData(trims) ""
 
+    getProp
+
     set ay(bok) $ay(appb)
 
     # create new UI
@@ -73,8 +75,6 @@ proc extrnc_getAttr { } {
 
     addText $w $a "Extracted NURBS Curve:"
     addInfo $w $a NCInfo
-
-    getProp
 
     plb_setwin $w $oldfocus
 

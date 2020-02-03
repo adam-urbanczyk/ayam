@@ -104,6 +104,8 @@ proc pamesh_getAttr { } {
     set w [frame $ay(pca).$PatchMeshAttr(w)]
     set a $PatchMeshAttr(arr)
 
+    getProp
+
     set ay(bok) $ay(appb)
     addVSpace $w s1 2
     addMenu $w $a Type [list Bilinear Bicubic]
@@ -140,8 +142,6 @@ proc pamesh_getAttr { } {
     bind $w.fHeight.b1 <Control-ButtonPress-1> "pamesh_updateWHL $w $a Height \$PatchMeshAttrData(BType_V) m;break"
     bind $w.fHeight.b2 <Control-ButtonPress-1> "pamesh_updateWHL $w $a Height \$PatchMeshAttrData(BType_V) p;break"
     }
-
-    getProp
 
     # add UI to property canvas
     plb_setwin $w $oldfocus
