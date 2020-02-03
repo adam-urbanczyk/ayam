@@ -23,6 +23,8 @@ proc light_getAttr { } {
     catch {destroy $ay(pca).$LightAttr(w)}
     set w [frame $ay(pca).$LightAttr(w)]
 
+    getProp
+
     set ay(bok) $ay(appb)
 
     # create new UI
@@ -59,8 +61,6 @@ proc light_getAttr { } {
 	addParam $w $a To_Y
 	addParam $w $a To_Z
     }
-
-    getProp
 
     plb_setwin $w $oldfocus
 
