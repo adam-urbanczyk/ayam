@@ -1,3 +1,17 @@
+[9. Feb 2020] Mercurial Tip:
+============================
+Bug Fixes:
+o append option of split curve tool does not work (SF 595)
+
+Modelling:
+o added option to specify the split knot in a relative way in the
+  split curve tool
+
+Scripts/Scripting Interface:
+o added "-r" (relative) option to "splitNC" command
+o the "-a" option of the "splitNC" command does not need a value anymore
+
+
 [27. Jan 2020] Ayam 1.27:
 =========================
 Bug Fixes:
@@ -72,8 +86,8 @@ o added "remsuknuNP"/"remsuknvNP" commands to remove superfluous knots
   from NURBS surfaces
 o added "reduceuNP"/"reducevNP" commands to reduce the order of
   NURBS surfaces
-o aded "-relative" option to "extrNP" command
-o aded "-replace" option to "breakNP" command
+o added "-relative" option to "extrNP" command
+o added "-replace" option to "breakNP" command
 o added "-get" option to "selOb" command
 o added value matching to "hasTag" command
 
