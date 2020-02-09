@@ -959,7 +959,7 @@ ay_capt_crtgordoncap(ay_object *c, ay_object **cap)
     {
       u = hknots[i];
       ay_knots_match((ay_nurbcurve_object*)c1->refine, AY_EPSILON, &u);
-      ay_status = ay_nct_split(c1, u, &c3);
+      ay_status = ay_nct_split(c1, u, AY_FALSE, &c3);
       i++;
     }
   if(!c3 || ay_status)
@@ -980,7 +980,7 @@ ay_capt_crtgordoncap(ay_object *c, ay_object **cap)
     {
       u = hknots[i];
       ay_knots_match((ay_nurbcurve_object*)c1->refine, AY_EPSILON, &u);
-      ay_status = ay_nct_split(c1, u, &c2);
+      ay_status = ay_nct_split(c1, u, AY_FALSE, &c2);
       i++;
     }
   if(!c2 || ay_status)
@@ -1004,7 +1004,7 @@ ay_capt_crtgordoncap(ay_object *c, ay_object **cap)
     {
       u = hknots[i];
       ay_knots_match((ay_nurbcurve_object*)c3->refine, AY_EPSILON, &u);
-      ay_status = ay_nct_split(c3, u, &c4);
+      ay_status = ay_nct_split(c3, u, AY_FALSE, &c4);
       i++;
     }
   if(!c4 || ay_status)
