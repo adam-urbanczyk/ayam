@@ -92,12 +92,21 @@ proc ncurve_getrknots {} {
 # ncurve_getrknots
 
 # split curve at parametric value
-proc ncurve_split { u {a 0} } {
+proc ncurve_split { u r {a 0} } {
     global ay
     undo save Split
     getSel sel
-    splitNC $u
+    set cmd splitNC
+    if { $r } {
+	append cmd " -r"
+    }
+    if { $a } {
+	append cmd " -a"
+    }
+    append cmd " $u"
+    eval $cmd
     cS
+
     if { $a } {
 	uCR; sL; getSel lsel
 	lappend sel $lsel

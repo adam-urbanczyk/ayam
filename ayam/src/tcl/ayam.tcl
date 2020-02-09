@@ -718,6 +718,7 @@ array set ay {
  remstol 0.0
  refinekn 0.5
  splitu 0.5
+ splitr false
  splitappend false
  concatc false
  concatt 0
@@ -2281,7 +2282,7 @@ if { $ay(ws) == "Aqua" } {
 # maintain Unix/X11 tk file dialog options for hidden files
 if { $tcl_platform(platform) != "windows" } {
     if { $ay(ws) != "Aqua" } {
-	if {  $ayprefs(FDShowHidden) != 1 || $ayprefs(FDShowHiddenBtn) != 0 } {
+	if { $ayprefs(FDShowHidden) != 1 || $ayprefs(FDShowHiddenBtn) != 0 } {
 	    catch {tk_getOpenFile foo bar}
 	    set ::tk::dialog::file::showHiddenVar $ayprefs(FDShowHidden)
 	    set ::tk::dialog::file::showHiddenBtn $ayprefs(FDShowHiddenBtn)

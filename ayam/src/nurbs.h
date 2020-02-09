@@ -694,7 +694,7 @@ int ay_nct_finducb(struct Togl *togl, int argc, char *argv[]);
 
 /** Split NURBS curve.
  */
-int ay_nct_split(ay_object *src, double u, ay_object **result);
+int ay_nct_split(ay_object *src, double u, int relative, ay_object **result);
 
 /** Tcl command to split selected NURBS curves.
  */

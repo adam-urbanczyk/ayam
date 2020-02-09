@@ -449,8 +449,9 @@ $m.nct add command -label "Concat" -command {
 } -underline 2
 # ^^^^^^^^^^^ => N
 $m.nct add command -label "Split" -command {
-    runTool {ay(splitu) ay(splitappend)} {"Split at:" "Append:"}\
-       "ncurve_split %0 %1;" "Split Curve" splitt
+    runTool {ay(splitu) ay(splitr) ay(splitappend)}\
+	{"Split at:" "Relative:" "Append:"}\
+	"ncurve_split %0 %1 %2;" "Split Curve" splitt
 } -underline 0
 #  ^^^^^^^^^^^ => S
 

@@ -2867,12 +2867,13 @@ cleanup:
  *
  * \param[in,out] src curve object to split
  * \param[in] u parametric value at which to split
+ * \param[in] relative if AY_TRUE, interpret \a u in a relative way
  * \param[in,out] result where to store the second curve
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_nct_split(ay_object *src, double u, ay_object **result)
+ay_nct_split(ay_object *src, double u, int relative, ay_object **result)
 {
  int ay_status = AY_OK;
  ay_object *new = NULL;
@@ -2896,10 +2897,18 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
       stride = 4;
       knots = curve->knotv;
 
-      if((u <= knots[curve->order-1]) || (u >= knots[curve->length]))
+      if(relative)
 	{
-	  return ay_error_reportdrange(fname, "\"u\"",
-				knots[curve->order-1], knots[curve->length]);
+	  u = knots[curve->order-1] +
+	    (knots[curve->length] - knots[curve->order-1])*u;
+	}
+      else
+	{
+	  if((u <= knots[curve->order-1]) || (u >= knots[curve->length]))
+	    {
+	      return ay_error_reportdrange(fname, "\"u\"",
+				 knots[curve->order-1], knots[curve->length]);
+	    }
 	}
 
       k = ay_nb_FindSpanMult(curve->length-1, curve->order-1, u,
@@ -3065,7 +3074,7 @@ ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *new = NULL;
  double u = 0.0;
  int i = 1;
- int notify_parent = AY_FALSE, append = AY_FALSE;
+ int notify_parent = AY_FALSE, append = AY_FALSE, relative = AY_FALSE;
 
   if(!sel)
     {
@@ -3073,21 +3082,26 @@ ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  if(argc > 1 && argv[1][0] == '-' && argv[1][1] == 'a')
+  /* parse args */
+  if(argc > 2)
     {
-      if(argc > 2)
+      while(i+1 < argc)
 	{
-	  tcl_status = Tcl_GetBoolean(interp, argv[2], &append);
-	  if(tcl_status != TCL_OK)
-	    tcl_status = Tcl_GetInt(interp, argv[2], &append);
-	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
-	}
-      i += 2;
-    }
+	  if(argv[i][0] == '-' && argv[i][1] == 'a')
+	    {
+	      append = AY_TRUE;
+	    }
+	  if(argv[i][0] == '-' && argv[i][1] == 'r')
+	    {
+	      relative = AY_TRUE;
+	    }
+	  i++;
+	} /* while */
+    } /* if have args */
 
   if(argc <= i)
     {
-      ay_error(AY_EARGS, argv[0], "[-a 0|1] u");
+      ay_error(AY_EARGS, argv[0], "[-a|-r] u");
       return TCL_OK;
     }
 
@@ -3105,7 +3119,7 @@ ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  new = NULL;
 
-	  if((ay_status = ay_nct_split(sel->object, u, &new)))
+	  if((ay_status = ay_nct_split(sel->object, u, relative, &new)))
 	    {
 	      if(!new)
 		ay_error(ay_status, argv[0], NULL);
@@ -7562,7 +7576,7 @@ ay_nct_trim(ay_nurbcurve_object **curve, double umin, double umax)
 
   if(umin > knotmin)
     {
-      ay_status = ay_nct_split(&t1, umin, &t2);
+      ay_status = ay_nct_split(&t1, umin, AY_FALSE, &t2);
 
       if(ay_status || !t2)
 	return AY_ERROR;
@@ -7577,7 +7591,7 @@ ay_nct_trim(ay_nurbcurve_object **curve, double umin, double umax)
 
   if(umax < knotmax)
     {
-      ay_status = ay_nct_split(&t1, umax, &t2);
+      ay_status = ay_nct_split(&t1, umax, AY_FALSE, &t2);
 
       if(ay_status)
 	return AY_ERROR;
@@ -10032,7 +10046,7 @@ ay_nct_extractnc(ay_object *src, double umin, double umax, int relative,
 	 and in this case does not execute the (unneeded) split */
       if(umin > curve->knotv[curve->order-1])
 	{
-	  ay_status = ay_nct_split(copy, umin, &nc1);
+	  ay_status = ay_nct_split(copy, umin, AY_FALSE, &nc1);
 	  if(ay_status)
 	    {
 	      ay_error(AY_ERROR, fname, split_errmsg);
@@ -10051,7 +10065,7 @@ ay_nct_extractnc(ay_object *src, double umin, double umax, int relative,
 	}
       if(umax < curve->knotv[curve->length])
 	{
-	  ay_status = ay_nct_split(copy, umax, &nc1);
+	  ay_status = ay_nct_split(copy, umax, AY_FALSE, &nc1);
 	  if(ay_status)
 	    {
 	      ay_error(AY_ERROR, fname, split_errmsg);
