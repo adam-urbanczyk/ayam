@@ -1358,11 +1358,11 @@ int ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
 
 /** Split a surface in U direction (along V).
  */
-int ay_npt_splitu(ay_object *src, double u, ay_object **result);
+int ay_npt_splitu(ay_object *src, double u, int relative, ay_object **result);
 
 /** Split a surface in V direction (along U).
  */
-int ay_npt_splitv(ay_object *src, double v, ay_object **result);
+int ay_npt_splitv(ay_object *src, double v, int relative, ay_object **result);
 
 /** Tcl command to split selected NURBS patches in U/V direction.
  */

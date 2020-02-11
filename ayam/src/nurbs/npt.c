@@ -11377,11 +11377,18 @@ ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_npt_splitu:
- *  split NURBPatch object <src> at parametric value <u> into two;
- *  modifies <src>, returns second patch in <result>.
+ *  split NURBPatch object \a src at parametric value \a u into two;
+ *  modifies \a src, returns second patch in \a result
+ *
+ * \param[in,out] src curve object to split
+ * \param[in] u parametric value at which to split
+ * \param[in] relative if AY_TRUE, interpret \a u in a relative way
+ * \param[in,out] result where to store the second patch
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_npt_splitu(ay_object *src, double u, ay_object **result)
+ay_npt_splitu(ay_object *src, double u, int relative, ay_object **result)
 {
  int ay_status = AY_OK;
  ay_object *new = NULL;
@@ -11405,9 +11412,17 @@ ay_npt_splitu(ay_object *src, double u, ay_object **result)
       stride = 4;
       knots = patch->uknotv;
 
-      if((u <= knots[patch->uorder-1]) || (u >= knots[patch->width]))
-	return ay_error_reportdrange(fname, "\"u\"",
+      if(relative)
+	{
+	  u = knots[patch->uorder-1] +
+	    (knots[patch->width] - knots[patch->uorder-1])*u;
+	}
+      else
+	{
+	  if((u <= knots[patch->uorder-1]) || (u >= knots[patch->width]))
+	    return ay_error_reportdrange(fname, "\"u\"",
 			      knots[patch->uorder-1], knots[patch->width]);
+	}
 
       k = ay_nb_FindSpanMult(patch->width-1, patch->uorder-1, u,
 			     knots, &s);
@@ -11542,12 +11557,19 @@ ay_npt_splitu(ay_object *src, double u, ay_object **result)
 } /* ay_npt_splitu */
 
 
-/* ay_npt_splitv:
- *  split NURBPatch object <src> at parametric value <v> into two;
- *  modifies <src>, returns second patch in <result>.
+/** ay_npt_splitv:
+ *  split NURBPatch object \a src at parametric value \a v into two;
+ *  modifies \a src, returns second patch in \a result
+ *
+ * \param[in,out] src curve object to split
+ * \param[in] u parametric value at which to split
+ * \param[in] relative if AY_TRUE, interpret \a v in a relative way
+ * \param[in,out] result where to store the second patch
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_npt_splitv(ay_object *src, double v, ay_object **result)
+ay_npt_splitv(ay_object *src, double v, int relative, ay_object **result)
 {
  int ay_status = AY_OK;
  ay_object *new = NULL;
@@ -11572,9 +11594,17 @@ ay_npt_splitv(ay_object *src, double v, ay_object **result)
       stride = 4;
       knots = patch->vknotv;
 
-      if((v <= knots[patch->vorder-1]) || (v >= knots[patch->height]))
-	return ay_error_reportdrange(fname, "\"v\"",
+      if(relative)
+	{
+	  v = knots[patch->vorder-1] +
+	    (knots[patch->height] - knots[patch->vorder-1])*v;
+	}
+      else
+	{
+	  if((v <= knots[patch->vorder-1]) || (v >= knots[patch->height]))
+	    return ay_error_reportdrange(fname, "\"v\"",
 			     knots[patch->vorder-1], knots[patch->height]);
+	}
 
       k = ay_nb_FindSpanMult(patch->height-1, patch->vorder-1, v,
 			     knots, &s);
@@ -11740,7 +11770,7 @@ ay_npt_splituvtcmd(ClientData clientData, Tcl_Interp *interp,
  int i = 1;
  int splitv = AY_FALSE;
  int notify_parent = AY_FALSE;
- int append = AY_FALSE;
+ int append = AY_FALSE, relative = AY_FALSE;
 
   /* distinguish between
      splituNP and
@@ -11754,22 +11784,26 @@ ay_npt_splituvtcmd(ClientData clientData, Tcl_Interp *interp,
       ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
-
-  if(argc > 1 && argv[1][0] == '-' && argv[1][1] == 'a')
+  /* parse args */
+  if(argc > 2)
     {
-      if(argc > 2)
+      while(i+1 < argc)
 	{
-	  tcl_status = Tcl_GetBoolean(interp, argv[2], &append);
-	  if(tcl_status != TCL_OK)
-	    tcl_status = Tcl_GetInt(interp, argv[2], &append);
-	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
-	}
-      i += 2;
-    }
+	  if(argv[i][0] == '-' && argv[i][1] == 'a')
+	    {
+	      append = AY_TRUE;
+	    }
+	  if(argv[i][0] == '-' && argv[i][1] == 'r')
+	    {
+	      relative = AY_TRUE;
+	    }
+	  i++;
+	} /* while */
+    } /* if have args */
 
   if(argc <= i)
     {
-      ay_error(AY_EARGS, argv[0], "[-a 0|1] t");
+      ay_error(AY_EARGS, argv[0], "[-a|-r] t");
       return TCL_OK;
     }
 
@@ -11791,9 +11825,9 @@ ay_npt_splituvtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  new = NULL;
 	  if(splitv)
-	    ay_status = ay_npt_splitv(sel->object, t, &new);
+	    ay_status = ay_npt_splitv(sel->object, t, relative, &new);
 	  else
-	    ay_status = ay_npt_splitu(sel->object, t, &new);
+	    ay_status = ay_npt_splitu(sel->object, t, relative, &new);
 
 	  if(ay_status)
 	    {
@@ -11914,7 +11948,7 @@ ay_npt_extractnp(ay_object *src, double umin, double umax,
 	 and in this case does not execute the (unneeded) split */
       if(umin > patch->uknotv[patch->uorder-1])
 	{
-	  ay_status = ay_npt_splitu(copy, umin, &np1);
+	  ay_status = ay_npt_splitu(copy, umin, AY_FALSE, &np1);
 	  if(ay_status)
 	    {
 	      ay_error(AY_ERROR, fname, split_errmsg);
@@ -11933,7 +11967,7 @@ ay_npt_extractnp(ay_object *src, double umin, double umax,
 	}
       if(umax < patch->uknotv[patch->width])
 	{
-	  ay_status = ay_npt_splitu(copy, umax, &np1);
+	  ay_status = ay_npt_splitu(copy, umax, AY_FALSE, &np1);
 	  if(ay_status)
 	    {
 	      ay_error(AY_ERROR, fname, split_errmsg);
@@ -11949,7 +11983,7 @@ ay_npt_extractnp(ay_object *src, double umin, double umax,
 	}
       if(vmin > patch->vknotv[patch->vorder-1])
 	{
-	  ay_status = ay_npt_splitv(copy, vmin, &np1);
+	  ay_status = ay_npt_splitv(copy, vmin, AY_FALSE, &np1);
 	  if(ay_status)
 	    {
 	      ay_error(AY_ERROR, fname, split_errmsg);
@@ -11968,7 +12002,7 @@ ay_npt_extractnp(ay_object *src, double umin, double umax,
 	}
       if(vmax < patch->vknotv[patch->height])
 	{
-	  ay_status = ay_npt_splitv(copy, vmax, &np1);
+	  ay_status = ay_npt_splitv(copy, vmax, AY_FALSE, &np1);
 	  if(ay_status)
 	    {
 	      ay_error(AY_ERROR, fname, split_errmsg);
@@ -14667,7 +14701,7 @@ ay_npt_refineuvtcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(!(X = malloc(aknotc*sizeof(double))))
 	{
-	  ay_error(AY_EOMEM,argv[0],NULL);
+	  ay_error(AY_EOMEM, argv[0], NULL);
 	  if(aknotv)
 	    Tcl_Free((char *) aknotv);
 	  return TCL_OK;
