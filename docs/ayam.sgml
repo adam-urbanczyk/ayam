@@ -33,7 +33,7 @@ code example of 6 lines text (needs another 2 for the upper/lower lines)
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>27. Jan 2020
+<date>31. Jan 2020
 
 <abstract>
 This is the documentation of Ayam 1.27 &ndash; a free 3D modelling environment
@@ -353,8 +353,9 @@ the hierarchy, makes the top level current, and clears the object selection,
 
 <item><tt>"Tree/Collapse All"</tt> closes all nodes with child nodes,
 
-<item><tt>"Tree/Toggle Selected"</tt> toggles display of all sub-levels
-of the selected objects,
+<item><tt>"Tree/Expand Selected"</tt> opens all selected nodes,
+
+<item><tt>"Tree/Collapse Selected"</tt> closes all selected nodes,
 
 <item><tt>"Switch to Listbox"</tt> removes the tree view and replaces it
 with the object listbox (see below).
@@ -5264,7 +5265,7 @@ dimension of the view window, but only for real RIB export operations,
 not for the QuickRender and not for the Render actions in view windows.
 QuickRender and Render actions will always use the dimensions of the
 view window instead.
-
+<#if out="latex"><x/newpage/</#if>
 <item><tt/"StdDisplay"/, if this is enabled, a standard display
 statement will be written to the RIB, which looks like this:
 
@@ -6318,7 +6319,7 @@ This special case of an instance is sometimes also called <em/reference/.
 <sect3>Instances and the Object Clipboard<label id="instclip">
 <p><#if out="latex">&nbsp;<newline></#if>
 This section contains additional information on instances and
-what happens to them when copied and pasted using the object
+what happens to them when they are copied and pasted using the object
 clipboard.
 <p>
 All copies of instance objects, that are created by the object clipboard,
@@ -13579,9 +13580,11 @@ will get the new knot vector
 after reversal. This ensures that the shape of a NURBS curve does not
 change during reversal. Interpolating and approximating curves may
 change their shape as the underlying interpolation/approximation
-algorithms are not direction-invariant.
-<tag/Notes/ The direction of a curve is shown as
-a small arrow at the end of the curve.
+algorithms are not direction-invariant.<newline>
+For interpolating curves, the end derivatives are also reversed properly.
+<tag/Notes/
+The revert tool can be conveniently invoked from view windows
+using the keyboard shortcut <tt/&lt;&excl;&gt;/ (exclamation mark).
 
 Eventually selected points will still be selected after this
 operation.
@@ -13860,7 +13863,11 @@ of old control points may be changed in the progress.
 The point selection will be removed from the processed objects.
 
 The ability to reduce a certain curve can be improved by increasing
-the multiplicity of internal knots first.
+the multiplicity of internal knots first. Furthermore, if the shape
+of the reduced curve has priority over the distribution of control points
+suitable for further editing, the curve approximation tool may be
+able to deliver a result even if curve reduction fails,
+see section <ref id="approxnct" name="Approximate Tool">.
 
 See also the documentation of the corresponding
 scripting interface command <ref id="screducenc" name="reduceNC">.
@@ -14058,10 +14065,11 @@ from the original curve in any point.
 It is no error if no knots can be removed.
 <p>
 See also the example image above where a curve created by the concatenation
-algorithm with knot type <tt/"Custom"/ has been cleaned up.
+algorithm with knot type <tt/"Custom"/ and therefore superfluous knots has
+been cleaned up.
 The original curve of order three with 28 control points is defined on the knot
 vector:<newline>
-<f>[&thinsp;0&thinsp;0&thinsp;0&ensp;1&thinsp;1&thinsp;1&ensp;1.5&ensp;2&thinsp;2&thinsp;2&ensp;3&thinsp;3&thinsp;3&ensp;3.5&ensp;4&thinsp;4&thinsp;4&ensp;5&thinsp;5&thinsp;5&ensp;5.5 6&thinsp;6&thinsp;6&ensp;7&thinsp;7&thinsp;7&ensp;7.5&ensp;8&thinsp;8&thinsp;8&thinsp;]</f>.<newline>
+<f>[&thinsp;0&thinsp;0&thinsp;0&ensp;1&thinsp;1&thinsp;1&ensp;1.5&ensp;2&thinsp;2&thinsp;2&ensp;3&thinsp;3&thinsp;3&ensp;3.5&ensp;4&thinsp;4&thinsp;4&ensp;5&thinsp;5&thinsp;5&ensp;5.5&ensp;6&thinsp;6&thinsp;6&ensp;7&thinsp;7&thinsp;7&ensp;7.5&ensp;8&thinsp;8&thinsp;8&thinsp;]</f>.<newline>
 The processed curve has 21 control points and is defined on the knot
 vector:<newline>
 <f>[&thinsp;0&thinsp;0&thinsp;0&ensp;1&thinsp;1&ensp;1.5&ensp;2&thinsp;2&ensp;3&thinsp;3&ensp;3.5&ensp;4&thinsp;4&ensp;5&thinsp;5&ensp;5.5&ensp;6&thinsp;6&ensp;7&thinsp;7&ensp;7.5&ensp;8&thinsp;8&thinsp;8&thinsp;]</f>.
@@ -14320,7 +14328,12 @@ scripting interface command <ref id="sctoxyc" name="toXYC">.
 NURBS curves from the selection and requests a level.
 <tag/Operation/ The curves will be made compatible, so that, based on
 the level parameter given, they are of the same length, order and defined
-on the same knot vector.
+on the same knot vector.<newline>
+This eases the application of the build from curves tool
+(see section <ref id="buildnpt" name="Build from Curves Tool">)
+or the application of skinning
+(see section <ref id="skinobj" name="Skin Object">).
+
 <tag/Notes/ This tool does not change the geometry of the curves.
 However, since clamping, degree elevation, and knot insertion may be
 used on the curves, their order, knot vectors, and control points
@@ -14335,7 +14348,7 @@ The point selection will be removed from the original objects.
 See also the documentation of the corresponding
 scripting interface command <ref id="scmakecompnc" name="makeCompNC">
 and the related tool for
-surfaces <ref id="makecompst" name="Make Compatible Tool">.
+surfaces <ref id="makecompst" name="Make Surfaces Compatible Tool">.
 </descrip>
 
 <#if out="latex"><x/newpage/</#if>
@@ -14948,7 +14961,7 @@ curves <ref id="refknwit" name="Refine Knots With Tool">.
 <sect2>Elevate Surface Tool<label id="elevuvt">
 <p>
 <figure loc="ht">
-<eps file="pics/elevunp.ps" height="4cm">
+<eps file="pics/elevunp.ps" height="5.5cm">
 <img src="pics/elevunp.gif">
 <caption>Elevate Surface Tool (left: original surface, right: elevated surface)</caption>
 </figure>
@@ -14959,8 +14972,8 @@ from the selection and additionally requests two integer values.
 by the specified integer values without changing the shape of the patches.
 New control points will be added and the position
 of old control points may be changed in the progress.
-See also the example image above where a surface of order 4 has been
-elevated to order 5 in U direction.
+See also the example image above where a surface of order four has been
+elevated to order five in U direction.
 <tag/Notes/ If the knot vector of the patch is not clamped, it
 will be clamped automatically.
 
@@ -15015,7 +15028,7 @@ the related tool for curves <ref id="reduct" name="Reduce Tool">.
 <sect2>Clamp Surface Tool<label id="clanpt">
 <p>
 <figure loc="ht">
-<eps file="pics/clampnp.ps" height="4cm">
+<eps file="pics/clampnp.ps" height="5.5cm">
 <img src="pics/clampnp.gif">
 <caption>Clamp Surface Tool (left: Original Patch with B-Spline Knot Vectors, right: Clamped Patch)</caption>
 </figure>
@@ -15111,7 +15124,7 @@ curves <ref id="insknt" name="Insert Knot Tool">.
 <sect2>Remove Knot Surface Tool<label id="remknnpt">
 <p>
 <figure loc="ht">
-<eps file="pics/remknnp.ps" height="5cm">
+<eps file="pics/remknnp.ps" height="6cm">
 <img src="pics/remknnp.gif">
 <caption>Remove Knot Surface Tool (left: original surface, right: the knot
 at <em/t/&thinsp;=&thinsp;0.5 has been removed one time)</caption>
@@ -15252,7 +15265,7 @@ curves <ref id="interpnct" name="Interpolate Tool">.
 <p>
 <p>
 <figure loc="ht">
-<eps file="pics/makecomps.ps" height="7.5cm">
+<eps file="pics/makecomps.ps" height="6.5cm">
 <img src="pics/makecomps.gif">
 <caption>Make Compatible Tool (u: Original Surfaces, m: Compatible by Order, l: Fully Compatible Surfaces)</caption>
 </figure>
@@ -15434,6 +15447,8 @@ Other parameters (Order_V, Knot-Type_V, Knots_V) are taken from
 the first curve.<newline>
 See also the image above; note, that the extraneous control point
 of the upper curve and the knot vector of the curve below are ignored.
+To avoid this, the make compatible tool can be used first,
+see section  <ref id="makecompt" name="Make Compatible Tool">.
 <p>
 If the <tt/"ApplyTrafo"/ option is enabled the transformation
 attributes of the individual curve objects will be applied to
@@ -15713,7 +15728,7 @@ Moreover, on the X11 and Aqua window systems, Ayam is able to execute
 script code sent via the Tk <tt/"send"/ command or the AppleScript
 <tt/"tell"/ command from external applications.
 <p>
-In contrast to other modelling environments, in Ayam there is
+In contrast to other modelling environments, in Ayam there is yet
 another way to run scripts. In Ayam, scripts may also be attached
 to Script objects and run when the notification mechanism updates
 the scene. See also section
@@ -24744,7 +24759,8 @@ values in curly braces, such as <tt>{1.0 1.0 1.0}</tt>.
 <p>
 This section documents the environment variables used by Ayam.
 <itemize>
-<item><tt>"AYAMRC"</tt>: designates the full filename of the <em/ayamrc/ file.
+<item><tt>"AYAMRC"</tt>: designates the full filename of the <em/ayamrc/ file
+(see section <ref id="ayamrc" name="Ayamrc File">).
 <item><tt>"HOME"</tt>: path to the <em/ayamrc/ file (used on Win32 if
 <tt>"AYAMRC"</tt> is not set).
 <item><tt>"TEMP"</tt>: path to the <em/ayamrc/ file (used on Win32 if
@@ -25160,9 +25176,11 @@ things to increase drawing speed can be done:
 <item>Hide objects or complete object hierarchies
 using <tt/"Hide"/ in the <tt/"Tools"/ menu.
 <item>Disable drawing of true NURBS curves/surfaces, if you can. Use the
-ControlHull display modes.
+ControlHull display modes<newline>
+(hit <tt>"&lt;F4&gt;"</tt> to toggle).
 <item>If you need to see curves/surfaces, try to increase the
-(GLU) sampling tolerance of the objects (use a value of about 60.0).
+(GLU) sampling tolerance of the objects (use a value of about 60.0,
+hit <tt>"&lt;F3&gt;"</tt> multiple times).
 <item>Switch the primary modelling view to draw just the selected
 object(s) or the current level.
 <item>Iconify views you do not need, they will not be redrawn then.
