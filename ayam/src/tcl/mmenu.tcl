@@ -451,7 +451,7 @@ $m.nct add command -label "Concat" -command {
 $m.nct add command -label "Split" -command {
     runTool {ay(splitu) ay(splitr) ay(splitappend)}\
 	{"Split at:" "Relative:" "Append:"}\
-	"ncurve_split %0 %1 %2;" "Split Curve" splitt
+	"npatch_split splitNC %0 %1 %2;" "Split Curve" splitt
 } -underline 0
 #  ^^^^^^^^^^^ => S
 
@@ -639,16 +639,16 @@ $m.npt add command -label "Close V" -command {
 }
 
 $m.npt add command -label "Split U" -command {
-    runTool {ay(splitu) ay(splitappend)} {"Split at:" "Append:"}\
-	"undo save SplitUNP; splituNP -a %1 %0;\
-if \{ %1 \} \{uCR; rV\} else \{cS; set ay(ul) $ay(CurrentLevel); uS; rV\}"\
+    runTool {ay(splitu) ay(splitr) ay(splitappend)}\
+	{"Split at:" "Relative:" "Append:"}\
+	"undo save SplitUNP; npatch_split splituNP %0 %1 %2"\
 	"Split Surface U" splitnpt
 }
 
 $m.npt add command -label "Split V" -command {
-    runTool {ay(splitu) ay(splitappend)} {"Split at:" "Append:"}\
-	"undo save SplitVNP; splitvNP -a %1 %0;\
-if \{ %1 \} \{uCR; rV\} else \{cS; set ay(ul) $ay(CurrentLevel); uS; rV\}"\
+    runTool {ay(splitu) ay(splitr) ay(splitappend)}\
+	{"Split at:" "Relative:" "Append:"}\
+	"undo save SplitVNP; npatch_split splitvNP %0 %1 %2"\
 	"Split Surface V" splitnpt
 }
 
