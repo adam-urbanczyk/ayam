@@ -302,3 +302,45 @@ proc npatch_getrknotsv { } {
 }
 # npatch_getrknotsv
 
+
+# split patch at parametric value
+proc npatch_split { cmd t r a } {
+    global ay ay_error
+    getSel sel
+    if { $r } {
+	append cmd " -r"
+    }
+    if { $a } {
+	append cmd " -a"
+    }
+    append cmd " $t"
+    set ay_error 0
+    eval $cmd
+    if { $ay_error == 0 } {
+	cS
+	if { $a } {
+	    uCR; sL [llength sel]; getSel lsel
+	    lappend sel $lsel
+	} else {
+	    set ay(ul) $ay(CurrentLevel); uS
+	    set inc 0
+	    foreach s $sel {
+		lappend nsel [expr $s + $inc] [expr $s + $inc + 1]
+		incr inc
+	    }
+	    set sel $nsel
+	}
+	eval "selOb $sel"
+	if { $ay(lb) == 0 } {
+	    tree_sync $ay(tree)
+	} else {
+	    olb_sync $ay(lb)
+	}
+    } else {
+	uS 0 1
+    }
+    rV
+    plb_update
+ return;
+}
+# npatch_split
