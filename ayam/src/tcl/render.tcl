@@ -135,7 +135,7 @@ proc render_select { } {
 
 	    2 {
 		# Aqsis
-		set ayprefs(QRender) "aqsis -Progress -fb  %s"
+		set ayprefs(QRender) "aqsis -Progress -fb %s"
 		set ayprefs(QRenderPT) "R90000%d"
 		set ayprefs(Render) "aqsis -Progress -fb %s"
 		set ayprefs(RenderPT) "R90000%d"
