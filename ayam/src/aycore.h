@@ -2068,7 +2068,7 @@ int ay_wrib_refobject(char *file, ay_object *o);
 
 /** export the scene to a RIB file
  */
-int ay_wrib_scene(char *file, char *image, int temp, int rtf,
+int ay_wrib_scene(char *file, char *image, int temp, int target,
 		  double *from, double *to,
 		  double roll, double zoom, double nearp, double farp,
 		  int width, int height, int type);

@@ -2382,6 +2382,8 @@ proc actionClear { w {only_clear 0} } {
 
     shortcut_view $t
 
+    $t.f3D.togl rendertoviewport -end
+
     bind $w <Motion> ""
 
     if { $only_clear || ($ayprefs(DefaultAction) == 0) } {
