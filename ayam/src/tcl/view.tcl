@@ -229,11 +229,16 @@ proc viewRender { w type } {
 		# Windows sucks big time!
 		regsub -all {\\} $tmpfile {/} tmpfile
 	    }
-	    set imagename [file rootname ${tmpfile}].tif
-	    if { $ayprefs(RenderMode) == 0 } {
-		$togl wrib -file $tmpfile -image $imagename -temp
+	    if { $ayprefs(RenderMode) == 2 } {
+		set imagename ${tmpfile}.fifo
+		$togl wrib -file $tmpfile -image $imagename -temp -rtv
 	    } else {
-		$togl wrib -file $tmpfile -temp
+		set imagename [file rootname ${tmpfile}].tif
+		if { $ayprefs(RenderMode) == 0 } {
+		    $togl wrib -file $tmpfile -image $imagename -temp
+		} else {
+		    $togl wrib -file $tmpfile -temp
+		}
 	    }
 	} else {
 	    # render to image file
@@ -255,10 +260,15 @@ proc viewRender { w type } {
 	if { $imagename == "" } { return; }
 	if { $type < 2 } {
 	    # render to display
-	    if { $ayprefs(RenderMode) == 0 } {
-		$togl wrib -file $tmpfile -image $imagename -temp
+	    if { $ayprefs(RenderMode) == 2 } {
+		set imagename [file rootname $imagename].fifo
+		$togl wrib -file $tmpfile -image $imagename -temp -rtv
 	    } else {
-		$togl wrib -file $tmpfile -temp
+		if { $ayprefs(RenderMode) == 0 } {
+		    $togl wrib -file $tmpfile -image $imagename -temp
+		} else {
+		    $togl wrib -file $tmpfile -temp
+		}
 	    }
 	} else {
 	    # render to image file
@@ -285,7 +295,7 @@ proc viewRender { w type } {
 	set pt $ayprefs(FRenderPT)
     }
 
-    if { $renderui != 1} {
+    if { $renderui != 1 } {
 	set command2 "exec "
 	append command2 $command
 	append command2 " &"
@@ -295,12 +305,61 @@ proc viewRender { w type } {
     }
     # if
 
-    update
-    tmp_clean 0
+    if { $ayprefs(RenderMode) == 2 && $type < 2 } {
+	viewCheckFifo $togl ${tmpfile}.fifo 0
+    } else {
+	update
+	tmp_clean 0
+    }
 
  return;
 }
 # viewRender
+
+
+##############################
+# viewCheckFifo:
+# wait until the fifo exists then start the rendertoviewport action
+proc viewCheckFifo { togl fifo count } {
+    global ayprefs
+
+    set stop 0
+    if { $count >= 50 } {
+	winAutoFocusOff
+
+	set t [ms info_fi1]
+	set m [ms info_fi2]
+
+	if { $ayprefs(FixDialogTitles) == 1 } {
+	    set m "$t\n\n$m"
+	}
+
+	set answer [tk_messageBox -title $t -type okcancel \
+			-icon warning -message $m]
+
+	if { $answer == "cancel" } {
+	    set stop 1
+	} else {
+	    set count 0
+	}
+
+	winAutoFocusOn
+    }
+
+    if { !$stop && ![file exists $fifo] } {
+	incr count
+	after 100 "viewCheckFifo $togl $fifo $count"
+    }
+
+    if { [file exists $fifo] } {
+	$togl rendertoviewport $fifo
+	update
+	tmp_clean 0
+    }
+
+ return;
+}
+# viewCheckFifo
 
 
 ##############################

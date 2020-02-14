@@ -1697,7 +1697,7 @@ cleanup:
  *  propagate changes to this function also to ay_wrib_pprevdraw()!
  */
 int
-ay_wrib_scene(char *file, char *image, int temp, int rtf,
+ay_wrib_scene(char *file, char *image, int temp, int target,
 	      double *from, double *to,
 	      double roll, double zoom, double nearp, double farp,
 	      int width, int height, int type)
@@ -1818,22 +1818,29 @@ ay_wrib_scene(char *file, char *image, int temp, int rtf,
   RiFrameBegin((RtInt)ay_wrib_framenum++);
 
    /* render to frame buffer or to image file? */
-   if(!image)
+   if(!image || target == 2)
      { /* frame buffer */
-       /* XXXX use "dummy" to work around a bug in Aqsis libri2rib */
-       RiDisplay(/*RI_NULL*/"dummy", RI_FRAMEBUFFER, RI_RGBA, RI_NULL);
+       if(target == 0)
+	 {
+	   /* XXXX use "dummy" to work around a bug in Aqsis libri2rib */
+	   RiDisplay(/*RI_NULL*/"dummy", RI_FRAMEBUFFER, RI_RGBA, RI_NULL);
+	 }
+       else
+	 {
+	   RiDisplay(image, "fifodspy", RI_RGBA, RI_NULL);
+	 }
        have_ridisplay = AY_TRUE;
      }
    else
      { /* image file */
        root = (ay_root_object*)(ay_root->refine);
        riopt = root->riopt;
-       if(riopt->use_std_display || temp || rtf)
+       if(riopt->use_std_display || temp || (target == 1))
 	 {
 	   RiDisplay(image, RI_FILE, RI_RGBA, RI_NULL);
 	   have_ridisplay = AY_TRUE;
 	 }
-     } /* if */
+     }
 
    /* write additional RiDisplay statements from tags */
    ay_wrib_displaytags(have_ridisplay);
@@ -1880,7 +1887,7 @@ ay_wrib_scene(char *file, char *image, int temp, int rtf,
 	 rifarp = RI_INFINITY;
 
        RiClipping(rinearp, rifarp);
-     }
+     } /* if */
 
    RiScreenWindow((RtFloat)(swleft*zoom), (RtFloat)(swright*zoom),
 		  (RtFloat)(swbot*zoom), (RtFloat)(swtop*zoom));
@@ -2116,14 +2123,14 @@ int
 ay_wrib_viewtcb(struct Togl *togl, int argc, char *argv[])
 {
  int ay_status = AY_OK;
+ char fname[] = "write_rib";
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  ay_root_object *root = NULL;
  ay_riopt *riopt = NULL;
  int width = Togl_Width (togl);
  int height = Togl_Height (togl);
- int i, temp = AY_FALSE, rtf = AY_FALSE;
+ int i, temp = AY_FALSE, target = 0;
  char *file = NULL, *image = NULL;
- char fname[] = "write_rib";
  double addroll = 0.0, dir[3];
 
 #ifdef AYENABLEPPREV
@@ -2158,8 +2165,14 @@ ay_wrib_viewtcb(struct Togl *togl, int argc, char *argv[])
 
       if(!strcmp(argv[i], "-rtf"))
 	{
-	  rtf = AY_TRUE;
+	  target = 1;
 	}
+
+      if(!strcmp(argv[i], "-rtv"))
+	{
+	  target = 2;
+	}
+
       i++;
     } /* while */
 
@@ -2188,7 +2201,7 @@ ay_wrib_viewtcb(struct Togl *togl, int argc, char *argv[])
 
   ay_wrib_getup(dir, view->up, &addroll);
 
-  ay_status = ay_wrib_scene(file, image, temp, rtf, view->from, view->to,
+  ay_status = ay_wrib_scene(file, image, temp, target, view->from, view->to,
 			    view->roll+addroll, view->zoom, view->nearp,
 			    view->farp,
 			    width, height, view->type);
@@ -2320,7 +2333,7 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp *interp,
 
       ay_wrib_getup(dir, cam->up, &addroll);
 
-      ay_status = ay_wrib_scene(filename, imagename, AY_FALSE, AY_FALSE,
+      ay_status = ay_wrib_scene(filename, imagename, AY_FALSE, /*target=*/0,
 				cam->from, cam->to, cam->roll+addroll,
 				cam->zoom, cam->nearp, cam->farp,
 				width, height, AY_VTPERSP);
