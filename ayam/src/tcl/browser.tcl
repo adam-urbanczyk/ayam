@@ -42,6 +42,8 @@ proc openUrl {url} {
 		expr {
 		    [findExecutable $mozilla browser] ||
 		    [findExecutable firefox browser] ||
+		    [findExecutable brave browser] ||
+		    [findExecutable opera browser] ||
 		    [findExecutable chromium browser] ||
 		    [findExecutable chromium-browser browser] ||
 		    [findExecutable epiphany browser] ||
