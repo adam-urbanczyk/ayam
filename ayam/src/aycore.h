@@ -1277,6 +1277,10 @@ void ay_sel_clean();
  */
 void ay_selp_clear(ay_object *o);
 
+/** copy list of selected points
+ */
+void ay_selp_copy(ay_point *pnt, ay_point **res);
+
 /** select all points of an object
  */
 int ay_selp_selall(ay_object *o);
@@ -1979,6 +1983,10 @@ void ay_viewt_getrolledup(ay_view_object *view, double *u);
 /** project point from world to window space
  */
 void ay_viewt_worldtowin(double *world, double *win);
+
+/** read rendered image from FIFO to texture
+ */
+int ay_viewt_rendertoviewportcb(struct Togl *togl, int argc, char *argv[]);
 
 /** initialize view tools module
  */
