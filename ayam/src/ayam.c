@@ -1142,6 +1142,7 @@ Tcl_AppInit(Tcl_Interp *interp)
 
   Togl_CreateCommand("saveimg", ay_viewt_saveimgtcb);
 
+  Togl_CreateCommand("rendertoviewport", ay_viewt_rendertoviewportcb);
 
   /* w32t.c */
 #ifdef WIN32

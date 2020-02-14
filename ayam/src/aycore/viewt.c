@@ -3019,6 +3019,184 @@ ay_viewt_worldtowin(double *world, double *win)
 } /* ay_viewt_worldtowin */
 
 
+/**
+ * A togl display callback that renders the first texture to
+ * the viewport.
+ *
+ * \param togl the Togl widget to render
+ */
+void
+ay_viewt_showtex(struct Togl *togl)
+{
+ int width = Togl_Width(togl);
+ int height = Togl_Height(togl);
+ GLfloat color[4] = {0.0f,0.0f,0.0f,0.0f};
+
+  glClearColor((GLfloat)ay_prefs.bgr, (GLfloat)ay_prefs.bgg,
+	       (GLfloat)ay_prefs.bgb, (GLfloat)1.0);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glDisable(GL_DEPTH_TEST);
+  glDisable(GL_LIGHTING);
+  glEnable(GL_TEXTURE_2D);
+
+  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
+  glMatrixMode(GL_PROJECTION);
+  glPushMatrix();
+   glLoadIdentity();
+   glOrtho(0.0, (GLdouble) width, 0.0, (GLdouble) height, -1.0, 1.0);
+
+   glMatrixMode(GL_MODELVIEW);
+   glPushMatrix();
+    glLoadIdentity();
+
+    glColor3f((GLfloat)ay_prefs.bgr, (GLfloat)ay_prefs.bgg,
+	      (GLfloat)ay_prefs.bgb);
+
+    color[0] = (GLfloat)ay_prefs.bgr;
+    color[1] = (GLfloat)ay_prefs.bgg;
+    color[2] = (GLfloat)ay_prefs.bgb;
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
+
+    glBegin(GL_QUADS);
+     glTexCoord2i(0, 0);
+     glVertex3i(0, 0, 0);
+
+     glTexCoord2i(0, 1);
+     glVertex3i(0, height, 0);
+
+     glTexCoord2i(1, 1);
+     glVertex3i(width, height, 0);
+
+     glTexCoord2i(1, 0);
+     glVertex3i(width, 0, 0);
+    glEnd();
+
+   glPopMatrix();
+   glMatrixMode(GL_PROJECTION);
+  glPopMatrix();
+  glMatrixMode(GL_MODELVIEW);
+
+  Togl_SwapBuffers(togl);
+
+  glFinish();
+
+ return;
+} /* ay_viewt_showtex */
+
+
+/** ay_viewt_rendertoviewportcb:
+ * A Togl callback that opens a FIFO for reading, and successively
+ * fills a texture with the data received via the FIFO while simultaneously
+ * displaying it via the \a ay_viewt_showtex display callback above.
+ * After the image is fully received, the FIFO is closed and the
+ * display callback installed into the view so that the image remains
+ * displayed, until this callback is called again with the "-end"
+ * parameter.
+ *
+ * \param togl the Togl widget to use
+ * \param argc number of arguments
+ * \param argv arguments
+ *
+ * \returns TCL_OK in any case
+ */
+int
+ay_viewt_rendertoviewportcb(struct Togl *togl, int argc, char *argv[])
+{
+ char fname[] = "rendertoviewport";
+ FILE *file = NULL;
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
+ int width = Togl_Width(togl);
+ int height = Togl_Height(togl);
+ int xy[4] = {0};
+ float *line = NULL;
+ size_t linesize = 0, size;
+ int done = AY_FALSE;
+ GLuint texture;
+ float *image = NULL;
+
+  if(argc < 3)
+    return TCL_OK;
+
+  if(argv[2][0] == '-' && argv[2][1] == 'e')
+    {
+      view->altdispcb = NULL;
+      //glDeleteTextures(0);
+      glDisable(GL_TEXTURE_2D);
+      glEnable(GL_DEPTH_TEST);
+
+      ay_toglcb_display(togl);
+      return TCL_OK;
+    }
+
+  file = fopen(argv[2], "rb");
+  if(file)
+    {
+      if(!(image = (float*)calloc(width*height*4, sizeof(float))))
+	{
+	  fclose(file);
+	  ay_error(AY_EOMEM, fname, NULL);
+	  return TCL_OK;
+	}
+
+      glEnable(GL_TEXTURE_2D);
+
+      //glDeleteTextures(0);
+      glGenTextures(1, &texture);
+      glBindTexture(GL_TEXTURE_2D, texture);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height,
+		   0, GL_RGBA, GL_FLOAT, image);
+
+      while(!done)
+	{
+	  fread(xy, sizeof(int), 4, file);
+
+	  size = (xy[1]-xy[0])*(xy[3]-xy[2])*4*sizeof(float);
+
+	  if(size != linesize)
+	    {
+	      if(line)
+		free(line);
+
+	      if(!(line = (float*)malloc(size)))
+		{
+		  ay_error(AY_EOMEM, fname, NULL);
+		  return TCL_OK;
+		}
+	      linesize = size;
+	    }
+
+	  fread(line, sizeof(float), (xy[1]-xy[0])*(xy[3]-xy[2])*4, file);
+
+	  glTexSubImage2D(GL_TEXTURE_2D, 0, xy[0], xy[2],
+			  xy[1]-xy[0], xy[3]-xy[2], GL_RGBA, GL_FLOAT, line);
+
+	  ay_viewt_showtex(togl);
+
+	  while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
+
+	  if(xy[3] >= height)
+	    done = AY_TRUE;
+	} /* while !done */
+
+      fclose(file);
+
+      if(remove(argv[2]))
+	{
+	  ay_error(AY_ERROR, fname, strerror(errno));
+	}
+
+      view->altdispcb = ay_viewt_showtex;
+
+      free(line);
+    } /* if have file */
+
+ return TCL_OK;
+} /* ay_viewt_rendertoviewportcb */
+
+
 /** ay_viewt_init:
  *  Initialize the view tools module.
  *
