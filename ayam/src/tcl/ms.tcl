@@ -355,6 +355,11 @@ ms_set en info_rp1 "Reset Preferences?"
 ms_set en info_rp2 "Ready to remove file:\n\"$ay(ayamrc)\"?"
 ms_set en info_rp3 "Preferences file removed!\nPlease restart Ayam now."
 
+ms_set en info_fi1 "Renderer not responding!"
+ms_set en info_fi2 "Renderer did not create the FIFO yet\
+\n(DSPY not found or still rendering ShadowMaps).\
+\nSelect \"OK\" to continue waiting.\nSelect \"Cancel\" to stop operation."
+
 ms_set en info_separator "\nSeparate multiple entries by '<sep>'."
 
 # view menu
@@ -619,6 +624,11 @@ ms_set de info_rp1 "Voreinstellungen zurücksetzen?"
 ms_set de info_rp2 "Bereit zum Löschen der Datei:\n\"$ay(ayamrc)\"?"
 ms_set de info_rp3 "Die Voreinstellungen wurden gelöscht!\nBitte Ayam neu starten."
 
+ms_set de info_fi1 "Renderer reagiert nicht!"
+ms_set de info_fi2 "Der Renderer hat den FIFO noch nicht erzeugt\
+\n(DSPY nicht gefunden oder Schattenkarten werden gerendert).\
+\n\"OK\" - weiter warten.\n\"Cancel\" - Operation abbrechen."
+
 ms_set de info_separator "\nMehrere Einträge durch '<sep>' trennen."
 
 # view menu
@@ -855,6 +865,11 @@ ms_set fr info_rs1 "Redémarrage nécessaire!"
 ms_set fr info_rp1 "Réinitialiser préférences?"
 ms_set fr info_rp2 "Prêt pour supprimier le fichier:\n\"$ay(ayamrc)\"?"
 #ms_set fr info_rp3 "Preferences file removed!\nPlease restart Ayam now."
+
+#ms_set fr info_fi1 "Renderer not responding!"
+#ms_set fr info_fi2 "Renderer did not create the FIFO yet\
+#\n(DSPY not found or still rendering ShadowMaps).\
+#\nSelect \"OK\" to continue waiting.\nSelect \"Cancel\" to stop operation."
 
 ms_set fr info_separator "\nSéparez les entrées par '<sep>'."
 
