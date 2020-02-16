@@ -3060,16 +3060,16 @@ ay_viewt_showtex(struct Togl *togl)
 
     glBegin(GL_QUADS);
      glTexCoord2i(0, 0);
-     glVertex3i(0, 0, 0);
-
-     glTexCoord2i(0, 1);
      glVertex3i(0, height, 0);
 
+     glTexCoord2i(0, 1);
+     glVertex3i(0, 0, 0);
+
      glTexCoord2i(1, 1);
-     glVertex3i(width, height, 0);
+     glVertex3i(width, 0, 0);
 
      glTexCoord2i(1, 0);
-     glVertex3i(width, 0, 0);
+     glVertex3i(width, height, 0);
     glEnd();
 
    glPopMatrix();
@@ -3110,7 +3110,7 @@ ay_viewt_rendertoviewportcb(struct Togl *togl, int argc, char *argv[])
  int height = Togl_Height(togl);
  int xy[4] = {0};
  float *line = NULL;
- size_t linesize = 0, size;
+ size_t readsize, linesize = 0, size;
  int done = AY_FALSE;
  GLuint texture;
  float *image = NULL;
@@ -3151,7 +3151,10 @@ ay_viewt_rendertoviewportcb(struct Togl *togl, int argc, char *argv[])
 
       while(!done)
 	{
-	  fread(xy, sizeof(int), 4, file);
+	  readsize = fread(xy, sizeof(int), 4, file);
+
+	  if(readsize != 4)
+	    break;
 
 	  size = (xy[1]-xy[0])*(xy[3]-xy[2])*4*sizeof(float);
 
@@ -3168,7 +3171,11 @@ ay_viewt_rendertoviewportcb(struct Togl *togl, int argc, char *argv[])
 	      linesize = size;
 	    }
 
-	  fread(line, sizeof(float), (xy[1]-xy[0])*(xy[3]-xy[2])*4, file);
+	  readsize = fread(line, sizeof(float),
+			   (xy[1]-xy[0])*(xy[3]-xy[2])*4, file);
+
+	  if(readsize != (size_t)(xy[1]-xy[0])*(xy[3]-xy[2])*4)
+	    break;
 
 	  glTexSubImage2D(GL_TEXTURE_2D, 0, xy[0], xy[2],
 			  xy[1]-xy[0], xy[3]-xy[2], GL_RGBA, GL_FLOAT, line);
