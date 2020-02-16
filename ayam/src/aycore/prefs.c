@@ -24,8 +24,6 @@ ay_prefs_gettcmd(ClientData clientData, Tcl_Interp *interp,
 {
  char *arr = "ayprefs";
 
-  /* Modeling */
-
   Tcl_SetVar2Ex(interp, arr, "PickEpsilon",
 		Tcl_NewDoubleObj(ay_prefs.pick_epsilon),
 		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -218,7 +216,6 @@ ay_prefs_gettcmd(ClientData clientData, Tcl_Interp *interp,
 		Tcl_NewIntObj(ay_prefs.cullfaces),
 		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  /* RIB */
   Tcl_SetVar2Ex(interp, arr, "ResInstances",
 		Tcl_NewIntObj(ay_prefs.resolveinstances),
 		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -247,7 +244,6 @@ ay_prefs_gettcmd(ClientData clientData, Tcl_Interp *interp,
 		Tcl_NewIntObj(ay_prefs.excludehidden),
 		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  /* Misc */
   Tcl_SetVar2Ex(interp, arr, "SingleWindow",
 		Tcl_NewIntObj(ay_prefs.single_window),
 		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -362,7 +358,8 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
  Tcl_HashEntry *entry = NULL;
  Tcl_Obj *to = NULL;
  double dtemp = 0.0;
- int setall = AY_TRUE, arglen = 0, i = 1, itemp = 0, ay_status = AY_OK, qf = 0;
+ size_t arglen = 0;
+ int setall = AY_TRUE, i = 1, itemp = 0, ay_status = AY_OK, qf = 0;
  char *ucargs[3] = {0}, ucarg0[] = "undo", ucarg1[] = "clear";
  char colbg[] = "Background_*";
  char colgr[] = "Grid_*";
@@ -372,7 +369,6 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
  char colsh[] = "Shade_*";
  char colse[] = "Selection_*";
  char colta[] = "Tag_*";
-
 
  if(argc > 1)
    {
@@ -676,7 +672,6 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 	  goto cleanup;
       } /* P... */
 
-
     if(setall || (argv[i][0] == 'Q'))
       {
 
@@ -696,7 +691,6 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	Tcl_GetIntFromObj(interp, to, &(ay_prefs.ristandard));
       } /* R... */
-
 
     if(setall || (argv[i][0] == 'S'))
       {
@@ -842,7 +836,7 @@ cleanup:
  * Helper to get a color value from Tcl.
  *
  * \param[in] interp Tcl interpreter to use
- * \param[in] arr string object with array name (ayprefs)
+ * \param[in] arr string with array name (e.g. "ayprefs")
  * \param[in,out] var base color variable name in arr (e.g. "Light_*")
  * \param[in,out] r where to store the red component
  * \param[in,out] g where to store the green component
@@ -853,7 +847,8 @@ ay_prefs_setcolor(Tcl_Interp *interp, char *arr, char *var,
 		  double *r, double *g, double *b)
 {
  Tcl_Obj *to;
- int i, itemp[3], l;
+ size_t l;
+ int i, itemp[3];
  char apps[3] = {'R', 'G', 'B'};
 
   l = strlen(var)-1;
