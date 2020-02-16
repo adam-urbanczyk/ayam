@@ -3197,7 +3197,8 @@ ay_viewt_rendertoviewportcb(struct Togl *togl, int argc, char *argv[])
 
       view->altdispcb = ay_viewt_showtex;
 
-      free(line);
+      if(line)
+	free(line);
     } /* if have file */
 
  return TCL_OK;
