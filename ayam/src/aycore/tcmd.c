@@ -1794,7 +1794,7 @@ ay_tcmd_withobtcmd(ClientData clientData, Tcl_Interp *interp,
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_tcmd_getstring(Tcl_Interp *interp, Tcl_Obj *arr, Tcl_Obj *var, char **result)
+ay_tcmd_getstring(Tcl_Interp *interp, char *arr, char *var, char **result)
 {
  Tcl_Obj *to;
  char *str;
@@ -1806,7 +1806,7 @@ ay_tcmd_getstring(Tcl_Interp *interp, Tcl_Obj *arr, Tcl_Obj *var, char **result)
   if(!arr || !var || !result)
    return AY_ENULL;
 
-  to = Tcl_ObjGetVar2(interp, arr, var, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, var, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   if(to)
     {
       str = Tcl_GetStringFromObj(to, &len);

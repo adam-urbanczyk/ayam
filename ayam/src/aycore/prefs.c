@@ -14,7 +14,7 @@
 
 /* prefs.c - functions for handling of preference settings */
 
-void ay_prefs_setcolor(Tcl_Interp *interp, Tcl_Obj *arr, char *var,
+void ay_prefs_setcolor(Tcl_Interp *interp, char *arr, char *var,
 		       double *r, double *g, double *b);
 
 /* C -> Tcl! */
@@ -22,341 +22,331 @@ int
 ay_prefs_gettcmd(ClientData clientData, Tcl_Interp *interp,
 		 int argc, char *argv[])
 {
- char *n1 = "ayprefs";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "ayprefs";
 
   /* Modeling */
-  toa = Tcl_NewStringObj(n1, -1);
-  ton = Tcl_NewStringObj("PickEpsilon", -1);
-  to = Tcl_NewDoubleObj(ay_prefs.pick_epsilon);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "HandleSize", -1);
-  to = Tcl_NewDoubleObj(ay_prefs.handle_size);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "PickEpsilon",
+		Tcl_NewDoubleObj(ay_prefs.pick_epsilon),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "LazyNotify", -1);
-  to = Tcl_NewIntObj(ay_prefs.lazynotify);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "HandleSize",
+		Tcl_NewDoubleObj(ay_prefs.handle_size),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "CompleteNotify", -1);
-  to = Tcl_NewIntObj(ay_prefs.completenotify);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "LazyNotify",
+		Tcl_NewIntObj(ay_prefs.lazynotify),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "EditSnaps", -1);
-  to = Tcl_NewIntObj(ay_prefs.edit_snaps_to_grid);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "CompleteNotify",
+		Tcl_NewIntObj(ay_prefs.completenotify),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "RationalPoints", -1);
-  to = Tcl_NewIntObj(ay_prefs.rationalpoints);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "EditSnaps",
+		Tcl_NewIntObj(ay_prefs.edit_snaps_to_grid),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "GlobalMark", -1);
-  to = Tcl_NewIntObj(ay_prefs.globalmark);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "RationalPoints",
+		Tcl_NewIntObj(ay_prefs.rationalpoints),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "CreateAtMark", -1);
-  to = Tcl_NewIntObj(ay_prefs.createatmark);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "GlobalMark",
+		Tcl_NewIntObj(ay_prefs.globalmark),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "NormalizeTrafos", -1);
-  to = Tcl_NewIntObj(ay_prefs.normalizetrafos);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "CreateAtMark",
+		Tcl_NewIntObj(ay_prefs.createatmark),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "NormalizeMark", -1);
-  to = Tcl_NewIntObj(ay_prefs.normalizemark);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "NormalizeTrafos",
+		Tcl_NewIntObj(ay_prefs.normalizetrafos),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "NormalizeDigits", -1);
-  to = Tcl_NewIntObj(ay_prefs.normalizedigits);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "NormalizeMark",
+		Tcl_NewIntObj(ay_prefs.normalizemark),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "UndoLevels", -1);
-  to = Tcl_NewIntObj(ay_prefs.undo_levels);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "NormalizeDigits",
+		Tcl_NewIntObj(ay_prefs.normalizedigits),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Snap3D", -1);
-  to = Tcl_NewIntObj(ay_prefs.snap3d);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "UndoLevels",
+		Tcl_NewIntObj(ay_prefs.undo_levels),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "AllowWarp", -1);
-  to = Tcl_NewIntObj(ay_prefs.allow_warp);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Snap3D",
+		Tcl_NewIntObj(ay_prefs.snap3d),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "ConvResetDisplay", -1);
-  to = Tcl_NewIntObj(ay_prefs.conv_reset_display);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "AllowWarp",
+		Tcl_NewIntObj(ay_prefs.allow_warp),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Tolerance", -1);
-  to = Tcl_NewDoubleObj(ay_prefs.glu_sampling_tolerance);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "ConvResetDisplay",
+		Tcl_NewIntObj(ay_prefs.conv_reset_display),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "ToleranceA", -1);
-  to = Tcl_NewDoubleObj(ay_prefs.glu_sampling_tolerance_a);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Tolerance",
+		Tcl_NewDoubleObj(ay_prefs.glu_sampling_tolerance),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "NPDisplayMode", -1);
-  to = Tcl_NewIntObj(ay_prefs.np_display_mode);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "ToleranceA",
+		Tcl_NewDoubleObj(ay_prefs.glu_sampling_tolerance_a),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "NCDisplayMode", -1);
-  to = Tcl_NewIntObj(ay_prefs.nc_display_mode);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "NPDisplayMode",
+		Tcl_NewIntObj(ay_prefs.np_display_mode),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "NPDisplayModeA", -1);
-  to = Tcl_NewIntObj(ay_prefs.np_display_mode_a);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "NCDisplayMode",
+		Tcl_NewIntObj(ay_prefs.nc_display_mode),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "NCDisplayModeA", -1);
-  to = Tcl_NewIntObj(ay_prefs.nc_display_mode_a);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "NPDisplayModeA",
+		Tcl_NewIntObj(ay_prefs.np_display_mode_a),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "AvoidPwlCurve", -1);
-  to = Tcl_NewIntObj(ay_prefs.glu_avoid_pwlcurve);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "NCDisplayModeA",
+		Tcl_NewIntObj(ay_prefs.nc_display_mode_a),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "UseMatColor", -1);
-  to = Tcl_NewIntObj(ay_prefs.use_materialcolor);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "AvoidPwlCurve",
+		Tcl_NewIntObj(ay_prefs.glu_avoid_pwlcurve),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Background_R", -1);
-  to = Tcl_NewIntObj((int)(ay_prefs.bgr*255));
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "UseMatColor",
+		Tcl_NewIntObj(ay_prefs.use_materialcolor),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Background_G", -1);
-  to = Tcl_NewIntObj((int)(ay_prefs.bgg*255));
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Background_R",
+		Tcl_NewIntObj((int)(ay_prefs.bgr*255)),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Background_B", -1);
-  to = Tcl_NewIntObj((int)(ay_prefs.bgb*255));
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Background_G",
+		Tcl_NewIntObj((int)(ay_prefs.bgg*255)),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetVar2Ex(interp, arr, "Background_B",
+		Tcl_NewIntObj((int)(ay_prefs.bgb*255)),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Object_R", -1);
-  to = Tcl_NewIntObj((int)(ay_prefs.obr*255));
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Object_R",
+		Tcl_NewIntObj((int)(ay_prefs.obr*255)),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Object_G", -1);
-  to = Tcl_NewIntObj((int)(ay_prefs.obg*255));
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Object_G",
+		Tcl_NewIntObj((int)(ay_prefs.obg*255)),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Object_B", -1);
-  to = Tcl_NewIntObj((int)(ay_prefs.obb*255));
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Object_B",
+		Tcl_NewIntObj((int)(ay_prefs.obb*255)),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetVar2Ex(interp, arr, "Selection_R",
+		Tcl_NewIntObj((int)(ay_prefs.ser*255)),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Selection_R", -1);
-  to = Tcl_NewIntObj((int)(ay_prefs.ser*255));
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Selection_G",
+		Tcl_NewIntObj((int)(ay_prefs.seg*255)),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Selection_G", -1);
-  to = Tcl_NewIntObj((int)(ay_prefs.seg*255));
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Selection_B",
+		Tcl_NewIntObj((int)(ay_prefs.seb*255)),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Selection_B", -1);
-  to = Tcl_NewIntObj((int)(ay_prefs.seb*255));
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Grid_R",
+		Tcl_NewIntObj((int)(ay_prefs.grr*255)),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetVar2Ex(interp, arr, "Grid_G",
+		Tcl_NewIntObj((int)(ay_prefs.grg*255)),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Grid_R", -1);
-  to = Tcl_NewIntObj((int)(ay_prefs.grr*255));
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Grid_B",
+		Tcl_NewIntObj((int)(ay_prefs.grb*255)),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Grid_G", -1);
-  to = Tcl_NewIntObj((int)(ay_prefs.grg*255));
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Tag_R",
+		Tcl_NewIntObj((int)(ay_prefs.tpr*255)),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Grid_B", -1);
-  to = Tcl_NewIntObj((int)(ay_prefs.grb*255));
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Tag_G",
+		Tcl_NewIntObj((int)(ay_prefs.tpg*255)),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetVar2Ex(interp, arr, "Tag_B",
+		Tcl_NewIntObj((int)(ay_prefs.tpb*255)),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Tag_R", -1);
-  to = Tcl_NewIntObj((int)(ay_prefs.tpr*255));
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Shade_R",
+		Tcl_NewIntObj((int)(ay_prefs.shr*255)),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Tag_G", -1);
-  to = Tcl_NewIntObj((int)(ay_prefs.tpg*255));
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Shade_G",
+		Tcl_NewIntObj((int)(ay_prefs.shg*255)),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Tag_B", -1);
-  to = Tcl_NewIntObj((int)(ay_prefs.tpb*255));
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Shade_B",
+		Tcl_NewIntObj((int)(ay_prefs.shb*255)),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetVar2Ex(interp, arr, "Light_R",
+		Tcl_NewIntObj((int)(ay_prefs.lir*255)),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Shade_R", -1);
-  to = Tcl_NewIntObj((int)(ay_prefs.shr*255));
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Light_G",
+		Tcl_NewIntObj((int)(ay_prefs.lig*255)),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Shade_G", -1);
-  to = Tcl_NewIntObj((int)(ay_prefs.shg*255));
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Light_B",
+		Tcl_NewIntObj((int)(ay_prefs.lib*255)),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Shade_B", -1);
-  to = Tcl_NewIntObj((int)(ay_prefs.shb*255));
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "SelXOR_R",
+		Tcl_NewIntObj((int)(ay_prefs.sxr*255)),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Light_R", -1);
-  to = Tcl_NewIntObj((int)(ay_prefs.lir*255));
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "SelXOR_G",
+		Tcl_NewIntObj((int)(ay_prefs.sxg*255)),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Light_G", -1);
-  to = Tcl_NewIntObj((int)(ay_prefs.lig*255));
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "SelXOR_B",
+		Tcl_NewIntObj((int)(ay_prefs.sxb*255)),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Light_B", -1);
-  to = Tcl_NewIntObj((int)(ay_prefs.lib*255));
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton, "SelXOR_R", -1);
-  to = Tcl_NewIntObj((int)(ay_prefs.sxr*255));
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton, "SelXOR_G", -1);
-  to = Tcl_NewIntObj((int)(ay_prefs.sxg*255));
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton, "SelXOR_B", -1);
-  to = Tcl_NewIntObj((int)(ay_prefs.sxb*255));
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton, "CullFaces", -1);
-  to = Tcl_NewIntObj(ay_prefs.cullfaces);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
+  Tcl_SetVar2Ex(interp, arr, "CullFaces",
+		Tcl_NewIntObj(ay_prefs.cullfaces),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   /* RIB */
-  Tcl_SetStringObj(ton, "ResInstances", -1);
-  to = Tcl_NewIntObj(ay_prefs.resolveinstances);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "ResInstances",
+		Tcl_NewIntObj(ay_prefs.resolveinstances),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "CheckLights", -1);
-  to = Tcl_NewIntObj(ay_prefs.checklights);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "CheckLights",
+		Tcl_NewIntObj(ay_prefs.checklights),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "DefaultMat", -1);
-  to = Tcl_NewIntObj(ay_prefs.defaultmat);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "DefaultMat",
+		Tcl_NewIntObj(ay_prefs.defaultmat),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "RIStandard", -1);
-  to = Tcl_NewIntObj(ay_prefs.ristandard);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "RIStandard",
+		Tcl_NewIntObj(ay_prefs.ristandard),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "WriteIdent", -1);
-  to = Tcl_NewIntObj(ay_prefs.writeident);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "WriteIdent",
+		Tcl_NewIntObj(ay_prefs.writeident),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "ShadowMaps", -1);
-  to = Tcl_NewIntObj(ay_prefs.use_sm);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "ShadowMaps",
+		Tcl_NewIntObj(ay_prefs.use_sm),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "ExcludeHidden", -1);
-  to = Tcl_NewIntObj(ay_prefs.excludehidden);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "ExcludeHidden",
+		Tcl_NewIntObj(ay_prefs.excludehidden),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   /* Misc */
-  Tcl_SetStringObj(ton, "SingleWindow", -1);
-  to = Tcl_NewIntObj(ay_prefs.single_window);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "SingleWindow",
+		Tcl_NewIntObj(ay_prefs.single_window),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "ListTypes", -1);
-  to = Tcl_NewIntObj(ay_prefs.list_types);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "ListTypes",
+		Tcl_NewIntObj(ay_prefs.list_types),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "MarkHidden", -1);
-  to = Tcl_NewIntObj(ay_prefs.mark_hidden);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "MarkHidden",
+		Tcl_NewIntObj(ay_prefs.mark_hidden),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Logging", -1);
-  to = Tcl_NewIntObj(ay_prefs.writelog);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Logging",
+		Tcl_NewIntObj(ay_prefs.writelog),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "LogFile", -1);
-  to = Tcl_NewStringObj(ay_prefs.logfile, -1);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "LogFile",
+		Tcl_NewStringObj(ay_prefs.logfile, -1),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "ErrorLevel", -1);
-  to = Tcl_NewIntObj((int)ay_prefs.errorlevel);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "ErrorLevel",
+		Tcl_NewIntObj(ay_prefs.errorlevel),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "PPRender", -1);
-  to = Tcl_NewStringObj(ay_prefs.pprender, -1);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "PPRender",
+		Tcl_NewIntObj((int)ay_prefs.pprender),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "SMethod", -1);
-  to = Tcl_NewIntObj(ay_prefs.smethod - 1);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "SMethod",
+		Tcl_NewIntObj(ay_prefs.smethod),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "SParamU", -1);
-  to = Tcl_NewDoubleObj(ay_prefs.sparamu);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "SParamU",
+		Tcl_NewDoubleObj(ay_prefs.sparamu),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "SParamV", -1);
-  to = Tcl_NewDoubleObj(ay_prefs.sparamv);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "SParamV",
+		Tcl_NewDoubleObj(ay_prefs.sparamv),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "WarnUnknownTag", -1);
-  to = Tcl_NewIntObj(ay_prefs.wutag);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "WarnUnknownTag",
+		Tcl_NewIntObj(ay_prefs.wutag),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "WarnPnts", -1);
-  to = Tcl_NewIntObj(ay_prefs.warnpnts);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "WarnPnts",
+		Tcl_NewIntObj(ay_prefs.warnpnts),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "LineWidth", -1);
-  to = Tcl_NewDoubleObj(ay_prefs.linewidth);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "LineWidth",
+		Tcl_NewDoubleObj(ay_prefs.linewidth),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "SelLineWidth", -1);
-  to = Tcl_NewDoubleObj(ay_prefs.sellinewidth);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "SelLineWidth",
+		Tcl_NewDoubleObj(ay_prefs.sellinewidth),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "AALineWidth", -1);
-  to = Tcl_NewDoubleObj(ay_prefs.aalinewidth);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "AALineWidth",
+		Tcl_NewDoubleObj(ay_prefs.aalinewidth),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "AASelLineWidth", -1);
-  to = Tcl_NewDoubleObj(ay_prefs.aasellinewidth);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "AASelLineWidth",
+		Tcl_NewDoubleObj(ay_prefs.aasellinewidth),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "AAFudge", -1);
-  to = Tcl_NewDoubleObj(ay_prefs.aafudge);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "AAFudge",
+		Tcl_NewDoubleObj(ay_prefs.aafudge),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "SDMode", -1);
-  to = Tcl_NewIntObj(ay_prefs.sdmode);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "SDMode",
+		Tcl_NewIntObj(ay_prefs.sdmode),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "PolyOffset0", -1);
-  to = Tcl_NewDoubleObj(ay_prefs.polyoffset0);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "PolyOffset0",
+		Tcl_NewDoubleObj(ay_prefs.polyoffset0),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "PolyOffset1", -1);
-  to = Tcl_NewDoubleObj(ay_prefs.polyoffset1);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "PolyOffset1",
+		Tcl_NewDoubleObj(ay_prefs.polyoffset1),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "PVTexCoordName", -1);
-  to = Tcl_NewStringObj(ay_prefs.texcoordname, -1);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "PVTexCoordName",
+		Tcl_NewStringObj(ay_prefs.texcoordname, -1),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "PVNormalName", -1);
-  to = Tcl_NewStringObj(ay_prefs.normalname, -1);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "PVNormalName",
+		Tcl_NewStringObj(ay_prefs.normalname, -1),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "PVTangentName", -1);
-  to = Tcl_NewStringObj(ay_prefs.tangentname, -1);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "PVTangentName",
+		Tcl_NewStringObj(ay_prefs.tangentname, -1),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "PVColorName", -1);
-  to = Tcl_NewStringObj(ay_prefs.colorname, -1);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "PVColorName",
+		Tcl_NewStringObj(ay_prefs.colorname, -1),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "DisableFailedScripts", -1);
-  to = Tcl_NewIntObj(ay_prefs.disablefailedscripts);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  Tcl_SetVar2Ex(interp, arr, "DisableFailedScripts",
+		Tcl_NewIntObj(ay_prefs.disablefailedscripts),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
  return TCL_OK;
 } /* ay_prefs_gettcmd */
@@ -367,13 +357,22 @@ int
 ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 		 int argc, char *argv[])
 {
- char *n1 = "ayprefs", *n2 = "ayprefse";
+ char *arr = "ayprefs", *arre = "ayprefse";
  char *cvtags = NULL, *tagname, *tagtype, **tmp;
  Tcl_HashEntry *entry = NULL;
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ Tcl_Obj *to = NULL;
  double dtemp = 0.0;
  int setall = AY_TRUE, arglen = 0, i = 1, itemp = 0, ay_status = AY_OK, qf = 0;
  char *ucargs[3] = {0}, ucarg0[] = "undo", ucarg1[] = "clear";
+ char colbg[] = "Background_*";
+ char colgr[] = "Grid_*";
+ char colli[] = "Light_*";
+ char colob[] = "Object_*";
+ char colsx[] = "SelXOR_*";
+ char colsh[] = "Shade_*";
+ char colse[] = "Selection_*";
+ char colta[] = "Tag_*";
+
 
  if(argc > 1)
    {
@@ -382,9 +381,6 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 
   do
   {
-    toa = Tcl_NewStringObj(n1, -1);
-    ton = Tcl_NewStringObj("", -1);
-
     if(!setall)
       arglen = strlen(argv[i]);
 
@@ -392,71 +388,61 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
       {
 	if(setall || arglen == 9)
 	  {
-	    Tcl_SetStringObj(ton, "AllowWarp", 9);
-	    to = Tcl_ObjGetVar2(interp, toa, ton,
-				TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	    Tcl_GetIntFromObj(interp, to, &ay_prefs.allow_warp);
+	    to = Tcl_GetVar2Ex(interp, arr, "AllowWarp",
+			       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	    Tcl_GetIntFromObj(interp, to, &(ay_prefs.allow_warp));
 	  }
 	if(setall || arglen == 13)
 	  {
-	    Tcl_SetStringObj(ton, "AvoidPwlCurve", 13);
-	    to = Tcl_ObjGetVar2(interp, toa, ton,
-				TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	    Tcl_GetIntFromObj(interp, to, &ay_prefs.glu_avoid_pwlcurve);
+	    to = Tcl_GetVar2Ex(interp, arr, "AvoidPwlCurve",
+			       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	    Tcl_GetIntFromObj(interp, to, &(ay_prefs.glu_avoid_pwlcurve));
 	  }
 	if(setall || arglen == 11)
 	  {
-	    Tcl_SetStringObj(ton, "AALineWidth", 11);
-	    to = Tcl_ObjGetVar2(interp, toa, ton,
-				TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	    Tcl_GetDoubleFromObj(interp, to, &ay_prefs.aalinewidth);
+	    to = Tcl_GetVar2Ex(interp, arr, "AALineWidth",
+			       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	    Tcl_GetDoubleFromObj(interp, to, &(ay_prefs.aalinewidth));
 	  }
 	if(setall || arglen == 14)
 	  {
-	    Tcl_SetStringObj(ton, "AASelLineWidth", 14);
-	    to = Tcl_ObjGetVar2(interp, toa, ton,
-				TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	    Tcl_GetDoubleFromObj(interp, to, &ay_prefs.aasellinewidth);
+	    to = Tcl_GetVar2Ex(interp, arr, "AASelLineWidth",
+			       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	    Tcl_GetDoubleFromObj(interp, to, &(ay_prefs.aasellinewidth));
 	  }
 	if(setall || arglen == 7)
 	  {
-	    Tcl_SetStringObj(ton, "AAFudge", 7);
-	    to = Tcl_ObjGetVar2(interp, toa, ton,
-				TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	    Tcl_GetDoubleFromObj(interp, to, &ay_prefs.aafudge);
+	    to = Tcl_GetVar2Ex(interp, arr, "AAFudge",
+			       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	    Tcl_GetDoubleFromObj(interp, to, &(ay_prefs.aafudge));
 	  }
       } /* A... */
 
     if(setall || (argv[i][0] == 'B'))
       {
-	ay_prefs_setcolor(interp, toa, "Background", &(ay_prefs.bgr),
+	ay_prefs_setcolor(interp, arr, colbg, &(ay_prefs.bgr),
 			    &(ay_prefs.bgg), &(ay_prefs.bgb));
       } /* B... */
 
     if(setall || (argv[i][0] == 'C'))
       {
-	Tcl_SetStringObj(ton, "CompleteNotify", 14);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetIntFromObj(interp, to, &ay_prefs.completenotify);
+	to = Tcl_GetVar2Ex(interp, arr, "CompleteNotify",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &(ay_prefs.completenotify));
 
-	Tcl_SetStringObj(ton, "CreateAtMark", 12);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetIntFromObj(interp, to, &ay_prefs.createatmark);
+	to = Tcl_GetVar2Ex(interp, arr, "CreateAtMark",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &(ay_prefs.createatmark));
 
-	Tcl_SetStringObj(ton, "ConvResetDisplay", 16);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetIntFromObj(interp, to, &ay_prefs.conv_reset_display);
+	to = Tcl_GetVar2Ex(interp, arr, "ConvResetDisplay",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &(ay_prefs.conv_reset_display));
 
-	Tcl_SetStringObj(ton, "CheckLights", 11);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetIntFromObj(interp, to, &ay_prefs.checklights);
+	to = Tcl_GetVar2Ex(interp, arr, "CheckLights",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &(ay_prefs.checklights));
 
-	Tcl_SetStringObj(ton, "ConvertTags", 11);
-	if((ay_status = ay_tcmd_getstring(interp, toa, ton, &cvtags)))
+	if((ay_status = ay_tcmd_getstring(interp, arr, "ConvertTags", &cvtags)))
 	  goto cleanup;
 
 	if(ay_prefs.converttags)
@@ -491,63 +477,54 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 	    free(cvtags);
 	  }
 
-
-	Tcl_SetStringObj(ton, "CullFaces", 9);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetIntFromObj(interp, to, &ay_prefs.cullfaces);
+	to = Tcl_GetVar2Ex(interp, arr, "CullFaces",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &(ay_prefs.cullfaces));
       } /* C... */
 
     if(setall || (argv[i][0] == 'D'))
       {
-	Tcl_SetStringObj(ton, "DefaultMat", 10);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetIntFromObj(interp, to, &ay_prefs.defaultmat);
-	Tcl_SetStringObj(ton, "DisableFailedScripts", 20);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetIntFromObj(interp, to, &ay_prefs.disablefailedscripts);
+	to = Tcl_GetVar2Ex(interp, arr, "DefaultMat",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &(ay_prefs.defaultmat));
+
+	to = Tcl_GetVar2Ex(interp, arr, "DisableFailedScripts",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &(ay_prefs.disablefailedscripts));
       } /* D... */
 
     if(setall || (argv[i][0] == 'E'))
       {
-	Tcl_SetStringObj(ton, "ErrorLevel", 10);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetIntFromObj(interp, to, &itemp);
-	ay_prefs.errorlevel = itemp;
+	to = Tcl_GetVar2Ex(interp, arr, "ErrorLevel",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &(itemp));
+	ay_prefs.errorlevel = (char)itemp;
 
-	Tcl_SetStringObj(ton, "EditSnaps", 9);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetIntFromObj(interp, to, &ay_prefs.edit_snaps_to_grid);
+	to = Tcl_GetVar2Ex(interp, arr, "EditSnaps",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &(ay_prefs.edit_snaps_to_grid));
 
-	Tcl_SetStringObj(ton, "ExcludeHidden", 13);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetIntFromObj(interp, to, &ay_prefs.excludehidden);
+	to = Tcl_GetVar2Ex(interp, arr, "ExcludeHidden",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &(ay_prefs.excludehidden));
       } /* E... */
 
     if(setall || (argv[i][0] == 'G'))
       {
-	Tcl_SetStringObj(ton, "GlobalMark", 10);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetIntFromObj(interp, to, &ay_prefs.globalmark);
+	to = Tcl_GetVar2Ex(interp, arr, "GlobalMark",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &(ay_prefs.globalmark));
 
 	if(setall || (arglen == 4))
-	  ay_prefs_setcolor(interp, toa, "Grid", &(ay_prefs.grr),
+	  ay_prefs_setcolor(interp, arr, colgr, &(ay_prefs.grr),
 			    &(ay_prefs.grg), &(ay_prefs.grb));
-
       } /* G... */
 
     if(setall || (argv[i][0] == 'H'))
       {
-	Tcl_SetStringObj(ton, "HandleSize", 10);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetDoubleFromObj(interp, to, &ay_prefs.handle_size);
+	to = Tcl_GetVar2Ex(interp, arr, "HandleSize",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetDoubleFromObj(interp, to, &(ay_prefs.handle_size));
       } /* H... */
 
     if(setall || (argv[i][0] == 'K'))
@@ -557,85 +534,72 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 
     if(setall || (argv[i][0] == 'L'))
       {
-	Tcl_SetStringObj(ton, "LazyNotify", 10);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetIntFromObj(interp, to, &ay_prefs.lazynotify);
+	to = Tcl_GetVar2Ex(interp, arr, "LazyNotify",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &(ay_prefs.lazynotify));
 
-	Tcl_SetStringObj(ton, "LineWidth", 9);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetDoubleFromObj(interp, to, &ay_prefs.linewidth);
+	to = Tcl_GetVar2Ex(interp, arr, "LineWidth",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetDoubleFromObj(interp, to, &(ay_prefs.linewidth));
 
-	Tcl_SetStringObj(ton, "Logging", 7);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetIntFromObj(interp, to, &ay_prefs.writelog);
+	to = Tcl_GetVar2Ex(interp, arr, "Logging",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &(ay_prefs.writelog));
 
-	Tcl_SetStringObj(ton, "LogFile", 7);
-	if((ay_status = ay_tcmd_getstring(interp, toa, ton,
+	if((ay_status = ay_tcmd_getstring(interp, arr, "LogFile",
 					  &(ay_prefs.logfile))))
 	  goto cleanup;
 
-	Tcl_SetStringObj(ton, "ListTypes", 9);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetIntFromObj(interp, to, &ay_prefs.list_types);
+	to = Tcl_GetVar2Ex(interp, arr, "ListTypes",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &(ay_prefs.list_types));
 
 	if(setall || arglen == 5)
-	  ay_prefs_setcolor(interp, toa, "Light", &(ay_prefs.lir),
+	  ay_prefs_setcolor(interp, arr, colli, &(ay_prefs.lir),
 			    &(ay_prefs.lig), &(ay_prefs.lib));
       } /* L... */
 
     if(setall || (argv[i][0] == 'M'))
       {
-	Tcl_SetStringObj(ton, "MarkHidden", 10);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetIntFromObj(interp, to, &ay_prefs.mark_hidden);
+	to = Tcl_GetVar2Ex(interp, arr, "MarkHidden",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &(ay_prefs.mark_hidden));
       } /* M... */
 
     if(setall || (argv[i][0] == 'N'))
       {
-	Tcl_SetStringObj(ton, "NormalizeTrafos", 15);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetIntFromObj(interp, to, &ay_prefs.normalizetrafos);
+	to = Tcl_GetVar2Ex(interp, arr, "NormalizeTrafos",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &(ay_prefs.normalizetrafos));
 
-	Tcl_SetStringObj(ton, "NormalizeMark", 13);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetIntFromObj(interp, to, &ay_prefs.normalizemark);
+	to = Tcl_GetVar2Ex(interp, arr, "NormalizeMark",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &(ay_prefs.normalizemark));
 
-	Tcl_SetStringObj(ton, "NormalizeDigits", 15);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetIntFromObj(interp, to, &ay_prefs.normalizedigits);
+	to = Tcl_GetVar2Ex(interp, arr, "NormalizeDigits",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &(ay_prefs.normalizedigits));
 
-	Tcl_SetStringObj(ton, "NPDisplayMode", 13);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetIntFromObj(interp, to, &ay_prefs.np_display_mode);
+	to = Tcl_GetVar2Ex(interp, arr, "NPDisplayMode",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &(ay_prefs.np_display_mode));
 
-	Tcl_SetStringObj(ton, "NCDisplayMode", 13);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetIntFromObj(interp, to, &ay_prefs.nc_display_mode);
+	to = Tcl_GetVar2Ex(interp, arr, "NCDisplayMode",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &(ay_prefs.nc_display_mode));
 
-	Tcl_SetStringObj(ton, "NPDisplayModeA", 14);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetIntFromObj(interp, to, &ay_prefs.np_display_mode_a);
+	to = Tcl_GetVar2Ex(interp, arr, "NPDisplayModeA",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &(ay_prefs.np_display_mode_a));
 
-	Tcl_SetStringObj(ton, "NCDisplayModeA", 14);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetIntFromObj(interp, to, &ay_prefs.nc_display_mode_a);
+	to = Tcl_GetVar2Ex(interp, arr, "NCDisplayModeA",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &(ay_prefs.nc_display_mode_a));
       } /* N... */
 
     if(setall || (argv[i][0] == 'O'))
       {
-	ay_prefs_setcolor(interp, toa, "Object", &(ay_prefs.obr),
+	ay_prefs_setcolor(interp, arr, colob, &(ay_prefs.obr),
 			  &(ay_prefs.obg), &(ay_prefs.obb));
       } /* O... */
 
@@ -643,10 +607,9 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
       {
 	if(setall || arglen == 11)
 	  {
-	    Tcl_SetStringObj(ton, "PickEpsilon", 11);
-	    to = Tcl_ObjGetVar2(interp, toa, ton,
-				TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	    Tcl_GetDoubleFromObj(interp, to, &dtemp);
+	    to = Tcl_GetVar2Ex(interp, arr, "PickEpsilon",
+			       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	    Tcl_GetDoubleFromObj(interp, to, &(dtemp));
 
 	    if(dtemp > 0.0)
 	      {
@@ -665,61 +628,50 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 		    ay_prefs.pick_epsilon = 0.2;
 		    to = Tcl_NewDoubleObj(0.2);
 		  }
-		Tcl_ObjSetVar2(interp, toa, ton, to,
-			       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-		Tcl_SetStringObj(toa, n2, -1);
-		Tcl_ObjSetVar2(interp, toa, ton, to,
-			       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-		Tcl_SetStringObj(toa, n1, -1);
+
+		Tcl_SetVar2Ex(interp, arr, "PickEpsilon", to,
+			      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+		Tcl_SetVar2Ex(interp, arre, "PickEpsilon", to,
+			      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	      }
 	  }
 
 	if(setall || arglen == 13)
 	  {
-	    Tcl_SetStringObj(ton, "PickTolerance", 13);
-	    to = Tcl_ObjGetVar2(interp, toa, ton,
-				TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	    Tcl_GetDoubleFromObj(interp, to, &ay_prefs.object_pick_epsilon);
+	    to = Tcl_GetVar2Ex(interp, arr, "PickTolerance",
+			       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	    Tcl_GetDoubleFromObj(interp, to, &(ay_prefs.object_pick_epsilon));
 	  }
 
-	Tcl_SetStringObj(ton, "PolyOffset0", 11);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetDoubleFromObj(interp, to, &ay_prefs.polyoffset0);
+	to = Tcl_GetVar2Ex(interp, arr, "PolyOffset0",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetDoubleFromObj(interp, to, &(ay_prefs.polyoffset0));
 
-	Tcl_SetStringObj(ton, "PolyOffset1", 11);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetDoubleFromObj(interp, to, &ay_prefs.polyoffset1);
+	to = Tcl_GetVar2Ex(interp, arr, "PolyOffset1",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetDoubleFromObj(interp, to, &(ay_prefs.polyoffset1));
 
-	Tcl_SetStringObj(ton, "PVTexCoordName", 14);
-	if((ay_status = ay_tcmd_getstring(interp, toa, ton,
+	if((ay_status = ay_tcmd_getstring(interp, arr, "PVTexCoordName",
 					  &(ay_prefs.texcoordname))))
 	  goto cleanup;
 
-	Tcl_SetStringObj(ton, "PVNormalName", 12);
-	if((ay_status = ay_tcmd_getstring(interp, toa, ton,
+	if((ay_status = ay_tcmd_getstring(interp, arr, "PVNormalName",
 					  &(ay_prefs.normalname))))
 	  goto cleanup;
 
-	Tcl_SetStringObj(ton, "PVTangentName", 13);
-	if((ay_status = ay_tcmd_getstring(interp, toa, ton,
+	if((ay_status = ay_tcmd_getstring(interp, arr, "PVTangentName",
 					  &(ay_prefs.tangentname))))
 	  goto cleanup;
 
-	Tcl_SetStringObj(ton, "PVColorName", 11);
-	if((ay_status = ay_tcmd_getstring(interp, toa, ton,
+	if((ay_status = ay_tcmd_getstring(interp, arr, "PVColorName",
 					  &(ay_prefs.colorname))))
 	  goto cleanup;
 
-	Tcl_SetStringObj(ton, "PVOpacityName", 13);
-	if((ay_status = ay_tcmd_getstring(interp, toa, ton,
+	if((ay_status = ay_tcmd_getstring(interp, arr, "PVOpacityName",
 					  &(ay_prefs.opacityname))))
 	  goto cleanup;
 
-
-	Tcl_SetStringObj(ton, "PPRender", 8);
-	if((ay_status = ay_tcmd_getstring(interp, toa, ton,
+	if((ay_status = ay_tcmd_getstring(interp, arr, "PPRender",
 					  &(ay_prefs.pprender))))
 	  goto cleanup;
       } /* P... */
@@ -732,89 +684,77 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 
     if(setall || (argv[i][0] == 'R'))
       {
-	Tcl_SetStringObj(ton, "RationalPoints", 14);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetIntFromObj(interp, to, &ay_prefs.rationalpoints);
+	to = Tcl_GetVar2Ex(interp, arr, "RationalPoints",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &(ay_prefs.rationalpoints));
 
-	Tcl_SetStringObj(ton, "ResInstances", 12);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetIntFromObj(interp, to, &ay_prefs.resolveinstances);
+	to = Tcl_GetVar2Ex(interp, arr, "ResInstances",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &(ay_prefs.resolveinstances));
 
-	Tcl_SetStringObj(ton, "RIStandard", 10);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetIntFromObj(interp, to, &ay_prefs.ristandard);
+	to = Tcl_GetVar2Ex(interp, arr, "RIStandard",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &(ay_prefs.ristandard));
       } /* R... */
 
 
     if(setall || (argv[i][0] == 'S'))
       {
-	Tcl_SetStringObj(ton, "SelLineWidth", 12);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetDoubleFromObj(interp, to, &ay_prefs.sellinewidth);
+	to = Tcl_GetVar2Ex(interp, arr, "SelLineWidth",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetDoubleFromObj(interp, to, &(ay_prefs.sellinewidth));
 
-	Tcl_SetStringObj(ton, "SDMode", 6);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetIntFromObj(interp, to, &ay_prefs.sdmode);
+	to = Tcl_GetVar2Ex(interp, arr, "SDMode",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &(ay_prefs.sdmode));
 
-	Tcl_SetStringObj(ton, "SMethod", 7);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetIntFromObj(interp, to, &ay_prefs.smethod);
+	to = Tcl_GetVar2Ex(interp, arr, "SMethod",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &(ay_prefs.smethod));
 
 	ay_prefs.smethod++;
 
-	Tcl_SetStringObj(ton, "SParamU", 7);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetDoubleFromObj(interp, to, &ay_prefs.sparamu);
+	to = Tcl_GetVar2Ex(interp, arr, "SParamU",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetDoubleFromObj(interp, to, &(ay_prefs.sparamu));
 
-	Tcl_SetStringObj(ton, "SParamV", 7);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetDoubleFromObj(interp, to, &ay_prefs.sparamv);
+	to = Tcl_GetVar2Ex(interp, arr, "SParamV",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetDoubleFromObj(interp, to, &(ay_prefs.sparamv));
 
-	Tcl_SetStringObj(ton, "SingleWindow", 12);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetIntFromObj(interp, to, &ay_prefs.single_window);
+	to = Tcl_GetVar2Ex(interp, arr, "SingleWindow",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &(ay_prefs.single_window));
 
-	Tcl_SetStringObj(ton, "ShadowMaps", 10);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetIntFromObj(interp, to, &ay_prefs.use_sm);
+	to = Tcl_GetVar2Ex(interp, arr, "ShadowMaps",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &(ay_prefs.use_sm));
 
-	ay_prefs_setcolor(interp, toa, "SelXOR", &(ay_prefs.sxr),
+	ay_prefs_setcolor(interp, arr, colsx, &(ay_prefs.sxr),
 			  &(ay_prefs.sxg), &(ay_prefs.sxb));
 
-	ay_prefs_setcolor(interp, toa, "Shade", &(ay_prefs.shr),
+	ay_prefs_setcolor(interp, arr, colsh, &(ay_prefs.shr),
 			  &(ay_prefs.shg), &(ay_prefs.shb));
 
-	ay_prefs_setcolor(interp, toa, "Selection", &(ay_prefs.ser),
+	ay_prefs_setcolor(interp, arr, colse, &(ay_prefs.ser),
 			  &(ay_prefs.seg), &(ay_prefs.seb));
 
-	Tcl_SetStringObj(ton, "Snap3D", 6);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetIntFromObj(interp, to, &ay_prefs.snap3d);
+	to = Tcl_GetVar2Ex(interp, arr, "Snap3D",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &(ay_prefs.snap3d));
       } /* S... */
 
     if(setall || (argv[i][0] == 'T'))
       {
 	if(setall || arglen == 3)
 	  {
-	    ay_prefs_setcolor(interp, toa, "Tag", &(ay_prefs.tpr),
+	    ay_prefs_setcolor(interp, arr, colta, &(ay_prefs.tpr),
 			      &(ay_prefs.tpg), &(ay_prefs.tpb));
 	  }
 
-	Tcl_SetStringObj(ton, "Tolerance", 9);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetDoubleFromObj(interp, to, &ay_prefs.glu_sampling_tolerance);
+	to = Tcl_GetVar2Ex(interp, arr, "Tolerance",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetDoubleFromObj(interp, to, &(ay_prefs.glu_sampling_tolerance));
 
 	qf = ay_stess_GetQF(ay_prefs.glu_sampling_tolerance);
 
@@ -824,31 +764,29 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 	  }
 	ay_prefs.stess_qf = qf;
 
-	Tcl_SetStringObj(ton, "ToleranceA", 10);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetDoubleFromObj(interp, to, &ay_prefs.glu_sampling_tolerance_a);
+	to = Tcl_GetVar2Ex(interp, arr, "ToleranceA",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetDoubleFromObj(interp, to, &(ay_prefs.glu_sampling_tolerance_a));
       } /* T... */
 
     if(setall || (argv[i][0] == 'U'))
       {
-	Tcl_SetStringObj(ton, "UndoLevels", 10);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetIntFromObj(interp, to, &itemp);
+	to = Tcl_GetVar2Ex(interp, arr, "UndoLevels",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &(itemp));
 
 	if(itemp != ay_prefs.undo_levels)
 	  {
 	    if(itemp < 0)
 	      itemp = 0;
 
-	    to = Tcl_NewIntObj(itemp);
-	    Tcl_ObjSetVar2(interp, toa, ton, to,
-			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	    Tcl_SetStringObj(toa, n2, -1);
-	    Tcl_ObjSetVar2(interp, toa, ton, to,
-			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	    Tcl_SetStringObj(toa, n1, -1);
+	    Tcl_SetVar2Ex(interp, arr, "UndoLevels",
+			  Tcl_NewIntObj(itemp),
+			  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+	    Tcl_SetVar2Ex(interp, arre, "UndoLevels",
+			  Tcl_NewIntObj(itemp),
+			  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
 	    /*      ay_status = ay_undo_clear();*/
 	    ucargs[0] = ucarg0;
@@ -865,28 +803,24 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 	    ay_prefs.undo_levels = itemp;
 	  } /* if */
 
-	Tcl_SetStringObj(ton, "UseMatColor", 11);
-	to = Tcl_ObjGetVar2(interp, toa,
-			    ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetIntFromObj(interp, to, &ay_prefs.use_materialcolor);
+	to = Tcl_GetVar2Ex(interp, arr, "UseMatColor",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &(ay_prefs.use_materialcolor));
       } /* U... */
 
     if(setall || (argv[i][0] == 'W'))
       {
-	Tcl_SetStringObj(ton, "WriteIdent", 10);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetIntFromObj(interp, to, &ay_prefs.writeident);
+	to = Tcl_GetVar2Ex(interp, arr, "WriteIdent",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &(ay_prefs.writeident));
 
-	Tcl_SetStringObj(ton, "WarnUnknownTag", 14);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetIntFromObj(interp, to, &ay_prefs.warnpnts);
+	to = Tcl_GetVar2Ex(interp, arr, "WarnUnknownTag",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &(ay_prefs.wutag));
 
-	Tcl_SetStringObj(ton, "WarnPnts", 8);
-	to = Tcl_ObjGetVar2(interp, toa, ton,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	Tcl_GetIntFromObj(interp, to, &ay_prefs.wutag);
+	to = Tcl_GetVar2Ex(interp, arr, "WarnPnts",
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	Tcl_GetIntFromObj(interp, to, &(ay_prefs.warnpnts));
       } /* W... */
 
     i++;
@@ -894,9 +828,6 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
   while(i <= argc);
 
 cleanup:
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
   if(ay_status)
     {
@@ -912,32 +843,30 @@ cleanup:
  *
  * \param[in] interp Tcl interpreter to use
  * \param[in] arr string object with array name (ayprefs)
- * \param[in] var base color variable name in arr (e.g. Light)
+ * \param[in,out] var base color variable name in arr (e.g. "Light_*")
  * \param[in,out] r where to store the red component
  * \param[in,out] g where to store the green component
  * \param[in,out] b where to store the blue component
  */
 void
-ay_prefs_setcolor(Tcl_Interp *interp, Tcl_Obj *arr, char *var,
+ay_prefs_setcolor(Tcl_Interp *interp, char *arr, char *var,
 		  double *r, double *g, double *b)
 {
- Tcl_Obj *to, *ton;
+ Tcl_Obj *to;
  int i, itemp[3], l;
- char *apps[3] = {"_R", "_G", "_B"};
+ char apps[3] = {'R', 'G', 'B'};
 
-  l = strlen(var);
-  ton = Tcl_NewStringObj(var, l);
+  l = strlen(var)-1;
   for(i = 0; i < 3; i++)
     {
-      Tcl_AppendToObj(ton, apps[i], 2);
-      to = Tcl_ObjGetVar2(interp, arr, ton,
-			  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      var[l] = apps[i];
+      to = Tcl_GetVar2Ex(interp, arr, var,
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       Tcl_GetIntFromObj(interp, to, &(itemp[i]));
       if(itemp[i] < 0)
 	itemp[i] = 0;
       if(itemp[i] > 255)
 	itemp[i] = 255;
-      Tcl_SetObjLength(ton, l);
     }
 
   *r = itemp[0]/255.0;

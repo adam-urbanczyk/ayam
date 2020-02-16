@@ -1602,8 +1602,7 @@ int ay_tcmd_registerlang(char *name, char **result);
 
 /** get string from Tcl variable
  */
-int ay_tcmd_getstring(Tcl_Interp *interp, Tcl_Obj *arr, Tcl_Obj *var,
-		      char **result);
+int ay_tcmd_getstring(Tcl_Interp *interp, char *arr, char *var, char **result);
 
 /** convert string to unsigned int
  */
