@@ -261,7 +261,7 @@ proc viewRender { w type } {
 	if { $type < 2 } {
 	    # render to display
 	    if { $ayprefs(RenderMode) == 2 } {
-		set imagename [file rootname $imagename].fifo
+		set imagename ${tmpfile}.fifo
 		$togl wrib -file $tmpfile -image $imagename -temp -rtv
 	    } else {
 		if { $ayprefs(RenderMode) == 0 } {
@@ -303,7 +303,6 @@ proc viewRender { w type } {
     } else {
 	runRenderer $w "$command" "$pt"
     }
-    # if
 
     if { $ayprefs(RenderMode) == 2 && $type < 2 } {
 	viewCheckFifo $togl ${tmpfile}.fifo 0
