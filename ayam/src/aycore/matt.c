@@ -304,9 +304,12 @@ ay_matt_creatematerialids(ay_object *o)
  ay_tag *newtag = NULL;
  ay_mat_object *mat = NULL;
  char *mname = NULL, *tname = NULL;
+ size_t nlen;
 
   if(!o)
     return AY_ENULL;
+
+  nlen = strlen(ay_matt_mitagname)+1;
 
   while(o)
     {
@@ -314,10 +317,10 @@ ay_matt_creatematerialids(ay_object *o)
 	{
 	  mat = o->mat;
 
-	  if(!(tname = calloc(3, sizeof(char))))
+	  if(!(tname = malloc(nlen*sizeof(char))))
 	    return AY_EOMEM;
 
-	  strcpy(tname, "MI");
+	  strcpy(tname, ay_matt_mitagname);
 
 	  if(!(newtag = calloc(1, sizeof(ay_tag))))
 	    { free(tname); return AY_EOMEM; }

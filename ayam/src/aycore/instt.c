@@ -45,7 +45,6 @@ ay_instt_createoidht(ay_object *o)
     {
       if(o->type != AY_IDINSTANCE)
 	{
-
 	  found = AY_FALSE;
 	  tag = o->tags;
 	  while(tag && !found)
@@ -84,7 +83,6 @@ ay_instt_createoidht(ay_object *o)
  *  _recursively_ connect instance objects to the appropriate
  *  master objects (using OI tags and the object
  *  id hashtable created by ay_instt_createoidht() above)
- *  returns AY_OK on success, AY_ERROR on error (master not found)
  *  to avoid crashes, unconnected instances will be removed
  *  immediately
  *  End-Level-Terminators must be present (i.e. the objects must be
@@ -210,7 +208,10 @@ ay_instt_createorigids(ay_object *o)
  int ay_status = AY_OK;
  char *tname = NULL, *tval = NULL;
  int found = AY_FALSE;
+ size_t nlen;
  ay_tag *tag = NULL, *newtag = NULL;
+
+  nlen = strlen(ay_oi_tagname)+1;
 
   while(o)
     {
@@ -239,26 +240,31 @@ ay_instt_createorigids(ay_object *o)
 
 	  if(!found)
 	    {
-	      if(!(tname = calloc(3, sizeof(char))))
+	      if(!(tname = malloc(nlen*sizeof(char))))
 		{ free(tval); return AY_EOMEM; }
 
-	      strcpy(tname, "OI");
-	      if(!(newtag = calloc(1, sizeof(ay_tag))))
+	      strcpy(tname, ay_oi_tagname);
+
+	      if(!(newtag = malloc(sizeof(ay_tag))))
 		{ free(tval); free(tname); return AY_EOMEM; }
 
+	      newtag->is_intern = AY_FALSE;
+	      newtag->is_binary = AY_FALSE;
 	      newtag->name = tname;
-	      newtag->val = tval;
 	      newtag->type = ay_oi_tagtype;
+	      newtag->val = tval;
 	      newtag->next = o->tags;
 	      o->tags = newtag;
-	    }
-	} /* if */
+	    } /* if not found */
+	} /* if o is master */
 
       if(o->down && o->down->next)
-	ay_status = ay_instt_createorigids(o->down);
+	{
+	  ay_status = ay_instt_createorigids(o->down);
 
-      if(ay_status)
-	return ay_status;
+	  if(ay_status)
+	    return ay_status;
+	}
 
       o = o->next;
     } /* while */
@@ -377,7 +383,6 @@ ay_instt_wribiarchives(char *file, ay_object *o)
 	    {
 	      if(tag->type == ay_oi_tagtype)
 		{
-
 		  /* create filename */
 		  if(!file)
 		    {
@@ -433,8 +438,7 @@ ay_instt_wribiarchives(char *file, ay_object *o)
 				  RiDeclare(parname, "string");
 				  RiAttribute("identifier", parname,
 					      (RtPointer)&o->name, RI_NULL);
-
-				} /* if */
+				}
 			    } /* if */
 			}
 		      else
@@ -442,7 +446,7 @@ ay_instt_wribiarchives(char *file, ay_object *o)
 			  if(o->name)
 			    {
 			      RiArchiveRecord(RI_COMMENT, o->name);
-			    } /* if */
+			    }
 			} /* if */
 
 		      ay_status = cb(file, o);
@@ -560,7 +564,6 @@ ay_instt_wribiarchives(char *file, ay_object *o)
 		{
 		  ay_current_primlevel++;
 		}
-
 	    } /* if */
 
 	  ay_status = ay_instt_wribiarchives(file, o->down);
@@ -572,9 +575,7 @@ ay_instt_wribiarchives(char *file, ay_object *o)
 		{
 		  ay_current_primlevel--;
 		} /* if */
-
 	    } /* if */
-
 	} /* if have children */
 
       if(ay_status)
@@ -624,10 +625,12 @@ ay_instt_clearoidtags(ay_object *o)
 	} /* if */
 
       if(o->down && o->down->next)
-	ay_status = ay_instt_clearoidtags(o->down);
+	{
+	  ay_status = ay_instt_clearoidtags(o->down);
 
-      if(ay_status)
-	return ay_status;
+	  if(ay_status)
+	    return ay_status;
+	}
 
       o = o->next;
     } /* while */
@@ -640,9 +643,12 @@ ay_instt_clearoidtags(ay_object *o)
  *  Remove all instance objects from objects pointed to by \a **o,
  *  which will eventually be modified (if \a *o is an instance);
  *  is able to work with multiple and nested objects!
+ *  The reference counters of the respective master objects will be
+ *  managed properly and the instance objects will be removed from
+ *  the undo system as well.
  *
- * \param[in,out] o object hierarchy to check
- * \param[in] m if != NULL only instances of this object are removed,
+ * \param[in,out] o object hierarchy to process
+ * \param[in] m if != NULL, only instances of this object are removed,
  *  otherwise all instances will be removed
  */
 void
@@ -660,7 +666,7 @@ ay_instt_removeinstances(ay_object **o, ay_object *m)
       if(co->down && co->down->next)
 	{
 	  ay_instt_removeinstances(&(co->down), m);
-	} /* if */
+	}
 
       if((co->type == AY_IDINSTANCE) && (!m || (co->refine == m)))
 	{
@@ -763,7 +769,7 @@ ay_instt_resolvetcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_error(ay_status, argv[0], NULL);
 	  continue;
 	}
-    }
+    } /* while */
 
  return TCL_OK;
 } /* ay_instt_resolvetcmd */
@@ -802,9 +808,7 @@ ay_instt_checkinstance(ay_object *o, ay_object *target,
 
 	  /* immediately return a positive result */
 	  if(res == AY_TRUE)
-	    {
-	      return res;
-	    } /* if */
+	    return res;
 
 	  /* inform parent invocation whether it needs to check */
 	  *check_this_tree = check;
@@ -860,9 +864,7 @@ ay_instt_check(ay_object *o, ay_object *target)
 	    {
 	      /* first, do easy check */
 	      if(((ay_object*)down->refine) == target)
-		{
-		  return AY_TRUE;
-		} /* if */
+		return AY_TRUE;
 
 	      /* recursive check */
 	      check = AY_FALSE;
@@ -881,9 +883,7 @@ ay_instt_check(ay_object *o, ay_object *target)
     {
       /* first, do easy check */
       if(((ay_object*)o->refine) == target)
-	{
-	  return AY_TRUE;
-	} /* if */
+	return AY_TRUE;
 
       check = AY_FALSE;
       res = ay_instt_checkinstance(ay_root, target, o, &check);
