@@ -1,7 +1,8 @@
-[9. Feb 2020] Mercurial Tip:
-============================
+[18. Feb 2020] Mercurial Tip:
+=============================
 Bug Fixes:
 o append option of split curve tool does not work (SF 595)
+o display of ConeAngle and ConeDeltaAngle (SF 597)
 
 Modelling:
 o added option to specify the split knot in a relative way in the
@@ -10,6 +11,9 @@ o added option to specify the split knot in a relative way in the
 Scripts/Scripting Interface:
 o added "-r" (relative) option to "splitNC" command
 o the "-a" option of the "splitNC" command does not need a value anymore
+
+Rendering:
+o added render to viewport feature via a new distributed plugin ("fifodspy")
 
 
 [27. Jan 2020] Ayam 1.27:
