@@ -854,11 +854,11 @@ ay_light_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetVar2Ex(interp, arr, "ConeAngle",
-		Tcl_NewDoubleObj(light->cone_angle),
+		Tcl_NewDoubleObj(AY_R2D(light->cone_angle)),
 		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetVar2Ex(interp, arr, "ConeDAngle",
-		Tcl_NewDoubleObj(light->cone_delta_angle),
+		Tcl_NewDoubleObj(AY_R2D(light->cone_delta_angle)),
 		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetVar2Ex(interp, arr, "BeamDistrib",
