@@ -13569,14 +13569,11 @@ revert operation.<footnote>Since 1.26.</footnote>
 <tag/Operation/ The direction of the selected curves will be
 reversed. This tool also reverts the relative knot distances
 of NURBS curves
-so that for example a NURBS curve defined on the (asymmetric) knot vector
-
-<tt/"0.0 0.0 0.0 0.75 1.0 1.0 1.0"/
-
-will get the new knot vector
-
-<tt/"0.0 0.0 0.0 0.25 1.0 1.0 1.0"/
-
+so that for example a NURBS curve defined on the (asymmetric) knot
+vector<newline>
+<f>[&thinsp;0&thinsp;0&thinsp;0&ensp;0.75&ensp;1&thinsp;1&thinsp;1&thinsp;]</f><newline>
+will get the new knot vector<newline>
+<f>[&thinsp;0&thinsp;0&thinsp;0&ensp;0.25&ensp;1&thinsp;1&thinsp;1&thinsp;]</f><newline>
 after reversal. This ensures that the shape of a NURBS curve does not
 change during reversal. Interpolating and approximating curves may
 change their shape as the underlying interpolation/approximation
@@ -13722,12 +13719,12 @@ refined by inserting a knot in the middle of each inner knot interval
 without changing the shape of the curve. New control
 points will be added and the position of old control points may be
 changed in the progress. See also the  image above where a curve defined
-on the knot vector:<newline>
-<tt>[0 0 0 0 1 1 1 1]</tt><newline>
-is successively refined to the knot vectors:<newline>
-<tt>[0 0 0 0 0.5 1 1 1 1]</tt><newline>
+on the knot vector<newline>
+<f>[&thinsp;0&thinsp;0&thinsp;0&thinsp;0&ensp;1&thinsp;1&thinsp;1&thinsp;1&thinsp;]</f><newline>
+is successively refined to the knot vector<newline>
+<f>[&thinsp;0&thinsp;0&thinsp;0&thinsp;0&ensp;0.5&ensp;1&thinsp;1&thinsp;1&thinsp;1&thinsp;]</f><newline>
 and then<newline>
-<tt>[0 0 0 0 0.25 0.5 0.75 1 1 1 1]</tt>.
+<f>[&thinsp;0&thinsp;0&thinsp;0&thinsp;0&ensp;0.25&ensp;0.5&ensp;0.75&ensp;1&thinsp;1&thinsp;1&thinsp;1&thinsp;]</f>.
 <tag/Notes/ Because new knots are inserted into inner intervals only,
 the clamping state of the knot vectors does not change.
 Furthermore, knot vectors of type <tt/"NURB"/ will not change in type,
@@ -13958,11 +13955,11 @@ of the knot vectors. The shape of the curve will not change but the
 position of some control points will. The knot type of the curve can
 be changed to type <tt/"Custom"/.
 
-See also the image above where a NURBS curve of order 3 defined on the
-knot vector<newline>
-<tt/[/&thinsp;<tt/0 0 0 0.5 1 1 1/&thinsp;<tt/]/<newline>
-has been unclamped using the new knot vector:<newline>
-<tt/[/&thinsp;<tt/0 0.1333 0.3333 0.5 0.6667 0.8333 1/&thinsp;<tt/]/.
+See also the image above where a NURBS curve of length four and
+order three, defined on the knot vector<newline>
+<f>[&thinsp;0&thinsp;0&thinsp;0&ensp;0.5&ensp;1&thinsp;1&thinsp;1&thinsp;]</f>,<newline>
+has been unclamped and is now using the new knot vector:<newline>
+<f>[&thinsp;0&ensp;0.1333&ensp;0.3333&ensp;0.5&ensp;0.6667&ensp;0.8333&ensp;1&thinsp;]</f>.
 <!--
 <f/[&thinsp;0&nbsp;&nbsp;0.13<ovl/3/&nbsp;&nbsp;0.3<ovl/3/&nbsp;&nbsp;0.5&nbsp;&nbsp;0.6<ovl/6/&nbsp;&nbsp;0.83<ovl/3/&nbsp;&nbsp;1&thinsp;]/.<newline>
  -->
@@ -13995,6 +13992,13 @@ and an integer value <it/i/.
 <tag/Operation/ A knot with the specified value <it/u/ will be inserted <it/i/
 times into the knot vector of the selected curves, without changing the
 shape of the curves.
+
+See also the image above, where a knot has been inserted at
+<em/u/&thinsp;=&thinsp;0.5 one time into a curve of length four and
+order four that was originally defined on the knot vector:<newline>
+<f>[&thinsp;0&thinsp;0&thinsp;0&thinsp;0&ensp;1&thinsp;1&thinsp;1&thinsp;1&thinsp;]</f>.<newline>
+The processed curve of length five is defined on the knot vector:<newline>
+<f>[&thinsp;0&thinsp;0&thinsp;0&thinsp;0&ensp;0.5&ensp;1&thinsp;1&thinsp;1&thinsp;1&thinsp;]</f>.
 <tag/Notes/ The knot type of the curves will be changed to <tt/"Custom"/.
 
 The point selection will be removed from the processed objects.
@@ -14026,11 +14030,19 @@ from the original curve in any point. Since Ayam 1.20 the knot to remove
 may also be specified using its (zero based)
 index in the knot vector; for instance by entering <tt/"-i 3"/ instead of
 <tt/"0.5"/ for the knot vector:<newline>
-<tt/[/&thinsp;<tt/0 0 0 0.5 1 1 1/&thinsp;<tt/]/.<newline>
+<f>[&thinsp;0&thinsp;0&thinsp;0&ensp;0.5&ensp;1&thinsp;1&thinsp;1&thinsp;]</f>.<newline>
 If the knot can not be removed <it/r/ times due to the tolerance given, an
 error is reported and the original curve is left unchanged.<newline>
 This operation also fails, if the knot removal would lead to a curve
 of lower order.
+
+See also the image above, where the knot <em/t/&thinsp;=&thinsp;0.5
+has been removed one time from a curve of length five and
+order four that was originally defined on the knot vector:<newline>
+<f>[&thinsp;0&thinsp;0&thinsp;0&thinsp;0&ensp;0.5&ensp;1&thinsp;1&thinsp;1&thinsp;1&thinsp;]</f>.<newline>
+The processed curve of length four is defined on the knot vector:<newline>
+<f>[&thinsp;0&thinsp;0&thinsp;0&thinsp;0&ensp;1&thinsp;1&thinsp;1&thinsp;1&thinsp;]</f>.
+
 <tag/Notes/ If <it/tol/ is <tt/"0.0"/ the remove knot tool tries to
 work without changing the shape of the curve, i.e.~only superfluous
 knots will be removed.
@@ -14892,12 +14904,13 @@ will be refined by inserting a knot in the middle of each inner knot interval
 without changing the shape of the patches. New control
 points will be added and the position of old control points may be
 changed in the progress. See also the image above where a surface defined
-on the knot vector:<newline>
-<tt>[0 0 0 0 1 1 1 1]</tt><newline>
-is successively refined to the knot vectors:<newline>
-<tt>[0 0 0 0 0.5 1 1 1 1]</tt><newline>
+on the knot vector<newline>
+<f>[&thinsp;0&thinsp;0&thinsp;0&thinsp;0&ensp;1&thinsp;1&thinsp;1&thinsp;1&thinsp;]</f><newline>
+is successively refined to the knot vector<newline>
+<f>[&thinsp;0&thinsp;0&thinsp;0&thinsp;0&ensp;0.5&ensp;1&thinsp;1&thinsp;1&thinsp;1&thinsp;]</f><newline>
 and then<newline>
-<tt>[0 0 0 0 0.25 0.5 0.75 1 1 1 1]</tt>.
+<f>[&thinsp;0&thinsp;0&thinsp;0&thinsp;0&ensp;0.25&ensp;0.5&ensp;0.75&ensp;1&thinsp;1&thinsp;1&thinsp;1&thinsp;]</f>.
+
 <tag/Notes/ Because new knots are inserted into inner intervals only,
 the clamping state of the knot vectors does not change.
 Furthermore, knot vectors of type <tt/"NURB"/ will not change in type,
@@ -14934,10 +14947,10 @@ New control points will be added and the position of old control points
 may be changed in the progress.<newline>
 See also the example image above where a surface defined on the knot
 vector<newline>
-<tt>[0 0 0 0 0.5 1 1 1 1]</tt><newline>
-has been refined with the new knots <tt/0.2/ and <tt/0.7/ in U direction
+<f>[&thinsp;0&thinsp;0&thinsp;0&thinsp;0&ensp;0.5&ensp;1&thinsp;1&thinsp;1&thinsp;1&thinsp;]</f><newline>
+has been refined with the new knots <f/0.2/ and <f/0.7/ in U direction
 to the new knot vector:<newline>
-<tt>[0 0 0 0 0.2 0.5 0.7 1 1 1 1]</tt>.
+<f>[&thinsp;0&thinsp;0&thinsp;0&thinsp;0&ensp;0.2&ensp;0.5&ensp;0.7&ensp;1&thinsp;1&thinsp;1&thinsp;1&thinsp;]</f>.
 
 The resulting knot vector must be valid, otherwise an error will
 be reported and the respective patch is not changed.
@@ -15139,9 +15152,9 @@ removed <em/r/ times from the knot vector of the selected surfaces if the
 shape of the resulting surfaces does not deviate more than <em/tol/ from
 the original surfaces in any point. Since Ayam 1.20
 the knot to remove may also be specified using its (zero based)
-index in the knot vector (i.e.~by entering <tt/"-i 3"/ instead of
-<tt/"0.5"/ for the knot vector
-<tt/"0 0 0 0.5 1 1 1"/).<newline>
+index in the knot vector; for instance by entering <tt/"-i 3"/ instead of
+<tt/"0.5"/ for the knot vector:<newline>
+<f>[&thinsp;0&thinsp;0&thinsp;0&ensp;0.5&ensp;1&thinsp;1&thinsp;1&thinsp;]</f>.<newline>
 If the knot can not be removed <em/r/ times due to the tolerance given, an
 error is reported and the original surface is left unchanged.<newline>
 This operation also fails, if the knot removal would lead to a surface
