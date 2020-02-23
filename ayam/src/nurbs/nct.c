@@ -10200,6 +10200,144 @@ ay_nct_extractnctcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_nct_extractnctcmd */
 
 
+/** ay_nct_fair:
+ *  make the shape of a curve more pleasant:
+ *  change the control points of a NURBS curve so that the curvature
+ *  is more evenly distributed
+ *
+ * \param[in,out] curve NURBS curve object to process
+ * \param[in] tol maximum distance a control point moves
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_nct_fair(ay_nurbcurve_object *curve, double tol)
+{
+ int i, j, stride = 4;
+ double *U, len, v[3], l[3], r[3], q[3];
+ double *pll, *pl, *p, *pr, *prr;
+
+  /* sanity check */
+  if(!curve)
+    return AY_ENULL;
+
+  if(curve->length < 5)
+    return AY_OK;
+
+  U = curve->knotv;
+
+  pll = curve->controlv;
+  pl = pll+stride;
+  p = pl+stride;
+  pr = p+stride;
+  prr = pr+stride;
+  j = curve->order;
+
+  for(i = 2; i < curve->length-2; i++)
+    {
+      l[0] = ((U[j+1]-U[j-3])*pl[0] - (U[j+1]-U[j])*pll[0]) / (U[j]-U[j-3]);
+      l[1] = ((U[j+1]-U[j-3])*pl[1] - (U[j+1]-U[j])*pll[1]) / (U[j]-U[j-3]);
+      l[2] = ((U[j+1]-U[j-3])*pl[2] - (U[j+1]-U[j])*pll[2]) / (U[j]-U[j-3]);
+
+      r[0] = ((U[j+3]-U[j-1])*pr[0] - (U[j]-U[j-1])*prr[0]) / (U[j+3]-U[j]);
+      r[1] = ((U[j+3]-U[j-1])*pr[1] - (U[j]-U[j-1])*prr[1]) / (U[j+3]-U[j]);
+      r[2] = ((U[j+3]-U[j-1])*pr[2] - (U[j]-U[j-1])*prr[2]) / (U[j+3]-U[j]);
+
+      q[0] = ((U[j+2]-U[j])*l[0] + (U[j]-U[j-2])*r[0]) / (U[j+2]-U[j-2]);
+      q[1] = ((U[j+2]-U[j])*l[1] + (U[j]-U[j-2])*r[1]) / (U[j+2]-U[j-2]);
+      q[2] = ((U[j+2]-U[j])*l[2] + (U[j]-U[j-2])*r[2]) / (U[j+2]-U[j-2]);
+
+      AY_V3SUB(v, p, q);
+      len = AY_V3LEN(v);
+      if(len > AY_EPSILON)
+	{
+	  if(len > tol)
+	    {
+	      AY_V3SCAL(v, tol);
+	      AY_V3ADD(p, p, v);
+	    }
+	  else
+	    {
+	      memcpy(p, q, stride*sizeof(double));
+	    }
+	}
+
+      pll += stride;
+      pl += stride;
+      p += stride;
+      pr += stride;
+      prr += stride;
+      j++;
+    } /* for */
+
+ return AY_OK;
+} /* ay_nct_fair */
+
+
+/** ay_nct_fairnctcmd:
+ *  make the shape of a curve more pleasant:
+ *  change the control points of a NURBS curve so that the curvature
+ *  is more evenly distributed
+ *  Implements the \a fairNC scripting interface command.
+ *  See also the corresponding section in the \ayd{scfairnc}.
+ *
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_nct_fairnctcmd(ClientData clientData, Tcl_Interp *interp,
+		  int argc, char *argv[])
+{
+ int tcl_status = TCL_OK, ay_status = AY_OK;
+ ay_list_object *sel = ay_selection;
+ ay_object *o;
+ ay_nurbcurve_object *nc;
+ double tol = DBL_MAX;
+ int i = 1;
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, argv[0], NULL);
+      return TCL_OK;
+    }
+
+  if(argc > 1)
+    {
+      tcl_status = Tcl_GetDouble(interp, argv[i], &tol);
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+      if(tol != tol)
+	{
+	  ay_error_reportnan(argv[0], "tol");
+	  return TCL_OK;
+	}
+    }
+
+  while(sel)
+    {
+      o = sel->object;
+      if(o->type == AY_IDNCURVE)
+	{
+	  nc = (ay_nurbcurve_object *)o->refine;
+	  ay_status = ay_nct_fair(nc, tol);
+
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, argv[0], "Fairing failed.");
+	      return TCL_OK;
+	    } /* if */
+	}
+      else
+	{
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
+	} /* if */
+
+      sel = sel->next;
+    } /* while */
+
+  (void)ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_nct_fairnctcmd */
+
 #if 0
 int
 ay_nct_expanddisc(double **p, int *plen)

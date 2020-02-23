@@ -1289,6 +1289,8 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "extrNC", ay_nct_extractnctcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "fairNC", ay_nct_fairnctcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* nurbs/npt.c */
   Tcl_CreateCommand(interp, "crtNSphere", ay_npt_crtnspheretcmd,
@@ -1936,6 +1938,10 @@ ay_safeinit(Tcl_Interp *interp)
 
   Tcl_CreateCommand(interp, "extrNC", ay_nct_extractnctcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "fairNC", ay_nct_fairnctcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
 
   /* nurbs/npt.c */
   Tcl_CreateCommand(interp, "crtNSphere", ay_npt_crtnspheretcmd,
