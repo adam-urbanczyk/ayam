@@ -13851,7 +13851,14 @@ the selection and additionally requests a tolerance value.
 <tag/Operation/ The order of the selected NURBS curves will be decreased
 by one if the shape of the reduced curves does not deviate from the original
 curves by the given tolerance in any point.
-See also the example image above.
+
+See also the example image above where a curve of order five and
+length 11, defined on the knot vector<newline>
+<f>[&thinsp;0&thinsp;0&thinsp;0&thinsp;0&thinsp;0&ensp;0.25&thinsp;0.25&ensp;0.5&thinsp;0.5&ensp;0.75&thinsp;0.75&ensp;1&thinsp;1&thinsp;1&thinsp;1&thinsp;1&thinsp;]</f>,<newline>
+has been reduced to order four and is now of length seven and
+defined on the knot vector<newline>
+<f>[&thinsp;0&thinsp;0&thinsp;0&thinsp;0&ensp;0.25&ensp;0.5&ensp;0.75&ensp;1&thinsp;1&thinsp;1&thinsp;1&thinsp;]</f>.
+
 <tag/Notes/ If the knot vector of the curve is not clamped, it
 will be clamped automatically. The knot type of the curve will
 be changed to <tt/"Custom"/. Control points will be removed and the position
@@ -13924,6 +13931,13 @@ have a multiplicity equal to the order of the curve,
 without changing the shape of the curve. The curve will
 interpolate the first and the last control point afterwards (unless
 the weights of those points are not 1.0).
+
+See also the image above, where a curve of length seven and order four,
+originally defined on the knot vector:<newline>
+<f>[&thinsp;0&ensp;0.1&ensp;0.2&ensp;0.3&ensp;0.4&ensp;0.5&ensp;0.6&ensp;0.7&ensp;0.8&ensp;0.9&ensp;1&thinsp;]</f><newline>
+has been clamped and is now defined on the knot vector:<newline>
+<f>[&thinsp;0.3&thinsp;0.3&thinsp;0.3&thinsp;0.3&ensp;0.4&ensp;0.5&ensp;0.6&ensp;0.7&thinsp;0.7&thinsp;0.7&thinsp;0.7&thinsp;]</f>.
+
 <tag/Notes/ The knot type of the curves will be changed to <tt/"Custom"/.
 
 In Ayam versions prior to 1.18 it was an error if the curve was already
@@ -14142,15 +14156,26 @@ In addition, an append option can be set.
 NURBS curves at the designated parametric value <it/u/. The splitting process
 involves application of knot insertion, so that all new curves will
 get a custom knot vector.
-<tscreen><verb>
-|-NCurve     ==>     |-NCurve
-                     |-NCurve
-</verb></tscreen>
+
+See also the image above, where a curve of length and order four,
+originally defined on the knot vector<newline>
+<f>[&thinsp;0&thinsp;0&thinsp;0&thinsp;0&ensp;1&thinsp;1&thinsp;1&thinsp;1&thinsp;]</f>,<newline>
+was split at parametric value <f/0.5/ resulting in a new
+curve of length and order four that is defined on the knot vector<newline>
+<f>[&thinsp;0.5&thinsp;0.5&thinsp;0.5&thinsp;0.5&ensp;1&thinsp;1&thinsp;1&thinsp;1&thinsp;]</f>.<newline>
+The original curve will be defined on the knot vector<newline>
+<f>[&thinsp;0&thinsp;0&thinsp;0&thinsp;0&ensp;0.5&thinsp;0.5&thinsp;0.5&thinsp;0.5&thinsp;]</f><newline>
+after this operation.
+
 <tag/Notes/ The original selected NURBS curve objects will be changed.
 
 The new curve(s) will be inserted
 into the level right after the respective curve(s) to split unless
 the append option is set.<footnote>Since 1.24.</footnote>
+<tscreen><verb>
+|-NCurve     ==>     |-NCurve
+                     |-NCurve
+</verb></tscreen>
 
 The point selection will be removed from the original curves.
 
@@ -14174,8 +14199,17 @@ surfaces <ref id="splitnpt" name="Split Surface Tool">.
 <tag/Arguments/ The trim curves tool takes all selected NURBS curves from
 the selection and additionally requests two parametric values, <em/umin/ and
 <em/umax/.
+
 <tag/Operation/ The selected NURBS curves will be trimmed to the
 designated parametric range (<em/umin/, <em/umax/).
+
+See also the image above, where a curve of length and order four,
+originally defined on the knot vector<newline>
+<f>[&thinsp;0&thinsp;0&thinsp;0&thinsp;0&ensp;1&thinsp;1&thinsp;1&thinsp;1&thinsp;]</f>,<newline>
+was trimmed at the parametric values <f/0.1/ <f/0.5/ resulting in a new
+curve of length and order four that is defined on the knot vector<newline>
+<f>[&thinsp;0.1&thinsp;0.1&thinsp;0.1&thinsp;0.1&ensp;0.5&thinsp;0.5&thinsp;0.5&thinsp;0.5&thinsp;]</f>.
+
 <tag/Notes/ The trimming process involves the application of knot insertion
 so that the curves will get a custom knot vector.
 
