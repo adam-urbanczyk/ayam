@@ -502,6 +502,12 @@ int ay_nb_FirstDerSurf3DMSize(int p, int q);
 void ay_nb_FirstDerSurf3DM(int n, int m, int p, int q, double *U, double *V,
 			   double *P, double u, double v, double *C);
 
+void ay_nb_SecondDerSurf3D(int n, int m, int p, int q, double *U, double *V,
+			   double *P, double u, double v, double *C);
+
+void ay_nb_SecondDerSurf4D(int n, int m, int p, int q, double *U, double *V,
+			   double *Pw, double u, double v, double *C);
+
 /** Create NURBS circle or arc.
  */
 int ay_nb_CreateNurbsCircleArc(double r, double ths, double the,
@@ -1508,6 +1514,8 @@ int ay_npt_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int ay_npt_isdegen(ay_nurbpatch_object *patch);
 
+int ay_npt_getcurvaturetcmd(ClientData clientData, Tcl_Interp *interp,
+			    int argc, char *argv[]);
 
 /* pmt.c */
 
