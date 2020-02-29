@@ -16074,6 +16074,165 @@ ay_npt_degreereducetcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_npt_degreereducetcmd */
 
 
+/** ay_npt_getcurvature:
+ * compute gaussian curvature of a NURBS surface
+ * \param[in] np NURBS patch to interrogate
+ * \param[in] u parametric value
+ * \param[in] v parametric value
+ *
+ * \returns gaussian curvature at designated position on the surface
+ */
+double
+ay_npt_getcurvature(ay_nurbpatch_object *np, double u, double v)
+{
+ double ders[24];
+ double *velu, *accu, *velv, *accv, cross[3];
+ double velsqrlen, numer, denom, ku = 0.0, kv = 0.0;
+ /*int i,j;*/
+
+  if(!np)
+    return 0.0;
+
+  if((u < np->uknotv[0]) || (u > np->uknotv[np->width+np->uorder-1]))
+    return 0.0;
+
+  if((v < np->vknotv[0]) || (v > np->vknotv[np->height+np->vorder-1]))
+    return 0.0;
+
+  if(np->is_rat)
+    ay_nb_SecondDerSurf4D(np->width-1, np->height-1,
+			  np->uorder-1, np->vorder-1,
+			  np->uknotv, np->vknotv, np->controlv, u, v, ders);
+  else
+    ay_nb_SecondDerSurf3D(np->width-1, np->height-1,
+			  np->uorder-1, np->vorder-1,
+			  np->uknotv, np->vknotv, np->controlv, u, v, ders);
+  /*
+  printf("sders at %lg %lg:\n",u,v);
+  for(i = 0; i < 8; i++)
+    {
+      j = i*3;
+      printf("%d: %lg,%lg,%lg\n",i,ders[j],ders[j+1],ders[j+2]);
+    }
+  printf("\n");
+  */
+  velu = &(ders[3]);
+  accu = &(ders[6]);
+  velv = &(ders[9]);
+  accv = &(ders[18]);
+
+  velsqrlen = (velu[0]*velu[0])+(velu[1]*velu[1])+(velu[2]*velu[2]);
+  if(velsqrlen > AY_EPSILON)
+    {
+      AY_V3CROSS(cross, velu, accu);
+      numer = AY_V3LEN(cross);
+      denom = pow(velsqrlen, 1.5);
+      /*printf("k(u): %lg\n",numer/denom);*/
+      ku = numer/denom;
+    }
+
+  velsqrlen = (velv[0]*velv[0])+(velv[1]*velv[1])+(velv[2]*velv[2]);
+  if(velsqrlen > AY_EPSILON)
+    {
+      AY_V3CROSS(cross, velv, accv);
+      numer = AY_V3LEN(cross);
+      denom = pow(velsqrlen, 1.5);
+      /*printf("k(v): %lg\n",numer/denom);*/
+      kv = numer/denom;
+    }
+
+ return ku*kv;
+} /* ay_npt_getcurvature */
+
+
+/** ay_npt_getcurvaturetcmd:
+ *  compute gaussian curvature of a NURBS surface
+ *  Implements the \a curvatNP scripting interface command.
+ *  See also the corresponding section in the \ayd{sccurvatnp}.
+ *
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_npt_getcurvaturetcmd(ClientData clientData, Tcl_Interp *interp,
+			int argc, char *argv[])
+{
+ int tcl_status = TCL_OK;
+ ay_object *o = NULL;
+ ay_nurbpatch_object *patch = NULL;
+ ay_list_object *sel = ay_selection;
+ double u = 0.0, v = 0.0, k;
+ int i = 1, relative = AY_FALSE;
+ Tcl_Obj *to = NULL, *res = NULL;
+
+  while(i < argc)
+    {
+      if(argv[i][0] == '-' && argv[i][1] == 'u')
+	{
+	  tcl_status = Tcl_GetDouble(interp, argv[i+1], &u);
+	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	  if(u != u)
+	    {
+	      ay_error_reportnan(argv[0], "u");
+	      return TCL_OK;
+	    }
+	  i++;
+	}
+      if(argv[i][0] == '-' && argv[i][1] == 'v')
+	{
+	  tcl_status = Tcl_GetDouble(interp, argv[i+1], &v);
+	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	  if(v != v)
+	    {
+	      ay_error_reportnan(argv[0], "v");
+	      return TCL_OK;
+	    }
+	  i++;
+	}
+      if(argv[i][0] == '-' && argv[i][1] == 'r')
+	{
+	  relative = AY_TRUE;
+	}
+      i++;
+    }
+
+  while(sel)
+    {
+      o = sel->object;
+      if(o->type == AY_IDNPATCH)
+	{
+	  patch = (ay_nurbpatch_object*)o->refine;
+
+	  k = ay_npt_getcurvature(patch, u, v);
+
+	  if(to)
+	    {
+	      if(!res)
+		res = Tcl_NewListObj(0, NULL);
+	      to = Tcl_NewDoubleObj(k);
+	      Tcl_ListObjAppendElement(interp, res, to);
+	    }
+	  else
+	    {
+	      to = Tcl_NewDoubleObj(k);
+	    }
+	}
+      else
+	{
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
+	} /* if is NPatch */
+      sel = sel->next;
+    } /* while */
+
+  /* return result */
+  if(res)
+    Tcl_SetObjResult(interp, res);
+  else
+    if(to)
+      Tcl_SetObjResult(interp, to);
+
+ return TCL_OK;
+} /* ay_npt_getcurvaturetcmd */
+
 /* templates */
 #if 0
 

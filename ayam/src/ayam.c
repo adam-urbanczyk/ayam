@@ -1292,6 +1292,7 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "fairNC", ay_nct_fairnctcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+
   /* nurbs/npt.c */
   Tcl_CreateCommand(interp, "crtNSphere", ay_npt_crtnspheretcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
@@ -1399,6 +1400,9 @@ Tcl_AppInit(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Togl_CreateCommand("finduvac", ay_npt_finduvcb);
+
+  Tcl_CreateCommand(interp, "curvatNP", ay_npt_getcurvaturetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
 
   /* nurbs/act.c */
@@ -2047,6 +2051,9 @@ ay_safeinit(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "makeCompNP", ay_npt_makecomptcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "curvatNP", ay_npt_getcurvaturetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* nurbs/ict.c */

@@ -109,9 +109,8 @@ ay_nb_LUDecompose(int n, double *A, int *pivot)
 	    }
 	  else		/* pivot singular */
 	    errval = k;
-	}
-
-    }
+	} /* for */
+    } /* if */
 
   pivot[nm1] = nm1;
   if(elem[nm1*n+nm1] == 0.0)
@@ -194,9 +193,7 @@ ay_nb_LUInvert(int n, double *inv, int *pivot)
 		  inv[i*n+l] = ten;
 		}
 	    }
-
 	} /* for */
-
     } /* if(nm >= 1) */
 
   free(work);
@@ -264,7 +261,7 @@ ay_nb_GlobalInterpolation4D(int n, double *Q, double *ub, double *Uc, int d)
     { goto cleanup; }
 
   /* Init matrix for LSE */
-  memcpy(qq,Q,(n+1)*4*sizeof(double));
+  memcpy(qq, Q, (n+1)*4*sizeof(double));
 
   /* Multiply through: xx = A(^-1)*qq */
   for(i = 0; i < (n+1); i++)
@@ -281,7 +278,7 @@ ay_nb_GlobalInterpolation4D(int n, double *Q, double *ub, double *Uc, int d)
     }
 
   /* Store the results */
-  memcpy(Q,xx,(n+1)*4*sizeof(double));
+  memcpy(Q, xx, (n+1)*4*sizeof(double));
 
 cleanup:
 
@@ -1507,6 +1504,7 @@ ay_nb_BasisFuns(int i, double u, int p, double *U, double *N)
  return AY_OK;
 } /* ay_nb_BasisFuns */
 
+
 /*
  * ay_nb_BasisFunsM:
  * calculate NURBS basis functions for span i, parametric value u
@@ -2276,9 +2274,9 @@ ay_nb_FirstDerSurf4D(int n, int m, int p, int q, double *U, double *V,
 
   /* du == 1, dv == 1 */
 
-  if(!(Nu = calloc((p+1) * (p+1), sizeof(double))))
+  if(!(Nu = calloc(2 * (p+1), sizeof(double))))
     return;
-  if(!(Nv = calloc((q+1)*(q+1), sizeof(double))))
+  if(!(Nv = calloc(2 * (q+1), sizeof(double))))
     {free(Nu); return;}
   if(!(temp = calloc((q+1)*4, sizeof(double))))
     {free(Nu); free(Nv); return;}
@@ -2744,6 +2742,224 @@ ay_nb_FirstDerSurf3DM(int n, int m, int p, int q, double *U, double *V,
 
 
 /*
+ * ay_nb_SecondDerSurf3D:
+ * compute the second derivatives of non-rational surface
+ * (n, m, p, q, U[], V[], P[]) at parametric values u,v in
+ * C[24]: C[0] - point, C[3] - 1st der along u, C[6] - 2nd der along u,
+ *        C[9] - 1st der along v, C[18] - 2nd der along u
+ */
+void
+ay_nb_SecondDerSurf3D(int n, int m, int p, int q, double *U, double *V,
+		      double *P, double u, double v, double *C)
+{
+ int i = 0, k = 0, l = 0, r = 0, s = 0;
+ int uspan = 0, vspan = 0;
+ double *Nu = NULL, *Nv = NULL, *temp = NULL;
+
+  /* du == 1, dv == 1 */
+
+  if(!(Nu = calloc(3 * (p+1), sizeof(double))))
+    return;
+  if(!(Nv = calloc(3 * (q+1), sizeof(double))))
+    {free(Nu); return;}
+  if(!(temp = calloc((q+1)*3, sizeof(double))))
+    {free(Nu); free(Nv); return;}
+
+  uspan = ay_nb_FindSpan(n, p, u, U);
+  ay_nb_DersBasisFuns(uspan, u, p, 2, U, Nu);
+  vspan = ay_nb_FindSpan(m, q, v, V);
+  ay_nb_DersBasisFuns(vspan, v, q, 2, V, Nv);
+
+  memset(C, 0, 24*sizeof(double));
+
+  for(k = 0; k <= 2; k++)
+    {
+      for(s = 0; s <= q; s++)
+	{
+	  temp[s*3]   = 0.0;
+	  temp[s*3+1] = 0.0;
+	  temp[s*3+2] = 0.0;
+
+	  for(r = 0; r <= p; r++)
+	    {
+	      /* was: temp[s] = temp[s] + Nu[k][r]*P[uspan-p+r][vspan-q+s]; */
+	      i = (((uspan-p+r)*(m+1))+(vspan-q+s))*4;
+	      temp[s*3]   += Nu[(k*(p+1))+r]*P[i];
+	      temp[s*3+1] += Nu[(k*(p+1))+r]*P[i+1];
+	      temp[s*3+2] += Nu[(k*(p+1))+r]*P[i+2];
+	    }
+	}
+
+      for(l = 0; l <= 2-k; l++)
+	{
+	  /* was: C[k][l] = 0; */
+	  C[(k*3+l)*3]   = 0.0;
+	  C[(k*3+l)*3+1] = 0.0;
+	  C[(k*3+l)*3+2] = 0.0;
+
+	  for(s = 0; s <= q; s++)
+	    {
+	      /* was C[k][l] = C[k][l] + Nv[l][s] * temp[s]; */
+	      i = (k*3+l)*3;
+	      C[i]   += Nv[(l*(q+1))+s] * temp[s*3];
+	      C[i+1] += Nv[(l*(q+1))+s] * temp[s*3+1];
+	      C[i+2] += Nv[(l*(q+1))+s] * temp[s*3+2];
+	    } /* for */
+	} /* for */
+    } /* for */
+
+  free(Nu);
+  free(Nv);
+  free(temp);
+
+ return;
+} /* ay_nb_SecondDerSurf3D */
+
+
+/*
+ * ay_nb_SecondDerSurf4D:
+ * compute the first derivatives of rational surface
+ * (n, m, p, q, U[], V[], Pw[]) at parametric values u,v in
+ * C[24]: C[0] - point, C[3] - 1st der along u, C[6] - 2nd der along u,
+ *        C[9] - 1st der along v, C[18] - 2nd der along u
+ */
+void
+ay_nb_SecondDerSurf4D(int n, int m, int p, int q, double *U, double *V,
+		     double *Pw, double u, double v, double *C)
+{
+ int i = 0, j = 0, k = 0, l = 0, h = 0, r = 0, s = 0;
+ int uspan = 0, vspan = 0;
+ double *Nu = NULL, *Nv = NULL, *temp = NULL, *Ct = NULL, *bin = NULL;
+ double w[3] = {0}, w2[3] = {0};
+
+  if(!(Nu = calloc(3 * (p+1), sizeof(double))))
+    return;
+  if(!(Nv = calloc(3 * (q+1), sizeof(double))))
+    {free(Nu); return;}
+  if(!(temp = calloc((q+1)*4, sizeof(double))))
+    {free(Nu); free(Nv); return;}
+  if(!(Ct = calloc(7*4*4, sizeof(double))))
+    {free(Nu); free(Nv); free(temp); return;}
+  if(!(bin = calloc(3*3, sizeof(double))))
+    {free(Nu); free(Nv); free(temp); free(Ct); return;}
+
+  memset(C, 0, 24*sizeof(double));
+
+  ay_nb_Bin(3, 3, bin);
+
+  uspan = ay_nb_FindSpan(n, p, u, U);
+  ay_nb_DersBasisFuns(uspan, u, p, 2, U, Nu);
+  vspan = ay_nb_FindSpan(m, q, v, V);
+  ay_nb_DersBasisFuns(vspan, v, q, 2, V, Nv);
+
+  Ct[0] = 0.0;
+  Ct[1] = 0.0;
+  Ct[2] = 0.0;
+  Ct[3] = 0.0;
+
+  for(k = 0; k <= 2; k++)
+    {
+      for(s = 0; s <= q; s++)
+	{
+	  temp[s*4]   = 0.0;
+	  temp[s*4+1] = 0.0;
+	  temp[s*4+2] = 0.0;
+	  temp[s*4+3] = 0.0;
+
+	  for(r = 0; r <= p; r++)
+	    {
+	      /* was: temp[s] = temp[s] + Nu[k][r]*P[uspan-p+r][vspan-q+s]; */
+	      i = (((uspan-p+r)*(m+1))+(vspan-q+s))*4;
+	      temp[s*4]   += Nu[(k*(p+1))+r]*Pw[i]*Pw[i+3];
+	      temp[s*4+1] += Nu[(k*(p+1))+r]*Pw[i+1]*Pw[i+3];
+	      temp[s*4+2] += Nu[(k*(p+1))+r]*Pw[i+2]*Pw[i+3];
+	      temp[s*4+3] += Nu[(k*(p+1))+r]*Pw[i+3];
+	    }
+	}
+
+      for(l = 0; l <= 2-k; l++)
+	{
+	  /* was: C[k][l] = 0; */
+	  Ct[(k*3+l)*4]   = 0.0;
+	  Ct[(k*3+l)*4+1] = 0.0;
+	  Ct[(k*3+l)*4+2] = 0.0;
+	  Ct[(k*3+l)*4+3] = 0.0;
+
+	  for(s = 0; s <= q; s++)
+	    {
+	      /* was C[k][l] = C[k][l] + Nv[l][s] * temp[s]; */
+	      i = (k*3+l)*4;
+	      Ct[i]   += Nv[(l*(q+1))+s] * temp[s*4];
+	      Ct[i+1] += Nv[(l*(q+1))+s] * temp[s*4+1];
+	      Ct[i+2] += Nv[(l*(q+1))+s] * temp[s*4+2];
+	      Ct[i+3] += Nv[(l*(q+1))+s] * temp[s*4+3];
+	    } /* for */
+	} /* for */
+    } /* for */
+  /***/
+  for(k = 0; k <= 2; k++)
+    {
+      for(l = 0; l <= 2-k; l++)
+	{
+	  /* was: w = Ct[k][l]; */
+	  i = (k*3+l)*4;
+	  w[0] = Ct[i];
+	  w[1] = Ct[i+1];
+	  w[2] = Ct[i+2];
+
+	  for(j = 1; j <= l; j++)
+	    {
+	      /* was: w -= bin[l][j]*wders[0][j]*C[k][l-j]; */
+	      i = (k*3+(l-j))*3;
+	      w[0] -= bin[l*3+j] * Ct[(j*4)+3] * C[i];
+	      w[1] -= bin[l*3+j] * Ct[(j*4)+3] * C[i+1];
+	      w[2] -= bin[l*3+j] * Ct[(j*4)+3] * C[i+2];
+	    } /* for */
+	  for(h = 1; h <= k; h++)
+	    {
+	      /* was: w -= bin[k][h]*wders[h][0]*C[k-h][l]; */
+	      i = ((k-h)*3+l)*3;
+	      w[0] -= bin[k*3+h] * Ct[(h*3*4)+3] * C[i];
+	      w[1] -= bin[k*3+h] * Ct[(h*3*4)+3] * C[i+1];
+	      w[2] -= bin[k*3+h] * Ct[(h*3*4)+3] * C[i+2];
+
+	      w2[0] = 0.0;
+	      w2[1] = 0.0;
+	      w2[2] = 0.0;
+
+	      for(j = 1; j <= l; j++)
+		{
+		  /* was: w2 += bin[l][j]*wders[h][j]*C[k-h][l-j]; */
+		  i = ((k-h)*3+(l-j))*3;
+		  w2[0] += bin[l*3+j] * Ct[((h*3+j)*4)+3] * C[i];
+		  w2[1] += bin[l*3+j] * Ct[((h*3+j)*4)+3] * C[i+1];
+		  w2[2] += bin[l*3+j] * Ct[((h*3+j)*4)+3] * C[i+2];
+		} /* for */
+
+	      /* was: w -= bin[k][h]*w2; */
+	      w[0] -= bin[k*3+h] * w2[0];
+	      w[1] -= bin[k*3+h] * w2[1];
+	      w[2] -= bin[k*3+h] * w2[2];
+	    } /* for */
+
+	  i = (k*3+l)*3;
+	  C[i]   = w[0]/Ct[3];
+	  C[i+1] = w[1]/Ct[3];
+	  C[i+2] = w[2]/Ct[3];
+	} /* for */
+    } /* for */
+
+  free(Nu);
+  free(Nv);
+  free(temp);
+  free(Ct);
+  free(bin);
+
+ return;
+} /* ay_nb_SecondDerSurf4D */
+
+
+/*
  * ay_nb_CreateNurbsCircleArc:
  *  create a NURBS circle arc with radius <r> and angle <the>-<ths>
  *  in the XY plane, centered at origin; uses standard algorithm that
@@ -2821,7 +3037,7 @@ ay_nb_CreateNurbsCircleArc(double r, double ths, double the,
 
       /* calculate new knots */
       j = 2*narcs+1;
-      for(i=0; i<3; i++)
+      for(i = 0; i < 3; i++)
 	{
 	  U[i] = 0.0;
 	  U[i+j] = 1.0;
@@ -4498,9 +4714,7 @@ ay_nb_RemoveKnotSurfV(int w, int h, int q, double *V, double *Pw, double tol,
  int stride = 4, i, a, b;
 
   if(!V || !Pw || !Vbar || !Qw)
-    {
-      return AY_ENULL;
-    }
+    return AY_ENULL;
 
   for(i = 0; i <= w; i++)
     {
@@ -4624,7 +4838,7 @@ void
 ay_nb_UnclampSurfaceU(int israt, int w, int h, int p, int s,
 		      double *U, double *Pw)
 {
- int w1 = w+1, h1=h+1, a, l, i, j, k, j1, j2, stride = 4;
+ int w1 = w+1, h1 = h+1, a, l, i, j, k, j1, j2, stride = 4;
  double alpha;
 
   /* convert rational coordinates from euclidean to homogeneous style */
@@ -4720,7 +4934,7 @@ void
 ay_nb_UnclampSurfaceV(int israt, int w, int h, int q, int s,
 		      double *V, double *Pw)
 {
- int w1 = w+1, h1=h+1, a, l, i, j, k, j1, j2, stride = 4;
+ int w1 = w+1, h1 = h+1, a, l, i, j, k, j1, j2, stride = 4;
  double alpha;
 
   /* convert rational coordinates from euclidean to homogeneous style */
@@ -5146,9 +5360,7 @@ ay_nb_DegreeReduceSurfV(int w, int h, int q, double *V, double *Pw, double tol,
  int stride = 4, i, a, b, qh;
 
   if(!V || !Pw || !nh || !Vbar || !Qw)
-    {
-      return AY_ENULL;
-    }
+    return AY_ENULL;
 
   qh = *nh;
 
