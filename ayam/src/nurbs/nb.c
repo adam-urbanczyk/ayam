@@ -1590,6 +1590,7 @@ ay_nb_CurvePoint4D(int n, int p, double *U, double *Pw, double u, double *C)
  return AY_OK;
 } /* ay_nb_CurvePoint4D */
 
+
 /*
  * ay_nb_CurvePoint4DM:
  * calculate point u on rational NURBS curve (n, p, U, Pw)
@@ -1672,6 +1673,7 @@ ay_nb_CurvePoint3D(int n, int p, double *U, double *P, double u, double *C)
 
  return AY_OK;
 } /* ay_nb_CurvePoint3D */
+
 
 /*
  * ay_nb_CurvePoint3DM:
@@ -1799,10 +1801,10 @@ ay_nb_SurfacePoint3D(int n, int m, int p, int q, double *U, double *V,
  int spanu = 0, spanv = 0, indu = 0, indv = 0, l = 0, k = 0, i = 0;
  double *Nu = NULL, *Nv = NULL, temp[3] = {0};
 
-  if(!(Nu = calloc(p+1,sizeof(double))))
+  if(!(Nu = calloc(p+1, sizeof(double))))
     return AY_EOMEM;
-  if(!(Nv = calloc(q+1,sizeof(double))))
-    {free(Nu); return AY_EOMEM;}
+  if(!(Nv = calloc(q+1, sizeof(double))))
+    { free(Nu); return AY_EOMEM; }
 
   spanu = ay_nb_FindSpan(n, p, u, U);
   ay_status = ay_nb_BasisFuns(spanu, u, p, U, Nu);
@@ -2329,7 +2331,7 @@ ay_nb_FirstDerSurf4D(int n, int m, int p, int q, double *U, double *V,
 
 	  for(s = 0; s <= q; s++)
 	    {
-	      /* was C[k][l] = C[k][l] + Nv[l][s] * temp[s]; */
+	      /* was: C[k][l] = C[k][l] + Nv[l][s] * temp[s]; */
 	      i = (k*2+l)*4;
 	      Ct[i]   += Nv[(l*(q+1))+s] * temp[s*4];
 	      Ct[i+1] += Nv[(l*(q+1))+s] * temp[s*4+1];
@@ -2501,7 +2503,7 @@ ay_nb_FirstDerSurf4DM(int n, int m, int p, int q, double *U, double *V,
 
 	  for(s = 0; s <= q; s++)
 	    {
-	      /* was C[k][l] = C[k][l] + Nv[l][s] * temp[s]; */
+	      /* was: C[k][l] = C[k][l] + Nv[l][s] * temp[s]; */
 	      i = (k*2+l)*4;
 	      Ct[i]   += Nv[(l*(q+1))+s] * temp[s*4];
 	      Ct[i+1] += Nv[(l*(q+1))+s] * temp[s*4+1];
@@ -2624,7 +2626,7 @@ ay_nb_FirstDerSurf3D(int n, int m, int p, int q, double *U, double *V,
 
 	  for(s = 0; s <= q; s++)
 	    {
-	      /* was C[k][l] = C[k][l] + Nv[l][s] * temp[s]; */
+	      /* was: C[k][l] = C[k][l] + Nv[l][s] * temp[s]; */
 	      i = (k*2+l)*3;
 	      C[i]   += Nv[(l*(q+1))+s] * temp[s*3];
 	      C[i+1] += Nv[(l*(q+1))+s] * temp[s*3+1];
@@ -2728,7 +2730,7 @@ ay_nb_FirstDerSurf3DM(int n, int m, int p, int q, double *U, double *V,
 
 	  for(s = 0; s <= q; s++)
 	    {
-	      /* was C[k][l] = C[k][l] + Nv[l][s] * temp[s]; */
+	      /* was: C[k][l] = C[k][l] + Nv[l][s] * temp[s]; */
 	      i = (k*2+l)*3;
 	      C[i]   += Nv[(l*(q+1))+s] * temp[s*3];
 	      C[i+1] += Nv[(l*(q+1))+s] * temp[s*3+1];
@@ -2746,7 +2748,7 @@ ay_nb_FirstDerSurf3DM(int n, int m, int p, int q, double *U, double *V,
  * compute the second derivatives of non-rational surface
  * (n, m, p, q, U[], V[], P[]) at parametric values u,v in
  * C[24]: C[0] - point, C[3] - 1st der along u, C[6] - 2nd der along u,
- *        C[9] - 1st der along v, C[18] - 2nd der along u
+ *        C[9] - 1st der along v, C[18] - 2nd der along v
  */
 void
 ay_nb_SecondDerSurf3D(int n, int m, int p, int q, double *U, double *V,
@@ -2755,8 +2757,6 @@ ay_nb_SecondDerSurf3D(int n, int m, int p, int q, double *U, double *V,
  int i = 0, k = 0, l = 0, r = 0, s = 0;
  int uspan = 0, vspan = 0;
  double *Nu = NULL, *Nv = NULL, *temp = NULL;
-
-  /* du == 1, dv == 1 */
 
   if(!(Nu = calloc(3 * (p+1), sizeof(double))))
     return;
@@ -2799,7 +2799,7 @@ ay_nb_SecondDerSurf3D(int n, int m, int p, int q, double *U, double *V,
 
 	  for(s = 0; s <= q; s++)
 	    {
-	      /* was C[k][l] = C[k][l] + Nv[l][s] * temp[s]; */
+	      /* was: C[k][l] = C[k][l] + Nv[l][s] * temp[s]; */
 	      i = (k*3+l)*3;
 	      C[i]   += Nv[(l*(q+1))+s] * temp[s*3];
 	      C[i+1] += Nv[(l*(q+1))+s] * temp[s*3+1];
@@ -2821,7 +2821,7 @@ ay_nb_SecondDerSurf3D(int n, int m, int p, int q, double *U, double *V,
  * compute the first derivatives of rational surface
  * (n, m, p, q, U[], V[], Pw[]) at parametric values u,v in
  * C[24]: C[0] - point, C[3] - 1st der along u, C[6] - 2nd der along u,
- *        C[9] - 1st der along v, C[18] - 2nd der along u
+ *        C[9] - 1st der along v, C[18] - 2nd der along v
  */
 void
 ay_nb_SecondDerSurf4D(int n, int m, int p, int q, double *U, double *V,
@@ -2887,7 +2887,7 @@ ay_nb_SecondDerSurf4D(int n, int m, int p, int q, double *U, double *V,
 
 	  for(s = 0; s <= q; s++)
 	    {
-	      /* was C[k][l] = C[k][l] + Nv[l][s] * temp[s]; */
+	      /* was: C[k][l] = C[k][l] + Nv[l][s] * temp[s]; */
 	      i = (k*3+l)*4;
 	      Ct[i]   += Nv[(l*(q+1))+s] * temp[s*4];
 	      Ct[i+1] += Nv[(l*(q+1))+s] * temp[s*4+1];
