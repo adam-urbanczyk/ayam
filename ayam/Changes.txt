@@ -1,5 +1,5 @@
-[18. Feb 2020] Mercurial Tip:
-=============================
+[1. Mar 2020] Mercurial Tip:
+============================
 Bug Fixes:
 o append option of split curve tool does not work (SF 595)
 o display of ConeAngle and ConeDeltaAngle (SF 597)
@@ -11,6 +11,9 @@ o added option to specify the split knot in a relative way in the
 Scripts/Scripting Interface:
 o added "-r" (relative) option to "splitNC" command
 o the "-a" option of the "splitNC" command does not need a value anymore
+o added "fairNC" command to make the shape of NURBS curve more pleasant/smooth
+o added "curvatNC" command to compute the curvature of a NURBS curve
+o added "curvatNP" command to compute the curvature of a NURBS surface
 
 Rendering:
 o added render to viewport feature via a new distributed plugin ("fifodspy")
