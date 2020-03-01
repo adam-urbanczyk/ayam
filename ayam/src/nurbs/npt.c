@@ -13491,7 +13491,7 @@ ay_npt_avglensu(double *cv, int width, int height, int stride,
 
   /* compute average partial lengths */
   a = 0;
-  b = height;
+  b = height*stride;
   for(i = 0; i < width-1; i++)
     {
       lens[i] = 0.0;
@@ -13503,7 +13503,7 @@ ay_npt_avglensu(double *cv, int width, int height, int stride,
 	    {
 	      lens[i] += AY_VLEN((cv[b] - cv[a]),
 				 (cv[b+1] - cv[a+1]),
-				 (cv[b+2] - cv[a+2]))/(width-1.0);
+				 (cv[b+2] - cv[a+2]))/((double)height);
 	    }
 	  a += stride;
 	  b += stride;
@@ -13557,7 +13557,7 @@ ay_npt_avglensv(double *cv, int width, int height, int stride,
 	    {
 	      lens[i] += AY_VLEN((cv[b] - cv[a]),
 				 (cv[b+1] - cv[a+1]),
-				 (cv[b+2] - cv[a+2]))/(height-1.0);
+				 (cv[b+2] - cv[a+2]))/((double)width);
 	    }
 
 	  a += (height*stride);
