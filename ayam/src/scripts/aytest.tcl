@@ -20,12 +20,15 @@ array set aytestprefs {
     TestItem "n/a"
     TestVariant "n/a"
     DebugCreate 0
+    InitTypes 0
+    TestProcs { testDefaultCallbacks testValidSolidVariations testValidNURBS testValidToolObjects testModellingTools testAllSolidVariations testCustomObjects testScriptObjects }
 }
 
 # aytest_handleLBS:
 #  handle selection of tests in select GUI listbox
 #  (fill and enable/disable second listbox accordingly)
 proc aytest_handleLBS { w } {
+    global aytestprefs
     set sel [$w curselection]
     set tw [winfo toplevel $w]
     if { [llength $sel] == 1 } {
@@ -34,8 +37,8 @@ proc aytest_handleLBS { w } {
 	# fill listbox with items from test
 	$tw.fu.fr.l1 delete 0 end
 	$tw.fu.fr.l1 insert end "All"
-	incr sel
-	eval set items \$::aytest_${sel}items
+	set testproc [lindex $aytestprefs(TestProcs) $sel]
+	eval set items \$::${testproc}Items
 	foreach item $items {
 	    $tw.fu.fr.l1 insert end $item
 	}
@@ -190,9 +193,9 @@ proc aytest_selectGUI { } {
 
 
 #
-# Test 1 - Default object callbacks
+# Test Default (Object) Callbacks
 #
-proc aytest_1 { types } {
+proc testDefaultCallbacks { types } {
 set ::types $types
 uplevel #0 {
 puts $log "Testing default object callbacks...\n"
@@ -223,6 +226,10 @@ puts -nonewline "Testing "
 foreach type $types {
     set aytestprefs(TestItem) "1 - ${type}"
     puts -nonewline "${type}, "
+
+    if { $aytestprefs(InitTypes) && ![info exists ${type}_props] } {
+	eval init_${type}
+    }
 
     puts $log "Creating a $type ...\n"
     crtOb $type
@@ -306,13 +313,13 @@ foreach type $types {
 
 }
 }
-# aytest_1
+# testDefaultCallbacks
 
 
 #
-# Test 2 - Valid Solid Object Variations
+# Test Valid Solid Object Variations
 #
-proc aytest_2 { types } {
+proc testValidSolidVariations { types } {
 set ::types $types
 uplevel #0 {
 
@@ -677,7 +684,7 @@ foreach type $types {
 puts -nonewline "\n"
 }
 }
-# aytest_2
+# testValidSolidVariations
 
 #
 # Test 3 - Valid NURBS Object Variations
@@ -912,7 +919,7 @@ set NPatch_4(valcmd) {
 array set NPatch_5 {
     arr NPatchAttrData
     freevars {Width Height Order_U Order_V}
-    fixedvars {Knot-Type_U Knot-Type_V Knots_U-Modified Knots_V-Modified}
+    fixedvars {Knot-Type_U Knot-Type_V Knots-Modified_U Knots-Modified_V}
     fixedvals { {3 3 1 1} }
 }
 set NPatch_5(Width) $lengthvals
@@ -927,7 +934,7 @@ set NPatch_5(valcmd) {
 array set NPatch_6 {
     arr NPatchAttrData
     freevars {Width Height Order_U Order_V}
-    fixedvars {Knot-Type_U Knot-Type_V Knots_V-Modified}
+    fixedvars {Knot-Type_U Knot-Type_V Knots-Modified_V}
     fixedvals { {0 3 1} }
 }
 set NPatch_6(Width) $lengthvals
@@ -942,7 +949,7 @@ set NPatch_6(valcmd) {
 array set NPatch_7 {
     arr NPatchAttrData
     freevars {Width Height Order_U Order_V}
-    fixedvars {Knot-Type_U Knot-Type_V Knots_U-Modified}
+    fixedvars {Knot-Type_U Knot-Type_V Knots-Modified_U}
     fixedvals { {3 0 1} }
 }
 set NPatch_7(Width) $lengthvals
@@ -1044,7 +1051,7 @@ set NCircle_1(valcmd) {
 }
 # aytest_crtnvars
 
-proc aytest_3 { types } {
+proc testValidNURBS { types } {
 set ::types $types
 uplevel #0 {
 
@@ -1070,7 +1077,7 @@ foreach type $types {
 puts -nonewline "\n"
 }
 }
-# aytest_3
+# testValidNURBS
 
 # aytest_crtknots:
 # create a custom knot vector
@@ -1144,9 +1151,9 @@ proc aytest_checkpml { w tu cu h tv cv } {
 
 
 #
-# Test 4 - Valid Tool Object Variations
+# Test Valid Tool Object Variations
 #
-proc aytest_4 { types } {
+proc testValidToolObjects { types } {
 set ::types $types
 uplevel #0 {
 
@@ -1775,13 +1782,13 @@ foreach type $types {
 puts -nonewline "\n"
 }
 }
-# aytest_4
+# testValidToolObjects
 
 
 #
-# Test 5 - Modelling Tools
+# Test Modelling Tools
 #
-proc aytest_5 { tools } {
+proc testModellingTools { tools } {
 set ::aytesttools $tools
 uplevel #0 {
 
@@ -2374,13 +2381,13 @@ puts -nonewline "\n"
 
 }
 }
-# aytest_5
+# testModellingTools
 
 
 #
-# Test 6 - All Solid Object Variations
+# Test All Solid Object Variations
 #
-proc aytest_6 { types } {
+proc testAllSolidVariations { types } {
 set ::types $types
 uplevel #0 {
 
@@ -2562,13 +2569,13 @@ foreach type $types {
 
 }
 }
-# aytest_6
+# testAllSolidVariations
 
 
 #
-# Test 7 - Custom Objects
+# Test Custom Objects
 #
-proc aytest_7 { types } {
+proc testCustomObjects { types } {
 set ::types $types
 uplevel #0 {
 puts $log "Testing custom objects callbacks...\n"
@@ -2681,12 +2688,12 @@ foreach type $types {
 
 }
 }
-# aytest_7
+# testCustomObjects
 
 #
-# Test 8 - Script Objects
+# Test Script Objects
 #
-proc aytest_8 { types } {
+proc testScriptObjects { types } {
 set ::types $types
 uplevel #0 {
 puts $log "Testing script objects implementation and callbacks...\n"
@@ -2778,8 +2785,9 @@ foreach type $types {
 	set script [read $scfile]
     }
     set ScriptAttrData(Script) $script
-    set ScriptAttrData(Type) [lindex $aytest_8types \
-			      [lsearch $aytest_8items $type]]
+    set stype [lindex $::testScriptObjectsTypes \
+		   [lsearch $::testScriptObjectsItems $type]]
+    set ScriptAttrData(Type) $stype
     setProp
 
     # create children
@@ -2850,7 +2858,7 @@ foreach type $types {
 
 }
 }
-# aytest_8
+# testScriptObjects
 
 
 # aytest_varcmds:
@@ -2868,7 +2876,6 @@ goDown -1
 pasOb
 hSL
 
-
 set view1 ""
 if { [winfo exists .fv.fViews.fview1.f3D.togl] } {
     set view1 .fv.fViews.fview1.f3D.togl
@@ -2877,7 +2884,6 @@ set view2 ""
 if { [winfo exists .fv.fViews.fview2.f3D.togl] } {
     set view2 .fv.fViews.fview2.f3D.togl
 }
-
 
 puts $log "Copy...\n"
 copOb
@@ -3196,17 +3202,17 @@ proc aytest_runTests { tests items } {
     set ::cancelled 0
 
     foreach test $tests {
-	incr test
+	set testproc [lindex $aytestprefs(TestProcs) $test]
 
 	set testitems ""
 	if { [lindex $items 0] == 0 } {
 	    # All Items
 	    set aytestprefs(Breadth) 1
-	    eval set testitems \$::aytest_${test}items
+	    eval set testitems \$::${testproc}Items
 	} else {
 	    # Selected Items
 	    set aytestprefs(Breadth) 0
-	    eval set allitems \$::aytest_${test}items
+	    eval set allitems \$::${testproc}Items
 	    foreach item $items {
 		incr item -1
 		lappend newitems [lindex $allitems $item]
@@ -3233,9 +3239,11 @@ proc aytest_runTests { tests items } {
 
 	set aytestprefs(Progress) 0.0
 
+	incr test
+
 	puts "Running test $test..."
 
-	catch {aytest_$test $testitems}
+	catch {$testproc $testitems}
 
 	close $::log
 
@@ -3274,7 +3282,7 @@ proc aytest_runTests { tests items } {
 
 ###
 
-# set up types to test in test #1
+# set up items to test in test #1
 set items {}
 lappend items Box Sphere Cylinder Cone Disk Hyperboloid Paraboloid Torus
 lappend items NCurve ICurve ACurve NCircle
@@ -3284,25 +3292,24 @@ lappend items Cap Bevel ExtrNC ExtrNP OffsetNC OffsetNP ConcatNC ConcatNP
 lappend items Trim Text
 lappend items Camera Light Material RiInc RiProc Script Select
 lappend items Clone Mirror
+set testDefaultCallbacksItems $items
 
-set aytest_1items $items
-
-# set up types to test in test #2
+# set up items to test in test #2
 set items {}
 lappend items Box Sphere Cylinder Disk Cone Paraboloid Torus Hyperboloid
-set aytest_2items $items
+set testValidSolidVariationsItems $items
 
-# set up types to test in test #3
+# set up items to test in test #3
 set items {}
 lappend items NCurve ICurve ACurve NPatch IPatch PatchMesh NCircle
-set aytest_3items $items
+set testValidNURBSItems $items
 
-# set up types to test in test #4
+# set up items to test in test #4
 set items {}
 lappend items Revolve Extrude Sweep Swing Skin Birail1 Birail2 Gordon
 lappend items Cap Bevel ExtrNC ExtrNP OffsetNC OffsetNP ConcatNC ConcatNP
 lappend items Trim
-set aytest_4items $items
+set testValidToolObjectsItems $items
 
 # set up tools to test in test #5
 set items {}
@@ -3326,25 +3333,27 @@ lappend items InsertKUNP InsertK2UNP InsertKVNP InsertK2VNP
 lappend items RemoveKUNP RemoveKIUNP RemoveKVNP RemoveKIVNP
 lappend items RemoveSuKUNP RemoveSuKVNP
 lappend items SplitNPU SplitNPV CloseUNP CloseVNP TweenNP
-set aytest_5items $items
+set testModellingToolsItems $items
 
-# set up types to test in test #6
+# set up items to test in test #6
 set items {}
 lappend items Box Sphere Cylinder Cone Disk Hyperboloid Paraboloid Torus
-set aytest_6items $items
+set testAllSolidVariationsItems $items
 
-# set up types to test in test #7
+# set up items to test in test #7
 set items {}
 lappend items MetaObj SfCurve SDNPatch BCurve SDCurve
-set aytest_7items $items
+set testCustomObjectsItems $items
 
-# set up types to test in test #8
+# set up items to test in test #8
 set items {}
-set types {}
 lappend items cbox tcircle tcone spiral helix extruden tsurf dualsweep
+set testScriptObjectsItems $items
+
+# set up script object types corresponding to each test item
+set types {}
 lappend types 1 1 1 1 1 2 2 2
-set aytest_8items $items
-set aytest_8types $types
+set testScriptObjectsTypes $types
 
 ###
 
