@@ -222,6 +222,8 @@ static JSFunctionSpec jsinterp_global_functions[] = {
   {"extrNC", jsinterp_wraptcmdargs, 0, 0, 0},
   {"interpNC", jsinterp_wraptcmdargs, 0, 0, 0},
   {"approxNC", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"fairNC", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"curvatNC", jsinterp_wraptcmdargs, 0, 0, 0},
 
   {"crtNSphere", jsinterp_wraptcmd, 0, 0, 0},
   {"crtNSphere2", jsinterp_wraptcmd, 0, 0, 0},
@@ -255,6 +257,8 @@ static JSFunctionSpec jsinterp_global_functions[] = {
   {"extrNP", jsinterp_wraptcmdargs, 0, 0, 0},
   {"interpuNP", jsinterp_wraptcmdargs, 0, 0, 0},
   {"interpvNP", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"curvatNP", jsinterp_wraptcmdargs, 0, 0, 0},
+
   {"concatS", jsinterp_wraptcmdargs, 0, 0, 0},
   {"tobasisPM", jsinterp_wraptcmdargs, 0, 0, 0},
   {"tweenNC", jsinterp_wraptcmdargs, 0, 0, 0},
