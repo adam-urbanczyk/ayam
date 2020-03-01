@@ -813,13 +813,19 @@ int ay_nct_arrange(ay_object *o, ay_object *t, int rotate);
 int ay_nct_rescaleknvtcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[]);
 
-/** Calculate curvature at parameter value \a t.
+/** Calculate curvature at parameter value \a u.
  */
-double ay_nct_getcurvature(ay_nurbcurve_object *c, double t);
+double ay_nct_getcurvature(ay_nurbcurve_object *nc, int relative, double u);
 
 /** Tcl command to create a curvature plot curve.
  */
 int ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
+			int argc, char *argv[]);
+
+/** Tcl command to compute the curvature of a curve.
+ */
+int
+ay_nct_getcurvaturetcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
 /** Unfinished.
