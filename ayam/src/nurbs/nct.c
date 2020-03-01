@@ -5437,41 +5437,57 @@ ay_nct_rescaleknvtcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_nct_rescaleknvtcmd */
 
 
-/* ay_nct_getcurvature:
- *  return the curvature of curve <c> at parametric value <t>
+/** ay_nct_getcurvature:
+ * compute curvature of a NURBS curve
+ * \param[in] np NURBS curve to interrogate
+ * \param[in] relative if AY_TRUE, interpret \a u in a relative way
+ * \param[in] u parametric value
+ *
+ * \returns  curvature at designated position on the surface
  */
 double
-ay_nct_getcurvature(ay_nurbcurve_object *c, double t)
+ay_nct_getcurvature(ay_nurbcurve_object *nc, int relative, double u)
 {
  double vel[3], acc[3], cross[3];
  double velsqrlen, numer, denom;
 
-  if(!c)
+  if(!nc)
     return 0.0;
 
-  if((t < c->knotv[0]) || (t > c->knotv[c->length+c->order-1]))
-    return 0.0;
+  if(relative)
+    {
+      if((u < 0.0) || (u > 1.0))
+	return 0.0;
 
-  if(c->order < 3)
-    return 0.0;
-
-  if(c->is_rat)
-    ay_nb_FirstDer4D(c->length-1, c->order-1, c->knotv, c->controlv,
-		     t, vel);
+      u = nc->knotv[nc->order-1] +
+	(nc->knotv[nc->length] - nc->knotv[nc->order-1])*u;
+    }
   else
-    ay_nb_FirstDer3D(c->length-1, c->order-1, c->knotv, c->controlv,
-		     t, vel);
+    {
+      if((u < nc->knotv[0]) || (u > nc->knotv[nc->length+nc->order-1]))
+	return 0.0;
+    }
+
+  if(nc->order < 3)
+    return 0.0;
+
+  if(nc->is_rat)
+    ay_nb_FirstDer4D(nc->length-1, nc->order-1, nc->knotv, nc->controlv,
+		     u, vel);
+  else
+    ay_nb_FirstDer3D(nc->length-1, nc->order-1, nc->knotv, nc->controlv,
+		     u, vel);
 
   velsqrlen = (vel[0]*vel[0])+(vel[1]*vel[1])+(vel[2]*vel[2]);
 
   if(velsqrlen > AY_EPSILON)
     {
-      if(c->is_rat)
-	ay_nb_SecondDer4D(c->length-1, c->order-1, c->knotv, c->controlv,
-			  t, acc);
+      if(nc->is_rat)
+	ay_nb_SecondDer4D(nc->length-1, nc->order-1, nc->knotv, nc->controlv,
+			  u, acc);
       else
-	ay_nb_SecondDer3D(c->length-1, c->order-1, c->knotv, c->controlv,
-			  t, acc);
+	ay_nb_SecondDer3D(nc->length-1, nc->order-1, nc->knotv, nc->controlv,
+			  u, acc);
       AY_V3CROSS(cross, vel, acc);
       numer = AY_V3LEN(cross);
       denom = pow(velsqrlen, 1.5);
@@ -5554,7 +5570,7 @@ ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
 	  for(t = umin; t < umax; t += dt)
 	    {
 	      controlv[a] = (double)b*width/samples;
-	      controlv[a+1] = ay_nct_getcurvature(c, t)*scale;
+	      controlv[a+1] = ay_nct_getcurvature(c, AY_FALSE, t)*scale;
 	      controlv[a+3] = 1.0;
 	      a += 4;
 	      b++;
@@ -5600,6 +5616,84 @@ ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_nct_curvplottcmd */
+
+
+/** ay_nct_getcurvaturetcmd:
+ *  compute gaussian curvature of a NURBS curve
+ *  Implements the \a curvatNC scripting interface command.
+ *  See also the corresponding section in the \ayd{sccurvatnc}.
+ *
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_nct_getcurvaturetcmd(ClientData clientData, Tcl_Interp *interp,
+			int argc, char *argv[])
+{
+ int tcl_status = TCL_OK;
+ ay_object *o = NULL;
+ ay_nurbcurve_object *curve = NULL;
+ ay_list_object *sel = ay_selection;
+ double u = 0.0, k;
+ int i = 1, relative = AY_FALSE;
+ Tcl_Obj *to = NULL, *res = NULL;
+
+  while(i < argc)
+    {
+      if(argv[i][0] == '-' && argv[i][1] == 'u')
+	{
+	  tcl_status = Tcl_GetDouble(interp, argv[i+1], &u);
+	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	  if(u != u)
+	    {
+	      ay_error_reportnan(argv[0], "u");
+	      return TCL_OK;
+	    }
+	  i++;
+	}
+      if(argv[i][0] == '-' && argv[i][1] == 'r')
+	{
+	  relative = AY_TRUE;
+	}
+      i++;
+    }
+
+  while(sel)
+    {
+      o = sel->object;
+      if(o->type == AY_IDNCURVE)
+	{
+	  curve = (ay_nurbcurve_object*)o->refine;
+
+	  k = ay_nct_getcurvature(curve, relative, u);
+
+	  if(to)
+	    {
+	      if(!res)
+		res = Tcl_NewListObj(0, NULL);
+	      to = Tcl_NewDoubleObj(k);
+	      Tcl_ListObjAppendElement(interp, res, to);
+	    }
+	  else
+	    {
+	      to = Tcl_NewDoubleObj(k);
+	    }
+	}
+      else
+	{
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
+	} /* if is NCurve */
+      sel = sel->next;
+    } /* while */
+
+  /* return result */
+  if(res)
+    Tcl_SetObjResult(interp, res);
+  else
+    if(to)
+      Tcl_SetObjResult(interp, to);
+
+ return TCL_OK;
+} /* ay_nct_getcurvaturetcmd */
 
 
 /* ay_nct_intersect:
