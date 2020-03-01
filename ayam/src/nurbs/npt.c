@@ -16077,13 +16077,14 @@ ay_npt_degreereducetcmd(ClientData clientData, Tcl_Interp *interp,
 /** ay_npt_getcurvature:
  * compute gaussian curvature of a NURBS surface
  * \param[in] np NURBS patch to interrogate
+ * \param[in] relative if AY_TRUE, interpret \a u and \a v in a relative way
  * \param[in] u parametric value
  * \param[in] v parametric value
  *
  * \returns gaussian curvature at designated position on the surface
  */
 double
-ay_npt_getcurvature(ay_nurbpatch_object *np, double u, double v)
+ay_npt_getcurvature(ay_nurbpatch_object *np, int relative, double u, double v)
 {
  double ders[24];
  double *velu, *accu, *velv, *accv, cross[3];
@@ -16093,11 +16094,28 @@ ay_npt_getcurvature(ay_nurbpatch_object *np, double u, double v)
   if(!np)
     return 0.0;
 
-  if((u < np->uknotv[0]) || (u > np->uknotv[np->width+np->uorder-1]))
-    return 0.0;
+  if(relative)
+    {
+      if((u < 0.0) || (u > 1.0))
+	return 0.0;
 
-  if((v < np->vknotv[0]) || (v > np->vknotv[np->height+np->vorder-1]))
-    return 0.0;
+      u = np->uknotv[np->uorder-1] +
+	(np->uknotv[np->width] - np->uknotv[np->uorder-1])*u;
+
+      if((v < 0.0) || (v > 1.0))
+	return 0.0;
+
+      v = np->vknotv[np->vorder-1] +
+	(np->vknotv[np->height] - np->vknotv[np->vorder-1])*v;
+    }
+  else
+    {
+      if((u < np->uknotv[0]) || (u > np->uknotv[np->width+np->uorder-1]))
+	return 0.0;
+
+      if((v < np->vknotv[0]) || (v > np->vknotv[np->height+np->vorder-1]))
+	return 0.0;
+    }
 
   if(np->is_rat)
     ay_nb_SecondDerSurf4D(np->width-1, np->height-1,
@@ -16202,7 +16220,7 @@ ay_npt_getcurvaturetcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  patch = (ay_nurbpatch_object*)o->refine;
 
-	  k = ay_npt_getcurvature(patch, u, v);
+	  k = ay_npt_getcurvature(patch, relative, u, v);
 
 	  if(to)
 	    {
