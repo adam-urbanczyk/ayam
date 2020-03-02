@@ -227,7 +227,7 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
 
       deg = vorder-1;
       ub = NULL;
-      if(patch->uknot_type == AY_KTCHORDAL)
+      if(patch->vknot_type == AY_KTCHORDAL)
 	ay_knots_chordparamnp(1, patch->controlv, width, height, 4, &ub);
       else
 	ay_knots_centriparamnp(1, patch->controlv, width, height, 4, &ub);
@@ -1376,7 +1376,7 @@ ay_knots_chordparamnp(int dir, double *Q, int width, int height, int stride,
     }
 
   /* compute total length */
-  for(i = 0; i < Ulen-1; i++)
+  for(i = 0; i < Ulen; i++)
     {
       totallen += lens[i];
     }
@@ -1392,14 +1392,13 @@ ay_knots_chordparamnp(int dir, double *Q, int width, int height, int stride,
   vk[0] = 0.0;
   j = 0;
   t = 0.0;
-  for(i = 1; i < Ulen-1; i++)
+  for(i = 1; i < Ulen; i++)
     {
       t += lens[j]/totallen;
       vk[i] = t;
-
       j++;
     }
-  vk[Ulen-1] = 1.0;
+  /*vk[Ulen-1] = 1.0;*/
 
   /* return result */
   *U = vk;
@@ -1455,7 +1454,7 @@ ay_knots_centriparamnp(int dir, double *Q, int width, int height, int stride,
     }
 
   /* compute total length and partial lengths */
-  for(i = 0; i < Ulen-1; i++)
+  for(i = 0; i < Ulen; i++)
     {
       if(fabs(lens[i]) > AY_EPSILON)
 	{
@@ -1475,14 +1474,13 @@ ay_knots_centriparamnp(int dir, double *Q, int width, int height, int stride,
   vk[0] = 0.0;
   j = 0;
   t = 0.0;
-  for(i = 1; i < Ulen-1; i++)
+  for(i = 1; i < Ulen; i++)
     {
       t += lens[j]/totallen;
       vk[i] = t;
-
       j++;
     }
-  vk[Ulen-1] = 1.0;
+  /*vk[Ulen-1] = 1.0;*/
 
   /* return result */
   *U = vk;
