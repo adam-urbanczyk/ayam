@@ -1887,7 +1887,7 @@ ay_trafo_normalizetcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  int i = 0, pnts = AY_FALSE, var = AY_FALSE;
  double val;
- Tcl_Obj *to, *ton;
+ Tcl_Obj *to;
 
   if(argv[0][4] == 'P')
     pnts = AY_TRUE;
@@ -1907,15 +1907,14 @@ ay_trafo_normalizetcmd(ClientData clientData, Tcl_Interp *interp,
       while(i+1 < argc)
 	{
 	  i++;
-	  ton = Tcl_NewStringObj(argv[i], -1);
-	  to = Tcl_ObjGetVar2(interp, ton, NULL, TCL_LEAVE_ERR_MSG);
-	  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+	  to = Tcl_GetVar2Ex(interp, argv[i], NULL, TCL_LEAVE_ERR_MSG);
 	  if(to)
 	    {
 	      if(Tcl_GetDoubleFromObj(interp, to, &val) == TCL_ERROR)
 		continue;
 	      val = ay_trafo_round(val, ay_prefs.normalizedigits);
-	      Tcl_SetDoubleObj(to, val);
+	      Tcl_SetVar2Ex(interp, argv[i], NULL, Tcl_NewDoubleObj(val),
+			    TCL_LEAVE_ERR_MSG);
 	    }
 	} /* while */
     }
