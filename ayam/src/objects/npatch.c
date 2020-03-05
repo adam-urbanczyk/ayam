@@ -15,25 +15,6 @@
 /* npatch.c - npatch object */
 
 static char *ay_npatch_name = "NPatch";
-static char *ay_npatch_arr = "NPatchAttrData";
-
-static Tcl_Obj *arrobj = NULL;
-static Tcl_Obj *widthobj = NULL;
-static Tcl_Obj *heightobj = NULL;
-static Tcl_Obj *orderuobj = NULL;
-static Tcl_Obj *ordervobj = NULL;
-static Tcl_Obj *creatempobj = NULL;
-static Tcl_Obj *knottypeuobj = NULL;
-static Tcl_Obj *knottypevobj = NULL;
-static Tcl_Obj *knotsuobj = NULL;
-static Tcl_Obj *knotsvobj = NULL;
-static Tcl_Obj *tolobj = NULL;
-static Tcl_Obj *dmobj = NULL;
-static Tcl_Obj *knotsmoduobj = NULL;
-static Tcl_Obj *knotsmodvobj = NULL;
-static Tcl_Obj *isratobj = NULL;
-static Tcl_Obj *capcobj = NULL;
-static Tcl_Obj *bevcobj = NULL;
 
 
 /* prototypes of functions local to this module: */
@@ -1857,6 +1838,7 @@ int
 ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  int ay_status = AY_OK, tcl_status = TCL_OK;
+ char arr[] = "NPatchAttrData";
  char fname[] = "npatch_setpropcb";
  Tcl_Obj *to = NULL;
  ay_object *b;
@@ -1877,72 +1859,71 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   /* get new values from Tcl */
-  to = Tcl_ObjGetVar2(interp, arrobj, widthobj,
-		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &new_width);
 
-  to = Tcl_ObjGetVar2(interp, arrobj, heightobj,
-		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &new_height);
+  to = Tcl_GetVar2Ex(interp, arr, "Width",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(new_width));
 
-  to = Tcl_ObjGetVar2(interp, arrobj, orderuobj,
-		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &new_uorder);
+  to = Tcl_GetVar2Ex(interp, arr, "Order_U",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(new_uorder));
 
-  to = Tcl_ObjGetVar2(interp, arrobj, ordervobj,
-		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &new_vorder);
+  to = Tcl_GetVar2Ex(interp, arr, "Height",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(new_height));
 
-  to = Tcl_ObjGetVar2(interp, arrobj, knottypeuobj,
-		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &new_uknot_type);
+  to = Tcl_GetVar2Ex(interp, arr, "Order_V",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(new_vorder));
 
-  to = Tcl_ObjGetVar2(interp, arrobj, knottypevobj, 
-		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &new_vknot_type);
+  to = Tcl_GetVar2Ex(interp, arr, "Knot-Type_U",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(new_uknot_type));
 
-  to = Tcl_ObjGetVar2(interp, arrobj, creatempobj,
-		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Knot-Type_V",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(new_vknot_type));
+
+  to = Tcl_GetVar2Ex(interp, arr, "CreateMP",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &(npatch->createmp));
 
-  to = Tcl_ObjGetVar2(interp, arrobj, tolobj,
-		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Tolerance",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &(npatch->glu_sampling_tolerance));
 
-  to = Tcl_ObjGetVar2(interp, arrobj, dmobj,
-		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "DisplayMode",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &(npatch->display_mode));
 
-  to = Tcl_ObjGetVar2(interp, arrobj, knotsmoduobj,
-		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &uknots_modified);
+  to = Tcl_GetVar2Ex(interp, arr, "Knots_U-Modified",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(uknots_modified));
 
-  to = Tcl_ObjGetVar2(interp, arrobj, knotsmodvobj,
-		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &vknots_modified);
+  to = Tcl_GetVar2Ex(interp, arr, "Knots_V-Modified",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(vknots_modified));
 
-  to = Tcl_ObjGetVar2(interp, arrobj, bevcobj,
-		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "BevelsChanged",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &i);
   if(i)
     {
       update = AY_TRUE;
-
-      to = Tcl_NewIntObj(0);
-      Tcl_ObjSetVar2(interp, arrobj, bevcobj, to,
-		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_SetVar2Ex(interp, arr, "BevelsChanged",
+		    Tcl_NewIntObj(0),
+		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
     }
 
-  to = Tcl_ObjGetVar2(interp, arrobj, capcobj,
-		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "CapsChanged",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &i);
   if(i)
     {
       update = AY_TRUE;
-
-      to = Tcl_NewIntObj(0);
-      Tcl_ObjSetVar2(interp, arrobj, capcobj, to,
-		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_SetVar2Ex(interp, arr, "CapsChanged",
+		    Tcl_NewIntObj(0),
+		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
     }
 
   /* apply changed values to patch */
@@ -2086,7 +2067,7 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   /* decompose uknot-list (create custom knot sequence) */
   if((npatch->uknot_type == AY_KTCUSTOM) && uknots_modified)
     {
-      Tcl_SplitList(interp, Tcl_GetVar2(interp, ay_npatch_arr, "Knots_U",
+      Tcl_SplitList(interp, Tcl_GetVar2(interp, arr, "Knots_U",
 					TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY),
 		    &knotc, &knotv);
 
@@ -2140,7 +2121,7 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   /* decompose vknot-list (create custom knot sequence) */
   if((npatch->vknot_type == AY_KTCUSTOM) && vknots_modified)
     {
-      Tcl_SplitList(interp, Tcl_GetVar2(interp, ay_npatch_arr, "Knots_V",
+      Tcl_SplitList(interp, Tcl_GetVar2(interp, arr, "Knots_V",
 				       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY),
 		    &knotc, &knotv);
 
@@ -2228,7 +2209,7 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_npatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- Tcl_Obj *to = NULL;
+ char arr[] = "NPatchAttrData";
  ay_nurbpatch_object *npatch = NULL;
  int i;
 
@@ -2240,84 +2221,86 @@ ay_npatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!npatch)
     return AY_ENULL;
 
-  to = Tcl_NewIntObj(npatch->width);
-  Tcl_ObjSetVar2(interp, arrobj, widthobj, to,
-		 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Width",
+		Tcl_NewIntObj(npatch->width),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  to = Tcl_NewIntObj(npatch->height);
-  Tcl_ObjSetVar2(interp, arrobj, heightobj, to,
-		 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Height",
+		Tcl_NewIntObj(npatch->height),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  to = Tcl_NewIntObj(npatch->uorder);
-  Tcl_ObjSetVar2(interp, arrobj, orderuobj, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Order_U",
+		Tcl_NewIntObj(npatch->uorder),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  to = Tcl_NewIntObj(npatch->vorder);
-  Tcl_ObjSetVar2(interp, arrobj, ordervobj, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Order_V",
+		Tcl_NewIntObj(npatch->vorder),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  to = Tcl_NewIntObj(npatch->uknot_type);
-  Tcl_ObjSetVar2(interp, arrobj, knottypeuobj, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Knot-Type_U",
+		Tcl_NewIntObj(npatch->uknot_type),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  to = Tcl_NewIntObj(npatch->vknot_type);
-  Tcl_ObjSetVar2(interp, arrobj, knottypevobj, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Knot-Type_V",
+		Tcl_NewIntObj(npatch->vknot_type),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetVar2(interp, ay_npatch_arr, "Knots_U", "", TCL_LEAVE_ERR_MSG |
-	      TCL_GLOBAL_ONLY);
   for(i = 0; i < npatch->width+npatch->uorder; i++)
     {
-      to = Tcl_NewDoubleObj((npatch->uknotv)[i]);
-      Tcl_ObjSetVar2(interp, arrobj, knotsuobj, to, TCL_APPEND_VALUE |
-		     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG |
-		     TCL_GLOBAL_ONLY);
+      Tcl_SetVar2Ex(interp, arr, "Knots_U",
+		    Tcl_NewDoubleObj((npatch->uknotv)[i]),
+		    TCL_APPEND_VALUE | TCL_LIST_ELEMENT |
+		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
     }
 
-  Tcl_SetVar2(interp, ay_npatch_arr, "Knots_V", "", TCL_LEAVE_ERR_MSG |
-	      TCL_GLOBAL_ONLY);
   for(i = 0; i < npatch->height+npatch->vorder; i++)
     {
-      to = Tcl_NewDoubleObj((npatch->vknotv)[i]);
-      Tcl_ObjSetVar2(interp, arrobj, knotsvobj, to, TCL_APPEND_VALUE |
-		     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG |
-		     TCL_GLOBAL_ONLY);
+      Tcl_SetVar2Ex(interp, arr, "Knots_V",
+		    Tcl_NewDoubleObj((npatch->vknotv)[i]),
+		    TCL_APPEND_VALUE | TCL_LIST_ELEMENT |
+		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
     }
 
-  to = Tcl_NewIntObj(npatch->createmp);
-  Tcl_ObjSetVar2(interp, arrobj, creatempobj, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "CreateMP",
+		Tcl_NewIntObj(npatch->createmp),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  to = Tcl_NewDoubleObj(npatch->glu_sampling_tolerance);
-  Tcl_ObjSetVar2(interp, arrobj, tolobj, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Tolerance",
+		Tcl_NewDoubleObj(npatch->glu_sampling_tolerance),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  to = Tcl_NewIntObj(npatch->display_mode);
-  Tcl_ObjSetVar2(interp, arrobj, dmobj, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "DisplayMode",
+		Tcl_NewIntObj(npatch->display_mode),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   if(npatch->is_rat)
-    to = Tcl_NewStringObj("yes", -1);
+    {
+      Tcl_SetVar2Ex(interp, arr, "IsRat",
+		    Tcl_NewStringObj("yes", 3),
+		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+    }
   else
-    to = Tcl_NewStringObj("no", -1);
-  Tcl_ObjSetVar2(interp, arrobj, isratobj, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+    {
+      Tcl_SetVar2Ex(interp, arr, "IsRat",
+		    Tcl_NewStringObj("no", 2),
+		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+    }
 
-  to = Tcl_NewIntObj(0);
-  Tcl_ObjSetVar2(interp, arrobj, knotsmoduobj, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Knots_U-Modified",
+		Tcl_NewIntObj(0),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  to = Tcl_NewIntObj(0);
-  Tcl_ObjSetVar2(interp, arrobj, knotsmodvobj, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Knots_V-Modified",
+		Tcl_NewIntObj(0),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  to = Tcl_NewIntObj(0);
-  Tcl_ObjSetVar2(interp, arrobj, bevcobj, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "BevelsChanged",
+		Tcl_NewIntObj(0),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  to = Tcl_NewIntObj(0);
-  Tcl_ObjSetVar2(interp, arrobj, capcobj, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "CapsChanged",
+		Tcl_NewIntObj(0),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
  return AY_OK;
 } /* ay_npatch_getpropcb */
@@ -3416,57 +3399,6 @@ ay_npatch_init(Tcl_Interp *interp)
   ay_status += ay_convert_register(ay_npatch_convertcb, AY_IDNPATCH);
 
   ay_status += ay_notify_register(ay_npatch_notifycb, AY_IDNPATCH);
-
-  arrobj = Tcl_NewStringObj(ay_npatch_arr,-1);
-  Tcl_IncrRefCount(arrobj);
-
-  widthobj = Tcl_NewStringObj("Width",-1);
-  Tcl_IncrRefCount(widthobj);
-
-  heightobj = Tcl_NewStringObj("Height",-1);
-  Tcl_IncrRefCount(heightobj);
-
-  orderuobj = Tcl_NewStringObj("Order_U",-1);
-  Tcl_IncrRefCount(orderuobj);
-
-  ordervobj = Tcl_NewStringObj("Order_V",-1);
-  Tcl_IncrRefCount(ordervobj);
-
-  creatempobj = Tcl_NewStringObj("CreateMP",-1);
-  Tcl_IncrRefCount(creatempobj);
-
-  knottypeuobj = Tcl_NewStringObj("Knot-Type_U",-1);
-  Tcl_IncrRefCount(knottypeuobj);
-
-  knottypevobj = Tcl_NewStringObj("Knot-Type_V",-1);
-  Tcl_IncrRefCount(knottypevobj);
-
-  knotsuobj = Tcl_NewStringObj("Knots_U",-1);
-  Tcl_IncrRefCount(knotsuobj);
-
-  knotsvobj = Tcl_NewStringObj("Knots_V",-1);
-  Tcl_IncrRefCount(knotsvobj);
-
-  tolobj = Tcl_NewStringObj("Tolerance",-1);
-  Tcl_IncrRefCount(tolobj);
-
-  dmobj = Tcl_NewStringObj("DisplayMode",-1);
-  Tcl_IncrRefCount(dmobj);
-
-  knotsmoduobj = Tcl_NewStringObj("Knots-Modified_U",-1);
-  Tcl_IncrRefCount(knotsmoduobj);
-
-  knotsmodvobj = Tcl_NewStringObj("Knots-Modified_V",-1);
-  Tcl_IncrRefCount(knotsmodvobj);
-
-  isratobj = Tcl_NewStringObj("IsRat",-1);
-  Tcl_IncrRefCount(isratobj);
-
-  capcobj = Tcl_NewStringObj("CapsChanged",-1);
-  Tcl_IncrRefCount(capcobj);
-
-  bevcobj = Tcl_NewStringObj("BevelsChanged",-1);
-  Tcl_IncrRefCount(bevcobj);
 
  return ay_status;
 } /* ay_npatch_init */

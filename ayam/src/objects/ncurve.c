@@ -16,18 +16,6 @@
 
 static char *ay_ncurve_name = "NCurve";
 
-static Tcl_Obj *arrobj = NULL;
-static Tcl_Obj *typeobj = NULL;
-static Tcl_Obj *lengthobj = NULL;
-static Tcl_Obj *orderobj = NULL;
-static Tcl_Obj *creatempobj = NULL;
-static Tcl_Obj *knottypeobj = NULL;
-static Tcl_Obj *knotsobj = NULL;
-static Tcl_Obj *tolobj = NULL;
-static Tcl_Obj *dmobj = NULL;
-static Tcl_Obj *knotsmodobj = NULL;
-static Tcl_Obj *isratobj = NULL;
-
 
 /* prototypes of functions local to this module: */
 
@@ -1300,6 +1288,7 @@ int
 ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  int ay_status = AY_OK, tcl_status = TCL_OK;
+ char *arr = "NCurveAttrData";
  char fname[] = "ncurve_setpropcb";
  Tcl_Obj *to = NULL;
  ay_nurbcurve_object *ncurve = NULL;
@@ -1326,36 +1315,41 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     }
 
   /* get new values from Tcl */
-  to = Tcl_ObjGetVar2(interp, arrobj, lengthobj,
-		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &new_length);
 
-  to = Tcl_ObjGetVar2(interp, arrobj, orderobj,
-		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &new_order);
+  to = Tcl_GetVar2Ex(interp, arr, "Length",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(new_length));
 
-  to = Tcl_ObjGetVar2(interp, arrobj, knottypeobj,
-		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &new_knot_type);
+  to = Tcl_GetVar2Ex(interp, arr, "Order",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(new_order));
 
-  to = Tcl_ObjGetVar2(interp, arrobj, typeobj,
-		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Knot-Type",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(new_knot_type));
+
+  to = Tcl_GetVar2Ex(interp, arr, "Type",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &new_type);
 
-  to = Tcl_ObjGetVar2(interp, arrobj, creatempobj,
-		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "CreateMP",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &(ncurve->createmp));
 
-  to = Tcl_ObjGetVar2(interp, arrobj, tolobj,
-		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "Tolerance",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &(ncurve->glu_sampling_tolerance));
 
-  to = Tcl_ObjGetVar2(interp, arrobj, dmobj,
-		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "DisplayMode",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &(ncurve->display_mode));
 
-  to = Tcl_ObjGetVar2(interp, arrobj, knotsmodobj,
-		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, arr, "DisplayMode",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(ncurve->display_mode));
+
+  to = Tcl_GetVar2Ex(interp, arr, "Knots-Modified",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &knots_modified);
 
 
@@ -1455,8 +1449,8 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   /* decompose knot-list (create custom knot sequence) */
   if((ncurve->knot_type == AY_KTCUSTOM) && knots_modified)
     {
-      to = Tcl_ObjGetVar2(interp, arrobj, knotsobj,
-			  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      to = Tcl_GetVar2Ex(interp, arr, "Knots",
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       tcl_status = Tcl_ListObjGetElements(interp, to, &knotc, &knotv);
       if(tcl_status == TCL_OK)
 	{
@@ -1600,7 +1594,7 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_ncurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- Tcl_Obj *to = NULL;
+ char *arr = "NCurveAttrData";
  ay_nurbcurve_object *ncurve = NULL;
  int i;
 
@@ -1612,57 +1606,58 @@ ay_ncurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!ncurve)
     return AY_ENULL;
 
-  to = Tcl_NewIntObj(ncurve->length);
-  Tcl_ObjSetVar2(interp, arrobj, lengthobj, to,
-		 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Length",
+		Tcl_NewIntObj(ncurve->length),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  to = Tcl_NewIntObj(ncurve->order);
-  Tcl_ObjSetVar2(interp, arrobj, orderobj, to,
-		 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Order",
+		Tcl_NewIntObj(ncurve->order),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  to = Tcl_NewIntObj(ncurve->type);
-  Tcl_ObjSetVar2(interp, arrobj, typeobj, to,
-		 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Type",
+		Tcl_NewIntObj(ncurve->type),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  to = Tcl_NewIntObj(ncurve->createmp);
-  Tcl_ObjSetVar2(interp, arrobj, creatempobj, to,
-		 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "CreateMP",
+		Tcl_NewIntObj(ncurve->createmp),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  to = Tcl_NewIntObj(ncurve->knot_type);
-  Tcl_ObjSetVar2(interp, arrobj, knottypeobj, to,
-		 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  to = Tcl_NewStringObj("", -1);
-  Tcl_ObjSetVar2(interp, arrobj, knotsobj, to,
-		 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Knot-Type",
+		Tcl_NewIntObj(ncurve->knot_type),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   for(i = 0; i < ncurve->length+ncurve->order; i++)
     {
-      to = Tcl_NewDoubleObj((ncurve->knotv)[i]);
-
-      Tcl_ObjSetVar2(interp, arrobj, knotsobj, to,
-		     TCL_APPEND_VALUE | TCL_LIST_ELEMENT |
-		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_SetVar2Ex(interp, arr, "Knots",
+		    Tcl_NewDoubleObj((ncurve->knotv)[i]),
+		    TCL_APPEND_VALUE | TCL_LIST_ELEMENT |
+		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
     }
 
-  to = Tcl_NewDoubleObj(ncurve->glu_sampling_tolerance);
-  Tcl_ObjSetVar2(interp, arrobj, tolobj, to,
-		 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Tolerance",
+		Tcl_NewDoubleObj(ncurve->glu_sampling_tolerance),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  to = Tcl_NewIntObj(ncurve->display_mode);
-  Tcl_ObjSetVar2(interp, arrobj, dmobj, to,
-		 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "DisplayMode",
+		Tcl_NewIntObj(ncurve->display_mode),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   if(ncurve->is_rat)
-    to = Tcl_NewStringObj("yes", -1);
+    {
+      Tcl_SetVar2Ex(interp, arr, "IsRat",
+		    Tcl_NewStringObj("yes", 3),
+		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+    }
   else
-    to = Tcl_NewStringObj("no", -1);
-  Tcl_ObjSetVar2(interp, arrobj, isratobj, to,
-		 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+    {
+      Tcl_SetVar2Ex(interp, arr, "IsRat",
+		    Tcl_NewStringObj("no", 2),
+		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+    }
 
-  to = Tcl_NewIntObj(0);
-  Tcl_ObjSetVar2(interp, arrobj, knotsmodobj, to,
-		 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2Ex(interp, arr, "Knots-Modified",
+		Tcl_NewIntObj(0),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
  return AY_OK;
 } /* ay_ncurve_getpropcb */
@@ -2012,39 +2007,6 @@ ay_ncurve_init(Tcl_Interp *interp)
 
   /* ncurve objects may not be associated with materials */
   ay_matt_nomaterial(AY_IDNCURVE);
-
-  arrobj = Tcl_NewStringObj("NCurveAttrData",-1);
-  Tcl_IncrRefCount(arrobj);
-
-  typeobj = Tcl_NewStringObj("Type",-1);
-  Tcl_IncrRefCount(typeobj);
-
-  lengthobj = Tcl_NewStringObj("Length",-1);
-  Tcl_IncrRefCount(lengthobj);
-
-  orderobj = Tcl_NewStringObj("Order",-1);
-  Tcl_IncrRefCount(orderobj);
-
-  creatempobj = Tcl_NewStringObj("CreateMP",-1);
-  Tcl_IncrRefCount(creatempobj);
-
-  knottypeobj = Tcl_NewStringObj("Knot-Type",-1);
-  Tcl_IncrRefCount(knottypeobj);
-
-  knotsobj = Tcl_NewStringObj("Knots",-1);
-  Tcl_IncrRefCount(knotsobj);
-
-  tolobj = Tcl_NewStringObj("Tolerance",-1);
-  Tcl_IncrRefCount(tolobj);
-
-  dmobj = Tcl_NewStringObj("DisplayMode",-1);
-  Tcl_IncrRefCount(dmobj);
-
-  knotsmodobj = Tcl_NewStringObj("Knots-Modified",-1);
-  Tcl_IncrRefCount(knotsmodobj);
-
-  isratobj = Tcl_NewStringObj("IsRat",-1);
-  Tcl_IncrRefCount(isratobj);
 
  return ay_status;
 } /* ay_ncurve_init */
