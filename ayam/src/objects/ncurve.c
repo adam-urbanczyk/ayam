@@ -1626,6 +1626,8 @@ ay_ncurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		Tcl_NewIntObj(ncurve->knot_type),
 		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetVar2Ex(interp, arr, "Knots", Tcl_NewStringObj("", -1),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   for(i = 0; i < ncurve->length+ncurve->order; i++)
     {
       Tcl_SetVar2Ex(interp, arr, "Knots",
