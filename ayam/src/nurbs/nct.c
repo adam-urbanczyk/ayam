@@ -5630,11 +5630,11 @@ ay_nct_getcurvaturetcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[])
 {
  int tcl_status = TCL_OK;
- ay_object *o = NULL;
+ ay_object *o = NULL, *po = NULL;
  ay_nurbcurve_object *curve = NULL;
  ay_list_object *sel = ay_selection;
  double u = 0.0, k;
- int i = 1, relative = AY_FALSE;
+ int i = 1, relative = AY_FALSE, freepo = AY_FALSE;
  Tcl_Obj *to = NULL, *res = NULL;
 
   while(i < argc)
@@ -5663,7 +5663,20 @@ ay_nct_getcurvaturetcmd(ClientData clientData, Tcl_Interp *interp,
       if(o->type == AY_IDNCURVE)
 	{
 	  curve = (ay_nurbcurve_object*)o->refine;
+	  freepo = AY_FALSE;
+	}
+      else
+	{
+	  (void)ay_provide_object(sel->object, AY_IDNCURVE, &po);
+	  if(po)
+	    {
+	      freepo = AY_TRUE;
+	      curve = (ay_nurbcurve_object *)po->refine;
+	    }
+	}
 
+      if(curve)
+	{
 	  k = ay_nct_getcurvature(curve, relative, u);
 
 	  if(to)
@@ -5681,7 +5694,12 @@ ay_nct_getcurvaturetcmd(ClientData clientData, Tcl_Interp *interp,
       else
 	{
 	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
-	} /* if is NCurve */
+	} /* if have NCurve */
+
+      if(freepo)
+	{
+	  (void)ay_object_deletemulti(po, AY_TRUE);
+	}
       sel = sel->next;
     } /* while */
 
