@@ -16175,11 +16175,11 @@ ay_npt_getcurvaturetcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[])
 {
  int tcl_status = TCL_OK;
- ay_object *o = NULL;
+ ay_object *o = NULL, *po = NULL;
  ay_nurbpatch_object *patch = NULL;
  ay_list_object *sel = ay_selection;
  double u = 0.0, v = 0.0, k;
- int i = 1, relative = AY_FALSE;
+ int i = 1, relative = AY_FALSE, freepo = AY_FALSE;
  Tcl_Obj *to = NULL, *res = NULL;
 
   while(i < argc)
@@ -16216,10 +16216,25 @@ ay_npt_getcurvaturetcmd(ClientData clientData, Tcl_Interp *interp,
   while(sel)
     {
       o = sel->object;
+      freepo = AY_FALSE;
+      patch = NULL;
+
       if(o->type == AY_IDNPATCH)
 	{
 	  patch = (ay_nurbpatch_object*)o->refine;
+	}
+      else
+	{
+	  (void)ay_provide_object(sel->object, AY_IDNPATCH, &po);
+	  if(po)
+	    {
+	      patch = (ay_nurbpatch_object *)po->refine;
+	      freepo = AY_TRUE;
+	    }
+	}
 
+      if(patch)
+	{
 	  k = ay_npt_getcurvature(patch, relative, u, v);
 
 	  if(to)
@@ -16237,7 +16252,12 @@ ay_npt_getcurvaturetcmd(ClientData clientData, Tcl_Interp *interp,
       else
 	{
 	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
-	} /* if is NPatch */
+	} /* if have NPatch */
+
+      if(freepo)
+	{
+	  (void)ay_object_deletemulti(po, AY_TRUE);
+	}
       sel = sel->next;
     } /* while */
 
