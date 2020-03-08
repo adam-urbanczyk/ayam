@@ -1117,8 +1117,11 @@ ay_safeinit(Tcl_Interp *interp)
 		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* notify.c */
-  Tcl_CreateCommand(interp, "notifyOb", ay_notify_objectsafetcmd,
-		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+  if(interp == ay_safeinterp)
+    {
+      Tcl_CreateCommand(interp, "notifyOb", ay_notify_objectsafetcmd,
+			(ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+    }
 
   /* object.c */
   Tcl_CreateCommand(interp, "crtOb", ay_object_createtcmd,
@@ -1233,9 +1236,11 @@ ay_safeinit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "getSel", ay_sel_getseltcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  if(interp != ay_interp)
-    Tcl_CreateCommand(interp, "sL", ay_sel_hsltcmd,
-		      (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+  if(interp == ay_safeinterp)
+    {
+      Tcl_CreateCommand(interp, "sL", ay_sel_hsltcmd,
+			(ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+    }
 
   /* shader.c */
   Tcl_CreateCommand(interp, "shaderSet", ay_shader_settcmd,
