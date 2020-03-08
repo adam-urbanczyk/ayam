@@ -5660,10 +5660,12 @@ ay_nct_getcurvaturetcmd(ClientData clientData, Tcl_Interp *interp,
   while(sel)
     {
       o = sel->object;
+      freepo = AY_FALSE;
+      curve = NULL;
+
       if(o->type == AY_IDNCURVE)
 	{
 	  curve = (ay_nurbcurve_object*)o->refine;
-	  freepo = AY_FALSE;
 	}
       else
 	{
