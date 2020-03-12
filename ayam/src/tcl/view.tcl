@@ -220,10 +220,17 @@ proc viewRender { w type } {
 
     set togl $w.f3D.togl
 
+    if { [string first ".view" $w] == 0 } {
+	set vn V[string range $w 2 end]
+    } else {
+	set vn V[string range [file extension $w] 3 end]
+    }
+
     if { $ayprefs(ShadowMaps) < 1 } {
 	# no shadow maps
 	if { $type < 2 } {
 	    # render to display
+	    ayError 4 "viewRender" "Rendering $vn ..."
 	    tmpGet $ayprefs(TmpDir) tmpfile .rib
 	    if { $tcl_platform(platform) == "windows" } {
 		# Windows sucks big time!
@@ -246,7 +253,7 @@ proc viewRender { w type } {
 	    if { $tmpfile != "" } {
 		set imagename [io_getImageName $tmpfile]
 		if { $imagename != "" } {
-		    ayError 4 "viewRender" "Rendering to \"$imagename\"..."
+		    ayError 4 "viewRender" "Rendering $vn to \"$imagename\"..."
 		    $togl wrib -file $tmpfile -image $imagename -temp -rtf
 		}
 	    }
@@ -260,6 +267,7 @@ proc viewRender { w type } {
 	if { $imagename == "" } { return; }
 	if { $type < 2 } {
 	    # render to display
+	    ayError 4 "viewRender" "Rendering $vn ..."
 	    if { $ayprefs(RenderMode) == 2 } {
 		set imagename ${tmpfile}.fifo
 		$togl wrib -file $tmpfile -image $imagename -temp -rtv
@@ -272,7 +280,7 @@ proc viewRender { w type } {
 	    }
 	} else {
 	    # render to image file
-	    ayError 4 "viewRender" "Rendering to \"$imagename\"..."
+	    ayError 4 "viewRender" "Rendering $vn to \"$imagename\"..."
 	    $togl wrib -file $tmpfile -image $imagename -temp -rtf
 	}
     }
