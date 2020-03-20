@@ -14092,7 +14092,7 @@ It is no error if no knots can be removed.
 <p>
 See also the example image above where a curve created by the concatenation
 algorithm with knot type <tt/"Custom"/ and therefore superfluous knots has
-been cleaned up.
+been cleaned up by the remove superfluous knots tool.
 The original curve of order three with 28 control points is defined on the knot
 vector:<newline>
 <f>[&thinsp;0&thinsp;0&thinsp;0&ensp;1&thinsp;1&thinsp;1&ensp;1.5&ensp;2&thinsp;2&thinsp;2&ensp;3&thinsp;3&thinsp;3&ensp;3.5&ensp;4&thinsp;4&thinsp;4&ensp;5&thinsp;5&thinsp;5&ensp;5.5&ensp;6&thinsp;6&thinsp;6&ensp;7&thinsp;7&thinsp;7&ensp;7.5&ensp;8&thinsp;8&thinsp;8&thinsp;]</f>.<newline>
@@ -15019,8 +15019,14 @@ from the selection and additionally requests two integer values.
 by the specified integer values without changing the shape of the patches.
 New control points will be added and the position
 of old control points may be changed in the progress.
-See also the example image above where a surface of order four has been
-elevated to order five in U direction.
+
+See also the image above, where a surface of order four and width five,
+originally defined on the u knot vector:<newline>
+<f>[&thinsp;0&thinsp;0&thinsp;0&thinsp;0&ensp;0.5&ensp;1&thinsp;1&thinsp;1&thinsp;1&thinsp;]</f><newline>
+has been elevated to order five in u direction and is now of width seven
+and defined on the u knot vector:<newline>
+<f>[&thinsp;0&thinsp;0&thinsp;0&thinsp;0&thinsp;0&ensp;0.5&ensp;0.5&ensp;1&thinsp;1&thinsp;1&thinsp;1&thinsp;1&thinsp;]</f>.
+
 <tag/Notes/ If the knot vector of the patch is not clamped, it
 will be clamped automatically.
 
@@ -15053,7 +15059,15 @@ the selection and additionally request a tolerance value.
 <tag/Operation/ The order of the selected NURBS surfaces will be decreased
 by one if the shape of the reduced surfaces does not deviate from the original
 surfaces by the given tolerance in any point.
-See also the example image above.
+
+See also the example image above where a surface of order four and
+height four, defined on the v knot vector<newline>
+<f>[&thinsp;0&thinsp;0&thinsp;0&thinsp;0&ensp;1&thinsp;1&thinsp;1&thinsp;1&thinsp;]</f>,<newline>
+has been reduced in v direction to order three and is now of height three and
+defined on the v knot vector<newline>
+<f>[&thinsp;0&thinsp;0&thinsp;0&ensp;1&thinsp;1&thinsp;1&thinsp;]</f>.
+
+
 <tag/Notes/ If the respective knot vector of the surface is not clamped, it
 will be clamped automatically. The respective knot type of the surface will
 be changed to <tt/"Custom"/. Control points will be removed and the position
@@ -15086,6 +15100,14 @@ the selection.
 changed using knot insertion so that the first and the last knot
 (in each direction) have a multiplicity equal to the order of the patch
 (in the respective direction).
+
+See also the image above, where a surface of width/height four and both
+orders also four,
+originally defined on the B-Spline knot vectors:<newline>
+<f>[&thinsp;0&ensp;0.1428&ensp;0.2857&ensp;0.4285&ensp;0.5714&ensp;0.7142&ensp;0.8571&ensp;1.0&thinsp;]</f><newline>
+has been clamped and is now defined on the knot vectors:<newline>
+<f>[&thinsp;0.4285&thinsp;0.4285&thinsp;0.4285&thinsp;0.4285&ensp;0.5714&thinsp;0.5714&thinsp;0.5714&thinsp;0.5714&thinsp;]</f>.
+
 <tag/Notes/ The shape of the patches will not change but the position of some
 control points will. The patches interpolate the first and the last control
 points in the respective direction afterwards (unless the weights of those
@@ -15119,6 +15141,14 @@ changed so that there are no multiple knots at the respective ends
 of the knot vectors. The shape of the patches will not change but the
 position of some control points will. The knot types of the patches may
 be changed to type <tt/"Custom"/.
+
+See also the image above, where a surface of width/height four and both
+orders three,
+originally defined on the knot vectors:<newline>
+<f>[&thinsp;0&thinsp;0&thinsp;0&ensp;0.5&ensp;1&thinsp;1&thinsp;1&thinsp;]</f><newline>
+has been unclamped and is now defined on the knot vectors:<newline>
+<f>[&thinsp;0&ensp;0.1666&ensp;0.3333&ensp;0.5&ensp;0.6666&ensp;0.8333&ensp;1&thinsp;]</f>.
+
 <tag/Notes/
 Unclamping is <em/not/ an exact reversal of clamping (and vice versa).
 
@@ -15140,7 +15170,7 @@ curves <ref id="unclat" name="Unclamp Tool">.
 <sect2>Insert Knot Surface Tool<label id="insknnpt">
 <p>
 <figure loc="ht">
-<eps file="pics/insknnp.ps" height="5cm">
+<eps file="pics/insknnp.ps" height="5.5cm">
 <img src="pics/insknnp.gif">
 <caption>Insert Knot Surface Tool (left: original patch, right: a knot has been
 inserted one time at <em/t/&thinsp;=&thinsp;0.5)</caption>
@@ -15153,6 +15183,14 @@ and an integer value <em/i/.
 <tag/Operation/ A knot with the specified value <em/t/ will be inserted <em/i/
 times into the knot vector of the selected patches, without changing their
 shape.
+
+See also the image above, where a knot has been inserted at
+<em/u/&thinsp;=&thinsp;0.5 one time into a surface of width four and
+order four that was originally defined on the u knot vector:<newline>
+<f>[&thinsp;0&thinsp;0&thinsp;0&thinsp;0&ensp;1&thinsp;1&thinsp;1&thinsp;1&thinsp;]</f>.<newline>
+The processed surface of width five is defined on the u knot vector:<newline>
+<f>[&thinsp;0&thinsp;0&thinsp;0&thinsp;0&ensp;0.5&ensp;1&thinsp;1&thinsp;1&thinsp;1&thinsp;]</f>.
+
 <tag/Notes/ The knot type of the patch will be changed to <tt/"Custom"/.
 
 This tool does not change the geometry of the patches.
@@ -15193,6 +15231,14 @@ If the knot can not be removed <em/r/ times due to the tolerance given, an
 error is reported and the original surface is left unchanged.<newline>
 This operation also fails, if the knot removal would lead to a surface
 of lower order.
+
+See also the image above, where the knot <em/t/&thinsp;=&thinsp;0.5
+has been removed one time from a surface of width five and
+order four that was originally defined on the u knot vector:<newline>
+<f>[&thinsp;0&thinsp;0&thinsp;0&thinsp;0&ensp;0.5&ensp;1&thinsp;1&thinsp;1&thinsp;1&thinsp;]</f>.<newline>
+The processed surface of width four is defined on the knot vector:<newline>
+<f>[&thinsp;0&thinsp;0&thinsp;0&thinsp;0&ensp;1&thinsp;1&thinsp;1&thinsp;1&thinsp;]</f>.
+
 <tag/Notes/ If <em/tol/ is <tt/"0.0"/ the remove knot tool tries to
 work without changing the shape of the surface, i.e.~only superfluous
 knots will be removed.
