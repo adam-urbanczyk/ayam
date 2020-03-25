@@ -8051,10 +8051,11 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 	      goto cleanup;
 	    }
 
+	  p1 = normal;
 	  for(i = 0; i < curve->length; i++)
 	    {
-	      p1 = &(vn[i*vnstride]);
-	      AY_V3SCAL(p1, offset);
+	      memcpy(normal, &(vn[i*vnstride]), 3*sizeof(double));
+	      AY_V3SCAL(normal, offset);
 	      newcv[i*stride]   = curve->controlv[i*stride]   + p1[0];
 	      newcv[i*stride+1] = curve->controlv[i*stride+1] + p1[1];
 	      newcv[i*stride+2] = curve->controlv[i*stride+2] + p1[2];
