@@ -5425,7 +5425,7 @@ ay_nct_rescaleknvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  (void)ay_notify_object(src);
 	  notify_parent = AY_TRUE;
 	  src->modified = AY_TRUE;
-	} /* if */
+	} /* if is NCurve */
 
       sel = sel->next;
     } /* while */
@@ -5439,11 +5439,12 @@ ay_nct_rescaleknvtcmd(ClientData clientData, Tcl_Interp *interp,
 
 /** ay_nct_getcurvature:
  * compute curvature of a NURBS curve
+ *
  * \param[in] np NURBS curve to interrogate
  * \param[in] relative if AY_TRUE, interpret \a u in a relative way
  * \param[in] u parametric value
  *
- * \returns  curvature at designated position on the surface
+ * \returns curvature at designated position on the curve
  */
 double
 ay_nct_getcurvature(ay_nurbcurve_object *nc, int relative, double u)
