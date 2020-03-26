@@ -7914,7 +7914,7 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
  double t1[2], n[2];
  char *nname = ay_prefs.normalname;
  unsigned int vnlen = 0;
- double *vn = NULL, vlen;
+ double *vn = NULL, vlen, have_mn = AY_FALSE;
  int vnstride = 3, free_vn = AY_FALSE;
 
   /* sanity check */
@@ -8046,7 +8046,32 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 		}
 	    }
 
-	  if(!vn || (vnlen != (unsigned int)curve->length))
+	  /* also, check for a MN-tag */
+	  if(!vn)
+	    {
+	      tag = o->tags;
+	      while(tag)
+		{
+		  if(tag->type == ay_mn_tagtype)
+		    {
+		      vnlen = sscanf(tag->val, "%lg,%lg,%lg",
+			       &(tangent[0]), &(tangent[1]), &(tangent[2]));
+		      if(vnlen != 3)
+			{
+			  ay_status = AY_ERROR;
+			  goto cleanup;
+			}
+		      else
+			{
+			  have_mn = AY_TRUE;
+			}
+		      break;
+		    }
+		  tag = tag->next;
+		}
+	    }
+
+	  if(!have_mn && (!vn || (vnlen != (unsigned int)curve->length)))
 	    {
 	      ay_status = AY_ERROR;
 	      goto cleanup;
@@ -8055,7 +8080,10 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 	  p1 = normal;
 	  for(i = 0; i < curve->length; i++)
 	    {
-	      memcpy(normal, &(vn[i*vnstride]), 3*sizeof(double));
+	      if(have_mn)
+		memcpy(normal, tangent, 3*sizeof(double));
+	      else
+		memcpy(normal, &(vn[i*vnstride]), 3*sizeof(double));
 	      AY_V3SCAL(normal, offset);
 	      newcv[i*stride]   = curve->controlv[i*stride]   + p1[0];
 	      newcv[i*stride+1] = curve->controlv[i*stride+1] + p1[1];
