@@ -1,12 +1,15 @@
-[1. Mar 2020] Mercurial Tip:
-============================
+[26. Mar 2020] Mercurial Tip:
+=============================
 Bug Fixes:
 o append option of split curve tool does not work (SF 595)
 o display of ConeAngle and ConeDeltaAngle (SF 597)
+o computation of chordal/centripetal surface knots (SF 598)
+o handling of NT tags in 3DPVN offset curves (SF 599)
 
 Modelling:
 o added option to specify the split knot in a relative way in the
   split curve tool
+o added MN tag support to 3DPVN offset curves
 
 Scripts/Scripting Interface:
 o added "-r" (relative) option to "splitNC" command
@@ -176,7 +179,7 @@ o many scripting interface commands now check their parameters more
   rigorously for NaN values
 
 Plugins:
-o added custom object/plugin "SDCurve" to model with subdivision curves 
+o added custom object/plugin "SDCurve" to model with subdivision curves
 o added support for periodic patches to NPatch to SDNPatch conversion
 o SDNPatch drawing now obeys the RationalStyle preference setting
 o SDNPatch drawing now also colors rational control points in weight editing
