@@ -7068,7 +7068,7 @@ ay_nct_coarsen(ay_nurbcurve_object *curve, ay_point *selp)
  char fname[] = "nct_coarsen";
  ay_point pmin = {0}, pmax = {0}, *tselp = NULL;
  double *newcontrolv = NULL, *newknotv = NULL;
- int newlength, p, t, smin, smax;
+ int newlength = 0, p, t, smin, smax;
 
   if(!curve)
     return AY_ENULL;
@@ -7133,7 +7133,7 @@ ay_nct_coarsen(ay_nurbcurve_object *curve, ay_point *selp)
   ay_status = ay_nct_coarsenarray(curve->controlv, curve->length, 4,
 				  &pmin, &newcontrolv, &newlength);
 
-  if(ay_status)
+  if(ay_status || !newcontrolv || newlength == 0)
     {
       ay_error(AY_ERROR, fname, "Coarsen failed.");
       return ay_status;
@@ -9100,7 +9100,7 @@ ay_nct_isplanar(ay_object *c, int allow_flip, ay_object **cp, int *is_planar)
  ay_icurve_object *ic;
  ay_acurve_object *ac;
  double *cv;
- int i, len, stride = 4;
+ int i, len = 0, stride = 4;
 
   if(!c || !is_planar)
     return;
