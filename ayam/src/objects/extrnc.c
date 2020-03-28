@@ -659,8 +659,20 @@ ay_extrnc_notifycb(ay_object *o)
     {
       goto cleanup;
     }
+
+  if(extrnc->revert)
+    {
+      ay_status = ay_nct_revert((ay_nurbcurve_object *)(ncurve->refine));
+    }
+
   if(pvnt)
     {
+      if(extrnc->revert)
+	{
+	  (void) ay_nct_revertarr(pvnt,
+			   ((ay_nurbcurve_object *)(ncurve->refine))->length,
+			   extrnc->extractnt > 1 ? 9 : 3);
+	}
       if(extrnc->extractnt > 1)
 	{
 	  if(!(newtag = calloc(1, sizeof(ay_tag))))
@@ -703,11 +715,7 @@ ay_extrnc_notifycb(ay_object *o)
 		    ((ay_nurbcurve_object *)(ncurve->refine))->length,
 		    stride, (void*)pvnt);
 	}
-    }
-  if(extrnc->revert)
-    {
-      ay_status = ay_nct_revert((ay_nurbcurve_object *)(ncurve->refine));
-    }
+    } /* if pvnt */
 
   extrnc->ncurve = ncurve;
 
