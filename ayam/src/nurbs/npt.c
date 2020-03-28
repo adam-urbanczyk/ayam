@@ -7780,18 +7780,25 @@ ay_npt_gordonwc(ay_object *g)
  * \param[in] o NURBS patch object to process
  * \param[in] apply_trafo this parameter controls whether transformation
  *  attributes of \a o should be applied to the control points of the curve
+ * \param[in] extractnt should normals/tangents be extracted (0 - no,
+ *            1 - normals, 2 - normals and tangents)
+ * \param[in,out] pvnt pointer where to store the extracted normals/tangents,
+ *            may be NULL, if \a extractnt is 0
  * \param[in,out] result pointer where to store the extracted curve
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_npt_extractboundary(ay_object *o, int apply_trafo,
-		       ay_nurbcurve_object **result)
+ay_npt_extractboundary(ay_object *o, int apply_trafo, int extractnt,
+		       double **pvnt, ay_nurbcurve_object **result)
 {
  int ay_status = AY_OK;
  ay_nurbcurve_object *u0 = NULL, *un = NULL, *v0 = NULL, *vn = NULL;
+ ay_nurbcurve_object *ub;
  ay_nurbpatch_object *np;
  ay_object o0 = {0}, o1 = {0}, o2 = {0}, o3 = {0}, *c = NULL;
+ double *pvnt0 = NULL, *pvnt1 = NULL, *pvnt2 = NULL, *pvnt3 = NULL;
+ double *pvnext;
  ay_object *list = NULL, **next;
 
   if(!o || !result)
@@ -7806,22 +7813,22 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo,
   if(np->vknot_type == AY_KTNURB || np->vknot_type == AY_KTBEZIER)
     {
       ay_status = ay_npt_extractnc(o, 0, 0.0, AY_FALSE, apply_trafo,
-				   AY_FALSE, NULL, &u0);
+				   extractnt, &pvnt0, &u0);
       if(ay_status)
 	goto cleanup;
       ay_status = ay_npt_extractnc(o, 1, 0.0, AY_FALSE, apply_trafo,
-				   AY_FALSE, NULL, &un);
+				   extractnt, &pvnt2, &un);
       if(ay_status)
 	goto cleanup;
     }
   else
     {
       ay_status = ay_npt_extractnc(o, 4, 0.0, AY_TRUE, apply_trafo,
-				   AY_FALSE, NULL, &u0);
+				   extractnt, &pvnt0, &u0);
       if(ay_status)
 	goto cleanup;
       ay_status = ay_npt_extractnc(o, 4, 1.0, AY_TRUE, apply_trafo,
-				   AY_FALSE, NULL, &un);
+				   extractnt, &pvnt2, &un);
       if(ay_status)
 	goto cleanup;
     }
@@ -7829,34 +7836,45 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo,
   if(np->uknot_type == AY_KTNURB || np->uknot_type == AY_KTBEZIER)
     {
       ay_status = ay_npt_extractnc(o, 2, 0.0, AY_FALSE, apply_trafo,
-				   AY_FALSE, NULL, &v0);
+				   extractnt, &pvnt1, &v0);
       if(ay_status)
 	goto cleanup;
       ay_status = ay_npt_extractnc(o, 3, 0.0, AY_FALSE, apply_trafo,
-				   AY_FALSE, NULL, &vn);
+				   extractnt, &pvnt3, &vn);
       if(ay_status)
 	goto cleanup;
     }
   else
     {
       ay_status = ay_npt_extractnc(o, 5, 0.0, AY_TRUE, apply_trafo,
-				   AY_FALSE, NULL, &v0);
+				   extractnt, &pvnt1, &v0);
       if(ay_status)
 	goto cleanup;
       ay_status = ay_npt_extractnc(o, 5, 1.0, AY_TRUE, apply_trafo,
-				   AY_FALSE, NULL, &vn);
+				   extractnt, &pvnt3, &vn);
       if(ay_status)
 	goto cleanup;
     }
 
   /* arrange the curves properly */
   ay_nct_revert(un);
+  if(pvnt2)
+    ay_nct_revertarr(pvnt2, un->length, extractnt>1?9:3);
   ay_nct_revert(v0);
+  if(pvnt1)
+    ay_nct_revertarr(pvnt1, v0->length, extractnt>1?9:3);
 
   next = &list;
 
   if(ay_nct_isdegen(u0))
-    o0.type = AY_IDLAST;
+    {
+      o0.type = AY_IDLAST;
+      if(pvnt0)
+	{
+	  free(pvnt0);
+	  pvnt0 = NULL;
+	}
+    }
   else
     {
       ay_object_defaults(&o0);
@@ -7866,7 +7884,14 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo,
       next = &(o0.next);
     }
   if(ay_nct_isdegen(vn))
-    o1.type = AY_IDLAST;
+    {
+      o1.type = AY_IDLAST;
+      if(pvnt1)
+	{
+	  free(pvnt1);
+	  pvnt1 = NULL;
+	}
+    }
   else
     {
       ay_object_defaults(&o1);
@@ -7876,7 +7901,14 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo,
       next = &(o1.next);
     }
   if(ay_nct_isdegen(un))
-    o2.type = AY_IDLAST;
+    {
+      o2.type = AY_IDLAST;
+      if(pvnt2)
+	{
+	  free(pvnt2);
+	  pvnt2 = NULL;
+	}
+    }
   else
     {
       ay_object_defaults(&o2);
@@ -7886,7 +7918,14 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo,
       next = &(o2.next);
     }
   if(ay_nct_isdegen(v0))
-    o3.type = AY_IDLAST;
+    {
+      o3.type = AY_IDLAST;
+      if(pvnt3)
+	{
+	  free(pvnt3);
+	  pvnt3 = NULL;
+	}
+    }
   else
     {
       ay_object_defaults(&o3);
@@ -7915,6 +7954,35 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo,
       ay_nct_applytrafo(c);
     }
 
+  /* concatenate extracted normals&tangents */
+  if(extractnt)
+    {
+      ub = (ay_nurbcurve_object*)c->refine;
+      if(!(*pvnt = malloc(ub->length*(extractnt>1?9:3)*sizeof(double))))
+	{ay_status = AY_EOMEM; goto cleanup;}
+      pvnext = *pvnt;
+      if(pvnt0)
+	{
+	  memcpy(pvnext, pvnt0, u0->length*(extractnt>1?9:3)*sizeof(double));
+	  pvnext += u0->length*(extractnt>1?9:3);
+	}
+      if(pvnt1)
+	{
+	  memcpy(pvnext, pvnt1, vn->length*(extractnt>1?9:3)*sizeof(double));
+	  pvnext += vn->length*(extractnt>1?9:3);
+	}
+      if(pvnt2)
+	{
+	  memcpy(pvnext, pvnt2, un->length*(extractnt>1?9:3)*sizeof(double));
+	  pvnext += un->length*(extractnt>1?9:3);
+	}
+      if(pvnt3)
+	{
+	  memcpy(pvnext, pvnt3, v0->length*(extractnt>1?9:3)*sizeof(double));
+	  pvnext += v0->length*(extractnt>1?9:3);
+	}
+    }
+
   /* return result */
   *result = (ay_nurbcurve_object*)c->refine;
 
@@ -7926,6 +7994,15 @@ cleanup:
 
   if(c)
     free(c);
+
+  if(pvnt0)
+    free(pvnt0);
+  if(pvnt1)
+    free(pvnt1);
+  if(pvnt2)
+    free(pvnt2);
+  if(pvnt3)
+    free(pvnt3);
 
  return ay_status;
 } /* ay_npt_extractboundary */
@@ -8150,7 +8227,8 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
 
   if(side == 6)
     {
-      return ay_npt_extractboundary(o, apply_trafo, result);
+      return ay_npt_extractboundary(o, apply_trafo, extractnt,
+				    pvnt, result);
     }
 
   if(!(nc = calloc(1, sizeof(ay_nurbcurve_object))))
