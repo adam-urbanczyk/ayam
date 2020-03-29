@@ -7796,10 +7796,11 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo, int extractnt,
  ay_nurbcurve_object *u0 = NULL, *un = NULL, *v0 = NULL, *vn = NULL;
  ay_nurbcurve_object *ub;
  ay_nurbpatch_object *np;
- ay_object o0 = {0}, o1 = {0}, o2 = {0}, o3 = {0}, *c = NULL;
+ ay_object o0 = {0}, o1 = {0}, o2 = {0}, o3 = {0}, *c = NULL, *oc = NULL;
+ ay_object *list = NULL, **next;
  double *pvnt0 = NULL, *pvnt1 = NULL, *pvnt2 = NULL, *pvnt3 = NULL;
  double *pvnext;
- ay_object *list = NULL, **next;
+ int clearoc = AY_FALSE;
 
   if(!o || !result)
     return AY_ENULL;
@@ -7809,25 +7810,52 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo, int extractnt,
 
   np = (ay_nurbpatch_object *)o->refine;
 
+  if(extractnt && np->uorder != np->vorder)
+    {
+      /* when extracting normals&tangents we must equalize the
+	 surface orders, otherwise the extracted data will become
+	 invalid in the make compatible step below */
+      ay_status = ay_object_copy(o, &oc);
+      if(ay_status || !oc)
+	return AY_ERROR;
+      clearoc = AY_TRUE;
+      np = (ay_nurbpatch_object *)oc->refine;
+
+      if(np->uorder > np->vorder)
+	ay_status = ay_npt_elevatev(np, np->uorder - np->vorder, AY_FALSE);
+      else
+	ay_status = ay_npt_elevateu(np, np->vorder - np->uorder, AY_FALSE);
+
+      if(ay_status)
+	{
+	  ay_object_delete(oc);
+	  return AY_ERROR;
+	}
+    }
+  else
+    {
+      oc = o;
+    }
+
   /* extract four curves (from each boundary) */
   if(np->vknot_type == AY_KTNURB || np->vknot_type == AY_KTBEZIER)
     {
-      ay_status = ay_npt_extractnc(o, 0, 0.0, AY_FALSE, apply_trafo,
+      ay_status = ay_npt_extractnc(oc, 0, 0.0, AY_FALSE, apply_trafo,
 				   extractnt, &pvnt0, &u0);
       if(ay_status)
 	goto cleanup;
-      ay_status = ay_npt_extractnc(o, 1, 0.0, AY_FALSE, apply_trafo,
+      ay_status = ay_npt_extractnc(oc, 1, 0.0, AY_FALSE, apply_trafo,
 				   extractnt, &pvnt2, &un);
       if(ay_status)
 	goto cleanup;
     }
   else
     {
-      ay_status = ay_npt_extractnc(o, 4, 0.0, AY_TRUE, apply_trafo,
+      ay_status = ay_npt_extractnc(oc, 4, 0.0, AY_TRUE, apply_trafo,
 				   extractnt, &pvnt0, &u0);
       if(ay_status)
 	goto cleanup;
-      ay_status = ay_npt_extractnc(o, 4, 1.0, AY_TRUE, apply_trafo,
+      ay_status = ay_npt_extractnc(oc, 4, 1.0, AY_TRUE, apply_trafo,
 				   extractnt, &pvnt2, &un);
       if(ay_status)
 	goto cleanup;
@@ -7835,22 +7863,22 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo, int extractnt,
 
   if(np->uknot_type == AY_KTNURB || np->uknot_type == AY_KTBEZIER)
     {
-      ay_status = ay_npt_extractnc(o, 2, 0.0, AY_FALSE, apply_trafo,
+      ay_status = ay_npt_extractnc(oc, 2, 0.0, AY_FALSE, apply_trafo,
 				   extractnt, &pvnt1, &v0);
       if(ay_status)
 	goto cleanup;
-      ay_status = ay_npt_extractnc(o, 3, 0.0, AY_FALSE, apply_trafo,
+      ay_status = ay_npt_extractnc(oc, 3, 0.0, AY_FALSE, apply_trafo,
 				   extractnt, &pvnt3, &vn);
       if(ay_status)
 	goto cleanup;
     }
   else
     {
-      ay_status = ay_npt_extractnc(o, 5, 0.0, AY_TRUE, apply_trafo,
+      ay_status = ay_npt_extractnc(oc, 5, 0.0, AY_TRUE, apply_trafo,
 				   extractnt, &pvnt1, &v0);
       if(ay_status)
 	goto cleanup;
-      ay_status = ay_npt_extractnc(o, 5, 1.0, AY_TRUE, apply_trafo,
+      ay_status = ay_npt_extractnc(oc, 5, 1.0, AY_TRUE, apply_trafo,
 				   extractnt, &pvnt3, &vn);
       if(ay_status)
 	goto cleanup;
@@ -7939,12 +7967,12 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo, int extractnt,
 
   /* in case the surface has different orders for U/V
      make the curves compatible (this also clamps them) */
-  ay_status = ay_nct_makecompatible(list, /*level=*/2);
+  ay_status = ay_nct_makecompatible(list, /*level=*/0);
   if(ay_status)
     {ay_status = AY_ERROR; goto cleanup;}
 
   /* concatenate all four extracted curves */
-  ay_status = ay_nct_concatmultiple(AY_FALSE, 1, AY_FALSE, list, &c);
+  ay_status = ay_nct_concatmultiple(/*closed=*/AY_FALSE, 1, AY_FALSE, list, &c);
   if(ay_status || !c)
     {ay_status = AY_ERROR; goto cleanup;}
 
@@ -7979,7 +8007,7 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo, int extractnt,
       if(pvnt3)
 	{
 	  memcpy(pvnext, pvnt3, v0->length*(extractnt>1?9:3)*sizeof(double));
-	  pvnext += v0->length*(extractnt>1?9:3);
+	  /*pvnext += v0->length*(extractnt>1?9:3);*/
 	}
     }
 
@@ -8003,6 +8031,9 @@ cleanup:
     free(pvnt2);
   if(pvnt3)
     free(pvnt3);
+
+  if(clearoc && oc)
+    (void)ay_object_delete(oc);
 
  return ay_status;
 } /* ay_npt_extractboundary */
@@ -8355,10 +8386,15 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
 	}
 
       if(r > 0)
-	 a = k - (np->vorder-1) + (np->vorder-1-s+r-1)/2 + 1;
-       else
-	 a = k - (np->vorder-1);
-
+	{
+	  a = k - (np->vorder-1) + (np->vorder-1-s+r-1)/2 + 1;
+	}
+      else
+	{
+	  a = 0;
+	  while(np->vknotv[a+(np->vorder-1)/2] < uv)
+	    a++;
+	}
       a *= stride;
 
       for(i = 0; i < nc->length*stride; i += stride)
@@ -8412,9 +8448,15 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
 	}
 
       if(r > 0)
-	 a = k - (np->uorder-1) + (np->uorder-1-s+r-1)/2 + 1;
-       else
-	 a = k - (np->uorder-1);
+	{
+	  a = k - (np->uorder-1) + (np->uorder-1-s+r-1)/2 + 1;
+	}
+      else
+	{
+	  a = 0;
+	  while(np->uknotv[a+(np->uorder-1)/2] < uv)
+	    a++;
+	}
 
       a *= np->height*stride;
 
