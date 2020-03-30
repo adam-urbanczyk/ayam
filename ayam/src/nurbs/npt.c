@@ -7994,9 +7994,9 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo, int extractnt,
 	  memcpy(pvnext, pvnt0, u0->length*(extractnt>1?9:3)*sizeof(double));
 	  pvnext += u0->length*(extractnt>1?9:3);
 	}
-      if(pvnt1)
+      if(pvnt3)
 	{
-	  memcpy(pvnext, pvnt1, vn->length*(extractnt>1?9:3)*sizeof(double));
+	  memcpy(pvnext, pvnt3, vn->length*(extractnt>1?9:3)*sizeof(double));
 	  pvnext += vn->length*(extractnt>1?9:3);
 	}
       if(pvnt2)
@@ -8004,9 +8004,9 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo, int extractnt,
 	  memcpy(pvnext, pvnt2, un->length*(extractnt>1?9:3)*sizeof(double));
 	  pvnext += un->length*(extractnt>1?9:3);
 	}
-      if(pvnt3)
+      if(pvnt1)
 	{
-	  memcpy(pvnext, pvnt3, v0->length*(extractnt>1?9:3)*sizeof(double));
+	  memcpy(pvnext, pvnt1, v0->length*(extractnt>1?9:3)*sizeof(double));
 	  /*pvnext += v0->length*(extractnt>1?9:3);*/
 	}
     }
@@ -8395,6 +8395,7 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
 	  while(np->vknotv[a+(np->vorder-1)/2] < uv)
 	    a++;
 	}
+
       a *= stride;
 
       for(i = 0; i < nc->length*stride; i += stride)
@@ -8586,7 +8587,9 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
 	    }
 	  else
 	    {
-	      a = k - (np->vorder-1);
+	      a = 0;
+	      while(np->vknotv[a+(np->vorder-1)/2] < uv)
+		a++;
 	    }
 
 	  b = 0;
@@ -8613,7 +8616,9 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
 	    }
 	  else
 	    {
-	      a = k - (np->uorder-1);
+	      a = 0;
+	      while(np->uknotv[a+(np->uorder-1)/2] < uv)
+		a++;
 	    }
 
 	  b = 0;
