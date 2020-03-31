@@ -10333,6 +10333,7 @@ ay_nct_extractnctcmd(ClientData clientData, Tcl_Interp *interp,
       if(pobject)
 	{
 	  ay_object_deletemulti(pobject, AY_FALSE);
+	  pobject = NULL;
 	}
 
       sel = sel->next;
