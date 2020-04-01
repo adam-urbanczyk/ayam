@@ -7982,7 +7982,14 @@ boundary curve (along height);
 extract curve along width and height respectively at specified parametric
 value (see below).<footnote>Since 1.8.1.</footnote>
 <item><tt/"Boundary"/: extract the complete boundary curve of the
-patch.<footnote>Since 1.13.</footnote>
+patch, by extracting four boundary curves, automatically selecting the
+proper method depending on the knot type of the surface
+(e.g.~<tt/"U0"/ or <tt/"U"/), reversing two and concatenating all non
+degenerated curves to the result.<footnote>Since 1.13.</footnote><newline>
+Note that if the surface has differing orders, the partial curves in the
+direction with the lower order will be elevated to the higher order before
+concatenation and therefore those parts of the resulting boundary curve will
+<em/not/ be compatible to the underlying surface anymore.
 <item><tt/"Middle_U"/, <tt/"Middle_V"/: create a curve from the patch
 data that is the "middle axis" (simply the medium of all control points
 of a patch in the designated
@@ -8015,17 +8022,22 @@ on the knot vectors of the NURBS patch.<newline>
 If a trim boundary is to be extracted, this parameter controls the
 sampling just like the preference setting <tt>"Drawing/Tolerance"</tt>.
 
-<item><tt/"Relative"/ controls whether the parametric value should
-be interpreted in a relative way. If enabled, a parametric value of 0.5
-always extracts from the middle of the knot vector, regardless of the
-actual knot values, and the valid range for <tt/"Parameter"/ is
+<item><tt/"Relative"/ controls whether or not the parametric value delivered
+via <tt/"Parameter"/ above should be interpreted in a relative way.
+If enabled, a parametric value of 0.5
+always extracts from the middle of the knot vector&thinsp;/&thinsp;surface,
+regardless of the actual knot values, and the valid range
+for <tt/"Parameter"/ is
 then consequently 0.0-1.0.<footnote>Since 1.15.</footnote>
 
 <item><tt/"Revert"/ immediately reverts the extracted curve.
 
-<item><tt/"CreatePVN"/ controls creation of a PV tag that contains
-the normals (derived from the surface control points) on the surface.
-This PV tag can then be used to control a 3D offset curve.
+<item><tt/"CreatePVN"/ controls creation of a PV or NT tag that contains
+the normals or normals and tangents on the surface.
+The normals and tangents will be derived from the surrounding
+surface control points.
+These tags can then e.g.~be used to control a 3D offset curve.
+Note that the tag will be present on provided/converted curve objects only.
 
 <item><tt/"PatchNum"/ allows to select a patch from a list of
 patches delivered e.g.~by a beveled Extrude object as child
@@ -8040,8 +8052,6 @@ of the extracted NURBS curve.
 <p>
 See section <ref id="ncattr" name="NCurveAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
-
-<#if out="latex"><x/newpage/</#if>
 
 <sect3>Conversion Support
 <p><#if out="latex">&nbsp;<newline></#if>
