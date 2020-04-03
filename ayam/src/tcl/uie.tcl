@@ -763,7 +763,9 @@ proc addMenu { w prop name elist } {
     bind $f.mb [repctrl $aymainshortcuts(Help)] "uie_callhelp %W"
 
     if { $ay(ws) == "Win32" } {
-	$f.mb configure -pady 1
+	$f.mb configure -pady 1 -highlightthickness 0
+	bind $f.mb <FocusIn> "$f.mb conf -highlightthickness 1"
+	bind $f.mb <FocusOut> "$f.mb conf -highlightthickness 0"
     }
 
     if { $ay(ws) == "Aqua" } {
