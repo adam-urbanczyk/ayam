@@ -5,11 +5,16 @@ o append option of split curve tool does not work (SF 595)
 o display of ConeAngle and ConeDeltaAngle (SF 597)
 o computation of chordal/centripetal surface knots (SF 598)
 o handling of NT tags in 3DPVN offset curves (SF 599)
+o revert option of ExtrNC does not revert extracted normals (SF 600)
+o extracting the complete boundary misses normals and tangents (SF 601)
 
 Modelling:
 o added option to specify the split knot in a relative way in the
   split curve tool
 o added MN tag support to 3DPVN offset curves
+
+GUI:
+o improved layout of menu components on Win32
 
 Scripts/Scripting Interface:
 o added "-r" (relative) option to "splitNC" command
