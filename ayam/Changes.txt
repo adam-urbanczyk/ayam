@@ -1,5 +1,5 @@
-[26. Mar 2020] Mercurial Tip:
-=============================
+[3. Apr 2020] Mercurial Tip:
+============================
 Bug Fixes:
 o append option of split curve tool does not work (SF 595)
 o display of ConeAngle and ConeDeltaAngle (SF 597)
