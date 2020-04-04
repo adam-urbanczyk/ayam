@@ -1697,7 +1697,7 @@ cleanup:
  *  propagate changes to this function also to ay_wrib_pprevdraw()!
  */
 int
-ay_wrib_scene(char *file, char *image, int temp, int target,
+ay_wrib_scene(char *file, char *image, char *driver, int temp, int target,
 	      double *from, double *to,
 	      double roll, double zoom, double nearp, double farp,
 	      int width, int height, int type)
@@ -1739,7 +1739,8 @@ ay_wrib_scene(char *file, char *image, int temp, int target,
 	{
 	  sprintf(objfile, "%s.obj.rib", file);
 	}
-    } /* if */
+    }
+
 
   if(!ay_prefs.resolveinstances)
     {
@@ -1814,6 +1815,20 @@ ay_wrib_scene(char *file, char *image, int temp, int target,
 
       ay_prefs.wrib_sm = AY_FALSE;
     }
+  else
+    {
+      if(target == 2)
+	{
+	  /* write root RiOption tags (possibly containing a
+	     display search path) */
+	  ay_status = ay_riopt_wrib(ay_root);
+	  if(ay_status)
+	    {
+	      RiEnd();
+	      goto cleanup;
+	    }
+	}
+    }
 
   RiFrameBegin((RtInt)ay_wrib_framenum++);
 
@@ -1827,7 +1842,10 @@ ay_wrib_scene(char *file, char *image, int temp, int target,
 	 }
        else
 	 {
-	   RiDisplay(image, "fifodspy", RI_RGBA, RI_NULL);
+	   if(driver != NULL)
+	     RiDisplay(image, driver, RI_RGBA, RI_NULL);
+	   else
+	     RiDisplay(image, "fifodspy", RI_RGBA, RI_NULL);
 	 }
        have_ridisplay = AY_TRUE;
      }
@@ -2130,7 +2148,7 @@ ay_wrib_viewtcb(struct Togl *togl, int argc, char *argv[])
  int width = Togl_Width (togl);
  int height = Togl_Height (togl);
  int i, temp = AY_FALSE, target = 0;
- char *file = NULL, *image = NULL;
+ char *file = NULL, *image = NULL, *driver = NULL;
  double addroll = 0.0, dir[3];
 
 #ifdef AYENABLEPPREV
@@ -2155,6 +2173,12 @@ ay_wrib_viewtcb(struct Togl *togl, int argc, char *argv[])
       if(!strcmp(argv[i], "-image"))
 	{
 	  image = argv[i+1];
+	  i++;
+	}
+
+      if(!strcmp(argv[i], "-driver"))
+	{
+	  driver = argv[i+1];
 	  i++;
 	}
 
@@ -2201,7 +2225,8 @@ ay_wrib_viewtcb(struct Togl *togl, int argc, char *argv[])
 
   ay_wrib_getup(dir, view->up, &addroll);
 
-  ay_status = ay_wrib_scene(file, image, temp, target, view->from, view->to,
+  ay_status = ay_wrib_scene(file, image, driver, temp, target,
+			    view->from, view->to,
 			    view->roll+addroll, view->zoom, view->nearp,
 			    view->farp,
 			    width, height, view->type);
@@ -2235,7 +2260,7 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp *interp,
  int width = 400;
  int height = 300;
  int i, selonly = AY_FALSE, smonly = AY_FALSE, objonly = AY_FALSE;
- char *filename = NULL, *imagename = NULL;
+ char *filename = NULL, *imagename = NULL, *driver = NULL;
  char fname[] = "wrib";
  double addroll = 0.0, dir[3];
 
@@ -2257,6 +2282,12 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp *interp,
       if(!strcmp(argv[i], "-image"))
 	{
 	  imagename = argv[i+1];
+	  i++;
+	}
+      else
+      if(!strcmp(argv[i], "-driver"))
+	{
+	  driver = argv[i+1];
 	  i++;
 	}
       else
@@ -2333,7 +2364,8 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp *interp,
 
       ay_wrib_getup(dir, cam->up, &addroll);
 
-      ay_status = ay_wrib_scene(filename, imagename, AY_FALSE, /*target=*/0,
+      ay_status = ay_wrib_scene(filename, imagename, driver,
+				AY_FALSE, /*target=*/0,
 				cam->from, cam->to, cam->roll+addroll,
 				cam->zoom, cam->nearp, cam->farp,
 				width, height, AY_VTPERSP);
