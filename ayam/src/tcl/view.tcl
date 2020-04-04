@@ -237,9 +237,21 @@ proc viewRender { w type } {
 		regsub -all {\\} $tmpfile {/} tmpfile
 	    }
 	    if { $ayprefs(RenderMode) == 2 } {
+		# render to viewport
 		set imagename ${tmpfile}.fifo
-		$togl wrib -file $tmpfile -image $imagename -temp -rtv
+		if { $type == 0 } {
+		    set driver $ayprefs(DisplayDriver)
+		} else {
+		    set driver $ayprefs(QDisplayDriver)
+		}
+		if { $driver != "" } {
+		    $togl wrib -file $tmpfile -image $imagename\
+			-driver $driver -temp -rtv
+		} else {
+		    $togl wrib -file $tmpfile -image $imagename -temp -rtv
+		}
 	    } else {
+		# render to external window
 		set imagename [file rootname ${tmpfile}].tif
 		if { $ayprefs(RenderMode) == 0 } {
 		    $togl wrib -file $tmpfile -image $imagename -temp
@@ -269,9 +281,21 @@ proc viewRender { w type } {
 	    # render to display
 	    ayError 4 "viewRender" "Rendering $vn ..."
 	    if { $ayprefs(RenderMode) == 2 } {
+		# render to viewport
 		set imagename ${tmpfile}.fifo
-		$togl wrib -file $tmpfile -image $imagename -temp -rtv
+		if { $type == 0 } {
+		    set driver $ayprefs(DisplayDriver)
+		} else {
+		    set driver $ayprefs(QDisplayDriver)
+		}
+		if { $driver != "" } {
+		    $togl wrib -file $tmpfile -image $imagename\
+			-driver $driver -temp -rtv
+		} else {
+		    $togl wrib -file $tmpfile -image $imagename -temp -rtv
+		}
 	    } else {
+		# render to external window
 		if { $ayprefs(RenderMode) == 0 } {
 		    $togl wrib -file $tmpfile -image $imagename -temp
 		} else {
