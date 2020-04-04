@@ -116,7 +116,14 @@ array set ayprefs {
  SMChangeShaders 1
 
  PPRender "rgl"
+ QRenderMode 0
  RenderMode 0
+
+ DisplayDriver ""
+ QDisplayDriver ""
+ FDisplayDriver ""
+
+ SetRenderer 0
  TclPrecision 6
  Shaders ""
 
