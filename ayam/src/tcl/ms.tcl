@@ -246,6 +246,8 @@ create a RIB that automatically renders ShadowMaps all the time.\
 ms_set en ayprefse_ExcludeHidden "Omit hidden objects on RIB export?"
 ms_set en ayprefse_RenderMode "How should the renderer be forced to render\
 to the screen?"
+ms_set en ayprefse_QRenderMode "How should the quick preview renderer be\
+forced to render to the screen?"
 ms_set en ayprefse_QRender "Command and parameters of the renderer to use for\
 quick render previews.\n\"%s\" will be replaced by the filename\
 of the RIB."
@@ -285,8 +287,13 @@ ms_set en ayprefse_SMChangeShaders "Change shader names (prepend\
 ms_set en ayprefse_AutoCloseUI "Automatically close the user interface\
 when rendering is finished?"
 
+ms_set en ayprefse_DisplayDriver ""
+ms_set en ayprefse_QDisplayDriver ""
+ms_set en ayprefse_FDisplayDriver ""
 
 ms_set en ayprefse_PPRender "Renderer to use for the permanent preview feature."
+
+ms_set en ayprefse_SetRenderer "Select renderer to edit."
 
 # Misc
 ms_set en ayprefse_RedirectTcl "Redirect all Tcl error messages to the\
@@ -489,6 +496,8 @@ ms_set de ayprefse_ExcludeHidden "Sollen alle versteckten Objekte beim
 RIB-Export ausgelassen werden?"
 ms_set de ayprefse_RenderMode "Wie soll der Renderer zum Rendern auf den\
 Bildschirm gezwungen werden?"
+ms_set de ayprefse_QRenderMode "Wie soll der Vorschau-Renderer zum Rendern\
+auf den Bildschirm gezwungen werden?"
 ms_set de ayprefse_QRender "Kommando und Aufrufparameter des Renderers,\
 der für\n schnelle Vorschaubilder verwendet werden soll.\n\"%s\" wird\
 durch den Dateinamen des RIBs ersetzt."
@@ -527,6 +536,9 @@ Rendering-Fortschritts durch den Schattenkarten-Renderer\
 
 ms_set de ayprefse_PPRender "Renderer, der für die permanente Vorschau\
 verwendet werden soll."
+
+ms_set de ayprefse_SetRenderer "Renderer zum Editieren auswählen."
+
 
 ms_set de ayprefse_SMFileFormat "Dateiformat der Schattenkarten.\
 \nRenderMan: zfile\nGelato: shadow"
@@ -747,6 +759,8 @@ seulement\n(Menu: View/Create ShadowMaps)"
 ms_set fr ayprefse_ExcludeHidden "Omettre les objets cachés à l'exportation\
 RIB?"
 ms_set fr ayprefse_RenderMode "Mode de rendu à l'écran?"
+ms_set fr ayprefse_QRenderMode "Mode de rendu d'aperçu rapides à l'écran?"
+
 ms_set fr ayprefse_QRender "Commandement et paramètres du moteur de rendu à utiliser\
 pour les rendus d'aperçu rapides\n\"%s\" sera remplacé par le nom\
 du fichier du RIB."
@@ -791,6 +805,7 @@ progression dans la sortie."
 ms_set fr ayprefse_PPRender "Moteur de rendu à utiliser pour l'aperçu\
 permanent."
 
+ms_set fr ayprefse_SetRenderer "Sélectionnez rendu pour modifier."
 
 # Misc
 ms_set fr ayprefse_RedirectTcl "Rediriger tous les messages d'erreur\
