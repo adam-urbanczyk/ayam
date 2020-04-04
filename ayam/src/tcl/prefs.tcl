@@ -247,57 +247,7 @@ proc prefs_open {} {
     set fw [$nb insert end RIB-Export -text RIB-Export\
 	    -raisecmd "prefs_rsnb $nb RIB-Export"]
 
-    addFileB $fw ayprefse RIBFile [ms ayprefse_RIBFile]\
-	    [list Scenefile Scene Ask]
-    addFileB $fw ayprefse Image [ms ayprefse_Image] [list RIB Ask]
-    addCheckB $fw ayprefse ResInstances [ms ayprefse_ResInstances]
-    addCheckB $fw ayprefse CheckLights [ms ayprefse_CheckLights]
-    addMenuB $fw ayprefse DefaultMat [ms ayprefse_DefaultMat]\
-	    [list none matte default]
-    addCheckB $fw ayprefse RIStandard [ms ayprefse_RIStandard]
-    addCheckB $fw ayprefse WriteIdent [ms ayprefse_WriteIdent]
-    addMenuB $fw ayprefse ShadowMaps [ms ayprefse_ShadowMaps]\
-	    [list Never Automatic Manual]
-    addCheckB $fw ayprefse ExcludeHidden [ms ayprefse_ExcludeHidden]
-    addMenuB $fw ayprefse RenderMode [ms ayprefse_RenderMode]\
-	    [list CommandLineArg RiDisplay Viewport]
-    addCheckB $fw ayprefse AutoCloseUI [ms ayprefse_AutoCloseUI]
-    addStringB $fw ayprefse QRender [ms ayprefse_QRender]\
-	    [list "rgl %s" "rgl -rd 10 %s" "..."]
-    addCheckB $fw ayprefse QRenderUI [ms ayprefse_QRenderUI]
-    addStringB $fw ayprefse QRenderPT [ms ayprefse_QRenderPT]\
-	    [list "R90000 %d" "Done computing %d" "%d"]
-
-    addStringB $fw ayprefse Render [ms ayprefse_Render]\
-      [list "rendrib -d 4 -Progress %s" "rendrib -d 4 %s" "aqsis -fb %s" "..."]
-    addCheckB $fw ayprefse RenderUI [ms ayprefse_RenderUI]
-    addStringB $fw ayprefse RenderPT [ms ayprefse_RenderPT]\
-	    [list "R90000 %d" "Done computing %d" "%d"]
-
-    addStringB $fw ayprefse FRender [ms ayprefse_FRender]\
-	    [list "rendrib -Progress %s" "rendrib %s" "aqsis %s" "..."]
-    addCheckB $fw ayprefse FRenderUI [ms ayprefse_FRenderUI]
-    addStringB $fw ayprefse FRenderPT [ms ayprefse_FRenderPT]\
-	    [list "R90000 %d" "Done computing %d" "%d"]
-
-    addStringB $fw ayprefse SMRender [ms ayprefse_SMRender]\
-	    [list "rendrib -Progress %s" "rendrib %s" "aqsis %s" "..."]
-    addCheckB $fw ayprefse SMRenderUI [ms ayprefse_SMRenderUI]
-    addStringB $fw ayprefse SMRenderPT [ms ayprefse_SMRenderPT]\
-	    [list "R90000 %d" "Done computing %d" "%d"]
-
-    addStringB $fw ayprefse SMFileFormat [ms ayprefse_SMFileFormat]\
-	    [list "zfile" "shadow"]
-    addStringB $fw ayprefse SMFileType [ms ayprefse_SMFileType]\
-	    [list "z" "avgz" "volshadow"]
-    addCheckB $fw ayprefse SMChangeShaders [ms ayprefse_SMChangeShaders]
-
-    uie_setLabelWidth $fw 16
-
-    global AYENABLEPPREV
-    if { $AYENABLEPPREV == 1 } {
-	addStringB $fw ayprefse PPRender [ms ayprefse_PPRender] [list "rgl"]
-    }
+    addRIBExport $nb $fw
 
     # Misc
     set fw [$nb insert end Misc -text Misc -raisecmd "prefs_rsnb $nb Misc"]
@@ -430,6 +380,109 @@ proc prefs_open {} {
  return;
 }
 # prefs_open
+
+
+proc layoutRIBExport { nb n1 n2 op } {
+    global ayprefse
+
+    if { [winfo exists $nb] && [$nb raise] == "RIB-Export" } {
+	set fw  [$nb getframe RIB-Export]
+
+	foreach w [winfo children $fw] {
+	    destroy $w
+	}
+
+	addRIBExport $nb $fw
+    }
+
+ return;
+}
+
+proc addRIBExport { nb fw } {
+    global ay ayprefse
+
+    addFileB $fw ayprefse RIBFile [ms ayprefse_RIBFile]\
+	    [list Scenefile Scene Ask]
+    addFileB $fw ayprefse Image [ms ayprefse_Image] [list RIB Ask]
+    addCheckB $fw ayprefse ResInstances [ms ayprefse_ResInstances]
+    addCheckB $fw ayprefse CheckLights [ms ayprefse_CheckLights]
+    addMenuB $fw ayprefse DefaultMat [ms ayprefse_DefaultMat]\
+	    [list none matte default]
+    addCheckB $fw ayprefse RIStandard [ms ayprefse_RIStandard]
+    addCheckB $fw ayprefse WriteIdent [ms ayprefse_WriteIdent]
+    addCheckB $fw ayprefse ExcludeHidden [ms ayprefse_ExcludeHidden]
+
+    addText $fw e0 "Rendering:"
+    addMenuB $fw ayprefse SetRenderer [ms ayprefse_SetRenderer]\
+	    [list Render QuickRender FileRender ShadowMapRender All]
+
+    trace add variable ayprefse(SetRenderer) write "layoutRIBExport $nb"
+
+    bind $fw.fSetRenderer <Destroy>\
+    "trace remove variable ayprefse(SetRenderer) write \"layoutRIBExport $nb\""
+
+    addVSpace $fw s1 3
+
+    if { $ayprefse(SetRenderer) == 0 || $ayprefse(SetRenderer) == 4 } {
+	addMenuB $fw ayprefse RenderMode [ms ayprefse_RenderMode]\
+	    [list CommandLineArg RiDisplay Viewport]
+	addStringB $fw ayprefse Render [ms ayprefse_Render]\
+      [list "rendrib -d 4 -Progress %s" "rendrib -d 4 %s" "aqsis -fb %s" "..."]
+	addCheckB $fw ayprefse RenderUI [ms ayprefse_RenderUI]
+	addStringB $fw ayprefse RenderPT [ms ayprefse_RenderPT]\
+	    [list "R90000 %d" "Done computing %d" "%d"]
+	addStringB $fw ayprefse DisplayDriver [ms ayprefse_DisplayDriver]\
+	    [list "fifodspy"]
+    }
+
+    if { $ayprefse(SetRenderer) == 1 || $ayprefse(SetRenderer) == 4 } {
+	addMenuB $fw ayprefse QRenderMode [ms ayprefse_QRenderMode]\
+	    [list CommandLineArg RiDisplay Viewport]
+	addStringB $fw ayprefse QRender [ms ayprefse_QRender]\
+	    [list "rgl %s" "rgl -rd 10 %s" "..."]
+	addCheckB $fw ayprefse QRenderUI [ms ayprefse_QRenderUI]
+	addStringB $fw ayprefse QRenderPT [ms ayprefse_QRenderPT]\
+	    [list "R90000 %d" "Done computing %d" "%d"]
+	addStringB $fw ayprefse QDisplayDriver [ms ayprefse_DisplayDriver]\
+	    [list "fifodspy"]
+    }
+
+    if { $ayprefse(SetRenderer) == 2 || $ayprefse(SetRenderer) == 4 } {
+	addStringB $fw ayprefse FRender [ms ayprefse_FRender]\
+	    [list "rendrib -Progress %s" "rendrib %s" "aqsis %s" "..."]
+	addCheckB $fw ayprefse FRenderUI [ms ayprefse_FRenderUI]
+	addStringB $fw ayprefse FRenderPT [ms ayprefse_FRenderPT]\
+	    [list "R90000 %d" "Done computing %d" "%d"]
+	addStringB $fw ayprefse FDisplayDriver [ms ayprefse_DisplayDriver]\
+	    [list ""]
+    }
+
+    if { $ayprefse(SetRenderer) == 3 || $ayprefse(SetRenderer) == 4 } {
+	addStringB $fw ayprefse SMRender [ms ayprefse_SMRender]\
+	    [list "rendrib -Progress %s" "rendrib %s" "aqsis %s" "..."]
+	addCheckB $fw ayprefse SMRenderUI [ms ayprefse_SMRenderUI]
+	addStringB $fw ayprefse SMRenderPT [ms ayprefse_SMRenderPT]\
+	    [list "R90000 %d" "Done computing %d" "%d"]
+    }
+
+    addCheckB $fw ayprefse AutoCloseUI [ms ayprefse_AutoCloseUI]
+
+    addText $fw e1 "ShadowMaps:"
+    addMenuB $fw ayprefse ShadowMaps [ms ayprefse_ShadowMaps]\
+	[list Never Automatic Manual]
+    addStringB $fw ayprefse SMFileFormat [ms ayprefse_SMFileFormat]\
+	[list "zfile" "shadow"]
+    addStringB $fw ayprefse SMFileType [ms ayprefse_SMFileType]\
+	[list "z" "avgz" "volshadow"]
+    addCheckB $fw ayprefse SMChangeShaders [ms ayprefse_SMChangeShaders]
+
+    uie_setLabelWidth $fw 16
+
+    global AYENABLEPPREV
+    if { $AYENABLEPPREV == 1 } {
+	addStringB $fw ayprefse PPRender [ms ayprefse_PPRender] [list "rgl"]
+    }
+}
 
 
 # prefs_save:
