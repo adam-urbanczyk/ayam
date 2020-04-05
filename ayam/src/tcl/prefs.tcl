@@ -414,7 +414,7 @@ proc addRIBExport { nb fw } {
 
     addText $fw e0 "Rendering:"
     addMenuB $fw ayprefse SetRenderer [ms ayprefse_SetRenderer]\
-	    [list Render QuickRender FileRender ShadowMapRender All]
+	    [list Preview QuickPreview File ShadowMap All]
 
     trace add variable ayprefse(SetRenderer) write "layoutRIBExport $nb"
 
