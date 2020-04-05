@@ -1711,6 +1711,7 @@ ay_wrib_scene(char *file, char *image, char *driver, int temp, int target,
  RtFloat fov = (RtFloat)90.0, rinearp, rifarp;
  int have_ridisplay = AY_FALSE;
  char *objfile = NULL, *pos = NULL, fnum[30];
+ char *driverext, *soext = ".so";
  size_t filenlen = 0;
 
   ay_current_primlevel = 0;
@@ -1842,10 +1843,32 @@ ay_wrib_scene(char *file, char *image, char *driver, int temp, int target,
 	 }
        else
 	 {
-	   if(driver != NULL)
-	     RiDisplay(image, driver, RI_RGBA, RI_NULL);
-	   else
-	     RiDisplay(image, "fifodspy", RI_RGBA, RI_NULL);
+	   if(driver == NULL)
+	     driver = "fifodspy";
+
+	   /* create a RiOption that maps the generic driver name, as
+	      used by the RiDisplay call, to a shared object file name,
+	      e.g.: fifodspy => fifodspy.so */
+	   soext = ".so";
+           #ifdef WIN32
+	    soext = ".dll";
+           #endif
+           #ifdef AYWITHAQUA
+	    soext = ".dylib";
+           #endif
+	   if(!(driverext = calloc(strlen(driver)+strlen(soext)+2,
+				   sizeof(char))))
+	     {
+	       ay_status = AY_EOMEM;
+	       goto cleanup;
+	     }
+	   strcpy(driverext, driver);
+	   strcpy(&(driverext[strlen(driver)]), soext);
+	   RiDeclare(driver, "string");
+	   RiOption("display", driver, (RtPointer)&driverext, RI_NULL);
+	   free(driverext);
+
+	   RiDisplay(image, driver, RI_RGBA, RI_NULL);
 	 }
        have_ridisplay = AY_TRUE;
      }
