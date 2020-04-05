@@ -287,9 +287,9 @@ ms_set en ayprefse_SMChangeShaders "Change shader names (prepend\
 ms_set en ayprefse_AutoCloseUI "Automatically close the user interface\
 when rendering is finished?"
 
-ms_set en ayprefse_DisplayDriver ""
-ms_set en ayprefse_QDisplayDriver ""
-ms_set en ayprefse_FDisplayDriver ""
+ms_set en ayprefse_DisplayDriver "Display driver to use for previews."
+ms_set en ayprefse_QDisplayDriver "Display driver to use for quick previews."
+ms_set en ayprefse_FDisplayDriver "Display driver to use for rendering to files."
 
 ms_set en ayprefse_PPRender "Renderer to use for the permanent preview feature."
 
@@ -533,6 +533,10 @@ ms_set de ayprefse_SMRenderPT "Beschreibung der Ausgabe des\
 Rendering-Fortschritts durch den Schattenkarten-Renderer\
 \n\"%d\" ist die Position des prozentualen Fortschrittswertes,\
 \nder dann im Rendering-Fenster angezeigt wird."
+
+ms_set de ayprefse_DisplayDriver "Display-Treiber für Vorschau."
+ms_set de ayprefse_QDisplayDriver "Display-Treiber für schnelle Vorschau."
+ms_set de ayprefse_FDisplayDriver "Display-Treiber für Rendern in eine Datei."
 
 ms_set de ayprefse_PPRender "Renderer, der für die permanente Vorschau\
 verwendet werden soll."
@@ -801,6 +805,10 @@ progression dans la sortie."
 # \"shadow\")\nwhen rendering with shadow maps?"
 #ms_set fr ayprefse_AutoCloseUI "Automatically close the user interface\
 #when rendering is finished?"
+
+#ms_set fr ayprefse_DisplayDriver "Display driver to use for previews."
+#ms_set fr ayprefse_QDisplayDriver "Display driver to use for quick previews."
+#ms_set fr ayprefse_FDisplayDriver "Display driver to use for rendering to files."
 
 ms_set fr ayprefse_PPRender "Moteur de rendu à utiliser pour l'aperçu\
 permanent."
