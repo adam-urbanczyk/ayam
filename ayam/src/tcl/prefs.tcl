@@ -247,7 +247,7 @@ proc prefs_open {} {
     set fw [$nb insert end RIB-Export -text RIB-Export\
 	    -raisecmd "prefs_rsnb $nb RIB-Export"]
 
-    addRIBExport $nb $fw
+    prefs_addRIBExport $nb $fw
 
     # Misc
     set fw [$nb insert end Misc -text Misc -raisecmd "prefs_rsnb $nb Misc"]
@@ -382,7 +382,7 @@ proc prefs_open {} {
 # prefs_open
 
 
-proc layoutRIBExport { nb n1 n2 op } {
+proc prefs_layoutRIBExport { nb n1 n2 op } {
     global ayprefse
 
     if { [winfo exists $nb] && [$nb raise] == "RIB-Export" } {
@@ -392,13 +392,15 @@ proc layoutRIBExport { nb n1 n2 op } {
 	    destroy $w
 	}
 
-	addRIBExport $nb $fw
+	prefs_addRIBExport $nb $fw
+
+	prefs_rsnb $nb "RIB-Export"
     }
 
  return;
 }
 
-proc addRIBExport { nb fw } {
+proc prefs_addRIBExport { nb fw } {
     global ay ayprefse
 
     addFileB $fw ayprefse RIBFile [ms ayprefse_RIBFile]\
@@ -416,10 +418,10 @@ proc addRIBExport { nb fw } {
     addMenuB $fw ayprefse SetRenderer [ms ayprefse_SetRenderer]\
 	    [list Preview QuickPreview File ShadowMap All]
 
-    trace add variable ayprefse(SetRenderer) write "layoutRIBExport $nb"
+    trace add variable ayprefse(SetRenderer) write "prefs_layoutRIBExport $nb"
 
     bind $fw.fSetRenderer <Destroy>\
-    "trace remove variable ayprefse(SetRenderer) write \"layoutRIBExport $nb\""
+    "trace remove variable ayprefse(SetRenderer) write \"prefs_layoutRIBExport $nb\""
 
     addVSpace $fw s1 3
 
