@@ -3101,57 +3101,43 @@ write special RiAttributes
 with the names of the objects to the RIB to aid in RIB file debugging.
 <p> <p>
 
-<item><tt/"ShadowMaps"/ determines, whether shadow maps should
-be used, when writing light sources. It is not sufficient
-to switch this on to render using shadow maps, light sources
-that shall use shadow maps have to be parameterised
-as well, see section <ref id="shadowmaps" name="Using ShadowMaps">.
-If <tt/"ShadowMaps"/ is set to <tt/"Automatic"/, the
-exported RIBs will automatically render and use all shadow maps;
-if it is set to <tt/"Manual"/, the shadow maps will be rendered on
-user request only (e.g.~using the view menu entry:
-<tt>"View/Create All ShadowMaps"</tt>). <tt/"Manual"/ should be used,
-when rendering directly from view windows with shadow maps.
-<p> <p>
-
 <item><tt/"ExcludeHidden"/ causes hidden objects not to be
 exported to RIB files.
 <p> <p>
 
-<item><tt/"RenderMode"/ allows to switch between two different methods
-of forcing a renderer to render to the screen (via a RiDisplay statement
-in the exported RIB, necessary for e.g.~PRMan and RDC;
-or via a command line argument, e.g.~<tt>-d</tt> for rendrib from BMRT).
+The following section of preference settings is concerned with
+settings for rendering directly from Ayam.
 <p> <p>
 
-<item><tt/"AutoCloseUI"/ controls whether the Rendering GUI dialog
-window should be closed automatically when the renderer signals
-that the rendering finished.
+<item><tt/"SetRenderer"/ allows to select which renderer preferences
+to edit (Preview, QuickPreview, File, ShadowMaps, or All).
+Depending on the selection, different sets of options will be shown below
+for the respective renderer.
 <p> <p>
 
-<item><tt/"QRender"/ determines the command that should be executed
-upon quick rendering a view using the view menu <tt>"View/Quick Render"</tt>
-or the keyboard shortcut <tt>Ctrl+r</tt>. The placeholder <tt>%s</tt>
-denotes the name of the RIB file.
-<p> <p>
-
-<item><tt/"QRenderUI"/, enables the Rendering GUI for quick rendering,
-see discussion of <tt/"RenderUI"/ below.
-<p> <p>
-
-<item><tt/"QRenderPT"/, progress template for quick rendering,
-see discussion of <tt/"RenderPT"/ below.
+<item><tt/"RenderMode"/ allows to switch between different methods
+of forcing the preview renderer to render to the screen:
+<itemize>
+<item><tt/"CommandLineArg"/ via a command line argument,
+e.g.~<tt>-d</tt> for rendrib from BMRT,
+<item><tt/"RiDisplay"/ via a RiDisplay statement in the exported RIB,
+necessary for e.g.~PRMan and RDC,
+<item><tt/"Viewport"/ via a RenderMan display driver as specified
+below.
+</itemize>
+The <tt/"Viewport"/ rendering will directly appear in the Ayam view
+window.
 <p> <p>
 
 <item><tt/"Render"/ determines the command that should be executed
-upon normal rendering of a view using the view menu <tt>"View/Render"</tt>
-or the keyboard shortcut <tt>Ctrl+R</tt>. The placeholder <tt>%s</tt>
+upon preview rendering of a view using the view menu <tt>"View/Render"</tt>
+or the keyboard shortcut <tt>&lt;Ctrl+R&gt;</tt>. The placeholder <tt>%s</tt>
 denotes the name of the RIB file.
 <p> <p>
 
-<item><tt/"RenderUI"/ enables the renderer user interface (Rendering GUI),
-which consists of a simple progress bar, a label that displays the
-estimated or elapsed rendering time, a checkbutton to control
+<item><tt/"RenderUI"/ enables the preview renderer user interface
+(Rendering GUI), which consists of a simple progress bar, a label that
+displays the estimated or elapsed rendering time, a checkbutton to control
 ringing the bell when the rendering is finished,
 and a cancel button. This GUI is displayed
 when a renderer is invoked directly from a view window
@@ -3214,6 +3200,36 @@ This regexp command eats away all pipe symbols, asterisks, and spaces
 sign, which comes right behind the sought after percentage number.
 <p> <p>
 
+<item><tt/"DisplayDriver"/ sets the RenderMan display driver to use,
+this is usually a string like <tt/"aqsisfifodspy"/, i.e.~the renderer
+name prepended to <tt/"fifodspy"/.
+<p> <p>
+
+<item><tt/"QRenderMode"/ see <tt/"RenderMode"/ above.
+<p> <p>
+
+<item><tt/"QRender"/ determines the command that should be executed
+upon quick rendering a view using the view menu <tt>"View/Quick Render"</tt>
+or the keyboard shortcut <tt>&lt;Ctrl+r&gt;</tt>. The placeholder <tt>%s</tt>
+denotes the name of the RIB file.
+<p> <p>
+
+<item><tt/"QRenderUI"/, enables the Rendering GUI for quick rendering,
+see discussion of <tt/"RenderUI"/ below.
+<p> <p>
+
+<item><tt/"QRenderPT"/, progress template for quick rendering,
+see discussion of <tt/"RenderPT"/ below.
+<p> <p>
+
+<item><tt/"QDisplayDriver"/ sets the RenderMan display driver to use,
+this is usually a string like <tt/"aqsisfifodspy"/, i.e.~the renderer
+name prepended to <tt/"fifodspy"/.
+<p> <p>
+
+<item><tt/"FRenderMode"/ see <tt/"RenderMode"/ above.
+<p> <p>
+
 <item><tt/"FRender"/, renderer command to use for direct rendering to image
 files (via view menu entry <tt/"Render to File"/). The placeholder <tt>%s</tt>
 denotes the name of the RIB file.
@@ -3225,6 +3241,11 @@ to image files, see discussion of <tt/"RenderUI"/ above.
 
 <item><tt/"FRenderPT"/, progress template for the direct rendering to
 image files, see discussion of <tt/"RenderPT"/ above.
+<p> <p>
+
+<item><tt/"FDisplayDriver"/ sets the RenderMan display driver to use,
+this is usually a string like <tt/"aqsisfifodspy"/, i.e.~the renderer
+name prepended to <tt/"fifodspy"/.
 <p> <p>
 
 <item><tt/"SMRender"/, renderer command to use for the rendering of shadow maps
@@ -3239,6 +3260,28 @@ of shadow maps, see discussion of <tt/"RenderUI"/ above.
 
 <item><tt/"SMRenderPT"/, progress template for the rendering
 of shadow maps, see discussion of <tt/"RenderPT"/ above.
+<p> <p>
+
+<item><tt/"AutoCloseUI"/ controls whether the Rendering GUI dialog
+window should be closed automatically when the renderer signals
+that the rendering finished.
+<p> <p>
+<#if out="latex"></itemize><x/newpage/<p></#if>
+The following section of preference settings is concerned with
+shadow maps.
+<p> <p>
+<#if out="latex"><itemize></#if>
+<item><tt/"ShadowMaps"/ determines, whether shadow maps should
+be used, when writing light sources. It is not sufficient
+to switch this on to render using shadow maps, individual light sources
+that shall use shadow maps have to be parameterised
+as well, see section <ref id="shadowmaps" name="Using ShadowMaps">.
+If <tt/"ShadowMaps"/ is set to <tt/"Automatic"/, the
+exported RIBs will automatically render and use all shadow maps;
+if it is set to <tt/"Manual"/, the shadow maps will be rendered on
+user request only (e.g.~using the view menu entry:
+<tt>"View/Create All ShadowMaps"</tt>). <tt/"Manual"/ should be used,
+when rendering directly from view windows with shadow maps.
 <p> <p>
 
 <item><tt/"SMFileFormat"/, designates the file format of the shadow maps,
@@ -3366,7 +3409,8 @@ surface is no point bigger than the value specified by <tt/"SParamU"/.
 polygon generated by the tesselation is longer than the value specified
 by <tt/"SParamU"/ and the tesselation method
 
-<item><tt/"DomainDistance"/ (the default up to 1.22) simply tesselates
+<item><tt/"DomainDistance"/ (the default in Ayam up to version 1.22) simply
+tesselates
 the NURBS surface into equally sized pieces with regard to parametric
 space; <tt/"SParamU"/ and <tt/"SParamV"/ control the number of sampling
 points in U and V direction respectively per unit length in parameter
@@ -25985,6 +26029,7 @@ Index:
 <item>Disk: <ref id="diskobj" name="Disk object">
 <item>Displacement: <ref id="matshader" name="shader property">
 <item>Display: <ref id="ridtag" name="RiDisplay tag type">
+<item>DisplayDriver: <ref id="prefrib" name="preference setting">
 <item>DisplayMode:
 <itemize>
 <item><ref id="ncattr" name="NCurve attribute">,
@@ -26109,6 +26154,7 @@ Index:
 <item>Face normals: <ref id="polymeshtools" name="PolyMesh tool">
 <item>FAQ: <ref id="secref" name="Ayam FAQ WWW reference">
 <item>Far: <ref id="camp" name="camera property">
+<item>FDisplayDriver: <ref id="prefrib" name="preference setting">
 <item>FDShowHidden, FDShowHiddenBtn: <ref id="hidprefsf" name="hidden preference setting">
 <item>File:
 <itemize>
@@ -26720,6 +26766,7 @@ Index:
 <list>
 <item>QuadAsBRep: <ref id="exp3dmopt" name="3DM (Rhino) export option">
 <item>Quadrics: <ref id="sphereobj" name="quadric primitives">
+<item>QDisplayDriver: <ref id="prefrib" name="preference setting">
 <item>QRender, QRenderPT, QRenderUI:
 <ref id="prefrib" name="preference setting">
 <item>Quaternion: <ref id="trap" name="transformations property">
@@ -27100,6 +27147,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 </itemize>
 <item>setPnt: <ref id="scsetpnt" name="scripting interface command">
 <item>setPrefs: <ref id="scsetprefs" name="scripting interface command">
+<item>SetRenderer: <ref id="prefrib" name="preference setting">
 <item>setTag: <ref id="scsettag" name="scripting interface command">
 <item>setTags: <ref id="scsettags" name="scripting interface command">
 <item>setProperty: <ref id="scsetproperty" name="scripting interface command">
