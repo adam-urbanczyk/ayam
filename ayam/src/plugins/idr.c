@@ -1961,7 +1961,7 @@ idr_wrib_scene(char *file, char *image,
   ay_wrib_placecamera(f, d, roll);
 
   /* wrib RiOptions */
-  ay_wrib_rioptions();
+  ay_wrib_rioptions(AY_FALSE);
 
   /* wrib root objects RiOption tags*/
   ay_status = ay_riopt_wrib(ay_root);
