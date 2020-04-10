@@ -3178,7 +3178,8 @@ ay_viewt_rendertoviewportcb(struct Togl *togl, int argc, char *argv[])
 	    break;
 
 	  glTexSubImage2D(GL_TEXTURE_2D, 0, xy[0], xy[2],
-			  xy[1]-xy[0], xy[3]-xy[2], GL_RGBA, GL_FLOAT, line);
+			  xy[1]-xy[0], xy[3]-xy[2],
+			  GL_BGRA/*GL_RGBA*/, GL_FLOAT, line);
 
 	  ay_viewt_showtex(togl);
 
