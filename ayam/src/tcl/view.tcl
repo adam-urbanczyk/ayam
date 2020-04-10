@@ -226,6 +226,14 @@ proc viewRender { w type } {
 	set vn V[string range [file extension $w] 3 end]
     }
 
+    set mode 0
+    if { $type == 0 } {
+	set mode $ayprefs(RenderMode)
+    }
+    if { $type == 1 } {
+	set mode $ayprefs(QRenderMode)
+    }
+
     if { $ayprefs(ShadowMaps) < 1 } {
 	# no shadow maps
 	if { $type < 2 } {
@@ -236,7 +244,7 @@ proc viewRender { w type } {
 		# Windows sucks big time!
 		regsub -all {\\} $tmpfile {/} tmpfile
 	    }
-	    if { $ayprefs(RenderMode) == 2 } {
+	    if { $mode == 2 } {
 		# render to viewport
 		set imagename ${tmpfile}.fifo
 		if { $type == 0 } {
@@ -280,7 +288,7 @@ proc viewRender { w type } {
 	if { $type < 2 } {
 	    # render to display
 	    ayError 4 "viewRender" "Rendering $vn ..."
-	    if { $ayprefs(RenderMode) == 2 } {
+	    if { $mode == 2 } {
 		# render to viewport
 		set imagename ${tmpfile}.fifo
 		if { $type == 0 } {
@@ -296,7 +304,7 @@ proc viewRender { w type } {
 		}
 	    } else {
 		# render to external window
-		if { $ayprefs(RenderMode) == 0 } {
+		if { $mode == 0 } {
 		    $togl wrib -file $tmpfile -image $imagename -temp
 		} else {
 		    $togl wrib -file $tmpfile -temp
@@ -336,7 +344,7 @@ proc viewRender { w type } {
 	runRenderer $w "$command" "$pt"
     }
 
-    if { $ayprefs(RenderMode) == 2 && $type < 2 } {
+    if { $mode == 2 && $type < 2 } {
 	viewCheckFifo $togl ${tmpfile}.fifo 0
     } else {
 	update
