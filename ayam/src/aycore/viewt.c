@@ -21,12 +21,6 @@
 /* viewt.c - view management tools */
 
 
-/* global variables: */
-
-static Tcl_Obj *aymarkobj = NULL;
-static Tcl_Obj *xyzobj[3] = {0};
-
-
 /* functions: */
 
 /* ay_viewt_setupprojection:
@@ -1760,6 +1754,7 @@ ay_viewt_updatemark(struct Togl *togl, int local)
  GLint vp[4], gl_status = GL_TRUE;
  Tcl_Obj *to = NULL;
  Tcl_Interp *interp = ay_interp;
+ char *xyz[3] = {"x", "y", "z"}, *arr = "aymark";
 
   glFlush();
 
@@ -1822,8 +1817,8 @@ ay_viewt_updatemark(struct Togl *togl, int local)
   for(i = 0; i < 3; i++)
     {
       to = Tcl_NewDoubleObj(view->markworld[i]);
-      Tcl_ObjSetVar2(interp, aymarkobj, xyzobj[i], to, TCL_LEAVE_ERR_MSG |
-		     TCL_GLOBAL_ONLY);
+      Tcl_SetVar2Ex(interp, arr, xyz[i], to,
+		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
     }
 
  return AY_OK;
@@ -3172,19 +3167,3 @@ ay_viewt_rendertoviewportcb(struct Togl *togl, int argc, char *argv[])
 
  return TCL_OK;
 } /* ay_viewt_rendertoviewportcb */
-
-
-/** ay_viewt_init:
- *  Initialize the view tools module.
- *
- */
-void
-ay_viewt_init(void)
-{
-  aymarkobj = Tcl_NewStringObj("aymark",-1);
-  xyzobj[0] = Tcl_NewStringObj("x",-1);
-  xyzobj[1] = Tcl_NewStringObj("y",-1);
-  xyzobj[2] = Tcl_NewStringObj("z",-1);
-
- return;
-} /* ay_viewt_init */
