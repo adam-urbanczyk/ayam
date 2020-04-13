@@ -27,12 +27,12 @@ PRManSpec RiStandard
 # create RiOpt-UI
 set w [frame $ay(pca).$RiOptions(w)]
 
-addText $w e0 "Image:"
+addText $w ei "Image:"
 addParam $w RiOptData Width
 addParam $w RiOptData Height
 addCheck $w RiOptData StdDisplay
 
-addText $w e1 "Antialias:"
+addText $w ea "Antialias:"
 addParam $w RiOptData Variance
 addParam $w RiOptData Samples_X
 addParam $w RiOptData Samples_Y
@@ -40,33 +40,35 @@ addMenu $w RiOptData FilterFunc [list Gaussian Triangle CatmullRom Box Sinc]
 addParam $w RiOptData FilterWidth
 addParam $w RiOptData FilterHeight
 
-addText $w e2 "Quantization:"
+addText $w ee "Exposure:"
 addParam $w RiOptData ExpGain
 addParam $w RiOptData ExpGamma
+
+addText $w eq "Quantization:"
 addParam $w RiOptData RGBA_ONE
 addParam $w RiOptData RGBA_MIN
 addParam $w RiOptData RGBA_MAX
 addParam $w RiOptData RGBA_Dither
 
-addText $w e3 "BMRT-Specific:"
-addText $w e4 "Rendering:"
+addText $w eb "BMRT-Specific:"
+addText $w er "Rendering:"
 addParam $w RiOptData MinSamples
 addParam $w RiOptData MaxSamples
 addParam $w RiOptData MaxRayLevel
 addParam $w RiOptData ShadowBias
 addMenu $w RiOptData PRManSpec [list RiStandard PRMan]
 
-addText $w e5 "Radiosity:"
+addText $w ed "Radiosity:"
 addParam $w RiOptData RadSteps
 addParam $w RiOptData PatchSamples
 
-addText $w e6 "SearchPaths:"
+addText $w es "SearchPaths:"
 addString $w RiOptData Textures [list "textures:&" "textures"]
 addString $w RiOptData Shaders [list "shaders:&" "shaders"]
 addString $w RiOptData Archives [list "archives:&" "archives"]
 addString $w RiOptData Procedurals [list "procedurals:&" "procedurals"]
 
-addText $w e7 "Limits:"
+addText $w el "Limits:"
 addParam $w RiOptData TextureMem
 addParam $w RiOptData GeomMem
 
