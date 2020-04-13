@@ -294,10 +294,10 @@ FrameCamera(double zoom, double framewidth, double frameheight)
   * export all RIB option settings from the root object to the currently
   * open RIB stream
   *
-  * \param no_quantization if AY_TRUE, do not use the quantization
-  *        settings from the root object, but 0, 0, 0 instead, to
-  *        facilitate rendering via the fifodspy display driver,
-  *        which operates in floating point value space
+  * \param[in] no_quantization if AY_TRUE, do not use the quantization
+  *   settings from the root object, but 0, 0, 0 instead, to
+  *   facilitate rendering via the fifodspy display driver,
+  *   which operates in floating point value space
   */
 void
 ay_wrib_rioptions(int no_quantization)
@@ -439,8 +439,11 @@ ay_wrib_rioptions(int no_quantization)
 } /* ay_wrib_rioptions */
 
 
-/* ay_wrib_trafos:
+/** ay_wrib_trafos:
+ * export the transformation attributes of an object to the currently
+ * open RIB stream
  *
+ * \param[in] o object whose transformation attributes shall be exported
  */
 void
 ay_wrib_trafos(ay_object *o)
@@ -450,7 +453,9 @@ ay_wrib_trafos(ay_object *o)
   if((fabs(o->movx) > AY_EPSILON) ||
      (fabs(o->movy) > AY_EPSILON) ||
      (fabs(o->movz) > AY_EPSILON))
-    RiTranslate((RtFloat)o->movx, (RtFloat)o->movy, (RtFloat)o->movz);
+    {
+      RiTranslate((RtFloat)o->movx, (RtFloat)o->movy, (RtFloat)o->movz);
+    }
 
   if(o->quat[0] != 0.0 || o->quat[1] != 0.0 || o->quat[2] != 0.0 ||
      o->quat[3] != 1.0)
@@ -467,7 +472,9 @@ ay_wrib_trafos(ay_object *o)
 		  (RtFloat)0.0f, (RtFloat)0.0f, (RtFloat)1.0f);
      }
 
-  if(o->scalx != 1.0 || o->scaly != 1.0 || o->scalz != 1.0)
+  if(fabs(o->scalx - 1.0) > AY_EPSILON ||
+     fabs(o->scaly - 1.0) > AY_EPSILON ||
+     fabs(o->scalz - 1.0) > AY_EPSILON)
     {
       RiScale((RtFloat)o->scalx, (RtFloat)o->scaly, (RtFloat)o->scalz);
     }
