@@ -1987,10 +1987,6 @@ void ay_viewt_worldtowin(double *world, double *win);
  */
 int ay_viewt_rendertoviewportcb(struct Togl *togl, int argc, char *argv[]);
 
-/** initialize view tools module
- */
-void ay_viewt_init();
-
 
 /* w32t.c */
 #ifdef WIN32
