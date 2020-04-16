@@ -1,4 +1,4 @@
-[readme.txt - 30. Nov 2018]
+[readme.txt - 16. Apr 2020]
 
 This directory contains a collection of various plugins for Ayam.
 
@@ -7,12 +7,13 @@ documentation please refer to the main Ayam documentation:
 http://ayam.sourceforge.net/docs/ayam-8.html#plugov
 .
 
-The plugins can be grouped in five categories:
+The plugins can be grouped in six categories:
 1) shader parsing plugins,
 2) import/export plugins,
 3) object type plugins,
-4) scripting language plugins, and
-5) modelling helper plugins.
+4) scripting language plugins
+5) modelling helper plugins, and
+6) rendering helper plugins.
 
 Shader Parsing Plugins
 ----------------------
@@ -65,3 +66,9 @@ idr - importance driven rendering
 aydnd - inter-application drag and drop support
 subdiv - subdivision surfaces support
 printps - print OpenGL drawings as SVG/EPS
+
+
+Rendering Helper Plugins
+------------------------
+
+fifodspy - RenderMan Display Driver for viewport rendering
