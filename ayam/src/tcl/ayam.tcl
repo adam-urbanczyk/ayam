@@ -614,7 +614,6 @@ array set riattr {
              { patch_minlevel f {1} } }
 
     trimcurve { {sense s {"inside" "outside"} } }
-
 }
 # array riattr
 
@@ -1121,7 +1120,7 @@ proc uCL { mode {addargs ""} } {
 
 	if { $mode == "cl" } {
 
-	    getLevel newnodes dummy
+	    getLevel newnodes
 	    set i 0
 	    foreach oldnode $oldnodes {
 		set newnode [lindex $newnodes $i]
@@ -1162,13 +1161,13 @@ proc uCR { } {
     if { $ay(lb) == 0 } {
 	# TreeView is active
 	set oldcount [llength [$ay(tree) nodes $ay(CurrentLevel)]]
-	set l ""
-	getLevel l dummy
+	set nodes ""
+	getLevel nodes
 
 	$ay(tree) configure -redraw 0
 
 	set count 0
-	foreach node $l {
+	foreach node $nodes {
 	    if { $node != ".." } {
 		if { $count >= $oldcount } {
 		    $ay(tree) insert end $ay(CurrentLevel)\
@@ -1226,7 +1225,7 @@ proc uS { {update_prop "" } {maintain_selection "" } } {
 	$lb delete 0 end
 
 	# get current objects
-	getLevel curlevel curtypes
+	getLevel curlevel
 
 	eval [subst "$lb insert end $curlevel"]
 
@@ -1279,7 +1278,7 @@ proc uS { {update_prop "" } {maintain_selection "" } } {
 	}
 
     }
-    # if
+    # if listbox or tree
 
  return;
 }
