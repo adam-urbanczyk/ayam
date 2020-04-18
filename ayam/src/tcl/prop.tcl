@@ -736,7 +736,7 @@ proc getProperty { property args } {
 #
 #
 proc setProperty { property newValue } {
-    global ay curtypes ay_error
+    global ay ay_error
 
     # decode arrayname from property argument
     set arrayname [string range $property 0 \

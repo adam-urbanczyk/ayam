@@ -103,15 +103,14 @@ proc pclip_paste { } {
 	undo save "PasteProp"
 
 	forAll -recursive 0 {
-	    global ay pclip_prop curtypes
-	    if { $ay(lb) == 1 } {
-		set olb $ay(olb)
-		set o [$ay(olb) curselection]
-		set type [lindex $curtypes $o]
-	    } else {
-		getType type
+	    global ay pclip_prop
+	    set type ""
+	    getType type
+	    if { $type == "" } {
+		ayError 2 "pclip_paste" "getType failed!"
+		set ay(pasteProp) 0
+		return;
 	    }
-
 	    global ${type}_props
 	    if { ! [info exists ${type}_props] } {
 		init_${type}
