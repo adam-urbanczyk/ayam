@@ -460,14 +460,14 @@ ay_clevel_gettcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   Tcl_SetVar(interp, argv[1], "", TCL_LEAVE_ERR_MSG);
-  if(argc > 1)
+  if(argc > 2)
     Tcl_SetVar(interp, argv[2], "", TCL_LEAVE_ERR_MSG);
 
   if(ay_currentlevel->object != ay_root)
     {
       Tcl_SetVar(interp, argv[1], "..",
 		 TCL_APPEND_VALUE | TCL_LEAVE_ERR_MSG);
-      if(argc > 1)
+      if(argc > 2)
 	Tcl_SetVar(interp, argv[2], "..",
 		   TCL_APPEND_VALUE | TCL_LEAVE_ERR_MSG);
     }
@@ -546,7 +546,7 @@ ay_clevel_gettcmd(ClientData clientData, Tcl_Interp *interp,
 	  return TCL_OK;
 	} /* if */
 
-      if(argc > 1)
+      if(argc > 2)
 	{
 	  typename = ay_object_gettypename(o->type);
 	  if(typename)
