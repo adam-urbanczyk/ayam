@@ -52,6 +52,7 @@ bind $f.li <<ListboxSelect>> {
 	plb_update
 	break
     }
+    set ay(prop) ${prop}
     eval [subst "set ww \$${prop}(w)"]
 
     set getprocp ""
@@ -406,7 +407,7 @@ return;
 #
 #
 proc plb_update { } {
-    global ay ayprefs ay_error curtypes pclip_omit pclip_omit_label
+    global ay ayprefs ay_error pclip_omit pclip_omit_label
     global tcl_platform AYWITHAQUA
 
     # protect against double updates
@@ -445,13 +446,9 @@ proc plb_update { } {
     $ay(pca) itemconfigure 1 -window $ay(pw)
     if { [llength $index] == 1 } {
 	set type ""
-	if { $ay(lb) == 1 } {
-	    set type [lindex $curtypes $index]
-	} else {
-	    set oldayerror $ay_error
-	    getType type
-	    set ay_error $oldayerror
-	}
+	set oldayerror $ay_error
+	getType type
+	set ay_error $oldayerror
 
 	if { $type == "" } {
 	    set ay(plblock) 0

@@ -267,20 +267,20 @@ pack $w.flb -in $w -side left -fill both -expand yes
 
 #
 proc olb_close { w } {
-global ay
+    global ay
 
-set ay(lb) 0
+    set ay(lb) 0
 
-destroy $w.flb
-destroy $w.fb
-
+    destroy $w.flb
+    destroy $w.fb
+ return;
 }
 # olb_close
 
 
 #
 proc olb_update { } {
-    global ay curlevel curtypes
+    global ay
 
     set lb $ay(olb)
 
@@ -292,7 +292,7 @@ proc olb_update { } {
     $lb delete 0 end
 
     # get current objects
-    getLevel curlevel curtypes
+    getLevel curlevel
 
     eval [subst "$lb insert end $curlevel"]
 

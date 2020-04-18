@@ -105,7 +105,7 @@ proc reconsider { Selection } {
 
     $f.lo configure -width ${maxlen}
     $f.lo delete 0 end
-    eval [ subst "$f.lo insert end $entry"]
+    eval [subst "$f.lo insert end $entry"]
 
     # Create the vertical scrollbar
     scrollbar $f.sv -command {global rArray; $rArray(lb) yview} -takefocus 0
@@ -309,7 +309,7 @@ proc goLevObjSel { node } {
 
     # Goes down into the list hierarchy until we reach the desired level
     goTop
-    set end [ expr [llength $hierarchy] -2 ]
+    set end [expr [llength $hierarchy] -2]
     foreach i [lrange $hierarchy 0 $end] {
         goDown $i
     }
@@ -321,7 +321,7 @@ proc goLevObjSel { node } {
 #listBoxObjSel:
 # Updates the List Box (if activated) accordingly to the selected items
 proc listBoxObjSel { Selection } {
-    global ay curlevel curtypes
+    global ay
 
     set lb $ay(olb)
     # Goes to the level of 'Selection' then stores the item' id
@@ -329,8 +329,8 @@ proc listBoxObjSel { Selection } {
 
     # Updates the list box to reflect the level change
     $lb delete 0 end
-    getLevel curlevel curtypes
-    eval [ subst "$lb insert end $curlevel"]
+    getLevel curlevel
+    eval [subst "$lb insert end $curlevel"]
 
     return $item
 }
