@@ -69,7 +69,7 @@ ay_geom_intersectlines2D(double *p1, double *t1,
     return 0;
 
   den = t2[1]*t1[0] - t2[0]*t1[1];
-  
+
   if(fabs(den) < AY_EPSILON)
     return 0;
 
