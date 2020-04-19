@@ -5132,7 +5132,7 @@ ay_nct_fillgaps(int closed, int order, double tanlen, ay_object *curves)
 				     (ay_nurbcurve_object *)c->next->refine,
 				     &fillet);
 	  if(ay_status)
-	    { return AY_ERROR; }
+	    return AY_ERROR;
 	  if(fillet)
 	    {
 	      fillet->next = c->next;
@@ -5152,12 +5152,11 @@ ay_nct_fillgaps(int closed, int order, double tanlen, ay_object *curves)
 				 (ay_nurbcurve_object *)curves->refine,
 				 &fillet);
       if(ay_status)
-	{ return AY_ERROR; }
+	return AY_ERROR;
+
       if(fillet)
-	{
-	  last->next = fillet;
-	} /* if */
-    } /* if */
+	last->next = fillet;
+    } /* if closed */
 
  return ay_status;
 } /* ay_nct_fillgaps */
@@ -5206,7 +5205,7 @@ ay_nct_arrange(ay_object *o, ay_object *t, int rotate)
   if(AY_ISTRAFO(t))
     {
       if(!(trcv = malloc(tr->length*stride*sizeof(double))))
-	{ return AY_EOMEM; }
+	return AY_EOMEM;
       memcpy(trcv, tr->controlv, tr->length*stride*sizeof(double));
 
       ay_trafo_creatematrix(t, mtr);
@@ -5383,7 +5382,7 @@ ay_nct_rescaleknvtcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	  i += 2;
 	} /* while */
-    } /* if */
+    } /* if have args */
 
   if(!sel)
     {
