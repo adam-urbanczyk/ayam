@@ -612,6 +612,7 @@ ay_prop_getnpinfo(Tcl_Interp *interp, char *arr, ay_object *o)
  char buffer5[64];
  ay_nurbpatch_object *np = NULL;
  Tcl_DString ds;
+ int len;
 
   if(!interp || !arr)
     return AY_ENULL;
@@ -620,30 +621,35 @@ ay_prop_getnpinfo(Tcl_Interp *interp, char *arr, ay_object *o)
     {
       np = (ay_nurbpatch_object *)(o->refine);
       /*"40 x 20, 4, 4, 3 (NURB), 3 (NURB)"*/
-      sprintf(buffer/*, sizeof(buffer)*/, "%d x %d, %d, %d, %d, %d",
+      len = sprintf(buffer/*, sizeof(buffer)*/, "%d x %d, %d, %d, %d, %d",
 	       np->width, np->height, np->uorder, np->vorder,
 	       np->uknot_type, np->vknot_type);
 
-      to = Tcl_NewStringObj(buffer, -1);
+      to = Tcl_NewStringObj(buffer, len);
     }
   else
     {
-      to = Tcl_NewStringObj("n/a", -1);
+      to = Tcl_NewStringObj("n/a", 3);
     } /* if */
 
   Tcl_SetVar2Ex(interp, arr, "NPInfo", to,
 		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  if(interp == ay_safeinterp)
+    {
+      return AY_OK;
+    }
 
   /* set Balloon info text */
   if(np)
     {
       Tcl_DStringInit(&ds);
 
-      sprintf(buffer2/*, sizeof(buffer)*/,
-	      "Width: %d\nHeight: %d\nOrder_U: %d\nOrder_V: %d\n",
-	      np->width, np->height, np->uorder, np->vorder);
+      len = sprintf(buffer2/*, sizeof(buffer)*/,
+		    "Width: %d\nHeight: %d\nOrder_U: %d\nOrder_V: %d\n",
+		    np->width, np->height, np->uorder, np->vorder);
 
-      Tcl_DStringAppend(&ds, buffer2, -1);
+      Tcl_DStringAppend(&ds, buffer2, len);
 
       sprintf(buffer3/*, sizeof(buffer)*/, "Knot-Type_U: ");
       switch(np->uknot_type)
@@ -741,6 +747,7 @@ ay_prop_getncinfo(Tcl_Interp *interp, char *arr, ay_object *o)
  char buffer5[64];
  ay_nurbcurve_object *nc = NULL;
  Tcl_DString ds;
+ int len;
 
   if(!interp || !arr)
     return AY_ENULL;
@@ -749,29 +756,34 @@ ay_prop_getncinfo(Tcl_Interp *interp, char *arr, ay_object *o)
     {
       nc = (ay_nurbcurve_object *)(o->refine);
       /*"40, 4, NURB"*/
-      sprintf(buffer/*, sizeof(buffer)*/, "%d, %d, %d",
-	       nc->length, nc->order, nc->knot_type);
+      len = sprintf(buffer/*, sizeof(buffer)*/, "%d, %d, %d",
+		    nc->length, nc->order, nc->knot_type);
 
-      to = Tcl_NewStringObj(buffer, -1);
+      to = Tcl_NewStringObj(buffer, len);
     }
   else
     {
-      to = Tcl_NewStringObj("n/a", -1);
+      to = Tcl_NewStringObj("n/a", 3);
     } /* if */
 
   Tcl_SetVar2Ex(interp, arr, "NCInfo", to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
+
+  if(interp == ay_safeinterp)
+    {
+      return AY_OK;
+    }
 
   /* set Balloon info text */
   if(nc)
     {
       Tcl_DStringInit(&ds);
 
-      sprintf(buffer2/*, sizeof(buffer)*/,
-	      "Length: %d\nOrder: %d\n",
-	      nc->length, nc->order);
+      len = sprintf(buffer2/*, sizeof(buffer)*/,
+		    "Length: %d\nOrder: %d\n",
+		    nc->length, nc->order);
 
-      Tcl_DStringAppend(&ds, buffer2, -1);
+      Tcl_DStringAppend(&ds, buffer2, len);
 
       sprintf(buffer3/*, sizeof(buffer)*/, "Knot-Type: ");
       switch(nc->knot_type)
