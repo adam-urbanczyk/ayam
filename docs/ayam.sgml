@@ -3200,7 +3200,8 @@ This regexp command eats away all pipe symbols, asterisks, and spaces
 sign, which comes right behind the sought after percentage number.
 <p> <p>
 
-<item><tt/"DisplayDriver"/ sets the RenderMan display driver to use,
+<item><tt/"DisplayDriver"/ sets the RenderMan display driver to use
+for the <tt/"Viewport"/ render mode,
 this is usually a string like <tt/"aqsisfifodspy"/, i.e.~the renderer
 name prepended to <tt/"fifodspy"/.
 <p> <p>
@@ -3222,7 +3223,8 @@ see discussion of <tt/"RenderUI"/ below.
 see discussion of <tt/"RenderPT"/ below.
 <p> <p>
 
-<item><tt/"QDisplayDriver"/ sets the RenderMan display driver to use,
+<item><tt/"QDisplayDriver"/ sets the RenderMan display driver to use
+for the <tt/"Viewport"/ render mode,
 this is usually a string like <tt/"aqsisfifodspy"/, i.e.~the renderer
 name prepended to <tt/"fifodspy"/.
 <p> <p>
@@ -17390,10 +17392,12 @@ selects all objects in the current level except for the first.
 <label id="scsl">
 sL &ndash; select last object:
 <itemize>
- <item>Synopsis: <tt/"sL"/
+ <item>Synopsis: <tt/"sL [count]"/
  <item>Background: No, Undo: No, Safe: Yes
  <item>Description: Select the last object in the current level
-and, if run in the Ayam interpreter, update the GUI.
+and, if run in the Ayam interpreter, update the GUI.<newline>
+If an argument is provided, it determines the number of objects to select.
+<newline>
 If run in the safe interpreter (e.g.~from a Script objects script)
 this command will create a hidden selection.
 This command is often called in a sequence
@@ -17416,10 +17420,11 @@ crtOb NCurve
 # select new object
 sL
 </code>
-<item>Note: In the main Tcl interpreter, sL is a procedure that operates
+<item>Note: In the main Tcl interpreter, <tt/sL/ is a procedure that operates
 on information in the Tcl context alone.
-Calling sL on outdated hierarchy data (e.g.~by leaving out uS or uCR after
-object creation) will possibly lead to the wrong objects being selected.
+Calling <tt/sL/ on outdated hierarchy data (e.g.~by leaving out <tt/uS/ or
+<tt/uCR/ after object creation) will possibly lead to the wrong objects
+being selected.
 </itemize>
 
 <p>
@@ -17428,10 +17433,16 @@ object creation) will possibly lead to the wrong objects being selected.
 <label id="schsl">
 hSL &ndash; hidden select last object:
 <itemize>
- <item>Synopsis: <tt/"hSL"/
+ <item>Synopsis: <tt/"hSL [count]"/
  <item>Background: Yes, Undo: No, Safe: No
  <item>Description: Select the last object in the current level
-but do not update the GUI.
+but do not update the GUI.<newline>
+If an argument is provided, it determines the number of objects to select.
+<newline>
+This command does not need an updated hierarchy in the Tcl context.
+In fact it is completely oblivious of the GUI and therefore safe to
+use directly after e.g.~script based object creation.
+<newline>
 Note: prior to Ayam 1.18 this command used to be available in the
 safe interpreter. This is no longer the case, use <tt/"sL"/ instead.
 </itemize>
