@@ -18396,7 +18396,7 @@ These are more specialized commands to change NURBS curve properties:
 <label id="scclampnc">
 clampNC &ndash; clamp NURBS curve:
 <itemize>
- <item>Synopsis: <tt/"clampNC [-s | -e]"/
+ <item>Synopsis: <tt/"clampNC [-s/&thinsp;<tt/|/&thinsp;<tt/-e]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Clamp the knot vector of the selected NURBS curves
 without changing the shape of the curves.
@@ -18422,7 +18422,7 @@ See also section <ref id="clat" name="Clamp Tool">.
 <label id="scunclampnc">
 unclampNC &ndash; unclamp NURBS curve:
 <itemize>
- <item>Synopsis: <tt/"unclampNC [-s | -e]"/
+ <item>Synopsis: <tt/"unclampNC [-s/&thinsp;<tt/|/&thinsp;<tt/-e]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Unclamp the knot vector of the selected NURBS curves
 without changing the shape of the curves.
@@ -18621,13 +18621,17 @@ See also section <ref id="resckrt" name="Rescale Knots to Range Tool">.
 <label id="scsplitnc">
 splitNC &ndash; split NURBS curve
 <itemize>
- <item>Synopsis: <tt/"splitNC [-a 0|1] u"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Synopsis: <tt/"splitNC [-a/&thinsp;<tt/|/&thinsp;<tt/-r] u"/
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: splits the selected NURBS curves at the designated
 parametric value <tt/u/ into two curves, creating one new curve and
 <em>modifying the original</em> selected curve.
 <p>
-If the option <tt/"-a"/ is set to 1 the new curve(s) will be appended
+If the option <tt/"-r"/ is present, the parametric value is interpreted
+in a relative way and should therefore be in the range
+&lsqb;0,&thinsp;1&rsqb;.<footnote>Since 1.28.</footnote>
+<p>
+If the option <tt/"-a"/ is present, the new curve(s) will be appended
 to the current level. Otherwise the new curve(s) will be inserted
 into the level right after the respective curve(s) to split.
 <footnote>Since 1.24.</footnote>
@@ -18832,7 +18836,7 @@ These are more specialized commands to change NURBS surface properties:
 <label id="scclampnpu"><label id="scclampunp">
 clampuNP &ndash; clamp NURBS patch in U direction:
 <itemize>
- <item>Synopsis: <tt/"clampuNP [-s | -e]"/
+ <item>Synopsis: <tt/"clampuNP [-s/&thinsp;<tt/|/&thinsp;<tt/-e]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Clamp the U direction knot vector of the selected NURBS
 patches without changing the shape of the patches.
@@ -18858,7 +18862,7 @@ See also section <ref id="clanpt" name="Clamp Surface Tool">.
 <label id="scclampnpv"><label id="scclampvnp">
 clampvNP &ndash; clamp NURBS patch in V direction:
 <itemize>
- <item>Synopsis: <tt/"clampvNP [-s | -e]"/
+ <item>Synopsis: <tt/"clampvNP [-s/&thinsp;<tt/|/&thinsp;<tt/-e]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Clamp the V direction knot vector of the selected NURBS
 patches without changing the shape of the patches.
@@ -18884,7 +18888,7 @@ See also section <ref id="clanpt" name="Clamp Surface Tool">.
 <label id="scunclampunp">
 unclampuNP &ndash; unclamp NURBS patch in U direction:
 <itemize>
- <item>Synopsis: <tt/"unclampuNP [-s | -e]"/
+ <item>Synopsis: <tt/"unclampuNP [-s/&thinsp;<tt/|/&thinsp;<tt/-e]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Unclamp the U direction knot vector of the selected NURBS
 patches without changing the shape of the patches.
@@ -18905,7 +18909,7 @@ See also section <ref id="unclanpt" name="Unclamp Surface Tool">.
 <label id="scunclampvnp">
 unclampvNP &ndash; unclamp NURBS patch in V direction:
 <itemize>
- <item>Synopsis: <tt/"unclampvNP [-s | -e]"/
+ <item>Synopsis: <tt/"unclampvNP [-s/&thinsp;<tt/|/&thinsp;<tt/-e]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Unclamp the V direction knot vector of the selected NURBS
 patches without changing the shape of the patches.
@@ -19200,13 +19204,17 @@ See also section <ref id="reduceuvt" name="Reduce Surface Tools">.
 <label id="scsplitnpu"><label id="scsplitunp">
 splituNP &ndash; split NURBS patch:
 <itemize>
- <item>Synopsis: <tt/"splituNP [-a 0|1] u"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Synopsis: <tt/"splituNP [-a/&thinsp;<tt/|/&thinsp;<tt/-r] u"/
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: Splits the selected NPatch objects into two patches
 at the parametric value <tt/u/, creating one new NPatch object and
-<em>modifying the original</em> selected NPatch object.<newline>
+<em>modifying the original</em> selected NPatch object.
 <p>
-If the option <tt/"-a"/ is set to 1 the new NPatch object(s) will be appended
+If the option <tt/"-r"/ is present, the parametric value is interpreted
+in a relative way and should therefore be in the range
+&lsqb;0,&thinsp;1&rsqb;.
+<p>
+If the option <tt/"-a"/ is present, the new NPatch object(s) will be appended
 to the current level. Otherwise the new NPatch object(s) will be inserted
 into the level right after the respective NPatch object(s) to split.
 This is the new default.<footnote>Since 1.24.</footnote>
@@ -19220,13 +19228,17 @@ See also section <ref id="splitnpt" name="Split Surface Tools">.
 <label id="scsplitnpv"><label id="scsplitvnp">
 splitvNP &ndash; split NURBS patch:
 <itemize>
- <item>Synopsis: <tt/"splitvNP [-a 0|1] v"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Synopsis: <tt/"splitvNP [-a/&thinsp;<tt/|/&thinsp;<tt/-r] v"/
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: Splits the selected NPatch objects into two patches
 at the parametric value <tt/v/, creating one new NPatch object and
 <em>modifying the original</em> selected NPatch object.<newline>
 <p>
-If the option <tt/"-a"/ is set to 1 the new NPatch object(s) will be appended
+If the option <tt/"-r"/ is present, the parametric value is interpreted
+in a relative way and should therefore be in the range
+&lsqb;0,&thinsp;1&rsqb;.
+<p>
+If the option <tt/"-a"/ is present, the new NPatch object(s) will be appended
 to the current level. Otherwise the new NPatch object(s) will be inserted
 into the level right after the respective NPatch object(s) to split.
 This is the new default.<footnote>Since 1.24.</footnote>
