@@ -16118,10 +16118,10 @@ that displays the help of scripting interface commands using a web
 browser (similar to the <tt/"Help on Object"/ feature):
 <itemize>
  <item>Synopsis: <tt/"help command"/
- <item>Background: N/A, Undo: No, Safe: No
+ <item>Background: N/A,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: No,&nbsp;&nbsp;Type: Procedure
  <item>Description: Fire up a web browser and display the help for
-the designated Ayam scripting interface command.
- <item>Example: <tt/"help help"/ displays the help of the help command.
+the designated Ayam scripting interface command or procedure.
+ <item>Example: <tt/"help help"/ displays the help of the help procedure.
 </itemize>
 
 <#if out="latex"><x/newpage/</#if>
@@ -16131,7 +16131,7 @@ the designated Ayam scripting interface command.
 To create new objects the <tt/"crtOb"/ command can be used.
 <itemize>
  <item>Synopsis: <tt/"crtOb type [args]"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: New objects may be created with the command <tt/"crtOb"/,
 <tt/"type"/ may be derived from the object type names, as displayed in the
 tree view.
@@ -17008,7 +17008,7 @@ curves:
 crtNCircle &ndash; create NURBS circle:<label id="sccrtncircle">
 <itemize>
  <item>Synopsis: <tt/"crtNCircle [-r radius] [-a arc]"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: This command creates a circular NURBS curve
 with radius as defined via the <tt/-r/ option and arc as
 defined via the <tt/-a/ option. The curve always starts on the
@@ -17025,7 +17025,7 @@ See also section <ref id="ncirct" name="NURB Circle Tool">.
 crtClosedBS &ndash; create closed (circular) B-Spline:
 <itemize>
  <item>Synopsis: <tt/"crtClosedBS [-s sections] [-o order] [-a arc] [-r radius]"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: This command creates a circular B-Spline curve
 with desired number of sections (defaults to 6), order (defaults to 4),
 arc (defaults to 360.0, negative values are allowed), and
@@ -17041,7 +17041,7 @@ See also section <ref id="cbspt" name="Circular B-Spline Tool">.
 crtNRect &ndash; create a rectangular NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"crtNRect [-w width] [-h height]"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: This command creates a centered rectangular NURBS curve
 of twice the given width and height in the XY-plane.
 </itemize>
@@ -17053,7 +17053,7 @@ of twice the given width and height in the XY-plane.
 crtTrimRect &ndash; create a rectangular bounding trim curve:
 <itemize>
  <item>Synopsis: <tt/"crtTrimRect"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: This command creates a rectangular NURBS curve
 that fits the parameter space of the currently selected NPatch
 object (or the current parent object, if it is a NPatch).
@@ -17069,7 +17069,7 @@ See also section <ref id="trrt" name="TrimRect Tool">.
 delOb &ndash; delete object(s):
 <itemize>
  <item>Synopsis: <tt/"delOb"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: Delete the selected object(s) and their children
 from the scene.
 This operation fails for the root object.
@@ -17092,7 +17092,7 @@ These commands help to inquire objects about various aspects.
 getType:
 <itemize>
  <item>Synopsis: <tt>"getType [varname]"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: This command writes the type of the
 selected object into the variable designated by the <tt/varname/ argument.
 The types are the well known strings that are displayed in the hierarchy
@@ -17109,7 +17109,7 @@ If multiple objects are selected, a list is returned.
 getName:
 <itemize>
  <item>Synopsis: <tt>"getName [-s] [varname]"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: This command writes the name of the
 selected object into the variable designated by the <tt/varname/
 argument. If the object has no name, a warning message will be
@@ -17128,7 +17128,7 @@ See also section <ref id="scnameob" name="nameOb scripting interface command">.
 hasChild:
 <itemize>
  <item>Synopsis: <tt>"hasChild"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: This command returns <tt/1/ if the selected object
 has child objects, otherwise <tt/0/ is returned. If multiple objects are
 selected, a list is returned.
@@ -17142,7 +17142,7 @@ selected, a list is returned.
 hasMat &ndash; has material:
 <itemize>
  <item>Synopsis: <tt>"hasMat"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: This command returns <tt/1/ if the selected object
 has a material assigned, otherwise <tt/0/ is returned. If multiple objects are
 selected, a list is returned.
@@ -17155,7 +17155,7 @@ selected, a list is returned.
 hasRefs &ndash; has references:
 <itemize>
  <item>Synopsis: <tt>"hasRefs"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: This command returns <tt/1/ if the selected object
 has references (e.g.~it is a master), otherwise <tt/0/ is returned.
 If multiple objects are selected, a list is returned.
@@ -17168,7 +17168,7 @@ If multiple objects are selected, a list is returned.
 candelOb &ndash; delete object(s):
 <itemize>
  <item>Synopsis: <tt/"candelOb"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: This command returns <tt/1/ if the selected object(s)
 can be deleted without errors and without moving objects to the end of
 the current level, otherwise <tt/0/ is returned.
@@ -17181,7 +17181,7 @@ the current level, otherwise <tt/0/ is returned.
 hasTrafo &ndash; has transformations:
 <itemize>
  <item>Synopsis: <tt>"hasTrafo [-r|-s|-t]"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: This command returns <tt/1/ if the selected object
 has non-default transformation attributes, otherwise <tt/0/ is returned.
 If multiple objects are selected, a list is returned.<newline>
@@ -17200,7 +17200,7 @@ attributes.
 isCurve:
 <itemize>
  <item>Synopsis: <tt>"isCurve"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: This command returns <tt/1/ if the selected object
 is (or provides&thinsp;/&thinsp;converts to) a parametric curve, otherwise
 <tt/0/ is returned.
@@ -17214,7 +17214,7 @@ If multiple objects are selected, a list is returned.
 isSurface:
 <itemize>
  <item>Synopsis: <tt>"isSurface"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: This command returns <tt/1/ if the selected object
 is (or provides&thinsp;/&thinsp;converts to) a parametric surface, otherwise
 <tt/0/ is returned.
@@ -17229,7 +17229,7 @@ If multiple objects are selected, a list is returned.
 getBB &ndash; get the bounding box:
 <itemize>
  <item>Synopsis: <tt>"getBB"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: This command returns the axis parallel bounding box
 of the selected object(s) as a list of six double values (xmin, ymin, zmin,
 xmax, ymax, zmax). Note, that for multiple selected objects the union
@@ -17244,7 +17244,7 @@ individual bounding boxes in a list.
 getPlaneNormal &ndash; get the plane normal of an object:
 <itemize>
  <item>Synopsis: <tt>"getPlaneNormal [-t]"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: This command returns the plane normal(s)
 of the selected object(s) as a list of three double values.<newline>
 If the option <tt>"-t"</tt> is given, the normal will be transformed
@@ -17265,8 +17265,8 @@ provide their points.
 <label id="scisclosed">
 isClosed:
 <itemize>
- <item>Synopsis: <tt>"isClosed [-u|-v]"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Synopsis: <tt/"isClosed [-u/&thinsp;<tt/|/&thinsp;<tt/-v]"/
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: This command returns <tt/1/ if the selected object
 is a closed parametric curve or surface,
 otherwise <tt/0/ is returned.<footnote>Since 1.27.</footnote>
@@ -17287,7 +17287,7 @@ provide NURBS curves or surfaces.
 isPlanar &ndash; check for planarity:
 <itemize>
  <item>Synopsis: <tt>"isPlanar"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: This command returns <tt/1/ if the selected object
 is a planar parametric curve or surface,
 otherwise <tt/0/ is returned.<footnote>Since 1.27.</footnote>
@@ -17304,7 +17304,7 @@ provide NURBS curves or surfaces.
 isDegen &ndash; check for degeneracy:
 <itemize>
  <item>Synopsis: <tt>"isDegen"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: This command returns <tt/1/ if the selected object
 is a degenerated parametric curve (point shape) or surface (point or line
 shape), otherwise <tt/0/ is returned.<footnote>Since 1.27.</footnote>
@@ -17323,7 +17323,7 @@ provide NURBS curves or surfaces.
 isParent:
 <itemize>
  <item>Synopsis: <tt>"isParent"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: This command returns <tt/1/ if the selected object
 is a potential parent, otherwise <tt/0/ is
 returned.<footnote>Since 1.27.</footnote>
@@ -17337,7 +17337,7 @@ If multiple objects are selected, a list is returned.
 isTrimmed:
 <itemize>
  <item>Synopsis: <tt>"isTrimmed"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: This command returns <tt/1/ if the selected object
 is a non trivially trimmed parametric surface, otherwise
 <tt/0/ is returned.<footnote>Since 1.27.</footnote>
@@ -17358,7 +17358,7 @@ scripting interface commands operate on selected objects only:
 selOb &ndash; select object(s):
 <itemize>
  <item>Synopsis: <tt/"selOb ([-get | -end | -clear] | [index] | [first-last])"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: Use this command to set or clear the current
 selection, <tt/index/ may be a single (zero based) index, an ordered list of
 indices or a range.<newline>
@@ -17393,7 +17393,7 @@ selects all objects in the current level except for the first.
 sL &ndash; select last object:
 <itemize>
  <item>Synopsis: <tt/"sL [count]"/
- <item>Background: No, Undo: No, Safe: Yes
+ <item>Background: No,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: Select the last object in the current level
 and, if run in the Ayam interpreter, update the GUI.<newline>
 If an argument is provided, it determines the number of objects to select.
@@ -17434,7 +17434,7 @@ being selected.
 hSL &ndash; hidden select last object:
 <itemize>
  <item>Synopsis: <tt/"hSL [count]"/
- <item>Background: Yes, Undo: No, Safe: No
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: No
  <item>Description: Select the last object in the current level
 but do not update the GUI.<newline>
 If an argument is provided, it determines the number of objects to select.
@@ -17459,7 +17459,7 @@ This command manipulates the point selection.
 selPnts &ndash; select points:
 <itemize>
  <item>Synopsis: <tt/"selPnts [(-count | -get) [vname] | -has | -all | -none | index1 index2 ...]"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description:
  <itemize>
   <item>If called without arguments, this command deselects all points.
@@ -17507,7 +17507,7 @@ scripting interface:<footnote>Since 1.9.</footnote>
 getProperty &ndash; get single property value
 <itemize>
  <item>Synopsis: <tt/"getProperty propname(elemname) [varname] [-s|-i]"/
- <item>Background: Yes, Undo: No, Safe: Yes, Type: Procedure
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
  <item>Description: This procedure gets a single property element
 named <tt/elemname/ from the property named <tt/propname/ of the currently
 selected object and writes the result into the variable named <tt/varname/.
@@ -17554,7 +17554,7 @@ See also section
 setProperty &ndash; set single property value
 <itemize>
  <item>Synopsis: <tt/"setProperty propname(elemname) value"/
- <item>Background: Yes, Undo: Yes, Safe: Yes, Type: Procedure
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
  <item>Description: This procedure sets a single property element
 named <tt/elemname/ of the property named <tt/propname/ for the currently
 selected object to the new value given in <tt/value/.
@@ -17590,7 +17590,7 @@ These commands operate the object clipboard:
 copOb &ndash; copy object(s):
 <itemize>
  <item>Synopsis: <tt/"copOb [-append]"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: Copy the selected object(s) to the object clipboard
 after clearing it.<newline>
 This is a deep copy, reference counters of master or material objects
@@ -17611,7 +17611,7 @@ not enough memory.
 cutOb &ndash; cut object(s):
 <itemize>
  <item>Synopsis: <tt/"cutOb [-append]"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: Move the selected object(s) and their children into
 the object clipboard after clearing it.<newline>
 If the option <tt/"-append"/ is used, the clipboard will not be cleared
@@ -17627,7 +17627,7 @@ If the append option is set, this operation never fails.
 pasOb &ndash; paste object(s):
 <itemize>
  <item>Synopsis: <tt/"pasOb [-move]"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: Copy all object(s) from the object
 clipboard to the current level.<newline>
 This is a deep copy, reference counters of master or material objects
@@ -17647,7 +17647,7 @@ instance configuration (i.e.~recursive references).
 repOb &ndash; replace clipboard content with selected object(s):
 <itemize>
  <item>Synopsis: <tt/"repOb"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: Swap all objects from the object clipboard
 with the currently selected object(s). If multiple objects are selected
 in non consecutive sequences, only the first consecutive sequence
@@ -17663,7 +17663,7 @@ instance configuration (i.e.~recursive references).
 clearClip &ndash; clear object clipboard:
 <itemize>
  <item>Synopsis: <tt/"clearClip"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: Clears the object clipboard.
  <item>Notes: May fail if the clipboard contains referenced objects.
 </itemize>
@@ -17679,7 +17679,7 @@ which is totally independent from the object clipboard.
 copyProp &ndash; copy a property to the property clipboard
 <itemize>
  <item>Synopsis: <tt/"copyProp [mode]"/
- <item>Background: Yes, Undo: No, Safe: No, Type: Procedure
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: No,&nbsp;&nbsp;Type: Procedure
  <item>Description: Copy the currently selected property from the
 currently selected object to the property clipboard.
 If <tt/mode/ is 0 (default), all marked entries will be omitted.
@@ -17697,7 +17697,7 @@ by adding the respective property element names to the global array
 pasteProp &ndash; paste a property
 <itemize>
  <item>Synopsis: <tt/"pasteProp"/
- <item>Background: Yes, Undo: Yes, Safe: No, Type: Procedure
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: No,&nbsp;&nbsp;Type: Procedure
  <item>Description: Copy the property from the property clipboard
 to the currently selected object.
 </itemize>
@@ -17712,7 +17712,7 @@ These commands manipulate the current level of Ayam:
 goDown:
 <itemize>
  <item>Synopsis: <tt/"goDown index"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: Enter the object determined by <tt/index/. If
 <tt/index/ is 0 and the current level is inside some object
 the parent level will be entered instead. If <tt/index/ is -1, the last
@@ -17730,7 +17730,7 @@ this level.
 goUp:
 <itemize>
  <item>Synopsis: <tt/"goUp"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: Go one level up in the object hierarchy.
  <item>Notes: The object selection is <em/not/ synchronized.
 </itemize>
@@ -17742,7 +17742,7 @@ goUp:
 goTop:
 <itemize>
  <item>Synopsis: <tt/"goTop"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: Go to the top level of the object hierarchy.
  <item>Notes: The object selection is <em/not/ synchronized.
 </itemize>
@@ -17755,7 +17755,7 @@ The following commands move objects around in the hierarchy:
 upOb &ndash; shuffle object(s) backward in the current level:<label id="scupob">
 <itemize>
  <item>Synopsis: <tt/"upOb"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: Shuffle the currently selected object(s) backwards
 (towards the first object) in the current level. Non contiguous selections
 are supported.
@@ -17773,7 +17773,7 @@ multiple times in a row.
 downOb &ndash; shuffle object(s) forward in the current level:
 <itemize>
  <item>Synopsis: <tt/"downOb"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: Shuffle the currently selected object(s) forwards
 (towards the last object) in the current level. Non contiguous selections
 are supported.
@@ -17796,7 +17796,7 @@ These commands transform objects or selected points of objects:
 movOb &ndash; move objects:
 <itemize>
  <item>Synopsis: <tt/"movOb dx dy dz"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Move the selected object(s) by <tt/dx/ in direction of the
 objects X-axis, by <tt/dy/ in direction of the objects Y-axis, and by
 <tt/dz/ in direction of the objects Z-axis.
@@ -17809,7 +17809,7 @@ objects X-axis, by <tt/dy/ in direction of the objects Y-axis, and by
 rotOb &ndash; rotate objects:
 <itemize>
  <item>Synopsis: <tt/"rotOb (dx dy dz | -a ax ay az a)"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Rotate the selected object(s) by <tt/dx/ degrees around the
 objects X-axis, then by <tt/dy/ degrees around objects Y-axis, and finally by
 <tt/dz/ degrees around the objects Z-axis. Note the order of the
@@ -17833,7 +17833,7 @@ axis <tt>"1 1 0"</tt>.
 scalOb &ndash; scale objects:
 <itemize>
  <item>Synopsis: <tt/"scalOb dx dy dz"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Scale the selected object(s) by a factor of <tt/dx/ in
 direction of the objects X-axis, by a factor of <tt/dy/ in
 direction of the objects Y-axis, and by a factor of <tt/dz/ in
@@ -17849,7 +17849,7 @@ be changed to 1.0 silently.
 movPnts &ndash; move selected points:
 <itemize>
  <item>Synopsis: <tt/"movPnts dx dy dz"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Move the selected points by <tt/dx/ in direction of the
 objects X-axis, by <tt/dy/ in direction of the objects Y-axis, and by
 <tt/dz/ in direction of the objects Z-axis.
@@ -17864,7 +17864,7 @@ objects X-axis, by <tt/dy/ in direction of the objects Y-axis, and by
 rotPnts &ndash; rotate selected points:
 <itemize>
  <item>Synopsis: <tt/"rotPnts (dx dy dz | -a ax ay az a)"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Rotate the selected points by <tt/dx/ degrees around the
 objects X-axis, then by <tt/dy/ degrees around objects Y-axis, and finally
 by <tt/dz/ degrees around the objects Z-axis. Note the order of the
@@ -17888,7 +17888,7 @@ axis <tt>"1 1 0"</tt>.
 scalPnts &ndash; scale selected points:
 <itemize>
  <item>Synopsis: <tt/"scalPnts dx dy dz"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Scale the selected points by a factor of <tt/dx/ in
 direction of the objects X-axis, by a factor of <tt/dy/ in
 direction of the objects Y-axis, and by a factor of <tt/dz/ in
@@ -17904,7 +17904,7 @@ be changed to 1.0 silently.
 delegTrafo &ndash; delegate transformations:
 <itemize>
  <item>Synopsis: <tt/"delegTrafo"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Delegates the transformations associated
 with the selected objects to their child objects. Additionally,
 the transformations of the selected objects will be reset to the
@@ -17921,7 +17921,7 @@ parent and child transformation is a shear transformation).
 applyTrafo &ndash; apply transformations:
 <itemize>
  <item>Synopsis: <tt/"applyTrafo [-sel]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Applies the transformations encoded in the
 transformation attributes of the selected objects to their points.
 Either all points (default) or just the selected ones (if the option
@@ -17941,7 +17941,7 @@ of this object will be reset to the default values.
 normTrafos &ndash; normalize transformation values:
 <itemize>
  <item>Synopsis: <tt/"normTrafos"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Normalize all transformation attribute values
 of the selected objects. The values will be rounded to the number of
 significant digits specified via the hidden preference setting
@@ -17955,7 +17955,7 @@ significant digits specified via the hidden preference setting
 normPnts &ndash; normalize points:
 <itemize>
  <item>Synopsis: <tt/"normPnts"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Normalize all selected points
 of the selected objects. The values will be rounded to the number of
 significant digits specified via the hidden preference setting
@@ -17969,7 +17969,7 @@ significant digits specified via the hidden preference setting
 normVar &ndash; normalize variable:
 <itemize>
  <item>Synopsis: <tt/"normVar varname"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Normalize the value of the designated variable.
 The value will be rounded to the number of
 significant digits specified via the hidden preference setting
@@ -17988,7 +17988,7 @@ These commands operate the shader properties:
 shaderSet:
 <itemize>
  <item>Synopsis: <tt/"shaderSet shadertype [varname]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Set the shader of type <tt/shadertype/ for the selected
 object. Type may be one of <tt/"surface"/, <tt/"displacement"/,
 <tt/"light"/, <tt/"imager"/, <tt/"atmosphere"/, <tt/"exterior"/
@@ -18009,7 +18009,7 @@ of given type.
 shaderGet:
 <itemize>
  <item>Synopsis: <tt/"shaderGet shadertype varname"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: Get the shader of type <tt/shadertype/ for the selected
 object. Type may be one of <tt/"surface"/, <tt/"displacement"/,
 <tt/"light"/, <tt/"imager"/, <tt/"atmosphere"/, <tt/"exterior"/
@@ -18030,7 +18030,7 @@ These commands may be used to modify the tags of an object
 setTag:
 <itemize>
  <item>Synopsis: <tt/"setTag type value"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Set a tag with type-string <tt/type/ and value-string
 <tt/value/ to the currently selected object(s).<newline>
 If a tag of matching type already exists, the new value will be set to
@@ -18055,7 +18055,7 @@ that hides the Transformations property GUI.
 addTag:<label id="scaddtag">
 <itemize>
  <item>Synopsis: <tt/"addTag type value"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Add a tag with type-string <tt/type/ and value-string
 <tt/value/ to the currently selected objects.<newline>
 It is legal to deliver <tt>""</tt> as value parameter. This is
@@ -18081,7 +18081,7 @@ that hides the Transformations property GUI.
 hasTag:
 <itemize>
  <item>Synopsis: <tt/"hasTag type [value]"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: This command returns <tt/"1"/ if the selected
 object has at least one tag of the designated type. Otherwise <tt/"0"/
 is returned.
@@ -18099,7 +18099,7 @@ forms of matching.
 delTags:
 <itemize>
  <item>Synopsis: <tt/"delTags [type]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Delete all tags of designated type from
 the currently selected objects.
 If the type parameter is omitted or <tt/"all"/, <em/all/ tags are
@@ -18118,7 +18118,7 @@ removes all <tt>"RP"</tt> tags from the selected objects.
 getTags:
 <itemize>
  <item>Synopsis: <tt/"getTags tvname vvname"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: Get all tags from
 the currently selected object and put them as lists into two
 variables named <tt/tvname/ for the tag types and <tt/vvname/ for the tag
@@ -18129,7 +18129,7 @@ values.
 setTags:
 <itemize>
  <item>Synopsis: <tt/"setTags tagslist"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Clear all tags from the currently selected objects
 and set all new tags from the list <tt/tagslist/. The tag types are
 taken from the list elements with even index numbers and the tag
@@ -18150,7 +18150,7 @@ tags.
 getTag:
 <itemize>
  <item>Synopsis: <tt/"getTag type [vname]"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: Get the value of a specific tag from
 the currently selected object and put it into the designated variable.
 If there is no tag of the specified type, the variable will be set
@@ -18164,7 +18164,7 @@ If no variable name is provided, the value of the tag is returned.
 registerTag:
 <itemize>
  <item>Synopsis: <tt/"registerTag type"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: This command registers the designated tag type.
 </itemize>
 
@@ -18178,7 +18178,7 @@ These commands operate on parametric curves:
 openC &ndash; open curve:
 <itemize>
  <item>Synopsis: <tt/"openC"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Open the selected curve objects.
 <p><p>
 See also section <ref id="openct" name="Open Tool">.
@@ -18191,7 +18191,7 @@ See also section <ref id="openct" name="Open Tool">.
 closeC &ndash; close curve:
 <itemize>
  <item>Synopsis: <tt/"closeC"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Close the selected curve objects.
 <p><p>
 See also section <ref id="closect" name="Close Tool">.
@@ -18204,7 +18204,7 @@ See also section <ref id="closect" name="Close Tool">.
 refineC &ndash; refine curve:
 <itemize>
  <item>Synopsis: <tt/"refineC"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Refine the control vector of the selected
 curve objects by inserting a new control point into every control
 point interval, changing the shapes of the curves.
@@ -18223,7 +18223,7 @@ See also section <ref id="refit" name="Refine Tool">.
 coarsenC &ndash; coarsen curve:
 <itemize>
  <item>Synopsis: <tt/"coarsenC"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Remove every second control point from the
 selected curve objects. If a curve has selected
 points, only the interval between the first and the
@@ -18245,7 +18245,7 @@ See also section <ref id="coart" name="Coarsen Tool">.
 revertC &ndash; revert curves:
 <itemize>
  <item>Synopsis: <tt/"revertC"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Revert the direction of the selected curve objects.
 <p><p>
 See also section <ref id="revertt" name="Revert Tool">.
@@ -18260,7 +18260,7 @@ See also section <ref id="revertt" name="Revert Tool">.
 shiftC &ndash; shift control points of a (closed) curve:
 <itemize>
  <item>Synopsis: <tt/"shiftC i"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: shifts the control points of the selected
 NCurve, ACurve, and ICurve objects by an amount specified by the
 parameter <tt/i/ (which may be negative to revert the direction of the
@@ -18280,7 +18280,7 @@ See also section <ref id="shiftclc" name="Shift Closed Curve Tool">.
 toXYC &ndash; rotate curve to XY-plane
 <itemize>
  <item>Synopsis: <tt/"toXYC"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: rotates the control points of the selected planar NCurve,
 ACurve, and ICurve objects to their respective XY-plane, modifying
 the transformation attributes accordingly.
@@ -18295,7 +18295,7 @@ See also section <ref id="toxyt" name="To XY Tool">.
 concatC &ndash; concatenate curves:
 <itemize>
  <item>Synopsis: <tt/"concatC [-c closed | -k knottype | -f fillets | -fl len]"/
- <item>Background: Yes, Undo: No, Safe: No
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: No
  <item>Description: Concatenate the selected curve objects into a
 single NURBS curve. The order of the new curve is taken from the first curve.
 <p><p>
@@ -18324,7 +18324,7 @@ These commands operate on parametric surfaces:
 revertuS &ndash; revert surfaces:
 <itemize>
  <item>Synopsis: <tt/"revertuS"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Revert the direction of the selected surfaces in
 the u parametric dimension.
 <p><p>
@@ -18338,7 +18338,7 @@ See also section <ref id="revertut" name="Revert U Tool">.
 revertvS &ndash; revert surfaces:
 <itemize>
  <item>Synopsis: <tt/"revertvS"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Revert the direction of the selected surfaces in
 the v parametric dimension.
 <p><p>
@@ -18352,7 +18352,7 @@ See also section <ref id="revertvt" name="Revert V Tool">.
 swapuvS &ndash; swap dimensions of surfaces:
 <itemize>
  <item>Synopsis: <tt/"swapuvS"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Swap the dimensions of the selected surfaces
 (objects of type NPatch, IPatch, BPatch, and PatchMesh), thus
 exchanging width and height, without altering the shape of the surfaces.
@@ -18367,7 +18367,7 @@ See also section <ref id="swapuvt" name="Swap UV Tool">.
 concatS &ndash; concatenate surfaces:
 <itemize>
  <item>Synopsis: <tt/"concatS [-o order | -t type | -k knottype | -u uvselect]"/
- <item>Background: Yes, Undo: No, Safe: No
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: No
  <item>Description: Concatenate the selected surface objects into a
 single NURBS patch.
 <p><p>
@@ -18397,7 +18397,7 @@ These are more specialized commands to change NURBS curve properties:
 clampNC &ndash; clamp NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"clampNC [-s/&thinsp;<tt/|/&thinsp;<tt/-e]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Clamp the knot vector of the selected NURBS curves
 without changing the shape of the curves.
 The knot type of the clamped curve will be changed to <tt/"Custom"/ and
@@ -18423,7 +18423,7 @@ See also section <ref id="clat" name="Clamp Tool">.
 unclampNC &ndash; unclamp NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"unclampNC [-s/&thinsp;<tt/|/&thinsp;<tt/-e]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Unclamp the knot vector of the selected NURBS curves
 without changing the shape of the curves.
 The knot type of the clamped curve can be changed to <tt/"Custom"/.
@@ -18442,7 +18442,7 @@ See also section <ref id="unclat" name="Unclamp Tool">.
 extendNC &ndash; extend NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"extendNC (x y z [w] | -vn varname | -m)"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Extend the selected NURBS curves to a given
 point or to the mark without changing the current shape of
 the curve.
@@ -18457,7 +18457,7 @@ See also section <ref id="extendt" name="Extend Tool">.
 elevateNC &ndash; increase order of NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"elevateNC [n]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Increases the order of the selected NURBS curves
 without changing the shape of the curves by <tt/n/.
 If the parameter <tt/n/ is omitted, a default value of 1 is used.
@@ -18475,7 +18475,7 @@ See also section <ref id="elevt" name="Elevate Tool">.
 reduceNC &ndash; decrease order of  NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"reduceNC [tol]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Decrease the order of the selected NURBS curves
 by one if the shape of the reduced curves does not deviate from the
 original curves by <tt/tol/ in any point.
@@ -18493,7 +18493,7 @@ See also section <ref id="reduct" name="Reduce Tool">.
 insknNC &ndash; insert knot into NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"insknNC u r"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Insert a new knot at the position
 specified by <tt/u/ <tt/r/ times. The valid range for <tt/u/ is determined by
 the current knot vector U as follows: <tt/U[p] <= u <= U[n]/, where
@@ -18512,7 +18512,7 @@ See also section <ref id="insknt" name="Insert Knot Tool">.
 remknNC &ndash; remove knot from NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"remknNC (u | -i ind) r [tol]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Remove a knot at the position
 specified by <tt/u/ (u must be in the valid range of the knot vector
 of the selected curve) <tt/r/ times from the curve. Since Ayam 1.20
@@ -18540,7 +18540,7 @@ See also section <ref id="remknt" name="Remove Knot Tool">.
 remsuknNC &ndash; remove superfluous knots from NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"remsuknNC [tol]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Remove all knots from the NURBS curve that do not
 contribute to its shape. This may lead to control point removal and
 changes, but the shape of the curve does not change unless a large
@@ -18561,7 +18561,7 @@ See also section <ref id="remsuknt" name="Remove Superfluous Knots Tool">.
 refineknNC &ndash; refine knots of NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"refineknNC [{u1 u2 un}]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Refine the knot vector of the selected NURBS curve
 without changing the shape of the curve with n new knots <tt/{u1 u2 un}/.
 If no list of new knots is given, a new knot is inserted into each interval
@@ -18577,7 +18577,7 @@ See also section <ref id="refknit" name="Refine Knots Tool">.
 tweenNC &ndash; interpolate (tween) curves:
 <itemize>
  <item>Synopsis: <tt/"tweenNC [r]"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: Interpolate (tween) between the first two selected
 NURBS curves, creating a new curve that incorporates features from the
 selected curves. The parameter <tt/r/ defines the
@@ -18598,7 +18598,7 @@ See also section <ref id="tweennct" name="Tween Curve Tool">.
 rescaleknNC &ndash; rescale knots of NURBS curves:
 <itemize>
  <item>Synopsis: <tt/"rescaleknNC [-r rmin rmax | -d mindist]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Rescale the knot vector(s) of the selected NURBS curve(s)
 to the range &lsqb;0.0,&thinsp;1.0&rsqb; (if no argument is present) or to the
 range &lsqb;<tt/rmin/,&thinsp;<tt/rmax/&rsqb; if the <tt/"-r"/ argument is
@@ -18648,7 +18648,7 @@ See also section <ref id="splitt" name="Split Tool">.
 extrNC &ndash; extract NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"extrNC [-relative] umin umax"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: Extracts a sub-curve from the selected NCurve
 or NCurve providing objects. The extracted curve(s) will be appended
 as new object(s) to the current level of the scene. The sub-curve to be
@@ -18671,7 +18671,7 @@ See also section <ref id="extrnpt" name="Extract Patch Tool">.
 trimNC &ndash; trim NURBS curve
 <itemize>
  <item>Synopsis: <tt/"trimNC [-relative] umin umax"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: trims the selected NURBS curve to the designated
 parametric range (umin-umax), modifying the original selected curve.
 <p><p>
@@ -18689,7 +18689,7 @@ See also section <ref id="ctrimt" name="Curve Trim Tool">.
 estlenNC &ndash; estimate length of NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"estlenNC [-trafo | -refine n] [varname]"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: estimate the length of the currently selected NURBS curve
 or NURBS curve providing object and put the result into the designated
 variable.<newline>
@@ -18712,7 +18712,7 @@ If no variable name is specified the command returns the respective result(s).
 reparamNC &ndash; reparameterise a NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"reparamNC type"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: reparameterise all selected NURBS curves to have
 chordal knots (type: <tt/0/), or centripetal knots (type: <tt/1/).
 The knot type of the curve will be changed to <tt/"Custom"/.
@@ -18727,7 +18727,7 @@ The knot type of the curve will be changed to <tt/"Custom"/.
 isCompNC:
 <itemize>
  <item>Synopsis: <tt>"isCompNC [-l level]"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: This command returns <tt/1/ if the selected NURBS curves
 are compatible (i.e.~defined on the same knot vector), otherwise it
 returns <tt/0/.
@@ -18746,7 +18746,7 @@ are compared.
 makeCompNC &ndash; make NURBS curves compatible
 <itemize>
  <item>Synopsis: <tt/"makeCompNC [-f | -l level]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: makes the selected NURBS curves compatible
 i.e.~of the same order and defined on the same knot vector.
 <p><p>
@@ -18765,7 +18765,7 @@ See also section <ref id="makecompt" name="Make Compatible Tool">.
 interpNC &ndash; interpolate NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"interpNC [-order order | -ptype type | -closed (0|1) | -sdlen length | -edlen length]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Interpolate the selected NURBS curves
 with desired order and parameterisation type.
 Order defaults to 4 and must be higher than 2.
@@ -18803,7 +18803,7 @@ See also section <ref id="interpnct" name="Interpolate Tool">.
 approxNC &ndash; approximate NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"approxNC [-order o | -length l | -closed (0|1) | -tesselate t]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Approximate the selected NURBS curves
 with a new NURBS curve of desired order and length.
 <p><p>
@@ -18827,6 +18827,27 @@ The knot type of the processed curves will be changed to <tt/"Custom"/.
 See also section <ref id="approxnct" name="Approximate Tool">.
 </itemize>
 
+<p>
+<#if out="latex"><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
+<label id="sccurvatnc">
+curvatNC &ndash; compute curvature:
+<itemize>
+ <item>Synopsis: <tt/"curvatNC [-r] -u u"/
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
+ <item>Description: Compute and return the curvature of the selected NURBS
+curve or NURBS curve providing object at the designated parametric
+value <tt/u/.<newline>
+<p>
+If the option <tt/"-r"/ is present, the parametric value is interpreted
+in a relative way and should therefore be in the range
+&lsqb;0,&thinsp;1&rsqb;.
+<p>
+If multiple objects are selected, a list of curvature values is returned.
+<p>
+See also section <ref id="plotcurt" name="Plot Curvature Tool">.
+</itemize>
+
 <#if out="latex"><x/newpage/</#if>
 
 <sect2>Manipulating NURBS Surfaces<label id="scinurbss">
@@ -18837,7 +18858,7 @@ These are more specialized commands to change NURBS surface properties:
 clampuNP &ndash; clamp NURBS patch in U direction:
 <itemize>
  <item>Synopsis: <tt/"clampuNP [-s/&thinsp;<tt/|/&thinsp;<tt/-e]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Clamp the U direction knot vector of the selected NURBS
 patches without changing the shape of the patches.
 The knot type will be changed to <tt/"Custom"/ and the knots will have <em/o/
@@ -18863,7 +18884,7 @@ See also section <ref id="clanpt" name="Clamp Surface Tool">.
 clampvNP &ndash; clamp NURBS patch in V direction:
 <itemize>
  <item>Synopsis: <tt/"clampvNP [-s/&thinsp;<tt/|/&thinsp;<tt/-e]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Clamp the V direction knot vector of the selected NURBS
 patches without changing the shape of the patches.
 The knot type will be changed to <tt/"Custom"/ and the knots will have <em/o/
@@ -18889,7 +18910,7 @@ See also section <ref id="clanpt" name="Clamp Surface Tool">.
 unclampuNP &ndash; unclamp NURBS patch in U direction:
 <itemize>
  <item>Synopsis: <tt/"unclampuNP [-s/&thinsp;<tt/|/&thinsp;<tt/-e]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Unclamp the U direction knot vector of the selected NURBS
 patches without changing the shape of the patches.
 The knot type can be changed to <tt/"Custom"/.
@@ -18910,7 +18931,7 @@ See also section <ref id="unclanpt" name="Unclamp Surface Tool">.
 unclampvNP &ndash; unclamp NURBS patch in V direction:
 <itemize>
  <item>Synopsis: <tt/"unclampvNP [-s/&thinsp;<tt/|/&thinsp;<tt/-e]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Unclamp the V direction knot vector of the selected NURBS
 patches without changing the shape of the patches.
 The knot type can be changed to <tt/"Custom"/.
@@ -18929,7 +18950,7 @@ See also section <ref id="unclanpt" name="Unclamp Surface Tool">.
 rescaleknNP &ndash; rescale knots of NURBS patches:
 <itemize>
  <item>Synopsis: <tt/"rescaleknNP [-r[u|v] rmin rmax | -d[u|v] mindist]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Rescale the knot vector(s) of the selected NURBS patch(es)
 to the range &lsqb;0.0,&thinsp;1.0&rsqb; (if no argument is present) or to the
 range &lsqb;<tt/rmin/,&thinsp;<tt/rmax/&rsqb; if the <tt/"-r"/ argument is
@@ -18965,7 +18986,7 @@ of the selected NURBS patch objects to the new range
 insknuNP &ndash; insert knot into NURBS patch:
 <itemize>
  <item>Synopsis: <tt/"insknuNP u r"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Insert a new knot in U direction at the position
 specified by <tt/u/, <tt/r/ times. <tt/u/ must be in the valid range of
 the corresponding
@@ -18988,7 +19009,7 @@ See also section <ref id="insknnpt" name="Insert Knot Surface Tool">.
 insknvNP &ndash; insert knot into NURBS patch:
 <itemize>
  <item>Synopsis: <tt/"insknvNP v r"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Insert a new knot in V direction at the position
 specified by <tt/v/, <tt/r/ times. <tt/v/ must be in the valid range of
 the corresponding
@@ -19009,7 +19030,7 @@ See also section <ref id="insknnpt" name="Insert Knot Surface Tool">.
 remknuNP &ndash; remove u knot from NURBS surface:
 <itemize>
  <item>Synopsis: <tt/"remknuNP (u | -i ind) r [tol]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Remove a knot at the position
 specified by <tt/u/ (<tt/u/ must be in the valid range of the knot vector
 of the selected surface) <tt/r/ times from the surface. Since Ayam 1.20
@@ -19035,7 +19056,7 @@ See also section <ref id="remknnpt" name="Remove Knot Surface Tool">.
 remknvNP &ndash; remove v knot from NURBS surface:
 <itemize>
  <item>Synopsis: <tt/"remknvNP (v | -i ind) r [tol]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Remove a knot at the position
 specified by <tt/v/ (<tt/v/ must be in the valid range of the knot vector
 of the selected surface) <tt/r/ times from the surface. Since Ayam 1.20
@@ -19061,7 +19082,7 @@ See also section <ref id="remknnpt" name="Remove Knot Surface Tool">.
 remsuknuNP &ndash; remove superfluous knots from NURBS surface:
 <itemize>
  <item>Synopsis: <tt/"remsuknuNP [tol]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Remove all knots from the NURBS surface that do not
 contribute to its shape (in u direction).
 This may lead to control point removal and
@@ -19082,7 +19103,7 @@ section <ref id="remsuknt" name="Remove Superfluous Knots Surface Tools">.
 remsuknvNP &ndash; remove superfluous knots from NURBS surface:
 <itemize>
  <item>Synopsis: <tt/"remsuknvNP [tol]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Remove all knots from the NURBS surface that do not
 contribute to its shape (in v direction).
 This may lead to control point removal and
@@ -19103,7 +19124,7 @@ section <ref id="remsuknuvt" name="Remove Superfluous Knots Surface Tools">.
 refineuNP &ndash; refine NURBS surface in U direction:
 <itemize>
  <item>Synopsis: <tt/"refineuNP [{u1 u2 un}]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Refine the selected NURBS surfaces in u direction
 with n new knots <tt/{u1 u2 un}/ without changing their shape.
 If no list of new knots is given, a new knot is inserted into each interval
@@ -19120,7 +19141,7 @@ See also section <ref id="refinest" name="Refine Knots Surface Tool">.
 refinevNP &ndash; refine NURBS surface in V direction:
 <itemize>
  <item>Synopsis: <tt/"refinevNP [{v1 v2 vn}]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Refine the selected NURBS surfaces in v direction
 with n new knots <tt/{v1 v2 vn}/ without changing their shape.
 If no list of new knots is given, a new knot is inserted into each interval
@@ -19137,7 +19158,7 @@ See also section <ref id="refinest" name="Refine Knots Surface Tool">.
 elevateuNP &ndash; elevate NURBS surface in U direction:
 <itemize>
  <item>Synopsis: <tt/"elevateuNP [n]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Elevate the u order of the selected NURBS surfaces
 without changing the shape of the surfaces by <tt/n/.
 If the parameter <tt/n/ is omitted, a default value of 1 is used.
@@ -19153,7 +19174,7 @@ See also section <ref id="elevuvt" name="Elevate Surface Tool">.
 elevatevNP &ndash; elevate NURBS surface in V direction:
 <itemize>
  <item>Synopsis: <tt/"elevatevNP [n]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Elevate the v order of the selected NURBS surfaces
 without changing the shape of the surfaces by <tt/n/.
 If the parameter <tt/n/ is omitted, a default value of 1 is used.
@@ -19169,7 +19190,7 @@ See also section <ref id="elevuvt" name="Elevate Surface Tool">.
 reduceuNP &ndash; decrease order of  NURBS surface:
 <itemize>
  <item>Synopsis: <tt/"reduceuNP [tol]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Decrease the order of the selected NURBS surfaces
 in u direction by one if the shape of the reduced surfaces does not
 deviate from the original surfaces by <tt/tol/ in any point.
@@ -19187,7 +19208,7 @@ See also section <ref id="reduceuvt" name="Reduce Surface Tools">.
 reducevNP &ndash; decrease order of  NURBS surface:
 <itemize>
  <item>Synopsis: <tt/"reducevNP [tol]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Decrease the order of the selected NURBS surfaces
 in v direction by one if the shape of the reduced surfaces does not
 deviate from the original surfaces by <tt/tol/ in any point.
@@ -19255,7 +19276,7 @@ See also section <ref id="splitnpt" name="Split Surface Tools">.
 extrNP &ndash; extract NURBS patch:
 <itemize>
  <item>Synopsis: <tt/"extrNP [-relative]  umin umax vmin vmax"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: Extracts a sub-patch from the selected NPatch
 or NPatch providing objects. The extracted patch(es) will be appended as
 new object(s) to the current level of the scene.
@@ -19277,7 +19298,7 @@ See also section <ref id="extrnpt" name="Extract Patch Tool">.
 tweenNP &ndash; interpolate (tween) surfaces:
 <itemize>
  <item>Synopsis: <tt/"tweenNP [r]"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: Interpolate (tween) between the first two selected
 NURBS patches, creating a new patch that incorporates features from the
 selected patches. The parameter <tt/r/ defines the
@@ -19300,7 +19321,7 @@ See also section <ref id="tweennpt" name="Tween Surfaces Tool">.
 interpuNP &ndash; interpolate NURBS surface in U direction:
 <itemize>
  <item>Synopsis: <tt/"interpuNP [-order order | -ktype type | -closed (0|1) | -sdlen length | -edlen length]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Interpolate the selected NURBS surfaces
 in U direction with desired order and parameterisation type.
 Order defaults to 4 and must be higher than 2.
@@ -19339,7 +19360,7 @@ See also section <ref id="interpnpt" name="Interpolate Surface Tool">.
 interpvNP &ndash; interpolate NURBS surface in V direction:
 <itemize>
  <item>Synopsis: <tt/"interpvNP [-order order | -ktype type | -closed (0|1) | -sdlen length | -edlen length]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Interpolate the selected NURBS surfaces
 in V direction with desired order and parameterisation type.
 Order defaults to 4 and must be higher than 2.
@@ -19377,7 +19398,7 @@ See also section <ref id="interpnpt" name="Interpolate Surface Tool">.
 breakNP &ndash; break NURBS patch into curves:
 <itemize>
  <item>Synopsis: <tt/"breakNP [-r | -a | (-u | -v)]"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: Breaks the selected NPatch objects into NURBS curves,
 along parametric dimension U or V (depending on whether the option
 <tt/"-u"/ or <tt/"-v"/ is specified, default is U).
@@ -19402,7 +19423,7 @@ See also section <ref id="breaknpt" name="Break into Curves Tool">.
 buildNP &ndash; build NURBS patch from curves:
 <itemize>
  <item>Synopsis: <tt/"buildNP [-r|-a (0|1) | -o order | -t type | -k knottype]"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: Builds a NURBS patch from the selected NURBS curves.
 The width of the new patch depends on the number of provided curves
 and the surface type.
@@ -19435,8 +19456,8 @@ See also section <ref id="buildnpt" name="Build from Curves Tool">.
 <label id="sciscompnp">
 isCompNP:
 <itemize>
- <item>Synopsis: <tt>"isCompNP [(-u|-v) | -l level]"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Synopsis: <tt/"isCompNP [(-u/&thinsp;<tt/|/&thinsp;<tt/-v) | -l level]"/
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: This command returns <tt/1/ if the selected NURBS surfaces
 are compatible (i.e.~defined on the same knot vector), otherwise it
 returns <tt/0/.
@@ -19456,8 +19477,8 @@ compared.
 <label id="scmakecompnp">
 makeCompNP &ndash; make NURBS surfaces compatible
 <itemize>
- <item>Synopsis: <tt/"makeCompNP [-f | (-u|-v) | -l level]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Synopsis: <tt/"makeCompNP [-f | (-u/&thinsp;<tt/|/&thinsp;<tt/-v) | -l level]"/
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: makes the selected NURBS surfaces compatible
 i.e.~of the same order and defined on the same knot vectors.
 <p><p>
@@ -19480,7 +19501,7 @@ tobasisPM &ndash; convert PatchMesh to a different
 basis:
 <itemize>
  <item>Synopsis: <tt/"tobasisPM [-t type | -s step | -b basis]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Converts all selected bicubic PatchMesh objects to a
 different basis. Both dimensions will be converted to the same
 basis; it is not an error if one dimension is already of the
@@ -19516,7 +19537,7 @@ tobasisBC &ndash; convert BCurve objects to a different
 basis:
 <itemize>
  <item>Synopsis: <tt/"tobasisBC [-t type | -s step | -b basis]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Converts all selected BCurve objects to a
 different basis.
 <p><p>
@@ -19558,7 +19579,7 @@ properties:
 genfnPo &ndash; generate face normals:
 <itemize>
  <item>Synopsis: <tt/"genfnPo"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Generate face normals for the selected PolyMesh object(s)
 using the robust Newell algorithm.
 <p><p>
@@ -19572,7 +19593,7 @@ The generated normals will be stored in a PV tag.
 gensnPo &ndash; generate smooth normals:
 <itemize>
  <item>Synopsis: <tt/"gensnPo"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Generate smooth vertex normals for the selected
 PolyMesh object(s), averaging the surrounding face normals of each vertex.
 The face normals will be weighted by the vertex face-centroid distance,
@@ -19593,7 +19614,7 @@ normals will be generated using the same algorithm as implemented in the
 remsnPo &ndash; remove smooth normals:
 <itemize>
  <item>Synopsis: <tt/"remsnPo"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Removes all smooth/vertex normals from the selected
 PolyMesh object(s).
 </itemize>
@@ -19605,7 +19626,7 @@ PolyMesh object(s).
 flipPo &ndash; flip normals or loops:
 <itemize>
  <item>Synopsis: <tt/"flipPo [0|1|2]"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Flips smooth/vertex normals of the selected
 PolyMesh object(s). By default, and if the parameter is 0, also all
 loops will be flipped. If the parameter is 1, only the normals are
@@ -19624,7 +19645,7 @@ objects that support point editing.
 getPnt &ndash; get point(s):
 <itemize>
  <item>Synopsis: <tt/"getPnt [-trafo | -world | -eval | -relative] (index | indexu indexv | u | u v ([varx vary varz [varw]] | -vn [varname]) | -all [varname])"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: Get a control point of the currently selected object
 and write the coordinate values into the variables <tt/varx/, <tt/vary/,
 <tt/varz/, and (if the object supports rational coordinates) <tt/varw/.
@@ -19682,7 +19703,7 @@ setPnt &ndash; set point(s):<label id="scsetpnt">
 <itemize>
  <item>Synopsis:
 <tt/"setPnt [-world] (index | indexu indexv) (x y z [w] | -vn varname) | -all varname)"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Set a control point of the
 currently selected object to the coordinates x, y, z, and w or to
 coordinates from a list, or set all control points from a list of
@@ -19741,7 +19762,7 @@ These procedures update various parts of the Ayam user interface:
 rV &ndash; redraw all views:
 <itemize>
  <item>Synopsis: <tt/"rV"/
- <item>Background: No, Undo: No, Safe: No, Type: Procedure
+ <item>Background: No,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: No,&nbsp;&nbsp;Type: Procedure
  <item>Description: Redraws all currently open views, except for
 iconified views and views where automatic redraw has been turned off.
 </itemize>
@@ -19753,7 +19774,7 @@ iconified views and views where automatic redraw has been turned off.
 uS &ndash; update select:
 <itemize>
  <item>Synopsis: <tt/"uS [update_prop maintain_selection]"/
- <item>Background: No, Undo: No, Safe: No, Type: Procedure
+ <item>Background: No,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: No,&nbsp;&nbsp;Type: Procedure
  <item>Description: Update the object listbox or tree view after a change
 to the object hierarchy.
 <p>
@@ -19789,7 +19810,7 @@ the command <tt/"uCL cl"/ may be used instead of <tt/"uS"/.
 uCL &ndash; update current level:
 <itemize>
  <item>Synopsis: <tt/"uCL mode [args]"/
- <item>Background: No, Undo: No, Safe: No, Type: Procedure
+ <item>Background: No,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: No,&nbsp;&nbsp;Type: Procedure
  <item>Description: Update only the current level of the object listbox
 or tree view after changes. See also the discussion of <tt/"uS"/ above.
 The parameter <tt/"mode"/ may be "cl" or "cs", where "cl" is the normal
@@ -19803,7 +19824,7 @@ operation mode, and "cs" just clears the selection.
 uCR &ndash; update current level after create:
 <itemize>
  <item>Synopsis: <tt/"uCR"/
- <item>Background: No, Undo: No, Safe: No
+ <item>Background: No,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: No
  <item>Description: Update only the current level of the object listbox
 or tree view after objects have been created and need to be added to
 the current level. See also the discussion of <tt/"uS"/ above.
@@ -19816,7 +19837,7 @@ the current level. See also the discussion of <tt/"uS"/ above.
 plb_update &ndash; property listbox update:
 <itemize>
  <item>Synopsis: <tt/"plb_update"/
- <item>Background: No, Undo: No, Safe: No, Type: Procedure
+ <item>Background: No,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: No,&nbsp;&nbsp;Type: Procedure
  <item>Description: Clear the current property GUI, ask the currently
 selected object for a list of properties and insert them in the
 property listbox, then rebuild the property GUI of the property
@@ -19842,7 +19863,7 @@ These commands manage preferences data:
 getPrefs &ndash; get preferences data:
 <itemize>
  <item>Synopsis: <tt/"getPrefs"/
- <item>Background: No, Undo: No, Safe: No
+ <item>Background: No,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: No
  <item>Description: Copy preferences data from the C to the Tcl context.
 </itemize>
 
@@ -19852,7 +19873,7 @@ getPrefs &ndash; get preferences data:
 setPrefs &ndash; set preferences data:
 <itemize>
  <item>Synopsis: <tt/"setPrefs"/
- <item>Background: No, Undo: No, Safe: No
+ <item>Background: No,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: No
  <item>Description: Copy preferences data from the Tcl to the C context.
 This is necessary after a change to the global Tcl array <tt/"ayprefs"/
 to let all changes take effect.
@@ -19867,7 +19888,7 @@ This command manages custom objects (plugins):
 loadPlugin &ndash; load custom object&thinsp;/&thinsp;plugin:
 <itemize>
  <item>Synopsis: <tt/"loadPlugin name"/
- <item>Background: No, Undo: No, Safe: No, Type: Procedure
+ <item>Background: No,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: No,&nbsp;&nbsp;Type: Procedure
  <item>Description: Load a custom object&thinsp;/&thinsp;plugin.
 If <tt/name/ is a complete
 filename and the designated file exists, it will be loaded directly.
@@ -19891,7 +19912,7 @@ to a number of selected objects.
 forAll:
 <itemize>
  <item>Synopsis: <tt>"forAll [(-recursive|-r) r | (-type|-t) t] command"</tt>
- <item>Background: depends, Undo: depends, Safe: No, Type: Procedure
+ <item>Background: depends,&nbsp;&nbsp;Undo: depends,&nbsp;&nbsp;Safe: No,&nbsp;&nbsp;Type: Procedure
  <item>Description: The forAll procedure executes command for all
 objects that have been selected currently, or for every object
 of the current level if nothing has been selected.
@@ -19955,7 +19976,7 @@ may just modify existing objects.
 withOb &ndash; execute a command on certain selected object(s):
 <itemize>
  <item>Synopsis: <tt/"withOb index [do] command"/
- <item>Background: depends on command, Undo: depends on command, Safe: Yes
+ <item>Background: depends on command,&nbsp;&nbsp;Undo: depends on command,&nbsp;&nbsp;Safe: Yes
  <item>Description: Use this command to execute command on a
 single object (designated by the zero based index) from a multiple selection
 without changing the selection state of any objects.
@@ -19979,7 +20000,7 @@ files:
 replaceScene:
 <itemize>
  <item>Synopsis: <tt>"replaceScene filename"</tt>
- <item>Background: Yes, Undo: No, Safe: No
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: No
  <item>Description: clears the current scene, then loads a new scene
 from the file designated by the <tt/"filename"/ parameter.
  <item>Notes: In contrast to using the main menu,
@@ -19997,7 +20018,7 @@ the most recently used list. Furthermore, automatic import is not working.
 insertScene:
 <itemize>
  <item>Synopsis: <tt>"insertScene filename"</tt>
- <item>Background: Yes, Undo: No, Safe: No
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: No
  <item>Description: inserts a scene from the file designated by the
 <tt/"filename"/ parameter.
  <item>Notes: In contrast to using the main menu,
@@ -20014,7 +20035,7 @@ does <em/not/ modify the scene changed state.
 saveScene:
 <itemize>
  <item>Synopsis: <tt>"saveScene filename [selected]"</tt>
- <item>Background: Yes, Undo: No, Safe: No
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: No
  <item>Description: saves the current scene to the file designated by the
 <tt/"filename"/ parameter. If the optional parameter <tt/"selected"/ is 1,
 only the selected objects will be saved.
@@ -20034,7 +20055,7 @@ saving of window geometries are not working.
 newScene:
 <itemize>
  <item>Synopsis: <tt>"newScene"</tt>
- <item>Background: Yes, Undo: No, Safe: No
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: No
  <item>Description: clears the current scene.
  <item>Notes:
 In contrast to using the main menu, this command does <em/not/ check
@@ -20055,7 +20076,7 @@ wrib &ndash; RIB export:
 <itemize>
  <item>Synopsis:
 <tt>"wrib filename [-image imagename] [-smonly | -selonly | -objonly]"</tt>
- <item>Background: Yes, Undo: No, Safe: No
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: No
  <item>Description: exports the current scene to a RIB file designated
 by <tt/"filename"/.
 <p><p>
@@ -20102,7 +20123,7 @@ This command is for error reporting from scripts:
 ayError:
 <itemize>
  <item>Synopsis: <tt>"ayError code place detail"</tt>
- <item>Background: No, Undo: No, Safe: No
+ <item>Background: No,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: No
  <item>Description: This command reports errors or warnings.
 <tt/ayError/ should be preferred to <tt/puts/ because the error
 reporting mechanism of Ayam features consistently formatted output,
@@ -20128,7 +20149,7 @@ section <ref id="ayproparr" name="Property Management and Data Arrays">.
 addPropertyGUI:
 <itemize>
  <item>Synopsis: <tt>"addPropertyGUI name"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes, Type: Procedure
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
  <item>Description: This procedure sets up a property GUI management
 array and creates an enclosing frame for GUI elements whose window
 name will be returned.
@@ -20158,7 +20179,7 @@ property GUIs created by <tt/"addPropertyGUI"/.
 addParam:
 <itemize>
  <item>Synopsis: <tt>"addParam window arrayname paramname [defaults]"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes, Type: Procedure
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
  <item>Description: This procedure adds a property GUI element for a single
 integer or floating point number parameter.
 <p><p>
@@ -20184,7 +20205,7 @@ additional drop down menu on the right side of the interface element.
 addString:
 <itemize>
  <item>Synopsis: <tt>"addString window arrayname paramname [defaults]"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes, Type: Procedure
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
  <item>Description: This procedure adds a property GUI element for a single
 string parameter.
 <p><p>
@@ -20209,7 +20230,7 @@ clear the string entry field and move the input focus to the field.
 addCheck:
 <itemize>
  <item>Synopsis: <tt>"addCheck window arrayname paramname [onoffvalues]"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes, Type: Procedure
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
  <item>Description: This procedure adds a property GUI element for a single
 boolean parameter realized by a check-button.
 <p><p>
@@ -20232,7 +20253,7 @@ enabled or disabled. The default values are 0 and 1.
 addColor:
 <itemize>
  <item>Synopsis: <tt>"addColor window arrayname paramname [defaults]"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes, Type: Procedure
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
  <item>Description: This procedure adds a property GUI element for a single
 color parameter.
 <p><p>
@@ -20258,7 +20279,7 @@ additional drop down menu on the right side of the interface element.
 addMatrix:
 <itemize>
  <item>Synopsis: <tt>"addMatrix window arrayname paramname"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes, Type: Procedure
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
  <item>Description: This procedure adds a property GUI element for a
 four by four element matrix, e.g.~a transformation matrix.
 <p><p>
@@ -20279,7 +20300,7 @@ The individual matrix value variable names will be formed by appending a
 addMenu:
 <itemize>
  <item>Synopsis: <tt>"addMenu window arrayname paramname choices"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes, Type: Procedure
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
  <item>Description: This procedure adds a property GUI element for a
 menu&thinsp;/&thinsp;multiple choice parameter, realized through
 a drop down menu. The value of the parameter will be the index
@@ -20307,7 +20328,7 @@ before this procedure is called.
 addFile:
 <itemize>
  <item>Synopsis: <tt>"addFile window arrayname paramname [defaults]"</tt>
- <item>Background: Yes, Undo: No, Safe: No, Type: Procedure
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: No,&nbsp;&nbsp;Type: Procedure
  <item>Description: This procedure adds a property GUI element for a
 file name.
 <p><p>
@@ -20335,7 +20356,7 @@ meant to be used for saving: <tt>"addSFile"</tt>
 addCommand:
 <itemize>
  <item>Synopsis: <tt>"addCommand window name text command"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes, Type: Procedure
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
  <item>Description: This procedure adds a property GUI element to let
 the user initiate a command with the help of a push-button.
 <p><p>
@@ -20357,7 +20378,7 @@ button is pushed.
 addText:
 <itemize>
  <item>Synopsis: <tt>"addText window name text"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes, Type: Procedure
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
  <item>Description: This procedure adds a property GUI element to
 display static information, e.g.~a parameter section name.
 <p><p>
@@ -20376,7 +20397,7 @@ The <tt/"text"/ parameter is the string to be displayed.
 addInfo:
 <itemize>
  <item>Synopsis: <tt>"addInfo window arrayname paramname"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes, Type: Procedure
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
  <item>Description: This procedure adds a property GUI element to
 display dynamic textual information.
 <p><p>
@@ -20405,7 +20426,7 @@ more complex information can be presented.
 addProgress:
 <itemize>
  <item>Synopsis: <tt>"addProgress window arrayname paramname"</tt>
- <item>Background: Yes, Undo: No, Safe: No, Type: Procedure
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: No,&nbsp;&nbsp;Type: Procedure
  <item>Description: This procedure adds a property GUI element to
 display progress information.
 <p><p>
@@ -20426,7 +20447,7 @@ the progress is stored in percent.
 addVSpace:
 <itemize>
  <item>Synopsis: <tt>"addVSpace window name height"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes, Type: Procedure
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
  <item>Description: This procedure adds an empty property GUI element with
 defined height to improve the layout of a property GUI.
 <p><p>
@@ -20445,7 +20466,7 @@ The <tt/"height"/ parameter is the desired height in pixels.
 addOptionToggle:
 <itemize>
  <item>Synopsis: <tt>"addOptionToggle window arrayname paramname text cmd"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes, Type: Procedure
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
  <item>Description: This procedure adds a property GUI element that
 allows to toggle the visibility of other property GUI elements.
 <p><p>
@@ -20499,7 +20520,7 @@ Miscellaneous commands:
 convOb:
 <itemize>
  <item>Synopsis: <tt>"convOb [-inplace [type] | -check type]"</tt>
- <item>Background: Yes, Undo: depends (if -inplace: Yes), Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: depends (if -inplace: Yes),&nbsp;&nbsp;Safe: Yes
  <item>Description: This command calls the registered converter
 for the selected objects which usually creates new objects of a different type.
 <p><p>
@@ -20523,7 +20544,7 @@ with target type.
 undo:<label id="scundo">
 <itemize>
  <item>Synopsis: <tt>"undo [redo | save opname [0|1] | clear | rewind]"</tt>
- <item>Background: Yes, Undo: Yes, Safe: No
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: No
  <item>Description:
  <itemize>
   <item>If called without arguments, this command performs the undo
@@ -20567,7 +20588,7 @@ if { $ay_error > 1 } {
 runTool:<label id="scruntool">
 <itemize>
  <item>Synopsis: <tt>"runTool vars labels commands title [doc]"</tt>
- <item>Background: Yes, Undo: No, Safe: No, Type: Procedure
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: No,&nbsp;&nbsp;Type: Procedure
  <item>Description: This procedure opens a dialog window to request
 a set of parameter values, specified via <tt/vars/ and <tt/labels/,
 and if the dialog is closed via the <tt/"Ok"/-button, runs the specified
@@ -20633,7 +20654,7 @@ NURBS curve(s) on the chosen side(s).
 notifyOb:<label id="scnotifyob">
 <itemize>
  <item>Synopsis: <tt>"notifyOb [-all | -modified | -parent]"</tt>
- <item>Background: Yes, Undo: No, Safe: Yes<f><sup>&lowast;</sup></f>
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes<f><sup>&lowast;</sup></f>
  <item>Description: This command calls the registered notification
 callback for the selected object(s) and their parents, or, if no object
 is selected, for all objects of the scene.
@@ -20667,7 +20688,7 @@ See also section <ref id="toolobj" name="The Modelling Concept Tool-Objects">.
 nameOb:<label id="scnameob">
 <itemize>
  <item>Synopsis: <tt>"nameOb name"</tt>
- <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: This command sets the name of the
 selected object(s).<newline>
 See also
@@ -20679,7 +20700,7 @@ section <ref id="scgetname" name="getName scripting interface command">.
 setMark:<label id="scsetmark">
 <itemize>
  <item>Synopsis: <tt>"setMark [x y z | l]"</tt>
- <item>Background: Yes, Undo: No, Safe: No, Type: Procedure
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: No,&nbsp;&nbsp;Type: Procedure
  <item>Description: This procedure sets the global mark to the specified
 coordinates.<newline>
 If there is only one argument, it is expected to be a list
@@ -20699,7 +20720,7 @@ See also section <ref id="markac" name="Setting the Mark">.
 getMark:<label id="scgetmark">
 <itemize>
  <item>Synopsis: <tt>"getMark"</tt>
- <item>Background: Yes, Undo: No, Safe: No, Type: Procedure
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: No,&nbsp;&nbsp;Type: Procedure
  <item>Description: This procedure returns the current global mark
 as a list of three floating point values.
 <p><p>
@@ -20713,7 +20734,7 @@ See also section <ref id="markac" name="Setting the Mark">.
 tmpGet:<label id="sctmpget">
 <itemize>
  <item>Synopsis: <tt>"tmpGet tmpdir varname [ext]"</tt>
- <item>Background: Yes, Undo: No, Safe: No
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: No
  <item>Description: This command calculates a name for a temporary
 file in tmpdir and puts the complete name (with the optionally present
 extension appended) into the variable designated by <tt/varname/.
@@ -20724,7 +20745,7 @@ extension appended) into the variable designated by <tt/varname/.
 whatis:<label id="scwhatis">
 <itemize>
  <item>Synopsis: <tt>"whatis this"</tt>
- <item>Background: Yes, Undo: N/A, Safe: No, Type: Procedure
+ <item>Background: Yes,&nbsp;&nbsp;Undo: N/A,&nbsp;&nbsp;Safe: No,&nbsp;&nbsp;Type: Procedure
  <item>Description: Print information about the named object
 <tt/"this"/ in the Tcl scripting context to the console.
 This procedure can be used to inquire about the existence of variables,
@@ -20743,7 +20764,7 @@ leads to the output:
 addToProc:<label id="scaddtoproc">
 <itemize>
  <item>Synopsis: <tt>"addToProc procedure addition"</tt>
- <item>Background: Yes, Undo: No, Safe: No, Type: Procedure
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: No,&nbsp;&nbsp;Type: Procedure
  <item>Description: This procedure adds the code from <tt/addition/ to
 the Tcl procedure <tt/procedure/.
  <item>Note: This procedure uses the introspection facilities of
