@@ -19450,6 +19450,7 @@ the current level, the other NCurve objects will be removed.
 See also section <ref id="buildnpt" name="Build from Curves Tool">.
 </itemize>
 
+<#if out="latex"><x/newpage/</#if>
 <p>
 <#if out="latex"><x/phantomsection/</#if>
 <#if out="html"><f/<inf/<newline>//</#if>
@@ -19491,6 +19492,26 @@ If <tt/"level"/ is <tt/0/, only the orders will be adapted.<newline>
 If <tt/"level"/ is <tt/1/, only the orders and lengths will be adapted.
 <p>
 See also section <ref id="makecompst" name="Make Compatible Tool">.
+</itemize>
+
+<#if out="latex"><x/newpage/</#if>
+<p>
+<#if out="latex"><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
+<label id="sccurvatnp">
+curvatNP &ndash; compute Gaussian curvature:
+<itemize>
+ <item>Synopsis: <tt/"curvatNP [-r] -u u -v v"/
+ <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
+ <item>Description: Compute and return the Gaussian curvature of the
+selected NURBS surface or NURBS surface providing object at the
+designated parametric values <tt/u/ and <tt/v/.<newline>
+<p>
+If the option <tt/"-r"/ is present, the parametric values are interpreted
+in a relative way and should therefore be in the range
+&lsqb;0,&thinsp;1&rsqb;.
+<p>
+If multiple objects are selected, a list of curvature values is returned.
 </itemize>
 
 <p>
@@ -26017,6 +26038,8 @@ Index:
 <item><ref id="aycsg" name="AyCSG CSG preview plugin">
 </itemize>
 <item>CullFaces: <ref id="hidprefsc" name="hidden preference setting">
+<item>curvatNC: <ref id="sccurvatnc" name="scripting interface command">
+<item>curvatNP: <ref id="sccurvatnp" name="scripting interface command">
 <item>Curvature: <ref id="plotcurt" name="NCurve tool">
 <item>Curves: <ref id="curves" name="curve primitives">
 <item>Custom:
@@ -26255,6 +26278,7 @@ Index:
 &nbsp;<newline>&nbsp;
 <label id="indexg"><tt/&nbsp;&nbsp;<bf/G//
 <list>
+<item>Gaussian curvature: <ref id="sccurvatnp" name="scripting interface command">
 <item>Gen.~Face/Smooth Normals: <ref id="polymeshtools" name="polymesh tool">
 <item>genfnPo: <ref id="scgenfnPo" name="scripting interface command">
 <item>gensnPo: <ref id="scgensnPo" name="scripting interface command">
@@ -27433,7 +27457,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>trimNC: <ref id="sctrimnc" name="scripting interface command">
 <item>TrimRect: <ref id="trrt" name="TrimRect tool">
 <item>TrueDisp: <ref id="attrs" name="RenderMan/BMRT attribute">
-<item>truncated cone: <ref id="tconetcl" name="example/helper script">
+<item>Truncated Cone: <ref id="tconetcl" name="example/helper script">
 <item>tsurf.tcl: <ref id="tsurftcl" name="example/helper script">
 <item>Tutorial: <ref id="secref" name="Tutorial WWW reference">
 <item>Tween:
