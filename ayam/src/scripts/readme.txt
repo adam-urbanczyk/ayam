@@ -1,4 +1,4 @@
-[readme.txt - 1. Feb 2019]
+[readme.txt - 27. Apr 2020]
 
 This directory contains a collection of various scripts for Ayam.
 
@@ -60,6 +60,7 @@ rc.tcl - revert cursor key bindings for parallel (modelling) views
 ssp.tcl - save point selection to tags
 cvview.tcl - show control points in a property
 link.tcl - manually control linking of object hierarchy and views
+curvature.tcl - show a curvature plot in a property
 
 Misc:
 aytest.tcl - test Ayam
