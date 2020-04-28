@@ -400,6 +400,7 @@ proc prefs_layoutRIBExport { nb n1 n2 op } {
  return;
 }
 
+
 proc prefs_addRIBExport { nb fw } {
     global ay ayprefse
 
@@ -472,11 +473,19 @@ proc prefs_addRIBExport { nb fw } {
     addText $fw e1 "ShadowMaps:"
     addMenuB $fw ayprefse ShadowMaps [ms ayprefse_ShadowMaps]\
 	[list Never Automatic Manual]
-    addStringB $fw ayprefse SMFileFormat [ms ayprefse_SMFileFormat]\
-	[list "zfile" "shadow"]
-    addStringB $fw ayprefse SMFileType [ms ayprefse_SMFileType]\
-	[list "z" "avgz" "volshadow"]
-    addCheckB $fw ayprefse SMChangeShaders [ms ayprefse_SMChangeShaders]
+
+    trace add variable ayprefse(ShadowMaps) write "prefs_layoutRIBExport $nb"
+
+    bind $fw.fShadowMaps <Destroy>\
+    "trace remove variable ayprefse(ShadowMaps) write \"prefs_layoutRIBExport $nb\""
+
+    if { $ayprefse(ShadowMaps) != 0 } {
+	addStringB $fw ayprefse SMFileFormat [ms ayprefse_SMFileFormat]\
+	    [list "zfile" "shadow"]
+	addStringB $fw ayprefse SMFileType [ms ayprefse_SMFileType]\
+	    [list "z" "avgz" "volshadow"]
+	addCheckB $fw ayprefse SMChangeShaders [ms ayprefse_SMChangeShaders]
+    }
 
     uie_setLabelWidth $fw 16
 
@@ -484,7 +493,10 @@ proc prefs_addRIBExport { nb fw } {
     if { $AYENABLEPPREV == 1 } {
 	addStringB $fw ayprefse PPRender [ms ayprefse_PPRender] [list "rgl"]
     }
+
+ return;
 }
+# prefs_addRIBExport
 
 
 # prefs_save:
