@@ -1,4 +1,4 @@
-[3. Apr 2020] Mercurial Tip:
+[29. Apr 2020] Mercurial Tip:
 ============================
 Bug Fixes:
 o append option of split curve tool does not work (SF 595)
@@ -15,6 +15,9 @@ o added MN tag support to 3DPVN offset curves
 
 GUI:
 o improved layout of menu components on Win32
+o added designated rendering section to RIB-Export preferences 
+o not all renderer and shadow maps options are shown in RIB-Export preferences
+o added preference options to specify a RenderMan display driver for RIB-Export
 
 Scripts/Scripting Interface:
 o added "-r" (relative) option to "splitNC" command
@@ -22,6 +25,8 @@ o the "-a" option of the "splitNC" command does not need a value anymore
 o added "fairNC" command to make the shape of NURBS curve more pleasant/smooth
 o added "curvatNC" command to compute the curvature of a NURBS curve
 o added "curvatNP" command to compute the curvature of a NURBS surface
+o added "curature.tcl" script that displays a curvature plot diagram
+  as property of NURBS curve and NURBS curve providing objects
 
 Rendering:
 o added render to viewport feature via a new distributed plugin ("fifodspy")
