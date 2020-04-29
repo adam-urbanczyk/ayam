@@ -39,8 +39,9 @@ DspyImageOpen(PtDspyImageHandle *imagehandle,
 	      PtDspyDevFormat *format,
 	      PtFlagStuff *flagstuff)
 {
- int i, err;
+ int i, j, err;
  fifoimagetype *image;
+ PtDspyDevFormat ourformat[4];
 
   if(formatCount != 4)
     return PkDspyErrorBadParams;
@@ -69,12 +70,31 @@ DspyImageOpen(PtDspyImageHandle *imagehandle,
     {
       format[i].type = PkDspyFloat32;
     }
-  if(*format[0].name != 'r')
+
+  for(i = 0; i < formatCount; i++)
     {
-      for(i = 0; i < formatCount; i++)
+      switch(*format[i].name)
 	{
-	  format[i].name = format[3-i].name;
+	case 'r':
+	  ourformat[0] = format[i];
+	  break;
+	case 'g':
+	  ourformat[1] = format[i];
+	  break;
+	case 'b':
+	  ourformat[2] = format[i];
+	  break;
+	case 'a':
+	  ourformat[3] = format[i];
+	  break;
+	default:
+	  break;
 	}
+    }
+
+  for(i = 0; i < formatCount; i++)
+    {
+      format[i].name = ourformat[i].name;
     }
 
   flagstuff->flags |= PkDspyFlagsWantsScanLineOrder;
