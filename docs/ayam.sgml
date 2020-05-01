@@ -21547,6 +21547,38 @@ by clicking on the circles.
 
 <#if out="latex"><x/newpage/</#if>
 
+<sect2>Curvature Plot<label id="curvaturetcl">
+<p>
+<figure loc="ht">
+<eps file="pics/curvature.ps" height="6cm">
+<img src="pics/curvature.gif">
+<caption>Curvature Plot Example</caption>
+</figure>
+<p>
+The script <tt>"curvature.tcl"</tt> allows to
+view the curvature of NURBS curves and NURBS curve providing objects
+as property, see also the image above.
+
+If the script is loaded, there is a new entry in the <tt>"Custom"</tt> menu
+that allows to add a new property to an individual curve object.
+The new property displays the curvature of the curve as live and interactive
+diagram.
+The diagram will be updated if the curve changes.
+The diagram can be zoomed by dragging with the leftmost mouse button
+and panned by dragging with the rightmost mouse button (in zoomed state).
+
+For NURBS curve objects the real knot value range will be shown on the x axis
+whereas for NURBS curve providing objects a relative knot value
+range (&lsqb;0,&thinsp;1&rsqb;) will be displayed.
+
+A click on the <tt/"k"/ label toggles between absolute and logarithmic
+scaling of the y axis.
+
+There is a resize handle that allows to adapt the size of the diagram to
+the property canvas.
+
+<#if out="latex"><x/newpage/</#if>
+
 <sect2>NURBS for X3DOM<label id="x3domnurbsjs">
 <p>
 <figure loc="ht">
