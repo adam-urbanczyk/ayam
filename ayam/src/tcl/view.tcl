@@ -393,6 +393,7 @@ proc viewCheckFifo { togl fifo count } {
     if { [file exists $fifo] } {
 	$togl rendertoviewport $fifo
 	update
+	ayError 4 "viewRender" "... done. Hit <Esc> to remove rendering."
 	tmp_clean 0
     }
 
