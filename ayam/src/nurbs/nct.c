@@ -4709,10 +4709,10 @@ ay_nct_concatobjs(ay_object *o, ay_object **result)
  * \param[in] closed determines whether to create a closed curve
  *  (0 - no, 1 - yes)
  * \param[in] knot_type if 0, a knot vector of type NURB will be generated,
- * otherwise a custom knot vector will be created that incorporates all
- * features of the parameter curves
+ *  otherwise a custom knot vector will be created that incorporates all
+ *  features of the parameter curves
  * \param[in] fillgaps determines whether gaps between the parameter curves
- * should be filled with additional fillet curves
+ *  should be filled with additional fillet curves
  * \param[in] curves a list of curve objects
  * \param[in,out] result pointer where to store the resulting object
  *
@@ -10350,16 +10350,18 @@ ay_nct_extractnctcmd(ClientData clientData, Tcl_Interp *interp,
  *  is more evenly distributed
  *
  * \param[in,out] curve NURBS curve object to process
+ * \param[in] selp selected points (may be NULL)
  * \param[in] tol maximum distance a control point moves
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_nct_fair(ay_nurbcurve_object *curve, double tol)
+ay_nct_fair(ay_nurbcurve_object *curve, ay_point *selp, double tol)
 {
- int i, j, stride = 4;
+ unsigned int i, j, stride = 4, found;
  double *U, len, v[3], l[3], r[3], q[3];
  double *pll, *pl, *p, *pr, *prr;
+ ay_point *pnt;
 
   /* sanity check */
   if(!curve)
@@ -10377,34 +10379,52 @@ ay_nct_fair(ay_nurbcurve_object *curve, double tol)
   prr = pr+stride;
   j = curve->order;
 
-  for(i = 2; i < curve->length-2; i++)
+  for(i = 2; i < (unsigned int)curve->length-2; i++)
     {
-      l[0] = ((U[j+1]-U[j-3])*pl[0] - (U[j+1]-U[j])*pll[0]) / (U[j]-U[j-3]);
-      l[1] = ((U[j+1]-U[j-3])*pl[1] - (U[j+1]-U[j])*pll[1]) / (U[j]-U[j-3]);
-      l[2] = ((U[j+1]-U[j-3])*pl[2] - (U[j+1]-U[j])*pll[2]) / (U[j]-U[j-3]);
-
-      r[0] = ((U[j+3]-U[j-1])*pr[0] - (U[j]-U[j-1])*prr[0]) / (U[j+3]-U[j]);
-      r[1] = ((U[j+3]-U[j-1])*pr[1] - (U[j]-U[j-1])*prr[1]) / (U[j+3]-U[j]);
-      r[2] = ((U[j+3]-U[j-1])*pr[2] - (U[j]-U[j-1])*prr[2]) / (U[j+3]-U[j]);
-
-      q[0] = ((U[j+2]-U[j])*l[0] + (U[j]-U[j-2])*r[0]) / (U[j+2]-U[j-2]);
-      q[1] = ((U[j+2]-U[j])*l[1] + (U[j]-U[j-2])*r[1]) / (U[j+2]-U[j-2]);
-      q[2] = ((U[j+2]-U[j])*l[2] + (U[j]-U[j-2])*r[2]) / (U[j+2]-U[j-2]);
-
-      AY_V3SUB(v, p, q);
-      len = AY_V3LEN(v);
-      if(len > AY_EPSILON)
+      if(selp)
 	{
-	  if(len > tol)
+	  found = AY_FALSE;
+	  pnt = selp;
+	  while(pnt)
 	    {
-	      AY_V3SCAL(v, tol);
-	      AY_V3ADD(p, p, v);
-	    }
-	  else
-	    {
-	      memcpy(p, q, stride*sizeof(double));
+	      if(pnt->index == i)
+		{
+		  found = AY_TRUE;
+		  break;
+		}
+	      pnt = pnt->next;
 	    }
 	}
+
+      if(!selp || found)
+	{
+	  l[0] = ((U[j+1]-U[j-3])*pl[0] - (U[j+1]-U[j])*pll[0]) / (U[j]-U[j-3]);
+	  l[1] = ((U[j+1]-U[j-3])*pl[1] - (U[j+1]-U[j])*pll[1]) / (U[j]-U[j-3]);
+	  l[2] = ((U[j+1]-U[j-3])*pl[2] - (U[j+1]-U[j])*pll[2]) / (U[j]-U[j-3]);
+
+	  r[0] = ((U[j+3]-U[j-1])*pr[0] - (U[j]-U[j-1])*prr[0]) / (U[j+3]-U[j]);
+	  r[1] = ((U[j+3]-U[j-1])*pr[1] - (U[j]-U[j-1])*prr[1]) / (U[j+3]-U[j]);
+	  r[2] = ((U[j+3]-U[j-1])*pr[2] - (U[j]-U[j-1])*prr[2]) / (U[j+3]-U[j]);
+
+	  q[0] = ((U[j+2]-U[j])*l[0] + (U[j]-U[j-2])*r[0]) / (U[j+2]-U[j-2]);
+	  q[1] = ((U[j+2]-U[j])*l[1] + (U[j]-U[j-2])*r[1]) / (U[j+2]-U[j-2]);
+	  q[2] = ((U[j+2]-U[j])*l[2] + (U[j]-U[j-2])*r[2]) / (U[j+2]-U[j-2]);
+
+	  AY_V3SUB(v, p, q);
+	  len = AY_V3LEN(v);
+	  if(len > AY_EPSILON)
+	    {
+	      if(len > tol)
+		{
+		  AY_V3SCAL(v, tol);
+		  AY_V3ADD(p, p, v);
+		}
+	      else
+		{
+		  memcpy(p, q, stride*sizeof(double));
+		}
+	    }
+	} /* if */
 
       pll += stride;
       pl += stride;
@@ -10461,18 +10481,18 @@ ay_nct_fairnctcmd(ClientData clientData, Tcl_Interp *interp,
       if(o->type == AY_IDNCURVE)
 	{
 	  nc = (ay_nurbcurve_object *)o->refine;
-	  ay_status = ay_nct_fair(nc, tol);
+	  ay_status = ay_nct_fair(nc, o->selp, tol);
 
 	  if(ay_status)
 	    {
 	      ay_error(ay_status, argv[0], "Fairing failed.");
 	      return TCL_OK;
-	    } /* if */
+	    }
 	}
       else
 	{
 	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
-	} /* if */
+	}
 
       sel = sel->next;
     } /* while */
