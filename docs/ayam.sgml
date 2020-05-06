@@ -2550,7 +2550,7 @@ in the global Tcl list <tt>"ObjectSearch(nodes)"</tt>.
 <sect1>Preferences<label id="prefs">
 <p>
 <figure loc="ht">
-<eps file="pics/prefs.ps" height="8cm">
+<eps file="pics/prefs.ps" height="11cm">
 <img src="pics/prefs.gif">
 <caption>Preferences Dialog</caption>
 </figure>
