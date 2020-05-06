@@ -22,7 +22,7 @@ int ay_object_isplanar(ay_object *o);
 
 int ay_object_isdegen(ay_object *o);
 
-int ay_object_istrimmed(ay_object *o, int argc, char *argv[]);
+int ay_object_istrimmed(ay_object *o);
 
 
 /** ay_object_create:
@@ -1168,14 +1168,12 @@ ay_object_isdegen(ay_object *o)
  * Helper for ay_object_ishastcmd() below. Check object for trims.
  *
  * \param[in] o object to check
- * \param[in] argc number of parameters in \a argv
- * \param[in] argv parameters
  *
  * \returns AY_TRUE if object is a non-trivially trimmed parametric surface;
  *          AY_FALSE else
  */
 int
-ay_object_istrimmed(ay_object *o, int argc, char *argv[])
+ay_object_istrimmed(ay_object *o)
 {
  ay_object *p;
  int trimmed = AY_FALSE;
@@ -1377,7 +1375,7 @@ ay_object_ishastcmd(ClientData clientData, Tcl_Interp *interp,
 	      break;
 	    case 'T':
 	      /* is isTrimmed */
-	      if(ay_object_istrimmed(o, argc, argv))
+	      if(ay_object_istrimmed(o))
 		res = yes;
 	      else
 		res = no;
