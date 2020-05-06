@@ -17180,7 +17180,7 @@ the current level, otherwise <tt/0/ is returned.
 <label id="schastrafo">
 hasTrafo &ndash; has transformations:
 <itemize>
- <item>Synopsis: <tt>"hasTrafo [-r|-s|-t]"</tt>
+ <item>Synopsis: <tt/"hasTrafo [-r/&thinsp;<tt/|/&thinsp;<tt/-s/&thinsp;<tt/|/&thinsp;<tt/-t]"/
  <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: This command returns <tt/1/ if the selected object
 has non-default transformation attributes, otherwise <tt/0/ is returned.
@@ -17357,7 +17357,7 @@ scripting interface commands operate on selected objects only:
 <label id="scselob">
 selOb &ndash; select object(s):
 <itemize>
- <item>Synopsis: <tt/"selOb ([-get | -end | -clear] | [index] | [first-last])"/
+ <item>Synopsis: <tt/"selOb ([-get/&thinsp;<tt/|/&thinsp;<tt/-end/&thinsp;<tt/|/&thinsp;<tt/-clear] | [index] | [first-last])"/
  <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: Use this command to set or clear the current
 selection, <tt/index/ may be a single (zero based) index, an ordered list of
@@ -17458,7 +17458,7 @@ This command manipulates the point selection.
 <label id="scselpnts">
 selPnts &ndash; select points:
 <itemize>
- <item>Synopsis: <tt/"selPnts [(-count | -get) [vname] | -has | -all | -none | index1 index2 ...]"/
+ <item>Synopsis: <tt/"selPnts [(-count/&thinsp;<tt/|/&thinsp;<tt/-get) [vname] | -has | -all | -none | index1 index2 ...]"/
  <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description:
  <itemize>
@@ -17506,7 +17506,7 @@ scripting interface:<footnote>Since 1.9.</footnote>
 <label id="scgetproperty">
 getProperty &ndash; get single property value
 <itemize>
- <item>Synopsis: <tt/"getProperty propname(elemname) [varname] [-s|-i]"/
+ <item>Synopsis: <tt/"getProperty propname(elemname) [varname] [-s/&thinsp;<tt/|/&thinsp;<tt/-i]"/
  <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
  <item>Description: This procedure gets a single property element
 named <tt/elemname/ from the property named <tt/propname/ of the currently
@@ -18022,7 +18022,13 @@ array pointed to by <tt/varname/.
 <sect2>Manipulating Tags<label id="scitags">
 <p>
 These commands may be used to modify the tags of an object
-(see also section <ref id="tags" name="Tags">):
+(see also section <ref id="tags" name="Tags">).
+<p>
+When processing tags of unknown or unregistered type, a corresponding
+warning message may be emitted. This warning can be inhibited using
+the hidden preference
+setting <tt/"WarnUnknownTag"/ or by registering the tag type using
+the <tt/"registerTag"/ command (see below).
 <p>
 <#if out="latex"><x/phantomsection/</#if>
 
@@ -18037,10 +18043,7 @@ If a tag of matching type already exists, the new value will be set to
 the first matching tag. Otherwise a new tag will be added to the
 selected object(s);<newline>
 It is legal to deliver <tt>""</tt> as value parameter. This is
-e.g.~needed for the <tt/"NoExport"/ tag type.<newline>
-If the tag type is not registered, a corresponding warning message may be
-emitted. This warning can be inhibited using the hidden preference
-setting <tt/"WarnUnknownTag"/.
+e.g.~needed for the <tt/"NoExport"/ tag type.
 <item>Examples:
 <enum>
 <item><bf><tt>"setTag NoExport """</tt></bf><f/<sup/&nbsp;//<newline>
@@ -18061,11 +18064,7 @@ addTag:<label id="scaddtag">
 It is legal to deliver <tt>""</tt> as value parameter. This is
 e.g.~needed for the <tt/"NoExport"/ tag type.<newline>
 Potentially existing tags of the designated type will <em/not/ be
-changed.<newline>
-If the tag type is not registered, a corresponding warning message may be
-emitted. This warning can be inhibited using the hidden preference
-setting <tt/"WarnUnknownTag"/ or by registering the tag type using
-the <tt/"registerTag"/ command (see below).
+changed.
 <item>Examples:
 <enum>
 <item><bf><tt>"addTag NoExport """</tt></bf><f/<sup/&nbsp;//<newline>
@@ -19275,7 +19274,7 @@ See also section <ref id="splitnpt" name="Split Surface Tools">.
 <label id="scextrnp">
 extrNP &ndash; extract NURBS patch:
 <itemize>
- <item>Synopsis: <tt/"extrNP [-relative]  umin umax vmin vmax"/
+ <item>Synopsis: <tt/"extrNP [-relative] umin umax vmin vmax"/
  <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: Extracts a sub-patch from the selected NPatch
 or NPatch providing objects. The extracted patch(es) will be appended as
@@ -19548,7 +19547,7 @@ to <tt/"Custom"/ and the option <tt/"-t"/ can be omitted.
 See also section <ref id="basist" name="Basis Tool">.
 -->
 <item>Example:<newline>
-<bf><tt>"tobasisPM -t 0"</tt></bf><newline>
+<#if out="html"><f/<sup/&nbsp;//</#if><bf><tt>"tobasisPM -t 0"</tt></bf><newline>
 converts the selected bicubic patch meshes to the Bezier basis.
 </itemize>
 
@@ -19582,8 +19581,8 @@ to <tt/"Custom"/ and the option <tt/"-t"/ can be omitted.
 See also section <ref id="basist" name="Basis Tool">.
 -->
 <item>Example:<newline>
-<bf><tt>"tobasisBC -t 0"</tt></bf><newline>
-converts the selected basis curves to the Bezier basis.
+<#if out="html"><f/<sup/&nbsp;//</#if><bf><tt>"tobasisBC -t 0"</tt></bf><newline>
+&nbsp;&nbsp;converts the selected basis curves to the Bezier basis.
 </itemize>
 
 <#if out="latex"><x/newpage/</#if>
@@ -20170,7 +20169,7 @@ section <ref id="ayproparr" name="Property Management and Data Arrays">.
 addPropertyGUI:
 <itemize>
  <item>Synopsis: <tt>"addPropertyGUI name"</tt>
- <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
+ <item>Background: No,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
  <item>Description: This procedure sets up a property GUI management
 array and creates an enclosing frame for GUI elements whose window
 name will be returned.
@@ -20200,7 +20199,7 @@ property GUIs created by <tt/"addPropertyGUI"/.
 addParam:
 <itemize>
  <item>Synopsis: <tt>"addParam window arrayname paramname [defaults]"</tt>
- <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
+ <item>Background: No,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
  <item>Description: This procedure adds a property GUI element for a single
 integer or floating point number parameter.
 <p><p>
@@ -20226,7 +20225,7 @@ additional drop down menu on the right side of the interface element.
 addString:
 <itemize>
  <item>Synopsis: <tt>"addString window arrayname paramname [defaults]"</tt>
- <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
+ <item>Background: No,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
  <item>Description: This procedure adds a property GUI element for a single
 string parameter.
 <p><p>
@@ -20251,7 +20250,7 @@ clear the string entry field and move the input focus to the field.
 addCheck:
 <itemize>
  <item>Synopsis: <tt>"addCheck window arrayname paramname [onoffvalues]"</tt>
- <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
+ <item>Background: No,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
  <item>Description: This procedure adds a property GUI element for a single
 boolean parameter realized by a check-button.
 <p><p>
@@ -20274,7 +20273,7 @@ enabled or disabled. The default values are 0 and 1.
 addColor:
 <itemize>
  <item>Synopsis: <tt>"addColor window arrayname paramname [defaults]"</tt>
- <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
+ <item>Background: No,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
  <item>Description: This procedure adds a property GUI element for a single
 color parameter.
 <p><p>
@@ -20300,7 +20299,7 @@ additional drop down menu on the right side of the interface element.
 addMatrix:
 <itemize>
  <item>Synopsis: <tt>"addMatrix window arrayname paramname"</tt>
- <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
+ <item>Background: No,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
  <item>Description: This procedure adds a property GUI element for a
 four by four element matrix, e.g.~a transformation matrix.
 <p><p>
@@ -20321,7 +20320,7 @@ The individual matrix value variable names will be formed by appending a
 addMenu:
 <itemize>
  <item>Synopsis: <tt>"addMenu window arrayname paramname choices"</tt>
- <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
+ <item>Background: No,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
  <item>Description: This procedure adds a property GUI element for a
 menu&thinsp;/&thinsp;multiple choice parameter, realized through
 a drop down menu. The value of the parameter will be the index
@@ -20349,7 +20348,7 @@ before this procedure is called.
 addFile:
 <itemize>
  <item>Synopsis: <tt>"addFile window arrayname paramname [defaults]"</tt>
- <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: No,&nbsp;&nbsp;Type: Procedure
+ <item>Background: No,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: No,&nbsp;&nbsp;Type: Procedure
  <item>Description: This procedure adds a property GUI element for a
 file name.
 <p><p>
@@ -20377,7 +20376,7 @@ meant to be used for saving: <tt>"addSFile"</tt>
 addCommand:
 <itemize>
  <item>Synopsis: <tt>"addCommand window name text command"</tt>
- <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
+ <item>Background: No,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
  <item>Description: This procedure adds a property GUI element to let
 the user initiate a command with the help of a push-button.
 <p><p>
@@ -20399,7 +20398,7 @@ button is pushed.
 addText:
 <itemize>
  <item>Synopsis: <tt>"addText window name text"</tt>
- <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
+ <item>Background: No,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
  <item>Description: This procedure adds a property GUI element to
 display static information, e.g.~a parameter section name.
 <p><p>
@@ -20418,7 +20417,7 @@ The <tt/"text"/ parameter is the string to be displayed.
 addInfo:
 <itemize>
  <item>Synopsis: <tt>"addInfo window arrayname paramname"</tt>
- <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
+ <item>Background: No,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
  <item>Description: This procedure adds a property GUI element to
 display dynamic textual information.
 <p><p>
@@ -20447,7 +20446,7 @@ more complex information can be presented.
 addProgress:
 <itemize>
  <item>Synopsis: <tt>"addProgress window arrayname paramname"</tt>
- <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: No,&nbsp;&nbsp;Type: Procedure
+ <item>Background: No,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: No,&nbsp;&nbsp;Type: Procedure
  <item>Description: This procedure adds a property GUI element to
 display progress information.
 <p><p>
@@ -20468,7 +20467,7 @@ the progress is stored in percent.
 addVSpace:
 <itemize>
  <item>Synopsis: <tt>"addVSpace window name height"</tt>
- <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
+ <item>Background: No,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
  <item>Description: This procedure adds an empty property GUI element with
 defined height to improve the layout of a property GUI.
 <p><p>
@@ -20487,7 +20486,7 @@ The <tt/"height"/ parameter is the desired height in pixels.
 addOptionToggle:
 <itemize>
  <item>Synopsis: <tt>"addOptionToggle window arrayname paramname text cmd"</tt>
- <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
+ <item>Background: No,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes,&nbsp;&nbsp;Type: Procedure
  <item>Description: This procedure adds a property GUI element that
 allows to toggle the visibility of other property GUI elements.
 <p><p>
