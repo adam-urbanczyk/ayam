@@ -1147,7 +1147,7 @@ proc addMDir { w prop name } {
 
     bind $f.e <Key> "+destroy $f.e.balloon;"
 
-    bind $f.e <1> "+balloon_setsplit $f.e \[$f.e get\] 15"
+    bind $f.e <1> "+after 500 \{balloon_setsplit $f.e \[$f.e get\] 15\}"
     eval balloon_setsplit $f.e \$${prop}(${name}) 15
 
     button $f.b -text "Add" -width 4 -bd $bw -padx 0 -pady 0 -takefocus 0\
@@ -1220,7 +1220,7 @@ proc addMFile { w prop name } {
 
     bind $f.e <Key> "+destroy $f.e.balloon;"
 
-    bind $f.e <1> "+balloon_setsplit $f.e \[$f.e get\] 15"
+    bind $f.e <1> "+after 500 \{balloon_setsplit $f.e \[$f.e get\] 15\}"
     eval balloon_setsplit $f.e \$${prop}(${name}) 15
 
     button $f.b -text "Add" -width 4 -bd $bw -padx 0 -pady 0 -takefocus 0\
