@@ -1,4 +1,4 @@
-[29. Apr 2020] Mercurial Tip:
+[7. May 2020] Mercurial Tip:
 ============================
 Bug Fixes:
 o append option of split curve tool does not work (SF 595)
@@ -18,6 +18,7 @@ o improved layout of menu components on Win32
 o added designated rendering section to RIB-Export preferences 
 o not all renderer and shadow maps options are shown in RIB-Export preferences
 o added preference options to specify a RenderMan display driver for RIB-Export
+o improved balloon interaction of MFile/MDir GUI elements (preferences)
 
 Scripts/Scripting Interface:
 o added "-r" (relative) option to "splitNC" command
