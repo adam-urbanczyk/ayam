@@ -134,6 +134,7 @@ static JSFunctionSpec jsinterp_global_functions[] = {
   {"isPlanar", jsinterp_wraptcmdargs, 0, 0, 0},
   {"isParent", jsinterp_wraptcmdargs, 0, 0, 0},
   {"isTrimmed", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"isRational", jsinterp_wraptcmdargs, 0, 0, 0},
 
   {"mergePo", jsinterp_wraptcmd, 0, 0, 0},
   {"optiPo", jsinterp_wraptcmd, 0, 0, 0},

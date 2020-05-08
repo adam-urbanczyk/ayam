@@ -114,6 +114,7 @@ static const struct luaL_Reg luainterplib [] = {
       {"isPlanar", luainterp_wraptclcmd},
       {"isParent", luainterp_wraptclcmd},
       {"isTrimmed", luainterp_wraptclcmd},
+      {"isRational", luainterp_wraptclcmd},
 
       {"mergePo", luainterp_wraptclcmd},
       {"optiPo", luainterp_wraptclcmd},

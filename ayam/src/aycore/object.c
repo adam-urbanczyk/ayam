@@ -24,6 +24,8 @@ int ay_object_isdegen(ay_object *o);
 
 int ay_object_istrimmed(ay_object *o);
 
+int ay_object_israt(ay_object *o);
+
 
 /** ay_object_create:
  * Allocate a new #ay_object structure, fill it with vital default values,
@@ -1164,6 +1166,64 @@ ay_object_isdegen(ay_object *o)
 } /* ay_object_isdegen */
 
 
+/** ay_object_israt:
+ * Helper for ay_object_ishastcmd() below. Check object for weights.
+ *
+ * \param[in] o object to check
+ *
+ * \returns AY_TRUE if object is a parametric curve or surface with
+ *          at least one weight value != 1.0;
+ *          AY_FALSE else
+ */
+int
+ay_object_israt(ay_object *o)
+{
+ ay_object *p;
+ ay_nurbcurve_object *nc;
+ ay_nurbpatch_object *np;
+ int deg = AY_FALSE;
+
+  if(o->type == AY_IDNCURVE)
+    {
+      nc = (ay_nurbcurve_object*)o->refine;
+      if(ay_nct_israt(nc))
+	deg = AY_TRUE;
+    }
+  else
+    if(o->type == AY_IDNPATCH)
+      {
+	np = (ay_nurbpatch_object*)o->refine;
+	if(ay_npt_israt(np))
+	  deg = AY_TRUE;
+      }
+    else
+      {
+	p = NULL;
+	(void)ay_provide_object(o, AY_IDNCURVE, &p);
+	if(p)
+	  {
+	    nc = (ay_nurbcurve_object*)p->refine;
+	    if(ay_nct_israt(nc))
+	      deg = AY_TRUE;
+	    ay_object_deletemulti(p, AY_FALSE);
+	  }
+	else
+	  {
+	    (void)ay_provide_object(o, AY_IDNPATCH, &p);
+	    if(p)
+	      {
+		np = (ay_nurbpatch_object*)p->refine;
+		if(ay_npt_israt(np))
+		  deg = AY_TRUE;
+		ay_object_deletemulti(p, AY_FALSE);
+	      }
+	  }
+      } /* if not NCurve or NPatch */
+
+ return deg;
+} /* ay_object_israt */
+
+
 /** ay_object_istrimmed:
  * Helper for ay_object_ishastcmd() below. Check object for trims.
  *
@@ -1205,6 +1265,7 @@ ay_object_istrimmed(ay_object *o)
  *  Also implements the \a hasRefs scripting interface command.
  *  Also implements the \a hasTrafo scripting interface command.
  *  Also implements the \a isCurve scripting interface command.
+ *  Also implements the \a isRational scripting interface command.
  *  Also implements the \a isSurface scripting interface command.
  *  Also implements the \a isDegen scripting interface command.
  *  Also implements the \a isPlanar scripting interface command.
@@ -1360,6 +1421,13 @@ ay_object_ishastcmd(ClientData clientData, Tcl_Interp *interp,
 		  else
 		    res = no;
 		} /* if */
+	      break;
+	    case 'R':
+	      /* is isRational */
+	      if(ay_object_israt(o))
+		res = yes;
+	      else
+		res = no;
 	      break;
 	    case 'S':
 	      /* is isSurface */

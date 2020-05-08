@@ -1163,6 +1163,9 @@ ay_safeinit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "isPlanar", ay_object_ishastcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "isRational", ay_object_ishastcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   Tcl_CreateCommand(interp, "isTrimmed", ay_object_ishastcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
