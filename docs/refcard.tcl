@@ -272,7 +272,7 @@ proc printHotKeys { filename } {
     puts $id "\\hline"
     puts $id "Refine / Coarsen Curve& \\verb|<[_makevis $ayviewshortcuts(RefineC)]> / <[_makevis $ayviewshortcuts(CoarsenC)]>|\\\\"
     puts $id "\\hline"
-    puts $id "Revert / Split Curve& \\verb|<[_makevis $ayviewshortcuts(RevertC)]> / <[remkpkr $ayviewshortcuts(SplitNC)]>|\\\\"
+    puts $id "Revert / Split Curve& \\verb+<[_makevis $ayviewshortcuts(RevertC)]> / <[_makevis $ayviewshortcuts(SplitNC)]>+\\\\"
     puts $id "\\hline"
     puts $id "Find Parameter (Surf.)& \\verb|<[remkpkr $ayviewshortcuts(FindU)]>| (\\verb|<[remkpkr $ayviewshortcuts(FindUV)]>|)\\\\"
     puts $id "\\hline"
