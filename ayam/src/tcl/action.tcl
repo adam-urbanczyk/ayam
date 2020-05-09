@@ -2063,10 +2063,25 @@ proc actionFindU { w } {
 
     $w setconf -drawh 2
 
+    if { [string first ".view" $w] == 0 } {
+	set t [winfo toplevel $w]
+    } else {
+	set t [winfo parent [winfo parent $w]]
+    }
+
+    actionBindParamKbd $t u " U: " "actionSetMarkFromU "
+
  return;
 }
 # actionFindU
 
+proc actionSetMarkFromU { u } {
+    withOb 0 {
+	getPnt -eval $u x y z
+	setMark $x $y $z
+    }
+ return;
+}
 
 #actionFindUV:
 # find parametric values u and v on a NURBS surface
