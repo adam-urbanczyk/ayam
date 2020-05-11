@@ -3105,7 +3105,7 @@ with the names of the objects to the RIB to aid in RIB file debugging.
 exported to RIB files.
 <p> <p>
 
-The following section of preference settings is concerned with
+The following sub-section of preference settings is concerned with
 settings for rendering directly from Ayam.
 <p> <p>
 
@@ -3269,7 +3269,7 @@ window should be closed automatically when the renderer signals
 that the rendering finished.
 <p> <p>
 <#if out="latex"></itemize><x/newpage/<p></#if>
-The following section of preference settings is concerned with
+The following sub-section of preference settings is concerned with
 shadow maps.
 <p> <p>
 <#if out="latex"><itemize></#if>
@@ -18847,6 +18847,26 @@ If multiple objects are selected, a list of curvature values is returned.
 See also section <ref id="plotcurt" name="Plot Curvature Tool">.
 </itemize>
 
+<#if out="latex"><x/phantomsection/</#if>
+<#if out="html"><f/<inf/<newline>//</#if>
+<label id="scfairnc">
+fairNC &ndash; improve curve shape:
+<itemize>
+ <item>Synopsis: <tt/"fairNC [tol]"/
+ <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
+ <item>Description: Improve the curve shape by moving control points
+so that the curvature is distributed more evenly.<newline>
+<p>
+If a tolerance value is present the processed control points do not move
+more than the given value.
+<p>
+If points are selected, only these will be processed.
+<!--
+<p>
+See also section <ref id="plotcurt" name="Plot Curvature Tool">.
+-->
+</itemize>
+
 <#if out="latex"><x/newpage/</#if>
 
 <sect2>Manipulating NURBS Surfaces<label id="scinurbss">
@@ -26072,6 +26092,7 @@ Index:
 <item>curvatNC: <ref id="sccurvatnc" name="scripting interface command">
 <item>curvatNP: <ref id="sccurvatnp" name="scripting interface command">
 <item>Curvature: <ref id="plotcurt" name="NCurve tool">
+<item>curvature.tcl: <ref id="curvaturetcl" name="example/helper script">
 <item>Curves: <ref id="curves" name="curve primitives">
 <item>Custom:
 <itemize>
@@ -26250,6 +26271,7 @@ Index:
 <list>
 <item>Face Extrude/Remove/Merge/Connect: <ref id="sdnpact" name="SDNPatch modelling action">
 <item>Face normals: <ref id="polymeshtools" name="PolyMesh tool">
+<item>fairNC: <ref id="scfairnc" name="scripting interface command">
 <item>FAQ: <ref id="secref" name="Ayam FAQ WWW reference">
 <item>Far: <ref id="camp" name="camera property">
 <item>FDisplayDriver: <ref id="prefrib" name="preference setting">
@@ -26819,6 +26841,7 @@ Index:
 </itemize>
 <item>Plane: <ref id="mirrorattr" name="Mirror attribute">
 <item>Plot Curvature: <ref id="plotcurt" name="NCurve tool">
+<item>Plugins: <ref id="plugov" name="Plugins Overview">
 <item>Point: <ref id="pdsl" name="light type">
 <item>Points: <ref id="scipoints" name="scripting interface commands">
 <item>Point Size: <ref id="prefmodel" name="see preference setting HandleSize">
@@ -26949,7 +26972,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 
 <item>Reduce:<#if out="html"><label id="indexredu"></#if>
 <itemize>
-<item><ref id="reduct" name="NCurve tool">
+<item><ref id="reduct" name="NCurve tool">,
 <item><ref id="reduceuvt" name="NPatch tool">
 </itemize>
 <item>reduceNC: <ref id="screducenc" name="scripting interface command">
