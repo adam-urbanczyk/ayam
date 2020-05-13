@@ -1179,22 +1179,25 @@ int
 ay_object_israt(ay_object *o)
 {
  ay_object *p;
+ ay_pointedit pe = {0};
  ay_nurbcurve_object *nc;
  ay_nurbpatch_object *np;
- int deg = AY_FALSE;
+ int rat = AY_FALSE;
+ unsigned int i;
+ double pnt[3] = {0};
 
   if(o->type == AY_IDNCURVE)
     {
       nc = (ay_nurbcurve_object*)o->refine;
       if(ay_nct_israt(nc))
-	deg = AY_TRUE;
+	rat = AY_TRUE;
     }
   else
     if(o->type == AY_IDNPATCH)
       {
 	np = (ay_nurbpatch_object*)o->refine;
 	if(ay_npt_israt(np))
-	  deg = AY_TRUE;
+	  rat = AY_TRUE;
       }
     else
       {
@@ -1204,7 +1207,7 @@ ay_object_israt(ay_object *o)
 	  {
 	    nc = (ay_nurbcurve_object*)p->refine;
 	    if(ay_nct_israt(nc))
-	      deg = AY_TRUE;
+	      rat = AY_TRUE;
 	    ay_object_deletemulti(p, AY_FALSE);
 	  }
 	else
@@ -1214,13 +1217,29 @@ ay_object_israt(ay_object *o)
 	      {
 		np = (ay_nurbpatch_object*)p->refine;
 		if(ay_npt_israt(np))
-		  deg = AY_TRUE;
+		  rat = AY_TRUE;
 		ay_object_deletemulti(p, AY_FALSE);
 	      }
-	  }
+	    else
+	      {
+		ay_pact_getpoint(0, o, pnt, &pe);
+		if(pe.type == AY_PTRAT)
+		  {
+		    for(i = 0; i < pe.num; i++)
+		      {
+			if(fabs(1.0-pe.coords[i][3]) > AY_EPSILON)
+			  {
+			    rat = AY_TRUE;
+			    break;
+			  }
+		      } /* for */
+		    ay_pact_clearpointedit(&pe);
+		  }
+	      } /* if not provided NPatch */
+	  } /* if not provided NCurve */
       } /* if not NCurve or NPatch */
 
- return deg;
+ return rat;
 } /* ay_object_israt */
 
 
