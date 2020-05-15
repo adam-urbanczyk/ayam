@@ -1960,7 +1960,7 @@ ay_nct_elevate(ay_nurbcurve_object *curve, int new_order)
       return AY_EOMEM;
     }
 
-  if(!(realUh = realloc(Uh, (nh+curve->order+t)*sizeof(double))))
+  if(!(realUh = realloc(Uh, (nh + curve->order + t) * sizeof(double))))
     {
       free(Uh); free(realQw);
       return AY_ERROR;
@@ -10457,6 +10457,7 @@ ay_nct_fairnctcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbcurve_object *nc;
  double tol = DBL_MAX;
  int i = 1;
+ int notify_parent = AY_FALSE;
 
   if(!sel)
     {
@@ -10471,6 +10472,11 @@ ay_nct_fairnctcmd(ClientData clientData, Tcl_Interp *interp,
       if(tol != tol)
 	{
 	  ay_error_reportnan(argv[0], "tol");
+	  return TCL_OK;
+	}
+      if(tol <= 0)
+	{
+	  ay_error(AY_ERROR, argv[0], "Argument tol must be > 0.");
 	  return TCL_OK;
 	}
     }
@@ -10488,6 +10494,8 @@ ay_nct_fairnctcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_error(ay_status, argv[0], "Fairing failed.");
 	      return TCL_OK;
 	    }
+	  (void)ay_notify_object(o);
+	  notify_parent = AY_TRUE;
 	}
       else
 	{
@@ -10497,7 +10505,8 @@ ay_nct_fairnctcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  (void)ay_notify_parent();
+  if(notify_parent)
+    (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_nct_fairnctcmd */
