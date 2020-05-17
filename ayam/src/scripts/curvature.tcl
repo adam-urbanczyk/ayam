@@ -235,6 +235,13 @@ proc curvature_update { {numin ""} {numax ""} } {
 	}
     }
 
+    # zoom by mouse wheel bindings
+    bind $ca <ButtonPress-4> {curvature_zoom %x %D;break}
+    bind $ca <ButtonPress-5> {curvature_zoom %x -%D;break}
+    if { $ay(ws) == "Win32" || $ay(ws) == "Aqua" } {
+	bind $w <MouseWheel> {curvature_zoom %x %D;break}
+    }
+
     # pan bindings
     bind $ca <ButtonPress-3> {
 	%W delete s
@@ -298,6 +305,29 @@ proc curvature_update { {numin ""} {numax ""} } {
 }
 # curvature_update
 
+proc curvature_zoom { x d } {
+    global Curvature
+    if { $x < 40 } {return;set x 40}
+    if { $x > [expr $Curvature(wi)+80] } {return;set x [expr $Curvature(wi)+80]}
+
+    if { $d < 0 } {
+	# zoom out
+	set Curvature(numin) [curvature_getU [expr $x - $Curvature(wi)*2]]
+	set Curvature(numax) [curvature_getU [expr $x + $Curvature(wi)*2]]
+    } else {
+	# zoom in
+	set Curvature(numin) [curvature_getU [expr $x - $Curvature(wi)*0.25]]
+	set Curvature(numax) [curvature_getU [expr $x + $Curvature(wi)*0.25]]
+    }
+    if { $Curvature(numin) < $Curvature(tumin) } {
+	set Curvature(numin) $Curvature(tumin)
+    }
+    if { $Curvature(numax) > $Curvature(tumax) } {
+	set Curvature(numax) $Curvature(tumax)
+    }
+    curvature_update $Curvature(numin) $Curvature(numax)
+ return;
+}
 
 proc curvature_print { } {
     set w $ay(pca).$Curvature(w)
