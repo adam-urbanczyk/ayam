@@ -18,6 +18,8 @@ array set Curvature {
     Coordinates "n/a"
     umin 0.0
     umax 1.0
+    numin 0.0
+    numax 0.0
     wi 200
     he 200
     reset 0
@@ -30,6 +32,10 @@ array set Curvature {
 #
 proc curvature_update { {numin ""} {numax ""} } {
     global ay Curvature NCurveAttrData
+
+    if { $numin != "" && $numax != "" && $numin == $numax } {
+	return;
+    }
 
     getProp
 
