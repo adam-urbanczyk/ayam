@@ -133,7 +133,9 @@ proc curvature_update { {numin ""} {numax ""} } {
     # horizontal
     $ca create line $dx $canvash [expr $canvasw+$dx+20] $canvash\
 	-arrow last -tags l
-    $ca create text [expr $dx+5] [expr $canvash+12] -text $Curvature(umin)
+    if { $Curvature(umin) > $Curvature(tumin) } {set txt "... "}
+    append txt $Curvature(umin)
+    $ca create text [expr $dx+5] [expr $canvash+12] -text $txt
     $ca create line [expr $canvasw/2+$dx] [expr $canvash+4]\
 	[expr $canvasw/2+$dx] $canvash -tags l
     $ca create text [expr $canvasw/2+$dx] [expr $canvash+12]\
@@ -142,8 +144,10 @@ proc curvature_update { {numin ""} {numax ""} } {
     if { $relative } {
 	$ca create text [expr $canvasw*0.75+$dx+6] [expr $canvash+26] -text r
     }
+    set txt $Curvature(umax)
+    if { $Curvature(umax) < $Curvature(tumax) } {append txt " ..."}
     $ca create text [expr $canvasw+$dx] [expr $canvash+12]\
-	-text $Curvature(umax)
+	-text $txt
     $ca create line [expr $canvasw+$dx] [expr $canvash+4]\
 	[expr $canvasw+$dx] $canvash -tags l
 
