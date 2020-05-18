@@ -1,4 +1,3 @@
-#
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
 # Ayam is copyrighted 1998-2020 by Randolf Schultz
@@ -239,7 +238,7 @@ proc curvature_update { {numin ""} {numax ""} } {
     bind $ca <ButtonPress-4> {curvature_zoom %x %D;break}
     bind $ca <ButtonPress-5> {curvature_zoom %x -%D;break}
     if { $ay(ws) == "Win32" || $ay(ws) == "Aqua" } {
-	bind $w <MouseWheel> {curvature_zoom %x %D;break}
+	bind $ca <MouseWheel> {curvature_zoom %x %D;break}
     }
 
     # pan bindings
@@ -305,6 +304,8 @@ proc curvature_update { {numin ""} {numax ""} } {
 }
 # curvature_update
 
+# curvature_zoom
+# realize zoom by mouse wheel
 proc curvature_zoom { x d } {
     global Curvature
     if { $x < 40 } {return;set x 40}
@@ -328,6 +329,7 @@ proc curvature_zoom { x d } {
     curvature_update $Curvature(numin) $Curvature(numax)
  return;
 }
+# curvature_zoom
 
 proc curvature_print { } {
     set w $ay(pca).$Curvature(w)
@@ -418,7 +420,7 @@ proc curvature_togglelog { } {
 # attach to custom menu
 global ay
 $ay(cm) add command -label "Add Curvature View to Object" -command {
-    addTag NP Curvature; plb_update
+    addTag NP Curvature; plb_update; plb_showprop 0
 }
 
 proc curvature_reset { args } {
