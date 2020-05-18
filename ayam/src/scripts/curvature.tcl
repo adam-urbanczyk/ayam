@@ -121,35 +121,44 @@ proc curvature_update { {numin ""} {numax ""} } {
     # vertical
     $ca create line $dx $canvash $dx 0 -arrow last -tags l
     $ca create text [expr $dx-5] 8 -anchor e -text [format "%.2g" $cmax]
-    $ca create line [expr $dx-3] [expr $canvash/2] $dx [expr $canvash/2] -tags l
+    #$ca create line [expr $dx-3] [expr $canvash/2] $dx [expr $canvash/2] -tags l
     set cmid [expr $cmin+($cmax-$cmin)*0.5]
     $ca create text [expr $dx-5] [expr $canvash/2] -anchor e\
 	-text [format "%.2g" $cmid]
     set k "k"
     if { $Curvature(log) } { set k "log(k)" }
-    $ca create text [expr $dx-18] [expr $canvash*0.25] -text $k -tag k
+    $ca create text [expr $dx-18] [expr $canvash*0.15] -text $k -tag k
     $ca create text [expr $dx-5] $canvash -anchor e -text [format "%.2g" $cmin]
 
+    # vertical ticks
+    set i [expr $canvash/4]
+    while { $i <= [expr $canvash] } {
+	$ca create line [expr $dx-3] $i $dx $i -tags l
+	incr i [expr $canvash/4]
+    }
     # horizontal
     $ca create line $dx $canvash [expr $canvasw+$dx+20] $canvash\
 	-arrow last -tags l
     if { $Curvature(umin) > $Curvature(tumin) } {set txt "... "}
     append txt $Curvature(umin)
     $ca create text [expr $dx+5] [expr $canvash+12] -text $txt
-    $ca create line [expr $canvasw/2+$dx] [expr $canvash+4]\
-	[expr $canvasw/2+$dx] $canvash -tags l
     $ca create text [expr $canvasw/2+$dx] [expr $canvash+12]\
 	-text [expr $Curvature(umin)+($Curvature(umax)-$Curvature(umin))*0.5]
-    $ca create text [expr $canvasw*0.75+$dx] [expr $canvash+20] -text u
+    $ca create text [expr $canvasw*0.87+$dx] [expr $canvash+20] -text u
     if { $relative } {
-	$ca create text [expr $canvasw*0.75+$dx+6] [expr $canvash+26] -text r
+	$ca create text [expr $canvasw*0.87+$dx+6] [expr $canvash+26] -text r
     }
     set txt $Curvature(umax)
     if { $Curvature(umax) < $Curvature(tumax) } {append txt " ..."}
     $ca create text [expr $canvasw+$dx] [expr $canvash+12]\
 	-text $txt
-    $ca create line [expr $canvasw+$dx] [expr $canvash+4]\
-	[expr $canvasw+$dx] $canvash -tags l
+
+    # horizontal ticks
+    set i $dx
+    while { $i <= [expr $canvasw+$dx] } {
+	$ca create line $i [expr $canvash+4] $i $canvash -tags l
+	incr i [expr $canvasw/4]
+    }
 
     set i 0
     set x $dx
