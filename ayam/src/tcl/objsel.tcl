@@ -340,6 +340,28 @@ proc listBoxObjSel { Selection } {
     return $item
 }
 
+proc treeObjSel { nodes } {
+    global ay
+
+set tr $ay(tree)
+    tree_openTree $tr [$tr parent [lindex $nodes end]]
+
+    eval [subst "$tr selection set $nodes"]
+    tree_handleSelection
+    update
+    plb_update
+    update idletasks
+
+    if { $ay(need_redraw) == 1 } {
+	rV
+    }
+
+    $tr see [lindex $nodes end]
+
+ return;
+}
+
+
 #singleObjSel:
 # Replace the current selection by one picked object.
 proc singleObjSel { node } {
@@ -434,12 +456,8 @@ proc multipleObjSel { node } {
 		$lb see $item
 		olb_select
 	    } else {
-		tree_selectItem $ay(tree) [lindex $cleanSelection 0]
-		foreach node [lrange $cleanSelection 1 end] {
-		    tree_toggleSelection $ay(tree) $node
-		}
-		# Scroll the tree so that selected items are visible
-		$ay(tree) see [lindex $cleanSelection end]
+		$ay(tree) selection clear
+		treeObjSel $cleanSelection
 	    }
 	}
     }
@@ -563,11 +581,7 @@ proc addMultipleObjSel { node } {
 		$ay(olb) see $item
 		olb_select
 	    } else {
-		foreach node $cleanSelection {
-		    tree_toggleSelection $ay(tree) $node
-		}
-		# Scroll the tree so that selected items are visible
-		$ay(tree) see [lindex $cleanSelection end]
+		treeObjSel $cleanSelection
 	    }
 	}
     }
