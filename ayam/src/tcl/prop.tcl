@@ -214,6 +214,7 @@ upvar #0 pclip_clipboard clipboard
 
 
 proc _remTags { {i -1} } {
+    global ay
     set fw [focus]
     if { $i != -1 } {
 	undo save RemTag
@@ -222,7 +223,10 @@ proc _remTags { {i -1} } {
 	undo save RemTags
 	delTags all
     }
-    getTagsp
+    plb_update
+    set i [lsearch -exact [$ay(plb) get 0 end] Tags]
+    incr i 1
+    if { $i > 0 } {plb_showprop $i}
     restoreFocus $fw
 }
 
