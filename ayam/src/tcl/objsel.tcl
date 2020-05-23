@@ -21,7 +21,7 @@ array set rArray {
     cycleIndex 0
 }
 
-#reconsider:
+#reconsiderObjSel:
 # This function helps the user to solve ambiguity when he/she clicks an object
 # on a viewport. Sometimes several objects are good candidates to be selected
 # (this can happen when many objects are located very close together) but only
@@ -29,7 +29,7 @@ array set rArray {
 # By default the first candidate is added to the selection. But the user may
 # want another object among the candidates to be retained. This function allows
 # the user to reconsider (hence the name) the selected candidate.
-proc reconsider { Selection } {
+proc reconsiderObjSel { Selection } {
     global rArray ay ayprefs
 
     set w .reconsider
@@ -243,24 +243,24 @@ proc reconsider { Selection } {
 
  return;
 }
-# reconsider
+# reconsiderObjSel
 
 #cleanObjSel:
 # This function is called when picked objects have to be added to the selection
-# (i.e. when the user pressed Shift during the picking). Its purpose is
+# (i.e. when the user pressed <Ctrl> during the picking). Its purpose is
 # to remove the following objects from the list of picked objects:
 # - objects that are already selected
 # - objects that are from a different level than the selected ones
-proc cleanObjSel { Selection } {
+proc cleanObjSel { newSelection oldSelection } {
     global ay
-    set cleanedSelect ""
-
+    set cleanSelection ""
+    set report 0
     if { $ay(lb) == 1 } {
 	# For each item picked by the user :
-	foreach i $ay(LastSelection) {
-	    set hierarchy [split $i :]
+	foreach node $newSelection {
+	    set hierarchy [split $node :]
 	    # Is the item in the current level ?
-	    if { [join [lrange $hierarchy 0 end-1] :] == $ay(CurrentLevel)} {
+	    if { [join [lrange $hierarchy 0 end-1] :] == $ay(CurrentLevel) } {
 		set item [lindex $hierarchy end]
 		# Because of the '..' in the list we have to increment
 		# the item entry, except for the first level where 'root'
@@ -269,33 +269,38 @@ proc cleanObjSel { Selection } {
 		    set item [expr $item + 1]
 		}
 		# Is the item already stored in the current selection ?
-		if { [lsearch -exact $Selection $item] == -1} {
-		    lappend cleanedSelect $i
+		if { [lsearch -exact $oldSelection $item] == -1} {
+		    lappend cleanSelection $node
+		} else {
+		    set report 1
 		}
 	    }
 	}
     } else {
-
 	# For each item picked by the user :
-	foreach i $ay(LastSelection) {
+	foreach node $newSelection {
 	    # Is the item already stored in the current selection ?
-	    if { [lsearch -exact $Selection $i] == -1} {
+	    if { [lsearch -exact $oldSelection $node] == -1 } {
 		# Is the item in the current level ?
-		if { $ay(SelectedLevel) == [$ay(tree) parent $i] } {
-		    lappend cleanedSelect $i
+		if { $ay(SelectedLevel) == [$ay(tree) parent $node] } {
+		    lappend cleanSelection $node
+		} else {
+		    set report 1
 		}
 	    }
 	}
     }
 
-    set ay(LastSelection) $cleanedSelect
+    if { $oldSelection != "" && $report } {
+	ayError 1 "objSel" "Can not select from different levels!"
+    }
 
- return;
+ return $cleanSelection
 }
 #cleanObjSel
 
 #goLevObjSel:
-# Goes to the level which name (in tree format) is given by 'level'
+# Goes to the level which name (in tree format) is given by 'node'
 proc goLevObjSel { node } {
 
     # Because of the '..' in the list we have to increment each entry number
@@ -316,10 +321,10 @@ proc goLevObjSel { node } {
 
     return [lindex $hierarchy end]
 }
-
+#goLevObjSel
 
 #listBoxObjSel:
-# Updates the List Box (if activated) accordingly to the selected items
+# Updates the List Box according to the selected item
 proc listBoxObjSel { Selection } {
     global ay
 
@@ -341,49 +346,49 @@ proc singleObjSel { node } {
     global ay rArray ayprefs
 
     if { $node != "" } {
-	set ay(LastSelection) [split $node " "]
-	set Selection [lindex $ay(LastSelection) 0]
+	set newSelection [split $node " "]
+	set singleSelection [lindex $newSelection 0]
 
 	# If the user has picked several objects then reconsider...
-	if {[llength $ay(LastSelection)] > 1} {
+	if {[llength $newSelection] > 1} {
 	    if { ($ayprefs(PickCycle) == 0) ||
-		 ([llength $ay(LastSelection)] > $ayprefs(PickCycleMax)) } {
+		 ([llength $newSelection] > $ayprefs(PickCycleMax)) } {
 		# ask
 		set rArray(result) ""
-		reconsider $ay(LastSelection)
+		reconsiderObjSel $newSelection
 		if { $rArray(result) != "" } {
-		    set Selection $rArray(result)
+		    set singleSelection $rArray(result)
 		} else {
 		    return;
 		}
 	    } else {
 		# cycle
-		if { $rArray(cycleList) == $ay(LastSelection) } {
+		if { $rArray(cycleList) == $newSelection } {
 		    if { $rArray(cycleIndex) >= [llength $rArray(cycleList)] } {
 			set rArray(cycleIndex) 0
 		    }
-		    set Selection\
-			[lindex $ay(LastSelection) $rArray(cycleIndex)]
+		  set singleSelection [lindex $newSelection $rArray(cycleIndex)]
 		}
-		set rArray(cycleList) $ay(LastSelection)
+		set rArray(cycleList) $newSelection
 		incr rArray(cycleIndex)
 	    }
 	}
 
-	# Determine whether the listbox is enabled or not
 	if {$ay(lb) == 1} {
 	    set lb $ay(olb)
 	    $lb selection clear 0 end
-	    set item [listBoxObjSel $Selection]; # update listbox
+	    set item [listBoxObjSel $singleSelection]
 	    $lb selection set $item
 	    $lb see $item
 	    olb_select
 	} else {
-	    tree_openTree $ay(tree) $Selection
-	    tree_selectItem $ay(tree) $Selection
-	    $ay(tree) see $Selection
+	    tree_openTree $ay(tree) $singleSelection
+	    tree_selectItem $ay(tree) $singleSelection
+	    $ay(tree) see $singleSelection
 	}
     }
+
+ return;
 }
 #singleObjSel
 
@@ -393,16 +398,19 @@ proc multipleObjSel { node } {
     global ay
 
     if { $node != "" } {
-	set ay(LastSelection) [split $node " "]
-	# Remove items that do not belong to the current level
-	cleanObjSel ""
+	set newSelection [split $node " "]
 
-	# If the user has picked items that are already selected or that
-	# do not belong to the current level then $ay(Selection) is empty
-	# (it has been emptied by cleanObjSel) else we can process the user's
-	# picking
-	if { $ay(LastSelection) != "" } {
-	    # Determine whether the listbox is enabled or not
+	# go to the level of the first selected object
+	set firstSelection [lindex $newSelection 0]
+	set hierarchy [split $firstSelection :]
+	set ay(CurrentLevel) [join [lrange $hierarchy 0 end-1] :]
+	set ay(SelectedLevel) $ay(CurrentLevel)
+	goLevObjSel $firstSelection
+
+	# Remove items that do not belong to the (new) current level
+	set cleanSelection [cleanObjSel $newSelection ""]
+
+	if { $cleanSelection != "" } {
 	    if { $ay(lb) == 1 } {
 	        set lb $ay(olb)
 		# Empty the current selection
@@ -411,8 +419,8 @@ proc multipleObjSel { node } {
 		# Unselect all items of the listbox and replace them by
 		# the new selection
 		$lb selection clear 0 end
-		foreach i $ay(LastSelection) {
-		    set item [lindex [split $i :] end]
+		foreach node $cleanSelection {
+		    set item [lindex [split $node :] end]
 		    # Because of the '..' in the list we have to increment
 		    # the item entry, except for the first level where 'root'
 		    # is actually entry 0.
@@ -426,19 +434,19 @@ proc multipleObjSel { node } {
 		$lb see $item
 		olb_select
 	    } else {
-		# Unselect all items of the listbox and replace them by
-		# the new selection
-		tree_selectItem $ay(tree) [lindex $ay(LastSelection) 0]
-		foreach i [lrange $ay(LastSelection) 1 end] {
-		    tree_toggleSelection $ay(tree) $i
+		tree_selectItem $ay(tree) [lindex $cleanSelection 0]
+		foreach node [lrange $cleanSelection 1 end] {
+		    tree_toggleSelection $ay(tree) $node
 		}
 		# Scroll the tree so that selected items are visible
-		$ay(tree) see [lindex $ay(LastSelection) end]
+		$ay(tree) see [lindex $cleanSelection end]
 	    }
 	}
     }
+
+ return;
 }
-#addMultipleObjSel
+#multipleObjSel
 
 #addObjSel:
 # Add one picked object to the current selection
@@ -446,18 +454,16 @@ proc addObjSel { node } {
     global ay rArray
 
     if { $node != "" } {
-	set ay(LastSelection) [split $node " "]
-
-	# Get the current selection
+	set newSelection [split $node " "]
 	if { $ay(lb) == 1} {
-	    set Selected [$ay(olb) curselection]
+	    set oldSelection [$ay(olb) curselection]
 	} else {
-	    set Selected [$ay(tree) selection get]
+	    set oldSelection [$ay(tree) selection get]
 	}
 
 	# Remove already selected items and items that do not belong to the
 	# current level
-	cleanObjSel $Selected
+	set cleanSelection [cleanObjSel $newSelection $oldSelection]
 
 	set Selection [lindex $ay(LastSelection) 0]
 
@@ -465,37 +471,36 @@ proc addObjSel { node } {
 	# do not belong to the current level then $ay(Selection) is empty
 	# (it has been emptied by cleanObjSel) else we can process the user's
 	# picking
-	if { $ay(LastSelection) != "" } {
+	if { $cleanSelection != "" } {
 
 	    #If there was no previously selected items then we fall back
 	    # in a regular "single object selection"
-	    if { $Selected == "" } {
+	    if { $oldSelection == "" } {
 		singleObjSel $node
 		return
 	    }
 
 	    # If the user has picked several objects then reconsider...
-	    if {[llength $ay(LastSelection)] > 1} {
-		set oldSelection ""
+	    if {[llength $cleanSelection] > 1} {
+		set oldSel ""
 		# Save the current selection
-		getSel oldSelection
+		getSel oldSel
 
 		# Reconsider the ambiguous picking
-		reconsider $ay(LastSelection)
+		reconsiderObjSel $cleanSelection
 		if { $rArray(result) != "" } {
-		    set Selection $rArray(result)
+		    set cleanSelection $rArray(result)
 		} else {
 		    return
 		}
 
 		# Restore the previous selection
 		selOb
-		selOb $oldSelection
+		selOb $oldSel
 	    }
 
-	    # Determine whether the listbox is enabled or not
 	    if { $ay(lb) == 1 } {
-		set item [lindex [split $Selection :] end]
+		set item [lindex [split $cleanSelection :] end]
 		# Because of the '..' in the list we have to increment
 		# the item entry, except for the first level where 'root'
 		# is actually entry 0.
@@ -507,14 +512,14 @@ proc addObjSel { node } {
 		$ay(olb) see $item
 		olb_select
 	    } else {
-		tree_toggleSelection $ay(tree) $Selection
+		tree_toggleSelection $ay(tree) $cleanSelection
 		# Scroll the tree so that the selected item is visible
-		$ay(tree) see $Selection
+		$ay(tree) see $cleanSelection
 	    }
-	} else {
-	    ayError 1 "addObjSel" "Can not select from different levels!"
 	}
     }
+
+ return;
 }
 #addObjSel
 
@@ -524,36 +529,28 @@ proc addMultipleObjSel { node } {
     global ay
 
     if { $node != "" } {
-	set ay(LastSelection) [split $node " "]
+	set newSelection [split $node " "]
 
-	# Get the current selection
 	if { $ay(lb) == 1} {
-	    set Selected [$ay(olb) curselection]
+	    set oldSelection [$ay(olb) curselection]
 	} else {
-	    set Selected [$ay(tree) selection get]
+	    set oldSelection [$ay(tree) selection get]
 	}
 
-	# Remove already selected items and items that do not belong to the
-	# current level
-	cleanObjSel $Selected
+	set cleanSelection [cleanObjSel $newSelection $oldSelection]
 
-	# If the user has picked items that are already selected or that
-	# do not belong to the current level then $ay(Selection) is empty
-	# (it has been emptied by cleanObjSel) else we can process the user's
-	# picking
-	if { $ay(LastSelection) != "" } {
+	if { $cleanSelection != "" } {
 
 	    #If there was no previously selected items then we fall back
 	    # in a regular "multiple object selection"
-	    if { $Selected == "" } {
+	    if { $oldSelection == "" } {
 		multipleObjSel $node
 		return
 	    }
 
-	    # Determine whether the listbox is enabled or not
 	    if { $ay(lb) == 1 } {
-		foreach i $ay(LastSelection) {
-		    set item [lindex [split $i :] end]
+		foreach node $cleanSelection {
+		    set item [lindex [split $node :] end]
 		    # Because of the '..' in the list we have to increment
 		    # the item entry, except for the first level where 'root'
 		    # is actually entry 0.
@@ -566,15 +563,15 @@ proc addMultipleObjSel { node } {
 		$ay(olb) see $item
 		olb_select
 	    } else {
-		foreach i $ay(LastSelection) {
-		    tree_toggleSelection $ay(tree) $i
+		foreach node $cleanSelection {
+		    tree_toggleSelection $ay(tree) $node
 		}
 		# Scroll the tree so that selected items are visible
-		$ay(tree) see [lindex $ay(LastSelection) end]
+		$ay(tree) see [lindex $cleanSelection end]
 	    }
-	} else {
-	    ayError 1 "addMultipleObjSel" "Can not select from different levels!"
 	}
     }
+
+ return;
 }
 #addMultipleObjSel
