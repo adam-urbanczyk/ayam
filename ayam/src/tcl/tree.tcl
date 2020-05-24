@@ -304,7 +304,6 @@ proc tree_toggleSelection { tree node } {
 	if { [llength $nlist] != "0" } {
 	    set parent [$tree parent $node]
 	    if { $parent == $SelectedLevel } {
-
 		lappend nlist $node
 		set newsel [lsort $nlist]
 		eval [subst "$tree selection set $newsel"]
@@ -428,7 +427,7 @@ proc tree_selectLast { } {
 
 
 #tree_handleSelection:
-# do any stuff for the selected objects such as highligting the selected level
+# do any stuff for the selected objects such as highlighting the selected level
 proc tree_handleSelection { } {
     global ay
 
