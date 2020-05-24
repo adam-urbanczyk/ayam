@@ -1,5 +1,5 @@
-[7. May 2020] Mercurial Tip:
-============================
+[24. May 2020] Mercurial Tip:
+=============================
 Bug Fixes:
 o append option of split curve tool does not work (SF 595)
 o display of ConeAngle and ConeDeltaAngle (SF 597)
@@ -12,6 +12,9 @@ Modelling:
 o added option to specify the split knot in a relative way in the
   split curve tool
 o added MN tag support to 3DPVN offset curves
+o added keyboard parameter GUI support to FindU action
+o improved speed and level handling of object picking by drag selection
+o improved property handling after tag removal (realize NP/RP changes)
 
 GUI:
 o improved layout of menu components on Win32
@@ -28,6 +31,7 @@ o added "curvatNC" command to compute the curvature of a NURBS curve
 o added "curvatNP" command to compute the curvature of a NURBS surface
 o added "curature.tcl" script that displays a curvature plot diagram
   as property of NURBS curve and NURBS curve providing objects
+o added "isRational" command
 
 Rendering:
 o added render to viewport feature via a new distributed plugin ("fifodspy")
