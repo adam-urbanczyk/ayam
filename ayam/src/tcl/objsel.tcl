@@ -10,9 +10,6 @@
 # objsel.tcl - scripts for object selection on viewport
 
 array set rArray {
-    lb ""
-    yscroll ""
-    xscroll ""
     selection ""
     oldLevel ""
     oldSelection ""
@@ -77,15 +74,15 @@ proc reconsiderObjSel { Selection } {
     pack $f -in $w -side top -fill both -expand yes
 
     # Create the listbox
-    listbox $f.lo -height 8 -selectmode browse -activestyle none \
-	-exportselection 0 \
-	-yscrollcommand {global rArray; $rArray(yscroll) set} \
-	-xscrollcommand {global rArray; $rArray(xscroll) set}
+    set scrollx $f.sh
+    set scrolly $f.sv
+    set lb [listbox $f.lo -height 8 -selectmode browse -activestyle none \
+		-exportselection 0 -xscrollcommand "$scrollx set"\
+		-yscrollcommand "$scrolly set"]
 
     set entry ""
     set maxlen 0
     foreach i $Selection {
-
 	# Computes the path of each object of the selection
 	set object [split $i :]
 	set level ""
@@ -107,23 +104,19 @@ proc reconsiderObjSel { Selection } {
     $f.lo delete 0 end
     eval [subst "$f.lo insert end $entry"]
 
+    set rArray(lb) $lb
+
     # Create the vertical scrollbar
-    scrollbar $f.sv -command {global rArray; $rArray(lb) yview} -takefocus 0
+    scrollbar $f.sv -command "$lb yview" -takefocus 0
 
     # Create the horizontal scrollbar
-    scrollbar $f.sh -command {global rArray; $rArray(lb) xview} \
-    	-takefocus 0 -orient h
+    scrollbar $f.sh -command "$lb xview" -takefocus 0 -orient h
 
     # Uses a grid to manage widgets (listbox, horizontal & vertical scrollbars)
     grid $f.lo $f.sv -sticky news
     grid $f.sh -sticky ew
     grid columnconfig $f 0 -weight 1
     grid rowconfig $f 0 -weight 1
-
-    # Save the listbox and scrollbar ids
-    set rArray(yscroll) $f.sv
-    set rArray(xscroll) $f.sh
-    set rArray(lb) $f.lo
 
     # Create a frame where to place buttons "Ok" and "Cancel"
     set f [frame $w.f2]
@@ -139,10 +132,6 @@ proc reconsiderObjSel { Selection } {
 	# Restore the current level so that the tree knows that the
 	# level has eventually changed
 	set ay(CurrentLevel) $rArray(oldLevel)
-
-	if { $ay(lb) == 0 } {
-	    tree_handleSelection
-	}
 
 	focus $ay(currentView)
 	destroy .reconsider
@@ -166,8 +155,9 @@ proc reconsiderObjSel { Selection } {
 	append rArray(oldLevel) ":"
 	append rArray(oldLevel) [lindex $rArray(oldSelection) 0]
 	goLevObjSel $rArray(oldLevel)
-	selOb $rArray(oldSelection)
-
+	if { $selection != "" } {
+	    selOb $rArray(oldSelection)
+	}
 	if { $ay(lb) == 1 } {
 	    olb_select
 	} else {
@@ -176,6 +166,7 @@ proc reconsiderObjSel { Selection } {
 	focus $ay(currentView)
 	destroy .reconsider
     }
+
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x
 
@@ -201,7 +192,7 @@ proc reconsiderObjSel { Selection } {
 	after 200 {.reconsider.f2.bok invoke}
     }
     bind $rArray(lb) <Home>\
-	"%W see 0 ;%W selection clear 0 end; %W selection set 0;\
+	"%W see 0; %W selection clear 0 end; %W selection set 0;\
          %W activate 0; event generate %W <<ListboxSelect>>; break"
     bind $rArray(lb) <End>\
 	"%W see end; %W selection clear 0 end; %W selection set end;\
@@ -269,7 +260,7 @@ proc cleanObjSel { newSelection oldSelection } {
 		    set item [expr $item + 1]
 		}
 		# Is the item already stored in the current selection ?
-		if { [lsearch -exact $oldSelection $item] == -1} {
+		if { [lsearch -exact $oldSelection $item] == -1 } {
 		    lappend cleanSelection $node
 		} else {
 		    set report 1
@@ -324,7 +315,7 @@ proc goLevObjSel { node } {
 #goLevObjSel
 
 #listBoxObjSel:
-# Updates the List Box according to the selected item
+# Updates the object list box according to the selected item
 proc listBoxObjSel { Selection } {
     global ay
 
@@ -340,13 +331,16 @@ proc listBoxObjSel { Selection } {
     return $item
 }
 
+#treeObjSel:
+# open the sub-tree of the given nodes and select them all
+# then updated the property list box and redraws all views
 proc treeObjSel { nodes } {
     global ay
 
-set tr $ay(tree)
-    tree_openTree $tr [$tr parent [lindex $nodes end]]
+    set tr $ay(tree)
 
-    eval [subst "$tr selection set $nodes"]
+    tree_openTree $tr [$tr parent [lindex $nodes end]]
+    eval [subst "$tr selection add $nodes"]
     tree_handleSelection
     update
     plb_update
@@ -360,7 +354,7 @@ set tr $ay(tree)
 
  return;
 }
-
+#treeObjSel
 
 #singleObjSel:
 # Replace the current selection by one picked object.
@@ -425,6 +419,7 @@ proc multipleObjSel { node } {
 	# go to the level of the first selected object
 	set firstSelection [lindex $newSelection 0]
 	set hierarchy [split $firstSelection :]
+	set oldCurrentLevel $ay(CurrentLevel)
 	set ay(CurrentLevel) [join [lrange $hierarchy 0 end-1] :]
 	set ay(SelectedLevel) $ay(CurrentLevel)
 	goLevObjSel $firstSelection
@@ -434,6 +429,7 @@ proc multipleObjSel { node } {
 
 	if { $cleanSelection != "" } {
 	    if { $ay(lb) == 1 } {
+		olb_update
 	        set lb $ay(olb)
 		# Empty the current selection
 		selOb
@@ -446,9 +442,7 @@ proc multipleObjSel { node } {
 		    # Because of the '..' in the list we have to increment
 		    # the item entry, except for the first level where 'root'
 		    # is actually entry 0.
-		    if { $ay(CurrentLevel) != "root" } {
-			set item [expr $item + 1]
-		    }
+		    if { $ay(CurrentLevel) != "root" } { incr item }
 		    $lb selection set $item
 		}
 
@@ -456,6 +450,12 @@ proc multipleObjSel { node } {
 		$lb see $item
 		olb_select
 	    } else {
+		if { $ay(CurrentLevel) != $oldCurrentLevel } {
+		    set newCurrentLevel $ay(CurrentLevel)
+		    set ay(CurrentLevel) $oldCurrentLevel
+		    tree_paintLevel $newCurrentLevel
+		    set ay(CurrentLevel) $newCurrentLevel
+		}
 		$ay(tree) selection clear
 		treeObjSel $cleanSelection
 	    }
@@ -483,22 +483,18 @@ proc addObjSel { node } {
 	# current level
 	set cleanSelection [cleanObjSel $newSelection $oldSelection]
 
-	set Selection [lindex $ay(LastSelection) 0]
+	#set Selection [lindex $ay(LastSelection) 0]
 
-	# If the user has picked items that are already selected or that
-	# do not belong to the current level then $ay(Selection) is empty
-	# (it has been emptied by cleanObjSel) else we can process the user's
-	# picking
 	if { $cleanSelection != "" } {
 
-	    #If there was no previously selected items then we fall back
-	    # in a regular "single object selection"
+	    # If there was no previously selected item then we fall back
+	    # to a regular "single object selection"
 	    if { $oldSelection == "" } {
 		singleObjSel $node
 		return
 	    }
 
-	    # If the user has picked several objects then reconsider...
+	    # If the user has picked multiple objects then reconsider...
 	    if {[llength $cleanSelection] > 1} {
 		set oldSel ""
 		# Save the current selection
@@ -522,9 +518,7 @@ proc addObjSel { node } {
 		# Because of the '..' in the list we have to increment
 		# the item entry, except for the first level where 'root'
 		# is actually entry 0.
-		if { $ay(CurrentLevel) != "root" } {
-		    set item [expr $item + 1]
-		}
+		if { $ay(CurrentLevel) != "root" } { incr item }
 		$ay(olb) selection set $item
 		# Scroll the listbox so that the selected item is visible
 		$ay(olb) see $item
@@ -542,7 +536,7 @@ proc addObjSel { node } {
 #addObjSel
 
 #addMultipleObjSel:
-# Add several picked objects to the selection
+# Add multiple picked objects to the selection
 proc addMultipleObjSel { node } {
     global ay
 
@@ -559,8 +553,8 @@ proc addMultipleObjSel { node } {
 
 	if { $cleanSelection != "" } {
 
-	    #If there was no previously selected items then we fall back
-	    # in a regular "multiple object selection"
+	    # If there was no previously selected item then we fall back
+	    # to a regular "multiple object selection"
 	    if { $oldSelection == "" } {
 		multipleObjSel $node
 		return
@@ -572,9 +566,7 @@ proc addMultipleObjSel { node } {
 		    # Because of the '..' in the list we have to increment
 		    # the item entry, except for the first level where 'root'
 		    # is actually entry 0.
-		    if { $ay(CurrentLevel) != "root" } {
-			set item [expr $item + 1]
-		    }
+		    if { $ay(CurrentLevel) != "root" } { incr item }
 		    $ay(olb) selection set $item
 		}
 		# Scroll the listbox so that selected items are visible
