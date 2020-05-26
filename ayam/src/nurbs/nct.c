@@ -10358,28 +10358,129 @@ ay_nct_extractnctcmd(ClientData clientData, Tcl_Interp *interp,
 int
 ay_nct_fair(ay_nurbcurve_object *curve, ay_point *selp, double tol)
 {
+ int ay_status = AY_OK;
  unsigned int i, j, stride = 4, found;
- double *U, len, v[3], l[3], r[3], q[3];
+ double *Pw, *U, len, v[3], l[3], r[3], q[3];
  double *pll, *pl, *p, *pr, *prr;
  ay_point *pnt;
+ ay_nurbcurve_object nc = {0};
 
   /* sanity check */
   if(!curve)
     return AY_ENULL;
 
-  if(curve->length < 5)
+  if(curve->length < 3)
     return AY_OK;
 
-  U = curve->knotv;
+  if(!(Pw = malloc((curve->length+4)*stride*sizeof(double))))
+    return AY_EOMEM;
 
-  pll = curve->controlv;
+  memcpy(&(Pw[2*stride]), curve->controlv, curve->length*stride*sizeof(double));
+
+  switch(curve->type)
+    {
+    case AY_CTOPEN:
+      pll = curve->controlv;
+      pl = pll+stride;
+      AY_V3SUB(l, pl, pll);
+      AY_V3SCAL(l, 0.5);
+      AY_V3SUB(q, pll, l);
+      memcpy(&(Pw[stride]), q, stride*sizeof(double));
+      pll += stride;
+      pl += stride;
+      AY_V3SUB(l, pl, pll);
+      AY_V3SCAL(l, 0.5);
+      AY_V3SUB(q, q, l);
+      memcpy(&(Pw[0]), q, stride*sizeof(double));
+
+      prr = &(curve->controlv[(curve->length-1)*stride]);
+      pr = prr-stride;
+      AY_V3SUB(r, pr, prr);
+      AY_V3SCAL(r, 0.5);
+      AY_V3SUB(q, prr, r);
+      memcpy(&(Pw[(curve->length+2)*stride]), q, stride*sizeof(double));
+      prr -= stride;
+      pr -= stride;
+      AY_V3SUB(r, pr, prr);
+      AY_V3SCAL(r, 0.5);
+      AY_V3SUB(q, q, r);
+      memcpy(&(Pw[(curve->length+3)*stride]), q, stride*sizeof(double));
+      break;
+    case AY_CTCLOSED:
+      memcpy(Pw,
+	     &(curve->controlv[(curve->length-3)*stride]),
+	     stride*sizeof(double));
+      memcpy(&(Pw[stride]),
+	     &(curve->controlv[(curve->length-2)*stride]),
+	     stride*sizeof(double));
+
+      memcpy(&(Pw[(curve->length+2)*stride]),
+	     &(curve->controlv[stride]),
+	     stride*sizeof(double));
+      memcpy(&(Pw[(curve->length+3)*stride]),
+	     &(curve->controlv[2*stride]),
+	     stride*sizeof(double));
+      break;
+    case AY_CTPERIODIC:
+      memcpy(Pw,
+	     &(curve->controlv[(curve->length-(curve->order+1))*stride]),
+	     stride*sizeof(double));
+      memcpy(&(Pw[stride]),
+	     &(curve->controlv[(curve->length-(curve->order))*stride]),
+	     stride*sizeof(double));
+
+      memcpy(&(Pw[(curve->length+2)*stride]),
+	     &(curve->controlv[(curve->order-1)*stride]),
+	     stride*sizeof(double));
+      memcpy(&(Pw[(curve->length+3)*stride]),
+	     &(curve->controlv[curve->order*stride]),
+	     stride*sizeof(double));
+      break;
+    default:
+      break;
+    }
+
+  if(curve->knot_type != AY_KTCUSTOM)
+    {
+      nc.length = curve->length+4;
+      nc.order = curve->order;
+      nc.type = curve->type;
+      nc.knot_type = curve->knot_type;
+      ay_status = ay_knots_createnc(&nc);
+      if(ay_status)
+	{
+	  free(Pw);
+	  return AY_ERROR;
+	}
+      U = nc.knotv;
+    }
+  else
+    {
+      if(!(U = malloc((curve->length+curve->order+4)*sizeof(double))))
+	{ free(Pw); return AY_EOMEM; }
+
+      memcpy(&(U[2]), curve->knotv,
+	     (curve->length+curve->order)*sizeof(double));
+
+      i = curve->order;
+      U[i-1] = U[i]-(U[i+1]-U[i])*0.5;
+      U[i-2] = U[i+1]-(U[i+2]-U[i+1])*0.5;
+
+      i = curve->length;
+      U[i+1] = U[i]+(U[i]-U[i-1])*0.5;
+      U[i+2] = U[i-1]+(U[i-1]-U[i-2])*0.5;
+
+      U[curve->length+curve->order] = U[curve->length+curve->order-1];
+    }
+
+  pll = Pw;
   pl = pll+stride;
   p = pl+stride;
   pr = p+stride;
   prr = pr+stride;
   j = curve->order;
 
-  for(i = 2; i < (unsigned int)curve->length-2; i++)
+  for(i = 2; i < (unsigned int)curve->length+2; i++)
     {
       if(selp)
 	{
@@ -10387,7 +10488,7 @@ ay_nct_fair(ay_nurbcurve_object *curve, ay_point *selp, double tol)
 	  pnt = selp;
 	  while(pnt)
 	    {
-	      if(pnt->index == i)
+	      if(pnt->index+2 == i)
 		{
 		  found = AY_TRUE;
 		  break;
@@ -10433,6 +10534,17 @@ ay_nct_fair(ay_nurbcurve_object *curve, ay_point *selp, double tol)
       prr += stride;
       j++;
     } /* for */
+
+  memcpy(curve->controlv, &(Pw[2*stride]), curve->length*stride*sizeof(double));
+
+  if(curve->type != AY_CTOPEN)
+    {
+      ay_nct_close(curve);
+    }
+
+
+  free(U);
+  free(Pw);
 
  return AY_OK;
 } /* ay_nct_fair */
@@ -10487,6 +10599,7 @@ ay_nct_fairnctcmd(ClientData clientData, Tcl_Interp *interp,
       if(o->type == AY_IDNCURVE)
 	{
 	  nc = (ay_nurbcurve_object *)o->refine;
+
 	  ay_status = ay_nct_fair(nc, o->selp, tol);
 
 	  if(ay_status)
@@ -10494,6 +10607,7 @@ ay_nct_fairnctcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_error(ay_status, argv[0], "Fairing failed.");
 	      return TCL_OK;
 	    }
+
 	  (void)ay_notify_object(o);
 	  notify_parent = AY_TRUE;
 	}
