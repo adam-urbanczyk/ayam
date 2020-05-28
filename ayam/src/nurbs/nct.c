@@ -10349,6 +10349,8 @@ ay_nct_extractnctcmd(ClientData clientData, Tcl_Interp *interp,
  *  change the control points of a NURBS curve so that the curvature
  *  is more evenly distributed
  *
+ *  Does not maintain close state or multiple points!
+ *
  * \param[in,out] curve NURBS curve object to process
  * \param[in] selp selected points (may be NULL)
  * \param[in] tol maximum distance a control point moves
@@ -10370,6 +10372,9 @@ ay_nct_fair(ay_nurbcurve_object *curve, ay_point *selp, double tol)
     return AY_ENULL;
 
   if(curve->length < 3)
+    return AY_OK;
+
+  if(curve->order < 3)
     return AY_OK;
 
   if(!(Pw = malloc((curve->length+4)*stride*sizeof(double))))
@@ -10438,7 +10443,7 @@ ay_nct_fair(ay_nurbcurve_object *curve, ay_point *selp, double tol)
       break;
     default:
       break;
-    }
+    } /* switch type */
 
   if(curve->knot_type != AY_KTCUSTOM)
     {
@@ -10537,12 +10542,6 @@ ay_nct_fair(ay_nurbcurve_object *curve, ay_point *selp, double tol)
 
   memcpy(curve->controlv, &(Pw[2*stride]), curve->length*stride*sizeof(double));
 
-  if(curve->type != AY_CTOPEN)
-    {
-      ay_nct_close(curve);
-    }
-
-
   free(U);
   free(Pw);
 
@@ -10607,6 +10606,17 @@ ay_nct_fairnctcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_error(ay_status, argv[0], "Fairing failed.");
 	      return TCL_OK;
 	    }
+
+	  if(nc->type != AY_CTOPEN)
+	    {
+	      ay_status = ay_nct_close(nc);
+
+	      if(ay_status)
+		ay_error(AY_ERROR, argv[0], "Could not close curve.");
+	    }
+
+	  if(nc->mpoints)
+	    ay_nct_recreatemp(nc);
 
 	  (void)ay_notify_object(o);
 	  notify_parent = AY_TRUE;
