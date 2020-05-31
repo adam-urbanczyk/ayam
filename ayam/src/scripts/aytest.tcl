@@ -1971,6 +1971,15 @@ array set ApproxNC {
     }
 }
 
+array set FairNC {
+    types { NCurve }
+    command {
+	getProp;
+	if { $::NCurveAttrData(Length) > 2 && $::NCurveAttrData(Order) } {
+	    fairNC }
+    }
+}
+
 array set SplitNC {
     types { NCurve }
     command {
@@ -2367,7 +2376,6 @@ foreach tool $aytesttools {
 	    set ${type}_${i}(tstcmd) $cmd
 	    incr i
 	}
-
 	aytest_var $type
     }
     # foreach type
@@ -3087,7 +3095,7 @@ proc aytest_var { type } {
 	      } else {
 		  append cmds {\
 		      selOb 0;copOb;pasOb;hSL;
-		      setProp;
+		      setProp;getProp;
 		      movOb $k $l $i;
 		      incr k 2;\
 		  }
@@ -3318,7 +3326,7 @@ lappend items RefineK InsertK InsertK2 RemoveK RemoveKI RemoveKS RemoveKIS
 lappend items RemoveKI1 RemoveKI1S RemoveKIEnd RemoveKIEndS RemoveSuK
 lappend items ShiftC ShiftC2 ShiftCM ShiftCM2 ToXYC ToXZC ToYZC
 lappend items ElevateNC ElevateNC2 ElevateNC3 ReduceNC EstLenNC ExtendNC
-lappend items SplitNC ExtractNC TrimNC TweenNC InterpNC ApproxNC
+lappend items SplitNC ExtractNC TrimNC TweenNC InterpNC ApproxNC FairNC
 lappend items ClampNC ClampNCS ClampNCE
 lappend items UnclampNC UnclampNCS UnclampNCE
 lappend items RevertUS RevertVS SwapUVS RefineUNP RefineVNP
