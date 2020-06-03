@@ -124,7 +124,7 @@ proc balloon_setsplit { w s len } {
     global ay
     balloon_clear $w
     if {[string length $s] > $len } {
-	regsub -all $ay(separator) $s  "\n" s2
+	regsub -all $ay(separator) $s "\n" s2
 
 	set ids [after info]
 	foreach id $ids {
