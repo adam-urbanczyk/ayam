@@ -2202,7 +2202,7 @@ proc actionPick { w } {
     bind $w <${ayviewshortcuts(PickMod)}-ButtonRelease-1> {
 	%W setconf -rect $oldx $oldy %x %y 0
 
-	if { $ay(b1d) && [winfo exists .reconsider] == 0} {
+	if { $ay(b1d) && [winfo exists .reconsider] == 0 } {
 	    if { ($oldx == %x) || ($oldy == %y) } {
 		%W processObjSel node %x %y
 		addObjSel $node
@@ -2222,7 +2222,7 @@ proc actionPick { w } {
 
     if { $ayprefs(FlashObjects) } {
 	bind $w <Motion> {
-	    if { [winfo exists .reconsider] == 0} {
+	    if { [winfo exists .reconsider] == 0 } {
 		%W processObjSel - %x %y
 	    }
 	}
