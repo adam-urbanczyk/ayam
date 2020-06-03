@@ -828,6 +828,7 @@ array set ay {
  interpedl 0.125
  interppt 0
  interppt_l {"Chordal" "Centripetal" "Uniform"}
+ fairtol Inf
  prop ""
 }
 # array ay

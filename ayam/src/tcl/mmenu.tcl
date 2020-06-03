@@ -518,6 +518,13 @@ $m.nct add command -label "Approximate" -command {
 	"Approximate Curve" approxnct
 }
 
+$m.nct add command -label "Fair" -command {
+    runTool [list ay(fairtol) ]\
+	[list "Tolerance:"]\
+	"undo save FairNC; fairNC %0; plb_update; rV"\
+	"Fair Curve" fairnct
+}
+
 $m.nct add cascade -menu $m.nct.kn -label "Knots" -underline 0
 menu $m.nct.kn -tearoff 0
 
