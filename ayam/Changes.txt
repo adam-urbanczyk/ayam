@@ -1,5 +1,5 @@
-[24. May 2020] Mercurial Tip:
-=============================
+[5. Jun 2020] Mercurial Tip:
+============================
 Bug Fixes:
 o append option of split curve tool does not work (SF 595)
 o display of ConeAngle and ConeDeltaAngle (SF 597)
@@ -29,9 +29,10 @@ o the "-a" option of the "splitNC" command does not need a value anymore
 o added "fairNC" command to make the shape of NURBS curve more pleasant/smooth
 o added "curvatNC" command to compute the curvature of a NURBS curve
 o added "curvatNP" command to compute the curvature of a NURBS surface
-o added "curature.tcl" script that displays a curvature plot diagram
+o added "curvature.tcl" script that displays a curvature plot diagram
   as property of NURBS curve and NURBS curve providing objects
 o added "isRational" command
+o added drag selection to "cvview.tcl"
 
 Rendering:
 o added render to viewport feature via a new distributed plugin ("fifodspy")
