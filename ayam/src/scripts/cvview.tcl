@@ -19,6 +19,7 @@ array set CVView {
     he 0
     ClickAction 0
     Coordinates "n/a"
+    SetMark 1
 }
 
 # cvview_update:
@@ -188,11 +189,29 @@ proc cvview_update { } {
     $ca lower l
     $ca bind o <1> cvview_toggleselect
 
+    bind $ca <ButtonPress-1> {
+	set CVView(OldX) %x
+	set CVView(OldY) %y
+    }
+    bind $ca <B1-Motion> {
+	$CVView(ca) delete r
+	$CVView(ca) create rectangle $CVView(OldX) $CVView(OldY) %x %y\
+	    -dash {2 4} -tag r
+    }
+    bind $ca <ButtonRelease-1> {
+	if {(%x != $CVView(OldX)) || (%y != $CVView(OldY)) } {
+	    $CVView(ca) delete r
+	    cvview_selectregion $CVView(OldX) $CVView(OldY) %x %y
+	}
+    }
+
     if { [winfo exists $w.scx] } {
 	pack $w.scx -side top -anchor nw -fill x -expand yes
 	$ca configure -xscrollcommand "$w.scx set"
 	$ca configure -scrollregion [$ca bbox all]
     }
+
+    set CVView(ca) $ca
 
     plb_setwin $w ""
 
@@ -244,6 +263,11 @@ proc cvview_showvalues { } {
 	    [winfo reqwidth $top.txt]x[winfo reqheight $top.txt]+$wx+$wy
 	raise $top
     }
+
+    if { $CVView(SetMark) } {
+	setMark [list $pntx $pnty $pntz]
+    }
+
  return;
 }
 # cvview_showvalues
@@ -252,11 +276,14 @@ proc cvview_showvalues { } {
 # cvview_toggleselect:
 #  toggle selection of the clicked control point
 #
-proc cvview_toggleselect { } {
+proc cvview_toggleselect { {id ""} } {
     global ay CVView
 
     set ca $ay(pca).$CVView(w).ca
-    set s [lindex [$ca gettags current] 1]
+    if { $id == "" } {
+	set id [$ca find withtag current]
+    }
+    set s [lindex [$ca gettags $id] 1]
     scan $s "%d,%d" x y
 
     set li [expr ($x*$CVView(he)+$y)]
@@ -264,7 +291,7 @@ proc cvview_toggleselect { } {
     if { $pos != -1 } {
 	set CVView(spnts) [lreplace $CVView(spnts) $pos $pos]
 	# pnt is selected => deselect
-	$ca itemconfigure current -fill black
+	$ca itemconfigure $id -fill black
 	if { $CVView(ClickAction) } {
 	    $ca dtag selected
 	    cvview_showvalues
@@ -282,11 +309,27 @@ proc cvview_toggleselect { } {
 	    selPnts $li
 	    selPnts -get CVView(spnts)
 	}
-	$ca itemconfigure current -fill red
+	$ca itemconfigure $id -fill red
     }
  return;
 }
 # cvview_toggleselect
+
+proc cvview_selectregion { x0 y0 x1 y1 } {
+    global ay CVView
+
+    set ca $ay(pca).$CVView(w).ca
+    set items [$ca find overlapping $x0 $y0 $x1 $y1]
+
+    foreach item $items {
+	if { [lsearch -exact [$ca gettags $item] o] != -1 } {
+	    cvview_toggleselect $item
+	}
+    }
+
+ return;
+}
+# cvview_selectregion
 
 # attach to custom menu
 global ay
