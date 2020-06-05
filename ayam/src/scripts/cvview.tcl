@@ -20,6 +20,8 @@ array set CVView {
     ClickAction 0
     Coordinates "n/a"
     SetMark 1
+    OldX 0
+    OldY 0
 }
 
 # cvview_update:
@@ -334,6 +336,7 @@ proc cvview_selectregion { x0 y0 x1 y1 } {
 # attach to custom menu
 global ay
 $ay(cm) add command -label "Add CV View to Object" -command {
-    addTag NP CVView; plb_update }
+    addTag NP CVView; plb_update; plb_showprop 0
+}
 
 # EOF
