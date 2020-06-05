@@ -118,10 +118,9 @@ proc curvature_update { {numin ""} {numax ""} } {
     #set cmax [lindex $Curvature(pnts) end]
 
     set dx 40
-    # vertical
+    # vertical scale
     $ca create line $dx $canvash $dx 0 -arrow last -tags l
     $ca create text [expr $dx-5] 8 -anchor e -text [format "%.2g" $cmax]
-    #$ca create line [expr $dx-3] [expr $canvash/2] $dx [expr $canvash/2] -tags l
     set cmid [expr $cmin+($cmax-$cmin)*0.5]
     $ca create text [expr $dx-5] [expr $canvash/2] -anchor e\
 	-text [format "%.2g" $cmid]
@@ -136,7 +135,8 @@ proc curvature_update { {numin ""} {numax ""} } {
 	$ca create line [expr $dx-3] $i $dx $i -tags l
 	incr i [expr $canvash/4]
     }
-    # horizontal
+
+    # horizontal scale
     $ca create line $dx $canvash [expr $canvasw+$dx+20] $canvash\
 	-arrow last -tags l
     if { $Curvature(umin) > $Curvature(tumin) } {set txt "... "}
