@@ -1182,25 +1182,29 @@ ay_object_israt(ay_object *o)
  ay_pointedit pe = {0};
  ay_nurbcurve_object *nc;
  ay_nurbpatch_object *np;
+ ay_pamesh_object *pm;
  int rat = AY_FALSE;
  unsigned int i;
  double pnt[3] = {0};
 
-  if(o->type == AY_IDNCURVE)
+  switch(o->type)
     {
+    case AY_IDNCURVE:
       nc = (ay_nurbcurve_object*)o->refine;
       if(ay_nct_israt(nc))
 	rat = AY_TRUE;
-    }
-  else
-    if(o->type == AY_IDNPATCH)
-      {
-	np = (ay_nurbpatch_object*)o->refine;
-	if(ay_npt_israt(np))
-	  rat = AY_TRUE;
-      }
-    else
-      {
+      break;
+    case AY_IDNPATCH:
+      np = (ay_nurbpatch_object*)o->refine;
+      if(ay_npt_israt(np))
+	rat = AY_TRUE;
+      break;
+    case AY_IDPAMESH:
+      pm = (ay_pamesh_object*)o->refine;
+      if(ay_pmt_israt(pm))
+	rat = AY_TRUE;
+      break;
+    default:
 	p = NULL;
 	(void)ay_provide_object(o, AY_IDNCURVE, &p);
 	if(p)
@@ -1237,7 +1241,7 @@ ay_object_israt(ay_object *o)
 		  }
 	      } /* if not provided NPatch */
 	  } /* if not provided NCurve */
-      } /* if not NCurve or NPatch */
+      } /* switch */
 
  return rat;
 } /* ay_object_israt */
