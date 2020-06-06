@@ -122,7 +122,7 @@ proc cvview_update { } {
     selPnts -get CVView(spnts)
 
     # create canvas
-    set m 20;
+    set m 20
     set canvasw 200
     if { [expr $CVView(wi)*$m] > 200 } {
 	set canvasw [expr [winfo width $ay(pca)] - 20]
@@ -140,12 +140,14 @@ proc cvview_update { } {
     pack $ca -side top -anchor nw
 
     # fill canvas
-    set r [expr 0.25*$m];
-    set r2 [expr $r*2.0];
+    set r [expr 0.25*$m]
+    set r2 [expr $r*2.0]
 
-    set i 0; set im $m;
+    set i 0
+    set im $m
     while { $i < $CVView(wi) } {
-	set j 0; set jm $m;
+	set j 0
+	set jm $m
 	while { $j < $CVView(he) } {
 	    set color black
 	    if { !$CVView(ClickAction) } {
@@ -155,24 +157,28 @@ proc cvview_update { } {
 	    }
 	    $ca create oval $im $jm [expr {$im+$r2}] [expr {$jm+$r2}]\
 		-tags [list o "$i,$j"] -fill $color
-	    incr j; incr jm $m
+	    incr j
+	    incr jm $m
 	}
 	# add vertical lines
 	$ca create line [expr {$im+$r}] [expr {$r+$m}]\
 	    [expr {$im+$r}] [expr {$CVView(he)*$m+$r}] -tags l
 	# add width labels
 	$ca create text [expr $im+$r] $r2 -text [expr $i+1]
-	incr i; incr im $m
+	incr i
+	incr im $m
     }
 
     # add horizontal lines
-    set j 0; set jm $m
+    set j 0
+    set jm $m
     while { $j < $CVView(he) } {
 	$ca create line [expr {$r+$m}] [expr {$jm+$r}]\
 	    [expr {$CVView(wi)*$m+$r}] [expr {$jm+$r}] -tags l
 	# add height labels
 	$ca create text $r2 [expr $jm+$r] -text [expr $j+1]
-	incr j; incr jm $m
+	incr j
+	incr jm $m
     }
 
     # add an arrow
@@ -313,10 +319,14 @@ proc cvview_toggleselect { {id ""} } {
 	}
 	$ca itemconfigure $id -fill red
     }
+
  return;
 }
 # cvview_toggleselect
 
+# cvview_selectregion:
+#  toggle selection state of all points in a rectangular region
+#
 proc cvview_selectregion { x0 y0 x1 y1 } {
     global ay CVView
 
