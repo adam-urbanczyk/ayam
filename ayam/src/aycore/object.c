@@ -1204,44 +1204,51 @@ ay_object_israt(ay_object *o)
       if(ay_pmt_israt(pm))
 	rat = AY_TRUE;
       break;
+    case AY_IDICURVE:
+    case AY_IDACURVE:
+    case AY_IDBPATCH:
+    case AY_IDIPATCH:
+    case AY_IDSDMESH:
+    case AY_IDPOMESH:
+      break;
     default:
-	p = NULL;
-	(void)ay_provide_object(o, AY_IDNCURVE, &p);
-	if(p)
-	  {
-	    nc = (ay_nurbcurve_object*)p->refine;
-	    if(ay_nct_israt(nc))
-	      rat = AY_TRUE;
-	    ay_object_deletemulti(p, AY_FALSE);
-	  }
-	else
-	  {
-	    (void)ay_provide_object(o, AY_IDNPATCH, &p);
-	    if(p)
-	      {
-		np = (ay_nurbpatch_object*)p->refine;
-		if(ay_npt_israt(np))
-		  rat = AY_TRUE;
-		ay_object_deletemulti(p, AY_FALSE);
-	      }
-	    else
-	      {
-		ay_pact_getpoint(0, o, pnt, &pe);
-		if(pe.type == AY_PTRAT)
-		  {
-		    for(i = 0; i < pe.num; i++)
-		      {
-			if(fabs(1.0-pe.coords[i][3]) > AY_EPSILON)
-			  {
-			    rat = AY_TRUE;
-			    break;
-			  }
-		      } /* for */
-		    ay_pact_clearpointedit(&pe);
-		  }
-	      } /* if not provided NPatch */
-	  } /* if not provided NCurve */
-      } /* switch */
+      p = NULL;
+      (void)ay_provide_object(o, AY_IDNCURVE, &p);
+      if(p)
+	{
+	  nc = (ay_nurbcurve_object*)p->refine;
+	  if(ay_nct_israt(nc))
+	    rat = AY_TRUE;
+	  ay_object_deletemulti(p, AY_FALSE);
+	}
+      else
+	{
+	  (void)ay_provide_object(o, AY_IDNPATCH, &p);
+	  if(p)
+	    {
+	      np = (ay_nurbpatch_object*)p->refine;
+	      if(ay_npt_israt(np))
+		rat = AY_TRUE;
+	      ay_object_deletemulti(p, AY_FALSE);
+	    }
+	  else
+	    {
+	      ay_pact_getpoint(0, o, pnt, &pe);
+	      if(pe.type == AY_PTRAT)
+		{
+		  for(i = 0; i < pe.num; i++)
+		    {
+		      if(fabs(1.0-pe.coords[i][3]) > AY_EPSILON)
+			{
+			  rat = AY_TRUE;
+			  break;
+			}
+		    } /* for */
+		  ay_pact_clearpointedit(&pe);
+		}
+	    } /* if not provided NPatch */
+	} /* if not provided NCurve */
+    } /* switch */
 
  return rat;
 } /* ay_object_israt */
