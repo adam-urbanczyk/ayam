@@ -824,9 +824,8 @@ int ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
 
 /** Tcl command to compute the curvature of a curve.
  */
-int
-ay_nct_getcurvaturetcmd(ClientData clientData, Tcl_Interp *interp,
-			int argc, char *argv[]);
+int ay_nct_getcurvaturetcmd(ClientData clientData, Tcl_Interp *interp,
+			    int argc, char *argv[]);
 
 /** Unfinished.
  */
