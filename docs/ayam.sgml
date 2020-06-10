@@ -14167,6 +14167,60 @@ surfaces <ref id="remsuknuvt" name="Remove Superfluous Knots Surface Tools">.
 
 <#if out="latex"><x/newpage/</#if>
 
+<sect2>Fair Tool<label id="fairt">
+<p>
+<#if out="latex">
+<table loc="ht">
+<tabular ca="c">
+<x>inlinegfx pics/fairwing1.png 4cm </x>@
+<x>inlinegfx pics/fairwing2.png 4cm </x>
+</tabular>
+<tabular ca="cc">
+<x>inlinegfx pics/fairwing1cu.png 5cm </x>|
+<x>inlinegfx pics/fairwing2cu.png 5cm </x>
+</tabular>
+<caption>Fair Tool Example</caption>
+</table>
+</#if>
+<#if out="html">
+<figure loc="ht">
+<img src="pics/fairwing1.gif"><newline>
+<newline>
+<img src="pics/fairwing2.gif"><newline>
+<newline>
+<img src="pics/fairwing1cu.gif">&emsp;
+<img src="pics/fairwing2cu.gif">
+<caption>Fair Tool Example</caption>
+</figure>
+</#if>
+
+<descrip>
+<tag/Arguments/ The fairing tool takes a number of NURBS
+curves from the selection and requests a tolerance value <it/tol/.
+
+<tag/Operation/ The control points of the curves will be modified
+so that the shape of the curve is somewhat smoother. The movement
+of a single control point is restricted by the specified tolerance
+value. This can also be used to apply the tool multiple times
+until the curve shape meets the requirements.
+<p>
+If there are selected points, only those will be modified.
+<p>
+See also the example images above where a kink on the leading edge of
+a wing profile have been removed by applying the fairing
+tool with a tolerance value of 0.1 two times, yielding the lower curve.
+Compare also the curvature plots of both curves.
+<tag/Notes/
+See also the documentation of the corresponding
+scripting interface command <ref id="scfairnc" name="fairNC">.
+<!--
+and the related tool for
+surfaces <ref id="fairt" name="Fair Surface Tool">.
+-->
+</descrip>
+
+<#if out="latex"><x/newpage/</#if>
+
 <sect2>Concat Tool<label id="conct">
 <p>
 <descrip>
@@ -21585,13 +21639,20 @@ diagram.
 The diagram will be updated if the curve changes.
 The diagram can be zoomed by dragging with the leftmost mouse button
 and panned by dragging with the rightmost mouse button (in zoomed state).
+Zooming is also possible with the mouse wheel.
+
+The zoomed state is conveyed by prepending/appending "..." to/on the
+respective label of the horizontal scale.
+
+Note that when panning, the new section of the curve will be re-scaled
+to completely fill the Y-axis.
 
 For NURBS curve objects the real knot value range will be shown on the x axis
 whereas for NURBS curve providing objects a relative knot value
 range (&lsqb;0,&thinsp;1&rsqb;) will be displayed.
 
 A click on the <tt/"k"/ label toggles between absolute and logarithmic
-scaling of the y axis.
+scaling of the Y-axis.
 
 There is a resize handle that allows to adapt the size of the diagram to
 the property canvas.
