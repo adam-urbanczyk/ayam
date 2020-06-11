@@ -14202,15 +14202,33 @@ curves from the selection and requests a tolerance value <it/tol/.
 so that the shape of the curve is somewhat smoother. The movement
 of a single control point is restricted by the specified tolerance
 value. This can also be used to apply the tool multiple times
-until the curve shape meets the requirements.
+until the curve shape meets the requirements.<footnote>Since 1.28.</footnote>
 <p>
 If there are selected points, only those will be modified.
 <p>
 See also the example images above where a kink on the leading edge of
-a wing profile have been removed by applying the fairing
+a wing profile has been removed by applying the fairing
 tool with a tolerance value of 0.1 two times, yielding the lower curve.
 Compare also the curvature plots of both curves.
 <tag/Notes/
+The fairing algorithm uses the four direct and indirect neighboring
+control points of each point to process. The control vector of open
+curves will be extended, so that every point of the original curve
+has four neighbors. Therefore, the fairing quality for the first, second,
+second to last, and last control point of an open curve will be somewhat
+lower.
+
+The original algorithm only delivers optimal results for cubic curves
+(of order four), however, using curves of other degrees will work too.
+
+Due to the fact that the algorithm uses already faired points as
+input points it is not direction invariant if used on all or
+multiple neighboring points.
+Also, control points already placed on very good if not optimal positions
+may be moved. Further problems arise for multiple control points, used
+to model sharp corners. If in doubt, just select a single control
+point to fair.
+
 See also the documentation of the corresponding
 scripting interface command <ref id="scfairnc" name="fairNC">.
 <!--
