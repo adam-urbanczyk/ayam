@@ -14171,26 +14171,26 @@ surfaces <ref id="remsuknuvt" name="Remove Superfluous Knots Surface Tools">.
 <p>
 <#if out="latex">
 <table loc="ht">
-<tabular ca="c">
-<x>inlinegfx pics/fairwing1.png 4cm </x>@
-<x>inlinegfx pics/fairwing2.png 4cm </x>
+<tabular ca="cl">
+<x>inlinegfx pics/fairwing1.png 4cm </x>|a@
+<x>inlinegfx pics/fairwing2.png 4cm </x>|b
 </tabular>
-<tabular ca="cc">
-<x>inlinegfx pics/fairwing1cu.png 5cm </x>|
-<x>inlinegfx pics/fairwing2cu.png 5cm </x>
+<tabular ca="clcl">
+<x>inlinegfx pics/fairwing1cu.png 5cm </x>|c|
+<x>inlinegfx pics/fairwing2cu.png 5cm </x>|d
 </tabular>
-<caption>Fair Tool Example</caption>
+<caption>Fair Tool (a: Original, b: Processed, c: Curvature of a, d: Curvature of b)</caption>
 </table>
 </#if>
 <#if out="html">
 <figure loc="ht">
-<img src="pics/fairwing1.gif"><newline>
+<img src="pics/fairwing1.gif">&nbsp;a<newline>
 <newline>
-<img src="pics/fairwing2.gif"><newline>
+<img src="pics/fairwing2.gif">&nbsp;b<newline>
 <newline>
-<img src="pics/fairwing1cu.gif">&emsp;
-<img src="pics/fairwing2cu.gif">
-<caption>Fair Tool Example</caption>
+<img src="pics/fairwing1cu.gif">&nbsp;c&emsp;
+<img src="pics/fairwing2cu.gif">&nbsp;d
+<caption>Fair Tool (a: Original, b: Processed, c: Curvature of a, d: Curvature of b)</caption>
 </figure>
 </#if>
 
@@ -14207,27 +14207,30 @@ until the curve shape meets the requirements.<footnote>Since 1.28.</footnote>
 If there are selected points, only those will be modified.
 <p>
 See also the example images above where a kink on the leading edge of
-a wing profile has been removed by applying the fairing
-tool with a tolerance value of 0.1 two times, yielding the lower curve.
-Compare also the curvature plots of both curves.
+a wing profile (a) has been removed by applying the fairing
+tool with a tolerance value of 0.1 two times, yielding the lower curve (b).
+Compare also the curvature plots of both curves (c and d).
+
 <tag/Notes/
 The fairing algorithm uses the four direct and indirect neighboring
-control points of each point to process. The control vector of open
+control points of each point to process. This poses a problem for the
+end points of an open curve. Therefore, the control vector of open
 curves will be extended, so that every point of the original curve
-has four neighbors. Therefore, the fairing quality for the first, second,
+has four neighbors. However, the fairing quality for the first, second,
 second to last, and last control point of an open curve will be somewhat
 lower.
 
 The original algorithm only delivers optimal results for cubic curves
-(of order four), however, using curves of other degrees will work too.
+(of order four), using curves of other degrees will work too but yield
+worse results.
 
 Due to the fact that the algorithm uses already faired points as
-input points it is not direction invariant if used on all or
-multiple neighboring points.
+input points for other points to fair it is not direction invariant
+if used on all or multiple neighboring points.
 Also, control points already placed on very good if not optimal positions
-may be moved. Further problems arise for multiple control points, used
-to model sharp corners. If in doubt, just select a single control
-point to fair.
+may be moved away to less favorable positions. Further problems arise
+for multiple control points, used to model sharp corners.
+If in doubt, just select a single control point to fair.
 
 See also the documentation of the corresponding
 scripting interface command <ref id="scfairnc" name="fairNC">.
@@ -15488,7 +15491,7 @@ curves <ref id="interpnct" name="Interpolate Tool">.
 <figure loc="ht">
 <eps file="pics/makecomps.ps" height="6.5cm">
 <img src="pics/makecomps.gif">
-<caption>Make Compatible Tool (u: Original Surfaces, m: Compatible by Order, l: Fully Compatible Surfaces)</caption>
+<caption>Make Compatible Tool (u: Original, m: Compatible by Order, l: Fully Compatible Surfaces)</caption>
 </figure>
 <descrip>
 <tag/Arguments/ The make compatible tool takes a number of
