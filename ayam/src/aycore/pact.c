@@ -2184,7 +2184,7 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
  /*ay_list_object *sel = ay_selection;*/
  static double oldwinx = 0.0, oldwiny = 0.0;
  static int warp = AY_FALSE;
- double winx = 0.0, winy = 0.0, w;
+ double winx = 0.0, winy = 0.0;
  double movX, movY, movZ, dx = 0.0, dy = 0.0, dz = 0.0, *coords = NULL;
  double quat[4] = {0}, uccoords[3] = {0}, wcoords[3];
  int i = 0, j, k = 0, start = AY_FALSE, redraw = AY_FALSE;
@@ -2398,39 +2398,23 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 		{
 		  ay_pact_notify(o, j, k-pact_numpo[j]);
 		  redraw = AY_TRUE;
-		} /* if */
-	    } /* if */
+		}
+	    } /* if have coords */
 	} /* if !start */
-    } /* for */
+    } /* for all objects with picked points */
 
   oldwinx = winx;
   oldwiny = winy;
 
-  /* flash option given? */
-  if(start && argc > 5)
+  if(redraw)
     {
-      printf("HIER\n");
-      if(*pact_typepo && ay_prefs.rationalpoints && coords)
+      if(!ay_prefs.lazynotify || start)
 	{
-	  w = pact_pe.coords[0][3];
-	  uccoords[0] = coords[0]*w;
-	  uccoords[1] = coords[1]*w;
-	  uccoords[2] = coords[2]*w;
-	  ay_pact_flashpoint(AY_TRUE, AY_FALSE, uccoords, o);
+	  (void)ay_notify_parent();
 	}
-      else
-	ay_pact_flashpoint(AY_TRUE, AY_FALSE, coords, o);
-    }
-  else
-    if(redraw)
-      {
-	if(!ay_prefs.lazynotify || start)
-	  {
-	    (void)ay_notify_parent();
-	  }
 
-	ay_toglcb_display(togl);
-      } /* if */
+      ay_toglcb_display(togl);
+    }
 
  return TCL_OK;
 } /* ay_pact_petcb */
