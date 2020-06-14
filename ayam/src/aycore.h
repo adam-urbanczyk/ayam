@@ -823,7 +823,7 @@ void ay_pact_griddify(double *n, double grid);
 
 /** helper to flash points
  */
-void ay_pact_flashpoint(int ignore_old, double *pnt, ay_object *o);
+void ay_pact_flashpoint(int ignore_old, int multiple, double *pnt, ay_object *o);
 
 /** direct point edit action
  */

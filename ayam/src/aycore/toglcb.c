@@ -364,7 +364,7 @@ ay_toglcb_display(struct Togl *togl)
 	}
 
       /* front buffer can not contain flashed points anymore now */
-      ay_pact_flashpoint(AY_FALSE, NULL, NULL);
+      ay_pact_flashpoint(AY_FALSE, AY_FALSE, NULL, NULL);
     } /* if !altdisp */
 
 #ifdef AYENABLEPPREV

@@ -80,6 +80,7 @@ ay_pact_clearpointedit(ay_pointedit *pe)
   pe->num = 0;
   pe->type = AY_PT3D;
   pe->readonly = AY_FALSE;
+  pe->multiple = AY_FALSE;
 
  return;
 } /* ay_pact_clearpointedit */
@@ -462,12 +463,14 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
  *  Note: This function needs at least OpenGL V1.1 to work.
  */
 void
-ay_pact_flashpoint(int ignore_old, double *pnt, ay_object *o)
+ay_pact_flashpoint(int ignore_old, int multiple, double *pnt, ay_object *o)
 {
  int old_is_new = AY_FALSE;
  static double old_pnt[3] = {0};
  static ay_object *old_o = NULL;
+ static int old_multiple = AY_FALSE;
  double m[16];
+ double point_size = ay_prefs.handle_size;
 
 #ifdef GL_VERSION_1_1
 
@@ -516,9 +519,13 @@ ay_pact_flashpoint(int ignore_old, double *pnt, ay_object *o)
 	    ay_quat_torotmatrix(old_o->quat, m);
 	    glMultMatrixd((GLdouble*)m);
 	    glScaled(old_o->scalx, old_o->scaly, old_o->scalz);
+	    if(old_multiple)
+	      glPointSize((GLfloat)(point_size*1.4));
 	    glBegin(GL_POINTS);
 	     glVertex3dv(old_pnt);
 	    glEnd();
+	    if(old_multiple)
+	      glPointSize((GLfloat)(point_size));
 	   glPopMatrix();
 	   old_o = NULL;
 	 } /* if */
@@ -536,12 +543,17 @@ ay_pact_flashpoint(int ignore_old, double *pnt, ay_object *o)
 	    ay_quat_torotmatrix(o->quat, m);
 	    glMultMatrixd((GLdouble*)m);
 	    glScaled(o->scalx, o->scaly, o->scalz);
+	    if(multiple)
+	      glPointSize((GLfloat)(point_size*1.4));
 	    glBegin(GL_POINTS);
 	     glVertex3dv(pnt);
 	    glEnd();
+	    if(multiple)
+	      glPointSize((GLfloat)(point_size));
 	   glPopMatrix();
 	   memcpy(old_pnt, pnt, 3*sizeof(double));
 	   old_o = o;
+	   old_multiple = multiple;
 	 }
        else
 	 {
@@ -581,7 +593,7 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
  double minlevelscale, obj[3] = {0}, w;
  double **pecoords = NULL, **tmp = NULL;
  int allowreadonly = AY_FALSE, flash = AY_FALSE, ignoreold = AY_FALSE;
- int i, penumber = 0, *tmpi;
+ int i, penumber = 0, *tmpi, multiple = AY_FALSE;
  unsigned int *peindices = NULL, *tmpu;
 
   Togl_MakeCurrent(togl);
@@ -716,6 +728,9 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 	      pact_objects[pact_objectslen] = sel->object;
 	    }
 
+	  if(pact_pe.multiple)
+	    multiple = AY_TRUE;
+
 	  pact_objectslen++;
 	} /* if pick ok */
       else
@@ -747,7 +762,7 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
       if(pecoords && *pact_typepo == AY_PTKNOT)
 	{
 	  /* flash knot */
-	  ay_pact_flashpoint(ignoreold, pecoords?*pecoords:NULL, o);
+	  ay_pact_flashpoint(ignoreold, multiple, pecoords?*pecoords:NULL, o);
 	}
       else
 	{
@@ -758,11 +773,12 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 	      obj[0] = pecoords[0][0]*w;
 	      obj[1] = pecoords[0][1]*w;
 	      obj[2] = pecoords[0][2]*w;
-	      ay_pact_flashpoint(ignoreold, obj, o);
+	      ay_pact_flashpoint(ignoreold, multiple, obj, o);
 	    }
 	  else
 	    {
-	      ay_pact_flashpoint(ignoreold, pecoords?*pecoords:NULL, o);
+	      ay_pact_flashpoint(ignoreold, multiple,
+				 pecoords?*pecoords:NULL, o);
 	    } /* if */
 	} /* if */
     } /* if */
@@ -1977,7 +1993,7 @@ ay_pact_deleteac(ay_acurve_object *acurve, int *index, double *objXYZ)
  int i = 0, j = 0, k = 0;
  double *newcontrolv = NULL;
 
-  if(!acurve || !index)
+  if(!acurve || !index || !objXYZ)
     return AY_ENULL;
 
   *index = -1;
@@ -2393,16 +2409,17 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
   /* flash option given? */
   if(start && argc > 5)
     {
+      printf("HIER\n");
       if(*pact_typepo && ay_prefs.rationalpoints && coords)
 	{
 	  w = pact_pe.coords[0][3];
 	  uccoords[0] = coords[0]*w;
 	  uccoords[1] = coords[1]*w;
 	  uccoords[2] = coords[2]*w;
-	  ay_pact_flashpoint(AY_TRUE, uccoords, o);
+	  ay_pact_flashpoint(AY_TRUE, AY_FALSE, uccoords, o);
 	}
       else
-	ay_pact_flashpoint(AY_TRUE, coords, o);
+	ay_pact_flashpoint(AY_TRUE, AY_FALSE, coords, o);
     }
   else
     if(redraw)
@@ -2702,7 +2719,7 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
 		}
 
 	      if(notify_object)
-		(void)ay_notify_object(sel->object);
+		(void)ay_notify_object(o);
 
 	      sel = sel->next;
 	    } /* while */
@@ -2855,7 +2872,7 @@ ay_pact_snaptogridcb(struct Togl *togl, int argc, char *argv[])
 		  /* XXXX output proper error message */
 		  break;
 		} /* switch */
-	    }
+	    } /* if 2D/3D */
 
 	  o->modified = AY_TRUE;
 	}
@@ -2903,7 +2920,7 @@ ay_pact_snaptogridcb(struct Togl *togl, int argc, char *argv[])
 			      /* XXXX output proper error message */
 			      break;
 			    } /* switch */
-			} /* if */
+			} /* if 2D/3D */
 		    } /* for */
 		} /* if have pnts */
 
@@ -2946,11 +2963,11 @@ ay_pact_snaptogridcb(struct Togl *togl, int argc, char *argv[])
 			      /* XXXX output proper error message */
 			      break;
 			    } /* switch */
-			} /* if */
+			} /* if 2D/3D */
 
 		      o->modified = AY_TRUE;
 
-		    } /* if */
+		    } /* if !readonly */
 		  pnt = pnt->next;
 		} /* while */
 	    } /* if have selp */
@@ -3210,7 +3227,7 @@ ay_pact_multincnc(ay_object *o)
  int i, a, b, m, stride = 4;
  double *cv, *p1, *p2, *newcv = NULL;
 
-  nc = o->refine;
+  nc = (ay_nurbcurve_object*)o->refine;
   cv = nc->controlv;
 
   /* copy the list of points to work on */
@@ -3370,14 +3387,15 @@ ay_pact_multdecnc(ay_object *o)
  int ay_status = AY_OK;
  ay_nurbcurve_object *nc = NULL;
  ay_point *pnt1 = NULL, *pnt2 = NULL;
- ay_point *opnt1;
+ ay_point *opnt1 = NULL;
  int i, a, b, m, stride = 4;
  double *cv, *p1, *p2, *newcv = NULL;
 
-  nc = o->refine;
+  nc = (ay_nurbcurve_object*)o->refine;
   cv = nc->controlv;
 
   /* copy the list of points to work on */
+#if 0
   i = 0;
   opnt1 = o->selp;
   while(opnt1)
@@ -3395,7 +3413,12 @@ ay_pact_multdecnc(ay_object *o)
     } /* while */
 
   opnt1 = pnt1;
+#endif
 
+  ay_selp_copy(o->selp, &pnt1);
+  opnt1 = pnt1;
+
+  /*pnt1 = o->selp;*/
   while(pnt1)
     {
       pnt2 = pnt1->next;
@@ -3490,7 +3513,7 @@ ay_pact_multdecnc(ay_object *o)
 	  /* remove currently processed selected point
 	     and readjust the indices of trailing points */
 	  ay_selp_rem(o, pnt1->index);
-	} /* if */
+	} /* if m > 1 */
 
       pnt1 = pnt2;
     } /* while */
@@ -3507,7 +3530,6 @@ ay_pact_multdecnc(ay_object *o)
 
   /* correct the curve type */
   ay_nct_settype(nc);
-
 
 cleanup:
 
