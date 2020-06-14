@@ -1726,6 +1726,7 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 		    {
 		      found = AY_TRUE;
 		      pe->num = mp->multiplicity;
+		      pe->multiple = AY_TRUE;
 		      if(!(pe->coords = calloc(mp->multiplicity,
 					       sizeof(double*))))
 			return AY_EOMEM;
@@ -1737,7 +1738,6 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 			return AY_EOMEM;
 		      memcpy(pe->indices, mp->indices,
 			     mp->multiplicity * sizeof(unsigned int));
-
 		    } /* if */
 		} /* for */
 

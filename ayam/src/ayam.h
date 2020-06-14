@@ -130,11 +130,12 @@ typedef struct ay_mpoint_s
 /** point edit helper (ay_getpntcb callbacks fill it) */
 typedef struct ay_pointedit_s
 {
-  unsigned int num; /**< number of selected point */
+  unsigned int num; /**< number of selected points */
   double **coords; /**< pointers to point data [num] */
   unsigned int *indices; /**< indices [num] */
   char type; /**< point type (AY_PT*) */
   char readonly; /**< are these points read only/not editable? */
+  char multiple; /**< is this a multiple point (for num == 1)? */
 } ay_pointedit;
 
 
@@ -1351,7 +1352,7 @@ typedef struct ay_view_object_s
 
   int transform_points; /**< transform points (1) or objects (0)? */
 
-  int enable_undo; /**< enable undo for view actions? (0 no, 1 yes (def.) */
+  int enable_undo; /**< enable undo for view actions? (0 no, 1 yes, def.) */
 
   /** alternative display callback, for plugins that like to take
       over drawing (e.g.\ AyCSG) */
