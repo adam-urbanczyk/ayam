@@ -193,18 +193,17 @@ proc actionSetMark { w { nextaction "" } } {
 	bind $w <Motion> {
 	    %W startpepac %x %y -readonly -flash
 	}
+
+	bind $w <ButtonRelease-1> "+\
+          %W startpepac %x %y -readonly -flash -ignoreold;"
+	bind $w <Shift-ButtonRelease-1> "+\
+          %W startpepac %x %y -readonly -flash -ignoreold;"
+
 	if { $ayprefs(FixFlashPoints) == 1 } {
 	    bind $w <ButtonRelease-1> "+\
-          %W startpepac %x %y -readonly -flash -ignoreold;\
-          %W startpepac %x %y -readonly -flash -ignoreold"
+              %W startpepac %x %y -readonly -flash -ignoreold"
 	    bind $w <Shift-ButtonRelease-1> "+\
-          %W startpepac %x %y -readonly -flash -ignoreold;\
-          %W startpepac %x %y -readonly -flash -ignoreold"
-	} else {
-	    bind $w <ButtonRelease-1> "+\
-          %W startpepac %x %y -readonly -flash -ignoreold;"
-	    bind $w <Shift-ButtonRelease-1> "+\
-          %W startpepac %x %y -readonly -flash -ignoreold;"
+              %W startpepac %x %y -readonly -flash -ignoreold"
 	}
     }
     # if flash
@@ -1133,8 +1132,11 @@ proc actionTagP { w } {
 	}
 	%W setconf -rect $oldx $oldy %x %y 0
 	rV
-	update
 	focus %W
+	if { $ayprefs(FlashPoints) == 1 } {
+	    %W startpepac %x %y -readonly -flash -ignoreold
+	    %W startpepac %x %y -readonly -flash -ignoreold
+	}
     }
 
     bind $w <${ayviewshortcuts(TagMod)}-ButtonRelease-1> {
@@ -1145,8 +1147,11 @@ proc actionTagP { w } {
 	}
 	%W setconf -rect $oldx $oldy %x %y 0
 	rV
-	update
 	focus %W
+	if { $ayprefs(FlashPoints) == 1 } {
+	    %W startpepac %x %y -readonly -flash -ignoreold
+	    %W startpepac %x %y -readonly -flash -ignoreold
+	}
     }
 
     bind $w <B1-Motion> {
@@ -1159,18 +1164,12 @@ proc actionTagP { w } {
 	bind $w <Motion> {
 	    %W startpepac %x %y -readonly -flash
 	}
+
 	if { $ayprefs(FixFlashPoints) == 1 } {
 	    bind $w <ButtonRelease-1> "+\
-          %W startpepac %x %y -readonly -flash -ignoreold;\
-          %W startpepac %x %y -readonly -flash -ignoreold"
+              %W startpepac %x %y -readonly -flash -ignoreold"
 	    bind $w <${ayviewshortcuts(TagMod)}-ButtonRelease-1> "+\
-          %W startpepac %x %y -readonly -flash -ignoreold;\
-          %W startpepac %x %y -readonly -flash -ignoreold"
-	} else {
-	    bind $w <ButtonRelease-1> "+\
-          %W startpepac %x %y -readonly -flash -ignoreold;"
-	    bind $w <${ayviewshortcuts(TagMod)}-ButtonRelease-1> "+\
-          %W startpepac %x %y -readonly -flash -ignoreold;"
+              %W startpepac %x %y -readonly -flash -ignoreold"
 	}
     }
     # if flash
@@ -1224,13 +1223,12 @@ proc actionTagB { w } {
 	bind $w <Motion> {
 	    %W startpepac %x %y -readonly -flash
 	}
+	bind $w <ButtonRelease-1> "+\
+          %W startpepac %x %y -readonly -flash -ignoreold;"
+
 	if { $ayprefs(FixFlashPoints) == 1 } {
 	    bind $w <ButtonRelease-1> "+\
-          %W startpepac %x %y -readonly -flash -ignoreold;\
-          %W startpepac %x %y -readonly -flash -ignoreold"
-	} else {
-	    bind $w <ButtonRelease-1> "+\
-          %W startpepac %x %y -readonly -flash -ignoreold;"
+              %W startpepac %x %y -readonly -flash -ignoreold"
 	}
     }
     $w setconf -drawh 1
@@ -1652,7 +1650,6 @@ proc actionEditNumP { w } {
 	set oldx %x
 	set oldy %y
 	set editPntArr(valid) 0
-	%W startpepac %x %y -flash -ignoreold
 	%W penpac -start %x %y
 	set editPntArr(window) %W
 	if { $editPntArr(valid) == 1 } {
@@ -1670,10 +1667,12 @@ proc actionEditNumP { w } {
 	}
 	%W setconf -rect $oldx $oldy %x %y 0
 	rV
-	update
 	focus %W
-	after idle { %W startpepac %x %y -flash -ignoreold }
-	editPointDialog %W 1
+	if { $ayprefs(FlashPoints) == 1 } {
+	    %W startpepac %x %y -flash -ignoreold
+	    %W startpepac %x %y -flash -ignoreold
+	}
+	editPointDialog %W 1;
     }
 
     bind $w <${ayviewshortcuts(TagMod)}-ButtonRelease-1> {
@@ -1684,8 +1683,11 @@ proc actionEditNumP { w } {
 	}
 	%W setconf -rect $oldx $oldy %x %y 0
 	rV
-	update
 	focus %W
+	if { $ayprefs(FlashPoints) == 1 } {
+	    %W startpepac %x %y -flash -ignoreold
+	    %W startpepac %x %y -flash -ignoreold
+	}
     }
 
     bind $w <B1-Motion> {
@@ -1700,7 +1702,9 @@ proc actionEditNumP { w } {
 	}
 	if { $ayprefs(FixFlashPoints) == 1 } {
 	    bind $w <ButtonRelease-1> "+\
-          %W startpepac %x %y -flash -ignoreold;"
+              %W startpepac %x %y -flash -ignoreold;"
+	    bind $w <${ayviewshortcuts(TagMod)}-ButtonRelease-1> "+\
+              %W startpepac %x %y -flash -ignoreold;"
 	}
     }
 
@@ -1753,14 +1757,14 @@ proc actionEditP { w } {
     }
 
     actionBindRelease $w
+
     if { $ayprefs(FlashPoints) == 1 } {
-	if {$ayprefs(FixFlashPoints) == 1 } {
-	    bind $w <ButtonRelease-1> "+\
-          %W startpepac %x %y -flash -ignoreold;\
-          %W startpepac %x %y -flash -ignoreold"
-	} else {
-	    bind $w <ButtonRelease-1> "+\
+	bind $w <ButtonRelease-1> "+\
           %W startpepac %x %y -flash -ignoreold;"
+
+	if { $ayprefs(FixFlashPoints) == 1 } {
+	    bind $w <ButtonRelease-1> "+\
+              %W startpepac %x %y -flash -ignoreold"
 	}
     }
 
@@ -1817,13 +1821,12 @@ proc actionEditWP { w } {
     actionBindRelease $w
 
     if { $ayprefs(FlashPoints) == 1 } {
+	bind $w <ButtonRelease-1> "+\
+          %W startpepac %x %y -flash -ignoreold;"
+
 	if { $ayprefs(FixFlashPoints) == 1 } {
 	    bind $w <ButtonRelease-1> "+\
-          %W startpepac %x %y -flash -ignoreold;\
-          %W startpepac %x %y -flash -ignoreold"
-	} else {
-	    bind $w <ButtonRelease-1> "+\
-          %W startpepac %x %y -flash -ignoreold"
+              %W startpepac %x %y -flash -ignoreold"
 	}
     }
 
@@ -1879,11 +1882,9 @@ proc actionResetWP { w } {
     }
 
     if { $ayprefs(FlashPoints) == 1 } {
+	bind $w <ButtonRelease-1> "+\
+          %W startpepac %x %y -flash -ignoreold;"
 	if { $ayprefs(FixFlashPoints) == 1 } {
-	    bind $w <ButtonRelease-1> "+\
-          %W startpepac %x %y -flash -ignoreold;\
-          %W startpepac %x %y -flash -ignoreold"
-	} else {
 	    bind $w <ButtonRelease-1> "+\
           %W startpepac %x %y -flash -ignoreold"
 	}
@@ -1923,15 +1924,17 @@ proc actionInsertAndEdit { w x y } {
 	$w moveoac -start $x $y
 	bind $w <B1-Motion> "$w moveoac -winxy %x %y; setProp -1"
 	bind $w <ButtonRelease-1>\
-	    "+bind %W <B1-Motion> \"\"; selPnts; %W redraw"
-	if { $ayprefs(FixFlashPoints) == 1 } {
+	    "+bind %W <B1-Motion> \"\"; selPnts; %W redraw;"
+
+	if { $ayprefs(FlashPoints) == 1 } {
 	    bind $w <ButtonRelease-1> "+\
-          %W startpepac %x %y -flash -ignoreold;\
-          %W startpepac %x %y -flash -ignoreold"
-	} else {
-	    bind $w <ButtonRelease-1> "+\
-          %W startpepac %x %y -flash -ignoreold;"
+              %W startpepac %x %y -flash -ignoreold;"
+	    if { $ayprefs(FixFlashPoints) == 1 } {
+		bind $w <ButtonRelease-1> "+\
+                  %W startpepac %x %y -flash -ignoreold;"
+	    }
 	}
+
 	# XXXX bind <Control-Release> to selPnts to allow continuous editing?
     }
  return;
@@ -1972,7 +1975,12 @@ proc actionInsertP { w } {
     actionBindRelease $w
 
     if { $ayprefs(FlashPoints) == 1 } {
-	bind $w <ButtonRelease-1> "+%W startpepac %x %y -flash -ignoreold"
+	bind $w <ButtonRelease-1> "+\
+          %W startpepac %x %y -flash -ignoreold;"
+	if { $ayprefs(FixFlashPoints) == 1 } {
+	    bind $w <ButtonRelease-1> "+\
+                  %W startpepac %x %y -flash -ignoreold;"
+	}
     }
 
     $w setconf -drawh 1
