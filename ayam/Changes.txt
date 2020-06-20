@@ -1,5 +1,5 @@
-[5. Jun 2020] Mercurial Tip:
-============================
+[20. Jun 2020] Mercurial Tip:
+=============================
 Bug Fixes:
 o append option of split curve tool does not work (SF 595)
 o display of ConeAngle and ConeDeltaAngle (SF 597)
@@ -7,6 +7,7 @@ o computation of chordal/centripetal surface knots (SF 598)
 o handling of NT tags in 3DPVN offset curves (SF 599)
 o revert option of ExtrNC does not revert extracted normals (SF 600)
 o extracting the complete boundary misses normals and tangents (SF 601)
+o memory leak when opening periodic curves with multiple points (SF 602)
 
 Modelling:
 o added option to specify the split knot in a relative way in the
@@ -15,6 +16,8 @@ o added MN tag support to 3DPVN offset curves
 o added keyboard parameter GUI support to FindU action
 o improved speed and level handling of object picking by drag selection
 o improved property handling after tag removal (realize NP/RP changes)
+o multiple points now flash completely in single point edit/tag actions
+o completely selected multiple points now draw completely filled
 
 GUI:
 o improved layout of menu components on Win32
