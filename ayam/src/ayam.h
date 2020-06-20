@@ -122,6 +122,7 @@ typedef struct ay_mpoint_s
 {
   struct ay_mpoint_s *next; /**< next multiple point */
   int multiplicity; /**< how many single points? */
+  int selected; /**< are all single points selected? */
   double **points; /**< pointers to point data [multiplicity] */
   unsigned int *indices; /**< indices [multiplicity] */
 } ay_mpoint;

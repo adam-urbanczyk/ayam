@@ -899,6 +899,9 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
 	  */
 	}
 
+      o->modified = 2;
+      (void)ay_notify_object(o);
+
       sel = sel->next;
     } /* while */
 
@@ -985,16 +988,13 @@ int
 ay_selp_ins(ay_object *o, unsigned int index)
 {
  int ay_status = AY_OK;
- ay_point *p = NULL, *newp = NULL;
+ ay_point *p = NULL;
 
   if(!o)
     return AY_ENULL;
 
   /* readjust indices of old points */
-  if(newp)
-    p = newp->next;
-  else
-    p = o->selp;
+  p = o->selp;
 
   while(p)
     {

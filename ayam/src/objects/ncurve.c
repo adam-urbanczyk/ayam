@@ -29,6 +29,7 @@ int ay_ncurve_drawch(ay_nurbcurve_object *ncurve);
 
 void ay_ncurve_drawweights(ay_nurbcurve_object *ncurve);
 
+void ay_ncurve_updatempselection(unsigned int n, ay_point *selp, ay_mpoint *mp);
 
 /* functions: */
 
@@ -817,8 +818,11 @@ int
 ay_ncurve_drawacb(struct Togl *togl, ay_object *o)
 {
  ay_nurbcurve_object *ncurve;
+ ay_mpoint *mp;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  double *a, *b;
+ double m[16];
+ double w, *pnts;
 
   if(!o)
     return AY_ENULL;
@@ -850,6 +854,50 @@ ay_ncurve_drawacb(struct Togl *togl, ay_object *o)
 	      a = b-4;
 	      break;
 	    }
+	}
+
+      if(ncurve->mpoints /*&& view->drawhandles < 2*/)
+	{
+	  /* set color for selected points */
+	  glColor3f((GLfloat)ay_prefs.tpr, (GLfloat)ay_prefs.tpg,
+		    (GLfloat)ay_prefs.tpb);
+	  glDepthFunc(GL_ALWAYS);
+	  glPointSize((GLfloat)ay_prefs.handle_size*1.4);
+	  glPushMatrix();
+	  
+	   glTranslated((GLdouble)o->movx, (GLdouble)o->movy,
+			(GLdouble)o->movz);
+	   ay_quat_torotmatrix(o->quat, m);
+	   glMultMatrixd((GLdouble*)m);
+	   glScaled((GLdouble)o->scalx, (GLdouble)o->scaly,
+		    (GLdouble)o->scalz);
+	  
+	   glBegin(GL_POINTS);
+	    mp = ncurve->mpoints;
+	    while(mp)
+	      {
+		if(mp->selected)
+		  {
+		    if(ncurve->is_rat && ay_prefs.rationalpoints)
+		      {
+			pnts = mp->points[0];
+			w = pnts[3];
+			glVertex3d((GLdouble)(pnts[0]*w),
+				   (GLdouble)(pnts[1]*w),
+				   (GLdouble)(pnts[2]*w));
+		      }
+		    else
+		      glVertex3dv((GLdouble*)mp->points[0]);
+		  }
+		mp = mp->next;
+	      }
+	   glEnd();
+	  glPopMatrix();
+	  glPointSize((GLfloat)ay_prefs.handle_size);
+	  glDepthFunc(GL_LESS);
+	  /* set color for selected objects */
+	  glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+		    (GLfloat)ay_prefs.seb);
 	}
     }
 
@@ -1566,6 +1614,8 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	  mp = ncurve->mpoints->next;
 	  if(ncurve->mpoints->points)
 	    free(ncurve->mpoints->points);
+	  if(ncurve->mpoints->indices)
+	    free(ncurve->mpoints->indices);
 	  free(ncurve->mpoints);
 	  ncurve->mpoints = mp;
 	} /* while */
@@ -1936,6 +1986,12 @@ ay_ncurve_notifycb(ay_object *o)
   if(!ncurve)
     return AY_ENULL;
 
+  if(ncurve->mpoints && o->modified != 3)
+    ay_ncurve_updatempselection(ncurve->length, o->selp, ncurve->mpoints);
+
+  if(o->modified == 2)
+    return AY_OK;
+
   if(ncurve->breakv)
     {
       free(ncurve->breakv);
@@ -1975,6 +2031,46 @@ ay_ncurve_notifycb(ay_object *o)
 
  return AY_OK;
 } /* ay_ncurve_notifycb */
+
+
+void
+ay_ncurve_updatempselection(unsigned int n, ay_point *selp, ay_mpoint *mp)
+{
+ char *sel = NULL;
+ int i, j;
+
+  if(!(sel = calloc(n, sizeof(char))))
+    return;
+
+  while(selp)
+    {
+      sel[selp->index] = 1;
+      selp = selp->next;
+    }
+
+  while(mp)
+    {
+      j = 0;
+      for(i = 0; i < mp->multiplicity; i++)
+	{
+	  if(sel[mp->indices[i]])
+	    j++;
+	}
+      if(j == mp->multiplicity)
+	{
+	  mp->selected = AY_TRUE;
+	}
+      else
+	{
+	  mp->selected = AY_FALSE;
+	}
+      mp = mp->next;
+    }
+
+  free(sel);
+
+ return;
+} /* ay_ncurve_updatempselection */
 
 
 /* ay_ncurve_init:
