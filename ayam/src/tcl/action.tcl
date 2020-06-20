@@ -1132,6 +1132,7 @@ proc actionTagP { w } {
 	}
 	%W setconf -rect $oldx $oldy %x %y 0
 	rV
+	plb_update
 	focus %W
 	if { $ayprefs(FlashPoints) == 1 } {
 	    %W startpepac %x %y -readonly -flash -ignoreold
@@ -1147,6 +1148,7 @@ proc actionTagP { w } {
 	}
 	%W setconf -rect $oldx $oldy %x %y 0
 	rV
+	plb_update
 	focus %W
 	if { $ayprefs(FlashPoints) == 1 } {
 	    %W startpepac %x %y -readonly -flash -ignoreold
