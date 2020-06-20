@@ -343,6 +343,7 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
   while(sel)
     {
       o = sel->object;
+      o->modified = 0;
 
       if(!multiple)
 	{
@@ -408,6 +409,7 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
 			    o->selp = point->next;
 
 			  free(point);
+			  o->modified = 2;
 			} /* if */
 		      break;
 		    } /* if */
@@ -444,11 +446,15 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
 
 		  newp->type = pe.type;
 		  newp->readonly = pe.readonly;
+		  o->modified = 2;
 		} /* if */
 	    } /* for */
 	} /* if */
 
       ay_pact_clearpointedit(&pe);
+
+      if(o->modified == 2)
+	(void)ay_notify_object(o);
 
       sel = sel->next;
     } /* while */
@@ -3111,7 +3117,7 @@ ay_pact_notify(ay_object *o, int j, int k)
 
   oldselp = o->selp;
   o->selp = &tmpselp;
-  o->modified = AY_TRUE;
+  o->modified = 3;
 
   ay_notify_object(o);
 
