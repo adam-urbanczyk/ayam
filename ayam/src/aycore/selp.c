@@ -1750,3 +1750,52 @@ ay_selp_reducetominmax(ay_object *o)
 
  return AY_OK;
 } /* ay_selp_reducetominmax */
+
+
+/** ay_selp_updatempselection:
+ * Update selection state of multiple points; if all points that
+ * make up a multiple point are selected, the multiple point will
+ * also be marked selected, else it will be marked unselected.
+ *
+ * \param[in] n total number of points in curve/surface
+ * \param[in] selp selected points
+ * \param[in,out] mp multiple points
+ */
+void
+ay_selp_updatempselection(unsigned int n, ay_point *selp, ay_mpoint *mp)
+{
+ char *sel = NULL;
+ int i, j;
+
+  if(!(sel = calloc(n, sizeof(char))))
+    return;
+
+  while(selp)
+    {
+      sel[selp->index] = 1;
+      selp = selp->next;
+    }
+
+  while(mp)
+    {
+      j = 0;
+      for(i = 0; i < mp->multiplicity; i++)
+	{
+	  if(sel[mp->indices[i]])
+	    j++;
+	}
+      if(j == mp->multiplicity)
+	{
+	  mp->selected = AY_TRUE;
+	}
+      else
+	{
+	  mp->selected = AY_FALSE;
+	}
+      mp = mp->next;
+    }
+
+  free(sel);
+
+ return;
+} /* ay_selp_updatempselection */

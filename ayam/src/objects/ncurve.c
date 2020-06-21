@@ -29,8 +29,6 @@ int ay_ncurve_drawch(ay_nurbcurve_object *ncurve);
 
 void ay_ncurve_drawweights(ay_nurbcurve_object *ncurve);
 
-void ay_ncurve_updatempselection(unsigned int n, ay_point *selp, ay_mpoint *mp);
-
 /* functions: */
 
 /* ay_ncurve_createcb:
@@ -1987,7 +1985,7 @@ ay_ncurve_notifycb(ay_object *o)
     return AY_ENULL;
 
   if(ncurve->mpoints && o->modified != 3)
-    ay_ncurve_updatempselection(ncurve->length, o->selp, ncurve->mpoints);
+    ay_selp_updatempselection(ncurve->length, o->selp, ncurve->mpoints);
 
   if(o->modified == 2)
     return AY_OK;
@@ -2032,45 +2030,6 @@ ay_ncurve_notifycb(ay_object *o)
  return AY_OK;
 } /* ay_ncurve_notifycb */
 
-
-void
-ay_ncurve_updatempselection(unsigned int n, ay_point *selp, ay_mpoint *mp)
-{
- char *sel = NULL;
- int i, j;
-
-  if(!(sel = calloc(n, sizeof(char))))
-    return;
-
-  while(selp)
-    {
-      sel[selp->index] = 1;
-      selp = selp->next;
-    }
-
-  while(mp)
-    {
-      j = 0;
-      for(i = 0; i < mp->multiplicity; i++)
-	{
-	  if(sel[mp->indices[i]])
-	    j++;
-	}
-      if(j == mp->multiplicity)
-	{
-	  mp->selected = AY_TRUE;
-	}
-      else
-	{
-	  mp->selected = AY_FALSE;
-	}
-      mp = mp->next;
-    }
-
-  free(sel);
-
- return;
-} /* ay_ncurve_updatempselection */
 
 
 /* ay_ncurve_init:

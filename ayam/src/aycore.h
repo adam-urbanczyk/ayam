@@ -1359,9 +1359,14 @@ int ay_selp_explodetcmd(ClientData clientData, Tcl_Interp *interp,
  */
 void ay_selp_managelist(ay_object *o, unsigned int *lenptr, double **pntsptr);
 
-/**  Change the point selection to minimum/maximum.
+/** Change the point selection to minimum/maximum.
  */
 int ay_selp_reducetominmax(ay_object *o);
+
+/** Update selection state of multiple points.
+ */
+void ay_selp_updatempselection(unsigned int n, ay_point *selp, ay_mpoint *mp);
+
 
 /* shade.c */
 
