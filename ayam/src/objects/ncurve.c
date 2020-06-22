@@ -816,11 +816,9 @@ int
 ay_ncurve_drawacb(struct Togl *togl, ay_object *o)
 {
  ay_nurbcurve_object *ncurve;
- ay_mpoint *mp;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  double *a, *b;
- double m[16];
- double w, *pnts;
+
 
   if(!o)
     return AY_ENULL;
@@ -856,46 +854,7 @@ ay_ncurve_drawacb(struct Togl *togl, ay_object *o)
 
       if(ncurve->mpoints /*&& view->drawhandles < 2*/)
 	{
-	  /* set color for selected points */
-	  glColor3f((GLfloat)ay_prefs.tpr, (GLfloat)ay_prefs.tpg,
-		    (GLfloat)ay_prefs.tpb);
-	  glDepthFunc(GL_ALWAYS);
-	  glPointSize((GLfloat)ay_prefs.handle_size*1.4);
-	  glPushMatrix();
-	  
-	   glTranslated((GLdouble)o->movx, (GLdouble)o->movy,
-			(GLdouble)o->movz);
-	   ay_quat_torotmatrix(o->quat, m);
-	   glMultMatrixd((GLdouble*)m);
-	   glScaled((GLdouble)o->scalx, (GLdouble)o->scaly,
-		    (GLdouble)o->scalz);
-	  
-	   glBegin(GL_POINTS);
-	    mp = ncurve->mpoints;
-	    while(mp)
-	      {
-		if(mp->selected)
-		  {
-		    if(ncurve->is_rat && ay_prefs.rationalpoints)
-		      {
-			pnts = mp->points[0];
-			w = pnts[3];
-			glVertex3d((GLdouble)(pnts[0]*w),
-				   (GLdouble)(pnts[1]*w),
-				   (GLdouble)(pnts[2]*w));
-		      }
-		    else
-		      glVertex3dv((GLdouble*)mp->points[0]);
-		  }
-		mp = mp->next;
-	      }
-	   glEnd();
-	  glPopMatrix();
-	  glPointSize((GLfloat)ay_prefs.handle_size);
-	  glDepthFunc(GL_LESS);
-	  /* set color for selected objects */
-	  glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
-		    (GLfloat)ay_prefs.seb);
+	  ay_draw_selmp(o, ncurve->is_rat, ncurve->mpoints);
 	}
     }
 

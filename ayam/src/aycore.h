@@ -237,6 +237,10 @@ int ay_draw_registerdacb(ay_drawcb  *dacb, unsigned int type_id);
  */
 void ay_draw_silhouettes(struct Togl *togl, unsigned char *silimg);
 
+/** draw selected multiple points
+ */
+void ay_draw_selmp(ay_object *o, int is_rat, ay_mpoint *mp);
+
 
 /* error.c */
 

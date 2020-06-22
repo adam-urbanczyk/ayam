@@ -318,7 +318,7 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 	      glDepthFunc(GL_LEQUAL);
 	    }
 
-	  /* temporarily disable drawing of selected points in 
+	  /* temporarily disable drawing of selected points in
 	     "edit weight" and "find u" actions */
 	  if(view->drawhandles < 2)
 	    {
@@ -1687,3 +1687,59 @@ ay_draw_silhouettes(struct Togl *togl, unsigned char *silimg)
 
  return;
 } /* ay_draw_silhouettes */
+
+
+/** ay_draw_selmp:
+ * Draw selected multiple points.
+ *
+ * \param[in] o object that has multiple points
+ * \param[in] is_rat are the points rational?
+ * \param[in] mp the multiple points to draw
+ */
+void
+ay_draw_selmp(ay_object *o, int is_rat, ay_mpoint *mp)
+{
+ double m[16];
+ double w, *pnts;
+
+  /* set color for selected points */
+  glColor3f((GLfloat)ay_prefs.tpr, (GLfloat)ay_prefs.tpg,
+	    (GLfloat)ay_prefs.tpb);
+  glDepthFunc(GL_ALWAYS);
+  glPointSize((GLfloat)ay_prefs.handle_size*1.4);
+  glPushMatrix();
+   glTranslated((GLdouble)o->movx, (GLdouble)o->movy,
+		(GLdouble)o->movz);
+   ay_quat_torotmatrix(o->quat, m);
+   glMultMatrixd((GLdouble*)m);
+   glScaled((GLdouble)o->scalx, (GLdouble)o->scaly,
+	    (GLdouble)o->scalz);
+
+   glBegin(GL_POINTS);
+    while(mp)
+      {
+	if(mp->selected)
+	  {
+	    if(is_rat && ay_prefs.rationalpoints)
+	      {
+		pnts = mp->points[0];
+		w = pnts[3];
+		glVertex3d((GLdouble)(pnts[0]*w),
+			   (GLdouble)(pnts[1]*w),
+			   (GLdouble)(pnts[2]*w));
+	      }
+	    else
+	      glVertex3dv((GLdouble*)mp->points[0]);
+	  }
+	mp = mp->next;
+      }
+   glEnd();
+  glPopMatrix();
+  glPointSize((GLfloat)ay_prefs.handle_size);
+  glDepthFunc(GL_LESS);
+  /* set color for selected objects */
+  glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+	    (GLfloat)ay_prefs.seb);
+
+ return;
+} /* ay_draw_selmp */
