@@ -1470,6 +1470,11 @@ ay_npatch_drawacb(struct Togl *togl, ay_object *o)
 	}
     }
 
+  if(npatch->mpoints /*&& view->drawhandles < 2*/)
+    {
+      ay_draw_selmp(o, npatch->is_rat, npatch->mpoints);
+    }
+
   ay_draw_arrow(togl, a, b);
 
  return AY_OK;
@@ -3255,6 +3260,15 @@ ay_npatch_notifycb(ay_object *o)
 
   if(!npatch)
     return AY_ENULL;
+
+  if(npatch->mpoints && o->modified != 3)
+    {
+      ay_selp_updatempselection(npatch->width*npatch->height,
+				o->selp, npatch->mpoints);
+    }
+
+  if(o->modified == 2)
+    return AY_OK;
 
   if(npatch->caps_and_bevels)
     {
