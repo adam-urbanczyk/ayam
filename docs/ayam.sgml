@@ -7471,29 +7471,35 @@ plausible.<footnote>Since 1.18.</footnote>
 <p>
 The NURBS curves of Ayam support so called multiple points.
 A multiple point is made of a number of different control points
-that have the same coordinates.
-Modelling actions will always modify all the control points that
-make up a multiple point even if just one of the control points is
-selected.
-Multiple points will be drawn with a bigger handle than normal points
-(see image above).
-They may e.g.~be used to create closed curves. Note that the control
+that have the same coordinates. Multiple points will be drawn with a
+bigger handle than normal points (see image above).<newline>
+Single point interactive modelling actions (e.g.~edit) will always
+modify all the control points that make up a multiple point.<newline>
+Selecting/tagging a multiple point will always select all control points
+of that multiple point.<newline>
+Modelling actions that work with selected points (e.g.~translate)
+will only modify all control points of a multiple point, if it is
+completely selected. This selection state is conveyed by drawing
+a completely filled bigger handle.<footnote>Since 1.28.</footnote>
+Individual points of a multiple point may be selected by
+<itemize>
+<item>turning off the <tt/"CreateMP"/ property of the curve,
+<item>using the <tt/"selPnts"/ scripting interface command<newline>
+(see also section
+<ref id="scselpnts" name="selPnts command">), or
+<item>using the <tt/"CVView"/ property<newline>
+(see also section
+<ref id="cvviewtcl" name="CVView property">).
+</itemize>
+Note that the control
 points that make up a multiple point do not have to be consecutive
 (in the control point vector of the NURBS curve).
-Multiple points may be created using the collapse tool,
+
+Multiple points may also be created using the collapse tool,
 and split up again using the explode tool (see sections
 <ref id="collt" name="Collapse Tool"> and
 <ref id="explt" name="Explode Tool"> for more information regarding
 those tools).
-Note that even though you might have exploded some multiple points
-Ayam will re-create them automatically on several occasions like reading
-of a scene, inserting/deleting points, and applying the NCurveAttr
-property if they still have identical coordinate values.
-In other words, you should immediately edit the control
-points (move them apart) after exploding to avoid that
-they automatically collapse to a multiple point again!
-You may also totally inhibit creation of multiple points for a
-NURBS curve using the attribute <tt/"CreateMP"/.
 
 <sect3>RIB Export
 <p><#if out="latex">&nbsp;<newline></#if>
@@ -14172,12 +14178,16 @@ surfaces <ref id="remsuknuvt" name="Remove Superfluous Knots Surface Tools">.
 <#if out="latex">
 <table loc="ht">
 <tabular ca="cl">
-<x>inlinegfx pics/fairwing1.png 4cm </x>|a@
-<x>inlinegfx pics/fairwing2.png 4cm </x>|b
+<x>inlinegfx pics/fairwing1.png 4cm </x>|
+<x>hspace -.5em </x>a@
+<x>inlinegfx pics/fairwing2.png 4cm </x>|
+<x>hspace -.5em </x>b
 </tabular>
 <tabular ca="clcl">
-<x>inlinegfx pics/fairwing1cu.png 5cm </x>|c|
-<x>inlinegfx pics/fairwing2cu.png 5cm </x>|d
+<x>inlinegfx pics/fairwing1cu.png 5cm </x>|
+<x>hspace -.5em </x>c|
+<x>inlinegfx pics/fairwing2cu.png 5cm </x>|
+<x>hspace -.5em </x>d
 </tabular>
 <caption>Fair Tool (a: Original, b: Processed, c: Curvature of a, d: Curvature of b)</caption>
 </table>
@@ -21638,6 +21648,7 @@ lump together in 3D space or have unusual values.
 Additionally, the current point selection is visualized by painting
 the selected vertices in red and the selection may also be adjusted
 by clicking on the circles.
+Drag selection is also possible.<footnote>Since 1.28.</footnote>
 
 <#if out="latex"><x/newpage/</#if>
 
