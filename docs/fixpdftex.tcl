@@ -17,7 +17,7 @@
 # o improve itemize/enumerate environments line spread and paragraph distance
 # o allow minipage environments for text blocks in tables
 
-set procs { fixheight fixsection fixenddoc fixdocclass fixitemize fixenditemize fixenum fixlist insnewpage insneedspace insphantomsection insinlinegfx insmps insmpe fixtoc fixhyperref fixpara }
+set procs { fixheight fixsection fixenddoc fixdocclass fixitemize fixenditemize fixenum fixlist insnewpage insneedspace insphantomsection insinlinegfx insmps insmpe inshspace fixtoc fixhyperref fixpara }
 
 proc fixheight { buf outfile } {
     global height
@@ -212,6 +212,16 @@ proc insinlinegfx { buf outfile } {
     if { $index > -1 } {
 	set buf [regsub -all "inlinegfx (.*?) (.*?) " $buf\
       {\rule[-0.3cm]{0cm}{0.9cm}\raisebox{-2mm}{\epsfig{file=\1,height=\2}}}]
+	puts $outfile $buf
+	set found 1
+    }
+    return $found;
+}
+
+proc inshspace { buf outfile } {
+    set found 0
+    if { [string first "hspace" $buf] > -1 } {
+	set buf [regsub -all "hspace (.*?) " $buf {\hspace{\1}}]
 	puts $outfile $buf
 	set found 1
     }
