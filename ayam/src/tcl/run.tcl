@@ -415,3 +415,22 @@ proc runRenderer { win cmd template } {
  return;
 }
 # runRenderer
+
+# helper for runBG below
+proc runBGHandler { chan finish } {
+    read $chan
+    if {[eof $chan]} {
+	close $chan
+        eval $finish
+    }
+}
+
+# runBG:
+#  run a shell command in the background and when finished run a Tcl command
+proc runBG { cmd { finish "" } } {
+    set chan [open "| $cmd" r]
+    fconfigure $chan -blocking false
+    fileevent $chan readable [list runBGHandler $chan $finish]
+ return;
+}
+# runBG

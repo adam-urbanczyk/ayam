@@ -336,10 +336,14 @@ proc viewRender { w type } {
     }
 
     if { $renderui != 1 } {
-	set command2 "exec "
-	append command2 $command
-	append command2 " &"
-	eval [subst "$command2"]
+	if { $mode == 2 } {
+	    set command2 "exec "
+	    append command2 $command
+	    append command2 " &"
+	    eval [subst "$command2"]
+	} else {
+	    runBG $command "ayError 4 \"viewRender\" \"Done rendering $vn!\""
+	}
     } else {
 	runRenderer $w "$command" "$pt"
     }
