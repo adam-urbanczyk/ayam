@@ -35,7 +35,8 @@ ay_error_wlog(const char *message)
 {
  FILE *log = NULL;
  static int warned = AY_FALSE;
- char *m = NULL;
+ int i;
+ const char *m = NULL;
 
   if(!message)
     return;
@@ -57,8 +58,16 @@ ay_error_wlog(const char *message)
 	    } /* if */
 	} /* if */
 
-      m = strchr(message, '"');
-      if(m)
+      m = message;
+      for(i = 0; i < 2; i++)
+	{
+	  m = strchr(m, '{');
+	  if(!m)
+	    break;
+	  m++;
+	}
+
+      if(m && *m)
 	{
 	  fprintf(log, "%s\n", m);
 	}
