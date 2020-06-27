@@ -729,7 +729,7 @@ x3dio_readfloatpoints(scew_element *element, char *attrname,
 		{
 		  /* forward p to next float */
 		  /* jump over leading whitespace */
-		  while(isspace(*p) && (*p != '\0'))
+		  while(isspace((unsigned char)*p) && (*p != '\0'))
 		    {
 		      p++;
 		    }
@@ -749,7 +749,7 @@ x3dio_readfloatpoints(scew_element *element, char *attrname,
 		  fp++;
 
 		  /* jump over the float we just read */
-		  while(!isspace(*p) && (*p != '\0'))
+		  while(!isspace((unsigned char)*p) && (*p != '\0'))
 		    {
 		      p++;
 		    }
@@ -826,7 +826,7 @@ x3dio_readdoublepoints(scew_element *element, char *attrname,
 		{
 		  /* forward p to next double */
 		  /* jump over leading whitespace */
-		  while(isspace(*p) && (*p != '\0'))
+		  while(isspace((unsigned char)*p) && (*p != '\0'))
 		    {
 		      p++;
 		    }
@@ -846,7 +846,7 @@ x3dio_readdoublepoints(scew_element *element, char *attrname,
 		  fp++;
 
 		  /* jump over the double we just read */
-		  while(!isspace(*p) && (*p != '\0'))
+		  while(!isspace((unsigned char)*p) && (*p != '\0'))
 		    {
 		      p++;
 		    }
@@ -922,7 +922,7 @@ x3dio_readindex(scew_element *element, char *attrname,
 
 	      /* forward p to next integer */
 	      /* jump over leading whitespace */
-	      while(isspace(*p) && (*p != '\0'))
+	      while(isspace((unsigned char)*p) && (*p != '\0'))
 		{
 		  p++;
 		}
@@ -945,7 +945,7 @@ x3dio_readindex(scew_element *element, char *attrname,
 	      /*ip++;*/
 
 	      /* jump over the integer we just read */
-	      while(!isspace(*p) && (*p != '\0'))
+	      while(!isspace((unsigned char)*p) && (*p != '\0'))
 		{
 		  p++;
 		}
@@ -1020,7 +1020,7 @@ x3dio_readboolvec(scew_element *element, char *attrname,
 
 	      /* forward p to next integer */
 	      /* jump over leading whitespace */
-	      while(isspace(*p) && (*p != '\0'))
+	      while(isspace((unsigned char)*p) && (*p != '\0'))
 		{
 		  p++;
 		}
@@ -1044,7 +1044,7 @@ x3dio_readboolvec(scew_element *element, char *attrname,
 	      ip++;
 
 	      /* jump over the integer we just read */
-	      while(!isspace(*p) && (*p != '\0'))
+	      while(!isspace((unsigned char)*p) && (*p != '\0'))
 		{
 		  p++;
 		}

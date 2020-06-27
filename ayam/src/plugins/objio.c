@@ -2107,7 +2107,7 @@ objio_readvindex(char *c, int *gvindex, int *tvindex, int *nvindex)
   /* parse geometric vertex index */
   sscanf(c, "%d", gvindex);
   /* forward to next index, /, or end */
-  while((isspace(*c)))
+  while((isspace((unsigned char)*c)))
     c++;
   if(*c == '\0')
     return AY_OK;
@@ -2167,18 +2167,18 @@ objio_readskip(char **b)
 {
  char *c = *b, *d;
 
-  while((isspace(*c)) && (*c != '\0'))
+  while((isspace((unsigned char)*c)) && (*c != '\0'))
     c++;
   if(*c == '\0')
     return;
-  while(!(isspace(*c)) && (*c != '\0'))
+  while(!(isspace((unsigned char)*c)) && (*c != '\0'))
     c++;
 
   /* skip over trailing whitespace */
   if(*c != '\0')
     {
       d = c;
-      while((isspace(*d)) && (*d != '\0'))
+      while((isspace((unsigned char)*d)) && (*d != '\0'))
 	d++;
       if(*d == '\0')
 	{
@@ -2734,7 +2734,7 @@ objio_readdeg(char *str)
   if(!str)
     return AY_ENULL;
 
-  while(!(isspace(*c)) && (*c != '\0'))
+  while(!(isspace((unsigned char)*c)) && (*c != '\0'))
     c++;
 
   sscanf(c," %d %d", &objio_degu, &objio_degv);
@@ -2769,7 +2769,7 @@ objio_readcurv(char *str)
       vtype = 1; /* geometric vertex */
     } /* if */
 
-  while(!(isspace(*c)) && (*c != '\0'))
+  while(!(isspace((unsigned char)*c)) && (*c != '\0'))
     c++;
 
   /* read umin/umax */
@@ -2860,7 +2860,7 @@ objio_readsurf(char *str)
   if(!str)
     return AY_ENULL;
 
-  while(!(isspace(*c)) && (*c != '\0'))
+  while(!(isspace((unsigned char)*c)) && (*c != '\0'))
     c++;
 
   /* read umin/umax */
@@ -2972,7 +2972,7 @@ objio_readparm(char *str)
   if(!str)
     return AY_ENULL;
 
-  while(!(isspace(*c)) && (*c != '\0'))
+  while(!(isspace((unsigned char)*c)) && (*c != '\0'))
     c++;
 
   if(c[1] == 'u')
@@ -3164,7 +3164,7 @@ objio_readtrim(char *str, int hole)
   if(!str)
     return AY_ENULL;
 
-  while(!(isspace(*c)) && (*c != '\0'))
+  while(!(isspace((unsigned char)*c)) && (*c != '\0'))
     c++;
 
   while(*c != '\0')

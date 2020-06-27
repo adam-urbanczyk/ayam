@@ -484,7 +484,7 @@ ay_select_providecb(ay_object *o, unsigned int type, ay_object **result)
 
 	      /* get start index of range */
 	      /* jump over leading white-space */
-	      while(isspace(*tok))
+	      while(isspace((unsigned char)*tok))
 		{
 		  tok++;
 		}
@@ -509,7 +509,7 @@ ay_select_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      /* jump over the '-' */
 	      min++;
 	      /* jump over leading white-space */
-	      while(isspace(*min))
+	      while(isspace((unsigned char)*min))
 		{
 		  min++;
 		}
@@ -570,7 +570,7 @@ ay_select_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      /* parse single index */
 
 	      /* jump over leading white-space */
-	      while(isspace(*tok))
+	      while(isspace((unsigned char)*tok))
 		{
 		  tok++;
 		}
