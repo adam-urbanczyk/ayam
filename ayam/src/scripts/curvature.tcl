@@ -59,6 +59,7 @@ proc curvature_update { {numin ""} {numax ""} } {
     # fill canvas
     set relative 0
     if { [getType] != "NCurve" } { set relative 1 }
+    set Curvature(relative) $relative
 
     if { $relative } {
 	set Curvature(umin) 0.0
@@ -150,8 +151,7 @@ proc curvature_update { {numin ""} {numax ""} } {
     }
     set txt $Curvature(umax)
     if { $Curvature(umax) < $Curvature(tumax) } {append txt " ..."}
-    $ca create text [expr $canvasw+$dx] [expr $canvash+12]\
-	-text $txt
+    $ca create text [expr $canvasw+$dx] [expr $canvash+12] -text $txt
 
     # horizontal ticks
     set i $dx
@@ -192,9 +192,12 @@ proc curvature_update { {numin ""} {numax ""} } {
 	    if { %x < 40 || %x > [expr $Curvature(wi)+40] ||
 		 %y > $Curvature(he) } break;
 	    $Curvature(ca) create line %x 0 %x $Curvature(he) -tag s
-
 	    set u [curvature_getU %x]
-	    setMark [getPnt -eval $u]
+	    if { $Curvature(relative) } {
+		setMark [getPnt -relative -eval $u]
+	    } else {
+		setMark [getPnt -eval $u]
+	    }
 	    catch {after cancel $Curvature(after)}
 	    set Curvature(after) [after 100 curvature_showvalues %x]
 	}
@@ -389,9 +392,6 @@ proc curvature_showvalues { {x ""} } {
     }
 
     if { $x == "" } {
-	set x [expr [winfo pointerx $ca] - [winfo rootx $ca]]
-	set u [curvature_getU $x]
-	setMark [getPnt -eval $u]
 	set txt [lindex [$ca gettags current] 1]
     } else {
 	set txt [lindex $Curvature(pnts) [expr $x - 40]]
