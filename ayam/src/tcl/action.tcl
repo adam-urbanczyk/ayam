@@ -1485,7 +1485,7 @@ proc editPointDialog { win {dragsel 0} } {
 	set editPntArr(w) 1
 
 	if { [llength $pnts] == 1 } {
-	    getPnt [lindex $pnts 0] -vn pnt
+	    getPnt -sel pnt
 	    if { [llength $pnt] == 4 } {
 		set editPntArr(w) [lindex $pnt 3]
 	    }
