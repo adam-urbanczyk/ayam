@@ -39,8 +39,8 @@ static ay_ftable ay_tcmd_coarsencbt;
 int ay_tcmd_setallpoints(Tcl_Interp *interp, char *fname, char *vn,
 			 int from_world);
 
-int ay_tcmd_getallpoints(Tcl_Interp *interp, char *fname, char *vn,
-			 int apply_trafo);
+int ay_tcmd_getselpoints(Tcl_Interp *interp, char *fname, char *vn,
+			 int get_all, int apply_trafo);
 
 
 /* functions: */
@@ -421,18 +421,19 @@ ay_tcmd_getbppntfromindex(ay_bpatch_object *patch, int index,
 } /* ay_tcmd_getbppntfromindex */
 
 
-/* ay_tcmd_getallpoints:
+/* ay_tcmd_getselpoints:
  *  helper for ay_tcmd_getpointtcmd() below
- *  get all points of selected objects
+ *  get selected or all points of selected objects
  */
 int
-ay_tcmd_getallpoints(Tcl_Interp *interp, char *fname, char *vn,
-		     int apply_trafo)
+ay_tcmd_getselpoints(Tcl_Interp *interp, char *fname, char *vn,
+		     int get_all, int apply_trafo)
 {
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_pointedit pe = {0};
- unsigned int i = 0;
+ ay_point *pnt;
+ unsigned int i = 0, j = 0;
  double p[4] = {0};
  double pm[16], m[16];
  int flags = TCL_APPEND_VALUE | TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG;
@@ -465,53 +466,79 @@ ay_tcmd_getallpoints(Tcl_Interp *interp, char *fname, char *vn,
 	  ay_trafo_getall(NULL, o, m);
 	} /* if */
 
-      ay_pact_getpoint(0, o, p, &pe);
-
-      for(i = 0; i < pe.num; i++)
+      if(get_all)
 	{
-	  memcpy(p, pe.coords[i], 3*sizeof(double));
-	  if(apply_trafo)
-	    ay_trafo_apply3(p, m);
+	  ay_pact_getpoint(0, o, p, &pe);
 
-	  if(!return_result)
+	  for(i = 0; i < pe.num; i++)
 	    {
-	      /* store result in variable */
-	      to = Tcl_NewDoubleObj(p[0]);
-	      Tcl_SetVar2Ex(interp, vn, NULL, to, flags);
-	      to = Tcl_NewDoubleObj(p[1]);
-	      Tcl_SetVar2Ex(interp, vn, NULL, to, flags);
-	      to = Tcl_NewDoubleObj(p[2]);
-	      Tcl_SetVar2Ex(interp, vn, NULL, to, flags);
+	      memcpy(p, pe.coords[i],
+		     ((pe.type == AY_PTRAT)?4:3)*sizeof(double));
+	      if(apply_trafo)
+		ay_trafo_apply3(p, m);
 
-	      if(pe.type == AY_PTRAT)
+	      if(!return_result)
 		{
-		  to = Tcl_NewDoubleObj(pe.coords[i][3]);
-		  Tcl_SetVar2Ex(interp, vn, NULL, to, flags);
-		} /* if */
-	    }
-	  else
-	    {
-	      if(!res)
-		res = Tcl_NewListObj(0, NULL);
-	      if(res)
-		{
-		  to = Tcl_NewDoubleObj(p[0]);
-		  Tcl_ListObjAppendElement(interp, res, to);
-		  to = Tcl_NewDoubleObj(p[1]);
-		  Tcl_ListObjAppendElement(interp, res, to);
-		  to = Tcl_NewDoubleObj(p[2]);
-		  Tcl_ListObjAppendElement(interp, res, to);
-
-		  if(pe.type == AY_PTRAT)
+		  /* store result in variable */
+		  for(j = 0; j < ((pe.type == AY_PTRAT)?4:3); j++)
 		    {
-		      to = Tcl_NewDoubleObj(pe.coords[i][3]);
-		      Tcl_ListObjAppendElement(interp, res, to);
+		      to = Tcl_NewDoubleObj(p[j]);
+		      Tcl_SetVar2Ex(interp, vn, NULL, to, flags);
 		    }
 		}
-	    } /* if return_result */
-	} /* for */
+	      else
+		{
+		  if(!res)
+		    res = Tcl_NewListObj(0, NULL);
+		  if(res)
+		    {
+		      for(j = 0; j < ((pe.type == AY_PTRAT)?4:3); j++)
+			{
+			  to = Tcl_NewDoubleObj(p[j]);
+			  Tcl_ListObjAppendElement(interp, res, to);
+			}
+		    }
+		} /* if return_result */
+	    } /* for */
 
-      ay_pact_clearpointedit(&pe);
+	  ay_pact_clearpointedit(&pe);
+	}
+      else
+	{
+	  pnt = o->selp;
+	  while(pnt)
+	    {
+	      memcpy(p, pnt->point,
+		     ((pnt->type == AY_PTRAT)?4:3)*sizeof(double));
+
+	      if(apply_trafo)
+		ay_trafo_apply3(p, m);
+
+	      if(!return_result)
+		{
+		  /* store result in variable */
+		  for(j = 0; j < ((pnt->type == AY_PTRAT)?4:3); j++)
+		    {
+		      to = Tcl_NewDoubleObj(p[j]);
+		      Tcl_SetVar2Ex(interp, vn, NULL, to, flags);
+		    }
+		}
+	      else
+		{
+		  if(!res)
+		    res = Tcl_NewListObj(0, NULL);
+		  if(res)
+		    {
+		      for(j = 0; j < ((pnt->type == AY_PTRAT)?4:3); j++)
+			{
+			  to = Tcl_NewDoubleObj(p[j]);
+			  Tcl_ListObjAppendElement(interp, res, to);
+			}
+		    }
+		} /* if return_result */
+	      pnt = pnt->next;
+	    } /* while */
+	} /* if all|sel */
 
       sel = sel->next;
     } /* while */
@@ -522,7 +549,7 @@ ay_tcmd_getallpoints(Tcl_Interp *interp, char *fname, char *vn,
     }
 
  return TCL_OK;
-} /* ay_tcmd_getallpoints */
+} /* ay_tcmd_getselpoints */
 
 
 /** ay_tcmd_evalcurve:
@@ -724,7 +751,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
  int return_result = AY_FALSE, handled = AY_FALSE;
  double *p = NULL, *tp = NULL, tmp[4] = {0}, utmp[4] = {0};
  double m[16], u = 0.0, v = 0.0;
- char fargs[] = "[-trafo|-world|-eval|-relative] (index | indexu indexv | u | u v ([varx vary varz [varw]] | -vn [varname]) | -all [varname])";
+ char fargs[] = "[-trafo|-world|-eval|-relative] (index | indexu indexv | u | u v ([varx vary varz [varw]] | -vn [varname]) | -all [varname] | -sel [varname])";
  Tcl_Obj *to = NULL, *res = NULL;
  int lflags = TCL_LEAVE_ERR_MSG | TCL_APPEND_VALUE | TCL_LIST_ELEMENT;
  ay_voidfp *arr = NULL;
@@ -784,19 +811,22 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
       j++;
     } /* while */
 
-  if((i < argc) && (argv[i][0] == '-') && (argv[i][1] == 'a'))
+  if((i < argc) && (argv[i][0] == '-') &&
+     ((argv[i][1] == 'a') || (argv[i][1] == 's')))
     {
-      /* -all */
-      i = 0;
+      /* -all | -sel */
+      j = 0;
       if(to_world)
-	i = 2;
+	j = 2;
       else
 	if(apply_trafo)
-	  i = 1;
+	  j = 1;
       if(argc2 <= 2)
-	return ay_tcmd_getallpoints(interp, argv[0], NULL, i);
+	return ay_tcmd_getselpoints(interp, argv[0], NULL,
+				    (argv[i][1] == 'a')?1:0, j);
       else
-	return ay_tcmd_getallpoints(interp, argv[0], argv[argc-1], i);
+	return ay_tcmd_getselpoints(interp, argv[0], argv[argc-1],
+				    (argv[i][1] == 'a')?1:0, j);
     }
 
   if((argc2 > 0) && (argv[argc-2][0] == '-') && (argv[argc-2][1] == 'v'))
@@ -2075,7 +2105,7 @@ ay_tcmd_getplanenormaltcmd(ClientData clientData, Tcl_Interp *interp,
 	  else
 	    {
 	      if((ay_provide_object(o, AY_IDNPATCH, NULL) == AY_OK))
-		{		  
+		{
 		  ay_provide_object(o, AY_IDNPATCH, &po);
 		}
 	    }
