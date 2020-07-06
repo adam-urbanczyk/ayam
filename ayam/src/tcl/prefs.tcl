@@ -185,9 +185,14 @@ proc prefs_open {} {
 		   ../doc/html/ayam.html]
 	lappend docdefs "file://$t"
     }
-
     addStringB $fw ayprefse Docs [ms ayprefse_Docs] $docdefs
-    addStringB $fw ayprefse TmpDir [ms ayprefse_TmpDir]
+
+    set tmpdefs "/tmp"
+    if { $tcl_platform(platform) == "windows" } {
+	set tmpdefs "$env(TEMP)"
+	regsub -all {\\} $tmpdefs {/} tmpdefs
+    }
+    addStringB $fw ayprefse TmpDir [ms ayprefse_TmpDir] $tmpdefs
 
     # Modeling
     set fw [$nb insert end Modeling -text Modeling\
