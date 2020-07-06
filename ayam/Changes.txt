@@ -1,5 +1,5 @@
-[20. Jun 2020] Mercurial Tip:
-=============================
+[6. Jul 2020] Mercurial Tip:
+============================
 Bug Fixes:
 o append option of split curve tool does not work (SF 595)
 o display of ConeAngle and ConeDeltaAngle (SF 597)
@@ -8,6 +8,7 @@ o handling of NT tags in 3DPVN offset curves (SF 599)
 o revert option of ExtrNC does not revert extracted normals (SF 600)
 o extracting the complete boundary misses normals and tangents (SF 601)
 o memory leak when opening periodic curves with multiple points (SF 602)
+o opening of numeric point editing dialog with selected points (SF 603)
 
 Modelling:
 o added option to specify the split knot in a relative way in the
@@ -18,6 +19,7 @@ o improved speed and level handling of object picking by drag selection
 o improved property handling after tag removal (realize NP/RP changes)
 o multiple points now flash completely in single point edit/tag actions
 o completely selected multiple points now draw completely filled
+o improved logging format
 
 GUI:
 o improved layout of menu components on Win32
@@ -25,6 +27,7 @@ o added designated rendering section to RIB-Export preferences
 o not all renderer and shadow maps options are shown in RIB-Export preferences
 o added preference options to specify a RenderMan display driver for RIB-Export
 o improved balloon interaction of MFile/MDir GUI elements (preferences)
+o improved TmpDir preference setting suggestions
 
 Scripts/Scripting Interface:
 o added "-r" (relative) option to "splitNC" command
@@ -39,6 +42,7 @@ o added drag selection to "cvview.tcl"
 
 Rendering:
 o added render to viewport feature via a new distributed plugin ("fifodspy")
+o improved console output of render to file option
 
 
 [27. Jan 2020] Ayam 1.27:
