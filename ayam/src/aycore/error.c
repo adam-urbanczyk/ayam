@@ -133,6 +133,9 @@ ay_error(int code, const char *where, const char *what)
 
 	  if(ay_prefs.writelog)
 	    {
+	      len = Tcl_DStringLength(&dsl);
+	      if(len > 3)
+		Tcl_DStringTrunc(&dsl, len-3);
 	      ay_error_wlog(Tcl_DStringValue(&dsl));
 	    }
 
@@ -258,6 +261,9 @@ ay_error(int code, const char *where, const char *what)
 	    }
 	  if(ay_prefs.writelog)
 	    {
+	      len = Tcl_DStringLength(&dsl);
+	      if(len > 3)
+		Tcl_DStringTrunc(&dsl, len-3);
 	      ay_error_wlog(Tcl_DStringValue(&dsl));
 	    }
 	  Tcl_DStringFree(&dsl);
@@ -275,6 +281,9 @@ ay_error(int code, const char *where, const char *what)
     }
   if(ay_prefs.writelog)
     {
+      len = Tcl_DStringLength(&ds);
+      if(len > 3)
+	Tcl_DStringTrunc(&ds, len-3);
       ay_error_wlog(Tcl_DStringValue(&ds));
     }
 
