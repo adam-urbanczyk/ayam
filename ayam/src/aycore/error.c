@@ -94,7 +94,6 @@ ay_error(int code, const char *where, const char *what)
 {
  Tcl_Interp *interp = ay_interp;
  Tcl_DString ds, dsl;
- Tcl_Obj *to = NULL, *ton = NULL;
  char countstr[TCL_INTEGER_SPACE];
  static char *last_message = NULL;
  static int count = 0;
@@ -298,11 +297,8 @@ ay_error(int code, const char *where, const char *what)
 set_ay_error:
   if(code != AY_EOUTPUT)
     {
-      ton = Tcl_NewStringObj("ay_error", -1);
-      to = Tcl_NewIntObj(code);
-      Tcl_ObjSetVar2(interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
-		     TCL_GLOBAL_ONLY);
-      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+      Tcl_SetVar2Ex(interp, "ay_error", NULL, Tcl_NewIntObj(code),
+		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
     }
 
  return;
