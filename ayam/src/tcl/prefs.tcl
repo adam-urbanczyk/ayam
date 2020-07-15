@@ -189,6 +189,7 @@ proc prefs_open {} {
 
     set tmpdefs "/tmp"
     if { $tcl_platform(platform) == "windows" } {
+	global env
 	set tmpdefs "$env(TEMP)"
 	regsub -all {\\} $tmpdefs {/} tmpdefs
     }
