@@ -2982,7 +2982,7 @@ ay_viewt_worldtowin(double *world, double *win)
  * A togl display callback that renders the first texture to
  * the viewport.
  *
- * \param togl the Togl widget to render
+ * \param[in] togl the Togl widget to render
  */
 void
 ay_viewt_showtex(struct Togl *togl)
@@ -3053,9 +3053,9 @@ ay_viewt_showtex(struct Togl *togl)
  * displayed, until this callback is called again with the "-end"
  * parameter.
  *
- * \param togl the Togl widget to use
- * \param argc number of arguments
- * \param argv arguments
+ * \param[in] togl the Togl widget to use
+ * \param[in] argc number of arguments
+ * \param[in] argv arguments
  *
  * \returns TCL_OK in any case
  */
@@ -3088,7 +3088,12 @@ ay_viewt_rendertoviewportcb(struct Togl *togl, int argc, char *argv[])
       return TCL_OK;
     }
 
+#ifdef WIN32
+  file = ay_w32t_openpipe(argv[2]);
+#else
   file = fopen(argv[2], "rb");
+#endif
+
   if(file)
     {
       if(!(image = (float*)calloc(width*height*4, sizeof(float))))
@@ -3135,7 +3140,7 @@ ay_viewt_rendertoviewportcb(struct Togl *togl, int argc, char *argv[])
 	  readsize = fread(line, sizeof(float),
 			   (xy[1]-xy[0])*(xy[3]-xy[2])*4, file);
 
-	  if(readsize != (size_t)(xy[1]-xy[0])*(xy[3]-xy[2])*4)
+	  if(readsize != (size_t)((xy[1]-xy[0])*(xy[3]-xy[2])*4))
 	    break;
 
 	  Togl_MakeCurrent(togl);
@@ -3163,6 +3168,10 @@ ay_viewt_rendertoviewportcb(struct Togl *togl, int argc, char *argv[])
 
       if(line)
 	free(line);
+    }
+  else
+    {
+      ay_error(AY_ERROR, argv[0], "Could not open the FIFO!");
     } /* if have file */
 
  return TCL_OK;

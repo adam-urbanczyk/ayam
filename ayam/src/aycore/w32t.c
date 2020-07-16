@@ -12,6 +12,10 @@
 
 #include "ayam.h"
 
+#include <fcntl.h>
+#include <errno.h>
+#include <io.h>
+
 /* w32t.c - tools for the Win32 platform */
 
 /* ay_w32t_w32killtcmd:
@@ -43,6 +47,62 @@ ay_w32t_w32killtcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_w32t_w32killtcmd */
+
+
+/** ay_w32t_openpipe:
+ * open a named pipe (FIFO surrogate) on the Win32 platform
+ * This is the client part of the fifo/pipe, i.e. it will be opened for reading.
+ *
+ * \param pipename name of pipe to open, must be of form "\\.\pipe\name"
+ *
+ * \return FILE handle of opened pipe or NULL
+ */
+FILE *
+ay_w32t_openpipe(char *pipename)
+{
+ char *fname = "openpipe";
+ HANDLE pipe;
+ int fd;
+ FILE *file = NULL;
+
+  while(1)
+    {
+      pipe = CreateFileA(pipename,GENERIC_READ,0,NULL,OPEN_EXISTING,0,NULL);
+
+      if(pipe == INVALID_HANDLE_VALUE)
+	{
+	  if(GetLastError() != ERROR_PIPE_BUSY)
+	    {
+	      ay_error(AY_ERROR, fname, "CreateFile failed.");
+	      _set_errno(EBADF);
+	      return NULL;
+	    }
+	}
+      else
+	break;
+
+      if(!WaitNamedPipeA(pipename, 5000))
+	{
+	  ay_error(AY_ERROR, fname,
+		   "Could not open pipe, 5 second wait timed out.");
+	  return NULL;
+	}
+    }
+
+  fd = _open_osfhandle((intptr_t) pipe, _O_BINARY | _O_RDONLY);
+
+  if(fd != -1)
+    {
+      file = _fdopen(fd, "rb");
+    }
+  else
+    {
+      ay_error(AY_ERROR, fname, "open handle failed.");
+      CloseHandle(pipe);
+    }
+
+ return file;
+} /* ay_w32t_openpipe */
 
 
 #ifdef AYW32PLUGIN
