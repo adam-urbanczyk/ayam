@@ -21,6 +21,10 @@
 
 #include <ndspy.h>
 
+#ifdef WIN32
+#include "mkfifo.h"
+#endif
+
 typedef struct fifoimagetype_s
 {
   FILE *file;
@@ -34,14 +38,15 @@ DspyImageOpen(PtDspyImageHandle *imagehandle,
 	      const char *drivername,
 	      const char *filename,
 	      int width, int height, int paramCount,
-	      const UserParameter  *parameters,
+	      const UserParameter *parameters,
 	      int formatCount,
 	      PtDspyDevFormat *format,
 	      PtFlagStuff *flagstuff)
 {
- int i, j, err;
+ int i, err;
  fifoimagetype *image;
  PtDspyDevFormat ourformat[4];
+ char *pipe = NULL;
 
   if(formatCount != 4)
     return PkDspyErrorBadParams;
@@ -49,13 +54,32 @@ DspyImageOpen(PtDspyImageHandle *imagehandle,
   if(!(image = malloc(sizeof(fifoimagetype))))
     return PkDspyErrorNoMemory;
 
+#ifdef WIN32
+  /* construct pipe name from filename */
+  i = strlen(filename);
+  if(!(pipe = malloc((i+10)*sizeof(char))))
+    {
+      free(image);
+      return PkDspyErrorNoMemory;
+    }
+  memcpy(pipe, "\\\\.\\pipe\\", 9*sizeof(char));
+  memcpy(&(pipe[9]), filename, i*sizeof(char));
+  pipe[i+9] = '\0';
+
+  if((image->file = mkfifo(pipe, filename)) == NULL)
+    {
+      free(pipe);
+      free(image);
+      return PkDspyErrorNoResource;
+    }
+#else
   if((err = mkfifo(filename, 0666)) != 0)
     {
       free(image);
       return PkDspyErrorNoResource;
     }
-
   image->file = fopen(filename, "wb");
+#endif
 
   if(0 == width)
     width = 640;
@@ -101,6 +125,9 @@ DspyImageOpen(PtDspyImageHandle *imagehandle,
 
   *imagehandle = image;
 
+  if(pipe)
+    free(pipe);
+
  return PkDspyErrorNone;
 }
 
@@ -122,22 +149,24 @@ DspyImageQuery(PtDspyImageHandle imagehandle,
       {
       case PkOverwriteQuery:
 	{
-	  PtDspyOverwriteInfo overwriteInfo;
+	  PtDspyOverwriteInfo overwriteinfo;
 
-	  if(datalen > sizeof(overwriteInfo))
-	    datalen = sizeof(overwriteInfo);
-	  overwriteInfo.overwrite = 1;
-	  overwriteInfo.interactive = 0;
-	  memcpy(data, &overwriteInfo, datalen);
+	  if(datalen > sizeof(overwriteinfo))
+	    {
+	      datalen = sizeof(overwriteinfo);
+	    }
+	  overwriteinfo.overwrite = 1;
+	  overwriteinfo.interactive = 0;
+	  memcpy(data, &overwriteinfo, datalen);
 	  break;
 	}
       case PkSizeQuery:
 	{
-	  PtDspySizeInfo sizeInfo;
+	  PtDspySizeInfo sizeinfo;
 
-	  if(datalen > sizeof(sizeInfo))
+	  if(datalen > sizeof(sizeinfo))
 	    {
-	      datalen = sizeof(sizeInfo);
+	      datalen = sizeof(sizeinfo);
 	    }
 	  if(image)
 	    {
@@ -146,33 +175,34 @@ DspyImageQuery(PtDspyImageHandle imagehandle,
 		  image->width = 640;
 		  image->height = 480;
 		}
-	      sizeInfo.width = image->width;
-	      sizeInfo.height = image->height;
-	      sizeInfo.aspectRatio = 1.0f;
+	      sizeinfo.width = image->width;
+	      sizeinfo.height = image->height;
+	      sizeinfo.aspectRatio = 1.0f;
 	    }
 	  else
 	    {
-	      sizeInfo.width = 640;
-	      sizeInfo.height = 480;
-	      sizeInfo.aspectRatio = 1.0f;
+	      sizeinfo.width = 640;
+	      sizeinfo.height = 480;
+	      sizeinfo.aspectRatio = 1.0f;
 	    }
-	  memcpy(data, &sizeInfo, datalen);
+	  memcpy(data, &sizeinfo, datalen);
 	  break;
 	}
 #if 0
-      case PkRenderingStartQuery :
+      case PkRenderingStartQuery:
 	{
-	  PtDspyRenderingStartQuery startLocation;
+	  PtDspyRenderingStartQuery startlocation;
 
-	  if (datalen > sizeof(startLocation))
-	    datalen = sizeof(startLocation);
-
+	  if(datalen > sizeof(startlocation))
+	    {
+	      datalen = sizeof(startlocation);
+	    }
 	  if(image)
 	    {
 	      /*
 	       * initialize values in startLocation
 	       */
-	      memcpy(data, &startLocation, datalen);
+	      memcpy(data, &startlocation, datalen);
 	    }
 	  else
 	    {
@@ -181,7 +211,7 @@ DspyImageQuery(PtDspyImageHandle imagehandle,
 	  break;
 	}
 #endif
-      default :
+      default:
 	ret = PkDspyErrorUnsupported;
 	break;
       }
