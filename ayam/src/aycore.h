@@ -2005,6 +2005,11 @@ int ay_viewt_rendertoviewportcb(struct Togl *togl, int argc, char *argv[]);
 int ay_w32t_w32killtcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
+/** open a named pipe (FIFO surrogate) on the Win32 platform
+ */
+FILE *ay_w32t_openpipe(char *pipe);
+
+
 /* As long as we do not use the return value...
  */
 #define snprintf sprintf_s

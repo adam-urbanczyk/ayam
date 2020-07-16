@@ -247,6 +247,9 @@ proc viewRender { w type } {
 	    if { $mode == 2 } {
 		# render to viewport
 		set imagename ${tmpfile}.fifo
+		if { $tcl_platform(platform) == "windows" } {
+		    set imagename [file tail $imagename]
+		}
 		if { $type == 0 } {
 		    set driver $ayprefs(DisplayDriver)
 		} else {
@@ -291,6 +294,9 @@ proc viewRender { w type } {
 	    if { $mode == 2 } {
 		# render to viewport
 		set imagename ${tmpfile}.fifo
+		if { $tcl_platform(platform) == "windows" } {
+		    set imagename [file tail $imagename]
+		}
 		if { $type == 0 } {
 		    set driver $ayprefs(DisplayDriver)
 		} else {
@@ -349,7 +355,8 @@ proc viewRender { w type } {
     }
 
     if { $mode == 2 && $type < 2 } {
-	viewCheckFifo $togl ${tmpfile}.fifo 0
+	set fifo ${imagename}
+	viewCheckFifo $togl $fifo 0
     } else {
 	update
 	tmp_clean 0
@@ -364,7 +371,7 @@ proc viewRender { w type } {
 # viewCheckFifo:
 # wait until the fifo exists then start the rendertoviewport action
 proc viewCheckFifo { togl fifo count } {
-    global ayprefs
+    global ayprefs tcl_platform
 
     set stop 0
     if { $count >= 50 } {
@@ -389,16 +396,27 @@ proc viewCheckFifo { togl fifo count } {
 	winAutoFocusOn
     }
 
-    if { !$stop && ![file exists $fifo] } {
-	incr count
-	after 100 "viewCheckFifo $togl $fifo $count"
+    set exists false
+    if { !$stop } {
+	set exists [file exists $fifo]
+	if { !$exists } {
+	    incr count
+	    after 100 "viewCheckFifo $togl {$fifo} $count"
+	}
     }
 
-    if { [file exists $fifo] } {
-	$togl rendertoviewport $fifo
+    if { $exists } {
+	if { $tcl_platform(platform) == "windows" } {
+	    set pipe "\\\\.\\pipe\\"
+	    append pipe ${fifo}
+	    $togl rendertoviewport $pipe
+	} else {
+	    $togl rendertoviewport $fifo
+	}
 	update
 	ayError 4 "viewRender" "... done. Hit <Esc> to remove rendering."
 	tmp_clean 0
+	focus $togl
     }
 
  return;
