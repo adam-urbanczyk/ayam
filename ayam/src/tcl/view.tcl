@@ -371,7 +371,7 @@ proc viewRender { w type } {
 # viewCheckFifo:
 # wait until the fifo exists then start the rendertoviewport action
 proc viewCheckFifo { togl fifo count } {
-    global ayprefs tcl_platform
+    global ayprefs tcl_platform env
 
     set stop 0
     if { $count >= 50 } {
@@ -398,7 +398,23 @@ proc viewCheckFifo { togl fifo count } {
 
     set exists false
     if { !$stop } {
-	set exists [file exists $fifo]
+	if { $tcl_platform(platform) == "windows" } {
+	    # on windows we can not check the real pipe with file exists;
+	    # therefore we wait until fifodspy creates a special signaling
+	    # file in the temp directory
+	    if { [info exists env(TEMP)] } {
+		set tmp $env(TEMP)
+	    } elseif { [info exists env(TMP)] } {
+		set tmp $env(TMP)
+	    } elseif { [info exists env(USERPROFILE)] } {
+		set tmp $env(USERPROFILE)
+	    }
+	    append tmp "\\" $fifo
+	    set tmp [string map {"\\" /} $tmp]
+	    set exists [file exists $tmp]
+	} else {
+	    set exists [file exists $fifo]
+	}
 	if { !$exists } {
 	    incr count
 	    after 100 "viewCheckFifo $togl {$fifo} $count"
@@ -409,6 +425,7 @@ proc viewCheckFifo { togl fifo count } {
 	if { $tcl_platform(platform) == "windows" } {
 	    set pipe "\\\\.\\pipe\\"
 	    append pipe ${fifo}
+	    catch {file delete $tmp}
 	    $togl rendertoviewport $pipe
 	} else {
 	    $togl rendertoviewport $fifo
