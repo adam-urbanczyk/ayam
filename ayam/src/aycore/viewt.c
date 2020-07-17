@@ -3159,11 +3159,12 @@ ay_viewt_rendertoviewportcb(struct Togl *togl, int argc, char *argv[])
 
       fclose(file);
 
+#ifndef WIN32
       if(remove(argv[2]))
 	{
 	  ay_error(AY_ERROR, fname, strerror(errno));
 	}
-
+#endif
       view->altdispcb = ay_viewt_showtex;
 
       if(line)

@@ -43,10 +43,16 @@ DspyImageOpen(PtDspyImageHandle *imagehandle,
 	      PtDspyDevFormat *format,
 	      PtFlagStuff *flagstuff)
 {
+ PtDspyError ret = PkDspyErrorNone;
  int i, err;
  fifoimagetype *image;
  PtDspyDevFormat ourformat[4];
+#ifdef WIN32
+ size_t lf, lt;
  char *pipe = NULL;
+ char *tmpenv = NULL;
+ char *tmp = NULL;
+#endif
 
   if(formatCount != 4)
     return PkDspyErrorBadParams;
@@ -56,27 +62,49 @@ DspyImageOpen(PtDspyImageHandle *imagehandle,
 
 #ifdef WIN32
   /* construct pipe name from filename */
-  i = strlen(filename);
-  if(!(pipe = malloc((i+10)*sizeof(char))))
+  lf = strlen(filename);
+  if(!(pipe = malloc((lf+10)*sizeof(char))))
     {
-      free(image);
-      return PkDspyErrorNoMemory;
+      ret = PkDspyErrorNoMemory;
+      goto cleanup;
     }
   memcpy(pipe, "\\\\.\\pipe\\", 9*sizeof(char));
-  memcpy(&(pipe[9]), filename, i*sizeof(char));
-  pipe[i+9] = '\0';
+  memcpy(&(pipe[9]), filename, lf*sizeof(char));
+  pipe[lf+9] = '\0';
 
-  if((image->file = mkfifo(pipe, filename)) == NULL)
+  /* construct sync file name */
+  tmpenv = getenv("TEMP");
+  if(!tmpenv)
+    tmpenv = getenv("TMP");
+  if(!tmpenv)
+    tmpenv = getenv("USERPROFILE");
+
+  if(tmpenv)
     {
-      free(pipe);
-      free(image);
-      return PkDspyErrorNoResource;
+      lt = strlen(tmpenv);
+      if(!(tmp = malloc((lf+lt+2)*sizeof(char))))
+	{
+	  ret = PkDspyErrorNoMemory;
+	  goto cleanup;
+	}
+      memcpy(tmp, tmpenv, lt*sizeof(char));
+      tmp[lt] = '\\';
+      memcpy(&(tmp[lt+1]), filename, lf*sizeof(char));
+
+      tmp[lf+lt+1] = '\0';
+    }
+
+  /* create named pipe */
+  if((image->file = mkfifo(pipe, tmp)) == NULL)
+    {
+      ret = PkDspyErrorNoResource;
+      goto cleanup;
     }
 #else
   if((err = mkfifo(filename, 0666)) != 0)
     {
-      free(image);
-      return PkDspyErrorNoResource;
+      ret = PkDspyErrorNoResource;
+      goto cleanup;
     }
   image->file = fopen(filename, "wb");
 #endif
@@ -125,10 +153,22 @@ DspyImageOpen(PtDspyImageHandle *imagehandle,
 
   *imagehandle = image;
 
+  /* prevent cleanup code from doing something harmful */
+  image = NULL;
+
+cleanup:
+
+  if(image)
+    free(image);
+
+#ifdef WIN32
   if(pipe)
     free(pipe);
+  if(tmp)
+    free(tmp);
+#endif
 
- return PkDspyErrorNone;
+ return ret;
 }
 
 
