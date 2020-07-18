@@ -10527,7 +10527,7 @@ ay_nct_fair(ay_nurbcurve_object *curve, ay_point *selp, double tol)
 		}
 	      else
 		{
-		  memcpy(p, q, stride*sizeof(double));
+		  memcpy(p, q, 3*sizeof(double));
 		}
 	    }
 	} /* if */
