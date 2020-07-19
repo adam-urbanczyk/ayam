@@ -6717,7 +6717,7 @@ ay_npt_elevateu(ay_nurbpatch_object *patch, int t, int is_clamped)
 					 patch->uorder-1, patch->uknotv,
 					 patch->controlv, t, &nw, Uh, Qw);
 
-  if(ay_status)
+  if(ay_status || (nw <= 0))
     {
       free(Uh); free(Qw);
       ay_error(ay_status, fname, "Degree elevation failed.");
@@ -6833,7 +6833,7 @@ ay_npt_elevatev(ay_nurbpatch_object *patch, int t, int is_clamped)
 					 patch->vorder-1, patch->vknotv,
 					 patch->controlv, t, &nh, Vh, Qw);
 
-  if(ay_status)
+  if(ay_status || (nh <= 0))
     {
       free(Vh); free(Qw);
       ay_error(ay_status, fname, "Degree elevation failed.");
@@ -16054,36 +16054,42 @@ ay_npt_degreereduce(ay_nurbpatch_object *np, double tol)
 				      tol, &nh,
 				      tkv, tcv);
 
-  if(!ay_status)
+  if(ay_status || (nh <= 0))
     {
-      /* save results */
-      if(!(newcv = malloc(np->width * nh * 4 * sizeof(double))))
-	{
-	  ay_error(AY_EOMEM, fname, NULL);
-	  goto cleanup;
-	}
-      if(!(newkv = malloc((nh + np->vorder - 1) * sizeof(double))))
-	{
-	  free(newcv);
-	  ay_error(AY_EOMEM, fname, NULL);
-	  goto cleanup;
-	}
-      np->height = nh;
-      np->vorder--;
-
-      for(i = 0; i < np->width; i++)
-	{
-	  a = i*nh*4;
-	  b = i*tcvh*4;
-	  memcpy(&(newcv[a]), &(tcv[b]), nh*4*sizeof(double));
-	}
-      memcpy(newkv, tkv, (np->height+np->vorder)*sizeof(double));
-
-      free(np->controlv);
-      np->controlv = newcv;
-      free(np->vknotv);
-      np->vknotv = newkv;
+      ay_error(AY_ERROR, fname, "Degree reduction failed.");
+      ay_status = AY_ERROR;
+      goto cleanup;
     }
+
+  /* save results */
+  if(!(newcv = malloc(np->width * nh * 4 * sizeof(double))))
+    {
+      ay_error(AY_EOMEM, fname, NULL);
+      ay_status = AY_ERROR;
+      goto cleanup;
+    }
+  if(!(newkv = malloc((nh + np->vorder - 1) * sizeof(double))))
+    {
+      free(newcv);
+      ay_error(AY_EOMEM, fname, NULL);
+      ay_status = AY_ERROR;
+      goto cleanup;
+    }
+  np->height = nh;
+  np->vorder--;
+
+  for(i = 0; i < np->width; i++)
+    {
+      a = i*nh*4;
+      b = i*tcvh*4;
+      memcpy(&(newcv[a]), &(tcv[b]), nh*4*sizeof(double));
+    }
+  memcpy(newkv, tkv, (np->height+np->vorder)*sizeof(double));
+
+  free(np->controlv);
+  np->controlv = newcv;
+  free(np->vknotv);
+  np->vknotv = newkv;
 
 cleanup:
   if(was_rat)
@@ -16095,7 +16101,7 @@ cleanup:
   if(tkv)
     free(tkv);
 
- return AY_OK;
+ return ay_status;
 } /* ay_npt_degreereduce */
 
 
