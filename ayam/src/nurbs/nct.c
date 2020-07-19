@@ -1948,7 +1948,7 @@ ay_nct_elevate(ay_nurbcurve_object *curve, int new_order)
 					 curve->order-1, curve->knotv,
 					 curve->controlv, t, &nh, Uh, Qw);
 
-  if(ay_status)
+  if(ay_status || (nh <= 0))
     {
       ay_error(ay_status, fname, "Degree elevation failed.");
       free(Uh); free(Qw); return AY_ERROR;
@@ -1956,12 +1956,14 @@ ay_nct_elevate(ay_nurbcurve_object *curve, int new_order)
 
   if(!(realQw = realloc(Qw, nh * 4 * sizeof(double))))
     {
+      ay_error(AY_EOMEM, fname, NULL);
       free(Uh); free(Qw);
-      return AY_EOMEM;
+      return AY_ERROR;
     }
 
   if(!(realUh = realloc(Uh, (nh + curve->order + t) * sizeof(double))))
     {
+      ay_error(AY_EOMEM, fname, NULL);
       free(Uh); free(realQw);
       return AY_ERROR;
     }
@@ -2082,12 +2084,12 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(clamp_me)
 	    {
 	      ay_status = ay_nct_clamp(curve, 0);
-	    }
 
-	  if(ay_status)
-	    {
-	      ay_error(AY_ERROR, argv[0], "Clamp operation failed.");
-	      return TCL_OK;
+	      if(ay_status)
+		{
+		  ay_error(AY_ERROR, argv[0], "Clamp operation failed.");
+		  return TCL_OK;
+		}
 	    }
 
 	  /* alloc new knotv & new controlv */
@@ -2113,7 +2115,7 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 					    curve->order-1, curve->knotv,
 					    curve->controlv, tol, &nh, Uh, Qw);
 
-	      if(ay_status)
+	      if(ay_status || (nh <= 0))
 		{
 		  ay_error(ay_status, argv[0], "Degree reduction failed.");
 		  free(Uh); free(Qw);
@@ -2126,7 +2128,7 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 					      curve->order-1, curve->knotv,
 					      curve->controlv, t, &nh, Uh, Qw);
 
-	      if(ay_status)
+	      if(ay_status || (nh <= 0))
 		{
 		  ay_error(ay_status, argv[0], "Degree elevation failed.");
 		  free(Uh); free(Qw);
@@ -2137,6 +2139,7 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(!(realQw = realloc(Qw, nh * 4 * sizeof(double))))
 	    {
 	      free(Uh); free(Qw);
+	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
 	    }
 
@@ -2145,6 +2148,7 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 	      if(!(realUh = realloc(Uh, (nh+curve->order-1)*sizeof(double))))
 		{
 		  free(Uh); free(realQw);
+		  ay_error(AY_EOMEM, argv[0], NULL);
 		  return TCL_OK;
 		}
 	      curve->order--;
@@ -2154,6 +2158,7 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 	      if(!(realUh = realloc(Uh, (nh+curve->order+t)*sizeof(double))))
 		{
 		  free(Uh); free(realQw);
+		  ay_error(AY_EOMEM, argv[0], NULL);
 		  return TCL_OK;
 		}
 	      curve->order += t;
