@@ -3655,7 +3655,7 @@ ay_npt_concat(ay_object *o, int type, int order,
 
 cleanup:
 
-  (void)ay_object_deletemulti(allcurves, AY_TRUE);
+  (void)ay_object_deletemulti(allcurves, AY_FALSE);
 
   /* delete list */
   while(curvelist)
@@ -5378,7 +5378,7 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
       ay_status = ay_nct_makecompatible(curve, /*level=*/2);
       if(ay_status)
 	{
-	  (void)ay_object_deletemulti(curve, AY_TRUE);
+	  (void)ay_object_deletemulti(curve, AY_FALSE);
 	  return ay_status;
 	}
       o1 = curve;
@@ -8840,7 +8840,7 @@ ay_npt_isboundcurve(ay_object *o, double b1, double b2, double b3, double b4,
 cleanup:
 
   if(c)
-    (void)ay_object_deletemulti(c, AY_TRUE);
+    (void)ay_object_deletemulti(c, AY_FALSE);
 
   if(tcv)
     free(tcv);
@@ -12257,8 +12257,8 @@ ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(ay_status)
 	    {
 	      ay_error(ay_status, argv[0], NULL);
-	      return TCL_OK;
-	    } /* if */
+	      goto cleanup;
+	    }
 
 	  ay_object_link(new);
 	} /* if */
@@ -12273,6 +12273,11 @@ ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
     } /* while */
 
   (void)ay_notify_parent();
+
+cleanup:
+
+  if(pobject)
+    (void)ay_object_deletemulti(pobject, AY_FALSE);
 
  return TCL_OK;
 } /* ay_npt_extractnptcmd */
@@ -13581,9 +13586,7 @@ ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[])
 cleanup:
 
   if(pobject)
-    {
-      (void)ay_object_deletemulti(pobject, AY_TRUE);
-    }
+    (void)ay_object_deletemulti(pobject, AY_FALSE);
 
  return TCL_OK;
 } /* ay_npt_finduvcb */
@@ -13865,7 +13868,7 @@ ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
 
 cleanup:
   /* free list of temporary patches/curves */
-  (void)ay_object_deletemulti(patches, AY_TRUE);
+  (void)ay_object_deletemulti(patches, AY_FALSE);
 
  return TCL_OK;
 } /* ay_npt_concatstcmd */
@@ -15871,8 +15874,9 @@ ay_npt_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
   (void)ay_notify_parent();
 
 cleanup:
+
   if(src)
-    (void)ay_object_deletemulti(src, AY_TRUE);
+    (void)ay_object_deletemulti(src, AY_FALSE);
 
  return TCL_OK;
 } /* ay_npt_makecomptcmd */
@@ -16388,7 +16392,7 @@ ay_npt_getcurvaturetcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(freepo)
 	{
-	  (void)ay_object_deletemulti(po, AY_TRUE);
+	  (void)ay_object_deletemulti(po, AY_FALSE);
 	}
       sel = sel->next;
     } /* while */

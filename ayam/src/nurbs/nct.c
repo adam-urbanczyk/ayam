@@ -2745,9 +2745,7 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 cleanup:
 
   if(pobject)
-    {
-      (void)ay_object_deletemulti(pobject, AY_TRUE);
-    }
+    (void)ay_object_deletemulti(pobject, AY_FALSE);
 
  return TCL_OK;
 } /* ay_nct_finducb */
@@ -3435,8 +3433,9 @@ ay_nct_concatctcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
 cleanup:
+
   /* free list of temporary curves */
-  (void)ay_object_deletemulti(curves, AY_TRUE);
+  (void)ay_object_deletemulti(curves, AY_FALSE);
 
  return TCL_OK;
 } /* ay_nct_concatctcmd */
@@ -5588,7 +5587,7 @@ ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      free(o); free(controlv);
 	      if(freepo)
-		(void)ay_object_deletemulti(po, AY_TRUE);
+		(void)ay_object_deletemulti(po, AY_FALSE);
 	      sel = sel->next;
 	      continue;
 	    }
@@ -5610,9 +5609,7 @@ ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
 	} /* if */
 
       if(freepo)
-	{
-	  (void)ay_object_deletemulti(po, AY_TRUE);
-	}
+	(void)ay_object_deletemulti(po, AY_FALSE);
 
       sel = sel->next;
     } /* while */
@@ -5704,9 +5701,8 @@ ay_nct_getcurvaturetcmd(ClientData clientData, Tcl_Interp *interp,
 	} /* if have NCurve */
 
       if(freepo)
-	{
-	  (void)ay_object_deletemulti(po, AY_TRUE);
-	}
+	(void)ay_object_deletemulti(po, AY_FALSE);
+
       sel = sel->next;
     } /* while */
 
@@ -7015,8 +7011,9 @@ ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
   (void)ay_notify_parent();
 
 cleanup:
+
   if(src)
-    (void)ay_object_deletemulti(src, AY_TRUE);
+    (void)ay_object_deletemulti(src, AY_FALSE);
 
  return TCL_OK;
 } /* ay_nct_makecomptcmd */
@@ -8779,7 +8776,7 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK, tcl_status = TCL_OK;
  ay_list_object *sel = ay_selection;
  ay_nurbcurve_object *curve;
- ay_object *o, *po;
+ ay_object *o, *po = NULL;
  double len;
  int have_vname = AY_FALSE, apply_trafo = 0, i = 1, r = 0;
  Tcl_Obj *to = NULL, *ton = NULL;
@@ -8836,7 +8833,6 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
     {
       /* get curve to work on */
       o = sel->object;
-      po = NULL;
       if(o->type != AY_IDNCURVE)
 	{
 	  ay_status = ay_provide_object(sel->object, AY_IDNCURVE, &po);
@@ -8892,6 +8888,7 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
+	  /* o is NCurve */
 	  curve = (ay_nurbcurve_object *)o->refine;
 
 	  if(apply_trafo)
@@ -8948,7 +8945,8 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(po)
 	{
-	  (void)ay_object_deletemulti(po, AY_TRUE);
+	  (void)ay_object_deletemulti(po, AY_FALSE);
+	  po = NULL;
 	}
 
       sel = sel->next;
@@ -8958,10 +8956,9 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
 
   /* cleanup */
 cleanup:
+
   if(po)
-    {
-      (void)ay_object_deletemulti(po, AY_TRUE);
-    }
+    (void)ay_object_deletemulti(po, AY_FALSE);
 
   if(ton)
     {
@@ -10328,8 +10325,8 @@ ay_nct_extractnctcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(ay_status)
 	    {
 	      ay_error(ay_status, argv[0], NULL);
-	      return TCL_OK;
-	    } /* if */
+	      goto cleanup;
+	    }
 
 	  ay_object_link(new);
 	} /* if */
@@ -10344,6 +10341,11 @@ ay_nct_extractnctcmd(ClientData clientData, Tcl_Interp *interp,
     } /* while */
 
   (void)ay_notify_parent();
+
+cleanup:
+
+  if(pobject)
+    (void)ay_object_deletemulti(pobject, AY_FALSE);
 
  return TCL_OK;
 } /* ay_nct_extractnctcmd */
