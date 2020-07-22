@@ -354,7 +354,8 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 		 int argc, char *argv[])
 {
  char *arr = "ayprefs", *arre = "ayprefse";
- char *cvtags = NULL, *tagname, *tagtype, **tmp;
+ char *cvtags = NULL, *tagname;
+ unsigned int *tmp, tagtype;
  Tcl_HashEntry *entry = NULL;
  Tcl_Obj *to = NULL;
  double dtemp = 0.0;
@@ -453,10 +454,10 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 	      {
 		if((entry = Tcl_FindHashEntry(&ay_tagtypesht, tagname)))
 		  {
-		    tagtype = (char*)Tcl_GetHashValue(entry);
+		    tagtype = *((unsigned int*)Tcl_GetHashValue(entry));
 
 		    if(!(tmp = realloc(ay_prefs.converttags,
-				 (ay_prefs.converttagslen+1)*sizeof(char*))))
+			 (ay_prefs.converttagslen+1)*sizeof(unsigned int))))
 		      goto cleanup;
 		    ay_prefs.converttags = tmp;
 		    ay_prefs.converttags[ay_prefs.converttagslen] = tagtype;

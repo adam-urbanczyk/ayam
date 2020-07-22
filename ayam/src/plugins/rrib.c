@@ -598,7 +598,7 @@ void ay_rrib_readshader(char *sname, int stype,
 void ay_rrib_readparams(int n, RtToken tokens[], RtPointer parms[],
 			Tcl_DString *ds);
 
-void ay_rrib_readtag(char *tagtype, char *tagname, char *name,
+void ay_rrib_readtag(unsigned int tagtype, char *tagname, char *name,
 		     int i, RtToken tokens[], RtPointer parms[],
 		     ay_tag **destination);
 
@@ -4251,7 +4251,7 @@ ay_rrib_readparams(int n, RtToken tokens[], RtPointer parms[],
 
 
 void
-ay_rrib_readtag(char *tagtype, char *tagname, char *name,
+ay_rrib_readtag(unsigned int tagtype, char *tagname, char *name,
 		int i, RtToken tokens[], RtPointer parms[],
 		ay_tag **destination)
 {

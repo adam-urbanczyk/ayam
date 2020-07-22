@@ -50,10 +50,10 @@ static Tcl_HashTable x3dio_write_ht;
 static Tcl_HashTable *x3dio_defs_ht = NULL;
 
 /* mdn tags are used to temporarily store x3dio generated Master/DEF names */
-char *x3dio_mdn_tagtype = NULL;
+unsigned int x3dio_mdn_tagtype;
 char *x3dio_mdn_tagname = "mdn";
 
-char *x3dio_xml_tagtype = NULL;
+unsigned int x3dio_xml_tagtype;
 char *x3dio_xml_tagname = "XML";
 
 char *x3dio_truestring = "true";

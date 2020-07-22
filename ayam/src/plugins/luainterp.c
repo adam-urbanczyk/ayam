@@ -71,7 +71,7 @@ char luainterp_version_ma[] = AY_VERSIONSTR;
 char luainterp_version_mi[] = AY_VERSIONSTRMI;
 
 /** language id */
-char *luainterp_langid = NULL;
+unsigned int luainterp_langid;
 
 static lua_State *L = NULL;
 
@@ -1140,7 +1140,7 @@ Luainterp_Init(Tcl_Interp *interp)
     }
 
   ay_status = ay_table_additem(&ay_sevalcbt, (ay_voidfp)luainterp_evalcb,
-			       (int)luainterp_langid);
+			       luainterp_langid);
   if(ay_status)
     {
       ay_error(AY_ERROR, fname, "Failed to register evaluation callback.");

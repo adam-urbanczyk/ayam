@@ -147,7 +147,7 @@ typedef struct ay_tag_s
   char is_intern; /**< is this tag internal? */
   char is_binary; /**< is this tag binary? */
   char *name; /**< name of tag (e.g.\ "PV") */
-  char *type; /**< type of tag (e.g.\ ay_pv_tagtype) */
+  unsigned int type; /**< type of tag (e.g.\ ay_pv_tagtype) */
   void *val; /**< value of tag (e.g.\ "mycolor,constant,c,1,0,1,0") */
 } ay_tag;
 
@@ -1525,7 +1525,7 @@ typedef struct ay_preferences_s
   char *colorname; /**< default name for vertex color PV tags */
   char *opacityname; /**< default name for vertex opacity PV tags */
 
-  char **converttags;  /**< tags to keep/copy upon provide/conversion */
+  unsigned int *converttags;  /**< tags to keep/copy upon provide/conversion */
   int converttagslen; /**< number of tag types in converttags */
 
   int disablefailedscripts;  /**< disable scripts after errors */
@@ -1718,57 +1718,57 @@ extern char ay_version_mi[];
 
 /** \name Tag names and types */
 /*@{*/
-extern char *ay_oi_tagtype;
+extern unsigned int ay_oi_tagtype;
 extern char *ay_oi_tagname;
-extern char *ay_riattr_tagtype;
+extern unsigned int ay_riattr_tagtype;
 extern char *ay_riattr_tagname;
-extern char *ay_riopt_tagtype;
+extern unsigned int ay_riopt_tagtype;
 extern char *ay_riopt_tagname;
-extern char *ay_tc_tagtype;
+extern unsigned int ay_tc_tagtype;
 extern char *ay_tc_tagname;
-extern char *ay_pv_tagtype;
+extern unsigned int ay_pv_tagtype;
 extern char *ay_pv_tagname;
-extern char *ay_ridisp_tagtype;
+extern unsigned int ay_ridisp_tagtype;
 extern char *ay_ridisp_tagname;
-extern char *ay_rihider_tagtype;
+extern unsigned int ay_rihider_tagtype;
 extern char *ay_rihider_tagname;
-extern char *ay_noexport_tagtype;
+extern unsigned int ay_noexport_tagtype;
 extern char *ay_noexport_tagname;
-extern char *ay_tp_tagtype;
+extern unsigned int ay_tp_tagtype;
 extern char *ay_tp_tagname;
-extern char *ay_bns_tagtype;
+extern unsigned int ay_bns_tagtype;
 extern char *ay_bns_tagname;
-extern char *ay_ans_tagtype;
+extern unsigned int ay_ans_tagtype;
 extern char *ay_ans_tagname;
-extern char *ay_dbns_tagtype;
+extern unsigned int ay_dbns_tagtype;
 extern char *ay_dbns_tagname;
-extern char *ay_dans_tagtype;
+extern unsigned int ay_dans_tagtype;
 extern char *ay_dans_tagname;
-extern char *ay_umm_tagtype;
+extern unsigned int ay_umm_tagtype;
 extern char *ay_umm_tagname;
-extern char *ay_vmm_tagtype;
+extern unsigned int ay_vmm_tagtype;
 extern char *ay_vmm_tagname;
-extern char *ay_bp_tagtype;
+extern unsigned int ay_bp_tagtype;
 extern char *ay_bp_tagname;
-extern char *ay_cp_tagtype;
+extern unsigned int ay_cp_tagtype;
 extern char *ay_cp_tagname;
-extern char *ay_np_tagtype;
+extern unsigned int ay_np_tagtype;
 extern char *ay_np_tagname;
-extern char *ay_rp_tagtype;
+extern unsigned int ay_rp_tagtype;
 extern char *ay_rp_tagname;
-extern char *ay_hc_tagtype;
+extern unsigned int ay_hc_tagtype;
 extern char *ay_hc_tagname;
-extern char *ay_no_tagtype;
+extern unsigned int ay_no_tagtype;
 extern char *ay_no_tagname;
-extern char *ay_nm_tagtype;
+extern unsigned int ay_nm_tagtype;
 extern char *ay_nm_tagname;
-extern char *ay_nt_tagtype;
+extern unsigned int ay_nt_tagtype;
 extern char *ay_nt_tagname;
-extern char *ay_aswire_tagtype;
+extern unsigned int ay_aswire_tagtype;
 extern char *ay_aswire_tagname;
-extern char *ay_mn_tagtype;
+extern unsigned int ay_mn_tagtype;
 extern char *ay_mn_tagname;
-extern char *ay_mp_tagtype;
+extern unsigned int ay_mp_tagtype;
 extern char *ay_mp_tagname;
 /*@}*/
 

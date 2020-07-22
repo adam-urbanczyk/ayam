@@ -714,6 +714,15 @@ int ay_otype_register(char *name,
 		      ay_bbccb     *bbccb,
 		      unsigned int *type_index);
 
+/** create pointer to ID integer value for Tcl hash table value
+ */
+unsigned int *ay_otype_getpointer(unsigned int id);
+
+/** initialize object type module
+ */
+int ay_otype_init();
+
+
 /* matt.c */
 
 /** initialize material tools module
@@ -1469,7 +1478,7 @@ void ay_tags_append(ay_object *o, ay_tag *tag);
 
 /** register a tag type
  */
-int ay_tags_register(char *name, char **result);
+int ay_tags_register(char *name, unsigned int *result);
 
 /** Tcl command to set the tags property
  */
@@ -1488,7 +1497,7 @@ int ay_tags_gettcmd(ClientData clientData, Tcl_Interp *interp,
 
 /** check for existence of a tag
  */
-int ay_tags_hastag(const ay_object *o, const char *tagtype);
+int ay_tags_hastag(const ay_object *o, const unsigned int tagtype);
 
 /** Tcl command to check for existence of a tag
  */
@@ -1507,7 +1516,7 @@ int ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
 
 /** reconnect already existing tags after late tag type registration
  */
-void ay_tags_reconnect(ay_object *o, char *tagtype, char *tagname);
+void ay_tags_reconnect(ay_object *o, unsigned int tagtype, char *tagname);
 
 /** add NO/NM tags
  */
@@ -1520,7 +1529,7 @@ void ay_tags_remnonm(ay_object *o, ay_object *m);
 /** copy selected tags
  */
 int ay_tags_copyselected(ay_object *src, ay_object *dst,
-			 char **types, int typeslen);
+			 unsigned int *types, int typeslen);
 
 /** convert newline characters
  */
@@ -1607,7 +1616,7 @@ int ay_tcmd_withobtcmd(ClientData clientData, Tcl_Interp *interp,
 
 /** Manage scripting language IDs
  */
-int ay_tcmd_registerlang(char *name, char **result);
+int ay_tcmd_registerlang(char *name, unsigned int *result);
 
 /** get string from Tcl variable
  */
