@@ -102,115 +102,115 @@ char ay_version_ma[] = AY_VERSIONSTR;
 char ay_version_mi[] = AY_VERSIONSTRMI;
 
 /* internal tags */
-char *ay_oi_tagtype;
+unsigned int ay_oi_tagtype;
 
 char *ay_oi_tagname = "OI";
 
-char *ay_riattr_tagtype;
+unsigned int ay_riattr_tagtype;
 
 char *ay_riattr_tagname = "RiAttribute";
 
-char *ay_riopt_tagtype;
+unsigned int ay_riopt_tagtype;
 
 char *ay_riopt_tagname = "RiOption";
 
-char *ay_tc_tagtype;
+unsigned int ay_tc_tagtype;
 
 char *ay_tc_tagname = "TC";
 
-char *ay_pv_tagtype;
+unsigned int ay_pv_tagtype;
 
 char *ay_pv_tagname = "PV";
 
-char *ay_ridisp_tagtype;
+unsigned int ay_ridisp_tagtype;
 
 char *ay_ridisp_tagname = "RiDisplay";
 
-char *ay_rihider_tagtype;
+unsigned int ay_rihider_tagtype;
 
 char *ay_rihider_tagname = "RiHider";
 
-char *ay_noexport_tagtype;
+unsigned int ay_noexport_tagtype;
 
 char *ay_noexport_tagname = "NoExport";
 
-char *ay_savegeom_tagtype;
+unsigned int ay_savegeom_tagtype;
 
 char *ay_savegeom_tagname = "SaveMainGeom";
 
-char *ay_savelayout_tagtype;
+unsigned int ay_savelayout_tagtype;
 
 char *ay_savelayout_tagname = "SavePaneLayout";
 
-char *ay_np_tagtype;
+unsigned int ay_np_tagtype;
 
 char *ay_np_tagname = "NP";
 
-char *ay_rp_tagtype;
+unsigned int ay_rp_tagtype;
 
 char *ay_rp_tagname = "RP";
 
-char *ay_tp_tagtype;
+unsigned int ay_tp_tagtype;
 
 char *ay_tp_tagname = "TP";
 
-char *ay_bns_tagtype;
+unsigned int ay_bns_tagtype;
 
 char *ay_bns_tagname = "BNS";
 
-char *ay_ans_tagtype;
+unsigned int ay_ans_tagtype;
 
 char *ay_ans_tagname = "ANS";
 
-char *ay_dbns_tagtype;
+unsigned int ay_dbns_tagtype;
 
 char *ay_dbns_tagname = "DBNS";
 
-char *ay_dans_tagtype;
+unsigned int ay_dans_tagtype;
 
 char *ay_dans_tagname = "DANS";
 
-char *ay_umm_tagtype;
+unsigned int ay_umm_tagtype;
 
 char *ay_umm_tagname = "UMM";
 
-char *ay_vmm_tagtype;
+unsigned int ay_vmm_tagtype;
 
 char *ay_vmm_tagname = "VMM";
 
-char *ay_bp_tagtype;
+unsigned int ay_bp_tagtype;
 
 char *ay_bp_tagname = "BP";
 
-char *ay_cp_tagtype;
+unsigned int ay_cp_tagtype;
 
 char *ay_cp_tagname = "CP";
 
-char *ay_hc_tagtype;
+unsigned int ay_hc_tagtype;
 
 char *ay_hc_tagname = "HC";
 
-char *ay_no_tagtype;
+unsigned int ay_no_tagtype;
 
 char *ay_no_tagname = "NO";
 
-char *ay_nm_tagtype;
+unsigned int ay_nm_tagtype;
 
 char *ay_nm_tagname = "NM";
 
-char *ay_nt_tagtype;
+unsigned int ay_nt_tagtype;
 
 char *ay_nt_tagname = "NT";
 
-char *ay_aswire_tagtype;
+unsigned int ay_aswire_tagtype;
 
 char *ay_aswire_tagname = "AsWire";
 
-char *ay_mn_tagtype;
+unsigned int ay_mn_tagtype;
 
 char *ay_mn_tagname = "MN";
 
-char *ay_mp_tagtype;
+unsigned int ay_mp_tagtype;
 
 char *ay_mp_tagname = "MP";
 
@@ -321,6 +321,9 @@ ay_init(Tcl_Interp *interp)
 
   /* initialize material object helper module */
   ay_matt_init(interp);
+
+  /* initialize object type helper module */
+  ay_otype_init();
 
   /* initialize riattribute tag helper module */
   ay_riattr_init(interp);

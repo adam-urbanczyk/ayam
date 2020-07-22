@@ -1297,7 +1297,7 @@ ay_script_notifycb(ay_object *o)
 	  if((entry = Tcl_FindHashEntry(ht, language)))
 	    {
 	      arr = ay_sevalcbt.arr;
-	      sc->cb = (ay_sevalcb *)(arr[(int)Tcl_GetHashValue(entry)]);
+	      sc->cb = (ay_sevalcb *)(arr[*((unsigned int*)Tcl_GetHashValue(entry))]);
 	    }
 	  else
 	    {

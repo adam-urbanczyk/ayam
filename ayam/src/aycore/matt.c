@@ -20,7 +20,7 @@ static Tcl_HashTable ay_matt_ptr_ht;
 
 static Tcl_HashTable ay_matt_blacklist_ht;
 
-static char *ay_matt_mitagtype;
+static unsigned int ay_matt_mitagtype;
 
 static char *ay_matt_mitagname = "MI";
 

@@ -157,7 +157,7 @@ ay_object_createtcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  index = (unsigned int) Tcl_GetHashValue(entry);
+  index = *((unsigned int *) Tcl_GetHashValue(entry));
 
   if(!(o = calloc(1, sizeof(ay_object))))
     {
@@ -722,7 +722,7 @@ ay_object_gettypename(unsigned int index)
 {
  Tcl_HashEntry *entry = NULL;
 
-  if((entry = Tcl_FindHashEntry(&ay_typenamesht, (char*)index)))
+ if((entry = Tcl_FindHashEntry(&ay_typenamesht, (char*)index)))
     {
       return Tcl_GetHashValue(entry);
     }

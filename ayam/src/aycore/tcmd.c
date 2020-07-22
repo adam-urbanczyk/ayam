@@ -1950,11 +1950,11 @@ outputerror:
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_tcmd_registerlang(char *name, char **result)
+ay_tcmd_registerlang(char *name, unsigned int *result)
 {
  int new_item = 0;
  Tcl_HashEntry *entry = NULL;
- static char *langcounter = (char *) 0;
+ static unsigned int langcounter = 0;
  char fname[] = "registerlang";
 
   /* check, if language is already registered */
@@ -1967,7 +1967,7 @@ ay_tcmd_registerlang(char *name, char **result)
   langcounter++;
 
   entry = Tcl_CreateHashEntry(&ay_languagesht, name, &new_item);
-  Tcl_SetHashValue(entry, langcounter);
+  Tcl_SetHashValue(entry, ay_otype_getpointer(langcounter));
 
   *result = langcounter;
 

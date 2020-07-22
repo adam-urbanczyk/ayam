@@ -25,7 +25,7 @@
   <tag->name> is always NULL (we solely use the tag->type for identification)
   <tag->val> is used as counter value and not as pointer to a string
 */
-static char *ay_nc_tagtype = NULL;
+static unsigned int ay_nc_tagtype;
 
 static char *ay_nc_tagname = "NC";
 

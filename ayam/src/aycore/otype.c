@@ -14,6 +14,16 @@
 
 /* otype.c - object type management */
 
+typedef struct cid_s
+{
+  struct cid_s *next; /**< next id */
+  unsigned int id; /**< id */
+} cid;
+
+unsigned int *ids;
+
+cid *cids;
+
 /** ay_otype_register:
  *  Register a new (custom) object type, filling pointers
  *  to the callback functions into various global callback tables.
@@ -74,7 +84,7 @@ ay_otype_register(char *name,
     {
       /* no, this is a new type */
       entry = Tcl_CreateHashEntry(&ay_otypesht, name, &new_item);
-      Tcl_SetHashValue(entry, tc);
+      Tcl_SetHashValue(entry, ay_otype_getpointer(tc));
       i = tc;
     }
 
@@ -207,10 +217,12 @@ ay_otype_registercore(char *name,
 
   /* no, this is a new type */
   entry = Tcl_CreateHashEntry(&ay_otypesht, name, &new_item);
-  Tcl_SetHashValue(entry, type_index);
+  Tcl_SetHashValue(entry, ay_otype_getpointer(type_index));
 
   /* register typename */
-  entry = Tcl_CreateHashEntry(&ay_typenamesht, (char*)type_index, &new_item);
+  entry = Tcl_CreateHashEntry(&ay_typenamesht,
+			      (char*)type_index,
+			      &new_item);
   Tcl_SetHashValue(entry, (void*)name);
 
   /*
@@ -286,3 +298,67 @@ ay_otype_registercore(char *name,
  return ay_status;
 } /* ay_otype_registercore */
 
+
+/** ay_otype_getpointer:
+ * Create a pointer for use as ID Tcl hash table value.
+ *
+ * \param[in] id integer value for ID
+ *
+ * \returns pointer or NULL
+ */
+unsigned int *
+ay_otype_getpointer(unsigned int id)
+{
+ unsigned int *pointer = NULL;
+ cid *c = cids;
+
+  if(id < AY_IDLAST)
+    {
+      pointer = &(ids[id]);
+    }
+  else
+    {
+      while(c)
+	{
+	  if(id == c->id)
+	    {
+	      pointer = &(c->id);
+	      break;
+	    }
+	  if(!c->next /*&& !pointer*/)
+	    {
+	      if((c->next = calloc(1, sizeof(cid))))
+		{
+		  c->next->id = id;
+		  pointer = &(c->next->id);
+		}
+	      break;
+	    }
+	  c = c->next;
+	}
+    }
+
+ return pointer;
+} /* ay_otype_getpointer */
+
+int
+ay_otype_init()
+{
+ unsigned int i;
+
+  if(!(ids = malloc(AY_IDLAST*sizeof(unsigned int))))
+    return AY_EOMEM;
+
+  for(i = 0; i < AY_IDLAST; i++)
+    ids[i] = i;
+
+  if(!(cids = calloc(1, sizeof(cid))))
+    {
+      free(ids);
+      return AY_EOMEM;
+    }
+
+  cids->id = AY_IDLAST;
+
+ return AY_OK;
+}

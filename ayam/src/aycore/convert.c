@@ -103,7 +103,7 @@ ay_convert_objecttcmd(ClientData clientData, Tcl_Interp *interp,
 	      /* resolve target type */
 	      if((entry = Tcl_FindHashEntry(&ay_otypesht, argv[2])))
 		{
-		  ttype = (unsigned int) Tcl_GetHashValue(entry);
+		  ttype = *((unsigned int*)Tcl_GetHashValue(entry));
 		}
 	    }
 	}
@@ -127,7 +127,7 @@ ay_convert_objecttcmd(ClientData clientData, Tcl_Interp *interp,
 	  if((entry = Tcl_FindHashEntry(&ay_otypesht, argv[2])))
 	    {
 	      ay_status = ay_provide_object(sel->object,
-			       (unsigned int)Tcl_GetHashValue(entry), NULL);
+			     *((unsigned int*)Tcl_GetHashValue(entry)), NULL);
 	      if(ay_status == AY_OK)
 		res = yes;
 	      else

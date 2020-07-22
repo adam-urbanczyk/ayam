@@ -212,11 +212,11 @@ ay_tags_append(ay_object *o, ay_tag *tag)
  *  register a new tag type
  */
 int
-ay_tags_register(char *name, char **result)
+ay_tags_register(char *name, unsigned int *result)
 {
  int new_item = 0;
  Tcl_HashEntry *entry = NULL;
- static char *tagcounter = (char *) 1; /* 0 - dummy */
+ static unsigned int tagcounter = 1; /* 0 - dummy */
  char fname[] = "tags_register";
 
   /* check, if type is already registered */
@@ -229,7 +229,8 @@ ay_tags_register(char *name, char **result)
   tagcounter++;
 
   entry = Tcl_CreateHashEntry(&ay_tagtypesht, name, &new_item);
-  Tcl_SetHashValue(entry, tagcounter);
+  /*Tcl_SetHashValue(entry, tagcounter);*/
+  Tcl_SetHashValue(entry, ay_otype_getpointer(tagcounter));
 
   *result = tagcounter;
 
@@ -328,7 +329,7 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	  if(entry)
 	    {
-	      new->type = (char *)Tcl_GetHashValue(entry);
+	      new->type = *((unsigned int *)Tcl_GetHashValue(entry));
 	    }
 	  /* create new tag */
 	  if(!(new->name = malloc((strlen(argv[3])+1) * sizeof(char))))
@@ -486,7 +487,7 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 		}
 	      if(entry)
 		{
-		  new->type = (char *)Tcl_GetHashValue(entry);
+		  new->type = *((unsigned int *)Tcl_GetHashValue(entry));
 		}
 
 	      if(!(new->name = malloc((strlen(argv[index])+1) * sizeof(char))))
@@ -576,7 +577,7 @@ ay_tags_addtcmd(ClientData clientData, Tcl_Interp *interp,
       strcpy(new->name, argv[1]);
 
       if(entry)
-	new->type = (char *)Tcl_GetHashValue(entry);
+	new->type = *((unsigned int *)Tcl_GetHashValue(entry));
 
       if(!(new->val = malloc((strlen(argv[2])+1) * sizeof(char))))
 	{
@@ -722,7 +723,7 @@ ay_tags_gettcmd(ClientData clientData, Tcl_Interp *interp,
  * \returns AY_TRUE if a tag of given type was found, AY_FALSE else
  */
 int
-ay_tags_hastag(const ay_object *o, const char *tagtype)
+ay_tags_hastag(const ay_object *o, const unsigned int tagtype)
 {
  ay_tag *tag;
 
@@ -1112,7 +1113,7 @@ cleanup:
  * \param[in] tagname tag name of tags to process
  */
 void
-ay_tags_reconnect(ay_object *o, char *tagtype, char *tagname)
+ay_tags_reconnect(ay_object *o, unsigned int tagtype, char *tagname)
 {
  ay_tag *tag;
 
@@ -1305,7 +1306,7 @@ ay_tags_remnonm(ay_object *o, ay_object *m)
  */
 int
 ay_tags_copyselected(ay_object *src, ay_object *dst,
-		     char **types, int typeslen)
+		     unsigned int *types, int typeslen)
 {
  int ay_status = AY_OK;
  int i, copy;
@@ -1406,7 +1407,7 @@ int
 ay_tags_registertcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
- char *dummy;
+ unsigned int dummy;
 
   if(argc < 2)
     {

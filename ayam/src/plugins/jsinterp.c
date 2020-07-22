@@ -81,7 +81,7 @@ char jsinterp_version_ma[] = AY_VERSIONSTR;
 char jsinterp_version_mi[] = AY_VERSIONSTRMI;
 
 /** language id */
-char *jsinterp_langtype = NULL;
+unsigned int jsinterp_langtype;
 
 /** JS runtime */
 static JSRuntime *jsinterp_rt;
@@ -1245,7 +1245,7 @@ Jsinterp_Init(Tcl_Interp *interp)
     }
 
   ay_status = ay_table_additem(&ay_sevalcbt, (ay_voidfp)jsinterp_evalcb,
-			       (int)jsinterp_langtype);
+			       jsinterp_langtype);
   if(ay_status)
     {
       ay_error(AY_ERROR, fname, "Failed to register evaluation callback.");
