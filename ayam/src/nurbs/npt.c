@@ -13993,7 +13993,7 @@ int
 ay_npt_remsuknnptcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
- int tcl_status = TCL_OK, ay_status = AY_OK;
+ int tcl_status = TCL_OK, ay_status = AY_OK, swap_status = AY_OK;
  ay_object *o = NULL;
  ay_nurbpatch_object *patch = NULL;
  ay_list_object *sel = ay_selection;
@@ -14031,8 +14031,8 @@ ay_npt_remsuknnptcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(is_u)
 	    {
 	      /* swap U/V, for there is no RemoveKnotSurfU() */
-	      ay_status = ay_npt_swapuv(patch);
-	      if(ay_status)
+	      swap_status = ay_npt_swapuv(patch);
+	      if(swap_status)
 		{
 		  ay_error(AY_ERROR, argv[0], "SwapUV failed.");
 		  return TCL_OK;
@@ -14044,8 +14044,8 @@ ay_npt_remsuknnptcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(is_u)
 	    {
 	      /* swap U/V, for there is no RemoveKnotSurfU() */
-	      ay_status = ay_npt_swapuv(patch);
-	      if(ay_status)
+	      swap_status = ay_npt_swapuv(patch);
+	      if(swap_status)
 		{
 		  ay_error(AY_ERROR, argv[0], "SwapUV failed.");
 		  return TCL_OK;
@@ -14221,14 +14221,6 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
 	      break;
 	    }
 
-	  /* swap U/V, for there is no RemoveKnotSurfU() */
-	  ay_status = ay_npt_swapuv(patch);
-	  if(ay_status)
-	    {
-	      ay_error(AY_ERROR, argv[0], "SwapUV failed.");
-	      return TCL_OK;
-	    }
-
 	  if(!(newcontrolv = malloc(patch->width*(patch->height-r)*4*
 				    sizeof(double))))
 	    {
@@ -14240,6 +14232,14 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      free(newcontrolv);
 	      ay_error(AY_EOMEM, argv[0], NULL);
+	      return TCL_OK;
+	    }
+
+	  /* swap U/V, for there is no RemoveKnotSurfU() */
+	  ay_status = ay_npt_swapuv(patch);
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, argv[0], "SwapUV failed.");
 	      return TCL_OK;
 	    }
 
@@ -14264,6 +14264,12 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
 	      if(patch->is_rat)
 		(void)ay_npt_homtoeuc(patch);
 
+	      ay_status = ay_npt_swapuv(patch);
+	      if(ay_status)
+		{
+		  ay_error(AY_ERROR, argv[0], "SwapUV failed.");
+		  return TCL_OK;
+		}
 	      break;
 	    }
 
@@ -16121,7 +16127,7 @@ int
 ay_npt_degreereducetcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[])
 {
- int tcl_status = TCL_OK, ay_status = AY_OK;
+ int tcl_status = TCL_OK, ay_status = AY_OK, swap_status = AY_OK;
  ay_object *o = NULL;
  ay_nurbpatch_object *patch = NULL;
  ay_list_object *sel = ay_selection;
@@ -16159,8 +16165,8 @@ ay_npt_degreereducetcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(is_u)
 	    {
 	      /* swap U/V, for there is no ay_nb_DegreeReduceSurfU() */
-	      ay_status = ay_npt_swapuv(patch);
-	      if(ay_status)
+	      swap_status = ay_npt_swapuv(patch);
+	      if(swap_status)
 		{
 		  ay_error(AY_ERROR, argv[0], "SwapUV failed.");
 		  return TCL_OK;
@@ -16172,8 +16178,8 @@ ay_npt_degreereducetcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(is_u)
 	    {
 	      /* swap U/V, for there is no ay_nb_DegreeReduceSurfU() */
-	      ay_status = ay_npt_swapuv(patch);
-	      if(ay_status)
+	      swap_status = ay_npt_swapuv(patch);
+	      if(swap_status)
 		{
 		  ay_error(AY_ERROR, argv[0], "SwapUV failed.");
 		  return TCL_OK;
