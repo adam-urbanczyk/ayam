@@ -14239,6 +14239,8 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_status = ay_npt_swapuv(patch);
 	  if(ay_status)
 	    {
+	      free(newcontrolv);
+	      free(newknotv);
 	      ay_error(AY_ERROR, argv[0], "SwapUV failed.");
 	      return TCL_OK;
 	    }
@@ -14257,9 +14259,7 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      ay_error(AY_ERROR, argv[0], "Knot removal failed.");
 	      free(newcontrolv);
-	      newcontrolv = NULL;
 	      free(newknotv);
-	      newknotv = NULL;
 
 	      if(patch->is_rat)
 		(void)ay_npt_homtoeuc(patch);
