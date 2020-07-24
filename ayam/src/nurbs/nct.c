@@ -7456,11 +7456,15 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 	      o->modified = AY_TRUE;
 
 	      /* re-create tesselation of curve */
-	      (void)ay_notify_object(sel->object);
+	      (void)ay_notify_object(o);
 	    } /* if */
 
 	  sel = sel->next;
 	} /* while */
+
+      if(notify_parent)
+	(void)ay_notify_parent();
+
       return TCL_OK;
     } /* if remsuknNC command */
 
