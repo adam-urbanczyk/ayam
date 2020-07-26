@@ -385,7 +385,7 @@ ay_text_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  /*int ay_status = AY_OK;*/
  char fname[] = "setProp";
  char *arr = "TextAttrData";
- char *result;
+ const char *newfont;
  Tcl_Obj *to = NULL;
  ay_text_object *text = NULL;
  Tcl_UniChar *unistr = NULL;
@@ -404,15 +404,15 @@ ay_text_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       text->fontname = NULL;
     }
 
-  result = Tcl_GetVar2(interp, arr, "FontName",
-		       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  newfont = Tcl_GetVar2(interp, arr, "FontName",
+			TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  if(!(text->fontname = calloc(strlen(result)+1, sizeof(char))))
+  if(!(text->fontname = calloc(strlen(newfont)+1, sizeof(char))))
     {
       ay_error(AY_EOMEM, fname, NULL);
       return AY_ERROR;
     }
-  strcpy(text->fontname, result);
+  strcpy(text->fontname, newfont);
 
   to = Tcl_GetVar2Ex(interp, arr, "Height",
 		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);

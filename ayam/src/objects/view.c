@@ -202,7 +202,7 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *tco = NULL;
  double oldmark[3];
  int i, itemp = 0, setmark = AY_FALSE, need_markupdate = AY_TRUE;
- char *result;
+ const char *newbgimage;
  char fname[] = "view_setpropcb";
  char *fr[3] = {"From_X","From_Y","From_Z"};
  char *to[3] = {"To_X","To_Y","To_Z"};
@@ -346,31 +346,31 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, tco, &(view->drawbgimage));
 
-  result = Tcl_GetVar2(interp, arr, "BGImage",
+  newbgimage = Tcl_GetVar2(interp, arr, "BGImage",
 		       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  if((result && !view->bgimage) ||
-     (!result && view->bgimage) ||
-     (result && view->bgimage && strcmp(result,view->bgimage)))
+  if((newbgimage && !view->bgimage) ||
+     (!newbgimage && view->bgimage) ||
+     (newbgimage && view->bgimage && strcmp(newbgimage, view->bgimage)))
     {
       if(view->bgimage)
 	{
 	  free(view->bgimage);
 	  view->bgimage = NULL;
-	} /* if */
+	}
 
-      if(result)
+      if(newbgimage)
 	{
-	  if(!(view->bgimage = malloc((strlen(result)+1)*sizeof(char))))
+	  if(!(view->bgimage = malloc((strlen(newbgimage)+1)*sizeof(char))))
 	    {
 	      ay_error(AY_EOMEM, fname, NULL);
 	      ay_status = AY_ERROR;
 	      goto cleanup;
-	    } /* if */
-	  strcpy(view->bgimage, result);
+	    }
+	  strcpy(view->bgimage, newbgimage);
 	  view->bgimagedirty = AY_TRUE;
-	} /* if */
-    } /* if */
+	} /* if have newbgimage */
+    } /* if bgimage changed */
 
   /* check clipping planes */
   if((view->type == AY_VTPERSP) && (view->nearp < 0.0))
