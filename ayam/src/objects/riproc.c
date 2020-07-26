@@ -236,7 +236,7 @@ ay_riproc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  char *arr = "RiProcAttrData";
  Tcl_Obj *to = NULL;
  ay_riproc_object *riproc = NULL;
- char *result = NULL;
+ const char *stemp = NULL;
 
   if(!interp || !o)
     return AY_ENULL;
@@ -253,24 +253,30 @@ ay_riproc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     }
 
   /* get file */
-  result = Tcl_GetVar2(interp, arr, "File", TCL_LEAVE_ERR_MSG |
-		       TCL_GLOBAL_ONLY);
-  if(!(riproc->file = calloc(strlen(result)+1, sizeof(char))))
+  stemp = Tcl_GetVar2(interp, arr, "File", TCL_LEAVE_ERR_MSG |
+		      TCL_GLOBAL_ONLY);
+  if(stemp)
     {
-      ay_error(AY_EOMEM, fname, NULL);
-      return AY_ERROR;
+      if(!(riproc->file = calloc(strlen(stemp)+1, sizeof(char))))
+	{
+	  ay_error(AY_EOMEM, fname, NULL);
+	  return AY_ERROR;
+	}
+      strcpy(riproc->file, stemp);
     }
-  strcpy(riproc->file, result);
 
   /* get data */
-  result = Tcl_GetVar2(interp, arr, "Data", TCL_LEAVE_ERR_MSG |
-		       TCL_GLOBAL_ONLY);
-  if(!(riproc->data = calloc(strlen(result)+1, sizeof(char))))
+  stemp = Tcl_GetVar2(interp, arr, "Data", TCL_LEAVE_ERR_MSG |
+		      TCL_GLOBAL_ONLY);
+  if(stemp)
     {
-      ay_error(AY_EOMEM, fname, NULL);
-      return AY_ERROR;
+      if(!(riproc->data = calloc(strlen(stemp)+1, sizeof(char))))
+	{
+	  ay_error(AY_EOMEM, fname, NULL);
+	  return AY_ERROR;
+	}
+      strcpy(riproc->data, stemp);
     }
-  strcpy(riproc->data, result);
 
   /* get bounding box */
   to = Tcl_GetVar2Ex(interp, arr, "MinX",
