@@ -39,6 +39,8 @@ Tk_RestrictAction
 ay_ns_restrictall(ClientData clientData,
 		  XEvent *eventPtr)
 {
+ char cancelled[] = "cancelled";
+
 #ifndef AYWITHAQUA
 #ifndef WIN32
  XKeyEvent *key_event = (XKeyEvent *) eventPtr;
@@ -46,22 +48,18 @@ ay_ns_restrictall(ClientData clientData,
  XComposeStatus status;
  char tmpstr[128];
 #endif /* !WIN32 */
- Tcl_Obj *to = NULL, *ton = NULL;
 
 #ifdef WIN32
   if((GetKeyState(VK_SHIFT) < 0) &&
      (GetKeyState(VK_CONTROL) < 0) &&
      (GetKeyState('C') < 0))
     {
-      ton = Tcl_NewStringObj("cancelled", -1);
-      to = Tcl_NewIntObj(1);
-      Tcl_ObjSetVar2(ay_interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
-		     TCL_GLOBAL_ONLY);
+      Tcl_SetVar2Ex(ay_interp, cancelled, NULL, Tcl_NewIntObj(1),
+		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 #ifndef AYNOSAFEINTERP
-      Tcl_ObjSetVar2(ay_safeinterp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
-		     TCL_GLOBAL_ONLY);
+      Tcl_SetVar2Ex(ay_safeinterp, cancelled, NULL, Tcl_NewIntObj(1),
+		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 #endif
-      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
       return TK_DISCARD_EVENT;
     }
 #else
@@ -72,15 +70,12 @@ ay_ns_restrictall(ClientData clientData,
 	  XLookupString(key_event, tmpstr, 128, &ks, &status);
 	  if(ks == 0x43)
 	    {
-	      ton = Tcl_NewStringObj("cancelled", -1);
-	      to = Tcl_NewIntObj(1);
-	      Tcl_ObjSetVar2(ay_interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
-			     TCL_GLOBAL_ONLY);
+	      Tcl_SetVar2Ex(ay_interp, cancelled, NULL, Tcl_NewIntObj(1),
+			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 #ifndef AYNOSAFEINTERP
-	      Tcl_ObjSetVar2(ay_safeinterp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
-			     TCL_GLOBAL_ONLY);
+	      Tcl_SetVar2Ex(ay_safeinterp, cancelled, NULL, Tcl_NewIntObj(1),
+			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 #endif
-	      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 	      return TK_DISCARD_EVENT;
 	    }
 	  else
