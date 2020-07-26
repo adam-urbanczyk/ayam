@@ -215,7 +215,7 @@ ay_root_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  ay_riopt *riopt = NULL;
  double dtemp = 0.0;
  int itemp = 0;
- char *result;
+ const char *stemp;
 
   if(!interp || !o)
     return AY_ENULL;
@@ -322,65 +322,65 @@ ay_root_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_GetIntFromObj(interp, to, &itemp);
   riopt->PatchSamples = itemp;
 
-  result = Tcl_GetVar2(interp, arr, "Textures",
-		       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  stemp = Tcl_GetVar2(interp, arr, "Textures",
+		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   if(riopt->textures)
     {
       free(riopt->textures);
       riopt->textures = NULL;
     }
 
-  if(!(riopt->textures = calloc(strlen(result)+1, sizeof(char))))
+  if(!(riopt->textures = calloc(strlen(stemp)+1, sizeof(char))))
     {
       ay_error(AY_EOMEM, fname, NULL);
       return AY_ERROR;
     }
-  strcpy(riopt->textures, result);
+  strcpy(riopt->textures, stemp);
 
-  result = Tcl_GetVar2(interp, arr, "Shaders",
-		       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  stemp = Tcl_GetVar2(interp, arr, "Shaders",
+		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   if(riopt->shaders)
     {
       free(riopt->shaders);
       riopt->shaders = NULL;
     }
 
-  if(!(riopt->shaders = calloc(strlen(result)+1, sizeof(char))))
+  if(!(riopt->shaders = calloc(strlen(stemp)+1, sizeof(char))))
     {
       ay_error(AY_EOMEM, fname, NULL);
       return AY_ERROR;
     }
-  strcpy(riopt->shaders, result);
+  strcpy(riopt->shaders, stemp);
 
-  result = Tcl_GetVar2(interp, arr, "Archives",
-		       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  stemp = Tcl_GetVar2(interp, arr, "Archives",
+		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   if(riopt->archives)
     {
       free(riopt->archives);
       riopt->archives = NULL;
     }
 
-  if(!(riopt->archives = calloc(strlen(result)+1, sizeof(char))))
+  if(!(riopt->archives = calloc(strlen(stemp)+1, sizeof(char))))
     {
       ay_error(AY_EOMEM, fname, NULL);
       return AY_ERROR;
     }
-  strcpy(riopt->archives, result);
+  strcpy(riopt->archives, stemp);
 
-  result = Tcl_GetVar2(interp, arr, "Procedurals",
-		       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  stemp = Tcl_GetVar2(interp, arr, "Procedurals",
+		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   if(riopt->procedurals)
     {
       free(riopt->procedurals);
       riopt->procedurals = NULL;
     }
 
-  if(!(riopt->procedurals = calloc(strlen(result)+1, sizeof(char))))
+  if(!(riopt->procedurals = calloc(strlen(stemp)+1, sizeof(char))))
     {
       ay_error(AY_EOMEM, fname, NULL);
       return AY_ERROR;
     }
-  strcpy(riopt->procedurals, result);
+  strcpy(riopt->procedurals, stemp);
 
   to = Tcl_GetVar2Ex(interp, arr, "TextureMem",
 		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -575,27 +575,27 @@ ay_root_readcb(FILE *fileptr, ay_object *o)
   if(!(riopt = calloc(1, sizeof(ay_riopt))))
     { return AY_EOMEM; }
 
-  fscanf(fileptr,"%lg\n",&riopt->Variance);
-  fscanf(fileptr,"%lg\n",&riopt->Samples_X);
-  fscanf(fileptr,"%lg\n",&riopt->Samples_Y);
-  fscanf(fileptr,"%d\n",&itemp);
+  fscanf(fileptr, "%lg\n", &riopt->Variance);
+  fscanf(fileptr, "%lg\n", &riopt->Samples_X);
+  fscanf(fileptr, "%lg\n", &riopt->Samples_Y);
+  fscanf(fileptr, "%d\n", &itemp);
   riopt->FilterFunc = (char)itemp;
-  fscanf(fileptr,"%d\n",&fwtemp/*riopt->FilterWidth*/);
-  fscanf(fileptr,"%d\n",&fhtemp/*riopt->FilterHeight*/);
-  fscanf(fileptr,"%lg\n",&riopt->ExpGain);
-  fscanf(fileptr,"%lg\n",&riopt->ExpGamma);
-  fscanf(fileptr,"%lg\n",&riopt->RGBA_ONE);
-  fscanf(fileptr,"%lg\n",&riopt->RGBA_MIN);
-  fscanf(fileptr,"%lg\n",&riopt->RGBA_MAX);
-  fscanf(fileptr,"%lg\n",&riopt->RGBA_Dither);
-  fscanf(fileptr,"%d\n",&riopt->MinSamples);
-  fscanf(fileptr,"%d\n",&riopt->MaxSamples);
-  fscanf(fileptr,"%d\n",&riopt->MaxRayLevel);
-  fscanf(fileptr,"%lg\n",&riopt->ShadowBias);
-  fscanf(fileptr,"%d\n",&itemp);
+  fscanf(fileptr, "%d\n", &fwtemp/*riopt->FilterWidth*/);
+  fscanf(fileptr, "%d\n", &fhtemp/*riopt->FilterHeight*/);
+  fscanf(fileptr, "%lg\n", &riopt->ExpGain);
+  fscanf(fileptr, "%lg\n", &riopt->ExpGamma);
+  fscanf(fileptr, "%lg\n", &riopt->RGBA_ONE);
+  fscanf(fileptr, "%lg\n", &riopt->RGBA_MIN);
+  fscanf(fileptr, "%lg\n", &riopt->RGBA_MAX);
+  fscanf(fileptr, "%lg\n", &riopt->RGBA_Dither);
+  fscanf(fileptr, "%d\n", &riopt->MinSamples);
+  fscanf(fileptr, "%d\n", &riopt->MaxSamples);
+  fscanf(fileptr, "%d\n", &riopt->MaxRayLevel);
+  fscanf(fileptr, "%lg\n", &riopt->ShadowBias);
+  fscanf(fileptr, "%d\n", &itemp);
   riopt->PRManSpec = itemp;
-  fscanf(fileptr,"%d\n",&riopt->RadSteps);
-  fscanf(fileptr,"%d",&riopt->PatchSamples);
+  fscanf(fileptr, "%d\n", &riopt->RadSteps);
+  fscanf(fileptr, "%d", &riopt->PatchSamples);
   (void)fgetc(fileptr);
 
   ay_status = ay_read_string(fileptr, &(riopt->textures));
@@ -623,14 +623,14 @@ ay_root_readcb(FILE *fileptr, ay_object *o)
       return ay_status;
     }
 
-  fscanf(fileptr,"%d\n",&riopt->texturemem);
-  fscanf(fileptr,"%d\n",&riopt->geommem);
+  fscanf(fileptr, "%d\n", &riopt->texturemem);
+  fscanf(fileptr, "%d\n", &riopt->geommem);
 
-  fscanf(fileptr,"%d\n",&riopt->width);
-  fscanf(fileptr,"%d\n",&riopt->height);
+  fscanf(fileptr, "%d\n", &riopt->width);
+  fscanf(fileptr, "%d\n", &riopt->height);
 
   /* read Atmosphere */
-  fscanf(fileptr,"%d\n",&has_atmosphere);
+  fscanf(fileptr, "%d\n", &has_atmosphere);
   if(has_atmosphere)
     {
       if(root->atmosphere)
@@ -647,7 +647,7 @@ ay_root_readcb(FILE *fileptr, ay_object *o)
     }
 
   /* read Imager */
-  fscanf(fileptr,"%d\n",&has_imager);
+  fscanf(fileptr, "%d\n", &has_imager);
   if(has_imager)
     {
       if(root->imager)
@@ -666,7 +666,7 @@ ay_root_readcb(FILE *fileptr, ay_object *o)
   if(ay_read_version >= 5)
     {
       /* since 1.6 */
-      fscanf(fileptr,"%d", &riopt->use_std_display);
+      fscanf(fileptr, "%d", &riopt->use_std_display);
       fgetc(fileptr);
 
       ay_status = ay_read_string(fileptr, &(riopt->procedurals));
@@ -695,8 +695,8 @@ ay_root_readcb(FILE *fileptr, ay_object *o)
   if(ay_read_version >= 10)
     {
       /* since 1.13 */
-      fscanf(fileptr,"%lg\n",&riopt->FilterWidth);
-      fscanf(fileptr,"%lg\n",&riopt->FilterHeight);
+      fscanf(fileptr, "%lg\n", &riopt->FilterWidth);
+      fscanf(fileptr, "%lg\n", &riopt->FilterHeight);
     }
   else
     {
@@ -753,79 +753,79 @@ ay_root_writecb(FILE *fileptr, ay_object *o)
   /* write RiOptions */
   riopt = root->riopt;
 
-  fprintf(fileptr,"%g\n",riopt->Variance);
-  fprintf(fileptr,"%g\n",riopt->Samples_X);
-  fprintf(fileptr,"%g\n",riopt->Samples_Y);
-  fprintf(fileptr,"%d\n",(int)(riopt->FilterFunc));
-  fprintf(fileptr,"%d\n",(int)riopt->FilterWidth);
-  fprintf(fileptr,"%d\n",(int)riopt->FilterHeight);
-  fprintf(fileptr,"%g\n",riopt->ExpGain);
-  fprintf(fileptr,"%g\n",riopt->ExpGamma);
-  fprintf(fileptr,"%g\n",riopt->RGBA_ONE);
-  fprintf(fileptr,"%g\n",riopt->RGBA_MIN);
-  fprintf(fileptr,"%g\n",riopt->RGBA_MAX);
-  fprintf(fileptr,"%g\n",riopt->RGBA_Dither);
+  fprintf(fileptr, "%g\n", riopt->Variance);
+  fprintf(fileptr, "%g\n", riopt->Samples_X);
+  fprintf(fileptr, "%g\n", riopt->Samples_Y);
+  fprintf(fileptr, "%d\n", (int)(riopt->FilterFunc));
+  fprintf(fileptr, "%d\n", (int)riopt->FilterWidth);
+  fprintf(fileptr, "%d\n", (int)riopt->FilterHeight);
+  fprintf(fileptr, "%g\n", riopt->ExpGain);
+  fprintf(fileptr, "%g\n", riopt->ExpGamma);
+  fprintf(fileptr, "%g\n", riopt->RGBA_ONE);
+  fprintf(fileptr, "%g\n", riopt->RGBA_MIN);
+  fprintf(fileptr, "%g\n", riopt->RGBA_MAX);
+  fprintf(fileptr, "%g\n", riopt->RGBA_Dither);
 
-  fprintf(fileptr,"%d\n",riopt->MinSamples);
-  fprintf(fileptr,"%d\n",riopt->MaxSamples);
-  fprintf(fileptr,"%d\n",riopt->MaxRayLevel);
-  fprintf(fileptr,"%g\n",riopt->ShadowBias);
-  fprintf(fileptr,"%d\n",(int)(riopt->PRManSpec));
-  fprintf(fileptr,"%d\n",riopt->RadSteps);
-  fprintf(fileptr,"%d\n",riopt->PatchSamples);
+  fprintf(fileptr, "%d\n", riopt->MinSamples);
+  fprintf(fileptr, "%d\n", riopt->MaxSamples);
+  fprintf(fileptr, "%d\n", riopt->MaxRayLevel);
+  fprintf(fileptr, "%g\n", riopt->ShadowBias);
+  fprintf(fileptr, "%d\n", (int)(riopt->PRManSpec));
+  fprintf(fileptr, "%d\n", riopt->RadSteps);
+  fprintf(fileptr, "%d\n", riopt->PatchSamples);
 
   if(riopt->textures)
-    fprintf(fileptr,"%s\n",riopt->textures);
+    fprintf(fileptr, "%s\n", riopt->textures);
   else
-    fprintf(fileptr,"\n");
+    fprintf(fileptr, "\n");
 
   if(riopt->archives)
-    fprintf(fileptr,"%s\n",riopt->archives);
+    fprintf(fileptr, "%s\n", riopt->archives);
   else
-    fprintf(fileptr,"\n");
+    fprintf(fileptr, "\n");
 
   if(riopt->shaders)
-    fprintf(fileptr,"%s\n",riopt->shaders);
+    fprintf(fileptr, "%s\n", riopt->shaders);
   else
-    fprintf(fileptr,"\n");
+    fprintf(fileptr, "\n");
 
-  fprintf(fileptr,"%d\n",riopt->texturemem);
-  fprintf(fileptr,"%d\n",riopt->geommem);
+  fprintf(fileptr, "%d\n", riopt->texturemem);
+  fprintf(fileptr, "%d\n", riopt->geommem);
 
-  fprintf(fileptr,"%d\n",riopt->width);
-  fprintf(fileptr,"%d\n",riopt->height);
+  fprintf(fileptr, "%d\n", riopt->width);
+  fprintf(fileptr, "%d\n", riopt->height);
 
   /* write Atmosphere */
   if(root->atmosphere)
     {
-      fprintf(fileptr,"1\n");
+      fprintf(fileptr, "1\n");
       ay_write_shader(fileptr, root->atmosphere);
     }
   else
     {
-      fprintf(fileptr,"0\n");
+      fprintf(fileptr, "0\n");
     }
 
   /* write Imager */
   if(root->imager)
     {
-      fprintf(fileptr,"1\n");
+      fprintf(fileptr, "1\n");
       ay_write_shader(fileptr, root->imager);
     }
   else
     {
-      fprintf(fileptr,"0\n");
+      fprintf(fileptr, "0\n");
     }
 
-  fprintf(fileptr,"%d\n",riopt->use_std_display);
+  fprintf(fileptr, "%d\n", riopt->use_std_display);
 
   if(riopt->procedurals)
-    fprintf(fileptr,"%s\n",riopt->procedurals);
+    fprintf(fileptr, "%s\n", riopt->procedurals);
   else
-    fprintf(fileptr,"\n");
+    fprintf(fileptr, "\n");
 
-  fprintf(fileptr,"%g\n",riopt->FilterWidth);
-  fprintf(fileptr,"%g\n",riopt->FilterHeight);
+  fprintf(fileptr, "%g\n", riopt->FilterWidth);
+  fprintf(fileptr, "%g\n", riopt->FilterHeight);
 
  return AY_OK;
 } /* ay_root_writecb */
