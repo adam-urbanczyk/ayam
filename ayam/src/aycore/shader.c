@@ -78,7 +78,7 @@ ay_shader_scanslcsarg(SLC_VISSYMDEF *symbol, Tcl_DString *ds)
 #endif /* AYUSESLCARGS */
 
 /* ay_shader_scanslctcmd:
- *  scan a shader compiled with slc with libslcargs.a
+ *  scan a shader compiled with slc (from BMRT) with libslcargs.a
  */
 int
 ay_shader_scanslctcmd(ClientData clientData, Tcl_Interp *interp,
@@ -119,32 +119,34 @@ ay_shader_scanslctcmd(ClientData clientData, Tcl_Interp *interp,
     {
     case SLC_TYPE_SURFACE:
       Tcl_DStringAppend(&ds, " surface ", -1);
-     break;
-   case SLC_TYPE_DISPLACEMENT:
+      break;
+    case SLC_TYPE_DISPLACEMENT:
       Tcl_DStringAppend(&ds, " displacement ", -1);
-     break;
-   case SLC_TYPE_LIGHT:
+      break;
+    case SLC_TYPE_LIGHT:
       Tcl_DStringAppend(&ds, " light ", -1);
-     break;
-   case SLC_TYPE_VOLUME:
-     Tcl_DStringAppend(&ds, " volume ", -1);
-     break;
-   case SLC_TYPE_IMAGER:
-     Tcl_DStringAppend(&ds, " imager ", -1);
-     break;
-   case SLC_TYPE_TRANSFORMATION:
-     Tcl_DStringAppend(&ds, " transformation ", -1);
-     break;
-   default:
-     break;
-   }
+      break;
+    case SLC_TYPE_VOLUME:
+      Tcl_DStringAppend(&ds, " volume ", -1);
+      break;
+    case SLC_TYPE_IMAGER:
+      Tcl_DStringAppend(&ds, " imager ", -1);
+      break;
+    case SLC_TYPE_TRANSFORMATION:
+      Tcl_DStringAppend(&ds, " transformation ", -1);
+      break;
+    default:
+      ay_error(AY_ERROR, fname, "skipping shader of unknown type");
+      ay_error(AY_ERROR, fname, argv[1]);
+      goto cleanup;
+      break;
+    }
 
   /* get arguments of shader */
   numargs = SLC_GetNArgs();
   Tcl_DStringAppend(&ds, "{ ", -1);
   for(i = 1; i <= numargs; i++)
     {
-
       symbol = NULL;
       symbol = SLC_GetArgById(i);
 
@@ -152,76 +154,72 @@ ay_shader_scanslctcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  ay_error(AY_ERROR, argv[0], "Cannot get symbol from shader:");
 	  ay_error(AY_ERROR, argv[0], argv[1]);
-	  SLC_EndShader();
-	  Tcl_DStringFree(&ds);
-	  return TCL_OK;
+	  goto cleanup;
 	}
 
       /* XXXX temporarily discard array arguments   */
       /* libslcargs cannot handle them as of 2.5h!  */
       if(symbol->svd_arraylen < 1)
 	{
-
-      Tcl_DStringAppend(&ds, "{ ", -1);
-      Tcl_DStringAppend(&ds, symbol->svd_name, -1);
-      Tcl_DStringAppend(&ds, " ", -1 );
-
-      switch(symbol->svd_type)
-	{
-	case SLC_TYPE_POINT:
-	  Tcl_DStringAppend(&ds, "point ", -1);
-	  break;
-	case SLC_TYPE_COLOR:
-	  Tcl_DStringAppend(&ds, "color ", -1);
-	  break;
-	case SLC_TYPE_VECTOR:
-	  Tcl_DStringAppend(&ds, "vector ", -1);
-	  break;
-	case SLC_TYPE_NORMAL:
-	  Tcl_DStringAppend(&ds, "normal ", -1);
-	  break;
-	case SLC_TYPE_MATRIX:
-	  Tcl_DStringAppend(&ds, "matrix ", -1);
-	  break;
-	case SLC_TYPE_SCALAR:
-	  Tcl_DStringAppend(&ds, "float ", -1);
-	  break;
-	case SLC_TYPE_STRING:
-	  Tcl_DStringAppend(&ds, "string ", -1);
-	  break;
-	default:
-	  break;
-	}
-
-      arraylen = symbol->svd_arraylen;
-      sprintf(buffer, "%d ", arraylen);
-      Tcl_DStringAppend(&ds, buffer, -1);
-
-      if(arraylen > 0)
-	{
 	  Tcl_DStringAppend(&ds, "{ ", -1);
-	  for(j = 0; j < arraylen; j++)
+	  Tcl_DStringAppend(&ds, symbol->svd_name, -1);
+	  Tcl_DStringAppend(&ds, " ", -1 );
+
+	  switch(symbol->svd_type)
 	    {
-	      element = NULL;
-	      element = SLC_GetArrayArgElement(symbol, j);
-	      if(!element)
+	    case SLC_TYPE_POINT:
+	      Tcl_DStringAppend(&ds, "point ", -1);
+	      break;
+	    case SLC_TYPE_COLOR:
+	      Tcl_DStringAppend(&ds, "color ", -1);
+	      break;
+	    case SLC_TYPE_VECTOR:
+	      Tcl_DStringAppend(&ds, "vector ", -1);
+	      break;
+	    case SLC_TYPE_NORMAL:
+	      Tcl_DStringAppend(&ds, "normal ", -1);
+	      break;
+	    case SLC_TYPE_MATRIX:
+	      Tcl_DStringAppend(&ds, "matrix ", -1);
+	      break;
+	    case SLC_TYPE_SCALAR:
+	      Tcl_DStringAppend(&ds, "float ", -1);
+	      break;
+	    case SLC_TYPE_STRING:
+	      Tcl_DStringAppend(&ds, "string ", -1);
+	      break;
+	    default:
+	      break;
+	    }
+
+	  arraylen = symbol->svd_arraylen;
+	  sprintf(buffer, "%d ", arraylen);
+	  Tcl_DStringAppend(&ds, buffer, -1);
+
+	  if(arraylen > 0)
+	    {
+	      Tcl_DStringAppend(&ds, "{ ", -1);
+	      for(j = 0; j < arraylen; j++)
 		{
-		  ay_error(AY_ERROR, argv[0], "Could not get array element:");
-		  ay_error(AY_ERROR, argv[0], symbol->svd_name);
-		  Tcl_DStringFree(&ds);
-		  return TCL_OK;
-		} /* if */
-	      ay_shader_scanslcsarg(element, &ds);
-	    } /* for */
+		  element = NULL;
+		  element = SLC_GetArrayArgElement(symbol, j);
+		  if(!element)
+		    {
+		      ay_error(AY_ERROR, argv[0],
+			       "Could not get array element:");
+		      ay_error(AY_ERROR, argv[0], symbol->svd_name);
+		      goto cleanup;
+		    } /* if */
+		  ay_shader_scanslcsarg(element, &ds);
+		} /* for */
 
+	      Tcl_DStringAppend(&ds, "} ", -1);
+	    }
+	  else
+	    {
+	      ay_shader_scanslcsarg(symbol, &ds);
+	    } /* if */
 	  Tcl_DStringAppend(&ds, "} ", -1);
-	}
-      else
-	{
-	  ay_shader_scanslcsarg(symbol, &ds);
-	} /* if */
-      Tcl_DStringAppend(&ds, "} ", -1);
-
 	}
       else
 	{
@@ -230,14 +228,16 @@ ay_shader_scanslctcmd(ClientData clientData, Tcl_Interp *interp,
 	} /* if */
       /* XXXX temporarily discard array arguments */
     } /* for */
+
   Tcl_DStringAppend(&ds, "} ", -1);
 
-
-  SLC_EndShader();
-
+  /* return result */
   Tcl_SetVar(interp, argv[2], Tcl_DStringValue(&ds), TCL_LEAVE_ERR_MSG);
 
+cleanup:
   Tcl_DStringFree(&ds);
+  SLC_EndShader();
+
 #else
  ay_error(AY_ERROR, argv[0], "This Ayam has not been linked with libslcargs!");
 #endif /* AYUSESLCARGS */
@@ -398,6 +398,9 @@ ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
       Tcl_DStringAppend(&ds, " transformation ", -1);
       break;
     default:
+      ay_error(AY_ERROR, argv[0], "skipping shader of unknown type");
+      ay_error(AY_ERROR, argv[0], argv[1]);
+      goto cleanup;
       break;
     }
 
@@ -406,7 +409,6 @@ ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_DStringAppend(&ds, "{ ", -1);
   for(i = 0; i < numargs; i++)
     {
-
       symbol = NULL;
       symbol = SLX_GetArgById(i);
 
@@ -414,11 +416,7 @@ ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  ay_error(AY_ERROR, argv[0], "Cannot get symbol from shader:");
 	  ay_error(AY_ERROR, argv[0], argv[1]);
-	  /*
-	  SLX_EndShader();
-	  Tcl_DStringFree(&ds);
-	  return TCL_OK;
-	  */
+	  goto cleanup;
 	}
 
       /* XXXX temporarily discard array arguments   */
@@ -479,8 +477,7 @@ ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
 		{
 		  ay_error(AY_ERROR, argv[0], "Could not get array element:");
 		  ay_error(AY_ERROR, argv[0], symbol->svd_name);
-		  Tcl_DStringFree(&ds);
-		  return TCL_OK;
+		  goto cleanup;
 		} /* if */
 	      ay_shader_scanslxsarg(element, &ds);
 	    } /* for */
@@ -501,14 +498,15 @@ ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
 	} /* if */
       /* XXXX temporarily discard array arguments */
     } /* for */
+
   Tcl_DStringAppend(&ds, "} ", -1);
 
-
-  SLX_EndShader();
-
+  /* return result */
   Tcl_SetVar(interp, argv[2], Tcl_DStringValue(&ds), TCL_LEAVE_ERR_MSG);
 
+cleanup:
   Tcl_DStringFree(&ds);
+  SLX_EndShader();
 #else
  ay_error(AY_ERROR, argv[0], "This Ayam has not been linked with libslxargs!");
  ay_error(AY_ERROR, argv[0],
@@ -1265,12 +1263,11 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp *interp,
   ton = Tcl_NewStringObj(n1, -1);
 
   /* get shadername */
-  result = Tcl_GetVar2(interp, n1, "Name",
-		       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  result = Tcl_GetVar2(interp, n1, "Name", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  /* user specified no new shader -> bail out! */
-  if(!strcmp("", result))
+  if(!result)
     {
+      /* user specified no new shader -> bail out! */
       goto cleanup;
     }
 
@@ -1432,6 +1429,7 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp *interp,
 	      newarg->val.matrix[j] = (float)dtemp;
 	    } /* for */
 	  break;
+
 	default:
 	  break;
 	} /* switch */
