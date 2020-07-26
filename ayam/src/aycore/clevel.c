@@ -427,7 +427,6 @@ ay_clevel_gettcmd(ClientData clientData, Tcl_Interp *interp,
  char *typename;
  Tcl_DString ds;
  int count = 0;
- Tcl_Obj *to = NULL, *toa = NULL;
 
   /* check args */
   if(argc < 2)
@@ -450,12 +449,8 @@ ay_clevel_gettcmd(ClientData clientData, Tcl_Interp *interp,
 	  count++;
 	  o = o->next;
 	}
-
-      toa = Tcl_NewStringObj(argv[2], -1);
-      to = Tcl_NewIntObj(count);
-      Tcl_ObjSetVar2(interp, toa, NULL, to, TCL_LEAVE_ERR_MSG);
-      Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-
+      Tcl_SetVar2Ex(interp, argv[2], NULL, Tcl_NewIntObj(count),
+		    TCL_LEAVE_ERR_MSG);
       return TCL_OK;
     }
 

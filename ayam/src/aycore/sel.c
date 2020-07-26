@@ -339,7 +339,6 @@ ay_sel_getseltcmd(ClientData clientData, Tcl_Interp *interp,
     {
       /* always clear result variable */
       Tcl_SetVar(interp, argv[1], "", TCL_LEAVE_ERR_MSG);
-      toa = Tcl_NewStringObj(argv[1], -1);
     }
 
   while(o)
@@ -349,7 +348,7 @@ ay_sel_getseltcmd(ClientData clientData, Tcl_Interp *interp,
 	  to = Tcl_NewIntObj(i);
 	  if(!return_result)
 	    {
-	      Tcl_ObjSetVar2(interp, toa, NULL, to, TCL_APPEND_VALUE |
+	      Tcl_SetVar2Ex(interp, argv[1], NULL, to, TCL_APPEND_VALUE |
 			     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
 	    }
 	  else
@@ -382,10 +381,6 @@ ay_sel_getseltcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
 cleanup:
-  if(toa)
-    {
-      Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-    }
 
  return TCL_OK;
 } /* ay_sel_getseltcmd */

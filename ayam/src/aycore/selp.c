@@ -700,7 +700,7 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
  ay_point *p;
- Tcl_Obj *toa = NULL, *to = NULL, *tor = NULL;
+ Tcl_Obj *to = NULL, *tor = NULL;
 
   /* parse args */
   if(argc == 1)
@@ -726,7 +726,6 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
 		}
 	      else
 		{
-		  toa = Tcl_NewStringObj(argv[2], -1);
 		  Tcl_SetVar(interp, argv[2], "", TCL_LEAVE_ERR_MSG);
 		}
 	      count = AY_TRUE;
@@ -746,7 +745,6 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
 		}
 	      else
 		{
-		  toa = Tcl_NewStringObj(argv[2], -1);
 		  Tcl_SetVar(interp, argv[2], "", TCL_LEAVE_ERR_MSG);
 		}
 
@@ -764,13 +762,10 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
 		      if(return_result)
 			Tcl_ListObjAppendElement(interp, tor, to);
 		      else
-			Tcl_ObjSetVar2(interp, toa, NULL, to, TCL_APPEND_VALUE |
-				       TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
+			Tcl_SetVar2Ex(interp, argv[2], NULL, to,
+				      TCL_APPEND_VALUE | TCL_LIST_ELEMENT |
+				      TCL_LEAVE_ERR_MSG);
 		      p = p->next;
-		    }
-		  if(toa)
-		    {
-		      Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
 		    }
 		} /* if sel */
 
@@ -861,7 +856,7 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(return_result)
 	    Tcl_ListObjAppendElement(interp, tor, to);
 	  else
-	    Tcl_ObjSetVar2(interp, toa, NULL, to, TCL_APPEND_VALUE |
+	    Tcl_SetVar2Ex(interp, argv[2], NULL, to, TCL_APPEND_VALUE |
 			   TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
 
 	  sel = sel->next;
@@ -906,11 +901,6 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
     } /* while */
 
 cleanup:
-
-  if(toa)
-    {
-      Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-    }
 
   if(indices)
     free(indices);
