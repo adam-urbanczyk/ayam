@@ -782,10 +782,14 @@ ay_shader_gettcmd(ClientData clientData, Tcl_Interp *interp,
  ay_mat_object *material = NULL;
  ay_shader *shader = NULL;
  ay_shader_arg *arg = NULL;
+ char *arr = NULL;
  char *n1 = NULL, *sname = NULL/*, *sfile = NULL*/;
- int shadertype = 0, itemp = 0, i;
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ int shadertype = 0, i;
+ Tcl_Obj *to = NULL;
  char *man[] = {"_0","_1","_2","_3","_4","_5","_6","_7","_8","_9","_10","_11","_12","_13","_14","_15"};
+ char *rgb[3] ={"_R","_G","_B"};
+ char *xyz[3] = {"_X","_Y","_Z"};
+ Tcl_DString ds;
 
   if(!sel) /* oops? */
     o = ay_root;
@@ -799,29 +803,36 @@ ay_shader_gettcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  if(strstr(argv[1],"surface"))
-    shadertype = AY_STSURFACE;
-  else
-  if(strstr(argv[1],"displacement"))
-    shadertype = AY_STDISPLACEMENT;
-  else
-  if(strstr(argv[1],"interior"))
-    shadertype = AY_STINTERIOR;
-  else
-  if(strstr(argv[1],"exterior"))
-    shadertype = AY_STEXTERIOR;
-  else
-  if(strstr(argv[1],"atmosphere"))
-    shadertype = AY_STATMOSPHERE;
-  else
-  if(strstr(argv[1],"light"))
-    shadertype = AY_STLIGHT;
-  else
-  if(strstr(argv[1],"imager"))
-    shadertype = AY_STIMAGER;
-  else
-  if(strstr(argv[1],"transformation"))
-    shadertype = AY_STTRANSFORMATION;
+  switch(argv[1][0])
+    {
+    case 's':
+      shadertype = AY_STSURFACE;
+      break;
+    case 'd':
+      shadertype = AY_STDISPLACEMENT;
+      break;
+    case 'i':
+      if(argv[1][1] == 'n')
+	shadertype = AY_STINTERIOR;
+      else
+	shadertype = AY_STIMAGER;
+      break;
+    case 'e':
+      shadertype = AY_STEXTERIOR;
+      break;
+    case 'a':
+      shadertype = AY_STATMOSPHERE;
+      break;
+    case 'l':
+      shadertype = AY_STLIGHT;
+      break;
+    case 't':
+      shadertype = AY_STTRANSFORMATION;
+      break;
+    default:
+      ay_error(AY_EARGS, argv[0], "unknown shadertype");
+      return TCL_OK;
+    }
 
   /* get shader */
   switch(shadertype)
@@ -919,158 +930,113 @@ ay_shader_gettcmd(ClientData clientData, Tcl_Interp *interp,
       /*      break;*/
     } /* switch */
 
-  n1 = argv[2];
+  arr = argv[2];
 
-  Tcl_SetVar2(interp,n1,"Name","",TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar2(interp, arr, "Name", "",
+	      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   if(!shader)
     { return TCL_OK; }
-
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
 
   arg = shader->arg;
   sname = shader->name;
   /*	  sfile = shader->loc;*/
 
-  Tcl_SetVar2(interp,n1,"Name",sname,TCL_LEAVE_ERR_MSG |
+  Tcl_SetVar2(interp, arr, "Name", sname, TCL_LEAVE_ERR_MSG |
 	      TCL_GLOBAL_ONLY);
   /*  Tcl_SetVar2(interp,n1,"File",sfile,TCL_LEAVE_ERR_MSG |
 	      TCL_GLOBAL_ONLY);*/
-  Tcl_SetVar2(interp,n1,"ArgNames","",TCL_LEAVE_ERR_MSG |
+  Tcl_SetVar2(interp, arr, "ArgNames", "", TCL_LEAVE_ERR_MSG |
 	      TCL_GLOBAL_ONLY);
-  Tcl_SetVar2(interp,n1,"ArgTypes","",TCL_LEAVE_ERR_MSG |
+  Tcl_SetVar2(interp, arr, "ArgTypes", "", TCL_LEAVE_ERR_MSG |
 	      TCL_GLOBAL_ONLY);
 
   while(arg)
     {
-      Tcl_SetVar2(interp,n1,"ArgNames",arg->name, TCL_LEAVE_ERR_MSG |
+      Tcl_SetVar2(interp, arr, "ArgNames", arg->name, TCL_LEAVE_ERR_MSG |
 		  TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT);
 
       switch(arg->type)
 	{
 	case AY_SACOLOR:
-	  Tcl_SetVar2(interp,n1,"ArgTypes", "color", TCL_LEAVE_ERR_MSG |
+	  Tcl_SetVar2(interp, arr, "ArgTypes", "color", TCL_LEAVE_ERR_MSG |
 		      TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT);
-
-	  Tcl_SetStringObj(ton,arg->name,-1);
-	  Tcl_AppendToObj(ton, "_R", -1);
-
-	  itemp = (int)(arg->val.color[0]*255);
-
-	  to = Tcl_NewIntObj(itemp);
-	  Tcl_ObjSetVar2(interp,toa,ton,to, TCL_LEAVE_ERR_MSG |
-			 TCL_GLOBAL_ONLY);
-
-	  Tcl_SetStringObj(ton,arg->name,-1);
-	  Tcl_AppendToObj(ton, "_G", -1);
-	  itemp = (int)(arg->val.color[1]*255);
-	  to = Tcl_NewIntObj(itemp);
-	  Tcl_ObjSetVar2(interp,toa,ton,to, TCL_LEAVE_ERR_MSG |
-			 TCL_GLOBAL_ONLY);
-
-	  Tcl_SetStringObj(ton,arg->name,-1);
-	  Tcl_AppendToObj(ton, "_B", -1);
-	  itemp = (int)(arg->val.color[2]*255);
-	  to = Tcl_NewIntObj(itemp);
-	  Tcl_ObjSetVar2(interp,toa,ton,to, TCL_LEAVE_ERR_MSG |
-			 TCL_GLOBAL_ONLY);
+	  Tcl_DStringInit(&ds);
+	  Tcl_DStringAppend(&ds, arg->name, -1);
+	  for(i = 0; i < 3; i++)
+	    {
+	      Tcl_DStringAppend(&ds, rgb[i], 2);
+	      to = Tcl_NewIntObj((int)(arg->val.color[i]*255));
+	      Tcl_SetVar2Ex(interp, arr, Tcl_DStringValue(&ds), to,
+			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	      Tcl_DStringSetLength(&ds, Tcl_DStringLength(&ds)-2);
+	    }
+	  Tcl_DStringFree(&ds);
 	  break;
 
 	case AY_SAPOINT:
-	  Tcl_SetVar2(interp,n1,"ArgTypes", "point", TCL_LEAVE_ERR_MSG |
-		      TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT);
-
-	  Tcl_SetStringObj(ton,arg->name,-1);
-	  Tcl_AppendToObj(ton, "_X", -1);
-	  to = Tcl_NewDoubleObj(arg->val.point[0]);
-	  Tcl_ObjSetVar2(interp,toa,ton,to, TCL_LEAVE_ERR_MSG |
-			 TCL_GLOBAL_ONLY);
-	  Tcl_SetStringObj(ton,arg->name,-1);
-	  Tcl_AppendToObj(ton, "_Y", -1);
-	  to = Tcl_NewDoubleObj(arg->val.point[1]);
-	  Tcl_ObjSetVar2(interp,toa,ton,to, TCL_LEAVE_ERR_MSG |
-			 TCL_GLOBAL_ONLY);
-	  Tcl_SetStringObj(ton,arg->name,-1);
-	  Tcl_AppendToObj(ton, "_Z", -1);
-	  to = Tcl_NewDoubleObj(arg->val.point[2]);
-	  Tcl_ObjSetVar2(interp,toa,ton,to, TCL_LEAVE_ERR_MSG |
-			 TCL_GLOBAL_ONLY);
-	  break;
-
 	case AY_SAVECTOR:
-	  Tcl_SetVar2(interp,n1,"ArgTypes", "vector", TCL_LEAVE_ERR_MSG |
-		      TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT);
-
-	  Tcl_SetStringObj(ton,arg->name,-1);
-	  Tcl_AppendToObj(ton, "_X", -1);
-	  to = Tcl_NewDoubleObj(arg->val.point[0]);
-	  Tcl_ObjSetVar2(interp,toa,ton,to, TCL_LEAVE_ERR_MSG |
-			 TCL_GLOBAL_ONLY);
-	  Tcl_SetStringObj(ton,arg->name,-1);
-	  Tcl_AppendToObj(ton, "_Y", -1);
-	  to = Tcl_NewDoubleObj(arg->val.point[1]);
-	  Tcl_ObjSetVar2(interp,toa,ton,to, TCL_LEAVE_ERR_MSG |
-			 TCL_GLOBAL_ONLY);
-	  Tcl_SetStringObj(ton,arg->name,-1);
-	  Tcl_AppendToObj(ton, "_Z", -1);
-	  to = Tcl_NewDoubleObj(arg->val.point[2]);
-	  Tcl_ObjSetVar2(interp,toa,ton,to, TCL_LEAVE_ERR_MSG |
-			 TCL_GLOBAL_ONLY);
-	  break;
-
 	case AY_SANORMAL:
-	  Tcl_SetVar2(interp,n1,"ArgTypes", "normal", TCL_LEAVE_ERR_MSG |
-		      TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT);
-
-	  Tcl_SetStringObj(ton,arg->name,-1);
-	  Tcl_AppendToObj(ton, "_X", -1);
-	  to = Tcl_NewDoubleObj(arg->val.point[0]);
-	  Tcl_ObjSetVar2(interp,toa,ton,to, TCL_LEAVE_ERR_MSG |
-			 TCL_GLOBAL_ONLY);
-	  Tcl_SetStringObj(ton,arg->name,-1);
-	  Tcl_AppendToObj(ton, "_Y", -1);
-	  to = Tcl_NewDoubleObj(arg->val.point[1]);
-	  Tcl_ObjSetVar2(interp,toa,ton,to, TCL_LEAVE_ERR_MSG |
-			 TCL_GLOBAL_ONLY);
-	  Tcl_SetStringObj(ton,arg->name,-1);
-	  Tcl_AppendToObj(ton, "_Z", -1);
-	  to = Tcl_NewDoubleObj(arg->val.point[2]);
-	  Tcl_ObjSetVar2(interp,toa,ton,to, TCL_LEAVE_ERR_MSG |
-			 TCL_GLOBAL_ONLY);
+	  switch(arg->type)
+	    {
+	    case AY_SAPOINT:
+	      Tcl_SetVar2(interp,n1,"ArgTypes", "point", TCL_LEAVE_ERR_MSG |
+		       TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT);
+	      break;
+	    case AY_SAVECTOR:
+	      Tcl_SetVar2(interp,n1,"ArgTypes", "vector", TCL_LEAVE_ERR_MSG |
+		       TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT);
+	    case AY_SANORMAL:
+	      Tcl_SetVar2(interp,n1,"ArgTypes", "normal", TCL_LEAVE_ERR_MSG |
+		       TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT);
+	      break;
+	    default:
+	      break;
+	    }
+	  Tcl_DStringInit(&ds);
+	  Tcl_DStringAppend(&ds, arg->name, -1);
+	  for(i = 0; i < 3; i++)
+	    {
+	      Tcl_DStringAppend(&ds, xyz[i], 2);
+	      to = Tcl_NewDoubleObj(arg->val.point[i]);
+	      Tcl_SetVar2Ex(interp, arr, Tcl_DStringValue(&ds), to,
+			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	      Tcl_DStringSetLength(&ds, Tcl_DStringLength(&ds)-2);
+	    }
+	  Tcl_DStringFree(&ds);
 	  break;
-
 	case AY_SASCALAR:
-	  Tcl_SetVar2(interp,n1,"ArgTypes", "float", TCL_LEAVE_ERR_MSG |
+	  Tcl_SetVar2(interp, arr, "ArgTypes", "float", TCL_LEAVE_ERR_MSG |
 		      TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT);
-
-	  Tcl_SetStringObj(ton,arg->name,-1);
 	  to = Tcl_NewDoubleObj(arg->val.scalar);
-	  Tcl_ObjSetVar2(interp,toa,ton,to, TCL_LEAVE_ERR_MSG |
-			 TCL_GLOBAL_ONLY);
+	  Tcl_SetVar2Ex(interp, arr, arg->name, to,
+			TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	  break;
 
 	case AY_SASTRING:
-	  Tcl_SetVar2(interp,n1,"ArgTypes", "string", TCL_LEAVE_ERR_MSG |
+	  Tcl_SetVar2(interp, arr, "ArgTypes", "string", TCL_LEAVE_ERR_MSG |
 		      TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT);
 	  if(arg->val.string)
-	    Tcl_SetVar2(interp,n1, arg->name, arg->val.string,
+	    Tcl_SetVar2(interp, arr, arg->name, arg->val.string,
 			TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	  else
-	    Tcl_SetVar2(interp,n1, arg->name, "",
+	    Tcl_SetVar2(interp, arr, arg->name, "",
 			TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	  break;
 
 	case AY_SAMATRIX:
-	  Tcl_SetVar2(interp,n1,"ArgTypes", "matrix", TCL_LEAVE_ERR_MSG |
+	  Tcl_SetVar2(interp, arr, "ArgTypes", "matrix", TCL_LEAVE_ERR_MSG |
 		      TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT);
+
 	  for(i = 0; i < 16; i++)
 	    {
-	      Tcl_SetStringObj(ton,arg->name,-1);
-	      Tcl_AppendToObj(ton, man[i], -1);
+	      Tcl_DStringInit(&ds);
+	      Tcl_DStringAppend(&ds, arg->name, -1);
+	      Tcl_DStringAppend(&ds, man[i], -1);
 	      to = Tcl_NewDoubleObj((double)(arg->val.matrix[i]));
-	      Tcl_ObjSetVar2(interp,toa,ton,to, TCL_LEAVE_ERR_MSG |
-			     TCL_GLOBAL_ONLY);
+	      Tcl_SetVar2Ex(interp, arr, Tcl_DStringValue(&ds), to,
+			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	      Tcl_DStringFree(&ds);
 	    } /* for */
 	  break;
 
@@ -1082,9 +1048,6 @@ ay_shader_gettcmd(ClientData clientData, Tcl_Interp *interp,
 	} /* switch */
       arg = arg->next;
     } /* while */
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
  return TCL_OK;
 } /* ay_shader_gettcmd */
@@ -1105,12 +1068,15 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp *interp,
  ay_shader *newshader = NULL, **shader = NULL;
  ay_shader_arg *newarg = NULL, **argnext = NULL;
  const char *result;
- char *n1=NULL;
+ char *arr = NULL;
  int sargnc = 0, sargtc = 0, i, j, shadertype = 0, argtype = 0;
  double dtemp = 0.0;
  char **sargnv = NULL, **sargtv = NULL;
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ Tcl_Obj *to = NULL;
  char *man[] = {"_0","_1","_2","_3","_4","_5","_6","_7","_8","_9","_10","_11","_12","_13","_14","_15"};
+ char *rgb[3] ={"_R","_G","_B"};
+ char *xyz[3] = {"_X","_Y","_Z"};
+ Tcl_DString ds;
 
   if(!sel) /* oops? */
     o = ay_root;
@@ -1124,30 +1090,36 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  if(strstr(argv[1],"surface"))
-    shadertype = AY_STSURFACE;
-  else
-  if(strstr(argv[1],"displacement"))
-    shadertype = AY_STDISPLACEMENT;
-  else
-  if(strstr(argv[1],"interior"))
-    shadertype = AY_STINTERIOR;
-  else
-  if(strstr(argv[1],"exterior"))
-    shadertype = AY_STEXTERIOR;
-  else
-  if(strstr(argv[1],"atmosphere"))
-    shadertype = AY_STATMOSPHERE;
-  else
-  if(strstr(argv[1],"light"))
-    shadertype = AY_STLIGHT;
-  else
-  if(strstr(argv[1],"imager"))
-    shadertype = AY_STIMAGER;
-  else
-  if(strstr(argv[1],"transformation"))
-    shadertype = AY_STTRANSFORMATION;
-
+  switch(argv[1][0])
+    {
+    case 's':
+      shadertype = AY_STSURFACE;
+      break;
+    case 'd':
+      shadertype = AY_STDISPLACEMENT;
+      break;
+    case 'i':
+      if(argv[1][1] == 'n')
+	shadertype = AY_STINTERIOR;
+      else
+	shadertype = AY_STIMAGER;
+      break;
+    case 'e':
+      shadertype = AY_STEXTERIOR;
+      break;
+    case 'a':
+      shadertype = AY_STATMOSPHERE;
+      break;
+    case 'l':
+      shadertype = AY_STLIGHT;
+      break;
+    case 't':
+      shadertype = AY_STTRANSFORMATION;
+      break;
+    default:
+      ay_error(AY_EARGS, argv[0], "unknown shadertype");
+      return TCL_OK;
+    }
 
   /* get shader */
   switch(shadertype)
@@ -1258,14 +1230,12 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp *interp,
     return TCL_OK;
 
   /* prepare Tcl Objects */
-  n1 = argv[2];
-  toa = Tcl_NewStringObj(n1, -1);
-  ton = Tcl_NewStringObj(n1, -1);
+  arr = argv[2];
 
   /* get shadername */
-  result = Tcl_GetVar2(interp, n1, "Name", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  if(!result)
+  result = Tcl_GetVar2(interp, arr, "Name",
+		       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  if(!result || *result == '\0')
     {
       /* user specified no new shader -> bail out! */
       goto cleanup;
@@ -1289,38 +1259,53 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp *interp,
   newshader->type = shadertype;
 
   /* decompose argument-list */
-  Tcl_SplitList(interp,Tcl_GetVar2(interp, n1, "ArgNames",
-				   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY),
+  Tcl_SplitList(interp, Tcl_GetVar2(interp, arr, "ArgNames",
+				    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY),
 		&sargnc, &sargnv);
-  Tcl_SplitList(interp,Tcl_GetVar2(interp, n1, "ArgTypes",
-				   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY),
+  Tcl_SplitList(interp, Tcl_GetVar2(interp, arr, "ArgTypes",
+				    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY),
 		&sargtc, &sargtv);
-
 
   argnext = &(newshader->arg);
   for(i = 0; i < sargnc; i++)
     {
       /* which argtype? */
-      if(!strcmp(sargtv[i],"float"))
-	argtype = AY_SASCALAR;
-      else
-      if(!strcmp(sargtv[i],"color"))
-	argtype = AY_SACOLOR;
-      else
-      if(!strcmp(sargtv[i],"point"))
-	argtype = AY_SAPOINT;
-      else
-      if(!strcmp(sargtv[i],"string"))
-	argtype = AY_SASTRING;
-      else
-      if(!strcmp(sargtv[i],"vector"))
-	argtype = AY_SAVECTOR;
-      else
-      if(!strcmp(sargtv[i],"normal"))
-	argtype = AY_SANORMAL;
-      else
-      if(!strcmp(sargtv[i],"matrix"))
-	argtype = AY_SAMATRIX;
+      switch(sargtv[i][0])
+	{
+	case 'f':
+	  /* float */
+	  argtype = AY_SASCALAR;
+	  break;
+	case 'c':
+	  /* color */
+	  argtype = AY_SACOLOR;
+	  break;
+	case 'p':
+	  /* point */
+	  argtype = AY_SAPOINT;
+	  break;
+	case 's':
+	  /* string */
+	  argtype = AY_SASTRING;
+	  break;
+	case 'v':
+	  /* vector */
+	  argtype = AY_SAVECTOR;
+	  break;
+	case 'n':
+	  /* normal */
+	  argtype = AY_SANORMAL;
+	  break;
+	case 'm':
+	  /* matrix */
+	  argtype = AY_SAMATRIX;
+	  break;
+	default:
+	  ay_shader_free(newshader);
+	  ay_error(AY_ERROR, argv[0], "unknown argtype");
+	  ay_error(AY_ERROR, argv[0], sargtv[i]);
+	  goto cleanup;
+	}
 
       /* create new shader-arg-struct */
       if(!(newarg = calloc(1, sizeof(ay_shader_arg))))
@@ -1345,69 +1330,48 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp *interp,
       switch(argtype)
 	{
 	case AY_SACOLOR:
-	  Tcl_SetStringObj(ton,sargnv[i],-1);
-	  Tcl_AppendStringsToObj(ton,"_R",NULL);
-	  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-			      TCL_GLOBAL_ONLY);
-	  Tcl_GetDoubleFromObj(interp, to, &dtemp);
-	  if(dtemp < 0) dtemp = 0.0;
-	  if(dtemp > 255) dtemp = 255.0;
-	  newarg->val.color[0]=(float)(dtemp/255.0);
-
-	  Tcl_SetStringObj(ton,sargnv[i],-1);
-	  Tcl_AppendStringsToObj(ton,"_G",NULL);
-	  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-			      TCL_GLOBAL_ONLY);
-	  Tcl_GetDoubleFromObj(interp, to, &dtemp);
-	  if(dtemp < 0) dtemp = 0.0;
-	  if(dtemp > 255) dtemp = 255.0;
-	  newarg->val.color[1]=(float)(dtemp/255.0);
-
-	  Tcl_SetStringObj(ton,sargnv[i],-1);
-	  Tcl_AppendStringsToObj(ton,"_B",NULL);
-	  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-			      TCL_GLOBAL_ONLY);
-	  Tcl_GetDoubleFromObj(interp, to, &dtemp);
-	  if(dtemp < 0) dtemp = 0.0;
-	  if(dtemp > 255) dtemp = 255.0;
-	  newarg->val.color[2]=(float)(dtemp/255.0);
+	  Tcl_DStringInit(&ds);
+	  Tcl_DStringAppend(&ds, sargnv[i], -1);
+	  for(j = 0; j < 3; j++)
+	    {
+	      Tcl_DStringAppend(&ds, rgb[j], 2);
+	      to = Tcl_GetVar2Ex(interp, arr, Tcl_DStringValue(&ds),
+				 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	      Tcl_GetDoubleFromObj(interp, to, &dtemp);
+	      if(dtemp < 0) dtemp = 0.0;
+	      if(dtemp > 255) dtemp = 255.0;
+	      newarg->val.color[j] = (float)(dtemp/255.0);
+	      Tcl_DStringSetLength(&ds, Tcl_DStringLength(&ds)-2);
+	    }
+	  Tcl_DStringFree(&ds);
 	  break;
 
 	case AY_SAPOINT:
 	case AY_SAVECTOR:
 	case AY_SANORMAL:
-	  Tcl_SetStringObj(ton,sargnv[i],-1);
-	  Tcl_AppendStringsToObj(ton,"_X",NULL);
-	  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-			      TCL_GLOBAL_ONLY);
-	  Tcl_GetDoubleFromObj(interp, to, &dtemp);
-	  newarg->val.point[0] = (float)dtemp;
-
-	  Tcl_SetStringObj(ton,sargnv[i],-1);
-	  Tcl_AppendStringsToObj(ton,"_Y",NULL);
-	  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-			      TCL_GLOBAL_ONLY);
-	  Tcl_GetDoubleFromObj(interp, to, &dtemp);
-	  newarg->val.point[1] = (float)dtemp;
-
-	  Tcl_SetStringObj(ton,sargnv[i],-1);
-	  Tcl_AppendStringsToObj(ton,"_Z",NULL);
-	  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-			      TCL_GLOBAL_ONLY);
-	  Tcl_GetDoubleFromObj(interp, to, &dtemp);
-	  newarg->val.point[2] = (float)dtemp;
+	  Tcl_DStringInit(&ds);
+	  Tcl_DStringAppend(&ds, sargnv[i], -1);
+	  for(j = 0; j < 3; j++)
+	    {
+	      Tcl_DStringAppend(&ds, xyz[j], 2);
+	      to = Tcl_GetVar2Ex(interp, arr, Tcl_DStringValue(&ds),
+				  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	      Tcl_GetDoubleFromObj(interp, to, &dtemp);
+	      newarg->val.point[j] = (float)dtemp;
+	      Tcl_DStringSetLength(&ds, Tcl_DStringLength(&ds)-2);
+	    }
+	  Tcl_DStringFree(&ds);
 	  break;
 
 	case AY_SASCALAR:
-	  Tcl_SetStringObj(ton,sargnv[i],-1);
-	  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-			      TCL_GLOBAL_ONLY);
+	  to = Tcl_GetVar2Ex(interp, arr, sargnv[i], TCL_LEAVE_ERR_MSG |
+			     TCL_GLOBAL_ONLY);
 	  Tcl_GetDoubleFromObj(interp, to, &dtemp);
 	  newarg->val.scalar = (float)dtemp;
 	  break;
 
 	case AY_SASTRING:
-	  result = Tcl_GetVar2(interp, n1, sargnv[i], TCL_LEAVE_ERR_MSG |
+	  result = Tcl_GetVar2(interp, arr, sargnv[i], TCL_LEAVE_ERR_MSG |
 			       TCL_GLOBAL_ONLY);
 	  if(!(newarg->val.string = calloc(strlen(result)+1, sizeof(char))))
 	  {
@@ -1421,12 +1385,14 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp *interp,
 	case AY_SAMATRIX:
 	  for(j = 0; j < 16; j++)
 	    {
-	      Tcl_SetStringObj(ton,sargnv[i],-1);
-	      Tcl_AppendStringsToObj(ton,man[j],NULL);
-	      to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
-				  TCL_GLOBAL_ONLY);
+	      Tcl_DStringInit(&ds);
+	      Tcl_DStringAppend(&ds, sargnv[i], -1);
+	      Tcl_DStringAppend(&ds, man[j], -1);
+	      to = Tcl_GetVar2Ex(interp, arr, Tcl_DStringValue(&ds),
+				 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	      Tcl_GetDoubleFromObj(interp, to, &dtemp);
 	      newarg->val.matrix[j] = (float)dtemp;
+	      Tcl_DStringFree(&ds);
 	    } /* for */
 	  break;
 
@@ -1444,9 +1410,6 @@ cleanup:
     Tcl_Free((char *) sargnv);
   if(sargtv)
     Tcl_Free((char *) sargtv);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
   ay_notify_object(o);
 
