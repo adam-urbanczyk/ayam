@@ -26,7 +26,7 @@ ay_tmp_gettcmd(ClientData clientData, Tcl_Interp *interp,
 	       int argc, char *argv[])
 {
  char *tmpname = NULL;
- Tcl_Obj *to = NULL, *ton = NULL;
+ Tcl_Obj *to = NULL;
  Tcl_DString ds;
 
   if(argc < 3)
@@ -49,8 +49,6 @@ ay_tmp_gettcmd(ClientData clientData, Tcl_Interp *interp,
     }
 #endif
 
-  ton = Tcl_NewStringObj(argv[2], -1);
-
   if(argc > 3)
     {
       Tcl_DStringInit(&ds);
@@ -64,9 +62,7 @@ ay_tmp_gettcmd(ClientData clientData, Tcl_Interp *interp,
       to = Tcl_NewStringObj(tmpname, -1);
     }
 
-  Tcl_ObjSetVar2(interp, ton, NULL, to, TCL_LEAVE_ERR_MSG);
-
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  Tcl_SetVar2Ex(interp, argv[2], NULL, to, TCL_LEAVE_ERR_MSG);
 
   free(tmpname);
 
