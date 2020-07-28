@@ -157,13 +157,12 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 {
  int ay_status = AY_OK;
  char fname[] = "tgui_update";
- char *n1 = "tgui_tessparam";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *arr = "tgui_tessparam";
  ay_list_object *oref = NULL;
  ay_list_object *newl = NULL, **lastl = NULL, *polist = NULL;
  ay_object *o = NULL, *tmp = NULL, *tmpnp = NULL;
  ay_deletecb *cb = NULL;
- ay_voidfp *arr = NULL;
+ ay_voidfp *cbs = NULL;
  int numpolys = 0;
  int use_tc = AY_FALSE, use_vc = AY_FALSE, use_vn = AY_FALSE;
  int smethod = 0, refine_trims = 0, primitives = 0;
@@ -205,8 +204,8 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
    {
      if((oref->object->type == AY_IDPOMESH) && oref->object->refine)
        {
-	 arr = ay_deletecbt.arr;
-	 cb = (ay_deletecb *)(arr[oref->object->type]);
+	 cbs = ay_deletecbt.arr;
+	 cb = (ay_deletecb *)(cbs[oref->object->type]);
 	 if(cb)
 	   (void)cb(oref->object->refine);
 
@@ -391,15 +390,8 @@ cleanup:
   if(ay_currentview)
     Togl_MakeCurrent(ay_currentview->togl);
 
-  toa = Tcl_NewStringObj(n1, -1);
-  ton = Tcl_NewStringObj(n1, -1);
-
-  Tcl_SetStringObj(ton, "NumPolys", -1);
-  to = Tcl_NewIntObj(numpolys);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  Tcl_SetVar2Ex(interp, arr, "NumPolys", Tcl_NewIntObj(numpolys),
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   ay_tgui_clearobjlist(&polist);
 
