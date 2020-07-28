@@ -686,15 +686,9 @@ char *
 luainterp_vartraceproc(ClientData clientData, Tcl_Interp *interp,
 		       char *name1, char *name2, int flags)
 {
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ Tcl_Obj *to = NULL;
 
-  toa = Tcl_NewStringObj(name1, -1);
-  if(name2)
-    {
-      ton = Tcl_NewStringObj(name2, -1);
-    }
-
-  to = Tcl_ObjGetVar2(interp, toa, ton, flags);
+  to = Tcl_GetVar2Ex(interp, name1, name2, flags);
 
   if(luainterp_pushobj(to))
     {
@@ -721,12 +715,6 @@ luainterp_vartraceproc(ClientData clientData, Tcl_Interp *interp,
   lua_setglobal(L, name1);
 
 cleanup:
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  if(ton)
-    {
-      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
-    }
 
  return NULL;
 } /* luainterp_vartraceproc */
@@ -787,7 +775,7 @@ luainterp_tclset(lua_State *L)
  int ay_status = AY_OK;
  int nargs, i = 0;
  const char *vname, *val;
- Tcl_Obj *ton = NULL, *to = NULL;
+ Tcl_Obj *to = NULL;
 
   nargs = lua_gettop(L);
 
@@ -803,8 +791,6 @@ luainterp_tclset(lua_State *L)
 	  return luaL_error(L, "varname must be a string");
 	}
       vname = lua_tostring(L, i);
-
-      ton = Tcl_NewStringObj(vname, -1);
 
       /* get variable value */
       to = NULL;
@@ -822,7 +808,6 @@ luainterp_tclset(lua_State *L)
 	  ay_status = luainterp_convtableobj(L, i+1, &to);
 	  if(ay_status)
 	    {
-	      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 	      goto cleanup;
 	    }
 	  break;
@@ -833,11 +818,9 @@ luainterp_tclset(lua_State *L)
       /* set the variable */
       if(to)
 	{
-	  Tcl_ObjSetVar2(luainterp_interp, ton, NULL, to,
-			 TCL_LEAVE_ERR_MSG);
+	  Tcl_SetVar2Ex(luainterp_interp, vname, NULL, to,
+			TCL_LEAVE_ERR_MSG);
 	}
-
-      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
     } /* for */
 
 cleanup:

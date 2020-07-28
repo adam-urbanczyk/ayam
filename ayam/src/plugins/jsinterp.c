@@ -723,7 +723,7 @@ char *
 jsinterp_vartraceproc(ClientData clientData, Tcl_Interp *interp,
 		      char *name1, char *name2, int flags)
 {
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ Tcl_Obj *to = NULL;
  JSObject *obj = NULL;
  jsval *newjsval, *objval;
  int create_object = AY_TRUE;
@@ -733,13 +733,7 @@ jsinterp_vartraceproc(ClientData clientData, Tcl_Interp *interp,
       goto cleanup;
     }
 
-  toa = Tcl_NewStringObj(name1, -1);
-  if(name2)
-    {
-      ton = Tcl_NewStringObj(name2, -1);
-    }
-
-  to = Tcl_ObjGetVar2(interp, toa, ton, flags);
+  to = Tcl_GetVar2Ex(interp, name1, name2, flags);
 
   JS_AddRoot(jsinterp_cx, newjsval);
 
@@ -802,14 +796,6 @@ cleanup:
 
   if(newjsval)
     free(newjsval);
-  if(toa)
-    {
-      Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-    }
-  if(ton)
-    {
-      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
-    }
 
  return NULL;
 } /* jsinterp_vartraceproc */
@@ -960,7 +946,7 @@ jsinterp_tclset(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
 {
  uintN i = 0;
  char *vname;
- Tcl_Obj *ton = NULL, *to = NULL;
+ Tcl_Obj *to = NULL;
 
   if(argc < 2)
     {
@@ -974,7 +960,6 @@ jsinterp_tclset(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
 	{
 	  /* get variable name */
 	  vname = JS_GetStringBytes(JSVAL_TO_STRING(argv[i]));
-	  ton = Tcl_NewStringObj(vname, -1);
 
 	  /* get variable value */
 	  to = NULL;
@@ -983,18 +968,15 @@ jsinterp_tclset(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
 	  /* set the variable */
 	  if(to)
 	    {
-	      Tcl_ObjSetVar2(jsinterp_interp, ton, NULL, to,
-			     TCL_LEAVE_ERR_MSG);
+	      Tcl_SetVar2Ex(jsinterp_interp, vname, NULL, to,
+			    TCL_LEAVE_ERR_MSG);
 	    }
 	  else
 	    {
 	      JS_ReportError(cx, "could not convert the value");
-	      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 	      return JS_FALSE;
 	    }
-
-	  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
-	} /* if */
+	} /* if is string */
     } /* for */
 
   *rval = JSVAL_VOID; /* return undefined */

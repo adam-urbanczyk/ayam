@@ -5331,7 +5331,7 @@ sdnpatch_editknottcmd(ClientData clientData, Tcl_Interp *interp,
  int i = 1;
  int mode = 0;
  char *varname = NULL;
- Tcl_Obj *to = NULL, *ton = NULL;
+ Tcl_Obj *to = NULL;
  KnotPrecision interval = 1.0;
  static vector<KnotInterval *> selectedKnots;
  vector<KnotInterval *>::iterator ki;
@@ -5409,11 +5409,9 @@ sdnpatch_editknottcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(selectedKnots.size() > 0)
 	    {
 	      interval = selectedKnots[0]->getInterval();
-	      ton = Tcl_NewStringObj(varname, -1);
 	      to = Tcl_NewDoubleObj(interval);
-	      Tcl_ObjSetVar2(interp, ton, NULL, to,
+	      Tcl_SetVar2Ex(interp, varname, NULL, to,
 			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 	    }
 	}
       else
