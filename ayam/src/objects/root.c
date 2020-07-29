@@ -463,7 +463,7 @@ ay_root_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		Tcl_NewIntObj((int)riopt->RGBA_MAX),
 		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_SetVar2Ex(interp, arr, "RGBA_Dither",
-		Tcl_NewDoubleObj((int)riopt->RGBA_Dither),
+		Tcl_NewDoubleObj(riopt->RGBA_Dither),
 		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetVar2Ex(interp, arr, "MinSamples",
