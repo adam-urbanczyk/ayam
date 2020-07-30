@@ -40,4 +40,4 @@ namespace OpenCSG {
 
 } // namespace OpenCSG
 
-extern char *aycsg_tm_tagtype;
+extern unsigned int aycsg_tm_tagtype;
