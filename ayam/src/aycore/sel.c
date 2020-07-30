@@ -328,7 +328,7 @@ ay_sel_getseltcmd(ClientData clientData, Tcl_Interp *interp,
  int i = 0;
  int return_result = AY_FALSE;
  ay_object *o = ay_currentlevel->object;
- Tcl_Obj *to = NULL, *toa = NULL, *tol = NULL;
+ Tcl_Obj *to = NULL, *tol = NULL;
 
   if(argc < 2)
     {

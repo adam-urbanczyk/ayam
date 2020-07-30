@@ -2550,7 +2550,7 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
  static double fX = 0.0, fY = 0.0, fwX = 0.0, fwY = 0.0, fwZ = 0.0;
  double obj[24] = {0}, pl[16] = {0};
  double minlevelscale = 1.0, u = 0.0;
- Tcl_Obj *to = NULL, *ton = NULL;
+ Tcl_Obj *to = NULL;
  char cmd[] = "puts \"u: $u\"";
  ay_object *o, *pobject = NULL;
  ay_pointedit pe = {0};
@@ -2706,10 +2706,10 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 	  i = 0;
 	  while((nc->knotv[i] < u) && (i < nc->length+nc->order))
 	    i++;
-	  ton = Tcl_NewStringObj("ui", -1);
+
 	  to = Tcl_NewIntObj(i);
-	  Tcl_ObjSetVar2(interp, ton, NULL, to,
-			 TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
+	  Tcl_SetVar2Ex(interp, "ui", NULL, to,
+			TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
 	}
       else
 	{
@@ -2730,12 +2730,10 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
       fwY = worldXYZ[1];
       fwZ = worldXYZ[2];
 
-      ton = Tcl_NewStringObj("u", -1);
       to = Tcl_NewDoubleObj(u);
-      Tcl_ObjSetVar2(interp, ton, NULL, to, TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
+      Tcl_SetVar2Ex(interp, "u", NULL, to, TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
       if(!silence)
 	Tcl_Eval(interp, cmd);
-      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
     }
   else
     {
@@ -8783,7 +8781,8 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o, *po = NULL;
  double len;
  int have_vname = AY_FALSE, apply_trafo = 0, i = 1, r = 0;
- Tcl_Obj *to = NULL, *ton = NULL;
+ Tcl_Obj *to = NULL;
+ char *vname;
 
   if(!sel)
     {
@@ -8817,7 +8816,7 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
 	  } /* if have -refine */
 	else
 	  {
-	    ton = Tcl_NewStringObj(argv[i], -1);
+	    vname = argv[i];
 	    have_vname = AY_TRUE;
 	  }
 
@@ -8876,7 +8875,7 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
 	      to = Tcl_NewDoubleObj(len);
 	      if(have_vname)
 		{
-		  Tcl_ObjSetVar2(interp, ton, NULL, to,
+		  Tcl_SetVar2Ex(interp, vname, NULL, to,
 		    TCL_LEAVE_ERR_MSG | TCL_APPEND_VALUE | TCL_LIST_ELEMENT);
 		}
 	      else
@@ -8935,7 +8934,7 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
 	  to = Tcl_NewDoubleObj(len);
 	  if(have_vname)
 	    {
-	      Tcl_ObjSetVar2(interp, ton, NULL, to,
+	      Tcl_SetVar2Ex(interp, vname, NULL, to,
 		    TCL_LEAVE_ERR_MSG | TCL_APPEND_VALUE | TCL_LIST_ELEMENT);
 	    }
 	  else
@@ -8963,11 +8962,6 @@ cleanup:
 
   if(po)
     (void)ay_object_deletemulti(po, AY_FALSE);
-
-  if(ton)
-    {
-      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
-    }
 
  return TCL_OK;
 } /* ay_nct_estlentcmd */
