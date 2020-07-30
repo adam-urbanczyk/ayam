@@ -13492,7 +13492,7 @@ ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[])
  static int fvalid = AY_FALSE;
  static double fX = 0.0, fY = 0.0, fwX = 0.0, fwY = 0.0, fwZ = 0.0;
  double u = 0.0, v = 0.0;
- Tcl_Obj *to = NULL, *ton = NULL;
+ Tcl_Obj *to = NULL;
  char cmd[] = "puts \"$u $v\"";
  ay_object *o, *pobject = NULL;
 
@@ -13568,15 +13568,12 @@ ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[])
       fwY = worldXYZ[1];
       fwZ = worldXYZ[2];
 
-      ton = Tcl_NewStringObj("u", -1);
       to = Tcl_NewDoubleObj(u);
-      Tcl_ObjSetVar2(interp,ton,NULL,to,TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
-      Tcl_SetStringObj(ton, "v", -1);
+      Tcl_SetVar2Ex(interp,"u",NULL,to,TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
       to = Tcl_NewDoubleObj(v);
-      Tcl_ObjSetVar2(interp,ton,NULL,to,TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
+      Tcl_SetVar2Ex(interp,"v",NULL,to,TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
 
       Tcl_Eval(interp, cmd);
-      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
     }
   else
     {
