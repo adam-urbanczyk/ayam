@@ -40,7 +40,7 @@ int aycsg_calcbbs = AY_FALSE; // control bounding box optimization, unused!
 // <tag->val> points to an array of doubles (the transformation matrix
 // itself) instead to a string;
 // we can do this safely, because no TM tag will escape this module ever
-char *aycsg_tm_tagtype;
+unsigned int aycsg_tm_tagtype;
 char *aycsg_tm_tagname = "TM";
 
 typedef struct aycsg_taglistelem_s {
@@ -52,7 +52,7 @@ typedef struct aycsg_taglistelem_s {
 aycsg_taglistelem *aycsg_tmtags;
 
 // DC tags are used to store the depth complexity of a primitive
-char *aycsg_dc_tagtype;
+unsigned int aycsg_dc_tagtype;
 char *aycsg_dc_tagname = "DC";
 
 char aycsg_version_ma[] = AY_VERSIONSTR;
