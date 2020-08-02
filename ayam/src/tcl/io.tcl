@@ -120,7 +120,6 @@ proc io_replaceScene { {newfilename ""} } {
 	set ay(SelectedLevel) "root"
 	update
 	uS
-	rV
 	# add scene file to most recently used list
 	io_mruAdd $filename
 	# reset scene change indicator
@@ -128,7 +127,7 @@ proc io_replaceScene { {newfilename ""} } {
 	update
 	foreach view $ay(views) { viewBind $view }
 	update
-
+	rV
 	after idle viewMouseToCurrent
     }
     # if have filename
@@ -219,12 +218,12 @@ proc io_insertScene { {ifilename ""} } {
 	} else {
 	    uCR
 	}
-	rV
 	io_mruAdd $filename
 	set ay(sc) 1
 	update
 	foreach view $ay(views) { viewBind $view }
 	update
+	rV
 	after idle viewMouseToCurrent
     }
     # if have filename
@@ -494,7 +493,6 @@ proc io_lcAuto { name } {
     foreach path $paths {
 	set filename [file join $path $soname]
 	set sopath [file dirname $filename]
-
 	if { ("$sopath" != "") && [file exists $sopath] } {
 	    cd $sopath
 	    set success [catch {load $soname}]
@@ -673,13 +671,12 @@ proc io_mruLoad { index } {
 	set ay(SelectedLevel) "root"
 	update
 	uS
-	rV
 	update
 	# reset scene change indicator
 	set ay(sc) 0
 	foreach view $ay(views) { viewBind $view }
 	update
-
+	rV
 	after idle viewMouseToCurrent
     }
     # if mru index is valid
