@@ -2277,16 +2277,23 @@ ay_viewt_setupintview(int viewnum, ay_object *o, ay_view_object *vtemp)
   else
     return;
 
+  if(view->bgimage)
+    free(view->bgimage);
+  if(view->bgknotv)
+    free(view->bgknotv);
+  if(view->bgcv)
+    free(view->bgcv);
+
   /* protect togl and altdispcb pointers from the memcpy below */
   togl = view->togl;
   altdispcb = view->altdispcb;
-  if(view->bgimage)
-    free(view->bgimage);
+
   memcpy(view, vtemp, sizeof(ay_view_object));
+
+  /* restore togl and altdispcb */
   view->togl = togl;
   view->altdispcb = altdispcb;
 
-  view->bgimage = NULL;
   if(vtemp->bgimage)
     {
       if((view->bgimage = malloc((strlen(vtemp->bgimage)+1)*sizeof(char))))
@@ -2295,11 +2302,14 @@ ay_viewt_setupintview(int viewnum, ay_object *o, ay_view_object *vtemp)
 	  view->bgimagedirty = AY_TRUE;
 	}
     }
-
-  /* notify also includes reshape() and additionally loads the BGImage */
-  (void)ay_notify_object(o);
+  /* XXXX need to handle new bgknotv bgcv? */
 
   (void)ay_viewt_makecurtcb(view->togl, 0, NULL);
+
+  /* notify loads the BGImage */
+  (void)ay_notify_object(o);
+
+  (void)ay_viewt_reshapetcb(view->togl, 0, NULL);
 
   /* set various view menu icons */
   sprintf(command,
@@ -3068,11 +3078,11 @@ ay_viewt_rendertoviewportcb(struct Togl *togl, int argc, char *argv[])
  int width = Togl_Width(togl);
  int height = Togl_Height(togl);
  int xy[4] = {0};
- float *line = NULL;
- size_t readsize, linesize = 0, size;
+ char *line = NULL;
+ size_t readsize, linesize = 0, size, i;
  int done = AY_FALSE;
  GLuint texture;
- float *image = NULL;
+ char *image = NULL;
 
   if(argc < 3)
     return TCL_OK;
@@ -3096,7 +3106,7 @@ ay_viewt_rendertoviewportcb(struct Togl *togl, int argc, char *argv[])
 
   if(file)
     {
-      if(!(image = (float*)calloc(width*height*4, sizeof(float))))
+      if(!(image = (char*)calloc(width*height*4, sizeof(char))))
 	{
 	  fclose(file);
 	  ay_error(AY_EOMEM, fname, NULL);
@@ -3113,7 +3123,7 @@ ay_viewt_rendertoviewportcb(struct Togl *togl, int argc, char *argv[])
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height,
-		   0, GL_RGBA, GL_FLOAT, image);
+		   0, GL_RGBA, GL_UNSIGNED_BYTE, image);
 
       while(!done)
 	{
@@ -3122,32 +3132,39 @@ ay_viewt_rendertoviewportcb(struct Togl *togl, int argc, char *argv[])
 	  if(readsize != 4)
 	    break;
 
-	  size = (xy[1]-xy[0])*(xy[3]-xy[2])*4*sizeof(float);
+	  size = (xy[1]-xy[0])*(xy[3]-xy[2])*4*sizeof(char);
 
 	  if(size != linesize)
 	    {
 	      if(line)
 		free(line);
 
-	      if(!(line = (float*)malloc(size)))
+	      if(!(line = (char*)calloc(1,size)))
 		{
 		  ay_error(AY_EOMEM, fname, NULL);
-		  return TCL_OK;
+		  break;
 		}
 	      linesize = size;
 	    }
+	  else
+	    {
+	      memset(line, 0, size);
+	    }
 
-	  readsize = fread(line, sizeof(float),
+	  readsize = fread(line, sizeof(char),
 			   (xy[1]-xy[0])*(xy[3]-xy[2])*4, file);
 
 	  if(readsize != (size_t)((xy[1]-xy[0])*(xy[3]-xy[2])*4))
-	    break;
+	    {
+	      ay_error(AY_ERROR, fname, "short read");
+	      break;
+	    }
 
 	  Togl_MakeCurrent(togl);
 
 	  glTexSubImage2D(GL_TEXTURE_2D, 0, xy[0], xy[2],
 			  xy[1]-xy[0], xy[3]-xy[2],
-			  /*GL_BGRA*/GL_RGBA, GL_FLOAT, line);
+			  /*GL_BGRA*/GL_RGBA, GL_UNSIGNED_BYTE, line);
 
 	  ay_viewt_showtex(togl);
 
