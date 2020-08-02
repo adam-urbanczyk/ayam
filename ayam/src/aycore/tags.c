@@ -208,8 +208,13 @@ ay_tags_append(ay_object *o, ay_tag *tag)
 } /* ay_tags_append */
 
 
-/* ay_tags_register:
- *  register a new tag type
+/** ay_tags_register:
+ * register a new tag type
+ * 
+ * \param name tag name (i.e. "OI")
+ * \param result where to store the tag id
+ * 
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_tags_register(char *name, unsigned int *result)
@@ -226,13 +231,13 @@ ay_tags_register(char *name, unsigned int *result)
       return AY_ERROR;
     }
 
-  tagcounter++;
-
   entry = Tcl_CreateHashEntry(&ay_tagtypesht, name, &new_item);
-  /*Tcl_SetHashValue(entry, tagcounter);*/
+
   Tcl_SetHashValue(entry, ay_otype_getpointer(tagcounter));
 
   *result = tagcounter;
+
+  tagcounter++;
 
  return AY_OK;
 } /* ay_tags_register */

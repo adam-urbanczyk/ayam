@@ -345,6 +345,8 @@ ay_otype_getpointer(unsigned int id)
 /** ay_otype_init:
  * Initialize object type module.
  * Must be called before registering any object or tag types.
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_otype_init()
