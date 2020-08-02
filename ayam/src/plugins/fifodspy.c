@@ -10,7 +10,7 @@
  *
  */
 
-/* fifodspy.c - a RenderMan Display Driver that writes RGBA-Float to a FIFO */
+/* fifodspy.c - a RenderMan Display Driver that writes RGBA-Data to a FIFO */
 
 #include <stdlib.h>
 #include <string.h>
@@ -120,7 +120,7 @@ DspyImageOpen(PtDspyImageHandle *imagehandle,
 
   for(i = 0; i < formatCount; i++)
     {
-      format[i].type = PkDspyFloat32;
+      format[i].type = PkDspyUnsigned8;
     }
 
   for(i = 0; i < formatCount; i++)
@@ -284,7 +284,7 @@ DspyImageData(PtDspyImageHandle imagehandle,
     {
       for(x = xmin; x < xmax_plusone; x++)
 	{
-	  fwrite(data, sizeof(float), image->channels, image->file);
+	  fwrite(data, sizeof(char), image->channels, image->file);
 	  data += entrysize;
 	}
     }
