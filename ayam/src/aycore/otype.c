@@ -341,6 +341,11 @@ ay_otype_getpointer(unsigned int id)
  return pointer;
 } /* ay_otype_getpointer */
 
+
+/** ay_otype_init:
+ * Initialize object type module.
+ * Must be called before registering any object or tag types.
+ */
 int
 ay_otype_init()
 {
@@ -361,4 +366,5 @@ ay_otype_init()
   cids->id = AY_IDLAST;
 
  return AY_OK;
-}
+} /* ay_otype_init */
+
