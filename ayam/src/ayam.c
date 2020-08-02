@@ -316,14 +316,14 @@ ay_init(Tcl_Interp *interp)
   /* Tags */
   Tcl_InitHashTable(&ay_tagtypesht, TCL_STRING_KEYS);
 
+  /* initialize object type helper module */
+  ay_otype_init();
+
   /* initialize instancing helper module */
   ay_instt_init(interp);
 
   /* initialize material object helper module */
   ay_matt_init(interp);
-
-  /* initialize object type helper module */
-  ay_otype_init();
 
   /* initialize riattribute tag helper module */
   ay_riattr_init(interp);
