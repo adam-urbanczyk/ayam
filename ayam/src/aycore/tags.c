@@ -261,7 +261,7 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
  ay_tag *t = NULL, *new = NULL, **next = NULL;
  ay_tag *oldibtags = NULL, **otnext = NULL;
  Tcl_HashEntry *entry = NULL;
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ Tcl_Obj *to = NULL;
  int index = 0, i = 0, pasteProp = AY_FALSE;
 
   if(argc < 3)
@@ -407,13 +407,10 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
   /* normal setTags functionality */
 
   /* is a paste property in progress? */
-  toa = Tcl_NewStringObj("ay", -1);
-  ton = Tcl_NewStringObj("pasteProp", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  to = Tcl_GetVar2Ex(interp, "ay", "pasteProp",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   if(to)
-    {
-      Tcl_GetIntFromObj(interp, to, &pasteProp);
-    }
+    Tcl_GetIntFromObj(interp, to, &pasteProp);
 
   while(sel)
     {
@@ -522,8 +519,6 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
     } /* while */
 
 cleanup:
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
  return TCL_OK;
 } /* ay_tags_settcmd */
@@ -880,8 +875,8 @@ ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
 {
  int ay_status = AY_OK;
  char fname[] = "tags_parseplist";
- char e1[] = "Missing value in parameter!";
- char e2[] = "Unknown parameter!";
+ char e1[] = "Missing parameter value!";
+ char e2[] = "Unknown parameter type!";
  char *tmp = NULL, *parname = NULL, *partype = NULL, *parval = NULL;
  char *parval2 = NULL;
  char tok[] = ",";
