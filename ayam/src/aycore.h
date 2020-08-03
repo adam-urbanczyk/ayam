@@ -2042,7 +2042,7 @@ void ay_wrib_placecamera(RtPoint position, RtPoint direction, double roll);
 
 /** export the RiOptions to a RIB file
  */
-void ay_wrib_rioptions(int no_quantization);
+void ay_wrib_rioptions();
 
 /** look through the scene whether there are any lights switched on
  */

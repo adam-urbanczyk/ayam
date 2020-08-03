@@ -290,17 +290,12 @@ FrameCamera(double zoom, double framewidth, double frameheight)
 }*/
 
 
- /** ay_wrib_rioptions:
-  * export all RIB option settings from the root object to the currently
-  * open RIB stream
-  *
-  * \param[in] no_quantization if AY_TRUE, do not use the quantization
-  *   settings from the root object, but 0, 0, 0 instead, to
-  *   facilitate rendering via the fifodspy display driver,
-  *   which operates in floating point value space
-  */
+/** ay_wrib_rioptions:
+ * export all RIB option settings from the root object to the currently
+ * open RIB stream
+ */
 void
-ay_wrib_rioptions(int no_quantization)
+ay_wrib_rioptions()
 {
  ay_riopt *riopt = NULL;
  ay_root_object *root = NULL;
@@ -347,12 +342,8 @@ ay_wrib_rioptions(int no_quantization)
 
   RiExposure((RtFloat)riopt->ExpGain, (RtFloat)riopt->ExpGamma);
 
-  if(no_quantization)
-    RiQuantize(RI_RGBA, (RtInt)0, (RtInt)0,
-	       (RtInt)0, (RtFloat)riopt->RGBA_Dither);
-  else
-    RiQuantize(RI_RGBA, (RtInt)riopt->RGBA_ONE, (RtInt)riopt->RGBA_MIN,
-	       (RtInt)riopt->RGBA_MAX, (RtFloat)riopt->RGBA_Dither);
+  RiQuantize(RI_RGBA, (RtInt)riopt->RGBA_ONE, (RtInt)riopt->RGBA_MIN,
+	     (RtInt)riopt->RGBA_MAX, (RtFloat)riopt->RGBA_Dither);
 
   /* BMRT-Specific */
   if(!ay_prefs.ristandard)
@@ -1726,7 +1717,7 @@ ay_wrib_scene(char *file, char *image, char *driver, int temp, int target,
  RtPoint f,/* t,*/ d;
  RtFloat aspect = (RtFloat)1.0, swleft, swright, swtop, swbot;
  RtFloat fov = (RtFloat)90.0, rinearp, rifarp;
- int have_ridisplay = AY_FALSE, no_quantization = AY_FALSE;
+ int have_ridisplay = AY_FALSE;
  char *objfile = NULL, *pos = NULL, fnum[30];
  char *driverext, *soext = ".so";
  size_t filenlen = 0;
@@ -1886,8 +1877,6 @@ ay_wrib_scene(char *file, char *image, char *driver, int temp, int target,
 	   free(driverext);
 
 	   RiDisplay(image, driver, RI_RGBA, RI_NULL);
-
-	   no_quantization = AY_TRUE;
 	 }
        have_ridisplay = AY_TRUE;
      }
@@ -1973,7 +1962,7 @@ ay_wrib_scene(char *file, char *image, char *driver, int temp, int target,
    ay_wrib_placecamera(f, d, roll);
 
    /* write RiOptions */
-   ay_wrib_rioptions(no_quantization);
+   ay_wrib_rioptions();
 
    /* write root RiOption tags */
    ay_status = ay_riopt_wrib(ay_root);
@@ -2446,7 +2435,7 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	  else
 	    {
-	      /* export all objects only */
+	      /* export all objects */
 	      o = ay_root->next;
 	      RiBegin(filename);
 	       while(o)
@@ -2645,7 +2634,7 @@ ay_wrib_pprevdraw(ay_view_object *view)
   ay_wrib_placecamera(f, d, roll+addroll);
 
   /* write RiOptions */
-  ay_status = ay_wrib_rioptions(AY_FALSE);
+  ay_status = ay_wrib_rioptions();
   if(ay_status)
     goto cleanup;
 
