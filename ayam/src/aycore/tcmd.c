@@ -1390,12 +1390,13 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
  int remargc = argc, indexu = 0, indexv = 0, i = 1, rational = AY_FALSE;
  int from_world = AY_FALSE, clear_selp = AY_FALSE, handled = AY_FALSE;
  int from_var = AY_FALSE, vlen = 0, notify_parent = AY_FALSE;
+ int set_selp = AY_FALSE;
  double *p = NULL, *v = NULL;
  ay_voidfp *arr = NULL;
  ay_getpntcb *cb = NULL;
- double pm[16], m[16], mi[16];
+ double pm[16], m[16], mi[16], t[4];
  char args[] =
-   "[-world] (index [indexv] (x y z [w] | -vn varname) | -all varname)";
+   "[-world] (index [indexv] (x y z [w] | -vn varname) | (-all|-sel) varname )";
 
   if(argc <= 1)
     {
@@ -1429,6 +1430,11 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
     }
   else
     {
+      if(argv[i][0] == '-' && argv[i][1] == 's')
+	{
+	  set_selp = AY_TRUE;
+	  i++;
+	}
       /* check for -vn argument */
       if(remargc < 3)
 	{
@@ -1460,115 +1466,122 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
       rational = AY_FALSE;
       clear_selp = AY_FALSE;
 
-      switch(o->type)
+      if(!set_selp)
 	{
-	case AY_IDNCURVE:
-	  remargc--;
-	  tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
-	  AY_CHTCLERRGOT(tcl_status, argv[0], interp);
-	  ay_nct_getpntfromindex((ay_nurbcurve_object*)(o->refine),
-				 indexu, &p);
-	  rational = AY_TRUE;
-	  i++;
-	  break;
-	case AY_IDACURVE:
-	  remargc--;
-	  tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
-	  AY_CHTCLERRGOT(tcl_status, argv[0], interp);
-	  ay_act_getpntfromindex((ay_acurve_object*)(o->refine),
-				 indexu, &p);
-	  i++;
-	  break;
-	case AY_IDICURVE:
-	  remargc--;
-	  tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
-	  AY_CHTCLERRGOT(tcl_status, argv[0], interp);
-	  ay_ict_getpntfromindex((ay_icurve_object*)(o->refine),
-				 indexu, &p);
-	  i++;
-	  break;
-	case AY_IDNPATCH:
-	  remargc -= 2;
-	  tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
-	  AY_CHTCLERRGOT(tcl_status, argv[0], interp);
-	  tcl_status = Tcl_GetInt(interp, argv[i+1], &indexv);
-	  AY_CHTCLERRGOT(tcl_status, argv[0], interp);
-	  ay_npt_getpntfromindex((ay_nurbpatch_object*)(o->refine),
-				 indexu, indexv, &p);
-	  rational = AY_TRUE;
-	  i += 2;
-	  break;
-	case AY_IDIPATCH:
-	  remargc -= 2;
-	  tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
-	  AY_CHTCLERRGOT(tcl_status, argv[0], interp);
-	  tcl_status = Tcl_GetInt(interp, argv[i+1], &indexv);
-	  AY_CHTCLERRGOT(tcl_status, argv[0], interp);
-	  ay_ipt_getpntfromindex((ay_ipatch_object*)(o->refine),
-				 indexu, indexv, &p);
-	  i += 2;
-	  break;
-	case AY_IDBPATCH:
-	  remargc--;
-	  tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
-	  AY_CHTCLERRGOT(tcl_status, argv[0], interp);
-	  ay_tcmd_getbppntfromindex((ay_bpatch_object*)(o->refine),
-				    indexu, &p);
-	  i++;
-	  break;
-	case AY_IDPAMESH:
-	  remargc -= 2;
-	  tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
-	  AY_CHTCLERRGOT(tcl_status, argv[0], interp);
-	  tcl_status = Tcl_GetInt(interp, argv[i+1], &indexv);
-	  AY_CHTCLERRGOT(tcl_status, argv[0], interp);
-	  ay_pmt_getpntfromindex((ay_pamesh_object*)(o->refine),
-				 indexu, indexv, &p);
-	  rational = AY_TRUE;
-	  i += 2;
-	  break;
-	default:
-	  handled = AY_FALSE;
-	  arr = ay_getpntcbt.arr;
-	  cb = (ay_getpntcb *)(arr[o->type]);
-	  if(cb)
+	  switch(o->type)
 	    {
-	      if(!(selp = calloc(1, sizeof(ay_point))))
-		{
-		  ay_error(AY_EOMEM, argv[0], NULL);
-		  goto cleanup;
-		}
-	      old_selp = o->selp;
-	      o->selp = selp;
-	      clear_selp = AY_TRUE;
-	      ay_status = ay_tcmd_getuint(argv[i], &selp->index);
-	      if(ay_status)
-		{
-		  goto cleanup;
-		}
-	      ay_status = cb(3, o, NULL, NULL);
-	      if(ay_status || (!o->selp))
-		{
-		  ay_error(AY_ERROR, argv[0], "getpntcb failed");
-		  goto cleanup;
-		}
-	      if(o->selp->readonly)
-		{
-		  ay_error(AY_ERROR, argv[0], "points are readonly");
-		  goto cleanup;
-		}
-	      p = selp->point;
-	      rational = selp->type;
-	      handled = AY_TRUE;
+	    case AY_IDNCURVE:
+	      remargc--;
+	      tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
+	      AY_CHTCLERRGOT(tcl_status, argv[0], interp);
+	      ay_nct_getpntfromindex((ay_nurbcurve_object*)(o->refine),
+				     indexu, &p);
+	      rational = AY_TRUE;
 	      i++;
-	    }
-	  if(!handled)
-	    {
-	      ay_error(AY_EWARN, argv[0],
-		       "do not know how to set point of this object");
-	    }
-	  break;
-	} /* switch */
+	      break;
+	    case AY_IDACURVE:
+	      remargc--;
+	      tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
+	      AY_CHTCLERRGOT(tcl_status, argv[0], interp);
+	      ay_act_getpntfromindex((ay_acurve_object*)(o->refine),
+				     indexu, &p);
+	      i++;
+	      break;
+	    case AY_IDICURVE:
+	      remargc--;
+	      tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
+	      AY_CHTCLERRGOT(tcl_status, argv[0], interp);
+	      ay_ict_getpntfromindex((ay_icurve_object*)(o->refine),
+				     indexu, &p);
+	      i++;
+	      break;
+	    case AY_IDNPATCH:
+	      remargc -= 2;
+	      tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
+	      AY_CHTCLERRGOT(tcl_status, argv[0], interp);
+	      tcl_status = Tcl_GetInt(interp, argv[i+1], &indexv);
+	      AY_CHTCLERRGOT(tcl_status, argv[0], interp);
+	      ay_npt_getpntfromindex((ay_nurbpatch_object*)(o->refine),
+				     indexu, indexv, &p);
+	      rational = AY_TRUE;
+	      i += 2;
+	      break;
+	    case AY_IDIPATCH:
+	      remargc -= 2;
+	      tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
+	      AY_CHTCLERRGOT(tcl_status, argv[0], interp);
+	      tcl_status = Tcl_GetInt(interp, argv[i+1], &indexv);
+	      AY_CHTCLERRGOT(tcl_status, argv[0], interp);
+	      ay_ipt_getpntfromindex((ay_ipatch_object*)(o->refine),
+				     indexu, indexv, &p);
+	      i += 2;
+	      break;
+	    case AY_IDBPATCH:
+	      remargc--;
+	      tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
+	      AY_CHTCLERRGOT(tcl_status, argv[0], interp);
+	      ay_tcmd_getbppntfromindex((ay_bpatch_object*)(o->refine),
+					indexu, &p);
+	      i++;
+	      break;
+	    case AY_IDPAMESH:
+	      remargc -= 2;
+	      tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
+	      AY_CHTCLERRGOT(tcl_status, argv[0], interp);
+	      tcl_status = Tcl_GetInt(interp, argv[i+1], &indexv);
+	      AY_CHTCLERRGOT(tcl_status, argv[0], interp);
+	      ay_pmt_getpntfromindex((ay_pamesh_object*)(o->refine),
+				     indexu, indexv, &p);
+	      rational = AY_TRUE;
+	      i += 2;
+	      break;
+	    default:
+	      handled = AY_FALSE;
+	      arr = ay_getpntcbt.arr;
+	      cb = (ay_getpntcb *)(arr[o->type]);
+	      if(cb)
+		{
+		  if(!(selp = calloc(1, sizeof(ay_point))))
+		    {
+		      ay_error(AY_EOMEM, argv[0], NULL);
+		      goto cleanup;
+		    }
+		  old_selp = o->selp;
+		  o->selp = selp;
+		  clear_selp = AY_TRUE;
+		  ay_status = ay_tcmd_getuint(argv[i], &selp->index);
+		  if(ay_status)
+		    {
+		      goto cleanup;
+		    }
+		  ay_status = cb(3, o, NULL, NULL);
+		  if(ay_status || (!o->selp))
+		    {
+		      ay_error(AY_ERROR, argv[0], "getpntcb failed");
+		      goto cleanup;
+		    }
+		  if(o->selp->readonly)
+		    {
+		      ay_error(AY_ERROR, argv[0], "points are readonly");
+		      goto cleanup;
+		    }
+		  p = selp->point;
+		  rational = selp->type;
+		  handled = AY_TRUE;
+		  i++;
+		}
+	      if(!handled)
+		{
+		  ay_error(AY_EWARN, argv[0],
+			   "do not know how to set point of this object");
+		}
+	      break;
+	    } /* switch */
+	}
+      else
+	{
+	  p = t;
+	} /* if set_selp */
 
       if(p)
 	{
@@ -1631,6 +1644,19 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_trafo_apply3(p, mi);
 	    } /* if */
 
+	  if(set_selp)
+	    {
+	      selp = o->selp;
+	      while(selp)
+		{
+		  if(selp->type == AY_PTRAT)
+		    memcpy(selp->point, p, 4*sizeof(double));
+		  else
+		    memcpy(selp->point, p, 3*sizeof(double));
+		  selp = selp->next;
+		}
+	    }
+
 	  ay_notify_object(o);
 	  o->modified = AY_TRUE;
 	  notify_parent = AY_TRUE;
@@ -1641,7 +1667,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	      o->selp = old_selp;
 	      clear_selp = AY_FALSE;
 	    }
-	} /* if */
+	} /* if p */
 
       sel = sel->next;
     } /* while */
@@ -2493,7 +2519,10 @@ ay_tcmd_refinetcmd(ClientData clientData, Tcl_Interp *interp,
 		}
 	      else
 		{
-		  goto cleanup;
+		  if(ay_status != AY_EDONOTLINK)
+		    goto cleanup;
+		  else
+		    ay_status = AY_OK;
 		}
 	    }
 	  else
