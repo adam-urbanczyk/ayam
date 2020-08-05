@@ -1387,7 +1387,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL;
  ay_point *old_selp = NULL, *selp = NULL;
  double dtemp = 0.0;
- int remargc = argc, indexu = 0, indexv = 0, i = 1, rational = AY_FALSE;
+ int remargc = argc, indexu = 0, indexv = 0, i = 1, j, rational = AY_FALSE;
  int from_world = AY_FALSE, clear_selp = AY_FALSE, handled = AY_FALSE;
  int from_var = AY_FALSE, vlen = 0, notify_parent = AY_FALSE;
  int set_selp = AY_FALSE;
@@ -1580,6 +1580,16 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
+	  if(o->selp && o->selp->readonly)
+	    {
+	      ay_error(AY_ERROR, argv[0], "points are readonly");
+	      goto cleanup;
+	    }
+
+	  if(o->selp && o->selp->type == AY_PTRAT)
+	    {
+	      rational = AY_TRUE;
+	    }
 	  p = t;
 	} /* if set_selp */
 
@@ -1640,22 +1650,64 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	      memcpy(m, pm, 16*sizeof(double));
 	      ay_trafo_getall(NULL, o, m);
 	      ay_trafo_invmatrix(m, mi);
-
 	      ay_trafo_apply3(p, mi);
 	    } /* if */
 
 	  if(set_selp)
 	    {
 	      selp = o->selp;
+
+	      j = 0;
 	      while(selp)
 		{
-		  if(selp->type == AY_PTRAT)
-		    memcpy(selp->point, p, 4*sizeof(double));
-		  else
-		    memcpy(selp->point, p, 3*sizeof(double));
+		  switch(selp->type)
+		    {
+		    case AY_PT3D:
+		      memcpy(selp->point, p, 3*sizeof(double));
+		      j += 3;
+		      rational = AY_FALSE;
+		      break;
+		    case AY_PTRAT:
+		      memcpy(selp->point, p, 4*sizeof(double));
+		      j += 4;
+		      rational = AY_TRUE;
+		      break;
+		    default:
+		      ay_error(AY_ERROR, argv[0], "unsupported point type");
+		      goto cleanup;
+		    }
+
+		  /* fetch next point data from var */
+		  if(from_var)
+		    {
+		      if(j+3+rational < vlen)
+			{
+			  if(!rational)
+			    {
+			      memset(p, 0, 3*sizeof(double));
+			      memcpy(p, &(v[j]),
+				     (vlen<3?vlen:3)*sizeof(double));
+			    }
+			  else
+			    {
+			      memset(p, 0, 3*sizeof(double));
+			      p[3] = 1.0;
+			      memcpy(p, &(v[j]),
+				     (vlen<4?vlen:4)*sizeof(double));
+			    }
+
+			  if(from_world)
+			    {
+			      memcpy(m, pm, 16*sizeof(double));
+			      ay_trafo_getall(NULL, o, m);
+			      ay_trafo_invmatrix(m, mi);
+			      ay_trafo_apply3(p, mi);
+			    } /* if from world */
+			} /* if have enough data */
+		    } /* if from var */
 		  selp = selp->next;
-		}
-	    }
+		} /* while */
+	    } /* if set selp */
 
 	  ay_notify_object(o);
 	  o->modified = AY_TRUE;
