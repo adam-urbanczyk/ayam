@@ -122,6 +122,7 @@ ay_prop_gettrafotcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  char *arr = "transfPropData", *quatstr = NULL;
+ int len;
 
   if(!sel)
     {
@@ -150,14 +151,14 @@ ay_prop_gettrafotcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_SetVar2Ex(interp, arr, "Quat3", Tcl_NewDoubleObj(o->quat[3]),
 		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  sprintf(quatstr, "[%.2lg, %.2lg, %.2lg, %.2lg]",
-	  o->quat[0], o->quat[1], o->quat[2], o->quat[3]);
-  Tcl_SetVar2Ex(interp, arr, "Quaternion", Tcl_NewStringObj(quatstr, -1),
+  len = sprintf(quatstr, "[%.2lg, %.2lg, %.2lg, %.2lg]",
+		o->quat[0], o->quat[1], o->quat[2], o->quat[3]);
+  Tcl_SetVar2Ex(interp, arr, "Quaternion", Tcl_NewStringObj(quatstr, len),
 		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  sprintf(quatstr, "[%lg, %lg, %lg, %lg]",
-	  o->quat[0], o->quat[1], o->quat[2], o->quat[3]);
-  Tcl_SetVar2Ex(interp, arr, "QuaternionBall", Tcl_NewStringObj(quatstr, -1),
+  len = sprintf(quatstr, "[%lg, %lg, %lg, %lg]",
+		o->quat[0], o->quat[1], o->quat[2], o->quat[3]);
+  Tcl_SetVar2Ex(interp, arr, "QuaternionBall", Tcl_NewStringObj(quatstr, len),
 		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetVar2Ex(interp, arr, "Rotate_X", Tcl_NewDoubleObj(o->rotx),
@@ -462,11 +463,11 @@ ay_prop_setattrtcmd(ClientData clientData, Tcl_Interp *interp,
 
   to = Tcl_GetVar2Ex(interp, arr, "Hide",
 		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &o->hide);
+  Tcl_GetIntFromObj(interp, to, &(o->hide));
 
   to = Tcl_GetVar2Ex(interp, arr, "HideChildren",
 		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &o->hide_children);
+  Tcl_GetIntFromObj(interp, to, &(o->hide_children));
 
   ay_notify_parent();
 
@@ -695,13 +696,13 @@ ay_prop_getnpinfo(Tcl_Interp *interp, char *arr, ay_object *o)
 	  sprintf(&(buffer4[13])/*, sizeof(buffer)*/, "CUSTOM\n");
 	  break;
 	case AY_KTCHORDAL:
-	  sprintf(&(buffer3[13])/*, sizeof(buffer)*/, "Chordal\n");
+	  sprintf(&(buffer4[13])/*, sizeof(buffer)*/, "Chordal\n");
 	  break;
 	case AY_KTCENTRI:
-	  sprintf(&(buffer3[13])/*, sizeof(buffer)*/, "Centripetal\n");
+	  sprintf(&(buffer4[13])/*, sizeof(buffer)*/, "Centripetal\n");
 	  break;
 	default:
-	  sprintf(&(buffer3[13])/*, sizeof(buffer)*/, "Unknown\n");
+	  sprintf(&(buffer4[13])/*, sizeof(buffer)*/, "Unknown\n");
 	  break;
 	}
 
@@ -726,11 +727,11 @@ ay_prop_getnpinfo(Tcl_Interp *interp, char *arr, ay_object *o)
     }
   else
     {
-      tob = Tcl_NewStringObj("n/a", -1);
+      tob = Tcl_NewStringObj("n/a", 3);
     } /* if o is NPatch */
 
   Tcl_SetVar2Ex(interp, arr, "NPInfoBall", tob, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+		TCL_GLOBAL_ONLY);
 
  return AY_OK;
 } /* ay_prop_getnpinfo */
@@ -767,7 +768,7 @@ ay_prop_getncinfo(Tcl_Interp *interp, char *arr, ay_object *o)
     } /* if */
 
   Tcl_SetVar2Ex(interp, arr, "NCInfo", to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+		TCL_GLOBAL_ONLY);
 
   if(interp == ay_safeinterp)
     {
@@ -845,7 +846,7 @@ ay_prop_getncinfo(Tcl_Interp *interp, char *arr, ay_object *o)
 
       Tcl_DStringAppend(&ds, buffer5, -1);
 
-      tob = Tcl_NewStringObj(Tcl_DStringValue(&ds), -1);
+      tob = Tcl_NewStringObj(Tcl_DStringValue(&ds), Tcl_DStringLength(&ds));
 
       Tcl_DStringFree(&ds);
     }
@@ -855,7 +856,7 @@ ay_prop_getncinfo(Tcl_Interp *interp, char *arr, ay_object *o)
     } /* if o is NCurve */
 
   Tcl_SetVar2Ex(interp, arr, "NCInfoBall", tob, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+		TCL_GLOBAL_ONLY);
 
  return AY_OK;
 } /* ay_prop_getncinfo */
