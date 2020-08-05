@@ -3203,7 +3203,7 @@ sign, which comes right behind the sought after percentage number.
 <item><tt/"DisplayDriver"/ sets the RenderMan display driver to use
 for the <tt/"Viewport"/ render mode,
 this is usually a string like <tt/"aqsisfifodspy"/, i.e.~the renderer
-name prepended to <tt/"fifodspy"/.
+name prepended to <tt/"fifodspy"/ but without any file name extension.
 <p> <p>
 
 <item><tt/"QRenderMode"/ see <tt/"RenderMode"/ above.
@@ -19769,7 +19769,7 @@ objects that support point editing.
 <label id="scgetpnt">
 getPnt &ndash; get point(s):
 <itemize>
- <item>Synopsis: <tt/"getPnt [-trafo | -world | -eval | -relative] (index | indexu indexv | u | u v ([varx vary varz [varw]] | -vn [varname]) | -all [varname])"/
+ <item>Synopsis: <tt/"getPnt [-trafo | -world | -eval | -relative] (index | indexu indexv | u | u v ([varx vary varz [varw]] | -vn [varname]) | -all [varname] | -sel [varname])"/
  <item>Background: Yes,&nbsp;&nbsp;Undo: No,&nbsp;&nbsp;Safe: Yes
  <item>Description: Get a control point of the currently selected object
 and write the coordinate values into the variables <tt/varx/, <tt/vary/,
@@ -19804,6 +19804,11 @@ If the alternative argument <tt/"-all"/ is used, all coordinate values
 of the selected objects will be appended to the list variable
 specified by <tt/"varname"/.
 <p>
+If the alternative argument <tt/"-sel"/ is used, the coordinate values
+of the currently selected points of the selected objects will be appended
+to the list variable specified by
+<tt/"varname"/.<footnote>Since 1.28.</footnote>
+<p>
 If any of the variable name arguments are omitted, the command returns the
 respective results.<footnote>Since 1.27.</footnote>
 
@@ -19827,7 +19832,7 @@ coordinate values to the variables <tt/"x y z"/.
 setPnt &ndash; set point(s):<label id="scsetpnt">
 <itemize>
  <item>Synopsis:
-<tt/"setPnt [-world] (index | indexu indexv) (x y z [w] | -vn varname) | -all varname)"/
+<tt/"setPnt [-world] (index | indexu indexv) (x y z [w] | -vn varname) | (-all|-sel) varname)"/
  <item>Background: Yes,&nbsp;&nbsp;Undo: Yes,&nbsp;&nbsp;Safe: Yes
  <item>Description: Set a control point of the
 currently selected object to the coordinates x, y, z, and w or to
@@ -19855,6 +19860,11 @@ If the alternative parameter <tt/"-all"/ is provided, all control
 points of the selected objects will be set and the coordinate
 values will be read from the variable specified by <tt/"varname"/
 which must be a list of double values.
+<p>
+If the alternative argument <tt/"-sel"/ is used, all selected control
+points of the selected objects will be set and the coordinate
+values will be read from the variable specified by <tt/"varname"/
+which must be a list of double values.<footnote>Since 1.28.</footnote>
 <p>
 When reading data from list variables, no precision will be lost
 as there are no double-string-double conversions involved.
