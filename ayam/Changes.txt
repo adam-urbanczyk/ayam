@@ -1,4 +1,4 @@
-[6. Jul 2020] Mercurial Tip:
+[7. Aug 2020] Mercurial Tip:
 ============================
 Bug Fixes:
 o append option of split curve tool does not work (SF 595)
@@ -9,6 +9,7 @@ o revert option of ExtrNC does not revert extracted normals (SF 600)
 o extracting the complete boundary misses normals and tangents (SF 601)
 o memory leak when opening periodic curves with multiple points (SF 602)
 o opening of numeric point editing dialog with selected points (SF 603)
+o remove knot tool does not accept "Inf" as tolerance value on Win32 (SF 604)
 
 Modelling:
 o added option to specify the split knot in a relative way in the
@@ -39,6 +40,7 @@ o added "curvature.tcl" script that displays a curvature plot diagram
   as property of NURBS curve and NURBS curve providing objects
 o added "isRational" command
 o added drag selection to "cvview.tcl"
+o added "-sel" option to "setPnt" command
 
 Rendering:
 o added render to viewport feature via a new distributed plugin ("fifodspy")
