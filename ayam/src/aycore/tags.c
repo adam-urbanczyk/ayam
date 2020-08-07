@@ -210,10 +210,10 @@ ay_tags_append(ay_object *o, ay_tag *tag)
 
 /** ay_tags_register:
  * register a new tag type
- * 
+ *
  * \param name tag name (i.e. "OI")
  * \param result where to store the tag id
- * 
+ *
  * \returns AY_OK on success, error code otherwise.
  */
 int
@@ -223,6 +223,9 @@ ay_tags_register(char *name, unsigned int *result)
  Tcl_HashEntry *entry = NULL;
  static unsigned int tagcounter = 1; /* 0 - dummy */
  char fname[] = "tags_register";
+
+  if(!name || !result)
+    return AY_ENULL;
 
   /* check, if type is already registered */
   if(Tcl_FindHashEntry(&ay_tagtypesht, name))

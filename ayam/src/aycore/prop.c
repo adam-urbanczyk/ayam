@@ -217,7 +217,8 @@ ay_prop_settrafotcmd(ClientData clientData, Tcl_Interp *interp,
 
   to = Tcl_GetVar2Ex(interp, "ay", "pasteProp",
 		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &pasteProp);
+  if(to)
+    Tcl_GetIntFromObj(interp, to, &pasteProp);
 
   to = Tcl_GetVar2Ex(interp, arr, "Translate_X",
 		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
