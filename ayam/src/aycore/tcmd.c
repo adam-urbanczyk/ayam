@@ -59,7 +59,7 @@ int
 ay_tcmd_convdlist(char *vname, int *dllen, double **dl)
 {
  int tcl_status = TCL_OK;
- Tcl_Obj *vnamePtr = NULL, *listPtr = NULL, **elemvPtr = NULL;
+ Tcl_Obj *listPtr = NULL, **elemvPtr = NULL;
  int i;
 
   if(!vname || !dllen || !dl)
@@ -67,15 +67,7 @@ ay_tcmd_convdlist(char *vname, int *dllen, double **dl)
       return TCL_ERROR;
     }
 
-  vnamePtr = Tcl_NewStringObj(vname, -1);
-  if(!vnamePtr)
-    {
-      return TCL_ERROR;
-    }
-
-  listPtr = Tcl_ObjGetVar2(ay_interp, vnamePtr, NULL, TCL_LEAVE_ERR_MSG);
-
-  Tcl_IncrRefCount(vnamePtr);Tcl_DecrRefCount(vnamePtr);
+  listPtr = Tcl_GetVar2Ex(ay_interp, vname, NULL, TCL_LEAVE_ERR_MSG);
 
   if(!listPtr)
     {
