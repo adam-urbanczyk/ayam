@@ -419,7 +419,7 @@ ay_read_tags(FILE *fileptr, ay_object *o)
  int deactivate = 0;
  char a1[] = "ay", n1[] = "scriptdisable";
  char script_disable_cmd[] = "script_disable";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ Tcl_Obj *to = NULL;
 #endif
 
   if(!o)
@@ -472,11 +472,10 @@ ay_read_tags(FILE *fileptr, ay_object *o)
      if(tag->type == ay_bns_tagtype)
        {
 	 Tcl_Eval(ay_interp, script_disable_cmd);
-	 toa = Tcl_NewStringObj(a1, -1);
-	 ton = Tcl_NewStringObj(n1, -1);
-	 to = Tcl_ObjGetVar2(ay_interp, toa, ton,
+	 to = Tcl_GetVar2Ex(ay_interp, "ay", "scriptdisable",
 			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	 Tcl_GetIntFromObj(ay_interp, to, &(deactivate));
+	 if(to)
+	   Tcl_GetIntFromObj(ay_interp, to, &(deactivate));
 
 	 if(deactivate)
 	   {
@@ -487,18 +486,14 @@ ay_read_tags(FILE *fileptr, ay_object *o)
 		 break;
 	       }
 	   }
-
-	 Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-	 Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
-       } /* if */
+       } /* if is bns */
      if(tag->type == ay_ans_tagtype)
        {
 	 Tcl_Eval(ay_interp, script_disable_cmd);
-	 toa = Tcl_NewStringObj(a1, -1);
-	 ton = Tcl_NewStringObj(n1, -1);
-	 to = Tcl_ObjGetVar2(ay_interp, toa, ton,
+	 to = Tcl_GetVar2Ex(ay_interp, "ay", "scriptdisable",
 			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	 Tcl_GetIntFromObj(ay_interp, to, &(deactivate));
+	 if(to)
+	   Tcl_GetIntFromObj(ay_interp, to, &(deactivate));
 
 	 if(deactivate)
 	   {
@@ -509,10 +504,7 @@ ay_read_tags(FILE *fileptr, ay_object *o)
 		 break;
 	       }
 	   }
-
-	 Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-	 Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
-       } /* if */
+       } /* if is ans */
 #endif /* AYNOSAFEINTERP */
 
       *next = tag;
