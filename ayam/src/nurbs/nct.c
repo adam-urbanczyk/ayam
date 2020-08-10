@@ -552,7 +552,7 @@ ay_nct_resize(ay_nurbcurve_object *curve, int new_length)
 			(newpersec[i])++;
 			new--;
 		      } /* if */
-		}  /* if */
+		} /* if */
 	    } /* for */
 	} /* while */
 
@@ -10367,7 +10367,7 @@ ay_nct_fair(ay_nurbcurve_object *curve, ay_point *selp, double tol)
 {
  int ay_status = AY_OK;
  unsigned int i, j, stride = 4, found;
- double *Pw, *U, len, v[3], l[3], r[3], q[3];
+ double *Pw, *U, len, v[3], l[3], r[3], q[4] = {0,0,0,1};
  double *pll, *pl, *p, *pr, *prr;
  ay_point *pnt;
  ay_nurbcurve_object nc = {0};
