@@ -830,11 +830,11 @@ jsinterp_tclvar(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
 			       jsinterp_vartraceproc, NULL))
 	    {
 	      /* ...establish a write trace */
-	      if(!TCL_OK == Tcl_TraceVar(jsinterp_interp,
-					 vname,
-					 TCL_TRACE_WRITES,
-					 jsinterp_vartraceproc,
-					 clientData))
+	      if(!(TCL_OK == Tcl_TraceVar(jsinterp_interp,
+					  vname,
+					  TCL_TRACE_WRITES,
+					  jsinterp_vartraceproc,
+					  clientData)))
 		{
 		  JS_ReportError(cx, "failed to establish trace");
 		  return JS_FALSE;

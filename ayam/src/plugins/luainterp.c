@@ -751,11 +751,11 @@ luainterp_tclvar(lua_State *L)
 			   luainterp_vartraceproc, NULL))
 	{
 	  /* ...establish a write trace */
-	  if(!TCL_OK == Tcl_TraceVar(luainterp_interp,
-				     vname,
-				     TCL_TRACE_WRITES,
-				     luainterp_vartraceproc,
-				     clientData))
+	  if(!(TCL_OK == Tcl_TraceVar(luainterp_interp,
+				      vname,
+				      TCL_TRACE_WRITES,
+				      luainterp_vartraceproc,
+				      clientData)))
 	    {
 	       return luaL_error(L, "failed to establish write trace");
 	    }
