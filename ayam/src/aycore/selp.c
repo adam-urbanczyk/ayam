@@ -1693,7 +1693,7 @@ int
 ay_selp_reducetominmax(ay_object *o)
 {
  unsigned int min = UINT_MAX, max = 0;
- ay_point *selp, *pmin, *pmax;
+ ay_point *selp, *pmin = NULL, *pmax = NULL;
  ay_point *next = NULL, *p = NULL;
 
   if(!o)
