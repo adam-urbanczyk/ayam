@@ -720,16 +720,8 @@ ay_object_placemark(ay_object *o)
 char *
 ay_object_gettypename(unsigned int index)
 {
- Tcl_HashEntry *entry = NULL;
-
- if((entry = Tcl_FindHashEntry(&ay_typenamesht, (char*)index)))
-    {
-      return Tcl_GetHashValue(entry);
-    }
-  else
-    {
-      return NULL;
-    }
+ void **arr = ay_typenamest.arr;
+ return((char*)arr[index]);
 } /* ay_object_gettypename */
 
 

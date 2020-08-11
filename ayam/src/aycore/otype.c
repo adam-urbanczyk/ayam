@@ -89,17 +89,9 @@ ay_otype_register(char *name,
     }
 
   /* register typename */
-  if(!(entry = Tcl_FindHashEntry(&ay_typenamesht, (char*)i)))
-    {
-      entry = Tcl_CreateHashEntry(&ay_typenamesht, (char*)i, &new_item);
-    }
-  Tcl_SetHashValue(entry, (void*)name);
-
-  /* register typename */
-  /*
   if((ay_status = ay_table_additem(&ay_typenamest, (void*)name, i)))
     return ay_status;
-  */
+
   /* register create callback */
   if((ay_status = ay_table_addcallback(&ay_createcbt, (ay_voidfp)crtcb, i)))
     return ay_status;
@@ -220,16 +212,9 @@ ay_otype_registercore(char *name,
   Tcl_SetHashValue(entry, ay_otype_getpointer(type_index));
 
   /* register typename */
-  entry = Tcl_CreateHashEntry(&ay_typenamesht,
-			      (char*)type_index,
-			      &new_item);
-  Tcl_SetHashValue(entry, (void*)name);
-
-  /*
-  if((ay_status = ay_table_additemo(&ay_typenamest, (ay_voidfp)name,
-				    type_index)))
+  if((ay_status = ay_table_additem(&ay_typenamest, (void*)name, type_index)))
     return ay_status;
-  */
+
   /* register create callback */
   if((ay_status = ay_table_addcallback(&ay_createcbt, (ay_voidfp)crtcb,
 				       type_index)))

@@ -45,7 +45,7 @@ GLUquadric *ay_gluquadobj = NULL;
 Tcl_HashTable ay_otypesht;
 
 /* registered object type names */
-Tcl_HashTable ay_typenamesht;
+ay_otable ay_typenamest;
 
 /* function pointer tables (object callbacks) */
 ay_ftable ay_createcbt;
@@ -251,7 +251,8 @@ ay_init(Tcl_Interp *interp)
   /* initialize AY tables */
   Tcl_InitHashTable(&ay_otypesht, TCL_STRING_KEYS);
 
-  Tcl_InitHashTable(&ay_typenamesht, TCL_ONE_WORD_KEYS);
+  if((ay_status = ay_table_init(&ay_typenamest)))
+    { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
   if((ay_status = ay_table_initftable(&ay_createcbt)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }

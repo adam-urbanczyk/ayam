@@ -1651,7 +1651,7 @@ extern GLUquadric *ay_gluquadobj;
 extern Tcl_HashTable ay_otypesht;
 
 /** table of registered object type names */
-extern Tcl_HashTable ay_typenamesht;
+extern ay_otable ay_typenamest;
 
 /** table of registered tag types */
 extern Tcl_HashTable ay_tagtypesht;
