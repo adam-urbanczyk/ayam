@@ -41,7 +41,7 @@ ay_tree_registerdrop(ay_treedropcb *cb, unsigned int type_id)
  int ay_status = AY_OK;
 
   /* register callback */
-  ay_status = ay_table_additem(&ay_treedropcbt, (ay_voidfp)cb, type_id);
+  ay_status = ay_table_addcallback(&ay_treedropcbt, (ay_voidfp)cb, type_id);
 
  return ay_status;
 } /* ay_tree_registerdrop */
