@@ -1568,7 +1568,7 @@ ay_draw_registerdacb(ay_drawcb *dacb, unsigned int type_id)
  int ay_status = AY_OK;
 
   /* register draw annotation callback */
-  ay_status = ay_table_additem(&ay_drawacbt, (ay_voidfp)dacb, type_id);
+  ay_status = ay_table_addcallback(&ay_drawacbt, (ay_voidfp)dacb, type_id);
 
  return ay_status;
 } /* ay_draw_registerdacb */

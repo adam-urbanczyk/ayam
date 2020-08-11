@@ -1542,6 +1542,15 @@ typedef struct ay_ftable_s
   ay_voidfp *arr; /**< callback function pointers [size] */
 } ay_ftable;
 
+
+/** object table */
+typedef struct ay_otable_s
+{
+  unsigned int size; /**< number of object pointers in table */
+  void *arr; /**< object pointers [size] */
+} ay_otable;
+
+
 /* Callbacks */
 
 /** Create callback, think constructor */
@@ -1800,6 +1809,7 @@ extern char *ay_error_igntype;
 #define AY_EEOF       14 /* EOF read */
 #define AY_EDONOTLINK 15 /* do not link read object */
 #define AY_ERANGE     16 /* argument out of range */
+#define AY_EUTAGTYPE  17 /* unknown tag type */
 #define AY_ENOSEL     20 /* nothing selected */
 #define AY_EARGS      21 /* missing or wrong args */
 #define AY_EOPT       22 /* missing or malformed option value */

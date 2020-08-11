@@ -1447,11 +1447,19 @@ int ay_shader_settcmd(ClientData clientData, Tcl_Interp *interp,
 
 /** initialize callback table
  */
-int ay_table_init(ay_ftable *table);
+int ay_table_initftable(ay_ftable *table);
 
 /** add item to callback table
  */
-int ay_table_additem(ay_ftable *table, ay_voidfp newitem, unsigned int index);
+int ay_table_addcallback(ay_ftable *table, ay_voidfp newitem, unsigned int index);
+
+/** initialize object table
+ */
+int ay_table_init(ay_otable *table);
+
+/** add item to object table
+ */
+int ay_table_additem(ay_otable *table, void *newitem, unsigned int index);
 
 
 /* tags.c */

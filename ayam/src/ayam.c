@@ -253,61 +253,61 @@ ay_init(Tcl_Interp *interp)
 
   Tcl_InitHashTable(&ay_typenamesht, TCL_ONE_WORD_KEYS);
 
-  if((ay_status = ay_table_init(&ay_createcbt)))
+  if((ay_status = ay_table_initftable(&ay_createcbt)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
-  if((ay_status = ay_table_init(&ay_deletecbt)))
+  if((ay_status = ay_table_initftable(&ay_deletecbt)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
-  if((ay_status = ay_table_init(&ay_copycbt)))
+  if((ay_status = ay_table_initftable(&ay_copycbt)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
-  if((ay_status = ay_table_init(&ay_drawcbt)))
+  if((ay_status = ay_table_initftable(&ay_drawcbt)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
-  if((ay_status = ay_table_init(&ay_drawhcbt)))
+  if((ay_status = ay_table_initftable(&ay_drawhcbt)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
-  if((ay_status = ay_table_init(&ay_drawacbt)))
+  if((ay_status = ay_table_initftable(&ay_drawacbt)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
-  if((ay_status = ay_table_init(&ay_shadecbt)))
+  if((ay_status = ay_table_initftable(&ay_shadecbt)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
-  if((ay_status = ay_table_init(&ay_setpropcbt)))
+  if((ay_status = ay_table_initftable(&ay_setpropcbt)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
-  if((ay_status = ay_table_init(&ay_getpropcbt)))
+  if((ay_status = ay_table_initftable(&ay_getpropcbt)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
-  if((ay_status = ay_table_init(&ay_getpntcbt)))
+  if((ay_status = ay_table_initftable(&ay_getpntcbt)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
-  if((ay_status = ay_table_init(&ay_notifycbt)))
+  if((ay_status = ay_table_initftable(&ay_notifycbt)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
-  if((ay_status = ay_table_init(&ay_readcbt)))
+  if((ay_status = ay_table_initftable(&ay_readcbt)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
-  if((ay_status = ay_table_init(&ay_writecbt)))
+  if((ay_status = ay_table_initftable(&ay_writecbt)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
-  if((ay_status = ay_table_init(&ay_wribcbt)))
+  if((ay_status = ay_table_initftable(&ay_wribcbt)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
-  if((ay_status = ay_table_init(&ay_bbccbt)))
+  if((ay_status = ay_table_initftable(&ay_bbccbt)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
-  if((ay_status = ay_table_init(&ay_treedropcbt)))
+  if((ay_status = ay_table_initftable(&ay_treedropcbt)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
-  if((ay_status = ay_table_init(&ay_convertcbt)))
+  if((ay_status = ay_table_initftable(&ay_convertcbt)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
-  if((ay_status = ay_table_init(&ay_providecbt)))
+  if((ay_status = ay_table_initftable(&ay_providecbt)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
-  if((ay_status = ay_table_init(&ay_sevalcbt)))
+  if((ay_status = ay_table_initftable(&ay_sevalcbt)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
   /* Languages */

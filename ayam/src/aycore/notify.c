@@ -51,7 +51,7 @@ ay_notify_register(ay_notifycb *notcb, unsigned int type_id)
  int ay_status = AY_OK;
 
   /* register notify callback */
-  ay_status = ay_table_additem(&ay_notifycbt, (ay_voidfp)notcb, type_id);
+  ay_status = ay_table_addcallback(&ay_notifycbt, (ay_voidfp)notcb, type_id);
 
  return ay_status;
 } /* ay_notify_register */

@@ -1122,8 +1122,8 @@ Luainterp_Init(Tcl_Interp *interp)
       return TCL_OK;
     }
 
-  ay_status = ay_table_additem(&ay_sevalcbt, (ay_voidfp)luainterp_evalcb,
-			       luainterp_langid);
+  ay_status = ay_table_addcallback(&ay_sevalcbt, (ay_voidfp)luainterp_evalcb,
+				   luainterp_langid);
   if(ay_status)
     {
       ay_error(AY_ERROR, fname, "Failed to register evaluation callback.");
