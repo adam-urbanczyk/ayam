@@ -1590,7 +1590,7 @@ ay_comp_register(ay_comparecb *compcb, unsigned int type_id)
  int ay_status = AY_OK;
 
   /* register comp callback */
-  ay_status = ay_table_additem(&ay_comparecbt, (ay_voidfp)compcb, type_id);
+  ay_status = ay_table_addcallback(&ay_comparecbt, (ay_voidfp)compcb, type_id);
 
  return ay_status;
 } /* ay_comp_register */
@@ -1644,7 +1644,7 @@ ay_comp_init()
  int ay_status = AY_OK;
  char fname[] = "comp_init";
 
-  if((ay_status = ay_table_init(&ay_comparecbt)))
+  if((ay_status = ay_table_initftable(&ay_comparecbt)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
   ay_status += ay_comp_register(ay_comp_box, AY_IDBOX);

@@ -2015,7 +2015,7 @@ outputerror:
  *
  * \param[in] name name of scripting language
  * \param[in,out] result pointer where to store the corresponding index
- *  in the script evaluation callback table (using ay_table_additem())
+ *  in the script evaluation callback table (using ay_table_addcallback())
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -2632,19 +2632,24 @@ ay_tcmd_registergeneric(int op, ay_genericcb *cb, unsigned int type_id)
   switch(op)
     {
     case AY_OPREVERT:
-      ay_status = ay_table_additem(&ay_tcmd_revertcbt, (ay_voidfp)cb, type_id);
+      ay_status = ay_table_addcallback(&ay_tcmd_revertcbt, (ay_voidfp)cb,
+				       type_id);
       break;
     case AY_OPOPEN:
-      ay_status = ay_table_additem(&ay_tcmd_opencbt, (ay_voidfp)cb, type_id);
+      ay_status = ay_table_addcallback(&ay_tcmd_opencbt, (ay_voidfp)cb,
+				       type_id);
       break;
     case AY_OPCLOSE:
-      ay_status = ay_table_additem(&ay_tcmd_closecbt, (ay_voidfp)cb, type_id);
+      ay_status = ay_table_addcallback(&ay_tcmd_closecbt, (ay_voidfp)cb,
+				       type_id);
       break;
     case AY_OPREFINE:
-      ay_status = ay_table_additem(&ay_tcmd_refinecbt, (ay_voidfp)cb, type_id);
+      ay_status = ay_table_addcallback(&ay_tcmd_refinecbt, (ay_voidfp)cb,
+				       type_id);
       break;
     case AY_OPCOARSEN:
-      ay_status = ay_table_additem(&ay_tcmd_coarsencbt, (ay_voidfp)cb, type_id);
+      ay_status = ay_table_addcallback(&ay_tcmd_coarsencbt, (ay_voidfp)cb,
+				       type_id);
       break;
     default:
       break;
@@ -2667,19 +2672,19 @@ ay_tcmd_init(Tcl_Interp *interp)
  int ay_status = AY_OK;
  char fname[] = "tcmd_init";
 
-  if((ay_status = ay_table_init(&ay_tcmd_revertcbt)))
+  if((ay_status = ay_table_initftable(&ay_tcmd_revertcbt)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
-  if((ay_status = ay_table_init(&ay_tcmd_opencbt)))
+  if((ay_status = ay_table_initftable(&ay_tcmd_opencbt)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
-  if((ay_status = ay_table_init(&ay_tcmd_closecbt)))
+  if((ay_status = ay_table_initftable(&ay_tcmd_closecbt)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
-  if((ay_status = ay_table_init(&ay_tcmd_refinecbt)))
+  if((ay_status = ay_table_initftable(&ay_tcmd_refinecbt)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
-  if((ay_status = ay_table_init(&ay_tcmd_coarsencbt)))
+  if((ay_status = ay_table_initftable(&ay_tcmd_coarsencbt)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
  return ay_status;

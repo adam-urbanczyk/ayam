@@ -28,7 +28,7 @@ ay_provide_register(ay_providecb *provcb, unsigned int type_id)
  int ay_status = AY_OK;
 
   /* register provide callback */
-  ay_status = ay_table_additem(&ay_providecbt, (ay_voidfp)provcb, type_id);
+  ay_status = ay_table_addcallback(&ay_providecbt, (ay_voidfp)provcb, type_id);
 
  return ay_status;
 } /* ay_provide_register */

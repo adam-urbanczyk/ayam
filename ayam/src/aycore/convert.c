@@ -28,7 +28,7 @@ ay_convert_register(ay_convertcb *convcb, unsigned int type_id)
  int ay_status = AY_OK;
 
   /* register convert callback */
-  ay_status = ay_table_additem(&ay_convertcbt, (ay_voidfp)convcb, type_id);
+  ay_status = ay_table_addcallback(&ay_convertcbt, (ay_voidfp)convcb, type_id);
 
  return ay_status;
 } /* ay_convert_register */

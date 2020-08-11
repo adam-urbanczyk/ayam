@@ -3498,7 +3498,8 @@ ay_pact_registerinsert(ay_inspntcb *inscb, unsigned int type_id)
  int ay_status = AY_OK;
 
   /* register insert callback */
-  ay_status = ay_table_additem(&ay_pact_insertcbt, (ay_voidfp)inscb, type_id);
+  ay_status = ay_table_addcallback(&ay_pact_insertcbt, (ay_voidfp)inscb,
+				   type_id);
 
  return ay_status;
 } /* ay_pact_registerinsert */
@@ -3518,7 +3519,8 @@ ay_pact_registerdelete(ay_delpntcb *delcb, unsigned int type_id)
  int ay_status = AY_OK;
 
   /* register delete callback */
-  ay_status = ay_table_additem(&ay_pact_deletecbt, (ay_voidfp)delcb, type_id);
+  ay_status = ay_table_addcallback(&ay_pact_deletecbt, (ay_voidfp)delcb,
+				   type_id);
 
  return ay_status;
 } /* ay_pact_registerdelete */
@@ -3535,10 +3537,10 @@ ay_pact_init(Tcl_Interp *interp)
  int ay_status = AY_OK;
  char fname[] = "pact_init";
 
-  if((ay_status = ay_table_init(&ay_pact_insertcbt)))
+  if((ay_status = ay_table_initftable(&ay_pact_insertcbt)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
-  if((ay_status = ay_table_init(&ay_pact_deletecbt)))
+  if((ay_status = ay_table_initftable(&ay_pact_deletecbt)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
  return ay_status;
