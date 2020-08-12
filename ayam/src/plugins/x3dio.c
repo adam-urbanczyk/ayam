@@ -45,7 +45,7 @@ typedef int (x3dio_writecb) (scew_element *element, ay_object *o);
 char x3dio_version_ma[] = AY_VERSIONSTR;
 char x3dio_version_mi[] = AY_VERSIONSTRMI;
 
-static Tcl_HashTable x3dio_write_ht;
+static ay_ftable x3dio_writecbt;
 
 static Tcl_HashTable *x3dio_defs_ht = NULL;
 
@@ -277,7 +277,7 @@ scew_element* x3dio_findelement(scew_element const* parent,
 
 unsigned int x3dio_count(ay_object *o);
 
-int x3dio_registerwritecb(char *name, x3dio_writecb *cb);
+int x3dio_registerwritecb(unsigned int type_id, x3dio_writecb *cb);
 
 int x3dio_copypv(ay_tag *src, char **dst);
 
@@ -6860,34 +6860,17 @@ unsigned int
 x3dio_count(ay_object *o)
 {
  unsigned int lcount = 0;
- int lasttype = -1;
- Tcl_HashTable *ht = &x3dio_write_ht;
- Tcl_HashEntry *entry = NULL;
- x3dio_writecb *cb = NULL;
+ ay_voidfp *arr = x3dio_writecbt.arr;
 
   if(!o)
     return 0;
 
   while(o->next)
     {
-      if(lasttype != (int)o->type)
-	{
-	  entry = NULL;
-	  if((entry = Tcl_FindHashEntry(ht, (char *)(o->type))))
-	    {
-	      cb = (x3dio_writecb*)Tcl_GetHashValue(entry);
-	    }
-	  else
-	    {
-	      cb = NULL;
-	    }
-	  lasttype = o->type;
-	} /* if */
-
-      if(o->down && o->down->next /*&& (cb != x3dio_writenpconvertible)*/)
+      if(o->down && o->down->next)
 	lcount += x3dio_count(o->down);
 
-      if(cb != NULL)
+      if(arr[o->type])
 	lcount++;
 
       o = o->next;
@@ -6901,26 +6884,14 @@ x3dio_count(ay_object *o)
  *  manage the write callback hash table
  */
 int
-x3dio_registerwritecb(char *name, x3dio_writecb *cb)
+x3dio_registerwritecb(unsigned int type_id, x3dio_writecb *cb)
 {
  int ay_status = AY_OK;
- int new_item = 0;
- Tcl_HashEntry *entry = NULL;
- Tcl_HashTable *ht = &x3dio_write_ht;
 
   if(!cb)
     return AY_ENULL;
 
-  if((entry = Tcl_FindHashEntry(ht, name)))
-    {
-      return AY_ERROR; /* name already registered */
-    }
-  else
-    {
-      /* create new entry */
-      entry = Tcl_CreateHashEntry(ht, name, &new_item);
-      Tcl_SetHashValue(entry, (char*)cb);
-    }
+  ay_status = ay_table_addcallback(&x3dio_writecbt, (ay_voidfp)cb, type_id);
 
  return ay_status;
 } /* x3dio_registerwritecb */
@@ -10990,9 +10961,8 @@ x3dio_writeobject(scew_element *element, ay_object *o, int count)
 {
  int ay_status = AY_OK;
  char fname[] = "x3dio_writeobject";
- Tcl_HashTable *ht = &x3dio_write_ht;
- Tcl_HashEntry *entry = NULL;
  char err[255];
+ ay_voidfp *arr = x3dio_writecbt.arr;
  x3dio_writecb *cb = NULL;
  ay_object *t, *c = NULL;
  int curprog = 0;
@@ -11004,51 +10974,48 @@ x3dio_writeobject(scew_element *element, ay_object *o, int count)
   if(!element || !o)
     return AY_ENULL;
 
-  if((entry = Tcl_FindHashEntry(ht, (char *)(o->type))))
+  if(arr[o->type])
     {
-      cb = (x3dio_writecb*)Tcl_GetHashValue(entry);
+      cb = (x3dio_writecb*)arr[o->type];
 
-      if(cb)
+      ay_status = cb(element, o);
+      if(ay_status)
 	{
-	  ay_status = cb(element, o);
-	  if(ay_status)
+	  ay_error(AY_ERROR, fname, "Error exporting object.");
+	  ay_status = AY_OK;
+	}
+
+      if(count)
+	{
+	  x3dio_curobjcnt++;
+
+	  /* calculate new progress value in percent */
+	  curprog = (int)(x3dio_curobjcnt*100.0/x3dio_allobjcnt);
+
+	  sprintf(pbuffer, "%d", curprog);
+	  Tcl_SetVar2(ay_interp, aname, vname1, pbuffer,
+		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+	  /* process all events (update the GUI) for every object */
+	  /*
+	    if(!fmod(x3dio_curobjcnt, 5.0))
 	    {
-	      ay_error(AY_ERROR, fname, "Error exporting object.");
-	      ay_status = AY_OK;
+	  */
+	  while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
+
+	  /* also, check for cancel button */
+	  val = Tcl_GetVar2(ay_interp, aname, vname2,
+			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	  if(val && val[0] == '1')
+	    {
+	      ay_error(AY_EOUTPUT, fname,
+		  "Export cancelled! Not all objects may have been written!");
+	      return AY_EDONOTLINK;
 	    }
-
-	  if(count)
-	    {
-	      x3dio_curobjcnt++;
-
-	      /* calculate new progress value in percent */
-	      curprog = (int)(x3dio_curobjcnt*100.0/x3dio_allobjcnt);
-
-	      sprintf(pbuffer, "%d", curprog);
-	      Tcl_SetVar2(ay_interp, aname, vname1, pbuffer,
-			  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-	      /* process all events (update the GUI) for every object */
-	      /*
-		if(!fmod(x3dio_curobjcnt, 5.0))
-		{
-	      */
-	      while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
-
-	      /* also, check for cancel button */
-	      val = Tcl_GetVar2(ay_interp, aname, vname2,
-				TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	      if(val && val[0] == '1')
-		{
-		  ay_error(AY_EOUTPUT, fname,
-		   "Export cancelled! Not all objects may have been written!");
-		  return AY_EDONOTLINK;
-		}
-	      /*
-		}
-	      */
-	    } /* if count */
-	} /* if cb */
+	  /*
+	    }
+	  */
+	} /* if count */
     }
   else
     {
@@ -11506,93 +11473,81 @@ X_Init(Tcl_Interp *interp)
   if(ay_status)
     return TCL_ERROR;
 
-  /* init hash table for write callbacks */
-  Tcl_InitHashTable(&x3dio_write_ht, TCL_ONE_WORD_KEYS);
+  /* init table for write callbacks */
+  ay_table_initftable(&x3dio_writecbt);
 
   /* fill hash table */
-  ay_status += x3dio_registerwritecb((char *)(AY_IDLEVEL),
-				     x3dio_writelevelobj);
-  ay_status += x3dio_registerwritecb((char *)(AY_IDCLONE),
-				     x3dio_writecloneobj);
-  ay_status += x3dio_registerwritecb((char *)(AY_IDMIRROR),
-				     x3dio_writecloneobj);
-  ay_status += x3dio_registerwritecb((char *)(AY_IDINSTANCE),
-				     x3dio_writeinstanceobj);
-  ay_status += x3dio_registerwritecb((char *)(AY_IDSCRIPT),
-				     x3dio_writescriptobj);
+  ay_status += x3dio_registerwritecb(AY_IDLEVEL, x3dio_writelevelobj);
+  ay_status += x3dio_registerwritecb(AY_IDCLONE, x3dio_writecloneobj);
+  ay_status += x3dio_registerwritecb(AY_IDMIRROR, x3dio_writecloneobj);
+  ay_status += x3dio_registerwritecb(AY_IDINSTANCE, x3dio_writeinstanceobj);
+  ay_status += x3dio_registerwritecb(AY_IDSCRIPT, x3dio_writescriptobj);
 
-  ay_status += x3dio_registerwritecb((char *)(AY_IDLIGHT),
-				     x3dio_writelight);
+  ay_status += x3dio_registerwritecb(AY_IDLIGHT, x3dio_writelight);
 
-  ay_status += x3dio_registerwritecb((char *)(AY_IDPOMESH),
-				     x3dio_writepomeshobj);
+  ay_status += x3dio_registerwritecb(AY_IDPOMESH, x3dio_writepomeshobj);
 
-  ay_status += x3dio_registerwritecb((char *)(AY_IDBOX),
-				     x3dio_writeboxobj);
-  ay_status += x3dio_registerwritecb((char *)(AY_IDSPHERE),
-				     x3dio_writesphereobj);
-  ay_status += x3dio_registerwritecb((char *)(AY_IDCYLINDER),
-				     x3dio_writecylinderobj);
-  ay_status += x3dio_registerwritecb((char *)(AY_IDCONE),
-				     x3dio_writeconeobj);
+  ay_status += x3dio_registerwritecb(AY_IDBOX, x3dio_writeboxobj);
+  ay_status += x3dio_registerwritecb(AY_IDSPHERE, x3dio_writesphereobj);
+  ay_status += x3dio_registerwritecb(AY_IDCYLINDER, x3dio_writecylinderobj);
+  ay_status += x3dio_registerwritecb(AY_IDCONE, x3dio_writeconeobj);
 
-  ay_status += x3dio_registerwritecb((char *)(AY_IDNCURVE),
-				     x3dio_writencurveobj);
+  ay_status += x3dio_registerwritecb(AY_IDNCURVE, x3dio_writencurveobj);
 
-  ay_status += x3dio_registerwritecb((char *)(AY_IDICURVE),
+  ay_status += x3dio_registerwritecb(AY_IDICURVE,
 				     x3dio_writencconvertibleobj);
-  ay_status += x3dio_registerwritecb((char *)(AY_IDCONCATNC),
+  ay_status += x3dio_registerwritecb(AY_IDCONCATNC,
 				     x3dio_writencconvertibleobj);
-  ay_status += x3dio_registerwritecb((char *)(AY_IDEXTRNC),
+  ay_status += x3dio_registerwritecb(AY_IDEXTRNC,
 				     x3dio_writencconvertibleobj);
-  ay_status += x3dio_registerwritecb((char *)(AY_IDNCIRCLE),
+  ay_status += x3dio_registerwritecb(AY_IDNCIRCLE,
 				     x3dio_writencconvertibleobj);
-  ay_status += x3dio_registerwritecb((char *)(AY_IDOFFNC),
+  ay_status += x3dio_registerwritecb(AY_IDOFFNC,
 				     x3dio_writencconvertibleobj);
 
-  ay_status += x3dio_registerwritecb((char *)(AY_IDNPATCH),
+  ay_status += x3dio_registerwritecb(AY_IDNPATCH,
 				     x3dio_writenpatchobj);
 
-  ay_status += x3dio_registerwritecb((char *)(AY_IDDISK),
+  ay_status += x3dio_registerwritecb(AY_IDDISK,
 				     x3dio_writenpconvertibleobj);
-  ay_status += x3dio_registerwritecb((char *)(AY_IDHYPERBOLOID),
+  ay_status += x3dio_registerwritecb(AY_IDHYPERBOLOID,
 				     x3dio_writenpconvertibleobj);
-  ay_status += x3dio_registerwritecb((char *)(AY_IDPARABOLOID),
+  ay_status += x3dio_registerwritecb(AY_IDPARABOLOID,
 				     x3dio_writenpconvertibleobj);
-  ay_status += x3dio_registerwritecb((char *)(AY_IDTORUS),
+  ay_status += x3dio_registerwritecb(AY_IDTORUS,
 				     x3dio_writenpconvertibleobj);
 
-  ay_status += x3dio_registerwritecb((char *)(AY_IDEXTRUDE),
+  ay_status += x3dio_registerwritecb(AY_IDEXTRUDE,
 				     x3dio_writeextrudeobj);
-  ay_status += x3dio_registerwritecb((char *)(AY_IDREVOLVE),
+  ay_status += x3dio_registerwritecb(AY_IDREVOLVE,
 				     x3dio_writerevolveobj);
-  ay_status += x3dio_registerwritecb((char *)(AY_IDSWEEP),
+  ay_status += x3dio_registerwritecb(AY_IDSWEEP,
 				     x3dio_writesweepobj);
-  ay_status += x3dio_registerwritecb((char *)(AY_IDSWING),
+  ay_status += x3dio_registerwritecb(AY_IDSWING,
 				     x3dio_writeswingobj);
-  ay_status += x3dio_registerwritecb((char *)(AY_IDSKIN),
+  ay_status += x3dio_registerwritecb(AY_IDSKIN,
 				     x3dio_writenpconvertibleobj);
-  ay_status += x3dio_registerwritecb((char *)(AY_IDCAP),
+  ay_status += x3dio_registerwritecb(AY_IDCAP,
 				     x3dio_writenpconvertibleobj);
-  ay_status += x3dio_registerwritecb((char *)(AY_IDPAMESH),
+  ay_status += x3dio_registerwritecb(AY_IDPAMESH,
 				     x3dio_writenpconvertibleobj);
-  ay_status += x3dio_registerwritecb((char *)(AY_IDBPATCH),
+  ay_status += x3dio_registerwritecb(AY_IDBPATCH,
 				     x3dio_writenpconvertibleobj);
-  ay_status += x3dio_registerwritecb((char *)(AY_IDGORDON),
+  ay_status += x3dio_registerwritecb(AY_IDGORDON,
 				     x3dio_writenpconvertibleobj);
-  ay_status += x3dio_registerwritecb((char *)(AY_IDBIRAIL1),
+  ay_status += x3dio_registerwritecb(AY_IDBIRAIL1,
 				     x3dio_writenpconvertibleobj);
-  ay_status += x3dio_registerwritecb((char *)(AY_IDBIRAIL2),
+  ay_status += x3dio_registerwritecb(AY_IDBIRAIL2,
 				     x3dio_writenpconvertibleobj);
-  ay_status += x3dio_registerwritecb((char *)(AY_IDTEXT),
+  ay_status += x3dio_registerwritecb(AY_IDTEXT,
 				     x3dio_writenpconvertibleobj);
-  ay_status += x3dio_registerwritecb((char *)(AY_IDBEVEL),
+  ay_status += x3dio_registerwritecb(AY_IDBEVEL,
 				     x3dio_writenpconvertibleobj);
-  ay_status += x3dio_registerwritecb((char *)(AY_IDEXTRNP),
+  ay_status += x3dio_registerwritecb(AY_IDEXTRNP,
 				     x3dio_writenpconvertibleobj);
-  ay_status += x3dio_registerwritecb((char *)(AY_IDOFFNP),
+  ay_status += x3dio_registerwritecb(AY_IDOFFNP,
 				     x3dio_writenpconvertibleobj);
-  ay_status += x3dio_registerwritecb((char *)(AY_IDIPATCH),
+  ay_status += x3dio_registerwritecb(AY_IDIPATCH,
 				     x3dio_writenpconvertibleobj);
 
   if(ay_status)

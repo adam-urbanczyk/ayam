@@ -60,7 +60,7 @@ typedef struct dxfio_block_s {
 char dxfio_version_ma[] = AY_VERSIONSTR;
 char dxfio_version_mi[] = AY_VERSIONSTRMI;
 
-static Tcl_HashTable dxfio_write_ht;
+static ay_ftable dxfio_writecbt;
 
 // last read object
 ay_object *dxfio_lrobject = NULL;
@@ -1720,7 +1720,6 @@ dxfio_readtcmd(ClientData clientData, Tcl_Interp *interp,
   //int ay_status = AY_OK;
  char *minus, lineerrstr[64];
  int i = 2;
- double accuracy = 0.1;
  char arrname[] = "dxfio_options", varname[] = "Progress";
 
   dxfio_importcurves = AY_TRUE;
@@ -1744,11 +1743,6 @@ dxfio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 
   while(i+1 < argc)
     {
-      if(!strcmp(argv[i], "-a"))
-	{
-	  sscanf(argv[i+1], "%lg", &accuracy);
-	}
-      else
       if(!strcmp(argv[i], "-c"))
 	{
 	  sscanf(argv[i+1], "%d", &dxfio_importcurves);
@@ -1792,7 +1786,6 @@ dxfio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 	} // if
       i += 2;
     } // while
-
 
   // open file for reading
   dimeInput in;
@@ -2353,8 +2346,7 @@ dxfio_writeobject(ay_object *o, dimeModel *dm)
 {
  int ay_status = AY_OK;
  char fname[] = "dxfio_writeobject";
- Tcl_HashTable *ht = &dxfio_write_ht;
- Tcl_HashEntry *entry = NULL;
+ ay_voidfp *arr = dxfio_writecbt.arr;
  char err[255];
  dxfio_writecb *cb = NULL;
  double m1[16] = {0}, m2[16];
@@ -2387,32 +2379,30 @@ dxfio_writeobject(ay_object *o, dimeModel *dm)
   if(dxfio_expignorehidden && o->hide)
     return AY_OK;
 
-  if((entry = Tcl_FindHashEntry(ht, (char *)(o->type))))
+  if(arr[o->type])
     {
-      cb = (dxfio_writecb*)Tcl_GetHashValue(entry);
-      if(cb)
-	{
-	  if((o->movx != 0.0) || (o->movy != 0.0) || (o->movz != 0.0) ||
-	     (o->rotx != 0.0) || (o->roty != 0.0) || (o->rotz != 0.0) ||
-	     (o->scalx != 1.0) || (o->scaly != 1.0) || (o->scalz != 1.0) ||
-	     (o->quat[0] != 0.0) || (o->quat[1] != 0.0) ||
-	     (o->quat[2] != 0.0) || (o->quat[3] != 1.0))
-	    {
-	      ay_trafo_creatematrix(o, m1);
-	      memcpy(m2, tm, 16*sizeof(double));
-	      ay_trafo_multmatrix(m2, m1);
-	      ay_status = cb(o, dm, m2);
-	    }
-	  else
-	    {
-	      ay_status = cb(o, dm, tm);
-	    } // if
+      cb = (dxfio_writecb*)arr[o->type];
 
-	  if(ay_status)
-	    {
-	      ay_error(AY_ERROR, fname, "Error exporting object.");
-	      ay_status = AY_OK;
-	    } // if
+      if((o->movx != 0.0) || (o->movy != 0.0) || (o->movz != 0.0) ||
+	 (o->rotx != 0.0) || (o->roty != 0.0) || (o->rotz != 0.0) ||
+	 (o->scalx != 1.0) || (o->scaly != 1.0) || (o->scalz != 1.0) ||
+	 (o->quat[0] != 0.0) || (o->quat[1] != 0.0) ||
+	 (o->quat[2] != 0.0) || (o->quat[3] != 1.0))
+	{
+	  ay_trafo_creatematrix(o, m1);
+	  memcpy(m2, tm, 16*sizeof(double));
+	  ay_trafo_multmatrix(m2, m1);
+	  ay_status = cb(o, dm, m2);
+	}
+      else
+	{
+	  ay_status = cb(o, dm, tm);
+	} // if
+
+      if(ay_status)
+	{
+	  ay_error(AY_ERROR, fname, "Error exporting object.");
+	  ay_status = AY_OK;
 	} // if
     }
   else
@@ -2606,7 +2596,7 @@ dxfio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 	    } // if
 	  o = o->next;
 	} // while
-    }
+    } // if
 
   // insert the layer in the table
   tables->insertTable(layers);
@@ -2680,26 +2670,14 @@ cleanup:
 // dxfio_registerwritecb:
 //
 int
-dxfio_registerwritecb(char *name, dxfio_writecb *cb)
+dxfio_registerwritecb(unsigned int type_id, dxfio_writecb *cb)
 {
  int ay_status = AY_OK;
- int new_item = 0;
- Tcl_HashEntry *entry = NULL;
- Tcl_HashTable *ht = &dxfio_write_ht;
 
   if(!cb)
     return AY_ENULL;
 
-  if((entry = Tcl_FindHashEntry(ht, name)))
-    {
-      return AY_ERROR; // name already registered
-    }
-  else
-    {
-      // create new entry
-      entry = Tcl_CreateHashEntry(ht, name, &new_item);
-      Tcl_SetHashValue(entry, (char*)cb);
-    }
+  ay_status = ay_table_addcallback(&dxfio_writecbt, (ay_voidfp)cb, type_id);
 
  return ay_status;
 } // dxfio_registerwritecb
@@ -2780,32 +2758,24 @@ Dxfio_Init(Tcl_Interp *interp)
     }
 
   // init hash table for write callbacks
-  Tcl_InitHashTable(&dxfio_write_ht, TCL_ONE_WORD_KEYS);
+  ay_table_initftable(&dxfio_writecbt);
 
   // fill hash table
-  ay_status += dxfio_registerwritecb((char *)(AY_IDLEVEL),
-				     dxfio_writelevel);
+  ay_status += dxfio_registerwritecb(AY_IDLEVEL, dxfio_writelevel);
 
-  ay_status += dxfio_registerwritecb((char *)(AY_IDCLONE),
-				     dxfio_writeclone);
+  ay_status += dxfio_registerwritecb(AY_IDCLONE, dxfio_writeclone);
 
-  ay_status += dxfio_registerwritecb((char *)(AY_IDMIRROR),
-				     dxfio_writeclone);
+  ay_status += dxfio_registerwritecb(AY_IDMIRROR, dxfio_writeclone);
 
-  ay_status += dxfio_registerwritecb((char *)(AY_IDINSTANCE),
-				     dxfio_writeinstance);
+  ay_status += dxfio_registerwritecb(AY_IDINSTANCE, dxfio_writeinstance);
 
-  ay_status += dxfio_registerwritecb((char *)(AY_IDSCRIPT),
-				     dxfio_writescript);
+  ay_status += dxfio_registerwritecb(AY_IDSCRIPT, dxfio_writescript);
 
-  ay_status += dxfio_registerwritecb((char *)(AY_IDPOMESH),
-				     dxfio_writepomesh);
+  ay_status += dxfio_registerwritecb(AY_IDPOMESH, dxfio_writepomesh);
 
-  ay_status += dxfio_registerwritecb((char *)(AY_IDNPATCH),
-				     dxfio_writenpatch);
+  ay_status += dxfio_registerwritecb(AY_IDNPATCH, dxfio_writenpatch);
 
-  ay_status += dxfio_registerwritecb((char *)(AY_IDNCURVE),
-				     dxfio_writencurve);
+  ay_status += dxfio_registerwritecb(AY_IDNCURVE, dxfio_writencurve);
 
   if(ay_status)
     return TCL_ERROR;

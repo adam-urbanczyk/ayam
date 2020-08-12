@@ -25,7 +25,7 @@ typedef int (objio_writecb) (FILE *fileptr, ay_object *o, double *m);
 
 unsigned int objio_count(ay_object *o);
 
-int objio_registerwritecb(char *name, objio_writecb *cb);
+int objio_registerwritecb(unsigned int type_id, objio_writecb *cb);
 
 int objio_writevertices(FILE *fileptr, unsigned int n, int stride,
 			   double *v);
@@ -81,7 +81,7 @@ static double tm[16] = {0}; /* current transformation matrix */
 
 static double objio_scalefactor = 1.0;
 
-static Tcl_HashTable objio_write_ht; /* write callbacks */
+static ay_ftable objio_writecbt; /* write callbacks */
 
 static int objio_tesspomesh = AY_FALSE;
 
@@ -103,34 +103,17 @@ unsigned int
 objio_count(ay_object *o)
 {
  unsigned int lcount = 0;
- int lasttype = -1;
- Tcl_HashTable *ht = &objio_write_ht;
- Tcl_HashEntry *entry = NULL;
- objio_writecb *cb = NULL;
+ ay_voidfp *arr = objio_writecbt.arr;
 
   if(!o)
     return 0;
 
   while(o->next)
     {
-      if(lasttype != (int)o->type)
-	{
-	  entry = NULL;
-	  if((entry = Tcl_FindHashEntry(ht, (char *)(o->type))))
-	    {
-	      cb = (objio_writecb*)Tcl_GetHashValue(entry);
-	    }
-	  else
-	    {
-	      cb = NULL;
-	    }
-	  lasttype = o->type;
-	} /* if */
-
-      if(o->down && o->down->next && (cb != objio_writenpconvertible))
+      if(o->down && o->down->next)
 	lcount += objio_count(o->down);
 
-      if(cb != NULL)
+      if(arr[o->type])
 	lcount++;
 
       o = o->next;
@@ -144,26 +127,14 @@ objio_count(ay_object *o)
  *
  */
 int
-objio_registerwritecb(char *name, objio_writecb *cb)
+objio_registerwritecb(unsigned int type_id, objio_writecb *cb)
 {
  int ay_status = AY_OK;
- int new_item = 0;
- Tcl_HashEntry *entry = NULL;
- Tcl_HashTable *ht = &objio_write_ht;
 
   if(!cb)
     return AY_ENULL;
 
-  if((entry = Tcl_FindHashEntry(ht, name)))
-    {
-      return AY_ERROR; /* name already registered */
-    }
-  else
-    {
-      /* create new entry */
-      entry = Tcl_CreateHashEntry(ht, name, &new_item);
-      Tcl_SetHashValue(entry, (char*)cb);
-    }
+  ay_status = ay_table_addcallback(&objio_writecbt, (ay_voidfp)cb, type_id);
 
  return ay_status;
 } /* objio_registerwritecb */
@@ -1360,8 +1331,7 @@ objio_writeobject(FILE *fileptr, ay_object *o, int writeend, int count)
 {
  int ay_status = AY_OK;
  char fname[] = "objio_writeobject";
- Tcl_HashTable *ht = &objio_write_ht;
- Tcl_HashEntry *entry = NULL;
+ ay_voidfp *arr = objio_writecbt.arr;
  double m1[16] = {0}, m2[16];
  char err[255];
  objio_writecb *cb = NULL;
@@ -1375,69 +1345,66 @@ objio_writeobject(FILE *fileptr, ay_object *o, int writeend, int count)
   if(!o)
     return AY_ENULL;
 
-  if((entry = Tcl_FindHashEntry(ht, (char *)(o->type))))
+  if(arr[o->type])
     {
-      cb = (objio_writecb*)Tcl_GetHashValue(entry);
+      cb = (objio_writecb*)arr[o->type];
 
-      if(cb)
+      if(o->name && (strlen(o->name)>1))
+	fprintf(fileptr, "o %s\n", o->name);
+
+      if(AY_ISTRAFO(o))
 	{
-	  if(o->name && (strlen(o->name)>1))
-	    fprintf(fileptr, "o %s\n", o->name);
+	  ay_trafo_creatematrix(o, m1);
+	  memcpy(m2, tm, 16*sizeof(double));
+	  ay_trafo_multmatrix(m2, m1);
 
-	  if(AY_ISTRAFO(o))
+	  ay_status = cb(fileptr, o, m2);
+	}
+      else
+	{
+	  ay_status = cb(fileptr, o, tm);
+	}
+
+      if(ay_status)
+	{
+	  ay_error(AY_ERROR, fname, "Error exporting object.");
+	  ay_status = AY_OK;
+	}
+
+      if(count)
+	{
+	  objio_curobjcnt++;
+
+	  /* calculate new progress value in percent */
+	  curprog = (int)(objio_curobjcnt*100.0/objio_allobjcnt);
+
+	  sprintf(pbuffer, "%d", curprog);
+	  Tcl_SetVar2(ay_interp, aname, vname1, pbuffer,
+		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+	  /* process all events (update the GUI) for every object */
+	  /*
+	    if(!fmod(objio_curobjcnt, 5.0))
 	    {
-	      ay_trafo_creatematrix(o, m1);
-	      memcpy(m2, tm, 16*sizeof(double));
-	      ay_trafo_multmatrix(m2, m1);
+	  */
+	  while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
 
-	      ay_status = cb(fileptr, o, m2);
+	  /* also, check for cancel button */
+	  val = Tcl_GetVar2(ay_interp, aname, vname2,
+			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	  if(val && val[0] == '1')
+	    {
+	      ay_error(AY_EOUTPUT, fname,
+		 "Export cancelled! Not all objects may have been written!");
+	      return AY_EDONOTLINK;
 	    }
-	  else
-	    {
-	      ay_status = cb(fileptr, o, tm);
+	  /*
 	    }
+	  */
+	} /* if count */
 
-	  if(ay_status)
-	    {
-	      ay_error(AY_ERROR, fname, "Error exporting object.");
-	      ay_status = AY_OK;
-	    }
-
-	  if(count)
-	    {
-	      objio_curobjcnt++;
-
-	      /* calculate new progress value in percent */
-	      curprog = (int)(objio_curobjcnt*100.0/objio_allobjcnt);
-
-	      sprintf(pbuffer, "%d", curprog);
-	      Tcl_SetVar2(ay_interp, aname, vname1, pbuffer,
-			  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-	      /* process all events (update the GUI) for every object */
-	      /*
-		if(!fmod(objio_curobjcnt, 5.0))
-		{
-	      */
-	      while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
-
-	      /* also, check for cancel button */
-	      val = Tcl_GetVar2(ay_interp, aname, vname2,
-				TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	      if(val && val[0] == '1')
-		{
-		  ay_error(AY_EOUTPUT, fname,
-		   "Export cancelled! Not all objects may have been written!");
-		  return AY_EDONOTLINK;
-		}
-	      /*
-		}
-	      */
-	    } /* if count */
-
-	  if(writeend)
-	    fprintf(fileptr, "end\n");
-	} /* if cb */
+      if(writeend)
+	fprintf(fileptr, "end\n");
     }
   else
     {
@@ -3998,87 +3965,78 @@ Objio_Init(Tcl_Interp *interp)
       return TCL_ERROR;
     }
 
-  /* init hash table for write callbacks */
-  Tcl_InitHashTable(&objio_write_ht, TCL_ONE_WORD_KEYS);
+  /* init table for write callbacks */
+  ay_table_initftable(&objio_writecbt);
 
-  /* fill hash table */
-  ay_status = objio_registerwritecb((char *)(AY_IDNPATCH),
-				    objio_writenpatch);
-  ay_status += objio_registerwritecb((char *)(AY_IDNCURVE),
-				     objio_writencurve);
-  ay_status += objio_registerwritecb((char *)(AY_IDLEVEL),
-				     objio_writelevel);
-  ay_status += objio_registerwritecb((char *)(AY_IDCLONE),
-				     objio_writeclone);
-  ay_status += objio_registerwritecb((char *)(AY_IDMIRROR),
-				     objio_writeclone);
-  ay_status += objio_registerwritecb((char *)(AY_IDINSTANCE),
-				     objio_writeinstance);
-  ay_status += objio_registerwritecb((char *)(AY_IDSCRIPT),
-				      objio_writescript);
+  /* fill callback table */
+  ay_status = objio_registerwritecb(AY_IDNPATCH, objio_writenpatch);
+  ay_status += objio_registerwritecb(AY_IDNCURVE, objio_writencurve);
+  ay_status += objio_registerwritecb(AY_IDLEVEL, objio_writelevel);
+  ay_status += objio_registerwritecb(AY_IDCLONE, objio_writeclone);
+  ay_status += objio_registerwritecb(AY_IDMIRROR, objio_writeclone);
+  ay_status += objio_registerwritecb(AY_IDINSTANCE, objio_writeinstance);
+  ay_status += objio_registerwritecb(AY_IDSCRIPT, objio_writescript);
 
-  ay_status += objio_registerwritecb((char *)(AY_IDACURVE),
+  ay_status += objio_registerwritecb(AY_IDACURVE,
 				     objio_writencconvertible);
-  ay_status += objio_registerwritecb((char *)(AY_IDICURVE),
+  ay_status += objio_registerwritecb(AY_IDICURVE,
 				     objio_writencconvertible);
-  ay_status += objio_registerwritecb((char *)(AY_IDCONCATNC),
+  ay_status += objio_registerwritecb(AY_IDCONCATNC,
 				     objio_writencconvertible);
-  ay_status += objio_registerwritecb((char *)(AY_IDEXTRNC),
+  ay_status += objio_registerwritecb(AY_IDEXTRNC,
 				     objio_writencconvertible);
-  ay_status += objio_registerwritecb((char *)(AY_IDNCIRCLE),
+  ay_status += objio_registerwritecb(AY_IDNCIRCLE,
 				     objio_writencconvertible);
-  ay_status += objio_registerwritecb((char *)(AY_IDOFFNC),
+  ay_status += objio_registerwritecb(AY_IDOFFNC,
 				     objio_writencconvertible);
 
-  ay_status += objio_registerwritecb((char *)(AY_IDEXTRUDE),
+  ay_status += objio_registerwritecb(AY_IDEXTRUDE,
 				     objio_writenpconvertible);
-  ay_status += objio_registerwritecb((char *)(AY_IDREVOLVE),
+  ay_status += objio_registerwritecb(AY_IDREVOLVE,
 				     objio_writenpconvertible);
-  ay_status += objio_registerwritecb((char *)(AY_IDSWEEP),
+  ay_status += objio_registerwritecb(AY_IDSWEEP,
 				     objio_writenpconvertible);
-  ay_status += objio_registerwritecb((char *)(AY_IDSWING),
+  ay_status += objio_registerwritecb(AY_IDSWING,
 				     objio_writenpconvertible);
-  ay_status += objio_registerwritecb((char *)(AY_IDSKIN),
+  ay_status += objio_registerwritecb(AY_IDSKIN,
 				     objio_writenpconvertible);
-  ay_status += objio_registerwritecb((char *)(AY_IDCAP),
+  ay_status += objio_registerwritecb(AY_IDCAP,
 				     objio_writenpconvertible);
-  ay_status += objio_registerwritecb((char *)(AY_IDPAMESH),
+  ay_status += objio_registerwritecb(AY_IDPAMESH,
 				     objio_writenpconvertible);
-  ay_status += objio_registerwritecb((char *)(AY_IDBPATCH),
+  ay_status += objio_registerwritecb(AY_IDBPATCH,
 				     objio_writenpconvertible);
-  ay_status += objio_registerwritecb((char *)(AY_IDGORDON),
+  ay_status += objio_registerwritecb(AY_IDGORDON,
 				     objio_writenpconvertible);
-  ay_status += objio_registerwritecb((char *)(AY_IDBIRAIL1),
+  ay_status += objio_registerwritecb(AY_IDBIRAIL1,
 				     objio_writenpconvertible);
-  ay_status += objio_registerwritecb((char *)(AY_IDBIRAIL2),
+  ay_status += objio_registerwritecb(AY_IDBIRAIL2,
 				     objio_writenpconvertible);
-  ay_status += objio_registerwritecb((char *)(AY_IDTEXT),
+  ay_status += objio_registerwritecb(AY_IDTEXT,
 				     objio_writenpconvertible);
-  ay_status += objio_registerwritecb((char *)(AY_IDBEVEL),
+  ay_status += objio_registerwritecb(AY_IDBEVEL,
 				     objio_writenpconvertible);
-  ay_status += objio_registerwritecb((char *)(AY_IDEXTRNP),
-				     objio_writenpconvertible);
-
-  ay_status += objio_registerwritecb((char *)(AY_IDSPHERE),
-				     objio_writenpconvertible);
-  ay_status += objio_registerwritecb((char *)(AY_IDDISK),
-				     objio_writenpconvertible);
-  ay_status += objio_registerwritecb((char *)(AY_IDCYLINDER),
-				     objio_writenpconvertible);
-  ay_status += objio_registerwritecb((char *)(AY_IDCONE),
-				     objio_writenpconvertible);
-  ay_status += objio_registerwritecb((char *)(AY_IDHYPERBOLOID),
-				     objio_writenpconvertible);
-  ay_status += objio_registerwritecb((char *)(AY_IDPARABOLOID),
-				     objio_writenpconvertible);
-  ay_status += objio_registerwritecb((char *)(AY_IDTORUS),
+  ay_status += objio_registerwritecb(AY_IDEXTRNP,
 				     objio_writenpconvertible);
 
-  ay_status += objio_registerwritecb((char *)(AY_IDPOMESH),
-				     objio_writepomesh);
+  ay_status += objio_registerwritecb(AY_IDSPHERE,
+				     objio_writenpconvertible);
+  ay_status += objio_registerwritecb(AY_IDDISK,
+				     objio_writenpconvertible);
+  ay_status += objio_registerwritecb(AY_IDCYLINDER,
+				     objio_writenpconvertible);
+  ay_status += objio_registerwritecb(AY_IDCONE,
+				     objio_writenpconvertible);
+  ay_status += objio_registerwritecb(AY_IDHYPERBOLOID,
+				     objio_writenpconvertible);
+  ay_status += objio_registerwritecb(AY_IDPARABOLOID,
+				     objio_writenpconvertible);
+  ay_status += objio_registerwritecb(AY_IDTORUS,
+				     objio_writenpconvertible);
 
-  ay_status += objio_registerwritecb((char *)(AY_IDBOX),
-				     objio_writebox);
+  ay_status += objio_registerwritecb(AY_IDPOMESH, objio_writepomesh);
+
+  ay_status += objio_registerwritecb(AY_IDBOX, objio_writebox);
 
   if(ay_status)
     {
