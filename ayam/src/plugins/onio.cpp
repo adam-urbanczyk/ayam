@@ -37,7 +37,7 @@ typedef int (onio_writecb) (ay_object *o, ONX_Model *p_m, double *m);
 char onio_version_ma[] = AY_VERSIONSTR;
 char onio_version_mi[] = AY_VERSIONSTRMI;
 
-static Tcl_HashTable onio_write_ht;
+static ay_ftable onio_writecbt;
 
 ay_object *onio_lrobject = NULL;
 
@@ -166,34 +166,17 @@ unsigned int
 onio_count(ay_object *o)
 {
  unsigned int lcount = 0;
- int lasttype = -1;
- Tcl_HashTable *ht = &onio_write_ht;
- Tcl_HashEntry *entry = NULL;
- onio_writecb *cb = NULL;
+ ay_voidfp *arr = onio_writecbt.arr;
 
   if(!o)
     return 0;
 
   while(o->next)
     {
-      if(lasttype != (int)o->type)
-	{
-	  entry = NULL;
-	  if((entry = Tcl_FindHashEntry(ht, (char *)(o->type))))
-	    {
-	      cb = (onio_writecb*)Tcl_GetHashValue(entry);
-	    }
-	  else
-	    {
-	      cb = NULL;
-	    }
-	  lasttype = o->type;
-	} // if
-
-      if(o->down && o->down->next && (cb != onio_writenpconvertible))
+      if(o->down && o->down->next)
 	lcount += onio_count(o->down);
 
-      if(cb != NULL)
+      if(arr[o->type])
 	lcount++;
 
       o = o->next;
@@ -1927,8 +1910,7 @@ onio_writeobject(ay_object *o, ONX_Model *p_m)
 {
  int ay_status = AY_OK;
  char fname[] = "onio_writeobject";
- Tcl_HashTable *ht = &onio_write_ht;
- Tcl_HashEntry *entry = NULL;
+ ay_voidfp *arr = onio_writecbt.arr;
  char err[255];
  onio_writecb *cb = NULL;
  double m1[16] = {0}, m2[16];
@@ -1958,32 +1940,30 @@ onio_writeobject(ay_object *o, ONX_Model *p_m)
   if(onio_expignorehidden && o->hide)
     return AY_OK;
 
-  if((entry = Tcl_FindHashEntry(ht, (char *)(o->type))))
+  if(arr[o->type])
     {
-      cb = (onio_writecb*)Tcl_GetHashValue(entry);
-      if(cb)
-	{
-	  if((o->movx != 0.0) || (o->movy != 0.0) || (o->movz != 0.0) ||
-	     (o->rotx != 0.0) || (o->roty != 0.0) || (o->rotz != 0.0) ||
-	     (o->scalx != 1.0) || (o->scaly != 1.0) || (o->scalz != 1.0) ||
-	     (o->quat[0] != 0.0) || (o->quat[1] != 0.0) ||
-	     (o->quat[2] != 0.0) || (o->quat[3] != 1.0))
-	    {
-	      ay_trafo_creatematrix(o, m1);
-	      memcpy(m2, tm, 16*sizeof(double));
-	      ay_trafo_multmatrix(m2, m1);
-	      ay_status = cb(o, p_m, m2);
-	    }
-	  else
-	    {
-	      ay_status = cb(o, p_m, tm);
-	    } // if
+      cb = (onio_writecb*)arr[o->type];
 
-	  if(ay_status)
-	    {
-	      ay_error(AY_ERROR, fname, "Error exporting object.");
-	      ay_status = AY_OK;
-	    } // if
+      if((o->movx != 0.0) || (o->movy != 0.0) || (o->movz != 0.0) ||
+	 (o->rotx != 0.0) || (o->roty != 0.0) || (o->rotz != 0.0) ||
+	 (o->scalx != 1.0) || (o->scaly != 1.0) || (o->scalz != 1.0) ||
+	 (o->quat[0] != 0.0) || (o->quat[1] != 0.0) ||
+	 (o->quat[2] != 0.0) || (o->quat[3] != 1.0))
+	{
+	  ay_trafo_creatematrix(o, m1);
+	  memcpy(m2, tm, 16*sizeof(double));
+	  ay_trafo_multmatrix(m2, m1);
+	  ay_status = cb(o, p_m, m2);
+	}
+      else
+	{
+	  ay_status = cb(o, p_m, tm);
+	} // if
+
+      if(ay_status)
+	{
+	  ay_error(AY_ERROR, fname, "Error exporting object.");
+	  ay_status = AY_OK;
 	} // if
     }
   else
@@ -2241,26 +2221,14 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 // onio_registerwritecb:
 //
 int
-onio_registerwritecb(char *name, onio_writecb *cb)
+onio_registerwritecb(unsigned int type_id, onio_writecb *cb)
 {
  int ay_status = AY_OK;
- int new_item = 0;
- Tcl_HashEntry *entry = NULL;
- Tcl_HashTable *ht = &onio_write_ht;
 
   if(!cb)
     return AY_ENULL;
 
-  if((entry = Tcl_FindHashEntry(ht, name)))
-    {
-      return AY_ERROR; // name already registered
-    }
-  else
-    {
-      // create new entry
-      entry = Tcl_CreateHashEntry(ht, name, &new_item);
-      Tcl_SetHashValue(entry, (char*)cb);
-    }
+  ay_status = ay_table_addcallback(&onio_writecbt, (ay_voidfp)cb, type_id);
 
  return ay_status;
 } // onio_registerwritecb
@@ -3707,117 +3675,81 @@ Onio_Init(Tcl_Interp *interp)
       return TCL_ERROR;
     }
 
-  // init hash table for write callbacks
-  Tcl_InitHashTable(&onio_write_ht, TCL_ONE_WORD_KEYS);
+  // init table for write callbacks
+  ay_table_initftable(&onio_writecbt);
 
-  // fill hash table
-  ay_status += onio_registerwritecb((char *)(AY_IDNPATCH),
-				    onio_writenpatch);
+  // fill callback table
+  ay_status += onio_registerwritecb(AY_IDNPATCH, onio_writenpatch);
 
-  ay_status += onio_registerwritecb((char *)(AY_IDEXTRUDE),
-				    onio_writenpconvertible);
+  ay_status += onio_registerwritecb(AY_IDEXTRUDE, onio_writenpconvertible);
 
-  ay_status += onio_registerwritecb((char *)(AY_IDREVOLVE),
-				    onio_writenpconvertible);
+  ay_status += onio_registerwritecb(AY_IDREVOLVE, onio_writenpconvertible);
 
-  ay_status += onio_registerwritecb((char *)(AY_IDSWEEP),
-				    onio_writenpconvertible);
+  ay_status += onio_registerwritecb(AY_IDSWEEP, onio_writenpconvertible);
 
-  ay_status += onio_registerwritecb((char *)(AY_IDSWING),
-				    onio_writenpconvertible);
+  ay_status += onio_registerwritecb(AY_IDSWING, onio_writenpconvertible);
 
-  ay_status += onio_registerwritecb((char *)(AY_IDSKIN),
-				    onio_writenpconvertible);
+  ay_status += onio_registerwritecb(AY_IDSKIN, onio_writenpconvertible);
 
-  ay_status += onio_registerwritecb((char *)(AY_IDGORDON),
-				    onio_writenpconvertible);
+  ay_status += onio_registerwritecb(AY_IDGORDON, onio_writenpconvertible);
 
-  ay_status += onio_registerwritecb((char *)(AY_IDBIRAIL1),
-				    onio_writenpconvertible);
+  ay_status += onio_registerwritecb(AY_IDBIRAIL1, onio_writenpconvertible);
 
-  ay_status += onio_registerwritecb((char *)(AY_IDBIRAIL2),
-				    onio_writenpconvertible);
+  ay_status += onio_registerwritecb(AY_IDBIRAIL2, onio_writenpconvertible);
 
-  ay_status += onio_registerwritecb((char *)(AY_IDCAP),
-				    onio_writenpconvertible);
+  ay_status += onio_registerwritecb(AY_IDCAP, onio_writenpconvertible);
 
-  ay_status += onio_registerwritecb((char *)(AY_IDBEVEL),
-				    onio_writenpconvertible);
+  ay_status += onio_registerwritecb(AY_IDBEVEL, onio_writenpconvertible);
 
-  ay_status += onio_registerwritecb((char *)(AY_IDEXTRNP),
-				    onio_writenpconvertible);
+  ay_status += onio_registerwritecb(AY_IDEXTRNP, onio_writenpconvertible);
 
-  ay_status += onio_registerwritecb((char *)(AY_IDBPATCH),
-				    onio_writenpconvertible);
+  ay_status += onio_registerwritecb(AY_IDBPATCH, onio_writenpconvertible);
 
-  ay_status += onio_registerwritecb((char *)(AY_IDPAMESH),
-				    onio_writenpconvertible);
+  ay_status += onio_registerwritecb(AY_IDPAMESH, onio_writenpconvertible);
 
-  ay_status += onio_registerwritecb((char *)(AY_IDTEXT),
-				    onio_writenpconvertible);
+  ay_status += onio_registerwritecb(AY_IDTEXT, onio_writenpconvertible);
 
-  ay_status += onio_registerwritecb((char *)(AY_IDNCURVE),
-				    onio_writencurve);
+  ay_status += onio_registerwritecb(AY_IDNCURVE, onio_writencurve);
 
-  ay_status += onio_registerwritecb((char *)(AY_IDACURVE),
-				    onio_writencconvertible);
+  ay_status += onio_registerwritecb(AY_IDACURVE, onio_writencconvertible);
 
-  ay_status += onio_registerwritecb((char *)(AY_IDICURVE),
-				    onio_writencconvertible);
+  ay_status += onio_registerwritecb(AY_IDICURVE, onio_writencconvertible);
 
-  ay_status += onio_registerwritecb((char *)(AY_IDCONCATNC),
-				    onio_writencconvertible);
+  ay_status += onio_registerwritecb(AY_IDCONCATNC, onio_writencconvertible);
 
-  ay_status += onio_registerwritecb((char *)(AY_IDEXTRNC),
-				    onio_writencconvertible);
+  ay_status += onio_registerwritecb(AY_IDEXTRNC, onio_writencconvertible);
 
-  ay_status += onio_registerwritecb((char *)(AY_IDNCIRCLE),
-				    onio_writencconvertible);
+  ay_status += onio_registerwritecb(AY_IDNCIRCLE, onio_writencconvertible);
 
-  ay_status += onio_registerwritecb((char *)(AY_IDOFFNC),
-				    onio_writencconvertible);
+  ay_status += onio_registerwritecb(AY_IDOFFNC, onio_writencconvertible);
 
-  ay_status += onio_registerwritecb((char *)(AY_IDLEVEL),
-				    onio_writelevel);
+  ay_status += onio_registerwritecb(AY_IDLEVEL, onio_writelevel);
 
-  ay_status += onio_registerwritecb((char *)(AY_IDCLONE),
-				    onio_writeclone);
+  ay_status += onio_registerwritecb(AY_IDCLONE, onio_writeclone);
 
-  ay_status += onio_registerwritecb((char *)(AY_IDMIRROR),
-				    onio_writeclone);
+  ay_status += onio_registerwritecb(AY_IDMIRROR, onio_writeclone);
 
-  ay_status += onio_registerwritecb((char *)(AY_IDINSTANCE),
-				    onio_writeinstance);
+  ay_status += onio_registerwritecb(AY_IDINSTANCE, onio_writeinstance);
 
-  ay_status += onio_registerwritecb((char *)(AY_IDSCRIPT),
-				    onio_writescript);
+  ay_status += onio_registerwritecb(AY_IDSCRIPT, onio_writescript);
 
-  ay_status += onio_registerwritecb((char *)(AY_IDSPHERE),
-				    onio_writesphere);
+  ay_status += onio_registerwritecb(AY_IDSPHERE, onio_writesphere);
 
-  ay_status += onio_registerwritecb((char *)(AY_IDCYLINDER),
-				    onio_writecylinder);
+  ay_status += onio_registerwritecb(AY_IDCYLINDER, onio_writecylinder);
 
-  ay_status += onio_registerwritecb((char *)(AY_IDCONE),
-				    onio_writecone);
+  ay_status += onio_registerwritecb(AY_IDCONE, onio_writecone);
 
-  ay_status += onio_registerwritecb((char *)(AY_IDTORUS),
-				    onio_writetorus);
+  ay_status += onio_registerwritecb(AY_IDTORUS, onio_writetorus);
 
-  ay_status += onio_registerwritecb((char *)(AY_IDBOX),
-				    onio_writebox);
+  ay_status += onio_registerwritecb(AY_IDBOX, onio_writebox);
 
-  ay_status += onio_registerwritecb((char *)(AY_IDDISK),
-				    onio_writenpconvertible);
+  ay_status += onio_registerwritecb(AY_IDDISK, onio_writenpconvertible);
 
-  ay_status += onio_registerwritecb((char *)(AY_IDHYPERBOLOID),
-				    onio_writenpconvertible);
+  ay_status += onio_registerwritecb(AY_IDHYPERBOLOID, onio_writenpconvertible);
 
-  ay_status += onio_registerwritecb((char *)(AY_IDPARABOLOID),
-				    onio_writenpconvertible);
+  ay_status += onio_registerwritecb(AY_IDPARABOLOID, onio_writenpconvertible);
 
-  ay_status += onio_registerwritecb((char *)(AY_IDPOMESH),
-				    onio_writepomesh);
+  ay_status += onio_registerwritecb(AY_IDPOMESH, onio_writepomesh);
 
   if(ay_status)
     return TCL_ERROR;

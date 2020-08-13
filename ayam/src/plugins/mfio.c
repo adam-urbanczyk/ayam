@@ -26,8 +26,7 @@ static MF3DErr ay_mfio_mf3d_errno;
 
 static Tcl_HashTable ay_mfio_read_ht;
 
-static Tcl_HashTable ay_mfio_write_ht;
-
+static ay_ftable mfio_writecbt;
 
 char mfio_version_ma[] = AY_VERSIONSTR;
 char mfio_version_mi[] = AY_VERSIONSTRMI;
@@ -147,7 +146,7 @@ int ay_mfio_writeobject(MF3D_FilePtr fileptr, ay_object *object);
 
 int ay_mfio_writescene(Tcl_Interp *interp, char *filename, int selected);
 
-int ay_mfio_registerwritecb(char *name, ay_mfio_writecb *cb);
+int ay_mfio_registerwritecb(unsigned int type_id, ay_mfio_writecb *cb);
 
 int ay_mfio_importscenetcmd(ClientData clientData, Tcl_Interp * interp,
 				int argc, char *argv[]);
@@ -2929,24 +2928,20 @@ ay_mfio_writeobject(MF3D_FilePtr fileptr, ay_object *object)
 {
  int ay_status = AY_OK;
  char fname[] = "mfio_writeobject";
- Tcl_HashTable *ht = &ay_mfio_write_ht;
- Tcl_HashEntry *entry = NULL;
+ ay_voidfp *arr = mfio_writecbt.arr;
  char err[255];
  ay_mfio_writecb *cb = NULL;
  ay_object *t, *c = NULL;
  int i, numconvs = 3, conversions[3] = {AY_IDNPATCH, AY_IDNCURVE, AY_IDPOMESH};
 
-  if((entry = Tcl_FindHashEntry(ht, (char *)(object->type))))
+  if(arr[object->type])
     {
-      cb = (ay_mfio_writecb*)Tcl_GetHashValue(entry);
-      if(cb)
+      cb = (ay_mfio_writecb*)arr[object->type];
+      ay_status = cb(fileptr, object);
+      if(ay_status)
 	{
-	  ay_status = cb(fileptr, object);
-	  if(ay_status)
-	    {
-	      ay_error(AY_ERROR, fname, "Error exporting object.");
-	      ay_status = AY_OK;
-	    }
+	  ay_error(AY_ERROR, fname, "Error exporting object.");
+	  ay_status = AY_OK;
 	}
     }
   else
@@ -3073,26 +3068,14 @@ ay_mfio_writescene(Tcl_Interp *interp, char *filename, int selected)
  *
  */
 int
-ay_mfio_registerwritecb(char *name, ay_mfio_writecb *cb)
+ay_mfio_registerwritecb(unsigned int type_id, ay_mfio_writecb *cb)
 {
  int ay_status = AY_OK;
- int new_item = 0;
- Tcl_HashEntry *entry = NULL;
- Tcl_HashTable *ht = &ay_mfio_write_ht;
 
   if(!cb)
     return AY_ENULL;
 
-  if((entry = Tcl_FindHashEntry(ht, name)))
-    {
-      return AY_ERROR; /* name already registered */
-    }
-  else
-    {
-      /* create new entry */
-      entry = Tcl_CreateHashEntry(ht, name, &new_item);
-      Tcl_SetHashValue(entry, (char*)cb);
-    }
+  ay_status = ay_table_addcallback(&mfio_writecbt, (ay_voidfp)cb, type_id);
 
  return ay_status;
 } /* ay_mfio_registerwritecb */
@@ -3518,7 +3501,7 @@ Mfio_Init(Tcl_Interp *interp)
 				      ay_mfio_readquat);
 
   ay_status += ay_mfio_registerreadcb(
-				      (char *)(kMF3DObjRotateAboutAxisTransform),
+				    (char *)(kMF3DObjRotateAboutAxisTransform),
 				      ay_mfio_readrotaaxis);
 
   ay_status += ay_mfio_registerreadcb((char *)(kMF3DObjDiffuseColor),
@@ -3533,84 +3516,65 @@ Mfio_Init(Tcl_Interp *interp)
   if(ay_status)
     return TCL_ERROR;
 
-  /* init hash table for write callbacks */
-  Tcl_InitHashTable(&ay_mfio_write_ht, TCL_ONE_WORD_KEYS);
+  /* init table for write callbacks */
+  ay_table_initftable(&mfio_writecbt);
 
   /* fill hash table */
-  ay_status += ay_mfio_registerwritecb((char *)(AY_IDNPATCH),
-				       ay_mfio_writenurbpatch);
-  ay_status += ay_mfio_registerwritecb((char *)(AY_IDNCURVE),
-				       ay_mfio_writenurbcurve);
-  ay_status += ay_mfio_registerwritecb((char *)(AY_IDLEVEL),
-				       ay_mfio_writelevel);
-  ay_status += ay_mfio_registerwritecb((char *)(AY_IDBOX),
-				       ay_mfio_writebox);
-  ay_status += ay_mfio_registerwritecb((char *)(AY_IDSPHERE),
-				       ay_mfio_writesphere);
-  ay_status += ay_mfio_registerwritecb((char *)(AY_IDDISK),
-				       ay_mfio_writedisk);
-  ay_status += ay_mfio_registerwritecb((char *)(AY_IDCONE),
-				       ay_mfio_writecone);
-  ay_status += ay_mfio_registerwritecb((char *)(AY_IDCYLINDER),
-				       ay_mfio_writecylinder);
-  ay_status += ay_mfio_registerwritecb((char *)(AY_IDTORUS),
-				       ay_mfio_writetorus);
-  ay_status += ay_mfio_registerwritecb((char *)(AY_IDINSTANCE),
-				       ay_mfio_writeinstance);
-  ay_status += ay_mfio_registerwritecb((char *)(AY_IDCLONE),
-				       ay_mfio_writeclone);
-  ay_status += ay_mfio_registerwritecb((char *)(AY_IDMIRROR),
-				       ay_mfio_writeclone);
-  ay_status += ay_mfio_registerwritecb((char *)(AY_IDSCRIPT),
-				       ay_mfio_writescript);
+  ay_status += ay_mfio_registerwritecb(AY_IDNPATCH, ay_mfio_writenurbpatch);
+  ay_status += ay_mfio_registerwritecb(AY_IDNCURVE, ay_mfio_writenurbcurve);
+  ay_status += ay_mfio_registerwritecb(AY_IDLEVEL, ay_mfio_writelevel);
+  ay_status += ay_mfio_registerwritecb(AY_IDBOX, ay_mfio_writebox);
+  ay_status += ay_mfio_registerwritecb(AY_IDSPHERE, ay_mfio_writesphere);
+  ay_status += ay_mfio_registerwritecb(AY_IDDISK, ay_mfio_writedisk);
+  ay_status += ay_mfio_registerwritecb(AY_IDCONE, ay_mfio_writecone);
+  ay_status += ay_mfio_registerwritecb(AY_IDCYLINDER, ay_mfio_writecylinder);
+  ay_status += ay_mfio_registerwritecb(AY_IDTORUS, ay_mfio_writetorus);
+  ay_status += ay_mfio_registerwritecb(AY_IDINSTANCE, ay_mfio_writeinstance);
+  ay_status += ay_mfio_registerwritecb(AY_IDCLONE, ay_mfio_writeclone);
+  ay_status += ay_mfio_registerwritecb(AY_IDMIRROR, ay_mfio_writeclone);
+  ay_status += ay_mfio_registerwritecb(AY_IDSCRIPT, ay_mfio_writescript);
 
-  ay_status += ay_mfio_registerwritecb((char *)(AY_IDICURVE),
+  ay_status += ay_mfio_registerwritecb(AY_IDICURVE, ay_mfio_writencconvertible);
+  ay_status += ay_mfio_registerwritecb(AY_IDCONCATNC,
 				       ay_mfio_writencconvertible);
-  ay_status += ay_mfio_registerwritecb((char *)(AY_IDCONCATNC),
+  ay_status += ay_mfio_registerwritecb(AY_IDEXTRNC, ay_mfio_writencconvertible);
+  ay_status += ay_mfio_registerwritecb(AY_IDNCIRCLE,
 				       ay_mfio_writencconvertible);
-  ay_status += ay_mfio_registerwritecb((char *)(AY_IDEXTRNC),
-				       ay_mfio_writencconvertible);
-  ay_status += ay_mfio_registerwritecb((char *)(AY_IDNCIRCLE),
-				       ay_mfio_writencconvertible);
-  ay_status += ay_mfio_registerwritecb((char *)(AY_IDOFFNC),
-				       ay_mfio_writencconvertible);
+  ay_status += ay_mfio_registerwritecb(AY_IDOFFNC, ay_mfio_writencconvertible);
 
-  ay_status += ay_mfio_registerwritecb((char *)(AY_IDEXTRUDE),
+  ay_status += ay_mfio_registerwritecb(AY_IDEXTRUDE,
 				       ay_mfio_writenpconvertible);
-  ay_status += ay_mfio_registerwritecb((char *)(AY_IDREVOLVE),
+  ay_status += ay_mfio_registerwritecb(AY_IDREVOLVE,
 				       ay_mfio_writenpconvertible);
-  ay_status += ay_mfio_registerwritecb((char *)(AY_IDSWEEP),
+  ay_status += ay_mfio_registerwritecb(AY_IDSWEEP,
 				       ay_mfio_writenpconvertible);
-  ay_status += ay_mfio_registerwritecb((char *)(AY_IDSWING),
+  ay_status += ay_mfio_registerwritecb(AY_IDSWING,
 				       ay_mfio_writenpconvertible);
-  ay_status += ay_mfio_registerwritecb((char *)(AY_IDSKIN),
+  ay_status += ay_mfio_registerwritecb(AY_IDSKIN,
 				       ay_mfio_writenpconvertible);
-  ay_status += ay_mfio_registerwritecb((char *)(AY_IDCAP),
+  ay_status += ay_mfio_registerwritecb(AY_IDCAP,
 				       ay_mfio_writenpconvertible);
-  ay_status += ay_mfio_registerwritecb((char *)(AY_IDBEVEL),
+  ay_status += ay_mfio_registerwritecb(AY_IDBEVEL,
 				       ay_mfio_writenpconvertible);
-  ay_status += ay_mfio_registerwritecb((char *)(AY_IDPAMESH),
+  ay_status += ay_mfio_registerwritecb(AY_IDPAMESH,
 				       ay_mfio_writenpconvertible);
-  ay_status += ay_mfio_registerwritecb((char *)(AY_IDBPATCH),
+  ay_status += ay_mfio_registerwritecb(AY_IDBPATCH,
 				       ay_mfio_writenpconvertible);
-  ay_status += ay_mfio_registerwritecb((char *)(AY_IDGORDON),
+  ay_status += ay_mfio_registerwritecb(AY_IDGORDON,
 				       ay_mfio_writenpconvertible);
-  ay_status += ay_mfio_registerwritecb((char *)(AY_IDBIRAIL1),
+  ay_status += ay_mfio_registerwritecb(AY_IDBIRAIL1,
 				       ay_mfio_writenpconvertible);
-  ay_status += ay_mfio_registerwritecb((char *)(AY_IDBIRAIL2),
+  ay_status += ay_mfio_registerwritecb(AY_IDBIRAIL2,
 				       ay_mfio_writenpconvertible);
-  ay_status += ay_mfio_registerwritecb((char *)(AY_IDTEXT),
+  ay_status += ay_mfio_registerwritecb(AY_IDTEXT,
 				       ay_mfio_writenpconvertible);
-  ay_status += ay_mfio_registerwritecb((char *)(AY_IDHYPERBOLOID),
+  ay_status += ay_mfio_registerwritecb(AY_IDHYPERBOLOID,
 				       ay_mfio_writenpconvertible);
-  ay_status += ay_mfio_registerwritecb((char *)(AY_IDPARABOLOID),
+  ay_status += ay_mfio_registerwritecb(AY_IDPARABOLOID,
 				       ay_mfio_writenpconvertible);
-  ay_status += ay_mfio_registerwritecb((char *)(AY_IDEXTRNP),
-				       ay_mfio_writenpconvertible);
+  ay_status += ay_mfio_registerwritecb(AY_IDEXTRNP, ay_mfio_writenpconvertible);
 
-  ay_status += ay_mfio_registerwritecb((char *)(AY_IDPOMESH),
-				       ay_mfio_writepolymesh);
-
+  ay_status += ay_mfio_registerwritecb(AY_IDPOMESH, ay_mfio_writepolymesh);
 
   if(ay_status)
     return TCL_ERROR;
