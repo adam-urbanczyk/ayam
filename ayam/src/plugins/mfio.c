@@ -1708,7 +1708,7 @@ ay_mfio_readscene(Tcl_Interp *interp, char *filename)
  int ay_status = AY_OK;
 
   /* open the metafile */
-  status = MF3DOpenInputStdCFile (filename, &metafilePtr);
+  status = MF3DOpenInputStdCFile(filename, &metafilePtr);
   if(status != kMF3DNoErr)
     {
       if(status > kMF3DTopError)
@@ -1727,14 +1727,14 @@ ay_mfio_readscene(Tcl_Interp *interp, char *filename)
 
   nextObjIsRoot = kMF3DBooleanFalse;
 
-  while (status == kMF3DNoErr)
+  while(status == kMF3DNoErr)
     {
       /* read an object from the metafile */
-      status = MF3DReadAnObject (metafilePtr, &object);
+      status = MF3DReadAnObject(metafilePtr, &object);
 
-      if (status != kMF3DNoErr)
+      if(status != kMF3DNoErr)
 	{
-	  if (status != kMF3DNoMoreObjects)
+	  if(status != kMF3DNoMoreObjects)
 	    {
 	      ay_mfio_mf3d_errno = status;
 	      ay_status = AY_ERROR;
@@ -1742,7 +1742,7 @@ ay_mfio_readscene(Tcl_Interp *interp, char *filename)
 	    } /* if */
 	} /* if */
 
-      if ((status == kMF3DNoErr) && object->objectType == kMF3DObjReference)
+      if((status == kMF3DNoErr) && (object->objectType == kMF3DObjReference))
 	{
 	  /* If we have just read a Reference object, resolve it.
 	   * There are two types of references: local and external.
@@ -1751,20 +1751,19 @@ ay_mfio_readscene(Tcl_Interp *interp, char *filename)
 	   * to an external file.
 	   */
 	  extStorageObj = NULL;
-	  if (nextObjIsRoot == kMF3DBooleanTrue)
+	  if(nextObjIsRoot == kMF3DBooleanTrue)
 	    {
 	      /* We are in a container which must mean we have an
 	       * external reference.
 	       */
 	      status = MF3DReadAnObject(metafilePtr, &extStorageObj);
 
-	      if (status != kMF3DNoErr)
+	      if(status != kMF3DNoErr)
 		{
 		  ay_mfio_mf3d_errno = status;
 		  ay_status = AY_ERROR;
 		  goto cleanup;
 		} /* if */
-
 	    } /* if */
 
 	  /* Resolve the reference. This causes metafilePtr to point
@@ -1811,7 +1810,7 @@ ay_mfio_readscene(Tcl_Interp *interp, char *filename)
 	}
 
       /* dispose the object */
-      if (status == kMF3DNoErr)
+      if(status == kMF3DNoErr)
 	{
 	  MF3DDisposeObject(object);
 	}
@@ -2723,7 +2722,6 @@ ay_mfio_writeattributes(MF3D_FilePtr fileptr, ay_object *o)
 	  if(status != kMF3DNoErr)
 	    { ay_mfio_mf3d_errno = status; return AY_ERROR; }
 	} /* if */
-
     } /* if */
 
  return ay_status;
@@ -3013,8 +3011,7 @@ ay_mfio_writescene(Tcl_Interp *interp, char *filename, int selected)
   mfo.typeSeed = kMF3DMinimumTypeSeed;
 
   /* open the metafile */
-  status = MF3DOpenOutputStdCFile(mfo.dataFormat, filename,
-				  &metafilePtr);
+  status = MF3DOpenOutputStdCFile(mfo.dataFormat, filename, &metafilePtr);
   if(status != kMF3DNoErr)
     return AY_EOPENFILE;
 
@@ -3048,19 +3045,20 @@ ay_mfio_writescene(Tcl_Interp *interp, char *filename, int selected)
 
 	  if(ay_status)
 	    {
-	      /*XXXX*/
-	      return ay_status;
+	      /*ay_error(ay_status,...);*/
+	      goto cleanup;
 	    }
 	} /* if */
       co = co->next;
     } /* while */
 
   /* close the file */
+cleanup:
   status = MF3DClose(metafilePtr);
   if(status != kMF3DNoErr)
     { return AY_ECLOSEFILE; }
 
- return AY_OK;
+ return ay_status;
 } /* ay_mfio_writescene */
 
 
@@ -3135,10 +3133,9 @@ ay_mfio_importscenetcmd(ClientData clientData, Tcl_Interp * interp,
       i += 2;
     } /* while */
 
+  ay_mfio_lastreadobject = NULL;
 
- ay_mfio_lastreadobject = NULL;
-
- ay_status = ay_mfio_readscene(interp, argv[1]);
+  ay_status = ay_mfio_readscene(interp, argv[1]);
 
   if(ay_status)
     {
