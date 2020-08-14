@@ -208,7 +208,6 @@ ay_mfio_readnurbpatch(MF3DVoidObjPtr object)
  ay_object *newo = NULL;
  MF3DNurbPatchObjPtr o = (MF3DNurbPatchObjPtr) object;
  MF3DVoidObjPtr nextobject;
- MF3DBinaryFilePosition oldpos;
  MF3DErr status = kMF3DNoErr;
 
   /* get some info about the patch */
@@ -278,13 +277,17 @@ ay_mfio_readnurbpatch(MF3DVoidObjPtr object)
   if(!(newo = calloc(1, sizeof(ay_object))))
     { free(controlv); free(uknotv); free(vknotv); return AY_EOMEM; }
 
+  ay_object_defaults(newo);
+
   newo->type = AY_IDNPATCH;
   newo->parent = AY_TRUE;
   newo->hide_children = AY_TRUE;
   newo->inherit_trafos = AY_FALSE;
   newo->refine = patch;
 
-  MF3DTellPosition(ay_mfio_fileptr, &oldpos);
+  ay_object_link(newo);
+
+  ay_mfio_lastreadobject = newo;
 
   /* preview next object; if it is a TrimCurves object, we may not
      rescale the knots until all trim curves have been read... */
@@ -293,8 +296,14 @@ ay_mfio_readnurbpatch(MF3DVoidObjPtr object)
     {
       /* XXXX resolve potential reference! */
 
-      if(object->objectType != kMF3DObjTrimCurves)
+      if(nextobject->objectType != kMF3DObjTrimCurves)
 	{
+	  ay_status = ay_mfio_readobject(nextobject);
+	  MF3DDisposeObject(nextobject);
+	  if(ay_status)
+	    {
+	      goto cleanup;
+	    }
 	  /* rescale knots to safe distance? */
 	  if(mfio_rescaleknots > 0.0)
 	    {
@@ -305,27 +314,15 @@ ay_mfio_readnurbpatch(MF3DVoidObjPtr object)
 					patch->vknotv,
 					mfio_rescaleknots);
 	    } /* if */
+	}
+      else
+	{
+	  ay_status = ay_mfio_readtrim(nextobject);
+	  MF3DDisposeObject(nextobject);
 	} /* if */
-      MF3DDisposeObject(object);
-    } /* if */
+    } /* if have nextobject */
 
-  MF3DSeekPosition(ay_mfio_fileptr, oldpos);
-
-  ay_object_link(newo);
-
-  if(ay_status)
-    {
-      ay_object_delete(newo);
-      return ay_status;
-    }
-
-  ay_mfio_lastreadobject = newo;
-
-  ay_object_defaults(newo);
-
-  newo->parent = AY_TRUE;
-  newo->hide_children = AY_TRUE;
-  newo->inherit_trafos = AY_FALSE;
+cleanup:
 
  return ay_status;
 } /* ay_mfio_readnurbpatch */
@@ -1633,6 +1630,7 @@ ay_mfio_readecntr(MF3DVoidObjPtr object)
 	      ay_status = ay_mfio_scalenpknots(ay_mfio_trimmedpatch);
 	    }
 	}
+
       ay_clevel_del();
       ay_clevel_del();
 
@@ -1684,7 +1682,7 @@ ay_mfio_readobject(MF3DVoidObjPtr object)
     }
   else
     {
-      sprintf(err,"No callback registered for this type: %d.",
+      sprintf(err, "No callback registered for this type: %d.",
 	      object->objectType);
       ay_error(AY_EWARN, fname, err);
       ay_status = AY_OK;
@@ -1902,8 +1900,38 @@ ay_mfio_writetrimcurve(MF3D_FilePtr fileptr, ay_object *o)
  MF3DNURBCurve2DObj mf3do = {0};
  MF3DErr status = kMF3DNoErr;	/* temporary result code */
  ay_nurbcurve_object *curve = (ay_nurbcurve_object*)(o->refine);
+ ay_object *c = NULL, *p;
  double m[16];
  double x, y, z, w;
+
+  if(!o)
+   return AY_ENULL;
+
+  if(o->type != AY_IDNCURVE)
+    {
+      ay_status = ay_provide_object(o, AY_IDNCURVE, &c);
+      if(c)
+	{
+	  if(c->next)
+	    ay_status = ay_mfio_writecntr(fileptr);
+
+	  p = c;
+	  while(p)
+	    {
+	      if(p->type == AY_IDNCURVE)
+		{
+		  ay_status = ay_mfio_writetrimcurve(fileptr, p);
+		}
+	      p = p->next;
+	    }
+
+	  if(c->next)
+	    ay_status = ay_mfio_writeecntr(fileptr);
+
+	  (void)ay_object_deletemulti(c, AY_FALSE);
+	}
+      return ay_status;
+    }
 
   /* we fill the MF3D-object now */
   mf3do.objectType = kMF3DObjNURBCurve2D;
@@ -2065,15 +2093,7 @@ ay_mfio_writenurbpatch(MF3D_FilePtr fileptr, ay_object *o)
 
       while(trim->next)
 	{
-
-	  if(trim->type == AY_IDNCURVE) /* single trimcurve? */
-	    {
-	      ay_status = ay_mfio_writetrimcurve(fileptr, trim);
-	      if(ay_status)
-		{ free(mf3do.points); free(mf3do.vKnots); free(mf3do.uKnots);
-		  return ay_status; }
-	    }
-	  else if(trim->type == AY_IDLEVEL) /* trimloop? */
+	  if(trim->type == AY_IDLEVEL) /* trimloop? */
 	    {
 	      if(trim->down && trim->down->next)
 		{
@@ -2093,7 +2113,14 @@ ay_mfio_writenurbpatch(MF3D_FilePtr fileptr, ay_object *o)
 
 		  ay_status = ay_mfio_writeecntr(fileptr);
 		} /* if */
-	    } /* if */
+	    }
+	  else
+	    {
+	      ay_status = ay_mfio_writetrimcurve(fileptr, trim);
+	      if(ay_status)
+		{ free(mf3do.points); free(mf3do.vKnots); free(mf3do.uKnots);
+		  return ay_status; }
+	    }
 	  trim = trim->next;
 	} /* while */
     } /* if */
@@ -3226,6 +3253,9 @@ ay_mfio_printerr(MF3DErr errcode)
 
   switch(errcode)
     {
+    case kMF3DNoMoreObjects:
+      ay_error(AY_ERROR, fname, "No More Objects/Base Error");
+      break;
     case kMF3DErrInvalidParameter:
       ay_error(AY_ERROR, fname, "Invalid Parameter");
       break;
