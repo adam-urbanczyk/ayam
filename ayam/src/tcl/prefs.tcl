@@ -463,7 +463,7 @@ proc prefs_addRIBExport { nb fw } {
 	addStringB $fw ayprefse FRenderPT [ms ayprefse_FRenderPT]\
 	    [list "R90000 %d" "Done computing %d" "%d"]
 	addStringB $fw ayprefse FDisplay [ms ayprefse_FDisplay]\
-	    [list ""]
+	    [list "image.exr,exr_dspy,rgba"]
     }
 
     if { $ayprefse(SetRenderer) == 3 || $ayprefse(SetRenderer) == 4 } {
