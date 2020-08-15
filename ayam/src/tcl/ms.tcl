@@ -289,7 +289,7 @@ when rendering is finished?"
 
 ms_set en ayprefse_DisplayDriver "Display driver to use for previews."
 ms_set en ayprefse_QDisplayDriver "Display driver to use for quick previews."
-ms_set en ayprefse_FDisplayDriver "Display driver to use for rendering to files."
+ms_set en ayprefse_FDisplay "Display to use for rendering to files."
 
 ms_set en ayprefse_PPRender "Renderer to use for the permanent preview feature."
 
@@ -501,8 +501,8 @@ auf den Bildschirm gezwungen werden?"
 ms_set de ayprefse_QRender "Kommando und Aufrufparameter des Renderers,\
 der für\n schnelle Vorschaubilder verwendet werden soll.\n\"%s\" wird\
 durch den Dateinamen des RIBs ersetzt."
-ms_set de ayprefse_QRenderUI "Soll das Render-Fenster für die schnelle Vorschau
-aktiviert werden?"
+ms_set de ayprefse_QRenderUI "Soll das Rendering-Fenster für die schnelle\
+ Vorschau aktiviert werden?"
 ms_set de ayprefse_QRenderPT "Beschreibung der Ausgabe des\
 Rendering-Fortschritts durch den Renderer\
 \n\"%d\" ist die Position des prozentualen Fortschrittswertes,\
@@ -510,7 +510,7 @@ Rendering-Fortschritts durch den Renderer\
 ms_set de ayprefse_Render "Kommando und Aufrufparameter des Renderers,\
 der für die Vorschau verwendet werden soll.\n\"%s\" wird\
 durch den Dateinamen des RIBs ersetzt."
-ms_set de ayprefse_RenderUI "Soll das Render-Fenster für die Vorschau\
+ms_set de ayprefse_RenderUI "Soll das Rendering-Fenster für die Vorschau\
 aktiviert werden?"
 ms_set de ayprefse_RenderPT "Beschreibung der Ausgabe des\
 Rendering-Fortschritts durch den Renderer\
@@ -519,7 +519,7 @@ Rendering-Fortschritts durch den Renderer\
 ms_set de ayprefse_FRender "Kommando und Aufrufparameter des Renderers,\
 der zum Rendern in eine Datei verwendet werden soll.\n\"%s\" wird\
 durch den Dateinamen des RIBs ersetzt."
-ms_set de ayprefse_FRenderUI "Soll das Render-Fenster aktiviert werden?"
+ms_set de ayprefse_FRenderUI "Soll das Rendering-Fenster aktiviert werden?"
 ms_set de ayprefse_FRenderPT "Beschreibung der Ausgabe des\
 Rendering-Fortschritts durch den Renderer\
 \n\"%d\" ist die Position des prozentualen Fortschrittswertes,\
@@ -527,7 +527,7 @@ Rendering-Fortschritts durch den Renderer\
 ms_set de ayprefse_SMRender "Kommando und Aufrufparameter des Renderers,\
 der für Schattenkarten verwendet werden soll.\n\"%s\" wird\
 durch den Dateinamen des RIBs ersetzt."
-ms_set de ayprefse_SMRenderUI "Soll das Render-Fenster für Schattenkarten\
+ms_set de ayprefse_SMRenderUI "Soll das Rendering-Fenster für Schattenkarten\
 aktiviert werden?"
 ms_set de ayprefse_SMRenderPT "Beschreibung der Ausgabe des\
 Rendering-Fortschritts durch den Schattenkarten-Renderer\
@@ -536,13 +536,12 @@ Rendering-Fortschritts durch den Schattenkarten-Renderer\
 
 ms_set de ayprefse_DisplayDriver "Display-Treiber für Vorschau."
 ms_set de ayprefse_QDisplayDriver "Display-Treiber für schnelle Vorschau."
-ms_set de ayprefse_FDisplayDriver "Display-Treiber für Rendern in eine Datei."
+ms_set de ayprefse_FDisplay "Display für Rendern in eine Datei."
 
 ms_set de ayprefse_PPRender "Renderer, der für die permanente Vorschau\
 verwendet werden soll."
 
 ms_set de ayprefse_SetRenderer "Renderer zum Editieren auswählen."
-
 
 ms_set de ayprefse_SMFileFormat "Dateiformat der Schattenkarten.\
 \nRenderMan: zfile\nGelato: shadow"
@@ -808,7 +807,7 @@ progression dans la sortie."
 
 #ms_set fr ayprefse_DisplayDriver "Display driver to use for previews."
 #ms_set fr ayprefse_QDisplayDriver "Display driver to use for quick previews."
-#ms_set fr ayprefse_FDisplayDriver "Display driver to use for rendering to files."
+#ms_set fr ayprefse_FDisplay "Display to use for rendering to files."
 
 ms_set fr ayprefse_PPRender "Moteur de rendu à utiliser pour l'aperçu\
 permanent."

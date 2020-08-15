@@ -22,7 +22,10 @@ int ay_wrib_sm(char *file, int width, int height,
 
 void ay_wrib_getup(double *dir, double *up, double *roll);
 
+void ay_wrib_displaydriver(char *driver);
+
 int ay_wrib_lights(char *file, ay_object *o);
+
 
 /* functions: */
 
@@ -644,7 +647,7 @@ ay_wrib_object(char *file, ay_object *o)
 	    {
 	      return AY_ERROR;
 	    }
-	}  /* if */
+	} /* if */
     } /* if have export callback */
 
   /* write child objects, but do not descend into light sources as
@@ -936,6 +939,41 @@ ay_wrib_caporbevel(char *file, ay_object *o, ay_object *c, unsigned int ci)
 } /* ay_wrib_caporbevel */
 
 
+/** ay_wrib_displaydriver
+ * export RiOption statement that maps the generic driver name, as
+ * used by the RiDisplay call, to a shared object file name,
+ * e.g.: fifodspy => fifodspy.so
+ * 
+ * \param[in] driver name of display driver
+ */
+void
+ay_wrib_displaydriver(char *driver)
+{
+ char *soext = ".so", *driverext;
+#ifdef WIN32
+ soext = ".dll";
+#endif
+#ifdef AYWITHAQUA
+ soext = ".dylib";
+#endif
+
+  if(!(driverext = calloc(strlen(driver)+strlen(soext)+2,
+			  sizeof(char))))
+    {
+      /*ay_status = AY_EOMEM;*/
+      return;
+    }
+
+  strcpy(driverext, driver);
+  strcpy(&(driverext[strlen(driver)]), soext);
+  RiDeclare(driver, "string");
+  RiOption("display", driver, (RtPointer)&driverext, RI_NULL);
+  free(driverext);
+
+ return;
+} /* ay_wrib_displaydriver */
+
+
 /* ay_wrib_displaytags:
  *  write display tags that are attached to the root object
  */
@@ -947,7 +985,7 @@ ay_wrib_displaytags(int have_ridisplay)
  ay_tag *tag = NULL;
  int i = 0, j = 0, k = 0;
  char *val = NULL, *name = NULL, *type = NULL, *mode = NULL;
- size_t len;
+ size_t len = 0;
  RtToken dtype = RI_FILE, dmode = RI_RGBA;
  RtToken *tokens = NULL;
  RtPointer *values = NULL;
@@ -967,7 +1005,8 @@ ay_wrib_displaytags(int have_ridisplay)
 	{
 	  name = NULL;
 	  val = tag->val;
-	  len = strlen(val)+1;
+	  if(val)
+	    len = strlen(val)+1;
 	  if(len > 1)
 	    {
 	      if(!(name = calloc(len, sizeof(char))))
@@ -1012,7 +1051,6 @@ ay_wrib_displaytags(int have_ridisplay)
 
 	      if(!name[0] || !type[0] || !mode[0])
 		{
-
 		  ay_error(AY_ERROR, fname,
 			   "malformed RiDisplay tag encountered");
 		  free(name); free(type); free(mode);
@@ -1024,9 +1062,16 @@ ay_wrib_displaytags(int have_ridisplay)
 		{
 		  dtype = RI_FRAMEBUFFER;
 		}
+	      else
 	      if(!ay_comp_strcase(type, "file"))
 		{
 		  dtype = RI_FILE;
+		}
+	      else
+		{
+		  /*if()*/
+		  ay_wrib_displaydriver(type);
+		  dtype = type;
 		}
 
 	      /* get proper mode */
@@ -1092,8 +1137,7 @@ ay_wrib_displaytags(int have_ridisplay)
 	    }
 	  else
 	    {
-	      ay_error(AY_ERROR, fname,
-		       "malformed RiDisplay tag encountered");
+	      ay_error(AY_ERROR, fname, "malformed RiDisplay tag encountered");
 	    }
 	} /* if */
 
@@ -1714,6 +1758,7 @@ ay_wrib_scene(char *file, char *image, char *driver, int temp, int target,
  ay_object *o = ay_root;
  ay_root_object *root = NULL;
  ay_riopt *riopt = NULL;
+ ay_tag ridisp = {0}, *otags;
  RtPoint f,/* t,*/ d;
  RtFloat aspect = (RtFloat)1.0, swleft, swright, swtop, swbot;
  RtFloat fov = (RtFloat)90.0, rinearp, rifarp;
@@ -1886,7 +1931,21 @@ ay_wrib_scene(char *file, char *image, char *driver, int temp, int target,
        riopt = root->riopt;
        if(riopt->use_std_display || temp || (target == 1))
 	 {
-	   RiDisplay(image, RI_FILE, RI_RGBA, RI_NULL);
+	   have_ridisplay = AY_FALSE;
+	   if((target == 1) && driver)
+	     {
+	       ridisp.type = ay_ridisp_tagtype;
+	       ridisp.name = ay_ridisp_tagname;
+	       ridisp.val = driver;
+	       otags = ay_root->tags;
+	       ay_root->tags = &ridisp;
+	       /*ay_status = */ay_wrib_displaytags(AY_FALSE);
+	       /*if(!ay_status)*/
+		 have_ridisplay = AY_TRUE;
+	       ay_root->tags = otags;
+	     }
+	   if(!have_ridisplay)
+	     RiDisplay(image, RI_FILE, RI_RGBA, RI_NULL);
 	   have_ridisplay = AY_TRUE;
 	 }
      }

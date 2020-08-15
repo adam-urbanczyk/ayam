@@ -121,7 +121,7 @@ array set ayprefs {
 
  DisplayDriver ""
  QDisplayDriver ""
- FDisplayDriver ""
+ FDisplay ""
 
  SetRenderer 0
  TclPrecision 6
