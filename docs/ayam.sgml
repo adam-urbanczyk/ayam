@@ -3245,9 +3245,12 @@ to image files, see discussion of <tt/"RenderUI"/ above.
 image files, see discussion of <tt/"RenderPT"/ above.
 <p> <p>
 
-<item><tt/"FDisplayDriver"/ sets the RenderMan display driver to use,
-this is usually a string like <tt/"aqsisfifodspy"/, i.e.~the renderer
-name prepended to <tt/"fifodspy"/.
+<item><tt/"FDisplay"/ sets the RenderMan display to use for rendering
+to an image file, the syntax of this string is equivalent to the value
+string of a RiDisplay tag
+see also section <ref id="ridtag" name="RiDisplay Tag">.
+If this string starts with <tt/"image"/, the image part will be replaced
+by the image file name that would be used for normal RIB export.
 <p> <p>
 
 <item><tt/"SMRender"/, renderer command to use for the rendering of shadow maps
@@ -26377,7 +26380,7 @@ Index:
 <item>fairNC: <ref id="scfairnc" name="scripting interface command">
 <item>FAQ: <ref id="secref" name="Ayam FAQ WWW reference">
 <item>Far: <ref id="camp" name="camera property">
-<item>FDisplayDriver: <ref id="prefrib" name="preference setting">
+<item>FDisplay: <ref id="prefrib" name="preference setting">
 <item>FDShowHidden, FDShowHiddenBtn: <ref id="hidprefsf" name="hidden preference setting">
 <item>File:
 <itemize>
