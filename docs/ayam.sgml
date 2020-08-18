@@ -33,10 +33,10 @@ code example of 6 lines text (needs another 2 for the upper/lower lines)
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>31. Jan 2020
+<date>18. Aug 2020
 
 <abstract>
-This is the documentation of Ayam 1.27 &ndash; a free 3D modelling environment
+This is the documentation of Ayam 1.28 &ndash; a free 3D modelling environment
 for the RenderMan interface.
 
 Please note, that this document is a reference manual,
@@ -3201,9 +3201,8 @@ sign, which comes right behind the sought after percentage number.
 <p> <p>
 
 <item><tt/"DisplayDriver"/ sets the RenderMan display driver to use
-for the <tt/"Viewport"/ render mode,
-this is usually a string like <tt/"aqsisfifodspy"/, i.e.~the renderer
-name prepended to <tt/"fifodspy"/ but without any file name extension.
+for the <tt/"Viewport"/ render mode, at the moment the only
+sensible setting of this is <tt/"fifodspy"/.
 <p> <p>
 
 <item><tt/"QRenderMode"/ see <tt/"RenderMode"/ above.
@@ -3224,9 +3223,8 @@ see discussion of <tt/"RenderPT"/ below.
 <p> <p>
 
 <item><tt/"QDisplayDriver"/ sets the RenderMan display driver to use
-for the <tt/"Viewport"/ render mode,
-this is usually a string like <tt/"aqsisfifodspy"/, i.e.~the renderer
-name prepended to <tt/"fifodspy"/.
+for the <tt/"Viewport"/ render mode, at the moment the only
+sensible setting of this is <tt/"fifodspy"/.
 <p> <p>
 
 <item><tt/"FRenderMode"/ see <tt/"RenderMode"/ above.
