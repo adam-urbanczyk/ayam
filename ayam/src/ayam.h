@@ -2152,11 +2152,11 @@ extern char *ay_error_igntype;
 
 /** \name Version Strings and Numbers */
 /*@{*/
-#define AY_VERSIONSTR "1.27"
+#define AY_VERSIONSTR "1.28"
 #define AY_VERSIONSTRMI "0"
 
 #define AY_VERSIONMA 1
-#define AY_VERSION   27
+#define AY_VERSION   28
 #define AY_VERSIONMI 0
 /*@}*/
 
