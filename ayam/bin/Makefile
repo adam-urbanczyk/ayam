@@ -115,6 +115,7 @@ install:
 	-$(INSTALL) plugins/sdcurve.so $(LIBDIR)
 	-$(INSTALL) plugins/loadsdcurve.tcl $(LIBDIR)
 	-$(INSTALL) plugins/printps.so $(LIBDIR)
+	-$(INSTALL) plugins/fifodspy.so $(LIBDIR)
 	$(MKDIR) $(DOCDIR)
 	$(INSTALL) $(DOCFILES) $(DOCDIR)
 	$(MKDIR) $(DOCDIR)/html
