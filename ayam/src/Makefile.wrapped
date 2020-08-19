@@ -683,9 +683,9 @@ luainterp.so:
 	$(CC) -c $(CFLAGS) plugins/luainterp.c -o plugins/luainterp.o $(AYINC) $(LUAINC)
 	$(CC) $(SHLFLAGS) plugins/luainterp.o -o plugins/luainterp.so $(LUALIB)
 
-aqsisfifodspy.so:
-	$(CC) -c $(CFLAGS) plugins/fifodspy.c -o plugins/aqsisfifodspy.o $(AQSISINC)
-	$(CC) $(SHLFLAGS) plugins/aqsisfifodspy.o -o plugins/aqsisfifodspy.so
+fifodspy.so:
+	$(CC) -c $(CFLAGS) plugins/fifodspy.c -o plugins/fifodspy.o $(AQSISINC)
+	$(CC) $(SHLFLAGS) plugins/fifodspy.o -o plugins/fifodspy.so
 
 printps.so:
 	$(CC) -c $(CFLAGS) plugins/printps.c -o plugins/printps.o $(AYINC) $(GL2PSINC)
@@ -786,6 +786,7 @@ install:
 	-$(INSTALL) plugins/sdcurve.so $(LIBDIR)
 	-$(INSTALL) plugins/loadsdcurve.tcl $(LIBDIR)
 	-$(INSTALL) plugins/printps.so $(LIBDIR)
+	-$(INSTALL) plugins/fifodspy.so $(LIBDIR)
 	-$(INSTALL) Makefile $(BINDIR)
 	$(MKDIR) $(DOCDIR)
 	$(INSTALL) $(DOCFILES) $(DOCDIR)
