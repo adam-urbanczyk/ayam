@@ -336,8 +336,26 @@ proc viewRender { w type } {
 	    }
 	} else {
 	    # render to image file
+	    set driver ""
+	    if { $ayprefs(FDisplay) != "" } {
+		set display $ayprefs(FDisplay)
+		if { [string first image $display] == 0 } {
+		    set driver $imagename
+		    append driver [string range $display 5 end]
+		} else {
+		    set driver $display
+		    set imagename [string range $display
+				   0 [expr [string first $display ","] + 1]]
+		}
+	    }
+
 	    ayError 4 "viewRender" "Rendering $vn to \"$imagename\"..."
-	    $togl wrib -file $tmpfile -image $imagename -temp -rtf
+	    if { $driver != "" } {
+		$togl wrib -file $tmpfile -image $imagename\
+		    -driver $driver -temp -rtf
+	    } else {
+		$togl wrib -file $tmpfile -image $imagename -temp -rtf
+	    }
 	}
     }
     # if shadow maps
