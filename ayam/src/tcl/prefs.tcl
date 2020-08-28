@@ -422,57 +422,63 @@ proc prefs_addRIBExport { nb fw } {
     addCheckB $fw ayprefse ExcludeHidden [ms ayprefse_ExcludeHidden]
 
     addText $fw e0 "Rendering:"
-    addMenuB $fw ayprefse SetRenderer [ms ayprefse_SetRenderer]\
+
+    set f [frame $fw.fr -bd 1 -relief sunken -padx 2 -pady 3]
+    pack $f -in $fw -side top -expand yes -fill x
+
+    addMenuB $f ayprefse SetRenderer [ms ayprefse_SetRenderer]\
 	    [list Preview QuickPreview File ShadowMap All]
 
     trace add variable ayprefse(SetRenderer) write "prefs_layoutRIBExport $nb"
 
-    bind $fw.fSetRenderer <Destroy>\
+    bind $f.fSetRenderer <Destroy>\
     "trace remove variable ayprefse(SetRenderer) write \"prefs_layoutRIBExport $nb\""
 
-    addVSpace $fw s1 3
+    addVSpace $f s1 3
 
     if { $ayprefse(SetRenderer) == 0 || $ayprefse(SetRenderer) == 4 } {
-	addMenuB $fw ayprefse RenderMode [ms ayprefse_RenderMode]\
+	addMenuB $f ayprefse RenderMode [ms ayprefse_RenderMode]\
 	    [list CommandLineArg RiDisplay Viewport]
-	addStringB $fw ayprefse Render [ms ayprefse_Render]\
+	addStringB $f ayprefse Render [ms ayprefse_Render]\
       [list "rendrib -d 4 -Progress %s" "rendrib -d 4 %s" "aqsis -fb %s" "..."]
-	addCheckB $fw ayprefse RenderUI [ms ayprefse_RenderUI]
-	addStringB $fw ayprefse RenderPT [ms ayprefse_RenderPT]\
+	addCheckB $f ayprefse RenderUI [ms ayprefse_RenderUI]
+	addStringB $f ayprefse RenderPT [ms ayprefse_RenderPT]\
 	    [list "R90000 %d" "Done computing %d" "%d"]
-	addStringB $fw ayprefse DisplayDriver [ms ayprefse_DisplayDriver]\
+	addStringB $f ayprefse DisplayDriver [ms ayprefse_DisplayDriver]\
 	    [list "fifodspy"]
     }
 
     if { $ayprefse(SetRenderer) == 1 || $ayprefse(SetRenderer) == 4 } {
-	addMenuB $fw ayprefse QRenderMode [ms ayprefse_QRenderMode]\
+	addMenuB $f ayprefse QRenderMode [ms ayprefse_QRenderMode]\
 	    [list CommandLineArg RiDisplay Viewport]
-	addStringB $fw ayprefse QRender [ms ayprefse_QRender]\
+	addStringB $f ayprefse QRender [ms ayprefse_QRender]\
 	    [list "rgl %s" "rgl -rd 10 %s" "..."]
-	addCheckB $fw ayprefse QRenderUI [ms ayprefse_QRenderUI]
-	addStringB $fw ayprefse QRenderPT [ms ayprefse_QRenderPT]\
+	addCheckB $f ayprefse QRenderUI [ms ayprefse_QRenderUI]
+	addStringB $f ayprefse QRenderPT [ms ayprefse_QRenderPT]\
 	    [list "R90000 %d" "Done computing %d" "%d"]
-	addStringB $fw ayprefse QDisplayDriver [ms ayprefse_QDisplayDriver]\
+	addStringB $f ayprefse QDisplayDriver [ms ayprefse_QDisplayDriver]\
 	    [list "fifodspy"]
     }
 
     if { $ayprefse(SetRenderer) == 2 || $ayprefse(SetRenderer) == 4 } {
-	addStringB $fw ayprefse FRender [ms ayprefse_FRender]\
+	addStringB $f ayprefse FRender [ms ayprefse_FRender]\
 	    [list "rendrib -Progress %s" "rendrib %s" "aqsis %s" "..."]
-	addCheckB $fw ayprefse FRenderUI [ms ayprefse_FRenderUI]
-	addStringB $fw ayprefse FRenderPT [ms ayprefse_FRenderPT]\
+	addCheckB $f ayprefse FRenderUI [ms ayprefse_FRenderUI]
+	addStringB $f ayprefse FRenderPT [ms ayprefse_FRenderPT]\
 	    [list "R90000 %d" "Done computing %d" "%d"]
-	addStringB $fw ayprefse FDisplay [ms ayprefse_FDisplay]\
+	addStringB $f ayprefse FDisplay [ms ayprefse_FDisplay]\
 	    [list "image.exr,exr_dspy,rgba"]
     }
 
     if { $ayprefse(SetRenderer) == 3 || $ayprefse(SetRenderer) == 4 } {
-	addStringB $fw ayprefse SMRender [ms ayprefse_SMRender]\
+	addStringB $f ayprefse SMRender [ms ayprefse_SMRender]\
 	    [list "rendrib -Progress %s" "rendrib %s" "aqsis %s" "..."]
-	addCheckB $fw ayprefse SMRenderUI [ms ayprefse_SMRenderUI]
-	addStringB $fw ayprefse SMRenderPT [ms ayprefse_SMRenderPT]\
+	addCheckB $f ayprefse SMRenderUI [ms ayprefse_SMRenderUI]
+	addStringB $f ayprefse SMRenderPT [ms ayprefse_SMRenderPT]\
 	    [list "R90000 %d" "Done computing %d" "%d"]
     }
+
+    addVSpace $fw s2 3
 
     addCheckB $fw ayprefse AutoCloseUI [ms ayprefse_AutoCloseUI]
 
