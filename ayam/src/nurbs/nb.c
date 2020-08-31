@@ -5098,7 +5098,8 @@ ay_nb_DegreeReduceCurve4D(int n, int p, double *U, double *Qw, double tol,
  int ph, mh, mult, cind, kind, a, b, m, i, j, s, ii, oldr, r, lbz, save;
  int first, last, k, kj, i1, i2, L, K, q;
  double A[3], Br, numer, alfa, beta, delta, maxerr;
- double *bpts, *rbpts, *nextbpts, *alphas, *e;
+ double *bpts = NULL, *rbpts = NULL, *nextbpts = NULL;
+ double *alphas = NULL, *e = NULL;
 
   ph = p-1;
   mh = ph;
@@ -5108,7 +5109,6 @@ ay_nb_DegreeReduceCurve4D(int n, int p, double *U, double *Qw, double tol,
   a = p;
   b = p+1;
   cind = 1;
-  mult = p;
 
   if(!(bpts = calloc((p+1)*4, sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
