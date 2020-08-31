@@ -1937,7 +1937,7 @@ ay_object_getpathname(ay_object *o, ay_object *h, size_t *totallen, int *found,
 	      if(*found)
 		{
 		  /* prepend current (level) name */
-		  strncpy(&((*result)[curtotallen]), curname, curlen);
+		  memcpy(&((*result)[curtotallen]), curname, curlen);
 		  (*result)[curtotallen+curlen] = ':';
 		  return AY_OK;
 		}
