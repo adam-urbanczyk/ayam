@@ -43,7 +43,6 @@ proc bcurve_getAttr { } {
     catch {destroy $ay(pca).$BCurveAttr(w)}
     set w [frame $ay(pca).$BCurveAttr(w)]
     set a $BCurveAttr(arr)
-    getProp
 
     set ay(bok) $ay(appb)
 
@@ -64,6 +63,8 @@ proc bcurve_getAttr { } {
     # advanced bindings for Length manipulation
     bind $w.fLength.b1 <Control-ButtonPress-1> "pamesh_updateWHL $w BCurveAttrData Length \$BCurveAttrData(BType) m;break"
     bind $w.fLength.b2 <Control-ButtonPress-1> "pamesh_updateWHL $w BCurveAttrData Length \$BCurveAttrData(BType) p;break"
+
+    getProp
 
     # add UI to property canvas
     plb_setwin $w $oldfocus
