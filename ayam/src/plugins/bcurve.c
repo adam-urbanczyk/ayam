@@ -38,7 +38,7 @@ char bcurve_version_ma[] = AY_VERSIONSTR;
 char bcurve_version_mi[] = AY_VERSIONSTRMI;
 
 static char *bcurve_name = "BCurve";
-static char *bcurve_arr = "PatchMeshAttrData";
+static char *bcurve_arr = "BCurveAttrData";
 
 static unsigned int bcurve_id;
 
@@ -1833,7 +1833,6 @@ bcurve_genericopcb(ay_object *o, int op)
 	  free(bc->controlv);
 	  bc->controlv = Qw;
 	  bc->length = Qwlen;
-	  o->modified = AY_TRUE;
 	}
       break;
     default:
@@ -1941,7 +1940,7 @@ Bcurve_Init(Tcl_Interp *interp)
 
   for(i = 0; i < 16; i++)
     {
-      sprintf(buf,"Basis_%d",i);
+      sprintf(buf, "Basis_%d", i);
       bm[i] = Tcl_NewStringObj(buf, -1);
       Tcl_IncrRefCount(bm[i]);
     }
