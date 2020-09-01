@@ -65,6 +65,8 @@ ay_text_createcb(int argc, char *argv[], ay_object *o)
 	    {
 	    case 'f':
 	      /* -font */
+	      if(font)
+		free(font);
 	      if(!(font = calloc(strlen(argv[i+1])+1, sizeof(char))))
 		{
 		  ay_error(AY_EOMEM, fname, NULL);
@@ -82,6 +84,8 @@ ay_text_createcb(int argc, char *argv[], ay_object *o)
 	    case 't':
 	      /* -text */
 	      numchars = Tcl_NumUtfChars(argv[i+1], -1);
+	      if(unistring)
+		free(unistring);
 	      if(!(unistring = calloc(numchars+1, sizeof(Tcl_UniChar))))
 		{
 		  ay_error(AY_EOMEM, fname, NULL);
