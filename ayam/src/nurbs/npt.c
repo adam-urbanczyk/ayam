@@ -5406,7 +5406,7 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
 	  a += stride;
 	}
       plenic = fabs(ic->knotv[ic->length] - ic->knotv[ic->order-1]);
-    }  /* if */
+    } /* if */
 
   /* apply all transformations to first cross-section curves controlv */
   if(!(cs1cv = malloc(cs1->length * stride * sizeof(double))))
@@ -14218,13 +14218,13 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
 	      break;
 	    }
 
-	  if(!(newcontrolv = malloc(patch->width*(patch->height-r)*4*
+	  if(!(newcontrolv = malloc(patch->height*(patch->width-r)*4*
 				    sizeof(double))))
 	    {
 	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
 	    }
-	  if(!(newknotv = malloc((patch->height+patch->vorder)*
+	  if(!(newknotv = malloc((patch->width+patch->uorder)*
 				 sizeof(double))))
 	    {
 	      free(newcontrolv);
