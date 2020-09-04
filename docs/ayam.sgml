@@ -1953,6 +1953,7 @@ This image may also be specified using the view attribute <tt/BGImage/.
 
 <item><tt/"Use Grid"/, if this is enabled the grid will be used to
 constrain modelling actions to grid coordinates.
+See also section <ref id="iac" name="Modelling Actions">.
 
 <item><tt/"Set Gridsize"/, may be used to change the size of the grid
 associated with this view. Another way to change the grid size is
@@ -2861,6 +2862,9 @@ mark (on, default<footnote>Since 1.21.</footnote>).
 Note that enabling this preference setting will not
 immediately lead to a global mark set in all windows, one rather
 needs to set a new mark that will then become global.
+See also section
+<ref id="markac" name="Setting the Mark">
+for more information about the mark.
 <p> <p>
 
 <item><tt/"CreateAtMark"/ controls whether or not new objects
@@ -3142,13 +3146,14 @@ ringing the bell when the rendering is finished,
 and a cancel button. This GUI is displayed
 when a renderer is invoked directly from a view window
 using the <tt/"Render"/ view menu entry (or the equivalent keyboard shortcut).
-Proper work of this GUI depends on the existence of
+Proper work of this feature depends on the existence of
 two external programs: <tt/"cat"/ and <tt/"kill"/ (those programs
 should be available on every Unix platform). If you do not have
-those programs in your path, do not enable the RenderUI option.
-On the Win32 platform you may also use an internal kill command
-<tt>"w32kill"</tt> that has been introduced in Ayam 1.4.
-See also section <ref id="hidprefsc" name="Hidden Preference Settings">.
+those programs in your path, do not enable the RenderUI option.<newline>
+On the Win32 platform a working <tt/"cat.exe"/ is distributed with Ayam
+and Ayam is set up to use an internal kill command
+<tt>"w32kill"</tt>.<footnote>Since 1.4.</footnote>
+See also section <ref id="hidprefsk" name="Hidden Preference Settings">.
 <p> <p>
 
 <item><tt/"RenderPT"/ is a string that contains a progress output
@@ -5509,6 +5514,8 @@ level will be drawn.
 <item><tt/"DrawGrid"/ toggles drawing of the current grid.
 <item><tt/"UseGrid"/ toggles, whether the current grid should be
 used by the interactive modelling actions.
+See also section <ref id="iac" name="Modelling Actions">.
+
 <item><tt/"ModellingMode"/ enables editing in local object spaces.
 See also section <ref id="editlocal" name="Editing in Local Spaces">.
 
@@ -21347,6 +21354,7 @@ surface myshader(float Ka = 0.5, Kd = 0.9; color ic = color (0, 1, 0);)
   Ci = Cs*mycolor*(Ka*ambient()+Kd*diffuse(faceforward(normalize(N),I)));
 }
 </code>
+<p>
 The following restrictions/caveats (in contrast to the normal shader parsing)
 apply:
 <itemize>
