@@ -3585,9 +3585,15 @@ ay_nb_DegreeElevateSurfU4D(int stride, int w, int h, int p, double *U,
 	    for(j = r; j <= p; j++)
 	      {
 		/* bpts(j,colJ) = S.P(b-p+j,colJ); */
-		ki = (j*h+colJ)*stride;
-		ki2 = ((b-p+j)*h+colJ)*stride;
-		memcpy(&(bpts[ki]), &(Pw[ki2]), stride*sizeof(double));
+		if(j >= 0)
+		  {
+		    ki = (j*h+colJ)*stride;
+		    if((b-p+j) <= w)
+		      ki2 = ((b-p+j)*h+colJ)*stride;
+		    else
+		      ki2 = (w*h+colJ)*stride;
+		    memcpy(&(bpts[ki]), &(Pw[ki2]), stride*sizeof(double));
+		  }
 	      }
 	  } /* for */
 	a = b;
@@ -4006,9 +4012,15 @@ ay_nb_DegreeElevateSurfV4D(int stride, int w, int h, int p, double *V,
 	    for(j = r; j <= p; j++)
 	      {
 		/* bpts(j,rowJ) = S.P(rowJ,b-p+j); */
-		ki = (j*w+rowJ)*stride;
-		ki2 = (rowJ*h+(b-p+j))*stride;
-		memcpy(&(bpts[ki]), &(Pw[ki2]), stride*sizeof(double));
+		if(j >= 0)
+		  {
+		    ki = (j*w+rowJ)*stride;
+		    if((b-p+j) <= h)
+		      ki2 = (rowJ*h+(b-p+j))*stride;
+		    else
+		      ki2 = (rowJ*h+h)*stride;
+		    memcpy(&(bpts[ki]), &(Pw[ki2]), stride*sizeof(double));
+		  }
 	      }
 	  } /* for */
 	a = b;
