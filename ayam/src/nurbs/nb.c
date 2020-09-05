@@ -3654,26 +3654,26 @@ cleanup:
 
 /*
  * ay_nb_DegreeElevateSurfV4D: (NURBS++)
- * Elevates the degree of surface: stride, w, h, p, V[], Pw[]
+ * Elevates the degree of surface: stride, w, h, q, V[], Pw[]
  * t times along parametric dimension v
- * q, U[] do not have to be provided (no change in dimension u)
+ * p, U[] do not have to be provided (no change in dimension u)
  * nh: new height, Vh: new knots, Qw: new controls
  * Vh[] and Qw[] should be sized appropriately before elevation
- * (Vh[he+he*t+p+1+t] and Qw[(he+he*t*wi*stride])
+ * (Vh[he+he*t+q+1+t] and Qw[(he+he*t*wi*stride])
  * and probably _resized_ according to nh after elevation!
  */
 int
-ay_nb_DegreeElevateSurfV4D(int stride, int w, int h, int p, double *V,
+ay_nb_DegreeElevateSurfV4D(int stride, int w, int h, int q, double *V,
 			   double *Pw, int t,
 			   int *nh, double *Vh, double *Qw)
 {
  int ay_status = AY_OK;
  int i, j, k;
  int n = h;
- int m = n+p+1;
- int ph = p+t;
- int ph2 = ph/2;
- int bal = p+1, bai, bai2, bi, bi2, mpi, maxit;
+ int m = n+q+1;
+ int qh = q+t;
+ int qh2 = qh/2;
+ int bal = q+1, bai, bai2, bi, bi2, mpi, maxit;
  double inv;
  double *bezalfs = NULL; /* coefficients for degree elevating the Bezier
 			    segment */
@@ -3688,14 +3688,14 @@ ay_nb_DegreeElevateSurfV4D(int stride, int w, int h, int p, double *V,
  int tnh = (h+1)+((h+1)*t);
 
  int rowJ;
- int mh = ph;
- int kind = ph+1;
+ int mh = qh;
+ int kind = qh+1;
  double va = V[0];
  double vb = 0.0;
  int r = -1;
  int oldr;
  int a = 0;
- int b = p+1;
+ int b = q+1;
  int cind = 1;
  int rbz, lbz = 1;
  int mul, save, s;
@@ -3716,57 +3716,57 @@ ay_nb_DegreeElevateSurfV4D(int stride, int w, int h, int p, double *V,
 
   *nh = h+1;
 
-  a = p;
+  a = q;
   w++;
 
   /* allocate temporary arrays */
-  if(!(bezalfs = calloc((p+t+1)*(p+1), sizeof(double))))
+  if(!(bezalfs = calloc((q+t+1)*(q+1), sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
-  if(!(bpts = calloc((p+1)*w*stride, sizeof(double))))
+  if(!(bpts = calloc((q+1)*w*stride, sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
-  if(!(ebpts = calloc((p+t+1)*w*stride, sizeof(double))))
+  if(!(ebpts = calloc((q+t+1)*w*stride, sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
-  if(!(nextbpts = calloc((p-1)*w*stride, sizeof(double))))
+  if(!(nextbpts = calloc((q-1)*w*stride, sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
-  if(!(alfas = calloc(p-1, sizeof(double))))
+  if(!(alfas = calloc(q-1, sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
-  if(!(bin = calloc((ph+1)*(ph2+1), sizeof(double))))
+  if(!(bin = calloc((qh+1)*(qh2+1), sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
   /* compute the Binomial coefficients */
-  ay_nb_Bin((ph+1), (ph2+1), bin);
+  ay_nb_Bin((qh+1), (qh2+1), bin);
 
   /* compute Bezier degree elevation coefficients */
-  /* bezalfs[0][0] = bezalfs[ph][p] = 1.0; */
+  /* bezalfs[0][0] = bezalfs[qh][q] = 1.0; */
   bezalfs[0] = 1.0;
-  bai = ph*bal+p;
+  bai = qh*bal+q;
   bezalfs[bai] = 1.0;
 
-  for(i = 1; i <= ph2; i++)
+  for(i = 1; i <= qh2; i++)
     {
-      bi = (ph2+1)*ph+i;
+      bi = (qh2+1)*qh+i;
       inv = 1.0/bin[bi];
-      mpi = p<i?p:i;
+      mpi = q<i?q:i;
       maxit = (0>(i-t))?0:(i-t);
       for(j = maxit; j <= mpi; j++)
 	{
-	  /* bezalfs[i][j] = inv*Bin(p,j)*Bin(t,i-j); */
+	  /* bezalfs[i][j] = inv*Bin(q,j)*Bin(t,i-j); */
 	  bai = i*bal+j;
-	  bi = (ph2+1)*p+j;
-	  bi2 = (ph2+1)*t+(i-j);
+	  bi = (qh2+1)*q+j;
+	  bi2 = (qh2+1)*t+(i-j);
 	  bezalfs[bai] = inv*bin[bi]*bin[bi2];
 	} /* for */
     } /* for */
 
-  for(i = ph2+1; i <= ph-1; i++)
+  for(i = qh2+1; i <= qh-1; i++)
     {
-      mpi = p<i?p:i;
+      mpi = q<i?q:i;
       maxit = (0>(i-t))?0:(i-t);
       for(j = maxit; j <= mpi; j++)
 	{
-	  /* bezalfs[i][j] = bezalfs[ph-i][p-j]; */
+	  /* bezalfs[i][j] = bezalfs[qh-i][q-j]; */
 	  bai = i*bal+j;
-	  bai2 = (ph-i)*bal+(p-j);
+	  bai2 = (qh-i)*bal+(q-j);
 	  bezalfs[bai] = bezalfs[bai2];
 	} /* for */
     } /* for */
@@ -3780,13 +3780,13 @@ ay_nb_DegreeElevateSurfV4D(int stride, int w, int h, int p, double *V,
       memcpy(&(Qw[ki]), &(Pw[ki2]), stride*sizeof(double));
     }
 
-  for(i = 0; i <= ph; i++)
+  for(i = 0; i <= qh; i++)
     {
       Vh[i] = va;
     }
 
   /* initialize the first Bezier segment */
-  for(i = 0; i <= p; i++)
+  for(i = 0; i <= q; i++)
     {
       for(j = 0; j < w; j++)
       {
@@ -3812,27 +3812,27 @@ ay_nb_DegreeElevateSurfV4D(int stride, int w, int h, int p, double *V,
       mh += mul+t;
       vb = V[b];
       oldr = r;
-      r = p-mul;
-      if(oldr>0)
+      r = q-mul;
+      if(oldr > 0)
 	lbz = (oldr+2)/2;
       else
 	lbz = 1;
-      if(r>0)
-	rbz = ph-(r+1)/2;
+      if(r > 0)
+	rbz = qh-(r+1)/2;
       else
-	rbz = ph;
+	rbz = qh;
       if(r > 0)
 	{
 	  /* insert knot to get Bezier segment */
 	  numer = vb - va;
-	  for(k = p; k > mul; k--)
+	  for(k = q; k > mul; k--)
 	    {
 	      alfas[k-mul-1] = numer/(V[a+k]-va);
 	    }
 	  for(j = 1; j <= r; j++)
 	    {
 	      save = r-j; s = mul+j;
-	      for(k = p; k >= s; k--)
+	      for(k = q; k >= s; k--)
 		{
 		  for(rowJ = 0; rowJ < w; rowJ++)
 		    {
@@ -3851,13 +3851,13 @@ ay_nb_DegreeElevateSurfV4D(int stride, int w, int h, int p, double *V,
 			              (1.0-alfas[k-s])*bpts[ki2+3];
 		    } /* for */
 		} /* for */
-	      if((p-1) > 0)
+	      if((q-1) > 0)
 		{
 		  for(rowJ = 0; rowJ < w; rowJ++)
 		    {
-		      /*nextbpts(save,rowJ) = bpts(p,rowJ);*/
+		      /*nextbpts(save,rowJ) = bpts(q,rowJ);*/
 		      ki = (save*w+rowJ)*stride;
-		      ki2 = (p*w+rowJ)*stride;
+		      ki2 = (q*w+rowJ)*stride;
 		      memcpy(&(nextbpts[ki]), &(bpts[ki2]),
 			     stride*sizeof(double));
 		    }
@@ -3866,9 +3866,9 @@ ay_nb_DegreeElevateSurfV4D(int stride, int w, int h, int p, double *V,
 	    } /* for */
 	} /* if(r>0 */
 
-      for(i = lbz; i <= ph; i++)
+      for(i = lbz; i <= qh; i++)
 	{
-	  /* degree elevate Bezier; only the points lbz,...,ph are used */
+	  /* degree elevate Bezier; only the points lbz,...,qh are used */
 	  for(rowJ = 0; rowJ < w; rowJ++)
 	    {
 	      /*ebpts(i,rowJ) = 0.0;*/
@@ -3876,8 +3876,7 @@ ay_nb_DegreeElevateSurfV4D(int stride, int w, int h, int p, double *V,
 	      memset(&(ebpts[ki]), 0, stride*sizeof(double));
 	    }
 
-
-	  mpi = ((p<i)?p:i);
+	  mpi = ((q<i)?q:i);
 	  for(j = (0>(i-t))?0:(i-t); j <= mpi; j++)
 	    {
 	      for(rowJ = 0; rowJ < w; rowJ++)
@@ -3897,9 +3896,9 @@ ay_nb_DegreeElevateSurfV4D(int stride, int w, int h, int p, double *V,
 
     if(oldr > 1)
       {
-	/* must remove knot u=V[a] oldr times */
+	/* must remove knot v=V[a] oldr times */
 	/* if(oldr>2) // Alfas on the right do not change
-	   alfj = (va-U[kind-1])/(vb-U[kind-1]); */
+	   alfj = (va-V[kind-1])/(vb-V[kind-1]); */
 	first = kind-2; last = kind;
 	den = vb-va;
 	bet = (vb-Vh[kind-1])/den;
@@ -3929,7 +3928,7 @@ ay_nb_DegreeElevateSurfV4D(int stride, int w, int h, int p, double *V,
 		  } /* if */
 		if(j >= lbz)
 		  {
-		    if(j-tr <= kind-ph+oldr)
+		    if(j-tr <= kind-qh+oldr)
 		      {
 			gam = (vb-Vh[j-tr])/den;
 			for(rowJ = 0; rowJ < w; rowJ++)
@@ -3975,10 +3974,10 @@ ay_nb_DegreeElevateSurfV4D(int stride, int w, int h, int p, double *V,
 	  } /* for */
       } /* if(oldr>1 */
 
-    if(a != p)
+    if(a != q)
       {
-	/* load the knot u=U[a] */
-	for(i = 0; i < ph-oldr; i++)
+	/* load the knot v=V[a] */
+	for(i = 0; i < qh-oldr; i++)
 	  {
 	    Vh[kind] = va;
 	    kind++;
@@ -4009,14 +4008,14 @@ ay_nb_DegreeElevateSurfV4D(int stride, int w, int h, int p, double *V,
 		ki = (j*w+rowJ)*stride;
 		memcpy(&(bpts[ki]), &(nextbpts[ki]), stride*sizeof(double));
 	      }
-	    for(j = r; j <= p; j++)
+	    for(j = r; j <= q; j++)
 	      {
-		/* bpts(j,rowJ) = S.P(rowJ,b-p+j); */
+		/* bpts(j,rowJ) = S.P(rowJ,b-q+j); */
 		if(j >= 0)
 		  {
 		    ki = (j*w+rowJ)*stride;
-		    if((b-p+j) <= h)
-		      ki2 = (rowJ*h+(b-p+j))*stride;
+		    if((b-q+j) <= h)
+		      ki2 = (rowJ*h+(b-q+j))*stride;
 		    else
 		      ki2 = (rowJ*h+h)*stride;
 		    memcpy(&(bpts[ki]), &(Pw[ki2]), stride*sizeof(double));
@@ -4029,12 +4028,12 @@ ay_nb_DegreeElevateSurfV4D(int stride, int w, int h, int p, double *V,
       }
     else
       {
-	for(i = 0; i <= ph; i++)
+	for(i = 0; i <= qh; i++)
 	  Vh[kind+i] = vb;
       } /* if */
     } /* while b<m */
 
-  *nh = mh-ph;
+  *nh = mh-qh;
 
 cleanup:
 

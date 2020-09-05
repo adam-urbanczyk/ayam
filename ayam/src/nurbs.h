@@ -527,7 +527,7 @@ int ay_nb_DegreeElevateSurfU4D(int stride, int w, int h, int p, double *U,
 
 /** Elevate degree of NURBS surface in V direction.
  */
-int ay_nb_DegreeElevateSurfV4D(int stride, int w, int h, int p, double *V,
+int ay_nb_DegreeElevateSurfV4D(int stride, int w, int h, int q, double *V,
 			       double *Pw, int t,
 			       int *nh, double *Vh, double *Qw);
 
