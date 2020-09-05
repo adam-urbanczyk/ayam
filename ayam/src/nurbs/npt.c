@@ -6716,7 +6716,7 @@ ay_npt_elevateu(ay_nurbpatch_object *patch, int t, int is_clamped)
 					 patch->height-1,
 					 patch->uorder-1, patch->uknotv,
 					 patch->controlv, t, &nw, Uh, Qw);
-
+  printf("%d => %d\n",patch->width,nw);
   if(ay_status || (nw <= 0))
     {
       free(Uh); free(Qw);
@@ -10402,7 +10402,20 @@ ay_npt_clampu(ay_nurbpatch_object *patch, int side)
     return AY_ENULL;
 
   if(patch->uorder < 3)
-    return AY_OK;
+    {
+      newknotv = patch->uknotv;
+      if(side == 0 || side == 1)
+	{
+	  memcpy(&(newknotv[1]), &(newknotv[0]), sizeof(double));
+	}
+      if(side == 0 || side == 2)
+	{
+	  memcpy(&(newknotv[patch->width+patch->uorder-2]),
+		 &(newknotv[patch->width+patch->uorder-1]),
+		 sizeof(double));
+	}
+      return AY_OK;
+    }
 
   /* clamp start? */
   if(side == 0 || side == 1)
@@ -10604,7 +10617,20 @@ ay_npt_clampv(ay_nurbpatch_object *patch, int side)
     return AY_ENULL;
 
   if(patch->vorder < 3)
-    return AY_OK;
+    {
+      newknotv = patch->vknotv;
+      if(side == 0 || side == 1)
+	{
+	  memcpy(&(newknotv[1]), &(newknotv[0]), sizeof(double));
+	}
+      if(side == 0 || side == 2)
+	{
+	  memcpy(&(newknotv[patch->height+patch->vorder-2]),
+		 &(newknotv[patch->height+patch->vorder-1]),
+		 sizeof(double));
+	}
+      return AY_OK;
+    }
 
   /* clamp start? */
   if(side == 0 || side == 1)
@@ -16054,7 +16080,7 @@ ay_npt_degreereduce(ay_nurbpatch_object *np, double tol)
       was_rat = AY_TRUE;
       (void)ay_npt_euctohom(np);
     }
-
+  printf("%d %d %d\n",np->width,np->height,np->vorder);
   ay_status = ay_nb_DegreeReduceSurfV(np->width-1, np->height-1,
 				      np->vorder-1,
 				      np->vknotv, np->controlv,
