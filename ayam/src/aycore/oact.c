@@ -352,7 +352,7 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
 	  sel = sel->next;
 	} /* while */
 
-      if(notify_parent && !ay_prefs.lazynotify)
+      if(notify_parent && (!ay_prefs.lazynotify || have_dxyz))
 	{
 	  ay_notify_parent();
 	}
@@ -561,7 +561,7 @@ ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
 	} /* if */
     } /* while */
 
-  if(!ay_prefs.lazynotify)
+  if(!ay_prefs.lazynotify || have_angle)
     {
       ay_notify_parent();
     }
@@ -897,7 +897,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
       sel = sel->next;
     } /* while */
 
-  if(!ay_prefs.lazynotify)
+  if(!ay_prefs.lazynotify || have_angle)
     {
       ay_notify_parent();
     }
@@ -1077,7 +1077,7 @@ ay_oact_sc1DXcb(struct Togl *togl, int argc, char *argv[])
   oldwinx = winx;
   oldwiny = winy;
 
-  if(!ay_prefs.lazynotify)
+  if(!ay_prefs.lazynotify || have_scale)
     {
       ay_notify_parent();
     }
@@ -1255,7 +1255,7 @@ ay_oact_sc1DYcb(struct Togl *togl, int argc, char *argv[])
   oldwinx = winx;
   oldwiny = winy;
 
-  if(!ay_prefs.lazynotify)
+  if(!ay_prefs.lazynotify || have_scale)
     {
       ay_notify_parent();
     }
@@ -1433,7 +1433,7 @@ ay_oact_sc1DZcb(struct Togl *togl, int argc, char *argv[])
   oldwinx = winx;
   oldwiny = winy;
 
-  if(!ay_prefs.lazynotify)
+  if(!ay_prefs.lazynotify || have_scale)
     {
       ay_notify_parent();
     }
@@ -1615,7 +1615,7 @@ ay_oact_sc2Dcb(struct Togl *togl, int argc, char *argv[])
   oldwinx = winx;
   oldwiny = winy;
 
-  if(!ay_prefs.lazynotify)
+  if(!ay_prefs.lazynotify || have_scale)
     {
       ay_notify_parent();
     }
@@ -1769,7 +1769,7 @@ ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[])
   oldwinx = winx;
   oldwiny = winy;
 
-  if(!ay_prefs.lazynotify)
+  if(!ay_prefs.lazynotify || have_scale)
     {
       ay_notify_parent();
     }
@@ -2042,7 +2042,7 @@ ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[])
   oldwinx = winx;
   oldwiny = winy;
 
-  if(!ay_prefs.lazynotify)
+  if(!ay_prefs.lazynotify || have_scale)
     {
       ay_notify_parent();
     }
@@ -2272,7 +2272,7 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
   oldwinx = winx;
   oldwiny = winy;
 
-  if(!ay_prefs.lazynotify)
+  if(!ay_prefs.lazynotify || have_scale)
     {
       ay_notify_parent();
     }
@@ -2502,7 +2502,7 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
   oldwinx = winx;
   oldwiny = winy;
 
-  if(!ay_prefs.lazynotify)
+  if(!ay_prefs.lazynotify || have_scale)
     {
       ay_notify_parent();
     }
@@ -2726,7 +2726,7 @@ ay_oact_sc2DAcb(struct Togl *togl, int argc, char *argv[])
   oldwinx = winx;
   oldwiny = winy;
 
-  if(!ay_prefs.lazynotify)
+  if(!ay_prefs.lazynotify || have_scale)
     {
       ay_notify_parent();
     }
@@ -2953,7 +2953,7 @@ ay_oact_sc3DAcb(struct Togl *togl, int argc, char *argv[])
   oldwinx = winx;
   oldwiny = winy;
 
-  if(!ay_prefs.lazynotify)
+  if(!ay_prefs.lazynotify || have_scale)
     {
       ay_notify_parent();
     }
