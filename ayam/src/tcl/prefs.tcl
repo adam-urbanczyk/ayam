@@ -353,7 +353,7 @@ proc prefs_open {} {
     # establish "Help"-binding
     global aymainshortcuts
     bind $w <[repctrl $aymainshortcuts(Help)]> {
-      browser_urlOpen [concatUrls \
+      openUrl [concatUrls \
 	 ${ayprefs(Docs)} ayam-2.html\#pref[string tolower $ay(prefssection)]]
     }
 

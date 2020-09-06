@@ -1302,7 +1302,7 @@ proc shortcut_addescescbinding { w } {
 #  actually calls the web browser
 proc shortcut_callcshelp { base tag } {
     global ayprefs
-    browser_urlOpen [concatUrls ${ayprefs(Docs)} ${base}\#${tag}]
+    openUrl [concatUrls ${ayprefs(Docs)} ${base}\#${tag}]
  return;
 }
 # shortcut_callcshelp
@@ -1327,7 +1327,7 @@ proc shortcut_addviewbinding { k b } {
 
     # arrange to bind to future views
     set add "bind \$w "
-    append add $k " " $b
+    append add $k " " \"$b\"
     addToProc shortcut_view $add
 
     # bind to current views
