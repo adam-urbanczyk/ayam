@@ -6716,7 +6716,7 @@ ay_npt_elevateu(ay_nurbpatch_object *patch, int t, int is_clamped)
 					 patch->height-1,
 					 patch->uorder-1, patch->uknotv,
 					 patch->controlv, t, &nw, Uh, Qw);
-  printf("%d => %d\n",patch->width,nw);
+
   if(ay_status || (nw <= 0))
     {
       free(Uh); free(Qw);
@@ -16080,7 +16080,7 @@ ay_npt_degreereduce(ay_nurbpatch_object *np, double tol)
       was_rat = AY_TRUE;
       (void)ay_npt_euctohom(np);
     }
-  printf("%d %d %d\n",np->width,np->height,np->vorder);
+
   ay_status = ay_nb_DegreeReduceSurfV(np->width-1, np->height-1,
 				      np->vorder-1,
 				      np->vknotv, np->controlv,
