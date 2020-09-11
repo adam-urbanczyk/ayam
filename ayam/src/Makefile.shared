@@ -376,6 +376,9 @@ LUADIR = ../../../sdk/lua-5.2.0/src
 LUAINC = -I $(LUADIR)
 LUALIB = -L $(LUADIR) -llua
 
+# Fifodspy Plugin
+DSPYINC = $(AQSISINC)/aqsis/ri
+
 # PrintPS Plugin
 GL2PSDIR = ../../../sdk/gl2ps-1.3.8-source
 GL2PSINC = -I $(GL2PSDIR)
@@ -683,7 +686,7 @@ luainterp.so:
 	$(CC) $(SHLFLAGS) plugins/luainterp.o -o plugins/luainterp.so $(LUALIB)
 
 fifodspy.so:
-	$(CC) -c $(CFLAGS) plugins/fifodspy.c -o plugins/aqsisfifodspy.o $(AQSISINC)
+	$(CC) -c $(CFLAGS) plugins/fifodspy.c -o plugins/fifodspy.o $(AQSISINC) $(DSPYINC)
 	$(CC) $(SHLFLAGS) plugins/fifodspy.o -o plugins/fifodspy.so
 
 printps.so:
