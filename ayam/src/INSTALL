@@ -679,8 +679,10 @@ Load it via menu entry "File/Load Plugin".
 ---------------------------------------------
 
 Additional prerequisites to compile the fifodspy plugin are:
-Aqsis renderer (as needed for ayslx or compiling with libri2rib).
-Variables to set: AQSISDIR, AQSISINC
+o Aqsis renderer (as needed for ayslx or compiling with libri2rib).
+  Variables to set: AQSISDIR, AQSISINC
+o ndspy.h
+  Variable to set: DSPYINC
 
 In order to compile the plugin, type:
 >make fifodspy.so
