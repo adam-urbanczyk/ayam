@@ -153,10 +153,7 @@ static int ay_rrib_cframe;
 static ay_object *ay_rrib_lrobject;
 
 /* light handle */
-static int ay_rrib_clighthandle;
-
-/* first read light */
-static ay_object *ay_rrib_flobject;
+static RtLightHandle ay_rrib_lighthandle;
 
 /* object handle */
 static int ay_rrib_cobjecthandle;
@@ -1162,7 +1159,7 @@ ay_rrib_RiLightSource(RtToken name,
  RtColor *col = NULL;
 
   if(!ay_rrib_readlights)
-    return((RtLightHandle)(ay_rrib_clighthandle++));
+    return NULL;
 
   /* load some defaults */
   l.type = AY_LITCUSTOM;
@@ -1300,12 +1297,7 @@ cleanup:
       l.lshader = NULL;
     }
 
-  if(ay_rrib_clighthandle == 1)
-    {
-      ay_rrib_flobject = o;
-    }
-
- return((RtLightHandle)(ay_rrib_clighthandle++));
+ return (RtLightHandle)o;
 } /* ay_rrib_RiLightSource */
 
 
@@ -1317,7 +1309,7 @@ ay_rrib_RiAreaLightSource(RtToken name,
  int ay_status = AY_OK;
 
   if(!ay_rrib_readlights)
-    return((RtLightHandle)(ay_rrib_clighthandle++));
+    return NULL;
 
   /* Are we currently reading AreaLight geometry? */
   if(ay_rrib_rageom > 0)
@@ -1333,7 +1325,7 @@ ay_rrib_RiAreaLightSource(RtToken name,
       ay_clevel_del();
       ay_next = &(ay_currentlevel->object->next);
       ay_clevel_del();
-      lh = 0;
+      lh = NULL;
     }
   else
     {
@@ -1353,7 +1345,7 @@ ay_rrib_RiAreaLightSource(RtToken name,
       ay_next = &(ay_rrib_lrobject->down);
     } /* if */
 
- return(lh);
+ return lh;
 } /* ay_rrib_RiAreaLightSource */
 
 
@@ -2053,28 +2045,20 @@ ay_rrib_RiIdentity(void)
 RtVoid
 ay_rrib_RiIlluminate(RtLightHandle light, RtBoolean onoff)
 {
- ay_object *o = NULL;
  ay_light_object *l = NULL;
- int i = 0;
 
-  o = ay_rrib_flobject;
-  while(o && o->next && i < (int)light)
-    {
-      if(o->type == AY_IDLIGHT)
-	{
-	  l = (ay_light_object *)o->refine;
-	  if(onoff)
-	    {
-	      l->on = AY_TRUE;
-	    }
-	  else
-	    {
-	      l->on = AY_FALSE;
-	    } /* if */
-	  i++;
-	} /* if */
-      o = o->next;
-    } /* while */
+ if(light)
+   {
+     l = (ay_light_object *)(((ay_object*)light)->refine);
+     if(onoff)
+       {
+	 l->on = AY_TRUE;
+       }
+     else
+       {
+	 l->on = AY_FALSE;
+       } /* if */
+    } /* if */
 
  return;
 } /* ay_rrib_RiIlluminate */
@@ -2365,7 +2349,7 @@ ay_rrib_RiOption(RtToken name,
   root = (ay_root_object *)ay_root->refine;
   riopt = root->riopt;
 
-  if(!strcmp(name,"limits"))
+  if(!strcmp(name, "limits"))
     {
       for(i = 0; i < n; i++)
 	{
@@ -4162,24 +4146,24 @@ ay_rrib_readparams(int n, RtToken tokens[], RtPointer parms[],
 	    {
 	    case kRIB_INTTYPE:
 	      typechar = 'i';
-	      sprintf(valbuf,"%d", (int)(*((RtInt *)(parms[i]))));
+	      sprintf(valbuf, "%d", (int)(*((RtInt *)(parms[i]))));
 	      valstr = valbuf;
 	      break;
 	    case kRIB_INTPAIRTYPE:
 	      typechar = 'j';
 	      intpair = (RtInt *)(parms[i]);
-	      sprintf(valbuf,"%d,%d", (int)(intpair[0]),(int)(intpair[1]));
+	      sprintf(valbuf, "%d,%d", (int)(intpair[0]),(int)(intpair[1]));
 	      valstr = valbuf;
 	      break;
 	    case kRIB_FLOATTYPE:
 	      typechar = 'f';
-	      sprintf(valbuf,"%f", (float)(*((RtFloat *)(parms[i]))));
+	      sprintf(valbuf, "%f", (float)(*((RtFloat *)(parms[i]))));
 	      valstr = valbuf;
 	      break;
 	    case kRIB_FLOATPAIRTYPE:
 	      typechar = 'g';
 	      fltpair = (RtFloat *)(parms[i]);
-	      sprintf(valbuf,"%f,%f", (float)(fltpair[0]),
+	      sprintf(valbuf, "%f,%f", (float)(fltpair[0]),
 		      (float)(fltpair[1]));
 	      valstr = valbuf;
 	      break;
@@ -4189,28 +4173,28 @@ ay_rrib_readparams(int n, RtToken tokens[], RtPointer parms[],
 	    case kRIB_COLORTYPE:
 	      typechar = 'c';
 	      col = (RtColor *)(parms[i]);
-	      sprintf(valbuf,"%f,%f,%f", (float)((*col)[0]),(float)((*col)[1]),
+	      sprintf(valbuf, "%f,%f,%f", (float)((*col)[0]),(float)((*col)[1]),
 		      (float)((*col)[2]));
 	      valstr = valbuf;
 	      break;
 	    case kRIB_POINTTYPE:
 	      typechar = 'p';
 	      pnt = (RtPoint *)(parms[i]);
-	      sprintf(valbuf,"%f,%f,%f", (float)((*pnt)[0]),(float)((*pnt)[1]),
+	      sprintf(valbuf, "%f,%f,%f", (float)((*pnt)[0]),(float)((*pnt)[1]),
 		      (float)((*pnt)[2]));
 	      valstr = valbuf;
 	      break;
 	    case kRIB_VECTORTYPE:
 	      typechar = 'v';
 	      pnt = (RtPoint *)(parms[i]);
-	      sprintf(valbuf,"%f,%f,%f", (float)((*pnt)[0]),(float)((*pnt)[1]),
+	      sprintf(valbuf, "%f,%f,%f", (float)((*pnt)[0]),(float)((*pnt)[1]),
 		      (float)((*pnt)[2]));
 	      valstr = valbuf;
 	      break;
 	    case kRIB_NORMALTYPE:
 	      typechar = 'n';
 	      pnt = (RtPoint *)(parms[i]);
-	      sprintf(valbuf,"%f,%f,%f", (float)((*pnt)[0]),(float)((*pnt)[1]),
+	      sprintf(valbuf, "%f,%f,%f", (float)((*pnt)[0]),(float)((*pnt)[1]),
 		      (float)((*pnt)[2]));
 	      valstr = valbuf;
 	      break;
@@ -4310,24 +4294,24 @@ ay_rrib_readtag(unsigned int tagtype, char *tagname, char *name,
 	{
 	case kRIB_INTTYPE:
 	  typechar = 'i';
-	  sprintf(valbuf,"%d", (int)(*((RtInt *)(parms[i]))));
+	  sprintf(valbuf, "%d", (int)(*((RtInt *)(parms[i]))));
 	  valstr = valbuf;
 	  break;
 	case kRIB_INTPAIRTYPE:
 	  typechar = 'j';
 	  intpair = (RtInt *)(parms[i]);
-	  sprintf(valbuf,"%d,%d", (int)(intpair[0]),(int)(intpair[1]));
+	  sprintf(valbuf, "%d,%d", (int)(intpair[0]),(int)(intpair[1]));
 	  valstr = valbuf;
 	  break;
 	case kRIB_FLOATTYPE:
 	  typechar = 'f';
-	  sprintf(valbuf,"%f", (float)(*((RtFloat *)(parms[i]))));
+	  sprintf(valbuf, "%f", (float)(*((RtFloat *)(parms[i]))));
 	  valstr = valbuf;
 	  break;
 	case kRIB_FLOATPAIRTYPE:
 	  typechar = 'g';
 	  fltpair = (RtFloat *)(parms[i]);
-	  sprintf(valbuf,"%f,%f", (float)(fltpair[0]), (float)(fltpair[1]));
+	  sprintf(valbuf, "%f,%f", (float)(fltpair[0]), (float)(fltpair[1]));
 	  valstr = valbuf;
 	  break;
 	case kRIB_STRINGTYPE:
@@ -4336,28 +4320,28 @@ ay_rrib_readtag(unsigned int tagtype, char *tagname, char *name,
 	case kRIB_COLORTYPE:
 	  typechar = 'c';
 	  col = (RtColor *)(parms[i]);
-	  sprintf(valbuf,"%f,%f,%f", (float)((*col)[0]),(float)((*col)[1]),
+	  sprintf(valbuf, "%f,%f,%f", (float)((*col)[0]),(float)((*col)[1]),
 		  (float)((*col)[2]));
 	  valstr = valbuf;
 	  break;
 	case kRIB_POINTTYPE:
 	  typechar = 'p';
 	  pnt = (RtPoint *)(parms[i]);
-	  sprintf(valbuf,"%f,%f,%f", (float)((*pnt)[0]),(float)((*pnt)[1]),
+	  sprintf(valbuf, "%f,%f,%f", (float)((*pnt)[0]),(float)((*pnt)[1]),
 		  (float)((*pnt)[2]));
 	  valstr = valbuf;
 	  break;
 	case kRIB_VECTORTYPE:
 	  typechar = 'v';
 	  pnt = (RtPoint *)(parms[i]);
-	  sprintf(valbuf,"%f,%f,%f", (float)((*pnt)[0]),(float)((*pnt)[1]),
+	  sprintf(valbuf, "%f,%f,%f", (float)((*pnt)[0]),(float)((*pnt)[1]),
 		  (float)((*pnt)[2]));
 	  valstr = valbuf;
 	  break;
 	case kRIB_NORMALTYPE:
 	  typechar = 'n';
 	  pnt = (RtPoint *)(parms[i]);
-	  sprintf(valbuf,"%f,%f,%f", (float)((*pnt)[0]),(float)((*pnt)[1]),
+	  sprintf(valbuf, "%f,%f,%f", (float)((*pnt)[0]),(float)((*pnt)[1]),
 		  (float)((*pnt)[2]));
 	  valstr = valbuf;
 	  break;
@@ -5635,7 +5619,7 @@ ay_rrib_linktexcoord(ay_object *o)
 
   strcpy(nt->name, tagname);
 
-  sprintf(buf,"%g,%g,%g,%g,%g,%g,%g,%g",
+  sprintf(buf, "%g,%g,%g,%g,%g,%g,%g,%g",
 	  ay_rrib_cattributes->s1, ay_rrib_cattributes->t1,
 	  ay_rrib_cattributes->s2, ay_rrib_cattributes->t2,
 	  ay_rrib_cattributes->s3, ay_rrib_cattributes->t3,
@@ -5920,8 +5904,7 @@ ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
   ay_object_defaults(&ay_rrib_co);
 
   ay_rrib_readinggprims = 0;
-  ay_rrib_clighthandle = 1;
-  ay_rrib_flobject = NULL;
+  ay_rrib_lighthandle = NULL;
   ay_rrib_cobjecthandle = 1;
   ay_rrib_riobjects = NULL;
   ay_rrib_lastriobject = NULL;
