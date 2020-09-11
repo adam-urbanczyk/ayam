@@ -2314,5 +2314,7 @@ if { $ay(ws) == "Aqua" } {
     wm deiconify .
 }
 
+rV
+
 # Reconstruct the World!
 
