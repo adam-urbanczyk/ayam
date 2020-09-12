@@ -544,10 +544,6 @@ RtVoid ay_rrib_RiEnd(void);
 
 RtVoid ay_rrib_RiArchiveRecord(RtToken type, char *format, char *s);
 
-RtVoid ay_rrib_RiProcedural(RtPointer data, RtBound bound,
-			    RtVoid (*subdivfunc)(RtPointer, RtFloat),
-			    RtVoid (*freefunc)(RtPointer));
-
 RtPoint* ay_rrib_RiTransformPoints(RtToken fromspace, RtToken tospace,
 				   RtInt n, RtPoint points[]);
 
@@ -3027,18 +3023,18 @@ ay_rrib_RiProcedural(RtPointer data, RtBound bound,
     return;
   strcpy(riproc.file, *((char**)data));
 
-  if((int)subdivfunc == kRIB_PROCDELAYEDREADARCHIVE)
+  if(subdivfunc == ay_rrib_RiProcDelayedReadArchive)
     {
       riproc.type = AY_PRTDREADA;
     }
 
-  if((int)subdivfunc == kRIB_PROCDYNAMICLOAD)
+  if(subdivfunc == ay_rrib_RiProcDynamicLoad)
     {
       riproc.type = AY_PRTDYNLOAD;
       ndata = 2;
     }
 
-  if((int)subdivfunc == kRIB_PROCRUNPROGRAM)
+  if(subdivfunc == ay_rrib_RiProcRunProgram)
     {
       riproc.type = AY_PRTRUNPROG;
       ndata = 2;
@@ -4864,6 +4860,11 @@ ay_rrib_initgprims(void)
   gRibNopRITable[kRIB_OBJECTINSTANCE] = (PRIB_RIPROC)ay_rrib_RiObjectInstance;
 
   gRibNopRITable[kRIB_PROCEDURAL] = (PRIB_RIPROC)ay_rrib_RiProcedural;
+
+  gRibNopRITable[kRIB_PROCDELAYEDREADARCHIVE] =
+    (PRIB_RIPROC)ay_rrib_RiProcDelayedReadArchive;
+  gRibNopRITable[kRIB_PROCRUNPROGRAM] = (PRIB_RIPROC)ay_rrib_RiProcRunProgram;
+  gRibNopRITable[kRIB_PROCDYNAMICLOAD] = (PRIB_RIPROC)ay_rrib_RiProcDynamicLoad;
 
  return;
 } /* ay_rrib_initgprims */
