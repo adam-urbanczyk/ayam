@@ -152,12 +152,6 @@ static int ay_rrib_cframe;
 /* last read object */
 static ay_object *ay_rrib_lrobject;
 
-/* light handle */
-static RtLightHandle ay_rrib_lighthandle;
-
-/* object handle */
-static int ay_rrib_cobjecthandle;
-
 /* objects (with handles):
  * objects defined in the RIB with RiObject will be linked
  * to these pointers for later use with RiObjectInstance
@@ -2229,7 +2223,7 @@ ay_rrib_RiObjectBegin(void)
   if(!(new = calloc(1, sizeof(ay_list_object))))
     {
       ay_error(AY_EOMEM, fname, NULL);
-      return((RtObjectHandle)(ay_rrib_cobjecthandle++));
+      return NULL;
     }
 
   if(ay_rrib_lastriobject)
@@ -2251,7 +2245,7 @@ ay_rrib_RiObjectBegin(void)
   ay_rrib_pushattribs();
   ay_rrib_defaultattribs(ay_rrib_cattributes);
 
- return((RtObjectHandle)(ay_rrib_cobjecthandle++));
+ return (RtObjectHandle)new;
 } /* ay_rrib_RiObjectBegin */
 
 
@@ -2274,21 +2268,8 @@ ay_rrib_RiObjectInstance(RtObjectHandle handle)
 {
  ay_list_object *l = NULL;
  ay_object *o = NULL;
- char fname[] = "ay_rrib_RiObjectInstance";
- int i = 1;
 
-  if((int)handle > ay_rrib_cobjecthandle)
-    {
-      ay_error(AY_ERROR, fname, "undefined object handle");
-      return;
-    }
-
-  l = ay_rrib_riobjects;
-  while(l->next && (i < (int)handle))
-    {
-      i++;
-      l = l->next;
-    } /* while */
+  l = (ay_list_object*)handle;
 
   /* copy objects from object handle to scene */
   /* XXXX this could be smarter by not copying all the time
@@ -2298,7 +2279,7 @@ ay_rrib_RiObjectInstance(RtObjectHandle handle)
      b) how to deal with multiple objects in one object handle
      c) how to remember where the instances should point to
   */
-  if((i == (int)handle) && l)
+  if(l)
     {
       o = l->object;
       if(o->next)
@@ -5694,7 +5675,9 @@ ay_rrib_linkobject(void *object, int type)
 		  t = t->next;
 		}
 	      if(t != ay_endlevel)
-		t->next = ay_endlevel;
+		{
+		  t->next = ay_endlevel;
+		}
 	    }
 	  else
 	    {
@@ -5904,8 +5887,6 @@ ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
   ay_object_defaults(&ay_rrib_co);
 
   ay_rrib_readinggprims = 0;
-  ay_rrib_lighthandle = NULL;
-  ay_rrib_cobjecthandle = 1;
   ay_rrib_riobjects = NULL;
   ay_rrib_lastriobject = NULL;
   ay_rrib_lastmaterialnum = 0;
