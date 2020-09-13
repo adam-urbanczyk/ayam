@@ -92,7 +92,7 @@ ay_tree_crtnodefromobj(ay_object *o, ay_object *l, int d,
 		  /* prepend buf to current node string,
 		     also remember the new start in ins */
 		  *ins = *ins - strlen(buf);
-		  strncpy(*ins, buf, strlen(buf));
+		  memcpy(*ins, buf, strlen(buf));
 		  return AY_OK;
 		}
 	    } /* if */
