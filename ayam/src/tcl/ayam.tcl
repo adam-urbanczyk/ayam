@@ -1090,6 +1090,9 @@ if { [llength [info commands winfo]] != 0 } {
     catch {unset visuals}
 }
 
+# RenderMan display driver search path (where is fifodspy.so?)
+set ayprefs(DisplayPath) [file join [file dirname [info nameofexecutable]] plugins]
+
 # infer ayamrc from environment
 if { [string length [array names env AYAMRC]] != 0 } {
     # envvar AYAMRC is set, use it
@@ -2296,7 +2299,6 @@ if { $tcl_platform(platform) != "windows" } {
 	}
     }
 }
-
 
 puts stdout "The tip of the day is:"
 tipoftheDay
