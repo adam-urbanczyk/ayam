@@ -24729,6 +24729,10 @@ on startup in the console (default: large).
 Script objects or BNS/ANS tags should be disabled when they
 fail (default: 1 &ndash; yes).
 Valid values are 0 and 1.
+
+<item><tt/"DisplayPath"/: is the display search path to be used in
+the viewport rendering mode, it should point to the
+<tt/"fifodspy.so"/ or <tt/"fifodspy.dll"/ file, respectively.
 </itemize>
 <#if out="latex"><x/phantomsection/<p></#if>
 <label id="hidprefse">
@@ -26261,6 +26265,7 @@ Index:
 <item>Displacement: <ref id="matshader" name="shader property">
 <item>Display: <ref id="ridtag" name="RiDisplay tag type">
 <item>DisplayDriver: <ref id="prefrib" name="preference setting">
+<item>DisplayPath: <ref id="hidprefsd" name="hidden preference setting">
 <item>DisplayMode:
 <itemize>
 <item><ref id="ncattr" name="NCurve attribute">,
