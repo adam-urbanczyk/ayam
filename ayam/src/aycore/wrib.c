@@ -943,7 +943,7 @@ ay_wrib_caporbevel(char *file, ay_object *o, ay_object *c, unsigned int ci)
  * export RiOption statement that maps the generic driver name, as
  * used by the RiDisplay call, to a shared object file name,
  * e.g.: fifodspy => fifodspy.so
- * 
+ *
  * \param[in] driver name of display driver
  */
 void
@@ -1764,8 +1764,9 @@ ay_wrib_scene(char *file, char *image, char *driver, int temp, int target,
  RtFloat fov = (RtFloat)90.0, rinearp, rifarp;
  int have_ridisplay = AY_FALSE;
  char *objfile = NULL, *pos = NULL, fnum[30];
- char *driverext, *soext = ".so";
+ char *driverext, *soext = ".so", *displaypath;
  size_t filenlen = 0;
+ Tcl_Obj *tclo = NULL;
 
   ay_current_primlevel = 0;
 
@@ -1920,6 +1921,20 @@ ay_wrib_scene(char *file, char *image, char *driver, int temp, int target,
 	   RiDeclare(driver, "string");
 	   RiOption("display", driver, (RtPointer)&driverext, RI_NULL);
 	   free(driverext);
+
+	   /* set display search path */
+	   tclo = Tcl_GetVar2Ex(ay_interp, "ayprefs", "DisplayPath",
+				TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	   if(tclo)
+	     {
+	       displaypath = Tcl_GetStringFromObj(tclo, NULL);
+	       if(displaypath && (strlen(displaypath) > 0))
+		 {
+		   RiDeclare("display", "string");
+		   RiOption("searchpath", "display", (RtPointer)&displaypath,
+			    RI_NULL);
+		 }
+	     }
 
 	   RiDisplay(image, driver, RI_RGBA, RI_NULL);
 	 }
