@@ -1762,7 +1762,8 @@ ay_selp_updatempselection(unsigned int n, ay_point *selp, ay_mpoint *mp)
 
   while(selp)
     {
-      sel[selp->index] = 1;
+      if(selp->index < n)
+	sel[selp->index] = 1;
       selp = selp->next;
     }
 
@@ -1771,8 +1772,9 @@ ay_selp_updatempselection(unsigned int n, ay_point *selp, ay_mpoint *mp)
       j = 0;
       for(i = 0; i < mp->multiplicity; i++)
 	{
-	  if(sel[mp->indices[i]])
-	    j++;
+	  if(mp->indices[i] < n)
+	    if(sel[mp->indices[i]])
+	      j++;
 	}
       if(j == mp->multiplicity)
 	{
