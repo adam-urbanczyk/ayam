@@ -1,5 +1,5 @@
-[7. Aug 2020] Mercurial Tip:
-============================
+[18. Sep 2020] Ayam 1.28:
+=========================
 Bug Fixes:
 o append option of split curve tool does not work (SF 595)
 o display of ConeAngle and ConeDeltaAngle (SF 597)
@@ -10,6 +10,7 @@ o extracting the complete boundary misses normals and tangents (SF 601)
 o memory leak when opening periodic curves with multiple points (SF 602)
 o opening of numeric point editing dialog with selected points (SF 603)
 o remove knot tool does not accept "Inf" as tolerance value on Win32 (SF 604)
+o RIB import of procedurals of types "DynamicLoad" and "RunProgram" (SF 605)
 
 Modelling:
 o added option to specify the split knot in a relative way in the
@@ -45,6 +46,7 @@ o added "-sel" option to "setPnt" command
 Rendering:
 o added render to viewport feature via a new distributed plugin ("fifodspy")
 o improved console output of render to file option
+o RiDisplay tags now support arbitrary display driver values
 
 
 [27. Jan 2020] Ayam 1.27:
