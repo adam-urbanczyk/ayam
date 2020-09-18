@@ -33,7 +33,7 @@ code example of 6 lines text (needs another 2 for the upper/lower lines)
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>18. Aug 2020
+<date>18. Sep 2020
 
 <abstract>
 This is the documentation of Ayam 1.28 &ndash; a free 3D modelling environment
@@ -3280,16 +3280,26 @@ shadow maps.
 <p> <p>
 <#if out="latex"><itemize></#if>
 <item><tt/"ShadowMaps"/ determines, whether shadow maps should
-be used, when writing light sources. It is not sufficient
-to switch this on to render using shadow maps, individual light sources
-that shall use shadow maps have to be parameterised
-as well, see section <ref id="shadowmaps" name="Using ShadowMaps">.
-If <tt/"ShadowMaps"/ is set to <tt/"Automatic"/, the
-exported RIBs will automatically render and use all shadow maps;
-if it is set to <tt/"Manual"/, the shadow maps will be rendered on
+be created/used:
+<itemize>
+<item><tt/"Never"/ shadow maps will not be created/used, and shadows
+will be created by the renderer using algorithms like ray tracing.
+<item><tt/"Automatic"/ shadow maps will be created and used each time
+the exported RIB is rendered.
+<item><tt/"Manual"/, shadow maps will be used each time
+the exported RIB is rendered. The shadow maps will be created/rendered on
 user request only (e.g.~using the view menu entry:
-<tt>"View/Create All ShadowMaps"</tt>). <tt/"Manual"/ should be used,
-when rendering directly from view windows with shadow maps.
+<tt>"View/Create All ShadowMaps"</tt>).
+</itemize>
+
+The mode <tt/"Manual"/ should be used,
+when rendering directly from view windows with rendering mode
+<tt/"CommandLineArg"/.
+
+Note that it is not sufficient to enable this option for an arbitrary
+scene to render using shadow maps, individual light sources
+that shall use shadow maps have to be parameterised for this
+as well, see section <ref id="shadowmaps" name="Using ShadowMaps">.
 <p> <p>
 
 <item><tt/"SMFileFormat"/, designates the file format of the shadow maps,
@@ -27713,6 +27723,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="viewwin" name="Anatomy of a View">
 </itemize>
 <item>ViewAttrib: <ref id="vat" name="property">
+<item>Viewport: <ref id="prefrib" name="preference setting">
 <item>VMax, VMin: <ref id="extrnpp" name="ExtrNP attribute">
 <item>VMM: <ref id="ummtag" name="tag type">
 </list>
