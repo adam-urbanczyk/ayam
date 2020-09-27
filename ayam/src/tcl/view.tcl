@@ -264,7 +264,7 @@ proc viewRender { w type } {
 	    } else {
 		# render to external window
 		set imagename [file rootname ${tmpfile}].tif
-		if { $ayprefs(RenderMode) == 0 } {
+		if { $mode == 0 } {
 		    $togl wrib -file $tmpfile -image $imagename -temp
 		} else {
 		    $togl wrib -file $tmpfile -temp
