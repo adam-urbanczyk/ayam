@@ -1,3 +1,14 @@
+[1. Oct 2020] Mercurial Tip
+===========================
+Bug Fixes:
+o crash when setPnt -sel is used to set rational coordinates (SF 606)
+o QRenderMode setting is ignored by Quick Preview Renderer (SF 607)
+
+Rendering:
+o added mechanism to automatically correct a wrongly set DisplayPath
+  preference setting (after program directory changes)
+
+
 [18. Sep 2020] Ayam 1.28:
 =========================
 Bug Fixes:
@@ -40,7 +51,7 @@ o added "curvatNP" command to compute the curvature of a NURBS surface
 o added "curvature.tcl" script that displays a curvature plot diagram
   as property of NURBS curve and NURBS curve providing objects
 o added "isRational" command
-o added drag selection to "cvview.tcl"
+o added drag selection to "cvview.tcl" script
 o added "-sel" option to "setPnt" command
 
 Rendering:
