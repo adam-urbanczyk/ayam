@@ -1426,6 +1426,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  set_selp = AY_TRUE;
 	  i++;
+	  remargc--;
 	}
       /* check for -vn argument */
       if(remargc < 3)
