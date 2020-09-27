@@ -368,3 +368,18 @@ proc render_select { } {
 }
 # render_select
 
+proc render_correctdisplaypath { } {
+    global ayprefs tcl_platform
+
+    set fd fifodspy.so
+    if { $tcl_platform(platform) == "windows" } {
+	set fd fifodspy.dll
+    }
+    if { ! [file exists [file join $ayprefs(DisplayPath) $fd] ] } {
+	# XXXX ayError / puts 
+	set ayprefs(DisplayPath) [file join [file dirname [info nameofexecutable]] plugins]
+    }
+
+ return;
+}
+# render_correctdisplaypath
