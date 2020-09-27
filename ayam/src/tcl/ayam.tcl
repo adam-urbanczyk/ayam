@@ -1752,6 +1752,10 @@ if { $ayprefs(NPDisplayMode) != 0 || $ayprefs(NCDisplayMode) != 0 } {
     set ay(draw_nurbs) 1
 }
 
+if { $ayprefs(DisplayPath) != "" } {
+    render_correctdisplaypath
+}
+
 # ayam_updateprompt - print a first prompt after configuration change
 proc ayam_updateprompt { n1 n2 op } {
     .fl.con delete end-1lines end
