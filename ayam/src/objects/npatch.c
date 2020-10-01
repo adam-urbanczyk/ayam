@@ -1845,7 +1845,7 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  int ay_status = AY_OK, tcl_status = TCL_OK;
  char arr[] = "NPatchAttrData";
  char fname[] = "npatch_setpropcb";
- Tcl_Obj *to = NULL;
+ Tcl_Obj *to = NULL, **knotv;
  ay_object *b;
  ay_nurbpatch_object *npatch = NULL;
  int new_uorder, new_width, new_uknot_type, uknots_modified = 0;
@@ -1853,7 +1853,6 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  double *nknotv = NULL, *olduknotv = NULL, *oldvknotv = NULL;
  int update = AY_FALSE, updateKnots = AY_FALSE, updateMPs = AY_TRUE;
  int knotc, i;
- char **knotv;
 
   if(!o)
     return AY_ENULL;
@@ -2072,110 +2071,115 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   /* decompose uknot-list (create custom knot sequence) */
   if((npatch->uknot_type == AY_KTCUSTOM) && uknots_modified)
     {
-      Tcl_SplitList(interp, Tcl_GetVar2(interp, arr, "Knots_U",
-					TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY),
-		    &knotc, &knotv);
-
-      if(!(nknotv = calloc(knotc, sizeof(double))))
+      to = Tcl_GetVar2Ex(interp, arr, "Knots_U",
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      if(to)
 	{
-	  ay_error(AY_EOMEM, fname, NULL);
-	  Tcl_Free((char *) knotv);
-	  return AY_ERROR;
-	}
-      tcl_status = TCL_OK;
-      for(i = 0; i < knotc; i++)
-	{
-	  tcl_status = Tcl_GetDouble(interp, knotv[i], &nknotv[i]);
-	  if(tcl_status != TCL_OK)
-	    break;
-	} /* for */
+	  tcl_status = Tcl_ListObjGetElements(interp, to, &knotc, &knotv);
+	  if(tcl_status == TCL_OK)
+	    {
+	      if(!(nknotv = calloc(knotc, sizeof(double))))
+		{
+		  ay_error(AY_EOMEM, fname, NULL);
+		  return AY_ERROR;
+		}
+	      tcl_status = TCL_OK;
+	      for(i = 0; i < knotc; i++)
+		{
+		  tcl_status = Tcl_GetDoubleFromObj(interp, knotv[i],
+						    &(nknotv[i]));
+		  if(tcl_status != TCL_OK)
+		    break;
+		} /* for */
 
-      if((tcl_status == TCL_OK) &&
-	 !(ay_status = ay_knots_check(new_width, new_uorder, knotc, nknotv)))
-	{
-	  /* the knots are ok */
-	  free(npatch->uknotv);
-	  npatch->uknotv = nknotv;
-	}
-      else
-	{
-	  /* the knots are wrong */
-	  /* tell the user what went wrong */
-	  ay_error(AY_EOUTPUT, fname, "Checking new knots for U...");
-	  ay_knots_printerr(fname, ay_status);
+	      if((tcl_status == TCL_OK) && !(ay_status =
+		   ay_knots_check(new_width, new_uorder, knotc, nknotv)))
+		{
+		  /* the knots are ok */
+		  free(npatch->uknotv);
+		  npatch->uknotv = nknotv;
+		}
+	      else
+		{
+		  /* the knots are wrong */
+		  /* tell the user what went wrong */
+		  ay_error(AY_EOUTPUT, fname, "Checking new knots for U...");
+		  ay_knots_printerr(fname, ay_status);
 
-	  /* get rid of user supplied knots */
-	  free(nknotv);
+		  /* get rid of user supplied knots */
+		  free(nknotv);
 
-	  /* create new knots */
-	  ay_error(AY_EWARN, fname, "Falling back to knot type NURB!");
-	  npatch->uknot_type = AY_KTNURB;
+		  /* create new knots */
+		  ay_error(AY_EWARN, fname, "Falling back to knot type NURB!");
+		  npatch->uknot_type = AY_KTNURB;
 
-	  ay_status = ay_knots_createnp(npatch);
+		  ay_status = ay_knots_createnp(npatch);
 
-	  if(ay_status)
-	    ay_error(AY_ERROR, fname, "Error creating new knots!");
+		  if(ay_status)
+		    ay_error(AY_ERROR, fname, "Error creating new knots!");
+		} /* if */
+	    } /* if */
 	} /* if */
-
       /* XXXX compare old and new knots before setting this flag */
       o->modified = AY_TRUE;
-
-      Tcl_Free((char *) knotv);
     } /* if */
 
   /* decompose vknot-list (create custom knot sequence) */
   if((npatch->vknot_type == AY_KTCUSTOM) && vknots_modified)
     {
-      Tcl_SplitList(interp, Tcl_GetVar2(interp, arr, "Knots_V",
-				       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY),
-		    &knotc, &knotv);
-
-      if(!(nknotv = calloc(knotc, sizeof(double))))
+      to = Tcl_GetVar2Ex(interp, arr, "Knots_V",
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      if(to)
 	{
-	  ay_error(AY_EOMEM, fname, NULL);
-	  Tcl_Free((char *) knotv);
-	  return AY_ERROR;
-	}
+	  tcl_status = Tcl_ListObjGetElements(interp, to, &knotc, &knotv);
+	  if(tcl_status == TCL_OK)
+	    {
+	      if(!(nknotv = calloc(knotc, sizeof(double))))
+		{
+		  ay_error(AY_EOMEM, fname, NULL);
+		  return AY_ERROR;
+		}
 
-      tcl_status = TCL_OK;
-      for(i = 0; i < knotc; i++)
-	{
-	  tcl_status = Tcl_GetDouble(interp, knotv[i], &nknotv[i]);
-	  if(tcl_status != TCL_OK)
-	    break;
-	} /* for */
+	      tcl_status = TCL_OK;
+	      for(i = 0; i < knotc; i++)
+		{
+		  tcl_status = Tcl_GetDoubleFromObj(interp, knotv[i],
+						    &(nknotv[i]));
+		  if(tcl_status != TCL_OK)
+		    break;
+		} /* for */
 
-      if((tcl_status == TCL_OK) &&
-	 !(ay_status = ay_knots_check(new_height, new_vorder, knotc, nknotv)))
-	{
-	  /* the knots are ok */
-	  free(npatch->vknotv);
-	  npatch->vknotv = nknotv;
-	}
-      else
-	{
-	  /* the knots are wrong */
-	  /* tell the user what went wrong */
-	  ay_error(AY_EOUTPUT, fname, "Checking new knots for V...");
-	  ay_knots_printerr(fname, ay_status);
+	      if((tcl_status == TCL_OK) && !(ay_status =
+		   ay_knots_check(new_height, new_vorder, knotc, nknotv)))
+		{
+		  /* the knots are ok */
+		  free(npatch->vknotv);
+		  npatch->vknotv = nknotv;
+		}
+	      else
+		{
+		  /* the knots are wrong */
+		  /* tell the user what went wrong */
+		  ay_error(AY_EOUTPUT, fname, "Checking new knots for V...");
+		  ay_knots_printerr(fname, ay_status);
 
-	  /* get rid of user supplied knots */
-	  free(nknotv);
+		  /* get rid of user supplied knots */
+		  free(nknotv);
 
-	  /* create new knots */
-	  ay_error(AY_EWARN, fname, "Falling back to knot type NURB!");
-	  npatch->vknot_type = AY_KTNURB;
+		  /* create new knots */
+		  ay_error(AY_EWARN, fname, "Falling back to knot type NURB!");
+		  npatch->vknot_type = AY_KTNURB;
 
-	  ay_status = ay_knots_createnp(npatch);
+		  ay_status = ay_knots_createnp(npatch);
 
-	  if(ay_status)
-	    ay_error(AY_ERROR, fname, "Error creating new knots!");
+		  if(ay_status)
+		    ay_error(AY_ERROR, fname, "Error creating new knots!");
+		} /* if */
+	    } /* if */
 	} /* if */
 
       /* XXXX compare old and new knots before setting this flag */
       o->modified = AY_TRUE;
-
-      Tcl_Free((char *) knotv);
     } /* if */
 
   if(updateMPs)
