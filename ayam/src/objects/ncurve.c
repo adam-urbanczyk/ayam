@@ -1467,14 +1467,14 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
 	  for(i = 0; i < knotc; i++)
 	    {
-	      tcl_status = Tcl_GetDoubleFromObj(interp, knotv[i], &nknotv[i]);
+	      tcl_status = Tcl_GetDoubleFromObj(interp, knotv[i], &(nknotv[i]));
 
 	      if(tcl_status != TCL_OK)
 		break;
 	    } /* for */
-	}
+	} /* if */
       if((tcl_status == TCL_OK) &&
-	 !(ay_status = ay_knots_check(new_length,new_order,knotc,nknotv)))
+	 !(ay_status = ay_knots_check(new_length, new_order, knotc, nknotv)))
 	{
 	  /* the knots are ok */
 	  free(ncurve->knotv);
