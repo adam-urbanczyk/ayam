@@ -2076,7 +2076,7 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 					TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY),
 		    &knotc, &knotv);
 
-      if(!(nknotv = malloc(knotc * sizeof(double))))
+      if(!(nknotv = calloc(knotc, sizeof(double))))
 	{
 	  ay_error(AY_EOMEM, fname, NULL);
 	  Tcl_Free((char *) knotv);
@@ -2130,7 +2130,7 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 				       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY),
 		    &knotc, &knotv);
 
-      if(!(nknotv = malloc(knotc * sizeof(double))))
+      if(!(nknotv = calloc(knotc, sizeof(double))))
 	{
 	  ay_error(AY_EOMEM, fname, NULL);
 	  Tcl_Free((char *) knotv);

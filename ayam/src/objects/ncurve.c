@@ -1459,7 +1459,7 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       tcl_status = Tcl_ListObjGetElements(interp, to, &knotc, &knotv);
       if(tcl_status == TCL_OK)
 	{
-	  if(!(nknotv = malloc(knotc * sizeof(double))))
+	  if(!(nknotv = calloc(knotc, sizeof(double))))
 	    {
 	      ay_error(AY_EOMEM, fname, NULL);
 	      return AY_ERROR;
@@ -1513,8 +1513,8 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     } /* if */
 
   /* close curve? */
-  if(((new_type != AY_CTOPEN) && (new_type != ncurve->type)) ||
-     order_modified)
+  if(((new_type != AY_CTOPEN) && ((new_type != ncurve->type) ||
+				  order_modified)))
     {
       /* close it */
       o->modified = AY_TRUE;
