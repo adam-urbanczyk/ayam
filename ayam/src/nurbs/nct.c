@@ -10456,6 +10456,7 @@ ay_nct_fair(ay_nurbcurve_object *curve, ay_point *selp, double tol)
       nc.order = curve->order;
       nc.type = curve->type;
       nc.knot_type = curve->knot_type;
+      nc.controlv = Pw;
       ay_status = ay_knots_createnc(&nc);
       if(ay_status)
 	{
@@ -10472,15 +10473,16 @@ ay_nct_fair(ay_nurbcurve_object *curve, ay_point *selp, double tol)
       memcpy(&(U[2]), curve->knotv,
 	     (curve->length+curve->order)*sizeof(double));
 
-      i = curve->order;
-      U[i-1] = U[i]-(U[i+1]-U[i])*0.5;
-      U[i-2] = U[i+1]-(U[i+2]-U[i+1])*0.5;
+      len = curve->knotv[curve->length]-curve->knotv[curve->order-1];
+      if(len < AY_EPSILON)
+	len = 0.5;
 
-      i = curve->length;
-      U[i+1] = U[i]+(U[i]-U[i-1])*0.5;
-      U[i+2] = U[i-1]+(U[i-1]-U[i-2])*0.5;
+      U[1] = U[2]-len*0.5;
+      U[0] = U[1]-len*0.5;
 
-      U[curve->length+curve->order] = U[curve->length+curve->order-1];
+      i = curve->length+curve->order+1;
+      U[i+1] = U[i]+len*0.5;
+      U[i+2] = U[i+1]+len*0.5;
     }
 
   pll = Pw;
