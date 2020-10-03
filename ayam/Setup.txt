@@ -3,19 +3,6 @@
 Setup instructions for Ayam on UNIX (e.g. Linux/IRIX/MacOSX)
 ------------------------------------------------------------
 
-These instructions contain just general information that may be
-outdated; additional (more specific and current) information can be
-obtained from the download page of the Ayam project, see:
-http://ayam.sourceforge.net/download.html
-or the "File Release Notes" document on the SourceForge download page
-of the Ayam project, see:
-http://sourceforge.net/project/showfiles.php?group_id=28460
-
-In addition, there are frequently asked questions that may be of
-some help, if something does not work as advertised:
-http://ayam.sourceforge.net/faq.html
-.
-
 Before you start modelling with Ayam, you should set it up
 properly. The following things have to be done:
 
@@ -26,7 +13,7 @@ properly. The following things have to be done:
   4. Set up the shaders
   5. Set up the plugins
   6. Create a working environment scene file
-
+  7. Troubleshooting
 
 0. Installing and Running Ayam
 ------------------------------
@@ -196,7 +183,8 @@ of the LD_LIBRARY_PATH variable.
 ----------------------------------------
 
 The working environment is simply an almost empty Ayam scene file.
-This file just contains the specification of some view windows.
+This file just contains the specification of some view windows,
+mostly useful in "floating windows" GUI mode.
 It is loaded automatically on every start of Ayam and presents you
 with a standard working environment, consisting of e.g. a traditional
 3-view layout (Front-, Side-, and Perspective-View).
@@ -227,6 +215,23 @@ Quit the application and start it again; then
 download "Tutorial #1" and do it.
 
 End of setup instructions.
+
+
+7. Troubleshooting
+------------------
+
+The instructions in this document contain just general information that
+may also be outdated; additional (more specific and current) information
+can always be obtained from the download page of the Ayam project, see:
+http://ayam.sourceforge.net/download.html
+or the "File Release Notes" document on the SourceForge download page
+of the Ayam project, see:
+http://sourceforge.net/project/showfiles.php?group_id=28460
+
+In addition, there are frequently asked questions that may be of
+some help, if something does not work as advertised:
+http://ayam.sourceforge.net/faq.html
+.
 
 -- 
 http://ayam.sourceforge.net/    Reconstruct the World!
