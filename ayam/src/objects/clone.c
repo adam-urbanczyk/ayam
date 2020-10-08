@@ -269,8 +269,18 @@ ay_clone_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   if(!clone->pnts)
     {
-      clone->pntslen = 1;
-      ay_clone_notifycb(o);
+      if(mode != 3)
+	{
+	  clone->pntslen = 1;
+	  ay_clone_notifycb(o);
+	}
+      else
+	{
+	  /* mode is 3 (recover selected points) but we have no points =>
+	     clear the selected points and bail out */
+	  clone->pntslen = 0;
+	  ay_selp_clear(o);
+	}
     }
 
   if(clone->pntslen)
