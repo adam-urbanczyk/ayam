@@ -14401,7 +14401,7 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   i++;
-  tcl_status = Tcl_GetInt(interp, argv[2], &r);
+  tcl_status = Tcl_GetInt(interp, argv[i], &r);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
   i++;
 
