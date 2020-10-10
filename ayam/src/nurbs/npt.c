@@ -16210,10 +16210,7 @@ ay_npt_degreereducetcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 
 	  if(ay_status)
-	    {
-	      ay_error(AY_ERROR, argv[0], "Degree reduction failed.");
-	      break;
-	    }
+	    break;
 
 	  /* remove all selected points */
 	  if(o->selp)
