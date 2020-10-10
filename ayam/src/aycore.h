@@ -1920,6 +1920,10 @@ int ay_viewt_align(struct Togl *togl, int argc, char *argv[]);
  */
 void ay_viewt_alignlocal(void);
 
+/** redraw all views
+ */
+void ay_viewt_redrawall(void);
+
 /** make view (the associated GL context) current
  */
 int ay_viewt_makecurtcb(struct Togl *togl, int argc, char *argv[]);
