@@ -21,6 +21,7 @@ array set aytestprefs {
     TestVariant "n/a"
     DebugCreate 0
     InitTypes 0
+    RandomOrder 0
     TestProcs { testDefaultCallbacks testValidSolidVariations testValidNURBS testValidToolObjects testModellingTools testAllSolidVariations testCustomObjects testScriptObjects }
 }
 
@@ -125,6 +126,7 @@ proc aytest_selectGUI { } {
     set f [frame $w.fp]
     addCheck $f aytestprefs KeepObjects
     addCheck $f aytestprefs KeepFiles
+    addCheck $f aytestprefs RandomOrder
     addInfo $w aytestprefs TestItem
     addInfo $w aytestprefs TestVariant
     addInfo $w aytestprefs Status
@@ -3237,6 +3239,23 @@ proc aytest_runTests { tests items } {
 	    set aytestprefs(Status) "Select Items"
 	    return;
 	}
+
+	if { $aytestprefs(RandomOrder) } {
+	    set nTestItems [llength $testitems]
+	    set randomIndices {}
+	    while { [llength $randomIndices] < $nTestItems} {
+		set newRandomIndex [expr {int(rand()*$nTestItems)}]
+		while { [lsearch -int $randomIndices $newRandomIndex] > -1 } {
+		    set newRandomIndex [expr {int(rand()*$nTestItems)}]
+		}
+		lappend randomIndices $newRandomIndex
+	    }
+	    foreach index $randomIndices {
+		lappend randomList [lindex $testitems $index]
+	    }
+	    set testitems $randomList
+	}
+
 	set ::scratchfile [file join $ayprefs(TmpDir) aytestscratchfile.ay]
 
 	set ::logfile [file join $ayprefs(TmpDir) aytestlog]
