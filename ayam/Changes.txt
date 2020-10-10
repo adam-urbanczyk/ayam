@@ -1,12 +1,16 @@
-[1. Oct 2020] Mercurial Tip
-===========================
+[10. Oct 2020] Mercurial Tip
+============================
 Bug Fixes:
 o crash when setPnt -sel is used to set rational coordinates (SF 606)
 o QRenderMode setting is ignored by Quick Preview Renderer (SF 607)
+o remknvNP command fails if knot index is provided (SF 608)
 
 Rendering:
 o added mechanism to automatically correct a wrongly set DisplayPath
   preference setting (after program directory changes)
+
+Scripts/Scripting Interface:
+o added "RandomOrder" facility and preference to "aytest.tcl" script
 
 
 [18. Sep 2020] Ayam 1.28:
