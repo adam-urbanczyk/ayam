@@ -674,6 +674,33 @@ ay_viewt_alignlocal(void)
 } /* ay_viewt_alignlocal */
 
 
+/** ay_viewt_redrawall:
+ * Redraw all views.
+ *
+ */
+void
+ay_viewt_redrawall(void)
+{
+ ay_object *o;
+
+  o = ay_root->down;
+  while(o)
+    {
+      if(o->type == AY_IDVIEW)
+	{
+	  Togl_MakeCurrent(((ay_view_object *)(o->refine))->togl);
+	  ay_toglcb_display(((ay_view_object *)(o->refine))->togl);
+	}
+      o = o->next;
+    } /* while */
+
+  if(ay_currentview)
+    Togl_MakeCurrent(ay_currentview->togl);
+
+ return;
+} /* ay_viewt_redrawall */
+
+
 /* ay_viewt_makecurtcb:
  *
  */

@@ -376,19 +376,7 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 cleanup:
 
   /* redraw all views */
-  o = ay_root->down;
-  while(o)
-    {
-      if(o->type == AY_IDVIEW)
-	{
-	  Togl_MakeCurrent(((ay_view_object *)(o->refine))->togl);
-	  ay_toglcb_display(((ay_view_object *)(o->refine))->togl);
-	}
-      o = o->next;
-    } /* while */
-
-  if(ay_currentview)
-    Togl_MakeCurrent(ay_currentview->togl);
+  ay_viewt_redrawall();
 
   Tcl_SetVar2Ex(interp, arr, "NumPolys", Tcl_NewIntObj(numpolys),
 		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -537,19 +525,7 @@ ay_tgui_cancel(void)
     } /* while */
 
   /* redraw all views */
-  o = ay_root->down;
-  while(o)
-    {
-      if(o->type == AY_IDVIEW)
-	{
-	  Togl_MakeCurrent(((ay_view_object *)(o->refine))->togl);
-	  ay_toglcb_display(((ay_view_object *)(o->refine))->togl);
-	}
-      o = o->next;
-    } /* while */
-
-  if(ay_currentview)
-    Togl_MakeCurrent(ay_currentview->togl);
+  ay_viewt_redrawall();
 
  return;
 } /* ay_tgui_cancel */
