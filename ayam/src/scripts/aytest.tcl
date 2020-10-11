@@ -770,7 +770,7 @@ array set NCurve_3 {
 set NCurve_3(Length) $lengthvals
 set NCurve_3(Order) $ordervals
 set NCurve_3(valcmd) {
-    [set ::NCurveAttrData(Knots) [aytest_crtknots $::NCurveAttrData(Length) $::NCurveAttrData(Order)]] != ""
+    [set ::NCurveAttrData(Knots-Modified) 1; set ::NCurveAttrData(Knots) [aytest_crtknots $::NCurveAttrData(Length) $::NCurveAttrData(Order)]] != ""
 }
 
 # rational variants of #2 and #3
@@ -921,45 +921,45 @@ set NPatch_4(valcmd) {
 array set NPatch_5 {
     arr NPatchAttrData
     freevars {Width Height Order_U Order_V}
-    fixedvars {Knot-Type_U Knot-Type_V Knots-Modified_U Knots-Modified_V}
-    fixedvals { {3 3 1 1} }
+    fixedvars {Knot-Type_U Knot-Type_V}
+    fixedvals { {3 3} }
 }
 set NPatch_5(Width) $lengthvals
 set NPatch_5(Height) $lengthvals
 set NPatch_5(Order_U) $ordervals
 set NPatch_5(Order_V) $ordervals
 set NPatch_5(valcmd) {
-    ([set ::NPatchAttrData(Knots_U) [aytest_crtknots $::NPatchAttrData(Width) $::NPatchAttrData(Order_U)]] != "") && ([set ::NPatchAttrData(Knots_V) [aytest_crtknots $::NPatchAttrData(Height) $::NPatchAttrData(Order_V)]] != "")
+    ([set ::NPatchAttrData(Knots-Modified_U) 1;set ::NPatchAttrData(Knots_U) [aytest_crtknots $::NPatchAttrData(Width) $::NPatchAttrData(Order_U)]] != "") && ([set ::NPatchAttrData(Knots-Modified_V) 1;set ::NPatchAttrData(Knots_V) [aytest_crtknots $::NPatchAttrData(Height) $::NPatchAttrData(Order_V)]] != "")
 }
 
 # NPatch Variation #6 (Bezier knots U, Custom knots V)
 array set NPatch_6 {
     arr NPatchAttrData
     freevars {Width Height Order_U Order_V}
-    fixedvars {Knot-Type_U Knot-Type_V Knots-Modified_V}
-    fixedvals { {0 3 1} }
+    fixedvars {Knot-Type_U Knot-Type_V}
+    fixedvals { {0 3} }
 }
 set NPatch_6(Width) $lengthvals
 set NPatch_6(Height) $lengthvals
 set NPatch_6(Order_U) $ordervals
 set NPatch_6(Order_V) $ordervals
 set NPatch_6(valcmd) {
-    ($::NPatchAttrData(Order_U) == $::NPatchAttrData(Width)) && ([set ::NPatchAttrData(Knots_V) [aytest_crtknots $::NPatchAttrData(Height) $::NPatchAttrData(Order_V)]] != "")
+    ($::NPatchAttrData(Order_U) == $::NPatchAttrData(Width)) && ([set ::NPatchAttrData(Knots-Modified_V) 1;set ::NPatchAttrData(Knots_V) [aytest_crtknots $::NPatchAttrData(Height) $::NPatchAttrData(Order_V)]] != "")
 }
 
 # NPatch Variation #7 (Custom knots U, Bezier knots V)
 array set NPatch_7 {
     arr NPatchAttrData
     freevars {Width Height Order_U Order_V}
-    fixedvars {Knot-Type_U Knot-Type_V Knots-Modified_U}
-    fixedvals { {3 0 1} }
+    fixedvars {Knot-Type_U Knot-Type_V}
+    fixedvals { {3 0} }
 }
 set NPatch_7(Width) $lengthvals
 set NPatch_7(Height) $lengthvals
 set NPatch_7(Order_U) $ordervals
 set NPatch_7(Order_V) $ordervals
 set NPatch_7(valcmd) {
-    ($::NPatchAttrData(Order_V) == $::NPatchAttrData(Height)) && ([set ::NPatchAttrData(Knots_U) [aytest_crtknots $::NPatchAttrData(Width) $::NPatchAttrData(Order_U)]] != "")
+    ($::NPatchAttrData(Order_V) == $::NPatchAttrData(Height)) && ([set ::NPatchAttrData(Knots-Modified_U) 1;set ::NPatchAttrData(Knots_U) [aytest_crtknots $::NPatchAttrData(Width) $::NPatchAttrData(Order_U)]] != "")
 }
 
 
