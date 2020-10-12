@@ -1464,6 +1464,12 @@ proc addOptionToggle { w prop name txt cmd } {
     set b [button $w.f${name}.b -compound right -text $txt \
 	       -image ay_TriangleR_img -bd 1 \
 	       -command "updateOptionToggle $w $prop $name $cmd"]
+    if { [info exists ${prop}($name)] } {
+	eval "set v \$${prop}($name)"
+	if { $v != 0 } {
+	    $b conf -image ay_Triangle_img
+	}
+    }
     if { $ay(ws) == "X11" } {
 	$b conf -height 8
     }
