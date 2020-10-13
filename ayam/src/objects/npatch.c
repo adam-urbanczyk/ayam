@@ -595,6 +595,9 @@ ay_npatch_deletecb(void *c)
   ay_stess_destroy(&(npatch->stess[0]));
   ay_stess_destroy(&(npatch->stess[1]));
 
+  if(npatch->breakv)
+    free(npatch->breakv);
+
   free(npatch);
 
  return AY_OK;
@@ -623,6 +626,7 @@ ay_npatch_copycb(void *src, void **dst)
 
   npatch->no = NULL;
   npatch->fltcv = NULL;
+  npatch->breakv = NULL;
   memset(npatch->stess, 0, 2*sizeof(ay_stess_patch));
 
   /* copy knots */
@@ -1447,6 +1451,7 @@ int
 ay_npatch_drawacb(struct Togl *togl, ay_object *o)
 {
  ay_nurbpatch_object *npatch = NULL;
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  double *a, *b;
 
   if(!o)
@@ -1457,16 +1462,29 @@ ay_npatch_drawacb(struct Togl *togl, ay_object *o)
   if(!npatch)
     return AY_ENULL;
 
-  b = &(npatch->controlv[npatch->width*npatch->height*4-4]);
-  a = b-4;
-
-  while(AY_V3COMP(a, b))
+  if((view->drawhandles == 2) && npatch->breakv)
     {
-      a -= 4;
-      if(a < b-(npatch->height*4))
+      b = &(npatch->breakv[1]);
+      do
+	b += 5;
+      while((b[3] <= npatch->uknotv[npatch->width]) &&
+	    (b[4] <= npatch->vknotv[npatch->height]));
+      b -= 5;
+      a = b-5;
+    }
+  else
+    {
+      b = &(npatch->controlv[npatch->width*npatch->height*4-4]);
+      a = b-4;
+
+      while(AY_V3COMP(a, b))
 	{
-	  a = b-4;
-	  break;
+	  a -= 4;
+	  if(a < b-(npatch->height*4))
+	    {
+	      a = b-4;
+	      break;
+	    }
 	}
     }
 
@@ -1575,6 +1593,12 @@ ay_npatch_drawhcb(struct Togl *togl, ay_object *o)
   if(!npatch)
     return AY_ENULL;
 
+  if(view->drawhandles == 2)
+    {
+      ay_npt_drawbreakpoints(togl, o);
+      return AY_OK;
+    }
+
   if(view->drawhandles == 3)
     {
       ay_npatch_drawweights(npatch);
@@ -1666,9 +1690,6 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
   if(min_dist == 0.0)
     min_dist = DBL_MAX;
 
-  if(pe)
-    pe->type = AY_PTRAT;
-
   switch(mode)
     {
     case 0:
@@ -1688,66 +1709,99 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	}
 
       pe->num = npatch->width * npatch->height;
+      pe->type = AY_PTRAT;
       break;
     case 1:
       /* selection based on a single point */
-      control = npatch->controlv;
-      for(i = 0; i < (npatch->width * npatch->height); i++)
+      if(pe->type == AY_PTKNOT)
 	{
-	  if(npatch->is_rat && ay_prefs.rationalpoints)
+	  /* pick breakpoint */
+	  if(npatch->breakv)
 	    {
-	      dist = AY_VLEN((p[0] - (control[j]*control[j+3])),
-			     (p[1] - (control[j+1]*control[j+3])),
-			     (p[2] - (control[j+2]*control[j+3])));
-	    }
-	  else
-	    {
-	      dist = AY_VLEN((p[0] - control[j]),
-			     (p[1] - control[j+1]),
-			     (p[2] - control[j+2]));
-	    }
-	  if(dist < min_dist)
-	    {
-	      pecoord = &(control[j]);
-	      peindex = i;
-	      min_dist = dist;
-	    }
-
-	  j += 4;
-	}
-
-      if(!pecoord)
-	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
-
-      if(npatch->mpoints)
-	{
-	  mp = npatch->mpoints;
-	  while(mp && !found)
-	    {
-	      found = AY_FALSE;
-	      for(i = 0; i < mp->multiplicity; i++)
+	      min_dist *= 0.1;
+	      c = &(npatch->breakv[1]);
+	      i = npatch->width*npatch->height;
+	      do
 		{
-		  if(mp->points[i] == pecoord)
+		  dist = AY_VLEN((p[0] - c[0]), (p[1] - c[1]), (p[2] - c[2]));
+		  if(dist < min_dist)
 		    {
-		      found = AY_TRUE;
-		      pe->num = mp->multiplicity;
-		      pe->multiple = AY_TRUE;
-		      if(!(pe->coords = calloc(mp->multiplicity,
-					       sizeof(double*))))
-			return AY_EOMEM;
-		      memcpy(pe->coords, mp->points,
-			     mp->multiplicity * sizeof(double *));
+		      pecoord = c;
+		      peindex = i;
+		      min_dist = dist;
+		    }
+		  i++;
+		  c += 5;
+		}
+	      while((c[3] <= npatch->uknotv[npatch->width]) &&
+		    (c[4] <= npatch->vknotv[npatch->height]));
+	    } /* if */
 
-		      if(!(pe->indices = calloc(mp->multiplicity,
-					       sizeof(unsigned int))))
-			return AY_EOMEM;
-		      memcpy(pe->indices, mp->indices,
-			     mp->multiplicity * sizeof(unsigned int));
-		    } /* if */
-		} /* for */
+	  if(!pecoord)
+	    return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
+	}
+      else
+	{
+	  /* pick ordinary point */
+	  pe->type = AY_PTRAT;
+	  control = npatch->controlv;
+	  for(i = 0; i < (npatch->width * npatch->height); i++)
+	    {
+	      if(npatch->is_rat && ay_prefs.rationalpoints)
+		{
+		  dist = AY_VLEN((p[0] - (control[j]*control[j+3])),
+				 (p[1] - (control[j+1]*control[j+3])),
+				 (p[2] - (control[j+2]*control[j+3])));
+		}
+	      else
+		{
+		  dist = AY_VLEN((p[0] - control[j]),
+				 (p[1] - control[j+1]),
+				 (p[2] - control[j+2]));
+		}
+	      if(dist < min_dist)
+		{
+		  pecoord = &(control[j]);
+		  peindex = i;
+		  min_dist = dist;
+		}
 
-	      mp = mp->next;
-	    } /* while */
+	      j += 4;
+	    }
+
+	  if(!pecoord)
+	    return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
+
+	  if(npatch->mpoints)
+	    {
+	      mp = npatch->mpoints;
+	      while(mp && !found)
+		{
+		  found = AY_FALSE;
+		  for(i = 0; i < mp->multiplicity; i++)
+		    {
+		      if(mp->points[i] == pecoord)
+			{
+			  found = AY_TRUE;
+			  pe->num = mp->multiplicity;
+			  pe->multiple = AY_TRUE;
+			  if(!(pe->coords = calloc(mp->multiplicity,
+						   sizeof(double*))))
+			    return AY_EOMEM;
+			  memcpy(pe->coords, mp->points,
+				 mp->multiplicity * sizeof(double *));
+
+			  if(!(pe->indices = calloc(mp->multiplicity,
+						    sizeof(unsigned int))))
+			    return AY_EOMEM;
+			  memcpy(pe->indices, mp->indices,
+				 mp->multiplicity * sizeof(unsigned int));
+			} /* if */
+		    } /* for */
+
+		  mp = mp->next;
+		} /* while */
+	    } /* if */
 	} /* if */
 
       if(!found)
@@ -1765,48 +1819,87 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       break;
     case 2:
       /* selection based on planes */
-      control = npatch->controlv;
-      j = 0;
-      a = 0;
-      if(npatch->is_rat && ay_prefs.rationalpoints)
+      if(pe->type == AY_PTKNOT)
 	{
-	  c = h;
+	  /* pick breakpoint(s) */
+	  if(npatch->breakv)
+	    {
+	      c = &(npatch->breakv[1]);
+	      i = npatch->width*npatch->height;
+	      do
+		{
+		  /* test point c against the four planes in p */
+		  if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
+		     ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
+		     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
+		     ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
+		    {
+		      if(!(ctmp = realloc(pe->coords, (a+1)*sizeof(double *))))
+			return AY_EOMEM;
+		      pe->coords = ctmp;
+		      if(!(itmp = realloc(pe->indices,
+					  (a+1)*sizeof(unsigned int))))
+			return AY_EOMEM;
+		      pe->indices = itmp;
+
+		      pe->coords[a] = c;
+		      pe->indices[a] = i;
+		      a++;
+		    } /* if c is in p */
+
+		  i++;
+		  c += 5;
+		}
+	      while((c[3] <= npatch->uknotv[npatch->width]) &&
+		    (c[4] <= npatch->vknotv[npatch->height]));
+	    } /* if */
 	}
-      for(i = 0; i < npatch->width * npatch->height; i++)
+      else
 	{
+	  /* pick ordinary point(s) */
+	  pe->type = AY_PTRAT;
+	  control = npatch->controlv;
+	  j = 0;
+	  a = 0;
 	  if(npatch->is_rat && ay_prefs.rationalpoints)
 	    {
-	      h[0] = control[j]*control[j+3];
-	      h[1] = control[j+1]*control[j+3];
-	      h[2] = control[j+2]*control[j+3];
+	      c = h;
 	    }
-	  else
+	  for(i = 0; i < npatch->width * npatch->height; i++)
 	    {
-	      c = &(control[j]);
-	    }
-	  /* test point c against the four planes in p */
-	  if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
-	     ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
-	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
-	     ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
-	    {
-	      if(!(ctmp = realloc(pe->coords, (a+1)*sizeof(double *))))
-		  return AY_EOMEM;
-	      pe->coords = ctmp;
+	      if(npatch->is_rat && ay_prefs.rationalpoints)
+		{
+		  h[0] = control[j]*control[j+3];
+		  h[1] = control[j+1]*control[j+3];
+		  h[2] = control[j+2]*control[j+3];
+		}
+	      else
+		{
+		  c = &(control[j]);
+		}
+	      /* test point c against the four planes in p */
+	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
+		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
+		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
+		 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
+		{
+		  if(!(ctmp = realloc(pe->coords, (a+1)*sizeof(double *))))
+		    return AY_EOMEM;
+		  pe->coords = ctmp;
 
-	      if(!(itmp = realloc(pe->indices,
-				  (a+1)*sizeof(unsigned int))))
-		return AY_EOMEM;
-	      pe->indices = itmp;
+		  if(!(itmp = realloc(pe->indices,
+				      (a+1)*sizeof(unsigned int))))
+		    return AY_EOMEM;
+		  pe->indices = itmp;
 
-	      pe->coords[a] = &(control[j]);
-	      pe->indices[a] = i;
-	      a++;
-	    } /* if */
+		  pe->coords[a] = &(control[j]);
+		  pe->indices[a] = i;
+		  a++;
+		} /* if */
 
-	  j += 4;
-	} /* for */
-
+	      j += 4;
+	    } /* for */
+	} /* if */
       pe->num = a;
       break;
     case 3:
@@ -3273,6 +3366,12 @@ ay_npatch_notifycb(ay_object *o)
 
   if(o->modified == 2)
     return AY_OK;
+
+  if(npatch->breakv)
+    {
+      free(npatch->breakv);
+      npatch->breakv = NULL;
+    }
 
   if(npatch->caps_and_bevels)
     {

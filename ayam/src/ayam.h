@@ -529,6 +529,9 @@ typedef struct ay_nurbpatch_object_s
   double *controlv; /**< control points [width * height * 4] */
   double *uknotv; /**< u knot vector [width + uorder]*/
   double *vknotv; /**< v knot vector [height + vorder]*/
+
+  double *breakv; /**< break point vector */
+
   /*double *texv;*/ /* unused */
 
   GLUnurbsObj *no; /**< GLU NURBS object */

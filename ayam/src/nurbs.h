@@ -1088,6 +1088,14 @@ int ay_npt_drawtrimcurves(ay_object *o, unsigned int refine_trims);
  */
 void ay_npt_drawrohandles(ay_nurbpatch_object *patch);
 
+/** Compute all distinct knots and their surface positions.
+ */
+int ay_npt_computebreakpoints(ay_nurbpatch_object *npatch);
+
+/** Draw distinct knots as rhombuses.
+ */
+void ay_npt_drawbreakpoints(struct Togl *togl, ay_object *o);
+
 /** Create Cobbs NURBS sphere patch.
  */
 int ay_npt_crtcobbsphere(ay_nurbpatch_object **cobbsphere);
