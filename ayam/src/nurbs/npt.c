@@ -1264,6 +1264,134 @@ ay_npt_drawrohandles(ay_nurbpatch_object *patch)
 } /* ay_npt_drawrohandles */
 
 
+/** ay_npt_computebreakpoints:
+ * Calculate the 3D positions on the surface that correspond to all
+ * distinct knot values (the break points) and put these together
+ * with the respective knot values into a special array.
+ *
+ * \param[in,out] npatch NURBS surface to process
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_npt_computebreakpoints(ay_nurbpatch_object *npatch)
+{
+ size_t breakvlen;
+ int i, j;
+ double *p, u, lastu, v, lastv;
+
+  if(npatch->breakv)
+    free(npatch->breakv);
+
+  /* calculate size of breakpoint array */
+  breakvlen = (npatch->width + npatch->uorder) *
+    (npatch->height + npatch->vorder) * 5 * sizeof(double);
+
+  /* add space for one double (size slot) */
+  breakvlen += sizeof(double);
+
+  if(!(npatch->breakv = malloc(breakvlen)))
+    return AY_EOMEM;
+
+  p = &(npatch->breakv[1]);
+  lastu = npatch->uknotv[npatch->uorder-1]-1.0;
+  for(i = npatch->uorder-1; i <= npatch->width; i++)
+    {
+      u = npatch->uknotv[i];
+      if(fabs(u - lastu) > AY_EPSILON)
+	{
+	  lastu = u;
+
+	  lastv = npatch->vknotv[npatch->vorder-1]-1.0;
+	  for(j = npatch->vorder-1; j <= npatch->height; j++)
+	    {
+	      v = npatch->vknotv[j];
+	      if(fabs(v - lastv) > AY_EPSILON)
+		{
+		  lastv = v;
+
+		  if(npatch->is_rat)
+		    ay_nb_SurfacePoint4D(npatch->width-1, npatch->height-1,
+					 npatch->uorder-1, npatch->vorder-1,
+					 npatch->uknotv, npatch->vknotv,
+					 npatch->controlv, u, v, p);
+		  else
+		    ay_nb_SurfacePoint3D(npatch->width-1, npatch->height-1,
+					 npatch->uorder-1, npatch->vorder-1,
+					 npatch->uknotv, npatch->vknotv,
+					 npatch->controlv, u, v, p);
+
+		  p[3] = u;
+		  p[4] = v;
+		  p += 5;
+		} /* if v is distinct */
+	    } /* for all v knots */
+	} /* if u is distinct */
+    } /* for all u knots */
+
+  p[3] = npatch->uknotv[npatch->width]+1;
+  p[4] = npatch->vknotv[npatch->height]+1;
+
+  /* set size slot */
+  npatch->breakv[0] = (p - &(npatch->breakv[1]))/4;
+
+ return AY_OK;
+} /* ay_npt_computebreakpoints */
+
+
+/** ay_npt_drawbreakpoints:
+ * draw the break points (distinct knots) of the surface;
+ * if there are no break points currently stored for the surface, they
+ * will be computed via ay_npt_computebreakpoints() above
+ *
+ * \param[in] togl Togl widget/view to draw into
+ * \param[in,out] o NURBS surface object to draw
+ */
+void
+ay_npt_drawbreakpoints(struct Togl *togl, ay_object *o)
+{
+ ay_nurbpatch_object *npatch = (ay_nurbpatch_object *)o->refine;
+ double *cv, c[3], dx[3], dy[3];
+ GLdouble mvm[16], pm[16], s;
+ GLint vp[4];
+
+  if(!npatch->breakv)
+    (void)ay_npt_computebreakpoints(npatch);
+
+  if(npatch->breakv)
+    {
+      cv = &((npatch->breakv)[1]);
+      s = ay_prefs.handle_size*0.75;
+
+      glGetDoublev(GL_MODELVIEW_MATRIX, mvm);
+      glGetDoublev(GL_PROJECTION_MATRIX, pm);
+      glGetIntegerv(GL_VIEWPORT, vp);
+
+      gluProject(0, 0, 0, mvm, pm, vp, &c[0], &c[1], &c[2]);
+
+      gluUnProject(c[0]+s, c[1], c[2], mvm, pm, vp,
+		   &dx[0], &dx[1], &dx[2]);
+      gluUnProject(c[0], c[1]+s, c[2], mvm, pm, vp,
+		   &dy[0], &dy[1], &dy[2]);
+
+      glBegin(GL_QUADS);
+       do
+	 {
+	   glVertex3d(cv[0]+dx[0], cv[1]+dx[1], cv[2]+dx[2]);
+	   glVertex3d(cv[0]+dy[0], cv[1]+dy[1], cv[2]+dy[2]);
+	   glVertex3d(cv[0]-dx[0], cv[1]-dx[1], cv[2]-dx[2]);
+	   glVertex3d(cv[0]-dy[0], cv[1]-dy[1], cv[2]-dy[2]);
+	   cv += 5;
+	 }
+       while((cv[3] <= npatch->uknotv[npatch->width]) &&
+	     (cv[4] <= npatch->vknotv[npatch->height]));
+      glEnd();
+    } /* if */
+
+ return;
+} /* ay_nct_drawbreakpoints */
+
+
 /* ay_npt_crtcobbsphere:
  *  create a single patch (out of 6) of a NURBS Cobb Sphere
  *  controls taken from:
