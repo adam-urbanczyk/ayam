@@ -1333,7 +1333,7 @@ ay_npt_computebreakpoints(ay_nurbpatch_object *npatch)
   p[4] = npatch->vknotv[npatch->height]+1;
 
   /* set size slot */
-  npatch->breakv[0] = (p - &(npatch->breakv[1]))/4;
+  npatch->breakv[0] = (p - &(npatch->breakv[1]))/5;
 
  return AY_OK;
 } /* ay_npt_computebreakpoints */
@@ -13641,14 +13641,17 @@ ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[])
  char fname[] = "findUV_cb";
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  Tcl_Interp *interp = Togl_Interp(togl);
- int height = Togl_Height(togl);
- double winXY[2] = {0}, worldXYZ[3] = {0};
+ int i, j, drag = AY_FALSE, silence = AY_FALSE, height = Togl_Height(togl);
+ double winXY[2] = {0}, worldXYZ[3] = {0}, dt;
  static int fvalid = AY_FALSE;
  static double fX = 0.0, fY = 0.0, fwX = 0.0, fwY = 0.0, fwZ = 0.0;
- double u = 0.0, v = 0.0;
+ double obj[24] = {0}, pl[16] = {0};
+ double minlevelscale = 1.0, u = 0.0, v = 0.0;
  Tcl_Obj *to = NULL;
  char cmd[] = "puts \"$u $v\"";
  ay_object *o, *pobject = NULL;
+ ay_pointedit pe = {0};
+ ay_nurbpatch_object *np;
 
   if(argc > 2)
     {
@@ -13688,6 +13691,9 @@ ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[])
 
   if(ay_selection)
     {
+      if(argc > 4)
+	silence = AY_TRUE;
+
       if(ay_selection->object->type != AY_IDNPATCH)
 	{
 	  (void)ay_provide_object(ay_selection->object,
@@ -13707,12 +13713,110 @@ ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[])
       Tcl_GetDouble(interp, argv[2], &(winXY[0]));
       Tcl_GetDouble(interp, argv[3], &(winXY[1]));
 
-      ay_status = ay_npt_finduv(togl, o, winXY, worldXYZ, &u, &v);
-
-      if(ay_status)
+      if(argc > 5)
 	{
-	  ay_error(AY_ERROR, fname, "Could not find point on surface.");
-	  goto cleanup;
+	  drag = AY_TRUE;
+	  Tcl_GetDouble(interp, argv[4], &(winXY[2]));
+	  Tcl_GetDouble(interp, argv[5], &(winXY[3]));
+
+	  if(argc > 6)
+	    silence = AY_TRUE;
+	  else
+	    silence = AY_FALSE;
+	}
+
+      /* first try to pick a knot point */
+      if(!drag)
+	{
+	  minlevelscale = ay_pact_getminlevelscale();
+	  ay_viewt_wintoobj(togl, o, winXY[0], winXY[1],
+			    &(obj[0]), &(obj[1]), &(obj[2]));
+
+	  pe.type = AY_PTKNOT;
+	  ay_status = ay_pact_pickpoint(o, view, minlevelscale, obj, &pe);
+	}
+      else
+	{
+	  /* drag selection */
+	  if(winXY[2] < winXY[0])
+	    {
+	      dt = winXY[2];
+	      winXY[2] = winXY[0];
+	      winXY[0] = dt;
+	    }
+
+	  if(winXY[3] < winXY[1])
+	    {
+	      dt = winXY[3];
+	      winXY[3] = winXY[1];
+	      winXY[1] = dt;
+	    }
+
+	  ay_viewt_winrecttoobj(togl, o, winXY[0], winXY[1],
+				winXY[2], winXY[3], obj);
+
+	  /* create plane equation coefficients */
+	  ay_geom_pointstoplane(obj[0], obj[1], obj[2],
+				 obj[3], obj[4], obj[5],
+				 obj[12], obj[13], obj[14],
+				 &(pl[0]), &(pl[1]), &(pl[2]), &(pl[3]));
+
+	  ay_geom_pointstoplane(obj[3], obj[4], obj[5],
+				 obj[9], obj[10], obj[11],
+				 obj[15], obj[16], obj[17],
+				 &(pl[4]), &(pl[5]), &(pl[6]), &(pl[7]));
+
+	  ay_geom_pointstoplane(obj[6], obj[7], obj[8],
+				 obj[18], obj[19], obj[20],
+				 obj[9], obj[10], obj[11],
+				 &(pl[8]), &(pl[9]), &(pl[10]), &(pl[11]));
+
+	  ay_geom_pointstoplane(obj[0], obj[1], obj[2],
+				 obj[12], obj[13], obj[14],
+				 obj[6], obj[7], obj[8],
+				 &(pl[12]), &(pl[13]), &(pl[14]), &(pl[15]));
+
+	  pe.type = AY_PTKNOT;
+	  ay_status = ay_pact_getpoint(2, o, pl, &pe);
+	} /* if drag */
+
+      if(pe.num)
+	{
+	  /* knot picking succeeded, get parametric value from knot */
+	  u = pe.coords[0][3];
+	  v = pe.coords[0][4];
+
+	  memcpy(worldXYZ, pe.coords[0], 3*sizeof(double));
+	  ay_trafo_identitymatrix(pl);
+	  ay_trafo_getall(ay_currentlevel, o, pl);
+	  ay_trafo_apply3(worldXYZ, pl);
+	  ay_viewt_worldtowin(worldXYZ, winXY);
+
+	  np = (ay_nurbpatch_object*) o->refine;
+	  i = 0;
+	  while((np->uknotv[i] < u) && (i < np->width+np->uorder))
+	    i++;
+	  j = 0;
+	  while((np->vknotv[j] < v) && (j < np->height+np->vorder))
+	    j++;
+
+	  to = Tcl_NewIntObj(i);
+	  Tcl_SetVar2Ex(interp, "ui", NULL, to,
+			TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
+	  to = Tcl_NewIntObj(j);
+	  Tcl_SetVar2Ex(interp, "vi", NULL, to,
+			TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
+	}
+      else
+	{
+	  /* knot picking failed, calculate parametric value */
+	  ay_status = ay_npt_finduv(togl, o, winXY, worldXYZ, &u, &v);
+
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, fname, "Could not find point on surface.");
+	      goto cleanup;
+	    }
 	}
 
       fvalid = AY_TRUE;
@@ -13726,8 +13830,8 @@ ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[])
       Tcl_SetVar2Ex(interp,"u",NULL,to,TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
       to = Tcl_NewDoubleObj(v);
       Tcl_SetVar2Ex(interp,"v",NULL,to,TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
-
-      Tcl_Eval(interp, cmd);
+      if(!silence)
+	Tcl_Eval(interp, cmd);
     }
   else
     {

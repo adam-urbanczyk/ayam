@@ -2096,6 +2096,7 @@ proc actionSetMarkFromU { u } {
 #actionFindUV:
 # find parametric values u and v on a NURBS surface
 proc actionFindUV { w } {
+    global ayprefs
 
     viewTitle $w "" "Find UV"
     viewSetMAIcon $w ay_FindUV_img "Find UV"
@@ -2104,20 +2105,35 @@ proc actionFindUV { w } {
 
     bind $w <ButtonPress-1> {
 	%W mc
-	%W finduvac %x %y
+	set oldx %x
+	set oldy %y
     }
 
-    bind $w <B1-Motion> ""
+    bind $w <B1-Motion> {
+	%W setconf -rect $oldx $oldy %x %y 1
+    }
 
     bind $w <Motion> ""
 
+    if { $ayprefs(FlashPoints) == 1 } {
+	bind $w <Motion> {
+	    %W startpepac %x %y -readonly -flash
+	}
+    }
+
     bind $w <ButtonRelease-1> {
+	%W setconf -rect $oldx $oldy %x %y 0
+	if { ($oldx != %x) || ($oldy != %y) } {
+	    %W finduvac %x %y $oldx $oldy
+	} else {
+	    %W finduvac %x %y
+	}
 	%W finduvac -end %x %y
 	%W redraw
 	focus %W
     }
 
-    $w setconf -drawh 0
+    $w setconf -drawh 2
 
  return;
 }
