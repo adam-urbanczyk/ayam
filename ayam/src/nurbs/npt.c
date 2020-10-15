@@ -13758,7 +13758,7 @@ ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[])
 	  ay_viewt_objrecttoplanes(obj, pl);
 
 	  pe.type = AY_PTKNOT;
-	  ay_status = ay_pact_getpoint(2, o, pl, &pe);
+	  (void)ay_pact_getpoint(2, o, pl, &pe);
 	} /* if drag */
 
       if(pe.num)
