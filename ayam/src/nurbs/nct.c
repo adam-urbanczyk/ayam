@@ -2666,26 +2666,7 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 	  ay_viewt_winrecttoobj(togl, o, winXY[0], winXY[1],
 				winXY[2], winXY[3], obj);
 
-	  /* create plane equation coefficients */
-	  ay_geom_pointstoplane(obj[0], obj[1], obj[2],
-				 obj[3], obj[4], obj[5],
-				 obj[12], obj[13], obj[14],
-				 &(pl[0]), &(pl[1]), &(pl[2]), &(pl[3]));
-
-	  ay_geom_pointstoplane(obj[3], obj[4], obj[5],
-				 obj[9], obj[10], obj[11],
-				 obj[15], obj[16], obj[17],
-				 &(pl[4]), &(pl[5]), &(pl[6]), &(pl[7]));
-
-	  ay_geom_pointstoplane(obj[6], obj[7], obj[8],
-				 obj[18], obj[19], obj[20],
-				 obj[9], obj[10], obj[11],
-				 &(pl[8]), &(pl[9]), &(pl[10]), &(pl[11]));
-
-	  ay_geom_pointstoplane(obj[0], obj[1], obj[2],
-				 obj[12], obj[13], obj[14],
-				 obj[6], obj[7], obj[8],
-				 &(pl[12]), &(pl[13]), &(pl[14]), &(pl[15]));
+	  ay_viewt_objrecttoplanes(obj, pl);
 
 	  pe.type = AY_PTKNOT;
 	  ay_status = ay_pact_getpoint(2, o, pl, &pe);
