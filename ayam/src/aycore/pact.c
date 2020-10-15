@@ -525,13 +525,20 @@ ay_pact_flashpoint(int ignore_old, int multiple, double *pnt, ay_object *o)
 	    ay_quat_torotmatrix(old_o->quat, m);
 	    glMultMatrixd((GLdouble*)m);
 	    glScaled(old_o->scalx, old_o->scaly, old_o->scalz);
-	    if(old_multiple)
-	      glPointSize((GLfloat)(point_size*1.4));
-	    glBegin(GL_POINTS);
-	     glVertex3dv(old_pnt);
-	    glEnd();
-	    if(old_multiple)
-	      glPointSize((GLfloat)(point_size));
+	    if(old_multiple == 2)
+	      {
+		ay_draw_rhombus(old_pnt);
+	      }
+	    else
+	      {
+		if(old_multiple)
+		  glPointSize((GLfloat)(point_size*1.4));
+		glBegin(GL_POINTS);
+		 glVertex3dv(old_pnt);
+		glEnd();
+		if(old_multiple)
+		  glPointSize((GLfloat)(point_size));
+	      }
 	   glPopMatrix();
 	   old_o = NULL;
 	 } /* if */
@@ -549,13 +556,20 @@ ay_pact_flashpoint(int ignore_old, int multiple, double *pnt, ay_object *o)
 	    ay_quat_torotmatrix(o->quat, m);
 	    glMultMatrixd((GLdouble*)m);
 	    glScaled(o->scalx, o->scaly, o->scalz);
-	    if(multiple)
-	      glPointSize((GLfloat)(point_size*1.4));
-	    glBegin(GL_POINTS);
-	     glVertex3dv(pnt);
-	    glEnd();
-	    if(multiple)
-	      glPointSize((GLfloat)(point_size));
+	    if(multiple == 2)
+	      {
+		ay_draw_rhombus(pnt);
+	      }
+	    else
+	      {
+		if(multiple)
+		  glPointSize((GLfloat)(point_size*1.4));
+		glBegin(GL_POINTS);
+		 glVertex3dv(pnt);
+		glEnd();
+		if(multiple)
+		  glPointSize((GLfloat)(point_size));
+	      }
 	   glPopMatrix();
 	   memcpy(old_pnt, pnt, 3*sizeof(double));
 	   old_o = o;
@@ -768,7 +782,7 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
       if(pecoords && *pact_typepo == AY_PTKNOT)
 	{
 	  /* flash knot */
-	  ay_pact_flashpoint(ignoreold, multiple, pecoords?*pecoords:NULL, o);
+	  ay_pact_flashpoint(ignoreold, 2, pecoords?*pecoords:NULL, o);
 	}
       else
 	{

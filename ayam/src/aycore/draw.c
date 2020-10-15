@@ -1743,3 +1743,39 @@ ay_draw_selmp(ay_object *o, int is_rat, ay_mpoint *mp)
 
  return;
 } /* ay_draw_selmp */
+
+
+/** ay_draw_rhombus:
+ * Helper function to draw a rhombus (knot, break point).
+ * 
+ * \param[in] pnt 3D coordinates of rhombus
+ */
+void
+ay_draw_rhombus(double *pnt)
+{
+ double c[3], dx[3], dy[3];
+ GLdouble mvm[16], pm[16], s;
+ GLint vp[4];
+
+  s = ay_prefs.handle_size*0.75;
+
+  glGetDoublev(GL_MODELVIEW_MATRIX, mvm);
+  glGetDoublev(GL_PROJECTION_MATRIX, pm);
+  glGetIntegerv(GL_VIEWPORT, vp);
+
+  gluProject(0, 0, 0, mvm, pm, vp, &c[0], &c[1], &c[2]);
+
+  gluUnProject(c[0]+s, c[1], c[2], mvm, pm, vp,
+	       &dx[0], &dx[1], &dx[2]);
+  gluUnProject(c[0], c[1]+s, c[2], mvm, pm, vp,
+	       &dy[0], &dy[1], &dy[2]);
+
+  glBegin(GL_QUADS);
+   glVertex3d(pnt[0]+dx[0], pnt[1]+dx[1], pnt[2]+dx[2]);
+   glVertex3d(pnt[0]+dy[0], pnt[1]+dy[1], pnt[2]+dy[2]);
+   glVertex3d(pnt[0]-dx[0], pnt[1]-dx[1], pnt[2]-dx[2]);
+   glVertex3d(pnt[0]-dy[0], pnt[1]-dy[1], pnt[2]-dy[2]);
+  glEnd();
+
+ return;
+} /* ay_draw_rhombus */
