@@ -3221,3 +3221,39 @@ ay_viewt_rendertoviewportcb(struct Togl *togl, int argc, char *argv[])
 
  return TCL_OK;
 } /* ay_viewt_rendertoviewportcb */
+
+
+/** ay_viewt_objrecttoplanes:
+ * Helper to create the coefficients for four planes of a rectangle
+ * specified in object coordinates (for drag selection).
+ * 
+ * \param[in] rect rectangle in object coordinates [21]
+ * \param[in,out] plcs where to store the plane coefficients [16]
+ */
+void
+ay_viewt_objrecttoplanes(double *rect, double *plcs)
+{
+
+  /* create plane equation coefficients */
+  ay_geom_pointstoplane(rect[0], rect[1], rect[2],
+			rect[3], rect[4], rect[5],
+			rect[12], rect[13], rect[14],
+			&(plcs[0]), &(plcs[1]), &(plcs[2]), &(plcs[3]));
+
+  ay_geom_pointstoplane(rect[3], rect[4], rect[5],
+			rect[9], rect[10], rect[11],
+			rect[15], rect[16], rect[17],
+			&(plcs[4]), &(plcs[5]), &(plcs[6]), &(plcs[7]));
+
+  ay_geom_pointstoplane(rect[6], rect[7], rect[8],
+			rect[18], rect[19], rect[20],
+			rect[9], rect[10], rect[11],
+			&(plcs[8]), &(plcs[9]), &(plcs[10]), &(plcs[11]));
+
+  ay_geom_pointstoplane(rect[0], rect[1], rect[2],
+			rect[12], rect[13], rect[14],
+			rect[6], rect[7], rect[8],
+			&(plcs[12]), &(plcs[13]), &(plcs[14]), &(plcs[15]));
+
+ return;
+} /* ay_viewt_objrecttoplanes */
