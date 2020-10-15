@@ -241,6 +241,10 @@ void ay_draw_silhouettes(struct Togl *togl, unsigned char *silimg);
  */
 void ay_draw_selmp(ay_object *o, int is_rat, ay_mpoint *mp);
 
+/** draw a rhombus (break point)
+ */
+void ay_draw_rhombus(double *pnt);
+
 
 /* error.c */
 
@@ -2016,6 +2020,10 @@ void ay_viewt_worldtowin(double *world, double *win);
 /** read rendered image from FIFO to texture
  */
 int ay_viewt_rendertoviewportcb(struct Togl *togl, int argc, char *argv[]);
+
+/** convert object space rectangle to plane coefficients
+ */
+void ay_viewt_objrecttoplanes(double *rect, double *plcs);
 
 
 /* w32t.c */
