@@ -13703,6 +13703,7 @@ ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[])
 	      ay_error(AY_EWTYPE, fname, ay_npt_npname);
 	      return TCL_OK;
 	    }
+	  (void)ay_npt_computebreakpoints(pobject->refine);
 	  o = pobject;
 	}
       else
@@ -13726,13 +13727,14 @@ ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[])
 	}
 
       /* first try to pick a knot point */
+      pe.type = AY_PTKNOT;
       if(!drag)
 	{
 	  minlevelscale = ay_pact_getminlevelscale();
+
 	  ay_viewt_wintoobj(togl, o, winXY[0], winXY[1],
 			    &(obj[0]), &(obj[1]), &(obj[2]));
 
-	  pe.type = AY_PTKNOT;
 	  ay_status = ay_pact_pickpoint(o, view, minlevelscale, obj, &pe);
 	}
       else
@@ -13757,13 +13759,12 @@ ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[])
 
 	  ay_viewt_objrecttoplanes(obj, pl);
 
-	  pe.type = AY_PTKNOT;
 	  (void)ay_pact_getpoint(2, o, pl, &pe);
 	} /* if drag */
 
       if(pe.num)
 	{
-	  /* knot picking succeeded, get parametric value from knot */
+	  /* knot picking succeeded, get parametric values from knot */
 	  u = pe.coords[0][3];
 	  v = pe.coords[0][4];
 
@@ -13773,7 +13774,7 @@ ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[])
 	  ay_trafo_apply3(worldXYZ, pl);
 	  ay_viewt_worldtowin(worldXYZ, winXY);
 
-	  np = (ay_nurbpatch_object*) o->refine;
+	  np = (ay_nurbpatch_object *)o->refine;
 	  i = 0;
 	  while((np->uknotv[i] < u) && (i < np->width+np->uorder))
 	    i++;
@@ -13790,7 +13791,7 @@ ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[])
 	}
       else
 	{
-	  /* knot picking failed, calculate parametric value */
+	  /* knot picking failed, calculate parametric values */
 	  ay_status = ay_npt_finduv(togl, o, winXY, worldXYZ, &u, &v);
 
 	  if(ay_status)
