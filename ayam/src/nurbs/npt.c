@@ -13641,14 +13641,16 @@ ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[])
  char fname[] = "findUV_cb";
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  Tcl_Interp *interp = Togl_Interp(togl);
- int i, j, drag = AY_FALSE, silence = AY_FALSE, height = Togl_Height(togl);
+ int i, j, drag = AY_FALSE, silence = AY_FALSE, success = AY_FALSE;
+ int height = Togl_Height(togl);
  double winXY[2] = {0}, worldXYZ[3] = {0}, dt;
  static int fvalid = AY_FALSE;
  static double fX = 0.0, fY = 0.0, fwX = 0.0, fwY = 0.0, fwZ = 0.0;
  double obj[24] = {0}, pl[16] = {0};
  double minlevelscale = 1.0, u = 0.0, v = 0.0;
  Tcl_Obj *to = NULL;
- char cmd[] = "puts \"$u $v\"";
+ char cmd[] = "puts \"u: $u v: $v\"";
+ ay_list_object *sel = ay_selection;
  ay_object *o, *pobject = NULL;
  ay_pointedit pe = {0};
  ay_nurbpatch_object *np;
@@ -13689,15 +13691,40 @@ ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[])
       return TCL_OK;
     }
 
-  if(ay_selection)
+  if(!ay_selection)
     {
-      if(argc > 4)
-	silence = AY_TRUE;
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
 
-      if(ay_selection->object->type != AY_IDNPATCH)
+  if(argc > 4)
+    silence = AY_TRUE;
+
+  Tcl_GetDouble(interp, argv[2], &(winXY[0]));
+  Tcl_GetDouble(interp, argv[3], &(winXY[1]));
+
+  if(argc > 5)
+    {
+      drag = AY_TRUE;
+      Tcl_GetDouble(interp, argv[4], &(winXY[2]));
+      Tcl_GetDouble(interp, argv[5], &(winXY[3]));
+
+      if(argc > 6)
+	silence = AY_TRUE;
+      else
+	silence = AY_FALSE;
+    }
+
+  minlevelscale = ay_pact_getminlevelscale();
+
+  while(sel)
+    {
+      o = sel->object;
+      pobject = NULL;
+
+      if(o->type != AY_IDNPATCH)
 	{
-	  (void)ay_provide_object(ay_selection->object,
-				  AY_IDNPATCH, &pobject);
+	  (void)ay_provide_object(o, AY_IDNPATCH, &pobject);
 	  if(!pobject)
 	    {
 	      ay_error(AY_EWTYPE, fname, ay_npt_npname);
@@ -13706,32 +13733,11 @@ ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[])
 	  (void)ay_npt_computebreakpoints(pobject->refine);
 	  o = pobject;
 	}
-      else
-	{
-	  o = ay_selection->object;
-	}
-
-      Tcl_GetDouble(interp, argv[2], &(winXY[0]));
-      Tcl_GetDouble(interp, argv[3], &(winXY[1]));
-
-      if(argc > 5)
-	{
-	  drag = AY_TRUE;
-	  Tcl_GetDouble(interp, argv[4], &(winXY[2]));
-	  Tcl_GetDouble(interp, argv[5], &(winXY[3]));
-
-	  if(argc > 6)
-	    silence = AY_TRUE;
-	  else
-	    silence = AY_FALSE;
-	}
 
       /* first try to pick a knot point */
       pe.type = AY_PTKNOT;
       if(!drag)
 	{
-	  minlevelscale = ay_pact_getminlevelscale();
-
 	  ay_viewt_wintoobj(togl, o, winXY[0], winXY[1],
 			    &(obj[0]), &(obj[1]), &(obj[2]));
 
@@ -13788,42 +13794,46 @@ ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[])
 	  to = Tcl_NewIntObj(j);
 	  Tcl_SetVar2Ex(interp, "vi", NULL, to,
 			TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
+	  success = AY_TRUE;
 	}
       else
 	{
-	  /* knot picking failed, calculate parametric values */
-	  ay_status = ay_npt_finduv(togl, o, winXY, worldXYZ, &u, &v);
-
-	  if(ay_status)
+	  /* knot picking failed, infer parametric values from surface point */
+	  if(!(ay_status = ay_npt_finduv(togl, o, winXY, worldXYZ, &u, &v)))
 	    {
-	      ay_error(AY_ERROR, fname, "Could not find point on surface.");
-	      goto cleanup;
+	      success = AY_TRUE;
 	    }
 	}
 
-      fvalid = AY_TRUE;
-      fX = winXY[0];
-      fY = winXY[1];
-      fwX = worldXYZ[0];
-      fwY = worldXYZ[1];
-      fwZ = worldXYZ[2];
+      if(success)
+	{
+	  fvalid = AY_TRUE;
+	  fX = winXY[0];
+	  fY = winXY[1];
+	  fwX = worldXYZ[0];
+	  fwY = worldXYZ[1];
+	  fwZ = worldXYZ[2];
 
-      to = Tcl_NewDoubleObj(u);
-      Tcl_SetVar2Ex(interp, "u", NULL, to, TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
-      to = Tcl_NewDoubleObj(v);
-      Tcl_SetVar2Ex(interp, "v", NULL, to, TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
-      if(!silence)
-	Tcl_Eval(interp, cmd);
-    }
-  else
-    {
-      ay_error(AY_ENOSEL, fname, NULL);
-    }
+	  to = Tcl_NewDoubleObj(u);
+	  Tcl_SetVar2Ex(interp, "u", NULL, to,
+			TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
+	  to = Tcl_NewDoubleObj(v);
+	  Tcl_SetVar2Ex(interp, "v", NULL, to,
+			TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
+	  if(!silence)
+	    Tcl_Eval(interp, cmd);
+	}
 
-cleanup:
+      if(pobject)
+	(void)ay_object_deletemulti(pobject, AY_FALSE);
 
-  if(pobject)
-    (void)ay_object_deletemulti(pobject, AY_FALSE);
+      ay_pact_clearpointedit(&pe);
+
+      if(success)
+	break;
+
+      sel = sel->next;
+    } /* while */
 
  return TCL_OK;
 } /* ay_npt_finduvcb */
