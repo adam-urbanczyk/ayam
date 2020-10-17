@@ -743,6 +743,11 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 
       ay_pact_clearpointedit(&pact_pe);
 
+      if(view->drawhandles == 2)
+	{
+	  pact_pe.type = AY_PTKNOT;
+	}
+
       sel = sel->next;
     } /* while */
 
