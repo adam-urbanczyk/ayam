@@ -13724,14 +13724,22 @@ ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[])
 
       if(o->type != AY_IDNPATCH)
 	{
-	  (void)ay_provide_object(o, AY_IDNPATCH, &pobject);
-	  if(!pobject)
+	  if(!ay_provide_object(o, AY_IDNPATCH, NULL))
 	    {
-	      ay_error(AY_EWTYPE, fname, ay_npt_npname);
-	      return TCL_OK;
+	      (void)ay_provide_object(o, AY_IDNPATCH, &pobject);
+	      if(!pobject)
+		{
+		  ay_error(AY_ERROR, fname, "Provide failed.");
+		  return TCL_OK;
+		}
+	      (void)ay_npt_computebreakpoints(pobject->refine);
+	      o = pobject;
 	    }
-	  (void)ay_npt_computebreakpoints(pobject->refine);
-	  o = pobject;
+	  else
+	    {
+	      sel = sel->next;
+	      continue;
+	    }
 	}
 
       /* first try to pick a knot point */

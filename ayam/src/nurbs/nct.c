@@ -2634,14 +2634,23 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 
       if(o->type != AY_IDNCURVE)
 	{
-	  ay_status = ay_provide_object(o, AY_IDNCURVE, &pobject);
-	  if(ay_status || !pobject)
+	  if(!ay_provide_object(o, AY_IDNCURVE, NULL))
 	    {
-	      ay_error(AY_ERROR, fname, "Provide failed.");
-	      return TCL_OK;
+	      ay_status = ay_provide_object(o, AY_IDNCURVE, &pobject);
+	      if(ay_status || !pobject)
+		{
+		  ay_error(AY_ERROR, fname, "Provide failed.");
+		  return TCL_OK;
+		}
+
+	      (void)ay_nct_computebreakpoints(pobject->refine);
+	      o = pobject;
 	    }
-	  (void)ay_nct_computebreakpoints(pobject->refine);
-	  o = pobject;
+	  else
+	    {
+	      sel = sel->next;
+	      continue;
+	    }
 	}
 
       /* first try to pick a knot point */
