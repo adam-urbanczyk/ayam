@@ -2546,10 +2546,11 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
  Tcl_Interp *interp = Togl_Interp(togl);
  int i, drag = AY_FALSE, silence = AY_FALSE, success = AY_FALSE;
  int height = Togl_Height(togl);
- double winXY[4] = {0}, worldXYZ[3] = {0}, dt;
+ unsigned int j;
+ double winXY[8] = {0}, worldXYZ[3] = {0}, dt;
  static int fvalid = AY_FALSE;
  static double fX = 0.0, fY = 0.0, fwX = 0.0, fwY = 0.0, fwZ = 0.0;
- double obj[24] = {0}, pl[16] = {0};
+ double obj[24] = {0}, pl[16] = {0}, mm[2] = {0};
  double minlevelscale = 1.0, u = 0.0;
  Tcl_Obj *to = NULL;
  char cmd[] = "puts \"u: $u\"";
@@ -2625,6 +2626,8 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 	silence = AY_FALSE;
     }
 
+  memcpy(&(winXY[4]), winXY, 4*sizeof(double));
+
   minlevelscale = ay_pact_getminlevelscale();
 
   while(sel)
@@ -2652,6 +2655,8 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 	      continue;
 	    }
 	}
+
+      memcpy(winXY, &(winXY[4]), 4*sizeof(double));
 
       /* first try to pick a knot point */
       pe.type = AY_PTKNOT;
@@ -2692,7 +2697,6 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 	  /* knot picking succeeded, get parametric value from knot */
 	  success = AY_TRUE;
 	  u = pe.coords[0][3];
-
 	  memcpy(worldXYZ, pe.coords[0], 3*sizeof(double));
 	  ay_trafo_identitymatrix(pl);
 	  ay_trafo_getall(ay_currentlevel, o, pl);
@@ -2707,13 +2711,37 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 	  to = Tcl_NewIntObj(i);
 	  Tcl_SetVar2Ex(interp, "ui", NULL, to,
 			TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
+
+	  if(pe.num > 1)
+	    {
+	      /* multiple hits, derive knot range */
+	      for(j = 0; j < pe.num; j++)
+		{
+		  if(pe.coords[j][3] < mm[0])
+		    {
+		      mm[0] = pe.coords[j][3];
+		    }
+		  if(pe.coords[j][3] > mm[1])
+		    {
+		      mm[1] = pe.coords[j][3];
+		    }
+		}
+	      to = Tcl_NewDoubleObj(mm[0]);
+	      Tcl_SetVar2Ex(interp, "umin", NULL, to,
+			    TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
+	      to = Tcl_NewDoubleObj(mm[1]);
+	      Tcl_SetVar2Ex(interp, "umax", NULL, to,
+			    TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
+	    }
 	}
       else
 	{
 	  /* knot picking failed, infer parametric value from curve point */
 	  if(!(ay_status = ay_nct_findu(togl, o, winXY, worldXYZ, &u)))
 	    {
-	      success = AY_TRUE;
+	      ay_viewt_worldtowin(worldXYZ, obj);
+	      if(fabs(winXY[0]-obj[0])<3.0 && fabs(winXY[1]-obj[1])<3.0)
+		success = AY_TRUE;
 	    }
 	} /* if pick succeeded */
 
@@ -2731,6 +2759,11 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 			TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
 	  if(!silence)
 	    Tcl_Eval(interp, cmd);
+	}
+      else
+	{
+	  /* need to repair the "damage" done by ay_nct_findu() above */
+	  ay_toglcb_display(togl);
 	}
 
       if(pobject)

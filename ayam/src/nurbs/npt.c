@@ -13643,7 +13643,7 @@ ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[])
  Tcl_Interp *interp = Togl_Interp(togl);
  int i, j, drag = AY_FALSE, silence = AY_FALSE, success = AY_FALSE;
  int height = Togl_Height(togl);
- double winXY[2] = {0}, worldXYZ[3] = {0}, dt;
+ double winXY[8] = {0}, worldXYZ[3] = {0}, dt;
  static int fvalid = AY_FALSE;
  static double fX = 0.0, fY = 0.0, fwX = 0.0, fwY = 0.0, fwZ = 0.0;
  double obj[24] = {0}, pl[16] = {0};
@@ -13715,6 +13715,8 @@ ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[])
 	silence = AY_FALSE;
     }
 
+  memcpy(&(winXY[4]), winXY, 4*sizeof(double));
+
   minlevelscale = ay_pact_getminlevelscale();
 
   while(sel)
@@ -13741,6 +13743,8 @@ ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[])
 	      continue;
 	    }
 	}
+
+      memcpy(winXY, &(winXY[4]), 4*sizeof(double));
 
       /* first try to pick a knot point */
       pe.type = AY_PTKNOT;
@@ -13809,7 +13813,8 @@ ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[])
 	  /* knot picking failed, infer parametric values from surface point */
 	  if(!(ay_status = ay_npt_finduv(togl, o, winXY, worldXYZ, &u, &v)))
 	    {
-	      success = AY_TRUE;
+	      if(fabs(winXY[0]-obj[0])<3.0 && fabs(winXY[1]-obj[1])<3.0)
+		success = AY_TRUE;
 	    }
 	}
 
@@ -13830,6 +13835,11 @@ ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[])
 			TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
 	  if(!silence)
 	    Tcl_Eval(interp, cmd);
+	}
+      else
+	{
+	  /* need to repair the "damage" done by ay_npt_finduv() above */
+	  ay_toglcb_display(togl);
 	}
 
       if(pobject)
