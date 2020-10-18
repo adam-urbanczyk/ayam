@@ -13643,10 +13643,11 @@ ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[])
  Tcl_Interp *interp = Togl_Interp(togl);
  int i, j, drag = AY_FALSE, silence = AY_FALSE, success = AY_FALSE;
  int height = Togl_Height(togl);
+ unsigned int ii;
  double winXY[8] = {0}, worldXYZ[3] = {0}, dt;
  static int fvalid = AY_FALSE;
  static double fX = 0.0, fY = 0.0, fwX = 0.0, fwY = 0.0, fwZ = 0.0;
- double obj[24] = {0}, pl[16] = {0};
+ double obj[24] = {0}, pl[16] = {0}, mm[2] = {0};
  double minlevelscale = 1.0, u = 0.0, v = 0.0;
  Tcl_Obj *to = NULL;
  char cmd[] = "puts \"u: $u v: $v\"";
@@ -13807,6 +13808,49 @@ ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[])
 	  Tcl_SetVar2Ex(interp, "vi", NULL, to,
 			TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
 	  success = AY_TRUE;
+
+	  if(pe.num > 1)
+	    {
+	      /* multiple hits, derive knot ranges */
+	      mm[0] = DBL_MAX;
+	      mm[1] = -DBL_MAX;
+	      for(ii = 0; ii < pe.num; ii++)
+		{
+		  if(pe.coords[ii][3] < mm[0])
+		    {
+		      mm[0] = pe.coords[ii][3];
+		    }
+		  if(pe.coords[ii][3] > mm[1])
+		    {
+		      mm[1] = pe.coords[ii][3];
+		    }
+		}
+	      to = Tcl_NewDoubleObj(mm[0]);
+	      Tcl_SetVar2Ex(interp, "umin", NULL, to,
+			    TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
+	      to = Tcl_NewDoubleObj(mm[1]);
+	      Tcl_SetVar2Ex(interp, "umax", NULL, to,
+			    TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
+	      mm[0] = DBL_MAX;
+	      mm[1] = -DBL_MAX;
+	      for(ii = 0; ii < pe.num; ii++)
+		{
+		  if(pe.coords[ii][4] < mm[0])
+		    {
+		      mm[0] = pe.coords[ii][4];
+		    }
+		  if(pe.coords[ii][4] > mm[1])
+		    {
+		      mm[1] = pe.coords[ii][4];
+		    }
+		}
+	      to = Tcl_NewDoubleObj(mm[0]);
+	      Tcl_SetVar2Ex(interp, "vmin", NULL, to,
+			    TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
+	      to = Tcl_NewDoubleObj(mm[1]);
+	      Tcl_SetVar2Ex(interp, "vmax", NULL, to,
+			    TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
+	    }
 	}
       else
 	{
