@@ -2715,6 +2715,8 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 	  if(pe.num > 1)
 	    {
 	      /* multiple hits, derive knot range */
+	      mm[0] = DBL_MAX;
+	      mm[1] = -DBL_MAX;
 	      for(j = 0; j < pe.num; j++)
 		{
 		  if(pe.coords[j][3] < mm[0])
