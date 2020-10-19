@@ -1891,6 +1891,8 @@ ay_viewt_printmark(ay_view_object *view)
 void
 ay_viewt_updateglobalmark(struct Togl *togl)
 {
+ int ay_status = AY_OK;
+ char fname[] = "updateglobalmark";
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  ay_object *o = ay_root->down;
  ay_view_object *v = NULL;
@@ -1905,13 +1907,19 @@ ay_viewt_updateglobalmark(struct Togl *togl)
 	      memcpy(v->markworld, view->markworld, 3*sizeof(double));
 	      v->drawmark = view->drawmark;
 	      Togl_MakeCurrent(v->togl);
-	      ay_viewt_updatemark(v->togl, /*local=*/AY_TRUE);
+	      ay_status = ay_viewt_updatemark(v->togl, /*local=*/AY_TRUE);
+	      if(ay_status)
+		{
+		  ay_error(AY_ERROR, fname, "Update mark failed.");
+		  goto cleanup;
+		}
 	      ay_toglcb_display(v->togl);
 	    }
 	}
       o = o->next;
     } /* while */
 
+cleanup:
   Togl_MakeCurrent(togl);
 
  return;
@@ -3226,7 +3234,7 @@ ay_viewt_rendertoviewportcb(struct Togl *togl, int argc, char *argv[])
 /** ay_viewt_objrecttoplanes:
  * Helper to create the coefficients for four planes of a rectangle
  * specified in object coordinates (for drag selection).
- * 
+ *
  * \param[in] rect rectangle in object coordinates [21]
  * \param[in,out] plcs where to store the plane coefficients [16]
  */
