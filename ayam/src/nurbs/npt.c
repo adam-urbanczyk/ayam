@@ -13677,10 +13677,17 @@ ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[])
 	      view->markworld[2] = fwZ;
 	      view->drawmark = AY_TRUE;
 
-	      if(ay_prefs.globalmark)
+	      if(ay_prefs.normalizemark)
 		{
-		  ay_viewt_updatemark(togl, AY_FALSE);
+		  for(i = 0; i < 3; i++)
+		    {
+		      view->markworld[i] = ay_trafo_round(view->markworld[i],
+						     ay_prefs.normalizedigits);
+		    }
 		}
+
+	      ay_viewt_updatemark(togl, AY_FALSE);
+	      ay_viewt_printmark(view);
 	    }
 
 	  fvalid = AY_FALSE;
