@@ -2626,6 +2626,9 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 	silence = AY_FALSE;
     }
 
+  if(ay_prefs.errorlevel < 3)
+    silence = AY_TRUE;
+
   memcpy(&(winXY[4]), winXY, 4*sizeof(double));
 
   minlevelscale = ay_pact_getminlevelscale();
