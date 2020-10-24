@@ -896,10 +896,11 @@ proc prefs_unset { } {
 # prefs_commit:
 #  helper to commit changes (copy array ayprefse to ayprefs)
 proc prefs_commit { } {
-    global ayprefs ayprefse
+    global ay ayprefs ayprefse
     foreach avn [array names ayprefs] {
 	set ayprefs($avn) $ayprefse($avn)
     }
+    set ay(oldAutoFocus) $ayprefse(AutoFocus)
  return;
 }
 # prefs_commit
@@ -918,6 +919,7 @@ proc prefs_revert { } {
     foreach c {Background Object Selection Grid Tag Shade Light} {
 	updateColorFromE $w ayprefse $c $w.f${c}.b1
     }
+    set ay(oldAutoFocus) $ayprefse(AutoFocus)
  return;
 }
 # prefs_revert
