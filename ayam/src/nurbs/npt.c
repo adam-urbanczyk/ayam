@@ -16757,6 +16757,7 @@ ay_npt_fair(ay_nurbpatch_object *np, ay_point *selp, double tol, int mode)
       nc.length = np->width;
       nc.order = np->uorder;
       nc.knotv = np->uknotv;
+      nc.knot_type = np->uknot_type;
       cv = malloc(nc.length*stride*sizeof(double));
       if(!cv)
 	return AY_EOMEM;
@@ -16772,7 +16773,7 @@ ay_npt_fair(ay_nurbpatch_object *np, ay_point *selp, double tol, int mode)
 	      if(ay_selp_find(selp, &(np->controlv[b])))
 		{
 		  p = calloc(1, sizeof(ay_point));
-		  p->index = a;
+		  p->index = i;
 		  p->point = &(cv[a]);
 		  p->next = nselp;
 		  nselp = p;
@@ -16782,13 +16783,16 @@ ay_npt_fair(ay_nurbpatch_object *np, ay_point *selp, double tol, int mode)
 	      b += stride*np->height;
 	    }
 
+	  if(selp && !nselp)
+	    continue;
+
 	  ay_status = ay_nct_fair(&nc, nselp, tol/*, AY_FALSE*/);
 
-	  while(selp)
+	  while(nselp)
 	    {
-	      p = selp->next;
-	      free(selp);
-	      selp = p;
+	      p = nselp->next;
+	      free(nselp);
+	      nselp = p;
 	    }
 
 	  if(ay_status)
@@ -16808,6 +16812,7 @@ ay_npt_fair(ay_nurbpatch_object *np, ay_point *selp, double tol, int mode)
       nc.length = np->height;
       nc.order = np->vorder;
       nc.knotv = np->vknotv;
+      nc.knot_type = np->vknot_type;
       cv = malloc(nc.length*stride*sizeof(double));
       if(!cv)
 	return AY_EOMEM;
@@ -16823,7 +16828,7 @@ ay_npt_fair(ay_nurbpatch_object *np, ay_point *selp, double tol, int mode)
 	      if(ay_selp_find(selp, &(np->controlv[b])))
 		{
 		  p = calloc(1, sizeof(ay_point));
-		  p->index = a;
+		  p->index = i;
 		  p->point = &(cv[a]);
 		  p->next = nselp;
 		  nselp = p;
@@ -16833,13 +16838,16 @@ ay_npt_fair(ay_nurbpatch_object *np, ay_point *selp, double tol, int mode)
 	      b += stride;
 	    }
 
+	  if(selp && !nselp)
+	    continue;
+
 	  ay_status = ay_nct_fair(&nc, nselp, tol/*, AY_FALSE*/);
 
-	  while(selp)
+	  while(nselp)
 	    {
-	      p = selp->next;
-	      free(selp);
-	      selp = p;
+	      p = nselp->next;
+	      free(nselp);
+	      nselp = p;
 	    }
 
 	  if(ay_status)
@@ -16868,6 +16876,9 @@ ay_npt_fair(ay_nurbpatch_object *np, ay_point *selp, double tol, int mode)
     } /* switch mode */
 
 cleanup:
+
+  if(nc.controlv)
+    free(nc.controlv);
 
  return ay_status;
 } /* ay_npt_fair */
