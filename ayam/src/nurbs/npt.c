@@ -16729,6 +16729,242 @@ ay_npt_getcurvaturetcmd(ClientData clientData, Tcl_Interp *interp,
  return TCL_OK;
 } /* ay_npt_getcurvaturetcmd */
 
+
+/** ay_npt_fair:
+ * Make the shape of a surface more pleasant.
+ *
+ * \param[in,out] np NURBS patch object to process
+ * \param[in] selp selected points (may be NULL)
+ * \param[in] tol maximum distance a control point moves (0.0-Inf, unchecked)
+ * \param[in] mode fair mode
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_npt_fair(ay_nurbpatch_object *np, ay_point *selp, double tol, int mode)
+{
+ int ay_status = AY_OK;
+ char fname[] = "npt_fair";
+ double worst = -DBL_MAX;
+ double *cv = NULL;
+ int a, b, i, j, stride = 4;
+ ay_nurbcurve_object nc = {0};
+ ay_point *nselp = NULL, *p = NULL;
+
+  switch(mode)
+    {
+    case 0:
+      nc.length = np->width;
+      nc.order = np->uorder;
+      nc.knotv = np->uknotv;
+      cv = malloc(nc.length*stride*sizeof(double));
+      if(!cv)
+	return AY_EOMEM;
+      nc.controlv = cv;
+      for(j = 0; j < np->height; j++)
+	{
+	  a = 0;
+	  b = j*stride;
+	  for(i = 0; i < np->width; i++)
+	    {
+	      memcpy(&(cv[a]), &(np->controlv[b]), stride*sizeof(double));
+
+	      if(ay_selp_find(selp, &(np->controlv[b])))
+		{
+		  p = calloc(1, sizeof(ay_point));
+		  p->index = a;
+		  p->point = &(cv[a]);
+		  p->next = nselp;
+		  nselp = p;
+		}
+
+	      a += stride;
+	      b += stride*np->height;
+	    }
+
+	  ay_status = ay_nct_fair(&nc, nselp, tol/*, AY_FALSE*/);
+
+	  while(selp)
+	    {
+	      p = selp->next;
+	      free(selp);
+	      selp = p;
+	    }
+
+	  if(ay_status)
+	    goto cleanup;
+
+	  a = 0;
+	  b = j*stride;
+	  for(i = 0; i < np->width; i++)
+	    {
+	      memcpy(&(np->controlv[b]), &(cv[a]), stride*sizeof(double));
+	      a += stride;
+	      b += stride*np->height;
+	    }
+	}
+      break;
+    case 1:
+      nc.length = np->height;
+      nc.order = np->vorder;
+      nc.knotv = np->vknotv;
+      cv = malloc(nc.length*stride*sizeof(double));
+      if(!cv)
+	return AY_EOMEM;
+      nc.controlv = cv;
+      for(j = 0; j < np->width; j++)
+	{
+	  a = 0;
+	  b = j*np->height*stride;
+	  for(i = 0; i < np->height; i++)
+	    {
+	      memcpy(&(cv[a]), &(np->controlv[b]), stride*sizeof(double));
+
+	      if(ay_selp_find(selp, &(np->controlv[b])))
+		{
+		  p = calloc(1, sizeof(ay_point));
+		  p->index = a;
+		  p->point = &(cv[a]);
+		  p->next = nselp;
+		  nselp = p;
+		}
+
+	      a += stride;
+	      b += stride;
+	    }
+
+	  ay_status = ay_nct_fair(&nc, nselp, tol/*, AY_FALSE*/);
+
+	  while(selp)
+	    {
+	      p = selp->next;
+	      free(selp);
+	      selp = p;
+	    }
+
+	  if(ay_status)
+	    goto cleanup;
+
+	  a = 0;
+	  b = j*np->height*stride;
+	  for(i = 0; i < np->height; i++)
+	    {
+	      memcpy(&(np->controlv[b]), &(cv[a]), stride*sizeof(double));
+	      a += stride;
+	      b += stride;
+	    }
+	}
+      break;
+    case 2:
+      ay_npt_fair(np, selp, tol, 0);
+      ay_npt_fair(np, selp, tol, 1);
+      break;
+    case 3:
+      ay_npt_fair(np, selp, tol, 1);
+      ay_npt_fair(np, selp, tol, 0);
+      break;
+    default:
+      break;
+    } /* switch mode */
+
+cleanup:
+
+ return ay_status;
+} /* ay_npt_fair */
+
+
+/** ay_npt_fairnptcmd:
+ *  make the shape of a surface more pleasant:
+ *  change the control points of a NURBS surface so that the curvature
+ *  is more evenly distributed
+ *  Implements the \a fairNP scripting interface command.
+ *  See also the corresponding section in the \ayd{scfairnp}.
+ *
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_npt_fairnptcmd(ClientData clientData, Tcl_Interp *interp,
+		  int argc, char *argv[])
+{
+ int tcl_status = TCL_OK, ay_status = AY_OK;
+ ay_list_object *sel = ay_selection;
+ ay_object *o;
+ ay_nurbpatch_object *np;
+ double tol = DBL_MAX;
+ int i = 1, mode = 0;
+ int notify_parent = AY_FALSE;
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, argv[0], NULL);
+      return TCL_OK;
+    }
+
+  while(i < argc)
+    {
+      if(argv[i][0] == '-' && argv[i][1] == 't')
+	{
+	  tcl_status = Tcl_GetDouble(interp, argv[i+1], &tol);
+	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	  if(tol != tol)
+	    {
+	      ay_error_reportnan(argv[0], "tol");
+	      return TCL_OK;
+	    }
+	  if(tol <= 0)
+	    {
+	      ay_error(AY_ERROR, argv[0], "Argument tol must be > 0.");
+	      return TCL_OK;
+	    }
+	  i++;
+	}
+      if(argv[i][0] == '-' && argv[i][1] == 'm')
+	{
+	  tcl_status = Tcl_GetInt(interp, argv[i+1], &mode);
+	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	  i++;
+	}
+      i++;
+    }
+
+  while(sel)
+    {
+      o = sel->object;
+      if(o->type == AY_IDNPATCH)
+	{
+	  np = (ay_nurbpatch_object *)o->refine;
+
+	  ay_status = ay_npt_fair(np, o->selp, tol, mode);
+
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, argv[0], "Fairing failed.");
+	      return TCL_OK;
+	    }
+
+	  /*XXX ToDo fix close state */
+
+	  if(np->mpoints)
+	    ay_npt_recreatemp(np);
+
+	  (void)ay_notify_object(o);
+	  notify_parent = AY_TRUE;
+	}
+      else
+	{
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
+	}
+
+      sel = sel->next;
+    } /* while */
+
+  if(notify_parent)
+    (void)ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_npt_fairnptcmd */
+
+
 /* templates */
 #if 0
 

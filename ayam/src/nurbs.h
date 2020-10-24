@@ -1527,8 +1527,23 @@ int ay_npt_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int ay_npt_isdegen(ay_nurbpatch_object *patch);
 
+
+/** Tcl command to compute the curvature of a NURBS surface.
+ */
 int ay_npt_getcurvaturetcmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
+
+/** Improve the shape of a NURBS surface.
+ */
+int ay_npt_fair(ay_nurbpatch_object *np, ay_point *selp, double tol, int mode);
+
+
+/** Tcl command to improve the shape of a NURBS surface.
+ */
+int
+ay_npt_fairnptcmd(ClientData clientData, Tcl_Interp *interp,
+		  int argc, char *argv[]);
+
 
 /* pmt.c */
 

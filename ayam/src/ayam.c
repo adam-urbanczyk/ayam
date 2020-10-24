@@ -1578,6 +1578,9 @@ ay_safeinit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "curvatNP", ay_npt_getcurvaturetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "fairNP", ay_npt_fairnptcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   /* nurbs/ict.c */
   Tcl_CreateCommand(interp, "interpNC", ay_ict_interptcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
