@@ -1384,6 +1384,10 @@ int ay_selp_reducetominmax(ay_object *o);
  */
 void ay_selp_updatempselection(unsigned int n, ay_point *selp, ay_mpoint *mp);
 
+/** Check whether a given point is among a list of selected points.
+ */
+int ay_selp_find(ay_point *selp, double *point);
+
 
 /* shade.c */
 
