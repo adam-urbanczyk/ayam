@@ -1791,3 +1791,28 @@ ay_selp_updatempselection(unsigned int n, ay_point *selp, ay_mpoint *mp)
 
  return;
 } /* ay_selp_updatempselection */
+
+
+/** ay_selp_find:
+ * Check whether a given point is among a list of selected points.
+ *
+ * \param selp the list of selected points to search
+ * \param point the address of the coordinates of the point
+ *
+ * \returns AY_TRUE if the point is among the list of selected points,
+ *          AY_FALSE else
+ */
+int
+ay_selp_find(ay_point *selp, double *point)
+{
+ ay_point *p = selp;
+
+  while(p)
+    {
+      if(p->point == point)
+	return AY_TRUE;
+      p = p->next;
+    }
+
+ return AY_FALSE;
+} /* ay_selp_find */
