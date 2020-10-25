@@ -16786,6 +16786,8 @@ ay_npt_fair(ay_nurbpatch_object *np, ay_point *selp, double tol, int mode)
 	  if(selp && !nselp)
 	    continue;
 
+	  ay_nct_settype(&nc);
+
 	  ay_status = ay_nct_fair(&nc, nselp, tol/*, AY_FALSE*/);
 
 	  while(nselp)
@@ -16840,6 +16842,8 @@ ay_npt_fair(ay_nurbpatch_object *np, ay_point *selp, double tol, int mode)
 
 	  if(selp && !nselp)
 	    continue;
+
+	  ay_nct_settype(&nc);
 
 	  ay_status = ay_nct_fair(&nc, nselp, tol/*, AY_FALSE*/);
 
