@@ -2545,13 +2545,14 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  Tcl_Interp *interp = Togl_Interp(togl);
  int i, drag = AY_FALSE, silence = AY_FALSE, success = AY_FALSE;
+ int extend = AY_FALSE;
  int height = Togl_Height(togl);
  unsigned int j;
  double winXY[8] = {0}, worldXYZ[3] = {0}, dt;
  static int fvalid = AY_FALSE;
  static double fX = 0.0, fY = 0.0, fwX = 0.0, fwY = 0.0, fwZ = 0.0;
  double obj[24] = {0}, pl[16] = {0}, mm[2] = {0};
- double minlevelscale = 1.0, u = 0.0;
+ double minlevelscale = 1.0, u = 0.0, oldu = 0.0;
  Tcl_Obj *to = NULL;
  char cmd[] = "puts \"u: $u\"";
  ay_list_object *sel = ay_selection;
@@ -2595,6 +2596,22 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 
 	  fvalid = AY_FALSE;
 	  return TCL_OK;
+	}
+      if(!strcmp(argv[argc-1], "-extend"))
+	{
+	  to = Tcl_GetVar2Ex(interp, "u", NULL,
+			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	  if(to)
+	    {
+	      Tcl_GetDoubleFromObj(interp, to, &oldu);
+	      extend = AY_TRUE;
+	    }
+	  else
+	    {
+	      ay_error(AY_ERROR, fname,
+		       "Could not get previous u for extension.");
+	      return TCL_OK;
+	    }
 	}
     }
   else
@@ -2764,6 +2781,54 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 			TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
 	  if(!silence)
 	    Tcl_Eval(interp, cmd);
+
+	  if(extend)
+	    {
+	      if(pe.num > 1)
+		{
+		  if(oldu < mm[0])
+		    {
+		      mm[0] = oldu;
+		    }
+		  else
+		    {
+		      if(oldu > mm[1])
+			mm[1] = oldu;
+		      else
+			extend = AY_FALSE;
+		    }
+		}
+	      else
+		{
+		  if(fabs(oldu-u) > AY_EPSILON)
+		    {
+		      if(oldu < u)
+			{
+			  mm[0] = oldu;
+			  mm[1] = u;
+			}
+		      else
+			{
+			  mm[0] = u;
+			  mm[1] = oldu;
+			}
+		    }
+		  else
+		    {
+		      extend = AY_FALSE;
+		    }
+		}
+	      if(extend)
+		{
+		  printf("umin umax %lg %lg\n",mm[0],mm[1]);
+		  to = Tcl_NewDoubleObj(mm[0]);
+		  Tcl_SetVar2Ex(interp, "umin", NULL, to,
+				TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
+		  to = Tcl_NewDoubleObj(mm[1]);
+		  Tcl_SetVar2Ex(interp, "umax", NULL, to,
+				TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
+		}
+	    }
 	}
       else
 	{
