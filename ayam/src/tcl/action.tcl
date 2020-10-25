@@ -2071,6 +2071,18 @@ proc actionFindU { w } {
 	focus %W
     }
 
+    bind $w <Shift-ButtonRelease-1> {
+	%W setconf -rect $oldx $oldy %x %y 0
+	if { ($oldx != %x) || ($oldy != %y) } {
+	    %W finduac %x %y $oldx $oldy -extend
+	} else {
+	    %W finduac %x %y -extend
+	}
+	%W finduac -end %x %y
+	%W redraw
+	focus %W
+    }
+
     $w setconf -drawh 2
 
     if { [string first ".view" $w] == 0 } {
