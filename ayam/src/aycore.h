@@ -245,6 +245,10 @@ void ay_draw_selmp(ay_object *o, int is_rat, ay_mpoint *mp);
  */
 void ay_draw_rhombus(double *pnt);
 
+/** draw a 2D linestrip
+ */
+void ay_draw_linestrip(struct Togl *togl, int n, int stride, double *cv);
+
 
 /* error.c */
 
