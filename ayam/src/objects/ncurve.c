@@ -672,7 +672,7 @@ ay_ncurve_drawglu(ay_view_object *view, ay_nurbcurve_object *ncurve)
 
 #ifndef AYWITHAQUA
   if(!ncurve->no)
-  {
+    {
 #endif /* !AYWITHAQUA */
       ncurve->no = gluNewNurbsRenderer();
       if(ncurve->no == NULL)
@@ -680,7 +680,7 @@ ay_ncurve_drawglu(ay_view_object *view, ay_nurbcurve_object *ncurve)
 	  return AY_EOMEM;
 	}
 #ifndef AYWITHAQUA
-      } /* if */
+    } /* if */
 #endif /* !AYWITHAQUA */
 
   gluNurbsCallback(ncurve->no, GLU_ERROR, AYGLUCBTYPE ay_error_glucb);
@@ -691,7 +691,7 @@ ay_ncurve_drawglu(ay_view_object *view, ay_nurbcurve_object *ncurve)
 #endif /* AYIRIXBUG */
 
    gluNurbsProperty(ncurve->no, GLU_SAMPLING_TOLERANCE,
-		    (GLfloat)sampling_tolerance);
+		   (GLfloat)sampling_tolerance);
 
    gluNurbsProperty(ncurve->no, GLU_CULLING, GL_TRUE);
 
@@ -809,6 +809,112 @@ ay_ncurve_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_ncurve_shadecb */
 
 
+/**
+ * Helper for ay_ncurve_drawacb() below. Draw the min/max knot range
+ * annotation.
+ *
+ * \param[in] togl view to draw into
+ * \param[in] ncurve NURBS curve
+ * \param[in] umin knot range minimum
+ * \param[in] umax knot range maximum
+ */
+void
+ay_ncurve_drawminmax(struct Togl *togl, ay_nurbcurve_object *ncurve,
+		     double umin, double umax)
+{
+ double p0[0], p1[3], w0[3], w1[3], q[2], ud, cv[8];
+ GLdouble mvm[16], pm[16], l, s;
+ GLint vp[4];
+
+  glGetDoublev(GL_MODELVIEW_MATRIX, mvm);
+  glGetDoublev(GL_PROJECTION_MATRIX, pm);
+  glGetIntegerv(GL_VIEWPORT, vp);
+
+  s = ay_prefs.handle_size*1.25;
+
+  ud = (ncurve->knotv[ncurve->length]-ncurve->knotv[ncurve->order-1])/
+    ncurve->length/10;
+
+  if(ncurve->is_rat)
+    {
+      ay_nb_CurvePoint4D(ncurve->length-1, ncurve->order-1,
+			 ncurve->knotv, ncurve->controlv, umin, p0);
+      ay_nb_CurvePoint4D(ncurve->length-1, ncurve->order-1,
+			 ncurve->knotv, ncurve->controlv,
+			 umin+ud, p0);
+    }
+  else
+    {
+      ay_nb_CurvePoint3D(ncurve->length-1, ncurve->order-1,
+			 ncurve->knotv, ncurve->controlv, umin, p0);
+      ay_nb_CurvePoint3D(ncurve->length-1, ncurve->order-1,
+			 ncurve->knotv, ncurve->controlv,
+			 umin+ud, p1);
+    }
+
+  gluProject(p0[0], p0[1], p0[2], mvm, pm, vp, &w0[0], &w0[1], &w0[2]);
+  gluProject(p1[0], p1[1], p1[2], mvm, pm, vp, &w1[0], &w1[1], &w1[2]);
+
+  AY_V2SUB(q, w1, w0);
+  l = AY_V2LEN(q);
+  if(l > AY_EPSILON)
+    AY_V2SCAL(q, s/l);
+
+  cv[2] = w0[0]+q[1];
+  cv[3] = w0[1]-q[0];
+  cv[4] = w0[0]-q[1];
+  cv[5] = w0[1]+q[0];
+
+  AY_V2SCAL(q, 0.33);
+  cv[6] = cv[4]+q[0];
+  cv[7] = cv[5]+q[1];
+  cv[0] = cv[2]+q[0];
+  cv[1] = cv[3]+q[1];
+
+  ay_draw_linestrip(togl, 3, 2, cv);
+
+  if(ncurve->is_rat)
+    {
+      ay_nb_CurvePoint4D(ncurve->length-1, ncurve->order-1,
+			 ncurve->knotv, ncurve->controlv, umax, p0);
+      ay_nb_CurvePoint4D(ncurve->length-1, ncurve->order-1,
+			 ncurve->knotv, ncurve->controlv,
+			 umax-ud, p0);
+    }
+  else
+    {
+      ay_nb_CurvePoint3D(ncurve->length-1, ncurve->order-1,
+			 ncurve->knotv, ncurve->controlv, umax, p0);
+      ay_nb_CurvePoint3D(ncurve->length-1, ncurve->order-1,
+			 ncurve->knotv, ncurve->controlv,
+			 umax-ud, p1);
+    }
+
+  gluProject(p0[0], p0[1], p0[2], mvm, pm, vp, &w0[0], &w0[1], &w0[2]);
+  gluProject(p1[0], p1[1], p1[2], mvm, pm, vp, &w1[0], &w1[1], &w1[2]);
+
+  AY_V2SUB(q, w1, w0);
+  l = AY_V2LEN(q);
+  if(l > AY_EPSILON)
+    AY_V2SCAL(q, s/l);
+
+  cv[2] = w0[0]+q[1];
+  cv[3] = w0[1]-q[0];
+  cv[4] = w0[0]-q[1];
+  cv[5] = w0[1]+q[0];
+
+  AY_V2SCAL(q, 0.33);
+  cv[6] = cv[4]+q[0];
+  cv[7] = cv[5]+q[1];
+  cv[0] = cv[2]+q[0];
+  cv[1] = cv[3]+q[1];
+
+  ay_draw_linestrip(togl, 3, 2, cv);
+
+ return;
+} /* ay_ncurve_drawminmax */
+
+
 /* ay_ncurve_drawacb:
  *  draw annotations (in an Ayam view window) callback function of ncurve object
  */
@@ -817,8 +923,9 @@ ay_ncurve_drawacb(struct Togl *togl, ay_object *o)
 {
  ay_nurbcurve_object *ncurve;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
- double *a, *b;
-
+ ay_tag *tag;
+ double *a, *b, umin, umax;
+ int have_uminmax = AY_FALSE;
 
   if(!o)
     return AY_ENULL;
@@ -830,6 +937,22 @@ ay_ncurve_drawacb(struct Togl *togl, ay_object *o)
 
   if((view->drawhandles == 2) && ncurve->breakv)
     {
+      tag = o->tags;
+      while(tag)
+	{
+	  if(tag->type == ay_umm_tagtype && tag->val)
+	    {
+	      if(sscanf(tag->val, "%lg,%lg", &umin, &umax) == 2)
+		{
+		  have_uminmax = AY_TRUE;
+		  break;
+		}
+	    }
+	}
+      if(have_uminmax)
+	{
+	  ay_ncurve_drawminmax(togl, ncurve, umin, umax);
+	}
       b = &(ncurve->breakv[1]);
       do
 	b += 4;
