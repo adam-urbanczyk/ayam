@@ -1747,7 +1747,7 @@ ay_draw_selmp(ay_object *o, int is_rat, ay_mpoint *mp)
 
 /** ay_draw_rhombus:
  * Helper function to draw a rhombus (knot, break point).
- * 
+ *
  * \param[in] pnt 3D coordinates of rhombus
  */
 void
@@ -1779,3 +1779,83 @@ ay_draw_rhombus(double *pnt)
 
  return;
 } /* ay_draw_rhombus */
+
+
+/** ay_draw_linestrip:
+ * Helper function to draw a 2D line strip.
+ *
+ * \param[in] n number of points in the strip
+ * \param[in] stride distance between points in \a cv
+ * \param[in] cv control points [(n+1)*stride]
+ */
+void
+ay_draw_linestrip(struct Togl *togl, int n, int stride, double *cv)
+{
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
+ int i;
+ double *p;
+
+  glDisable(GL_DEPTH_TEST);
+
+  glMatrixMode(GL_PROJECTION);
+  glPushMatrix();
+   glLoadIdentity();
+   glOrtho(0, Togl_Width(togl), 0, Togl_Height(togl), -100.0, 100.0);
+
+   glMatrixMode(GL_MODELVIEW);
+   glPushMatrix();
+    glLoadIdentity();
+    if(!view->antialiaslines)
+      glTranslated(0.375,0.375,0.0);
+    if(view->antialiaslines)
+      {
+	glLineWidth((GLfloat)ay_prefs.aasellinewidth*2.0f);
+      }
+    else
+      {
+	glLineWidth((GLfloat)ay_prefs.sellinewidth*4.0f);
+      }
+    glColor3f((GLfloat)ay_prefs.bgr, (GLfloat)ay_prefs.bgg,
+	      (GLfloat)ay_prefs.bgb);
+    glBegin(GL_LINE_STRIP);
+     p = cv;
+     glVertex2dv(p);
+     p += stride;
+     for(i = 0; i < n; i++)
+       {
+	 glVertex2dv(p);
+	 p += stride;
+       }
+    glEnd();
+
+    if(view->antialiaslines)
+      {
+	glLineWidth((GLfloat)ay_prefs.aasellinewidth);
+      }
+    else
+      {
+	glLineWidth((GLfloat)ay_prefs.sellinewidth*2.0f);
+      }
+    glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+	      (GLfloat)ay_prefs.seb);
+
+    glBegin(GL_LINE_STRIP);
+     p = cv;
+     glVertex2dv(p);
+     p += stride;
+     for(i = 0; i < n; i++)
+       {
+	 glVertex2dv(p);
+	 p += stride;
+       }
+    glEnd();
+
+    glPopMatrix();
+   glMatrixMode(GL_PROJECTION);
+   glPopMatrix();
+  glMatrixMode(GL_MODELVIEW);
+
+  glEnable(GL_DEPTH_TEST);
+
+ return;
+} /* ay_draw_linestrip */
