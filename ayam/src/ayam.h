@@ -2082,6 +2082,8 @@ extern char *ay_error_igntype;
 
 #define AY_V3SUB(r,v1,v2) {r[0]=v1[0]-v2[0];r[1]=v1[1]-v2[1];r[2]=v1[2]-v2[2];}
 
+#define AY_V2SUB(r,v1,v2) {r[0]=v1[0]-v2[0];r[1]=v1[1]-v2[1];}
+
 #define AY_V3ADD(r,v1,v2) {r[0]=v1[0]+v2[0];r[1]=v1[1]+v2[1];r[2]=v1[2]+v2[2];}
 
 #define AY_V3MUL(r,v1,v2) {r[0]=v1[0]*v2[0];r[1]=v1[1]*v2[1];r[2]=v1[2]*v2[2];}
