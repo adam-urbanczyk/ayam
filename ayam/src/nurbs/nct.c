@@ -2754,6 +2754,9 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 	      to = Tcl_NewDoubleObj(mm[1]);
 	      Tcl_SetVar2Ex(interp, "umax", NULL, to,
 			    TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
+
+	      if(o->type == AY_IDNCURVE)
+		(void)ay_knots_setuminmax(o, mm[0], mm[1]);
 	    }
 	}
       else
@@ -2769,12 +2772,20 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 
       if(success)
 	{
-	  fvalid = AY_TRUE;
-	  fX = winXY[0];
-	  fY = winXY[1];
-	  fwX = worldXYZ[0];
-	  fwY = worldXYZ[1];
-	  fwZ = worldXYZ[2];
+	  if(!extend && !(pe.num > 1))
+	    {
+	      fvalid = AY_TRUE;
+	      fX = winXY[0];
+	      fY = winXY[1];
+	      fwX = worldXYZ[0];
+	      fwY = worldXYZ[1];
+	      fwZ = worldXYZ[2];
+	    }
+	  else
+	    {
+	      fvalid = AY_FALSE;
+	      view->drawmark = AY_FALSE;
+	    }
 
 	  to = Tcl_NewDoubleObj(u);
 	  Tcl_SetVar2Ex(interp, "u", NULL, to,
@@ -2820,15 +2831,16 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 		}
 	      if(extend)
 		{
-		  printf("umin umax %lg %lg\n",mm[0],mm[1]);
 		  to = Tcl_NewDoubleObj(mm[0]);
 		  Tcl_SetVar2Ex(interp, "umin", NULL, to,
 				TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
 		  to = Tcl_NewDoubleObj(mm[1]);
 		  Tcl_SetVar2Ex(interp, "umax", NULL, to,
 				TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
+		  if(o->type == AY_IDNCURVE)
+		    (void)ay_knots_setuminmax(o, mm[0], mm[1]);
 		}
-	    }
+	    } /* if extend */
 	}
       else
 	{
