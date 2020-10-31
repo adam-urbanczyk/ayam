@@ -41,7 +41,7 @@ int aycsg_calcbbs = AY_FALSE; // control bounding box optimization, unused!
 // itself) instead to a string;
 // we can do this safely, because no TM tag will escape this module ever
 unsigned int aycsg_tm_tagtype;
-char *aycsg_tm_tagname = "TM";
+char aycsg_tm_tagname[] = "TM";
 
 typedef struct aycsg_taglistelem_s {
   struct aycsg_taglistelem_s *next;
@@ -53,7 +53,7 @@ aycsg_taglistelem *aycsg_tmtags;
 
 // DC tags are used to store the depth complexity of a primitive
 unsigned int aycsg_dc_tagtype;
-char *aycsg_dc_tagname = "DC";
+char aycsg_dc_tagname[] = "DC";
 
 char aycsg_version_ma[] = AY_VERSIONSTR;
 char aycsg_version_mi[] = AY_VERSIONSTRMI;
@@ -1634,13 +1634,14 @@ aycsg_setopttcmd(ClientData clientData, Tcl_Interp *interp,
  OpenCSG::Optimization opti = OpenCSG::OptimizationDefault;
  int opencsg_algorithm = 0, opencsg_dcsampling = 0;
  int opencsg_offscreen = 0, opencsg_optimization = 0;
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ Tcl_Obj *to = NULL;
+ char arr[] = "aycsg_options";
 
   // get preferences data
-  toa = Tcl_NewStringObj("aycsg_options", -1);
-  ton = Tcl_NewStringObj("Algorithm", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &opencsg_algorithm);
+  to = Tcl_GetVar2Ex(interp, arr, "Algorithm",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  if(to)
+    Tcl_GetIntFromObj(interp, to, &opencsg_algorithm);
 
   switch(opencsg_algorithm)
     {
@@ -1658,9 +1659,11 @@ aycsg_setopttcmd(ClientData clientData, Tcl_Interp *interp,
       break;
     } // switch
 
-  Tcl_SetStringObj(ton, "DCSampling", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &opencsg_dcsampling);
+
+  to = Tcl_GetVar2Ex(interp, arr, "DCSampling",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  if(to)
+    Tcl_GetIntFromObj(interp, to, &opencsg_dcsampling);
 
   switch(opencsg_dcsampling)
     {
@@ -1678,13 +1681,15 @@ aycsg_setopttcmd(ClientData clientData, Tcl_Interp *interp,
       break;
     } // switch
 
-  Tcl_SetStringObj(ton, "CalcBBS", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &aycsg_calcbbs);
+  to = Tcl_GetVar2Ex(interp, arr, "CalcBBS",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  if(to)
+    Tcl_GetIntFromObj(interp, to, &aycsg_calcbbs);
 
-  Tcl_SetStringObj(ton, "OffscreenType", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &opencsg_offscreen);
+  to = Tcl_GetVar2Ex(interp, arr, "OffscreenType",
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  if(to)
+    Tcl_GetIntFromObj(interp, to, &opencsg_offscreen);
 
   switch(opencsg_offscreen)
     {
@@ -1708,9 +1713,10 @@ aycsg_setopttcmd(ClientData clientData, Tcl_Interp *interp,
       break;
     } // switch
 
-  Tcl_SetStringObj(ton, "Optimization", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &opencsg_optimization);
+  to = Tcl_GetVar2Ex(interp, arr, "Optimization",
+		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  if(to)
+    Tcl_GetIntFromObj(interp, to, &opencsg_optimization);
 
   switch(opencsg_optimization)
     {
@@ -1736,9 +1742,6 @@ aycsg_setopttcmd(ClientData clientData, Tcl_Interp *interp,
   OpenCSG::setOption(OpenCSG::DepthComplexitySetting, depthalgo);
   OpenCSG::setOption(OpenCSG::OffscreenSetting, offscreen);
   OpenCSG::setOption(OpenCSG::DepthBoundsOptimization, opti);
-
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
  return TCL_OK;
 } // aycsg_setopttcmd
@@ -1814,7 +1817,7 @@ Aycsg_Init(Tcl_Interp *interp)
   Togl_CreateCommand("togglecsg", aycsg_toggletcb);
 
   // reconnect potentially present DC tags
-  ay_tags_reconnect(ay_root, aycsg_dc_tagtype, "DC");
+  ay_tags_reconnect(ay_root, aycsg_dc_tagtype, aycsg_dc_tagname);
 
   ay_error(AY_EOUTPUT, fname, "Plugin 'aycsg' successfully loaded.");
 
