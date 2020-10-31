@@ -150,7 +150,7 @@ ay_error(int code, const char *where, const char *what)
 
       Tcl_DStringFree(&ds);
       return;
-    } /* if */
+    } /* if flush */
 
   if(where)
     {
@@ -290,6 +290,7 @@ ay_error(int code, const char *where, const char *what)
   if(last_message)
     {
       free(last_message);
+      last_message = NULL;
     }
 
   if(Tcl_DStringValue(&ds))
@@ -362,8 +363,15 @@ ay_error_glucb(GLenum err)
 } /* ay_error_glucb */
 
 
-/* ay_error_reportdrange:
- *  format and output double range error
+/** ay_error_reportdrange:
+ * format and output double parameter range error
+ *
+ * \param fname location of error
+ * \param pname parameter name
+ * \param lb lower bound of range
+ * \param ub uper bound of range
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_error_reportdrange(char *fname, char *pname, double lb, double ub)
@@ -395,8 +403,15 @@ ay_error_reportdrange(char *fname, char *pname, double lb, double ub)
 } /* ay_error_reportdrange */
 
 
-/* ay_error_reportirange:
- *  format and output integer range error
+/** ay_error_reportirange:
+ * format and output integer parameter range error
+ *
+ * \param fname location of error
+ * \param pname parameter name
+ * \param lb lower bound of range
+ * \param ub uper bound of range
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_error_reportirange(char *fname, char *pname, int lb, int ub)
@@ -430,8 +445,11 @@ ay_error_reportirange(char *fname, char *pname, int lb, int ub)
 } /* ay_error_reportirange */
 
 
-/* ay_error_reportnan:
- *  format and output nan error
+/** ay_error_reportnan:
+ * format and output nan parameter error
+ *
+ * \param fname location of error
+ * \param pname parameter name
  */
 void
 ay_error_reportnan(char *fname, char *pname)
@@ -460,8 +478,14 @@ ay_error_reportnan(char *fname, char *pname)
 } /* ay_error_reportnan */
 
 
-/* ay_error_reportobject:
- *  format and output object path name
+/** ay_error_reportobject
+ * format and output object path name
+ *
+ * \param ecode error code (AY_E*)
+ * \param fname location of error
+ * \param o object (must be linked to the scene)
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_error_reportobject(int ecode, char *fname, ay_object *o)
