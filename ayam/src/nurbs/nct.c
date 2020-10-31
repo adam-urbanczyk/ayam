@@ -2840,6 +2840,8 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 		  if(o->type == AY_IDNCURVE)
 		    (void)ay_knots_setuminmax(o, mm[0], mm[1]);
 		}
+
+	      extend = AY_TRUE;
 	    } /* if extend */
 	}
       else
