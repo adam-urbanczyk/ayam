@@ -2071,7 +2071,7 @@ proc actionFindU { w } {
 	focus %W
     }
 
-    bind $w <Shift-ButtonRelease-1> {
+    bind $w <Control-ButtonRelease-1> {
 	%W setconf -rect $oldx $oldy %x %y 0
 	if { ($oldx != %x) || ($oldy != %y) } {
 	    %W finduac %x %y $oldx $oldy -extend
