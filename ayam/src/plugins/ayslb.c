@@ -29,15 +29,16 @@
 #include "errcode.h"
 #include <string.h>
 
+extern void ay_error(int code, char *where, char *what);
+
+extern void ay_error_init(Tcl_Interp *interp);
+
+
 /* prototypes: */
 int ayslb_scanshader(char *fname, Tcl_DString *ds);
 
 int ayslb_scanslbtcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
-
-extern void ay_error(int code, char *where, char *what);
-
-extern void ay_error_init(Tcl_Interp *interp);
 
 #ifdef WIN32
 __declspec( dllexport ) int Ayslb_Init(Tcl_Interp *interp);
@@ -121,7 +122,7 @@ ayslb_scanshader(char *fname, Tcl_DString *ds)
  float *fp;
  FILE *f;
 
-  f = fopen(fname,"rb");
+  f = fopen(fname, "rb");
   if(f)
     {
       t = (char *)&h1;
@@ -164,8 +165,7 @@ ayslb_scanshader(char *fname, Tcl_DString *ds)
 		  /*Tcl_DStringAppend(ds, " procedure ", -1);*/
 		  break;
 		default:
-		  ay_error(AY_EWARN, fname,
-			   "skipping shader of unkown type");
+		  ay_error(AY_EWARN, fname, "skipping shader of unkown type");
 		  fclose(f);
 		  return AY_ERROR; /* early exit! */
 		  break;
@@ -292,19 +292,18 @@ ayslb_scanshader(char *fname, Tcl_DString *ds)
 			    } /* switch */
 
 			} /* for */
+
 		      if(na > 1)
 			{
 			  Tcl_DStringAppend(ds, "} ", -1);
 			}
+
 		      Tcl_DStringAppend(ds, "} ", -1);
 		    }
 		  else
 		    {
-		      ay_error(AY_EWARN, h.parm[i].pname,
-			       "skipping array parameter");
-		      /* reset ay_errno so that scanAllShaders does not
-			 stop parsing because of this */
-		      ay_error(AY_OK, NULL, NULL);
+		      ay_error(AY_EWARN, fname, "skipping array parameter");
+		      /*ay_error(AY_EWARN, fname, h.parm[i].pname);*/
 		    } /* if */
 		} /* for */
 	      Tcl_DStringAppend(ds, "}", -1);
@@ -404,10 +403,8 @@ Ayslb_Init(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "shaderScan", ayslb_scanslbtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  ay_error(AY_EOUTPUT, fname,
-	   "Plugin 'ayslb' successfully loaded.");
-  ay_error(AY_EOUTPUT, fname,
-	   "Ayam will now scan for .slb-shaders only!");
+  ay_error(AY_EOUTPUT, fname, "Plugin 'ayslb' successfully loaded.");
+  ay_error(AY_EOUTPUT, fname, "Ayam will now scan for .slb-shaders only!");
 
  return TCL_OK;
 } /* Ayslb_Init */
