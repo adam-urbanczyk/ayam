@@ -1784,6 +1784,7 @@ ay_draw_rhombus(double *pnt)
 /** ay_draw_linestrip:
  * Helper function to draw a 2D line strip.
  *
+ * \param[in] togl view to draw into
  * \param[in] n number of points in the strip
  * \param[in] stride distance between points in \a cv
  * \param[in] cv control points [(n+1)*stride]
@@ -1806,7 +1807,7 @@ ay_draw_linestrip(struct Togl *togl, int n, int stride, double *cv)
    glPushMatrix();
     glLoadIdentity();
     if(!view->antialiaslines)
-      glTranslated(0.375,0.375,0.0);
+      glTranslated(0.375, 0.375, 0.0);
     if(view->antialiaslines)
       {
 	glLineWidth((GLfloat)ay_prefs.aasellinewidth*2.0f);
