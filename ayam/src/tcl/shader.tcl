@@ -59,8 +59,9 @@ proc shader_scanAll { } {
     if { $ayprefs(Shaders) == "" } {
 	ayError 2 scanAllShaders "Shaders are not configured."
 	ayError 4 scanAllShaders "Trying to load initial configuration from env(SHADERS)."
-	if {[string length [array names env SHADERS]] == 0} then {
-	    ayError 2 scanAllShaders "Environment variable SHADERS not set."
+	if {([string length [array names env SHADERS]] == 0) ||
+	    ([string length [string trimleft $env(SHADERS)]] == 0) } then {
+	    ayError 2 scanAllShaders "Environment variable SHADERS not set or empty."
 	    ayError 2 scanAllShaders "Please configure Shaders in the Preferences."
 	    return;
 	} else {
