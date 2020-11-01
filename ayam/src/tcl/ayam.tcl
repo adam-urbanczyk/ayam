@@ -2068,9 +2068,14 @@ if { ($ayprefs(EnvFile) != "") && ($ayprefs(LoadEnv) == 1) &&
 	if { $tcl_platform(platform) == "windows" } {
 	    regsub -all {\\} $filename {/} filename
 	}
-	replaceScene $filename
-	uS
-	rV
+	if { [file exists $filename] } {
+	    replaceScene $filename
+	    uS
+	    rV
+	} else {
+	    puts stdout "Environment scene file does not exist!"
+	    puts stdout "Create via menu \"Special/Save Environment\" or disable environment loading\nby clearing the preference setting \"EnvFile\"."
+	}
     } else {
        puts stdout "Not loading environment because of scene file argument..."
     }
