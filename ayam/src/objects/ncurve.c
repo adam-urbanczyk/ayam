@@ -809,8 +809,8 @@ ay_ncurve_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_ncurve_shadecb */
 
 
-/**
- * Helper for ay_ncurve_drawacb() below. Draw the min/max knot range
+/** ay_ncurve_drawminmax:
+ * Helper for \a ay_ncurve_drawacb() below. Draw the min/max knot range
  * annotation.
  *
  * \param[in] togl view to draw into
@@ -1467,10 +1467,6 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_GetVar2Ex(interp, arr, "Tolerance",
 		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &(ncurve->glu_sampling_tolerance));
-
-  to = Tcl_GetVar2Ex(interp, arr, "DisplayMode",
-		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &(ncurve->display_mode));
 
   to = Tcl_GetVar2Ex(interp, arr, "DisplayMode",
 		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
