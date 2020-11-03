@@ -2559,6 +2559,7 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
  ay_object *o, *pobject = NULL;
  ay_pointedit pe = {0};
  ay_nurbcurve_object *nc;
+ ay_tag *tag = NULL, **last = NULL;
 
   if(argc > 2)
     {
@@ -2768,6 +2769,29 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 	      if(fabs(winXY[0]-obj[0])<3.0 && fabs(winXY[1]-obj[1])<3.0)
 		success = AY_TRUE;
 	    }
+	  else
+	    {
+	      if(drag)
+		{
+		  /* failed drag => remove all UMM tags */
+		  tag = o->tags;
+		  last = &(o->tags);
+		  while(tag)
+		    {
+		      if(tag->type == ay_umm_tagtype)
+			{
+			  *last = tag->next;
+			  ay_tags_free(tag);
+			  tag = *last;
+			}
+		      else
+			{
+			  last = &(tag->next);
+			  tag = tag->next;
+			} /* if */
+		    } /* while */
+		} /* if drag */
+	    } /* if */
 	} /* if pick succeeded */
 
       if(success)
