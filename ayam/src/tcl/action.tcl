@@ -2068,6 +2068,9 @@ proc actionFindU { w } {
 	}
 	%W finduac -end %x %y
 	%W redraw
+	if { ($oldx != %x) || ($oldy != %y) } {
+	    plb_update
+	}
 	focus %W
     }
 
@@ -2080,6 +2083,9 @@ proc actionFindU { w } {
 	}
 	%W finduac -end %x %y
 	%W redraw
+	if { ($oldx != %x) || ($oldy != %y) } {
+	    plb_update
+	}
 	focus %W
     }
 
