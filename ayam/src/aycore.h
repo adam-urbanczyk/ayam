@@ -1476,9 +1476,13 @@ int ay_table_additem(ay_otable *table, void *newitem, unsigned int index);
 
 /* tags.c */
 
-/** delete all tags from object o
+/** remove all tags from an object
  */
 void ay_tags_delall(ay_object *o);
+
+/** remove tags from an object
+ */
+void ay_tags_delete(ay_object *o, unsigned int type);
 
 /** delete a single tag
  */
