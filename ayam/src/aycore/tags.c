@@ -801,8 +801,44 @@ ay_tags_hastcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_tags_hastcmd */
 
 
+/** ay_tags_delete:
+ * Remove all tags of given type from an object.
+ * Also removes internal and binary tags. Does not check the name.
+ *
+ * \param[in,out] o object to process
+ * \param[in] type type of tags to remove
+ */
+void
+ay_tags_delete(ay_object *o, unsigned int type)
+{
+ ay_tag *tag = NULL, **last = NULL;
+
+  if(!o)
+    return;
+
+  tag = o->tags;
+  last = &(o->tags);
+  while(tag)
+    {
+      if(tag->type == type)
+	{
+	  *last = tag->next;
+	  ay_tags_free(tag);
+	  tag = *last;
+	}
+      else
+	{
+	  last = &(tag->next);
+	  tag = tag->next;
+	} /* if */
+    } /* while */
+
+ return;
+} /* ay_tags_delete */
+
+
 /** ay_tags_deletetcmd:
- *  delete all tags of the selected object(s)
+ *  Remove tags from the selected object(s).
  *  Implements the \a delTags scripting interface command.
  *  See also the corresponding section in the \ayd{scdeltags}.
  *
