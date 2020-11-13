@@ -2157,6 +2157,47 @@ proc actionFindUV { w } {
 }
 # actionFindUV
 
+#actionSelBnd:
+# 
+proc actionSelBnd { w } {
+    global ayprefs
+
+    viewTitle $w "" "SelBnd"
+    viewSetMAIcon $w ay_FindUV_img "SelBnd"
+
+    actionClearB1 $w
+
+    bind $w <ButtonPress-1> {
+	%W mc
+	set oldx %x
+	set oldy %y
+    }
+
+    bind $w <B1-Motion> {
+	%W setconf -rect $oldx $oldy %x %y 1
+    }
+
+    bind $w <Motion> ""
+
+    bind $w <ButtonRelease-1> {
+	%W setconf -rect $oldx $oldy %x %y 0
+	if { ($oldx != %x) || ($oldy != %y) } {
+	    %W selbndac %x %y $oldx $oldy
+	} else {
+	    %W selbndac %x %y
+	}
+	#%W selbnd -end %x %y
+	%W redraw
+	if { ($oldx != %x) || ($oldy != %y) } {
+	    plb_update
+	}
+	focus %W
+    }
+
+ return;
+}
+# actionSelBnd
+
 
 #actionSplitNC:
 # split NURBS curve at parametric value u

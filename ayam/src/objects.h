@@ -98,7 +98,11 @@ int ay_ncircle_init(Tcl_Interp *interp);
 /* ncurve.c */
 int ay_ncurve_init(Tcl_Interp *interp);
 
+void ay_ncurve_cacheflt(ay_nurbcurve_object *ncurve);
+
 /* npatch.c */
+void ay_npatch_drawboundary(ay_object *o, unsigned int bound);
+
 int ay_npatch_init(Tcl_Interp *interp);
 
 /* offnc.c */
