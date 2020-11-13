@@ -926,6 +926,39 @@ proc viewBindMenus { w } {
 # viewBindMenus
 
 
+proc viewAutoFocus { w } {
+ global ayprefs
+    if { $ayprefs(AutoFocus) == 1 } {
+	if { [string first ".view" $w] == 0 } {
+	    focus [winfo toplevel $w].f3D.togl
+	} else {
+	    focus $w
+	}
+    }
+ return;
+}
+
+
+proc viewEnter { w c } {
+    global ay
+    if { $ay(viewlock) != 1 } {
+	set ay(viewlock) 1
+
+	if { [string first ".view" $w] == 0 } {
+	    set w [winfo toplevel $w]
+	}
+	$w.f3D.togl mc
+	set ay(currentView) $w.f3D.togl
+	$w.f3D.togl configure -cursor $c
+
+	set ay(viewlock) 0
+    }
+    #if
+
+ return;
+}
+
+
 ##############################
 # viewBind:
 # establish all keyboard and mouse bindings for view window w
@@ -934,88 +967,22 @@ proc viewBind { w } {
 
     # internal bindings
     bind $w <Enter> {
-	global ay ayprefs
-	if { $ay(viewlock) != 1 } {
-	    set ay(viewlock) 1
-
-	    if { [string first ".view" %W] == 0 } {
-		set w [winfo toplevel %W]
-	    } else {
-		set w %W
-	    }
-	    $w.f3D.togl mc
-	    set ay(currentView) $w.f3D.togl
-	    $w.f3D.togl configure -cursor left_ptr
-
-	    set ay(viewlock) 0
-	}
-	#if
-
-	if { $ayprefs(AutoFocus) == 1 } {
-	    if { [string first ".view" %W] == 0 } {
-		focus [winfo toplevel %W].f3D.togl
-	    } else {
-		focus %W
-	    }
-	}
+	viewEnter %W left_ptr
+	viewAutoFocus %W
 	break;
     }
     #bind
 
     bind $w <$ayviewshortcuts(RotMod)-Enter> {
-	global ay ayprefs ayviewshortcuts
-	if { $ay(viewlock) != 1 } {
-	    set ay(viewlock) 1
-
-	    if { [string first ".view" %W] == 0 } {
-		set w [winfo toplevel %W]
-	    } else {
-		set w %W
-	    }
-	    $w.f3D.togl mc
-	    set ay(currentView) $w.f3D.togl
-	    $w.f3D.togl configure -cursor exchange
-
-	    set ay(viewlock) 0
-	}
-	#if
-
-	if { $ayprefs(AutoFocus) == 1 } {
-	    if { [string first ".view" %W] == 0 } {
-		focus [winfo toplevel %W].f3D.togl
-	    } else {
-		focus %W
-	    }
-	}
+	viewEnter %W exchange
+	viewAutoFocus %W
 	break;
     }
     #bind
 
     bind $w <$ayviewshortcuts(ZoomRMod)-Enter> {
-	global ay ayprefs ayviewshortcuts
-	if { $ay(viewlock) != 1 } {
-	    set ay(viewlock) 1
-
-	    if { [string first ".view" %W] == 0 } {
-		set w [winfo toplevel %W]
-	    } else {
-		set w %W
-	    }
-	    $w.f3D.togl mc
-	    set ay(currentView) $w.f3D.togl
-	    $w.f3D.togl configure -cursor sizing
-
-	    set ay(viewlock) 0
-	}
-	#if
-
-	if { $ayprefs(AutoFocus) == 1 } {
-	    if { [string first ".view" %W] == 0 } {
-		focus [winfo toplevel %W].f3D.togl
-	    } else {
-		focus %W
-	    }
-	}
+	viewEnter %W sizing
+	viewAutoFocus %W
 	break;
     }
     #bind
@@ -1438,6 +1405,19 @@ proc viewSetMModeIcon { w mode } {
  return;
 }
 # viewSetMModeIcon
+
+
+##############################
+# viewGetMAIcon:
+#  get modelling action icon (may be used to infer the
+#  currently active modelling action)
+proc viewGetMAIcon { w } {
+    set m fMenu.a
+    set w [winfo parent [winfo parent $w]]
+    set conf "$w.$m configure"
+    lindex [eval "$conf -image"] 4
+}
+# viewGetMAIcon
 
 
 ##############################
