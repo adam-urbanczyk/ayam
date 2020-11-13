@@ -16435,7 +16435,7 @@ cleanup:
 
 
 /** ay_npt_degreereducetcmd:
- *  Reduce the degree of the selected NURBS patch objects.
+ *  Decrease the order of the selected NURBS patch objects.
  *  Implements the \a reduceuNP scripting interface command.
  *  Also implements the \a reducevNP scripting interface command.
  *  See also the corresponding section in the \ayd{screduceunp}.
@@ -16978,6 +16978,241 @@ ay_npt_fairnptcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_npt_fairnptcmd */
+
+
+int
+ay_npatch_selectbound(ay_object *o, unsigned int i, int add)
+{
+ ay_tag *newtag = NULL;
+ int l;
+ char buf[64];
+
+  if(!add)
+    {
+      ay_tags_delete(o, ay_sb_tagtype);
+    }
+
+  if(!(newtag = calloc(1, sizeof(ay_tag))))
+    {
+      return AY_EOMEM;
+    }
+
+  newtag->type = ay_sb_tagtype;
+  if(!(newtag->name = malloc(3*sizeof(char))))
+    {
+      free(newtag);
+      return AY_EOMEM;
+    }
+  memcpy(newtag->name, ay_sb_tagname, 3*sizeof(char));
+
+  l = snprintf(buf, 64, "%u", i);
+  if(!(newtag->val = malloc((l+1)*sizeof(char))))
+    {
+      free(newtag->name);
+      free(newtag);
+      return AY_EOMEM;
+    }
+  memcpy(newtag->val, buf, l*sizeof(char));
+  ((char*)newtag->val)[l] = '\0';
+
+  newtag->next = o->tags;
+  o->tags = newtag;
+
+ return AY_OK;
+}
+
+
+typedef struct ay_objbid_s {
+  ay_object *obj;
+  unsigned int bid;
+} ay_objbid;
+
+
+/* ay_npt_pickboundcb:
+ *  Togl callback to implement picking a boundary curve
+ *  of a NURBS surface
+ */
+int
+ay_npt_pickboundcb(struct Togl *togl, int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ Tcl_Interp *interp = ay_interp;
+ char fname[] = "pickBound_cb";
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
+ int width = Togl_Width(togl);
+ int height = Togl_Height(togl);
+ int i;
+ GLdouble aspect = ((GLdouble) width) / ((GLdouble) height);
+ double x1 = 0.0, y1 = 0.0, x2 = 0.0, y2 = 0.0;
+ double x = 0.0, y = 0.0, boxw = 0.0, boxh = 0.0;
+ ay_nurbpatch_object *np;
+ ay_list_object *sel = ay_selection;
+ ay_object *o, *d, *pobject = NULL;
+ GLuint j, ni = 1, *s, namecnt, name;
+ GLuint selectbuf[1024];
+ GLint hits;
+ GLint viewport[4];
+ ay_objbid *t, *objbids = NULL;
+ unsigned int objbidlen = 256;
+ int add = AY_FALSE, flash = AY_FALSE;
+ double tolerance;
+
+  if(!(objbids = calloc(256, sizeof(ay_objbid))))
+    return TCL_OK;
+
+  Tcl_GetDouble(interp, argv[2], &x1);
+  Tcl_GetDouble(interp, argv[3], &y1);
+
+  if(argc == 6)
+    {
+      Tcl_GetDouble(interp, argv[4], &x2);
+      Tcl_GetDouble(interp, argv[5], &y2);
+
+      x = (x1 + x2) / 2.0;
+      y = (y1 + y2) / 2.0;
+      boxh = abs((int)(y2 - y1));
+      boxw = abs((int)(x2 - x1));
+      add = AY_TRUE;
+    }
+  else
+    {
+      x = x1;
+      y = y1;
+      boxh = ay_prefs.object_pick_epsilon;
+      boxw = ay_prefs.object_pick_epsilon;
+    }
+
+  tolerance = ay_prefs.glu_sampling_tolerance;
+  ay_prefs.glu_sampling_tolerance = 120.0;
+
+  Togl_MakeCurrent(togl);
+
+  glGetIntegerv(GL_VIEWPORT, viewport);
+
+  glSelectBuffer(1024, selectbuf);
+  glRenderMode(GL_SELECT);
+
+  glInitNames();
+  glPushName(0);
+
+  glMatrixMode(GL_PROJECTION);
+  glPushMatrix();
+  glLoadIdentity();
+  gluPickMatrix(x, (GLdouble) (viewport[3] - y), boxw, boxh, viewport);
+
+  /* Setup projection code from viewt.c */
+  if(view->type == AY_VTPERSP)
+    glFrustum(-aspect * view->zoom, aspect * view->zoom,
+	       -1.0 * view->zoom, 1.0 * view->zoom, 1, 1000.0);
+  else
+    glOrtho(-aspect * view->zoom, aspect * view->zoom,
+	     -1.0 * view->zoom, 1.0 * view->zoom, -100.0, 100.0);
+
+  if(view->roll != 0.0)
+    glRotated(view->roll, 0.0, 0.0, 1.0);
+  if(view->type != AY_VTTOP)
+    gluLookAt(view->from[0], view->from[1], view->from[2],
+	       view->to[0], view->to[1], view->to[2],
+	       view->up[0], view->up[1], view->up[2]);
+  else
+    gluLookAt(view->from[0], view->from[1], view->from[2],
+	       view->to[0], view->to[1], view->to[2],
+	       view->up[0], view->up[1], view->up[2]);
+
+  glMatrixMode(GL_MODELVIEW);
+
+  while(sel)
+    {
+      o = sel->object;
+      if(o->type == AY_IDNPATCH)
+	{
+	  for(i = 0; i < 4; i++)
+	    {
+	      if(ni >= objbidlen)
+		{
+		  objbidlen *= 2;
+		  if(!(t = realloc(objbids, objbidlen*sizeof(ay_objbid))))
+		    goto cleanup;
+		  objbids = t;
+		}
+	      (objbids[ni]).obj = o;
+	      (objbids[ni]).bid = i;
+	      glPushName(ni);
+	       ay_npatch_drawboundary(o, i);
+	      glPopName();
+	      ni++;
+	    }
+
+	  i = 5;
+	  d = o->down;
+	  while(d && d->next)
+	    {
+	      if(ni >= objbidlen)
+		{
+		  objbidlen *= 2;
+		  if(!(t = realloc(objbids, objbidlen*sizeof(ay_objbid))))
+		    goto cleanup;
+		  objbids = t;
+		}
+	      (objbids[ni]).obj = o;
+	      (objbids[ni]).bid = i;
+	      glPushName(ni);
+	       ay_npatch_drawboundary(o, i);
+	      glPopName();
+	      ni++;
+	      i++;
+	      d = d->next;
+	    }
+	}
+      sel = sel->next;
+    } /* while */
+
+  glMatrixMode(GL_PROJECTION);
+  glPopMatrix();
+  glFinish();
+
+  hits = glRenderMode(GL_RENDER);
+
+  ay_prefs.glu_sampling_tolerance = tolerance;
+
+  /* process hits */
+  s = selectbuf;
+  for(i = 0; i < hits; i++)
+    {
+      namecnt = *s;
+      s += 3;
+
+      for(j = 0; j < namecnt; j++)
+	{
+	  name = *s;
+	  if(name != 0)
+	    {
+	      /*printf("Got hit %u\n",name);*/
+	      o = (objbids[name]).obj;
+	      if(o)
+		{
+		  if(flash)
+		    {
+		      /*ay_npatch_flashbound(o, (objbids[name]).bid);*/
+		    }
+		  else
+		    {
+		      ay_npatch_selectbound(o, (objbids[name]).bid, add);
+		    }
+		}
+	    }
+	  s++;
+	}
+    }
+
+cleanup:
+
+  if(objbids)
+    free(objbids);
+
+ return TCL_OK;
+} /* ay_npt_pickboundcb */
+
 
 
 /* templates */

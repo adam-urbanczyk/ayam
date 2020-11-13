@@ -214,6 +214,11 @@ unsigned int ay_mp_tagtype;
 
 char *ay_mp_tagname = "MP";
 
+unsigned int ay_sb_tagtype;
+
+char *ay_sb_tagname = "SB";
+
+/* default logging directory and file */
 static char *ay_log = "/tmp/ay.log";
 
 int ay_wrib_framenum = 0;
@@ -557,11 +562,14 @@ ay_init(Tcl_Interp *interp)
   /* register AsWire tag type */
   (void)ay_tags_register(ay_aswire_tagname, &ay_aswire_tagtype);
 
-  /* register MN tag type */
+  /* register MN (Mean Normal) tag type */
   (void)ay_tags_register(ay_mn_tagname, &ay_mn_tagtype);
 
-  /* register MP tag type */
+  /* register MP (Mean Point) tag type */
   (void)ay_tags_register(ay_mp_tagname, &ay_mp_tagtype);
+
+  /* register SB (Selected Boundary) tag type */
+  (void)ay_tags_register(ay_sb_tagname, &ay_sb_tagtype);
 
   /* create root object */
   if((ay_status = ay_object_create(AY_IDROOT, &ay_root)))
@@ -914,6 +922,8 @@ Tcl_AppInit(Tcl_Interp *interp)
 
   /* nurbs/npt.c */
   Togl_CreateCommand("finduvac", ay_npt_finduvcb);
+
+  Togl_CreateCommand("selbndac", ay_npt_pickboundcb);
 
   /* create all safe commands in main interpreter */
   ay_safeinit(interp);

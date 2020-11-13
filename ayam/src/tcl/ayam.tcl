@@ -496,6 +496,7 @@ array set ayviewshortcuts {
     SplitNC "bar"
     FindU "u"
     FindUV "U"
+    SelBnd "n"
 
     IncMultP "asterisk"
     DecMultP "slash"

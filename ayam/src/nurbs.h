@@ -1544,6 +1544,10 @@ int
 ay_npt_fairnptcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[]);
 
+/** Select boundary on NURBS surface modelling action.
+ */
+int ay_npt_pickboundcb(struct Togl *togl, int argc, char *argv[]);
+
 
 /* pmt.c */
 

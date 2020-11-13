@@ -19,8 +19,6 @@ static char *ay_ncurve_name = "NCurve";
 
 /* prototypes of functions local to this module: */
 
-void ay_ncurve_cacheflt(ay_nurbcurve_object *ncurve);
-
 int ay_ncurve_drawstess(ay_view_object *view, ay_nurbcurve_object *ncurve);
 
 int ay_ncurve_drawglu(ay_view_object *view, ay_nurbcurve_object *ncurve);

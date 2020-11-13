@@ -14,7 +14,16 @@
 
 /* npatch.c - npatch object */
 
+/* local variables: */
 static char *ay_npatch_name = "NPatch";
+
+
+/* local types: */
+typedef struct ay_trimtess_s {
+  double *verts;
+  int vertslen;
+  int vindex;
+} ay_trimtess;
 
 
 /* prototypes of functions local to this module: */
@@ -686,6 +695,630 @@ cleanup:
 
  return ay_status;
 } /* ay_npatch_copycb */
+
+
+/** ay_npatch_drawtrimch:
+ * Helper for ay_npatch_drawboundarych() below.
+ * Draw a single trim curve boundary curve.
+ *
+ * \param[in] o NURBS surface
+ * \param[in] t trim curve
+ */
+void
+ay_npatch_drawtrimch(ay_object *o, ay_object *t)
+{
+ ay_nurbpatch_object *npatch;
+ ay_nurbcurve_object *ncurve;
+ double *cv, p[3];
+ int i, stride = 4;
+
+  npatch = (ay_nurbpatch_object *)o->refine;
+  ncurve = (ay_nurbcurve_object *)t->refine;
+
+  cv = ncurve->controlv;
+  glBegin(GL_LINE_LOOP);
+   for(i = 0; i < ncurve->length; i++)
+     {
+       if(npatch->is_rat)
+	 (void)ay_nb_SurfacePoint4D(npatch->width-1, npatch->height-1,
+				    npatch->uorder-1, npatch->vorder-1,
+				    npatch->uknotv, npatch->vknotv,
+				    npatch->controlv,
+				    cv[0], cv[1],
+				    p);
+       else
+	 (void)ay_nb_SurfacePoint3D(npatch->width-1, npatch->height-1,
+				    npatch->uorder-1, npatch->vorder-1,
+				    npatch->uknotv, npatch->vknotv,
+				    npatch->controlv,
+				    cv[0], cv[1],
+				    p);
+       glVertex3dv(p);
+       cv += stride;
+     }
+  glEnd();
+
+ return;
+} /* ay_npatch_drawtrimch */
+
+
+/** ay_npatch_drawboundarystess:
+ * Draw a single boundary of a NURBS surface using STESS.
+ *
+ * \param[in] o NURBS surface
+ * \param[in] bound which boundary to draw
+ */
+void
+ay_npatch_drawboundarystess(ay_object *o, unsigned int bound)
+{
+ ay_nurbpatch_object *npatch;
+ double *cv;
+ int i, j, a, stride = 6;
+ ay_stess_patch tess;
+
+  npatch = (ay_nurbpatch_object *)o->refine;
+  tess = npatch->stess[0];
+  cv = tess.tessv;
+
+  glBegin(GL_LINE_STRIP);
+   switch(bound)
+     {
+     case 0:
+       a = 0;
+       glVertex3dv(cv);
+       for(i = 0; i < npatch->width; i++)
+	 {
+	   glVertex3dv(&(cv[a]));
+	   a += stride*npatch->height;
+	 }
+       break;
+     case 1:
+       a = stride*npatch->height;
+       glVertex3dv(&(cv[a]));
+       for(i = 0; i < npatch->width; i++)
+	 {
+	   glVertex3dv(&(cv[a]));
+	   a += stride*npatch->height;
+	 }
+       break;
+     case 2:
+       a = 0;
+       glVertex3dv(cv);
+       for(i = 0; i < npatch->height; i++)
+	 {
+	   glVertex3dv(&(cv[a]));
+	   a += stride;
+	 }
+       break;
+     case 3:
+       a = stride*npatch->height*(npatch->width-1);
+       glVertex3dv(&(cv[a]));
+       for(i = 0; i < npatch->height; i++)
+	 {
+	   glVertex3dv(&(cv[a]));
+	   a += stride;
+	 }
+       break;
+     case 4:
+       for(i = 0; i < 4; i++)
+	 ay_npatch_drawboundarystess(o, i);
+       break;
+     default:
+       a = 0;
+       for(i = 0; i < tess.tcslen; i++)
+	 {
+	   if((unsigned int)i+5 == bound)
+	     {
+	       for(j = 0; j < tess.tcslens[i]; j++)
+		 {
+		   glVertex3dv(&(tess.tcspnts[a]));
+		   a += 3;
+		 } /* for */
+	       break;
+	     }
+	   else
+	     {
+	       a += tess.tcslens[i];
+	     }
+	 } /* for */
+       break;
+     } /* switch */
+   glEnd();
+
+ return;
+} /* ay_npatch_drawboundarystess */
+
+
+/** ay_npatch_drawboundarych:
+ * Draw control polygon of a single boundary of a NURBS surface.
+ *
+ * \param[in] o NURBS surface
+ * \param[in] bound which boundary to draw
+ */
+void
+ay_npatch_drawboundarych(ay_object *o, unsigned int bound)
+{
+ ay_object *pobject, *t, *tt, *ttt;
+ ay_nurbpatch_object *npatch;
+ double *cv;
+ int i, a, stride = 4;
+ unsigned int ui;
+
+  if(!o || o->type != AY_IDNPATCH)
+    return;
+
+  npatch = (ay_nurbpatch_object *)o->refine;
+
+  cv = npatch->controlv;
+
+  if(bound < 4)
+    {
+      glBegin(GL_LINE_STRIP);
+       switch(bound)
+	 {
+	 case 0:
+	   a = 0;
+	   glVertex3dv(cv);
+	   for(i = 0; i < npatch->width; i++)
+	     {
+	       glVertex3dv(&(cv[a]));
+	       a += stride*npatch->height;
+	     }
+	   break;
+	 case 1:
+	   a = stride*npatch->height;
+	   glVertex3dv(&(cv[a]));
+	   for(i = 0; i < npatch->width; i++)
+	     {
+	       glVertex3dv(&(cv[a]));
+	       a += stride*npatch->height;
+	     }
+	   break;
+	 case 2:
+	   a = 0;
+	   glVertex3dv(cv);
+	   for(i = 0; i < npatch->height; i++)
+	     {
+	       glVertex3dv(&(cv[a]));
+	       a += stride;
+	     }
+	   break;
+	 case 3:
+	   a = stride*npatch->height*(npatch->width-1);
+	   glVertex3dv(&(cv[a]));
+	   for(i = 0; i < npatch->height; i++)
+	     {
+	       glVertex3dv(&(cv[a]));
+	       a += stride;
+	     }
+	   break;
+	 default:
+	   break;
+	 } /* switch */
+      glEnd();
+    }
+  else
+    {
+      if(bound == 4)
+	{
+	  for(i = 0; i < 4; i++)
+	    ay_npatch_drawboundarych(o, i);
+	}
+      else
+	{
+	  t = o->down;
+	  ui = 4;
+	  while(t && t->next)
+	    {
+	      if(ui == bound)
+		{
+		  switch(t->type)
+		    {
+		    case AY_IDNCURVE:
+		      ay_npatch_drawtrimch(o, t);
+		      break;
+		    case AY_IDLEVEL:
+		      tt = t->down;
+		      while(tt && tt->next)
+			{
+			  if(tt->type == AY_IDNCURVE)
+			    {
+			      ay_npatch_drawtrimch(o, tt);
+			    }
+			  else
+			    {
+			      ay_provide_object(tt, AY_IDNCURVE, &pobject);
+			      ttt = pobject;
+			      while(ttt)
+				{
+				  ay_npatch_drawtrimch(o, ttt);
+				  ttt = ttt->next;
+				}
+			      (void)ay_object_deletemulti(pobject, AY_FALSE);
+			    }
+			  o = o->next;
+			}
+		      break;
+		    default:
+		      ay_provide_object(o, AY_IDNCURVE, &pobject);
+		      t = pobject;
+		      while(t)
+			{
+			  ay_npatch_drawtrimch(o, t);
+			  t = t->next;
+			}
+		      (void)ay_object_deletemulti(pobject, AY_FALSE);
+		      break;
+		    } /* switch */
+		  break;
+		} /* if */
+	      ui++;
+	      t = t->next;
+	    } /* while */
+	} /* if bound is trim */
+    } /* if */
+
+ return;
+} /* ay_npatch_drawboundarych */
+
+
+/** ay_npatch_trimvertexcb:
+ * Helper for ay_npatch_drawtrimglu() below.
+ * This vertex data callback accepts a tesselated trim curve point,
+ * calculates the corresponding point on the NURBS surface and adds
+ * the latter to a curve.
+ *
+ * \param[in] vertex tesselated trim curve vertex
+ * \param[in] userData NURBS surface
+ */
+void
+ay_npatch_trimvertexcb(GLfloat *vertex, void *userData)
+{
+ ay_trimtess *tess = (ay_trimtess*)userData;
+ double v[2], *t;
+
+  if(vertex && userData)
+    {
+      v[0] = (double)vertex[0];
+      v[1] = (double)vertex[1];
+
+      if(tess->vindex >= tess->vertslen)
+	{
+	  tess->vertslen *= 2;
+	  if(!(t = realloc(tess->verts, tess->vertslen*2*sizeof(double))))
+	    return;
+
+	  tess->verts = t;
+	}
+      memcpy(&(tess->verts[2*tess->vindex]), v, 2*sizeof(double));
+      tess->vindex++;
+    }
+
+ return;
+} /* ay_npatch_trimvertexcb */
+
+
+/** ay_npatch_drawtrimglu:
+ * Helper for ay_npatch_drawboundaryglu() below.
+ * Draw a single trim curve boundary curve.
+ *
+ * \param[in] no GLU NURBS object
+ * \param[in] o NURBS surface
+ * \param[in] t trim curve
+ */
+void
+ay_npatch_drawtrimglu(GLUnurbsObj *no, ay_object *o, ay_object *t)
+{
+ ay_trimtess tess = {0};
+ ay_nurbpatch_object *npatch;
+ ay_nurbcurve_object *ncurve;
+ int knot_count, i;
+ double *v, p[3];
+
+  npatch = (ay_nurbpatch_object *)o->refine;
+  ncurve = (ay_nurbcurve_object *)t->refine;
+
+  if(!ncurve->fltcv)
+    {
+      ay_ncurve_cacheflt(ncurve);
+    }
+
+  if(!ncurve->fltcv)
+    {
+      return;
+    }
+
+  if(!(tess.verts = malloc(64*2*sizeof(double))))
+    {
+      return;
+    }
+
+  tess.vertslen = 64;
+
+  knot_count = ncurve->length + ncurve->order;
+
+  gluNurbsProperty(no, GLU_NURBS_MODE, GLU_NURBS_TESSELLATOR);
+
+  gluNurbsCallback(no, GLU_NURBS_VERTEX_DATA,
+		   AYGLUCBTYPE ay_npatch_trimvertexcb);
+
+  gluNurbsCallbackData(no, &tess);
+
+
+  gluBeginCurve(no);
+   gluNurbsCurve(no, (GLint)knot_count, (GLfloat*)ncurve->fltcv,
+		 (GLint)(ncurve->is_rat?4:3),
+		 (GLfloat*)&(ncurve->fltcv[knot_count]),
+		 (GLint)ncurve->order,
+		 (ncurve->is_rat?GL_MAP1_VERTEX_4:GL_MAP1_VERTEX_3));
+  gluEndCurve(no);
+
+  gluNurbsCallback(no, GLU_NURBS_VERTEX_DATA, NULL);
+
+  gluNurbsProperty(no, GLU_NURBS_MODE, GLU_NURBS_RENDERER);
+
+  v = tess.verts;
+  glBegin(GL_LINE_LOOP);
+   for(i = 0; i < tess.vindex; i++)
+     {
+       if(npatch->is_rat)
+	 (void)ay_nb_SurfacePoint4D(npatch->width-1, npatch->height-1,
+				    npatch->uorder-1, npatch->vorder-1,
+				    npatch->uknotv, npatch->vknotv,
+				    npatch->controlv,
+				    v[0], v[1],
+				    p);
+       else
+	 (void)ay_nb_SurfacePoint3D(npatch->width-1, npatch->height-1,
+				    npatch->uorder-1, npatch->vorder-1,
+				    npatch->uknotv, npatch->vknotv,
+				    npatch->controlv,
+				    v[0], v[1],
+				    p);
+       glVertex3dv(p);
+       v += 2;
+     }
+  glEnd();
+
+  if(tess.verts)
+    free(tess.verts);
+
+ return;
+} /* ay_npatch_drawtrimglu */
+
+
+/** ay_npatch_drawboundaryglu:
+ * Draw a single boundary of a NURBS surface using GLU.
+ *
+ * \param[in] o NURBS surface
+ * \param[in] bound which boundary to draw
+ */
+void
+ay_npatch_drawboundaryglu(ay_object *o, unsigned int bound)
+{
+ ay_object *pobject, *t, *tt, *ttt;
+ ay_nurbpatch_object *npatch;
+ int uknot_count, vknot_count, total_knots;
+ int freeNurbsObj = AY_FALSE;
+ unsigned int i;
+ GLUnurbsObj *no;
+
+  npatch = (ay_nurbpatch_object *)o->refine;
+
+  if(bound == 4)
+    {
+      for(i = 0; i < 4; i++)
+	ay_npatch_drawboundaryglu(o, i);
+    }
+  else
+    {
+#ifndef AYWITHAQUA
+      if(!npatch->no)
+	{
+#endif /* !AYWITHAQUA */
+	  no = gluNewNurbsRenderer();
+	  if(no == NULL)
+	    {
+	      return;
+	    }
+#ifndef AYWITHAQUA
+	}
+      else
+	{
+	  no = npatch->no;
+	}
+#endif /* !AYWITHAQUA */
+
+      if(bound < 4)
+	{
+	  uknot_count = npatch->width + npatch->uorder;
+	  vknot_count = npatch->height + npatch->vorder;
+	  total_knots = uknot_count + vknot_count;
+
+	  gluBeginCurve(no);
+	   switch(bound)
+	     {
+	     case 0:
+	       gluNurbsCurve(no, (GLint)uknot_count, (GLfloat*)npatch->fltcv,
+			     (GLint)((npatch->is_rat?4:3)*npatch->height),
+			     (GLfloat*)&(npatch->fltcv[total_knots]),
+			     (GLint)npatch->uorder,
+			   (npatch->is_rat?GL_MAP1_VERTEX_4:GL_MAP1_VERTEX_3));
+	       break;
+	     case 1:
+	       gluNurbsCurve(no, (GLint)uknot_count, (GLfloat*)npatch->fltcv,
+			     (GLint)((npatch->is_rat?4:3)*npatch->height),
+			     (GLfloat*)&(npatch->fltcv[total_knots +
+				  (npatch->is_rat?4:3) * (npatch->height-1)]),
+			     (GLint)npatch->uorder,
+			   (npatch->is_rat?GL_MAP1_VERTEX_4:GL_MAP1_VERTEX_3));
+	       break;
+	     case 2:
+	       gluNurbsCurve(no, (GLint)vknot_count,
+			     (GLfloat*)&(npatch->fltcv[uknot_count]),
+			     (GLint)(npatch->is_rat?4:3),
+			     (GLfloat*)&(npatch->fltcv[total_knots]),
+			     (GLint)npatch->vorder,
+			   (npatch->is_rat?GL_MAP1_VERTEX_4:GL_MAP1_VERTEX_3));
+
+	       break;
+	     case 3:
+	       gluNurbsCurve(no, (GLint)vknot_count,
+			     (GLfloat*)&(npatch->fltcv[uknot_count]),
+			     (GLint)(npatch->is_rat?4:3),
+			     (GLfloat*)&(npatch->fltcv[total_knots +
+		  (npatch->is_rat?4:3) * npatch->height * (npatch->width-1)]),
+			     (GLint)npatch->vorder,
+			   (npatch->is_rat?GL_MAP1_VERTEX_4:GL_MAP1_VERTEX_3));
+	       break;
+	     default:
+	       break;
+	     } /* switch */
+	  gluEndCurve(no);
+	}
+      else
+	{
+	  /* bound is trim */
+	  t = o->down;
+	  i = 5;
+	  while(t && t->next)
+	    {
+	      if(i == bound)
+		{
+		  switch(t->type)
+		    {
+		    case AY_IDNCURVE:
+		      ay_npatch_drawtrimglu(no, o, t);
+		      break;
+		    case AY_IDLEVEL:
+		      tt = t->down;
+		      while(tt && tt->next)
+			{
+			  if(tt->type == AY_IDNCURVE)
+			    {
+			      ay_npatch_drawtrimglu(no, o, tt);
+			    }
+			  else
+			    {
+			      ay_provide_object(tt, AY_IDNCURVE, &pobject);
+			      ttt = pobject;
+			      while(ttt)
+				{
+				  ay_npatch_drawtrimglu(no, o, ttt);
+				  ttt = ttt->next;
+				}
+			      (void)ay_object_deletemulti(pobject, AY_FALSE);
+			    }
+			  tt = tt->next;
+			}
+		      break;
+		    default:
+		      ay_provide_object(o, AY_IDNCURVE, &pobject);
+		      tt = pobject;
+		      while(tt)
+			{
+			  ay_npatch_drawtrimglu(no, o, tt);
+			  tt = tt->next;
+			}
+		      (void)ay_object_deletemulti(pobject, AY_FALSE);
+		      break;
+		    } /* switch */
+		  break;
+		} /* if */
+	      i++;
+	      t = t->next;
+	    } /* while */
+	} /* if bound is trim */
+    } /* if */
+
+  if(freeNurbsObj)
+    gluDeleteNurbsRenderer(no);
+
+ return;
+} /* ay_npatch_drawboundaryglu */
+
+
+/** ay_npatch_drawboundary:
+ * Draw a single boundary of a NURBS surface.
+ *
+ * \param[in] o NURBS surface
+ * \param[in] bound which boundary to draw
+ */
+void
+ay_npatch_drawboundary(ay_object *o, unsigned int bound)
+{
+ int mode = ay_prefs.np_display_mode;
+ ay_nurbpatch_object *np = NULL;
+
+  if(!o)
+    return;
+
+  if(o->type != AY_IDNPATCH)
+    return;
+
+  np = (ay_nurbpatch_object *)o->refine;
+
+  if(np->display_mode != 0)
+    mode = np->display_mode-1;
+
+  switch(mode)
+    {
+    case 0:
+      ay_npatch_drawboundarych(o, bound);
+      break;
+    case 1:
+    case 2:
+      ay_npatch_drawboundaryglu(o, bound);
+      break;
+    case 3:
+      ay_npatch_drawboundarystess(o, bound);
+      break;
+    default:
+      break;
+    }
+
+ return;
+} /* ay_npatch_drawboundary */
+
+
+/** ay_npatch_drawboundaries:
+ * Draw all selected boundaries.
+ *
+ * \param[in] o object with boundaries to draw
+ */
+void
+ay_npatch_drawboundaries(ay_object *o)
+{
+ ay_tag *tag;
+ unsigned int bound;
+ int n;
+
+  tag = o->tags;
+  while(tag)
+    {
+      if(tag->type == ay_sb_tagtype)
+	{
+	  if(tag->val)
+	    {
+	      if(((char*)tag->val)[0] != '\0')
+		{
+		  n = sscanf(tag->val, "%u", &bound);
+		  if(n == 1)
+		    {
+		      ay_npatch_drawboundary(o, bound);
+		    }
+		  else
+		    {
+	     /*ay_error(AY_EWARN, fname, "malformed SB tag encountered");*/
+		    }
+		} /* if */
+	    } /* if have tag value */
+	} /* if is sb tag */
+      tag = tag->next;
+    } /* while */
+
+ return;
+} /* ay_npatch_drawboundaries */
 
 
 /* ay_npatch_drawstess:
