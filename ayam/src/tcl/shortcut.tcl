@@ -938,6 +938,7 @@ proc shortcut_viewactions { w } {
     bind $w <$ayviewshortcuts(DeleteP)> "actionDeleteP $w.f3D.togl"
     bind $w <$ayviewshortcuts(FindU)> "actionFindU $w.f3D.togl"
     bind $w <$ayviewshortcuts(FindUV)> "actionFindUV $w.f3D.togl"
+    bind $w <$ayviewshortcuts(SelBnd)> "actionSelBnd $w.f3D.togl"
     bind $w <$ayviewshortcuts(SplitNC)> "actionSplitNC $w.f3D.togl"
 
     bind $w <$ayviewshortcuts(IncMultP)> "actionIncMultP $w.f3D.togl"
@@ -956,8 +957,13 @@ proc shortcut_viewactions { w } {
 	focus %W
     }
     bind $w <$ayviewshortcuts(RefineC)> {
-	undo save RefineC
-	refineC
+	if { [string first "FindU" [viewGetMAIcon %W.f3D.togl]] != -1 } {
+	    undo save RefineKNC
+	    refineknNC
+	} else {
+	    undo save RefineC
+	    refineC
+	}
 	plb_update; rV
 	focus %W
     }
