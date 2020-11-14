@@ -1014,6 +1014,7 @@ ay_npatch_drawtrimglu(GLUnurbsObj *no, ay_object *o, ay_object *t)
  ay_nurbcurve_object *ncurve;
  int knot_count, i;
  double *v, p[3];
+ double m[16];
 
   npatch = (ay_nurbpatch_object *)o->refine;
   ncurve = (ay_nurbcurve_object *)t->refine;
@@ -1044,41 +1045,49 @@ ay_npatch_drawtrimglu(GLUnurbsObj *no, ay_object *o, ay_object *t)
 
   gluNurbsCallbackData(no, &tess);
 
+  glPushMatrix();
 
-  gluBeginCurve(no);
-   gluNurbsCurve(no, (GLint)knot_count, (GLfloat*)ncurve->fltcv,
-		 (GLint)(ncurve->is_rat?4:3),
-		 (GLfloat*)&(ncurve->fltcv[knot_count]),
-		 (GLint)ncurve->order,
-		 (ncurve->is_rat?GL_MAP1_VERTEX_4:GL_MAP1_VERTEX_3));
-  gluEndCurve(no);
+   glTranslated((GLdouble)t->movx, (GLdouble)t->movy, (GLdouble)t->movz);
+   ay_quat_torotmatrix(t->quat, m);
+   glMultMatrixd((GLdouble*)m);
+   glScaled((GLdouble)t->scalx, (GLdouble)t->scaly, (GLdouble)t->scalz);
 
-  gluNurbsCallback(no, GLU_NURBS_VERTEX_DATA, NULL);
+   gluBeginCurve(no);
+    gluNurbsCurve(no, (GLint)knot_count, (GLfloat*)ncurve->fltcv,
+		  (GLint)(ncurve->is_rat?4:3),
+		  (GLfloat*)&(ncurve->fltcv[knot_count]),
+		  (GLint)ncurve->order,
+		  (ncurve->is_rat?GL_MAP1_VERTEX_4:GL_MAP1_VERTEX_3));
+   gluEndCurve(no);
 
-  gluNurbsProperty(no, GLU_NURBS_MODE, GLU_NURBS_RENDERER);
+   gluNurbsCallback(no, GLU_NURBS_VERTEX_DATA, NULL);
 
-  v = tess.verts;
-  glBegin(GL_LINE_LOOP);
-   for(i = 0; i < tess.vindex; i++)
-     {
-       if(npatch->is_rat)
-	 (void)ay_nb_SurfacePoint4D(npatch->width-1, npatch->height-1,
-				    npatch->uorder-1, npatch->vorder-1,
-				    npatch->uknotv, npatch->vknotv,
-				    npatch->controlv,
-				    v[0], v[1],
-				    p);
-       else
-	 (void)ay_nb_SurfacePoint3D(npatch->width-1, npatch->height-1,
-				    npatch->uorder-1, npatch->vorder-1,
-				    npatch->uknotv, npatch->vknotv,
-				    npatch->controlv,
-				    v[0], v[1],
-				    p);
-       glVertex3dv(p);
-       v += 2;
-     }
-  glEnd();
+   gluNurbsProperty(no, GLU_NURBS_MODE, GLU_NURBS_RENDERER);
+
+   v = tess.verts;
+   glBegin(GL_LINE_LOOP);
+    for(i = 0; i < tess.vindex; i++)
+      {
+	if(npatch->is_rat)
+	  (void)ay_nb_SurfacePoint4D(npatch->width-1, npatch->height-1,
+				     npatch->uorder-1, npatch->vorder-1,
+				     npatch->uknotv, npatch->vknotv,
+				     npatch->controlv,
+				     v[0], v[1],
+				     p);
+	else
+	  (void)ay_nb_SurfacePoint3D(npatch->width-1, npatch->height-1,
+				     npatch->uorder-1, npatch->vorder-1,
+				     npatch->uknotv, npatch->vknotv,
+				     npatch->controlv,
+				     v[0], v[1],
+				     p);
+	glVertex3dv(p);
+	v += 2;
+      }
+   glEnd();
+
+  glPopMatrix();
 
   if(tess.verts)
     free(tess.verts);
