@@ -21,6 +21,13 @@ char ay_npt_npname[] = "NPatch";
 typedef void (ay_npt_gndcb) (char dir, ay_nurbpatch_object *np,
 			     int i, double *p, double **dp);
 
+/* helper to connect GL names to objects */
+typedef struct ay_objbid_s {
+  ay_object *obj;
+  unsigned int bid;
+} ay_objbid;
+
+
 /* prototypes of functions local to this module: */
 
 /** Helper for gordonwc().
@@ -64,6 +71,7 @@ void ay_npt_gndvp(char dir, ay_nurbpatch_object *np, int j, double *p,
 int ay_npt_getnormal(ay_nurbpatch_object *np, int i, int j,
 		     ay_npt_gndcb *gnducb, ay_npt_gndcb *gndvcb,
 		     int store_tangents, double *result);
+
 
 /* functions: */
 
@@ -16980,8 +16988,17 @@ ay_npt_fairnptcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_npt_fairnptcmd */
 
 
+/**ay_npt_selectbound:
+ * Add a new SB tag to an object.
+ *
+ * \param[in,out] o object to process
+ * \param[in] i which bound to select
+ * \param[in] add whether to clear all other SB tags first
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
 int
-ay_npatch_selectbound(ay_object *o, unsigned int i, int add)
+ay_npt_selectbound(ay_object *o, unsigned int i, int add)
 {
  ay_tag *newtag = NULL;
  int l;
@@ -17019,13 +17036,7 @@ ay_npatch_selectbound(ay_object *o, unsigned int i, int add)
   o->tags = newtag;
 
  return AY_OK;
-}
-
-
-typedef struct ay_objbid_s {
-  ay_object *obj;
-  unsigned int bid;
-} ay_objbid;
+} /* ay_npt_selectbound */
 
 
 /* ay_npt_pickboundcb:
@@ -17197,7 +17208,7 @@ ay_npt_pickboundcb(struct Togl *togl, int argc, char *argv[])
 		    }
 		  else
 		    {
-		      ay_npatch_selectbound(o, (objbids[name]).bid, add);
+		      ay_npt_selectbound(o, (objbids[name]).bid, add);
 		    }
 		}
 	    }

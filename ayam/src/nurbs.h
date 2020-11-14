@@ -1548,6 +1548,10 @@ ay_npt_fairnptcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int ay_npt_pickboundcb(struct Togl *togl, int argc, char *argv[]);
 
+/** Add SB (SelectedBoundary) tag to an object.
+ */
+int ay_npt_selectbound(ay_object *o, unsigned int i, int add);
+
 
 /* pmt.c */
 
