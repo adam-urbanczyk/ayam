@@ -1169,7 +1169,14 @@ ay_npatch_drawboundaryglu(ay_object *o, unsigned int bound)
 	  uknot_count = npatch->width + npatch->uorder;
 	  vknot_count = npatch->height + npatch->vorder;
 	  total_knots = uknot_count + vknot_count;
-
+	  if(!npatch->fltcv)
+	    {
+	      ay_npatch_cacheflt(npatch);
+	    }
+	  if(!npatch->fltcv)
+	    {
+	      return;
+	    }
 	  gluBeginCurve(no);
 	   switch(bound)
 	     {
