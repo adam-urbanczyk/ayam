@@ -17054,6 +17054,7 @@ ay_npt_pickboundcb(struct Togl *togl, int argc, char *argv[])
  int height = Togl_Height(togl);
  int i;
  GLdouble aspect = ((GLdouble) width) / ((GLdouble) height);
+ double m[16];
  double x1 = 0.0, y1 = 0.0, x2 = 0.0, y2 = 0.0;
  double x = 0.0, y = 0.0, boxw = 0.0, boxh = 0.0;
  ay_nurbpatch_object *np;
@@ -17132,51 +17133,74 @@ ay_npt_pickboundcb(struct Togl *togl, int argc, char *argv[])
 
   glMatrixMode(GL_MODELVIEW);
 
+  if(ay_currentlevel->object != ay_root)
+    {
+      glPushMatrix();
+      ay_trafo_concatparent(ay_currentlevel->next);
+    }
+
   while(sel)
     {
       o = sel->object;
-      if(o->type == AY_IDNPATCH)
-	{
-	  for(i = 0; i < 4; i++)
-	    {
-	      if(ni >= objbidlen)
-		{
-		  objbidlen *= 2;
-		  if(!(t = realloc(objbids, objbidlen*sizeof(ay_objbid))))
-		    goto cleanup;
-		  objbids = t;
-		}
-	      (objbids[ni]).obj = o;
-	      (objbids[ni]).bid = i;
-	      glPushName(ni);
-	       ay_npatch_drawboundary(o, i);
-	      glPopName();
-	      ni++;
-	    }
 
-	  i = 5;
-	  d = o->down;
-	  while(d && d->next)
-	    {
-	      if(ni >= objbidlen)
-		{
-		  objbidlen *= 2;
-		  if(!(t = realloc(objbids, objbidlen*sizeof(ay_objbid))))
-		    goto cleanup;
-		  objbids = t;
-		}
-	      (objbids[ni]).obj = o;
-	      (objbids[ni]).bid = i;
-	      glPushName(ni);
+      glPushMatrix();
+
+       glTranslated((GLdouble)o->movx, (GLdouble)o->movy, (GLdouble)o->movz);
+       ay_quat_torotmatrix(o->quat, m);
+       glMultMatrixd((GLdouble*)m);
+       glScaled((GLdouble)o->scalx, (GLdouble)o->scaly, (GLdouble)o->scalz);
+
+       if(o->type == AY_IDNPATCH)
+	 {
+	   for(i = 0; i < 4; i++)
+	     {
+	       if(ni >= objbidlen)
+		 {
+		   objbidlen *= 2;
+		   if(!(t = realloc(objbids, objbidlen*sizeof(ay_objbid))))
+		     goto cleanup;
+		   objbids = t;
+		 }
+	       (objbids[ni]).obj = o;
+	       (objbids[ni]).bid = i;
+	       glPushName(ni);
 	       ay_npatch_drawboundary(o, i);
-	      glPopName();
-	      ni++;
-	      i++;
-	      d = d->next;
-	    }
-	}
+	       glPopName();
+	       ni++;
+	     }
+
+	   i = 5;
+	   d = o->down;
+	   while(d && d->next)
+	     {
+	       if(ni >= objbidlen)
+		 {
+		   objbidlen *= 2;
+		   if(!(t = realloc(objbids, objbidlen*sizeof(ay_objbid))))
+		     goto cleanup;
+		   objbids = t;
+		 }
+	       (objbids[ni]).obj = o;
+	       (objbids[ni]).bid = i;
+	       glPushName(ni);
+	       ay_npatch_drawboundary(o, i);
+	       glPopName();
+	       ni++;
+	       i++;
+
+	       d = d->next;
+	     }
+	 }
+
+      glPopMatrix();
+
       sel = sel->next;
     } /* while */
+
+  if(ay_currentlevel->object != ay_root)
+    {
+      glPopMatrix();
+    }
 
   glMatrixMode(GL_PROJECTION);
   glPopMatrix();
