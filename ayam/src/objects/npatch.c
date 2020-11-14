@@ -699,7 +699,7 @@ cleanup:
 
 /** ay_npatch_drawtrimch:
  * Helper for ay_npatch_drawboundarych() below.
- * Draw a single trim curve boundary curve.
+ * Draw the control polygon of a single trim curve boundary curve.
  *
  * \param[in] o NURBS surface
  * \param[in] t trim curve
@@ -709,34 +709,45 @@ ay_npatch_drawtrimch(ay_object *o, ay_object *t)
 {
  ay_nurbpatch_object *npatch;
  ay_nurbcurve_object *ncurve;
- double *cv, p[3];
+ double *cv, p[3], m[16];
  int i, stride = 4;
 
   npatch = (ay_nurbpatch_object *)o->refine;
   ncurve = (ay_nurbcurve_object *)t->refine;
 
-  cv = ncurve->controlv;
-  glBegin(GL_LINE_LOOP);
-   for(i = 0; i < ncurve->length; i++)
-     {
-       if(npatch->is_rat)
-	 (void)ay_nb_SurfacePoint4D(npatch->width-1, npatch->height-1,
-				    npatch->uorder-1, npatch->vorder-1,
-				    npatch->uknotv, npatch->vknotv,
-				    npatch->controlv,
-				    cv[0], cv[1],
-				    p);
-       else
-	 (void)ay_nb_SurfacePoint3D(npatch->width-1, npatch->height-1,
-				    npatch->uorder-1, npatch->vorder-1,
-				    npatch->uknotv, npatch->vknotv,
-				    npatch->controlv,
-				    cv[0], cv[1],
-				    p);
-       glVertex3dv(p);
-       cv += stride;
-     }
-  glEnd();
+  glPushMatrix();
+   glTranslated((GLdouble)t->movx,
+		(GLdouble)t->movy,
+		(GLdouble)t->movz);
+   ay_quat_torotmatrix(t->quat, m);
+   glMultMatrixd((GLdouble*)m);
+   glScaled((GLdouble)t->scalx,
+	    (GLdouble)t->scaly,
+	    (GLdouble)t->scalz);
+
+   cv = ncurve->controlv;
+   glBegin(GL_LINE_LOOP);
+    for(i = 0; i < ncurve->length; i++)
+      {
+	if(npatch->is_rat)
+	  (void)ay_nb_SurfacePoint4D(npatch->width-1, npatch->height-1,
+				     npatch->uorder-1, npatch->vorder-1,
+				     npatch->uknotv, npatch->vknotv,
+				     npatch->controlv,
+				     cv[0], cv[1],
+				     p);
+	else
+	  (void)ay_nb_SurfacePoint3D(npatch->width-1, npatch->height-1,
+				     npatch->uorder-1, npatch->vorder-1,
+				     npatch->uknotv, npatch->vknotv,
+				     npatch->controlv,
+				     cv[0], cv[1],
+				     p);
+	glVertex3dv(p);
+	cv += stride;
+      }
+   glEnd();
+  glPopMatrix();
 
  return;
 } /* ay_npatch_drawtrimch */
@@ -841,6 +852,7 @@ ay_npatch_drawboundarych(ay_object *o, unsigned int bound)
  ay_object *pobject, *t, *tt, *ttt;
  ay_nurbpatch_object *npatch;
  double *cv;
+ double m[16];
  int i, a, stride = 4;
  unsigned int ui;
 
@@ -918,26 +930,38 @@ ay_npatch_drawboundarych(ay_object *o, unsigned int bound)
 		      ay_npatch_drawtrimch(o, t);
 		      break;
 		    case AY_IDLEVEL:
-		      tt = t->down;
-		      while(tt && tt->next)
-			{
-			  if(tt->type == AY_IDNCURVE)
-			    {
-			      ay_npatch_drawtrimch(o, tt);
-			    }
-			  else
-			    {
-			      ay_provide_object(tt, AY_IDNCURVE, &pobject);
-			      ttt = pobject;
-			      while(ttt)
-				{
-				  ay_npatch_drawtrimch(o, ttt);
-				  ttt = ttt->next;
-				}
-			      (void)ay_object_deletemulti(pobject, AY_FALSE);
-			    }
-			  o = o->next;
-			}
+		      glPushMatrix();
+
+		       glTranslated((GLdouble)t->movx,
+				    (GLdouble)t->movy,
+				    (GLdouble)t->movz);
+		       ay_quat_torotmatrix(t->quat, m);
+		       glMultMatrixd((GLdouble*)m);
+		       glScaled((GLdouble)t->scalx,
+				(GLdouble)t->scaly,
+				(GLdouble)t->scalz);
+
+		       tt = t->down;
+		       while(tt && tt->next)
+			 {
+			   if(tt->type == AY_IDNCURVE)
+			     {
+			       ay_npatch_drawtrimch(o, tt);
+			     }
+			   else
+			     {
+			       ay_provide_object(tt, AY_IDNCURVE, &pobject);
+			       ttt = pobject;
+			       while(ttt)
+				 {
+				   ay_npatch_drawtrimch(o, ttt);
+				   ttt = ttt->next;
+				 }
+			       (void)ay_object_deletemulti(pobject, AY_FALSE);
+			     }
+			   o = o->next;
+			 }
+		       glPopMatrix();
 		      break;
 		    default:
 		      ay_provide_object(o, AY_IDNCURVE, &pobject);
@@ -965,11 +989,10 @@ ay_npatch_drawboundarych(ay_object *o, unsigned int bound)
 /** ay_npatch_trimvertexcb:
  * Helper for ay_npatch_drawtrimglu() below.
  * This vertex data callback accepts a tesselated trim curve point,
- * calculates the corresponding point on the NURBS surface and adds
- * the latter to a curve.
+ * and stores it for later projection onto the NURBS surface and drawing.
  *
  * \param[in] vertex tesselated trim curve vertex
- * \param[in] userData NURBS surface
+ * \param[in,out] userData a ay_trimtess structure where to store the vertices
  */
 void
 ay_npatch_trimvertexcb(GLfloat *vertex, void *userData)
@@ -1111,6 +1134,7 @@ ay_npatch_drawboundaryglu(ay_object *o, unsigned int bound)
  int freeNurbsObj = AY_FALSE;
  unsigned int i;
  GLUnurbsObj *no;
+ double m[16];
 
   npatch = (ay_nurbpatch_object *)o->refine;
 
@@ -1200,26 +1224,38 @@ ay_npatch_drawboundaryglu(ay_object *o, unsigned int bound)
 		      ay_npatch_drawtrimglu(no, o, t);
 		      break;
 		    case AY_IDLEVEL:
-		      tt = t->down;
-		      while(tt && tt->next)
-			{
-			  if(tt->type == AY_IDNCURVE)
-			    {
-			      ay_npatch_drawtrimglu(no, o, tt);
-			    }
-			  else
-			    {
-			      ay_provide_object(tt, AY_IDNCURVE, &pobject);
-			      ttt = pobject;
-			      while(ttt)
-				{
-				  ay_npatch_drawtrimglu(no, o, ttt);
-				  ttt = ttt->next;
-				}
-			      (void)ay_object_deletemulti(pobject, AY_FALSE);
-			    }
-			  tt = tt->next;
-			}
+		      glPushMatrix();
+
+		       glTranslated((GLdouble)t->movx,
+				    (GLdouble)t->movy,
+				    (GLdouble)t->movz);
+		       ay_quat_torotmatrix(t->quat, m);
+		       glMultMatrixd((GLdouble*)m);
+		       glScaled((GLdouble)t->scalx,
+				(GLdouble)t->scaly,
+				(GLdouble)t->scalz);
+
+		       tt = t->down;
+		       while(tt && tt->next)
+			 {
+			   if(tt->type == AY_IDNCURVE)
+			     {
+			       ay_npatch_drawtrimglu(no, o, tt);
+			     }
+			   else
+			     {
+			       ay_provide_object(tt, AY_IDNCURVE, &pobject);
+			       ttt = pobject;
+			       while(ttt)
+				 {
+				   ay_npatch_drawtrimglu(no, o, ttt);
+				   ttt = ttt->next;
+				 }
+			       (void)ay_object_deletemulti(pobject, AY_FALSE);
+			     }
+			   tt = tt->next;
+			 }
+		      glPopMatrix();
 		      break;
 		    default:
 		      ay_provide_object(o, AY_IDNCURVE, &pobject);
