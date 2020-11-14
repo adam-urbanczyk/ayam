@@ -12396,6 +12396,7 @@ ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
       o = sel->object;
       if(o->type != AY_IDNPATCH)
 	{
+	  pobject = NULL;
 	  (void)ay_provide_object(o, AY_IDNPATCH, &pobject);
 
 	  if(!pobject)
@@ -16691,6 +16692,7 @@ ay_npt_getcurvaturetcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
+	  po = NULL;
 	  (void)ay_provide_object(sel->object, AY_IDNPATCH, &po);
 	  if(po)
 	    {
@@ -17046,9 +17048,8 @@ ay_npt_selectbound(ay_object *o, unsigned int i, int add)
 int
 ay_npt_pickboundcb(struct Togl *togl, int argc, char *argv[])
 {
- int ay_status = AY_OK;
  Tcl_Interp *interp = ay_interp;
- char fname[] = "pickBound_cb";
+ /*char fname[] = "pickBound_cb";*/
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  int width = Togl_Width(togl);
  int height = Togl_Height(togl);
@@ -17057,7 +17058,6 @@ ay_npt_pickboundcb(struct Togl *togl, int argc, char *argv[])
  double m[16];
  double x1 = 0.0, y1 = 0.0, x2 = 0.0, y2 = 0.0;
  double x = 0.0, y = 0.0, boxw = 0.0, boxh = 0.0;
- ay_nurbpatch_object *np;
  ay_list_object *sel = ay_selection;
  ay_object *o, *d, *pobject = NULL;
  GLuint j, ni = 1, *s, namecnt, name;
@@ -17164,7 +17164,7 @@ ay_npt_pickboundcb(struct Togl *togl, int argc, char *argv[])
 	       (objbids[ni]).obj = o;
 	       (objbids[ni]).bid = i;
 	       glPushName(ni);
-	       ay_npatch_drawboundary(o, i);
+	        ay_npatch_drawboundary(o, i);
 	       glPopName();
 	       ni++;
 	     }
@@ -17183,7 +17183,7 @@ ay_npt_pickboundcb(struct Togl *togl, int argc, char *argv[])
 	       (objbids[ni]).obj = o;
 	       (objbids[ni]).bid = i;
 	       glPushName(ni);
-	       ay_npatch_drawboundary(o, i);
+	        ay_npatch_drawboundary(o, i);
 	       glPopName();
 	       ni++;
 	       i++;
@@ -17191,7 +17191,53 @@ ay_npt_pickboundcb(struct Togl *togl, int argc, char *argv[])
 	       d = d->next;
 	     }
 	 }
+       else
+	 {
+	   pobject = NULL;
+	   ay_provide_object(o, AY_IDNPATCH, &pobject);
+	   if(pobject)
+	     {
+	       for(i = 0; i < 4; i++)
+		 {
+		   if(ni >= objbidlen)
+		     {
+		       objbidlen *= 2;
+		       if(!(t = realloc(objbids, objbidlen*sizeof(ay_objbid))))
+			 goto cleanup;
+		       objbids = t;
+		     }
+		   (objbids[ni]).obj = o;
+		   (objbids[ni]).bid = i;
+		   glPushName(ni);
+		    ay_npatch_drawboundary(pobject, i);
+		   glPopName();
+		   ni++;
+		 }
 
+	       i = 5;
+	       d = pobject->down;
+	       while(d && d->next)
+		 {
+		   if(ni >= objbidlen)
+		     {
+		       objbidlen *= 2;
+		       if(!(t = realloc(objbids, objbidlen*sizeof(ay_objbid))))
+			 goto cleanup;
+		       objbids = t;
+		     }
+		   (objbids[ni]).obj = o;
+		   (objbids[ni]).bid = i;
+		   glPushName(ni);
+		    ay_npatch_drawboundary(pobject, i);
+		   glPopName();
+		   ni++;
+		   i++;
+
+		   d = d->next;
+		 }
+	       (void)ay_object_deletemulti(pobject, AY_FALSE);
+	     }
+	 }
       glPopMatrix();
 
       sel = sel->next;
