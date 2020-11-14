@@ -950,6 +950,7 @@ ay_npatch_drawboundarych(ay_object *o, unsigned int bound)
 			     }
 			   else
 			     {
+			       pobject = NULL;
 			       ay_provide_object(tt, AY_IDNCURVE, &pobject);
 			       ttt = pobject;
 			       while(ttt)
@@ -964,6 +965,7 @@ ay_npatch_drawboundarych(ay_object *o, unsigned int bound)
 		       glPopMatrix();
 		      break;
 		    default:
+		      pobject = NULL;
 		      ay_provide_object(o, AY_IDNCURVE, &pobject);
 		      t = pobject;
 		      while(t)
@@ -1244,6 +1246,7 @@ ay_npatch_drawboundaryglu(ay_object *o, unsigned int bound)
 			     }
 			   else
 			     {
+			       pobject = NULL;
 			       ay_provide_object(tt, AY_IDNCURVE, &pobject);
 			       ttt = pobject;
 			       while(ttt)
@@ -1258,6 +1261,7 @@ ay_npatch_drawboundaryglu(ay_object *o, unsigned int bound)
 		      glPopMatrix();
 		      break;
 		    default:
+		      pobject = NULL;
 		      ay_provide_object(o, AY_IDNCURVE, &pobject);
 		      tt = pobject;
 		      while(tt)
