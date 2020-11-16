@@ -252,7 +252,7 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 	} /* if */
 
       /* draw handles of selected objects */
-      if(view->drawhandles)
+      if(view->drawhandles && view->drawhandles < 4)
 	{
 	  /* let all handles appear "on top" of current drawing;     */
 	  /* we cannot use the glDisable(GL_DEPTH_TEST);-method here */

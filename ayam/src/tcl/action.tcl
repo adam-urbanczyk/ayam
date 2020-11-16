@@ -2194,6 +2194,8 @@ proc actionSelBnd { w } {
 	focus %W
     }
 
+    $w setconf -drawh 4
+
  return;
 }
 # actionSelBnd
