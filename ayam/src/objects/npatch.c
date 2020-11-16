@@ -30,6 +30,8 @@ typedef struct ay_trimtess_s {
 
 void ay_npatch_cacheflt(ay_nurbpatch_object *npatch);
 
+void ay_npatch_drawboundarych(ay_object *o, unsigned int bound);
+
 int ay_npatch_drawstess(ay_view_object *view, ay_object *o);
 
 int ay_npatch_drawglu(ay_view_object *view, ay_object *o);
@@ -771,6 +773,20 @@ ay_npatch_drawboundarystess(ay_object *o, unsigned int bound)
   tess = npatch->stess[0];
   cv = tess.tessv;
 
+  if(!cv && (bound < 5))
+    {
+      /* fallback for trimmed patches (without simple tesselation) */
+      ay_npatch_drawboundarych(o, bound);
+      return;
+    }
+
+  if((bound > 4) && tess.tcslen == 0)
+    {
+      /* fallback for planar trimmed patches (that tesselate to a polymesh) */
+      ay_npatch_drawboundarych(o, bound);
+      return;
+    }
+
   glBegin(GL_LINE_STRIP);
    switch(bound)
      {
@@ -1349,6 +1365,9 @@ ay_npatch_drawboundaries(ay_object *o)
  unsigned int bound;
  int n;
 
+  glColor3f((GLfloat)ay_prefs.tpr, (GLfloat)ay_prefs.tpg,
+	    (GLfloat)ay_prefs.tpb);
+
   tag = o->tags;
   while(tag)
     {
@@ -1372,6 +1391,9 @@ ay_npatch_drawboundaries(ay_object *o)
 	} /* if is sb tag */
       tag = tag->next;
     } /* while */
+
+  glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+	    (GLfloat)ay_prefs.obb);
 
  return;
 } /* ay_npatch_drawboundaries */
@@ -2145,6 +2167,12 @@ ay_npatch_drawacb(struct Togl *togl, ay_object *o)
 
   if(!o)
     return AY_ENULL;
+
+  if(view->drawhandles == 4)
+    {
+      ay_npatch_drawboundaries(o);
+      return AY_OK;
+    }
 
   npatch = (ay_nurbpatch_object *)o->refine;
 
