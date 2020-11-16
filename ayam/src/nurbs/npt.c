@@ -72,6 +72,9 @@ int ay_npt_getnormal(ay_nurbpatch_object *np, int i, int j,
 		     ay_npt_gndcb *gnducb, ay_npt_gndcb *gndvcb,
 		     int store_tangents, double *result);
 
+int ay_npt_addobjbid(ay_objbid **objbids, unsigned int *objbidslen,
+		     unsigned int ni, ay_object *o, unsigned int id);
+
 
 /* functions: */
 
@@ -17041,6 +17044,38 @@ ay_npt_selectbound(ay_object *o, unsigned int i, int add)
 } /* ay_npt_selectbound */
 
 
+/** ay_npt_addobjbid:
+ * Helper for ay_npt_pickboundcb() below.
+ * Add a (ay_object reference / boundary id) pair to an array.
+ *
+ * \param[in,out] objbids array to manage
+ * \param[in,out] objbidslen current length of array
+ * \param[in] ni index in array where to store the pair
+ * \param[in] o ay_object reference
+ * \param[in] id boundary id
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_npt_addobjbid(ay_objbid **objbids, unsigned int *objbidslen,
+		 unsigned int ni, ay_object *o, unsigned int id)
+{
+ ay_objbid *t;
+
+  if(ni >= *objbidslen)
+    {
+      *objbidslen *= 2;
+      if(!(t = realloc(*objbids, *objbidslen*sizeof(ay_objbid))))
+	return AY_EOMEM;
+      *objbids = t;
+    }
+  ((*objbids)[ni]).obj = o;
+  ((*objbids)[ni]).bid = id;
+
+ return AY_OK;
+} /* ay_npt_addobjbid */
+
+
 /* ay_npt_pickboundcb:
  *  Togl callback to implement picking a boundary curve
  *  of a NURBS surface
@@ -17064,12 +17099,12 @@ ay_npt_pickboundcb(struct Togl *togl, int argc, char *argv[])
  GLuint selectbuf[1024];
  GLint hits;
  GLint viewport[4];
- ay_objbid *t, *objbids = NULL;
- unsigned int objbidlen = 256;
+ ay_objbid *objbids = NULL;
+ unsigned int objbidslen = 256;
  int add = AY_FALSE, flash = AY_FALSE;
  double tolerance;
 
-  if(!(objbids = calloc(256, sizeof(ay_objbid))))
+  if(!(objbids = calloc(objbidslen, sizeof(ay_objbid))))
     return TCL_OK;
 
   Tcl_GetDouble(interp, argv[2], &x1);
@@ -17154,15 +17189,8 @@ ay_npt_pickboundcb(struct Togl *togl, int argc, char *argv[])
 	 {
 	   for(i = 0; i < 4; i++)
 	     {
-	       if(ni >= objbidlen)
-		 {
-		   objbidlen *= 2;
-		   if(!(t = realloc(objbids, objbidlen*sizeof(ay_objbid))))
-		     goto cleanup;
-		   objbids = t;
-		 }
-	       (objbids[ni]).obj = o;
-	       (objbids[ni]).bid = i;
+	       if(ay_npt_addobjbid(&objbids, &objbidslen, ni, o, i))
+		 goto cleanup;
 	       glPushName(ni);
 	        ay_npatch_drawboundary(o, i);
 	       glPopName();
@@ -17173,15 +17201,8 @@ ay_npt_pickboundcb(struct Togl *togl, int argc, char *argv[])
 	   d = o->down;
 	   while(d && d->next)
 	     {
-	       if(ni >= objbidlen)
-		 {
-		   objbidlen *= 2;
-		   if(!(t = realloc(objbids, objbidlen*sizeof(ay_objbid))))
-		     goto cleanup;
-		   objbids = t;
-		 }
-	       (objbids[ni]).obj = o;
-	       (objbids[ni]).bid = i;
+	       if(ay_npt_addobjbid(&objbids, &objbidslen, ni, o, i))
+		 goto cleanup;
 	       glPushName(ni);
 	        ay_npatch_drawboundary(o, i);
 	       glPopName();
@@ -17199,15 +17220,8 @@ ay_npt_pickboundcb(struct Togl *togl, int argc, char *argv[])
 	     {
 	       for(i = 0; i < 4; i++)
 		 {
-		   if(ni >= objbidlen)
-		     {
-		       objbidlen *= 2;
-		       if(!(t = realloc(objbids, objbidlen*sizeof(ay_objbid))))
-			 goto cleanup;
-		       objbids = t;
-		     }
-		   (objbids[ni]).obj = o;
-		   (objbids[ni]).bid = i;
+		   if(ay_npt_addobjbid(&objbids, &objbidslen, ni, o, i))
+		     goto cleanup;
 		   glPushName(ni);
 		    ay_npatch_drawboundary(pobject, i);
 		   glPopName();
@@ -17218,15 +17232,8 @@ ay_npt_pickboundcb(struct Togl *togl, int argc, char *argv[])
 	       d = pobject->down;
 	       while(d && d->next)
 		 {
-		   if(ni >= objbidlen)
-		     {
-		       objbidlen *= 2;
-		       if(!(t = realloc(objbids, objbidlen*sizeof(ay_objbid))))
-			 goto cleanup;
-		       objbids = t;
-		     }
-		   (objbids[ni]).obj = o;
-		   (objbids[ni]).bid = i;
+		   if(ay_npt_addobjbid(&objbids, &objbidslen, ni, o, i))
+		     goto cleanup;
 		   glPushName(ni);
 		    ay_npatch_drawboundary(pobject, i);
 		   glPopName();
@@ -17236,8 +17243,8 @@ ay_npt_pickboundcb(struct Togl *togl, int argc, char *argv[])
 		   d = d->next;
 		 }
 	       (void)ay_object_deletemulti(pobject, AY_FALSE);
-	     }
-	 }
+	     } /* if have NPatch */
+	 } /* if is NPatch */
       glPopMatrix();
 
       sel = sel->next;
