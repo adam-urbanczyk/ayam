@@ -1544,6 +1544,10 @@ int
 ay_npt_fairnptcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[]);
 
+/** Draw all selected boundaries of a NURBS surface.
+ */
+int ay_npt_drawboundaries(struct Togl *togl, ay_object *o);
+
 /** Select boundary on NURBS surface modelling action.
  */
 int ay_npt_pickboundcb(struct Togl *togl, int argc, char *argv[]);
