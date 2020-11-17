@@ -1353,52 +1353,6 @@ ay_npatch_drawboundary(ay_object *o, unsigned int bound)
 } /* ay_npatch_drawboundary */
 
 
-/** ay_npatch_drawboundaries:
- * Draw all selected boundaries.
- *
- * \param[in] o object with boundaries to draw
- */
-void
-ay_npatch_drawboundaries(ay_object *o)
-{
- ay_tag *tag;
- unsigned int bound;
- int n;
-
-  glColor3f((GLfloat)ay_prefs.tpr, (GLfloat)ay_prefs.tpg,
-	    (GLfloat)ay_prefs.tpb);
-
-  tag = o->tags;
-  while(tag)
-    {
-      if(tag->type == ay_sb_tagtype)
-	{
-	  if(tag->val)
-	    {
-	      if(((char*)tag->val)[0] != '\0')
-		{
-		  n = sscanf(tag->val, "%u", &bound);
-		  if(n == 1)
-		    {
-		      ay_npatch_drawboundary(o, bound);
-		    }
-		  else
-		    {
-	     /*ay_error(AY_EWARN, fname, "malformed SB tag encountered");*/
-		    }
-		} /* if */
-	    } /* if have tag value */
-	} /* if is sb tag */
-      tag = tag->next;
-    } /* while */
-
-  glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
-	    (GLfloat)ay_prefs.obb);
-
- return;
-} /* ay_npatch_drawboundaries */
-
-
 /* ay_npatch_drawstess:
  *  internal helper function
  *  draw the patch using STESS
@@ -2170,7 +2124,7 @@ ay_npatch_drawacb(struct Togl *togl, ay_object *o)
 
   if(view->drawhandles == 4)
     {
-      ay_npatch_drawboundaries(o);
+      (void)ay_npt_drawboundaries(togl, o);
       return AY_OK;
     }
 

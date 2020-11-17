@@ -16993,7 +16993,74 @@ ay_npt_fairnptcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_npt_fairnptcmd */
 
 
-/**ay_npt_selectbound:
+/** ay_npt_drawboundaries:
+ * Draw all selected boundaries.
+ *
+ * \param[in] o object with boundaries to draw
+ */
+int
+ay_npt_drawboundaries(struct Togl *togl, ay_object *o)
+{
+ ay_tag *tag;
+ unsigned int bound;
+ int n;
+ ay_object *p, *pobject = NULL;
+
+  if(!o->tags)
+    return AY_OK;
+
+  if(!o->type == AY_IDNPATCH)
+    {
+      ay_provide_object(o, AY_IDNPATCH, &pobject);
+      if(!pobject)
+	return AY_OK;
+      p = pobject;
+    }
+  else
+    {
+      p = o;
+    }
+
+  glColor3f((GLfloat)ay_prefs.tpr, (GLfloat)ay_prefs.tpg,
+	    (GLfloat)ay_prefs.tpb);
+
+  tag = o->tags;
+  while(tag)
+    {
+      if(tag->type == ay_sb_tagtype)
+	{
+	  if(tag->val)
+	    {
+	      if(((char*)tag->val)[0] != '\0')
+		{
+		  n = sscanf(tag->val, "%u", &bound);
+		  if(n == 1)
+		    {
+		      ay_npatch_drawboundary(p, bound);
+		    }
+		  else
+		    {
+	     /*ay_error(AY_EWARN, fname, "malformed SB tag encountered");*/
+		    }
+		} /* if */
+	    } /* if have tag value */
+	} /* if is sb tag */
+      tag = tag->next;
+    } /* while */
+
+  glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+	    (GLfloat)ay_prefs.obb);
+
+  if(pobject)
+    {
+      ay_object_deletemulti(pobject, AY_FALSE);
+    }
+
+ return;
+} /* ay_npt_drawboundaries */
+
+
+/** ay_npt_selectbound:
  * Add a new SB tag to an object.
  *
  * \param[in,out] o object to process
