@@ -17056,7 +17056,7 @@ ay_npt_drawboundaries(struct Togl *togl, ay_object *o)
       ay_object_deletemulti(pobject, AY_FALSE);
     }
 
- return;
+ return AY_OK;
 } /* ay_npt_drawboundaries */
 
 
@@ -17282,7 +17282,7 @@ ay_npt_pickboundcb(struct Togl *togl, int argc, char *argv[])
        else
 	 {
 	   pobject = NULL;
-	   ay_provide_object(o, AY_IDNPATCH, &pobject);
+	   ay_provide_peek(o, AY_IDNPATCH, &pobject);
 	   if(pobject)
 	     {
 	       for(i = 0; i < 4; i++)
@@ -17309,7 +17309,6 @@ ay_npt_pickboundcb(struct Togl *togl, int argc, char *argv[])
 
 		   d = d->next;
 		 }
-	       (void)ay_object_deletemulti(pobject, AY_FALSE);
 	     } /* if have NPatch */
 	 } /* if is NPatch */
       glPopMatrix();
