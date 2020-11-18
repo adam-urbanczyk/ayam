@@ -1077,6 +1077,11 @@ int ay_provide_nptoolobj(ay_object *o, unsigned int type,
 			 ay_object *npatch, ay_object *cb,
 			 ay_object **result);
 
+/** provide access to an object of desired type
+ */
+int ay_provide_peek(ay_object *o, unsigned int type, ay_object **result);
+
+
 /* pv.c */
 
 /** parse all PV tags to RtToken/RtPointer arrays
