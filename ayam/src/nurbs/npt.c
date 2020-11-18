@@ -17009,9 +17009,9 @@ ay_npt_drawboundaries(struct Togl *togl, ay_object *o)
   if(!o->tags)
     return AY_OK;
 
-  if(!o->type == AY_IDNPATCH)
+  if(o->type != AY_IDNPATCH)
     {
-      ay_provide_object(o, AY_IDNPATCH, &pobject);
+      ay_provide_peek(o, AY_IDNPATCH, &pobject);
       if(!pobject)
 	return AY_OK;
       p = pobject;
@@ -17021,6 +17021,7 @@ ay_npt_drawboundaries(struct Togl *togl, ay_object *o)
       p = o;
     }
 
+  glDisable(GL_DEPTH_TEST);
   glColor3f((GLfloat)ay_prefs.tpr, (GLfloat)ay_prefs.tpg,
 	    (GLfloat)ay_prefs.tpb);
 
@@ -17050,11 +17051,7 @@ ay_npt_drawboundaries(struct Togl *togl, ay_object *o)
 
   glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
 	    (GLfloat)ay_prefs.obb);
-
-  if(pobject)
-    {
-      ay_object_deletemulti(pobject, AY_FALSE);
-    }
+  glEnable(GL_DEPTH_TEST);
 
  return AY_OK;
 } /* ay_npt_drawboundaries */
