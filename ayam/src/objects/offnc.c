@@ -611,7 +611,7 @@ ay_offnc_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   if(!result)
     {
-      if(type == AY_IDNCURVE)
+      if((type == AY_IDNCURVE) || (type == UINT_MAX-AY_IDNCURVE))
 	return AY_OK;
       else
 	return AY_ERROR;
@@ -621,6 +621,15 @@ ay_offnc_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   if(!s)
     return AY_ENULL;
+
+  if(type == UINT_MAX-AY_IDNCURVE)
+    {
+      /* peek */
+      if(!s->ncurve)
+	return AY_ERROR;
+      *result = s->ncurve;
+      return AY_OK;
+    }
 
   if(type == AY_IDNCURVE)
     {

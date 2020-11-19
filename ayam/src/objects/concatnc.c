@@ -682,7 +682,7 @@ ay_concatnc_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   if(!result)
     {
-      if(type == AY_IDNCURVE)
+      if((type == AY_IDNCURVE) || (type == UINT_MAX-AY_IDNCURVE))
 	return AY_OK;
       else
 	return AY_ERROR;
@@ -692,6 +692,15 @@ ay_concatnc_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   if(!concatnc)
     return AY_ENULL;
+
+  if(type == UINT_MAX-AY_IDNCURVE)
+    {
+      /* peek */
+      if(!concatnc->ncurve)
+	return AY_ERROR;
+      *result = concatnc->ncurve;
+      return AY_OK;
+    }
 
   if(type == AY_IDNCURVE)
     {
