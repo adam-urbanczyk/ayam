@@ -878,6 +878,14 @@ ay_instance_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   i = (ay_object *) o->refine;
 
+  if(type == UINT_MAX-i->type)
+    {
+      if(!i)
+	return AY_ERROR;
+      *result = i;
+      return AY_OK;
+    }
+
   if(i->type == type)
     {
       ay_status = ay_object_copy(i, result);
@@ -904,8 +912,11 @@ ay_instance_providecb(ay_object *o, unsigned int type, ay_object **result)
 	{
 	  /*
 	    we got it, copy transformation from instance
-	    to result(s)
+	    to result(s) (unless in peek mode)
 	  */
+	  if(type == (UINT_MAX-(*result)->type))
+	    return ay_status;
+
 	  if(!o->tags || !ay_instance_hasrptrafo(o))
 	    {
 	      i = *result;
@@ -915,7 +926,7 @@ ay_instance_providecb(ay_object *o, unsigned int type, ay_object **result)
 		  i = i->next;
 		}
 	    }
-	}
+	} /* if */
     } /* if */
 
  return ay_status;
