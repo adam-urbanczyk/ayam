@@ -880,14 +880,15 @@ ay_instance_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   if(i->type == type)
     {
-
       ay_status = ay_object_copy(i, result);
-      if(!o->tags || !ay_instance_hasrptrafo(o))
-	ay_trafo_copy(o, *result);
 
-      if(*result)
-	ay_notify_object(*result);
+      if(!ay_status && *result)
+	{
+	  if(!o->tags || !ay_instance_hasrptrafo(o))
+	    ay_trafo_copy(o, *result);
 
+	  ay_notify_object(*result);
+	}
     }
   else
     {
@@ -899,14 +900,21 @@ ay_instance_providecb(ay_object *o, unsigned int type, ay_object **result)
       */
       ay_status = ay_provide_object(i, type, result);
 
-      if(*result)
+      if(!ay_status && *result)
 	{
 	  /*
 	    we got it, copy transformation from instance
-	    to result
+	    to result(s)
 	  */
 	  if(!o->tags || !ay_instance_hasrptrafo(o))
-	    ay_trafo_copy(o, *result);
+	    {
+	      i = *result;
+	      while(i)
+		{
+		  ay_trafo_copy(o, i);
+		  i = i->next;
+		}
+	    }
 	}
     } /* if */
 
