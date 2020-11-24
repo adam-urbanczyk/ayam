@@ -1137,14 +1137,115 @@ ay_npatch_drawtrimglu(GLUnurbsObj *no, ay_object *o, ay_object *t)
 } /* ay_npatch_drawtrimglu */
 
 
+/** ay_npatch_drawextboundglu:
+ * Extract and draw a boundary curve from a NURBS patch.
+ * Checks for (and uses) or creates a SBC tag with the extracted data
+ * (which is linked as next tag to a given SB tag).
+ *
+ * \param[in] no GLU NURBS object
+ * \param[in] o NURBS surface
+ * \param[in] tag originating SB tag, may be NULL
+ * \param[in] side which side to extract (4-7)
+ * \param[in] length length of curve to extract
+ * \param[in] order order of curve to extract
+ * \param[in] stride rational state of NURBS surface (3 or 4)
+ */
+void
+ay_npatch_drawextboundglu(GLUnurbsObj *no, ay_object *o, ay_tag *tag,
+			  int side, int length, int order, int stride)
+{
+ int dir;
+ float *fltcv = NULL;
+ double u;
+ ay_nurbcurve_object *ncurve = NULL;
+ ay_tag *newtag;
+ ay_btval *newtagval;
+
+  /* find and use sbc tag */
+  if(tag && tag->next && tag->next->type == ay_sbc_tagtype)
+    {
+      fltcv = ((ay_btval*)tag->next->val)->payload;
+      gluNurbsCurve(no, (GLint)length+order, (GLfloat*)fltcv,
+		    (GLint)(stride),
+		    (GLfloat*)&(fltcv[length+order]),
+		    (GLint)order,
+		    (stride==4?GL_MAP1_VERTEX_4:GL_MAP1_VERTEX_3));
+      return;
+    }
+
+  if(side == 4 || side == 6)
+    u = 0.0;
+  else
+    u = 1.0;
+
+  if(side == 4 || side == 5)
+    dir = 4;
+  else
+    dir = 5;
+
+  (void) ay_npt_extractnc(o, dir, u, AY_TRUE, AY_FALSE, 0, NULL,
+			       &ncurve);
+
+  if(!ncurve)
+    goto cleanup;
+
+  ay_ncurve_cacheflt(ncurve);
+
+  if(!ncurve->fltcv)
+    goto cleanup;
+
+  fltcv = ncurve->fltcv;
+
+  gluNurbsCurve(no, (GLint)length+order, (GLfloat*)fltcv,
+		(GLint)(stride),
+		(GLfloat*)&(fltcv[length+order]),
+		(GLint)order,
+		(stride==4?GL_MAP1_VERTEX_4:GL_MAP1_VERTEX_3));
+
+  /* cache fltcv in sbc tag */
+  if(tag)
+    {
+      if(!(newtag = calloc(1, sizeof(ay_tag))))
+	goto cleanup;
+
+      if(!(newtagval = calloc(1, sizeof(ay_btval))))
+	{
+	  free(newtag);
+	  goto cleanup;
+	}
+
+      newtag->type = ay_sbc_tagtype;
+      newtag->is_binary = AY_TRUE;
+      newtag->is_intern = AY_TRUE;
+
+      newtagval->size = (length+order+(length*stride))
+	*sizeof(float);
+      newtagval->payload = fltcv;
+      ncurve->fltcv = NULL;
+      newtag->val = newtagval;
+
+      newtag->next = tag->next;
+      tag->next = newtag;
+    }
+
+cleanup:
+
+  if(ncurve)
+    ay_nct_destroy(ncurve);
+
+ return;
+} /* ay_npatch_drawextboundglu */
+
+
 /** ay_npatch_drawboundaryglu:
  * Draw a single boundary of a NURBS surface using GLU.
  *
  * \param[in] o NURBS surface
+ * \param[in,out] tag originating SB tag, may be NULL
  * \param[in] bound which boundary to draw
  */
 void
-ay_npatch_drawboundaryglu(ay_object *o, unsigned int bound)
+ay_npatch_drawboundaryglu(ay_object *o, ay_tag *tag, unsigned int bound)
 {
  ay_object *pobject, *t, *tt, *ttt;
  ay_nurbpatch_object *npatch;
@@ -1159,7 +1260,7 @@ ay_npatch_drawboundaryglu(ay_object *o, unsigned int bound)
   if(bound == 4)
     {
       for(i = 0; i < 4; i++)
-	ay_npatch_drawboundaryglu(o, i);
+	ay_npatch_drawboundaryglu(o, NULL, i);
     }
   else
     {
@@ -1197,37 +1298,64 @@ ay_npatch_drawboundaryglu(ay_object *o, unsigned int bound)
 	   switch(bound)
 	     {
 	     case 0:
-	       gluNurbsCurve(no, (GLint)uknot_count, (GLfloat*)npatch->fltcv,
+	       if(ay_knots_isclamped(1, npatch->vorder,
+				     npatch->vknotv, vknot_count,
+				     AY_EPSILON))
+	         gluNurbsCurve(no, (GLint)uknot_count, (GLfloat*)npatch->fltcv,
 			     (GLint)((npatch->is_rat?4:3)*npatch->height),
 			     (GLfloat*)&(npatch->fltcv[total_knots]),
 			     (GLint)npatch->uorder,
 			   (npatch->is_rat?GL_MAP1_VERTEX_4:GL_MAP1_VERTEX_3));
+	       else
+		 ay_npatch_drawextboundglu(no, o, tag, 4, npatch->width,
+					   npatch->uorder,
+					   (npatch->is_rat?4:3));
 	       break;
 	     case 1:
-	       gluNurbsCurve(no, (GLint)uknot_count, (GLfloat*)npatch->fltcv,
+	       if(ay_knots_isclamped(2, npatch->vorder,
+				     npatch->vknotv, vknot_count,
+				     AY_EPSILON))
+		 gluNurbsCurve(no, (GLint)uknot_count, (GLfloat*)npatch->fltcv,
 			     (GLint)((npatch->is_rat?4:3)*npatch->height),
 			     (GLfloat*)&(npatch->fltcv[total_knots +
 				  (npatch->is_rat?4:3) * (npatch->height-1)]),
 			     (GLint)npatch->uorder,
 			   (npatch->is_rat?GL_MAP1_VERTEX_4:GL_MAP1_VERTEX_3));
+	       else
+		 ay_npatch_drawextboundglu(no, o, tag, 5, npatch->width,
+					   npatch->uorder,
+					   (npatch->is_rat?4:3));
 	       break;
 	     case 2:
-	       gluNurbsCurve(no, (GLint)vknot_count,
+	       if(ay_knots_isclamped(1, npatch->uorder,
+				     npatch->uknotv, uknot_count,
+				     AY_EPSILON))
+		 gluNurbsCurve(no, (GLint)vknot_count,
 			     (GLfloat*)&(npatch->fltcv[uknot_count]),
 			     (GLint)(npatch->is_rat?4:3),
 			     (GLfloat*)&(npatch->fltcv[total_knots]),
 			     (GLint)npatch->vorder,
 			   (npatch->is_rat?GL_MAP1_VERTEX_4:GL_MAP1_VERTEX_3));
-
+	       else
+		 ay_npatch_drawextboundglu(no, o, tag, 6, npatch->height,
+					   npatch->vorder,
+					   (npatch->is_rat?4:3));
 	       break;
 	     case 3:
-	       gluNurbsCurve(no, (GLint)vknot_count,
-			     (GLfloat*)&(npatch->fltcv[uknot_count]),
-			     (GLint)(npatch->is_rat?4:3),
-			     (GLfloat*)&(npatch->fltcv[total_knots +
+	       if(ay_knots_isclamped(2, npatch->uorder,
+				     npatch->uknotv, uknot_count,
+				     AY_EPSILON))
+		 gluNurbsCurve(no, (GLint)vknot_count,
+			       (GLfloat*)&(npatch->fltcv[uknot_count]),
+			       (GLint)(npatch->is_rat?4:3),
+			       (GLfloat*)&(npatch->fltcv[total_knots +
 		  (npatch->is_rat?4:3) * npatch->height * (npatch->width-1)]),
-			     (GLint)npatch->vorder,
+			       (GLint)npatch->vorder,
 			   (npatch->is_rat?GL_MAP1_VERTEX_4:GL_MAP1_VERTEX_3));
+	       else
+		 ay_npatch_drawextboundglu(no, o, tag, 7, npatch->height,
+					   npatch->vorder,
+					   (npatch->is_rat?4:3));
 	       break;
 	     default:
 	       break;
@@ -1314,10 +1442,11 @@ ay_npatch_drawboundaryglu(ay_object *o, unsigned int bound)
  * Draw a single boundary of a NURBS surface.
  *
  * \param[in] o NURBS surface
+ * \param[in,out] tag originating SB tag, may be NULL
  * \param[in] bound which boundary to draw
  */
 void
-ay_npatch_drawboundary(ay_object *o, unsigned int bound)
+ay_npatch_drawboundary(ay_object *o, ay_tag *tag, unsigned int bound)
 {
  int mode = ay_prefs.np_display_mode;
  ay_nurbpatch_object *np = NULL;
@@ -1340,7 +1469,7 @@ ay_npatch_drawboundary(ay_object *o, unsigned int bound)
       break;
     case 1:
     case 2:
-      ay_npatch_drawboundaryglu(o, bound);
+      ay_npatch_drawboundaryglu(o, tag, bound);
       break;
     case 3:
       ay_npatch_drawboundarystess(o, bound);
@@ -4037,6 +4166,11 @@ ay_npatch_notifycb(ay_object *o)
 
   if(o->modified == 2)
     return AY_OK;
+
+  if(o->tags)
+    {
+      ay_tags_delete(o, ay_sbc_tagtype);
+    }
 
   if(npatch->breakv)
     {

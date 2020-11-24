@@ -1784,6 +1784,8 @@ extern unsigned int ay_mp_tagtype;
 extern char *ay_mp_tagname;
 extern unsigned int ay_sb_tagtype;
 extern char *ay_sb_tagname;
+extern unsigned int ay_sbc_tagtype;
+extern char *ay_sbc_tagname;
 /*@}*/
 
 /** \name Generic Error Message Strings */
