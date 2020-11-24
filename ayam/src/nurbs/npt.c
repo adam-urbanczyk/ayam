@@ -17037,7 +17037,7 @@ ay_npt_drawboundaries(struct Togl *togl, ay_object *o)
 		  n = sscanf(tag->val, "%u", &bound);
 		  if(n == 1)
 		    {
-		      ay_npatch_drawboundary(p, bound);
+		      ay_npatch_drawboundary(p, tag, bound);
 		    }
 		  else
 		    {
@@ -17256,7 +17256,7 @@ ay_npt_pickboundcb(struct Togl *togl, int argc, char *argv[])
 	       if(ay_npt_addobjbid(&objbids, &objbidslen, ni, o, i))
 		 goto cleanup;
 	       glPushName(ni);
-	        ay_npatch_drawboundary(o, i);
+	        ay_npatch_drawboundary(o, NULL, i);
 	       glPopName();
 	       ni++;
 	     }
@@ -17268,7 +17268,7 @@ ay_npt_pickboundcb(struct Togl *togl, int argc, char *argv[])
 	       if(ay_npt_addobjbid(&objbids, &objbidslen, ni, o, i))
 		 goto cleanup;
 	       glPushName(ni);
-	        ay_npatch_drawboundary(o, i);
+	        ay_npatch_drawboundary(o, NULL, i);
 	       glPopName();
 	       ni++;
 	       i++;
@@ -17287,7 +17287,7 @@ ay_npt_pickboundcb(struct Togl *togl, int argc, char *argv[])
 		   if(ay_npt_addobjbid(&objbids, &objbidslen, ni, o, i))
 		     goto cleanup;
 		   glPushName(ni);
-		    ay_npatch_drawboundary(pobject, i);
+		    ay_npatch_drawboundary(pobject, NULL, i);
 		   glPopName();
 		   ni++;
 		 }
@@ -17299,7 +17299,7 @@ ay_npt_pickboundcb(struct Togl *togl, int argc, char *argv[])
 		   if(ay_npt_addobjbid(&objbids, &objbidslen, ni, o, i))
 		     goto cleanup;
 		   glPushName(ni);
-		    ay_npatch_drawboundary(pobject, i);
+		    ay_npatch_drawboundary(pobject, NULL, i);
 		   glPopName();
 		   ni++;
 		   i++;
