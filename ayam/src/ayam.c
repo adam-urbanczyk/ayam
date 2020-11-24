@@ -218,6 +218,10 @@ unsigned int ay_sb_tagtype;
 
 char *ay_sb_tagname = "SB";
 
+unsigned int ay_sbc_tagtype;
+
+char *ay_sbc_tagname = "SBC";
+
 /* default logging directory and file */
 static char *ay_log = "/tmp/ay.log";
 
@@ -570,6 +574,9 @@ ay_init(Tcl_Interp *interp)
 
   /* register SB (Selected Boundary) tag type */
   (void)ay_tags_register(ay_sb_tagname, &ay_sb_tagtype);
+
+  /* register SBC (Selected Boundary Cache) tag type */
+  (void)ay_tags_register(ay_sbc_tagname, &ay_sbc_tagtype);
 
   /* create root object */
   if((ay_status = ay_object_create(AY_IDROOT, &ay_root)))
