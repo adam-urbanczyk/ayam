@@ -1554,7 +1554,15 @@ int ay_npt_pickboundcb(struct Togl *togl, int argc, char *argv[]);
 
 /** Add SB (SelectedBoundary) tag to an object.
  */
-int ay_npt_selectbound(ay_object *o, unsigned int i, int add);
+int ay_npt_selectbound(ay_object *o, unsigned int i);
+
+/** Remove SB (SelectedBoundary) tags from an object.
+ */
+void ay_npt_deselectbound(ay_object *o, unsigned int i);
+
+/** Check for presence of an SB tag.
+ */
+int ay_npt_isboundselected(ay_object *o, unsigned int i);
 
 
 /* pmt.c */

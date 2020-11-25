@@ -17067,16 +17067,11 @@ ay_npt_drawboundaries(struct Togl *togl, ay_object *o)
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_npt_selectbound(ay_object *o, unsigned int i, int add)
+ay_npt_selectbound(ay_object *o, unsigned int i)
 {
  ay_tag *newtag = NULL;
  int l;
  char buf[64];
-
-  if(!add)
-    {
-      ay_tags_delete(o, ay_sb_tagtype);
-    }
 
   if(!(newtag = calloc(1, sizeof(ay_tag))))
     {
@@ -17106,6 +17101,105 @@ ay_npt_selectbound(ay_object *o, unsigned int i, int add)
 
  return AY_OK;
 } /* ay_npt_selectbound */
+
+
+/** ay_npt_deselectbound:
+ * Remove all SB tags with given boundary.
+ * Also removes the trailing SBC tags, if present.
+ *
+ * \param[in,out] o object to process
+ * \param[in] i boundary for which the tag shall be removed
+ */
+void
+ay_npt_deselectbound(ay_object *o, unsigned int i)
+{
+  ay_tag **prev, *tag = NULL;
+ unsigned int bound;
+ int n, remove;
+
+  prev = &(o->tags);
+  tag = o->tags;
+  while(tag)
+    {
+      remove = AY_FALSE;
+      if(tag->type == ay_sb_tagtype)
+	{
+	  if(tag->val)
+	    {
+	      if(((char*)tag->val)[0] != '\0')
+		{
+		  n = sscanf(tag->val, "%u", &bound);
+		  if(n == 1)
+		    {
+		      if(bound == i)
+			{
+			  remove = AY_TRUE;
+			  *prev = tag->next;
+			  ay_tags_free(tag);
+			  tag = *prev;
+
+			  if(tag && (tag->type == ay_sbc_tagtype))
+			    {
+			      *prev = tag->next;
+			      ay_tags_free(tag);
+			      tag = *prev;
+			    }
+			}
+		    }
+		}
+	    }
+	}
+
+      if(tag)
+	prev = &(tag->next);
+      if(!remove)
+	tag = tag->next;
+    } /* while */
+
+ return;
+} /* ay_npt_deselectbound */
+
+
+/** ay_npt_isboundselected:
+ * Check whether or not a SB tag for a given boundary is present.
+ *
+ * \param[in] o object to process
+ * \param[in] i which tag/bound to check for
+ *
+ * \returns AY_TRUE if a matching SB tag was found, AY_FALSE else
+ */
+int
+ay_npt_isboundselected(ay_object *o, unsigned int i)
+{
+ ay_tag *tag = NULL;
+ unsigned int bound;
+ int n;
+
+  tag = o->tags;
+  while(tag)
+    {
+      if(tag->type == ay_sb_tagtype)
+	{
+	  if(tag->val)
+	    {
+	      if(((char*)tag->val)[0] != '\0')
+		{
+		  n = sscanf(tag->val, "%u", &bound);
+		  if(n == 1)
+		    {
+		      if(bound == i)
+			{
+			  return AY_TRUE;
+			}
+		    }
+		}
+	    }
+	}
+      tag = tag->next;
+    }
+
+ return AY_FALSE;
+} /* ay_npt_isboundselected */
 
 
 /** ay_npt_addobjbid:
@@ -17165,7 +17259,7 @@ ay_npt_pickboundcb(struct Togl *togl, int argc, char *argv[])
  GLint viewport[4];
  ay_objbid *objbids = NULL;
  unsigned int objbidslen = 256;
- int add = AY_FALSE, flash = AY_FALSE;
+ int hit = AY_FALSE, add = AY_FALSE, flash = AY_FALSE;
  double tolerance;
 
   if(!(objbids = calloc(objbidslen, sizeof(ay_objbid))))
@@ -17342,17 +17436,41 @@ ay_npt_pickboundcb(struct Togl *togl, int argc, char *argv[])
 	      o = (objbids[name]).obj;
 	      if(o)
 		{
+		  hit = AY_TRUE;
 		  if(flash)
 		    {
 		      /*ay_npatch_flashbound(o, (objbids[name]).bid);*/
 		    }
 		  else
 		    {
-		      ay_npt_selectbound(o, (objbids[name]).bid, add);
+		      if(add)
+			{
+			  ay_npt_selectbound(o, (objbids[name]).bid);
+			}
+		      else
+			{
+			  if(ay_npt_isboundselected(o, (objbids[name]).bid))
+			    ay_npt_deselectbound(o, (objbids[name]).bid);
+			  else
+			    ay_npt_selectbound(o, (objbids[name]).bid);
+			}
 		    }
 		}
 	    }
 	  s++;
+	}
+    }
+
+  if(add && !hit)
+    {
+      sel = ay_selection;
+      while(sel)
+	{
+	  o = sel->object;
+
+	  ay_tags_delete(o, ay_sb_tagtype);
+	  ay_tags_delete(o, ay_sbc_tagtype);
+	  sel = sel->next;
 	}
     }
 
