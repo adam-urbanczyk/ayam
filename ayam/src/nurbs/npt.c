@@ -17061,13 +17061,12 @@ ay_npt_drawboundaries(struct Togl *togl, ay_object *o)
  * Add a new SB tag to an object.
  *
  * \param[in,out] o object to process
- * \param[in] i which bound to select
- * \param[in] add whether to clear all other SB tags first
+ * \param[in] bound which boundary to select
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_npt_selectbound(ay_object *o, unsigned int i)
+ay_npt_selectbound(ay_object *o, unsigned int bound)
 {
  ay_tag *newtag = NULL;
  int l;
@@ -17086,7 +17085,7 @@ ay_npt_selectbound(ay_object *o, unsigned int i)
     }
   memcpy(newtag->name, ay_sb_tagname, 3*sizeof(char));
 
-  l = snprintf(buf, 64, "%u", i);
+  l = snprintf(buf, 64, "%u", bound);
   if(!(newtag->val = malloc((l+1)*sizeof(char))))
     {
       free(newtag->name);
@@ -17104,17 +17103,17 @@ ay_npt_selectbound(ay_object *o, unsigned int i)
 
 
 /** ay_npt_deselectbound:
- * Remove all SB tags with given boundary.
+ * Remove all SB tags for a given boundary.
  * Also removes the trailing SBC tags, if present.
  *
  * \param[in,out] o object to process
- * \param[in] i boundary for which the tag shall be removed
+ * \param[in] bound boundary for which the tag shall be removed
  */
 void
-ay_npt_deselectbound(ay_object *o, unsigned int i)
+ay_npt_deselectbound(ay_object *o, unsigned int bound)
 {
-  ay_tag **prev, *tag = NULL;
- unsigned int bound;
+ ay_tag **prev, *tag = NULL;
+ unsigned int tagbound;
  int n, remove;
 
   prev = &(o->tags);
@@ -17124,27 +17123,21 @@ ay_npt_deselectbound(ay_object *o, unsigned int i)
       remove = AY_FALSE;
       if(tag->type == ay_sb_tagtype)
 	{
-	  if(tag->val)
+	  if(tag->val && (((char*)tag->val)[0] != '\0'))
 	    {
-	      if(((char*)tag->val)[0] != '\0')
+	      n = sscanf(tag->val, "%u", &tagbound);
+	      if((n == 1) && (tagbound == bound))
 		{
-		  n = sscanf(tag->val, "%u", &bound);
-		  if(n == 1)
-		    {
-		      if(bound == i)
-			{
-			  remove = AY_TRUE;
-			  *prev = tag->next;
-			  ay_tags_free(tag);
-			  tag = *prev;
+		  remove = AY_TRUE;
+		  *prev = tag->next;
+		  ay_tags_free(tag);
+		  tag = *prev;
 
-			  if(tag && (tag->type == ay_sbc_tagtype))
-			    {
-			      *prev = tag->next;
-			      ay_tags_free(tag);
-			      tag = *prev;
-			    }
-			}
+		  if(tag && (tag->type == ay_sbc_tagtype))
+		    {
+		      *prev = tag->next;
+		      ay_tags_free(tag);
+		      tag = *prev;
 		    }
 		}
 	    }
@@ -17164,15 +17157,15 @@ ay_npt_deselectbound(ay_object *o, unsigned int i)
  * Check whether or not a SB tag for a given boundary is present.
  *
  * \param[in] o object to process
- * \param[in] i which tag/bound to check for
+ * \param[in] bound boundary to check for
  *
  * \returns AY_TRUE if a matching SB tag was found, AY_FALSE else
  */
 int
-ay_npt_isboundselected(ay_object *o, unsigned int i)
+ay_npt_isboundselected(ay_object *o, unsigned int bound)
 {
  ay_tag *tag = NULL;
- unsigned int bound;
+ unsigned int tagbound;
  int n;
 
   tag = o->tags;
@@ -17180,18 +17173,12 @@ ay_npt_isboundselected(ay_object *o, unsigned int i)
     {
       if(tag->type == ay_sb_tagtype)
 	{
-	  if(tag->val)
+	  if(tag->val && (((char*)tag->val)[0] != '\0'))
 	    {
-	      if(((char*)tag->val)[0] != '\0')
+	      n = sscanf(tag->val, "%u", &tagbound);
+	      if((n == 1) && (tagbound == bound))
 		{
-		  n = sscanf(tag->val, "%u", &bound);
-		  if(n == 1)
-		    {
-		      if(bound == i)
-			{
-			  return AY_TRUE;
-			}
-		    }
+		  return AY_TRUE;
 		}
 	    }
 	}
