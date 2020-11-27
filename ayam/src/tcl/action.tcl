@@ -2160,7 +2160,7 @@ proc actionFindUV { w } {
 #actionSelBnd:
 # 
 proc actionSelBnd { w } {
-    global ayprefs
+    global ayprefs ayviewshortcuts
 
     viewTitle $w "" "SelBnd"
     viewSetMAIcon $w ay_FindUV_img "SelBnd"
@@ -2194,6 +2194,20 @@ proc actionSelBnd { w } {
 	focus %W
     }
 
+    bind $w <${ayviewshortcuts(TagMod)}-ButtonRelease-1> {
+	%W setconf -rect $oldx $oldy %x %y 0
+	if { ($oldx != %x) || ($oldy != %y) } {
+	    %W selbndac %x %y $oldx $oldy 1
+	} else {
+	    %W selbndac %x %y
+	}
+	#%W selbnd -end %x %y
+	%W redraw
+	if { ($oldx != %x) || ($oldy != %y) } {
+	    plb_update
+	}
+	focus %W
+    }
     $w setconf -drawh 4
 
  return;

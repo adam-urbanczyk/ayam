@@ -17246,7 +17246,7 @@ ay_npt_pickboundcb(struct Togl *togl, int argc, char *argv[])
  GLint viewport[4];
  ay_objbid *objbids = NULL;
  unsigned int objbidslen = 256;
- int hit = AY_FALSE, add = AY_FALSE, flash = AY_FALSE;
+ int hit = AY_FALSE, drag = AY_FALSE, rem = AY_FALSE, flash = AY_FALSE;
  double tolerance;
 
   if(!(objbids = calloc(objbidslen, sizeof(ay_objbid))))
@@ -17255,7 +17255,7 @@ ay_npt_pickboundcb(struct Togl *togl, int argc, char *argv[])
   Tcl_GetDouble(interp, argv[2], &x1);
   Tcl_GetDouble(interp, argv[3], &y1);
 
-  if(argc == 6)
+  if(argc >= 6)
     {
       Tcl_GetDouble(interp, argv[4], &x2);
       Tcl_GetDouble(interp, argv[5], &y2);
@@ -17264,7 +17264,9 @@ ay_npt_pickboundcb(struct Togl *togl, int argc, char *argv[])
       y = (y1 + y2) / 2.0;
       boxh = abs((int)(y2 - y1));
       boxw = abs((int)(x2 - x1));
-      add = AY_TRUE;
+      drag = AY_TRUE;
+      if(argc > 6)
+	rem = AY_TRUE;
     }
   else
     {
@@ -17430,9 +17432,12 @@ ay_npt_pickboundcb(struct Togl *togl, int argc, char *argv[])
 		    }
 		  else
 		    {
-		      if(add)
+		      if(drag)
 			{
-			  ay_npt_selectbound(o, (objbids[name]).bid);
+			  if(rem)
+			    ay_npt_deselectbound(o, (objbids[name]).bid);
+			  else
+			    ay_npt_selectbound(o, (objbids[name]).bid);
 			}
 		      else
 			{
@@ -17442,13 +17447,13 @@ ay_npt_pickboundcb(struct Togl *togl, int argc, char *argv[])
 			    ay_npt_selectbound(o, (objbids[name]).bid);
 			}
 		    }
-		}
-	    }
+		} /* if */
+	    } /* if */
 	  s++;
-	}
-    }
+	} /* for */
+    } /* for */
 
-  if(add && !hit)
+  if(drag && !hit)
     {
       sel = ay_selection;
       while(sel)
