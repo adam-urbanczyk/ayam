@@ -181,6 +181,73 @@ ay_prop_gettrafotcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_prop_gettrafotcmd */
 
 
+/** ay_prop_parseexpression:
+ * Parse and apply a simple (one operator) expression.
+ *
+ * \param to Tcl object to get the expression from
+ * \param fname name for error reporting, may be NULL to inhibit reporting
+ * \param oldval old value of expression
+ * \param newval new value of expression
+ *
+ * \returns AY_OK if an expression is present and a new value was set
+ * AY_EWARN if no expression was found in the string (it is a value)
+ * AY_ERROR if an expression is present but parsing failed
+ */
+int
+ay_prop_parseexpression(Tcl_Obj *to, char *fname, double oldval, double *newval)
+{
+ const char *exp, *mp;
+ int success = AY_EWARN;
+ double d;
+
+  if(!to || !newval)
+    goto cleanup;
+
+  exp = Tcl_GetStringFromObj(to, NULL);
+  if(strchr(exp, '+') != NULL)
+    {
+      success = AY_ERROR;
+      mp = strchr(exp, '+');
+      if(mp)
+	{
+	  if(sscanf(mp+1, "%lg", &d) == 1)
+	    {
+	      d = oldval + d;
+	      *newval = d;
+	      success = AY_OK;
+	    }
+	}
+    }
+  else
+    {
+      if(strchr(exp, '-') > exp)
+	{
+	  success = AY_ERROR;
+	  mp = strchr(exp, '-');
+	  if(mp)
+	    {
+	      if(sscanf(mp+1, "%lg", &d) == 1)
+		{
+		  d = oldval - d;
+		  *newval = d;
+		  success = AY_OK;
+		}
+	    }
+	}
+    }
+
+  if((success == AY_ERROR) && fname)
+    {
+      ay_error(AY_ERROR, fname, "Error decoding expression:");
+      ay_error(AY_ERROR, fname, exp);
+    }
+
+cleanup:
+
+ return success;
+} /* ay_prop_parseexpression */
+
+
 /** ay_prop_settrafotcmd:
  *  Set the transformation property data from the Tcl context
  *  to the C context.
@@ -196,6 +263,7 @@ int
 ay_prop_settrafotcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
+ int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  char *arr = "transfPropData";
@@ -282,7 +350,12 @@ ay_prop_settrafotcmd(ClientData clientData, Tcl_Interp *interp,
 
   to = Tcl_GetVar2Ex(interp, arr, "Rotate_X",
 		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &dtemp);
+
+  ay_status = ay_prop_parseexpression(to, argv[0], o->rotx, &dtemp);
+
+  if(ay_status != AY_OK)
+    Tcl_GetDoubleFromObj(interp, to, &dtemp);
+
   if(o->rotx != dtemp)
     {
       if(!pasteProp)
@@ -296,7 +369,12 @@ ay_prop_settrafotcmd(ClientData clientData, Tcl_Interp *interp,
     }
   to = Tcl_GetVar2Ex(interp, arr, "Rotate_Y",
 		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &dtemp);
+
+  ay_status = ay_prop_parseexpression(to, argv[0], o->roty, &dtemp);
+
+  if(ay_status != AY_OK)
+    Tcl_GetDoubleFromObj(interp, to, &dtemp);
+
   if(o->roty != dtemp)
     {
       if(!pasteProp)
@@ -308,9 +386,15 @@ ay_prop_settrafotcmd(ClientData clientData, Tcl_Interp *interp,
       notify_parent = AY_TRUE;
       o->roty = dtemp;
     }
+
   to = Tcl_GetVar2Ex(interp, arr, "Rotate_Z",
 		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &dtemp);
+
+  ay_status = ay_prop_parseexpression(to, argv[0], o->rotz, &dtemp);
+
+  if(ay_status != AY_OK)
+    Tcl_GetDoubleFromObj(interp, to, &dtemp);
+
   if(o->rotz != dtemp)
     {
       if(!pasteProp)

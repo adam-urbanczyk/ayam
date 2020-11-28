@@ -1060,6 +1060,11 @@ int ay_prop_getnpinfo(Tcl_Interp *interp, char *n1, ay_object *o);
  */
 int ay_prop_getncinfo(Tcl_Interp *interp, char *n1, ay_object *o);
 
+/** parse and apply simple one operand expression
+ */
+int ay_prop_parseexpression(Tcl_Obj *to, char *fname, double oldval,
+			    double *newval);
+
 
 /* provide.c */
 
