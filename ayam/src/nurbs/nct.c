@@ -10499,17 +10499,20 @@ cleanup:
  * \param[in,out] curve NURBS curve object to process
  * \param[in] selp selected points (may be NULL)
  * \param[in] tol maximum distance a control point moves
+ * \param[in] fair_worst if AY_TRUE only the control point that would move
+ * the farthest distance is detected and moved
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_nct_fair(ay_nurbcurve_object *curve, ay_point *selp, double tol)
+ay_nct_fair(ay_nurbcurve_object *curve, ay_point *selp, double tol,
+	    int fair_worst)
 {
  int ay_status = AY_OK;
  unsigned int i, j, stride = 4, found;
  double *Pw, *U, len, v[3], l[3], r[3], q[4] = {0,0,0,1};
- double *pll, *pl, *p, *pr, *prr;
- ay_point *pnt;
+ double *pll, *pl, *p, *pr, *prr, worstlen = 0.0;
+ ay_point *pnt, worstpnt = {0};
  ay_nurbcurve_object nc = {0};
 
   /* sanity check */
@@ -10596,7 +10599,6 @@ ay_nct_fair(ay_nurbcurve_object *curve, ay_point *selp, double tol)
       nc.order = curve->order;
       nc.type = curve->type;
       nc.knot_type = curve->knot_type;
-      nc.controlv = Pw;
       ay_status = ay_knots_createnc(&nc);
       if(ay_status)
 	{
@@ -10613,16 +10615,15 @@ ay_nct_fair(ay_nurbcurve_object *curve, ay_point *selp, double tol)
       memcpy(&(U[2]), curve->knotv,
 	     (curve->length+curve->order)*sizeof(double));
 
-      len = curve->knotv[curve->length]-curve->knotv[curve->order-1];
-      if(len < AY_EPSILON)
-	len = 0.5;
+      i = curve->order;
+      U[i-1] = U[i]-(U[i+1]-U[i])*0.5;
+      U[i-2] = U[i+1]-(U[i+2]-U[i+1])*0.5;
 
-      U[1] = U[2]-len*0.5;
-      U[0] = U[1]-len*0.5;
+      i = curve->length;
+      U[i+1] = U[i]+(U[i]-U[i-1])*0.5;
+      U[i+2] = U[i-1]+(U[i-1]-U[i-2])*0.5;
 
-      i = curve->length+curve->order+1;
-      U[i+1] = U[i]+len*0.5;
-      U[i+2] = U[i+1]+len*0.5;
+      U[curve->length+curve->order] = U[curve->length+curve->order-1];
     }
 
   pll = Pw;
@@ -10667,16 +10668,27 @@ ay_nct_fair(ay_nurbcurve_object *curve, ay_point *selp, double tol)
 	  len = AY_V3LEN(v);
 	  if(len > AY_EPSILON)
 	    {
-	      if(len > tol)
+	      if(fair_worst)
 		{
-		  AY_V3SCAL(v, tol);
-		  AY_V3ADD(p, p, v);
+		  if(len > worstlen)
+		    {
+		      worstlen = len;
+		      worstpnt.index = i-2;
+		    }
 		}
 	      else
 		{
-		  memcpy(p, q, 3*sizeof(double));
-		}
-	    }
+		  if(len > tol)
+		    {
+		      AY_V3SCAL(v, tol);
+		      AY_V3ADD(p, p, v);
+		    }
+		  else
+		    {
+		      memcpy(p, q, 3*sizeof(double));
+		    }
+		} /* if worst */
+	    } /* if have len */
 	} /* if */
 
       pll += stride;
@@ -10687,7 +10699,15 @@ ay_nct_fair(ay_nurbcurve_object *curve, ay_point *selp, double tol)
       j++;
     } /* for */
 
-  memcpy(curve->controlv, &(Pw[2*stride]), curve->length*stride*sizeof(double));
+  if(fair_worst)
+    {
+      ay_status = ay_nct_fair(curve, &worstpnt, tol, /*fair_worst=*/AY_FALSE);
+    }
+  else
+    {
+      memcpy(curve->controlv, &(Pw[2*stride]),
+	     curve->length*stride*sizeof(double));
+    }
 
   free(U);
   free(Pw);
@@ -10716,6 +10736,7 @@ ay_nct_fairnctcmd(ClientData clientData, Tcl_Interp *interp,
  double tol = DBL_MAX;
  int i = 1;
  int notify_parent = AY_FALSE;
+ int fair_worst = AY_FALSE;
 
   if(!sel)
     {
@@ -10725,6 +10746,12 @@ ay_nct_fairnctcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc > 1)
     {
+      if(argv[1][0] == '-' && argv[1][1] == 'w')
+	{
+	  fair_worst = AY_TRUE;
+	  i++;
+	}
+
       tcl_status = Tcl_GetDouble(interp, argv[i], &tol);
       AY_CHTCLERRRET(tcl_status, argv[0], interp);
       if(tol != tol)
@@ -10746,7 +10773,7 @@ ay_nct_fairnctcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  nc = (ay_nurbcurve_object *)o->refine;
 
-	  ay_status = ay_nct_fair(nc, o->selp, tol);
+	  ay_status = ay_nct_fair(nc, o->selp, tol, fair_worst);
 
 	  if(ay_status)
 	    {

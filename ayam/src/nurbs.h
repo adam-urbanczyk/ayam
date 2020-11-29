@@ -1004,7 +1004,8 @@ int ay_nct_extractnctcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
 
 /** make the shape of a curve more pleasant */
-int ay_nct_fair(ay_nurbcurve_object *curve, ay_point *selp, double tol);
+int ay_nct_fair(ay_nurbcurve_object *curve, ay_point *selp, double tol,
+		int fair_worst);
 
 /** Tcl command to make the shape of a curve more pleasant */
 int ay_nct_fairnctcmd(ClientData clientData, Tcl_Interp *interp,
