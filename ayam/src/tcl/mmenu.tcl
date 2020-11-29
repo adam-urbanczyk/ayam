@@ -519,9 +519,9 @@ $m.nct add command -label "Approximate" -command {
 }
 
 $m.nct add command -label "Fair" -command {
-    runTool [list ay(fairtol) ]\
-	[list "Tolerance:"]\
-	"undo save FairNC; fairNC %0; plb_update; rV"\
+    runTool [list ay(fairtol) ay(fairworst)]\
+	[list "Tolerance:" "Fair Worst:"]\
+	"undo save FairNC; if { $ay(fairworst) } {fairNC -w %0;} else {fairNC %0;}; plb_update; rV"\
 	"Fair Curve" fairnct
 }
 
